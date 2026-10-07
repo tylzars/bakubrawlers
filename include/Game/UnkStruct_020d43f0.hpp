@@ -37,7 +37,7 @@ struct UnkStruct_020d43f0 {
     /* 01a */ u16 mUnk_1a_3 : 5;
     /* 01a */ u16 mUnk_1a_8 : 8;
     /* 01c */ u32 mMoney;
-    /* 020 */ PAD(0x020, 0x024);
+    /* 020 */ u32 mUnk_20;
     /* 024 */ u8 mUnk_24;
     /* 025 */ u8 mUnk_25;
     /* 026 */ u8 mUnk_26;

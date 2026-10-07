@@ -30,6 +30,13 @@ extern const VecFx32 data_ov008_02229044;
 extern const VecFx32 data_ov008_02229050;
 
 extern const u8 data_ov008_0222901e[2][3];
+extern const u8 data_ov008_0222901a[][2];
+extern const u32 data_ov008_02229024[];
+extern const u8 data_ov008_0222902c[][2];
+extern const u8 data_ov008_022290a4[];
+extern const WindowItemRecord data_ov008_02229184[];
+extern const WindowCellRecord data_ov008_02229114[];
+extern WindowCellRecord data_ov008_0222ab2c[];
 extern const u8 data_ov008_0222905c[][6];
 extern const u8 data_ov008_0222905d[][6];
 
@@ -180,6 +187,100 @@ void MyroomShootScene::InitDisplay() {
     G2S_SetWnd1Position(0, 0, 0, 0);
     G2_BlendNone();
     G2S_BlendNone();
+}
+
+void MyroomShootScene::func_ov008_02221a14() {
+    mCamera = new Camera();
+    mCamera->SetUp(0, 0x1000, 0);
+    mCamera->SetTarget(0x28000, 0x6e000, 0);
+    mCamera->SetClip(0x1000, 0x1388000);
+    mCamera->func_02026004(0x2aaa);
+    mCamera->SetPosition(0x14000, 0x5a000, 0x96000);
+    CameraManager::Get().mActive = 0;
+    CameraManager::Get().func_02026504(1, mCamera, 0);
+    CameraManager &manager = CameraManager::Get();
+    Camera *camera    = manager.mCameras[manager.mActive];
+    data_02211374.mCameraPosition = camera->mPosition;
+    data_02211374.mCameraUp       = camera->mUp;
+    data_02211374.mCameraTarget   = camera->mTarget;
+    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    data_02211374.mFlags &= ~0xe8;
+    manager.mProjection[manager.mActive] = data_02211374.mProjection;
+    manager.mView[manager.mActive]       = data_02211374.mView;
+    manager.mMtxA[manager.mActive]       = *func_02032710();
+    manager.mMtxB[manager.mActive]       = *func_02032604();
+    manager.mMtxC[manager.mActive]       = *func_020323b8();
+    mLights = new UnkStruct_02029ca8(data_ov008_022290a4);
+    ChangeDir("/Game/Myroom/");
+    func_02025b64(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
+    func_02025b64(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
+    func_02025b64(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
+    SpriteScreen &main = SpriteManager::Get().Screen(0);
+    main.func_02027624(3);
+    main.LoadCharacters("myroom_s_shoot_u_obj_00.nce_ncg1D.bin", 0x4000, 0);
+    main.LoadPalette("myroom_s_shoot_u_obj_00_ncl.bin", 0, 0);
+    mCellAnim            = new CellAnimation("myroom_s_shoot_u_obj_00_nce.bin", 0, 1, 1);
+    mCellAnim->mCharBase = main.func_020276f4(0x4000);
+    mCellAnim->mUnk_11   = 0;
+    mCellAnim->SetAnimation(0);
+    ChangeDir("/");
+    mWindow = NULL;
+    mWindow = new SelectWindow(10, data_ov008_02229184, -1);
+    SpriteScreen &sub = SpriteManager::Get().Screen(1);
+    sub.func_02027624(3);
+    ChangeDir("/");
+    sub.LoadCharacters("Game/Myroom/myroom_s_shoot_b_obj.nce_ncg1D.bin", 0, 0);
+    sub.LoadPalette("Game/Myroom/myroom_s_shoot_b_obj_ncl.bin", 0, 0);
+    sub.LoadCharacters("Game/2D/union_b/union_b_obj_cockpit.nce_ncg1D.bin", 0x5000, 0);
+    sub.LoadPalette("Game/2D/union_b/union_b_obj_cockpit_ncl.bin", 0x140, 0);
+    sub.LoadCharacters("Game/2D/union_b/union_b_obj_page.nce_ncg1D.bin", 0x8000, 0);
+    sub.LoadPalette("Game/2D/union_b/union_b_obj_page_ncl.bin", 0x160, 0);
+    for (u8 i = 0; i < 6; i++) {
+        if (mUnlocked[i] != 0) {
+            u8 a = data_ov008_0222902c[i][0];
+            u8 b = data_ov008_0222902c[i][1];
+            *(u8 *) &data_ov008_0222ab2c[i].mUnk_04 = a;
+            data_ov008_0222ab2c[i].mUnk_18[0] = a;
+            data_ov008_0222ab2c[i].mUnk_18[1] = b;
+            data_ov008_0222ab2c[i].mUnk_18[2] = a;
+        } else {
+            *(u8 *) &data_ov008_0222ab2c[i].mUnk_04 = 1;
+            data_ov008_0222ab2c[i].mUnk_18[0] = 1;
+            data_ov008_0222ab2c[i].mUnk_18[1] = 1;
+            data_ov008_0222ab2c[i].mUnk_18[2] = 1;
+        }
+    }
+    mWindow->SetCells(6, data_ov008_0222ab2c);
+    mWindow->SetCells(4, data_ov008_02229114);
+    ChangeDir("/Game/Myroom/Map/");
+    NitroModel *model     = new NitroModel();
+    NitroTexture *texture = new NitroTexture("myroom_s.nsbtx");
+    model->func_020289e0("myroom_s.nsbmd", texture);
+    texture->func_02028344();
+    mRoom = model->func_02028b78(0);
+    data_020d433c.mEffects = new EffectManager();
+    func_0202ba64(data_020d433c.mEffects, 0, "shoot");
+    SpriteManager::Get().func_02027504(0);
+    func_ov008_02222474(0);
+    ChangeDir("/font/");
+    if (mMessages == NULL) {
+        mMessages = (MessageFile *) func_02023504("mes_myroom.mes", 0, 0, 0, 0, 0);
+    }
+    for (u8 i = 0; i < 2; i++) {
+        mTextBufferSize[i] = (u16) TextManager::Get().BufferSize((s16) data_ov008_0222901a[i][0], (s16) data_ov008_0222901a[i][1]);
+        mGlyphCount[i]     = TextManager::Get().GlyphCount(data_ov008_0222901a[i][0], data_ov008_0222901a[i][1], data_ov008_02229024[i]);
+        mTextBuffers[i]    = OS_Alloc(mTextBufferSize[i]);
+        ClearTextBuffers(i);
+        mGlyphBuffers[i] = OS_Alloc(mGlyphCount[i] * 0xc);
+        TextManager::Get().Init(mGlyphBuffers[i], 0, 0, data_ov008_0222901a[i][0], data_ov008_0222901a[i][1], data_ov008_02229024[i]);
+    }
+    TextManager::Get().SetColor(0, 0, 0xf);
+    mMessage = new MessageWindow("mes_myroom", 1, 0x7000);
+    mMessage->func_02065bd4(0x14, 4, 0);
+    mMessage->func_02065be4(0xd8);
+    mMessage->func_02065890(0x23, 0, 1);
+    func_ov008_02222a78();
+    ChangeDir("/");
 }
 
 void MyroomShootScene::func_ov008_02222474(s8 index) {

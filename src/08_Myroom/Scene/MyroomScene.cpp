@@ -1,4 +1,11 @@
 #include "Scene/MyroomScene.hpp"
+#include "Scene/CharacterEditScene.hpp"
+#include "Scene/MyroomCharaScene.hpp"
+#include "Scene/MyroomGiftScene.hpp"
+#include "Scene/MyroomRankingScene.hpp"
+#include "Scene/MyroomShootScene.hpp"
+#include "Scene/MyroomTipsScene.hpp"
+#include "Unknown/UnkStruct_02070608.hpp"
 #include "Game/UnkStruct_02065c40.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/CellAnimation.hpp"
@@ -17,6 +24,14 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
+class UnkStruct_02078e14 {
+public:
+    /* 000 */ PAD(0x000, 0x408);
+
+    UnkStruct_02078e14(u32 unk1, u32 unk2);
+};
+
+extern const char data_ov008_02229da0[];
 extern const WindowItemRecord data_ov008_02229d14[];
 extern const WindowItemRecord data_ov008_02229c88[];
 extern const WindowCellRecord data_ov008_0222877c[];
@@ -83,6 +98,238 @@ void MyroomScene::Cleanup() {
         delete cell;
     }
     mCellAnim = NULL;
+}
+
+void MyroomScene::Update() {
+    UnkStruct_SceneContext *ctx = mContext;
+    switch (ctx->mInfo.mState) {
+        case 0:
+            InitDisplay();
+            LoadGraphics();
+            SetupText();
+            mEvent = new UnkStruct_02065c40(1, 0, 0);
+            ctx->mInfo.mState++;
+            break;
+        case 1:
+            if (mEvent->func_020678e8()) {
+                return;
+            }
+            mEvent->func_0206ef4c(data_ov008_02229da0, 0, 0xa, 0, 0x15);
+            if (mMenus[0] != NULL) {
+                mMenus[0]->func_0205c7c8(-1);
+                mMenus[0]->mCursor->mSelection = -1;
+                mMenus[0]->mCursor->mSelection = *(s8 *) &ctx->mInfo.mUnk_06;
+                mMenus[0]->mCells[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(data_ov008_022286fc[(s8) ctx->mInfo.mUnk_06]);
+            }
+            PrintStatus();
+            ctx->mInfo.mState++;
+            break;
+        case 2:
+            if (mEvent->func_020678e8()) {
+                return;
+            }
+            switch (ctx->mInfo.mMenuResult) {
+                case 0:
+                    mEvent->func_02067998(data_ov008_0222870c[(s8) ctx->mInfo.mUnk_06]);
+                    break;
+                case 1:
+                    mEvent->func_02067998(4);
+                    break;
+                case 2:
+                    mEvent->func_02067998(3);
+                    break;
+            }
+            SpriteManager::Get().StartFade(2);
+            ctx->mInfo.mState++;
+            break;
+        case 3:
+            switch (ctx->mInfo.mMenuResult) {
+                case 0:
+                    mMenus[0]->Draw();
+                    break;
+                case 1:
+                    mMenus[1]->Draw();
+                    break;
+                case 2:
+                    mMenus[2]->Draw();
+                    break;
+            }
+            DrawText();
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            ctx->mInfo.mState++;
+            break;
+        case 4:
+            func_ov008_0221c9c8();
+            func_ov008_0221c2a0();
+            DrawText();
+            break;
+        case 5:
+            if (func_ov008_0221cc6c()) {
+                ctx->mInfo.mState = 4;
+            }
+            DrawText();
+            break;
+        case 6:
+            func_ov008_0221c2a0();
+            DrawText();
+            SpriteManager::Get().StartSubFade(3);
+            switch (ctx->mInfo.mScroll) {
+                case 2:
+                case 4:
+                case 5:
+                    mEvent->func_020702e0(0x3c, 8, -606, -26, -4, -656);
+                    break;
+                case 6:
+                    mEvent->func_020702e0(0x76, -52, -619, 0x1f, -64, -669);
+                    break;
+                case 3:
+                    mEvent->func_020702e0(0xe0, 8, -595, 0x92, -39, -657);
+                    break;
+                case 0:
+                case 1:
+                case 7:
+                    mEvent->func_020702e0(0xb6, 8, -665, 0x60, -4, -715);
+                    break;
+            }
+            ctx->mInfo.mState++;
+            break;
+        case 7:
+            func_ov008_0221c2a0();
+            DrawText();
+            if (mEvent->func_020678e8()) {
+                return;
+            }
+            SpriteManager::Get().StartFade(3);
+            ctx->mInfo.mState++;
+            break;
+        case 8:
+            func_ov008_0221c2a0();
+            DrawText();
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            mEvent->func_020676f8();
+            mContext->mUnk_12 = 0;
+            ctx->mInfo.mState++;
+            break;
+        case 9:
+            if (ctx->mUnk_12 == 0) {
+                return;
+            }
+            SpriteManager::Get().StartFade(3);
+            ctx->mInfo.mState++;
+            break;
+        case 10:
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            switch (ctx->mInfo.mScroll) {
+                case 0:
+                    new MyroomGiftScene();
+                    break;
+                case 1:
+                    new MyroomShootScene();
+                    break;
+                case 2:
+                    new MyroomRankingScene();
+                    break;
+                case 4:
+                    new MyroomCharaScene();
+                    break;
+                case 3:
+                    new CharacterEditScene(1);
+                    break;
+                case 5:
+                    new MyroomTipsScene();
+                    break;
+                case 6:
+                    new UnkStruct_02078e14(3, 0);
+                    break;
+                case 7:
+                    new UnkStruct_02078e14(4, 0);
+                    break;
+            }
+            mContext->mUnk_12 = 0;
+            Cleanup();
+            ctx->mInfo.mState++;
+            break;
+        case 11:
+            if (ctx->mUnk_12 == 0) {
+                return;
+            }
+            ctx->mInfo.mPrevSelection = 0;
+            ctx->mInfo.mState         = 0;
+            break;
+        case 12:
+            func_ov008_0221c2a0();
+            DrawText();
+            mEvent->func_020702e0(0x3a, 0x10, -667, -28, 4, -717);
+            ctx->mInfo.mState++;
+            break;
+        case 13:
+            func_ov008_0221c2a0();
+            DrawText();
+            if (mEvent->func_020678e8()) {
+                return;
+            }
+            new UnkStruct_02070608(1, 1, 0, 0x2000, 2, 0, 0, 0x1e000, 0x1a0);
+            mContext->mUnk_12 = 0;
+            data_020d433c.mUnk_14_1 = 0;
+            ctx->mInfo.mState++;
+            break;
+        case 14:
+            if (ctx->mUnk_12 == 0) {
+                return;
+            }
+            GXS_SetVisiblePlane(0x11);
+            ctx->mInfo.mState         = 1;
+            ctx->mInfo.mPrevSelection = 0;
+            FrameTask::Get().func_0203dc34(0, 0x13);
+            break;
+        case 15:
+            if ((data_020d433c.mUnk_14 & 2) && data_020d433c.mUnk_7f == 4) {
+                new UnkStruct_02070608(1, 1, 0, 0x2000, 2, 0, 0, 0x1e000, 0x1a0);
+                mContext->mUnk_12 = 0;
+                ctx->mInfo.mState++;
+            } else {
+                ctx->mInfo.mState = 0x11;
+                mMenus[0]->Draw();
+                DrawText();
+            }
+            break;
+        case 16:
+            if (ctx->mUnk_12 != 0) {
+                ctx->mInfo.mState++;
+            }
+            break;
+        case 17:
+            SpriteManager::Get().StartFade(3);
+            ctx->mInfo.mState++;
+            mMenus[0]->Draw();
+            DrawText();
+            break;
+        case 18:
+            mMenus[0]->Draw();
+            DrawText();
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            mEvent->func_020676f8();
+            mContext->mUnk_12 = 0;
+            ctx->mInfo.mState++;
+            break;
+        case 19:
+            if (ctx->mUnk_12 != 0) {
+                ctx->mInfo.mState++;
+            }
+            break;
+        case 20:
+            RequestScene(data_020d433c.mUnk_7f);
+            mFinished = 1;
+            break;
+    }
 }
 
 void MyroomScene::InitDisplay() {

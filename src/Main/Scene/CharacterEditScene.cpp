@@ -16,6 +16,7 @@ extern const u32 data_0209e784[6];
 // The look fields of the save data (+0x14..+0x1c of data_020d43f0) as CharacterLook.
 #define SAVE_LOOK ((CharacterLook *) ((u8 *) data_020d43f0 + 0x14))
 extern WindowItem data_0209ec5c[];
+extern WindowItem data_0209eec4[];
 extern WindowItem data_0209f12c[];
 extern WindowItem data_0209f394[];
 
@@ -1238,6 +1239,225 @@ void CharacterEditScene::func_0205e6ac() {
         mState = 1;
         mUnk_31 = 2;
         func_02063ad8(2);
+        break;
+    }
+}
+
+void CharacterEditScene::func_0205e958() {
+    switch (mUnk_31) {
+    case 0x16: {
+        if (mUnk_158 != 2) {
+            mUnk_155[mUnk_154] = 1;
+        }
+        mWindows[0]->func_0205c74c(10, data_0209eec4, (s8) mUnk_155[mUnk_154]);
+        mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
+        mWindows[1]->func_0205c7c8(-1);
+        func_02063b10(0);
+        func_02063c64();
+        func_020637a8();
+        func_020637dc();
+        func_020638a8(0);
+        fx32 posZ = FxRound(0x1e000);
+        fx32 posY = FxRound(0x82000);
+        mCamera->SetPosition(FxRound(0x3c000), posY, posZ);
+        fx32 tgtZ = FxRound(0);
+        fx32 tgtY = FxRound(0x82000);
+        mCamera->SetTarget(FxRound(0x5000), tgtY, tgtZ);
+        CameraManager &manager = CameraManager::Get();
+        Camera *camera = manager.mCameras[manager.mActive];
+        data_02211374.mCameraPosition = camera->mPosition;
+        data_02211374.mCameraUp = camera->mUp;
+        data_02211374.mCameraTarget = camera->mTarget;
+        func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+        data_02211374.mFlags &= ~0xe8;
+        manager.mProjection[manager.mActive] = data_02211374.mProjection;
+        manager.mView[manager.mActive] = data_02211374.mView;
+        manager.mMtxA[manager.mActive] = *func_02032710();
+        manager.mMtxB[manager.mActive] = *func_02032604();
+        manager.mMtxC[manager.mActive] = *func_020323b8();
+        func_0205d090();
+        func_0205d0fc(0, 0xf, 0);
+        switch (mUnk_1ac) {
+        case 0:
+            func_0205d0fc(1, 0xf, 0);
+            break;
+        case 1:
+            switch (mUnk_1b4) {
+            case 0:
+                func_0205d0fc(2, 0x12, 1);
+                break;
+            case 1:
+                func_0205d0fc(2, 0x13, 1);
+                break;
+            }
+            break;
+        case 2:
+            switch (mUnk_1b4) {
+            case 0:
+                func_0205d0fc(3, 0x13, 2);
+                break;
+            case 1:
+                func_0205d0fc(3, 0x18, 2);
+                break;
+            }
+            break;
+        case 3:
+            switch (mUnk_1b4) {
+            case 0:
+                func_0205d0fc(4, 0x18, 3);
+                break;
+            case 1:
+                func_0205d0fc(4, 0x14, 3);
+                break;
+            }
+            break;
+        case 4:
+            func_0205d0fc(5, 0x14, 4);
+            break;
+        }
+        mUnk_31 = 0x17;
+        break;
+    }
+    case 0x17:
+        if (mWindows[0]->mUnk_062 != 1) {
+            return;
+        }
+        if (mUnk_1ac != 0) {
+            func_0205d0fc(1, 0xf, 0);
+        }
+        switch (mUnk_1b4) {
+        case 0:
+            if (mUnk_1ac != 1) {
+                func_0205d0fc(2, 0x12, 1);
+            }
+            if (mUnk_1ac != 2) {
+                func_0205d0fc(3, 0x13, 2);
+            }
+            if (mUnk_1ac != 3) {
+                func_0205d0fc(4, 0x18, 3);
+            }
+            if (mUnk_1ac != 4) {
+                func_0205d0fc(5, 0x14, 4);
+            }
+            break;
+        case 1:
+            if (mUnk_1ac != 1) {
+                func_0205d0fc(2, 0x13, 1);
+            }
+            if (mUnk_1ac != 2) {
+                func_0205d0fc(3, 0x18, 2);
+            }
+            if (mUnk_1ac != 3) {
+                func_0205d0fc(4, 0x14, 3);
+            }
+            break;
+        }
+        mUnk_31 = 0x18;
+        break;
+    case 0x18:
+        if (mWindows[0]->mUnk_061 == 1) {
+            mUnk_31 = 0x19;
+        }
+        break;
+    case 0x19:
+        if (mUnk_1c == 3) {
+            if (func_0206332c()) {
+                if (mWindows[1]->GetSelectedId() != 1) {
+                    mWindows[0]->mUnk_061 = 3;
+                    mWindows[1]->mUnk_061 = 3;
+                    mUnk_31 = 0x1b;
+                    return;
+                }
+            }
+        } else if (mUnk_18 == 1) {
+            if (mWindows[0]->GetSelectedId() == 2) {
+                mUnk_31 = 0x1a;
+                func_02063b10(1);
+                func_02063d10();
+                return;
+            }
+            mUnk_31 = 0x1b;
+            func_02063b10(1);
+            func_02063dac();
+            return;
+        } else if (mUnk_18 == 2) {
+            mUnk_31 = 0x1a;
+            func_02063b10(1);
+            func_02063d10();
+            return;
+        } else if (InputManager::Get().IsHeld(8) && mWindows[0]->mUnk_061 == 1) {
+            mUnk_1b0 = 1;
+            func_02063b10(1);
+            mWindows[0]->mUnk_061 = 3;
+            mUnk_31 = 0x1b;
+            return;
+        }
+        func_020638b8();
+        break;
+    case 0x1a:
+        if (mWindows[0]->mUnk_061 != 4) {
+            return;
+        }
+        mState = 1;
+        mUnk_31 = 2;
+        func_02063ad8(2);
+        break;
+    case 0x1b:
+        if (mWindows[0]->mUnk_061 != 4) {
+            return;
+        }
+        if (func_02063e20()) {
+            return;
+        }
+        if (mUnk_1b0 != 0) {
+            mState = 0xc;
+            mUnk_31 = 0x53;
+            return;
+        }
+        if (mWindows[0]->GetSelectedId() == 3) {
+            mState = 6;
+            mUnk_31 = 0x1c;
+            if (mUnk_1b4 == 1) {
+                mState = 7;
+                mUnk_31 = 0x23;
+            }
+            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
+            func_02063ad8(1);
+            return;
+        }
+        if (mWindows[0]->GetSelectedId() == 4) {
+            mState = 7;
+            mUnk_31 = 0x23;
+            if (mUnk_1b4 == 1) {
+                mState = 8;
+                mUnk_31 = 0x2a;
+            }
+            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
+            func_02063ad8(1);
+            return;
+        }
+        if (mWindows[0]->GetSelectedId() == 5) {
+            mState = 8;
+            mUnk_31 = 0x2a;
+            if (mUnk_1b4 == 1) {
+                mState = 9;
+                mUnk_31 = 0x31;
+            }
+            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
+            func_02063ad8(1);
+            return;
+        }
+        if (mWindows[0]->GetSelectedId() == 6) {
+            mState = 9;
+            mUnk_31 = 0x31;
+            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
+            func_02063ad8(1);
+            return;
+        }
+        if (mWindows[0]->GetSelectedId() == 8) {
+            mState = 0xc;
+            mUnk_31 = 0x53;
+        }
         break;
     }
 }

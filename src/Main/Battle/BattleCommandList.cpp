@@ -1,3 +1,4 @@
+// non-matching: TextManager mUnk_5b store precedes guard load in original (see docs/decompiling.md open problems); 10 words differ
 #include "Battle/BattleCommandList.hpp"
 #include "Graphics/UnkStruct_0203d374.hpp"
 #include "System/FileSystem.hpp"
@@ -21,8 +22,10 @@ static inline BOOL NonZero(u8 value) {
     return result;
 }
 
+void func_02023a54();
 extern u8 data_0209e57c[]; // table of func_0205aea4 (.rodata 0x0209e57c)
 extern u8 data_0209e5bc[][5]; // per cell values, five columns (.rodata 0x0209e5bc)
+void func_020037e8(u32 mode);
 
 extern WindowItemRecord data_020b3688[4]; // item table of the list window (positions are patched by func_02058404)
 extern WindowCellRecord data_020b3618[4];
@@ -641,4 +644,147 @@ void BattleCommandList::func_020597d0() {
     TextManager::Get().SetColor(0, 0, 0xf);
     MI_CpuClearFast((void *) 0x6400000, 0x3800);
     func_0205a774();
+}
+
+extern u8 data_0209e68c[][6]; // per command, six message indices (.rodata 0x0209e68c)
+extern u16 data_020c1a4c[];   // 0x20 bytes cleared before the first text of a page
+
+// non-matching: 10 words, the guard load before a preceding store (see docs/decompiling.md), twice.
+void BattleCommandList::func_02059c50(u8 index) {
+    mUnk_156 = index;
+    func_0205a774();
+    u16 width;
+    s16 numY;
+    s16 numX;
+    u8 cmd = mUnk_14e;
+    if (cmd >= 0x2b) {
+        if (mUnk_156 == 0) {
+            TextManager &text = TextManager::Get();
+            s16 y;
+            u16 x;
+            x = 2 - (mUnk_156 << 7);
+            y = 0x10;
+            u8 sel            = mUnk_150;
+            MessageFile *file;
+            void *buffer;
+            buffer = mUnk_a0[0];
+            file   = (MessageFile *) mUnk_78;
+            MI_CpuClear16(data_020c1a4c, 0x20);
+            text.mUnk_58      = 1;
+            text.Print(file->GetText(sel), file->GetLength(sel), buffer, 0x10, 0x12, &y, (s16 *) &x, 0, 0, 2, 0x21,
+                       0xe, 0, 1, 0, 1, 1);
+            u16 w = x;
+            for (u8 i = 1; i < 0x10; i++) {
+                if (text.mPalette[i] == 0) {
+                    text.mPalette[i] = text.mUnk_36[i];
+                }
+            }
+            mUnk_157 = (w - 0xe) / 0x80;
+        }
+        {
+            TextManager &text = TextManager::Get();
+            s16 y;
+            u16 x;
+            x = 2 - (mUnk_156 << 7);
+            y = 0x10;
+            u8 sel            = mUnk_150;
+            MessageFile *file = (MessageFile *) mUnk_78;
+            text.Print(file->GetText(sel), file->GetLength(sel), mUnk_a0[0], 0x10, 0x12, &y, (s16 *) &x,
+                                     0, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
+        }
+        mUnk_154 = 0;
+        TextManager::Get().mUnk_5b = 1;
+        {
+            TextManager &text = TextManager::Get();
+            s16 y;
+            s16 x;
+            x = 0;
+            y = 0;
+            MessageFile *file = (MessageFile *) mUnk_78;
+            text.Print(file->GetText((u16) (mUnk_150 + 6)), file->GetLength((u16) (mUnk_150 + 6)), mUnk_a0[1], 0x40, 2, &y, &x,
+                                     &mUnk_154, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
+        }
+        TextManager::Get().mUnk_5b = 0;
+    } else {
+        if (mUnk_156 == 0) {
+            TextManager &text = TextManager::Get();
+            s16 y;
+            u16 x;
+            x = 2 - (mUnk_156 << 7);
+            y = 0x10;
+            u8 row = data_0209e68c[cmd][mUnk_150];
+            MessageFile *file;
+            void *buffer;
+            buffer = mUnk_a0[0];
+            file   = (MessageFile *) mUnk_7c;
+            MI_CpuClear16(data_020c1a4c, 0x20);
+            text.mUnk_58      = 1;
+            text.Print(file->GetText(row), file->GetLength(row), buffer, 0x10, 0x12, &y, (s16 *) &x, 0, 0, 2, 0x21,
+                       0xe, 0, 1, 0, 1, 1);
+            u16 w = x;
+            for (u8 i = 1; i < 0x10; i++) {
+                if (text.mPalette[i] == 0) {
+                    text.mPalette[i] = text.mUnk_36[i];
+                }
+            }
+            mUnk_157 = (w - 0xe) / 0x80;
+        }
+        {
+            TextManager &text = TextManager::Get();
+            s16 y;
+            u16 x;
+            x = 2 - (mUnk_156 << 7);
+            y = 0x10;
+            u8 row = data_0209e68c[cmd][mUnk_150];
+            MessageFile *file = (MessageFile *) mUnk_7c;
+            text.Print(file->GetText(row), file->GetLength(row), mUnk_a0[0], 0x10, 0x12, &y, (s16 *) &x,
+                                     0, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
+        }
+        if (mUnk_161 != 0) {
+            if ((cmd == 5) | (cmd == 6)) {
+                cmd = cmd + 0x24;
+            }
+        }
+        mUnk_154 = 0;
+        TextManager::Get().mUnk_5b = 1;
+        {
+            TextManager &text = TextManager::Get();
+            s16 y;
+            s16 x;
+            x = 0;
+            y = 0;
+            MessageFile *file = (MessageFile *) mUnk_80;
+            text.Print(file->GetText(cmd), file->GetLength(cmd), mUnk_a0[1], 0x40, 2, &y, &x,
+                       &mUnk_154, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
+        }
+        width = 0;
+        {
+            TextManager &text = TextManager::Get();
+            s16 y;
+            s16 x;
+            x = 0;
+            y = 0;
+            MessageFile *file = (MessageFile *) mUnk_84;
+            text.Print(file->GetText(5), file->GetLength(5), mUnk_a0[2], 0x10, 2, &y, &x, &width, 0, 2,
+                       0x21, 0xe, 0, 0, 0, 1, 1);
+        }
+        if (mUnk_164 >= 9) {
+            TextManager &text = TextManager::Get();
+            s16 y;
+            s16 x;
+            x = 0;
+            y = width + 6;
+            MessageFile *file = (MessageFile *) mUnk_84;
+            text.Print(file->GetText(6), file->GetLength(6), mUnk_a0[2], 0x10, 2, &y, &x, 0, 0, 2, 0x21,
+                       0xe, 0, 0, 0, 1, 1);
+        } else {
+            numY = width + 10;
+            numX = 0;
+            TextManager::Get().PrintNumber(mUnk_164 + 1, 1, 0, mUnk_a0[2], 0x10, 2, &numY, &numX, 0, 2, 0x21, 0xe, 0, 1, 1);
+        }
+        TextManager::Get().mUnk_5b = 0;
+    }
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0, mUnk_a0[0], 0x2000, 0);
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x2000, mUnk_a0[1], mUnk_b8[1], 0);
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x3000, mUnk_a0[2], mUnk_b8[2], 0);
 }

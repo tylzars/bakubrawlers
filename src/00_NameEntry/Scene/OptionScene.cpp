@@ -1,6 +1,8 @@
 #include "Scene/OptionScene.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
+#include "Scene/CreditsScene.hpp"
+#include "Unknown/UnkStruct_02070608.hpp"
 #include "UI/SelectWindow.hpp"
 #include <nitro/mi.h>
 #include <nitro/os.h>
@@ -29,6 +31,9 @@ OptionScene::~OptionScene() {
     Release();
 }
 
+void func_02022d48(UnkStruct_020d43f0 *d);
+void func_02022db4(UnkStruct_020d43f0 *d);
+
 void OptionScene::Release() {
     if (mFile != NULL) {
         OS_Free(mFile);
@@ -51,6 +56,250 @@ void OptionScene::Release() {
         delete mWindow;
     }
     mWindow = NULL;
+}
+
+void OptionScene::Update() {
+    switch (mState) {
+        case 0:
+            Init();
+            mState++;
+            break;
+        case 1:
+            BuildMainMenu();
+            SpriteManager::Get().StartFade(2);
+            mState++;
+            break;
+        case 2: {
+            if (SpriteManager::Get().IsFading()) {
+                break;
+            }
+            BOOL result = mWindow->Update(1);
+            switch (result) {
+                case 1:
+                    mSelection = mWindow->GetSelectedId();
+                    switch ((u8) mSelection) {
+                        case 0:
+                            mState = 3;
+                            break;
+                        case 1:
+                            mState = 7;
+                            break;
+                        case 2:
+                            mState = 0x11;
+                            break;
+                        case 3:
+                            mState = 0xb;
+                            break;
+                        case 4:
+                            mState = 0xe;
+                            break;
+                    }
+                    break;
+                case 2:
+                    mState = 0x15;
+                    break;
+            }
+            break;
+        }
+        case 3:
+            mWindow->Update(1);
+            if (mWindow->mUnk_061 == 4) {
+                BuildSettings();
+                mState++;
+            }
+            break;
+        case 4: {
+            UpdateSettings();
+            DrawSettings();
+            BOOL result = mWindow->Update(1);
+            switch (result) {
+                case 1:
+                    mState++;
+                    break;
+                case 2: {
+                    UnkStruct_020d43f0 *d = data_020d43f0;
+                    d->mUnk_28_7 = mOld[0];
+                    d->mUnk_28_10 = mOld[1];
+                    d->mUnk_28_13 = mOld[2];
+                    func_02022db4(d);
+                    mState++;
+                    break;
+                }
+            }
+            break;
+        }
+        case 5:
+            DrawSettings();
+            mUnk_4b = 8;
+            mState++;
+            break;
+        case 6:
+            mPosY[0] -= 4;
+            DrawSettings();
+            if (mUnk_4b == 0) {
+                func_02024764(&SoundManager::Get(), 5, 1);
+                FrameTask::Get().func_0203dd74(1);
+                mState = 1;
+            }
+            break;
+        case 7:
+            mWindow->Update(1);
+            if (mWindow->mUnk_061 == 4) {
+                BuildMenu2();
+                mState++;
+            }
+            break;
+        case 8: {
+            BOOL result = mWindow->Update(1);
+            DrawMenu2();
+            switch (result) {
+                case 1:
+                    data_020d43f0[0].mUnk_28_6 = mUnk_4f == 0 ? 1 : 0;
+                    data_020d43f0[0].mUnk_27_0 = data_020d43f0[0].mUnk_28_6;
+                    mState++;
+                    break;
+                case 2:
+                    mState++;
+                    break;
+                default:
+                    if (mWindow->GetSelectedId() < 2) {
+                        mUnk_4f = mWindow->GetSelectedId();
+                    }
+                    break;
+            }
+            break;
+        }
+        case 9:
+            DrawMenu2();
+            mUnk_4b = 8;
+            mState++;
+            break;
+        case 10:
+            mPosY[0] -= 4;
+            DrawMenu2();
+            if (mUnk_4b == 0) {
+                mState = 1;
+            }
+            break;
+        case 11:
+            mWindow->Update(1);
+            if (mWindow->mUnk_061 == 4) {
+                BuildMenu3();
+                mState++;
+            }
+            break;
+        case 12: {
+            SlideStep();
+            BOOL result = mWindow->Update(1);
+            if (result == 1) {
+                s8 id = mWindow->GetSelectedId();
+                switch (id) {
+                    case 0:
+                        func_02022d48(data_020d43f0);
+                        break;
+                    case 1:
+                        break;
+                }
+                mState++;
+                mUnk_4b = 8;
+            }
+            break;
+        }
+        case 13:
+            SlideStep();
+            if (mUnk_4b == 0) {
+                ResetDisplay();
+                mState = 1;
+            }
+            break;
+        case 17:
+            mWindow->Update(1);
+            if (mWindow->mUnk_061 == 4) {
+                BuildMenu4();
+                mState++;
+            }
+            break;
+        case 18: {
+            BOOL result = mWindow->Update(1);
+            DrawMenu3();
+            switch (result) {
+                case 1:
+                    data_020d43f0[0].mUnk_28_5 = mUnk_4f == 0 ? 1 : 0;
+                    mState++;
+                    break;
+                case 2:
+                    mState++;
+                    break;
+                default:
+                    if (mWindow->GetSelectedId() < 2) {
+                        mUnk_4f = mWindow->GetSelectedId();
+                    }
+                    break;
+            }
+            break;
+        }
+        case 19:
+            DrawMenu3();
+            mUnk_4b = 8;
+            mState++;
+            break;
+        case 20:
+            mPosY[0] -= 4;
+            DrawMenu3();
+            if (mUnk_4b == 0) {
+                mState = 1;
+            }
+            break;
+        case 14:
+            SpriteManager::Get().StartFade(3);
+            mState++;
+            break;
+        case 15:
+            if (SpriteManager::Get().IsFading()) {
+                break;
+            }
+            Release();
+            new CreditsScene();
+            mContext->mUnk_12 = 0;
+            mState++;
+            break;
+        case 16:
+            if (mContext->mUnk_12 == 0) {
+                break;
+            }
+            FrameTask::Get().func_0203dc34(0, 0x10);
+            mState = 0;
+            break;
+        case 21:
+            mWindow->Update(1);
+            if (mWindow->mUnk_061 == 4) {
+                if (mSaved == *(u16 *) ((u8 *) data_020d43f0 + 0x28)) {
+                    SpriteManager::Get().StartFade(3);
+                    mState = 0x17;
+                } else {
+                    GX_SetVisiblePlane(0x11);
+                    new UnkStruct_02070608(1, 1, 0, 0x2000, 2, 0, 0, 0xd000, 0x120);
+                    mContext->mUnk_12 = 0;
+                    mState++;
+                }
+            }
+            break;
+        case 22:
+            if (mContext->mUnk_12 != 0) {
+                mState = 0x17;
+            }
+            break;
+        case 23:
+            if (SpriteManager::Get().IsFading()) {
+                break;
+            }
+            RequestScene(1);
+            mFinished = 1;
+            return;
+    }
+    if (mWindow != NULL) {
+        mWindow->Draw();
+    }
 }
 
 void OptionScene::Init() {

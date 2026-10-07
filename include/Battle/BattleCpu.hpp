@@ -44,6 +44,7 @@ public:
     u8 func_ov007_022310f0();
     u8 func_ov007_02231300();
     u8 func_ov007_02231dd0();
+    void func_ov007_02231e2c(struct BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC);
     void func_ov007_022328dc();
     void func_ov007_022329cc(int a);
     void func_ov007_02232bfc();

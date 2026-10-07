@@ -9,7 +9,7 @@ class UnkStruct_020651bc;
 // One player's panel on the upper screen (battle_u): sprites, the name text buffers and a few state bytes. 0x38 bytes.
 struct BattlePanel {
     /* 00 */ CellAnimation *mAnims[7];
-    /* 1c */ u16 mUnk_1c[4];
+    /* 1c */ s16 mUnk_1c[4];
     /* 24 */ s8 mUnk_24; // character shown in the icon (-1: none)
     /* 25 */ u8 mUnk_25;
     /* 26 */ u8 mUnk_26;
@@ -52,6 +52,7 @@ public:
     ~BattleStatusPanels();
     void func_ov007_02234efc();
     void func_ov007_02235280(u32 index, s32 character, u32 team, u8 side);
+    void func_ov007_02235480();
     void func_ov007_02235fe4();
     void func_ov007_0223619c(u32 index);
     void func_ov007_022361c4(u32 index);

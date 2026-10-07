@@ -13,6 +13,114 @@ struct BattleCpuRegion {
 
 static const BattleCpuRegion data_ov007_022796d8[6] = {{3, 1}, {7, 1}, {7, 5}, {3, 5}, {5, 3}, {0, 0}};
 
+struct BattleCpuRot {
+    u16 x;
+    u16 y;
+    u16 z;
+};
+
+struct BattleCpuShot {
+    s8 mTilt;
+    u8 mPitch;
+    u8 mPower;
+    u8 mUnk_3;
+};
+
+static const u8 data_ov007_022796d0[5] = {95, 110, 125, 140, 155};
+
+static const u8 data_ov007_0227970c[17] = {10, 60, 80, 40, 10, 10, 60, 20, 30, 70, 10, 10, 10, 5, 10, 50, 40};
+
+static const u8 data_ov007_022797ac[17][5] = {
+    {5, 10, 70, 10, 5},
+    {10, 30, 20, 30, 10},
+    {20, 20, 20, 20, 20},
+    {15, 20, 30, 20, 15},
+    {10, 10, 60, 10, 10},
+    {20, 20, 20, 20, 20},
+    {10, 30, 20, 30, 10},
+    {0, 30, 40, 30, 0},
+    {0, 45, 10, 45, 0},
+    {25, 20, 10, 20, 25},
+    {20, 30, 0, 30, 20},
+    {20, 20, 20, 20, 20},
+    {15, 30, 10, 30, 15},
+    {0, 40, 20, 40, 0},
+    {0, 25, 50, 25, 0},
+    {0, 0, 30, 50, 20},
+    {20, 50, 30, 0, 0}
+};
+
+static const u8 data_ov007_02279804[17][7] = {
+    {10, 20, 20, 0, 20, 20, 10},
+    {0, 5, 5, 25, 30, 25, 10},
+    {20, 20, 0, 30, 20, 0, 10},
+    {10, 10, 10, 20, 20, 20, 10},
+    {0, 20, 30, 0, 20, 20, 10},
+    {20, 20, 20, 10, 10, 10, 10},
+    {10, 10, 20, 20, 20, 20, 0},
+    {20, 20, 20, 10, 10, 10, 10},
+    {10, 20, 30, 20, 10, 0, 10},
+    {0, 10, 30, 20, 30, 10, 0},
+    {0, 5, 45, 0, 5, 40, 5},
+    {10, 10, 40, 10, 10, 10, 10},
+    {10, 20, 15, 15, 20, 10, 10},
+    {30, 10, 0, 20, 10, 10, 20},
+    {10, 20, 0, 20, 10, 10, 30},
+    {0, 0, 20, 10, 30, 30, 10},
+    {10, 10, 0, 30, 30, 10, 10}
+};
+
+static const BattleCpuShot data_ov007_0227987c[8][4][3] = {
+    {
+        {{23, 15, 70, 0}, {26, 25, 70, 0}, {-21, 25, 70, 0}},
+        {{23, 15, 70, 0}, {-7, 25, 70, 0}, {-21, 25, 70, 0}},
+        {{23, 15, 70, 0}, {26, 25, 70, 0}, {-21, 25, 70, 0}},
+        {{23, 15, 70, 0}, {-7, 25, 70, 0}, {-21, 25, 70, 0}},
+    },
+    {
+        {{13, 30, 70, 0}, {16, 35, 75, 0}, {17, 43, 70, 0}},
+        {{-13, 30, 70, 0}, {-28, 35, 75, 0}, {-17, 43, 70, 0}},
+        {{13, 30, 70, 0}, {16, 35, 75, 0}, {17, 43, 70, 0}},
+        {{-13, 30, 70, 0}, {-28, 35, 75, 0}, {-17, 43, 70, 0}},
+    },
+    {
+        {{18, 36, 78, 0}, {27, 40, 78, 0}, {16, 45, 78, 0}},
+        {{18, 36, 78, 0}, {-9, 45, 80, 0}, {-16, 40, 78, 0}},
+        {{18, 36, 78, 0}, {27, 40, 78, 0}, {16, 45, 78, 0}},
+        {{18, 36, 78, 0}, {-9, 45, 80, 0}, {-16, 40, 78, 0}},
+    },
+    {
+        {{-4, 30, 70, 0}, {5, 30, 70, 0}, {-16, 30, 70, 0}},
+        {{-4, 30, 70, 0}, {-3, 30, 70, 0}, {16, 30, 70, 0}},
+        {{-4, 30, 70, 0}, {5, 30, 70, 0}, {-16, 30, 70, 0}},
+        {{-4, 30, 70, 0}, {-3, 30, 70, 0}, {16, 30, 70, 0}},
+    },
+    {
+        {{25, 30, 70, 0}, {20, 20, 70, 0}, {8, 23, 73, 0}},
+        {{25, 25, 70, 0}, {30, 40, 70, 0}, {10, 20, 70, 0}},
+        {{-27, 30, 70, 0}, {33, 40, 75, 0}, {8, 22, 70, 0}},
+        {{25, 30, 70, 0}, {22, 20, 70, 0}, {-8, 20, 70, 0}},
+    },
+    {
+        {{-20, 20, 70, 0}, {-15, 15, 70, 0}, {12, 25, 75, 0}},
+        {{-21, 20, 70, 0}, {38, 10, 60, 0}, {-30, 15, 70, 0}},
+        {{-20, 20, 70, 0}, {28, 10, 60, 0}, {12, 25, 75, 0}},
+        {{-21, 20, 70, 0}, {15, 15, 70, 0}, {-30, 10, 70, 0}},
+    },
+    {
+        {{-20, 17, 80, 0}, {-30, 25, 80, 0}, {9, 30, 80, 0}},
+        {{20, 17, 80, 0}, {30, 25, 80, 0}, {9, 30, 80, 0}},
+        {{-20, 17, 80, 0}, {-30, 25, 80, 0}, {9, 30, 80, 0}},
+        {{20, 17, 80, 0}, {30, 25, 80, 0}, {9, 30, 80, 0}},
+    },
+    {
+        {{40, 10, 80, 0}, {25, 15, 75, 0}, {23, 20, 70, 0}},
+        {{40, 10, 80, 0}, {25, 15, 75, 0}, {-23, 20, 70, 0}},
+        {{40, 10, 80, 0}, {25, 15, 75, 0}, {23, 20, 70, 0}},
+        {{40, 10, 80, 0}, {25, 15, 75, 0}, {-23, 20, 70, 0}},
+    },
+};
+
 BattleCpu::BattleCpu(u8 player) {
     mUnk_78 = 0;
     mUnk_7a = 0xff;
@@ -211,6 +319,133 @@ u8 BattleCpu::func_ov007_02231dd0() {
     } while (i < count);
     mUnk_7a = found;
     return found;
+}
+
+// non-matching: register allocation and stack slots only (396 of 684 words differ by register or
+// spill slot; structure, call targets and literal pool match; the original spills mUnk_95 to sp+0x10).
+void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC) {
+    u8 a    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f6;
+    u8 idx2 = 0;
+    s8 tilt;
+    u8 idx1 = 6;
+    u8 power;
+    u8 i    = 0;
+    u8 spin;
+    u8 roll = MATH_Rand32(&data_020d42e8, 100);
+    u8 sum  = 0;
+    u8 i2;
+    u8 sum2;
+    u8 roll2;
+    do {
+        sum += data_ov007_02279804[a][i];
+        if (sum > roll) {
+            idx1 = i;
+            break;
+        }
+        i++;
+    } while (i < 7);
+    roll2 = MATH_Rand32(&data_020d42e8, 100);
+    i2   = 0;
+    sum2 = 0;
+    do {
+        sum2 += data_ov007_022797ac[a][i2];
+        if (sum2 > roll2) {
+            idx2 = i2;
+            break;
+        }
+        i2++;
+    } while (i2 < 5);
+    BattleCpuRot r = {0, 0, 0};
+    r.y = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 125) * 65536.0f / 360.0f);
+    r.z = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 10) * 65536.0f / 360.0f);
+    power = MATH_Rand32(&data_020d42e8, 30) + 50;
+    spin  = 0;
+    tilt  = 0;
+    switch (idx1) {
+    case 0:
+        power = MATH_Rand32(&data_020d42e8, 20) + 60;
+        spin  = MATH_Rand32(&data_020d42e8, 30) + 30;
+        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 20) * 65536.0f / 360.0f);
+        break;
+    case 1:
+        power = MATH_Rand32(&data_020d42e8, 20) + 60;
+        spin  = MATH_Rand32(&data_020d42e8, 30);
+        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 5) * 65536.0f / 360.0f);
+        break;
+    case 2:
+        power = MATH_Rand32(&data_020d42e8, 20) + 60;
+        spin  = 0;
+        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 10) + 5) * 65536.0f / 360.0f);
+        break;
+    case 3:
+        power = MATH_Rand32(&data_020d42e8, 30) + 40;
+        spin  = MATH_Rand32(&data_020d42e8, 30) + 30;
+        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 20) * 65536.0f / 360.0f);
+        break;
+    case 4:
+        power = MATH_Rand32(&data_020d42e8, 30) + 40;
+        spin  = MATH_Rand32(&data_020d42e8, 30);
+        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 5) * 65536.0f / 360.0f);
+        break;
+    case 5:
+        power = MATH_Rand32(&data_020d42e8, 30) + 40;
+        spin  = 0;
+        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 10) + 5) * 65536.0f / 360.0f);
+        break;
+    case 6:
+        power = MATH_Rand32(&data_020d42e8, 30) + 10;
+        spin  = MATH_Rand32(&data_020d42e8, 30);
+        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 5) * 65536.0f / 360.0f);
+        break;
+    }
+    u8 attr = data_020d433c.mUnk_95;
+    if (attr == 3) {
+        r.y = (u16) ((float) (MATH_Rand32(&data_020d42e8, 30) + 120) * 65536.0f / 360.0f);
+    } else {
+        r.y = (u16) ((float) (data_ov007_022796d0[idx2] + MATH_Rand32(&data_020d42e8, 20)) * 65536.0f / 360.0f);
+    }
+    if (MATH_Rand32(&data_020d42e8, 100) < data_ov007_0227970c[a]) {
+        u8 sel = data_020d433c.mUnk_96;
+        u8 f1  = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f1;
+        switch (sel) {
+        case 0:
+        case 1:
+        case 2:
+            if (MATH_Rand32(&data_020d42e8, 100) >= 100) {
+                sel = MATH_Rand32(&data_020d42e8, 3);
+            }
+            break;
+        default:
+            sel = MATH_Rand32(&data_020d42e8, 3);
+            break;
+        }
+        r.y   = 0x6000;
+        power = data_ov007_0227987c[attr][f1][sel].mPower;
+        r.z   = (u16) ((float) data_ov007_0227987c[attr][f1][sel].mPitch * 65536.0f / 360.0f);
+        tilt  = data_ov007_0227987c[attr][f1][sel].mTilt;
+        spin  = 0;
+    }
+    if (data_020d433c.mUnk_85 == 2) {
+        spin  = 0;
+        tilt  = 0;
+        r.y  = 0x6000;
+        r.z  = 0x1777;
+        power = 0x3e;
+    } else if (data_020d433c.mUnk_85 == 7) {
+        spin  = 0;
+        tilt  = 0;
+        r.y  = 0x6000;
+        r.z  = 0x1555;
+        power = 0x32;
+    }
+    *rot = r;
+    if (tilt < 0) {
+        *outA = (u16) ((float) (tilt + 360) * 65536.0f / 360.0f);
+    } else {
+        *outA = (u16) ((float) tilt * 65536.0f / 360.0f);
+    }
+    *outB = (u16) ((float) spin * 65536.0f / 360.0f);
+    *outC = power;
 }
 
 struct BattleCpuOdds {

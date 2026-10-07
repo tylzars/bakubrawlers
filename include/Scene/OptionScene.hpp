@@ -25,7 +25,8 @@ public:
     /* 4c */ s8 mUnk_4c;
     /* 4d */ s8 mSelection;
     /* 4e */ u8 mUnk_4e;
-    /* 4f */
+    /* 4f */ u8 mUnk_4f;
+    /* 50 */
 
     OptionScene();
     /* 00 */ virtual ~OptionScene() override;
@@ -42,7 +43,7 @@ public:
     void DrawMenu2();      // 0222128c, 02221814 (identical)
     void DrawMenu3();
     void SlideStep();      // 02221534
-    static void ResetDisplay(); // 0222163c
+    void ResetDisplay(); // 0222163c
     void BuildMenu3();     // 022212d4
     void BuildMenu4();     // 02221680
     void ClearText(u32 index); // 0222185c

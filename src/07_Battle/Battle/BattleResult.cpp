@@ -7,6 +7,9 @@
 #include "Scene/SceneBase.hpp"
 #include "System/FileSystem.hpp"
 #include "System/FrameTask.hpp"
+#include "System/InputManager.hpp"
+#include "System/SoundManager.hpp"
+#include "System/TouchManager.hpp"
 #include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
 #include "Unknown/UnkFunctions.hpp"
@@ -60,6 +63,7 @@ public:
     void func_ov007_02250010();
     void func_ov007_0225047c();
     void func_ov007_02251724();
+    void func_ov007_02251ae4();
     void func_ov007_022525c4();
     void func_ov007_022526f0();
 };
@@ -490,4 +494,168 @@ void BattleResult::func_ov007_02250010() {
         }
         m++;
     } while (m < count2);
+}
+
+#define COUNT_STEP(CLEAR_ONLY)                                                         \
+    if ((u32) mUnk_a4 < 10 || (InputManager::Get().IsHeld(1) | TouchManager::Get().mUnk_57)) { \
+        if (!(CLEAR_ONLY)) {                                                           \
+            mUnk_a8 += mUnk_a4;                                                        \
+        }                                                                              \
+        mUnk_a4 = 0;                                                                   \
+    } else {                                                                           \
+        mUnk_a4 -= 10;                                                                 \
+        if (!(CLEAR_ONLY)) {                                                           \
+            mUnk_a8 += 10;                                                             \
+        }                                                                              \
+    }                                                                                  \
+    if (mUnk_b0 != 0) {                                                                \
+        mUnk_b0--;                                                                     \
+    } else {                                                                           \
+        SoundManager::Get().func_020246f8(8);                                          \
+        mUnk_b0 = 4;                                                                   \
+    }
+
+void BattleResult::func_ov007_02251ae4() {
+    if (InputManager::Get().IsHeld(1) | TouchManager::Get().mUnk_57) {
+        mUnk_af = 0;
+    }
+    if (mUnk_af != 0) {
+        mUnk_af--;
+        return;
+    }
+    if (mUnk_38[1]) {
+        MI_CpuClear16(mUnk_38[1], mUnk_50[1]);
+    }
+    switch (mUnk_b2) {
+        case 0:
+            mUnk_a4 += mUnk_9c;
+            mUnk_af = 30;
+            mUnk_b2++;
+            func_ov007_0225047c();
+            break;
+        case 1:
+            if (mUnk_a4 != 0) {
+                COUNT_STEP(0)
+            } else {
+                mUnk_b2++;
+                mUnk_b0 = 0;
+            }
+            break;
+        case 2:
+            mUnk_a4 = mUnk_84[0];
+            mUnk_af = 30;
+            mUnk_b2++;
+            func_ov007_0225047c();
+            break;
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+            if (mUnk_a4 != 0) {
+                COUNT_STEP(0)
+            } else {
+                mUnk_b2++;
+                mUnk_b0 = 0;
+                mUnk_af = 30;
+                mUnk_a4 = mUnk_84[mUnk_b2 - 3];
+                if (mUnk_a4 == 0) {
+                    mUnk_b2 = 9;
+                }
+                func_ov007_0225047c();
+            }
+            break;
+        case 9:
+            mUnk_a4 = mUnk_ad * 100;
+            mUnk_af = 30;
+            mUnk_b2++;
+            func_ov007_0225047c();
+            break;
+        case 10:
+            if (mUnk_a4 != 0) {
+                COUNT_STEP(0)
+            } else {
+                mUnk_a4 = mUnk_ae * 100;
+                mUnk_af = 30;
+                mUnk_b2++;
+                mUnk_b0 = 0;
+                func_ov007_0225047c();
+            }
+            break;
+        case 11:
+            if (mUnk_a4 != 0) {
+                COUNT_STEP(0)
+            } else {
+                mUnk_af = 30;
+                mUnk_b2++;
+                mUnk_b0 = 0;
+                func_ov007_0225047c();
+            }
+            break;
+        case 12:
+            mUnk_b2++;
+            mUnk_a4 = mUnk_a0;
+            mUnk_af = 30;
+            func_ov007_0225047c();
+            break;
+        case 13:
+            if (mUnk_a4 != 0) {
+                COUNT_STEP(0)
+            } else {
+                mUnk_b2++;
+                mUnk_b0 = 0;
+                mUnk_af = 30;
+            }
+            break;
+        case 14:
+            mUnk_b2++;
+            mUnk_af = 30;
+            func_ov007_0225047c();
+            break;
+        case 15:
+            data_020d433c.mUnk_8c_0 = 0;
+            if (mUnk_ac != 0) {
+                mUnk_a8 *= 2;
+                if (data_020d433c.mUnk_7b == 12) {
+                    data_020d433c.mUnk_8c_0 = 1;
+                }
+                SoundManager::Get().func_020246f8(8);
+            }
+            mUnk_af = 30;
+            mUnk_b2++;
+            break;
+        case 16: {
+            u32 add = mUnk_a8;
+            if (add > 9999990) {
+                add = 9999990;
+            }
+            data_020d43f0[0].mMoney += add;
+            if (data_020d43f0[0].mMoney > 9999990) {
+                data_020d43f0[0].mMoney = 9999990;
+            }
+            add = mUnk_a8;
+            if (add > 9999990) {
+                add = 9999990;
+            }
+            data_020d43f0[0].mUnk_20 += add;
+            if (data_020d43f0[0].mUnk_20 > 9999990) {
+                data_020d43f0[0].mUnk_20 = 9999990;
+            }
+            mUnk_a4 = mUnk_a8;
+            mUnk_af = 30;
+            mUnk_b2++;
+            break;
+        }
+        case 17:
+            if (mUnk_a4 != 0) {
+                COUNT_STEP(1)
+            } else {
+                mUnk_b1++;
+                mUnk_b0 = 0;
+                *((u8 *) mUnk_68 + 0x78) = 1;
+            }
+            break;
+    }
+    func_ov007_02251724();
 }

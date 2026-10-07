@@ -3,6 +3,7 @@
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
+#include "System/SoundManager.hpp"
 #include "Text/TextManager.hpp"
 #include "Unknown/UnkStruct_020651bc.hpp"
 #include <nitro/mi.h>
@@ -177,6 +178,216 @@ void BattleStatusPanels::func_ov007_02235280(u32 index, s32 character, u32 team,
         mPanels[index].mUnk_36  = 1;
         mUnk_fd     = 1;
     }
+}
+
+// non-matching: ~42 words. Head of the loop body is scheduled differently (the data_020d433c pointer load and the
+// x/y/dir temporaries use other registers), the args of func_02027778 get other registers (0xf, 0 and the VRAM offset),
+// and one add has its operands swapped (k + mUnk_25).
+void BattleStatusPanels::func_ov007_02235480() {
+    int shown1 = 0;
+    int shown2 = 0;
+    u8 i        = 0;
+    do {
+        if (mPanels[i].mUnk_24 > -1) {
+            if (mPanels[i].mUnk_1c[0] != mPanels[i].mUnk_1c[2]) {
+                if (mPanels[i].mUnk_1c[0] < mPanels[i].mUnk_1c[2]) {
+                    mPanels[i].mUnk_1c[0]++;
+                } else {
+                    mPanels[i].mUnk_1c[0]--;
+                }
+            }
+            if (mPanels[i].mUnk_1c[1] != mPanels[i].mUnk_1c[3]) {
+                if (mPanels[i].mUnk_1c[1] < mPanels[i].mUnk_1c[3]) {
+                    mPanels[i].mUnk_1c[1]++;
+                } else {
+                    mPanels[i].mUnk_1c[1]--;
+                }
+            }
+            s16 baseX = mPanels[i].mUnk_26 * 0xd8 + 6;
+            s16 baseY = mPanels[i].mUnk_27 * 0x90 + 8;
+            s16 x     = mPanels[i].mUnk_1c[0] + baseX;
+            s16 y     = mPanels[i].mUnk_1c[1] + baseY;
+            s8 dir    = 1 - mPanels[i].mUnk_25 * 2;
+            s16 q     = x + 0xe;
+            if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
+                mPanels[i].mAnims[4]->Draw(0, dir * (mPanels[i].mUnk_25 * 0x24 - 0x10) + q, y + 0x22, mUnk_f2);
+            } else if (data_020d433c.mUnk_98 &&
+                       i == data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mUnk_f2) {
+                mPanels[i].mAnims[6]->Draw(0, dir * (mPanels[i].mUnk_25 * 0x24 - 0x10) + q, y + 0x22, mUnk_f2);
+            }
+            if (data_020d433c.mUnk_98 && mMode == 0) {
+                if (i == 0 || i == data_020d433c.mBattlePlayers->mPlayers[0]->mUnk_f2) {
+                    BOOL c = TRUE;
+                    if (mPanels[data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_f2].mUnk_36 != 0) {
+                        c = FALSE;
+                    }
+                    if (!shown1 && c) {
+                        shown1 = true;
+                        if (mPanels[i].mUnk_29 != 0) {
+                            if (mPanels[i].mUnk_36 != 0) {
+                                if (SpriteManager::Get().sFade.mMain <= 1) {
+                                    if (mUnk_fd) {
+                                        mUnk_fd = 0;
+                                        SoundManager::Get().func_020246f8(6);
+                                    }
+                                    mAnimD->Update();
+                                }
+                                mAnimD->Draw(0, (mPanels[i].mUnk_28 - 1) * 9 + 0x74, 0x10, mUnk_f2);
+                            }
+                            u8 k = 0;
+                            do {
+                                u8 f;
+                                if (k < mPanels[i].mUnk_28) {
+                                    f = 0;
+                                    if (mPanels[i].mUnk_36 != 0) {
+                                        if (k == mPanels[i].mUnk_28 - 1) {
+                                            f = 1;
+                                        }
+                                    }
+                                } else {
+                                    f = 1;
+                                }
+                                mPanels[i].mAnims[1]->func_0202a3ec(0, f, k * 9 + 0x74, 0x10, mUnk_f2);
+                                k++;
+                            } while (k < mPanels[i].mUnk_29);
+                        }
+                    }
+                } else {
+                    BOOL c = TRUE;
+                    if (mPanels[data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_f2].mUnk_36 != 0) {
+                        c = FALSE;
+                    }
+                    if (!shown2 && c) {
+                        shown2 = true;
+                        if (mPanels[i].mUnk_29 != 0) {
+                            if (mPanels[i].mUnk_36 != 0) {
+                                if (SpriteManager::Get().sFade.mMain <= 1) {
+                                    if (mUnk_fd) {
+                                        mUnk_fd = 0;
+                                        SoundManager::Get().func_020246f8(6);
+                                    }
+                                    mAnimD->Update();
+                                }
+                                mAnimD->Draw(0, (mPanels[i].mUnk_28 - 1) * 9 + 0x74, 0xa8, mUnk_f2);
+                            }
+                            u8 k = 0;
+                            do {
+                                u8 f;
+                                if (k < mPanels[i].mUnk_28) {
+                                    f = 0;
+                                    if (mPanels[i].mUnk_36 != 0) {
+                                        if (k == mPanels[i].mUnk_28 - 1) {
+                                            f = 1;
+                                        }
+                                    }
+                                } else {
+                                    f = 1;
+                                }
+                                mPanels[i].mAnims[1]->func_0202a3ec(0, f, k * 9 + 0x74, 0xa8, mUnk_f2);
+                                k++;
+                            } while (k < mPanels[i].mUnk_29);
+                        }
+                    }
+                }
+            } else if (mPanels[i].mUnk_29 != 0) {
+                if (mPanels[i].mUnk_36 != 0) {
+                    if (SpriteManager::Get().sFade.mMain <= 1) {
+                        if (mUnk_fd) {
+                            mUnk_fd = 0;
+                            SoundManager::Get().func_020246f8(6);
+                        }
+                        mAnimD->Update();
+                    }
+                    mAnimD->Draw(0, dir * ((mPanels[i].mUnk_25 + (mPanels[i].mUnk_28 - 1)) * 9 + 0x14) + q, y + 0xc, mUnk_f2);
+                }
+                u8 k = 0;
+                do {
+                    u8 f;
+                    if (k < mPanels[i].mUnk_28) {
+                        f = 0;
+                        if (mPanels[i].mUnk_36 != 0) {
+                            if (k == mPanels[i].mUnk_28 - 1) {
+                                f = 1;
+                            }
+                        }
+                    } else {
+                        f = 1;
+                    }
+                    mPanels[i].mAnims[1]->func_0202a3ec(0, f, dir * ((k + mPanels[i].mUnk_25) * 9 + 0x14) + q, y + 0xc, mUnk_f2);
+                    k++;
+                } while (k < mPanels[i].mUnk_29);
+            }
+            u8 level = func_ov007_02236458(i);
+            if (level != 0) {
+                if (mPanels[i].mUnk_2b >= 0x13) {
+                    mPanels[i].mAnims[2]->Update();
+                    mPanels[i].mAnims[2]->Draw(0, x - 2, y - 2, mUnk_f2);
+                } else {
+                    mPanels[i].mAnims[2]->func_0202a3ec(0, level - 1, x - 2, y - 2, mUnk_f2);
+                    if (level >= 0x13) {
+                        u8 cur  = data_020d433c.mBattlePlayers->mUnk_28a;
+                        u8 cur2 = data_020d433c.mBattlePlayers->mUnk_2a9;
+                        if ((i == cur) & (cur == cur2)) {
+                            mPanels[i].mAnims[2]->SetAnimation(mPanels[i].mUnk_25 + 0x18);
+                        } else {
+                            mPanels[i].mAnims[2]->mUnk_0f = 0x12;
+                        }
+                    }
+                }
+            }
+            mPanels[i].mUnk_2b = level;
+                        mPanels[i].mAnims[3]->Draw(0, q + dir * mPanels[i].mUnk_25 * 16 + dir * -0x12, y - 8, mUnk_f2);
+            if (data_020d433c.mBattlePlayers->mPlayers[i]->IsActive()) {
+                mPanels[i].mAnims[5]->Draw(0, dir * (mPanels[i].mUnk_25 * 0x18 - 2) + q, y - 8, mUnk_f2);
+            }
+            s16 px = dir * (mPanels[i].mUnk_34 * mPanels[i].mUnk_25 + 0xe) + q;
+            if (dir < 0) {
+                if (px < 0x82) {
+                    px = 0x82;
+                }
+            } else {
+                int e = px + mPanels[i].mUnk_34;
+                if (e >= 0x7e) {
+                    e -= 0x7e;
+                    px = px - e;
+                }
+            }
+            switch (mMode) {
+                case 0:
+                    SpriteManager::Get().Screen(0).func_02027778(mPanels[i].mBuffer2, (u8) mGlyphCount, px, (s16) (y - 1), mUnk_f2,
+                                                                 ((mCharBase + 0x2000 + (i << 11)) << 11) >> 16, 0xf,
+                                                                 0);
+                    break;
+                case 1:
+                    SpriteManager::Get().Screen(0).func_02027778(mPanels[i].mBuffer2, (u8) mGlyphCount, px, (s16) (y - 1), mUnk_f2,
+                                                                 ((mCharBase + 0x2000) << 11) >> 16, 0xf, 0);
+                    break;
+            }
+            mIcons->func_0206547c(i, x, y, mUnk_f2);
+        }
+        i++;
+    } while (i < 4);
+    mIcons->func_020654a0();
+    u8 j = 0;
+    do {
+        s16 baseX      = mPanels[j].mUnk_26 * 0xd8 + 6;
+        s16 baseY      = mPanels[j].mUnk_27 * 0x90 + 8;
+        s8 character   = mPanels[j].mUnk_24;
+        s16 x          = mPanels[j].mUnk_1c[0] + baseX;
+        s16 y          = mPanels[j].mUnk_1c[1] + baseY;
+        if (character > -1) {
+            mPanels[j].mAnims[0]->Update();
+            mPanels[j].mAnims[0]->Draw(0, x - 2, y - 2, mUnk_f2);
+        }
+        j++;
+    } while (j < 4);
+    if (!data_020d433c.mUnk_98) {
+        return;
+    }
+    if (mMode != 0) {
+        return;
+    }
+    mAnimC->Draw(0, 0x80, 0x60, mUnk_f2);
 }
 
 void BattleStatusPanels::func_ov007_02235fe4() {

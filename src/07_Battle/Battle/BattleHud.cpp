@@ -16,6 +16,8 @@
 #include "Unknown/UnkStruct_020651bc.hpp"
 #include <nitro/gx.h>
 #include <nitro/fx.h>
+#include <nitro/mi.h>
+#include <nitro/os.h>
 #include <stdio.h>
 
 // Externals of other battle files.
@@ -119,6 +121,222 @@ BattleHud::~BattleHud() {
         i++;
     } while (i < 15);
     mData->mUnk_6c->mUnk_27 = 0;
+}
+
+extern u32 data_ov007_02279d44;
+extern s8 data_ov007_02279d40;
+u16 func_02065c20(u32 id);
+int func_02065c0c(u32 id, u32 kind);
+
+// non-matching: 96 words (all 2-word-shifted literal pool offsets plus registers): screen is r7 (original r5), the palette
+// buffer r5 (original r6), and in the entry loop at the end the original shares one k*0x14 multiply between two separate
+// adds (mul; add r1,r4,r0; add r8,r4,r0) while this fuses mla.
+void BattleHud::func_ov007_022257e0() {
+    BattleEntry *entries = mData->mEntries;
+    ChangeDir("/Game/Confrontation/Bg/");
+    func_02025b64(1, 1, 0, "vs_b_bg_01_ncl.bin", 0, 0, 0);
+    func_02025b64(1, 11, 0, "vs_b_bg_01_ncg.bin", 0, 0, 0);
+    func_02025b64(1, 7, 0, "vs_b_bg_01_nsc.bin", 0, 0, 0);
+    ChangeDir("/");
+    MI_CpuClearFast((void *) 0x5000400, 0x20);
+    void *fill = OS_Alloc(0x20);
+    MI_CpuFill8(fill, 0x11, 0x20);
+    func_02025c1c(1, 0xd, 0, fill, 0x20, 1);
+    SpriteScreen &screen = SpriteManager::Get().Screen(1);
+    screen.func_02027624(3);
+    ChangeDir("/Game/Confrontation/Obj/");
+    screen.LoadCharacters("vs_b_obj_01.nce_ncg1D.bin", 0x7000, 0);
+    u8 *pal = (u8 *) func_02023504("vs_b_obj_01_ncl.bin", 0, 0, 0, 0, 0);
+    func_02025c1c(screen.mBgIndex, 5, 0xe0, pal + (u8) (entries[0].mUnk_0d_0 + 2) * 0x20, 0x20, 0);
+    func_02025c1c(screen.mBgIndex, 5, 0x100, pal + (u8) (entries[1].mUnk_0d_0 + 2) * 0x20, 0x20, 0);
+    func_02025c1c(screen.mBgIndex, 5, 0xa0, pal, 0x40, 1);
+    u8 i = 0;
+    do {
+        mAnims[i] = new CellAnimation("vs_b_obj_01_nce.bin", 0, 1, 1);
+        mAnims[i]->mCharBase = screen.func_020276f4(0x7000);
+        mAnims[i]->mUnk_11 = 5;
+        i++;
+    } while (i < 8);
+    mAnims[0]->SetAnimation(0);
+    mAnims[1]->SetAnimation(2);
+    mAnims[2]->SetAnimation(6);
+    mAnims[3]->SetAnimation(8);
+    mAnims[4]->SetAnimation(9);
+    mUnk_c0 = mAnims[3]->func_0202a54c();
+    mAnims[4]->SetAnimation(7);
+    mAnims[5]->SetAnimation(0x12);
+    mAnims[6]->SetAnimation(entries[0].mUnk_0d_4 + 0x17);
+    mAnims[7]->SetAnimation(entries[1].mUnk_0d_4 + 0x1b);
+    char path[0x80];
+    u8 n;
+    if (mUnk_0c >= 2) {
+        n = 1;
+    } else {
+        n = mParam->mUnk_00 + 1;
+    }
+    sprintf(path, "vs_cutin_cbattle%02d.nce_ncg1D.bin", n);
+    screen.LoadCharacters(path, 0xe000, 0);
+    sprintf(path, "vs_cutin_cbattle%02d_nce.bin", n);
+    mAnims[9] = new CellAnimation(path, 0, 1, 1);
+    mAnims[9]->mCharBase = screen.func_020276f4(0xe000);
+    mAnims[9]->mUnk_11 = 9;
+    mAnims[9]->SetAnimation(0);
+    screen.LoadCharacters("vs_cutin_perfect.nce_ncg1D.bin", 0xd000, 0);
+    screen.LoadPalette("vs_cutin_perfect_ncl.bin", 0x120, 0x20);
+    mAnims[8] = new CellAnimation("vs_cutin_perfect_nce.bin", 0, 1, 1);
+    mAnims[8]->mCharBase = screen.func_020276f4(0xd000);
+    mAnims[8]->mUnk_11 = 9;
+    mAnims[8]->SetAnimation(0);
+    screen.LoadCharacters("vs_cutin_cbattle01.nce_ncg1D.bin", 0xf000, 0);
+    mAnims[10] = new CellAnimation("vs_cutin_cbattle01_nce.bin", 0, 1, 1);
+    mAnims[10]->mCharBase = screen.func_020276f4(0xf000);
+    mAnims[10]->mUnk_11 = 9;
+    mAnims[10]->SetAnimation(3);
+    mAnims[11] = new CellAnimation("vs_cutin_cbattle01_nce.bin", 0, 1, 1);
+    mAnims[11]->mCharBase = screen.func_020276f4(0xf000);
+    mAnims[11]->mUnk_11 = 9;
+    mAnims[11]->SetAnimation(4);
+    screen.LoadCharacters("vs_b_obj_ability.nce_ncg1D.bin", 0x10000, 0);
+    screen.LoadPalette("vs_b_obj_ability_ncl.bin", 0x140, 0x20);
+    u8 side = 0;
+    u8 slot = 14;
+    do {
+        mAnims[slot] = new CellAnimation("vs_b_obj_ability_nce.bin", 0, 1, 1);
+        mAnims[slot]->mCharBase = screen.func_020276f4(0x10000);
+        BattleEntry *entry = &entries[side];
+        mAnims[slot]->mUnk_11 = 10;
+        switch (func_02065c0c(entry->mUnk_12, 3)) {
+            case 0:
+                mAnims[slot]->SetAnimation(0);
+                break;
+            case 1:
+                mAnims[slot]->SetAnimation(1);
+                break;
+            case 2:
+                mAnims[slot]->SetAnimation(2);
+                break;
+            case 3:
+                mAnims[slot]->SetAnimation(3);
+                break;
+            case 5:
+                mAnims[slot]->SetAnimation(4);
+                break;
+            case 4:
+                if (entry->mUnk_12 >= 0x8e && entry->mUnk_12 <= 0x91) {
+                    mAnims[slot]->SetAnimation(9);
+                } else if (func_ov007_02222764(side, entries) == 5) {
+                    if (func_02065c0c(entries[(u8) (side ^ 1)].mUnk_12, 3) != 5) {
+                        mAnims[slot]->SetAnimation(6);
+                    } else {
+                        mAnims[slot]->SetAnimation(5);
+                    }
+                } else {
+                    mAnims[slot]->SetAnimation(5);
+                }
+                break;
+        }
+        slot++;
+        side++;
+    } while (side < 2);
+    mAnims[20] = new CellAnimation("vs_b_obj_ability_nce.bin", 0, 1, 1);
+    mAnims[20]->mCharBase = screen.func_020276f4(0x10000);
+    mAnims[20]->mUnk_11 = 10;
+    mAnims[20]->SetAnimation(8);
+    mAnims[16] = new CellAnimation("vs_b_obj_ability_nce.bin", 0, 1, 1);
+    mAnims[16]->mCharBase = screen.func_020276f4(0x10000);
+    mAnims[16]->mUnk_11 = 10;
+    mAnims[16]->SetAnimation(7);
+    screen.LoadPalette("vs_b_obj_down_ncl.bin", 0x1c0, 0);
+    screen.LoadCharacters("vs_b_obj_pen.nce_ncg1D.bin", 0x14000, 0);
+    mAnims[21] = new CellAnimation("vs_b_obj_pen_nce.bin", 0, 1, 1);
+    mAnims[21]->mCharBase = screen.func_020276f4(0x14000);
+    mAnims[21]->mUnk_11 = 9;
+    if (mUnk_0c < 2) {
+        switch (mParam->mUnk_00) {
+            case 0:
+                mUnk_12c = 0x80;
+                mUnk_12e = 0x82;
+                mAnims[21]->SetAnimation(0);
+                break;
+            case 3:
+                mUnk_12c = 0x80;
+                mUnk_12e = 0x82;
+                mAnims[21]->SetAnimation(1);
+                break;
+            case 1:
+                mUnk_12c = 0x80;
+                mUnk_12e = 0x82;
+            case 2:
+                mAnims[21]->SetAnimation(2);
+                break;
+            case 4:
+            case 5:
+                mAnims[21]->SetAnimation(3);
+                break;
+        }
+    } else {
+        if (mUnk_0c == 4) {
+            mUnk_12c = 0xd2;
+        } else {
+            mUnk_12c = 0x26;
+        }
+        mUnk_12e = 0x82;
+        mAnims[21]->SetAnimation(0);
+    }
+    ChangeDir("/");
+    ChangeDir("/Game/Character/Icon");
+    mAnims[12] = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
+    u32 base = data_ov007_02279d44;
+    mAnims[12]->mCharBase = screen.func_020276f4(base);
+    s8 layer = data_ov007_02279d40;
+    mAnims[12]->mUnk_11 = layer;
+    mAnims[13] = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
+    mAnims[13]->mCharBase = screen.func_020276f4(base);
+    mAnims[13]->mUnk_11 = layer;
+    mAnims[12]->SetAnimation(7);
+    mAnims[13]->SetAnimation(7);
+    ChangeDir("/");
+    u8 k = 0;
+    do {
+        if (((u8 *) data_020d433c.mBattlePlayers->mPlayers[entries[k].mUnk_0d_4])[0xf9] == 0) {
+            mUnk_118[k] = 0xff;
+        }
+        BattleEntry *e = &entries[(int) k];
+        u32 card;
+        if (e->mUnk_12 == 0) {
+            if (mUnk_0c == k) {
+                mUnk_117_1 = 1;
+            }
+            card = 0;
+        } else {
+            int kind = func_02065c0c(entries[(u8) mUnk_0c].mUnk_12, 3);
+            if ((u8) (kind + 0xfc) <= 1) {
+                mUnk_117_1 = 1;
+            }
+            card = func_02065c20(e->mUnk_12);
+        }
+        func_ov007_0222644c(k, card);
+        k++;
+    } while (k < 2);
+    if (mUnk_0c >= 2) {
+        mUnk_117_1 = 1;
+    }
+    func_ov007_02226614();
+    mData->mUnk_6c->func_02065660("mes_ControlBattle");
+    if ((u32) mUnk_0c <= 1) {
+        mData->mUnk_6c->func_02065890(mParam->mUnk_00, 0, 1);
+    } else {
+        mData->mUnk_6c->func_02065890(6, 0, 1);
+    }
+    mData->mUnk_6c->mUnk_27 = 1;
+    func_ov007_02226ab8();
+    k = 0;
+    do {
+        if (entries[k].mUnk_0f_1) {
+            mUnk_118[k] = 0xff;
+        }
+        k++;
+    } while (k < 2);
 }
 
 void BattleHud::Update() {

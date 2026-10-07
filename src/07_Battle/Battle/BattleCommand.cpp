@@ -9,6 +9,9 @@
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
 #include "System/FrameUpdate.hpp"
+#include "System/InputManager.hpp"
+#include "System/SoundManager.hpp"
+#include "System/TouchManager.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
@@ -430,6 +433,214 @@ void BattleCommand::func_ov007_0223b874() {
                 } while (col < 10);
                 row++;
             } while (row < 14);
+        }
+    }
+}
+
+struct BattleScrollBounds {
+    s16 mMin;
+    s16 mMax;
+};
+extern BattleScrollBounds data_ov007_02279acc[];
+extern BattleScrollBounds data_ov007_02279aec[];
+
+void func_ov007_022471c8(BattleCommandMap *map, u32 a);
+
+// non-matching: register allocation in the bounds clamp (field/off/data ptr) and the touch cell select (col/row/flip/cur); control flow and calls match
+void BattleCommand::func_ov007_0223bb30(u32 flag) {
+    u32 moved = 0;
+    mUnk_13b  = 0;
+    if (mUnk_13a == 0) {
+        if (mUnk_135 != 0) {
+            if (InputManager::Get().IsTrigger(0x10) && mUnk_12c != 0) {
+                u32 r = mUnk_12c - 1;
+                if (mUnk_90[r][mUnk_12d] != 0) {
+                    mUnk_12c = r;
+                    moved    = 1;
+                    if (mUnk_12c <= 2) {
+                        mUnk_120 += 0x10;
+                    }
+                }
+            }
+            if (InputManager::Get().IsTrigger(0x20) && mUnk_12c < 13) {
+                u32 r = mUnk_12c + 1;
+                if (mUnk_90[r][mUnk_12d] != 0) {
+                    mUnk_12c = r;
+                    moved    = 1;
+                    if (mUnk_12c >= 11) {
+                        mUnk_120 -= 0x10;
+                    }
+                }
+            }
+            if (InputManager::Get().IsTrigger(0x40) && mUnk_12d < 9) {
+                u32 c = mUnk_12d;
+                c++;
+                if (mUnk_90[mUnk_12c][c] != 0) {
+                    mUnk_12d = c;
+                    moved    = 1;
+                    if (mUnk_12d >= 6) {
+                        mUnk_122 -= 0x18;
+                    }
+                }
+            }
+            if (InputManager::Get().IsTrigger(0x80) && mUnk_12d != 0) {
+                u32 c = mUnk_12d;
+                c--;
+                if (mUnk_90[mUnk_12c][c] != 0) {
+                    mUnk_12d = c;
+                    moved    = 1;
+                    if (mUnk_12d <= 3) {
+                        mUnk_122 += 0x18;
+                    }
+                }
+            }
+        } else {
+            if (InputManager::Get().IsTrigger(0x10) && mUnk_12c < 13) {
+                u32 r = mUnk_12c + 1;
+                if (mUnk_90[r][mUnk_12d] != 0) {
+                    mUnk_12c = r;
+                    moved    = 1;
+                    if (mUnk_12c >= 11) {
+                        mUnk_120 += 0x10;
+                    }
+                }
+            }
+            if (InputManager::Get().IsTrigger(0x20) && mUnk_12c != 0) {
+                u32 r = mUnk_12c - 1;
+                if (mUnk_90[r][mUnk_12d] != 0) {
+                    mUnk_12c = r;
+                    moved    = 1;
+                    if (mUnk_12c <= 2) {
+                        mUnk_120 -= 0x10;
+                    }
+                }
+            }
+            if (InputManager::Get().IsTrigger(0x40) && mUnk_12d != 0) {
+                u32 c = mUnk_12d;
+                c--;
+                if (mUnk_90[mUnk_12c][c] != 0) {
+                    mUnk_12d = c;
+                    moved    = 1;
+                    if (mUnk_12d <= 3) {
+                        mUnk_122 -= 0x18;
+                    }
+                }
+            }
+            if (InputManager::Get().IsTrigger(0x80) && mUnk_12d < 9) {
+                u32 c = mUnk_12d;
+                c++;
+                if (mUnk_90[mUnk_12c][c] != 0) {
+                    mUnk_12d = c;
+                    moved    = 1;
+                    if (mUnk_12d >= 6) {
+                        mUnk_122 += 0x18;
+                    }
+                }
+            }
+        }
+    }
+    s32 tx = TouchManager::Get().mX;
+    s32 ty = TouchManager::Get().mY;
+    if (mUnk_13a == 0) {
+        u8 field = data_020d433c.mUnk_95;
+        if (data_020d433c.mUnk_8a_0 != 0) {
+            field = 0;
+        }
+        s32 off = 0;
+        switch (field) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 5:
+                break;
+            case 6:
+                if (data_020d43f0[0].mUnk_28_5 == 0) {
+                    off = 0xa;
+                }
+                break;
+            case 4:
+                if (data_020d43f0[0].mUnk_28_5 == 0) {
+                    off = 0x20;
+                }
+                break;
+        }
+        if (mUnk_129 != 0) {
+            mUnk_120 = mUnk_124 - tx;
+            mUnk_122 = mUnk_126 - ty;
+        }
+        s16 cx = mUnk_120;
+        if (cx > data_ov007_02279acc[field].mMax) {
+            mUnk_120 = data_ov007_02279acc[field].mMax;
+        } else if (cx < data_ov007_02279acc[field].mMin - off) {
+            mUnk_120 = data_ov007_02279acc[field].mMin - off;
+        }
+        s16 cy = mUnk_122;
+        if (cy > data_ov007_02279aec[field].mMax) {
+            mUnk_122 = data_ov007_02279aec[field].mMax;
+        } else if (cy < data_ov007_02279aec[field].mMin) {
+            mUnk_122 = data_ov007_02279aec[field].mMin;
+        }
+        if (TouchManager::Get().mUnk_57 != 0) {
+            mUnk_129 = 1;
+            mUnk_124 = tx + mUnk_120;
+            mUnk_126 = ty + mUnk_122;
+        }
+        if (TouchManager::Get().mTouching != 0) {
+            mUnk_124 = tx + mUnk_120;
+            mUnk_126 = ty + mUnk_122;
+            u8 flip;
+            u8 cur;
+            s16 col  = (mUnk_124 - 0xe - mUnk_139) / 16;
+            s16 row  = (mUnk_126 + 0x16) / 10;
+            if (col >= 0 && col <= 13 && row >= 0 && row <= 9 && mUnk_90[col][row] != 0) {
+                flip = mUnk_135;
+                cur  = mUnk_12c;
+                if (flip == 0) {
+                    if (cur != col || mUnk_12d != row) {
+                        mUnk_12c = col;
+                        mUnk_12d = row;
+                        moved    = 1;
+                    } else if (cur == col && mUnk_12d == row) {
+                        mUnk_13b = 1;
+                    }
+                } else {
+                    int fc = 13 - col;
+                    int fr = 9 - row;
+                    if (cur != fc || mUnk_12d != fr) {
+                        mUnk_12c = fc;
+                        mUnk_12d = fr;
+                        moved    = 1;
+                    } else if (cur == fc && mUnk_12d == fr) {
+                        mUnk_13b = 1;
+                    }
+                }
+            }
+        }
+        if (TouchManager::Get().mTouching != 0) {
+            mUnk_129 = 0;
+        }
+    }
+    if (mMode == 2) {
+        if (InputManager::Get().IsDown(0x200)) {
+            if (InputManager::Get().IsHeld(0x100)) {
+                func_ov007_02246a84(mUnk_84, 2);
+                return;
+            }
+            func_ov007_022471c8(mUnk_84, 0);
+        }
+        if (InputManager::Get().IsDown(0x100)) {
+            if (InputManager::Get().IsHeld(0x200)) {
+                func_ov007_02246a84(mUnk_84, 2);
+                return;
+            }
+            func_ov007_022471c8(mUnk_84, 1);
+        }
+    }
+    if (moved == 1) {
+        SoundManager::Get().func_020246f8(5);
+        if (flag == 0) {
+            func_ov007_0223c578();
         }
     }
 }

@@ -17,6 +17,7 @@ public:
     u32 func_020667ec();
     BOOL func_02066c7c();
     u32 func_020670b4(u32 id);
+    u8 func_02067120(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
     BOOL func_020678e8();
     u32 func_02067900();
     BOOL func_02067938();

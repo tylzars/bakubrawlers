@@ -7,7 +7,7 @@
 struct UnkStruct_020758f4_Record {
     /* 0 */ PAD(0x0, 0x2);
     /* 2 */ u16 mTextOffset;
-    /* 4 */ u16 mTextLength;
+    /* 4 */ u32 mTextLength;
 };
 
 class UnkStruct_020758f4 {

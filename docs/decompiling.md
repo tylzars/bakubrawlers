@@ -59,6 +59,8 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   MessageFile *file = mMessages;
   text.Print(file->GetText(i), file->GetLength(i), mTextBuffer, ...);
   ```
+  When the original loads the text buffer before the file pointer, load it first in source too:
+  `void *buffer = mTextBuffers[2]; file = mMessages[2];` (ov002 `0221ddf8`, `02220830`).
   How it was found: a store placed between the offset load and the call gave the original register allocation,
   so the load only had to be pinned in place.
 

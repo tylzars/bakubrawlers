@@ -37,7 +37,7 @@ public:
     /* a6 */ s16 mUnk_a6;
     /* a8 */ s16 mUnk_a8;
     /* aa */ s16 mUnk_aa;
-    /* ac */ s16 mUnk_ac;
+    /* ac */ u16 mUnk_ac;
     /* ae */ s16 mUnk_ae;
     /* b0 */ u8 mUnk_b0;
     /* b1 */ PAD(0xb1, 0xb2);

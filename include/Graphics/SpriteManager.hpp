@@ -50,6 +50,7 @@ public:
         return mScreens[index];
     }
 
+    void func_0202740c();
     void func_02026dec(u32 unk1, u32 unk2);
 
     void StartFade(s8 mode) {

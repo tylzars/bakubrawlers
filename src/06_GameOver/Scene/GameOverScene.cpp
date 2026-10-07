@@ -218,8 +218,7 @@ void GameOverScene::LoadGraphics() {
     mCellAnims[0]            = new CellAnimation("gameover_u_obj_00_nce.bin", 0, 1, 1);
     mCellAnims[0]->mCharBase = main.func_020276f4(0);
     mCellAnims[0]->mUnk_11   = 0;
-    mCellAnims[0]->mUnk_0e   = 0;
-    func_02029f6c();
+    mCellAnims[0]->SetAnimation(0);
     ChangeDir("/Game/2D/union_b/");
     func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
     func_02025b64(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
@@ -246,10 +245,10 @@ void GameOverScene::SetupText() {
     SpriteManager::Get().Screen(1).func_02027624(3);
     ChangeDir("/");
     mMessages       = (MessageFile *) func_02023504("font/mes_System.mes", 0, 0, 0, 0, 0);
-    mTextBufferSize = TextManager::Get().BufferSize();
+    mTextBufferSize = TextManager::Get().BufferSize(0x18, 8);
     mTextBuffer     = OS_Alloc(mTextBufferSize);
     MI_CpuClear16(mTextBuffer, mTextBufferSize);
-    mGlyphCount  = TextManager::Get().GlyphCount();
+    mGlyphCount  = TextManager::Get().GlyphCount(0x30);
     mGlyphBuffer = OS_Alloc((s16) mGlyphCount * (s16) 0xc);
     TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x18, 8, 0x11);
     TextManager::Get().SetColor(1, 0, 0xf);
@@ -259,9 +258,9 @@ void GameOverScene::SetupText() {
     s16 width;
     width                = 0;
     MessageFile *file    = mMessages;
-    const u8 *message    = (const u8 *) file + file->mTextOffset;
+    const u8 *message    = file->GetText(10);
     height               = 0;
-    text.Print(message, file->mTextLength, mTextBuffer, 0x18, 8, &height, &width, 0, 0, 2, 0x11, 0xe, 0, 0, 1, 1, 1);
+    text.Print(message, file->GetLength(10), mTextBuffer, 0x18, 8, &height, &width, 0, 0, 2, 0x11, 0xe, 0, 0, 1, 1, 1);
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x4000, mTextBuffer, mTextBufferSize, 0);
 }
 

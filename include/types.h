@@ -34,6 +34,12 @@ typedef s32 BOOL;
     #define NULL 0
 #endif
 
+// A 2D point of signed 16-bit coordinates.
+struct Vec2s {
+    s16 x;
+    s16 y;
+};
+
 // fx32 and friends: NitroSDK fixed point, 12 fractional bits.
 typedef s16 fx16;
 typedef s32 fx32;

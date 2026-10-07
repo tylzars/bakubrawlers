@@ -49,6 +49,11 @@ static inline void G2S_SetBG0Control(int size, int color, int screenBase, int ch
 static inline void G2S_SetBG1Control(int size, int color, int screenBase, int charBase, int extPltt) {
     reg_G2S_DB_BG1CNT = G2_BG_CONTROL_VALUE(reg_G2S_DB_BG1CNT, size, color, screenBase, charBase, extPltt);
 }
+// Like G2S_SetBG1Control, but without the extended-palette bit.
+static inline void G2S_SetBG2ControlText(int size, int color, int screenBase, int charBase) {
+    reg_G2S_DB_BG2CNT =
+        (u16) ((reg_G2S_DB_BG2CNT & G2_BGCNT_KEEP_MASK) | (size << 14) | (color << 7) | (screenBase << 8) | (charBase << 2));
+}
 
 #define G2_BG_OFFSET_VALUE(h, v) (u32) ((((h) << 0) & G2_BGOFS_H_MASK) | (((v) << 16) & G2_BGOFS_V_MASK))
 
@@ -61,6 +66,12 @@ static inline void G2S_SetBG0Offset(int h, int v) {
 static inline void G2S_SetBG1Offset(int h, int v) {
     reg_G2S_DB_BG1OFS = G2_BG_OFFSET_VALUE(h, v);
 }
+static inline void G2S_SetBG2Offset(int h, int v) {
+    reg_G2S_DB_BG2OFS = G2_BG_OFFSET_VALUE(h, v);
+}
+static inline void G2S_SetBG3Offset(int h, int v) {
+    reg_G2S_DB_BG3OFS = G2_BG_OFFSET_VALUE(h, v);
+}
 
 static inline void G2_SetBG0Priority(int priority) {
     reg_G2_BG0CNT = (u16) ((reg_G2_BG0CNT & ~G2_BGCNT_PRIORITY_MASK) | (priority << 0));
@@ -70,6 +81,12 @@ static inline void G2S_SetBG0Priority(int priority) {
 }
 static inline void G2S_SetBG1Priority(int priority) {
     reg_G2S_DB_BG1CNT = (u16) ((reg_G2S_DB_BG1CNT & ~G2_BGCNT_PRIORITY_MASK) | (priority << 0));
+}
+static inline void G2S_SetBG2Priority(int priority) {
+    reg_G2S_DB_BG2CNT = (u16) ((reg_G2S_DB_BG2CNT & ~G2_BGCNT_PRIORITY_MASK) | (priority << 0));
+}
+static inline void G2S_SetBG3Priority(int priority) {
+    reg_G2S_DB_BG3CNT = (u16) ((reg_G2S_DB_BG3CNT & ~G2_BGCNT_PRIORITY_MASK) | (priority << 0));
 }
 
 #ifdef __cplusplus

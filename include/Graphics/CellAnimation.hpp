@@ -18,6 +18,12 @@ public:
     ~CellAnimation();
     void Update();
     void Draw(u32 unk1, s32 x, s32 y, u32 unk4);
+    void func_02029f6c();
+    void SetAnimation(u8 index) {
+        mUnk_0e = index;
+        func_02029f6c();
+    }
+    void func_02029fb8(u32 unk1);
+    void func_02029fc0();
+    void func_0202a3ec(u32 unk1, u8 frame, s16 x, s16 y, u32 unk5);
 };
-
-void func_02029f6c();

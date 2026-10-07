@@ -55,6 +55,10 @@ public:
         sFade.mSub  = mode;
     }
 
+    void StartSubFade(s8 mode) {
+        sFade.mSub = mode;
+    }
+
     BOOL IsFading() {
         return (sFade.mMain > 1) | (sFade.mSub > 1);
     }

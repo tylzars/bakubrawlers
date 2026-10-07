@@ -3,6 +3,8 @@
 #include "global.h"
 #include "types.h"
 
+class CellAnimation;
+
 // Cell animation used by a window element.
 struct WindowCellRecord {
     /* 00 */ const char *mPath;
@@ -30,9 +32,28 @@ struct WindowItemRecord {
     /* 1c */
 };
 
+// Runtime copy of a WindowItemRecord, kept by the cursor.
+struct WindowItem {
+    /* 00 */ s8 mId;
+    /* 01 */ PAD(0x01, 0x04);
+    /* 04 */ u32 mFlags;
+    /* 08 */ s16 mX;
+    /* 0a */ s16 mY;
+    /* 0c */ PAD(0x0c, 0x1c);
+    /* 1c */
+};
+
 struct SelectWindowCursor {
-    /* 0 */ PAD(0x0, 0x6);
+    /* 0 */ WindowItem *mItems;
+    /* 4 */ PAD(0x4, 0x6);
     /* 6 */ s8 mSelection;
+};
+
+// An on-screen button of a window; mEnabled toggles whether it can be pressed.
+struct WindowButton {
+    /* 0 */ u32 mEnabled;
+    /* 4 */ PAD(0x4, 0xc);
+    /* c */
 };
 
 // A window of selectable items driven by touch or buttons.
@@ -40,9 +61,16 @@ class SelectWindow {
 public:
     /* 000 (vtable) */
     /* 004 */ SelectWindowCursor *mCursor;
-    /* 008 */ PAD(0x008, 0x064);
+    /* 008 */ CellAnimation *mCells[6];
+    /* 020 */ PAD(0x020, 0x061);
+    /* 061 */ u8 mUnk_061;
+    /* 062 */ PAD(0x062, 0x064);
     /* 064 */ u8 mUnk_064;
-    /* 065 */ PAD(0x065, 0x1ec);
+    /* 065 */ PAD(0x065, 0x080);
+    /* 080 */ Vec2s mCellPos[6];
+    /* 098 */ PAD(0x098, 0x0e8);
+    /* 0e8 */ WindowButton mButtons[6];
+    /* 130 */ PAD(0x130, 0x1ec);
     /* 1ec */
 
     SelectWindow(u32 itemCount, const WindowItemRecord *items, s32 unk3);
@@ -50,4 +78,18 @@ public:
     void SetCells(u32 count, const WindowCellRecord *cells);
     BOOL Update(BOOL acceptInput);
     void Draw();
+    void func_0205c844(u32 unk1, u32 unk2);
+
+    Vec2s GetCellPos(int index) {
+        return mCellPos[index];
+    }
+    void SetCellPos(int index, Vec2s pos) {
+        mCellPos[index] = pos;
+    }
+    s8 GetSelectedId() {
+        if (mCursor->mSelection == -1) {
+            return -1;
+        }
+        return mCursor->mItems[mCursor->mSelection].mId;
+    }
 };

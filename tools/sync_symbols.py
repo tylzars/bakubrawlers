@@ -28,6 +28,7 @@ from elftools.elf.relocation import RelocationSection  # noqa: E402
 
 CFG = ROOT / "config/usa/arm9"
 LINE = re.compile(r"^(\S+) (kind:\S+) addr:(0x[0-9a-f]+)(.*)$")
+FORCE = False  # set by --force: replace existing non-address names (after a signature change in a header)
 ADDRESS_NAME = re.compile(r"^(func|data)_(ov\d{3}_)?[0-9a-f]{8}$")
 
 
@@ -75,8 +76,8 @@ class Symbols:
                 continue
             if name == new:
                 return "ok"
-            if not ADDRESS_NAME.match(name):
-                return f"CONFLICT: {addr:#010x} is already '{name}', source says '{new}'"
+            if not ADDRESS_NAME.match(name) and not FORCE:
+                return f"CONFLICT: {addr:#010x} is already '{name}', source says '{new}' (use --force to rename)"
             self.lines[i] = f"{new} {kind} addr:{m.group(3)}{m.group(4)}"
             self.changed = True
             return f"rename {name} -> {new}"
@@ -164,7 +165,11 @@ def main() -> None:
     ap.add_argument("--assume", action="append", default=[], metavar="NAME=ADDR",
                     help="place a non-matching function at ADDR (same size required; relocations are read at the "
                          "same offsets, so only use this when the mismatch doesn't shift code)")
+    ap.add_argument("--force", action="store_true",
+                    help="rename symbols that already have a non-address name (review the dry run first)")
     a = ap.parse_args()
+    global FORCE
+    FORCE = a.force
 
     base, blob = module_bytes(a.module)
     tables = {a.module: Symbols(a.module)}

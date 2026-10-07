@@ -36,6 +36,8 @@ DECOMP_ME_COMPILER = "mwcc_30_131"  # decomp.me id for MWCC_VERSION
 
 CC_FLAGS = [
     "-O4,p",            # verified: -O3,p differs in regalloc; ,s and -O2 don't inline accessors
+    # Not yet verified; nothing matched so far exercises them.
+    # Question these first on char/enum/string-pooling mismatches.
     "-enum int",        # int-sized enums
     "-char signed",     # char is signed
     "-str noreuse",     # equal string literals are distinct objects
@@ -143,7 +145,7 @@ w(f"rule rom_build\n  command = {DSD} rom build --config $in --rom $out {bios_fl
 w(f"rule fix_header\n  command = {PY} tools/fix_header.py $in $out --secure-area-crc $crc\n  description = FIX HEADER $out\n")
 w(f"rule sha1\n  command = sha1sum -c $sha1_file && touch $out\n  description = SHA1 $in\n")
 w(f"rule objdiff_config\n  command = {DSD} objdiff -c $config -o . --scratch --compiler {DECOMP_ME_COMPILER} "
-  f"--c-flags {shlex.quote(' '.join(CC_FLAGS))} --custom-make ninja\n  description = OBJDIFF CONFIG\n")
+  f"--c-flags {shlex.quote(' '.join(CC_FLAGS + ['-lang=c++']))} --custom-make ninja\n  description = OBJDIFF CONFIG\n")
 w(f"rule objdiff_report\n  command = {OBJDIFF} report generate -o $out\n  description = REPORT\n")
 w(f"rule check_symbols\n  command = {DSD} check symbols -c $config --elf-path $in --fail --max-lines 20 && touch $out\n  description = CHECK SYMBOLS\n")
 w(f"rule configure\n  command = {PY} tools/configure.py {' '.join(shlex.quote(a) for a in sys.argv[1:])}\n  generator = 1\n  description = CONFIGURE\n")

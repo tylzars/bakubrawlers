@@ -36,7 +36,7 @@ public:
     /* 3c */ TextSlot mText[2];
     /* 64 */ u8 mUnk_64;
     /* 65 */ u8 mUnk_65;
-    /* 66 */ u16 mNextState;
+    /* 66 */ s16 mNextState;
     /* 68 */ u8 mUnk_68;
     /* 69 */ u8 mUnk_69;
     /* 6a */ u8 mTab;
@@ -47,7 +47,7 @@ public:
     /* 72 */ u8 mDragging;
     /* 73 */ u8 mLastTouchX;
     /* 74 */ s8 mUnk_74;
-    /* 75 */ u8 mUnk_75;
+    /* 75 */ s8 mUnk_75;
     /* 76 */ u8 mPage;
     /* 77 */ u8 mPageVisible;
     /* 78 */ PAD(0x78, 0x79);
@@ -70,7 +70,7 @@ public:
     MapScene();
 
     /* 00 */ virtual ~MapScene() override;
-    /* 08 */ virtual void Update() override; // 022197b4, not decompiled yet
+    /* 08 */ virtual void Update() override;
     /* 0c */
 
     void Init();                      // 0221a4e0
@@ -79,7 +79,7 @@ public:
     void LoadWindowGraphics();        // 0221a824
     void func_ov005_0221a9ec();
     void LoadMapBackground();         // 0221aaa4
-    void func_ov005_0221abf4();       // not decompiled yet
+    void func_ov005_0221abf4();
     BOOL func_ov005_0221b1a0();
     BOOL func_ov005_0221b2ac();
     u8 UpdateMenu();                  // 0221b2dc

@@ -20,6 +20,7 @@ struct SpriteScreen {
     SpriteScreen();
     void LoadCharacters(const char *path, u32 offset, u32 unk3);
     void LoadPalette(const char *path, u32 offset, u32 unk3);
+    void func_02027fec(const char *path, u32 unk2, u32 unk3); // palette load variant
     u16 func_020276f4(u32 unk1);
     void func_02027624(u32 unk1);
     void func_02027778(void *buffer, u8 count, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8);

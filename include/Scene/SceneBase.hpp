@@ -57,6 +57,7 @@ public:
     /* 0c */
 
     void RequestScene(int scene) {
-        mContext->mList->mHead->mRequest->mNextScene = scene;
+        UnkStruct_SceneContext *context = mContext;
+        context->mList->mHead->mRequest->mNextScene = scene;
     }
 };

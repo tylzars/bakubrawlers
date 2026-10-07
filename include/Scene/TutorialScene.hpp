@@ -8,6 +8,7 @@
 class CellAnimation;
 class MessageWindow;
 class SelectWindow;
+class UnkStruct_02065c40;
 struct MessageFile;
 
 struct GlyphSlot {
@@ -21,7 +22,7 @@ class TutorialScene : public SceneBase {
 public:
     /* 00 (base) */
     /* 0c */ CellAnimation *mCells[4];
-    /* 1c */ void *mUnk_1c;
+    /* 1c */ UnkStruct_02065c40 *mEvent;
     /* 20 */ SelectWindow *mWindow;
     /* 24 */ MessageWindow *mMessageWindow;
     /* 28 */ MessageFile *mMessages[2];
@@ -39,7 +40,7 @@ public:
     TutorialScene();
 
     /* 00 */ virtual ~TutorialScene() override;
-    /* 08 */ virtual void Update() override; // 0221d258, not decompiled yet
+    /* 08 */ virtual void Update() override;
     /* 0c */
 
     void LoadGraphics();      // 0221eb64

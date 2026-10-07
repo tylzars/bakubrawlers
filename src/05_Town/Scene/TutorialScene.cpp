@@ -26,7 +26,7 @@ extern const WindowCellRecord data_ov005_0222013c[];
 
 TutorialScene::TutorialScene() :
     SceneBase(1000, 0) {
-    mUnk_1c        = NULL;
+    mEvent        = NULL;
     mWindow        = NULL;
     mMessageWindow = NULL;
     mMessages[0]      = NULL;

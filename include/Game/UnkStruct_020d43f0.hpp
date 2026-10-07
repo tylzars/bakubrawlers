@@ -4,7 +4,9 @@
 #include "types.h"
 
 struct UnkStruct_020d43f0 {
-    /* 000 */ PAD(0x000, 0x01c);
+    /* 000 */ PAD(0x000, 0x01a);
+    /* 01a */ u16 mUnk_1a_0 : 8;
+    /* 01a */ u16 mUnk_1a_8 : 8;
     /* 01c */ u32 mMoney;
     /* 020 */ PAD(0x020, 0x024);
     /* 024 */ u8 mUnk_24;

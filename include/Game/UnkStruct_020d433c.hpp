@@ -4,11 +4,16 @@
 #include "types.h"
 
 struct UnkStruct_020d433c {
-    /* 00 */ PAD(0x00, 0x76);
+    /* 00 */ PAD(0x00, 0x14);
+    /* 14 */ u16 mUnk_14_0 : 1;
+    /* 14 */ u16 mUnk_14_1 : 1;
+    /* 14 */ u16 mUnk_14_2 : 14;
+    /* 16 */ PAD(0x16, 0x76);
     /* 76 */ u8 mUnk_76;
     /* 77 */ PAD(0x77, 0x7b);
     /* 7b */ u8 mUnk_7b;
-    /* 7c */ PAD(0x7c, 0x7e);
+    /* 7c */ u8 mUnk_7c;
+    /* 7d */ u8 mUnk_7d;
     /* 7e */ u8 mUnk_7e_0 : 4;
     /* 7e */ u8 mUnk_7e_4 : 4;
     /* 7f */ u8 mUnk_7f;
@@ -16,7 +21,7 @@ struct UnkStruct_020d433c {
     /* 82 */ u8 mUnk_82;
     /* 83 */ u8 mUnk_83;
     /* 84 */ u8 mUnk_84;
-    /* 85 */ PAD(0x85, 0x86);
+    /* 85 */ u8 mUnk_85;
     /* 86 */ u8 mUnk_86;
     /* 87 */ PAD(0x87, 0x8a);
     /* 8a */ u8 mUnk_8a_0 : 4;
@@ -25,7 +30,9 @@ struct UnkStruct_020d433c {
     /* 8b */ u8 mUnk_8b_4 : 4;
     /* 8c */ u8 mUnk_8c_0 : 4;
     /* 8c */ u8 mUnk_8c_4 : 4;
-    /* 8d */ PAD(0x8d, 0x97);
+    /* 8d */ PAD(0x8d, 0x95);
+    /* 95 */ u8 mUnk_95;
+    /* 96 */ s8 mUnk_96;
     /* 97 */ u8 mPlayerCount;
     /* 98 */ u8 mUnk_98;
     /* 99 */ u8 mUnk_99;

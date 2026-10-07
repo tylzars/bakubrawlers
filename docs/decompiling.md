@@ -36,6 +36,9 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
 
 ## Source patterns that matter
 
+- **`RequestScene` copies the context pointer to a local.** `SceneBase::RequestScene` is
+  `UnkStruct_SceneContext *context = mContext; context->mList->...->mNextScene = scene;`. Without the local, the
+  context pointer and the request chain share one register at the end of `Update` functions.
 - **Message text pointers (`MessageFile::GetText`).** `MessageEntry::mOffset` is declared `volatile`. The original
   always reads the offset where the text pointer is formed, so the load sits right after the file pointer, and
   the zero for `Print`'s size outputs lands in a callee-saved register. A plain `u16` lets the load sink to the

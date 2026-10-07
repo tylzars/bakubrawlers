@@ -3,3 +3,11 @@
     .ctor       start:0x0222699c end:0x0222699c kind:rodata align:4
     .data       start:0x022269a0 end:0x02227f80 kind:data align:32
     .bss        start:0x02227f80 end:0x022280c0 kind:bss align:32
+
+// provisional: code only. 0x02219a08 and 0x0221a04c (one is probably Update) are not decompiled.
+src/00_NameEntry/Scene/NameEntryScene.cpp:
+    .text       start:0x02219440 end:0x0221c290
+
+// provisional: code only. UnkScene_02226e60::Update (0x0221c71c) is not decompiled.
+src/00_NameEntry/Scene/UnkScene_ov000.cpp:
+    .text       start:0x0221c290 end:0x0221d150

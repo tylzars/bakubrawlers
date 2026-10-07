@@ -9,7 +9,7 @@
 #include "Scene/FieldSelectScene.hpp"
 #include "System/FrameTask.hpp"
 #include "Unknown/UnkStruct_02070608.hpp"
-#include "Unknown/UnkStruct_020c3030.hpp"
+#include "System/WirelessManager.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
@@ -163,7 +163,7 @@ void ArenaWindowScene::Update() {
             func_ov001_0221d6dc();
             BOOL done = FALSE;
             if (data_020d433c.mUnk_a8 != 0) {
-                UnkStruct_020c3030::Get();
+                WirelessManager::Get();
                 if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
                     mUnk_24 = 5;
                     done    = TRUE;
@@ -248,14 +248,14 @@ void ArenaWindowScene::Update() {
         case 5:
             func_ov001_0221d858();
             SpriteManager::Get().StartFade(2);
-            UnkStruct_020c3030::Get().func_0202edd0();
+            WirelessManager::Get().func_0202edd0();
             mUnk_24++;
             break;
         case 6:
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            UnkStruct_020c3030::Get();
+            WirelessManager::Get();
             if (data_020c4030.mUnk_228 != 0) {
                 return;
             }

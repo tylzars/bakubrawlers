@@ -53,7 +53,10 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   global (`MapScene::func_ov005_0221bde8`, a `u16` copy inside `data_020d48f0`). No 2.0 or DSi compiler build
   moves a load above a store on its own, for compiler guards or plain globals; the only case found that does is a
   load of a `const`-qualified global. Changing the field type (`bool`, `s8`, bitfields), writing through a
-  reference, comma expressions, inline setters and `const` singletons all leave the store first.
+  reference, comma expressions, inline setters and `const` singletons all leave the store first. The pragmas
+  `opt_pointer_analysis` (on crashes the compiler on a full file), `opt_pointer_analysis_mode` and
+  `thread_safe_init` don't change it either. The guards are separate objects in the original (all of them sit
+  together at 0x020c17ac-0x020c17e0), so offset-based disambiguation within one object is not the reason.
 
 ## Source patterns that matter
 

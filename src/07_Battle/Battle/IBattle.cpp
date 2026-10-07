@@ -3,7 +3,7 @@
 
 #include "Game/UnkStruct_020d433c.hpp"
 #include "System/TouchManager.hpp"
-#include "Unknown/UnkStruct_020c3030.hpp"
+#include "System/WirelessManager.hpp"
 
 s32 func_0200198c(s32 y, s32 x);
 
@@ -43,7 +43,7 @@ void func_ov007_02229c88(BattleBase *scene, u16 *a, u16 *b, u16 *c, u8 flag) {
 
 void func_ov007_02229d08(BattleBase *scene) {
     u8 i = 0;
-    u32 count = UnkStruct_020c3030::Get().func_0202f134();
+    u32 count = WirelessManager::Get().func_0202f134();
     u16 first[4] = {0, 0, 0, 0};
     u16 second[4] = {0, 0, 0, 0};
     u16 third[2] = {0, 0};

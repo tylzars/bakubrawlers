@@ -7,7 +7,7 @@
 #include "System/SoundManager.hpp"
 #include "System/TouchManager.hpp"
 #include "Unknown/UnkFunctions.hpp"
-#include "Unknown/UnkStruct_020c3030.hpp"
+#include "System/WirelessManager.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
 #include <nitro/fx.h>
 #include <nitro/gx.h>
@@ -671,7 +671,7 @@ void BattleBase::func_ov007_0221c938() {
     mUnk_1c = mUnk_1d;
     mUnk_1f = -1;
     mUnk_1e = mUnk_1f;
-    UnkStruct_020c3030::Get();
+    WirelessManager::Get();
     if (IsWirelessMode(&data_020c4258)) {
         func_ov007_02229d08(this);
     }
@@ -702,7 +702,7 @@ void BattleBase::func_ov007_0221c938() {
             value = b[sel];
             side = 1;
         }
-        UnkStruct_020c3030::Get();
+        WirelessManager::Get();
         if (!IsWirelessMode(&data_020c4258)) {
             if (doneB) {
                 u8 k = 0;
@@ -732,7 +732,7 @@ void BattleBase::func_ov007_0221c938() {
             }
         }
     }
-    UnkStruct_020c3030::Get();
+    WirelessManager::Get();
     if (!IsWirelessMode(&data_020c4258)) {
         func_ov007_0221c850(a, b, c, &flag);
         u8 count = data_020d433c.mPlayerCount;

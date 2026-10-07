@@ -14,7 +14,7 @@
 #include "System/SoundManager.hpp"
 #include "System/TouchManager.hpp"
 #include "Text/TextManager.hpp"
-#include "Unknown/UnkStruct_020c3030.hpp"
+#include "System/WirelessManager.hpp"
 
 #include <nitro/os.h>
 
@@ -143,7 +143,7 @@ void SceneRunner::func_02024968(s32 scene) {
     SceneManager::Get().DeleteLayer();
     SceneManager::Get().Reset();
     TextManager::Get().mUnk_5b = 0;
-    if (!UnkStruct_020c3030::Get().func_0202f238()) {
+    if (!WirelessManager::Get().func_0202f238()) {
         FrameTask::Get().func_0203dc28();
         func_02021e10();
         FrameTask::Get().func_0203dbc4();

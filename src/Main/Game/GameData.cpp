@@ -4,7 +4,7 @@
 #include "System/FrameTask.hpp"
 #include "System/SoundManager.hpp"
 #include "Unknown/UnkFunctions.hpp"
-#include "Unknown/UnkStruct_020c3030.hpp"
+#include "System/WirelessManager.hpp"
 
 #include <nitro/mi.h>
 
@@ -178,11 +178,11 @@ void func_0202330c(UnkStruct_020d433c *d) {
     u8 n = 0;
     i = 0;
     do {
-        UnkStruct_020c3030::Get();
+        WirelessManager::Get();
         if (i == data_020c4250) {
             d->mUnk_ae = n;
         }
-        if (UnkStruct_020c3030::Get().func_0202f0cc(i)) {
+        if (WirelessManager::Get().func_0202f0cc(i)) {
             d->mUnk_af[n++] = i;
         }
         i++;
@@ -193,11 +193,11 @@ void func_020233f8(UnkStruct_020d433c *d) {
     u8 n = 0;
     u8 i = 0;
     do {
-        UnkStruct_020c3030::Get();
+        WirelessManager::Get();
         if (i == data_020c4250) {
             d->mUnk_ae = n;
         }
-        if (UnkStruct_020c3030::Get().func_0202f0cc(i)) {
+        if (WirelessManager::Get().func_0202f0cc(i)) {
             n++;
         }
         i++;

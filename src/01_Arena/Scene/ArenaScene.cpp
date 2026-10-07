@@ -13,7 +13,7 @@
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
-#include "Unknown/UnkStruct_020c3030.hpp"
+#include "System/WirelessManager.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
@@ -94,7 +94,7 @@ void ArenaScene::func_ov001_022197ec() {
     if (mMode < 2) {
         return;
     }
-    UnkStruct_020c3030::Get().func_0202edd0();
+    WirelessManager::Get().func_0202edd0();
     data_020d433c.mUnk_a8 = 0;
     mUnk_b3 = 1;
     func_ov001_0221c5b0();
@@ -503,10 +503,10 @@ void ArenaScene::func_ov001_0221c5b0() {
 
 u32 ArenaScene::func_ov001_0221c614(u32 unk1) {
     data_0220f540.mUnk_00 = unk1;
-    u32 needed    = UnkStruct_020c3030::Get().func_0202f134();
+    u32 needed    = WirelessManager::Get().func_0202f134();
     u8 count      = 0;
     for (u8 i = 0; i < 4; i++) {
-        u8 *p = UnkStruct_020c3030::Get().func_0202f0cc(i);
+        u8 *p = WirelessManager::Get().func_0202f0cc(i);
         if (p != NULL && *p == unk1) {
             count++;
         }
@@ -566,15 +566,15 @@ void func_0202330c(UnkStruct_020d433c *data);
 #define MINU(a, b) ((u32) (b) > (u32) (a) ? (u32) (a) : (u32) (b))
 void ArenaScene::Update() {
     func_ov001_0221bee8();
-    UnkStruct_020c3030::Get();
+    WirelessManager::Get();
     const u8 *modePtr = &data_020c4258;
     if (IsWirelessMode(modePtr)) {
-        UnkStruct_020c3030::Get();
+        WirelessManager::Get();
         data_0220f540.mUnk_01 = data_020c4230.mUnk_20;
-        UnkStruct_020c3030::Get().func_0202f024(&data_0220f540);
-        UnkStruct_020c3030::Get().func_0202f078(&data_0220f540);
+        WirelessManager::Get().func_0202f024(&data_0220f540);
+        WirelessManager::Get().func_0202f078(&data_0220f540);
     }
-    UnkStruct_020c3030::Get();
+    WirelessManager::Get();
     u8 mode = *modePtr;
     if (mUnk_b3 != 0) {
         if (mode != 0) {
@@ -673,7 +673,7 @@ void ArenaScene::Update() {
                             break;
                         case 1:
                             if (mode == 0) {
-                                UnkStruct_020c3030::Get().func_0202ed3c();
+                                WirelessManager::Get().func_0202ed3c();
                                 data_020d433c.mUnk_a8 = 1;
                             }
                             data_0220f540.mUnk_00 = 0xb;
@@ -711,7 +711,7 @@ void ArenaScene::Update() {
                 for (u8 i = 0; i < 12; i++) {
                     name[i] = data_020d43f0[0].mName[i];
                 }
-                UnkStruct_020c3030::Get().func_0202ee10(3, name, 0x1a, 0);
+                WirelessManager::Get().func_0202ee10(3, name, 0x1a, 0);
                 mMode++;
             }
             break;
@@ -724,7 +724,7 @@ void ArenaScene::Update() {
             }
             u8 count = 1;
             for (u8 i = 0; i < 4; i++) {
-                u8 *p = UnkStruct_020c3030::Get().func_0202f0cc(i);
+                u8 *p = WirelessManager::Get().func_0202f0cc(i);
                 if (p != NULL) {
                     count = i + 1;
                     func_01ff94e0(p + 4, data_020d433c.mNames[i], 0x18);
@@ -748,7 +748,7 @@ void ArenaScene::Update() {
             if (InputManager::Get().IsHeld(1) || menu == 1) {
                 if (mPlayerCount >= 2) {
                     SoundManager::Get().func_020246f8(0);
-                    UnkStruct_020c3030::Get().func_0202f184();
+                    WirelessManager::Get().func_0202f184();
                     mUnk_b6 = 10;
                     mMode   = 7;
                 }
@@ -771,7 +771,7 @@ void ArenaScene::Update() {
             break;
         case 8:
             if (mode >= 1) {
-                UnkStruct_020c3030::Get().func_0202eeb0();
+                WirelessManager::Get().func_0202eeb0();
                 mMode++;
             }
             break;
@@ -783,12 +783,12 @@ void ArenaScene::Update() {
                 func_ov001_0221993c(1);
                 return;
             }
-            u8 count = UnkStruct_020c3030::Get().func_0202ef80() <= 4 ? UnkStruct_020c3030::Get().func_0202ef80() : 4;
+            u8 count = WirelessManager::Get().func_0202ef80() <= 4 ? WirelessManager::Get().func_0202ef80() : 4;
             if (count != 0) {
                 mMenu->mButtons[0].mEnabled = 1;
                 u8 i = 0;
                 do {
-                    UnkStruct_020c3030::Get();
+                    WirelessManager::Get();
                     UnkStruct_020c3938 *e = &data_020c3938[i];
                     if (e != NULL && e->mUnk_68 == 0xfffc) {
                         func_01ff94e0(e->mName, data_020d433c.mNames[i], 0x18);
@@ -838,7 +838,7 @@ void ArenaScene::Update() {
                         for (u8 i = 0; i < 12; i++) {
                             name[i] = data_020d43f0[0].mName[i];
                         }
-                        UnkStruct_020c3030::Get().func_0202eefc(mSelection, name, 0x1a);
+                        WirelessManager::Get().func_0202eefc(mSelection, name, 0x1a);
                         mPlayerCount = 0;
                         func_ov001_0221c5b0();
                         mSlots[2].mVisible = 0;
@@ -869,7 +869,7 @@ void ArenaScene::Update() {
             u8 flag  = 0;
             u8 count = 1;
             for (u8 i = 0; i < 4; i++) {
-                u8 *p = UnkStruct_020c3030::Get().func_0202f0cc(i);
+                u8 *p = WirelessManager::Get().func_0202f0cc(i);
                 if (p != NULL) {
                     count = i + 1;
                     func_01ff94e0(p + 4, data_020d433c.mNames[i], 0x18);
@@ -897,7 +897,7 @@ void ArenaScene::Update() {
         case 12:
             if (func_ov001_0221c614(0xc) != 0) {
                 for (u8 i = 0; i < 4; i++) {
-                    u8 *p = UnkStruct_020c3030::Get().func_0202f0cc(i);
+                    u8 *p = WirelessManager::Get().func_0202f0cc(i);
                     if (p != NULL) {
                         func_01ff94e0(p + 4, data_020d433c.mNames[i], 0x18);
                     }
@@ -913,9 +913,9 @@ void ArenaScene::Update() {
         case 13:
             func_01ff96c4(data_020d43eb, (u8 *) &data_0220f540 + 4, 4);
             if (func_ov001_0221c614(0x18) != 0) {
-                UnkStruct_020c3030::Get();
+                WirelessManager::Get();
                 if (data_020c4230.mUnk_20 != 0) {
-                    func_01ff96c4(UnkStruct_020c3030::Get().func_0202f0cc(0) + 4, data_020d43eb, 4);
+                    func_01ff96c4(WirelessManager::Get().func_0202f0cc(0) + 4, data_020d43eb, 4);
                 }
                 mMode++;
             }

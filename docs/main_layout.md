@@ -68,6 +68,7 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 | 0x0202ab24-0x0202c02c | Graphics/EffectManager.cpp | effect script interpreter (Effect) and EffectManager |
 | 0x0202c02c-0x0202d794 | Text/TextManager.cpp | |
 | 0x0202d794-0x0202db04 | System/MicManager.cpp | microphone sampling ("blow" detection), not text |
+| 0x0202db04-0x0202f420 | System/WirelessManager.cpp | DS wireless (WM) local play: scan, parent/child, send and receive rings |
 | 0x0202f420-0x020305ac | UI/SelectWindowCursor.cpp | |
 | 0x0203dbb0-0x0203de40 | System/FrameTask.cpp | sound/voice task over the CRI library (`TaskBase` has no virtual destructor) |
 | 0x0205b288-0x0205c8f0 | UI/SelectWindow.cpp | |

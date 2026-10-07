@@ -4,7 +4,7 @@
 #include "Game/Random.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "System/SoundManager.hpp"
-#include "Unknown/UnkStruct_020c3030.hpp"
+#include "System/WirelessManager.hpp"
 #include <nitro/math.h>
 
 u32 func_ov007_0221d348(u32 max);
@@ -310,7 +310,7 @@ int BattleSlot::func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 *choice, u8 n, u8
             mUnk_1c--;
             if (mUnk_1c == 0) {
                 u8 other = (u8) (mRole - 2) ^ 1;
-                UnkStruct_020c3030::Get();
+                WirelessManager::Get();
                 if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
                     func_ov007_0223e214(mData, other, 0);
                 } else {

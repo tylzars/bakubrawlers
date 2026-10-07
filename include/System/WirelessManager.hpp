@@ -1,0 +1,162 @@
+#pragma once
+
+#include "global.h"
+#include "types.h"
+
+// Argument handed to the callbacks of the wireless library (its WM callback structures: the first two
+// words are the API id and the error code, the rest depends on the call that completed).
+struct WmCallbackArg {
+    /* 00 */ u16 mUnk_00;
+    /* 02 */ u16 mResult; // 0 = success
+    /* 04 */ u16 mUnk_04;
+    /* 06 */ u16 mUnk_06;
+    /* 08 */ u16 mUnk_08;
+    /* 0a */ u16 mUnk_0a;
+    /* 0c */ u8 *mUnk_0c;
+    /* 10 */ u16 mUnk_10;
+    /* 12 */ u16 mUnk_12;
+    /* 14 */ u8 mUnk_14[24];
+};
+
+#define WM_ENTRY_SIZE 0xc0 // one scanned/listed network record (the wireless library's WMBssDesc with its game info)
+#define WM_ENTRY_COUNT 12
+
+// Scan result of one beacon (the wireless library's WMBssDesc followed by its game info), as far as it is read.
+struct WmEntry {
+    /* 00 */ PAD(0x00, 0x04);
+    /* 04 */ u8 mBssid[6];
+    /* 0a */ PAD(0x0a, 0x3c);
+    /* 3c */ u16 mUnk_3c;
+    /* 3e */ PAD(0x3e, 0x44);
+    /* 44 */ u32 mUnk_44;
+    /* 48 */ PAD(0x48, 0x4b);
+    /* 4b */ u8 mUnk_4b;
+    /* 4c */ PAD(0x4c, 0xc0);
+};
+
+
+// Singleton (instance 0x020c3030, vtable 0x020a5738), constructed on first use. It drives the DS wireless library
+// (local multiplayer: scanning for parents, joining, exchanging 4-byte messages); the library calls at
+// 0x0200f8e8-0x02011c34 are the wireless (WM) library, not CARD.
+class WirelessManager {
+public:
+    /* 0000 */ // vptr
+    /* 0004 */ u32 mUnk_0004; // callback: void (*)(u8 aid, const void *data), run when the link comes up
+    /* 0008 */ WmEntry mUnk_0008[WM_ENTRY_COUNT]; // collected scan results
+    /* 0908 */ WmEntry mUnk_0908[WM_ENTRY_COUNT]; // snapshot handed to the game
+    /* 1208 */ u16 mUnk_1208[WM_ENTRY_COUNT]; // age counter per scan result
+    /* 1220 */ u16 mUnk_1220;
+    /* 1222 */ u16 mUnk_1222; // channel index while a scan is running
+    /* 1224 */ u16 mUnk_1224;
+    /* 1226 */ u16 mUnk_1226;
+    /* 1228 */ volatile u8 mUnk_1228; // mode (6 and 7 are the wireless modes, see IsWirelessMode)
+    /* 1229 */ u8 mUnk_1229;
+    /* 122a */ u8 mUnk_122a; // step of the running mode
+    /* 122b */ u8 mUnk_122b;
+    /* 122c */ u8 mUnk_122c;
+    /* 122d */ u8 mUnk_122d;
+    /* 122e */ u8 mUnk_122e;
+    /* 122f */ u8 mUnk_122f;
+    /* 1230 */ u8 mUnk_1230;
+    /* 1231 */ u8 mUnk_1231[24];
+    /* 1249 */ u8 mUnk_1249;
+    /* 124a */ u8 mUnk_124a;
+    /* 124b */ u8 mUnk_124b;
+    /* 124c */ u8 mUnk_124c;
+    /* 124d */ u8 mUnk_124d;
+    /* 124e */ u8 mUnk_124e;
+    /* 124f */ u8 mUnk_124f;
+    /* 1250 */ u8 mUnk_1250;
+    /* 1251 */ PAD(0x1251, 0x1254);
+    /* 1254 */ s32 mUnk_1254;
+    /* 1258 */
+
+    virtual void func_0202ed28();
+    virtual ~WirelessManager();
+
+    static WirelessManager &Get() {
+        static WirelessManager instance;
+        return instance;
+    }
+
+    void func_0202e4ec();
+    void func_0202e524();
+    void func_0202e544();
+    void func_0202e59c();
+    void func_0202e618();
+    void func_0202e6f8();
+    void func_0202e718();
+    void func_0202e76c();
+    void func_0202e7c8();
+    void func_0202e7fc(u32 unk1);
+    void func_0202e864();
+    void func_0202e9e0();
+    void func_0202ea18();
+    void func_0202ea34();
+    void func_0202ea84();
+    u32 func_0202eb08(void *unk1, u32 unk2);
+    void func_0202eb70();
+    void func_0202ebc4();
+    void func_0202ec74(u32 unk1);
+    void func_0202ec9c(u32 unk1);
+    void func_0202ed00();
+    void func_0202ed2c();
+    void func_0202f1a4(u32 unk1);
+    u32 func_0202f238();
+    void func_0202f244();
+
+    u32 func_0202ed3c();
+    u32 func_0202edd0();
+    u32 func_0202ee10(u32 unk1, void *unk2, u32 unk3, u32 unk4);
+    u32 func_0202eefc(u32 unk1, void *unk2, u32 unk3);
+    u32 func_0202ef80();
+    u32 func_0202eeb0();
+    u32 func_0202f024(void *unk1);
+    u32 func_0202f078(void *unk1);
+    u8 *func_0202f0cc(u32 unk1);
+    u32 func_0202f134();
+    void func_0202f184();
+};
+
+struct UnkStruct_020c4030 {
+    /* 000 */ PAD(0x000, 0x228);
+    /* 228 */ u8 mUnk_228;
+};
+
+extern UnkStruct_020c4030 data_020c4030;
+extern u8 data_020c4258; // the same byte as data_020c4030.mUnk_228
+// Communication mode 6 and 7 are the wireless modes.
+static inline BOOL IsWirelessMode(const u8 *mode) {
+    switch (*mode) {
+        case 6:
+        case 7:
+            return TRUE;
+    }
+    return FALSE;
+}
+
+struct UnkStruct_0220f540 {
+    /* 00 */ u8 mUnk_00;
+    /* 01 */ u8 mUnk_01;
+    /* 02 */ PAD(0x02, 0x04);
+    union {
+        /* 04 */ u32 mUnk_04;
+        struct {
+            /* 04 */ u16 mKeys;
+            /* 06 */ u8 mUnk_06;
+            /* 07 */ u8 mUnk_07;
+            /* 08 */ u8 mUnk_08;
+            /* 09 */ u8 mUnk_09;
+            /* 0a */ PAD(0x0a, 0x0b);
+            /* 0b */ u8 mUnk_0b;
+            /* 0c */ u8 mUnk_0c;
+            /* 0d */ u8 mUnk_0d;
+            /* 0e */ u8 mUnk_0e;
+            /* 0f */ u8 mUnk_0f;
+            /* 10 */ PAD(0x10, 0x1f);
+            /* 1f */ u8 mUnk_1f;
+        };
+    };
+};
+
+extern UnkStruct_0220f540 data_0220f540;

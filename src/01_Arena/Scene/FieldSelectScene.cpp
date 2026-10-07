@@ -16,7 +16,7 @@
 #include "Unknown/UnkStruct_02078290.hpp"
 #include "Unknown/UnkStruct_020651bc.hpp"
 #include "System/FrameTask.hpp"
-#include "Unknown/UnkStruct_020c3030.hpp"
+#include "System/WirelessManager.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
@@ -122,16 +122,16 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     MI_CpuClear32(mUnk_30c, sizeof(mUnk_30c));
     MI_CpuFill8(mUnk_2d2, 0, sizeof(mUnk_2d2));
     MI_CpuFill8(mUnk_2e4, 0, sizeof(mUnk_2e4));
-    UnkStruct_020c3030::Get();
+    WirelessManager::Get();
     const u8 *mode = &data_020c4258;
     if (IsWirelessMode(mode)) {
-        mUnk_32a = mUnk_32b = UnkStruct_020c3030::Get().func_0202f134();
+        mUnk_32a = mUnk_32b = WirelessManager::Get().func_0202f134();
     } else {
         mUnk_32b = 1;
         mUnk_32a = 2;
     }
     mUnk_333 = 1;
-    UnkStruct_020c3030::Get();
+    WirelessManager::Get();
     if (IsWirelessMode(mode)) {
         mUnk_33b = data_020d433c.mUnk_ae;
         if (mUnk_33b != 0) {
@@ -185,7 +185,7 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     }
     mUnk_25c[1] = 3;
     if (mUnk_33a == 0) {
-        UnkStruct_020c3030::Get();
+        WirelessManager::Get();
         if (IsWirelessMode(mode)) {
             mUnk_2ed[0] = 5;
             n++;
@@ -306,7 +306,7 @@ void FieldSelectScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            UnkStruct_020c3030::Get();
+            WirelessManager::Get();
             if (IsWirelessMode(&data_020c4030.mUnk_228)) {
                 mState++;
             } else {
@@ -330,7 +330,7 @@ void FieldSelectScene::Update() {
             ctx->x                 = ctx->mul * ctx->x + ctx->add;
             data_0220f540.mUnk_04  = (u32) (ctx->x >> 32);
             if (func_ov001_02221aa8(2)) {
-                u8 *p = UnkStruct_020c3030::Get().func_0202f0cc(0);
+                u8 *p = WirelessManager::Get().func_0202f0cc(0);
                 if (p != NULL) {
                     func_020219ec(*(u32 *) (p + 4));
                 }
@@ -354,11 +354,11 @@ void FieldSelectScene::Update() {
             break;
         }
         case 6:
-            UnkStruct_020c3030::Get().func_0202edd0();
+            WirelessManager::Get().func_0202edd0();
             mState++;
             break;
         case 7:
-            UnkStruct_020c3030::Get();
+            WirelessManager::Get();
             if (data_020c4030.mUnk_228 == 0) {
                 mState++;
             }
@@ -773,7 +773,7 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 mPanel[0]->func_02065204(p, -1, 0, 0);
                 mPanel[1]->func_02065204(p, -1, 0, 0);
                 func_ov001_02226bf8(p);
-                UnkStruct_020c3030::Get();
+                WirelessManager::Get();
                 if (IsWirelessMode(&data_020c4258) && p < mUnk_32b) {
                     func_ov001_022267d0(p);
                 }
@@ -973,15 +973,15 @@ void FieldSelectScene::func_ov001_0221fa94() {
 }
 
 BOOL FieldSelectScene::func_ov001_02221aa8(u32 unk1) {
-    UnkStruct_020c3030::Get();
+    WirelessManager::Get();
     if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
         return TRUE;
     }
-    u32 count = UnkStruct_020c3030::Get().func_0202f134();
+    u32 count = WirelessManager::Get().func_0202f134();
     u8 matches = 0;
     u8 i       = 0;
     do {
-        u8 *p = UnkStruct_020c3030::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
+        u8 *p = WirelessManager::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
         if (p != NULL && *p == unk1) {
             matches++;
         }
@@ -997,10 +997,10 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
     data_0220f540.mUnk_0e = data_020d43f0[0].mUnk_27;
     data_0220f540.mUnk_0f = data_020d43f0[0].mUnk_5bf_0;
     if (func_ov001_02221aa8(0x17)) {
-        u32 count = UnkStruct_020c3030::Get().func_0202f134();
+        u32 count = WirelessManager::Get().func_0202f134();
         u8 i      = 0;
         do {
-            u8 *p = UnkStruct_020c3030::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
+            u8 *p = WirelessManager::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
             if (p != NULL) {
                 for (u8 j = 0; j < 0x12; j++) {
                     if (j == 0 || j == 0x11) {
@@ -1053,10 +1053,10 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
 BOOL FieldSelectScene::func_ov001_02221f1c() {
     MI_CpuCopy8(data_020d4404, (u8 *) &data_0220f540 + 4, 8);
     if (func_ov001_02221aa8(6)) {
-        u32 count = UnkStruct_020c3030::Get().func_0202f134();
+        u32 count = WirelessManager::Get().func_0202f134();
         u8 i      = 0;
         do {
-            u8 *p = UnkStruct_020c3030::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
+            u8 *p = WirelessManager::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
             if (p != NULL) {
                 MI_CpuCopy8(p + 4, mUnk_14c + i * 8, 8);
             }
@@ -1069,7 +1069,7 @@ BOOL FieldSelectScene::func_ov001_02221f1c() {
 
 void FieldSelectScene::func_ov001_02222040() {
     if (data_020d433c.mUnk_a8 != 0) {
-        UnkStruct_020c3030::Get();
+        WirelessManager::Get();
         if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
             if (!((mState != 0) & (mState < 6))) {
                 return;
@@ -1091,19 +1091,19 @@ void FieldSelectScene::func_ov001_02222040() {
         }
     }
     u8 i;
-    UnkStruct_020c3030::Get();
+    WirelessManager::Get();
     const u8 *mode = &data_020c4258;
     if (IsWirelessMode(mode)) {
-        UnkStruct_020c3030::Get();
+        WirelessManager::Get();
         data_0220f540.mUnk_01 = data_020c4230.mUnk_20;
-        UnkStruct_020c3030::Get().func_0202f024(&data_0220f540);
-        UnkStruct_020c3030::Get().func_0202f078(&data_0220f540);
+        WirelessManager::Get().func_0202f024(&data_0220f540);
+        WirelessManager::Get().func_0202f078(&data_0220f540);
     }
-    UnkStruct_020c3030::Get();
+    WirelessManager::Get();
     if (IsWirelessMode(mode)) {
         i = 0;
         do {
-            u8 *p = UnkStruct_020c3030::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
+            u8 *p = WirelessManager::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
             if (p != NULL) {
                 if (p[0] == 0xd) {
                     mInput[i].mTouching = p[6];
@@ -1151,7 +1151,7 @@ void FieldSelectScene::func_ov001_02222040() {
                 switch (r) {
                     case 1:
                     case 2:
-                        UnkStruct_020c3030::Get();
+                        WirelessManager::Get();
                         if (IsWirelessMode(mode)) {
                             NET_KEYS |= 2;
                         } else {
@@ -1170,7 +1170,7 @@ void FieldSelectScene::func_ov001_02222040() {
                 BOOL r = mWindows[1]->Update(1);
                 switch (r) {
                     case 1:
-                        UnkStruct_020c3030::Get();
+                        WirelessManager::Get();
                         if (IsWirelessMode(mode)) {
                             NET_KEYS |= 1;
                         } else {
@@ -1178,7 +1178,7 @@ void FieldSelectScene::func_ov001_02222040() {
                         }
                         break;
                     case 2:
-                        UnkStruct_020c3030::Get();
+                        WirelessManager::Get();
                         if (IsWirelessMode(mode)) {
                             NET_KEYS |= 2;
                         } else {
@@ -1186,7 +1186,7 @@ void FieldSelectScene::func_ov001_02222040() {
                         }
                         break;
                     default:
-                        UnkStruct_020c3030::Get();
+                        WirelessManager::Get();
                         if (IsWirelessMode(mode)) {
                             if (NET_KEYS & 1) {
                                 NET_KEYS -= 1;
@@ -1206,7 +1206,7 @@ void FieldSelectScene::func_ov001_02222040() {
                 }
                 u8 sel = mWindows[1]->mCursor->mSelection;
                 if (sel < 3) {
-                    UnkStruct_020c3030::Get();
+                    WirelessManager::Get();
                     if (IsWirelessMode(mode)) {
                         NET_BYTE(11) = sel;
                     } else {
@@ -1218,7 +1218,7 @@ void FieldSelectScene::func_ov001_02222040() {
                 if (r != 0) {
                     switch (r) {
                         case 1:
-                            UnkStruct_020c3030::Get();
+                            WirelessManager::Get();
                             if (!IsWirelessMode(mode)) {
                                 mInput[0].mUnk_0e = 1;
                             } else {
@@ -1226,7 +1226,7 @@ void FieldSelectScene::func_ov001_02222040() {
                             }
                             break;
                         case 2:
-                            UnkStruct_020c3030::Get();
+                            WirelessManager::Get();
                             if (IsWirelessMode(mode)) {
                                 if (mUnk_33d != 0) {
                                     if (!(NET_KEYS & 2)) {
@@ -1251,7 +1251,7 @@ void FieldSelectScene::func_ov001_02222040() {
                         u8 r2 = mWindows[3]->Update(0);
                         if (r2 != 0) {
                             if (r2 == 1) {
-                                UnkStruct_020c3030::Get();
+                                WirelessManager::Get();
                                 if (IsWirelessMode(mode)) {
                                     NET_BYTE(13) = 1;
                                 } else {
@@ -1264,7 +1264,7 @@ void FieldSelectScene::func_ov001_02222040() {
                 }
             } else {
                 if (mUnk_2ed[mUnk_329] == 2) {
-                    UnkStruct_020c3030::Get();
+                    WirelessManager::Get();
                     if (IsWirelessMode(mode)) {
                                                 if (mInput[mUnk_33b].mUnk_0a != 0) {
                             if (mInput[mUnk_33b].mUnk_0d == 0) {
@@ -1592,7 +1592,7 @@ BOOL FieldSelectScene::func_ov001_022237d0(u32 slot) {
         }
     }
     if (idx == 0) {
-        UnkStruct_020c3030::Get();
+        WirelessManager::Get();
         if (IsWirelessMode(&data_020c4030.mUnk_228)) {
             return slot >= mUnk_32b;
         }
@@ -1632,7 +1632,7 @@ BOOL FieldSelectScene::func_ov001_02223914() {
                     }
                     if (mInput[slot].mUnk_06 != 0) {
                         mPanel[0]->func_02065204(slot, -1, 0, 0);
-                        UnkStruct_020c3030::Get();
+                        WirelessManager::Get();
                         if (IsWirelessMode(mode)) {
                             if (slot >= mUnk_32b) {
                                 func_ov001_02226bf8(slot);
@@ -1653,7 +1653,7 @@ BOOL FieldSelectScene::func_ov001_02223914() {
                 } else {
                     if (mInput[i].mUnk_06 != 0) {
                         mPanel[0]->func_02065204(i, -1, 0, 0);
-                        UnkStruct_020c3030::Get();
+                        WirelessManager::Get();
                         if (IsWirelessMode(mode)) {
                             if (i >= mUnk_32b) {
                                 func_ov001_02226bf8(i);
@@ -2704,7 +2704,7 @@ void FieldSelectScene::func_ov001_022267d0(u32 slot) {
     if (id == 0x15) {
         useName = 1;
     } else {
-        UnkStruct_020c3030::Get();
+        WirelessManager::Get();
         if (IsWirelessMode(&data_020c4030.mUnk_228)) {
             if (slot < mUnk_32b) {
                 useName = 1;
@@ -2789,7 +2789,7 @@ u32 FieldSelectScene::func_ov001_02226d48(u32 id) {
 
 // non-matching: the original keeps i in r5 and tests the loaded value directly.
 void FieldSelectScene::func_ov001_02226d74() {
-    UnkStruct_020c3030::Get();
+    WirelessManager::Get();
     if (IsWirelessMode(&data_020c4030.mUnk_228)) {
         u8 i = mUnk_32b;
         if (i < mUnk_32a) {

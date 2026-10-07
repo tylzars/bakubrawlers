@@ -109,6 +109,10 @@ src/Main/Text/TextManager.cpp:
 src/Main/System/MicManager.cpp:
     .text       start:0x0202d794 end:0x0202db04
 
+// provisional: code only; .data 0x020a5730-0x020a5784 and .bss 0x0220f560-0x02210fdc belong here.
+src/Main/System/WirelessManager.cpp:
+    .text       start:0x0202db04 end:0x0202f420
+
 // provisional: code only; constructor, 0x0202f468 and 0x0202f61c are not decompiled.
 src/Main/UI/SelectWindowCursor.cpp:
     .text       start:0x0202f420 end:0x020305ac

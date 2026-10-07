@@ -6,7 +6,7 @@
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 #include "System/TouchManager.hpp"
-#include "Unknown/UnkStruct_020c3030.hpp"
+#include "System/WirelessManager.hpp"
 #include <nitro/fx.h>
 #include <stdio.h>
 
@@ -104,7 +104,7 @@ void ConfrontEmblem06::func_ov007_02221884() {
                 mAnims[1]->Draw(1, (s32) mUnk_10, (s32) mUnk_14, 0);
                 return;
             }
-            UnkStruct_020c3030::Get();
+            WirelessManager::Get();
             if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
                 func_ov007_02221c68();
             }

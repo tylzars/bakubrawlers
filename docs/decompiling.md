@@ -16,7 +16,8 @@ Lessons from getting functions to match exactly. Compiler and flags: see `compil
    by its bytes and reads every referenced address from the original code, so `symbols.txt` follows the source.
    A non-matching function of the same size can be placed with `--assume <mangled>=<addr>`.
 5. Statics of inline functions (`_ZGVZ…`, `_ZZ…`, e.g. singleton instances and guards) are defined by every file
-   that uses them; mark them `weak` in `symbols.txt` so the build keeps the original copy (`tools/delink_multidef.py`).
+   that uses them. Mark them `weak` in `symbols.txt`. Compiled objects get their copies demoted to weak as well
+   (`tools/demote_multidef.py`, run by the build), so main's original copy wins when a file is linked.
 6. `ninja objdiff report` shows per-function and per-section results. When everything matches, add `complete`
    to the delinks entry and run `ninja`; the ROM must still match.
 
@@ -24,11 +25,18 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
 
 ## Known open problems
 
-- **Order of identical string literals.** With `-str noreuse`, several copies of one literal (e.g. a path repeated
-  in a table) are emitted in an order that depends on unrelated context in the file, apparently through the
-  compiler's internal hashing. `GameOverScene.cpp`'s result-window table emits its five copies in a different order
-  than the original. The tables and code are otherwise identical.
-
+- **Order of identical string literals.** With `-str noreuse`, every copy of a literal gets its own object
+  (`@N`, in its own `.data` section). The compiler emits the copies of one string in a permuted order, and the
+  linker keeps that section order. `GameOverScene.cpp`'s result-window table uses five copies of one path;
+  table entries 0..4 point at copies 4 2 0 1 3 (in emission order) where the original has 2 4 3 1 0. This is the
+  only thing stopping that unit from linking (`complete`). What is known:
+  - The permutation is stable under renaming, under extra declarations or literal-using functions placed
+    before the tables, under `-sym on/off` and under small edits inside other functions.
+  - It changes when whole functions are removed (even ones without strings, e.g. the destructor), when the
+    tables move into functions, and when other tables of identical strings are added or moved.
+  - Named `char[]` arrays instead of literals are permuted the same way, so they are not a way around it.
+  `build/lit/both.py`-style probing (compile, read the relocations of the table, rank the target sections) is the
+  quickest way to test ideas.
 - **Guard load hoisted above a `TextManager` field store.** Before a second `TextManager::Get()`, the original
   loads the guard word before the `mUnk_5b` store (`StoreScene::PrintStatus`, `MapScene::LoadPanelText2`,
   ov000 `0221b9e8`). Changing the field to `bool`, writing through a reference or reordering the statements does

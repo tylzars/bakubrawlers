@@ -141,7 +141,7 @@ w(f"rule extract\n  command = {DSD} rom extract --rom $in --output-path $outdir 
 w(f"rule delink\n  command = {DSD} delink -c $config && {PY} tools/delink_multidef.py $out\n  description = DELINK\n")
 w(f"rule lcf\n  command = {DSD} lcf -c $config && {PY} tools/lcf_force_active.py $lcf_raw $lcf_final --config-dir {config_dir}\n  description = LCF\n")
 w(f"rule mwcc\n  command = {WINE} $cc {' '.join(CC_FLAGS)} $cc_flags {' '.join('-i ' + d for d in include_dirs)} "
-  f"-d version_{ver.upper()} -MD -c $in -o $outdir && {PY} tools/transform_dep.py $basefile.d $basefile.d\n"
+  f"-d version_{ver.upper()} -MD -c $in -o $outdir && {PY} tools/transform_dep.py $basefile.d $basefile.d && {PY} tools/demote_multidef.py $out\n"
   f"  depfile = $basefile.d\n  deps = gcc\n  description = MWCC $in\n")
 w(f"rule mwld\n  command = {WINE} {LD} {' '.join(LD_FLAGS)} @$objects $lcf -o $out\n  description = LINK $out\n")
 w(f"rule disassemble\n  command = {DSD} dis -c $config -a $outdir --ual && touch $out\n  description = DIS\n")
@@ -188,7 +188,7 @@ for src in sources:
     compiled_objects.append(str(obj))
     cc = next((str(MWCC_ROOT / v / "mwccarm.exe") for prefix, v in PATH_COMPILERS.items()
                if str(src).startswith(prefix)), CC)
-    build(str(obj), "mwcc", [str(src)], implicit=[cc] + tool_outputs, variables={
+    build(str(obj), "mwcc", [str(src)], implicit=[cc, "tools/demote_multidef.py"] + tool_outputs, variables={
         "cc": cc,
         "cc_flags": "-lang=c++" if src.suffix == ".cpp" else "-lang=c",
         "outdir": str(obj.parent),

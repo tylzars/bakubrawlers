@@ -164,6 +164,35 @@ static inline void G2S_BlendNone(void) {
     reg_G2S_DB_BLDCNT = 0;
 }
 
+static inline void G2_SetWnd0Position(int x1, int y1, int x2, int y2) {
+    reg_G2_WIN0H = (u16) ((x1 << 8) | x2);
+    reg_G2_WIN0V = (u16) ((y1 << 8) | y2);
+}
+static inline void G2_SetWnd1Position(int x1, int y1, int x2, int y2) {
+    reg_G2_WIN1H = (u16) ((x1 << 8) | x2);
+    reg_G2_WIN1V = (u16) ((y1 << 8) | y2);
+}
+static inline void G2_SetWnd0InsidePlane(int wnd, BOOL effect) {
+    u32 value = (reg_G2_WININ & ~G2_WINOUT_PLANE_MASK) | ((u32) wnd << 0);
+    if (effect) {
+        value |= G2_WINOUT_EFFECT;
+    }
+    reg_G2_WININ = (u16) value;
+}
+static inline void G2_SetWnd1InsidePlane(int wnd, BOOL effect) {
+    u32 value = (reg_G2_WININ & ~(G2_WINOUT_PLANE_MASK << 8)) | ((u32) wnd << 8);
+    if (effect) {
+        value |= (G2_WINOUT_EFFECT << 8);
+    }
+    reg_G2_WININ = (u16) value;
+}
+static inline void G2_SetWndOBJInsidePlane(int wnd, BOOL effect) {
+    u32 value = (reg_G2_WINOUT & ~(G2_WINOUT_PLANE_MASK << 8)) | ((u32) wnd << 8);
+    if (effect) {
+        value |= (G2_WINOUT_EFFECT << 8);
+    }
+    reg_G2_WINOUT = (u16) value;
+}
 static inline void G2S_SetWnd0Position(int x1, int y1, int x2, int y2) {
     reg_G2S_DB_WIN0H = (u16) ((x1 << 8) | x2);
     reg_G2S_DB_WIN0V = (u16) ((y1 << 8) | y2);

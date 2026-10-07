@@ -46,7 +46,7 @@ struct WindowItem {
 struct SelectWindowCursor {
     /* 00 */ WindowItem *mItems;
     /* 04 */ u8 mCount;
-    /* 05 */ PAD(0x05, 0x06);
+    /* 05 */ s8 mUnk_05;
     /* 06 */ s8 mSelection;
     /* 07 */ PAD(0x07, 0x0b);
     /* 0b */ u8 mUnk_0b;
@@ -74,17 +74,17 @@ class SelectWindow {
 public:
     /* 000 (vtable) */
     /* 004 */ SelectWindowCursor *mCursor;
-    /* 008 */ CellAnimation *mCells[6];
-    /* 020 */ PAD(0x020, 0x061);
+    /* 008 */ CellAnimation *mCells[16];
+    /* 048 */ PAD(0x048, 0x061);
     /* 061 */ u8 mUnk_061;
     /* 062 */ PAD(0x062, 0x064);
     /* 064 */ u8 mUnk_064;
     /* 065 */ u8 mUnk_065;
     /* 066 */ PAD(0x066, 0x080);
-    /* 080 */ Vec2s mCellPos[6];
-    /* 098 */ PAD(0x098, 0x0e8);
-    /* 0e8 */ WindowButton mButtons[7];
-    /* 13c */ PAD(0x13c, 0x1ec);
+    /* 080 */ Vec2s mCellPos[16];
+    /* 0c0 */ PAD(0x0c0, 0x0e8);
+    /* 0e8 */ WindowButton mButtons[8];
+    /* 148 */ PAD(0x148, 0x1ec);
     /* 1ec */
 
     SelectWindow(u32 itemCount, const WindowItemRecord *items, s32 unk3);

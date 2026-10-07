@@ -57,6 +57,14 @@ public:
     u32 GlyphCount(u32 count) {
         return count;
     }
+    // Glyph slots needed for a width x height tile area, from Init's flags argument (tile unit sizes in its nibbles).
+    u16 GlyphCount(u32 width, u32 height, s32 flags) {
+        u16 unitX  = (flags & 0xf) << 4;
+        u16 unitY  = ((flags >> 4) & 0xf) << 4;
+        s32 countX = (unitY + width * 8 - 1) / unitY;
+        s32 countY = (unitX + height * 8 - 1) / unitX;
+        return countX * countY;
+    }
 
     void Init(void *glyphs, u32 unk2, u32 unk3, u32 width, u32 height, u32 unk6);
     void SetColor(u32 unk1, u32 unk2, u32 unk3);

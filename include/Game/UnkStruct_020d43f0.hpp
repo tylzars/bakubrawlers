@@ -27,7 +27,8 @@ struct UnkStruct_020d43f0 {
     /* 02a */ u16 mName[12]; // player name, UTF-16
     /* 042 */ volatile u8 mUnk_42; // reloaded after a switch on it (ov002 0221e984)
     /* 043 */ u8 mUnk_43;
-    /* 044 */ PAD(0x044, 0x578);
+    /* 044 */ u32 mPlayFrames; // play time in frames (60 per second)
+    /* 048 */ PAD(0x048, 0x578);
     /* 578 */ u8 mUnk_578;
     /* 579 */ PAD(0x579, 0x5b8);
     /* 5b8 */ u8 mUnk_5b8;

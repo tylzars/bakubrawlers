@@ -49,6 +49,7 @@ BattleSideHelper::BattleSideHelper(u8 index, u8 unk2, BattleEntry *entries) {
     }
 }
 
+// non-matching: 4 bytes short: the original materialises a fresh zero before each zero store.
 BOOL BattleSideHelper::func_ov007_02223638(int side, u8 n) {
     if (mUnk_04 == 0) {
         return 0;

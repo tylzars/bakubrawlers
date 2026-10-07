@@ -16,6 +16,7 @@ void func_ov007_02225354(float x, float y, float *out);
 int func_ov007_022252d0(int x1, int y1, int x2, int y2);
 
 
+// non-matching: layer and charBase in swapped registers (r6/r5).
 BattleObj01::BattleObj01(int layer, u32 charBase) {
     mActive = 0;
     mUnk_05 = 0;

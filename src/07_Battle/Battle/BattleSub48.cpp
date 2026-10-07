@@ -16,6 +16,7 @@ extern u8 data_ov007_022790c0[];
 int func_ov007_022252d0(int x1, int y1, int x2, int y2);
 void func_ov007_02225354(float x, float y, float *out);
 
+// non-matching: register naming only.
 BattleSub48::BattleSub48(BattleData *data, u8 mode)
     : SceneBase(2, 0) {
     BattleEntry *entries = data->mEntries;
@@ -126,6 +127,7 @@ void BattleSub48::func_ov007_02224270() {
     ChangeDir("/");
 }
 
+// non-matching: kind, other, i, entries and screen in different registers.
 void BattleSub48::func_ov007_02224444() {
     func_ov007_02224270();
     BattleEntry *entries = mUnk_40->mEntries;
@@ -348,6 +350,7 @@ int func_ov007_022252d0(int x1, int y1, int x2, int y2) {
     return (int) ((float) FX_Sqrt(FX32_CONST((float) sq)) / 4096.0f);
 }
 
+// non-matching: stack-slot order and one r8/r9 swap.
 void BattleSub48::func_ov007_02224c90() {
     mAnims[13]->Draw(0, 0x6e, (s16) mUnk_16, 1);
     u8 i = 0;
@@ -395,6 +398,7 @@ void BattleSub48::func_ov007_02224ef8() {
     } while (i < 2);
 }
 
+// non-matching: the original reloads xs[i] around the draw calls; registers differ.
 void BattleSub48::func_ov007_02224fdc() {
     s16 y = mUnk_38;
     s16 xs[2];

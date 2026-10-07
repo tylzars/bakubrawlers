@@ -20,6 +20,7 @@ extern u8 data_ov007_02278d7c[];
 extern u8 data_ov007_02278d7d[];
 extern u8 data_ov007_02278d7e[];
 
+// non-matching: this and the vtable temporary have swapped registers (r5/r4).
 BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8 unk6, BattleParam *param, u8 unk8) {
     mMode = mode;
     mCharacter = unk4;
@@ -296,6 +297,7 @@ u32 BattleSlot::func_ov007_022230b4(u16 value, u8 n) {
     return value;
 }
 
+// non-matching: the original spills data and keeps choice in r6; here it is the reverse.
 int BattleSlot::func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 *choice, u8 n, u8 *d) {
     int role = mRole;
     if (role == 4) {

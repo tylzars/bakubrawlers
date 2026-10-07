@@ -73,6 +73,10 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   original's `mov r0, #8; bl _ffltu`.
 - **Inlined SDK setters.** A 36-byte copy into 0x02211430 followed by calls to 0x020322c0/0x020322f0 is the
   inline `NNS_G3dGlbSetBaseRot`/`Trans`/`Scale`: `MI_Copy36B` (0x01ff95c4) copies the 3x3 rotation.
+- **Flag from a condition.** `if (c) { x = 0; } else { x = 1; }` as statements can give the original's
+  `moveq`/`movne` order where `x = c ? 0 : 1` gives the reverse (`func_02023708`).
+- **Narrow read-modify-write toggles.** `f++; f &= 1;` as two statements on a `u8` field matches where a temporary
+  (`u8 t = f + 1; f = t & 1;`) keeps the add in its own register (`UnkStruct_02065c40::Update`).
 - **Declare return values.** A function declared `void` that really returns a value changes the caller's
   register allocation: `func_02025b64` returns `offset + size`, and declaring it `u32` (callers ignore the result)
   fixed runs of loads that kept a zero in a callee-saved register.

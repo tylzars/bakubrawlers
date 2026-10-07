@@ -54,7 +54,8 @@ public:
     /* 38 */ u8 mUnk_38;
     /* 39 */ PAD(0x39, 0x3a);
     /* 3a */ u16 mUnk_3a;
-    /* 3c */ PAD(0x3c, 0x54);
+    /* 3c */ VecFx32 mUnk_3c;
+    /* 48 */ VecFx32 mUnk_48;
     /* 54 */ VecFx32 mUnk_54;
     /* 60 */ u8 mUnk_60;
     /* 61 */ u8 mUnk_61;
@@ -62,8 +63,8 @@ public:
     /* 62 */ u8 mUnk_62_1 : 1;
     /* 62 */ u8 mUnk_62_2 : 1;
     /* 63 */ u8 mUnk_63;
-    /* 64 */ u32 mUnk_64;
-    /* 68 */ u32 mUnk_68;
+    /* 64 */ s32 mUnk_64;
+    /* 68 */ s32 mUnk_68;
     /* 6c */ u16 mUnk_6c;
     /* 6e */ u16 mUnk_6e;
     /* 70 */ u8 mUnk_70;

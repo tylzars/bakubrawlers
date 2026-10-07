@@ -28,7 +28,6 @@ struct BattlePanel {
 
 // The four player panels of the battle upper screen (battle_u files). No vtable, 0x100 bytes.
 class BattleStatusPanels;
-extern "C" void func_ov007_02235480(BattleStatusPanels *panels); // not decompiled; same declaration as BattleCommandMap.cpp
 
 class BattleStatusPanels {
 public:

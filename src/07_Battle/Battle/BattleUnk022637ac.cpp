@@ -777,25 +777,23 @@ u8 BattleUnk022637ac::func_ov007_02266868() {
     return done;
 }
 
-// Effect placement of a field (0x24 bytes): position, three unknown values and a scale.
+// Effect placement of a field (0x24 bytes): position, camera position and a scale.
 struct BattleUnk022637acEffect {
     /* 00 */ VecFx32 mPos;
-    /* 0c */ fx32 mUnk_0c;
-    /* 10 */ fx32 mUnk_10;
-    /* 14 */ fx32 mUnk_14;
+    /* 0c */ VecFx32 mCamera;
     /* 18 */ VecFx32 mScale;
     /* 24 */
 };
 
 static const BattleUnk022637acEffect data_ov007_0227ab00[8] = {
-    {{0, 0x5000, 0}, 0, 0x140000, 0xf0000, {0x9000, 0xa000, 0x9000}},
-    {{0, 0x5000, 0}, 0, 0x15e000, 0x15e000, {0xc000, 0xa000, 0xc000}},
-    {{0, 0x5000, 0}, 0, 0x1f4000, 0x1f4000, {0x11800, 0xa000, 0x11800}},
-    {{0, 0x5000, 0}, 0, 0x118000, 0x118000, {0x9800, 0xa000, 0x9800}},
-    {{0, 0x5000, 0}, 0, 0x1c2000, 0x1c2000, {0xf800, 0xa000, 0xf800}},
-    {{0, 0x5000, 0}, 0, 0x1f4000, 0x1f4000, {0x11000, 0xa000, 0x11000}},
-    {{0, 0x5000, 0}, 0, 0x1f4000, 0x1f4000, {0x12000, 0xa000, 0x12000}},
-    {{0, 0x5000, 0}, 0, 0x208000, 0x208000, {0x12000, 0xa000, 0x12000}},
+    {{0, 0x5000, 0}, {0, 0x140000, 0xf0000}, {0x9000, 0xa000, 0x9000}},
+    {{0, 0x5000, 0}, {0, 0x15e000, 0x15e000}, {0xc000, 0xa000, 0xc000}},
+    {{0, 0x5000, 0}, {0, 0x1f4000, 0x1f4000}, {0x11800, 0xa000, 0x11800}},
+    {{0, 0x5000, 0}, {0, 0x118000, 0x118000}, {0x9800, 0xa000, 0x9800}},
+    {{0, 0x5000, 0}, {0, 0x1c2000, 0x1c2000}, {0xf800, 0xa000, 0xf800}},
+    {{0, 0x5000, 0}, {0, 0x1f4000, 0x1f4000}, {0x11000, 0xa000, 0x11000}},
+    {{0, 0x5000, 0}, {0, 0x1f4000, 0x1f4000}, {0x12000, 0xa000, 0x12000}},
+    {{0, 0x5000, 0}, {0, 0x208000, 0x208000}, {0x12000, 0xa000, 0x12000}},
 };
 
 void func_0202bf18(EffectManager *manager, u16 handle, VecFx32 *scale);
@@ -928,4 +926,292 @@ u8 BattleUnk022637ac::func_ov007_02266a28() {
         }
     }
     return done;
+}
+
+void func_ov007_0226a380(BattlePlayer *player, u8 record, int unk);
+
+void func_ov007_02267098(BattleUnk022637ac *self) {
+    u16 angle   = self->mUnk_3a;
+    Camera *cam = self->mUnk_30;
+    int idx     = angle >> 4;
+    s32 sinV    = FX_SinCosTable_[idx * 2 + 1];
+    s32 cosV    = FX_SinCosTable_[idx * 2];
+    fx32 x      = cam->mTarget.x + sinV * 65;
+    fx32 z      = cam->mTarget.z + cosV * 65;
+    self->mUnk_3a = angle + 100;
+    cam         = self->mUnk_30;
+    cam->mPosition.x = x;
+    cam->mPosition.y = 0xc000;
+    cam->mPosition.z = z;
+}
+
+BOOL func_ov007_02267100(BattleUnk022637ac *self) {
+    BOOL done = 0;
+    VecFx32 tmp;
+    VecFx32 d1;
+    VecFx32 d2;
+    Camera *cam;
+    const BattleUnk022637acEffect *entry = &data_ov007_0227ab00[data_020d433c.mUnk_95];
+    switch (self->mUnk_38) {
+        case 0:
+            cam   = self->mUnk_30;
+            tmp.x = cam->mPosition.x;
+            tmp.y = cam->mPosition.y;
+            tmp.z = cam->mPosition.z;
+            VEC_Subtract(&entry->mCamera, &tmp, &d1);
+            cam   = self->mUnk_30;
+            tmp.x = cam->mTarget.x;
+            tmp.y = cam->mTarget.y;
+            tmp.z = cam->mTarget.z;
+            VEC_Subtract(&entry->mPos, &tmp, &d2);
+            self->mUnk_3c.x = d1.x / 70;
+            self->mUnk_3c.y = d1.y / 70;
+            self->mUnk_3c.z = d1.z / 70;
+            self->mUnk_48.x = d2.x / 70;
+            self->mUnk_48.y = d2.y / 70;
+            self->mUnk_48.z = d2.z / 70;
+            self->mUnk_38++;
+        case 1:
+            cam  = self->mUnk_30;
+            d1.x = cam->mPosition.x;
+            d1.y = cam->mPosition.y;
+            d1.z = cam->mPosition.z;
+            cam  = self->mUnk_30;
+            d2.x = cam->mTarget.x;
+            d2.y = cam->mTarget.y;
+            d2.z = cam->mTarget.z;
+            VEC_Add(&d1, &self->mUnk_3c, &d1);
+            VEC_Add(&d2, &self->mUnk_48, &d2);
+            cam                = self->mUnk_30;
+            cam->mPosition.x   = d1.x;
+            cam->mPosition.y   = d1.y;
+            cam->mPosition.z   = d1.z;
+            cam                = self->mUnk_30;
+            cam->mTarget.x     = d2.x;
+            cam->mTarget.y     = d2.y;
+            cam->mTarget.z     = d2.z;
+            self->mUnk_1a++;
+            if (self->mUnk_1a > 0x46) {
+                self->mUnk_1a = 0;
+                self->mUnk_38 = 0;
+                done          = 1;
+            }
+            break;
+    }
+    return done;
+}
+
+BOOL func_ov007_02267304(BattleUnk022637ac *self, VecFx32 *out) {
+    BOOL done = 0;
+    VecFx32 tmp;
+    VecFx32 d1;
+    VecFx32 d2;
+    Camera *cam;
+    switch (self->mUnk_38) {
+        case 0:
+            cam   = self->mUnk_30;
+            tmp.x = cam->mTarget.x;
+            tmp.y = cam->mTarget.y;
+            tmp.z = cam->mTarget.z;
+            VEC_Subtract(out, &tmp, out);
+            VEC_Normalize(out, &self->mUnk_3c);
+            self->mUnk_3c.x *= 10;
+            self->mUnk_3c.z *= 10;
+            self->mUnk_3c.y = done;
+            self->mUnk_1a   = out->x / self->mUnk_3c.x;
+            self->mUnk_38++;
+            break;
+        case 1:
+            cam  = self->mUnk_30;
+            d1.x = cam->mPosition.x;
+            d1.y = cam->mPosition.y;
+            d1.z = cam->mPosition.z;
+            cam  = self->mUnk_30;
+            d2.x = cam->mTarget.x;
+            d2.y = cam->mTarget.y;
+            d2.z = cam->mTarget.z;
+            VEC_Add(&d1, &self->mUnk_3c, &d1);
+            VEC_Add(&d2, &self->mUnk_3c, &d2);
+            cam              = self->mUnk_30;
+            cam->mPosition.x = d1.x;
+            cam->mPosition.y = d1.y;
+            cam->mPosition.z = d1.z;
+            cam              = self->mUnk_30;
+            cam->mTarget.x   = d2.x;
+            cam->mTarget.y   = d2.y;
+            cam->mTarget.z   = d2.z;
+            if (self->mUnk_1a != 0) {
+                self->mUnk_1a--;
+            } else {
+                done = 1;
+            }
+            break;
+    }
+    return done;
+}
+
+BOOL func_ov007_0226745c(BattleUnk022637ac *self, u8 player, u8 slot) {
+    BOOL done = 0;
+    switch (self->mUnk_60) {
+        case 0: {
+            u16 value      = data_020d433c.mBattlePlayers->mPlayers[player]->mRecords[slot].mUnk_06;
+            self->mUnk_6c = value;
+            self->mUnk_6e = value;
+            self->mUnk_68 = 0x4000;
+            self->mUnk_64 = 0x60000;
+            if (self->mUnk_62_0) {
+                u8 i = 0;
+                do {
+                    self->mUnk_80[i]->mUnk_11 = 13;
+                    i++;
+                } while (i < 2);
+            } else {
+                u16 sum = data_020d433c.mBattlePlayers->mPlayers[player]->mRecords[slot].mUnk_04;
+                sum += self->mUnk_6c;
+                if (self->mUnk_6c + sum > 0x3de) {
+                    self->mUnk_6c = 0x3de - sum;
+                    self->mUnk_6e = self->mUnk_6c;
+                }
+            }
+            self->mUnk_61 = 4;
+            if (self->mUnk_6c < 1000) {
+                self->mUnk_61--;
+                if (self->mUnk_6c < 100) {
+                    self->mUnk_61--;
+                    if ((int) self->mUnk_6c < 10) {
+                        self->mUnk_61--;
+                    }
+                }
+            }
+            self->mUnk_60++;
+            break;
+        }
+        case 1:
+            self->mUnk_68 -= 0x800;
+            self->mUnk_64 -= self->mUnk_68;
+            if (self->mUnk_68 < -0x4000) {
+                if (self->mUnk_6c == 0) {
+                    self->mUnk_60 = 3;
+                } else {
+                    self->mUnk_60++;
+                }
+            }
+            break;
+        case 2:
+            self->mUnk_63++;
+            if (self->mUnk_63 > 10) {
+                self->mUnk_63 = 0;
+                if (self->mUnk_6c == 0) {
+                    self->mUnk_60++;
+                } else {
+                    s16 amount;
+                    if ((int) self->mUnk_6c >= 30) {
+                        self->mUnk_6c -= 30;
+                        amount = 30;
+                    } else {
+                        self->mUnk_6c = 0;
+                        amount        = 30 - self->mUnk_6c;
+                    }
+                    BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[player];
+                    if (!self->mUnk_62_0) {
+                        func_ov007_0226a380(p, slot, amount);
+                    } else {
+                        func_ov007_0226a380(p, slot, (s16) -amount);
+                    }
+                }
+                SoundManager::Get().func_020246f8(8);
+            }
+            break;
+        case 3:
+            done = 1;
+            break;
+    }
+    u8 i      = 0;
+    s16 x     = 0x50;
+    s16 y     = (s16) (int) ((float) self->mUnk_64 / 4096.0f);
+    x += 0x30;
+    u32 value = self->mUnk_6e;
+    do {
+        self->mUnk_80[0]->func_0202a3ec(0, (u8) (u16) ((int) value % 10), x, y, 0);
+        x -= 12;
+        value /= 10;
+        i++;
+    } while (i < self->mUnk_61);
+    self->mUnk_80[1]->func_0202a3ec(0, self->mUnk_62_0, x, y, 0);
+    return done;
+}
+
+// non-matching: 30 words, register assignment only (original keeps i in ip, a/b/c in lr/r4/r5 and the list in r6).
+BOOL func_ov007_022677cc(BattleUnk022637ac *self) {
+    BOOL r = 1;
+    u8 i                   = 0;
+    u16 b                  = 0;
+    u16 a                  = 0;
+    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    u16 c                  = 0;
+    do {
+        BattleUnit *unit = &list->mUnits[i];
+        if (unit->mUnk_10) {
+            c += 0x3de;
+            BattleRecord *rec = &list->mPlayers[unit->mUnk_0f]->mRecords[unit->mUnk_0e];
+            a += rec->mUnk_04;
+            a += rec->mUnk_06;
+            b += rec->mUnk_06;
+        }
+        i++;
+    } while (i < 12);
+if (a >= c || b == 0) { r = 0; } return r;
+}
+
+// non-matching: 0xc4 vs 0xc0, the original returns the loop-invariant zero from r0 (here a separate mov r0,#0 at the end).
+u32 func_ov007_02267884(BattleUnk022637ac *self) {
+    if (self->mUnk_1c->mUnk_1d2 != 3) {
+        return 0;
+    }
+    BattleUnit *units    = data_020d433c.mBattlePlayers->mUnits;
+    u8 i                 = 0;
+    u8 me                = self->mUnk_16;
+    u32 result           = 0;
+    BattleUnit *selfUnit = &units[me];
+    do {
+        if (me != i) {
+            BattleUnit *unit = &units[i];
+            if (selfUnit->mUnk_11 == unit->mUnk_11) {
+                u16 a = data_020d433c.mBattlePlayers->mPlayers[selfUnit->mUnk_0f]->mRecords[selfUnit->mUnk_0e].mUnk_06;
+                u16 b = data_020d433c.mBattlePlayers->mPlayers[unit->mUnk_0f]->mRecords[unit->mUnk_0e].mUnk_06;
+                if (a > b) {
+                    result = 2;
+                } else if (a < b) {
+                    result = 1;
+                }
+                return result;
+            }
+        }
+        i++;
+    } while (i < 12);
+    return result;
+}
+
+BOOL func_ov007_02267944(BattleUnk022637ac *self, u16 *out) {
+    u8 i = 0;
+    do {
+        BattlePlayerList *list = data_020d433c.mBattlePlayers;
+        BattleUnit *unit       = &list->mUnits[i];
+        if (unit->mUnk_10) {
+            u8 pidx = unit->mUnk_0f;
+            u16 v   = list->mPlayers[pidx]->mRecords[unit->mUnk_0e].mUnk_06;
+            if (pidx == self->mUnk_15) {
+                out[0] += v;
+            } else if (data_020d433c.mUnk_98 && pidx == list->mPlayers[self->mUnk_15]->mUnk_f2) {
+                out[0] += v;
+            } else {
+                out[1] += v;
+            }
+        }
+        i++;
+    } while (i < 12);
+    if (out[0] != 0 || out[1] != 0) {
+        return 1;
+    }
+    return 0;
 }

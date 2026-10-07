@@ -452,7 +452,6 @@ void BattleCommandMap::func_ov007_02245f08() {
     mUnk_14->mUnk_14 = obj->mUnk_14;
 }
 
-extern "C" void func_ov007_02235480(BattleStatusPanels *panels);
 extern "C" void func_ov007_02270248(BattleUnk29c *unk);
 extern "C" void func_ov007_022712c4(BattleUnk29c *unk, u8 a, VecFx32 *pos);
 extern "C" void func_ov007_02271338(BattleUnk29c *unk, VecFx32 *pos);
@@ -462,7 +461,7 @@ void func_ov007_02248944(VecFx32 *out, u8 a, u8 b);
 
 extern "C" void func_ov007_02246558(BattleCommandMap *map) {
     if (map->mUnk_151 != 0 && map->mUnk_70) {
-        func_ov007_02235480(map->mUnk_70);
+        map->mUnk_70->func_ov007_02235480();
     }
 }
 

@@ -33,6 +33,13 @@ struct BattlePlayerMessage {
     /* 19 */
 };
 
+// 4 byte per-slot entry of a player.
+struct BattlePlayerSlot {
+    /* 00 */ u16 mValue;
+    /* 02 */ u8 mFlag;
+    /* 03 */ u8 mUnk_03;
+};
+
 // 12 byte per-slot record of a player, the second field is a 12 bit gauge.
 struct BattleRecord {
     /* 00 */ u16 mUnk_00_0 : 4;
@@ -50,18 +57,21 @@ struct BattleRecord {
     /* 0b */ u8 mUnk_0b;
 };
 
-// The object a player controls on the field (only the timer at +74 is known).
-struct BattleFighter {
-    /* 00 */ PAD(0x00, 0x74);
-    /* 74 */ u16 mUnk_74;
-    /* 76 */ PAD(0x76, 0x78);
-};
+class BattleCpu; // the object a player controls on the field (ctor 02230f58)
 
-struct BattlePlayer {
-    /* 00 */ PAD(0x00, 0x0c);
-    /* 0c */ BattleRecord mRecords[15];
+struct BattlePlayer : public SceneBase {
+    /* 00 SceneBase */
+    union {
+        /* 0c */ BattleRecord mRecords[15];
+        struct {
+            /* 0c */ PAD(0x0c, 0x54);
+            /* 54 */ BattlePlayerSlot mSlots54[3]; // value, flag and a byte per slot (second slot table at +6c)
+            /* 60 */ PAD(0x60, 0x6c);
+            /* 6c */ BattlePlayerSlot mSlots6c[3];
+        };
+    };
     /* c0 */ PAD(0xc0, 0xc8);
-    /* c8 */ BattleFighter *mUnk_c8;
+    /* c8 */ BattleCpu *mUnk_c8;
     /* cc */ u16 mUnk_cc[3];
     /* d2 */ PAD(0xd2, 0xd4);
     /* d4 */ s32 mUnk_d4;
@@ -73,16 +83,17 @@ struct BattlePlayer {
     /* ec */ u8 mUnk_ec;
     /* ed */ u8 mUnk_ed; // length of the name at +b0
     /* ee */ u8 mUnk_ee;
-    /* ef */ PAD(0xef, 0xf1);
+    /* ef */ u8 mUnk_ef;
+    /* f0 */ u8 mUnk_f0;
     /* f1 */ u8 mUnk_f1;
     /* f2 */ u8 mUnk_f2;
     /* f3 */ u8 mUnk_f3;
-    /* f4 */ PAD(0xf4, 0xf5);
+    /* f4 */ u8 mUnk_f4;
     /* f5 */ u8 mRecord;
     /* f6 */ u8 mUnk_f6;
     /* f7 */ u8 mUnk_f7;
     /* f8 */ u8 mUnk_f8;
-    /* f9 */ PAD(0xf9, 0xfa);
+    /* f9 */ u8 mUnk_f9;
     /* fa */ u16 mUnk_fa;
     /* fc */ u8 mUnk_fc;
     /* fd */ u8 mUnk_fd;
@@ -93,6 +104,8 @@ struct BattlePlayer {
     /* 140 */
 
     BattlePlayer(u32 index); // 022696b4
+    virtual ~BattlePlayer();
+    /* 08 */ virtual void Update(); // 02269c98
 
     // Name text at +b0 and the pointer-sized value at +a8 (both overlap mRecords, which is probably only 4 long).
     const u8 *NameText() {

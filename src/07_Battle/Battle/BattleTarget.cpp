@@ -579,7 +579,7 @@ void BattleTarget::func_ov007_022573e4() {
         func_ov007_022571d4();
     }
     if (mUnk_28) {
-        func_ov007_02235480(mUnk_28);
+        mUnk_28->func_ov007_02235480();
         func_ov007_0225cb7c();
     }
     if (mUnk_1e2 != 0xd && mUnk_1e2 != 0xe) {
@@ -1578,7 +1578,7 @@ void BattleTarget::func_ov007_0225897c() {
             if (mUnk_1e0 == 3) {
                 mUnk_1dd = 2;
             }
-            BattleFighter *fighter = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mUnk_c8;
+            BattleCpu *fighter = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mUnk_c8;
             if (fighter) {
                 fighter->mUnk_74 = 0x3c;
             }

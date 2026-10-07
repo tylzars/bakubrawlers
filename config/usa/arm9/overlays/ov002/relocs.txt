@@ -138,7 +138,7 @@ from:0x0221a84c kind:load to:0x0220e628 module:main
 from:0x0221a850 kind:load to:0x020d433c module:main
 from:0x0221a854 kind:load to:0x020c17bc module:main
 from:0x0221a858 kind:load to:0x020c1d54 module:main
-from:0x0221a85c kind:load to:0x020ac954 module:main
+from:0x0221a85c kind:load to:0x020ac94c add:0x8 module:main
 from:0x0221a860 kind:load to:0x02020a08 module:main
 from:0x0221a864 kind:load to:0x02221fb8 module:overlay(2)
 from:0x0221a868 kind:load to:0x02221304 module:overlay(2)

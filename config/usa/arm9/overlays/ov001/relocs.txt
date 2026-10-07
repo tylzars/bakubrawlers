@@ -559,7 +559,7 @@ from:0x0221d6ac kind:load to:0x0222929c module:overlay(1)
 from:0x0221d6b0 kind:load to:0x020c4030 module:main
 from:0x0221d6b4 kind:load to:0x020c17bc module:main
 from:0x0221d6b8 kind:load to:0x020c1d54 module:main
-from:0x0221d6bc kind:load to:0x020ac954 module:main
+from:0x0221d6bc kind:load to:0x020ac94c add:0x8 module:main
 from:0x0221d6c0 kind:load to:0x02020a08 module:main
 from:0x0221d6c4 kind:load to:0x022292a8 module:overlay(1)
 from:0x0221d6c8 kind:load to:0x020c17cc module:main

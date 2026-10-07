@@ -788,7 +788,7 @@ func_020202c0 kind:function(arm,size=0x2c) addr:0x020202c0
 __register_global_object kind:function(arm,size=0x20) addr:0x020202ec
 func_0202030c kind:function(arm,size=0x1c) addr:0x0202030c
 func_02020328 kind:function(arm,size=0x6e0) addr:0x02020328
-func_02020a08 kind:function(arm,size=0x14) addr:0x02020a08
+_ZN9FrameTaskD1Ev kind:function(arm,size=0x14) addr:0x02020a08
 func_02020a1c kind:function(arm,size=0x4) addr:0x02020a1c
 func_02020a20 kind:function(arm,size=0x4) addr:0x02020a20
 _ZN11TextManagerD1Ev kind:function(arm,size=0x4) addr:0x02020a24
@@ -898,9 +898,9 @@ func_02024818 kind:function(arm,size=0x118) addr:0x02024818
 func_02024930 kind:function(arm,size=0x38) addr:0x02024930
 func_02024968 kind:function(arm,size=0x364) addr:0x02024968
 func_02024ccc kind:function(arm,size=0x6b0) addr:0x02024ccc
-func_0202537c kind:function(arm,size=0x14) addr:0x0202537c
-func_02025390 kind:function(arm,size=0x10) addr:0x02025390
-func_020253a0 kind:function(arm,size=0x11c) addr:0x020253a0
+_Z13func_0202537cPv kind:function(arm,size=0x14) addr:0x0202537c
+_Z16SetFrameIntervalh kind:function(arm,size=0x10) addr:0x02025390
+_Z11UpdateFramev kind:function(arm,size=0x11c) addr:0x020253a0
 func_020254bc kind:function(arm,size=0x34) addr:0x020254bc
 func_020254f0 kind:function(arm,size=0x6c) addr:0x020254f0
 func_0202555c kind:function(arm,size=0x2c) addr:0x0202555c
@@ -1596,7 +1596,7 @@ func_0203dbb0 kind:function(arm,size=0x14) addr:0x0203dbb0
 func_0203dbc4 kind:function(arm,size=0x40) addr:0x0203dbc4
 func_0203dc04 kind:function(arm,size=0xc) addr:0x0203dc04
 func_0203dc10 kind:function(arm,size=0xc) addr:0x0203dc10
-func_0203dc1c kind:function(arm,size=0xc) addr:0x0203dc1c
+_ZN9FrameTask3RunEv kind:function(arm,size=0xc) addr:0x0203dc1c
 func_0203dc28 kind:function(arm,size=0xc) addr:0x0203dc28
 func_0203dc34 kind:function(arm,size=0xd8) addr:0x0203dc34
 func_0203dd0c kind:function(arm,size=0x40) addr:0x0203dd0c
@@ -2450,7 +2450,7 @@ func_020522a0 kind:function(arm,size=0x28) addr:0x020522a0
 func_020522c8 kind:function(arm,size=0x1c) addr:0x020522c8
 func_020522e4 kind:function(arm,size=0x4) addr:0x020522e4
 func_020522e8 kind:function(arm,size=0x38) addr:0x020522e8
-func_02052320 kind:function(arm,size=0x28) addr:0x02052320
+_ZN8TaskBaseC2Ev kind:function(arm,size=0x28) addr:0x02052320
 func_02052348 kind:function(arm,size=0x4) addr:0x02052348
 func_0205234c kind:function(arm,size=0xac) addr:0x0205234c
 func_020523f8 kind:function(arm,size=0x34) addr:0x020523f8
@@ -3472,7 +3472,7 @@ data_020ac928 kind:data(any) addr:0x020ac928
 data_020ac92c kind:data(any) addr:0x020ac92c
 data_020ac934 kind:data(any) addr:0x020ac934
 data_020ac940 kind:data(any) addr:0x020ac940
-data_020ac954 kind:data(any) addr:0x020ac954
+_ZTV9FrameTask kind:data(any) addr:0x020ac94c
 data_020ac960 kind:data(any) addr:0x020ac960
 data_020ac978 kind:data(any) addr:0x020ac978
 data_020ac998 kind:data(any) addr:0x020ac998
@@ -4620,7 +4620,7 @@ _ZGVZN11TextManager3GetEvE8instance kind:bss addr:0x020c17ac weak
 data_020c17b0 kind:bss addr:0x020c17b0
 data_020c17b4 kind:bss addr:0x020c17b4
 data_020c17b8 kind:bss addr:0x020c17b8
-data_020c17bc kind:bss addr:0x020c17bc
+_ZGVZN9FrameTask3GetEvE8instance kind:bss addr:0x020c17bc weak
 data_020c17c0 kind:bss addr:0x020c17c0
 data_020c17c4 kind:bss addr:0x020c17c4
 data_020c17c8 kind:bss addr:0x020c17c8
@@ -4656,7 +4656,7 @@ data_020c1b74 kind:bss addr:0x020c1b74
 data_020c1bf4 kind:bss addr:0x020c1bf4
 data_020c1c74 kind:bss addr:0x020c1c74
 data_020c1cf4 kind:bss addr:0x020c1cf4
-data_020c1d54 kind:bss addr:0x020c1d54
+_ZZN9FrameTask3GetEvE8instance kind:bss addr:0x020c1d54 weak
 _ZZN13SpriteManager3GetEvE8instance kind:bss addr:0x020c26c0 weak
 data_020c26c4 kind:bss addr:0x020c26c4
 data_020c2acc kind:bss addr:0x020c2acc

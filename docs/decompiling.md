@@ -31,6 +31,10 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
 
 ## Known open problems
 
+- **Two literal-pool entries for one address.** `func_02023504` (FileSystem.cpp) loads 0x020d53e4 from two
+  different pool words, so two relocations (different symbols, or symbol plus offset) resolve to the same address
+  in the original. The source models it with a second extern, `data_020d53e4_h`; the real layout of the loader's
+  statics (header word, registration node, two MI contexts, state fields) is still to be worked out.
 - **Order of identical string literals.** With `-str noreuse`, every copy of a literal gets its own object
   (`@N`, in its own `.data` section). The compiler emits the copies of one string in a permuted order, and the
   linker keeps that section order. `GameOverScene.cpp`'s result-window table uses five copies of one path;

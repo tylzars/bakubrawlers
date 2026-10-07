@@ -3,10 +3,38 @@
 #include "global.h"
 #include "types.h"
 
+struct UnkStruct_02023248 {
+    /* 0 */ u16 mPad;
+    /* 2 */ u16 mUnk_0 : 3;
+    /* 2 */ u16 mUnk_3 : 3;
+    /* 2 */ u16 mUnk_6 : 3;
+    /* 2 */ u16 mUnk_9 : 3;
+    /* 2 */ u16 mUnk_12 : 3;
+    /* 2 */ u16 mUnk_15 : 1;
+    /* 4 */
+};
+
 struct UnkStruct_020d43f0 {
     /* 000 */ u16 mUnk_00[3];
-    /* 006 */ PAD(0x006, 0x01a);
-    /* 01a */ u16 mUnk_1a_0 : 8;
+    /* 006 */ u16 mUnk_06[3];
+    /* 00c */ u16 mUnk_0c[3];
+    /* 012 */ PAD(0x012, 0x014);
+    /* 014 */ u16 mUnk_14_0 : 1;
+    /* 014 */ u16 mUnk_14_1 : 3;
+    /* 014 */ u16 mUnk_14_4 : 3;
+    /* 014 */ u16 mUnk_14_7 : 3;
+    /* 014 */ u16 mUnk_14_10 : 3;
+    /* 014 */ u16 mUnk_14_13 : 3;
+    /* 016 */ u16 mUnk_16_0 : 12;
+    /* 016 */ u16 mUnk_16_12 : 3;
+    /* 016 */ u16 mUnk_16_15 : 1;
+    /* 018 */ u16 mUnk_18_0 : 3;
+    /* 018 */ u16 mUnk_18_3 : 5;
+    /* 018 */ u16 mUnk_18_8 : 3;
+    /* 018 */ u16 mUnk_18_11 : 3;
+    /* 018 */ u16 mUnk_18_14 : 2;
+    /* 01a */ u16 mUnk_1a_0 : 3;
+    /* 01a */ u16 mUnk_1a_3 : 5;
     /* 01a */ u16 mUnk_1a_8 : 8;
     /* 01c */ u32 mMoney;
     /* 020 */ PAD(0x020, 0x024);
@@ -16,7 +44,9 @@ struct UnkStruct_020d43f0 {
     union {
         /* 027 */ u8 mUnk_27;
         struct {
-            /* 027 */ u8 mUnk_27_0 : 5;
+            /* 027 */ u8 mUnk_27_0 : 1;
+            /* 027 */ u8 mUnk_27_1 : 1;
+            /* 027 */ u8 mUnk_27_2 : 3;
             /* 027 */ u8 mUnk_27_5 : 2;
             /* 027 */ u8 mUnk_27_7 : 1;
         };
@@ -24,12 +54,17 @@ struct UnkStruct_020d43f0 {
     /* 028 */ u16 mUnk_28_0 : 5;
     /* 028 */ u16 mUnk_28_5 : 1;
     /* 028 */ u16 mUnk_28_6 : 1;
-    /* 028 */ u16 mUnk_28_7 : 9;
+    /* 028 */ u16 mUnk_28_7 : 3;
+    /* 028 */ u16 mUnk_28_10 : 3;
+    /* 028 */ u16 mUnk_28_13 : 3;
     /* 02a */ u16 mName[12]; // player name, UTF-16
     /* 042 */ volatile u8 mUnk_42; // reloaded after a switch on it (ov002 0221e984)
     /* 043 */ u8 mUnk_43;
     /* 044 */ u32 mPlayFrames; // play time in frames (60 per second)
-    /* 048 */ PAD(0x048, 0x578);
+    /* 048 */ PAD(0x048, 0x088);
+    /* 088 */ u16 mUnk_88[0xf6][2];
+    /* 460 */ u8 mUnk_460[0xf6];
+    /* 556 */ PAD(0x556, 0x578);
     /* 578 */ u8 mUnk_578;
     /* 579 */ PAD(0x579, 0x5b8);
     /* 5b8 */ u8 mUnk_5b8;
@@ -67,16 +102,6 @@ struct UnkStruct_020d4478 {
     /* 4 */
 };
 
-struct UnkStruct_02023248 {
-    /* 0 */ u16 mPad;
-    /* 2 */ u16 mUnk_0 : 3;
-    /* 2 */ u16 mUnk_3 : 3;
-    /* 2 */ u16 mUnk_6 : 3;
-    /* 2 */ u16 mUnk_9 : 3;
-    /* 2 */ u16 mUnk_12 : 3;
-    /* 2 */ u16 mUnk_15 : 1;
-    /* 4 */
-};
 
 extern UnkStruct_020d4478 data_020d4478[];
 extern u8 data_020d4850[];

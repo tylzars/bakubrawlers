@@ -10,7 +10,7 @@ void func_020070f8();
 void func_0200c338();
 int func_0200c3cc(void *raw);
 void func_0200c608(TouchSample *out, void *raw);
-void func_0200c17c(void *panel);
+BOOL func_0200c17c(void *panel);
 void func_0200c210(void *panel);
 u16 func_020017d4(fx32 a, fx32 b);
 }
@@ -238,8 +238,8 @@ void TouchManager::func_02022988() {
     }
 }
 
-void TouchManager::func_02022ae0() {
-    func_0200c17c(&mPanel);
+BOOL TouchManager::func_02022ae0() {
+    return func_0200c17c(&mPanel);
 }
 
 void TouchManager::func_02022af0() {

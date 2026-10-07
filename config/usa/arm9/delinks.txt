@@ -24,6 +24,26 @@ src/Main/Scene/SceneBase.cpp:
 src/Main/System/TouchManager.cpp:
     .text       start:0x020224f8 end:0x02022b0c
 
+// provisional: code only; .bss 0x020d4318-0x020d53e4 (data_020d433c, data_020d43f0) and const tables 0x020906f0-0x02090778 belong here.
+src/Main/Game/GameData.cpp:
+    .text       start:0x02022b0c end:0x020234c8
+
+// provisional: code only; .data 0x020a5480-0x020a548c and .bss 0x020d53e4-0x020d5508 belong here.
+src/Main/System/FileSystem.cpp:
+    .text       start:0x020234c8 end:0x02023b80
+
+// provisional: code only; .data 0x020a548c-0x020a54b4 and .bss 0x020d5508-0x020d5520 belong here.
+src/Main/System/FileLoader.cpp:
+    .text       start:0x02023b80 end:0x020244cc
+
+// provisional: code only; .data 0x020a54b4-0x020a54cc, .bss 0x020d5520-0x0220e520 and tables from 0x02090778 belong here.
+src/Main/System/SoundManager.cpp:
+    .text       start:0x020244cc end:0x02024818
+
+// provisional: code only; .data 0x020a54cc-0x020a54e0 and .bss 0x0220e520-0x0220e580 belong here.
+src/Main/System/SceneRunner.cpp:
+    .text       start:0x02024818 end:0x0202537c
+
 src/Main/System/FrameUpdate.cpp:
     .text       start:0x0202537c end:0x02025668
     .data       start:0x020a54e0 end:0x020a54e4

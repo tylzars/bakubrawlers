@@ -66,6 +66,6 @@ public:
     BOOL func_020228c0(u32 x, s16 y, u32 width, s16 height);
     void func_020228f0();
     void func_02022988();
-    void func_02022ae0();
+    BOOL func_02022ae0();
     void func_02022af0();
 };

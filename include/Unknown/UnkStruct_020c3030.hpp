@@ -16,6 +16,7 @@ public:
     void func_0202edd0();
     u8 *func_0202f0cc(u32 unk1);
     u32 func_0202f134();
+    u32 func_0202f238();
     void func_0202f024(void *unk1);
     void func_0202f078(void *unk1);
     void func_0202ed3c();

@@ -80,7 +80,10 @@ u16 TextManager::func_0202c1a8(u32 index) {
     return 0;
 }
 
-// non-matching: prologue: order of the stack-argument copies and spill slots; the body is the same.
+// non-matching: prologue: order of the stack-argument copies and spill slots; the body is the same. MW copies
+// each stack parameter onto itself in the prologue, in an order that follows the statements that first use them;
+// the original's order is width, height, unk12, unk13, unk10, unk14, outWidth, outHeight, unk11, unk15, unk17,
+// which suggests locals initialised from those parameters at the top of the function.
 void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u32 height, s16 *outWidth,
                         s16 *outHeight, u16 *outPixelWidth, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13,
                         u32 unk14, u32 unk15, u32 unk16, u32 unk17) {

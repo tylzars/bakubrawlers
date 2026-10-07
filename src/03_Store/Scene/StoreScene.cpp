@@ -1,4 +1,5 @@
 #include "Scene/StoreScene.hpp"
+#include "Unknown/UnkStruct_02078e14.hpp"
 #include "Game/UnkStruct_02065c40.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
@@ -17,14 +18,6 @@
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
-
-// Other overlay-3 objects that are only ever constructed here.
-class UnkStruct_02078e14 {
-public:
-    /* 000 */ PAD(0x000, 0x408);
-
-    UnkStruct_02078e14(u32 unk1, u32 unk2);
-};
 
 class UnkStruct_02089f90 {
 public:

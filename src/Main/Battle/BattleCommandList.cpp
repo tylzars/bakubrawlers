@@ -30,7 +30,7 @@ void func_020037e8(u32 mode);
 extern WindowItemRecord data_020b3688[4]; // item table of the list window (positions are patched by func_02058404)
 extern WindowCellRecord data_020b3618[4];
 
-BattleCommandList::BattleCommandList(u8 a, u8 b, u8 c, u8 d) :
+BattleCommandList::BattleCommandList(u8 a, u8 b, s32 c, u8 d) :
     SceneBase(0x3e8, 0) {
     mUnk_78  = NULL;
     mUnk_7c  = NULL;

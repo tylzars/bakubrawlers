@@ -1,4 +1,5 @@
 #include "Scene/MyroomScene.hpp"
+#include "Unknown/UnkStruct_02078e14.hpp"
 #include "Scene/CharacterEditScene.hpp"
 #include "Scene/MyroomCharaScene.hpp"
 #include "Scene/MyroomGiftScene.hpp"
@@ -23,13 +24,6 @@
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
-
-class UnkStruct_02078e14 {
-public:
-    /* 000 */ PAD(0x000, 0x408);
-
-    UnkStruct_02078e14(u32 unk1, u32 unk2);
-};
 
 extern const char data_ov008_02229da0[];
 extern const WindowItemRecord data_ov008_02229d14[];

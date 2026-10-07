@@ -70,7 +70,7 @@ public:
     /* 166 */ u16 mUnk_166;
     /* 168 */
 
-    BattleCommandList(u8 a, u8 b, u8 c, u8 d);
+    BattleCommandList(u8 a, u8 b, s32 c, u8 d);
     virtual ~BattleCommandList();
     virtual void Update();
     void func_02058240(u32 value);

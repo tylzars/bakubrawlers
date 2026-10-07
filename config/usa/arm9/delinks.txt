@@ -164,3 +164,15 @@ src/Main/Game/UnkStruct_02065c40.cpp:
 // provisional: code only; .data 0x020b8ddc-0x020b8ff4, .rodata from 0x020a2dac and .bss 0x022192d8-0x022192fc belong here.
 src/Main/Unknown/UnkStruct_02070608.cpp:
     .text       start:0x02070608 end:0x02071868
+
+// provisional: code only; .data 0x020b9848-0x020b9a04, .rodata about 0x020a30dc-0x020a3168 and .bss 0x0221938c-0x022193b0 belong here.
+src/Main/Unknown/UnkStruct_02078290.cpp:
+    .text       start:0x02078290 end:0x02078e14
+
+// provisional: code only; .data 0x020b9a04-0x020ba3a4 and probably .bss 0x022193b0-0x022193bc belong here.
+src/Main/Unknown/UnkStruct_02078e14.cpp:
+    .text       start:0x02078e14 end:0x0207b3a8
+
+// provisional: code only; the end is not determined (0x0208550c is the end of the last function done); .data from 0x020ba3a4 and .bss 0x022193bc-0x022193ec belong here.
+src/Main/Unknown/UnkStruct_02078e14_b.cpp:
+    .text       start:0x0207b3a8 end:0x0208550c

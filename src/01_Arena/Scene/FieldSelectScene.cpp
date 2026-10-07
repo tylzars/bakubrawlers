@@ -282,7 +282,7 @@ FieldSelectScene::~FieldSelectScene() {
         }
     }
     if (data_020d433c.mUnk_a8 != 0) {
-        data_020d433c.mUnk_10->mUnk_04 = 1;
+        data_020d433c.mUnk_10->mFinished = 1;
     }
 }
 

@@ -85,7 +85,7 @@ ArenaScene::~ArenaScene() {
         delete mSubMenu;
     }
     if (data_020d433c.mUnk_10 != NULL) {
-        data_020d433c.mUnk_10->mUnk_04 = 1;
+        data_020d433c.mUnk_10->mFinished = 1;
         data_020d433c.mUnk_10 = NULL;
     }
 }
@@ -103,7 +103,7 @@ void ArenaScene::func_ov001_022197ec() {
     mVariant = 0;
     func_ov001_0221b994();
     if (data_020d433c.mUnk_10 != NULL) {
-        data_020d433c.mUnk_10->mUnk_04 = 1;
+        data_020d433c.mUnk_10->mFinished = 1;
         data_020d433c.mUnk_10 = NULL;
     }
     if (mSubMenuMode != 0) {

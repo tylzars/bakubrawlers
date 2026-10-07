@@ -11,7 +11,7 @@ the evidence and how to reproduce it.
 | NitroSDK 4.2 (Nintendo prebuilt) | CodeWarrior for DS **2.0 sp1, sp1p2 or sp1p5** | `-O4,p -ipa file -enum int`, C |
 | CRI ADX/Sofdec, Mobiclip | vendor prebuilt, not identified | keep delinked |
 
-`-char signed` is the only setting not yet observed in this binary (see the end of this doc).
+`-char signed` (everywhere) and `-enum int` (game code) are not yet observed in this binary (see the end of this doc).
 
 ## Tools
 
@@ -50,13 +50,16 @@ later drop them.
   NitroSDK inline, or any hand-written equivalent (shift, cast or inline-helper forms),
   gives the long form on every build up to sp2.
 - `tools/longmul_scan.py` validates on known code (ph + SDK at sp2: 9 long forms; at
-  sp2p2: 1 single-`mla` residual). Bakugan game code has about 1,000 64-bit multiplies,
-  no sp2-style double-zero form, and one sp2p2-style residual (`func_ov007_02232c88`,
-  same shape as ph's sp2p2 residual).
+  sp2p2: 1 single-`mla` residual). Across Bakugan's game code (~1,000 `umull`/`smull`
+  instructions, 73 of them 64-bit multiplies by an immediate), there is no sp2-style
+  double-zero form and one sp2p2-style residual (`func_ov007_02232c88`, same shape as
+  ph's sp2p2 residual).
 
-**sp2p2, sp2p3 and sp2p4 are equivalent here.** Their only observed difference is pooling
-the address of a file's own globals, which in C++ produces the same duplicate pool entry
-on every build. ph's 3,666 C++ functions are identical across all three.
+**sp2p2, sp2p3 and sp2p4 are equivalent here.** Their only observed difference (4 of
+pokeheartgold's C functions) is pooling the address of a file's own globals, which in
+C++ gives the same duplicate pool entry on every build. Compiled with the game's exact
+flags (including `-ipa file`), ph's 3,663 C++ functions are identical across all three.
+sp2p2 is the lower bound; any of the three is correct for matching.
 
 **NitroSDK is sp1–sp1p5.** 99 of pokeheartgold's NitroSDK functions exactly match this ROM:
 - `DC_FlushAll`, `DC_FlushRange`, `DC_StoreAll`, `OSi_WaitVCount0`, `OSi_DoBoot` match sp1+ only.
@@ -70,7 +73,7 @@ on every build. ph's 3,666 C++ functions are identical across all three.
 | `-O4,p` | `-O3,p` misallocates registers in `func_ov000_0221f474`; `-O4,s`/`-O2` keep the singleton accessor out of line and change `func_020253a0` size |
 | `-ipa file` | Inline-function local statics (e.g. guard `data_020c17cc`) are referenced from main and every overlay, so they are shared standalone sections. Without `-ipa file`, mwcc puts them in each file's `.bss` (checked on the frame-update probe). The SDK also loses 23/99 matches without it. |
 | `-inline on,noauto` | `auto` inlines same-file calls (`CreateObj`, `Draw`) that ov006 keeps as `bl` |
-| `-enum int` | `-enum min` loses 9/99 SDK matches |
+| `-enum int` | SDK only: `-enum min` loses 9/99 SDK matches. For game code it is inherited (same status as `-char signed`) |
 | `-str noreuse` | ov006's `data_ov006_0221a544` initializer points at three identical copies of one path literal; `reuse`/`pool`/default merge them |
 | `-Cpp_exceptions off` | `on` changes `new`-with-constructor codegen in ov006 |
 | `-RTTI off` | vtables have a zero typeinfo slot (`data_ov006_0221a6a8 - 4`) |
@@ -80,7 +83,10 @@ on every build. ph's 3,666 C++ functions are identical across all three.
 
 ## Open
 
-- `-char signed`: no matched function depends on char signedness yet. It is the NitroSDK
-  default. Revisit if a plain-`char` function mismatches.
+- `-char signed` (game and SDK) and `-enum int` (game code): no matched function depends on
+  them yet. Both are NitroSDK build defaults. Question these
+  first on a char- or enum-related mismatch.
+- `ninja objdiff` passes one decomp.me preset (`mwcc_30_137`) for every unit; scratches
+  for NitroSDK units must be switched to 2.0/sp1p5 (`mwcc_30_131`) by hand.
 - NitroSDK `-char` and `-O` variants beyond `-O4,p` haven't been separated, because nothing
   matched so far depends on them.

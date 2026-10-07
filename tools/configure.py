@@ -159,7 +159,9 @@ if WINE == "tools/bin/wibo":
     build(WINE, "download_tool", variables={"tool": "wibo", "tag": WIBO_TAG, "path": WINE})
     tool_outputs.append(WINE)
 if args.compiler is None:
-    build([CC, LD], "download_tool", variables={"tool": "mwccarm", "tag": "latest", "path": "tools"})
+    # One zip holds every version, including the PATH_COMPILERS ones.
+    extra = [str(MWCC_ROOT / v / "mwccarm.exe") for v in sorted(set(PATH_COMPILERS.values()))]
+    build([CC, LD] + extra, "download_tool", variables={"tool": "mwccarm", "tag": "latest", "path": "tools"})
 build(OBJDIFF, "download_tool", variables={"tool": "objdiff", "tag": OBJDIFF_TAG, "path": OBJDIFF})
 
 # ---- extract / delink / lcf ----

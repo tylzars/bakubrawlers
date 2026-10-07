@@ -149,6 +149,22 @@ src/07_Battle/Gimmick/GimmickUnk_022308a8.cpp:
 src/07_Battle/Gimmick/GimmickUnk_02230cec.cpp:
     .text       start:0x02230cec end:0x02230f58
 
+// provisional: code only; .data 0x02287604-0x02287614 and .rodata ~0x022796d0-0x022799fc belong here.
+src/07_Battle/Battle/BattleCpu.cpp:
+    .text       start:0x02230f58 end:0x02233f58
+
+// provisional: code only; .data 0x02287614-0x02287a10 and .rodata 0x022799fc-0x02279aa8 belong here.
+src/07_Battle/Battle/BattleUnionAbility.cpp:
+    .text       start:0x02233f58 end:0x02234ce8
+
+// provisional: code only; .data 0x02287a10-0x02287ad0 belongs here.
+src/07_Battle/Battle/BattleStatusPanels.cpp:
+    .text       start:0x02234ce8 end:0x02236494
+
+// provisional: code only; .data 0x02287ad0-0x022881e8 and .rodata ~0x02279aa8-0x02279bd0 belong here.
+src/07_Battle/Battle/BattleCommand.cpp:
+    .text       start:0x02236494 end:0x0223cfe8
+
 // provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickUnk_02274830.cpp:
     .text       start:0x02274830 end:0x02274d78

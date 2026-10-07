@@ -47,6 +47,7 @@ void MTX_Identity22_(MtxFx22 *mtx); // 0x02000cb4
 void VEC_Add(const VecFx32 *a, const VecFx32 *b, VecFx32 *ab);      // 0x01ff8e3c (itcm)
 void VEC_Subtract(const VecFx32 *a, const VecFx32 *b, VecFx32 *ab); // 0x01ff8e70 (itcm)
 fx32 VEC_Mag(const VecFx32 *v);                                      // 0x01ff8f64 (itcm)
+fx32 VEC_DotProduct(const VecFx32 *a, const VecFx32 *b);             // 0x01ff8ea4 (itcm)
 void VEC_Normalize(const VecFx32 *src, VecFx32 *dst);                // 0x01ff8fc4 (itcm)
 fx32 FX_Sqrt(fx32 x); // 0x01ff8068 (itcm, hardware square root)
 void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle); // itcm: rotation and scale

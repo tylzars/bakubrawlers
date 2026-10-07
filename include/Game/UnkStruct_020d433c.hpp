@@ -31,7 +31,8 @@ struct BattleRecord {
     /* 04 */ u16 mUnk_04;
     /* 06 */ PAD(0x06, 0x09);
     /* 09 */ u8 mUnk_09;
-    /* 0a */ PAD(0x0a, 0x0c);
+    /* 0a */ u8 mUnk_0a;
+    /* 0b */ PAD(0x0b, 0x0c);
 };
 
 struct BattlePlayer {
@@ -39,9 +40,11 @@ struct BattlePlayer {
     /* 0c */ BattleRecord mRecords[15];
     /* c0 */ PAD(0xc0, 0xc8);
     /* c8 */ void *mUnk_c8;
-    /* cc */ PAD(0xcc, 0xee);
+    /* cc */ PAD(0xcc, 0xed);
+    /* ed */ u8 mUnk_ed; // length of the name at +b0
     /* ee */ u8 mUnk_ee;
-    /* ef */ PAD(0xef, 0xf2);
+    /* ef */ PAD(0xef, 0xf1);
+    /* f1 */ u8 mUnk_f1;
     /* f2 */ u8 mUnk_f2;
     /* f3 */ u8 mUnk_f3;
     /* f4 */ PAD(0xf4, 0xf5);
@@ -52,9 +55,23 @@ struct BattlePlayer {
     /* fa */ u16 mUnk_fa;
     /* fc */ u8 mUnk_fc;
     /* fd */ u8 mUnk_fd;
-    /* fe */ PAD(0xfe, 0x100);
+    /* fe */ u8 mUnk_fe;
+    /* ff */ PAD(0xff, 0x100);
     /* 100 */ BattlePlayerMessage mMsg;
     /* 119 */
+
+    // Name text at +b0 and the pointer-sized value at +a8 (both overlap mRecords, which is probably only 4 long).
+    const u8 *NameText() {
+        return (const u8 *) this + 0xb0;
+    }
+    u32 NameInfo() {
+        return (u32) ((u8 *) this + 0xa8);
+    }
+
+    // Byte at +56 + 4 * i (a flag per bakugan slot, 4 bytes apart; overlaps mRecords).
+    u8 &Flag56(int i) {
+        return ((u8 *) this)[0x56 + i * 4];
+    }
 
     bool IsActive() const {
         bool active = false;
@@ -102,8 +119,23 @@ struct BattleTarget {
     /* 1dd */ u8 mUnk_1dd;
 };
 
+// 0x14 byte entry of the unit table at BattlePlayerList+0x7c.
+struct BattleUnit {
+    /* 00 */ PAD(0x00, 0x0e);
+    /* 0e */ u8 mUnk_0e;
+    /* 0f */ u8 mUnk_0f;
+    /* 10 */ u8 mUnk_10;
+    /* 11 */ PAD(0x11, 0x14);
+};
+
+struct BattleUnk29c {
+    /* 00 */ PAD(0x00, 0xa0);
+    /* a0 */ u8 mUnk_a0;
+};
+
 struct BattleMarker {
-    /* 0 */ PAD(0, 2);
+    /* 0 */ PAD(0, 1);
+    /* 1 */ u8 mUnk_1;
     /* 2 */ u8 mUnk_2;
     /* 3 */ u8 mUnk_3;
     /* 4 */ u8 mUnk_4;
@@ -114,11 +146,23 @@ struct BattlePlayerList {
     /* 000 */ PAD(0x000, 0x00c);
     /* 00c */ BattlePlayer *mPlayers[4];
     /* 01c */ BattleMarker mUnk_1c[12];
-    /* 07c */ PAD(0x07c, 0x28a);
+    /* 07c */ BattleUnit mUnits[12];
+    /* 16c */ s8 mUnk_16c[14][10];
+    /* 1f8 */ s8 mUnk_1f8[14][10];
+    /* 284 */ PAD(0x284, 0x288);
+    /* 288 */ u16 mUnk_288;
     /* 28a */ u8 mUnk_28a;
-    /* 28b */ PAD(0x28b, 0x298);
+    /* 28b */ u8 mUnk_28b;
+    /* 28c */ u8 mUnk_28c;
+    /* 28d */ PAD(0x28d, 0x28f);
+    /* 28f */ u8 mUnk_28f;
+    /* 290 */ PAD(0x290, 0x292);
+    /* 292 */ u8 mUnk_292;
+    /* 293 */ PAD(0x293, 0x294);
+    /* 294 */ u8 mUnk_294;
+    /* 295 */ PAD(0x295, 0x298);
     /* 298 */ BattleTarget *mUnk_298;
-    /* 29c */ PAD(0x29c, 0x2a0);
+    /* 29c */ BattleUnk29c *mUnk_29c;
     /* 2a0 */ Camera *mCamera;
     /* 2a4 */ UnkStruct_Battle2a4 *mUnk_2a4;
     /* 2a8 */ PAD(0x2a8, 0x2a9);
@@ -129,6 +173,10 @@ struct BattlePlayerList {
 
     BattlePlayer *Current() {
         return mPlayers[mUnk_28a];
+    }
+
+    BattleUnit *Units() {
+        return mUnits;
     }
 
     BattleMarker *Entries() {

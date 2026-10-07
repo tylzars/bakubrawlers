@@ -21,7 +21,8 @@ struct UnkStruct_020d43f0 {
             /* 027 */ u8 mUnk_27_7 : 1;
         };
     };
-    /* 028 */ u16 mUnk_28_0 : 6;
+    /* 028 */ u16 mUnk_28_0 : 5;
+    /* 028 */ u16 mUnk_28_5 : 1;
     /* 028 */ u16 mUnk_28_6 : 1;
     /* 028 */ u16 mUnk_28_7 : 9;
     /* 02a */ u16 mName[12]; // player name, UTF-16

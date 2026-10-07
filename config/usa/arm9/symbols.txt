@@ -793,7 +793,7 @@ _ZN12InputManagerD1Ev kind:function(arm,size=0x4) addr:0x02020a1c
 _ZN12TouchManagerD1Ev kind:function(arm,size=0x4) addr:0x02020a20
 _ZN11TextManagerD1Ev kind:function(arm,size=0x4) addr:0x02020a24
 _ZN12SoundManagerD1Ev kind:function(arm,size=0x4) addr:0x02020a28
-func_02020a2c kind:function(arm,size=0x4) addr:0x02020a2c
+_ZN18UnkStruct_020c3030D1Ev kind:function(arm,size=0x4) addr:0x02020a2c
 func_02020a30 kind:function(arm,size=0x4) addr:0x02020a30
 func_02020a34 kind:function(arm,size=0x4) addr:0x02020a34
 func_02020a38 kind:function(arm,size=0x4) addr:0x02020a38
@@ -806,7 +806,7 @@ func_020219c0 kind:function(arm,size=0x4) addr:0x020219c0
 func_020219c4 kind:function(arm,size=0x4) addr:0x020219c4
 func_020219c8 kind:function(arm,size=0x14) addr:0x020219c8
 func_020219dc kind:function(arm,size=0x10) addr:0x020219dc
-func_020219ec kind:function(arm,size=0x44) addr:0x020219ec
+_Z13func_020219ecj kind:function(arm,size=0x44) addr:0x020219ec
 func_02021a30 kind:function(arm,size=0xc8) addr:0x02021a30
 func_02021af8 kind:function(arm,size=0x2c) addr:0x02021af8
 func_02021b24 kind:function(arm,size=0x13c) addr:0x02021b24
@@ -1090,7 +1090,7 @@ func_0202c024 kind:function(arm,size=0x8) addr:0x0202c024
 func_0202c02c kind:function(arm,size=0x17c) addr:0x0202c02c
 func_0202c1a8 kind:function(arm,size=0x14) addr:0x0202c1a8
 _ZN11TextManager5PrintEPKvtPvjjPsS3_Ptjjjjjjjjj kind:function(arm,size=0x994) addr:0x0202c1bc
-func_0202cb50 kind:function(arm,size=0x1f8) addr:0x0202cb50
+_ZN11TextManager11PrintNumberEjjjPvjjPsS1_jjjjjjj kind:function(arm,size=0x1f8) addr:0x0202cb50
 func_0202cd48 kind:function(arm,size=0x98) addr:0x0202cd48
 _ZN11TextManager8SetColorEjjj kind:function(arm,size=0x64) addr:0x0202cde0
 func_0202ce44 kind:function(arm,size=0x68) addr:0x0202ce44
@@ -1141,22 +1141,22 @@ func_0202ed00 kind:function(arm,size=0x28) addr:0x0202ed00
 func_0202ed28 kind:function(arm,size=0x4) addr:0x0202ed28
 func_0202ed2c kind:function(arm,size=0x10) addr:0x0202ed2c
 func_0202ed3c kind:function(arm,size=0x94) addr:0x0202ed3c
-func_0202edd0 kind:function(arm,size=0x40) addr:0x0202edd0
+_ZN18UnkStruct_020c303013func_0202edd0Ev kind:function(arm,size=0x40) addr:0x0202edd0
 func_0202ee10 kind:function(arm,size=0xa0) addr:0x0202ee10
 func_0202eeb0 kind:function(arm,size=0x4c) addr:0x0202eeb0
 func_0202eefc kind:function(arm,size=0x84) addr:0x0202eefc
 func_0202ef80 kind:function(arm,size=0xa4) addr:0x0202ef80
 func_0202f024 kind:function(arm,size=0x54) addr:0x0202f024
 func_0202f078 kind:function(arm,size=0x54) addr:0x0202f078
-func_0202f0cc kind:function(arm,size=0x68) addr:0x0202f0cc
-func_0202f134 kind:function(arm,size=0x50) addr:0x0202f134
+_ZN18UnkStruct_020c303013func_0202f0ccEj kind:function(arm,size=0x68) addr:0x0202f0cc
+_ZN18UnkStruct_020c303013func_0202f134Ev kind:function(arm,size=0x50) addr:0x0202f134
 func_0202f184 kind:function(arm,size=0x20) addr:0x0202f184
 func_0202f1a4 kind:function(arm,size=0x94) addr:0x0202f1a4
 func_0202f238 kind:function(arm,size=0xc) addr:0x0202f238
 func_0202f244 kind:function(arm,size=0x1c8) addr:0x0202f244
 func_0202f40c kind:function(arm,size=0x14) addr:0x0202f40c
-func_0202f420 kind:function(arm,size=0x48) addr:0x0202f420
-func_0202f468 kind:function(arm,size=0x1b4) addr:0x0202f468
+_ZN18UnkStruct_0202f420C1EjPKvj kind:function(arm,size=0x48) addr:0x0202f420
+_ZN18UnkStruct_0202f42013func_0202f468Ej kind:function(arm,size=0x1b4) addr:0x0202f468
 func_0202f61c kind:function(arm,size=0xe58) addr:0x0202f61c
 _ZN18SelectWindowCursor13func_02030474Ejjjj kind:function(arm,size=0x78) addr:0x02030474
 _ZN18SelectWindowCursor9SetScrollEj kind:function(arm,size=0x1c) addr:0x020304ec
@@ -2648,8 +2648,8 @@ func_02064d7c kind:function(arm,size=0x15c) addr:0x02064d7c
 func_02064ed8 kind:function(arm,size=0xa8) addr:0x02064ed8
 func_02064f80 kind:function(arm,size=0x18) addr:0x02064f80
 func_02064f98 kind:function(arm,size=0x1c0) addr:0x02064f98
-func_02065158 kind:function(arm,size=0x64) addr:0x02065158
-func_020651bc kind:function(arm,size=0x48) addr:0x020651bc
+_ZN18UnkStruct_020651bcC1Ejjj kind:function(arm,size=0x64) addr:0x02065158
+_ZN18UnkStruct_020651bcD1Ev kind:function(arm,size=0x48) addr:0x020651bc
 func_02065204 kind:function(arm,size=0x278) addr:0x02065204
 func_0206547c kind:function(arm,size=0x24) addr:0x0206547c
 func_020654a0 kind:function(arm,size=0x58) addr:0x020654a0
@@ -2824,11 +2824,11 @@ func_02077d2c kind:function(arm,size=0x474) addr:0x02077d2c
 func_020781a0 kind:function(arm,size=0xb0) addr:0x020781a0
 func_02078250 kind:function(arm,size=0x20) addr:0x02078250
 func_02078270 kind:function(arm,size=0x20) addr:0x02078270
-func_02078290 kind:function(arm,size=0x4c) addr:0x02078290
+_ZN18UnkStruct_02078290C1Ej kind:function(arm,size=0x4c) addr:0x02078290
 func_020782dc kind:function(arm,size=0x54) addr:0x020782dc
 func_02078330 kind:function(arm,size=0x5c) addr:0x02078330
 func_0207838c kind:function(arm,size=0x24c) addr:0x0207838c
-func_020785d8 kind:function(arm,size=0x2c4) addr:0x020785d8
+_ZN18UnkStruct_0207829013func_020785d8Ej kind:function(arm,size=0x2c4) addr:0x020785d8
 func_0207889c kind:function(arm,size=0x1ac) addr:0x0207889c
 func_02078a48 kind:function(arm,size=0x70) addr:0x02078a48
 func_02078ab8 kind:function(arm,size=0x35c) addr:0x02078ab8
@@ -3403,7 +3403,7 @@ data_020a56d4 kind:data(any) addr:0x020a56d4
 data_020a56e0 kind:data(any) addr:0x020a56e0
 data_020a56ec kind:data(any) addr:0x020a56ec
 data_020a56f0 kind:data(any) addr:0x020a56f0
-data_020a5738 kind:data(any) addr:0x020a5738
+_ZTV18UnkStruct_020c3030 kind:data(any) addr:0x020a5730
 data_020a5744 kind:data(any) addr:0x020a5744
 data_020a5784 kind:data(any) addr:0x020a5784
 data_020a5788 kind:data(any) addr:0x020a5788
@@ -4628,7 +4628,7 @@ _ZGVZN13SpriteManager3GetEvE8instance kind:bss addr:0x020c17cc weak
 _ZGVZN12InputManager3GetEvE8instance kind:bss addr:0x020c17d0 weak
 data_020c17d4 kind:bss addr:0x020c17d4
 data_020c17d8 kind:bss addr:0x020c17d8
-data_020c17dc kind:bss addr:0x020c17dc
+_ZGVZN18UnkStruct_020c30303GetEvE8instance kind:bss addr:0x020c17dc weak
 data_020c17e0 kind:bss addr:0x020c17e0
 data_020c17ec kind:bss addr:0x020c17ec
 data_020c17f8 kind:bss addr:0x020c17f8
@@ -4661,7 +4661,7 @@ _ZZN13SpriteManager3GetEvE8instance kind:bss addr:0x020c26c0 weak
 data_020c26c4 kind:bss addr:0x020c26c4
 data_020c2acc kind:bss addr:0x020c2acc
 data_020c2ed4 kind:bss addr:0x020c2ed4
-data_020c3030 kind:bss addr:0x020c3030
+_ZZN18UnkStruct_020c30303GetEvE8instance kind:bss addr:0x020c3030 weak
 data_020c3938 kind:bss addr:0x020c3938
 data_020c4030 kind:bss addr:0x020c4030
 data_020c4230 kind:bss addr:0x020c4230

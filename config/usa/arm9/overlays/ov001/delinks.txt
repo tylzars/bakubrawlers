@@ -3,3 +3,15 @@
     .ctor       start:0x022278a8 end:0x022278a8 kind:rodata align:4
     .data       start:0x022278c0 end:0x02229260 kind:data align:32
     .bss        start:0x02229260 end:0x02229300 kind:bss align:32
+
+// provisional: code only. Update (0x02219b54) is not decompiled.
+src/01_Arena/Scene/ArenaScene.cpp:
+    .text       start:0x02219440 end:0x0221cb4c
+
+// provisional: code only. Update (0x0221cca0) is not decompiled.
+src/01_Arena/Scene/ArenaWindowScene.cpp:
+    .text       start:0x0221cb4c end:0x0221e17c
+
+// provisional: code only, and only the first part of the class (from 0x0221fa94 on is not assigned yet).
+src/01_Arena/Scene/FieldSelectScene.cpp:
+    .text       start:0x0221e17c end:0x0221fa94

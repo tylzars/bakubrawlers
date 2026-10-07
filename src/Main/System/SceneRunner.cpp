@@ -108,7 +108,6 @@ extern void func_02007230();
 extern void func_0202555c();
 extern void func_020255f8(void (*hook)());
 extern void func_02025df8();
-extern BOOL func_0203dd0c(FrameTask *task, u32 channel);
 
 SceneRunner::SceneRunner() : SceneBase(0, 3) {
     mOverlay      = -1;

@@ -66,3 +66,5 @@ public:
     void func_0203dd90();
     void func_0203ddb0(u32 channel, u32 level);
 };
+
+BOOL func_0203dd0c(FrameTask *task, u32 channel); // nonzero when the channel's task has finished

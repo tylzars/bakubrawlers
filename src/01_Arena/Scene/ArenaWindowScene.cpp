@@ -155,7 +155,6 @@ void ArenaWindowScene::func_ov001_0221e15c() {
     }
 }
 
-extern BOOL func_0203dd0c(FrameTask *task, u32 unk2);
 extern void func_020219dc();
 void ArenaWindowScene::Update() {
     switch (mUnk_24) {

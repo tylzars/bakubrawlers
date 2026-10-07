@@ -4,9 +4,6 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-void func_02023708(const char *path, u32 a, u32 b, u32 c, u32 d, u32 e);
-int func_02023874();
-void *func_02023864();
 // the original passes a pointer here (the declaration in FileSystem.hpp takes u32)
 const char *data_020b24e4[6] = {"head", "up", "down", "hair", "glasse", "cap"}; // part names, .data 0x020b24bc-0x020b24fc
 extern MtxFx43 data_0220e86c;

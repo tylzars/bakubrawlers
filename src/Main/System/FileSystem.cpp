@@ -173,12 +173,11 @@ BOOL func_02023ad4(const char *path) {
 }
 
 // non-matching: 10 words, registers of compressed and outSize swapped.
-void *func_02023708(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk6) {
+void *func_02023708(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32 unk6) {
     void *buffer = (void *) unk2;
     u32 offset   = unk3;
     u32 size     = unk4;
     u32 compressed;
-    u32 *outSize = (u32 *) unk5;
     u32 mode     = unk6;
     switch (mode) {
         case 2:

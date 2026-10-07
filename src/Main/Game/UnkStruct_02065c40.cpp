@@ -1,0 +1,2412 @@
+#include "Game/UnkStruct_02065c40.hpp"
+#include "Unknown/UnkStruct_02087898.hpp"
+
+#include "Graphics/Camera.hpp"
+#include "Graphics/CellAnimation.hpp"
+#include "Graphics/Display.hpp"
+#include "Graphics/Model.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "System/FrameTask.hpp"
+#include "System/SoundManager.hpp"
+#include "Game/UnkStruct_020d433c.hpp"
+#include "Game/UnkStruct_020d43f0.hpp"
+
+#include <nitro/gx.h>
+#include <nitro/mi.h>
+#include <nitro/os.h>
+#include <stdio.h>
+#include "Graphics/CharacterModel.hpp"
+#include "System/FileSystem.hpp"
+#include "Graphics/UnkStruct_0203d374.hpp"
+#include "System/InputManager.hpp"
+#include "System/TouchManager.hpp"
+#include "Graphics/ModelInternal.hpp"
+
+extern UnkStruct_02065c40 *data_02219288;
+extern const u32 data_020a23cc[8][6];
+void func_020360cc(UnkStruct_SpriteManager_28 *slot);
+void func_02038444(u32 a, u32 b);
+
+UnkStruct_02065c40::UnkStruct_02065c40(u32 unk1, u32 unk2, u32 unk3) :
+    SceneBase(0x3e8, 0) {
+    mUnk_1010 = NULL;
+    mUnk_1014 = NULL;
+    mUnk_1018 = NULL;
+    mUnk_12ac = 0;
+    mUnk_12b8 = 0;
+    mUnk_12b9 = 0;
+    mUnk_12ba = 0;
+    mUnk_12bc = 0;
+    mUnk_12be = 0;
+    mUnk_12c0 = 0;
+    mUnk_12c2 = 0;
+    mUnk_12c5 = 0;
+    mUnk_12ca = 0;
+    mUnk_12cb = 0;
+    mUnk_12cc = 0;
+    mUnk_12ce = 0;
+    mUnk_12d0 = 0;
+    mUnk_14d2 = -1;
+    mUnk_14d3 = 0;
+    mUnk_14d4 = 0;
+    mUnk_14d5 = -16;
+    mUnk_14d6 = -16;
+    mUnk_14d7 = 0;
+    mUnk_14d8 = 0;
+    mUnk_14d9 = 0;
+    mUnk_14de = 1;
+    mUnk_14e0 = 0;
+    mUnk_14e1 = 0;
+    mUnk_14e2 = unk1;
+    mUnk_14e4 = 0;
+    mUnk_14e5 = 0;
+    mUnk_14e6 = 0;
+    mUnk_14e7 = 0;
+    mUnk_14e8 = 0;
+    mUnk_14e9 = 0;
+    mUnk_14ea = 0;
+    mUnk_14eb = 0;
+    mUnk_14ec = 0;
+    mUnk_14ed = 0;
+    mUnk_14ee = 0;
+    mUnk_14ef = 0;
+    mUnk_14f0 = unk2;
+    mUnk_14f1 = unk3;
+    mUnk_14f2 = 0;
+    mUnk_14f3 = 0;
+    data_02219288 = this;
+    MI_CpuClear32(&mUnk_100c, 4);
+    MI_CpuClear32(mUnk_11b4, 0x90);
+    MI_CpuClear32(mUnk_101c, 0x68);
+    MI_CpuClear32(mUnk_1084, 0xa8);
+    MI_CpuClear32(mUnk_112c, 0x88);
+    for (u8 i = 0; i < 2; i++) {
+        mUnk_11b4[i].mUnk_36 = -1;
+        mUnk_11b4[i].mUnk_37 = -1;
+        mUnk_101c[i].mUnk_30 = -1;
+        mUnk_1084[i].mUnk_48 = -1;
+        mUnk_1084[i].mUnk_4a = -1;
+        mUnk_1084[i].mUnk_4c = 1;
+        mUnk_1084[i].mUnk_4f = 0x80;
+        mUnk_11b4[i].mUnk_3d = 0x28;
+        mUnk_11b4[i].mUnk_3f = 0x80;
+        mUnk_11b4[i].mUnk_40 = 0x80;
+        mUnk_11b4[i].mUnk_41 = 0x80;
+        mUnk_112c[i].mUnk_34 = -1;
+        mUnk_112c[i].mUnk_35 = -1;
+        mUnk_112c[i].mUnk_38 = 0x80;
+        mUnk_112c[i].mUnk_39 = 0x80;
+        mUnk_112c[i].mUnk_3a = 0x80;
+        mUnk_112c[i].mUnk_40 = 0;
+        mUnk_112c[i].mUnk_3f = 10;
+    }
+    MI_CpuClear32(&mUnk_12b0, 4);
+    MI_CpuClear32(&mUnk_12b4, 4);
+    mUnk_1288 = new Camera();
+    mUnk_1288->SetUp(0, 0x1000, 0);
+    mUnk_1288->SetClip(0x1000, 0x1388000);
+    CameraManager::Get().mActive = 0;
+    CameraManager::Get().func_02026504(1, mUnk_1288, 0);
+    func_02069bdc();
+    func_02069c6c();
+    mUnk_1018 = new UnkStruct_02087898();
+    G2_SetBlendBrightness(1, -16);
+    if (mUnk_14f0 != 0) {
+        FrameTask::Get().func_0203dd74(0);
+    }
+    FrameTask::Get().func_0203dd74(1);
+    data_020d433c.mUnk_9a = 0x11;
+    data_020d433c.mUnk_9a_0 = data_020d43f0[0].mUnk_28_6;
+    data_020d433c.mUnk_7a = 1;
+    if (data_020d433c.mUnk_84 != 0) {
+        func_02038444(SoundManager::Get().mUnk_9c, 2);
+    } else {
+        SoundManager::Get().func_020245a4();
+    }
+    SoundManager::Get().func_020246d4(3);
+    func_020666d8();
+}
+
+UnkStruct_02065c40::~UnkStruct_02065c40() {
+    func_02023a54();
+    if (mUnk_100c != NULL) {
+        delete mUnk_100c;
+    }
+    func_02067708(1);
+    for (u8 i = 0; i < 2; i++) {
+        for (u8 j = 0; j < 3; j++) {
+            if (mUnk_1084[i].mUnk_3c[j] != NULL) {
+                OS_Free(mUnk_1084[i].mUnk_3c[j]);
+            }
+        }
+    }
+    ModelInstance *instance = mUnk_1010;
+    if (instance != NULL) {
+        instance->mUnk_68 = 0xf;
+        delete instance;
+    }
+    delete mUnk_1288;
+    UnkStruct_02029ca8 *lights = mUnk_1014;
+    if (lights != NULL) {
+        delete lights;
+    }
+    CameraManager::Get().func_02026504(0, NULL, 0);
+    if (mUnk_14f0 != 0) {
+        FrameTask::Get().func_0203dd74(0);
+    }
+    FrameTask::Get().func_0203dd74(1);
+    SoundManager::Get().func_02024754(1);
+    if (data_020d433c.mUnk_84 == 0) {
+        SoundManager::Get().func_02024688(1);
+    }
+}
+
+void UnkStruct_02065c40::func_020666d8() {
+    SpriteManager::Get().func_0202740c();
+    UnkStruct_SpriteManager_28 slot;
+    func_020360cc(&slot);
+    for (u8 i = 0; i < 8; i++) {
+        for (u8 j = 0; j < 6; j++) {
+            slot.mUnk_00[j] = data_020a23cc[i][j];
+        }
+        SpriteManager::Get().func_02027578(i, &slot);
+    }
+}
+
+struct UnkStruct_Pair {
+    u8 mUnk_0;
+    u8 mUnk_1;
+};
+
+struct UnkStruct_020b4324_entry {
+    UnkStruct_Pair mPairs[3];
+    u8 mUnk_06;
+    u8 mUnk_07;
+    u8 mUnk_08;
+    u8 mUnk_09;
+    u8 mUnk_0a;
+    u8 mUnk_0b;
+};
+
+struct UnkStruct_020b4324 {
+    UnkStruct_020b4324_entry mEntries[10];
+    u8 mUnk_78;
+    u8 mUnk_79;
+};
+
+extern UnkStruct_020b4324 *data_020b4324[11];
+extern const u8 data_020a1c38[];
+
+u32 UnkStruct_02065c40::func_020667ec() {
+    u8 type = data_020d43f0[0].mUnk_42;
+    if (type >= 11) {
+        return 7;
+    }
+    return data_020b4324[type]->mUnk_78;
+}
+
+BOOL UnkStruct_02065c40::func_02066c7c() {
+    return func_02066814(0) != -1;
+}
+
+void UnkStruct_02065c40::func_020676f8() {
+    mUnk_14e0 = 1;
+}
+
+BOOL UnkStruct_02065c40::func_020678e8() {
+    return mUnk_12b9 != 9;
+}
+
+u32 UnkStruct_02065c40::func_02067900() {
+    if (mUnk_14ea | mUnk_14eb) {
+        return 0;
+    }
+    return mUnk_14e1;
+}
+
+void UnkStruct_02065c40::func_0206791c(u32 unk1) {
+    mUnk_14e1 = unk1;
+    mUnk_12c5 = 7;
+    mUnk_12b9 = 4;
+}
+
+BOOL UnkStruct_02065c40::func_02067938() {
+    return mUnk_14e6;
+}
+
+void UnkStruct_02065c40::func_02067944() {
+    mUnk_14e6 = 0;
+}
+
+u32 UnkStruct_02065c40::func_02067954() {
+    if (mUnk_12b9 == 6) {
+        return mUnk_14ea;
+    }
+    return 0;
+}
+
+void UnkStruct_02065c40::func_0206796c() {
+    mUnk_14ea = 0;
+}
+
+u32 UnkStruct_02065c40::func_0206797c() {
+    return mUnk_14eb;
+}
+
+void UnkStruct_02065c40::func_02067988() {
+    mUnk_14eb = 0;
+}
+
+u32 UnkStruct_02065c40::func_020670b4(u32 id) {
+    switch (id) {
+        case 1: return 1;
+        case 3: return 2;
+        case 6: return 3;
+        case 7: return 4;
+        case 8: return 5;
+        case 9: return 6;
+    }
+    return 0;
+}
+
+u8 UnkStruct_02065c40::func_02067240(u32 id) {
+    return data_020a1c38[func_020670b4(id)];
+}
+
+void UnkStruct_02065c40::func_02067998(u8 unk1) {
+    if (unk1) {
+        NNSG3dAnmObj *obj = mUnk_101c[0].mUnk_2c->mAnim->func_02029a58(1, unk1);
+        mUnk_101c[0].mUnk_2c->func_02028f54(obj);
+    } else {
+        mUnk_101c[0].mUnk_2c->func_02028f88();
+    }
+}
+
+void UnkStruct_02065c40::func_020679d8() {
+    if (mUnk_14d4 == 0) {
+        func_02067a30();
+        return;
+    }
+    if (mUnk_14d5 == 0) {
+        return;
+    }
+    mUnk_14d7 = mUnk_14d5;
+    mUnk_14d6 = 0;
+    mUnk_14d8 = 0;
+    s32 v = mUnk_14d5;
+    if (v < 0) {
+        v = -v;
+    }
+    mUnk_14d9 = v;
+    func_02067a30();
+}
+
+void UnkStruct_02065c40::func_02067a30() {
+    if (mUnk_14d9 == 0) {
+        return;
+    }
+    s32 t = mUnk_14d8 + 1;
+    if (t > mUnk_14d9) {
+        t = mUnk_14d9;
+    }
+    mUnk_14d8 = t;
+    s8 from = mUnk_14d7;
+    s8 to   = mUnk_14d6;
+    s8 d = to - from;
+    int v = from + d * mUnk_14d8 / mUnk_14d9;
+    if (v > 16) {
+        v = 16;
+    } else if (v < -16) {
+        v = -16;
+    }
+    mUnk_14d5 = v;
+    if (mUnk_14d9 <= mUnk_14d8) {
+        mUnk_14d5 = mUnk_14d6;
+        mUnk_14d7 = mUnk_14d6;
+        mUnk_14d8 = 0;
+        mUnk_14d9 = 0;
+    }
+    if (mUnk_14d3 == 0) {
+        G2_SetBlendBrightness(0x21, mUnk_14d5);
+    }
+}
+
+void UnkStruct_02065c40::func_02067e2c(u32 index, u8 unk2) {
+    UnkStruct_0205401c *model = mUnk_11b4[index].mUnk_2c;
+    if (model == NULL) {
+        return;
+    }
+    model->func_02054694(unk2);
+    mUnk_11b4[index].mUnk_3b = 0;
+    mUnk_11b4[index].mUnk_3e = unk2;
+}
+
+void UnkStruct_02065c40::func_02067e74() {
+    for (u8 i = 0; i < 2; i++) {
+        if (mUnk_11b4[i].mUnk_43 != 0) {
+            func_0206852c(i);
+            mUnk_11b4[i].mUnk_43 = 0;
+        }
+        if (mUnk_112c[i].mUnk_42 != 0) {
+            func_02069a24(i);
+            mUnk_112c[i].mUnk_42 = 0;
+        }
+        if (mUnk_1084[i].mUnk_51 != 0) {
+            func_02069340(i);
+            mUnk_1084[i].mUnk_51 = 0;
+        }
+    }
+}
+
+void UnkStruct_02065c40::func_02068074(u32 index) {
+    UnkStruct_0205401c *model = mUnk_11b4[index].mUnk_30;
+    if (model != NULL) {
+        model->func_02054034();
+        delete model;
+    }
+    mUnk_11b4[index].mUnk_30 = NULL;
+    if (mUnk_11b4[index].mUnk_37 < 0) {
+        return;
+    }
+    mUnk_11b4[index].mUnk_30 = new UnkStruct_0205401c();
+    mUnk_11b4[index].mUnk_30->func_020543e8((u8) mUnk_11b4[index].mUnk_37, 0, 0, 0);
+}
+
+extern const s8 data_020a1b2a[][5];
+extern const s8 data_020a1ac6[][5];
+extern const s8 data_020a1ad5[][5];
+extern const s8 data_020a1ae4[][5];
+extern const s8 data_020a1af3[][5];
+extern const s8 data_020a1b02[][5];
+
+BOOL UnkStruct_02065c40::func_020680f8(u32 index, u32 flag) {
+    u8 variant;
+    s8 kind;
+    UnkStruct_0205401c **slot;
+    if (flag) {
+        variant = mUnk_11b4[index].mUnk_38;
+        kind    = mUnk_11b4[index].mUnk_37;
+        slot    = &mUnk_11b4[index].mUnk_30;
+    } else {
+        variant = mUnk_11b4[index].mUnk_3a;
+        kind    = mUnk_11b4[index].mUnk_36;
+        slot    = &mUnk_11b4[index].mUnk_2c;
+    }
+    if (kind < 0) {
+        return TRUE;
+    }
+    func_020682a0(index, kind);
+    if (flag) {
+        if (!(*slot)->func_020544e4()) {
+            return FALSE;
+        }
+    } else {
+        *slot = new UnkStruct_0205401c();
+        u8 id = kind;
+        (*slot)->func_0205411c(id, 0, 0, 0);
+        u8 a = func_020687a8(id, variant, 0);
+        u8 b = func_020687a8(id, variant, 3);
+        (*slot)->func_02054644(b, a);
+        if (kind == 0x15) {
+            ((CharacterModel *) (*slot)->mUnk_04)->mParts[0]->mAnim->mUnk_08 = 1;
+        } else {
+            ((ModelTransform *) (*slot)->mUnk_08)->mModel->mAnim->mUnk_08 = 1;
+        }
+        mUnk_11b4[index].mUnk_39 = variant;
+        (*slot)->func_02054694(0);
+        mUnk_11b4[index].mUnk_3e = 0;
+        MI_CpuClear16(&mUnk_11b4[index], 0x18);
+        MI_CpuClear16(mUnk_11b4[index].mUnk_18, 0x14);
+        func_020683cc(index);
+    }
+    return TRUE;
+}
+
+void UnkStruct_02065c40::func_020682a0(u32 index, u32 kind) {
+    if (kind == 0x15) {
+        SpriteManager::Get().func_0202753c(3);
+    } else if (index == 0) {
+        SpriteManager::Get().func_0202753c(2);
+    } else {
+        SpriteManager::Get().func_0202753c(1);
+    }
+}
+
+void UnkStruct_02065c40::func_0206852c(u32 index) {
+    if (mUnk_11b4[index].mUnk_30 == NULL) {
+        return;
+    }
+    UnkStruct_0205401c *old = mUnk_11b4[index].mUnk_2c;
+    if (old != NULL) {
+        old->func_02054034();
+        delete old;
+    }
+    mUnk_11b4[index].mUnk_2c = mUnk_11b4[index].mUnk_30;
+    mUnk_11b4[index].mUnk_30 = NULL;
+    mUnk_11b4[index].mUnk_36 = mUnk_11b4[index].mUnk_37;
+    mUnk_11b4[index].mUnk_39 = mUnk_11b4[index].mUnk_38;
+    mUnk_11b4[index].mUnk_3a = mUnk_11b4[index].mUnk_38;
+    func_020683cc(index);
+    s8 kind    = mUnk_11b4[index].mUnk_36;
+    s8 variant = mUnk_11b4[index].mUnk_3a;
+    func_020682a0(index, kind);
+    mUnk_11b4[index].mUnk_2c->func_0205451c();
+    u8 variantId = variant;
+    u8 id        = kind;
+    u8 a         = func_020687a8(id, variantId, 0);
+    u8 b         = func_020687a8(id, variantId, 3);
+    mUnk_11b4[index].mUnk_2c->func_02054644(b, a);
+    if (kind == 0x15) {
+        ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim->mUnk_08 = 1;
+    } else {
+        ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim->mUnk_08 = 1;
+    }
+}
+
+void UnkStruct_02065c40::func_020683cc(u32 index) {
+    switch (mUnk_11b4[index].mUnk_36) {
+        case 2:
+            mUnk_11b4[index].mUnk_34 = 0x3c;
+            break;
+        case 3:
+            mUnk_11b4[index].mUnk_34 = -0x14;
+            break;
+        case 14:
+            mUnk_11b4[index].mUnk_34 = 0x28;
+            break;
+        case 11:
+            mUnk_11b4[index].mUnk_34 = -0x78;
+            break;
+        case 12:
+            mUnk_11b4[index].mUnk_34 = 0x28;
+            break;
+        case 9:
+            mUnk_11b4[index].mUnk_34 = -0x28;
+            break;
+        default:
+            mUnk_11b4[index].mUnk_34 = 0;
+            break;
+    }
+    switch (mUnk_11b4[index].mUnk_36) {
+        case 13:
+            mUnk_11b4[index].mUnk_3d = 0x3c;
+            break;
+        case 14:
+            mUnk_11b4[index].mUnk_3d = 0x1e;
+            break;
+        default:
+            mUnk_11b4[index].mUnk_3d = 0x28;
+            break;
+    }
+    mUnk_11b4[index].mUnk_3f = 0x80;
+    mUnk_11b4[index].mUnk_40 = 0x80;
+    mUnk_11b4[index].mUnk_41 = 0x80;
+    mUnk_11b4[index].mUnk_42 = 0;
+    mUnk_11b4[index].mUnk_3c = 0;
+}
+
+s8 UnkStruct_02065c40::func_020687a8(s32 kind, u32 index, u32 column) {
+    if (index < 6) {
+        return data_020a1b2a[index][column];
+    }
+    u8 row = index - 6;
+    switch (kind) {
+        case 0:
+            return data_020a1ac6[row][column];
+        case 0x15:
+            return data_020a1ae4[row][column];
+        case 6:
+            return data_020a1ad5[row][column];
+        case 0x12:
+            return data_020a1af3[row][column];
+        default:
+            return data_020a1b02[row][column];
+    }
+}
+
+void UnkStruct_02065c40::func_0206867c(u32 index, u32 value) {
+    if (value == mUnk_11b4[index].mUnk_3c) {
+        return;
+    }
+    mUnk_11b4[index].mUnk_3c = value;
+    if (mUnk_11b4[index].mUnk_2c == NULL) {
+        return;
+    }
+    mUnk_11b4[index].mUnk_2c->func_0205466c(mUnk_11b4[index].mUnk_3c);
+    if (mUnk_11b4[index].mUnk_3b == 0) {
+        return;
+    }
+    if (mUnk_11b4[index].mUnk_36 == 0x15) {
+        ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim->mUnk_08 = 0;
+    } else {
+        ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim->mUnk_08 = 0;
+    }
+}
+
+void UnkStruct_02065c40::func_02068714() {
+    for (u8 i = 0; i < 2; i++) {
+        s32 kind = mUnk_11b4[i].mUnk_36;
+        if (kind < 0) {
+            continue;
+        }
+        if (kind == mUnk_1018->mUnk_42) {
+            if (mUnk_1018->func_02088ef4()) {
+                func_0206867c(i, 1);
+            } else {
+                func_0206867c(i, 0);
+            }
+        } else {
+            func_0206867c(i, 0);
+        }
+    }
+}
+
+void UnkStruct_02065c40::func_02068884(u32 index) {
+    if (mUnk_11b4[index].mUnk_2c == NULL) {
+        return;
+    }
+    s16 rot[3];
+    rot[0] = mUnk_11b4[index].mUnk_18[0];
+    rot[1] = mUnk_11b4[index].mUnk_18[1];
+    rot[2] = mUnk_11b4[index].mUnk_18[2];
+    mUnk_11b4[index].mUnk_2c->func_020546e4((const u16 *) rot);
+}
+
+BOOL UnkStruct_02065c40::func_020688e0(s32 value) {
+    if (value == mUnk_101c[0].mUnk_30) {
+        return FALSE;
+    }
+    if (value != -2) {
+        mUnk_101c[0].mUnk_30 = value;
+    }
+    ModelInstance *instance = mUnk_101c[0].mUnk_2c;
+    if (instance != NULL) {
+        instance->mUnk_68 = 0xf;
+        delete instance;
+        mUnk_101c[0].mUnk_2c = NULL;
+    }
+    if (mUnk_101c[0].mUnk_30 < 0) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+struct UnkStruct_020a22ac {
+    /* 0 */ const char *mName;
+    /* 4 */ s16 mX;
+    /* 6 */ s16 mY;
+    /* 8 */
+};
+extern const UnkStruct_020a22ac data_020a22ac[18];
+
+static inline fx32 FxRound(s32 v) {
+    s32 t = v;
+    return (fx32) (t > 0 ? t + 0.5f : t - 0.5f);
+}
+
+#define FX_FROM_INT_ROUND(x) ((fx32) (((x) > 0) ? (((x) << 12) + 0.5f) : (((x) << 12) - 0.5f)))
+
+BOOL UnkStruct_02065c40::func_02068954() {
+    char path[0x80];
+    SpriteManager::Get().func_0202753c(0);
+    s32 index = mUnk_101c[0].mUnk_30;
+    if (index > 0x11) {
+        index = 0x11;
+    } else if (index < 0) {
+        index = 0;
+    }
+    u8 id = index;
+    ChangeDir("/Story/Map/");
+    sprintf(path, "%s.nsbtx", data_020a22ac[id].mName);
+    NitroTexture *texture = new NitroTexture(path);
+    sprintf(path, "%s.nsbmd", data_020a22ac[id].mName);
+    NitroModel *model = new NitroModel;
+    model->func_020289e0(path, texture);
+    texture->func_02028344();
+    if ((id != 8) & (id != 9)) {
+        sprintf(path, "%s_data.bin", data_020a22ac[id].mName);
+        ModelAnimData *animData = new ModelAnimData(path);
+        ModelAnim *anim         = new ModelAnim(animData, model);
+        mUnk_101c[0].mUnk_2c    = model->func_02028b78(anim);
+        mUnk_101c[0].mUnk_2c->func_02028e54(0, 1, 0x1000);
+    } else {
+        mUnk_101c[0].mUnk_2c = model->func_02028b78(NULL);
+    }
+    ChangeDir("/");
+    func_02069bdc();
+    func_02069c6c();
+    MI_CpuClear16(mUnk_101c[0].mUnk_18, 0x14);
+    MI_CpuClear16(&mUnk_101c[0], 0x18);
+    mUnk_101c[0].mUnk_00 = 0;
+    s16 x = data_020a22ac[id].mX;
+    mUnk_101c[0].mUnk_04 = FX_FROM_INT_ROUND(x);
+    s16 y = data_020a22ac[id].mY;
+    mUnk_101c[0].mUnk_08 = FX_FROM_INT_ROUND(y);
+    mUnk_101c[0].mUnk_0c[0] = 0;
+    mUnk_101c[0].mUnk_0c[1] = x;
+    mUnk_101c[0].mUnk_0c[2] = y;
+    mUnk_101c[0].mUnk_12[0] = mUnk_101c[0].mUnk_0c[0];
+    mUnk_101c[0].mUnk_12[1] = mUnk_101c[0].mUnk_0c[1];
+    mUnk_101c[0].mUnk_12[2] = mUnk_101c[0].mUnk_0c[2];
+    mUnk_101c[0].mUnk_32 = 0;
+    return TRUE;
+}
+
+struct UnkStruct_020a2554 {
+    /* 0 */ const char *mName;
+    /* 4 */ u8 mDir;
+    /* 5 */ u8 mUnk_05;
+    /* 6 */ u8 mData;
+    /* 7 */ PAD(0x07, 0x08);
+    /* 8 */
+};
+extern const UnkStruct_020a2554 data_020a2554[42];
+extern const char *data_020b431c[];
+
+struct UnkStruct_020a1bd6 {
+    /* 0 */ u8 mUnk_0;
+    /* 1 */ u8 mUnk_1;
+    /* 2 */ u8 mUnk_2;
+    /* 3 */
+};
+extern const UnkStruct_020a1bd6 data_020a1bd6[];
+
+BOOL UnkStruct_02065c40::func_02068c54(u32 index, s32 value) {
+    if (value == mUnk_1084[index].mUnk_48) {
+        return FALSE;
+    }
+    if (value != -2) {
+        mUnk_1084[index].mUnk_48 = value;
+    }
+    if (index == 0) {
+        UnkStruct_0205401c *model = mUnk_11b4[1].mUnk_2c;
+        if (model != NULL) {
+            model->func_02054034();
+            delete model;
+        }
+        mUnk_11b4[1].mUnk_2c = NULL;
+    } else {
+        UnkStruct_0203d374 *object = mUnk_112c[1].mUnk_2c;
+        if (object != NULL) {
+            delete object;
+        }
+        mUnk_112c[1].mUnk_2c = NULL;
+    }
+    func_020695e8(index);
+    if (mUnk_1084[index].mUnk_48 < 0) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+void UnkStruct_02065c40::func_02068d0c(UnkStruct_02028308 *texture, u32 id) {
+    if ((id == 0x1d) | (id == 0x1c)) {
+        char name[0x40];
+        char file[0x40];
+        ChangeDir("/Game/Realbaku/Tex");
+        u8 i;
+        const char *prefix = data_020a2554[id].mName;
+        u8 variant         = data_020d43f0[0].mUnk_1a_8;
+        for (i = 0; i < 11; i++) {
+            sprintf(name, "%s_%02d", prefix, i);
+            sprintf(file, "%s_%02d_%02d", prefix, i, variant);
+            texture->func_02028858(name, file, 0);
+        }
+        ChangeDir("/");
+    }
+}
+
+void UnkStruct_02065c40::func_02069120(u32 index, u32 value) {
+    mUnk_1084[index].mUnk_4a = value;
+    mUnk_1084[index].mUnk_52 = 0;
+    for (u8 j = 0; j < 3; j++) {
+        if (mUnk_1084[index].mUnk_3c[j] != NULL) {
+            OS_Free(mUnk_1084[index].mUnk_3c[j]);
+            mUnk_1084[index].mUnk_3c[j] = NULL;
+        }
+    }
+    mUnk_12b8 = 0;
+}
+
+void UnkStruct_02065c40::func_020695e8(u32 index) {
+    ModelInstance *instance = mUnk_1084[index].mUnk_2c;
+    if (instance != NULL) {
+        instance->mUnk_68 = 0xf;
+        delete instance;
+        mUnk_1084[index].mUnk_2c = NULL;
+    }
+    for (u8 j = 0; j < 3; j++) {
+        if (mUnk_1084[index].mUnk_30[j] != NULL) {
+            OS_Free(mUnk_1084[index].mUnk_30[j]);
+            mUnk_1084[index].mUnk_30[j] = NULL;
+        }
+    }
+}
+
+BOOL UnkStruct_02065c40::func_02069680(u32 index) {
+    if (index == 1) {
+        func_020695e8(1);
+    }
+    UnkStruct_0203d374 *object = mUnk_112c[index].mUnk_2c;
+    if (object != NULL) {
+        delete object;
+    }
+    mUnk_112c[index].mUnk_2c = NULL;
+    if (mUnk_112c[index].mUnk_34 < 0) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+void UnkStruct_02065c40::func_020696e8(u32 index) {
+    UnkStruct_0203d374 *object = mUnk_112c[index].mUnk_30;
+    if (object != NULL) {
+        delete object;
+    }
+    mUnk_112c[index].mUnk_30 = NULL;
+    s32 kind = mUnk_112c[index].mUnk_35;
+    if (kind < 0) {
+        return;
+    }
+    mUnk_112c[index].mUnk_30 = new UnkStruct_0203d374();
+    u8 value = func_02069780(kind);
+    mUnk_112c[index].mUnk_30->func_0203d6e0(data_020a1bd6[kind].mUnk_0, value, 5);
+}
+
+u8 UnkStruct_02065c40::func_02069780(u32 index) {
+    switch (data_020a1bd6[index].mUnk_0) {
+        case 0x24:
+        case 0x25:
+            return data_020d43f0[0].mUnk_1a_8;
+    }
+    return data_020a1bd6[index].mUnk_1;
+}
+
+
+BOOL UnkStruct_02065c40::func_02068e14(u32 index) {
+    char path[0x80];
+    if (index == 0) {
+        SpriteManager::Get().func_0202753c(1);
+    } else {
+        SpriteManager::Get().func_0202753c(6);
+    }
+    s32 value = mUnk_1084[index].mUnk_48;
+    if (value > 0x29) {
+        value = 0x29;
+    } else if (value < 0) {
+        value = 0;
+    }
+    u8 id;
+    u8 dir;
+    NitroTexture *texture;
+    NitroModel *model;
+    id  = value;
+    dir = data_020a2554[id].mDir;
+    ChangeDir(data_020b431c[dir]);
+    sprintf(path, "%s.nsbtx", data_020a2554[id].mName);
+    texture = new NitroTexture(path);
+    func_02068d0c(texture, id);
+    ChangeDir(data_020b431c[dir]);
+    sprintf(path, "%s.nsbmd", data_020a2554[id].mName);
+    model = new NitroModel;
+    model->func_020289e0(path, texture);
+    if (dir != 1) {
+        texture->func_02028344();
+    }
+    if (data_020a2554[id].mData != 0) {
+        sprintf(path, "%s_data.bin", data_020a2554[id].mName);
+        ModelAnimData *animData = new ModelAnimData(path);
+        ModelAnim *anim         = new ModelAnim(animData, model);
+        mUnk_1084[index].mUnk_2c = model->func_02028b78(anim);
+        mUnk_1084[index].mUnk_2c->func_02028e54(0, 1, 0x1000);
+    } else {
+        mUnk_1084[index].mUnk_2c = model->func_02028b78(NULL);
+    }
+    ChangeDir("/");
+    MI_CpuClear16(&mUnk_1084[index], 0x18);
+    MI_CpuClear16(mUnk_1084[index].mUnk_18, 0x14);
+    mUnk_1084[index].mUnk_4d = 0;
+    mUnk_1084[index].mUnk_4e = 0;
+    mUnk_1084[index].mUnk_4c = data_020a2554[id].mUnk_05;
+    mUnk_1084[index].mUnk_4f = 0x80;
+    mUnk_1084[index].mUnk_50 = 0;
+    return TRUE;
+}
+
+BOOL UnkStruct_02065c40::func_02069194(u32 index) {
+    char path[0x80];
+    u8 id = mUnk_1084[index].mUnk_4a;
+    if (mUnk_12b8 != 0) {
+        if (func_02023874() != 0) {
+            return FALSE;
+        }
+        mUnk_1084[index].mUnk_3c[mUnk_12b8 - 1] = func_02023864();
+        if (mUnk_12b8 == 2 && data_020a2554[id].mData == 0) {
+            mUnk_12b8 = 3;
+        }
+    }
+    if (mUnk_12b8 < 3) {
+        ChangeDir("/");
+        switch (mUnk_12b8) {
+            case 0:
+                sprintf(path, "%s%s.nsbtx", data_020b431c[data_020a2554[id].mDir], data_020a2554[id].mName);
+                break;
+            case 1:
+                sprintf(path, "%s%s.nsbmd", data_020b431c[data_020a2554[id].mDir], data_020a2554[id].mName);
+                break;
+            case 2:
+                sprintf(path, "%s%s_data.bin", data_020b431c[data_020a2554[id].mDir], data_020a2554[id].mName);
+                break;
+        }
+        func_02023708(path, 0, 0, 0, 0, 0);
+        mUnk_12b8++;
+        return FALSE;
+    }
+    return TRUE;
+}
+
+void UnkStruct_02065c40::func_02069340(u32 index) {
+    func_020695e8(index);
+    if (index == 0) {
+        SpriteManager::Get().func_0202753c(1);
+    } else {
+        SpriteManager::Get().func_0202753c(6);
+    }
+    u8 id = mUnk_1084[index].mUnk_4a;
+    UnkStruct_02028308 *texture = new NitroTextureData(mUnk_1084[index].mUnk_3c[0]);
+    func_02068d0c(texture, id);
+    NitroModel *model = new NitroModel;
+    model->func_02028a2c(mUnk_1084[index].mUnk_3c[1], texture);
+    if (data_020a2554[id].mDir != 1) {
+        texture->func_02028344();
+    }
+    if (data_020a2554[id].mData != 0) {
+        ModelAnimData *animData = new ModelAnimData(mUnk_1084[index].mUnk_3c[2]);
+        ModelAnim *anim         = new ModelAnim(animData, model);
+        mUnk_1084[index].mUnk_2c = model->func_02028b78(anim);
+        mUnk_1084[index].mUnk_2c->func_02028e54(0, 1, 0x1000);
+    } else {
+        mUnk_1084[index].mUnk_2c = model->func_02028b78(NULL);
+    }
+    for (u8 j = 0; j < 3; j++) {
+        mUnk_1084[index].mUnk_30[j] = mUnk_1084[index].mUnk_3c[j];
+        mUnk_1084[index].mUnk_3c[j] = NULL;
+    }
+    mUnk_1084[index].mUnk_2c->func_02028e54(mUnk_1084[index].mUnk_52, 1, 0x1000);
+    mUnk_1084[index].mUnk_48 = mUnk_1084[index].mUnk_4a;
+    mUnk_1084[index].mUnk_4a = -1;
+    mUnk_1084[index].mUnk_4d = 0;
+    mUnk_1084[index].mUnk_4c = data_020a2554[id].mUnk_05;
+}
+
+BOOL UnkStruct_02065c40::func_020697c8(u32 index, u32 flag) {
+    if (index == 0) {
+        SpriteManager::Get().func_0202753c(4);
+    } else {
+        SpriteManager::Get().func_0202753c(5);
+    }
+    if (flag) {
+        if (!mUnk_112c[index].mUnk_30->func_0203d6f0()) {
+            return FALSE;
+        }
+    } else {
+        s32 kind = mUnk_112c[index].mUnk_34;
+        u32 mode = mUnk_112c[index].mUnk_36 != 0 ? 5 : 1;
+        ChangeDir("/");
+        mUnk_112c[index].mUnk_2c = new UnkStruct_0203d374();
+        u8 value = func_02069780(kind);
+        mUnk_112c[index].mUnk_2c->func_0203d4dc(data_020a1bd6[kind].mUnk_0, value, (u8) mode);
+        mUnk_112c[index].mUnk_37 = 0;
+        MI_CpuClear16(&mUnk_112c[index], 0x18);
+        MI_CpuClear16(mUnk_112c[index].mUnk_18, 0x14);
+        func_020699a4(index);
+    }
+    return TRUE;
+}
+
+void UnkStruct_02065c40::func_020699a4(u32 index) {
+    mUnk_112c[index].mUnk_38 = 0x80;
+    mUnk_112c[index].mUnk_39 = 0x80;
+    mUnk_112c[index].mUnk_3a = 0x80;
+    mUnk_112c[index].mUnk_3b = 0;
+    mUnk_112c[index].mUnk_3c = 0;
+    mUnk_112c[index].mUnk_3d = 0;
+    mUnk_112c[index].mUnk_3e = 0;
+    mUnk_112c[index].mUnk_40 = 0;
+    mUnk_112c[index].mUnk_3f = 10;
+    if (mUnk_112c[index].mUnk_36 == 0) {
+        return;
+    }
+    mUnk_112c[index].mUnk_2c->mUnk_49 = 1;
+    mUnk_112c[index].mUnk_2c->mUnk_28->func_02028e54(0, 0, 0x64000);
+}
+
+void UnkStruct_02065c40::func_02069a24(u32 index) {
+    if (mUnk_112c[index].mUnk_30 == NULL) {
+        return;
+    }
+    UnkStruct_0203d374 *object = mUnk_112c[index].mUnk_2c;
+    if (object != NULL) {
+        delete object;
+    }
+    mUnk_112c[index].mUnk_2c = mUnk_112c[index].mUnk_30;
+    mUnk_112c[index].mUnk_30 = NULL;
+    mUnk_112c[index].mUnk_34 = mUnk_112c[index].mUnk_35;
+    mUnk_112c[index].mUnk_36 = 1;
+    if (index == 0) {
+        SpriteManager::Get().func_0202753c(4);
+    } else {
+        SpriteManager::Get().func_0202753c(5);
+    }
+    mUnk_112c[index].mUnk_2c->func_0203d6f8();
+    func_020699a4(index);
+}
+
+void UnkStruct_02065c40::func_02069b80(u32 index) {
+    if (mUnk_112c[index].mUnk_2c == NULL) {
+        return;
+    }
+    u16 rot[3];
+    rot[0] = mUnk_112c[index].mUnk_18[0];
+    rot[1] = mUnk_112c[index].mUnk_18[1];
+    rot[2] = mUnk_112c[index].mUnk_18[2];
+    mUnk_112c[index].mUnk_2c->func_0203db94(rot);
+}
+
+void UnkStruct_02065c40::func_02069bdc() {
+    for (u8 i = 0; i < 2; i++) {
+        MI_CpuClear16(&mUnk_1244[i], 0x18);
+        MI_CpuClear16(&mUnk_1274, 0x14);
+    }
+    mUnk_1244[1].mUnk_08 = -0x64000;
+    mUnk_128c[0] = 0x3c;
+    mUnk_128c[1] = 0x3c;
+    mUnk_128c[2] = 0x3c;
+    mUnk_1292    = 1;
+    func_02069d0c();
+}
+
+void UnkStruct_02065c40::func_02069c6c() {
+    MI_CpuClear16(&mUnk_1298, 0x14);
+    u32 v = 0xfffff23d;
+    mUnk_1298.x = -0x452;
+    mUnk_1298.y = -0x6e1;
+    mUnk_1298.z = v;
+    mUnk_129e.x = mUnk_1298.x;
+    mUnk_129e.y = mUnk_1298.y;
+    mUnk_129e.z = mUnk_1298.z;
+    mUnk_12a4.x = mUnk_1298.x;
+    mUnk_12a4.y = mUnk_1298.y;
+    mUnk_12a4.z = mUnk_1298.z;
+    mUnk_12ac = v >> 17;
+    if (mUnk_1014 == NULL) {
+        return;
+    }
+    mUnk_1014->mLights[0]->mColor = mUnk_12ac;
+    mUnk_1014->func_02029d54();
+}
+
+void UnkStruct_02065c40::func_02069d0c() {
+    u32 fov = mUnk_128c[0];
+    mUnk_1288->func_02026004((u32) (65536.0f * fov / 360.0f));
+}
+
+u16 func_0200198c(fx32 x, fx32 y);
+
+static inline fx32 SinIdx(int idx) {
+    return FX_SinCosTable_[(idx >> 4) * 2];
+}
+static inline fx32 CosIdx(int idx) {
+    return FX_SinCosTable_[(idx >> 4) * 2 + 1];
+}
+
+void UnkStruct_02065c40::func_02069d54() {
+    if (mUnk_1292 == 0) {
+        mUnk_1244[1].mUnk_00 = mUnk_1244[0].mUnk_00 + SinIdx(mUnk_1274.mUnk_02) * 100;
+        mUnk_1244[1].mUnk_08 = mUnk_1244[0].mUnk_08 - CosIdx(mUnk_1274.mUnk_02) * 100;
+        mUnk_1244[1].mUnk_04 = mUnk_1244[0].mUnk_04 + SinIdx(mUnk_1274.mUnk_00) * 100;
+    }
+    fx32 z = mUnk_1244[0].mUnk_08;
+    fx32 y = mUnk_1244[0].mUnk_04;
+    fx32 x = mUnk_1244[0].mUnk_00;
+    if ((z == mUnk_1244[1].mUnk_08) & ((x == mUnk_1244[1].mUnk_00) & (y == mUnk_1244[1].mUnk_04))) {
+        return;
+    }
+    mUnk_1288->SetPosition(x, y, z);
+    mUnk_1288->SetTarget(mUnk_1244[1].mUnk_00, mUnk_1244[1].mUnk_04, mUnk_1244[1].mUnk_08);
+    if (mUnk_1014 == NULL) {
+        return;
+    }
+    s16 dir[3];
+    s16 dx = mUnk_1298.x;
+    s16 dz = mUnk_1298.z;
+    s16 dy = mUnk_1298.y;
+    dir[0] = dx;
+    dir[1] = dy;
+    dir[2] = dz;
+    mUnk_1014->mLights[0]->func_02029c44(dir);
+    mUnk_1014->func_02029d54();
+}
+
+void UnkStruct_02065c40::func_02069eb8(u32 mode) {
+    if (mUnk_1292 == mode) {
+        return;
+    }
+    if (mode != 0) {
+        mUnk_1244[1].mUnk_00 = mUnk_1244[0].mUnk_00 + SinIdx(mUnk_1274.mUnk_02) * 100;
+        mUnk_1244[1].mUnk_08 = mUnk_1244[0].mUnk_08 - CosIdx(mUnk_1274.mUnk_02) * 100;
+        mUnk_1244[1].mUnk_0c = mUnk_1244[1].mUnk_00 >> 12;
+        mUnk_1244[1].mUnk_10 = mUnk_1244[1].mUnk_08 >> 12;
+        mUnk_1244[1].mUnk_12 = mUnk_1244[1].mUnk_0c;
+        mUnk_1244[1].mUnk_16 = mUnk_1244[1].mUnk_10;
+        mUnk_1244[1].mUnk_04 = mUnk_1244[0].mUnk_04 + SinIdx(mUnk_1274.mUnk_00) * 100;
+    } else {
+        mUnk_1274.mUnk_02 = func_0200198c(mUnk_1244[1].mUnk_00 - mUnk_1244[0].mUnk_00, -(mUnk_1244[1].mUnk_08 - mUnk_1244[0].mUnk_08));
+        VecFx32 delta = {0, 0, 0};
+        delta.x = mUnk_1244[1].mUnk_00 - mUnk_1244[0].mUnk_00;
+        delta.z = mUnk_1244[1].mUnk_08 - mUnk_1244[0].mUnk_08;
+        mUnk_1274.mUnk_00 = func_0200198c(mUnk_1244[1].mUnk_04 - mUnk_1244[0].mUnk_04, VEC_Mag(&delta));
+        mUnk_1274.mUnk_08 = mUnk_1274.mUnk_02s;
+    }
+    mUnk_1292 = mode;
+}
+
+void UnkStruct_02065c40::func_0206a01c() {
+    if ((mUnk_14e4 == 0) & (mUnk_14e8 | mUnk_14f1) && mUnk_100c != NULL) {
+        mUnk_100c->Update();
+        mUnk_100c->Draw(1, 0x80, 0x60, 0);
+    }
+    if (mUnk_14e4 != 0 && mUnk_14e5 != 0) {
+        return;
+    }
+    u32 first  = 0;
+    u32 second = 0;
+    s32 current = mUnk_1018->mUnk_42;
+    if (current >= 0) {
+        if (current == 0x1a) {
+            second = 0x80;
+        } else {
+            for (u8 i = 0; i < 2; i++) {
+                if (mUnk_11b4[i].mUnk_2c != NULL && current == mUnk_11b4[i].mUnk_36) {
+                    second = mUnk_11b4[i].mUnk_3f;
+                    first  = mUnk_11b4[i].mUnk_42;
+                    break;
+                }
+                if (mUnk_112c[i].mUnk_2c != NULL) {
+                    s32 kind = mUnk_112c[i].mUnk_34;
+                    if (kind >= 0 && current == data_020a1bd6[kind].mUnk_2) {
+                        second = mUnk_112c[i].mUnk_38;
+                        first  = mUnk_112c[i].mUnk_3b;
+                        break;
+                    }
+                }
+                if (mUnk_1084[i].mUnk_2c != NULL) {
+                    BOOL match = FALSE;
+                    if (current == 0x16) {
+                        s32 v = mUnk_1084[i].mUnk_48;
+                        switch (v) {
+                            case 0x1c:
+                            case 0x1d:
+                                match = TRUE;
+                        }
+                    } else if (current == 0x17) {
+                        s32 v = mUnk_1084[i].mUnk_48;
+                        switch (v) {
+                            case 0x1e:
+                            case 0x1f:
+                                match = TRUE;
+                        }
+                    }
+                    if (match) {
+                        second = mUnk_1084[i].mUnk_4f;
+                        first  = mUnk_1084[i].mUnk_50;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    mUnk_1018->func_02088a18(first, second);
+}
+
+void UnkStruct_02065c40::func_0206a1c8(u32 value, u32 force) {
+    if (force == 0 && mUnk_14f2 == value) {
+        return;
+    }
+    if (mUnk_100c == NULL) {
+        return;
+    }
+    mUnk_14f2 = value;
+    mUnk_100c->SetAnimation(value);
+}
+
+void UnkStruct_02065c40::func_0206a208() {
+    if ((mUnk_14ed == 0) & ((mUnk_12ba == 0) & (mUnk_14ec == 0))) {
+        u8 step = mUnk_12b9;
+        if (((step >= 3) & (step <= 4)) && mUnk_12c5 != 6) {
+            if (InputManager::Get().IsHeld(8)) {
+                func_02070390();
+                return;
+            }
+        }
+    }
+    switch (mUnk_12ca) {
+        case 0:
+            func_0206a1c8(0, 0);
+            if (mUnk_12cc >= mUnk_12ce) {
+                return;
+            }
+            u32 flag = 0;
+            if (mUnk_14e2 == 5) {
+                flag = 1;
+            }
+            mUnk_1018->func_02088e64(mUnk_12d2[mUnk_12cc], mUnk_13d2[mUnk_12cc], flag, mUnk_14ee);
+            mUnk_12ca = 1;
+            break;
+        case 1:
+            if (!mUnk_1018->func_02088f14()) {
+                return;
+            }
+            if (mUnk_12ba == 0) {
+                mUnk_12ca = 3;
+            } else if (mUnk_12ba == 3) {
+                mUnk_1018->mUnk_4a = 1;
+                mUnk_14f1          = mUnk_1018->func_02088efc();
+                if (mUnk_14f1 != 0) {
+                    mUnk_1018->func_02088ebc(1);
+                    mUnk_12ca = 4;
+                } else {
+                    mUnk_1018->func_02088ebc(0);
+                    mUnk_12ca = 6;
+                    mUnk_12b9 = 9;
+                }
+            } else {
+                mUnk_12ca = 5;
+                mUnk_12b9 = 9;
+            }
+            func_0206a1c8(2, 0);
+            break;
+        case 2:
+            if (mUnk_12ba == 3) {
+                if (mUnk_1018->func_02088efc()) {
+                    func_0206a1c8(2, 0);
+                    mUnk_14f1 = 1;
+                    mUnk_12ca = 4;
+                } else {
+                    mUnk_12ca = 6;
+                    mUnk_14f1 = 0;
+                    mUnk_12b9 = 9;
+                }
+            } else {
+                mUnk_12ca = 5;
+            }
+            break;
+        case 5:
+            if (!mUnk_1018->func_02088efc()) {
+                return;
+            }
+            mUnk_12ca = 7;
+            mUnk_12d0 = 200;
+            mUnk_1018->func_02088ebc(0);
+            break;
+        case 7:
+            if (mUnk_12d0 != 0) {
+                mUnk_12d0--;
+                return;
+            }
+            if (!mUnk_1018->func_02088dac(1)) {
+                mUnk_1018->mUnk_34 = -1;
+                mUnk_1018->func_02088e64(mUnk_12d2[0], mUnk_13d2[0], 0, 0);
+                mUnk_12d0 = 200;
+            } else {
+                if (mUnk_1018->func_02088efc()) {
+                    mUnk_12d0 = 200;
+                } else {
+                    mUnk_12d0 = 300;
+                }
+            }
+            break;
+        case 3:
+        case 4: {
+            if (mUnk_14ee == 2) {
+                return;
+            }
+            BOOL touched = FALSE;
+            if (TouchManager::Get().mUnk_57 != 0) {
+                mUnk_14ef = 1;
+            }
+            if (mUnk_14ef != 0) {
+                if (TouchManager::Get().mUnk_56 == 0) {
+                    touched = TRUE;
+                } else {
+                    func_0206a1c8(1, 1);
+                }
+            }
+            if (!InputManager::Get().IsHeld(1) && !touched) {
+                return;
+            }
+            mUnk_14ef = 0;
+            if (mUnk_14e8 | mUnk_14f1) {
+                func_0206a1c8(InputManager::Get().IsHeld(1) ? 3 : 1, 0);
+            }
+            mUnk_12cb = 4;
+            if (mUnk_12ca == 4) {
+                mUnk_12ca = 9;
+            } else {
+                mUnk_12ca = 8;
+            }
+            if (mUnk_14ee != 0) {
+                return;
+            }
+            SoundManager::Get().func_020246f8(0x6b);
+            break;
+        }
+        case 8:
+        case 9:
+            if (mUnk_12cb != 0) {
+                mUnk_12cb--;
+                return;
+            }
+            if (!mUnk_1018->func_02088dac(0)) {
+                if (mUnk_12ca == 9) {
+                    mUnk_1018->func_02088ebc(0);
+                    mUnk_14f1 = 0;
+                    mUnk_12ca = 6;
+                    mUnk_12b9 = 9;
+                } else {
+                    mUnk_12cc++;
+                    mUnk_12ca = 0;
+                }
+                func_0206a1c8(0, 0);
+            } else {
+                if (mUnk_12ca == 9) {
+                    mUnk_12ca = 4;
+                } else {
+                    mUnk_12ca = 3;
+                }
+                func_0206a1c8(2, 0);
+            }
+            break;
+    }
+}
+
+void func_01ffcf64(MtxFx43 *mtx, VecFx32 *pos);
+
+void UnkStruct_02065c40::func_0206a850() {
+    for (u8 i = 0; i < 2; i++) {
+        if (mUnk_112c[i].mUnk_2c != NULL && mUnk_112c[i].mUnk_37 != 0) {
+            VecFx32 pos;
+            fx32 z = mUnk_112c[i].mUnk_08;
+            fx32 y = mUnk_112c[i].mUnk_04;
+            fx32 x = mUnk_112c[i].mUnk_00;
+            pos.z = z / 2 - 0x72000;
+            pos.y = y / 2;
+            pos.x = x / 2;
+            if (mUnk_112c[i].mUnk_3c != 0) {
+                if (mUnk_112c[i].mUnk_3e < 1) {
+                    mUnk_112c[i].mUnk_3e++;
+                }
+            } else {
+                if (mUnk_112c[i].mUnk_3e != 0) {
+                    mUnk_112c[i].mUnk_3e--;
+                }
+            }
+            if (mUnk_112c[i].mUnk_3e != 0) {
+                mUnk_112c[i].mUnk_3d = (mUnk_112c[i].mUnk_3d + 1) % 0x80;
+                pos.y += mUnk_112c[i].mUnk_3e * SinIdx((u16) (mUnk_112c[i].mUnk_3d * 0x10000 / 0x80));
+            }
+            mUnk_112c[i].mUnk_2c->func_0203db70(&pos);
+            func_02069b80(i);
+            mUnk_112c[i].mUnk_2c->func_0203d988();
+            mUnk_112c[i].mUnk_2c->func_0203dab0();
+            u8 shadow = mUnk_112c[i].mUnk_3f;
+            if (shadow != 0 && mUnk_1010 != NULL) {
+                s32 scale = shadow * 0x19a;
+                if (scale > 0) {
+                    pos.y = (mUnk_112c[i].mUnk_40 << 12) - 0x64000;
+                    MtxFx43 mtx = data_0220e86c;
+                    func_01ffcf64(&mtx, &pos);
+                    VecFx32 size;
+                    size.x = scale;
+                    size.y = scale;
+                    size.z = scale;
+                    mUnk_1010->func_02029174(&mtx, &size);
+                }
+            }
+        }
+    }
+}
+
+void UnkStruct_02065c40::func_0206aa34() {
+    for (u8 i = 0; i < 2; i++) {
+        if (mUnk_11b4[i].mUnk_2c != NULL) {
+            s32 z = mUnk_11b4[i].mUnk_08 / 2 - 0x80000;
+            s32 h = mUnk_11b4[i].mUnk_34 / 2;
+            VecFx32 pos;
+            s32 round = FX_FROM_INT_ROUND(h);
+            s32 y = mUnk_11b4[i].mUnk_04;
+            s32 x = mUnk_11b4[i].mUnk_00;
+            pos.y = y / 2 - 0x64000 + round;
+            pos.x = x / 2;
+            pos.z = z;
+            if (mUnk_11b4[i].mUnk_36 == 0x15) {
+                ModelTransform *transform = (ModelTransform *) mUnk_11b4[i].mUnk_2c->mUnk_04;
+                transform->mPosition.x    = pos.x;
+                transform->mPosition.y    = pos.y;
+                transform->mPosition.z    = pos.z;
+            } else {
+                ModelTransform *transform = (ModelTransform *) mUnk_11b4[i].mUnk_2c->mUnk_08;
+                transform->mPosition.x    = pos.x;
+                transform->mPosition.y    = pos.y;
+                transform->mPosition.z    = pos.z;
+            }
+            if (mUnk_11b4[i].mUnk_3e != 0) {
+                func_02068884(i);
+                mUnk_11b4[i].mUnk_2c->func_02054568();
+                func_0206abf4(i);
+                u8 shadow = mUnk_11b4[i].mUnk_3d;
+                if (shadow != 0 && mUnk_1010 != NULL) {
+                    MtxFx43 mtx = data_0220e86c;
+                    s32 scale   = shadow * 0x19a;
+                    VecFx32 size;
+                    size.x = scale;
+                    size.y = scale;
+                    size.z = scale;
+                    pos.y += 0x1000;
+                    func_01ffcf64(&mtx, &pos);
+                    mUnk_1010->func_02029174(&mtx, &size);
+                }
+            }
+        }
+    }
+}
+
+void UnkStruct_02065c40::func_0206abf4(u32 index) {
+    if (mUnk_11b4[index].mUnk_3b == 0) {
+        return;
+    }
+    s32 kind = mUnk_11b4[index].mUnk_36;
+    ModelInstance *instance;
+    if (kind == 0x15) {
+        instance = ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0];
+    } else {
+        instance = ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel;
+    }
+    ModelAnim *anim = instance->mAnim;
+    if (anim->mUnk_10 == 0) {
+        return;
+    }
+    u8 target = mUnk_11b4[index].mUnk_3a;
+    s32 value;
+    BOOL loop = FALSE;
+    if (mUnk_11b4[index].mUnk_39 != target) {
+        if (mUnk_11b4[index].mUnk_39 == 0) {
+            value = func_020687a8((u8) kind, target, 1);
+            mUnk_11b4[index].mUnk_39 = target;
+        } else {
+            value = func_020687a8((u8) kind, mUnk_11b4[index].mUnk_39, 2);
+            mUnk_11b4[index].mUnk_39 = 0;
+        }
+        if (value < 0) {
+            value = func_020687a8(mUnk_11b4[index].mUnk_36, target, 0);
+            mUnk_11b4[index].mUnk_39 = target;
+            mUnk_11b4[index].mUnk_3b = 0;
+            if (func_020687a8(mUnk_11b4[index].mUnk_36, target, 4) == 0) {
+                loop = TRUE;
+            }
+        }
+    } else {
+        value = func_020687a8((u8) kind, target, 0);
+        mUnk_11b4[index].mUnk_3b = 0;
+        loop = TRUE;
+    }
+    u8 other = func_020687a8(mUnk_11b4[index].mUnk_36, target, 3);
+    mUnk_11b4[index].mUnk_2c->func_02054644(other, (u8) value);
+    mUnk_11b4[index].mUnk_3c = 0;
+    anim->mUnk_08 = loop;
+}
+
+void UnkStruct_02065c40::func_0206ada4() {
+    if (mUnk_101c[0].mUnk_2c == NULL) {
+        return;
+    }
+    MtxFx43 mtx = data_0220e86c;
+    VecFx32 size;
+    size.x = 0x1000;
+    size.y = 0x1000;
+    size.z = 0x1000;
+    VecFx32 pos;
+    fx32 x = mUnk_101c[0].mUnk_00;
+    fx32 z = mUnk_101c[0].mUnk_08;
+    fx32 y = mUnk_101c[0].mUnk_04;
+    pos.x = x;
+    pos.y = y;
+    pos.z = z;
+    if (mUnk_101c[0].mUnk_18[0] != 0) {
+        func_01ffd088(&mtx, (u16) mUnk_101c[0].mUnk_18[0]);
+    }
+    if (mUnk_101c[0].mUnk_18[1] != 0) {
+        func_01ffd0e0(&mtx, (u16) mUnk_101c[0].mUnk_18[1]);
+    }
+    if (mUnk_101c[0].mUnk_18[2] != 0) {
+        func_01ffd138(&mtx, (u16) mUnk_101c[0].mUnk_18[2]);
+    }
+    func_01ffcf64(&mtx, &pos);
+    if (mUnk_101c[0].mUnk_32 != 0) {
+        mUnk_101c[0].mUnk_2c->mUnk_60->mFrame = 0;
+    } else {
+        mUnk_101c[0].mUnk_2c->func_02028d80();
+    }
+    mUnk_101c[0].mUnk_2c->func_02028da4();
+    mUnk_101c[0].mUnk_2c->func_02029174(&mtx, &size);
+}
+
+void UnkStruct_02065c40::func_0206aecc() {
+    for (u8 i = 0; i < 2; i++) {
+        if (mUnk_1084[i].mUnk_2c != NULL && mUnk_1084[i].mUnk_4e != 0) {
+            MtxFx43 mtx = data_0220e86c;
+            s32 scale   = FX_FROM_INT_ROUND(mUnk_1084[i].mUnk_4c);
+            VecFx32 size;
+            size.x = scale;
+            size.y = scale;
+            size.z = scale;
+            VecFx32 pos;
+            pos.x = mUnk_1084[i].mUnk_00;
+            pos.y = mUnk_1084[i].mUnk_04;
+            pos.z = mUnk_1084[i].mUnk_08;
+            func_01ffcf64(&mtx, &pos);
+            if (mUnk_1084[i].mUnk_18[0] != 0) {
+                func_01ffd088(&mtx, (u16) mUnk_1084[i].mUnk_18[0]);
+            }
+            if (mUnk_1084[i].mUnk_18[1] != 0) {
+                func_01ffd0e0(&mtx, (u16) mUnk_1084[i].mUnk_18[1]);
+            }
+            if (mUnk_1084[i].mUnk_18[2] != 0) {
+                func_01ffd138(&mtx, (u16) mUnk_1084[i].mUnk_18[2]);
+            }
+            mUnk_1084[i].mUnk_2c->func_02028d80();
+            mUnk_1084[i].mUnk_2c->func_02029174(&mtx, &size);
+            if (mUnk_1084[i].mUnk_4d != 0) {
+                if (mUnk_1084[i].mUnk_2c->func_02028f48() != 0) {
+                    mUnk_1084[i].mUnk_4e = 0;
+                }
+            }
+        }
+    }
+}
+
+BOOL UnkStruct_02065c40::func_0206b05c(u32 id) {
+    if (id < 0x60) {
+        return FALSE;
+    }
+    if (id < 0x77) {
+        return TRUE;
+    }
+    if (id < 0x90) {
+        return FALSE;
+    }
+    if (id < 0xa9) {
+        return TRUE;
+    }
+    if (id < 0xbf) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+void UnkStruct_02065c40::func_0206b09c() {
+    mUnk_12b9 = 3;
+    mUnk_12c5 = 0;
+    while (TRUE) {
+        if (mUnk_12bc >= mUnk_12be) {
+            if (mUnk_12cc != mUnk_12ce) {
+                return;
+            }
+            func_02066814(1);
+            mUnk_12b9 = 5;
+            func_02067708(0);
+            return;
+        }
+        func_0206b150(mUnk_0c[mUnk_12bc].mCommand, mUnk_0c[mUnk_12bc].mValue);
+        if (mUnk_12c5 == 0) {
+            mUnk_12bc++;
+        } else {
+            mUnk_12b9 = 4;
+            return;
+        }
+    }
+}
+
+extern const s16 data_020a248c[][9];
+extern const s16 data_020a233c[][12];
+void func_02025588(void (*callback)());
+void func_020255f8(void (*callback)());
+extern "C" void func_0206ea14();
+void func_02087ccc(UnkStruct_02087898 *object, void *data);
+void func_02088ec4(UnkStruct_02087898 *object);
+
+s32 UnkStruct_02065c40::func_02070554(s32 kind, s32 index) {
+    if ((kind < 0) | (kind > 0x10)) {
+        return -1;
+    }
+    s32 result = -1;
+    if (kind > 5) {
+        if (index < 9) {
+            result = (s16) (data_020a248c[kind - 6][index] - 0xa8);
+        }
+    } else {
+        if (index < 12) {
+            result = (s16) (data_020a233c[kind][index] - 0xa8);
+        }
+    }
+    if (result < 0) {
+        return -1;
+    }
+    return result;
+}
+
+extern "C" void func_020705f0(UnkStruct_02065c40 *event) {
+    if (event->mUnk_1018 != NULL) {
+        event->mUnk_1018->mUnk_34 = -1;
+    }
+}
+
+void UnkStruct_02065c40::func_0206e9d0(u32 flag) {
+    if (mUnk_14f3 == flag) {
+        return;
+    }
+    mUnk_14f3 = flag;
+    if (flag & 0xff) {
+        func_02025588(func_0206ea14);
+    } else {
+        func_020255f8(func_0206ea14);
+        func_020037e8(0);
+    }
+}
+
+BOOL UnkStruct_02065c40::func_0206ef08() {
+    if (func_02023874() != 0) {
+        return FALSE;
+    }
+    mUnk_12b0 = (u32) func_02023864();
+    func_02087ccc(mUnk_1018, (void *) mUnk_12b0);
+    func_02088ec4(mUnk_1018);
+    return TRUE;
+}
+
+extern const UnkStruct_Pair data_020a26a4[][5][10][3];
+
+u8 UnkStruct_02065c40::func_02067120(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
+    if (unk3 != 0) {
+        u8 slot = unk3 - 1;
+        if (data_020d43f0[0].mUnk_5bf_0) {
+            u32 kind = func_020670b4(unk1);
+            u8 flag = *(u8 *) &unk4;
+            u8 group = data_020d43f0[0].mUnk_25;
+            u8 row = group % 5;
+            if (kind == 0) {
+                kind = 1;
+            }
+            
+            if (flag == 0) {
+                return data_020a26a4[kind - 1][row][unk2][slot].mUnk_0;
+            }
+            return data_020a26a4[kind - 1][row][unk2][slot].mUnk_1;
+        }
+        if (*(u8 *) &unk4 == 0) {
+            return data_020b4324[unk1]->mEntries[unk2].mPairs[slot].mUnk_0;
+        }
+        return data_020b4324[unk1]->mEntries[unk2].mPairs[slot].mUnk_1;
+    }
+    if (*(u8 *) &unk4 == 0) {
+        return 0x15;
+    }
+    return 0;
+}
+
+void UnkStruct_02065c40::func_02067708(u32 unk1) {
+    for (u8 i = 0; i < 2; i++) {
+        UnkStruct_0205401c *model = mUnk_11b4[i].mUnk_2c;
+        if (model != NULL) {
+            model->func_02054034();
+            delete model;
+        }
+        mUnk_11b4[i].mUnk_2c = NULL;
+        model                = mUnk_11b4[i].mUnk_30;
+        if (model != NULL) {
+            model->func_02054034();
+            delete model;
+        }
+        mUnk_11b4[i].mUnk_30 = NULL;
+        UnkStruct_0203d374 *object = mUnk_112c[i].mUnk_2c;
+        if (object != NULL) {
+            delete object;
+        }
+        mUnk_112c[i].mUnk_2c = NULL;
+        object               = mUnk_112c[i].mUnk_30;
+        if (object != NULL) {
+            delete object;
+        }
+        mUnk_112c[i].mUnk_30 = NULL;
+        if (unk1 != 0) {
+            ModelInstance *instance = mUnk_101c[i].mUnk_2c;
+            if (instance != NULL) {
+                instance->mUnk_68 = 0xf;
+                delete instance;
+                mUnk_101c[i].mUnk_2c = NULL;
+            }
+            mUnk_101c[i].mUnk_30 = -1;
+        }
+        func_020695e8(i);
+        mUnk_11b4[i].mUnk_36 = -1;
+        mUnk_11b4[i].mUnk_37 = -1;
+        mUnk_1084[i].mUnk_48 = -1;
+        mUnk_1084[i].mUnk_4a = -1;
+        mUnk_112c[i].mUnk_34 = -1;
+        mUnk_112c[i].mUnk_35 = -1;
+        mUnk_11b4[i].mUnk_43 = 0;
+        mUnk_112c[i].mUnk_42 = 0;
+        mUnk_1084[i].mUnk_51 = 0;
+    }
+    ModelInstance *instance;
+    if (unk1 != 0 && (instance = mUnk_1010) != NULL) {
+        instance->mUnk_68 = 0xf;
+        delete instance;
+        mUnk_1010 = NULL;
+    }
+}
+
+BOOL UnkStruct_02065c40::func_02067f30(u32 index, s32 value) {
+    if (value < 0) {
+        func_02067e2c(index, 0);
+        UnkStruct_0205401c *model = mUnk_11b4[index].mUnk_2c;
+        if (model != NULL) {
+            model->func_02054034();
+            delete model;
+        }
+        mUnk_11b4[index].mUnk_2c = NULL;
+        return FALSE;
+    }
+    mUnk_11b4[index].mUnk_3a = value;
+    if (mUnk_11b4[index].mUnk_2c != NULL) {
+        if (mUnk_11b4[index].mUnk_3a != mUnk_11b4[index].mUnk_39) {
+            if (mUnk_11b4[index].mUnk_2c->func_020546b0()) {
+                mUnk_11b4[index].mUnk_3b = 1;
+            }
+            if (mUnk_11b4[index].mUnk_36 == 0x15) {
+                ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim->mUnk_10 = 1;
+            } else {
+                ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim->mUnk_10 = 1;
+            }
+            func_0206abf4(index);
+        }
+        return FALSE;
+    }
+    if (index == 1) {
+        func_020695e8(0);
+    }
+    func_02067e2c(index, 0);
+    UnkStruct_0205401c *model = mUnk_11b4[index].mUnk_2c;
+    if (model != NULL) {
+        model->func_02054034();
+        delete model;
+    }
+    mUnk_11b4[index].mUnk_2c = NULL;
+    return TRUE;
+}
+
+extern const u8 data_020a1c34[];
+
+u32 UnkStruct_02065c40::func_02066f60() {
+    char path[0x80];
+    if (mUnk_14e2 == 6) {
+        return 0;
+    }
+    s32 command = func_02066814(0);
+    if (command > -1) {
+        switch (command - 0x64) {
+            case 0:
+                sprintf(path, "cmd_ST_mev_A001.bin");
+                break;
+            case 1:
+                sprintf(path, "cmd_ST_mev_A002.bin");
+                break;
+            case 2:
+                sprintf(path, "cmd_ST_mev_B001.bin");
+                break;
+            case 3:
+                sprintf(path, "cmd_ST_mev_B002.bin");
+                break;
+            default:
+                sprintf(path, "cmd_ST_mev_%03d.bin", command);
+                break;
+        }
+        for (u8 i = 0; i < 2; i++) {
+            if (command == data_020a1c34[i]) {
+                GXS_SetVisiblePlane(0);
+                break;
+            }
+        }
+        func_0206eb10(path);
+        mUnk_14e8 = 1;
+        return 1;
+    }
+    func_02066814(1);
+    if (mUnk_14e9 != 0) {
+        func_0206791c(5);
+    }
+    return 0;
+}
+
+extern const u8 data_020a1bae[];
+#define REG_G3_DISP3DCNT (*(vu16 *) 0x4000060)
+
+void UnkStruct_02065c40::func_02067b08() {
+    char path[0x80];
+    GX_SetVisiblePlane(0x11);
+    G2_SetBG0Offset(0, 0);
+    G2_SetBG0Priority(3);
+    REG_G3_DISP3DCNT = (REG_G3_DISP3DCNT & ~0x3000) | 0x20;
+    ChangeDir("/story/");
+    if (mUnk_14e4 == 0 && (mUnk_14f1 | func_02066c7c())) {
+        ChangeDir("/story/");
+        SpriteScreen &screen = SpriteManager::Get().Screen(1);
+        screen.func_02027624(3);
+        sprintf(path, "cutscene_b_obj.nce_ncg1D.bin");
+        screen.LoadCharacters(path, 0xd000, 0);
+        sprintf(path, "cutscene_b_obj_ncl.bin");
+        screen.func_02027fec(path, 0, 0);
+        if (mUnk_100c != NULL) {
+            delete mUnk_100c;
+        }
+        mUnk_14f2 = 0;
+        mUnk_100c = new CellAnimation("cutscene_b_obj_nce.bin", mUnk_14f2, 1, 1);
+        mUnk_100c->mCharBase = 0x1a0;
+        mUnk_100c->mUnk_11   = 0;
+        if (mUnk_14e2 == 5) {
+            mUnk_14f1 = 0;
+            mUnk_14ed = 1;
+        }
+    }
+    ChangeDir("/");
+    if (mUnk_1010 == NULL) {
+        SpriteManager::Get().func_0202753c(7);
+        NitroTexture *texture = new NitroTexture("story/mdl/cut_shadow.nsbtx");
+        NitroModel *model     = new NitroModel;
+        model->func_020289e0("story/mdl/cut_shadow.nsbmd", texture);
+        texture->func_02028344();
+        mUnk_1010 = model->func_02028b78(NULL);
+    }
+    if (mUnk_1014 == NULL) {
+        mUnk_1014 = new UnkStruct_02029ca8(data_020a1bae);
+        func_02069c6c();
+    }
+    mUnk_1018->func_02087eec();
+}
+
+void UnkStruct_02065c40::func_02066c9c(u32 unk1, u32 unk2) {
+    data_020d433c.mUnk_99 = 3;
+    data_020d433c.mPlayerCount = 2;
+    data_020d433c.mUnk_98 = 0;
+    for (u8 i = 0; i < 4; i++) {
+        data_020d433c.mUnk_9f[i] = i;
+        data_020d433c.mUnk_a3[i] = 0;
+        data_020d433c.mUnk_9b[i] = i;
+    }
+    switch (mUnk_14e2) {
+        case 3:
+            data_020d433c.mUnk_7b = 8;
+            break;
+        case 2:
+            data_020d433c.mUnk_7b = 0xc;
+            break;
+        default:
+            data_020d433c.mUnk_7b = 9;
+            break;
+    }
+    data_020d433c.mUnk_9a   = 0x11;
+    data_020d433c.mUnk_9a_0 = data_020d43f0[0].mUnk_28_6;
+    for (u8 j = 0; j < 3; j++) {
+        data_020d433c.mUnk_9f[j + 1] = func_02067120(unk1, unk2, (u8) (j + 1), 0);
+        data_020d433c.mUnk_a3[j + 1] = func_02067120(unk1, unk2, (j + 1) & 0xff, 1);
+    }
+    UnkStruct_020b4324_entry *entry = &data_020b4324[unk1]->mEntries[unk2];
+    data_020d433c.mUnk_95 = entry->mUnk_07;
+    data_020d433c.mUnk_96 = entry->mUnk_08;
+    if (data_020d43f0[0].mUnk_5bf_0 && (data_020d43f0[0].mUnk_580 & 0x80)) {
+        for (u8 k = 0; k < 3; k++) {
+            if (data_020d433c.mUnk_9f[k + 1] == 7) {
+                data_020d433c.mUnk_a3[k + 1] = 2;
+            }
+        }
+    }
+    switch (data_020b4324[unk1]->mEntries[unk2].mUnk_06) {
+        case 3:
+            data_020d433c.mUnk_98 = 1;
+            data_020d433c.mPlayerCount = 4;
+            data_020d433c.mUnk_9b[0] = 1;
+            data_020d433c.mUnk_9b[1] = 0;
+            data_020d433c.mUnk_9b[2] = 3;
+            data_020d433c.mUnk_9b[3] = 2;
+            break;
+        case 4:
+            data_020d433c.mUnk_99 = 6;
+            break;
+        case 5:
+            data_020d433c.mPlayerCount = 4;
+            break;
+    }
+    data_020d433c.mUnk_9f[0] = 0x15;
+    u8 type = data_020d43f0[0].mUnk_42;
+    if ((type == 9) & (data_020d43f0[0].mUnk_43 == 8)) {
+        data_020d433c.mUnk_8a_0 = 1;
+    } else {
+        data_020d433c.mUnk_8a_0 = 0;
+    }
+    BOOL reached = unk2 >= func_02067240(unk1);
+    BOOL known   = func_020670b4(type) != 0;
+    if (reached & known) {
+        data_020d433c.mUnk_8a_4 = 1;
+    } else {
+        data_020d433c.mUnk_8a_4 = 0;
+    }
+}
+
+void func_02089278();
+
+s32 UnkStruct_02065c40::func_02066814(u32 unk1) {
+    volatile s32 result = -1;
+    u8 type    = data_020d43f0[0].mUnk_42;
+    if (type >= 10) {
+        return result;
+    }
+    if (mUnk_14e2 == data_020b4324[type]->mUnk_78) {
+        u8 saved = data_020d433c.mUnk_7d;
+        s32 done = 0;
+        if (unk1 != 0) {
+            data_020d433c.mUnk_7d = 1;
+        }
+        u8 position = data_020d43f0[0].mUnk_43;
+        s32 advance = 0;
+        u8 index    = position % 10;
+        s32 pending = 0;
+        if ((index == 0) & (saved == 0)) {
+            result = data_020b4324[type]->mUnk_79;
+        } else {
+            BOOL seen = FALSE;
+            UnkStruct_020b4324_entry *entry = &data_020b4324[type]->mEntries[index];
+            switch (entry->mUnk_06) {
+                case 0:
+                    if (unk1 != 0) {
+                        done = 1;
+                    }
+                    break;
+                case 1:
+                    seen = TRUE;
+                    if (unk1 != 0) {
+                        advance = seen;
+                        if (type == 8 && data_020b4324[type]->mEntries[index + 1].mUnk_06 == 0) {
+                            pending = 1;
+                            break;
+                        }
+                        s32 next = index + 1;
+                        if (next < 10) {
+                            func_02066c9c(type, (u8) next);
+                            if (data_020b4324[type]->mEntries[index].mUnk_0a != 0 && data_020b4324[type]->mEntries[next].mUnk_06 != 1) {
+                                mUnk_14e9 = 1;
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    if (saved == 2) {
+                        seen = TRUE;
+                        if (unk1 != 0) {
+                            advance = seen;
+                            if (entry->mUnk_0b == 0) {
+                                pending = 1;
+                            }
+                        }
+                        s32 next = index + 1;
+                        if (next < 10) {
+                            func_02066c9c(type, (u8) next);
+                            if (unk1 != 0) {
+                                if (data_020b4324[type]->mEntries[index].mUnk_0a != 0 && data_020b4324[type]->mEntries[next].mUnk_06 != 1) {
+                                    mUnk_14e9 = 1;
+                                }
+                            }
+                        }
+                    } else {
+                        func_02066c9c(type, index);
+                        if (mUnk_14e2 == 0 || mUnk_14e9 == 1) {
+                            func_0206791c(5);
+                        }
+                    }
+                    break;
+            }
+            if (data_020d43f0[0].mUnk_5bf_0) {
+                mUnk_14e9 = 0;
+            }
+            if (seen) {
+                u8 value = data_020b4324[type]->mEntries[index].mUnk_09;
+                if (value != 0) {
+                    result = value;
+                }
+            }
+        }
+        if (unk1 != 0) {
+            if ((advance | done) && pending != 0) {
+                mUnk_14ea = 1;
+            }
+            if (advance != 0) {
+                u32 limit = 10;
+                if (data_020d43f0[0].mUnk_5bf_0) {
+                    limit = func_02067240(type);
+                }
+                data_020d43f0[0].mUnk_43++;
+                u8 now = data_020d43f0[0].mUnk_43;
+                if (now >= limit) {
+                    done = 1;
+                } else if (data_020b4324[type]->mEntries[now].mUnk_06 == 0) {
+                    done = 1;
+                }
+                data_020d433c.mUnk_7d = 0;
+            }
+            if (done != 0) {
+                if (data_020d43f0[0].mUnk_5bf_0) {
+                    switch (data_020d43f0[0].mUnk_42) {
+                        case 1:
+                            data_020d43f0[0].mUnk_5bf |= 0x2;
+                            break;
+                        case 3:
+                            data_020d43f0[0].mUnk_5bf |= 0x4;
+                            break;
+                        case 6:
+                            data_020d43f0[0].mUnk_5bf |= 0x8;
+                            break;
+                        case 7:
+                            data_020d43f0[0].mUnk_5bf |= 0x10;
+                            break;
+                        case 8:
+                            data_020d43f0[0].mUnk_5bf |= 0x20;
+                            break;
+                        case 9:
+                            data_020d43f0[0].mUnk_5bf |= 0x40;
+                            break;
+                    }
+                    data_020d43f0[0].mUnk_42 = 10;
+                    func_0206791c(6);
+                    mUnk_14ea = 1;
+                } else {
+                    u32 next = 0;
+                    if (data_020b4324[type]->mUnk_78 != 0) {
+                        next = 6;
+                    }
+                    if (next != 0) {
+                        func_0206791c(next);
+                    }
+                    data_020d43f0[0].mUnk_42++;
+                    if (data_020d43f0[0].mUnk_42 == 10) {
+                        func_0206791c(8);
+                    }
+                }
+                data_020d43f0[0].mUnk_43 = 0;
+                data_020d433c.mUnk_7d = 0;
+                mUnk_14e2 = 7;
+            }
+            if (advance | done) {
+                func_02089278();
+            }
+        }
+    }
+    if (data_020d43f0[0].mUnk_5bf_0) {
+        result = -1;
+    }
+    return result;
+}
+
+void func_02086938();
+BOOL func_02086a58();
+BOOL func_02086b74();
+BOOL func_02086e08();
+
+void UnkStruct_02065c40::Update() {
+    if (mUnk_14e4 != 0) {
+        u8 flip = mUnk_14e5 + 1;
+        mUnk_14e5 = flip & 1;
+    }
+    func_02067e74();
+    func_02069d54();
+    CameraManager &manager = CameraManager::Get();
+    Camera *camera         = manager.mCameras[manager.mActive];
+    data_02211374.mCameraPosition = camera->mPosition;
+    data_02211374.mCameraUp       = camera->mUp;
+    data_02211374.mCameraTarget   = camera->mTarget;
+    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    data_02211374.mFlags &= ~0xe8;
+    manager.mProjection[manager.mActive] = data_02211374.mProjection;
+    manager.mView[manager.mActive]       = data_02211374.mView;
+    manager.mMtxA[manager.mActive]       = *func_02032710();
+    manager.mMtxB[manager.mActive]       = *func_02032604();
+    manager.mMtxC[manager.mActive]       = *func_020323b8();
+    func_020679d8();
+    func_0206a208();
+    func_0206a01c();
+    func_0206ada4();
+    func_02068714();
+    func_0206aa34();
+    func_0206a850();
+    func_0206aecc();
+    if (mUnk_14e0 != 0) {
+        if (mUnk_12b9 < 10) {
+            mUnk_12b9 = 10;
+        }
+    }
+    switch (mUnk_12b9) {
+        case 0:
+            func_02067b08();
+            mUnk_12b9 = 5;
+            break;
+        case 1:
+            if (func_0206ed40()) {
+                mUnk_12b9++;
+            }
+            break;
+        case 2:
+            if (func_0206ef08()) {
+                mUnk_12b9++;
+            }
+            break;
+        case 3:
+            func_0206b09c();
+            break;
+        case 4:
+            func_0206d3b8();
+            break;
+        case 5:
+            if (mUnk_14ea != 0) {
+                func_02086938();
+                if (func_02086a58()) {
+                    mUnk_14eb = 1;
+                    mUnk_12b9 = 7;
+                } else if (func_02086b74()) {
+                    mUnk_14eb = 2;
+                    mUnk_12b9 = 7;
+                } else if (func_02086e08()) {
+                    mUnk_14eb = 3;
+                    mUnk_12b9 = 7;
+                } else {
+                    mUnk_12b9++;
+                }
+            } else {
+                mUnk_12b9 = 8;
+            }
+            break;
+        case 6:
+            if (mUnk_14ea != 0) {
+                break;
+            }
+            func_02067b08();
+            mUnk_12b9 = 8;
+            break;
+        case 7:
+            if (mUnk_14eb != 0) {
+                break;
+            }
+            func_02067b08();
+            mUnk_12b9 = 5;
+            break;
+        case 8:
+            if (func_02066f60()) {
+                if (mUnk_12b9 == 8) {
+                    mUnk_12b9 = 1;
+                }
+            } else {
+                if (mUnk_12b9 == 8) {
+                    mUnk_12b9 = 9;
+                }
+            }
+            if (mUnk_14ea != 0) {
+                mUnk_12b9 = 5;
+            }
+            break;
+        case 10:
+            mUnk_1018->func_02087cc0();
+            func_02067708(1);
+            RequestScene(1);
+            mFinished = 1;
+            break;
+    }
+}
+
+extern const u8 data_020a1b8a[];
+void func_01ff96c4(const void *src, void *dest, u32 size);
+void func_02088ec4(UnkStruct_02087898 *object);
+
+BOOL UnkStruct_02065c40::func_020702e0(s32 unk1, s32 unk2, s32 unk3, s32 unk4, s32 unk5, s32 unk6) {
+    if (mUnk_12bc != mUnk_12be) {
+        return FALSE;
+    }
+    func_01ff96c4(data_020a1b8a, mUnk_0c, 0x24);
+    mUnk_0c[0].mValue = unk1;
+    mUnk_0c[1].mValue = unk2;
+    mUnk_0c[2].mValue = unk3;
+    mUnk_0c[3].mValue = *(s16 *) &unk4;
+    mUnk_0c[4].mValue = *(s16 *) &unk5;
+    mUnk_0c[5].mValue = *(s16 *) &unk6;
+    mUnk_12bc  = 0;
+    mUnk_12be  = 9;
+    mUnk_12ca  = 0;
+    mUnk_12ce  = 0;
+    mUnk_12cc  = 0;
+    mUnk_12d2[0] = -1;
+    func_02088ec4(mUnk_1018);
+    mUnk_101c[0].mUnk_32 = 1;
+    mUnk_12b9            = 3;
+    return TRUE;
+}
+
+u32 UnkStruct_02065c40::func_0206f9b4(const char *name, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7) {
+    struct {
+        u8 bytes[2];
+        u16 shorts[2];
+    } data;
+    u8 *p  = data.bytes;
+    u16 *q = data.shorts;
+    p[0] = 0;
+    q[0] = 0;
+    data.bytes[0]  = unk3;
+    data.shorts[0] = unk2;
+    q[1] = 0;
+    p[1] = 0;
+    return func_0206fa20(name, q, p, 1, *(u16 *) &unk4, unk5, *(u8 *) &unk6, unk7, 0);
+}
+
+struct UnkStruct_020a1b12 {
+    /* 0 */ s16 mUnk_0;
+    /* 2 */ u8 mUnk_2;
+    /* 3 */ s8 mUnk_3;
+    /* 4 */
+};
+extern const UnkStruct_020a1b12 data_020a1b12[];
+extern const u8 data_020a2118[];
+void func_01ff9510(const void *src, void *dest, u32 size);
+
+extern "C" void func_0206f88c(UnkStruct_02065c40 *event, u32 category, s32 value, u32 unk4) {
+    BOOL idle    = event->mUnk_12bc >= event->mUnk_12be;
+    BOOL waiting = event->mUnk_12ba == 3;
+    BOOL changed = value != event->mUnk_1018->mUnk_34;
+    if (!(idle & (waiting & changed))) {
+        return;
+    }
+    func_01ff9510(data_020a2118, event->mUnk_0c, 0x80);
+    s32 offset = data_020a1b12[category].mUnk_3;
+    if (offset < 0) {
+        offset = -1;
+    } else {
+        offset += 0x24;
+    }
+    event->mUnk_0c[5].mValue = offset;
+    u8 kind                  = data_020a1b12[category].mUnk_2;
+    s16 extra                = data_020a1b12[category].mUnk_0;
+    event->mUnk_0c[10].mValue = kind;
+    event->mUnk_0c[13].mValue = extra;
+    event->mUnk_0c[29].mValue = event->func_02070554((s8) kind, unk4);
+    event->mUnk_0c[30].mValue = kind;
+    event->mUnk_0c[31].mValue = value;
+    event->mUnk_12c0 = 0x1d;
+    event->mUnk_12bc = 0;
+    event->mUnk_12be = 0x20;
+    event->mUnk_12ca = 0;
+    func_02088ec4(event->mUnk_1018);
+    event->mUnk_12cc = 0;
+    event->mUnk_12ce = 0;
+    event->mUnk_12b9 = 3;
+}
+
+BOOL UnkStruct_02065c40::func_0206eb10(const char *path) {
+    char file[0x80];
+    if (mUnk_12bc != mUnk_12be) {
+        return FALSE;
+    }
+    ChangeDir("/");
+    sprintf(file, "/script/%s", path);
+    func_02023708(file, 0, 0, 0, &mUnk_12b4, 1);
+    func_02069bdc();
+    func_02069c6c();
+    mUnk_12ca = 0;
+    mUnk_12cc = 0;
+    mUnk_12ce = 0;
+    func_02088ec4(mUnk_1018);
+    mUnk_12ba = 0;
+    mUnk_14ec = 0;
+    func_02067e2c(0, 0);
+    func_02067e2c(1, 0);
+    func_02067708(0);
+    for (u8 i = 0; i < 2; i++) {
+        mUnk_11b4[i].mUnk_3c = 0;
+        mUnk_11b4[i].mUnk_3b = 0;
+        mUnk_11b4[i].mUnk_34 = 0;
+        mUnk_11b4[i].mUnk_3d = 0x28;
+        mUnk_11b4[i].mUnk_3f = 0x80;
+        mUnk_11b4[i].mUnk_40 = 0x80;
+        mUnk_11b4[i].mUnk_41 = 0x80;
+        mUnk_11b4[i].mUnk_42 = 0;
+        MI_CpuClear16(&mUnk_11b4[i], 0x18);
+        MI_CpuClear16(mUnk_11b4[i].mUnk_18, 0x14);
+        mUnk_1084[i].mUnk_4d = 0;
+        mUnk_1084[i].mUnk_4e = 0;
+        mUnk_1084[i].mUnk_4c = 1;
+        mUnk_1084[i].mUnk_4f = 0x80;
+        mUnk_112c[i].mUnk_37 = 0;
+        mUnk_112c[i].mUnk_38 = 0x80;
+        mUnk_112c[i].mUnk_39 = 0x80;
+        mUnk_112c[i].mUnk_3a = 0x80;
+        mUnk_112c[i].mUnk_3b = 0;
+        mUnk_112c[i].mUnk_36 = 0;
+        mUnk_112c[i].mUnk_3c = 0;
+        mUnk_112c[i].mUnk_3d = 0;
+        mUnk_112c[i].mUnk_3e = 0;
+        mUnk_112c[i].mUnk_40 = 0;
+        mUnk_112c[i].mUnk_3f = 10;
+        MI_CpuClear16(&mUnk_112c[i], 0x18);
+        MI_CpuClear16(mUnk_112c[i].mUnk_18, 0x14);
+    }
+    mUnk_12b9 = 1;
+    return TRUE;
+}
+
+extern const u8 data_020a1b48[];
+
+void UnkStruct_02065c40::func_02070390() {
+    s32 target = -2;
+    s32 flag   = 0;
+    while (mUnk_12bc < mUnk_12be) {
+        switch (mUnk_0c[mUnk_12bc].mCommand) {
+            case 0xd5:
+                target = (s8) mUnk_0c[mUnk_12bc].mValue;
+                break;
+            case 0xd6:
+                target = -1;
+                break;
+            case 0xe5:
+                flag = 0xe5;
+                break;
+        }
+        mUnk_12bc++;
+    }
+    func_01ff96c4(data_020a1b48, mUnk_0c, 0x20);
+    if (mUnk_14e4 != 0) {
+        mUnk_0c[3].mCommand = 0xe8;
+    } else {
+        mUnk_0c[3].mCommand = 0;
+    }
+    if (target >= -1) {
+        if (target != -1) {
+            mUnk_0c[5].mCommand = 0xd6;
+        } else {
+            mUnk_0c[5].mCommand = 0xd5;
+            mUnk_0c[5].mValue   = target;
+        }
+    } else {
+        mUnk_0c[5].mCommand = 0;
+    }
+    if (flag != 0) {
+        mUnk_0c[7].mCommand = flag;
+    } else {
+        mUnk_0c[7].mCommand = 0;
+    }
+    mUnk_12bc = 0;
+    mUnk_12be = 8;
+    mUnk_12ca = 0;
+    mUnk_14ee = 0;
+    mUnk_12ce = mUnk_12cc;
+    func_02088ec4(mUnk_1018);
+    mUnk_12b9 = 3;
+    mUnk_14ec = 1;
+    SpriteManager::Get().StartFade(2);
+    if (mUnk_14f3 != 0) {
+        func_0206e9d0(0);
+    }
+}
+
+void UnkStruct_02065c40::func_0206f564(u8 unk1, u32 unk2, s32 unk3) {
+    BOOL isTwo   = mUnk_12ba == 2;
+    BOOL isThree = mUnk_12ba == 3;
+    if (!(isTwo | isThree)) {
+        return;
+    }
+    if (mUnk_12bc < mUnk_12be - 1) {
+        return;
+    }
+    if (!(((mUnk_12ca == 6) | ((mUnk_12ca == 5) | (mUnk_12ca == 7))) & (unk1 != mUnk_1018->mUnk_34))) {
+        return;
+    }
+    if (mUnk_14e2 == 5) {
+        mUnk_12ca = 0;
+        func_02088ec4(mUnk_1018);
+        mUnk_12d2[0] = unk1;
+        mUnk_12bc    = mUnk_12c0;
+        mUnk_0c[mUnk_12c0].mValue = func_02070554(mUnk_11b4[0].mUnk_36, unk2);
+        mUnk_12b9 = 3;
+        return;
+    }
+    mUnk_1018->func_02088e64((s16) (s32) unk1, mUnk_13d2[0], 0, 0);
+    mUnk_12ca = 2;
+    if (mUnk_14e2 != 0) {
+        return;
+    }
+    if (unk3 < 0) {
+        return;
+    }
+    u8 value = unk3 + 0x20;
+    if (value == mUnk_0c[mUnk_12c2].mValue) {
+        return;
+    }
+    mUnk_0c[mUnk_12c2].mValue = value;
+    mUnk_12bc                 = mUnk_12c2;
+    mUnk_0c[mUnk_12c0].mValue = -1;
+    mUnk_12b9                 = 3;
+}
+
+// Frame clock singleton (instance 0x020c1884, destructor 0x020219c0).
+class UnkStruct_020c1884 {
+public:
+    /* 00 */ PAD(0x00, 0x10);
+    /* 10 */ u32 mUnk_10;
+    /* 14 */ PAD(0x14, 0x18);
+    /* 18 */
+
+    ~UnkStruct_020c1884();
+
+    static UnkStruct_020c1884 &Get() {
+        static UnkStruct_020c1884 instance;
+        return instance;
+    }
+};
+
+s32 func_0201f970(s32 value, s32 divisor);
+
+extern "C" void func_0206ea14() {
+    s32 line = *(vu16 *) 0x4000006;
+    if (line >= 0xc0) {
+        return;
+    }
+    UnkStruct_02065c40 *event = data_02219288;
+    u32 time = line + UnkStruct_020c1884::Get().mUnk_10;
+    u32 angle = ((time << 16) / 3) >> 6;
+    u16 height = event->mUnk_14dc;
+    u16 width  = event->mUnk_14da;
+    u16 third  = height / 3;
+    u16 span;
+    if (width >= height - third) {
+        span = height - width;
+    } else {
+        span = width;
+        if (span > third) {
+            span = third;
+        }
+    }
+    s32 offset = span * (SinIdx(angle) << 5) / third;
+    func_020037e8((s16) ((offset << 4) >> 16));
+}

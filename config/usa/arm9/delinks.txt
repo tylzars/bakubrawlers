@@ -156,3 +156,11 @@ src/Main/Scene/CharacterEditScene.cpp:
 // provisional: code only (also UnkStruct_020651bc); tables at .rodata 0x020a10a0 not assigned yet.
 src/Main/UI/MessageWindow.cpp:
     .text       start:0x02065158 end:0x02065c40
+
+// provisional: code only; .data 0x020b4314-0x020b48dc, .rodata 0x020a1ac6-0x020a2dac and .bss 0x02219288-0x022192d8 belong here.
+src/Main/Game/UnkStruct_02065c40.cpp:
+    .text       start:0x02065c40 end:0x02070608
+
+// provisional: code only; .data 0x020b8ddc-0x020b8ff4, .rodata from 0x020a2dac and .bss 0x022192d8-0x022192fc belong here.
+src/Main/Unknown/UnkStruct_02070608.cpp:
+    .text       start:0x02070608 end:0x02071868

@@ -10,10 +10,6 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-void func_02023a54();
-void func_02023708(const char *path, u32 a, u32 b, u32 c, u32 d, u32 e);
-int func_02023874();
-void *func_02023864();
 u16 func_02065c20(u32 id);
 int func_02065c0c(u32 id, u32 kind);
 extern u16 data_020c1a4c[0x10]; // palette scratch (cleared before each text)
@@ -451,7 +447,7 @@ BOOL BattleCommandPage::func_02055c28() {
         mUnk_90[mUnk_f0 - 1] = func_02023864();
     }
     if (mUnk_f0 < 12) {
-        func_02023708(data_020b3070[mUnk_f0], 0, 0, 0, (u32) &mUnk_c0[mUnk_f0], 0);
+        func_02023708(data_020b3070[mUnk_f0], 0, 0, 0, &mUnk_c0[mUnk_f0], 0);
         mUnk_f0++;
         return FALSE;
     }
@@ -587,7 +583,7 @@ BOOL BattleCommandPage::func_020561c4() {
         } else if (mUnk_f0 == 1) {
             sprintf(path, "%s.nce_ncg1D.bin", file);
         }
-        func_02023708(path, 0, 0, 0, (u32) &mUnk_c0[mUnk_f0], 0);
+        func_02023708(path, 0, 0, 0, &mUnk_c0[mUnk_f0], 0);
         mUnk_f0++;
         return FALSE;
     }

@@ -26,7 +26,6 @@ u8 func_02065bf4(u32 id, u32 index);
 extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
 extern "C" void func_ov007_022633f8(BattlePlayerList *list);
 BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
-BOOL func_0203dd0c(FrameTask *task, u32 channel);
 void func_020383f8(u32 heap);
 void func_02001e68(u32 unk1, u32 unk2, u32 unk3);
 void func_02001ed0(u32 unk1);

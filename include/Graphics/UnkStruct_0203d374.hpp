@@ -5,6 +5,8 @@
 
 #include <nitro/fx.h>
 
+class ModelInstance;
+
 // A posed 3D object (0x54 bytes, ctor 0203d374, destructor 0203d3e8): set up with func_0203d4dc, moved with
 // func_0203db70/func_0203db94, updated with func_0203d988 and drawn with func_0203dab0.
 class UnkStruct_0203d374 {
@@ -15,7 +17,7 @@ public:
     /* 12 */ u16 mUnk_12;
     /* 14 */ u16 mUnk_14;
     /* 16 */ PAD(0x16, 0x28);
-    /* 28 */ void *mUnk_28;
+    /* 28 */ ModelInstance *mUnk_28;
     /* 2c */ PAD(0x2c, 0x49);
     /* 49 */ u8 mUnk_49;
     /* 4a */ u8 mUnk_4a;
@@ -40,6 +42,9 @@ public:
         mUnk_12 = rot[1];
         mUnk_14 = rot[2];
     }
+    void func_0203d6e0(u32 unk1, u32 unk2, u32 unk3);
+    BOOL func_0203d6f0();
+    void func_0203d6f8();
     void func_0203d988();
     void func_0203dab0();
 };

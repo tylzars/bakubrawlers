@@ -2,6 +2,7 @@
 
 
 #include "Battle/BattleBase.hpp"
+#include "Unknown/UnkStruct_02087898.hpp"
 #include "UI/MessageWindow.hpp"
 #include "Battle/BattleObj01.hpp"
 
@@ -20,10 +21,6 @@
 // Externals of other battle files.
 u32 func_ov007_0221d348(u32 max);
 // Object at BattlePlayerList+0x2a4: a timed screen effect (fade) the battle shows before the gauge starts.
-void func_02087eec(UnkStruct_Battle2a4 *effect);
-void func_02088e64(UnkStruct_Battle2a4 *effect, u32 unk2, u32 unk3, u32 unk4, u32 unk5);
-void func_02088dac(UnkStruct_Battle2a4 *effect, u32 unk2);
-BOOL func_02087cac(UnkStruct_Battle2a4 *effect);
 extern u8 data_ov007_02279178[];
 extern u32 data_ov007_02279184[];
 extern s32 data_ov007_0227918c[];
@@ -133,8 +130,8 @@ void BattleHud::Update() {
         case 1:
             if (data_020d433c.mUnk_85 == 0xe || (data_020d433c.mUnk_85 >= 7 && data_020d433c.mUnk_85 <= 10)) {
                 mUnk_12b = 2;
-                func_02087eec(data_020d433c.mBattlePlayers->mUnk_2a4);
-                func_02088e64(data_020d433c.mBattlePlayers->mUnk_2a4, data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                data_020d433c.mBattlePlayers->mUnk_2a4->func_02087eec();
+                data_020d433c.mBattlePlayers->mUnk_2a4->func_02088e64(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
                 G2S_SetBlendBrightness(0x1f, -10);
             } else {
                 func_ov007_02226ab8();
@@ -143,10 +140,10 @@ void BattleHud::Update() {
             break;
         case 2: {
             if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
-                func_02088dac(data_020d433c.mBattlePlayers->mUnk_2a4, 1);
+                data_020d433c.mBattlePlayers->mUnk_2a4->func_02088dac(1);
             }
             u32 limit = data_020d433c.mUnk_83 == 4 ? 0 : 5;
-            if (!func_02087cac(data_020d433c.mBattlePlayers->mUnk_2a4)) {
+            if (!data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
                 data_020d433c.mBattlePlayers->mUnk_2af++;
                 u8 n = data_020d433c.mBattlePlayers->mUnk_2af;
                 if (n > limit) {
@@ -154,7 +151,7 @@ void BattleHud::Update() {
                     mUnk_12b = 3;
                     G2S_SetBlendBrightness(0x1f, 0);
                 } else {
-                    func_02088e64(data_020d433c.mBattlePlayers->mUnk_2a4, n, 0x64, 0, 0);
+                    data_020d433c.mBattlePlayers->mUnk_2a4->func_02088e64(n, 0x64, 0, 0);
                 }
             }
             break;

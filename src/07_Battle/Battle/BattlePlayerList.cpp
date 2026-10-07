@@ -1,4 +1,5 @@
 #include "Game/UnkStruct_020d433c.hpp"
+#include "Unknown/UnkStruct_02087898.hpp"
 #include "Battle/GimmickTypes.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/Camera.hpp"
@@ -33,15 +34,8 @@ public:
     void func_0202d8cc();
 };
 
-class UnkStruct_Battle2a4 {
-public:
-    u8 mPad[0x4c];
-    UnkStruct_Battle2a4(); // 02087898
-};
-
 extern "C" void func_ov007_022633f8(BattlePlayerList *list);
 void func_02038444(u32 heap, u32 a);
-void func_02087cf8(UnkStruct_Battle2a4 *effect, const char *path);
 void func_ov007_0226a48c(BattlePlayer *player);
 void func_ov007_0226a404(BattlePlayer *player, u32 index, u32 flag);
 extern const u8 data_ov007_0227aa5c[];
@@ -329,14 +323,14 @@ void func_ov007_02262a70(BattlePlayerList *list, u8 slot, u8 player) {
 }
 
 void func_ov007_02262acc(BattlePlayerList *list) {
-    list->mUnk_2a4 = new UnkStruct_Battle2a4();
+    list->mUnk_2a4 = new UnkStruct_02087898();
     MI_CpuCopy8(data_020d4404, (u8 *) list->mPlayers[0] + 0xa8, 8);
     switch (data_020d433c.mUnk_85) {
         case 1:
             if (data_020d433c.mUnk_82) {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T001_ba.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T001_ba.mes");
             } else {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T001_ba_Ali.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T001_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             func_ov007_0226a404(list->mPlayers[0], 1, 2);
@@ -354,9 +348,9 @@ void func_ov007_02262acc(BattlePlayerList *list) {
         case 3:
         case 4:
             if (data_020d433c.mUnk_82) {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T001_ba.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T001_ba.mes");
             } else {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T001_ba_Ali.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T001_ba_Ali.mes");
             }
             list->mUnk_2af = 2;
             list->mUnk_288 = 3;
@@ -374,9 +368,9 @@ void func_ov007_02262acc(BattlePlayerList *list) {
         case 7: {
             list->mUnk_28f = 0;
             if (data_020d433c.mUnk_82) {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T002_ba.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T002_ba.mes");
             } else {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T002_ba_Ali.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T002_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             list->mUnk_288 = 10;
@@ -400,9 +394,9 @@ void func_ov007_02262acc(BattlePlayerList *list) {
         case 8: {
             list->mUnk_28f = 0;
             if (data_020d433c.mUnk_82) {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T002_ba.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T002_ba.mes");
             } else {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T002_ba_Ali.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T002_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             list->mUnk_288 = 11;
@@ -428,9 +422,9 @@ void func_ov007_02262acc(BattlePlayerList *list) {
         case 10: {
             list->mUnk_28f = 0;
             if (data_020d433c.mUnk_82) {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T002_ba.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T002_ba.mes");
             } else {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T002_ba_Ali.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T002_ba_Ali.mes");
             }
             list->mUnk_2af = 3;
             list->mUnk_288 = 11;
@@ -458,9 +452,9 @@ void func_ov007_02262acc(BattlePlayerList *list) {
         }
         case 12:
             if (data_020d433c.mUnk_82) {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T003_ba.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T003_ba.mes");
             } else {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T003_ba_Ali.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T003_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             list->mUnk_2a8 = 14;
@@ -470,9 +464,9 @@ void func_ov007_02262acc(BattlePlayerList *list) {
             break;
         case 14: {
             if (data_020d433c.mUnk_82) {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T004_ba.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T004_ba.mes");
             } else {
-                func_02087cf8(list->mUnk_2a4, "font/mes_T004_ba_Ali.mes");
+                list->mUnk_2a4->func_02087cf8("font/mes_T004_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             list->mUnk_2a8 = 24;

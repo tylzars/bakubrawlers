@@ -21,10 +21,8 @@ static inline BOOL NonZero(u8 value) {
     return result;
 }
 
-void func_02023a54();
 extern u8 data_0209e57c[]; // table of func_0205aea4 (.rodata 0x0209e57c)
 extern u8 data_0209e5bc[][5]; // per cell values, five columns (.rodata 0x0209e5bc)
-void func_020037e8(u32 mode);
 
 extern WindowItemRecord data_020b3688[4]; // item table of the list window (positions are patched by func_02058404)
 extern WindowCellRecord data_020b3618[4];

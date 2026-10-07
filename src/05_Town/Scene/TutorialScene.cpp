@@ -24,26 +24,6 @@ extern const WindowItemRecord data_ov005_02220190[];
 extern const WindowCellRecord data_ov005_02220238[];
 extern const WindowItemRecord data_ov005_022200e8[];
 extern const WindowCellRecord data_ov005_0222013c[];
-struct UnkEntryA {
-    u16 mUnk_0 : 4;
-    u16 mUnk_4 : 12;
-    u16 mPad;
-};
-extern UnkEntryA data_020d4478[];
-struct UnkEntryB {
-    u16 mPad;
-    u16 mUnk_0 : 3;
-    u16 mUnk_3 : 3;
-    u16 mUnk_6 : 3;
-    u16 mUnk_9 : 3;
-    u16 mUnk_12 : 3;
-    u16 mUnk_15 : 1;
-};
-int func_0202317c(UnkStruct_020d43f0 *base, u32 a, u32 b, u32 c);
-void func_020231c0(UnkStruct_020d43f0 *base, int a, u32 b);
-void func_02023168(UnkStruct_020d43f0 *base, u32 a, u32 b, int c);
-UnkEntryB *func_02023248(UnkStruct_020d43f0 *base, u32 a, u32 b);
-extern u8 data_020d49b0[];
 extern const s8 data_ov005_022200d8[];
 extern const s8 data_ov005_022200d9[];
 void func_020383f8(u32 a);
@@ -822,7 +802,7 @@ void TutorialScene::Update() {
                         func_020231c0(data_020d43f0, slot, 0x1b8);
                         func_02023168(data_020d43f0, 0, 0, slot);
                         data_020d4478[slot].mUnk_0 = 2;
-                        UnkEntryB *entry = func_02023248(data_020d43f0, 0x24, id);
+                        UnkStruct_02023248 *entry = func_02023248(data_020d43f0, 0x24, id);
                         entry->mUnk_0 = 2;
                         entry->mUnk_3 = 1;
                         entry->mUnk_6 = 3;

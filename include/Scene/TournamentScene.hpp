@@ -10,6 +10,7 @@ class MessageWindow;
 class SelectWindow;
 class UnkStruct_020651bc;
 class UnkStruct_02065c40;
+class TournamentSubScene;
 struct MessageFile;
 
 // Overlay 2: the tournament bracket.
@@ -40,7 +41,7 @@ public:
     /* ac */ u16 mUnk_ac;
     /* ae */ s16 mUnk_ae;
     /* b0 */ u8 mUnk_b0;
-    /* b1 */ PAD(0xb1, 0xb2);
+    /* b1 */ u8 mTimer;
     /* b2 */ u8 mMode;
     /* b3 */ u8 mSelection;
     /* b4 */ PAD(0xb4, 0xb5);
@@ -70,13 +71,13 @@ public:
     /* d4 */ u8 mUnk_d4;
     /* d5 */ u8 mBlend;
     /* d6 */ s8 mUnk_d6;
-    /* d7 */ u8 mUnk_d7;
+    /* d7 */ s8 mUnk_d7;
     /* d8 */
 
     TournamentScene();
 
     /* 00 */ virtual ~TournamentScene() override;
-    /* 08 */ virtual void Update() override; // 022197e0, not decompiled yet
+    /* 08 */ virtual void Update() override;
     /* 0c */
 
     void Cleanup(); // 022195e0

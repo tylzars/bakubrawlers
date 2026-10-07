@@ -16,6 +16,7 @@ public:
     UnkStruct_02065c40(u32 unk1, u32 unk2, u32 unk3);
     u32 func_020667ec();
     BOOL func_02066c7c();
+    void func_02066c9c(u32 unk1, u32 unk2);
     u32 func_020670b4(u32 id);
     u8 func_02067120(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
     BOOL func_020678e8();

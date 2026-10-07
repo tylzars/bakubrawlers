@@ -60,7 +60,7 @@ struct UnkStruct_020d433c {
     /* a7 */ u8 mUnk_a7;
     /* a8 */ u8 mUnk_a8;
     /* a9 */ u8 mUnk_a9[4];
-    /* ad */ PAD(0xad, 0xae);
+    /* ad */ u8 mUnk_ad;
     /* ae */ u8 mUnk_ae;
     /* af */
 };

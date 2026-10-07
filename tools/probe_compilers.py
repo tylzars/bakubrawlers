@@ -86,7 +86,7 @@ def compare(code: bytes, mask: set[int], orig: bytes) -> tuple[bool, str]:
 def disasm(code: bytes) -> list[str]:
     tmp = ROOT / f"build/probe/_dis_{os.getpid()}.bin"
     tmp.write_bytes(code)
-    out = subprocess.run(["arm-none-eabi-objdump", "-D", "-b", "binary", "-m", "arm", str(tmp)],
+    out = subprocess.run(["arm-none-eabi-objdump", "-z", "-D", "-b", "binary", "-m", "arm", str(tmp)],
                          capture_output=True, text=True).stdout
     return [re.sub(r"\s+", " ", l.split("\t", 2)[-1]).strip() if "\t" in l else ""
             for l in out.splitlines() if re.match(r"\s+[0-9a-f]+:\t", l)]

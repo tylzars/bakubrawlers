@@ -4,13 +4,15 @@
 #include "types.h"
 
 struct UnkStruct_020d43f0 {
-    /* 000 */ PAD(0x000, 0x01a);
+    /* 000 */ u16 mUnk_00[3];
+    /* 006 */ PAD(0x006, 0x01a);
     /* 01a */ u16 mUnk_1a_0 : 8;
     /* 01a */ u16 mUnk_1a_8 : 8;
     /* 01c */ u32 mMoney;
     /* 020 */ PAD(0x020, 0x024);
     /* 024 */ u8 mUnk_24;
-    /* 025 */ PAD(0x025, 0x027);
+    /* 025 */ u8 mUnk_25;
+    /* 026 */ PAD(0x026, 0x027);
     union {
         /* 027 */ u8 mUnk_27;
         struct {
@@ -54,6 +56,34 @@ extern u8 data_020d496a[];
 extern u8 data_020d4973[];
 extern u8 data_020d49ae[];
 extern u8 data_020d4404[];
+
+// Records reached through data_020d43f0 by the helpers below.
+struct UnkStruct_020d4478 {
+    /* 0 */ u16 mUnk_0 : 4;
+    /* 0 */ u16 mUnk_4 : 12;
+    /* 2 */ u16 mPad;
+    /* 4 */
+};
+
+struct UnkStruct_02023248 {
+    /* 0 */ u16 mPad;
+    /* 2 */ u16 mUnk_0 : 3;
+    /* 2 */ u16 mUnk_3 : 3;
+    /* 2 */ u16 mUnk_6 : 3;
+    /* 2 */ u16 mUnk_9 : 3;
+    /* 2 */ u16 mUnk_12 : 3;
+    /* 2 */ u16 mUnk_15 : 1;
+    /* 4 */
+};
+
+extern UnkStruct_020d4478 data_020d4478[];
+extern u8 data_020d4850[];
+extern u8 data_020d49b0[];
+
+int func_0202317c(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2, u32 unk3);
+void func_02023168(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2, int unk3);
+void func_020231c0(UnkStruct_020d43f0 *base, int unk1, u32 unk2);
+UnkStruct_02023248 *func_02023248(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2);
 
 static inline BOOL TestFlagBit(const u8 *flags, int index) {
     return flags[(u32) index >> 3] & (1 << (index % 8));

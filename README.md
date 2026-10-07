@@ -19,6 +19,7 @@ Optional: `orig/biosnds7.bin` (ARM7 BIOS). Without it, `tools/fix_header.py` res
 
 ## Notes
 - NitroSDK 4.2 (relstep 30009); CRI ADX/Sofdec (built Apr 2008) and Actimagine Mobiclip 1.1.1 are linked in.
+- Compiler: CodeWarrior for DS 2.0 (`mwccarm` 2.0/sp1p5) with `-O4,p -inline noauto`, C++ with exceptions and RTTI off. Verified by exact matches of real functions (`tools/probe_compilers.py`). 1.2 and DSi compilers don't match, and the 2.0 service packs produce identical code.
 - Overlay entries are kept via `FORCE_ACTIVE` (`tools/lcf_force_active.py`), because main reaches every overlay through the shared address 0x02219440.
 
 ## Progress

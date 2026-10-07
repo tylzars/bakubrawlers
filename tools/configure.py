@@ -28,18 +28,21 @@ VERSIONS = {
 
 WIBO_TAG = "1.2.0"
 OBJDIFF_TAG = "v3.8.2"
+# CodeWarrior for DS 2.0 (mwcc 3.0), verified with tools/probe_compilers.py:
+# every 2.0 build matches, while 1.2 and DSi builds don't. The 2.0 service packs
+# emit identical code for everything tested, so sp1p5 (decomp.me mwcc_30_131) is used.
 MWCC_VERSION = "2.0/sp1p5"
 DECOMP_ME_COMPILER = "mwcc_30_131"  # decomp.me id for MWCC_VERSION
 
 CC_FLAGS = [
-    "-O4,p",            # Optimize maximally for performance
+    "-O4,p",            # verified: -O3,p differs in regalloc; ,s and -O2 don't inline accessors
     "-enum int",        # int-sized enums
     "-char signed",     # char is signed
     "-str noreuse",     # equal string literals are distinct objects
     "-proc arm946e",
     "-gccext,on",
     "-fp soft",
-    "-inline noauto",   # only inline functions marked inline
+    "-inline noauto",   # verified: auto would inline same-TU calls the game keeps out of line
     "-Cpp_exceptions off",
     "-RTTI off",
     "-interworking",

@@ -1,4 +1,5 @@
 #include "Battle/BattleCommand.hpp"
+#include "Battle/BattleCommandPrompt.hpp"
 #include "Battle/BattleCommandList.hpp"
 #include "Battle/BattleCommandPage.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
@@ -150,13 +151,6 @@ void BattleCommand::func_ov007_0223c8d4(u32 flag) {
     mNextMode = 0;
 }
 
-// 0x98 byte prompt object of the command screen (ctor 0225d08c, released with func_ov007_0225e68c).
-class BattleCommandPrompt {
-public:
-    u8 mPad[0x98];
-    BattleCommandPrompt(u32 a, void *b, u32 c, u32 d, u8 e);
-};
-void func_ov007_0225e68c(BattleCommandPrompt *prompt, u32 flag);
 
 BattleCommand::~BattleCommand() {
     if (mUnk_8c) {

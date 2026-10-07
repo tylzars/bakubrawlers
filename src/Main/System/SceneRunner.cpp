@@ -66,7 +66,6 @@ public:
 };
 
 // Constructs the BattlePlayerList (0x2b4 bytes) in place and returns it.
-extern BattlePlayerList *func_ov007_0225fd5c(void *self);
 
 // The scene that switches between the game's scenes: loads the overlay of the next one and constructs it.
 class SceneRunner : public SceneBase {
@@ -189,11 +188,7 @@ void SceneRunner::Update() {
             break;
         case 5: {
             SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV007_ID);
-            void *p = operator new(0x2b4);
-            if (p) {
-                p = func_ov007_0225fd5c(p);
-            }
-            data_020d433c.mBattlePlayers = (BattlePlayerList *) p;
+            data_020d433c.mBattlePlayers = new BattlePlayerList();
             context->mState = 14;
             break;
         }

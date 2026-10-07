@@ -25,6 +25,7 @@ class BattleMapPiece : public ModelTransform {
 public:
     BattleMapPiece(int unk); // 0226368c
     ~BattleMapPiece();
+    void func_ov007_022636f4(u32 type);
 };
 
 // Model of the player name plates, status icons and character markers (/Game/Battle/3d/FontObj), 0x2c bytes.

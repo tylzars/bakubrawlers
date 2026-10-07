@@ -205,6 +205,26 @@ src/07_Battle/Battle/BattleOrderSelect.cpp:
 src/07_Battle/Battle/BattleResult.cpp:
     .text       start:0x0224cb84 end:0x02252730
 
+// provisional: code only; .data 0x0228998c-0x02289dd8, .rodata about 0x0227a75c-0x0227aa1c and .bss 0x0228b9c4-0x0228b9e8 belong here.
+src/07_Battle/Battle/BattleCommandPrompt.cpp:
+    .text       start:0x0225d08c end:0x0225f33c
+
+// provisional: code only; .data 0x02289dd8-0x02289e70, .rodata 0x0227aa1c-0x0227aa28 and .bss 0x0228b9e8-0x0228ba0c belong here.
+src/07_Battle/Battle/BattleCardSpec.cpp:
+    .text       start:0x0225f33c end:0x0225fd5c
+
+// provisional: code only; .data 0x02289e70-0x02289ff0, .rodata 0x0227aa28-0x0227aa64 and .bss 0x0228ba0c-0x0228ba48 belong here.
+src/07_Battle/Battle/BattlePlayerList.cpp:
+    .text       start:0x0225fd5c end:0x0226368c
+
+// provisional: code only; .data 0x02289ff0-0x0228a084 belongs here.
+src/07_Battle/Battle/BattleMapPiece.cpp:
+    .text       start:0x0226368c end:0x022637ac
+
+// provisional: code only; .data 0x0228a084-0x0228a23c, .rodata 0x0227aa64-0x0227ac20 and .bss 0x0228ba48-0x0228ba6c belong here; the helpers from 0x02267098 are still to be added.
+src/07_Battle/Battle/BattleUnk022637ac.cpp:
+    .text       start:0x022637ac end:0x02267a10
+
 // provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickUnk_02274830.cpp:
     .text       start:0x02274830 end:0x02274d78

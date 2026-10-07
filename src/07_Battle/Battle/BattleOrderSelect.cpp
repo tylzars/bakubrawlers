@@ -16,7 +16,6 @@
 #include <nitro/mi.h>
 
 u32 func_ov007_022631bc(BattlePlayerList *list, u32 index);
-void func_ov007_02262a70(BattlePlayerList *list, u32 a, u32 b);
 
 struct OrderItem {
     /* 00 */ CellAnimation *mAnim;

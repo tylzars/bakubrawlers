@@ -5,6 +5,8 @@
 
 #include <nitro/fx.h>
 
+#include "Scene/SceneBase.hpp"
+
 class UnkStruct_02078290;
 class Camera;
 class UnkStruct_Battle2a4; // object at BattlePlayerList+0x2a4, drives a timed screen effect
@@ -40,7 +42,7 @@ struct BattleRecord {
     /* 08 */ u8 mUnk_08;
     /* 09 */ u8 mUnk_09;
     /* 0a */ u8 mUnk_0a;
-    /* 0b */ PAD(0x0b, 0x0c);
+    /* 0b */ u8 mUnk_0b;
 };
 
 struct BattlePlayer {
@@ -70,7 +72,10 @@ struct BattlePlayer {
     /* fe */ u8 mUnk_fe;
     /* ff */ PAD(0xff, 0x100);
     /* 100 */ BattlePlayerMessage mMsg;
-    /* 119 */
+    /* 11a */ u8 mUnk_11a[0x26];
+    /* 140 */
+
+    BattlePlayer(u32 index); // 022696b4
 
     // Name text at +b0 and the pointer-sized value at +a8 (both overlap mRecords, which is probably only 4 long).
     const u8 *NameText() {
@@ -149,12 +154,18 @@ struct BattleUnit {
     /* 0f */ u8 mUnk_0f;
     /* 10 */ u8 mUnk_10;
     /* 11 */ u8 mUnk_11;
-    /* 12 */ PAD(0x12, 0x14);
+    /* 12 */ u8 mUnk_12;
+    /* 13 */ PAD(0x13, 0x14);
 };
 
 struct BattleUnk29c {
     /* 00 */ PAD(0x00, 0xa0);
     /* a0 */ u8 mUnk_a0;
+    /* a1 */ PAD(0xa1, 0xa4);
+    /* a4 */
+
+    BattleUnk29c();  // 0226fb74
+    ~BattleUnk29c(); // 0226fc18
 };
 
 struct BattleMarker {
@@ -163,11 +174,13 @@ struct BattleMarker {
     /* 2 */ u8 mUnk_2;
     /* 3 */ u8 mUnk_3;
     /* 4 */ u8 mUnk_4;
-    /* 5 */ PAD(5, 8);
+    /* 5 */ u8 mUnk_5;
+    /* 6 */ PAD(6, 8);
 };
 
-struct BattlePlayerList {
-    /* 000 */ PAD(0x000, 0x00c);
+// The battle scene itself (0x2b4 bytes, vtable 02289e78, constructor 0225fd5c); data_020d433c.mBattlePlayers points to it.
+struct BattlePlayerList : public SceneBase {
+    /* 000 SceneBase */
     /* 00c */ BattlePlayer *mPlayers[4];
     /* 01c */ BattleMarker mUnk_1c[12];
     /* 07c */ BattleUnit mUnits[12];
@@ -185,16 +198,26 @@ struct BattlePlayerList {
     /* 292 */ u8 mUnk_292;
     /* 293 */ PAD(0x293, 0x294);
     /* 294 */ u8 mUnk_294;
-    /* 295 */ PAD(0x295, 0x298);
+    /* 295 */ u8 mUnk_295;
+    /* 296 */ PAD(0x296, 0x298);
     /* 298 */ BattleTarget *mUnk_298;
     /* 29c */ BattleUnk29c *mUnk_29c;
     /* 2a0 */ Camera *mCamera;
     /* 2a4 */ UnkStruct_Battle2a4 *mUnk_2a4;
-    /* 2a8 */ PAD(0x2a8, 0x2a9);
+    /* 2a8 */ u8 mUnk_2a8;
     /* 2a9 */ u8 mUnk_2a9;
-    /* 2aa */ PAD(0x2aa, 0x2af);
+    /* 2aa */ u8 mUnk_2aa;
+    /* 2ab */ u8 mUnk_2ab;
+    /* 2ac */ u8 mUnk_2ac;
+    /* 2ad */ u8 mUnk_2ad;
+    /* 2ae */ u8 mUnk_2ae;
     /* 2af */ u8 mUnk_2af;
     /* 2b0 */ u8 mUnk_2b0;
+    /* 2b1 */ PAD(0x2b1, 0x2b4);
+
+    BattlePlayerList(); // 0225fd5c
+    virtual ~BattlePlayerList();
+    /* 08 */ virtual void Update(); // 0226026c
 
     BattlePlayer *Current() {
         return mPlayers[mUnk_28a];
@@ -208,6 +231,9 @@ struct BattlePlayerList {
         return mUnk_1c;
     }
 };
+
+void func_ov007_022628e0(BattlePlayerList *list, u8 index, const VecFx32 *pos, u8 marker);
+void func_ov007_02262a70(BattlePlayerList *list, u8 slot, u8 player);
 
 class EffectManager; // particle effect list (ctor 0202ab24 creates the 0x61c byte effects)
 

@@ -1,4 +1,6 @@
 #include "Battle/BattleConfrontCard.hpp"
+#include "Battle/BattleCardSpec.hpp"
+#include "Battle/BattleCommandPrompt.hpp"
 #include "Battle/BattleCommandList.hpp"
 #include "Battle/BattleCommandPage.hpp"
 #include "Battle/BattleUnionAbility.hpp"
@@ -20,27 +22,6 @@
 
 extern const s8 data_ov007_02279d3c[];
 u8 func_02065bf4(u32 id, u32 index);
-// Card detail object (0x20 bytes, ctor 0225f33c).
-class BattleCardSpec {
-public:
-    /* 00 */ PAD(0x00, 0x0c);
-    /* 0c */ void *mUnk_0c;
-    /* 10 */ PAD(0x10, 0x1e);
-    /* 1e */ u8 mUnk_1e;
-    /* 1f */ PAD(0x1f, 0x20);
-    /* 20 */
-
-    BattleCardSpec(u32 a, u32 b, u32 c, u8 d);
-};
-
-class BattleCommandPrompt { // 0x98 bytes, ctor 0225d08c
-public:
-    u8 mPad[0x98];
-    BattleCommandPrompt(u32 a, void *b, u32 c, u32 d, u8 e);
-};
-
-extern "C" void func_ov007_02273e3c(void *p);
-extern "C" u8 func_ov007_0225f0bc(u32 v);
 
 extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
 extern "C" void func_ov007_022633f8(BattlePlayerList *list);

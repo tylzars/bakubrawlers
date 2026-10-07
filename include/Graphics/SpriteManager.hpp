@@ -3,6 +3,14 @@
 #include "global.h"
 #include "types.h"
 
+// One OAM entry as the 3D-less sprite code writes it: attributes 0 and 1 are stored as one word.
+struct SpriteOamEntry {
+    /* 00 */ u32 mAttr01;
+    /* 04 */ u16 mAttr2;
+    /* 06 */ u16 mUnk_06;
+    /* 08 */
+};
+
 struct UnkStruct_SpriteManager_00 {
     /* 00 */ unk32 mUnk_00;
     /* 04 */
@@ -12,7 +20,7 @@ struct UnkStruct_SpriteManager_00 {
 
 // One screen's OBJ (sprite) state: character and palette uploads.
 struct SpriteScreen {
-    /* 000 */ PAD(0x000, 0x400);
+    /* 000 */ SpriteOamEntry mOam[128];
     /* 400 */ u16 mUnk_400; // OBJ tile unit (bytes), from the mode table
     /* 402 */ u8 mBgIndex;
     /* 403 */ u8 mUnk_403; // OBJ mapping mode

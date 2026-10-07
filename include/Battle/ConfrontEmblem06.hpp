@@ -33,4 +33,7 @@ public:
     void func_ov007_02221d44();
     int func_ov007_02221f2c(int a);
     int func_ov007_0222210c();
+    void func_ov007_02222230();
+    u8 func_ov007_022222b0();
+    u8 func_ov007_022222c8();
 };

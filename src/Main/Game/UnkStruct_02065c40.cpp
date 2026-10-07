@@ -945,7 +945,7 @@ void UnkStruct_02065c40::func_020699a4(u32 index) {
         return;
     }
     mUnk_112c[index].mUnk_2c->mUnk_49 = 1;
-    mUnk_112c[index].mUnk_2c->mUnk_28->func_02028e54(0, 0, 0x64000);
+    mUnk_112c[index].mUnk_2c->mModel->func_02028e54(0, 0, 0x64000);
 }
 
 void UnkStruct_02065c40::func_02069a24(u32 index) {
@@ -2259,11 +2259,10 @@ BOOL func_02086a58();
 BOOL func_02086b74();
 BOOL func_02086e08();
 
-// non-matching: 2 words, the original keeps the unmasked add in r2.
 void UnkStruct_02065c40::Update() {
     if (mUnk_14e4 != 0) {
-        u8 flip = mUnk_14e5 + 1;
-        mUnk_14e5 = flip & 1;
+        mUnk_14e5++;
+        mUnk_14e5 &= 1;
     }
     func_02067e74();
     func_02069d54();

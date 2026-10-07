@@ -1,22 +1,57 @@
-
 #include "Battle/BattleBase.hpp"
-
 #include "Game/Random.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "System/SoundManager.hpp"
 #include "System/WirelessManager.hpp"
 #include <nitro/math.h>
 
+int func_02065c0c(u32 id, u32 kind);
+
+int func_ov007_02222764(int side, BattleEntry *entry) {
+    int result = -1;
+    u16 *ids   = &entry->mUnk_12;
+    int off    = side * sizeof(BattleEntry);
+    if (func_02065c0c(*(u16 *) ((u8 *) ids + off), 3) == 4) {
+        switch (*(u16 *) ((u8 *) ids + off)) {
+            case 0x88:
+                result = 2;
+                break;
+            case 0x89:
+                result = 0;
+                break;
+            case 0x8a:
+                result = 1;
+                break;
+            case 0x8b:
+                result = 3;
+                break;
+            case 0x8c:
+            case 0x8d:
+                result = 5;
+                break;
+        }
+    }
+    return result;
+}
+
 u32 func_ov007_0221d348(u32 max);
 
 extern u8 *data_ov007_02286570[6];
+
 extern u8 data_ov007_02278c34[];
+
 extern u8 data_ov007_02278d34[];
+
 extern u8 data_ov007_02278d74[];
+
 extern u8 data_ov007_02278d7a[];
+
 extern u8 data_ov007_02278d7b[];
+
 extern u8 data_ov007_02278d7c[];
+
 extern u8 data_ov007_02278d7d[];
+
 extern u8 data_ov007_02278d7e[];
 
 // non-matching: this and the vtable temporary have swapped registers (r5/r4).

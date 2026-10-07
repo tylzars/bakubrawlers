@@ -487,9 +487,9 @@ void BattleUnk29c::func_ov007_02270dbc(u32 index) {
     m = mUnk_30[index];
     if (m->mRot[0] != 0 || m->mRot[1] != 0 || m->mRot[2] != 0) {
         UnkStruct_0203d374 *p = mUnk_00[index];
-        p->mUnk_10 = p->mUnk_10 + m->mRot[0];
-        p->mUnk_12 = p->mUnk_12 + m->mRot[1];
-        p->mUnk_14 = p->mUnk_14 + m->mRot[2];
+        p->mRotX = p->mRotX + m->mRot[0];
+        p->mRotY = p->mRotY + m->mRot[1];
+        p->mRotZ = p->mRotZ + m->mRot[2];
     }
 }
 
@@ -520,9 +520,9 @@ void BattleUnk29c::func_ov007_02270f1c(u32 index) {
     m = mUnk_30[index];
     if (m->mRot[0] != 0 || m->mRot[1] != 0 || m->mRot[2] != 0) {
         UnkStruct_0203d374 *p = mUnk_00[index];
-        p->mUnk_10 = p->mUnk_10 + m->mRot[0];
-        p->mUnk_12 = p->mUnk_12 + m->mRot[1];
-        p->mUnk_14 = p->mUnk_14 + m->mRot[2];
+        p->mRotX = p->mRotX + m->mRot[0];
+        p->mRotY = p->mRotY + m->mRot[1];
+        p->mRotZ = p->mRotZ + m->mRot[2];
     }
 }
 
@@ -553,9 +553,9 @@ void BattleUnk29c::func_ov007_02271054(u32 index) {
     m = mUnk_30[index];
     if (m->mRot[0] != 0 || m->mRot[1] != 0 || m->mRot[2] != 0) {
         UnkStruct_0203d374 *p = mUnk_00[index];
-        p->mUnk_10 = p->mUnk_10 + m->mRot[0];
-        p->mUnk_12 = p->mUnk_12 + m->mRot[1];
-        p->mUnk_14 = p->mUnk_14 + m->mRot[2];
+        p->mRotX = p->mRotX + m->mRot[0];
+        p->mRotY = p->mRotY + m->mRot[1];
+        p->mRotZ = p->mRotZ + m->mRot[2];
     }
 }
 
@@ -586,9 +586,9 @@ void BattleUnk29c::func_ov007_0227118c(u32 index) {
     m = mUnk_30[index];
     if (m->mRot[0] != 0 || m->mRot[1] != 0 || m->mRot[2] != 0) {
         UnkStruct_0203d374 *p = mUnk_00[index];
-        p->mUnk_10 = p->mUnk_10 + m->mRot[0];
-        p->mUnk_12 = p->mUnk_12 + m->mRot[1];
-        p->mUnk_14 = p->mUnk_14 + m->mRot[2];
+        p->mRotX = p->mRotX + m->mRot[0];
+        p->mRotY = p->mRotY + m->mRot[1];
+        p->mRotZ = p->mRotZ + m->mRot[2];
     }
 }
 

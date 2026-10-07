@@ -158,7 +158,6 @@ BOOL func_02023ad4(const char *path) {
     return ok;
 }
 
-// non-matching: 10 words, registers of compressed and outSize swapped.
 void *func_02023708(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32 unk6) {
     void *buffer = (void *) unk2;
     u32 offset   = unk3;
@@ -173,7 +172,11 @@ void *func_02023708(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
             compressed = 0;
             break;
         case 0:
-            compressed = (offset | size) != 0 ? 0 : 1;
+            if ((offset | size) != 0) {
+                compressed = 0;
+            } else {
+                compressed = 1;
+            }
             break;
     }
     data_020d53e4.mRequestedSize = size;

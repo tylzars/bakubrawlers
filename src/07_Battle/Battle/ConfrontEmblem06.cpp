@@ -1,5 +1,4 @@
 #include "Battle/ConfrontEmblem06.hpp"
-
 #include "Battle/BattleUtil.hpp"
 #include "Battle/BattleBase.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -52,7 +51,9 @@ ConfrontEmblem06::~ConfrontEmblem06() {
 }
 
 void func_ov007_02225354(float dx, float dy, float *out);
+
 extern "C" void func_02024764(SoundManager *manager, u32 a, u32 b);
+
 extern "C" int func_02024790(SoundManager *manager, u32 a);
 
 void ConfrontEmblem06::func_ov007_02221c68() {
@@ -227,4 +228,33 @@ int ConfrontEmblem06::func_ov007_0222210c() {
         }
     }
     return result;
+}
+
+void ConfrontEmblem06::func_ov007_02222230() {
+    if (mUnk_05_0) {
+        return;
+    }
+    if (mUnk_0c > 2.0f) {
+        mUnk_0c = mUnk_0c - 0.02f;
+        if (mUnk_0c < 2.0f) {
+            mUnk_0c = 2.0f;
+        }
+    } else if (mUnk_0c < 2.0f) {
+        mUnk_0c += 0.02f;
+        if (mUnk_0c > 2.0f) {
+            mUnk_0c = 2.0f;
+        }
+    }
+}
+
+u8 ConfrontEmblem06::func_ov007_022222b0() {
+    return mUnk_04 == 2 ? 1 : 0;
+}
+
+u8 ConfrontEmblem06::func_ov007_022222c8() {
+    if (mUnk_05_2) {
+        mUnk_05_2 = 0;
+        return 1;
+    }
+    return 0;
 }

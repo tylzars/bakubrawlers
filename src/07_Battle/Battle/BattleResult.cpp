@@ -1,4 +1,5 @@
 #include "Battle/BattleBase.hpp"
+#include "Battle/BattleUnk022767c8.hpp"
 #include "Battle/BattleCharaAct.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
@@ -34,11 +35,6 @@ extern u8 data_020d43e5[];
 extern UnkStruct_0220f540 data_0220f540;
 
 class Camera;
-class UnkStruct_ov007_022767c8 {
-public:
-    PAD(0x00, 0xe8);
-    UnkStruct_ov007_022767c8();
-};
 class UnkStruct_02076058 {
 public:
     /* 00 */ PAD(0x00, 0x78);
@@ -408,7 +404,7 @@ void BattleResult::Update() {
             if (data_020d433c.mUnk_7b != 8 && data_020d433c.mUnk_7b != 12) {
                 if (data_020d433c.mUnk_7d == 2) {
                     if (func_0202326c(&data_020d43f0[0])) {
-                        new UnkStruct_ov007_022767c8();
+                        new BattleUnk022767c8();
                         mContext->mUnk_12 = 0;
                     }
                 }

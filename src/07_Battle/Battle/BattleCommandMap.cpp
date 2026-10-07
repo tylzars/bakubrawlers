@@ -348,10 +348,10 @@ struct Rot16 {
 };
 
 static inline void ApplyRot(UnkStruct_0203d374 *obj, Rot16 *rot, u16 base) {
-    obj->mUnk_10 = obj->mUnk_10 + rot->x;
-    obj->mUnk_12 = obj->mUnk_12 + rot->y;
-    obj->mUnk_14 = obj->mUnk_14 + rot->z;
-    obj->mUnk_10 = base;
+    obj->mRotX = obj->mRotX + rot->x;
+    obj->mRotY = obj->mRotY + rot->y;
+    obj->mRotZ = obj->mRotZ + rot->z;
+    obj->mRotX = base;
 }
 
 // non-matching: 0x52c vs 0x548, the original keeps angle unfolded per arm and has sx/sy in swapped registers.
@@ -434,14 +434,14 @@ void BattleCommandMap::func_ov007_02245f08() {
         angle  = angle + 60;
         ApplyRot(obj, &rot, 0x98e3);
     }
-    obj->mUnk_12 = (u16) (65536.0f * (float) (u16) (angle % 360) / 360.0f);
+    obj->mRotY = (u16) (65536.0f * (float) (u16) (angle % 360) / 360.0f);
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera) {
-        obj->mUnk_12 = obj->mUnk_12 + camera->mYaw;
+        obj->mRotY = obj->mRotY + camera->mYaw;
     }
-    mUnk_14->mUnk_10 = obj->mUnk_10;
-    mUnk_14->mUnk_12 = obj->mUnk_12;
-    mUnk_14->mUnk_14 = obj->mUnk_14;
+    mUnk_14->mRotX = obj->mRotX;
+    mUnk_14->mRotY = obj->mRotY;
+    mUnk_14->mRotZ = obj->mRotZ;
 }
 
 extern const VecFx32 data_ov007_02279ec4;

@@ -1,15 +1,17 @@
-# Copyrighted inputs — never commit
-orig/*
-!orig/.gitkeep
+# Never commit game data: ROMs, BIOS dumps, extracted assets, disassembly
 *.nds
 *.zip
 *.bin
-# Generated
-extract/
+*.sav
+extract/*
+!extract/README.md
+
+# Build output and downloaded tools
 build/
 tools/bin/
 tools/mwccarm/
 .ninja_*
 build.ninja
 objdiff.json
+compile_commands.json
 __pycache__/

@@ -20,7 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 WIBO = ROOT / "tools/bin/wibo"
 MWCC_ROOT = ROOT / "tools/mwccarm"
-EXTRACT = ROOT / "extract/us"
+EXTRACT = ROOT / "extract/usa"
 BASE_FLAGS = "-proc arm946e -fp soft -interworking -w off -nolink -enum int -char signed -str noreuse -gccext,on"
 
 PROBE = re.compile(r"//\s*PROBE:\s*(\S+)\s+(\S+)\s+(0x[0-9a-fA-F]+)")
@@ -37,7 +37,7 @@ def module_bytes(module: str) -> tuple[int, bytes]:
 
 
 def orig_size(module: str, addr: int) -> int:
-    cfg = ROOT / "config/us/arm9"
+    cfg = ROOT / "config/usa/arm9"
     path = cfg / "symbols.txt" if module == "main" else cfg / module / "symbols.txt" if module == "itcm" \
         else cfg / "overlays" / module / "symbols.txt"
     for line in path.read_text().splitlines():

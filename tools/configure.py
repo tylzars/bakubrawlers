@@ -18,9 +18,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 os.chdir(ROOT)
 
+GAME = "bakugan"
 VERSIONS = {
-    "us": {
-        "baserom": "orig/baserom_us.nds",
+    "usa": {
+        "baserom": f"extract/baserom_{GAME}_usa.nds",
         # See tools/fix_header.py; only used when no ARM7 BIOS is supplied.
         "secure_area_crc": 0x31A7,
     },
@@ -35,7 +36,7 @@ DECOMP_ME_COMPILER = "mwcc_30_137"  # decomp.me id for MWCC_VERSION
 # NitroSDK was prebuilt by Nintendo with an older compiler (2.0 sp1..sp1p5); sources
 # under these paths compile with it instead.
 PATH_COMPILERS = {
-    "libs/NitroSDK/": "2.0/sp1p5",
+    "libs/nds/": "2.0/sp1p5",
 }
 
 CC_FLAGS = [
@@ -68,11 +69,11 @@ LD_FLAGS = [
 ]
 
 parser = argparse.ArgumentParser()
-parser.add_argument("version", nargs="?", default="us", choices=VERSIONS)
+parser.add_argument("version", nargs="?", default="usa", choices=VERSIONS)
 parser.add_argument("-w", "--wine", default="tools/bin/wibo", help="wibo or wine binary used to run mwcc/mwld")
 parser.add_argument("--compiler", type=Path, help="pre-installed compiler root (contains 2.0/sp2p2/...)")
 parser.add_argument("--dsd", type=Path, default=Path("tools/bin/dsd"), help="patched dsd (see tools/build_dsd.sh)")
-parser.add_argument("--arm7-bios", type=Path, default=Path("orig/biosnds7.bin"))
+parser.add_argument("--arm7-bios", type=Path, default=Path("arm7_bios.bin"))
 args = parser.parse_args()
 
 ver = args.version
@@ -97,7 +98,7 @@ bios_flag = f"--arm7-bios {args.arm7_bios}" if have_bios else ""
 if not args.dsd.is_file():
     sys.exit(f"{args.dsd} not found; run tools/build_dsd.sh first (stock dsd releases can't rebuild this ROM)")
 if not baserom.is_file():
-    sys.exit(f"{baserom} not found; place your ROM there (see README)")
+    sys.exit(f"{baserom} not found; see extract/README.md")
 
 # dsd needs an extracted ROM to answer `json delinks`, so extract eagerly the first time.
 if not extract_cfg.is_file():
@@ -107,7 +108,7 @@ delinks = json.loads(subprocess.run([DSD, "json", "delinks", "-c", str(dsd_confi
                                     check=True, capture_output=True, text=True).stdout)
 
 dsd_config_files = sorted(str(p) for p in config_dir.rglob("*") if p.suffix in (".txt", ".yaml"))
-include_dirs = ["include"] + [str(p) for p in Path("libs").glob("**/include")]
+include_dirs = ["include"] + sorted(str(p) for p in Path("libs").glob("*/include"))
 sources = sorted(p for d in ("src", "libs") for p in Path(d).rglob("*") if p.suffix in (".c", ".cpp"))
 
 lines: list[str] = []
@@ -137,7 +138,7 @@ w("")
 # ---- rules ----
 w(f"rule download_tool\n  command = {PY} tools/download_tool.py $tool $tag --path $path\n  description = DOWNLOAD $tool\n")
 w(f"rule extract\n  command = {DSD} rom extract --rom $in --output-path $outdir {bios_flag}\n  description = EXTRACT $in\n")
-w(f"rule delink\n  command = {DSD} delink -c $config\n  description = DELINK\n")
+w(f"rule delink\n  command = {DSD} delink -c $config && {PY} tools/delink_multidef.py $out\n  description = DELINK\n")
 w(f"rule lcf\n  command = {DSD} lcf -c $config && {PY} tools/lcf_force_active.py $lcf_raw $lcf_final --config-dir {config_dir}\n  description = LCF\n")
 w(f"rule mwcc\n  command = {WINE} $cc {' '.join(CC_FLAGS)} $cc_flags {' '.join('-i ' + d for d in include_dirs)} "
   f"-d version_{ver.upper()} -MD -c $in -o $outdir && {PY} tools/transform_dep.py $basefile.d $basefile.d\n"
@@ -168,7 +169,8 @@ build(OBJDIFF, "download_tool", variables={"tool": "objdiff", "tag": OBJDIFF_TAG
 build(str(extract_cfg), "extract", [str(baserom)], implicit=[DSD], variables={"outdir": str(extract_dir)})
 
 delink_files = [f["delink_file"] for f in delinks["files"]]
-build(delink_files, "delink", dsd_config_files + [str(extract_cfg)], implicit=[DSD], variables={"config": str(dsd_config)})
+build(delink_files, "delink", dsd_config_files + [str(extract_cfg)], implicit=[DSD, "tools/delink_multidef.py"],
+      variables={"config": str(dsd_config)})
 build("delink", "phony", delink_files)
 
 lcf_raw = delinks["arm9_lcf_file"]
@@ -199,16 +201,16 @@ build("arm9", "phony", [arm9_o])
 rom_cfg = str(build_dir / "build" / "rom_config.yaml")
 build(rom_cfg, "rom_config", [arm9_o], implicit=[DSD], variables={"config": str(dsd_config)})
 
-rom = str(build_dir / f"bakugan_{ver}.nds")
+rom = str(build_dir / f"{GAME}_{ver}.nds")
 if have_bios:
     build(rom, "rom_build", [rom_cfg], implicit=[DSD])
 else:
-    raw_rom = str(build_dir / f"bakugan_{ver}.nobios.nds")
+    raw_rom = str(build_dir / f"{GAME}_{ver}.nobios.nds")
     build(raw_rom, "rom_build", [rom_cfg], implicit=[DSD])
     build(rom, "fix_header", [raw_rom], implicit=["tools/fix_header.py"], variables={"crc": hex(info["secure_area_crc"])})
 build("rom", "phony", [rom])
 
-sha1_file = f"config/{ver}/rom.sha1"
+sha1_file = f"{GAME}_{ver}.sha1"
 build(str(build_dir / "rom.ok"), "sha1", [rom], implicit=[sha1_file], variables={"sha1_file": sha1_file})
 build("sha1", "phony", [str(build_dir / "rom.ok")])
 

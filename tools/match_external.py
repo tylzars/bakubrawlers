@@ -24,7 +24,7 @@ ap.add_argument("--min-size", type=lambda s: int(s, 0), default=0x20)
 a = ap.parse_args()
 
 SYM = re.compile(r"^(\S+) kind:function\((arm|thumb),size=(0x[0-9a-f]+)\) addr:(0x[0-9a-f]+)")
-cfg = ROOT / "config/us/arm9"
+cfg = ROOT / "config/usa/arm9"
 rom_funcs = collections.defaultdict(list)  # size -> [(module, name, bytes)]
 for mod in a.modules.split(","):
     path = cfg / "symbols.txt" if mod == "main" else cfg / mod / "symbols.txt" if mod in ("itcm", "dtcm") \

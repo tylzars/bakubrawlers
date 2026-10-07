@@ -155,7 +155,7 @@ def readme_section(rows: list[dict]) -> str:
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("cmd", choices=["update", "check"])
-    p.add_argument("--version", default="us")
+    p.add_argument("--version", default="usa")
     a = p.parse_args()
 
     cur = read_report(a.version)

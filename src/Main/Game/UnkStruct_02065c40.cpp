@@ -606,6 +606,7 @@ static inline fx32 FxRound(s32 v) {
 
 #define FX_FROM_INT_ROUND(x) ((fx32) (((x) > 0) ? (((x) << 12) + 0.5f) : (((x) << 12) - 0.5f)))
 
+// non-matching: 27 words, r4/r5 swapped for id, the path pointer and the texture.
 BOOL UnkStruct_02065c40::func_02068954() {
     char path[0x80];
     SpriteManager::Get().func_0202753c(0);
@@ -899,6 +900,7 @@ void UnkStruct_02065c40::func_02069340(u32 index) {
     mUnk_1084[index].mUnk_4c = data_020a2554[id].mUnk_05;
 }
 
+// non-matching: 10 words, r6/r7 swapped between mode and the index*0x44 offset.
 BOOL UnkStruct_02065c40::func_020697c8(u32 index, u32 flag) {
     if (index == 0) {
         SpriteManager::Get().func_0202753c(4);
@@ -1129,6 +1131,7 @@ void UnkStruct_02065c40::func_0206a01c() {
     mUnk_1018->func_02088a18(first, second);
 }
 
+// non-matching: 3 words, the original emits the `and` after the cell pointer load.
 void UnkStruct_02065c40::func_0206a1c8(u32 value, u32 force) {
     if (force == 0 && mUnk_14f2 == value) {
         return;
@@ -1140,6 +1143,7 @@ void UnkStruct_02065c40::func_0206a1c8(u32 value, u32 force) {
     mUnk_100c->SetAnimation(value);
 }
 
+// non-matching: 4 words, the original emits `ands r1, r0, #255` for the result byte.
 void UnkStruct_02065c40::func_0206a208() {
     if ((mUnk_14ed == 0) & ((mUnk_12ba == 0) & (mUnk_14ec == 0))) {
         u8 step = mUnk_12b9;
@@ -1337,6 +1341,7 @@ void UnkStruct_02065c40::func_0206a850() {
     }
 }
 
+// non-matching: 2 words, y in r1 instead of r3.
 void UnkStruct_02065c40::func_0206aa34() {
     for (u8 i = 0; i < 2; i++) {
         if (mUnk_11b4[i].mUnk_2c != NULL) {
@@ -1381,6 +1386,7 @@ void UnkStruct_02065c40::func_0206aa34() {
     }
 }
 
+// non-matching: 0x1bc vs 0x1b0, the original hoists per-field address pointers.
 void UnkStruct_02065c40::func_0206abf4(u32 index) {
     if (mUnk_11b4[index].mUnk_3b == 0) {
         return;
@@ -1495,6 +1501,7 @@ void UnkStruct_02065c40::func_0206aecc() {
     }
 }
 
+// non-matching: 2 words, movcs/movcc in the other order.
 BOOL UnkStruct_02065c40::func_0206b05c(u32 id) {
     if (id < 0x60) {
         return FALSE;
@@ -1596,6 +1603,7 @@ BOOL UnkStruct_02065c40::func_0206ef08() {
 
 extern const UnkStruct_Pair data_020a26a4[][5][10][3];
 
+// non-matching: 17 words, register allocation of the % 5 block.
 u8 UnkStruct_02065c40::func_02067120(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
     if (unk3 != 0) {
         u8 slot = unk3 - 1;
@@ -1874,6 +1882,7 @@ void UnkStruct_02065c40::func_02066c9c(u32 unk1, u32 unk2) {
 
 void func_02089278();
 
+// non-matching: 57 words, register assignment (`volatile s32 result` is a placeholder for the stack slot).
 s32 UnkStruct_02065c40::func_02066814(u32 unk1) {
     volatile s32 result = -1;
     u8 type    = data_020d43f0[0].mUnk_42;
@@ -2030,6 +2039,7 @@ BOOL func_02086a58();
 BOOL func_02086b74();
 BOOL func_02086e08();
 
+// non-matching: 2 words, the original keeps the unmasked add in r2.
 void UnkStruct_02065c40::Update() {
     if (mUnk_14e4 != 0) {
         u8 flip = mUnk_14e5 + 1;
@@ -2143,6 +2153,7 @@ extern const u8 data_020a1b8a[];
 void func_01ff96c4(const void *src, void *dest, u32 size);
 void func_02088ec4(UnkStruct_02087898 *object);
 
+// non-matching: 10 words, the original schedules `mov r2, #9` later.
 BOOL UnkStruct_02065c40::func_020702e0(s32 unk1, s32 unk2, s32 unk3, s32 unk4, s32 unk5, s32 unk6) {
     if (mUnk_12bc != mUnk_12be) {
         return FALSE;
@@ -2166,6 +2177,7 @@ BOOL UnkStruct_02065c40::func_020702e0(s32 unk1, s32 unk2, s32 unk3, s32 unk4, s
     return TRUE;
 }
 
+// non-matching: 0x64 vs 0x6c, the original keeps two named pointers into a local record.
 u32 UnkStruct_02065c40::func_0206f9b4(const char *name, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7) {
     struct {
         u8 bytes[2];
@@ -2192,6 +2204,7 @@ extern const UnkStruct_020a1b12 data_020a1b12[];
 extern const u8 data_020a2118[];
 void func_01ff9510(const void *src, void *dest, u32 size);
 
+// non-matching: 30 words, the original keeps event in r8 and category in r7.
 extern "C" void func_0206f88c(UnkStruct_02065c40 *event, u32 category, s32 value, u32 unk4) {
     BOOL idle    = event->mUnk_12bc >= event->mUnk_12be;
     BOOL waiting = event->mUnk_12ba == 3;
@@ -2387,6 +2400,7 @@ public:
 
 s32 func_0201f970(s32 value, s32 divisor);
 
+// non-matching: 0x100 vs 0xfc, the angle is truncated differently.
 extern "C" void func_0206ea14() {
     s32 line = *(vu16 *) 0x4000006;
     if (line >= 0xc0) {

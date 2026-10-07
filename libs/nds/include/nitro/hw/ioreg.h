@@ -10,6 +10,8 @@
 #define REG_ADDR_G2_BG3CNT      0x0400000e
 #define REG_ADDR_G2_BG0OFS      0x04000010
 #define REG_ADDR_G2_BG1OFS      0x04000014
+#define REG_ADDR_G2_BG2OFS      0x04000018
+#define REG_ADDR_G2_BG3OFS      0x0400001c
 #define REG_ADDR_G2_WINOUT      0x0400004a
 #define REG_ADDR_G2_BLDCNT      0x04000050
 #define REG_ADDR_G2_BLDALPHA    0x04000052
@@ -38,6 +40,8 @@
 #define reg_G2_BG3CNT      (*(vu16 *) REG_ADDR_G2_BG3CNT)
 #define reg_G2_BG0OFS      (*(vu32 *) REG_ADDR_G2_BG0OFS)
 #define reg_G2_BG1OFS      (*(vu32 *) REG_ADDR_G2_BG1OFS)
+#define reg_G2_BG2OFS      (*(vu32 *) REG_ADDR_G2_BG2OFS)
+#define reg_G2_BG3OFS      (*(vu32 *) REG_ADDR_G2_BG3OFS)
 #define reg_G2_WINOUT      (*(vu16 *) REG_ADDR_G2_WINOUT)
 #define reg_G2_BLDCNT      (*(vu16 *) REG_ADDR_G2_BLDCNT)
 #define reg_G2_BLDALPHA    (*(vu16 *) REG_ADDR_G2_BLDALPHA)

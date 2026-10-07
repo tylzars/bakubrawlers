@@ -46,6 +46,12 @@ static inline void G2_SetBG0Control(int size, int color, int screenBase, int cha
 static inline void G2_SetBG1Control(int size, int color, int screenBase, int charBase, int extPltt) {
     reg_G2_BG1CNT = G2_BG_CONTROL_VALUE(reg_G2_BG1CNT, size, color, screenBase, charBase, extPltt);
 }
+static inline void G2_SetBG2Control(int size, int color, int screenBase, int charBase, int extPltt) {
+    reg_G2_BG2CNT = G2_BG_CONTROL_VALUE(reg_G2_BG2CNT, size, color, screenBase, charBase, extPltt);
+}
+static inline void G2_SetBG3Control(int size, int color, int screenBase, int charBase, int extPltt) {
+    reg_G2_BG3CNT = G2_BG_CONTROL_VALUE(reg_G2_BG3CNT, size, color, screenBase, charBase, extPltt);
+}
 static inline void G2S_SetBG0Control(int size, int color, int screenBase, int charBase, int extPltt) {
     reg_G2S_DB_BG0CNT = G2_BG_CONTROL_VALUE(reg_G2S_DB_BG0CNT, size, color, screenBase, charBase, extPltt);
 }
@@ -72,6 +78,12 @@ static inline void G2_SetBG0Offset(int h, int v) {
 static inline void G2_SetBG1Offset(int h, int v) {
     reg_G2_BG1OFS = G2_BG_OFFSET_VALUE(h, v);
 }
+static inline void G2_SetBG2Offset(int h, int v) {
+    reg_G2_BG2OFS = G2_BG_OFFSET_VALUE(h, v);
+}
+static inline void G2_SetBG3Offset(int h, int v) {
+    reg_G2_BG3OFS = G2_BG_OFFSET_VALUE(h, v);
+}
 static inline void G2S_SetBG0Offset(int h, int v) {
     reg_G2S_DB_BG0OFS = G2_BG_OFFSET_VALUE(h, v);
 }
@@ -90,6 +102,12 @@ static inline void G2_SetBG0Priority(int priority) {
 }
 static inline void G2_SetBG1Priority(int priority) {
     reg_G2_BG1CNT = (u16) ((reg_G2_BG1CNT & ~G2_BGCNT_PRIORITY_MASK) | (priority << 0));
+}
+static inline void G2_SetBG2Priority(int priority) {
+    reg_G2_BG2CNT = (u16) ((reg_G2_BG2CNT & ~G2_BGCNT_PRIORITY_MASK) | (priority << 0));
+}
+static inline void G2_SetBG3Priority(int priority) {
+    reg_G2_BG3CNT = (u16) ((reg_G2_BG3CNT & ~G2_BGCNT_PRIORITY_MASK) | (priority << 0));
 }
 static inline void G2S_SetBG0Priority(int priority) {
     reg_G2S_DB_BG0CNT = (u16) ((reg_G2S_DB_BG0CNT & ~G2_BGCNT_PRIORITY_MASK) | (priority << 0));

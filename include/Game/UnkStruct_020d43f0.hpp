@@ -10,7 +10,15 @@ struct UnkStruct_020d43f0 {
     /* 01c */ u32 mMoney;
     /* 020 */ PAD(0x020, 0x024);
     /* 024 */ u8 mUnk_24;
-    /* 025 */ PAD(0x025, 0x028);
+    /* 025 */ PAD(0x025, 0x027);
+    union {
+        /* 027 */ u8 mUnk_27;
+        struct {
+            /* 027 */ u8 mUnk_27_0 : 5;
+            /* 027 */ u8 mUnk_27_5 : 2;
+            /* 027 */ u8 mUnk_27_7 : 1;
+        };
+    };
     /* 028 */ u16 mUnk_28_0 : 6;
     /* 028 */ u16 mUnk_28_6 : 1;
     /* 028 */ u16 mUnk_28_7 : 9;
@@ -41,7 +49,11 @@ extern UnkStruct_020d43f0 data_020d43f0[];
 extern u8 data_020d4968[];
 extern u8 data_020d496d[];
 extern u8 data_020d4970[];
+extern u8 data_020d4969[];
+extern u8 data_020d496a[];
+extern u8 data_020d4973[];
 extern u8 data_020d49ae[];
+extern u8 data_020d4404[];
 
 static inline BOOL TestFlagBit(const u8 *flags, int index) {
     return flags[(u32) index >> 3] & (1 << (index % 8));

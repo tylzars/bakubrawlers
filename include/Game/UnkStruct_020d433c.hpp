@@ -3,16 +3,19 @@
 #include "global.h"
 #include "types.h"
 
+class UnkStruct_02078290;
+
 struct UnkStruct_020d433c {
-    /* 00 */ PAD(0x00, 0x14);
+    /* 00 */ PAD(0x00, 0x10);
+    /* 10 */ UnkStruct_02078290 *mUnk_10;
     /* 14 */ u16 mUnk_14_0 : 1;
     /* 14 */ u16 mUnk_14_1 : 1;
     /* 14 */ u16 mUnk_14_2 : 14;
-    /* 16 */ PAD(0x16, 0x76);
+    /* 16 */ u16 mNames[4][12]; // UTF-16 player names
     /* 76 */ u8 mUnk_76;
     /* 77 */ PAD(0x77, 0x79);
     /* 79 */ u8 mUnk_79;
-    /* 7a */ PAD(0x7a, 0x7b);
+    /* 7a */ u8 mUnk_7a;
     /* 7b */ u8 mUnk_7b;
     /* 7c */ u8 mUnk_7c;
     /* 7d */ u8 mUnk_7d;
@@ -43,13 +46,22 @@ struct UnkStruct_020d433c {
         /* 9a */ u8 mUnk_9a;
         struct {
             /* 9a */ u8 mUnk_9a_0 : 1;
-            /* 9a */ u8 mUnk_9a_1 : 7;
+            /* 9a */ u8 mUnk_9a_1 : 1;
+            /* 9a */ u8 mUnk_9a_2 : 1;
+            /* 9a */ u8 mUnk_9a_3 : 1;
+            /* 9a */ u8 mUnk_9a_4 : 1;
+            /* 9a */ u8 mUnk_9a_5 : 3;
         };
     };
     /* 9b */ u8 mUnk_9b[4];
     /* 9f */ u8 mUnk_9f[4];
     /* a3 */ u8 mUnk_a3[4];
-    /* a7 */
+    /* a7 */ u8 mUnk_a7;
+    /* a8 */ u8 mUnk_a8;
+    /* a9 */ u8 mUnk_a9[4];
+    /* ad */ PAD(0xad, 0xae);
+    /* ae */ u8 mUnk_ae;
+    /* af */
 };
 
 extern UnkStruct_020d433c data_020d433c;

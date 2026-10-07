@@ -197,10 +197,15 @@ src/Main/Unknown/UnkStruct_02076058.cpp:
 src/Main/Unknown/UnkStruct_02078290.cpp:
     .text       start:0x02078290 end:0x02078e14
 
-// provisional: code only; .data 0x020b9a04-0x020ba3a4 and probably .bss 0x022193b0-0x022193bc belong here.
+// provisional: code only; .data 0x020b9a04-0x020b9a18 and .bss 0x022193b0-0x022193bc belong here.
 src/Main/Unknown/UnkStruct_02078e14.cpp:
     .text       start:0x02078e14 end:0x0207b3a8
 
-// provisional: code only; the end is not determined (0x0208550c is the end of the last function done); .data from 0x020ba3a4 and .bss 0x022193bc-0x022193ec belong here.
+// provisional: code only; one translation unit with UnkStruct_02078e14.cpp in the original (shared .bss nodes);
+// .rodata 0x020a3168-0x020a41c8, .data 0x020b9a18-0x020baa48 and .bss 0x022193bc-0x022193ec belong here.
 src/Main/Unknown/UnkStruct_02078e14_b.cpp:
-    .text       start:0x0207b3a8 end:0x0208550c
+    .text       start:0x0207b3a8 end:0x02087898
+
+// provisional: code only; the end is a guess (0x02088f38 may start a separate progress-function group); .rodata 0x020a41c8-0x020a41d8, .data 0x020baa50-0x020baae4 and .bss 0x022193ec-0x02219404 belong here.
+src/Main/Unknown/UnkStruct_02087898.cpp:
+    .text       start:0x02087898 end:0x02088f38

@@ -9,8 +9,8 @@ s32 func_020230a8(UnkStruct_020d43f0 *data, u32 unk2, u32 unk3);
 void func_02005e9c(void *buffer, u32 size); // probably DC_FlushRange
 void func_020219ec(u32 unk1);
 int func_02065c0c(u32 id, u32 kind);
-void func_020876f0(u32 unk1);
-void func_02086938();
+BOOL func_020876f0(u32 unk1);
+BOOL func_02086938();
 BOOL func_02086a58();
 BOOL func_02086b74();
 void func_02089208();

@@ -90,7 +90,9 @@ public:
     /* 1ec */ MessageWindow *mUnk_1ec;
     /* 1f0 */ u8 mUnk_1f0;
     /* 1f1 */ u8 mUnk_1f1;
-    /* 1f2 */ PAD(0x1f2, 0x3f4);
+    /* 1f2 */ u16 mUnk_1f2[0x100];
+    /* 3f2 */ u8 mUnk_3f2;
+    /* 3f3 */ PAD(0x3f3, 0x3f4);
     /* 3f4 */ u32 mUnk_3f4;
     /* 3f8 */ u8 mUnk_3f8;
     /* 3f9 */ u8 mUnk_3f9;

@@ -53,7 +53,7 @@ src/Main/Graphics/NitroTexture.cpp:
 src/Main/Graphics/NitroModel.cpp:
     .text       start:0x020289c8 end:0x02028bb4
 
-// provisional: code only; .data 0x020a567c-0x020a568c and .bss 0x0220f100-0x0220f10c belong here.
+// provisional: code only; .data 0x020a5674-0x020a5684 and .bss 0x0220f100-0x0220f10c belong here.
 src/Main/Graphics/ModelInstance.cpp:
     .text       start:0x02028bb4 end:0x02029248
 
@@ -61,17 +61,25 @@ src/Main/Graphics/ModelInstance.cpp:
 src/Main/Graphics/ModelAnimData.cpp:
     .text       start:0x02029248 end:0x020294e8
 
-// provisional: code only; .data 0x020a568c-0x020a569c belongs here.
+// provisional: code only; .data 0x020a5684-0x020a5694 belongs here.
 src/Main/Graphics/ModelAnim.cpp:
     .text       start:0x020294e8 end:0x02029b5c
 
-// provisional: code only; .data 0x020a569c-0x020a56ac belongs here.
+// provisional: code only; .data 0x020a5694-0x020a56a4 belongs here.
 src/Main/Graphics/ModelLight.cpp:
     .text       start:0x02029b5c end:0x02029d7c
 
 // provisional: code only.
 src/Main/Graphics/CellAnimation.cpp:
     .text       start:0x02029d7c end:0x0202a594
+
+// provisional: code only; .bss 0x0220f10c-0x0220f110 belongs here.
+src/Main/Graphics/CellAnimFile.cpp:
+    .text       start:0x0202a594 end:0x0202ab24
+
+// provisional: code only; .data 0x020a56a4-0x020a56f0 and .bss 0x0220f110-0x0220f114 belong here.
+src/Main/Graphics/EffectManager.cpp:
+    .text       start:0x0202ab24 end:0x0202c02c
 
 // provisional: code only; Print and PrintNumber are near-misses.
 src/Main/Text/TextManager.cpp:

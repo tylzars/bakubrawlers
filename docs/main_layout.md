@@ -59,6 +59,8 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 | 0x020305ac-0x02030880 | Graphics/ModelResource.cpp | model + texture + animation bundle |
 | 0x02052548-0x020527a4 | Graphics/ModelTransform.cpp | model with a transform (CharacterModel follows at 0x020527a4) |
 | 0x02029d7c-0x0202a594 | Graphics/CellAnimation.cpp | |
+| 0x0202a594-0x0202ab24 | Graphics/CellAnimFile.cpp | cached cell-animation files |
+| 0x0202ab24-0x0202c02c | Graphics/EffectManager.cpp | effect script interpreter (Effect) and EffectManager |
 | 0x0202c02c-0x0202d794 | Text/TextManager.cpp | |
 | 0x0202d794-0x0202db04 | System/MicManager.cpp | microphone sampling ("blow" detection), not text |
 | 0x0202f420-0x020305ac | UI/SelectWindowCursor.cpp | |

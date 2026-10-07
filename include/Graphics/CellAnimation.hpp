@@ -28,10 +28,23 @@ struct CellAnimFrame {
     /* 14 */
 };
 
+// One OAM entry of a cel (12 bytes); the low 10 bits of mChar are scaled when a file is loaded at another size.
+struct CellAnimOam {
+    /* 00 */ u16 mUnk_00;
+    /* 02 */ u16 mUnk_02;
+    /* 04 */ u16 mChar;
+    /* 06 */ PAD(0x06, 0x0c);
+    /* 0c */
+};
+
+// Header of an NCE file. The offsets at +04..+0c are relocated to pointers when the file is loaded.
 struct CellAnimData {
-    /* 00 */ PAD(0x00, 0x04);
+    /* 00 */ u16 mUnk_00;
+    /* 02 */ u16 mNumFrames;
     /* 04 */ CellAnimFrame *mFrames;
-    /* 08 */
+    /* 08 */ CellAnimCel *mCels;
+    /* 0c */ CellAnimOam *mOams;
+    /* 10 */
 };
 
 // Loaded NCE file.
@@ -39,8 +52,13 @@ struct CellAnimFile {
     /* 00 */ CellAnimData *mData;
     /* 04 */
 
-    CellAnimFile(const char *path, u32 unk2, u16 unk3); // 0x0202a710
+    CellAnimFile(const char *path, u32 unk2, u16 unk3); // 0x0202a710 (0x0202a594 is the base-object constructor)
     ~CellAnimFile();                                    // 0x0202a88c
+};
+
+// A file taken from memory (already loaded), not through the cache's path lookup.
+struct CellAnimFileData : public CellAnimFile {
+    CellAnimFileData(void *data); // 0x0202aa24
 };
 
 // Rotation/scale applied to a drawn frame.

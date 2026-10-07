@@ -61,7 +61,21 @@ struct UnkStruct_020d43f0 {
     /* 042 */ volatile u8 mUnk_42; // reloaded after a switch on it (ov002 0221e984)
     /* 043 */ u8 mUnk_43;
     /* 044 */ u32 mPlayFrames; // play time in frames (60 per second)
-    /* 048 */ PAD(0x048, 0x088);
+    /* 048 */ u16 mUnk_48;
+    /* 04a */ u16 mUnk_4a;
+    /* 04c */ PAD(0x04c, 0x04e);
+    /* 04e */ u16 mUnk_4e;
+    /* 050 */ u16 mUnk_50;
+    /* 052 */ u16 mUnk_52;
+    /* 054 */ PAD(0x054, 0x05a);
+    /* 05a */ u8 mUnk_5a;
+    /* 05b */ u8 mUnk_5b;
+    /* 05c */ u16 mUnk_5c;
+    /* 05e */ u16 mUnk_5e[17];
+    /* 080 */ u16 mUnk_80;
+    /* 082 */ u16 mUnk_82;
+    /* 084 */ u16 mUnk_84;
+    /* 086 */ PAD(0x086, 0x088);
     /* 088 */ u16 mUnk_88[0xf6][2];
     /* 460 */ u8 mUnk_460[0xf6];
     /* 556 */ PAD(0x556, 0x578);

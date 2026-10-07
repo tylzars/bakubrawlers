@@ -1,4 +1,5 @@
 #include "Battle/BattleCommandList.hpp"
+#include "Graphics/UnkStruct_0203d374.hpp"
 #include "System/FileSystem.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/CellAnimation.hpp"
@@ -19,18 +20,6 @@ static inline BOOL NonZero(u8 value) {
     }
     return result;
 }
-
-// 0x54 bytes, ctor 0203d374, dtor 0203d3e8.
-class UnkStruct_0203d374 {
-public:
-    u8 mPad[0x54];
-    UnkStruct_0203d374();
-    ~UnkStruct_0203d374();
-    void func_0203d4dc(u32 a, u32 b, u32 c);
-    void func_0203db70(const VecFx32 *pos);
-    void func_0203d988();
-    void func_0203dab0();
-};
 
 void func_02023a54();
 extern u8 data_0209e57c[]; // table of func_0205aea4 (.rodata 0x0209e57c)

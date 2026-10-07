@@ -24,7 +24,10 @@ struct UnkStruct_SceneContext;
 
 // Per-scene state kept in the scene context, cleared by the scene constructors.
 struct SceneInfo {
-    /* 00 */ u16 mUnk_00;
+    union {
+        /* 00 */ u16 mUnk_00;
+        /* 00 */ u8 mStep; // low byte, used as the scene state by MyroomTipsScene
+    };
     /* 02 */ u8 mState;
     /* 03 */ u8 mMenuResult;
     /* 04 */ s8 mPrevSelection;

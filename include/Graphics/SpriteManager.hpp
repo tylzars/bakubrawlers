@@ -38,6 +38,7 @@ public:
     /* 814 */
 
     static FadeState sFade;
+    static FadeState sBrightness;
 
     static SpriteManager &Get() {
         static SpriteManager instance;
@@ -53,6 +54,13 @@ public:
     void StartFade(s8 mode) {
         sFade.mMain = mode;
         sFade.mSub  = mode;
+    }
+
+    void SetFade(s8 mode, s8 brightness) {
+        sFade.mMain       = mode;
+        sBrightness.mMain = brightness;
+        sFade.mSub        = mode;
+        sBrightness.mSub  = brightness;
     }
 
     void StartSubFade(s8 mode) {

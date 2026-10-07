@@ -4,14 +4,23 @@
 #include "types.h"
 
 // A cell animation loaded from an NCE file.
+struct CellAnimFrame {
+    /* 00 */ PAD(0x00, 0x10);
+    /* 10 */ u32 mUnk_10;
+    /* 14 */
+};
+
 class CellAnimation {
 public:
-    /* 00 */ PAD(0x00, 0x0c);
+    /* 00 */ CellAnimFrame *mFrames;
+    /* 04 */ PAD(0x04, 0x0c);
     /* 0c */ u16 mCharBase;
     /* 0e */ u8 mUnk_0e;
-    /* 0f */ PAD(0x0f, 0x11);
+    /* 0f */ u8 mUnk_0f;
+    /* 10 */ u8 mUnk_10;
     /* 11 */ u8 mUnk_11;
-    /* 12 */ PAD(0x12, 0x18);
+    /* 12 */ u8 mUnk_12;
+    /* 13 */ PAD(0x13, 0x18);
     /* 18 */
 
     CellAnimation(const char *path, u32 unk2, u32 unk3, u32 unk4);

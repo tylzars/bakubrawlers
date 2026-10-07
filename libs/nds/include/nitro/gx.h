@@ -49,6 +49,9 @@ static inline void G2S_SetBG0Control(int size, int color, int screenBase, int ch
 static inline void G2S_SetBG1Control(int size, int color, int screenBase, int charBase, int extPltt) {
     reg_G2S_DB_BG1CNT = G2_BG_CONTROL_VALUE(reg_G2S_DB_BG1CNT, size, color, screenBase, charBase, extPltt);
 }
+static inline void G2S_SetBG2Control(int size, int color, int screenBase, int charBase, int extPltt) {
+    reg_G2S_DB_BG2CNT = G2_BG_CONTROL_VALUE(reg_G2S_DB_BG2CNT, size, color, screenBase, charBase, extPltt);
+}
 // Like G2S_SetBG1Control, but without the extended-palette bit.
 static inline void G2S_SetBG2ControlText(int size, int color, int screenBase, int charBase) {
     reg_G2S_DB_BG2CNT =
@@ -124,4 +127,17 @@ static inline void G2_BlendNone(void) {
 }
 static inline void G2S_BlendNone(void) {
     reg_G2S_DB_BLDCNT = 0;
+}
+
+static inline void G2S_SetWnd0Position(int x1, int y1, int x2, int y2) {
+    reg_G2S_DB_WIN0H = (u16) ((x1 << 8) | x2);
+    reg_G2S_DB_WIN0V = (u16) ((y1 << 8) | y2);
+}
+
+static inline void G2S_SetWnd0InsidePlane(int wnd, BOOL effect) {
+    u32 value = (reg_G2S_DB_WININ & ~G2_WINOUT_PLANE_MASK) | ((u32) wnd << 0);
+    if (effect) {
+        value |= G2_WINOUT_EFFECT;
+    }
+    reg_G2S_DB_WININ = (u16) value;
 }

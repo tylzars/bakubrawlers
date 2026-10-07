@@ -27,7 +27,9 @@ struct MessageFile {
 // Global text renderer, constructed on first use and destroyed at exit.
 class TextManager {
 public:
-    /* 00 */ PAD(0x00, 0x5b);
+    /* 00 */ PAD(0x00, 0x10);
+    /* 10 */ u16 mUnk_10;
+    /* 12 */ PAD(0x12, 0x5b);
     /* 5b */ u8 mUnk_5b;
     /* 5c */
 

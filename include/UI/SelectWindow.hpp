@@ -78,6 +78,7 @@ public:
     void SetCells(u32 count, const WindowCellRecord *cells);
     BOOL Update(BOOL acceptInput);
     void Draw();
+    void func_0205c7c8(int selection);
     void func_0205c844(u32 unk1, u32 unk2);
 
     Vec2s GetCellPos(int index) {

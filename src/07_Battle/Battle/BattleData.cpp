@@ -131,7 +131,7 @@ void BattleData::func_ov007_0223d504() {
         sprintf(path, "bakugan_l_%03d.nce_ncg1D.bin", id);
         screen.LoadCharacters(path, i << 13, 0);
         sprintf(path, "bakugan_l_%03d_ncl.bin", id);
-        u8 *palette = (u8 *) func_02023504(path, 0, 0, 0, (u32) &size, 0);
+        u8 *palette = (u8 *) func_02023504(path, 0, 0, 0, &size, 0);
         func_02025c1c(1, 0, i << 9, palette + (mEntries[i].mUnk_0d_0 << 9), 0x200, 0);
         OS_Free(palette);
         sprintf(path, "bakugan_l_%03d_nce.bin", id);

@@ -1,4 +1,5 @@
 #include "Scene/CharacterEditScene.hpp"
+#include "Graphics/CharacterModel.hpp"
 #include "System/InputManager.hpp"
 #include "System/FrameTask.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
@@ -16,7 +17,6 @@ extern const u32 data_0209e784[6];
 #define SAVE_LOOK ((CharacterLook *) ((u8 *) data_020d43f0 + 0x14))
 extern WindowItem data_0209ec5c[];
 extern WindowItem data_0209f12c[];
-BOOL func_02054710(UnkStruct_0205401c *model);
 extern WindowItem data_0209f394[];
 
 // Rounds an integer through float, the way the camera set-up code does (the temporary keeps it from being folded).
@@ -26,9 +26,6 @@ static inline fx32 FxRound(s32 v) {
 }
 
 
-u32 func_02053f84(UnkStruct_0205401c_04 *model);
-void func_02053fa8(UnkStruct_0205401c_04 *model, u32 value);
-void func_02054740(UnkStruct_0205401c *model);
 extern const Vec2s data_0209e7f4[16];
 
 extern MtxFx43 data_0220e86c;
@@ -1020,7 +1017,7 @@ void CharacterEditScene::func_0206183c() {
 
 void CharacterEditScene::Update() {
     if (mUnk_1a8 != 0) {
-        u32 value = func_02053f84(mModel->mUnk_04);
+        u32 value = ((CharacterModel *) mModel->mUnk_04)->func_02053f84();
         mUnk_1a8 = 0;
         UnkStruct_0205401c *model = mModel;
         if (model != NULL) {
@@ -1031,10 +1028,10 @@ void CharacterEditScene::Update() {
         func_02063570(&look);
         mModel = new UnkStruct_0205401c();
         mModel->func_0205411c(0x15, 1, (u32) &look, 0);
-        func_02054740(mModel);
+        mModel->func_02054740();
         mModel->mUnk_04->mUnk_12 = mUnk_1d2;
         mModel->func_0205461c(0, 1);
-        func_02053fa8(mModel->mUnk_04, value);
+        ((CharacterModel *) mModel->mUnk_04)->func_02053fa8(value);
     }
     switch (mState) {
     case 0:
@@ -2040,7 +2037,7 @@ void CharacterEditScene::func_020612cc() {
         if (mUnk_32 == 100) {
             FrameTask::Get().func_0203dc34(1, 0x183);
         }
-        if (func_02054710(mModel)) {
+        if (mModel->func_02054710()) {
             mUnk_1d0 = 1;
             mState = 0xd;
             mUnk_31 = 0x5a;

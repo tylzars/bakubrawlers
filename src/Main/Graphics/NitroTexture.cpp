@@ -154,7 +154,7 @@ BOOL UnkStruct_02028308::func_020286fc(const char *name, const char *file, u32 s
     char path[0x20];
     u32 outSize;
     sprintf(path, "%s.ntft", file);
-    void *data = func_02023504(path, 0, 0, 0, (u32) &outSize, size);
+    void *data = func_02023504(path, 0, 0, 0, &outSize, size);
     BOOL result = func_02028778(name, data, outSize);
     OS_Free(data);
     return result;
@@ -186,7 +186,7 @@ BOOL UnkStruct_02028308::func_02028858(const char *name, const char *file, u32 s
     char path[0x20];
     u32 outSize;
     sprintf(path, "%s.ntfp", file);
-    void *data = func_02023504(path, 0, 0, 0, (u32) &outSize, size);
+    void *data = func_02023504(path, 0, 0, 0, &outSize, size);
     BOOL result = func_020288d4(name, data, outSize);
     OS_Free(data);
     return result;

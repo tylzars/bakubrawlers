@@ -1,10 +1,8 @@
+#include "System/FileSystem.hpp"
 #include "System/FrameUpdate.hpp"
 
 #include <nitro/os.h>
 
-void *func_02023504(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk6);
-u32 func_02025b64(u32 screen, u32 kind, u32 offset, const char *path, u32 unk5, u32 unk6, u32 unk7);
-u32 func_02025c1c(u32 bg, u32 kind, u32 offset, void *data, u32 size, u32 unk6);
 int func_02001f14(vu16 *reg);
 BOOL func_0200d924();
 
@@ -180,7 +178,7 @@ static inline void FlushPendingFrees() {
 u32 func_02025b64(u32 screen, u32 kind, u32 offset, const char *path, u32 unk5, u32 unk6, u32 unk7) {
     FlushPendingFrees();
     u32 size;
-    void *data = func_02023504(path, 0, unk5, unk6, (u32) &size, unk7);
+    void *data = func_02023504(path, 0, unk5, unk6, &size, unk7);
     return func_02025c1c(screen, kind, offset, data, size, 1);
 }
 

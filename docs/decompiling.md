@@ -17,7 +17,8 @@ Lessons from getting functions to match exactly. Compiler and flags: see `compil
    `python3 tools/sync_symbols.py build/usa/src/<path>.o <module> --write`. The tool locates each matching function
    by its bytes and reads every referenced address from the original code, so `symbols.txt` follows the source.
    A non-matching function of the same size can be placed with `--assume <mangled>=<addr>`, and
-   `--assume-embedded` places every `func_<addr>`/`func_ovNNN_<addr>` at the address in its name.
+   `--assume-embedded` places every `func_<addr>`/`func_ovNNN_<addr>` at the address in its name. Only exact matches
+   have their referenced symbols renamed: a near-miss's literal pool can be laid out differently.
 5. Statics of inline functions (`_ZGVZ…`, `_ZZ…`, e.g. singleton instances and guards) are defined by every file
    that uses them. Mark them `weak` in `symbols.txt`. Compiled objects get their copies demoted to weak as well
    (`tools/demote_multidef.py`, run by the build), so main's original copy wins when a file is linked.

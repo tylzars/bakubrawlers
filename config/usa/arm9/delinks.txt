@@ -129,6 +129,22 @@ src/Main/System/FrameTask.cpp:
 src/Main/Graphics/ModelTransform.cpp:
     .text       start:0x02052548 end:0x020527a4
 
+// provisional: code only; .data 0x020b24bc-0x020b2c6c and .rodata 0x0209e53c-0x0209e558 belong here.
+src/Main/Graphics/CharacterModel.cpp:
+    .text       start:0x020527a4 end:0x0205401c
+
+// provisional: code only; .data 0x020b2c6c-0x020b2dc0 belongs here.
+src/Main/Graphics/CharacterPreview.cpp:
+    .text       start:0x0205401c end:0x02054df0
+
+// provisional: code only; .data 0x020b2dc0-0x020b3290 and .rodata 0x0209e558-0x0209e57c belong here.
+src/Main/Battle/BattleCommandPage.cpp:
+    .text       start:0x02054df0 end:0x020575e0
+
+// provisional: code only; .data 0x020b3290-0x020b376c and .rodata about 0x0209e57c-0x0209e68c belong here.
+src/Main/Battle/BattleCommandList.cpp:
+    .text       start:0x020575e0 end:0x0205b288
+
 // provisional: code only; the vtable (.data 0x020b3764) is not assigned yet.
 src/Main/UI/SelectWindow.cpp:
     .text       start:0x0205b288 end:0x0205c8f0

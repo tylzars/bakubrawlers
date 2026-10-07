@@ -1,4 +1,6 @@
 #include "Battle/BattleConfrontCard.hpp"
+#include "Battle/BattleCommandList.hpp"
+#include "Battle/BattleCommandPage.hpp"
 #include "Battle/BattleUnionAbility.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/CellAnimation.hpp"
@@ -31,21 +33,12 @@ public:
     BattleCardSpec(u32 a, u32 b, u32 c, u8 d);
 };
 
-class BattleCommandPage { // 0x10c bytes, ctor 02054df0
-public:
-    u8 mPad[0x10c];
-    BattleCommandPage(u32 a, s32 b);
-};
-
 class BattleCommandPrompt { // 0x98 bytes, ctor 0225d08c
 public:
     u8 mPad[0x98];
     BattleCommandPrompt(u32 a, void *b, u32 c, u32 d, u8 e);
 };
 
-void func_02055624(BattleCommandPage *page, u32 a);
-void func_0205562c(BattleCommandPage *page, u32 a);
-extern "C" void func_02055738(BattleCommandPage *page, u32 a, u32 b, u32 c);
 extern "C" void func_ov007_02273e3c(void *p);
 extern "C" u8 func_ov007_0225f0bc(u32 v);
 

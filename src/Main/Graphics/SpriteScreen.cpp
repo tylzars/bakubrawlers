@@ -11,7 +11,7 @@
 
 void SpriteScreen::LoadCharacters(const char *path, u32 offset, u32 unk3) {
     u32 size;
-    void *data = func_02023504(path, 0, 0, 0, (u32) &size, 0);
+    void *data = func_02023504(path, 0, 0, 0, &size, 0);
     if (unk3 != 0) {
         size = unk3;
     }
@@ -20,7 +20,7 @@ void SpriteScreen::LoadCharacters(const char *path, u32 offset, u32 unk3) {
 
 void SpriteScreen::LoadPalette(const char *path, u32 offset, u32 unk3) {
     u32 size;
-    void *data = func_02023504(path, 0, 0, 0, (u32) &size, 0);
+    void *data = func_02023504(path, 0, 0, 0, &size, 0);
     if (unk3 != 0) {
         size = unk3;
     }
@@ -29,7 +29,7 @@ void SpriteScreen::LoadPalette(const char *path, u32 offset, u32 unk3) {
 
 void SpriteScreen::func_02027fec(const char *path, u32 unk2, u32 unk3) {
     u32 size;
-    void *data = func_02023504(path, 0, 0, 0, (u32) &size, 0);
+    void *data = func_02023504(path, 0, 0, 0, &size, 0);
     if (unk3 != 0) {
         size = unk3;
     }

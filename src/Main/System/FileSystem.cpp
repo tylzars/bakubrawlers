@@ -94,11 +94,10 @@ void func_020234c8() {
 }
 
 // non-matching: 12 words, registers of outSize and chunk swapped.
-void *func_02023504(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk6) {
+void *func_02023504(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32 unk6) {
     void *buffer      = (void *) unk2;
     u32 offset        = unk3;
     u32 size          = unk4;
-    u32 *outSize      = (u32 *) unk5;
     u32 mode          = unk6;
     if (mode == 0) {
         mode = (offset | size) != 0 ? 1 : 2;

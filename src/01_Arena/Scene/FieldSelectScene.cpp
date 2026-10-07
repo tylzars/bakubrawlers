@@ -465,11 +465,11 @@ void FieldSelectScene::func_ov001_0221f4e8() {
     char name[0x80];
     for (u8 i = 0; i < 10; i++) {
         sprintf(name, "select_field_u_sub_%02d_ncl.bin", i);
-        mFiles[i][1] = func_02023504(name, 0, 0, 0, (u32) &mFileSizes[i][1], 0);
+        mFiles[i][1] = func_02023504(name, 0, 0, 0, &mFileSizes[i][1], 0);
         sprintf(name, "select_field_u_sub_%02d_ncg.bin", i);
-        mFiles[i][0] = func_02023504(name, 0, 0, 0, (u32) &mFileSizes[i][0], 0);
+        mFiles[i][0] = func_02023504(name, 0, 0, 0, &mFileSizes[i][0], 0);
         sprintf(name, "select_field_u_sub_%02d_nsc.bin", i);
-        mFiles[i][2] = func_02023504(name, 0, 0, 0, (u32) &mFileSizes[i][2], 0);
+        mFiles[i][2] = func_02023504(name, 0, 0, 0, &mFileSizes[i][2], 0);
     }
     ChangeDir("/");
     mMessage = new MessageWindow("mes_BattleArenaMenu", 1, 0x7000);

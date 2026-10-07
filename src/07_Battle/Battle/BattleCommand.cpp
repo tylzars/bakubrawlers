@@ -1,4 +1,6 @@
 #include "Battle/BattleCommand.hpp"
+#include "Battle/BattleCommandList.hpp"
+#include "Battle/BattleCommandPage.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
@@ -11,29 +13,6 @@
 #include "Unknown/UnkStruct_02078290.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
-
-// Objects of the modes, created through external constructors.
-class BattleCommandPage { // 0x10c bytes, ctor 02054df0
-public:
-    u8 mPad[0x10c];
-    BattleCommandPage(u32 a, s32 b);
-};
-
-class BattleCommandList { // 0x168 bytes, ctor 020575e0
-public:
-    u8 mPad[0x168];
-    BattleCommandList(u32 a, u32 b, u32 c, u8 d);
-};
-
-void func_0205562c(BattleCommandPage *page, u32 a);
-
-void func_02055764(BattleCommandPage *page, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f, u32 g);
-
-void func_02058404(BattleCommandList *list, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f, u32 g);
-
-void func_02055624(BattleCommandPage *page, u32 a);
-
-void func_0205821c(BattleCommandList *list);
 
 void func_ov007_02245888(BattleCommandMap *map);
 
@@ -314,19 +293,6 @@ u16 *func_ov007_02262510(BattlePlayerList *list, u8 index);
 void func_ov007_02247a3c(BattleCommandMap *map);
 
 void func_ov007_02246a84(BattleCommandMap *map, u32 a);
-
-void func_02055668(BattleCommandPage *page, u32 a, s32 b);
-
-void func_02058260(BattleCommandList *list, u8 a, u32 b, s32 c);
-
-struct BattleCellPair {
-    u16 mUnk_00;
-    u16 mUnk_02;
-};
-
-void func_0205afb4(BattleCommandList *list, u32 a, u32 b, BattleCellPair *pair);
-
-void func_02058228(BattleCommandList *list, u32 a);
 
 BOOL BattleCommand::func_ov007_02239fd8() {
     BOOL result = FALSE;

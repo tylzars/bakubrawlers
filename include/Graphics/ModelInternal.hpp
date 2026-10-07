@@ -102,7 +102,11 @@ struct NNSG3dRS {
     /* 00 */ u32 mUnk_00;
     /* 04 */ NNSG3dRenderObj *mRenderObj;
     /* 08 */ u32 mFlags;
-    /* 0c */ u8 mUnk_0c[0xae - 0x0c];
+    /* 0c */ u8 mUnk_0c[0x24 - 0x0c];
+    /* 24 */ void (*mCallback)(NNSG3dRS *);
+    /* 28 */ u8 mUnk_28[0x92 - 0x28];
+    /* 92 */ u8 mUnk_92;
+    /* 93 */ u8 mUnk_93[0xae - 0x93];
     /* ae */ u8 mUnk_ae;
 };
 

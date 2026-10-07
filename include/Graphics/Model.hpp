@@ -32,6 +32,11 @@ public:
     void func_02029d54(); // apply all lights
 };
 
+class ModelInstance;
+struct CharacterParams;
+
+// The CharacterModel (Graphics/CharacterModel.hpp) seen through UnkStruct_0205401c::mUnk_04; still to be merged
+// into that class (CharacterEditScene reads 0x65-0x74 as an array).
 struct UnkStruct_0205401c_04 {
     /* 00 */ PAD(0x00, 0x12);
     /* 12 */ u16 mUnk_12;
@@ -45,16 +50,31 @@ struct UnkStruct_0205401c_04 {
 // A model of a scene (ctor 0205401c, destroyed with 02054034).
 class UnkStruct_0205401c {
 public:
-    /* 00 */ PAD(0x00, 0x04);
-    /* 04 */ UnkStruct_0205401c_04 *mUnk_04;
-    /* 08 */ PAD(0x08, 0x10);
+    /* 00 */ ModelInstance *mUnk_00; // shadow
+    /* 04 */ UnkStruct_0205401c_04 *mUnk_04; // CharacterModel (editable character, kind 0x15)
+    /* 08 */ void *mUnk_08;                  // StoryCharacterModel (every other kind)
+    /* 0c */ volatile u8 mUnk_0c;                   // 1: mUnk_04 is used
+    /* 0d */ u8 mUnk_0d;                     // set up
+    /* 0e */ PAD(0x0e, 0x10);
     /* 10 */
 
     UnkStruct_0205401c();
-    void func_02054034();
+    UnkStruct_0205401c *func_02054034();
     void func_0205411c(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
+    void func_02054290(const CharacterParams *params);
     void func_0205461c(u32 unk1, u32 unk2);
     void func_02054568();
+    void func_020543e8(u32 unk1, u32 unk2, u32 unk3, u8 unk4);
+    BOOL func_020544e4();
+    void func_0205451c();
+    void func_02054644(u32 unk1, u32 unk2);
+    void func_0205466c(u32 unk1);
+    void func_02054694(u8 unk1);
+    u8 func_020546b0();
+    u16 *func_020546cc();
+    void func_020546e4(const u16 *rot);
+    s32 func_02054710();
+    void func_02054740();
 };
 
 class NitroModel;
@@ -146,7 +166,10 @@ public:
     /* 00 (vtable) */
     /* 04 */ u8 mRenderObj[0x2c]; // NNSG3dRenderObj
     /* 30 */ ModelInstance *mUnk_30;
-    /* 34 */ PAD(0x34, 0x58);
+    /* 34 */ PAD(0x34, 0x38);
+    /* 38 */ void *mUnk_38;
+    /* 3c */ u32 mUnk_3c;
+    /* 40 */ PAD(0x40, 0x58);
     /* 58 */ UnkStruct_020289c8 *mUnk_58;
     /* 5c */ ModelAnim *mAnim;
     /* 60 */ NNSG3dAnmObj *mUnk_60;

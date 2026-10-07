@@ -71,6 +71,10 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 | 0x0202db04-0x0202f420 | System/WirelessManager.cpp | DS wireless (WM) local play: scan, parent/child, send and receive rings |
 | 0x0202f420-0x020305ac | UI/SelectWindowCursor.cpp | |
 | 0x0203dbb0-0x0203de40 | System/FrameTask.cpp | sound/voice task over the CRI library (`TaskBase` has no virtual destructor) |
+| 0x020527a4-0x0205401c | Graphics/CharacterModel.cpp | the edited (player) character model and its parts |
+| 0x0205401c-0x02054df0 | Graphics/CharacterPreview.cpp | character model wrapper and the story character model |
+| 0x02054df0-0x020575e0 | Battle/BattleCommandPage.cpp | battle command screen: page scene |
+| 0x020575e0-0x0205b288 | Battle/BattleCommandList.cpp | battle command screen: list scene |
 | 0x0205b288-0x0205c8f0 | UI/SelectWindow.cpp | |
 | 0x0205c8f0-0x02065158 | Scene/CharacterEditScene.cpp | character editor scene (looks, colours, name) |
 | 0x02065158-0x02065c40 | UI/MessageWindow.cpp | also the four-character-icon class `UnkStruct_020651bc` |

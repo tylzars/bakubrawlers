@@ -230,10 +230,10 @@ def main() -> None:
                     hits = [want]  # several identical candidates (e.g. thunks): take the one given
                 elif not hits and any(addr == want for _, addr, _ in rom_funcs):
                     hits = [want]
-                    # With a different size the relocations sit at other offsets: rename the function only.
-                    only_name = not any(addr == want and rs == size for _, addr, rs in rom_funcs)
-                    report.append(f"{sym.name}: assumed at {want:#010x} (not an exact match"
-                                  f"{', size differs: relocations not read' if only_name else ''})")
+                    # The code differs, so its literal pool may be laid out differently even at the same size:
+                    # rename the function only and leave the symbols it references alone.
+                    only_name = True
+                    report.append(f"{sym.name}: assumed at {want:#010x} (not an exact match: relocations not read)")
             if len(hits) > 1 and (rng := tu_text_range(a.obj, a.module)):
                 hits = [h for h in hits if rng[0] <= h < rng[1]]
             if len(hits) > 1:

@@ -43,7 +43,7 @@ struct BattleObstacle {
     /* 1a */ u16 mRotY;
     /* 1c */ u16 mRotZ;
     /* 1e */ u8 mType; // 0: box, 1: ball, 4: wall, ...
-    /* 1f */ PAD(0x1f, 0x20);
+    /* 1f */ u8 mUnk_1f;
 };
 
 // A ball: centre and radius.

@@ -11,6 +11,8 @@ class SelectWindow;
 struct SelectWindowCursor;
 class BattleCommandList;
 class BattleCommandPage;
+class UnkStruct_02076058;
+class UnkStruct_02071d24;
 
 // Object with a virtual destructor in the second slot (vtable +4).
 class UnkObject_02078e14 {
@@ -84,8 +86,8 @@ public:
     } mUnk_1a2[14];
     /* 1da */ PAD(0x1da, 0x1dc);
     /* 1dc */ u32 mUnk_1dc;
-    /* 1e0 */ u32 mUnk_1e0;
-    /* 1e4 */ u32 mUnk_1e4;
+    /* 1e0 */ UnkStruct_02076058 *mUnk_1e0;
+    /* 1e4 */ UnkStruct_02071d24 *mUnk_1e4;
     /* 1e8 */ UnkObject_02078e14 *mUnk_1e8;
     /* 1ec */ MessageWindow *mUnk_1ec;
     /* 1f0 */ u8 mUnk_1f0;
@@ -99,7 +101,7 @@ public:
     /* 3fa */ u8 mUnk_3fa;
     /* 3fb */ PAD(0x3fb, 0x3fc);
     /* 3fc */ s16 mUnk_3fc;
-    /* 3fe */ u8 mUnk_3fe;
+    /* 3fe */ s8 mUnk_3fe;
     /* 3ff */ u8 mUnk_3ff;
     /* 400 */ u8 mUnk_400;
     /* 401 */ u8 mUnk_401;
@@ -164,4 +166,19 @@ public:
     void func_02080210();
     void func_02080bdc(u32 unk1);
     void func_020832bc();
+    void func_0207b760();
+    void func_0207cfa4();
 };
+
+// Helpers of the second part of the class (UnkStruct_02078e14_b.cpp), free functions taking the object.
+void func_020834ec(UnkStruct_02078e14 *self, u32 mode);
+void func_0208415c(UnkStruct_02078e14 *self);
+void func_020843ac(UnkStruct_02078e14 *self, u32 unk1);
+void func_020848c8(UnkStruct_02078e14 *self);
+BOOL func_02084a10(UnkStruct_02078e14 *self);
+BOOL func_02084c38(UnkStruct_02078e14 *self);
+BOOL func_02084e64(UnkStruct_02078e14 *self); // self is passed but unused
+BOOL func_02084f40(UnkStruct_02078e14 *self); // self is passed but unused
+BOOL func_0208501c(UnkStruct_02078e14 *self);
+void func_02085220(UnkStruct_02078e14 *self, u32 mode);
+void func_0208550c(UnkStruct_02078e14 *self);

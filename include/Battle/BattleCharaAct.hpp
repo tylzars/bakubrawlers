@@ -26,9 +26,9 @@ public:
     /* 24 */ ModelInstance *mUnk_24;
     /* 28 */ ModelInstance *mUnk_28;
     /* 2c */ u32 mUnk_2c;
-    /* 30 */ PAD(0x30, 0x32);
+    /* 30 */ u16 mUnk_30;
     /* 32 */ u16 mUnk_32;
-    /* 34 */ PAD(0x34, 0x35);
+    /* 34 */ u8 mUnk_34;
     /* 35 */ u8 mUnk_35;
     /* 36 */ u8 mUnk_36;
     /* 37 */ u8 mUnk_37;
@@ -37,8 +37,9 @@ public:
     /* 3a */ u8 mUnk_3a;
     /* 3b */ u8 mUnk_3b;
     /* 3c */ u8 mUnk_3c;
-    /* 3d */ u8 mUnk_3d;
-    /* 3e */ PAD(0x3e, 0x40);
+    /* 3d */ s8 mUnk_3d;
+    /* 3e */ u8 mUnk_3e;
+    /* 3f */ PAD(0x3f, 0x40);
     /* 40 */
 
     BattleCharaAct(Camera *camera, u8 player, u32 kind, u8 unk4, u8 unk5);

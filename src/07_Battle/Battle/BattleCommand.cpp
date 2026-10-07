@@ -1,4 +1,12 @@
 #include "Battle/BattleCommand.hpp"
+#include "Battle/BattleCharaAct.hpp"
+#include "Battle/BattleCardEffect.hpp"
+#include "Graphics/Camera.hpp"
+#include "Battle/GimmickTypes.hpp"
+#include "Unknown/UnkStruct_02087898.hpp"
+#include "Battle/BattleCpu.hpp"
+#include "System/WirelessManager.hpp"
+#include "System/TouchManager.hpp"
 #include "System/FrameClock.hpp"
 #include "Battle/BattleCommandPrompt.hpp"
 #include "Battle/BattleCommandList.hpp"
@@ -213,6 +221,1123 @@ BattleCommand::~BattleCommand() {
     SpriteManager::Get().func_0202740c();
     if (mMessage) {
         delete mMessage;
+    }
+}
+
+class Camera;
+
+u32 func_ov007_022696a0(u32 a, u32 b);
+void func_ov007_022626b8(BattlePlayerList *list, u8 index);
+BOOL func_ov007_02262574(BattlePlayerList *list, u8 row, u8 col);
+extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
+void func_ov007_02246a84(BattleCommandMap *map, u32 a);
+void func_ov007_02247a3c(BattleCommandMap *map);
+
+extern "C" void func_ov007_022314bc(BattleCpu *cpu);
+BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
+void func_ov007_02262638(BattlePlayerList *list, u8 row, u8 col, u8 player, u8 slot);
+extern "C" void func_ov007_02247a7c(BattleCommandMap *map);
+class BattleUnk0227532c {
+public:
+    u8 mPad[0x1c];
+    BattleUnk0227532c(u32 a);
+};
+
+// non-matching: 21 words differ, all register allocation/scheduling inside case 42 (v/idx registers r6<->r2, one load order, y-loop init order); everything else identical, calls verified
+void BattleCommand::Update() {
+    switch (mUnk_128) {
+        case 0: {
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            if (list->mUnk_288 == 0) {
+                list->mUnk_288++;
+                if (data_020d433c.mGimmicks) {
+                    data_020d433c.mGimmicks->func_ov007_0222e25c();
+                }
+            } else {
+                func_ov007_0223a5a4(this, 1);
+                func_ov007_0223a690((s16) (mUnk_120 - mUnk_139), mUnk_122);
+            }
+            func_ov007_0223a734();
+            func_ov007_0223ad70(mUnk_135);
+            func_ov007_0223b2f0();
+            SpriteManager::Get().StartFade(2);
+            mUnk_128 = 1;
+            return;
+        }
+        case 1:
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            mUnk_128++;
+            return;
+        case 2: {
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            if (list->mUnk_293 == 0) {
+                list->mUnk_293 = 1;
+                new BattleCardEffect(0, 10, 0x11, 1);
+                mContext->mUnk_12 = 0;
+            } else {
+                mContext->mUnk_12 = 1;
+            }
+            if (data_020d433c.mBattlePlayers->mUnk_292 == 2) {
+                mUnk_128 = 3;
+                return;
+            }
+            mUnk_128 = 7;
+            return;
+        }
+        case 3:
+            if (mContext->mUnk_12 == 0) {
+                return;
+            }
+            func_ov007_0223c74c(1);
+            SpriteManager::Get().StartFade(3);
+            mUnk_128++;
+            return;
+        case 4: {
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            func_ov007_0223c8ac();
+            if (mMode != 0) {
+                return;
+            }
+            u32 unk4 = 0;
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            if (list->mUnk_292 == 2) {
+                u8 player = mUnk_133;
+                u8 i = 0;
+                do {
+                    BattleUnit *unit = &list->mUnits[i];
+                    if (player == unit->mUnk_0f && unit->mUnk_12 != 0) {
+                        BattleUnit *u2 = &data_020d433c.mBattlePlayers->mUnits[i];
+                        u8 slot = u2->mUnk_0e;
+                        u8 marker = u2->mUnk_11;
+                        func_ov007_02262828(data_020d433c.mBattlePlayers, i, 2);
+                        BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[mUnk_133];
+                        p->mUnk_fe = 1;
+                        p->mUnk_ee++;
+                        p->mRecords[slot].mUnk_0a = 0;
+                        BattleRecord *rec = &p->mRecords[slot];
+                        unk4 = func_ov007_022696a0(rec->mUnk_08, rec->mUnk_09);
+                        func_ov007_022626b8(data_020d433c.mBattlePlayers, marker);
+                        break;
+                    }
+                    i++;
+                } while (i < 12);
+            }
+            new BattleCharaAct((Camera *) mUnk_80, mUnk_133, 7, unk4, 0);
+            mContext->mUnk_12 = 0;
+            mUnk_128++;
+            return;
+        }
+        case 5: {
+            if (mContext->mUnk_12 == 0) {
+                return;
+            }
+            if (data_020d433c.mBattlePlayers->mUnk_292 == 2) {
+                data_020d433c.mBattlePlayers->mUnk_292 = 0;
+                if (func_ov007_02263150(data_020d433c.mBattlePlayers)) {
+                    mUnk_128 = 0x37;
+                    SpriteManager::Get().StartFade(3);
+                    return;
+                }
+                u8 i = 0;
+                u8 found = 0;
+                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                do {
+                    if (list->mUnk_1c[i].mUnk_2 != 0) {
+                        found = 1;
+                        break;
+                    }
+                    i++;
+                } while (i < 12);
+                if (found == 0) {
+                    mUnk_128 = 0x38;
+                    SpriteManager::Get().StartFade(3);
+                    return;
+                }
+            }
+            mNextMode = 2;
+            func_ov007_0223c8d4(0);
+            func_ov007_0223a690((s16) (mUnk_120 - mUnk_139), mUnk_122);
+            func_ov007_0223ad70(mUnk_135);
+            func_ov007_0223b2f0();
+            func_ov007_02247a3c(mUnk_84);
+            func_ov007_02246a84(mUnk_84, 2);
+            SpriteManager::Get().StartFade(2);
+            mUnk_128++;
+            return;
+        }
+        case 6:
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            mUnk_128++;
+            mContext->mUnk_12 = 1;
+            return;
+        case 7: {
+            if (mContext->mUnk_12 == 0) {
+                return;
+            }
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            u8 cur                 = list->mUnk_2a9;
+            if (list->mUnk_28a == cur) {
+                if (data_020d433c.mUnk_85 == 3 || data_020d433c.mUnk_85 == 7) {
+                    list->mUnk_2a4->func_02087eec();
+                    data_020d433c.mBattlePlayers->mUnk_2a4->func_02088e64(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                    mUnk_128++;
+                    G2S_SetBlendBrightness(0x1f, -10);
+                    return;
+                }
+                if (data_020d433c.mUnk_98 != 0 && data_020d433c.mUnk_9a_3) {
+                    u8 i = 0;
+                    u8 count = 0;
+                    u8 need = list->mUnk_294;
+                    u8 partner = list->mPlayers[cur]->mUnk_f2;
+                    do {
+                        BattleUnit *unit = &list->mUnits[i];
+                        if (unit->mUnk_10 != 0) {
+                            if (partner == unit->mUnk_0f) {
+                                count++;
+                            }
+                        }
+                        i++;
+                    } while (i < 12);
+                    if (count == need) {
+                        if (list->mUnk_28f == 0) {
+                            mUnk_128 = 10;
+                        } else {
+                            mUnk_128 = 9;
+                        }
+                    } else {
+                        mUnk_128 = 10;
+                    }
+                } else {
+                    mUnk_128 = 10;
+                }
+            } else {
+                BOOL active = list->mPlayers[mUnk_133]->IsActive();
+                if (!active) {
+                    mUnk_128 = 0xe;
+                } else {
+                    mUnk_128 = 0x10;
+                    mUnk_11c = 0;
+                }
+            }
+            func_ov007_0223ce24();
+            mMessage->func_02065818();
+            mUnk_6c->mUnk_064 = 1;
+            return;
+        }
+
+        case 8: {
+            if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
+                data_020d433c.mBattlePlayers->mUnk_2a4->func_02088dac(1);
+            }
+            if (data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
+                return;
+            }
+            G2S_SetBlendBrightness(0x1f, 0);
+            data_020d433c.mBattlePlayers->mUnk_2af++;
+            func_ov007_0223ce24();
+            mMessage->func_02065818();
+            mUnk_6c->mUnk_064 = 1;
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            if (mUnk_133 == list->mUnk_2a9) {
+                mUnk_128 = 10;
+                return;
+            }
+            BOOL active = list->mPlayers[mUnk_133]->IsActive();
+            if (!active) {
+                mUnk_128 = 0xe;
+                return;
+            }
+            mUnk_128 = 0x10;
+            mUnk_11c = 0;
+            return;
+        }
+        case 9: {
+            u8 i = 0;
+            BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[mUnk_133];
+            u8 count = data_020d433c.mUnk_99;
+            do {
+                if (p->mSlots54[i].mFlag == 0) {
+                    mUnk_132 = i;
+                    break;
+                }
+                i++;
+            } while (i < count);
+            u8 x = 0;
+            do {
+                u8 y = 0;
+                do {
+                    if (func_ov007_02262574(data_020d433c.mBattlePlayers, x, y)) {
+                        mUnk_12c = x;
+                        mUnk_12d = y;
+                        break;
+                    }
+                    y++;
+                } while (y < 9);
+                x++;
+            } while (x < 14);
+            u8 b                   = mUnk_12d;
+            u8 a                   = mUnk_12c;
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            list->mUnk_28b         = a;
+            list->mUnk_28c         = b;
+            SpriteManager::Get().StartFade(3);
+            mUnk_128 = 0x1d;
+            return;
+        }
+        case 10: {
+            BOOL ok = TRUE;
+            if (mMode == 3) {
+                if (mUnk_78->func_02055724()) {
+                    ok = FALSE;
+                }
+            }
+            if (mMode == 4) {
+                if (mUnk_7c->func_020583f0()) {
+                    ok = FALSE;
+                }
+            }
+            if (data_020d433c.mUnk_83 != 0) {
+                ok = FALSE;
+            }
+            if (ok) {
+                if (InputManager::Get().IsHeld(8)) {
+                    mUnk_128 = 0x31;
+                    return;
+                }
+            }
+            if (!func_ov007_02239e1c(1)) {
+                return;
+            }
+            switch (mUnk_136) {
+                case 3:
+                    mUnk_128 = 0xb;
+                    return;
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                    mUnk_128 = 0xc;
+                    return;
+                default:
+                    mUnk_128 = 0xd;
+                    return;
+            }
+        }
+        case 11:
+            func_ov007_02239e1c(0);
+            if (!func_ov007_02239fd8()) {
+                return;
+            }
+            mUnk_128 = 10;
+            mUnk_129 = 0;
+            return;
+        case 12:
+            if (func_ov007_0223a1c8()) {
+                mUnk_128 = 10;
+            }
+            return;
+        case 13: {
+            mUnk_6c->Update(1);
+            if (mUnk_6c->mUnk_061 == 4) {
+                switch (mUnk_136) {
+                    case 1:
+                        mUnk_128 = 0x25;
+                        func_ov007_0223c74c(1);
+                        mNextMode = 4;
+                        break;
+                    case 2: {
+                        BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                        if (list->mUnk_28f != 0) {
+                            u8 cur   = list->mUnk_2a9;
+                            u8 i     = 0;
+                            u8 count = data_020d433c.mUnk_99;
+                            BattlePlayer *p = list->mPlayers[cur];
+                            do {
+                                if (p->mSlots54[i].mFlag == 0) {
+                                    func_ov007_0223c74c(1);
+                                    mUnk_70->mUnk_064 = 0;
+                                    mUnk_128          = 0x17;
+                                    break;
+                                }
+                                i++;
+                            } while (i < count);
+                        }
+                        break;
+                    }
+                    case 4:
+                        func_ov007_0223c74c(1);
+                        mNextMode = 4;
+                        mUnk_70->mUnk_064 = 0;
+                        mUnk_128          = 0x29;
+                        break;
+                }
+            }
+            u8 b                   = mUnk_12d;
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            u8 a                   = mUnk_12c;
+            list->mUnk_28b         = a;
+            list->mUnk_28c         = b;
+            func_ov007_0223b38c();
+            mMessage->func_020658d0();
+            return;
+        }
+        case 14: {
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayer *p        = list->mPlayers[list->mUnk_28a];
+            switch (p->mMsg.mType) {
+                case 7: {
+                    if (mUnk_138 != 0) {
+                        mUnk_138 = 9;
+                        if (mUnk_8c) {
+                            func_ov007_0225e68c(mUnk_8c, 1);
+                            mUnk_8c = 0;
+                        }
+                    }
+                    mUnk_132 = *(u32 *) p->mMsg.mUnk_04;
+                    mUnk_12c = p->mMsg.mUnk_08;
+                    u8 b     = p->mMsg.mUnk_09;
+                    mUnk_12d = b;
+                    u8 a     = mUnk_12c;
+                    BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                    l->mUnk_28b = a;
+                    l->mUnk_28c = b;
+                    mNextMode = 0;
+                    func_ov007_0223c74c(1);
+                    SpriteManager::Get().StartFade(3);
+                    mUnk_128 = 0xf;
+                    return;
+                }
+                case 8:
+                    if (mUnk_138 != 0) {
+                        mUnk_138 = 0;
+                        if (mUnk_8c) {
+                            func_ov007_0225e68c(mUnk_8c, 1);
+                            mUnk_8c = 0;
+                        }
+                    }
+                    mNextMode = 0;
+                    func_ov007_0223c74c(0);
+                    SpriteManager::Get().SetFade(1, -16);
+                    {
+                        BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                        l->mPlayers[l->mUnk_28a]->mRecord = p->mMsg.mUnk_0e;
+                    }
+                    mUnk_128 = 0x35;
+                    return;
+                case 0x12:
+                    if (mUnk_138 != 0) {
+                        mUnk_138 = 0;
+                        if (mUnk_8c) {
+                            func_ov007_0225e68c(mUnk_8c, 1);
+                            mUnk_8c = 0;
+                        }
+                    }
+                    mUnk_12c  = p->mMsg.mTouchDown;
+                    mUnk_12d  = p->mMsg.mTouchX;
+                    mNextMode = 0;
+                    mUnk_128  = 0x2d;
+                    return;
+                default:
+                    mUnk_6c->mButtons[1].mEnabled = 0;
+                    mUnk_6c->mButtons[2].mEnabled = 0;
+                    mUnk_6c->mButtons[5].mEnabled = 0;
+                    mUnk_6c->mButtons[4].mEnabled = 0;
+                    mUnk_6c->mButtons[3].mEnabled = 1;
+                    if (mUnk_138 == 0) {
+                        if ((mMode == 0) | (mMode == 1)) {
+                            func_ov007_02239e1c(0);
+                            func_ov007_02239fd8();
+                            return;
+                        }
+                        if (!func_ov007_02239e1c(1)) {
+                            return;
+                        }
+                        switch (mUnk_136) {
+                            case 6:
+                            case 7:
+                            case 8:
+                            case 9:
+                                func_ov007_0223a1c8();
+                                return;
+                        }
+                        return;
+                    }
+                    func_ov007_0223a1c8();
+                    return;
+            }
+        }
+        case 15:
+            func_ov007_0223c8ac();
+            if (mMode != 0) {
+                return;
+            }
+            func_ov007_0223b38c();
+            func_ov007_0223b874();
+            mUnk_70->Draw();
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            mUnk_6c->mButtons[3].mEnabled = 0;
+            mUnk_6c->mUnk_061 = 4;
+            mUnk_6c->mUnk_066 = 0;
+            mMode     = 0;
+            mUnk_11e  = 0;
+            mUnk_128  = 0x1f;
+            return;
+        case 16: {
+            mUnk_11c++;
+            if (mUnk_11c == 0) {
+                return;
+            }
+            mUnk_6c->mButtons[1].mEnabled = 0;
+            mUnk_6c->mButtons[2].mEnabled = 0;
+            mUnk_6c->mButtons[5].mEnabled = 0;
+            mUnk_6c->mButtons[4].mEnabled = 0;
+            mUnk_11c                      = 0;
+            u8 r = data_020d433c.mBattlePlayers->Current()->mUnk_c8->func_ov007_022310f0();
+            if (r == 0xff || data_020d433c.mBattlePlayers->mUnk_28f == 0) {
+                mUnk_128 = 0x12;
+                return;
+            }
+            mUnk_132 = r;
+            u8 v     = data_020d433c.mBattlePlayers->Current()->mUnk_c8->func_ov007_02231300();
+            u8 hi    = v >> 4;
+            u8 lo    = v & 0xf;
+            if (mUnk_90[hi][lo] != 0) {
+                u8 b                   = mUnk_12d;
+                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                u8 a                   = mUnk_12c;
+                list->mUnk_28b         = a;
+                list->mUnk_28c         = b;
+                func_ov007_0223c74c(1);
+                SpriteManager::Get().StartFade(3);
+                mUnk_12c = hi;
+                mUnk_12d = lo;
+                mUnk_128++;
+                return;
+            }
+            mUnk_128 = 0x12;
+            return;
+        }
+        case 17:
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            func_ov007_0223c8ac();
+            if (mMode != 0) {
+                return;
+            }
+            func_ov007_0223b38c();
+            func_ov007_0223b874();
+            mUnk_70->Draw();
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            mMode    = 0;
+            mUnk_11e = 0;
+            mUnk_128 = 0x1f;
+            return;
+        case 18:
+            func_ov007_0223b38c();
+            mUnk_11c++;
+            if (mUnk_11c == 0) {
+                return;
+            }
+            mUnk_11c = 0;
+            func_ov007_0223c74c(1);
+            SpriteManager::Get().StartFade(3);
+            if (data_020d433c.mBattlePlayers->mUnk_292 != 0) {
+                mUnk_128 = 0x15;
+                return;
+            }
+            mUnk_128++;
+            return;
+        case 19: {
+            func_ov007_0223b38c();
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            func_ov007_0223c8ac();
+            if (mMode != 0) {
+                return;
+            }
+            u8 cur          = data_020d433c.mBattlePlayers->mUnk_28a;
+            BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[cur];
+            u8 sel          = p->mUnk_c8->func_ov007_02231dd0();
+            func_ov007_022314bc(p->mUnk_c8);
+            BattleRecord *rec = &p->mRecords[sel];
+            p->mRecord = sel;
+            u32 act    = func_ov007_022696a0(rec->mUnk_08, rec->mUnk_09);
+            u8 kind    = 3;
+            if (p->mUnk_c8->mUnk_7e != 0) {
+                kind = 0xf;
+            }
+            new BattleCharaAct((Camera *) mUnk_80, cur, kind, act, 0);
+            mContext->mUnk_12 = 0;
+            mUnk_128++;
+            return;
+        }
+        case 20:
+            if (mContext->mUnk_12 == 0) {
+                return;
+            }
+            mUnk_134 = 4;
+            mUnk_128 = 0x39;
+            return;
+        case 21: {
+            u8 i                   = 0;
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            u32 cur                 = list->mUnk_28a;
+            do {
+                if ((u8) cur == list->mUnits[i].mUnk_0f) {
+                    list->mUnits[i].mUnk_12 = 1;
+                    BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                    u8 idx              = l->mUnits[i].mUnk_11;
+                    mUnk_12c            = l->mUnk_1c[idx].mUnk_3;
+                    mUnk_12d            = data_020d433c.mBattlePlayers->mUnk_1c[idx].mUnk_4;
+                    break;
+                }
+                i++;
+            } while (i < 12);
+            mUnk_128++;
+            return;
+        }
+        case 22:
+            mUnk_128 = 0x2d;
+            return;
+        case 23:
+            func_ov007_0223c8ac();
+            if (mMode != 0) {
+                return;
+            }
+            mNextMode = 3;
+            func_ov007_0223c8d4(0);
+            new BattleCommandPrompt(1, mUnk_78, 0, 0, 0);
+            mContext->mUnk_12 = 0;
+            mUnk_128++;
+            return;
+        case 24: {
+            u16 v = mContext->mUnk_12;
+            if (v == 0) {
+                return;
+            }
+            if (v != 10) {
+                GXS_SetVisiblePlane(0x11);
+                mUnk_132 = func_ov007_0225f0bc(v);
+                mUnk_128++;
+                return;
+            }
+            func_ov007_0223c74c(1);
+            mUnk_128 = 0x23;
+            return;
+        }
+        case 25:
+            mUnk_6c->func_0205c7c8(-1);
+            mUnk_70->mUnk_064 = 1;
+            mMessage->func_02065890(0x13, 0, 1);
+            mMessage->func_02065818();
+            mUnk_128++;
+            return;
+        case 26: {
+            if (mUnk_70->mUnk_061 == 1) {
+                func_ov007_0223bb30(1);
+            }
+            WindowItem *item = mUnk_70->mCursor->mItems;
+            u8 flag          = 0;
+            if (func_ov007_02262574(data_020d433c.mBattlePlayers, mUnk_12c, mUnk_12d)) {
+                item->mFlags = 5;
+                if (mUnk_13b != 0) {
+                    flag = 1;
+                    SoundManager::Get().func_020246f8(0);
+                }
+            } else {
+                item->mFlags = 0x804;
+                if (mUnk_13b != 0) {
+                    SoundManager::Get().func_020246f8(2);
+                }
+            }
+            u8 sel    = mUnk_70->Update(1);
+            mUnk_13a = mUnk_70->mUnk_0e0;
+            if (sel == 1 || flag != 0) {
+                mUnk_12f = 0;
+                mUnk_11e = 0;
+                SpriteManager::Get().StartFade(3);
+                mUnk_128 = 0x1c;
+                if (flag != 0) {
+                    mUnk_70->mUnk_061 = 4;
+                    mUnk_70->mUnk_066 = 0;
+                }
+                mUnk_129 = 0;
+            } else if (sel == 2) {
+                mUnk_128++;
+                mUnk_129 = 0;
+            }
+            mMessage->func_020658d0();
+            u8 b                   = mUnk_12d;
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            u8 a                   = mUnk_12c;
+            list->mUnk_28b         = a;
+            list->mUnk_28c         = b;
+            func_ov007_0223b38c();
+            func_ov007_0223b874();
+            mUnk_70->Draw();
+            func_020254f0(func_ov007_0223cf8c, this);
+            return;
+        }
+
+        case 27:
+            mUnk_70->Update(1);
+            if (mUnk_70->mUnk_061 == 4) {
+                new BattleCommandPrompt(1, mUnk_78, 0, 0, 0);
+                mContext->mUnk_12 = 0;
+                mUnk_70->func_0205c7c8(-1);
+                mUnk_70->mUnk_064 = 0;
+                mUnk_128          = 0x18;
+            }
+            mMessage->func_020658d0();
+            {
+                u8 b                   = mUnk_12d;
+                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                u8 a                   = mUnk_12c;
+                list->mUnk_28b         = a;
+                list->mUnk_28c         = b;
+            }
+            func_ov007_0223b38c();
+            func_ov007_0223b874();
+            mUnk_70->Draw();
+            func_020254f0(func_ov007_0223cf8c, this);
+            return;
+        case 28:
+            mUnk_70->Update(1);
+            if (mUnk_70->mUnk_061 == 4) {
+                mUnk_128++;
+            }
+            func_ov007_0223b38c();
+            func_ov007_0223b874();
+            return;
+        case 29:
+            data_0220f540.mUnk_00 = 7;
+            data_0220f540.mUnk_04 = mUnk_132;
+            data_0220f540.mUnk_08 = mUnk_12c;
+            data_0220f540.mUnk_09 = mUnk_12d;
+            mUnk_128++;
+            func_ov007_0223b38c();
+            func_ov007_0223b874();
+            return;
+        case 30:
+            func_ov007_0223b38c();
+            func_ov007_0223b874();
+            mUnk_70->Draw();
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            func_ov007_0223c74c(1);
+            mUnk_11e = 0;
+            mUnk_128++;
+            mUnk_70->mUnk_064 = 0;
+            return;
+        case 31: {
+            func_ov007_0223c8ac();
+            if (mMode != 0) {
+                return;
+            }
+            u8 cur = data_020d433c.mBattlePlayers->mUnk_28a;
+            new BattleCharaAct((Camera *) mUnk_80, cur, 1, 0, 0);
+            mContext->mUnk_12 = 0;
+            GXS_SetVisibleWnd(0);
+            mUnk_128++;
+            return;
+        }
+        case 32: {
+            if (mContext->mUnk_12 == 0) {
+                return;
+            }
+            mNextMode = 2;
+            func_ov007_0223c8d4(0);
+            func_ov007_0223a690((s16) (mUnk_120 - mUnk_139), mUnk_122);
+            func_ov007_0223ad70(mUnk_135);
+            func_ov007_0223b2f0();
+            u8 b                   = mUnk_12d;
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            u8 a                   = mUnk_12c;
+            list->mUnk_28b         = a;
+            list->mUnk_28c         = b;
+            func_ov007_02247a7c(mUnk_84);
+            mUnk_12e = 1;
+            data_020d433c.mGimmicks->mState = 0;
+            SpriteManager::Get().StartFade(2);
+            mUnk_128++;
+            return;
+        }
+        case 33: {
+            func_ov007_0223b38c();
+            func_ov007_0223b874();
+            mUnk_11e++;
+            if ((mUnk_11e % 4) == 0) {
+                if (mUnk_12f < 16) {
+                    mUnk_12f++;
+                }
+            }
+            if (mUnk_11e == 1) {
+                SoundManager::Get().func_020246f8(6);
+            }
+            if ((s32) mUnk_11e <= 0x96) {
+                return;
+            }
+            mUnk_12f = 0;
+            mUnk_11e = 0;
+            mUnk_128++;
+            func_ov007_02262638(data_020d433c.mBattlePlayers, mUnk_12c, mUnk_12d, mUnk_133, mUnk_132);
+            mUnk_130 = 1;
+            SpriteManager::Get().sFade.mMain = 3;
+            data_020d433c.mBattlePlayers->mUnk_28f = 0;
+            WindowItem *items = mUnk_6c->mCursor->mItems;
+            items[2].mFlags   = 0x8000;
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            if (list->mUnk_28a != list->mUnk_2a9) {
+                items[5].mFlags = 0x8000;
+            } else {
+                items[5].mFlags = 0x800;
+            }
+            return;
+        }
+        case 34:
+            if (SpriteManager::Get().sFade.mMain <= 1) {
+                GXS_SetVisibleWnd(0);
+                mUnk_12e = 0;
+                G2S_SetBlendBrightness(0x11, 0);
+                func_ov007_0223c74c(1);
+                mUnk_128++;
+            }
+            func_ov007_0223b38c();
+            return;
+        case 35:
+            func_ov007_0223b38c();
+            func_ov007_0223c8ac();
+            if (mMode != 0) {
+                return;
+            }
+            mNextMode = 2;
+            func_ov007_0223c8d4(0);
+            func_ov007_02247a3c(mUnk_84);
+            func_ov007_02246a84(mUnk_84, 2);
+            mUnk_128++;
+            return;
+        case 36: {
+            func_ov007_0223b38c();
+            if (SpriteManager::Get().sFade.mMain > 1) {
+                return;
+            }
+            mUnk_6c->func_0205c7c8(-1);
+            mUnk_6c->Update(1);
+            mMessage->func_02065818();
+            func_ov007_0223ce24();
+            mUnk_13a = 0;
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            u32 cur                 = list->mUnk_28a;
+            if (cur == list->mUnk_2a9) {
+                mUnk_128 = 10;
+                return;
+            }
+            BOOL active = list->mPlayers[(u8) cur]->IsActive();
+            if (!active) {
+                mUnk_128 = 0xe;
+                return;
+            }
+            mUnk_128 = 0x12;
+            mUnk_11c = 0;
+            return;
+        }
+        case 37:
+            func_ov007_0223b38c();
+            func_ov007_0223c8ac();
+            if (mMode != 0) {
+                return;
+            }
+            func_ov007_0223c8d4(0);
+            func_02058228(mUnk_7c, 1);
+            new BattleCommandPrompt(2, mUnk_7c, 0, 0, 0);
+            mContext->mUnk_12 = 0;
+            mUnk_128++;
+            return;
+        case 38: {
+            u16 v = mContext->mUnk_12;
+            if (v == 0) {
+                return;
+            }
+            if (v == 10) {
+                func_ov007_0223c74c(1);
+                mUnk_128++;
+                return;
+            }
+            func_ov007_0223c74c(1);
+            SpriteManager::Get().StartSubFade(3);
+            mUnk_132 = func_ov007_0225f0bc(v);
+            data_020d433c.mBattlePlayers->mPlayers[mUnk_133]->mRecord = mUnk_132;
+            GXS_SetVisiblePlane(0x11);
+            mUnk_128 = 0x34;
+            return;
+        }
+        case 39:
+            func_ov007_0223b38c();
+            func_ov007_0223c8ac();
+            if (mMode != 0) {
+                return;
+            }
+            mNextMode = 2;
+            func_ov007_0223c8d4(0);
+            func_ov007_02247a3c(mUnk_84);
+            func_ov007_02246a84(mUnk_84, 2);
+            mUnk_128++;
+            return;
+        case 40:
+            func_ov007_0223b38c();
+            if (SpriteManager::Get().sFade.mMain > 1) {
+                return;
+            }
+            func_ov007_0223ce24();
+            mUnk_6c->func_0205c7c8(-1);
+            mUnk_128 = 10;
+            return;
+        case 41:
+            func_ov007_0223b38c();
+            func_ov007_0223c8ac();
+            if (mMode != 0) {
+                return;
+            }
+            func_ov007_0223c8d4(1);
+            func_02058228(mUnk_7c, 1);
+            mUnk_128++;
+            mUnk_70->func_0205c7c8(-1);
+            mUnk_70->mUnk_064 = 1;
+            func_ov007_0223c578();
+            mMessage->func_02065890(0x21, 0, 1);
+            return;
+        case 42: {
+            if (mUnk_70->mUnk_061 == 1) {
+                func_ov007_0223bb30(0);
+            }
+            WindowItem *item       = mUnk_70->mCursor->mItems;
+            u8 idx;
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            s8 v                   = list->mUnk_1f8[mUnk_12c][mUnk_12d];
+            u8 flag                = 0;
+            if (v > 0) {
+                idx = v - 1;
+                if (list->mUnk_2a9 == list->mUnits[idx].mUnk_0f) {
+                    item->mFlags = 5;
+                    if (mUnk_13b != 0) {
+                        flag = 1;
+                        SoundManager::Get().func_020246f8(0);
+                    }
+                } else {
+                    item->mFlags = v + 0x7f0;
+                    if (mUnk_13b != 0) {
+                        SoundManager::Get().func_020246f8(2);
+                    }
+                }
+            } else {
+                item->mFlags = 0x804;
+            }
+            u8 sel   = mUnk_70->Update(1);
+            mUnk_13a = mUnk_70->mUnk_0e0;
+            if (sel == 1 || flag != 0) {
+                mUnk_12f = 0;
+                mUnk_11e = 0;
+                SpriteManager::Get().StartFade(3);
+                mUnk_70->mUnk_064 = 0;
+                mUnk_128          = 0x2d;
+                data_0220f540.mUnk_00 = 0x12;
+                data_0220f540.mTouchDown = mUnk_12c;
+                data_0220f540.mTouchX    = mUnk_12d;
+                mUnk_129              = 0;
+            } else if (sel == 2) {
+                mUnk_128++;
+                func_ov007_0223c74c(1);
+                mUnk_129 = 0;
+            }
+            mMessage->func_020658d0();
+            u8 b                = mUnk_12d;
+            BattlePlayerList *l = data_020d433c.mBattlePlayers;
+            u8 a                = mUnk_12c;
+            l->mUnk_28b         = a;
+            l->mUnk_28c         = b;
+            func_ov007_0223b38c();
+            mUnk_10->Update();
+            u8 y = 0;
+            do {
+                u8 x = 0;
+                do {
+                    s8 cell = data_020d433c.mBattlePlayers->mUnk_1f8[y][x];
+                    if (cell > 0) {
+                        BattlePlayerList *l2 = data_020d433c.mBattlePlayers;
+                        if (l2->mUnk_2a9 == l2->mUnits[(u8) (cell - 1)].mUnk_0f) {
+                            if (mUnk_135 == 0) {
+                                mUnk_10->Draw(1, (s16) (mUnk_139 + (y * 16 + 14 - mUnk_120)), (s16) (x * 24 - 22 - mUnk_122), 0);
+                            } else {
+                                mUnk_10->Draw(1, (s16) (mUnk_139 + ((u8) (13 - y) * 16 + 14 - mUnk_120)), (s16) ((u8) (9 - x) * 24 - 22 - mUnk_122), 0);
+                            }
+                        }
+                    }
+                    x++;
+                } while (x < 10);
+                y++;
+            } while (y < 14);
+            mUnk_70->Draw();
+            func_020254f0(func_ov007_0223cf8c, this);
+            return;
+        }
+        case 43:
+            mMessage->func_020658d0();
+            func_ov007_0223b38c();
+            func_ov007_0223c8ac();
+            if (mMode != 0) {
+                return;
+            }
+            mUnk_70->Update(1);
+            if (mUnk_70->mUnk_061 != 4) {
+                return;
+            }
+            mNextMode = 2;
+            func_ov007_0223c8d4(0);
+            func_ov007_02247a3c(mUnk_84);
+            mUnk_70->func_0205c7c8(-1);
+            mUnk_70->mUnk_064 = 0;
+            func_ov007_02246a84(mUnk_84, 2);
+            mUnk_128++;
+            return;
+        case 44:
+            mMessage->func_020658d0();
+            func_ov007_0223b38c();
+            if (SpriteManager::Get().sFade.mMain > 1) {
+                return;
+            }
+            func_ov007_0223ce24();
+            mUnk_6c->func_0205c7c8(-1);
+            mUnk_128 = 10;
+            func_ov007_0223ce24();
+            return;
+        case 45: {
+            u8 b                   = mUnk_12d;
+            u8 a                   = mUnk_12c;
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            list->mUnk_28b         = a;
+            list->mUnk_28c         = b;
+            func_ov007_0223b38c();
+            mUnk_70->Draw();
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            func_ov007_0223c74c(1);
+            mUnk_11e = 0;
+            mUnk_128++;
+            return;
+        }
+        case 46:
+            func_ov007_0223b38c();
+            func_ov007_0223c8ac();
+            if (mMode != 0) {
+                return;
+            }
+            if (!func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+                return;
+            }
+            mNextMode = 2;
+            func_ov007_0223c8d4(0);
+            func_ov007_02247a3c(mUnk_84);
+            func_ov007_02246a84(mUnk_84, 2);
+            mUnk_84->mUnk_151 = 0;
+            SpriteManager::Get().StartSubFade(2);
+            data_020d433c.mGimmicks->mState = 0;
+            new BattleCardEffect(0, 0xb, 0xe, 1);
+            mContext->mUnk_12 = 0;
+            mUnk_128++;
+            return;
+        case 47: {
+            if (mContext->mUnk_12 == 0) {
+                return;
+            }
+            SpriteManager::Get().StartFade(3);
+            func_ov007_0223c74c(0);
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            list->mUnits[(u8) (list->mUnk_1f8[mUnk_12c][mUnk_12d] - 1)].mUnk_12 = 1;
+            mUnk_128++;
+            return;
+        }
+        case 48:
+            if (!SpriteManager::Get().IsFading()) {
+                mUnk_128 = 0x36;
+            }
+            return;
+        case 49:
+            new BattleUnk0227532c(1);
+            mContext->mUnk_12 = 0;
+            mUnk_128++;
+            return;
+        case 50:
+            switch (mContext->mUnk_12) {
+                case 1:
+                    mUnk_128 = 10;
+                    return;
+                case 2:
+                    if (data_020d433c.mUnk_a8 != 0) {
+                        WirelessManager::Get();
+                        data_020c4030.mUnk_22a = 6;
+                        mUnk_128++;
+                        return;
+                    }
+                    SpriteManager::Get().SetFade(1, -16);
+                    mUnk_134 = 7;
+                    mUnk_128 = 0x39;
+                    return;
+            }
+            return;
+        case 52:
+            func_ov007_0223c8ac();
+            if (mMode == 0) {
+                SpriteManager::Get().SetFade(1, -16);
+                mUnk_128 = 0x39;
+                mUnk_134 = 1;
+            }
+            func_ov007_0223b38c();
+            return;
+        case 53:
+            func_ov007_0223c8ac();
+            if (mMode == 0) {
+                mUnk_134 = 3;
+                mUnk_128 = 0x39;
+            }
+            func_ov007_0223b38c();
+            return;
+        case 54:
+            func_ov007_0223c8ac();
+            if (mMode == 0) {
+                SpriteManager::Get().SetFade(1, -16);
+                mUnk_134 = 2;
+                mUnk_128 = 0x39;
+            }
+            func_ov007_0223b38c();
+            return;
+        case 55:
+            SpriteManager::Get().SetFade(1, -16);
+            mUnk_134 = 5;
+            mUnk_128 = 0x39;
+            return;
+        case 56:
+            SpriteManager::Get().SetFade(1, -16);
+            mUnk_134 = 6;
+            mUnk_128 = 0x39;
+            return;
+        case 57:
+            RequestScene(mUnk_134);
+            mFinished = 1;
+            return;
     }
 }
 

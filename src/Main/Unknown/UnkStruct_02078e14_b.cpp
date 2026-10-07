@@ -270,8 +270,8 @@ void func_020843ac(UnkStruct_02078e14 *self, u32 unk1);
 void func_020848c8(UnkStruct_02078e14 *self);
 BOOL func_02084a10(UnkStruct_02078e14 *self);
 BOOL func_02084c38(UnkStruct_02078e14 *self);
-BOOL func_02084e64();
-BOOL func_02084f40();
+BOOL func_02084e64(UnkStruct_02078e14 *self); // self is passed but unused
+BOOL func_02084f40(UnkStruct_02078e14 *self); // self is passed but unused
 BOOL func_0208501c(UnkStruct_02078e14 *self);
 void func_02085220(UnkStruct_02078e14 *self, u32 mode);
 void func_0208550c(UnkStruct_02078e14 *self);
@@ -2617,7 +2617,7 @@ BOOL func_02084c38(UnkStruct_02078e14 *self) {
     return FALSE;
 }
 
-BOOL func_02084e64() {
+BOOL func_02084e64(UnkStruct_02078e14 *self) {
     data_0220f540.mUnk_04 = MATH_Rand32(&data_020d42e8, 0);
     if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 2)) {
         u8 *info = WirelessManager::Get().func_0202f0cc(0);
@@ -2629,7 +2629,7 @@ BOOL func_02084e64() {
     return FALSE;
 }
 
-BOOL func_02084f40() {
+BOOL func_02084f40(UnkStruct_02078e14 *self) {
     MI_CpuCopy8(data_020d4404, (u8 *) &data_0220f540 + 4, 8);
     if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 6)) {
         u32 count = WirelessManager::Get().func_0202f134();

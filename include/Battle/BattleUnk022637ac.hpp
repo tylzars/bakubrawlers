@@ -10,6 +10,8 @@ class CellAnimation;
 class EffectManager;
 class Camera;
 class BattleUnionAbility;
+class BattleCommandPage;
+class BattleCommandList;
 #include "Battle/BattleTarget.hpp"
 
 // View of a 0x14 byte BattleUnit entry with its position.
@@ -43,14 +45,14 @@ public:
     /* 1a */ u16 mUnk_1a;
     /* 1c */ BattleTarget *mUnk_1c;
     /* 20 */ BattleUnionAbility *mUnk_20;
-    /* 24 */ u32 mUnk_24;
+    /* 24 */ BattleCommandPage *mUnk_24;
     /* 28 */ u8 mUnk_28;
     /* 29 */ u8 mUnk_29;
     /* 2a */ u8 mUnk_2a;
     /* 2b */ u8 mUnk_2b;
     /* 2c */ EffectManager *mEffects;
     /* 30 */ Camera *mUnk_30;
-    /* 34 */ PAD(0x34, 0x38);
+    /* 34 */ BattleCommandList *mUnk_34;
     /* 38 */ u8 mUnk_38;
     /* 39 */ PAD(0x39, 0x3a);
     /* 3a */ u16 mUnk_3a;

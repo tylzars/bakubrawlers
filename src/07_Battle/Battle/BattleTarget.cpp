@@ -48,6 +48,7 @@ static inline void ReleaseSlot(BattlePlayerList *list, u8 index) {
     ((void (*)(BattlePlayerList *, u8)) func_ov007_02262828)(list, index);
 }
 extern VecFx32 data_ov007_0227a60c;
+void func_ov007_022337ec(VecFx32 *A, VecFx32 *B, VecFx32 *C, VecFx32 *D, VecFx32 *E, fx32 F, fx32 G, int flag);
 fx32 func_020017d4(fx32 x, fx32 z);
 extern const u16 data_ov007_0227a5ee[];
 extern const s32 data_ov007_0227a6bc[];
@@ -114,6 +115,26 @@ static inline void SnapshotCamera() {
     manager.mMtxA[manager.mActive]       = *func_02032710();
     manager.mMtxB[manager.mActive]       = *func_02032604();
     manager.mMtxC[manager.mActive]       = *func_020323b8();
+}
+
+// Bits 12-14 of the halfword at +2 of a record.
+struct RecordBits {
+    u16 mUnk_0 : 12;
+    u16 mIndex : 3;
+    u16 mUnk_15 : 1;
+};
+
+union ObstacleBuf {
+    BattleObstacle o;
+    u32 w[8];
+};
+#define OBST(set, idx) ((BattleObstacle *) ((u8 *) (set) + 0x10 + (idx) * 0x20))
+
+static inline void AddRot(BattleObstacle *o, GimmickSetData *s) {
+    u16 *r = &s->mRotX;
+    o->mRotY += r[1];
+    o->mRotZ += r[2];
+    o->mRotX += r[0];
 }
 
 // non-matching: 5 words (first +0x1a8): the constants 0x1c3 / 0x32000 are loaded into r3 in the original (r2 is held by the later constant 1 whose mov is hoisted above the store of 0x32000); the permute search over the constant block found no order that does this.
@@ -777,6 +798,262 @@ void BattleTarget::func_ov007_02254a14(GimmickSetData *set) {
     mUnk_e4[set->mUnk_834 - 1] = 0;
 }
 
+// non-matching: ~89% of instructions aligned; the original zeroes the three vectors through base registers and reloads the zero from the marker slot, the rotation adds of the second obstacle are scheduled differently, and some stack slots/registers differ.
+void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
+    VecFx32 move;
+    VecFx32 hitOut;
+    VecFx32 vel;
+    ObstacleBuf self;
+    ObstacleBuf obs;
+    u8 hit;
+    u32 none = 0xffff;
+    s32 wallFree;
+    s32 marker;
+    s32 moved;
+    s32 ceilingHit;
+    u16 handle;
+    BattleRecord *record;
+    u8 i;
+    marker     = 0;
+    move.x     = 0;
+    move.y     = 0;
+    move.z     = 0;
+    hitOut.x   = 0;
+    hitOut.y   = 0;
+    hitOut.z   = 0;
+    vel.x      = 0;
+    vel.y      = 0;
+    vel.z      = 0;
+    hit        = 0;
+    mUnk_1d8   = 0;
+    moved      = 0;
+    ceilingHit = 0;
+    wallFree   = 1;
+    if (mUnk_4c != 0) {
+        mUnk_1cd = 0;
+    }
+    record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
+    if (mUnk_1a8->mUnk_823 != 0) {
+        for (i = 0; i < mUnk_1a8->mUnk_823; i++) {
+            GimmickSetData *set = &data_020d433c.mUnk_0c->mUnk_0c[mUnk_1a8->mUnk_824[i]];
+            if (!set) {
+                continue;
+            }
+            self = *(ObstacleBuf *) ((u8 *) mUnk_1a8 + 0x10);
+            obs = *(ObstacleBuf *) OBST(set, mUnk_1a8->mUnk_82c[i]);
+            switch (set->mUnk_08) {
+                case 2: {
+                    if (!set->mUnk_834) {
+                        continue;
+                    }
+                    BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) (set->mUnk_834 - 1)];
+                    if (unit->mUnk_10 == 2 || mUnk_1df == 5) {
+                        continue;
+                    }
+                    if (mUnk_1df == 6 && unit->mUnk_0f != mUnk_1d4 && unit->mUnk_0f != mUnk_1d5 && unit->mUnk_10 != 3) {
+                        SoundManager::Get().func_020246f8(0x10);
+                        func_ov007_02254a14(set);
+                        continue;
+                    }
+                    if (mUnk_1df == 4 && unit->mUnk_0f != mUnk_1d4 && unit->mUnk_0f != mUnk_1d5 && unit->mUnk_10 != 3) {
+                        mUnk_1dd = 3;
+                        marker   = none;
+                        continue;
+                    }
+                    if (mUnk_1e0 == 3 && unit->mUnk_10 != 3) {
+                        VecFx32 v           = unit->mPos;
+                        v.y                 = 0x8999;
+                        mUnk_1a4->mPosition = v;
+                        mUnk_64.x           = 0;
+                        mUnk_64.y           = 0;
+                        mUnk_64.z           = 0;
+                        mUnk_a0.x           = 0;
+                        mUnk_a0.y           = 0;
+                        mUnk_a0.z           = 0;
+                        mUnk_c8.x           = 0;
+                        mUnk_c8.y           = 0;
+                        mUnk_c8.z           = 0;
+                        mUnk_ac.x           = 0;
+                        mUnk_ac.y           = 0;
+                        mUnk_ac.z           = 0;
+                        continue;
+                    }
+                    *c = 0x666;
+                    *d = 0x4cd;
+                    VEC_Add(&self.o.mPos, &mUnk_1a8->mUnk_810, &self.o.mPos);
+                    AddRot(&self.o, mUnk_1a8);
+                    VEC_Add(&obs.o.mPos, &set->mUnk_810, &obs.o.mPos);
+                    obs.o.mRotY += set->mRotY;
+                    obs.o.mRotZ += set->mRotZ;
+                    obs.o.mRotX += set->mRotX;
+                    marker = 0;
+                    if (data_020d433c.mUnk_85 == 0 && unit->mUnk_0f != mUnk_1d4 && unit->mUnk_0f != mUnk_1d5 && unit->mUnk_10 != 3 &&
+                        (mUnk_1e1 != 0 || func_ov007_02254938(&self.o.mPos, &obs.o.mPos, a, ((RecordBits *) ((u8 *) record + 2))->mIndex))) {
+                        mUnk_1dd = 6;
+                        mUnk_1db = 0;
+                        mUnk_15c = mUnk_1a4->mPosition;
+                        mUnk_168 = obs.o.mPos;
+                        mUnk_1de = set->mUnk_834;
+                        mUnk_134 = *a;
+                        mUnk_1cb = 1;
+                    } else {
+                        func_ov007_02257c80((BattleSphere *) &self.o, a, &obs.o, &hitOut, 0, 0);
+                        SoundManager::Get().func_020246f8(4);
+                    }
+                    VEC_Add(&move, &hitOut, &move);
+                    if (!(move.x == 0 && move.y == 0 && move.z == 0)) {
+                        VEC_Normalize(&move, &move);
+                    }
+                    moved = 1;
+                    break;
+                }
+                case 4: {
+                    u8 kind = OBST(set, mUnk_1a8->mUnk_82c[i])->mUnk_1f;
+                    switch (kind) {
+                        case 0:
+                        case 2: {
+                            if (kind == 2) {
+                                wallFree = 0;
+                            }
+                            if (kind == 2 && mUnk_1ce == 0) {
+                                continue;
+                            }
+                            if (kind == 2) {
+                                if (VEC_Mag(&mUnk_64) >= 0x2000) {
+                                    *c = 0xccd;
+                                } else {
+                                    *c = 0x1333;
+                                }
+                            } else {
+                                *c = 0x800;
+                            }
+                            *d = 0x4cd;
+                            VEC_Add(&self.o.mPos, &mUnk_1a8->mUnk_810, &self.o.mPos);
+                            AddRot(&self.o, mUnk_1a8);
+                            VEC_Add(&obs.o.mPos, &set->mUnk_810, &obs.o.mPos);
+                            obs.o.mRotY += set->mRotY;
+                    obs.o.mRotZ += set->mRotZ;
+                    obs.o.mRotX += set->mRotX;
+                            vel.x = a->x;
+                            vel.y = a->y;
+                            vel.z = a->z;
+                            vel.y = vel.y * (none - 0x10000);
+                            if (OBST(set, mUnk_1a8->mUnk_82c[i])->mUnk_1f == 2) {
+                                func_ov007_02257c80((BattleSphere *) &self.o, &vel, &obs.o, &move, 1, &hit);
+                            } else {
+                                func_ov007_02257c80((BattleSphere *) &self.o, &vel, &obs.o, &move, 0, &hit);
+                            }
+                            if (move.x != 0 || move.z != 0) {
+                                SoundManager::Get().func_020246f8(4);
+                            }
+                            marker = 0;
+                            if (move.y != 0 && OBST(set, mUnk_1a8->mUnk_82c[i])->mUnk_1f == 0) {
+                                mUnk_58.y = set->mUnk_810.y + obs.o.mPos.y + obs.o.mHalfY + self.o.mHalfY;
+                            }
+                            if (OBST(set, mUnk_1a8->mUnk_82c[i])->mUnk_1f == 2) {
+                                ceilingHit = 1;
+                                if (move.x != 0 || move.z != 0) {
+                                    handle = func_0202bd40(data_020d433c.mEffects, 1, 0xd, 0, 1);
+                                    if (handle != 0) {
+                                        CameraManager::Get();
+                                        MtxFx43 mtx = data_020c1cf4;
+                                        VecFx32 pos = mUnk_1a4->mPosition;
+                                        func_01ffcf64(&mtx, &pos);
+                                        func_0202bf60(data_020d433c.mEffects, handle, &mtx);
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                        case 1:
+                            mUnk_1cd = 1;
+                            break;
+                    }
+                    break;
+                }
+                case 8:
+                case 0x20:
+                    *c = 0x4cd;
+                    *d = 0x29;
+                    vel.x = a->x;
+                    vel.y = a->y;
+                    vel.z = a->z;
+                    func_ov007_02257f3c(set, mUnk_1a8->mUnk_82c[i], &vel, &move);
+                    marker = 0;
+                    break;
+            }
+        }
+    }
+    if (wallFree != 0) {
+        if (mUnk_1ce == 0) {
+            mUnk_1ce = 1;
+        }
+    }
+    if (ceilingHit != 0) {
+        if (mUnk_1cd == 0) {
+            mUnk_1cd = 1;
+        }
+    }
+    if (a->y > 0 && move.y > 0) {
+        move.y = 0;
+    }
+    if (!(move.x == 0 && move.y == 0 && move.z == 0)) {
+        VecFx32 pos = mUnk_1a4->mPosition;
+        mUnk_1e3    = 1;
+        if (move.x != 0) {
+            pos.x = mUnk_58.x;
+        }
+        s32 movedNow = moved;
+        if (move.y != 0) {
+            pos.y = mUnk_58.y;
+        }
+        if (move.z != 0) {
+            pos.z = mUnk_58.z;
+        }
+        func_ov007_022337ec(&mUnk_64, &mUnk_a0, &mUnk_ac, &mUnk_b8, &move, *c, *d, movedNow);
+        fx32 mag = VEC_Mag(&mUnk_a0);
+        if (moved != 0 && mag <= 0x1000 && move.y != 0) {
+            if (ABS(move.x) <= 0x800) {
+                if (move.x < 0) {
+                    mUnk_a0.x = -0x800;
+                } else {
+                    mUnk_a0.x = 0x800;
+                }
+            } else {
+                mUnk_a0.x = move.x;
+            }
+            if (ABS(move.z) <= 0x800) {
+                if (move.z < 0) {
+                    mUnk_a0.z = -0x800;
+                } else {
+                    mUnk_a0.z = 0x800;
+                }
+            } else {
+                mUnk_a0.z = move.z;
+            }
+            mUnk_a0.y += 0x1000;
+        }
+        if (move.y != 0 && marker != none) {
+            mUnk_38 = none - 0x10000;
+        }
+        mUnk_1a4->mPosition = pos;
+    }
+    if (move.y != 0) {
+        mUnk_148 = mUnk_58.y;
+    }
+    if (mUnk_1cd == 0) {
+        mUnk_1d2 = 0;
+        mUnk_1cb = 1;
+        if (mUnk_1c6 == 0) {
+            mUnk_1c6 = 1;
+        }
+    }
+    *b = move;
+}
+
+
+
+
 void BattleTarget::func_ov007_02255a9c() {
     if (mUnk_1d9 != 0x33) {
         return;
@@ -826,6 +1103,259 @@ void BattleTarget::func_ov007_02255c04(VecFx32 *vec, s32 *out) {
     out[1] = rotated.x;
     out[0] = rotated.z;
 }
+
+extern const VecFx32 data_ov007_0227a704[];
+extern const VecFx32 data_ov007_0227a728[];
+extern const s32 data_ov007_0227a6e4[];
+// non-matching: structure, call sequence and size match; register allocation differs (mUnk_1e2 in r2 / player in r1 in the original) and the target/pose camera position stores are not tail-merged as in the original.
+void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
+    VecFx32 pos;
+    VecFx32 u;
+    VecFx32 cam;
+    VecFx32 curr;
+    VecFx32 diff;
+    MtxFx33 rot;
+    MtxFx33 ident;
+    VecFx32 v;
+    MtxFx33 m0;
+    m0    = data_0220e848;
+    rot   = m0;
+    ident = m0;
+    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4];
+    u8 step = mUnk_1e2;
+    if (step >= 0xb) {
+        return;
+    }
+    switch (mUnk_1e4) {
+        case 0:
+            if (step > 1) {
+                mUnk_11c.x = mUnk_11c.x * 15 / 16;
+                mUnk_11c.y = mUnk_11c.y * 15 / 16;
+                mUnk_11c.z = mUnk_11c.z * 15 / 16;
+                mUnk_1ba   = mUnk_1ba * 15 / 16;
+            }
+            switch (mUnk_1d2) {
+                case 0:
+                case 1: {
+                    s32 k = mUnk_14c;
+                    u.x   = k << 13;
+                    u.y   = k * 0x333;
+                    u.z   = k << 13;
+                    pos.x = mUnk_11c.x + 0x37000 + (k << 13);
+                    pos.y = mUnk_11c.y + 0x19000 + k * 0x333;
+                    pos.z = mUnk_11c.z + 0x37000 + (k << 13);
+                    func_01ffcfd8(&rot, (u16) (data_ov007_0227a5ee[player->mUnk_f1] - mUnk_1b8));
+                    func_01ff84d0(&pos, &rot, &pos);
+                    func_01ff84d0(&mUnk_188, &rot, &mUnk_188);
+                    pos.x = FX_Mul(pos.x, ident._[4]);
+                    pos.z = FX_Mul(pos.z, ident._[8]);
+                    UnkStruct_0203d374 *pose = mUnk_1a4;
+                    if (target == 0) {
+                        cam.x = pos.x + pose->mPosition.x;
+                        cam.y = pos.y + pose->mPosition.y + 0x4000;
+                        cam.z = pos.z + pose->mPosition.z;
+                    } else {
+                        cam.x = target->x + pos.x;
+                        cam.y = pos.y + pose->mPosition.y + 0x4000;
+                        cam.z = target->z + pos.z;
+                    }
+                    curr = mUnk_194;
+                    VEC_Subtract(&curr, &cam, &diff);
+                    s32 scale = mUnk_184;
+                    diff.x    = FX_Mul(diff.x, scale);
+                    diff.y    = FX_Mul(diff.y, scale);
+                    diff.z    = FX_Mul(diff.z, scale);
+                    VEC_Add(&cam, &diff, &mUnk_194);
+                    mUnk_174->mPosition.x = mUnk_188.x + (cam.x + diff.x);
+                    mUnk_174->mPosition.y = mUnk_188.y + (cam.y + diff.y);
+                    mUnk_174->mPosition.z = mUnk_188.z + (cam.z + diff.z);
+                    return;
+                }
+                case 2:
+                case 3: {
+                    pos.x = 0x46000;
+                    pos.y = 0x32000;
+                    pos.z = 0x46000;
+                    func_01ffcfd8(&rot, mUnk_1a4->mRotY);
+                    func_01ff84d0(&pos, &rot, &pos);
+                    fx32 cx;
+                    fx32 cz;
+                    if (target == 0) {
+                        cx = pos.x + mUnk_1a4->mPosition.x;
+                        cz = pos.z + mUnk_1a4->mPosition.z;
+                    } else {
+                        cx = target->x + pos.x;
+                        cz = target->z + pos.z;
+                    }
+                    Camera *c      = mUnk_174;
+                    c->mPosition.x = cx;
+                    c->mPosition.y = pos.y;
+                    c->mPosition.z = cz;
+                    c = mUnk_174;
+                    mUnk_194.x = c->mPosition.x;
+                    mUnk_194.y = c->mPosition.y;
+                    mUnk_194.z = c->mPosition.z;
+                    return;
+                }
+                case 4: {
+                    u8 slot = mUnk_1dc;
+                    if (slot == 0) {
+                        return;
+                    }
+                    if (mUnk_1df == 1) {
+                        pos.x = data_ov007_0227a704[slot - 1].x;
+                        pos.y = data_ov007_0227a704[slot - 1].y;
+                        pos.z = data_ov007_0227a704[slot - 1].z;
+                    } else {
+                        pos.x = data_ov007_0227a728[slot - 1].x;
+                        pos.y = data_ov007_0227a728[slot - 1].y;
+                        pos.z = data_ov007_0227a728[slot - 1].z;
+                    }
+                    func_01ffcfd8(&rot, mUnk_1a4->mRotY);
+                    func_01ff84d0(&pos, &rot, &pos);
+                    fx32 cx;
+                    fx32 cz;
+                    if (target == 0) {
+                        cx = pos.x + mUnk_1a4->mPosition.x;
+                        cz = pos.z + mUnk_1a4->mPosition.z;
+                    } else {
+                        cx = target->x + pos.x;
+                        cz = target->z + pos.z;
+                    }
+                    Camera *c      = mUnk_174;
+                    c->mPosition.x = cx;
+                    c->mPosition.y = pos.y;
+                    c->mPosition.z = cz;
+                    c = mUnk_174;
+                    mUnk_194.x = c->mPosition.x;
+                    mUnk_194.y = c->mPosition.y;
+                    mUnk_194.z = c->mPosition.z;
+                    return;
+                }
+                default:
+                    return;
+            }
+        case 1: {
+            pos.x = mUnk_11c.x + 0x37000;
+            pos.z = mUnk_11c.z + 0x37000;
+            pos.y = mUnk_11c.y + 0x19000;
+            func_01ffcfd8(&rot, (u16) (data_ov007_0227a5ee[player->mUnk_f1] - mUnk_1b8));
+            func_01ff84d0(&pos, &rot, &pos);
+            pos.x = FX_Mul(pos.x, ident._[4]);
+            pos.z = FX_Mul(pos.z, ident._[8]);
+            cam.x = pos.x + mUnk_1a4->mPosition.x;
+            cam.y = pos.y + mUnk_1a4->mPosition.y + 0x4000;
+            cam.z = pos.z + mUnk_1a4->mPosition.z;
+            v.x   = mUnk_1a4->mPosition.x;
+            v.y   = data_ov007_0227a6e4[data_020d433c.mUnk_95];
+            v.z   = mUnk_1a4->mPosition.z;
+            if (v.x < 0) {
+                v.x = v.x - 0x14000;
+            } else {
+                v.x = v.x + 0x14000;
+            }
+            if (v.z < 0) {
+                v.z = v.z - 0x14000;
+            } else {
+                v.z = v.z + 0x14000;
+            }
+            func_ov007_02233ed8(&v, mUnk_1b0, &v);
+            VEC_Subtract(&v, &cam, &diff);
+            fx32 dz = func_01ff8000(diff.z, 0x14000);
+            fx32 dy = func_01ff8000(diff.y, 0x14000);
+            fx32 dx = func_01ff8000(diff.x, 0x14000);
+            u.x     = dx;
+            u.y     = dy;
+            u.z     = dz;
+            int scale = INT_TO_FX(mUnk_17c);
+            u.x       = FX_Mul(u.x, scale);
+            u.y       = FX_Mul(u.y, scale);
+            u.z       = FX_Mul(u.z, scale);
+            VEC_Add(&cam, &u, &cam);
+            Camera *c      = mUnk_174;
+            c->mPosition.x = cam.x;
+            c->mPosition.y = cam.y;
+            c->mPosition.z = cam.z;
+            return;
+        }
+        case 2: {
+            pos.x = -0x32000;
+            pos.y = 0x5000;
+            pos.z = 0x32000;
+            func_01ffcfd8(&rot, mUnk_1a4->mRotY);
+            func_01ff84d0(&pos, &rot, &pos);
+            Camera *c      = mUnk_174;
+            c->mPosition.x = pos.x + mUnk_1a4->mPosition.x;
+            c->mPosition.y = pos.y;
+            c->mPosition.z = pos.z + mUnk_1a4->mPosition.z;
+            return;
+        }
+        case 3: {
+            if (mUnk_64.x == 0 && mUnk_64.z == 0) {
+                return;
+            }
+            pos.x = 0x37000;
+            pos.y = 0xf000;
+            pos.z = 0x37000;
+            func_01ffcfd8(&rot, (u16) (func_0200198c(mUnk_64.x, mUnk_64.z) - 0xa000));
+            func_01ff84d0(&pos, &rot, &pos);
+            Camera *c = mUnk_174;
+            cam.x     = c->mPosition.x;
+            cam.y     = c->mPosition.y;
+            cam.z     = c->mPosition.z;
+            VEC_Add(&pos, &mUnk_1a4->mPosition, &pos);
+            VEC_Subtract(&cam, &pos, &u);
+            s32 scale = mUnk_184;
+            u.x       = FX_Mul(u.x, scale);
+            u.y       = FX_Mul(u.y, scale);
+            u.z       = FX_Mul(u.z, scale);
+            c                  = mUnk_174;
+            c->mPosition.x = cam.x - u.x;
+            c->mPosition.y = cam.y - u.y;
+            c->mPosition.z = cam.z - u.z;
+            return;
+        }
+        case 4: {
+            if (mUnk_70.x == 0 && mUnk_70.y == 0 && mUnk_70.z == 0) {
+                return;
+            }
+            pos.x = 0x14000;
+            pos.y = 0x14000;
+            pos.z = 0x14000;
+            func_01ffcfd8(&rot, (u16) (func_0200198c(mUnk_70.x, mUnk_70.z) - 0xa000));
+            s32 a = func_0200198c(mUnk_70.y, 0x1000);
+            func_01ff84d0(&pos, &rot, &pos);
+            func_01ff84d0(&mUnk_188, &rot, &mUnk_188);
+            pos.y = FX_Mul(pos.y, -FX_SinCosTable_[(a >> 4) * 2]) + 0x5a000;
+            cam.x = mUnk_194.x;
+            cam.y = mUnk_194.y;
+            cam.z = mUnk_194.z;
+            VEC_Add(&pos, &mUnk_1a4->mPosition, &pos);
+            VEC_Subtract(&cam, &pos, &u);
+            s32 scale = mUnk_184;
+            u.x       = FX_Mul(u.x, scale);
+            u.y       = FX_Mul(u.y, scale);
+            u.z       = FX_Mul(u.z, scale);
+            mUnk_194.x = cam.x - u.x;
+            mUnk_194.y = mUnk_1a4->mPosition.y + 0x5a000;
+            mUnk_194.z = cam.z - u.z;
+            VEC_Add(&cam, &mUnk_188, &cam);
+            Camera *c      = mUnk_174;
+            c->mPosition.x = cam.x - u.x;
+            c->mPosition.y = mUnk_1a4->mPosition.y + 0x5a000;
+            c->mPosition.z = cam.z - u.z;
+            return;
+        }
+        case 5:
+            func_ov007_022567ac();
+            return;
+        case 6:
+            return;
+    }
+}
+
+
+
 
 void BattleTarget::func_ov007_02255640() {
     u32 outA = 0;

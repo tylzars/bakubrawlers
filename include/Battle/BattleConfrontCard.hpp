@@ -77,7 +77,9 @@ public:
     /* 53 */ u8 mUnk_53;
     /* 54 */ u16 mUnk_54;
     /* 56 */ u16 mUnk_56;
-    /* 58 */ PAD(0x58, 0x5e);
+    /* 58 */ PAD(0x58, 0x5c);
+    /* 5c */ u8 mUnk_5c;
+    /* 5d */ u8 mUnk_5d;
     /* 5e */ u8 mUnk_5e;
     /* 5f */ u8 mUnk_5f;
     /* 60 */ u8 mUnk_60;
@@ -103,6 +105,8 @@ public:
     virtual ~BattleConfrontCard();
     /* 08 */ virtual void Update();
     int func_ov007_0224251c();
+    u8 func_ov007_022428d4(u16 card);
+    u8 func_ov007_02244440();
     BOOL func_ov007_022433c8(u8 side, u16 id);
     void func_ov007_02243f04(const char *path, u32 mode);
     void func_ov007_022442d4(u32 index);

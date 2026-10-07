@@ -10,6 +10,10 @@
 #include "Graphics/ModelInternal.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
+#include "System/FrameTask.hpp"
+#include "System/InputManager.hpp"
+#include "System/WirelessManager.hpp"
+#include "Game/UnkStruct_020d43f0.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
 #include <nitro/os.h>
 #include <stdio.h>
@@ -27,6 +31,10 @@ extern const u8 data_ov007_0227af68[][0x28];
 extern VecFx32 data_ov007_0227ac20;
 extern VecFx32 data_ov007_0227ac2c;
 extern const char *data_ov007_0228a394[22];
+extern const u16 *const data_ov007_0228a2e4[];
+extern const u8 *const data_ov007_0228a33c[];
+BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
+BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag);
 
 
 BattleCharaAct::BattleCharaAct(Camera *camera, u8 player, u32 kind, u8 unk4, u8 unk5)
@@ -238,6 +246,168 @@ void BattleCharaAct::func_ov007_022684f0() {
         case 9:
             new BattleCardEffect(0, 0, 4, 0);
             break;
+    }
+}
+
+void BattleCharaAct::Update() {
+    u32 run = 1;
+    switch (mUnk_35) {
+        case 0:
+            run = 0;
+            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0x1a)) {
+                mUnk_35++;
+            }
+            break;
+        case 1:
+            mUnk_3e = run;
+            run     = 0;
+            func_ov007_02269380();
+            mUnk_35++;
+            break;
+        case 2:
+            mUnk_30 = 0x1ee;
+            if (data_ov007_0228a2e4[mUnk_38] != NULL) {
+                mUnk_30 = data_ov007_0228a2e4[mUnk_38][mUnk_36];
+                if (mUnk_30 != 0x1ee) {
+                    if (mUnk_30 == 0x1dc && data_020d43f0[0].mUnk_42 == 0) {
+                        mUnk_30 = 0x1ee - 0x11;
+                    }
+const u8 *t = data_ov007_0228a33c[mUnk_38];
+ if (t) { mUnk_34 = t[mUnk_36]; } else { mUnk_34 = 0; }
+                    FrameTask::Get().func_0203dc34(1, mUnk_30);
+                    FrameTask::Get().func_0203dd4c(1);
+                }
+            }
+            mUnk_35++;
+            break;
+        case 4:
+            SpriteManager::Get().StartFade(2);
+        case 3:
+            mUnk_35++;
+            break;
+        case 5:
+            if (!SpriteManager::Get().IsFading()) {
+                mUnk_35++;
+            }
+            break;
+        case 6:
+            if (mUnk_36 == 0 && mUnk_3d >= 0x10) {
+                mUnk_35 = 8;
+                break;
+            }
+            if (mUnk_1c->func_02054710()) {
+                mUnk_35 = 8;
+                break;
+            }
+            if (func_ov007_022632d0(data_020d433c.mBattlePlayers, 0)) {
+                mUnk_3e = 2;
+                mUnk_35 = 8;
+                break;
+            }
+            if (InputManager::Get().IsDown(8)) {
+                mUnk_35++;
+            }
+            break;
+        case 7:
+            WirelessManager::Get();
+            if (IsWirelessMode(&data_020c4030.mUnk_228)) {
+                if (func_ov007_022632d0(data_020d433c.mBattlePlayers, 1)) {
+                    mUnk_3e = 2;
+                    mUnk_35++;
+                }
+            } else {
+                mUnk_3e = 2;
+                mUnk_35++;
+            }
+            break;
+        case 8:
+            if (mUnk_36 == 0) {
+                if (CameraManager::Get().mMode != 1) {
+                    SpriteManager::Get().StartFade(4);
+                    mUnk_32 = 0xffff;
+                }
+            } else {
+                if (CameraManager::Get().mMode != 1) {
+                    SpriteManager::Get().StartFade(3);
+                } else {
+                    SpriteManager::Get();
+                    SpriteManager::sFade.mMain = 3;
+                }
+            }
+            mUnk_35++;
+            break;
+        case 9:
+            if (!SpriteManager::Get().IsFading()) {
+                CameraManager::Get().func_02026504(0, NULL, 0);
+                data_020d433c.mUnk_14 |= 4;
+                mUnk_35++;
+            }
+            break;
+        case 10:
+            run = 0;
+            if (mUnk_30 != 0x1ee) {
+                FrameTask::Get().func_0203dd60(1);
+            }
+            mUnk_35++;
+            break;
+        case 11:
+            run = 0;
+            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+                RequestScene(mUnk_3e);
+                mFinished = 1;
+            }
+            break;
+    }
+    if (!run) {
+        return;
+    }
+    if (mUnk_30 != 0x1ee) {
+        if (mUnk_34 != 0) {
+            mUnk_34--;
+        }
+        if (mUnk_34 == 0) {
+            FrameTask::Get().func_0203dd60(1);
+            mUnk_30 = 0x1ee;
+        }
+    }
+    CameraManager &manager         = CameraManager::Get();
+    Camera *camera                 = manager.mCameras[manager.mActive];
+    data_02211374.mCameraPosition  = camera->mPosition;
+    data_02211374.mCameraUp        = camera->mUp;
+    data_02211374.mCameraTarget    = camera->mTarget;
+    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    data_02211374.mFlags &= ~0xe8;
+    manager.mProjection[manager.mActive] = data_02211374.mProjection;
+    manager.mView[manager.mActive]       = data_02211374.mView;
+    manager.mMtxA[manager.mActive]       = *func_02032710();
+    manager.mMtxB[manager.mActive]       = *func_02032604();
+    manager.mMtxC[manager.mActive]       = *func_020323b8();
+    if (mUnk_36 == 0) {
+        if (CameraManager::Get().mActive == 0) {
+            u8 saved                     = CameraManager::Get().mUnk_01;
+            CameraManager::Get().mUnk_01 = 0;
+            func_ov007_022693f4();
+            CameraManager::Get().mUnk_01 = saved;
+            func_ov007_022693f4();
+        } else {
+            func_ov007_0226961c();
+        }
+        if (SpriteManager::Get().IsFading()) {
+            return;
+        }
+        if (mUnk_32 == 0xffff) {
+            return;
+        }
+        mUnk_32++;
+        int frames = mUnk_32;
+        if (frames > 0x5a && frames % 7 == 0) {
+            if (mUnk_3d < 0x10) {
+                mUnk_3d++;
+                SpriteManager::Get().SetFade(1, (u8) mUnk_3d);
+            }
+        }
+    } else {
+        func_ov007_022693f4();
     }
 }
 

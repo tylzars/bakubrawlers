@@ -30,7 +30,7 @@ public:
     /* 7b */ u8 mUnk_7b;
     /* 7c */ PAD(0x7c, 0x7d);
     /* 7d */ u8 mUnk_7d;
-    /* 7e */ PAD(0x7e, 0x7f);
+    /* 7e */ u8 mUnk_7e;
     /* 7f */ u8 mUnk_7f[4];
     /* 83 */ u8 mUnk_83;
     /* 84 */ u8 mUnk_84;

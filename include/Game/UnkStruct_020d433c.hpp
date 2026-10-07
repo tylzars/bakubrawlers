@@ -24,8 +24,16 @@ struct BattlePlayerMessage {
             /* 06 */ u8 mTouchY;
         };
     };
-    /* 08 */ PAD(0x08, 0x0c);
-    /* 0c */ u16 mUnk_0c[2];
+    /* 08 */ u8 mUnk_08;
+    /* 09 */ u8 mUnk_09;
+    /* 0a */ PAD(0x0a, 0x0c);
+    union {
+        /* 0c */ u16 mUnk_0c[2];
+        struct {
+            /* 0c */ PAD(0x0c, 0x0e);
+            /* 0e */ u8 mUnk_0e;
+        };
+    };
     /* 10 */ PAD(0x10, 0x14);
     /* 14 */ u16 mUnk_14;
     /* 16 */ u16 mUnk_16;
@@ -179,9 +187,10 @@ struct BattlePlayerList : public SceneBase {
     /* 28d */ u8 mUnk_28d;
     /* 28e */ u8 mUnk_28e;
     /* 28f */ u8 mUnk_28f;
-    /* 290 */ PAD(0x290, 0x292);
+    /* 290 */ PAD(0x290, 0x291);
+    /* 291 */ u8 mUnk_291;
     /* 292 */ u8 mUnk_292;
-    /* 293 */ PAD(0x293, 0x294);
+    /* 293 */ u8 mUnk_293;
     /* 294 */ u8 mUnk_294;
     /* 295 */ u8 mUnk_295;
     /* 296 */ PAD(0x296, 0x298);

@@ -15,6 +15,20 @@
 #include "Unknown/UnkFunctions.hpp"
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
+#include "Battle/BattleCharaAct.hpp"
+#include "Battle/ConfrontBg01.hpp"
+#include "Battle/ConfrontBg02.hpp"
+#include "Battle/Confront03.hpp"
+#include "Battle/ConfrontBg04.hpp"
+#include "Battle/ConfrontBg05.hpp"
+#include "Game/UnkStruct_020d48f0.hpp"
+#include "Unknown/UnkStruct_02087898.hpp"
+#include "Graphics/Camera.hpp"
+#include "System/InputManager.hpp"
+#include "System/TouchManager.hpp"
+#include "Game/Random.hpp"
+#include "System/WirelessManager.hpp"
+#include <nitro/math.h>
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
@@ -29,6 +43,21 @@ BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
 void func_020383f8(u32 heap);
 void func_02001e68(u32 unk1, u32 unk2, u32 unk3);
 void func_02001ed0(u32 unk1);
+
+class ConfrontBg06 : public BattleBase {
+public:
+    PAD(0x68, 0x70);
+    ConfrontBg06();
+    virtual ~ConfrontBg06();
+    virtual void vfunc_28();
+    virtual void vfunc_34();
+    virtual void vfunc_3c();
+    virtual u8 vfunc_40(int a);
+};
+extern "C" u32 func_ov007_022696a0(u32 a, u32 b);
+extern "C" void func_ov007_022626b8(BattlePlayerList *list, u8 index);
+u8 func_ov007_0226a700(BattlePlayer *player, u8 mask, s16 x, s16 y);
+
 
 BattleConfrontCard::BattleConfrontCard(u32 unk)
     : SceneBase(0x3e8, 0) {
@@ -290,6 +319,946 @@ void BattleConfrontCard::func_ov007_0223f780(u16 card) {
 void BattleConfrontCard::func_ov007_0223f90c(u16 value) {
     mUnk_12 = value;
     mUnk_10 = value;
+}
+
+// non-matching: all 178 calls and the 54-case jump table match, but the size is 0x2c14 vs 0x2c04 and the register assignment differs (the original keeps `mData->mEntries` in r8, here it lands in r6, which shifts the temporaries of cases 15-35 and 51; case 44 loads the bit from a branch instead of predicated loads; case 35 computes i*0x14 once more).
+BOOL BattleConfrontCard::func_ov007_0223f918() {
+    BattleEntry *e = mData->mEntries;
+    switch (mUnk_0d) {
+        case 0:
+            if (data_020d433c.mUnk_10) {
+                data_020d433c.mUnk_10->mUnk_1a = 1;
+            }
+            GXS_SetVisibleWnd(5);
+            G2S_SetWndOutsidePlane(0x1f, FALSE);
+            G2S_SetWnd0InsidePlane(0x3f, FALSE);
+            G2S_SetWnd0Position(0, 0, 0xff, 0xbf);
+            func_ov007_0223f90c(0x100);
+            if (data_020d433c.mBattlePlayers->mPlayers[e[0].mUnk_0d_4]->IsActive() == 1
+                && data_020d433c.mBattlePlayers->mPlayers[e[1].mUnk_0d_4]->IsActive() == 1) {
+                mUnk_68 = 1;
+                WirelessManager::Get();
+                if (IsWirelessMode(&data_020c4030.mUnk_228)) {
+                    if (data_020d433c.mBattlePlayers->mUnk_2a9 == 0) {
+                        mUnk_23 = 1;
+                    }
+                }
+            }
+            if (mUnk_68) {
+                WirelessManager::Get();
+                if (IsWirelessMode(&data_020c4030.mUnk_228)) {
+                    if (mUnk_23) {
+                        func_ov007_02243f04("/font/mes_confrontation.mes", 0);
+                    } else {
+                        func_ov007_02243f04("/font/mes_BattleArenaMenu.mes", 4);
+                    }
+                } else {
+                    func_ov007_02243f04("/font/mes_confrontation.mes", 0);
+                }
+                func_ov007_02243d40();
+                if (mUnk_80) {
+                    mUnk_80->mCursor->mSelection = -1;
+                    mUnk_80->mUnk_061            = 4;
+                    mUnk_80->func_0205c7c8(1);
+                }
+                mUnk_0d = 2;
+            } else {
+                mUnk_0d = 1;
+            }
+            break;
+        case 1:
+            mUnk_10--;
+            if (mUnk_10 == 0) {
+                func_ov007_022430d8(0);
+                reg_G2S_DB_WIN0H = 0x4faf;
+                reg_G2S_DB_WIN0V = 0x20a0;
+                mUnk_14[2] = 0x4f;
+                mUnk_1a[2] = 0x20;
+                func_ov007_0223f90c(0x4f);
+                mUnk_0d = 3;
+            }
+            break;
+        case 2: {
+            if (mUnk_10 > 1) {
+                mUnk_10--;
+            }
+            u8 active = mUnk_68;
+            WirelessManager::Get();
+            if (IsWirelessMode(&data_020c4258)) {
+                if (mUnk_23 == 0) {
+                    active = 0;
+                }
+            }
+            if (active) {
+                u8 result = mUnk_80->Update(1);
+                SelectWindow *w = mUnk_80;
+                if (w->mUnk_061 == 2 && w->mResult == 1 && w->mCursor->mSelection == 0) {
+                    WirelessManager::Get();
+                    if (IsWirelessMode(&data_020c4258)) {
+                        data_0220f540.mUnk_00     = 0x16;
+                        data_0220f540.mTouchDown = 1;
+                    } else {
+                        func_ov007_02243dec();
+                        func_ov007_02243e7c();
+                        SpriteManager::Get().StartFade(3);
+                        mUnk_0d = 0x31;
+                    }
+                    mUnk_68 = 0;
+                } else if (result == 1) {
+                    if (w->mCursor->mSelection != 0) {
+                        WirelessManager::Get();
+                        if (IsWirelessMode(&data_020c4258)) {
+                            data_0220f540.mUnk_00     = 0x16;
+                            data_0220f540.mTouchDown = 0;
+                        } else {
+                            func_ov007_02243dec();
+                            func_ov007_02243e7c();
+                            mUnk_0d = 1;
+                        }
+                    }
+                    mUnk_68 = 0;
+                }
+            }
+            WirelessManager::Get();
+            if (IsWirelessMode(&data_020c4258)) {
+                BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[0];
+                if (p->mMsg.mType == 0x16) {
+                    func_ov007_02243dec();
+                    func_ov007_02243e7c();
+                    mUnk_68 = 0;
+                    if (p->mMsg.mTouchDown) {
+                        SpriteManager::Get().StartFade(3);
+                        mUnk_0d = 0x31;
+                    } else {
+                        mUnk_0d = 1;
+                    }
+                }
+            }
+            break;
+        }
+        case 3:
+            mUnk_10--;
+            if (mUnk_10 != 0) {
+                func_ov007_022430d8((u8) ((mUnk_10 << 4) / mUnk_12));
+            } else {
+                BattleCardCamera *cam = mUnk_3c;
+                SpriteManager::Get();
+                SpriteManager::sFade.mMain = 3;
+                data_020d433c.mUnk_14 |= 4;
+                cam->mState = 3;
+                mUnk_0d++;
+            }
+            break;
+        case 4:
+            if (mContext->mUnk_12 != 0) {
+                mUnk_0d++;
+            }
+            break;
+        case 5:
+            new BattleCardSpec(0, e[0].mUnk_0c, e[0].mUnk_0d_0, e[0].mUnk_0e == 0x15 ? 1 : 0);
+            mContext->mUnk_12 = 0;
+            func_ov007_0223f90c(0x40);
+            mUnk_0d++;
+            break;
+        case 6:
+            mUnk_14[0] = (s16) ((-0x60 * (mUnk_10 * mUnk_10)) / (mUnk_12 * mUnk_12)) + 8;
+            if (mUnk_10 != 0) {
+                mUnk_10--;
+                break;
+            }
+            if (mContext->mUnk_12 != 0) {
+                mUnk_0d++;
+            }
+            break;
+        case 7:
+            new BattleCardSpec(0, e[1].mUnk_0c, e[1].mUnk_0d_0, e[1].mUnk_0e == 0x15 ? 1 : 0);
+            mContext->mUnk_12 = 0;
+            func_ov007_0223f90c(0x40);
+            mUnk_0d++;
+            break;
+        case 8:
+            mUnk_14[1] = 0xb7 - (s16) ((-0x60 * (mUnk_10 * mUnk_10)) / (mUnk_12 * mUnk_12));
+            if (mUnk_10 != 0) {
+                mUnk_10--;
+                break;
+            }
+            if (mContext->mUnk_12 != 0) {
+                mUnk_0d++;
+            }
+            break;
+        case 9:
+            new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[0].mUnk_0d_4, 5, 0, 0);
+            mContext->mUnk_12 = 0;
+            func_ov007_0223f90c(0x40);
+            mUnk_0d++;
+            break;
+        case 10:
+            mUnk_10--;
+            if (mUnk_10 == 0) {
+                func_ov007_0223f90c(0x20);
+                func_ov007_0223f780(mData->mUnk_04);
+                func_ov007_022430bc(0x10);
+                mUnk_0d++;
+                mUnk_5f = 1;
+            }
+            break;
+        case 11:
+            func_ov007_022430bc((s8) ((mUnk_10 << 4) / mUnk_12));
+            if (mUnk_10 != 0) {
+                mUnk_10--;
+                break;
+            }
+            func_ov007_0223f90c(0x10);
+            mUnk_0d++;
+            break;
+        case 12:
+            if (mContext->mUnk_12 == 0) {
+                break;
+            }
+            if (data_020d433c.mUnk_10) {
+                data_020d433c.mUnk_10->func_020785d8(10);
+            }
+            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+                mUnk_0d++;
+            }
+            break;
+        case 13:
+            mUnk_40 = new BattleCommandPage(mData->mUnk_04, -1);
+            mUnk_0d++;
+            mUnk_10 = 0;
+            break;
+        case 14:
+            mUnk_10++;
+            if (mUnk_10 > 0xf0) {
+                func_02055624(mUnk_40, 1);
+                mContext->mUnk_12 = 0;
+                mUnk_0d++;
+                mUnk_10 = 0;
+            }
+            break;
+        case 15: {
+            if (mContext->mUnk_12 == 0) {
+                break;
+            }
+            SpriteManager::Get().func_02026dec(0, 7);
+            func_02001e68(1, 0, 1);
+            mUnk_50 = func_ov007_022428d4(mData->mUnk_04);
+            u8 side = data_020d433c.mBattlePlayers->mUnk_2a9 == e[1].mUnk_0d_4 ? 1 : 0;
+            u32 kind = 6;
+            switch (mUnk_50) {
+                case 1:
+                    if (e[side].mUnk_08 != 0) {
+                        kind = 7;
+                    }
+                    break;
+                case 4:
+                case 6:
+                    if (e[side].mUnk_08 == 0) {
+                        kind = 6;
+                    } else {
+                        kind = 8;
+                    }
+                    break;
+            }
+            mUnk_44 = new BattleCardSpec(kind, e[side].mUnk_0c, e[side].mUnk_0d_0, e[side].mUnk_0e == 0x15 ? 1 : 0);
+            mContext->mUnk_12 = 0;
+            func_ov007_0223f90c(0x40);
+            mUnk_0d++;
+            break;
+        }
+        case 16:
+            func_ov007_022432dc(0, 0, 0);
+            mUnk_10--;
+            if (mUnk_10 == 0) {
+                mUnk_0d++;
+            }
+            break;
+        case 17:
+            if (mData->func_ov007_0223dd6c()) {
+                func_ov007_0223f90c(0x40);
+                if (mUnk_50 == 2 || mUnk_50 == 3 || mUnk_50 == 5) {
+                    mUnk_44->mUnk_1e = 0;
+                    func_ov007_02273e3c(mUnk_44->mUnk_0c);
+                    mContext->mUnk_12 = 0;
+                    mUnk_0d           = 0x14;
+                } else if (mData->mUnk_04 == 0x55) {
+                    mUnk_44->mUnk_1e = 0;
+                    func_ov007_02273e3c(mUnk_44->mUnk_0c);
+                    mContext->mUnk_12 = 0;
+                    mUnk_0d           = 0x14;
+                } else {
+                    mData->mEntries[0].mUnk_02 = e[0].mUnk_00 + e[0].mUnk_08;
+                    mData->mEntries[1].mUnk_02 = e[1].mUnk_00 + e[1].mUnk_08;
+                    mUnk_0d++;
+                }
+            }
+            func_ov007_022432dc(0, 1, 0);
+            break;
+        case 18:
+            func_ov007_022432dc(1, 0, 1);
+            mUnk_10--;
+            if (mUnk_10 == 0) {
+                mUnk_0d++;
+            }
+            break;
+        case 19:
+            if (mData->func_ov007_0223dd6c()) {
+                func_ov007_0223f90c(0x40);
+                mUnk_0d = 0x19;
+            }
+            func_ov007_022432dc(1, 1, 1);
+            break;
+        case 20: {
+            if (mContext->mUnk_12 == 0) {
+                break;
+            }
+            u8 side;
+            if (data_020d433c.mBattlePlayers->mUnk_2a9 == e[1].mUnk_0d_4) {
+                side = 1;
+                if (mUnk_5d == 0) {
+                    side = 0;
+                }
+            } else {
+                side = 0;
+                if (mUnk_5c == 0) {
+                    side = 1;
+                }
+            }
+            u32 kind = 0;
+            u8 make  = 0;
+            switch (mUnk_50) {
+                case 2:
+                    kind = 9;
+                    make = 1;
+                    break;
+                case 3:
+                    kind = 10;
+                    make = 1;
+                    break;
+                case 5:
+                    kind = 11;
+                    make = 1;
+                    break;
+            }
+            if (mData->mUnk_04 == 0x55) {
+                make = 1;
+                kind = 10;
+            }
+            if (make) {
+                mUnk_44 = new BattleCardSpec(kind, e[side].mUnk_0c, e[side].mUnk_0d_0, e[side].mUnk_0e == 0x15 ? 1 : 0);
+            }
+            mUnk_0d++;
+            break;
+        }
+        case 21:
+            if (mUnk_50 == 5) {
+                mData->mEntries[0].mUnk_02 = e[1].mUnk_04 + e[0].mUnk_00 - e[0].mUnk_04;
+                mData->mEntries[1].mUnk_02 = e[0].mUnk_04 + e[1].mUnk_00 - e[1].mUnk_04;
+                mData->mEntries[1].mUnk_04 = e[0].mUnk_04;
+                mData->mEntries[0].mUnk_04 = e[1].mUnk_04;
+            }
+            func_ov007_0223f90c(0x64);
+            mUnk_0d++;
+            break;
+        case 22: {
+            BOOL done = mData->func_ov007_0223dd6c();
+            if (mUnk_10 != 0) {
+                mUnk_10--;
+                break;
+            }
+            if (!done) {
+                break;
+            }
+            func_ov007_0223f90c(0x40);
+            mUnk_0d = 0x19;
+            if (data_020d433c.mBattlePlayers->mUnk_2a9 == e[1].mUnk_0d_4) {
+                if (mUnk_5d == 0) {
+                    mUnk_44->mUnk_1e = 0;
+                    func_ov007_02273e3c(mUnk_44->mUnk_0c);
+                    mContext->mUnk_12 = 0;
+                    mUnk_0d           = 0x17;
+                }
+            } else {
+                if (mUnk_5c == 0) {
+                    mUnk_44->mUnk_1e = 0;
+                    func_ov007_02273e3c(mUnk_44->mUnk_0c);
+                    mContext->mUnk_12 = 0;
+                    mUnk_0d           = 0x17;
+                }
+            }
+            break;
+        }
+        case 23: {
+            if (mContext->mUnk_12 == 0) {
+                break;
+            }
+            u8 side = data_020d433c.mBattlePlayers->mUnk_2a9 == e[1].mUnk_0d_4 ? 1 : 0;
+            mUnk_44 = new BattleCardSpec(3, e[side].mUnk_0c, e[side].mUnk_0d_0, e[side].mUnk_0e == 0x15 ? 1 : 0);
+            func_ov007_0223f90c(0x40);
+            mUnk_0d++;
+            break;
+        }
+        case 24:
+            mUnk_0d++;
+            break;
+        case 25:
+            if (mUnk_10 != 0) {
+                mUnk_10--;
+                break;
+            }
+            mUnk_54 = 0;
+            if (data_020d433c.mUnk_83 == 2 || data_020d433c.mUnk_83 == 4) {
+                mUnk_0d = 0x1a;
+            } else {
+                mUnk_0d = 0x1c;
+            }
+            break;
+        case 26:
+            if (data_020d433c.mUnk_10) {
+                data_020d433c.mUnk_10->mUnk_1a = 0;
+            }
+            GXS_SetVisibleWnd(0);
+            data_020d433c.mBattlePlayers->mUnk_2a4->func_02087eec();
+            {
+                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                list->mUnk_2a4->func_02088e64(list->mUnk_2af, 0x64, 0, 0);
+            }
+            G2S_SetBlendBrightness(0x1f, -10);
+            mUnk_0d++;
+            break;
+        case 27:
+            if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
+                data_020d433c.mBattlePlayers->mUnk_2a4->func_02088dac(1);
+            }
+            if (data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
+                break;
+            }
+            data_020d433c.mBattlePlayers->mUnk_2af++;
+            G2S_SetBlendBrightness(0x1f, 0);
+            mUnk_0d = 0x1c;
+            break;
+        case 28: {
+            mUnk_62 = 0;
+            mUnk_63 = 0;
+            mUnk_64 = 0;
+            mUnk_65 = 0;
+            mUnk_5e = 0;
+            mUnk_4c = 0;
+            if (data_020d433c.mUnk_9a_2) {
+                mUnk_0d = 0x20;
+                break;
+            }
+            u8 owner = data_020d433c.mBattlePlayers->mUnk_2a9;
+            if (owner == e[0].mUnk_0d_4) {
+                mUnk_0d = 0x1d;
+                mUnk_52 = 0;
+            } else if (owner == e[1].mUnk_0d_4) {
+                mUnk_0d = 0x1d;
+                mUnk_52 = 1;
+            } else {
+                mUnk_0d = 0x20;
+                mUnk_4c = new BattleUnionAbility(4, 0x1a000, 0xc);
+            }
+            break;
+        }
+        case 29: {
+            u8 j     = 0;
+            u8 bit   = 0;
+            u8 count = 0;
+            u8 *bits = &mUnk_60;
+            mUnk_60  = 0;
+            do {
+                BattlePlayerSlot *slots = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mSlots6c;
+                u8 flag                 = slots[j].mFlag;
+                u16 id                  = slots[j].mValue;
+                if (flag == 0) {
+                    if (func_ov007_022433c8(mUnk_52, id)) {
+                        count++;
+                    } else {
+                        bits[bit / 8] |= 1 << (bit % 8);
+                    }
+                    bit++;
+                }
+                j++;
+            } while (j < data_020d433c.mUnk_99);
+            if (count != 0) {
+                mUnk_66 = 0;
+                mUnk_0d = 0x1e;
+                if (count == 1) {
+                    mUnk_66 = 1;
+                }
+                mUnk_51 = 0;
+            } else {
+                mUnk_4c = new BattleUnionAbility(4, 0x1a000, 0xc);
+                mUnk_0d = 0x1f;
+            }
+            break;
+        }
+        case 30:
+            if (e[mUnk_52].mUnk_0f_0) {
+                mUnk_4c = new BattleUnionAbility(4, 0x1a000, 0xc);
+                mUnk_54 = 0;
+                mUnk_0d = 0x20;
+                break;
+            }
+            switch (func_ov007_0224251c()) {
+                case 1:
+                    if (!data_020d433c.mUnk_9a_2) {
+                        mUnk_5e = 1;
+                    }
+                    mUnk_51 = 0;
+                    mUnk_0d = 0x20;
+                    mUnk_4c = new BattleUnionAbility(4, 0x1a000, 0xc);
+                    break;
+                case 2:
+                    mUnk_54 = 0;
+                    mUnk_0d = 0x20;
+                    mUnk_4c = new BattleUnionAbility(4, 0x1a000, 0xc);
+                    break;
+            }
+            break;
+        case 31:
+            mUnk_54 = 0;
+            mUnk_0d = 0x20;
+            break;
+        case 32:
+            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+                mUnk_0d++;
+                if (mUnk_4c) {
+                    ((BattleUnionAbility *) mUnk_4c)->func_ov007_02234418(0);
+                }
+            }
+            break;
+        case 33: {
+            WirelessManager::Get();
+            if (IsWirelessMode(&data_020c4258)) {
+                u8 owner = data_020d433c.mBattlePlayers->mUnk_2a9;
+                if (e[0].mUnk_0d_4 == owner || e[1].mUnk_0d_4 == owner) {
+                    data_0220f540.mUnk_00 = 7;
+                    data_0220f540.mUnk_04 = mUnk_54;
+                    *((u8 *) &data_0220f540 + 0xa) = mUnk_53;
+                }
+            }
+            u8 i    = 0;
+            u8 done = 0;
+            do {
+                BattleEntry *ent = &e[i];
+                if ((&mUnk_62)[i] == 0) {
+                    if (data_020d433c.mBattlePlayers->mPlayers[ent->mUnk_0d_4]->IsActive()) {
+                        (&mUnk_62)[i] = 1;
+                    } else if (data_020d433c.mUnk_9a_2) {
+                        (&mUnk_62)[i] = 1;
+                    } else {
+                        WirelessManager::Get();
+                        if (IsWirelessMode(&data_020c4258)) {
+                            BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[ent->mUnk_0d_4];
+                            if (p->mMsg.mType == 7) {
+                                mData->mEntries[i].mUnk_12 = *(u32 *) ((u8 *) p + 0x104);
+                                mData->mEntries[i].mUnk_11 = *((u8 *) p + 0x10a);
+                                mData->mEntries[i].mUnk_0a = func_ov007_02243b24(i, (u16) *(u32 *) ((u8 *) p + 0x104));
+                                (&mUnk_62)[i]              = 1;
+                            }
+                        } else {
+                            mData->mEntries[i].mUnk_12 = mUnk_54;
+                            mData->mEntries[i].mUnk_11 = mUnk_53;
+                            mData->mEntries[i].mUnk_0a = func_ov007_02243b24(i, mUnk_54);
+                            (&mUnk_62)[i]              = 1;
+                        }
+                    }
+                } else {
+                    done++;
+                }
+                i++;
+            } while (i < 2);
+            if (done == 2) {
+                mUnk_0d = 0x22;
+            }
+            break;
+        }
+        case 34:
+            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+                mUnk_0d++;
+            }
+            break;
+        case 35: {
+            u8 i = 0;
+            do {
+                
+                if (data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4]->IsActive()) {
+                    if (e[i].mUnk_0f_0) {
+                        mUnk_56 = 0;
+                    } else {
+                        u8 j = 0;
+                        u8 k = 0;
+                        u8 mask = 0;
+                        do {
+                            if (!func_ov007_022433c8(i, data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4]->mSlots6c[j].mValue)) {
+                                (&mask)[k / 8] |= 1 << (k % 8);
+                            }
+                            j++;
+                            k++;
+                        } while (j < data_020d433c.mUnk_99);
+                        u8 other = (i + 1) % 2;
+                        u8 pick  = func_ov007_0226a700(data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4], mask,
+                                                       (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
+                        if (pick == 0xff) {
+                            mUnk_56 = 0;
+                        } else {
+                            BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4];
+                            mData->mEntries[i].mUnk_12 = p->mSlots6c[pick].mValue;
+                            mData->mEntries[i].mUnk_11 = pick;
+                            mData->mEntries[i].mUnk_0a = func_ov007_02243b24(i, data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4]->mSlots6c[pick].mValue);
+                        }
+                    }
+                } else if (data_020d433c.mUnk_9a_2) {
+                    if (e[i].mUnk_0f_0) {
+                        mUnk_54 = 0;
+                    } else {
+                        u8 j = 0;
+                        u8 k = 0;
+                        u8 mask = 0;
+                        do {
+                            if (!func_ov007_022433c8(i, data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4]->mSlots6c[j].mValue)) {
+                                (&mask)[k / 8] |= 1 << (k % 8);
+                            }
+                            j++;
+                            k++;
+                        } while (j < data_020d433c.mUnk_99);
+                        u8 other = (i + 1) % 2;
+                        u8 pick  = func_ov007_0226a700(data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4], mask,
+                                                       (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
+                        if (pick == 0xff) {
+                            mUnk_54 = 0;
+                        } else {
+                            mUnk_53 = pick;
+                            BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4];
+                            mUnk_54 = p->mSlots6c[pick].mValue;
+                            mData->mEntries[i].mUnk_12 = p->mSlots6c[pick].mValue;
+                            mData->mEntries[i].mUnk_11 = mUnk_53;
+                            mData->mEntries[i].mUnk_0a = func_ov007_02243b24(i, p->mSlots6c[pick].mValue);
+                        }
+                    }
+                }
+                i++;
+            } while (i < 2);
+            mUnk_0d = 0x24;
+            break;
+        }
+        case 36:
+            if (mUnk_5e) {
+                func_02055624(mUnk_40, 1);
+            } else {
+                mUnk_44->mUnk_1e = 0;
+                func_ov007_02273e3c(mUnk_44->mUnk_0c);
+            }
+            mContext->mUnk_12 = 0;
+            mUnk_0d           = 0x25;
+            break;
+        case 37:
+            if (mContext->mUnk_12 == 0) {
+                break;
+            }
+            if (mUnk_5e) {
+                SpriteManager::Get().func_02026dec(0, 7);
+                func_02001e68(1, 0, 1);
+            }
+            mUnk_0d++;
+            break;
+        case 38: {
+            if (!func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+                break;
+            }
+            u8 i = 0;
+            do {
+                if (e[i].mUnk_12 >= 0x92 && e[i].mUnk_12 <= 0xa5) {
+                    u8 o = i ^ 1;
+                    if (e[o].mUnk_12 != 0x8c && e[o].mUnk_12 != 0x8d) {
+                        mData->mEntries[i].mUnk_0f_4 = 1;
+                    }
+                }
+                i++;
+            } while (i < 2);
+            mUnk_0d = 0x27;
+            SpriteManager::Get().StartFade(3);
+            break;
+        }
+        case 39: {
+            if (SpriteManager::Get().IsFading()) {
+                break;
+            }
+            mContext->mUnk_12 = 0;
+            func_ov007_0223f168();
+            MI_CpuClearFast((void *) 0x6200000, 0x20000);
+            MI_CpuClearFast((void *) 0x6607000, 0x19000);
+            u8 kind = mData->mUnk_07;
+            mData->func_ov007_0223e1a4(0, 0xff);
+            switch (kind) {
+                case 1:
+                    mUnk_20 = 0;
+                    break;
+                case 2:
+                    mUnk_20 = 3;
+                    break;
+                case 3:
+                    mUnk_20 = 1;
+                    break;
+                case 4:
+                    mUnk_20 = 2;
+                    break;
+                case 5:
+                    mUnk_20 = 4;
+                    break;
+                case 6:
+                    mUnk_20 = 5;
+                    break;
+                case 8:
+                    mData->func_ov007_0223e180();
+                    break;
+            }
+            switch (mUnk_20) {
+                case 0:
+                    mUnk_48 = new ConfrontBg01();
+                    break;
+                case 1:
+                    mUnk_48 = new ConfrontBg02();
+                    break;
+                case 2:
+                    mUnk_48 = new Confront03();
+                    break;
+                case 3:
+                    mUnk_48 = new ConfrontBg04();
+                    break;
+                case 4:
+                    mUnk_48 = new ConfrontBg05();
+                    break;
+                case 5:
+                    mUnk_48 = new ConfrontBg06();
+                    break;
+            }
+            ((BattleBase *) mUnk_48)->BattleBase::func_ov007_02219888(mData, mUnk_20);
+            mUnk_22 = 1;
+            mUnk_0d++;
+            break;
+        }
+        case 40:
+            if (mContext->mUnk_12 != 0) {
+                mUnk_0d++;
+            }
+            break;
+        case 41:
+            if (mData->mUnk_07 == 0) {
+                func_ov007_0223f168();
+                MI_CpuClearFast((void *) 0x6200000, 0x20000);
+                func_ov007_0223f398();
+                SpriteManager::Get().StartFade(2);
+                mUnk_22 = 0;
+                mUnk_0d++;
+            } else {
+                mUnk_0d = 0x27;
+            }
+            break;
+        case 42:
+            if (SpriteManager::Get().IsFading()) {
+                break;
+            }
+            mUnk_21 = e[0].mUnk_10 == 1 ? 0 : 1;
+            if (data_020d433c.mUnk_10) {
+                data_020d433c.mUnk_10->mUnk_1a = 1;
+            }
+            GXS_SetVisibleWnd(5);
+            G2S_SetWndOutsidePlane(0x1f, FALSE);
+            G2S_SetWnd0InsidePlane(0x3f, FALSE);
+            mUnk_0d++;
+            break;
+        case 43:
+            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+                mUnk_0d++;
+            }
+            break;
+        case 44: {
+            u32 kind;
+            if (mUnk_21 == 0 ? e[0].mUnk_0f_4 : e[1].mUnk_0f_4) {
+                kind = 4;
+            } else {
+                kind = 1;
+            }
+            new BattleCardSpec(kind, e[mUnk_21].mUnk_0c, e[mUnk_21].mUnk_0d_0, e[mUnk_21].mUnk_0e == 0x15 ? 1 : 0);
+            mContext->mUnk_12 = 0;
+            u8 x;
+            if (mUnk_21 == 0) {
+                x = 8;
+            } else if (mUnk_21 == 1) {
+                x = 0xb7;
+            }
+            reg_G2S_DB_WIN0H = (u16) (((x << 8) & 0xff00) | ((x + 0x40) & 0xff));
+            reg_G2S_DB_WIN0V = 0x3c9c;
+            func_ov007_022430bc(0);
+            mUnk_10 = 0;
+            mUnk_0d++;
+            break;
+        }
+        case 45: {
+            if (mContext->mUnk_12 != 0) {
+                func_ov007_022430bc(0);
+                mUnk_0d++;
+                break;
+            }
+            mUnk_10++;
+            u8 t;
+            if (mUnk_10 < 0x20) {
+                t = 0;
+            } else if (mUnk_10 < 0x30) {
+                t = ((mUnk_10 - 0x20) * 16) / 16;
+            } else if (mUnk_10 < 0x50) {
+                t = 0x10;
+            } else if (mUnk_10 >= 0x60) {
+                t = 0;
+            } else {
+                t = 0x10 - ((mUnk_10 - 0x50) * 16) / 16;
+            }
+            func_ov007_022430bc((s8) t);
+            break;
+        }
+        case 46:
+            mUnk_0e = mUnk_21 == 0;
+            new BattleCardSpec(2, e[mUnk_0e].mUnk_0c, e[mUnk_0e].mUnk_0d_0, e[mUnk_0e].mUnk_0e == 0x15 ? 1 : 0);
+            mContext->mUnk_12 = 0;
+            mUnk_0f           = mUnk_21 == 0 ? 0xb7 : 8;
+            mUnk_10           = 0;
+            mUnk_0d++;
+            break;
+        case 47:
+            if (mContext->mUnk_12 != 0) {
+                mUnk_0d++;
+                SpriteManager::Get().StartFade(3);
+                break;
+            }
+            mUnk_10++;
+            if ((mUnk_10 > 4) & (mUnk_10 < 0x40)) {
+                mUnk_14[mUnk_0e] = mUnk_0f + MATH_Rand32(&data_020d42e8, 0x20) - 0x10;
+                mUnk_1a[mUnk_0e] = MATH_Rand32(&data_020d42e8, 0x18) + 0x30;
+            } else {
+                mUnk_14[mUnk_0e] = mUnk_0f;
+                mUnk_1a[mUnk_0e] = 0x3c;
+            }
+            break;
+        case 48:
+            if (SpriteManager::Get().IsFading()) {
+                break;
+            }
+            mUnk_0d = 0x33;
+            func_ov007_0223f168();
+            break;
+        case 49: {
+            if (SpriteManager::Get().IsFading()) {
+                break;
+            }
+            BattleCardCamera *cam = mUnk_3c;
+            SpriteManager::Get();
+            SpriteManager::sFade.mMain = 3;
+            data_020d433c.mUnk_14 |= 4;
+            cam->mState = 3;
+            mContext->mUnk_12 = 0;
+            mUnk_0d++;
+            break;
+        }
+        case 50:
+            if (mContext->mUnk_12 == 0) {
+                break;
+            }
+            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+                mUnk_21 = func_ov007_02244440();
+                mUnk_0d++;
+            }
+            break;
+        case 51: {
+            if (mUnk_21 != -1) {
+                u8 owner = data_020d433c.mBattlePlayers->mUnk_2a9;
+                u8 found = 0;
+                u8 idx   = 0;
+                u8 i     = 0;
+                do {
+                    if (owner == e[i].mUnk_0d_4) {
+                        idx   = i;
+                        found = 1;
+                    }
+                    i++;
+                } while (i < 2);
+                if (found == 1) {
+                    if (idx == mUnk_21) {
+                        u32 v = func_ov007_022696a0(e[mUnk_21].mUnk_0c, e[mUnk_21].mUnk_0d_0);
+                        new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[mUnk_21].mUnk_0d_4, 10, v, 0);
+                        if (data_020d433c.mUnk_7a) {
+                            s16 d = (s16) (e[(mUnk_21 + 1) % 2].mUnk_04 - e[mUnk_21].mUnk_04);
+                            if (d < 0) {
+                                d = 0;
+                            }
+                            u16 add = d + 0x50;
+                            if (e[mUnk_21].mUnk_0f_6) {
+                                add = (u16) (add << 1);
+                            }
+                            if (data_020d433c.mUnk_83 == 0) {
+                                u8 sel = data_020d433c.mBattlePlayers->mUnk_28d;
+                                if (mUnk_21 == 1) {
+                                    sel = data_020d433c.mBattlePlayers->mUnk_28e;
+                                }
+                                BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[e[mUnk_21].mUnk_0d_4];
+                                BattleRecord *rec = &p->mRecords[data_020d433c.mBattlePlayers->mUnits[sel].mUnk_0e];
+                                if (0xfff - add > rec->mGauge) {
+                                    rec->mGauge = rec->mGauge + add;
+                                }
+                                if (data_020d48f0.mUnk_d4 < 9999) {
+                                    data_020d48f0.mUnk_d4++;
+                                }
+                            }
+                        }
+                        if (data_020d433c.mUnk_83 == 2) {
+                            data_020d433c.mBattlePlayers->mUnk_2b0 = 1;
+                        }
+                    } else {
+                        new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[idx].mUnk_0d_4, 0xb, 0, 0);
+                    }
+                    if (data_020d433c.mUnk_83 == 4 && e[idx].mUnk_0f_1) {
+                        data_020d433c.mBattlePlayers->mUnk_2b0 = 1;
+                    }
+                } else {
+                    u32 v = func_ov007_022696a0(e[mUnk_21].mUnk_0c, e[mUnk_21].mUnk_0d_0);
+                    new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[mUnk_21].mUnk_0d_4, e[mUnk_21].mUnk_0d_4 + 0x10, v, 0);
+                }
+                mContext->mUnk_12 = 0;
+            } else {
+                mContext->mUnk_12 = 1;
+            }
+            mUnk_0d++;
+            break;
+        }
+        case 52: {
+            if (mContext->mUnk_12 == 0) {
+                break;
+            }
+            if (mUnk_21 != -1) {
+                BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[e[mUnk_21].mUnk_0d_4];
+                u8 other        = 0;
+                p->mUnk_fe      = 1;
+                p->mUnk_ee++;
+                if (mUnk_21 == 0) {
+                    other = 1;
+                }
+                BattlePlayer *q = data_020d433c.mBattlePlayers->mPlayers[e[mUnk_21].mUnk_0d_4];
+                *(u16 *) ((u8 *) q + q->mUnk_f4 * 6 + 0x84) = e[other].mUnk_04;
+                *((u8 *) q + q->mUnk_f4 * 6 + 0x86) = e[other].mUnk_0d_0;
+                q->mUnk_f4++;
+            }
+            func_ov007_022626b8(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnits[data_020d433c.mBattlePlayers->mUnk_28d].mUnk_11);
+            func_ov007_02262828(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnk_28d, 2);
+            func_ov007_02262828(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnk_28e, 2);
+            mUnk_0d = 0x35;
+            break;
+        }
+        case 53:
+            return TRUE;
+    }
+    return FALSE;
 }
 
 void BattleConfrontCard::func_ov007_022430bc(int brightness) {

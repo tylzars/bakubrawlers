@@ -453,7 +453,7 @@ _ZN18BattleStatusPanels19func_ov007_02236458Ej kind:function(arm,size=0x3c) addr
 _ZN13BattleCommandC1Ej kind:function(arm,size=0x3bc) addr:0x02236494
 _ZN13BattleCommandD1Ev kind:function(arm,size=0x238) addr:0x02236850
 _ZN13BattleCommandD0Ev kind:function(arm,size=0x240) addr:0x02236a88
-func_ov007_02236cc8 kind:function(arm,size=0x3154) addr:0x02236cc8
+_ZN13BattleCommand6UpdateEv kind:function(arm,size=0x3154) addr:0x02236cc8
 _ZN13BattleCommand19func_ov007_02239e1cEi kind:function(arm,size=0x1bc) addr:0x02239e1c
 _ZN13BattleCommand19func_ov007_02239fd8Ev kind:function(arm,size=0x1f0) addr:0x02239fd8
 _ZN13BattleCommand19func_ov007_0223a1c8Ev kind:function(arm,size=0x3dc) addr:0x0223a1c8
@@ -716,7 +716,7 @@ _ZN14BattleCardSpec19func_ov007_0225fbdcEv kind:function(arm,size=0x180) addr:0x
 _ZN16BattlePlayerListC1Ev kind:function(arm,size=0x230) addr:0x0225fd5c
 _ZN16BattlePlayerListD1Ev kind:function(arm,size=0x16c) addr:0x0225ff8c
 _ZN16BattlePlayerListD0Ev kind:function(arm,size=0x174) addr:0x022600f8
-func_ov007_0226026c kind:function(arm,size=0x1f70) addr:0x0226026c
+_ZN16BattlePlayerList6UpdateEv kind:function(arm,size=0x1f70) addr:0x0226026c
 _Z19func_ov007_022621dcv kind:function(arm,size=0x14c) addr:0x022621dc
 _Z19func_ov007_02262328P16BattlePlayerList kind:function(arm,size=0x1e8) addr:0x02262328
 _Z19func_ov007_02262510P16BattlePlayerListh kind:function(arm,size=0x20) addr:0x02262510
@@ -742,7 +742,7 @@ _ZN14BattleMapPiece19func_ov007_022636f4Ej kind:function(arm,size=0xb8) addr:0x0
 _ZN17BattleUnk022637acC1Ev kind:function(arm,size=0x198) addr:0x022637ac
 _ZN17BattleUnk022637acD1Ev kind:function(arm,size=0x64) addr:0x02263944
 _ZN17BattleUnk022637acD0Ev kind:function(arm,size=0x6c) addr:0x022639a8
-func_ov007_02263a14 kind:function(arm,size=0xd74) addr:0x02263a14
+_ZN17BattleUnk022637ac6UpdateEv kind:function(arm,size=0xd74) addr:0x02263a14
 _ZN17BattleUnk022637ac19func_ov007_02264788Ev kind:function(arm,size=0x208) addr:0x02264788
 _ZN17BattleUnk022637ac19func_ov007_02264990Ev kind:function(arm,size=0xcc) addr:0x02264990
 _ZN17BattleUnk022637ac19func_ov007_02264a5cEv kind:function(arm,size=0x6bc) addr:0x02264a5c
@@ -770,7 +770,7 @@ _ZN14BattleCharaActD0Ev kind:function(arm,size=0x128) addr:0x02267fe8
 _ZN14BattleCharaAct19func_ov007_02268110Ev kind:function(arm,size=0x80) addr:0x02268110
 _ZN14BattleCharaAct19func_ov007_02268190Ev kind:function(arm,size=0x360) addr:0x02268190
 _ZN14BattleCharaAct19func_ov007_022684f0Ev kind:function(arm,size=0x1d8) addr:0x022684f0
-func_ov007_022686c8 kind:function(arm,size=0xcb8) addr:0x022686c8
+_ZN14BattleCharaAct6UpdateEv kind:function(arm,size=0xcb8) addr:0x022686c8
 _ZN14BattleCharaAct19func_ov007_02269380Ev kind:function(arm,size=0x74) addr:0x02269380
 _ZN14BattleCharaAct19func_ov007_022693f4Ev kind:function(arm,size=0x124) addr:0x022693f4
 _ZN14BattleCharaAct19func_ov007_02269518Ev kind:function(arm,size=0xdc) addr:0x02269518
@@ -1779,7 +1779,7 @@ data_ov007_02285c10 kind:data(any) addr:0x02285c10
 data_ov007_02285c2c kind:data(any) addr:0x02285c2c
 data_ov007_02285c30 kind:data(any) addr:0x02285c30
 data_ov007_02285c5c kind:data(any) addr:0x02285c5c
-__sinit_ov007_02285c98 kind:function(arm,size=0x24) addr:0x02285c98
+__sinit_BattleUnk022637ac.cpp kind:function(arm,size=0x24) addr:0x02285c98
 .p__sinit_ov007_02285c98 kind:data(word) addr:0x02285cbc
 data_ov007_02285ce8 kind:data(any) addr:0x02285ce8
 data_ov007_02285d38 kind:data(any) addr:0x02285d38

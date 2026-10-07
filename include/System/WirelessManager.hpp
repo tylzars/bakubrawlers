@@ -121,7 +121,9 @@ public:
 struct UnkStruct_020c4030 {
     /* 000 */ PAD(0x000, 0x228);
     /* 228 */ u8 mUnk_228;
-    /* 229 */ PAD(0x229, 0x24d);
+    /* 229 */ PAD(0x229, 0x22a);
+    /* 22a */ u8 mUnk_22a;
+    /* 22b */ PAD(0x22b, 0x24d);
     /* 24d */ u8 mUnk_24d; // the same byte as WirelessManager::mUnk_124d
 };
 

@@ -1,14 +1,34 @@
 #include "Unknown/UnkStruct_02078e14.hpp"
+#include "Unknown/UnkStruct_02071d24.hpp"
 #include "Battle/BattleCommandList.hpp"
 #include "Battle/BattleCommandPage.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
+#include "System/SoundManager.hpp"
+#include "System/WirelessManager.hpp"
+#include "UI/SelectWindow.hpp"
+#include "Game/UnkStruct_020d43f0.hpp"
+#include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
 extern u8 data_020d43db[];
 void operator delete(void *ptr);
+extern u8 data_020d4946[];
+extern u8 data_020d4404[];
+
+class UnkStruct_02076058 {
+public:
+    /* 00 */ PAD(0x00, 0x78);
+    /* 78 */ u8 mUnk_78;
+    /* 79 */ PAD(0x79, 0x80);
+    UnkStruct_02076058(u8 unk1);
+    void func_02077a30(u32 a, u32 b, u32 c, u8 d);
+};
+BOOL func_02078270(UnkStruct_02076058 *obj);
+u32 func_020779ec(void *obj);
+
 
 UnkStruct_02078e14::UnkStruct_02078e14(u32 unk1, u32 unk2) :
     SceneBase(0x3e8, 0) {
@@ -225,4 +245,502 @@ void UnkStruct_02078e14::func_0207966c(u32 unk1) {
     }
     mUnk_3f9 = 0;
     func_0207ed3c();
+}
+
+#define UPDATE_TAIL()                      \
+    func_0207eec4();                       \
+    mUnk_74[18]->Update();                 \
+    mUnk_74[18]->Draw(1, 0x80, 0x60, 0);   \
+    return
+
+void UnkStruct_02078e14::Update() {
+    if (mUnk_404 != -1) {
+        GXS_SetVisiblePlane(mUnk_404);
+        mUnk_404 = -1;
+        if (mUnk_e1 == 3) {
+            if (mUnk_f0 != 0) {
+                mUnk_3f9 = 2;
+            } else {
+                mUnk_3f9 = 1;
+            }
+        }
+    }
+    if (mUnk_3fa != 0) {
+        mUnk_3fa--;
+        if (mUnk_3fa == 0 && mUnk_4c != NULL) {
+            mUnk_4c->mCells[0]->SetAnimation(2);
+        }
+    }
+    if (mUnk_3ff != 0 && mUnk_3fc == 0) {
+        SoundManager::Get().func_020246f8(0x66);
+        mUnk_3ff = 0;
+        u32 one = 1;
+        if (mUnk_e6 < 4) {
+            mUnk_c8[mUnk_e6 - 1] = mUnk_106[mUnk_fa];
+            mUnk_c8[mUnk_e6 + 8] = mUnk_104;
+            mUnk_f0              = one;
+            mUnk_3f9             = 2;
+            mUnk_186[mUnk_e6]    = mUnk_fa;
+            mUnk_194[0]          = one;
+            mUnk_194[1]          = one;
+            mUnk_194[2]          = one;
+            func_02081128();
+            data_020d433c.mUnk_14 |= 2;
+        } else {
+            mUnk_c8[mUnk_e6 - 1] = mUnk_106[mUnk_fa];
+            mUnk_f0              = one;
+            mUnk_3f9             = 2;
+            mUnk_186[mUnk_e6]    = mUnk_fa;
+            mUnk_194[0]          = one;
+            mUnk_194[1]          = one;
+            mUnk_194[2]          = one;
+            func_02081594();
+            data_020d433c.mUnk_14 |= 2;
+        }
+    }
+    if (mUnk_3fc > 0) {
+        mUnk_3fc -= mUnk_3fe;
+        if (mUnk_3fc <= 0) {
+            mUnk_3fc = 0;
+        }
+    }
+    switch (mUnk_e1) {
+        case 0:
+            func_0207b3a8();
+            func_0207b6e8();
+            func_0207b760();
+            func_0207c568();
+            mUnk_e1++;
+            if (mUnk_e0 == 5) {
+                mUnk_e1 = 7;
+                func_020851d0();
+                return;
+            }
+            break;
+        case 1:
+            mUnk_48->mUnk_064 = 0;
+            mUnk_4c->mUnk_064 = 0;
+            if (!func_020842a0()) {
+                SpriteManager::Get().StartFade(2);
+                mUnk_e1++;
+            }
+            break;
+        case 2:
+            if (!SpriteManager::Get().IsFading()) {
+                mUnk_4c->mUnk_064 = 1;
+                mUnk_e1++;
+            }
+            break;
+        case 3:
+            func_0207cfa4();
+            break;
+        case 4:
+            if (!func_020842a0()) {
+                switch (mUnk_48->Update(1)) {
+                    case 1:
+                        mUnk_e1 = 5;
+                        break;
+                    case 2:
+                        mUnk_e1 = 6;
+                        break;
+                }
+            }
+            break;
+        case 5:
+            mUnk_48->Update(1);
+            if (mUnk_48->mUnk_061 == 4) {
+                switch (mUnk_1a1) {
+                    case 2:
+                        switch (mUnk_e0) {
+                            case 0:
+                                data_020d43f0[0].mMoney -= mUnk_1dc;
+                                func_020834ec(this, 4);
+                                break;
+                            case 1:
+                                data_020d43f0[0].mMoney -= mUnk_1dc;
+                                func_020834ec(this, 0);
+                                mUnk_186[mUnk_e6] = mUnk_fa;
+                                mUnk_e1           = 0x21;
+                                break;
+                            case 2:
+                                data_020d43f0[0].mMoney -= mUnk_1dc;
+                                func_020834ec(this, 6);
+                                break;
+                        }
+                        SoundManager::Get().func_020246f8(0x69);
+                        break;
+                    case 3:
+                        func_020834ec(this, 2);
+                        func_02081128();
+                        break;
+                    case 4:
+                    case 5:
+                        func_0208415c(this);
+                        func_020834ec(this, 10);
+                        break;
+                    case 10:
+                        func_020834ec(this, 0);
+                        mUnk_e1 = 0x26;
+                        break;
+                    case 6:
+                        SetFlagBit(data_020d4946, mUnk_106[mUnk_fa]);
+                        func_020834ec(this, 0);
+                        break;
+                    case 8:
+                        func_02080210();
+                        func_020834ec(this, 0);
+                        SoundManager::Get().func_020246f8(0x68);
+                        break;
+                    case 9:
+                        func_0208550c(this);
+                        data_020d433c.mUnk_14 |= 2;
+                        func_020834ec(this, 0);
+                        SoundManager::Get().func_020246f8(0x67);
+                        break;
+                    default:
+                        func_020834ec(this, 0);
+                        break;
+                }
+            }
+            break;
+        case 6:
+            mUnk_48->Update(1);
+            if (mUnk_48->mUnk_061 == 4) {
+                func_020834ec(this, 0);
+            }
+            break;
+        case 7:
+            mUnk_48->mUnk_064 = 0;
+            mUnk_4c->mUnk_064 = 0;
+            mUnk_50->mUnk_064 = 0;
+            SpriteManager::Get().StartFade(2);
+            mUnk_e1++;
+            func_020851d0();
+            return;
+        case 8:
+            if (!SpriteManager::Get().IsFading()) {
+                mUnk_50->mUnk_064 = 1;
+                mUnk_e1++;
+                if (mUnk_3f4 != 0) {
+                    func_02085220(this, 0xc);
+                }
+            }
+            func_020851d0();
+            return;
+        case 9:
+            if (!func_020842a0()) {
+                if (mUnk_50->Update(1) == 3) {
+                    switch (mUnk_50->mCursor->mSelection) {
+                        case 0:
+                            func_020842e8();
+                            func_02085220(this, 0xb);
+                            break;
+                        case 1:
+                            mUnk_e6 = mUnk_f4;
+                            mUnk_e7 = mUnk_f4;
+                            mUnk_e8 = mUnk_f4;
+                            mUnk_ea = mUnk_f4;
+                            if (mUnk_1f1 != 0x15) {
+                                mUnk_1a0 = 1;
+                            }
+                            mUnk_e1++;
+                            break;
+                    }
+                }
+            }
+            func_020851d0();
+            return;
+        case 10:
+            SpriteManager::Get().StartFade(3);
+            mUnk_50->mUnk_064 = 0;
+            mUnk_e1++;
+            func_020851d0();
+            return;
+        case 11:
+            if (!SpriteManager::Get().IsFading()) {
+                mUnk_e1++;
+            }
+            func_020851d0();
+            return;
+        case 12:
+            if (func_020842a0()) {
+                return;
+            }
+            func_020843ac(this, 0);
+            mUnk_e1++;
+            break;
+        case 13:
+            if (!func_020842a0()) {
+                SpriteManager::Get().StartFade(2);
+                mUnk_e1++;
+            }
+            break;
+        case 14:
+            if (!SpriteManager::Get().IsFading()) {
+                mUnk_4c->mUnk_064 = 1;
+                mUnk_e1           = 3;
+            }
+            break;
+        case 15:
+            SpriteManager::Get().StartFade(3);
+            mUnk_4c->mUnk_064 = 0;
+            mUnk_e1++;
+            break;
+        case 16:
+            if (!SpriteManager::Get().IsFading()) {
+                mUnk_e1++;
+            }
+            break;
+        case 17:
+            if (func_020842a0()) {
+                return;
+            }
+            func_020843ac(this, 1);
+            mUnk_e1++;
+            func_020851d0();
+            return;
+        case 18:
+            if (!func_020842a0() && mUnk_1a0 == 0) {
+                SpriteManager::Get().StartFade(2);
+                mUnk_e1++;
+            }
+            func_020851d0();
+            return;
+        case 19:
+            if (!SpriteManager::Get().IsFading()) {
+                mUnk_50->mUnk_064 = 1;
+                mUnk_e1           = 9;
+            }
+            func_020851d0();
+            return;
+        case 20: {
+            switch (mUnk_48->Update(1)) {
+                case 1:
+                    mUnk_e1 = 0x15;
+                    break;
+                case 2:
+                    mUnk_e1 = 0x16;
+                    break;
+            }
+            func_020851d0();
+            return;
+        }
+        case 21:
+            mUnk_48->Update(1);
+            if (mUnk_48->mUnk_061 == 4) {
+                switch (mUnk_1a1) {
+                    case 0xb:
+                        SoundManager::Get().func_020246f8(0x6a);
+                        func_02085220(this, 0);
+                        mUnk_50->mCells[0]->SetAnimation(0);
+                        mUnk_e1 = 0x17;
+                        WirelessManager::Get();
+                        if (IsWirelessMode(&data_020c4030.mUnk_228)) {
+                            mUnk_50->mUnk_064 = 0;
+                            mUnk_e1           = 0x1b;
+                            UPDATE_TAIL();
+                        }
+                        break;
+                    case 0xc:
+                        func_02085220(this, 0);
+                        break;
+                }
+            }
+            func_020851d0();
+            return;
+        case 22:
+            mUnk_48->Update(1);
+            if (mUnk_48->mUnk_061 == 4) {
+                func_02085220(this, 0);
+            }
+            func_020851d0();
+            return;
+        case 23:
+            mUnk_50->mUnk_064 = 0;
+            if (mUnk_1f1 == 0x15) {
+                func_020848c8(this);
+            }
+            MI_CpuCopy8(data_020d4404, (u8 *) ((u32 *) data_020d433c.mBattlePlayers)[3] + 0xa8, 8);
+            SpriteManager::Get().StartFade(3);
+            mUnk_e1++;
+            func_020851d0();
+            return;
+        case 24:
+            if (!SpriteManager::Get().IsFading()) {
+                func_0207966c(1);
+                mUnk_e1++;
+                return;
+            }
+            func_020851d0();
+            return;
+        case 25:
+            if (mContext->mUnk_12 != 0) {
+                mUnk_e1++;
+            }
+            return;
+        case 26:
+            RequestScene(1);
+            mFinished = 1;
+            return;
+        case 27:
+            if (func_02084a10(this)) {
+                mUnk_e1++;
+            }
+            UPDATE_TAIL();
+        case 28:
+            if (func_02084c38(this)) {
+                mUnk_e1++;
+            }
+            UPDATE_TAIL();
+        case 29:
+            if (func_0208501c(this)) {
+                mUnk_e1++;
+            }
+            UPDATE_TAIL();
+        case 30:
+            if (func_02084f40(this)) {
+                mUnk_e1++;
+            }
+            UPDATE_TAIL();
+        case 31:
+            if (func_02084e64(this)) {
+                SpriteManager::Get().StartFade(3);
+                mUnk_e1++;
+            }
+            UPDATE_TAIL();
+        case 32:
+            if (!SpriteManager::Get().IsFading()) {
+                func_0207966c(1);
+                mUnk_e1 = 0x19;
+                return;
+            }
+            UPDATE_TAIL();
+        case 33:
+            SpriteManager::Get().StartSubFade(3);
+            mUnk_e1++;
+            break;
+        case 34:
+            SpriteManager::Get();
+            if (SpriteManager::sFade.mSub <= 1) {
+                if (mUnk_c0 != NULL) {
+                    mUnk_c0->func_02058530(0);
+                }
+                func_0207966c(0);
+                mUnk_1e0 = new UnkStruct_02076058(1);
+                mUnk_1e0->func_02077a30(1, mUnk_106[mUnk_fa] & 0xff, mUnk_104, 1);
+                mContext->mUnk_12 = 0;
+                mUnk_e1++;
+                return;
+            }
+            break;
+        case 35:
+            if (func_02078270(mUnk_1e0)) {
+                UnkStruct_02023248 *pair = func_02023248(&data_020d43f0[0], mUnk_106[mUnk_fa] & 0xff, mUnk_104);
+                u16 val = func_020231f4(&data_020d43f0[0], 0, mUnk_106[mUnk_fa] & 0xff, mUnk_104);
+                func_0205afb4(mUnk_c0, mUnk_104, val, (BattleCellPair *) pair);
+            }
+            if (func_020779ec(mUnk_1e0) == 0) {
+                return;
+            }
+            if (mUnk_c0 != NULL) {
+                func_0205821c(mUnk_c0);
+            }
+            mUnk_e1++;
+            return;
+        case 36:
+            if (mUnk_c0 != NULL) {
+                if (mContext->mUnk_12 == 0) {
+                    return;
+                }
+                mUnk_1e0->mUnk_78 = 1;
+                mUnk_c0           = NULL;
+            }
+            mUnk_e1++;
+            return;
+        case 37:
+            if (mContext->mUnk_12 != 3) {
+                return;
+            }
+            mContext->mUnk_12 = 0;
+            mUnk_1e0          = NULL;
+            mUnk_e1           = 0;
+            mUnk_f0           = 0;
+            mUnk_1a0          = 4;
+            mUnk_194[0]       = 1;
+            mUnk_194[1]       = 1;
+            mUnk_194[2]       = 1;
+            mUnk_3f9          = 1;
+            return;
+        case 38:
+            SpriteManager::Get().StartFade(3);
+            mUnk_e1++;
+            break;
+        case 39:
+            if (!SpriteManager::Get().IsFading()) {
+                func_0207966c(1);
+                mUnk_e1++;
+                return;
+            }
+            break;
+        case 40:
+            if (mContext->mUnk_12 == 0) {
+                return;
+            }
+            mUnk_1e4 = new UnkStruct_02071d24(2);
+            mUnk_1e4->func_02074148(0, mUnk_106[mUnk_fa] & 0xff, mUnk_104, 1);
+            mContext->mUnk_12 = 0;
+            mUnk_e1++;
+            return;
+        case 41:
+            if (mContext->mUnk_12 != 2) {
+                return;
+            }
+            mContext->mUnk_12 = 0;
+            mUnk_1e4          = NULL;
+            mUnk_e1           = 0;
+            mUnk_f0           = 1;
+            mUnk_1a0          = 4;
+            mUnk_194[0]       = 1;
+            mUnk_194[1]       = 1;
+            mUnk_194[2]       = 1;
+            mUnk_3f9          = 2;
+            return;
+        case 43:
+            if (mUnk_e0 == 3 || mUnk_e0 == 5) {
+                func_020842e8();
+            }
+            SpriteManager::Get().StartFade(3);
+            mUnk_48->mUnk_064 = 0;
+            mUnk_4c->mUnk_064 = 0;
+            mUnk_e1++;
+            break;
+        case 44:
+            if (!SpriteManager::Get().IsFading()) {
+                func_0207966c(1);
+                mUnk_e1++;
+                return;
+            }
+            break;
+        case 45:
+            if (mContext->mUnk_12 != 0) {
+                mUnk_e1++;
+            }
+            return;
+        case 46:
+            RequestScene(1);
+            mFinished = 1;
+            return;
+    }
+    func_0207ed3c();
+    func_0207dea4();
+    func_0207e074();
+    func_0207e424();
+    func_0207ea3c();
+    func_0207eec4();
+    func_0208403c();
+    func_0207ceb0();
+    func_02080104();
+    func_0207f2f0();
+    func_0207f32c();
+    func_0207f90c();
 }

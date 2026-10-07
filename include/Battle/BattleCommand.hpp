@@ -40,8 +40,8 @@ public:
     /* 88 */ MessageWindow *mMessage;
     /* 8c */ BattleCommandPrompt *mUnk_8c; // freed with func_ov007_0225e68c(obj, flag)
     /* 90 */ u8 mUnk_90[14][10];
-    /* 11c */ s16 mUnk_11c;
-    /* 11e */ s16 mUnk_11e;
+    /* 11c */ u16 mUnk_11c;
+    /* 11e */ u16 mUnk_11e;
     /* 120 */ s16 mUnk_120;
     /* 122 */ s16 mUnk_122;
     /* 124 */ s16 mUnk_124;
@@ -54,9 +54,11 @@ public:
     /* 12d */ u8 mUnk_12d;
     /* 12e */ u8 mUnk_12e;
     /* 12f */ u8 mUnk_12f;
-    /* 130 */ PAD(0x130, 0x133);
+    /* 130 */ u8 mUnk_130;
+    /* 131 */ PAD(0x131, 0x132);
+    /* 132 */ u8 mUnk_132;
     /* 133 */ u8 mUnk_133;
-    /* 134 */ PAD(0x134, 0x135);
+    /* 134 */ u8 mUnk_134;
     /* 135 */ u8 mUnk_135;
     /* 136 */ s8 mUnk_136;
     /* 137 */ PAD(0x137, 0x138);

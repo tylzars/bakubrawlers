@@ -77,6 +77,9 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   `moveq`/`movne` order where `x = c ? 0 : 1` gives the reverse (`func_02023708`).
 - **Narrow read-modify-write toggles.** `f++; f &= 1;` as two statements on a `u8` field matches where a temporary
   (`u8 t = f + 1; f = t & 1;`) keeps the add in its own register (`UnkStruct_02065c40::Update`).
+- **Arguments a callee ignores.** If callers load a register before a call (e.g. `this` into r0) that the callee
+  never reads, the callee still takes that parameter: `func_02084e64(UnkStruct_02078e14 *self)` is passed `self`
+  although its body ignores it, and declaring it without the parameter makes the caller 8 bytes short.
 - **Declare return values.** A function declared `void` that really returns a value changes the caller's
   register allocation: `func_02025b64` returns `offset + size`, and declaring it `u32` (callers ignore the result)
   fixed runs of loads that kept a zero in a callee-saved register.

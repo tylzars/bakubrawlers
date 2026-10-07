@@ -7,17 +7,17 @@
 class BattleBlend {
 public:
     /* 04 */ u8 mUnk_04;
-    /* 05 */ u8 mUnk_05;
+    /* 05 */ u8 mLevel;
     /* 06 */ u16 mUnk_06;
-    /* 08 */ s16 mUnk_08;
+    /* 08 */ s16 mWobble;
     /* 0a */ u8 mUnk_0a;
-    /* 0b */ u8 mUnk_0b;
-    /* 0c */ u16 mUnk_0c;
-    /* 0e */ u8 mUnk_0e;
-    /* 0f */ u8 mUnk_0f;
+    /* 0b */ u8 mFalling;
+    /* 0c */ u16 mPeriod;
+    /* 0e */ u8 mMin;
+    /* 0f */ u8 mMax;
     /* 10 */
 
-    BattleBlend(u16 a, u8 b, u8 c);   // 02223cf0
+    BattleBlend(u16 period, u8 min, u8 max); // 02223cf0
     virtual ~BattleBlend();           // 02223d4c deleting
     void func_ov007_02223d7c();
     void func_ov007_02223dc4();

@@ -575,7 +575,7 @@ void BattleBase::func_ov007_02219888(BattleData *data, u32 mode) {
             BattleSlot *slot = new BattleSlot(data, i, mode, data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_f6,
                                               entries[0].mUnk_0d_4, entries[1].mUnk_0d_4, mUnk_20, mUnk_13);
             mSlots[i] = slot;
-            if (slot->mUnk_18 - 2 <= 1) {
+            if (slot->mRole == 2 || slot->mRole == 3) {
                 order[count++] = i;
             }
         }

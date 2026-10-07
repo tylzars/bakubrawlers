@@ -18,7 +18,7 @@ public:
     /* 0e */ u8 mUnk_0e;
     /* 0f */ u8 mUnk_0f;
     /* 10 */ u8 mUnk_10;
-    /* 11 */ u8 mUnk_11;
+    /* 11 */ s8 mUnk_11;
     /* 12 */ u8 mUnk_12;
     /* 13 */ PAD(0x13, 0x18);
     /* 18 */

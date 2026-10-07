@@ -8,11 +8,14 @@ class UnkStruct_02078290;
 struct BattlePlayer {
     /* 00 */ PAD(0x00, 0xc8);
     /* c8 */ void *mUnk_c8;
-    /* cc */ PAD(0xcc, 0xf2);
+    /* cc */ PAD(0xcc, 0xee);
+    /* ee */ u8 mUnk_ee;
+    /* ef */ PAD(0xef, 0xf2);
     /* f2 */ u8 mUnk_f2;
     /* f3 */ PAD(0xf3, 0xf6);
     /* f6 */ u8 mUnk_f6;
-    /* f7 */
+    /* f7 */ u8 mUnk_f7;
+    /* f8 */
 
     bool IsActive() const {
         bool active = false;

@@ -59,6 +59,8 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   `_fdiv` 0x0201edc4, `_fflt`/`_ffltu` (int to float) 0x0201f274/0x0201f2bc, `_ffix`/`_ffixu` (float to int)
   0x0201f200/0x0201f234, and compares `_fgeq` `_fgr` `_fleq` `_fls` `_feq` `_fneq` (0x0201eb6c..0x0201ed50). A
   compare in source must use the same operator as the original (`a < b` calls `_fls`, `!(a >= b)` calls `_fgeq`).
+- **Unfolded int-to-float.** `s->x = 8;` on a float folds to a constant; `u32 left = 8; s->x = left;` keeps the
+  original's `mov r0, #8; bl _ffltu`.
 - **Runtime helpers.** `bl` to `0x0201f970` is `_s32_div_f`, i.e. a `/` in source: the dividend is in r0 and the
   divisor in r1, which often already holds a value the code uses elsewhere (keep it in a local).
 - **`RequestScene` copies the context pointer to a local.** `SceneBase::RequestScene` is

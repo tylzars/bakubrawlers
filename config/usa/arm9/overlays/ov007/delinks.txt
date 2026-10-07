@@ -44,3 +44,23 @@ src/07_Battle/Battle/ConfrontBg05.cpp:
 // provisional: code only; data not assigned yet.
 src/07_Battle/Battle/ConfrontEmblem06.cpp:
     .text       start:0x0222155c end:0x02222230
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/BattleSlot.cpp:
+    .text       start:0x022227e4 end:0x02223534
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/BattleSideHelper.cpp:
+    .text       start:0x02223534 end:0x02223750
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/BattleObj01.cpp:
+    .text       start:0x02223750 end:0x02223cf0
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/BattleBlend.cpp:
+    .text       start:0x02223cf0 end:0x02223f28
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/BattleSub48.cpp:
+    .text       start:0x02223f28 end:0x0222545c

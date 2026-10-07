@@ -1,7 +1,7 @@
 func_01ff8000 kind:function(arm,size=0x10) addr:0x01ff8000
 func_01ff8010 kind:function(arm,size=0x2c) addr:0x01ff8010
 func_01ff803c kind:function(arm,size=0x2c) addr:0x01ff803c
-func_01ff8068 kind:function(arm,size=0x34) addr:0x01ff8068
+FX_Sqrt kind:function(arm,size=0x34) addr:0x01ff8068
 func_01ff809c kind:function(arm,size=0x24) addr:0x01ff809c
 func_01ff80c0 kind:function(arm,size=0x38) addr:0x01ff80c0
 func_01ff80f8 kind:function(arm,size=0x30) addr:0x01ff80f8

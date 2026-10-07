@@ -8,30 +8,74 @@
 struct BattleData;
 struct BattleEntry;
 struct BattleParam;
+class BattleSideHelper;
 
 // Generic polymorphic object owned by the battle scene (deleted through vtable slot 1).
 class BattleObject {
 public:
-    virtual ~BattleObject();
+    virtual ~BattleObject() {}
 };
 
 // Per-player helper object (0x38 bytes, created by func_ov007_022227e4).
 class BattleSlot : public BattleObject {
 public:
-    /* 04 */ PAD(0x04, 0x14);
-    /* 14 */ u8 mUnk_14;
-    /* 15 */ PAD(0x15, 0x18);
-    /* 18 */ u32 mUnk_18;
-    /* 1c */ PAD(0x1c, 0x38);
+    /* 04 */ u8 mMode;
+    /* 05 */ u8 mCharacter;
+    /* 06 */ u8 mUnk_06;
+    /* 07 */ u8 mUnk_07;
+    /* 08 */ u16 mUnk_08;
+    /* 0a */ u16 mUnk_0a;
+    /* 0c */ s16 mUnk_0c;
+    /* 0e */ u16 mUnk_0e;
+    /* 10 */ u16 mUnk_10;
+    /* 12 */ u16 mUnk_12;
+    union {
+        /* 14 */ u8 mUnk_14;
+        struct {
+            /* 14 */ u8 mUnk_14_0 : 1;
+            /* 14 */ u8 mUnk_14_1 : 1;
+            /* 14 */ u8 mUnk_14_2 : 1;
+        };
+    };
+    /* 15 */ u8 mUnk_15;
+    /* 16 */ u8 mUnk_16;
+    /* 17 */ u8 mIndex;
+    /* 18 */ int mRole;
+    /* 1c */ u16 mUnk_1c;
+    /* 1e */ u8 mUnk_1e;
+    /* 20 */ BattleData *mData;
+    /* 24 */ u8 *mUnk_24;
+    /* 28 */ u8 *mUnk_28;
+    /* 2c */ u8 *mUnk_2c;
+    /* 30 */ BattleParam *mParam;
+    /* 34 */ BattleSideHelper *mHelper;
+    /* 38 */
 
-    BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u32 unk5, u32 unk6, BattleParam *param, u8 unk8);
+    BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8 unk6, BattleParam *param, u8 unk8);
+    ~BattleSlot();
     int func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 *choice, u8 n, u8 *d);
+    BOOL func_ov007_02222bac();
+    int func_ov007_02222c34(u8 n, u16 *a, u16 *b);
+    u32 func_ov007_022230b4(u16 value, u8 n);
+    void func_ov007_02223484(int sel);
 };
+
+u32 func_ov007_022234f0(int player, u8 mode, u8 ch);
 
 // Per-side helper object (0x14 bytes, created by func_ov007_02223534).
 class BattleSideHelper : public BattleObject {
 public:
-    /* 04 */ PAD(0x04, 0x14);
+    /* 04 */ u8 mUnk_04;
+    /* 05 */ u8 mUnk_05;
+    /* 06 */ u8 mUnk_06;
+    /* 07 */ u8 mUnk_07;
+    /* 08 */ u16 mUnk_08;
+    /* 0a */ PAD(0x0a, 0x0c);
+    /* 0c */ u8 mUnk_0c;
+    /* 0d */ u8 mUnk_0d;
+    /* 0e */ u16 mUnk_0e;
+    /* 10 */ u8 mUnk_10[4];
+    /* 14 */
 
     BattleSideHelper(u8 index, u8 unk2, BattleEntry *entries);
     BOOL func_ov007_02223638(int side, u8 n);
@@ -85,12 +129,47 @@ struct BattleParam {
 };
 extern BattleParam data_ov007_02278b20[];
 
-struct BattleSub48 { // 0x48 object (0x80 bytes)
-    /* 00 */ PAD(0x00, 0x0c);
-    /* 0c */ u8 mUnk_0c;
-    /* 0d */ PAD(0x0d, 0x80);
+class CellAnimation;
+
+// Confrontation screen overlay (0x80 bytes): the two players' emblems and gauges on the sub screen.
+class BattleSub48 : public SceneBase {
+public:
+    /* 00 SceneBase */
+    /* 0c */ u8 mUnk_0c; // state: 0 idle, 1 slide in (update), 2 slide out, 3 hold, 4 finished
+    /* 0d */ u8 mUnk_0d; // sub-state of the animation started by func_ov007_02224a70
+    union {
+        /* 0e */ u8 mUnk_0e;
+        struct {
+            /* 0e */ u8 mUnk_0e_0 : 1;
+            /* 0e */ u8 mUnk_0e_1 : 1;
+            /* 0e */ u8 mUnk_0e_2 : 1;
+            /* 0e */ u8 mUnk_0e_3 : 1;
+            /* 0e */ u8 mUnk_0e_4 : 1;
+        };
+    };
+    /* 0f */ u8 mUnk_0f;
+    /* 10 */ PAD(0x10, 0x12);
+    /* 12 */ u8 mUnk_12[2];
+    /* 14 */ u16 mUnk_14;
+    /* 16 */ u16 mUnk_16;
+    /* 18 */ float mPos[2][2];
+    /* 28 */ float mVel[2][2];
+    /* 38 */ s16 mUnk_38;
+    /* 3a */ s16 mUnk_3a;
+    /* 3c */ int mUnk_3c;
+    /* 40 */ BattleData *mUnk_40;
+    /* 44 */ CellAnimation *mAnims[15];
+    /* 80 */
 
     BattleSub48(BattleData *data, u8 mode);
+    virtual ~BattleSub48();
+    virtual void Update();
+    void func_ov007_02224270();
+    void func_ov007_02224444();
+    u8 func_ov007_02224a70();
+    void func_ov007_02224c90();
+    void func_ov007_02224ef8();
+    void func_ov007_02224fdc();
 };
 
 // 0x40 object (0x54 bytes), deleted through its vtable.

@@ -1,0 +1,479 @@
+
+#include "Battle/BattleBase.hpp"
+
+#include "Game/UnkStruct_020d433c.hpp"
+#include "Graphics/CellAnimation.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "System/FileSystem.hpp"
+#include "Unknown/UnkFunctions.hpp"
+#include <nitro/fx.h>
+
+// Fixed-point conversion of a float value, rounded to nearest.
+
+extern s32 data_ov007_022790c8[][6];
+extern u8 data_ov007_022790c0[];
+
+int func_ov007_022252d0(int x1, int y1, int x2, int y2);
+void func_ov007_02225354(float x, float y, float *out);
+
+BattleSub48::BattleSub48(BattleData *data, u8 mode)
+    : SceneBase(2, 0) {
+    BattleEntry *entries = data->mEntries;
+    mUnk_0c = 0;
+    mUnk_0d = 0;
+    mUnk_0e_0 = 0;
+    mUnk_0e_1 = 0;
+    mUnk_0e_2 = 0;
+    mUnk_0e_3 = 0;
+    mUnk_0e_4 = 0;
+    mUnk_0f = 0;
+    mUnk_14 = 0;
+    mUnk_38 = 0xc0;
+    mUnk_3a = 10;
+    mUnk_3c = mode;
+    mUnk_40 = data;
+    u8 i = 0;
+    do {
+        mAnims[i] = 0;
+        i++;
+    } while (i < 15);
+    if (data_020d433c.mUnk_95 != 0 && data_020d433c.mUnk_95 != 7) {
+        mUnk_0f = data_020d433c.mUnk_95 - 1;
+        u8 k = 0;
+        do {
+            u8 nib = entries[k].mUnk_0d_0;
+            s32 value = data_ov007_022790c8[mUnk_0f][nib];
+            mUnk_12[k] = nib;
+            if (entries[k].mUnk_0c == 5) {
+                if (value < data_ov007_022790c8[mUnk_0f][3]) {
+                    mUnk_12[k] = 3;
+                }
+            } else if (entries[k].mUnk_0c == 6) {
+                if (value < data_ov007_022790c8[mUnk_0f][0]) {
+                    mUnk_12[k] = 0;
+                }
+            }
+            mUnk_16 = 90;
+            int step = (u16) (data_ov007_022790c0[mUnk_12[k]] * 0x2aaa + 0xc000) >> 4;
+            mPos[k][0] = 110.0f + 50.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
+            mPos[k][1] = (float) (u32) mUnk_16 + 50.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
+            k++;
+        } while (k < 2);
+        if (!entries[0].mUnk_0f_5 && !entries[1].mUnk_0f_5) {
+            mUnk_0c = 1;
+        } else {
+            u32 left = 8;
+            u32 right = 0xdc;
+            mPos[0][0] = left;
+            mPos[0][1] = 5.0f;
+            mPos[1][0] = right;
+            mPos[1][1] = 5.0f;
+            mUnk_0e |= 0x14;
+        }
+    } else {
+        mUnk_0e |= 8;
+    }
+    func_ov007_02224444();
+}
+
+BattleSub48::~BattleSub48() {
+    u8 i = 0;
+    do {
+        CellAnimation *anim = mAnims[i];
+        if (anim) {
+            delete anim;
+        }
+        i++;
+    } while (i < 15);
+}
+
+void BattleSub48::func_ov007_02224270() {
+    SpriteScreen &screen = SpriteManager::Get().Screen(0);
+    screen.func_02027624(1);
+    ChangeDir("/Game/Confrontation/Obj/");
+    screen.LoadCharacters("vs_u_obj_ability_32k.nce_ncg1D.bin", 0x1000, 0);
+    screen.LoadPalette("vs_u_obj_ability_32k_ncl.bin", 0x20, 0x40);
+    screen.LoadCharacters("vs_u_obj_updown_32k.nce_ncg1D.bin", 0x3400, 0);
+    screen.LoadPalette("vs_u_obj_updown_32k_ncl.bin", 0x60, 0);
+    int emblem = -1;
+    switch (data_020d433c.mUnk_95) {
+        case 1:
+            emblem = 0;
+            break;
+        case 2:
+            emblem = 1;
+            break;
+        case 4:
+            emblem = 2;
+            break;
+        case 5:
+            emblem = 3;
+            break;
+        case 6:
+            emblem = 4;
+            break;
+        case 3:
+            emblem = 5;
+            break;
+    }
+    if (emblem != -1) {
+        char path[0x80];
+        sprintf(path, "vs_emblem_%02d_32k.nce_ncg1D.bin", emblem);
+        screen.LoadCharacters(path, 0x6000, 0);
+        sprintf(path, "vs_emblem_%02d_32k_ncl.bin", emblem);
+        screen.LoadPalette(path, 0x140, 0);
+    }
+    ChangeDir("/");
+}
+
+void BattleSub48::func_ov007_02224444() {
+    func_ov007_02224270();
+    BattleEntry *entries = mUnk_40->mEntries;
+    u8 i;
+    SpriteScreen &screen = SpriteManager::Get().Screen(0);
+    screen.func_02027624(1);
+    ChangeDir("/Game/Confrontation/Obj/");
+    if (mUnk_3c < 2) {
+        if (entries[mUnk_3c].mUnk_12 != 0) {
+            int kind = func_02065c0c(entries[(u8) mUnk_3c].mUnk_12, 3);
+            int other = func_ov007_02222764((u8) mUnk_3c, entries);
+            if (kind != 5 && other != 5) {
+                i = 0;
+                do {
+                    mAnims[i] = new CellAnimation("vs_u_obj_ability_32k_nce.bin", 0, 1, 1);
+                    mAnims[i]->mCharBase = screen.func_020276f4(0x1000);
+                    mAnims[i]->mUnk_11 = 1;
+                    i++;
+                } while (i < 4);
+                mAnims[0]->SetAnimation(9);
+                mAnims[1]->SetAnimation(8);
+                mUnk_0e_0 = 0;
+                switch (kind) {
+                    case 0:
+                        mAnims[3]->SetAnimation(0);
+                        break;
+                    case 1:
+                        mAnims[3]->SetAnimation(1);
+                        break;
+                    case 2:
+                        mAnims[3]->SetAnimation(2);
+                        break;
+                    case 3:
+                        mAnims[3]->SetAnimation(3);
+                        break;
+                    case 4:
+                        mUnk_0e_0 = 1;
+                        mAnims[2]->SetAnimation(10);
+                        switch (other) {
+                            case 0:
+                                mAnims[3]->SetAnimation(5);
+                                break;
+                            case 1:
+                                mAnims[3]->SetAnimation(4);
+                                break;
+                            case 2:
+                                mAnims[3]->SetAnimation(6);
+                                break;
+                            case 3:
+                                mAnims[3]->SetAnimation(7);
+                                break;
+                        }
+                        break;
+                }
+                if (data_020d433c.mUnk_9a_2) {
+                    mAnims[2]->SetAnimation(10);
+                    mUnk_0e_0 = 1;
+                }
+            }
+        }
+    }
+    i = 4;
+    do {
+        mAnims[i] = new CellAnimation("vs_u_obj_ability_32k_nce.bin", 0, 1, 1);
+        mAnims[i]->mCharBase = screen.func_020276f4(0x1000);
+        mAnims[i]->mUnk_11 = 1;
+        i++;
+    } while (i < 7);
+    mAnims[4]->SetAnimation(11);
+    i = 0;
+    u8 idx = 5;
+    do {
+        if (entries[i].mUnk_0f_2) {
+            mAnims[idx]->SetAnimation(3);
+        } else {
+            int k = func_02065c0c(entries[i].mUnk_12, 3);
+            if (k == 1) {
+                mAnims[idx]->SetAnimation(1);
+            } else if (k == 3) {
+                mAnims[idx]->SetAnimation(3);
+            }
+        }
+        i++;
+        idx++;
+    } while (i < 2);
+    if (!mUnk_0e_3) {
+        i = 0;
+        u8 slot = 7;
+        do {
+            s32 value = data_ov007_022790c8[mUnk_0f][i];
+            mAnims[slot] = new CellAnimation("vs_u_obj_updown_32k_nce.bin", 0, 1, 1);
+            mAnims[slot]->mCharBase = screen.func_020276f4(0x3400);
+            mAnims[slot]->mUnk_11 = 3;
+            if (value > 0x1000) {
+                mAnims[slot]->SetAnimation(0);
+            } else if (value < 0x1000) {
+                mAnims[slot]->SetAnimation(1);
+            } else {
+                mAnims[slot]->SetAnimation(2);
+            }
+            slot++;
+            i++;
+        } while (i < 6);
+        mAnims[13] = new CellAnimation("vs_emblem_00_32k_nce.bin", 0, 1, 1);
+        mAnims[13]->mCharBase = screen.func_020276f4(0x6000);
+        mAnims[13]->mUnk_11 = 10;
+        mAnims[13]->SetAnimation(0);
+        mAnims[14] = new CellAnimation("vs_u_obj_updown_32k_nce.bin", 0, 1, 1);
+        mAnims[14]->mCharBase = screen.func_020276f4(0x3400);
+        mAnims[14]->mUnk_11 = 3;
+        mAnims[14]->SetAnimation(3);
+    }
+    ChangeDir("/");
+}
+
+void BattleSub48::Update() {
+    switch (mUnk_0c) {
+        case 1:
+            func_ov007_02224c90();
+            break;
+        case 2:
+            mUnk_38 = mUnk_38 - mUnk_3a;
+            mUnk_3a = mUnk_3a - 2;
+            if (mUnk_3a < 2) {
+                mUnk_3a = 2;
+            }
+            if (mUnk_38 <= 0x8c) {
+                mUnk_38 = 0x8c;
+                mUnk_0c++;
+            }
+            func_ov007_02224fdc();
+            break;
+        case 3:
+            func_ov007_02224fdc();
+            break;
+        case 4:
+            mFinished = 1;
+            break;
+    }
+}
+
+extern u8 data_ov007_022790bc[];
+
+u8 BattleSub48::func_ov007_02224a70() {
+    if (mUnk_0c == 0) {
+        return 1;
+    }
+    u8 i;
+    u8 ret = 0;
+    switch (mUnk_0d) {
+        case 0: {
+            i = 0;
+            do {
+                mVel[i][0] = ((float) (u32) data_ov007_022790bc[i] - mPos[i][0]) / 60.0f;
+                mVel[i][1] = (5.0f - mPos[i][1]) / 60.0f;
+                i++;
+            } while (i < 2);
+            mUnk_0e |= 2;
+            mUnk_14 = 0;
+            mUnk_0d++;
+            break;
+        }
+        case 1:
+            mUnk_14++;
+            if (mUnk_14 > 0x78) {
+                mUnk_14 = 0;
+                mUnk_0e &= ~2;
+                mUnk_0d++;
+            }
+            break;
+        case 2:
+            mUnk_16 += 3;
+            if (mUnk_16 >= 250) {
+                mUnk_0d++;
+            }
+            break;
+        case 3:
+            mPos[0][0] = mPos[0][0] + mVel[0][0];
+            mPos[0][1] = mPos[0][1] + mVel[0][1];
+            mPos[1][0] = mPos[1][0] + mVel[1][0];
+            mPos[1][1] = mPos[1][1] + mVel[1][1];
+            mUnk_14++;
+            if (mUnk_14 >= 0x3c) {
+                mUnk_14 = 0;
+                i = 0;
+                do {
+                    s32 value = data_ov007_022790c8[mUnk_0f][mUnk_12[i]];
+                    u8 slot = mUnk_12[i] + 7;
+                    if (value > 0x1000) {
+                        mAnims[slot]->SetAnimation(0);
+                    } else if (value < 0x1000) {
+                        mAnims[slot]->SetAnimation(1);
+                    } else {
+                        mAnims[slot]->SetAnimation(2);
+                    }
+                    i++;
+                } while (i < 2);
+                mUnk_0e |= 4;
+                ret = 1;
+            }
+            break;
+    }
+    return ret;
+}
+
+void func_ov007_022252a8(BattleSub48 *obj) {
+    obj->mUnk_38 = 0xc0;
+    obj->mUnk_3a = 10;
+    obj->mUnk_0c = 2;
+}
+
+void func_ov007_022252c4(BattleSub48 *obj) {
+    obj->mUnk_0c = 0;
+}
+
+int func_ov007_022252d0(int x1, int y1, int x2, int y2) {
+    s16 dy = y2 - y1;
+    s16 dx = x2 - x1;
+    int sq = dx * dx + dy * dy;
+    return (int) ((float) FX_Sqrt(FX32_CONST((float) sq)) / 4096.0f);
+}
+
+void BattleSub48::func_ov007_02224c90() {
+    mAnims[13]->Draw(0, 0x6e, (s16) mUnk_16, 1);
+    u8 i = 0;
+    do {
+        u8 c = data_ov007_022790c0[i];
+        u16 angle = c * 0x2aaa + 0xc000;
+        if (mUnk_0e_1) {
+            u8 slot = i + 7;
+            CellAnimation *anim = mAnims[slot];
+            if (anim->mUnk_0e != 2) {
+                int step = angle >> 4;
+                u16 y;
+                u16 x;
+                x = 110.0f + 70.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
+                y = (float) (u32) mUnk_16 + 70.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
+                anim->Update();
+                mAnims[slot]->Draw(0, (s16) x, (s16) y, 1);
+            }
+        }
+        if (data_ov007_022790c0[mUnk_12[0]] != c && data_ov007_022790c0[mUnk_12[1]] != c) {
+            int step = angle >> 4;
+            u16 y;
+            u16 x;
+            x = 110.0f + 50.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
+            y = (float) (u32) mUnk_16 + 50.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
+            mAnims[14]->func_0202a3ec(0, i, x, y, 1);
+        }
+        i++;
+    } while (i < 6);
+    func_ov007_02224ef8();
+}
+
+void BattleSub48::func_ov007_02224ef8() {
+    u8 i = 0;
+    do {
+        u16 x = mPos[i][0];
+        u16 y = mPos[i][1];
+        if (mUnk_0e_2) {
+            u8 slot = mUnk_12[i] + 7;
+            mAnims[slot]->Update();
+            mAnims[slot]->Draw(0, (s16) (x + (i == 0 ? 30 : -30)), (s16) y, 1);
+        }
+        mAnims[14]->func_0202a3ec(0, mUnk_12[i], x, y, 1);
+        i++;
+    } while (i < 2);
+}
+
+void BattleSub48::func_ov007_02224fdc() {
+    s16 y = mUnk_38;
+    s16 xs[2];
+    xs[0] = 0x24;
+    xs[1] = 0xdc;
+    BattleEntry *entries = mUnk_40->mEntries;
+    u8 i;
+    if (y >= 0xc0) {
+        return;
+    }
+    i = 0;
+    do {
+        if (entries[i].mUnk_12 != 0) {
+            if (mAnims[3] == 0) {
+                break;
+            }
+            if ((i == 0 && mUnk_3c == 0) || (i == 1 && mUnk_3c == 1)) {
+                u8 other = i ^ 1;
+                if (!entries[other].mUnk_0f_3) {
+                    if (!mUnk_0e_0) {
+                        mAnims[1]->Update();
+                        mAnims[1]->Draw(0, xs[i], y, 1);
+                    } else {
+                        mAnims[2]->Draw(0, xs[i], y, 1);
+                    }
+                    s16 x = xs[i];
+                    mAnims[3]->Draw(0, x, y, 1);
+                    mAnims[0]->Draw(0, x, y, 1);
+                    if (i == 0) {
+                        xs[0] += 0x41;
+                    } else {
+                        xs[1] -= 0x41;
+                    }
+                }
+            }
+        }
+        i++;
+    } while (i < 2);
+    i = 0;
+    do {
+        if (entries[i].mUnk_12 == 0) {
+            if (entries[i].mUnk_0f_2) {
+                s16 x = xs[i];
+                u8 slot = i + 5;
+                mAnims[slot]->Draw(0, x, y, 1);
+                mAnims[4]->Update();
+                mAnims[4]->Draw(0, x, y, 1);
+                if (i == 0) {
+                    xs[0] += 0x41;
+                } else {
+                    xs[1] -= 0x41;
+                }
+            } else if (entries[i].mUnk_0f_3) {
+                u8 j = i ^ 1;
+                s16 x = xs[j];
+                u8 slot = i + 5;
+                mAnims[slot]->Draw(0, x, y, 1);
+                mAnims[4]->Update();
+                mAnims[4]->Draw(0, x, y, 1);
+                if (j == 0) {
+                    xs[0] -= 0x41;
+                } else {
+                    xs[1] -= 0x41;
+                }
+            }
+        }
+        i++;
+    } while (i < 2);
+    if (mUnk_0e_3) {
+        return;
+    }
+    func_ov007_02224ef8();
+}
+
+void func_ov007_02225354(float x, float y, float *out) {
+    float len = (float) FX_Sqrt(FX32_CONST(x * x + y * y)) / 4096.0f;
+    if (len == 0.0f) {
+        return;
+    }
+    out[0] = x / len;
+    out[1] = y / len;
+}

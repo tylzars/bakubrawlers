@@ -107,7 +107,7 @@ u8 ConfrontBg01::vfunc_40(int a) {
                 func_020247fc(&SoundManager::Get(), mUnk_6a);
             }
             mBlend->func_ov007_02223d7c();
-            hit = mBlend->mUnk_05 * 100 / 40;
+            hit = mBlend->mLevel * 100 / 40;
         }
     } else {
         if (mUnk_68 != 0) {

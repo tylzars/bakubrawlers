@@ -5,6 +5,8 @@
 
 #define FX32_SHIFT 12
 
+#define FX32_CONST(x) ((fx32) (((x) > 0) ? ((x) * 4096.0f + 0.5f) : ((x) * 4096.0f - 0.5f)))
+
 static inline fx32 FX_Mul(fx32 v1, fx32 v2) {
     return (fx32) (((fx64) v1 * v2 + 0x800LL) >> FX32_SHIFT);
 }
@@ -37,6 +39,7 @@ extern "C" {
 // Sine/cosine pairs: [2 * i] is sin, [2 * i + 1] is cos, for i = angle >> 4.
 extern const s16 FX_SinCosTable_[];
 void MTX_Identity22_(MtxFx22 *mtx); // 0x02000cb4
+fx32 FX_Sqrt(fx32 x); // 0x01ff8068 (itcm, hardware square root)
 void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle); // itcm: rotation and scale
 #ifdef __cplusplus
 }

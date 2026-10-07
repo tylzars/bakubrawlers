@@ -40,3 +40,6 @@ public:
     void func_020656c4();
     void func_02065818();
 };
+
+// Looks up a 16-bit value for an id (table of 213 entries; 0 when out of range).
+u16 func_02065c20(u32 id);

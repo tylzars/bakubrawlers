@@ -3,7 +3,11 @@
 #include "global.h"
 #include "types.h"
 
+#include <nitro/fx.h>
+
 #include "Scene/SceneBase.hpp"
+#include "UI/MessageWindow.hpp"
+#include "Unknown/UnkStruct_020651bc.hpp"
 
 struct BattleData;
 struct BattleEntry;
@@ -90,11 +94,12 @@ public:
 
 // One 0x14-byte player/slot record inside BattleData (array starts at +0x0c).
 struct BattleEntry {
-    /* 00 */ PAD(0x00, 0x0c);
+    /* 00 */ u16 mUnk_00; // power value compared by the gauge
+    /* 02 */ PAD(0x02, 0x0c);
     /* 0c */ u8 mUnk_0c;
     /* 0d */ u8 mUnk_0d_0 : 4;
     /* 0d */ u8 mUnk_0d_4 : 4;
-    /* 0e */ PAD(0x0e, 0x0f);
+    /* 0e */ u8 mUnk_0e;
     /* 0f */ u8 mUnk_0f_0 : 1;
     /* 0f */ u8 mUnk_0f_1 : 1;
     /* 0f */ u8 mUnk_0f_2 : 1;
@@ -112,13 +117,16 @@ struct BattleEntry {
 struct BattleData {
     /* 00 */ PAD(0x00, 0x0c);
     /* 0c */ BattleEntry mEntries[2];
-    /* 34 */
+    /* 34 */ PAD(0x34, 0x6c);
+    /* 6c */ MessageWindow *mUnk_6c;
+    /* 70 */ UnkStruct_020651bc *mUnk_70;
+    /* 74 */
 };
 
 // 12-byte per-mode parameter record (table at 0x02278b20).
 struct BattleParam {
     /* 00 */ u8 mUnk_00;
-    /* 01 */ PAD(0x01, 0x02);
+    /* 01 */ u8 mUnk_01;
     /* 02 */ u16 mUnk_02;
     /* 04 */ u32 mUnk_04;
     /* 08 */ u8 mUnk_08;
@@ -130,6 +138,7 @@ struct BattleParam {
 extern BattleParam data_ov007_02278b20[];
 
 class CellAnimation;
+class BattleObj01;
 
 // Confrontation screen overlay (0x80 bytes): the two players' emblems and gauges on the sub screen.
 class BattleSub48 : public SceneBase {
@@ -172,31 +181,198 @@ public:
     void func_ov007_02224fdc();
 };
 
-// 0x40 object (0x54 bytes), deleted through its vtable.
-class BattleSub40 : public BattleObject {
-public:
-    /* 04 */ PAD(0x04, 0x54);
+class Camera;
+class ModelInstance;
+class UnkStruct_02029ca8;
+class EffectManager;
 
-    BattleSub40(BattleData *data, int unk2);
+// Helper of the battle map scene (0x24 bytes): ctor 0x0224916c, destructor 0x02249198 (non-virtual).
+class BattleMapObj {
+public:
+    /* 00 */ PAD(0x00, 0x24);
+    /* 24 */
+
+    BattleMapObj(int unk1);
+    ~BattleMapObj();
+    void func_ov007_022493fc();
+    void func_ov007_0224954c();
 };
 
-struct BattleSub44 {
-    /* 000 */ PAD(0x000, 0x13);
-    /* 013 */ u8 mUnk_13;
-    /* 014 */ PAD(0x014, 0x22);
-    /* 022 */ u8 mUnk_22;
-    /* 023 */ u8 mUnk_23;
-    /* 024 */ PAD(0x024, 0x117);
-    /* 117 */ u8 mUnk_117;
-    /* 118 */ PAD(0x118, 0x12c);
-    /* 12c */ u16 mUnk_12c;
-    /* 12e */ u16 mUnk_12e;
+// A Real Bakugan model (0x10 bytes, ctor 0x0227430c), deleted through its vtable.
+class BattleRealBaku : public BattleObject {
+public:
+    /* 04 */ PAD(0x04, 0x08);
+    /* 08 */ ModelInstance *mModel;
+    /* 0c */ PAD(0x0c, 0x10);
+    /* 10 */
+
+    BattleRealBaku(u8 id, int unk2, u8 unk3, int unk4, int unk5, int unk6, bool unk7);
+};
+
+// Camera rows of the 3D battle field (12 bytes, table at 0x022791ec).
+struct BattleCamRow {
+    /* 00 */ s32 mUnk_00;
+    /* 04 */ s32 mUnk_04;
+    /* 08 */ s32 mUnk_08;
+    /* 0c */
+};
+
+// 3D side of the battle (0x54 bytes, formerly BattleField3D): the camera animation of the map (commandfiled0.cam),
+// the two Real Bakugan models and the two "aura%02d" effects. Deleted through its vtable.
+class BattleField3D : public BattleObject {
+public:
+    union {
+        /* 04 */ u8 mUnk_04;
+        struct {
+            /* 04 */ u8 mUnk_04_0 : 1;
+            /* 04 */ u8 mUnk_04_1 : 1;
+            /* 04 */ u8 mUnk_04_2 : 1;
+        };
+    };
+    /* 05 */ PAD(0x05, 0x08);
+    /* 08 */ s16 mAura[2]; // effect handles, -1 when none
+    /* 0c */ s32 mUnk_0c;
+    /* 10 */ s32 mUnk_10;
+    /* 14 */ s32 mUnk_14;
+    /* 18 */ s32 mUnk_18;
+    /* 1c */ VecFx32 mPos[2];
+    /* 34 */ float mUnk_34;
+    /* 38 */ BattleMapObj *mUnk_38;
+    /* 3c */ UnkStruct_02029ca8 *mUnk_3c;
+    /* 40 */ void *mCamFile;
+    /* 44 */ EffectManager *mEffects;
+    /* 48 */ BattleRealBaku *mUnk_48;
+    /* 4c */ BattleRealBaku *mUnk_4c;
+    /* 50 */ BattleData *mData;
+    /* 54 */
+
+    BattleField3D(BattleData *data, int unk2);
+    virtual ~BattleField3D();
+    void func_ov007_022298bc(float a, float b);
+    void func_ov007_02229900();
+    void func_ov007_022299f4(u32 frame);
+    void func_ov007_02229b2c(u32 frame);
+};
+
+// Battle HUD scene on the sub screen (0x130 bytes, formerly BattleHud): the power gauge that tugs between the two
+// players, the countdown, the small card images and the cut-in animations.
+class BattleHud : public SceneBase {
+public:
+    /* 00 SceneBase */
+    /* 0c */ int mUnk_0c; // viewer index: 0/1 players, 2/3 spectators
+    /* 10 */ u16 mUnk_10;
+    /* 12 */ u8 mUnk_12;
+    /* 13 */ u8 mUnk_13; // gauge position in percent
+    /* 14 */ s32 mUnk_14; // same, 20.12 fixed point
+    /* 18 */ s16 mUnk_18;
+    /* 1a */ s16 mUnk_1a;
+    /* 1c */ u16 mUnk_1c[2];
+    /* 20 */ u16 mUnk_20;
+    union {
+        /* 22 */ u8 mUnk_22;
+        struct {
+            /* 22 */ u8 mUnk_22_0 : 1;
+            /* 22 */ u8 mUnk_22_1 : 1;
+            /* 22 */ u8 mUnk_22_2 : 1;
+            /* 22 */ u8 mUnk_22_3 : 1;
+            /* 22 */ u8 mUnk_22_4 : 1;
+            /* 22 */ u8 mUnk_22_5 : 1;
+            /* 22 */ u8 mUnk_22_6 : 1;
+            /* 22 */ u8 mUnk_22_7 : 1;
+        };
+    };
+    union {
+        /* 23 */ u8 mUnk_23;
+        struct {
+            /* 23 */ u8 mUnk_23_0 : 1;
+            /* 23 */ u8 mUnk_23_1 : 1;
+            /* 23 */ u8 mUnk_23_2 : 1;
+        };
+    };
+    /* 24 */ u16 mUnk_24;
+    /* 26 */ u8 mUnk_26;
+    /* 27 */ u8 mUnk_27;
+    /* 28 */ s32 mUnk_28[2];
+    /* 30 */ CellAnimation *mAnims[23];
+    /* 8c */ BattleData *mData;
+    /* 90 */ BattleParam *mParam;
+    /* 94 */ s8 (*mChoice)[2]; // per side: the two chosen entries (-1: none)
+    /* 98 */ u32 mUnk_98;
+    /* 9c */ u16 mUnk_9c;
+    /* 9e */ PAD(0x9e, 0x9f);
+    /* 9f */ u8 mUnk_9f;
+    /* a0 */ float mUnk_a0[2];
+    /* a8 */ float mUnk_a8[2];
+    /* b0 */ float mUnk_b0[2];
+    /* b8 */ float mUnk_b8[2];
+    /* c0 */ u16 mUnk_c0;
+    /* c2 */ PAD(0xc2, 0xc3);
+    /* c3 */ u8 mUnk_c3;
+    /* c4 */ BattleObj01 *mObjs[15];
+    /* 100 */ u8 mUnk_100[2];
+    /* 102 */ u8 mUnk_102[2];
+    /* 104 */ u8 mUnk_104[2];
+    /* 106 */ PAD(0x106, 0x108);
+    /* 108 */ float mUnk_108;
+    /* 10c */ float mUnk_10c;
+    /* 110 */ float mUnk_110;
+    /* 114 */ u8 mUnk_114;
+    /* 115 */ u8 mUnk_115;
+    /* 116 */ u8 mUnk_116;
+    union {
+        /* 117 */ u8 mUnk_117;
+        struct {
+            /* 117 */ u8 mUnk_117_0 : 1;
+            /* 117 */ u8 mUnk_117_1 : 1;
+            /* 117 */ u8 mUnk_117_2 : 1;
+            /* 117 */ u8 mUnk_117_3 : 1;
+        };
+    };
+    /* 118 */ u8 mUnk_118[2];
+    /* 11a */ u8 mUnk_11a;
+    /* 11b */ u8 mUnk_11b;
+    /* 11c */ s16 mUnk_11c[2];
+    /* 120 */ s16 mUnk_120;
+    /* 122 */ u8 mUnk_122[2];
+    /* 124 */ s16 mUnk_124;
+    /* 126 */ s16 mUnk_126;
+    /* 128 */ u8 mUnk_128;
+    /* 129 */ u8 mUnk_129;
+    /* 12a */ PAD(0x12a, 0x12b);
+    /* 12b */ u8 mUnk_12b; // state of Update
+    /* 12c */ s16 mUnk_12c;
+    /* 12e */ s16 mUnk_12e;
     /* 130 */
 
-    BattleSub44(BattleData *data, BattleParam *param, u8 mode, s8 *choice);
+    BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *choice);
+    virtual ~BattleHud();
+    virtual void Update();
+    void func_ov007_022257e0();
+    void func_ov007_0222644c(u8 side, int card);
+    void func_ov007_02226614();
+    void func_ov007_02226ab8();
+    BOOL func_ov007_02226c70();
+    void func_ov007_02226e7c();
+    BOOL func_ov007_02226f1c();
+    void func_ov007_02226fc8();
+    BOOL func_ov007_02227068();
+    void func_ov007_02227128();
+    BOOL func_ov007_02227158();
+    BOOL func_ov007_022273b4();
+    void func_ov007_02227460(int side);
     void func_ov007_02227490(int mode, s32 value, s32 count, bool boost, bool useLevel);
-    void func_ov007_022275c0(int mode, s16 x, s16 y, u8 flag);
     u8 func_ov007_022275a0(u16 value, u8 a, u8 b);
+    BOOL func_ov007_022275c0(u8 side, s16 x, s16 y, u8 flag);
+    void func_ov007_02227730();
+    void func_ov007_02227bbc(u8 index);
+    void func_ov007_02227c54();
+    void func_ov007_022284a0(int side);
+    void func_ov007_022284c0(int side);
+    void func_ov007_022284e0(int side);
+    BOOL func_ov007_02228514();
+    void func_ov007_02228530(int card);
+    void func_ov007_022286c8();
+    void func_ov007_022286e0();
 };
 
 // Battle scene base: IBattle at +0, SceneBase at +4. Derived classes are the per-field battle screens.
@@ -230,8 +406,8 @@ public:
     /* 2a */ u16 mUnk_2a;
     /* 2c */ BattleData *mUnk_2c;
     /* 30 */ BattleSlot *mSlots[4];
-    /* 40 */ BattleSub40 *mUnk_40;
-    /* 44 */ BattleSub44 *mUnk_44;
+    /* 40 */ BattleField3D *mUnk_40;
+    /* 44 */ BattleHud *mUnk_44;
     /* 48 */ BattleSub48 *mUnk_48;
     /* 4c */ u8 mUnk_4c;
     /* 4d */ u8 mUnk_4d;
@@ -265,7 +441,7 @@ public:
     /* 10 */ virtual void func_ov007_0221cfac(u16 *a, u16 *b);
     /* 14 */ virtual int func_ov007_0221d494(u16 *a, u16 *b, u16 *c, u8 *d);
     /* 18 */ virtual void func_ov007_0221d488(u16 *p);
-    /* 1c */ virtual void func_ov007_0221d088(int a, u16 *counts);
+    /* 1c */ virtual void func_ov007_0221d088(u8 a, u16 *counts);
     /* 20 */ virtual void Update();
     /* 24 */ virtual void func_ov007_02219888(BattleData *data, u32 mode);
     /* 28 */ virtual void vfunc_28() = 0;

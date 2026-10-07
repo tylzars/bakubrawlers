@@ -14,19 +14,19 @@
 
 // Functions of other battle files.
 int func_ov007_0223e214(BattleData *data, int a, int b);
-void func_ov007_02229998(BattleSub40 *obj);
+void func_ov007_02229998(BattleField3D *obj);
 void func_ov007_022252c4(BattleSub48 *obj);
 void func_ov007_0226a448(BattlePlayer *player, u8 a, int b);
-void func_ov007_0222844c(BattleSub44 *obj, u8 a, u8 b);
-BOOL func_ov007_02226aa0(BattleSub44 *obj);
+void func_ov007_0222844c(BattleHud *obj, u8 a, u8 b);
+BOOL func_ov007_02226aa0(BattleHud *obj);
 BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
 void func_ov007_022252a8(BattleSub48 *obj);
-void func_ov007_02229758(BattleSub40 *obj);
-BOOL func_ov007_02229770(BattleSub40 *obj);
-BOOL func_ov007_022297f0(BattleSub40 *obj);
-void func_ov007_02226a44(BattleSub44 *obj, u32 a);
-void func_ov007_0222847c(BattleSub44 *obj);
-void func_ov007_02227434(BattleSub44 *obj);
+void func_ov007_02229758(BattleField3D *obj);
+BOOL func_ov007_02229770(BattleField3D *obj);
+BOOL func_ov007_022297f0(BattleField3D *obj);
+void func_ov007_02226a44(BattleHud *obj, u32 a);
+void func_ov007_0222847c(BattleHud *obj);
+void func_ov007_02227434(BattleHud *obj);
 extern u8 data_ov007_0227915c;
 extern u8 data_ov007_02279170;
 struct BattleRow {
@@ -128,7 +128,7 @@ BOOL BattleBase::func_ov007_0221a664() {
 }
 
 void BattleBase::func_ov007_0221bb28(s16 a, s16 b) {
-    BattleSub44 *p = mUnk_44;
+    BattleHud *p = mUnk_44;
     p->mUnk_12c = a;
     p->mUnk_12e = b;
 }
@@ -489,7 +489,7 @@ BOOL BattleBase::func_ov007_0221bfa4() {
 extern "C" void func_02024764(SoundManager *manager, u32 a, u32 b);
 
 BOOL BattleBase::func_ov007_0221bb84() {
-    BattleSub44 *sub = mUnk_44;
+    BattleHud *sub = mUnk_44;
     u8 n = sub->mUnk_13;
     BOOL done = 0;
     mUnk_16++;
@@ -596,16 +596,16 @@ void BattleBase::func_ov007_02219888(BattleData *data, u32 mode) {
         mSlots[order[1]]->mUnk_14 |= 4;
     }
     func_ov007_02219888(data, mode);
-    mUnk_44 = new BattleSub44(data, mUnk_20, mUnk_12, (s8 *) &mUnk_1c);
+    mUnk_44 = new BattleHud(data, mUnk_20, mUnk_12, (s8 *) &mUnk_1c);
     mUnk_48 = new BattleSub48(data, mUnk_12);
-    mUnk_40 = new BattleSub40(data, 0);
+    mUnk_40 = new BattleField3D(data, 0);
     if (data_020d433c.mUnk_10) {
         data_020d433c.mUnk_10->func_020785d8(0xb);
     }
 }
 
 // non-matching: 4 bytes long. The original reloads counts[i] after the hi[i] store.
-void BattleBase::func_ov007_0221d088(int a, u16 *counts) {
+void BattleBase::func_ov007_0221d088(u8 a, u16 *counts) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 sel = list->mUnk_2a9;
     u16 hi[4] = {0, 0, 0, 0};

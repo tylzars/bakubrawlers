@@ -6,6 +6,22 @@
 #include <nitro/fx.h>
 
 class UnkStruct_02078290;
+class Camera;
+class UnkStruct_Battle2a4; // object at BattlePlayerList+0x2a4, drives a timed screen effect
+
+// Battle message a player sends over the communication link (type 0xe).
+struct BattlePlayerMessage {
+    /* 00 */ u8 mType; // 0xe = a battle message is pending
+    /* 01 */ PAD(0x01, 0x04);
+    /* 04 */ u16 mUnk_04[2];
+    /* 08 */ PAD(0x08, 0x0c);
+    /* 0c */ u16 mUnk_0c[2];
+    /* 10 */ PAD(0x10, 0x14);
+    /* 14 */ u16 mUnk_14;
+    /* 16 */ u16 mUnk_16;
+    /* 18 */ u8 mUnk_18;
+    /* 19 */
+};
 
 // 12 byte per-slot record of a player, the second field is a 12 bit gauge.
 struct BattleRecord {
@@ -36,7 +52,9 @@ struct BattlePlayer {
     /* fa */ u16 mUnk_fa;
     /* fc */ u8 mUnk_fc;
     /* fd */ u8 mUnk_fd;
-    /* fe */
+    /* fe */ PAD(0xfe, 0x100);
+    /* 100 */ BattlePlayerMessage mMsg;
+    /* 119 */
 
     bool IsActive() const {
         bool active = false;
@@ -100,9 +118,13 @@ struct BattlePlayerList {
     /* 28a */ u8 mUnk_28a;
     /* 28b */ PAD(0x28b, 0x298);
     /* 298 */ BattleTarget *mUnk_298;
-    /* 29c */ PAD(0x29c, 0x2a9);
+    /* 29c */ PAD(0x29c, 0x2a0);
+    /* 2a0 */ Camera *mCamera;
+    /* 2a4 */ UnkStruct_Battle2a4 *mUnk_2a4;
+    /* 2a8 */ PAD(0x2a8, 0x2a9);
     /* 2a9 */ u8 mUnk_2a9;
-    /* 2aa */ PAD(0x2aa, 0x2b0);
+    /* 2aa */ PAD(0x2aa, 0x2af);
+    /* 2af */ u8 mUnk_2af;
     /* 2b0 */ u8 mUnk_2b0;
 
     BattlePlayer *Current() {

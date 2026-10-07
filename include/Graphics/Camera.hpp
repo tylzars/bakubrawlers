@@ -14,11 +14,18 @@ public:
     /* 20 */ VecFx32 mTarget;
     /* 2c */ fx32 mNear;
     /* 30 */ fx32 mFar;
-    /* 34 */ PAD(0x34, 0x64);
+    /* 34 */ PAD(0x34, 0x50);
+    /* 50 */ u16 mUnk_50; // camera animation: frame count
+    /* 52 */ u16 mUnk_52; // camera animation: current frame
+    /* 54 */ PAD(0x54, 0x64);
     /* 64 */
 
     Camera(); // 0x02025e50
     void func_02026004(u32 fov); // sets the field of view
+    void func_02026164(u32 frame);
+    void func_02026180();
+    void func_020264a4(u32 unk1);
+    void func_0202610c(void *file, u32 unk2); // 0x0202610c, load a camera animation
 
     void SetPosition(fx32 x, fx32 y, fx32 z) {
         mPosition.x = x;

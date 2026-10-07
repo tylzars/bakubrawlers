@@ -99,7 +99,7 @@ _Z13func_01ffcf80P7MtxFx33t kind:function(arm,size=0x58) addr:0x01ffcf80
 _Z13func_01ffcfd8P7MtxFx33t kind:function(arm,size=0x58) addr:0x01ffcfd8
 _Z13func_01ffd030P7MtxFx33t kind:function(arm,size=0x58) addr:0x01ffd030
 _Z13func_01ffd088P7MtxFx43t kind:function(arm,size=0x58) addr:0x01ffd088
-func_01ffd0e0 kind:function(arm,size=0x58) addr:0x01ffd0e0
+_Z13func_01ffd0e0P7MtxFx43t kind:function(arm,size=0x58) addr:0x01ffd0e0
 func_01ffd138 kind:function(arm,size=0x58) addr:0x01ffd138
 data_01ffd1a0 kind:bss addr:0x01ffd1a0
 data_01ffd1a4 kind:bss addr:0x01ffd1a4

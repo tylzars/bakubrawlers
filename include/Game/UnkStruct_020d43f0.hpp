@@ -14,8 +14,8 @@ struct UnkStruct_020d43f0 {
     /* 028 */ u16 mUnk_28_0 : 6;
     /* 028 */ u16 mUnk_28_6 : 1;
     /* 028 */ u16 mUnk_28_7 : 9;
-    /* 02a */ PAD(0x02a, 0x042);
-    /* 042 */ u8 mUnk_42;
+    /* 02a */ u16 mName[12]; // player name, UTF-16
+    /* 042 */ volatile u8 mUnk_42; // reloaded after a switch on it (ov002 0221e984)
     /* 043 */ u8 mUnk_43;
     /* 044 */ PAD(0x044, 0x578);
     /* 578 */ u8 mUnk_578;
@@ -24,8 +24,14 @@ struct UnkStruct_020d43f0 {
     /* 5b9 */ u8 mUnk_5b9_0 : 1;
     /* 5b9 */ u8 mUnk_5b9_1 : 1;
     /* 5b9 */ u8 mUnk_5b9_2 : 6;
-    /* 5ba */ PAD(0x5ba, 0x5c1);
+    /* 5ba */ PAD(0x5ba, 0x5be);
+    /* 5be */ u8 mUnk_5be;
+    /* 5bf */ u8 mUnk_5bf_0 : 1;
+    /* 5bf */ u8 mUnk_5bf_1 : 7;
+    /* 5c0 */ PAD(0x5c0, 0x5c1);
     /* 5c1 */ u8 mUnk_5c1;
+    /* 5c2 */ PAD(0x5c2, 0x5d2);
+    /* 5d2 */ u8 mUnk_5d2;
 };
 
 // Declared as an array: code that stores through it only matches when indexed (`data_020d43f0[0]`).

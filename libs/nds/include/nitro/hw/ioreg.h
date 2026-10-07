@@ -5,9 +5,14 @@
 // ARM9 I/O registers used so far. Main engine at 0x04000000, sub engine (DB) at 0x04001000.
 #define REG_ADDR_GX_DISPCNT     0x04000000
 #define REG_ADDR_G2_BG0CNT      0x04000008
+#define REG_ADDR_G2_BG1CNT      0x0400000a
+#define REG_ADDR_G2_BG2CNT      0x0400000c
+#define REG_ADDR_G2_BG3CNT      0x0400000e
 #define REG_ADDR_G2_BG0OFS      0x04000010
+#define REG_ADDR_G2_BG1OFS      0x04000014
 #define REG_ADDR_G2_WINOUT      0x0400004a
 #define REG_ADDR_G2_BLDCNT      0x04000050
+#define REG_ADDR_G2_BLDALPHA    0x04000052
 #define REG_ADDR_GX_POWCNT      0x04000304
 #define REG_ADDR_GXS_DB_DISPCNT 0x04001000
 #define REG_ADDR_G2S_DB_BG0CNT  0x04001008
@@ -19,16 +24,23 @@
 #define REG_ADDR_G2S_DB_BG2OFS  0x04001018
 #define REG_ADDR_G2S_DB_BG3OFS  0x0400101c
 #define REG_ADDR_G2S_DB_WIN0H   0x04001040
+#define REG_ADDR_G2S_DB_WIN1H   0x04001042
 #define REG_ADDR_G2S_DB_WIN0V   0x04001044
+#define REG_ADDR_G2S_DB_WIN1V   0x04001046
 #define REG_ADDR_G2S_DB_WININ   0x04001048
 #define REG_ADDR_G2S_DB_WINOUT  0x0400104a
 #define REG_ADDR_G2S_DB_BLDCNT  0x04001050
 
 #define reg_GX_DISPCNT     (*(vu32 *) REG_ADDR_GX_DISPCNT)
 #define reg_G2_BG0CNT      (*(vu16 *) REG_ADDR_G2_BG0CNT)
+#define reg_G2_BG1CNT      (*(vu16 *) REG_ADDR_G2_BG1CNT)
+#define reg_G2_BG2CNT      (*(vu16 *) REG_ADDR_G2_BG2CNT)
+#define reg_G2_BG3CNT      (*(vu16 *) REG_ADDR_G2_BG3CNT)
 #define reg_G2_BG0OFS      (*(vu32 *) REG_ADDR_G2_BG0OFS)
+#define reg_G2_BG1OFS      (*(vu32 *) REG_ADDR_G2_BG1OFS)
 #define reg_G2_WINOUT      (*(vu16 *) REG_ADDR_G2_WINOUT)
 #define reg_G2_BLDCNT      (*(vu16 *) REG_ADDR_G2_BLDCNT)
+#define reg_G2_BLDALPHA    (*(vu16 *) REG_ADDR_G2_BLDALPHA)
 #define reg_GX_POWCNT      (*(vu16 *) REG_ADDR_GX_POWCNT)
 #define reg_GXS_DB_DISPCNT (*(vu32 *) REG_ADDR_GXS_DB_DISPCNT)
 #define reg_G2S_DB_BG0CNT  (*(vu16 *) REG_ADDR_G2S_DB_BG0CNT)
@@ -41,6 +53,8 @@
 #define reg_G2S_DB_BG3OFS  (*(vu32 *) REG_ADDR_G2S_DB_BG3OFS)
 #define reg_G2S_DB_WIN0H   (*(vu16 *) REG_ADDR_G2S_DB_WIN0H)
 #define reg_G2S_DB_WIN0V   (*(vu16 *) REG_ADDR_G2S_DB_WIN0V)
+#define reg_G2S_DB_WIN1H   (*(vu16 *) REG_ADDR_G2S_DB_WIN1H)
+#define reg_G2S_DB_WIN1V   (*(vu16 *) REG_ADDR_G2S_DB_WIN1V)
 #define reg_G2S_DB_WININ   (*(vu16 *) REG_ADDR_G2S_DB_WININ)
 #define reg_G2S_DB_WINOUT  (*(vu16 *) REG_ADDR_G2S_DB_WINOUT)
 #define reg_G2S_DB_BLDCNT  (*(vu16 *) REG_ADDR_G2S_DB_BLDCNT)

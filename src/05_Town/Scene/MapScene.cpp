@@ -328,7 +328,7 @@ void MapScene::CreateMenu() {
 }
 
 void MapScene::UpdateDrag() {
-    u8 cur = TouchManager::Get().mUnk_30;
+    u8 cur = TouchManager::Get().mX;
     if (mDragging != 0) {
         if (TouchManager::Get().mUnk_56 == 0) {
             mDragging = 0;

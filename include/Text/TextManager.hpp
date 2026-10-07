@@ -31,8 +31,14 @@ class TextManager {
 public:
     /* 00 */ PAD(0x00, 0x10);
     /* 10 */ u16 mUnk_10;
-    /* 12 */ PAD(0x12, 0x38);
-    /* 38 */ u16 mPalette[16];
+    /* 12 */ PAD(0x12, 0x36);
+    union {
+        /* 36 */ u16 mUnk_36[17]; // filled as one run from 0x36 (ov002 02220830)
+        struct {
+            /* 36 */ u16 mUnk_36_0;
+            /* 38 */ u16 mPalette[16];
+        };
+    };
     /* 58 */ u8 mUnk_58;
     /* 59 */ PAD(0x59, 0x5b);
     /* 5b */ u8 mUnk_5b;

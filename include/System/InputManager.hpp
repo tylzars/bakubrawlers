@@ -6,7 +6,8 @@
 // Global input state, constructed on first use and destroyed at exit.
 class InputManager {
 public:
-    /* 00 */ PAD(0x00, 0x04);
+    /* 00 */ u16 mHeld;
+    /* 02 */ PAD(0x02, 0x04);
     /* 04 */ u16 mTrigger;
     /* 06 */
 
@@ -17,6 +18,9 @@ public:
         return instance;
     }
 
+    u16 IsHeld(u16 keys) {
+        return mHeld & keys;
+    }
     u16 IsTrigger(u16 keys) {
         return mTrigger & keys;
     }

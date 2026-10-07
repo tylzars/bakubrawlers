@@ -12,6 +12,7 @@ public:
 
     MessageWindow(const char *name, u32 unk2, u32 unk3);
     virtual ~MessageWindow();
+    void func_02065878();
     void func_020658d0();
     void func_02065bd4(u32 unk1, u32 unk2, u32 unk3);
     void func_02065be4(u32 unk1);

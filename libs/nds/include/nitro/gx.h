@@ -43,6 +43,9 @@ static inline void GXS_SetVisibleWnd(int window) {
 static inline void G2_SetBG0Control(int size, int color, int screenBase, int charBase, int extPltt) {
     reg_G2_BG0CNT = G2_BG_CONTROL_VALUE(reg_G2_BG0CNT, size, color, screenBase, charBase, extPltt);
 }
+static inline void G2_SetBG1Control(int size, int color, int screenBase, int charBase, int extPltt) {
+    reg_G2_BG1CNT = G2_BG_CONTROL_VALUE(reg_G2_BG1CNT, size, color, screenBase, charBase, extPltt);
+}
 static inline void G2S_SetBG0Control(int size, int color, int screenBase, int charBase, int extPltt) {
     reg_G2S_DB_BG0CNT = G2_BG_CONTROL_VALUE(reg_G2S_DB_BG0CNT, size, color, screenBase, charBase, extPltt);
 }
@@ -51,6 +54,9 @@ static inline void G2S_SetBG1Control(int size, int color, int screenBase, int ch
 }
 static inline void G2S_SetBG2Control(int size, int color, int screenBase, int charBase, int extPltt) {
     reg_G2S_DB_BG2CNT = G2_BG_CONTROL_VALUE(reg_G2S_DB_BG2CNT, size, color, screenBase, charBase, extPltt);
+}
+static inline void G2S_SetBG3Control(int size, int color, int screenBase, int charBase, int extPltt) {
+    reg_G2S_DB_BG3CNT = G2_BG_CONTROL_VALUE(reg_G2S_DB_BG3CNT, size, color, screenBase, charBase, extPltt);
 }
 // Like G2S_SetBG1Control, but without the extended-palette bit.
 static inline void G2S_SetBG2ControlText(int size, int color, int screenBase, int charBase) {
@@ -62,6 +68,9 @@ static inline void G2S_SetBG2ControlText(int size, int color, int screenBase, in
 
 static inline void G2_SetBG0Offset(int h, int v) {
     reg_G2_BG0OFS = G2_BG_OFFSET_VALUE(h, v);
+}
+static inline void G2_SetBG1Offset(int h, int v) {
+    reg_G2_BG1OFS = G2_BG_OFFSET_VALUE(h, v);
 }
 static inline void G2S_SetBG0Offset(int h, int v) {
     reg_G2S_DB_BG0OFS = G2_BG_OFFSET_VALUE(h, v);
@@ -78,6 +87,9 @@ static inline void G2S_SetBG3Offset(int h, int v) {
 
 static inline void G2_SetBG0Priority(int priority) {
     reg_G2_BG0CNT = (u16) ((reg_G2_BG0CNT & ~G2_BGCNT_PRIORITY_MASK) | (priority << 0));
+}
+static inline void G2_SetBG1Priority(int priority) {
+    reg_G2_BG1CNT = (u16) ((reg_G2_BG1CNT & ~G2_BGCNT_PRIORITY_MASK) | (priority << 0));
 }
 static inline void G2S_SetBG0Priority(int priority) {
     reg_G2S_DB_BG0CNT = (u16) ((reg_G2S_DB_BG0CNT & ~G2_BGCNT_PRIORITY_MASK) | (priority << 0));
@@ -138,6 +150,10 @@ static inline void G2S_SetWnd0Position(int x1, int y1, int x2, int y2) {
     reg_G2S_DB_WIN0H = (u16) ((x1 << 8) | x2);
     reg_G2S_DB_WIN0V = (u16) ((y1 << 8) | y2);
 }
+static inline void G2S_SetWnd1Position(int x1, int y1, int x2, int y2) {
+    reg_G2S_DB_WIN1H = (u16) ((x1 << 8) | x2);
+    reg_G2S_DB_WIN1V = (u16) ((y1 << 8) | y2);
+}
 
 static inline void G2S_SetWnd0InsidePlane(int wnd, BOOL effect) {
     u32 value = (reg_G2S_DB_WININ & ~G2_WINOUT_PLANE_MASK) | ((u32) wnd << 0);
@@ -145,4 +161,18 @@ static inline void G2S_SetWnd0InsidePlane(int wnd, BOOL effect) {
         value |= G2_WINOUT_EFFECT;
     }
     reg_G2S_DB_WININ = (u16) value;
+}
+static inline void G2S_SetWnd1InsidePlane(int wnd, BOOL effect) {
+    u32 value = (reg_G2S_DB_WININ & ~(G2_WINOUT_PLANE_MASK << 8)) | ((u32) wnd << 8);
+    if (effect) {
+        value |= (G2_WINOUT_EFFECT << 8);
+    }
+    reg_G2S_DB_WININ = (u16) value;
+}
+static inline void G2S_SetWndOBJInsidePlane(int wnd, BOOL effect) {
+    u32 value = (reg_G2S_DB_WINOUT & ~(G2_WINOUT_PLANE_MASK << 8)) | ((u32) wnd << 8);
+    if (effect) {
+        value |= (G2_WINOUT_EFFECT << 8);
+    }
+    reg_G2S_DB_WINOUT = (u16) value;
 }

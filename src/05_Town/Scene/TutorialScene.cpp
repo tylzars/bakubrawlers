@@ -314,7 +314,7 @@ u8 TutorialScene::UpdateList() {
             mScroll = mSelection - 3;
         }
     }
-    if (TouchManager::Get().mUnk_5a != 0) {
+    if (TouchManager::Get().mTouching != 0) {
         for (i = 0; i < 4; i++) {
             if (TouchManager::Get().func_020228c0(0x20, (s16) (i * 32 + 0x20), 0xc0, 0x1c)) {
                 u8 index = mScroll + i;

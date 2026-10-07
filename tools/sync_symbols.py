@@ -163,8 +163,9 @@ def main() -> None:
     ap.add_argument("module")
     ap.add_argument("--write", action="store_true")
     ap.add_argument("--assume", action="append", default=[], metavar="NAME=ADDR",
-                    help="place a non-matching function at ADDR (same size required; relocations are read at the "
-                         "same offsets, so only use this when the mismatch doesn't shift code)")
+                    help="place a non-matching function at ADDR, or pick ADDR among identical candidates. With the same size its "
+                         "relocations are read too (only safe when the mismatch doesn't shift code); with a "
+                         "different size only the function is renamed")
     ap.add_argument("--force", action="store_true",
                     help="rename symbols that already have a non-address name (review the dry run first)")
     a = ap.parse_args()
@@ -210,10 +211,17 @@ def main() -> None:
                 if all(i in mask or code[i:i + 4] == orig[i:i + 4] for i in range(0, size, 4)):
                     hits.append(addr)
             assumed = {n: int(v, 16) for n, v in (x.split("=") for x in a.assume)}
-            if not hits and sym.name in assumed and any(addr == assumed[sym.name] and rs == size
-                                                        for _, addr, rs in rom_funcs):
-                hits = [assumed[sym.name]]
-                report.append(f"{sym.name}: assumed at {hits[0]:#010x} (not an exact match)")
+            only_name = False
+            if sym.name in assumed:
+                want = assumed[sym.name]
+                if want in hits:
+                    hits = [want]  # several identical candidates (e.g. thunks): take the one given
+                elif not hits and any(addr == want for _, addr, _ in rom_funcs):
+                    hits = [want]
+                    # With a different size the relocations sit at other offsets: rename the function only.
+                    only_name = not any(addr == want and rs == size for _, addr, rs in rom_funcs)
+                    report.append(f"{sym.name}: assumed at {want:#010x} (not an exact match"
+                                  f"{', size differs: relocations not read' if only_name else ''})")
             if len(hits) > 1 and (rng := tu_text_range(a.obj, a.module)):
                 hits = [h for h in hits if rng[0] <= h < rng[1]]
             if len(hits) != 1:
@@ -221,7 +229,7 @@ def main() -> None:
                 continue
             addr = hits[0]
             report.append(f"{sym.name} @ {addr:#010x}: {tables[a.module].rename(addr, sym.name, True)}")
-            for r in rels:
+            for r in ([] if only_name else rels):
                 target_sym = symtab.get_symbol(r["r_info_sym"])
                 name = target_sym.name
                 if not name or target_sym["st_info"]["type"] == "STT_SECTION" or name.startswith(("@", "$")):

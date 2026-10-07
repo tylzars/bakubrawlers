@@ -5,8 +5,34 @@
 
 class UnkStruct_02078290;
 
+struct BattlePlayer {
+    /* 00 */ PAD(0x00, 0xc8);
+    /* c8 */ void *mUnk_c8;
+    /* cc */ PAD(0xcc, 0xf2);
+    /* f2 */ u8 mUnk_f2;
+    /* f3 */ PAD(0xf3, 0xf6);
+    /* f6 */ u8 mUnk_f6;
+    /* f7 */
+
+    bool IsActive() const {
+        bool active = false;
+        if (mUnk_c8) {
+            active = true;
+        }
+        return active;
+    }
+};
+
+struct BattlePlayerList {
+    /* 000 */ PAD(0x000, 0x00c);
+    /* 00c */ BattlePlayer *mPlayers[4];
+    /* 01c */ PAD(0x01c, 0x2a9);
+    /* 2a9 */ u8 mUnk_2a9;
+};
+
 struct UnkStruct_020d433c {
-    /* 00 */ PAD(0x00, 0x10);
+    /* 00 */ BattlePlayerList *mBattlePlayers;
+    /* 04 */ PAD(0x04, 0x10);
     /* 10 */ UnkStruct_02078290 *mUnk_10;
     /* 14 */ u16 mUnk_14_0 : 1;
     /* 14 */ u16 mUnk_14_1 : 1;

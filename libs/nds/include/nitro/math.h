@@ -10,5 +10,8 @@ typedef struct MATHRandContext32 {
 
 static inline u32 MATH_Rand32(MATHRandContext32 *context, u32 max) {
     context->x = context->mul * context->x + context->add;
+    if (max == 0) {
+        return (u32) (context->x >> 32);
+    }
     return (u32) (((context->x >> 32) * max) >> 32);
 }

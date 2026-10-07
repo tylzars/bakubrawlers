@@ -1,4 +1,5 @@
 #include "Battle/BattleMapTypes.hpp"
+#include "System/FrameClock.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/ModelTransform.hpp"
@@ -7,22 +8,6 @@
 extern "C" void func_020330fc(void *model, u32 a, u32 b);
 extern "C" void func_02032370(u32 a, u32 b, u32 c);
 extern "C" void func_02032394(u32 a, u32 b, u32 c);
-
-// Frame clock singleton (instance 0x020c1884); mFrame is the running frame count.
-class UnkStruct_020c1884 {
-public:
-    /* 00 */ PAD(0x00, 0x10);
-    /* 10 */ u32 mFrame;
-    /* 14 */ PAD(0x14, 0x18);
-    /* 18 */
-
-    ~UnkStruct_020c1884();
-
-    static UnkStruct_020c1884 &Get() {
-        static UnkStruct_020c1884 instance;
-        return instance;
-    }
-};
 
 BattleMapModel::BattleMapModel(u32 unk1) {
     mUnk_2c = unk1;

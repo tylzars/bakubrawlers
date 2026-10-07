@@ -1,20 +1,5 @@
 #include "System/SoundManager.hpp"
-
-// Frame clock singleton (instance 0x020c1884); mFrame is the running frame count.
-class UnkStruct_020c1884 {
-public:
-    /* 00 */ PAD(0x00, 0x10);
-    /* 10 */ u32 mFrame;
-    /* 14 */ PAD(0x14, 0x18);
-    /* 18 */
-
-    ~UnkStruct_020c1884();
-
-    static UnkStruct_020c1884 &Get() {
-        static UnkStruct_020c1884 instance;
-        return instance;
-    }
-};
+#include "System/FrameClock.hpp"
 
 // Parameters of the microphone's automatic sampling (same layout as the microphone library's MICAutoParam).
 struct MicAutoParam {

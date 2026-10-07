@@ -149,6 +149,181 @@ void UnkStruct_02070608::Update() {
     }
 }
 
+extern const u32 data_020a2dac[];
+extern WindowCellRecord data_020b8ea0[4];
+extern const WindowItemRecord data_020a2dcc[];
+
+// non-matching: 1 word shorter (0x99c vs 0x9a0). The tile fix-up loop (the original masks with the pool constant 0x1fff and
+// keeps the tile offset in r5) and the register allocation differ; the rest has the same structure.
+void UnkStruct_02070608::func_02070d10() {
+    ChangeDir("/Game/2D/union_b/");
+    func_02025b64(mUnk_30, 1, mUnk_1c, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    func_02025b64(mUnk_30, data_020a2dbc[mUnk_31], mUnk_18, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    u32 size;
+    u16 *tiles = (u16 *) func_02023504("union_b_bg_window_a_nsc.bin", 0, 0, 0, &size, 0);
+    size >>= 1;
+    u32 tileAdd = mUnk_18 >> 6;
+    u32 palAdd  = ((mUnk_1c & 0x1fff) << 7) >> 16;
+    if ((palAdd | (u16) tileAdd) != 0) {
+        u16 i = 0;
+        do {
+            u16 tile = tiles[i] & 0x3ff;
+            u16 flipH = (tiles[i] & 0x400) >> 10;
+            u16 pal = (tiles[i] & 0xf000) >> 12;
+            u16 flipV = (tiles[i] & 0x800) >> 11;
+            tiles[i] = (u16) (tile + tileAdd) | (flipH << 10) | (flipV << 11) | ((u16) (pal + palAdd) << 12);
+            i++;
+        } while (size > i);
+    }
+    func_02025c1c(mUnk_30, data_020a2dac[mUnk_31], 0, tiles, size * 2, 1);
+    ChangeDir("/");
+    mMessages = (MessageFile *) func_02023504("/font/mes_system.mes", 0, 0, 0, 0, 0);
+    TextManager::Get().func_0202ce44(mUnk_30, 0, (mUnk_24 >> 5) & 0xff, 0);
+    TextManager::Get();
+    u16 *buffer = (u16 *) OS_Alloc(0x600);
+    MIi_CpuClear16((u16) (((mUnk_24 >> 5) << 12) | (mUnk_20 >> 5)), buffer, 0x600);
+    TextManager::Get().func_0202cd48(0, buffer, (mUnk_24 >> 5) & 0xff, (u16) mUnk_20, 0x18, 0x18, 0x20);
+    func_02025c1c(mUnk_30, data_020a2dac[mUnk_32], 0, buffer, 0x600, 1);
+    TextManager::Get();
+    mUnk_2e = 0x4000;
+    mUnk_14 = OS_Alloc(mUnk_2e);
+    SpriteScreen &screen = SpriteManager::Get().Screen(mUnk_30);
+    screen.LoadCharacters("/Game/2D/union_b/union_b_obj_window.nce_ncg1D.bin", mUnk_28, 0);
+    screen.LoadPalette("/Game/2D/union_b/union_b_obj_window_ncl.bin", mUnk_2c, 0);
+    for (u8 i = 0; i < 4; i++) {
+        data_020b8ea0[i].mUnk_08 = mUnk_28;
+        data_020b8ea0[i].mUnk_0c = mUnk_2c >> 5;
+    }
+    mWindow = new SelectWindow(4, data_020a2dcc, 1);
+    mWindow->SetCells(4, data_020b8ea0);
+    u16 mask = 0;
+    if (mUnk_30 == 0) {
+        u16 plane = (reg_GX_DISPCNT & GX_DISPCNT_PLANE_MASK) >> GX_DISPCNT_PLANE_SHIFT;
+        switch (mUnk_31) {
+            case 0:
+                G2_SetBG0Offset(0, 0);
+                G2_SetBG0Priority(1);
+                plane |= 1;
+                mask = 1;
+                break;
+            case 1:
+                G2_SetBG1Offset(0, 0);
+                G2_SetBG1Priority(1);
+                plane |= 2;
+                mask = 2;
+                break;
+            case 2:
+                G2_SetBG2Offset(0, 0);
+                G2_SetBG2Priority(1);
+                plane |= 4;
+                mask = 4;
+                break;
+            case 3:
+                G2_SetBG3Offset(0, 0);
+                G2_SetBG3Priority(1);
+                plane |= 8;
+                mask = 8;
+                break;
+        }
+        switch (mUnk_32) {
+            case 0:
+                G2_SetBG0Offset(0, 0);
+                G2_SetBG0Priority(0);
+                mask |= 1;
+                plane |= 1;
+                break;
+            case 1:
+                G2_SetBG1Offset(0, 0);
+                G2_SetBG1Priority(0);
+                mask |= 2;
+                plane |= 2;
+                break;
+            case 2:
+                G2_SetBG2Offset(0, 0);
+                G2_SetBG2Priority(0);
+                mask |= 4;
+                plane |= 4;
+                break;
+            case 3:
+                G2_SetBG3Offset(0, 0);
+                G2_SetBG3Priority(0);
+                mask |= 8;
+                plane |= 8;
+                break;
+        }
+        GX_SetVisiblePlane(plane);
+        mask |= 0x10;
+        G2_SetBlendBrightness(mask ^ 0x3f, -8);
+        SpriteManager::Get();
+        SpriteManager::sFade.mMain       = 1;
+        SpriteManager::sBrightness.mMain = 0;
+        SpriteManager::sFade.mSub        = 1;
+        SpriteManager::sBrightness.mSub  = -8;
+    } else {
+        u16 plane = (reg_GXS_DB_DISPCNT & GX_DISPCNT_PLANE_MASK) >> GX_DISPCNT_PLANE_SHIFT;
+        switch (mUnk_31) {
+            case 0:
+                G2S_SetBG0Offset(0, 0);
+                G2S_SetBG0Priority(1);
+                plane |= 1;
+                mask = 1;
+                break;
+            case 1:
+                G2S_SetBG1Offset(0, 0);
+                G2S_SetBG1Priority(1);
+                plane |= 2;
+                mask = 2;
+                break;
+            case 2:
+                G2S_SetBG2Offset(0, 0);
+                G2S_SetBG2Priority(1);
+                plane |= 4;
+                mask = 4;
+                break;
+            case 3:
+                G2S_SetBG3Offset(0, 0);
+                G2S_SetBG3Priority(1);
+                plane |= 8;
+                mask = 8;
+                break;
+        }
+        switch (mUnk_32) {
+            case 0:
+                G2S_SetBG0Offset(0, 0);
+                G2S_SetBG0Priority(0);
+                mask |= 1;
+                plane |= 1;
+                break;
+            case 1:
+                G2S_SetBG1Offset(0, 0);
+                G2S_SetBG1Priority(0);
+                mask |= 2;
+                plane |= 2;
+                break;
+            case 2:
+                G2S_SetBG2Offset(0, 0);
+                G2S_SetBG2Priority(0);
+                mask |= 4;
+                plane |= 4;
+                break;
+            case 3:
+                G2S_SetBG3Offset(0, 0);
+                G2S_SetBG3Priority(0);
+                mask |= 8;
+                plane |= 8;
+                break;
+        }
+        GXS_SetVisiblePlane(plane);
+        mask |= 0x10;
+        G2S_SetBlendBrightness(mask ^ 0x3f, -8);
+        SpriteManager::Get();
+        SpriteManager::sFade.mMain       = 1;
+        SpriteManager::sBrightness.mMain = -8;
+        SpriteManager::sFade.mSub        = 1;
+        SpriteManager::sBrightness.mSub  = 0;
+    }
+}
+
 void UnkStruct_02070608::func_020716b0(u32 index) {
     MI_CpuClearFast(mUnk_14, mUnk_2e);
     TextManager &text = TextManager::Get();

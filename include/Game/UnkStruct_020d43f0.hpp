@@ -130,6 +130,7 @@ extern u8 data_020d4850[];
 extern u8 data_020d49b0[];
 
 int func_0202317c(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2, u32 unk3);
+u16 func_020231f4(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2, u32 unk3);
 void func_02023168(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2, int unk3);
 void func_020231c0(UnkStruct_020d43f0 *base, int unk1, u32 unk2);
 UnkStruct_02023248 *func_02023248(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2);

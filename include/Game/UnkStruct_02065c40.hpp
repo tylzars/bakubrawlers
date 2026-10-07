@@ -302,7 +302,7 @@ public:
     void func_02067988();
     BOOL func_0206eb10(const char *path);
     void func_020676f8();
-    void func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4, u32 unk5);
+    BOOL func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4, s32 unk5);
     void func_02067998(u8 unk1);
     void func_0206f564(u8 unk1, u32 unk2, s32 unk3);
     u32 func_0206f9b4(const char *name, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7);

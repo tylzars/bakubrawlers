@@ -165,6 +165,22 @@ src/Main/Game/UnkStruct_02065c40.cpp:
 src/Main/Unknown/UnkStruct_02070608.cpp:
     .text       start:0x02070608 end:0x02071868
 
+// provisional: code only; .rodata 0x020a2e3c-0x020a2fd0, .data 0x020b8ff4-0x020b9384 and .bss 0x022192fc-0x02219344 belong here.
+src/Main/Unknown/UnkStruct_02071868.cpp:
+    .text       start:0x02071868 end:0x020741b4
+
+// provisional: code only; .rodata 0x020a2fd0-0x020a305c, .data 0x020b9384-0x020b94ec and .bss 0x02219344-0x0221935c belong here.
+src/Main/Unknown/UnkStruct_02074938.cpp:
+    .text       start:0x020741b4 end:0x020758f4
+
+// provisional: code only; .rodata 0x020a305c-0x020a308c and .data 0x020b94ec-0x020b964c belong here.
+src/Main/Unknown/UnkStruct_020758f4.cpp:
+    .text       start:0x020758f4 end:0x02076058
+
+// provisional: code only; .rodata 0x020a308c-0x020a30dc, .data 0x020b964c-0x020b9848 and .bss 0x0221935c-0x0221938c belong here.
+src/Main/Unknown/UnkStruct_02076058.cpp:
+    .text       start:0x02076058 end:0x02078290
+
 // provisional: code only; .data 0x020b9848-0x020b9a04, .rodata about 0x020a30dc-0x020a3168 and .bss 0x0221938c-0x022193b0 belong here.
 src/Main/Unknown/UnkStruct_02078290.cpp:
     .text       start:0x02078290 end:0x02078e14

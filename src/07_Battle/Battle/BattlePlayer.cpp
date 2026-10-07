@@ -46,7 +46,6 @@ extern u8 data_020d43db[];
 extern u8 data_020d43d7[];
 extern u8 data_020d43e3[];
 s32 func_020230dc(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2);
-int func_020231f4(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2, u32 unk3);
 
 // non-matching: 0x54c vs 0x574 bytes. The original keeps `index` in r11 for the whole constructor and passes it to the BattleCpu constructor without masking it to u8; here it is spilled and masked.
 BattlePlayer::BattlePlayer(u32 index)
@@ -416,7 +415,6 @@ void func_ov007_0226a448(BattlePlayer *player, u8 index, int flag) {
     player->mSlots6c[index].mFlag = flag;
 }
 
-int func_020231f4(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2, u32 unk3);
 
 // non-matching: 0x154 vs 0x15c bytes. The original reads data_020d43f0[0].mUnk_1a_8 again for the +0x6c store (here it is reused) and keeps the constant 2 in r2 across the second flag group.
 void func_ov007_0226a48c(BattlePlayer *player) {

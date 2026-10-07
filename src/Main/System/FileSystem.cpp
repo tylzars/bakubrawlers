@@ -1,23 +1,9 @@
 #include "System/FileSystem.hpp"
+#include "System/FrameClock.hpp"
 #include "Unknown/UnkFunctions.hpp"
 
 #include <nitro/mi.h>
 #include <nitro/os.h>
-
-// Frame clock singleton (instance 0x020c1884); func_0202030c returns the language suffix.
-class UnkStruct_020c1884 {
-public:
-    /* 00 */ PAD(0x00, 0x18);
-
-    ~UnkStruct_020c1884();
-
-    static UnkStruct_020c1884 &Get() {
-        static UnkStruct_020c1884 instance;
-        return instance;
-    }
-
-    const char *func_0202030c();
-};
 
 // State of the file load in progress (instance 0x020d53e4, 0x5c bytes).
 struct UnkStruct_020d53e4 {

@@ -63,7 +63,7 @@ ParkMenu::ParkMenu(u8 current) {
     mWindow->func_0205c7c8(sel);
     mWindow->mCursor->mSelection = sel;
     mUnk_5c = new UnkStruct_020758f4();
-    func_02075a0c();
+    mUnk_5c->func_02075a0c();
     mCount = data_020d43f0[0].mUnk_5c1;
     if (mCount >= 4) {
         mCount = 4;

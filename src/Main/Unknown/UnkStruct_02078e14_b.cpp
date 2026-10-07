@@ -149,7 +149,6 @@ void UnkStruct_02078e14::func_0207c568() {
     }
 }
 
-u32 func_020231f4(UnkStruct_020d43f0 *data, u32 unk2, u32 unk3, u32 unk4);
 
 void UnkStruct_02078e14::func_0207ca60() {
     u8 i = 0;

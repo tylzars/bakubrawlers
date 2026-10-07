@@ -1,4 +1,5 @@
 #include "Battle/BattleCommand.hpp"
+#include "System/FrameClock.hpp"
 #include "Battle/BattleCommandPrompt.hpp"
 #include "Battle/BattleCommandList.hpp"
 #include "Battle/BattleCommandPage.hpp"
@@ -1131,22 +1132,6 @@ void func_ov007_0223ad70(u32 variant) {
     }
     ChangeDir("/");
 }
-
-// Frame clock singleton (instance 0x020c1884); mFrame is the running frame count.
-class UnkStruct_020c1884 {
-public:
-    /* 00 */ PAD(0x00, 0x10);
-    /* 10 */ u32 mFrame;
-    /* 14 */ PAD(0x14, 0x18);
-    /* 18 */
-
-    ~UnkStruct_020c1884();
-
-    static UnkStruct_020c1884 &Get() {
-        static UnkStruct_020c1884 instance;
-        return instance;
-    }
-};
 
 extern u8 data_ov007_02279ac0[];
 

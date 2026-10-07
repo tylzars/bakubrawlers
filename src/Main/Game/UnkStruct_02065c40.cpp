@@ -1,4 +1,5 @@
 #include "Game/UnkStruct_02065c40.hpp"
+#include "System/FrameClock.hpp"
 #include "Unknown/UnkStruct_02087898.hpp"
 
 #include "Graphics/Camera.hpp"
@@ -22,7 +23,11 @@
 #include "System/TouchManager.hpp"
 #include "Graphics/ModelInternal.hpp"
 
-extern UnkStruct_02065c40 *data_02219288;
+UnkStruct_02065c40 *data_02219288;
+void func_01ff96c4(const void *src, void *dest, u32 size);
+void func_02005e9c(void *buffer, u32 size);
+void func_02088ec4(UnkStruct_02087898 *object);
+void func_01ff9510(const void *src, void *dest, u32 size);
 extern const u32 data_020a23cc[8][6];
 void func_020360cc(UnkStruct_SpriteManager_28 *slot);
 void func_02038444(u32 a, u32 b);
@@ -1591,6 +1596,47 @@ void UnkStruct_02065c40::func_0206e9d0(u32 flag) {
     }
 }
 
+BOOL UnkStruct_02065c40::func_0206ed40() {
+    if (func_02023874() != 0) {
+        return FALSE;
+    }
+    mUnk_12b0 = (u32) func_02023864();
+    u8 *data = (u8 *) mUnk_12b0;
+    u32 size = mUnk_12b4;
+    u8 *name = (u8 *) OS_Alloc(0x20);
+    func_01ff96c4(data, name, 0x20);
+    func_02005e9c(name, 0x20);
+    u8 *body = (u8 *) OS_Alloc(size - 0x20);
+    func_01ff96c4(data + 0x20, body, size - 0x20);
+    func_02005e9c(body, size - 0x20);
+    mUnk_12be = (size - 0x20) / 3;
+    if (mUnk_12be >= 0x400) {
+        mUnk_12be = 0x400;
+    }
+    mUnk_12bc = 0;
+    u16 i = 0;
+    do {
+        u16 j = i * 3;
+        mUnk_0c[i].mCommand = body[j];
+        u8 *q = body + j;
+        mUnk_0c[i].mValue = (q[1] << 24 >> 16) + q[2];
+        i++;
+    } while (i < mUnk_12be);
+    do {
+        mUnk_0c[i].mCommand = 0;
+        mUnk_0c[i].mValue   = 0;
+        i++;
+    } while (i < 0x400);
+    ChangeDir("/");
+    char file[0x80];
+    sprintf(file, "/font/%s.mes", name);
+    func_02023708(file, 0, 0, 0, &mUnk_12b4, 0);
+    OS_Free(name);
+    OS_Free(body);
+    OS_Free(data);
+    return TRUE;
+}
+
 BOOL UnkStruct_02065c40::func_0206ef08() {
     if (func_02023874() != 0) {
         return FALSE;
@@ -1599,6 +1645,180 @@ BOOL UnkStruct_02065c40::func_0206ef08() {
     func_02087ccc(mUnk_1018, (void *) mUnk_12b0);
     func_02088ec4(mUnk_1018);
     return TRUE;
+}
+
+struct UnkStruct_020a2198 {
+    /* 00 */ s16 mUnk_00;
+    /* 02 */ s16 mUnk_02;
+    /* 04 */ s16 mUnk_04;
+    /* 06 */ s16 mUnk_06;
+    /* 08 */ s16 mUnk_08;
+    /* 0a */ s16 mUnk_0a;
+    /* 0c */ s16 mUnk_0c;
+    /* 0e */ s16 mUnk_0e;
+    /* 10 */ s16 mUnk_10;
+    /* 12 */ s16 mUnk_12;
+    /* 14 */ u8 mUnk_14;
+    /* 15 */ PAD(0x15, 0x16);
+    /* 16 */
+};
+struct UnkStruct_020a1c04 {
+    /* 0 */ s16 mUnk_0;
+    /* 2 */ s16 mUnk_2;
+    /* 4 */ s16 mUnk_4;
+    /* 6 */ u16 mUnk_6;
+    /* 8 */
+};
+extern const UnkStruct_020a2198 data_020a2198[];
+extern const UnkStruct_020a1c04 data_020a1c04[];
+
+// non-matching: 53 words, register allocation (the original keeps the zero/index in r9).
+BOOL UnkStruct_02065c40::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4, s32 unk5) {
+    BOOL isTwo = mUnk_12ba == 2;
+    BOOL isNine = mUnk_12b9 == 9;
+    BOOL done = mUnk_12bc == mUnk_12be;
+    if (isTwo | (isNine & done)) {
+    u8 mode = mUnk_14e2;
+    u8 n = 0;
+    mUnk_0c[n].mCommand = 9;
+    mUnk_0c[n].mValue = 2;
+    n++;
+    mUnk_0c[n].mCommand = 0xe;
+    mUnk_0c[n].mValue = 1;
+    n++;
+    mUnk_0c[n].mCommand = 0xf;
+    mUnk_0c[n].mValue = -16;
+    n++;
+    mUnk_0c[n].mCommand = 0x19;
+    mUnk_0c[n].mValue = 0;
+    n++;
+    if (mode >= 6) {
+        mode = 0;
+    }
+    s16 extra = *(s16 *) &unk4;
+    if (extra >= 0) {
+        mUnk_0c[n].mCommand = 0x3b;
+        mUnk_0c[n].mValue = extra;
+        n++;
+    }
+    mUnk_0c[n].mCommand = 0x49;
+    mUnk_0c[n].mValue = unk5;
+    n++;
+    if (unk5 >= 0) {
+        mUnk_0c[n].mCommand = 0x4a;
+        mUnk_0c[n].mValue = 0;
+        n++;
+        mUnk_0c[n].mCommand = 0x50;
+        mUnk_0c[n].mValue = data_020a2198[mode].mUnk_0c;
+        n++;
+        mUnk_0c[n].mCommand = 0x51;
+        mUnk_0c[n].mValue = data_020a2198[mode].mUnk_0e;
+        n++;
+        mUnk_0c[n].mCommand = 0x52;
+        mUnk_0c[n].mValue = data_020a2198[mode].mUnk_10;
+        n++;
+        mUnk_0c[n].mCommand = 0x57;
+        mUnk_0c[n].mValue = data_020a2198[mode].mUnk_12;
+        n++;
+        mUnk_0c[n].mCommand = 0x5c;
+        mUnk_0c[n].mValue = data_020a2198[mode].mUnk_14;
+        n++;
+        mUnk_0c[n].mCommand = 0x4e;
+        mUnk_0c[n].mValue = 0;
+        n++;
+    }
+    mUnk_0c[n].mCommand = 0x31;
+    mUnk_0c[n].mValue = data_020a1c04[mode].mUnk_0;
+    n++;
+    mUnk_0c[n].mCommand = 0x33;
+    mUnk_0c[n].mValue = data_020a1c04[mode].mUnk_2;
+    n++;
+    mUnk_0c[n].mCommand = 0x35;
+    mUnk_0c[n].mValue = data_020a1c04[mode].mUnk_4;
+    n++;
+    mUnk_0c[n].mCommand = 0x3a;
+    n++;
+    mUnk_12ac = data_020a1c04[mode].mUnk_6;
+    mUnk_0c[n].mCommand = 0x1c;
+    mUnk_0c[n].mValue = data_020a2198[mode].mUnk_00;
+    n++;
+    mUnk_0c[n].mCommand = 0x1d;
+    mUnk_0c[n].mValue = data_020a2198[mode].mUnk_02;
+    n++;
+    mUnk_0c[n].mCommand = 0x1e;
+    mUnk_0c[n].mValue = data_020a2198[mode].mUnk_04;
+    n++;
+    mUnk_0c[n].mCommand = 0x22;
+    mUnk_0c[n].mValue = data_020a2198[mode].mUnk_06;
+    n++;
+    mUnk_0c[n].mCommand = 0x23;
+    mUnk_0c[n].mValue = data_020a2198[mode].mUnk_08;
+    n++;
+    mUnk_0c[n].mCommand = 0x24;
+    mUnk_0c[n].mValue = data_020a2198[mode].mUnk_0a;
+    n++;
+    mUnk_0c[n].mCommand = 8;
+    mUnk_0c[n].mValue = unk5;
+    n++;
+    mUnk_0c[n].mCommand = 0xe;
+    mUnk_0c[n].mValue = 10;
+    n++;
+    mUnk_0c[n].mCommand = 0xf;
+    mUnk_0c[n].mValue = 0;
+    n++;
+    mUnk_0c[n].mCommand = 0x19;
+    mUnk_0c[n].mValue = 0;
+    n++;
+    mUnk_12c0 = n;
+    mUnk_0c[n].mCommand = 0xd7;
+    mUnk_0c[n].mValue = func_02070554((s8) unk5, unk3);
+    n++;
+    mUnk_0c[n].mCommand = 1;
+    mUnk_0c[n].mValue = unk2;
+    n++;
+    mUnk_12c2 = n;
+    if (mUnk_14e2 == 0) {
+        mUnk_0c[n].mCommand = 0xa9;
+        mUnk_0c[n].mValue = data_020d433c.mUnk_7e_0 + 0x20;
+        n++;
+        mUnk_0c[n].mCommand = 0xae;
+        mUnk_0c[n].mValue = -0x13b;
+        n++;
+        mUnk_0c[n].mCommand = 0xaf;
+        mUnk_0c[n].mValue = data_020a2198[mode].mUnk_0e;
+        n++;
+        mUnk_0c[n].mCommand = 0xb0;
+        mUnk_0c[n].mValue = -0x834;
+        n++;
+        mUnk_0c[n].mCommand = 0xb5;
+        mUnk_0c[n].mValue = 0x140;
+        n++;
+        mUnk_0c[n].mCommand = 0xb2;
+        mUnk_0c[n].mValue = data_020a2198[mode].mUnk_02;
+        n++;
+        mUnk_0c[n].mCommand = 0xac;
+        n++;
+        mUnk_0c[n].mCommand = 0x10;
+        mUnk_0c[n].mValue = 0;
+        n++;
+    }
+    mUnk_101c[0].mUnk_32 = 0;
+    mUnk_12bc = 0;
+    mUnk_12be = n;
+    ChangeDir("/");
+    char file[0x80];
+    sprintf(file, "/font/%s.mes", name);
+    func_02023708(file, 0, 0, 0, &mUnk_12b4, 0);
+    mUnk_1018->func_02088ebc(0);
+    mUnk_12ca = 0;
+    func_02088ec4(mUnk_1018);
+    mUnk_12cc = 0;
+    mUnk_12ce = 0;
+    mUnk_12b9 = 2;
+    mUnk_14e8 = 0;
+    return TRUE;
+    }
+    return FALSE;
 }
 
 extern const UnkStruct_Pair data_020a26a4[][5][10][3];
@@ -2177,6 +2397,45 @@ BOOL UnkStruct_02065c40::func_020702e0(s32 unk1, s32 unk2, s32 unk3, s32 unk4, s
     return TRUE;
 }
 
+// The calls keep the initializer of the static script below from being a constant expression, so it is filled at run time
+// (guard 0x0221928c) on the first call, like the original.
+inline s16 FxScale(float v) {
+    return (s16) (v * 4096.0f + 0.5f);
+}
+inline s16 Identity16(s16 v) {
+    return v;
+}
+
+// non-matching: size 0x1a0 vs 0x19c. Code is identical, but the original shares one literal-pool word (the static script at
+// 0x020b467c) between the run-time init and the copy call, while the compiler emits two (.data and the named static).
+extern "C" BOOL func_0206f6f0(UnkStruct_02065c40 *event, const char *name, u32 id, u32 unk3, u32 unk4) {
+    BOOL idle = event->mUnk_12bc == event->mUnk_12be;
+    BOOL nine = event->mUnk_12b9 == 9;
+    if (nine & idle) {
+        static UnkStruct_02065c40_cmd script[17] = {
+            {1, 0xe}, {-16, 0xf}, {0, 0x19}, {3, 9}, {9, 0x3b}, {0, 0x3c}, {0x2d, 0x2f}, {FxScale(0.27f), 0x31},
+            {FxScale(0.43f), 0x33}, {FxScale(0.86f), 0x35}, {Identity16(0x7fff), 0x3a}, {10, 0xe}, {0, 0xf}, {0, 0x19}, {0, 0xd7}, {0, 8}, {0, 1}};
+        func_01ff9510(script, event->mUnk_0c, 0x44);
+        event->mUnk_0c[14].mValue = event->func_02070554((s8) *(s16 *) &unk4, unk3);
+        event->mUnk_0c[15].mValue = *(s16 *) &unk4;
+        event->mUnk_0c[16].mValue = id;
+        event->mUnk_12bc = 0;
+        event->mUnk_12be = 0x11;
+        ChangeDir("/");
+        char file[0x80];
+        sprintf(file, "/font/%s.mes", name);
+        func_02023708(file, 0, 0, 0, &event->mUnk_12b4, 0);
+        event->mUnk_1018->func_02088ebc(0);
+        event->mUnk_12ca = 0;
+        func_02088ec4(event->mUnk_1018);
+        event->mUnk_12cc = 0;
+        event->mUnk_12ce = 0;
+        event->mUnk_12b9 = 2;
+        return TRUE;
+    }
+    return FALSE;
+}
+
 // non-matching: 0x64 vs 0x6c, the original keeps two named pointers into a local record.
 u32 UnkStruct_02065c40::func_0206f9b4(const char *name, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7) {
     struct {
@@ -2192,6 +2451,258 @@ u32 UnkStruct_02065c40::func_0206f9b4(const char *name, u32 unk2, u32 unk3, u32 
     q[1] = 0;
     p[1] = 0;
     return func_0206fa20(name, q, p, 1, *(u16 *) &unk4, unk5, *(u8 *) &unk6, unk7, 0);
+}
+
+struct UnkStruct_s8x2 {
+    /* 0 */ s8 mUnk_0;
+    /* 1 */ s8 mUnk_1;
+};
+struct UnkStruct_s16x4 {
+    /* 0 */ s16 mUnk_0;
+    /* 2 */ s16 mUnk_2;
+    /* 4 */ s16 mUnk_4;
+    /* 6 */ s16 mUnk_6;
+};
+extern const UnkStruct_s8x2 data_020a1b68[];
+extern const UnkStruct_s16x4 data_020a22a4;
+extern const UnkStruct_s16x4 data_020a221c[];
+
+// non-matching: 111 words, scheduling of the index arithmetic in the `case 0xa` and `default` (unk4 == 2) blocks; size matches.
+u8 UnkStruct_02065c40::func_0206fa20(const char *name, const u16 *unk2, const u8 *unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7,
+                                     u32 unk8, u32 unk9) {
+    if (mUnk_12b9 != 9 || mUnk_12bc != mUnk_12be) {
+        return FALSE;
+    }
+    u8 n = 0;
+    mUnk_0c[n].mCommand = 14;
+    mUnk_0c[n].mValue = 0;
+    n++;
+    mUnk_0c[n].mCommand = 15;
+    mUnk_0c[n].mValue = -16;
+    n++;
+    mUnk_0c[n].mCommand = 25;
+    mUnk_0c[n].mValue = 0;
+    n++;
+    mUnk_0c[n].mCommand = 59;
+    mUnk_0c[n].mValue = *(u8 *) &unk7;
+    n++;
+    mUnk_0c[n].mCommand = 60;
+    n++;
+    mUnk_0c[n].mCommand = 73;
+    mUnk_0c[n].mValue = unk2[0] % 22;
+    n++;
+    mUnk_0c[n].mCommand = 74;
+    mUnk_0c[n].mValue = unk3[0];
+    n++;
+    mUnk_0c[n].mCommand = 78;
+    n++;
+    switch (unk6) {
+        case 2:
+        if (*(u8 *) &unk7 != 2) {
+            if (unk2[0] == 0x10) {
+                mUnk_0c[n].mCommand = 80;
+                mUnk_0c[n].mValue = 0;
+                n++;
+            }
+        }
+        mUnk_0c[n].mCommand = 81;
+        mUnk_0c[n].mValue = data_020a1b68[unk2[0]].mUnk_0;
+        n++;
+        mUnk_0c[n].mCommand = 82;
+        mUnk_0c[n].mValue = data_020a1b68[unk2[0]].mUnk_1;
+        n++;
+        mUnk_0c[n].mCommand = 28;
+        mUnk_0c[n].mValue = 0;
+        n++;
+        mUnk_0c[n].mCommand = 29;
+        mUnk_0c[n].mValue = 12;
+        n++;
+        mUnk_0c[n].mCommand = 30;
+        mUnk_0c[n].mValue = -1;
+        n++;
+        mUnk_0c[n].mCommand = 34;
+        mUnk_0c[n].mValue = -3;
+        n++;
+        mUnk_0c[n].mCommand = 35;
+        mUnk_0c[n].mValue = 7;
+        n++;
+        mUnk_0c[n].mCommand = 36;
+        mUnk_0c[n].mValue = -101;
+        n++;
+            break;
+        case 0xa:
+        mUnk_0c[n].mCommand = 80;
+        mUnk_0c[n].mValue = 0;
+        n++;
+        mUnk_0c[n].mCommand = 81;
+        mUnk_0c[n].mValue = 0;
+        n++;
+        mUnk_0c[n].mCommand = 82;
+        mUnk_0c[n].mValue = 0;
+        n++;
+        mUnk_0c[n].mCommand = 87;
+        mUnk_0c[n].mValue = 330;
+        n++;
+        mUnk_0c[n].mCommand = 92;
+        mUnk_0c[n].mValue = 128;
+        n++;
+        mUnk_0c[n].mCommand = 78;
+        mUnk_0c[n].mValue = 0;
+        n++;
+        mUnk_0c[n].mCommand = 49;
+        mUnk_0c[n].mValue = 2580;
+        n++;
+        mUnk_0c[n].mCommand = 51;
+        mUnk_0c[n].mValue = 1761;
+        n++;
+        mUnk_0c[n].mCommand = 53;
+        mUnk_0c[n].mValue = (s16) 0xc0f6;
+        n++;
+        mUnk_0c[n].mCommand = 58;
+        n++;
+        mUnk_12ac = 0x7fff;
+        mUnk_0c[n].mCommand = 28;
+        mUnk_0c[n].mValue = -62;
+        n++;
+        mUnk_0c[n].mCommand = 29;
+        mUnk_0c[n].mValue = 20;
+        n++;
+        mUnk_0c[n].mCommand = 30;
+        mUnk_0c[n].mValue = -21;
+        n++;
+        mUnk_0c[n].mCommand = 34;
+        mUnk_0c[n].mValue = 3;
+        n++;
+        mUnk_0c[n].mCommand = 35;
+        mUnk_0c[n].mValue = 7;
+        n++;
+        mUnk_0c[n].mCommand = 36;
+        mUnk_0c[n].mValue = -108;
+        n++;
+            break;
+        default:
+        if (*(u8 *) &unk4 == 1) {
+            if (*(u8 *) &unk7 == 2) {
+                if (unk2[0] == 6) {
+                    mUnk_0c[n].mCommand = 81;
+                    mUnk_0c[n].mValue = -20;
+                    n++;
+                } else if (unk2[0] == 0xe) {
+                    mUnk_0c[n].mCommand = 80;
+                    mUnk_0c[n].mValue = 15;
+                    n++;
+                    mUnk_0c[n].mCommand = 81;
+                    mUnk_0c[n].mValue = 20;
+                    n++;
+                }
+            }
+        } else if (*(u8 *) &unk4 == 2) {
+            mUnk_0c[n].mCommand = 80;
+            mUnk_0c[n].mValue = data_020a22a4.mUnk_0;
+            n++;
+            mUnk_0c[n].mCommand = 82;
+            mUnk_0c[n].mValue = data_020a22a4.mUnk_4;
+            n++;
+            mUnk_0c[n].mCommand = 87;
+            mUnk_0c[n].mValue = data_020a22a4.mUnk_6;
+            n++;
+            u16 id = unk2[1];
+            const UnkStruct_s16x4 *e = &data_020a221c[id];
+            mUnk_0c[n].mCommand = 96;
+            mUnk_0c[n].mValue = unk2[1] % 22;
+            n++;
+            mUnk_0c[n].mCommand = 97;
+            mUnk_0c[n].mValue = unk3[1];
+            n++;
+            mUnk_0c[n].mCommand = 101;
+            n++;
+            mUnk_0c[n].mCommand = 103;
+            mUnk_0c[n].mValue = e->mUnk_0;
+            n++;
+            mUnk_0c[n].mCommand = 104;
+            mUnk_0c[n].mValue = e->mUnk_2;
+            n++;
+            mUnk_0c[n].mCommand = 105;
+            mUnk_0c[n].mValue = e->mUnk_4;
+            n++;
+            mUnk_0c[n].mCommand = 110;
+            mUnk_0c[n].mValue = e->mUnk_6;
+            n++;
+            mUnk_0c[n].mCommand = 117;
+            mUnk_0c[n].mValue = 1;
+            n++;
+            mUnk_0c[n].mCommand = 115;
+            mUnk_0c[n].mValue = 148;
+            n++;
+        }
+        if (unk9 != 0) {
+            mUnk_0c[n].mCommand = 28;
+            mUnk_0c[n].mValue = -11;
+            n++;
+            mUnk_0c[n].mCommand = 29;
+            mUnk_0c[n].mValue = 16;
+            n++;
+            mUnk_0c[n].mCommand = 30;
+            mUnk_0c[n].mValue = 0;
+            n++;
+            mUnk_0c[n].mCommand = 34;
+            mUnk_0c[n].mValue = -1;
+            n++;
+            mUnk_0c[n].mCommand = 35;
+            mUnk_0c[n].mValue = 10;
+            n++;
+            mUnk_0c[n].mCommand = 36;
+            mUnk_0c[n].mValue = -100;
+            n++;
+        }
+    }
+    mUnk_0c[n].mCommand = 14;
+    mUnk_0c[n].mValue = 10;
+    n++;
+    mUnk_0c[n].mCommand = 15;
+    mUnk_0c[n].mValue = 0;
+    n++;
+    mUnk_0c[n].mCommand = 25;
+    mUnk_0c[n].mValue = 0;
+    n++;
+    s16 value;
+    if (*(u8 *) &unk4 == 1) {
+        value = unk2[0];
+    } else {
+        value = unk2[1];
+    }
+    mUnk_0c[n].mCommand = 8;
+    mUnk_0c[n].mValue = value;
+    n++;
+    mUnk_0c[n].mCommand = 1;
+    mUnk_0c[n].mValue = *(u16 *) &unk5;
+    n++;
+    mUnk_0c[n].mCommand = 0xd7;
+    mUnk_0c[n].mValue = func_02070554((s8) value, unk6);
+    n++;
+    mUnk_0c[n].mCommand = 2;
+    n++;
+    if (unk8 != 0) {
+        mUnk_0c[n].mCommand = 234;
+        n++;
+        mUnk_14ed = 1;
+    }
+    mUnk_0c[n].mCommand = 15;
+    mUnk_0c[n].mValue = -16;
+    n++;
+    mUnk_0c[n].mCommand = 25;
+    mUnk_0c[n].mValue = 0;
+    n++;
+    mUnk_12bc = 0;
+    mUnk_12be = n;
+    func_02088ec4(mUnk_1018);
+    ChangeDir("/");
+    char file[0x80];
+    sprintf(file, "/font/%s.mes", name);
+    func_02023708(file, 0, 0, 0, &mUnk_12b4, 0);
+    mUnk_14ec = 0;
+    mUnk_12b9 = 2;
+    return TRUE;
 }
 
 struct UnkStruct_020a1b12 {
@@ -2382,22 +2893,6 @@ void UnkStruct_02065c40::func_0206f564(u8 unk1, u32 unk2, s32 unk3) {
     mUnk_12b9                 = 3;
 }
 
-// Frame clock singleton (instance 0x020c1884, destructor 0x020219c0).
-class UnkStruct_020c1884 {
-public:
-    /* 00 */ PAD(0x00, 0x10);
-    /* 10 */ u32 mUnk_10;
-    /* 14 */ PAD(0x14, 0x18);
-    /* 18 */
-
-    ~UnkStruct_020c1884();
-
-    static UnkStruct_020c1884 &Get() {
-        static UnkStruct_020c1884 instance;
-        return instance;
-    }
-};
-
 s32 func_0201f970(s32 value, s32 divisor);
 
 // non-matching: 0x100 vs 0xfc, the angle is truncated differently.
@@ -2407,7 +2902,7 @@ extern "C" void func_0206ea14() {
         return;
     }
     UnkStruct_02065c40 *event = data_02219288;
-    u32 time = line + UnkStruct_020c1884::Get().mUnk_10;
+    u32 time = line + UnkStruct_020c1884::Get().mFrame;
     u32 angle = ((time << 16) / 3) >> 6;
     u16 height = event->mUnk_14dc;
     u16 width  = event->mUnk_14da;

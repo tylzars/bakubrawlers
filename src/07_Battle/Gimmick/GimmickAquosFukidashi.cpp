@@ -135,7 +135,7 @@ int GimmickAquosFukidashi::func_ov007_02276760() {
     VecFx32 d;
     BattleTarget *target = data_020d433c.mBattlePlayers->mUnk_298;
     if (target && target->mUnk_1a4 && target->mUnk_1a4->mUnk_4a) {
-        VEC_Subtract(&target->mUnk_1a4->mPos, &mPosition, &d);
+        VEC_Subtract(&target->mUnk_1a4->mPosition, &mPosition, &d);
         if (VEC_Mag(&d) <= 0x96000) {
             return 1;
         }
@@ -193,7 +193,7 @@ void GimmickAquosFukidashi::Update() {
                 if (p->mRecords[p->mRecord].mUnk_09 != 1) {
                     VecFx32 a = data_ov007_02285bd0;
                     VecFx32 b = data_020d433c.mBattlePlayers->mUnk_298->mUnk_64;
-                    int dy = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos.y - mPosition.y + -0x54cd;
+                    int dy = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition.y - mPosition.y + -0x54cd;
                     if (dy <= 0x1000) {
                         dy = 0x1000;
                     }

@@ -3,6 +3,8 @@
 #include "global.h"
 #include "types.h"
 
+#include <nitro/fx.h>
+
 #include "Scene/SceneBase.hpp"
 
 class CellAnimation;
@@ -161,3 +163,12 @@ public:
     void func_ov007_02245f08();
     void func_ov007_02246450();
 };
+
+// Helpers of the map object implemented in BattleCommandMap.cpp (linkage as defined there).
+void func_ov007_0224587c(BattleCommandMap *map);
+extern "C" void func_ov007_022479f4(BattleCommandMap *map, u32 a);
+void func_ov007_02247a3c(BattleCommandMap *map);
+extern "C" void func_ov007_02248620(BattleCommandMap *map, u32 flag);
+extern "C" void func_ov007_02248748(BattleCommandMap *map, VecFx32 *out);
+void func_ov007_02248944(VecFx32 *out, u8 a, u8 b);
+extern "C" u32 func_ov007_02248998(VecFx32 *v, u8 *outA, u8 *outB);

@@ -87,16 +87,16 @@ void GimmickHaosBall::Update() {
         if (!target) {
             return;
         }
-        BattleVecHolder4 *h = target->mUnk_1a4;
-        VEC_Subtract(&mPosition, &h->mPos, &d);
+        UnkStruct_0203d374 *h = target->mUnk_1a4;
+        VEC_Subtract(&mPosition, &h->mPosition, &d);
         d.x = FX_Mul(d.x, 0x400);
         d.y = FX_Mul(d.y, 0x400);
         d.z = FX_Mul(d.z, 0x400);
         VecFx32 sum;
-        sum.z = d.z + h->mPos.z;
-        sum.y = d.y + h->mPos.y;
-        sum.x = d.x + h->mPos.x;
-        h->mPos = sum;
+        sum.z = d.z + h->mPosition.z;
+        sum.y = d.y + h->mPosition.y;
+        sum.x = d.x + h->mPosition.x;
+        h->mPosition = sum;
         func_ov007_0225c9c0(data_020d433c.mBattlePlayers->mUnk_298, 0, 0x333, 0, 0);
         data_020d433c.mUnk_14 &= 8;
         if (data_020d433c.mUnk_14) {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Battle/BattleTarget.hpp"
 #include "Battle/Gimmick.hpp"
 #include "Game/Random.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
@@ -173,6 +174,8 @@ public:
 
 void func_ov007_0225ca18(BattleTarget *target, int a, int b);
 void func_01ff84d0(VecFx32 *vec, MtxFx33 *m, VecFx32 *out);
+void func_01ffcfd8(MtxFx33 *m, u16 angle);
+u16 func_0200198c(fx32 x, fx32 y); // atan2 (16-bit angle)
 extern MtxFx33 data_0220e848;
 
 // Jump pad (jumpobj_00), vtable 022871f0. mDir is the launch direction (0, 0x3000, 0) turned by a random angle.

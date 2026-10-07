@@ -43,7 +43,7 @@ void GimmickUnk_02274830::Update() {
         if (!(mUnk_3c && mUnk_3c->mUnk_823 && (target = (list = data_020d433c.mBattlePlayers)->mUnk_298))) {
             return;
         }
-        if (target->mUnk_1a4->mPos.y > 0x899a) {
+        if (target->mUnk_1a4->mPosition.y > 0x899a) {
             return;
         }
         if (target->mUnk_1da) {
@@ -82,7 +82,7 @@ void GimmickUnk_02274830::Update() {
         func_ov007_0225c960(data_020d433c.mBattlePlayers->mUnk_298, &v, 0);
         CameraManager::Get();
         MtxFx43 mtx    = data_020c1cf4;
-        VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos;
+        VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
         VecFx32 w      = data_ov007_02285a98;
         u16 handle     = func_0202bd40(data_020d433c.mEffects, 1, 4, 0, 0);
         if (handle) {
@@ -98,7 +98,7 @@ void GimmickUnk_02274830::Update() {
         if (handle) {
             CameraManager::Get();
             MtxFx43 mtx2    = data_020c1cf4;
-            VecFx32 camPos2 = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos;
+            VecFx32 camPos2 = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
             mtx2._[11]      = 0;
             mtx2._[10]      = 0;
             mtx2._[9]       = 0;

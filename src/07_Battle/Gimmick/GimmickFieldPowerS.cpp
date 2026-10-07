@@ -128,7 +128,7 @@ void GimmickFieldPowerS::Update() {
             CameraManager::Get();
             MtxFx43 mtx    = data_020c1cf4;
             MtxFx43 rot    = data_0220e86c;
-            VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos;
+            VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
             VecFx32 v      = data_ov007_02279438;
             VecFx32 w      = data_ov007_02279444;
             mtx._[11]      = 0;

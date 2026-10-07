@@ -33,11 +33,6 @@ public:
     void func_0202d8cc();
 };
 
-struct UnkStruct_020d433c_0c {
-    u8 mPad[0x214];
-    UnkStruct_020d433c_0c(); // 02271bb4
-};
-
 class UnkStruct_Battle2a4 {
 public:
     u8 mPad[0x4c];

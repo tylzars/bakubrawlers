@@ -10,7 +10,7 @@ class CellAnimation;
 class EffectManager;
 class Camera;
 class BattleUnionAbility;
-struct BattleTarget;
+#include "Battle/BattleTarget.hpp"
 
 // View of a 0x14 byte BattleUnit entry with its position.
 struct BattleUnk022637acUnit {
@@ -22,18 +22,6 @@ struct BattleUnk022637acUnit {
     /* 11 */ u8 mUnk_11;
     /* 12 */ PAD(0x12, 0x14);
     /* 14 */
-};
-
-// Fields of the battle target (BattlePlayerList::mUnk_298) read by this class.
-struct BattleUnk022637acTarget {
-    /* 000 */ PAD(0x000, 0x178);
-    /* 178 */ void *mUnk_178;
-    /* 17c */ PAD(0x17c, 0x1a4);
-    /* 1a4 */ BattleVecHolder4 *mUnk_1a4;
-    /* 1a8 */ PAD(0x1a8, 0x1d2);
-    /* 1d2 */ u8 mUnk_1d2;
-    /* 1d3 */ PAD(0x1d3, 0x1e8);
-    /* 1e8 */ u8 mUnk_1e8;
 };
 
 // Battle class with vtable 0228a08c (ctor 022637ac, dtor 02263944/022639a8, Update 02263a14, 0x74 bytes). Runs a
@@ -53,7 +41,7 @@ public:
     /* 17 */ u8 mUnk_17;
     /* 18 */ u16 mUnk_18;
     /* 1a */ u16 mUnk_1a;
-    /* 1c */ BattleUnk022637acTarget *mUnk_1c;
+    /* 1c */ BattleTarget *mUnk_1c;
     /* 20 */ BattleUnionAbility *mUnk_20;
     /* 24 */ u32 mUnk_24;
     /* 28 */ u8 mUnk_28;

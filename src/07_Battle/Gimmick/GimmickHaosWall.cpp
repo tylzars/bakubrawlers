@@ -76,8 +76,8 @@ void GimmickHaosWall::Update() {
         VecFx32 b;
         VecFx32 d;
         MtxFx33 m = data_0220e848;
-        BattleVecHolder4 *h = list->mUnk_298->mUnk_1a4;
-        VEC_Subtract(&mPosition, &h->mPos, &a);
+        UnkStruct_0203d374 *h = list->mUnk_298->mUnk_1a4;
+        VEC_Subtract(&mPosition, &h->mPosition, &a);
         if (mRotY) {
             func_01ffcfd8(&m, -mRotY);
         }
@@ -89,7 +89,7 @@ void GimmickHaosWall::Update() {
         func_01ffcfd8(&m, node->mGimmick->mRotY + 0x8000);
         func_01ff84d0(&b, &m, &b);
         VEC_Add(&c, &b, &c);
-        c.y = h->mPos.y;
+        c.y = h->mPosition.y;
         d.x = c.x;
         d.y = 0;
         d.z = c.z;
@@ -98,9 +98,9 @@ void GimmickHaosWall::Update() {
         d.y = FX_Mul(d.y, 0xf000);
         d.z = FX_Mul(d.z, 0xf000);
         VEC_Subtract(&c, &d, &c);
-        h->mPos.x = c.x;
-        h->mPos.y = c.y;
-        h->mPos.z = c.z;
+        h->mPosition.x = c.x;
+        h->mPosition.y = c.y;
+        h->mPosition.z = c.z;
         mUnk_45 = 0x1e;
         func_ov007_0225ca18(data_020d433c.mBattlePlayers->mUnk_298, 7, 0);
         SoundManager::Get().func_020246f8(0x5b);

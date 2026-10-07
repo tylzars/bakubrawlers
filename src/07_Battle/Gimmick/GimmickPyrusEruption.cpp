@@ -164,7 +164,7 @@ void GimmickPyrusEruption::Update() {
         if (p->mRecords[p->mRecord].mUnk_09 == 0) {
             return;
         }
-        VEC_Subtract(&mPosition, &target->mUnk_1a4->mPos, &d);
+        VEC_Subtract(&mPosition, &target->mUnk_1a4->mPosition, &d);
         fx32 len = VEC_Mag(&d);
         VEC_Normalize(&d, &d);
         d.x      = FX_Mul(d.x, 0x1e000);

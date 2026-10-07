@@ -10,8 +10,15 @@
 struct GimmickSetData {
     /* 000 */ PAD(0x000, 0x810);
     /* 810 */ VecFx32 mUnk_810;
-    /* 81c */ PAD(0x81c, 0x823);
+    /* 81c */ u16 mRotX;
+    /* 81e */ u16 mRotY;
+    /* 820 */ u16 mRotZ;
+    /* 822 */ PAD(0x822, 0x823);
     /* 823 */ u8 mUnk_823;
+    /* 824 */ PAD(0x824, 0x82c);
+    /* 82c */ u8 mUnk_82c;
+    /* 82d */ PAD(0x82d, 0x834);
+    /* 834 */ u8 mUnk_834; // slot in the owner's table + 1 (0: unused)
 };
 
 // Base of the field gimmick objects of the battle overlay (vtable 0228729c, 0x46 bytes in the derived classes).

@@ -41,7 +41,7 @@ void GimmickUnk_022308a8::Update() {
         break;
     case 1: {
         if (mUnk_3c && mUnk_3c->mUnk_823 == 1 && !data_020d433c.mBattlePlayers->mUnk_298->mUnk_1da &&
-            data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos.y <= 0x899a &&
+            data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition.y <= 0x899a &&
             data_020d433c.mBattlePlayers->mUnk_298->mUnk_44 <= 0x5dc && data_020d433c.mBattlePlayers->mUnk_298->mUnk_38 <= 3) {
             BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
             BattleRecord *r = &p->mRecords[p->mRecord];
@@ -57,7 +57,7 @@ void GimmickUnk_022308a8::Update() {
                 return;
             }
             m = data_0220e848;
-            VEC_Subtract(&data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos, &mPosition, &d);
+            VEC_Subtract(&data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition, &mPosition, &d);
             d.y = 0;
             e.x = d.x;
             e.y = 0;

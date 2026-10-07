@@ -77,7 +77,7 @@ void GimmickFieldPowerG::Update() {
         SoundManager::Get().func_020246f8(0x35);
         CameraManager::Get();
         MtxFx43 mtx = data_020c1cf4;
-        VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos;
+        VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
         VecFx32 v      = data_ov007_02279420;
         u16 handle     = func_0202bd40(data_020d433c.mEffects, 1, 3, 0, 0);
         if (handle) {
@@ -92,20 +92,20 @@ void GimmickFieldPowerG::Update() {
         handle = func_0202bd40(data_020d433c.mEffects, 1, 0xd, 0, 1);
         if (handle) {
             VecFx32 d;
-            VecFx32 camPos2 = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos;
+            VecFx32 camPos2 = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
             CameraManager::Get();
             MtxFx43 mtx2 = data_020c1cf4;
             func_01ffcf64(&mtx2, &mPosition);
-            BattleVecHolder8 *h = data_020d433c.mBattlePlayers->mUnk_298->mUnk_174;
-            d.x                 = h->mPos.x;
-            d.y                 = h->mPos.y;
-            d.z                 = h->mPos.z;
+            Camera *h = data_020d433c.mBattlePlayers->mUnk_298->mUnk_174;
+            d.x                 = h->mPosition.x;
+            d.y                 = h->mPosition.y;
+            d.z                 = h->mPosition.z;
             VEC_Subtract(&d, &camPos2, &d);
             VEC_Normalize(&d, &d);
             d.x = FX_Mul(d.x, 0x1e000);
             d.y = FX_Mul(d.y, 0x1e000);
             d.z = FX_Mul(d.z, 0x1e000);
-            VEC_Add(&d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos, &d);
+            VEC_Add(&d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition, &d);
             func_01ffcf64(&mtx2, &d);
             func_0202bf60(data_020d433c.mEffects, handle, &mtx2);
         }

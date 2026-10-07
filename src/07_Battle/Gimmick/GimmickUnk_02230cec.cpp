@@ -34,7 +34,7 @@ void GimmickUnk_02230cec::Update() {
         if (target->mUnk_1dd == 4 || !target) {
             return;
         }
-        if (target->mUnk_1a4->mPos.y > 0x899a) {
+        if (target->mUnk_1a4->mPosition.y > 0x899a) {
             return;
         }
         if (target->mUnk_1da) {

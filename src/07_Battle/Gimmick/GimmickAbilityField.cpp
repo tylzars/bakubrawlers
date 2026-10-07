@@ -110,7 +110,7 @@ void GimmickAbilityField::Update() {
         if (handle) {
             CameraManager::Get();
             MtxFx43 mtx    = data_020c1cf4;
-            VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos;
+            VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
             mtx._[11]      = 0;
             mtx._[10]      = 0;
             mtx._[9]       = 0;

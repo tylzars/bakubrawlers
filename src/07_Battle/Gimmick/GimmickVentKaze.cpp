@@ -77,7 +77,7 @@ void GimmickVentKaze::Update() {
         if (r->mUnk_09 == 5) {
             return;
         }
-        BattleVecHolder4 *h = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4;
+        UnkStruct_0203d374 *h = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4;
         VecFx32 a           = data_ov007_02279450;
         m                   = data_0220e848;
         if (mRotY) {
@@ -85,7 +85,7 @@ void GimmickVentKaze::Update() {
         }
         func_01ff84d0(&a, &m, &a);
         VEC_Add(&a, &mPosition, &a);
-        VEC_Subtract(&a, &h->mPos, &b);
+        VEC_Subtract(&a, &h->mPosition, &b);
         fx32 z = func_01ff8000(0x2800, -b.y);
         fx32 y = func_01ff8000(0x8000, -b.y);
         fx32 x = func_01ff8000(0, -b.y);

@@ -9,6 +9,7 @@
 
 class UnkStruct_02078290;
 class Camera;
+class BattleTarget;
 class UnkStruct_Battle2a4; // object at BattlePlayerList+0x2a4, drives a timed screen effect
 
 // Battle message a player sends over the communication link (type 0xe).
@@ -36,7 +37,11 @@ struct BattlePlayerMessage {
 struct BattleRecord {
     /* 00 */ u16 mUnk_00_0 : 4;
     /* 00 */ u16 mGauge : 12;
-    /* 02 */ PAD(0x02, 0x04);
+    /* 02 */ u16 mUnk_02_0 : 3;
+    /* 02 */ u16 mUnk_02_3 : 3;
+    /* 02 */ u16 mUnk_02_6 : 3;
+    /* 02 */ u16 mUnk_02_9 : 3;
+    /* 02 */ u16 mUnk_02_12 : 4;
     /* 04 */ u16 mUnk_04;
     /* 06 */ u16 mUnk_06;
     /* 08 */ u8 mUnk_08;
@@ -45,15 +50,27 @@ struct BattleRecord {
     /* 0b */ u8 mUnk_0b;
 };
 
+// The object a player controls on the field (only the timer at +74 is known).
+struct BattleFighter {
+    /* 00 */ PAD(0x00, 0x74);
+    /* 74 */ u16 mUnk_74;
+    /* 76 */ PAD(0x76, 0x78);
+};
+
 struct BattlePlayer {
     /* 00 */ PAD(0x00, 0x0c);
     /* 0c */ BattleRecord mRecords[15];
     /* c0 */ PAD(0xc0, 0xc8);
-    /* c8 */ void *mUnk_c8;
-    /* cc */ PAD(0xcc, 0xd4);
+    /* c8 */ BattleFighter *mUnk_c8;
+    /* cc */ u16 mUnk_cc[3];
+    /* d2 */ PAD(0xd2, 0xd4);
     /* d4 */ s32 mUnk_d4;
     /* d8 */ s32 mUnk_d8;
-    /* dc */ PAD(0xdc, 0xed);
+    /* dc */ u32 mUnk_dc;
+    /* e0 */ u32 mUnk_e0;
+    /* e4 */ u32 mUnk_e4;
+    /* e8 */ u32 mUnk_e8;
+    /* ec */ u8 mUnk_ec;
     /* ed */ u8 mUnk_ed; // length of the name at +b0
     /* ee */ u8 mUnk_ee;
     /* ef */ PAD(0xef, 0xf1);
@@ -109,43 +126,6 @@ struct BattlePlayer {
     }
 };
 
-struct BattleVecHolder4 {
-    /* 00 */ PAD(0x00, 0x04);
-    /* 04 */ VecFx32 mPos;
-    /* 10 */ PAD(0x10, 0x4a);
-    /* 4a */ u8 mUnk_4a;
-};
-
-struct BattleVecHolder8 {
-    /* 00 */ PAD(0x00, 0x08);
-    /* 08 */ VecFx32 mPos;
-};
-
-struct BattleTarget {
-    /* 00 */ PAD(0x00, 0x38);
-    /* 38 */ u32 mUnk_38;
-    /* 3c */ PAD(0x3c, 0x44);
-    /* 44 */ u32 mUnk_44;
-    /* 48 */ PAD(0x48, 0x4c);
-    /* 4c */ u32 mUnk_4c;
-    /* 50 */ PAD(0x50, 0x64);
-    /* 64 */ VecFx32 mUnk_64;
-    /* 70 */ PAD(0x70, 0xa0);
-    /* a0 */ VecFx32 mUnk_a0;
-    /* ac */ PAD(0xac, 0x174);
-    /* 174 */ BattleVecHolder8 *mUnk_174; // vector at +08
-    /* 178 */ PAD(0x178, 0x1a4);
-    /* 1a4 */ BattleVecHolder4 *mUnk_1a4; // vector at +04
-    /* 1a8 */ PAD(0x1a8, 0x1bc);
-    /* 1bc */ u16 mUnk_1bc;
-    /* 1be */ PAD(0x1be, 0x1c6);
-    /* 1c6 */ u16 mUnk_1c6;
-    /* 1c8 */ PAD(0x1c8, 0x1da);
-    /* 1da */ u8 mUnk_1da;
-    /* 1db */ PAD(0x1db, 0x1dd);
-    /* 1dd */ u8 mUnk_1dd;
-};
-
 // 0x14 byte entry of the unit table at BattlePlayerList+0x7c.
 struct BattleUnit {
     /* 00 */ VecFx32 mPos;
@@ -159,7 +139,9 @@ struct BattleUnit {
 };
 
 struct BattleUnk29c {
-    /* 00 */ PAD(0x00, 0xa0);
+    /* 00 */ PAD(0x00, 0x9e);
+    /* 9e */ u8 mUnk_9e;
+    /* 9f */ PAD(0x9f, 0xa0);
     /* a0 */ u8 mUnk_a0;
     /* a1 */ PAD(0xa1, 0xa4);
     /* a4 */
@@ -213,7 +195,8 @@ struct BattlePlayerList : public SceneBase {
     /* 2ae */ u8 mUnk_2ae;
     /* 2af */ u8 mUnk_2af;
     /* 2b0 */ u8 mUnk_2b0;
-    /* 2b1 */ PAD(0x2b1, 0x2b4);
+    /* 2b1 */ u8 mUnk_2b1;
+    /* 2b2 */ PAD(0x2b2, 0x2b4);
 
     BattlePlayerList(); // 0225fd5c
     virtual ~BattlePlayerList();
@@ -234,12 +217,19 @@ struct BattlePlayerList : public SceneBase {
 
 void func_ov007_022628e0(BattlePlayerList *list, u8 index, const VecFx32 *pos, u8 marker);
 void func_ov007_02262a70(BattlePlayerList *list, u8 slot, u8 player);
+void func_ov007_02262828(BattlePlayerList *list, u8 index, u8 value);
 
 class EffectManager; // particle effect list (ctor 0202ab24 creates the 0x61c byte effects)
 
 class GimmickManager;
 
-struct UnkStruct_020d433c_0c; // opaque, only passed to func_ov007_02271ca8
+struct UnkStruct_020d433c_0c { // 0x214 bytes, mostly opaque (passed to func_ov007_02271ca8)
+    /* 000 */ PAD(0x000, 0x212);
+    /* 212 */ u8 mUnk_212; // set while the shoot screen is shown
+    /* 213 */ PAD(0x213, 0x214);
+
+    UnkStruct_020d433c_0c(); // 02271bb4
+};
 
 struct UnkStruct_020d433c {
     /* 00 */ BattlePlayerList *mBattlePlayers;

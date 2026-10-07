@@ -130,6 +130,7 @@ void OptionScene::BuildMainMenu() {
     mWindow->mCells[sel]->SetAnimation(data_ov000_02226650[sel].mUnk_18[2]);
 }
 
+// non-matching: 4 words, scheduling of the argument setup.
 void OptionScene::BuildSettings() {
     ClearText(1);
     SpriteManager::Get();
@@ -195,6 +196,7 @@ void func_02022db4(UnkStruct_020d43f0 *d);
 // func_02024754 forwards a second argument (r1) to func_020369f4; the header's member declares none.
 extern "C" void func_02024754(SoundManager *manager, u32 unk1);
 
+// non-matching: 3 words, scheduling of the argument setup.
 void OptionScene::UpdateSettings() {
     BOOL changed;
     u8 prev;

@@ -109,6 +109,7 @@ extern WindowItemRecord data_ov000_0222623c[];
 
 extern WindowCellRecord data_ov000_02226258[];
 
+// non-matching: 7 words, registers only: the original keeps flags in r8 and unitX in r6.
 void AttrSelScene::LoadGraphics() {
     ChangeDir("/Game/AttrSel/Bg");
     func_02025b64(0, 1, 0, "edit_attribute_u_bg_00_ncl.bin", 0, 0, 0);
@@ -172,6 +173,7 @@ void AttrSelScene::LoadGraphics() {
 
 extern u8 data_ov000_0222621c[];
 
+// non-matching: 10 words, the guard load before a preceding store (see docs/decompiling.md).
 void AttrSelScene::PrintName(void *buffer, u32 size, u32 vram, u16 width, u16 height, u32 unk) {
     s16 outWidth = 0;
     s16 outHeight = 0;

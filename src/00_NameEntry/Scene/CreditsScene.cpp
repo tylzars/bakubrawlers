@@ -114,6 +114,7 @@ void CreditsScene::LoadText() {
     mMessages = (MessageFile *) func_02023504("/font/mes_Credit.mes", 0, 0, 0, 0, 0);
 }
 
+// non-matching: 0x254 vs 0x24c, different stack-slot layout for the two Print calls.
 void CreditsScene::PrintLine(u32 message, u32 row, u32 column, u32 shadow) {
     s16 pixelWidth;
     s16 outWidth;
@@ -140,6 +141,7 @@ void CreditsScene::PrintLine(u32 message, u32 row, u32 column, u32 shadow) {
     func_02025c1c(column, 12, offset, mBuffers[column], mBufferSize, 0);
 }
 
+// non-matching: 0x288 vs 0x284, the zero constants are allocated to different registers.
 BOOL CreditsScene::UpdateText() {
     u32 step = 0;
     if (InputManager::Get().IsHeld(8)) {

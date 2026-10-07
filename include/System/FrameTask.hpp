@@ -21,4 +21,6 @@ public:
     }
 
     void Run();
+    void func_0203dc34(u32 unk1, u32 unk2);
+    void func_0203dd90();
 };

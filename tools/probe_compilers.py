@@ -21,7 +21,8 @@ ROOT = Path(__file__).resolve().parent.parent
 WIBO = ROOT / "tools/bin/wibo"
 MWCC_ROOT = ROOT / "tools/mwccarm"
 EXTRACT = ROOT / "extract/usa"
-BASE_FLAGS = "-proc arm946e -fp soft -interworking -w off -nolink -enum int -char signed -str noreuse -gccext,on"
+BASE_FLAGS = ("-proc arm946e -fp soft -interworking -w off -nolink -enum int -char signed -str noreuse -gccext,on "
+              "-gccinc -i include -i libs/c/include -i libs/cpp/include -i libs/nds/include")
 
 PROBE = re.compile(r"//\s*PROBE:\s*(\S+)\s+(\S+)\s+(0x[0-9a-fA-F]+)")
 
@@ -126,7 +127,7 @@ def main() -> None:
         for cdir in compilers:
             obj.unlink(missing_ok=True)
             cmd = f"{WIBO} {cdir}/mwccarm.exe {BASE_FLAGS} {lang} {flags} -c {a.source} -o {obj}"
-            r = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            r = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=ROOT)
             label = str(cdir.relative_to(MWCC_ROOT))
             if r.returncode or not obj.exists():
                 print(f"  {label:12} COMPILE ERROR {r.stdout.strip()[:200]}{r.stderr.strip()[:200]}")

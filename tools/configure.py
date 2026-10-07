@@ -144,6 +144,7 @@ w(f"rule mwcc\n  command = {WINE} $cc {' '.join(CC_FLAGS)} $cc_flags {' '.join('
   f"-d version_{ver.upper()} -MD -c $in -o $outdir && {PY} tools/transform_dep.py $basefile.d $basefile.d\n"
   f"  depfile = $basefile.d\n  deps = gcc\n  description = MWCC $in\n")
 w(f"rule mwld\n  command = {WINE} {LD} {' '.join(LD_FLAGS)} @$objects $lcf -o $out\n  description = LINK $out\n")
+w(f"rule disassemble\n  command = {DSD} dis -c $config -a $outdir --ual && touch $out\n  description = DIS\n")
 w(f"rule rom_config\n  command = {DSD} rom config --elf $in --config $config\n  description = ROM CONFIG\n")
 w(f"rule rom_build\n  command = {DSD} rom build --config $in --rom $out {bios_flag}\n  description = ROM BUILD $out\n")
 w(f"rule fix_header\n  command = {PY} tools/fix_header.py $in $out --secure-area-crc $crc\n  description = FIX HEADER $out\n")
@@ -216,6 +217,11 @@ build("sha1", "phony", [str(build_dir / "rom.ok")])
 
 build(str(build_dir / "symbols.ok"), "check_symbols", [arm9_o], implicit=[DSD], variables={"config": str(dsd_config)})
 build("check", "phony", [str(build_dir / "rom.ok"), str(build_dir / "symbols.ok")])
+
+# Disassembly for reading (not committed): build/<ver>/asm/
+build(str(build_dir / "asm" / ".stamp"), "disassemble", dsd_config_files, implicit=[DSD],
+      variables={"config": str(dsd_config), "outdir": str(build_dir / "asm")})
+build("dis", "phony", [str(build_dir / "asm" / ".stamp")])
 
 # ---- objdiff ----
 build("objdiff.json", "objdiff_config", dsd_config_files, implicit=[DSD], variables={"config": str(dsd_config)})

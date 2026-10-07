@@ -28,6 +28,11 @@ typedef struct {
     fx32 _[16];
 } MtxFx44;
 
+// 3x3 matrix (rotation only), row-major.
+typedef struct MtxFx33 {
+    fx32 _[9];
+} MtxFx33;
+
 // 2x2 matrix (BG affine parameters).
 typedef struct MtxFx22 {
     fx32 _[4];

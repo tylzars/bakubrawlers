@@ -3,19 +3,36 @@
 #include "global.h"
 #include "types.h"
 
+#include <nitro/fx.h>
+
 class UnkStruct_02078290;
 
+// 12 byte per-slot record of a player, the second field is a 12 bit gauge.
+struct BattleRecord {
+    /* 00 */ u16 mUnk_00_0 : 4;
+    /* 00 */ u16 mGauge : 12;
+    /* 02 */ PAD(0x02, 0x09);
+    /* 09 */ u8 mUnk_09;
+    /* 0a */ PAD(0x0a, 0x0c);
+};
+
 struct BattlePlayer {
-    /* 00 */ PAD(0x00, 0xc8);
+    /* 00 */ PAD(0x00, 0x0c);
+    /* 0c */ BattleRecord mRecords[15];
+    /* c0 */ PAD(0xc0, 0xc8);
     /* c8 */ void *mUnk_c8;
     /* cc */ PAD(0xcc, 0xee);
     /* ee */ u8 mUnk_ee;
     /* ef */ PAD(0xef, 0xf2);
     /* f2 */ u8 mUnk_f2;
-    /* f3 */ PAD(0xf3, 0xf6);
+    /* f3 */ u8 mUnk_f3;
+    /* f4 */ PAD(0xf4, 0xf5);
+    /* f5 */ u8 mRecord;
     /* f6 */ u8 mUnk_f6;
     /* f7 */ u8 mUnk_f7;
-    /* f8 */
+    /* f8 */ PAD(0xf8, 0xfd);
+    /* fd */ u8 mUnk_fd;
+    /* fe */
 
     bool IsActive() const {
         bool active = false;
@@ -26,20 +43,81 @@ struct BattlePlayer {
     }
 };
 
+struct BattleVecHolder4 {
+    /* 00 */ PAD(0x00, 0x04);
+    /* 04 */ VecFx32 mPos;
+};
+
+struct BattleVecHolder8 {
+    /* 00 */ PAD(0x00, 0x08);
+    /* 08 */ VecFx32 mPos;
+};
+
+struct BattleTarget {
+    /* 00 */ PAD(0x00, 0x38);
+    /* 38 */ u32 mUnk_38;
+    /* 3c */ PAD(0x3c, 0x44);
+    /* 44 */ u32 mUnk_44;
+    /* 48 */ PAD(0x48, 0x64);
+    /* 64 */ VecFx32 mUnk_64;
+    /* 70 */ PAD(0x70, 0x174);
+    /* 174 */ BattleVecHolder8 *mUnk_174; // vector at +08
+    /* 178 */ PAD(0x178, 0x1a4);
+    /* 1a4 */ BattleVecHolder4 *mUnk_1a4; // vector at +04
+    /* 1a8 */ PAD(0x1a8, 0x1c6);
+    /* 1c6 */ u16 mUnk_1c6;
+};
+
+struct BattleMarker {
+    /* 0 */ PAD(0, 2);
+    /* 2 */ u8 mUnk_2;
+    /* 3 */ u8 mUnk_3;
+    /* 4 */ u8 mUnk_4;
+    /* 5 */ PAD(5, 8);
+};
+
 struct BattlePlayerList {
     /* 000 */ PAD(0x000, 0x00c);
     /* 00c */ BattlePlayer *mPlayers[4];
-    /* 01c */ PAD(0x01c, 0x2a9);
+    /* 01c */ BattleMarker mUnk_1c[12];
+    /* 07c */ PAD(0x07c, 0x28a);
+    /* 28a */ u8 mUnk_28a;
+    /* 28b */ PAD(0x28b, 0x298);
+    /* 298 */ BattleTarget *mUnk_298;
+    /* 29c */ PAD(0x29c, 0x2a9);
     /* 2a9 */ u8 mUnk_2a9;
+    /* 2aa */ PAD(0x2aa, 0x2b0);
+    /* 2b0 */ u8 mUnk_2b0;
+
+    BattlePlayer *Current() {
+        return mPlayers[mUnk_28a];
+    }
+
+    BattleMarker *Entries() {
+        return mUnk_1c;
+    }
 };
+
+class EffectManager; // particle effect list (ctor 0202ab24 creates the 0x61c byte effects)
+
+class GimmickManager;
+
+struct UnkStruct_020d433c_0c; // opaque, only passed to func_ov007_02271ca8
 
 struct UnkStruct_020d433c {
     /* 00 */ BattlePlayerList *mBattlePlayers;
-    /* 04 */ PAD(0x04, 0x10);
+    /* 04 */ EffectManager *mEffects;
+    /* 08 */ GimmickManager *mGimmicks;
+    /* 0c */ UnkStruct_020d433c_0c *mUnk_0c;
     /* 10 */ UnkStruct_02078290 *mUnk_10;
-    /* 14 */ u16 mUnk_14_0 : 1;
-    /* 14 */ u16 mUnk_14_1 : 1;
-    /* 14 */ u16 mUnk_14_2 : 14;
+    union {
+        /* 14 */ u16 mUnk_14;
+        struct {
+            /* 14 */ u16 mUnk_14_0 : 1;
+            /* 14 */ u16 mUnk_14_1 : 1;
+            /* 14 */ u16 mUnk_14_2 : 14;
+        };
+    };
     /* 16 */ u16 mNames[4][12]; // UTF-16 player names
     /* 76 */ u8 mUnk_76;
     /* 77 */ u8 mUnk_77;

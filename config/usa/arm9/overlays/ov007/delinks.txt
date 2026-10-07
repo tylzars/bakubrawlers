@@ -64,3 +64,47 @@ src/07_Battle/Battle/BattleBlend.cpp:
 // provisional: code only; data not assigned yet.
 src/07_Battle/Battle/BattleSub48.cpp:
     .text       start:0x02223f28 end:0x0222545c
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickBakugan.cpp:
+    .text       start:0x0222a2f8 end:0x0222a91c
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickBlock.cpp:
+    .text       start:0x0222a91c end:0x0222ac14
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickFieldDestroy.cpp:
+    .text       start:0x0222ac14 end:0x0222bdbc
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickSuteWall.cpp:
+    .text       start:0x0222bdbc end:0x0222c3d8
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickDashBase.cpp:
+    .text       start:0x0222c3d8 end:0x0222c8cc
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickExePoint.cpp:
+    .text       start:0x0222c8cc end:0x0222ce78
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickFieldPowerG.cpp:
+    .text       start:0x0222ce78 end:0x0222d514
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickHaosBall.cpp:
+    .text       start:0x0222d514 end:0x0222db8c
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickJumpObj.cpp:
+    .text       start:0x0222db8c end:0x0222e134
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickManager.cpp:
+    .text       start:0x0222e134 end:0x0222e8d0
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/Gimmick.cpp:
+    .text       start:0x0222e8d0 end:0x0222eb1c

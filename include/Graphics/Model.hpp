@@ -38,16 +38,39 @@ public:
     void func_02054568();
 };
 
+class NitroModel;
+class ModelInstance;
+
+// Animation controller of a ModelInstance (0x60 bytes, ctor 020294e8).
+class ModelAnim {
+public:
+    /* 00 (vtable) */
+    /* 04 */ u32 mUnk_04;
+    /* 08 */ PAD(0x08, 0x0c);
+    /* 0c */ s32 mUnk_0c;
+    /* 10 */ u32 mUnk_10;
+    /* 14 */ PAD(0x14, 0x60);
+    /* 60 */
+
+    ModelAnim(const void *data, NitroModel *model);
+    virtual ~ModelAnim();
+    void func_020298c0(u32 value, u32 index); // index 5 = all channels
+};
+
 // A drawable instance of an NSBMD model; deleted through its virtual destructor.
 class ModelInstance {
 public:
     /* 00 (vtable) */
-    /* 04 */ PAD(0x04, 0x68);
+    /* 04 */ PAD(0x04, 0x5c);
+    /* 5c */ ModelAnim *mAnim;
+    /* 60 */ PAD(0x60, 0x68);
     /* 68 */ u8 mUnk_68;
-    /* 69 */
+    /* 69 */ u8 mUnk_69;
+    /* 6a */
 
     virtual ~ModelInstance();
-    void func_02028d80();
+    BOOL func_02028d80();
+    void func_02028e54(u32 a, u32 b, fx32 c);
     void func_02029174(MtxFx43 *mtx, VecFx32 *pos);
 };
 
@@ -73,11 +96,14 @@ public:
 // Base of the model file object (ctor 020289c8), 0x10 bytes.
 class UnkStruct_020289c8 {
 public:
-    /* 00 */ PAD(0x00, 0x10);
+    /* 00 */ PAD(0x00, 0x08);
+    /* 08 */ void *mUnk_08;
+    /* 0c */ PAD(0x0c, 0x10);
     /* 10 */
 
     UnkStruct_020289c8();
-    ModelInstance *func_02028b78(u32 unk1);
+    ModelInstance *func_02028b78(ModelAnim *anim);
+    void func_02028b4c(UnkStruct_02028308 *texture);
     void func_020289e0(const char *name, UnkStruct_02028308 *texture);
 };
 

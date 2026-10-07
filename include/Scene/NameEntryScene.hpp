@@ -7,26 +7,8 @@
 
 class CellAnimation;
 class MessageWindow;
+class SelectWindow;
 struct MessageFile;
-
-struct NameEntryObjInner {
-    /* 00 */ PAD(0x00, 0xac);
-    /* ac */ u32 mUnk_ac;
-};
-
-struct NameEntryObjMid {
-    /* 00 */ NameEntryObjInner *mInner;
-};
-
-// Owned by the scene and deleted through its virtual destructor.
-struct NameEntryObject {
-    /* 000 (vtable) */
-    /* 004 */ NameEntryObjMid *mMid;
-    /* 008 */ PAD(0x008, 0x130);
-    /* 130 */ u32 mUnk_130;
-
-    virtual ~NameEntryObject() {}
-};
 
 // Overlay 0: player name entry (8x4 character grid over two tabs, up to 12 UTF-16 characters).
 class NameEntryScene : public SceneBase {
@@ -40,8 +22,8 @@ public:
     /* 20 */ u32 mTextBufferSize;
     /* 24 */ u32 mGlyphCount;
     /* 28 */ CellAnimation *mCellAnims[3];
-    /* 34 */ NameEntryObject *mObj34;
-    /* 38 */ NameEntryObject *mObj38;
+    /* 34 */ SelectWindow *mKeyboard;
+    /* 38 */ SelectWindow *mConfirm;
     /* 3c */ u8 *mBuf3c;
     /* 40 */ u8 *mBuf40;
     /* 44 */ u8 *mBuf44;
@@ -69,6 +51,7 @@ public:
     /* 0c */
 
     void InitDisplay(); // 02219844
+    void LoadGraphics(); // 02219a08
     void func_ov000_0221b190();
     void func_ov000_0221b22c();
     void func_ov000_0221b2a0();

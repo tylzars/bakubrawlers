@@ -799,7 +799,7 @@ func_02020a34 kind:function(arm,size=0x4) addr:0x02020a34
 func_02020a38 kind:function(arm,size=0x4) addr:0x02020a38
 func_02020a3c kind:function(arm,size=0x4) addr:0x02020a3c
 func_02020a40 kind:function(arm,size=0x4) addr:0x02020a40
-func_02020a44 kind:function(arm,size=0x4) addr:0x02020a44
+_ZN18UnkStruct_020c17a8D1Ev kind:function(arm,size=0x4) addr:0x02020a44
 func_02020a48 kind:function(arm,size=0xcb8) addr:0x02020a48
 func_02021700 kind:function(arm,size=0x2c0) addr:0x02021700
 func_020219c0 kind:function(arm,size=0x4) addr:0x020219c0
@@ -870,7 +870,7 @@ func_02023a54 kind:function(arm,size=0x80) addr:0x02023a54
 func_02023ad4 kind:function(arm,size=0xac) addr:0x02023ad4
 func_02023b80 kind:function(arm,size=0x44) addr:0x02023b80
 func_02023bc4 kind:function(arm,size=0x74) addr:0x02023bc4
-func_02023c38 kind:function(arm,size=0xf8) addr:0x02023c38
+_ZN18UnkStruct_020c17a813func_02023c38Ej kind:function(arm,size=0xf8) addr:0x02023c38
 func_02023d30 kind:function(arm,size=0xcc) addr:0x02023d30
 func_02023dfc kind:function(arm,size=0x370) addr:0x02023dfc
 func_0202416c kind:function(arm,size=0x330) addr:0x0202416c
@@ -4615,7 +4615,7 @@ data_020c1790 kind:bss addr:0x020c1790
 data_020c1794 kind:bss addr:0x020c1794
 data_020c179c kind:bss addr:0x020c179c
 data_020c17a4 kind:bss addr:0x020c17a4
-data_020c17a8 kind:bss addr:0x020c17a8
+_ZZN18UnkStruct_020c17a83GetEvE8instance kind:bss addr:0x020c17a8 weak
 _ZGVZN11TextManager3GetEvE8instance kind:bss addr:0x020c17ac weak
 _ZGVZN12SoundManager3GetEvE8instance kind:bss addr:0x020c17b0 weak
 data_020c17b4 kind:bss addr:0x020c17b4
@@ -4627,7 +4627,7 @@ _ZGVZN12TouchManager3GetEvE8instance kind:bss addr:0x020c17c8 weak
 _ZGVZN13SpriteManager3GetEvE8instance kind:bss addr:0x020c17cc weak
 _ZGVZN12InputManager3GetEvE8instance kind:bss addr:0x020c17d0 weak
 data_020c17d4 kind:bss addr:0x020c17d4
-data_020c17d8 kind:bss addr:0x020c17d8
+_ZGVZN18UnkStruct_020c17a83GetEvE8instance kind:bss addr:0x020c17d8 weak
 _ZGVZN18UnkStruct_020c30303GetEvE8instance kind:bss addr:0x020c17dc weak
 data_020c17e0 kind:bss addr:0x020c17e0
 data_020c17ec kind:bss addr:0x020c17ec

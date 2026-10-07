@@ -49,5 +49,10 @@ public:
     /* 0c */
 
     void InitDisplay(); // 0221cf30
+    void func_ov000_0221d21c();
+    void func_ov000_0221d2e8();
+    void func_ov000_0221d3b4();
+    void func_ov000_0221d500();
+    void func_ov000_0221d5d4();
     BOOL WaitFrames(u32 maxFrames, u32 minFrames); // 0221d034
 };

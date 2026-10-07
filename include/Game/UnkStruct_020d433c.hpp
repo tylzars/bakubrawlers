@@ -13,7 +13,8 @@ struct UnkStruct_020d433c {
     /* 14 */ u16 mUnk_14_2 : 14;
     /* 16 */ u16 mNames[4][12]; // UTF-16 player names
     /* 76 */ u8 mUnk_76;
-    /* 77 */ PAD(0x77, 0x79);
+    /* 77 */ u8 mUnk_77;
+    /* 78 */ PAD(0x78, 0x79);
     /* 79 */ u8 mUnk_79;
     /* 7a */ u8 mUnk_7a;
     /* 7b */ u8 mUnk_7b;
@@ -23,7 +24,7 @@ struct UnkStruct_020d433c {
     /* 7e */ u8 mUnk_7e_4 : 4;
     /* 7f */ u8 mUnk_7f;
     /* 80 */ u8 mUnk_80;
-    /* 81 */ PAD(0x81, 0x82);
+    /* 81 */ u8 mUnk_81;
     /* 82 */ u8 mUnk_82;
     /* 83 */ u8 mUnk_83;
     /* 84 */ u8 mUnk_84;

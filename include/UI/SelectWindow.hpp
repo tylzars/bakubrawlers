@@ -82,8 +82,8 @@ public:
     /* 065 */ PAD(0x065, 0x080);
     /* 080 */ Vec2s mCellPos[6];
     /* 098 */ PAD(0x098, 0x0e8);
-    /* 0e8 */ WindowButton mButtons[6];
-    /* 130 */ PAD(0x130, 0x1ec);
+    /* 0e8 */ WindowButton mButtons[7];
+    /* 13c */ PAD(0x13c, 0x1ec);
     /* 1ec */
 
     SelectWindow(u32 itemCount, const WindowItemRecord *items, s32 unk3);

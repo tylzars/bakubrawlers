@@ -28,26 +28,29 @@ VERSIONS = {
 
 WIBO_TAG = "1.2.0"
 OBJDIFF_TAG = "v3.8.2"
-# CodeWarrior for DS 2.0 (mwcc 3.0), verified with tools/probe_compilers.py:
-# every 2.0 build matches, while 1.2 and DSi builds don't. The 2.0 service packs
-# emit identical code for everything tested, so sp1p5 (decomp.me mwcc_30_131) is used.
-MWCC_VERSION = "2.0/sp1p5"
-DECOMP_ME_COMPILER = "mwcc_30_131"  # decomp.me id for MWCC_VERSION
+# Compiler and flags are pinned by evidence in docs/compiler.md.
+# Game code: CodeWarrior for DS 2.0 sp2p2+ (sp2p2/sp2p3/sp2p4 are codegen-identical on C++).
+MWCC_VERSION = "2.0/sp2p2"
+DECOMP_ME_COMPILER = "mwcc_30_137"  # decomp.me id for MWCC_VERSION
+# NitroSDK was prebuilt by Nintendo with an older compiler (2.0 sp1..sp1p5); sources
+# under these paths compile with it instead.
+PATH_COMPILERS = {
+    "libs/NitroSDK/": "2.0/sp1p5",
+}
 
 CC_FLAGS = [
     "-O4,p",            # verified: -O3,p differs in regalloc; ,s and -O2 don't inline accessors
-    # Not yet verified; nothing matched so far exercises them.
-    # Question these first on char/enum/string-pooling mismatches.
-    "-enum int",        # int-sized enums
-    "-char signed",     # char is signed
-    "-str noreuse",     # equal string literals are distinct objects
-    "-proc arm946e",
+    "-ipa file",        # verified: inline-function statics are shared across modules (docs/compiler.md)
+    "-inline on,noauto",  # verified: auto would inline same-TU calls the game keeps out of line
+    "-enum int",        # verified on SDK code (-enum min loses matches)
+    "-char signed",     # NOT yet verified; nothing matched so far depends on it
+    "-str noreuse",     # verified: identical literals in one initializer are separate copies
+    "-proc arm946e",    # verified: arm9tdmi lacks smulbb
     "-gccext,on",
     "-fp soft",
-    "-inline noauto",   # verified: auto would inline same-TU calls the game keeps out of line
-    "-Cpp_exceptions off",
-    "-RTTI off",
-    "-interworking",
+    "-Cpp_exceptions off",  # verified: on changes new-expression codegen
+    "-RTTI off",        # verified: vtables have no typeinfo pointer
+    "-interworking",    # verified: leaf returns are bx lr, never mov pc, lr
     "-w off",
     "-sym on",
     "-gccinc",          # treat #include "" and <> alike
@@ -67,7 +70,7 @@ LD_FLAGS = [
 parser = argparse.ArgumentParser()
 parser.add_argument("version", nargs="?", default="us", choices=VERSIONS)
 parser.add_argument("-w", "--wine", default="tools/bin/wibo", help="wibo or wine binary used to run mwcc/mwld")
-parser.add_argument("--compiler", type=Path, help="pre-installed compiler root (contains 2.0/sp1p5/...)")
+parser.add_argument("--compiler", type=Path, help="pre-installed compiler root (contains 2.0/sp2p2/...)")
 parser.add_argument("--dsd", type=Path, default=Path("tools/bin/dsd"), help="patched dsd (see tools/build_dsd.sh)")
 parser.add_argument("--arm7-bios", type=Path, default=Path("orig/biosnds7.bin"))
 args = parser.parse_args()
@@ -136,7 +139,7 @@ w(f"rule download_tool\n  command = {PY} tools/download_tool.py $tool $tag --pat
 w(f"rule extract\n  command = {DSD} rom extract --rom $in --output-path $outdir {bios_flag}\n  description = EXTRACT $in\n")
 w(f"rule delink\n  command = {DSD} delink -c $config\n  description = DELINK\n")
 w(f"rule lcf\n  command = {DSD} lcf -c $config && {PY} tools/lcf_force_active.py $lcf_raw $lcf_final --config-dir {config_dir}\n  description = LCF\n")
-w(f"rule mwcc\n  command = {WINE} {CC} {' '.join(CC_FLAGS)} $cc_flags {' '.join('-i ' + d for d in include_dirs)} "
+w(f"rule mwcc\n  command = {WINE} $cc {' '.join(CC_FLAGS)} $cc_flags {' '.join('-i ' + d for d in include_dirs)} "
   f"-d version_{ver.upper()} -MD -c $in -o $outdir && {PY} tools/transform_dep.py $basefile.d $basefile.d\n"
   f"  depfile = $basefile.d\n  deps = gcc\n  description = MWCC $in\n")
 w(f"rule mwld\n  command = {WINE} {LD} {' '.join(LD_FLAGS)} @$objects $lcf -o $out\n  description = LINK $out\n")
@@ -175,7 +178,10 @@ build([lcf_raw, delinks["arm9_objects_file"], lcf_final], "lcf", dsd_config_file
 # ---- compile ----
 for src in sources:
     obj = build_dir / src.with_suffix(".o")
-    build(str(obj), "mwcc", [str(src)], implicit=[CC] + tool_outputs, variables={
+    cc = next((str(MWCC_ROOT / v / "mwccarm.exe") for prefix, v in PATH_COMPILERS.items()
+               if str(src).startswith(prefix)), CC)
+    build(str(obj), "mwcc", [str(src)], implicit=[cc] + tool_outputs, variables={
+        "cc": cc,
         "cc_flags": "-lang=c++" if src.suffix == ".cpp" else "-lang=c",
         "outdir": str(obj.parent),
         "basefile": str(obj.with_suffix("")),

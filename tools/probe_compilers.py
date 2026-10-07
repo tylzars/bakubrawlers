@@ -46,34 +46,30 @@ def orig_size(module: str, addr: int) -> int:
 
 
 def elf_functions(obj: Path) -> dict[str, tuple[bytes, set[int]]]:
-    """Returns {symbol: (code bytes, masked word offsets)} for every function in obj."""
-    syms = subprocess.run(["arm-none-eabi-readelf", "-sW", str(obj)], capture_output=True, text=True).stdout
-    relocs = subprocess.run(["arm-none-eabi-readelf", "-rW", str(obj)], capture_output=True, text=True).stdout
-    shdrs = subprocess.run(["arm-none-eabi-readelf", "-SW", str(obj)], capture_output=True, text=True).stdout
-    data = obj.read_bytes()
+    """Returns {symbol: (code bytes, word offsets covered by that section's relocations)}.
 
-    sections = {}
-    for m in re.finditer(r"\[\s*(\d+)\]\s+(\S+)\s+\S+\s+[0-9a-f]+\s+([0-9a-f]+)\s+([0-9a-f]+)", shdrs):
-        sections[int(m.group(1))] = (m.group(2), int(m.group(3), 16), int(m.group(4), 16))
+    mwcc emits one .text section per function, so relocations are keyed by the
+    section index they apply to (sh_info), never by section name."""
+    from elftools.elf.elffile import ELFFile
+    from elftools.elf.relocation import RelocationSection
 
-    # Relocation offsets per section name.
-    masked: dict[str, set[int]] = {}
-    cur = None
-    for line in relocs.splitlines():
-        if m := re.match(r"Relocation section '\.rela?(\S+)'", line):
-            cur = masked.setdefault(m.group(1), set())
-        elif cur is not None and (m := re.match(r"([0-9a-f]{8})\s", line)):
-            cur.add(int(m.group(1), 16) & ~3)
-
-    funcs = {}
-    for line in syms.splitlines():
-        p = line.split()
-        if len(p) >= 8 and p[3] == "FUNC" and p[6].isdigit():
-            name, shndx, value, size = p[7], int(p[6]), int(p[1], 16), int(p[2])
-            sname, off, _ = sections[shndx]
-            code = data[off + value: off + value + size]
-            funcs[name] = (code, {r - value for r in masked.get(sname, ()) if value <= r < value + size})
-    return funcs
+    with open(obj, "rb") as fh:
+        elf = ELFFile(fh)
+        masked: dict[int, set[int]] = {}
+        for sec in elf.iter_sections():
+            if isinstance(sec, RelocationSection):
+                masked.setdefault(sec["sh_info"], set()).update(r["r_offset"] & ~3 for r in sec.iter_relocations())
+        funcs = {}
+        symtab = elf.get_section_by_name(".symtab")
+        for sym in symtab.iter_symbols():
+            if sym["st_info"]["type"] != "STT_FUNC" or not isinstance(sym["st_shndx"], int):
+                continue
+            data = elf.get_section(sym["st_shndx"]).data()
+            value, size = sym["st_value"] & ~1, sym["st_size"]
+            code = data[value: value + size]
+            mask = {r - value for r in masked.get(sym["st_shndx"], ()) if value <= r < value + size}
+            funcs[sym.name] = (code, mask)
+        return funcs
 
 
 def compare(code: bytes, mask: set[int], orig: bytes) -> tuple[bool, str]:
@@ -137,6 +133,11 @@ def main() -> None:
             funcs = elf_functions(obj)
             results = []
             for sym, mod, addr in probes:
+                if sym not in funcs:  # allow a bare or mis-mangled name: match on the identifier
+                    ident = re.sub(r"^_Z\d+|^_ZN\d+", "", sym).split("E")[0]
+                    cands = [f for f in funcs if ident and ident in f]
+                    if len(cands) == 1:
+                        sym = cands[0]
                 if sym not in funcs:
                     results.append((False, f"{sym} missing (have {', '.join(funcs)})"))
                     continue

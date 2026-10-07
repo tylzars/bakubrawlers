@@ -87,22 +87,22 @@ u16 TextManager::func_0202c1a8(u32 index) {
 void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u32 height, s16 *outWidth,
                         s16 *outHeight, u16 *outPixelWidth, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13,
                         u32 unk14, u32 unk15, u32 unk16, u32 unk17) {
-    const u16 *line = (const u16 *) text;
-    s32 fontHeight;
-    u16 pixelHeight;
-    u16 pixelWidth;
-    u8 savedFontMode;
+    s32 lastAdvance;
     s32 startY;
+    s16 x;
+    u16 pixelHeight;
+    u8 savedFontMode;
+    s32 fontHeight;
     s32 maxX;
+    u16 pixelWidth;
+    const u16 *line = (const u16 *) text;
+    s16 y;
+    u16 remaining;
+    u16 charCount;
+    s16 startX;
     u32 drawFlag;
     u32 more;
     s32 fontMode;
-    s32 lastAdvance;
-    s16 startX;
-    u16 charCount;
-    s16 x;
-    s16 y;
-    u16 remaining;
     u32 color = unk10;
     maxX        = 0;
     pixelWidth  = width * 8;

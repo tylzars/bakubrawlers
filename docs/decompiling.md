@@ -8,13 +8,16 @@ Lessons from getting functions to match exactly. Compiler and flags: see `compil
    gives disassembly to read from.
 2. For a single function, iterate in a scratch file with a `// PROBE: <mangled symbol> <module> <address>` line:
    `python3 tools/probe_compilers.py <file> --only 2.0/sp2p2 --flags='-O4,p -ipa file -inline on,noauto' --show`
-   prints a side-by-side diff with relocated words masked.
+   prints a side-by-side diff with relocated words masked. When only register names or stack slots differ, mark
+   the declarations that may move with a trailing `//PERM` and run `python3 tools/permute.py <file> <function>`:
+   mwcc allocates in declaration order, and the tool tries the orders (all of them for up to 8 lines).
 3. Put the code in its translation unit under `src/`, with an entry in `config/usa/arm9/**/delinks.txt` (see
    `CONTRIBUTING.md`). Shared classes go in `include/`, SDK declarations in `libs/nds/include/`.
 4. Compile it (`ninja build/usa/src/<path>.o`), then rename the original symbols to the names your code uses:
    `python3 tools/sync_symbols.py build/usa/src/<path>.o <module> --write`. The tool locates each matching function
    by its bytes and reads every referenced address from the original code, so `symbols.txt` follows the source.
-   A non-matching function of the same size can be placed with `--assume <mangled>=<addr>`.
+   A non-matching function of the same size can be placed with `--assume <mangled>=<addr>`, and
+   `--assume-embedded` places every `func_<addr>`/`func_ovNNN_<addr>` at the address in its name.
 5. Statics of inline functions (`_ZGVZ…`, `_ZZ…`, e.g. singleton instances and guards) are defined by every file
    that uses them. Mark them `weak` in `symbols.txt`. Compiled objects get their copies demoted to weak as well
    (`tools/demote_multidef.py`, run by the build), so main's original copy wins when a file is linked.

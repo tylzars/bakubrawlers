@@ -348,7 +348,7 @@ void BattleData::func_ov007_0223e180() {
     mEntries[1].mUnk_00 = average;
 }
 
-void BattleData::func_ov007_0223e1a4(u8 unk, u8 side) {
+void BattleData::func_ov007_0223e1a4(u32 unk, u8 side) {
     mUnk_07 = unk;
     if (side == 0xff) {
         return;

@@ -144,7 +144,7 @@ struct BattleData {
     void func_ov007_0223de88(u8 side, int x, int y, u32 flag, u32 value);
     void func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u32 flag, u32 mode, u16 a, u16 b);
     void func_ov007_0223e180();
-    void func_ov007_0223e1a4(u8 unk, u8 side);
+    void func_ov007_0223e1a4(u32 unk, u8 side);
     void func_ov007_0223e1cc(u8 side, u8 kind);
 };
 
@@ -503,6 +503,7 @@ public:
     void func_ov007_0221a6b4();
     void func_ov007_0221b8e8();
     BOOL func_ov007_0221bb84();
+    BOOL func_ov007_0221a7d0();
 };
 
 BOOL func_ov007_0221b998(int unk1, int mode, BattleEntry *entry);

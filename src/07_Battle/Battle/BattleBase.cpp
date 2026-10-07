@@ -1,7 +1,11 @@
 #include "Battle/BattleBase.hpp"
+#include "Battle/BattleCharaAct.hpp"
 
 #include "Game/Random.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
+#include "Battle/BattleCardSpec.hpp"
+#include "Battle/BattleCommandPage.hpp"
+#include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/SoundManager.hpp"
@@ -373,6 +377,329 @@ void BattleBase::func_ov007_0221a6b4() {
     if (entries[0].mUnk_12 == 0x8c || entries[1].mUnk_12 == 0x8c) {
         mUnk_54_2 = 1;
     }
+}
+
+class Camera;
+extern s8 data_ov007_02279158;
+extern s8 data_ov007_02279d3c;
+extern s16 data_ov007_02278b1c[];
+
+// non-matching: structure, case order, jump table and every call match; ~52 of 1094 words differ, only instruction scheduling / register choice (BattleCharaAct args in case 2, the s8 data load in cases 14/17, case 15 constant order)
+BOOL BattleBase::func_ov007_0221a7d0() {
+    BattleEntry *entries = mUnk_2c->mEntries;
+    switch (mUnk_4d) {
+        case 0:
+            SoundManager::Get().func_02024754(1);
+            SoundManager::Get().func_020246f8(0x30);
+            SpriteManager::Get().StartFade(4);
+            mUnk_4d++;
+        case 1:
+            if (SpriteManager::Get().IsFading()) {
+                break;
+            }
+            if (mUnk_40) {
+                delete mUnk_40;
+            }
+            mUnk_40 = 0;
+            func_ov007_0221a6b4();
+            mUnk_4d++;
+            break;
+        case 2:
+            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+                func_ov007_0221a55c();
+                Camera *cam = data_020d433c.mBattlePlayers->mCamera;
+                new BattleCharaAct(cam, entries[mUnk_4e].mUnk_0d_4, 6, (func_02065c20(mUnk_56) - 0x190) / 100, 0);
+                mUnk_4d++;
+            }
+            break;
+        case 3:
+            if (mContext->mUnk_12 != 0) {
+                mContext->mUnk_12 = 0;
+                SpriteManager::Get().func_0202740c();
+                mUnk_44->mUnk_118[mUnk_4e] = 0xff;
+                mUnk_4d++;
+            }
+            break;
+        case 4:
+            mUnk_44->func_ov007_022284a0(mUnk_4e);
+            mUnk_58 = (u32) new BattleCommandPage(mUnk_56, -1);
+            mUnk_4d++;
+            break;
+        case 5:
+            if (mUnk_54_4) {
+                if (mUnk_44->func_ov007_02228514()) {
+                    mUnk_54_4 = 0;
+                    SoundManager::Get().func_020246f8(0x33);
+                }
+            }
+            mUnk_2a++;
+            if (mUnk_2a > 0xf0) {
+                mUnk_2a = 0;
+                func_02055624((BattleCommandPage *) mUnk_58, 1);
+                mUnk_4d = 6;
+                if (mUnk_54_5 && mUnk_4f == 4 && func_ov007_0221ba0c((int) this, mUnk_4e, entries)) {
+                    mUnk_4d = 7;
+                } else if (!mUnk_54_1 && mUnk_54_0 && func_ov007_0221b998((int) this, mUnk_4e, entries)) {
+                    mUnk_4d = 8;
+                } else if (!mUnk_54_1 && mUnk_54_0 && func_ov007_0221b9d0((int) this, mUnk_4e, entries)) {
+                    mUnk_54_4 = 1;
+                    mUnk_4d   = 8;
+                } else if (mUnk_4f != 4 && func_ov007_0221ba38((int) this, mUnk_4e, mUnk_4f, entries)) {
+                    mUnk_4d = 9;
+                }
+                if (mUnk_4d != 6) {
+                    SoundManager::Get().func_020246f8(0x30);
+                    func_02055624((BattleCommandPage *) mUnk_58, 2);
+                }
+            }
+            break;
+        case 6:
+            if (mContext->mUnk_12 != 0) {
+                mContext->mUnk_12 = 0;
+                if (mUnk_4f == 4) {
+                    if (mUnk_54_5) {
+                        if (entries[0].mUnk_00 == entries[1].mUnk_00) {
+                            u8 idx = MATH_Rand32(&data_020d42e8, 2);
+                            BattleData *d = mUnk_2c;
+                            d->mEntries[idx].mUnk_10   = 1;
+                            d->mEntries[idx].mUnk_0f_6 = 0;
+                        } else if (entries[0].mUnk_00 > entries[1].mUnk_00) {
+                            BattleData *d = mUnk_2c;
+                            d->mEntries[0].mUnk_10   = 1;
+                            d->mEntries[0].mUnk_0f_6 = 0;
+                        } else {
+                            BattleData *d = mUnk_2c;
+                            d->mEntries[1].mUnk_10   = 1;
+                            d->mEntries[1].mUnk_0f_6 = 0;
+                        }
+                        mUnk_4d = 0x12;
+                    } else if (mUnk_54_0) {
+                        mUnk_4d = 0xe;
+                    } else {
+                        mUnk_44->func_ov007_022284e0(mUnk_4e);
+                        mUnk_4d = 0x12;
+                    }
+                } else if (mUnk_54_0) {
+                    mUnk_4d = 0xe;
+                } else {
+                    int k = func_ov007_0221ba88((int) this, mUnk_4e, entries);
+                    if (k) {
+                        mUnk_2c->func_ov007_0223e1a4(k, mUnk_4e);
+                    }
+                    switch (mUnk_4f) {
+                        case 0:
+                            mUnk_4d = 0xb;
+                            break;
+                        case 1:
+                        case 2:
+                        case 3:
+                            mUnk_44->func_ov007_022284c0(mUnk_4e);
+                            mUnk_4d = 0x12;
+                            break;
+                    }
+                }
+                mUnk_2c->func_ov007_0223e1cc(mUnk_4e, mUnk_4f);
+            }
+            break;
+        case 7:
+            if (mContext->mUnk_12 != 0) {
+                mContext->mUnk_12 = 0;
+                mUnk_4d           = 10;
+                mUnk_2c->func_ov007_0223e1cc(mUnk_4e, mUnk_4f);
+            }
+            break;
+        case 8:
+            if (mContext->mUnk_12 != 0) {
+                mContext->mUnk_12 = 0;
+                mUnk_54_1         = 1;
+                mUnk_4d           = 10;
+                mUnk_2c->func_ov007_0223e1cc(mUnk_4e, mUnk_4f);
+            }
+            break;
+        case 9:
+            if (mContext->mUnk_12 != 0) {
+                mContext->mUnk_12 = 0;
+                mUnk_54_4         = 1;
+                mUnk_4d           = 10;
+                if (mUnk_4f == 3) {
+                    mUnk_4f = 4;
+                }
+                mUnk_2c->func_ov007_0223e1cc(mUnk_4e, mUnk_4f);
+            }
+            break;
+        case 11: {
+            func_ov007_0221a55c();
+            u8 side = mUnk_4e;
+            mUnk_5c = (u32) new BattleCardSpec(0xb, entries[(u8) (side ^ 1)].mUnk_0c, entries[(u8) (side ^ 1)].mUnk_0d_0,
+                                               entries[(u8) (side ^ 1)].mUnk_0e == 0x15 ? 1 : 0);
+            mContext->mUnk_12 = 0;
+            mUnk_2a           = 0x40;
+            mUnk_4d++;
+            break;
+        }
+        case 12:
+            mUnk_2a++;
+            if (mUnk_2a > 0xa0) {
+                mUnk_2a = 0;
+                BattleCardSpec *spec = (BattleCardSpec *) mUnk_5c;
+                spec->mUnk_1e = 0;
+                func_ov007_02273e3c(spec->mUnk_0c);
+                mUnk_4d++;
+            }
+            break;
+        case 13:
+            if (mContext->mUnk_12 != 0) {
+                mContext->mUnk_12 = 0;
+                SpriteManager::Get().func_0202740c();
+                mUnk_44->func_ov007_022284c0(mUnk_4e);
+                mUnk_4d = 0x12;
+            }
+            break;
+        case 10:
+            if (mUnk_44->func_ov007_02228514()) {
+                s32 other = mUnk_4e ^ 1;
+                mUnk_4e   = other;
+                mUnk_56   = entries[other & 0xff].mUnk_12;
+                mUnk_50   = mUnk_4f;
+                mUnk_4f   = func_02065c0c(entries[mUnk_4e].mUnk_12, 3);
+                func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[entries[mUnk_4e].mUnk_0d_4], entries[mUnk_4e].mUnk_11, 2);
+                mUnk_44->mUnk_118[mUnk_4e] = 0;
+                mUnk_4d                    = 2;
+            }
+            break;
+        case 14:
+            func_ov007_0221a55c();
+            if (mUnk_54_2) {
+                mUnk_56 = 0x8c;
+            }
+            switch (mUnk_56) {
+                case 0x8c: {
+                    u8 side = mUnk_4e;
+                    if (mUnk_12 >= 2) {
+                        side = 0;
+                    }
+                    mUnk_5c = (u32) new BattleCardSpec(0xc, entries[side].mUnk_0c, entries[side].mUnk_0d_0, entries[side].mUnk_0e == 0x15 ? 1 : 0);
+                    mUnk_2c->mEntries[0].mUnk_0a = entries[0].mUnk_06 + entries[0].mUnk_08;
+                    mUnk_2c->mEntries[1].mUnk_0a = entries[1].mUnk_06 + entries[1].mUnk_08;
+                    mUnk_2c->mEntries[0].mUnk_02 = entries[0].mUnk_04;
+                    mUnk_2c->mEntries[1].mUnk_02 = entries[1].mUnk_04;
+                    mUnk_54_1                    = 1;
+                    s8 v = data_ov007_02279158;
+                    mUnk_2c->mUnk_34[4]->mUnk_0f = 1;
+                    mUnk_2c->mUnk_34[4]->mUnk_11 = v;
+                    mUnk_2c->mUnk_34[3]->mUnk_11 = v;
+                    break;
+                }
+                case 0x8d: {
+                    mUnk_4e ^= 1;
+                    mUnk_5c = (u32) new BattleCardSpec(0xc, entries[mUnk_4e].mUnk_0c, entries[mUnk_4e].mUnk_0d_0, entries[mUnk_4e].mUnk_0e == 0x15 ? 1 : 0);
+                    mUnk_2c->mEntries[mUnk_4e].mUnk_0a = entries[mUnk_4e].mUnk_06 + entries[mUnk_4e].mUnk_08;
+                    mUnk_2c->mEntries[mUnk_4e].mUnk_02 = entries[mUnk_4e].mUnk_04;
+                    s8 v = data_ov007_02279158;
+                    mUnk_2c->mUnk_34[4]->mUnk_0f = 1;
+                    mUnk_2c->mUnk_34[4]->mUnk_11 = v;
+                    mUnk_2c->mUnk_34[3]->mUnk_11 = v;
+                    break;
+                }
+                default: {
+                    if (mUnk_54_1 && mUnk_12 != 1) {
+                        mUnk_4e = 0;
+                    }
+                    mUnk_5c = (u32) new BattleCardSpec(5, entries[mUnk_4e].mUnk_0c, entries[mUnk_4e].mUnk_0d_0, entries[mUnk_4e].mUnk_0e == 0x15 ? 1 : 0);
+                    if (mUnk_54_1) {
+                        mUnk_2c->mEntries[0].mUnk_02 = entries[0].mUnk_00 + entries[0].mUnk_0a;
+                        mUnk_2c->mEntries[1].mUnk_02 = entries[1].mUnk_00 + entries[1].mUnk_0a;
+                    } else {
+                        mUnk_2c->mEntries[mUnk_4e].mUnk_02 = entries[mUnk_4e].mUnk_00 + entries[mUnk_4e].mUnk_0a;
+                    }
+                    mUnk_2c->mUnk_34[4]->mUnk_0f = 0;
+                    s8 v = data_ov007_02279d3c;
+                    mUnk_2c->mUnk_34[4]->mUnk_11 = v;
+                    mUnk_2c->mUnk_34[3]->mUnk_11 = v;
+                    break;
+                }
+            }
+            mContext->mUnk_12 = 0;
+            mUnk_2a           = 0x40;
+            mUnk_4d++;
+            break;
+        case 15:
+            func_ov007_0221a664();
+            if (mUnk_54_1) {
+                mUnk_2c->func_ov007_0223dfcc(0, 2, 8, 0x64, 0, 0, mUnk_2a, 0x40);
+                mUnk_2c->func_ov007_0223dfcc(1, 2, 0xb8, 0x64, 0, 0, mUnk_2a, 0x40);
+            } else {
+                mUnk_2c->func_ov007_0223dfcc(mUnk_4e, 2, data_ov007_02278b1c[mUnk_4e], 0x64, 0, 0, mUnk_2a, 0x40);
+            }
+            mUnk_2a--;
+            if (mUnk_2a == 0) {
+                mUnk_2a = 0;
+                mUnk_4d++;
+            }
+            break;
+        case 16: {
+            u8 flag = 0;
+            if (mUnk_54_1) {
+                if (mUnk_2c->func_ov007_0223dd6c()) {
+                    flag = 1;
+                }
+                mUnk_44->mUnk_b0[0] = (u32) entries[0].mUnk_00;
+                mUnk_44->mUnk_b0[1] = (u32) entries[1].mUnk_00;
+                mUnk_2c->func_ov007_0223dfcc(0, 2, 8, 0x64, 0, 1, 0, 0);
+                mUnk_2c->func_ov007_0223dfcc(1, 2, 0xb8, 0x64, 0, 1, 0, 0);
+            } else {
+                if (mUnk_2c->func_ov007_0223ddac(mUnk_4e)) {
+                    flag = 1;
+                }
+                mUnk_44->mUnk_b0[mUnk_4e] = (u32) entries[mUnk_4e].mUnk_00;
+                mUnk_2c->func_ov007_0223dfcc(mUnk_4e, 2, data_ov007_02278b1c[mUnk_4e], 0x64, 0, 1, 0, 0);
+            }
+            if (flag) {
+                if (mUnk_56 == 0x8d) {
+                    mUnk_4e ^= 1;
+                }
+                if (mUnk_50 == 5 && mUnk_4f == 4) {
+                    mUnk_44->func_ov007_022284e0(mUnk_4e);
+                } else if (mUnk_54_1) {
+                    mUnk_44->func_ov007_022284c0(0);
+                    mUnk_44->func_ov007_022284c0(1);
+                } else {
+                    mUnk_44->func_ov007_022284c0(mUnk_4e);
+                }
+                BattleCardSpec *spec = (BattleCardSpec *) mUnk_5c;
+                spec->mUnk_1e = 0;
+                func_ov007_02273e3c(spec->mUnk_0c);
+                mUnk_4d++;
+            }
+            break;
+        }
+        case 17:
+            if (mContext->mUnk_12 != 0) {
+                mContext->mUnk_12 = 0;
+                SpriteManager::Get().func_0202740c();
+                SpriteManager::Get().StartFade(3);
+                mUnk_4d                      = 0x12;
+                mUnk_2c->mUnk_34[4]->mUnk_0f = 0;
+                s8 v = data_ov007_02279d3c;
+                mUnk_2c->mUnk_34[4]->mUnk_11 = v;
+                mUnk_2c->mUnk_34[3]->mUnk_11 = v;
+            }
+            break;
+        case 18:
+            if (!mUnk_44->func_ov007_02228514()) {
+                break;
+            }
+            func_ov007_0221a55c();
+            func_ov007_0221a624();
+            mUnk_54_3 = 0;
+            mUnk_44->mUnk_117_3 = 0;
+            mUnk_44->func_ov007_02226614();
+            mUnk_48->func_ov007_02224270();
+            mUnk_4d++;
+        case 19:
+            return 1;
+    }
+    return 0;
 }
 
 void BattleBase::func_ov007_0221b8e8() {

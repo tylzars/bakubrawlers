@@ -496,6 +496,153 @@ void BattleCommandList::func_020589e8() {
     mUnk_140 = 0;
 }
 
+extern const char *data_020b35e0[14]; // paths loaded by func_020589f4
+extern u8 data_0209e594[];             // light table of the list model
+
+// non-matching: 11 words at +0x40, the index of the file table lives in r2 instead of r3 (same as BattleCommandPage::func_02055c28).
+BOOL BattleCommandList::func_020589f4() {
+    if (mUnk_140 != 0) {
+        if (func_02023874() != 0) {
+            return FALSE;
+        }
+        mUnk_d0[mUnk_140 - 1] = (u32) func_02023864();
+    }
+    u32 n = mUnk_140;
+    if (n < 14) {
+        u32 *out = &mUnk_108[n];
+        func_02023708(data_020b35e0[n], 0, 0, 0, out, 0);
+        mUnk_140++;
+        return FALSE;
+    }
+    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().mScreens[0].func_02027624(3);
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 0, 0, (void *) mUnk_d0[0], mUnk_108[0], 1);
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x14000, (void *) mUnk_d0[1], mUnk_108[1], 1);
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 5, 0x40, (void *) mUnk_d0[2], mUnk_108[2], 1);
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x7000, (void *) mUnk_d0[3], mUnk_108[3], 1);
+    if (mUnk_1c[0] != NULL) {
+        OS_Free(mUnk_1c[0]);
+    }
+    mUnk_1c[0] = (void *) mUnk_d0[4];
+    if (mUnk_1c[0] != NULL) {
+        CellAnimFile *file = mUnk_2c[0];
+        if (file != NULL) {
+            delete file;
+        }
+        mUnk_2c[0] = new CellAnimFileData(mUnk_1c[0]);
+        if (mUnk_2c[0] != NULL) {
+            for (u8 i = 0; i < 7; i++) {
+                CellAnimation *cell = mCells3c[i];
+                if (cell != NULL) {
+                    delete cell;
+                }
+                mCells3c[i]            = new CellAnimation(mUnk_2c[0], 0);
+                mCells3c[i]->mCharBase = SpriteManager::Get().Screen(0).func_020276f4(0x7000);
+                mCells3c[i]->mUnk_11   = 2;
+            }
+            mCells3c[0]->SetAnimation(2);
+            mCells3c[1]->SetAnimation(3);
+            mCells3c[2]->SetAnimation(6);
+            mCells3c[4]->SetAnimation(0xa);
+            mCells3c[5]->SetAnimation(5);
+            mCells3c[3]->SetAnimation(0);
+            mCells3c[3]->mUnk_0f = 2;
+            mCells3c[6]->SetAnimation(4);
+        }
+    }
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 5, 0, (void *) mUnk_d0[5], mUnk_108[5], 1);
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x4000, (void *) mUnk_d0[6], mUnk_108[6], 1);
+    if (mUnk_1c[1] != NULL) {
+        OS_Free(mUnk_1c[1]);
+    }
+    mUnk_1c[1] = (void *) mUnk_d0[7];
+    if (mUnk_1c[1] != NULL) {
+        CellAnimFile *file = mUnk_2c[1];
+        if (file != NULL) {
+            delete file;
+        }
+        mUnk_2c[1] = new CellAnimFileData(mUnk_1c[1]);
+        if (mUnk_2c[1] != NULL) {
+            for (u8 i = 0; i <= 2; i++) {
+                CellAnimation *cell = mCells58[i];
+                if (cell != NULL) {
+                    delete cell;
+                }
+                mCells58[i]            = new CellAnimation(mUnk_2c[1], 0);
+                mCells58[i]->mCharBase = SpriteManager::Get().Screen(0).func_020276f4(0x4000);
+                mCells58[i]->mUnk_11   = 0;
+            }
+            mCells58[0]->SetAnimation(2);
+            mCells58[1]->SetAnimation(1);
+            mCells58[2]->SetAnimation(3);
+        }
+    }
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 5, 0x20, (void *) mUnk_d0[8], mUnk_108[8], 1);
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x5000, (void *) mUnk_d0[9], mUnk_108[9], 1);
+    if (mUnk_1c[2] != NULL) {
+        OS_Free(mUnk_1c[2]);
+    }
+    mUnk_1c[2] = (void *) mUnk_d0[10];
+    if (mUnk_1c[2] != NULL) {
+        CellAnimFile *file = mUnk_2c[2];
+        if (file != NULL) {
+            delete file;
+        }
+        mUnk_2c[2] = new CellAnimFileData(mUnk_1c[2]);
+        if (mUnk_2c[2] != NULL) {
+            for (u8 i = 3; i < 7; i++) {
+                CellAnimation *cell = mCells58[i];
+                if (cell != NULL) {
+                    delete cell;
+                }
+                mCells58[i]            = new CellAnimation(mUnk_2c[2], 0);
+                mCells58[i]->mCharBase = SpriteManager::Get().Screen(0).func_020276f4(0x5000);
+                mCells58[i]->mUnk_11   = 1;
+            }
+            mCells58[3]->SetAnimation(1);
+            mCells58[4]->SetAnimation(3);
+            mCells58[5]->SetAnimation(2);
+            mCells58[6]->SetAnimation(4);
+        }
+    }
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 0, 0x200, (void *) mUnk_d0[11], mUnk_108[11], 1);
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0xc000, (void *) mUnk_d0[12], mUnk_108[12], 1);
+    if (mUnk_1c[3] != NULL) {
+        OS_Free(mUnk_1c[3]);
+    }
+    mUnk_1c[3] = (void *) mUnk_d0[13];
+    if (mUnk_1c[3] != NULL) {
+        CellAnimFile *file = mUnk_2c[3];
+        if (file != NULL) {
+            delete file;
+        }
+        mUnk_2c[3] = new CellAnimFileData(mUnk_1c[3]);
+        if (mUnk_2c[3] != NULL) {
+            CellAnimation *cell = mCells58[7];
+            if (cell != NULL) {
+                delete cell;
+            }
+            mCells58[7]            = new CellAnimation(mUnk_2c[3], 0);
+            mCells58[7]->mCharBase = SpriteManager::Get().Screen(0).func_020276f4(0xc000);
+            mCells58[7]->mUnk_11   = 1;
+        }
+    }
+    CameraManager &manager = CameraManager::Get();
+    Camera *camera         = manager.mCameras[manager.mActive];
+    data_02211374.mCameraPosition = camera->mPosition;
+    data_02211374.mCameraUp       = camera->mUp;
+    data_02211374.mCameraTarget   = camera->mTarget;
+    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    data_02211374.mFlags &= ~0xe8;
+    manager.mProjection[manager.mActive] = data_02211374.mProjection;
+    manager.mView[manager.mActive]       = data_02211374.mView;
+    manager.mMtxA[manager.mActive]       = *func_02032710();
+    manager.mMtxB[manager.mActive]       = *func_02032604();
+    manager.mMtxC[manager.mActive]       = *func_020323b8();
+    mUnk_88 = new UnkStruct_02029ca8(data_0209e594);
+    return TRUE;
+}
+
 BOOL BattleCommandList::func_02059734() {
     mUnk_14e = mUnk_14f;
     mUnk_150 = mUnk_151;

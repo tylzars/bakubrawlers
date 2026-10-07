@@ -81,6 +81,7 @@ struct SelectWindowCursor {
 
     SelectWindowCursor(u32 count, const void *table, u32 unk3); // 0x0202f420
     u32 func_0202f468(u32 unk1);
+    u32 func_0202f61c(u32 playSound);
     void func_02030474(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
     void SetScroll(u32 scroll); // 020304ec, clamps to mUnk_10
     void func_02030508();

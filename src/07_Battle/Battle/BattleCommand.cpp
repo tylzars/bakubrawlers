@@ -1072,11 +1072,10 @@ void BattleCommand::func_ov007_0223a734() {
     func_ov007_0223ce24();
 }
 
-// matches only with `variant = (u32) this`: the original leaves `variant` uninitialised for field types 0/4/5/6 and the
-// compiler reuses the register that still holds `this`. Placeholder for an uninitialised variable, not source.
-void BattleCommand::func_ov007_0223ad70() {
+// Loads the battle background; `variant` is the screen variant (BattleObj00 passes its mUnk_3c), overridden for some
+// field types.
+void func_ov007_0223ad70(u32 variant) {
     char path[0x100];
-    u32 variant = (u32) this;
     MI_CpuClearFast((void *) 0x6609000, 0x1000);
     reg_GX_POWCNT |= 0x8000;
     ChangeDir("/Game/Battle/Bg");

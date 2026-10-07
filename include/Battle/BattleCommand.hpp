@@ -78,7 +78,6 @@ public:
     void func_ov007_0223c8d4(u32 flag);
     void func_ov007_0223b38c();
     void func_ov007_0223a734();
-    void func_ov007_0223ad70();
     void func_ov007_0223c578();
     void func_ov007_0223b874();
     void func_ov007_0223ca80();
@@ -172,3 +171,5 @@ extern "C" void func_ov007_02248620(BattleCommandMap *map, u32 flag);
 extern "C" void func_ov007_02248748(BattleCommandMap *map, VecFx32 *out);
 void func_ov007_02248944(VecFx32 *out, u8 a, u8 b);
 extern "C" u32 func_ov007_02248998(VecFx32 *v, u8 *outA, u8 *outB);
+
+void func_ov007_0223ad70(u32 variant); // loads the battle background

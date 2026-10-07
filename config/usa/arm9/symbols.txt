@@ -103,7 +103,7 @@ func_020031f4 kind:function(arm,size=0x40) addr:0x020031f4
 func_02003234 kind:function(arm,size=0x58) addr:0x02003234
 func_0200328c kind:function(arm,size=0x48) addr:0x0200328c
 func_020032d4 kind:function(arm,size=0xb0) addr:0x020032d4
-func_02003384 kind:function(arm,size=0x1c) addr:0x02003384
+G2x_SetBlendAlpha_ kind:function(arm,size=0x1c) addr:0x02003384
 G2x_SetBlendBrightness_ kind:function(arm,size=0x28) addr:0x020033a0
 func_020033c8 kind:function(arm,size=0x1c) addr:0x020033c8
 func_020033e4 kind:function(arm,size=0x1c) addr:0x020033e4
@@ -790,7 +790,7 @@ func_0202030c kind:function(arm,size=0x1c) addr:0x0202030c
 func_02020328 kind:function(arm,size=0x6e0) addr:0x02020328
 _ZN9FrameTaskD1Ev kind:function(arm,size=0x14) addr:0x02020a08
 _ZN12InputManagerD1Ev kind:function(arm,size=0x4) addr:0x02020a1c
-func_02020a20 kind:function(arm,size=0x4) addr:0x02020a20
+_ZN12TouchManagerD1Ev kind:function(arm,size=0x4) addr:0x02020a20
 _ZN11TextManagerD1Ev kind:function(arm,size=0x4) addr:0x02020a24
 _ZN12SoundManagerD1Ev kind:function(arm,size=0x4) addr:0x02020a28
 func_02020a2c kind:function(arm,size=0x4) addr:0x02020a2c
@@ -839,7 +839,7 @@ func_0202279c kind:function(arm,size=0x94) addr:0x0202279c
 func_02022830 kind:function(arm,size=0x30) addr:0x02022830
 func_02022860 kind:function(arm,size=0x30) addr:0x02022860
 func_02022890 kind:function(arm,size=0x30) addr:0x02022890
-func_020228c0 kind:function(arm,size=0x30) addr:0x020228c0
+_ZN12TouchManager13func_020228c0Ejsjj kind:function(arm,size=0x30) addr:0x020228c0
 func_020228f0 kind:function(arm,size=0x98) addr:0x020228f0
 func_02022988 kind:function(arm,size=0x158) addr:0x02022988
 func_02022ae0 kind:function(arm,size=0x10) addr:0x02022ae0
@@ -902,7 +902,7 @@ _Z13func_0202537cPv kind:function(arm,size=0x14) addr:0x0202537c
 _Z16SetFrameIntervalh kind:function(arm,size=0x10) addr:0x02025390
 _Z11UpdateFramev kind:function(arm,size=0x11c) addr:0x020253a0
 func_020254bc kind:function(arm,size=0x34) addr:0x020254bc
-func_020254f0 kind:function(arm,size=0x6c) addr:0x020254f0
+_Z13func_020254f0PFvPvES_ kind:function(arm,size=0x6c) addr:0x020254f0
 func_0202555c kind:function(arm,size=0x2c) addr:0x0202555c
 func_02025588 kind:function(arm,size=0x70) addr:0x02025588
 func_020255f8 kind:function(arm,size=0x70) addr:0x020255f8
@@ -1158,8 +1158,8 @@ func_0202f40c kind:function(arm,size=0x14) addr:0x0202f40c
 func_0202f420 kind:function(arm,size=0x48) addr:0x0202f420
 func_0202f468 kind:function(arm,size=0x1b4) addr:0x0202f468
 func_0202f61c kind:function(arm,size=0xe58) addr:0x0202f61c
-func_02030474 kind:function(arm,size=0x78) addr:0x02030474
-func_020304ec kind:function(arm,size=0x1c) addr:0x020304ec
+_ZN18SelectWindowCursor13func_02030474Ejjjj kind:function(arm,size=0x78) addr:0x02030474
+_ZN18SelectWindowCursor9SetScrollEj kind:function(arm,size=0x1c) addr:0x020304ec
 func_02030508 kind:function(arm,size=0x54) addr:0x02030508
 func_0203055c kind:function(arm,size=0x50) addr:0x0203055c
 func_020305ac kind:function(arm,size=0xd8) addr:0x020305ac
@@ -2673,19 +2673,19 @@ _ZN18UnkStruct_02065c40C1Ejjj kind:function(arm,size=0x538) addr:0x02065c40
 func_02066178 kind:function(arm,size=0x2ac) addr:0x02066178
 func_02066424 kind:function(arm,size=0x2b4) addr:0x02066424
 func_020666d8 kind:function(arm,size=0x114) addr:0x020666d8
-func_020667ec kind:function(arm,size=0x28) addr:0x020667ec
+_ZN18UnkStruct_02065c4013func_020667ecEv kind:function(arm,size=0x28) addr:0x020667ec
 func_02066814 kind:function(arm,size=0x468) addr:0x02066814
-func_02066c7c kind:function(arm,size=0x20) addr:0x02066c7c
+_ZN18UnkStruct_02065c4013func_02066c7cEv kind:function(arm,size=0x20) addr:0x02066c7c
 func_02066c9c kind:function(arm,size=0x2c4) addr:0x02066c9c
 func_02066f60 kind:function(arm,size=0x154) addr:0x02066f60
-func_020670b4 kind:function(arm,size=0x6c) addr:0x020670b4
+_ZN18UnkStruct_02065c4013func_020670b4Ej kind:function(arm,size=0x6c) addr:0x020670b4
 func_02067120 kind:function(arm,size=0x120) addr:0x02067120
 func_02067240 kind:function(arm,size=0x18) addr:0x02067240
 func_02067258 kind:function(arm,size=0x4a0) addr:0x02067258
 _ZN18UnkStruct_02065c4013func_020676f8Ev kind:function(arm,size=0x10) addr:0x020676f8
 func_02067708 kind:function(arm,size=0x1e0) addr:0x02067708
 _ZN18UnkStruct_02065c4013func_020678e8Ev kind:function(arm,size=0x18) addr:0x020678e8
-func_02067900 kind:function(arm,size=0x1c) addr:0x02067900
+_ZN18UnkStruct_02065c4013func_02067900Ev kind:function(arm,size=0x1c) addr:0x02067900
 func_0206791c kind:function(arm,size=0x1c) addr:0x0206791c
 func_02067938 kind:function(arm,size=0xc) addr:0x02067938
 func_02067944 kind:function(arm,size=0x10) addr:0x02067944
@@ -2957,7 +2957,7 @@ func_02088efc kind:function(arm,size=0x18) addr:0x02088efc
 func_02088f14 kind:function(arm,size=0x14) addr:0x02088f14
 func_02088f28 kind:function(arm,size=0x10) addr:0x02088f28
 func_02088f38 kind:function(arm,size=0x2d0) addr:0x02088f38
-func_02089208 kind:function(arm,size=0x70) addr:0x02089208
+_Z13func_02089208v kind:function(arm,size=0x70) addr:0x02089208
 func_02089278 kind:function(arm,size=0x6ac) addr:0x02089278
 _Z13func_02089924jPv kind:function(arm,size=0x140) addr:0x02089924
 _Z13func_02089a64j kind:function(arm,size=0x38) addr:0x02089a64
@@ -4623,7 +4623,7 @@ data_020c17b8 kind:bss addr:0x020c17b8
 _ZGVZN9FrameTask3GetEvE8instance kind:bss addr:0x020c17bc weak
 data_020c17c0 kind:bss addr:0x020c17c0
 data_020c17c4 kind:bss addr:0x020c17c4
-data_020c17c8 kind:bss addr:0x020c17c8
+_ZGVZN12TouchManager3GetEvE8instance kind:bss addr:0x020c17c8 weak
 _ZGVZN13SpriteManager3GetEvE8instance kind:bss addr:0x020c17cc weak
 _ZGVZN12InputManager3GetEvE8instance kind:bss addr:0x020c17d0 weak
 data_020c17d4 kind:bss addr:0x020c17d4
@@ -4645,7 +4645,7 @@ data_020c1870 kind:bss addr:0x020c1870
 data_020c1884 kind:bss addr:0x020c1884
 data_020c189c kind:bss addr:0x020c189c
 _ZZN12InputManager3GetEvE8instance kind:bss addr:0x020c18c4 weak
-data_020c1900 kind:bss addr:0x020c1900
+_ZZN12TouchManager3GetEvE8instance kind:bss addr:0x020c1900 weak
 _ZZN12SoundManager3GetEvE8instance kind:bss addr:0x020c1964 weak
 _ZZN11TextManager3GetEvE8instance kind:bss addr:0x020c1a14 weak
 data_020c1a4c kind:bss addr:0x020c1a4c

@@ -101,7 +101,7 @@ public:
     void DrawPanelText();             // 0221caf8
     void LoadPanelText2(int index);   // 0221cba4
     void DrawPanelText2(s16 x);       // 0221cdbc
-    void UpdatePanelWindow();         // 0221cec4
+    u32 UpdatePanelWindow();          // 0221cec4
 };
 
 void func_ov005_0221b67c(MapScene *scene); // scroll callback for func_020254f0

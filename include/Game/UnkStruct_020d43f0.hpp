@@ -38,3 +38,7 @@ extern u8 data_020d49ae[];
 static inline BOOL TestFlagBit(const u8 *flags, int index) {
     return flags[(u32) index >> 3] & (1 << (index % 8));
 }
+
+static inline void SetFlagBit(u8 *flags, int index) {
+    flags[(u32) index >> 3] |= 1 << (index % 8);
+}

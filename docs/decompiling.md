@@ -60,6 +60,8 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   compare in source must use the same operator as the original (`a < b` calls `_fls`, `!(a >= b)` calls `_fgeq`).
 - **Unfolded int-to-float.** `s->x = 8;` on a float folds to a constant; `u32 left = 8; s->x = left;` keeps the
   original's `mov r0, #8; bl _ffltu`.
+- **Inlined SDK setters.** A 36-byte copy into 0x02211430 followed by calls to 0x020322c0/0x020322f0 is the
+  inline `NNS_G3dGlbSetBaseRot`/`Trans`/`Scale`: `MI_Copy36B` (0x01ff95c4) copies the 3x3 rotation.
 - **Declare return values.** A function declared `void` that really returns a value changes the caller's
   register allocation: `func_02025b64` returns `offset + size`, and declaring it `u32` (callers ignore the result)
   fixed runs of loads that kept a zero in a callee-saved register.

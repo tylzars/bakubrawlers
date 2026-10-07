@@ -12,6 +12,7 @@ void MI_CpuFill8(void *dest, u8 data, u32 size); // 0x01ff9630
 void MI_CpuCopy8(const void *src, void *dest, u32 size); // 0x01ff958c
 void MIi_CpuClear32(u32 data, void *dest, u32 size);
 void MIi_CpuClearFast(u32 data, void *dest, u32 size); // 0x01ff9540
+void MI_Copy36B(const void *src, void *dest);            // 0x01ff95c4
 
 static inline void MI_CpuClear8(void *dest, u32 size) {
     MI_CpuFill8(dest, 0, size);

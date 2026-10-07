@@ -45,6 +45,30 @@ src/Main/Graphics/SpriteManager.cpp:
 src/Main/Graphics/SpriteScreen.cpp:
     .text       start:0x020275bc end:0x02028280
 
+// provisional: code only; .data 0x020a565c-0x020a567c belongs here.
+src/Main/Graphics/NitroTexture.cpp:
+    .text       start:0x02028280 end:0x020289c8
+
+// provisional: code only.
+src/Main/Graphics/NitroModel.cpp:
+    .text       start:0x020289c8 end:0x02028bb4
+
+// provisional: code only; .data 0x020a567c-0x020a568c and .bss 0x0220f100-0x0220f10c belong here.
+src/Main/Graphics/ModelInstance.cpp:
+    .text       start:0x02028bb4 end:0x02029248
+
+// provisional: code only.
+src/Main/Graphics/ModelAnimData.cpp:
+    .text       start:0x02029248 end:0x020294e8
+
+// provisional: code only; .data 0x020a568c-0x020a569c belongs here.
+src/Main/Graphics/ModelAnim.cpp:
+    .text       start:0x020294e8 end:0x02029b5c
+
+// provisional: code only; .data 0x020a569c-0x020a56ac belongs here.
+src/Main/Graphics/ModelLight.cpp:
+    .text       start:0x02029b5c end:0x02029d7c
+
 // provisional: code only.
 src/Main/Graphics/CellAnimation.cpp:
     .text       start:0x02029d7c end:0x0202a594
@@ -61,9 +85,17 @@ src/Main/System/MicManager.cpp:
 src/Main/UI/SelectWindowCursor.cpp:
     .text       start:0x0202f420 end:0x020305ac
 
+// provisional: code only.
+src/Main/Graphics/ModelResource.cpp:
+    .text       start:0x020305ac end:0x02030880
+
 // provisional: code only; data not assigned yet.
 src/Main/System/FrameTask.cpp:
     .text       start:0x0203dbb0 end:0x0203de40
+
+// provisional: code only.
+src/Main/Graphics/ModelTransform.cpp:
+    .text       start:0x02052548 end:0x020527a4
 
 // provisional: code only; the vtable (.data 0x020b3764) is not assigned yet.
 src/Main/UI/SelectWindow.cpp:

@@ -27,5 +27,8 @@ public:
     ~ModelTransform();
     BOOL func_020526bc(); // builds the matrix and draws mModel
     // loads texture, model and optional animation data files and creates the instance (mModel); unk0 -> mUnk_00
-    void func_020525c0(const char *nsbtx, const char *nsbmd, const char *data, u8 unk0);
+    void func_020525c0(const char *nsbtx, const char *nsbmd, const char *data, u32 unk0);
+    void func_020526a8(const char *nsbtx, const char *nsbmd); // same without animation data
+    void func_02052768(u32 a, u32 b);                         // starts the animation (frame step 1.0)
+    void func_0205277c();                                     // updates mUnk_25 from the animation state
 };

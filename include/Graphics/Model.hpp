@@ -5,14 +5,31 @@
 
 #include <nitro/fx.h>
 
-// Palette-like 16 byte object (ctor 02029ca8, dtor 02029d18).
+// One of the four lights of a ModelLights set (0x14 bytes, ctor 02029b5c; vtable 020a569c).
+class ModelLight {
+public:
+    /* 00 (vtable) */
+    /* 04 */ u32 mEnabled;
+    /* 08 */ u32 mIndex;
+    /* 0c */ u16 mColor;
+    /* 0e */ s16 mDirection[3];
+    /* 14 */
+
+    ModelLight(u32 index, u32 enabled, u16 color, const s16 *direction);
+    virtual ~ModelLight() {}
+    void func_02029c0c(); // sends the light to the 3D engine state
+    void func_02029c44(const s16 *direction);
+};
+
+// Four lights read from a 10 byte per light table (ctor 02029ca8, dtor 02029d18).
 class UnkStruct_02029ca8 {
 public:
-    /* 00 */ PAD(0x00, 0x10);
+    /* 00 */ ModelLight *mLights[4];
     /* 10 */
 
     UnkStruct_02029ca8(const void *data);
     ~UnkStruct_02029ca8();
+    void func_02029d54(); // apply all lights
 };
 
 struct UnkStruct_0205401c_04 {
@@ -40,56 +57,152 @@ public:
 
 class NitroModel;
 class ModelInstance;
+class ModelAnimData;
+class UnkStruct_02028308;
+class UnkStruct_020289c8;
+
+struct NNSG3dRS;
+struct NNSG3dAnmObj;
+
+// One animation file (8 bytes, ctor 02029248): the file data and whether it was allocated by us.
+class UnkStruct_02029248 {
+public:
+    /* 00 */ void *mFile;
+    /* 04 */ u8 mOwnsFile;
+    /* 05 */ PAD(0x05, 0x08);
+    /* 08 */
+
+    void func_02029248();
+    BOOL func_02029258(void *file);
+    void *func_02029288(u32 index, UnkStruct_020289c8 *model, UnkStruct_02028308 *texture); // creates an animation object
+    void func_020292e4();
+};
+
+// The set of animation files of a model (one per channel; 0x1c bytes). Ctor 02029324 loads the files by name,
+// ctor 020293b8 takes a file in memory.
+struct ModelAnimEntry {
+    /* 00 */ u32 mFile; // offset in the data, relocated to a pointer when loaded
+    /* 04 */ u32 mTable; // likewise
+};
+
+class ModelAnimData {
+public:
+    /* 00 */ ModelAnimEntry *mFile;
+    /* 04 */ UnkStruct_02029248 *mAnims[5];
+    /* 18 */ u8 mOwnsFile;
+    /* 19 */ PAD(0x19, 0x1c);
+    /* 1c */
+
+    ModelAnimData(const char *path);
+    ModelAnimData(void *data);
+    ~ModelAnimData();
+    void func_02029488(); // creates the UnkStruct_02029248 of every file entry
+};
 
 // Animation controller of a ModelInstance (0x60 bytes, ctor 020294e8).
 class ModelAnim {
 public:
     /* 00 (vtable) */
     /* 04 */ u32 mUnk_04;
-    /* 08 */ PAD(0x08, 0x0c);
+    /* 08 */ u32 mUnk_08; // loop
     /* 0c */ s32 mUnk_0c;
     /* 10 */ u32 mUnk_10;
-    /* 14 */ PAD(0x14, 0x60);
+    /* 14 */ NitroModel *mUnk_14;
+    /* 18 */ ModelAnimData *mUnk_18;
+    /* 1c */ UnkStruct_02029248 *mUnk_1c[5];
+    /* 30 */ NNSG3dAnmObj **mUnk_30[5];
+    /* 44 */ u8 *mUnk_44[5];
+    /* 58 */ u8 mUnk_58[5];
+    /* 5d */ u8 mUnk_5d;
+    /* 5e */ PAD(0x5e, 0x60);
     /* 60 */
 
     ModelAnim(const void *data, NitroModel *model);
     virtual ~ModelAnim();
     void func_020298c0(u32 value, u32 index); // index 5 = all channels
+    void func_02029594();
+    BOOL func_020295e0();
+    void func_0202964c(u32 channel, UnkStruct_02029248 *anim, u8 *table);
+    void func_02029734();
+    s32 func_020297d4(u32 set);
+    void func_0202982c(NNSG3dAnmObj *obj);
+    BOOL func_02029854(NNSG3dAnmObj *obj);
+    void func_02029914();
+    void func_020299b8();
+    void func_020299ec();
+    NNSG3dAnmObj *func_02029a48(u32 channel);
+    NNSG3dAnmObj *func_02029a58(u32 channel, u32 set);
+    void func_02029ad8(u32 set);
 };
 
-// Render data of a ModelInstance (only the pointer at +04 is used so far: the NSBMD model data).
-struct ModelInstanceData {
-    /* 00 */ PAD(0x00, 0x04);
-    /* 04 */ void *mUnk_04;
-};
+// Render data of a ModelInstance (the model file object: only the pointer at +04 is used outside this module).
+typedef UnkStruct_020289c8 ModelInstanceData;
 
 // A drawable instance of an NSBMD model; deleted through its virtual destructor.
 class ModelInstance {
 public:
     /* 00 (vtable) */
-    /* 04 */ PAD(0x04, 0x58);
-    /* 58 */ ModelInstanceData *mUnk_58;
+    /* 04 */ u8 mRenderObj[0x2c]; // NNSG3dRenderObj
+    /* 30 */ ModelInstance *mUnk_30;
+    /* 34 */ PAD(0x34, 0x58);
+    /* 58 */ UnkStruct_020289c8 *mUnk_58;
     /* 5c */ ModelAnim *mAnim;
-    /* 60 */ PAD(0x60, 0x68);
+    /* 60 */ NNSG3dAnmObj *mUnk_60;
+    /* 64 */ MtxFx43 *mUnk_64;
     /* 68 */ u8 mUnk_68;
     /* 69 */ u8 mUnk_69;
-    /* 6a */
+    /* 6a */ u8 mUnk_6a;
+    /* 6b */ u8 mUnk_6b;
+    /* 6c */
 
+    ModelInstance(UnkStruct_020289c8 *model);
     virtual ~ModelInstance();
     BOOL func_02028d80();
+    BOOL func_02028da4();
+    void func_02028de0(ModelAnim *anim);
+    void func_02028de8(u32 a, u32 b);
     void func_02028e54(u32 a, u32 b, fx32 c);
     void func_02028e70(s32 frame); // sets the animation frame of all five channels
-    void func_02029174(MtxFx43 *mtx, VecFx32 *pos);
+    s32 func_02028ea4();
+    void func_02028ef0();
+    s32 func_02028f48();
+    void func_02028f54(NNSG3dAnmObj *obj);
+    void func_02028f88();
+    static void func_02028fb0(NNSG3dRS *rs);
+    void func_02028fec();
+    void func_02029054();
+    MtxFx43 *func_02029084(s32 index);
+    BOOL func_020290c0();
+    BOOL func_02029174(MtxFx43 *mtx, VecFx32 *pos);
 };
+
+struct NNSG3dResTex;
 
 // Base of the texture file object (ctor 02028308), 0x1c bytes.
 class UnkStruct_02028308 {
 public:
-    /* 00 */ PAD(0x00, 0x1c);
+    /* 00 */ void *mFile;
+    /* 04 */ NNSG3dResTex *mTex;
+    /* 08 */ u32 mLoaded;
+    /* 0c */ u32 mTexHandle;
+    /* 10 */ u32 m4x4Handle;
+    /* 14 */ u32 mPlttHandle;
+    /* 18 */ u8 mOwnsFile;
+    /* 19 */ PAD(0x19, 0x1c);
     /* 1c */
 
     UnkStruct_02028308();
     void func_02028344();
+    BOOL func_020282c4(void *file);
+    void func_0202832c(); // release VRAM and file
+    void func_02028388(); // free VRAM
+    void func_020283f8(); // allocate VRAM and upload
+    void func_020284e8();
+    void func_0202866c();
+    BOOL func_020286fc(const char *name, const char *file, u32 size); // upload part of the textures from file.ntft
+    BOOL func_02028778(const char *name, void *data, u32 size);
+    BOOL func_02028858(const char *name, const char *file, u32 size); // upload a palette from file.ntfp
+    BOOL func_020288d4(const char *name, void *data, u32 size);
 };
 
 // An NSBTX texture file (0x1c bytes).
@@ -104,20 +217,26 @@ public:
 // Base of the model file object (ctor 020289c8), 0x10 bytes.
 class UnkStruct_020289c8 {
 public:
-    /* 00 */ PAD(0x00, 0x08);
-    /* 08 */ void *mUnk_08;
-    /* 0c */ PAD(0x0c, 0x10);
+    /* 00 */ void *mFile;     // NSBMD file data
+    /* 04 */ void *mUnk_04;   // NNSG3dResMdl in the file
+    /* 08 */ UnkStruct_02028308 *mUnk_08; // texture bound to the model
+    /* 0c */ u8 mOwnsFile;
+    /* 0d */ PAD(0x0d, 0x10);
     /* 10 */
 
     UnkStruct_020289c8();
     ModelInstance *func_02028b78(ModelAnim *anim);
     void func_02028b4c(UnkStruct_02028308 *texture);
-    void func_020289e0(const char *name, UnkStruct_02028308 *texture);
+    BOOL func_020289e0(const char *name, UnkStruct_02028308 *texture);
+    BOOL func_02028a2c(void *file, UnkStruct_02028308 *texture);
+    BOOL func_02028ac4(const char *name);
+    void func_02028af0();
 };
 
 // An NSBMD model file (0x10 bytes).
 class NitroModel : public UnkStruct_020289c8 {
 public:
+    NitroModel() {}
     NitroModel(const char *name, UnkStruct_02028308 *texture) {
         func_020289e0(name, texture);
     }

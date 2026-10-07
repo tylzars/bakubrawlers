@@ -50,6 +50,14 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 | 0x020257c8-0x02025e18 | Graphics/UploadQueue.cpp | queue of VRAM uploads (`func_02025b64`, `func_02025c1c`) |
 | 0x02025e18-0x020275bc | Graphics/SpriteManager.cpp | identity matrices, Camera, CameraManager, SpriteManager methods |
 | 0x020275bc-0x02028280 | Graphics/SpriteScreen.cpp | |
+| 0x02028280-0x020289c8 | Graphics/NitroTexture.cpp | texture/palette resource and VRAM upload |
+| 0x020289c8-0x02028bb4 | Graphics/NitroModel.cpp | model resource |
+| 0x02028bb4-0x02029248 | Graphics/ModelInstance.cpp | render object, matrices, drawing |
+| 0x02029248-0x020294e8 | Graphics/ModelAnimData.cpp | animation files per channel |
+| 0x020294e8-0x02029b5c | Graphics/ModelAnim.cpp | animation player |
+| 0x02029b5c-0x02029d7c | Graphics/ModelLight.cpp | the four 3D lights |
+| 0x020305ac-0x02030880 | Graphics/ModelResource.cpp | model + texture + animation bundle |
+| 0x02052548-0x020527a4 | Graphics/ModelTransform.cpp | model with a transform (CharacterModel follows at 0x020527a4) |
 | 0x02029d7c-0x0202a594 | Graphics/CellAnimation.cpp | |
 | 0x0202c02c-0x0202d794 | Text/TextManager.cpp | |
 | 0x0202d794-0x0202db04 | System/MicManager.cpp | microphone sampling ("blow" detection), not text |

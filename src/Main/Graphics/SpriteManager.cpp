@@ -1,4 +1,5 @@
 #include "Graphics/Camera.hpp"
+#include "Graphics/ModelInternal.hpp"
 #include <nitro/fx.h>
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -34,12 +35,9 @@ void func_02001688(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, fx32 farPlan
 // MTX_Ortho
 void func_0200144c(fx32 top, fx32 bottom, fx32 left, fx32 right, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
 void func_01ff92a4();
-void func_01ff95c4(MtxFx33 *src, void *dst);
-void func_020322c0(const void *vec);
-void func_020322f0(const void *vec);
-extern u8 data_02211430[];
-extern const u8 data_0209094c[];
-extern const u8 data_02090958[];
+extern MtxFx33 data_02211430; // NNS_G3dGlb base rotation
+extern const VecFx32 data_0209094c;
+extern const VecFx32 data_02090958;
 
 void func_020256d4();
 void func_02026c4c(void *arg);
@@ -350,10 +348,10 @@ void CameraManager::func_020267f0() {
 }
 
 void func_02026848() {
-    func_01ff95c4(&data_0220e848, data_02211430);
+    MI_Copy36B(&data_0220e848, &data_02211430);
     data_02211374.mFlags &= ~0xa4;
-    func_020322c0(data_02090958);
-    func_020322f0(data_0209094c);
+    func_020322c0(&data_02090958);
+    func_020322f0(&data_0209094c);
 }
 // non-matching: 3 words: scheduling in the OAM-fill loop.
 void CameraManager::func_02026890() {

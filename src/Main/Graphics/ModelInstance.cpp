@@ -1,0 +1,225 @@
+#include "Graphics/Model.hpp"
+#include "Graphics/Camera.hpp"
+#include "Graphics/ModelInternal.hpp"
+#include <nitro/os.h>
+
+extern MtxFx33 data_02211430; // NNS_G3dGlb base rotation
+
+ModelInstance::ModelInstance(UnkStruct_020289c8 *model) {
+    mUnk_69 = 1;
+    mUnk_58 = model;
+    func_02031554(mRenderObj, model->mUnk_04);
+    mUnk_30 = this;
+    mUnk_60 = NULL;
+    mAnim   = NULL;
+    mUnk_64 = NULL;
+    mUnk_6a = 0;
+}
+
+ModelInstance::~ModelInstance() {
+    func_02029054();
+    func_02028ef0();
+    if (mAnim != NULL) {
+        if (mUnk_68 & 8) {
+            mAnim->func_020299b8();
+        }
+        if ((mUnk_68 & 1) && mAnim != NULL) {
+            delete mAnim;
+        }
+    }
+    UnkStruct_02028308 *texture;
+    UnkStruct_020289c8 *file = mUnk_58;
+    if (file != NULL) {
+        texture = file->mUnk_08;
+        if ((mUnk_68 & 2) && file != NULL) {
+            file->func_02028af0();
+            delete file;
+        }
+        if (texture != NULL) {
+            if ((mUnk_68 & 4) && texture != NULL) {
+                texture->func_0202832c();
+                delete texture;
+            }
+        }
+    }
+}
+
+BOOL ModelInstance::func_02028d80() {
+    BOOL result = TRUE;
+    if (mAnim != NULL) {
+        result = mAnim->func_020295e0();
+    }
+    return result;
+}
+
+BOOL ModelInstance::func_02028da4() {
+    BOOL result = TRUE;
+    if (mUnk_60 != NULL) {
+        ModelAnim *anim = mAnim;
+        if (anim->mUnk_04 == 0) {
+            result = anim->func_02029854(mUnk_60) == 0;
+        }
+    }
+    return result;
+}
+
+void ModelInstance::func_02028de0(ModelAnim *anim) {
+    mAnim = anim;
+}
+
+void ModelInstance::func_02028de8(u32 a, u32 b) {
+    func_02028ef0();
+    mAnim->func_02029ad8(a);
+    mAnim->func_02029734();
+    for (u8 i = 0; i < 5; i++) {
+        NNSG3dAnmObj *obj = mAnim->func_02029a48(i);
+        if (obj != NULL) {
+            func_020316c8(mRenderObj, obj);
+        }
+    }
+    mAnim->mUnk_08 = b;
+    mUnk_6a        = 1;
+}
+
+void ModelInstance::func_02028e54(u32 a, u32 b, fx32 c) {
+    func_02028de8(a, b);
+    mAnim->mUnk_0c = c;
+}
+
+void ModelInstance::func_02028e70(s32 frame) {
+    for (u8 i = 0; i < 5; i++) {
+        mAnim->func_020298c0(frame, i);
+    }
+}
+
+s32 ModelInstance::func_02028ea4() {
+    s32 max = 0;
+    for (u8 i = 0; i < 5; i++) {
+        NNSG3dAnmObj *obj = mAnim->func_02029a48(i);
+        s32 frame;
+        if (obj == NULL) {
+            frame = 0;
+        } else {
+            frame = obj->mFrame;
+        }
+        if (frame > max) {
+            max = frame;
+        }
+    }
+    return max;
+}
+
+void ModelInstance::func_02028ef0() {
+    if (mUnk_6a != 0 && mAnim != NULL) {
+        for (u8 i = 0; i < 5; i++) {
+            NNSG3dAnmObj *obj = mAnim->func_02029a48(i);
+            if (obj != NULL) {
+                func_020317bc(mRenderObj, obj);
+            }
+        }
+    }
+    func_02028f88();
+}
+
+s32 ModelInstance::func_02028f48() {
+    return mAnim->mUnk_10;
+}
+
+void ModelInstance::func_02028f54(NNSG3dAnmObj *obj) {
+    func_02028f88();
+    if (obj == NULL) {
+        return;
+    }
+    func_020316c8(mRenderObj, obj);
+    mUnk_60     = obj;
+    obj->mFrame = 0;
+}
+
+void ModelInstance::func_02028f88() {
+    if (mUnk_60 == NULL) {
+        return;
+    }
+    func_020317bc(mRenderObj, mUnk_60);
+    mUnk_60 = NULL;
+}
+
+void ModelInstance::func_02028fb0(NNSG3dRS *rs) {
+    ModelInstance *instance = (ModelInstance *) rs->mRenderObj->mUserData;
+    s32 index;
+    if (rs->mFlags & 0x10) {
+        index = rs->mUnk_ae;
+    } else {
+        index = -1;
+    }
+    func_02032cc8(&instance->mUnk_64[index], NULL);
+    instance->mUnk_6b = 1;
+}
+
+void ModelInstance::func_02028fec() {
+    if (mUnk_64 != NULL) {
+        return;
+    }
+    mUnk_64 = new MtxFx43[((u8 *) mUnk_58->mUnk_04)[0x17]];
+    func_02031810(mRenderObj, func_02028fb0, 0, 6, 3);
+    mUnk_6b = 0;
+}
+
+void ModelInstance::func_02029054() {
+    if (mUnk_64 == NULL) {
+        return;
+    }
+    func_02031824(mRenderObj);
+    delete[] mUnk_64;
+    mUnk_64 = NULL;
+}
+
+MtxFx43 *ModelInstance::func_02029084(s32 index) {
+    if (mUnk_6b != 0 && index <= ((u8 *) mUnk_58->mUnk_04)[0x17] && mUnk_64 != NULL) {
+        return &mUnk_64[index];
+    }
+    return NULL;
+}
+
+BOOL ModelInstance::func_020290c0() {
+    if (mUnk_69 == 0) {
+        return TRUE;
+    }
+    func_01ff92a4();
+    u8 *model = (u8 *) mUnk_58->mUnk_04;
+    *(vu32 *) 0x040004a4 = 0x30c1;
+    *(vu32 *) 0x04000500 = 0;
+    *(vu32 *) 0x04000504 = 0;
+    *(vu32 *) 0x04000444 = 0;
+    u32 scale = *(u32 *) (model + 0x38);
+    *(vu32 *) 0x0400046c = scale;
+    *(vu32 *) 0x0400046c = scale;
+    *(vu32 *) 0x0400046c = scale;
+    *(vu32 *) 0x040005c0 = *(u32 *) (model + 0x2c);
+    *(vu32 *) 0x040005c0 = *(u32 *) (model + 0x30);
+    *(vu32 *) 0x040005c0 = *(u32 *) (model + 0x34);
+    s32 result;
+    while (func_020037bc(&result) != 0) {
+    }
+    *(vu32 *) 0x04000448 = 1;
+    return result != 0;
+}
+
+BOOL ModelInstance::func_02029174(MtxFx43 *mtx, VecFx32 *pos) {
+    if (mtx != NULL) {
+        MI_Copy36B(mtx, &data_02211430);
+        data_02211374.mFlags &= ~0xa4;
+        func_020322c0((VecFx32 *) &mtx->_[9]);
+    }
+    if (pos != NULL) {
+        func_020322f0(pos);
+    }
+    func_02032284();
+    if (!func_020290c0()) {
+        return FALSE;
+    }
+    if (!CameraManager::Get().mUnk_01) {
+        return TRUE;
+    }
+    func_01ffb0ec(mRenderObj);
+    return TRUE;
+}

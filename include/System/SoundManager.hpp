@@ -43,7 +43,7 @@ public:
     void func_020246a4(s32 unk1);
     void func_020246d4(u32 unk1);
     void func_020246f8(u32 unk1);
-    void func_02024754();
+    void func_02024754(u32 unk1);
     void func_020247cc(s32 unk1);
 };
 

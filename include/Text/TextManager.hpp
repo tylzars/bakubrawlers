@@ -110,7 +110,7 @@ public:
         return count;
     }
     // Glyph slots needed for a width x height tile area, from Init's flags argument (tile unit sizes in its nibbles).
-    u16 GlyphCount(u32 width, u32 height, s32 flags) {
+    u16 GlyphCount(s32 width, s32 height, s32 flags) {
         u16 unitX  = (flags & 0xf) << 4;
         u16 unitY  = ((flags >> 4) & 0xf) << 4;
         s32 countX = (unitY + width * 8 - 1) / unitY;

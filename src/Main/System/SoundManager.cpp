@@ -17,7 +17,7 @@ extern "C" void func_020369e4(void *handle, u32 fadeFrames);
 extern void func_02039048(void *handle, s32 id);
 extern void func_02038214(u32 a);
 extern void func_02039090(void *handle, u32 a, s32 b, s32 c, s32 d, s32 e);
-extern void func_020369f4(u32 a);
+extern void func_020369f4(u32 a, u32 b);
 extern void func_02036a50(s32 a, s32 b, u32 c);
 extern int func_02036ae0(s32 a, s32 b);
 extern void func_02036b40(void *handle, s32 a);
@@ -112,8 +112,8 @@ void SoundManager::func_020246f8(u32 unk1) {
     }
 }
 
-void SoundManager::func_02024754() {
-    func_020369f4(mUnk_ac);
+void SoundManager::func_02024754(u32 unk1) {
+    func_020369f4(mUnk_ac, unk1);
 }
 
 extern "C" void func_02024764(SoundManager *manager, u32 unk1, u32 unk2) {

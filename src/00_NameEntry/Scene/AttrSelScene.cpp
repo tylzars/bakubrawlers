@@ -69,10 +69,6 @@ AttrSelScene::~AttrSelScene() {
 }
 
 // Same helper as FieldSelectScene.cpp defines locally; belongs in nitro/gx.h next to G2S_SetBlendAlpha.
-static inline void G2_SetBlendAlpha(int plane1, int plane2, int ev1, int ev2) {
-    G2x_SetBlendAlpha_(&reg_G2_BLDCNT, plane1, plane2, ev1, ev2);
-}
-
 void AttrSelScene::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
@@ -91,14 +87,6 @@ void AttrSelScene::InitDisplay() {
 
 // Same arithmetic as TextManager::GlyphCount(width, height, flags) but with signed operands: the original calls
 // _s32_div_f here (and in ov008 0221e2d8/0221e2ec), the header's u32 parameters would give _u32_div_f.
-static inline u16 GlyphCountS(TextManager &, u16 width, u16 height, s32 flags) {
-    u16 unitX  = (flags & 0xf) << 4;
-    u16 unitY  = ((flags >> 4) & 0xf) << 4;
-    s32 countX = (unitY + width * 8 - 1) / unitY;
-    s32 countY = (unitX + height * 8 - 1) / unitX;
-    return countX * countY;
-}
-
 extern u8 data_ov000_02226214[];
 
 extern u8 data_ov000_02226218[];
@@ -162,7 +150,7 @@ void AttrSelScene::LoadGraphics() {
         mBufferSize[i] = (u16) TextManager::Get().BufferSize((s16) (width = data_ov000_02226214[i]), (s16) (height = data_ov000_02226218[i]));
         mTextBuffer[i] = OS_Alloc(mBufferSize[i]);
         MI_CpuClear16(mTextBuffer[i], mBufferSize[i]);
-        mGlyphCount[i] = GlyphCountS(TextManager::Get(), width, height, flags = data_ov000_02226234[i]);
+        mGlyphCount[i] = TextManager::Get().GlyphCount(width, height, flags = data_ov000_02226234[i]);
         mGlyphBuffer[i] = OS_Alloc(mGlyphCount[i] * 0xc);
         TextManager::Get().Init(mGlyphBuffer[i], 0, 0, width, height, flags);
     }

@@ -133,6 +133,9 @@ void G2x_SetBGyAffine_(vu16 *reg, const MtxFx22 *mtx, int centerX, int centerY, 
 }
 #endif
 
+static inline void G2_SetBlendAlpha(int plane1, int plane2, int ev1, int ev2) {
+    G2x_SetBlendAlpha_(&reg_G2_BLDCNT, plane1, plane2, ev1, ev2);
+}
 static inline void G2S_SetBlendAlpha(int plane1, int plane2, int ev1, int ev2) {
     G2x_SetBlendAlpha_(&reg_G2S_DB_BLDCNT, plane1, plane2, ev1, ev2);
 }

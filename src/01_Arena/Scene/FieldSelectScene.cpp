@@ -54,10 +54,6 @@ static inline u8 IsZeroU8(u8 v) {
 
 extern u8 data_020d43d7[];
 
-static inline void G2_SetBlendAlpha(int plane1, int plane2, int ev1, int ev2) {
-    G2x_SetBlendAlpha_(&reg_G2_BLDCNT, plane1, plane2, ev1, ev2);
-}
-
 extern const u8 data_ov001_022270d0[];
 
 extern const WindowItemRecord data_ov001_02227218[][6];

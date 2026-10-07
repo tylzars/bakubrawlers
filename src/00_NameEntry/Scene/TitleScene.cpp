@@ -307,10 +307,6 @@ void TitleScene::SetWindowMode(u8 mode) {
 }
 
 // Same helper as FieldSelectScene.cpp defines locally; belongs in nitro/gx.h next to G2S_SetBlendAlpha.
-static inline void G2_SetBlendAlpha(int plane1, int plane2, int ev1, int ev2) {
-    G2x_SetBlendAlpha_(&reg_G2_BLDCNT, plane1, plane2, ev1, ev2);
-}
-
 void TitleScene::UpdateFade() {
     if (!mUnk_d3) {
         return;

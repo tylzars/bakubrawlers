@@ -11,7 +11,9 @@ class UnkStruct_02078290;
 struct BattleRecord {
     /* 00 */ u16 mUnk_00_0 : 4;
     /* 00 */ u16 mGauge : 12;
-    /* 02 */ PAD(0x02, 0x09);
+    /* 02 */ PAD(0x02, 0x04);
+    /* 04 */ u16 mUnk_04;
+    /* 06 */ PAD(0x06, 0x09);
     /* 09 */ u8 mUnk_09;
     /* 0a */ PAD(0x0a, 0x0c);
 };
@@ -30,7 +32,9 @@ struct BattlePlayer {
     /* f5 */ u8 mRecord;
     /* f6 */ u8 mUnk_f6;
     /* f7 */ u8 mUnk_f7;
-    /* f8 */ PAD(0xf8, 0xfd);
+    /* f8 */ PAD(0xf8, 0xfa);
+    /* fa */ u16 mUnk_fa;
+    /* fc */ u8 mUnk_fc;
     /* fd */ u8 mUnk_fd;
     /* fe */
 
@@ -46,6 +50,8 @@ struct BattlePlayer {
 struct BattleVecHolder4 {
     /* 00 */ PAD(0x00, 0x04);
     /* 04 */ VecFx32 mPos;
+    /* 10 */ PAD(0x10, 0x4a);
+    /* 4a */ u8 mUnk_4a;
 };
 
 struct BattleVecHolder8 {
@@ -58,14 +64,24 @@ struct BattleTarget {
     /* 38 */ u32 mUnk_38;
     /* 3c */ PAD(0x3c, 0x44);
     /* 44 */ u32 mUnk_44;
-    /* 48 */ PAD(0x48, 0x64);
+    /* 48 */ PAD(0x48, 0x4c);
+    /* 4c */ u32 mUnk_4c;
+    /* 50 */ PAD(0x50, 0x64);
     /* 64 */ VecFx32 mUnk_64;
-    /* 70 */ PAD(0x70, 0x174);
+    /* 70 */ PAD(0x70, 0xa0);
+    /* a0 */ VecFx32 mUnk_a0;
+    /* ac */ PAD(0xac, 0x174);
     /* 174 */ BattleVecHolder8 *mUnk_174; // vector at +08
     /* 178 */ PAD(0x178, 0x1a4);
     /* 1a4 */ BattleVecHolder4 *mUnk_1a4; // vector at +04
-    /* 1a8 */ PAD(0x1a8, 0x1c6);
+    /* 1a8 */ PAD(0x1a8, 0x1bc);
+    /* 1bc */ u16 mUnk_1bc;
+    /* 1be */ PAD(0x1be, 0x1c6);
     /* 1c6 */ u16 mUnk_1c6;
+    /* 1c8 */ PAD(0x1c8, 0x1da);
+    /* 1da */ u8 mUnk_1da;
+    /* 1db */ PAD(0x1db, 0x1dd);
+    /* 1dd */ u8 mUnk_1dd;
 };
 
 struct BattleMarker {

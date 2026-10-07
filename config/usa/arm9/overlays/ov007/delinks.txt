@@ -108,3 +108,47 @@ src/07_Battle/Gimmick/GimmickManager.cpp:
 // provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/Gimmick.cpp:
     .text       start:0x0222e8d0 end:0x0222eb1c
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickFieldPowerS.cpp:
+    .text       start:0x0222eb1c end:0x0222f1e8
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickTornado.cpp:
+    .text       start:0x0222f1e8 end:0x0222f480
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickVentKaze.cpp:
+    .text       start:0x0222f480 end:0x0222f8fc
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickPyrusEruption.cpp:
+    .text       start:0x0222f8fc end:0x022300dc
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickAbilityField.cpp:
+    .text       start:0x022300dc end:0x022308a8
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickUnk_022308a8.cpp:
+    .text       start:0x022308a8 end:0x02230cec
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickUnk_02230cec.cpp:
+    .text       start:0x02230cec end:0x02230f58
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickUnk_02274830.cpp:
+    .text       start:0x02274830 end:0x02274d78
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickHaosWall.cpp:
+    .text       start:0x02274d78 end:0x0227532c
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickAquosFukidashi.cpp:
+    .text       start:0x02275de8 end:0x022767c8
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Gimmick/GimmickIkazuchiStart.cpp:
+    .text       start:0x02278270 end:0x02278b1c

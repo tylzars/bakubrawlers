@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Battle/Gimmick.hpp"
+#include "Game/Random.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/ModelResource.hpp"
 #include <nitro/fx.h>
@@ -14,6 +15,8 @@ void func_01ff8e3c(const VecFx32 *a, const VecFx32 *b, VecFx32 *out); // a + b
 void func_01ff8fc4(const VecFx32 *a, VecFx32 *out);                   // normalize
 fx32 func_01ff8f64(const VecFx32 *v);                                 // length
 extern MtxFx43 data_020c1cf4;
+fx32 func_01ff8000(fx32 num, fx32 den); // fixed point num / den (hardware divider)
+void func_ov007_02233ed8(VecFx32 *in, u16 angle, VecFx32 *out); // rotates `in` about Y
 
 // Bakugan statue shown for the attribute in data_020d433c.mUnk_95 (pyrus_dorg00, angelo/diablo, Ventus_skyr_0,
 // subterra_majin, haos_tig, hydra). Vtable 02286c84.
@@ -116,6 +119,7 @@ public:
 // Helpers of the effect manager (data_020d433c.mEffects).
 u16 func_0202bd40(EffectManager *manager, u32 a, u32 b, u32 c, u32 d);
 void func_0202bf60(EffectManager *manager, u16 handle, MtxFx43 *mtx);
+void func_0202bf18(EffectManager *manager, u16 handle, VecFx32 *vec);
 
 // Exit marker (exepoint_00), vtable 022870bc.
 class GimmickExePoint : public Gimmick {
@@ -249,113 +253,200 @@ public:
 
 // Gimmick classes of later rows of the overlay, declared with the right size and constructor so that
 // GimmickManager::func_ov007_0222e290 can create them.
-class GimmickFieldPowerS : public Gimmick { // 0222eb1c
+class GimmickFieldPowerS : public Gimmick { // 0222eb1c, vtable 022872c0, model fieldpower_s_<mVariant>
 public:
-    /* 45 */ PAD(0x45, 0x48);
+    /* 45 */ u8 mVariant;
+    /* 46 */ PAD(0x46, 0x48);
+    /* 48 */
+
     GimmickFieldPowerS(u8 id, u8 variant);
     virtual ~GimmickFieldPowerS();
-    virtual void Update();
-    virtual void Load();
-    virtual void Unload();
-    virtual void Finish();
+    /* 08 */ virtual void Update();
+    /* 0c */ virtual void Load();
+    /* 10 */ virtual void Unload();
+    /* 14 */ virtual void Finish();
+
+    void func_ov007_0222f1ac();
 };
-class GimmickTornado : public Gimmick { // 0222f1e8
+class GimmickTornado : public Gimmick { // 0222f1e8, vtable 02287358, model vne_tornado
 public:
-    /* 45 */ PAD(0x45, 0x48);
+    /* 45 */ PAD(0x45, 0x46);
+    /* 46 */ u16 mAngle;
+    /* 48 */
+
     GimmickTornado(u8 id, u8 variant);
     virtual ~GimmickTornado();
-    virtual void Update();
-    virtual void Load();
-    virtual void Unload();
-    virtual void Finish();
+    /* 08 */ virtual void Update();
+    /* 0c */ virtual void Load();
+    /* 10 */ virtual void Unload();
+    /* 14 */ virtual void Finish();
 };
-class GimmickVentKaze : public Gimmick { // 0222f480
+class GimmickVentKaze : public Gimmick { // 0222f480, vtable 022873d0, model ventkaze0
 public:
     /* 45 */ PAD(0x45, 0x48);
+    /* 48 */
+
     GimmickVentKaze(u8 id);
     virtual ~GimmickVentKaze();
-    virtual void Update();
-    virtual void Load();
-    virtual void Unload();
-    virtual void Finish();
+    /* 08 */ virtual void Update();
+    /* 0c */ virtual void Load();
+    /* 10 */ virtual void Unload();
+    /* 14 */ virtual void Finish();
 };
-class GimmickPyrusEruption : public Gimmick { // 0222f8fc
+class GimmickPyrusEruption : public Gimmick { // 0222f8fc, vtable 0228743c, models Pyruseruption_n / Pyruseruption_b
 public:
-    /* 45 */ PAD(0x45, 0x50);
+    /* 45 */ PAD(0x45, 0x48);
+    /* 48 */ ModelInstance *mModelB;
+    /* 4c */ u16 mCounter;
+    /* 4e */ u8 mUnk_4e;
+    /* 4f */ u8 mUnk_4f;
+    /* 50 */
+
     GimmickPyrusEruption(u8 id);
     virtual ~GimmickPyrusEruption();
-    virtual void Update();
-    virtual void Load();
-    virtual void Unload();
-    virtual void Finish();
+    /* 08 */ virtual void Update();
+    /* 0c */ virtual void Load();
+    /* 10 */ virtual void Unload();
+    /* 14 */ virtual void Finish();
+
+    void func_ov007_0222ffb0();
+    void func_ov007_02230040(int drawB);
+    int func_ov007_0223008c(int frames, int state);
 };
-class GimmickAbilityField : public Gimmick { // 022300dc
+// One row of the ability pick table at 02279568: `mCount` entries, picked by weight, mapped through `mIds`.
+struct GimmickAbilityRow {
+    /* 00 */ u8 mCount;
+    /* 01 */ PAD(0x01, 0x04);
+    /* 04 */ const u8 *mIds;
+    /* 08 */ const u8 *mWeights;
+    /* 0c */
+};
+extern const GimmickAbilityRow data_ov007_02279568[];
+void func_020331a4(void *nsbmd, u32 value, u32 mask); // sets the bits of `mask` of every material's polygon attribute
+
+class GimmickAbilityField : public Gimmick { // 022300dc, vtable 0228750c, models ability_filed0 / ability_filed1
 public:
-    /* 45 */ PAD(0x45, 0x50);
+    /* 45 */ PAD(0x45, 0x48);
+    /* 48 */ ModelInstance *mModelB;
+    /* 4c */ u8 mUnk_4c;
+    /* 4d */ u8 mUnk_4d;
+    /* 4e */ PAD(0x4e, 0x50);
+    /* 50 */
+
     GimmickAbilityField(u8 id, u8 param);
     virtual ~GimmickAbilityField();
-    virtual void Update();
-    virtual void Load();
-    virtual void Unload();
-    virtual void Finish();
+    /* 08 */ virtual void Update();
+    /* 0c */ virtual void Load();
+    /* 10 */ virtual void Unload();
+    /* 14 */ virtual void Finish();
+
+    void func_ov007_022303f4();
 };
-class GimmickUnk_022308a8 : public Gimmick {
+// Model-less push field (no Load/Unload work): while the target is inside, pushes it away from mPosition.
+class GimmickUnk_022308a8 : public Gimmick { // vtable 022875bc
 public:
-    /* 45 */ PAD(0x45, 0x58);
+    /* 45 */ PAD(0x45, 0x48);
+    /* 48 */ VecFx32 mUnk_48;
+    /* 54 */ u8 mUnk_54;
+    /* 55 */ PAD(0x55, 0x58);
+    /* 58 */
+
     GimmickUnk_022308a8(u8 id);
     virtual ~GimmickUnk_022308a8();
-    virtual void Update();
-    virtual void Load();
-    virtual void Unload();
-    virtual void Finish();
+    /* 08 */ virtual void Update();
+    /* 0c */ virtual void Load();
+    /* 10 */ virtual void Unload();
+    /* 14 */ virtual void Finish();
 };
-class GimmickUnk_02230cec : public Gimmick {
+// Model-less trigger (id 0x3d): hands the target's velocity vector to func_ov007_0225c960.
+class GimmickUnk_02230cec : public Gimmick { // vtable 022875e0
 public:
     /* 45 */ PAD(0x45, 0x48);
+    /* 48 */
+
     GimmickUnk_02230cec(u8 id);
     virtual ~GimmickUnk_02230cec();
-    virtual void Update();
-    virtual void Load();
-    virtual void Unload();
-    virtual void Finish();
+    /* 08 */ virtual void Update();
+    /* 0c */ virtual void Load();
+    /* 10 */ virtual void Unload();
+    /* 14 */ virtual void Finish();
 };
-class GimmickUnk_02274830 : public Gimmick {
+// Model-less hit field (id 0x1f): knocks the target up, drains the current record's gauge and waits mUnk_46 frames.
+class GimmickUnk_02274830 : public Gimmick { // vtable 0228af78
 public:
-    /* 45 */ PAD(0x45, 0x48);
+    /* 45 */ PAD(0x45, 0x46);
+    /* 46 */ u16 mUnk_46;
+    /* 48 */
+
     GimmickUnk_02274830(u8 id);
     virtual ~GimmickUnk_02274830();
-    virtual void Update();
-    virtual void Load();
-    virtual void Unload();
-    virtual void Finish();
+    /* 08 */ virtual void Update();
+    /* 0c */ virtual void Load();
+    /* 10 */ virtual void Unload();
+    /* 14 */ virtual void Finish();
 };
+// Wall pair of the Haos field (haos_wall): mUnk_46 is the manager id of the partner wall (node mUnk_46 + 1), the
+// target is pulled from the partner's side and the partner gets a mUnk_45 frame cooldown. Vtable 0228af9c.
 class GimmickHaosWall : public Gimmick { // 02274d78
 public:
-    /* 45 */ PAD(0x45, 0x48);
+    /* 45 */ u8 mUnk_45;
+    /* 46 */ u8 mUnk_46;
+    /* 47 */ PAD(0x47, 0x48);
+    /* 48 */
+
     GimmickHaosWall(u8 id, u8 param);
     virtual ~GimmickHaosWall();
-    virtual void Update();
-    virtual void Load();
-    virtual void Unload();
-    virtual void Finish();
+    /* 08 */ virtual void Update();
+    /* 0c */ virtual void Load();
+    /* 10 */ virtual void Unload();
+    /* 14 */ virtual void Finish();
+
+    void func_ov007_02274fac(u8 cooldown); // starts the cooldown (state 2)
 };
+// Speech bubble of the Aquos field (aqousfukidasi_n / _b): pushes the target up while it is near and counts the
+// near bubbles in a static counter for the looping sound 0x63. Vtable 0228b16c.
 class GimmickAquosFukidashi : public Gimmick { // 02275de8
 public:
-    /* 45 */ PAD(0x45, 0x54);
+    /* 45 */ PAD(0x45, 0x48);
+    /* 48 */ ModelInstance *mModelB;
+    /* 4c */ u16 mCounter;
+    /* 4e */ u16 mUnk_4e;
+    /* 50 */ u8 mUnk_50;
+    /* 51 */ u8 mUnk_51;
+    /* 52 */ u8 mUnk_52;
+    /* 53 */ PAD(0x53, 0x54);
+    /* 54 */
+
     GimmickAquosFukidashi(u8 id);
     virtual ~GimmickAquosFukidashi();
-    virtual void Update();
-    virtual void Load();
-    virtual void Unload();
-    virtual void Finish();
+    /* 08 */ virtual void Update();
+    /* 0c */ virtual void Load();
+    /* 10 */ virtual void Unload();
+    /* 14 */ virtual void Finish();
+
+    void func_ov007_02276634();
+    void func_ov007_022766c4(int drawB);
+    int func_ov007_02276710(int frames, int state);
+    int func_ov007_02276760(); // TRUE when the target is within 0x96000 of the bubble
 };
+// Lightning strikes (ikazuchistart / ikaz00): at most two strike at a time (static counter), each waits one of
+// the random mDelays between strikes and hits the target when it is in range. Vtable 0228b528.
 class GimmickIkazuchiStart : public Gimmick { // 02278270
 public:
-    /* 45 */ PAD(0x45, 0x60);
+    /* 45 */ PAD(0x45, 0x48);
+    /* 48 */ ModelInstance *mModelB;
+    /* 4c */ u16 mCounter;
+    /* 4e */ u16 mDelays[8];
+    /* 5e */ u8 mUnk_5e;
+    /* 5f */ u8 mUnk_5f;
+    /* 60 */
+
     GimmickIkazuchiStart(u8 id);
     virtual ~GimmickIkazuchiStart();
-    virtual void Update();
-    virtual void Load();
-    virtual void Unload();
-    virtual void Finish();
+    /* 08 */ virtual void Update();
+    /* 0c */ virtual void Load();
+    /* 10 */ virtual void Unload();
+    /* 14 */ virtual void Finish();
+
+    int func_ov007_022789e0(int count); // draws; with `count` also counts mCounter down, TRUE when it hits 0
 };

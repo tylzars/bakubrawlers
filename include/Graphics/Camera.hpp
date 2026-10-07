@@ -72,7 +72,9 @@ struct UnkStruct_02211374 {
     /* 008 */ MtxFx44 mProjection;
     /* 048 */ PAD(0x048, 0x04c);
     /* 04c */ MtxFx43 mView;
-    /* 07c */ PAD(0x07c, 0x0fc);
+    /* 07c */ PAD(0x07c, 0x09c);
+    /* 09c */ u32 mUnk_9c;
+    /* 0a0 */ PAD(0x0a0, 0x0fc);
     /* 0fc */ u32 mFlags;
     /* 100 */ PAD(0x100, 0x240);
     /* 240 */ VecFx32 mCameraPosition;

@@ -26,4 +26,6 @@ public:
     ModelTransform();
     ~ModelTransform();
     BOOL func_020526bc(); // builds the matrix and draws mModel
+    // loads texture, model and optional animation data files and creates the instance (mModel); unk0 -> mUnk_00
+    void func_020525c0(const char *nsbtx, const char *nsbmd, const char *data, u8 unk0);
 };

@@ -1,4 +1,4 @@
-func_01ff8000 kind:function(arm,size=0x10) addr:0x01ff8000
+_Z13func_01ff8000ii kind:function(arm,size=0x10) addr:0x01ff8000
 func_01ff8010 kind:function(arm,size=0x2c) addr:0x01ff8010
 func_01ff803c kind:function(arm,size=0x2c) addr:0x01ff803c
 FX_Sqrt kind:function(arm,size=0x34) addr:0x01ff8068

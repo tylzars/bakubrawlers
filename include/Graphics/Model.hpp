@@ -57,11 +57,18 @@ public:
     void func_020298c0(u32 value, u32 index); // index 5 = all channels
 };
 
+// Render data of a ModelInstance (only the pointer at +04 is used so far: the NSBMD model data).
+struct ModelInstanceData {
+    /* 00 */ PAD(0x00, 0x04);
+    /* 04 */ void *mUnk_04;
+};
+
 // A drawable instance of an NSBMD model; deleted through its virtual destructor.
 class ModelInstance {
 public:
     /* 00 (vtable) */
-    /* 04 */ PAD(0x04, 0x5c);
+    /* 04 */ PAD(0x04, 0x58);
+    /* 58 */ ModelInstanceData *mUnk_58;
     /* 5c */ ModelAnim *mAnim;
     /* 60 */ PAD(0x60, 0x68);
     /* 68 */ u8 mUnk_68;
@@ -71,6 +78,7 @@ public:
     virtual ~ModelInstance();
     BOOL func_02028d80();
     void func_02028e54(u32 a, u32 b, fx32 c);
+    void func_02028e70(s32 frame); // sets the animation frame of all five channels
     void func_02029174(MtxFx43 *mtx, VecFx32 *pos);
 };
 

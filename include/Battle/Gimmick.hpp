@@ -8,7 +8,9 @@
 
 // Loaded data of the SetData_%02d_%02d.bin files (0x824+ bytes), created by func_ov007_02271ca8.
 struct GimmickSetData {
-    /* 000 */ PAD(0x000, 0x823);
+    /* 000 */ PAD(0x000, 0x810);
+    /* 810 */ VecFx32 mUnk_810;
+    /* 81c */ PAD(0x81c, 0x823);
     /* 823 */ u8 mUnk_823;
 };
 

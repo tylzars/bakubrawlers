@@ -3,6 +3,9 @@
 #include "global.h"
 #include "types.h"
 
+class SceneBase;
+
+// Old view of the parent link (mList), kept so existing code keeps compiling.
 struct UnkStruct_SceneRequest {
     /* 00 */ PAD(0x00, 0x12);
     /* 12 */ u16 mNextScene;
@@ -16,6 +19,8 @@ struct UnkStruct_SceneNode {
 struct UnkStruct_SceneList {
     /* 00 */ UnkStruct_SceneNode *mHead;
 };
+
+struct UnkStruct_SceneContext;
 
 // Per-scene state kept in the scene context, cleared by the scene constructors.
 struct SceneInfo {
@@ -33,13 +38,20 @@ struct SceneInfo {
     /* 0c */
 };
 
+// One entry of the scene manager's list (0x40 bytes, SceneManager::mNodes). Scenes keep a pointer to theirs in mContext.
 struct UnkStruct_SceneContext {
-    /* 00 */ PAD(0x00, 0x0c);
-    /* 0c */ UnkStruct_SceneList *mList;
-    /* 10 */ PAD(0x10, 0x12);
+    /* 00 */ SceneBase *mScene;
+    /* 04 */ UnkStruct_SceneContext *mPrev;
+    /* 08 */ UnkStruct_SceneContext *mNext;
+    /* 0c */ union {
+        UnkStruct_SceneContext *mParent; // node of the scene that was running when this one was added
+        UnkStruct_SceneList *mList;
+    };
+    /* 10 */ u16 mOrder;
     /* 12 */ s16 mUnk_12;
     /* 14 */ SceneInfo mInfo;
-    /* 20 */
+    /* 20 */ PAD(0x20, 0x40);
+    /* 40 */
 };
 
 // Base of every game scene; each overlay's entry point constructs one in place.
@@ -50,14 +62,19 @@ public:
     /* 08 */ UnkStruct_SceneContext *mContext;
     /* 0c */
 
-    SceneBase(u32 unk1, u32 unk2);
+    // mode: 0 adds a node ordered by `order`, 1 / 2 take a layer's first / second slot, 3 is unmanaged.
+    SceneBase(u32 order, u32 mode);
 
     /* 00 */ virtual ~SceneBase() {}
     /* 08 */ virtual void Update() = 0;
     /* 0c */
 
+    u8 IsFinished() {
+        return (mFinished == 1) & 1;
+    }
+
     void RequestScene(int scene) {
         UnkStruct_SceneContext *context = mContext;
-        context->mList->mHead->mRequest->mNextScene = scene;
+        context->mParent->mScene->mContext->mUnk_12 = scene;
     }
 };

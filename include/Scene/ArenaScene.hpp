@@ -9,7 +9,7 @@ class CellAnimation;
 class MessageWindow;
 class SelectWindow;
 struct MessageFile;
-class UnkStruct_0202f420;
+struct SelectWindowCursor;
 
 // A cell animation placed on screen.
 struct CellSlot {
@@ -40,7 +40,7 @@ public:
     /* 90 */ void *mUnk_90;
     /* 94 */ u32 mUnk_94;
     /* 98 */ u32 mUnk_98;
-    /* 9c */ UnkStruct_0202f420 *mUnk_9c;
+    /* 9c */ SelectWindowCursor *mCursor;
     /* a0 */ SelectWindow *mMenu;
     /* a4 */ SelectWindow *mSubMenu;
     /* a8 */ MessageWindow *mMessage;

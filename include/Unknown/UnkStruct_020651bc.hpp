@@ -3,16 +3,36 @@
 #include "global.h"
 #include "types.h"
 
-// Owned by pointer and destroyed with a plain (non-virtual) destructor.
+class CellAnimation;
+
+// One icon of the set.
+struct CharacterIconSlot {
+    /* 00 */ CellAnimation *mAnim;
+    /* 04 */ s16 mX;
+    /* 06 */ s16 mY;
+    /* 08 */ u8 mVisible;
+    /* 09 */ s8 mCharacter; // -1: none
+    /* 0a */ u8 mUnk_0a;
+    /* 0b */ PAD(0x0b, 0x0c);
+    /* 0c */
+};
+
+// Four character icons (icon_ch_NN files). Owned by pointer and destroyed with a plain (non-virtual) destructor.
 class UnkStruct_020651bc {
 public:
-    /* 00 */ PAD(0x00, 0x3c);
+    /* 00 */ CharacterIconSlot mSlots[4];
+    /* 30 */ u8 mUnk_30;
+    /* 31 */ PAD(0x31, 0x34);
+    /* 34 */ u32 mVram;
+    /* 38 */ u8 mPalette;
+    /* 39 */ u8 mScreen;
+    /* 3a */ PAD(0x3a, 0x3c);
     /* 3c */
 
-    UnkStruct_020651bc(u32 unk1, u32 unk2, u32 unk3); // 0x02065158
+    UnkStruct_020651bc(u32 unk1, u32 unk2, s32 unk3); // 0x02065158
     ~UnkStruct_020651bc();
-    void func_02065204(u32 unk1, s32 unk2, u32 unk3, u32 unk4);
-    void func_0206547c(u8 unk1, s16 unk2, s16 unk3, u32 unk4);
+    void func_02065204(u32 slot, s32 character, u32 unk3, u32 unk4);
+    void func_0206547c(u8 slot, s16 x, s16 y, u32 unk4);
     void func_020654a0();
-    void func_020654f8(u32 unk1, u32 unk2);
+    void func_020654f8(u32 slot, u32 visible);
 };

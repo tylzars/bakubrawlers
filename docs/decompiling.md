@@ -55,6 +55,10 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
 
 ## Source patterns that matter
 
+- **Narrow reads of stack arguments.** Some callees read a stack-passed argument with `ldrb`/`ldrh` while every
+  caller stores it as a full word, so a `u8`/`u16` parameter type breaks the callers (they add an `and`). Until the
+  real source form is known, these read the parameter as `*(u8 *) &param` (CellAnimation, MessageWindow); treat
+  that as a placeholder, not as the original code.
 - **Soft float.** `float` arithmetic calls MSL helpers: `_fadd` 0x0201e5c0, `_fsub` 0x0201f4f0, `_fmul` 0x0201f304,
   `_fdiv` 0x0201edc4, `_fflt`/`_ffltu` (int to float) 0x0201f274/0x0201f2bc, `_ffix`/`_ffixu` (float to int)
   0x0201f200/0x0201f234, and compares `_fgeq` `_fgr` `_fleq` `_fls` `_feq` `_fneq` (0x0201eb6c..0x0201ed50). A

@@ -12,7 +12,6 @@
 #include "System/TouchManager.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
-#include "Unknown/UnkStruct_0202f420.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
 #include "Unknown/UnkStruct_020651bc.hpp"

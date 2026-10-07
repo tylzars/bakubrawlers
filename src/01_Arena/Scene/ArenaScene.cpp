@@ -13,7 +13,6 @@
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
-#include "Unknown/UnkStruct_0202f420.hpp"
 #include "Unknown/UnkStruct_020c3030.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
@@ -28,7 +27,7 @@ ArenaScene::ArenaScene() : SceneBase(1000, 0) {
     mUnk_90 = 0;
     mUnk_94 = 0;
     mUnk_98 = 0;
-    mUnk_9c = 0;
+    mCursor = 0;
     mMenu = 0;
     mSubMenu = 0;
     mMessage = 0;
@@ -78,7 +77,7 @@ ArenaScene::~ArenaScene() {
         delete mMessage;
     }
     delete (u8 *) mMessages;
-    delete mUnk_9c;
+    delete mCursor;
     if (mMenu != NULL) {
         delete mMenu;
     }
@@ -264,8 +263,8 @@ void ArenaScene::func_ov001_0221b24c() {
     sub3.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0xc000, 0);
     sub3.LoadPalette("union_b_obj_window_ncl.bin", 0xe0, 0);
     ChangeDir("/");
-    delete mUnk_9c;
-    mUnk_9c = new UnkStruct_0202f420(2, data_ov001_02226efc, 0);
+    delete mCursor;
+    mCursor = new SelectWindowCursor(2, data_ov001_02226efc, 0);
     if (mMessage != NULL) {
         delete mMessage;
     }
@@ -327,11 +326,11 @@ void ArenaScene::func_ov001_0221b994() {
         mSlots[0].mUnk_0a = 0x30;
         mSlots[1].mUnk_08 = 0x20;
         mSlots[1].mUnk_0a = 0x60;
-        UnkStruct_0202f420 *p = mUnk_9c;
+        SelectWindowCursor *p = mCursor;
         p->mUnk_05        = -1;
         p->mUnk_07        = -1;
         p->mUnk_08        = 0;
-        mUnk_9c->mUnk_06  = mSelection;
+        mCursor->mSelection = mSelection;
         func_ov001_0221bc44();
         break;
         case 3:
@@ -368,9 +367,9 @@ void ArenaScene::func_ov001_0221bc44() {
 // non-matching: 1 word, `subs r0, r6, r7` where the original has `cmp r6, r7` (every spelling of oldSel == newSel tried yields either cmpeq predication or subs)
 u32 ArenaScene::func_ov001_0221bca0() {
     u32 result = 0;
-    u8 key     = mUnk_9c->func_0202f468(0);
+    u8 key     = mCursor->func_0202f468(0);
     u8 oldSel  = mSelection;
-    u8 newSel  = mUnk_9c->mUnk_06;
+    u8 newSel  = mCursor->mSelection;
     u8 menu    = func_ov001_0221bdf0();
     if (oldSel != newSel) {
         mSelection = newSel;

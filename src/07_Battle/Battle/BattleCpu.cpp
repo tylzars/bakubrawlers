@@ -525,7 +525,7 @@ void func_ov007_022334f4(u16 *rot, u32 s, VecFx32 *dir, VecFx32 *out) {
     out->z = FX_Mul(out->z, FX32_CONST((float) s / 150.0f));
 }
 
-int func_ov007_02233270(VecFx32 *pos, VecFx32 *vel, VecFx32 *out) {
+int func_ov007_02233270(VecFx32 *pos, VecFx32 *vel, VecFx32 *out, u32 unk4, u32 unk5) {
     VecFx32 p = *pos;
     VecFx32 v = *vel;
     v.x       = FX_Mul(v.x, 0xb800);

@@ -41,7 +41,10 @@ struct BattlePlayer {
     /* 0c */ BattleRecord mRecords[15];
     /* c0 */ PAD(0xc0, 0xc8);
     /* c8 */ void *mUnk_c8;
-    /* cc */ PAD(0xcc, 0xed);
+    /* cc */ PAD(0xcc, 0xd4);
+    /* d4 */ s32 mUnk_d4;
+    /* d8 */ s32 mUnk_d8;
+    /* dc */ PAD(0xdc, 0xed);
     /* ed */ u8 mUnk_ed; // length of the name at +b0
     /* ee */ u8 mUnk_ee;
     /* ef */ PAD(0xef, 0xf1);
@@ -52,7 +55,8 @@ struct BattlePlayer {
     /* f5 */ u8 mRecord;
     /* f6 */ u8 mUnk_f6;
     /* f7 */ u8 mUnk_f7;
-    /* f8 */ PAD(0xf8, 0xfa);
+    /* f8 */ u8 mUnk_f8;
+    /* f9 */ PAD(0xf9, 0xfa);
     /* fa */ u16 mUnk_fa;
     /* fc */ u8 mUnk_fc;
     /* fd */ u8 mUnk_fd;
@@ -132,7 +136,8 @@ struct BattleTarget {
 
 // 0x14 byte entry of the unit table at BattlePlayerList+0x7c.
 struct BattleUnit {
-    /* 00 */ PAD(0x00, 0x0e);
+    /* 00 */ VecFx32 mPos;
+    /* 0c */ u16 mUnk_0c;
     /* 0e */ u8 mUnk_0e;
     /* 0f */ u8 mUnk_0f;
     /* 10 */ u8 mUnk_10;
@@ -161,7 +166,7 @@ struct BattlePlayerList {
     /* 07c */ BattleUnit mUnits[12];
     /* 16c */ s8 mUnk_16c[14][10];
     /* 1f8 */ s8 mUnk_1f8[14][10];
-    /* 284 */ PAD(0x284, 0x288);
+    /* 284 */ u8 mUnk_284[4];
     /* 288 */ u16 mUnk_288;
     /* 28a */ u8 mUnk_28a;
     /* 28b */ u8 mUnk_28b;

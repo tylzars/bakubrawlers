@@ -211,14 +211,26 @@ class ModelInstance;
 class UnkStruct_02029ca8;
 class EffectManager;
 
+class BattleMapObjPart;
+class UnkStruct_02028308;
+struct BattleMapObjTable;
+
 // Helper of the battle map scene (0x24 bytes): ctor 0x0224916c, destructor 0x02249198 (non-virtual).
+// Loads the 3D model parts of the map field of the given kind (9..13: throw fields, real pop, command field; other
+// kinds use the tables at 0227a2bc / 0227a2fc).
 class BattleMapObj {
 public:
-    /* 00 */ PAD(0x00, 0x24);
+    /* 00 */ BattleMapObjPart *mParts[8];
+    /* 20 */ u8 mUnk_20; // kind
+    /* 21 */ u8 mCount;  // used entries of mParts
+    /* 22 */ PAD(0x22, 0x24);
     /* 24 */
 
     BattleMapObj(int unk1);
     ~BattleMapObj();
+    void func_ov007_02249200(const char *nsbtx, const char *nsbmd, const char *data, u32 flag);
+    void func_ov007_0224927c(UnkStruct_02028308 *texture, const char *nsbmd, const char *data, u32 flag);
+    void func_ov007_022492f8(const BattleMapObjTable *table);
     void func_ov007_022493fc();
     void func_ov007_0224954c();
 };

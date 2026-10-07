@@ -37,11 +37,13 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   - Named `char[]` arrays instead of literals are permuted the same way, so they are not a way around it.
   `build/lit/both.py`-style probing (compile, read the relocations of the table, rank the target sections) is the
   quickest way to test ideas.
-- **Guard load hoisted above a `TextManager` field store.** Before a second `TextManager::Get()`, the original
-  loads the guard word before the `mUnk_5b` store (`StoreScene::PrintStatus`, `MapScene::LoadPanelText2`,
-  ov000 `0221b9e8`). Changing the field to `bool`, writing through a reference or reordering the statements does
-  not reproduce it.
-
+- **Guard load before a preceding store.** Before a singleton `Get()`, the original loads the guard word ahead of
+  a store from the previous statement: the `TextManager::mUnk_5b` store (`StoreScene::PrintStatus`,
+  `MapScene::LoadPanelText2`, ov000 `RenderName`, ov002 `0221dbd4`/`0221df48`, ov001 `0221c1d8`) or an unrelated
+  global (`MapScene::func_ov005_0221bde8`, a `u16` copy inside `data_020d48f0`). No 2.0 or DSi compiler build
+  moves a load above a store on its own, for compiler guards or plain globals; the only case found that does is a
+  load of a `const`-qualified global. Changing the field type (`bool`, `s8`, bitfields), writing through a
+  reference, comma expressions, inline setters and `const` singletons all leave the store first.
 - **Zero kept in a callee-saved register across `func_02025b64` calls.** In some runs of resource loads the
   original materialises one zero (`mov r4, #0`) and reuses it for the stack arguments and the offset of the next
   two or three calls (ov001 `0221b24c`, `0221f4e8`; ov002 `0221fb24`; `MapScene::LoadMapBackground`). Plain

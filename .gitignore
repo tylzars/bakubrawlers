@@ -1,0 +1,15 @@
+# Copyrighted inputs — never commit
+orig/*
+!orig/.gitkeep
+*.nds
+*.zip
+*.bin
+# Generated
+extract/
+build/
+tools/bin/
+tools/mwccarm/
+.ninja_*
+build.ninja
+objdiff.json
+__pycache__/

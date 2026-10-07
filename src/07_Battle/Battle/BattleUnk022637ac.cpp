@@ -128,6 +128,7 @@ BOOL func_ov007_022677cc(BattleUnk022637ac *self);
 u32 func_ov007_02267884(BattleUnk022637ac *self);
 BOOL func_ov007_02267944(BattleUnk022637ac *self, u16 *out);
 
+// non-matching: 0x6b0 vs 0x6bc, register allocation in cases 3, 5 and 6.
 BOOL BattleUnk022637ac::func_ov007_02264a5c() {
     BOOL result = 1;
     switch (mUnk_18 - 0xc9) {
@@ -397,6 +398,7 @@ void func_ov007_02262714(BattlePlayerList *list, u8 a, u8 b, u8 c);
 void func_ov007_02248944(VecFx32 *out, u8 a, u8 b);
 void func_ov007_02248910(void *p);
 
+// non-matching: 0x298 vs 0x29c, the original has one more `mov r2, ip` and schedules SetTarget/SetPosition differently.
 u8 BattleUnk022637ac::func_ov007_0226547c() {
     u8 done = 0;
     switch (mUnk_28) {
@@ -509,6 +511,7 @@ void func_ov007_02262768(BattlePlayerList *list, BattleUnk022637acUnit *unit, u1
 void func_ov007_02262a64(BattlePlayerList *list, u8 a, u8 b);
 BOOL func_ov007_02267304(BattleUnk022637ac *self, VecFx32 *out);
 
+// non-matching: 0x4bc vs 0x4b4, the original keeps this in r5, unit in r4 and 0x14 live in sl.
 u8 BattleUnk022637ac::func_ov007_02265af8() {
     u8 done = 0;
     switch (mUnk_28) {
@@ -799,6 +802,7 @@ static const BattleUnk022637acEffect data_ov007_0227ab00[8] = {
 void func_0202bf18(EffectManager *manager, u16 handle, VecFx32 *scale);
 BOOL func_ov007_02267100(BattleUnk022637ac *self);
 
+// non-matching: 5 words in case 6, the original loads z, x, y with entry/base registers swapped.
 u8 BattleUnk022637ac::func_ov007_02266a28() {
     u8 done = 0;
     switch (mUnk_28) {

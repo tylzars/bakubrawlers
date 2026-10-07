@@ -44,9 +44,22 @@ struct WindowItem {
 };
 
 struct SelectWindowCursor {
-    /* 0 */ WindowItem *mItems;
-    /* 4 */ PAD(0x4, 0x6);
-    /* 6 */ s8 mSelection;
+    /* 00 */ WindowItem *mItems;
+    /* 04 */ u8 mCount;
+    /* 05 */ PAD(0x05, 0x06);
+    /* 06 */ s8 mSelection;
+    /* 07 */ PAD(0x07, 0x0b);
+    /* 0b */ u8 mUnk_0b;
+    /* 0c */ u8 mUnk_0c;
+    /* 0d */ u8 mUnk_0d;
+    /* 0e */ u8 mUnk_0e;
+    /* 0f */ u8 mUnk_0f;
+    /* 10 */ u8 mUnk_10;
+    /* 11 */ u8 mScroll;
+    /* 12 */
+
+    void func_02030474(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
+    void SetScroll(u32 scroll); // 020304ec, clamps to mUnk_10
 };
 
 // An on-screen button of a window; mEnabled toggles whether it can be pressed.

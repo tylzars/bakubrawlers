@@ -29,7 +29,10 @@ class TextManager {
 public:
     /* 00 */ PAD(0x00, 0x10);
     /* 10 */ u16 mUnk_10;
-    /* 12 */ PAD(0x12, 0x5b);
+    /* 12 */ PAD(0x12, 0x38);
+    /* 38 */ u16 mPalette[16];
+    /* 58 */ u8 mUnk_58;
+    /* 59 */ PAD(0x59, 0x5b);
     /* 5b */ u8 mUnk_5b;
     /* 5c */
 
@@ -52,4 +55,7 @@ public:
     void Print(const void *text, u16 length, void *buffer, u32 width, u32 height, s16 *outWidth, s16 *outHeight,
                u16 *outPixelWidth, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13, u32 unk14, u32 unk15,
                u32 unk16, u32 unk17);
+    void PrintNumber(u32 value, u32 unk2, u32 unk3, void *buffer, u32 width, u32 height, s16 *outWidth,
+                     s16 *outHeight, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13, u32 unk14,
+                     u32 unk15); // 0202cb50
 };

@@ -10,7 +10,11 @@ public:
     /* 14f4 */
 
     UnkStruct_02065c40(u32 unk1, u32 unk2, u32 unk3);
+    u32 func_020667ec();
+    BOOL func_02066c7c();
+    u32 func_020670b4(u32 id);
     BOOL func_020678e8();
+    u32 func_02067900();
     void func_0206eb10(const char *path);
     void func_020676f8();
     void func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4, u32 unk5);

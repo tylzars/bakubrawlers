@@ -96,9 +96,14 @@ static inline void G2S_SetBG3Priority(int priority) {
 extern "C" {
 #endif
 void G2x_SetBlendBrightness_(vu16 *reg, int plane, int brightness);
+void G2x_SetBlendAlpha_(vu16 *reg, int plane1, int plane2, int ev1, int ev2); // 0x02003384
 #ifdef __cplusplus
 }
 #endif
+
+static inline void G2S_SetBlendAlpha(int plane1, int plane2, int ev1, int ev2) {
+    G2x_SetBlendAlpha_(&reg_G2S_DB_BLDCNT, plane1, plane2, ev1, ev2);
+}
 
 static inline void G2_SetBlendBrightness(int plane, int brightness) {
     G2x_SetBlendBrightness_(&reg_G2_BLDCNT, plane, brightness);

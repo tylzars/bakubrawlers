@@ -10,4 +10,20 @@ src/00_NameEntry/Scene/NameEntryScene.cpp:
 
 // provisional: code only; data not assigned yet.
 src/00_NameEntry/Scene/UnkScene_ov000.cpp:
-    .text       start:0x0221c290 end:0x0221d150
+    .text       start:0x0221c290 end:0x0221d6a8
+
+// provisional: code only; .rodata 0x02226214-0x02226274, .data 0x022270c4-0x022273d4 and .bss 0x02227fec-0x0222801c belong here.
+src/00_NameEntry/Scene/AttrSelScene.cpp:
+    .text       start:0x0221d6a8 end:0x0221f4fc
+
+// provisional: code only; .rodata 0x02226274-0x022266f8, .data 0x022273d4-0x02227918 and .bss 0x0222801c-0x02228058 belong here.
+src/00_NameEntry/Scene/OptionScene.cpp:
+    .text       start:0x0221f4fc end:0x0222198c
+
+// provisional: code only; .rodata 0x022266f8-0x0222699c, .data 0x02227918-0x02227ea4 and .bss 0x02228058-0x02228088 belong here.
+src/00_NameEntry/Scene/TitleScene.cpp:
+    .text       start:0x0222198c end:0x02224f60
+
+// provisional: code only; .data 0x02227ea4-0x02227f80 and .bss 0x02228088-0x022280c0 belong here.
+src/00_NameEntry/Scene/CreditsScene.cpp:
+    .text       start:0x02224f60 end:0x02225fc8

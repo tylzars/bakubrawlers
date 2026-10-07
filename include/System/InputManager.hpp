@@ -33,6 +33,9 @@ public:
     u16 IsHeld(u16 keys) {
         return mHeld & keys;
     }
+    u16 IsDown(u16 keys) {
+        return mKeys & keys;
+    }
     u16 IsTrigger(u16 keys) {
         return mTrigger & keys;
     }

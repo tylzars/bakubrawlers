@@ -133,6 +133,10 @@ src/Main/Graphics/ModelTransform.cpp:
 src/Main/UI/SelectWindow.cpp:
     .text       start:0x0205b288 end:0x0205c8f0
 
+// provisional: code only; .data 0x020b3774-0x020b4274, .rodata 0x0209e784-0x0209fd34 and .bss 0x02219240-0x0221927c belong here.
+src/Main/Scene/CharacterEditScene.cpp:
+    .text       start:0x0205c8f0 end:0x02065158
+
 // provisional: code only (also UnkStruct_020651bc); tables at .rodata 0x020a10a0 not assigned yet.
 src/Main/UI/MessageWindow.cpp:
     .text       start:0x02065158 end:0x02065c40

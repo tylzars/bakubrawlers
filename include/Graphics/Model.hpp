@@ -37,7 +37,9 @@ struct UnkStruct_0205401c_04 {
     /* 12 */ u16 mUnk_12;
     /* 14 */ PAD(0x14, 0x64);
     /* 64 */ u8 mUnk_64;
-    /* 65 */
+    /* 65 */ u8 mUnk_65[16];
+    /* 75 */ u8 mUnk_75;
+    /* 76 */
 };
 
 // A model of a scene (ctor 0205401c, destroyed with 02054034).

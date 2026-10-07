@@ -72,6 +72,7 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 | 0x0202f420-0x020305ac | UI/SelectWindowCursor.cpp | |
 | 0x0203dbb0-0x0203de40 | System/FrameTask.cpp | sound/voice task over the CRI library (`TaskBase` has no virtual destructor) |
 | 0x0205b288-0x0205c8f0 | UI/SelectWindow.cpp | |
+| 0x0205c8f0-0x02065158 | Scene/CharacterEditScene.cpp | character editor scene (looks, colours, name) |
 | 0x02065158-0x02065c40 | UI/MessageWindow.cpp | also the four-character-icon class `UnkStruct_020651bc` |
 
 0x02030880-0x02030b64 is NitroSystem foundation code (list and heap helpers), not game code.

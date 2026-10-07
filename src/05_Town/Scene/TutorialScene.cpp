@@ -237,27 +237,20 @@ void TutorialScene::LoadListWindow() {
     mWindow->mCursor->mSelection = 1;
 }
 
-// non-matching: 24 words differ (first +0x94). Print argument setup: the original keeps the zero in a callee-saved
-// register and stores both outputs before loading the message file; same open problem as GameOverScene::SetupText.
-
 void TutorialScene::ShowText(int index) {
     u32 size     = TextManager::Get().BufferSize(0x18, 4);
     void *buffer = OS_Alloc(size);
     MI_CpuClear16(buffer, size);
     TextManager &text = TextManager::Get();
-    MessageFile *file = mMessages[1];
-    u16 offset        = file->mEntries[index].mOffset;
     s16 height;
     s16 width;
-    width  = 0;
-    height = 0;
-    text.Print((const u8 *) file + offset, file->mEntries[index].mLength, buffer, 0x18, 4, &height,
+    width             = 0;
+    height            = 0;
+    MessageFile *file = mMessages[1];
+    text.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 4, &height,
                              &width, 0, 0, 2, 0x21, 0x10, 0, 0, 1, 1, 1);
     func_02025c1c(1, 4, 0x1000, buffer, size, 1);
 }
-
-// non-matching: 26 words differ (first +0x194). Print argument scheduling (zero register / order of loads), same as
-// GameOverScene::SetupText. Everything else matches.
 
 void TutorialScene::LoadListText() {
     u8 i;
@@ -276,8 +269,7 @@ void TutorialScene::LoadListText() {
         width  = 0;
         height = 0;
         MessageFile *file = mMessages[0];
-        u16 offset        = file->mEntries[(u16) (i + 5)].mOffset;
-        text.Print((const u8 *) file + offset, file->mEntries[(u16) (i + 5)].mLength, buffer, 0x20, 2, &height,
+        text.Print(file->GetText((u16) (i + 5)), file->GetLength((u16) (i + 5)), buffer, 0x20, 2, &height,
                    &width, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
         func_02025c1c(1, 4, 0x8000 + i * 0x800, buffer, size, 1);
     }

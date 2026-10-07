@@ -421,7 +421,7 @@ void MapScene::DrawPopup() {
     switch (mTab) {
         case 0:
             if (mUnk_7e_0) {
-                SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, mUnk_38, 0,
+                SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
                 mCellAnims[5]->Draw(1, 0x80, 0x64, 0);
@@ -430,7 +430,7 @@ void MapScene::DrawPopup() {
             break;
         case 1:
             if (mUnk_7e_1) {
-                SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, mUnk_38, 0,
+                SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
                 mPageVisible = 0;
@@ -438,7 +438,7 @@ void MapScene::DrawPopup() {
             break;
         case 2:
             if (mUnk_7e_2) {
-                SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, mUnk_38, 0,
+                SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
                 mPageVisible = 0;
@@ -446,7 +446,7 @@ void MapScene::DrawPopup() {
             break;
         case 3:
             if (mUnk_7e_3) {
-                SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, mUnk_38, 0,
+                SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
                 mPageVisible = 0;
@@ -532,8 +532,8 @@ void MapScene::func_ov005_0221bde8(u32 index) {
     }
 }
 
-// non-matching: size 0x428 vs 0x430. Print argument scheduling (zero in ip, offset load hoisted above the stack
-// stores, stm for the first two stack args).
+// non-matching: size 0x424 vs 0x430. The original computes (0x6c - 0x20) / 2 + 0x1e at run time from a register
+// holding 0x20 (later stored to y); every form tried here is folded to a constant.
 void MapScene::ShowNumbers() {
     s16 x;
     s16 x2;
@@ -551,8 +551,7 @@ void MapScene::ShowNumbers() {
     TextManager &text = TextManager::Get();
     width  = 0;
     height = 0;
-    u16 offset = file->mEntries[15].mOffset;
-    text.Print((const u8 *) file + offset, file->mEntries[15].mLength, buffer, 0x18, 0x10, &height, &width, &mUnk_36, 0, 2,
+    text.Print(file->GetText(15), file->GetLength(15), buffer, 0x18, 0x10, &height, &width, &mUnk_36, 0, 2,
                0x44, 0x10, 0, 0, 0, 1, 1);
     if (&mUnk_38 != NULL) {
         mUnk_38 = width;
@@ -582,12 +581,11 @@ void MapScene::ShowNumbers() {
     TextManager::Get().SetColor(1, 0, 0xf);
 }
 
-// non-matching: size 0x2c4 vs 0x2c0; registers differ (original: cols r4, file r5, buffer r6, size r7, this r8,
-// index r9) plus the Print argument scheduling.
+// non-matching: 21 words, register assignment only (original: cols r4, file r5, buffer r6, size r7).
 void MapScene::ShowText(u16 index, s32 unk2) {
+    void *buffer;
     u16 cols;
     MessageFile *file;
-    void *buffer;
     u16 size;
     cols = (256 - unk2 * 2) / 8;
     if (mGlyphBuffer != NULL) {
@@ -603,8 +601,7 @@ void MapScene::ShowText(u16 index, s32 unk2) {
     s16 width;
     width  = 0;
     height = 0;
-    u16 offset = file->mEntries[index].mOffset;
-    text.Print((const u8 *) file + offset, file->mEntries[index].mLength, buffer, cols, 0x10, &height, &width, &mUnk_36, 0, 2,
+    text.Print(file->GetText(index), file->GetLength(index), buffer, cols, 0x10, &height, &width, &mUnk_36, 0, 2,
                0x44, 0x10, 0, 0, 0, 1, 1);
     if (&mUnk_38 != NULL) {
         mUnk_38 = width;
@@ -647,8 +644,6 @@ void MapScene::CreatePanelWindow() {
     mUnk_79                           = 1;
 }
 
-// non-matching: 14 words differ (first +0x184). Original stores the two zero outputs (zero kept in r5) before loading
-// mText[0].mMessages; the compiler hoists the load first.
 void MapScene::LoadPanelText() {
     if (mText[0].mMessages == NULL) {
         ChangeDir("/");
@@ -661,13 +656,12 @@ void MapScene::LoadPanelText() {
         TextManager::Get().Init(mText[0].mGlyphBuffer, 1, 0, 0x18, 4, 0x11);
     }
     TextManager &text = TextManager::Get();
-    MessageFile *file = (MessageFile *) mText[0].mMessages;
-    u16 offset        = file->mEntries[16].mOffset;
     s16 height;
     s16 width;
-    width  = 0;
-    height = 0;
-    text.Print((const u8 *) file + offset, file->mEntries[16].mLength, mText[0].mTextBuffer, 0x18, 4, &height, &width, 0, 0,
+    width             = 0;
+    height            = 0;
+    MessageFile *file = mText[0].mMessages;
+    text.Print(file->GetText(16), file->GetLength(16), mText[0].mTextBuffer, 0x18, 4, &height, &width, 0, 0,
                2, 0x11, 0xe, 0, 0, 1, 1, 1);
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xc000, mText[0].mTextBuffer, mText[0].mTextBufferSize, 0);
     TextManager::Get().SetColor(1, 0, 0xf);
@@ -678,8 +672,7 @@ void MapScene::DrawPanelText() {
                                                  0);
 }
 
-// non-matching: 40 words differ (first +0x84). Guard-load/store scheduling around the mUnk_5b store, then the same
-// Print argument scheduling.
+// non-matching: guard load vs mUnk_5b store order (see docs/decompiling.md).
 void MapScene::LoadPanelText2(int index) {
     int id;
     switch (index) {
@@ -704,8 +697,7 @@ void MapScene::LoadPanelText2(int index) {
     width             = 0;
     height            = 0;
     MessageFile *file = (MessageFile *) mText[1].mMessages;
-    u16 offset        = file->mEntries[id].mOffset;
-    text.Print((const u8 *) file + offset, file->mEntries[id].mLength, mText[1].mTextBuffer, 0x20, 4, &height, &width,
+    text.Print(file->GetText(id), file->GetLength(id), mText[1].mTextBuffer, 0x20, 4, &height, &width,
                &mTextWidth, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
     TextManager::Get().mUnk_5b = 0;
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xd000, mText[1].mTextBuffer, mText[1].mTextBufferSize, 0);

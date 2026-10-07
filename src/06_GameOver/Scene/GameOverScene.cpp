@@ -239,8 +239,6 @@ void GameOverScene::CreateResultWindow() {
     mResultWindow->mCursor->mSelection = 0;
 }
 
-// non-matching: 6 words around the Print call. The original stores both size outputs before loading
-// mMessages, keeping the zero in r5; identical on every 2.0 build.
 void GameOverScene::SetupText() {
     SpriteManager::Get().Screen(1).func_02027624(3);
     ChangeDir("/");
@@ -256,11 +254,10 @@ void GameOverScene::SetupText() {
     TextManager &text = TextManager::Get();
     s16 height;
     s16 width;
-    width                = 0;
-    MessageFile *file    = mMessages;
-    const u8 *message    = file->GetText(10);
-    height               = 0;
-    text.Print(message, file->GetLength(10), mTextBuffer, 0x18, 8, &height, &width, 0, 0, 2, 0x11, 0xe, 0, 0, 1, 1, 1);
+    width             = 0;
+    height            = 0;
+    MessageFile *file = mMessages;
+    text.Print(file->GetText(10), file->GetLength(10), mTextBuffer, 0x18, 8, &height, &width, 0, 0, 2, 0x11, 0xe, 0, 0, 1, 1, 1);
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x4000, mTextBuffer, mTextBufferSize, 0);
 }
 

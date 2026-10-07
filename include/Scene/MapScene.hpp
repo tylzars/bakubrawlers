@@ -31,7 +31,7 @@ public:
     /* 30 */ void *mGlyphBuffer;
     /* 34 */ u16 mGlyphCount;
     /* 36 */ u16 mUnk_36;
-    /* 38 */ s16 mUnk_38;
+    /* 38 */ u16 mUnk_38;
     /* 3a */ PAD(0x3a, 0x3c);
     /* 3c */ TextSlot mText[2];
     /* 64 */ u8 mUnk_64;

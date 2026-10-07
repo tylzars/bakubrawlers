@@ -29,7 +29,29 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   compiler's internal hashing. `GameOverScene.cpp`'s result-window table emits its five copies in a different order
   than the original. The tables and code are otherwise identical.
 
+- **Guard load hoisted above a `TextManager` field store.** Before a second `TextManager::Get()`, the original
+  loads the guard word before the `mUnk_5b` store (`StoreScene::PrintStatus`, `MapScene::LoadPanelText2`,
+  ov000 `0221b9e8`). Changing the field to `bool`, writing through a reference or reordering the statements does
+  not reproduce it.
+
 ## Source patterns that matter
+
+- **Message text pointers (`MessageFile::GetText`).** `MessageEntry::mOffset` is declared `volatile`. The original
+  always reads the offset where the text pointer is formed, so the load sits right after the file pointer, and
+  the zero for `Print`'s size outputs lands in a callee-saved register. A plain `u16` lets the load sink to the
+  call and changes register allocation for the whole argument setup. With the volatile field, the natural form
+  matches:
+  ```cpp
+  TextManager &text = TextManager::Get();
+  s16 height;
+  s16 width;
+  width             = 0;
+  height            = 0;
+  MessageFile *file = mMessages;
+  text.Print(file->GetText(i), file->GetLength(i), mTextBuffer, ...);
+  ```
+  How it was found: a store placed between the offset load and the call gave the original register allocation,
+  so the load only had to be pinned in place.
 
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.

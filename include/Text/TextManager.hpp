@@ -5,7 +5,9 @@
 
 // One message of a .mes file: where its text starts and how long it is.
 struct MessageEntry {
-    /* 00 */ u16 mOffset;
+    // Read as volatile: the original always loads the offset where the text pointer is formed, never later
+    // (it is not moved past the following stores). Plain u16 lets the load sink to the call.
+    /* 00 */ volatile u16 mOffset;
     /* 02 */ u16 mLength;
     /* 04 */
 };

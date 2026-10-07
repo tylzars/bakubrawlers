@@ -342,7 +342,7 @@ BOOL ParkMenu::Slide() {
     return result;
 }
 
-// non-matching: original has one extra live register (r9 = 2, entry offset loaded early); size 0x268 vs 0x264
+// non-matching: guard load vs mUnk_5b store order (see docs/decompiling.md); size 0x268 vs 0x264
 void ParkMenu::DrawText() {
     ClearBuffers();
     for (u8 i = 0; i < 2; i++) {

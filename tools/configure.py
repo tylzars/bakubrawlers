@@ -181,8 +181,11 @@ build([lcf_raw, delinks["arm9_objects_file"], lcf_final], "lcf", dsd_config_file
       variables={"config": str(dsd_config), "lcf_raw": lcf_raw, "lcf_final": lcf_final})
 
 # ---- compile ----
+# The ROM links the delinked originals until a unit is complete; the compiled objects feed objdiff (report).
+compiled_objects = []
 for src in sources:
     obj = build_dir / src.with_suffix(".o")
+    compiled_objects.append(str(obj))
     cc = next((str(MWCC_ROOT / v / "mwccarm.exe") for prefix, v in PATH_COMPILERS.items()
                if str(src).startswith(prefix)), CC)
     build(str(obj), "mwcc", [str(src)], implicit=[cc] + tool_outputs, variables={
@@ -225,8 +228,9 @@ build("dis", "phony", [str(build_dir / "asm" / ".stamp")])
 
 # ---- objdiff ----
 build("objdiff.json", "objdiff_config", dsd_config_files, implicit=[DSD], variables={"config": str(dsd_config)})
-build("objdiff", "phony", ["objdiff.json"] + delink_files)
-build(str(build_dir / "report.json"), "objdiff_report", ["objdiff.json"] + delink_files + [arm9_o], implicit=[OBJDIFF])
+build("objdiff", "phony", ["objdiff.json"] + delink_files + compiled_objects)
+build(str(build_dir / "report.json"), "objdiff_report", ["objdiff.json"] + delink_files + compiled_objects + [arm9_o],
+      implicit=[OBJDIFF])
 build("report", "phony", [str(build_dir / "report.json")])
 
 # Re-run configure when TU lists change (new files in delinks.txt or new sources).

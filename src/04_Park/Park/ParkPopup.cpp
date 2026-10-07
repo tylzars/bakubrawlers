@@ -75,18 +75,16 @@ void ParkPopup::Open(const char *mesPath, u32 index, u32 mode) {
     ChangeDir("/");
 }
 
-// non-matching: entry load/store scheduling (zero reg r3 vs lr, order of ldrh/arg stores); 17 words
 void ParkPopup::PrintMessage(u32 index) {
     MI_CpuClear16(mTextBuffer, mTextBufferSize);
     TextManager &text = TextManager::Get();
-    const u8 *base = (const u8 *) mMessages;
-    const u16 *entry = (const u16 *) (base + index * 4);
-    u16 off = entry[1];
-    s16 A;
-    s16 B;
-    B = 0;
-    A = 0;
-    text.Print(base + off, entry[2], mTextBuffer, 0x18, 0xc, &B, &A, 0, 0, 2, 0x42, 0x10, 0, 0, 0, 1, 1);
+    s16 height;
+    s16 width;
+    width             = 0;
+    height            = 0;
+    MessageFile *file = mMessages;
+    text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x18, 0xc, &height, &width, 0, 0, 2, 0x42,
+               0x10, 0, 0, 0, 1, 1);
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x1b000, mTextBuffer, mTextBufferSize, 0);
 }
 

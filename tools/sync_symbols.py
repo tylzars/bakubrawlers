@@ -1,0 +1,188 @@
+#!/usr/bin/env python3
+"""Renames symbols in config/<ver>/arm9/**/symbols.txt to the names used by compiled source.
+
+Source refers to other code by its real (often mangled C++) name, but symbols.txt starts out with
+address-based names. Once a function matches, every relocation in its compiled object sits exactly where
+the original has a branch or literal, so the referenced address can be read from the ROM. This tool:
+
+  1. finds each compiled function in the module by exact (relocation-masked) byte match,
+  2. renames the function's own symbol to the compiled name,
+  3. for every relocation against a named symbol, reads the target address from the original code and
+     renames the symbol at that address.
+
+Existing non-address names are never overwritten; conflicts are reported. Dry run unless --write.
+
+  sync_symbols.py build/usa/src/06_GameOver/Scene/GameOverScene.o ov006 [--write]
+"""
+import argparse
+import re
+import struct
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from probe_compilers import ROOT, module_bytes  # noqa: E402
+
+from elftools.elf.elffile import ELFFile  # noqa: E402
+from elftools.elf.relocation import RelocationSection  # noqa: E402
+
+CFG = ROOT / "config/usa/arm9"
+LINE = re.compile(r"^(\S+) (kind:\S+) addr:(0x[0-9a-f]+)(.*)$")
+ADDRESS_NAME = re.compile(r"^(func|data)_(ov\d{3}_)?[0-9a-f]{8}$")
+
+
+def symbols_path(module: str) -> Path:
+    if module == "main":
+        return CFG / "symbols.txt"
+    if module in ("itcm", "dtcm"):
+        return CFG / module / "symbols.txt"
+    return CFG / "overlays" / module / "symbols.txt"
+
+
+def module_of(addr: int, current: str) -> str:
+    if 0x01FF8000 <= addr < 0x02000000:
+        return "itcm"
+    if 0x027E0000 <= addr < 0x027E4000:
+        return "dtcm"
+    if 0x02000000 <= addr < 0x02219440:
+        return "main"
+    return current  # overlay space is shared; assume the module being synced
+
+
+class Symbols:
+    def __init__(self, module: str):
+        self.path = symbols_path(module)
+        self.lines = self.path.read_text().splitlines()
+        self.by_addr: dict[int, list[int]] = {}
+        for i, line in enumerate(self.lines):
+            if m := LINE.match(line):
+                self.by_addr.setdefault(int(m.group(3), 16), []).append(i)
+        self.changed = False
+
+    def functions(self):
+        for line in self.lines:
+            if (m := LINE.match(line)) and m.group(2).startswith("kind:function"):
+                size = int(re.search(r"size=(0x[0-9a-f]+)", m.group(2)).group(1), 16)
+                yield m.group(1), int(m.group(3), 16), size
+
+    def rename(self, addr: int, new: str, want_function: bool | None) -> str:
+        """want_function: True/False to require a kind, None to take whichever symbol is there."""
+        for i in self.by_addr.get(addr, []):
+            m = LINE.match(self.lines[i])
+            name, kind = m.group(1), m.group(2)
+            if name.startswith(".L") or (want_function is not None and kind.startswith("kind:function") != want_function):
+                continue
+            if name == new:
+                return "ok"
+            if not ADDRESS_NAME.match(name):
+                return f"CONFLICT: {addr:#010x} is already '{name}', source says '{new}'"
+            self.lines[i] = f"{new} {kind} addr:{m.group(3)}{m.group(4)}"
+            self.changed = True
+            return f"rename {name} -> {new}"
+        return f"MISSING: no symbol at {addr:#010x} for '{new}'"
+
+    def save(self):
+        if self.changed:
+            self.path.write_text("\n".join(self.lines) + "\n")
+
+
+def branch_target(word: int, pc: int) -> int:
+    off = word & 0xFFFFFF
+    if off & 0x800000:
+        off -= 1 << 24
+    target = pc + 8 + off * 4
+    if (word >> 28) == 0xF:  # blx imm: H bit adds 2
+        target += ((word >> 24) & 1) * 2
+    return target
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("obj", type=Path)
+    ap.add_argument("module")
+    ap.add_argument("--write", action="store_true")
+    ap.add_argument("--assume", action="append", default=[], metavar="NAME=ADDR",
+                    help="place a non-matching function at ADDR (same size required; relocations are read at the "
+                         "same offsets, so only use this when the mismatch doesn't shift code)")
+    a = ap.parse_args()
+
+    base, blob = module_bytes(a.module)
+    tables = {a.module: Symbols(a.module)}
+
+    def table(mod):
+        if mod not in tables:
+            tables[mod] = Symbols(mod)
+        return tables[mod]
+
+    with open(a.obj, "rb") as fh:
+        elf = ELFFile(fh)
+        symtab = elf.get_section_by_name(".symtab")
+        relocs: dict[int, list] = {}
+        for sec in elf.iter_sections():
+            if isinstance(sec, RelocationSection):
+                relocs.setdefault(sec["sh_info"], []).extend(sec.iter_relocations())
+
+        rom_funcs = list(tables[a.module].functions())
+        report = []
+        # mwcc emits identical base-object (C2/D2) and complete-object (C1/D1) structors; the ROM keeps one copy,
+        # referenced under the complete-object name.
+        names = {s.name for s in symtab.iter_symbols()}
+        for sym in symtab.iter_symbols():
+            if sym["st_info"]["type"] != "STT_FUNC" or not isinstance(sym["st_shndx"], int) or sym["st_size"] == 0:
+                continue
+            if re.search(r"[CD]2E", sym.name) and re.sub(r"([CD])2E", r"\g<1>1E", sym.name) in names:
+                continue
+            data = elf.get_section(sym["st_shndx"]).data()
+            value, size = sym["st_value"] & ~1, sym["st_size"]
+            code = data[value:value + size]
+            rels = [r for r in relocs.get(sym["st_shndx"], []) if value <= r["r_offset"] < value + size]
+            mask = {(r["r_offset"] - value) & ~3 for r in rels}
+            hits = []
+            for _, addr, rsize in rom_funcs:
+                if rsize != size:
+                    continue
+                orig = blob[addr - base: addr - base + size]
+                if all(i in mask or code[i:i + 4] == orig[i:i + 4] for i in range(0, size, 4)):
+                    hits.append(addr)
+            assumed = {n: int(v, 16) for n, v in (x.split("=") for x in a.assume)}
+            if not hits and sym.name in assumed and any(addr == assumed[sym.name] and rs == size
+                                                        for _, addr, rs in rom_funcs):
+                hits = [assumed[sym.name]]
+                report.append(f"{sym.name}: assumed at {hits[0]:#010x} (not an exact match)")
+            if len(hits) != 1:
+                report.append(f"{sym.name}: {'no' if not hits else 'ambiguous'} match in {a.module}, skipped")
+                continue
+            addr = hits[0]
+            report.append(f"{sym.name} @ {addr:#010x}: {tables[a.module].rename(addr, sym.name, True)}")
+            for r in rels:
+                target_sym = symtab.get_symbol(r["r_info_sym"])
+                name = target_sym.name
+                if not name or target_sym["st_info"]["type"] == "STT_SECTION" or name.startswith(("@", "$")):
+                    continue  # file-local data, handled by the translation unit itself
+                off = (r["r_offset"] - value) & ~3
+                word = struct.unpack_from("<I", blob, addr - base + off)[0]
+                rtype = r["r_info_type"]
+                if rtype == 2:  # R_ARM_ABS32
+                    target = word - r["r_addend"]
+                    is_func = None
+                elif rtype in (1, 28, 29):  # PC24 / CALL / JUMP24
+                    target = branch_target(word, addr + off)
+                    is_func = True
+                else:
+                    continue
+                mod = module_of(target, a.module)
+                if target_sym["st_shndx"] != "SHN_UNDEF" and mod == a.module:
+                    continue  # defined in this object; covered by its own entry
+                report.append(f"  -> {name} @ {target:#010x} [{mod}]: {table(mod).rename(target, name, is_func)}")
+
+    print("\n".join(report))
+    if a.write:
+        for t in tables.values():
+            t.save()
+        print("symbols.txt updated" if any(t.changed for t in tables.values()) else "no changes")
+    else:
+        print("(dry run; pass --write to apply)")
+
+
+if __name__ == "__main__":
+    main()

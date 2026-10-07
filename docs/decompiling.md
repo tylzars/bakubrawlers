@@ -34,6 +34,12 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   ov000 `0221b9e8`). Changing the field to `bool`, writing through a reference or reordering the statements does
   not reproduce it.
 
+- **Zero kept in a callee-saved register across `func_02025b64` calls.** In some runs of resource loads the
+  original materialises one zero (`mov r4, #0`) and reuses it for the stack arguments and the offset of the next
+  two or three calls (ov001 `0221b24c`, `0221f4e8`; ov002 `0221fb24`; `MapScene::LoadMapBackground`). Plain
+  literals, a zero local, an inline helper with a zero parameter, a one-trip loop counter and `n * 4` with `n = 0`
+  all fold to fresh `mov rX, #0` per call. Not solved yet.
+
 ## Source patterns that matter
 
 - **`RequestScene` copies the context pointer to a local.** `SceneBase::RequestScene` is

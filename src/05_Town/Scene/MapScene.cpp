@@ -11,7 +11,10 @@
 #include "System/TouchManager.hpp"
 #include "Text/TextManager.hpp"
 #include "UI/SelectWindow.hpp"
+#include "System/FrameTask.hpp"
 #include "Unknown/UnkFunctions.hpp"
+#include "Unknown/UnkStruct_02070608.hpp"
+#include "Unknown/UnkStruct_0208ab40.hpp"
 
 #include <nitro/gx.h>
 #include <nitro/mi.h>
@@ -34,6 +37,8 @@ extern const WindowItemRecord data_ov005_0221fed8[];
 extern const WindowCellRecord data_ov005_0221ff48[];
 extern const WindowItemRecord data_ov005_0221ffb8[];
 extern const WindowCellRecord data_ov005_02220044[];
+extern const char data_ov005_02220464[];
+extern const char data_ov005_02220470[];
 
 MapScene::MapScene() :
     SceneBase(1000, 0) {
@@ -723,4 +728,341 @@ u32 MapScene::UpdatePanelWindow() {
         result = mPanelWindow->mCursor->mSelection == 0 ? 1 : 2;
     }
     return result;
+}
+
+void MapScene::func_ov005_0221abf4() {
+    SpriteScreen &screen = SpriteManager::Get().Screen(1);
+    screen.func_02027624(3);
+    ChangeDir("/story/");
+    char path[0x80];
+    sprintf(path, "map_b_obj_00.nce_ncg1D.bin");
+    screen.LoadCharacters(path, 0, 0);
+    sprintf(path, "map_b_obj_00_ncl.bin");
+    screen.LoadPalette(path, 0, 0);
+    for (u8 i = 0; i <= 1; i++) {
+        if (mCellAnims[i] != NULL) {
+            delete mCellAnims[i];
+        }
+        mCellAnims[i] = new CellAnimation("map_b_obj_00_nce.bin", 0, 1, 1);
+        mCellAnims[i]->mCharBase = screen.func_020276f4(0);
+        mCellAnims[i]->mUnk_11 = 0;
+    }
+    mCellAnims[0]->SetAnimation(0x10);
+    mCellAnims[1]->SetAnimation(0xf);
+    if (mCellAnims[4] != NULL) {
+        delete mCellAnims[4];
+    }
+    mCellAnims[4] = new CellAnimation("map_b_obj_00_nce.bin", 0x11, 1, 1);
+    mCellAnims[4]->mCharBase = screen.func_020276f4(0);
+    mCellAnims[4]->mUnk_11 = 0;
+    if (mCellAnims[5] != NULL) {
+        delete mCellAnims[5];
+    }
+    mCellAnims[5] = new CellAnimation("map_b_obj_00_nce.bin", 0x12, 1, 1);
+    mCellAnims[5]->mCharBase = screen.func_020276f4(0);
+    mCellAnims[5]->mUnk_11 = 0;
+    ChangeDir("/Game/2D/union_b/");
+    screen.LoadCharacters("union_b_obj_point.nce_ncg1D.bin", 0x4800, 0);
+    screen.LoadPalette("union_b_obj_point_ncl.bin", 0x1a0, 0);
+    if (mCellAnims[2] != NULL) {
+        delete mCellAnims[2];
+    }
+    mCellAnims[2] = new CellAnimation("union_b_obj_point_nce.bin", 0, 1, 1);
+    mCellAnims[2]->mCharBase = screen.func_020276f4(0x4800);
+    mCellAnims[2]->mUnk_11 = 0xd;
+    screen.LoadCharacters("union_b_obj_number.nce_ncg1D.bin", 0x3000, 0);
+    screen.LoadPalette("union_b_obj_number_ncl.bin", 0x1c0, 0);
+    if (mCellAnims[3] != NULL) {
+        delete mCellAnims[3];
+    }
+    mCellAnims[3] = new CellAnimation("union_b_obj_number_nce.bin", 0, 1, 1);
+    mCellAnims[3]->mCharBase = screen.func_020276f4(0x3000);
+    mCellAnims[3]->mUnk_11 = 0xe;
+    screen.LoadCharacters("union_b_obj_quit.nce_ncg1D.bin", 0x4000, 0);
+    screen.LoadPalette("union_b_obj_quit_ncl.bin", 0x180, 0);
+    screen.LoadCharacters("union_b_obj_window_a.nce_ncg1D.bin", 0x9000, 0);
+    screen.func_02027fec("union_b_obj_window_a_ncl.bin", 0, 0);
+    screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0xb000, 0);
+    screen.LoadPalette("union_b_obj_window_ncl.bin", 0x140, 0);
+    ChangeDir("/");
+    if (mText[1].mMessages != NULL) {
+        return;
+    }
+    mText[1].mMessages = (MessageFile *) func_02023504("font/mes_town_info.mes", 0, 0, 0, 0, 0);
+    mText[1].mTextBufferSize = TextManager::Get().BufferSize(0x20, 4);
+    mText[1].mTextBuffer = OS_Alloc(mText[1].mTextBufferSize);
+    MI_CpuClear16(mText[1].mTextBuffer, mText[1].mTextBufferSize);
+    mText[1].mGlyphCount = TextManager::Get().GlyphCount(0x10);
+    mText[1].mGlyphBuffer = OS_Alloc((s16) mText[1].mGlyphCount * (s16) 12);
+    TextManager::Get().Init(mText[1].mGlyphBuffer, 1, 0, 0x20, 4, 0x21);
+}
+
+void MapScene::Update() {
+    if ((mUnk_64 > 1) & (mUnk_64 < 0x10)) {
+        if (func_ov005_0221b1a0()) {
+            mUnk_64 = 0x10;
+        }
+    }
+    switch (mUnk_64) {
+        case 0:
+            Init();
+            mUnk_64++;
+            break;
+        case 1:
+            if (!func_ov005_0221b2ac()) {
+                mUnk_64 = 0xb;
+                break;
+            }
+            mUnk_64++;
+            break;
+        case 2:
+            SpriteManager::Get().StartFade(2);
+            mUnk_64++;
+            break;
+        case 3:
+            if (!mEvent->func_020678e8()) {
+                mUnk_64 = 0xb;
+                break;
+            }
+            if (mEvent->func_02067938()) {
+                GXS_SetVisiblePlane(0x10);
+                mEvent->func_02067944();
+            }
+            if (mEvent->func_02067954()) {
+                SpriteManager::Get().StartSubFade(3);
+                mUnk_64 = 4;
+            }
+            if (mEvent->func_0206797c()) {
+                SpriteManager::Get().StartSubFade(3);
+                mUnk_64 = 8;
+            }
+            break;
+        case 4:
+            SpriteManager::Get();
+            if (SpriteManager::sFade.mSub > 1) {
+                break;
+            }
+            LoadWindowGraphics();
+            new UnkStruct_02070608(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
+            mContext->mUnk_12 = 0;
+            data_020d433c.mUnk_14_1 = 0;
+            SpriteManager::Get().StartSubFade(2);
+            mUnk_64++;
+            break;
+        case 5:
+            if (mContext->mUnk_12 == 0) {
+                break;
+            }
+            SpriteManager::Get().StartSubFade(3);
+            mUnk_64++;
+            break;
+        case 6:
+            SpriteManager::Get();
+            if (SpriteManager::sFade.mSub > 1) {
+                break;
+            }
+            func_ov005_0221a9ec();
+            mEvent->func_0206796c();
+            mUnk_65 = 8;
+            mUnk_64++;
+            break;
+        case 7:
+            mUnk_65--;
+            if (mUnk_65 != 0) {
+                break;
+            }
+            if (!mEvent->func_020678e8()) {
+                mUnk_75 = 0;
+                mUnk_64 = 0xb;
+                break;
+            }
+            SpriteManager::Get().StartSubFade(2);
+            mUnk_64 = 3;
+            break;
+        case 8:
+            SpriteManager::Get();
+            if (SpriteManager::sFade.mSub > 1) {
+                break;
+            }
+            new UnkStruct_0208ab40(mEvent->func_0206797c() - 1);
+            mContext->mUnk_12 = 0;
+            mUnk_64++;
+            break;
+        case 9:
+            if (mContext->mUnk_12 == 0) {
+                break;
+            }
+            func_ov005_0221a9ec();
+            mEvent->func_02067988();
+            mUnk_64++;
+            break;
+        case 10:
+            mUnk_64 = 3;
+            break;
+        case 11:
+            if (mEvent->func_020678e8()) {
+                break;
+            }
+            FrameTask::Get().func_0203dc34(0, 0x12);
+            CreateMenu();
+            mEvent->func_0206ef4c(data_ov005_02220464, data_ov005_0221fe90[mTab], 10, 7, 0x15);
+            SpriteManager::Get().StartFade(2);
+            mUnk_64++;
+            break;
+        case 12: {
+            UpdateDrag();
+            func_020254f0((FrameCallback) func_ov005_0221b67c, this);
+            u8 r = UpdateMenu();
+            if (r != 0) {
+                if (r != 1) {
+                    CreatePanelWindow();
+                    mUnk_64 = 0xf;
+                } else {
+                    mUnk_64++;
+                }
+            }
+            break;
+        }
+        case 13:
+            mMenu->Update(TRUE);
+            if (mMenu->mUnk_061 == 4) {
+                if (mTab == 3) {
+                    switch (data_020d43f0[0].mUnk_42) {
+                        case 1:
+                        case 3:
+                        case 6:
+                        case 7:
+                        case 8:
+                        case 9:
+                        case 10:
+                            if (mUnk_7c == 0) {
+                                mUnk_64++;
+                                goto done;
+                            }
+                            break;
+                    }
+                    mMenu->func_0205c7c8((s8) mTab);
+                    {
+                        CellAnimation *cell = mMenu->mCells[mTab];
+                        cell->mUnk_0e = data_ov005_02220044[mTab].mUnk_18[2];
+                        cell->func_02029f6c();
+                    }
+                    mUnk_64--;
+                } else {
+                    mUnk_64++;
+                }
+            }
+            break;
+        case 14:
+            if (func_ov005_0221b6f0()) {
+                mUnk_64 = 0x10;
+            }
+            break;
+        case 15: {
+            u32 r = UpdatePanelWindow();
+            if (r == 0) {
+                break;
+            }
+            mUnk_79 = 0;
+            if (r == 2) {
+                CreateMenu();
+                mUnk_64 = 0xc;
+            } else {
+                mUnk_7d = 1;
+                mNextState = 4;
+                mUnk_64++;
+            }
+            break;
+        }
+        case 16:
+            SpriteManager::Get().StartFade(3);
+            mUnk_64++;
+            break;
+        case 17:
+            if (SpriteManager::Get().IsFading()) {
+                break;
+            }
+            mEvent->func_020676f8();
+            mContext->mUnk_12 = 0;
+            mUnk_64++;
+            break;
+        case 18:
+            if (mContext->mUnk_12 == 0) {
+                break;
+            }
+            mUnk_75 = 1;
+            mUnk_64++;
+            if (mNextState == 7 && data_020d43f0[0].mUnk_42 == 5) {
+                mEvent = new UnkStruct_02065c40(7, 0, 1);
+                mUnk_64 = 0x18;
+            }
+            break;
+        case 19:
+            if (mUnk_7d == 0) {
+                mUnk_64 = 0x17;
+                break;
+            }
+            LoadWindowGraphics();
+            GX_SetVisiblePlane(0);
+            mUnk_65 = 8;
+            mUnk_64++;
+            break;
+        case 20:
+            mUnk_65--;
+            if (mUnk_65 != 0) {
+                break;
+            }
+            new UnkStruct_02070608(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
+            mContext->mUnk_12 = 0;
+            data_020d433c.mUnk_14_1 = 0;
+            mUnk_64++;
+            break;
+        case 21:
+            if (mContext->mUnk_12 == 0) {
+                break;
+            }
+            SpriteManager::Get().StartSubFade(3);
+            mUnk_64++;
+            break;
+        case 22:
+            SpriteManager::Get();
+            if (SpriteManager::sFade.mSub > 1) {
+                break;
+            }
+            mUnk_64++;
+            break;
+        case 23:
+            RequestScene(mNextState);
+            mFinished = 1;
+            break;
+        case 24:
+            if (mEvent->func_020678e8()) {
+                break;
+            }
+            mEvent->func_0206eb10(data_ov005_02220470);
+            SpriteManager::Get().StartFade(2);
+            mUnk_64++;
+            break;
+        case 25:
+            if (mEvent->func_020678e8()) {
+                break;
+            }
+            data_020d43f0[0].mUnk_42 = 6;
+            data_020d43f0[0].mUnk_43 = 0;
+            mUnk_64 = 0x10;
+            break;
+    }
+done:
+    if (mUnk_75 != 0) {
+        return;
+    }
+    if (mUnk_79 != 0) {
+        func_ov005_0221b7e0();
+        return;
+    }
+    DrawPopup();
+    if ((mUnk_64 >= 0xc) & (mUnk_64 < 0x12)) {
+        func_ov005_0221bd48();
+    }
+    DrawMoney();
 }

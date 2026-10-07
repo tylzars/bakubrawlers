@@ -30,9 +30,21 @@ src/Main/System/FrameUpdate.cpp:
     .data       start:0x020a54e0 end:0x020a54e4
     .bss        start:0x0220e580 end:0x0220e628
 
+// provisional: code only; several functions are near-misses.
+src/Main/Graphics/SpriteScreen.cpp:
+    .text       start:0x020275bc end:0x02028280
+
 // provisional: code only.
 src/Main/Graphics/CellAnimation.cpp:
     .text       start:0x02029d7c end:0x0202a594
+
+// provisional: code only; Print and PrintNumber are near-misses.
+src/Main/Text/TextManager.cpp:
+    .text       start:0x0202c02c end:0x0202d794
+
+// provisional: code only; data not assigned yet.
+src/Main/System/MicManager.cpp:
+    .text       start:0x0202d794 end:0x0202db04
 
 // provisional: code only; constructor, 0x0202f468 and 0x0202f61c are not decompiled.
 src/Main/UI/SelectWindowCursor.cpp:

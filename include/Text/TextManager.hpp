@@ -26,23 +26,75 @@ struct MessageFile {
     }
 };
 
+// Header of the 1bpp glyph bitmaps; the bitmaps follow at +8, mGlyphSize bytes each.
+struct FontHeader {
+    /* 00 */ u8 mWidth;
+    /* 01 */ u8 mHeight; // line height of the font
+    /* 02 */ u16 mGlyphSize;
+    /* 04 */ PAD(0x04, 0x08);
+    /* 08 */
+};
+
+// Per-glyph metrics, 3 bytes each.
+struct GlyphMetrics {
+    /* 00 */ s8 mLeft;
+    /* 01 */ s8 mUnk_01;
+    /* 02 */ s8 mAdvance;
+    /* 03 */
+};
+
+// An entry of the glyph tables at the start of the font data: mOffset is the position of a u16 glyph list.
+struct GlyphTable {
+    /* 00 */ u16 mUnk_00;
+    /* 02 */ u16 mOffset;
+    /* 04 */
+};
+
+// Font data: glyph tables, then at +0x22 the offset of the sorted glyph code list whose byte size is at +0x24.
+struct FontData {
+    /* 00 */ GlyphTable mTables[1];
+    /* 04 */ PAD(0x04, 0x20);
+    /* 20 */ u16 mUnk_20;
+    /* 22 */ u16 mCodeOffset;
+    /* 24 */ u16 mCodeSize;
+    /* 26 */
+};
+
+// A text string registered with the manager: a control code in message text prints it in place.
+struct TextString {
+    /* 00 */ u32 mLength;
+    /* 04 */ const void *mText;
+    /* 08 */
+};
+
 // Global text renderer, constructed on first use and destroyed at exit.
 class TextManager {
 public:
-    /* 00 */ PAD(0x00, 0x10);
-    /* 10 */ u16 mUnk_10;
-    /* 12 */ PAD(0x12, 0x36);
+    /* 00 */ FontHeader *mFont;
+    /* 04 */ GlyphMetrics *mMetrics;
+    /* 08 */ FontData *mData;
+    /* 0c */ u16 *mCursor;
+    /* 10 */ u16 mUnk_10; // numbers for control code 0xff81: mUnk_10 and the three u16 after it
+    /* 12 */ u16 mUnk_12[3];
+    /* 18 */ TextString mStrings[3]; // texts for control code 0xff82
+    /* 30 */ PAD(0x30, 0x36);
     union {
         /* 36 */ u16 mUnk_36[17]; // filled as one run from 0x36 (ov002 02220830)
         struct {
             /* 36 */ u16 mUnk_36_0;
-            /* 38 */ u16 mPalette[16];
+            /* 38 */ u16 mPalette[16]; // character count of each printed line
         };
     };
-    /* 58 */ u8 mUnk_58;
-    /* 59 */ PAD(0x59, 0x5b);
-    /* 5b */ u8 mUnk_5b;
-    /* 5c */
+    /* 58 */ u8 mUnk_58; // lines recorded in mPalette
+    /* 59 */ u8 mUnk_59; // draw a shadow behind each glyph
+    /* 5a */ u8 mUnk_5a; // shadow colour index
+    /* 5b */ u8 mUnk_5b; // 1 = use the 4bpp bitmap font
+    /* 5c */ // the instance really extends to 0xe8: u8 widths of the bitmap font glyphs from +0x5c (see Widths());
+    //        declaring them as a member changes the code of the users, so they are reached by offset
+
+    u8 *Widths() {
+        return (u8 *) this + 0x5c;
+    }
 
     ~TextManager();
 
@@ -66,6 +118,8 @@ public:
         return countX * countY;
     }
 
+    void func_0202c02c(); // sets up the font pointers and measures the bitmap font
+    u16 func_0202c1a8(u32 index); // character count of a recorded line
     void Init(void *glyphs, u32 unk2, u32 unk3, u32 width, u32 height, u32 unk6);
     void SetColor(u32 unk1, u32 unk2, u32 unk3);
     void Print(const void *text, u16 length, void *buffer, u32 width, u32 height, s16 *outWidth, s16 *outHeight,
@@ -74,4 +128,10 @@ public:
     void PrintNumber(u32 value, u32 unk2, u32 unk3, void *buffer, u32 width, u32 height, s16 *outWidth,
                      s16 *outHeight, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13, u32 unk14,
                      u32 unk15); // 0202cb50
+    void func_0202cd48(u32 mode, u16 *map, u32 palette, u32 base, u32 width, u32 height, u32 stride);
+    void func_0202ce44(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
+    void func_0202ceac(u32 glyph, void *buffer, u32 eightBit, s32 layout, s16 x, s16 y, u16 width, u16 height);
+    u8 func_0202d19c(u32 glyph);
+    s32 func_0202d1bc(u32 code);
+    void func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color, s32 layout, s16 x, s16 y, u32 width, u32 height);
 };

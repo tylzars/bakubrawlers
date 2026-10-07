@@ -46,7 +46,10 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 | 0x02021eb8-0x020224f8 | Scene/SceneBase.cpp | `SceneManager` (scene list with layers) and the `SceneBase` constructor |
 | 0x020224f8-0x02022b0c | System/TouchManager.cpp | touch sampling, hit tests |
 | 0x0202537c-0x020254bc | System/FrameUpdate.cpp | (range provisional, probably extends to 0x02025668) |
+| 0x020275bc-0x02028280 | Graphics/SpriteScreen.cpp | |
 | 0x02029d7c-0x0202a594 | Graphics/CellAnimation.cpp | |
+| 0x0202c02c-0x0202d794 | Text/TextManager.cpp | |
+| 0x0202d794-0x0202db04 | System/MicManager.cpp | microphone sampling ("blow" detection), not text |
 | 0x0202f420-0x020305ac | UI/SelectWindowCursor.cpp | |
 | 0x0203dbb0-0x0203de40 | System/FrameTask.cpp | sound/voice task over the CRI library (`TaskBase` has no virtual destructor) |
 | 0x0205b288-0x0205c8f0 | UI/SelectWindow.cpp | |

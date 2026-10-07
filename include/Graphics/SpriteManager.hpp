@@ -12,17 +12,25 @@ struct UnkStruct_SpriteManager_00 {
 
 // One screen's OBJ (sprite) state: character and palette uploads.
 struct SpriteScreen {
-    /* 000 */ PAD(0x000, 0x402);
+    /* 000 */ PAD(0x000, 0x400);
+    /* 400 */ u16 mUnk_400; // OBJ tile unit (bytes), from the mode table
     /* 402 */ u8 mBgIndex;
-    /* 403 */ PAD(0x403, 0x408);
+    /* 403 */ u8 mUnk_403; // OBJ mapping mode
+    /* 404 */ u8 mUnk_404; // OAM entries used
+    /* 405 */ u8 mUnk_405; // matrices used
+    /* 406 */ PAD(0x406, 0x408);
     /* 408 */
 
     SpriteScreen();
+    void func_020275e8(u32 unk1); // set mBgIndex
+    void func_020275f0();         // upload the OAM copy and reset it
+    void func_02027750();         // reset the OAM copy
     void LoadCharacters(const char *path, u32 offset, u32 unk3);
     void LoadPalette(const char *path, u32 offset, u32 unk3);
     void func_02027fec(const char *path, u32 unk2, u32 unk3); // palette load variant
+    void *func_02028054(u8 *data); // reorders 0x1000 bytes of character data into a new buffer and frees data
     u16 func_020276f4(u32 unk1);
-    void func_02027624(u32 unk1);
+    void func_02027624(s32 unk1);
     void func_02027778(void *buffer, u8 count, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8);
 };
 

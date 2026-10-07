@@ -18,6 +18,7 @@ public:
     }
 
     void func_020245a4();
+    void func_020245c4(u32 unk1);
     void func_020245d4(u32 unk1);
     void func_020246f8(u32 unk1);
 };

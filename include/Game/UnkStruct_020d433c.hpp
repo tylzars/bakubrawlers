@@ -13,7 +13,14 @@ class UnkStruct_Battle2a4; // object at BattlePlayerList+0x2a4, drives a timed s
 struct BattlePlayerMessage {
     /* 00 */ u8 mType; // 0xe = a battle message is pending
     /* 01 */ PAD(0x01, 0x04);
-    /* 04 */ u16 mUnk_04[2];
+    union {
+        /* 04 */ u16 mUnk_04[2];
+        struct {
+            /* 04 */ u8 mTouchDown;
+            /* 05 */ u8 mTouchX;
+            /* 06 */ u8 mTouchY;
+        };
+    };
     /* 08 */ PAD(0x08, 0x0c);
     /* 0c */ u16 mUnk_0c[2];
     /* 10 */ PAD(0x10, 0x14);

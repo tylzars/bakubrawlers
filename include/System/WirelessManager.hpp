@@ -142,6 +142,11 @@ struct UnkStruct_0220f540 {
     union {
         /* 04 */ u32 mUnk_04;
         struct {
+            /* 04 */ u8 mTouchDown;
+            /* 05 */ u8 mTouchX;
+            /* 06 */ u8 mTouchY;
+        };
+        struct {
             /* 04 */ u16 mKeys;
             /* 06 */ u8 mUnk_06;
             /* 07 */ u8 mUnk_07;

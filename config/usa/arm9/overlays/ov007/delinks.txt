@@ -193,6 +193,18 @@ src/07_Battle/Battle/BattleMapModel.cpp:
 src/07_Battle/Battle/BattleMapObj.cpp:
     .text       start:0x02249068 end:0x02249658
 
+// provisional: code only; .data 0x02288e4c-0x02288f14, .rodata 0x0227a33c-0x0227a350 and the .bss nodes 0x0228b904-0x0228b928 belong here.
+src/07_Battle/Battle/BattleObj00.cpp:
+    .text       start:0x02249658 end:0x0224af4c
+
+// provisional: code only; .data 0x02288f14-0x02289280 and .bss 0x0228b928-0x0228b94c belong here.
+src/07_Battle/Battle/BattleOrderSelect.cpp:
+    .text       start:0x0224af4c end:0x0224cb84
+
+// provisional: code only; .data 0x02289280-0x02289810, .rodata 0x0227a350-0x0227a5dc and .bss 0x0228b94c-0x0228b994 belong here.
+src/07_Battle/Battle/BattleResult.cpp:
+    .text       start:0x0224cb84 end:0x02252730
+
 // provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickUnk_02274830.cpp:
     .text       start:0x02274830 end:0x02274d78

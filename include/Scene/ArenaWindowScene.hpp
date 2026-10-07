@@ -24,7 +24,7 @@ public:
     ArenaWindowScene();
 
     /* 00 */ virtual ~ArenaWindowScene() override;
-    /* 08 */ virtual void Update() override; // 0221cca0, not decompiled yet
+    /* 08 */ virtual void Update() override;
     /* 0c */
 
     void func_ov001_0221d6dc();

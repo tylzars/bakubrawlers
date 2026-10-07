@@ -79,7 +79,8 @@ public:
     /* 061 */ u8 mUnk_061;
     /* 062 */ PAD(0x062, 0x064);
     /* 064 */ u8 mUnk_064;
-    /* 065 */ PAD(0x065, 0x080);
+    /* 065 */ u8 mUnk_065;
+    /* 066 */ PAD(0x066, 0x080);
     /* 080 */ Vec2s mCellPos[6];
     /* 098 */ PAD(0x098, 0x0e8);
     /* 0e8 */ WindowButton mButtons[7];

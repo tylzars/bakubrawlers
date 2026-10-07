@@ -56,7 +56,10 @@ struct UnkStruct_020d433c {
     /* 84 */ u8 mUnk_84;
     /* 85 */ u8 mUnk_85;
     /* 86 */ u8 mUnk_86;
-    /* 87 */ PAD(0x87, 0x8a);
+    /* 87 */ u8 mUnk_87;
+    /* 88 */ u8 mUnk_88_0 : 4;
+    /* 88 */ u8 mUnk_88_4 : 4;
+    /* 89 */ u8 mUnk_89;
     /* 8a */ u8 mUnk_8a_0 : 4;
     /* 8a */ u8 mUnk_8a_4 : 4;
     /* 8b */ u8 mUnk_8b_0 : 4;
@@ -77,7 +80,8 @@ struct UnkStruct_020d433c {
             /* 9a */ u8 mUnk_9a_2 : 1;
             /* 9a */ u8 mUnk_9a_3 : 1;
             /* 9a */ u8 mUnk_9a_4 : 1;
-            /* 9a */ u8 mUnk_9a_5 : 3;
+            /* 9a */ u8 mUnk_9a_5 : 2;
+            /* 9a */ u8 mUnk_9a_7 : 1;
         };
     };
     /* 9b */ u8 mUnk_9b[4];
@@ -88,6 +92,7 @@ struct UnkStruct_020d433c {
     /* a9 */ u8 mUnk_a9[4];
     /* ad */ u8 mUnk_ad;
     /* ae */ u8 mUnk_ae;
+    /* af */ u8 mUnk_af[4];
     /* af */
 };
 

@@ -54,12 +54,13 @@ public:
     /* b3 */ u8 mUnk_b3;
     /* b4 */ u8 mUnk_b4;
     /* b5 */ u8 mUnk_b5;
-    /* b6 */
+    /* b6 */ u8 mUnk_b6;
+    /* b7 */
 
     ArenaScene();
 
     /* 00 */ virtual ~ArenaScene() override;
-    /* 08 */ virtual void Update() override; // 02219b54, not decompiled yet
+    /* 08 */ virtual void Update() override;
     /* 0c */
 
     void func_ov001_022197ec();

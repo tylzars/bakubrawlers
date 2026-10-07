@@ -16,6 +16,14 @@ public:
     void func_0202edd0();
     u8 *func_0202f0cc(u32 unk1);
     u32 func_0202f134();
+    void func_0202f024(void *unk1);
+    void func_0202f078(void *unk1);
+    void func_0202ed3c();
+    void func_0202ee10(u32 unk1, void *unk2, u32 unk3, u32 unk4);
+    void func_0202eefc(u32 unk1, void *unk2, u32 unk3);
+    u32 func_0202ef80();
+    void func_0202eeb0();
+    void func_0202f184();
 };
 
 struct UnkStruct_020c4030 {
@@ -38,8 +46,26 @@ static inline BOOL IsWirelessMode(const u8 *mode) {
 
 struct UnkStruct_0220f540 {
     /* 00 */ u8 mUnk_00;
-    /* 01 */ PAD(0x01, 0x04);
-    /* 04 */ u32 mUnk_04;
+    /* 01 */ u8 mUnk_01;
+    /* 02 */ PAD(0x02, 0x04);
+    union {
+        /* 04 */ u32 mUnk_04;
+        struct {
+            /* 04 */ u16 mKeys;
+            /* 06 */ u8 mUnk_06;
+            /* 07 */ u8 mUnk_07;
+            /* 08 */ u8 mUnk_08;
+            /* 09 */ u8 mUnk_09;
+            /* 0a */ PAD(0x0a, 0x0b);
+            /* 0b */ u8 mUnk_0b;
+            /* 0c */ u8 mUnk_0c;
+            /* 0d */ u8 mUnk_0d;
+            /* 0e */ u8 mUnk_0e;
+            /* 0f */ u8 mUnk_0f;
+            /* 10 */ PAD(0x10, 0x1f);
+            /* 1f */ u8 mUnk_1f;
+        };
+    };
 };
 
 extern UnkStruct_0220f540 data_0220f540;

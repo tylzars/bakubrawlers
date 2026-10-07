@@ -52,6 +52,8 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
 
 ## Source patterns that matter
 
+- **Runtime helpers.** `bl` to `0x0201f970` is `_s32_div_f`, i.e. a `/` in source: the dividend is in r0 and the
+  divisor in r1, which often already holds a value the code uses elsewhere (keep it in a local).
 - **`RequestScene` copies the context pointer to a local.** `SceneBase::RequestScene` is
   `UnkStruct_SceneContext *context = mContext; context->mList->...->mNextScene = scene;`. Without the local, the
   context pointer and the request chain share one register at the end of `Update` functions.

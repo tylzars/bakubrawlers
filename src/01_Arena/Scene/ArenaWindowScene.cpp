@@ -5,6 +5,11 @@
 #include "System/FileSystem.hpp"
 #include "Text/TextManager.hpp"
 #include "UI/SelectWindow.hpp"
+#include "Scene/ArenaScene.hpp"
+#include "Scene/FieldSelectScene.hpp"
+#include "System/FrameTask.hpp"
+#include "Unknown/UnkStruct_02070608.hpp"
+#include "Unknown/UnkStruct_020c3030.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
@@ -147,5 +152,191 @@ void ArenaWindowScene::func_ov001_0221e0b4() {
 void ArenaWindowScene::func_ov001_0221e15c() {
     if (mTextBuffer != NULL) {
         MI_CpuClear16(mTextBuffer, mTextBufferSize);
+    }
+}
+
+extern BOOL func_0203dd0c(FrameTask *task, u32 unk2);
+extern void func_020219dc();
+void ArenaWindowScene::Update() {
+    switch (mUnk_24) {
+        case 0: {
+            func_ov001_0221d6dc();
+            BOOL done = FALSE;
+            if (data_020d433c.mUnk_a8 != 0) {
+                UnkStruct_020c3030::Get();
+                if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
+                    mUnk_24 = 5;
+                    done    = TRUE;
+                }
+            }
+            if (!done) {
+                if (data_020d433c.mUnk_88_4 != 0) {
+                    done = TRUE;
+                    if (data_020d433c.mUnk_87 != 0) {
+                        mUnk_24 = 0xa;
+                    } else {
+                        mUnk_24 = 0x10;
+                    }
+                }
+            }
+            if (!done) {
+                if (data_020d433c.mUnk_88_0 != 0 && data_020d433c.mUnk_87 != 0) {
+                    mUnk_24 = 0xa;
+                    done    = TRUE;
+                }
+            }
+            if (!done) {
+                if (data_020d433c.mUnk_89 != 0) {
+                    mUnk_24 = 3;
+                } else {
+                    mUnk_24++;
+                }
+            }
+            if (mUnk_24 == 0xa) {
+                return;
+            }
+            FrameTask::Get().func_0203dc34(0, 0x10);
+            break;
+        }
+        case 1:
+            new ArenaScene();
+            mContext->mUnk_12 = 0;
+            mUnk_24++;
+            break;
+        case 2: {
+            u8 r = (u8) mContext->mUnk_12;
+            if (r == 0) {
+                return;
+            }
+            if (r != 1) {
+                mUnk_24 = 0x10;
+                return;
+            }
+            data_020d433c.mUnk_87 = 0;
+            mUnk_24++;
+            break;
+        }
+        case 3:
+            new FieldSelectScene(0);
+            mContext->mUnk_12 = 0;
+            mUnk_24++;
+            break;
+        case 4: {
+            u8 r = (u8) mContext->mUnk_12;
+            if (r == 0) {
+                return;
+            }
+            switch (r) {
+                case 1:
+                    mUnk_24 = 0xe;
+                    break;
+                case 2:
+                    if (data_020d433c.mUnk_a8 != 0) {
+                        mUnk_24 = 5;
+                    } else if (data_020d433c.mUnk_87 != 0) {
+                        mUnk_24 = 0xa;
+                    } else {
+                        mUnk_24 = 1;
+                    }
+                    break;
+                case 3:
+                    mUnk_24 = 5;
+                    break;
+            }
+            break;
+        }
+        case 5:
+            func_ov001_0221d858();
+            SpriteManager::Get().StartFade(2);
+            UnkStruct_020c3030::Get().func_0202edd0();
+            mUnk_24++;
+            break;
+        case 6:
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            UnkStruct_020c3030::Get();
+            if (data_020c4030.mUnk_228 != 0) {
+                return;
+            }
+            data_020d433c.mUnk_a8 = 0;
+            mMenu->mUnk_064       = 1;
+            mUnk_24++;
+            break;
+        case 7:
+            if (mMenu->Update(1) == 1) {
+                SpriteManager::Get().StartFade(3);
+                mUnk_24++;
+            }
+            mMenu->Draw();
+            func_ov001_0221e0b4();
+            break;
+        case 8:
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            mUnk_24++;
+            break;
+        case 9:
+            func_020219dc();
+            if (data_020d433c.mUnk_87 != 0) {
+                mUnk_24 = 0xa;
+                return;
+            }
+            if (data_020d433c.mUnk_88_4 != 0) {
+                mUnk_24 = 0x10;
+            } else {
+                mUnk_24 = 1;
+            }
+            break;
+        case 10:
+            SpriteManager::Get().StartFade(3);
+            mUnk_24++;
+            break;
+        case 11:
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            func_ov001_0221db10();
+            new UnkStruct_02070608(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
+            mContext->mUnk_12     = 0;
+            data_020d433c.mUnk_87 = 0;
+            data_020d433c.mUnk_14_1 = 0;
+            mUnk_24++;
+            break;
+        case 12:
+            if (mContext->mUnk_12 == 0) {
+                return;
+            }
+            FrameTask::Get().func_0203dc34(0, 0x10);
+            SpriteManager::Get().StartFade(3);
+            mUnk_24++;
+            break;
+        case 13:
+            if (SpriteManager::Get().IsFading()) {
+                return;
+            }
+            if (data_020d433c.mUnk_88_4 != 0) {
+                mUnk_24 = 0x10;
+            } else {
+                mUnk_24 = 1;
+            }
+            break;
+        case 14:
+            FrameTask::Get().func_0203dd90();
+            mUnk_24++;
+            break;
+        case 15:
+            if (func_0203dd0c(&FrameTask::Get(), 0) != 0) {
+                return;
+            }
+            data_020d433c.mUnk_7b = 8;
+            RequestScene(5);
+            mFinished = 1;
+            break;
+        case 16:
+            RequestScene(4);
+            mFinished = 1;
+            break;
     }
 }

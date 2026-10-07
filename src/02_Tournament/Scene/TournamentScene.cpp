@@ -232,9 +232,10 @@ void TournamentScene::func_ov002_0221b78c(BOOL a, BOOL b) {
         func_02025b64(0, 1, 0, "tournament_u_bg_06_ncl.bin", 0, 0, 0);
     }
     u8 idx;
-    int x = data_020d43f0[0].mUnk_43;
-    idx   = x * data_ov002_02220a10[mMode];
-    if (x >= func_0201f970(data_ov002_02220a20[mMode]) - 1) {
+    int count = data_ov002_02220a10[mMode];
+    int x     = data_020d43f0[0].mUnk_43;
+    idx       = x * count;
+    if (x >= data_ov002_02220a20[mMode] / count - 1) {
         x = 6;
     }
     ChangeDir("/Game/Tournament/Obj/");

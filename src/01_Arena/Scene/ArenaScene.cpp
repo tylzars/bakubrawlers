@@ -5,7 +5,9 @@
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
+#include "System/InputManager.hpp"
 #include "System/SoundManager.hpp"
+#include "System/TouchManager.hpp"
 #include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
@@ -542,4 +544,404 @@ void ArenaScene::func_ov001_0221c934(u32 unk1) {
 
 void ArenaScene::func_ov001_0221caa0() {
     SpriteManager::Get().Screen(1).func_02027778(mUnk_90, (u8) mUnk_98, 0x20, 0x28, 0, 0x1c0, 0xf, 0);
+}
+
+struct UnkStruct_020c4230 {
+    /* 00 */ PAD(0x00, 0x20);
+    /* 20 */ u16 mUnk_20;
+};
+extern UnkStruct_020c4230 data_020c4230;
+struct UnkStruct_020c3938 {
+    /* 00 */ PAD(0x00, 0x50);
+    /* 50 */ u16 mName[12];
+    /* 68 */ u16 mUnk_68;
+    /* 6a */ PAD(0x6a, 0xc0);
+};
+extern UnkStruct_020c3938 data_020c3938[];
+extern u8 data_020d43eb[];
+extern u8 data_020d441a[];
+extern "C" void func_01ff94e0(const void *src, void *dest, u32 size);
+extern "C" void func_01ff96c4(const void *src, void *dest, u32 size);
+void func_020233f8(UnkStruct_020d433c *data);
+void func_0202330c(UnkStruct_020d433c *data);
+
+#define MINU(a, b) ((u32) (b) > (u32) (a) ? (u32) (a) : (u32) (b))
+void ArenaScene::Update() {
+    func_ov001_0221bee8();
+    UnkStruct_020c3030::Get();
+    const u8 *modePtr = &data_020c4258;
+    if (IsWirelessMode(modePtr)) {
+        UnkStruct_020c3030::Get();
+        data_0220f540.mUnk_01 = data_020c4230.mUnk_20;
+        UnkStruct_020c3030::Get().func_0202f024(&data_0220f540);
+        UnkStruct_020c3030::Get().func_0202f078(&data_0220f540);
+    }
+    UnkStruct_020c3030::Get();
+    u8 mode = *modePtr;
+    if (mUnk_b3 != 0) {
+        if (mode != 0) {
+            if (mUnk_b4 == 0) {
+                return;
+            }
+            func_ov001_0221caa0();
+            return;
+        }
+        mUnk_b3 = 0;
+    }
+    if (mode == 9) {
+        if (mMode == 10) {
+            mUnk_b4 = 1;
+        }
+        func_ov001_022197ec();
+        func_ov001_0221993c(2);
+    } else if (mode > 1) {
+        if (mMode < 0xc) {
+            func_01ff94e0(data_020d441a, (u8 *) &data_0220f540 + 4, 0x18);
+            data_0220f540.mUnk_1f = 0;
+        }
+    }
+    if (mSubMenuMode != 0) {
+        if ((u8) mSubMenu->Update(1)) {
+            if ((u8) mSubMenu->mCursor->mSelection == 0) {
+                func_ov001_022197ec();
+            }
+            func_ov001_0221993c(0);
+        }
+        if (mSubMenu == NULL) {
+            return;
+        }
+        func_ov001_0221caa0();
+        mSubMenu->Draw();
+        return;
+    }
+    switch (mMode) {
+        case 0:
+            func_ov001_0221b06c();
+            func_ov001_0221b24c();
+            func_ov001_0221c008();
+            func_ov001_0221c710();
+            func_ov001_0221b994();
+            SpriteManager::Get().StartFade(2);
+            mMode++;
+            break;
+        case 1:
+            if (SpriteManager::Get().IsFading()) {
+                break;
+            }
+            mMode++;
+            break;
+        case 2: {
+            mUnk_b0 = func_ov001_0221bca0();
+            if (mUnk_b0 == 0) {
+                break;
+            }
+            u8 v;
+            if (mUnk_b0 == 1) {
+                mSlots[mSelection].mAnim->SetAnimation(mSlots[mSelection].mFrame + 2);
+                v = 0x14;
+            } else {
+                v = 0;
+            }
+            mUnk_ae = v;
+            mMode++;
+            break;
+        }
+        case 3:
+            if (mUnk_ae != 0) {
+                mUnk_ae--;
+                break;
+            }
+            mSlots[0].mUnk_08 = 0x108;
+            mSlots[1].mUnk_08 = -200;
+            mUnk_ae           = 10;
+            mMode++;
+            break;
+        case 4:
+            if (mUnk_ae != 0) {
+                mUnk_ae--;
+                break;
+            }
+            switch (mUnk_b0) {
+                case 1:
+                    switch (mVariant) {
+                        case 0:
+                            if (mSelection == 0) {
+                                mMode = 0xe;
+                            } else {
+                                mVariant = 1;
+                                func_ov001_0221b994();
+                                mMode = 2;
+                            }
+                            break;
+                        case 1:
+                            if (mode == 0) {
+                                UnkStruct_020c3030::Get().func_0202ed3c();
+                                data_020d433c.mUnk_a8 = 1;
+                            }
+                            data_0220f540.mUnk_00 = 0xb;
+                            if (mSelection == 0) {
+                                mVariant = 2;
+                                mMode    = 5;
+                            } else {
+                                mVariant = 3;
+                                mMode    = 8;
+                            }
+                            data_020d433c.mUnk_10 = new UnkStruct_02078290(1);
+                            MI_CpuClearFast((void *) 0x6600000, 0x2000);
+                            func_ov001_0221c1a0();
+                            mPlayerCount = 0;
+                            func_ov001_0221b994();
+                            break;
+                    }
+                    break;
+                case 2:
+                    switch (mVariant) {
+                        case 0:
+                            mMode = 0xf;
+                            break;
+                        default:
+                            func_ov001_022197ec();
+                            break;
+                    }
+                    break;
+            }
+            break;
+        case 5:
+            if (mode == 1) {
+                u16 name[13];
+                name[12] = 0xfffc;
+                for (u8 i = 0; i < 12; i++) {
+                    name[i] = data_020d43f0[0].mName[i];
+                }
+                UnkStruct_020c3030::Get().func_0202ee10(3, name, 0x1a, 0);
+                mMode++;
+            }
+            break;
+        case 6: {
+            u8 menu = func_ov001_0221bdf0();
+            if (menu == 2) {
+                func_ov001_0221be1c();
+                func_ov001_0221993c(1);
+                return;
+            }
+            u8 count = 1;
+            for (u8 i = 0; i < 4; i++) {
+                u8 *p = UnkStruct_020c3030::Get().func_0202f0cc(i);
+                if (p != NULL) {
+                    count = i + 1;
+                    func_01ff94e0(p + 4, data_020d433c.mNames[i], 0x18);
+                } else if (i != 0) {
+                    MI_CpuClear16(data_020d433c.mNames[i], 0x18);
+                }
+            }
+            mPlayerCount = count;
+            func_ov001_0221c1d8();
+            if (mPlayerCount >= 2) {
+                if (mMenu->mButtons[0].mEnabled == 0) {
+                    mMenu->mButtons[0].mEnabled = 1;
+                    mMessage->func_02065890(2, 0, 1);
+                }
+            } else {
+                if (mMenu->mButtons[0].mEnabled != 0) {
+                    mMenu->mButtons[0].mEnabled = 0;
+                    mMessage->func_02065890(0x10, 0, 1);
+                }
+            }
+            if (InputManager::Get().IsHeld(1) || menu == 1) {
+                if (mPlayerCount >= 2) {
+                    SoundManager::Get().func_020246f8(0);
+                    UnkStruct_020c3030::Get().func_0202f184();
+                    mUnk_b6 = 10;
+                    mMode   = 7;
+                }
+            }
+            if (menu != 0) {
+                mMenu->func_0205c7c8(-1);
+                mMenu->mCursor->mSelection = -1;
+            }
+            if (menu & (mMode == 6)) {
+                func_ov001_0221be1c();
+            }
+            break;
+        }
+        case 7:
+            if (mUnk_b6-- != 0) {
+                break;
+            }
+            data_0220f540.mUnk_1f = 1;
+            mMode                 = 0xb;
+            break;
+        case 8:
+            if (mode >= 1) {
+                UnkStruct_020c3030::Get().func_0202eeb0();
+                mMode++;
+            }
+            break;
+        case 9: {
+            mSlots[2].mVisible = 0;
+            u32 menu           = (u8) func_ov001_0221bdf0();
+            if (menu == 2) {
+                func_ov001_0221be1c();
+                func_ov001_0221993c(1);
+                return;
+            }
+            u8 count = UnkStruct_020c3030::Get().func_0202ef80() <= 4 ? UnkStruct_020c3030::Get().func_0202ef80() : 4;
+            if (count != 0) {
+                mMenu->mButtons[0].mEnabled = 1;
+                u8 i = 0;
+                do {
+                    UnkStruct_020c3030::Get();
+                    UnkStruct_020c3938 *e = &data_020c3938[i];
+                    if (e != NULL && e->mUnk_68 == 0xfffc) {
+                        func_01ff94e0(e->mName, data_020d433c.mNames[i], 0x18);
+                    }
+                    i++;
+                } while (i < count);
+                mPlayerCount = count;
+                if (mPlayerCount != 0) {
+                    int sel = mSelection;
+                    if (sel > mPlayerCount - 1) {
+                        sel = mPlayerCount - 1;
+                    }
+                    mSelection = sel;
+                    if (mPlayerCount > 1) {
+                        u8 old = mSelection;
+                        if (InputManager::Get().IsTrigger(0x40)) {
+                            mSelection = (mSelection + mPlayerCount - 1) % mPlayerCount;
+                        } else if (InputManager::Get().IsTrigger(0x80)) {
+                            mSelection = (mSelection + 1) % mPlayerCount;
+                        }
+                        if (old != mSelection) {
+                            SoundManager::Get().func_020246f8(5);
+                        }
+                    }
+                    u32 touched = 0;
+                    if (TouchManager::Get().mUnk_57) {
+                        if (TouchManager::Get().func_02022860(0x20, 0x30, 0xc0, (s16) (mPlayerCount * 0x18))) {
+                            mSelection = MINU(mPlayerCount - 1, (u32) (TouchManager::Get().mY - 0x30) / 0x18);
+                        }
+                    } else if (TouchManager::Get().mTouching) {
+                        if (TouchManager::Get().func_020228c0(0x20, 0x30, 0xc0, (s16) (mPlayerCount * 0x18))) {
+                            mSelection = MINU(mPlayerCount - 1, (u32) (TouchManager::Get().mY - 0x30) / 0x18);
+                            touched = 1;
+                        }
+                    }
+                    if (menu == 1) {
+                        touched = 1;
+                    }
+                    mSlots[2].mVisible = 1;
+                    mSlots[2].mUnk_08  = 0x20;
+                    mSlots[2].mUnk_0a  = mSelection * 0x18 + 0x34;
+                    if (touched) {
+                        SoundManager::Get().func_020246f8(0);
+                        mMessage->func_02065890(4, 1, 1);
+                        u16 name[13];
+                        name[12] = 0xfffc;
+                        for (u8 i = 0; i < 12; i++) {
+                            name[i] = data_020d43f0[0].mName[i];
+                        }
+                        UnkStruct_020c3030::Get().func_0202eefc(mSelection, name, 0x1a);
+                        mPlayerCount = 0;
+                        func_ov001_0221c5b0();
+                        mSlots[2].mVisible = 0;
+                        mSlots[2].mFrame   = 0xd;
+                        mMode++;
+                    }
+                }
+            } else {
+                mMenu->mButtons[0].mEnabled = 0;
+                func_ov001_0221c5b0();
+                mSelection = 0;
+            }
+            func_ov001_0221c1d8();
+            if (menu != 0) {
+                func_ov001_0221be1c();
+            }
+            break;
+        }
+        case 10: {
+            mMenu->mButtons[0].mEnabled = 0;
+            u8 menu                     = func_ov001_0221bdf0();
+            if (menu == 2) {
+                func_ov001_0221be1c();
+                func_ov001_022197ec();
+                func_ov001_0221993c(2);
+                return;
+            }
+            u8 flag  = 0;
+            u8 count = 1;
+            for (u8 i = 0; i < 4; i++) {
+                u8 *p = UnkStruct_020c3030::Get().func_0202f0cc(i);
+                if (p != NULL) {
+                    count = i + 1;
+                    func_01ff94e0(p + 4, data_020d433c.mNames[i], 0x18);
+                    if (i == 0) {
+                        flag = p[0x1f];
+                    }
+                } else if (i != 0) {
+                    MI_CpuClear16(data_020d433c.mNames[i], 0x18);
+                }
+            }
+            mPlayerCount = count;
+            func_ov001_0221c1d8();
+            if (flag != 0) {
+                func_020233f8(&data_020d433c);
+                mMode = 0xb;
+            }
+            break;
+        }
+        case 11:
+            if (func_ov001_0221c614(0xb) != 0) {
+                mMode++;
+            }
+            data_0220f540.mUnk_1f = 1;
+            break;
+        case 12:
+            if (func_ov001_0221c614(0xc) != 0) {
+                for (u8 i = 0; i < 4; i++) {
+                    u8 *p = UnkStruct_020c3030::Get().func_0202f0cc(i);
+                    if (p != NULL) {
+                        func_01ff94e0(p + 4, data_020d433c.mNames[i], 0x18);
+                    }
+                }
+                if (mode == 6) {
+                    func_0202330c(&data_020d433c);
+                    func_020233f8(&data_020d433c);
+                }
+                mMode++;
+            }
+            func_01ff94e0(data_020d441a, (u8 *) &data_0220f540 + 4, 0x18);
+            break;
+        case 13:
+            func_01ff96c4(data_020d43eb, (u8 *) &data_0220f540 + 4, 4);
+            if (func_ov001_0221c614(0x18) != 0) {
+                UnkStruct_020c3030::Get();
+                if (data_020c4230.mUnk_20 != 0) {
+                    func_01ff96c4(UnkStruct_020c3030::Get().func_0202f0cc(0) + 4, data_020d43eb, 4);
+                }
+                mMode++;
+            }
+            break;
+        case 14:
+            mUnk_b5 = 1;
+            SpriteManager::Get().StartFade(3);
+            mMode = 0x10;
+            break;
+        case 15:
+            mUnk_b5 = 2;
+            SpriteManager::Get().StartFade(3);
+            mMode = 0x10;
+            break;
+        case 16:
+            if (SpriteManager::Get().IsFading()) {
+                break;
+            }
+            mMode++;
+            break;
+        case 17:
+            RequestScene(mUnk_b5);
+            mFinished = 1;
+            return;
+    }
+    func_ov001_0221bf40();
 }

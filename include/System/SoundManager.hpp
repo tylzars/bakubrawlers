@@ -39,7 +39,7 @@ public:
     void func_020245d4(u32 unk1);
     void func_020245f4(u32 unk1);
     void func_02024628(u32 unk1);
-    void func_02024688();
+    void func_02024688(u32 fadeFrames);
     void func_020246a4(s32 unk1);
     void func_020246d4(u32 unk1);
     void func_020246f8(u32 unk1);

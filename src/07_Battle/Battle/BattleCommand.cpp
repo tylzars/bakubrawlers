@@ -8,6 +8,7 @@
 #include "System/FrameUpdate.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
+#include "Unknown/UnkStruct_02078290.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 
@@ -818,4 +819,239 @@ BOOL BattleCommand::func_ov007_0223a1c8() {
             break;
     }
     return FALSE;
+}
+
+extern const WindowCellRecord data_ov007_02279c24[];
+extern const WindowCellRecord data_ov007_02279b44[];
+extern const WindowCellRecord data_ov007_02279bd0[];
+
+// non-matching: 16 words. In the player-animation loop the original loads mUnk_135 before the mPlayers[p] pointer (cmp scheduled before the add/ldr); every variant tried loads the pointer first.
+void BattleCommand::func_ov007_0223a734() {
+    ChangeDir("/Game/Battle/Obj");
+    func_02025b64(0, 4, 0, "battle_u.nce_ncg1D.bin", 0, 0, 0);
+    func_02025b64(0, 5, 0, "battle_u_ncl.bin", 0, 0, 0);
+    mUnk_84 = new BattleCommandMap(data_020d433c.mUnk_95);
+    mUnk_84->vfunc_0c();
+    func_ov007_02247a3c(mUnk_84);
+    func_ov007_02246a84(mUnk_84, 2);
+    ChangeDir("/Game/Battle/Obj");
+    u8 i;
+    SpriteScreen &screen = SpriteManager::Get().Screen(1);
+    screen.func_02027624(3);
+    mUnk_6c->SetCells(10, data_ov007_02279c24);
+    for (i = data_020d433c.mPlayerCount; i < 4; i++) {
+        mUnk_6c->mButtons[i + 6].mEnabled = 0;
+    }
+    mUnk_70->SetCells(2, data_ov007_02279b44);
+    mUnk_74->SetCells(3, data_ov007_02279bd0);
+    for (i = 0; i < 12; i++) {
+        mUnk_3c[i] = new CellAnimation("battle_b_obj_00_nce.bin", 0x44, 1, 1);
+        mUnk_3c[i]->mCharBase = screen.func_020276f4(0xa000);
+        mUnk_3c[i]->mUnk_11   = 0;
+    }
+    mUnk_0c = new CellAnimation("battle_b_obj_00_nce.bin", 0x15, 1, 1);
+    mUnk_0c->mCharBase = screen.func_020276f4(0xa000);
+    mUnk_0c->mUnk_11   = 0;
+    mUnk_10 = new CellAnimation("battle_b_obj_00_nce.bin", 0x16, 1, 1);
+    mUnk_10->mCharBase = screen.func_020276f4(0xa000);
+    mUnk_10->mUnk_11   = 0;
+    mUnk_14 = new CellAnimation("battle_b_obj_00_nce.bin", 0x1b, 1, 1);
+    mUnk_14->mCharBase = screen.func_020276f4(0xa000);
+    mUnk_14->mUnk_11   = 0;
+    if (data_020d433c.mUnk_85) {
+        mUnk_28 = new CellAnimation("battle_b_obj_00_nce.bin", 0x45, 1, 1);
+        mUnk_28->mCharBase = screen.func_020276f4(0xa000);
+        mUnk_28->mUnk_11   = 0;
+    }
+    u8 cur = data_020d433c.mBattlePlayers->mUnk_2a9;
+    mUnk_18 = new CellAnimation("battle_b_obj_00_nce.bin", (u8) (cur + 0x38), 1, 1);
+    mUnk_18->mCharBase = screen.func_020276f4(0xa000);
+    mUnk_18->mUnk_11   = 0;
+    if (data_020d433c.mUnk_98) {
+        u8 partner = data_020d433c.mBattlePlayers->mPlayers[cur]->mUnk_f2;
+        mUnk_1c = new CellAnimation("battle_b_obj_00_nce.bin", (u8) (partner + 0x40), 1, 1);
+        mUnk_1c->mCharBase = screen.func_020276f4(0xa000);
+        mUnk_1c->mUnk_11   = 0;
+    }
+    mUnk_20 = new CellAnimation("battle_b_obj_turn_nce.bin", 0, 1, 1);
+    mUnk_20->mCharBase = screen.func_020276f4(0x17000);
+    mUnk_20->mUnk_11   = 9;
+    mTurnDigits = new CellAnimation("battle_b_obj_turn_nce.bin", 1, 1, 1);
+    mTurnDigits->mCharBase = screen.func_020276f4(0x17000);
+    mTurnDigits->mUnk_11   = 9;
+    u8 p = 0;
+    do {
+        BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[p];
+        if (mUnk_135 == 0) {
+            u8 frame   = pl->mUnk_f1 + (p * 4 + 0x28);
+            mUnk_2c[p] = new CellAnimation("battle_b_obj_00_nce.bin", frame, 1, 1);
+        } else {
+            u8 side    = (pl->mUnk_f1 + 2) % 4;
+            u8 frame   = side + (p * 4 + 0x28);
+            mUnk_2c[p] = new CellAnimation("battle_b_obj_00_nce.bin", frame, 1, 1);
+        }
+        mUnk_2c[p]->mCharBase = screen.func_020276f4(0xa000);
+        mUnk_2c[p]->mUnk_11   = 0;
+        p++;
+    } while (p < data_020d433c.mPlayerCount);
+    ChangeDir("/");
+    mMessage = new MessageWindow("mes_Command", 1, 0x1f000);
+    mMessage->func_02065bd4(0x14, 4, 0);
+    mMessage->func_02065be4(0xd8);
+    func_ov007_0223ce24();
+}
+
+// matches only with `variant = (u32) this`: the original leaves `variant` uninitialised for field types 0/4/5/6 and the
+// compiler reuses the register that still holds `this`. Placeholder for an uninitialised variable, not source.
+void BattleCommand::func_ov007_0223ad70() {
+    char path[0x100];
+    u32 variant = (u32) this;
+    MI_CpuClearFast((void *) 0x6609000, 0x1000);
+    reg_GX_POWCNT |= 0x8000;
+    ChangeDir("/Game/Battle/Bg");
+    if (data_020d433c.mUnk_8a_0 != 0) {
+        sprintf(path, "battle_b_bg_last_ncl.bin", data_020d433c.mUnk_95);
+        func_02025b64(1, 1, 0x4000, path, 0, 0, 0);
+        sprintf(path, "battle_b_bg_last_ncg.bin", data_020d433c.mUnk_95);
+        func_02025b64(1, 0xb, 0, path, 0, 0, 0);
+        sprintf(path, "battle_b_bg_last_a_nsc.bin", data_020d433c.mUnk_95);
+        func_02025b64(1, 7, 0, path, 0, 0, 0);
+        sprintf(path, "battle_b_bg_last_b_nsc.bin", data_020d433c.mUnk_95);
+        func_02025b64(1, 7, 0x800, path, 0, 0, 0);
+        sprintf(path, "battle_b_bg_last_c_nsc.bin", data_020d433c.mUnk_95);
+        func_02025b64(1, 7, 0x1000, path, 0, 0, 0);
+        sprintf(path, "battle_b_bg_last_d_nsc.bin", data_020d433c.mUnk_95);
+        func_02025b64(1, 7, 0x1800, path, 0, 0, 0);
+    } else {
+        switch (data_020d433c.mUnk_95) {
+            case 1:
+            case 2:
+            case 3:
+            case 7:
+                variant = 0;
+                break;
+        }
+        sprintf(path, "battle_b_bg_%02d_ncl.bin", data_020d433c.mUnk_95);
+        func_02025b64(1, 1, 0x4000, path, 0, 0, 0);
+        sprintf(path, "battle_b_bg_%02d_ncg.bin", data_020d433c.mUnk_95);
+        func_02025b64(1, 0xb, 0, path, 0, 0, 0);
+        sprintf(path, "battle_b_bg_%02d_a_%02d_nsc.bin", data_020d433c.mUnk_95, variant);
+        func_02025b64(1, 7, 0, path, 0, 0, 0);
+        sprintf(path, "battle_b_bg_%02d_b_%02d_nsc.bin", data_020d433c.mUnk_95, variant);
+        func_02025b64(1, 7, 0x800, path, 0, 0, 0);
+        sprintf(path, "battle_b_bg_%02d_c_%02d_nsc.bin", data_020d433c.mUnk_95, variant);
+        func_02025b64(1, 7, 0x1000, path, 0, 0, 0);
+        sprintf(path, "battle_b_bg_%02d_d_%02d_nsc.bin", data_020d433c.mUnk_95, variant);
+        func_02025b64(1, 7, 0x1800, path, 0, 0, 0);
+    }
+    SpriteManager::Get().Screen(1).func_02027624(3);
+    ChangeDir("/Game/Battle/Obj");
+    func_02025b64(1, 4, 0xa000, "battle_b_obj_00.nce_ncg1D.bin", 0, 0, 0);
+    func_02025b64(1, 5, 0, "battle_b_obj_00_ncl.bin", 0, 0, 0);
+    ChangeDir("/Game/2D/union_b");
+    func_02025b64(1, 4, 0x1c800, "union_b_obj_cockpit.nce_ncg1D.bin", 0, 0, 0);
+    func_02025b64(1, 5, 0x1c0, "union_b_obj_cockpit_ncl.bin", 0, 0, 0);
+    ChangeDir("/Game/Card/Graphic/Small");
+    func_02025b64(1, 4, 0x9000, "card_s_000_ncg.bin", 0, 0, 0);
+    func_02025b64(1, 0, 0, "card_s_000_ncl.bin", 0, 0, 0);
+    ChangeDir("/Game/2D/union_b");
+    func_02025b64(1, 4, 0x18000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
+    if (data_020d433c.mUnk_10) {
+        data_020d433c.mUnk_10->func_020785d8(8);
+    }
+    ChangeDir("/");
+}
+
+// Frame clock singleton (instance 0x020c1884); mFrame is the running frame count.
+class UnkStruct_020c1884 {
+public:
+    /* 00 */ PAD(0x00, 0x10);
+    /* 10 */ u32 mFrame;
+    /* 14 */ PAD(0x14, 0x18);
+    /* 18 */
+
+    ~UnkStruct_020c1884();
+
+    static UnkStruct_020c1884 &Get() {
+        static UnkStruct_020c1884 instance;
+        return instance;
+    }
+};
+
+extern u8 data_ov007_02279ac0[];
+
+void BattleCommand::func_ov007_0223b38c() {
+    SpriteScreen &screen = SpriteManager::Get().Screen(1);
+    screen.func_02027624(3);
+    u8 col = mUnk_12c;
+    u8 row = mUnk_12d;
+    if (mUnk_135) {
+        col = 13 - col;
+        row = 9 - row;
+    }
+    mUnk_0c->Update();
+    mUnk_0c->Draw(1, (s16) (col * 16 + 14 - mUnk_120 + mUnk_139), (s16) (row * 24 - 22 - mUnk_122), 1);
+    u8 i = 0;
+    u8 k = 0;
+    do {
+        u8 j = 0;
+        do {
+            u8 x = i;
+            u8 y = j;
+            if (mUnk_135) {
+                y = 9 - j;
+                x = 13 - i;
+            }
+            BOOL show;
+            s8 cell = data_020d433c.mBattlePlayers->mUnk_1f8[i][j];
+            if (cell > 0) {
+                func_ov007_02262530(data_020d433c.mBattlePlayers, i, j);
+                mUnk_3c[k]->func_0202a3ec(1, data_020d433c.mBattlePlayers->Units()[(u8) (cell - 1)].mUnk_0f, (s16) (x * 16 + 14 - mUnk_120 + mUnk_139), (s16) (y * 24 - 22 - mUnk_122), 1);
+                k++;
+            }
+            s8 mark = data_020d433c.mBattlePlayers->mUnk_16c[i][j];
+            if (mark > 0) {
+                u8 who    = data_020d433c.mBattlePlayers->mUnk_1c[(u8) (mark - 1)].mUnk_1;
+                show      = TRUE;
+                if (data_020d433c.mBattlePlayers->mUnk_2a9 == who) {
+                    if (!(UnkStruct_020c1884::Get().mFrame & 0x20)) {
+                        show = FALSE;
+                    }
+                }
+                if (show) {
+                    screen.func_02027778(data_ov007_02279ac0, 1, (s16) (x * 16 + 14 - mUnk_120 + mUnk_139), (s16) (y * 24 - 22 - mUnk_122), 1, 0x120, 0, 0);
+                }
+            }
+            j++;
+        } while (j < 10);
+        i++;
+    } while (i < 14);
+    u8 p = 0;
+    do {
+        u8 side = data_020d433c.mBattlePlayers->mPlayers[p]->mUnk_f1;
+        if (mUnk_135) {
+            side = (side + 2) % 4;
+        }
+        if (p == data_020d433c.mBattlePlayers->mUnk_2a9) {
+            mUnk_18->Update();
+            mUnk_18->Draw(1, (s16) (mUnk_139 + data_ov007_02279ab0[side].mX), data_ov007_02279ab0[side].mY, 0);
+            if (data_020d433c.mUnk_98) {
+                u8 partner = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[p]->mUnk_f2]->mUnk_f1;
+                if (mUnk_135) {
+                    partner = (partner + 2) % 4;
+                }
+                mUnk_1c->Update();
+                mUnk_1c->Draw(1, (s16) (mUnk_139 + data_ov007_02279ab0[partner].mX), data_ov007_02279ab0[partner].mY, 0);
+            }
+        }
+        mUnk_2c[p]->Update();
+        mUnk_2c[p]->Draw(1, (s16) (mUnk_139 + data_ov007_02279ab0[side].mX), data_ov007_02279ab0[side].mY, 0);
+        p++;
+    } while (p < data_020d433c.mPlayerCount);
+    if (data_020d433c.mUnk_85 && mUnk_6c->mUnk_061 == 1) {
+        mUnk_28->Update();
+        mUnk_28->Draw(1, data_ov007_02279aa8[data_020d43f0[0].mUnk_28_5], 0x22, 0);
+    }
+    mUnk_6c->Draw();
+    func_ov007_0223ce90();
 }

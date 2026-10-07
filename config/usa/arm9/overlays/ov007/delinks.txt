@@ -165,6 +165,22 @@ src/07_Battle/Battle/BattleStatusPanels.cpp:
 src/07_Battle/Battle/BattleCommand.cpp:
     .text       start:0x02236494 end:0x0223cfe8
 
+// provisional: code only; .data 0x022881e8-0x02288378 and .bss 0x0228b880-0x0228b88c belong here.
+src/07_Battle/Battle/BattleData.cpp:
+    .text       start:0x0223cfe8 end:0x0223e238
+
+// provisional: code only; .data 0x02288378-0x02288700, .rodata 0x02279d3c-0x02279e88 and .bss 0x0228b88c-0x0228b8d4 belong here.
+src/07_Battle/Battle/BattleConfrontCard.cpp:
+    .text       start:0x0223e238 end:0x022447d4
+
+// provisional: code only; .data 0x02288700-0x022887e0, .rodata 0x02279e88-0x02279eb0 and .bss 0x0228b8d4-0x0228b8e0 belong here.
+src/07_Battle/Battle/BattleCardCamera.cpp:
+    .text       start:0x022447d4 end:0x022450f4
+
+// provisional: code only; the class continues to about 0x02249658; .data from 0x022887e0, .rodata from 0x02279eb0, .bss from 0x0228b8e0.
+src/07_Battle/Battle/BattleCommandMap.cpp:
+    .text       start:0x022450f4 end:0x02246558
+
 // provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickUnk_02274830.cpp:
     .text       start:0x02274830 end:0x02274d78

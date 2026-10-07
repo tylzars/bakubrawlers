@@ -13,7 +13,6 @@
 #include <nitro/gx.h>
 
 // Functions of other battle files.
-int func_ov007_0223e214(BattleData *data, int a, int b);
 void func_ov007_02229998(BattleField3D *obj);
 void func_ov007_022252c4(BattleSub48 *obj);
 void func_ov007_0226a448(BattlePlayer *player, u8 a, int b);
@@ -247,8 +246,8 @@ int BattleBase::func_ov007_0221c850(u16 *a, u16 *b, u16 *c, u8 *d) {
     return -1;
 }
 
-int BattleBase::func_ov007_0221cebc(int a) {
-    return func_ov007_0223e214(mUnk_2c, a, 0);
+void BattleBase::func_ov007_0221cebc(int a) {
+    func_ov007_0223e214(mUnk_2c, a, 0);
 }
 
 void func_02001eec(vu16 *reg, int value);

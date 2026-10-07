@@ -13,7 +13,7 @@ extern void func_020383f8(u32 heap);
 extern void func_02036ab4(void *handle);
 extern void func_02036918(u32 a, u32 b);
 extern void func_02038444(u32 heap, u32 a);
-extern "C" void func_020369e4(void *handle, ...); // called with one or two arguments; forwards them
+extern "C" void func_020369e4(void *handle, u32 fadeFrames);
 extern void func_02039048(void *handle, s32 id);
 extern void func_02038214(u32 a);
 extern void func_02039090(void *handle, u32 a, s32 b, s32 c, s32 d, s32 e);
@@ -90,8 +90,8 @@ void SoundManager::func_02024628(u32 unk1) {
     mUnk_a8 = unk1;
 }
 
-void SoundManager::func_02024688() {
-    func_020369e4(&mUnk_a0);
+void SoundManager::func_02024688(u32 fadeFrames) {
+    func_020369e4(&mUnk_a0, fadeFrames);
     mUnk_a8 = -1;
 }
 

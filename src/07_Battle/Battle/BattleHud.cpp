@@ -19,8 +19,6 @@
 
 // Externals of other battle files.
 u32 func_ov007_0221d348(u32 max);
-void func_ov007_0223db20(BattleData *data, int side, int x, int y);
-void func_ov007_0223de88(BattleData *data, int side, int x, int y, int a, int b);
 // Object at BattlePlayerList+0x2a4: a timed screen effect (fade) the battle shows before the gauge starts.
 void func_02087eec(UnkStruct_Battle2a4 *effect);
 void func_02088e64(UnkStruct_Battle2a4 *effect, u32 unk2, u32 unk3, u32 unk4, u32 unk5);
@@ -704,8 +702,8 @@ void BattleHud::func_ov007_022286c8() {
 // non-matching: i and j swap registers (r8/r7).
 void BattleHud::func_ov007_02227730() {
     u8 selected = data_020d433c.mBattlePlayers->mUnk_2a9;
-    func_ov007_0223db20(mData, 0, 8, 0x1e);
-    func_ov007_0223db20(mData, 1, 0xb8, 0x1e);
+    mData->func_ov007_0223db20(0, 8, 0x1e);
+    mData->func_ov007_0223db20(1, 0xb8, 0x1e);
     mData->mUnk_70->func_020654a0();
     if (mUnk_22_6) {
         s16 pos[2];
@@ -727,8 +725,8 @@ void BattleHud::func_ov007_02227730() {
             }
             i++;
         } while (i < 2);
-        func_ov007_0223de88(mData, 0, pos[0], 0x5a, 2, (u32) mUnk_b0[0]);
-        func_ov007_0223de88(mData, 1, pos[1], 0x5a, 2, (u32) mUnk_b0[1]);
+        mData->func_ov007_0223de88(0, pos[0], 0x5a, 2, (u32) mUnk_b0[0]);
+        mData->func_ov007_0223de88(1, pos[1], 0x5a, 2, (u32) mUnk_b0[1]);
         if (mUnk_22_7) {
             func_ov007_022273b4();
         }

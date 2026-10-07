@@ -75,6 +75,8 @@ public:
     void func_ov007_0223c8ac();
     void func_ov007_0223c8d4(u32 flag);
     void func_ov007_0223b38c();
+    void func_ov007_0223a734();
+    void func_ov007_0223ad70();
     void func_ov007_0223c578();
     void func_ov007_0223b874();
     void func_ov007_0223ca80();
@@ -83,12 +85,79 @@ public:
     void func_ov007_0223bb30(u32 flag); // 0xa48 bytes, not decompiled
 };
 
-// Sub objects of the modes (constructed through external constructors).
+class BattleMapObj;
+class BattleMapModel;
+class UnkStruct_0203d374;
+class UnkStruct_02029ca8;
+class BattleStatusPanels;
+struct BattleUnk29c;
+class BattleMapPiece;
+
+// Battle map of the command screen (vtable 022887e0, 0x158 bytes): the map object, cameras, models of the field,
+// the status panels and the objects of the battle.
 class BattleCommandMap : public SceneBase {
 public:
-    /* 0c */ u8 mPad[0x158 - 0xc];
+    /* 0c */ void *mUnk_0c;
+    /* 10 */ BattleMapObj *mUnk_10;
+    /* 14 */ UnkStruct_0203d374 *mUnk_14;
+    /* 18 */ void *mUnk_18[12];
+    /* 48 */ BattleMapModel *mUnk_48;
+    /* 4c */ BattleMapModel *mUnk_4c;
+    /* 50 */ BattleMapModel *mUnk_50[4];
+    /* 60 */ UnkStruct_02029ca8 *mUnk_60;
+    /* 64 */ BattleMapPiece *mUnk_64;
+    /* 68 */ BattleMapPiece *mUnk_68;
+    /* 6c */ BattleMapPiece *mUnk_6c;
+    /* 70 */ BattleStatusPanels *mUnk_70;
+    /* 74 */ BattleUnk29c *mUnk_74;
+    /* 78 */ u8 mUnk_78[0x60];
+    /* d8 */ u32 mUnk_d8[3];
+    /* e4 */ u32 mUnk_e4[3];
+    /* f0 */ u32 mUnk_f0[3];
+    /* fc */ u32 mUnk_fc[3];
+    /* 108 */ u32 mUnk_108[3];
+    /* 114 */ u32 mUnk_114[3];
+    /* 120 */ u32 mUnk_120[3];
+    /* 12c */ u32 mUnk_12c;
+    /* 130 */ void *mUnk_130;
+    /* 134 */ float mUnk_134;
+    /* 138 */ PAD(0x138, 0x13c);
+    /* 13c */ u16 mUnk_13c;
+    /* 13e */ u16 mUnk_13e;
+    /* 140 */ u16 mUnk_140;
+    /* 142 */ u16 mUnk_142;
+    /* 144 */ u16 mUnk_144;
+    /* 146 */ PAD(0x146, 0x148);
+    /* 148 */ u8 mUnk_148;
+    /* 149 */ u8 mUnk_149;
+    /* 14a */ u8 mState;
+    /* 14b */ u8 mUnk_14b;
+    /* 14c */ u8 mUnk_14c;
+    /* 14d */ u8 mUnk_14d;
+    /* 14e */ PAD(0x14e, 0x14f);
+    /* 14f */ u8 mUnk_14f;
+    /* 150 */ u8 mUnk_150;
+    /* 151 */ u8 mUnk_151;
+    /* 152 */ u8 mUnk_152;
+    /* 153 */ u8 mUnk_153;
+    /* 154 */ u8 mUnk_154;
+    /* 155 */ u8 mUnk_155;
+    /* 156 */ PAD(0x156, 0x158);
+    /* 158 */
+
     BattleCommandMap(u8 unk);
     virtual ~BattleCommandMap();
     /* 08 */ virtual void Update();
     /* 0c */ virtual void vfunc_0c();
+    void func_ov007_02245594();
+    void func_ov007_022455c0();
+    void func_ov007_0224560c(u32 index);
+    void func_ov007_02245894();
+    void func_ov007_022458cc();
+    void func_ov007_022458f4();
+    void func_ov007_02245900();
+    void func_ov007_02245b30();
+    void func_ov007_02245e58();
+    void func_ov007_02245f08();
+    void func_ov007_02246450();
 };

@@ -8,7 +8,6 @@
 #include <nitro/math.h>
 
 u32 func_ov007_0221d348(u32 max);
-int func_ov007_0223e214(BattleData *data, int a, int b);
 
 extern u8 *data_ov007_02286570[6];
 extern u8 data_ov007_02278c34[];

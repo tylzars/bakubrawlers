@@ -9,6 +9,7 @@
 #include "UI/MessageWindow.hpp"
 #include "Unknown/UnkStruct_020651bc.hpp"
 
+class CellAnimation;
 struct BattleData;
 struct BattleEntry;
 struct BattleParam;
@@ -95,7 +96,11 @@ public:
 // One 0x14-byte player/slot record inside BattleData (array starts at +0x0c).
 struct BattleEntry {
     /* 00 */ u16 mUnk_00; // power value compared by the gauge
-    /* 02 */ PAD(0x02, 0x0c);
+    /* 02 */ u16 mUnk_02;
+    /* 04 */ u16 mUnk_04;
+    /* 06 */ u16 mUnk_06;
+    /* 08 */ u16 mUnk_08;
+    /* 0a */ u16 mUnk_0a;
     /* 0c */ u8 mUnk_0c;
     /* 0d */ u8 mUnk_0d_0 : 4;
     /* 0d */ u8 mUnk_0d_4 : 4;
@@ -114,13 +119,33 @@ struct BattleEntry {
     /* 14 */
 };
 
+// Data of a pairing of two bakugan about to battle (vtable 022881e8): per-side entries, the animations of both
+// sides and the windows that show them.
 struct BattleData {
-    /* 00 */ PAD(0x00, 0x0c);
+    /* 00 (vtable) */
+    /* 04 */ u16 mUnk_04;
+    /* 06 */ u8 mUnk_06;
+    /* 07 */ u8 mUnk_07;
+    /* 08 */ u8 mUnk_08[2];
+    /* 0a */ u8 mUnk_0a;
+    /* 0b */ u8 mUnk_0b;
     /* 0c */ BattleEntry mEntries[2];
-    /* 34 */ PAD(0x34, 0x6c);
+    /* 34 */ CellAnimation *mUnk_34[14];
     /* 6c */ MessageWindow *mUnk_6c;
     /* 70 */ UnkStruct_020651bc *mUnk_70;
     /* 74 */
+
+    BattleData();
+    virtual ~BattleData();
+    void func_ov007_0223d504();
+    void func_ov007_0223db20(u8 side, s16 x, s16 y);
+    BOOL func_ov007_0223dd6c();
+    BOOL func_ov007_0223ddac(u8 side);
+    void func_ov007_0223de88(u8 side, int x, int y, u32 flag, u32 value);
+    void func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u32 flag, u32 mode, u16 a, u16 b);
+    void func_ov007_0223e180();
+    void func_ov007_0223e1a4(u8 unk, u8 side);
+    void func_ov007_0223e1cc(u8 side, u8 kind);
 };
 
 // 12-byte per-mode parameter record (table at 0x02278b20).
@@ -436,7 +461,7 @@ public:
 
     BattleBase();
     virtual ~BattleBase();
-    /* 08 */ virtual int func_ov007_0221cebc(int a);
+    /* 08 */ virtual void func_ov007_0221cebc(int a);
     /* 0c */ virtual void func_ov007_0221ced0(u16 *a, u16 *b, u16 *c);
     /* 10 */ virtual void func_ov007_0221cfac(u16 *a, u16 *b);
     /* 14 */ virtual int func_ov007_0221d494(u16 *a, u16 *b, u16 *c, u8 *d);
@@ -473,5 +498,6 @@ BOOL func_ov007_0221b9d0(int unk1, int mode, BattleEntry *entry);
 BOOL func_ov007_0221ba0c(int unk1, int mode, BattleEntry *entry);
 BOOL func_ov007_0221ba38(int unk1, u8 side, int value, BattleEntry *entries);
 int func_ov007_0221ba88(int unk1, int index, BattleEntry *entries);
+void func_ov007_0223e214(BattleData *data, int side, u8 bit); // sets mEntries[side].mUnk_0f_3
 u32 func_ov007_0221d348(u32 max);
 int func_ov007_02222764(int side, BattleEntry *entry);

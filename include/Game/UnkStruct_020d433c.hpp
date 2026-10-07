@@ -29,7 +29,8 @@ struct BattleRecord {
     /* 00 */ u16 mGauge : 12;
     /* 02 */ PAD(0x02, 0x04);
     /* 04 */ u16 mUnk_04;
-    /* 06 */ PAD(0x06, 0x09);
+    /* 06 */ u16 mUnk_06;
+    /* 08 */ u8 mUnk_08;
     /* 09 */ u8 mUnk_09;
     /* 0a */ u8 mUnk_0a;
     /* 0b */ PAD(0x0b, 0x0c);
@@ -66,6 +67,16 @@ struct BattlePlayer {
     }
     u32 NameInfo() {
         return (u32) ((u8 *) this + 0xa8);
+    }
+
+    // u16 at +54 + 4 * i (overlaps mRecords).
+    u16 &Slot54(int i) {
+        return *(u16 *) ((u8 *) this + 0x54 + i * 4);
+    }
+
+    // u16 at +6c + 4 * i (overlaps mRecords).
+    u16 &Slot6c(int i) {
+        return *(u16 *) ((u8 *) this + 0x6c + i * 4);
     }
 
     // Byte at +56 + 4 * i (a flag per bakugan slot, 4 bytes apart; overlaps mRecords).
@@ -125,7 +136,8 @@ struct BattleUnit {
     /* 0e */ u8 mUnk_0e;
     /* 0f */ u8 mUnk_0f;
     /* 10 */ u8 mUnk_10;
-    /* 11 */ PAD(0x11, 0x14);
+    /* 11 */ u8 mUnk_11;
+    /* 12 */ PAD(0x12, 0x14);
 };
 
 struct BattleUnk29c {
@@ -134,7 +146,7 @@ struct BattleUnk29c {
 };
 
 struct BattleMarker {
-    /* 0 */ PAD(0, 1);
+    /* 0 */ u8 mUnk_0;
     /* 1 */ u8 mUnk_1;
     /* 2 */ u8 mUnk_2;
     /* 3 */ u8 mUnk_3;
@@ -154,7 +166,8 @@ struct BattlePlayerList {
     /* 28a */ u8 mUnk_28a;
     /* 28b */ u8 mUnk_28b;
     /* 28c */ u8 mUnk_28c;
-    /* 28d */ PAD(0x28d, 0x28f);
+    /* 28d */ u8 mUnk_28d;
+    /* 28e */ u8 mUnk_28e;
     /* 28f */ u8 mUnk_28f;
     /* 290 */ PAD(0x290, 0x292);
     /* 292 */ u8 mUnk_292;

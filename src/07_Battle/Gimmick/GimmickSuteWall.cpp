@@ -1,4 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
+#include <nitro/fx.h>
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/Camera.hpp"
 #include "System/FileSystem.hpp"
@@ -7,7 +8,6 @@
 void func_ov007_02271d78(UnkStruct_020d433c_0c *data, GimmickSetData *set);
 void func_ov007_022719c8(void *buf, u8 id);
 GimmickSetData *func_ov007_02271ca8(UnkStruct_020d433c_0c *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
-fx32 func_01ff8f64(const VecFx32 *v);
 extern MtxFx43 data_020c1cf4;
 
 static ModelResource *sResources[2];
@@ -101,7 +101,7 @@ void GimmickSuteWall::Update() {
         if (!(target && mUnk_3c && mUnk_3c->mUnk_823)) {
             return;
         }
-        if (func_01ff8f64(&target->mUnk_64) < 0x5000) {
+        if (VEC_Mag(&target->mUnk_64) < 0x5000) {
             return;
         }
         func_ov007_02271d78(data_020d433c.mUnk_0c, mUnk_3c);

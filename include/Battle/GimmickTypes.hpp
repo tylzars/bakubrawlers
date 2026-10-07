@@ -10,10 +10,6 @@
 void func_ov007_022719c8(void *buf, u8 id);
 GimmickSetData *func_ov007_02271ca8(UnkStruct_020d433c_0c *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
 void func_ov007_02271d78(UnkStruct_020d433c_0c *data, GimmickSetData *set);
-void func_01ff8e70(const VecFx32 *a, const VecFx32 *b, VecFx32 *out); // a - b
-void func_01ff8e3c(const VecFx32 *a, const VecFx32 *b, VecFx32 *out); // a + b
-void func_01ff8fc4(const VecFx32 *a, VecFx32 *out);                   // normalize
-fx32 func_01ff8f64(const VecFx32 *v);                                 // length
 extern MtxFx43 data_020c1cf4;
 fx32 func_01ff8000(fx32 num, fx32 den); // fixed point num / den (hardware divider)
 void func_ov007_02233ed8(VecFx32 *in, u16 angle, VecFx32 *out); // rotates `in` about Y

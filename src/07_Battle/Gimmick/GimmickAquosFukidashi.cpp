@@ -1,4 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
+#include <nitro/fx.h>
 #include "Graphics/Camera.hpp"
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
@@ -134,8 +135,8 @@ int GimmickAquosFukidashi::func_ov007_02276760() {
     VecFx32 d;
     BattleTarget *target = data_020d433c.mBattlePlayers->mUnk_298;
     if (target && target->mUnk_1a4 && target->mUnk_1a4->mUnk_4a) {
-        func_01ff8e70(&target->mUnk_1a4->mPos, &mPosition, &d);
-        if (func_01ff8f64(&d) <= 0x96000) {
+        VEC_Subtract(&target->mUnk_1a4->mPos, &mPosition, &d);
+        if (VEC_Mag(&d) <= 0x96000) {
             return 1;
         }
     }
@@ -197,7 +198,7 @@ void GimmickAquosFukidashi::Update() {
                         dy = 0x1000;
                     }
                     a.y = func_01ff8000(a.y, FX_Mul(dy, 0x800));
-                    func_01ff8e3c(&b, &a, &b);
+                    VEC_Add(&b, &a, &b);
                     b.x = FX_Mul(b.x, 0xc00);
                     b.z = FX_Mul(b.z, 0xc00);
                     func_ov007_0225c960(data_020d433c.mBattlePlayers->mUnk_298, &b, 0);

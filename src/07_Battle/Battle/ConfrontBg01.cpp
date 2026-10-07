@@ -43,8 +43,6 @@ void ConfrontBg01::func_ov007_0221a624() {
     mBlend->func_ov007_02223ee4();
 }
 
-// non-matching: 3 words, the argument setup of the vs_b_bg_01_%02d_ncg call schedules `mov r0, #1; mov r1, #14`
-// before `add r3, sp, #12` (the original has `add r3` first).
 void ConfrontBg01::vfunc_28() {
     u8 spectator = IsSpectator();
     if (spectator) {

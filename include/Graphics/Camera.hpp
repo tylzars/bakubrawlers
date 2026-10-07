@@ -14,18 +14,32 @@ public:
     /* 20 */ VecFx32 mTarget;
     /* 2c */ fx32 mNear;
     /* 30 */ fx32 mFar;
-    /* 34 */ PAD(0x34, 0x50);
-    /* 50 */ u16 mUnk_50; // camera animation: frame count
-    /* 52 */ u16 mUnk_52; // camera animation: current frame
-    /* 54 */ PAD(0x54, 0x64);
+    /* 34 */ s32 mUnk_34;
+    /* 38 */ fx32 mSin; // sin of fov * 3/8 (table lookup)
+    /* 3c */ fx32 mCos; // cos of fov * 3/8
+    /* 40 */ fx32 mUnk_40;
+    /* 44 */ fx32 mUnk_44;
+    /* 48 */ s32 mUnk_48;
+    /* 4c */ fx32 mDistance; // length of target - position, set by func_02025ec8
+    /* 50 */ u16 mUnk_50;    // camera animation: frame count
+    /* 52 */ u16 mUnk_52;    // camera animation: current frame
+    /* 54 */ const u32 *mPath; // animation data: u32 key count, then per track one VecFx32 per key
+    /* 58 */ u16 mUnk_58;      // field of view from the animation header (0 = none)
+    /* 5a */ u16 mFov;
+    /* 5c */ u16 mPitch;
+    /* 5e */ u16 mYaw;
+    /* 60 */ u16 mRoll;
+    /* 62 */ PAD(0x62, 0x64);
     /* 64 */
 
     Camera(); // 0x02025e50
     void func_02026004(u32 fov); // sets the field of view
-    void func_02026164(u32 frame);
+    void func_02026164(u16 frame);
     void func_02026180();
     void func_020264a4(u32 unk1);
     void func_0202610c(void *file, u32 unk2); // 0x0202610c, load a camera animation
+    void func_020262cc(VecFx32 *out, u32 track, fx32 t); // samples a track of the animation
+    void func_02025ec8();                                // derives distance, yaw, pitch and roll
 
     void SetPosition(fx32 x, fx32 y, fx32 z) {
         mPosition.x = x;
@@ -52,9 +66,12 @@ public:
 // 3D engine's matrices for each (mActive selects the slot that is current).
 class CameraManager {
 public:
-    /* 000 */ PAD(0x000, 0x008);
+    /* 000 */ u8 mDirty; // set when a new mode was requested
+    /* 001 */ u8 mUnk_01;
+    /* 002 */ PAD(0x002, 0x004);
+    /* 004 */ s32 mRequestedMode;
     /* 008 */ s32 mActive;
-    /* 00c */ PAD(0x00c, 0x010);
+    /* 00c */ s32 mMode; // 0 = off, 1..4 = 3D layouts
     /* 010 */ Camera *mCameras[2];
     /* 018 */ MtxFx43 mView[2];
     /* 078 */ MtxFx44 mProjection[2];
@@ -65,7 +82,11 @@ public:
 
     CameraManager();
     ~CameraManager();
-    void func_02026504(u32 slot, Camera *camera, u32 unk3);
+    void func_02026504(u32 mode, Camera *camera, u32 unk3); // unk3: camera for the second screen
+    void func_020264e0();
+    void func_0202655c();
+    void func_020267f0();
+    void func_02026890();
 
     static CameraManager &Get() {
         static CameraManager instance;

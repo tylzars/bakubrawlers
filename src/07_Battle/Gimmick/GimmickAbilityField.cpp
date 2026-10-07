@@ -1,4 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
+#include <nitro/fx.h>
 #include "Graphics/Camera.hpp"
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
@@ -75,12 +76,12 @@ void GimmickAbilityField::func_ov007_022303f4() {
     MtxFx43 mtx = data_020c1cf4;
     func_01ffcf64(&mtx, &mPosition);
     v = cam->mPosition;
-    func_01ff8e70(&v, &pos, &v);
-    func_01ff8fc4(&v, &v);
+    VEC_Subtract(&v, &pos, &v);
+    VEC_Normalize(&v, &v);
     v.x = FX_Mul(v.x, 0xa000);
     v.y = FX_Mul(v.y, 0xa000);
     v.z = FX_Mul(v.z, 0xa000);
-    func_01ff8e3c(&v, &mPosition, &v);
+    VEC_Add(&v, &mPosition, &v);
     func_01ffcf64(&mtx, &v);
     data_02211374.mUnk_9c = 0x1f00c0 | (data_ov007_02279554[mUnk_4d] << 24);
     mModelB->func_02029174(&mtx, &mScale);

@@ -45,7 +45,10 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 | 0x02021c60-0x02021eb8 | System/Memory.cpp | game heap, `operator new`/`delete` |
 | 0x02021eb8-0x020224f8 | Scene/SceneBase.cpp | `SceneManager` (scene list with layers) and the `SceneBase` constructor |
 | 0x020224f8-0x02022b0c | System/TouchManager.cpp | touch sampling, hit tests |
-| 0x0202537c-0x020254bc | System/FrameUpdate.cpp | (range provisional, probably extends to 0x02025668) |
+| 0x0202537c-0x02025668 | System/FrameUpdate.cpp | frame callbacks and HBlank hooks |
+| 0x02025668-0x020257c8 | Graphics/SpriteFade.cpp | screen fade state |
+| 0x020257c8-0x02025e18 | Graphics/UploadQueue.cpp | queue of VRAM uploads (`func_02025b64`, `func_02025c1c`) |
+| 0x02025e18-0x020275bc | Graphics/SpriteManager.cpp | identity matrices, Camera, CameraManager, SpriteManager methods |
 | 0x020275bc-0x02028280 | Graphics/SpriteScreen.cpp | |
 | 0x02029d7c-0x0202a594 | Graphics/CellAnimation.cpp | |
 | 0x0202c02c-0x0202d794 | Text/TextManager.cpp | |

@@ -212,7 +212,6 @@ void MapScene::func_ov005_0221a9ec() {
     func_ov005_0221a598();
 }
 
-// non-matching: the last func_02025b64(1, 9, ...) call stores its stack args in a different order (2 words)
 void MapScene::LoadMapBackground() {
     ChangeDir("/story/");
     func_02025b64(1, 1, 0x4000, "map_b_bg_00_ncl.bin", 0, 0, 0);

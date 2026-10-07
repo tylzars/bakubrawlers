@@ -1,4 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
+#include <nitro/fx.h>
 #include "Graphics/Camera.hpp"
 #include "System/SoundManager.hpp"
 
@@ -74,7 +75,7 @@ void GimmickUnk_02274830::Update() {
         v.y = t->mUnk_64.y;
         v.z = t->mUnk_64.z;
         v.y = 0;
-        func_01ff8fc4(&v, &v);
+        VEC_Normalize(&v, &v);
         v.x = FX_Mul(v.x, 0x2000);
         v.y = 0x2000;
         v.z = FX_Mul(v.z, 0x2000);
@@ -89,7 +90,7 @@ void GimmickUnk_02274830::Update() {
             mtx._[10] = 0;
             mtx._[9]  = 0;
             func_01ff8c94(&w, &mtx, &w);
-            func_01ff8e3c(&camPos, &w, &camPos);
+            VEC_Add(&camPos, &w, &camPos);
             func_01ffcf64(&mtx, &camPos);
             func_0202bf60(data_020d433c.mEffects, handle, &mtx);
         }

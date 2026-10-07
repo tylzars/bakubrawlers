@@ -39,12 +39,22 @@ struct FadeState {
     /* 01 */ s8 mSub;
 };
 
+// One of the eight slots at SpriteManager+0x828 (copied by func_02027578, set up by func_020360cc).
+struct UnkStruct_SpriteManager_28 {
+    /* 00 */ u32 mUnk_00[10];
+    /* 28 */
+};
+
 // Global sprite/display manager, constructed on first use.
 class SpriteManager {
 public:
     /* 000 */ UnkStruct_SpriteManager_00 mUnk_000;
     /* 004 */ SpriteScreen mScreens[2];
-    /* 814 */
+    /* 814 */ PAD(0x814, 0x824); // initialised by func_020313f8
+    /* 824 */ u32 mMode;         // VRAM/display layout 1..9 chosen by func_02026dec
+    /* 828 */ UnkStruct_SpriteManager_28 mUnk_828[8];
+    /* 968 */ u8 mUnk_968[8];    // slot in use flags
+    /* 970 */
 
     static FadeState sFade;
     static FadeState sBrightness;
@@ -60,6 +70,16 @@ public:
 
     void func_0202740c();
     void func_02026dec(u32 unk1, u32 unk2);
+    void func_02026cc0(); // end of frame: flush the OAM copies, queue the per-frame callback func_02026c4c
+    void func_02026d48();
+    void func_02026d90();
+    void func_02027354(u32 unk1);
+    void func_020273dc(u32 unk1, u32 unk2);
+    void func_0202743c();
+    void func_02027504(s32 index);
+    void func_0202753c(s32 index);
+    void func_02027568(s32 index);
+    void func_02027578(s32 index, const UnkStruct_SpriteManager_28 *src);
 
     void StartFade(s8 mode) {
         sFade.mMain = mode;

@@ -47,11 +47,6 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   moves a load above a store on its own, for compiler guards or plain globals; the only case found that does is a
   load of a `const`-qualified global. Changing the field type (`bool`, `s8`, bitfields), writing through a
   reference, comma expressions, inline setters and `const` singletons all leave the store first.
-- **Zero kept in a callee-saved register across `func_02025b64` calls.** In some runs of resource loads the
-  original materialises one zero (`mov r4, #0`) and reuses it for the stack arguments and the offset of the next
-  two or three calls (ov001 `0221b24c`, `0221f4e8`; ov002 `0221fb24`; `MapScene::LoadMapBackground`). Plain
-  literals, a zero local, an inline helper with a zero parameter, a one-trip loop counter and `n * 4` with `n = 0`
-  all fold to fresh `mov rX, #0` per call. Not solved yet.
 
 ## Source patterns that matter
 
@@ -65,6 +60,9 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   compare in source must use the same operator as the original (`a < b` calls `_fls`, `!(a >= b)` calls `_fgeq`).
 - **Unfolded int-to-float.** `s->x = 8;` on a float folds to a constant; `u32 left = 8; s->x = left;` keeps the
   original's `mov r0, #8; bl _ffltu`.
+- **Declare return values.** A function declared `void` that really returns a value changes the caller's
+  register allocation: `func_02025b64` returns `offset + size`, and declaring it `u32` (callers ignore the result)
+  fixed runs of loads that kept a zero in a callee-saved register.
 - **Runtime helpers.** `bl` to `0x0201f970` is `_s32_div_f`, i.e. a `/` in source: the dividend is in r0 and the
   divisor in r1, which often already holds a value the code uses elsewhere (keep it in a local).
 - **`RequestScene` copies the context pointer to a local.** `SceneBase::RequestScene` is

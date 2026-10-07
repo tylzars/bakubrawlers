@@ -12,7 +12,6 @@
 
 extern u8 data_020d4404[];
 extern u8 data_020a10a0[];
-void func_02025c1c(u8 bg, u32 kind, u32 offset, void *data, u32 size, u32 unk6);
 void func_0207889c(u32 screen, u32 offset, u32 palette, const void *colors, u32 unk5);
 
 UnkStruct_020651bc::UnkStruct_020651bc(u32 unk1, u32 unk2, s32 unk3) {

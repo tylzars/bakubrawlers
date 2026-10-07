@@ -1,11 +1,10 @@
 #include "Battle/Gimmick.hpp"
+#include <nitro/fx.h>
 #include "Game/UnkStruct_020d433c.hpp"
 
 void func_ov007_022719c8(void *buf, u8 id);
 GimmickSetData *func_ov007_02271ca8(UnkStruct_020d433c_0c *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
 void func_ov007_02248944(VecFx32 *out, u8 a, u8 b);
-void func_01ff8e70(const VecFx32 *a, const VecFx32 *b, VecFx32 *out);
-fx32 func_01ff8f64(const VecFx32 *v);
 
 Gimmick::Gimmick(u8 a, u8 b)
     : SceneBase(0x2710, 0) {
@@ -42,8 +41,8 @@ BOOL Gimmick::func_ov007_0222ea84(int radius) {
         if (e->mUnk_2) {
             func_ov007_02248944(&tmp, e->mUnk_3, e->mUnk_4);
             tmp.y = mPosition.y;
-            func_01ff8e70(&tmp, &mPosition, &diff);
-            if (radius + 0x17800 >= func_01ff8f64(&diff)) {
+            VEC_Subtract(&tmp, &mPosition, &diff);
+            if (radius + 0x17800 >= VEC_Mag(&diff)) {
                 return TRUE;
             }
         }

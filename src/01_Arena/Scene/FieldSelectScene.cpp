@@ -429,7 +429,6 @@ void FieldSelectScene::func_ov001_0221f23c() {
     G2S_SetWnd0Position(0, 0, 0xff, 0x12);
 }
 
-// non-matching: 4 words, zero kept in a callee-saved register across func_02025b64 calls (see docs/decompiling.md)
 void FieldSelectScene::func_ov001_0221f4e8() {
     ChangeDir("/Game/Battle/Bg/");
     func_02025b64(0, 1, 0x6000, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);

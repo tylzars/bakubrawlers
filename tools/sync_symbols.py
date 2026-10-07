@@ -168,6 +168,9 @@ def main() -> None:
     ap.add_argument("obj", type=Path)
     ap.add_argument("module")
     ap.add_argument("--write", action="store_true")
+    ap.add_argument("--assume-embedded", action="store_true",
+                    help="also assume every function whose name embeds its address (func_<addr>, func_ovNNN_<addr>) "
+                         "lives at that address")
     ap.add_argument("--assume", action="append", default=[], metavar="NAME=ADDR",
                     help="place a non-matching function at ADDR, or pick ADDR among identical candidates. With the same size its "
                          "relocations are read too (only safe when the mismatch doesn't shift code); with a "
@@ -217,6 +220,9 @@ def main() -> None:
                 if all(i in mask or code[i:i + 4] == orig[i:i + 4] for i in range(0, size, 4)):
                     hits.append(addr)
             assumed = {n: int(v, 16) for n, v in (x.split("=") for x in a.assume)}
+            if a.assume_embedded and sym.name not in assumed:
+                if m := re.search(r"func_(?:ov\d{3}_)?(0[0-9a-f]{7})", sym.name):
+                    assumed[sym.name] = int(m.group(1), 16)
             only_name = False
             if sym.name in assumed:
                 want = assumed[sym.name]

@@ -1,4 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
+#include <nitro/fx.h>
 #include "Graphics/Camera.hpp"
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
@@ -84,7 +85,7 @@ void GimmickFieldPowerG::Update() {
             mtx._[10] = 0;
             mtx._[9]  = 0;
             func_01ff8c94(&v, &mtx, &v);
-            func_01ff8e3c(&camPos, &v, &camPos);
+            VEC_Add(&camPos, &v, &camPos);
             func_01ffcf64(&mtx, &camPos);
             func_0202bf60(data_020d433c.mEffects, handle, &mtx);
         }
@@ -99,12 +100,12 @@ void GimmickFieldPowerG::Update() {
             d.x                 = h->mPos.x;
             d.y                 = h->mPos.y;
             d.z                 = h->mPos.z;
-            func_01ff8e70(&d, &camPos2, &d);
-            func_01ff8fc4(&d, &d);
+            VEC_Subtract(&d, &camPos2, &d);
+            VEC_Normalize(&d, &d);
             d.x = FX_Mul(d.x, 0x1e000);
             d.y = FX_Mul(d.y, 0x1e000);
             d.z = FX_Mul(d.z, 0x1e000);
-            func_01ff8e3c(&d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos, &d);
+            VEC_Add(&d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos, &d);
             func_01ffcf64(&mtx2, &d);
             func_0202bf60(data_020d433c.mEffects, handle, &mtx2);
         }

@@ -1,4 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
+#include <nitro/fx.h>
 #include "Graphics/Camera.hpp"
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
@@ -163,9 +164,9 @@ void GimmickPyrusEruption::Update() {
         if (p->mRecords[p->mRecord].mUnk_09 == 0) {
             return;
         }
-        func_01ff8e70(&mPosition, &target->mUnk_1a4->mPos, &d);
-        fx32 len = func_01ff8f64(&d);
-        func_01ff8fc4(&d, &d);
+        VEC_Subtract(&mPosition, &target->mUnk_1a4->mPos, &d);
+        fx32 len = VEC_Mag(&d);
+        VEC_Normalize(&d, &d);
         d.x      = FX_Mul(d.x, 0x1e000);
         d.y      = FX_Mul(d.y, 0x1e000);
         d.z      = FX_Mul(d.z, 0x1e000);
@@ -174,7 +175,7 @@ void GimmickPyrusEruption::Update() {
         d.x      = -func_01ff8000(d.x, len);
         d.y      = y;
         d.z      = z;
-        func_01ff8e3c(&data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0, &d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0);
+        VEC_Add(&data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0, &d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0);
         mState++;
         mUnk_4e = 1;
         break;

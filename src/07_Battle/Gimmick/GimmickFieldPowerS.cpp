@@ -1,4 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
+#include <nitro/fx.h>
 #include "Graphics/Camera.hpp"
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
@@ -134,7 +135,7 @@ void GimmickFieldPowerS::Update() {
             mtx._[10]      = 0;
             mtx._[9]       = 0;
             func_01ff8c94(&v, &mtx, &v);
-            func_01ff8e3c(&camPos, &v, &camPos);
+            VEC_Add(&camPos, &v, &camPos);
             func_01ffd088(&rot, 0x1555);
             func_01ff89c0(&rot, &mtx, &mtx);
             func_01ffcf64(&mtx, &camPos);

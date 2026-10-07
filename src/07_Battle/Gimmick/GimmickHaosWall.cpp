@@ -1,4 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
+#include <nitro/fx.h>
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 
@@ -76,7 +77,7 @@ void GimmickHaosWall::Update() {
         VecFx32 d;
         MtxFx33 m = data_0220e848;
         BattleVecHolder4 *h = list->mUnk_298->mUnk_1a4;
-        func_01ff8e70(&mPosition, &h->mPos, &a);
+        VEC_Subtract(&mPosition, &h->mPos, &a);
         if (mRotY) {
             func_01ffcfd8(&m, -mRotY);
         }
@@ -87,16 +88,16 @@ void GimmickHaosWall::Update() {
         m = data_0220e848;
         func_01ffcfd8(&m, node->mGimmick->mRotY + 0x8000);
         func_01ff84d0(&b, &m, &b);
-        func_01ff8e3c(&c, &b, &c);
+        VEC_Add(&c, &b, &c);
         c.y = h->mPos.y;
         d.x = c.x;
         d.y = 0;
         d.z = c.z;
-        func_01ff8fc4(&d, &d);
+        VEC_Normalize(&d, &d);
         d.x = FX_Mul(d.x, 0xf000);
         d.y = FX_Mul(d.y, 0xf000);
         d.z = FX_Mul(d.z, 0xf000);
-        func_01ff8e70(&c, &d, &c);
+        VEC_Subtract(&c, &d, &c);
         h->mPos.x = c.x;
         h->mPos.y = c.y;
         h->mPos.z = c.z;

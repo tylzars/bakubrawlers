@@ -1,4 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
+#include <nitro/fx.h>
 #include "Game/Random.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/Camera.hpp"
@@ -16,9 +17,6 @@ static const u16 data_ov007_022793e0[3] = {10, 10, 6};
 static const u16 data_ov007_022793e6[3] = {30, 50, 0};
 extern VecFx32 data_ov007_022793f8;
 
-void func_01ff8e70(const VecFx32 *a, const VecFx32 *b, VecFx32 *out);
-void func_01ff8e3c(const VecFx32 *a, const VecFx32 *b, VecFx32 *out);
-void func_01ff8fc4(const VecFx32 *a, VecFx32 *out);
 extern MtxFx43 data_020c1cf4;
 extern MtxFx43 data_0220e86c;
 extern VecFx32 data_ov007_02279404;
@@ -232,12 +230,12 @@ int GimmickFieldDestroy::func_ov007_0222bc24() {
     Camera *cam = CameraManager::Get().mCameras[0];
     cp          = cam->mPosition;
     cp          = cam->mTarget;
-    func_01ff8e70(&dir, &cp, &dir);
-    func_01ff8fc4(&dir, &dir);
+    VEC_Subtract(&dir, &cp, &dir);
+    VEC_Normalize(&dir, &dir);
     dir.x = 0;
     dir.y = 0;
     dir.z = 0;
-    func_01ff8e3c(&dir, &mPosition, &dir);
+    VEC_Add(&dir, &mPosition, &dir);
     func_01ffcf64(&mtx, &dir);
     mModelE->func_02028d80();
     mModelE->func_02029174(&mtx, &mScale);
@@ -267,7 +265,7 @@ void GimmickFieldDestroy::func_ov007_0222b410() {
                     mtx._[10] = 0;
                     mtx._[9]  = 0;
                     func_01ff8c94(&v, &mtx, &v);
-                    func_01ff8e3c(&camPos, &v, &camPos);
+                    VEC_Add(&camPos, &v, &camPos);
                     func_01ffcf64(&mtx, &camPos);
                     func_0202bf60(data_020d433c.mEffects, handle, &mtx);
                 }
@@ -290,12 +288,12 @@ void GimmickFieldDestroy::func_ov007_0222b410() {
                     d.x                 = h->mPos.x;
                     d.y                 = h->mPos.y;
                     d.z                 = h->mPos.z;
-                    func_01ff8e70(&d, &camPos, &d);
-                    func_01ff8fc4(&d, &d);
+                    VEC_Subtract(&d, &camPos, &d);
+                    VEC_Normalize(&d, &d);
                     d.x = FX_Mul(d.x, 0x1e000);
                     d.y = FX_Mul(d.y, 0x1e000);
                     d.z = FX_Mul(d.z, 0x1e000);
-                    func_01ff8e3c(&d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos, &d);
+                    VEC_Add(&d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos, &d);
                     func_01ffcf64(&mtx, &d);
                     func_0202bf60(data_020d433c.mEffects, handle, &mtx);
                 }
@@ -341,7 +339,7 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         mtx2._[10]             = 0;
         mtx2._[9]              = 0;
         func_01ff8c94(&v2, &mtx2, &v2);
-        func_01ff8e3c(&camPos, &v2, &camPos);
+        VEC_Add(&camPos, &v2, &camPos);
         func_01ffd088(&mtx, 0x1555);
         func_01ff89c0(&mtx, &mtx2, &mtx2);
         func_01ffcf64(&mtx2, &camPos);
@@ -362,12 +360,12 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         d.x                 = h->mPos.x;
         d.y                 = h->mPos.y;
         d.z                 = h->mPos.z;
-        func_01ff8e70(&d, &camPos, &d);
-        func_01ff8fc4(&d, &d);
+        VEC_Subtract(&d, &camPos, &d);
+        VEC_Normalize(&d, &d);
         d.x = FX_Mul(d.x, 0x1e000);
         d.y = FX_Mul(d.y, 0x1e000);
         d.z = FX_Mul(d.z, 0x1e000);
-        func_01ff8e3c(&d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos, &d);
+        VEC_Add(&d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPos, &d);
         func_01ffcf64(&mtx, &d);
         func_0202bf60(data_020d433c.mEffects, handle, &mtx);
         break;

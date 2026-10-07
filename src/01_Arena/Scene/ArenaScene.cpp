@@ -183,7 +183,6 @@ void ArenaScene::func_ov001_0221b06c() {
     G2S_BlendNone();
 }
 
-// non-matching: 15 words, the original keeps one zero in a callee-saved register (mov r4, #0) for the stack arguments of the func_02025b64 calls (see docs/decompiling.md)
 extern const WindowItemRecord data_ov001_02226efc[];
 void ArenaScene::func_ov001_0221b24c() {
     if (data_020d433c.mUnk_10 != NULL) {

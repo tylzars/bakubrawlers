@@ -1,4 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
+#include <nitro/fx.h>
 #include "System/FileSystem.hpp"
 
 void func_01ffcfd8(MtxFx33 *m, u16 angle);
@@ -83,8 +84,8 @@ void GimmickVentKaze::Update() {
             func_01ffcfd8(&m, mRotY);
         }
         func_01ff84d0(&a, &m, &a);
-        func_01ff8e3c(&a, &mPosition, &a);
-        func_01ff8e70(&a, &h->mPos, &b);
+        VEC_Add(&a, &mPosition, &a);
+        VEC_Subtract(&a, &h->mPos, &b);
         fx32 z = func_01ff8000(0x2800, -b.y);
         fx32 y = func_01ff8000(0x8000, -b.y);
         fx32 x = func_01ff8000(0, -b.y);
@@ -96,7 +97,7 @@ void GimmickVentKaze::Update() {
             func_01ffcfd8(&m, mRotY);
         }
         func_01ff84d0(&c, &m, &c);
-        func_01ff8e3c(&data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0, &c, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0);
+        VEC_Add(&data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0, &c, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0);
         break;
     }
     case 2:

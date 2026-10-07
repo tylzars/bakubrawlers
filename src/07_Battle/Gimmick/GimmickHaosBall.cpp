@@ -1,4 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
+#include <nitro/fx.h>
 #include "Game/Random.hpp"
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
@@ -87,7 +88,7 @@ void GimmickHaosBall::Update() {
             return;
         }
         BattleVecHolder4 *h = target->mUnk_1a4;
-        func_01ff8e70(&mPosition, &h->mPos, &d);
+        VEC_Subtract(&mPosition, &h->mPos, &d);
         d.x = FX_Mul(d.x, 0x400);
         d.y = FX_Mul(d.y, 0x400);
         d.z = FX_Mul(d.z, 0x400);
@@ -117,7 +118,7 @@ void GimmickHaosBall::Update() {
         u32 y = MATH_Rand32(&data_020d42e8, 0x1000);
         u32 z = MATH_Rand32(&data_020d42e8, 0x2000);
         rnd.x = x - 0x1000; rnd.y = y; rnd.z = z - 0x1000;
-        func_01ff8fc4(&rnd, &rnd);
+        VEC_Normalize(&rnd, &rnd);
         rnd.x = FX_Mul(rnd.x, 0x6000);
         rnd.y = FX_Mul(rnd.y, 0x6000);
         rnd.z = FX_Mul(rnd.z, 0x6000);

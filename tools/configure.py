@@ -42,8 +42,8 @@ CC_FLAGS = [
     "-O4,p",            # verified: -O3,p differs in regalloc; ,s and -O2 don't inline accessors
     "-ipa file",        # verified: inline-function statics are shared across modules (docs/compiler.md)
     "-inline on,noauto",  # verified: auto would inline same-TU calls the game keeps out of line
-    "-enum int",        # verified on SDK code (-enum min loses matches)
-    "-char signed",     # NOT yet verified; nothing matched so far depends on it
+    "-enum int",        # verified: FSFile field offsets in game code (docs/compiler.md)
+    "-char signed",     # verified: plain-char table walk in game code loads with ldrsb
     "-str noreuse",     # verified: identical literals in one initializer are separate copies
     "-proc arm946e",    # verified: arm9tdmi lacks smulbb
     "-gccext,on",

@@ -10,6 +10,7 @@ Words covered by relocations in the compiled object are masked (branch targets,
 literal pool entries), so only instruction encoding and layout are compared.
 """
 import argparse
+import os
 import re
 import struct
 import subprocess
@@ -80,7 +81,7 @@ def compare(code: bytes, mask: set[int], orig: bytes) -> tuple[bool, str]:
 
 
 def disasm(code: bytes) -> list[str]:
-    tmp = ROOT / "build/probe/_dis.bin"
+    tmp = ROOT / f"build/probe/_dis_{os.getpid()}.bin"
     tmp.write_bytes(code)
     out = subprocess.run(["arm-none-eabi-objdump", "-D", "-b", "binary", "-m", "arm", str(tmp)],
                          capture_output=True, text=True).stdout
@@ -118,7 +119,7 @@ def main() -> None:
 
     out_dir = ROOT / "build/probe"
     out_dir.mkdir(parents=True, exist_ok=True)
-    obj = out_dir / (a.source.stem + ".o")
+    obj = out_dir / f"{a.source.stem}_{os.getpid()}.o"
 
     for flags in flag_sets:
         print(f"== {flags}")

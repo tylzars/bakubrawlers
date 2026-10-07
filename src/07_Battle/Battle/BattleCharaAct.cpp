@@ -1,4 +1,5 @@
 #include "global.h"
+#include "Battle/BattleCardEffect.hpp"
 #include "types.h"
 #include "Battle/BattleCharaAct.hpp"
 #include "Scene/SceneBase.hpp"
@@ -12,13 +13,6 @@
 #include "Unknown/UnkStruct_02078290.hpp"
 #include <nitro/os.h>
 #include <stdio.h>
-
-// 0x1c byte object created by this class (ctor 02271410), not kept.
-class BattleCardEffect {
-public:
-    u8 mPad[0x1c];
-    BattleCardEffect(u32 a, u32 b, u32 c, u32 d);
-};
 
 // Model file loaded from a name and a texture (the pair of calls after the base constructor).
 class BattleCharaActModel : public UnkStruct_020289c8 {

@@ -237,9 +237,37 @@ src/07_Battle/Battle/BattleCharaAct.cpp:
 src/07_Battle/Battle/BattlePlayer.cpp:
     .text       start:0x022696b4 end:0x0226a91c
 
-// provisional: code only; the end is not determined yet (0x0226fb74 is BattleUnk29c's ctor); .data from 0x0228a5a0, .rodata from about 0x0227bcd0, .bss from 0x0228bac0.
+// provisional: code only; the class ends where BattleUnk29c's ctor starts; .data 0x0228a5a0-0x0228aa30, .rodata 0x0227bc9c-0x0227bf94 and .bss 0x0228bac0-0x0228bb14 belong here.
 src/07_Battle/Battle/BattleShoot.cpp:
     .text       start:0x0226a91c end:0x0226fb74
+
+// provisional: code only; .rodata 0x0227bf94-0x0227c018 and .bss 0x0228bb14-0x0228bb20 belong here.
+src/07_Battle/Battle/BattleUnk29c.cpp:
+    .text       start:0x0226fb74 end:0x02271410
+
+// provisional: code only; .data 0x0228ab70-0x0228abe4, .rodata 0x0227c018-0x0227c0c4 and .bss 0x0228bb20-0x0228bb2c belong here (shared with GimmickSetFile.cpp if they are one file).
+src/07_Battle/Battle/BattleCardEffect.cpp:
+    .text       start:0x02271410 end:0x022719c8
+
+// provisional: code only; may be part of BattleCardEffect.cpp.
+src/07_Battle/Battle/GimmickSetFile.cpp:
+    .text       start:0x022719c8 end:0x02271bb4
+
+// provisional: code only; .data 0x0228abe4-0x0228ac08 belongs here.
+src/07_Battle/Battle/UnkStruct_020d433c_0c.cpp:
+    .text       start:0x02271bb4 end:0x022720ac
+
+// provisional: code only; no data of its own.
+src/07_Battle/Battle/BattleCollision.cpp:
+    .text       start:0x022720ac end:0x02272540
+
+// provisional: code only; .data 0x0228ac08-0x0228ae64, .rodata 0x0227c0c4-0x022858b8 and .bss 0x0228bb2c-0x0228bb68 belong here.
+src/07_Battle/Battle/BattleCardModel.cpp:
+    .text       start:0x02272540 end:0x0227430c
+
+// provisional: code only; .data 0x0228ae64-0x0228af78 and .rodata 0x022858b8-0x02285a98 belong here.
+src/07_Battle/Battle/BattleRealBaku.cpp:
+    .text       start:0x0227430c end:0x02274830
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickUnk_02274830.cpp:

@@ -89,7 +89,7 @@ void GimmickUnk_02274830::Update() {
             mtx._[11] = 0;
             mtx._[10] = 0;
             mtx._[9]  = 0;
-            func_01ff8c94(&w, &mtx, &w);
+            MTX_MultVec43(&w, &mtx, &w);
             VEC_Add(&camPos, &w, &camPos);
             func_01ffcf64(&mtx, &camPos);
             func_0202bf60(data_020d433c.mEffects, handle, &mtx);

@@ -1,4 +1,5 @@
 #include "Battle/BattleConfrontCard.hpp"
+#include "Battle/BattleCardEffect.hpp"
 #include "Battle/BattleMapTypes.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -7,13 +8,6 @@
 #include "Graphics/ModelTransform.hpp"
 #include "System/FileSystem.hpp"
 #include <nitro/os.h>
-
-// 0x1c byte object created by the camera (ctor 02271410), not kept.
-class BattleCardEffect {
-public:
-    u8 mPad[0x1c];
-    BattleCardEffect(u32 a, u32 b, u32 c, u32 d);
-};
 
 BattleCardCamera::BattleCardCamera(u16 a, u16 b)
     : SceneBase(0x3e8, 0) {

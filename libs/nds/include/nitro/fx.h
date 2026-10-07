@@ -48,6 +48,7 @@ void VEC_Add(const VecFx32 *a, const VecFx32 *b, VecFx32 *ab);      // 0x01ff8e3
 void VEC_Subtract(const VecFx32 *a, const VecFx32 *b, VecFx32 *ab); // 0x01ff8e70 (itcm)
 fx32 VEC_Mag(const VecFx32 *v);                                      // 0x01ff8f64 (itcm)
 fx32 VEC_DotProduct(const VecFx32 *a, const VecFx32 *b);             // 0x01ff8ea4 (itcm)
+void MTX_MultVec43(const VecFx32 *vec, const MtxFx43 *m, VecFx32 *dst); // 0x01ff8c94 (itcm)
 void VEC_CrossProduct(const VecFx32 *a, const VecFx32 *b, VecFx32 *axb); // 0x01ff8ee0 (itcm)
 void VEC_Normalize(const VecFx32 *src, VecFx32 *dst);                // 0x01ff8fc4 (itcm)
 fx32 FX_Sqrt(fx32 x); // 0x01ff8068 (itcm, hardware square root)

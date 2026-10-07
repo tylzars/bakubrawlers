@@ -84,7 +84,7 @@ void GimmickFieldPowerG::Update() {
             mtx._[11] = 0;
             mtx._[10] = 0;
             mtx._[9]  = 0;
-            func_01ff8c94(&v, &mtx, &v);
+            MTX_MultVec43(&v, &mtx, &v);
             VEC_Add(&camPos, &v, &camPos);
             func_01ffcf64(&mtx, &camPos);
             func_0202bf60(data_020d433c.mEffects, handle, &mtx);

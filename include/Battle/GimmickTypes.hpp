@@ -133,7 +133,6 @@ public:
 };
 
 void func_ov007_0226a380(BattlePlayer *player, u8 record, int unk);
-void func_01ff8c94(VecFx32 *vec, const MtxFx43 *m, VecFx32 *out); // m * vec
 void func_01ffd088(MtxFx43 *m, u16 angle);                       // rotate about X
 void func_01ff89c0(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);        // a * b
 extern MtxFx43 data_0220e86c;

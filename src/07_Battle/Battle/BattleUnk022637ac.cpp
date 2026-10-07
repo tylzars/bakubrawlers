@@ -1,4 +1,5 @@
 #include "Battle/BattleUnk022637ac.hpp"
+#include "Battle/BattleUnk29c.hpp"
 #include "Battle/BattleTarget.hpp"
 #include "Battle/BattleUnionAbility.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
@@ -669,8 +670,6 @@ u8 BattleUnk022637ac::func_ov007_02265fac() {
     return done;
 }
 
-void func_ov007_02270a7c(BattleUnk29c *p, u8 a, u32 b);
-
 u8 BattleUnk022637ac::func_ov007_022663f0() {
     u8 done = 0;
     switch (mUnk_28) {
@@ -691,7 +690,7 @@ u8 BattleUnk022637ac::func_ov007_022663f0() {
             func_ov007_02267098(this);
             if (!mUnk_62_2 && mUnk_1a > 0x32) {
                 mUnk_62_2 = 1;
-                func_ov007_02270a7c(data_020d433c.mBattlePlayers->mUnk_29c, mUnk_16, 0);
+                data_020d433c.mBattlePlayers->mUnk_29c->func_ov007_02270a7c(mUnk_16, 0);
             }
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {

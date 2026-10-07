@@ -208,6 +208,7 @@ public:
 
 class Camera;
 class ModelInstance;
+class ModelAnim;
 class UnkStruct_02029ca8;
 class EffectManager;
 
@@ -238,12 +239,26 @@ public:
 // A Real Bakugan model (0x10 bytes, ctor 0x0227430c), deleted through its vtable.
 class BattleRealBaku : public BattleObject {
 public:
-    /* 04 */ PAD(0x04, 0x08);
+    /* 04 */ u8 mId;
+    /* 05 */ u8 mUnk_05;
+    union {
+        /* 06 */ u8 mUnk_06;
+        struct {
+            /* 06 */ u8 mUnk_06_0 : 3; // variant number in the file names
+            /* 06 */ u8 mUnk_06_3 : 1;
+            /* 06 */ u8 mUnk_06_4 : 1;
+            /* 06 */ u8 mUnk_06_5 : 1;
+            /* 06 */ u8 mUnk_06_6 : 1;
+        };
+    };
+    /* 07 */ PAD(0x07, 0x08);
     /* 08 */ ModelInstance *mModel;
-    /* 0c */ PAD(0x0c, 0x10);
+    /* 0c */ ModelAnim *mAnim;
     /* 10 */
 
-    BattleRealBaku(u8 id, int unk2, u8 unk3, int unk4, int unk5, int unk6, bool unk7);
+    BattleRealBaku(u8 id, int unk2, u8 unk3, int unk4, int unk5, int unk6, int unk7);
+    virtual ~BattleRealBaku();
+    void func_ov007_02274454();
 };
 
 // Camera rows of the 3D battle field (12 bytes, table at 0x022791ec).

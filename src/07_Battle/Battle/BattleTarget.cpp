@@ -1,4 +1,7 @@
 #include "Battle/BattleCpu.hpp"
+#include <nitro/fx.h>
+#include "Battle/BattleCardEffect.hpp"
+#include "Battle/BattleUnk29c.hpp"
 #include "Battle/BattleStatusPanels.hpp"
 #include "Battle/BattleTarget.hpp"
 #include "Battle/BattleCommand.hpp"
@@ -24,22 +27,8 @@ struct GimmickBuffer {
     u8 mData[0x804];
 };
 
-// Motion record handed to func_ov007_02270ae0.
-struct BattleMoveState {
-    VecFx32 mVelocity;
-    u16 mRot[3];
-    u8 mMode;
-};
-
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define INT_TO_FX(n) ((fx32) ((n) > 0 ? 0.5f + (float) ((n) << 12) : (float) ((n) << 12) - 0.5f))
-
-// 0x1c byte object created on a hit (ctor 02271410).
-class BattleCardEffect {
-public:
-    u8 mPad[0x1c];
-    BattleCardEffect(u32 a, u32 b, u32 c, u32 d);
-};
 
 u8 func_ov007_02262768(BattlePlayerList *list, VecFx32 *pos, u16 rot, u8 player, u8 record, u8 cell, u32 flag);
 void func_ov007_02262a64(BattlePlayerList *list, u8 a, u8 b);
@@ -58,7 +47,6 @@ void func_01ffd030(MtxFx33 *m, u16 angle);
 static inline void ReleaseSlot(BattlePlayerList *list, u8 index) {
     ((void (*)(BattlePlayerList *, u8)) func_ov007_02262828)(list, index);
 }
-void func_01ff8c94(VecFx32 *vec, MtxFx43 *m, VecFx32 *out);
 extern VecFx32 data_ov007_0227a60c;
 fx32 func_020017d4(fx32 x, fx32 z);
 extern const u16 data_ov007_0227a5ee[];
@@ -69,8 +57,6 @@ extern const u16 data_ov007_0227a670[];
 void func_ov007_02233f38(const VecFx32 *a, const VecFx32 *b, int unused, VecFx32 *out);
 extern VecFx32 data_ov007_0227a648;
 void func_ov007_0226a380(BattlePlayer *player, u8 record, int unk);
-UnkStruct_0203d374 *func_ov007_0226fc4c(BattleUnk29c *obj, u8 index);
-void func_ov007_02270ae0(BattleUnk29c *obj, u8 index, BattleMoveState *state);
 void func_ov007_02233730(VecFx32 *a, VecFx32 *b, VecFx32 *speed, VecFx32 *out);
 u32 func_02001bec(s32 value);
 extern const s32 data_ov007_0227a694[];
@@ -81,7 +67,6 @@ extern const u16 data_ov007_0227a600[];
 extern "C" void func_ov007_022488ac(BattleCommandMap *map, u32 a, u32 b, u32 c);
 extern "C" void func_ov007_02248688(BattleCommandMap *map, VecFx32 *v);
 extern "C" void func_0203d45c(UnkStruct_0203d374 *pose);
-void func_ov007_02270a7c(BattleUnk29c *obj, u8 a, u32 b);
 BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
 extern const u32 data_ov007_0227a680[];
 extern const u8 data_ov007_0227a5dc[];
@@ -413,10 +398,10 @@ void BattleTarget::Update() {
                 if (mUnk_1d2 == 2 && mUnk_1e8 != 0 && mUnk_1c6 == 0x32) {
                     switch (mUnk_1df) {
                         case 6:
-                            func_ov007_02270a7c(data_020d433c.mBattlePlayers->mUnk_29c, mUnk_1e8 - 1, 0);
+                            data_020d433c.mBattlePlayers->mUnk_29c->func_ov007_02270a7c(mUnk_1e8 - 1, 0);
                             break;
                         case 5:
-                            func_ov007_02270a7c(data_020d433c.mBattlePlayers->mUnk_29c, mUnk_1e8 - 1, 1);
+                            data_020d433c.mBattlePlayers->mUnk_29c->func_ov007_02270a7c(mUnk_1e8 - 1, 1);
                             break;
                     }
                 }
@@ -785,9 +770,9 @@ void BattleTarget::func_ov007_02254a14(GimmickSetData *set) {
     }
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     ReleaseSlot(list, set->mUnk_834 - 1);
-    UnkStruct_0203d374 *other = func_ov007_0226fc4c(list->mUnk_29c, set->mUnk_834 - 1);
+    UnkStruct_0203d374 *other = list->mUnk_29c->func_ov007_0226fc4c(set->mUnk_834 - 1);
     func_ov007_02233730(&mUnk_1a4->mPosition, &other->mPosition, &mUnk_64, &state.mVelocity);
-    func_ov007_02270ae0(list->mUnk_29c, set->mUnk_834 - 1, &state);
+    list->mUnk_29c->func_ov007_02270ae0(set->mUnk_834 - 1, &state);
     func_ov007_02271d78(data_020d433c.mUnk_0c, set);
     mUnk_e4[set->mUnk_834 - 1] = 0;
 }
@@ -1623,7 +1608,7 @@ void BattleTarget::func_ov007_0225ce08() {
     data_020d433c.mGimmicks->mState = 0;
     mUnk_1a4->func_0203d4c4(3);
     if (mUnk_1e8 != 0) {
-        UnkStruct_0203d374 *pose = func_ov007_0226fc4c(data_020d433c.mBattlePlayers->mUnk_29c, mUnk_1e8 - 1);
+        UnkStruct_0203d374 *pose = data_020d433c.mBattlePlayers->mUnk_29c->func_ov007_0226fc4c(mUnk_1e8 - 1);
         pose->mUnk_4a            = 0;
     }
     func_ov007_02255cb4(0);
@@ -2066,7 +2051,7 @@ BOOL BattleTarget::func_ov007_02258cec(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d)
     u16 rotZ                 = pose->mUnk_14;
     func_ov007_02248998(b, &y, &x);
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    UnkStruct_0203d374 *other = func_ov007_0226fc4c(list->mUnk_29c, d - 1);
+    UnkStruct_0203d374 *other = list->mUnk_29c->func_ov007_0226fc4c(d - 1);
     if (!other) {
         return 0;
     }
@@ -2096,7 +2081,7 @@ BOOL BattleTarget::func_ov007_02258cec(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d)
     other->mUnk_10        = r0 + 0x4000;
     other->mUnk_12        = r1;
     other->mUnk_14        = r2;
-    func_ov007_02270ae0(list->mUnk_29c, d - 1, &state);
+    list->mUnk_29c->func_ov007_02270ae0(d - 1, &state);
     func_ov007_02256c4c(&mUnk_1a4->mPosition);
     func_ov007_02255cb4(&mUnk_1a4->mPosition);
     if (mUnk_1c0 != 0) {
@@ -2135,7 +2120,7 @@ void BattleTarget::func_ov007_02258a34() {
             mtx._[11]   = 0;
             mtx._[10]   = 0;
             mtx._[9]    = 0;
-            func_01ff8c94(&b, &mtx, &b);
+            MTX_MultVec43(&b, &mtx, &b);
             VEC_Add(&a, &b, &a);
             func_01ffcf64(&mtx, &a);
             func_0202bf60(data_020d433c.mEffects, handle, &mtx);
@@ -2258,7 +2243,7 @@ void BattleTarget::func_ov007_02258edc() {
             state.mVelocity.x = v30.x;
             state.mVelocity.y = v30.y;
             state.mVelocity.z = v30.z;
-            func_ov007_02270ae0(data_020d433c.mBattlePlayers->mUnk_29c, mUnk_140, &state);
+            data_020d433c.mBattlePlayers->mUnk_29c->func_ov007_02270ae0(mUnk_140, &state);
             mUnk_1db = i;
             u8 handle = func_0202bd40(data_020d433c.mEffects, 1, 10, 0, i);
             u16 yaw   = func_0200198c(mUnk_64.x, mUnk_64.z);
@@ -2488,7 +2473,7 @@ BOOL BattleTarget::func_ov007_02259af0() {
                 mUnk_1d2 = 2;
                 ReleaseSlot(data_020d433c.mBattlePlayers, idx);
                 StartResult(this, 0xa);
-                VEC_Subtract(&func_ov007_0226fc4c(list->mUnk_29c, idx)->mPosition, &mUnk_1a4->mPosition, &d);
+                VEC_Subtract(&list->mUnk_29c->func_ov007_0226fc4c(idx)->mPosition, &mUnk_1a4->mPosition, &d);
                 if (d.x == 0 && d.z == 0) {
                     state.mVelocity.z = 0x1000;
                     state.mVelocity.x = 0x1000;
@@ -2497,11 +2482,11 @@ BOOL BattleTarget::func_ov007_02259af0() {
                     state.mVelocity.y = d.y;
                     state.mVelocity.z = d.z;
                 }
-                func_ov007_02270ae0(list->mUnk_29c, idx, &state);
+                list->mUnk_29c->func_ov007_02270ae0(idx, &state);
             } else {
                 mUnk_1d2 = 4;
                 StartResult(this, 1);
-                VEC_Subtract(&func_ov007_0226fc4c(list->mUnk_29c, idx)->mPosition, &mUnk_1a4->mPosition, &d);
+                VEC_Subtract(&list->mUnk_29c->func_ov007_0226fc4c(idx)->mPosition, &mUnk_1a4->mPosition, &d);
                 if (d.x == 0 && d.z == 0) {
                     state.mVelocity.z = 0x1000;
                     state.mVelocity.x = 0x1000;
@@ -2510,7 +2495,7 @@ BOOL BattleTarget::func_ov007_02259af0() {
                     state.mVelocity.y = d.y;
                     state.mVelocity.z = d.z;
                 }
-                func_ov007_02270ae0(list->mUnk_29c, idx, &state);
+                list->mUnk_29c->func_ov007_02270ae0(idx, &state);
             }
             if (mUnk_1d2 != 1) {
                 pose     = mUnk_1a4;
@@ -2539,11 +2524,11 @@ BOOL BattleTarget::func_ov007_02259af0() {
                         u8 kind = list->mUnits[oidx].mUnk_10;
                         if (kind != 2 && kind != 3) {
                             func_ov007_02262828(data_020d433c.mBattlePlayers, oidx, 2);
-                            VEC_Subtract(&func_ov007_0226fc4c(list->mUnk_29c, oidx)->mPosition, &mUnk_1a4->mPosition, &d);
+                            VEC_Subtract(&list->mUnk_29c->func_ov007_0226fc4c(oidx)->mPosition, &mUnk_1a4->mPosition, &d);
                             state.mVelocity.y = d.y;
                             state.mVelocity.x = d.x;
                             state.mVelocity.z = d.z;
-                            func_ov007_02270ae0(list->mUnk_29c, oidx, &state);
+                            list->mUnk_29c->func_ov007_02270ae0(oidx, &state);
                         }
                     }
                 }
@@ -2771,7 +2756,7 @@ void BattleTarget::func_ov007_0225c4dc() {
     mtx._[10]   = 0;
     mtx._[9]    = 0;
     VecFx32 off = data_ov007_0227a648;
-    func_01ff8c94(&off, &mtx, &off);
+    MTX_MultVec43(&off, &mtx, &off);
     VEC_Add(&pos, &off, &pos);
     func_01ffcf64(&mtx, &pos);
     func_0202bf60(data_020d433c.mEffects, mUnk_1c2, &mtx);

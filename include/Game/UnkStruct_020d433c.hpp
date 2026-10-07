@@ -151,17 +151,7 @@ struct BattleUnit {
     /* 13 */ PAD(0x13, 0x14);
 };
 
-struct BattleUnk29c {
-    /* 00 */ PAD(0x00, 0x9e);
-    /* 9e */ u8 mUnk_9e;
-    /* 9f */ PAD(0x9f, 0xa0);
-    /* a0 */ u8 mUnk_a0;
-    /* a1 */ PAD(0xa1, 0xa4);
-    /* a4 */
-
-    BattleUnk29c();  // 0226fb74
-    ~BattleUnk29c(); // 0226fc18
-};
+#include "Battle/BattleUnk29c.hpp"
 
 struct BattleMarker {
     /* 0 */ u8 mUnk_0;
@@ -236,12 +226,26 @@ class EffectManager; // particle effect list (ctor 0202ab24 creates the 0x61c by
 
 class GimmickManager;
 
-struct UnkStruct_020d433c_0c { // 0x214 bytes, mostly opaque (passed to func_ov007_02271ca8)
-    /* 000 */ PAD(0x000, 0x212);
+struct GimmickSetData;
+struct BattleObstacle;
+
+// Collision manager of the gimmick set files (0x214 bytes, vtable 0228abfc, ctor 02271bb4): a list of up to 0x7f loaded
+// sets (slot 0 is the list head) handed out through a ring of slot pointers; Update tests the sets against each other.
+struct UnkStruct_020d433c_0c : public SceneBase {
+    /* 00 SceneBase */
+    /* 0c */ GimmickSetData *mUnk_0c; // 0x80 slots of 0x838 bytes
+    /* 10 */ GimmickSetData *mUnk_10[0x80]; // slot ring
+    /* 210 */ u8 mUnk_210; // ring position where a released slot is put back
+    /* 211 */ u8 mUnk_211; // ring position of the next slot to hand out
     /* 212 */ u8 mUnk_212; // set while the shoot screen is shown
     /* 213 */ PAD(0x213, 0x214);
 
     UnkStruct_020d433c_0c(); // 02271bb4
+    virtual ~UnkStruct_020d433c_0c();
+    /* 08 */ virtual void Update(); // 02271db0
+
+    void func_ov007_02271e48(GimmickSetData *a, GimmickSetData *b);
+    BOOL func_ov007_0227203c(BattleObstacle *a, BattleObstacle *b);
 };
 
 struct UnkStruct_020d433c {

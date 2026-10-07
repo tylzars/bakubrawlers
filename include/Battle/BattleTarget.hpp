@@ -19,7 +19,10 @@ struct BattlePlayer;
 // A box on the field floor (centre, half sizes and the rotation of its frame).
 struct BattleHitBox {
     /* 00 */ VecFx32 mPos;
-    /* 0c */ PAD(0x0c, 0x30);
+    union {
+        /* 0c */ VecFx32 mAxes[3]; // the frame's axes, refreshed from the rotation by func_ov007_0227238c
+        /* 0c */ PAD(0x0c, 0x30);
+    };
     /* 30 */ fx32 mHalfX;
     /* 34 */ fx32 mHalfY;
     /* 38 */ fx32 mHalfZ;

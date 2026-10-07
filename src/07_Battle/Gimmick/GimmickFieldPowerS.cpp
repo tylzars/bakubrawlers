@@ -134,7 +134,7 @@ void GimmickFieldPowerS::Update() {
             mtx._[11]      = 0;
             mtx._[10]      = 0;
             mtx._[9]       = 0;
-            func_01ff8c94(&v, &mtx, &v);
+            MTX_MultVec43(&v, &mtx, &v);
             VEC_Add(&camPos, &v, &camPos);
             func_01ffd088(&rot, 0x1555);
             func_01ff89c0(&rot, &mtx, &mtx);

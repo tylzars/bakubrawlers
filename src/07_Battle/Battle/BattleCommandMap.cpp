@@ -1,4 +1,7 @@
 #include "Battle/BattleBase.hpp"
+#include <nitro/fx.h>
+#include "Battle/BattleCardEffect.hpp"
+#include "Battle/BattleUnk29c.hpp"
 #include "Battle/BattleCpu.hpp"
 #include "Battle/BattleCommand.hpp"
 #include "Battle/BattleMapTypes.hpp"
@@ -13,21 +16,10 @@
 #include <nitro/os.h>
 #include "System/FileSystem.hpp"
 
-// 0x1c byte object created by the camera (ctor 02271410), not kept.
-class BattleCardEffect {
-public:
-    u8 mPad[0x1c];
-    BattleCardEffect(u32 a, u32 b, u32 c, u32 d);
-};
-
 extern const char *const data_ov007_022887f0[];
 extern const s32 data_ov007_0227a0d4[][2];
 extern const s32 data_ov007_0227a0d8[][2];
 
-extern "C" void func_ov007_0226fca8(BattleUnk29c *unk);
-extern "C" void func_ov007_0226fd78(BattleUnk29c *unk);
-extern "C" void func_ov007_0226fc5c(BattleUnk29c *unk, u32 index);
-extern "C" void func_ov007_0226fe4c(BattleUnk29c *unk);
 extern "C" void func_ov007_02248748(BattleCommandMap *map, VecFx32 *out);
 extern "C" void func_ov007_022476e0(BattleCommandMap *map);
 extern "C" void func_ov007_02247898(BattleCommandMap *map);
@@ -114,7 +106,7 @@ BattleCommandMap::BattleCommandMap(u8 unk)
     }
     mUnk_74 = data_020d433c.mBattlePlayers->mUnk_29c;
     if (mUnk_74) {
-        func_ov007_0226fca8(mUnk_74);
+        mUnk_74->func_ov007_0226fca8();
     }
     mUnk_60 = new UnkStruct_02029ca8(data_ov007_02279efc);
     func_ov007_02248748(this, (VecFx32 *) mUnk_120);
@@ -123,7 +115,7 @@ BattleCommandMap::BattleCommandMap(u8 unk)
 BattleCommandMap::~BattleCommandMap() {
     u8 i = 0;
     do {
-        func_ov007_0226fc5c(mUnk_74, i);
+        mUnk_74->func_ov007_0226fc5c(i);
         i++;
     } while (i < 12);
     if (mUnk_14) {
@@ -156,7 +148,7 @@ BattleCommandMap::~BattleCommandMap() {
         data_020d433c.mGimmicks->UnloadAll();
     }
     if (mUnk_74) {
-        func_ov007_0226fd78(mUnk_74);
+        mUnk_74->func_ov007_0226fd78();
     }
     if (mUnk_60) {
         delete mUnk_60;
@@ -218,7 +210,7 @@ void BattleCommandMap::func_ov007_022458cc() {
     func_ov007_022476e0(this);
     func_ov007_02247898(this);
     func_ov007_0224796c(this);
-    func_ov007_0226fe4c(mUnk_74);
+    mUnk_74->func_ov007_0226fe4c();
 }
 
 void BattleCommandMap::func_ov007_022458f4() {
@@ -452,10 +444,6 @@ void BattleCommandMap::func_ov007_02245f08() {
     mUnk_14->mUnk_14 = obj->mUnk_14;
 }
 
-extern "C" void func_ov007_02270248(BattleUnk29c *unk);
-extern "C" void func_ov007_022712c4(BattleUnk29c *unk, u8 a, VecFx32 *pos);
-extern "C" void func_ov007_02271338(BattleUnk29c *unk, VecFx32 *pos);
-extern "C" void func_ov007_022713a4(BattleUnk29c *unk, VecFx32 *pos);
 extern const VecFx32 data_ov007_02279ec4;
 void func_ov007_02248944(VecFx32 *out, u8 a, u8 b);
 
@@ -479,7 +467,7 @@ extern "C" void func_ov007_02246578(BattleCommandMap *map) {
     pos.x = unit->mPos.x;
     pos.y = unit->mPos.y + 0x2299a;
     pos.z = unit->mPos.z;
-    func_ov007_022712c4(map->mUnk_74, unit->mUnk_0f, &pos);
+    map->mUnk_74->func_ov007_022712c4(unit->mUnk_0f, &pos);
     pos.y += 0xa000;
     CameraManager::Get();
     MtxFx43 mtx = data_020c1cf4;
@@ -487,12 +475,12 @@ extern "C" void func_ov007_02246578(BattleCommandMap *map) {
     mtx._[11]   = 0;
     mtx._[10]   = 0;
     mtx._[9]    = 0;
-    func_01ff8c94(&v, &mtx, &v);
+    MTX_MultVec43(&v, &mtx, &v);
     VEC_Add(&pos, &v, &pos);
     if (unit->mUnk_0f == current) {
-        func_ov007_02271338(map->mUnk_74, &pos);
+        map->mUnk_74->func_ov007_02271338(&pos);
     } else if (unit->mUnk_0f == data_020d433c.mBattlePlayers->mPlayers[current]->mUnk_f2) {
-        func_ov007_022713a4(map->mUnk_74, &pos);
+        map->mUnk_74->func_ov007_022713a4(&pos);
     }
 }
 
@@ -504,7 +492,7 @@ extern "C" void func_ov007_02246730(BattleCommandMap *map) {
 
 extern "C" void func_ov007_02246758(BattleCommandMap *map) {
     if (map->mUnk_14c != 0 && map->mUnk_152 != 0) {
-        func_ov007_02270248(map->mUnk_74);
+        map->mUnk_74->func_ov007_02270248();
     }
 }
 
@@ -825,7 +813,6 @@ extern "C" void func_ov007_02247544(BattleCommandMap *map, VecFx32 *target, VecF
 }
 
 extern "C" s32 func_01ff9208(VecFx32 *a, VecFx32 *b);
-extern "C" void func_ov007_02270120(BattleUnk29c *unk, u32 index, VecFx32 *pos, u16 *rot, u32 a, u32 b);
 extern const u8 data_ov007_02279eb0[];
 extern "C" void func_ov007_02247794(BattleCommandMap *map);
 
@@ -887,7 +874,7 @@ extern "C" void func_ov007_02247794(BattleCommandMap *map) {
             Rot16 rot = {0, 0, 0};
             rot.y = unit->mUnk_0c;
             BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[unit->mUnk_0f]->mRecords[unit->mUnk_0e];
-            func_ov007_02270120(map->mUnk_74, i, &pos, &rot.x, record->mUnk_08, record->mUnk_09);
+            map->mUnk_74->func_ov007_02270120(i, &pos, &rot.x, record->mUnk_08, record->mUnk_09);
         }
         i++;
     } while (i < 12);

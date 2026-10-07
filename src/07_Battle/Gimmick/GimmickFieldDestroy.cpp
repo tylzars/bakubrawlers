@@ -264,7 +264,7 @@ void GimmickFieldDestroy::func_ov007_0222b410() {
                     mtx._[11] = 0;
                     mtx._[10] = 0;
                     mtx._[9]  = 0;
-                    func_01ff8c94(&v, &mtx, &v);
+                    MTX_MultVec43(&v, &mtx, &v);
                     VEC_Add(&camPos, &v, &camPos);
                     func_01ffcf64(&mtx, &camPos);
                     func_0202bf60(data_020d433c.mEffects, handle, &mtx);
@@ -338,7 +338,7 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         mtx2._[11]             = 0;
         mtx2._[10]             = 0;
         mtx2._[9]              = 0;
-        func_01ff8c94(&v2, &mtx2, &v2);
+        MTX_MultVec43(&v2, &mtx2, &v2);
         VEC_Add(&camPos, &v2, &camPos);
         func_01ffd088(&mtx, 0x1555);
         func_01ff89c0(&mtx, &mtx2, &mtx2);

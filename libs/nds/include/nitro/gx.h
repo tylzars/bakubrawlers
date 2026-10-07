@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include <nitro/fx.h>
 #include "nitro/hw/ioreg.h"
 
 // Display and 2D engine controls (NitroSDK GX/G2 API). Main-engine functions use the G2_/GX_ prefix, sub-engine
@@ -127,6 +128,7 @@ extern "C" {
 #endif
 void G2x_SetBlendBrightness_(vu16 *reg, int plane, int brightness);
 void G2x_SetBlendAlpha_(vu16 *reg, int plane1, int plane2, int ev1, int ev2); // 0x02003384
+void G2x_SetBGyAffine_(vu16 *reg, const MtxFx22 *mtx, int centerX, int centerY, int x1, int y1); // 0x020032d4
 #ifdef __cplusplus
 }
 #endif

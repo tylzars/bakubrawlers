@@ -35,4 +35,5 @@ public:
     void func_02029fb8(u32 unk1);
     void func_02029fc0();
     void func_0202a3ec(u32 unk1, u8 frame, s16 x, s16 y, u32 unk5);
+    void func_0202a494(u32 screen, s32 x, s32 y, u32 mode, s32 scaleX, s32 scaleY, u32 unk7); // scaled draw
 };

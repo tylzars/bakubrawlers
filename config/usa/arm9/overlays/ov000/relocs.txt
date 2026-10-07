@@ -1619,6 +1619,7 @@ from:0x02224b10 kind:load to:0x020c2acc module:main
 from:0x02224b2c kind:arm_call to:0x01ff94c8 module:itcm
 from:0x02224b70 kind:arm_call to:0x02065890 module:main
 from:0x02224c64 kind:arm_call to:0x02003384 module:main
+from:0x02224c9c kind:load to:0x0208b524 module:main
 from:0x02224d18 kind:arm_call to:0x02025c1c module:main
 from:0x02224d38 kind:arm_call to:0x02025c1c module:main
 from:0x02224d58 kind:arm_call to:0x02025c1c module:main

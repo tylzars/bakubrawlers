@@ -18,7 +18,10 @@ Lessons from getting functions to match exactly. Compiler and flags: see `compil
 5. Statics of inline functions (`_ZGVZ…`, `_ZZ…`, e.g. singleton instances and guards) are defined by every file
    that uses them. Mark them `weak` in `symbols.txt`. Compiled objects get their copies demoted to weak as well
    (`tools/demote_multidef.py`, run by the build), so main's original copy wins when a file is linked.
-6. `ninja objdiff report` shows per-function and per-section results. When everything matches, add `complete`
+6. Run `python3 tools/check_calls.py`. Matching masks relocated words, so a function can match while calling the
+   wrong function (e.g. `_fmul` where the original calls `_fdiv`); this compares every call in fully matching
+   functions with the original's branch targets.
+7. `ninja objdiff report` shows per-function and per-section results. When everything matches, add `complete`
    to the delinks entry and run `ninja`; the ROM must still match.
 
 A function that doesn't match yet is kept in source with a `// non-matching` comment describing the difference.
@@ -52,6 +55,10 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
 
 ## Source patterns that matter
 
+- **Soft float.** `float` arithmetic calls MSL helpers: `_fadd` 0x0201e5c0, `_fsub` 0x0201f4f0, `_fmul` 0x0201f304,
+  `_fdiv` 0x0201edc4, `_fflt`/`_ffltu` (int to float) 0x0201f274/0x0201f2bc, `_ffix`/`_ffixu` (float to int)
+  0x0201f200/0x0201f234, and compares `_fgeq` `_fgr` `_fleq` `_fls` `_feq` `_fneq` (0x0201eb6c..0x0201ed50). A
+  compare in source must use the same operator as the original (`a < b` calls `_fls`, `!(a >= b)` calls `_fgeq`).
 - **Runtime helpers.** `bl` to `0x0201f970` is `_s32_div_f`, i.e. a `/` in source: the dividend is in r0 and the
   divisor in r1, which often already holds a value the code uses elsewhere (keep it in a local).
 - **`RequestScene` copies the context pointer to a local.** `SceneBase::RequestScene` is

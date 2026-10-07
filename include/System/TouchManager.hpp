@@ -6,7 +6,10 @@
 // Global touch screen state, constructed on first use and destroyed at exit.
 class TouchManager {
 public:
-    /* 00 */ PAD(0x00, 0x30);
+    /* 00 */ PAD(0x00, 0x08);
+    /* 08 */ s16 mUnk_08;
+    /* 0a */ s16 mUnk_0a;
+    /* 0c */ PAD(0x0c, 0x30);
     /* 30 */ s32 mX;
     /* 34 */ s32 mY;
     /* 38 */ PAD(0x38, 0x56);

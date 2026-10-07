@@ -174,6 +174,11 @@ public:
     /* 60 */ BattleSideHelper *mHelpers[2];
     /* 68 */
 
+    // Players 2 and 3 only watch (no touch input). Kept as BOOL: callers test it as a byte.
+    BOOL IsSpectator() const {
+        return mUnk_12 >= 2;
+    }
+
     BattleBase();
     virtual ~BattleBase();
     /* 08 */ virtual int func_ov007_0221cebc(int a);
@@ -190,11 +195,11 @@ public:
     /* 34 */ virtual void vfunc_34() = 0;
     /* 38 */ virtual BOOL func_ov007_0221bfa4();
     /* 3c */ virtual void vfunc_3c() = 0;
-    /* 40 */ virtual void vfunc_40() = 0;
+    /* 40 */ virtual u8 vfunc_40(int fast) = 0;
     /* 44 */ virtual void vfunc_44(int index, u16 count);
 
     BOOL func_ov007_0221a664();
-    void func_ov007_0221bb28(u16 a, u16 b);
+    void func_ov007_0221bb28(s16 a, s16 b);
     void func_ov007_0221bb3c();
     void func_ov007_0221bb68();
     void func_ov007_0221c8f8(u16 *p);

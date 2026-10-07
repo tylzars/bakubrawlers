@@ -21,3 +21,8 @@ public:
     void func_020245d4(u32 unk1);
     void func_020246f8(u32 unk1);
 };
+
+// Sound helpers with C linkage that take the manager explicitly.
+extern "C" void func_02024764(SoundManager *manager, u32 unk1, u32 unk2);
+extern "C" int func_02024790(SoundManager *manager, u32 unk1);
+extern "C" void func_020247fc(SoundManager *manager, s16 unk1);

@@ -127,7 +127,7 @@ BOOL BattleBase::func_ov007_0221a664() {
     return 0;
 }
 
-void BattleBase::func_ov007_0221bb28(u16 a, u16 b) {
+void BattleBase::func_ov007_0221bb28(s16 a, s16 b) {
     BattleSub44 *p = mUnk_44;
     p->mUnk_12c = a;
     p->mUnk_12e = b;

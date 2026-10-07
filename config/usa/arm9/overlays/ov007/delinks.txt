@@ -8,3 +8,39 @@
 // provisional: code only. Update (0x02219bf0), 0x0221a7d0 and 0x0221c178 are not decompiled.
 src/07_Battle/Battle/BattleBase.cpp:
     .text       start:0x02219440 end:0x0221d4d8
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/ConfrontBg01.cpp:
+    .text       start:0x0221d4d8 end:0x0221dc74
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/ConfrontEmblem02.cpp:
+    .text       start:0x0221dc74 end:0x0221e3b8
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/ConfrontBg02.cpp:
+    .text       start:0x0221e3b8 end:0x0221efc0
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/ConfrontEmblem03.cpp:
+    .text       start:0x0221efc0 end:0x0221f730
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/Confront03.cpp:
+    .text       start:0x0221f730 end:0x02220060
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/ConfrontBg04.cpp:
+    .text       start:0x02220060 end:0x02220784
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/ConfrontEmblem05.cpp:
+    .text       start:0x02220784 end:0x02220cc8
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/ConfrontBg05.cpp:
+    .text       start:0x02220cc8 end:0x0222155c
+
+// provisional: code only; data not assigned yet.
+src/07_Battle/Battle/ConfrontEmblem06.cpp:
+    .text       start:0x0222155c end:0x02222230

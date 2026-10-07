@@ -61,6 +61,12 @@ class Symbols:
         self.changed = False
         self.retarget: list[tuple[int, int]] = []
 
+    def address_of(self, name: str):
+        for line in self.lines:
+            if line.startswith(name + " ") and (m := LINE.match(line)):
+                return int(m.group(3), 16)
+        return None
+
     def functions(self):
         for line in self.lines:
             if (m := LINE.match(line)) and m.group(2).startswith("kind:function"):
@@ -224,6 +230,28 @@ def main() -> None:
                                   f"{', size differs: relocations not read' if only_name else ''})")
             if len(hits) > 1 and (rng := tu_text_range(a.obj, a.module)):
                 hits = [h for h in hits if rng[0] <= h < rng[1]]
+            if len(hits) > 1:
+                # Identical code (e.g. this-adjusting thunks): keep the candidates whose branches go where the
+                # source's call targets are already known to be. A second run resolves thunks of new names.
+                def branches_agree(cand: int) -> bool:
+                    for r in rels:
+                        if r["r_info_type"] not in (1, 28, 29):
+                            continue
+                        name = symtab.get_symbol(r["r_info_sym"]).name
+                        known = tables[a.module].address_of(name)
+                        if known is None:
+                            known = table("main").address_of(name)
+                        if known is None:
+                            continue
+                        off = (r["r_offset"] - value) & ~3
+                        word = struct.unpack_from("<I", blob, cand - base + off)[0]
+                        disp = word & 0xFFFFFF
+                        if disp & 0x800000:
+                            disp -= 1 << 24
+                        if cand + off + 8 + disp * 4 != known:
+                            return False
+                    return True
+                hits = [h for h in hits if branches_agree(h)] or hits
             if len(hits) != 1:
                 report.append(f"{sym.name}: {'no' if not hits else 'ambiguous'} match in {a.module}, skipped")
                 continue

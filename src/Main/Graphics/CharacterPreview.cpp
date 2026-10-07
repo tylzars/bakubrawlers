@@ -265,6 +265,7 @@ u16 *UnkStruct_0205401c::func_020546cc() {
     return &model->mRotX;
 }
 
+// non-matching: 6 words, the original keeps the model pointer in r3 and loads rot[0] between the conditional loads.
 void UnkStruct_0205401c::func_020546e4(const u16 *rot) {
     ModelTransform *model;
     if (mUnk_0c == 0) {
@@ -417,6 +418,7 @@ void StoryCharacterModel::func_02054cc4(u32 a, u32 b) {
     mUnk_3a = 0;
 }
 
+// non-matching: 0x98 vs 0xa0, same problem as CharacterModel::func_02053eec.
 void StoryCharacterModel::func_02054d08(u32 flag) {
     mUnk_3a = flag;
     if (!(flag & 0xff)) {

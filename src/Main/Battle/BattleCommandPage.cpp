@@ -218,6 +218,7 @@ u32 BattleCommandPage::func_02055644(u32 id) {
     return id;
 }
 
+// non-matching: 0x70 vs 0x68, the original stores one call result to two u16 fields without truncating or reloading.
 void func_02055668(BattleCommandPage *page, u32 a, s32 b) {
     page->mUnk_fa = b;
     if (page->mUnk_f1 == 0) {
@@ -258,6 +259,7 @@ void func_02055738(BattleCommandPage *page, u32 a, u32 b, u32 c) {
     func_02055764(page, a, b, 0xc0, 0, 0xe0, 0, c);
 }
 
+// non-matching: 0x130 vs 0x12c, the stack argument g is loaded one instruction earlier in the original.
 void func_02055764(BattleCommandPage *page, u32 a, u32 b, s16 c, s16 d, s16 e, s16 f, u32 g) {
     if (page->mUnk_50 != NULL) {
         delete page->mUnk_50;
@@ -440,6 +442,7 @@ void BattleCommandPage::func_02056f70() {
     SpriteManager::Get().mScreens[0].func_02027778(data_0209e558, 1, 0x14, 0x65, 3, 0xe0, 0, 0);
 }
 
+// non-matching: 11 words, r2 vs r3 for the index.
 BOOL BattleCommandPage::func_02055c28() {
     if (mUnk_f0 != 0) {
         if (func_02023874() != 0) {
@@ -619,6 +622,7 @@ void BattleCommandPage::func_02056414() {
     func_02056f38();
 }
 
+// non-matching: 0x530 vs 0x524, register allocation of total, base and rem.
 void BattleCommandPage::func_02056814(u32 index) {
     mUnk_fb = index;
     func_02056f38();

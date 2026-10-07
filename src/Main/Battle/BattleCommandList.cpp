@@ -333,6 +333,7 @@ void func_02058260(BattleCommandList *list, u8 a, u8 b, s32 c) {
     list->mUnk_160 = 0;
 }
 
+// non-matching: 0x4c vs 0x54, the original reloads mUnk_15c after the store (volatile over-corrects).
 void BattleCommandList::func_0205839c(u32 flag) {
     int next;
     if (flag == 0) {
@@ -351,6 +352,7 @@ BOOL BattleCommandList::func_020583f0() {
     return mUnk_159 < 7;
 }
 
+// non-matching: 0x130 vs 0x12c, same stack-argument load as func_02055764.
 void func_02058404(BattleCommandList *list, u32 a, u32 b, s16 c, s16 d, s16 e, s16 f, u32 g) {
     if (list->mUnk_8c != NULL) {
         delete list->mUnk_8c;
@@ -411,6 +413,7 @@ void BattleCommandList::func_02058558() {
     func_020585e0();
 }
 
+// non-matching: 0x18c vs 0x194, the original keeps a movne/cmp flag instead of predicating the loads.
 void BattleCommandList::func_020585e0() {
     if (mUnk_8c == NULL) {
         return;
@@ -543,6 +546,7 @@ void BattleCommandList::func_0205a7ac() {
     mCells58[7]->func_0202a3ec(0, mUnk_150, 0x22, 0x4c, 0);
 }
 
+// non-matching: 18 words, registers of the loop index and the inlined Get() temporary.
 void BattleCommandList::func_0205aea4() {
     for (u8 i = 0; i < 12; i++) {
         SpriteManager::Get().mScreens[0].func_02027778(data_0209e57c, 1, (s16) ((i % 4) << 6), (s16) ((i / 4) << 6), 3,
@@ -613,6 +617,7 @@ void BattleCommandList::func_0205b0dc(const BattleCellPair *pair) {
     }
 }
 
+// non-matching: 20 words, scheduling of the last table loads.
 void func_0205b1c4(u32 index, u32 unk2) {
     UnkStruct_02023248 *entry = func_02023248(data_020d43f0, index, unk2);
     entry->mUnk_0  = data_0209e5bc[index][0];

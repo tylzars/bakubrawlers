@@ -464,6 +464,7 @@ void CharacterModel::func_02053ea0(u32 a, u32 b) {
     mUnk_77 = 0;
 }
 
+// non-matching: 0x90 vs 0x98, the original keeps this in r4 and does not hoist the branch.
 void CharacterModel::func_02053eec(u32 flag) {
     if (mParts[0] == NULL) {
         return;

@@ -130,6 +130,13 @@ BattleCharaAct::~BattleCharaAct() {
     }
 }
 
+u8 BattleCharaAct::func_ov007_02268110() {
+    mUnk_1c = new UnkStruct_0205401c();
+    mUnk_1c->func_0205411c(mUnk_38, 1, data_020d433c.mBattlePlayers->mPlayers[mUnk_39]->NameInfo(), (u8) (mUnk_36 + 1));
+    mUnk_1c->func_0205461c(mUnk_36, 0);
+    return mUnk_1c->mUnk_0c;
+}
+
 void BattleCharaAct::func_ov007_02268190() {
     char modelName[0x20];
     char textureName[0x20];
@@ -202,13 +209,6 @@ void BattleCharaAct::func_ov007_02268190() {
         mUnk_24->mUnk_69 = 0;
     }
     ChangeDir("/");
-}
-
-u8 BattleCharaAct::func_ov007_02268110() {
-    mUnk_1c = new UnkStruct_0205401c();
-    mUnk_1c->func_0205411c(mUnk_38, 1, data_020d433c.mBattlePlayers->mPlayers[mUnk_39]->NameInfo(), (u8) (mUnk_36 + 1));
-    mUnk_1c->func_0205461c(mUnk_36, 0);
-    return mUnk_1c->mUnk_0c;
 }
 
 void BattleCharaAct::func_ov007_022684f0() {

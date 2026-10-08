@@ -120,6 +120,8 @@ static const BattleCpuShot data_ov007_0227987c[8][4][3] = {
         {{40, 10, 80, 0}, {25, 15, 75, 0}, {-23, 20, 70, 0}},
     },
 };
+static inline fx32 Abs(fx32 v);
+
 
 BattleCpu::BattleCpu(u8 player) {
     mUnk_78 = 0;
@@ -714,52 +716,6 @@ int func_ov007_02233158(VecFx32 *pos, VecFx32 *vel, VecFx32 *out) {
     return n;
 }
 
-void func_ov007_02233730(VecFx32 *a, VecFx32 *b, VecFx32 *speed, VecFx32 *out) {
-    fx32 dx = b->x - a->x;
-    fx32 dz = b->z - a->z;
-    VecFx32 d;
-    d.x = dx;
-    d.y = 0;
-    d.z = dz;
-    VEC_Normalize(&d, &d);
-    fx32 len = VEC_Mag(speed);
-    d.x      = FX_Mul(d.x, len);
-    d.y      = FX_Mul(d.y, len);
-    d.z      = FX_Mul(d.z, len);
-    out->x   = d.x;
-    out->y   = d.y;
-    out->z   = d.z;
-}
-
-void func_ov007_02233f38(const VecFx32 *a, const VecFx32 *b, int unused, VecFx32 *out) {
-    VEC_Subtract(a, b, out);
-    VEC_Normalize(out, out);
-}
-
-void func_ov007_02233ed8(VecFx32 *in, u16 angle, VecFx32 *out) {
-    MtxFx33 m = data_0220e848;
-    func_01ffcfd8(&m, angle);
-    func_01ff84d0(in, &m, out);
-}
-
-void func_ov007_022334f4(u16 *rot, u32 s, VecFx32 *dir, VecFx32 *out) {
-    VEC_Normalize(dir, out);
-    MtxFx33 m = data_0220e848;
-    if (rot[1]) {
-        func_01ffcfd8(&m, rot[1]);
-    }
-    if (rot[0]) {
-        func_01ffcf80(&m, rot[0]);
-    }
-    if (rot[2]) {
-        func_01ffd030(&m, rot[2]);
-    }
-    func_01ff84d0(out, &m, out);
-    out->x = FX_Mul(out->x, FX32_CONST((float) s / 150.0f));
-    out->y = FX_Mul(out->y, FX32_CONST((float) s / 150.0f));
-    out->z = FX_Mul(out->z, FX32_CONST((float) s / 150.0f));
-}
-
 int func_ov007_02233270(VecFx32 *pos, VecFx32 *vel, VecFx32 *out, u32 unk4, u32 unk5) {
     VecFx32 p = *pos;
     VecFx32 v = *vel;
@@ -800,9 +756,39 @@ int func_ov007_02233270(VecFx32 *pos, VecFx32 *vel, VecFx32 *out, u32 unk4, u32 
     }
 }
 
+void func_ov007_022334f4(u16 *rot, u32 s, VecFx32 *dir, VecFx32 *out) {
+    VEC_Normalize(dir, out);
+    MtxFx33 m = data_0220e848;
+    if (rot[1]) {
+        func_01ffcfd8(&m, rot[1]);
+    }
+    if (rot[0]) {
+        func_01ffcf80(&m, rot[0]);
+    }
+    if (rot[2]) {
+        func_01ffd030(&m, rot[2]);
+    }
+    func_01ff84d0(out, &m, out);
+    out->x = FX_Mul(out->x, FX32_CONST((float) s / 150.0f));
+    out->y = FX_Mul(out->y, FX32_CONST((float) s / 150.0f));
+    out->z = FX_Mul(out->z, FX32_CONST((float) s / 150.0f));
+}
 
-static inline fx32 Abs(fx32 v) {
-    return v < 0 ? -v : v;
+void func_ov007_02233730(VecFx32 *a, VecFx32 *b, VecFx32 *speed, VecFx32 *out) {
+    fx32 dx = b->x - a->x;
+    fx32 dz = b->z - a->z;
+    VecFx32 d;
+    d.x = dx;
+    d.y = 0;
+    d.z = dz;
+    VEC_Normalize(&d, &d);
+    fx32 len = VEC_Mag(speed);
+    d.x      = FX_Mul(d.x, len);
+    d.y      = FX_Mul(d.y, len);
+    d.z      = FX_Mul(d.z, len);
+    out->x   = d.x;
+    out->y   = d.y;
+    out->z   = d.z;
 }
 
 // non-matching: registers in the flag != 0 branch (r2 vs r3 for the FX_Mul temporary).
@@ -887,4 +873,20 @@ void func_ov007_022337ec(VecFx32 *A, VecFx32 *B, VecFx32 *C, VecFx32 *D, VecFx32
     D->x = 0;
     D->y = 0;
     D->z = 0;
+}
+
+void func_ov007_02233ed8(VecFx32 *in, u16 angle, VecFx32 *out) {
+    MtxFx33 m = data_0220e848;
+    func_01ffcfd8(&m, angle);
+    func_01ff84d0(in, &m, out);
+}
+
+
+static inline fx32 Abs(fx32 v) {
+    return v < 0 ? -v : v;
+}
+
+void func_ov007_02233f38(const VecFx32 *a, const VecFx32 *b, int unused, VecFx32 *out) {
+    VEC_Subtract(a, b, out);
+    VEC_Normalize(out, out);
 }

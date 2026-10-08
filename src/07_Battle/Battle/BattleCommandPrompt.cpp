@@ -545,82 +545,6 @@ void func_ov007_0225e698() {
     GXS_SetVisiblePlane(0x11);
 }
 
-void func_ov007_0225f080(s16 *x) {
-    G2x_SetBGyAffine_((vu16 *) 0x4001030, &data_0220e838, 0, 0, -*x, 0);
-}
-
-extern "C" u8 func_ov007_0225f0bc(u32 v) {
-    return (u8) v;
-}
-
-void BattleCommandPrompt::func_ov007_0225f0c4(const BattlePromptSlot *slot) {
-    BOOL add;
-    u8 i = 0;
-    mUnk_92 = 0;
-    do {
-        add = 0;
-        switch (mUnk_93) {
-            case 0:
-                if (slot->mKind == 0) {
-                    mUnk_52[mUnk_92] = slot->mId;
-                    add              = 1;
-                }
-                break;
-            case 2:
-                if (slot->mKind != 2) {
-                    mUnk_52[mUnk_92] = mUnk_8b == 7 ? 0xd6 : 0;
-                } else {
-                    mUnk_52[mUnk_92] = slot->mId;
-                }
-                add = 1;
-                break;
-            case 1:
-                mUnk_52[mUnk_92] = slot->mId;
-                add              = 1;
-                break;
-        }
-        if (add) {
-            mUnk_5e[mUnk_92] = i | 0x100 | (mUnk_8c << 10);
-            mUnk_6a[mUnk_92] = slot->mKind;
-            mUnk_92++;
-        }
-        i++;
-        slot++;
-    } while (i < data_020d433c.mUnk_99);
-    func_02055668(mUnk_30, mUnk_52[mUnk_8f + mUnk_90], (s8) mUnk_8d);
-}
-
-void BattleCommandPrompt::func_ov007_0225f200() {
-    u8 i = 0;
-    BOOL ok;
-    BattleRecord *rec;
-    mUnk_92 = 0;
-    do {
-        rec = &data_020d433c.mBattlePlayers->mPlayers[mUnk_8c]->mRecords[i];
-        ok  = 1;
-        if (mUnk_93 == 0) {
-            if (rec->mUnk_0a != 0) {
-                ok = 0;
-            }
-        }
-        if (ok) {
-            mUnk_70[mUnk_92] = rec;
-            mUnk_6a[mUnk_92] = rec->mUnk_0a;
-            mUnk_5e[mUnk_92] = i | 0x200 | (mUnk_8c << 10);
-            mUnk_92++;
-        }
-        if ((u8) (rec->mUnk_08 + 0xfb) <= 1) {
-            if (rec->mUnk_0a == 1) {
-                mUnk_34->mUnk_161 = 1;
-            }
-        }
-        i++;
-    } while (i < data_020d433c.mUnk_99);
-    func_02058260(mUnk_34, mUnk_70[mUnk_8f + mUnk_90]->mUnk_08, mUnk_70[mUnk_8f + mUnk_90]->mUnk_09, (s8) mUnk_8d);
-    BattleRecord *r = mUnk_70[mUnk_8f + mUnk_90];
-    func_0205afb4(mUnk_34, r->mUnk_09, (u16) (r->mUnk_04 + r->mUnk_06), (BattleCellPair *) r);
-}
-
 void BattleCommandPrompt::func_ov007_0225e6d4() {
     mUnk_2c = new MessageWindow("mes_Command", 1, 0x1f000);
     mUnk_2c->func_02065bd4(0x20, 0x28, 0);
@@ -733,4 +657,80 @@ void BattleCommandPrompt::func_ov007_0225e6d4() {
     }
     }
     ChangeDir("/");
+}
+
+void func_ov007_0225f080(s16 *x) {
+    G2x_SetBGyAffine_((vu16 *) 0x4001030, &data_0220e838, 0, 0, -*x, 0);
+}
+
+extern "C" u8 func_ov007_0225f0bc(u32 v) {
+    return (u8) v;
+}
+
+void BattleCommandPrompt::func_ov007_0225f0c4(const BattlePromptSlot *slot) {
+    BOOL add;
+    u8 i = 0;
+    mUnk_92 = 0;
+    do {
+        add = 0;
+        switch (mUnk_93) {
+            case 0:
+                if (slot->mKind == 0) {
+                    mUnk_52[mUnk_92] = slot->mId;
+                    add              = 1;
+                }
+                break;
+            case 2:
+                if (slot->mKind != 2) {
+                    mUnk_52[mUnk_92] = mUnk_8b == 7 ? 0xd6 : 0;
+                } else {
+                    mUnk_52[mUnk_92] = slot->mId;
+                }
+                add = 1;
+                break;
+            case 1:
+                mUnk_52[mUnk_92] = slot->mId;
+                add              = 1;
+                break;
+        }
+        if (add) {
+            mUnk_5e[mUnk_92] = i | 0x100 | (mUnk_8c << 10);
+            mUnk_6a[mUnk_92] = slot->mKind;
+            mUnk_92++;
+        }
+        i++;
+        slot++;
+    } while (i < data_020d433c.mUnk_99);
+    func_02055668(mUnk_30, mUnk_52[mUnk_8f + mUnk_90], (s8) mUnk_8d);
+}
+
+void BattleCommandPrompt::func_ov007_0225f200() {
+    u8 i = 0;
+    BOOL ok;
+    BattleRecord *rec;
+    mUnk_92 = 0;
+    do {
+        rec = &data_020d433c.mBattlePlayers->mPlayers[mUnk_8c]->mRecords[i];
+        ok  = 1;
+        if (mUnk_93 == 0) {
+            if (rec->mUnk_0a != 0) {
+                ok = 0;
+            }
+        }
+        if (ok) {
+            mUnk_70[mUnk_92] = rec;
+            mUnk_6a[mUnk_92] = rec->mUnk_0a;
+            mUnk_5e[mUnk_92] = i | 0x200 | (mUnk_8c << 10);
+            mUnk_92++;
+        }
+        if ((u8) (rec->mUnk_08 + 0xfb) <= 1) {
+            if (rec->mUnk_0a == 1) {
+                mUnk_34->mUnk_161 = 1;
+            }
+        }
+        i++;
+    } while (i < data_020d433c.mUnk_99);
+    func_02058260(mUnk_34, mUnk_70[mUnk_8f + mUnk_90]->mUnk_08, mUnk_70[mUnk_8f + mUnk_90]->mUnk_09, (s8) mUnk_8d);
+    BattleRecord *r = mUnk_70[mUnk_8f + mUnk_90];
+    func_0205afb4(mUnk_34, r->mUnk_09, (u16) (r->mUnk_04 + r->mUnk_06), (BattleCellPair *) r);
 }

@@ -240,6 +240,51 @@ void BattleConfrontCard::func_ov007_0223f0c0() {
     func_ov007_0223f168();
 }
 
+void BattleConfrontCard::func_ov007_0223f168() {
+    G2S_SetBG0Control(0, 1, 0, 1, 0);
+    G2S_SetBG1Control(0, 1, 2, 4, 0);
+    G2S_SetBG3Control(1, 0, 4, 5, 0);
+    G2_SetBG0Offset(0, 0);
+    G2_SetBG1Offset(0, 0);
+    G2_SetBG2Offset(0, 0);
+    G2_SetBG3Offset(0, 0);
+    G2S_SetBG0Offset(0, 0);
+    G2S_SetBG1Offset(0, 0);
+    G2S_SetBG2Offset(0, 0);
+    G2S_SetBG3Offset(0, 0);
+    G2_SetBG0Priority(2);
+    G2_SetBG1Priority(2);
+    G2_SetBG2Priority(2);
+    G2_SetBG3Priority(2);
+    G2S_SetBG0Priority(3);
+    G2S_SetBG1Priority(0);
+    G2S_SetBG2Priority(3);
+    G2S_SetBG3Priority(3);
+    GX_SetVisiblePlane(0x1f);
+    GXS_SetVisiblePlane(0x1f);
+    G2_SetBlendBrightness(0x1f, 0);
+    G2S_SetBlendBrightness(0x1f, 0);
+    GX_SetVisibleWnd(0);
+    G2_SetWndOutsidePlane(0x1f, FALSE);
+    G2_SetWnd0InsidePlane(0x1f, FALSE);
+    G2_SetWnd1InsidePlane(0x1f, FALSE);
+    G2_SetWndOBJInsidePlane(0x1f, FALSE);
+    G2_SetWnd0Position(0, 0, 0, 0);
+    G2_SetWnd1Position(0, 0, 0, 0);
+    if (data_020d433c.mUnk_10) {
+        data_020d433c.mUnk_10->mUnk_1a = 0;
+    }
+    GXS_SetVisibleWnd(0);
+    G2S_SetWndOutsidePlane(0x1f, FALSE);
+    G2S_SetWnd0InsidePlane(0x1f, FALSE);
+    G2S_SetWnd1InsidePlane(0x1f, FALSE);
+    G2S_SetWndOBJInsidePlane(0x1f, FALSE);
+    G2S_SetWnd0Position(0, 0, 0, 0);
+    G2S_SetWnd1Position(0, 0, 0, 0);
+    G2_BlendNone();
+    G2S_BlendNone();
+}
+
 // non-matching: 10 words, register assignment only (screen r7 / loop animation r8 / loop index r9 in the original; r8 / r7 / r8-r9 here).
 void BattleConfrontCard::func_ov007_0223f398() {
     char buffer[0x80];
@@ -1261,253 +1306,6 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
     return FALSE;
 }
 
-void BattleConfrontCard::func_ov007_022430bc(int brightness) {
-    G2S_SetBlendBrightness(0x1f, brightness);
-}
-
-void BattleConfrontCard::func_ov007_022430d8(int blend) {
-    G2S_SetBlendAlpha(0x10, 0x2f, 0x10 - blend, blend);
-}
-
-u8 BattleConfrontCard::func_ov007_022433ac() {
-    return func_02065c0c(mData->mUnk_04, 2);
-}
-
-void BattleConfrontCard::func_ov007_02243d40() {
-    GXS_SetVisiblePlane(0x13);
-    if (mUnk_80) {
-        mUnk_80->mUnk_064 = 1;
-    }
-    mUnk_69 = 1;
-    if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->mUnk_1a = 1;
-    }
-    G2S_SetWnd0Position(0x10, 0x10, 0xf0, 0xb0);
-    GXS_SetVisibleWnd(5);
-    G2S_SetWnd0InsidePlane(0x13, FALSE);
-    G2S_SetWndOutsidePlane(0x13, TRUE);
-    G2S_SetBlendBrightness(0x11, -8);
-}
-
-void BattleConfrontCard::func_ov007_02243dec() {
-    GXS_SetVisiblePlane(0x11);
-    if (mUnk_80) {
-        mUnk_80->mUnk_064 = 0;
-    }
-    mUnk_69 = 0;
-    G2S_SetBlendBrightness(0x11, 0);
-    if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->mUnk_1a = 0;
-    }
-    GXS_SetVisibleWnd(0);
-    G2S_SetWnd0InsidePlane(0x1f, FALSE);
-    G2S_SetWndOutsidePlane(0x3f, FALSE);
-}
-
-void BattleConfrontCard::func_ov007_02243e7c() {
-    if (mUnk_80) {
-        delete mUnk_80;
-    }
-    mUnk_80 = 0;
-    if (mUnk_84) {
-        OS_Free(mUnk_84);
-        mUnk_84 = 0;
-    }
-    if (mUnk_78) {
-        OS_Free(mUnk_78);
-        mUnk_78 = 0;
-    }
-    if (mUnk_7c) {
-        OS_Free(mUnk_7c);
-        mUnk_7c = 0;
-    }
-}
-
-// non-matching: register assignment, and the original fuses the call result test (`movs r6, r0`) into the variable.
-void BattleConfrontCard::func_ov007_02243100() {
-    u8 i = 0;
-    do {
-        mData->func_ov007_0223de88(i, mUnk_14[i], mUnk_1a[i], 2, 0xffff);
-        i++;
-    } while (i < 2);
-    mData->func_ov007_0223db20(0, mUnk_14[0], (s16) (mUnk_1a[0] - 0x1e));
-    mData->func_ov007_0223db20(1, mUnk_14[1], (s16) (mUnk_1a[1] - 0x1e));
-    mData->mUnk_70->func_020654a0();
-    mUnk_24[0]->Draw(1, mUnk_14[2], mUnk_1a[2], 3);
-    if (mUnk_5f == 0) {
-        return;
-    }
-    u8 k = 0;
-    do {
-        u32 value;
-        u8 digits;
-        int margin;
-        s16 y;
-        u8 j;
-        value = func_02065bf4(mData->mUnk_04, k);
-        if (value != 0) {
-            digits = 3;
-            if (value < 10) {
-                digits--;
-            }
-            value  = (u16) (value * 10);
-            margin = (3 - digits) * 4;
-            y      = k * 17 + 0x28;
-            j      = 0;
-            do {
-                mUnk_24[3]->func_0202a3ec(1, (s32) value % 10, (s16) ((digits - j) * 4 + 0x50 + margin / 2), y, 2);
-                value /= 10;
-                j++;
-            } while (j < digits);
-        }
-        mUnk_24[2]->func_0202a3ec(1, k, 0x53, (s16) (k * 17 + 0x24), 2);
-        k++;
-    } while (k < 6);
-}
-
-void BattleConfrontCard::func_ov007_022432dc(u8 kind, u32 mode, u32 flag) {
-    if (flag == 0) {
-        mData->mUnk_34[4]->mUnk_11 = data_ov007_02279d3c[0];
-        mData->mUnk_34[3]->mUnk_11 = data_ov007_02279d3c[0];
-    } else {
-        mData->mUnk_34[4]->mUnk_11 = 0xb;
-        mData->mUnk_34[3]->mUnk_11 = 0xb;
-    }
-    mData->func_ov007_0223dfcc(0, kind, mUnk_14[0], 0x54, 2, mode, mUnk_10, mUnk_12);
-    mData->func_ov007_0223dfcc(1, kind, mUnk_14[1], 0x54, 2, mode, mUnk_10, mUnk_12);
-}
-
-u16 BattleConfrontCard::func_ov007_02243b24(u8 side, u32 id) {
-    u16 value      = 0;
-    BattleEntry *e = &mData->mEntries[side];
-    switch (id) {
-        case 0x92:
-        case 0x93:
-        case 0x94:
-        case 0x95:
-        case 0x96:
-        case 0x97:
-        case 0x98:
-        case 0x99:
-        case 0x9a:
-        case 0x9b:
-        case 0x9c:
-        case 0x9d:
-        case 0x9e:
-        case 0x9f:
-        case 0xa0:
-        case 0xa1:
-        case 0xa2:
-        case 0xa3:
-        case 0xa4:
-        case 0xa5:
-        case 0xa6:
-        case 0xa7:
-        case 0xbe:
-        case 0xbf:
-        case 0xc0:
-        case 0xc1:
-        case 0xc2:
-        case 0xc3:
-        case 0xc4:
-        case 0xc5:
-        case 0xc6:
-            value = 200;
-            break;
-        case 0xc7:
-        case 0xc8:
-            value = 400;
-            break;
-        case 0xb9:
-        case 0xba:
-            value = data_020d433c.mBattlePlayers->mPlayers[e->mUnk_0d_4]->mUnk_ee * 50;
-            break;
-        case 0xa8:
-        case 0xa9:
-        case 0xaa:
-        case 0xab:
-        case 0xac:
-        case 0xad:
-        case 0xae:
-        case 0xaf:
-        case 0xb0:
-        case 0xb1:
-        case 0xb2:
-        case 0xb3:
-        case 0xb4:
-        case 0xb5:
-        case 0xb6:
-        case 0xb7:
-        case 0xb8:
-        case 0xbb:
-        case 0xbc:
-        case 0xbd: {
-            value   = func_02065bf4(id, e->mUnk_0d_0) * 10;
-            u16 old = value;
-            if (e->mUnk_0c == 5) {
-                if (value < func_02065bf4(id, 3) * 10) {
-                    value = func_02065bf4(id, 3) * 10;
-                }
-            }
-            if (e->mUnk_0c == 6) {
-                if (old < func_02065bf4(id, 0) * 10) {
-                    value = func_02065bf4(id, 0) * 10;
-                }
-            }
-            break;
-        }
-    }
-    if (mUnk_61) {
-        value = value << 1;
-    }
-    return value;
-}
-
-void BattleConfrontCard::func_ov007_0223f168() {
-    G2S_SetBG0Control(0, 1, 0, 1, 0);
-    G2S_SetBG1Control(0, 1, 2, 4, 0);
-    G2S_SetBG3Control(1, 0, 4, 5, 0);
-    G2_SetBG0Offset(0, 0);
-    G2_SetBG1Offset(0, 0);
-    G2_SetBG2Offset(0, 0);
-    G2_SetBG3Offset(0, 0);
-    G2S_SetBG0Offset(0, 0);
-    G2S_SetBG1Offset(0, 0);
-    G2S_SetBG2Offset(0, 0);
-    G2S_SetBG3Offset(0, 0);
-    G2_SetBG0Priority(2);
-    G2_SetBG1Priority(2);
-    G2_SetBG2Priority(2);
-    G2_SetBG3Priority(2);
-    G2S_SetBG0Priority(3);
-    G2S_SetBG1Priority(0);
-    G2S_SetBG2Priority(3);
-    G2S_SetBG3Priority(3);
-    GX_SetVisiblePlane(0x1f);
-    GXS_SetVisiblePlane(0x1f);
-    G2_SetBlendBrightness(0x1f, 0);
-    G2S_SetBlendBrightness(0x1f, 0);
-    GX_SetVisibleWnd(0);
-    G2_SetWndOutsidePlane(0x1f, FALSE);
-    G2_SetWnd0InsidePlane(0x1f, FALSE);
-    G2_SetWnd1InsidePlane(0x1f, FALSE);
-    G2_SetWndOBJInsidePlane(0x1f, FALSE);
-    G2_SetWnd0Position(0, 0, 0, 0);
-    G2_SetWnd1Position(0, 0, 0, 0);
-    if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->mUnk_1a = 0;
-    }
-    GXS_SetVisibleWnd(0);
-    G2S_SetWndOutsidePlane(0x1f, FALSE);
-    G2S_SetWnd0InsidePlane(0x1f, FALSE);
-    G2S_SetWnd1InsidePlane(0x1f, FALSE);
-    G2S_SetWndOBJInsidePlane(0x1f, FALSE);
-    G2S_SetWnd0Position(0, 0, 0, 0);
-    G2S_SetWnd1Position(0, 0, 0, 0);
-    G2_BlendNone();
-    G2S_BlendNone();
-}
-
 int BattleConfrontCard::func_ov007_0224251c() {
     int result      = 0;
     BattleEntry *e  = mData->mEntries;
@@ -1610,64 +1408,70 @@ int BattleConfrontCard::func_ov007_0224251c() {
     return result;
 }
 
-extern WindowItemRecord data_ov007_02279d48[3];
-extern const WindowCellRecord data_ov007_02279d9c[3];
-
-void BattleConfrontCard::func_ov007_022442d4(u32 index) {
-    MI_CpuClear16(mUnk_78, mUnk_6c);
-    TextManager &text = TextManager::Get();
-    s16 height;
-    s16 width;
-    width              = 0;
-    height             = 0;
-    MessageFile *file = mUnk_84;
-    text.Print(file->GetText(index), file->GetLength(index), mUnk_78, 0x18, 0xc, &height, &width, 0, 0, 2, 0x42, 0x10, 0, 0, 0, 1, 1);
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xd000, mUnk_78, mUnk_6c, 0);
+void BattleConfrontCard::func_ov007_022430bc(int brightness) {
+    G2S_SetBlendBrightness(0x1f, brightness);
 }
 
-void BattleConfrontCard::func_ov007_02243f04(const char *path, u32 mode) {
-    ChangeDir("/Game/2D/union_b/");
-    func_02025b64(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 0xc, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    ChangeDir("/Game/2D/union_b/");
-    screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0xc000, 0);
-    CellAnimation *old = mUnk_24[1];
-    if (old) {
-        delete old;
+void BattleConfrontCard::func_ov007_022430d8(int blend) {
+    G2S_SetBlendAlpha(0x10, 0x2f, 0x10 - blend, blend);
+}
+
+// non-matching: register assignment, and the original fuses the call result test (`movs r6, r0`) into the variable.
+void BattleConfrontCard::func_ov007_02243100() {
+    u8 i = 0;
+    do {
+        mData->func_ov007_0223de88(i, mUnk_14[i], mUnk_1a[i], 2, 0xffff);
+        i++;
+    } while (i < 2);
+    mData->func_ov007_0223db20(0, mUnk_14[0], (s16) (mUnk_1a[0] - 0x1e));
+    mData->func_ov007_0223db20(1, mUnk_14[1], (s16) (mUnk_1a[1] - 0x1e));
+    mData->mUnk_70->func_020654a0();
+    mUnk_24[0]->Draw(1, mUnk_14[2], mUnk_1a[2], 3);
+    if (mUnk_5f == 0) {
+        return;
     }
-    mUnk_24[1]            = 0;
-    mUnk_24[1]            = new CellAnimation("union_b_obj_window_nce.bin", 0, 1, 1);
-    mUnk_24[1]->mCharBase = screen.func_020276f4(0xc000);
-    mUnk_24[1]->mUnk_11   = 7;
-    mUnk_24[1]->SetAnimation(0xc);
-    if (mUnk_84) {
-        OS_Free(mUnk_84);
-    }
-    if (mUnk_78) {
-        OS_Free(mUnk_78);
-    }
-    if (mUnk_7c) {
-        OS_Free(mUnk_7c);
-    }
-    mUnk_84 = (MessageFile *) func_02023504(path, 0, 0, 0, 0, 0);
-    mUnk_6c = TextManager::Get().BufferSize(0x18, 0xc);
-    mUnk_70 = TextManager::Get().GlyphCount(9);
-    mUnk_78 = OS_Alloc(mUnk_6c);
-    mUnk_7c = OS_Alloc(mUnk_70 * 12);
-    TextManager::Get().Init(mUnk_7c, 1, 0, 0x18, 0xc, 0x42);
-    func_ov007_022442d4(mode);
-    if (mode != 4) {
-        if (mUnk_80) {
-            delete mUnk_80;
+    u8 k = 0;
+    do {
+        u32 value;
+        u8 digits;
+        int margin;
+        s16 y;
+        u8 j;
+        value = func_02065bf4(mData->mUnk_04, k);
+        if (value != 0) {
+            digits = 3;
+            if (value < 10) {
+                digits--;
+            }
+            value  = (u16) (value * 10);
+            margin = (3 - digits) * 4;
+            y      = k * 17 + 0x28;
+            j      = 0;
+            do {
+                mUnk_24[3]->func_0202a3ec(1, (s32) value % 10, (s16) ((digits - j) * 4 + 0x50 + margin / 2), y, 2);
+                value /= 10;
+                j++;
+            } while (j < digits);
         }
-        mUnk_80 = new SelectWindow(3, data_ov007_02279d48, 1);
-        mUnk_80->SetCells(3, data_ov007_02279d9c);
-        mUnk_80->mCursor->mSelection = -1;
-        mUnk_80->mUnk_064            = 0;
+        mUnk_24[2]->func_0202a3ec(1, k, 0x53, (s16) (k * 17 + 0x24), 2);
+        k++;
+    } while (k < 6);
+}
+
+void BattleConfrontCard::func_ov007_022432dc(u8 kind, u32 mode, u32 flag) {
+    if (flag == 0) {
+        mData->mUnk_34[4]->mUnk_11 = data_ov007_02279d3c[0];
+        mData->mUnk_34[3]->mUnk_11 = data_ov007_02279d3c[0];
+    } else {
+        mData->mUnk_34[4]->mUnk_11 = 0xb;
+        mData->mUnk_34[3]->mUnk_11 = 0xb;
     }
-    ChangeDir("/");
+    mData->func_ov007_0223dfcc(0, kind, mUnk_14[0], 0x54, 2, mode, mUnk_10, mUnk_12);
+    mData->func_ov007_0223dfcc(1, kind, mUnk_14[1], 0x54, 2, mode, mUnk_10, mUnk_12);
+}
+
+u8 BattleConfrontCard::func_ov007_022433ac() {
+    return func_02065c0c(mData->mUnk_04, 2);
 }
 
 // non-matching: same instruction sequence and jump table; register assignment differs (result r5/self r6 in the original) and case 42 emits a `mov r1, r6` the original does not.
@@ -1988,4 +1792,200 @@ BOOL BattleConfrontCard::func_ov007_022433c8(u8 side, u16 id) {
             break;
     }
     return result;
+}
+
+u16 BattleConfrontCard::func_ov007_02243b24(u8 side, u32 id) {
+    u16 value      = 0;
+    BattleEntry *e = &mData->mEntries[side];
+    switch (id) {
+        case 0x92:
+        case 0x93:
+        case 0x94:
+        case 0x95:
+        case 0x96:
+        case 0x97:
+        case 0x98:
+        case 0x99:
+        case 0x9a:
+        case 0x9b:
+        case 0x9c:
+        case 0x9d:
+        case 0x9e:
+        case 0x9f:
+        case 0xa0:
+        case 0xa1:
+        case 0xa2:
+        case 0xa3:
+        case 0xa4:
+        case 0xa5:
+        case 0xa6:
+        case 0xa7:
+        case 0xbe:
+        case 0xbf:
+        case 0xc0:
+        case 0xc1:
+        case 0xc2:
+        case 0xc3:
+        case 0xc4:
+        case 0xc5:
+        case 0xc6:
+            value = 200;
+            break;
+        case 0xc7:
+        case 0xc8:
+            value = 400;
+            break;
+        case 0xb9:
+        case 0xba:
+            value = data_020d433c.mBattlePlayers->mPlayers[e->mUnk_0d_4]->mUnk_ee * 50;
+            break;
+        case 0xa8:
+        case 0xa9:
+        case 0xaa:
+        case 0xab:
+        case 0xac:
+        case 0xad:
+        case 0xae:
+        case 0xaf:
+        case 0xb0:
+        case 0xb1:
+        case 0xb2:
+        case 0xb3:
+        case 0xb4:
+        case 0xb5:
+        case 0xb6:
+        case 0xb7:
+        case 0xb8:
+        case 0xbb:
+        case 0xbc:
+        case 0xbd: {
+            value   = func_02065bf4(id, e->mUnk_0d_0) * 10;
+            u16 old = value;
+            if (e->mUnk_0c == 5) {
+                if (value < func_02065bf4(id, 3) * 10) {
+                    value = func_02065bf4(id, 3) * 10;
+                }
+            }
+            if (e->mUnk_0c == 6) {
+                if (old < func_02065bf4(id, 0) * 10) {
+                    value = func_02065bf4(id, 0) * 10;
+                }
+            }
+            break;
+        }
+    }
+    if (mUnk_61) {
+        value = value << 1;
+    }
+    return value;
+}
+
+void BattleConfrontCard::func_ov007_02243d40() {
+    GXS_SetVisiblePlane(0x13);
+    if (mUnk_80) {
+        mUnk_80->mUnk_064 = 1;
+    }
+    mUnk_69 = 1;
+    if (data_020d433c.mUnk_10) {
+        data_020d433c.mUnk_10->mUnk_1a = 1;
+    }
+    G2S_SetWnd0Position(0x10, 0x10, 0xf0, 0xb0);
+    GXS_SetVisibleWnd(5);
+    G2S_SetWnd0InsidePlane(0x13, FALSE);
+    G2S_SetWndOutsidePlane(0x13, TRUE);
+    G2S_SetBlendBrightness(0x11, -8);
+}
+
+void BattleConfrontCard::func_ov007_02243dec() {
+    GXS_SetVisiblePlane(0x11);
+    if (mUnk_80) {
+        mUnk_80->mUnk_064 = 0;
+    }
+    mUnk_69 = 0;
+    G2S_SetBlendBrightness(0x11, 0);
+    if (data_020d433c.mUnk_10) {
+        data_020d433c.mUnk_10->mUnk_1a = 0;
+    }
+    GXS_SetVisibleWnd(0);
+    G2S_SetWnd0InsidePlane(0x1f, FALSE);
+    G2S_SetWndOutsidePlane(0x3f, FALSE);
+}
+
+extern WindowItemRecord data_ov007_02279d48[3];
+extern const WindowCellRecord data_ov007_02279d9c[3];
+
+void BattleConfrontCard::func_ov007_02243e7c() {
+    if (mUnk_80) {
+        delete mUnk_80;
+    }
+    mUnk_80 = 0;
+    if (mUnk_84) {
+        OS_Free(mUnk_84);
+        mUnk_84 = 0;
+    }
+    if (mUnk_78) {
+        OS_Free(mUnk_78);
+        mUnk_78 = 0;
+    }
+    if (mUnk_7c) {
+        OS_Free(mUnk_7c);
+        mUnk_7c = 0;
+    }
+}
+
+void BattleConfrontCard::func_ov007_02243f04(const char *path, u32 mode) {
+    ChangeDir("/Game/2D/union_b/");
+    func_02025b64(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    func_02025b64(1, 0xc, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    SpriteScreen &screen = SpriteManager::Get().Screen(1);
+    ChangeDir("/Game/2D/union_b/");
+    screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0xc000, 0);
+    CellAnimation *old = mUnk_24[1];
+    if (old) {
+        delete old;
+    }
+    mUnk_24[1]            = 0;
+    mUnk_24[1]            = new CellAnimation("union_b_obj_window_nce.bin", 0, 1, 1);
+    mUnk_24[1]->mCharBase = screen.func_020276f4(0xc000);
+    mUnk_24[1]->mUnk_11   = 7;
+    mUnk_24[1]->SetAnimation(0xc);
+    if (mUnk_84) {
+        OS_Free(mUnk_84);
+    }
+    if (mUnk_78) {
+        OS_Free(mUnk_78);
+    }
+    if (mUnk_7c) {
+        OS_Free(mUnk_7c);
+    }
+    mUnk_84 = (MessageFile *) func_02023504(path, 0, 0, 0, 0, 0);
+    mUnk_6c = TextManager::Get().BufferSize(0x18, 0xc);
+    mUnk_70 = TextManager::Get().GlyphCount(9);
+    mUnk_78 = OS_Alloc(mUnk_6c);
+    mUnk_7c = OS_Alloc(mUnk_70 * 12);
+    TextManager::Get().Init(mUnk_7c, 1, 0, 0x18, 0xc, 0x42);
+    func_ov007_022442d4(mode);
+    if (mode != 4) {
+        if (mUnk_80) {
+            delete mUnk_80;
+        }
+        mUnk_80 = new SelectWindow(3, data_ov007_02279d48, 1);
+        mUnk_80->SetCells(3, data_ov007_02279d9c);
+        mUnk_80->mCursor->mSelection = -1;
+        mUnk_80->mUnk_064            = 0;
+    }
+    ChangeDir("/");
+}
+
+void BattleConfrontCard::func_ov007_022442d4(u32 index) {
+    MI_CpuClear16(mUnk_78, mUnk_6c);
+    TextManager &text = TextManager::Get();
+    s16 height;
+    s16 width;
+    width              = 0;
+    height             = 0;
+    MessageFile *file = mUnk_84;
+    text.Print(file->GetText(index), file->GetLength(index), mUnk_78, 0x18, 0xc, &height, &width, 0, 0, 2, 0x42, 0x10, 0, 0, 0, 1, 1);
+    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xd000, mUnk_78, mUnk_6c, 0);
 }

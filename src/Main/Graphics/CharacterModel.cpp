@@ -55,6 +55,96 @@ void CharacterModel::func_02052894(u32 a, u32 b) {
     mParts[0]->func_02028e54(a, b, 0x1000);
 }
 
+void CharacterModel::func_020528b0(u32 part, u32 sex) {
+    char buf[0x20];
+    switch (part) {
+        case 0: {
+            func_02052da4(sex);
+            u32 async = 0;
+            while (!func_02052e50(async)) {
+            }
+            func_020530e8();
+            break;
+        }
+        case 1: {
+            mUnk_38[1] = mUnk_6f;
+            ChangeDir("/Game/Character/EditedCharacter/Male/Up");
+            sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[1], mUnk_38[1]);
+            UnkStruct_02028308 *texture = new NitroTexture(buf);
+            sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[1], mUnk_38[1]);
+            NitroModel *model = new NitroModel(buf, texture);
+            mParts[1]         = model->func_02028b78(NULL);
+            func_0205340c(1);
+            texture->func_02028344();
+            if (mUnk_60 != NULL) {
+                mParts[1]->mUnk_38 = mUnk_60;
+            }
+            mParts[1]->mUnk_69 = 0;
+            break;
+        }
+        case 2: {
+            mUnk_38[2] = mUnk_71 * 3 + mUnk_73;
+            ChangeDir("/Game/Character/EditedCharacter/Male/Down");
+            sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[2], mUnk_38[2]);
+            UnkStruct_02028308 *texture = new NitroTexture(buf);
+            sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[2], mUnk_38[2]);
+            NitroModel *model = new NitroModel(buf, texture);
+            mParts[2]         = model->func_02028b78(NULL);
+            func_0205340c(2);
+            texture->func_02028344();
+            if (mUnk_60 != NULL) {
+                mParts[2]->mUnk_38 = mUnk_60;
+            }
+            mParts[2]->mUnk_69 = 0;
+            break;
+        }
+        case 3: {
+            mUnk_38[3] = mUnk_68;
+            ChangeDir("/Game/Character/EditedCharacter/Male/Hair");
+            sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[3], mUnk_38[3]);
+            UnkStruct_02028308 *texture = new NitroTexture(buf);
+            sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[3], mUnk_38[3]);
+            NitroModel *model = new NitroModel(buf, texture);
+            mParts[3]         = model->func_02028b78(NULL);
+            func_0205340c(3);
+            texture->func_02028344();
+            mParts[3]->mUnk_69 = 0;
+            break;
+        }
+        case 4: {
+            mUnk_38[4] = mUnk_6c;
+            if (mUnk_38[4] != 0) {
+                ChangeDir("/Game/Character/EditedCharacter/Male/Glasse");
+                sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[4], mUnk_38[4] - 1);
+                UnkStruct_02028308 *texture = new NitroTexture(buf);
+                sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[4], mUnk_38[4] - 1);
+                NitroModel *model = new NitroModel(buf, texture);
+                mParts[4]         = model->func_02028b78(NULL);
+                func_0205340c(4);
+                texture->func_02028344();
+                mParts[4]->mUnk_69 = 0;
+            }
+            break;
+        }
+        case 5: {
+            mUnk_38[5] = mUnk_6a;
+            if (mUnk_38[5] != 0) {
+                ChangeDir("/Game/Character/EditedCharacter/Male/Cap");
+                sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[5], mUnk_38[5] - 1);
+                UnkStruct_02028308 *texture = new NitroTexture(buf);
+                sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[5], mUnk_38[5] - 1);
+                NitroModel *model = new NitroModel(buf, texture);
+                mParts[5]         = model->func_02028b78(NULL);
+                func_0205340c(5);
+                texture->func_02028344();
+                mParts[5]->mUnk_69 = 0;
+            }
+            break;
+        }
+    }
+    ChangeDir("/");
+}
+
 void CharacterModel::func_02052da4(u32 sex) {
     mUnk_78 = sex;
     mUnk_79 = 0;
@@ -160,6 +250,7 @@ void CharacterModel::func_020530e8() {
     mParts[0]->mUnk_69 = 0;
 }
 
+
 void CharacterModel::func_020531fc() {
     for (u8 i = 0; i < 6; i++) {
         ModelInstance *inst = mParts[i];
@@ -178,97 +269,6 @@ void CharacterModel::func_020531fc() {
         OS_Free(mUnk_60);
         mUnk_60 = NULL;
     }
-}
-
-
-void CharacterModel::func_020528b0(u32 part, u32 sex) {
-    char buf[0x20];
-    switch (part) {
-        case 0: {
-            func_02052da4(sex);
-            u32 async = 0;
-            while (!func_02052e50(async)) {
-            }
-            func_020530e8();
-            break;
-        }
-        case 1: {
-            mUnk_38[1] = mUnk_6f;
-            ChangeDir("/Game/Character/EditedCharacter/Male/Up");
-            sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[1], mUnk_38[1]);
-            UnkStruct_02028308 *texture = new NitroTexture(buf);
-            sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[1], mUnk_38[1]);
-            NitroModel *model = new NitroModel(buf, texture);
-            mParts[1]         = model->func_02028b78(NULL);
-            func_0205340c(1);
-            texture->func_02028344();
-            if (mUnk_60 != NULL) {
-                mParts[1]->mUnk_38 = mUnk_60;
-            }
-            mParts[1]->mUnk_69 = 0;
-            break;
-        }
-        case 2: {
-            mUnk_38[2] = mUnk_71 * 3 + mUnk_73;
-            ChangeDir("/Game/Character/EditedCharacter/Male/Down");
-            sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[2], mUnk_38[2]);
-            UnkStruct_02028308 *texture = new NitroTexture(buf);
-            sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[2], mUnk_38[2]);
-            NitroModel *model = new NitroModel(buf, texture);
-            mParts[2]         = model->func_02028b78(NULL);
-            func_0205340c(2);
-            texture->func_02028344();
-            if (mUnk_60 != NULL) {
-                mParts[2]->mUnk_38 = mUnk_60;
-            }
-            mParts[2]->mUnk_69 = 0;
-            break;
-        }
-        case 3: {
-            mUnk_38[3] = mUnk_68;
-            ChangeDir("/Game/Character/EditedCharacter/Male/Hair");
-            sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[3], mUnk_38[3]);
-            UnkStruct_02028308 *texture = new NitroTexture(buf);
-            sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[3], mUnk_38[3]);
-            NitroModel *model = new NitroModel(buf, texture);
-            mParts[3]         = model->func_02028b78(NULL);
-            func_0205340c(3);
-            texture->func_02028344();
-            mParts[3]->mUnk_69 = 0;
-            break;
-        }
-        case 4: {
-            mUnk_38[4] = mUnk_6c;
-            if (mUnk_38[4] != 0) {
-                ChangeDir("/Game/Character/EditedCharacter/Male/Glasse");
-                sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[4], mUnk_38[4] - 1);
-                UnkStruct_02028308 *texture = new NitroTexture(buf);
-                sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[4], mUnk_38[4] - 1);
-                NitroModel *model = new NitroModel(buf, texture);
-                mParts[4]         = model->func_02028b78(NULL);
-                func_0205340c(4);
-                texture->func_02028344();
-                mParts[4]->mUnk_69 = 0;
-            }
-            break;
-        }
-        case 5: {
-            mUnk_38[5] = mUnk_6a;
-            if (mUnk_38[5] != 0) {
-                ChangeDir("/Game/Character/EditedCharacter/Male/Cap");
-                sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[5], mUnk_38[5] - 1);
-                UnkStruct_02028308 *texture = new NitroTexture(buf);
-                sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[5], mUnk_38[5] - 1);
-                NitroModel *model = new NitroModel(buf, texture);
-                mParts[5]         = model->func_02028b78(NULL);
-                func_0205340c(5);
-                texture->func_02028344();
-                mParts[5]->mUnk_69 = 0;
-            }
-            break;
-        }
-    }
-    ChangeDir("/");
 }
 
 void CharacterModel::func_02053298() {

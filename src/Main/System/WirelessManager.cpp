@@ -111,6 +111,8 @@ void func_0202e374(WmCallbackArg *arg);
 void func_0202e478(WmCallbackArg *arg);
 void func_0202e4e8(WmCallbackArg *arg);
 
+WirelessManager::~WirelessManager() {}
+
 void func_0202db04(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult != 0) {
@@ -462,6 +464,40 @@ void WirelessManager::func_0202e7fc(u32 unk1) {
     }
 }
 
+void WirelessManager::func_0202e864() {
+    WmEntry *scan = (WmEntry *) data_0220f7a0;
+    u8 i = 0;
+    do {
+        if (mUnk_1208[i] != 0) {
+            bool m4 = false;
+            bool m3 = false;
+            bool m2 = false;
+            bool m1 = false;
+            bool m0 = false;
+            if (scan->mBssid[0] == mUnk_0008[i].mBssid[0]) { if (scan->mBssid[1] == mUnk_0008[i].mBssid[1]) { m0 = true; } }
+            if (m0) { if (scan->mBssid[2] == mUnk_0008[i].mBssid[2]) { m1 = true; } }
+            if (m1) { if (scan->mBssid[3] == mUnk_0008[i].mBssid[3]) { m2 = true; } }
+            if (m2) { if (scan->mBssid[4] == mUnk_0008[i].mBssid[4]) { m3 = true; } }
+            if (m3) { if (scan->mBssid[5] == mUnk_0008[i].mBssid[5]) { m4 = true; } }
+            if (m4) {
+                func_01ff96c4(data_0220f7a0, &mUnk_0008[i], 0xc0);
+                mUnk_1208[i] = 300;
+                return;
+            }
+        }
+        i++;
+    } while (i < WM_ENTRY_COUNT);
+    i = 0;
+    do {
+        if (mUnk_1208[i] == 0) {
+            func_01ff96c4(data_0220f7a0, &mUnk_0008[i], 0xc0);
+            mUnk_1208[i] = 300;
+            return;
+        }
+        i++;
+    } while (i < WM_ENTRY_COUNT);
+}
+
 void WirelessManager::func_0202e9e0() {
     for (u8 i = 0; i < WM_ENTRY_COUNT; i++) {
         if (mUnk_1208[i] != 0) {
@@ -560,40 +596,6 @@ void WirelessManager::func_0202ed28() {}
 
 void WirelessManager::func_0202ed2c() {
     mUnk_1228 = 0;
-}
-
-void WirelessManager::func_0202e864() {
-    WmEntry *scan = (WmEntry *) data_0220f7a0;
-    u8 i = 0;
-    do {
-        if (mUnk_1208[i] != 0) {
-            bool m4 = false;
-            bool m3 = false;
-            bool m2 = false;
-            bool m1 = false;
-            bool m0 = false;
-            if (scan->mBssid[0] == mUnk_0008[i].mBssid[0]) { if (scan->mBssid[1] == mUnk_0008[i].mBssid[1]) { m0 = true; } }
-            if (m0) { if (scan->mBssid[2] == mUnk_0008[i].mBssid[2]) { m1 = true; } }
-            if (m1) { if (scan->mBssid[3] == mUnk_0008[i].mBssid[3]) { m2 = true; } }
-            if (m2) { if (scan->mBssid[4] == mUnk_0008[i].mBssid[4]) { m3 = true; } }
-            if (m3) { if (scan->mBssid[5] == mUnk_0008[i].mBssid[5]) { m4 = true; } }
-            if (m4) {
-                func_01ff96c4(data_0220f7a0, &mUnk_0008[i], 0xc0);
-                mUnk_1208[i] = 300;
-                return;
-            }
-        }
-        i++;
-    } while (i < WM_ENTRY_COUNT);
-    i = 0;
-    do {
-        if (mUnk_1208[i] == 0) {
-            func_01ff96c4(data_0220f7a0, &mUnk_0008[i], 0xc0);
-            mUnk_1208[i] = 300;
-            return;
-        }
-        i++;
-    } while (i < WM_ENTRY_COUNT);
 }
 
 u32 WirelessManager::func_0202ed3c() {
@@ -824,5 +826,3 @@ void WirelessManager::func_0202f244() {
             break;
     }
 }
-
-WirelessManager::~WirelessManager() {}

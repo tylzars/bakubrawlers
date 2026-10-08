@@ -101,20 +101,6 @@ void ConfrontEmblem03::func_ov007_0221f368() {
     mUnk_07_2 = 1;
 }
 
-u8 ConfrontEmblem03::func_ov007_0221f57c() {
-    return mUnk_04 == 2 ? 1 : 0;
-}
-
-int ConfrontEmblem03::func_ov007_0221f70c() {
-    if (mUnk_04 == 2) {
-        s8 v = mUnk_0b;
-        if (v != -1) {
-            return v;
-        }
-    }
-    return -1;
-}
-
 void ConfrontEmblem03::func_ov007_0221f3a4() {
     switch (mUnk_04) {
         case 0: {
@@ -154,6 +140,10 @@ void ConfrontEmblem03::func_ov007_0221f3a4() {
     }
 }
 
+u8 ConfrontEmblem03::func_ov007_0221f57c() {
+    return mUnk_04 == 2 ? 1 : 0;
+}
+
 int ConfrontEmblem03::func_ov007_0221f594() {
     if (mUnk_04 != 0 || mUnk_07_0 == 1) {
         return -1;
@@ -178,4 +168,14 @@ int ConfrontEmblem03::func_ov007_0221f594() {
         mAnim->SetAnimation(anim);
     }
     return result;
+}
+
+int ConfrontEmblem03::func_ov007_0221f70c() {
+    if (mUnk_04 == 2) {
+        s8 v = mUnk_0b;
+        if (v != -1) {
+            return v;
+        }
+    }
+    return -1;
 }

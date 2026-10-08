@@ -10,19 +10,14 @@ fx32 func_ov007_02272358(BattleSphere *sphere, BattleHitBox *box);
 BOOL func_ov007_0227226c(BattleObstacle *a, BattleObstacle *b);
 BOOL func_ov007_0227212c(BattleObstacle *a, BattleObstacle *b);
 
-BOOL func_ov007_02272308(BattleObstacle *a, BattleObstacle *b) {
-    VecFx32 d;
-    VEC_Subtract(&a->mPos, &b->mPos, &d);
-    fx32 mag = VEC_Mag(&d);
-    fx32 rb  = b->mHalfX;
-    fx32 ra  = a->mHalfX;
-    if (rb < 0) {
-        rb = -rb;
+BOOL func_ov007_022720ac(BattleObstacle *a, BattleObstacle *b) {
+    BattleObstacle tmp = *a;
+    if (func_ov007_0227212c(&tmp, b)) {
+        if (b->mPos.y + b->mHalfY >= tmp.mPos.y - tmp.mHalfX && b->mPos.y - b->mHalfY <= tmp.mPos.y + tmp.mHalfX) {
+            return 1;
+        }
     }
-    if (ra < 0) {
-        ra = -ra;
-    }
-    return mag < ra + rb;
+    return 0;
 }
 
 BOOL func_ov007_0227212c(BattleObstacle *a, BattleObstacle *b) {
@@ -34,16 +29,6 @@ BOOL func_ov007_0227212c(BattleObstacle *a, BattleObstacle *b) {
         r = -r;
     }
     return VEC_Mag(&d) < r;
-}
-
-BOOL func_ov007_022720ac(BattleObstacle *a, BattleObstacle *b) {
-    BattleObstacle tmp = *a;
-    if (func_ov007_0227212c(&tmp, b)) {
-        if (b->mPos.y + b->mHalfY >= tmp.mPos.y - tmp.mHalfX && b->mPos.y - b->mHalfY <= tmp.mPos.y + tmp.mHalfX) {
-            return 1;
-        }
-    }
-    return 0;
 }
 
 BOOL func_ov007_02272170(BattleObstacle *a, BattleObstacle *b) {
@@ -91,6 +76,21 @@ BOOL func_ov007_0227226c(BattleObstacle *a, BattleObstacle *b) {
         d = -d;
     }
     return d <= r;
+}
+
+BOOL func_ov007_02272308(BattleObstacle *a, BattleObstacle *b) {
+    VecFx32 d;
+    VEC_Subtract(&a->mPos, &b->mPos, &d);
+    fx32 mag = VEC_Mag(&d);
+    fx32 rb  = b->mHalfX;
+    fx32 ra  = a->mHalfX;
+    if (rb < 0) {
+        rb = -rb;
+    }
+    if (ra < 0) {
+        ra = -ra;
+    }
+    return mag < ra + rb;
 }
 
 fx32 func_ov007_02272358(BattleSphere *sphere, BattleHitBox *box) {

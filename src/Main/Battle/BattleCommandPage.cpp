@@ -396,48 +396,6 @@ void BattleCommandPage::func_02055c1c() {
     mUnk_f0 = 0;
 }
 
-void BattleCommandPage::func_02056d38() {
-    if (mUnk_f4 == 0) {
-        return;
-    }
-    if (mUnk_106 != 0) {
-        return;
-    }
-    SpriteManager::Get().mScreens[0].func_02027778(mUnk_6c[mUnk_108], mUnk_84[mUnk_108], 0x73, 0x20, 3, 0, 0xf, 0);
-    if ((s32) mUnk_100 > 0xf0) {
-        mUnk_102--;
-        if (mUnk_102 < -(s32) mUnk_100) {
-            mUnk_102 = 0x100;
-        }
-    } else {
-        mUnk_102 = 0x80 - ((u32) mUnk_100 >> 1);
-    }
-    u8 i = 0;
-    do {
-        s16 x = mUnk_102 + (i << 5);
-        if ((x < 0x120) & (x > -0x20)) {
-            SpriteManager::Get().mScreens[0].func_02027778(data_0209e570, 1, x, 8, 1, (u16) (0x80 + i * 2), 0xf, 0);
-        }
-        i++;
-    } while (i < (s32) ((u32) mUnk_100 >> 5) + 1);
-}
-
-void BattleCommandPage::func_02056f38() {
-    for (u8 i = 0; i < 3; i++) {
-        MI_CpuClear16(mUnk_60[i], mUnk_78[i]);
-    }
-}
-
-void BattleCommandPage::func_02056f70() {
-    if (mUnk_106 != 0) {
-        return;
-    }
-    SpriteManager::Get().mScreens[0].func_02027778(data_0209e564, 1, 0x54, 0x25, 3, 0xa0, 0, 0);
-    SpriteManager::Get().mScreens[0].func_02027778(data_0209e564, 1, 0x54, 0x65, 3, 0xb0, 0, 0);
-    SpriteManager::Get().mScreens[0].func_02027778(data_0209e558, 1, 0x14, 0x25, 3, 0xc0, 0, 0);
-    SpriteManager::Get().mScreens[0].func_02027778(data_0209e558, 1, 0x14, 0x65, 3, 0xe0, 0, 0);
-}
-
 // non-matching: 11 words, r2 vs r3 for the index.
 BOOL BattleCommandPage::func_02055c28() {
     if (mUnk_f0 != 0) {
@@ -704,4 +662,46 @@ void BattleCommandPage::func_02056814(u32 index) {
     TextManager::Get().mUnk_5b = 0;
     func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0, mUnk_60[1], mUnk_78[1], 0);
     func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x4000, mUnk_60[2], mUnk_78[2], 0);
+}
+
+void BattleCommandPage::func_02056d38() {
+    if (mUnk_f4 == 0) {
+        return;
+    }
+    if (mUnk_106 != 0) {
+        return;
+    }
+    SpriteManager::Get().mScreens[0].func_02027778(mUnk_6c[mUnk_108], mUnk_84[mUnk_108], 0x73, 0x20, 3, 0, 0xf, 0);
+    if ((s32) mUnk_100 > 0xf0) {
+        mUnk_102--;
+        if (mUnk_102 < -(s32) mUnk_100) {
+            mUnk_102 = 0x100;
+        }
+    } else {
+        mUnk_102 = 0x80 - ((u32) mUnk_100 >> 1);
+    }
+    u8 i = 0;
+    do {
+        s16 x = mUnk_102 + (i << 5);
+        if ((x < 0x120) & (x > -0x20)) {
+            SpriteManager::Get().mScreens[0].func_02027778(data_0209e570, 1, x, 8, 1, (u16) (0x80 + i * 2), 0xf, 0);
+        }
+        i++;
+    } while (i < (s32) ((u32) mUnk_100 >> 5) + 1);
+}
+
+void BattleCommandPage::func_02056f38() {
+    for (u8 i = 0; i < 3; i++) {
+        MI_CpuClear16(mUnk_60[i], mUnk_78[i]);
+    }
+}
+
+void BattleCommandPage::func_02056f70() {
+    if (mUnk_106 != 0) {
+        return;
+    }
+    SpriteManager::Get().mScreens[0].func_02027778(data_0209e564, 1, 0x54, 0x25, 3, 0xa0, 0, 0);
+    SpriteManager::Get().mScreens[0].func_02027778(data_0209e564, 1, 0x54, 0x65, 3, 0xb0, 0, 0);
+    SpriteManager::Get().mScreens[0].func_02027778(data_0209e558, 1, 0x14, 0x25, 3, 0xc0, 0, 0);
+    SpriteManager::Get().mScreens[0].func_02027778(data_0209e558, 1, 0x14, 0x65, 3, 0xe0, 0, 0);
 }

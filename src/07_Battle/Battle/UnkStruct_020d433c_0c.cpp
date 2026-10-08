@@ -7,6 +7,10 @@ void *operator new[](size_t size);
 void operator delete[](void *p);
 void func_ov007_02271b24(GimmickSetData *set, int count);
 
+struct ObstacleRaw {
+    u32 w[8];
+};
+
 UnkStruct_020d433c_0c::UnkStruct_020d433c_0c()
     : SceneBase(0x3e8, 0) {
     mUnk_0c = (GimmickSetData *) new u8[0x41c00];
@@ -100,28 +104,6 @@ static BOOL (*sTests[6])(BattleObstacle *, BattleObstacle *) = {
     func_ov007_02272308, func_ov007_02272170, func_ov007_0227212c, func_ov007_022720ac, 0, 0,
 };
 
-BOOL UnkStruct_020d433c_0c::func_ov007_0227203c(BattleObstacle *a, BattleObstacle *b) {
-    BOOL result = 0;
-    u8 type     = a->mType;
-    if (type == 0) {
-        if (b->mType == 0) {
-            result = func_ov007_0227226c(a, b);
-        }
-    } else if (type == 1) {
-        type = b->mType;
-        if (type == 0) {
-            result = func_ov007_0227226c(b, a);
-        } else {
-            result = sTests[type - 1](a, b);
-        }
-    }
-    return result;
-}
-
-struct ObstacleRaw {
-    u32 w[8];
-};
-
 // non-matching: same instructions and size (0x1f4) but the registers differ (a/b in r6/r5 instead of r7/r6, j r4 instead of r5, fileB fp instead of r4), the zero for i/j is not shared and hoisted before the loops, and the spill slots of i/fileA/entry differ (~87 instructions)
 void UnkStruct_020d433c_0c::func_ov007_02271e48(GimmickSetData *a, GimmickSetData *b) {
     BattleObstacle shapeA;
@@ -160,4 +142,24 @@ void UnkStruct_020d433c_0c::func_ov007_02271e48(GimmickSetData *a, GimmickSetDat
             }
         }
     }
+}
+
+
+
+BOOL UnkStruct_020d433c_0c::func_ov007_0227203c(BattleObstacle *a, BattleObstacle *b) {
+    BOOL result = 0;
+    u8 type     = a->mType;
+    if (type == 0) {
+        if (b->mType == 0) {
+            result = func_ov007_0227226c(a, b);
+        }
+    } else if (type == 1) {
+        type = b->mType;
+        if (type == 0) {
+            result = func_ov007_0227226c(b, a);
+        } else {
+            result = sTests[type - 1](a, b);
+        }
+    }
+    return result;
 }

@@ -32,6 +32,36 @@ extern const u32 data_020a23cc[8][6];
 void func_020360cc(UnkStruct_SpriteManager_28 *slot);
 void func_02038444(u32 a, u32 b);
 
+void func_02089278();
+
+extern const u8 data_020a1c34[];
+
+struct UnkStruct_Pair {
+    u8 mUnk_0;
+    u8 mUnk_1;
+};
+
+extern const UnkStruct_Pair data_020a26a4[][5][10][3];
+
+void func_02086938();
+
+BOOL func_02086a58();
+
+BOOL func_02086b74();
+
+BOOL func_02086e08();
+
+extern const u8 data_020a2118[];
+
+struct UnkStruct_020a1b12 {
+    /* 0 */ s16 mUnk_0;
+    /* 2 */ u8 mUnk_2;
+    /* 3 */ s8 mUnk_3;
+    /* 4 */
+};
+
+extern const UnkStruct_020a1b12 data_020a1b12[];
+
 UnkStruct_02065c40::UnkStruct_02065c40(u32 unk1, u32 unk2, u32 unk3) :
     SceneBase(0x3e8, 0) {
     mUnk_1010 = NULL;
@@ -178,10 +208,7 @@ void UnkStruct_02065c40::func_020666d8() {
     }
 }
 
-struct UnkStruct_Pair {
-    u8 mUnk_0;
-    u8 mUnk_1;
-};
+
 
 struct UnkStruct_020b4324_entry {
     UnkStruct_Pair mPairs[3];
@@ -210,12 +237,479 @@ u32 UnkStruct_02065c40::func_020667ec() {
     return data_020b4324[type]->mUnk_78;
 }
 
+// non-matching: 57 words, register assignment (`volatile s32 result` is a placeholder for the stack slot).
+s32 UnkStruct_02065c40::func_02066814(u32 unk1) {
+    volatile s32 result = -1;
+    u8 type    = data_020d43f0[0].mUnk_42;
+    if (type >= 10) {
+        return result;
+    }
+    if (mUnk_14e2 == data_020b4324[type]->mUnk_78) {
+        u8 saved = data_020d433c.mUnk_7d;
+        s32 done = 0;
+        if (unk1 != 0) {
+            data_020d433c.mUnk_7d = 1;
+        }
+        u8 position = data_020d43f0[0].mUnk_43;
+        s32 advance = 0;
+        u8 index    = position % 10;
+        s32 pending = 0;
+        if ((index == 0) & (saved == 0)) {
+            result = data_020b4324[type]->mUnk_79;
+        } else {
+            BOOL seen = FALSE;
+            UnkStruct_020b4324_entry *entry = &data_020b4324[type]->mEntries[index];
+            switch (entry->mUnk_06) {
+                case 0:
+                    if (unk1 != 0) {
+                        done = 1;
+                    }
+                    break;
+                case 1:
+                    seen = TRUE;
+                    if (unk1 != 0) {
+                        advance = seen;
+                        if (type == 8 && data_020b4324[type]->mEntries[index + 1].mUnk_06 == 0) {
+                            pending = 1;
+                            break;
+                        }
+                        s32 next = index + 1;
+                        if (next < 10) {
+                            func_02066c9c(type, (u8) next);
+                            if (data_020b4324[type]->mEntries[index].mUnk_0a != 0 && data_020b4324[type]->mEntries[next].mUnk_06 != 1) {
+                                mUnk_14e9 = 1;
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    if (saved == 2) {
+                        seen = TRUE;
+                        if (unk1 != 0) {
+                            advance = seen;
+                            if (entry->mUnk_0b == 0) {
+                                pending = 1;
+                            }
+                        }
+                        s32 next = index + 1;
+                        if (next < 10) {
+                            func_02066c9c(type, (u8) next);
+                            if (unk1 != 0) {
+                                if (data_020b4324[type]->mEntries[index].mUnk_0a != 0 && data_020b4324[type]->mEntries[next].mUnk_06 != 1) {
+                                    mUnk_14e9 = 1;
+                                }
+                            }
+                        }
+                    } else {
+                        func_02066c9c(type, index);
+                        if (mUnk_14e2 == 0 || mUnk_14e9 == 1) {
+                            func_0206791c(5);
+                        }
+                    }
+                    break;
+            }
+            if (data_020d43f0[0].mUnk_5bf_0) {
+                mUnk_14e9 = 0;
+            }
+            if (seen) {
+                u8 value = data_020b4324[type]->mEntries[index].mUnk_09;
+                if (value != 0) {
+                    result = value;
+                }
+            }
+        }
+        if (unk1 != 0) {
+            if ((advance | done) && pending != 0) {
+                mUnk_14ea = 1;
+            }
+            if (advance != 0) {
+                u32 limit = 10;
+                if (data_020d43f0[0].mUnk_5bf_0) {
+                    limit = func_02067240(type);
+                }
+                data_020d43f0[0].mUnk_43++;
+                u8 now = data_020d43f0[0].mUnk_43;
+                if (now >= limit) {
+                    done = 1;
+                } else if (data_020b4324[type]->mEntries[now].mUnk_06 == 0) {
+                    done = 1;
+                }
+                data_020d433c.mUnk_7d = 0;
+            }
+            if (done != 0) {
+                if (data_020d43f0[0].mUnk_5bf_0) {
+                    switch (data_020d43f0[0].mUnk_42) {
+                        case 1:
+                            data_020d43f0[0].mUnk_5bf |= 0x2;
+                            break;
+                        case 3:
+                            data_020d43f0[0].mUnk_5bf |= 0x4;
+                            break;
+                        case 6:
+                            data_020d43f0[0].mUnk_5bf |= 0x8;
+                            break;
+                        case 7:
+                            data_020d43f0[0].mUnk_5bf |= 0x10;
+                            break;
+                        case 8:
+                            data_020d43f0[0].mUnk_5bf |= 0x20;
+                            break;
+                        case 9:
+                            data_020d43f0[0].mUnk_5bf |= 0x40;
+                            break;
+                    }
+                    data_020d43f0[0].mUnk_42 = 10;
+                    func_0206791c(6);
+                    mUnk_14ea = 1;
+                } else {
+                    u32 next = 0;
+                    if (data_020b4324[type]->mUnk_78 != 0) {
+                        next = 6;
+                    }
+                    if (next != 0) {
+                        func_0206791c(next);
+                    }
+                    data_020d43f0[0].mUnk_42++;
+                    if (data_020d43f0[0].mUnk_42 == 10) {
+                        func_0206791c(8);
+                    }
+                }
+                data_020d43f0[0].mUnk_43 = 0;
+                data_020d433c.mUnk_7d = 0;
+                mUnk_14e2 = 7;
+            }
+            if (advance | done) {
+                func_02089278();
+            }
+        }
+    }
+    if (data_020d43f0[0].mUnk_5bf_0) {
+        result = -1;
+    }
+    return result;
+}
+
 BOOL UnkStruct_02065c40::func_02066c7c() {
     return func_02066814(0) != -1;
 }
 
+void UnkStruct_02065c40::func_02066c9c(u32 unk1, u32 unk2) {
+    data_020d433c.mUnk_99 = 3;
+    data_020d433c.mPlayerCount = 2;
+    data_020d433c.mUnk_98 = 0;
+    for (u8 i = 0; i < 4; i++) {
+        data_020d433c.mUnk_9f[i] = i;
+        data_020d433c.mUnk_a3[i] = 0;
+        data_020d433c.mUnk_9b[i] = i;
+    }
+    switch (mUnk_14e2) {
+        case 3:
+            data_020d433c.mUnk_7b = 8;
+            break;
+        case 2:
+            data_020d433c.mUnk_7b = 0xc;
+            break;
+        default:
+            data_020d433c.mUnk_7b = 9;
+            break;
+    }
+    data_020d433c.mUnk_9a   = 0x11;
+    data_020d433c.mUnk_9a_0 = data_020d43f0[0].mUnk_28_6;
+    for (u8 j = 0; j < 3; j++) {
+        data_020d433c.mUnk_9f[j + 1] = func_02067120(unk1, unk2, (u8) (j + 1), 0);
+        data_020d433c.mUnk_a3[j + 1] = func_02067120(unk1, unk2, (j + 1) & 0xff, 1);
+    }
+    UnkStruct_020b4324_entry *entry = &data_020b4324[unk1]->mEntries[unk2];
+    data_020d433c.mUnk_95 = entry->mUnk_07;
+    data_020d433c.mUnk_96 = entry->mUnk_08;
+    if (data_020d43f0[0].mUnk_5bf_0 && (data_020d43f0[0].mUnk_580 & 0x80)) {
+        for (u8 k = 0; k < 3; k++) {
+            if (data_020d433c.mUnk_9f[k + 1] == 7) {
+                data_020d433c.mUnk_a3[k + 1] = 2;
+            }
+        }
+    }
+    switch (data_020b4324[unk1]->mEntries[unk2].mUnk_06) {
+        case 3:
+            data_020d433c.mUnk_98 = 1;
+            data_020d433c.mPlayerCount = 4;
+            data_020d433c.mUnk_9b[0] = 1;
+            data_020d433c.mUnk_9b[1] = 0;
+            data_020d433c.mUnk_9b[2] = 3;
+            data_020d433c.mUnk_9b[3] = 2;
+            break;
+        case 4:
+            data_020d433c.mUnk_99 = 6;
+            break;
+        case 5:
+            data_020d433c.mPlayerCount = 4;
+            break;
+    }
+    data_020d433c.mUnk_9f[0] = 0x15;
+    u8 type = data_020d43f0[0].mUnk_42;
+    if ((type == 9) & (data_020d43f0[0].mUnk_43 == 8)) {
+        data_020d433c.mUnk_8a_0 = 1;
+    } else {
+        data_020d433c.mUnk_8a_0 = 0;
+    }
+    BOOL reached = unk2 >= func_02067240(unk1);
+    BOOL known   = func_020670b4(type) != 0;
+    if (reached & known) {
+        data_020d433c.mUnk_8a_4 = 1;
+    } else {
+        data_020d433c.mUnk_8a_4 = 0;
+    }
+}
+
+u32 UnkStruct_02065c40::func_02066f60() {
+    char path[0x80];
+    if (mUnk_14e2 == 6) {
+        return 0;
+    }
+    s32 command = func_02066814(0);
+    if (command > -1) {
+        switch (command - 0x64) {
+            case 0:
+                sprintf(path, "cmd_ST_mev_A001.bin");
+                break;
+            case 1:
+                sprintf(path, "cmd_ST_mev_A002.bin");
+                break;
+            case 2:
+                sprintf(path, "cmd_ST_mev_B001.bin");
+                break;
+            case 3:
+                sprintf(path, "cmd_ST_mev_B002.bin");
+                break;
+            default:
+                sprintf(path, "cmd_ST_mev_%03d.bin", command);
+                break;
+        }
+        for (u8 i = 0; i < 2; i++) {
+            if (command == data_020a1c34[i]) {
+                GXS_SetVisiblePlane(0);
+                break;
+            }
+        }
+        func_0206eb10(path);
+        mUnk_14e8 = 1;
+        return 1;
+    }
+    func_02066814(1);
+    if (mUnk_14e9 != 0) {
+        func_0206791c(5);
+    }
+    return 0;
+}
+
+u32 UnkStruct_02065c40::func_020670b4(u32 id) {
+    switch (id) {
+        case 1: return 1;
+        case 3: return 2;
+        case 6: return 3;
+        case 7: return 4;
+        case 8: return 5;
+        case 9: return 6;
+    }
+    return 0;
+}
+
+// non-matching: 17 words, register allocation of the % 5 block.
+u8 UnkStruct_02065c40::func_02067120(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
+    if (unk3 != 0) {
+        u8 slot = unk3 - 1;
+        if (data_020d43f0[0].mUnk_5bf_0) {
+            u32 kind = func_020670b4(unk1);
+            u8 flag = *(u8 *) &unk4;
+            u8 group = data_020d43f0[0].mUnk_25;
+            u8 row = group % 5;
+            if (kind == 0) {
+                kind = 1;
+            }
+            
+            if (flag == 0) {
+                return data_020a26a4[kind - 1][row][unk2][slot].mUnk_0;
+            }
+            return data_020a26a4[kind - 1][row][unk2][slot].mUnk_1;
+        }
+        if (*(u8 *) &unk4 == 0) {
+            return data_020b4324[unk1]->mEntries[unk2].mPairs[slot].mUnk_0;
+        }
+        return data_020b4324[unk1]->mEntries[unk2].mPairs[slot].mUnk_1;
+    }
+    if (*(u8 *) &unk4 == 0) {
+        return 0x15;
+    }
+    return 0;
+}
+
+u8 UnkStruct_02065c40::func_02067240(u32 id) {
+    return data_020a1c38[func_020670b4(id)];
+}
+
+void UnkStruct_02065c40::Update() {
+    if (mUnk_14e4 != 0) {
+        mUnk_14e5++;
+        mUnk_14e5 &= 1;
+    }
+    func_02067e74();
+    func_02069d54();
+    CameraManager &manager = CameraManager::Get();
+    Camera *camera         = manager.mCameras[manager.mActive];
+    data_02211374.mCameraPosition = camera->mPosition;
+    data_02211374.mCameraUp       = camera->mUp;
+    data_02211374.mCameraTarget   = camera->mTarget;
+    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    data_02211374.mFlags &= ~0xe8;
+    manager.mProjection[manager.mActive] = data_02211374.mProjection;
+    manager.mView[manager.mActive]       = data_02211374.mView;
+    manager.mMtxA[manager.mActive]       = *func_02032710();
+    manager.mMtxB[manager.mActive]       = *func_02032604();
+    manager.mMtxC[manager.mActive]       = *func_020323b8();
+    func_020679d8();
+    func_0206a208();
+    func_0206a01c();
+    func_0206ada4();
+    func_02068714();
+    func_0206aa34();
+    func_0206a850();
+    func_0206aecc();
+    if (mUnk_14e0 != 0) {
+        if (mUnk_12b9 < 10) {
+            mUnk_12b9 = 10;
+        }
+    }
+    switch (mUnk_12b9) {
+        case 0:
+            func_02067b08();
+            mUnk_12b9 = 5;
+            break;
+        case 1:
+            if (func_0206ed40()) {
+                mUnk_12b9++;
+            }
+            break;
+        case 2:
+            if (func_0206ef08()) {
+                mUnk_12b9++;
+            }
+            break;
+        case 3:
+            func_0206b09c();
+            break;
+        case 4:
+            func_0206d3b8();
+            break;
+        case 5:
+            if (mUnk_14ea != 0) {
+                func_02086938();
+                if (func_02086a58()) {
+                    mUnk_14eb = 1;
+                    mUnk_12b9 = 7;
+                } else if (func_02086b74()) {
+                    mUnk_14eb = 2;
+                    mUnk_12b9 = 7;
+                } else if (func_02086e08()) {
+                    mUnk_14eb = 3;
+                    mUnk_12b9 = 7;
+                } else {
+                    mUnk_12b9++;
+                }
+            } else {
+                mUnk_12b9 = 8;
+            }
+            break;
+        case 6:
+            if (mUnk_14ea != 0) {
+                break;
+            }
+            func_02067b08();
+            mUnk_12b9 = 8;
+            break;
+        case 7:
+            if (mUnk_14eb != 0) {
+                break;
+            }
+            func_02067b08();
+            mUnk_12b9 = 5;
+            break;
+        case 8:
+            if (func_02066f60()) {
+                if (mUnk_12b9 == 8) {
+                    mUnk_12b9 = 1;
+                }
+            } else {
+                if (mUnk_12b9 == 8) {
+                    mUnk_12b9 = 9;
+                }
+            }
+            if (mUnk_14ea != 0) {
+                mUnk_12b9 = 5;
+            }
+            break;
+        case 10:
+            mUnk_1018->func_02087cc0();
+            func_02067708(1);
+            RequestScene(1);
+            mFinished = 1;
+            break;
+    }
+}
+
 void UnkStruct_02065c40::func_020676f8() {
     mUnk_14e0 = 1;
+}
+
+void UnkStruct_02065c40::func_02067708(u32 unk1) {
+    for (u8 i = 0; i < 2; i++) {
+        UnkStruct_0205401c *model = mUnk_11b4[i].mUnk_2c;
+        if (model != NULL) {
+            model->func_02054034();
+            delete model;
+        }
+        mUnk_11b4[i].mUnk_2c = NULL;
+        model                = mUnk_11b4[i].mUnk_30;
+        if (model != NULL) {
+            model->func_02054034();
+            delete model;
+        }
+        mUnk_11b4[i].mUnk_30 = NULL;
+        UnkStruct_0203d374 *object = mUnk_112c[i].mUnk_2c;
+        if (object != NULL) {
+            delete object;
+        }
+        mUnk_112c[i].mUnk_2c = NULL;
+        object               = mUnk_112c[i].mUnk_30;
+        if (object != NULL) {
+            delete object;
+        }
+        mUnk_112c[i].mUnk_30 = NULL;
+        if (unk1 != 0) {
+            ModelInstance *instance = mUnk_101c[i].mUnk_2c;
+            if (instance != NULL) {
+                instance->mUnk_68 = 0xf;
+                delete instance;
+                mUnk_101c[i].mUnk_2c = NULL;
+            }
+            mUnk_101c[i].mUnk_30 = -1;
+        }
+        func_020695e8(i);
+        mUnk_11b4[i].mUnk_36 = -1;
+        mUnk_11b4[i].mUnk_37 = -1;
+        mUnk_1084[i].mUnk_48 = -1;
+        mUnk_1084[i].mUnk_4a = -1;
+        mUnk_112c[i].mUnk_34 = -1;
+        mUnk_112c[i].mUnk_35 = -1;
+        mUnk_11b4[i].mUnk_43 = 0;
+        mUnk_112c[i].mUnk_42 = 0;
+        mUnk_1084[i].mUnk_51 = 0;
+    }
+    ModelInstance *instance;
+    if (unk1 != 0 && (instance = mUnk_1010) != NULL) {
+        instance->mUnk_68 = 0xf;
+        delete instance;
+        mUnk_1010 = NULL;
+    }
 }
 
 BOOL UnkStruct_02065c40::func_020678e8() {
@@ -262,21 +756,12 @@ void UnkStruct_02065c40::func_02067988() {
     mUnk_14eb = 0;
 }
 
-u32 UnkStruct_02065c40::func_020670b4(u32 id) {
-    switch (id) {
-        case 1: return 1;
-        case 3: return 2;
-        case 6: return 3;
-        case 7: return 4;
-        case 8: return 5;
-        case 9: return 6;
-    }
-    return 0;
-}
-
-u8 UnkStruct_02065c40::func_02067240(u32 id) {
-    return data_020a1c38[func_020670b4(id)];
-}
+extern const s8 data_020a1b2a[][5];
+extern const s8 data_020a1ac6[][5];
+extern const s8 data_020a1ad5[][5];
+extern const s8 data_020a1ae4[][5];
+extern const s8 data_020a1af3[][5];
+extern const s8 data_020a1b02[][5];
 
 void UnkStruct_02065c40::func_02067998(u8 unk1) {
     if (unk1) {
@@ -363,6 +848,45 @@ void UnkStruct_02065c40::func_02067e74() {
     }
 }
 
+BOOL UnkStruct_02065c40::func_02067f30(u32 index, s32 value) {
+    if (value < 0) {
+        func_02067e2c(index, 0);
+        UnkStruct_0205401c *model = mUnk_11b4[index].mUnk_2c;
+        if (model != NULL) {
+            model->func_02054034();
+            delete model;
+        }
+        mUnk_11b4[index].mUnk_2c = NULL;
+        return FALSE;
+    }
+    mUnk_11b4[index].mUnk_3a = value;
+    if (mUnk_11b4[index].mUnk_2c != NULL) {
+        if (mUnk_11b4[index].mUnk_3a != mUnk_11b4[index].mUnk_39) {
+            if (mUnk_11b4[index].mUnk_2c->func_020546b0()) {
+                mUnk_11b4[index].mUnk_3b = 1;
+            }
+            if (mUnk_11b4[index].mUnk_36 == 0x15) {
+                ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim->mUnk_10 = 1;
+            } else {
+                ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim->mUnk_10 = 1;
+            }
+            func_0206abf4(index);
+        }
+        return FALSE;
+    }
+    if (index == 1) {
+        func_020695e8(0);
+    }
+    func_02067e2c(index, 0);
+    UnkStruct_0205401c *model = mUnk_11b4[index].mUnk_2c;
+    if (model != NULL) {
+        model->func_02054034();
+        delete model;
+    }
+    mUnk_11b4[index].mUnk_2c = NULL;
+    return TRUE;
+}
+
 void UnkStruct_02065c40::func_02068074(u32 index) {
     UnkStruct_0205401c *model = mUnk_11b4[index].mUnk_30;
     if (model != NULL) {
@@ -376,13 +900,6 @@ void UnkStruct_02065c40::func_02068074(u32 index) {
     mUnk_11b4[index].mUnk_30 = new UnkStruct_0205401c();
     mUnk_11b4[index].mUnk_30->func_020543e8((u8) mUnk_11b4[index].mUnk_37, 0, 0, 0);
 }
-
-extern const s8 data_020a1b2a[][5];
-extern const s8 data_020a1ac6[][5];
-extern const s8 data_020a1ad5[][5];
-extern const s8 data_020a1ae4[][5];
-extern const s8 data_020a1af3[][5];
-extern const s8 data_020a1b02[][5];
 
 BOOL UnkStruct_02065c40::func_020680f8(u32 index, u32 flag) {
     u8 variant;
@@ -435,165 +952,6 @@ void UnkStruct_02065c40::func_020682a0(u32 index, u32 kind) {
     } else {
         SpriteManager::Get().func_0202753c(1);
     }
-}
-
-void UnkStruct_02065c40::func_0206852c(u32 index) {
-    if (mUnk_11b4[index].mUnk_30 == NULL) {
-        return;
-    }
-    UnkStruct_0205401c *old = mUnk_11b4[index].mUnk_2c;
-    if (old != NULL) {
-        old->func_02054034();
-        delete old;
-    }
-    mUnk_11b4[index].mUnk_2c = mUnk_11b4[index].mUnk_30;
-    mUnk_11b4[index].mUnk_30 = NULL;
-    mUnk_11b4[index].mUnk_36 = mUnk_11b4[index].mUnk_37;
-    mUnk_11b4[index].mUnk_39 = mUnk_11b4[index].mUnk_38;
-    mUnk_11b4[index].mUnk_3a = mUnk_11b4[index].mUnk_38;
-    func_020683cc(index);
-    s8 kind    = mUnk_11b4[index].mUnk_36;
-    s8 variant = mUnk_11b4[index].mUnk_3a;
-    func_020682a0(index, kind);
-    mUnk_11b4[index].mUnk_2c->func_0205451c();
-    u8 variantId = variant;
-    u8 id        = kind;
-    u8 a         = func_020687a8(id, variantId, 0);
-    u8 b         = func_020687a8(id, variantId, 3);
-    mUnk_11b4[index].mUnk_2c->func_02054644(b, a);
-    if (kind == 0x15) {
-        ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim->mUnk_08 = 1;
-    } else {
-        ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim->mUnk_08 = 1;
-    }
-}
-
-void UnkStruct_02065c40::func_020683cc(u32 index) {
-    switch (mUnk_11b4[index].mUnk_36) {
-        case 2:
-            mUnk_11b4[index].mUnk_34 = 0x3c;
-            break;
-        case 3:
-            mUnk_11b4[index].mUnk_34 = -0x14;
-            break;
-        case 14:
-            mUnk_11b4[index].mUnk_34 = 0x28;
-            break;
-        case 11:
-            mUnk_11b4[index].mUnk_34 = -0x78;
-            break;
-        case 12:
-            mUnk_11b4[index].mUnk_34 = 0x28;
-            break;
-        case 9:
-            mUnk_11b4[index].mUnk_34 = -0x28;
-            break;
-        default:
-            mUnk_11b4[index].mUnk_34 = 0;
-            break;
-    }
-    switch (mUnk_11b4[index].mUnk_36) {
-        case 13:
-            mUnk_11b4[index].mUnk_3d = 0x3c;
-            break;
-        case 14:
-            mUnk_11b4[index].mUnk_3d = 0x1e;
-            break;
-        default:
-            mUnk_11b4[index].mUnk_3d = 0x28;
-            break;
-    }
-    mUnk_11b4[index].mUnk_3f = 0x80;
-    mUnk_11b4[index].mUnk_40 = 0x80;
-    mUnk_11b4[index].mUnk_41 = 0x80;
-    mUnk_11b4[index].mUnk_42 = 0;
-    mUnk_11b4[index].mUnk_3c = 0;
-}
-
-s8 UnkStruct_02065c40::func_020687a8(s32 kind, u32 index, u32 column) {
-    if (index < 6) {
-        return data_020a1b2a[index][column];
-    }
-    u8 row = index - 6;
-    switch (kind) {
-        case 0:
-            return data_020a1ac6[row][column];
-        case 0x15:
-            return data_020a1ae4[row][column];
-        case 6:
-            return data_020a1ad5[row][column];
-        case 0x12:
-            return data_020a1af3[row][column];
-        default:
-            return data_020a1b02[row][column];
-    }
-}
-
-void UnkStruct_02065c40::func_0206867c(u32 index, u32 value) {
-    if (value == mUnk_11b4[index].mUnk_3c) {
-        return;
-    }
-    mUnk_11b4[index].mUnk_3c = value;
-    if (mUnk_11b4[index].mUnk_2c == NULL) {
-        return;
-    }
-    mUnk_11b4[index].mUnk_2c->func_0205466c(mUnk_11b4[index].mUnk_3c);
-    if (mUnk_11b4[index].mUnk_3b == 0) {
-        return;
-    }
-    if (mUnk_11b4[index].mUnk_36 == 0x15) {
-        ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim->mUnk_08 = 0;
-    } else {
-        ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim->mUnk_08 = 0;
-    }
-}
-
-void UnkStruct_02065c40::func_02068714() {
-    for (u8 i = 0; i < 2; i++) {
-        s32 kind = mUnk_11b4[i].mUnk_36;
-        if (kind < 0) {
-            continue;
-        }
-        if (kind == mUnk_1018->mUnk_42) {
-            if (mUnk_1018->func_02088ef4()) {
-                func_0206867c(i, 1);
-            } else {
-                func_0206867c(i, 0);
-            }
-        } else {
-            func_0206867c(i, 0);
-        }
-    }
-}
-
-void UnkStruct_02065c40::func_02068884(u32 index) {
-    if (mUnk_11b4[index].mUnk_2c == NULL) {
-        return;
-    }
-    s16 rot[3];
-    rot[0] = mUnk_11b4[index].mUnk_18[0];
-    rot[1] = mUnk_11b4[index].mUnk_18[1];
-    rot[2] = mUnk_11b4[index].mUnk_18[2];
-    mUnk_11b4[index].mUnk_2c->func_020546e4((const u16 *) rot);
-}
-
-BOOL UnkStruct_02065c40::func_020688e0(s32 value) {
-    if (value == mUnk_101c[0].mUnk_30) {
-        return FALSE;
-    }
-    if (value != -2) {
-        mUnk_101c[0].mUnk_30 = value;
-    }
-    ModelInstance *instance = mUnk_101c[0].mUnk_2c;
-    if (instance != NULL) {
-        instance->mUnk_68 = 0xf;
-        delete instance;
-        mUnk_101c[0].mUnk_2c = NULL;
-    }
-    if (mUnk_101c[0].mUnk_30 < 0) {
-        return FALSE;
-    }
-    return TRUE;
 }
 
 struct UnkStruct_020a22ac {
@@ -677,6 +1035,166 @@ struct UnkStruct_020a1bd6 {
 };
 extern const UnkStruct_020a1bd6 data_020a1bd6[];
 
+void UnkStruct_02065c40::func_020683cc(u32 index) {
+    switch (mUnk_11b4[index].mUnk_36) {
+        case 2:
+            mUnk_11b4[index].mUnk_34 = 0x3c;
+            break;
+        case 3:
+            mUnk_11b4[index].mUnk_34 = -0x14;
+            break;
+        case 14:
+            mUnk_11b4[index].mUnk_34 = 0x28;
+            break;
+        case 11:
+            mUnk_11b4[index].mUnk_34 = -0x78;
+            break;
+        case 12:
+            mUnk_11b4[index].mUnk_34 = 0x28;
+            break;
+        case 9:
+            mUnk_11b4[index].mUnk_34 = -0x28;
+            break;
+        default:
+            mUnk_11b4[index].mUnk_34 = 0;
+            break;
+    }
+    switch (mUnk_11b4[index].mUnk_36) {
+        case 13:
+            mUnk_11b4[index].mUnk_3d = 0x3c;
+            break;
+        case 14:
+            mUnk_11b4[index].mUnk_3d = 0x1e;
+            break;
+        default:
+            mUnk_11b4[index].mUnk_3d = 0x28;
+            break;
+    }
+    mUnk_11b4[index].mUnk_3f = 0x80;
+    mUnk_11b4[index].mUnk_40 = 0x80;
+    mUnk_11b4[index].mUnk_41 = 0x80;
+    mUnk_11b4[index].mUnk_42 = 0;
+    mUnk_11b4[index].mUnk_3c = 0;
+}
+
+void UnkStruct_02065c40::func_0206852c(u32 index) {
+    if (mUnk_11b4[index].mUnk_30 == NULL) {
+        return;
+    }
+    UnkStruct_0205401c *old = mUnk_11b4[index].mUnk_2c;
+    if (old != NULL) {
+        old->func_02054034();
+        delete old;
+    }
+    mUnk_11b4[index].mUnk_2c = mUnk_11b4[index].mUnk_30;
+    mUnk_11b4[index].mUnk_30 = NULL;
+    mUnk_11b4[index].mUnk_36 = mUnk_11b4[index].mUnk_37;
+    mUnk_11b4[index].mUnk_39 = mUnk_11b4[index].mUnk_38;
+    mUnk_11b4[index].mUnk_3a = mUnk_11b4[index].mUnk_38;
+    func_020683cc(index);
+    s8 kind    = mUnk_11b4[index].mUnk_36;
+    s8 variant = mUnk_11b4[index].mUnk_3a;
+    func_020682a0(index, kind);
+    mUnk_11b4[index].mUnk_2c->func_0205451c();
+    u8 variantId = variant;
+    u8 id        = kind;
+    u8 a         = func_020687a8(id, variantId, 0);
+    u8 b         = func_020687a8(id, variantId, 3);
+    mUnk_11b4[index].mUnk_2c->func_02054644(b, a);
+    if (kind == 0x15) {
+        ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim->mUnk_08 = 1;
+    } else {
+        ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim->mUnk_08 = 1;
+    }
+}
+
+void UnkStruct_02065c40::func_0206867c(u32 index, u32 value) {
+    if (value == mUnk_11b4[index].mUnk_3c) {
+        return;
+    }
+    mUnk_11b4[index].mUnk_3c = value;
+    if (mUnk_11b4[index].mUnk_2c == NULL) {
+        return;
+    }
+    mUnk_11b4[index].mUnk_2c->func_0205466c(mUnk_11b4[index].mUnk_3c);
+    if (mUnk_11b4[index].mUnk_3b == 0) {
+        return;
+    }
+    if (mUnk_11b4[index].mUnk_36 == 0x15) {
+        ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim->mUnk_08 = 0;
+    } else {
+        ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim->mUnk_08 = 0;
+    }
+}
+
+void UnkStruct_02065c40::func_02068714() {
+    for (u8 i = 0; i < 2; i++) {
+        s32 kind = mUnk_11b4[i].mUnk_36;
+        if (kind < 0) {
+            continue;
+        }
+        if (kind == mUnk_1018->mUnk_42) {
+            if (mUnk_1018->func_02088ef4()) {
+                func_0206867c(i, 1);
+            } else {
+                func_0206867c(i, 0);
+            }
+        } else {
+            func_0206867c(i, 0);
+        }
+    }
+}
+
+s8 UnkStruct_02065c40::func_020687a8(s32 kind, u32 index, u32 column) {
+    if (index < 6) {
+        return data_020a1b2a[index][column];
+    }
+    u8 row = index - 6;
+    switch (kind) {
+        case 0:
+            return data_020a1ac6[row][column];
+        case 0x15:
+            return data_020a1ae4[row][column];
+        case 6:
+            return data_020a1ad5[row][column];
+        case 0x12:
+            return data_020a1af3[row][column];
+        default:
+            return data_020a1b02[row][column];
+    }
+}
+
+void UnkStruct_02065c40::func_02068884(u32 index) {
+    if (mUnk_11b4[index].mUnk_2c == NULL) {
+        return;
+    }
+    s16 rot[3];
+    rot[0] = mUnk_11b4[index].mUnk_18[0];
+    rot[1] = mUnk_11b4[index].mUnk_18[1];
+    rot[2] = mUnk_11b4[index].mUnk_18[2];
+    mUnk_11b4[index].mUnk_2c->func_020546e4((const u16 *) rot);
+}
+
+BOOL UnkStruct_02065c40::func_020688e0(s32 value) {
+    if (value == mUnk_101c[0].mUnk_30) {
+        return FALSE;
+    }
+    if (value != -2) {
+        mUnk_101c[0].mUnk_30 = value;
+    }
+    ModelInstance *instance = mUnk_101c[0].mUnk_2c;
+    if (instance != NULL) {
+        instance->mUnk_68 = 0xf;
+        delete instance;
+        mUnk_101c[0].mUnk_2c = NULL;
+    }
+    if (mUnk_101c[0].mUnk_30 < 0) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+
 BOOL UnkStruct_02065c40::func_02068c54(u32 index, s32 value) {
     if (value == mUnk_1084[index].mUnk_48) {
         return FALSE;
@@ -721,73 +1239,6 @@ void UnkStruct_02065c40::func_02068d0c(UnkStruct_02028308 *texture, u32 id) {
         ChangeDir("/");
     }
 }
-
-void UnkStruct_02065c40::func_02069120(u32 index, u32 value) {
-    mUnk_1084[index].mUnk_4a = value;
-    mUnk_1084[index].mUnk_52 = 0;
-    for (u8 j = 0; j < 3; j++) {
-        if (mUnk_1084[index].mUnk_3c[j] != NULL) {
-            OS_Free(mUnk_1084[index].mUnk_3c[j]);
-            mUnk_1084[index].mUnk_3c[j] = NULL;
-        }
-    }
-    mUnk_12b8 = 0;
-}
-
-void UnkStruct_02065c40::func_020695e8(u32 index) {
-    ModelInstance *instance = mUnk_1084[index].mUnk_2c;
-    if (instance != NULL) {
-        instance->mUnk_68 = 0xf;
-        delete instance;
-        mUnk_1084[index].mUnk_2c = NULL;
-    }
-    for (u8 j = 0; j < 3; j++) {
-        if (mUnk_1084[index].mUnk_30[j] != NULL) {
-            OS_Free(mUnk_1084[index].mUnk_30[j]);
-            mUnk_1084[index].mUnk_30[j] = NULL;
-        }
-    }
-}
-
-BOOL UnkStruct_02065c40::func_02069680(u32 index) {
-    if (index == 1) {
-        func_020695e8(1);
-    }
-    UnkStruct_0203d374 *object = mUnk_112c[index].mUnk_2c;
-    if (object != NULL) {
-        delete object;
-    }
-    mUnk_112c[index].mUnk_2c = NULL;
-    if (mUnk_112c[index].mUnk_34 < 0) {
-        return FALSE;
-    }
-    return TRUE;
-}
-
-void UnkStruct_02065c40::func_020696e8(u32 index) {
-    UnkStruct_0203d374 *object = mUnk_112c[index].mUnk_30;
-    if (object != NULL) {
-        delete object;
-    }
-    mUnk_112c[index].mUnk_30 = NULL;
-    s32 kind = mUnk_112c[index].mUnk_35;
-    if (kind < 0) {
-        return;
-    }
-    mUnk_112c[index].mUnk_30 = new UnkStruct_0203d374();
-    u8 value = func_02069780(kind);
-    mUnk_112c[index].mUnk_30->func_0203d6e0(data_020a1bd6[kind].mUnk_0, value, 5);
-}
-
-u8 UnkStruct_02065c40::func_02069780(u32 index) {
-    switch (data_020a1bd6[index].mUnk_0) {
-        case 0x24:
-        case 0x25:
-            return data_020d43f0[0].mUnk_1a_8;
-    }
-    return data_020a1bd6[index].mUnk_1;
-}
-
 
 BOOL UnkStruct_02065c40::func_02068e14(u32 index) {
     char path[0x80];
@@ -837,6 +1288,18 @@ BOOL UnkStruct_02065c40::func_02068e14(u32 index) {
     mUnk_1084[index].mUnk_4f = 0x80;
     mUnk_1084[index].mUnk_50 = 0;
     return TRUE;
+}
+
+void UnkStruct_02065c40::func_02069120(u32 index, u32 value) {
+    mUnk_1084[index].mUnk_4a = value;
+    mUnk_1084[index].mUnk_52 = 0;
+    for (u8 j = 0; j < 3; j++) {
+        if (mUnk_1084[index].mUnk_3c[j] != NULL) {
+            OS_Free(mUnk_1084[index].mUnk_3c[j]);
+            mUnk_1084[index].mUnk_3c[j] = NULL;
+        }
+    }
+    mUnk_12b8 = 0;
 }
 
 BOOL UnkStruct_02065c40::func_02069194(u32 index) {
@@ -903,6 +1366,69 @@ void UnkStruct_02065c40::func_02069340(u32 index) {
     mUnk_1084[index].mUnk_4a = -1;
     mUnk_1084[index].mUnk_4d = 0;
     mUnk_1084[index].mUnk_4c = data_020a2554[id].mUnk_05;
+}
+
+void UnkStruct_02065c40::func_020695e8(u32 index) {
+    ModelInstance *instance = mUnk_1084[index].mUnk_2c;
+    if (instance != NULL) {
+        instance->mUnk_68 = 0xf;
+        delete instance;
+        mUnk_1084[index].mUnk_2c = NULL;
+    }
+    for (u8 j = 0; j < 3; j++) {
+        if (mUnk_1084[index].mUnk_30[j] != NULL) {
+            OS_Free(mUnk_1084[index].mUnk_30[j]);
+            mUnk_1084[index].mUnk_30[j] = NULL;
+        }
+    }
+}
+
+BOOL UnkStruct_02065c40::func_02069680(u32 index) {
+    if (index == 1) {
+        func_020695e8(1);
+    }
+    UnkStruct_0203d374 *object = mUnk_112c[index].mUnk_2c;
+    if (object != NULL) {
+        delete object;
+    }
+    mUnk_112c[index].mUnk_2c = NULL;
+    if (mUnk_112c[index].mUnk_34 < 0) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+void UnkStruct_02065c40::func_020696e8(u32 index) {
+    UnkStruct_0203d374 *object = mUnk_112c[index].mUnk_30;
+    if (object != NULL) {
+        delete object;
+    }
+    mUnk_112c[index].mUnk_30 = NULL;
+    s32 kind = mUnk_112c[index].mUnk_35;
+    if (kind < 0) {
+        return;
+    }
+    mUnk_112c[index].mUnk_30 = new UnkStruct_0203d374();
+    u8 value = func_02069780(kind);
+    mUnk_112c[index].mUnk_30->func_0203d6e0(data_020a1bd6[kind].mUnk_0, value, 5);
+}
+
+u8 UnkStruct_02065c40::func_02069780(u32 index) {
+    switch (data_020a1bd6[index].mUnk_0) {
+        case 0x24:
+        case 0x25:
+            return data_020d43f0[0].mUnk_1a_8;
+    }
+    return data_020a1bd6[index].mUnk_1;
+}
+
+u16 func_0200198c(fx32 x, fx32 y);
+
+static inline fx32 SinIdx(int idx) {
+    return FX_SinCosTable_[(idx >> 4) * 2];
+}
+static inline fx32 CosIdx(int idx) {
+    return FX_SinCosTable_[(idx >> 4) * 2 + 1];
 }
 
 // non-matching: 10 words, r6/r7 swapped between mode and the index*0x44 offset.
@@ -993,6 +1519,8 @@ void UnkStruct_02065c40::func_02069bdc() {
     func_02069d0c();
 }
 
+void func_01ffcf64(MtxFx43 *mtx, VecFx32 *pos);
+
 void UnkStruct_02065c40::func_02069c6c() {
     MI_CpuClear16(&mUnk_1298, 0x14);
     u32 v = 0xfffff23d;
@@ -1016,15 +1544,6 @@ void UnkStruct_02065c40::func_02069c6c() {
 void UnkStruct_02065c40::func_02069d0c() {
     u32 fov = mUnk_128c[0];
     mUnk_1288->func_02026004((u32) (65536.0f * fov / 360.0f));
-}
-
-u16 func_0200198c(fx32 x, fx32 y);
-
-static inline fx32 SinIdx(int idx) {
-    return FX_SinCosTable_[(idx >> 4) * 2];
-}
-static inline fx32 CosIdx(int idx) {
-    return FX_SinCosTable_[(idx >> 4) * 2 + 1];
 }
 
 void UnkStruct_02065c40::func_02069d54() {
@@ -1299,7 +1818,13 @@ void UnkStruct_02065c40::func_0206a208() {
     }
 }
 
-void func_01ffcf64(MtxFx43 *mtx, VecFx32 *pos);
+extern const s16 data_020a248c[][9];
+extern const s16 data_020a233c[][12];
+void func_02025588(void (*callback)());
+void func_020255f8(void (*callback)());
+extern "C" void func_0206ea14();
+void func_02087ccc(UnkStruct_02087898 *object, void *data);
+void func_02088ec4(UnkStruct_02087898 *object);
 
 void UnkStruct_02065c40::func_0206a850() {
     for (u8 i = 0; i < 2; i++) {
@@ -1506,6 +2031,31 @@ void UnkStruct_02065c40::func_0206aecc() {
     }
 }
 
+struct UnkStruct_020a2198 {
+    /* 00 */ s16 mUnk_00;
+    /* 02 */ s16 mUnk_02;
+    /* 04 */ s16 mUnk_04;
+    /* 06 */ s16 mUnk_06;
+    /* 08 */ s16 mUnk_08;
+    /* 0a */ s16 mUnk_0a;
+    /* 0c */ s16 mUnk_0c;
+    /* 0e */ s16 mUnk_0e;
+    /* 10 */ s16 mUnk_10;
+    /* 12 */ s16 mUnk_12;
+    /* 14 */ u8 mUnk_14;
+    /* 15 */ PAD(0x15, 0x16);
+    /* 16 */
+};
+struct UnkStruct_020a1c04 {
+    /* 0 */ s16 mUnk_0;
+    /* 2 */ s16 mUnk_2;
+    /* 4 */ s16 mUnk_4;
+    /* 6 */ u16 mUnk_6;
+    /* 8 */
+};
+extern const UnkStruct_020a2198 data_020a2198[];
+extern const UnkStruct_020a1c04 data_020a1c04[];
+
 // non-matching: 2 words, movcs/movcc in the other order.
 BOOL UnkStruct_02065c40::func_0206b05c(u32 id) {
     if (id < 0x60) {
@@ -1525,6 +2075,8 @@ BOOL UnkStruct_02065c40::func_0206b05c(u32 id) {
     }
     return TRUE;
 }
+
+
 
 void UnkStruct_02065c40::func_0206b09c() {
     mUnk_12b9 = 3;
@@ -1549,40 +2101,6 @@ void UnkStruct_02065c40::func_0206b09c() {
     }
 }
 
-extern const s16 data_020a248c[][9];
-extern const s16 data_020a233c[][12];
-void func_02025588(void (*callback)());
-void func_020255f8(void (*callback)());
-extern "C" void func_0206ea14();
-void func_02087ccc(UnkStruct_02087898 *object, void *data);
-void func_02088ec4(UnkStruct_02087898 *object);
-
-s32 UnkStruct_02065c40::func_02070554(s32 kind, s32 index) {
-    if ((kind < 0) | (kind > 0x10)) {
-        return -1;
-    }
-    s32 result = -1;
-    if (kind > 5) {
-        if (index < 9) {
-            result = (s16) (data_020a248c[kind - 6][index] - 0xa8);
-        }
-    } else {
-        if (index < 12) {
-            result = (s16) (data_020a233c[kind][index] - 0xa8);
-        }
-    }
-    if (result < 0) {
-        return -1;
-    }
-    return result;
-}
-
-extern "C" void func_020705f0(UnkStruct_02065c40 *event) {
-    if (event->mUnk_1018 != NULL) {
-        event->mUnk_1018->mUnk_34 = -1;
-    }
-}
-
 void UnkStruct_02065c40::func_0206e9d0(u32 flag) {
     if (mUnk_14f3 == flag) {
         return;
@@ -1594,6 +2112,131 @@ void UnkStruct_02065c40::func_0206e9d0(u32 flag) {
         func_020255f8(func_0206ea14);
         func_020037e8(0);
     }
+}
+
+// non-matching: 0x100 vs 0xfc, the angle is truncated differently.
+extern "C" void func_0206ea14() {
+    s32 line = *(vu16 *) 0x4000006;
+    if (line >= 0xc0) {
+        return;
+    }
+    UnkStruct_02065c40 *event = data_02219288;
+    u32 time = line + UnkStruct_020c1884::Get().mFrame;
+    u32 angle = ((time << 16) / 3) >> 6;
+    u16 height = event->mUnk_14dc;
+    u16 width  = event->mUnk_14da;
+    u16 third  = height / 3;
+    u16 span;
+    if (width >= height - third) {
+        span = height - width;
+    } else {
+        span = width;
+        if (span > third) {
+            span = third;
+        }
+    }
+    s32 offset = span * (SinIdx(angle) << 5) / third;
+    func_020037e8((s16) ((offset << 4) >> 16));
+}
+
+
+
+BOOL UnkStruct_02065c40::func_0206eb10(const char *path) {
+    char file[0x80];
+    if (mUnk_12bc != mUnk_12be) {
+        return FALSE;
+    }
+    ChangeDir("/");
+    sprintf(file, "/script/%s", path);
+    func_02023708(file, 0, 0, 0, &mUnk_12b4, 1);
+    func_02069bdc();
+    func_02069c6c();
+    mUnk_12ca = 0;
+    mUnk_12cc = 0;
+    mUnk_12ce = 0;
+    func_02088ec4(mUnk_1018);
+    mUnk_12ba = 0;
+    mUnk_14ec = 0;
+    func_02067e2c(0, 0);
+    func_02067e2c(1, 0);
+    func_02067708(0);
+    for (u8 i = 0; i < 2; i++) {
+        mUnk_11b4[i].mUnk_3c = 0;
+        mUnk_11b4[i].mUnk_3b = 0;
+        mUnk_11b4[i].mUnk_34 = 0;
+        mUnk_11b4[i].mUnk_3d = 0x28;
+        mUnk_11b4[i].mUnk_3f = 0x80;
+        mUnk_11b4[i].mUnk_40 = 0x80;
+        mUnk_11b4[i].mUnk_41 = 0x80;
+        mUnk_11b4[i].mUnk_42 = 0;
+        MI_CpuClear16(&mUnk_11b4[i], 0x18);
+        MI_CpuClear16(mUnk_11b4[i].mUnk_18, 0x14);
+        mUnk_1084[i].mUnk_4d = 0;
+        mUnk_1084[i].mUnk_4e = 0;
+        mUnk_1084[i].mUnk_4c = 1;
+        mUnk_1084[i].mUnk_4f = 0x80;
+        mUnk_112c[i].mUnk_37 = 0;
+        mUnk_112c[i].mUnk_38 = 0x80;
+        mUnk_112c[i].mUnk_39 = 0x80;
+        mUnk_112c[i].mUnk_3a = 0x80;
+        mUnk_112c[i].mUnk_3b = 0;
+        mUnk_112c[i].mUnk_36 = 0;
+        mUnk_112c[i].mUnk_3c = 0;
+        mUnk_112c[i].mUnk_3d = 0;
+        mUnk_112c[i].mUnk_3e = 0;
+        mUnk_112c[i].mUnk_40 = 0;
+        mUnk_112c[i].mUnk_3f = 10;
+        MI_CpuClear16(&mUnk_112c[i], 0x18);
+        MI_CpuClear16(mUnk_112c[i].mUnk_18, 0x14);
+    }
+    mUnk_12b9 = 1;
+    return TRUE;
+}
+
+extern const u8 data_020a1bae[];
+#define REG_G3_DISP3DCNT (*(vu16 *) 0x4000060)
+
+void UnkStruct_02065c40::func_02067b08() {
+    char path[0x80];
+    GX_SetVisiblePlane(0x11);
+    G2_SetBG0Offset(0, 0);
+    G2_SetBG0Priority(3);
+    REG_G3_DISP3DCNT = (REG_G3_DISP3DCNT & ~0x3000) | 0x20;
+    ChangeDir("/story/");
+    if (mUnk_14e4 == 0 && (mUnk_14f1 | func_02066c7c())) {
+        ChangeDir("/story/");
+        SpriteScreen &screen = SpriteManager::Get().Screen(1);
+        screen.func_02027624(3);
+        sprintf(path, "cutscene_b_obj.nce_ncg1D.bin");
+        screen.LoadCharacters(path, 0xd000, 0);
+        sprintf(path, "cutscene_b_obj_ncl.bin");
+        screen.func_02027fec(path, 0, 0);
+        if (mUnk_100c != NULL) {
+            delete mUnk_100c;
+        }
+        mUnk_14f2 = 0;
+        mUnk_100c = new CellAnimation("cutscene_b_obj_nce.bin", mUnk_14f2, 1, 1);
+        mUnk_100c->mCharBase = 0x1a0;
+        mUnk_100c->mUnk_11   = 0;
+        if (mUnk_14e2 == 5) {
+            mUnk_14f1 = 0;
+            mUnk_14ed = 1;
+        }
+    }
+    ChangeDir("/");
+    if (mUnk_1010 == NULL) {
+        SpriteManager::Get().func_0202753c(7);
+        NitroTexture *texture = new NitroTexture("story/mdl/cut_shadow.nsbtx");
+        NitroModel *model     = new NitroModel;
+        model->func_020289e0("story/mdl/cut_shadow.nsbmd", texture);
+        texture->func_02028344();
+        mUnk_1010 = model->func_02028b78(NULL);
+    }
+    if (mUnk_1014 == NULL) {
+        mUnk_1014 = new UnkStruct_02029ca8(data_020a1bae);
+        func_02069c6c();
+    }
+    mUnk_1018->func_02087eec();
 }
 
 BOOL UnkStruct_02065c40::func_0206ed40() {
@@ -1637,6 +2280,8 @@ BOOL UnkStruct_02065c40::func_0206ed40() {
     return TRUE;
 }
 
+
+
 BOOL UnkStruct_02065c40::func_0206ef08() {
     if (func_02023874() != 0) {
         return FALSE;
@@ -1647,30 +2292,10 @@ BOOL UnkStruct_02065c40::func_0206ef08() {
     return TRUE;
 }
 
-struct UnkStruct_020a2198 {
-    /* 00 */ s16 mUnk_00;
-    /* 02 */ s16 mUnk_02;
-    /* 04 */ s16 mUnk_04;
-    /* 06 */ s16 mUnk_06;
-    /* 08 */ s16 mUnk_08;
-    /* 0a */ s16 mUnk_0a;
-    /* 0c */ s16 mUnk_0c;
-    /* 0e */ s16 mUnk_0e;
-    /* 10 */ s16 mUnk_10;
-    /* 12 */ s16 mUnk_12;
-    /* 14 */ u8 mUnk_14;
-    /* 15 */ PAD(0x15, 0x16);
-    /* 16 */
-};
-struct UnkStruct_020a1c04 {
-    /* 0 */ s16 mUnk_0;
-    /* 2 */ s16 mUnk_2;
-    /* 4 */ s16 mUnk_4;
-    /* 6 */ u16 mUnk_6;
-    /* 8 */
-};
-extern const UnkStruct_020a2198 data_020a2198[];
-extern const UnkStruct_020a1c04 data_020a1c04[];
+
+
+
+
 
 // non-matching: 53 words, register allocation (the original keeps the zero/index in r9).
 BOOL UnkStruct_02065c40::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4, s32 unk5) {
@@ -1821,579 +2446,47 @@ BOOL UnkStruct_02065c40::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32
     return FALSE;
 }
 
-extern const UnkStruct_Pair data_020a26a4[][5][10][3];
-
-// non-matching: 17 words, register allocation of the % 5 block.
-u8 UnkStruct_02065c40::func_02067120(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
-    if (unk3 != 0) {
-        u8 slot = unk3 - 1;
-        if (data_020d43f0[0].mUnk_5bf_0) {
-            u32 kind = func_020670b4(unk1);
-            u8 flag = *(u8 *) &unk4;
-            u8 group = data_020d43f0[0].mUnk_25;
-            u8 row = group % 5;
-            if (kind == 0) {
-                kind = 1;
-            }
-            
-            if (flag == 0) {
-                return data_020a26a4[kind - 1][row][unk2][slot].mUnk_0;
-            }
-            return data_020a26a4[kind - 1][row][unk2][slot].mUnk_1;
-        }
-        if (*(u8 *) &unk4 == 0) {
-            return data_020b4324[unk1]->mEntries[unk2].mPairs[slot].mUnk_0;
-        }
-        return data_020b4324[unk1]->mEntries[unk2].mPairs[slot].mUnk_1;
-    }
-    if (*(u8 *) &unk4 == 0) {
-        return 0x15;
-    }
-    return 0;
-}
-
-void UnkStruct_02065c40::func_02067708(u32 unk1) {
-    for (u8 i = 0; i < 2; i++) {
-        UnkStruct_0205401c *model = mUnk_11b4[i].mUnk_2c;
-        if (model != NULL) {
-            model->func_02054034();
-            delete model;
-        }
-        mUnk_11b4[i].mUnk_2c = NULL;
-        model                = mUnk_11b4[i].mUnk_30;
-        if (model != NULL) {
-            model->func_02054034();
-            delete model;
-        }
-        mUnk_11b4[i].mUnk_30 = NULL;
-        UnkStruct_0203d374 *object = mUnk_112c[i].mUnk_2c;
-        if (object != NULL) {
-            delete object;
-        }
-        mUnk_112c[i].mUnk_2c = NULL;
-        object               = mUnk_112c[i].mUnk_30;
-        if (object != NULL) {
-            delete object;
-        }
-        mUnk_112c[i].mUnk_30 = NULL;
-        if (unk1 != 0) {
-            ModelInstance *instance = mUnk_101c[i].mUnk_2c;
-            if (instance != NULL) {
-                instance->mUnk_68 = 0xf;
-                delete instance;
-                mUnk_101c[i].mUnk_2c = NULL;
-            }
-            mUnk_101c[i].mUnk_30 = -1;
-        }
-        func_020695e8(i);
-        mUnk_11b4[i].mUnk_36 = -1;
-        mUnk_11b4[i].mUnk_37 = -1;
-        mUnk_1084[i].mUnk_48 = -1;
-        mUnk_1084[i].mUnk_4a = -1;
-        mUnk_112c[i].mUnk_34 = -1;
-        mUnk_112c[i].mUnk_35 = -1;
-        mUnk_11b4[i].mUnk_43 = 0;
-        mUnk_112c[i].mUnk_42 = 0;
-        mUnk_1084[i].mUnk_51 = 0;
-    }
-    ModelInstance *instance;
-    if (unk1 != 0 && (instance = mUnk_1010) != NULL) {
-        instance->mUnk_68 = 0xf;
-        delete instance;
-        mUnk_1010 = NULL;
-    }
-}
-
-BOOL UnkStruct_02065c40::func_02067f30(u32 index, s32 value) {
-    if (value < 0) {
-        func_02067e2c(index, 0);
-        UnkStruct_0205401c *model = mUnk_11b4[index].mUnk_2c;
-        if (model != NULL) {
-            model->func_02054034();
-            delete model;
-        }
-        mUnk_11b4[index].mUnk_2c = NULL;
-        return FALSE;
-    }
-    mUnk_11b4[index].mUnk_3a = value;
-    if (mUnk_11b4[index].mUnk_2c != NULL) {
-        if (mUnk_11b4[index].mUnk_3a != mUnk_11b4[index].mUnk_39) {
-            if (mUnk_11b4[index].mUnk_2c->func_020546b0()) {
-                mUnk_11b4[index].mUnk_3b = 1;
-            }
-            if (mUnk_11b4[index].mUnk_36 == 0x15) {
-                ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim->mUnk_10 = 1;
-            } else {
-                ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim->mUnk_10 = 1;
-            }
-            func_0206abf4(index);
-        }
-        return FALSE;
-    }
-    if (index == 1) {
-        func_020695e8(0);
-    }
-    func_02067e2c(index, 0);
-    UnkStruct_0205401c *model = mUnk_11b4[index].mUnk_2c;
-    if (model != NULL) {
-        model->func_02054034();
-        delete model;
-    }
-    mUnk_11b4[index].mUnk_2c = NULL;
-    return TRUE;
-}
-
-extern const u8 data_020a1c34[];
-
-u32 UnkStruct_02065c40::func_02066f60() {
-    char path[0x80];
-    if (mUnk_14e2 == 6) {
-        return 0;
-    }
-    s32 command = func_02066814(0);
-    if (command > -1) {
-        switch (command - 0x64) {
-            case 0:
-                sprintf(path, "cmd_ST_mev_A001.bin");
-                break;
-            case 1:
-                sprintf(path, "cmd_ST_mev_A002.bin");
-                break;
-            case 2:
-                sprintf(path, "cmd_ST_mev_B001.bin");
-                break;
-            case 3:
-                sprintf(path, "cmd_ST_mev_B002.bin");
-                break;
-            default:
-                sprintf(path, "cmd_ST_mev_%03d.bin", command);
-                break;
-        }
-        for (u8 i = 0; i < 2; i++) {
-            if (command == data_020a1c34[i]) {
-                GXS_SetVisiblePlane(0);
-                break;
-            }
-        }
-        func_0206eb10(path);
-        mUnk_14e8 = 1;
-        return 1;
-    }
-    func_02066814(1);
-    if (mUnk_14e9 != 0) {
-        func_0206791c(5);
-    }
-    return 0;
-}
-
-extern const u8 data_020a1bae[];
-#define REG_G3_DISP3DCNT (*(vu16 *) 0x4000060)
-
-void UnkStruct_02065c40::func_02067b08() {
-    char path[0x80];
-    GX_SetVisiblePlane(0x11);
-    G2_SetBG0Offset(0, 0);
-    G2_SetBG0Priority(3);
-    REG_G3_DISP3DCNT = (REG_G3_DISP3DCNT & ~0x3000) | 0x20;
-    ChangeDir("/story/");
-    if (mUnk_14e4 == 0 && (mUnk_14f1 | func_02066c7c())) {
-        ChangeDir("/story/");
-        SpriteScreen &screen = SpriteManager::Get().Screen(1);
-        screen.func_02027624(3);
-        sprintf(path, "cutscene_b_obj.nce_ncg1D.bin");
-        screen.LoadCharacters(path, 0xd000, 0);
-        sprintf(path, "cutscene_b_obj_ncl.bin");
-        screen.func_02027fec(path, 0, 0);
-        if (mUnk_100c != NULL) {
-            delete mUnk_100c;
-        }
-        mUnk_14f2 = 0;
-        mUnk_100c = new CellAnimation("cutscene_b_obj_nce.bin", mUnk_14f2, 1, 1);
-        mUnk_100c->mCharBase = 0x1a0;
-        mUnk_100c->mUnk_11   = 0;
-        if (mUnk_14e2 == 5) {
-            mUnk_14f1 = 0;
-            mUnk_14ed = 1;
-        }
-    }
-    ChangeDir("/");
-    if (mUnk_1010 == NULL) {
-        SpriteManager::Get().func_0202753c(7);
-        NitroTexture *texture = new NitroTexture("story/mdl/cut_shadow.nsbtx");
-        NitroModel *model     = new NitroModel;
-        model->func_020289e0("story/mdl/cut_shadow.nsbmd", texture);
-        texture->func_02028344();
-        mUnk_1010 = model->func_02028b78(NULL);
-    }
-    if (mUnk_1014 == NULL) {
-        mUnk_1014 = new UnkStruct_02029ca8(data_020a1bae);
-        func_02069c6c();
-    }
-    mUnk_1018->func_02087eec();
-}
-
-void UnkStruct_02065c40::func_02066c9c(u32 unk1, u32 unk2) {
-    data_020d433c.mUnk_99 = 3;
-    data_020d433c.mPlayerCount = 2;
-    data_020d433c.mUnk_98 = 0;
-    for (u8 i = 0; i < 4; i++) {
-        data_020d433c.mUnk_9f[i] = i;
-        data_020d433c.mUnk_a3[i] = 0;
-        data_020d433c.mUnk_9b[i] = i;
-    }
-    switch (mUnk_14e2) {
-        case 3:
-            data_020d433c.mUnk_7b = 8;
-            break;
-        case 2:
-            data_020d433c.mUnk_7b = 0xc;
-            break;
-        default:
-            data_020d433c.mUnk_7b = 9;
-            break;
-    }
-    data_020d433c.mUnk_9a   = 0x11;
-    data_020d433c.mUnk_9a_0 = data_020d43f0[0].mUnk_28_6;
-    for (u8 j = 0; j < 3; j++) {
-        data_020d433c.mUnk_9f[j + 1] = func_02067120(unk1, unk2, (u8) (j + 1), 0);
-        data_020d433c.mUnk_a3[j + 1] = func_02067120(unk1, unk2, (j + 1) & 0xff, 1);
-    }
-    UnkStruct_020b4324_entry *entry = &data_020b4324[unk1]->mEntries[unk2];
-    data_020d433c.mUnk_95 = entry->mUnk_07;
-    data_020d433c.mUnk_96 = entry->mUnk_08;
-    if (data_020d43f0[0].mUnk_5bf_0 && (data_020d43f0[0].mUnk_580 & 0x80)) {
-        for (u8 k = 0; k < 3; k++) {
-            if (data_020d433c.mUnk_9f[k + 1] == 7) {
-                data_020d433c.mUnk_a3[k + 1] = 2;
-            }
-        }
-    }
-    switch (data_020b4324[unk1]->mEntries[unk2].mUnk_06) {
-        case 3:
-            data_020d433c.mUnk_98 = 1;
-            data_020d433c.mPlayerCount = 4;
-            data_020d433c.mUnk_9b[0] = 1;
-            data_020d433c.mUnk_9b[1] = 0;
-            data_020d433c.mUnk_9b[2] = 3;
-            data_020d433c.mUnk_9b[3] = 2;
-            break;
-        case 4:
-            data_020d433c.mUnk_99 = 6;
-            break;
-        case 5:
-            data_020d433c.mPlayerCount = 4;
-            break;
-    }
-    data_020d433c.mUnk_9f[0] = 0x15;
-    u8 type = data_020d43f0[0].mUnk_42;
-    if ((type == 9) & (data_020d43f0[0].mUnk_43 == 8)) {
-        data_020d433c.mUnk_8a_0 = 1;
-    } else {
-        data_020d433c.mUnk_8a_0 = 0;
-    }
-    BOOL reached = unk2 >= func_02067240(unk1);
-    BOOL known   = func_020670b4(type) != 0;
-    if (reached & known) {
-        data_020d433c.mUnk_8a_4 = 1;
-    } else {
-        data_020d433c.mUnk_8a_4 = 0;
-    }
-}
-
-void func_02089278();
-
-// non-matching: 57 words, register assignment (`volatile s32 result` is a placeholder for the stack slot).
-s32 UnkStruct_02065c40::func_02066814(u32 unk1) {
-    volatile s32 result = -1;
-    u8 type    = data_020d43f0[0].mUnk_42;
-    if (type >= 10) {
-        return result;
-    }
-    if (mUnk_14e2 == data_020b4324[type]->mUnk_78) {
-        u8 saved = data_020d433c.mUnk_7d;
-        s32 done = 0;
-        if (unk1 != 0) {
-            data_020d433c.mUnk_7d = 1;
-        }
-        u8 position = data_020d43f0[0].mUnk_43;
-        s32 advance = 0;
-        u8 index    = position % 10;
-        s32 pending = 0;
-        if ((index == 0) & (saved == 0)) {
-            result = data_020b4324[type]->mUnk_79;
-        } else {
-            BOOL seen = FALSE;
-            UnkStruct_020b4324_entry *entry = &data_020b4324[type]->mEntries[index];
-            switch (entry->mUnk_06) {
-                case 0:
-                    if (unk1 != 0) {
-                        done = 1;
-                    }
-                    break;
-                case 1:
-                    seen = TRUE;
-                    if (unk1 != 0) {
-                        advance = seen;
-                        if (type == 8 && data_020b4324[type]->mEntries[index + 1].mUnk_06 == 0) {
-                            pending = 1;
-                            break;
-                        }
-                        s32 next = index + 1;
-                        if (next < 10) {
-                            func_02066c9c(type, (u8) next);
-                            if (data_020b4324[type]->mEntries[index].mUnk_0a != 0 && data_020b4324[type]->mEntries[next].mUnk_06 != 1) {
-                                mUnk_14e9 = 1;
-                            }
-                        }
-                    }
-                    break;
-                default:
-                    if (saved == 2) {
-                        seen = TRUE;
-                        if (unk1 != 0) {
-                            advance = seen;
-                            if (entry->mUnk_0b == 0) {
-                                pending = 1;
-                            }
-                        }
-                        s32 next = index + 1;
-                        if (next < 10) {
-                            func_02066c9c(type, (u8) next);
-                            if (unk1 != 0) {
-                                if (data_020b4324[type]->mEntries[index].mUnk_0a != 0 && data_020b4324[type]->mEntries[next].mUnk_06 != 1) {
-                                    mUnk_14e9 = 1;
-                                }
-                            }
-                        }
-                    } else {
-                        func_02066c9c(type, index);
-                        if (mUnk_14e2 == 0 || mUnk_14e9 == 1) {
-                            func_0206791c(5);
-                        }
-                    }
-                    break;
-            }
-            if (data_020d43f0[0].mUnk_5bf_0) {
-                mUnk_14e9 = 0;
-            }
-            if (seen) {
-                u8 value = data_020b4324[type]->mEntries[index].mUnk_09;
-                if (value != 0) {
-                    result = value;
-                }
-            }
-        }
-        if (unk1 != 0) {
-            if ((advance | done) && pending != 0) {
-                mUnk_14ea = 1;
-            }
-            if (advance != 0) {
-                u32 limit = 10;
-                if (data_020d43f0[0].mUnk_5bf_0) {
-                    limit = func_02067240(type);
-                }
-                data_020d43f0[0].mUnk_43++;
-                u8 now = data_020d43f0[0].mUnk_43;
-                if (now >= limit) {
-                    done = 1;
-                } else if (data_020b4324[type]->mEntries[now].mUnk_06 == 0) {
-                    done = 1;
-                }
-                data_020d433c.mUnk_7d = 0;
-            }
-            if (done != 0) {
-                if (data_020d43f0[0].mUnk_5bf_0) {
-                    switch (data_020d43f0[0].mUnk_42) {
-                        case 1:
-                            data_020d43f0[0].mUnk_5bf |= 0x2;
-                            break;
-                        case 3:
-                            data_020d43f0[0].mUnk_5bf |= 0x4;
-                            break;
-                        case 6:
-                            data_020d43f0[0].mUnk_5bf |= 0x8;
-                            break;
-                        case 7:
-                            data_020d43f0[0].mUnk_5bf |= 0x10;
-                            break;
-                        case 8:
-                            data_020d43f0[0].mUnk_5bf |= 0x20;
-                            break;
-                        case 9:
-                            data_020d43f0[0].mUnk_5bf |= 0x40;
-                            break;
-                    }
-                    data_020d43f0[0].mUnk_42 = 10;
-                    func_0206791c(6);
-                    mUnk_14ea = 1;
-                } else {
-                    u32 next = 0;
-                    if (data_020b4324[type]->mUnk_78 != 0) {
-                        next = 6;
-                    }
-                    if (next != 0) {
-                        func_0206791c(next);
-                    }
-                    data_020d43f0[0].mUnk_42++;
-                    if (data_020d43f0[0].mUnk_42 == 10) {
-                        func_0206791c(8);
-                    }
-                }
-                data_020d43f0[0].mUnk_43 = 0;
-                data_020d433c.mUnk_7d = 0;
-                mUnk_14e2 = 7;
-            }
-            if (advance | done) {
-                func_02089278();
-            }
-        }
-    }
-    if (data_020d43f0[0].mUnk_5bf_0) {
-        result = -1;
-    }
-    return result;
-}
-
-void func_02086938();
-BOOL func_02086a58();
-BOOL func_02086b74();
-BOOL func_02086e08();
-
-void UnkStruct_02065c40::Update() {
-    if (mUnk_14e4 != 0) {
-        mUnk_14e5++;
-        mUnk_14e5 &= 1;
-    }
-    func_02067e74();
-    func_02069d54();
-    CameraManager &manager = CameraManager::Get();
-    Camera *camera         = manager.mCameras[manager.mActive];
-    data_02211374.mCameraPosition = camera->mPosition;
-    data_02211374.mCameraUp       = camera->mUp;
-    data_02211374.mCameraTarget   = camera->mTarget;
-    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
-    data_02211374.mFlags &= ~0xe8;
-    manager.mProjection[manager.mActive] = data_02211374.mProjection;
-    manager.mView[manager.mActive]       = data_02211374.mView;
-    manager.mMtxA[manager.mActive]       = *func_02032710();
-    manager.mMtxB[manager.mActive]       = *func_02032604();
-    manager.mMtxC[manager.mActive]       = *func_020323b8();
-    func_020679d8();
-    func_0206a208();
-    func_0206a01c();
-    func_0206ada4();
-    func_02068714();
-    func_0206aa34();
-    func_0206a850();
-    func_0206aecc();
-    if (mUnk_14e0 != 0) {
-        if (mUnk_12b9 < 10) {
-            mUnk_12b9 = 10;
-        }
-    }
-    switch (mUnk_12b9) {
-        case 0:
-            func_02067b08();
-            mUnk_12b9 = 5;
-            break;
-        case 1:
-            if (func_0206ed40()) {
-                mUnk_12b9++;
-            }
-            break;
-        case 2:
-            if (func_0206ef08()) {
-                mUnk_12b9++;
-            }
-            break;
-        case 3:
-            func_0206b09c();
-            break;
-        case 4:
-            func_0206d3b8();
-            break;
-        case 5:
-            if (mUnk_14ea != 0) {
-                func_02086938();
-                if (func_02086a58()) {
-                    mUnk_14eb = 1;
-                    mUnk_12b9 = 7;
-                } else if (func_02086b74()) {
-                    mUnk_14eb = 2;
-                    mUnk_12b9 = 7;
-                } else if (func_02086e08()) {
-                    mUnk_14eb = 3;
-                    mUnk_12b9 = 7;
-                } else {
-                    mUnk_12b9++;
-                }
-            } else {
-                mUnk_12b9 = 8;
-            }
-            break;
-        case 6:
-            if (mUnk_14ea != 0) {
-                break;
-            }
-            func_02067b08();
-            mUnk_12b9 = 8;
-            break;
-        case 7:
-            if (mUnk_14eb != 0) {
-                break;
-            }
-            func_02067b08();
-            mUnk_12b9 = 5;
-            break;
-        case 8:
-            if (func_02066f60()) {
-                if (mUnk_12b9 == 8) {
-                    mUnk_12b9 = 1;
-                }
-            } else {
-                if (mUnk_12b9 == 8) {
-                    mUnk_12b9 = 9;
-                }
-            }
-            if (mUnk_14ea != 0) {
-                mUnk_12b9 = 5;
-            }
-            break;
-        case 10:
-            mUnk_1018->func_02087cc0();
-            func_02067708(1);
-            RequestScene(1);
-            mFinished = 1;
-            break;
-    }
-}
-
 extern const u8 data_020a1b8a[];
 void func_01ff96c4(const void *src, void *dest, u32 size);
 void func_02088ec4(UnkStruct_02087898 *object);
 
-// non-matching: 10 words, the original schedules `mov r2, #9` later.
-BOOL UnkStruct_02065c40::func_020702e0(s32 unk1, s32 unk2, s32 unk3, s32 unk4, s32 unk5, s32 unk6) {
-    if (mUnk_12bc != mUnk_12be) {
-        return FALSE;
+void UnkStruct_02065c40::func_0206f564(u8 unk1, u32 unk2, s32 unk3) {
+    BOOL isTwo   = mUnk_12ba == 2;
+    BOOL isThree = mUnk_12ba == 3;
+    if (!(isTwo | isThree)) {
+        return;
     }
-    func_01ff96c4(data_020a1b8a, mUnk_0c, 0x24);
-    mUnk_0c[0].mValue = unk1;
-    mUnk_0c[1].mValue = unk2;
-    mUnk_0c[2].mValue = unk3;
-    mUnk_0c[3].mValue = *(s16 *) &unk4;
-    mUnk_0c[4].mValue = *(s16 *) &unk5;
-    mUnk_0c[5].mValue = *(s16 *) &unk6;
-    mUnk_12bc  = 0;
-    mUnk_12be  = 9;
-    mUnk_12ca  = 0;
-    mUnk_12ce  = 0;
-    mUnk_12cc  = 0;
-    mUnk_12d2[0] = -1;
-    func_02088ec4(mUnk_1018);
-    mUnk_101c[0].mUnk_32 = 1;
-    mUnk_12b9            = 3;
-    return TRUE;
+    if (mUnk_12bc < mUnk_12be - 1) {
+        return;
+    }
+    if (!(((mUnk_12ca == 6) | ((mUnk_12ca == 5) | (mUnk_12ca == 7))) & (unk1 != mUnk_1018->mUnk_34))) {
+        return;
+    }
+    if (mUnk_14e2 == 5) {
+        mUnk_12ca = 0;
+        func_02088ec4(mUnk_1018);
+        mUnk_12d2[0] = unk1;
+        mUnk_12bc    = mUnk_12c0;
+        mUnk_0c[mUnk_12c0].mValue = func_02070554(mUnk_11b4[0].mUnk_36, unk2);
+        mUnk_12b9 = 3;
+        return;
+    }
+    mUnk_1018->func_02088e64((s16) (s32) unk1, mUnk_13d2[0], 0, 0);
+    mUnk_12ca = 2;
+    if (mUnk_14e2 != 0) {
+        return;
+    }
+    if (unk3 < 0) {
+        return;
+    }
+    u8 value = unk3 + 0x20;
+    if (value == mUnk_0c[mUnk_12c2].mValue) {
+        return;
+    }
+    mUnk_0c[mUnk_12c2].mValue = value;
+    mUnk_12bc                 = mUnk_12c2;
+    mUnk_0c[mUnk_12c0].mValue = -1;
+    mUnk_12b9                 = 3;
 }
 
 // The calls keep the initializer of the static script below from being a constant expression, so it is filled at run time
@@ -2435,6 +2528,53 @@ extern "C" BOOL func_0206f6f0(UnkStruct_02065c40 *event, const char *name, u32 i
     return FALSE;
 }
 
+// non-matching: 30 words, the original keeps event in r8 and category in r7.
+extern "C" void func_0206f88c(UnkStruct_02065c40 *event, u32 category, s32 value, u32 unk4) {
+    BOOL idle    = event->mUnk_12bc >= event->mUnk_12be;
+    BOOL waiting = event->mUnk_12ba == 3;
+    BOOL changed = value != event->mUnk_1018->mUnk_34;
+    if (!(idle & (waiting & changed))) {
+        return;
+    }
+    func_01ff9510(data_020a2118, event->mUnk_0c, 0x80);
+    s32 offset = data_020a1b12[category].mUnk_3;
+    if (offset < 0) {
+        offset = -1;
+    } else {
+        offset += 0x24;
+    }
+    event->mUnk_0c[5].mValue = offset;
+    u8 kind                  = data_020a1b12[category].mUnk_2;
+    s16 extra                = data_020a1b12[category].mUnk_0;
+    event->mUnk_0c[10].mValue = kind;
+    event->mUnk_0c[13].mValue = extra;
+    event->mUnk_0c[29].mValue = event->func_02070554((s8) kind, unk4);
+    event->mUnk_0c[30].mValue = kind;
+    event->mUnk_0c[31].mValue = value;
+    event->mUnk_12c0 = 0x1d;
+    event->mUnk_12bc = 0;
+    event->mUnk_12be = 0x20;
+    event->mUnk_12ca = 0;
+    func_02088ec4(event->mUnk_1018);
+    event->mUnk_12cc = 0;
+    event->mUnk_12ce = 0;
+    event->mUnk_12b9 = 3;
+}
+
+struct UnkStruct_s8x2 {
+    /* 0 */ s8 mUnk_0;
+    /* 1 */ s8 mUnk_1;
+};
+struct UnkStruct_s16x4 {
+    /* 0 */ s16 mUnk_0;
+    /* 2 */ s16 mUnk_2;
+    /* 4 */ s16 mUnk_4;
+    /* 6 */ s16 mUnk_6;
+};
+extern const UnkStruct_s8x2 data_020a1b68[];
+extern const UnkStruct_s16x4 data_020a22a4;
+extern const UnkStruct_s16x4 data_020a221c[];
+
 // non-matching: 0x64 vs 0x6c, the original keeps two named pointers into a local record.
 u32 UnkStruct_02065c40::func_0206f9b4(const char *name, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7) {
     struct {
@@ -2452,19 +2592,9 @@ u32 UnkStruct_02065c40::func_0206f9b4(const char *name, u32 unk2, u32 unk3, u32 
     return func_0206fa20(name, q, p, 1, *(u16 *) &unk4, unk5, *(u8 *) &unk6, unk7, 0);
 }
 
-struct UnkStruct_s8x2 {
-    /* 0 */ s8 mUnk_0;
-    /* 1 */ s8 mUnk_1;
-};
-struct UnkStruct_s16x4 {
-    /* 0 */ s16 mUnk_0;
-    /* 2 */ s16 mUnk_2;
-    /* 4 */ s16 mUnk_4;
-    /* 6 */ s16 mUnk_6;
-};
-extern const UnkStruct_s8x2 data_020a1b68[];
-extern const UnkStruct_s16x4 data_020a22a4;
-extern const UnkStruct_s16x4 data_020a221c[];
+
+
+void func_01ff9510(const void *src, void *dest, u32 size);
 
 // non-matching: 111 words, scheduling of the index arithmetic in the `case 0xa` and `default` (unk4 == 2) blocks; size matches.
 u8 UnkStruct_02065c40::func_0206fa20(const char *name, const u16 *unk2, const u8 *unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7,
@@ -2704,98 +2834,27 @@ u8 UnkStruct_02065c40::func_0206fa20(const char *name, const u16 *unk2, const u8
     return TRUE;
 }
 
-struct UnkStruct_020a1b12 {
-    /* 0 */ s16 mUnk_0;
-    /* 2 */ u8 mUnk_2;
-    /* 3 */ s8 mUnk_3;
-    /* 4 */
-};
-extern const UnkStruct_020a1b12 data_020a1b12[];
-extern const u8 data_020a2118[];
-void func_01ff9510(const void *src, void *dest, u32 size);
-
-// non-matching: 30 words, the original keeps event in r8 and category in r7.
-extern "C" void func_0206f88c(UnkStruct_02065c40 *event, u32 category, s32 value, u32 unk4) {
-    BOOL idle    = event->mUnk_12bc >= event->mUnk_12be;
-    BOOL waiting = event->mUnk_12ba == 3;
-    BOOL changed = value != event->mUnk_1018->mUnk_34;
-    if (!(idle & (waiting & changed))) {
-        return;
-    }
-    func_01ff9510(data_020a2118, event->mUnk_0c, 0x80);
-    s32 offset = data_020a1b12[category].mUnk_3;
-    if (offset < 0) {
-        offset = -1;
-    } else {
-        offset += 0x24;
-    }
-    event->mUnk_0c[5].mValue = offset;
-    u8 kind                  = data_020a1b12[category].mUnk_2;
-    s16 extra                = data_020a1b12[category].mUnk_0;
-    event->mUnk_0c[10].mValue = kind;
-    event->mUnk_0c[13].mValue = extra;
-    event->mUnk_0c[29].mValue = event->func_02070554((s8) kind, unk4);
-    event->mUnk_0c[30].mValue = kind;
-    event->mUnk_0c[31].mValue = value;
-    event->mUnk_12c0 = 0x1d;
-    event->mUnk_12bc = 0;
-    event->mUnk_12be = 0x20;
-    event->mUnk_12ca = 0;
-    func_02088ec4(event->mUnk_1018);
-    event->mUnk_12cc = 0;
-    event->mUnk_12ce = 0;
-    event->mUnk_12b9 = 3;
-}
-
-BOOL UnkStruct_02065c40::func_0206eb10(const char *path) {
-    char file[0x80];
+// non-matching: 10 words, the original schedules `mov r2, #9` later.
+BOOL UnkStruct_02065c40::func_020702e0(s32 unk1, s32 unk2, s32 unk3, s32 unk4, s32 unk5, s32 unk6) {
     if (mUnk_12bc != mUnk_12be) {
         return FALSE;
     }
-    ChangeDir("/");
-    sprintf(file, "/script/%s", path);
-    func_02023708(file, 0, 0, 0, &mUnk_12b4, 1);
-    func_02069bdc();
-    func_02069c6c();
-    mUnk_12ca = 0;
-    mUnk_12cc = 0;
-    mUnk_12ce = 0;
+    func_01ff96c4(data_020a1b8a, mUnk_0c, 0x24);
+    mUnk_0c[0].mValue = unk1;
+    mUnk_0c[1].mValue = unk2;
+    mUnk_0c[2].mValue = unk3;
+    mUnk_0c[3].mValue = *(s16 *) &unk4;
+    mUnk_0c[4].mValue = *(s16 *) &unk5;
+    mUnk_0c[5].mValue = *(s16 *) &unk6;
+    mUnk_12bc  = 0;
+    mUnk_12be  = 9;
+    mUnk_12ca  = 0;
+    mUnk_12ce  = 0;
+    mUnk_12cc  = 0;
+    mUnk_12d2[0] = -1;
     func_02088ec4(mUnk_1018);
-    mUnk_12ba = 0;
-    mUnk_14ec = 0;
-    func_02067e2c(0, 0);
-    func_02067e2c(1, 0);
-    func_02067708(0);
-    for (u8 i = 0; i < 2; i++) {
-        mUnk_11b4[i].mUnk_3c = 0;
-        mUnk_11b4[i].mUnk_3b = 0;
-        mUnk_11b4[i].mUnk_34 = 0;
-        mUnk_11b4[i].mUnk_3d = 0x28;
-        mUnk_11b4[i].mUnk_3f = 0x80;
-        mUnk_11b4[i].mUnk_40 = 0x80;
-        mUnk_11b4[i].mUnk_41 = 0x80;
-        mUnk_11b4[i].mUnk_42 = 0;
-        MI_CpuClear16(&mUnk_11b4[i], 0x18);
-        MI_CpuClear16(mUnk_11b4[i].mUnk_18, 0x14);
-        mUnk_1084[i].mUnk_4d = 0;
-        mUnk_1084[i].mUnk_4e = 0;
-        mUnk_1084[i].mUnk_4c = 1;
-        mUnk_1084[i].mUnk_4f = 0x80;
-        mUnk_112c[i].mUnk_37 = 0;
-        mUnk_112c[i].mUnk_38 = 0x80;
-        mUnk_112c[i].mUnk_39 = 0x80;
-        mUnk_112c[i].mUnk_3a = 0x80;
-        mUnk_112c[i].mUnk_3b = 0;
-        mUnk_112c[i].mUnk_36 = 0;
-        mUnk_112c[i].mUnk_3c = 0;
-        mUnk_112c[i].mUnk_3d = 0;
-        mUnk_112c[i].mUnk_3e = 0;
-        mUnk_112c[i].mUnk_40 = 0;
-        mUnk_112c[i].mUnk_3f = 10;
-        MI_CpuClear16(&mUnk_112c[i], 0x18);
-        MI_CpuClear16(mUnk_112c[i].mUnk_18, 0x14);
-    }
-    mUnk_12b9 = 1;
+    mUnk_101c[0].mUnk_32 = 1;
+    mUnk_12b9            = 3;
     return TRUE;
 }
 
@@ -2853,68 +2912,30 @@ void UnkStruct_02065c40::func_02070390() {
     }
 }
 
-void UnkStruct_02065c40::func_0206f564(u8 unk1, u32 unk2, s32 unk3) {
-    BOOL isTwo   = mUnk_12ba == 2;
-    BOOL isThree = mUnk_12ba == 3;
-    if (!(isTwo | isThree)) {
-        return;
+s32 UnkStruct_02065c40::func_02070554(s32 kind, s32 index) {
+    if ((kind < 0) | (kind > 0x10)) {
+        return -1;
     }
-    if (mUnk_12bc < mUnk_12be - 1) {
-        return;
+    s32 result = -1;
+    if (kind > 5) {
+        if (index < 9) {
+            result = (s16) (data_020a248c[kind - 6][index] - 0xa8);
+        }
+    } else {
+        if (index < 12) {
+            result = (s16) (data_020a233c[kind][index] - 0xa8);
+        }
     }
-    if (!(((mUnk_12ca == 6) | ((mUnk_12ca == 5) | (mUnk_12ca == 7))) & (unk1 != mUnk_1018->mUnk_34))) {
-        return;
+    if (result < 0) {
+        return -1;
     }
-    if (mUnk_14e2 == 5) {
-        mUnk_12ca = 0;
-        func_02088ec4(mUnk_1018);
-        mUnk_12d2[0] = unk1;
-        mUnk_12bc    = mUnk_12c0;
-        mUnk_0c[mUnk_12c0].mValue = func_02070554(mUnk_11b4[0].mUnk_36, unk2);
-        mUnk_12b9 = 3;
-        return;
-    }
-    mUnk_1018->func_02088e64((s16) (s32) unk1, mUnk_13d2[0], 0, 0);
-    mUnk_12ca = 2;
-    if (mUnk_14e2 != 0) {
-        return;
-    }
-    if (unk3 < 0) {
-        return;
-    }
-    u8 value = unk3 + 0x20;
-    if (value == mUnk_0c[mUnk_12c2].mValue) {
-        return;
-    }
-    mUnk_0c[mUnk_12c2].mValue = value;
-    mUnk_12bc                 = mUnk_12c2;
-    mUnk_0c[mUnk_12c0].mValue = -1;
-    mUnk_12b9                 = 3;
+    return result;
 }
 
 s32 func_0201f970(s32 value, s32 divisor);
 
-// non-matching: 0x100 vs 0xfc, the angle is truncated differently.
-extern "C" void func_0206ea14() {
-    s32 line = *(vu16 *) 0x4000006;
-    if (line >= 0xc0) {
-        return;
+extern "C" void func_020705f0(UnkStruct_02065c40 *event) {
+    if (event->mUnk_1018 != NULL) {
+        event->mUnk_1018->mUnk_34 = -1;
     }
-    UnkStruct_02065c40 *event = data_02219288;
-    u32 time = line + UnkStruct_020c1884::Get().mFrame;
-    u32 angle = ((time << 16) / 3) >> 6;
-    u16 height = event->mUnk_14dc;
-    u16 width  = event->mUnk_14da;
-    u16 third  = height / 3;
-    u16 span;
-    if (width >= height - third) {
-        span = height - width;
-    } else {
-        span = width;
-        if (span > third) {
-            span = third;
-        }
-    }
-    s32 offset = span * (SinIdx(angle) << 5) / third;
-    func_020037e8((s16) ((offset << 4) >> 16));
 }

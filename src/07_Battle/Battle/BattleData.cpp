@@ -268,6 +268,31 @@ BOOL BattleData::func_ov007_0223ddac(u8 side) {
     return done;
 }
 
+// non-matching: same instructions; register assignment and the prologue order (side/x/y spilled before `this` is copied) differ.
+void BattleData::func_ov007_0223de88(u8 side, int x, int y, u32 flag, u32 value) {
+    if (value == 0xffff) {
+        value = mEntries[side].mUnk_00;
+    }
+    u8 count = 4;
+    if (value < 1000) {
+        count--;
+        if (value < 100) {
+            count--;
+            if ((s32) value < 10) {
+                count--;
+            }
+        }
+    }
+    u8 i = 0;
+    do {
+        mUnk_34[2]->func_0202a3ec(1, (s32) value % 10, (s16) (x + 0x2f - i * 12), (s16) (y + 0x4d), flag);
+        value /= 10;
+        i++;
+    } while (i < count);
+    mUnk_34[side + 5]->Draw(1, x, y, flag);
+    mUnk_34[side + 5]->Draw(1, x, y, flag);
+}
+
 // non-matching: same instructions, but the original keeps `mode` and the shift in registers and spills x + 0x30 / y; the compiled version spills different values.
 void BattleData::func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u32 flag, u32 mode, u16 a, u16 b) {
     u32 value = 0;
@@ -315,31 +340,6 @@ void BattleData::func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u32 flag, u
     next:
         i++;
     } while (i <= count);
-}
-
-// non-matching: same instructions; register assignment and the prologue order (side/x/y spilled before `this` is copied) differ.
-void BattleData::func_ov007_0223de88(u8 side, int x, int y, u32 flag, u32 value) {
-    if (value == 0xffff) {
-        value = mEntries[side].mUnk_00;
-    }
-    u8 count = 4;
-    if (value < 1000) {
-        count--;
-        if (value < 100) {
-            count--;
-            if ((s32) value < 10) {
-                count--;
-            }
-        }
-    }
-    u8 i = 0;
-    do {
-        mUnk_34[2]->func_0202a3ec(1, (s32) value % 10, (s16) (x + 0x2f - i * 12), (s16) (y + 0x4d), flag);
-        value /= 10;
-        i++;
-    } while (i < count);
-    mUnk_34[side + 5]->Draw(1, x, y, flag);
-    mUnk_34[side + 5]->Draw(1, x, y, flag);
 }
 
 void BattleData::func_ov007_0223e180() {

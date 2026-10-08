@@ -339,6 +339,51 @@ void BattleHud::func_ov007_022257e0() {
     } while (k < 2);
 }
 
+// non-matching: register order: the original has screen r5, entries r6, selected r7.
+void BattleHud::func_ov007_0222644c(u8 side, int card) {
+    u8 index;
+    SpriteScreen &screen = SpriteManager::Get().Screen(1);
+    BattleEntry *entries = mData->mEntries;
+    u8 selected = data_020d433c.mBattlePlayers->mUnk_2a9;
+    screen.func_02027624(3);
+    index = side + 0x11;
+    ChangeDir("/Game/Card/Graphic/Small");
+    char path[0x80];
+    if (selected == entries[side].mUnk_0d_4) {
+        sprintf(path, "card_s_%03d_ncg.bin", card);
+    } else {
+        sprintf(path, "card_s_000_ncg.bin", card);
+    }
+    u32 base = data_ov007_02279184[side];
+    screen.LoadCharacters(path, base, 0);
+    if (side == 0) {
+        screen.func_02027fec("card_s_000_ncl.bin", 0x600, 0);
+    }
+    mAnims[index] = new CellAnimation("card_s_000_nce.bin", 0, 1, 1);
+    mAnims[index]->mCharBase = screen.func_020276f4(base);
+    mAnims[index]->mUnk_11 = 3;
+    mAnims[index]->SetAnimation(0);
+    ChangeDir("/");
+}
+
+void BattleHud::func_ov007_02226614() {
+    CellAnimation *old = mAnims[22];
+    if (old) {
+        delete old;
+    }
+    mAnims[22] = 0;
+    SpriteScreen &screen = SpriteManager::Get().Screen(0);
+    screen.func_02027624(1);
+    ChangeDir("/Game/Confrontation/Obj/");
+    screen.LoadCharacters("vs_b_obj_countdown.nce_ncg1D.bin", 0, 0);
+    screen.LoadPalette("vs_b_obj_countdown_ncl.bin", 0, 0x20);
+    mAnims[22] = new CellAnimation("vs_b_obj_countdown_nce.bin", 0, 1, 1);
+    mAnims[22]->mCharBase = screen.func_020276f4(0);
+    mAnims[22]->mUnk_11 = 0;
+    mAnims[22]->SetAnimation(0);
+    ChangeDir("/");
+}
+
 void BattleHud::Update() {
     if (mUnk_23_1) {
         mFinished = 1;
@@ -433,70 +478,6 @@ void func_ov007_02226a44(BattleHud *obj, u32 state) {
 
 u8 func_ov007_02226aa0(BattleHud *obj) {
     return obj->mUnk_12b ? 1 : 0;
-}
-
-void func_ov007_02227434(BattleHud *obj) {
-    obj->mUnk_108 = obj->mUnk_108 + obj->mUnk_110;
-    obj->mUnk_10c = obj->mUnk_10c - obj->mUnk_110;
-}
-
-void func_ov007_0222844c(BattleHud *obj, u8 a, u8 b) {
-    obj->mUnk_118[a] = 0;
-    obj->mUnk_11c[0] = -32;
-    obj->mUnk_11c[1] = 0x120;
-    obj->mUnk_117 |= 0xc;
-}
-
-void func_ov007_0222847c(BattleHud *obj) {
-    CellAnimation *anim = obj->mAnims[9];
-    if (anim->mUnk_0e != 2) {
-        anim->SetAnimation(2);
-    }
-}
-
-// non-matching: register order: the original has screen r5, entries r6, selected r7.
-void BattleHud::func_ov007_0222644c(u8 side, int card) {
-    u8 index;
-    SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    BattleEntry *entries = mData->mEntries;
-    u8 selected = data_020d433c.mBattlePlayers->mUnk_2a9;
-    screen.func_02027624(3);
-    index = side + 0x11;
-    ChangeDir("/Game/Card/Graphic/Small");
-    char path[0x80];
-    if (selected == entries[side].mUnk_0d_4) {
-        sprintf(path, "card_s_%03d_ncg.bin", card);
-    } else {
-        sprintf(path, "card_s_000_ncg.bin", card);
-    }
-    u32 base = data_ov007_02279184[side];
-    screen.LoadCharacters(path, base, 0);
-    if (side == 0) {
-        screen.func_02027fec("card_s_000_ncl.bin", 0x600, 0);
-    }
-    mAnims[index] = new CellAnimation("card_s_000_nce.bin", 0, 1, 1);
-    mAnims[index]->mCharBase = screen.func_020276f4(base);
-    mAnims[index]->mUnk_11 = 3;
-    mAnims[index]->SetAnimation(0);
-    ChangeDir("/");
-}
-
-void BattleHud::func_ov007_02226614() {
-    CellAnimation *old = mAnims[22];
-    if (old) {
-        delete old;
-    }
-    mAnims[22] = 0;
-    SpriteScreen &screen = SpriteManager::Get().Screen(0);
-    screen.func_02027624(1);
-    ChangeDir("/Game/Confrontation/Obj/");
-    screen.LoadCharacters("vs_b_obj_countdown.nce_ncg1D.bin", 0, 0);
-    screen.LoadPalette("vs_b_obj_countdown_ncl.bin", 0, 0x20);
-    mAnims[22] = new CellAnimation("vs_b_obj_countdown_nce.bin", 0, 1, 1);
-    mAnims[22]->mCharBase = screen.func_020276f4(0);
-    mAnims[22]->mUnk_11 = 0;
-    mAnims[22]->SetAnimation(0);
-    ChangeDir("/");
 }
 
 // non-matching: 2 words: temporary register naming in the and/asr pair.
@@ -750,6 +731,11 @@ BOOL BattleHud::func_ov007_022273b4() {
     return 0;
 }
 
+void func_ov007_02227434(BattleHud *obj) {
+    obj->mUnk_108 = obj->mUnk_108 + obj->mUnk_110;
+    obj->mUnk_10c = obj->mUnk_10c - obj->mUnk_110;
+}
+
 void BattleHud::func_ov007_02227460(int side) {
     mAnims[5]->SetAnimation(0x13 + mData->mEntries[side].mUnk_0d_4);
 }
@@ -837,81 +823,6 @@ BOOL BattleHud::func_ov007_022275c0(u8 side, s16 x, s16 y, u8 flag) {
         i++;
     } while (i < 15);
     return result;
-}
-
-void BattleHud::func_ov007_02227bbc(u8 index) {
-    u8 j = 3;
-    u8 i = 0;
-    do {
-        if (i == index) {
-            mAnims[j]->func_02029f6c();
-            mAnims[j]->SetAnimation(12 - i);
-            mUnk_122[i] = 1;
-        } else if (mUnk_122[i] == 0) {
-            mAnims[j]->func_02029f6c();
-            mAnims[j]->SetAnimation(8 - i);
-        }
-        j++;
-        i++;
-    } while (i < 2);
-}
-
-void BattleHud::func_ov007_022284a0(int side) {
-    if (side == 0) {
-        mUnk_11a = 1;
-    } else {
-        mUnk_11b = 1;
-    }
-    mUnk_120 = 20;
-}
-
-void BattleHud::func_ov007_022284c0(int side) {
-    if (side == 0) {
-        mUnk_11a = 2;
-    } else {
-        mUnk_11b = 2;
-    }
-    mUnk_120 = 20;
-}
-
-void BattleHud::func_ov007_022284e0(int side) {
-    if (side == 0) {
-        mUnk_11a = 2;
-        mUnk_11b = 3;
-    } else {
-        mUnk_11a = 3;
-        mUnk_11b = 2;
-    }
-    mUnk_120 = 20;
-}
-
-BOOL BattleHud::func_ov007_02228514() {
-    return mUnk_11a == 0 && mUnk_11b == 0;
-}
-
-void BattleHud::func_ov007_02228530(int card) {
-    mUnk_128 = 1;
-    mUnk_126 = 0xb4;
-    mUnk_124 = 0x14;
-    SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    u32 id = func_02065c20(card);
-    ChangeDir("/Game/Card/Graphic/Large");
-    char path[0x80];
-    sprintf(path, "card_l_%03d.nce_ncg1D.bin", id);
-    screen.LoadCharacters(path, 0x17000, 0);
-    sprintf(path, "card_l_%03d_ncl.bin", id);
-    screen.func_02027fec(path, 0xa00, 0);
-    sprintf(path, "card_l_%03d_nce.bin", id);
-    mAnims[19] = new CellAnimation(path, 0, 1, 1);
-    mAnims[19]->mCharBase = screen.func_020276f4(0x17000);
-    mAnims[19]->mUnk_11 = 5;
-    mAnims[19]->SetAnimation(0);
-    ChangeDir("/");
-}
-
-void BattleHud::func_ov007_022286c8() {
-    mUnk_129 = 1;
-    mUnk_124 = 0x14;
 }
 
 // non-matching: i and j swap registers (r8/r7).
@@ -1018,130 +929,21 @@ void BattleHud::func_ov007_02227730() {
     mData->mUnk_6c->func_020658d0();
 }
 
-// non-matching: the original keeps the card x position in r5 and does not fold x + 3.
-void BattleHud::func_ov007_022286e0() {
-    BattleEntry *entries = mData->mEntries;
-    if (mUnk_11a != 0 || mUnk_11b != 0) {
-        mUnk_120 -= 1;
-        if (mUnk_120 < 4) {
-            mUnk_120 = 4;
-        }
-    }
-    switch (mUnk_11a) {
-        case 1:
-            mUnk_11c[0] += mUnk_120;
-            if (mUnk_11c[0] >= 0x80) {
-                mUnk_11c[0] = 0x80;
-                mUnk_11a = 0;
-            }
-            break;
-        case 2:
-            mUnk_11c[0] -= mUnk_120;
-            if (mUnk_11c[0] <= -32) {
-                mUnk_11c[0] = -32;
-                mUnk_11a = 0;
-            }
-            break;
-        case 3:
-            mUnk_11c[0] += mUnk_120;
-            if (mUnk_11c[0] >= 0x120) {
-                mUnk_11c[0] = 0x120;
-                mUnk_11a = 0;
-            }
-            break;
-    }
-    switch (mUnk_11b) {
-        case 1:
-            mUnk_11c[1] -= mUnk_120;
-            if (mUnk_11c[1] <= 0x80) {
-                mUnk_11c[1] = 0x80;
-                mUnk_11b = 0;
-            }
-            break;
-        case 2:
-            mUnk_11c[1] += mUnk_120;
-            if (mUnk_11c[1] >= 0x120) {
-                mUnk_11c[1] = 0x120;
-                mUnk_11b = 0;
-            }
-            break;
-        case 3:
-            mUnk_11c[1] -= mUnk_120;
-            if (mUnk_11c[1] <= -32) {
-                mUnk_11c[1] = -32;
-                mUnk_11b = 0;
-            }
-            break;
-    }
-    if (mUnk_128 | mUnk_129) {
-        mUnk_124 -= 2;
-        if (mUnk_124 < 3) {
-            mUnk_124 = 3;
-        }
-    }
-    s16 y = 0x62;
-    if (mUnk_129) {
-        mUnk_126 += mUnk_124;
-        if (mUnk_126 > 0xb4) {
-            mUnk_126 = 0xb4;
-            mUnk_128 = mUnk_129 = 0;
-        }
-    } else if (mUnk_128) {
-        mUnk_126 -= mUnk_124;
-        if (mUnk_126 < 0x5f) {
-            mUnk_126 = 0x5f;
-            if (mUnk_116) {
-                y = mUnk_114 != 0 ? y + 3 : y - 3;
-                mUnk_115++;
-                if (mUnk_115 >= 1) {
-                    mUnk_115 = 0;
-                    mUnk_114 ^= 1;
-                    mUnk_116--;
-                }
-            }
-        }
-    }
-    u8 side = 0;
+void BattleHud::func_ov007_02227bbc(u8 index) {
+    u8 j = 3;
+    u8 i = 0;
     do {
-        if (!entries[side].mUnk_0f_0) {
-            if (mUnk_118[side] != 0xff) {
-                u8 x = data_ov007_02279178[side];
-                mAnims[17 + side]->Draw(1, x, 0x20, mUnk_118[side]);
-                if (!data_020d433c.mUnk_9a_2 && mUnk_0c == side) {
-                    if (!mUnk_117_1 && !mUnk_117_2 && mUnk_118[side] == 1) {
-                        if (!entries[(u8) (side ^ 1)].mUnk_0f_3) {
-                            mAnims[16]->Draw(1, x, 0x17, 0);
-                        }
-                    }
-                }
-            }
+        if (i == index) {
+            mAnims[j]->func_02029f6c();
+            mAnims[j]->SetAnimation(12 - i);
+            mUnk_122[i] = 1;
+        } else if (mUnk_122[i] == 0) {
+            mAnims[j]->func_02029f6c();
+            mAnims[j]->SetAnimation(8 - i);
         }
-        side++;
-    } while (side < 2);
-    if (mAnims[15]->mUnk_0e == 5) {
-        s8 s = 1;
-        do {
-            if (mUnk_11c[s] > -32 && mUnk_11c[s] < 0x120) {
-                mAnims[14 + s]->Draw(1, mUnk_11c[s], 0x78, 0);
-            }
-            s--;
-        } while (s >= 0);
-    } else {
-        u8 s = 0;
-        do {
-            if (mUnk_11c[s] > -32 && mUnk_11c[s] < 0x120) {
-                mAnims[14 + s]->Draw(1, mUnk_11c[s], 0x78, 0);
-            }
-            s++;
-        } while (s < 2);
-    }
-    if (mUnk_128 | mUnk_129) {
-        if (mUnk_117_0 && !mUnk_129) {
-            mAnims[20]->Update();
-            mAnims[20]->Draw(1, 0x82, 0x5a, 0);
-        }
-        mAnims[19]->func_0202a494(1, y, mUnk_126, 0, 0xb33, 0xb33, 0);
-    }
+        j++;
+        i++;
+    } while (i < 2);
 }
 
 // non-matching: register order in the aura loop (original i=r9, j=r8, frame=r7, x=r6).
@@ -1313,5 +1115,203 @@ void BattleHud::func_ov007_02227c54() {
             f = 4096.0f * p - 0.5f;
         }
         mAnims[0]->func_0202a494(1, 0x20, 0x40, 3, (s32) f << 1, 0x1000, 0);
+    }
+}
+
+void func_ov007_0222844c(BattleHud *obj, u8 a, u8 b) {
+    obj->mUnk_118[a] = 0;
+    obj->mUnk_11c[0] = -32;
+    obj->mUnk_11c[1] = 0x120;
+    obj->mUnk_117 |= 0xc;
+}
+
+void func_ov007_0222847c(BattleHud *obj) {
+    CellAnimation *anim = obj->mAnims[9];
+    if (anim->mUnk_0e != 2) {
+        anim->SetAnimation(2);
+    }
+}
+
+void BattleHud::func_ov007_022284a0(int side) {
+    if (side == 0) {
+        mUnk_11a = 1;
+    } else {
+        mUnk_11b = 1;
+    }
+    mUnk_120 = 20;
+}
+
+void BattleHud::func_ov007_022284c0(int side) {
+    if (side == 0) {
+        mUnk_11a = 2;
+    } else {
+        mUnk_11b = 2;
+    }
+    mUnk_120 = 20;
+}
+
+void BattleHud::func_ov007_022284e0(int side) {
+    if (side == 0) {
+        mUnk_11a = 2;
+        mUnk_11b = 3;
+    } else {
+        mUnk_11a = 3;
+        mUnk_11b = 2;
+    }
+    mUnk_120 = 20;
+}
+
+BOOL BattleHud::func_ov007_02228514() {
+    return mUnk_11a == 0 && mUnk_11b == 0;
+}
+
+void BattleHud::func_ov007_02228530(int card) {
+    mUnk_128 = 1;
+    mUnk_126 = 0xb4;
+    mUnk_124 = 0x14;
+    SpriteScreen &screen = SpriteManager::Get().Screen(1);
+    u32 id = func_02065c20(card);
+    ChangeDir("/Game/Card/Graphic/Large");
+    char path[0x80];
+    sprintf(path, "card_l_%03d.nce_ncg1D.bin", id);
+    screen.LoadCharacters(path, 0x17000, 0);
+    sprintf(path, "card_l_%03d_ncl.bin", id);
+    screen.func_02027fec(path, 0xa00, 0);
+    sprintf(path, "card_l_%03d_nce.bin", id);
+    mAnims[19] = new CellAnimation(path, 0, 1, 1);
+    mAnims[19]->mCharBase = screen.func_020276f4(0x17000);
+    mAnims[19]->mUnk_11 = 5;
+    mAnims[19]->SetAnimation(0);
+    ChangeDir("/");
+}
+
+void BattleHud::func_ov007_022286c8() {
+    mUnk_129 = 1;
+    mUnk_124 = 0x14;
+}
+
+// non-matching: the original keeps the card x position in r5 and does not fold x + 3.
+void BattleHud::func_ov007_022286e0() {
+    BattleEntry *entries = mData->mEntries;
+    if (mUnk_11a != 0 || mUnk_11b != 0) {
+        mUnk_120 -= 1;
+        if (mUnk_120 < 4) {
+            mUnk_120 = 4;
+        }
+    }
+    switch (mUnk_11a) {
+        case 1:
+            mUnk_11c[0] += mUnk_120;
+            if (mUnk_11c[0] >= 0x80) {
+                mUnk_11c[0] = 0x80;
+                mUnk_11a = 0;
+            }
+            break;
+        case 2:
+            mUnk_11c[0] -= mUnk_120;
+            if (mUnk_11c[0] <= -32) {
+                mUnk_11c[0] = -32;
+                mUnk_11a = 0;
+            }
+            break;
+        case 3:
+            mUnk_11c[0] += mUnk_120;
+            if (mUnk_11c[0] >= 0x120) {
+                mUnk_11c[0] = 0x120;
+                mUnk_11a = 0;
+            }
+            break;
+    }
+    switch (mUnk_11b) {
+        case 1:
+            mUnk_11c[1] -= mUnk_120;
+            if (mUnk_11c[1] <= 0x80) {
+                mUnk_11c[1] = 0x80;
+                mUnk_11b = 0;
+            }
+            break;
+        case 2:
+            mUnk_11c[1] += mUnk_120;
+            if (mUnk_11c[1] >= 0x120) {
+                mUnk_11c[1] = 0x120;
+                mUnk_11b = 0;
+            }
+            break;
+        case 3:
+            mUnk_11c[1] -= mUnk_120;
+            if (mUnk_11c[1] <= -32) {
+                mUnk_11c[1] = -32;
+                mUnk_11b = 0;
+            }
+            break;
+    }
+    if (mUnk_128 | mUnk_129) {
+        mUnk_124 -= 2;
+        if (mUnk_124 < 3) {
+            mUnk_124 = 3;
+        }
+    }
+    s16 y = 0x62;
+    if (mUnk_129) {
+        mUnk_126 += mUnk_124;
+        if (mUnk_126 > 0xb4) {
+            mUnk_126 = 0xb4;
+            mUnk_128 = mUnk_129 = 0;
+        }
+    } else if (mUnk_128) {
+        mUnk_126 -= mUnk_124;
+        if (mUnk_126 < 0x5f) {
+            mUnk_126 = 0x5f;
+            if (mUnk_116) {
+                y = mUnk_114 != 0 ? y + 3 : y - 3;
+                mUnk_115++;
+                if (mUnk_115 >= 1) {
+                    mUnk_115 = 0;
+                    mUnk_114 ^= 1;
+                    mUnk_116--;
+                }
+            }
+        }
+    }
+    u8 side = 0;
+    do {
+        if (!entries[side].mUnk_0f_0) {
+            if (mUnk_118[side] != 0xff) {
+                u8 x = data_ov007_02279178[side];
+                mAnims[17 + side]->Draw(1, x, 0x20, mUnk_118[side]);
+                if (!data_020d433c.mUnk_9a_2 && mUnk_0c == side) {
+                    if (!mUnk_117_1 && !mUnk_117_2 && mUnk_118[side] == 1) {
+                        if (!entries[(u8) (side ^ 1)].mUnk_0f_3) {
+                            mAnims[16]->Draw(1, x, 0x17, 0);
+                        }
+                    }
+                }
+            }
+        }
+        side++;
+    } while (side < 2);
+    if (mAnims[15]->mUnk_0e == 5) {
+        s8 s = 1;
+        do {
+            if (mUnk_11c[s] > -32 && mUnk_11c[s] < 0x120) {
+                mAnims[14 + s]->Draw(1, mUnk_11c[s], 0x78, 0);
+            }
+            s--;
+        } while (s >= 0);
+    } else {
+        u8 s = 0;
+        do {
+            if (mUnk_11c[s] > -32 && mUnk_11c[s] < 0x120) {
+                mAnims[14 + s]->Draw(1, mUnk_11c[s], 0x78, 0);
+            }
+            s++;
+        } while (s < 2);
+    }
+    if (mUnk_128 | mUnk_129) {
+        if (mUnk_117_0 && !mUnk_129) {
+            mAnims[20]->Update();
+            mAnims[20]->Draw(1, 0x82, 0x5a, 0);
+        }
+        mAnims[19]->func_0202a494(1, y, mUnk_126, 0, 0xb33, 0xb33, 0);
     }
 }

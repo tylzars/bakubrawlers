@@ -144,20 +144,6 @@ void *func_02023504(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
     return buffer;
 }
 
-BOOL func_02023ad4(const char *path) {
-    char buf[0x80];
-    BOOL ok = FALSE;
-    const char *prefix = UnkStruct_020c1884::Get().func_0202030c();
-    if (prefix) {
-        sprintf(buf, "%s_%s", path, prefix);
-        ok = func_0200aa94(&data_020d5440, buf);
-    }
-    if (!ok) {
-        ok = func_0200aa94(&data_020d5440, path);
-    }
-    return ok;
-}
-
 void *func_02023708(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32 unk6) {
     void *buffer = (void *) unk2;
     u32 offset   = unk3;
@@ -282,4 +268,18 @@ void func_02023a54() {
         OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, data_020d53e4.mTemp);
     }
     data_020d53e4.mActive = 0;
+}
+
+BOOL func_02023ad4(const char *path) {
+    char buf[0x80];
+    BOOL ok = FALSE;
+    const char *prefix = UnkStruct_020c1884::Get().func_0202030c();
+    if (prefix) {
+        sprintf(buf, "%s_%s", path, prefix);
+        ok = func_0200aa94(&data_020d5440, buf);
+    }
+    if (!ok) {
+        ok = func_0200aa94(&data_020d5440, path);
+    }
+    return ok;
 }

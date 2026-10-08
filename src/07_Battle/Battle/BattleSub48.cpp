@@ -333,23 +333,6 @@ u8 BattleSub48::func_ov007_02224a70() {
     return ret;
 }
 
-void func_ov007_022252a8(BattleSub48 *obj) {
-    obj->mUnk_38 = 0xc0;
-    obj->mUnk_3a = 10;
-    obj->mUnk_0c = 2;
-}
-
-void func_ov007_022252c4(BattleSub48 *obj) {
-    obj->mUnk_0c = 0;
-}
-
-int func_ov007_022252d0(int x1, int y1, int x2, int y2) {
-    s16 dy = y2 - y1;
-    s16 dx = x2 - x1;
-    int sq = dx * dx + dy * dy;
-    return (int) ((float) FX_Sqrt(FX32_CONST((float) sq)) / 4096.0f);
-}
-
 // non-matching: stack-slot order and one r8/r9 swap.
 void BattleSub48::func_ov007_02224c90() {
     mAnims[13]->Draw(0, 0x6e, (s16) mUnk_16, 1);
@@ -471,6 +454,23 @@ void BattleSub48::func_ov007_02224fdc() {
         return;
     }
     func_ov007_02224ef8();
+}
+
+void func_ov007_022252a8(BattleSub48 *obj) {
+    obj->mUnk_38 = 0xc0;
+    obj->mUnk_3a = 10;
+    obj->mUnk_0c = 2;
+}
+
+void func_ov007_022252c4(BattleSub48 *obj) {
+    obj->mUnk_0c = 0;
+}
+
+int func_ov007_022252d0(int x1, int y1, int x2, int y2) {
+    s16 dy = y2 - y1;
+    s16 dx = x2 - x1;
+    int sq = dx * dx + dy * dy;
+    return (int) ((float) FX_Sqrt(FX32_CONST((float) sq)) / 4096.0f);
 }
 
 void func_ov007_02225354(float x, float y, float *out) {

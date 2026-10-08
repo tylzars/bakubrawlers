@@ -109,11 +109,6 @@ extern void func_0202555c();
 extern void func_020255f8(void (*hook)());
 extern void func_02025df8();
 
-SceneRunner::SceneRunner() : SceneBase(0, 3) {
-    mOverlay      = -1;
-    mOverlayState = 0;
-}
-
 void SceneRunner::func_02024818(u32 overlay) {
     UnkStruct_OverlayInfo info;
     FrameTask::Get().func_0203dc28();
@@ -127,6 +122,11 @@ void SceneRunner::func_02024818(u32 overlay) {
     mOverlayState = 2;
     func_02021d38((void *) (info.mRamAddress + (info.mRamSize + info.mBssSize)));
     FrameTask::Get().func_0203dbc4();
+}
+
+SceneRunner::SceneRunner() : SceneBase(0, 3) {
+    mOverlay      = -1;
+    mOverlayState = 0;
 }
 
 // non-matching: 5 words, the guard load before a preceding store (see docs/decompiling.md).

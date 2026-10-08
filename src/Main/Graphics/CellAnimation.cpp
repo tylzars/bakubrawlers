@@ -107,10 +107,6 @@ void CellAnimation::func_02029ffc(SpriteScreen *screen, s32 x, s32 y, u8 unk4) {
     }
 }
 
-void CellAnimation::Draw(u8 unk1, s32 x, s32 y, u32 unk4) {
-    func_02029ffc(&SpriteManager::Get().Screen(unk1), x, y, *(u8 *) &unk4);
-}
-
 void CellAnimation::func_0202a120(SpriteScreen *screen, u32 frameIndex, s32 x, s16 y, u8 unk5) {
     CellAnimCel *frame = &mFrames[mUnk_0e].mCels[frameIndex];
     if (frame->mRotation != 0 || frame->mScaleX != 0x1000 || frame->mScaleY != 0x1000) {
@@ -133,6 +129,10 @@ void CellAnimation::func_0202a244(SpriteScreen *screen, s32 x, s32 y, u8 unk4, s
     SpriteTransform transform(scaleX, scaleY, rotation);
     screen->func_02027778(frame->mOam, frame->mOamCount, (s16)(x + frame->mOffsetX), (s16)(y + frame->mOffsetY), unk4,
                           mCharBase, mUnk_11, (u32)&transform);
+}
+
+void CellAnimation::Draw(u8 unk1, s32 x, s32 y, u32 unk4) {
+    func_02029ffc(&SpriteManager::Get().Screen(unk1), x, y, *(u8 *) &unk4);
 }
 
 void CellAnimation::func_0202a3ec(u8 unk1, u8 frame, s16 x, s16 y, u32 unk5) {

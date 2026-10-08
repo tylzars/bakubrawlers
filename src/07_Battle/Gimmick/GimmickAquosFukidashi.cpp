@@ -91,58 +91,6 @@ void GimmickAquosFukidashi::Finish() {
     mState = 4;
 }
 
-void GimmickAquosFukidashi::func_ov007_02276634() {
-    if (!mModelB) {
-        return;
-    }
-    MtxFx43 mtx = data_0220e86c;
-    func_01ffcf64(&mtx, &mPosition);
-    data_020d433c.mUnk_14 &= 8;
-    if (!data_020d433c.mUnk_14) {
-        mModelB->func_02028d80();
-    }
-    mModelB->func_02029174(&mtx, &mScale);
-}
-
-void GimmickAquosFukidashi::func_ov007_022766c4(int drawB) {
-    if (!mModel) {
-        return;
-    }
-    if ((int)data_020d433c.mGimmicks->mState < 2) {
-        return;
-    }
-    func_020526bc();
-    if (!drawB) {
-        return;
-    }
-    func_ov007_02276634();
-}
-
-int GimmickAquosFukidashi::func_ov007_02276710(int frames, int state) {
-    data_020d433c.mUnk_14 &= 8;
-    if (!data_020d433c.mUnk_14) {
-        mCounter--;
-        if (mCounter == 0) {
-            mCounter = frames;
-            mState   = state;
-            return 1;
-        }
-    }
-    return 0;
-}
-
-int GimmickAquosFukidashi::func_ov007_02276760() {
-    VecFx32 d;
-    BattleTarget *target = data_020d433c.mBattlePlayers->mUnk_298;
-    if (target && target->mUnk_1a4 && target->mUnk_1a4->mUnk_4a) {
-        VEC_Subtract(&target->mUnk_1a4->mPosition, &mPosition, &d);
-        if (VEC_Mag(&d) <= 0x96000) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
 void GimmickAquosFukidashi::Update() {
     switch (mState) {
     case 0:
@@ -234,4 +182,56 @@ void GimmickAquosFukidashi::Update() {
         mFinished = 1;
         break;
     }
+}
+
+void GimmickAquosFukidashi::func_ov007_02276634() {
+    if (!mModelB) {
+        return;
+    }
+    MtxFx43 mtx = data_0220e86c;
+    func_01ffcf64(&mtx, &mPosition);
+    data_020d433c.mUnk_14 &= 8;
+    if (!data_020d433c.mUnk_14) {
+        mModelB->func_02028d80();
+    }
+    mModelB->func_02029174(&mtx, &mScale);
+}
+
+void GimmickAquosFukidashi::func_ov007_022766c4(int drawB) {
+    if (!mModel) {
+        return;
+    }
+    if ((int)data_020d433c.mGimmicks->mState < 2) {
+        return;
+    }
+    func_020526bc();
+    if (!drawB) {
+        return;
+    }
+    func_ov007_02276634();
+}
+
+int GimmickAquosFukidashi::func_ov007_02276710(int frames, int state) {
+    data_020d433c.mUnk_14 &= 8;
+    if (!data_020d433c.mUnk_14) {
+        mCounter--;
+        if (mCounter == 0) {
+            mCounter = frames;
+            mState   = state;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int GimmickAquosFukidashi::func_ov007_02276760() {
+    VecFx32 d;
+    BattleTarget *target = data_020d433c.mBattlePlayers->mUnk_298;
+    if (target && target->mUnk_1a4 && target->mUnk_1a4->mUnk_4a) {
+        VEC_Subtract(&target->mUnk_1a4->mPosition, &mPosition, &d);
+        if (VEC_Mag(&d) <= 0x96000) {
+            return 1;
+        }
+    }
+    return 0;
 }

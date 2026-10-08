@@ -68,46 +68,6 @@ void GimmickPyrusEruption::Finish() {
     mState = 5;
 }
 
-void GimmickPyrusEruption::func_ov007_0222ffb0() {
-    if (!mModelB) {
-        return;
-    }
-    MtxFx43 mtx = data_0220e86c;
-    func_01ffcf64(&mtx, &mPosition);
-    data_020d433c.mUnk_14 &= 8;
-    if (!data_020d433c.mUnk_14) {
-        mModelB->func_02028d80();
-    }
-    mModelB->func_02029174(&mtx, &mScale);
-}
-
-void GimmickPyrusEruption::func_ov007_02230040(int drawB) {
-    if (!mModel) {
-        return;
-    }
-    if ((int)data_020d433c.mGimmicks->mState < 2) {
-        return;
-    }
-    func_020526bc();
-    if (!drawB) {
-        return;
-    }
-    func_ov007_0222ffb0();
-}
-
-int GimmickPyrusEruption::func_ov007_0223008c(int frames, int state) {
-    data_020d433c.mUnk_14 &= 8;
-    if (!data_020d433c.mUnk_14) {
-        mCounter--;
-        if (mCounter == 0) {
-            mCounter = frames;
-            mState   = state;
-            return 1;
-        }
-    }
-    return 0;
-}
-
 void GimmickPyrusEruption::Update() {
     VecFx32 d;
     switch (mState) {
@@ -198,4 +158,44 @@ void GimmickPyrusEruption::Update() {
         mFinished = 1;
         break;
     }
+}
+
+void GimmickPyrusEruption::func_ov007_0222ffb0() {
+    if (!mModelB) {
+        return;
+    }
+    MtxFx43 mtx = data_0220e86c;
+    func_01ffcf64(&mtx, &mPosition);
+    data_020d433c.mUnk_14 &= 8;
+    if (!data_020d433c.mUnk_14) {
+        mModelB->func_02028d80();
+    }
+    mModelB->func_02029174(&mtx, &mScale);
+}
+
+void GimmickPyrusEruption::func_ov007_02230040(int drawB) {
+    if (!mModel) {
+        return;
+    }
+    if ((int)data_020d433c.mGimmicks->mState < 2) {
+        return;
+    }
+    func_020526bc();
+    if (!drawB) {
+        return;
+    }
+    func_ov007_0222ffb0();
+}
+
+int GimmickPyrusEruption::func_ov007_0223008c(int frames, int state) {
+    data_020d433c.mUnk_14 &= 8;
+    if (!data_020d433c.mUnk_14) {
+        mCounter--;
+        if (mCounter == 0) {
+            mCounter = frames;
+            mState   = state;
+            return 1;
+        }
+    }
+    return 0;
 }

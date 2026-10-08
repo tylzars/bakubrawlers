@@ -47,16 +47,6 @@ void GimmickHaosBall::Finish() {
     mState = 5;
 }
 
-void GimmickHaosBall::func_ov007_0222db58() {
-    if (!mModel) {
-        return;
-    }
-    if ((int)data_020d433c.mGimmicks->mState < 2) {
-        return;
-    }
-    func_020526bc();
-}
-
 void GimmickHaosBall::Update() {
     VecFx32 rnd;
     VecFx32 d;
@@ -146,4 +136,14 @@ void GimmickHaosBall::Update() {
         mFinished = 1;
         break;
     }
+}
+
+void GimmickHaosBall::func_ov007_0222db58() {
+    if (!mModel) {
+        return;
+    }
+    if ((int)data_020d433c.mGimmicks->mState < 2) {
+        return;
+    }
+    func_020526bc();
 }

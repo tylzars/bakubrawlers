@@ -16,6 +16,16 @@
 #include "System/SoundManager.hpp"
 #include "System/TouchManager.hpp"
 
+extern WindowItemRecord data_ov000_02226340[];
+
+extern WindowCellRecord data_ov000_02226394[];
+
+extern Vec2s data_ov000_02226298[];
+
+extern WindowItemRecord data_ov000_022263e8[];
+
+extern WindowCellRecord data_ov000_02226458[];
+
 OptionScene::OptionScene() :
     SceneBase(2, 0) {
     mWindow = NULL;
@@ -556,47 +566,6 @@ void OptionScene::DrawMenu2() {
     mCells[0]->Draw(1, mPosX[0], mPosY[0], 0);
 }
 
-void OptionScene::DrawMenu3() {
-    if (mUnk_4b != 0) {
-        mPosY[0] += 2;
-        mUnk_4b--;
-    }
-    mCells[0]->Draw(1, mPosX[0], mPosY[0], 0);
-}
-
-void OptionScene::SlideStep() {
-    if (mUnk_4b == 0) {
-        return;
-    }
-    u8 i;
-    for (i = 0; i < 3; i++) {
-        mPosX[i] += data_ov000_02226288[i].x;
-        mPosY[i] += data_ov000_02226288[i].y;
-        SelectWindow *w = mWindow;
-        s16 y = mPosY[i];
-        w->mCellPos[i].x = mPosX[i];
-        w->mCellPos[i].y = y;
-    }
-    mPosX[i] += data_ov000_02226288[i].x;
-    mPosY[i] += data_ov000_02226288[i].y;
-    G2S_SetBG1Offset(mPosX[i], mPosY[i]);
-    G2S_SetBG2Offset(mPosX[i] - 0x20, mPosY[i]);
-    mUnk_4b--;
-}
-
-void OptionScene::ResetDisplay() {
-    G2_BlendNone();
-    G2S_BlendNone();
-    GX_SetVisiblePlane(0x13);
-    GXS_SetVisiblePlane(0x11);
-}
-
-extern WindowItemRecord data_ov000_02226340[];
-
-extern WindowCellRecord data_ov000_02226394[];
-
-extern Vec2s data_ov000_02226298[];
-
 void OptionScene::BuildMenu3() {
     GX_SetVisiblePlane(0x11);
     delete mWindow;
@@ -632,9 +601,38 @@ void OptionScene::BuildMenu3() {
     func_02025c1c(1, 0xd, 0, mBuf0c, mBufSize, 0);
 }
 
-extern WindowItemRecord data_ov000_022263e8[];
+void OptionScene::SlideStep() {
+    if (mUnk_4b == 0) {
+        return;
+    }
+    u8 i;
+    for (i = 0; i < 3; i++) {
+        mPosX[i] += data_ov000_02226288[i].x;
+        mPosY[i] += data_ov000_02226288[i].y;
+        SelectWindow *w = mWindow;
+        s16 y = mPosY[i];
+        w->mCellPos[i].x = mPosX[i];
+        w->mCellPos[i].y = y;
+    }
+    mPosX[i] += data_ov000_02226288[i].x;
+    mPosY[i] += data_ov000_02226288[i].y;
+    G2S_SetBG1Offset(mPosX[i], mPosY[i]);
+    G2S_SetBG2Offset(mPosX[i] - 0x20, mPosY[i]);
+    mUnk_4b--;
+}
 
-extern WindowCellRecord data_ov000_02226458[];
+void OptionScene::ResetDisplay() {
+    G2_BlendNone();
+    G2S_BlendNone();
+    GX_SetVisiblePlane(0x13);
+    GXS_SetVisiblePlane(0x11);
+}
+
+
+
+
+
+
 
 void OptionScene::BuildMenu4() {
     ClearText(4);
@@ -652,6 +650,18 @@ void OptionScene::BuildMenu4() {
     mWindow->Update(1);
     int sel = data_020d43f0[0].mUnk_28_5 == 0 ? 1 : 0;
     mWindow->mCells[(u8) sel]->SetAnimation(data_ov000_02226458[sel].mUnk_18[2]);
+}
+
+
+
+
+
+void OptionScene::DrawMenu3() {
+    if (mUnk_4b != 0) {
+        mPosY[0] += 2;
+        mUnk_4b--;
+    }
+    mCells[0]->Draw(1, mPosX[0], mPosY[0], 0);
 }
 
 void OptionScene::ClearText(u32 index) {

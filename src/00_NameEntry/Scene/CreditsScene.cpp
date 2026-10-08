@@ -81,64 +81,39 @@ void CreditsScene::LoadGraphics() {
     func_02025b64(1, 7, 0, "credits_b_bg_00_nsc.bin", 0, 0, 0);
 }
 
-void func_ov000_02225f98(void *scene) {
-    CreditsScene *self = (CreditsScene *) scene;
-    G2_SetBG1Offset(0, self->mScroll[0]);
-    G2S_SetBG1Offset(0, self->mScroll[1]);
-}
-
-void CreditsScene::LoadText() {
-    u16 *map = (u16 *) OS_Alloc(TextManager::Get().BufferSize(8, 8));
-    MI_CpuClear16(map, 0x800);
-    TextManager::Get().func_0202cd48(0, map, 0, 0, 0x20, 0x20, 0x20);
-    func_02025c1c(0, 8, 0, map, 0x800, 1);
-    map = (u16 *) OS_Alloc(0x800);
-    MI_CpuClear16(map, 0x800);
-    TextManager::Get().func_0202cd48(0, map, 0, 0, 0x20, 0x20, 0x20);
-    func_02025c1c(1, 8, 0, map, 0x800, 1);
-    TextManager::Get().func_0202ce44(0, 0, 0, 0);
-    TextManager::Get().func_0202ce44(1, 0, 0, 0);
-    void *chars = OS_Alloc(TextManager::Get().BufferSize(0x20, 0x20));
-    MI_CpuClear16(chars, 0x8000);
-    func_02005e9c(chars, 0x8000);
-    func_02025c1c(0, 12, 0, chars, 0x8000, 1);
-    chars = OS_Alloc(0x8000);
-    MI_CpuClear16(chars, 0x8000);
-    func_02005e9c(chars, 0x8000);
-    func_02025c1c(1, 12, 0, chars, 0x8000, 1);
-    mBufferSize = TextManager::Get().BufferSize(8, 8);
-    for (u32 i = 0; i < 2; i++) {
-        mBuffers[i] = OS_Alloc(mBufferSize);
-        MI_CpuClear16(mBuffers[i], mBufferSize);
+void CreditsScene::Update() {
+    switch (mState) {
+        case 0:
+            InitDisplay();
+            LoadGraphics();
+            LoadText();
+            SpriteManager::Get().StartFade(2);
+            mState++;
+            break;
+        case 1:
+            if (!SpriteManager::Get().IsFading()) {
+                mState++;
+            }
+            break;
+        case 2:
+            if (UpdateText()) {
+                mState++;
+            }
+            break;
+        case 3:
+            mState++;
+            SpriteManager::Get().StartFade(3);
+            break;
+        case 4:
+            if (SpriteManager::Get().IsFading()) {
+                break;
+            }
+            mState++;
+        case 5:
+            RequestScene(1);
+            mFinished = 1;
+            break;
     }
-    mMessages = (MessageFile *) func_02023504("/font/mes_Credit.mes", 0, 0, 0, 0, 0);
-}
-
-// non-matching: 0x254 vs 0x24c, different stack-slot layout for the two Print calls.
-void CreditsScene::PrintLine(u32 message, u32 row, u32 column, u32 shadow) {
-    s16 pixelWidth;
-    s16 outWidth;
-    s16 outHeight;
-    s16 outWidth2;
-    s16 outHeight2;
-    u32 offset = row * mBufferSize;
-    MI_CpuClear16(mBuffers[column], mBufferSize);
-    func_02005e9c(mBuffers[column], mBufferSize);
-    if (shadow) {
-        pixelWidth = 0;
-        outWidth = 0;
-        outHeight = 0;
-        TextManager::Get();
-        const u8 *text = mMessages->GetText((u16) message);
-        TextManager::Get().Print(text, mMessages->GetLength(message), mBuffers[column], 0x20, 2, &outWidth,
-                                 &outHeight, (u16 *) &pixelWidth, 0, 2, 0x21, 0, 0xffff, 0, 0, 1, 1);
-        outHeight = 0;
-        outWidth = (0x100 - (u16) pixelWidth) / 2;
-        MessageFile *file = mMessages;
-        TextManager::Get().Print(file->GetText((u16) message), file->GetLength(message), mBuffers[column], 0x20, 2, &outWidth,
-                                 &outHeight, NULL, 0, 2, 0, 0x10, 0, 0, 0, 1, 1);
-    }
-    func_02025c1c(column, 12, offset, mBuffers[column], mBufferSize, 0);
 }
 
 // non-matching: 0x288 vs 0x284, the zero constants are allocated to different registers.
@@ -203,37 +178,62 @@ BOOL CreditsScene::UpdateText() {
     return mColState[0] == 3 && mColState[1] == 3;
 }
 
-void CreditsScene::Update() {
-    switch (mState) {
-        case 0:
-            InitDisplay();
-            LoadGraphics();
-            LoadText();
-            SpriteManager::Get().StartFade(2);
-            mState++;
-            break;
-        case 1:
-            if (!SpriteManager::Get().IsFading()) {
-                mState++;
-            }
-            break;
-        case 2:
-            if (UpdateText()) {
-                mState++;
-            }
-            break;
-        case 3:
-            mState++;
-            SpriteManager::Get().StartFade(3);
-            break;
-        case 4:
-            if (SpriteManager::Get().IsFading()) {
-                break;
-            }
-            mState++;
-        case 5:
-            RequestScene(1);
-            mFinished = 1;
-            break;
+// non-matching: 0x254 vs 0x24c, different stack-slot layout for the two Print calls.
+void CreditsScene::PrintLine(u32 message, u32 row, u32 column, u32 shadow) {
+    s16 pixelWidth;
+    s16 outWidth;
+    s16 outHeight;
+    s16 outWidth2;
+    s16 outHeight2;
+    u32 offset = row * mBufferSize;
+    MI_CpuClear16(mBuffers[column], mBufferSize);
+    func_02005e9c(mBuffers[column], mBufferSize);
+    if (shadow) {
+        pixelWidth = 0;
+        outWidth = 0;
+        outHeight = 0;
+        TextManager::Get();
+        const u8 *text = mMessages->GetText((u16) message);
+        TextManager::Get().Print(text, mMessages->GetLength(message), mBuffers[column], 0x20, 2, &outWidth,
+                                 &outHeight, (u16 *) &pixelWidth, 0, 2, 0x21, 0, 0xffff, 0, 0, 1, 1);
+        outHeight = 0;
+        outWidth = (0x100 - (u16) pixelWidth) / 2;
+        MessageFile *file = mMessages;
+        TextManager::Get().Print(file->GetText((u16) message), file->GetLength(message), mBuffers[column], 0x20, 2, &outWidth,
+                                 &outHeight, NULL, 0, 2, 0, 0x10, 0, 0, 0, 1, 1);
     }
+    func_02025c1c(column, 12, offset, mBuffers[column], mBufferSize, 0);
+}
+
+void CreditsScene::LoadText() {
+    u16 *map = (u16 *) OS_Alloc(TextManager::Get().BufferSize(8, 8));
+    MI_CpuClear16(map, 0x800);
+    TextManager::Get().func_0202cd48(0, map, 0, 0, 0x20, 0x20, 0x20);
+    func_02025c1c(0, 8, 0, map, 0x800, 1);
+    map = (u16 *) OS_Alloc(0x800);
+    MI_CpuClear16(map, 0x800);
+    TextManager::Get().func_0202cd48(0, map, 0, 0, 0x20, 0x20, 0x20);
+    func_02025c1c(1, 8, 0, map, 0x800, 1);
+    TextManager::Get().func_0202ce44(0, 0, 0, 0);
+    TextManager::Get().func_0202ce44(1, 0, 0, 0);
+    void *chars = OS_Alloc(TextManager::Get().BufferSize(0x20, 0x20));
+    MI_CpuClear16(chars, 0x8000);
+    func_02005e9c(chars, 0x8000);
+    func_02025c1c(0, 12, 0, chars, 0x8000, 1);
+    chars = OS_Alloc(0x8000);
+    MI_CpuClear16(chars, 0x8000);
+    func_02005e9c(chars, 0x8000);
+    func_02025c1c(1, 12, 0, chars, 0x8000, 1);
+    mBufferSize = TextManager::Get().BufferSize(8, 8);
+    for (u32 i = 0; i < 2; i++) {
+        mBuffers[i] = OS_Alloc(mBufferSize);
+        MI_CpuClear16(mBuffers[i], mBufferSize);
+    }
+    mMessages = (MessageFile *) func_02023504("/font/mes_Credit.mes", 0, 0, 0, 0, 0);
+}
+
+void func_ov000_02225f98(void *scene) {
+    CreditsScene *self = (CreditsScene *) scene;
+    G2_SetBG1Offset(0, self->mScroll[0]);
+    G2S_SetBG1Offset(0, self->mScroll[1]);
 }

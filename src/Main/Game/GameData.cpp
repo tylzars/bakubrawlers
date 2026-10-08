@@ -112,6 +112,16 @@ u8 func_020230dc(UnkStruct_020d43f0 *d, u32 a, u32 b) {
     return q % 41;
 }
 
+void func_02023134(UnkStruct_020d43f0 *d, u32 a, u32 b, u32 c, u32 e, u32 f) {
+    u16 *rec = (u16 *) ((u8 *) d + a * 0x14);
+    rec[b] = func_0202317c(d, c, *(u8 *) &e, *(u8 *) &f);
+}
+
+void func_02023168(UnkStruct_020d43f0 *d, u32 a, u32 b, int c) {
+    u16 *rec = (u16 *) ((u8 *) d + a * 0x14);
+    rec[b] = c;
+}
+
 int func_0202317c(UnkStruct_020d43f0 *d, u32 a, u32 b, u32 c) {
     if (a >= 1) {
         return 0;
@@ -123,16 +133,6 @@ int func_0202317c(UnkStruct_020d43f0 *d, u32 a, u32 b, u32 c) {
         return 0;
     }
     return (u16) (c + (b * 6 + a * 0xf6));
-}
-
-void func_02023134(UnkStruct_020d43f0 *d, u32 a, u32 b, u32 c, u32 e, u32 f) {
-    u16 *rec = (u16 *) ((u8 *) d + a * 0x14);
-    rec[b] = func_0202317c(d, c, *(u8 *) &e, *(u8 *) &f);
-}
-
-void func_02023168(UnkStruct_020d43f0 *d, u32 a, u32 b, int c) {
-    u16 *rec = (u16 *) ((u8 *) d + a * 0x14);
-    rec[b] = c;
 }
 
 void func_020231c0(UnkStruct_020d43f0 *d, int idx, u32 v) {

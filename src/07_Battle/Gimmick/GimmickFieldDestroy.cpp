@@ -125,37 +125,6 @@ void GimmickFieldDestroy::Finish() {
     mState = 5;
 }
 
-// non-matching: the original loads the d4 table literal before e6, and the branch shape differs (bhi/pop vs popls/b).
-u8 func_ov007_0222b328() {
-    u8 flag   = data_020d433c.mUnk_7a;
-    u32 total = 0;
-    u8 i;
-    for (i = 0; i < 3; i++) {
-        if (flag) {
-            total += data_ov007_022793d4[i];
-        } else {
-            total += data_ov007_022793e6[i];
-        }
-    }
-    u32 r = MATH_Rand32(&data_020d42e8, total + 1);
-    i     = 0;
-    u32 acc = i;
-    for (; i < 3; i++) {
-        if (flag) {
-            acc += data_ov007_022793d4[i];
-            if (r <= acc) {
-                return i;
-            }
-        } else {
-            acc += data_ov007_022793e6[i];
-            if (r <= acc) {
-                return i;
-            }
-        }
-    }
-    return 0;
-}
-
 // non-matching: same .bss ordering difference as Load.
 void GimmickFieldDestroy::Update() {
     switch (mState) {
@@ -214,31 +183,35 @@ void GimmickFieldDestroy::Update() {
     func_ov007_0222b410();
 }
 
-int GimmickFieldDestroy::func_ov007_0222bc24() {
-    if (!mModelB) {
-        return 0;
+// non-matching: the original loads the d4 table literal before e6, and the branch shape differs (bhi/pop vs popls/b).
+u8 func_ov007_0222b328() {
+    u8 flag   = data_020d433c.mUnk_7a;
+    u32 total = 0;
+    u8 i;
+    for (i = 0; i < 3; i++) {
+        if (flag) {
+            total += data_ov007_022793d4[i];
+        } else {
+            total += data_ov007_022793e6[i];
+        }
     }
-    if (!mModelB->func_02028d80()) {
-        mState++;
+    u32 r = MATH_Rand32(&data_020d42e8, total + 1);
+    i     = 0;
+    u32 acc = i;
+    for (; i < 3; i++) {
+        if (flag) {
+            acc += data_ov007_022793d4[i];
+            if (r <= acc) {
+                return i;
+            }
+        } else {
+            acc += data_ov007_022793e6[i];
+            if (r <= acc) {
+                return i;
+            }
+        }
     }
-    CameraManager::Get();
-    MtxFx43 mtx = data_020c1cf4;
-    func_01ffcf64(&mtx, &mPosition);
-    mModelB->func_02029174(&mtx, &mScale);
-    VecFx32 dir;
-    VecFx32 cp;
-    Camera *cam = CameraManager::Get().mCameras[0];
-    cp          = cam->mPosition;
-    cp          = cam->mTarget;
-    VEC_Subtract(&dir, &cp, &dir);
-    VEC_Normalize(&dir, &dir);
-    dir.x = 0;
-    dir.y = 0;
-    dir.z = 0;
-    VEC_Add(&dir, &mPosition, &dir);
-    func_01ffcf64(&mtx, &dir);
-    mModelE->func_02028d80();
-    mModelE->func_02029174(&mtx, &mScale);
+    return 0;
 }
 
 void GimmickFieldDestroy::func_ov007_0222b410() {
@@ -373,6 +346,33 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
     case 2:
         break;
     }
+}
+
+int GimmickFieldDestroy::func_ov007_0222bc24() {
+    if (!mModelB) {
+        return 0;
+    }
+    if (!mModelB->func_02028d80()) {
+        mState++;
+    }
+    CameraManager::Get();
+    MtxFx43 mtx = data_020c1cf4;
+    func_01ffcf64(&mtx, &mPosition);
+    mModelB->func_02029174(&mtx, &mScale);
+    VecFx32 dir;
+    VecFx32 cp;
+    Camera *cam = CameraManager::Get().mCameras[0];
+    cp          = cam->mPosition;
+    cp          = cam->mTarget;
+    VEC_Subtract(&dir, &cp, &dir);
+    VEC_Normalize(&dir, &dir);
+    dir.x = 0;
+    dir.y = 0;
+    dir.z = 0;
+    VEC_Add(&dir, &mPosition, &dir);
+    func_01ffcf64(&mtx, &dir);
+    mModelE->func_02028d80();
+    mModelE->func_02029174(&mtx, &mScale);
 }
 
 VecFx32 data_ov007_022793f8 = {0x1000, 0x1000, 0x1000};

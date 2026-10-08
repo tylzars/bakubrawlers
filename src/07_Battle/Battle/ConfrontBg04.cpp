@@ -87,33 +87,6 @@ void ConfrontBg04::vfunc_3c() {
     }
 }
 
-void ConfrontBg04::vfunc_34() {
-}
-
-BOOL ConfrontBg04::func_ov007_0221bd84() {
-    return FALSE;
-}
-
-void ConfrontBg04::vfunc_44(int index, u16 count) {
-}
-
-void ConfrontBg04::func_ov007_02220718() {
-    if (mSpeed == 0) {
-        return;
-    }
-    if (mSpeed > 0) {
-        mSpeed -= 0x40;
-        if (mSpeed < 0) {
-            mSpeed = 0;
-        }
-    } else if (mSpeed < 0) {
-        mSpeed += 0x40;
-        if (mSpeed > 0) {
-            mSpeed = 0;
-        }
-    }
-}
-
 u8 ConfrontBg04::vfunc_40(int a) {
     u8 touching = 1;
     s32 value;
@@ -172,6 +145,9 @@ u8 ConfrontBg04::vfunc_40(int a) {
     return result;
 }
 
+void ConfrontBg04::vfunc_44(int index, u16 count) {
+}
+
 void func_ov007_02220688(ConfrontBg04 *scene) {
     MtxFx22 mtx;
     u16 speed = scene->mSpeed;
@@ -185,4 +161,28 @@ void func_ov007_02220688(ConfrontBg04 *scene) {
     mtx._[0] = c;
     mtx._[3] = c;
     G2x_SetBGyAffine_((vu16 *) 0x4001030, &mtx, 0x80, 0x88, 0, 0);
+}
+
+void ConfrontBg04::func_ov007_02220718() {
+    if (mSpeed == 0) {
+        return;
+    }
+    if (mSpeed > 0) {
+        mSpeed -= 0x40;
+        if (mSpeed < 0) {
+            mSpeed = 0;
+        }
+    } else if (mSpeed < 0) {
+        mSpeed += 0x40;
+        if (mSpeed > 0) {
+            mSpeed = 0;
+        }
+    }
+}
+
+void ConfrontBg04::vfunc_34() {
+}
+
+BOOL ConfrontBg04::func_ov007_0221bd84() {
+    return FALSE;
 }

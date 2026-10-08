@@ -113,50 +113,6 @@ void ConfrontBg02::vfunc_28() {
     ChangeDir("/");
 }
 
-void ConfrontBg02::func_ov007_0221ee70() {
-    u8 i = 0;
-    u16 total = 0;
-    ConfrontEmblemStep *step = data_ov007_02278bf8;
-    for (; i < 5; i++) {
-        total += step->mUntil;
-        if (mUnk_16 < total) {
-            if (mStep != step) {
-                mStep = step;
-            }
-            return;
-        }
-        step++;
-    }
-}
-
-BOOL ConfrontBg02::func_ov007_0221eec8() {
-    BOOL result = FALSE;
-    if (mUnk_20->mUnk_02 - mUnk_16 >= 10) {
-        if (mDelay != 0) {
-            mDelay--;
-        } else {
-            mDelay = func_ov007_0221d348(mStep->mMaxDelay - mStep->mMinDelay);
-            mDelay += mStep->mMinDelay;
-            result = TRUE;
-        }
-    }
-    return result;
-}
-
-void ConfrontBg02::func_ov007_0221ef34() {
-    BOOL found = FALSE;
-    for (u8 i = 0; i < 4; i++) {
-        if (mEmblems[i]->func_ov007_0221e250()) {
-            mEmblems[i]->func_ov007_0221de78(mSide);
-            found = TRUE;
-            break;
-        }
-    }
-    if (!found) {
-        func_ov007_0221d348(0xffff);
-    }
-}
-
 void ConfrontBg02::vfunc_34() {
     func_ov007_0221ee70();
     if (func_ov007_0221eec8()) {
@@ -260,6 +216,50 @@ u8 ConfrontBg02::vfunc_40(int a) {
 }
 
 void ConfrontBg02::vfunc_44(int index, u16 count) {
+}
+
+void ConfrontBg02::func_ov007_0221ee70() {
+    u8 i = 0;
+    u16 total = 0;
+    ConfrontEmblemStep *step = data_ov007_02278bf8;
+    for (; i < 5; i++) {
+        total += step->mUntil;
+        if (mUnk_16 < total) {
+            if (mStep != step) {
+                mStep = step;
+            }
+            return;
+        }
+        step++;
+    }
+}
+
+BOOL ConfrontBg02::func_ov007_0221eec8() {
+    BOOL result = FALSE;
+    if (mUnk_20->mUnk_02 - mUnk_16 >= 10) {
+        if (mDelay != 0) {
+            mDelay--;
+        } else {
+            mDelay = func_ov007_0221d348(mStep->mMaxDelay - mStep->mMinDelay);
+            mDelay += mStep->mMinDelay;
+            result = TRUE;
+        }
+    }
+    return result;
+}
+
+void ConfrontBg02::func_ov007_0221ef34() {
+    BOOL found = FALSE;
+    for (u8 i = 0; i < 4; i++) {
+        if (mEmblems[i]->func_ov007_0221e250()) {
+            mEmblems[i]->func_ov007_0221de78(mSide);
+            found = TRUE;
+            break;
+        }
+    }
+    if (!found) {
+        func_ov007_0221d348(0xffff);
+    }
 }
 
 BOOL ConfrontBg02::func_ov007_0221bd84() {

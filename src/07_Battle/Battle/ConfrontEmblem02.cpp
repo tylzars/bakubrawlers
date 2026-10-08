@@ -109,6 +109,33 @@ void ConfrontEmblem02::func_ov007_0221e054() {
     mUnk_07_3 = 1;
 }
 
+void ConfrontEmblem02::func_ov007_0221e090() {
+    switch (mState) {
+        case 0:
+            {
+                float a = mScale > 0.0f ? 0.5f + 4096.0f * mScale : 4096.0f * mScale - 0.5f;
+                float b = mScale > 0.0f ? 0.5f + 4096.0f * mScale : 4096.0f * mScale - 0.5f;
+                s32 x = (s32) mAngle;
+                s32 sy = (s32) b;
+                s32 sx = (s32) a;
+                mAnim->func_0202a494(1, x, 0x7b, 2, sy, sx, 0);
+            }
+            break;
+        case 1:
+            {
+                float a = mScale > 0.0f ? 0.5f + 4096.0f * mScale : 4096.0f * mScale - 0.5f;
+                float b = mScale > 0.0f ? 0.5f + 4096.0f * mScale : 4096.0f * mScale - 0.5f;
+                s32 x = (s32) mAngle;
+                s32 sy = (s32) b;
+                s32 sx = (s32) a;
+                mAnim->func_0202a494(1, x, 0x7b, 2, sy, sx, 0);
+            }
+            break;
+        case 2:
+            break;
+    }
+}
+
 u8 ConfrontEmblem02::func_ov007_0221e250() {
     return (mState == 2) ? 1 : 0;
 }
@@ -157,31 +184,4 @@ int ConfrontEmblem02::func_ov007_0221e268(u8 flag) {
         mUnk_07_2 = 1;
     }
     return result;
-}
-
-void ConfrontEmblem02::func_ov007_0221e090() {
-    switch (mState) {
-        case 0:
-            {
-                float a = mScale > 0.0f ? 0.5f + 4096.0f * mScale : 4096.0f * mScale - 0.5f;
-                float b = mScale > 0.0f ? 0.5f + 4096.0f * mScale : 4096.0f * mScale - 0.5f;
-                s32 x = (s32) mAngle;
-                s32 sy = (s32) b;
-                s32 sx = (s32) a;
-                mAnim->func_0202a494(1, x, 0x7b, 2, sy, sx, 0);
-            }
-            break;
-        case 1:
-            {
-                float a = mScale > 0.0f ? 0.5f + 4096.0f * mScale : 4096.0f * mScale - 0.5f;
-                float b = mScale > 0.0f ? 0.5f + 4096.0f * mScale : 4096.0f * mScale - 0.5f;
-                s32 x = (s32) mAngle;
-                s32 sy = (s32) b;
-                s32 sx = (s32) a;
-                mAnim->func_0202a494(1, x, 0x7b, 2, sy, sx, 0);
-            }
-            break;
-        case 2:
-            break;
-    }
 }

@@ -66,17 +66,6 @@ void GimmickFieldPowerS::Finish() {
     mState = 3;
 }
 
-void GimmickFieldPowerS::func_ov007_0222f1ac() {
-    switch (mVariant) {
-    case 0:
-        func_ov007_0222ea28(0x5b, 0x20);
-        break;
-    case 1:
-        func_ov007_0222ea28(0x61, 0x20);
-        break;
-    }
-}
-
 void GimmickFieldPowerS::Update() {
     switch (mState) {
     case 0:
@@ -170,6 +159,17 @@ void GimmickFieldPowerS::Update() {
     }
     case 3:
         mFinished = 1;
+        break;
+    }
+}
+
+void GimmickFieldPowerS::func_ov007_0222f1ac() {
+    switch (mVariant) {
+    case 0:
+        func_ov007_0222ea28(0x5b, 0x20);
+        break;
+    case 1:
+        func_ov007_0222ea28(0x61, 0x20);
         break;
     }
 }

@@ -77,74 +77,6 @@ void Confront03::vfunc_28() {
     ChangeDir("/");
 }
 
-BOOL Confront03::func_ov007_0221bd84() {
-    return FALSE;
-}
-
-void Confront03::vfunc_44(int index, u16 count) {
-}
-
-BOOL Confront03::func_ov007_0221fe4c() {
-    BOOL result = FALSE;
-    if (mUnk_20->mUnk_02 - mUnk_16 >= 0x28) {
-        if (mUnk_74 != 0) {
-            mUnk_74--;
-        } else {
-            mUnk_74 = func_ov007_0221d348(mUnk_70->mUnk_03 - mUnk_70->mUnk_02);
-            mUnk_74 += mUnk_70->mUnk_02;
-            result = TRUE;
-        }
-    }
-    return result;
-}
-
-void Confront03::func_ov007_0221feb8() {
-    u8 found = 0;
-    u8 i = 0;
-    do {
-        int v = mEmblems[i]->func_ov007_0221f70c();
-        if (v != -1) {
-            mUnk_6e = mUnk_6e & ~(u16) (1 << (u16) v);
-        }
-        i++;
-    } while (i < 4);
-    u8 free[12];
-    u8 n = 0;
-    u16 bit = 1;
-    u16 mask = mUnk_6e;
-    for (u8 k = 0; k < 12; k++) {
-        if (!(mask & bit)) {
-            free[n] = k;
-            n++;
-        }
-        bit = bit << 1;
-    }
-    if (n != 0) {
-        u8 j = 0;
-        do {
-            if (mEmblems[j]->func_ov007_0221f57c()) {
-                int pick = free[func_ov007_0221d348(n) & 0xff];
-                if (!mUnk_18_1 && (u16) (pick + 0xffff) <= 1) {
-                    func_ov007_0221d348(0xffff);
-                    func_ov007_0221d348(0xffff);
-                } else {
-                    mEmblems[j]->func_ov007_0221f1b8(pick, mUnk_6d);
-                    mUnk_6e = mUnk_6e | (u16) (1 << pick);
-                }
-                found = 1;
-                break;
-            }
-            j++;
-        } while (j < 4);
-    }
-    if (found) {
-        return;
-    }
-    func_ov007_0221d348(0xffff);
-    func_ov007_0221d348(0xffff);
-    func_ov007_0221d348(0xffff);
-}
-
 void Confront03::vfunc_34() {
     if (func_ov007_0221fe4c()) {
         u8 count = func_ov007_0221d348(mUnk_70->mUnk_04);
@@ -248,4 +180,72 @@ u8 Confront03::vfunc_40(int a) {
         return 0;
     }
     return result;
+}
+
+void Confront03::vfunc_44(int index, u16 count) {
+}
+
+BOOL Confront03::func_ov007_0221fe4c() {
+    BOOL result = FALSE;
+    if (mUnk_20->mUnk_02 - mUnk_16 >= 0x28) {
+        if (mUnk_74 != 0) {
+            mUnk_74--;
+        } else {
+            mUnk_74 = func_ov007_0221d348(mUnk_70->mUnk_03 - mUnk_70->mUnk_02);
+            mUnk_74 += mUnk_70->mUnk_02;
+            result = TRUE;
+        }
+    }
+    return result;
+}
+
+void Confront03::func_ov007_0221feb8() {
+    u8 found = 0;
+    u8 i = 0;
+    do {
+        int v = mEmblems[i]->func_ov007_0221f70c();
+        if (v != -1) {
+            mUnk_6e = mUnk_6e & ~(u16) (1 << (u16) v);
+        }
+        i++;
+    } while (i < 4);
+    u8 free[12];
+    u8 n = 0;
+    u16 bit = 1;
+    u16 mask = mUnk_6e;
+    for (u8 k = 0; k < 12; k++) {
+        if (!(mask & bit)) {
+            free[n] = k;
+            n++;
+        }
+        bit = bit << 1;
+    }
+    if (n != 0) {
+        u8 j = 0;
+        do {
+            if (mEmblems[j]->func_ov007_0221f57c()) {
+                int pick = free[func_ov007_0221d348(n) & 0xff];
+                if (!mUnk_18_1 && (u16) (pick + 0xffff) <= 1) {
+                    func_ov007_0221d348(0xffff);
+                    func_ov007_0221d348(0xffff);
+                } else {
+                    mEmblems[j]->func_ov007_0221f1b8(pick, mUnk_6d);
+                    mUnk_6e = mUnk_6e | (u16) (1 << pick);
+                }
+                found = 1;
+                break;
+            }
+            j++;
+        } while (j < 4);
+    }
+    if (found) {
+        return;
+    }
+    func_ov007_0221d348(0xffff);
+    func_ov007_0221d348(0xffff);
+    func_ov007_0221d348(0xffff);
+}
+
+BOOL Confront03::func_ov007_0221bd84() {
+    return FALSE;
 }

@@ -36,6 +36,14 @@ extern "C" void func_ov007_02246578(BattleCommandMap *map);
 extern "C" void func_ov007_02246558(BattleCommandMap *map);
 void func_ov007_02233078(VecFx32 *a, VecFx32 *b, int c, VecFx32 *d);
 
+static inline s32 StickSign(s32 v);
+
+struct Rot16 {
+    u16 x, y, z;
+};
+
+static inline void ApplyRot(UnkStruct_0203d374 *obj, Rot16 *rot, u16 base);
+
 // Copies the active camera into the 3D engine state and the camera manager's snapshot of it.
 static inline void SnapshotCamera() {
     CameraManager &manager        = CameraManager::Get();
@@ -188,35 +196,6 @@ void BattleCommandMap::func_ov007_0224560c(u32 index) {
     mUnk_50[index] = 0;
 }
 
-void func_ov007_0224587c(BattleCommandMap *map) {
-    map->mState = 3;
-}
-
-void func_ov007_02245888(BattleCommandMap *map) {
-    map->mState = 1;
-}
-
-void BattleCommandMap::func_ov007_02245894() {
-    func_ov007_022479d4(this, 1);
-    func_ov007_02247a1c(this, 1);
-}
-
-void BattleCommandMap::vfunc_0c() {
-    func_ov007_02245894();
-    func_ov007_022458cc();
-}
-
-void BattleCommandMap::func_ov007_022458cc() {
-    func_ov007_022476e0(this);
-    func_ov007_02247898(this);
-    func_ov007_0224796c(this);
-    mUnk_74->func_ov007_0226fe4c();
-}
-
-void BattleCommandMap::func_ov007_022458f4() {
-    func_ov007_02245f08();
-}
-
 void BattleCommandMap::Update() {
     switch (mState) {
         case 0:
@@ -253,6 +232,35 @@ void BattleCommandMap::Update() {
     }
 }
 
+void func_ov007_0224587c(BattleCommandMap *map) {
+    map->mState = 3;
+}
+
+void func_ov007_02245888(BattleCommandMap *map) {
+    map->mState = 1;
+}
+
+void BattleCommandMap::func_ov007_02245894() {
+    func_ov007_022479d4(this, 1);
+    func_ov007_02247a1c(this, 1);
+}
+
+void BattleCommandMap::vfunc_0c() {
+    func_ov007_02245894();
+    func_ov007_022458cc();
+}
+
+void BattleCommandMap::func_ov007_022458cc() {
+    func_ov007_022476e0(this);
+    func_ov007_02247898(this);
+    func_ov007_0224796c(this);
+    mUnk_74->func_ov007_0226fe4c();
+}
+
+void BattleCommandMap::func_ov007_022458f4() {
+    func_ov007_02245f08();
+}
+
 void BattleCommandMap::func_ov007_02245900() {
     if (mUnk_0c == 0) {
         return;
@@ -265,42 +273,6 @@ void BattleCommandMap::func_ov007_02245900() {
     camera->func_02026180();
     SnapshotCamera();
 }
-
-void BattleCommandMap::func_ov007_02245e58() {
-    float step = (float) mUnk_12c / 8.0f;
-    u8 i       = 0;
-    do {
-        func_ov007_02233078((VecFx32 *) mUnk_120, (VecFx32 *) mUnk_114, (u32) (mUnk_134 + (float) i * step), (VecFx32 *) &mUnk_78[i * 0xc]);
-        i++;
-    } while (i < 8);
-    float limit = (float) mUnk_12c / 8.0f;
-    mUnk_134    = mUnk_134 + limit / 30.0f;
-    if (mUnk_134 >= limit) {
-        mUnk_134 = 0;
-    }
-}
-
-void BattleCommandMap::func_ov007_02246450() {
-    func_ov007_02246a6c(this);
-    func_ov007_02246804(this);
-    func_ov007_02246758(this);
-    if (mUnk_14f != 0) {
-        func_ov007_0224677c(this);
-    }
-    func_ov007_02246730(this);
-    data_020d433c.mEffects->func_0202bf94(1);
-    BOOL show = TRUE;
-    if (CameraManager::Get().mMode == 2) {
-        if (CameraManager::Get().mActive != 0) {
-            show = FALSE;
-        }
-    }
-    if (show) {
-        func_ov007_02246578(this);
-        func_ov007_02246558(this);
-    }
-}
-
 
 void BattleCommandMap::func_ov007_02245b30() {
     if (mUnk_144 == 0) {
@@ -327,32 +299,20 @@ void BattleCommandMap::func_ov007_02245b30() {
     SnapshotCamera();
 }
 
-static inline s32 StickSign(s32 v) {
-    s32 s;
-    s32 a = v;
-    if (a < 0) {
-        a = -a;
+void BattleCommandMap::func_ov007_02245e58() {
+    float step = (float) mUnk_12c / 8.0f;
+    u8 i       = 0;
+    do {
+        func_ov007_02233078((VecFx32 *) mUnk_120, (VecFx32 *) mUnk_114, (u32) (mUnk_134 + (float) i * step), (VecFx32 *) &mUnk_78[i * 0xc]);
+        i++;
+    } while (i < 8);
+    float limit = (float) mUnk_12c / 8.0f;
+    mUnk_134    = mUnk_134 + limit / 30.0f;
+    if (mUnk_134 >= limit) {
+        mUnk_134 = 0;
     }
-    if (a < 0x31) {
-        s = 0;
-    } else if (v < 0) {
-        s = -1;
-    } else if (v > 0) {
-        s = 1;
-    }
-    return s;
 }
 
-struct Rot16 {
-    u16 x, y, z;
-};
-
-static inline void ApplyRot(UnkStruct_0203d374 *obj, Rot16 *rot, u16 base) {
-    obj->mRotX = obj->mRotX + rot->x;
-    obj->mRotY = obj->mRotY + rot->y;
-    obj->mRotZ = obj->mRotZ + rot->z;
-    obj->mRotX = base;
-}
 
 // non-matching: 0x52c vs 0x548, the original keeps angle unfolded per arm and has sx/sy in swapped registers.
 void BattleCommandMap::func_ov007_02245f08() {
@@ -442,6 +402,52 @@ void BattleCommandMap::func_ov007_02245f08() {
     mUnk_14->mRotX = obj->mRotX;
     mUnk_14->mRotY = obj->mRotY;
     mUnk_14->mRotZ = obj->mRotZ;
+}
+
+static inline s32 StickSign(s32 v) {
+    s32 s;
+    s32 a = v;
+    if (a < 0) {
+        a = -a;
+    }
+    if (a < 0x31) {
+        s = 0;
+    } else if (v < 0) {
+        s = -1;
+    } else if (v > 0) {
+        s = 1;
+    }
+    return s;
+}
+
+
+
+static inline void ApplyRot(UnkStruct_0203d374 *obj, Rot16 *rot, u16 base) {
+    obj->mRotX = obj->mRotX + rot->x;
+    obj->mRotY = obj->mRotY + rot->y;
+    obj->mRotZ = obj->mRotZ + rot->z;
+    obj->mRotX = base;
+}
+
+void BattleCommandMap::func_ov007_02246450() {
+    func_ov007_02246a6c(this);
+    func_ov007_02246804(this);
+    func_ov007_02246758(this);
+    if (mUnk_14f != 0) {
+        func_ov007_0224677c(this);
+    }
+    func_ov007_02246730(this);
+    data_020d433c.mEffects->func_0202bf94(1);
+    BOOL show = TRUE;
+    if (CameraManager::Get().mMode == 2) {
+        if (CameraManager::Get().mActive != 0) {
+            show = FALSE;
+        }
+    }
+    if (show) {
+        func_ov007_02246578(this);
+        func_ov007_02246558(this);
+    }
 }
 
 extern const VecFx32 data_ov007_02279ec4;
@@ -587,6 +593,12 @@ extern const u32 data_ov007_02279edc[];
 extern "C" void func_ov007_02247618(BattleCommandMap *map);
 extern "C" void func_ov007_0224768c(BattleCommandMap *map);
 
+extern "C" void func_ov007_02246a6c(BattleCommandMap *map) {
+    if (map->mUnk_10) {
+        map->mUnk_10->func_ov007_0224954c();
+    }
+}
+
 void func_ov007_02246a84(BattleCommandMap *map, u32 mode) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     camera->mUp.x  = 0;
@@ -717,6 +729,8 @@ void func_ov007_022470e4(BattleCommandMap *map, u8 a, u8 b) {
     func_ov007_022470f4(map, a, b, 0x1e);
 }
 
+extern "C" void func_ov007_0224724c(BattleCommandMap *map);
+
 extern "C" void func_ov007_022470f4(BattleCommandMap *map, u8 a, u8 b, u32 frames) {
     if (a == map->mUnk_148 && b == map->mUnk_149 && frames == 0x1e) {
         return;
@@ -745,8 +759,6 @@ extern "C" void func_ov007_022470f4(BattleCommandMap *map, u8 a, u8 b, u32 frame
     e.y = pos.y;
     func_ov007_02247544(map, &w, &e, frames);
 }
-
-extern "C" void func_ov007_0224724c(BattleCommandMap *map);
 
 extern "C" void func_ov007_022471c8(BattleCommandMap *map, u32 direction) {
     if (map->mUnk_144 != 0) {
@@ -792,6 +804,10 @@ extern "C" void func_ov007_0224724c(BattleCommandMap *map) {
     SnapshotCamera();
 }
 
+extern "C" s32 func_01ff9208(VecFx32 *a, VecFx32 *b);
+extern const u8 data_ov007_02279eb0[];
+extern "C" void func_ov007_02247794(BattleCommandMap *map);
+
 extern "C" void func_ov007_02247544(BattleCommandMap *map, VecFx32 *target, VecFx32 *pos, u32 frames) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera == 0) {
@@ -811,10 +827,6 @@ extern "C" void func_ov007_02247544(BattleCommandMap *map, VecFx32 *target, VecF
     camera->mTarget   = *(VecFx32 *) map->mUnk_e4;
     camera->mPosition = *(VecFx32 *) map->mUnk_f0;
 }
-
-extern "C" s32 func_01ff9208(VecFx32 *a, VecFx32 *b);
-extern const u8 data_ov007_02279eb0[];
-extern "C" void func_ov007_02247794(BattleCommandMap *map);
 
 extern "C" void func_ov007_02247618(BattleCommandMap *map) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
@@ -1041,6 +1053,10 @@ extern "C" void func_ov007_02247e00(BattleCommandMap *map) {
     SnapshotCamera();
 }
 
+extern "C" void func_ov007_022486c4(BattleCommandMap *map, VecFx32 *v, u32 mode);
+extern const VecFx32 data_ov007_02279ed0;
+extern const VecFx32 *const data_ov007_02288810[];
+
 extern "C" void func_ov007_022482a8(BattleCommandMap *map) {
     ChangeDir("/Game/Battle/3d/MapCam");
     map->mUnk_151  = 0;
@@ -1059,10 +1075,6 @@ extern "C" void func_ov007_022482a8(BattleCommandMap *map) {
     SnapshotCamera();
     ChangeDir("/");
 }
-
-extern "C" void func_ov007_022486c4(BattleCommandMap *map, VecFx32 *v, u32 mode);
-extern const VecFx32 data_ov007_02279ed0;
-extern const VecFx32 *const data_ov007_02288810[];
 
 extern "C" void func_ov007_02248620(BattleCommandMap *map, u32 flag) {
     map->mUnk_14f = flag;
@@ -1111,6 +1123,8 @@ extern "C" void func_ov007_02248748(BattleCommandMap *map, VecFx32 *out) {
     *out = data_ov007_02288810[map->mUnk_14b][data_020d433c.mBattlePlayers->Current()->mUnk_f1];
 }
 
+extern "C" void func_ov007_0224882c(BattleCommandMap *map);
+
 extern "C" void func_ov007_022487a8(BattleCommandMap *map) {
     VecFx32 v;
     v.x = 0x1000;
@@ -1123,8 +1137,6 @@ extern "C" void func_ov007_022487a8(BattleCommandMap *map) {
     rot[2] = map->mUnk_13e;
     func_ov007_022334f4(rot, map->mUnk_140, &v, (VecFx32 *) map->mUnk_114);
 }
-
-extern "C" void func_ov007_0224882c(BattleCommandMap *map);
 
 extern "C" void func_ov007_0224882c(BattleCommandMap *map) {
     VecFx32 tmp;
@@ -1196,10 +1208,4 @@ extern "C" u32 func_ov007_02248998(VecFx32 *v, u8 *outA, u8 *outB) {
         i++;
     } while (i < 12);
     return 0;
-}
-
-extern "C" void func_ov007_02246a6c(BattleCommandMap *map) {
-    if (map->mUnk_10) {
-        map->mUnk_10->func_ov007_0224954c();
-    }
 }

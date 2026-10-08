@@ -91,10 +91,6 @@ void ConfrontBg05::vfunc_28() {
     ChangeDir("/");
 }
 
-BOOL ConfrontBg05::func_ov007_0221bd84() {
-    return FALSE;
-}
-
 void ConfrontBg05::vfunc_34() {
     u8 spectator = IsSpectator();
     if (spectator) {
@@ -163,4 +159,8 @@ u8 ConfrontBg05::vfunc_40(int a) {
 }
 
 void ConfrontBg05::vfunc_44(int index, u16 count) {
+}
+
+BOOL ConfrontBg05::func_ov007_0221bd84() {
+    return FALSE;
 }

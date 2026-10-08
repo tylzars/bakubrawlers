@@ -14,6 +14,10 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
+extern u16 data_020c1a4c[];
+
+extern u8 data_0209e68c[][6];
+
 static inline BOOL NonZero(u8 value) {
     BOOL result = FALSE;
     if (value != 0) {
@@ -660,110 +664,6 @@ BOOL BattleCommandList::func_02059734() {
     return TRUE;
 }
 
-void BattleCommandList::func_0205a6a8() {
-    if (mUnk_15f != 0) {
-        return;
-    }
-    SpriteManager::Get().mScreens[0].func_02027778(mUnk_ac[1], mUnk_c4[1], (s16) (0x80 - ((u32) mUnk_154 >> 1)), 8, 0,
-                                                   0x40, 0xf, 0);
-}
-
-void BattleCommandList::func_0205a774() {
-    for (u8 i = 0; i < 3; i++) {
-        MI_CpuClear16(mUnk_a0[i], mUnk_b8[i]);
-    }
-}
-
-void BattleCommandList::func_0205a7ac() {
-    if (mUnk_14e < 0x2b) {
-        mUnk_90->func_0203d988();
-        mUnk_90->func_0203dab0();
-        return;
-    }
-    mCells58[7]->func_0202a3ec(0, mUnk_150, 0x22, 0x4c, 0);
-}
-
-// non-matching: 18 words, registers of the loop index and the inlined Get() temporary.
-void BattleCommandList::func_0205aea4() {
-    for (u8 i = 0; i < 12; i++) {
-        SpriteManager::Get().mScreens[0].func_02027778(data_0209e57c, 1, (s16) ((i % 4) << 6), (s16) ((i / 4) << 6), 3,
-                                                       (u16) (0x280 + i * 0x20), 0, 0);
-    }
-}
-
-void BattleCommandList::func_0205af8c() {
-    for (u8 i = 0; i < 6; i++) {
-        mUnk_142[i] = 0;
-    }
-}
-
-void func_0205afb4(BattleCommandList *list, u32 a, u32 b, BattleCellPair *pair) {
-    list->func_0205af8c();
-    list->func_0205b034(a, b);
-    if (list->mUnk_161 != 0) {
-        switch (list->mUnk_14f) {
-            case 5:
-                list->func_0205b034(3, b);
-                break;
-            case 6:
-                list->func_0205b034(0, b);
-                break;
-        }
-    }
-    list->func_0205b0dc(pair);
-}
-
-void BattleCommandList::func_0205b034(u32 index, u32 value) {
-    if (index < 6) {
-        mUnk_142[index] = value;
-    }
-}
-
-void BattleCommandList::func_0205b048(u32 value) {
-    if (mUnk_166 != 0) {
-        return;
-    }
-    SoundManager::Get().func_020246f8(8);
-    mUnk_165 = 0x3c;
-    mUnk_166 = value;
-}
-
-BOOL BattleCommandList::func_0205b0c4() {
-    return mUnk_166 != 0 ? 1 : 0;
-}
-
-void BattleCommandList::func_0205b0dc(const BattleCellPair *pair) {
-    if (pair == NULL) {
-        for (u8 i = 0; i < 5; i++) {
-            mUnk_16[i] = data_0209e5bc[mUnk_14f][i];
-        }
-        mUnk_164 = 0;
-    } else {
-        mUnk_16[0] = pair->mUnk_02_0;
-        mUnk_16[2] = pair->mUnk_02_3;
-        mUnk_16[3] = pair->mUnk_02_6;
-        mUnk_16[4] = pair->mUnk_02_9;
-        mUnk_16[1] = pair->mUnk_02_12;
-        mUnk_164   = pair->mUnk_00_0;
-    }
-    for (u8 i = 0; i < 5; i++) {
-        mUnk_0c[1 + i * 2] = mUnk_16[i];
-    }
-    if (mUnk_7c != NULL) {
-        func_02059c50(mUnk_156);
-    }
-}
-
-// non-matching: 20 words, scheduling of the last table loads.
-void func_0205b1c4(u32 index, u32 unk2) {
-    UnkStruct_02023248 *entry = func_02023248(data_020d43f0, index, unk2);
-    entry->mUnk_0  = data_0209e5bc[index][0];
-    entry->mUnk_3  = data_0209e5bc[index][2];
-    entry->mUnk_6  = data_0209e5bc[index][3];
-    entry->mUnk_9  = data_0209e5bc[index][4];
-    entry->mUnk_12 = data_0209e5bc[index][1];
-}
-
 void BattleCommandList::func_020597d0() {
     SpriteManager::Get().mScreens[0].func_02027624(3);
     mUnk_7c    = func_02023504("/font/mes_BakuganDisplay.mes", 0, 0, 0, 0, 0);
@@ -792,9 +692,6 @@ void BattleCommandList::func_020597d0() {
     MI_CpuClearFast((void *) 0x6400000, 0x3800);
     func_0205a774();
 }
-
-extern u8 data_0209e68c[][6]; // per command, six message indices (.rodata 0x0209e68c)
-extern u16 data_020c1a4c[];   // 0x20 bytes cleared before the first text of a page
 
 // non-matching: 10 words, the guard load before a preceding store (see docs/decompiling.md), twice.
 void BattleCommandList::func_02059c50(u8 index) {
@@ -934,4 +831,111 @@ void BattleCommandList::func_02059c50(u8 index) {
     func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0, mUnk_a0[0], 0x2000, 0);
     func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x2000, mUnk_a0[1], mUnk_b8[1], 0);
     func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x3000, mUnk_a0[2], mUnk_b8[2], 0);
+}
+
+void BattleCommandList::func_0205a6a8() {
+    if (mUnk_15f != 0) {
+        return;
+    }
+    SpriteManager::Get().mScreens[0].func_02027778(mUnk_ac[1], mUnk_c4[1], (s16) (0x80 - ((u32) mUnk_154 >> 1)), 8, 0,
+                                                   0x40, 0xf, 0);
+}
+
+void BattleCommandList::func_0205a774() {
+    for (u8 i = 0; i < 3; i++) {
+        MI_CpuClear16(mUnk_a0[i], mUnk_b8[i]);
+    }
+}
+
+void BattleCommandList::func_0205a7ac() {
+    if (mUnk_14e < 0x2b) {
+        mUnk_90->func_0203d988();
+        mUnk_90->func_0203dab0();
+        return;
+    }
+    mCells58[7]->func_0202a3ec(0, mUnk_150, 0x22, 0x4c, 0);
+}
+
+// non-matching: 18 words, registers of the loop index and the inlined Get() temporary.
+void BattleCommandList::func_0205aea4() {
+    for (u8 i = 0; i < 12; i++) {
+        SpriteManager::Get().mScreens[0].func_02027778(data_0209e57c, 1, (s16) ((i % 4) << 6), (s16) ((i / 4) << 6), 3,
+                                                       (u16) (0x280 + i * 0x20), 0, 0);
+    }
+}
+
+void BattleCommandList::func_0205af8c() {
+    for (u8 i = 0; i < 6; i++) {
+        mUnk_142[i] = 0;
+    }
+}
+
+void func_0205afb4(BattleCommandList *list, u32 a, u32 b, BattleCellPair *pair) {
+    list->func_0205af8c();
+    list->func_0205b034(a, b);
+    if (list->mUnk_161 != 0) {
+        switch (list->mUnk_14f) {
+            case 5:
+                list->func_0205b034(3, b);
+                break;
+            case 6:
+                list->func_0205b034(0, b);
+                break;
+        }
+    }
+    list->func_0205b0dc(pair);
+}
+
+void BattleCommandList::func_0205b034(u32 index, u32 value) {
+    if (index < 6) {
+        mUnk_142[index] = value;
+    }
+}
+
+void BattleCommandList::func_0205b048(u32 value) {
+    if (mUnk_166 != 0) {
+        return;
+    }
+    SoundManager::Get().func_020246f8(8);
+    mUnk_165 = 0x3c;
+    mUnk_166 = value;
+}
+
+BOOL BattleCommandList::func_0205b0c4() {
+    return mUnk_166 != 0 ? 1 : 0;
+}
+
+void BattleCommandList::func_0205b0dc(const BattleCellPair *pair) {
+    if (pair == NULL) {
+        for (u8 i = 0; i < 5; i++) {
+            mUnk_16[i] = data_0209e5bc[mUnk_14f][i];
+        }
+        mUnk_164 = 0;
+    } else {
+        mUnk_16[0] = pair->mUnk_02_0;
+        mUnk_16[2] = pair->mUnk_02_3;
+        mUnk_16[3] = pair->mUnk_02_6;
+        mUnk_16[4] = pair->mUnk_02_9;
+        mUnk_16[1] = pair->mUnk_02_12;
+        mUnk_164   = pair->mUnk_00_0;
+    }
+    for (u8 i = 0; i < 5; i++) {
+        mUnk_0c[1 + i * 2] = mUnk_16[i];
+    }
+    if (mUnk_7c != NULL) {
+        func_02059c50(mUnk_156);
+    }
+}
+
+ // per command, six message indices (.rodata 0x0209e68c)
+   // 0x20 bytes cleared before the first text of a page
+
+// non-matching: 20 words, scheduling of the last table loads.
+void func_0205b1c4(u32 index, u32 unk2) {
+    UnkStruct_02023248 *entry = func_02023248(data_020d43f0, index, unk2);
+    entry->mUnk_0  = data_0209e5bc[index][0];
+    entry->mUnk_3  = data_0209e5bc[index][2];
+    entry->mUnk_6  = data_0209e5bc[index][3];
+    entry->mUnk_9  = data_0209e5bc[index][4];
+    entry->mUnk_12 = data_0209e5bc[index][1];
 }

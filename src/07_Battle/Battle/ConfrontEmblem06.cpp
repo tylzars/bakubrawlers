@@ -56,21 +56,6 @@ extern "C" void func_02024764(SoundManager *manager, u32 a, u32 b);
 
 extern "C" int func_02024790(SoundManager *manager, u32 a);
 
-void ConfrontEmblem06::func_ov007_02221c68() {
-    u8 quadrant = func_ov007_0221d348(4);
-    u16 r       = func_ov007_0221d348(0x1555);
-    u16 angle   = ((quadrant & 3) << 14) + 0x1555 + r;
-    int i       = (angle >> 4) * 2;
-    float p[2];
-    float dx = FX_SinCosTable_[i + 1];
-    dx /= 4096.0f;
-    p[0]     = mUnk_10 + dx;
-    float dy = FX_SinCosTable_[i];
-    dy /= 4096.0f;
-    p[1] = mUnk_14 + dy;
-    func_ov007_02225354(p[0] - mUnk_10, p[1] - mUnk_14, &mUnk_18);
-}
-
 void ConfrontEmblem06::func_ov007_02221884() {
     switch (mUnk_04) {
         case 0:
@@ -118,37 +103,6 @@ void ConfrontEmblem06::func_ov007_02221884() {
     }
 }
 
-void ConfrontEmblem06::func_ov007_02221d44() {
-    u8 bounced = 0;
-    float p[2];
-    p[0] = mUnk_10 + mUnk_18 * mUnk_0c;
-    p[1] = mUnk_14 + mUnk_1c * mUnk_0c;
-    if (p[1] <= 112.0f) {
-        mUnk_1c *= -1.0f;
-        bounced = 1;
-    } else if (p[1] >= 176.0f) {
-        mUnk_1c *= -1.0f;
-        bounced = 1;
-    }
-    if (p[0] <= 16.0f) {
-        mUnk_18 *= -1.0f;
-        bounced = 1;
-    } else if (p[0] >= 240.0f) {
-        mUnk_18 *= -1.0f;
-        bounced = 1;
-    }
-    if (!bounced) {
-        return;
-    }
-    if (mUnk_05_4) {
-        return;
-    }
-    if (func_02024790(&SoundManager::Get(), 0x2c)) {
-        func_02024764(&SoundManager::Get(), 0x2c, 1);
-    }
-    SoundManager::Get().func_020246f8(0x2c);
-}
-
 void ConfrontEmblem06::func_ov007_02221ad0() {
     s16 x = (s32) mUnk_10;
     s16 y = (s32) mUnk_14;
@@ -180,6 +134,52 @@ void ConfrontEmblem06::func_ov007_02221ad0() {
         b = 4096.0f * mUnk_08 - 0.5f;
     }
     mAnims[0]->func_0202a494(1, x, y, 1, (s32) b, (s32) a, 0);
+}
+
+void ConfrontEmblem06::func_ov007_02221c68() {
+    u8 quadrant = func_ov007_0221d348(4);
+    u16 r       = func_ov007_0221d348(0x1555);
+    u16 angle   = ((quadrant & 3) << 14) + 0x1555 + r;
+    int i       = (angle >> 4) * 2;
+    float p[2];
+    float dx = FX_SinCosTable_[i + 1];
+    dx /= 4096.0f;
+    p[0]     = mUnk_10 + dx;
+    float dy = FX_SinCosTable_[i];
+    dy /= 4096.0f;
+    p[1] = mUnk_14 + dy;
+    func_ov007_02225354(p[0] - mUnk_10, p[1] - mUnk_14, &mUnk_18);
+}
+
+void ConfrontEmblem06::func_ov007_02221d44() {
+    u8 bounced = 0;
+    float p[2];
+    p[0] = mUnk_10 + mUnk_18 * mUnk_0c;
+    p[1] = mUnk_14 + mUnk_1c * mUnk_0c;
+    if (p[1] <= 112.0f) {
+        mUnk_1c *= -1.0f;
+        bounced = 1;
+    } else if (p[1] >= 176.0f) {
+        mUnk_1c *= -1.0f;
+        bounced = 1;
+    }
+    if (p[0] <= 16.0f) {
+        mUnk_18 *= -1.0f;
+        bounced = 1;
+    } else if (p[0] >= 240.0f) {
+        mUnk_18 *= -1.0f;
+        bounced = 1;
+    }
+    if (!bounced) {
+        return;
+    }
+    if (mUnk_05_4) {
+        return;
+    }
+    if (func_02024790(&SoundManager::Get(), 0x2c)) {
+        func_02024764(&SoundManager::Get(), 0x2c, 1);
+    }
+    SoundManager::Get().func_020246f8(0x2c);
 }
 
 int ConfrontEmblem06::func_ov007_02221f2c(int a) {

@@ -70,24 +70,6 @@ BattleCardSpec::~BattleCardSpec() {
     SpriteManager::Get().func_0202740c();
 }
 
-void BattleCardSpec::func_ov007_0225fbdc() {
-    ChangeDir("/Game/Battle/3d/Map/");
-    UnkStruct_02028308 *texture = new NitroTexture("realbase_00.nsbtx");
-    NitroModel *model           = new NitroModel("realbase_00.nsbmd", texture);
-    mUnk_10                     = model->func_02028b78(NULL);
-    mUnk_10->mUnk_69            = 0;
-    texture->func_02028344();
-    UnkStruct_02028308 *texture2 = new NitroTexture("realnormal_99.nsbtx");
-    NitroModel *model2           = new NitroModel("realnormal_99.nsbmd", texture2);
-    texture2->func_02028344();
-    ModelAnimData *data = new ModelAnimData("realnormal_99_data.bin");
-    ModelAnim *anim     = new ModelAnim(data, model2);
-    mUnk_14             = model2->func_02028b78(anim);
-    mUnk_14->func_02028de8(0, 1);
-    mUnk_14->mUnk_69 = 0;
-    ChangeDir("/");
-}
-
 void BattleCardSpec::Update() {
     switch (mState) {
         case 0: {
@@ -156,4 +138,22 @@ void BattleCardSpec::Update() {
         mUnk_14->func_02028d80();
         mUnk_14->func_02029174(&mtx, &pos);
     }
+}
+
+void BattleCardSpec::func_ov007_0225fbdc() {
+    ChangeDir("/Game/Battle/3d/Map/");
+    UnkStruct_02028308 *texture = new NitroTexture("realbase_00.nsbtx");
+    NitroModel *model           = new NitroModel("realbase_00.nsbmd", texture);
+    mUnk_10                     = model->func_02028b78(NULL);
+    mUnk_10->mUnk_69            = 0;
+    texture->func_02028344();
+    UnkStruct_02028308 *texture2 = new NitroTexture("realnormal_99.nsbtx");
+    NitroModel *model2           = new NitroModel("realnormal_99.nsbmd", texture2);
+    texture2->func_02028344();
+    ModelAnimData *data = new ModelAnimData("realnormal_99_data.bin");
+    ModelAnim *anim     = new ModelAnim(data, model2);
+    mUnk_14             = model2->func_02028b78(anim);
+    mUnk_14->func_02028de8(0, 1);
+    mUnk_14->mUnk_69 = 0;
+    ChangeDir("/");
 }

@@ -9,35 +9,35 @@
 #include <nitro/os.h>
 
 
-void SpriteScreen::LoadCharacters(const char *path, u32 offset, u32 unk3) {
-    u32 size;
-    void *data = func_02023504(path, 0, 0, 0, &size, 0);
-    if (unk3 != 0) {
-        size = unk3;
-    }
-    func_02025c1c(mBgIndex, 4, offset, data, size, 1);
-}
+void func_020039e8(const void *src, u32 offset, u32 size);
 
-void SpriteScreen::LoadPalette(const char *path, u32 offset, u32 unk3) {
-    u32 size;
-    void *data = func_02023504(path, 0, 0, 0, &size, 0);
-    if (unk3 != 0) {
-        size = unk3;
-    }
-    func_02025c1c(mBgIndex, 5, offset, data, size, 1);
-}
+void func_02003a3c(const void *src, u32 offset, u32 size);
 
-void SpriteScreen::func_02027fec(const char *path, u32 unk2, u32 unk3) {
-    u32 size;
-    void *data = func_02023504(path, 0, 0, 0, &size, 0);
-    if (unk3 != 0) {
-        size = unk3;
-    }
-    func_02025c1c(mBgIndex, 0, unk2, data, size, 1);
-}
+struct OamEntry {
+    u32 mAttr01;
+    u16 mAttr2;
+    u16 mPad;
+};
 
-static u16 data_020a5624[10] = {0x20, 0x20, 0x40, 0x80, 0x100, 0x80, 0x100, 0x80, 0x100, 0x100};
-static u32 data_020a5638[9]  = {0x0, 0x10, 0x100010, 0x200010, 0x300010, 0x40, 0x400040, 0x0, 0x20};
+struct OamSource {
+    u32 mAttr01;
+    u16 mAttr2;
+    s16 mX;
+    s16 mY;
+    u16 mPad;
+};
+
+void func_02027c18(void *slot_, SpriteTransform *transform);
+
+void func_02027cf4(s32 *x, s32 *y, s32 shape, SpriteTransform *transform);
+
+fx32 func_01ff8000(fx32 num, fx32 den);
+
+void func_02027c64(MtxFx22 *out, SpriteTransform *transform);
+
+void func_02000ccc(MtxFx22 *mtx, fx32 x, fx32 y);
+
+void func_02000cd8(const MtxFx22 *a, const MtxFx22 *b, MtxFx22 *out);
 
 SpriteScreen::SpriteScreen() {
     mUnk_400 = 0;
@@ -50,9 +50,6 @@ void SpriteScreen::func_020275e8(u32 unk1) {
     mBgIndex = unk1;
 }
 
-void func_020039e8(const void *src, u32 offset, u32 size);
-void func_02003a3c(const void *src, u32 offset, u32 size);
-
 void SpriteScreen::func_020275f0() {
     if (mBgIndex == 0) {
         func_020039e8(this, 0, 0x400);
@@ -61,6 +58,9 @@ void SpriteScreen::func_020275f0() {
     }
     func_02027750();
 }
+
+static u16 data_020a5624[10] = {0x20, 0x20, 0x40, 0x80, 0x100, 0x80, 0x100, 0x80, 0x100, 0x100};
+static u32 data_020a5638[9]  = {0x0, 0x10, 0x100010, 0x200010, 0x300010, 0x40, 0x400040, 0x0, 0x20};
 
 // non-matching: store and scheduling order (the ROM's store order fits inlined OBJ VRAM mode setters).
 void SpriteScreen::func_02027624(s32 mode) {
@@ -94,136 +94,14 @@ u16 SpriteScreen::func_020276f4(u32 offset) {
     return result;
 }
 
+
+
+
 void SpriteScreen::func_02027750() {
     MIi_CpuClear16(0xc0, this, 0x400);
     mUnk_404 = 0;
     mUnk_405 = 0;
 }
-
-
-fx32 func_01ff8000(fx32 num, fx32 den);
-void func_02000ccc(MtxFx22 *mtx, fx32 x, fx32 y);
-void func_02000cd8(const MtxFx22 *a, const MtxFx22 *b, MtxFx22 *out);
-
-SpriteTransform::SpriteTransform(s32 scaleX, s32 scaleY, u16 rotation) {
-    mScaleX   = scaleX;
-    mScaleY   = scaleY;
-    mRotation = rotation;
-}
-
-void func_02027c64(MtxFx22 *out, SpriteTransform *transform) {
-    MtxFx22 scale;
-    MtxFx22 rotation;
-    fx32 y = func_01ff8000(0x1000, transform->mScaleY);
-    fx32 x = func_01ff8000(0x1000, transform->mScaleX);
-    func_02000ccc(&scale, x, y);
-    s32 index = transform->mRotation >> 4;
-    fx32 sin = FX_SinCosTable_[index * 2];
-    fx32 cos = FX_SinCosTable_[index * 2 + 1];
-    rotation._[0] = cos;
-    rotation._[1] = sin;
-    rotation._[2] = -sin;
-    rotation._[3] = cos;
-    func_02000cd8(&scale, &rotation, out);
-}
-
-void func_02027c18(void *slot_, SpriteTransform *transform) {
-    u8 *slot = (u8 *) slot_;
-    MtxFx22 mtx;
-    func_02027c64(&mtx, transform);
-    *(s16 *) (slot + 0x06) = mtx._[0] >> 4;
-    *(s16 *) (slot + 0x0e) = mtx._[1] >> 4;
-    *(s16 *) (slot + 0x16) = mtx._[2] >> 4;
-    *(s16 *) (slot + 0x1e) = mtx._[3] >> 4;
-}
-
-
-// non-matching: register allocation only.
-void func_02027cf4(s32 *x, s32 *y, s32 shape, SpriteTransform *transform) {
-    fx32 cx = *x << 12;
-    fx32 cy = *y << 12;
-    fx32 width;
-    fx32 height;
-    switch (shape) {
-    case 0:
-        width = 0x4000;
-        height = 0x4000;
-        break;
-    case 0x4000:
-        width = 0x8000;
-        height = 0x4000;
-        break;
-    case 0x8000:
-        width = 0x4000;
-        height = 0x8000;
-        break;
-    case 0x40000000:
-        width = 0x8000;
-        height = 0x8000;
-        break;
-    case (s32) 0x80008000:
-        width = 0x8000;
-        height = 0x10000;
-        break;
-    case 0x40004000:
-        width = 0x10000;
-        height = 0x4000;
-        break;
-    case 0x40008000:
-        width = 0x4000;
-        height = 0x10000;
-        break;
-    case (s32) 0x80000000:
-        width = 0x10000;
-        height = 0x10000;
-        break;
-    case (s32) 0x80004000:
-        width = 0x10000;
-        height = 0x8000;
-        break;
-    case (s32) 0xC0000000:
-        width = 0x20000;
-        height = 0x20000;
-        break;
-    case (s32) 0xC0004000:
-        width = 0x20000;
-        height = 0x10000;
-        break;
-    case (s32) 0xC0008000:
-        width = 0x10000;
-        height = 0x20000;
-        break;
-    }
-    *x = cx >> 12;
-    *y = cy >> 12;
-    fx32 px = FX_Mul(cx + width, transform->mScaleX);
-    fx32 py = FX_Mul(cy + height, transform->mScaleY);
-    s32 index = transform->mRotation >> 4;
-    fx32 sin = FX_SinCosTable_[index * 2];
-    fx32 cos = FX_SinCosTable_[index * 2 + 1];
-    *x = (FX_Mul(px, cos) - FX_Mul(py, sin)) >> 12;
-    *y = (FX_Mul(px, sin) + FX_Mul(py, cos)) >> 12;
-    *x = *x - ((width << 1) >> 12);
-    *y = *y - ((height << 1) >> 12);
-}
-
-
-struct OamEntry {
-    u32 mAttr01;
-    u16 mAttr2;
-    u16 mPad;
-};
-
-struct OamSource {
-    u32 mAttr01;
-    u16 mAttr2;
-    s16 mX;
-    s16 mY;
-    u16 mPad;
-};
-
-fx32 func_01ff8000(fx32 num, fx32 den);
-float _fdiv(float a, float b);
 
 // non-matching: same size; loop-head register allocation and stack slots.
 void SpriteScreen::func_02027778(void *buffer, u8 count, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8) {
@@ -348,6 +226,148 @@ void SpriteScreen::func_02027778(void *buffer, u8 count, u32 unk3, u32 unk4, u32
             break;
         }
     }
+}
+
+void func_02027c18(void *slot_, SpriteTransform *transform) {
+    u8 *slot = (u8 *) slot_;
+    MtxFx22 mtx;
+    func_02027c64(&mtx, transform);
+    *(s16 *) (slot + 0x06) = mtx._[0] >> 4;
+    *(s16 *) (slot + 0x0e) = mtx._[1] >> 4;
+    *(s16 *) (slot + 0x16) = mtx._[2] >> 4;
+    *(s16 *) (slot + 0x1e) = mtx._[3] >> 4;
+}
+
+void func_02027c64(MtxFx22 *out, SpriteTransform *transform) {
+    MtxFx22 scale;
+    MtxFx22 rotation;
+    fx32 y = func_01ff8000(0x1000, transform->mScaleY);
+    fx32 x = func_01ff8000(0x1000, transform->mScaleX);
+    func_02000ccc(&scale, x, y);
+    s32 index = transform->mRotation >> 4;
+    fx32 sin = FX_SinCosTable_[index * 2];
+    fx32 cos = FX_SinCosTable_[index * 2 + 1];
+    rotation._[0] = cos;
+    rotation._[1] = sin;
+    rotation._[2] = -sin;
+    rotation._[3] = cos;
+    func_02000cd8(&scale, &rotation, out);
+}
+
+
+
+
+
+
+// non-matching: register allocation only.
+void func_02027cf4(s32 *x, s32 *y, s32 shape, SpriteTransform *transform) {
+    fx32 cx = *x << 12;
+    fx32 cy = *y << 12;
+    fx32 width;
+    fx32 height;
+    switch (shape) {
+    case 0:
+        width = 0x4000;
+        height = 0x4000;
+        break;
+    case 0x4000:
+        width = 0x8000;
+        height = 0x4000;
+        break;
+    case 0x8000:
+        width = 0x4000;
+        height = 0x8000;
+        break;
+    case 0x40000000:
+        width = 0x8000;
+        height = 0x8000;
+        break;
+    case (s32) 0x80008000:
+        width = 0x8000;
+        height = 0x10000;
+        break;
+    case 0x40004000:
+        width = 0x10000;
+        height = 0x4000;
+        break;
+    case 0x40008000:
+        width = 0x4000;
+        height = 0x10000;
+        break;
+    case (s32) 0x80000000:
+        width = 0x10000;
+        height = 0x10000;
+        break;
+    case (s32) 0x80004000:
+        width = 0x10000;
+        height = 0x8000;
+        break;
+    case (s32) 0xC0000000:
+        width = 0x20000;
+        height = 0x20000;
+        break;
+    case (s32) 0xC0004000:
+        width = 0x20000;
+        height = 0x10000;
+        break;
+    case (s32) 0xC0008000:
+        width = 0x10000;
+        height = 0x20000;
+        break;
+    }
+    *x = cx >> 12;
+    *y = cy >> 12;
+    fx32 px = FX_Mul(cx + width, transform->mScaleX);
+    fx32 py = FX_Mul(cy + height, transform->mScaleY);
+    s32 index = transform->mRotation >> 4;
+    fx32 sin = FX_SinCosTable_[index * 2];
+    fx32 cos = FX_SinCosTable_[index * 2 + 1];
+    *x = (FX_Mul(px, cos) - FX_Mul(py, sin)) >> 12;
+    *y = (FX_Mul(px, sin) + FX_Mul(py, cos)) >> 12;
+    *x = *x - ((width << 1) >> 12);
+    *y = *y - ((height << 1) >> 12);
+}
+
+SpriteTransform::SpriteTransform(s32 scaleX, s32 scaleY, u16 rotation) {
+    mScaleX   = scaleX;
+    mScaleY   = scaleY;
+    mRotation = rotation;
+}
+
+void SpriteScreen::LoadCharacters(const char *path, u32 offset, u32 unk3) {
+    u32 size;
+    void *data = func_02023504(path, 0, 0, 0, &size, 0);
+    if (unk3 != 0) {
+        size = unk3;
+    }
+    func_02025c1c(mBgIndex, 4, offset, data, size, 1);
+}
+
+
+void SpriteScreen::LoadPalette(const char *path, u32 offset, u32 unk3) {
+    u32 size;
+    void *data = func_02023504(path, 0, 0, 0, &size, 0);
+    if (unk3 != 0) {
+        size = unk3;
+    }
+    func_02025c1c(mBgIndex, 5, offset, data, size, 1);
+}
+
+
+
+
+
+
+fx32 func_01ff8000(fx32 num, fx32 den);
+float _fdiv(float a, float b);
+
+void SpriteScreen::func_02027fec(const char *path, u32 unk2, u32 unk3) {
+    u32 size;
+    void *data = func_02023504(path, 0, 0, 0, &size, 0);
+    if (unk3 != 0) {
+        size = unk3;
+    }
+    func_02025c1c(mBgIndex, 0, unk2, data, size, 1);
 }
 
 

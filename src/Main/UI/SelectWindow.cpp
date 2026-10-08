@@ -34,21 +34,210 @@ SelectWindow::~SelectWindow() {
     func_0205bcf4();
 }
 
-void SelectWindow::func_0205bcf4() {
-    delete mCursor;
-    mCursor = NULL;
-}
-
-void SelectWindow::func_0205bd10() {
-    u8 i = 0;
-    do {
-        CellAnimation *cell = mCells[i];
-        if (cell != NULL) {
-            delete cell;
+// non-matching: 4 bytes long: spill-slot order of items/newPrev, a reload of mCursor->mItems, register choice in states 2 and 5.
+BOOL SelectWindow::Update(BOOL input) {
+    int result = 0;
+    u32 event  = 0;
+    if (mUnk_064 == 0) {
+        return 0;
+    }
+    switch (mUnk_061) {
+    case 0:
+        if (func_0205bdf4()) {
+            mUnk_061 = 1;
         }
-        mCells[i] = NULL;
-        i++;
-    } while (i < 22);
+        break;
+    case 1: {
+        int oldSel        = mCursor->mSelection;
+        WindowItem *items = mCursor->mItems;
+        int oldId         = oldSel == -1 ? -1 : items[oldSel].mId;
+        int oldPrev       = mCursor->mUnk_05;
+        int oldPrevId     = oldPrev == -1 ? -1 : mCursor->mItems[oldPrev].mId;
+        if (mUnk_065 == 0) {
+            event = mCursor->func_0202f468(input);
+        }
+        int newSel    = mCursor->mSelection;
+        int newId     = newSel == -1 ? -1 : mCursor->mItems[newSel].mId;
+        int newPrev   = mCursor->mUnk_05;
+        int newPrevId = newPrev == -1 ? -1 : mCursor->mItems[newPrev].mId;
+        if (mUnk_07e == 0 && newId != -1 && mButtons[newId].mEnabled == 0) {
+            mCursor->mSelection = oldSel;
+            return 0;
+        }
+        switch (event) {
+        case 1:
+            if (newId == -1) {
+                return 0;
+            }
+            mCells[newId]->SetAnimation(mButtons[newId].mUnk_09);
+            if (oldId != -1 && newId != oldId) {
+                mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
+            }
+            mResult  = 1;
+            mUnk_065 = 1;
+            mUnk_061 = 2;
+            break;
+        case 2:
+            if (newId == -1) {
+                return 0;
+            }
+            mCells[newId]->SetAnimation(mButtons[newId].mUnk_09);
+            if (oldId != -1 && newId != oldId) {
+                CellAnimation *cell = mCells[oldId];
+                u8 anim             = mButtons[oldId].mUnk_08;
+                if (anim != cell->mUnk_0e) {
+                    cell->SetAnimation(anim);
+                }
+            }
+            mResult  = 2;
+            mUnk_065 = 1;
+            mUnk_061 = 2;
+            break;
+        case 3:
+            if (newId == -1) {
+                return 0;
+            }
+            mCells[newId]->SetAnimation(mButtons[newId].mUnk_09);
+            if (oldId != -1 && newId != oldId && mCursor->func_0203055c(newSel)) {
+                mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
+            }
+            mUnk_063 = oldSel;
+            mResult  = 3;
+            mUnk_061 = 2;
+            break;
+        case 5:
+            mUnk_0e0 = 1;
+            if (newPrev != oldPrev) {
+                if (newPrevId != -1 && items[newPrev].mUnk_18 == 3) {
+                    CellAnimation *cell = mCells[newPrevId];
+                    u8 anim             = mButtons[newPrevId].mUnk_0a;
+                    if (anim != cell->mUnk_0e) {
+                        cell->SetAnimation(anim);
+                    }
+                }
+                if (oldPrevId != -1 && newPrevId != oldPrevId && oldPrev != newSel) {
+                    mCells[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
+                }
+            }
+            break;
+        case 4:
+            mUnk_0e0 = 1;
+            if (newSel != oldSel) {
+                if (newId != -1) {
+                    CellAnimation *cell = mCells[newId];
+                    u8 anim             = mButtons[newId].mUnk_0a;
+                    if (anim != cell->mUnk_0e) {
+                        cell->SetAnimation(anim);
+                    }
+                }
+                if (oldId != -1 && newId != oldId) {
+                    mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
+                }
+            }
+            if (newPrev != oldPrev) {
+                if (newPrevId != -1) {
+                    CellAnimation *cell = mCells[newPrevId];
+                    u8 anim             = mButtons[newPrevId].mUnk_0a;
+                    if (anim != cell->mUnk_0e) {
+                        cell->SetAnimation(anim);
+                    }
+                }
+                if (oldPrevId != -1 && newPrevId != oldPrevId && oldPrev != newSel) {
+                    mCells[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
+                }
+            }
+            break;
+        case 0:
+            mUnk_0e0 = 0;
+            if (newSel != oldSel) {
+                if (newId != -1) {
+                    CellAnimation *cell = mCells[newId];
+                    u8 anim             = mButtons[newId].mUnk_0a;
+                    if (anim != cell->mUnk_0e) {
+                        cell->SetAnimation(anim);
+                    }
+                }
+                if (oldId != -1 && newId != oldId) {
+                    mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
+                }
+            }
+            if (newPrev != oldPrev) {
+                if (newPrevId != -1) {
+                    CellAnimation *cell = mCells[newPrevId];
+                    u8 anim             = mButtons[newPrevId].mUnk_0a;
+                    if (anim != cell->mUnk_0e) {
+                        cell->SetAnimation(anim);
+                    }
+                }
+                if (oldPrevId != -1 && newPrevId != oldPrevId && oldPrev != newSel) {
+                    mCells[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
+                }
+            }
+            break;
+        case 7:
+            mUnk_0e0 = 0;
+            if (newPrev != oldPrev && oldPrevId != -1 && newPrevId != oldPrevId && oldPrev != newSel) {
+                mCells[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
+            }
+            break;
+        }
+        break;
+    }
+    case 2: {
+        BOOL flag = FALSE;
+        if (mCells[GetSelectedId()]->mUnk_12 != 0) {
+            flag = TRUE;
+        }
+        if (mCells[GetSelectedId()]->mUnk_10 == 1) {
+            flag = TRUE;
+        }
+        if (flag) {
+            mUnk_0e0 = 0;
+            if (mCursor->mItems[mCursor->mSelection].mFlags & 8) {
+                mUnk_061 = 5;
+                result   = mResult;
+            } else {
+                result   = mResult;
+                mUnk_061 = 3;
+            }
+        }
+        break;
+    }
+    case 3:
+        func_0205c2e0();
+        if (mUnk_062 == 2) {
+            if (mCursor->mSelection != -1) {
+                mCells[GetSelectedId()]->SetAnimation(mButtons[GetSelectedId()].mUnk_08);
+            }
+        } else if (mUnk_062 == 0) {
+            mUnk_066 = 0;
+            mUnk_061 = 4;
+        }
+        break;
+    case 4:
+        if (mUnk_066 != 0) {
+            mUnk_065 = 0;
+            mUnk_061 = 0;
+        }
+        break;
+    case 5: {
+        if (mUnk_063 != mCursor->mSelection) {
+            int id = mUnk_063 == -1 ? -1 : mCursor->mItems[mUnk_063].mId;
+            if (id != -1) {
+                mCells[GetSelectedId()]->SetAnimation(mButtons[GetSelectedId()].mUnk_08);
+            }
+        }
+        mCursor->mSelection = mUnk_063;
+        mUnk_063            = -1;
+        SelectWindowCursor *cursor = mCursor;
+        cursor->mUnk_05    = -1;
+        cursor->mUnk_07    = -1;
+        cursor->mUnk_08    = 0;
+        mUnk_061            = 1;
+        break;
+    }
+    }
+    return result;
 }
 
 // non-matching: 3 words: the original loads button mUnk_08/mUnk_09 into r2/r1 and stores r2 first.
@@ -74,6 +263,23 @@ void SelectWindow::SetCells(u32 count, const WindowCellRecord *cells) {
     } while (i < count);
 }
 
+void SelectWindow::func_0205bcf4() {
+    delete mCursor;
+    mCursor = NULL;
+}
+
+void SelectWindow::func_0205bd10() {
+    u8 i = 0;
+    do {
+        CellAnimation *cell = mCells[i];
+        if (cell != NULL) {
+            delete cell;
+        }
+        mCells[i] = NULL;
+        i++;
+    } while (i < 22);
+}
+
 void SelectWindow::Draw() {
     u8 i = 0;
     do {
@@ -87,52 +293,6 @@ void SelectWindow::Draw() {
         }
         i++;
     } while (i < mCellCount);
-}
-
-void SelectWindow::func_0205c74c(u32 count, WindowItem *items, s32 selection) {
-    mCursor->mSelection = -1;
-    mCursor->mSelection = selection;
-    SelectWindowCursor *cursor = mCursor;
-    cursor->mItems             = items;
-    cursor->mCount             = count;
-    WindowItem *item           = mCursor->mItems;
-    u8 i                = 0;
-    do {
-        mCellPos[item->mId].x = item->mX;
-        mCellPos[item->mId].y = item->mY;
-        mUnk_068[item->mId]   = 0;
-        i++;
-        item++;
-    } while (i < count);
-    mUnk_066 = 1;
-}
-
-void SelectWindow::func_0205c7c8(int selection) {
-    mCursor->mSelection = -1;
-    mCursor->mSelection = selection;
-    WindowItem *item    = mCursor->mItems;
-    u8 i                = 0;
-    do {
-        mCellPos[item->mId].x = item->mX;
-        mCellPos[item->mId].y = item->mY;
-        mUnk_068[item->mId]   = 0;
-        i++;
-        item++;
-    } while (i < mCursor->mCount);
-    mUnk_066 = 1;
-    mUnk_0e0 = 0;
-}
-
-void SelectWindow::func_0205c844(u32 unk1, u32 unk2) {
-    s8 oldId = GetSelectedId();
-    mCursor->mSelection = unk1;
-    s8 sel = mCursor->mSelection;
-    mCells[unk1]->SetAnimation(mButtons[unk1].mUnk_09);
-    if (oldId != -1 && unk1 != oldId && mCursor->func_0203055c(sel)) {
-        mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
-    }
-    mResult   = unk2;
-    mUnk_061  = 2;
 }
 
 BOOL SelectWindow::func_0205bdf4() {
@@ -397,208 +557,48 @@ void SelectWindow::func_0205c2e0() {
     }
 }
 
-// non-matching: 4 bytes long: spill-slot order of items/newPrev, a reload of mCursor->mItems, register choice in states 2 and 5.
-BOOL SelectWindow::Update(BOOL input) {
-    int result = 0;
-    u32 event  = 0;
-    if (mUnk_064 == 0) {
-        return 0;
+void SelectWindow::func_0205c74c(u32 count, WindowItem *items, s32 selection) {
+    mCursor->mSelection = -1;
+    mCursor->mSelection = selection;
+    SelectWindowCursor *cursor = mCursor;
+    cursor->mItems             = items;
+    cursor->mCount             = count;
+    WindowItem *item           = mCursor->mItems;
+    u8 i                = 0;
+    do {
+        mCellPos[item->mId].x = item->mX;
+        mCellPos[item->mId].y = item->mY;
+        mUnk_068[item->mId]   = 0;
+        i++;
+        item++;
+    } while (i < count);
+    mUnk_066 = 1;
+}
+
+void SelectWindow::func_0205c7c8(int selection) {
+    mCursor->mSelection = -1;
+    mCursor->mSelection = selection;
+    WindowItem *item    = mCursor->mItems;
+    u8 i                = 0;
+    do {
+        mCellPos[item->mId].x = item->mX;
+        mCellPos[item->mId].y = item->mY;
+        mUnk_068[item->mId]   = 0;
+        i++;
+        item++;
+    } while (i < mCursor->mCount);
+    mUnk_066 = 1;
+    mUnk_0e0 = 0;
+}
+
+void SelectWindow::func_0205c844(u32 unk1, u32 unk2) {
+    s8 oldId = GetSelectedId();
+    mCursor->mSelection = unk1;
+    s8 sel = mCursor->mSelection;
+    mCells[unk1]->SetAnimation(mButtons[unk1].mUnk_09);
+    if (oldId != -1 && unk1 != oldId && mCursor->func_0203055c(sel)) {
+        mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
     }
-    switch (mUnk_061) {
-    case 0:
-        if (func_0205bdf4()) {
-            mUnk_061 = 1;
-        }
-        break;
-    case 1: {
-        int oldSel        = mCursor->mSelection;
-        WindowItem *items = mCursor->mItems;
-        int oldId         = oldSel == -1 ? -1 : items[oldSel].mId;
-        int oldPrev       = mCursor->mUnk_05;
-        int oldPrevId     = oldPrev == -1 ? -1 : mCursor->mItems[oldPrev].mId;
-        if (mUnk_065 == 0) {
-            event = mCursor->func_0202f468(input);
-        }
-        int newSel    = mCursor->mSelection;
-        int newId     = newSel == -1 ? -1 : mCursor->mItems[newSel].mId;
-        int newPrev   = mCursor->mUnk_05;
-        int newPrevId = newPrev == -1 ? -1 : mCursor->mItems[newPrev].mId;
-        if (mUnk_07e == 0 && newId != -1 && mButtons[newId].mEnabled == 0) {
-            mCursor->mSelection = oldSel;
-            return 0;
-        }
-        switch (event) {
-        case 1:
-            if (newId == -1) {
-                return 0;
-            }
-            mCells[newId]->SetAnimation(mButtons[newId].mUnk_09);
-            if (oldId != -1 && newId != oldId) {
-                mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
-            }
-            mResult  = 1;
-            mUnk_065 = 1;
-            mUnk_061 = 2;
-            break;
-        case 2:
-            if (newId == -1) {
-                return 0;
-            }
-            mCells[newId]->SetAnimation(mButtons[newId].mUnk_09);
-            if (oldId != -1 && newId != oldId) {
-                CellAnimation *cell = mCells[oldId];
-                u8 anim             = mButtons[oldId].mUnk_08;
-                if (anim != cell->mUnk_0e) {
-                    cell->SetAnimation(anim);
-                }
-            }
-            mResult  = 2;
-            mUnk_065 = 1;
-            mUnk_061 = 2;
-            break;
-        case 3:
-            if (newId == -1) {
-                return 0;
-            }
-            mCells[newId]->SetAnimation(mButtons[newId].mUnk_09);
-            if (oldId != -1 && newId != oldId && mCursor->func_0203055c(newSel)) {
-                mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
-            }
-            mUnk_063 = oldSel;
-            mResult  = 3;
-            mUnk_061 = 2;
-            break;
-        case 5:
-            mUnk_0e0 = 1;
-            if (newPrev != oldPrev) {
-                if (newPrevId != -1 && items[newPrev].mUnk_18 == 3) {
-                    CellAnimation *cell = mCells[newPrevId];
-                    u8 anim             = mButtons[newPrevId].mUnk_0a;
-                    if (anim != cell->mUnk_0e) {
-                        cell->SetAnimation(anim);
-                    }
-                }
-                if (oldPrevId != -1 && newPrevId != oldPrevId && oldPrev != newSel) {
-                    mCells[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
-                }
-            }
-            break;
-        case 4:
-            mUnk_0e0 = 1;
-            if (newSel != oldSel) {
-                if (newId != -1) {
-                    CellAnimation *cell = mCells[newId];
-                    u8 anim             = mButtons[newId].mUnk_0a;
-                    if (anim != cell->mUnk_0e) {
-                        cell->SetAnimation(anim);
-                    }
-                }
-                if (oldId != -1 && newId != oldId) {
-                    mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
-                }
-            }
-            if (newPrev != oldPrev) {
-                if (newPrevId != -1) {
-                    CellAnimation *cell = mCells[newPrevId];
-                    u8 anim             = mButtons[newPrevId].mUnk_0a;
-                    if (anim != cell->mUnk_0e) {
-                        cell->SetAnimation(anim);
-                    }
-                }
-                if (oldPrevId != -1 && newPrevId != oldPrevId && oldPrev != newSel) {
-                    mCells[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
-                }
-            }
-            break;
-        case 0:
-            mUnk_0e0 = 0;
-            if (newSel != oldSel) {
-                if (newId != -1) {
-                    CellAnimation *cell = mCells[newId];
-                    u8 anim             = mButtons[newId].mUnk_0a;
-                    if (anim != cell->mUnk_0e) {
-                        cell->SetAnimation(anim);
-                    }
-                }
-                if (oldId != -1 && newId != oldId) {
-                    mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
-                }
-            }
-            if (newPrev != oldPrev) {
-                if (newPrevId != -1) {
-                    CellAnimation *cell = mCells[newPrevId];
-                    u8 anim             = mButtons[newPrevId].mUnk_0a;
-                    if (anim != cell->mUnk_0e) {
-                        cell->SetAnimation(anim);
-                    }
-                }
-                if (oldPrevId != -1 && newPrevId != oldPrevId && oldPrev != newSel) {
-                    mCells[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
-                }
-            }
-            break;
-        case 7:
-            mUnk_0e0 = 0;
-            if (newPrev != oldPrev && oldPrevId != -1 && newPrevId != oldPrevId && oldPrev != newSel) {
-                mCells[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
-            }
-            break;
-        }
-        break;
-    }
-    case 2: {
-        BOOL flag = FALSE;
-        if (mCells[GetSelectedId()]->mUnk_12 != 0) {
-            flag = TRUE;
-        }
-        if (mCells[GetSelectedId()]->mUnk_10 == 1) {
-            flag = TRUE;
-        }
-        if (flag) {
-            mUnk_0e0 = 0;
-            if (mCursor->mItems[mCursor->mSelection].mFlags & 8) {
-                mUnk_061 = 5;
-                result   = mResult;
-            } else {
-                result   = mResult;
-                mUnk_061 = 3;
-            }
-        }
-        break;
-    }
-    case 3:
-        func_0205c2e0();
-        if (mUnk_062 == 2) {
-            if (mCursor->mSelection != -1) {
-                mCells[GetSelectedId()]->SetAnimation(mButtons[GetSelectedId()].mUnk_08);
-            }
-        } else if (mUnk_062 == 0) {
-            mUnk_066 = 0;
-            mUnk_061 = 4;
-        }
-        break;
-    case 4:
-        if (mUnk_066 != 0) {
-            mUnk_065 = 0;
-            mUnk_061 = 0;
-        }
-        break;
-    case 5: {
-        if (mUnk_063 != mCursor->mSelection) {
-            int id = mUnk_063 == -1 ? -1 : mCursor->mItems[mUnk_063].mId;
-            if (id != -1) {
-                mCells[GetSelectedId()]->SetAnimation(mButtons[GetSelectedId()].mUnk_08);
-            }
-        }
-        mCursor->mSelection = mUnk_063;
-        mUnk_063            = -1;
-        SelectWindowCursor *cursor = mCursor;
-        cursor->mUnk_05    = -1;
-        cursor->mUnk_07    = -1;
-        cursor->mUnk_08    = 0;
-        mUnk_061            = 1;
-        break;
-    }
-    }
-    return result;
+    mResult   = unk2;
+    mUnk_061  = 2;
 }

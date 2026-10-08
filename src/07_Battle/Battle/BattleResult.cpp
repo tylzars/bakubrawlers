@@ -105,6 +105,14 @@ public:
     void func_ov007_022525c4();
     void func_ov007_022526f0();
 };
+extern const u8 data_ov007_0227a359[];
+extern const u16 data_ov007_0227a504[2][6][9];
+extern const u8 data_ov007_0227a37b[][3];
+extern const u8 data_ov007_0227a350[3][3];
+
+
+
+
 
 BattleResult::BattleResult()
     : SceneBase(0x3e8, 0) {
@@ -804,21 +812,6 @@ void BattleResult::func_ov007_0224f8f4() {
     SpriteManager::Get().Screen(1).func_02027778(mUnk_44[2], mUnk_5c[2], 0x20, 0x38, 0, 0xe0, 0xf, 0);
 }
 
-void BattleResult::func_ov007_022525c4() {
-    SpriteManager::Get().Screen(0).func_02027778(mUnk_44[0], mUnk_5c[0], 10, 12, 0, 0x100, 14, 0);
-    SpriteManager::Get().Screen(0).func_02027778(mUnk_44[1], mUnk_5c[1], 0x9e, 0x8c, 0, 0x1e0, 14, 0);
-}
-
-void BattleResult::func_ov007_022526f0() {
-    u8 i = 0;
-    do {
-        if (mUnk_38[i]) {
-            MI_CpuClear16(mUnk_38[i], mUnk_50[i]);
-        }
-        i++;
-    } while (i < 3);
-}
-
 // non-matching: 5 words: original emits `mov r0,#1; str r0,[sp]` before computing (s16)(base + 0x25) for the third Draw
 void BattleResult::func_ov007_0224f9a0() {
     mMessage->func_020658d0();
@@ -860,8 +853,6 @@ void BattleResult::func_ov007_0224f9a0() {
     } while (i < data_020d433c.mPlayerCount);
     mIcons->func_020654a0();
 }
-
-extern const u8 data_ov007_0227a359[];
 
 void BattleResult::func_ov007_0224fb70() {
     if (func_020779ec(mUnk_68)) {
@@ -926,30 +917,7 @@ void BattleResult::func_ov007_0224fcdc() {
     func_ov007_02251724();
 }
 
-void BattleResult::func_ov007_02251724() {
-    s16 outH = 0;
-    s16 outW = 0;
-    TextManager::Get().mUnk_5b = 1;
-    if (mUnk_b2 >= 0x11) {
-        TextManager::Get().PrintNumber(mUnk_a4, 7, 0, mUnk_38[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
-    } else {
-        TextManager::Get().PrintNumber(mUnk_a8, 7, 0, mUnk_38[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
-    }
-    outH = 0;
-    outW = 0x1e;
-    if (mUnk_b2 >= 0x11) {
-        TextManager::Get().PrintNumber(data_020d43f0[0].mMoney - mUnk_a4, 7, 0, mUnk_38[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
-    } else {
-        TextManager::Get().PrintNumber(data_020d43f0[0].mMoney, 7, 0, mUnk_38[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
-    }
-    TextManager::Get().mUnk_5b = 0;
-    func_02005e9c(mUnk_38[1], mUnk_50[1]);
-    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0xf000, mUnk_38[1], mUnk_50[1], 0);
-}
 
-extern const u16 data_ov007_0227a504[2][6][9];
-extern const u8 data_ov007_0227a350[3][3];
-extern const u8 data_ov007_0227a37b[][3];
 
 // non-matching: register allocation only (15 words): the original keeps &data_020d433c in r6 and &data_020d43f0 in r5 during the loop
 void BattleResult::func_ov007_02250010() {
@@ -1048,6 +1016,46 @@ void BattleResult::func_ov007_02250010() {
         }
         m++;
     } while (m < count2);
+}
+
+void BattleResult::func_ov007_02251724() {
+    s16 outH = 0;
+    s16 outW = 0;
+    TextManager::Get().mUnk_5b = 1;
+    if (mUnk_b2 >= 0x11) {
+        TextManager::Get().PrintNumber(mUnk_a4, 7, 0, mUnk_38[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
+    } else {
+        TextManager::Get().PrintNumber(mUnk_a8, 7, 0, mUnk_38[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
+    }
+    outH = 0;
+    outW = 0x1e;
+    if (mUnk_b2 >= 0x11) {
+        TextManager::Get().PrintNumber(data_020d43f0[0].mMoney - mUnk_a4, 7, 0, mUnk_38[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
+    } else {
+        TextManager::Get().PrintNumber(data_020d43f0[0].mMoney, 7, 0, mUnk_38[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
+    }
+    TextManager::Get().mUnk_5b = 0;
+    func_02005e9c(mUnk_38[1], mUnk_50[1]);
+    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0xf000, mUnk_38[1], mUnk_50[1], 0);
+}
+
+void BattleResult::func_ov007_022525c4() {
+    SpriteManager::Get().Screen(0).func_02027778(mUnk_44[0], mUnk_5c[0], 10, 12, 0, 0x100, 14, 0);
+    SpriteManager::Get().Screen(0).func_02027778(mUnk_44[1], mUnk_5c[1], 0x9e, 0x8c, 0, 0x1e0, 14, 0);
+}
+
+
+
+
+
+void BattleResult::func_ov007_022526f0() {
+    u8 i = 0;
+    do {
+        if (mUnk_38[i]) {
+            MI_CpuClear16(mUnk_38[i], mUnk_50[i]);
+        }
+        i++;
+    } while (i < 3);
 }
 
 #define COUNT_STEP(CLEAR_ONLY)                                                         \

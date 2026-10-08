@@ -211,28 +211,6 @@ void BattleCardModel::func_ov007_02273718() {
     }
 }
 
-void BattleCardModel::func_ov007_02273a4c(u32 index) {
-    MtxFx43 world;
-    MtxFx43 rot;
-    MtxFx43 *bone = mBaku->mModel->func_02029084(mBones[index]);
-    func_01ff89c0(bone, &CameraManager::Get().mMtxC[0], &world);
-    rot = data_0220e86c;
-    func_01ffd088(&rot, mParts[index].mRot[0]);
-    func_01ffd0e0(&rot, mParts[index].mRot[1]);
-    func_01ffd138(&rot, mParts[index].mRot[2]);
-    func_01ff8634(&rot, &rot);
-    func_01ff89c0(&rot, &world, &world);
-    BattleCardModelPart *part = &mParts[index];
-    mPos[index].x = part->mPos.x;
-    mPos[index].y = part->mPos.y;
-    mPos[index].z = part->mPos.z;
-    func_01ff84d0(&mPos[index], (MtxFx33 *) &world, &mPos[index]);
-    mPos[index].x += world._[9];
-    mPos[index].y += world._[10];
-    mPos[index].z += world._[11];
-    func_0202bef4(mEffects, mHandles[index], &mPos[index]);
-}
-
 void BattleCardModel::func_ov007_022737e0() {
     MtxFx43 rot;
     VecFx32 dir;
@@ -278,6 +256,28 @@ void BattleCardModel::func_ov007_022737e0() {
     }
 }
 
+void BattleCardModel::func_ov007_02273a4c(u32 index) {
+    MtxFx43 world;
+    MtxFx43 rot;
+    MtxFx43 *bone = mBaku->mModel->func_02029084(mBones[index]);
+    func_01ff89c0(bone, &CameraManager::Get().mMtxC[0], &world);
+    rot = data_0220e86c;
+    func_01ffd088(&rot, mParts[index].mRot[0]);
+    func_01ffd0e0(&rot, mParts[index].mRot[1]);
+    func_01ffd138(&rot, mParts[index].mRot[2]);
+    func_01ff8634(&rot, &rot);
+    func_01ff89c0(&rot, &world, &world);
+    BattleCardModelPart *part = &mParts[index];
+    mPos[index].x = part->mPos.x;
+    mPos[index].y = part->mPos.y;
+    mPos[index].z = part->mPos.z;
+    func_01ff84d0(&mPos[index], (MtxFx33 *) &world, &mPos[index]);
+    mPos[index].x += world._[9];
+    mPos[index].y += world._[10];
+    mPos[index].z += world._[11];
+    func_0202bef4(mEffects, mHandles[index], &mPos[index]);
+}
+
 void BattleCardModel::func_ov007_02273be8() {
     if (mId > 0x41) {
         return;
@@ -309,6 +309,15 @@ void BattleCardModel::func_ov007_02273be8() {
     if (sounds && sounds[mType] != 0x1ee) {
         FrameTask::Get().func_0203dc34(2, (u16) data_ov007_0228acf4[mId][mType]);
     }
+}
+
+void func_ov007_02273e3c(BattleCardModel *model) {
+    if (model->mState >= 3) {
+        return;
+    }
+    model->mState = 3;
+    SpriteManager::Get();
+    SpriteManager::sFade.mMain = 3;
 }
 
 // non-matching: 5 words, the guard load before a preceding store (TextManager::mUnk_5b, see docs/decompiling.md).
@@ -349,13 +358,4 @@ void BattleCardModel::func_ov007_02274238() {
         SpriteManager::Get().mScreens[0].func_02027778(mTextBuffer2, 8, (s16) (0x80 - ((u32) mTextWidth >> 1)), 0xb0, 0, 0, 0xf, 0);
     }
     mUnk_96 = 1;
-}
-
-void func_ov007_02273e3c(BattleCardModel *model) {
-    if (model->mState >= 3) {
-        return;
-    }
-    model->mState = 3;
-    SpriteManager::Get();
-    SpriteManager::sFade.mMain = 3;
 }

@@ -76,6 +76,30 @@ StoreScene::~StoreScene() {
     FrameTask::Get().func_0203dd90();
 }
 
+void StoreScene::Cleanup() {
+    ClearTextBuffer();
+    if (mMessages != NULL) {
+        OS_Free(mMessages);
+        mMessages = NULL;
+    }
+    if (mTextBuffer != NULL) {
+        OS_Free(mTextBuffer);
+        mTextBuffer = NULL;
+    }
+    if (mGlyphBuffer != NULL) {
+        OS_Free(mGlyphBuffer);
+        mGlyphBuffer = NULL;
+    }
+    delete mMenu;
+    mMenu = NULL;
+    delete mMessage;
+    mMessage = NULL;
+    for (u8 i = 0; i < 2; i++) {
+        delete mCellAnims[i];
+        mCellAnims[i] = NULL;
+    }
+}
+
 // non-matching: the cases' fall-through order differs (register swap on the data_020d4414 write in case 0)
 void StoreScene::Update() {
     UnkStruct_SceneContext *ctx = mContext;
@@ -290,30 +314,6 @@ void StoreScene::Update() {
             ctx->mList->mHead->mRequest->mNextScene = mUnk_2c;
             mFinished                               = TRUE;
             break;
-    }
-}
-
-void StoreScene::Cleanup() {
-    ClearTextBuffer();
-    if (mMessages != NULL) {
-        OS_Free(mMessages);
-        mMessages = NULL;
-    }
-    if (mTextBuffer != NULL) {
-        OS_Free(mTextBuffer);
-        mTextBuffer = NULL;
-    }
-    if (mGlyphBuffer != NULL) {
-        OS_Free(mGlyphBuffer);
-        mGlyphBuffer = NULL;
-    }
-    delete mMenu;
-    mMenu = NULL;
-    delete mMessage;
-    mMessage = NULL;
-    for (u8 i = 0; i < 2; i++) {
-        delete mCellAnims[i];
-        mCellAnims[i] = NULL;
     }
 }
 

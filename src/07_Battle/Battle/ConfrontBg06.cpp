@@ -35,9 +35,6 @@ void ConfrontBg06::func_ov007_02219888(BattleData *data, u32 mode) {
     }
 }
 
-void ConfrontBg06::vfunc_28() {
-}
-
 void ConfrontBg06::func_ov007_0221a624() {
     func_02001ed0(0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
@@ -133,4 +130,7 @@ void ConfrontBg06::vfunc_44(int index, int count) {
         func_ov007_0221d348(0xffff);
         func_ov007_0221d348(0xffff);
     }
+}
+
+void ConfrontBg06::vfunc_28() {
 }

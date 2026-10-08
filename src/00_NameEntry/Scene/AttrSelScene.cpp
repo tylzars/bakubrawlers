@@ -20,6 +20,12 @@
 extern u8 data_ov000_0222622c[];
 
 void operator delete(void *ptr);
+u32 func_0200198c(s32 x, s32 y);
+extern u8 data_ov000_02226224[];
+extern u8 data_ov000_0222621c[];
+
+
+
 
 AttrSelScene::AttrSelScene() :
     SceneBase(1000, 0) {
@@ -68,6 +74,116 @@ AttrSelScene::~AttrSelScene() {
     }
 }
 
+void AttrSelScene::Update() {
+    switch (mUnk_0c) {
+        case 0:
+            SpriteManager::Get().StartFade(2);
+            mUnk_0c++;
+        case 1:
+            if (!SpriteManager::Get().IsFading()) {
+                mUnk_0c++;
+            }
+            break;
+        case 2: {
+            u32 event = 0;
+            if ((u8) mSelectWindow->Update(TRUE) == 2) {
+                event = 1;
+            } else {
+                if (TouchManager::Get().mUnk_57) {
+                    if (Distance(TouchManager::Get().mX, TouchManager::Get().mY, 0x80, 0x60) < 0x50) {
+                        int x = FX32_CONST((float) (u32) TouchManager::Get().mX - 128.0f);
+                        int y = FX32_CONST((float) (u32) TouchManager::Get().mY - 96.0f);
+                        u32 sector = (func_0200198c(x, y) + 0x1555) / 10922;
+                        if (sector > 5) {
+                            sector = 0;
+                        }
+                        u8 attr = data_ov000_02226224[sector];
+                        if (mAttrib == attr) {
+                            event = 3;
+                            SoundManager::Get().func_020246f8(0);
+                        } else {
+                            event = 2;
+                            SoundManager::Get().func_020246f8(5);
+                        }
+                        mAttrib = attr;
+                    }
+                }
+                if (event == 0) {
+                    if (InputManager::Get().IsTrigger(0x50)) {
+                        mAttrib++;
+                        event = 2;
+                        if (mAttrib >= 6) {
+                            mAttrib = 0;
+                        }
+                        SoundManager::Get().func_020246f8(5);
+                    } else if (InputManager::Get().IsTrigger(0xa0)) {
+                        event = 2;
+                        if (mAttrib == 0) {
+                            mAttrib = 6;
+                        }
+                        mAttrib--;
+                        SoundManager::Get().func_020246f8(5);
+                    } else if (InputManager::Get().IsHeld(1)) {
+                        SoundManager::Get().func_020246f8(0);
+                        event = 3;
+                    }
+                }
+            }
+            switch (event) {
+                case 1:
+                    SpriteManager::Get().StartFade(3);
+                    mUnk_15 = 1;
+                    mUnk_0c = 4;
+                    break;
+                case 2:
+                    if (mState == 3) {
+                        LoadSubBg();
+                    }
+                    mState = 2;
+                    mCells[6]->mUnk_0f = mAttrib;
+                    mUnk_0e = 0;
+                    mUnk_0f = 0;
+                    break;
+                case 3:
+                    mUnk_0e = 2;
+                    mUnk_0c++;
+                    break;
+            }
+            break;
+        }
+        case 3:
+            if (mUnk_0e != 2) {
+                data_020d43f0[0].mUnk_1a_8 = data_ov000_0222621c[mAttrib];
+                SpriteManager::Get().StartFade(3);
+                mUnk_15 = 2;
+                mUnk_0c++;
+            }
+            break;
+        case 4:
+            if (!SpriteManager::Get().IsFading()) {
+                RequestScene(mUnk_15);
+                mFinished = 1;
+            }
+            break;
+    }
+    TransitionStep();
+    PulseBlend();
+    DrawText();
+    Draw();
+}
+
+// Same arithmetic as TextManager::GlyphCount(width, height, flags) but with signed operands: the original calls
+// _s32_div_f here (and in ov008 0221e2d8/0221e2ec), the header's u32 parameters would give _u32_div_f.
+extern u8 data_ov000_02226214[];
+
+extern u8 data_ov000_02226218[];
+
+extern u32 data_ov000_02226234[];
+
+extern WindowItemRecord data_ov000_0222623c[];
+
+extern WindowCellRecord data_ov000_02226258[];
+
 // Same helper as FieldSelectScene.cpp defines locally; belongs in nitro/gx.h next to G2S_SetBlendAlpha.
 void AttrSelScene::InitDisplay() {
     GX_SetDispSelect(1);
@@ -85,17 +201,7 @@ void AttrSelScene::InitDisplay() {
     G2S_SetBlendAlpha(0, 1, 0x1f, 0);
 }
 
-// Same arithmetic as TextManager::GlyphCount(width, height, flags) but with signed operands: the original calls
-// _s32_div_f here (and in ov008 0221e2d8/0221e2ec), the header's u32 parameters would give _u32_div_f.
-extern u8 data_ov000_02226214[];
 
-extern u8 data_ov000_02226218[];
-
-extern u32 data_ov000_02226234[];
-
-extern WindowItemRecord data_ov000_0222623c[];
-
-extern WindowCellRecord data_ov000_02226258[];
 
 // non-matching: 7 words, registers only: the original keeps flags in r8 and unitX in r6.
 void AttrSelScene::LoadGraphics() {
@@ -158,8 +264,6 @@ void AttrSelScene::LoadGraphics() {
     mMessages = (MessageFile *) func_02023504("/font/mes_chara_edit.mes", 0, 0, 0, 0, 0);
     LoadSubBg();
 }
-
-extern u8 data_ov000_0222621c[];
 
 // non-matching: 10 words, the guard load before a preceding store (see docs/decompiling.md).
 void AttrSelScene::PrintName(void *buffer, u32 size, u32 vram, u16 width, u16 height, u32 unk) {
@@ -313,113 +417,15 @@ void AttrSelScene::Draw() {
     mSelectWindow->Draw();
 }
 
+extern u8 data_ov000_0222621c[];
+
+
+
+
+
 int AttrSelScene::Distance(s16 x1, s16 y1, s16 x2, s16 y2) {
     s16 dy = y2 - y1;
     s16 dx = x2 - x1;
     int sq = dx * dx + dy * dy;
     return (int) ((float) FX_Sqrt(FX32_CONST((float) sq)) / 4096.0f);
-}
-
-extern u8 data_ov000_0222621c[];
-
-extern u8 data_ov000_02226224[];
-
-u32 func_0200198c(s32 x, s32 y);
-
-void AttrSelScene::Update() {
-    switch (mUnk_0c) {
-        case 0:
-            SpriteManager::Get().StartFade(2);
-            mUnk_0c++;
-        case 1:
-            if (!SpriteManager::Get().IsFading()) {
-                mUnk_0c++;
-            }
-            break;
-        case 2: {
-            u32 event = 0;
-            if ((u8) mSelectWindow->Update(TRUE) == 2) {
-                event = 1;
-            } else {
-                if (TouchManager::Get().mUnk_57) {
-                    if (Distance(TouchManager::Get().mX, TouchManager::Get().mY, 0x80, 0x60) < 0x50) {
-                        int x = FX32_CONST((float) (u32) TouchManager::Get().mX - 128.0f);
-                        int y = FX32_CONST((float) (u32) TouchManager::Get().mY - 96.0f);
-                        u32 sector = (func_0200198c(x, y) + 0x1555) / 10922;
-                        if (sector > 5) {
-                            sector = 0;
-                        }
-                        u8 attr = data_ov000_02226224[sector];
-                        if (mAttrib == attr) {
-                            event = 3;
-                            SoundManager::Get().func_020246f8(0);
-                        } else {
-                            event = 2;
-                            SoundManager::Get().func_020246f8(5);
-                        }
-                        mAttrib = attr;
-                    }
-                }
-                if (event == 0) {
-                    if (InputManager::Get().IsTrigger(0x50)) {
-                        mAttrib++;
-                        event = 2;
-                        if (mAttrib >= 6) {
-                            mAttrib = 0;
-                        }
-                        SoundManager::Get().func_020246f8(5);
-                    } else if (InputManager::Get().IsTrigger(0xa0)) {
-                        event = 2;
-                        if (mAttrib == 0) {
-                            mAttrib = 6;
-                        }
-                        mAttrib--;
-                        SoundManager::Get().func_020246f8(5);
-                    } else if (InputManager::Get().IsHeld(1)) {
-                        SoundManager::Get().func_020246f8(0);
-                        event = 3;
-                    }
-                }
-            }
-            switch (event) {
-                case 1:
-                    SpriteManager::Get().StartFade(3);
-                    mUnk_15 = 1;
-                    mUnk_0c = 4;
-                    break;
-                case 2:
-                    if (mState == 3) {
-                        LoadSubBg();
-                    }
-                    mState = 2;
-                    mCells[6]->mUnk_0f = mAttrib;
-                    mUnk_0e = 0;
-                    mUnk_0f = 0;
-                    break;
-                case 3:
-                    mUnk_0e = 2;
-                    mUnk_0c++;
-                    break;
-            }
-            break;
-        }
-        case 3:
-            if (mUnk_0e != 2) {
-                data_020d43f0[0].mUnk_1a_8 = data_ov000_0222621c[mAttrib];
-                SpriteManager::Get().StartFade(3);
-                mUnk_15 = 2;
-                mUnk_0c++;
-            }
-            break;
-        case 4:
-            if (!SpriteManager::Get().IsFading()) {
-                RequestScene(mUnk_15);
-                mFinished = 1;
-            }
-            break;
-    }
-    TransitionStep();
-    PulseBlend();
-    DrawText();
-    Draw();
 }

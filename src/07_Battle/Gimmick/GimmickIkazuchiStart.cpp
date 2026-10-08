@@ -72,37 +72,6 @@ void GimmickIkazuchiStart::Finish() {
     mState = 8;
 }
 
-int GimmickIkazuchiStart::func_ov007_022789e0(int count) {
-    int result = 0;
-    if (mModel && (int)data_020d433c.mGimmicks->mState >= 1) {
-        func_020526bc();
-        if (count && mModelB) {
-            MtxFx43 mtx = data_0220e86c;
-            func_01ffcf64(&mtx, &mPosition);
-            data_020d433c.mUnk_14 &= 8;
-            if (!data_020d433c.mUnk_14) {
-                mModelB->func_02028d80();
-            }
-            mModelB->func_02029174(&mtx, &mScale);
-        }
-    }
-    if (count) {
-        data_020d433c.mUnk_14 &= 8;
-        if (!data_020d433c.mUnk_14) {
-            mCounter--;
-            if (mCounter == 0) {
-                mState = 1;
-                sCount--;
-                if (mModelB) {
-                    mModelB->func_02028e54(0, 0, 0x1000);
-                }
-                result = 1;
-            }
-        }
-    }
-    return result;
-}
-
 void GimmickIkazuchiStart::Update() {
     switch (mState) {
     case 0:
@@ -216,4 +185,35 @@ void GimmickIkazuchiStart::Update() {
         mFinished = 1;
         break;
     }
+}
+
+int GimmickIkazuchiStart::func_ov007_022789e0(int count) {
+    int result = 0;
+    if (mModel && (int)data_020d433c.mGimmicks->mState >= 1) {
+        func_020526bc();
+        if (count && mModelB) {
+            MtxFx43 mtx = data_0220e86c;
+            func_01ffcf64(&mtx, &mPosition);
+            data_020d433c.mUnk_14 &= 8;
+            if (!data_020d433c.mUnk_14) {
+                mModelB->func_02028d80();
+            }
+            mModelB->func_02029174(&mtx, &mScale);
+        }
+    }
+    if (count) {
+        data_020d433c.mUnk_14 &= 8;
+        if (!data_020d433c.mUnk_14) {
+            mCounter--;
+            if (mCounter == 0) {
+                mState = 1;
+                sCount--;
+                if (mModelB) {
+                    mModelB->func_02028e54(0, 0, 0x1000);
+                }
+                result = 1;
+            }
+        }
+    }
+    return result;
 }

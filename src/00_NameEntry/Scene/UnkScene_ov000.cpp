@@ -1,3 +1,5 @@
+
+void func_ov000_0221d150();
 #include "Scene/UnkScene_ov000.hpp"
 #include "Unknown/UnkStruct_020c17a8.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
@@ -85,38 +87,6 @@ UnkScene_02226e60::UnkScene_02226e60() :
 UnkScene_02226e60::~UnkScene_02226e60() {
     data_020d433c.mUnk_80 = 0;
 }
-
-void UnkScene_02226e60::InitDisplay() {
-    GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
-    func_02001e68(1, 5, 0);
-    func_02001ed0(0);
-    G2_SetBG0Control(0, 0, 0, 1, 0);
-    G2_SetBG1Control(0, 1, 1, 3, 0);
-    G2S_SetBG0Control(0, 0, 0, 1, 0);
-    G2S_SetBG1Control(0, 1, 1, 3, 0);
-    G2_SetBG0Offset(0, 0);
-    G2_SetBG1Offset(0, 0);
-    G2S_SetBG0Offset(0, 0);
-    G2S_SetBG1Offset(0, 0);
-}
-
-BOOL UnkScene_02226e60::WaitFrames(u32 maxFrames, u32 minFrames) {
-    BOOL done = FALSE;
-    mFrames++;
-    if (mFrames >= minFrames) {
-        if (TouchManager::Get().mUnk_57 | (InputManager::Get().IsHeld(1) | InputManager::Get().IsHeld(8))) {
-            done = TRUE;
-        }
-    }
-    if (mFrames >= maxFrames) {
-        done = TRUE;
-    }
-    return done;
-}
-
-// Singleton at data_020c17a8 (guard data_020c17d8); the destructor is func_02020a44.
-void func_ov000_0221d150();
 
 void UnkScene_02226e60::Update() {
     switch (mState) {
@@ -224,6 +194,38 @@ void UnkScene_02226e60::Update() {
             mFinished = 1;
             break;
     }
+}
+
+void UnkScene_02226e60::InitDisplay() {
+    GX_SetDispSelect(1);
+    SpriteManager::Get().func_02026dec(1, 1);
+    func_02001e68(1, 5, 0);
+    func_02001ed0(0);
+    G2_SetBG0Control(0, 0, 0, 1, 0);
+    G2_SetBG1Control(0, 1, 1, 3, 0);
+    G2S_SetBG0Control(0, 0, 0, 1, 0);
+    G2S_SetBG1Control(0, 1, 1, 3, 0);
+    G2_SetBG0Offset(0, 0);
+    G2_SetBG1Offset(0, 0);
+    G2S_SetBG0Offset(0, 0);
+    G2S_SetBG1Offset(0, 0);
+}
+
+// Singleton at data_020c17a8 (guard data_020c17d8); the destructor is func_02020a44.
+
+
+BOOL UnkScene_02226e60::WaitFrames(u32 maxFrames, u32 minFrames) {
+    BOOL done = FALSE;
+    mFrames++;
+    if (mFrames >= minFrames) {
+        if (TouchManager::Get().mUnk_57 | (InputManager::Get().IsHeld(1) | InputManager::Get().IsHeld(8))) {
+            done = TRUE;
+        }
+    }
+    if (mFrames >= maxFrames) {
+        done = TRUE;
+    }
+    return done;
 }
 
 void func_ov000_0221d150() {

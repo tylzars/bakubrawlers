@@ -122,12 +122,12 @@ u8 ConfrontBg01::vfunc_40(int a) {
     return hit;
 }
 
-BOOL ConfrontBg01::func_ov007_0221bd84() {
-    return FALSE;
+void ConfrontBg01::vfunc_44(int index, u16 count) {
 }
 
 void ConfrontBg01::vfunc_34() {
 }
 
-void ConfrontBg01::vfunc_44(int index, u16 count) {
+BOOL ConfrontBg01::func_ov007_0221bd84() {
+    return FALSE;
 }

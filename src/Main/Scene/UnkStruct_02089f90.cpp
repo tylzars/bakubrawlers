@@ -1,3 +1,4 @@
+#include "System/FrameTask.hpp"
 #include "Unknown/UnkStruct_02089f90.hpp"
 
 #include "Graphics/Display.hpp"

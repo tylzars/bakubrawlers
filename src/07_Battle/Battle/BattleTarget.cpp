@@ -1,3 +1,5 @@
+#include "System/SoundManager.hpp"
+#include "Graphics/SpriteManager.hpp"
 #include "Battle/BattleCpu.hpp"
 #include <nitro/fx.h>
 #include "Battle/BattleCardEffect.hpp"

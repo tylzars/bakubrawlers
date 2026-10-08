@@ -1,3 +1,5 @@
+#include "System/SoundManager.hpp"
+#include "System/TouchManager.hpp"
 #include "UI/SelectWindow.hpp"
 #include "System/InputManager.hpp"
 #include "System/SoundManager.hpp"

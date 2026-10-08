@@ -1,3 +1,5 @@
+#include "Text/TextManager.hpp"
+#include "Unknown/UnkStruct_020c17a8.hpp"
 #include "Unknown/UnkStruct_02070608.hpp"
 
 #include "Game/UnkStruct_020d433c.hpp"

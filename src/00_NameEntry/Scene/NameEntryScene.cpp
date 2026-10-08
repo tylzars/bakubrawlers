@@ -1,3 +1,6 @@
+#include "System/TouchManager.hpp"
+#include "Text/TextManager.hpp"
+#include "System/InputManager.hpp"
 #include "Scene/NameEntryScene.hpp"
 
 #include "Game/UnkStruct_020d43f0.hpp"
@@ -530,15 +533,14 @@ void NameEntryScene::func_ov000_0221b22c() {
     }
 }
 
-// non-matching: 9 words, only register naming (original x-0x20 in r1/y in r0, ours r2/r1) in the two s16 subtractions.
 void NameEntryScene::func_ov000_0221b2a0() {
     if (TouchManager::Get().mTouching == 0) {
         return;
     }
-    s16 x = TouchManager::Get().mX;
-    s16 y = TouchManager::Get().mY;
-    s16 px = x - 0x20;
-    s16 py = y - 0x38;
+    s16 px = TouchManager::Get().mX;
+    s16 py = TouchManager::Get().mY;
+    px -= 0x20;
+    py -= 0x38;
     if (px < 0 || py < 0) {
         return;
     }

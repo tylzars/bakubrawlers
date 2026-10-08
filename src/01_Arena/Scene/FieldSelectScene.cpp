@@ -1,3 +1,6 @@
+#include "Text/TextManager.hpp"
+#include "System/WirelessManager.hpp"
+#include "System/SoundManager.hpp"
 #include "Scene/FieldSelectScene.hpp"
 #include "Game/Random.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
@@ -1753,7 +1756,7 @@ void FieldSelectScene::func_ov001_02223e5c() {
     }
 }
 
-// non-matching: the original computes (s16) (0x30 - 0x10) at run time; it folds here.
+// non-matching: registers only (34 words): the original keeps n in r1 and 0x30 in sl, here n is in sl and 0x30 in r9.
 u32 FieldSelectScene::func_ov001_02223f5c() {
     u32 result = 0;
     if (func_ov001_02223914()) {
@@ -1771,9 +1774,9 @@ u32 FieldSelectScene::func_ov001_02223f5c() {
                 i++;
             }
             do {
-                int base = 0x30;
+                s16 base = 0x30;
                 if (n > 2) {
-                    base = 0x20;
+                    base -= 0x10;
                 }
                 int dy = (s16) (mInput[0].mTouchY - base - i * 0x24);
                 if ((dy >= 0) & (dy < 0x20)) {
@@ -1803,7 +1806,8 @@ u32 FieldSelectScene::func_ov001_02223f5c() {
         }
     }
     if (mInput[0].mUnk_06 != 0) {
-        mUnk_32a = mInput[0].mUnk_02 % 3 + 2;
+        u8 m     = mInput[0].mUnk_02 % 3;
+        mUnk_32a = m + 2;
         result   = 1;
     }
     }

@@ -1,3 +1,4 @@
+#include "Text/TextManager.hpp"
 #include "Battle/BattleCommandPage.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"

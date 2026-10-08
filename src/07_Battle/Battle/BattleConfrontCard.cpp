@@ -1,3 +1,5 @@
+#include "System/InputManager.hpp"
+#include "System/SoundManager.hpp"
 #include "Battle/BattleConfrontCard.hpp"
 #include "Battle/BattleCardSpec.hpp"
 #include "Battle/BattleCommandPrompt.hpp"

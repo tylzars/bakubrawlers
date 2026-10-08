@@ -1,3 +1,6 @@
+#include "System/InputManager.hpp"
+#include "System/SoundManager.hpp"
+#include "Text/TextManager.hpp"
 #include "Scene/ArenaScene.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"

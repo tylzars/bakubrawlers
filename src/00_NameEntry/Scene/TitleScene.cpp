@@ -1,3 +1,4 @@
+#include "Unknown/UnkStruct_020c17a8.hpp"
 #include "Scene/TitleScene.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/CellAnimation.hpp"

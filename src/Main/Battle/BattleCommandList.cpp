@@ -1,3 +1,6 @@
+#include "Text/TextManager.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "System/SoundManager.hpp"
 // non-matching: TextManager mUnk_5b store precedes guard load in original (see docs/decompiling.md open problems); 10 words differ
 #include "Battle/BattleCommandList.hpp"
 #include "Graphics/UnkStruct_0203d374.hpp"

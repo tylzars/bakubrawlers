@@ -1,3 +1,6 @@
+#include "System/InputManager.hpp"
+#include "Text/TextManager.hpp"
+#include "System/WirelessManager.hpp"
 #include "Unknown/UnkStruct_02078e14.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"

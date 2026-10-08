@@ -1,3 +1,5 @@
+#include "System/SoundManager.hpp"
+#include "System/WirelessManager.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d48f0.hpp"

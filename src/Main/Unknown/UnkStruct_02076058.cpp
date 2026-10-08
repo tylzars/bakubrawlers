@@ -1,3 +1,6 @@
+#include "System/TouchManager.hpp"
+#include "Text/TextManager.hpp"
+#include "System/InputManager.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Unknown/UnkStruct_02071d24.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"

@@ -1,3 +1,4 @@
+#include "System/WirelessManager.hpp"
 #include "global.h"
 #include "types.h"
 #include "Battle/BattleCpu.hpp"

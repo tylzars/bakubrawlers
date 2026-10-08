@@ -1,3 +1,4 @@
+#include "System/TouchManager.hpp"
 #include "Game/Random.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/CellAnimation.hpp"

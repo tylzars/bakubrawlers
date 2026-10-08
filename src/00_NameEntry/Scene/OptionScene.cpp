@@ -1,3 +1,5 @@
+#include "Text/TextManager.hpp"
+#include "System/SoundManager.hpp"
 #include "Scene/OptionScene.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"

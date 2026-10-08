@@ -1,3 +1,4 @@
+#include "Text/TextManager.hpp"
 #include "Scene/CreditsScene.hpp"
 #include "System/FrameTask.hpp"
 #include <nitro/gx.h>

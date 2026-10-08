@@ -212,11 +212,11 @@ void Camera::func_02026180() {
     mTarget = v;
 }
 
-// non-matching: size 0x1c8 vs 0x1d8: the original indexes the path without a post-indexed load.
 void Camera::func_020262cc(VecFx32 *out, u32 track, fx32 t) {
-    u32 n               = mPath[0];
-    const VecFx32 *keys = (const VecFx32 *) (mPath + 1) + n * track;
-    u32 index           = (u32) (t << 4) >> 16;
+    const VecFx32 *keys;
+    u32 n      = mPath[0];
+    keys       = (const VecFx32 *) (mPath + 1) + track * n;
+    u32 index  = (u32) (t << 4) >> 16;
     if (n <= index) {
         *out = keys[n - 1];
         return;
@@ -226,18 +226,20 @@ void Camera::func_020262cc(VecFx32 *out, u32 track, fx32 t) {
         *out = keys[n - 1];
         return;
     }
-    fx32 whole;
-    fx32 frac = func_02001b38(t, &whole);
+    fx32 w;
+    fx32 frac = func_02001b38(t, &w);
     if (frac == 0) {
         *out = keys[index];
         return;
     }
-    fx32 w        = 0x1000 - frac;
-    VecFx32 a     = keys[index];
-    VecFx32 b     = keys[next];
-    out->z = func_01ff8000(FX_Mul(a.z, w) + FX_Mul(b.z, frac), 0x1000);
-    out->y = func_01ff8000(FX_Mul(a.y, w) + FX_Mul(b.y, frac), 0x1000);
-    out->x = func_01ff8000(FX_Mul(a.x, w) + FX_Mul(b.x, frac), 0x1000);
+    w         = 0x1000 - frac;
+    VecFx32 a = keys[index];
+    VecFx32 b = keys[next];
+    VecFx32 r;
+    r.z  = func_01ff8000(FX_Mul(a.z, w) + FX_Mul(b.z, frac), 0x1000);
+    r.y  = func_01ff8000(FX_Mul(a.y, w) + FX_Mul(b.y, frac), 0x1000);
+    r.x  = func_01ff8000(FX_Mul(a.x, w) + FX_Mul(b.x, frac), 0x1000);
+    *out = r;
 }
 
 void Camera::func_020264a4(u32 loop) {

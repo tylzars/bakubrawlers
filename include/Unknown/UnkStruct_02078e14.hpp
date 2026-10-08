@@ -42,7 +42,7 @@ public:
     /* 04c */ SelectWindow *mUnk_4c;
     /* 050 */ SelectWindow *mUnk_50;
     /* 054 */ SelectWindowCursor *mUnk_54;
-    /* 058 */ void *mUnk_58;
+    /* 058 */ SelectWindowCursor *mUnk_58;
     /* 05c */ CellAnimation *mUnk_5c[6];
     /* 074 */ CellAnimation *mUnk_74[19];
     /* 0c0 */ BattleCommandList *mUnk_c0;

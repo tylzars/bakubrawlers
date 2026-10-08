@@ -322,15 +322,12 @@ void func_02058260(BattleCommandList *list, u8 a, u8 b, s32 c) {
     list->mUnk_160 = 0;
 }
 
-// non-matching: 0x4c vs 0x54, the original reloads mUnk_15c after the store (volatile over-corrects).
 void BattleCommandList::func_0205839c(u32 flag) {
-    int next;
     if (flag == 0) {
-        next = mUnk_15c + 2;
+        mUnk_15c = (mUnk_15c + 2) % 3;
     } else {
-        next = mUnk_15c + 1;
+        mUnk_15c = (mUnk_15c + 1) % 3;
     }
-    mUnk_15c = next % 3;
     if (mUnk_15c == 0) {
         return;
     }

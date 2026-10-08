@@ -2101,6 +2101,850 @@ void UnkStruct_02065c40::func_0206b09c() {
     }
 }
 
+void func_02088f28(UnkStruct_02087898 *self, u8 unk1);
+
+void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
+    mUnk_12c6 = command;
+    mUnk_12c8 = value;
+    s16 angle = (mUnk_12c8 << 16) / 360;
+    u32 idx   = func_0206b05c(mUnk_12c6);
+    mUnk_12c5 = 0;
+    switch (mUnk_12c6) {
+        case 1:
+            mUnk_12d2[mUnk_12ce] = mUnk_12c8;
+            mUnk_12ce++;
+            if (mUnk_12ce >= 0x80) {
+                mUnk_12ce = 0;
+            }
+            break;
+        case 3:
+            func_02088ec4(mUnk_1018);
+            mUnk_12ca = 0;
+            mUnk_12cc = mUnk_12ce;
+            mUnk_12c4 = 0;
+            mUnk_12c5 = 1;
+            break;
+        case 8:
+            mUnk_13d2[mUnk_12ce] = mUnk_12c8;
+            break;
+        case 2:
+            mUnk_12c5 = 2;
+            break;
+        case 9:
+            {
+                s32 limit = mUnk_12c8;
+                if (limit > 3) {
+                    limit = 3;
+                }
+                mUnk_12ba = limit;
+                break;
+            }
+        case 10:
+            mUnk_14ee = mUnk_12c8;
+            break;
+        case 11:
+            mUnk_1018->mUnk_3a = mUnk_12c8;
+            break;
+        case 12:
+            mUnk_1018->mUnk_3b = mUnk_12c8;
+            break;
+        case 13:
+            mUnk_12c4 = mUnk_12c8;
+            mUnk_12c5 = 1;
+            break;
+        case 14:
+            {
+                s32 v = mUnk_12c8;
+                if (v < 1) {
+                    v = 1;
+                }
+                mUnk_14de = v;
+                break;
+            }
+        case 15:
+            {
+                s32 v = mUnk_12c8;
+                if (v > 0x10) {
+                    v = 0x10;
+                } else if (v < -0x10) {
+                    v = -0x10;
+                }
+                mUnk_14d6 = v;
+                mUnk_14d7 = mUnk_14d5;
+                break;
+            }
+        case 25:
+        case 26:
+        case 27:
+            mUnk_14d7 = mUnk_14d5;
+            mUnk_14d8 = 0;
+            mUnk_14d9 = mUnk_14de;
+            mUnk_14d4 = 0;
+            switch (mUnk_12c6) {
+                case 0x1a:
+                    mUnk_14d3 = 1;
+                    if (mUnk_14d6 < 0) {
+                        SpriteManager::Get().StartSubFade(3);
+                    } else {
+                        SpriteManager::Get().StartSubFade(2);
+                    }
+                    mUnk_14d9 = 0x10;
+                    break;
+                case 0x1b:
+                    mUnk_14d3 = 2;
+                    if (mUnk_14d6 < 0) {
+                        SpriteManager::Get().StartFade(3);
+                    } else {
+                        SpriteManager::Get().StartFade(2);
+                    }
+                    mUnk_14d9 = 0x10;
+                    break;
+                default:
+                    mUnk_14d3 = 0;
+                    break;
+            }
+            mUnk_12c5 = 3;
+            break;
+        case 17:
+            func_0206e9d0(1);
+        case 16:
+            mUnk_14da = 0;
+            mUnk_14dc = mUnk_14de;
+            mUnk_12c5 = 4;
+            break;
+        case 18:
+        case 19:
+        case 20:
+        case 21:
+        case 22:
+        case 23:
+            switch (mUnk_12c6) {
+                case 0x12:
+                    func_02067e2c(0, 1);
+                    break;
+                case 0x13:
+                    func_02067e2c(1, 1);
+                    break;
+                case 0x15:
+                    func_02067e2c(0, 0);
+                    break;
+                case 0x16:
+                    func_02067e2c(1, 0);
+                    break;
+                case 0x17:
+                    break;
+            }
+            break;
+        case 28:
+            mUnk_1244[0].mUnk_00 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_1244[0].mUnk_0c = mUnk_12c8;
+        case 31:
+            mUnk_1244[0].mUnk_12 = mUnk_12c8;
+            break;
+        case 29:
+            mUnk_1244[0].mUnk_04 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_1244[0].mUnk_0e = mUnk_12c8;
+        case 32:
+            mUnk_1244[0].mUnk_14 = mUnk_12c8;
+            break;
+        case 30:
+            mUnk_1244[0].mUnk_08 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_1244[0].mUnk_10 = mUnk_12c8;
+        case 33:
+            mUnk_1244[0].mUnk_16 = mUnk_12c8;
+            break;
+        case 34:
+            mUnk_1244[1].mUnk_00 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_1244[1].mUnk_0c = mUnk_12c8;
+        case 37:
+            mUnk_1244[1].mUnk_12 = mUnk_12c8;
+            func_02069eb8(1);
+            break;
+        case 35:
+            mUnk_1244[1].mUnk_04 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_1244[1].mUnk_0e = mUnk_12c8;
+        case 38:
+            mUnk_1244[1].mUnk_14 = mUnk_12c8;
+            func_02069eb8(1);
+            break;
+        case 36:
+            mUnk_1244[1].mUnk_08 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_1244[1].mUnk_10 = mUnk_12c8;
+        case 39:
+            mUnk_1244[1].mUnk_16 = mUnk_12c8;
+            func_02069eb8(1);
+            break;
+        case 40:
+            mUnk_1274.mVec[0].x = angle;
+            mUnk_1274.mVec[1].x = angle;
+        case 41:
+            mUnk_1274.mVec[2].x = angle;
+            func_02069eb8(0);
+            break;
+        case 42:
+            mUnk_1274.mVec[0].y = angle;
+            mUnk_1274.mVec[1].y = angle;
+        case 43:
+            mUnk_1274.mVec[2].y = angle;
+            func_02069eb8(0);
+            break;
+        case 44:
+            mUnk_1274.mVec[0].z = angle;
+            mUnk_1274.mVec[1].z = angle;
+        case 45:
+            mUnk_1274.mVec[2].z = angle;
+            func_02069eb8(0);
+            break;
+        case 46:
+            mUnk_128c[0] = 0x3c;
+            mUnk_128c[1] = 0x3c;
+            mUnk_128c[2] = 0x3c;
+            func_02069d0c();
+            break;
+        case 47:
+            mUnk_128c[0] = mUnk_12c8;
+            mUnk_128c[1] = mUnk_12c8;
+            func_02069d0c();
+        case 48:
+            mUnk_128c[2] = mUnk_12c8;
+            break;
+        case 49:
+            mUnk_1298.x = mUnk_12c8;
+            mUnk_129e.x = mUnk_12c8;
+        case 50:
+            mUnk_12a4.x = mUnk_12c8;
+            break;
+        case 51:
+            mUnk_1298.y = mUnk_12c8;
+            mUnk_129e.y = mUnk_12c8;
+        case 52:
+            mUnk_12a4.y = mUnk_12c8;
+            break;
+        case 53:
+            mUnk_1298.z = mUnk_12c8;
+            mUnk_129e.z = mUnk_12c8;
+        case 54:
+            mUnk_12a4.z = mUnk_12c8;
+            break;
+        case 55:
+            mUnk_12ac = (mUnk_12ac & 0xffe0) | (mUnk_12c8 & 0x1f);
+            break;
+        case 56:
+            mUnk_12ac = (mUnk_12ac & 0xfc1f) | ((mUnk_12c8 & 0x1f) << 5);
+            break;
+        case 57:
+            mUnk_12ac = (mUnk_12ac & 0x83ff) | ((mUnk_12c8 & 0x1f) << 10);
+            break;
+        case 58:
+            mUnk_1014->mLights[0]->mColor = mUnk_12ac;
+            mUnk_1014->func_02029d54();
+            break;
+        case 169:
+        case 191:
+            if (func_02068c54(idx, mUnk_12c8)) {
+                mUnk_12c4 = 0;
+                mUnk_12c5 = 6;
+            }
+            break;
+        case 170:
+        case 192:
+            func_02069120(idx, mUnk_12c8);
+            mUnk_12c4 = 0;
+            mUnk_12c5 = 6;
+            break;
+        case 171:
+        case 193:
+            mUnk_1084[idx].mUnk_51 = 1;
+            break;
+        case 188:
+        case 210:
+            if (mUnk_1084[idx].mUnk_51 != 0) {
+                mUnk_1084[idx].mUnk_52 = mUnk_12c8;
+                break;
+            }
+            if (mUnk_1084[idx].mUnk_2c == NULL) {
+                break;
+            }
+            mUnk_1084[idx].mUnk_2c->func_02028e54((u8) mUnk_12c8, 0, 0x1000);
+            mUnk_1084[idx].mUnk_4d = 1;
+            mUnk_1084[idx].mUnk_4e = 1;
+            break;
+        case 189:
+        case 211:
+            if (mUnk_1084[idx].mUnk_51 != 0) {
+                mUnk_1084[idx].mUnk_52 = mUnk_12c8;
+                break;
+            }
+            if (mUnk_1084[idx].mUnk_2c == NULL) {
+                break;
+            }
+            mUnk_1084[idx].mUnk_2c->func_02028e54((u8) mUnk_12c8, 1, 0x1000);
+            mUnk_1084[idx].mUnk_4d = 0;
+            mUnk_1084[idx].mUnk_4e = 1;
+            break;
+        case 172:
+        case 194:
+            mUnk_1084[idx].mUnk_4e = 1;
+            break;
+        case 173:
+        case 195:
+            mUnk_1084[idx].mUnk_4e = 0;
+            break;
+        case 174:
+            mUnk_1084[0].mUnk_00 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_1084[0].mUnk_0c[0] = mUnk_12c8;
+        case 177:
+            mUnk_1084[0].mUnk_12[0] = mUnk_12c8;
+            break;
+        case 175:
+            mUnk_1084[0].mUnk_04 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_1084[0].mUnk_0c[1] = mUnk_12c8;
+        case 178:
+            mUnk_1084[0].mUnk_12[1] = mUnk_12c8;
+            break;
+        case 176:
+            mUnk_1084[0].mUnk_08 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_1084[0].mUnk_0c[2] = mUnk_12c8;
+        case 179:
+            mUnk_1084[0].mUnk_12[2] = mUnk_12c8;
+            break;
+        case 180:
+            mUnk_1084[0].mUnk_18[0] = angle;
+            mUnk_1084[0].mUnk_1e[0] = angle;
+        case 183:
+            mUnk_1084[0].mUnk_24[0] = angle;
+            break;
+        case 181:
+            mUnk_1084[0].mUnk_18[1] = angle;
+            mUnk_1084[0].mUnk_1e[1] = angle;
+        case 184:
+            mUnk_1084[0].mUnk_24[1] = angle;
+            break;
+        case 182:
+            mUnk_1084[0].mUnk_18[2] = angle;
+            mUnk_1084[0].mUnk_1e[2] = angle;
+        case 185:
+            mUnk_1084[0].mUnk_24[2] = angle;
+            break;
+        case 196:
+            mUnk_1084[1].mUnk_00 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_1084[1].mUnk_0c[0] = mUnk_12c8;
+        case 199:
+            mUnk_1084[1].mUnk_12[0] = mUnk_12c8;
+            break;
+        case 197:
+            mUnk_1084[1].mUnk_04 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_1084[1].mUnk_0c[1] = mUnk_12c8;
+        case 200:
+            mUnk_1084[1].mUnk_12[1] = mUnk_12c8;
+            break;
+        case 198:
+            mUnk_1084[1].mUnk_08 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_1084[1].mUnk_0c[2] = mUnk_12c8;
+        case 201:
+            mUnk_1084[1].mUnk_12[2] = mUnk_12c8;
+            break;
+        case 202:
+            mUnk_1084[1].mUnk_18[0] = angle;
+            mUnk_1084[1].mUnk_1e[0] = angle;
+        case 205:
+            mUnk_1084[1].mUnk_24[0] = angle;
+            break;
+        case 203:
+            mUnk_1084[1].mUnk_18[1] = angle;
+            mUnk_1084[1].mUnk_1e[1] = angle;
+        case 206:
+            mUnk_1084[1].mUnk_24[1] = angle;
+            break;
+        case 204:
+            mUnk_1084[1].mUnk_18[2] = angle;
+            mUnk_1084[1].mUnk_1e[2] = angle;
+        case 207:
+            mUnk_1084[1].mUnk_24[2] = angle;
+            break;
+        case 186:
+        case 208:
+            mUnk_1084[idx].mUnk_4f = mUnk_12c8;
+            break;
+        case 187:
+        case 209:
+            mUnk_1084[idx].mUnk_50 = mUnk_12c8;
+            break;
+        case 59:
+            if (func_020688e0(mUnk_12c8)) {
+                mUnk_12c4 = 0;
+                mUnk_12c5 = 6;
+            }
+            break;
+        case 61:
+            mUnk_101c[0].mUnk_00 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_101c[0].mUnk_0c[0] = mUnk_12c8;
+        case 64:
+            mUnk_101c[0].mUnk_12[0] = mUnk_12c8;
+            break;
+        case 62:
+            mUnk_101c[0].mUnk_04 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_101c[0].mUnk_0c[1] = mUnk_12c8;
+        case 65:
+            mUnk_101c[0].mUnk_12[1] = mUnk_12c8;
+            break;
+        case 63:
+            mUnk_101c[0].mUnk_08 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_101c[0].mUnk_0c[2] = mUnk_12c8;
+        case 66:
+            mUnk_101c[0].mUnk_12[2] = mUnk_12c8;
+            break;
+        case 67:
+            mUnk_101c[0].mUnk_18[0] = angle;
+            mUnk_101c[0].mUnk_1e[0] = angle;
+        case 70:
+            mUnk_101c[0].mUnk_24[0] = angle;
+            break;
+        case 68:
+            mUnk_101c[0].mUnk_18[1] = angle;
+            mUnk_101c[0].mUnk_1e[1] = angle;
+        case 71:
+            mUnk_101c[0].mUnk_24[1] = angle;
+            break;
+        case 69:
+            mUnk_101c[0].mUnk_18[2] = angle;
+            mUnk_101c[0].mUnk_1e[2] = angle;
+        case 72:
+            mUnk_101c[0].mUnk_24[2] = angle;
+            break;
+        case 80:
+            mUnk_11b4[0].mUnk_00 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_11b4[0].mUnk_0c[0] = mUnk_12c8;
+        case 83:
+            mUnk_11b4[0].mUnk_12[0] = mUnk_12c8;
+            break;
+        case 103:
+            mUnk_11b4[1].mUnk_00 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_11b4[1].mUnk_0c[0] = mUnk_12c8;
+        case 106:
+            mUnk_11b4[1].mUnk_12[0] = mUnk_12c8;
+            break;
+        case 81:
+            mUnk_11b4[0].mUnk_04 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_11b4[0].mUnk_0c[1] = mUnk_12c8;
+        case 84:
+            mUnk_11b4[0].mUnk_12[1] = mUnk_12c8;
+            break;
+        case 104:
+            mUnk_11b4[1].mUnk_04 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_11b4[1].mUnk_0c[1] = mUnk_12c8;
+        case 107:
+            mUnk_11b4[1].mUnk_12[1] = mUnk_12c8;
+            break;
+        case 82:
+            mUnk_11b4[0].mUnk_08 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_11b4[0].mUnk_0c[2] = mUnk_12c8;
+        case 85:
+            mUnk_11b4[0].mUnk_12[2] = mUnk_12c8;
+            break;
+        case 105:
+            mUnk_11b4[1].mUnk_08 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_11b4[1].mUnk_0c[2] = mUnk_12c8;
+        case 108:
+            mUnk_11b4[1].mUnk_12[2] = mUnk_12c8;
+            break;
+        case 73:
+        case 96:
+            {
+                UnkStruct_0205401c *model = mUnk_11b4[idx].mUnk_2c;
+                if (model != NULL) {
+                    model->func_02054034();
+                    delete model;
+                }
+                mUnk_11b4[idx].mUnk_2c = NULL;
+                s32 v = mUnk_12c8;
+                if (v == -2) {
+                    v = mUnk_11b4[idx].mUnk_36;
+                }
+                if (v >= 0) {
+                    mUnk_11b4[idx].mUnk_36 = v;
+                }
+                break;
+            }
+        case 75:
+        case 98:
+            {
+                UnkStruct_0205401c *model = mUnk_11b4[idx].mUnk_30;
+                if (model != NULL) {
+                    model->func_02054034();
+                    delete model;
+                }
+                mUnk_11b4[idx].mUnk_30 = NULL;
+                mUnk_11b4[idx].mUnk_37 = mUnk_12c8;
+                break;
+            }
+        case 76:
+        case 99:
+            func_02068074(idx);
+            mUnk_11b4[idx].mUnk_38 = mUnk_12c8;
+            mUnk_12c4 = 0;
+            mUnk_12c5 = 6;
+            break;
+        case 74:
+        case 97:
+            mUnk_12c4 = 0;
+            mUnk_12c5 = 5;
+            break;
+        case 77:
+        case 100:
+            mUnk_11b4[idx].mUnk_43 = 1;
+            break;
+        case 87:
+            mUnk_11b4[0].mUnk_18[1] = angle;
+            mUnk_11b4[0].mUnk_1e[1] = angle;
+        case 90:
+            mUnk_11b4[0].mUnk_24[1] = angle;
+            break;
+        case 110:
+            mUnk_11b4[1].mUnk_18[1] = angle;
+            mUnk_11b4[1].mUnk_1e[1] = angle;
+        case 113:
+            mUnk_11b4[1].mUnk_24[1] = angle;
+            break;
+        case 78:
+        case 101:
+            func_02067e2c(idx, 1);
+            break;
+        case 79:
+        case 102:
+            func_02067e2c(idx, 0);
+            break;
+        case 92:
+        case 115:
+            mUnk_11b4[idx].mUnk_3f = mUnk_12c8;
+            mUnk_11b4[idx].mUnk_40 = mUnk_12c8;
+            mUnk_11b4[idx].mUnk_41 = mUnk_12c8;
+            break;
+        case 93:
+            mUnk_11b4[idx].mUnk_40 = mUnk_12c8;
+            break;
+        case 94:
+        case 117:
+            mUnk_11b4[idx].mUnk_42 = mUnk_12c8;
+            break;
+        case 95:
+        case 118:
+            mUnk_11b4[idx].mUnk_3d = mUnk_12c8;
+            break;
+        case 119:
+        case 120:
+        case 144:
+        case 145:
+            {
+                mUnk_112c[idx].mUnk_37 = 0;
+                s32 v = mUnk_12c8;
+                if (v != -2) {
+                    mUnk_112c[idx].mUnk_34 = v;
+                    switch (mUnk_12c6) {
+                        case 0x78:
+                        case 0x91:
+                            mUnk_112c[idx].mUnk_36 = 1;
+                            break;
+                        default:
+                            mUnk_112c[idx].mUnk_36 = 0;
+                            break;
+                    }
+                }
+                UnkStruct_0203d374 *pose = mUnk_112c[idx].mUnk_2c;
+                if (pose != NULL) {
+                    delete pose;
+                }
+                mUnk_112c[idx].mUnk_2c = NULL;
+                if (func_02069680(idx)) {
+                    mUnk_12c4 = 0;
+                    mUnk_12c5 = 6;
+                }
+                break;
+            }
+        case 121:
+        case 146:
+            {
+                UnkStruct_0203d374 *pose = mUnk_112c[idx].mUnk_30;
+                if (pose != NULL) {
+                    delete pose;
+                }
+                mUnk_112c[idx].mUnk_30 = NULL;
+                mUnk_112c[idx].mUnk_35 = mUnk_12c8;
+                func_020696e8(idx);
+                mUnk_12c4 = 0;
+                mUnk_12c5 = 6;
+                break;
+            }
+        case 122:
+        case 147:
+            mUnk_112c[idx].mUnk_42 = 1;
+            break;
+        case 123:
+        case 148:
+            if (mUnk_112c[idx].mUnk_2c != NULL) {
+                mUnk_112c[idx].mUnk_37 = 1;
+            }
+            break;
+        case 124:
+        case 149:
+            mUnk_112c[idx].mUnk_37 = 0;
+            break;
+        case 125:
+        case 150:
+            mUnk_112c[idx].mUnk_00 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_112c[idx].mUnk_0c[0] = mUnk_12c8;
+            mUnk_112c[idx].mUnk_12[0] = mUnk_12c8;
+            break;
+        case 128:
+        case 153:
+            mUnk_112c[idx].mUnk_12[0] = mUnk_12c8;
+            break;
+        case 126:
+        case 151:
+            mUnk_112c[idx].mUnk_04 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_112c[idx].mUnk_0c[1] = mUnk_12c8;
+            mUnk_112c[idx].mUnk_12[1] = mUnk_12c8;
+            break;
+        case 129:
+        case 154:
+            mUnk_112c[idx].mUnk_12[1] = mUnk_12c8;
+            break;
+        case 127:
+        case 152:
+            mUnk_112c[idx].mUnk_08 = FX_FROM_INT_ROUND(mUnk_12c8);
+            mUnk_112c[idx].mUnk_0c[2] = mUnk_12c8;
+            mUnk_112c[idx].mUnk_12[2] = mUnk_12c8;
+            break;
+        case 130:
+        case 155:
+            mUnk_112c[idx].mUnk_12[2] = mUnk_12c8;
+            break;
+        case 131:
+            mUnk_112c[0].mUnk_18[0] = angle;
+            mUnk_112c[0].mUnk_1e[0] = angle;
+        case 134:
+            mUnk_112c[0].mUnk_24[0] = angle;
+            break;
+        case 156:
+            mUnk_112c[1].mUnk_18[0] = angle;
+            mUnk_112c[1].mUnk_1e[0] = angle;
+        case 159:
+            mUnk_112c[1].mUnk_24[0] = angle;
+            break;
+        case 132:
+            mUnk_112c[0].mUnk_18[1] = angle;
+            mUnk_112c[0].mUnk_1e[1] = angle;
+        case 135:
+            mUnk_112c[0].mUnk_24[1] = angle;
+            break;
+        case 157:
+            mUnk_112c[1].mUnk_18[1] = angle;
+            mUnk_112c[1].mUnk_1e[1] = angle;
+        case 160:
+            mUnk_112c[1].mUnk_24[1] = angle;
+            break;
+        case 133:
+            mUnk_112c[0].mUnk_18[2] = angle;
+            mUnk_112c[0].mUnk_1e[2] = angle;
+        case 136:
+            mUnk_112c[0].mUnk_24[2] = angle;
+            break;
+        case 158:
+            mUnk_112c[1].mUnk_18[2] = angle;
+            mUnk_112c[1].mUnk_1e[2] = angle;
+        case 161:
+            mUnk_112c[1].mUnk_24[2] = angle;
+            break;
+        case 137:
+            mUnk_112c[0].mUnk_38 = mUnk_12c8;
+            mUnk_112c[0].mUnk_3a = mUnk_12c8;
+        case 138:
+            mUnk_112c[0].mUnk_39 = mUnk_12c8;
+            break;
+        case 162:
+            mUnk_112c[1].mUnk_38 = mUnk_12c8;
+            mUnk_112c[1].mUnk_3a = mUnk_12c8;
+        case 163:
+            mUnk_112c[1].mUnk_39 = mUnk_12c8;
+            break;
+        case 139:
+        case 164:
+            mUnk_112c[idx].mUnk_3b = mUnk_12c8;
+            break;
+        case 140:
+        case 165:
+            mUnk_112c[idx].mUnk_3c = mUnk_12c8;
+            break;
+        case 141:
+        case 166:
+            if (mUnk_112c[idx].mUnk_36 == 0) {
+                break;
+            }
+            switch (mUnk_12c8) {
+                case 1:
+                    mUnk_112c[idx].mUnk_2c->mModel->func_02028e54(0, 0, 0x1000);
+                    break;
+                case 3:
+                    mUnk_112c[idx].mUnk_2c->mModel->func_02028e54(0, 0, 0x64000);
+                    break;
+                case 4:
+                    mUnk_112c[idx].mUnk_2c->mModel->func_02028e54(0, 0, -1);
+                    break;
+                case 2:
+                    mUnk_112c[idx].mUnk_2c->mModel->func_02028e54(0, 0, 0x64000);
+                    mUnk_112c[idx].mUnk_2c->mModel->func_02028d80();
+                    mUnk_112c[idx].mUnk_2c->mModel->mAnim->mUnk_0c = -0x1000;
+                    break;
+            }
+            break;
+        case 142:
+        case 167:
+            mUnk_112c[idx].mUnk_3f = mUnk_12c8;
+            break;
+        case 143:
+        case 168:
+            mUnk_112c[idx].mUnk_40 = mUnk_12c8;
+            break;
+        case 213:
+            if (mUnk_14d2 == mUnk_12c8) {
+                break;
+            }
+            mUnk_14d2 = mUnk_12c8;
+            if (mUnk_14d2 > -1) {
+                FrameTask::Get().func_0203dc34(0, mUnk_14d2);
+            } else {
+                FrameTask::Get().func_0203dd74(0);
+            }
+            break;
+        case 214:
+            FrameTask::Get().func_0203dd74(0);
+            break;
+        case 215:
+            if (mUnk_12c8 > -1) {
+                FrameTask::Get().func_0203dc34(1, (u16) (mUnk_12c8 + 0xa8));
+            } else {
+                FrameTask::Get().func_0203dd74(1);
+            }
+            break;
+        case 216:
+            FrameTask::Get().func_0203dd74(1);
+            break;
+        case 217:
+            {
+                if (mUnk_12c8 <= -1) {
+                    break;
+                }
+                s32 id = (u16) mUnk_12c8;
+                if (id < 0x11) {
+                    SoundManager::Get().func_020246f8(id + 0x12);
+                } else {
+                    SoundManager::Get().func_020246f8((u16) (id - 0x11) + 0x44);
+                }
+                break;
+            }
+        case 218:
+            SoundManager::Get().func_02024754(1);
+            break;
+        case 219:
+            data_020d433c.mPlayerCount = 2;
+            break;
+        case 220:
+            {
+                s32 v = mUnk_12c8;
+                if (v > 4) {
+                    v = 4;
+                } else if (v < 2) {
+                    v = 2;
+                }
+                data_020d433c.mPlayerCount = v;
+                break;
+            }
+        case 221:
+            {
+                s32 v = mUnk_12c8;
+                if (v < 0) {
+                    v = -v;
+                }
+                data_020d433c.mUnk_95 = v % 8;
+                data_020d433c.mUnk_96 = 0;
+                break;
+            }
+        case 222:
+            {
+                s32 v = mUnk_12c8;
+                data_020d433c.mUnk_9f[1] = v % 22;
+                break;
+            }
+        case 223:
+            {
+                s32 v = mUnk_12c8;
+                data_020d433c.mUnk_9f[2] = v % 22;
+                break;
+            }
+        case 224:
+            {
+                s32 v = mUnk_12c8;
+                data_020d433c.mUnk_9f[3] = v % 22;
+                break;
+            }
+        case 225:
+            func_0206791c(1);
+            break;
+        case 226:
+            func_0206791c(2);
+            break;
+        case 227:
+            func_0206791c(3);
+            break;
+        case 228:
+            func_0206791c(4);
+            break;
+        case 229:
+            func_0206791c(7);
+            break;
+        case 230:
+            func_0206791c(8);
+            break;
+        case 231:
+            func_0206791c(5);
+            {
+                s32 v = mUnk_12c8;
+                if (v > 4) {
+                    v = 4;
+                } else if (v < 2) {
+                    v = 2;
+                }
+                data_020d433c.mPlayerCount = v;
+            }
+            break;
+        case 232:
+            CameraManager::Get().mActive = 0;
+            CameraManager::Get().func_02026504(1, mUnk_1288, 0);
+            mUnk_14e4 = 0;
+            func_02088f28(mUnk_1018, 0);
+            mUnk_12c5 = 9;
+            break;
+        case 233:
+            func_02067708(1);
+            SpriteManager::Get().func_02026dec(1, 7);
+            func_020666d8();
+            CameraManager::Get().func_02026504(2, mUnk_1288, (u32) mUnk_1288);
+            SpriteManager::Get().SetFade(1, -16);
+            mUnk_14e4 = 1;
+            mUnk_14e5 = 1;
+            GXS_SetVisiblePlane(1);
+            func_02088f28(mUnk_1018, 1);
+            mUnk_1018->func_02087eec();
+            break;
+        case 234:
+            mUnk_14e7 = 1;
+            mUnk_12c5 = 8;
+            mUnk_14e8 = 0;
+            mUnk_14f1 = 0;
+            break;
+    }
+}
+
 void UnkStruct_02065c40::func_0206e9d0(u32 flag) {
     if (mUnk_14f3 == flag) {
         return;

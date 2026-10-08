@@ -44,6 +44,9 @@ struct UnkStruct_02065c40_18 {
 };
 
 struct UnkStruct_02065c40_74 {
+  union {
+   UnkStruct_Vec3s mVec[3];
+   struct {
     /* 00 */ u16 mUnk_00;
     union {
         /* 02 */ u16 mUnk_02;
@@ -52,6 +55,8 @@ struct UnkStruct_02065c40_74 {
     /* 04 */ PAD(0x04, 0x08);
     /* 08 */ s16 mUnk_08;
     /* 0a */ PAD(0x0a, 0x14);
+   };
+  };
     /* 14 */
 };
 
@@ -62,7 +67,9 @@ struct UnkStruct_02065c40_34 {
     /* 0c */ s16 mUnk_0c[3];
     /* 12 */ s16 mUnk_12[3];
     /* 18 */ s16 mUnk_18[3];
-    /* 1e */ u8 mUnk_1e[0x0e];
+    /* 1e */ s16 mUnk_1e[3];
+    /* 24 */ s16 mUnk_24[3];
+    /* 2a */ PAD(0x2a, 0x2c);
     /* 2c */ ModelInstance *mUnk_2c;
     /* 30 */ s16 mUnk_30;
     /* 32 */ u8 mUnk_32;
@@ -74,9 +81,12 @@ struct UnkStruct_02065c40_54 {
     /* 00 */ fx32 mUnk_00;
     /* 04 */ fx32 mUnk_04;
     /* 08 */ fx32 mUnk_08;
-    /* 0c */ u8 mUnk_0c[0x0c];
+    /* 0c */ s16 mUnk_0c[3];
+    /* 12 */ s16 mUnk_12[3];
     /* 18 */ s16 mUnk_18[3];
-    /* 1e */ u8 mUnk_1e[0x0e];
+    /* 1e */ s16 mUnk_1e[3];
+    /* 24 */ s16 mUnk_24[3];
+    /* 2a */ PAD(0x2a, 0x2c);
     /* 2c */ ModelInstance *mUnk_2c;
     /* 30 */ void *mUnk_30[3];
     /* 3c */ void *mUnk_3c[3];
@@ -97,9 +107,12 @@ struct UnkStruct_02065c40_44 {
     /* 00 */ fx32 mUnk_00;
     /* 04 */ fx32 mUnk_04;
     /* 08 */ fx32 mUnk_08;
-    /* 0c */ u8 mUnk_0c[0x0c];
+    /* 0c */ s16 mUnk_0c[3];
+    /* 12 */ s16 mUnk_12[3];
     /* 18 */ s16 mUnk_18[3];
-    /* 1e */ u8 mUnk_1e[0x0e];
+    /* 1e */ s16 mUnk_1e[3];
+    /* 24 */ s16 mUnk_24[3];
+    /* 2a */ PAD(0x2a, 0x2c);
     /* 2c */ UnkStruct_0203d374 *mUnk_2c;
     /* 30 */ UnkStruct_0203d374 *mUnk_30;
     /* 34 */ s8 mUnk_34;
@@ -124,9 +137,12 @@ struct UnkStruct_02065c40_48 {
     /* 00 */ fx32 mUnk_00;
     /* 04 */ fx32 mUnk_04;
     /* 08 */ fx32 mUnk_08;
-    /* 0c */ u8 mUnk_0c[0x0c];
+    /* 0c */ s16 mUnk_0c[3];
+    /* 12 */ s16 mUnk_12[3];
     /* 18 */ s16 mUnk_18[3];
-    /* 1e */ u8 mUnk_1e[0x0e];
+    /* 1e */ s16 mUnk_1e[3];
+    /* 24 */ s16 mUnk_24[3];
+    /* 2a */ PAD(0x2a, 0x2c);
     /* 2c */ UnkStruct_0205401c *mUnk_2c;
     /* 30 */ UnkStruct_0205401c *mUnk_30;
     /* 34 */ s16 mUnk_34;
@@ -182,9 +198,11 @@ public:
     /* 12be */ u16 mUnk_12be;
     /* 12c0 */ u16 mUnk_12c0;
     /* 12c2 */ u16 mUnk_12c2;
-    /* 12c4 */ PAD(0x12c4, 0x12c5);
+    /* 12c4 */ u8 mUnk_12c4;
     /* 12c5 */ u8 mUnk_12c5;
-    /* 12c6 */ PAD(0x12c6, 0x12ca);
+    /* 12c6 */ u8 mUnk_12c6;
+    /* 12c7 */ PAD(0x12c7, 0x12c8);
+    /* 12c8 */ s16 mUnk_12c8;
     /* 12ca */ u8 mUnk_12ca;
     /* 12cb */ u8 mUnk_12cb;
     /* 12cc */ u16 mUnk_12cc;

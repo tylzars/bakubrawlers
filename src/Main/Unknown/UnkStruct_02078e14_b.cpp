@@ -23,6 +23,8 @@
 #include "System/WirelessManager.hpp"
 #include "Game/Random.hpp"
 #include "Game/UnkStruct_020d48f0.hpp"
+#include "Unknown/UnkStruct_02078290.hpp"
+#include "System/SoundManager.hpp"
 
 void func_02081a4c(void *arg);
 
@@ -382,6 +384,166 @@ void UnkStruct_02078e14::func_0207b6e8() {
     func_02080bdc(1);
 }
 
+extern WindowItemRecord data_020a3430[];
+extern WindowCellRecord data_020a34f4[];
+extern WindowItemRecord data_020a3300[];
+extern WindowCellRecord data_020a3274[];
+extern u8 data_020a3688[];
+extern u8 data_020a3210[];
+extern WindowItemRecord data_020a31a0[];
+extern WindowCellRecord data_020a31d8[];
+
+void UnkStruct_02078e14::func_0207b760() {
+    ChangeDir("/Game/2d/union_b/");
+    func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    func_02025b64(1, 0xc, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    func_02025b64(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    switch (mUnk_e0) {
+        case 0:
+        case 1:
+        case 2:
+            ChangeDir("/Game/List/");
+            func_02025b64(1, 1, 0, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
+            func_02025b64(1, 1, 0x4000, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
+            func_02025b64(1, 1, 0x6000, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
+            func_02025b64(1, 0xb, 0, "list_store_b_bg_00_ncg.bin", 0, 0, 0);
+            func_02025b64(1, 7, 0, "list_store_b_bg_00_nsc.bin", 0, 0, 0);
+            func_02025b64(1, 9, 0, "list_store_b_bg_01_nsc.bin", 0, 0, 0);
+            func_02025b64(1, 10, 0, "list_store_b_bg_02_nsc.bin", 0, 0, 0);
+            break;
+        case 3:
+            ChangeDir("/Game/List/");
+            func_02025b64(1, 1, 0, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+            func_02025b64(1, 1, 0x4000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+            func_02025b64(1, 1, 0x6000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+            func_02025b64(1, 0xb, 0, "list_edit_b_bg_00_ncg.bin", 0, 0, 0);
+            func_02025b64(1, 7, 0, "list_edit_b_bg_00_nsc.bin", 0, 0, 0);
+            func_02025b64(1, 9, 0, "list_edit_b_bg_01_nsc.bin", 0, 0, 0);
+            func_02025b64(1, 10, 0, "list_edit_b_bg_02_nsc.bin", 0, 0, 0);
+            break;
+        case 4:
+            ChangeDir("/Game/List/");
+            func_02025b64(1, 1, 0, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
+            func_02025b64(1, 1, 0x4000, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
+            func_02025b64(1, 1, 0x6000, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
+            func_02025b64(1, 0xb, 0, "list_gallery_b_bg_00_ncg.bin", 0, 0, 0);
+            func_02025b64(1, 7, 0, "list_gallery_b_bg_00_nsc.bin", 0, 0, 0);
+            func_02025b64(1, 9, 0, "list_gallery_b_bg_01_nsc.bin", 0, 0, 0);
+            func_02025b64(1, 10, 0, "list_gallery_b_bg_02_nsc.bin", 0, 0, 0);
+            break;
+        case 5:
+            ChangeDir("/Game/Battle/Bg/");
+            func_02025b64(1, 1, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
+            func_02025b64(1, 0xb, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
+            func_02025b64(1, 7, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
+            break;
+    }
+    SpriteScreen &screen = SpriteManager::Get().Screen(1);
+    screen.func_02027624(3);
+    ChangeDir("/Game/List/");
+    screen.LoadCharacters("list_b_obj_00.nce_ncg1D.bin", 0xc000, 0);
+    screen.LoadPalette("list_b_obj_00_ncl.bin", 0xc0, 0);
+    for (u8 i = 0; i <= 12; i++) {
+        mUnk_74[i]            = new CellAnimation("list_b_obj_00_nce.bin", 0, 1, 1);
+        mUnk_74[i]->mCharBase = screen.func_020276f4(0xc000);
+        mUnk_74[i]->mUnk_11   = 6;
+    }
+    mUnk_74[0]->SetAnimation(0x23);
+    mUnk_74[1]->SetAnimation(0x24);
+    mUnk_74[2]->SetAnimation(0x22);
+    mUnk_74[3]->SetAnimation(0);
+    mUnk_74[4]->SetAnimation(1);
+    mUnk_74[5]->SetAnimation(2);
+    mUnk_74[6]->SetAnimation(3);
+    mUnk_74[7]->SetAnimation(0x10);
+    mUnk_74[8]->SetAnimation(0x10);
+    mUnk_74[9]->SetAnimation(0x1c);
+    mUnk_74[10]->SetAnimation(0x1d);
+    mUnk_74[11]->SetAnimation(0x1e);
+    mUnk_74[12]->SetAnimation(0x1f);
+    ChangeDir("/Game/2d/union_b/");
+    screen.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0x6000, 0);
+    screen.LoadPalette("union_b_obj_cockpit_ncl.bin", 0, 0);
+    screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x7800, 0);
+    screen.LoadPalette("union_b_obj_window_ncl.bin", 0x20, 0);
+    screen.LoadCharacters("union_b_obj_number.nce_ncg1D.bin", 0x9000, 0);
+    screen.LoadPalette("union_b_obj_number_ncl.bin", 0x60, 0);
+    screen.LoadCharacters("union_b_obj_gp.nce_ncg1D.bin", 0xa000, 0);
+    screen.LoadPalette("union_b_obj_gp_ncl.bin", 0x80, 0);
+    screen.LoadCharacters("union_b_obj_new.nce_ncg1D.bin", 0xb000, 0);
+    screen.LoadPalette("union_b_obj_new_ncl.bin", 0xa0, 0);
+    screen.LoadCharacters("union_b_obj_point.nce_ncg1D.bin", 0x1c000, 0);
+    screen.LoadPalette("union_b_obj_point_ncl.bin", 0x60, 0);
+    screen.LoadCharacters("union_b_obj_page.nce_ncg1D.bin", 0x1d000, 0);
+    screen.LoadPalette("union_b_obj_page_ncl.bin", 0, 0);
+    mUnk_74[13]            = new CellAnimation("union_b_obj_number_nce.bin", 0, 1, 1);
+    mUnk_74[13]->mCharBase = screen.func_020276f4(0x9000);
+    mUnk_74[13]->mUnk_11   = 3;
+    mUnk_74[13]->SetAnimation(0);
+    mUnk_74[15]            = new CellAnimation("union_b_obj_new_nce.bin", 0, 1, 1);
+    mUnk_74[15]->mCharBase = screen.func_020276f4(0xb000);
+    mUnk_74[15]->mUnk_11   = 5;
+    mUnk_74[15]->SetAnimation(0);
+    mUnk_74[16]            = new CellAnimation("union_b_obj_gp_nce.bin", 0, 1, 1);
+    mUnk_74[16]->mCharBase = screen.func_020276f4(0xa000);
+    mUnk_74[16]->mUnk_11   = 4;
+    mUnk_74[16]->SetAnimation(2);
+    mUnk_74[17]            = new CellAnimation("union_b_obj_point_nce.bin", 0, 1, 1);
+    mUnk_74[17]->mCharBase = screen.func_020276f4(0x1c000);
+    mUnk_74[17]->mUnk_11   = 3;
+    mUnk_74[17]->SetAnimation(0);
+    ChangeDir("/");
+    mUnk_4c = new SelectWindow(7, data_020a3430, -1);
+    mUnk_4c->SetCells(7, data_020a34f4);
+    mUnk_48 = new SelectWindow(5, data_020a3300, 1);
+    mUnk_48->SetCells(5, data_020a3274);
+    mUnk_54 = new SelectWindowCursor(8, data_020a3688, -1);
+    mUnk_58 = new SelectWindowCursor(2, data_020a3210, -1);
+    if (mUnk_e0 == 5) {
+        ChangeDir("/Game/Deck/");
+        screen.LoadCharacters("select_deck_b_obj_01.nce_ncg1D.bin", 0x1c000, 0);
+        screen.LoadPalette("select_deck_b_obj_01_ncl.bin", 0xc0, 0);
+        ChangeDir("/Game/Battle/Obj/");
+        screen.LoadCharacters("battle_b_obj_wait.nce_ncg1D.bin", 0x1e000, 0);
+        screen.LoadPalette("battle_b_obj_ability_ncl.bin", 0x100, 0);
+        mUnk_74[18]            = new CellAnimation("battle_b_obj_wait_nce.bin", 0, 1, 1);
+        mUnk_74[18]->mCharBase = screen.func_020276f4(0x1e000);
+        mUnk_74[18]->mUnk_11   = 8;
+        mUnk_74[18]->SetAnimation(0);
+        ChangeDir("/");
+        mUnk_50 = new SelectWindow(2, data_020a31a0, 0);
+        mUnk_50->SetCells(2, data_020a31d8);
+        mUnk_50->mCells[0]->SetAnimation(1);
+        this->func_02081994(3, 0, 8);
+        this->func_02081994(3, 1, 8);
+        this->func_02081994(0, 0, 0x8000);
+        this->func_02081994(0, 1, 0x8000);
+        this->func_02081994(0, 2, 0x8000);
+        this->func_02081994(0, 3, 0x8000);
+        this->func_02081994(0, 4, 0x8000);
+        this->func_02081994(0, 5, 0x8000);
+        this->func_02081994(0, 6, 0x8000);
+    }
+    ChangeDir("/Game/Bakugan/mark");
+    func_02025b64(1, 0, 0x200, "bakugan_s_000_ncl.bin", 0, 0, 0);
+    func_02025b64(1, 0, 0, "bakugan_s_base_ncl.bin", 0, 0, 0);
+    func_02025b64(1, 4, 0x12000, "bakugan_s_base.nce_ncg1D.bin", 0, 0, 0);
+    mUnk_74[14]            = new CellAnimation("bakugan_s_base_nce.bin", 0, 1, 1);
+    mUnk_74[14]->mCharBase = screen.func_020276f4(0x12000);
+    mUnk_74[14]->mUnk_11   = 0;
+    mUnk_74[14]->SetAnimation(0);
+    ChangeDir("/Game/Card/Graphic/Small");
+    func_02025b64(1, 0, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
+    if (data_020d433c.mUnk_a8 == 0) {
+        return;
+    }
+    if (mUnk_1e8 != NULL) {
+        ((UnkStruct_02078290 *) mUnk_1e8)->func_020785d8(3);
+        return;
+    }
+    mUnk_1e8 = (UnkObject_02078e14 *) new UnkStruct_02078290(3);
+}
+
 void UnkStruct_02078e14::func_0207c568() {
     SpriteManager::Get().Screen(1).func_02027624(3);
     ChangeDir("/font/");
@@ -529,6 +691,317 @@ void UnkStruct_02078e14::func_0207ceb0() {
 void UnkStruct_02078e14::func_0207cf84() {
     if (mUnk_28[0] != NULL) {
         MI_CpuClear16(mUnk_28[0], mUnk_38[0]);
+    }
+}
+
+void UnkStruct_02078e14::func_0207cfa4() {
+    u32 act = 0;
+    if (mUnk_ec != 0 || mUnk_e7 != mUnk_e8 || mUnk_100 != 0 || mUnk_fb != mUnk_fa || mUnk_3ff != 0) {
+        return;
+    }
+    if (mUnk_e2 == 3) {
+        switch (mUnk_4c->mCursor->mSelection) {
+            case 0:
+                act = 2;
+                break;
+            case 3:
+                act = 3;
+                break;
+            case 4:
+                act = 4;
+                break;
+        }
+    }
+    switch (mUnk_4c->mCursor->mUnk_05) {
+        case 1:
+            if (act == 0) {
+                if (mUnk_f5 == 0) {
+                    mUnk_f5 = 5;
+                    act     = 3;
+                } else if (TouchManager::Get().mUnk_58 != 0) {
+                    mUnk_f5 = 6;
+                    act     = 3;
+                }
+            }
+            break;
+        case 2:
+            if (act == 0) {
+                if (mUnk_f5 == 0) {
+                    mUnk_f5 = 7;
+                    act     = 4;
+                } else if (TouchManager::Get().mUnk_58 != 0) {
+                    mUnk_f5 = 8;
+                    act     = 4;
+                }
+            }
+            break;
+        case 5:
+            if (act == 0) {
+                if (mUnk_f5 == 0) {
+                    mUnk_f5 = 9;
+                    act     = 5;
+                } else if (TouchManager::Get().mUnk_58 != 0) {
+                    act = 5;
+                }
+            }
+            break;
+        case 6:
+            if (act == 0) {
+                if (mUnk_f5 == 0) {
+                    mUnk_f5 = 9;
+                    act     = 6;
+                } else if (TouchManager::Get().mUnk_58 != 0) {
+                    act = 6;
+                }
+            }
+            break;
+    }
+    if (mUnk_4c->mUnk_061 == 1) {
+        if (InputManager::Get().IsHeld(1)) {
+            if (act == 0) {
+                act = 1;
+            }
+        } else if (InputManager::Get().IsHeld(2)) {
+            if (act == 0) {
+                act = 2;
+                mUnk_4c->mCells[0]->SetAnimation(3);
+                mUnk_3fa = 6;
+            }
+        } else if (InputManager::Get().IsTrigger(0x20)) {
+            if (act == 0) {
+                if (mUnk_f0 != 0) {
+                    act = 3;
+                    if (InputManager::Get().IsHeld(0x20)) {
+                        mUnk_f5 = 1;
+                    } else {
+                        mUnk_f5 = 2;
+                    }
+                } else if (mUnk_4c->mButtons[3].mEnabled != 0) {
+                    mUnk_4c->func_0205c844(3, 3);
+                }
+            }
+        } else if (InputManager::Get().IsTrigger(0x10)) {
+            if (act == 0) {
+                if (mUnk_f0 != 0) {
+                    act = 4;
+                    if (InputManager::Get().IsHeld(0x10)) {
+                        mUnk_f5 = 3;
+                    } else {
+                        mUnk_f5 = 4;
+                    }
+                } else if (mUnk_4c->mButtons[4].mEnabled != 0) {
+                    mUnk_4c->func_0205c844(4, 3);
+                }
+            }
+        } else if (InputManager::Get().IsTrigger(0x40)) {
+            if (act == 0) {
+                act = 5;
+            }
+        } else if (InputManager::Get().IsTrigger(0x80)) {
+            if (act == 0) {
+                act = 6;
+            }
+        }
+        if (mUnk_58->func_0202f468(0) == 3) {
+            switch (mUnk_58->mSelection) {
+                case 0:
+                    if (act == 0 && mUnk_f0 == 0) {
+                        act = 7;
+                    }
+                    break;
+                case 1:
+                    if (act == 0) {
+                        if (mUnk_f0 != 0) {
+                            act = 8;
+                        }
+                    }
+                    break;
+            }
+        }
+        s8 prev = mUnk_54->mSelection;
+        if (mUnk_54->func_0202f468(0) == 3) {
+            s8 cur = mUnk_54->mSelection;
+            if (prev == cur) {
+                if (act == 0) {
+                    act = 1;
+                }
+            } else if (act == 0) {
+                if (mUnk_f0 != 0) {
+                    mUnk_e7                = mUnk_ea + cur;
+                    mUnk_54->mSelection = 0;
+                } else {
+                    mUnk_fb = mUnk_fd + cur - 5;
+                }
+                SoundManager::Get().func_020246f8(5);
+            }
+        }
+    }
+    if (mUnk_f0 != 0) {
+        switch (act) {
+            case 1:
+            case 8:
+                if (mUnk_fc == 0) {
+                    return;
+                }
+                mUnk_f0     = 0;
+                mUnk_3f9    = 1;
+                mUnk_194[0] = 1;
+                func_02081128();
+                func_02081594();
+                if ((mUnk_e0 == 3 || mUnk_e0 == 5) && mUnk_e6 == 0) {
+                    func_02085460(-1);
+                }
+                SoundManager::Get().func_020246f8(0);
+                return;
+            case 2:
+                if (mUnk_e0 == 5) {
+                    mUnk_e1 = 0xf;
+                } else {
+                    mUnk_e1 = 0x2b;
+                }
+                SoundManager::Get().func_020246f8(1);
+                return;
+            case 3:
+                if (mUnk_e8 > mUnk_f4) {
+                    mUnk_e7 = mUnk_e8 - 1;
+                    SoundManager::Get().func_020246f8(5);
+                } else {
+                    mUnk_f5 = 0;
+                }
+                return;
+            case 4:
+                if (mUnk_e8 < mUnk_e9 - 1) {
+                    mUnk_e7 = mUnk_e8 + 1;
+                    SoundManager::Get().func_020246f8(5);
+                } else {
+                    mUnk_f5 = 0;
+                }
+                return;
+        }
+    } else {
+        switch (act) {
+            case 1:
+                if (mUnk_fc == 0) {
+                    return;
+                }
+                switch (mUnk_e0) {
+                    case 0:
+                        mUnk_1dc = func_020864ec((u8) mUnk_106[mUnk_fa], mUnk_104);
+                        if (data_020d43f0[0].mMoney < mUnk_1dc) {
+                            func_020834ec(this, 1);
+                        } else if (func_020231f4(data_020d43f0, 0, (u8) mUnk_106[mUnk_fa], mUnk_104) != 0) {
+                            func_020834ec(this, 3);
+                        } else {
+                            func_020834ec(this, 2);
+                        }
+                        SoundManager::Get().func_020246f8(0);
+                        return;
+                    case 1: {
+                        UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mUnk_106[mUnk_fa], mUnk_104);
+                        mUnk_1dc                  = func_02086224((u8) mUnk_106[mUnk_fa], mUnk_104);
+                        if ((s32) entry->mUnk_00_0 >= 9) {
+                            func_020834ec(this, 7);
+                        } else if (data_020d43f0[0].mMoney < mUnk_1dc) {
+                            func_020834ec(this, 1);
+                        } else {
+                            func_020834ec(this, 2);
+                        }
+                        SoundManager::Get().func_020246f8(0);
+                        return;
+                    }
+                    case 2:
+                        mUnk_1dc = data_020a39fc[mUnk_106[mUnk_fa]];
+                        if (data_020d43f0[0].mMoney < mUnk_1dc) {
+                            func_020834ec(this, 1);
+                        } else {
+                            func_020834ec(this, 2);
+                        }
+                        SoundManager::Get().func_020246f8(0);
+                        return;
+                    case 3:
+                    case 5:
+                        if (mUnk_e6 == 0) {
+                            if (mUnk_fa == 0) {
+                                func_020834ec(this, 8);
+                            } else if (mUnk_fa == 1) {
+                                func_020834ec(this, 9);
+                            }
+                        } else if (mUnk_e6 < 4) {
+                            if (func_02082d00(1, (u8) mUnk_106[mUnk_fa], mUnk_104) == 0) {
+                                mUnk_3fc = (mUnk_fa - mUnk_fd) * 0x20 + 0x24;
+                                mUnk_3fe = mUnk_3fc / 8;
+                                mUnk_3ff = 1;
+                            }
+                        } else {
+                            if (func_02082d00(0, (u8) mUnk_106[mUnk_fa], 0) == 0) {
+                                mUnk_3fc = (mUnk_fa - mUnk_fd) * 0x20 + 0x24;
+                                mUnk_3fe = mUnk_3fc / 8;
+                                mUnk_3ff = 1;
+                            }
+                        }
+                        SoundManager::Get().func_020246f8(0);
+                        return;
+                }
+                break;
+            case 2:
+            case 7:
+                mUnk_f0                = 1;
+                mUnk_3f9               = 2;
+                mUnk_186[mUnk_e6]      = mUnk_fa;
+                mUnk_194[0]            = 1;
+                func_02081128();
+                func_02081594();
+                if ((mUnk_e0 == 3 || mUnk_e0 == 5) && mUnk_e6 == 0) {
+                    func_02085460(-1);
+                }
+                if (act == 2) {
+                    SoundManager::Get().func_020246f8(1);
+                } else {
+                    SoundManager::Get().func_020246f8(0);
+                }
+                return;
+            case 3:
+            case 4:
+                if ((mUnk_e0 == 3 || mUnk_e0 == 5) && mUnk_e6 != 0 && mUnk_e6 < 4) {
+                    if (act == 3) {
+                        mUnk_104 = (mUnk_104 + 5) % 6;
+                    } else {
+                        mUnk_104 = (mUnk_104 + 1) % 6;
+                    }
+                    func_02080bdc(1);
+                    mUnk_fa     = 0;
+                    mUnk_fb     = 0;
+                    mUnk_fd     = 0;
+                    mUnk_194[2] = 1;
+                    mUnk_194[0] = 1;
+                    func_02081128();
+                    SoundManager::Get().func_020246f8(0);
+                }
+                mUnk_f5 = 0;
+                return;
+            case 5:
+                if (mUnk_fc <= 1) {
+                    return;
+                }
+                if (mUnk_fa != 0) {
+                    mUnk_fb = mUnk_fa - 1;
+                } else {
+                    mUnk_fb = mUnk_fc - 1;
+                }
+                SoundManager::Get().func_020246f8(5);
+                return;
+            case 6:
+                if (mUnk_fc <= 1) {
+                    return;
+                }
+                if (mUnk_fa < mUnk_fc - 1) {
+                    mUnk_fb = mUnk_fa + 1;
+                } else {
+                    mUnk_fb = 0;
+                }
+                SoundManager::Get().func_020246f8(5);
+                return;
+        }
     }
 }
 

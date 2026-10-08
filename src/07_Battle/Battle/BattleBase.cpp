@@ -602,16 +602,18 @@ BOOL func_ov007_0221b998(int a, int mode, BattleEntry *entry) {
     return result;
 }
 
-// non-matching: the original sets the result register after the entry load; this variant differs only there.
 BOOL func_ov007_0221b9d0(int a, int mode, BattleEntry *entry) {
-    BOOL result = 0;
     if (mode != 1) {
         return 0;
     }
+    BOOL result;
     if (entry->mUnk_12 != 0) {
+        result = 0;
         if (func_ov007_02222764(result, entry) == 5) {
             result = 1;
         }
+    } else {
+        result = 0;
     }
     return result;
 }

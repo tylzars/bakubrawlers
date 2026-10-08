@@ -525,8 +525,8 @@ void BattleOrderSelect::func_ov007_0224c810() {
     mIcons->func_020654a0();
 }
 
-// non-matching: the original reads the s16 stack argument twice (ldrsh at entry and again before the bottom edge) and stays within r0-r3/ip (no push); mine keeps it in ip and pushes lr (20 words differ)
-BOOL BattleOrderSelect::func_ov007_0224cb20(int x, int y, int rx, s16 ry, u8 w, u8 h) {
+// ry is volatile as a placeholder: the original reads the stack argument twice (see docs/decompiling.md).
+BOOL BattleOrderSelect::func_ov007_0224cb20(int x, int y, int rx, volatile s16 ry, u8 w, u8 h) {
     if ((x >= rx) & (y >= ry)) {
         if ((x < rx + w) & (y < ry + h)) {
             return 1;

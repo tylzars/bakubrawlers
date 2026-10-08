@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+"""Works out the declaration order that gives a unit's .bss (or .data/.rodata) objects their original layout.
+
+How mwcc lays out a file's objects within one section (found by experiment, see docs/decompiling.md):
+  * Objects are collected in declaration order and the list is built by prepending, so it ends up reversed.
+  * Each *used* singleton accessor (`static T &Get() { static T instance; ... }`) contributes three objects at
+    the point where its inline function is parsed (i.e. where its header is included): the guard (4 bytes), the
+    destructor-chain node `@N` (12 bytes) and the instance. File-level statics contribute themselves.
+  * The list is heapsorted by size (max-heap, strict comparisons), giving ascending sizes with a scrambled order
+    among equal sizes. Then the weak objects (guards, instances) move to their own sections; the rest is the
+    layout.
+
+The tool reads the compiled object, maps each `@N` node to its singleton, finds the original order of the
+unit's objects (from relocations in matching functions, as data_ranges.py does), and searches the orders of
+singletons (include order) and statics (definition order) for ones that reproduce it.
+
+  data_order.py src/07_Battle/Battle/IBattle.cpp
+"""
+import itertools
+import re
+import struct
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from data_ranges import BUILD, ELFFile, RelocationSection, find_unit, load_symbols, matched_functions, \
+    module_bytes  # noqa: E402
+
+
+def heapsort(items, key):
+    a = list(items)
+    n = len(a)
+
+    def sift(i, n):
+        while True:
+            c = 2 * i + 1
+            if c >= n:
+                return
+            if c + 1 < n and key(a[c + 1]) > key(a[c]):
+                c += 1
+            if key(a[c]) > key(a[i]):
+                a[c], a[i] = a[i], a[c]
+                i = c
+            else:
+                return
+
+    for i in range(n // 2 - 1, -1, -1):
+        sift(i, n)
+    for end in range(n - 1, 0, -1):
+        a[0], a[end] = a[end], a[0]
+        sift(0, end)
+    return a
+
+
+def layout(decl, sizes):
+    """decl: declaration sequence of object names. Returns the layout order."""
+    return heapsort(decl[::-1], sizes.get)
+
+
+def analyse(src):
+    module, _, _ = find_unit(src)
+    syms = load_symbols(module)
+    mbase, blob = module_bytes(module)
+    good = matched_functions(src)
+    with (BUILD / Path(src).with_suffix(".o")).open("rb") as fh:
+        elf = ELFFile(fh)
+        secs = list(elf.iter_sections())
+        st = list(elf.get_section_by_name(".symtab").iter_symbols())
+        objs = [s for s in st if s["st_info"]["type"] == "STT_OBJECT" and isinstance(s["st_shndx"], int)]
+        func_addr = {s["st_shndx"]: syms[s.name] for s in st if s["st_info"]["type"] == "STT_FUNC"
+                     and s.name in good and s.name in syms and s["st_value"] == 0}
+        orig = {}  # object name -> original address
+        node_owner = {}  # @N -> instance symbol name (closest instance reference in the same function)
+        for sec in secs:
+            if not isinstance(sec, RelocationSection):
+                continue
+            tgt = sec["sh_info"]
+            if secs[tgt].name != ".text":
+                continue
+            data = secs[tgt].data()
+            refs = []
+            for r in sec.iter_relocations():
+                sym = st[r["r_info_sym"]]
+                if not isinstance(sym["st_shndx"], int):
+                    if sym.name.startswith("_ZZ"):
+                        refs.append((r["r_offset"], sym.name))
+                    continue
+                name = sym.name
+                addend = struct.unpack_from("<I", data, r["r_offset"])[0]
+                if sym["st_info"]["type"] == "STT_SECTION":
+                    hit = [o for o in objs if o["st_shndx"] == sym["st_shndx"]
+                           and o["st_value"] <= addend < o["st_value"] + max(o["st_size"], 1)]
+                    if not hit:
+                        continue
+                    name, addend = hit[0].name, addend - hit[0]["st_value"]
+                refs.append((r["r_offset"], name))
+                if tgt in func_addr:
+                    w = struct.unpack_from("<I", blob, func_addr[tgt] + r["r_offset"] - mbase)[0]
+                    orig.setdefault(name, w - addend)
+            for off, name in refs:
+                if name.startswith("@"):
+                    inst = [(abs(o - off), n) for o, n in refs if n.startswith("_ZZ") and n.endswith("instance")]
+                    if inst:
+                        node_owner.setdefault(name, min(inst)[1])
+    return secs, objs, orig, node_owner
+
+
+def main():
+    src = sys.argv[1]
+    secs, objs, orig, node_owner = analyse(src)
+    size = {o.name: o["st_size"] for o in objs}
+    by_sec = {}
+    for o in objs:
+        by_sec.setdefault(o["st_shndx"], []).append(o)
+    for idx, members in sorted(by_sec.items()):
+        sec = secs[idx]
+        local = [o for o in members if o["st_info"]["bind"] == "STB_LOCAL" or o["st_info"]["bind"] == "STB_GLOBAL"]
+        local = [o for o in local if o["st_info"]["bind"] == "STB_LOCAL" or not o.name.startswith(("_ZZ", "_ZGVZ"))]
+        if len(local) < 2 or not sec["sh_flags"] & 2:
+            continue
+        cur = [o.name for o in sorted(local, key=lambda o: o["st_value"])]
+        if any(n not in orig for n in cur):
+            print(f"{sec.name}#{idx}: not every object is placed: {[n for n in cur if n not in orig]}")
+            continue
+        want = sorted(cur, key=lambda n: orig[n])
+        if want == cur:
+            continue
+        print(f"{sec.name}#{idx}: layout {cur}\n   original {want}")
+        # Declaration units: a singleton (guard, node, instance) or a static.
+        nodes = [n for n in cur if n.startswith("@") and n in node_owner]
+        statics = [n for n in cur if n not in nodes]
+        units = {}
+        for n in nodes:
+            inst = node_owner[n]
+            guard = inst.replace("_ZZ", "_ZGVZ", 1)
+            units[n] = [guard, n, inst]
+            size.setdefault(guard, 4)
+        for n in statics:
+            units[n] = [n]
+        cls = {n: re.sub(r"^_ZZN(\d+)(\w+?)3Get.*", lambda m: m.group(2)[: int(m.group(1))], node_owner[n])
+               for n in nodes}
+        found = []
+        for perm in itertools.permutations(list(units)):
+            decl = [x for u in perm for x in units[u]]
+            out = [x for x in layout(decl, size) if x in cur]
+            if out == want:
+                found.append(perm)
+        if not found:
+            print("   no declaration order reproduces it (other objects in the list?)")
+            continue
+        # Prefer orders that keep singletons before statics (includes come first in a file).
+        found.sort(key=lambda p: (sum(1 for i, u in enumerate(p) if u in statics
+                                      and any(v in nodes for v in p[i + 1:])), p))
+        for perm in found[:3]:
+            print("   declare: " + ", ".join(f"{cls[u]}::Get (header)" if u in nodes else u for u in perm))
+        if len(found) > 3:
+            print(f"   ... {len(found)} orders in all")
+
+
+if __name__ == "__main__":
+    main()

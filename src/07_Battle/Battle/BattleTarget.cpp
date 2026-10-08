@@ -3033,7 +3033,6 @@ BOOL BattleTarget::func_ov007_0225a9c8(VecFx32 *a, VecFx32 *b, VecFx32 *c, VecFx
     return func_ov007_0225a8d4(a, b, &p, t, hit);
 }
 
-// non-matching: 4 words: registers of the box centre/half size z are swapped (lr/r4); permute over the four locals does not help.
 BOOL BattleTarget::func_ov007_0225aa80(BattleHitBox *box, VecFx32 *point) {
     VecFx32 d;
     MtxFx33 mtx;
@@ -3050,9 +3049,11 @@ BOOL BattleTarget::func_ov007_0225aa80(BattleHitBox *box, VecFx32 *point) {
     }
     func_01ff84d0(&d, &mtx, &d);
     VEC_Add(&d, &box->mPos, &d);
+    fx32 pz    = box->mPos.z;
+    fx32 hz    = box->mHalfZ;
     fx32 lowX  = box->mPos.x - box->mHalfX;
-    fx32 lowZ  = box->mPos.z - box->mHalfZ;
-    fx32 highZ = box->mHalfZ + box->mPos.z;
+    fx32 lowZ  = pz - hz;
+    fx32 highZ = hz + pz;
     fx32 highX = box->mHalfX + box->mPos.x;
     if (lowX >= d.x || highX <= d.x || lowZ >= d.z || highZ <= d.z) {
         return 0;
@@ -3540,19 +3541,17 @@ void BattleTarget::func_ov007_0225c2e4(VecFx32 *v) {
     VEC_Add(&mUnk_c8, &d, &mUnk_c8);
 }
 
-// non-matching: 5 words: the result of the first FX_Mul lives in r2 in the original (r1 here).
 void BattleTarget::func_ov007_0225c360(u16 *in, s32 a, u16 *out) {
     u16 n    = *in - 910;
     int base = 0x1c71;
     fx32 q   = func_01ff8000(INT_TO_FX(n), INT_TO_FX(base));
-    fx32 d = func_01ff8000(0x4000000, 0x2aaa000);
-    fx32 m = FX_Mul(a / 240, d);
-    int rem = 100 - m;
-    fx32 r  = INT_TO_FX(rem) / 100;
-    fx32 c  = INT_TO_FX(base);
-    fx32 t1  = FX_Mul(c, r);
+    fx32 d   = func_01ff8000(0x4000000, 0x2aaa000);
+    fx32 m   = FX_Mul(a / 182, d);
+    int rem  = 100 - m;
+    fx32 r   = INT_TO_FX(rem) / 100;
+    fx32 t1  = FX_Mul(INT_TO_FX(base), r);
     fx32 res = FX_Mul(t1, q);
-    *out = (u16) (u32) (910.0f + (float) res / 4096.0f);
+    *out     = (u16) (u32) (910.0f + (float) res / 4096.0f);
 }
 
 // non-matching: size 0x478 vs 0x484: the original keeps a redundant `mUnk_1c0 != 0` test inside the liveness check of case 0.

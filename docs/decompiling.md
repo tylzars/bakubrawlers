@@ -69,6 +69,27 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   `thread_safe_init` don't change it either. The guards are separate objects in the original (all of them sit
   together at 0x020c17ac-0x020c17e0), so offset-based disambiguation within one object is not the reason.
 
+## Data layout within a section
+
+mwcc does not lay out a file's objects in declaration order. Found by experiment (and checked against 14 random
+layouts), for the objects of one section kind (`.bss`, and likely `.data`/`.rodata` the same way):
+
+1. Objects join a list as they are declared, by prepending, so the list ends up in reverse declaration order.
+2. A *used* singleton accessor (`static T &Get() { static T instance; ... }`) adds its guard (4 bytes), its
+   destructor-chain node `@N` (12 bytes, only when `T` has a destructor) and its instance where the inline
+   function is parsed, i.e. where its header is first included. An unused one adds nothing. File-level statics
+   add themselves where they are defined.
+3. The list is heapsorted by size (max-heap, strict comparisons): ascending sizes, with equal sizes in an
+   order that depends on the whole list.
+4. Weak objects (guards, instances) then move to their own sections; what stays is the unit's layout.
+
+So header include order and the definition order of statics decide the layout, and an object of a smaller
+size can never follow a bigger one from the same list. `python3 tools/data_order.py <unit>` compares the compiled
+layout with the original and searches for the include/definition order that reproduces it. When no order
+works, the unit's boundaries are usually wrong: an object that sits in another unit's block in the original
+belongs to that unit's file (e.g. IBattle's WirelessManager node lies among the previous file's nodes, so the
+functions using it belong there).
+
 ## Source patterns that matter
 
 - **Narrow reads of stack arguments.** Some callees read a stack-passed argument with `ldrb`/`ldrh` while every

@@ -3,8 +3,8 @@
 #include "Battle/BattleUtil.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FileSystem.hpp"
-#include "System/SoundManager.hpp"
 #include "System/TouchManager.hpp"
+#include "System/SoundManager.hpp"
 #include <nitro/gx.h>
 #include <stdio.h>
 

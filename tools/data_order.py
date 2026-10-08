@@ -17,6 +17,7 @@ singletons (include order) and statics (definition order) for ones that reproduc
   data_order.py src/07_Battle/Battle/IBattle.cpp
 """
 import itertools
+import subprocess
 import re
 import struct
 import sys
@@ -105,9 +106,38 @@ def analyse(src):
     return secs, objs, orig, node_owner
 
 
+def parse_order_owners(src, objs):
+    """Maps each `@N` destructor-chain node to its singleton's instance symbol: nodes are numbered in parse
+    order, so the i-th node (by N) belongs to the i-th singleton (in preprocessed source order) that this file
+    uses and whose type has a destructor (the registration passes the destructor, so the object references it)."""
+    root = Path(__file__).resolve().parent.parent
+    pp = subprocess.run(["tools/bin/wibo", "tools/mwccarm/2.0/sp2p2/mwccarm.exe", "-E", "-enum", "int", "-char",
+                         "signed", "-proc", "arm946e", "-gccext,on", "-gccinc", "-lang=c++", "-i", "include", "-i",
+                         "libs/c/include", "-i", "libs/cpp/include", "-i", "libs/nds/include", "-d", "version_USA",
+                         src], cwd=root, capture_output=True, text=True).stdout
+    order = []
+    for m in re.finditer(r"static\s+(\w+)\s*&\s*Get\s*\(\s*\)\s*\{\s*static\s+\1\s+instance", pp):
+        if m.group(1) not in order:
+            order.append(m.group(1))
+    obj = BUILD / Path(src).with_suffix(".o")
+    with obj.open("rb") as fh:
+        elf = ELFFile(fh)
+        names = {s.name for s in elf.get_section_by_name(".symtab").iter_symbols()}
+        bss = {i for i, sec in enumerate(elf.iter_sections()) if sec.name == ".bss"}
+    insts = {o.name for o in objs}
+    with_node = [c for c in order if f"_ZZN{len(c)}{c}3GetEvE8instance" in insts
+                 and f"_ZN{len(c)}{c}D1Ev" in names]
+    nodes = sorted((o.name for o in objs if re.fullmatch(r"@\d+", o.name) and o["st_shndx"] in bss
+                    and o["st_size"] == 12), key=lambda n: int(n[1:]))
+    if len(nodes) != len(with_node):
+        print(f"warning: {len(nodes)} nodes but {len(with_node)} singletons with destructors: {with_node}")
+    return {n: f"_ZZN{len(c)}{c}3GetEvE8instance" for n, c in zip(nodes, with_node)}
+
+
 def main():
     src = sys.argv[1]
-    secs, objs, orig, node_owner = analyse(src)
+    secs, objs, orig, _ = analyse(src)
+    node_owner = parse_order_owners(src, objs)
     size = {o.name: o["st_size"] for o in objs}
     by_sec = {}
     for o in objs:
@@ -139,6 +169,9 @@ def main():
             units[n] = [n]
         cls = {n: re.sub(r"^_ZZN(\d+)(\w+?)3Get.*", lambda m: m.group(2)[: int(m.group(1))], node_owner[n])
                for n in nodes}
+        for n in nodes:
+            units[n][0] = "_ZGVZ" + node_owner[n][3:]
+            units[n][2] = node_owner[n]
         found = []
         for perm in itertools.permutations(list(units)):
             decl = [x for u in perm for x in units[u]]

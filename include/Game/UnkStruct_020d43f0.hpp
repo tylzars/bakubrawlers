@@ -15,6 +15,11 @@ struct UnkStruct_02023248 {
     /* 4 */
 };
 
+struct ParkSlot {
+    /* 0 */ u8 mCategory;
+    /* 1 */ u8 mGroup;
+};
+
 struct UnkStruct_020d43f0 {
     /* 000 */ u16 mUnk_00[3];
     /* 006 */ u16 mUnk_06[3];
@@ -106,7 +111,7 @@ struct UnkStruct_020d43f0 {
     };
     /* 5c0 */ PAD(0x5c0, 0x5c1);
     /* 5c1 */ u8 mUnk_5c1;
-    /* 5c2 */ PAD(0x5c2, 0x5d2);
+    /* 5c2 */ ParkSlot mUnk_5c2[8];
     /* 5d2 */ u8 mUnk_5d2;
 };
 

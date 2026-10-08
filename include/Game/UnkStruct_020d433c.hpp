@@ -300,7 +300,7 @@ struct UnkStruct_020d433c {
     /* 8b */ u8 mUnk_8b_4 : 4;
     /* 8c */ u8 mUnk_8c_0 : 4;
     /* 8c */ u8 mUnk_8c_4 : 4;
-    /* 8d */ PAD(0x8d, 0x95);
+    /* 8d */ u8 mUnk_8d[8];
     /* 95 */ u8 mUnk_95;
     /* 96 */ s8 mUnk_96;
     /* 97 */ u8 mPlayerCount;

@@ -24,6 +24,7 @@
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
+#include "Unknown/UnkStruct_02089f90.hpp"
 
 u32 func_020779ec(void *unk);
 BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
@@ -41,11 +42,6 @@ public:
     /* 78 */ u8 mUnk_78;
     /* 79 */ PAD(0x79, 0x80);
     UnkStruct_02076058(u32 unk1);
-};
-class UnkStruct_02089f90 {
-public:
-    PAD(0x00, 0x24);
-    UnkStruct_02089f90(s32 unk1);
 };
 struct UnkStruct_020c4230 {
     /* 00 */ PAD(0x00, 0x20);

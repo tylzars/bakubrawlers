@@ -18,13 +18,7 @@
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
-
-class UnkStruct_02089f90 {
-public:
-    /* 00 */ PAD(0x00, 0x24);
-
-    UnkStruct_02089f90(s32 unk1);
-};
+#include "Unknown/UnkStruct_02089f90.hpp"
 
 s32 func_02087468();
 void func_02086d48();

@@ -1,4 +1,5 @@
 #include "Text/TextManager.hpp"
+#include "Game/UnkStruct_020d433c.hpp"
 #include "Battle/BattleCommandPage.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -12,7 +13,7 @@
 #include <nitro/os.h>
 
 u16 func_02065c20(u32 id);
-int func_02065c0c(u32 id, u32 kind);
+u8 func_02065c0c(u32 id, u32 kind);
 extern u16 data_020c1a4c[0x10]; // palette scratch (cleared before each text)
 extern const char *data_020b3070[12]; // paths loaded by func_02055c28 and func_020561c4
 
@@ -704,4 +705,108 @@ void BattleCommandPage::func_02056f70() {
     SpriteManager::Get().mScreens[0].func_02027778(data_0209e564, 1, 0x54, 0x65, 3, 0xb0, 0, 0);
     SpriteManager::Get().mScreens[0].func_02027778(data_0209e558, 1, 0x14, 0x25, 3, 0xc0, 0, 0);
     SpriteManager::Get().mScreens[0].func_02027778(data_0209e558, 1, 0x14, 0x65, 3, 0xe0, 0, 0);
+}
+
+// non-matching: 0x430 vs 0x438; stm where the original has str+str, and the original keeps the -4/0x17/3 constants in stack slots and adds them inside the digit block (the sum is hoisted here).
+int func_02065bf4(u32 id, u32 index);
+extern u8 data_020d43d7[];
+
+void BattleCommandPage::func_020571a8() {
+    u8 big;
+    if (mUnk_109 != 0) {
+        big = 1;
+    } else if (mUnk_f8 < 0xd5) {
+        big = func_02065c0c(mUnk_f8, 0);
+    } else if (mUnk_f8 < 0xda) {
+        big = 0;
+    } else {
+        big = 1;
+    }
+    mCells[0]->func_0202a3ec(0, big, 0x80, 0x60, 0);
+    if (mUnk_106 != 0) {
+        return;
+    }
+    if (mUnk_f8 >= 0xd5) {
+        return;
+    }
+    if (mUnk_fa > -1) {
+        u8 cur   = data_020d433c.mBattlePlayers->mUnk_2a9;
+        BOOL has = 0;
+        if (mUnk_fa == cur) {
+            mCells[8]->func_0202a3ec(0, mUnk_fa, 0x24, 0x18, 0);
+        } else {
+            if (data_020d433c.mBattlePlayers->mPlayers[mUnk_fa]->mUnk_c8 != NULL) {
+                has = 1;
+            }
+            if (has == 1) {
+                mCells[9]->func_0202a3ec(0, mUnk_fa, 0x15, 0x12, 0);
+            }
+            if ((data_020d433c.mUnk_98 == 1) & (mUnk_fa == data_020d43d7[cur])) {
+                mCells[10]->func_0202a3ec(0, mUnk_fa, 0x24, 0x18, 0);
+            }
+        }
+        mCells[7]->func_0202a3ec(0, mUnk_fa, 0, 0x16, 0);
+    }
+    if (mUnk_f4 == 0) {
+        return;
+    }
+    s16 a;
+    s32 b;
+    s32 c;
+    s32 d;
+    if (big) {
+        a = 0x32;
+        b = -4;
+        c = 0x17;
+        d = 3;
+    } else {
+        a = 0x29;
+        b = -3;
+        c = 0x18;
+        d = 4;
+    }
+    for (u8 k = 0; k < 6; k++) {
+        s16 y = k * 0x28 + 0x14;
+        int n = func_02065bf4(mUnk_f8, k);
+        if (n != 0) {
+            int v  = n;
+            u8 cnt = 3;
+            if (v < 10) {
+                y -= 3;
+                cnt--;
+            }
+            v *= 10;
+            s32 half = (3 - cnt) * 4 / 2;
+            s32 left = c + b;
+            s16 yy   = a + d;
+            u8 i     = 0;
+            do {
+                u8 digit = v % 10;
+                mCells[2]->func_0202a3ec(0, digit, y + (3 - i) * 7, 0xb0, 0);
+                mCells[5]->func_0202a3ec(0, digit, left + (cnt - i) * 4 + half, yy, 0);
+                v = (u32) v / 10;
+                i++;
+            } while (i < cnt);
+        }
+        u8 idx = 3;
+        if (big) {
+            idx = 4;
+        }
+        if (n != 0) {
+            mCells[1]->func_0202a3ec(0, k, 0x80, 0x60, 0);
+            mCells[idx]->func_0202a3ec(0, k, c, a, 0);
+        }
+        if (big) {
+            a += 0xd;
+        } else {
+            a += 0x11;
+        }
+    }
+    if (big) {
+        return;
+    }
+    if (mUnk_f8 == 0) {
+        return;
+    }
+    mCells[6]->func_0202a3ec(0, func_02065c0c(mUnk_f8, 2), 0x80, 0x84, 0);
 }

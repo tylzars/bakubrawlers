@@ -257,6 +257,86 @@ void func_0208813c(UnkStruct_02087898 *self, s32 unk1) {
     }
 }
 
+// non-matching: same size; in the first mUnk_39 print the text/buffer registers are swapped (r5/r6) and file + index*4 is computed twice here, once in the original.
+extern char data_020d441a[];
+
+void func_020882c4(UnkStruct_02087898 *self) {
+    if (self->mUnk_34 < 0) {
+        return;
+    }
+    u32 a = TextManager::Get().func_0202c1a8((u8) ((self->mUnk_38 + 1) * 3));
+    u32 b = TextManager::Get().func_0202c1a8((u8) ((self->mUnk_38 + 2) * 3));
+    if (a < b) {
+        self->mUnk_39 = 1;
+    }
+    if (self->mUnk_39 != 0) {
+        self->mUnk_38++;
+    }
+    if (self->mUnk_39 != 0) {
+        TextManager &text = TextManager::Get();
+        TextManager &t1 = TextManager::Get();
+        s16 y;
+        s16 x;
+        x = -(self->mUnk_37 * 0x30);
+        y = 0x20;
+        void *buffer      = self->mUnk_20[0];
+        u16 count         = t1.func_0202c1a8((u8) ((self->mUnk_37 + 1) * 3));
+        MessageFile *file = (MessageFile *) self->mUnk_18;
+        u16 index         = self->mUnk_34;
+        u16 len           = file->GetLength(index);
+        u16 n             = count;
+        if (len < count * 2) {
+            n = len >> 1;
+        }
+        text.mUnk_58 = 0x10;
+        text.Print(file->GetText(index), n * 2, buffer, 0x20, 6, &y, &x, NULL, 0, 2, 0x21, 0x10, 0, 0, 1, 1, 1);
+        self->mUnk_3e = 2;
+    } else {
+        TextManager &text = TextManager::Get();
+        s16 y;
+        s16 x;
+        x = -(self->mUnk_37 * 0x30);
+        y = 0x20;
+        MessageFile *file = (MessageFile *) self->mUnk_18;
+        u16 index         = self->mUnk_34;
+        text.Print(file->GetText(index), file->GetLength(index), self->mUnk_20[0], 0x20, 6, &y, &x, NULL, 0, 2, 0x21, 0x10, 0, 0, 1, 1, 1);
+        s32 w = ((u16) x - 0x10) / 16;
+        if (w <= 0) {
+            w = 0;
+        }
+        self->mUnk_3e = w;
+        self->mUnk_36 = 1;
+    }
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x6000, self->mUnk_20[0], 0x1800, 0);
+    if (self->mUnk_37 != 0) {
+        TextManager::Get();
+        TextManager &text = TextManager::Get();
+        u16 a2            = text.func_0202c1a8((u8) ((self->mUnk_37 + 1) * 3));
+        u16 b2            = text.func_0202c1a8((u8) (self->mUnk_37 * 3));
+        self->mUnk_3c     = a2 - b2;
+    } else {
+        self->mUnk_3c = TextManager::Get().func_0202c1a8((u8) ((self->mUnk_37 + 1) * 3));
+    }
+    self->mUnk_3c = self->mUnk_3c * 2 / 3;
+    if (self->mUnk_34 < 0 || self->mUnk_42 < 0) {
+        return;
+    }
+    TextManager::Get().mUnk_5b = 1;
+    if (self->mUnk_42 == 0x15) {
+        s16 h = 0;
+        s16 w = 0;
+        TextManager::Get().Print(data_020d441a, 0x18, self->mUnk_20[1], 0x20, 2, &h, &w, NULL, 0, 0, 2, 0x21, 0, 0, 0, 1, 1);
+    } else {
+        s16 x = 0;
+        s16 y = 0;
+        MessageFile *file = (MessageFile *) self->mUnk_1c;
+        u16 index         = self->mUnk_42;
+        TextManager::Get().Print(file->GetText(index), file->GetLength(index), self->mUnk_20[1], 0x20, 2, &y, &x, NULL, 0, 0, 2, 0x21, 0, 0, 0, 1, 1);
+    }
+    TextManager::Get().mUnk_5b = 0;
+    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x7800, self->mUnk_20[1], self->mUnk_28[1], 0);
+}
+
 void func_020889d8(UnkStruct_02087898 *self, s32 unk1) {
     if (unk1 == self->mUnk_42) {
         return;

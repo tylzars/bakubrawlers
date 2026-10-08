@@ -34,7 +34,7 @@ public:
     /* f4 */ u16 mUnk_f4;
     /* f6 */ u16 mUnk_f6;
     /* f8 */ u16 mUnk_f8;
-    /* fa */ u8 mUnk_fa;
+    /* fa */ s8 mUnk_fa;
     /* fb */ u8 mUnk_fb;
     /* fc */ u8 mUnk_fc;
     /* fd */ u8 mUnk_fd;

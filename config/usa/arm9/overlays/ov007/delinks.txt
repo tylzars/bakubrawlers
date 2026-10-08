@@ -10,9 +10,11 @@ src/07_Battle/Battle/BattleBase.cpp:
     .data       start:0x02285ce0 end:0x02285d44
     .bss        start:0x0228b5ec end:0x0228b610
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Battle/ConfrontBg01.cpp:
+    complete
     .text       start:0x0221d4d8 end:0x0221dc74
+    .data       start:0x02285d44 end:0x02285e54
+    .bss        start:0x0228b610 end:0x0228b628
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Battle/ConfrontEmblem02.cpp:
@@ -293,17 +295,18 @@ src/07_Battle/Battle/GimmickSetFile.cpp:
 src/07_Battle/Battle/UnkStruct_020d433c_0c.cpp:
     .text       start:0x02271bb4 end:0x022720ac
 
-// provisional: code only; no data of its own.
 src/07_Battle/Battle/BattleCollision.cpp:
+    complete
     .text       start:0x022720ac end:0x02272540
 
 // provisional: code only; .data 0x0228ac08-0x0228ae64, .rodata 0x0227c0c4-0x022858b8 and .bss 0x0228bb2c-0x0228bb68 belong here.
 src/07_Battle/Battle/BattleCardModel.cpp:
     .text       start:0x02272540 end:0x0227430c
 
-// provisional: code only; .data 0x0228ae64-0x0228af78 and .rodata 0x022858b8-0x02285a98 belong here.
 src/07_Battle/Battle/BattleRealBaku.cpp:
+    complete
     .text       start:0x0227430c end:0x02274830
+    .data       start:0x0228ae5c end:0x0228af70
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickUnk_02274830.cpp:

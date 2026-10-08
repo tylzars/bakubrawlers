@@ -24,12 +24,14 @@ START, END = "<!-- progress:start -->", "<!-- progress:end -->"
 FIELDS = ["date", "matched_code", "complete_code", "total_code", "matched_functions", "total_functions",
           "fuzzy_match_percent"]
 
-# (key, label, light, dark): categorical slots 1-2, validated light and dark.
+# (key, label, light, dark): categorical slots 1-3, validated light and dark.
 # matched_code: compiled C byte-identical to the original assembly.
 # fuzzy_match_percent: objdiff's overall similarity, crediting near-matches too.
+# complete_code: code in units built from source and linked into the ROM.
 SERIES = [
     ("matched_code", "Matched code", "#2a78d6", "#3987e5"),
     ("fuzzy_match_percent", "Overall accuracy", "#eb6834", "#d95926"),
+    ("complete_code", "Linked code", "#1baf7a", "#199e70"),
 ]
 
 

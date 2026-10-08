@@ -1,3 +1,5 @@
+#include "System/WirelessManager.hpp"
+#include "System/FrameTask.hpp"
 
 extern void func_020219dc();
 #include "Scene/ArenaWindowScene.hpp"

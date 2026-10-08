@@ -142,6 +142,24 @@ def analyse(src: str):
             if data_secs[idx]["sh_type"] != "SHT_NOBITS":
                 scan(idx, base[idx], contents[idx])
 
+    # Sections used only by functions the original doesn't have (e.g. the unused C2 copy of a constructor,
+    # which the linker strips along with its strings) are dropped from the unit.
+    users: dict[int, set] = {}
+    for src_idx, rels in relocs.items():
+        for r in rels:
+            tgt = symbols[r["r_info_sym"]]["st_shndx"]
+            if isinstance(tgt, int) and tgt in data_secs:
+                users.setdefault(tgt, set()).add(src_idx)
+    func_names = {}
+    for sym in symbols:
+        if sym["st_info"]["type"] == "STT_FUNC" and isinstance(sym["st_shndx"], int) and not sym.name.startswith("$"):
+            func_names.setdefault(sym["st_shndx"], []).append(sym.name)
+    for idx in list(data_secs):
+        if idx in base or not users.get(idx):
+            continue
+        if all(sections[u].name == ".text" and not any(n in syms for n in func_names.get(u, []))
+               for u in users[idx]):
+            del data_secs[idx]
     reloc_offsets = {idx: [r["r_offset"] for r in relocs.get(idx, [])] for idx in data_secs}
     return module, delinks_path, unit, data_secs, names_in, base, conflicts, contents, (mbase, blob), reloc_offsets
 

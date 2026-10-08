@@ -91,11 +91,17 @@ def main():
             if not cands:
                 inside = next(((n, lo) for md, lo, hi, n in spans if md == mod and lo < addr < hi), None)
                 if inside:  # an interior address (e.g. dsd's vtable symbol 8 bytes into the vtable)
-                    print(f"{module}: {m.group(1)} at {addr:#x} is inside {inside[0]}: removed")
-                    lines[i] = None
+                    start = inside[1]
+                    has_start = any((mm := LINE.match(ln or "")) and int(mm.group(3), 16) == start for ln in lines)
+                    if has_start:
+                        print(f"{module}: {m.group(1)} at {addr:#x} is inside {inside[0]}: removed")
+                        lines[i] = None
+                    else:
+                        print(f"{module}: {m.group(1)} at {addr:#x} is inside {inside[0]}: moved to its start")
+                        lines[i] = f"{inside[0]} {m.group(2)} addr:{start:#010x}"
                     changed += 1
                     if args.write:
-                        retarget_relocs(addr, inside[1])
+                        retarget_relocs(addr, start)
                 else:
                     print(f"{module}: {m.group(1)} at {addr:#x}: nothing in the linked binary")
                 continue

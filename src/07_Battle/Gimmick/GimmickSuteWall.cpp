@@ -1,3 +1,4 @@
+#include "System/SoundManager.hpp"
 #include "Battle/GimmickTypes.hpp"
 #include <nitro/fx.h>
 #include "Game/UnkStruct_020d433c.hpp"

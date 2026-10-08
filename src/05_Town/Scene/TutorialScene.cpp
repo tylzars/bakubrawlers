@@ -1,3 +1,6 @@
+#include "System/InputManager.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "System/TouchManager.hpp"
 #include "Scene/TutorialScene.hpp"
 #include "Game/UnkStruct_02065c40.hpp"
 #include "Game/UnkStruct_020d433c.hpp"

@@ -131,13 +131,16 @@ def parse_order_owners(src, objs):
                     and o["st_size"] == 12), key=lambda n: int(n[1:]))
     if len(nodes) != len(with_node):
         print(f"warning: {len(nodes)} nodes but {len(with_node)} singletons with destructors: {with_node}")
-    return {n: f"_ZZN{len(c)}{c}3GetEvE8instance" for n, c in zip(nodes, with_node)}
+    return {n: f"_ZZN{len(c)}{c}3GetEvE8instance" for n, c in zip(nodes, with_node)}, order
+
+
+ROOT = Path(__file__).resolve().parent.parent
 
 
 def main():
     src = sys.argv[1]
     secs, objs, orig, _ = analyse(src)
-    node_owner = parse_order_owners(src, objs)
+    node_owner, parse_order = parse_order_owners(src, objs)
     size = {o.name: o["st_size"] for o in objs}
     by_sec = {}
     for o in objs:
@@ -156,22 +159,30 @@ def main():
         if want == cur:
             continue
         print(f"{sec.name}#{idx}: layout {cur}\n   original {want}")
-        # Declaration units: a singleton (guard, node, instance) or a static.
-        nodes = [n for n in cur if n.startswith("@") and n in node_owner]
-        statics = [n for n in cur if n not in nodes]
+        # Declaration units: every used singleton (guard, node if any, instance; .bss only) and each static.
+        is_bss = sec["sh_type"] == "SHT_NOBITS"
+        node_of = {inst: n for n, inst in node_owner.items()}
+        singles = [c for c in parse_order if f"_ZZN{len(c)}{c}3GetEvE8instance" in size] if is_bss else []
+        statics = [n for n in cur if n not in node_owner]
+        text = (ROOT / src).read_text()
+        statics.sort(key=lambda n: (m.start() if (m := re.search(r"\b" + re.escape(n) + r"\b", text)) else 0))
         units = {}
-        for n in nodes:
-            inst = node_owner[n]
-            guard = inst.replace("_ZZ", "_ZGVZ", 1)
-            units[n] = [guard, n, inst]
+        for c in singles:
+            inst = f"_ZZN{len(c)}{c}3GetEvE8instance"
+            guard = "_ZGVZ" + inst[3:]
             size.setdefault(guard, 4)
+            units[c] = [guard] + ([node_of[inst]] if inst in node_of else []) + [inst]
         for n in statics:
             units[n] = [n]
-        cls = {n: re.sub(r"^_ZZN(\d+)(\w+?)3Get.*", lambda m: m.group(2)[: int(m.group(1))], node_owner[n])
-               for n in nodes}
-        for n in nodes:
-            units[n][0] = "_ZGVZ" + node_owner[n][3:]
-            units[n][2] = node_owner[n]
+        cls = {c: c for c in singles}
+        nodes = singles
+        cur_decl = [x for u in units for x in units[u]]
+        model_now = [x for x in layout(cur_decl, size) if x in cur]
+        print(f"   model {'reproduces' if model_now == cur else 'does NOT reproduce'} the current layout"
+              + ("" if model_now == cur else f" (predicts {model_now})"))
+        if len(units) > 9:
+            print("   too many declaration units to search")
+            continue
         found = []
         for perm in itertools.permutations(list(units)):
             decl = [x for u in perm for x in units[u]]
@@ -185,7 +196,7 @@ def main():
         found.sort(key=lambda p: (sum(1 for i, u in enumerate(p) if u in statics
                                       and any(v in nodes for v in p[i + 1:])), p))
         for perm in found[:3]:
-            print("   declare: " + ", ".join(f"{cls[u]}::Get (header)" if u in nodes else u for u in perm))
+            print("   declare: " + ", ".join(f"{u}::Get (header)" if u in nodes else u for u in perm))
         if len(found) > 3:
             print(f"   ... {len(found)} orders in all")
 

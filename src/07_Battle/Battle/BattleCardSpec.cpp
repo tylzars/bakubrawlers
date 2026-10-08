@@ -1,3 +1,4 @@
+#include "System/InputManager.hpp"
 #include "Battle/BattleCardSpec.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/Camera.hpp"

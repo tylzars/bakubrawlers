@@ -84,11 +84,22 @@ layouts), for the objects of one section kind (`.bss`, and likely `.data`/`.roda
 4. Weak objects (guards, instances) then move to their own sections; what stays is the unit's layout.
 
 So header include order and the definition order of statics decide the layout, and an object of a smaller
-size can never follow a bigger one from the same list. `python3 tools/data_order.py <unit>` compares the compiled
-layout with the original and searches for the include/definition order that reproduces it. When no order
-works, the unit's boundaries are usually wrong: an object that sits in another unit's block in the original
-belongs to that unit's file (e.g. IBattle's WirelessManager node lies among the previous file's nodes, so the
-functions using it belong there).
+size can never follow a bigger one from the same list. The synthetic rule above is exact, but real files have more
+participants than it accounts for (function-local statics with destructors, objects from other sections), so
+predictions from `tools/data_order.py` are only a hint. `python3 tools/fix_layout.py <unit>` is the reliable
+route: it tries putting the unit's singleton headers first (one to three of them, in every order), recompiles
+and keeps the first order for which `data_ranges.py` reports no layout conflicts. `.clang-format` keeps include
+order (`SortIncludes: Never`), and it is load-bearing.
+
+Other findings from linking:
+- **Two classes, one file.** The ConfrontEmblem0N classes were compiled in the same file as their
+  ConfrontBg0N/Confront03 partner: the emblem's strings sit in the partner's data block, after both vtables.
+  An object that lies in a neighbour's block in the original means the code using it belongs to that file.
+- **Dead constructor copies.** mwcc emits separate C1 and C2 constructors (and D1/D2) for some classes. The
+  original link dropped the unused copy and the strings only it used; `data_ranges.py` ignores sections used only
+  by functions the original doesn't have.
+- When no include order works, look for a boundary problem before anything else (IBattle: its first functions use
+  a WirelessManager node that lies among the previous file's nodes).
 
 ## Source patterns that matter
 

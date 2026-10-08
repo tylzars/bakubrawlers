@@ -18,14 +18,6 @@ extern u16 data_020c1a4c[];
 
 extern u8 data_0209e68c[][6];
 
-static inline BOOL NonZero(u8 value) {
-    BOOL result = FALSE;
-    if (value != 0) {
-        result = TRUE;
-    }
-    return result;
-}
-
 void func_02023a54();
 extern u8 data_0209e57c[]; // table of func_0205aea4 (.rodata 0x0209e57c)
 extern u8 data_0209e5bc[][5]; // per cell values, five columns (.rodata 0x0209e5bc)
@@ -346,7 +338,6 @@ BOOL BattleCommandList::func_020583f0() {
     return mUnk_159 < 7;
 }
 
-// non-matching: 0x130 vs 0x12c, same stack-argument load as func_02055764.
 void func_02058404(BattleCommandList *list, u32 a, u32 b, s16 c, s16 d, s16 e, s16 f, u32 g) {
     if (list->mUnk_8c != NULL) {
         delete list->mUnk_8c;
@@ -376,12 +367,12 @@ void func_02058404(BattleCommandList *list, u32 a, u32 b, s16 c, s16 d, s16 e, s
     data_020b3618[3].mUnk_08 = a;
     data_020b3618[3].mUnk_0c = b;
     u32 count;
-    if (g & 0xff) {
+    list->mUnk_163 = g;
+    if (list->mUnk_163 != 0) {
         count = 4;
     } else {
         count = 2;
     }
-    list->mUnk_163 = g;
     list->mUnk_8c  = new SelectWindow(count, data_020b3688, -1);
     list->mUnk_8c->SetCells(count, data_020b3618);
     list->mUnk_8c->mCursor->mSelection = -1;
@@ -407,7 +398,6 @@ void BattleCommandList::func_02058558() {
     func_020585e0();
 }
 
-// non-matching: 0x18c vs 0x194, the original keeps a movne/cmp flag instead of predicating the loads.
 void BattleCommandList::func_020585e0() {
     if (mUnk_8c == NULL) {
         return;
@@ -432,13 +422,17 @@ void BattleCommandList::func_020585e0() {
             }
         }
     }
-    u8 page;
+    BOOL hasPage = FALSE;
     if (mUnk_14e == 0x2b) {
-        page = mUnk_156;
+        if (mUnk_156 != 0) {
+            hasPage = TRUE;
+        }
     } else {
-        page = mUnk_15b;
+        if (mUnk_15b != 0) {
+            hasPage = TRUE;
+        }
     }
-    if (NonZero(page)) {
+    if (hasPage) {
         if (func_02058774(0) != 0) {
             return;
         }

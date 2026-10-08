@@ -423,10 +423,11 @@ void func_0202bc58(EffectManager *manager, u32 slot) {
     manager->mFiles[slot] = NULL;
 }
 
-// non-matching: 5 words, registers of start and the effect list; the original also pushes r9.
 u16 func_0202bd40(EffectManager *manager, u32 group, u32 script, u32 position, u32 tag) {
-    u16 start        = manager->mNext;
-    u16 i            = start;
+    u16 start;
+    u16 i;
+    start = manager->mNext;
+    i     = manager->mNext;
     do {
         if (manager->mEffects[i] == NULL) {
             Effect *effect       = new Effect(manager, group, manager->mFiles[group]->mScripts[script]);

@@ -138,6 +138,19 @@ functions using it belong there).
   How it was found: a store placed between the offset load and the call gave the original register allocation,
   so the load only had to be pinned in place.
 
+- **Early returns:** `if (x != 0) { x = 0; return TRUE; } return FALSE;` and `if (id < N) { return table[id]; }
+  return 0;` give the original's conditional early return (`bxeq`/`bxcs`); the inverted forms predicate instead.
+- **Stopping predication:** explicit nested ifs setting a `BOOL` keep a branch that a ternary or a selected `u8`
+  would predicate (`BattleCommandList::func_020585e0`).
+- **A field set from an argument and then tested:** store first and test the field (`f = g; if (f != 0)`), not
+  `if (g & 0xff)` (`func_02058404`, `func_02055764`).
+- **Load order through locals:** a pointer copied to a local before a store fixes the order of pool loads
+  (`func_02084a10`); fields loaded into named locals before arithmetic fix the order of field loads, then try
+  both operand orders (`BattleTarget::func_ov007_0225aa80`).
+- **One-word diffs in the literal pool** can be a wrong constant, e.g. dividing by the wrong number
+  (`BattleTarget::func_ov007_0225c360` divides by 182, not 240).
+- **A stack argument read twice:** a `volatile` parameter reproduces it (`BattleOrderSelect::func_ov007_0224cb20`);
+  like `*(u8 *) &param`, treat it as a placeholder for the real source form.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

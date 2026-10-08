@@ -3,6 +3,55 @@
 #include "System/SoundManager.hpp"
 #include "System/TouchManager.hpp"
 
+SelectWindowCursor::SelectWindowCursor(u32 count, const void *table, u32 unk3) {
+    mCount     = count;
+    mUnk_05    = -1;
+    mSelection = unk3;
+    mUnk_07    = -1;
+    mUnk_08    = 0;
+    mUnk_09    = 0;
+    mUnk_0a    = 0;
+    mUnk_0b    = 0;
+    mUnk_0c    = 0;
+    mUnk_0d    = 0;
+    mUnk_0e    = 0;
+    mUnk_0f    = 0;
+    mUnk_10    = 0;
+    mScroll    = 0;
+    mItems     = (WindowItem *) table;
+}
+
+u32 SelectWindowCursor::func_0202f468(u32 unk1) {
+    s8 previous = mSelection;
+    u32 result  = func_0202f61c(unk1);
+    if (unk1 != 0) {
+        switch (result) {
+            case 1:
+                SoundManager::Get().func_020246f8(0);
+                break;
+            case 2:
+                SoundManager::Get().func_020246f8(1);
+                break;
+            case 3:
+                SoundManager::Get().func_020246f8(0);
+                break;
+            case 5:
+            case 7:
+                break;
+            case 6:
+                SoundManager::Get().func_020246f8(2);
+                mSelection = -1;
+                break;
+            default:
+                if (mSelection != previous) {
+                    SoundManager::Get().func_020246f8(5);
+                }
+                break;
+        }
+    }
+    return result;
+}
+
 u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
     u32 mode   = 0;
     u32 result = 0;

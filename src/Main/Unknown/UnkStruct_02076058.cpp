@@ -620,3 +620,21 @@ void UnkStruct_02076058::func_02077d2c() {
     TextManager::Get().mUnk_5b = 0;
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x6000, mUnk_44, mUnk_4c, 0);
 }
+
+void func_020781a0(UnkStruct_02076058 *object) {
+    SpriteManager::Get().Screen(1).func_02027778(object->mUnk_48, object->mUnk_50, 0x46, 0x29, 1, 0xc0, 0xf, 0);
+}
+
+void func_02078250(UnkStruct_02076058 *object) {
+    if (object->mUnk_44 != NULL) {
+        MI_CpuClear16(object->mUnk_44, object->mUnk_4c);
+    }
+}
+
+BOOL func_02078270(UnkStruct_02076058 *object) {
+    if (object->mUnk_79 != 0) {
+        object->mUnk_79 = 0;
+        return TRUE;
+    }
+    return FALSE;
+}

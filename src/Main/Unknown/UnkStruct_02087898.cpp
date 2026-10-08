@@ -243,8 +243,9 @@ void func_0208813c(UnkStruct_02087898 *self, s32 unk1) {
     x = 0;
     y = 0x20;
     u16 index         = self->mUnk_34;
-    MessageFile *file = (MessageFile *) self->mUnk_18;
-    void *buffer      = self->mUnk_20[0];
+    MessageFile *file;
+    void *buffer = self->mUnk_20[0];
+    file         = (MessageFile *) self->mUnk_18;
     MI_CpuClear16(data_020c1a4c, 0x20);
     text.mUnk_58 = 1;
     text.Print(file->GetText(index), file->GetLength(index), buffer, 0x20, 6, &y, &x, NULL, 0, 0, 0x21, 0x10, 0, 1, 0, 1, 1);

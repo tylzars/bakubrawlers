@@ -2536,8 +2536,9 @@ BOOL func_02084a10(UnkStruct_02078e14 *self) {
             MESSAGE->mUnk_16[i] = self->mUnk_c8[i + 9];
         }
     }
-    MESSAGE->mUnk_1c = 3;
-    if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 3)) {
+    BattlePlayerList *players = data_020d433c.mBattlePlayers;
+    MESSAGE->mUnk_1c          = 3;
+    if (func_ov007_022631bc(players, 3)) {
     u32 count = WirelessManager::Get().func_0202f134();
     u8 j = 0;
     do {

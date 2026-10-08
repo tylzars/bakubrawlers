@@ -255,7 +255,6 @@ void func_02055738(BattleCommandPage *page, u32 a, u32 b, u32 c) {
     func_02055764(page, a, b, 0xc0, 0, 0xe0, 0, c);
 }
 
-// non-matching: 0x130 vs 0x12c, the stack argument g is loaded one instruction earlier in the original.
 void func_02055764(BattleCommandPage *page, u32 a, u32 b, s16 c, s16 d, s16 e, s16 f, u32 g) {
     if (page->mUnk_50 != NULL) {
         delete page->mUnk_50;
@@ -285,12 +284,12 @@ void func_02055764(BattleCommandPage *page, u32 a, u32 b, s16 c, s16 d, s16 e, s
     data_020b3144[3].mUnk_08 = a;
     data_020b3144[3].mUnk_0c = b;
     u32 count;
-    if (g & 0xff) {
+    page->mUnk_fe = g;
+    if (page->mUnk_fe != 0) {
         count = 4;
     } else {
         count = 2;
     }
-    page->mUnk_fe = g;
     page->mUnk_50 = new SelectWindow(count, data_020b30d4, -1);
     page->mUnk_50->SetCells(count, data_020b3144);
     page->mUnk_50->mCursor->mSelection = -1;

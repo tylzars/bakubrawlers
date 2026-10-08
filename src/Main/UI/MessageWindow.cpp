@@ -246,10 +246,9 @@ int func_02065c0c(u32 id, u32 kind) {
     return data_020a1258[id][kind];
 }
 
-// non-matching: the original returns early with bxcs; this predicates the loads.
 u16 func_02065c20(u32 id) {
-    if (id >= 0xd5) {
-        return 0;
+    if (id < 0xd5) {
+        return data_020a10ac[id];
     }
-    return data_020a10ac[id];
+    return 0;
 }

@@ -25,13 +25,18 @@ Lessons from getting functions to match exactly. Compiler and flags: see `compil
 6. Run `python3 tools/check_calls.py`. Matching masks relocated words, so a function can match while calling the
    wrong function (e.g. `_fmul` where the original calls `_fdiv`); this compares every call in fully matching
    functions with the original's branch targets.
-7. `ninja objdiff report` shows per-function and per-section results. When everything matches, run
-   `python3 tools/link_check.py <unit>`: the definitions in the `.cpp` must follow the original addresses (mwcc
-   emits functions in source order; forward-declare a callee that is defined later), and every compiled data
-   section needs a range in the delinks entry. When it says READY, `python3 tools/mark_complete.py <unit>` and run
-   `ninja check`: the ROM must still match, and `symbols.txt` must name the unit's statics as the source does,
-   with `local` after file-level `static`s (a compiler-generated `@N`, such as the destructor-chain node of a
-   singleton, is named `@N` too and has to follow renumbering).
+7. `ninja objdiff report` shows per-function and per-section results. When everything matches, link the unit:
+   - `python3 tools/link_check.py <unit>` checks the function order (mwcc emits functions in source order; fix it
+     with `tools/reorder_functions.py <unit> --write` then `--fix-decls <unit>`) and that every compiled data
+     section has a range in the delinks entry.
+   - `python3 tools/data_ranges.py <unit> [--write]` finds those ranges: relocations in exactly matching
+     functions give the original address of each data section the code uses, and the data sections found point
+     at the rest. It refuses when sections disagree, land outside the module's section of that kind (e.g.
+     `.data` in the original's `.rodata`: the source has the const-ness wrong), are laid out in a different
+     order, or hold different bytes. It also adds the boundary symbols dsd needs.
+   - `python3 tools/mark_complete.py <unit>`, `ninja`: the ROM must still match.
+   - `python3 tools/sync_linked_symbols.py --write`, then `ninja check`: inside complete units, symbols.txt takes
+     the linked binary's names (`@N` literals, statics marked `local`) and binding.
 
 A function that doesn't match yet is kept in source with a `// non-matching` comment describing the difference.
 

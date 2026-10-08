@@ -5,9 +5,10 @@
     .data       start:0x02285ce0 end:0x0228b5e0 kind:data align:32
     .bss        start:0x0228b5e0 end:0x0228bc20 kind:bss align:32
 
-// provisional: code only. Update (0x02219bf0), 0x0221a7d0 and 0x0221c178 are not decompiled.
 src/07_Battle/Battle/BattleBase.cpp:
     .text       start:0x02219440 end:0x0221d4d8
+    .data       start:0x02285ce0 end:0x02285d44
+    .bss        start:0x0228b5ec end:0x0228b610
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Battle/ConfrontBg01.cpp:
@@ -17,21 +18,25 @@ src/07_Battle/Battle/ConfrontBg01.cpp:
 src/07_Battle/Battle/ConfrontEmblem02.cpp:
     .text       start:0x0221dc74 end:0x0221e3b8
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Battle/ConfrontBg02.cpp:
     .text       start:0x0221e3b8 end:0x0221efc0
+    .data       start:0x02285e64 end:0x02286060
+    .bss        start:0x0228b628 end:0x0228b640
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Battle/ConfrontEmblem03.cpp:
     .text       start:0x0221efc0 end:0x0221f730
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Battle/Confront03.cpp:
     .text       start:0x0221f730 end:0x02220060
+    .data       start:0x02286070 end:0x02286164
+    .bss        start:0x0228b640 end:0x0228b658
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Battle/ConfrontBg04.cpp:
+    complete
     .text       start:0x02220060 end:0x02220784
+    .data       start:0x02286164 end:0x02286274
+    .bss        start:0x0228b658 end:0x0228b670
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Battle/ConfrontEmblem05.cpp:
@@ -45,9 +50,10 @@ src/07_Battle/Battle/ConfrontBg05.cpp:
 src/07_Battle/Battle/ConfrontEmblem06.cpp:
     .text       start:0x0222155c end:0x022222ec
 
-// provisional: code only; .data 0x02286434-0x02286498 belongs here (Emblem06's strings follow, so the pair may be one file).
 src/07_Battle/Battle/ConfrontBg06.cpp:
     .text       start:0x022222ec end:0x02222764
+    .data       start:0x02286434 end:0x02286498
+    .bss        start:0x0228b694 end:0x0228b6a0
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Battle/BattleSlot.cpp:
@@ -61,9 +67,10 @@ src/07_Battle/Battle/BattleSideHelper.cpp:
 src/07_Battle/Battle/BattleObj01.cpp:
     .text       start:0x02223750 end:0x02223cf0
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Battle/BattleBlend.cpp:
+    complete
     .text       start:0x02223cf0 end:0x02223f28
+    .data       start:0x022865ec end:0x022865fc
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Battle/BattleSub48.cpp:
@@ -81,13 +88,17 @@ src/07_Battle/Battle/BattleField3D.cpp:
 src/07_Battle/Battle/IBattle.cpp:
     .text       start:0x02229c5c end:0x0222a2f8
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickBakugan.cpp:
+    complete
     .text       start:0x0222a2f8 end:0x0222a91c
+    .data       start:0x02286c7c end:0x02286e28
+    .bss        start:0x0228b710 end:0x0228b718
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickBlock.cpp:
+    complete
     .text       start:0x0222a91c end:0x0222ac14
+    .data       start:0x02286e28 end:0x02286e88
+    .bss        start:0x0228b718 end:0x0228b71c
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickFieldDestroy.cpp:
@@ -97,61 +108,77 @@ src/07_Battle/Gimmick/GimmickFieldDestroy.cpp:
 src/07_Battle/Gimmick/GimmickSuteWall.cpp:
     .text       start:0x0222bdbc end:0x0222c3d8
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickDashBase.cpp:
+    complete
     .text       start:0x0222c3d8 end:0x0222c8cc
+    .data       start:0x0228703c end:0x022870b4
+    .bss        start:0x0228b760 end:0x0228b770
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickExePoint.cpp:
+    complete
     .text       start:0x0222c8cc end:0x0222ce78
+    .rodata     start:0x02279410 end:0x02279414
+    .data       start:0x022870b4 end:0x02287114
+    .bss        start:0x0228b770 end:0x0228b78c
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickFieldPowerG.cpp:
     .text       start:0x0222ce78 end:0x0222d514
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickHaosBall.cpp:
+    complete
     .text       start:0x0222d514 end:0x0222db8c
+    .data       start:0x0228717c end:0x022871e8
+    .bss        start:0x0228b7a8 end:0x0228b7b8
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickJumpObj.cpp:
+    complete
     .text       start:0x0222db8c end:0x0222e134
+    .data       start:0x022871e8 end:0x0228725c
+    .bss        start:0x0228b7b8 end:0x0228b7c8
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickManager.cpp:
     .text       start:0x0222e134 end:0x0222e8d0
+    .data       start:0x0228725c end:0x02287294
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/Gimmick.cpp:
+    complete
     .text       start:0x0222e8d0 end:0x0222eb1c
+    .data       start:0x02287294 end:0x022872b8
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickFieldPowerS.cpp:
     .text       start:0x0222eb1c end:0x0222f1e8
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickTornado.cpp:
+    complete
     .text       start:0x0222f1e8 end:0x0222f480
+    .data       start:0x02287350 end:0x022873c8
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickVentKaze.cpp:
     .text       start:0x0222f480 end:0x0222f8fc
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickPyrusEruption.cpp:
+    complete
     .text       start:0x0222f8fc end:0x022300dc
+    .data       start:0x02287434 end:0x02287504
+    .bss        start:0x0228b7ec end:0x0228b800
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickAbilityField.cpp:
     .text       start:0x022300dc end:0x022308a8
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickUnk_022308a8.cpp:
+    complete
     .text       start:0x022308a8 end:0x02230cec
+    .data       start:0x022875b4 end:0x022875d8
+    .bss        start:0x0228b820 end:0x0228b82c
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickUnk_02230cec.cpp:
+    complete
     .text       start:0x02230cec end:0x02230f58
+    .data       start:0x022875d8 end:0x022875fc
 
 // provisional: code only; .data 0x02287604-0x02287614 and .rodata ~0x022796d0-0x022799fc belong here.
 src/07_Battle/Battle/BattleCpu.cpp:
@@ -169,9 +196,10 @@ src/07_Battle/Battle/BattleStatusPanels.cpp:
 src/07_Battle/Battle/BattleCommand.cpp:
     .text       start:0x02236494 end:0x0223cfe8
 
-// provisional: code only; .data 0x022881e8-0x02288378 and .bss 0x0228b880-0x0228b88c belong here.
 src/07_Battle/Battle/BattleData.cpp:
     .text       start:0x0223cfe8 end:0x0223e238
+    .data       start:0x022881e0 end:0x02288370
+    .bss        start:0x0228b880 end:0x0228b88c
 
 // provisional: code only; .data 0x02288378-0x02288700, .rodata 0x02279d3c-0x02279e88 and .bss 0x0228b88c-0x0228b8d4 belong here.
 src/07_Battle/Battle/BattleConfrontCard.cpp:
@@ -185,17 +213,19 @@ src/07_Battle/Battle/BattleCardCamera.cpp:
 src/07_Battle/Battle/BattleCommandMap.cpp:
     .text       start:0x022450f4 end:0x02248a5c
 
-// provisional: code only; .data 0x0228884c-0x022888e0 belongs here.
 src/07_Battle/Battle/BattleFontObj.cpp:
+    complete
     .text       start:0x02248a5c end:0x02248c84
+    .data       start:0x0228884c end:0x022888e0
 
 // provisional: code only; .data 0x022888e0-0x02288ac0 and .bss 0x0228b8ec-0x0228b8f8 belong here.
 src/07_Battle/Battle/BattleMapModel.cpp:
     .text       start:0x02248c84 end:0x02249068
 
-// provisional: code only; .rodata 0x0227a114-0x0227a33c and .data 0x02288ac0-0x02288e4c belong here.
 src/07_Battle/Battle/BattleMapObj.cpp:
+    complete
     .text       start:0x02249068 end:0x02249658
+    .data       start:0x02288d28 end:0x02288e44
 
 // provisional: code only; .data 0x02288e4c-0x02288f14, .rodata 0x0227a33c-0x0227a350 and the .bss nodes 0x0228b904-0x0228b928 belong here.
 src/07_Battle/Battle/BattleObj00.cpp:
@@ -225,9 +255,10 @@ src/07_Battle/Battle/BattleCardSpec.cpp:
 src/07_Battle/Battle/BattlePlayerList.cpp:
     .text       start:0x0225fd5c end:0x0226368c
 
-// provisional: code only; .data 0x02289ff0-0x0228a084 belongs here.
 src/07_Battle/Battle/BattleMapPiece.cpp:
+    complete
     .text       start:0x0226368c end:0x022637ac
+    .data       start:0x02289ff0 end:0x0228a084
 
 // provisional: code only; .data 0x0228a084-0x0228a23c, .rodata 0x0227aa64-0x0227ac20 and .bss 0x0228ba48-0x0228ba6c belong here.
 src/07_Battle/Battle/BattleUnk022637ac.cpp:
@@ -278,9 +309,11 @@ src/07_Battle/Battle/BattleRealBaku.cpp:
 src/07_Battle/Gimmick/GimmickUnk_02274830.cpp:
     .text       start:0x02274830 end:0x02274d78
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickHaosWall.cpp:
+    complete
     .text       start:0x02274d78 end:0x0227532c
+    .data       start:0x0228af94 end:0x0228b000
+    .bss        start:0x0228bb80 end:0x0228bb90
 
 // provisional: code only; .rodata 0x02285aa4-0x02285bd0, .data 0x0228b000-0x0228b164 and .bss 0x0228bb90-0x0228bba8 belong here.
 src/07_Battle/Battle/BattleUnk0227532c.cpp:
@@ -294,6 +327,8 @@ src/07_Battle/Gimmick/GimmickAquosFukidashi.cpp:
 src/07_Battle/Battle/BattleUnk022767c8.cpp:
     .text       start:0x022767c8 end:0x02278270
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickIkazuchiStart.cpp:
+    complete
     .text       start:0x02278270 end:0x02278b1c
+    .data       start:0x0228b520 end:0x0228b5e0
+    .bss        start:0x0228bbfc end:0x0228bc20

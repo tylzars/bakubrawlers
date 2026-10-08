@@ -32,17 +32,19 @@ src/Main/System/TouchManager.cpp:
 src/Main/Game/GameData.cpp:
     .text       start:0x02022b0c end:0x020234c8
 
-// provisional: code only; .data 0x020a5480-0x020a548c and .bss 0x020d53e4-0x020d5508 belong here.
 src/Main/System/FileSystem.cpp:
     .text       start:0x020234c8 end:0x02023b80
+    .data       start:0x020a5480 end:0x020a548c
+    .bss        start:0x020d53e8 end:0x020d53f4
 
 // provisional: code only; .data 0x020a548c-0x020a54b4 and .bss 0x020d5508-0x020d5520 belong here.
 src/Main/System/FileLoader.cpp:
     .text       start:0x02023b80 end:0x020244cc
 
-// provisional: code only; .data 0x020a54b4-0x020a54cc, .bss 0x020d5520-0x0220e520 and tables from 0x02090778 belong here.
 src/Main/System/SoundManager.cpp:
+    complete
     .text       start:0x020244cc end:0x02024818
+    .data       start:0x020a54b4 end:0x020a54cc
 
 // provisional: code only; .data 0x020a54cc-0x020a54e0 and .bss 0x0220e520-0x0220e580 belong here.
 src/Main/System/SceneRunner.cpp:
@@ -78,17 +80,20 @@ src/Main/Graphics/NitroTexture.cpp:
 src/Main/Graphics/NitroModel.cpp:
     .text       start:0x020289c8 end:0x02028bb4
 
-// provisional: code only; .data 0x020a5674-0x020a5684 and .bss 0x0220f100-0x0220f10c belong here.
 src/Main/Graphics/ModelInstance.cpp:
+    complete
     .text       start:0x02028bb4 end:0x02029248
+    .data       start:0x020a5674 end:0x020a5684
+    .bss        start:0x0220f100 end:0x0220f10c
 
 // provisional: code only.
 src/Main/Graphics/ModelAnimData.cpp:
     .text       start:0x02029248 end:0x020294e8
 
-// provisional: code only; .data 0x020a5684-0x020a5694 belongs here.
 src/Main/Graphics/ModelAnim.cpp:
+    complete
     .text       start:0x020294e8 end:0x02029b5c
+    .data       start:0x020a5684 end:0x020a5694
 
 // provisional: code only; .data 0x020a5694-0x020a56a4 belongs here.
 src/Main/Graphics/ModelLight.cpp:
@@ -98,9 +103,9 @@ src/Main/Graphics/ModelLight.cpp:
 src/Main/Graphics/CellAnimation.cpp:
     .text       start:0x02029d7c end:0x0202a594
 
-// provisional: code only; .bss 0x0220f10c-0x0220f110 belongs here.
 src/Main/Graphics/CellAnimFile.cpp:
     .text       start:0x0202a594 end:0x0202ab24
+    .bss        start:0x0220f10c end:0x0220f110
 
 // provisional: code only; .data 0x020a56a4-0x020a56f0 and .bss 0x0220f110-0x0220f114 belong here.
 src/Main/Graphics/EffectManager.cpp:
@@ -110,9 +115,9 @@ src/Main/Graphics/EffectManager.cpp:
 src/Main/Text/TextManager.cpp:
     .text       start:0x0202c02c end:0x0202d794
 
-// provisional: code only; data not assigned yet.
 src/Main/System/MicManager.cpp:
     .text       start:0x0202d794 end:0x0202db04
+    .bss        start:0x0220f114 end:0x0220f12c
 
 // provisional: code only; .data 0x020a5730-0x020a5784 and .bss 0x0220f560-0x02210fdc belong here.
 src/Main/System/WirelessManager.cpp:
@@ -134,13 +139,15 @@ src/Main/Video/MoviePlayer.cpp:
 src/Main/Video/MovieScene.cpp:
     .text       start:0x0203ced4 end:0x0203d374
 
-// provisional: code only; .data 0x020ac814-0x020ac914 belongs here.
 src/Main/Graphics/UnkStruct_0203d374.cpp:
+    complete
     .text       start:0x0203d374 end:0x0203dbb0
+    .data       start:0x020ac814 end:0x020ac914
 
-// provisional: code only; data not assigned yet.
 src/Main/System/FrameTask.cpp:
+    complete
     .text       start:0x0203dbb0 end:0x0203de40
+    .data       start:0x020ac94c end:0x020ac960
 
 // provisional: code only.
 src/Main/Graphics/ModelTransform.cpp:
@@ -150,9 +157,9 @@ src/Main/Graphics/ModelTransform.cpp:
 src/Main/Graphics/CharacterModel.cpp:
     .text       start:0x020527a4 end:0x0205401c
 
-// provisional: code only; .data 0x020b2c6c-0x020b2dc0 belongs here.
 src/Main/Graphics/CharacterPreview.cpp:
     .text       start:0x0205401c end:0x02054df0
+    .data       start:0x020b2c6c end:0x020b2dc0
 
 // provisional: code only; .data 0x020b2dc0-0x020b3290 and .rodata 0x0209e558-0x0209e57c belong here.
 src/Main/Battle/BattleCommandPage.cpp:
@@ -162,9 +169,9 @@ src/Main/Battle/BattleCommandPage.cpp:
 src/Main/Battle/BattleCommandList.cpp:
     .text       start:0x020575e0 end:0x0205b288
 
-// provisional: code only; the vtable (.data 0x020b3764) is not assigned yet.
 src/Main/UI/SelectWindow.cpp:
     .text       start:0x0205b288 end:0x0205c8f0
+    .data       start:0x020b3764 end:0x020b3774
 
 // provisional: code only; .data 0x020b3774-0x020b4274, .rodata 0x0209e784-0x0209fd34 and .bss 0x02219240-0x0221927c belong here.
 src/Main/Scene/CharacterEditScene.cpp:
@@ -186,13 +193,14 @@ src/Main/Unknown/UnkStruct_02070608.cpp:
 src/Main/Unknown/UnkStruct_02071868.cpp:
     .text       start:0x02071868 end:0x020741b4
 
-// provisional: code only; .rodata 0x020a2fd0-0x020a305c, .data 0x020b9384-0x020b94ec and .bss 0x02219344-0x0221935c belong here.
 src/Main/Unknown/UnkStruct_02074938.cpp:
     .text       start:0x020741b4 end:0x020758f4
+    .data       start:0x020b9384 end:0x020b94ec
+    .bss        start:0x02219344 end:0x0221935c
 
-// provisional: code only; .rodata 0x020a305c-0x020a308c and .data 0x020b94ec-0x020b964c belong here.
 src/Main/Unknown/UnkStruct_020758f4.cpp:
     .text       start:0x020758f4 end:0x02076058
+    .data       start:0x020b94ec end:0x020b94fc
 
 // provisional: code only; .rodata 0x020a308c-0x020a30dc, .data 0x020b964c-0x020b9848 and .bss 0x0221935c-0x0221938c belong here.
 src/Main/Unknown/UnkStruct_02076058.cpp:

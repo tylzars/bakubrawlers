@@ -5,7 +5,9 @@ Function-local statics of inline functions (singleton instances and their guards
 emitted by every file that uses them. The original link kept the copy in main. dsd writes that copy as weak
 (14), and mwld prefers a multidef copy over a weak one, so without this a decompiled overlay file would take
 over the singleton and every reference to it would move. As weak definitions, the first one in link order
-(main's) wins.
+(main's) wins. The same goes for functions every user emits (virtual thunks, inline methods): against the
+original's copy, still delinked as a global, a multidef copy is a duplicate-definition error, while a weak one
+is dropped.
 
 Usage: demote_multidef.py <object.o>...
 """
@@ -27,6 +29,6 @@ for path in map(Path, sys.argv[1:]):
         base, size = symtab["sh_offset"], symtab["sh_entsize"]
         for i, sym in enumerate(symtab.iter_symbols()):
             p = base + i * size + 12  # st_info
-            if data[p] >> 4 == STB_MW_MULTIDEF and sym["st_shndx"] != "SHN_UNDEF" and sym.name.startswith(("_ZZ", "_ZGVZ")):
+            if data[p] >> 4 == STB_MW_MULTIDEF and sym["st_shndx"] != "SHN_UNDEF":
                 data[p] = (STB_MW_WEAK << 4) | (data[p] & 0xF)
     path.write_bytes(data)

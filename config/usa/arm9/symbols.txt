@@ -3382,7 +3382,7 @@ data_020a5494 kind:data(any) addr:0x020a5494
 _ZTV18UnkStruct_020a54a0 kind:data(any) addr:0x020a54a0
 data_020a54b4 kind:data(any) addr:0x020a54b4
 data_020a54d4 kind:data(any) addr:0x020a54d4
-data_020a54e0 kind:data(any) addr:0x020a54e0
+sFrameInterval kind:data(any) addr:0x020a54e0 local
 data_020a54e4 kind:data(any) addr:0x020a54e4
 data_020a54ec kind:data(any) addr:0x020a54ec
 data_020a550c kind:data(any) addr:0x020a550c
@@ -4806,11 +4806,11 @@ data_0220e550 kind:bss addr:0x0220e550
 data_0220e55c kind:bss addr:0x0220e55c
 data_0220e568 kind:bss addr:0x0220e568
 data_0220e574 kind:bss addr:0x0220e574
-data_0220e580 kind:bss addr:0x0220e580
-data_0220e584 kind:bss addr:0x0220e584
-data_0220e590 kind:bss addr:0x0220e590
-data_0220e5a0 kind:bss addr:0x0220e5a0
-data_0220e5e4 kind:bss addr:0x0220e5e4
+sQueueWrite kind:bss addr:0x0220e580 local
+@17 kind:bss addr:0x0220e584 local
+sHooks kind:bss addr:0x0220e590 local
+sCallbacks kind:bss addr:0x0220e5a0 local
+sCallbackArgs kind:bss addr:0x0220e5e4 local
 _ZN13SpriteManager5sFadeE kind:bss addr:0x0220e628
 data_0220e629 kind:bss addr:0x0220e629
 _ZN13SpriteManager11sBrightnessE kind:bss addr:0x0220e62c

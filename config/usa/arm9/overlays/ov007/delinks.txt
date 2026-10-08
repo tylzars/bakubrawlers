@@ -255,6 +255,7 @@ src/07_Battle/Battle/BattleCardEffect.cpp:
 
 // provisional: code only; may be part of BattleCardEffect.cpp.
 src/07_Battle/Battle/GimmickSetFile.cpp:
+    complete
     .text       start:0x022719c8 end:0x02271bb4
 
 // provisional: code only; .data 0x0228abe4-0x0228ac08 belongs here.

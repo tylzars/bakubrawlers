@@ -2,12 +2,14 @@
 
 extern u32 func_02006ba4();
 
-void func_020219ec(u32 seed) {
-    MATH_InitRand32(&data_020d42e8, seed);
-}
+void func_020219ec(u32 seed);
 
 void func_020219dc() {
     func_020219ec(func_02006ba4());
+}
+
+void func_020219ec(u32 seed) {
+    MATH_InitRand32(&data_020d42e8, seed);
 }
 
 s8 func_02021a30(u8 count, const u8 *weights) {

@@ -25,8 +25,13 @@ Lessons from getting functions to match exactly. Compiler and flags: see `compil
 6. Run `python3 tools/check_calls.py`. Matching masks relocated words, so a function can match while calling the
    wrong function (e.g. `_fmul` where the original calls `_fdiv`); this compares every call in fully matching
    functions with the original's branch targets.
-7. `ninja objdiff report` shows per-function and per-section results. When everything matches, add `complete`
-   to the delinks entry and run `ninja`; the ROM must still match.
+7. `ninja objdiff report` shows per-function and per-section results. When everything matches, run
+   `python3 tools/link_check.py <unit>`: the definitions in the `.cpp` must follow the original addresses (mwcc
+   emits functions in source order; forward-declare a callee that is defined later), and every compiled data
+   section needs a range in the delinks entry. When it says READY, `python3 tools/mark_complete.py <unit>` and run
+   `ninja check`: the ROM must still match, and `symbols.txt` must name the unit's statics as the source does,
+   with `local` after file-level `static`s (a compiler-generated `@N`, such as the destructor-chain node of a
+   singleton, is named `@N` too and has to follow renumbering).
 
 A function that doesn't match yet is kept in source with a `// non-matching` comment describing the difference.
 

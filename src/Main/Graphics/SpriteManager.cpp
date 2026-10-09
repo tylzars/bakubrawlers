@@ -22,19 +22,19 @@ MtxFx44 data_0220e89c;
 
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);                         // atan2 (16-bit angle)
 extern "C" u16 FX_AsinIdx(fx32 y);                                 // asin (16-bit angle)
-void func_01ff827c(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotY33_
-void func_01ff8260(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotX33_
-void func_01ff82b0(MtxFx33 *a, MtxFx33 *b, MtxFx33 *out);  // MTX_Concat33
-void func_01ff84d0(VecFx32 *v, MtxFx33 *m, VecFx32 *out);  // MTX_MultVec33
+extern "C" void func_01ff827c(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotY33_
+extern "C" void func_01ff8260(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotX33_
+extern "C" void func_01ff82b0(MtxFx33 *a, MtxFx33 *b, MtxFx33 *out);  // MTX_Concat33
+extern "C" void func_01ff84d0(VecFx32 *v, MtxFx33 *m, VecFx32 *out);  // MTX_MultVec33
 
-s64 func_01ff8010(fx32 a, fx32 b); // 64-bit fixed-point division (32 fraction bits)
+extern "C" s64 func_01ff8010(fx32 a, fx32 b); // 64-bit fixed-point division (32 fraction bits)
 extern "C" fx32 FX_Modf(fx32 value, fx32 *integer); // splits into integer part and fraction
 
 // MTX_Perspective
 void func_02001688(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
 // MTX_Ortho
 extern "C" void MTX_Frustum(fx32 top, fx32 bottom, fx32 left, fx32 right, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
-void func_01ff92a4();
+extern "C" void func_01ff92a4();
 extern MtxFx33 data_02211430; // NNS_G3dGlb base rotation
 extern const VecFx32 data_0209094c;
 extern const VecFx32 data_02090958;
@@ -106,7 +106,7 @@ static inline fx32 CosIdx(int idx) {
     return FX_SinCosTable_[(idx >> 4) * 2 + 1];
 }
 
-fx32 func_01ff8000(fx32 a, fx32 b); // FX_Div
+extern "C" fx32 func_01ff8000(fx32 a, fx32 b); // FX_Div
 
 void func_02025e18() {
     MTX_Identity22_(&data_0220e838);

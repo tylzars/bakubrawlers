@@ -1,2 +1,15 @@
     .text       start:0x01ff8000 end:0x01ffd190 kind:code align:32
     .bss        start:0x01ffd1a0 end:0x01ffd1c0 kind:bss align:32
+
+libs/nds/src/fx/fx_cp.c:
+    .text       start:0x01ff8000 end:0x01ff817c
+
+libs/nds/src/fx/fx_vec_mtx.c:
+    .text       start:0x01ff81a0 end:0x01ff9284
+
+libs/nds/src/gx/g3_fifo.c:
+    .text       start:0x01ff9284 end:0x01ff94c8
+
+libs/nns/src/g3d/g3d_anm_itcm.c:
+    .text       start:0x01ff9804 end:0x01ff9b64
+

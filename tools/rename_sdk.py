@@ -27,11 +27,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("names")
     ap.add_argument("--write", action="store_true")
+    ap.add_argument("--symbols", default=str(SYMS), help="symbols.txt of the module (default: main)")
     ap.add_argument("--sources-only", action="store_true",
                     help="input lines are `<address> <old symbol> <new name>`; only src/ and include/ change")
     a = ap.parse_args()
     pairs = [ln.split() for ln in Path(a.names).read_text().splitlines() if ln.strip()]
-    syms = SYMS.read_text().splitlines()
+    symfile = Path(a.symbols)
+    syms = symfile.read_text().splitlines()
     by_addr = {}
     for i, ln in enumerate(syms):
         m = re.match(r"(\S+) kind:function\S* addr:(0x[0-9a-f]+)", ln)
@@ -80,7 +82,7 @@ def main():
                 p.write_text(new)
     print(f"{len(renames)} functions renamed, {changed} files")
     if a.write and not a.sources_only:
-        SYMS.write_text("\n".join(syms) + "\n")
+        symfile.write_text("\n".join(syms) + "\n")
 
 
 if __name__ == "__main__":

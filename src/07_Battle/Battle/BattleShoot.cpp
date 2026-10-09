@@ -1086,7 +1086,7 @@ struct BattleShootRange { // at data_ov007_0227bcf8
 extern BattleShootRange data_ov007_0227bcf8[3];
 extern MtxFx33 data_0220e848;
 void func_01ffcfd8(MtxFx33 *m, u16 angle);
-void func_01ff84d0(VecFx32 *v, MtxFx33 *m, VecFx32 *out);
+extern "C" void func_01ff84d0(VecFx32 *v, MtxFx33 *m, VecFx32 *out);
 
 // non-matching: 2 words: add operand order of the right/down clamp checks.
 void BattleShoot::func_ov007_0226daa8() {

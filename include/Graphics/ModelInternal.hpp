@@ -116,14 +116,14 @@ extern "C" void func_020317bc(void *renderObj, NNSG3dAnmObj *obj);
 extern "C" void func_02031810(void *renderObj, void (*callback)(NNSG3dRS *), u32 unk2, u32 unk3, u32 unk4);
 extern "C" void func_02031824(void *renderObj);
 extern "C" void func_02032cc8(MtxFx43 *mtx, void *unk2);
-void func_01ff92a4();
+extern "C" void func_01ff92a4();
 extern "C" BOOL G3X_GetBoxTestResult(s32 *result);
 extern "C" void func_020322c0(const VecFx32 *trans); // NNS_G3dGlbSetBaseTrans
 extern "C" void func_020322f0(const VecFx32 *scale); // NNS_G3dGlbSetBaseScale
 extern "C" void func_02032284();
 void func_01ffb0ec(void *renderObj);
 
-void func_01ff90dc(s16 *in, s16 *out);
+extern "C" void func_01ff90dc(s16 *in, s16 *out);
 extern "C" void func_0203235c(u32 index, u32 color);
 extern "C" void func_02032320(u32 index, s32 x, s32 y, s32 z);
 

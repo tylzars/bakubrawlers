@@ -31,7 +31,7 @@ void func_02027c18(void *slot_, SpriteTransform *transform);
 
 void func_02027cf4(s32 *x, s32 *y, s32 shape, SpriteTransform *transform);
 
-fx32 func_01ff8000(fx32 num, fx32 den);
+extern "C" fx32 func_01ff8000(fx32 num, fx32 den);
 
 void func_02027c64(MtxFx22 *out, SpriteTransform *transform);
 
@@ -358,7 +358,7 @@ void SpriteScreen::LoadPalette(const char *path, u32 offset, u32 unk3) {
 
 
 
-fx32 func_01ff8000(fx32 num, fx32 den);
+extern "C" fx32 func_01ff8000(fx32 num, fx32 den);
 float _fdiv(float a, float b);
 
 void SpriteScreen::func_02027fec(const char *path, u32 unk2, u32 unk3) {

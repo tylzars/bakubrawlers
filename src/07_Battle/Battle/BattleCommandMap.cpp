@@ -319,18 +319,18 @@ void BattleCommandMap::func_ov007_02245f08() {
     if (mUnk_150 == 0) {
         return;
     }
-    UnkStruct_0203d374 *obj;
+    UnkStruct_0203d374 *obj; 
     obj = mUnk_14;
     if (obj == 0) {
         return;
     }
-    u16 angle = 0;
-    BattlePlayer *player;
+    u16 angle = 0; 
+    BattlePlayer *player; 
     s32 dy;
-    s32 dx;
     s32 sx;
     s32 sy;
     float fy;
+    s32 dx;
     float fx;
     player = data_020d433c.mBattlePlayers->Current();
     dy     = -player->mUnk_d8;
@@ -343,23 +343,24 @@ void BattleCommandMap::func_ov007_02245f08() {
         if (fx < 0.0f) {
             fx = 0.0f - fx;
         }
-        fx = fx * 14.84058f;
+        fx *= 14.84058f;
     }
     if (sy != 0) {
         if (fy < 0.0f) {
             fy = 0.0f - fy;
         }
-        fy = fy * 14.84058f;
+        fy *= 14.84058f;
     }
     if (sx == 0) {
         fx = 0;
-        fy = fy * 2.0f;
+        fy *= 2.0f;
     }
     if (sy == 0) {
         fy = 0;
-        fx = fx * 2.0f;
+        fx *= 2.0f;
     }
-    float m = (fy + fx) * 12.0f;
+    float m = fy + fx;
+    m *= 12.0f;
     Rot16 rot = {0, 0, 0};
     if (sx == 0 && sy == 0) {
     } else if (sy != 0 && sx == 0) {
@@ -369,7 +370,7 @@ void BattleCommandMap::func_ov007_02245f08() {
             rot.z = 65536.0f * m / 360.0f;
         }
         ApplyRot(obj, &rot, 0);
-        angle = angle + 90;
+        angle += 90;
     } else if (sx != 0 && sy == 0) {
         if (sx < 0) {
             rot.z = 65536.0f * m / 360.0f;
@@ -379,19 +380,19 @@ void BattleCommandMap::func_ov007_02245f08() {
         ApplyRot(obj, &rot, 0x4000);
     } else if (sx < 0 && sy < 0) {
         rot.z = 65536.0f * m / 360.0f;
-        angle  = angle + 130;
+        angle += 130;
         ApplyRot(obj, &rot, 0x78e3);
     } else if (sx > 0 && sy < 0) {
         rot.z = 65536.0f * m / 360.0f;
-        angle  = angle + 60;
+        angle += 60;
         ApplyRot(obj, &rot, 0x98e3);
     } else if (sx > 0 && sy > 0) {
         rot.z = 65536.0f * (360.0f - m) / 360.0f;
-        angle  = angle + 130;
+        angle += 130;
         ApplyRot(obj, &rot, 0x78e3);
     } else if (sx < 0 && sy > 0) {
         rot.z = 65536.0f * (360.0f - m) / 360.0f;
-        angle  = angle + 60;
+        angle += 60;
         ApplyRot(obj, &rot, 0x98e3);
     }
     obj->mRotY = (u16) (65536.0f * (float) (u16) (angle % 360) / 360.0f);
@@ -399,9 +400,10 @@ void BattleCommandMap::func_ov007_02245f08() {
     if (camera) {
         obj->mRotY = obj->mRotY + camera->mYaw;
     }
-    mUnk_14->mRotX = obj->mRotX;
-    mUnk_14->mRotY = obj->mRotY;
-    mUnk_14->mRotZ = obj->mRotZ;
+    UnkStruct_0203d374 *dst = mUnk_14;
+    dst->mRotX = obj->mRotX;
+    dst->mRotY = obj->mRotY;
+    dst->mRotZ = obj->mRotZ;
 }
 
 static inline s32 StickSign(s32 v) {
@@ -423,9 +425,12 @@ static inline s32 StickSign(s32 v) {
 
 
 static inline void ApplyRot(UnkStruct_0203d374 *obj, Rot16 *rot, u16 base) {
-    obj->mRotX = obj->mRotX + rot->x;
-    obj->mRotY = obj->mRotY + rot->y;
-    obj->mRotZ = obj->mRotZ + rot->z;
+    u16 x = obj->mRotX + rot->x;
+    u16 y = obj->mRotY + rot->y;
+    u16 z = obj->mRotZ + rot->z;
+    obj->mRotX = x;
+    obj->mRotY = y;
+    obj->mRotZ = z;
     obj->mRotX = base;
 }
 
@@ -875,8 +880,8 @@ extern "C" void func_ov007_02247794(BattleCommandMap *map) {
     if (map->mUnk_14c == 0) {
         return;
     }
-    VecFx32 pos;
-    u8 i = 0;
+    VecFx32 pos; 
+    u8 i = 0;    
     do {
         BattleUnit *unit = &data_020d433c.mBattlePlayers->Units()[i];
         if (unit->mUnk_10 != 0) {

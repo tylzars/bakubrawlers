@@ -185,6 +185,12 @@ Other findings from linking:
   `ldm`/`stm`), the source filled a local `VecFx32 t` (z, then y, then x) and assigned `*dst = t;`. Field-by-field
   stores to `dst` interleave loads and stores instead. Same for `*vel = *a`: a plain struct copy can give three
   `ldr`/`str` pairs where a filled temporary gives `ldm`/`stm` (BattleTarget).
+- **Compound assignment keeps constants out of folding.** `angle += 90;` and `fx *= 2.0f;` compile differently from
+  `angle = angle + 90;` / `fx = fx * 2.0f;`: with the compound form mwcc doesn't fold the constant and keeps the
+  variable as the first operand of the float multiply (BattleCommandMap, 74% -> 99.6%).
+- **Arguments narrowed at the call.** If callers do `lsl #16; asr #16` on an argument of a function that takes `s32`,
+  the caller's variable was `s16` (BattleStatusPanels' `CellAnimation::Draw` calls); changing the callee to `s16`
+  breaks every other caller.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

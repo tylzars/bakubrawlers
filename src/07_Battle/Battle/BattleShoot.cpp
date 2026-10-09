@@ -66,13 +66,47 @@ struct BattleShootIcon { // 0x10 bytes
     /* 0d */ PAD(0x0d, 0x10);
 };
 
+struct ShootWords7 {
+    u32 mUnk_00[7];
+};
+
+struct BattleShootMsg { // 0x20 bytes: a message of the shoot minigame, sent to or received from a player
+    /* 00 */ u8 mUnk_00;
+    /* 01 */ u8 mUnk_01;
+    /* 02 */ u8 mUnk_02;
+    /* 03 */ u8 mUnk_03;
+    union {
+        struct {
+            /* 04 */ s32 mUnk_04;
+            /* 08 */ s32 mUnk_08;
+            /* 0c */ u8 mUnk_0c;
+        };
+        /* 04 */ ShootWords7 mWords;
+    };
+};
+
+struct ShootWords3 {
+    u32 mUnk_00;
+    u32 mUnk_04;
+    u32 mUnk_08;
+};
+
+
+struct ShootMsg32 {
+    u8 mUnk_00;
+    u8 mUnk_01;
+    u8 mUnk_02;
+    u8 mUnk_03;
+    u32 mUnk_04[7];
+};
+
 // The shoot minigame (vtable 0228a5a8, 0x61b0 bytes).
 class BattleShoot : public SceneBase {
 public:
     /* 000c */ u8 mBitmap[0x6000]; // 4bpp 256x192 bitmap in tile order, at +0x0c
     /* 600c */ BattleShootCell mCells[7];
     /* 6060 */ BattleShootIcon mIcons[5];
-    /* 60b0 */ u8 mUnk_60b0[0x80];
+    /* 60b0 */ BattleShootMsg mMsgs[4];
     /* 6130 */ BattleTarget *mUnk_6130;
     /* 6134 */ SelectWindow *mUnk_6134;
     /* 6138 */ MessageWindow *mUnk_6138;
@@ -262,7 +296,7 @@ void BattleShoot::func_ov007_0226aa14(Camera *unk1) {
     }
     MI_CpuClear32(mCells, 0x54);
     MI_CpuClear32(mIcons, 0x50);
-    MI_CpuClear32(mUnk_60b0, 0x80);
+    MI_CpuClear32(mMsgs, 0x80);
     mUnk_61a9 = data_020d433c.mPlayerCount - 1;
 }
 
@@ -1177,23 +1211,6 @@ public:
     }
 };
 
-struct BattleShootMsg { // 0x20 bytes: a message of the shoot minigame, sent to or received from a player
-    /* 00 */ u8 mUnk_00;
-    /* 01 */ u8 mUnk_01;
-    /* 02 */ u8 mUnk_02;
-    /* 03 */ u8 mUnk_03;
-    /* 04 */ s32 mUnk_04;
-    /* 08 */ s32 mUnk_08;
-    /* 0c */ u8 mUnk_0c;
-    /* 0d */ PAD(0x0d, 0x20);
-};
-
-struct ShootWords3 {
-    u32 mUnk_00;
-    u32 mUnk_04;
-    u32 mUnk_08;
-};
-
 extern s16 data_ov007_0208b524[];
 extern s32 data_ov007_0227bcb8[3];
 
@@ -1467,27 +1484,24 @@ void BattleShoot::func_ov007_0226e884() {
         if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
             WirelessManager::Get();
             if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
-                BattleShootMsg *m = (BattleShootMsg *) &mUnk_60b0[i * 0x20];
-                m->mUnk_00        = ((u8 *) &data_0220f540)[0];
-                m->mUnk_01        = ((u8 *) &data_0220f540)[1];
-                m->mUnk_02        = ((u8 *) &data_0220f540)[2];
-                m->mUnk_03        = ((u8 *) &data_0220f540)[3];
-                *(ShootWords3 *) &m->mUnk_04 = *(ShootWords3 *) ((u8 *) &data_0220f540 + 4);
+                mMsgs[i].mUnk_00 = ((u8 *) &data_0220f540)[0];
+                mMsgs[i].mUnk_01 = ((u8 *) &data_0220f540)[1];
+                mMsgs[i].mUnk_02 = ((u8 *) &data_0220f540)[2];
+                mMsgs[i].mUnk_03 = ((u8 *) &data_0220f540)[3];
+                mMsgs[i].mWords = *(ShootWords7 *) ((u8 *) &data_0220f540 + 4);
             } else {
-                BattleShootMsg *m = (BattleShootMsg *) &mUnk_60b0[i * 0x20];
-                m->mUnk_00        = ((u8 *) p)[0x100];
-                m->mUnk_01        = ((u8 *) p)[0x101];
-                m->mUnk_02        = ((u8 *) p)[0x102];
-                m->mUnk_03        = ((u8 *) p)[0x103];
-                *(ShootWords3 *) &m->mUnk_04 = *(ShootWords3 *) ((u8 *) p + 0x104);
+                mMsgs[i].mUnk_00 = ((u8 *) p + 0x100)[0];
+                mMsgs[i].mUnk_01 = ((u8 *) p + 0x100)[1];
+                mMsgs[i].mUnk_02 = ((u8 *) p + 0x100)[2];
+                mMsgs[i].mUnk_03 = ((u8 *) p + 0x100)[3];
+                mMsgs[i].mWords = *(ShootWords7 *) ((u8 *) p + 0x100 + 4);
             }
         } else {
-            BattleShootMsg *m = (BattleShootMsg *) &mUnk_60b0[i * 0x20];
-            m->mUnk_00        = ((u8 *) p)[0x100];
-            m->mUnk_01        = ((u8 *) p)[0x101];
-            m->mUnk_02        = ((u8 *) p)[0x102];
-            m->mUnk_03        = ((u8 *) p)[0x103];
-            *(ShootWords3 *) &m->mUnk_04 = *(ShootWords3 *) ((u8 *) p + 0x104);
+            mMsgs[i].mUnk_00 = ((u8 *) p + 0x100)[0];
+                mMsgs[i].mUnk_01 = ((u8 *) p + 0x100)[1];
+                mMsgs[i].mUnk_02 = ((u8 *) p + 0x100)[2];
+                mMsgs[i].mUnk_03 = ((u8 *) p + 0x100)[3];
+                mMsgs[i].mWords = *(ShootWords7 *) ((u8 *) p + 0x100 + 4);
         }
         i++;
     } while (i < data_020d433c.mPlayerCount);
@@ -1500,11 +1514,10 @@ void BattleShoot::func_ov007_0226e884() {
             s32 outZ = 0;
             if (mUnk_6130->mUnk_4c <= cpu->mUnk_5c) {
                 cpu->func_ov007_02232eb8(&outX, &outZ);
-                BattleShootMsg *m = (BattleShootMsg *) &mUnk_60b0[j * 0x20];
-                m->mUnk_00        = 9;
-                m->mUnk_04        = outX;
-                m->mUnk_08        = outZ;
-                m->mUnk_0c        = 0;
+                mMsgs[j].mUnk_00        = 9;
+                mMsgs[j].mUnk_04        = outX;
+                mMsgs[j].mUnk_08        = outZ;
+                mMsgs[j].mUnk_0c        = 0;
                 cpu->mUnk_70++;
                 if (cpu->mUnk_70 >= cpu->mUnk_60[cpu->mUnk_8d]) {
                     cpu->mUnk_70 = 0;
@@ -1520,12 +1533,11 @@ void BattleShoot::func_ov007_0226e884() {
         u8 k = 0;
         do {
             if (data_020d433c.mBattlePlayers->mPlayers[k]->mUnk_c8 == 0) {
-                BattleShootMsg *m = (BattleShootMsg *) &mUnk_60b0[k * 0x20];
-                if (m->mUnk_04 != 0) {
-                    m->mUnk_04 = FX_Mul(m->mUnk_04, data_ov007_0227bcb8[me->mUnk_f7]);
+                if (mMsgs[k].mUnk_04 != 0) {
+                    mMsgs[k].mUnk_04 = FX_Mul(mMsgs[k].mUnk_04, data_ov007_0227bcb8[me->mUnk_f7]);
                 }
-                if (m->mUnk_08 != 0) {
-                    m->mUnk_08 = FX_Mul(m->mUnk_08, data_ov007_0227bcb8[me->mUnk_f7]);
+                if (mMsgs[k].mUnk_08 != 0) {
+                    mMsgs[k].mUnk_08 = FX_Mul(mMsgs[k].mUnk_08, data_ov007_0227bcb8[me->mUnk_f7]);
                 }
             }
             k++;
@@ -1538,10 +1550,9 @@ void BattleShoot::func_ov007_0226e884() {
     s32 spread   = me->mUnk_e4;
     u8 sent      = 0;
     if (!(mUnk_6130->mUnk_1dd == 4 && mUnk_6130->mUnk_38 <= 0x1e)) {
-        BattleShootMsg *msgs = (BattleShootMsg *) mUnk_60b0;
         u8 n = 0;
         do {
-            BattleShootMsg *m = &msgs[n];
+            BattleShootMsg *m = &mMsgs[n];
             if (m->mUnk_00 == 9) {
                 s32 msgX = m->mUnk_04;
                 s32 msgZ = m->mUnk_08;

@@ -210,10 +210,10 @@ void BattleStatusPanels::func_ov007_02235480() {
             s8 dir    = 1 - mPanels[i].mUnk_25 * 2;
             s16 q     = x + 0xe;
             if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
-                mPanels[i].mAnims[4]->Draw(0, dir * (mPanels[i].mUnk_25 * 0x24 - 0x10) + q, y + 0x22, mUnk_f2);
+                mPanels[i].mAnims[4]->Draw(0, (s16) (dir * (mPanels[i].mUnk_25 * 0x24 - 0x10) + q), (s16) (y + 0x22), mUnk_f2);
             } else if (data_020d433c.mUnk_98 &&
                        i == data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mUnk_f2) {
-                mPanels[i].mAnims[6]->Draw(0, dir * (mPanels[i].mUnk_25 * 0x24 - 0x10) + q, y + 0x22, mUnk_f2);
+                mPanels[i].mAnims[6]->Draw(0, (s16) (dir * (mPanels[i].mUnk_25 * 0x24 - 0x10) + q), (s16) (y + 0x22), mUnk_f2);
             }
             if (data_020d433c.mUnk_98 && mMode == 0) {
                 if (i == 0 || i == data_020d433c.mBattlePlayers->mPlayers[0]->mUnk_f2) {
@@ -232,7 +232,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                                     }
                                     mAnimD->Update();
                                 }
-                                mAnimD->Draw(0, (mPanels[i].mUnk_28 - 1) * 9 + 0x74, 0x10, mUnk_f2);
+                                mAnimD->Draw(0, (s16) ((mPanels[i].mUnk_28 - 1) * 9 + 0x74), 0x10, mUnk_f2);
                             }
                             u8 k = 0;
                             do {
@@ -268,7 +268,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                                     }
                                     mAnimD->Update();
                                 }
-                                mAnimD->Draw(0, (mPanels[i].mUnk_28 - 1) * 9 + 0x74, 0xa8, mUnk_f2);
+                                mAnimD->Draw(0, (s16) ((mPanels[i].mUnk_28 - 1) * 9 + 0x74), 0xa8, mUnk_f2);
                             }
                             u8 k = 0;
                             do {
@@ -298,7 +298,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                         }
                         mAnimD->Update();
                     }
-                    mAnimD->Draw(0, dir * ((mPanels[i].mUnk_25 + (mPanels[i].mUnk_28 - 1)) * 9 + 0x14) + q, y + 0xc, mUnk_f2);
+                    mAnimD->Draw(0, (s16) (dir * ((mPanels[i].mUnk_25 + (mPanels[i].mUnk_28 - 1)) * 9 + 0x14) + q), (s16) (y + 0xc), mUnk_f2);
                 }
                 u8 k = 0;
                 do {
@@ -321,7 +321,7 @@ void BattleStatusPanels::func_ov007_02235480() {
             if (level != 0) {
                 if (mPanels[i].mUnk_2b >= 0x13) {
                     mPanels[i].mAnims[2]->Update();
-                    mPanels[i].mAnims[2]->Draw(0, x - 2, y - 2, mUnk_f2);
+                    mPanels[i].mAnims[2]->Draw(0, (s16) (x - 2), (s16) (y - 2), mUnk_f2);
                 } else {
                     mPanels[i].mAnims[2]->func_0202a3ec(0, level - 1, x - 2, y - 2, mUnk_f2);
                     if (level >= 0x13) {
@@ -336,9 +336,9 @@ void BattleStatusPanels::func_ov007_02235480() {
                 }
             }
             mPanels[i].mUnk_2b = level;
-                        mPanels[i].mAnims[3]->Draw(0, q + dir * mPanels[i].mUnk_25 * 16 + dir * -0x12, y - 8, mUnk_f2);
+                        mPanels[i].mAnims[3]->Draw(0, (s16) (q + dir * mPanels[i].mUnk_25 * 16 + dir * -0x12), (s16) (y - 8), mUnk_f2);
             if (data_020d433c.mBattlePlayers->mPlayers[i]->IsActive()) {
-                mPanels[i].mAnims[5]->Draw(0, dir * (mPanels[i].mUnk_25 * 0x18 - 2) + q, y - 8, mUnk_f2);
+                mPanels[i].mAnims[5]->Draw(0, (s16) (dir * (mPanels[i].mUnk_25 * 0x18 - 2) + q), (s16) (y - 8), mUnk_f2);
             }
             s16 px = dir * (mPanels[i].mUnk_34 * mPanels[i].mUnk_25 + 0xe) + q;
             if (dir < 0) {
@@ -377,7 +377,7 @@ void BattleStatusPanels::func_ov007_02235480() {
         s16 y          = mPanels[j].mUnk_1c[1] + baseY;
         if (character > -1) {
             mPanels[j].mAnims[0]->Update();
-            mPanels[j].mAnims[0]->Draw(0, x - 2, y - 2, mUnk_f2);
+            mPanels[j].mAnims[0]->Draw(0, (s16) (x - 2), (s16) (y - 2), mUnk_f2);
         }
         j++;
     } while (j < 4);

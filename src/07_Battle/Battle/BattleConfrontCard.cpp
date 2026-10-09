@@ -2236,8 +2236,8 @@ u8 BattleConfrontCard::func_ov007_02244440() {
                 if (!func_ov007_022433c8(i, data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4]->mSlots6c[j].mValue)) {
                     (&mask)[k / 8] |= 1 << (k % 8);
                 }
-                j++;
                 k++;
+                j++;
             } while (j < data_020d433c.mUnk_99);
             u8 other = (i + 1) % 2;
             mUnk_53 = func_ov007_0226a700(data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4], mask,

@@ -3274,7 +3274,6 @@ void BattleTarget::func_ov007_0225b298(s32 *pair, u8 mode, VecFx32 *out) {
     out->z = FX_Mul(out->z, 0x1000);
 }
 
-// non-matching: size 0x238 vs 0x1fc: prologue and register allocation differ (the original zeroes a/b through r4 first and keeps `this` in r5, angle in r4); the decision tree is the same.
 BOOL BattleTarget::func_ov007_0225b4a0(VecFx32 *pos, u16 *angle, VecFx32 *vel, u8 *outA, u8 *outB) {
     u8 a = 0;
     u8 b = 0;

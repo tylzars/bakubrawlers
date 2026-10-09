@@ -1014,8 +1014,6 @@ void BattleResult::func_ov007_02250010() {
     } while (m < count2);
 }
 
-// non-matching: the loop prologue sets the counter and its zero copy (r9, r5) after the clamp; the original sets
-// them before it and loads the pool constants one slot later (6 words).
 void BattleResult::func_ov007_0225047c() {
     if (mUnk_38[0]) {
         MI_CpuClear16(mUnk_38[0], mUnk_50[0]);

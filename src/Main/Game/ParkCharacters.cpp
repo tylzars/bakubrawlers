@@ -35,7 +35,7 @@ BOOL func_02089ec8();
 BOOL func_02089f2c();
 
 // Moved here from UnkStruct_02087898.cpp, where it currently sits past the end of that unit (0x02088f38).
-s32 func_02088f38() {
+u8 func_02088f38() {
     u8 stage = data_020d43f0[0].mUnk_42;
     if (stage == 0 || (stage == 1 && data_020d43f0[0].mUnk_43 == 0)) {
         return 0;
@@ -115,7 +115,10 @@ s32 func_02088f38() {
     if (stage == 9 && data_020d43f0[0].mUnk_43 == 4) {
         return 25;
     }
-    return stage == 9 && data_020d43f0[0].mUnk_43 == 5 ? 26 : 27;
+    if (stage == 9 && data_020d43f0[0].mUnk_43 == 5) {
+        return 26;
+    }
+    return 27;
 }
 
 void func_02089208() {
@@ -140,20 +143,27 @@ struct ParkPick {
     /* 03 */ u8 mValue;
 };
 
-// non-matching: same code shape, register allocation differs (the original keeps the 5c1 count spilled at [sp] and
-// the loop variables in r5-r9/sl/fp in a different order); 0x6a4 vs 0x6ac bytes.
+// non-matching: same size; the pick loop's group->mId compare and the fill loop's stores and pointer steps get other
+// registers/order, and the perm loop keeps n+1 in another register.
 void func_02089278() {
+    ParkGroup *group;
+    ParkEntry *entry;
+    u8 count;
+    u8 cat;
+    u8 g;
+    u8 e;
+    ParkCategory *category;
     if (data_020d43f0[0].mUnk_5bf_0) {
         ParkPick picks[26] = {0};
-        u8 count           = 0;
-        u8 cat             = 0;
+        count = 0;
+        cat   = 0;
         do {
-            ParkCategory *category = &data_020a4ccc[cat];
-            ParkGroup *group       = category->mGroups;
-            u8 g                   = 0;
+            category = &data_020a4ccc[cat];
+            group    = category->mGroups;
+            g        = 0;
             do {
-                ParkEntry *entry = group->mEntries;
-                u8 e             = 0;
+                entry = group->mEntries;
+                e     = 0;
                 do {
                     if (entry->mUnk_06 != 0xff && func_02089c7c(entry->mUnk_06)) {
                         BOOL duplicate = FALSE;
@@ -246,22 +256,22 @@ void func_02089278() {
             } while (s < used);
             u8 w = 0;
             do {
-                u8 c = 0;
+                cat = 0;
                 do {
-                    ParkCategory *category = &data_020a4ccc[c];
-                    ParkGroup *group       = category->mGroups;
-                    u8 g                   = 0;
+                    category = &data_020a4ccc[cat];
+                    group    = category->mGroups;
+                    g        = 0;
                     do {
                         if (chosen[w] == group->mId) {
-                            ParkEntry *entry = group->mEntries;
-                            u8 e             = 0;
+                            entry = group->mEntries;
+                            e     = 0;
                             do {
                                 if (entry->mType <= 2) {
-                                    data_020d43f0[0].mUnk_5c2[count].mCategory = c;
+                                    data_020d43f0[0].mUnk_5c2[count].mCategory = cat;
                                     data_020d43f0[0].mUnk_5c2[count].mGroup    = g;
                                     count++;
                                     g = category->mCount;
-                                    c = 0x1c;
+                                    cat = 0x1c;
                                     if (count >= 8) {
                                         w = used;
                                     }
@@ -274,8 +284,8 @@ void func_02089278() {
                         g++;
                         group++;
                     } while (g < category->mCount);
-                    c++;
-                } while (c < 0x1c);
+                    cat++;
+                } while (cat < 0x1c);
                 w++;
             } while (w < used);
         }
@@ -319,13 +329,13 @@ void func_02089278() {
 
         } while (n < data_020d43f0[0].mUnk_5c1);
     } else {
-        s32 index              = func_02088f38();
-        ParkCategory *category = &data_020a4ccc[index];
-        ParkGroup *group       = category->mGroups;
-        u8 count               = 0;
-        u8 g                   = 0;
+        u8 index = func_02088f38();
+        category = &data_020a4ccc[index];
+        group    = category->mGroups;
+        count    = 0;
+        g        = 0;
         do {
-            ParkEntry *entry = &group->mEntries[group->mDefault];
+            entry = &group->mEntries[group->mDefault];
             BOOL skip        = FALSE;
             if (entry->mType == 6) {
                 if (entry->mUnk_0a == 0) {

@@ -1431,9 +1431,12 @@ int BattleConfrontCard::func_ov007_0224251c() {
     return result;
 }
 
-// non-matching: 0x7cc vs 0x7e8; pointer/offset forms of e[side]/e[other] and some reloads.
+// non-matching: 0x7c8 vs 0x7e8; the original keeps side*20 / other*20 as offsets from e and re-adds them in every
+// case (`ldrh r0, [r6, r7]`, `add r0, r6, r8`), where this CSEs e+side*20 / e+other*20 into pointer registers.
 u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
-    int result = 0;
+    u8 result = 0;
+    u8 type;
+    u16 power;
     mUnk_5c   = 0;
     mUnk_5d   = 0;
     mUnk_61   = 0;
@@ -1449,7 +1452,7 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
         BattleEntry *self = &e[side];
         u8 selfLevel      = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4]->mUnk_ee;
         u8 oppLevel       = data_020d433c.mBattlePlayers->mPlayers[e[other].mUnk_0d_4]->mUnk_ee;
-        int type          = func_02065c0c(card, 3);
+        type              = func_02065c0c(card, 3);
         switch (type) {
         case 1: {
             u8 want = card - 1;
@@ -1461,7 +1464,7 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
                 }
             }
             if (want == e[i].mUnk_0c) {
-                u16 power = func_02065bf4(card, e[i].mUnk_0d_0) * 10;
+                power     = func_02065bf4(card, e[i].mUnk_0d_0) * 10;
                 u16 alt   = 0;
                 if (e[i].mUnk_0c == 5) {
                     alt = func_02065bf4(card, 3) * 10;
@@ -1707,7 +1710,8 @@ void BattleConfrontCard::func_ov007_022432dc(u8 kind, u32 mode, u32 flag) {
 }
 
 u8 BattleConfrontCard::func_ov007_022433ac() {
-    return func_02065c0c(mData->mUnk_04, 2);
+    int kind = func_02065c0c(mData->mUnk_04, 2);
+    return kind;
 }
 
 // non-matching: same instruction sequence and jump table; register assignment differs (result r5/self r6 in the original) and case 42 emits a `mov r1, r6` the original does not.
@@ -2226,7 +2230,6 @@ void BattleConfrontCard::func_ov007_022442d4(u32 index) {
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xd000, mUnk_78, mUnk_6c, 0);
 }
 
-// non-matching: 0x390 vs 0x394, the cur pointer / e[i] CSE in the pick loop.
 u8 BattleConfrontCard::func_ov007_02244440() {
     BattleData *data = mData;
     BattleEntry *e   = data->mEntries;
@@ -2241,6 +2244,7 @@ u8 BattleConfrontCard::func_ov007_02244440() {
     }
     u8 i = 0;
     do {
+        BattleEntry *cur = &e[i];
         if (e[i].mUnk_0f_0) {
             mUnk_56 = 0;
         } else {
@@ -2255,7 +2259,7 @@ u8 BattleConfrontCard::func_ov007_02244440() {
                 j++;
             } while (j < data_020d433c.mUnk_99);
             u8 other = (i + 1) % 2;
-            mUnk_53 = func_ov007_0226a700(data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4], mask,
+            mUnk_53 = func_ov007_0226a700(data_020d433c.mBattlePlayers->mPlayers[cur->mUnk_0d_4], mask,
                                           (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
             if (mUnk_53 == 0xff) {
                 mUnk_56 = 0;
@@ -2286,6 +2290,6 @@ u8 BattleConfrontCard::func_ov007_02244440() {
         } while (m < 2);
     }
     u16 chance = (u16) (100.0f * ((float) power[0] / (float) (power[0] + power[1])));
-    u8 r = MATH_Rand32(&data_020d42e8, 100) >= chance;
+    BOOL r = MATH_Rand32(&data_020d42e8, 100) >= chance;
     return r;
 }

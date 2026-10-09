@@ -311,7 +311,9 @@ u8 BattleCpu::func_ov007_02231300() {
     return 0;
 }
 
-// non-matching: same size; registers, the add scheduled before the byte store in own[nOwn++], blt vs bcc, and a cmp/cmpne chain for type == 2 || type == 3.
+// non-matching: 0x90c vs 0x914; the mUnk_98 pass keeps l->mPlayers[mUnk_79]->mUnk_f2 from the check before the loop
+// where the original reloads it in the loop, case 4 swaps the two index temporaries of the record address, and the
+// best-value loop loads mUnk_79 / m->mUnk_1 in the other order.
 extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     cpu->mPos.x = 0;
     cpu->mPos.y = 0;
@@ -322,6 +324,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     u8 nOther   = 0;
     u8 cntA     = 0;
     u8 cntB     = 0;
+    u8 type;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 kind                = list->mPlayers[cpu->mUnk_79]->mUnk_f6;
     u8 i                   = 0;
@@ -329,9 +332,11 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
         BattleMarker *m = &list->Entries()[i];
         if (m->mUnk_2 != 0) {
             if (cpu->mUnk_79 == m->mUnk_1) {
-                own[nOwn++] = i;
+                own[nOwn] = i;
+                nOwn++;
             } else {
-                other[nOther++] = i;
+                other[nOther] = i;
+                nOther++;
             }
             if (m->mUnk_5 == 0) {
                 cntA++;
@@ -347,11 +352,11 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     if (nOwn + nOther == 0) {
         return;
     }
-    u8 type = list->mPlayers[cpu->mUnk_79]->mRecords[cpu->mUnk_7a].mUnk_09;
+    type = list->mPlayers[cpu->mUnk_79]->mRecords[cpu->mUnk_7a].mUnk_09;
     cpu->mUnk_7e = 0;
     BattlePlayerList *list2 = data_020d433c.mBattlePlayers;
     BattlePlayer *pl        = list2->mPlayers[cpu->mUnk_79];
-    if (pl->mRecords[cpu->mUnk_7a].mUnk_00_0 >= 2 && pl->mUnk_f3 == 0xbe) {
+    if ((s32) pl->mRecords[cpu->mUnk_7a].mUnk_00_0 >= 2 && pl->mUnk_f3 == 0xbe) {
         u8 roll = MATH_Rand32(&data_020d42e8, 100);
         if (cpu->mUnk_7b == 0) {
             roll = 99;
@@ -392,7 +397,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
             }
             break;
         case 1:
-            if (cpu->mUnk_7b == 0 || cpu->mUnk_7b == 3) {
+            if (cpu->mUnk_7b == 3 || cpu->mUnk_7b == 0) {
                 state = 4;
             } else {
                 state = 0;
@@ -402,7 +407,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
             state = 2;
             break;
         case 3:
-            if (cpu->mUnk_7b == 0 || cpu->mUnk_7b == 3) {
+            if (cpu->mUnk_7b == 3 || cpu->mUnk_7b == 0) {
                 state = 1;
             } else {
                 state = 0;
@@ -413,18 +418,24 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
             break;
     }
     if (cpu->mUnk_7e != 0 && cntB != 0) {
-        if (type == 0 || type == 2 || type == 3) {
-            state = 3;
+        switch (type) {
+            case 0:
+            case 2:
+            case 3:
+                state = 3;
+                break;
         }
     }
+    u8 j;
     u8 pick = 12;
     do {
         switch (state) {
             case 0: {
                 u8 idx   = MATH_Rand32(&data_020d42e8, 12);
                 u8 found = 0;
+                BattlePlayerList *l;
                 u8 n     = 0;
-                BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                l = data_020d433c.mBattlePlayers;
                 do {
                     BattleUnit *u = &l->Units()[idx];
                     if (u->mUnk_10 != 0 && cpu->mUnk_79 == u->mUnk_0f) {
@@ -446,7 +457,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
             }
             case 1:
                 if (cntA != 0) {
-                    u8 j = 0;
+                    j = 0;
                     BattlePlayerList *l = data_020d433c.mBattlePlayers;
                     do {
                         BattleMarker *m = &l->Entries()[j];
@@ -466,8 +477,9 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
             case 2:
             case 3:
                 if (cntB != 0) {
-                    u8 j = 0;
-                    BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                    BattlePlayerList *l;
+                    j = 0;
+                    l = data_020d433c.mBattlePlayers;
                     do {
                         BattleMarker *m = &l->Entries()[j];
                         if (m->mUnk_2 != 0 && m->mUnk_5 != 0) {
@@ -499,16 +511,16 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                 break;
             case 4: {
                 BattleRecord *rec = &data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->mRecords[cpu->mUnk_7a];
-                u8 recKind        = rec->mUnk_08;
+                u32 recKind       = rec->mUnk_08;
                 u16 recValue      = rec->mUnk_04;
-                u8 j              = 0;
+                j                 = 0;
                 do {
                     BattlePlayerList *l = data_020d433c.mBattlePlayers;
                     BattleMarker *m     = &l->Entries()[j];
                     if (m->mUnk_2 != 0) {
+                        bool ok  = false;
                         u8 owner = m->mUnk_1;
                         u16 val  = l->mPlayers[owner]->Slot54(m->mUnk_0);
-                        bool ok  = false;
                         if (cpu->mUnk_79 == owner || owner == l->mPlayers[cpu->mUnk_79]->mUnk_f2) {
                             ok = cpu->func_ov007_02232e04(val, recValue, recKind);
                         }
@@ -520,23 +532,25 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                     j++;
                 } while (j < 12);
                 if (pick >= 12) {
-                    u8 bestIdx = 0;
-                    u32 best   = 0;
-                    u8 k       = 0;
+                    u32 best;
+                    u8 bestIdx;
+                    j       = 0;
+                    best    = 0;
+                    bestIdx = 0;
                     do {
                         BattlePlayerList *l = data_020d433c.mBattlePlayers;
-                        BattleMarker *m     = &l->Entries()[k];
+                        BattleMarker *m     = &l->Entries()[j];
                         if (m->mUnk_2 != 0) {
-                            if (cpu->mUnk_79 == m->mUnk_1 || m->mUnk_1 == l->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+                            if (m->mUnk_1 == cpu->mUnk_79 || m->mUnk_1 == l->mPlayers[cpu->mUnk_79]->mUnk_f2) {
                                 u32 v = func_02065bf4(m->mUnk_0, recKind);
                                 if (v > best) {
                                     best    = v;
-                                    bestIdx = k;
+                                    bestIdx = j;
                                 }
                             }
                         }
-                        k++;
-                    } while (k < 12);
+                        j++;
+                    } while (j < 12);
                     if (best != 0) {
                         pick = bestIdx;
                     } else {
@@ -546,8 +560,9 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                 break;
             }
             case 5: {
+                u32 roll2 = MATH_Rand32(&data_020d42e8, 100);
                 BOOL pickOwn = FALSE;
-                if (MATH_Rand32(&data_020d42e8, 100) < 75) {
+                if (roll2 < 75) {
                     if (nOwn != 0) {
                         pickOwn = TRUE;
                     }
@@ -570,14 +585,13 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
         BattleMarker *m     = &l->Entries()[pick];
         if (m->mUnk_5 != 0) {
             u8 owner = l->Units()[(u8) (m->mUnk_5 - 1)].mUnk_0f;
-            BattlePlayer *me = l->mPlayers[cpu->mUnk_79];
-            if (owner == me->mUnk_f2) {
-                u8 j = 0;
+            if (owner == l->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+                j = 0;
                 do {
                     BattleMarker *m2 = &l->Entries()[j];
                     if (m2->mUnk_2 != 0) {
                         if (m2->mUnk_5 != 0) {
-                            if (l->Units()[(u8) (m2->mUnk_5 - 1)].mUnk_0f != me->mUnk_f2) {
+                            if (l->Units()[(u8) (m2->mUnk_5 - 1)].mUnk_0f != l->mPlayers[cpu->mUnk_79]->mUnk_f2) {
                                 pick = j;
                                 break;
                             }
@@ -594,10 +608,9 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     if (pick >= 12) {
         pick = 0;
     }
-    BattleMarker *chosen = &data_020d433c.mBattlePlayers->Entries()[pick];
-    cpu->mPos.x          = chosen->mUnk_3 * 0x23000 - 0xe3800;
-    cpu->mPos.y          = 0;
-    cpu->mPos.z          = chosen->mUnk_4 * 0x2f000 - 0xd3800;
+    cpu->mPos.x = data_020d433c.mBattlePlayers->Entries()[pick].mUnk_3 * 0x23000 - 0xe3800;
+    cpu->mPos.y = 0;
+    cpu->mPos.z = data_020d433c.mBattlePlayers->Entries()[pick].mUnk_4 * 0x2f000 - 0xd3800;
     cpu->func_ov007_022328dc();
 }
 

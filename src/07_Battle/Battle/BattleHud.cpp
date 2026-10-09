@@ -128,7 +128,7 @@ BattleHud::~BattleHud() {
 extern const u32 data_ov007_02279d44;
 extern const s8 data_ov007_02279d40;
 u16 func_02065c20(u32 id);
-int func_02065c0c(u32 id, u32 kind);
+u8 func_02065c0c(u32 id, u32 kind);
 
 // non-matching: 96 words (all 2-word-shifted literal pool offsets plus registers): screen is r7 (original r5), the palette
 // buffer r5 (original r6), and in the entry loop at the end the original shares one k*0x14 multiply between two separate

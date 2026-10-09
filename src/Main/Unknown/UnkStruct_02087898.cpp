@@ -152,7 +152,7 @@ void func_02088b30(UnkStruct_02087898 *self);
 void func_02088cd8(UnkStruct_02087898 *self);
 void func_02088ec4(UnkStruct_02087898 *self);
 void func_02088f28(UnkStruct_02087898 *self, u8 unk1);
-s32 func_02088f38();
+u8 func_02088f38();
 
 BOOL UnkStruct_02087898::func_02087cac() {
     return mUnk_30 > 2;

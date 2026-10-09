@@ -311,6 +311,13 @@ Other findings from linking:
   - A struct copy declared inside a loop block (`VecFx32 d1 = *dir;`) stays an `ldm`/`stm` copy re-read from the
     stack; at function scope it's decomposed into registers.
   - An index the original masks with `and #0xff` at each use was not a u8 local: write `owner - 1` at each use.
+- **Small-type and comparison rules (band pass).**
+  - In a function returning `u8`, `u8 r = c >= x; return r;` has no final `and #0xff`; a BOOL local does.
+  - A spilled `u8` local holding a call result is reloaded before each compare of a switch chain; an `int` isn't.
+  - `x == 0 || x == 2 || x == 3` folds into a range check; the original's `cmp #0; cmpne #2; cmpne #3` came from
+    `switch (x) { case 0: case 2: case 3: ... }`. Write `||` chains in the order the original tests.
+  - Compares on an unsigned bitfield are unsigned (`bcc`); `(s32) bf >= 2` gives `blt`.
+  - One function-scope loop variable reused by several loops colours differently from per-loop variables.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

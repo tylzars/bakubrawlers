@@ -53,6 +53,15 @@ libs/cri/src/cri_adx_err.c:
 libs/cri/src/cri_fs.c:
     .text       start:0x020477d8 end:0x02047d80
 
+libs/cri/src/cri_err.c:
+    .text       start:0x02045f90 end:0x02046924
+
+libs/cri/src/cri_dev.c:
+    .text       start:0x02046924 end:0x0204713c
+
+libs/cri/src/cri_thread.c:
+    .text       start:0x0204713c end:0x020477d8
+
 // MSL C runtime (2.0/sp1p5, C); code only so far.
 libs/msl/src/msl_string.c:
     .text       start:0x020122b0 end:0x020125b4

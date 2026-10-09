@@ -4954,9 +4954,9 @@ g_rings kind:bss addr:0x02216944
 g_bufCount kind:bss addr:0x02217004
 g_bufs kind:bss addr:0x02217008
 g_lock kind:bss addr:0x022170e0
-data_022170ec kind:bss addr:0x022170ec
-data_022170f0 kind:bss addr:0x022170f0
-data_02217330 kind:bss addr:0x02217330
+g_pool3Count kind:bss addr:0x022170ec
+g_pool3 kind:bss addr:0x022170f0
+g_lockSt kind:bss addr:0x02217330
 data_0221733c kind:bss addr:0x0221733c
 data_02217344 kind:bss addr:0x02217344
 data_0221734c kind:bss addr:0x0221734c

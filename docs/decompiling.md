@@ -98,6 +98,11 @@ Other findings from linking:
 - **Dead constructor copies.** mwcc emits separate C1 and C2 constructors (and D1/D2) for some classes. The
   original link dropped the unused copy and the strings only it used; `data_ranges.py` ignores sections used only
   by functions the original doesn't have.
+- **Stripped weak copies in other files.** An inline destructor (e.g. `virtual ~WirelessManager() {}`) is emitted
+  as a weak copy in every file that uses the singleton's `Get()`; the original link kept one (Game.cpp's, at
+  0x02020a2c) and dropped the rest. Our objects still carry the copy, which shifts objdiff's view of later
+  relocations: ArenaScene::func_ov001_022197ec, ArenaWindowScene::Update, BattleCardSpec::Update and
+  BattleCharaAct::Update show 99.9x% with identical code. The ROM is unaffected.
 - When no include order works, look for a boundary problem before anything else (IBattle: its first functions use
   a WirelessManager node that lies among the previous file's nodes).
 

@@ -1,0 +1,198 @@
+/* CRI middleware, 0x02044614-0x02044a20: 4-slot object pool (0x3c bytes) */
+typedef struct CriSlot {
+    int used;           /* 0x00 */
+    int idx;            /* 0x04 */
+    int i8;             /* 0x08 */
+    int state;          /* 0x0c */
+    int result;         /* 0x10 */
+    int mode;           /* 0x14 */
+    int a18, a1c, a20, a24;
+    union { short s[4]; signed char b[8]; } u28;   /* 0x28 */
+    short s30, s32, s34, s36, s38;
+    short pad3a;
+} CriSlot;
+
+typedef struct CriSlotHdr { char c0; signed char type; } CriSlotHdr;
+
+extern CriSlot g_slots[4];      /* 0x02216850 */
+extern int g_flag;              /* 0x0221684c */
+extern char str_020ad000[];
+
+extern void func_0203edbc(void);
+extern void func_0203edc0(void);
+extern int func_0203edc4(int, int, short *, short *);
+extern void func_02040170(const char *);
+extern void func_02044440(CriSlot *);
+extern void func_02043f28(CriSlot *);
+extern void func_020442ec(CriSlot *);
+extern void func_02044514(CriSlot *);
+extern void func_02044548(CriSlot *);
+extern void func_020445a8(CriSlot *);
+extern void func_0204454c(CriSlot *);
+extern void *func_02012484(void *, int, int);
+extern int func_0203f714(int, int, int, short *, int, int, int, int, int);
+extern int func_0204006c(int, int, int, short *, int, short *, int, int, short *, int, int);
+
+void func_02044630(CriSlot *p);
+
+void func_02044614(CriSlot *p)
+{
+    func_0203edbc();
+    func_02044630(p);
+    func_0203edc0();
+}
+
+void func_02044630(CriSlot *p)
+{
+    if (p == 0) {
+        func_02040170(str_020ad000);
+        return;
+    }
+    {
+        int t = ((CriSlotHdr *)p)->type;
+        if (t == 3) func_02044440(p);
+        else if (t == 1) func_02043f28(p);
+        else if (t == 2) func_020442ec(p);
+        else if (t == 4) func_02044514(p);
+        else if (t == 5) func_02044548(p);
+    }
+    func_020445a8(p);
+    func_0204454c(p);
+}
+
+void func_020446b0(void)
+{
+    __clear(g_slots, sizeof(g_slots));
+}
+
+CriSlot *func_020446e8(void)
+{
+    int i;
+    CriSlot *p;
+    for (i = 0; i < 4; i++) {
+        if (g_slots[i].used == 0) break;
+    }
+    if (i == 4) return 0;
+    p = &g_slots[i];
+    func_02012484(p, 0, 0x3c);
+    p->used = 1;
+    p->idx = i;
+    p->i8 = 0;
+    p->state = 0;
+    func_0203edc4(0x1f4, 0xac44, &p->s30, &p->s32);
+    p->u28.b[0] = 0; p->u28.b[1] = 0; p->u28.b[2] = 0; p->u28.b[3] = 0;
+    p->u28.b[4] = 0; p->u28.b[5] = 0; p->u28.b[6] = 0; p->u28.b[7] = 0;
+    return p;
+}
+
+void func_02044790(CriSlot *p, int a, int b)
+{
+    func_0203edc4(b, a, &p->s30, &p->s32);
+}
+
+void func_020447ac(CriSlot *p, short *a, short *b)
+{
+    p->u28.s[0] = a[0];
+    p->u28.s[1] = b[0];
+    p->u28.s[2] = a[1];
+    p->u28.s[3] = b[1];
+}
+
+void func_020447d0(CriSlot *p, short *a, short *b)
+{
+    a[0] = p->u28.s[0];
+    b[0] = p->u28.s[1];
+    a[1] = p->u28.s[2];
+    b[1] = p->u28.s[3];
+}
+
+void func_020447f4(CriSlot *p, int a, int b, int c)
+{
+    p->s34 = a;
+    p->s36 = b;
+    p->s38 = c;
+}
+
+void func_02044804(CriSlot *p, short *a, short *b, short *c)
+{
+    *a = p->s34;
+    *b = p->s36;
+    *c = p->s38;
+}
+
+void func_02044820(CriSlot *p)
+{
+    if (p == 0) return;
+    p->used = 0;
+    func_02012484(p, 0, 0x3c);
+}
+
+int func_02044840(CriSlot *p)
+{
+    return p->state;
+}
+
+int func_02044848(CriSlot *p, int a, int b, int c, int d)
+{
+    if (p->state != 0) return 0;
+    p->mode = 1;
+    p->a18 = a;
+    p->a1c = b;
+    p->a20 = c;
+    p->a24 = d;
+    return 1;
+}
+
+int func_0204487c(CriSlot *p, int a, int b, int c, int d)
+{
+    if (p->state != 0) return 0;
+    p->mode = 2;
+    p->a18 = a;
+    p->a1c = b;
+    p->a20 = c;
+    p->a24 = d;
+    return 1;
+}
+
+void func_020448b0(CriSlot *p)
+{
+    if (p->state != 0) return;
+    p->result = 0;
+    p->state = 1;
+}
+
+void func_020448d0(CriSlot *p)
+{
+    p->state = 0;
+    p->u28.b[0] = 0; p->u28.b[1] = 0; p->u28.b[2] = 0; p->u28.b[3] = 0;
+    p->u28.b[4] = 0; p->u28.b[5] = 0; p->u28.b[6] = 0; p->u28.b[7] = 0;
+}
+
+void func_020448fc(CriSlot *p)
+{
+    if (p->state == 3) p->state = 0;
+}
+
+int func_02044910(CriSlot *p)
+{
+    return p->result;
+}
+
+void func_02044918(void)
+{
+    g_flag = 1;
+}
+
+void func_0204492c(CriSlot *p)
+{
+    if (p->state == 1) p->state = 2;
+    if (p->state != 2) return;
+    if (p->mode == 1) {
+        p->result = func_0203f714(p->a18, p->a1c, p->a20, &p->u28.s[0], p->s30, p->s32, (int)&p->s34, p->s36, p->s38);
+    } else {
+        int r = func_0204006c(p->a18, p->a1c, p->a20, &p->u28.s[0], p->a24, &p->u28.s[2], p->s30, p->s32, &p->s34, p->s36, p->s38);
+        p->result = r;
+        if (r % 2 == 1) func_02044918();
+    }
+    p->state = 3;
+}

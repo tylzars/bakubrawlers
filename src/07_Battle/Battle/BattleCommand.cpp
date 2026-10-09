@@ -1598,7 +1598,7 @@ void func_ov007_0223a5a4(BattleCommand *command, u32 mode) {
     G2_BlendNone();
     GX_SetDispSelect(1);
     GX_SetVisiblePlane(0x11);
-    func_02001e68(1, 0, 1);
+    GX_SetGraphicsMode(1, 0, 1);
     G2_SetBG0Priority(0);
     G2_SetBG1Priority(1);
     GX_SetVisibleWnd(0);
@@ -1613,7 +1613,7 @@ void func_ov007_0223a690(int x, int y) {
     G2S_BlendNone();
     GXS_SetVisiblePlane(0x11);
     GXS_SetVisibleWnd(0);
-    func_02001ed0(3);
+    GXS_SetGraphicsMode(3);
     G2S_SetBG0Priority(3);
 }
 

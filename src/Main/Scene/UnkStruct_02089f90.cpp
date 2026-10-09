@@ -97,8 +97,8 @@ void UnkStruct_02089f90::Update() {
 void UnkStruct_02089f90::func_0208a454() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
-    func_02001e68(1, 0, 0);
-    func_02001ed0(0);
+    GX_SetGraphicsMode(1, 0, 0);
+    GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG0Offset(0, 0);

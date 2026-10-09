@@ -380,7 +380,7 @@ BOOL BattleCommandPage::func_02055ab4(u32 right) {
 void BattleCommandPage::func_02055af4() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(0, 1);
-    func_02001e68(1, 0, 0);
+    GX_SetGraphicsMode(1, 0, 0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG0Offset(0, 0);
     G2_SetBG0Priority(3);

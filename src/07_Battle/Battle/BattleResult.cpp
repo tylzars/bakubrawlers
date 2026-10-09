@@ -592,7 +592,7 @@ void BattleResult::func_ov007_0224e3ec() {
     G2_BlendNone();
     GX_SetDispSelect(1);
     GX_SetVisiblePlane(0x11);
-    func_02001e68(1, 0, 1);
+    GX_SetGraphicsMode(1, 0, 1);
     G2_SetBG0Priority(0);
     G2_SetBG1Priority(1);
     GX_SetVisibleWnd(0);
@@ -624,7 +624,7 @@ void BattleResult::func_ov007_0224e3ec() {
 void BattleResult::func_ov007_0224e5f8() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
-    func_02001e68(1, 0, 0);
+    GX_SetGraphicsMode(1, 0, 0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG0Offset(0, 0);
     G2_SetBG0Priority(3);
@@ -676,7 +676,7 @@ void BattleResult::func_ov007_0224e6f4() {
 void BattleResult::func_ov007_0224e9f4() {
     SpriteManager::Get().func_02026dec(1, 1);
     GX_SetDispSelect(1);
-    func_02001e68(1, 0, 0);
+    GX_SetGraphicsMode(1, 0, 0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG1Control(0, 0, 1, 4, 0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);

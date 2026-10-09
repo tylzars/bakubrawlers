@@ -7,20 +7,20 @@
 #include <nitro/gx.h>
 
 void func_02025df8();
-void func_020028dc(u32 a);
-void func_020029f4(u32 a);
+extern "C" void GX_SetBankForSubBG(u32 a);
+extern "C" void GX_SetBankForSubBGExtPltt(u32 a);
 
 MovieScene::MovieScene(void *video, u32 unk2)
     : SceneBase(2, 0) {
     mPlayer = new MoviePlayer();
     mPlayer->func_0203c5b4(video, 0, 1, unk2);
     RequestScene(0);
-    func_02001eec((vu16 *) 0x400006c, -16);
-    func_02001eec((vu16 *) 0x400106c, -16);
+    G2x_SetMasterBrightness_((vu16 *) 0x400006c, -16);
+    G2x_SetMasterBrightness_((vu16 *) 0x400106c, -16);
     SpriteManager::Get().SetFade(1, -16);
-    func_020028dc(4);
-    func_020029f4(0x80);
-    func_02001ed0(5);
+    GX_SetBankForSubBG(4);
+    GX_SetBankForSubBGExtPltt(0x80);
+    GXS_SetGraphicsMode(5);
     vu16 *bg0cnt = (vu16 *) 0x4001008;
     *bg0cnt      = (*bg0cnt & 0x43) | 0x84;
     ChangeDir("/Game/2D/union_b");

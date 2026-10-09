@@ -308,8 +308,8 @@ BOOL func_020876f0(u32 index);
 void UnkStruct_02078e14::func_0207b3a8() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
-    func_02001e68(1, 0, 0);
-    func_02001ed0(0);
+    GX_SetGraphicsMode(1, 0, 0);
+    GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG1Control(0, 1, 2, 4, 0);
     G2_SetBG2Control(0, 1, 4, 8, 0);
@@ -2446,7 +2446,7 @@ void UnkStruct_02078e14::func_02082660() {
 
 void UnkStruct_02078e14::func_020826ec() {
     SpriteManager::Get().func_02026dec(0, 1);
-    func_02001e68(1, 0, 0);
+    GX_SetGraphicsMode(1, 0, 0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG1Control(0, 1, 2, 4, 0);
     G2_SetBG2Control(0, 1, 4, 8, 0);

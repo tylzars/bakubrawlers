@@ -30,12 +30,12 @@ extern u16 data_020a596c;
 UnkStruct_02071868::UnkStruct_02071868(u32 unk1) {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
-    func_02001e68(1, 0, 0);
-    func_02001ed0(0);
+    GX_SetGraphicsMode(1, 0, 0);
+    GXS_SetGraphicsMode(0);
     GX_SetVisiblePlane(0);
     GXS_SetVisiblePlane(1);
-    func_02001eec((vu16 *) 0x400006c, -16);
-    func_02001eec((vu16 *) 0x400106c, 0);
+    G2x_SetMasterBrightness_((vu16 *) 0x400006c, -16);
+    G2x_SetMasterBrightness_((vu16 *) 0x400106c, 0);
     G2_BlendNone();
     G2S_BlendNone();
     SpriteManager::Get().SetFade(1, 0);
@@ -73,13 +73,13 @@ UnkStruct_02071868::UnkStruct_02071868(u32 unk1) {
                0, 0, 1, 1);
     OS_Free(file);
     TextManager::Get().func_0202cd48(1, (u16 *) map, 0, 0, 0x20, 0x18, 0x20);
-    func_02003ea4(glyphs, 0, 0xc000);
+    GXS_LoadBG0Char(glyphs, 0, 0xc000);
     OS_Free(glyphs);
-    func_02003ba4(map, 0, 0x600);
+    GXS_LoadBG0Scr(map, 0, 0x600);
     OS_Free(map);
-    func_02004394();
-    func_020043ac(&data_020a596c, 0x4000, 0x20);
-    func_02004410();
+    GX_BeginLoadSubBGExtPltt();
+    GX_LoadSubBGExtPltt(&data_020a596c, 0x4000, 0x20);
+    GX_EndLoadSubBGExtPltt();
     G2S_SetBG0Offset(0x10, 0);
     if (unk1 != 2) {
         UnkStruct_020c1884::Get().mUnk_14 = 1;
@@ -283,7 +283,7 @@ void UnkStruct_02071d24::Update() {
 void func_02072614() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(0, 1);
-    func_02001e68(1, 0, 0);
+    GX_SetGraphicsMode(1, 0, 0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG1Control(0, 1, 2, 4, 0);
     G2S_SetBG0Offset(0, 0);

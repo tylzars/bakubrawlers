@@ -51,7 +51,7 @@ static inline void ReleaseSlot(BattlePlayerList *list, u8 index) {
 }
 extern VecFx32 data_ov007_0227a60c;
 void func_ov007_022337ec(VecFx32 *A, VecFx32 *B, VecFx32 *C, VecFx32 *D, VecFx32 *E, fx32 F, fx32 G, int flag);
-fx32 func_020017d4(fx32 x, fx32 z);
+extern "C" fx32 FX_Atan2(fx32 x, fx32 z);
 extern const u16 data_ov007_0227a5ee[];
 extern const s32 data_ov007_0227a6bc[];
 extern const s8 data_ov007_0227a754[];
@@ -61,7 +61,7 @@ void func_ov007_02233f38(const VecFx32 *a, const VecFx32 *b, int unused, VecFx32
 extern VecFx32 data_ov007_0227a648;
 void func_ov007_0226a380(BattlePlayer *player, u8 record, int unk);
 void func_ov007_02233730(VecFx32 *a, VecFx32 *b, VecFx32 *speed, VecFx32 *out);
-u32 func_02001bec(s32 value);
+extern "C" u32 FX_AcosIdx(s32 value);
 extern const s32 data_ov007_0227a694[];
 extern VecFx32 data_ov007_0227a624;
 extern const s32 data_ov007_0227a6a8[];
@@ -841,7 +841,7 @@ BOOL BattleTarget::func_ov007_02254938(VecFx32 *a, VecFx32 *b, VecFx32 *vel, u8 
         if (dot > 0x1000) {
             dot = 0x1000;
         }
-        if (func_02001bec(dot) <= data_ov007_0227a600[index]) {
+        if (FX_AcosIdx(dot) <= data_ov007_0227a600[index]) {
             return 1;
         }
     }
@@ -1243,7 +1243,7 @@ void BattleTarget::func_ov007_02255b78(VecFx32 *b, VecFx32 *c, VecFx32 *in, VecF
     diff.z = 0;
     diff.y = 0;
     VEC_Subtract(c, b, &diff);
-    int angle = -(func_0200198c(diff.z, diff.x) + 0x4000);
+    int angle = -(FX_Atan2Idx(diff.z, diff.x) + 0x4000);
     mtx       = data_0220e848;
     func_01ffcfd8(&mtx, angle);
     func_01ff84d0(in, &mtx, out);
@@ -1262,7 +1262,7 @@ void BattleTarget::func_ov007_02255c04(VecFx32 *vec, s32 *out) {
     target.y = camera->mTarget.y;
     target.z = camera->mTarget.z;
     VEC_Subtract(&mUnk_194, &target, &diff);
-    int angle = -(func_0200198c(diff.x, diff.z) + 0x4000);
+    int angle = -(FX_Atan2Idx(diff.x, diff.z) + 0x4000);
     func_01ffcfd8(&mtx, angle);
     func_01ff84d0(vec, &mtx, &rotated);
     out[1] = rotated.x;
@@ -1459,7 +1459,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             pos.x = 0x37000;
             pos.y = 0xf000;
             pos.z = 0x37000;
-            func_01ffcfd8(&rot, (u16) (func_0200198c(mUnk_64.x, mUnk_64.z) - 0xa000));
+            func_01ffcfd8(&rot, (u16) (FX_Atan2Idx(mUnk_64.x, mUnk_64.z) - 0xa000));
             func_01ff84d0(&pos, &rot, &pos);
             Camera *c = mUnk_174;
             cam.x     = c->mPosition.x;
@@ -1484,8 +1484,8 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             pos.x = 0x14000;
             pos.y = 0x14000;
             pos.z = 0x14000;
-            func_01ffcfd8(&rot, (u16) (func_0200198c(mUnk_70.x, mUnk_70.z) - 0xa000));
-            s32 a = func_0200198c(mUnk_70.y, 0x1000);
+            func_01ffcfd8(&rot, (u16) (FX_Atan2Idx(mUnk_70.x, mUnk_70.z) - 0xa000));
+            s32 a = FX_Atan2Idx(mUnk_70.y, 0x1000);
             func_01ff84d0(&pos, &rot, &pos);
             func_01ff84d0(&mUnk_188, &rot, &mUnk_188);
             pos.y = FX_Mul(pos.y, -FX_SinCosTable_[(a >> 4) * 2]) + 0x5a000;
@@ -1581,10 +1581,10 @@ void BattleTarget::func_ov007_022567ac() {
             c.x = 0x2f800;
             c.y = 0x2f800;
             c.z = 0x2f800;
-            func_01ffcfd8(&mtx, func_0200198c(mUnk_64.x, mUnk_64.z) - 0xa000);
+            func_01ffcfd8(&mtx, FX_Atan2Idx(mUnk_64.x, mUnk_64.z) - 0xa000);
             func_01ff84d0(&c, &mtx, &c);
             func_01ff84d0(&mUnk_188, &mtx, &mUnk_188);
-            u16 pitch = func_0200198c(mUnk_64.y, 0x1000);
+            u16 pitch = FX_Atan2Idx(mUnk_64.y, 0x1000);
             c.y       = FX_Mul(c.y, -FX_SinCosTable_[(pitch >> 4) * 2]);
             VEC_Add(&c, &mUnk_1a4->mPosition, &c);
             VEC_Add(&c, &data_ov007_0227a624, &c);
@@ -1636,7 +1636,7 @@ void BattleTarget::func_ov007_02256c4c(VecFx32 *target) {
                 cam.y          = camera->mPosition.y;
                 cam.z          = camera->mPosition.z;
                 VEC_Subtract(&cam, &mUnk_1a4->mPosition, &diff);
-                int angle = -(func_0200198c(diff.z, diff.x) + 0x4000);
+                int angle = -(FX_Atan2Idx(diff.z, diff.x) + 0x4000);
                 func_01ffcfd8(&mtx, angle);
                 func_01ff84d0(&move, &mtx, &move);
                 if (mUnk_1d6 != 0) {
@@ -1770,10 +1770,10 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
     if (mode == 0) {
         fx32 len;
         if (VEC_Mag(b) > 0x800 || VEC_Mag(a) <= 0) {
-            len = func_020017d4(b->x, b->z);
+            len = FX_Atan2(b->x, b->z);
             speed = ABS(b->x) + ABS(b->z);
         } else {
-            len = func_020017d4(vel->x, vel->z);
+            len = FX_Atan2(vel->x, vel->z);
             speed = ABS(vel->x) + ABS(vel->z);
         }
         fx32 q = func_01ff8000(len, 0x47);
@@ -2517,7 +2517,7 @@ void BattleTarget::func_ov007_02258edc() {
             data_020d433c.mBattlePlayers->mUnk_29c->func_ov007_02270ae0(mUnk_140, &state);
             mUnk_1db = i;
             u8 handle = func_0202bd40(data_020d433c.mEffects, 1, 10, 0, i);
-            u16 yaw   = func_0200198c(mUnk_64.x, mUnk_64.z);
+            u16 yaw   = FX_Atan2Idx(mUnk_64.x, mUnk_64.z);
             SoundManager::Get().func_020246f8(0x10);
             rot2[0] = 0;
             rot2[1] = yaw + 0x4000;
@@ -3383,7 +3383,7 @@ void BattleTarget::func_ov007_0225b6d0() {
             func_ov007_022334f4(rot, power, &dir, &vel);
             mUnk_1c0  = func_0202bd40(data_020d433c.mEffects, 1, 9, 0, 1);
             u8 handle = func_0202bd40(data_020d433c.mEffects, 1, 10, 0, 0);
-            rot2[1]   = func_0200198c(vel.x, vel.z) + 0x4000;
+            rot2[1]   = FX_Atan2Idx(vel.x, vel.z) + 0x4000;
             rot2[0]   = 0;
             rot2[2]   = 0;
             func_0202bf3c(data_020d433c.mEffects, handle, rot2);
@@ -3447,7 +3447,7 @@ void BattleTarget::func_ov007_0225b6d0() {
             SoundManager::Get().func_020246f8(0x3b);
         }
         if (mUnk_1c0 != 0) {
-            r3[1] = func_0200198c(mUnk_64.x, mUnk_64.z) + 0x4000;
+            r3[1] = FX_Atan2Idx(mUnk_64.x, mUnk_64.z) + 0x4000;
             r3[0] = 0;
             r3[2] = 0;
             func_0202bf3c(data_020d433c.mEffects, mUnk_1c0, r3);
@@ -3565,7 +3565,7 @@ void BattleTarget::func_ov007_0225c4dc() {
             }
             if (EffectAlive(data_020d433c.mEffects, mUnk_1c0)) {
                 u16 rot[3];
-                rot[1] = func_0200198c(mUnk_64.x, mUnk_64.z) + 0x4000;
+                rot[1] = FX_Atan2Idx(mUnk_64.x, mUnk_64.z) + 0x4000;
                 rot[0] = 0;
                 rot[2] = 0;
                 func_0202bf3c(data_020d433c.mEffects, mUnk_1c0, rot);
@@ -3585,7 +3585,7 @@ void BattleTarget::func_ov007_0225c4dc() {
                 mUnk_1c0 = 0;
             } else {
                 u16 rot[3];
-                rot[1] = func_0200198c(mUnk_64.x, mUnk_64.z) + 0x4000;
+                rot[1] = FX_Atan2Idx(mUnk_64.x, mUnk_64.z) + 0x4000;
                 rot[0] = 0;
                 rot[2] = 0;
                 func_0202bf3c(data_020d433c.mEffects, mUnk_1c0, rot);
@@ -3598,7 +3598,7 @@ void BattleTarget::func_ov007_0225c4dc() {
                 break;
             }
             u16 rot[3];
-            rot[1] = func_0200198c(mUnk_64.x, mUnk_64.z) + 0x4000;
+            rot[1] = FX_Atan2Idx(mUnk_64.x, mUnk_64.z) + 0x4000;
             rot[0] = 0;
             rot[2] = 0;
             func_0202bf3c(data_020d433c.mEffects, mUnk_1c0, rot);
@@ -3777,8 +3777,8 @@ void BattleTarget::func_ov007_0225cd6c() {
 void BattleTarget::func_ov007_0225ce08() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(0, 7);
-    func_02001e68(1, 0, 1);
-    func_02001ed0(3);
+    GX_SetGraphicsMode(1, 0, 1);
+    GXS_SetGraphicsMode(3);
     G2_SetBG0Offset(0, 0);
     G2_SetBG0Priority(2);
     GX_SetVisiblePlane(0x11);

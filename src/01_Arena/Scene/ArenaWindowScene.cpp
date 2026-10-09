@@ -261,7 +261,7 @@ void ArenaWindowScene::func_ov001_0221d6dc() {
 void ArenaWindowScene::func_ov001_0221d858() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
-    func_02001ed0(0);
+    GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG0Offset(0, 0);
     G2S_SetBG0Priority(0);

@@ -528,8 +528,8 @@ void TutorialScene::Update() {
 void func_ov005_0221e858(TutorialScene *scene) {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 7);
-    func_02001e68(1, 0, 1);
-    func_02001ed0(0);
+    GX_SetGraphicsMode(1, 0, 1);
+    GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 1);
     G2_SetBG0Offset(0, 0);
     G2_SetBG0Priority(2);
@@ -548,8 +548,8 @@ void func_ov005_0221e858(TutorialScene *scene) {
 void func_ov005_0221e9c8(TutorialScene *scene) {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
-    func_02001e68(1, 0, 0);
-    func_02001ed0(0);
+    GX_SetGraphicsMode(1, 0, 0);
+    GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG0Offset(0, 0);

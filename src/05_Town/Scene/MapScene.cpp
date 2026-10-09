@@ -423,8 +423,8 @@ void MapScene::func_ov005_0221a598() {
 void MapScene::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 7);
-    func_02001e68(1, 0, 1);
-    func_02001ed0(0);
+    GX_SetGraphicsMode(1, 0, 1);
+    GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(1, 1, 0, 4, 1);
     G2S_SetBG1Control(1, 1, 2, 1, 1);
     G2S_SetBG2ControlText(0, 1, 4, 1);

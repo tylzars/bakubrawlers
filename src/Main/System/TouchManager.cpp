@@ -12,7 +12,7 @@ int func_0200c3cc(void *raw);
 void func_0200c608(TouchSample *out, void *raw);
 BOOL func_0200c17c(void *panel);
 void func_0200c210(void *panel);
-u16 func_020017d4(fx32 a, fx32 b);
+extern "C" u16 FX_Atan2(fx32 a, fx32 b);
 }
 
 void TouchManager::Init() {
@@ -213,11 +213,11 @@ void TouchManager::func_02022988() {
     u32 b;
     int idx;
     if (dy < 0) {
-        idx = func_020017d4(-fy, fx);
+        idx = FX_Atan2(-fy, fx);
         a = 0;
         b = 0;
     } else {
-        idx = func_020017d4(fy, -fx);
+        idx = FX_Atan2(fy, -fx);
         a = 180;
         b = 0x800;
     }

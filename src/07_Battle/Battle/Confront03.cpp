@@ -223,7 +223,7 @@ void Confront03::func_ov007_02219888(BattleData *data, u32 mode) {
 }
 
 void Confront03::func_ov007_0221a624() {
-    func_02001ed0(0);
+    GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG1Control(0, 1, 2, 4, 0);
     G2S_SetBG2Control(0, 0, 4, 5, 0);

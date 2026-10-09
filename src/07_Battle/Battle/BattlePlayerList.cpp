@@ -874,11 +874,11 @@ void BattlePlayerList::Update() {
 void func_ov007_022621dc() {
     SpriteManager::Get().func_02026dec(1, 7);
     GX_SetDispSelect(1);
-    func_02001e68(1, 0, 1);
+    GX_SetGraphicsMode(1, 0, 1);
     GXS_SetVisiblePlane(0x11);
     GX_SetVisibleWnd(0);
     GXS_SetVisibleWnd(0);
-    func_02001ed0(5);
+    GXS_SetGraphicsMode(5);
     G2S_SetBG0Control(0, 1, 0, 1, 1);
     G2S_SetBG1Control(0, 0, 1, 4, 0);
     G2_SetBG0Offset(0, 0);

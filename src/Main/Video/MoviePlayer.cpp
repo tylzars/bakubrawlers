@@ -14,17 +14,17 @@ void func_020080d8(u32 a, u32 b);
 void func_020080f8(u32 a, u32 b);
 void func_02008160(u32 a, u32 b, void *data, u32 c, u32 d, u32 e, u32 f, u32 g, u32 h, u32 i);
 void func_020085ec(u32 a);
-u32 func_02002f90(u32 a);
-void func_02002b28();
-void func_02002b3c();
-void func_02002b50();
-void func_02002b74();
-void func_02002b98();
-void func_02002bac();
-void func_02002bc0();
-void func_02002bd4();
-void func_02002be8();
-void func_02002c10();
+extern "C" u32 G2S_GetBG2ScrPtr(u32 a);
+extern "C" void GX_DisableBankForBG();
+extern "C" void GX_DisableBankForOBJ();
+extern "C" void GX_DisableBankForBGExtPltt();
+extern "C" void GX_DisableBankForOBJExtPltt();
+extern "C" void GX_DisableBankForTex();
+extern "C" void GX_DisableBankForTexPltt();
+extern "C" void GX_DisableBankForSubBG();
+extern "C" void GX_DisableBankForSubOBJ();
+extern "C" void GX_DisableBankForSubBGExtPltt();
+extern "C" void GX_DisableBankForSubOBJExtPltt();
 u32 func_02005a68();
 void func_0200d3e0(u32 a, u32 b, u32 c);
 void func_0200d904(u32 a);
@@ -54,12 +54,12 @@ void func_0203bdfc(u32 a, u32 b);
 }
 u64 func_02006ba4();
 BOOL func_0200d924();
-void func_020028bc(u32 a);
-void func_020028dc(u32 a);
-void func_02002984(u32 a);
-void func_020029f4(u32 a);
+extern "C" void GX_SetBankForLCDC(u32 a);
+extern "C" void GX_SetBankForSubBG(u32 a);
+extern "C" void GX_SetBankForSubOBJ(u32 a);
+extern "C" void GX_SetBankForSubBGExtPltt(u32 a);
 void func_02002dd8();
-void func_02003a3c(const void *data, u32 offset, u32 size);
+extern "C" void GXS_LoadOAM(const void *data, u32 offset, u32 size);
 void func_0200a7b4(void *decoder);
 void func_0200aa94(void *decoder, const char *path);
 void func_0200aadc(void *decoder);
@@ -122,7 +122,7 @@ u32 MoviePlayer::func_0203c39c() {
         if (mUnk_ec == 0) {
             result = 0x6600000;
         } else {
-            result = func_02002f90(mUnk_ec);
+            result = G2S_GetBG2ScrPtr(mUnk_ec);
         }
     }
     return result;
@@ -153,7 +153,7 @@ void func_0203c454(MoviePlayer *player) {
     }
     player->mUnk_f0 = 1;
     if (player->mUnk_ec == 0) {
-        func_02001e68(6, 0, 0);
+        GX_SetGraphicsMode(6, 0, 0);
         if (player->mUnk_10e) {
             *(vu32 *) 0x4001000 = (*(vu32 *) 0x4001000 & ~0x60) | 0x20;
             SpriteOamEntry *oam = SpriteManager::Get().mScreens[1].mOam;
@@ -164,10 +164,10 @@ void func_0203c454(MoviePlayer *player) {
                 e->mAttr01 = ((row * 64) & 0xff) | 0xc0000c00 | ((col & 7) << 22);
                 e->mAttr2  = ((row << 8) + (col << 3)) | 0xf000;
             }
-            func_02003a3c(oam, 0, 0x400);
+            GXS_LoadOAM(oam, 0, 0x400);
         }
     } else {
-        func_02001e68(2, 0, 0);
+        GX_SetGraphicsMode(2, 0, 0);
         if (player->mUnk_10e) {
             *(vu32 *) 0x4001000 = (*(vu32 *) 0x4001000 & ~0x1f00) | 0x400;
         }
@@ -178,27 +178,27 @@ void func_0203c454(MoviePlayer *player) {
 void MoviePlayer::func_0203c5b4(void *a, void *b, u8 c, u32 d) {
     mUnk_10c = a != 0;
     mUnk_10e = a != 0 && b != 0;
-    func_02002b28();
-    func_02002b50();
-    func_02002b3c();
-    func_02002b74();
-    func_02002b98();
-    func_02002bac();
-    func_02002bc0();
-    func_02002be8();
-    func_02002bd4();
-    func_02002c10();
+    GX_DisableBankForBG();
+    GX_DisableBankForBGExtPltt();
+    GX_DisableBankForOBJ();
+    GX_DisableBankForOBJExtPltt();
+    GX_DisableBankForTex();
+    GX_DisableBankForTexPltt();
+    GX_DisableBankForSubBG();
+    GX_DisableBankForSubBGExtPltt();
+    GX_DisableBankForSubOBJ();
+    GX_DisableBankForSubOBJExtPltt();
     MIi_CpuClearFast(0, (void *) 0x5000000, 0x200);
     MIi_CpuClearFast(0, (void *) 0x5000400, 0x200);
-    func_020028bc(0x1ff);
+    GX_SetBankForLCDC(0x1ff);
     MIi_CpuClearFast(0, (void *) 0x6800000, 0xa4000);
     func_02002dd8();
-    func_020028bc(3);
-    func_02001e68(2, 0, 0);
+    GX_SetBankForLCDC(3);
+    GX_SetGraphicsMode(2, 0, 0);
     if (mUnk_10e) {
-        func_02002984(8);
-        func_020028dc(4);
-        func_02001ed0(5);
+        GX_SetBankForSubOBJ(8);
+        GX_SetBankForSubBG(4);
+        GXS_SetGraphicsMode(5);
         vu32 *dispcnt = (vu32 *) 0x4001000;
         *dispcnt      = (*dispcnt & ~0x1f00) | 0x400;
         vu16 *bgcnt   = (vu16 *) 0x400100c;

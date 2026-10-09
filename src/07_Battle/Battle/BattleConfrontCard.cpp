@@ -49,8 +49,8 @@ extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
 extern "C" void func_ov007_022633f8(BattlePlayerList *list);
 BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
 void func_020383f8(u32 heap);
-void func_02001e68(u32 unk1, u32 unk2, u32 unk3);
-void func_02001ed0(u32 unk1);
+extern "C" void GX_SetGraphicsMode(u32 unk1, u32 unk2, u32 unk3);
+extern "C" void GXS_SetGraphicsMode(u32 unk1);
 
 class ConfrontBg06 : public BattleBase {
 public:
@@ -243,8 +243,8 @@ void BattleConfrontCard::func_ov007_0223f044() {
 void BattleConfrontCard::func_ov007_0223f0c0() {
     SpriteManager::Get().func_02026dec(1, 7);
     reg_GX_POWCNT |= 0x8000;
-    func_02001e68(1, 0, 1);
-    func_02001ed0(3);
+    GX_SetGraphicsMode(1, 0, 1);
+    GXS_SetGraphicsMode(3);
     func_ov007_0223f168();
 }
 
@@ -594,7 +594,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 break;
             }
             SpriteManager::Get().func_02026dec(0, 7);
-            func_02001e68(1, 0, 1);
+            GX_SetGraphicsMode(1, 0, 1);
             mUnk_50 = func_ov007_022428d4(mData->mUnk_04);
             u8 side = data_020d433c.mBattlePlayers->mUnk_2a9 == e[1].mUnk_0d_4 ? 1 : 0;
             u32 kind = 6;
@@ -1013,7 +1013,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             }
             if (mUnk_5e) {
                 SpriteManager::Get().func_02026dec(0, 7);
-                func_02001e68(1, 0, 1);
+                GX_SetGraphicsMode(1, 0, 1);
             }
             mUnk_0d++;
             break;
@@ -1406,7 +1406,7 @@ int BattleConfrontCard::func_ov007_0224251c() {
                 break;
             }
             SpriteManager::Get().func_02026dec(0, 7);
-            func_02001e68(1, 0, 1);
+            GX_SetGraphicsMode(1, 0, 1);
             mUnk_44 = new BattleCardSpec(3, e[mUnk_52].mUnk_0c, e[mUnk_52].mUnk_0d_0, e[mUnk_52].mUnk_0e == 0x15 ? 1 : 0);
             mContext->mUnk_12 = 0;
             mUnk_51           = 0;

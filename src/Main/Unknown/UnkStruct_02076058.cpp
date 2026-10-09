@@ -253,7 +253,7 @@ void UnkStruct_02076058::func_02076a28() {
     GX_SetDispSelect(1);
     if (mUnk_73 == 0) {
         SpriteManager::Get().func_02026dec(0, 1);
-        func_02001e68(1, 0, 0);
+        GX_SetGraphicsMode(1, 0, 0);
     }
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG0Offset(0, 0);

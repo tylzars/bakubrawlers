@@ -2,14 +2,14 @@
 
 #include "types.h"
 
-void func_02001e68(u32 unk1, u32 unk2, u32 unk3);
-void func_02001ed0(u32 unk1);
+extern "C" void GX_SetGraphicsMode(u32 unk1, u32 unk2, u32 unk3);
+extern "C" void GXS_SetGraphicsMode(u32 unk1);
 
-void func_020037e8(s32 offset); // 0x020037e8
+extern "C" void func_020037e8(s32 offset); // 0x020037e8
 
-void func_02001eec(vu16 *reg, int value); // master brightness of the engine whose DISPCNT block starts at reg - 0x6c
-void func_02003ba4(void *data, u32 offset, u32 size);
-void func_02003ea4(void *data, u32 offset, u32 size);
-void func_02004394();
-void func_020043ac(void *data, u32 offset, u32 size);
-void func_02004410();
+extern "C" void G2x_SetMasterBrightness_(vu16 *reg, int value); // master brightness of the engine whose DISPCNT block starts at reg - 0x6c
+extern "C" void GXS_LoadBG0Scr(void *data, u32 offset, u32 size);
+extern "C" void GXS_LoadBG0Char(void *data, u32 offset, u32 size);
+extern "C" void GX_BeginLoadSubBGExtPltt();
+extern "C" void GX_LoadSubBGExtPltt(void *data, u32 offset, u32 size);
+extern "C" void GX_EndLoadSubBGExtPltt();

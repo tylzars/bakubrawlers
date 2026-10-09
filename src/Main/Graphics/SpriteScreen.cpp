@@ -9,9 +9,9 @@
 #include <nitro/os.h>
 
 
-void func_020039e8(const void *src, u32 offset, u32 size);
+extern "C" void GX_LoadOAM(const void *src, u32 offset, u32 size);
 
-void func_02003a3c(const void *src, u32 offset, u32 size);
+extern "C" void GXS_LoadOAM(const void *src, u32 offset, u32 size);
 
 struct OamEntry {
     u32 mAttr01;
@@ -37,7 +37,7 @@ void func_02027c64(MtxFx22 *out, SpriteTransform *transform);
 
 void func_02000ccc(MtxFx22 *mtx, fx32 x, fx32 y);
 
-void func_02000cd8(const MtxFx22 *a, const MtxFx22 *b, MtxFx22 *out);
+extern "C" void MTX_Concat22(const MtxFx22 *a, const MtxFx22 *b, MtxFx22 *out);
 
 SpriteScreen::SpriteScreen() {
     mUnk_400 = 0;
@@ -52,9 +52,9 @@ void SpriteScreen::func_020275e8(u32 unk1) {
 
 void SpriteScreen::func_020275f0() {
     if (mBgIndex == 0) {
-        func_020039e8(this, 0, 0x400);
+        GX_LoadOAM(this, 0, 0x400);
     } else {
-        func_02003a3c(this, 0, 0x400);
+        GXS_LoadOAM(this, 0, 0x400);
     }
     func_02027750();
 }
@@ -251,7 +251,7 @@ void func_02027c64(MtxFx22 *out, SpriteTransform *transform) {
     rotation._[1] = sin;
     rotation._[2] = -sin;
     rotation._[3] = cos;
-    func_02000cd8(&scale, &rotation, out);
+    MTX_Concat22(&scale, &rotation, out);
 }
 
 

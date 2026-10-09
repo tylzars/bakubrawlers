@@ -317,8 +317,8 @@ void OptionScene::Update() {
 void OptionScene::Init() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
-    func_02001e68(1, 0, 0);
-    func_02001ed0(0);
+    GX_SetGraphicsMode(1, 0, 0);
+    GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG1Control(0, 0, 1, 4, 0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);

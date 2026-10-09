@@ -387,8 +387,8 @@ void FieldSelectScene::Update() {
 void FieldSelectScene::func_ov001_0221f23c() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
-    func_02001e68(1, 0, 0);
-    func_02001ed0(0);
+    GX_SetGraphicsMode(1, 0, 0);
+    GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG1Control(0, 1, 2, 4, 1);
     G2_SetBG2Control(0, 1, 4, 7, 0);

@@ -22,7 +22,7 @@
 extern u8 data_ov000_0222622c[];
 
 void operator delete(void *ptr);
-u32 func_0200198c(s32 x, s32 y);
+extern "C" u32 FX_Atan2Idx(s32 x, s32 y);
 extern u8 data_ov000_02226224[];
 extern u8 data_ov000_0222621c[];
 
@@ -95,7 +95,7 @@ void AttrSelScene::Update() {
                     if (Distance(TouchManager::Get().mX, TouchManager::Get().mY, 0x80, 0x60) < 0x50) {
                         int x = FX32_CONST((float) (u32) TouchManager::Get().mX - 128.0f);
                         int y = FX32_CONST((float) (u32) TouchManager::Get().mY - 96.0f);
-                        u32 sector = (func_0200198c(x, y) + 0x1555) / 10922;
+                        u32 sector = (FX_Atan2Idx(x, y) + 0x1555) / 10922;
                         if (sector > 5) {
                             sector = 0;
                         }
@@ -190,7 +190,7 @@ extern WindowCellRecord data_ov000_02226258[];
 void AttrSelScene::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
-    func_02001e68(1, 3, 0);
+    GX_SetGraphicsMode(1, 3, 0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG3Control(1, 0, 2, 4, 0);
     G2_SetBG0Priority(3);

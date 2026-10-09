@@ -1422,7 +1422,7 @@ u8 UnkStruct_02065c40::func_02069780(u32 index) {
     return data_020a1bd6[index].mUnk_1;
 }
 
-u16 func_0200198c(fx32 x, fx32 y);
+extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);
 
 static inline fx32 SinIdx(int idx) {
     return FX_SinCosTable_[(idx >> 4) * 2];
@@ -1587,11 +1587,11 @@ void UnkStruct_02065c40::func_02069eb8(u32 mode) {
         mUnk_1244[1].mUnk_16 = mUnk_1244[1].mUnk_10;
         mUnk_1244[1].mUnk_04 = mUnk_1244[0].mUnk_04 + SinIdx(mUnk_1274.mUnk_00) * 100;
     } else {
-        mUnk_1274.mUnk_02 = func_0200198c(mUnk_1244[1].mUnk_00 - mUnk_1244[0].mUnk_00, -(mUnk_1244[1].mUnk_08 - mUnk_1244[0].mUnk_08));
+        mUnk_1274.mUnk_02 = FX_Atan2Idx(mUnk_1244[1].mUnk_00 - mUnk_1244[0].mUnk_00, -(mUnk_1244[1].mUnk_08 - mUnk_1244[0].mUnk_08));
         VecFx32 delta = {0, 0, 0};
         delta.x = mUnk_1244[1].mUnk_00 - mUnk_1244[0].mUnk_00;
         delta.z = mUnk_1244[1].mUnk_08 - mUnk_1244[0].mUnk_08;
-        mUnk_1274.mUnk_00 = func_0200198c(mUnk_1244[1].mUnk_04 - mUnk_1244[0].mUnk_04, VEC_Mag(&delta));
+        mUnk_1274.mUnk_00 = FX_Atan2Idx(mUnk_1244[1].mUnk_04 - mUnk_1244[0].mUnk_04, VEC_Mag(&delta));
         mUnk_1274.mUnk_08 = mUnk_1274.mUnk_02s;
     }
     mUnk_1292 = mode;

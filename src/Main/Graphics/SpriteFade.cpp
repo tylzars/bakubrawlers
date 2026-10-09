@@ -1,6 +1,6 @@
 #include "Graphics/SpriteManager.hpp"
 
-void func_02001eec(vu16 *reg, int value);
+extern "C" void G2x_SetMasterBrightness_(vu16 *reg, int value);
 
 typedef void (*FadeFunc)(s32 brightness);
 
@@ -13,11 +13,11 @@ FadeState SpriteManager::sFade;
 FadeState SpriteManager::sBrightness;
 
 void func_02025668(int brightness) {
-    func_02001eec((vu16 *) 0x400106c, brightness);
+    G2x_SetMasterBrightness_((vu16 *) 0x400106c, brightness);
 }
 
 void func_02025680(int brightness) {
-    func_02001eec((vu16 *) 0x400006c, brightness);
+    G2x_SetMasterBrightness_((vu16 *) 0x400006c, brightness);
 }
 
 UnkStruct_SpriteManager_00::UnkStruct_SpriteManager_00() {

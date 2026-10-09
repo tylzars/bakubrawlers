@@ -208,8 +208,8 @@ void MyroomRankingScene::InitDisplay() {
     MI_CpuClearFast((void *) 0x6200000, 0x20000);
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(0, 7);
-    func_02001e68(1, 0, 1);
-    func_02001ed0(0);
+    GX_SetGraphicsMode(1, 0, 1);
+    GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG0Offset(0, 0);
     G2S_SetBG1Offset(0, 0);

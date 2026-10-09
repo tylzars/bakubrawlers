@@ -117,7 +117,7 @@ void func_02031810(void *renderObj, void (*callback)(NNSG3dRS *), u32 unk2, u32 
 void func_02031824(void *renderObj);
 void func_02032cc8(MtxFx43 *mtx, void *unk2);
 void func_01ff92a4();
-BOOL func_020037bc(s32 *result);
+extern "C" BOOL G3X_GetBoxTestResult(s32 *result);
 void func_020322c0(const VecFx32 *trans); // NNS_G3dGlbSetBaseTrans
 void func_020322f0(const VecFx32 *scale); // NNS_G3dGlbSetBaseScale
 void func_02032284();

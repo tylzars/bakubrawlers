@@ -198,7 +198,7 @@ BOOL ModelInstance::func_020290c0() {
     *(vu32 *) 0x040005c0 = *(u32 *) (model + 0x30);
     *(vu32 *) 0x040005c0 = *(u32 *) (model + 0x34);
     s32 result;
-    while (func_020037bc(&result) != 0) {
+    while (G3X_GetBoxTestResult(&result) != 0) {
     }
     *(vu32 *) 0x04000448 = 1;
     return result != 0;

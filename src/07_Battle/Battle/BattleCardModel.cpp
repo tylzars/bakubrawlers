@@ -64,8 +64,8 @@ void func_01ffcf64(MtxFx43 *m, VecFx32 *v);
 void func_01ff89c0(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);
 void func_01ff8634(MtxFx43 *src, MtxFx43 *dst);
 void func_01ff84d0(VecFx32 *vec, MtxFx33 *m, VecFx32 *out);
-s32 func_02001b74(s32 value);
-s32 func_02001bec(s32 value);
+extern "C" s32 FX_AsinIdx(s32 value);
+extern "C" s32 FX_AcosIdx(s32 value);
 void func_020122f4(char *dst, const char *name);
 
 // Frame clock singleton (instance 0x020c1884, destructor 0x020219c0).
@@ -380,8 +380,8 @@ void BattleCardModel::func_ov007_022737e0() {
                         MTX_MultVec43(&mParts[i].mTarget, &CameraManager::Get().mMtxC[0], &dir);
                         VEC_Subtract(&mPos[i], &dir, &dir);
                         VEC_Normalize(&dir, &dir);
-                        angles[0] = func_02001b74(dir.y);
-                        angles[1] = func_02001bec(dir.x) - 0x4000;
+                        angles[0] = FX_AsinIdx(dir.y);
+                        angles[1] = FX_AcosIdx(dir.x) - 0x4000;
                         angles[2] = 0;
                         func_0202bf3c(mEffects, mHandles[i], angles);
                         break;

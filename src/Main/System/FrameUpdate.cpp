@@ -7,8 +7,8 @@ typedef void (*FrameCallback)(void *arg);
 #define FRAME_CALLBACK_COUNT 17
 #define FRAME_HOOK_COUNT 4
 
-void func_02001dec(BOOL enable);
-void func_02001db8(BOOL enable);
+extern "C" void GX_VBlankIntr(BOOL enable);
+extern "C" void GX_HBlankIntr(BOOL enable);
 
 // Per-frame callback queue, drained at the start of each frame update.
 static vu8 sFrameCount;
@@ -50,22 +50,22 @@ void func_020254bc() {
 }
 
 void func_020254f0(FrameCallback callback, void *arg) {
-    func_02001dec(FALSE);
+    GX_VBlankIntr(FALSE);
     sCallbacks[sQueueWrite]    = callback;
     sCallbackArgs[sQueueWrite] = arg;
     sQueueWrite                = (sQueueWrite + 1) % FRAME_CALLBACK_COUNT;
-    func_02001dec(TRUE);
+    GX_VBlankIntr(TRUE);
 }
 
 void func_0202555c() {
-    func_02001dec(FALSE);
+    GX_VBlankIntr(FALSE);
     sQueueWrite = 0;
     sQueueRead  = 0;
-    func_02001dec(TRUE);
+    GX_VBlankIntr(TRUE);
 }
 
 void func_02025588(void (*hook)()) {
-    func_02001db8(FALSE);
+    GX_HBlankIntr(FALSE);
     for (u8 i = 0; i < FRAME_HOOK_COUNT; i++) {
         if (sHooks[i] == hook) {
             sHooks[i] = NULL;
@@ -77,11 +77,11 @@ void func_02025588(void (*hook)()) {
             break;
         }
     }
-    func_02001db8(TRUE);
+    GX_HBlankIntr(TRUE);
 }
 
 void func_020255f8(void (*hook)()) {
-    func_02001db8(FALSE);
+    GX_HBlankIntr(FALSE);
     if (hook == NULL) {
         for (u8 i = 0; i < FRAME_HOOK_COUNT; i++) {
             sHooks[i] = NULL;
@@ -93,5 +93,5 @@ void func_020255f8(void (*hook)()) {
             }
         }
     }
-    func_02001db8(TRUE);
+    GX_HBlankIntr(TRUE);
 }

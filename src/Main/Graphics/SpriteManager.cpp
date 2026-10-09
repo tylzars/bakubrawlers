@@ -20,20 +20,20 @@ MtxFx33 data_0220e848;
 MtxFx43 data_0220e86c;
 MtxFx44 data_0220e89c;
 
-u16 func_0200198c(fx32 x, fx32 y);                         // atan2 (16-bit angle)
-u16 func_02001b74(fx32 y);                                 // asin (16-bit angle)
+extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);                         // atan2 (16-bit angle)
+extern "C" u16 FX_AsinIdx(fx32 y);                                 // asin (16-bit angle)
 void func_01ff827c(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotY33_
 void func_01ff8260(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotX33_
 void func_01ff82b0(MtxFx33 *a, MtxFx33 *b, MtxFx33 *out);  // MTX_Concat33
 void func_01ff84d0(VecFx32 *v, MtxFx33 *m, VecFx32 *out);  // MTX_MultVec33
 
 s64 func_01ff8010(fx32 a, fx32 b); // 64-bit fixed-point division (32 fraction bits)
-fx32 func_02001b38(fx32 value, fx32 *integer); // splits into integer part and fraction
+extern "C" fx32 FX_Modf(fx32 value, fx32 *integer); // splits into integer part and fraction
 
 // MTX_Perspective
 void func_02001688(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
 // MTX_Ortho
-void func_0200144c(fx32 top, fx32 bottom, fx32 left, fx32 right, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
+extern "C" void MTX_Frustum(fx32 top, fx32 bottom, fx32 left, fx32 right, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
 void func_01ff92a4();
 extern MtxFx33 data_02211430; // NNS_G3dGlb base rotation
 extern const VecFx32 data_0209094c;
@@ -43,30 +43,30 @@ void func_020256d4();
 void func_02026c4c(void *arg);
 
 // VRAM bank mapping and engine setup (NitroSDK GX_SetBankFor* and related).
-void func_02002070(u32 banks);
-void func_020025fc(u32 banks);
-void func_02002300(u32 banks);
-void func_02002450(u32 banks);
-void func_02002550(u32 banks);
-void func_020027d4(u32 banks);
-void func_020028bc(u32 banks);
-void func_020028dc(u32 banks);
-void func_02002984(u32 banks);
-void func_020029f4(u32 banks);
-void func_02002a74(u32 banks);
-void func_02002d18();
-void func_02002d2c();
-void func_02002d40();
-void func_02002d64();
-void func_02002d88();
-void func_02002d9c();
-void func_02002db0();
-void func_02002dc4();
+extern "C" void GX_SetBankForBG(u32 banks);
+extern "C" void GX_SetBankForTex(u32 banks);
+extern "C" void GX_SetBankForOBJ(u32 banks);
+extern "C" void GX_SetBankForBGExtPltt(u32 banks);
+extern "C" void GX_SetBankForOBJExtPltt(u32 banks);
+extern "C" void GX_SetBankForTexPltt(u32 banks);
+extern "C" void GX_SetBankForLCDC(u32 banks);
+extern "C" void GX_SetBankForSubBG(u32 banks);
+extern "C" void GX_SetBankForSubOBJ(u32 banks);
+extern "C" void GX_SetBankForSubBGExtPltt(u32 banks);
+extern "C" void GX_SetBankForSubOBJExtPltt(u32 banks);
+extern "C" void GX_ResetBankForBG();
+extern "C" void GX_ResetBankForOBJ();
+extern "C" void GX_ResetBankForBGExtPltt();
+extern "C" void GX_ResetBankForOBJExtPltt();
+extern "C" void GX_ResetBankForTex();
+extern "C" void GX_ResetBankForTexPltt();
+extern "C" void GX_ResetBankForSubBG();
+extern "C" void GX_ResetBankForSubOBJ();
 void func_02002dd8();
 void func_02002dec();
 void func_02002e00();
-void func_02002e14();
-void func_02002e3c();
+extern "C" void GX_ResetBankForSubBGExtPltt();
+extern "C" void GX_ResetBankForSubOBJExtPltt();
 void func_0200754c(u32 dmaNo, void *dest, u32 data, u32 size);
 s32 func_02021e00();
 void func_020313f8(void *obj, u32 unk2, s32 heap);
@@ -76,11 +76,11 @@ void func_02035ee0();
 void func_020360cc(UnkStruct_SpriteManager_28 *slot);
 void func_0203610c(UnkStruct_SpriteManager_28 *slot);
 void func_02032d54();
-void func_0200356c();
-void func_0200367c(const void *unk1);
-void func_02003664(const void *unk1);
-void func_02003694(int rgb, int alpha, int depth, int polygonId, BOOL fog); // G3X_SetClearColor
-void func_0200341c(const void *unk1);
+extern "C" void G3X_InitMtxStack();
+extern "C" void G3X_SetToonTable(const void *unk1);
+extern "C" void G3X_SetEdgeColorTable(const void *unk1);
+extern "C" void G3X_SetClearColor(int rgb, int alpha, int depth, int polygonId, BOOL fog); // G3X_SetClearColor
+extern "C" void G3_Shininess(const void *unk1);
 
 struct UnkStruct_020c2acc {
     u32 mAttr;
@@ -140,8 +140,8 @@ void Camera::func_02025ec8() {
     VEC_Subtract(&mTarget, &mPosition, &dir);
     mDistance = VEC_Mag(&dir);
     VEC_Normalize(&dir, &dir);
-    mYaw   = func_0200198c(-dir.x, -dir.z);
-    mPitch = func_02001b74(dir.y);
+    mYaw   = FX_Atan2Idx(-dir.x, -dir.z);
+    mPitch = FX_AsinIdx(dir.y);
     mtx = data_0220e848;
     if (mYaw != 0) {
         func_01ff827c(&mtx, -SinIdx(mYaw), CosIdx(mYaw));
@@ -152,7 +152,7 @@ void Camera::func_02025ec8() {
     }
     func_01ff84d0(&mUp, &mtx, &dir);
     VEC_Normalize(&dir, &dir);
-    mRoll = func_0200198c(-dir.x, dir.y);
+    mRoll = FX_Atan2Idx(-dir.x, dir.y);
 }
 
 void Camera::func_02026004(u32 fov) {
@@ -227,7 +227,7 @@ void Camera::func_020262cc(VecFx32 *out, u32 track, fx32 t) {
         return;
     }
     fx32 w;
-    fx32 frac = func_02001b38(t, &w);
+    fx32 frac = FX_Modf(t, &w);
     if (frac == 0) {
         *out = keys[index];
         return;
@@ -309,11 +309,11 @@ void CameraManager::func_0202655c() {
         }
         case 2:
             if (mActive == 0) {
-                func_0200144c(cam0->mUnk_44 / 2, -cam0->mUnk_44 / 2, -cam0->mUnk_40, cam0->mUnk_40, cam0->mNear, cam0->mFar,
+                MTX_Frustum(cam0->mUnk_44 / 2, -cam0->mUnk_44 / 2, -cam0->mUnk_40, cam0->mUnk_40, cam0->mNear, cam0->mFar,
                               0x19a, &data_02211374.mProjection);
                 data_02211374.mFlags &= ~0x50;
             } else {
-                func_0200144c(-cam1->mUnk_44 / 2 - cam1->mUnk_48, -cam1->mUnk_44 - cam1->mUnk_44 / 2 - cam1->mUnk_48,
+                MTX_Frustum(-cam1->mUnk_44 / 2 - cam1->mUnk_48, -cam1->mUnk_44 - cam1->mUnk_44 / 2 - cam1->mUnk_48,
                               -cam1->mUnk_40, cam1->mUnk_40, cam1->mNear, cam1->mFar, 0x19a, &data_02211374.mProjection);
                 data_02211374.mFlags &= ~0x50;
             }
@@ -365,17 +365,17 @@ void CameraManager::func_02026890() {
             case 0:
                 break;
             case 1:
-                func_02001e68(1, 5, 1);
+                GX_SetGraphicsMode(1, 5, 1);
                 break;
             case 2:
             case 3:
-                func_02001e68(1, 5, 1);
-                func_02001ed0(5);
+                GX_SetGraphicsMode(1, 5, 1);
+                GXS_SetGraphicsMode(5);
                 G2S_SetBG2Control(1, 1, 0, 1, 0);
                 reg_GXS_DB_DISPCNT = (reg_GXS_DB_DISPCNT & ~0x60) | 0x20;
                 break;
             case 4:
-                func_02001e68(1, 5, 1);
+                GX_SetGraphicsMode(1, 5, 1);
                 G2_SetBG2Control(1, 1, 0, 1, 0);
                 break;
         }
@@ -396,16 +396,16 @@ void CameraManager::func_02026890() {
             if (mActive == 0) {
                 reg_GX_POWCNT = reg_GX_POWCNT | 0x8000;
                 func_02002e00();
-                func_020028bc(8);
-                func_020028dc(4);
+                GX_SetBankForLCDC(8);
+                GX_SetBankForSubBG(4);
                 reg_GXS_DB_DISPCNT = (reg_GXS_DB_DISPCNT & ~0x1f00) | 0x400;
                 *(vu32 *) 0x4000064 = 0x80330010;
                 mActive = 1;
             } else {
                 reg_GX_POWCNT = reg_GX_POWCNT & ~0x8000;
                 func_02002dec();
-                func_020028bc(4);
-                func_02002984(8);
+                GX_SetBankForLCDC(4);
+                GX_SetBankForSubOBJ(8);
                 reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xffbfff9f) | 0x20;
                 reg_GXS_DB_DISPCNT = (reg_GXS_DB_DISPCNT & ~0x1f00) | 0x1000;
                 *(vu32 *) 0x4000064 = 0x80320010;
@@ -424,18 +424,18 @@ void CameraManager::func_02026890() {
             return;
         case 4:
             if (mActive == 0) {
-                func_02002d18();
-                func_020028bc(8);
-                func_02002070(2);
+                GX_ResetBankForBG();
+                GX_SetBankForLCDC(8);
+                GX_SetBankForBG(2);
                 reg_G2_BG0CNT = (reg_G2_BG0CNT & ~3) | 2;
                 reg_G2_BG2CNT = (reg_G2_BG2CNT & ~3) | 3;
                 *(vu32 *) 0x4000064 = 0x81330010;
                 mActive = 1;
                 return;
             } else {
-                func_02002d18();
-                func_020028bc(2);
-                func_02002070(8);
+                GX_ResetBankForBG();
+                GX_SetBankForLCDC(2);
+                GX_SetBankForBG(8);
                 reg_G2_BG2CNT = (reg_G2_BG2CNT & ~3) | 2;
                 reg_G2_BG0CNT = (reg_G2_BG0CNT & ~3) | 3;
                 *(vu32 *) 0x4000064 = 0x81310010;
@@ -474,11 +474,11 @@ void SpriteManager::func_02026d90() {
         case 5:
         case 6:
         case 7:
-            func_020028dc(4);
-            func_02002984(8);
+            GX_SetBankForSubBG(4);
+            GX_SetBankForSubOBJ(8);
             break;
         case 9:
-            func_02002070(2);
+            GX_SetBankForBG(2);
             break;
     }
 }
@@ -491,41 +491,41 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
     mMode = mode;
     switch (mode) {
         case 1:
-            func_02002070(1);
-            func_02002300(2);
-            func_02002450(0x10);
-            func_02002550(0x20);
-            func_020028dc(4);
-            func_02002984(8);
-            func_020029f4(0x80);
-            func_02002a74(0x100);
+            GX_SetBankForBG(1);
+            GX_SetBankForOBJ(2);
+            GX_SetBankForBGExtPltt(0x10);
+            GX_SetBankForOBJExtPltt(0x20);
+            GX_SetBankForSubBG(4);
+            GX_SetBankForSubOBJ(8);
+            GX_SetBankForSubBGExtPltt(0x80);
+            GX_SetBankForSubOBJExtPltt(0x100);
             mScreens[0].func_02027624(3);
             mScreens[1].func_02027624(3);
             SET_POWCNT(2);
             break;
         case 2:
-            func_02002070(3);
-            func_02002300(0x10);
-            func_02002450(0x40);
-            func_02002550(0x20);
-            func_020028dc(4);
-            func_02002984(8);
-            func_020029f4(0x80);
-            func_02002a74(0x100);
+            GX_SetBankForBG(3);
+            GX_SetBankForOBJ(0x10);
+            GX_SetBankForBGExtPltt(0x40);
+            GX_SetBankForOBJExtPltt(0x20);
+            GX_SetBankForSubBG(4);
+            GX_SetBankForSubOBJ(8);
+            GX_SetBankForSubBGExtPltt(0x80);
+            GX_SetBankForSubOBJExtPltt(0x100);
             mScreens[0].func_02027624(3);
             mScreens[1].func_02027624(3);
             SET_POWCNT(2);
             break;
         case 3:
-            func_020025fc(1);
-            func_020027d4(0x10);
-            func_02002070(2);
-            func_02002300(0x20);
-            func_02002450(0x40);
-            func_020028dc(4);
-            func_02002984(8);
-            func_020029f4(0x80);
-            func_02002a74(0x100);
+            GX_SetBankForTex(1);
+            GX_SetBankForTexPltt(0x10);
+            GX_SetBankForBG(2);
+            GX_SetBankForOBJ(0x20);
+            GX_SetBankForBGExtPltt(0x40);
+            GX_SetBankForSubBG(4);
+            GX_SetBankForSubOBJ(8);
+            GX_SetBankForSubBGExtPltt(0x80);
+            GX_SetBankForSubOBJExtPltt(0x100);
             mScreens[0].func_02027624(3);
             mScreens[1].func_02027624(8);
             SET_POWCNT(0xe);
@@ -533,14 +533,14 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             func_020273dc(1, 0x10000);
             break;
         case 4:
-            func_020025fc(1);
-            func_020027d4(0x10);
-            func_02002300(2);
-            func_02002550(0x20);
-            func_020028dc(4);
-            func_02002984(8);
-            func_020029f4(0x80);
-            func_02002a74(0x100);
+            GX_SetBankForTex(1);
+            GX_SetBankForTexPltt(0x10);
+            GX_SetBankForOBJ(2);
+            GX_SetBankForOBJExtPltt(0x20);
+            GX_SetBankForSubBG(4);
+            GX_SetBankForSubOBJ(8);
+            GX_SetBankForSubBGExtPltt(0x80);
+            GX_SetBankForSubOBJExtPltt(0x100);
             mScreens[0].func_02027624(1);
             mScreens[1].func_02027624(8);
             SET_POWCNT(0xe);
@@ -548,14 +548,14 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             func_020273dc(1, 0x10000);
             break;
         case 5:
-            func_020025fc(3);
-            func_020027d4(0x10);
-            func_02002300(0x20);
-            func_02002550(0x40);
-            func_020028dc(4);
-            func_02002984(8);
-            func_020029f4(0x80);
-            func_02002a74(0x100);
+            GX_SetBankForTex(3);
+            GX_SetBankForTexPltt(0x10);
+            GX_SetBankForOBJ(0x20);
+            GX_SetBankForOBJExtPltt(0x40);
+            GX_SetBankForSubBG(4);
+            GX_SetBankForSubOBJ(8);
+            GX_SetBankForSubBGExtPltt(0x80);
+            GX_SetBankForSubOBJExtPltt(0x100);
             mScreens[0].func_02027624(1);
             mScreens[1].func_02027624(8);
             SET_POWCNT(0xe);
@@ -563,13 +563,13 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             func_020273dc(2, 0x10000);
             break;
         case 6:
-            func_020025fc(3);
-            func_020027d4(0x60);
-            func_02002300(0x10);
-            func_020028dc(4);
-            func_02002984(8);
-            func_020029f4(0x80);
-            func_02002a74(0x100);
+            GX_SetBankForTex(3);
+            GX_SetBankForTexPltt(0x60);
+            GX_SetBankForOBJ(0x10);
+            GX_SetBankForSubBG(4);
+            GX_SetBankForSubOBJ(8);
+            GX_SetBankForSubBGExtPltt(0x80);
+            GX_SetBankForSubOBJExtPltt(0x100);
             mScreens[0].func_02027624(2);
             mScreens[1].func_02027624(8);
             SET_POWCNT(0xe);
@@ -577,13 +577,13 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             func_020273dc(2, 0x8000);
             break;
         case 7:
-            func_020025fc(3);
-            func_020027d4(0x10);
-            func_02002300(0x60);
-            func_020028dc(4);
-            func_02002984(8);
-            func_020029f4(0x80);
-            func_02002a74(0x100);
+            GX_SetBankForTex(3);
+            GX_SetBankForTexPltt(0x10);
+            GX_SetBankForOBJ(0x60);
+            GX_SetBankForSubBG(4);
+            GX_SetBankForSubOBJ(8);
+            GX_SetBankForSubBGExtPltt(0x80);
+            GX_SetBankForSubOBJExtPltt(0x100);
             mScreens[0].func_02027624(1);
             mScreens[1].func_02027624(3);
             SET_POWCNT(0xe);
@@ -591,13 +591,13 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             func_020273dc(2, 0x10000);
             break;
         case 8:
-            func_020025fc(3);
-            func_020027d4(0x40);
-            func_02002070(8);
-            func_02002450(0x20);
-            func_02002300(0x10);
-            func_020028dc(4);
-            func_020029f4(0x80);
+            GX_SetBankForTex(3);
+            GX_SetBankForTexPltt(0x40);
+            GX_SetBankForBG(8);
+            GX_SetBankForBGExtPltt(0x20);
+            GX_SetBankForOBJ(0x10);
+            GX_SetBankForSubBG(4);
+            GX_SetBankForSubBGExtPltt(0x80);
             mScreens[0].func_02027624(3);
             mScreens[1].func_02027624(3);
             SET_POWCNT(0xe);
@@ -605,14 +605,14 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             func_020273dc(2, 0x4000);
             break;
         case 9:
-            func_020025fc(1);
-            func_020027d4(0x10);
-            func_02002070(2);
-            func_02002300(0x20);
-            func_02002450(0x40);
-            func_020028dc(4);
-            func_02002984(0x100);
-            func_020029f4(0x80);
+            GX_SetBankForTex(1);
+            GX_SetBankForTexPltt(0x10);
+            GX_SetBankForBG(2);
+            GX_SetBankForOBJ(0x20);
+            GX_SetBankForBGExtPltt(0x40);
+            GX_SetBankForSubBG(4);
+            GX_SetBankForSubOBJ(0x100);
+            GX_SetBankForSubBGExtPltt(0x80);
             mScreens[0].func_02027624(1);
             mScreens[1].func_02027624(3);
             SET_POWCNT(0xe);
@@ -626,19 +626,19 @@ void SpriteManager::func_02027354(u32 unk1) {
     if (unk1 != 1) {
         return;
     }
-    func_02002d18();
-    func_02002d2c();
-    func_02002d40();
-    func_02002d64();
-    func_02002d88();
-    func_02002d9c();
-    func_02002db0();
+    GX_ResetBankForBG();
+    GX_ResetBankForOBJ();
+    GX_ResetBankForBGExtPltt();
+    GX_ResetBankForOBJExtPltt();
+    GX_ResetBankForTex();
+    GX_ResetBankForTexPltt();
+    GX_ResetBankForSubBG();
     func_02002dec();
     func_02002e00();
-    func_02002e14();
-    func_02002e3c();
-    func_02002dc4();
-    func_020028bc(0x1ff);
+    GX_ResetBankForSubBGExtPltt();
+    GX_ResetBankForSubOBJExtPltt();
+    GX_ResetBankForSubOBJ();
+    GX_SetBankForLCDC(0x1ff);
     func_0200754c(3, (void *) 0x6800000, 0, 0xa4000);
     MIi_CpuClear16(0xc0, (void *) 0x7000000, 0x800);
     func_0200754c(3, (void *) 0x5000000, 0, 0x800);
@@ -659,18 +659,18 @@ void SpriteManager::func_0202740c() {
 
 void SpriteManager::func_0202743c() {
     func_02032d54();
-    func_0200356c();
+    G3X_InitMtxStack();
     REG_G3_DISP3DCNT = REG_G3_DISP3DCNT & 0xffffcffd;
-    func_0200367c(data_02090978);
+    G3X_SetToonTable(data_02090978);
     REG_G3_DISP3DCNT = (REG_G3_DISP3DCNT & ~0x3000) | 0x10;
     REG_G3_DISP3DCNT = REG_G3_DISP3DCNT & 0xcffb;
     REG_G3_DISP3DCNT = (REG_G3_DISP3DCNT & ~0x3000) | 0x8;
     *(vu32 *) 0x4000580 = 0xbfff0000;
     *(vu32 *) 0x4000540 = 3;
     REG_G3_DISP3DCNT = (REG_G3_DISP3DCNT & ~0x3000) | 0x20;
-    func_02003664(data_02090968);
-    func_02003694(0x7fff, 0, 0x7fff, 0x3f, 0);
-    func_0200341c(data_020909c0);
+    G3X_SetEdgeColorTable(data_02090968);
+    G3X_SetClearColor(0x7fff, 0, 0x7fff, 0x3f, 0);
+    G3_Shininess(data_020909c0);
 }
 
 void SpriteManager::func_02027504(s32 index) {

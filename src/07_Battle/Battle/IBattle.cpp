@@ -5,7 +5,7 @@
 #include "System/TouchManager.hpp"
 #include "System/WirelessManager.hpp"
 
-s32 func_0200198c(s32 y, s32 x);
+extern "C" s32 FX_Atan2Idx(s32 y, s32 x);
 
 // Battle message of the communication buffer data_0220f540 (the layout used by the battle).
 struct BattleNetMessage {
@@ -118,9 +118,9 @@ s32 func_ov007_0222a118(s32 x, s32 y, s32 radius) {
         s32 dx = TouchManager::Get().mX - x;
         s32 dy = TouchManager::Get().mY - y;
         if (dx * dx + dy * dy <= radius * radius) {
-            angle = func_0200198c(dy << 12, dx << 12);
+            angle = FX_Atan2Idx(dy << 12, dx << 12);
             s32 startX = (u16) TouchManager::Get().mUnk_08 - x;
-            angle -= func_0200198c(((u16) TouchManager::Get().mUnk_0a - y) << 12, startX << 12);
+            angle -= FX_Atan2Idx(((u16) TouchManager::Get().mUnk_0a - y) << 12, startX << 12);
             if (angle > 0x8000) {
                 angle -= 0x10000;
             } else if (angle < -0x8000) {

@@ -113,8 +113,8 @@ void MyroomStatusScene::SetReady() {
 void MyroomStatusScene::InitDisplay() {
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     SpriteManager::Get().func_02026dec(0, 7);
-    func_02001e68(1, 0, 1);
-    func_02001ed0(0);
+    GX_SetGraphicsMode(1, 0, 1);
+    GXS_SetGraphicsMode(0);
 }
 
 void MyroomStatusScene::CreateModel() {

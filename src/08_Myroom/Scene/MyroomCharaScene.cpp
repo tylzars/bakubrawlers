@@ -244,7 +244,7 @@ void MyroomCharaScene::InitDisplay() {
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(0, 1);
-    func_02001e68(1, 0, 0);
+    GX_SetGraphicsMode(1, 0, 0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG1Control(0, 1, 2, 4, 0);
     G2_SetBG2Control(0, 1, 4, 8, 0);

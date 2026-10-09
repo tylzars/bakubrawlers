@@ -424,7 +424,7 @@ void BattleBase::Update() {
 
 void BattleBase::func_ov007_0221a55c() {
     SpriteManager::Get().func_02026dec(0, 7);
-    func_02001e68(1, 0, 1);
+    GX_SetGraphicsMode(1, 0, 1);
     G2_SetBG0Priority(2);
     G2_SetBG1Priority(2);
     G2_SetBG2Priority(2);
@@ -904,7 +904,7 @@ void BattleBase::func_ov007_0221bb3c() {
     mUnk_44->mUnk_23 |= 4;
 }
 
-void func_02001eec(vu16 *reg, int value);
+extern "C" void G2x_SetMasterBrightness_(vu16 *reg, int value);
 
 // Differs from the shared MATH_Rand32: max == 0 returns the raw high word.
 
@@ -1460,8 +1460,8 @@ BOOL BattleBase::func_ov007_0221d398() {
             done = 1;
         }
     }
-    func_02001eec((vu16 *) 0x400006c, mUnk_26);
-    func_02001eec((vu16 *) 0x400106c, mUnk_26);
+    G2x_SetMasterBrightness_((vu16 *) 0x400006c, mUnk_26);
+    G2x_SetMasterBrightness_((vu16 *) 0x400106c, mUnk_26);
     return done;
 }
 

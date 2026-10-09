@@ -602,8 +602,8 @@ void BattleShoot::Update() {
 void BattleShoot::func_ov007_0226bb2c() {
     reg_GX_POWCNT |= 0x8000;
     SpriteManager::Get().func_02026dec(1, 7);
-    func_02001e68(1, 0, 1);
-    func_02001ed0(3);
+    GX_SetGraphicsMode(1, 0, 1);
+    GXS_SetGraphicsMode(3);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG1Control(0, 1, 2, 1, 0);
     G2S_SetBG2Control(0, 0, 4, 6, 0);
@@ -1288,7 +1288,7 @@ void BattleShoot::func_ov007_0226e234() {
                 mIcons[i].mUnk_06 = mUnk_6190;
                 mIcons[i].mUnk_0a = 0;
                 mIcons[i].mUnk_0b = 0;
-                mIcons[i].mUnk_08 = func_0200198c(-(mUnk_618b - mUnk_618f), mUnk_618c - mUnk_6190);
+                mIcons[i].mUnk_08 = FX_Atan2Idx(-(mUnk_618b - mUnk_618f), mUnk_618c - mUnk_6190);
                 if (distance > 0x20) {
                     distance = 0x20;
                 }
@@ -1314,8 +1314,8 @@ u16 BattleShoot::func_ov007_0226e390() {
     VecFx32 offset = {0, 0, 0};
     VEC_Subtract(&offset, &target->mPosition, &offset);
     VEC_Subtract(&cpuPos, &target->mPosition, &delta);
-    u16 first = func_0200198c(offset.z, offset.x);
-    u16 second = func_0200198c(delta.z, delta.x);
+    u16 first = FX_Atan2Idx(offset.z, offset.x);
+    u16 second = FX_Atan2Idx(delta.z, delta.x);
     return second - first;
 }
 
@@ -1411,7 +1411,7 @@ u16 BattleShoot::func_ov007_0226df24(int a, int b) {
     return VEC_Mag(&v) >> 12;
 }
 
-u16 func_0200198c(fx32 x, fx32 y);
+extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);
 
 // non-matching: register allocation: the original keeps this in r10 and the running sums in stack slots; this version has the same structure (size 0x870 vs 0x864).
 void BattleShoot::func_ov007_0226e884() {
@@ -1443,7 +1443,7 @@ void BattleShoot::func_ov007_0226e884() {
             s32 distance = (u16) (dx + dy);
             if (distance >= 0x20) {
                 data_0220f540.mUnk_00 = 9;
-                s32 idx               = func_0200198c(-mUnk_615c, mUnk_6160) >> 4;
+                s32 idx               = FX_Atan2Idx(-mUnk_615c, mUnk_6160) >> 4;
                 data_0220f540.mUnk_04 = -FX_Mul(data_ov007_0208b524[idx * 2], 0x4cd);
                 *(s32 *) &data_0220f540.mUnk_08 = -FX_Mul(data_ov007_0208b524[idx * 2 + 1], 0x4cd);
             }
@@ -1611,7 +1611,7 @@ void BattleShoot::func_ov007_0226e884() {
     }
 }
 
-u16 func_0200198c(fx32 x, fx32 y);
+extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);
 
 // non-matching: scheduling of the stores into the offset vector and the constant 1 in r1 (size 0x28c vs 0x290).
 void BattleShoot::func_ov007_0226f0e8(u8 kind, s32 x, s32 z) {

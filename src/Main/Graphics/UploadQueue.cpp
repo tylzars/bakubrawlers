@@ -3,7 +3,7 @@
 
 #include <nitro/os.h>
 
-int func_02001f14(vu16 *reg);
+extern "C" int G2x_GetMasterBrightness_(vu16 *reg);
 BOOL func_0200d924();
 
 #define UPLOAD_QUEUE_SIZE 32
@@ -30,57 +30,57 @@ struct UploadQueue {
 };
 
 // VRAM/BG upload helpers (GX/G2 region of main).
-void func_02003938(void *data, u32 offset, u32 size);
-void func_02003a94(void *data, u32 offset, u32 size);
-void func_0200388c(void *data, u32 offset, u32 size);
-void func_02003b44(void *data, u32 offset, u32 size);
-void func_02003c04(void *data, u32 offset, u32 size);
-void func_02003cc4(void *data, u32 offset, u32 size);
-void func_02003d84(void *data, u32 offset, u32 size);
-void func_02003e44(void *data, u32 offset, u32 size);
-void func_02003f04(void *data, u32 offset, u32 size);
-void func_02003fc4(void *data, u32 offset, u32 size);
-void func_02004084(void *data, u32 offset, u32 size);
-void func_02004468(void *data, u32 offset, u32 size);
-void func_020043ac(void *data, u32 offset, u32 size);
-void func_02004568(void *data, u32 offset, u32 size);
-void func_02004728(void *data, u32 offset, u32 size);
-void func_02003aec(void *data, u32 offset, u32 size);
-void func_02003990(void *data, u32 offset, u32 size);
-void func_020038e0(void *data, u32 offset, u32 size);
-void func_02003ba4(void *data, u32 offset, u32 size);
-void func_02003c64(void *data, u32 offset, u32 size);
-void func_02003d24(void *data, u32 offset, u32 size);
-void func_02003de4(void *data, u32 offset, u32 size);
-void func_02003ea4(void *data, u32 offset, u32 size);
-void func_02003f64(void *data, u32 offset, u32 size);
-void func_02004024(void *data, u32 offset, u32 size);
-void func_020040e4(void *data, u32 offset, u32 size);
-void func_020042e4(void *data, u32 offset, u32 size);
-void func_020041e4(void *data, u32 offset, u32 size);
-void func_02004350();
-void func_02004254();
-void func_020046a8();
-void func_02004794();
-void func_020044cc();
-void func_02004410();
-void func_0200429c();
-void func_02004144();
-void func_0200450c();
-void func_020046f4();
-void func_02004450();
-void func_02004394();
+extern "C" void GXS_LoadBGPltt(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadOBJ(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadBGPltt(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadBG0Scr(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadBG1Scr(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadBG2Scr(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadBG3Scr(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadBG0Char(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadBG1Char(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadBG2Char(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadBG3Char(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadSubOBJExtPltt(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadSubBGExtPltt(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadTex(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadTexPltt(void *data, u32 offset, u32 size);
+extern "C" void GXS_LoadOBJ(void *data, u32 offset, u32 size);
+extern "C" void GXS_LoadOBJPltt(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadOBJPltt(void *data, u32 offset, u32 size);
+extern "C" void GXS_LoadBG0Scr(void *data, u32 offset, u32 size);
+extern "C" void GXS_LoadBG1Scr(void *data, u32 offset, u32 size);
+extern "C" void GXS_LoadBG2Scr(void *data, u32 offset, u32 size);
+extern "C" void GXS_LoadBG3Scr(void *data, u32 offset, u32 size);
+extern "C" void GXS_LoadBG0Char(void *data, u32 offset, u32 size);
+extern "C" void GXS_LoadBG1Char(void *data, u32 offset, u32 size);
+extern "C" void GXS_LoadBG2Char(void *data, u32 offset, u32 size);
+extern "C" void GXS_LoadBG3Char(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadOBJExtPltt(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadBGExtPltt(void *data, u32 offset, u32 size);
+extern "C" void GX_EndLoadOBJExtPltt();
+extern "C" void GX_EndLoadBGExtPltt();
+extern "C" void GX_EndLoadTex();
+extern "C" void GX_EndLoadTexPltt();
+extern "C" void GX_EndLoadSubOBJExtPltt();
+extern "C" void GX_EndLoadSubBGExtPltt();
+extern "C" void GX_BeginLoadOBJExtPltt();
+extern "C" void GX_BeginLoadBGExtPltt();
+extern "C" void GX_BeginLoadTex();
+extern "C" void GX_BeginLoadTexPltt();
+extern "C" void GX_BeginLoadSubOBJExtPltt();
+extern "C" void GX_BeginLoadSubBGExtPltt();
 
-BankFunc data_020a54ec[8]  = {func_02004350, func_02004254, func_020046a8, func_02004794,
-                              func_020044cc, func_02004410, func_020046a8, func_02004794};
-BankFunc data_020a550c[8]  = {func_0200429c, func_02004144, func_0200450c, func_020046f4,
-                              func_02004450, func_02004394, func_0200450c, func_020046f4};
+BankFunc data_020a54ec[8]  = {GX_EndLoadOBJExtPltt, GX_EndLoadBGExtPltt, GX_EndLoadTex, GX_EndLoadTexPltt,
+                              GX_EndLoadSubOBJExtPltt, GX_EndLoadSubBGExtPltt, GX_EndLoadTex, GX_EndLoadTexPltt};
+BankFunc data_020a550c[8]  = {GX_BeginLoadOBJExtPltt, GX_BeginLoadBGExtPltt, GX_BeginLoadTex, GX_BeginLoadTexPltt,
+                              GX_BeginLoadSubOBJExtPltt, GX_BeginLoadSubBGExtPltt, GX_BeginLoadTex, GX_BeginLoadTexPltt};
 UploadFunc data_020a552c[30] = {
-    func_020042e4, func_020041e4, func_02004568, func_02004728, func_02003a94, func_02003938, func_0200388c,
-    func_02003b44, func_02003c04, func_02003cc4, func_02003d84, func_02003e44, func_02003f04, func_02003fc4,
-    func_02004084, func_02004468, func_020043ac, func_02004568, func_02004728, func_02003aec, func_02003990,
-    func_020038e0, func_02003ba4, func_02003c64, func_02003d24, func_02003de4, func_02003ea4, func_02003f64,
-    func_02004024, func_020040e4};
+    GX_LoadOBJExtPltt, GX_LoadBGExtPltt, GX_LoadTex, GX_LoadTexPltt, GX_LoadOBJ, GXS_LoadBGPltt, GX_LoadBGPltt,
+    GX_LoadBG0Scr, GX_LoadBG1Scr, GX_LoadBG2Scr, GX_LoadBG3Scr, GX_LoadBG0Char, GX_LoadBG1Char, GX_LoadBG2Char,
+    GX_LoadBG3Char, GX_LoadSubOBJExtPltt, GX_LoadSubBGExtPltt, GX_LoadTex, GX_LoadTexPltt, GXS_LoadOBJ, GXS_LoadOBJPltt,
+    GX_LoadOBJPltt, GXS_LoadBG0Scr, GXS_LoadBG1Scr, GXS_LoadBG2Scr, GXS_LoadBG3Scr, GXS_LoadBG0Char, GXS_LoadBG1Char,
+    GXS_LoadBG2Char, GXS_LoadBG3Char};
 void *data_020a55a4[UPLOAD_FREE_COUNT] = {0};
 
 UploadQueue data_0220e630;
@@ -112,9 +112,9 @@ BOOL func_020258f4(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 f
     BOOL immediate = FALSE;
     int brightness;
     if (screen == 0) {
-        brightness = func_02001f14((vu16 *) 0x400006c);
+        brightness = G2x_GetMasterBrightness_((vu16 *) 0x400006c);
     } else if (screen == 1) {
-        brightness = func_02001f14((vu16 *) 0x400106c);
+        brightness = G2x_GetMasterBrightness_((vu16 *) 0x400106c);
     }
     if ((brightness == -16) | (brightness == 16)) {
         immediate = TRUE;

@@ -25,7 +25,6 @@ extern u8 data_0209e68c[][6];
 void func_02023a54();
 extern u8 data_0209e57c[]; // table of func_0205aea4 (.rodata 0x0209e57c)
 extern u8 data_0209e5bc[][5]; // per cell values, five columns (.rodata 0x0209e5bc)
-void func_020037e8(u32 mode);
 
 extern WindowItemRecord data_020b3688[4]; // item table of the list window (positions are patched by func_02058404)
 extern WindowCellRecord data_020b3618[4];
@@ -472,7 +471,7 @@ BOOL BattleCommandList::func_02058774(u32 right) {
 void BattleCommandList::func_020587b4() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(0, 4);
-    func_02001e68(1, 0, 1);
+    GX_SetGraphicsMode(1, 0, 1);
     GX_SetVisiblePlane(0x11);
     G2_SetBG0Priority(2);
     func_020037e8(0);

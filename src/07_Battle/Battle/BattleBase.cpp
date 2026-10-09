@@ -1388,13 +1388,14 @@ void BattleBase::func_ov007_0221d088(u8 a, u16 *counts) {
     u8 i = 0;
     do {
         hi[i] = counts[i] >> 8;
-        counts[i] = counts[i] & 0xff;
+        counts[i] &= 0xff;
         i++;
     } while (i < data_020d433c.mPlayerCount);
+    u8 k;
     u8 p = 0;
     do {
         if (hi[p] != 0) {
-            u8 k = 0;
+            k = 0;
             do {
                 if (sel == p) {
                     mUnk_44->func_ov007_022275c0(a, TouchManager::Get().mX, TouchManager::Get().mY, mUnk_15);
@@ -1414,10 +1415,11 @@ void BattleBase::func_ov007_0221d088(u8 a, u16 *counts) {
     } while (j < data_020d433c.mPlayerCount);
     if (total != 0) {
         s32 v = 0x1000;
+        BattleEntry *entries = mUnk_2c->mEntries;
         s8 cur = mUnk_14;
         if (cur != -1) {
-            BattleEntry *e = &mUnk_2c->mEntries[a];
-            v = data_ov007_02278b68[cur].mUnk[e->mUnk_0d_4];
+            BattleEntry *e = &entries[a];
+            v = data_ov007_02278b68[cur].mUnk[e->mUnk_0d_0];
             if (e->mUnk_0c == 5) {
                 if (v < data_ov007_02278b68[cur].mUnk[3]) {
                     v = data_ov007_02278b68[cur].mUnk[3];

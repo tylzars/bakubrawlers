@@ -742,7 +742,7 @@ void BattleHud::func_ov007_02227460(int side) {
     mAnims[5]->SetAnimation(0x13 + mData->mEntries[side].mUnk_0d_4);
 }
 
-void BattleHud::func_ov007_02227490(int mode, s32 value, s32 count, bool boost, bool useLevel) {
+void BattleHud::func_ov007_02227490(int mode, s32 value, s32 count, u8 boost, bool useLevel) {
     s32 delta = value * count;
     if (boost) {
         delta = FX_Mul(delta, 0x1800);

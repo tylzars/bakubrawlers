@@ -412,7 +412,7 @@ public:
     BOOL func_ov007_02227158();
     BOOL func_ov007_022273b4();
     void func_ov007_02227460(int side);
-    void func_ov007_02227490(int mode, s32 value, s32 count, bool boost, bool useLevel);
+    void func_ov007_02227490(int mode, s32 value, s32 count, u8 boost, bool useLevel);
     u8 func_ov007_022275a0(u16 value, u8 a, u8 b);
     BOOL func_ov007_022275c0(u8 side, s16 x, s16 y, u8 flag);
     void func_ov007_02227730();

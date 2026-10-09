@@ -181,6 +181,10 @@ Other findings from linking:
   Found in the CRI library (`func_0203e07c` and four more).
 - **Division helpers.** `/` and `%` on ints compile to calls to the runtime helper at 0x0201f970 (`_s32_div_f`,
   quotient in r0, remainder in r1). Write the operator; never call the helper by name.
+- **Vector writes through a temporary.** Where the original loads every component before storing any (often as
+  `ldm`/`stm`), the source filled a local `VecFx32 t` (z, then y, then x) and assigned `*dst = t;`. Field-by-field
+  stores to `dst` interleave loads and stores instead. Same for `*vel = *a`: a plain struct copy can give three
+  `ldr`/`str` pairs where a filled temporary gives `ldm`/`stm` (BattleTarget).
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

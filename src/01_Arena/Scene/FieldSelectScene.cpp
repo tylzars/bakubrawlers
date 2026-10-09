@@ -2087,7 +2087,6 @@ u32 FieldSelectScene::func_ov001_02224538() {
     return result;
 }
 
-// non-matching: register order in the table-store tail.
 u32 FieldSelectScene::func_ov001_02224be0() {
     u32 result = 0;
     if (func_ov001_02223914()) {
@@ -2135,10 +2134,10 @@ u32 FieldSelectScene::func_ov001_02224be0() {
             } else {
                 mUnk_32c                 = 1;
                 u8 a                     = data_ov001_022270dd[idx * 4];
-                u8 b                     = data_ov001_022270de[idx * 4];
-                u8 c                     = data_ov001_022270df[idx * 4];
                 data_020d433c.mUnk_9b[0] = a;
                 data_020d43d7[a]         = 0;
+                u8 b = data_ov001_022270de[idx * 4];
+                u8 c = data_ov001_022270df[idx * 4];
                 data_020d43d7[b]         = c;
                 data_020d43d7[c]         = b;
             }

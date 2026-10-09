@@ -315,13 +315,13 @@ void func_0200ea14(CardCommon *c)
 {
     u32 mode;
     u32 chunk;
-    u8 *buf;
+    u32 buf;
     u32 cmd;
     u32 len;
     u32 retry;
+    u32 e;
     void *cbarg;
     void (*fn)(void *);
-    u32 e;
     cmd = c->cmd;
     mode = c->mode;
     retry = c->retry;
@@ -332,7 +332,7 @@ void func_0200ea14(CardCommon *c)
     } else if (cmd == 0xf) {
         chunk = ((CardCommon *)data_020bfe60)->arg->f20;
     }
-    buf = c->buf;
+    buf = (u32)c->buf;
     do {
         len = c->len;
         if (chunk < len) {
@@ -346,16 +346,16 @@ void func_0200ea14(CardCommon *c)
         }
         switch (mode) {
         case 0:
-            DC_InvalidateRange(buf, len);
+            DC_InvalidateRange((void *)buf, len);
             c->arg->f0c = c->src;
-            c->arg->f10 = (u32)buf;
+            c->arg->f10 = buf;
             break;
         case 1:
         case 2:
-            MI_CpuCopy8((void *)c->src, buf, len);
-            DC_StoreRange(buf, len);
+            MI_CpuCopy8((void *)c->src, (void *)buf, len);
+            DC_FlushRange((void *)buf, len);
             DC_WaitWriteBufferEmpty();
-            c->arg->f0c = (u32)buf;
+            c->arg->f0c = buf;
             c->arg->f10 = c->dst;
             break;
         case 3:
@@ -371,7 +371,7 @@ void func_0200ea14(CardCommon *c)
                 break;
             }
         } else if (mode == 0) {
-            MI_CpuCopy8(buf, (void *)c->dst, len);
+            MI_CpuCopy8((void *)buf, (void *)c->dst, len);
         }
         c->src += len;
         c->dst += len;

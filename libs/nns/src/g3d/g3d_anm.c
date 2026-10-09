@@ -113,20 +113,20 @@ void func_02033a80(u8 *obj, u8 *anm, u8 *mdl) {   // NNS_G3dAnmObjInitNsBma: map
         if (r >= 0) ((u16 *)(obj + 0x1a))[r] = i | 0x100;
     }
 }
+// entry idx of the animation's data dictionary, or 0 when idx is out of range
+static inline u32 *AnmEntryByIdx(u8 *res, u32 idx) {
+    u8 *d = res + 8;
+    if (d != 0 && (u16)idx < (u32)U8(res, 9)) {
+        u8 *t = d + U16(res, 0xe);
+        return (u32 *)(t + 4 + *(u16 *)t * (u16)idx);
+    }
+    return 0;
+}
 void func_02033b54(u32 *out, u8 *obj, u32 idx) {   // material colour animation at the current frame
     u8 *res = (u8 *)U32(obj, 8);
-    s32 frame = (s32)U32(obj, 0) >> 12;
-    u32 *e;
+    u32 frame = (u32)((s32)U32(obj, 0) >> 12);
+    u32 *e = AnmEntryByIdx(res, idx);
     u32 a, b;
-    {
-        u8 *d = res + 8;
-        if (d != 0 && (u16)idx < U8(res, 9)) {
-            u8 *t = d + U16(res, 0xe);
-            e = (u32 *)(t + 4 + *(u16 *)t * (u16)idx);
-        } else {
-            e = 0;
-        }
-    }
     a = func_0203382c(res, e[0], frame);
     b = func_0203382c(res, e[1], frame);
     out[1] = a | (b << 16) | (((out[1] & 0x8000) != 0) << 15);

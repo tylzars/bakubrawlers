@@ -15,7 +15,7 @@
 u16 func_02065c20(u32 id);
 u8 func_02065c0c(u32 id, u32 kind);
 extern u16 data_020c1a4c[0x10]; // palette scratch (cleared before each text)
-extern const char *data_020b3070[12]; // paths loaded by func_02055c28 and func_020561c4
+extern const char *const data_020b3070[12]; // paths loaded by func_02055c28 and func_020561c4
 
 extern WindowItemRecord data_020b30d4[4]; // item table of the page window (positions are patched by func_02055764)
 extern WindowCellRecord data_020b3144[4];
@@ -397,7 +397,6 @@ void BattleCommandPage::func_02055c1c() {
     mUnk_f0 = 0;
 }
 
-// non-matching: 11 words, r2 vs r3 for the index.
 BOOL BattleCommandPage::func_02055c28() {
     if (mUnk_f0 != 0) {
         if (func_02023874() != 0) {

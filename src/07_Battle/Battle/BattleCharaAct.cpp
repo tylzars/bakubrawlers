@@ -427,7 +427,6 @@ void BattleCharaAct::func_ov007_02269380() {
     }
 }
 
-// non-matching: 16 words, register assignment only (original keeps the matrix copy in r4/lr and the vector copy in ip).
 void BattleCharaAct::func_ov007_022693f4() {
     mUnk_0c->func_020264a4(0);
     mUnk_0c->func_02026180();
@@ -436,10 +435,10 @@ void BattleCharaAct::func_ov007_022693f4() {
     if (!mUnk_24) {
         return;
     }
-    MtxFx43 mtx = data_0220e86c;
-    VecFx32 pos = data_ov007_0227ac20;
+    BOOL draw    = 1;
+    MtxFx43 mtx  = data_0220e86c;
+    VecFx32 pos  = data_ov007_0227ac20;
     VecFx32 zero = {0, 0, 0};
-    BOOL draw   = 1;
     func_01ffcf64(&mtx, &zero);
     if ((mUnk_36 == 10) | ((mUnk_36 == 7) | ((mUnk_36 == 8) | (mUnk_36 == 9)))) {
         mUnk_3a++;

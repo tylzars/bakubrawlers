@@ -776,12 +776,10 @@ void BattleTarget::func_ov007_02254790() {
     mUnk_58.z = pos.z;
 }
 
-// non-matching: 8 words, register allocation only: the original keeps data_020d433c in r4, &rot in r5 and the zero in r6 (permute over the declarations found no better order).
 void BattleTarget::func_ov007_022547e4() {
     u16 rot[3];
-    UnkStruct_020d433c *data = &data_020d433c;
-    BattleUnit *units        = data->mBattlePlayers->mUnits;
-    u8 i = 0;
+    BattleUnit *units = data_020d433c.mBattlePlayers->mUnits;
+    u8 i              = 0;
     do {
         BattleUnit *unit = &units[i];
         if (unit->mUnk_10 != 0) {
@@ -792,7 +790,7 @@ void BattleTarget::func_ov007_022547e4() {
             rot[1] = unit->mUnk_0c;
             rot[0] = 0;
             rot[2] = 0;
-            mUnk_e4[i] = func_ov007_02271ca8(data->mUnk_0c, 2, mUnk_e0, &unit->mPos, rot, i + 1);
+            mUnk_e4[i] = func_ov007_02271ca8(data_020d433c.mUnk_0c, 2, mUnk_e0, &unit->mPos, rot, i + 1);
         }
         i++;
     } while (i < 12);

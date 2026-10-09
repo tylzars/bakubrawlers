@@ -50,7 +50,7 @@ void func_0204d834(void) {
 
 void func_0204d864(void) {
     int i;
-    char *src;
+    const char *src;
     char *dst;
     if (data_02218f20.ready != 0) return;
     src = data_02218f30;

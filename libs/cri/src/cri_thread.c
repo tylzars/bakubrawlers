@@ -78,7 +78,7 @@ extern void func_02047388(void);
 extern void func_02047484(CriCfg *);
 extern int func_02047680(void);
 extern void func_020477c0(void);
-extern void OS_SetThreadPriority(void *);
+extern void OS_SetThreadPriority(void *, unsigned);
 extern int func_020477d8(void);
 extern void func_020466bc(void);
 
@@ -263,13 +263,13 @@ int func_02047698(void)
     func_020477c0();
     if (func_02047798() == 0) {
         data_02217a9c.run2 = 0;
-        OS_SetThreadPriority(data_02217c40);
+        OS_SetThreadPriority(data_02217c40, 0);
         while (data_02217a9c.done2 == 0) OS_WakeupThreadDirect(data_02217c40);
         data_02217a9c.run1 = 0;
-        OS_SetThreadPriority(data_02217b80);
+        OS_SetThreadPriority(data_02217b80, 0);
         while (data_02217a9c.done1 == 0) OS_WakeupThreadDirect(data_02217b80);
         data_02217a9c.run0 = 0;
-        OS_SetThreadPriority(data_02217ac0);
+        OS_SetThreadPriority(data_02217ac0, 0);
         if (func_020477d8() == 0) {
             do {
                 OS_WakeupThreadDirect(data_02217ac0);

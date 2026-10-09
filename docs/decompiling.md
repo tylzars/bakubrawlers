@@ -191,6 +191,9 @@ Other findings from linking:
 - **Arguments narrowed at the call.** If callers do `lsl #16; asr #16` on an argument of a function that takes `s32`,
   the caller's variable was `s16` (BattleStatusPanels' `CellAnimation::Draw` calls); changing the callee to `s16`
   breaks every other caller.
+- **Loops without a pre-test.** If the original enters a loop body without first testing the count (no
+  `cmp; bls` guard), the source was `do { ... } while (k < count);`, not a `for` loop.
+- **`%` vs the expanded form.** `x % 300` and `x - x / 300 * 300` compile differently (different `smull` use).
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

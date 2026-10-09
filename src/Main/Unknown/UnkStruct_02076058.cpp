@@ -369,36 +369,37 @@ void UnkStruct_02076058::func_020770f4() {
     }
 }
 
-// non-matching: 0x270 vs 0x280, the loop body is 4 words shorter (register allocation of count/k/mode also differs).
 u32 UnkStruct_02076058::func_020771d8(u32 index, u32 unk2) {
     u32 result = 0;
-    u8 slot = index + mUnk_75;
     u32 count = 1;
     if (unk2 != 0) {
         count = 9;
     }
+    u8 slot = index + mUnk_75;
     if (mUnk_54[slot] != NULL) {
-        for (u8 k = 0; k < count; k++) {
+        u8 k = 0;
+        do {
             UnkStruct_02023248 *entry = mUnk_54[slot];
             u16 cost = (entry->mUnk_00_0 + 1) * 300;
             if (unk2 != 0) {
                 u16 points = mUnk_64[slot];
-                if (points < cost) {
-                    entry->mPad = mUnk_64[slot];
+                if (points >= cost) {
+                    mUnk_64[slot] = points - cost;
+                    if ((s32) mUnk_54[slot]->mUnk_00_0 < 9) {
+                        mUnk_54[slot]->mUnk_00_0 = mUnk_54[slot]->mUnk_00_0 + 1;
+                    }
+                    s32 level = mUnk_54[slot]->mUnk_00_0;
+                    if (level < 9) {
+                        mUnk_14[index + 6]->mUnk_0f = level;
+                    }
+                    mUnk_14[index + 9]->func_02029f6c();
+                    mUnk_77 = 1;
+                    mUnk_79 = 1;
+                    result = 1;
+                } else {
+                    mUnk_54[slot]->mPad = mUnk_64[slot];
                     break;
                 }
-                mUnk_64[slot] = points - cost;
-                if ((s32) mUnk_54[slot]->mUnk_00_0 < 9) {
-                    mUnk_54[slot]->mUnk_00_0 = mUnk_54[slot]->mUnk_00_0 + 1;
-                }
-                s32 level = mUnk_54[slot]->mUnk_00_0;
-                if (level < 9) {
-                    mUnk_14[index + 6]->mUnk_0f = level;
-                }
-                mUnk_14[index + 9]->func_02029f6c();
-                mUnk_77 = 1;
-                mUnk_79 = 1;
-                result = 1;
             } else {
                 u32 gauge = entry->mPad;
                 if (gauge < cost) {
@@ -417,10 +418,11 @@ u32 UnkStruct_02076058::func_020771d8(u32 index, u32 unk2) {
                 mUnk_79 = 1;
                 result = 1;
             }
-        }
+            k++;
+        } while (k < count);
         CellAnimation *anim = mUnk_14[index + 3];
         int gauge = mUnk_54[slot]->mPad;
-        u16 rest = gauge - gauge / 300 * 300;
+        u16 rest = gauge % 300;
         anim->mUnk_0f = (u8) ((float) (rest * (anim->mFrames[anim->mUnk_0e].mUnk_10 - 1)) / 300.0f);
     }
     return result;

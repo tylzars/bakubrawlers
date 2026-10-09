@@ -92,6 +92,12 @@ libs/cri/src/cri_adx_hdrparse.c:
 libs/cri/src/cri_ahx_bitrd.c:
     .text       start:0x0204e330 end:0x0204e844
 
+libs/cri/src/cri_adx_pool.c:
+    .text       start:0x0204ecf0 end:0x0204f3c8
+
+libs/cri/src/cri_adx_vobj.c:
+    .text       start:0x0204f3c8 end:0x0204fc00
+
 // MSL C runtime (2.0/sp1p5, C); code only so far.
 libs/msl/src/msl_string.c:
     .text       start:0x020122b0 end:0x020125b4

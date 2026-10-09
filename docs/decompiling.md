@@ -301,6 +301,16 @@ Other findings from linking:
   - A `double` parameter copied to a local puts its argument loads at entry, above an early return.
   - A named `char *q = (char *)&x` gives indexed `q[i]` loads; the cast expression `((char *)&x)[i]` is
     strength-reduced to a running pointer.
+- **Rules from the BattleTarget passes.**
+  - Three u16s copied as one object (`*(Rot3 *) rot = *(Rot3 *) p->mRot;` with `struct Rot3 { u16 r[3]; }`) load all
+    three before storing and keep the copy in memory; element-wise copies interleave.
+  - Guards that branch to one shared `mov r0,#0` exit are nested ifs with a single `return 0` at the end; early
+    returns become predicated `movne/popne`.
+  - Inline setters (`SetVec(&v, x, y, z)`) compute all values before storing; identical setter calls in both arms
+    of an if/else are merged after the join.
+  - A struct copy declared inside a loop block (`VecFx32 d1 = *dir;`) stays an `ldm`/`stm` copy re-read from the
+    stack; at function scope it's decomposed into registers.
+  - An index the original masks with `and #0xff` at each use was not a u8 local: write `owner - 1` at each use.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

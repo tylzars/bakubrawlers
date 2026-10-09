@@ -81,7 +81,7 @@ BOOL func_0200b0d4(FSOverlayInfo *out, int target, int id)
     FSFileID fid;
     if (loc->ptr != 0) {
         if (loc->size <= id * 0x20) return FALSE;
-        MIi_CpuCopyFast((void *) (loc->ptr + id * 0x20), out, 0x20);
+        MI_CpuCopy8((void *) (loc->ptr + id * 0x20), out, 0x20);
         out->target = target;
         func_0200a7b4(&tmp);
         fid = func_0200afb4(out);

@@ -935,7 +935,7 @@ void MapScene::ShowText(u16 index, s32 unk2) {
     file   = (MessageFile *) func_02023504("/font/mes_town_info.mes", 0, 0, 0, 0, 0);
     size   = TextManager::Get().BufferSize(cols, 0x10);
     buffer = OS_Alloc(size);
-    MI_CpuClear16(buffer, size);
+    MI_CpuClearFast(buffer, size);
     TextManager &text = TextManager::Get();
     s16 height;
     s16 width;

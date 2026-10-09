@@ -69,6 +69,12 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   0xe8 (an unused trailing member, so `Widths()` keeps its code), 22 functions match. So when a store seems to
   pin a later load, check the declared size of the stored-to object.
 
+- **Call checks.** `tools/check_calls.py` compares every call in matching functions with the original;
+  `tools/check_callees.py` compares, per function (matching or not), the set of callees with the `bl` targets in
+  the original's range. Probes and objdiff mask call targets, so both are needed: a near-identical neighbour
+  (`DC_StoreRange`/`DC_FlushRange`, `MI_CpuCopy8`/`MIi_CpuCopyFast`, signed/unsigned division) is easy to call by
+  mistake. Its noise: `this`-adjusting thunks and literal-pool words that decode as branches.
+
 ## Data layout within a section
 
 mwcc does not lay out a file's objects in declaration order. Found by experiment (and checked against 14 random

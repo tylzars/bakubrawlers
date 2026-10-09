@@ -56,6 +56,6 @@ u32 OS_DisableInterrupts(void);   // 0x0200710c
 u32 OS_RestoreInterrupts(u32 e);  // 0x02007120
 void OS_SleepThread(void *q);     // 0x02005610
 void OS_WakeupThread(void *q);    // 0x02005660
-void MIi_CpuCopyFast(const void *src, void *dst, u32 n);
+void MI_CpuCopy8(const void *src, void *dst, u32 n);
 void MI_CpuFill8(void *dst, u8 v, u32 n);
 #endif

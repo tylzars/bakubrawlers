@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 extern "C" void func_0205253c();
-extern int func_02051e40(void *handle);
+extern "C" int func_02051e40(void *handle);
 
 struct UnkStruct_020d433c {
     PAD(0x00, 0x79);

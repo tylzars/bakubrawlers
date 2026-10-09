@@ -98,6 +98,12 @@ libs/cri/src/cri_adx_pool.c:
 libs/cri/src/cri_adx_vobj.c:
     .text       start:0x0204f3c8 end:0x0204fc00
 
+libs/cri/src/cri_misc_tail.c:
+    .text       start:0x02051528 end:0x02051804
+
+libs/cri/src/cri_adxm.c:
+    .text       start:0x02051804 end:0x02052320
+
 // MSL C runtime (2.0/sp1p5, C); code only so far.
 libs/msl/src/msl_string.c:
     .text       start:0x020122b0 end:0x020125b4

@@ -6,21 +6,21 @@ struct UnkStruct_CriConfig {
     void (*mFree)(void *);
 };
 
-extern void func_02051804(UnkStruct_CriConfig *config, int a, const void *b, void (*c)(void *));
-extern void *func_02051ab0(UnkStruct_CriConfig *config, int a, int b);
-extern void func_0205214c(void *handle, int a, int b);
-extern void func_020520e8(void *handle, int a);
-extern void func_02051d7c(void *handle);
-extern void func_020519bc();
-extern int func_02051e40(void *handle);
-extern void func_02051a3c();
-extern void func_02051ed4(void *handle, const char *path);
-extern void func_02051fb8(void *handle, int a);
-extern void func_02051f5c(void *handle);
-extern void func_0205201c(void *handle, float volume);
-extern void func_02051a88();
+extern "C" void func_02051804(UnkStruct_CriConfig *config, int a, const void *b, void (*c)(void *));
+extern "C" void *func_02051ab0(UnkStruct_CriConfig *config, int a, int b);
+extern "C" void func_0205214c(void *handle, int a, int b);
+extern "C" void func_020520e8(void *handle, int a);
+extern "C" void func_02051d7c(void *handle);
+extern "C" void func_020519bc();
+extern "C" int func_02051e40(void *handle);
+extern "C" void func_02051a3c();
+extern "C" void func_02051ed4(void *handle, const char *path);
+extern "C" void func_02051fb8(void *handle, int a);
+extern "C" void func_02051f5c(void *handle);
+extern "C" void func_0205201c(void *handle, float volume);
+extern "C" void func_02051a88();
 extern "C" void func_02007230();
-extern void func_02051a5c();
+extern "C" void func_02051a5c();
 extern const u8 data_0209e538[];
 
 TaskBase::TaskBase() {

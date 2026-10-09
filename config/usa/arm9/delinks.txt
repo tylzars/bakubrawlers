@@ -71,6 +71,12 @@ libs/cri/src/cri_file.c:
 libs/cri/src/cri_adx_vol.c:
     .text       start:0x02050f68 end:0x02051528
 
+libs/cri/src/cri_file_obj.c:
+    .text       start:0x02047d80 end:0x02048304
+
+libs/cri/src/cri_wave_ch.c:
+    .text       start:0x02048304 end:0x02049150
+
 // MSL C runtime (2.0/sp1p5, C); code only so far.
 libs/msl/src/msl_string.c:
     .text       start:0x020122b0 end:0x020125b4

@@ -1,11 +1,11 @@
-// MI_CpuFill8 and the byte copy (ITCM). non-matching: MI_CpuFill8 differs in scheduling (14 words), func_01ff96c4
+// MI_CpuFill8 and the byte copy (ITCM). non-matching: MI_CpuFill8 differs in scheduling (14 words), MI_CpuCopy8
 // is 0x134 vs 0x130 (register choice); same on every 2.0 build.
 // ITCM NitroSDK memory routines 0x01ff94c8-0x01ff9802 (compiler 2.0/sp1p5, -O4,p -ipa file).
 // Hand-written asm (not reproducible from C: conditional-execution loops, single-register ldm/stm, 8-register stm runs):
 //   MIi_CpuClear16 0x01ff94c8, func_01ff94e0 0x01ff94e0, MIi_CpuClear32 0x01ff94fc, func_01ff9510, func_01ff9528,
-//   MIi_CpuClearFast 0x01ff9540, MI_CpuCopy8(fast, ldm/stm x8) 0x01ff958c, MI_Copy36B, func_01ff95e0, func_01ff9604,
+//   MIi_CpuClearFast 0x01ff9540, MIi_CpuCopyFast(fast, ldm/stm x8) 0x01ff958c, MI_Copy36B, func_01ff95e0, func_01ff9604,
 //   func_01ff97f4 (thumb, stm x3).
-// Not matching (scheduling/register allocation only): MI_CpuFill8, func_01ff96c4 (byte copy).
+// Not matching (scheduling/register allocation only): MI_CpuFill8, MI_CpuCopy8 (byte copy).
 #include <nitro/internal.h>
 
 void MI_CpuFill8(void *dstp, u32 data, u32 size) {
@@ -56,7 +56,7 @@ void MI_CpuFill8(void *dstp, u32 data, u32 size) {
     }
 }
 
-void func_01ff96c4(const void *srcp, void *dstp, u32 size) {
+void MI_CpuCopy8(const void *srcp, void *dstp, u32 size) {
     if (size == 0) {
         return;
     }

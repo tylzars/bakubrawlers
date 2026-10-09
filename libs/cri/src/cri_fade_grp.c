@@ -141,10 +141,6 @@ void func_020508cc(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, in
 void func_020508dc(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b);
 void func_020508ec(CriFader *f);
 int func_02050984(CriFader *f, int a, int b, int c);
-int func_020509cc(CriFader *f, int x);
-int func_02050bfc(CriFader *f, int x);
-int func_02050e08(CriFader *f);
-int func_02050e34(CriFader *f);
 
 int func_0204fc00(CriFadeGrp *g, int i)
 {
@@ -660,24 +656,6 @@ int func_02050984(CriFader *f, int a, int b, int c)
     return (func_02050bfc(f, b) - func_02050bfc(f, a)) / c;
 }
 
-int func_02050e08(CriFader *f)
-{
-    if (f->cb1 == 0) {
-        return 0;
-    }
-    f->cb1((CriFadeGrp *) f->a1, f->b1);
-    return 1;
-}
-
-int func_02050e34(CriFader *f)
-{
-    if (f->cb2 == 0) {
-        return 0;
-    }
-    f->cb2((CriFadeGrp *) f->a2, f->b2);
-    return 1;
-}
-
 int func_020509cc(CriFader *f, int x)
 {
     float t;
@@ -760,4 +738,22 @@ int func_02050bfc(CriFader *f, int x)
         t = 3238200.0f;
     }
     return (int) t;
+}
+
+int func_02050e08(CriFader *f)
+{
+    if (f->cb1 == 0) {
+        return 0;
+    }
+    f->cb1((CriFadeGrp *) f->a1, f->b1);
+    return 1;
+}
+
+int func_02050e34(CriFader *f)
+{
+    if (f->cb2 == 0) {
+        return 0;
+    }
+    f->cb2((CriFadeGrp *) f->a2, f->b2);
+    return 1;
 }

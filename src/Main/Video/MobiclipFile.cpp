@@ -1,7 +1,7 @@
 #include "Video/MobiclipDecoder.hpp"
 typedef struct { u8 pad[0x24]; u32 o24, o28, o2c; } FSFile;
 extern "C" {
-void MI_CpuCopy8(const void *src, void *dst, u32 n);
+void MIi_CpuCopyFast(const void *src, void *dst, u32 n);
 void func_0200ab18(FSFile *);
 int func_0200ac40(FSFile *, u32, u32);
 int func_0200ac30(FSFile *, void *, u32);
@@ -74,7 +74,7 @@ void *name() { \
     if (data_02215860.field == 0) { \
         if (data_02215860.s0c < size) return (void *) src; \
         data_02215860.field = (u32) data_02215860.p10; \
-        MI_CpuCopy8((void *) src, (void *) data_02215860.field, size); \
+        MIi_CpuCopyFast((void *) src, (void *) data_02215860.field, size); \
         data_02215860.p10 += size; \
         data_02215860.s0c -= size; \
     } \
@@ -84,7 +84,7 @@ void *func_0203be24() {
     if (data_02215860.c == 0) {
         if (data_02215860.s14 < 0x659c) return (void *) 0x2096a90;
         data_02215860.c = (u32) data_02215860.p18;
-        MI_CpuCopy8((void *) 0x2096a90, data_02215860.p18, 0x659c);
+        MIi_CpuCopyFast((void *) 0x2096a90, data_02215860.p18, 0x659c);
         data_02215860.p18 += 0x659c;
         data_02215860.s14 -= 0x659c;
     }
@@ -94,7 +94,7 @@ void *func_0203bea0() {
     if (data_02215860.b == 0) {
         if (data_02215860.s0c < 0x2100) return (void *) 0x2094990;
         data_02215860.b = (u32) data_02215860.p10;
-        MI_CpuCopy8((void *) 0x2094990, data_02215860.p10, 0x2100);
+        MIi_CpuCopyFast((void *) 0x2094990, data_02215860.p10, 0x2100);
         data_02215860.p10 += 0x2100;
         data_02215860.s0c -= 0x2100;
     }
@@ -105,7 +105,7 @@ void *func_0203bf10() {
     if (data_02215860.a == 0) {
         if (data_02215860.s0c < 0x300) return data_0209d6f8;
         data_02215860.a = (u32) data_02215860.p10;
-        MI_CpuCopy8(data_0209d6f8, data_02215860.p10, 0x300);
+        MIi_CpuCopyFast(data_0209d6f8, data_02215860.p10, 0x300);
         data_02215860.p10 += 0x300;
         data_02215860.s0c -= 0x300;
     }
@@ -115,7 +115,7 @@ void *func_0203bf80() {
     if (data_02215860.d == 0) {
         if (data_02215860.s0c < 0x180) return data_0209d578;
         data_02215860.d = (u32) data_02215860.p10;
-        MI_CpuCopy8(data_0209d578, data_02215860.p10, 0x180);
+        MIi_CpuCopyFast(data_0209d578, data_02215860.p10, 0x180);
         data_02215860.p10 += 0x180;
         data_02215860.s0c -= 0x180;
     }

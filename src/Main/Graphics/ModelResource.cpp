@@ -2,7 +2,7 @@
 #include "Graphics/ModelInternal.hpp"
 
 extern "C" u32 func_02012328(const char *str);
-extern "C" void func_01ff96c4(const void *src, void *dst, u32 size);
+extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 void *operator new[](size_t size);
 
 // non-matching: 1 word. The original reads the stack argument with `ldr`, we emit `ldrb` for u8 (the callee-side
@@ -19,18 +19,18 @@ ModelResource::ModelResource(const char *nsbmd, const char *data, const char *ns
     if (nsbmd != NULL) {
         u32 len    = func_02012328(nsbmd);
         mModelFile = new char[len + 1];
-        func_01ff96c4(nsbmd, mModelFile, len + 1);
+        MI_CpuCopy8(nsbmd, mModelFile, len + 1);
     }
     if (nsbtx != NULL) {
         u32 len      = func_02012328(nsbtx);
         mTextureFile = new char[len + 1];
-        func_01ff96c4(nsbtx, mTextureFile, len + 1);
+        MI_CpuCopy8(nsbtx, mTextureFile, len + 1);
         mUnk_1a = 0;
     }
     if (data != NULL) {
         u32 len   = func_02012328(data);
         mDataFile = new char[len + 1];
-        func_01ff96c4(data, mDataFile, len + 1);
+        MI_CpuCopy8(data, mDataFile, len + 1);
     }
 }
 

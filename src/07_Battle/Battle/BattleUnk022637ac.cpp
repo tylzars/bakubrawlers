@@ -771,7 +771,7 @@ u8 BattleUnk022637ac::func_ov007_02265718() {
     return done;
 }
 
-extern "C" void func_01ff96c4(const void *src, void *dst, u32 size);
+extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 void func_0203db8c(void *obj, fx32 x, fx32 y, fx32 z);
 void func_ov007_02262828(BattlePlayerList *list, u8 a, u8 b);
 void func_ov007_02262768(BattlePlayerList *list, BattleUnk022637acUnit *unit, u16 a, u8 b, u8 c, u8 d, u8 e);
@@ -817,7 +817,7 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
                 u16 r6               = record->mUnk_06;
                 u8 r9                = record->mUnk_09;
                 BattleUnk022637acUnit tmp;
-                func_01ff96c4(&units[caster], &tmp, 0x14);
+                MI_CpuCopy8(&units[caster], &tmp, 0x14);
                 tmp.mPos.x = mUnk_1c->mUnk_1a4->mPosition.x;
                 tmp.mPos.z = mUnk_1c->mUnk_1a4->mPosition.z;
                 func_ov007_02262828(data_020d433c.mBattlePlayers, mUnk_16, 2);

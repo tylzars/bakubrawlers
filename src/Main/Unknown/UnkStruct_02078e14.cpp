@@ -560,7 +560,7 @@ void UnkStruct_02078e14::Update() {
             if (mUnk_1f1 == 0x15) {
                 func_020848c8(this);
             }
-            MI_CpuCopy8(data_020d4404, (u8 *) ((u32 *) data_020d433c.mBattlePlayers)[3] + 0xa8, 8);
+            MIi_CpuCopyFast(data_020d4404, (u8 *) ((u32 *) data_020d433c.mBattlePlayers)[3] + 0xa8, 8);
             SpriteManager::Get().StartFade(3);
             mUnk_e1++;
             func_020851d0();

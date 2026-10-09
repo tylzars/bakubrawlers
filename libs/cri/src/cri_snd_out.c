@@ -41,7 +41,7 @@ extern void func_02037574(void *, int);
 extern void func_020375e0(void *, int, int);
 extern void func_02037504(void *);
 extern void func_02037558(void *);
-extern void func_01ff96c4(void *, void *, int);
+extern void MI_CpuCopy8(void *, void *, int);
 extern void MI_CpuFill8(void *, int, int);
 extern void (*data_02218884)(SndOut *, void *);
 extern char data_020ae2bc[];
@@ -410,7 +410,7 @@ s16 *func_0204a320(SndOut *o, s16 *src, u32 n)
         o->prev = prev;
     }
     } else {
-        func_01ff96c4(src, dst, n);
+        MI_CpuCopy8(src, dst, n);
         src += n / 2;
     }
     if (o->cb != 0) o->cb(o->id, o->buf + wp, n);

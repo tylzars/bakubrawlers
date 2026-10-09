@@ -24,7 +24,7 @@
 #include "Graphics/ModelInternal.hpp"
 
 UnkStruct_02065c40 *data_02219288;
-extern "C" void func_01ff96c4(const void *src, void *dest, u32 size);
+extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 extern "C" void DC_FlushRange(void *buffer, u32 size);
 void func_02088ec4(UnkStruct_02087898 *object);
 extern "C" void func_01ff9510(const void *src, void *dest, u32 size);
@@ -3370,10 +3370,10 @@ BOOL UnkStruct_02065c40::func_0206ed40() {
     u8 *data = (u8 *) mUnk_12b0;
     u32 size = mUnk_12b4;
     u8 *name = (u8 *) OS_Alloc(0x20);
-    func_01ff96c4(data, name, 0x20);
+    MI_CpuCopy8(data, name, 0x20);
     DC_FlushRange(name, 0x20);
     u8 *body = (u8 *) OS_Alloc(size - 0x20);
-    func_01ff96c4(data + 0x20, body, size - 0x20);
+    MI_CpuCopy8(data + 0x20, body, size - 0x20);
     DC_FlushRange(body, size - 0x20);
     mUnk_12be = (size - 0x20) / 3;
     if (mUnk_12be >= 0x400) {
@@ -3570,7 +3570,7 @@ BOOL UnkStruct_02065c40::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32
 }
 
 extern const u8 data_020a1b8a[];
-extern "C" void func_01ff96c4(const void *src, void *dest, u32 size);
+extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 void func_02088ec4(UnkStruct_02087898 *object);
 
 void UnkStruct_02065c40::func_0206f564(u8 unk1, u32 unk2, s32 unk3) {
@@ -3962,7 +3962,7 @@ BOOL UnkStruct_02065c40::func_020702e0(s32 unk1, s32 unk2, s32 unk3, s32 unk4, s
     if (mUnk_12bc != mUnk_12be) {
         return FALSE;
     }
-    func_01ff96c4(data_020a1b8a, mUnk_0c, 0x24);
+    MI_CpuCopy8(data_020a1b8a, mUnk_0c, 0x24);
     mUnk_0c[0].mValue = unk1;
     mUnk_0c[1].mValue = unk2;
     mUnk_0c[2].mValue = unk3;
@@ -4000,7 +4000,7 @@ void UnkStruct_02065c40::func_02070390() {
         }
         mUnk_12bc++;
     }
-    func_01ff96c4(data_020a1b48, mUnk_0c, 0x20);
+    MI_CpuCopy8(data_020a1b48, mUnk_0c, 0x20);
     if (mUnk_14e4 != 0) {
         mUnk_0c[3].mCommand = 0xe8;
     } else {

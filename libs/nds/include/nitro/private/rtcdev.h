@@ -26,4 +26,4 @@ void func_02005e30(void);                // DC_WaitWriteBufferEmpty
 int MI_DmaCopy16(int a, u32 b, void *c, u32 d); // DMA
 u32 OS_SetIrqMask(u32 mask);             // OS_SetIrqMask-like
 void OS_Terminate(void);                // OS_Terminate
-void MI_CpuCopy8(const void *src, void *dst, u32 size);
+void MIi_CpuCopyFast(const void *src, void *dst, u32 size);

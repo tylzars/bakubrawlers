@@ -11,7 +11,7 @@ extern MtxFx43 data_022191d4;
 extern "C" void func_02031838(void *renderObj, void (*callback)(NNSG3dRS *));
 extern "C" MtxFx43 *func_020323b8();
 extern "C" void func_01ff89c0(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);
-extern "C" void func_01ff96c4(const void *src, void *dst, u32 size);
+extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 void func_02053fc0(NNSG3dRS *rs);
 void func_02053fd8(NNSG3dRS *rs);
 
@@ -445,7 +445,7 @@ void CharacterModel::func_02053dc4(u32 part, const char *name, const char *file1
     data1 = (u8 *) func_02023504(buf1, 0, 0, 0, &size, 0);
     sprintf(buf2, "%s.ntfp", file2);
     data2 = (u8 *) func_02023504(buf2, 0, 0, 0, &size, 0);
-    func_01ff96c4(data2 + offset * 2, data1 + offset * 2, size - offset * 2);
+    MI_CpuCopy8(data2 + offset * 2, data1 + offset * 2, size - offset * 2);
     texture->func_020288d4(name, data1, size);
     OS_Free(data1);
     OS_Free(data2);

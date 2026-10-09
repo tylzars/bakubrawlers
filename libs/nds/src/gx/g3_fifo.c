@@ -66,7 +66,7 @@ void func_01ff93d8(u32 cmd, const void *params, u32 count) {
                 if (count == 0) {
                     return;
                 }
-                MI_CpuCopy8(params, data_01ffd1a0 + 1 + data_01ffd1a0[0], count << 2);
+                MIi_CpuCopyFast(params, data_01ffd1a0 + 1 + data_01ffd1a0[0], count << 2);
                 data_01ffd1a0[0] += count;
                 return;
             }

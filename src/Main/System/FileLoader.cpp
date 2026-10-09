@@ -14,7 +14,7 @@ extern "C" BOOL func_0200ec04(u32 src, void *dst, u32 len, u32 a, u32 b, u32 c, 
 extern "C" BOOL func_0200ed00(u32 cmd);
 extern "C" BOOL func_0200ee44();
 extern "C" int func_0200e60c();
-extern "C" void func_01ff96c4(const void *src, void *dst, u32 size);
+extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 void UnkStruct_020c17a8::func_02023b80() {
     u16 id = OS_GetLockID();
@@ -137,7 +137,7 @@ void UnkScene_020a54a8::Update() {
         }
         case 5: {
             task->mBuffer = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, 0x1000);
-            func_01ff96c4(data_020d43f0, (u8 *) task->mBuffer + 0xc, 0xff4);
+            MI_CpuCopy8(data_020d43f0, (u8 *) task->mBuffer + 0xc, 0xff4);
             u16 crc = UnkStruct_020c17a8::Get().func_02023bc4((u8 *) task->mBuffer + 0xc, 0xff4);
             ((UnkStruct_SaveBlock *) task->mBuffer)->mCrc    = crc;
             ((UnkStruct_SaveBlock *) task->mBuffer)->mMagic0 = 0x20071019;
@@ -222,7 +222,7 @@ void UnkScene_020a5494::Update() {
             UnkStruct_SaveBlock *block;
             u16 crc = UnkStruct_020c17a8::Get().func_02023bc4((block = (UnkStruct_SaveBlock *) task->mBuffer)->mData, 0xff4);
             if (block->mCrc == crc && block->mMagic1 == 0x19721021 && block->mMagic0 == 0x20071019) {
-                func_01ff96c4(block->mData, data_020d43f0, 0xff4);
+                MI_CpuCopy8(block->mData, data_020d43f0, 0xff4);
                 RequestScene(4);
                 task->mState++;
             } else if (++task->mTry < 2) {

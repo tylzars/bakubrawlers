@@ -106,7 +106,7 @@ struct AntennaPalette {
 };
 
 extern "C" void func_01ff94e0(const void *src, void *dst, u32 size);
-extern "C" void func_01ff96c4(const void *src, void *dst, u32 size);
+extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 void func_02078ab8(u32 screen, u32 palette, const AntennaPalette *colors, u32 unk4);
 void func_02078a48(u8 *dst, const u8 *src);
 
@@ -122,7 +122,7 @@ void func_0207889c(u32 screen, u32 offset, u32 palette, const void *colors, u32 
     u8 c     = pal->mUnk_00_13;
     u8 d     = pal->mUnk_02_3;
     u8 e     = pal->mUnk_02_9;
-    func_01ff96c4(file + a * 0x200, buffer, 0x200);
+    MI_CpuCopy8(file + a * 0x200, buffer, 0x200);
     if (d != 0) {
         if (e != 0) {
             func_02078a48(buffer, file + ((d - 1) * 0x200 + 0x2e00));

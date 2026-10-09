@@ -1079,7 +1079,7 @@ void func_ov007_02262a70(BattlePlayerList *list, u8 slot, u8 player) {
 
 void func_ov007_02262acc(BattlePlayerList *list) {
     list->mUnk_2a4 = new UnkStruct_02087898();
-    MI_CpuCopy8(data_020d4404, (u8 *) list->mPlayers[0] + 0xa8, 8);
+    MIi_CpuCopyFast(data_020d4404, (u8 *) list->mPlayers[0] + 0xa8, 8);
     switch (data_020d433c.mUnk_85) {
         case 1:
             if (data_020d433c.mUnk_82) {

@@ -294,8 +294,8 @@ int func_02009a9c(FSFile *f)
         else if (name <= 0xff00) len = 2;
         else len = 3;
     }
-    MI_CpuCopy8(arc, buf, len);
-    MI_CpuCopy8(data_020a4f3c, buf + len, 2);
+    MIi_CpuCopyFast(arc, buf, len);
+    MIi_CpuCopyFast(data_020a4f3c, buf + len, 2);
     func_02009668(&tmp, dir);
     if (target != 0x10000) {
         tmp.f30 = (u32) &ent;
@@ -306,7 +306,7 @@ int func_02009a9c(FSFile *f)
             } while (func_020093c8(&tmp, 3) == 0);
         }
         r = ent.name_len + 1;
-        MI_CpuCopy8(ent.name, buf + pos - r, r);
+        MIi_CpuCopyFast(ent.name, buf + pos - r, r);
         pos -= r;
     } else {
         buf[pos - 1] = 0;
@@ -322,7 +322,7 @@ int func_02009a9c(FSFile *f)
             do {
                 if (ent.is_dir != 0 && FH(&ent, 4) == dir) {
                     dir = ent.name_len;
-                    MI_CpuCopy8(ent.name, buf + pos - dir, dir);
+                    MIi_CpuCopyFast(ent.name, buf + pos - dir, dir);
                     pos -= dir;
                     break;
                 }
@@ -388,19 +388,19 @@ u32 func_02009ef8(const u8 *s, int len)
 
 int func_02009f50(FSArchive *arc, void *dst, u32 pos, u32 len)
 {
-    MI_CpuCopy8((u8 *) arc->base + pos, dst, len);
+    MIi_CpuCopyFast((u8 *) arc->base + pos, dst, len);
     return 0;
 }
 
 int func_02009f6c(FSArchive *arc, void *src, u32 pos, u32 len)
 {
-    MI_CpuCopy8(src, (u8 *) arc->base + pos, len);
+    MIi_CpuCopyFast(src, (u8 *) arc->base + pos, len);
     return 0;
 }
 
 int func_02009f8c(FSArchive *arc, void *dst, u32 pos, u32 len)
 {
-    MI_CpuCopy8((void *) pos, dst, len);
+    MIi_CpuCopyFast((void *) pos, dst, len);
     return 0;
 }
 

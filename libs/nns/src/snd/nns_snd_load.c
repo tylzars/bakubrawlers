@@ -14,7 +14,7 @@ extern void func_02008fe0(u32 wave, int idx, u32 data);
 extern u32 func_02008fd8(u32 wave);
 extern void func_02008e08(void *iter);
 extern int func_02008e28(u32 bank, void *entry, void *iter);
-extern void func_01ff96c4(void *dst, void *src, u32 n);
+extern void MI_CpuCopy8(void *dst, void *src, u32 n);
 extern void MI_CpuFill8(void *dst, u32 data, u32 size);
 typedef struct { u8 pad[0x38]; u32 count; } SndWaveHdr;   // 0x3c bytes of wave archive header
 extern SndWaveHdr data_022149b4;
@@ -96,7 +96,7 @@ u32 func_02038bd4(u32 id, SndHeap *heap, int flag) {
         if (p == 0) return 0;
         n = func_020380e8(id, (void *)p, tblBytes + 0x3c, 0);
         if (n != tblBytes + 0x3c) return 0;
-        func_01ff96c4((u8 *)p + 0x3c, (u8 *)p + 0x3c + ((SndWaveHdr *)p)->count * 4, tblBytes);
+        MI_CpuCopy8((u8 *)p + 0x3c, (u8 *)p + 0x3c + ((SndWaveHdr *)p)->count * 4, tblBytes);
         MI_CpuFill8((u8 *)p + 0x3c, 0, tblBytes);
         DC_StoreRange((void *)p, total + 0x3c);
         if (flag != 0) func_020381f8(id, p);

@@ -3112,13 +3112,13 @@ BOOL func_02084e64(UnkStruct_02078e14 *self) {
 }
 
 BOOL func_02084f40(UnkStruct_02078e14 *self) {
-    MI_CpuCopy8(data_020d4404, (u8 *) &data_0220f540 + 4, 8);
+    MIi_CpuCopyFast(data_020d4404, (u8 *) &data_0220f540 + 4, 8);
     if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 6)) {
         u32 count = WirelessManager::Get().func_0202f134();
         u8 j      = 0;
         do {
             BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[j];
-            MI_CpuCopy8((u8 *) player + 0x104, (u8 *) player + 0xa8, 8);
+            MIi_CpuCopyFast((u8 *) player + 0x104, (u8 *) player + 0xa8, 8);
             j++;
         } while (j < count);
         return TRUE;
@@ -3153,7 +3153,7 @@ BOOL func_0208501c(UnkStruct_02078e14 *self) {
             u8 k = 0;
             do {
                 BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[j];
-                MI_CpuCopy8((u8 *) player + 0x104 + k * 4, &player->mRecords[k], 4);
+                MIi_CpuCopyFast((u8 *) player + 0x104 + k * 4, &player->mRecords[k], 4);
                 k++;
             } while (k < 3);
             j++;

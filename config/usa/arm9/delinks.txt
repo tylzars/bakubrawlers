@@ -91,6 +91,7 @@ libs/cri/src/cri_wave_ch.c:
     .text       start:0x02048304 end:0x02049150
 
 libs/cri/src/cri_fade_grp.c:
+    complete
     .text       start:0x0204fc00 end:0x02050e60
 
 libs/cri/src/cri_mem_blk.c:
@@ -473,6 +474,7 @@ libs/nds/src/os/os_reset.c:
     .text       start:0x02007230 end:0x020073bc
 
 libs/nds/src/os/os_owner.c:
+    complete
     .text       start:0x020073bc end:0x0200745c
 
 libs/nds/src/os/os_irqowner.c:

@@ -561,7 +561,7 @@ extern UnkStruct_020c3938 data_020c3938[];
 extern u8 data_020d43eb[];
 extern u8 data_020d441a[];
 extern "C" void func_01ff94e0(const void *src, void *dest, u32 size);
-extern "C" void func_01ff96c4(const void *src, void *dest, u32 size);
+extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 void func_020233f8(UnkStruct_020d433c *data);
 void func_0202330c(UnkStruct_020d433c *data);
 
@@ -913,11 +913,11 @@ void ArenaScene::Update() {
             func_01ff94e0(data_020d441a, (u8 *) &data_0220f540 + 4, 0x18);
             break;
         case 13:
-            func_01ff96c4(data_020d43eb, (u8 *) &data_0220f540 + 4, 4);
+            MI_CpuCopy8(data_020d43eb, (u8 *) &data_0220f540 + 4, 4);
             if (func_ov001_0221c614(0x18) != 0) {
                 WirelessManager::Get();
                 if (data_020c4230.mUnk_20 != 0) {
-                    func_01ff96c4(WirelessManager::Get().func_0202f0cc(0) + 4, data_020d43eb, 4);
+                    MI_CpuCopy8(WirelessManager::Get().func_0202f0cc(0) + 4, data_020d43eb, 4);
                 }
                 mMode++;
             }

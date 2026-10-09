@@ -31,16 +31,16 @@ BattleSideHelper::BattleSideHelper(u8 index, u8 unk2, BattleEntry *entries) {
         mUnk_04 = 1;
         switch (func_02065c0c(*id, 3)) {
             case 0:
-                MI_CpuCopy8(row->mUnk_00, &mUnk_0c, 8);
+                MIi_CpuCopyFast(row->mUnk_00, &mUnk_0c, 8);
                 break;
             case 1:
-                MI_CpuCopy8(row->mUnk_00 + 8, &mUnk_0c, 8);
+                MIi_CpuCopyFast(row->mUnk_00 + 8, &mUnk_0c, 8);
                 break;
             case 2:
-                MI_CpuCopy8(row->mUnk_00 + 0x10, &mUnk_0c, 8);
+                MIi_CpuCopyFast(row->mUnk_00 + 0x10, &mUnk_0c, 8);
                 break;
             case 3:
-                MI_CpuCopy8(row->mUnk_00 + 0x18, &mUnk_0c, 8);
+                MIi_CpuCopyFast(row->mUnk_00 + 0x18, &mUnk_0c, 8);
                 break;
             default:
                 mUnk_04 = 0;

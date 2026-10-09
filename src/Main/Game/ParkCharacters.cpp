@@ -372,7 +372,7 @@ void func_02089924(u32 index, void *out) {
         }
         do {
             if (entries->mUnk_06 != 0xff && category >= entries->mUnk_07 && func_02089c7c(entries->mUnk_06)) {
-                MI_CpuCopy8(entries, out, 12);
+                MIi_CpuCopyFast(entries, out, 12);
                 found = TRUE;
                 break;
             }
@@ -385,9 +385,9 @@ void func_02089924(u32 index, void *out) {
     }
     entries = groups[group].mEntries;
     if (data_020d43f0[0].mUnk_5bf_0) {
-        MI_CpuCopy8(&entries[data_020d433c.mUnk_8d[index]], out, 12);
+        MIi_CpuCopyFast(&entries[data_020d433c.mUnk_8d[index]], out, 12);
     } else {
-        MI_CpuCopy8(&entries[groups[group].mDefault], out, 12);
+        MIi_CpuCopyFast(&entries[groups[group].mDefault], out, 12);
     }
 }
 

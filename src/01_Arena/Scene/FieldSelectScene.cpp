@@ -35,7 +35,7 @@ struct UnkStruct_020c4230 {
 };
 extern UnkStruct_020c4230 data_020c4230;
 extern u8 data_020d43e3[];
-extern "C" void func_01ff96c4(const void *src, void *dest, u32 size);
+extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 
 #define NET_KEYS (*(u16 *) ((u8 *) &data_0220f540 + 4))
 #define NET_BYTE(n) (*((u8 *) &data_0220f540 + (n)))
@@ -309,7 +309,7 @@ void FieldSelectScene::Update() {
             if (IsWirelessMode(&data_020c4030.mUnk_228)) {
                 mState++;
             } else {
-                MI_CpuCopy8(data_020d4404, mUnk_14c, 8);
+                MIi_CpuCopyFast(data_020d4404, mUnk_14c, 8);
                 mState = 4;
             }
             break;
@@ -991,8 +991,8 @@ BOOL FieldSelectScene::func_ov001_02221aa8(u32 unk1) {
 }
 
 BOOL FieldSelectScene::func_ov001_02221c0c() {
-    func_01ff96c4(data_020d496a, (u8 *) &data_0220f540 + 4, 9);
-    func_01ff96c4(data_020d4968, (u8 *) &data_0220f540 + 0xd, 1);
+    MI_CpuCopy8(data_020d496a, (u8 *) &data_0220f540 + 4, 9);
+    MI_CpuCopy8(data_020d4968, (u8 *) &data_0220f540 + 0xd, 1);
     data_0220f540.mUnk_0e = data_020d43f0[0].mUnk_27;
     data_0220f540.mUnk_0f = data_020d43f0[0].mUnk_5bf_0;
     if (func_ov001_02221aa8(0x17)) {
@@ -1050,14 +1050,14 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
 }
 
 BOOL FieldSelectScene::func_ov001_02221f1c() {
-    MI_CpuCopy8(data_020d4404, (u8 *) &data_0220f540 + 4, 8);
+    MIi_CpuCopyFast(data_020d4404, (u8 *) &data_0220f540 + 4, 8);
     if (func_ov001_02221aa8(6)) {
         u32 count = WirelessManager::Get().func_0202f134();
         u8 i      = 0;
         do {
             u8 *p = WirelessManager::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
             if (p != NULL) {
-                MI_CpuCopy8(p + 4, mUnk_14c + i * 8, 8);
+                MIi_CpuCopyFast(p + 4, mUnk_14c + i * 8, 8);
             }
             i++;
         } while (i < count);

@@ -27,7 +27,7 @@ extern "C" u32 func_02011a64(void *callback, u32 arg);
 extern "C" u8 *func_02011968(void *buf, void *a, u32 index);
 extern "C" u32 func_020119ec(void *callback, u32 a, u32 b, u32 channel, u32 c);
 extern "C" void DC_InvalidateRange(void *p, u32 size);
-extern "C" void func_01ff96c4(const void *src, void *dst, u32 size);
+extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern "C" void func_01ff9510(const void *src, void *dst, u32 size);
 extern "C" u32 func_0201071c(void *callback);
 
@@ -149,7 +149,7 @@ void func_0202db04(WmCallbackArg *arg) {
                         break;
                 }
             } else {
-                func_01ff96c4(arg->mUnk_0c, &data_0220f5a0[mgr.mUnk_1249], 4);
+                MI_CpuCopy8(arg->mUnk_0c, &data_0220f5a0[mgr.mUnk_1249], 4);
                 mgr.mUnk_1249 = (mgr.mUnk_1249 + 1) % 4;
             }
             break;
@@ -454,7 +454,7 @@ void WirelessManager::func_0202e7c8() {
 }
 
 void WirelessManager::func_0202e7fc(u32 unk1) {
-    func_01ff96c4(&mUnk_0908[unk1], data_0220f7a0, 0xc0);
+    MI_CpuCopy8(&mUnk_0908[unk1], data_0220f7a0, 0xc0);
     if (func_020109e0((void *) func_0202e374, data_0220f7a0, mUnk_1231, 1, 0) != 2) {
         mUnk_122a = 6;
     } else {
@@ -478,7 +478,7 @@ void WirelessManager::func_0202e864() {
             if (m2) { if (scan->mBssid[4] == mUnk_0008[i].mBssid[4]) { m3 = true; } }
             if (m3) { if (scan->mBssid[5] == mUnk_0008[i].mBssid[5]) { m4 = true; } }
             if (m4) {
-                func_01ff96c4(data_0220f7a0, &mUnk_0008[i], 0xc0);
+                MI_CpuCopy8(data_0220f7a0, &mUnk_0008[i], 0xc0);
                 mUnk_1208[i] = 300;
                 return;
             }
@@ -488,7 +488,7 @@ void WirelessManager::func_0202e864() {
     i = 0;
     do {
         if (mUnk_1208[i] == 0) {
-            func_01ff96c4(data_0220f7a0, &mUnk_0008[i], 0xc0);
+            MI_CpuCopy8(data_0220f7a0, &mUnk_0008[i], 0xc0);
             mUnk_1208[i] = 300;
             return;
         }
@@ -518,7 +518,7 @@ void WirelessManager::func_0202ea84() {
         return;
     }
     mUnk_122b = 0;
-    func_01ff96c4(&data_0220f5c0[mUnk_124c], &data_0220f600, 4);
+    MI_CpuCopy8(&data_0220f5c0[mUnk_124c], &data_0220f600, 4);
     if (func_0202eb08(&data_0220f600, 4) == 0) {
         return;
     }
@@ -642,7 +642,7 @@ u32 WirelessManager::func_0202ee10(u32 unk1, void *unk2, u32 unk3, u32 unk4) {
     }
     MI_CpuFill8(data_0220f680, 0, 0x70);
     if (unk2 != 0 && unk3 != 0) {
-        func_01ff96c4(unk2, data_0220f680, unk3);
+        MI_CpuCopy8(unk2, data_0220f680, unk3);
     }
     func_0202e544();
     mUnk_0004 = unk4;
@@ -670,7 +670,7 @@ u32 WirelessManager::func_0202eefc(u32 unk1, void *unk2, u32 unk3) {
     }
     MI_CpuFill8(mUnk_1231, 0, 0x18);
     if (unk2 != 0 && unk3 != 0) {
-        func_01ff96c4(unk2, mUnk_1231, unk3);
+        MI_CpuCopy8(unk2, mUnk_1231, unk3);
     }
     func_0202e544();
     mUnk_1228 = 5;
@@ -689,7 +689,7 @@ u32 WirelessManager::func_0202ef80() {
     u8 i = 0;
     for (i = 0; i < WM_ENTRY_COUNT; i++) {
         if (mUnk_1208[i] != 0) {
-            func_01ff96c4(&mUnk_0008[i], &mUnk_0908[n++], WM_ENTRY_SIZE);
+            MI_CpuCopy8(&mUnk_0008[i], &mUnk_0908[n++], WM_ENTRY_SIZE);
         }
     }
     u16 tmp = *ime;
@@ -698,7 +698,7 @@ u32 WirelessManager::func_0202ef80() {
 }
 
 u32 WirelessManager::func_0202f024(void *unk1) {
-    func_01ff96c4(unk1, &data_0220f5c0[mUnk_124b], 4);
+    MI_CpuCopy8(unk1, &data_0220f5c0[mUnk_124b], 4);
     mUnk_124b = (mUnk_124b + 1) % 4;
     func_0202ea84();
     return 1;
@@ -708,7 +708,7 @@ u32 WirelessManager::func_0202f078(void *unk1) {
     if ((mUnk_1228 != 6) & (mUnk_1228 != 7)) {
         return 0;
     }
-    func_01ff96c4(unk1, data_0220f620, 0x20);
+    MI_CpuCopy8(unk1, data_0220f620, 0x20);
     return 1;
 }
 

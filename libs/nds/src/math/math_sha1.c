@@ -50,13 +50,13 @@ void func_0200b5d8(SHA1Ctx *c, const u8 *data, u32 len)
     if (c->fill != 0) {
         if (c->fill + len >= 0x40) {
             n = 0x40 - c->fill;
-            MI_CpuCopy8(data, buf + c->fill, n);
+            MIi_CpuCopyFast(data, buf + c->fill, n);
             len -= n;
             data += n;
             data_020a4f50(c, buf, 0x40);
             c->fill = 0;
         } else {
-            MI_CpuCopy8(data, buf + c->fill, len);
+            MIi_CpuCopyFast(data, buf + c->fill, len);
             c->fill += len;
             return;
         }
@@ -69,7 +69,7 @@ void func_0200b5d8(SHA1Ctx *c, const u8 *data, u32 len)
             data += m;
         } else {
             do {
-                MI_CpuCopy8(data, buf, 0x40);
+                MIi_CpuCopyFast(data, buf, 0x40);
                 data += 0x40;
                 data_020a4f50(c, buf, 0x40);
                 m -= 0x40;
@@ -78,7 +78,7 @@ void func_0200b5d8(SHA1Ctx *c, const u8 *data, u32 len)
     }
     c->fill = len;
     if (len == 0) return;
-    MI_CpuCopy8(data, buf, len);
+    MIi_CpuCopyFast(data, buf, len);
 }
 
 void func_0200b72c(SHA1Ctx *c, u8 *out)

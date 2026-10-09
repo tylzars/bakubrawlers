@@ -35,7 +35,7 @@ extern void OS_UnlockMutex(void *mutex);
 extern void OS_SleepThread(void *queue);
 extern void OS_CreateThread(void *thr, void *fn, void *arg, void *stack, u32 size, u32 prio);
 extern void OS_WakeupThreadDirect(void *thr);
-extern void func_01ff96c4(void *src, void *dst, u32 len);
+extern void MI_CpuCopy8(void *src, void *dst, u32 len);
 extern s32 func_0203a4e0(SndLerp *l);
 extern s16 data_0208f89c[];
 extern void *NNS_FndGetNextListObject(void *list, void *obj);
@@ -475,7 +475,7 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
                 } else if (s->b6) {
                     MI_CpuFill8(dst, 0, outBytes);
                 } else {
-                    func_01ff96c4(c->buf[0] + offset, dst, outBytes);
+                    MI_CpuCopy8(c->buf[0] + offset, dst, outBytes);
                 }
             }
             if (s->b4) {
@@ -539,7 +539,7 @@ int func_0203a3b4(WavStrm *s) {
 
 int func_0203a3c4(WavStrm *s, u32 id) {   // open from memory
     s->dataBase = func_020381d0(id);
-    func_01ff96c4((void *)s->dataBase, s->hdrPad, 0x40);
+    MI_CpuCopy8((void *)s->dataBase, s->hdrPad, 0x40);
     return 1;
 }
 
@@ -547,7 +547,7 @@ void func_0203a3ec(WavStrm *s) {
 }
 
 int func_0203a3f0(WavStrm *s, void *dst, u32 len, u32 off) {
-    func_01ff96c4((u8 *)s->dataBase + off, dst, len);
+    MI_CpuCopy8((u8 *)s->dataBase + off, dst, len);
     return len;
 }
 

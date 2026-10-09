@@ -81,7 +81,7 @@ BOOL func_0200b0d4(FSOverlayInfo *out, int target, int id)
     FSFileID fid;
     if (loc->ptr != 0) {
         if (loc->size <= id * 0x20) return FALSE;
-        MI_CpuCopy8((void *) (loc->ptr + id * 0x20), out, 0x20);
+        MIi_CpuCopyFast((void *) (loc->ptr + id * 0x20), out, 0x20);
         out->target = target;
         func_0200a7b4(&tmp);
         fid = func_0200afb4(out);
@@ -123,7 +123,7 @@ BOOL func_0200b260(const u32 *expected, const void *data, u32 len)
     u32 i;
     u32 *p;
     MI_CpuFill8(digest, 0, 0x14);
-    MI_CpuCopy8(data_020a4f44.key, key, data_020a4f44.keylen);
+    MIi_CpuCopyFast(data_020a4f44.key, key, data_020a4f44.keylen);
     func_0200b928((u8 *) digest, data, len, key, data_020a4f44.keylen);
     p = digest;
     for (i = 0; i < 0x14; i += 4) {

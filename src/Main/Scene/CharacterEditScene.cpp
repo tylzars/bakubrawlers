@@ -1940,7 +1940,7 @@ void CharacterEditScene::func_02062194() {
     mCells[9]->mCharBase = screen1.func_020276f4(0x14000);
     mCells[9]->mUnk_11 = 10;
     mCells[9]->SetAnimation(0);
-    ChangeDir("/Game/2D/union_b");
+    ChangeDir("/Game/2d/union_b");
     u8 i = 10;
     do {
         mCells[i] = new CellAnimation("union_b_obj_edit_nce.bin", 0, 1, 1);

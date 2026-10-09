@@ -78,6 +78,8 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   the original's range. Probes and objdiff mask call targets, so both are needed: a near-identical neighbour
   (`DC_StoreRange`/`DC_FlushRange`, `MI_CpuCopy8`/`MIi_CpuCopyFast`, signed/unsigned division) is easy to call by
   mistake. It skips `this`-adjusting thunks and ignores branch-like literal-pool words; a clean run reports 0.
+  `tools/check_strings.py` does the same for string literals in matching functions (a wrong file name or a case
+  difference in a path still "matches"). Run all three before committing.
 
 ## Data layout within a section
 

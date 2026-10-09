@@ -115,9 +115,9 @@ void CharacterModel::func_020528b0(u32 part, u32 sex) {
             mUnk_38[4] = mUnk_6c;
             if (mUnk_38[4] != 0) {
                 ChangeDir("/Game/Character/EditedCharacter/Male/Glasse");
-                sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[4], mUnk_38[4] - 1);
+                sprintf(buf, "edit_%s_MF%02d.nsbtx", data_020b24e4[4], mUnk_38[4] - 1);
                 UnkStruct_02028308 *texture = new NitroTexture(buf);
-                sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[4], mUnk_38[4] - 1);
+                sprintf(buf, "edit_%s_MF%02d.nsbmd", data_020b24e4[4], mUnk_38[4] - 1);
                 NitroModel *model = new NitroModel(buf, texture);
                 mParts[4]         = model->func_02028b78(NULL);
                 func_0205340c(4);

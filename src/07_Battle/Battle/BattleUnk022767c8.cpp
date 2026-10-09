@@ -18,8 +18,8 @@
 
 extern u8 data_020d49a1[];
 
-static inline void ClearBit(u8 *flags, int index) {
-    flags[index / 8] &= ~(1 << (index % 8));
+static inline void ClearBit(void *flags, int index) {
+    ((u8 *) flags)[index / 8] &= ~(1 << (index % 8));
 }
 
 static const u16 sSparkleFrames[6][2] = {

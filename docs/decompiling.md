@@ -328,6 +328,13 @@ Other findings from linking:
   just before a loop puts the address computation before the loop guard; `((T *)&x)[k]` at each use moves it after
   the guard, and initialising it in the declaration recolours the whole function (MSL printf's float formatter).
   Index a table with the global field in place (`&tbl[g.a]`) rather than through a named copy of the index.
+- **A cast on the address swaps address and value registers.** In a read-modify-write of a global, a direct access
+  (`g.x |= 1`, `fl[1] &= ~0x20`) colours the address first (lower register); going through a pointer cast, even a
+  no-op one (`*(u8 *)&g |= 1`, `((u8 *)fl)[1] &= ...`, or a helper taking `void *` and casting back), gives the value
+  the lower register. The cast also stops reuse of an already loaded base: `*(u8 *)&data_020d43f0[0].mUnk_24 |= 1`
+  gets its own pool word. Don't change the shared SetFlagBit/TestFlagBit helpers: existing matches depend on them.
+- **The register of a zero stack argument can depend on the calls before it** (a 7-call cycle with
+  `func_02025b64(1, 8, 0, ...)` in tests); the source difference behind it is still open (func_02072734).
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

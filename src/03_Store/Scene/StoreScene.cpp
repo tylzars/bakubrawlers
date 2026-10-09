@@ -94,7 +94,6 @@ void StoreScene::Cleanup() {
     }
 }
 
-// non-matching: the cases' fall-through order differs (register swap on the data_020d4414 write in case 0)
 void StoreScene::Update() {
     UnkStruct_SceneContext *ctx = mContext;
     switch (ctx->mInfo.mState) {
@@ -103,7 +102,7 @@ void StoreScene::Update() {
                 ctx->mInfo.mState = 6;
                 break;
             }
-            data_020d4414.mUnk_00 |= 1;
+            *(u8 *) &data_020d43f0[0].mUnk_24 |= 1;
             ctx->mInfo.mState++;
             break;
         case 1:

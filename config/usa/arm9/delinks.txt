@@ -81,6 +81,9 @@ libs/nns/src/snd/nns_snd_capture.c:
 libs/nns/src/snd/nns_snd_arc.c:
     .text       start:0x02037af8 end:0x020381b0
 
+libs/nns/src/snd/nns_snd_wavstrm.c:
+    .text       start:0x0203913c end:0x0203a52c
+
 // NitroSDK (2.0/sp1p5, C); code only so far.
 libs/nds/src/fx/fx_mtx44_concat.c:
     .text       start:0x02000de8 end:0x0200144c

@@ -6,7 +6,7 @@ extern "C" void func_02036780();
 extern "C" void func_020367b0(u32 volume);
 extern "C" u32 func_0203824c(void *buffer, u32 size);
 extern "C" void func_02037af8(void *arc, const char *path, u32 heap, u32 unk);
-extern void func_020392fc(u32 a, u32 heap);
+extern "C" void func_020392fc(u32 a, u32 heap);
 extern "C" void func_02038fac(u32 heap);
 extern "C" void func_020385b8(s32 id, u32 heap);
 extern "C" void func_020383f8(u32 heap);

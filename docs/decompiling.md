@@ -58,7 +58,16 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   - Named `char[]` arrays instead of literals are permuted the same way, so they are not a way around it.
   `build/lit/both.py`-style probing (compile, read the relocations of the table, rank the target sections) is the
   quickest way to test ideas.
-- **Guard load before a preceding store.** Before a singleton `Get()`, the original loads the guard word ahead of
+  - New (see "Data layout within a section"): the literals of data initializers are sorted by size together with
+    every other object of the file, `.bss` included. Putting `Text/TextManager.hpp` first changes the order
+    of GameOverScene's five copies, and so does moving a table without strings. Literals used inside functions are
+    not in that list (they come out in creation order). No combination of table order and the first two singleton
+    includes reproduces the original yet; `build/lit2/gos.py` measures the order for a source variant.
+- **Guard load before a preceding store.** Cause found: mwcc moves the guard load above the store only when the
+  store's base pointer is defined in an earlier basic block (a store through a `TextManager &` bound earlier
+  reorders; `TextManager::Get().mUnk_5b = 0` with its own guard check does not). Holding the reference from the
+  top of the function reproduces the order but costs a callee-saved register the original doesn't use; the
+  original rematerializes the address. The source form is still open. Previously: Before a singleton `Get()`, the original loads the guard word ahead of
   a store from the previous statement: the `TextManager::mUnk_5b` store (`StoreScene::PrintStatus`,
   `MapScene::LoadPanelText2`, ov000 `RenderName`, ov002 `0221dbd4`/`0221df48`, ov001 `0221c1d8`) or an unrelated
   global (`MapScene::func_ov005_0221bde8`, a `u16` copy inside `data_020d48f0`). No 2.0 or DSi compiler build

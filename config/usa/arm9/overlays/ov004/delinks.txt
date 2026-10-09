@@ -4,13 +4,14 @@
     .data       start:0x0221dc60 end:0x0221e3a0 kind:data align:32
     .bss        start:0x0221e3a0 end:0x0221e3e0 kind:bss align:32
 
-// provisional: code only; data sections not assigned to files yet.
+// ParkScene, ParkPopup and the ParkRules functions after it are one file: ParkScene's tables sit on both sides
+// of ParkPopup's.
 src/04_Park/Scene/ParkScene.cpp:
-    .text       start:0x02219440 end:0x0221ba3c
-
-// provisional: ParkPopup and the ParkRules functions after it
-src/04_Park/Park/ParkPopup.cpp:
-    .text       start:0x0221ba3c end:0x0221c1d4
+    complete
+    .text       start:0x02219440 end:0x0221c1d4
+    .rodata     start:0x0221d7f4 end:0x0221daa8
+    .data       start:0x0221dc60 end:0x0221e058
+    .bss        start:0x0221e3a0 end:0x0221e3b8
 
 // provisional
 src/04_Park/Park/ParkMenu.cpp:

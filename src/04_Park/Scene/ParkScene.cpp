@@ -1,10 +1,12 @@
+#include "Text/TextManager.hpp"
+#include "System/FrameTask.hpp"
+#include "Graphics/SpriteManager.hpp"
 #include "global.h"
 #include "types.h"
 #include "Scene/ParkScene.hpp"
 #include "Park/ParkMenu.hpp"
 #include "Park/ParkPopup.hpp"
 #include "Game/Random.hpp"
-#include "System/FrameTask.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include "Unknown/UnkStruct_02070608.hpp"
 #include "Unknown/UnkStruct_0208ab40.hpp"
@@ -12,7 +14,6 @@
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
 #include "UI/SelectWindow.hpp"
 #include <nitro/gx.h>
@@ -44,22 +45,47 @@ struct ParkRandEntry {
     u8 mKind;
     u8 mPad;
 };
-extern const ParkRandEntry data_ov004_0221d910[][6];
-extern const u16 data_ov004_0221d7f4;
+static const ParkRandEntry data_ov004_0221d910[17][6] = {
+    {{6, 1, 0}, {7, 1, 0}, {8, 1, 0}, {6, 3, 0}, {7, 3, 0}, {8, 3, 0}},
+    {{9, 1, 0}, {10, 1, 0}, {11, 1, 0}, {9, 3, 0}, {10, 3, 0}, {11, 3, 0}},
+    {{12, 1, 0}, {13, 1, 0}, {14, 1, 0}, {12, 3, 0}, {13, 3, 0}, {14, 3, 0}},
+    {{15, 1, 0}, {16, 1, 0}, {17, 1, 0}, {15, 3, 0}, {16, 3, 0}, {17, 3, 0}},
+    {{18, 1, 0}, {19, 1, 0}, {20, 1, 0}, {18, 3, 0}, {19, 3, 0}, {20, 3, 0}},
+    {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}},
+    {{21, 1, 0}, {22, 1, 0}, {23, 1, 0}, {21, 3, 0}, {22, 3, 0}, {23, 3, 0}},
+    {{3, 1, 0}, {4, 1, 0}, {5, 1, 0}, {3, 3, 0}, {4, 3, 0}, {5, 3, 0}},
+    {{24, 1, 0}, {25, 1, 0}, {26, 1, 0}, {24, 3, 0}, {25, 3, 0}, {26, 3, 0}},
+    {{27, 1, 0}, {28, 1, 0}, {29, 1, 0}, {27, 3, 0}, {28, 3, 0}, {29, 3, 0}},
+    {{30, 1, 0}, {31, 1, 0}, {32, 1, 0}, {30, 3, 0}, {31, 3, 0}, {32, 3, 0}},
+    {{33, 1, 0}, {34, 1, 0}, {35, 1, 0}, {33, 3, 0}, {34, 3, 0}, {35, 3, 0}},
+    {{36, 1, 0}, {37, 1, 0}, {38, 1, 0}, {36, 3, 0}, {37, 3, 0}, {38, 3, 0}},
+    {{39, 1, 0}, {40, 1, 0}, {41, 1, 0}, {39, 3, 0}, {40, 3, 0}, {41, 3, 0}},
+    {{42, 1, 0}, {43, 1, 0}, {44, 1, 0}, {42, 3, 0}, {43, 3, 0}, {44, 3, 0}},
+    {{45, 1, 0}, {46, 1, 0}, {47, 1, 0}, {45, 3, 0}, {46, 3, 0}, {47, 3, 0}},
+    {{48, 1, 0}, {49, 1, 0}, {50, 1, 0}, {48, 3, 0}, {49, 3, 0}, {50, 3, 0}},
+};
 
-extern const char data_ov004_0221dd50[];
-extern const char data_ov004_0221dd5c[];
-extern const char data_ov004_0221dd68[];
-extern const char data_ov004_0221dd78[];
-extern const char data_ov004_0221dd88[];
-extern const char data_ov004_0221dd9c[];
-extern const char data_ov004_0221ddb0[];
-extern const char data_ov004_0221ddc4[];
-extern const char data_ov004_0221ddd8[];
-extern const char data_ov004_0221ddec[];
-extern const char data_ov004_0221ddfc[];
-extern const char data_ov004_0221de10[];
-extern const char data_ov004_0221de24[];
+static const WindowItemRecord sTwoButtonItems[2] = {
+    {0, 0x1, 89, 152, 78, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {1, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+};
+
+static const WindowCellRecord sThreeButtonCells[3] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0x10000, 0, 0, 1, {3, 5, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0x10000, 0, 0, 1, {6, 8, 7, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x10000, 0, 0, 1, {10, 10, 10, 0}},
+};
+
+static const WindowCellRecord sTwoButtonCells[2] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0x10000, 0, 0, 1, {0, 2, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0x10000, 0, 0, 1, {9, 9, 9, 0}},
+};
+
+static const WindowItemRecord sThreeButtonItems[3] = {
+    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
+    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
+    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+};
 
 
 ParkScene::ParkScene() :
@@ -274,9 +300,9 @@ void ParkScene::Update() {
             u16 message = data_ov004_0221d910[idx][pick].mMessage;
             u8 ok;
             if (nib != 0) {
-                ok = mEvent->func_0206f9b4(data_ov004_0221dd50, idx, kind, message, 0, 2, 0);
+                ok = mEvent->func_0206f9b4("mes_pm_win", idx, kind, message, 0, 2, 0);
             } else {
-                ok = mEvent->func_0206f9b4(data_ov004_0221dd5c, idx, kind, message, 1, 2, 0);
+                ok = mEvent->func_0206f9b4("mes_pm_lose", idx, kind, message, 1, 2, 0);
             }
             if (ok == 0) {
                 break;
@@ -332,7 +358,7 @@ void ParkScene::Update() {
                 break;
             }
             data_020d433c.mUnk_7c = 1;
-            mEvent->func_0206ef4c(data_ov004_0221dd68, 5, 0xa, 2, 0x15);
+            mEvent->func_0206ef4c("mes_pm_button", 5, 0xa, 2, 0x15);
             mUnk_0d++;
             break;
         case 19: {
@@ -408,31 +434,31 @@ void ParkScene::Update() {
             char name[0x20];
             switch (entry.mType) {
                 case 0:
-                    sprintf(name, data_ov004_0221dd78);
+                    sprintf(name, "mes_pm_battle");
                     kind = 3;
                     break;
                 case 1:
-                    sprintf(name, data_ov004_0221dd88);
+                    sprintf(name, "mes_pm_Teambattle");
                     kind = 4;
                     break;
                 case 2:
-                    sprintf(name, data_ov004_0221dd9c);
+                    sprintf(name, "mes_pm_BattleRoyale");
                     kind = 5;
                     break;
                 case 3:
-                    sprintf(name, data_ov004_0221ddb0);
+                    sprintf(name, "mes_pm_mes_only_1");
                     kind = 6;
                     break;
                 case 4:
-                    sprintf(name, data_ov004_0221ddc4);
+                    sprintf(name, "mes_pm_mes_only_2");
                     kind = 7;
                     break;
                 case 5:
-                    sprintf(name, data_ov004_0221ddd8);
+                    sprintf(name, "mes_pm_mes_only_3");
                     kind = 8;
                     break;
                 case 6:
-                    sprintf(name, data_ov004_0221ddec);
+                    sprintf(name, "mes_pm_Tutorial");
                     shown = entry.mUnk_0a_h;
                     if (shown == 0 && (data_020d43f0[0].mUnk_5be & 8)) {
                         shown = 1;
@@ -440,7 +466,7 @@ void ParkScene::Update() {
                     kind = 9;
                     break;
             }
-            u16 halves[2] = {data_ov004_0221d7f4, idx};
+            u16 halves[2] = {0x15, idx};
             u8 bytes[2]   = {entry.mUnk_04, entry.mUnk_05};
             if (!mEvent->func_0206fa20(name, halves, bytes, 2, shown, kind, 2, 1, 1)) {
                 break;
@@ -499,7 +525,7 @@ void ParkScene::Update() {
         case 28: {
             ParkEntry entry;
             func_02089924(mUnk_0c, &entry);
-            reinterpret_cast<ParkPopup *>(this)->Open(data_ov004_0221ddfc, (u8) (entry.mUnk_06 + 5), 1);
+            reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", (u8) (entry.mUnk_06 + 5), 1);
             ShowWindow();
             mUnk_0d++;
             break;
@@ -518,7 +544,7 @@ void ParkScene::Update() {
             mUnk_0d++;
             break;
         case 31:
-            reinterpret_cast<ParkPopup *>(this)->Open(data_ov004_0221de10, 2, 0);
+            reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", 2, 0);
             ShowWindow();
             mUnk_0d++;
             break;
@@ -621,7 +647,7 @@ void ParkScene::Update() {
             mUnk_0d = 0x11;
             break;
         case 36:
-            reinterpret_cast<ParkPopup *>(this)->Open(data_ov004_0221de24, 4, 0);
+            reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", 4, 0);
             ShowWindow();
             mUnk_0d++;
             break;
@@ -839,4 +865,112 @@ void ParkScene::HideWindow() {
     GXS_SetVisibleWnd(0);
     G2S_SetWnd0InsidePlane(0x1f, FALSE);
     G2S_SetWndOutsidePlane(0x3f, FALSE);
+}
+
+void ParkPopup::Open(const char *mesPath, u32 index, u32 mode) {
+    ChangeDir("/Game/2D/union_b/");
+    func_02025b64(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    func_02025b64(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    SpriteScreen &screen = SpriteManager::Get().Screen(1);
+    ChangeDir("/Game/2D/union_b/");
+    screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x10000, 0);
+    screen.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
+    if (mMessages != NULL) {
+        OS_Free(mMessages);
+    }
+    if (mTextBuffer != NULL) {
+        OS_Free(mTextBuffer);
+    }
+    if (mGlyphBuffer != NULL) {
+        OS_Free(mGlyphBuffer);
+    }
+    mMessages       = (MessageFile *) func_02023504(mesPath, 0, 0, 0, 0, 0);
+    mTextBufferSize = TextManager::Get().BufferSize(0x18, 0xc);
+    mGlyphCount     = TextManager::Get().GlyphCount(9);
+    mTextBuffer     = OS_Alloc(mTextBufferSize);
+    mGlyphBuffer    = OS_Alloc(mGlyphCount * 0xc);
+    TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x18, 0xc, 0x42);
+    PrintMessage(index);
+    delete mWindow;
+    switch (mode) {
+        case 0:
+            mWindow = new SelectWindow(3, sThreeButtonItems, 1);
+            mWindow->SetCells(3, sThreeButtonCells);
+            break;
+        case 1:
+            mWindow = new SelectWindow(2, sTwoButtonItems, 0);
+            mWindow->SetCells(2, sTwoButtonCells);
+            break;
+    }
+    mWindow->mCursor->mSelection = -1;
+    mWindow->mUnk_064            = 0;
+    ChangeDir("/");
+}
+
+void ParkPopup::PrintMessage(u32 index) {
+    MI_CpuClear16(mTextBuffer, mTextBufferSize);
+    TextManager &text = TextManager::Get();
+    s16 height;
+    s16 width;
+    width             = 0;
+    height            = 0;
+    MessageFile *file = mMessages;
+    text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x18, 0xc, &height, &width, 0, 0, 2, 0x42,
+               0x10, 0, 0, 0, 1, 1);
+    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x1b000, mTextBuffer, mTextBufferSize, 0);
+}
+
+struct ParkRulesBuf {
+    u8 pad[6];
+    u8 mId;
+    u8 pad2[5];
+};
+
+BOOL ParkRules::func_ov004_0221bf5c() {
+    u8 lo = data_020d433c.mUnk_8b_0;
+    u8 hi = data_020d433c.mUnk_8b_4;
+    u8 saved = data_020d43f0[0].mUnk_5b8;
+    ParkRulesBuf buf;
+    data_020d43f0[0].mUnk_5b8 = hi;
+    func_02089924(lo, &buf);
+    u8 id = buf.mId;
+    data_020d43f0[0].mUnk_5b8 = saved;
+    BOOL ok = 1;
+    if (id == 0xff) {
+        return 0;
+    }
+    switch (id) {
+        case 11: if (CountSlotsWith(0) != 3) ok = 0; break;
+        case 12: if (CountSlotsWith(1) != 3) ok = 0; break;
+        case 13: if (CountSlotsWith(2) != 3) ok = 0; break;
+        case 14: if (CountSlotsWith(3) != 3) ok = 0; break;
+        case 15: if (CountSlotsWith(4) != 3) ok = 0; break;
+        case 16: if (CountSlotsWith(5) != 3) ok = 0; break;
+        case 17: if (CountSlotsWith(0) != 0) ok = 0; break;
+        case 18: if (CountSlotsWith(3) != 0) ok = 0; break;
+        case 19: if (CountSlotsWith(1) != 0) ok = 0; break;
+        case 20: if (CountSlotsWith(2) != 0) ok = 0; break;
+        case 21: if (CountSlotsWith(4) != 0) ok = 0; break;
+        case 22: if (CountSlotsWith(5) != 0) ok = 0; break;
+        case 24: if (CountSlotsWith(4) != 0) ok = 0; break;
+        case 25: if (data_020d433c.mUnk_8c_0 == 0) ok = 0; break;
+    }
+    if (ok) {
+        func_020876f0(buf.mId);
+        if (buf.mId == 0x19) {
+            func_020876f0(0x1a);
+        }
+    }
+    return ok;
+}
+
+u8 ParkRules::CountSlotsWith(u32 value) {
+    u8 count = 0;
+    for (u8 i = 0; i < 3; i++) {
+        if (value == func_020230a8(&data_020d43f0[0], 0, i)) {
+            count++;
+        }
+    }
+    return count;
 }

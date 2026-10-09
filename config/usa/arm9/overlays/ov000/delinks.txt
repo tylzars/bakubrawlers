@@ -8,9 +8,17 @@
 src/00_NameEntry/Scene/NameEntryScene.cpp:
     .text       start:0x02219440 end:0x0221c290
 
-// provisional: code only; data not assigned yet.
-src/00_NameEntry/Scene/UnkScene_ov000.cpp:
-    .text       start:0x0221c290 end:0x0221d6a8
+src/00_NameEntry/Scene/UnkScene_02226e4c.cpp:
+    complete
+    .text       start:0x0221c290 end:0x0221c6b4
+    .data       start:0x02226e44 end:0x02226e58
+    .bss        start:0x02227fb0 end:0x02227fc8
+
+src/00_NameEntry/Scene/UnkScene_02226e60.cpp:
+    complete
+    .text       start:0x0221c6b4 end:0x0221d6a8
+    .data       start:0x02226e58 end:0x022270c4
+    .bss        start:0x02227fc8 end:0x02227fec
 
 // provisional: code only; .rodata 0x02226214-0x02226274, .data 0x022270c4-0x022273d4 and .bss 0x02227fec-0x0222801c belong here.
 src/00_NameEntry/Scene/AttrSelScene.cpp:

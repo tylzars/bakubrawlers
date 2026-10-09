@@ -797,7 +797,7 @@ int func_0200f5c8(CardCommon *c, u32 cmd, int tries)
         }
         func_0200f5c8(c, 0, 1);
     }
-    DC_StoreRange(c->arg, 0x60);
+    DC_FlushRange(c->arg, 0x60);
     DC_WaitWriteBufferEmpty();
     for (;;) {
         c->f04 = cmd;

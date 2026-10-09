@@ -39,11 +39,12 @@ def load_symbols() -> dict[str, dict[str, int]]:
 
 
 def module_of(obj: Path) -> str | None:
-    rel = obj.relative_to(ROOT / "build/usa").with_suffix(".cpp").as_posix()
-    for path in [ROOT / "config/usa/arm9/delinks.txt", ROOT / "config/usa/arm9/itcm/delinks.txt",
-                 *sorted((ROOT / "config/usa/arm9/overlays").glob("*/delinks.txt"))]:
-        if f"{rel}:" in path.read_text():
-            return "main" if path.parent.name == "arm9" else path.parent.name
+    for ext in (".cpp", ".c"):
+        rel = obj.relative_to(ROOT / "build/usa").with_suffix(ext).as_posix()
+        for path in [ROOT / "config/usa/arm9/delinks.txt", ROOT / "config/usa/arm9/itcm/delinks.txt",
+                     *sorted((ROOT / "config/usa/arm9/overlays").glob("*/delinks.txt"))]:
+            if f"{rel}:" in path.read_text():
+                return "main" if path.parent.name == "arm9" else path.parent.name
     return None
 
 
@@ -99,7 +100,9 @@ def main():
                     if disp & 0x800000:
                         disp -= 1 << 24
                     actual = site + 8 + disp * 4
-                    if actual != want:
+                    if word >> 28 == 0xF:  # BLX: bit 24 adds a halfword
+                        actual += (word >> 24 & 1) * 2
+                    if (actual | 1) != (want | 1):  # ignore the Thumb bit
                         names = [n for t in tables.values() for n, a in t.items() if a == actual]
                         print(f"{obj.relative_to(ROOT)}: {fn.name}+{r['r_offset'] - fn['st_value']:#x} calls {target} "
                               f"({want:#010x}); the original calls {actual:#010x} {names[:1]}")

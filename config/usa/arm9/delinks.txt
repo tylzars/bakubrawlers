@@ -4,6 +4,49 @@
     .data       start:0x020a4e80 end:0x020baf00 kind:data align:32
     .bss        start:0x020baf00 end:0x02219440 kind:bss align:32
 
+// NitroSDK (2.0/sp1p5, C); code only so far.
+libs/nds/src/fx/fx_mtx22.c:
+    .text       start:0x02000cd8 end:0x02000d88
+
+libs/nds/src/fx/fx_mtx44.c:
+    .text       start:0x0200144c end:0x02001688
+
+libs/nds/src/fx/fx_atan.c:
+    .text       start:0x020017d4 end:0x02001b34
+
+libs/nds/src/fx/fx_misc.c:
+    .text       start:0x02001b34 end:0x02001c6c
+
+libs/nds/src/gx/gx.c:
+    .text       start:0x02001c6c end:0x02002070
+
+libs/nds/src/gx/gx_bank.c:
+    .text       start:0x02002070 end:0x02002e64
+
+libs/nds/src/gx/gx_g2ptr.c:
+    .text       start:0x02002e64 end:0x020030fc
+
+libs/nds/src/gx/gx_g2chr.c:
+    .text       start:0x020030fc end:0x020032d4
+
+libs/nds/src/gx/gx_g2.c:
+    .text       start:0x020032d4 end:0x020033c8
+
+libs/nds/src/gx/g3c.c:
+    .text       start:0x020033c8 end:0x02003438
+
+libs/nds/src/gx/g3x.c:
+    .text       start:0x02003438 end:0x020037f8
+
+libs/nds/src/gx/gx_load.c:
+    .text       start:0x0200388c end:0x02004144
+
+libs/nds/src/gx/gx_extpltt.c:
+    .text       start:0x02004144 end:0x0200450c
+
+libs/nds/src/gx/gx_tex.c:
+    .text       start:0x0200450c end:0x020047d8
+
 // provisional: code only; data not assigned yet.
 src/Main/System/Random.cpp:
     complete

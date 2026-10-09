@@ -13,6 +13,11 @@ the evidence and how to reproduce it.
 
 Every game-code setting above is backed by an exact match that fails when that setting changes. For NitroSDK, `-char` and `-O` variants are unverified (see Open).
 
+The NitroSDK functions written in C live in `libs/nds/src/` and build with `PATH_COMPILERS`/`PATH_DROP_FLAGS` in
+`tools/configure.py`: 2.0/sp1p5 and the default inlining (not the game's `-inline on,noauto`). The matching
+FX/GX code confirms `-O4,p -ipa file -enum int` with `-char signed`/`-str noreuse` harmless. Game code calls SDK
+functions by their SDK names, declared `extern "C"` (`tools/rename_sdk.py` renames placeholder names).
+
 ## Tools
 
 - `tools/probe_compilers.py <probe>`: compiles a hand-decompiled function with every

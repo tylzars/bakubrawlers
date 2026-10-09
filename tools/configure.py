@@ -38,6 +38,10 @@ DECOMP_ME_COMPILER = "mwcc_30_137"  # decomp.me id for MWCC_VERSION
 PATH_COMPILERS = {
     "libs/nds/": "2.0/sp1p5",
 }
+# Flags those builds don't use. NitroSDK matches with the default inlining (docs/compiler.md).
+PATH_DROP_FLAGS = {
+    "libs/nds/": ["-inline on,noauto"],
+}
 
 CC_FLAGS = [
     "-O4,p",            # verified: -O3,p differs in regalloc; ,s and -O2 don't inline accessors
@@ -140,7 +144,7 @@ w(f"rule download_tool\n  command = {PY} tools/download_tool.py $tool $tag --pat
 w(f"rule extract\n  command = {DSD} rom extract --rom $in --output-path $outdir {bios_flag}\n  description = EXTRACT $in\n")
 w(f"rule delink\n  command = {DSD} delink -c $config && {PY} tools/delink_multidef.py $out\n  description = DELINK\n")
 w(f"rule lcf\n  command = {DSD} lcf -c $config && {PY} tools/lcf_force_active.py $lcf_raw $lcf_final --config-dir {config_dir}\n  description = LCF\n")
-w(f"rule mwcc\n  command = {WINE} $cc {' '.join(CC_FLAGS)} $cc_flags {' '.join('-i ' + d for d in include_dirs)} "
+w(f"rule mwcc\n  command = {WINE} $cc $base_flags $cc_flags {' '.join('-i ' + d for d in include_dirs)} "
   f"-d version_{ver.upper()} -MD -c $in -o $outdir && {PY} tools/transform_dep.py $basefile.d $basefile.d && {PY} tools/demote_multidef.py $out\n"
   f"  depfile = $basefile.d\n  deps = gcc\n  description = MWCC $in\n")
 w(f"rule mwld\n  command = {WINE} {LD} {' '.join(LD_FLAGS)} @$objects $lcf -o $out\n  description = LINK $out\n")
@@ -188,8 +192,10 @@ for src in sources:
     compiled_objects.append(str(obj))
     cc = next((str(MWCC_ROOT / v / "mwccarm.exe") for prefix, v in PATH_COMPILERS.items()
                if str(src).startswith(prefix)), CC)
+    drop = next((f for prefix, f in PATH_DROP_FLAGS.items() if str(src).startswith(prefix)), [])
     build(str(obj), "mwcc", [str(src)], implicit=[cc, "tools/demote_multidef.py"] + tool_outputs, variables={
         "cc": cc,
+        "base_flags": " ".join(f for f in CC_FLAGS if f not in drop),
         "cc_flags": "-lang=c++" if src.suffix == ".cpp" else "-lang=c",
         "outdir": str(obj.parent),
         "basefile": str(obj.with_suffix("")),

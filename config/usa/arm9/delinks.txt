@@ -22,6 +22,7 @@ libs/cri/src/cri_slot.c:
     .text       start:0x02044614 end:0x02044a20
 
 libs/cri/src/cri_ring.c:
+    complete
     .text       start:0x02044a20 end:0x020450a4
 
 libs/cri/src/cri_stm_ctl.c:
@@ -60,6 +61,7 @@ libs/cri/src/cri_fs.c:
     .text       start:0x020477d8 end:0x02047d80
 
 libs/cri/src/cri_err.c:
+    complete
     .text       start:0x02045f90 end:0x02046924
 
 libs/cri/src/cri_dev.c:
@@ -74,6 +76,7 @@ libs/cri/src/cri_adx_api.c:
     .text       start:0x0204e844 end:0x0204ecf0
 
 libs/cri/src/cri_file.c:
+    complete
     .text       start:0x02049150 end:0x02049c34
 
 libs/cri/src/cri_adx_vol.c:
@@ -264,6 +267,7 @@ libs/msl/src/msl_dec_c.c:
     .text       start:0x0201ca18 end:0x0201caf8
 
 libs/msl/src/msl_dec_e.c:
+    complete
     .text       start:0x0201caf8 end:0x0201cd9c
 
 libs/msl/src/msl_dec_d.c:

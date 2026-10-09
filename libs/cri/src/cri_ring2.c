@@ -36,23 +36,23 @@ extern int g_bufCount;          /* 0x02217004 */
 extern char g_pool3[0x240];     /* 0x022170f0 */
 extern int g_pool3Count;        /* 0x022170ec */
 extern CriLock g_lock;          /* 0x022170e0 */
-extern char vt_020ad4a0[], dat_0209e378[];
-extern char e_020ad284[], e_020ad290[], e_020ad2ac[], e_020ad2b8[];
-extern char e_020ad2d8[], e_020ad2e4[], e_020ad300[], e_020ad30c[], e_020ad32c[], e_020ad338[];
-extern char e_020ad350[], e_020ad35c[], e_020ad378[], e_020ad384[];
-extern char e_020ad3a4[], e_020ad3b0[], e_020ad3cc[], e_020ad3d8[];
-extern char e_020ad3f8[], e_020ad404[], e_020ad420[], e_020ad42c[];
-extern char e_020ad44c[], e_020ad458[], e_020ad474[], e_020ad480[];
-extern char e_020ad4d0[];
-extern char e_020ad4dc[], e_020ad4e8[], e_020ad504[], e_020ad510[];
-extern char e_020ad530[], e_020ad53c[], e_020ad558[], e_020ad564[];
-extern char e_020ad584[], e_020ad590[], e_020ad5ac[], e_020ad5b8[];
-extern char e_020ad5d8[], e_020ad5e4[], e_020ad600[], e_020ad60c[];
-extern char e_020ad62c[], e_020ad638[], e_020ad654[], e_020ad660[];
-extern char e_020ad680[], e_020ad68c[], e_020ad6a8[], e_020ad6b4[];
-extern char e_020ad6d4[], e_020ad6e0[], e_020ad6fc[], e_020ad708[];
-extern char e_020ad728[], e_020ad734[], e_020ad750[], e_020ad75c[];
-extern char e_020ad77c[], e_020ad788[], e_020ad7a4[], e_020ad7b0[];
+extern char data_020ad4a0[], data_0209e378[];
+extern char data_020ad284[], data_020ad290[], data_020ad2ac[], data_020ad2b8[];
+extern char data_020ad2d8[], data_020ad2e4[], data_020ad300[], data_020ad30c[], data_020ad32c[], data_020ad338[];
+extern char data_020ad350[], data_020ad35c[], data_020ad378[], data_020ad384[];
+extern char data_020ad3a4[], data_020ad3b0[], data_020ad3cc[], data_020ad3d8[];
+extern char data_020ad3f8[], data_020ad404[], data_020ad420[], data_020ad42c[];
+extern char data_020ad44c[], data_020ad458[], data_020ad474[], data_020ad480[];
+extern char data_020ad4d0[];
+extern char data_020ad4dc[], data_020ad4e8[], data_020ad504[], data_020ad510[];
+extern char data_020ad530[], data_020ad53c[], data_020ad558[], data_020ad564[];
+extern char data_020ad584[], data_020ad590[], data_020ad5ac[], data_020ad5b8[];
+extern char data_020ad5d8[], data_020ad5e4[], data_020ad600[], data_020ad60c[];
+extern char data_020ad62c[], data_020ad638[], data_020ad654[], data_020ad660[];
+extern char data_020ad680[], data_020ad68c[], data_020ad6a8[], data_020ad6b4[];
+extern char data_020ad6d4[], data_020ad6e0[], data_020ad6fc[], data_020ad708[];
+extern char data_020ad728[], data_020ad734[], data_020ad750[], data_020ad75c[];
+extern char data_020ad77c[], data_020ad788[], data_020ad7a4[], data_020ad7b0[];
 
 extern void func_02044a34(const char *, const char *);
 extern void *func_02012464(void *, void *, int);
@@ -94,11 +94,11 @@ extern void func_02045f90(void);
 void func_020450a4(CriRing *r, int mode, CriSpan *s)
 {
     if (r == 0) {
-        func_02044a34(e_020ad284, e_020ad290);
+        func_02044a34(data_020ad284, data_020ad290);
         return;
     }
     if (r->used == 0) {
-        func_02044a34(e_020ad2ac, e_020ad2b8);
+        func_02044a34(data_020ad2ac, data_020ad2b8);
         return;
     }
     if (s->len <= 0) return;
@@ -150,16 +150,16 @@ void func_02045250(CriRing *r, int mode, CriSpan *s)
     char *ptr;
     unsigned size;
     if (r == 0) {
-        func_02044a34(e_020ad2d8, e_020ad2e4);
+        func_02044a34(data_020ad2d8, data_020ad2e4);
         return;
     }
     if (r->used == 0) {
-        func_02044a34(e_020ad300, e_020ad30c);
+        func_02044a34(data_020ad300, data_020ad30c);
         return;
     }
     size = r->size;
     if (size == 0) {
-        func_02044a34(e_020ad32c, e_020ad338);
+        func_02044a34(data_020ad32c, data_020ad338);
         return;
     }
     if (s->len <= 0) return;
@@ -205,11 +205,11 @@ int func_02045434(CriRing *r, int mode, int max, int *out)
 {
     int n;
     if (r == 0) {
-        func_02044a34(e_020ad350, e_020ad35c);
+        func_02044a34(data_020ad350, data_020ad35c);
         return 0;
     }
     if (r->used == 0) {
-        func_02044a34(e_020ad378, e_020ad384);
+        func_02044a34(data_020ad378, data_020ad384);
         return 0;
     }
     if (mode == 0) {
@@ -240,11 +240,11 @@ void *func_02045524(CriRing *r)
 void *func_02045548(CriRing *r)
 {
     if (r == 0) {
-        func_02044a34(e_020ad3a4, e_020ad3b0);
+        func_02044a34(data_020ad3a4, data_020ad3b0);
         return 0;
     }
     if (r->used != 0) return r->buf;
-    func_02044a34(e_020ad3cc, e_020ad3d8);
+    func_02044a34(data_020ad3cc, data_020ad3d8);
     return 0;
 }
 
@@ -260,11 +260,11 @@ int func_0204559c(CriRing *r)
 int func_020455c0(CriRing *r)
 {
     if (r == 0) {
-        func_02044a34(e_020ad3f8, e_020ad404);
+        func_02044a34(data_020ad3f8, data_020ad404);
         return 0;
     }
     if (r->used != 0) return r->size;
-    func_02044a34(e_020ad420, e_020ad42c);
+    func_02044a34(data_020ad420, data_020ad42c);
     return 0;
 }
 
@@ -280,11 +280,11 @@ int func_02045614(CriRing *r)
 int func_02045638(CriRing *r)
 {
     if (r == 0) {
-        func_02044a34(e_020ad44c, e_020ad458);
+        func_02044a34(data_020ad44c, data_020ad458);
         return 0;
     }
     if (r->used != 0) return r->extra;
-    func_02044a34(e_020ad474, e_020ad480);
+    func_02044a34(data_020ad474, data_020ad480);
     return 0;
 }
 
@@ -295,7 +295,7 @@ void func_0204568c(const char *s)
 
 void func_02045698(void)
 {
-    func_0204568c(e_020ad4d0);
+    func_0204568c(data_020ad4d0);
 }
 
 void func_020456ac(const char *a, const char *b)
@@ -356,10 +356,10 @@ CriBuf *func_020457f8(char *buf, int size)
     if (i == 6) return 0;
     b = &g_bufs[i];
     b->used = 1;
-    b->vt = vt_020ad4a0;
+    b->vt = data_020ad4a0;
     b->buf = buf;
     b->size = size;
-    b->p8 = dat_0209e378;
+    b->p8 = data_0209e378;
     b->cb = (void (*)(void *, int))func_02045698;
     b->cbarg = b;
     func_02045a14(b);
@@ -376,11 +376,11 @@ void func_02045888(CriBuf *b)
 void func_020458a4(CriBuf *b)
 {
     if (b == 0) {
-        func_020456ac(e_020ad4dc, e_020ad4e8);
+        func_020456ac(data_020ad4dc, data_020ad4e8);
         return;
     }
     if (b->used == 0) {
-        func_020456ac(e_020ad504, e_020ad510);
+        func_020456ac(data_020ad504, data_020ad510);
         return;
     }
     func_02012484(b, 0, 0x24);
@@ -399,11 +399,11 @@ void *func_02045904(CriBuf *b)
 void *func_02045928(CriBuf *b)
 {
     if (b == 0) {
-        func_020456ac(e_020ad530, e_020ad53c);
+        func_020456ac(data_020ad530, data_020ad53c);
         return 0;
     }
     if (b->used != 0) return b->p8;
-    func_020456ac(e_020ad558, e_020ad564);
+    func_020456ac(data_020ad558, data_020ad564);
     return 0;
 }
 
@@ -417,7 +417,7 @@ void func_0204597c(CriBuf *b, void (*cb)(void *, int), void *arg)
 void func_020459a8(CriBuf *b, void (*cb)(void *, int), void *arg)
 {
     if (b == 0) {
-        func_020456ac(e_020ad584, e_020ad590);
+        func_020456ac(data_020ad584, data_020ad590);
         return;
     }
     if (b->used != 0) {
@@ -425,7 +425,7 @@ void func_020459a8(CriBuf *b, void (*cb)(void *, int), void *arg)
         b->cbarg = arg;
         return;
     }
-    func_020456ac(e_020ad5ac, e_020ad5b8);
+    func_020456ac(data_020ad5ac, data_020ad5b8);
 }
 
 void func_020459f8(CriBuf *b)
@@ -438,11 +438,11 @@ void func_020459f8(CriBuf *b)
 void func_02045a14(CriBuf *b)
 {
     if (b == 0) {
-        func_020456ac(e_020ad5d8, e_020ad5e4);
+        func_020456ac(data_020ad5d8, data_020ad5e4);
         return;
     }
     if (b->used == 0) {
-        func_020456ac(e_020ad600, e_020ad60c);
+        func_020456ac(data_020ad600, data_020ad60c);
         return;
     }
     b->c = b->size;
@@ -461,11 +461,11 @@ int func_02045a70(CriBuf *b, int w)
 int func_02045a9c(CriBuf *b, int w)
 {
     if (b == 0) {
-        func_020456ac(e_020ad62c, e_020ad638);
+        func_020456ac(data_020ad62c, data_020ad638);
         return 0;
     }
     if (b->used == 0) {
-        func_020456ac(e_020ad654, e_020ad660);
+        func_020456ac(data_020ad654, data_020ad660);
         return 0;
     }
     if (w == 1) return b->c;
@@ -484,11 +484,11 @@ void func_02045b24(CriBuf *b, int mode, int max, CriSpan *s)
 void func_02045b58(CriBuf *b, int mode, int max, CriSpan *s)
 {
     if (b == 0) {
-        func_020456ac(e_020ad680, e_020ad68c);
+        func_020456ac(data_020ad680, data_020ad68c);
         return;
     }
     if (b->used == 0) {
-        func_020456ac(e_020ad6a8, e_020ad6b4);
+        func_020456ac(data_020ad6a8, data_020ad6b4);
         return;
     }
     if (mode == 0) {
@@ -520,11 +520,11 @@ void func_02045c2c(CriBuf *b, int mode, CriSpan *s)
 void func_02045c58(CriBuf *b, int mode, CriSpan *s)
 {
     if (b == 0) {
-        func_020456ac(e_020ad6d4, e_020ad6e0);
+        func_020456ac(data_020ad6d4, data_020ad6e0);
         return;
     }
     if (b->used == 0) {
-        func_020456ac(e_020ad6fc, e_020ad708);
+        func_020456ac(data_020ad6fc, data_020ad708);
         return;
     }
     if (s->len <= 0) return;
@@ -546,11 +546,11 @@ void func_02045d18(CriBuf *b, int mode, CriSpan *s)
 {
     int d;
     if (b == 0) {
-        func_020456ac(e_020ad728, e_020ad734);
+        func_020456ac(data_020ad728, data_020ad734);
         return;
     }
     if (b->used == 0) {
-        func_020456ac(e_020ad750, e_020ad75c);
+        func_020456ac(data_020ad750, data_020ad75c);
         return;
     }
     if (s->len <= 0) return;
@@ -585,11 +585,11 @@ int func_02045e64(CriBuf *b, int mode, int max, int *out)
 {
     int n;
     if (b == 0) {
-        func_020456ac(e_020ad77c, e_020ad788);
+        func_020456ac(data_020ad77c, data_020ad788);
         return 0;
     }
     if (b->used == 0) {
-        func_020456ac(e_020ad7a4, e_020ad7b0);
+        func_020456ac(data_020ad7a4, data_020ad7b0);
         return 0;
     }
     if (mode == 0) {

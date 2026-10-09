@@ -16,7 +16,7 @@ typedef struct CriSlotHdr { char c0; signed char type; } CriSlotHdr;
 
 extern CriSlot g_slots[4];      /* 0x02216850 */
 extern int g_flag;              /* 0x0221684c */
-extern char str_020ad000[];
+extern char data_020ad000[];
 
 extern void func_0203edbc(void);
 extern void func_0203edc0(void);
@@ -45,7 +45,7 @@ void func_02044614(CriSlot *p)
 void func_02044630(CriSlot *p)
 {
     if (p == 0) {
-        func_02040170(str_020ad000);
+        func_02040170(data_020ad000);
         return;
     }
     {

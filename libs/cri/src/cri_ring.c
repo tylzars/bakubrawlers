@@ -21,14 +21,14 @@ typedef struct CriSpan { char *ptr; int len; } CriSpan;
 
 extern int g_ringCount;         /* 0x02216940 */
 extern CriRing g_rings[24];     /* 0x02216944 */
-extern char vt_020ad02c[], dat_0209e368[];
-extern char str_020ad05c[];
-extern char s_020ad068[], s_020ad074[], s_020ad090[], s_020ad09c[];
-extern char s_020ad0bc[], s_020ad0c8[], s_020ad0e4[], s_020ad0f0[];
-extern char s_020ad110[], s_020ad11c[], s_020ad138[], s_020ad144[];
-extern char s_020ad164[], s_020ad170[], s_020ad18c[], s_020ad198[];
-extern char s_020ad1b8[], s_020ad1c4[], s_020ad1e0[], s_020ad1ec[];
-extern char s_020ad20c[], s_020ad218[], s_020ad234[], s_020ad240[], s_020ad260[], s_020ad26c[];
+extern char data_020ad02c[], data_0209e368[];
+extern char data_020ad05c[];
+extern char data_020ad068[], data_020ad074[], data_020ad090[], data_020ad09c[];
+extern char data_020ad0bc[], data_020ad0c8[], data_020ad0e4[], data_020ad0f0[];
+extern char data_020ad110[], data_020ad11c[], data_020ad138[], data_020ad144[];
+extern char data_020ad164[], data_020ad170[], data_020ad18c[], data_020ad198[];
+extern char data_020ad1b8[], data_020ad1c4[], data_020ad1e0[], data_020ad1ec[];
+extern char data_020ad20c[], data_020ad218[], data_020ad234[], data_020ad240[], data_020ad260[], data_020ad26c[];
 
 extern void func_0204568c(const char *);
 extern void func_02051558(char *, int, const char *);
@@ -50,7 +50,7 @@ extern void func_02044f00(CriRing *, int, int, CriSpan *);
 
 void func_02044a20(void)
 {
-    func_0204568c(str_020ad05c);
+    func_0204568c(data_020ad05c);
 }
 
 void func_02044a34(const char *a, const char *b)
@@ -113,11 +113,11 @@ CriRing *func_02044b78(int a, int b, int c)
     } else {
         r = &g_rings[i];
         r->used = 1;
-        r->vt = vt_020ad02c;
+        r->vt = data_020ad02c;
         r->buf = (char *)a;
         r->size = b;
         r->extra = c;
-        r->p8 = dat_0209e368;
+        r->p8 = data_0209e368;
         r->cb = (void (*)(void *, int))func_02044a20;
         r->cbarg = r;
         r->i40 = 0;
@@ -137,11 +137,11 @@ void func_02044c18(CriRing *r)
 void func_02044c34(CriRing *r)
 {
     if (r == 0) {
-        func_02044a34(s_020ad068, s_020ad074);
+        func_02044a34(data_020ad068, data_020ad074);
         return;
     }
     if (r->used == 0) {
-        func_02044a34(s_020ad090, s_020ad09c);
+        func_02044a34(data_020ad090, data_020ad09c);
         return;
     }
     func_02012484(r, 0, 0x48);
@@ -160,11 +160,11 @@ int func_02044c94(CriRing *r)
 int func_02044cb8(CriRing *r)
 {
     if (r == 0) {
-        func_02044a34(s_020ad0bc, s_020ad0c8);
+        func_02044a34(data_020ad0bc, data_020ad0c8);
         return 0;
     }
     if (r->used != 0) return (int)r->p8;
-    func_02044a34(s_020ad0e4, s_020ad0f0);
+    func_02044a34(data_020ad0e4, data_020ad0f0);
     return 0;
 }
 
@@ -178,7 +178,7 @@ void func_02044d0c(CriRing *r, void (*cb)(void *, int), void *arg)
 void func_02044d38(CriRing *r, void (*cb)(void *, int), void *arg)
 {
     if (r == 0) {
-        func_02044a34(s_020ad110, s_020ad11c);
+        func_02044a34(data_020ad110, data_020ad11c);
         return;
     }
     if (r->used != 0) {
@@ -186,7 +186,7 @@ void func_02044d38(CriRing *r, void (*cb)(void *, int), void *arg)
         r->cbarg = arg;
         return;
     }
-    func_02044a34(s_020ad138, s_020ad144);
+    func_02044a34(data_020ad138, data_020ad144);
 }
 
 void func_02044d88(CriRing *r)
@@ -199,11 +199,11 @@ void func_02044d88(CriRing *r)
 void func_02044da4(CriRing *r)
 {
     if (r == 0) {
-        func_02044a34(s_020ad164, s_020ad170);
+        func_02044a34(data_020ad164, data_020ad170);
         return;
     }
     if (r->used == 0) {
-        func_02044a34(s_020ad18c, s_020ad198);
+        func_02044a34(data_020ad18c, data_020ad198);
         return;
     }
     r->c = 0;
@@ -228,11 +228,11 @@ int func_02044e18(CriRing *r, int w)
 int func_02044e44(CriRing *r, int w)
 {
     if (r == 0) {
-        func_02044a34(s_020ad1b8, s_020ad1c4);
+        func_02044a34(data_020ad1b8, data_020ad1c4);
         return 0;
     }
     if (r->used == 0) {
-        func_02044a34(s_020ad1e0, s_020ad1ec);
+        func_02044a34(data_020ad1e0, data_020ad1ec);
         return 0;
     }
     if (w == 1) return r->c;
@@ -251,15 +251,15 @@ void func_02044ecc(CriRing *r, int a, int b, CriSpan *s)
 void func_02044f00(CriRing *r, int mode, int max, CriSpan *s)
 {
     if (r == 0) {
-        func_02044a34(s_020ad20c, s_020ad218);
+        func_02044a34(data_020ad20c, data_020ad218);
         return;
     }
     if (r->used == 0) {
-        func_02044a34(s_020ad234, s_020ad240);
+        func_02044a34(data_020ad234, data_020ad240);
         return;
     }
     if (r->size == 0) {
-        func_02044a34(s_020ad260, s_020ad26c);
+        func_02044a34(data_020ad260, data_020ad26c);
         return;
     }
     if (mode == 0) {

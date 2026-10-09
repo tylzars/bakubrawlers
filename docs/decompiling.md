@@ -73,7 +73,7 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   `tools/check_callees.py` compares, per function (matching or not), the set of callees with the `bl` targets in
   the original's range. Probes and objdiff mask call targets, so both are needed: a near-identical neighbour
   (`DC_StoreRange`/`DC_FlushRange`, `MI_CpuCopy8`/`MIi_CpuCopyFast`, signed/unsigned division) is easy to call by
-  mistake. Its noise: `this`-adjusting thunks and literal-pool words that decode as branches.
+  mistake. It skips `this`-adjusting thunks and ignores branch-like literal-pool words; a clean run reports 0.
 
 ## Data layout within a section
 

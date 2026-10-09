@@ -92,10 +92,12 @@ def main():
                         continue
                     ours[fn.name][addr | 1] += 1
             for f in funcs:
-                if unknown[f.name]:
+                if unknown[f.name] or f.name.startswith("_ZThn"):  # this-adjusting thunks: the original tail-branches
                     continue
                 # scan the original over the ORIGINAL function's size, not ours
                 theirs = original_callees(blob, base, local[f.name], sizes.get(f.name, f["st_size"]))
+                # literal-pool words can decode as branches: keep only targets that are known function starts
+                theirs = Counter({a: n for a, n in theirs.items() if a in names_at})
                 if ours[f.name] != theirs:
                     extra = ours[f.name] - theirs
                     missing = theirs - ours[f.name]

@@ -38,13 +38,13 @@ void func_02028e54(void *model, u32 a, u32 b, u32 c);
 extern const u16 data_ov007_0227a5e0[];
 extern const u16 data_ov007_0227a5e4[];
 void func_ov007_0227238c(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out);
-void func_01ffcf80(MtxFx33 *m, u16 angle);
+extern "C" void func_01ffcf80(MtxFx33 *m, u16 angle);
 void func_02005e9c(void *buf, u32 size);
 extern u8 data_ov007_0227a630[];
 extern const u8 data_ov007_0227a750[];
 extern const s32 data_ov007_0227a6d0[];
 extern const u16 data_ov007_0227a5f6[];
-void func_01ffd030(MtxFx33 *m, u16 angle);
+extern "C" void func_01ffd030(MtxFx33 *m, u16 angle);
 // Two callers leave r2 as it is (the original passes a value already in r2); call through a two-argument type.
 static inline void ReleaseSlot(BattlePlayerList *list, u8 index) {
     ((void (*)(BattlePlayerList *, u8)) func_ov007_02262828)(list, index);

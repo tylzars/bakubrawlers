@@ -6,7 +6,7 @@
 
 extern u8 data_020d4404[];
 extern MtxFx43 data_0220e86c;
-void func_01ffcf64(MtxFx43 *mtx, VecFx32 *pos);
+extern "C" void func_01ffcf64(MtxFx43 *mtx, VecFx32 *pos);
 
 // 0x1bc bytes, built from /Game/Character/Character/charaNN files.
 // Custom character appearance as stored in the save data (8 bytes, data_020d4404).

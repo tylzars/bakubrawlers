@@ -940,11 +940,11 @@ void BattleCpu::func_ov007_02232eb8(s32 *x, s32 *y) {
     *y = 0;
 }
 
-void func_01ffcf80(MtxFx33 *m, u16 angle);
+extern "C" void func_01ffcf80(MtxFx33 *m, u16 angle);
 
-void func_01ffcfd8(MtxFx33 *m, u16 angle);
+extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
 
-void func_01ffd030(MtxFx33 *m, u16 angle);
+extern "C" void func_01ffd030(MtxFx33 *m, u16 angle);
 
 BOOL func_ov007_02232f24(VecFx32 *pos, VecFx32 *vel);
 

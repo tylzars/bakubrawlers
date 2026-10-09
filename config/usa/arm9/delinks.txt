@@ -8,6 +8,9 @@
 libs/cri/src/cri_adx_player.c:
     .text       start:0x0203dee8 end:0x0203e954
 
+libs/cri/src/cri_stm.c:
+    .text       start:0x02041744 end:0x02041f50
+
 // MSL C runtime (2.0/sp1p5, C); code only so far.
 libs/msl/src/msl_string.c:
     .text       start:0x020122b0 end:0x020125b4

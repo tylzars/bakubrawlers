@@ -20,7 +20,7 @@
 extern const WindowCellRecord data_ov007_0227a77c[];
 extern const WindowItemRecord data_ov007_0227a7b4[];
 extern MtxFx22 data_0220e838;
-void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
+extern "C" void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
 
 
 

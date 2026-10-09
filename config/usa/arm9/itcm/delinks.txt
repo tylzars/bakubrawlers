@@ -13,3 +13,18 @@ libs/nds/src/gx/g3_fifo.c:
 libs/nns/src/g3d/g3d_anm_itcm.c:
     .text       start:0x01ff9804 end:0x01ff9b64
 
+libs/nns/src/g3d/g3d_anm_itcm_b.c:
+    .text       start:0x01ff9b64 end:0x01ffae10
+
+libs/nns/src/g3d/g3d_sbc_itcm.c:
+    .text       start:0x01ffae10 end:0x01ffc93c
+
+libs/nds/src/os/os_boot_itcm.c:
+    .text       start:0x01ffcb20 end:0x01ffcdbc
+
+libs/nds/src/mi/mi_dma_itcm.c:
+    .text       start:0x01ffcdbc end:0x01ffcef4
+
+libs/nds/src/fx/fx_rot_itcm.c:
+    .text       start:0x01ffcef4 end:0x01ffd190
+

@@ -2,7 +2,7 @@
 #include <nitro/fx.h>
 #include "System/FileSystem.hpp"
 
-void func_01ffcfd8(MtxFx33 *m, u16 angle);
+extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
 extern MtxFx33 data_0220e848;
 
 static const VecFx32 data_ov007_02279450 = {0, 0, -0x14000};

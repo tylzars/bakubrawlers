@@ -39,7 +39,7 @@ PATH_COMPILERS = {
     "libs/nds/": "2.0/sp1p5",
     "libs/msl/": "2.0/sp1p5",  # MSL C runtime: 2.0 sp1p5 or later (docs/compiler.md)
     "libs/cri/": "2.0/sp1p5",  # CRI audio middleware: every 2.0 build gives the same code (docs/compiler.md)
-    "libs/nns/": "2.0/sp1p5",  # NitroSystem: every 2.0 build gives the same code (docs/compiler.md)
+    "libs/nns/": "2.0/sp2p2",  # NitroSystem: the ITCM animation code needs sp2p2; the rest is the same on every 2.0 build
 }
 # Flags those builds don't use. NitroSDK matches with the default inlining (docs/compiler.md).
 PATH_DROP_FLAGS = {
@@ -172,7 +172,7 @@ if WINE == "tools/bin/wibo":
     tool_outputs.append(WINE)
 if args.compiler is None:
     # One zip holds every version, including the PATH_COMPILERS ones.
-    extra = [str(MWCC_ROOT / v / "mwccarm.exe") for v in sorted(set(PATH_COMPILERS.values()))]
+    extra = [str(MWCC_ROOT / v / "mwccarm.exe") for v in sorted(set(PATH_COMPILERS.values())) if v != MWCC_VERSION]
     build([CC, LD] + extra, "download_tool", variables={"tool": "mwccarm", "tag": "latest", "path": "tools"})
 build(OBJDIFF, "download_tool", variables={"tool": "objdiff", "tag": OBJDIFF_TAG, "path": OBJDIFF})
 

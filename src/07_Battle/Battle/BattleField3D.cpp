@@ -14,7 +14,7 @@ extern u8 data_ov007_022791c4[];
 extern VecFx32 data_ov007_022791ac;
 extern VecFx32 data_ov007_022791b8;
 extern VecFx32 data_ov007_022791a0;
-void func_01ffd0e0(MtxFx43 *mtx, u16 angle);
+extern "C" void func_01ffd0e0(MtxFx43 *mtx, u16 angle);
 void func_ov007_02229998(BattleField3D *obj);
 
 // Effect (particle) system functions: effects are loaded by name into numbered slots, spawned as emitters addressed by

@@ -3,9 +3,9 @@
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 
-void func_01ffcfd8(MtxFx33 *m, u16 angle);
-void func_01ffcf80(MtxFx33 *m, u16 angle);
-void func_01ffd030(MtxFx33 *m, u16 angle);
+extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
+extern "C" void func_01ffcf80(MtxFx33 *m, u16 angle);
+extern "C" void func_01ffd030(MtxFx33 *m, u16 angle);
 
 static ModelResource *sResource;
 

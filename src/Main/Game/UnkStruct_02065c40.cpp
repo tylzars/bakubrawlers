@@ -1519,7 +1519,7 @@ void UnkStruct_02065c40::func_02069bdc() {
     func_02069d0c();
 }
 
-void func_01ffcf64(MtxFx43 *mtx, VecFx32 *pos);
+extern "C" void func_01ffcf64(MtxFx43 *mtx, VecFx32 *pos);
 
 void UnkStruct_02065c40::func_02069c6c() {
     MI_CpuClear16(&mUnk_1298, 0x14);

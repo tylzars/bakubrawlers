@@ -3,7 +3,7 @@
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 
-void func_01ffcfd8(MtxFx33 *m, u16 angle);
+extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
 extern MtxFx33 data_0220e848;
 
 static ModelResource *sResource;

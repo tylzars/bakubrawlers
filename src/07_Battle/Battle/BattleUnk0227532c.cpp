@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 extern MtxFx22 data_0220e838;
-void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
+extern "C" void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
 
 static const WindowItemRecord sTwoButtonItems[2] = {
     {0, 0x1, 89, 136, 78, 20, 0, {-1, -1, -1, -1}, 0, 2},

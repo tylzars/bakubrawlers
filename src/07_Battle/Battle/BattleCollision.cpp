@@ -3,8 +3,8 @@
 #include <nitro/fx.h>
 #include <nitro/mi.h>
 
-void func_01ffcf80(MtxFx33 *m, u16 angle);
-void func_01ffd030(MtxFx33 *m, u16 angle);
+extern "C" void func_01ffcf80(MtxFx33 *m, u16 angle);
+extern "C" void func_01ffd030(MtxFx33 *m, u16 angle);
 void func_ov007_0227238c(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out);
 fx32 func_ov007_02272358(BattleSphere *sphere, BattleHitBox *box);
 BOOL func_ov007_0227226c(BattleObstacle *a, BattleObstacle *b);

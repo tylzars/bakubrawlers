@@ -57,10 +57,10 @@ extern u8 data_ov007_0227c3f0[];
 extern u32 *data_ov007_0228acf4[];
 
 extern "C" s32 func_0203340c(void *dict, const char *name);
-void func_01ffd088(MtxFx43 *m, u16 angle);
-void func_01ffd0e0(MtxFx43 *m, u16 angle);
-void func_01ffd138(MtxFx43 *m, u16 angle);
-void func_01ffcf64(MtxFx43 *m, VecFx32 *v);
+extern "C" void func_01ffd088(MtxFx43 *m, u16 angle);
+extern "C" void func_01ffd0e0(MtxFx43 *m, u16 angle);
+extern "C" void func_01ffd138(MtxFx43 *m, u16 angle);
+extern "C" void func_01ffcf64(MtxFx43 *m, VecFx32 *v);
 extern "C" void func_01ff89c0(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);
 void func_01ff8634(MtxFx43 *src, MtxFx43 *dst);
 extern "C" void func_01ff84d0(VecFx32 *vec, MtxFx33 *m, VecFx32 *out);

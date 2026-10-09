@@ -121,13 +121,13 @@ extern "C" BOOL G3X_GetBoxTestResult(s32 *result);
 extern "C" void func_020322c0(const VecFx32 *trans); // NNS_G3dGlbSetBaseTrans
 extern "C" void func_020322f0(const VecFx32 *scale); // NNS_G3dGlbSetBaseScale
 extern "C" void func_02032284();
-void func_01ffb0ec(void *renderObj);
+extern "C" void func_01ffb0ec(void *renderObj);
 
 extern "C" void func_01ff90dc(s16 *in, s16 *out);
 extern "C" void func_0203235c(u32 index, u32 color);
 extern "C" void func_02032320(u32 index, s32 x, s32 y, s32 z);
 
-void func_01ffd0e0(MtxFx43 *mtx, u16 angle);
-void func_01ffd088(MtxFx43 *mtx, u16 angle);
-void func_01ffd138(MtxFx43 *mtx, u16 angle);
-void func_01ffcf64(MtxFx43 *mtx, VecFx32 *pos);
+extern "C" void func_01ffd0e0(MtxFx43 *mtx, u16 angle);
+extern "C" void func_01ffd088(MtxFx43 *mtx, u16 angle);
+extern "C" void func_01ffd138(MtxFx43 *mtx, u16 angle);
+extern "C" void func_01ffcf64(MtxFx43 *mtx, VecFx32 *pos);

@@ -2,7 +2,7 @@
 #include <nitro/fx.h>
 #include "System/SoundManager.hpp"
 
-void func_01ffcfd8(MtxFx33 *m, u16 angle);
+extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
 extern MtxFx33 data_0220e848;
 extern "C" void func_02024764(SoundManager *manager, u32 a, u32 b);
 

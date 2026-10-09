@@ -1,3 +1,4 @@
+#include "System/InputManager.hpp"
 #include "Scene/MyroomTipsScene.hpp"
 #include "Game/UnkStruct_02065c40.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"

@@ -1,3 +1,5 @@
+#include "Graphics/Camera.hpp"
+#include "System/SoundManager.hpp"
 #include "Scene/MyroomShootScene.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"

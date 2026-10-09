@@ -1,3 +1,4 @@
+#include "Text/TextManager.hpp"
 #include "Scene/MyroomRankingScene.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"

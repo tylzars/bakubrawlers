@@ -1,3 +1,5 @@
+#include "System/InputManager.hpp"
+#include "System/SoundManager.hpp"
 #include "Scene/MyroomGiftScene.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"

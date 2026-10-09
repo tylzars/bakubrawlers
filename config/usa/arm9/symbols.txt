@@ -3291,9 +3291,9 @@ data_020a4b40 kind:data(any) addr:0x020a4b40
 data_020a4bb8 kind:data(any) addr:0x020a4bb8
 data_020a4c3c kind:data(any) addr:0x020a4c3c
 data_020a4ccc kind:data(any) addr:0x020a4ccc
-data_020a4dac kind:data(any) addr:0x020a4dac
-data_020a4db8 kind:data(any) addr:0x020a4db8
-data_020a4dd4 kind:data(any) addr:0x020a4dd4
+sEmblemFiles kind:data(any) addr:0x020a4dac local
+sOkItems kind:data(any) addr:0x020a4db8 local
+sOkCells kind:data(any) addr:0x020a4dd4 local
 data_020a4df0 kind:data(any) addr:0x020a4df0
 data_020a4df4 kind:data(any) addr:0x020a4df4
 data_020a4e2c kind:data(any) addr:0x020a4e2c
@@ -3446,12 +3446,12 @@ data_020a596c kind:data(any) addr:0x020a596c
 data_020a598c kind:data(any) addr:0x020a598c
 data_020ab150 kind:data(any) addr:0x020ab150
 data_020ab80c kind:data(any) addr:0x020ab80c
-data_020ac790 kind:data(any) addr:0x020ac790
-data_020ac79c kind:data(any) addr:0x020ac79c
-data_020ac7b0 kind:data(any) addr:0x020ac7b0
-data_020ac7d0 kind:data(any) addr:0x020ac7d0
-data_020ac7f0 kind:data(any) addr:0x020ac7f0
-data_020ac810 kind:data(any) addr:0x020ac810
+_ZTV10MovieScene kind:data(any) addr:0x020ac788
+@680 kind:data(any) addr:0x020ac79c local
+@681 kind:data(any) addr:0x020ac7b0 local
+@682 kind:data(any) addr:0x020ac7d0 local
+@683 kind:data(any) addr:0x020ac7f0 local
+@684 kind:data(any) addr:0x020ac810 local
 @645 kind:data(any) addr:0x020ac814 local
 @646 kind:data(any) addr:0x020ac828 local
 @647 kind:data(any) addr:0x020ac834 local
@@ -4464,31 +4464,32 @@ data_020baa94 kind:data(any) addr:0x020baa94
 data_020baab0 kind:data(any) addr:0x020baab0
 data_020baac8 kind:data(any) addr:0x020baac8
 data_020baae0 kind:data(any) addr:0x020baae0
-data_020baaec kind:data(any) addr:0x020baaec
-data_020baaf8 kind:data(any) addr:0x020baaf8
-data_020bab28 kind:data(any) addr:0x020bab28
-data_020bab40 kind:data(any) addr:0x020bab40
-data_020bab5c kind:data(any) addr:0x020bab5c
-data_020bab78 kind:data(any) addr:0x020bab78
-data_020bab94 kind:data(any) addr:0x020bab94
-data_020babb0 kind:data(any) addr:0x020babb0
-data_020babcc kind:data(any) addr:0x020babcc
-data_020babe8 kind:data(any) addr:0x020babe8
-data_020bac00 kind:data(any) addr:0x020bac00
-data_020bac24 kind:data(any) addr:0x020bac24
-data_020bac40 kind:data(any) addr:0x020bac40
-data_020bac60 kind:data(any) addr:0x020bac60
-data_020bac74 kind:data(any) addr:0x020bac74
-data_020bac98 kind:data(any) addr:0x020bac98
-data_020bacb4 kind:data(any) addr:0x020bacb4
-data_020bacc4 kind:data(any) addr:0x020bacc4
-data_020bacf0 kind:data(any) addr:0x020bacf0
-data_020bad18 kind:data(any) addr:0x020bad18
-data_020bad40 kind:data(any) addr:0x020bad40
-data_020bad58 kind:data(any) addr:0x020bad58
-data_020bad78 kind:data(any) addr:0x020bad78
-data_020bad94 kind:data(any) addr:0x020bad94
-data_020badb0 kind:data(any) addr:0x020badb0
+_ZTV18UnkStruct_02089f90 kind:data(any) addr:0x020baae4
+@637 kind:data(any) addr:0x020baaf8 local
+@1094 kind:data(any) addr:0x020bab28 local
+@1095 kind:data(any) addr:0x020bab40 local
+@1096 kind:data(any) addr:0x020bab5c local
+@1097 kind:data(any) addr:0x020bab78 local
+@1098 kind:data(any) addr:0x020bab94 local
+@1099 kind:data(any) addr:0x020babb0 local
+@1100 kind:data(any) addr:0x020babcc local
+@1101 kind:data(any) addr:0x020babe8 local
+@1102 kind:data(any) addr:0x020bac00 local
+@1103 kind:data(any) addr:0x020bac24 local
+@1104 kind:data(any) addr:0x020bac40 local
+@1105 kind:data(any) addr:0x020bac60 local
+@1106 kind:data(any) addr:0x020bac74 local
+@1107 kind:data(any) addr:0x020bac98 local
+@1108 kind:data(any) addr:0x020bacb4 local
+@1109 kind:data(any) addr:0x020bacc4 local
+@1110 kind:data(any) addr:0x020bacf0 local
+@1111 kind:data(any) addr:0x020bad18 local
+@1112 kind:data(any) addr:0x020bad40 local
+@1113 kind:data(any) addr:0x020bad58 local
+@1114 kind:data(any) addr:0x020bad78 local
+@1115 kind:data(any) addr:0x020bad94 local
+@1116 kind:data(any) addr:0x020badb0 local
+data_020badb4 kind:data(any) addr:0x020badb4
 data_020badbc kind:data(any) addr:0x020badbc
 data_020badc8 kind:data(any) addr:0x020badc8
 data_020badf4 kind:data(any) addr:0x020badf4
@@ -4865,9 +4866,9 @@ data_0220fa20 kind:bss addr:0x0220fa20
 data_0220fc20 kind:bss addr:0x0220fc20
 data_02210440 kind:bss addr:0x02210440
 data_02210fdc kind:bss addr:0x02210fdc
-data_02211340 kind:bss addr:0x02211340
-data_0221134c kind:bss addr:0x0221134c
-data_02211358 kind:bss addr:0x02211358
+@52 kind:bss addr:0x02211340 local
+@14 kind:bss addr:0x0221134c local
+@128 kind:bss addr:0x02211358 local
 data_02211364 kind:bss addr:0x02211364
 data_02211368 kind:bss addr:0x02211368
 data_02211374 kind:bss addr:0x02211374
@@ -4916,7 +4917,7 @@ data_02215080 kind:bss addr:0x02215080
 data_0221508c kind:bss addr:0x0221508c
 data_02215660 kind:bss addr:0x02215660
 data_02215860 kind:bss addr:0x02215860
-data_02215884 kind:bss addr:0x02215884
+@176 kind:bss addr:0x02215884 local
 data_02215890 kind:bss addr:0x02215890
 data_02215894 kind:bss addr:0x02215894
 data_02215898 kind:bss addr:0x02215898
@@ -5059,6 +5060,6 @@ data_022193d4 kind:bss addr:0x022193d4
 data_022193e0 kind:bss addr:0x022193e0
 data_022193ec kind:bss addr:0x022193ec
 data_022193f8 kind:bss addr:0x022193f8
-data_02219404 kind:bss addr:0x02219404
-data_02219410 kind:bss addr:0x02219410
+@17 kind:bss addr:0x02219404 local
+@286 kind:bss addr:0x02219410 local
 data_0221941c kind:bss addr:0x0221941c

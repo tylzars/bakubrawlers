@@ -174,13 +174,12 @@ extern const PromptRect data_ov007_0227a764[];
 extern const PromptRect data_ov007_0227a75c[];
 extern u8 data_ov007_0227a770[];
 void func_ov007_0225f080(s16 *x);
-void func_ov007_0225e698();
+void func_ov007_0225e698(BattleCommandPrompt *prompt);
 
-// non-matching: only the register of the first state-byte load differs (original ldrb r1 / cmp r1 / addls pc,pc,r1; mine uses r0), everything else is identical
 void BattleCommandPrompt::Update() {
     switch (mUnk_8a) {
         case 0: {
-            func_ov007_0225e698();
+            func_ov007_0225e698(this);
             func_ov007_0225e6d4();
             SelectWindow *win = mUnk_38;
             WindowItem *items = win->mCursor->mItems;
@@ -539,7 +538,7 @@ void func_ov007_0225e68c(BattleCommandPrompt *prompt, u32 flag) {
     prompt->mUnk_8a = 7;
 }
 
-void func_ov007_0225e698() {
+void func_ov007_0225e698(BattleCommandPrompt *prompt) {
     G2S_SetBG0Priority(3);
     G2S_SetBG3Priority(0);
     GXS_SetVisiblePlane(0x11);

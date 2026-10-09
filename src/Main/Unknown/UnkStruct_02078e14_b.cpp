@@ -31,7 +31,6 @@ void func_02081a4c(void *arg);
 // Which screen a sprite or text goes to (passed to SpriteManager::Screen and the cell animation draws).
 enum ScreenId { SCREEN_MAIN, SCREEN_SUB };
 
-// non-matching: 2 words, the original materialises `moved = 1` with `mov r4, #1` where the compiler reuses r2 (`mov r4, r2`)
 
 extern u16 data_020a39fc[];
 
@@ -1298,11 +1297,11 @@ void UnkStruct_02078e14::func_0207ea3c() {
                 if (mUnk_fb > mUnk_fa) {
                     if (mUnk_fb - mUnk_fa > 1) {
                         mUnk_fa = mUnk_fb;
-                        moved   = 1;
                         mUnk_fd = mUnk_fb;
                         if (mUnk_fd >= mUnk_fc - 3) {
                             mUnk_fd = mUnk_fc - 3;
                         }
+                        moved   = 1;
                     } else {
                         func_02081c2c((u8) mUnk_106[mUnk_fd + 3], (u8) ((mUnk_fd + 3) % 4), 2);
                         func_020823d8(mUnk_106[mUnk_fd + 3], (u8) ((mUnk_fd + 3) % 4), 2);
@@ -1310,11 +1309,11 @@ void UnkStruct_02078e14::func_0207ea3c() {
                 } else {
                     if (mUnk_fa - mUnk_fb > 1) {
                         mUnk_fa = mUnk_fb;
-                        moved   = 1;
                         mUnk_fd = mUnk_fb;
                         if (mUnk_fd >= mUnk_fc - 3) {
                             mUnk_fd = mUnk_fc - 3;
                         }
+                        moved   = 1;
                     } else {
                         mUnk_f8 = -0x20;
                         mUnk_fd--;

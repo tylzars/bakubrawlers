@@ -347,6 +347,7 @@ void BattleHud::func_ov007_0222644c(u8 side, int card) {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     BattleEntry *entries = mData->mEntries;
     u8 selected = data_020d433c.mBattlePlayers->mUnk_2a9;
+    u8 i;
     screen.func_02027624(3);
     index = side + 0x11;
     ChangeDir("/Game/Card/Graphic/Small");
@@ -826,9 +827,9 @@ BOOL BattleHud::func_ov007_022275c0(u8 side, s16 x, s16 y, u8 flag) {
     return result;
 }
 
-// non-matching: i and j swap registers (r8/r7).
 void BattleHud::func_ov007_02227730() {
     u8 selected = data_020d433c.mBattlePlayers->mUnk_2a9;
+    u8 i;
     mData->func_ov007_0223db20(0, 8, 0x1e);
     mData->func_ov007_0223db20(1, 0xb8, 0x1e);
     mData->mUnk_70->func_020654a0();
@@ -836,7 +837,7 @@ void BattleHud::func_ov007_02227730() {
         s16 pos[2];
         pos[0] = mUnk_18;
         pos[1] = mUnk_1a;
-        u8 i = 0;
+        i = 0;
         do {
                         if (selected == mChoice[i][0] || selected == mChoice[i][1]) {
                 if (mUnk_114 != 0) {
@@ -863,7 +864,7 @@ void BattleHud::func_ov007_02227730() {
     mAnims[7]->Draw(1, (s32) mUnk_10c, 0x54, 1);
     if (mUnk_22_3) {
         u8 j = 12;
-        u8 i = 0;
+        i = 0;
         do {
             int x = i == 0 ? 0xb : 0xe7;
             s8 first = mChoice[i][0];

@@ -1430,6 +1430,8 @@ u16 BattleShoot::func_ov007_0226df24(int a, int b) {
 
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);
 
+struct Bytes2 { u8 b[2]; };
+
 // non-matching: register allocation: the original keeps this in r10 and the running sums in stack slots; this version has the same structure (size 0x870 vs 0x864).
 void BattleShoot::func_ov007_0226e884() {
     s32 limitedX;
@@ -1467,10 +1469,14 @@ void BattleShoot::func_ov007_0226e884() {
             mUnk_615c = 0;
             mUnk_6160 = 0;
         } else {
-            u8 curX  = mUnk_618f;
-            u8 prevX = mUnk_618d;
-            u8 curY  = mUnk_6190;
-            u8 prevY = mUnk_618e;
+            u8 prevX;
+            u8 prevY;
+            u8 curY;
+            u8 curX;
+            curX  = mUnk_618f;
+            prevX = mUnk_618d;
+            curY  = mUnk_6190;
+            prevY = mUnk_618e;
             if ((prevX != curX) | (prevY != curY)) {
                 mUnk_615c += (s16) (curX - prevX);
                 mUnk_6160 += (s16) (curY - prevY);
@@ -1483,24 +1489,21 @@ void BattleShoot::func_ov007_0226e884() {
         BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[i];
         if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
             WirelessManager::Get();
-            if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
+            if (!IsWirelessMode(&data_020c4258)) {
                 mMsgs[i].mUnk_00 = ((u8 *) &data_0220f540)[0];
                 mMsgs[i].mUnk_01 = ((u8 *) &data_0220f540)[1];
-                mMsgs[i].mUnk_02 = ((u8 *) &data_0220f540)[2];
-                mMsgs[i].mUnk_03 = ((u8 *) &data_0220f540)[3];
+                *(Bytes2 *) &mMsgs[i].mUnk_02 = *(Bytes2 *) (((u8 *) &data_0220f540) + 2);
                 mMsgs[i].mWords = *(ShootWords7 *) ((u8 *) &data_0220f540 + 4);
             } else {
                 mMsgs[i].mUnk_00 = ((u8 *) p + 0x100)[0];
                 mMsgs[i].mUnk_01 = ((u8 *) p + 0x100)[1];
-                mMsgs[i].mUnk_02 = ((u8 *) p + 0x100)[2];
-                mMsgs[i].mUnk_03 = ((u8 *) p + 0x100)[3];
+                *(Bytes2 *) &mMsgs[i].mUnk_02 = *(Bytes2 *) (((u8 *) p + 0x100) + 2);
                 mMsgs[i].mWords = *(ShootWords7 *) ((u8 *) p + 0x100 + 4);
             }
         } else {
             mMsgs[i].mUnk_00 = ((u8 *) p + 0x100)[0];
                 mMsgs[i].mUnk_01 = ((u8 *) p + 0x100)[1];
-                mMsgs[i].mUnk_02 = ((u8 *) p + 0x100)[2];
-                mMsgs[i].mUnk_03 = ((u8 *) p + 0x100)[3];
+                *(Bytes2 *) &mMsgs[i].mUnk_02 = *(Bytes2 *) (((u8 *) p + 0x100) + 2);
                 mMsgs[i].mWords = *(ShootWords7 *) ((u8 *) p + 0x100 + 4);
         }
         i++;

@@ -232,6 +232,15 @@ Other findings from linking:
   enclosing loop where it's invariant; passed straight as a call argument it's recomputed instead. A local assigned
   twice (`s32 left = c; left += b;`) is not substituted and is computed where written, e.g. in an inner loop's
   preheader (BattleCommandPage::func_020571a8). Function-scope stack locals get slots in descending declaration order.
+- **More register rules (game code).**
+  - A value returned from an inline helper (or a block-local copied into the variable) is coloured differently from
+    assigning the variable directly; a variable left unset on some path is live from entry and gets low registers.
+  - Declaration order sets registers, assignment order sets load order: declare `a, b, c, d` and assign `b, a, d, c`.
+  - Several zero-initialised locals share one `mov rN, #0`, put in whichever is assigned first; the later ones become
+    `mov rM, rN`. Use declare-then-assign to choose the first.
+  - A global read repeated inside a loop is hoisted and coloured after named locals and loop temps, so it gets the
+    higher registers; a named local copy is coloured early.
+  - `T a[2] = {0, 0};` stores through a base register (`add r1, sp, #N`), separate element stores use sp offsets.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

@@ -36,7 +36,6 @@ extern "C" void func_ov007_02246578(BattleCommandMap *map);
 extern "C" void func_ov007_02246558(BattleCommandMap *map);
 void func_ov007_02233078(VecFx32 *a, VecFx32 *b, int c, VecFx32 *d);
 
-static inline s32 StickSign(s32 v);
 
 struct Rot16 {
     u16 x, y, z;
@@ -314,7 +313,6 @@ void BattleCommandMap::func_ov007_02245e58() {
 }
 
 
-// non-matching: 0x52c vs 0x548, the original keeps angle unfolded per arm and has sx/sy in swapped registers.
 void BattleCommandMap::func_ov007_02245f08() {
     if (mUnk_150 == 0) {
         return;
@@ -335,8 +333,29 @@ void BattleCommandMap::func_ov007_02245f08() {
     player = data_020d433c.mBattlePlayers->Current();
     dy     = -player->mUnk_d8;
     dx     = player->mUnk_d4;
-    sy     = StickSign(dy);
-    sx     = StickSign(dx);
+    s32 ay = dy;
+    if (ay < 0) {
+        ay = -ay;
+    }
+    if (ay < 0x31) {
+        sy = 0;
+    } else if (dy < 0) {
+        sy = -1;
+    } else if (dy > 0) {
+        sy = 1;
+    }
+    s32 ax = dx;
+    if (ax < 0) {
+        ax = -ax;
+    }
+    if (ax < 0x31) {
+        sx = 0;
+    } else if (dx < 0) {
+        sx = -1;
+    } else if (dx > 0) {
+        sx = 1;
+    }
+
     fy     = (float) dy / 4096.0f;
     fx     = (float) dx / 4096.0f;
     if (sx != 0) {
@@ -406,21 +425,6 @@ void BattleCommandMap::func_ov007_02245f08() {
     dst->mRotZ = obj->mRotZ;
 }
 
-static inline s32 StickSign(s32 v) {
-    s32 s;
-    s32 a = v;
-    if (a < 0) {
-        a = -a;
-    }
-    if (a < 0x31) {
-        s = 0;
-    } else if (v < 0) {
-        s = -1;
-    } else if (v > 0) {
-        s = 1;
-    }
-    return s;
-}
 
 
 

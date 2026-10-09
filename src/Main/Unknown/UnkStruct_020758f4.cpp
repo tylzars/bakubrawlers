@@ -63,8 +63,8 @@ UnkStruct_020758f4_Entry *UnkStruct_020758f4::func_02075a00(u32 index) {
 // and it adds the 9000 of the score > 1000000 case to a register holding 10000 (ours loads the folded 0x4a38).
 void UnkStruct_020758f4::func_02075a0c() {
     s8 i;
-    s8 j;
     s8 k;
+    s8 j;
     for (i = 0; i < 13; i++) {
         u8 id = data_020a3070[mUnk_94][i];
         mUnk_04[i].mUnk_0 = id;
@@ -138,18 +138,17 @@ void UnkStruct_020758f4::func_02075a0c() {
         }
     }
     for (i = 0; i < 4; i++) {
-        u32 value = (base + data_020a3060[i]) / 10 * 10;
         mUnk_6c[i].mUnk_0 = data_020a305c[i];
-        mUnk_6c[i].mUnk_4 = value;
-        mUnk_6c[i].mUnk_2 = func_02075ff4(value);
+        mUnk_6c[i].mUnk_4 = (base + data_020a3060[i]) / 10 * 10;
+        mUnk_6c[i].mUnk_2 = func_02075ff4(mUnk_6c[i].mUnk_4);
     }
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
             if (i != j && mUnk_6c[i].mUnk_2 == mUnk_6c[j].mUnk_2) {
-                if (mUnk_6c[i].mUnk_4 <= mUnk_6c[j].mUnk_4) {
-                    mUnk_6c[j].mUnk_2--;
-                } else {
+                if (mUnk_6c[i].mUnk_4 > mUnk_6c[j].mUnk_4) {
                     mUnk_6c[i].mUnk_2--;
+                } else {
+                    mUnk_6c[j].mUnk_2--;
                 }
             }
         }
@@ -163,7 +162,7 @@ void UnkStruct_020758f4::func_02075a0c() {
                     mUnk_04[k].mUnk_1 = mUnk_04[k - 1].mUnk_1;
                     mUnk_04[k].mUnk_2 = mUnk_04[k - 1].mUnk_2;
                     mUnk_04[k].mUnk_4 = mUnk_04[k - 1].mUnk_4;
-                    if (mUnk_04[k - 1].mUnk_4 < mUnk_90) {
+                    if (mUnk_04[k].mUnk_4 < mUnk_90) {
                         mUnk_04[k].mUnk_2++;
                     }
                     mUnk_04[k - 1].mUnk_0 = mUnk_8c;

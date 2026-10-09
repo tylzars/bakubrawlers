@@ -432,11 +432,14 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
                 i++;
             } while (i < count);
             if (mUnk_0e != 0 && result == 0) {
+                u8 n;
+                BattlePlayerList *list;
+                u8 count2;
                 u8 j        = 0;
                 u8 slots[3] = {0, 0, 0};
-                u8 count2   = data_020d433c.mUnk_99;
-                u8 n        = 0;
-                BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                count2   = data_020d433c.mUnk_99;
+                list = data_020d433c.mBattlePlayers;
+                n        = 0;
                 do {
                     if (list->mPlayers[mUnk_15]->mRecords[j].mUnk_0a == 0) {
                         slots[n] = j;
@@ -453,23 +456,27 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
             break;
         case 5:
             if (mUnk_1c->mUnk_1d2 == 2) {
+                u8 mode;
+                u8 x;
+                u8 y;
                 u8 n         = 0;
                 u8 found[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-                u8 mode                = data_020d433c.mUnk_98;
-                BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                u8 x                   = 0;
+                mode                = data_020d433c.mUnk_98;
+                x = 0;
                 do {
-                    u8 y = 0;
+                    y = 0;
                     do {
-                        u8 v = list->mUnk_1f8[y][x];
+                        u8 v = data_020d433c.mBattlePlayers->mUnk_1f8[y][x];
                         if (v != 0) {
                             u8 unit = v - 1;
-                            u8 owner = list->mUnits[unit].mUnk_0f;
+                            u8 owner = data_020d433c.mBattlePlayers->mUnits[unit].mUnk_0f;
                             if (owner != mUnk_15) {
-                                if (mode == 0) {
-                                    found[n] = unit;
-                                    n++;
-                                } else if (owner != list->mPlayers[mUnk_15]->mUnk_f2) {
+                                if (mode != 0) {
+                                    if (owner != data_020d433c.mBattlePlayers->mPlayers[mUnk_15]->mUnk_f2) {
+                                        found[n] = unit;
+                                        n++;
+                                    }
+                                } else {
                                     found[n] = unit;
                                     n++;
                                 }
@@ -488,28 +495,31 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
             break;
         case 6: {
             u8 pairs[12][2] = {0};
-            u8 mode                = data_020d433c.mUnk_98;
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            u8 n                   = 0;
-            u8 x                   = 0;
+            u8 n;
+            u8 y;
+            u8 x;
+            n                   = 0;
+            x                   = 0;
             do {
-                u8 y = 0;
+                y = 0;
                 do {
-                    u8 v = list->mUnk_16c[y][x];
+                    u8 v = data_020d433c.mBattlePlayers->mUnk_16c[y][x];
                     if (v != 0) {
                         pairs[n][0] = v - 1;
                         pairs[n][1] = 0xff;
-                        u8 w        = list->mUnk_1f8[y][x];
+                        u8 w        = data_020d433c.mBattlePlayers->mUnk_1f8[y][x];
                         if (w == 0) {
                             n++;
                         } else {
                             u8 unit  = w - 1;
-                            u8 owner = list->mUnits[unit].mUnk_0f;
+                            u8 owner = data_020d433c.mBattlePlayers->mUnits[unit].mUnk_0f;
                             if (owner != mUnk_15) {
-                                if (mode == 0) {
-                                    pairs[n][1] = unit;
-                                    n++;
-                                } else if (owner != list->mPlayers[mUnk_15]->mUnk_f2) {
+                                if (data_020d433c.mUnk_98 != 0) {
+                                    if (owner != data_020d433c.mBattlePlayers->mPlayers[mUnk_15]->mUnk_f2) {
+                                        pairs[n][1] = unit;
+                                        n++;
+                                    }
+                                } else {
                                     pairs[n][1] = unit;
                                     n++;
                                 }
@@ -556,9 +566,7 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
             if (r == 1) {
                 result = 0;
             } else if (r == 0) {
-                u16 s[2];
-                s[0] = 0;
-                s[1] = 0;
+                u16 s[2] = {0, 0};
                 if (func_ov007_02267944(this, s)) {
                     if (s[1] >= s[0]) {
                         result = 0;
@@ -580,9 +588,7 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
             if (r == 2) {
                 result = 0;
             } else if (r == 0) {
-                u16 s[2];
-                s[0] = 0;
-                s[1] = 0;
+                u16 s[2] = {0, 0};
                 if (func_ov007_02267944(this, s)) {
                     if (s[0] >= s[1]) {
                         result = 0;

@@ -31,7 +31,7 @@ extern "C" s64 func_01ff8010(fx32 a, fx32 b); // 64-bit fixed-point division (32
 extern "C" fx32 FX_Modf(fx32 value, fx32 *integer); // splits into integer part and fraction
 
 // MTX_Perspective
-void func_02001688(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
+extern "C" void func_02001688(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
 // MTX_Ortho
 extern "C" void MTX_Frustum(fx32 top, fx32 bottom, fx32 left, fx32 right, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
 extern "C" void func_01ff92a4();

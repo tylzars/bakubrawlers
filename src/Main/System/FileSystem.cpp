@@ -54,7 +54,7 @@ extern "C" void func_0200ab18(void *file);
 extern "C" void func_0200abd8(void *file);
 extern "C" int func_0200aa94(void *file, const char *path);
 extern "C" void func_0200a7b4(void *file);
-extern void func_02007d4c(void *ctx, void *dst, const void *header);
+extern "C" void MI_InitUncompContextLZ(void *ctx, void *dst, const void *header);
 extern int func_02007d94(void *ctx, void *src, u32 len);
 extern void func_02005e9c(void *buf, u32 size);
 
@@ -124,7 +124,7 @@ void *func_02023504(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
             buffer = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, unpacked);
         }
         void *temp = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, 0x2000);
-        func_02007d4c(data_020d53f4, buffer, &data_020d53e4);
+        MI_InitUncompContextLZ(data_020d53f4, buffer, &data_020d53e4);
         u32 chunk;
         do {
             chunk = size > 0x2000 ? 0x2000 : size;
@@ -228,7 +228,7 @@ void func_02023884() {
             data_020d53e4.mOwnsBuffer = 1;
         }
         data_020d53e4.mTemp = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, 0x2000);
-        func_02007d4c(data_020d540c, data_020d53e4.mBuffer, &data_020d5408);
+        MI_InitUncompContextLZ(data_020d540c, data_020d53e4.mBuffer, &data_020d5408);
         data_020d53e4.mRemaining = data_020d53e4.mSize;
         if (data_020d53e4.mRequestedSize == 0) {
             data_020d53e4.mSize = unpacked;

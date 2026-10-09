@@ -1814,7 +1814,6 @@ u32 FieldSelectScene::func_ov001_02223f5c() {
     return result;
 }
 
-// non-matching: the original keeps this in r7 without spilling.
 u32 FieldSelectScene::func_ov001_02224178() {
     u32 result = 0;
     if (func_ov001_02223914()) {
@@ -1833,18 +1832,20 @@ u32 FieldSelectScene::func_ov001_02224178() {
         u32 prev = 0;
         u32 next = 0;
         u32 changed = 0;
-        if (!(mInput[0].mKeys & 1)) {
+        u32 keys = mInput[0].mKeys;
+        if (!(keys & 1)) {
             if (mInput[0].mTouching != 0) {
                 int y = mInput[0].mTouchY;
-                int x = mInput[0].mTouchX;
                 int t = y - 0x26;
+                int x = mInput[0].mTouchX;
                 if (((t % 0x18) < 0x14) & ((y < 0x9e) & ((y > 0x26) & ((x >= 0x79) & (x <= 0xfc))))) {
                     int sel = t / 0x18;
                     if (sel > 4) {
                         sel = 4;
                     }
-                    if (mInput[0].mUnk_02 != (u8) sel) {
-                        mInput[0].mUnk_02 = sel;
+                    u8 ns = sel;
+                    if (mInput[0].mUnk_02 != ns) {
+                        mInput[0].mUnk_02 = ns;
                         changed           = 1;
                     }
                     if (x <= 0x91) {
@@ -1854,27 +1855,27 @@ u32 FieldSelectScene::func_ov001_02224178() {
                         next = 1;
                     }
                 }
-            } else if (mInput[0].mKeys != 0) {
+            } else if (keys != 0) {
                 u8 cur = mInput[0].mUnk_02;
                 u8 v   = cur % 5;
-                if (mInput[0].mKeys & 0x40) {
+                if (keys & 0x40) {
                     v = (v + 4) % 5;
-                } else if (mInput[0].mKeys & 0x80) {
+                } else if (keys & 0x80) {
                     v = (v + 1) % 5;
                 }
                 if (v != cur) {
                     mInput[0].mUnk_02 = v;
                     changed           = 1;
-                } else if (mInput[0].mKeys & 0x20) {
+                } else if (keys & 0x20) {
                     prev = 1;
-                } else if (mInput[0].mKeys & 0x10) {
+                } else if (keys & 0x10) {
                     next = 1;
                 }
             }
         }
         u8 idx = mInput[0].mUnk_02 % 5;
         if (prev) {
-            mUnk_25c[idx * 2] = (mUnk_25c[idx * 2] + mUnk_25c[idx * 2 + 1] - 1) % mUnk_25c[idx * 2 + 1];
+            mOptions[idx].mValue = (mOptions[idx].mValue + mOptions[idx].mCount - 1) % mOptions[idx].mCount;
             if (mUnk_333 != 0) {
                 mCells2[5].mAnim->SetAnimation(1);
                 mCells2[5].mY = idx * 0x18 + 0x26;
@@ -1882,7 +1883,7 @@ u32 FieldSelectScene::func_ov001_02224178() {
             changed = 1;
         }
         if (next) {
-            mUnk_25c[idx * 2] = (mUnk_25c[idx * 2] + 1) % mUnk_25c[idx * 2 + 1];
+            mOptions[idx].mValue = (mOptions[idx].mValue + 1) % mOptions[idx].mCount;
             if (mUnk_333 != 0) {
                 mCells2[6].mAnim->SetAnimation(4);
                 mCells2[6].mY = idx * 0x18 + 0x26;
@@ -2507,7 +2508,7 @@ void FieldSelectScene::func_ov001_022256e4() {
             u8 col = 0;
             do {
                 int v = data_ov001_022270dc[r * 4 + col];
-                int x = data_ov001_022270c0[col];
+                s16 x = data_ov001_022270c0[col];
                 if (r == 0) {
                     x = data_ov001_022270bc[col];
                 }

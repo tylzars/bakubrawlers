@@ -1194,6 +1194,8 @@ void BattleHud::func_ov007_022286c8() {
 
 // non-matching: the original keeps the card x position in r5 and does not fold x + 3.
 void BattleHud::func_ov007_022286e0() {
+    s16 y;
+    u8 side;
     BattleEntry *entries = mData->mEntries;
     if (mUnk_11a != 0 || mUnk_11b != 0) {
         mUnk_120 -= 1;
@@ -1253,19 +1255,20 @@ void BattleHud::func_ov007_022286e0() {
             mUnk_124 = 3;
         }
     }
-    s16 y = 0x62;
+    y = 0x62;
     if (mUnk_129) {
         mUnk_126 += mUnk_124;
         if (mUnk_126 > 0xb4) {
             mUnk_126 = 0xb4;
-            mUnk_128 = mUnk_129 = 0;
+            mUnk_129 = 0;
+            mUnk_128 = 0;
         }
     } else if (mUnk_128) {
         mUnk_126 -= mUnk_124;
         if (mUnk_126 < 0x5f) {
             mUnk_126 = 0x5f;
             if (mUnk_116) {
-                y = mUnk_114 != 0 ? y + 3 : y - 3;
+                if (mUnk_114 != 0) { y += 3; } else { y -= 3; }
                 mUnk_115++;
                 if (mUnk_115 >= 1) {
                     mUnk_115 = 0;
@@ -1275,11 +1278,11 @@ void BattleHud::func_ov007_022286e0() {
             }
         }
     }
-    u8 side = 0;
+    side = 0;
     do {
         if (!entries[side].mUnk_0f_0) {
+            u8 x = data_ov007_02279178[side];
             if (mUnk_118[side] != 0xff) {
-                u8 x = data_ov007_02279178[side];
                 mAnims[17 + side]->Draw(1, x, 0x20, mUnk_118[side]);
                 if (!data_020d433c.mUnk_9a_2 && mUnk_0c == side) {
                     if (!mUnk_117_1 && !mUnk_117_2 && mUnk_118[side] == 1) {

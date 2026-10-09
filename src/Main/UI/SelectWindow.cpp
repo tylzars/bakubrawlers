@@ -48,17 +48,18 @@ BOOL SelectWindow::Update(BOOL input) {
         }
         break;
     case 1: {
-        int oldSel        = mCursor->mSelection;
+        s8 oldSel        = mCursor->mSelection;
         WindowItem *items = mCursor->mItems;
         int oldId         = oldSel == -1 ? -1 : items[oldSel].mId;
         int oldPrev       = mCursor->mUnk_05;
-        int oldPrevId     = oldPrev == -1 ? -1 : mCursor->mItems[oldPrev].mId;
+        SelectWindowCursor *cur = mCursor;
+        int oldPrevId     = oldPrev == -1 ? -1 : cur->mItems[oldPrev].mId;
         if (mUnk_065 == 0) {
             event = mCursor->func_0202f468(input);
         }
         int newSel    = mCursor->mSelection;
         int newId     = newSel == -1 ? -1 : mCursor->mItems[newSel].mId;
-        int newPrev   = mCursor->mUnk_05;
+        s8 newPrev   = mCursor->mUnk_05;
         int newPrevId = newPrev == -1 ? -1 : mCursor->mItems[newPrev].mId;
         if (mUnk_07e == 0 && newId != -1 && mButtons[newId].mEnabled == 0) {
             mCursor->mSelection = oldSel;
@@ -185,10 +186,12 @@ BOOL SelectWindow::Update(BOOL input) {
     }
     case 2: {
         BOOL flag = FALSE;
-        if (mCells[GetSelectedId()]->mUnk_12 != 0) {
+        SelectWindowCursor *c = mCursor;
+        s8 sel = c->mSelection;
+        if (mCells[sel == -1 ? -1 : c->mItems[sel].mId]->mUnk_12 != 0) {
             flag = TRUE;
         }
-        if (mCells[GetSelectedId()]->mUnk_10 == 1) {
+        if (mCells[sel == -1 ? -1 : c->mItems[sel].mId]->mUnk_10 == 1) {
             flag = TRUE;
         }
         if (flag) {
@@ -205,8 +208,9 @@ BOOL SelectWindow::Update(BOOL input) {
     }
     case 3:
         func_0205c2e0();
+        SelectWindowCursor *c = mCursor;
         if (mUnk_062 == 2) {
-            if (mCursor->mSelection != -1) {
+            if (c->mSelection != -1) {
                 mCells[GetSelectedId()]->SetAnimation(mButtons[GetSelectedId()].mUnk_08);
             }
         } else if (mUnk_062 == 0) {
@@ -222,7 +226,7 @@ BOOL SelectWindow::Update(BOOL input) {
         break;
     case 5: {
         if (mUnk_063 != mCursor->mSelection) {
-            int id = mUnk_063 == -1 ? -1 : mCursor->mItems[mUnk_063].mId;
+            int id = GetSelectedId();
             if (id != -1) {
                 mCells[GetSelectedId()]->SetAnimation(mButtons[GetSelectedId()].mUnk_08);
             }

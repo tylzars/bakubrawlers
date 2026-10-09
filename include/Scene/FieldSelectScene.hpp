@@ -60,7 +60,10 @@ public:
     /* 14c */ u8 mUnk_14c[0x20];
     /* 16c */ void *mFiles[10][3];
     /* 1e4 */ u32 mFileSizes[10][3];
-    /* 25c */ u8 mUnk_25c[10];
+    union {
+        /* 25c */ u8 mUnk_25c[10];
+        /* 25c */ struct { u8 mValue; u8 mCount; } mOptions[5];
+    };
     /* 266 */ u8 mUnk_266[4][0x12];
     /* 2ae */ u8 mUnk_2ae[4][9];
     /* 2d2 */ u8 mUnk_2d2[0x12];

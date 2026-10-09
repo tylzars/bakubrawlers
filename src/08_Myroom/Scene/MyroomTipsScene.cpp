@@ -520,8 +520,11 @@ void MyroomTipsScene::func_ov008_022274f8() {
                         func_0206f88c(mEvent, (u8) current, data_ov008_02229658[current], 10);
                         mCount = mUnlocked[(s8) context->mInfo.mMenuResult];
                         mWindowB->mCursor->func_02030474(0x30, 0x90, 4, mCount);
-                        u32 enable = (mCount > 4) ? 1 : 0;
-                        mWindowB->mButtons[1].mEnabled = enable;
+                        if (mCount <= 4) {
+                            mWindowB->mButtons[1].mEnabled = 0;
+                        } else {
+                            mWindowB->mButtons[1].mEnabled = 1;
+                        }
                         context->mInfo.mStep = 8;
                     }
                 }

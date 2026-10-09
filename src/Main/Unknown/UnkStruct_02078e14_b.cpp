@@ -28,6 +28,9 @@
 
 void func_02081a4c(void *arg);
 
+// Which screen a sprite or text goes to (passed to SpriteManager::Screen and the cell animation draws).
+enum ScreenId { SCREEN_MAIN, SCREEN_SUB };
+
 // non-matching: 2 words, the original materialises `moved = 1` with `mov r4, #1` where the compiler reuses r2 (`mov r4, r2`)
 
 extern u16 data_020a39fc[];
@@ -2263,7 +2266,7 @@ void func_02081a4c(void *arg) {
 }
 
 void UnkStruct_02078e14::func_02081a74(u8 unk1, u32 unk2, u32 unk3, s16 unk4, s16 unk5) {
-    BOOL second = unk3 == 0 ? 0 : 1;
+    BOOL second = unk3 == 0 ? SCREEN_MAIN : SCREEN_SUB;
     u16 pos     = 0;
     u32 priority = 0;
     switch (unk3) {
@@ -2315,7 +2318,7 @@ void UnkStruct_02078e14::func_02081c2c(u32 unk1, u32 unk2, u32 unk3) {
             }
             break;
     }
-    BOOL second = unk3 == 0 ? 0 : 1;
+    BOOL second = unk3 == 0 ? SCREEN_MAIN : SCREEN_SUB;
     ChangeDir("/Game/Bakugan/mark");
     char path[0x20];
     sprintf(path, "bakugan_s_%03d_ncg.bin", data_020a1074[unk1]);
@@ -2366,7 +2369,7 @@ void UnkStruct_02078e14::func_02081d5c(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
 }
 
 void UnkStruct_02078e14::func_02082264(u8 unk1, u8 unk2, u32 unk3, s16 unk4, s16 unk5) {
-    BOOL second = unk3 == 0 ? 0 : 1;
+    BOOL second = unk3 == 0 ? SCREEN_MAIN : SCREEN_SUB;
     u16 pos      = 0;
     u32 priority = 0;
     switch (unk3) {
@@ -2412,7 +2415,7 @@ void UnkStruct_02078e14::func_020823d8(u32 unk1, u32 unk2, u32 unk3) {
             }
             break;
     }
-    BOOL second = unk3 == 0 ? 0 : 1;
+    BOOL second = unk3 == 0 ? SCREEN_MAIN : SCREEN_SUB;
     ChangeDir("/Game/Card/Graphic/Small");
     char path[0x20];
     sprintf(path, "card_s_%03d_ncg.bin", func_02065c20(unk1));

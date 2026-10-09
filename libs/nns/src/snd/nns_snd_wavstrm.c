@@ -58,6 +58,9 @@ extern int func_0203a36c(WavStrm *s);
 extern int func_0203a37c(WavStrm *s, void *dst, u32 len, u32 off);
 extern int func_0203a3b4(WavStrm *s);
 extern int func_0203a3c4(WavStrm *s, u32 id);
+
+// Sample format passed to the fill callback.
+enum StrmFormat { STRM_FORMAT_PCM8, STRM_FORMAT_PCM16 };
 extern void func_0203a3ec(WavStrm *s);
 extern int func_0203a3f0(WavStrm *s, void *dst, u32 len, u32 off);
 extern void func_0203a40c(WavStrm *s);
@@ -493,7 +496,7 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
         } while (remaining != 0);
     }
     if (s->fillCb != 0) {
-        s->fillCb(c->phase, c->channels, c->buf, c->size, s->format != 0 ? 1 : 0, s->fillArg);
+        s->fillCb(c->phase, c->channels, c->buf, c->size, s->format == 0 ? STRM_FORMAT_PCM8 : STRM_FORMAT_PCM16, s->fillArg);
     }
     for (i = 0; (s32)i < c->channels; i++) {
         DC_FlushRange(c->buf[i], c->size);

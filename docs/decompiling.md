@@ -276,6 +276,12 @@ Other findings from linking:
   gives the reverse; a BOOL stored into a u8 field gives `ands rX, r0, #0xff` before the store; a u8 return removes
   the caller's `and #0xff`.
 - **Chained assignments** (`a = b = c = 1`) store right to left and change which register holds the constant.
+- **0/1 selects always put the 1 first.** mwcc rewrites an int/bool select between exactly 0 and 1 (`x ? 1 : 0`,
+  `x != 0`, `!!x`, if/else assigning 0 and 1 to a local, inline `return x != 0;`) into a compare value emitted as
+  `movCC #1; movNCC #0`, whatever the source order. The original's `#0`-first pair comes from: a select of two
+  enum constants (`x == 0 ? SCREEN_MAIN : SCREEN_SUB`); if/else storing straight to memory in both arms
+  (`if (c) p->f = 0; else p->f = 1;`); a variable with other definitions; or constants other than {0, 1}.
+  `b = 0; if (x) b = 1;` gives `mov #0; movne #1` instead.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

@@ -162,20 +162,17 @@ extern unsigned _u32_div_f(unsigned, unsigned);   /* unsigned divide, quotient i
 /* 0x02012b44: integer to digits, written backwards from end; returns start (0 if too long) */
 char *func_02012b44(int val, char *end, FmtSpec spec)
 {
-    char *p = end;
-    int count = 0;
+    unsigned u, base;
+    char *p;
+    int digit, count;
     int neg = 0;
-    int base;
-    int sign = spec.sign;
-    int alt = spec.alt;
-    int conv = spec.conv;
-    int width = spec.width;
-    int prec = spec.prec;
-    unsigned u = val;
-    int digit;
+    u = val;
+    neg = 0;
+    p = end;
     *--p = 0;
-    if (val == 0 && prec == 0 && !(alt && conv == 'o')) return p;
-    switch (conv) {
+    count = 0;
+    if (val == 0 && spec.prec == 0 && !(spec.alt && spec.conv == 'o')) return p;
+    switch (spec.conv) {
     case 'd': case 'i':
         base = 10;
         if (val < 0) {
@@ -183,60 +180,61 @@ char *func_02012b44(int val, char *end, FmtSpec spec)
             neg = 1;
         }
         break;
-    case 'o': base = 8; sign = 0; break;
-    case 'u': base = 10; sign = 0; break;
-    case 'x': case 'X': base = 16; sign = 0; break;
+    case 'o': base = 8; spec.sign = 0; break;
+    case 'u': base = 10; spec.sign = 0; break;
+    case 'x': case 'X': base = 16; spec.sign = 0; break;
     }
     do {
         digit = u % base;
-        u = u / base;
-        if (digit < 10) digit += '0';
-        else if (conv == 'x') digit += 'a' - 10;
-        else digit += 'A' - 10;
+        u /= base;
+        if (digit < 10) {
+            digit += '0';
+        } else {
+            digit -= 10;
+            if (spec.conv == 'x') digit += 'a';
+            else digit += 'A';
+        }
         *--p = digit;
-        count++;
+        ++count;
     } while (u != 0);
-    if (base == 8 && alt && *p != '0') {
+    if (base == 8 && spec.alt && *p != '0') {
         *--p = '0';
-        count++;
+        ++count;
     }
     if (spec.justify == 2) {
-        prec = width;
-        if (neg || sign) prec--;
-        if (base == 16 && alt) prec -= 2;
+        spec.prec = spec.width;
+        if (neg || spec.sign != 0) --spec.prec;
+        if (base == 16 && spec.alt) spec.prec -= 2;
     }
-    if ((end - p) + prec > 509) return 0;
-    while (count < prec) {
+    if (end - p + spec.prec > 509) return 0;
+    while (count < spec.prec) {
         *--p = '0';
-        count++;
+        ++count;
     }
-    if (base == 16 && alt) {
-        *--p = conv;
+    if (base == 16 && spec.alt) {
+        *--p = spec.conv;
         *--p = '0';
     }
     if (neg) *--p = '-';
-    else if (sign == 1) *--p = '+';
-    else if (sign == 2) *--p = ' ';
+    else if (spec.sign == 1) *--p = '+';
+    else if (spec.sign == 2) *--p = ' ';
     return p;
 }
 
 /* 0x02012d90: the same for 64-bit values */
 char *func_02012d90(long long val, char *end, FmtSpec spec)
 {
-    char *p = end;
-    int count = 0;
+    unsigned long long u, base;
+    char *p;
+    int digit, count;
     int neg = 0;
-    unsigned long long base;
-    int sign = spec.sign;
-    int alt = spec.alt;
-    int conv = spec.conv;
-    int width = spec.width;
-    int prec = spec.prec;
-    unsigned long long u = val;
-    int digit;
+    u = val;
+    neg = 0;
+    p = end;
     *--p = 0;
-    if (val == 0 && prec == 0 && !(alt && conv == 'o')) return p;
-    switch (conv) {
+    count = 0;
+    if (val == 0 && spec.prec == 0 && !(spec.alt && spec.conv == 'o')) return p;
+    switch (spec.conv) {
     case 'd': case 'i':
         base = 10;
         if (val < 0) {
@@ -244,40 +242,44 @@ char *func_02012d90(long long val, char *end, FmtSpec spec)
             neg = 1;
         }
         break;
-    case 'o': base = 8; sign = 0; break;
-    case 'u': base = 10; sign = 0; break;
-    case 'x': case 'X': base = 16; sign = 0; break;
+    case 'o': base = 8; spec.sign = 0; break;
+    case 'u': base = 10; spec.sign = 0; break;
+    case 'x': case 'X': base = 16; spec.sign = 0; break;
     }
     do {
         digit = u % base;
-        u = u / base;
-        if (digit < 10) digit += '0';
-        else if (conv == 'x') digit += 'a' - 10;
-        else digit += 'A' - 10;
+        u /= base;
+        if (digit < 10) {
+            digit += '0';
+        } else {
+            digit -= 10;
+            if (spec.conv == 'x') digit += 'a';
+            else digit += 'A';
+        }
         *--p = digit;
-        count++;
+        ++count;
     } while (u != 0);
-    if (base == 8 && alt && *p != '0') {
+    if (base == 8 && spec.alt && *p != '0') {
         *--p = '0';
-        count++;
+        ++count;
     }
     if (spec.justify == 2) {
-        prec = width;
-        if (neg || sign) prec--;
-        if (base == 16 && alt) prec -= 2;
+        spec.prec = spec.width;
+        if (neg || spec.sign != 0) --spec.prec;
+        if (base == 16 && spec.alt) spec.prec -= 2;
     }
-    if ((end - p) + prec > 509) return 0;
-    while (count < prec) {
+    if (end - p + spec.prec > 509) return 0;
+    while (count < spec.prec) {
         *--p = '0';
-        count++;
+        ++count;
     }
-    if (base == 16 && alt) {
-        *--p = conv;
+    if (base == 16 && spec.alt) {
+        *--p = spec.conv;
         *--p = '0';
     }
     if (neg) *--p = '-';
-    else if (sign == 1) *--p = '+';
-    else if (sign == 2) *--p = ' ';
+    else if (spec.sign == 1) *--p = '+';
+    else if (spec.sign == 2) *--p = ' ';
     return p;
 }
 
@@ -296,45 +298,45 @@ extern double func_0201bb40(double);
 #define XB ((unsigned char *)&x)
 char *func_0201308c(double x, char *end, FmtSpec spec)
 {
-    int sign = spec.sign;
-    int alt = spec.alt;
-    int conv = spec.conv;
-    int prec = spec.prec;
     char *p = end;
     DecForm f;
     FmtSpec e;
     DecDigits d;
     int i, n, bit, ex;
-    if (prec > 509) return 0;
+    double ld;
+    unsigned snum;
+    char *q;
+    ld = x;
+    if (spec.prec > 509) return 0;
     f.mode = 0;
     f.ndigits = 32;
-    func_0201cf1c(&f, x, &d);
+    func_0201cf1c(&f, ld, &d);
     if (0.0 == func_0201bb40(x)) {
         p = end - 6;
-        *(B6 *)p = data_020a52a0;
+        __memcpy(p, &data_020a52a0, 6);
         return p;
     }
     if (d.text[0] == 'I') {
         if (d.sign) {
             p = end - 5;
-            if (conv == 'A') *(B5 *)p = data_020a52a8;
-            else *(B5 *)p = data_020a52b0;
+            if (spec.conv == 'A') __memcpy(p, &data_020a52a8, 5);
+            else __memcpy(p, &data_020a52b0, 5);
         } else {
             p = end - 4;
-            if (conv == 'A') *(B4 *)p = data_020a52b8;
-            else *(B4 *)p = data_020a52bc;
+            if (spec.conv == 'A') __memcpy(p, &data_020a52b8, 4);
+            else __memcpy(p, &data_020a52bc, 4);
         }
         return p;
     }
     if (d.text[0] == 'N') {
         if (d.sign) {
             p = end - 5;
-            if (conv == 'A') *(B5 *)p = data_020a52c0;
-            else *(B5 *)p = data_020a52c8;
+            if (spec.conv == 'A') __memcpy(p, &data_020a52c0, 5);
+            else __memcpy(p, &data_020a52c8, 5);
         } else {
             p = end - 4;
-            if (conv == 'A') *(B4 *)p = data_020a52d0;
-            else *(B4 *)p = data_020a52d4;
+            if (spec.conv == 'A') __memcpy(p, &data_020a52d0, 4);
+            else __memcpy(p, &data_020a52d4, 4);
         }
         return p;
     }
@@ -346,16 +348,21 @@ char *func_0201308c(double x, char *end, FmtSpec spec)
     e.width = 0;
     e.prec = 1;
     e.conv = 'd';
+    q = (char *)&x;
     for (i = 0; i < 4; i++) {
-        signed char t = XB[i];
-        XB[i] = XB[7 - i];
-        XB[7 - i] = t;
+        char t = q[i];
+        q[i] = q[7 - i];
+        q[7 - i] = t;
     }
-    ex = ((XB[0] << 8 | XB[1]) >> 4) & 0x7ff;
-    p = func_02012b44(ex - 1023, p, e);
-    *--p = (conv == 'a') ? 'p' : 'P';
-    bit = prec * 4 + 11;
-    for (n = prec; n >= 1; n--) {
+    snum = XB[0] << 25;
+    snum |= XB[1] << 17;
+    snum = (snum >> 21) & 0x7ff;
+    ex = snum - 1023;
+    p = func_02012b44(ex, p, e);
+    if (spec.conv == 'a') *--p = 'p';
+    else *--p = 'P';
+    bit = spec.prec * 4 + 11;
+    for (n = spec.prec; n >= 1; n--) {
         unsigned char ch;
         if (bit < 64) {
             unsigned char v = XB[bit >> 3] >> (7 - (bit & 7));
@@ -364,7 +371,7 @@ char *func_0201308c(double x, char *end, FmtSpec spec)
             }
             v &= 0xf;
             if (v < 10) ch = v + '0';
-            else if (conv == 'a') ch = v + 'a' - 10;
+            else if (spec.conv == 'a') ch = v + 'a' - 10;
             else ch = v + 'A' - 10;
         } else {
             ch = '0';
@@ -372,13 +379,14 @@ char *func_0201308c(double x, char *end, FmtSpec spec)
         *--p = ch;
         bit -= 4;
     }
-    if (prec != 0 || alt != 0) *--p = '.';
+    if (spec.prec != 0 || spec.alt != 0) *--p = '.';
     *--p = '1';
-    *--p = (conv == 'a') ? 'x' : 'X';
+    if (spec.conv == 'a') *--p = 'x';
+    else *--p = 'X';
     *--p = '0';
     if (d.sign) *--p = '-';
-    else if (sign == 1) *--p = '+';
-    else if (sign == 2) *--p = ' ';
+    else if (spec.sign == 1) *--p = '+';
+    else if (spec.sign == 2) *--p = ' ';
     return p;
 }
 

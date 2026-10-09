@@ -15,9 +15,12 @@ extern int data_0209e2e4[16];        /* signed nibble table */
 int func_0203f714(unsigned char *src, int nblk, short *out, short *hist,
                   short c0, short c1, short *rnd, short mul, short add)
 {
-    int y1 = hist[0];
-    int y2 = hist[1];
-    int i = 0;
+    int y2;
+    int y1;
+    int i;
+    y1 = hist[0];
+    y2 = hist[1];
+    i = 0;
     if (nblk > 0) {
         do {
             int scale, k, j;

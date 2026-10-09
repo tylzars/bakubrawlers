@@ -15,22 +15,15 @@ typedef struct StrRead { const char *p; int eof; } StrRead;
 unsigned long func_02016ec0(int base, int maxw, int (*rd)(void *, int, int), void *ctx,
                             int *nread, int *neg, int *ovf)
 {
-    int state;
-    int count;
+    int state = 1;
+    int count = 0;
+    int nspace = 0;
+    unsigned long value = 0;
+    unsigned long max_over = 0;
     int ch;
-    unsigned long value;
-    unsigned long max_over;
-    int nspace;
-    int dig;
     int stop = -1;
 
-    *ovf = 0;
-    max_over = 0;
-    *neg = 0;
-    nspace = 0;
-    count = 0;
-    value = 0;
-    state = 1;
+    *neg = *ovf = 0;
     if (base < 0 || base == 1 || base > 36 || maxw < 1) {
         state = 0x40;
     } else {
@@ -60,19 +53,19 @@ unsigned long func_02016ec0(int base, int maxw, int (*rd)(void *, int, int), voi
             break;
         case 2:
             if ((base == 0 || base == 16) && ch == '0') {
+                state = 4;
                 count++;
                 ch = rd(ctx, 0, 0);
-                state = 4;
             } else {
                 state = 8;
             }
             break;
         case 4:
-            if (ch == 'x' || ch == 'X') {
-                count++;
-                ch = rd(ctx, 0, 0);
+            if (ch == 'X' || ch == 'x') {
                 base = 16;
                 state = 8;
+                count++;
+                ch = rd(ctx, 0, 0);
             } else {
                 if (base == 0) base = 8;
                 state = 0x10;
@@ -89,11 +82,11 @@ unsigned long func_02016ec0(int base, int maxw, int (*rd)(void *, int, int), voi
                     ch += '0';
                     break;
                 }
-            } else if (ISALPHA(ch) && TOUPPER(ch) - 'A' + 10 < base) {
-                ch = TOUPPER(ch) - 'A' + 10;
-            } else {
+            } else if (!ISALPHA(ch) || TOUPPER(ch) - 'A' + 10 >= base) {
                 state = (state == 0x10) ? 0x20 : 0x40;
                 break;
+            } else {
+                ch = TOUPPER(ch) - 'A' + 10;
             }
             state = 0x10;
             if (value > max_over) *ovf = 1;
@@ -164,19 +157,19 @@ unsigned long long func_020172a8(int base, int maxw, int (*rd)(void *, int, int)
             break;
         case 2:
             if ((base == 0 || base == 16) && ch == '0') {
+                state = 4;
                 count++;
                 ch = rd(ctx, 0, 0);
-                state = 4;
             } else {
                 state = 8;
             }
             break;
         case 4:
-            if (ch == 'x' || ch == 'X') {
-                count++;
-                ch = rd(ctx, 0, 0);
+            if (ch == 'X' || ch == 'x') {
                 base = 16;
                 state = 8;
+                count++;
+                ch = rd(ctx, 0, 0);
             } else {
                 if (base == 0) base = 8;
                 state = 0x10;
@@ -193,11 +186,11 @@ unsigned long long func_020172a8(int base, int maxw, int (*rd)(void *, int, int)
                     ch += '0';
                     break;
                 }
-            } else if (ISALPHA(ch) && TOUPPER(ch) - 'A' + 10 < base) {
-                ch = TOUPPER(ch) - 'A' + 10;
-            } else {
+            } else if (!ISALPHA(ch) || TOUPPER(ch) - 'A' + 10 >= base) {
                 state = (state == 0x10) ? 0x20 : 0x40;
                 break;
+            } else {
+                ch = TOUPPER(ch) - 'A' + 10;
             }
             state = 0x10;
             if (value > max_over) *ovf = 1;

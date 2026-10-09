@@ -164,16 +164,18 @@ int func_0204e6c0(CriBits *r, int n)
 
 int func_0204e6f0(CriBits *r, int n)
 {
-    int sh, v;
+    int sh, v, a;
     if (r->bits < n) func_0204e478(r);
     if (n > r->bits) {
         r->pos += r->bits;
         r->bits = 0;
         return 0;
     }
+    a = r->acc;
     sh = r->bits - n;
+    v = data_0209e424[n];
     r->bits = sh;
-    v = data_0209e424[n] & (r->acc >> sh);
+    v &= a >> sh;
     r->pos += n;
     return v;
 }

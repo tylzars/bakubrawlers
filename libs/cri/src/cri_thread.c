@@ -191,11 +191,11 @@ int func_02047414(unsigned mode, CriCfg *cfg)
 {
     data_02217a9c.mode = mode;
     __clear(data_02217a5c, sizeof(data_02217a5c));
-    if (mode <= 1) {
+    if ((unsigned)data_02217a9c.mode <= 1) {
         func_0204e844(1);
         return 1;
     }
-    if (mode == 2) func_0204e844(2);
+    if (data_02217a9c.mode == 2) func_0204e844(2);
     func_02047484(cfg);
     return 1;
 }

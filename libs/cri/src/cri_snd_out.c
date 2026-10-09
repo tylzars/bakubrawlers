@@ -299,8 +299,8 @@ s16 *func_0204a320(SndOut *o, s16 *src, u32 n)
     mode = o->mode;
     if (mode != 8) {
     if (mode == 5) {
-        int cnt = (int)(n >> 1) / 8;
         int i;
+        int cnt = (int)(n >> 1) / 8;
         for (i = 0; i < cnt; i++) {
             s16 s0 = src[0], s1 = src[1], s2 = src[2], s3 = src[3], s4 = src[4];
             s16 a0 = AVG(o->prev, s0);

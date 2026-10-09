@@ -282,6 +282,19 @@ Other findings from linking:
   enum constants (`x == 0 ? SCREEN_MAIN : SCREEN_SUB`); if/else storing straight to memory in both arms
   (`if (c) p->f = 0; else p->f = 1;`); a variable with other definitions; or constants other than {0, 1}.
   `b = 0; if (x) b = 1;` gives `mov #0; movne #1` instead.
+- **More from the library passes.**
+  - `__memcpy(dst, src, n)` is a CodeWarrior intrinsic like `__clear`: it inlines to `ldrb`/`strb` pairs (source
+    address in r3), where `memcpy` and struct copies call or use other registers (MSL printf's inf/nan strings).
+  - A leftover `mov rX, rX` means a store followed by a read-back of the same field (`g.mode = m; ...;
+    if (g.mode <= 1)`).
+  - Identical trailing statements in both arms of an if/else are merged into the join; write them inside both arms
+    when the original keeps them there.
+  - By-value struct parameters: use and modify the fields in place (`spec.prec -= 2`) rather than copying them to
+    locals; the copies change spill slots.
+  - `T *p = o->a; p += o->b;` pins the computation where it's written (not substituted into a call argument).
+  - A `double` parameter copied to a local puts its argument loads at entry, above an early return.
+  - A named `char *q = (char *)&x` gives indexed `q[i]` loads; the cast expression `((char *)&x)[i]` is
+    strength-reduced to a running pointer.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

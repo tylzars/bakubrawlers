@@ -305,14 +305,15 @@ int func_0203e874(CriObj *o) { return o->state; }
 
 void func_0203e87c(CriObj *o, int a, unsigned b)
 {
-    int t = o->s98;
-    o->i48 = a;
-    if (t == 0) {
+    if (o->s98 == 0) {
+        o->i48 = a;
         o->i4c = b / o->f;
+        o->i74 = 0;
     } else {
+        o->i48 = a;
         o->i4c = b / ((o->d / 8) * o->e);
+        o->i74 = 0;
     }
-    o->i74 = 0;
     o->i90 = 0;
     o->i94 = 0;
     o->ie0 = 0;

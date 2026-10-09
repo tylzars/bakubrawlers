@@ -14,7 +14,8 @@ extern void func_0203e9dc(CriObj *);
 void func_0203e954(CriObj *o, int n)
 {
     int h = o->h;
-    short *p = o->i5c + o->i68;
+    short *p = o->i5c;
+    p += o->i68;
     func_02044848(h, o->i48, n, p, 0);
     func_020448b0(h);
 }

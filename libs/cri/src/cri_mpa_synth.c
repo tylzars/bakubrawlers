@@ -28,12 +28,14 @@ void func_0204d864(void);
 
 void func_0204d78c(MpSyn *s, short *in, int ch, short *out) {
     short *dst;
+    short *win;
     int pos;
     s->pos[ch] = (s->pos[ch] - 0x40) & 0x3ff;
     pos = s->pos[ch];
     dst = &s->buf[ch][pos];
-    if (((unsigned)in & 0x1f) != 0 || ((unsigned)s->win & 0x1f) != 0) for (;;) {}
-    func_0204c088(in, s->win, dst);
+    win = s->win;
+    if (((unsigned)in & 0x1f) != 0 || ((unsigned)win & 0x1f) != 0) for (;;) {}
+    func_0204c088(in, win, dst);
     pos = s->pos[ch];
     data_020af5a0[pos >> 6](&s->buf[ch][pos], s->coef, out);
 }

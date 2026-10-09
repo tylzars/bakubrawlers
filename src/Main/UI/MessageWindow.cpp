@@ -234,9 +234,9 @@ void MessageWindow::func_02065be4(u32 unk1) {
     mWidth = (unk1 >> 4) << 4;
 }
 
-extern u8 data_020a15ac[][6];
-extern u8 data_020a1258[][4];
-extern u16 data_020a10ac[];
+extern const u8 data_020a15ac[][6];
+extern const u8 data_020a1258[][4];
+extern const u16 data_020a10ac[];
 
 u8 func_02065bf4(u32 id, u32 index) {
     return data_020a15ac[id][index];

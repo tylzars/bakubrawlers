@@ -10,10 +10,10 @@
 #include <stdio.h>
 
 extern BattleCamRow data_ov007_022791ec[];
-extern u8 data_ov007_022791c4[];
-extern VecFx32 data_ov007_022791ac;
-extern VecFx32 data_ov007_022791b8;
-extern VecFx32 data_ov007_022791a0;
+extern const u8 data_ov007_022791c4[];
+extern const VecFx32 data_ov007_022791ac;
+extern const VecFx32 data_ov007_022791b8;
+extern const VecFx32 data_ov007_022791a0;
 extern "C" void func_01ffd0e0(MtxFx43 *mtx, u16 angle);
 void func_ov007_02229998(BattleField3D *obj);
 

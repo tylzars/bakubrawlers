@@ -395,11 +395,11 @@ void UnkStruct_02078e14::func_0207b6e8() {
     func_02080bdc(1);
 }
 
-extern WindowItemRecord data_020a3430[];
-extern WindowCellRecord data_020a34f4[];
-extern WindowItemRecord data_020a3300[];
-extern WindowCellRecord data_020a3274[];
-extern u8 data_020a3688[];
+extern const WindowItemRecord data_020a3430[];
+extern const WindowCellRecord data_020a34f4[];
+extern const WindowItemRecord data_020a3300[];
+extern const WindowCellRecord data_020a3274[];
+extern const u8 data_020a3688[];
 extern u8 data_020a3210[];
 extern WindowItemRecord data_020a31a0[];
 extern WindowCellRecord data_020a31d8[];

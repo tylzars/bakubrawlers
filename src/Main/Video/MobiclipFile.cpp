@@ -127,8 +127,8 @@ void func_0203bff0(u32 *s, u8 *p) {
 }
 // non-matching: 0x150 vs 0x158; the clamp constants and table pointers are allocated differently and a zero is hoisted (mov r5, r7) where the original uses movmi.
 struct AdSt { int pred; int idx; };
-extern s8 data_0209d9f8[];
-extern s16 data_0209da08[];
+extern const s8 data_0209d9f8[];
+extern const s16 data_0209da08[];
 #define NIB(n) \
     { \
         int idx = st->idx; \

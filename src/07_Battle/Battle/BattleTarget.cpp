@@ -49,7 +49,7 @@ extern "C" void func_01ffd030(MtxFx33 *m, u16 angle);
 static inline void ReleaseSlot(BattlePlayerList *list, u8 index) {
     ((void (*)(BattlePlayerList *, u8)) func_ov007_02262828)(list, index);
 }
-extern VecFx32 data_ov007_0227a60c;
+extern const VecFx32 data_ov007_0227a60c;
 void func_ov007_022337ec(VecFx32 *A, VecFx32 *B, VecFx32 *C, VecFx32 *D, VecFx32 *E, fx32 F, fx32 G, int flag);
 extern "C" fx32 FX_Atan2(fx32 x, fx32 z);
 extern const u16 data_ov007_0227a5ee[];
@@ -58,12 +58,12 @@ extern const s8 data_ov007_0227a754[];
 extern const u16 data_ov007_0227a660[];
 extern const u16 data_ov007_0227a670[];
 void func_ov007_02233f38(const VecFx32 *a, const VecFx32 *b, int unused, VecFx32 *out);
-extern VecFx32 data_ov007_0227a648;
+extern const VecFx32 data_ov007_0227a648;
 void func_ov007_0226a380(BattlePlayer *player, u8 record, int unk);
 void func_ov007_02233730(VecFx32 *a, VecFx32 *b, VecFx32 *speed, VecFx32 *out);
 extern "C" u32 FX_AcosIdx(s32 value);
 extern const s32 data_ov007_0227a694[];
-extern VecFx32 data_ov007_0227a624;
+extern const VecFx32 data_ov007_0227a624;
 extern const s32 data_ov007_0227a6a8[];
 extern const u16 data_ov007_0227a600[];
 

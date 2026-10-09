@@ -20,11 +20,11 @@
 
 extern u16 data_020c1a4c[];
 
-extern u8 data_0209e68c[][6];
+extern const u8 data_0209e68c[][6];
 
 void func_02023a54();
 extern u8 data_0209e57c[]; // table of func_0205aea4 (.rodata 0x0209e57c)
-extern u8 data_0209e5bc[][5]; // per cell values, five columns (.rodata 0x0209e5bc)
+extern const u8 data_0209e5bc[][5]; // per cell values, five columns (.rodata 0x0209e5bc)
 
 extern WindowItemRecord data_020b3688[4]; // item table of the list window (positions are patched by func_02058404)
 extern WindowCellRecord data_020b3618[4];
@@ -495,7 +495,7 @@ void BattleCommandList::func_020589e8() {
 }
 
 extern const char *const data_020b35e0[14]; // paths loaded by func_020589f4
-extern u8 data_0209e594[];             // light table of the list model
+extern const u8 data_0209e594[];             // light table of the list model
 
 BOOL BattleCommandList::func_020589f4() {
     if (mUnk_140 != 0) {

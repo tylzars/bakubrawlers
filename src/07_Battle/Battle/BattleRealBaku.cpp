@@ -6,7 +6,7 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-extern u8 data_020a1074[];
+extern const u8 data_020a1074[];
 
 struct BattleRealBakuTexEntry { // 0xc bytes, table at 022858b8
     /* 00 */ u8 mCount;

@@ -19,7 +19,7 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-extern u16 data_ov000_02225fc8[]; // {0, 10, 50, 100, 1000, 5000}
+extern const u16 data_ov000_02225fc8[]; // {0, 10, 50, 100, 1000, 5000}
 extern u8 data_ov000_02226044[6][12];
 extern const WindowItemRecord data_ov000_0222608c[];
 extern const WindowCellRecord data_ov000_02226150[];

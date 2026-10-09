@@ -48,11 +48,11 @@ extern u8 data_ov007_02278d7a[];
 
 extern u8 data_ov007_02278d7b[];
 
-extern u8 data_ov007_02278d7c[];
+extern const u8 data_ov007_02278d7c[];
 
-extern u8 data_ov007_02278d7d[];
+extern const u8 data_ov007_02278d7d[];
 
-extern u8 data_ov007_02278d7e[];
+extern const u8 data_ov007_02278d7e[];
 
 // non-matching: this and the vtable temporary have swapped registers (r5/r4).
 BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8 unk6, BattleParam *param, u8 unk8) {

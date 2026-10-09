@@ -106,11 +106,11 @@ struct BattleScrollBounds {
     s16 mMax;
 };
 
-extern BattleScrollBounds data_ov007_02279acc[];
+extern const BattleScrollBounds data_ov007_02279acc[];
 
 
 
-extern BattleScrollBounds data_ov007_02279aec[];
+extern const BattleScrollBounds data_ov007_02279aec[];
 
 void func_ov007_022471c8(BattleCommandMap *map, u32 a);
 

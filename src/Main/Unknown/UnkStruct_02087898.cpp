@@ -471,7 +471,7 @@ u32 UnkStruct_02087898::func_02088ef4() {
     return mUnk_3c;
 }
 
-u8 UnkStruct_02087898::func_02088efc() {
+BOOL UnkStruct_02087898::func_02088efc() {
     return mUnk_37 < mUnk_38;
 }
 

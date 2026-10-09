@@ -376,7 +376,6 @@ void ParkMenu::ClearBuffers() {
     }
 }
 
-// non-matching: 17 words: (u8 frame) arg of CellAnimation::func_0202a3ec adds an 'and r2,r0,#255' the original lacks, plus arg evaluation order of func_02027778
 void ParkMenu::Draw() {
     u8 i = 0;
     do {
@@ -404,8 +403,8 @@ void ParkMenu::Draw() {
     } while (i < mCount);
     mWindow->Draw();
     for (i = 0; i < 2; i++) {
-        SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, 6, (s16) (0x80 - (mTextWidth[i] >> 1)),
-                                                     sTextY[i], 0, (sTextVramOffsets[i] << 9) >> 16, 0xf, 0);
+        SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, 6, (s16) (0x80 - ((u32) mTextWidth[i] >> 1)),
+                                                     sTextY[i], 0, (u16) (sTextVramOffsets[i] >> 7), 0xf, 0);
     }
     DrawNumber();
     mMessage->func_020658d0();

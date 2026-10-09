@@ -198,9 +198,7 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mUnk_c8.z = 0;
     mUnk_c4 = 0x1c3;
     mUnk_8c = 0x32000;
-    mUnk_38 = 1;
-    mUnk_3c = 1;
-    mUnk_40 = 1;
+    mUnk_40 = mUnk_3c = mUnk_38 = 1;
     mUnk_1ca = 0;
     mUnk_48 = 0;
     mUnk_34 = 0;

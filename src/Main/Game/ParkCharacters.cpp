@@ -391,7 +391,7 @@ void func_02089924(u32 index, void *out) {
     }
 }
 
-u32 func_02089a64(u32 index) {
+u8 func_02089a64(u32 index) {
     ParkCategory *category = &data_020a4ccc[data_020d43f0[0].mUnk_5c2[index].mCategory];
     return (u8) category->mGroups[data_020d43f0[0].mUnk_5c2[index].mGroup].mId;
 }

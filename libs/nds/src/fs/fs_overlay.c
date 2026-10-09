@@ -116,6 +116,8 @@ BOOL func_0200b1d0(FSOverlayInfo *ov)
 typedef struct { const u32 *key; u32 keylen; } FSHmacKey;
 extern FSHmacKey data_020a4f44;
 
+void MI_CpuCopy8(const void *src, void *dst, u32 n);
+
 BOOL func_0200b260(const u32 *expected, const void *data, u32 len)
 {
     u32 digest[5];
@@ -123,7 +125,7 @@ BOOL func_0200b260(const u32 *expected, const void *data, u32 len)
     u32 i;
     u32 *p;
     MI_CpuFill8(digest, 0, 0x14);
-    MIi_CpuCopyFast(data_020a4f44.key, key, data_020a4f44.keylen);
+    MI_CpuCopy8(data_020a4f44.key, key, data_020a4f44.keylen);
     func_0200b928((u8 *) digest, data, len, key, data_020a4f44.keylen);
     p = digest;
     for (i = 0; i < 0x14; i += 4) {

@@ -25,7 +25,7 @@
 // Externals of other battle files.
 u32 func_ov007_0221d348(u32 max);
 // Object at BattlePlayerList+0x2a4: a timed screen effect (fade) the battle shows before the gauge starts.
-extern u8 data_ov007_02279178[];
+extern const u8 data_ov007_02279178[];
 extern u32 data_ov007_02279184[];
 extern s32 data_ov007_0227918c[];
 
@@ -1191,7 +1191,6 @@ void BattleHud::func_ov007_022286c8() {
     mUnk_124 = 0x14;
 }
 
-// non-matching: the original keeps the card x position in r5 and does not fold x + 3.
 void BattleHud::func_ov007_022286e0() {
     s16 y;
     u8 side;
@@ -1280,8 +1279,8 @@ void BattleHud::func_ov007_022286e0() {
     side = 0;
     do {
         if (!entries[side].mUnk_0f_0) {
-            u8 x = data_ov007_02279178[side];
             if (mUnk_118[side] != 0xff) {
+                u8 x = data_ov007_02279178[side];
                 mAnims[17 + side]->Draw(1, x, 0x20, mUnk_118[side]);
                 if (!data_020d433c.mUnk_9a_2 && mUnk_0c == side) {
                     if (!mUnk_117_1 && !mUnk_117_2 && mUnk_118[side] == 1) {

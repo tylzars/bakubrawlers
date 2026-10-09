@@ -15,5 +15,5 @@ BOOL func_02086a58();
 BOOL func_02086b74();
 void func_02089208();
 void func_02089924(u32 index, void *out);
-u32 func_02089a64(u32 index);
+u8 func_02089a64(u32 index);
 void func_02089a9c(u32 index);

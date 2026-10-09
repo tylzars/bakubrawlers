@@ -366,7 +366,6 @@ void ArenaScene::func_ov001_0221bc44() {
     }
 }
 
-// non-matching: 1 word, `subs r0, r6, r7` where the original has `cmp r6, r7` (every spelling of oldSel == newSel tried yields either cmpeq predication or subs)
 u32 ArenaScene::func_ov001_0221bca0() {
     u32 result = 0;
     u8 key     = mCursor->func_0202f468(0);
@@ -383,9 +382,15 @@ u32 ArenaScene::func_ov001_0221bca0() {
     if (menu == 1) {
         key = 1;
     }
-    if (key == 1 || (key == 3 && (oldSel - newSel) == 0)) {
-        result = 1;
-        SoundManager::Get().func_020246f8(0);
+    switch (key) {
+        case 3:
+            if (oldSel != newSel) {
+                break;
+            }
+        case 1:
+            result = 1;
+            SoundManager::Get().func_020246f8(0);
+            break;
     }
     if (result == 0 && menu == 2) {
         result = 2;

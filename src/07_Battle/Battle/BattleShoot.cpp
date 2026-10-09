@@ -814,14 +814,13 @@ void BattleShoot::func_ov007_0226bdfc() {
     }
 }
 
-// non-matching: 11 words: TextManager::mUnk_5b store sits before the guard load in the original (known open problem), plus one scheduling swap at +0xb8.
 void BattleShoot::func_ov007_0226c798() {
     MessageFile *file = (MessageFile *) func_02023504("/font/mes_shoot.mes", 0, 0, 0, 0, 0);
     u32 size          = TextManager::Get().BufferSize(0x18, 0xa);
     void *buffer      = OS_Alloc(size);
     MI_CpuClear16(buffer, size);
     mUnk_6140 = TextManager::Get().GlyphCount(0x1e);
-    mUnk_613c = OS_Alloc((s16) mUnk_6140 * (s16) 0xc);
+    mUnk_613c = OS_Alloc(mUnk_6140 * (s16) 0xc);
     TextManager::Get().Init(mUnk_613c, 1, 0, 0x18, 0xa, 0x21);
     u16 pixelWidth = 0;
     TextManager::Get().mUnk_5b = 1;
@@ -1266,7 +1265,6 @@ void BattleShoot::func_ov007_0226dfb8() {
     }
 }
 
-// non-matching: 13 words, register assignment only (original: loop index i in r4, distance in r5).
 void BattleShoot::func_ov007_0226e234() {
     if (!mIcons[0].mAnim) {
         return;
@@ -1304,10 +1302,7 @@ void BattleShoot::func_ov007_0226e234() {
                 mIcons[i].mUnk_0a = 0;
                 mIcons[i].mUnk_0b = 0;
                 mIcons[i].mUnk_08 = FX_Atan2Idx(-(mUnk_618b - mUnk_618f), mUnk_618c - mUnk_6190);
-                if (distance > 0x20) {
-                    distance = 0x20;
-                }
-                mIcons[i].mUnk_0c = distance;
+                mIcons[i].mUnk_0c = distance > 0x20 ? 0x20 : distance;
                 mUnk_6194         = 1;
                 break;
             }

@@ -53,6 +53,6 @@ public:
     void func_02088e64(s32 unk1, s32 unk2, u32 unk3, u32 unk4);
     void func_02088ebc(u32 unk1);
     u32 func_02088ef4();
-    u8 func_02088efc();
+    BOOL func_02088efc();
     BOOL func_02088f14();
 };

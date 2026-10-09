@@ -16,6 +16,9 @@ class UnkStruct_0205401c;
 class UnkStruct_0203d374;
 class UnkStruct_02028308;
 
+// func_0206b05c's result: an enum, not BOOL (the final compare's moveq/movne order needs it)
+enum UnkStruct_02065c40_Kind { UNK_02065C40_KIND_0, UNK_02065C40_KIND_1 };
+
 struct UnkStruct_02065c40_cmd {
     /* 00 */ s16 mValue;
     /* 02 */ u8 mCommand;
@@ -289,7 +292,7 @@ public:
     void func_0206abf4(u32 index);
     void func_0206ada4();
     void func_0206aecc();
-    BOOL func_0206b05c(u32 id);
+    UnkStruct_02065c40_Kind func_0206b05c(u32 id);
     void func_0206b09c();
     void func_0206b150(u32 command, s32 value);
     s32 func_02070554(s32 kind, s32 index);

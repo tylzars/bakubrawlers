@@ -425,9 +425,9 @@ void OptionScene::BuildSettings() {
 
 extern Vec2s data_ov000_022262bc[];
 
-extern u8 data_ov000_02226278[];
+extern const u8 data_ov000_02226278[];
 
-extern u8 data_ov000_02226274[];
+extern const u8 data_ov000_02226274[];
 
 void OptionScene::DrawSettings() {
     if (mUnk_4b != 0) {
@@ -446,16 +446,15 @@ void OptionScene::DrawSettings() {
     }
 }
 
-extern u8 data_ov000_02226274[];
+extern const u8 data_ov000_02226274[];
 
-extern u8 data_ov000_02226278[];
+extern const u8 data_ov000_02226278[];
 
 extern u8 data_ov000_02226280[];
 
 void func_02022db4(UnkStruct_020d43f0 *d);
 
 
-// non-matching: 3 words, scheduling of the argument setup.
 void OptionScene::UpdateSettings() {
     BOOL changed;
     u8 prev;

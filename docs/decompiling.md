@@ -270,6 +270,12 @@ Other findings from linking:
   adds (CRI's 16 windowing functions). Indexing through a pointer-to-array type (`int (*scf)[3][32]`,
   `scf[ch][i][sb]`) recomputes `scf + sb*4` each iteration where a running pointer is strength-reduced; chained
   stores `a = b = c = k;` evaluate right to left.
+- **`const` on read-only data.** Externs that live in .rodata must be declared `const` (pointer tables
+  `const char *const`): mwcc then moves their loads above stores and stack-argument writes, as the original does.
+- **Return types show in the callers.** An enum return gives `movlo #0; movhs #1` at the last compare where BOOL
+  gives the reverse; a BOOL stored into a u8 field gives `ands rX, r0, #0xff` before the store; a u8 return removes
+  the caller's `and #0xff`.
+- **Chained assignments** (`a = b = c = 1`) store right to left and change which register holds the constant.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

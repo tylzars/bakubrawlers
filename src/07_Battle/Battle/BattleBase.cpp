@@ -19,12 +19,12 @@
 #include "System/InputManager.hpp"
 
 extern u8 data_ov007_02279160;
-extern u8 data_ov007_02279164;
-extern u8 data_ov007_02279168;
+extern const u8 data_ov007_02279164;
+extern const u8 data_ov007_02279168;
 extern u8 data_ov007_0227916c;
-extern s16 data_ov007_02279174;
+extern const s16 data_ov007_02279174;
 extern u8 data_ov007_02279178[];
-extern s16 data_ov007_0227917c;
+extern const s16 data_ov007_0227917c;
 
 BOOL func_ov007_02229524(BattleField3D *field);
 
@@ -1039,7 +1039,6 @@ BOOL BattleBase::func_ov007_0221bfa4() {
     return done;
 }
 
-// non-matching: 9 words, the stack-argument temp for h in the first TouchManager call is r3 (r5 in the original).
 int BattleBase::func_ov007_0221c178(u16 *a, u16 *b, u16 *c, u8 *flag) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     int result             = -1;

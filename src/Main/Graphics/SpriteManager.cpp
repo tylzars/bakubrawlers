@@ -355,7 +355,6 @@ void func_02026848() {
     func_020322c0(&data_02090958);
     func_020322f0(&data_0209094c);
 }
-// non-matching: 3 words: scheduling in the OAM-fill loop.
 void CameraManager::func_02026890() {
     if (mDirty != 0) {
         mMode  = mRequestedMode;
@@ -417,7 +416,7 @@ void CameraManager::func_02026890() {
                     s32 row = i / 4;
                     s32 col = i % 4;
                     UnkStruct_020c2acc *e = p++;
-                    e->mAttr = ((row << 6) & 0xff) | 0xc0000c00 | (((col << 6) & 0x1ff) << 16);
+                    e->mAttr = (((col << 6) & 0x1ff) << 16) | (((row << 6) & 0xff) | 0xc0000c00);
                     e->mPos  = (col << 3) + (row << 8) | 0xf000;
                 }
             }

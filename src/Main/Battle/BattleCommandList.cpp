@@ -494,10 +494,9 @@ void BattleCommandList::func_020589e8() {
     mUnk_140 = 0;
 }
 
-extern const char *data_020b35e0[14]; // paths loaded by func_020589f4
+extern const char *const data_020b35e0[14]; // paths loaded by func_020589f4
 extern u8 data_0209e594[];             // light table of the list model
 
-// non-matching: 11 words at +0x40, the index of the file table lives in r2 instead of r3 (same as BattleCommandPage::func_02055c28).
 BOOL BattleCommandList::func_020589f4() {
     if (mUnk_140 != 0) {
         if (func_02023874() != 0) {

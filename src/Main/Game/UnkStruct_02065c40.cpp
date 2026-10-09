@@ -1667,7 +1667,6 @@ void UnkStruct_02065c40::func_0206a1c8(u32 value, u32 force) {
     mUnk_100c->SetAnimation(value);
 }
 
-// non-matching: 4 words, the original emits `ands r1, r0, #255` for the result byte.
 void UnkStruct_02065c40::func_0206a208() {
     if ((mUnk_14ed == 0) & ((mUnk_12ba == 0) & (mUnk_14ec == 0))) {
         u8 step = mUnk_12b9;
@@ -1699,8 +1698,9 @@ void UnkStruct_02065c40::func_0206a208() {
                 mUnk_12ca = 3;
             } else if (mUnk_12ba == 3) {
                 mUnk_1018->mUnk_4a = 1;
-                mUnk_14f1          = mUnk_1018->func_02088efc();
-                if (mUnk_14f1 != 0) {
+                u8 r      = mUnk_1018->func_02088efc();
+                mUnk_14f1 = r;
+                if (r) {
                     mUnk_1018->func_02088ebc(1);
                     mUnk_12ca = 4;
                 } else {
@@ -2060,24 +2060,23 @@ struct UnkStruct_020a1c04 {
 extern const UnkStruct_020a2198 data_020a2198[];
 extern const UnkStruct_020a1c04 data_020a1c04[];
 
-// non-matching: 2 words, movcs/movcc in the other order.
-BOOL UnkStruct_02065c40::func_0206b05c(u32 id) {
+UnkStruct_02065c40_Kind UnkStruct_02065c40::func_0206b05c(u32 id) {
     if (id < 0x60) {
-        return FALSE;
+        return UNK_02065C40_KIND_0;
     }
     if (id < 0x77) {
-        return TRUE;
+        return UNK_02065C40_KIND_1;
     }
     if (id < 0x90) {
-        return FALSE;
+        return UNK_02065C40_KIND_0;
     }
     if (id < 0xa9) {
-        return TRUE;
+        return UNK_02065C40_KIND_1;
     }
     if (id < 0xbf) {
-        return FALSE;
+        return UNK_02065C40_KIND_0;
     }
-    return TRUE;
+    return UNK_02065C40_KIND_1;
 }
 
 

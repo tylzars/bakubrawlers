@@ -71,7 +71,7 @@ extern "C" void MI_DmaFill32(u32 dmaNo, void *dest, u32 data, u32 size);
 s32 func_02021e00();
 extern "C" void func_020313f8(void *obj, u32 unk2, s32 heap);
 extern "C" void func_02035e58(u32 unk1, u32 unk2);
-void func_02036538(u32 unk1, void *buffer, u32 size, u32 unk4);
+extern "C" void func_02036538(u32 unk1, void *buffer, u32 size, u32 unk4);
 extern "C" void func_02035ee0();
 void func_020360cc(UnkStruct_SpriteManager_28 *slot);
 void func_0203610c(UnkStruct_SpriteManager_28 *slot);

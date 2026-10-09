@@ -1,27 +1,27 @@
 #include "System/SoundManager.hpp"
 
 // NitroSystem sound library (NNS_Snd*), addresses in the main module.
-extern void func_020366f8();
-extern void func_02036780();
-extern void func_020367b0(u32 volume);
+extern "C" void func_020366f8();
+extern "C" void func_02036780();
+extern "C" void func_020367b0(u32 volume);
 extern u32 func_0203824c(void *buffer, u32 size);
 extern void func_02037af8(void *arc, const char *path, u32 heap, u32 unk);
 extern void func_020392fc(u32 a, u32 heap);
 extern void func_02038fac(u32 heap);
 extern void func_020385b8(s32 id, u32 heap);
 extern void func_020383f8(u32 heap);
-extern void func_02036ab4(void *handle);
-extern void func_02036918(u32 a, u32 b);
+extern "C" void func_02036ab4(void *handle);
+extern "C" void func_02036918(u32 a, u32 b);
 extern void func_02038444(u32 heap, u32 a);
 extern "C" void func_020369e4(void *handle, u32 fadeFrames);
 extern void func_02039048(void *handle, s32 id);
 extern void func_02038214(u32 a);
 extern void func_02039090(void *handle, u32 a, s32 b, s32 c, s32 d, s32 e);
-extern void func_020369f4(u32 a, u32 b);
-extern void func_02036a50(s32 a, s32 b, u32 c);
-extern int func_02036ae0(s32 a, s32 b);
-extern void func_02036b40(void *handle, s32 a);
-extern void func_02036b88(void *handle, u32 a, s32 b);
+extern "C" void func_020369f4(u32 a, u32 b);
+extern "C" void func_02036a50(s32 a, s32 b, u32 c);
+extern "C" int func_02036ae0(s32 a, s32 b);
+extern "C" void func_02036b40(void *handle, s32 a);
+extern "C" void func_02036b88(void *handle, u32 a, s32 b);
 
 extern u32 data_020d5520[];
 extern u32 data_02090778;

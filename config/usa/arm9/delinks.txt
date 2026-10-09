@@ -717,6 +717,7 @@ src/Main/Video/Mobiclip.cpp:
     .text       start:0x0203a544 end:0x0203afb0
 
 src/Main/Video/MobiclipDecoder.cpp:
+    complete
     .text       start:0x0203afb0 end:0x0203b658
 
 src/Main/Video/MobiclipFile.cpp:

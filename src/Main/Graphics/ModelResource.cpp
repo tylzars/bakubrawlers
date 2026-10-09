@@ -1,7 +1,7 @@
 #include "Graphics/ModelResource.hpp"
 #include "Graphics/ModelInternal.hpp"
 
-u32 func_02012328(const char *str);
+extern "C" u32 func_02012328(const char *str);
 void func_01ff96c4(const void *src, void *dst, u32 size);
 void *operator new[](size_t size);
 

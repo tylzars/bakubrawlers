@@ -66,7 +66,7 @@ void func_01ff8634(MtxFx43 *src, MtxFx43 *dst);
 extern "C" void func_01ff84d0(VecFx32 *vec, MtxFx33 *m, VecFx32 *out);
 extern "C" s32 FX_AsinIdx(s32 value);
 extern "C" s32 FX_AcosIdx(s32 value);
-void func_020122f4(char *dst, const char *name);
+extern "C" void func_020122f4(char *dst, const char *name);
 
 // Frame clock singleton (instance 0x020c1884, destructor 0x020219c0).
 class UnkStruct_020c1884 {

@@ -4,6 +4,22 @@
     .data       start:0x020a4e80 end:0x020baf00 kind:data align:32
     .bss        start:0x020baf00 end:0x02219440 kind:bss align:32
 
+// MSL C runtime (2.0/sp1p5, C); code only so far.
+libs/msl/src/msl_string.c:
+    .text       start:0x020122b0 end:0x020125b4
+
+libs/msl/src/msl_printf.c:
+    .text       start:0x020125b4 end:0x0201368c
+
+libs/msl/src/msl_printf_glue.c:
+    .text       start:0x02014614 end:0x02014704
+
+libs/msl/src/msl_scan_spec.c:
+    .text       start:0x02014704 end:0x02014bfc
+
+libs/msl/src/msl_string_tail.c:
+    .text       start:0x02015950 end:0x02015c74
+
 // NitroSystem (2.0, C); code only so far.
 libs/nns/src/fnd/fnd.c:
     .text       start:0x02030880 end:0x02030b7c

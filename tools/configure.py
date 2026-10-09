@@ -37,12 +37,14 @@ DECOMP_ME_COMPILER = "mwcc_30_137"  # decomp.me id for MWCC_VERSION
 # under these paths compile with it instead.
 PATH_COMPILERS = {
     "libs/nds/": "2.0/sp1p5",
+    "libs/msl/": "2.0/sp1p5",  # MSL C runtime: 2.0 sp1p5 or later (docs/compiler.md)
     "libs/nns/": "2.0/sp1p5",  # NitroSystem: every 2.0 build gives the same code (docs/compiler.md)
 }
 # Flags those builds don't use. NitroSDK matches with the default inlining (docs/compiler.md).
 PATH_DROP_FLAGS = {
     "libs/nds/": ["-inline on,noauto"],
     "libs/nns/": ["-inline on,noauto"],
+    "libs/msl/": ["-inline on,noauto"],
 }
 
 CC_FLAGS = [

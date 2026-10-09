@@ -67,7 +67,8 @@ double func_0201cfc4(Dec *d)
     p = q + 1;
     acc = (double)*q;
     while (p < end) {
-        int n, i, val = 0;
+        int n, i;
+        unsigned val = 0;
         n = (end - p) % 8;
         if (n == 0) n = 8;
         for (i = 0; i < n; i++) {

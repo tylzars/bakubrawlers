@@ -8,7 +8,7 @@ the symbol the object calls (when that symbol's address is known). Run after `ni
 
 Only fully matching functions are checked (from build/usa/report.json; run `ninja report` first).
 
-Usage: check_calls.py [object.o ...]   (default: every object under build/usa/src)
+Usage: check_calls.py [object.o ...]   (default: every object under build/usa/src and build/usa/libs)
 """
 import json
 import re
@@ -27,7 +27,8 @@ LINE = re.compile(r"^(\S+) kind:(\S+).* addr:(0x[0-9a-f]+)")
 
 def load_symbols() -> dict[str, dict[str, int]]:
     tables = {}
-    for path in [ROOT / "config/usa/arm9/symbols.txt", *sorted((ROOT / "config/usa/arm9/overlays").glob("*/symbols.txt"))]:
+    for path in [ROOT / "config/usa/arm9/symbols.txt", ROOT / "config/usa/arm9/itcm/symbols.txt",
+                 *sorted((ROOT / "config/usa/arm9/overlays").glob("*/symbols.txt"))]:
         module = "main" if path.parent.name == "arm9" else path.parent.name
         table = {}
         for line in path.read_text().splitlines():
@@ -39,7 +40,8 @@ def load_symbols() -> dict[str, dict[str, int]]:
 
 def module_of(obj: Path) -> str | None:
     rel = obj.relative_to(ROOT / "build/usa").with_suffix(".cpp").as_posix()
-    for path in [ROOT / "config/usa/arm9/delinks.txt", *sorted((ROOT / "config/usa/arm9/overlays").glob("*/delinks.txt"))]:
+    for path in [ROOT / "config/usa/arm9/delinks.txt", ROOT / "config/usa/arm9/itcm/delinks.txt",
+                 *sorted((ROOT / "config/usa/arm9/overlays").glob("*/delinks.txt"))]:
         if f"{rel}:" in path.read_text():
             return "main" if path.parent.name == "arm9" else path.parent.name
     return None
@@ -61,7 +63,7 @@ def matched_functions() -> set[str]:
 def main():
     tables = load_symbols()
     matched = matched_functions()
-    objs = [Path(p).resolve() for p in sys.argv[1:]] or sorted((ROOT / "build/usa/src").rglob("*.o"))
+    objs = [Path(p).resolve() for p in sys.argv[1:]] or sorted([*(ROOT / "build/usa/src").rglob("*.o"), *(ROOT / "build/usa/libs").rglob("*.o")])
     problems = 0
     for obj in objs:
         module = module_of(obj)

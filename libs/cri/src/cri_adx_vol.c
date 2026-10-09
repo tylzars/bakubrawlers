@@ -193,13 +193,13 @@ int func_0205141c(CriX *o)
 {
     int a = o->t54;
     unsigned r = func_020506fc(o->h);
-    return a - a * r / -o->t5c;
+    return a - a * (int)r / -o->t5c;
 }
 
 int func_02051448(CriX *o)
 {
     unsigned r = func_020506fc(o->h);
-    return o->t54 - o->t58 * r / -o->t5c;
+    return o->t54 - o->t58 * (int)r / -o->t5c;
 }
 
 int func_02051478(char *s, int n, short *out)

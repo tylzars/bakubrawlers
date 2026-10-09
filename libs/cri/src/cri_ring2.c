@@ -147,7 +147,7 @@ void func_02045224(CriRing *r, int mode, CriSpan *s)
 void func_02045250(CriRing *r, int mode, CriSpan *s)
 {
     char *ptr;
-    unsigned size;
+    int size;
     if (r == 0) {
         func_02044a34(data_020ad2d8, data_020ad2e4);
         return;

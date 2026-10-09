@@ -9,7 +9,7 @@ typedef struct CriRing {
     int c, d10;         /* 0x0c, 0x10 */
     int rd, wr;         /* 0x14, 0x18 */
     char *buf;          /* 0x1c */
-    unsigned size;      /* 0x20 */
+    int size;           /* 0x20 */
     int extra;          /* 0x24 */
     int tot28, tot2c, tot30, tot34;
     void (*cb)(void *, int);   /* 0x38 */

@@ -765,7 +765,7 @@ u8 BattleUnk022637ac::func_ov007_02265718() {
     return done;
 }
 
-void func_01ff96c4(const void *src, void *dst, u32 size);
+extern "C" void func_01ff96c4(const void *src, void *dst, u32 size);
 void func_0203db8c(void *obj, fx32 x, fx32 y, fx32 z);
 void func_ov007_02262828(BattlePlayerList *list, u8 a, u8 b);
 void func_ov007_02262768(BattlePlayerList *list, BattleUnk022637acUnit *unit, u16 a, u8 b, u8 c, u8 d, u8 e);

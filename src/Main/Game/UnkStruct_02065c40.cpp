@@ -24,7 +24,7 @@
 #include "Graphics/ModelInternal.hpp"
 
 UnkStruct_02065c40 *data_02219288;
-void func_01ff96c4(const void *src, void *dest, u32 size);
+extern "C" void func_01ff96c4(const void *src, void *dest, u32 size);
 void func_02005e9c(void *buffer, u32 size);
 void func_02088ec4(UnkStruct_02087898 *object);
 void func_01ff9510(const void *src, void *dest, u32 size);
@@ -3566,7 +3566,7 @@ BOOL UnkStruct_02065c40::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32
 }
 
 extern const u8 data_020a1b8a[];
-void func_01ff96c4(const void *src, void *dest, u32 size);
+extern "C" void func_01ff96c4(const void *src, void *dest, u32 size);
 void func_02088ec4(UnkStruct_02087898 *object);
 
 void UnkStruct_02065c40::func_0206f564(u8 unk1, u32 unk2, s32 unk3) {

@@ -86,3 +86,14 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 | 0x0208ab40-0x0208b4bc | Scene/UnkStruct_0208ab40.cpp | unlock message window (`/font/mes_Unlock.mes`) |
 
 0x02030880-0x02030b64 is NitroSystem foundation code (list and heap helpers), not game code.
+
+## Hand-written assembly (no C source)
+
+- 0x02090b24-0x0209d490 (main `.text`, interleaved with data tables): the Mobiclip video decoder's assembly
+  (bitstream unpacking, an audio lattice filter over 256 samples, 8x8 block filters); it uses pc-relative table
+  reads and non-standard argument registers.
+- 0x0204c088-0x0204c40c: CRI's MPEG synthesis dot products (`ldmib` + `smlatt`).
+- ITCM: `func_01ff817c` (identity matrix fill), the `MIi_CpuClear*`/copy routines at 0x01ff94c8-0x01ff962f and
+  0x01ff97f4, the IRQ dispatcher `func_01ffc93c` and the thread-switch return `func_01ffc9a4`.
+- The BIOS calls (`SoftReset`, `CpuSet`, ...), `OS_SaveContext`/`OS_LoadContext`, the interrupt helpers and the
+  floating-point runtime (`_dadd` ... ) are hand-written assembly too.

@@ -2,7 +2,7 @@
 #include "Graphics/ModelInternal.hpp"
 
 extern "C" u32 func_02012328(const char *str);
-void func_01ff96c4(const void *src, void *dst, u32 size);
+extern "C" void func_01ff96c4(const void *src, void *dst, u32 size);
 void *operator new[](size_t size);
 
 // non-matching: 1 word. The original reads the stack argument with `ldr`, we emit `ldrb` for u8 (the callee-side

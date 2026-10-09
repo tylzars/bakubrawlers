@@ -83,6 +83,15 @@ libs/cri/src/cri_fade_grp.c:
 libs/cri/src/cri_mem_blk.c:
     .text       start:0x02050e60 end:0x02050f68
 
+libs/cri/src/cri_ahx_play.c:
+    .text       start:0x0204d968 end:0x0204dff4
+
+libs/cri/src/cri_adx_hdrparse.c:
+    .text       start:0x0204dff4 end:0x0204e330
+
+libs/cri/src/cri_ahx_bitrd.c:
+    .text       start:0x0204e330 end:0x0204e844
+
 // MSL C runtime (2.0/sp1p5, C); code only so far.
 libs/msl/src/msl_string.c:
     .text       start:0x020122b0 end:0x020125b4

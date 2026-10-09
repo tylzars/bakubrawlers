@@ -1,0 +1,241 @@
+/* MSL strtoul/strtoull, main 0x02016ec0-0x020177ac: __strtoul (16ec0), __strtoull (172a8), strtoul (17714).
+   Remaining: 16ec0 differs in register assignment of state/count/ch + one extra tail-merged block (4 bytes); 17714 differs by one word (mvn vs sub for return -1). */
+extern const unsigned short data_020903a8[];
+extern const unsigned char data_02090328[];
+extern int data_020c1790;
+#define ISSPACE(c) (((c) < 0 || (c) >= 128) ? 0 : (data_020903a8[c] & 0x100))
+#define ISDIGIT(c) (((c) < 0 || (c) >= 128) ? 0 : (data_020903a8[c] & 8))
+#define ISALPHA(c) (((c) < 0 || (c) >= 128) ? 0 : (data_020903a8[c] & 1))
+#define TOUPPER(c) (((c) < 0 || (c) >= 128) ? (c) : data_02090328[c])
+
+extern unsigned int func_0201fb7c(unsigned int, unsigned int);
+extern unsigned long long func_0201f928(unsigned long long, unsigned long long);
+extern int func_02015950(void *, int, int);
+
+typedef struct StrRead { const char *p; int eof; } StrRead;
+
+unsigned long func_02016ec0(int base, int maxw, int (*rd)(void *, int, int), void *ctx,
+                            int *nread, int *neg, int *ovf)
+{
+    int state;
+    int count;
+    int ch;
+    unsigned long value;
+    unsigned long max_over;
+    int nspace;
+    int dig;
+    int stop = -1;
+
+    *ovf = 0;
+    max_over = 0;
+    *neg = 0;
+    nspace = 0;
+    count = 0;
+    value = 0;
+    state = 1;
+    if (base < 0 || base == 1 || base > 36 || maxw < 1) {
+        state = 0x40;
+    } else {
+        count++;
+        ch = rd(ctx, 0, 0);
+    }
+    if (base != 0) {
+        max_over = func_0201fb7c(-1, base);
+    }
+    while (count <= maxw && ch != stop && !(state & 0x60)) {
+        switch (state) {
+        case 1:
+            if (ISSPACE(ch)) {
+                ch = rd(ctx, 0, 0);
+                nspace++;
+                break;
+            }
+            if (ch == '+') {
+                count++;
+                ch = rd(ctx, 0, 0);
+            } else if (ch == '-') {
+                count++;
+                ch = rd(ctx, 0, 0);
+                *neg = 1;
+            }
+            state = 2;
+            break;
+        case 2:
+            if ((base == 0 || base == 16) && ch == '0') {
+                count++;
+                ch = rd(ctx, 0, 0);
+                state = 4;
+            } else {
+                state = 8;
+            }
+            break;
+        case 4:
+            if (ch == 'x' || ch == 'X') {
+                count++;
+                ch = rd(ctx, 0, 0);
+                base = 16;
+                state = 8;
+            } else {
+                if (base == 0) base = 8;
+                state = 0x10;
+            }
+            break;
+        case 8:
+        case 0x10:
+            if (base == 0) base = 10;
+            if (max_over == 0) max_over = func_0201fb7c(stop, base);
+            if (ISDIGIT(ch)) {
+                ch -= '0';
+                if (ch >= base) {
+                    state = (state == 0x10) ? 0x20 : 0x40;
+                    ch += '0';
+                    break;
+                }
+            } else if (ISALPHA(ch) && TOUPPER(ch) - 'A' + 10 < base) {
+                ch = TOUPPER(ch) - 'A' + 10;
+            } else {
+                state = (state == 0x10) ? 0x20 : 0x40;
+                break;
+            }
+            state = 0x10;
+            if (value > max_over) *ovf = 1;
+            value *= base;
+            if (ch > (unsigned long)(stop - value)) *ovf = 1;
+            value += ch;
+            count++;
+            ch = rd(ctx, 0, 0);
+            break;
+        }
+    }
+    if (!(state & 0x34)) {
+        value = 0;
+        *nread = 0;
+    } else {
+        *nread = count - 1 + nspace;
+    }
+    rd(ctx, ch, 1);
+    return value;
+}
+
+
+unsigned long long func_020172a8(int base, int maxw, int (*rd)(void *, int, int), void *ctx,
+                            int *nread, int *neg, int *ovf)
+{
+    int state;
+    int count;
+    int ch;
+    unsigned long long value;
+    unsigned long long max_over;
+    int nspace;
+    int dig;
+    int stop = -1;
+
+    *ovf = 0;
+    max_over = 0;
+    *neg = 0;
+    nspace = 0;
+    count = 0;
+    value = 0;
+    state = 1;
+    if (base < 0 || base == 1 || base > 36 || maxw < 1) {
+        state = 0x40;
+    } else {
+        count++;
+        ch = rd(ctx, 0, 0);
+    }
+    if (base != 0) {
+        max_over = func_0201f928(-1, base);
+    }
+    while (count <= maxw && ch != stop && !(state & 0x60)) {
+        switch (state) {
+        case 1:
+            if (ISSPACE(ch)) {
+                ch = rd(ctx, 0, 0);
+                nspace++;
+                break;
+            }
+            if (ch == '+') {
+                count++;
+                ch = rd(ctx, 0, 0);
+            } else if (ch == '-') {
+                count++;
+                ch = rd(ctx, 0, 0);
+                *neg = 1;
+            }
+            state = 2;
+            break;
+        case 2:
+            if ((base == 0 || base == 16) && ch == '0') {
+                count++;
+                ch = rd(ctx, 0, 0);
+                state = 4;
+            } else {
+                state = 8;
+            }
+            break;
+        case 4:
+            if (ch == 'x' || ch == 'X') {
+                count++;
+                ch = rd(ctx, 0, 0);
+                base = 16;
+                state = 8;
+            } else {
+                if (base == 0) base = 8;
+                state = 0x10;
+            }
+            break;
+        case 8:
+        case 0x10:
+            if (base == 0) base = 10;
+            if (max_over == 0) max_over = func_0201f928(stop, base);
+            if (ISDIGIT(ch)) {
+                ch -= '0';
+                if (ch >= base) {
+                    state = (state == 0x10) ? 0x20 : 0x40;
+                    ch += '0';
+                    break;
+                }
+            } else if (ISALPHA(ch) && TOUPPER(ch) - 'A' + 10 < base) {
+                ch = TOUPPER(ch) - 'A' + 10;
+            } else {
+                state = (state == 0x10) ? 0x20 : 0x40;
+                break;
+            }
+            state = 0x10;
+            if (value > max_over) *ovf = 1;
+            value *= base;
+            if (ch > (unsigned long long)(stop - value)) *ovf = 1;
+            value += ch;
+            count++;
+            ch = rd(ctx, 0, 0);
+            break;
+        }
+    }
+    if (!(state & 0x34)) {
+        value = 0;
+        *nread = 0;
+    } else {
+        *nread = count - 1 + nspace;
+    }
+    rd(ctx, ch, 1);
+    return value;
+}
+
+
+unsigned long func_02017714(const char *str, char **end, int base)
+{
+    int scanned, neg, ovf;
+    StrRead s;
+    unsigned long v;
+    s.p = str;
+    s.eof = 0;
+    v = func_02016ec0(base, 0x7fffffff, func_02015950, &s, &scanned, &neg, &ovf);
+    if (end) *end = (char *)str + scanned;
+    if (ovf) {
+        data_020c1790 = 34;
+        v = -1;
+    } else if (neg) {
+        v = -v;
+    }
+    return v;
+}

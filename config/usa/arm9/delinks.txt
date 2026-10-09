@@ -54,6 +54,81 @@ libs/msl/src/msl_scan_spec.c:
 libs/msl/src/msl_string_tail.c:
     .text       start:0x02015950 end:0x02015c74
 
+libs/msl/src/msl_strtoul.c:
+    .text       start:0x02016ec0 end:0x020177ac
+
+libs/msl/src/e_acos.c:
+    .text       start:0x020177ac end:0x02017fa4
+
+libs/msl/src/e_asin.c:
+    .text       start:0x02017fa4 end:0x020186f0
+
+libs/msl/src/e_log.c:
+    .text       start:0x020186f0 end:0x02018e28
+
+libs/msl/src/e_log10.c:
+    .text       start:0x02018e28 end:0x02019000
+
+libs/msl/src/e_pow.c:
+    .text       start:0x02019000 end:0x0201a188
+
+libs/msl/src/e_rem_pio2.c:
+    .text       start:0x0201a188 end:0x0201a850
+
+libs/msl/src/k_cos.c:
+    .text       start:0x0201a850 end:0x0201ab70
+
+libs/msl/src/k_rem_pio2.c:
+    .text       start:0x0201ab70 end:0x0201b72c
+
+libs/msl/src/k_sin.c:
+    .text       start:0x0201b72c end:0x0201b9a8
+
+libs/msl/src/s_copysign.c:
+    .text       start:0x0201b9a8 end:0x0201b9d0
+
+libs/msl/src/s_cos.c:
+    .text       start:0x0201b9d0 end:0x0201bb40
+
+libs/msl/src/s_fabs.c:
+    .text       start:0x0201bb40 end:0x0201bb60
+
+libs/msl/src/s_floor.c:
+    .text       start:0x0201bb60 end:0x0201bd20
+
+libs/msl/src/s_frexp.c:
+    .text       start:0x0201bd20 end:0x0201bddc
+
+libs/msl/src/s_scalbn.c:
+    .text       start:0x0201bddc end:0x0201c028
+
+libs/msl/src/s_sin.c:
+    .text       start:0x0201c028 end:0x0201c19c
+
+libs/msl/src/msl_math_wrappers.c:
+    .text       start:0x0201c19c end:0x0201c1cc
+
+libs/msl/src/msl_dec_a.c:
+    .text       start:0x0201c1cc end:0x0201c5b4
+
+libs/msl/src/msl_dec_b.c:
+    .text       start:0x0201c5b4 end:0x0201ca18
+
+libs/msl/src/msl_dec_c.c:
+    .text       start:0x0201ca18 end:0x0201caf8
+
+libs/msl/src/msl_dec_e.c:
+    .text       start:0x0201caf8 end:0x0201cd9c
+
+libs/msl/src/msl_dec_d.c:
+    .text       start:0x0201cd9c end:0x0201cfc4
+
+libs/msl/src/msl_popcount64.c:
+    .text       start:0x0201d5e8 end:0x0201d67c
+
+libs/msl/src/msl_fpclassify.c:
+    .text       start:0x0201d67c end:0x0201d72c
+
 // NitroSystem (2.0, C); code only so far.
 libs/nns/src/fnd/fnd.c:
     .text       start:0x02030880 end:0x02030b7c

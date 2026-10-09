@@ -336,3 +336,5 @@ void main() {
     data_020baf00 = state;
     UnkStruct_020c1884::Get().func_02020a48();
 }
+
+void NullScene::Update() {}

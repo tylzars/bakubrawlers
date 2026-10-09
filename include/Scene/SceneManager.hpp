@@ -12,7 +12,7 @@ class NullScene : public SceneBase {
 public:
     NullScene() : SceneBase(0, 3) {}
     virtual ~NullScene() {}
-    virtual void Update() {}
+    virtual void Update(); // func_020219c4, defined in Game.cpp: the key function, so the vtable is emitted there only
 };
 
 // Owns every running scene. Scenes live in a doubly linked list of fixed nodes; each "layer" has two sentinel

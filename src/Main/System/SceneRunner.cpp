@@ -1,21 +1,7 @@
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Scene/SceneBase.hpp"
-#include "Scene/ArenaWindowScene.hpp"
-#include "Scene/GameOverScene.hpp"
-#include "Scene/MapScene.hpp"
-#include "Scene/MyroomScene.hpp"
-#include "Scene/ParkScene.hpp"
-#include "Scene/SceneManager.hpp"
-#include "Scene/StoreScene.hpp"
-#include "Scene/TournamentScene.hpp"
-#include "Scene/TutorialScene.hpp"
-#include "Scene/UnkScene_ov000.hpp"
 #include "System/FrameTask.hpp"
-#include "System/SoundManager.hpp"
-#include "System/TouchManager.hpp"
-#include "Text/TextManager.hpp"
-#include "System/WirelessManager.hpp"
-
+#include "Scene/SceneManager.hpp"
 #include <nitro/os.h>
 
 
@@ -55,18 +41,6 @@ public:
     void func_0202d8cc();
 };
 
-extern u8 data_0220e544[];
-
-// Overlay 0 scene constructed by case 4 (0xdc bytes, constructor at 0x0222198c).
-class UnkScene_0222198c {
-public:
-    /* 00 */ u8 mUnk_00[0xdc];
-
-    UnkScene_0222198c();
-};
-
-// Constructs the BattlePlayerList (0x2b4 bytes) in place and returns it.
-
 // The scene that switches between the game's scenes: loads the overlay of the next one and constructs it.
 class SceneRunner : public SceneBase {
 public:
@@ -87,6 +61,26 @@ public:
     void func_02024818(u32 overlay);
     void func_02024968(s32 scene);
 };
+
+#include "Scene/ArenaWindowScene.hpp"
+#include "Scene/GameOverScene.hpp"
+#include "Scene/MapScene.hpp"
+#include "Scene/MyroomScene.hpp"
+#include "Scene/ParkScene.hpp"
+#include "Scene/StoreScene.hpp"
+#include "Scene/TournamentScene.hpp"
+#include "Scene/TutorialScene.hpp"
+#include "Scene/UnkScene_ov000.hpp"
+#include "System/SoundManager.hpp"
+#include "System/WirelessManager.hpp"
+#include "System/TouchManager.hpp"
+#include "Text/TextManager.hpp"
+#include "Scene/TitleScene.hpp"
+
+extern u8 data_0220e544[];
+
+
+// Constructs the BattlePlayerList (0x2b4 bytes) in place and returns it.
 
 // Overlay ids, absolute symbols defined by the linker script.
 extern char SDK_OVERLAY_OV000_ID[];
@@ -181,7 +175,7 @@ void SceneRunner::Update() {
             break;
         case 4:
             SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV000_ID);
-            new UnkScene_0222198c();
+            new TitleScene();
             context->mState = 14;
             break;
         case 5: {

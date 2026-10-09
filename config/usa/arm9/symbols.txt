@@ -898,7 +898,7 @@ _ZN11SceneRunner13func_02024818Ej kind:function(arm,size=0x118) addr:0x02024818
 _ZN11SceneRunnerC1Ev kind:function(arm,size=0x38) addr:0x02024930
 _ZN11SceneRunner13func_02024968Ei kind:function(arm,size=0x364) addr:0x02024968
 _ZN11SceneRunner6UpdateEv kind:function(arm,size=0x6b0) addr:0x02024ccc
-_Z13func_0202537cPv kind:function(arm,size=0x14) addr:0x0202537c
+_ZN11SceneRunnerD0Ev kind:function(arm,size=0x14) addr:0x0202537c weak
 _Z16SetFrameIntervalh kind:function(arm,size=0x10) addr:0x02025390
 _Z11UpdateFramev kind:function(arm,size=0x11c) addr:0x020253a0
 _Z13func_020254bcv kind:function(arm,size=0x34) addr:0x020254bc
@@ -3376,6 +3376,7 @@ data_020a5428 kind:data(any) addr:0x020a5428
 data_020a542c kind:data(any) addr:0x020a542c
 data_020a5430 kind:data(any) addr:0x020a5430
 data_020a5434 kind:data(any) addr:0x020a5434
+_ZTV9NullScene kind:data(any) addr:0x020a5438
 data_020a5440 kind:data(any) addr:0x020a5440
 data_020a544c kind:data(any) addr:0x020a544c
 data_020a5474 kind:data(any) addr:0x020a5474
@@ -3385,8 +3386,7 @@ data_020a548c kind:data(any) addr:0x020a548c
 data_020a5494 kind:data(any) addr:0x020a5494
 _ZTV18UnkStruct_020a54a0 kind:data(any) addr:0x020a54a0
 @174 kind:data(any) addr:0x020a54b4 local
-data_020a54cc kind:data(any) addr:0x020a54cc
-data_020a54d4 kind:data(any) addr:0x020a54d4
+_ZTV11SceneRunner kind:data(any) addr:0x020a54cc
 sFrameInterval kind:data(any) addr:0x020a54e0 local
 data_020a54e4 kind:data(any) addr:0x020a54e4
 data_020a54ec kind:data(any) addr:0x020a54ec
@@ -4812,14 +4812,14 @@ data_021f8000 kind:bss addr:0x021f8000
 data_02200001 kind:bss addr:0x02200001
 data_022001ee kind:bss addr:0x022001ee
 data_022018be kind:bss addr:0x022018be
-data_0220e520 kind:bss addr:0x0220e520
-data_0220e52c kind:bss addr:0x0220e52c
-data_0220e538 kind:bss addr:0x0220e538
-data_0220e544 kind:bss addr:0x0220e544
-data_0220e550 kind:bss addr:0x0220e550
-data_0220e55c kind:bss addr:0x0220e55c
-data_0220e568 kind:bss addr:0x0220e568
-data_0220e574 kind:bss addr:0x0220e574
+@520 kind:bss addr:0x0220e520 local
+@439 kind:bss addr:0x0220e52c local
+@318 kind:bss addr:0x0220e538 local
+@348 kind:bss addr:0x0220e544 local
+@372 kind:bss addr:0x0220e550 local
+@384 kind:bss addr:0x0220e55c local
+@470 kind:bss addr:0x0220e568 local
+@642 kind:bss addr:0x0220e574 local
 sQueueWrite kind:bss addr:0x0220e580 local
 @17 kind:bss addr:0x0220e584 local
 sHooks kind:bss addr:0x0220e590 local

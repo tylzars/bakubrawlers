@@ -4,12 +4,13 @@
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 
+static ModelResource *sResources[2];
+
 static const u8 data_ov007_0227942c[4]  = {5, 3, 0, 0};
 static const u8 data_ov007_02279430[2][3] = {{5, 7, 9}, {5, 7, 9}};
-static VecFx32 data_ov007_02279438      = {0, 0, 0x1e000};
-static VecFx32 data_ov007_02279444      = {0x800, 0x800, 0x800};
+static const VecFx32 data_ov007_02279438      = {0, 0, 0x1e000};
+static const VecFx32 data_ov007_02279444      = {0x800, 0x800, 0x800};
 
-static ModelResource *sResources[2];
 
 GimmickFieldPowerS::GimmickFieldPowerS(u8 id, u8 variant)
     : Gimmick(id, 0) {

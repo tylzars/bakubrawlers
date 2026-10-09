@@ -19,11 +19,6 @@ static FrameCallback sCallbacks[FRAME_CALLBACK_COUNT];
 static void *sCallbackArgs[FRAME_CALLBACK_COUNT];
 static u8 sFrameInterval = 1;
 
-void *func_0202537c(void *ptr) {
-    operator delete(ptr);
-    return ptr;
-}
-
 void SetFrameInterval(u8 frames) {
     sFrameInterval = frames;
 }

@@ -42,4 +42,9 @@ for ov_dir in sorted((args.config_dir / "overlays").iterdir()):
         raise SystemExit(f"{ov_dir}: no function symbol at overlay base {base:#010x}")
 
 lcf = args.lcf_in.read_text()
+# Linker-defined constants the linker script has to provide (values read from the original's literal pools):
+# overlay ids under their SDK names, and the IRQ/system stack sizes.
+sdk = [f"    SDK_OVERLAY_OV{n:03d}_ID = {n};" for n in range(lcf.count("_ID = "))]
+sdk += ["    SDK_IRQ_STACKSIZE = 0x1000;", "    SDK_SYS_STACKSIZE = 0;"]
+lcf = lcf.replace("SECTIONS {\n", "SECTIONS {\n" + "\n".join(sdk) + "\n", 1)
 args.lcf_out.write_text(f"FORCE_ACTIVE {{ {', '.join(entries)} }}\n\n{lcf}")

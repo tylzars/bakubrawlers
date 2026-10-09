@@ -150,9 +150,9 @@ void func_0204af3c(SndPlayer *p, int src)
 // non-matching: same code; h/q swap registers (r6/r7) and the 8-byte tail copy has source and destination swapped
 void func_0204af54(SndPlayer *p)
 {
-    u8 *q;
     u8 *end;
     SndInfo *info = &p->info;
+    u8 *q;
     int h = p->src;
     if (h == 0) return;
     {
@@ -160,10 +160,10 @@ void func_0204af54(SndPlayer *p)
         int len = 0;
         q = data_02218d20;
         end = data_02218d24;
-        while (q != end) *q++ = func_0204e6f0(h, 8);
+        while (q != end) { *q = func_0204e6f0(h, 8); q++; }
         func_0204e1c8(data_02218d20, 4, &len, 0);
         end += len;
-        while (q != end) *q++ = func_0204e6f0(h, 8);
+        while (q != end) { *q = func_0204e6f0(h, 8); q++; }
         if (func_0204e1c8(data_02218d20, 0x200, &len, &hdr) < 0) return;
         info->i04 = hdr.b3;
         info->i08 = hdr.i4;

@@ -335,14 +335,14 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u
 void TextManager::PrintNumber(u32 value, u32 minDigits, u32 unk3, void *buffer, u32 width, u32 height,
                               s16 *outWidth, s16 *outHeight, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13,
                               u32 unk14, u32 unk15) {
+    u32 count    = 0;
     u32 reversed = 0;
-    u8 count     = 0;
     mUnk_59       = unk13;
     do {
-        count++;
-        reversed = reversed * 10 + value % 10;
-        value    = value / 10;
-    } while (value != 0);
+        count = (u8) (count + 1);
+        reversed *= 10;
+        reversed += value % 10;
+    } while ((value /= 10) != 0);
     if (minDigits != 0 && minDigits > count) {
         u32 code = *(u16 *) ((u8 *) mData + *(u16 *) ((u8 *) mData + (u16) unk3 * 4 + 2) + 0x20);
         s32 advance;
@@ -360,7 +360,7 @@ void TextManager::PrintNumber(u32 value, u32 minDigits, u32 unk3, void *buffer, 
         Print(&glyph, 2, buffer, width, height, outWidth, outHeight, NULL, unk9, unk10, unk11, unk12, 0, 0, unk13, unk14,
               unk15);
         reversed = reversed / 10;
-        count--;
+        count = (u8) (count - 1);
     } while (count != 0);
 }
 

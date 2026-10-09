@@ -120,13 +120,19 @@ void UnkStruct_020d433c_0c::func_ov007_02271e48(GimmickSetData *a, GimmickSetDat
             *(ObstacleRaw *) &shapeA = *(ObstacleRaw *) ((u8 *) fileA + i * 0x20 + 4);
             *(ObstacleRaw *) &shapeB = *(ObstacleRaw *) ((u8 *) fileB + j * 0x20 + 4);
             VEC_Add(&shapeA.mPos, &a->mUnk_810, &shapeA.mPos);
-            shapeA.mRotX += a->mRotX;
-            shapeA.mRotY += a->mRotY;
-            shapeA.mRotZ += a->mRotZ;
+            u16 rxA = shapeA.mRotX + a->mRotX;
+            u16 ryA = shapeA.mRotY + a->mRotY;
+            u16 rzA = shapeA.mRotZ + a->mRotZ;
+            shapeA.mRotX = rxA;
+            shapeA.mRotY = ryA;
+            shapeA.mRotZ = rzA;
             VEC_Add(&shapeB.mPos, &b->mUnk_810, &shapeB.mPos);
-            shapeB.mRotX += b->mRotX;
-            shapeB.mRotY += b->mRotY;
-            shapeB.mRotZ += b->mRotZ;
+            u16 rxB = shapeB.mRotX + b->mRotX;
+            u16 ryB = shapeB.mRotY + b->mRotY;
+            u16 rzB = shapeB.mRotZ + b->mRotZ;
+            shapeB.mRotX = rxB;
+            shapeB.mRotY = ryB;
+            shapeB.mRotZ = rzB;
             if (!func_ov007_0227203c(&shapeA, &shapeB)) {
                 continue;
             }

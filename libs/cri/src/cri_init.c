@@ -31,7 +31,7 @@ extern char data_020aca48[], data_020aca58[], data_020aca68[], data_020aca7c[], 
 
 extern int func_0204327c(void);
 extern int func_0204035c(void);
-extern void func_02051540(void);
+extern int *func_02051540(void);
 extern void func_0203ed54(void);
 extern void func_0203eda4(void);
 extern void func_0203edb0(void);

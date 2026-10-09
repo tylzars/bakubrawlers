@@ -463,8 +463,7 @@ void func_0205058c(CriFadeGrp *g, CriSlot *s)
     CriFader *f = s->f;
     if (g->w9c == 1) {
         for (i = 0; i < g->ch_n; i++) {
-            int v = func_020506fc(f) + g->pc8[i];
-            s->obj->vt->m34(s->obj, i, v + g->cc);
+int v = g->cc + (func_020506fc(f) + g->pc8[i]); s->obj->vt->m34(s->obj, i, v);
         }
     } else {
         int v = func_020506fc(f);

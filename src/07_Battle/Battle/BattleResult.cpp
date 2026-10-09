@@ -1045,10 +1045,10 @@ void BattleResult::func_ov007_0225047c() {
     }
     if (mUnk_b2 >= 2) {
         u8 n = mUnk_b2 - 2;
-        u8 i = 0;
         if (n > data_020d433c.mUnk_99) {
             n = data_020d433c.mUnk_99;
         }
+        u8 i = 0;
         do {
             if (i != 0 && mUnk_84[i] == 0) {
                 break;

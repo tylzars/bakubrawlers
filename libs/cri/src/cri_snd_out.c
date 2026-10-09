@@ -197,7 +197,6 @@ u16 func_0204a05c(SndOut *o, u32 n, u16 *out)
     u16 m;
     u16 cnt;
     u16 unit;
-    u16 mode;
     if (n == 0) {
         *out = 0;
         return 0;
@@ -211,26 +210,25 @@ u16 func_0204a05c(SndOut *o, u32 n, u16 *out)
     m = n;
     if (m > 0xc00) m = 0xc00;
     if (m > first) m = first;
-    mode = o->mode;
-    if (mode != 8) {
-        if (mode == 5) {
+    if (o->mode != 8) {
+        if (o->mode == 5) {
             if (m < 10) {
                 *out = 0;
                 return m;
             }
             m = (m / 10) * 10;
             unit = 0;
-            cnt = (m / mode) << 3;
-        } else if (mode == 3 || mode == 6) {
+            cnt = (m / o->mode) << 3;
+        } else if (o->mode == 3 || o->mode == 6) {
             if (m < 6) {
                 *out = 0;
                 return m;
             }
             m = (m / 6) * 6;
             unit = 0;
-            cnt = (m / mode) << 3;
+            cnt = (m / o->mode) << 3;
         } else {
-            unit = 8 / mode;
+            unit = 8 / o->mode;
             cnt = m * unit;
         }
     } else {
@@ -238,9 +236,9 @@ u16 func_0204a05c(SndOut *o, u32 n, u16 *out)
         unit = 1;
     }
     if (cnt > first) {
-        if (mode == 3 || mode == 5 || mode == 6) {
-            m = (mode * first) / 8;
-            *out = (m / mode) << 3;
+        if (o->mode == 3 || o->mode == 5 || o->mode == 6) {
+            m = (o->mode * first) / 8;
+            *out = (m / o->mode) << 3;
         } else {
             m = m - (cnt - first) / unit;
             *out = m * unit;

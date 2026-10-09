@@ -233,18 +233,16 @@ void func_0204ef90(Pool *p, Obj *o)
 int func_0204efd8(int unused, Cfg *c)
 {
     int base = 0;
-    int r0 = base + 0xe0;
+    int r0 = 0;
     int has = c->i1c;
-    int r2 = c->i24;
+    r0 += 0xe0;
     if (has != 0) {
         base += 0x10;
-        if (r2 != 0) {
+        if (c->i24 != 0) {
             int t = (c->w8 / 1000) * 2500;
             t = (c->w0 + 1) * (t / 16);
             t = ((t + 0x800) / 0x800) * 0x800;
-            t += 0x24;
-            t += 0x28c0;
-            base += c->wc * t + 0x40;
+            base += c->wc * (t + 0x24 + 0x28c0u) + 0x40;
         } else {
             int t = (c->w8 / 1000) * (c->w4 * 2500);
             t = (c->w0 + 1) * (t / 16);
@@ -253,7 +251,7 @@ int func_0204efd8(int unused, Cfg *c)
         }
     } else {
         base += 0xc;
-        if (r2 != 0) {
+        if (c->i24 != 0) {
             int t = (c->w8 / 1000) * 2500;
             t = (c->w0 + 1) * (t / 16);
             t = ((t + 0x800) / 0x800) * 0x800;

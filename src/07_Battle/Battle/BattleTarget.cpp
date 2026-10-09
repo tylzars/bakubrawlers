@@ -1536,31 +1536,37 @@ void BattleTarget::func_ov007_022567ac() {
             a.x     = mUnk_194.x;
             a.y     = mUnk_194.y;
             a.z     = mUnk_194.z;
-            dir.x   = -mUnk_64.x;
-            dir.y   = -mUnk_64.y;
-            dir.z   = -mUnk_64.z;
+            VecFx32 t;
+            t.z = -mUnk_64.z;
+            t.y = -mUnk_64.y;
+            t.x = -mUnk_64.x;
+            dir = t;
             if (VEC_Mag(&dir) == 0) {
                 dir.x = -1;
                 dir.y = -1;
                 dir.z = -1;
             }
             VEC_Normalize(&dir, &dir);
-            b.x = mUnk_1a4->mPosition.x;
-            b.y = mUnk_1a4->mPosition.y;
-            b.z = mUnk_1a4->mPosition.z;
+            b = mUnk_1a4->mPosition;
             b.x += FX_Mul(dir.x, 0x28000);
             b.y += FX_Mul(dir.y, 0x28000);
             b.z += FX_Mul(dir.z, 0x28000);
             VEC_Subtract(&a, &b, &c);
-            b.x = FX_Mul(c.x, mUnk_184);
-            b.y = FX_Mul(c.y, mUnk_184);
-            b.z = FX_Mul(c.z, mUnk_184);
-            mUnk_174->mPosition.x = a.x - b.x;
-            mUnk_174->mPosition.y = a.y - b.y;
-            mUnk_174->mPosition.z = a.z - b.z;
-            mUnk_194.x = a.x - b.x;
-            mUnk_194.y = a.y - b.y;
-            mUnk_194.z = a.z - b.z;
+            VecFx32 t0;
+            t0.z = FX_Mul(c.z, mUnk_184);
+            t0.y = FX_Mul(c.y, mUnk_184);
+            t0.x = FX_Mul(c.x, mUnk_184);
+            b = t0;
+            VecFx32 t1;
+            t1.z = a.z - b.z;
+            t1.y = a.y - b.y;
+            t1.x = a.x - b.x;
+            mUnk_174->mPosition = t1;
+            VecFx32 t2;
+            t2.z = a.z - b.z;
+            t2.y = a.y - b.y;
+            t2.x = a.x - b.x;
+            mUnk_194 = t2;
             mUnk_17c--;
             if (mUnk_17c == 0) {
                 mUnk_1e6++;
@@ -1596,16 +1602,22 @@ void BattleTarget::func_ov007_022567ac() {
             VEC_Add(&c, &mUnk_1a4->mPosition, &c);
             VEC_Add(&c, &data_ov007_0227a624, &c);
             VEC_Subtract(&a, &c, &b);
-            b.x = FX_Mul(b.x, mUnk_184);
-            b.y = FX_Mul(b.y, mUnk_184);
-            b.z = FX_Mul(b.z, mUnk_184);
-            mUnk_194.x = a.x - b.x;
-            mUnk_194.y = a.y - b.y;
-            mUnk_194.z = a.z - b.z;
+            fx32 k = mUnk_184;
+            fx32 bx = FX_Mul(b.x, k);
+            b.x = bx;
+            fx32 by = FX_Mul(b.y, k);
+            fx32 bz = FX_Mul(b.z, k);
+            b.y = by;
+            b.z = bz;
+            mUnk_194.x = a.x - bx;
+            mUnk_194.y = a.y - by;
+            mUnk_194.z = a.z - bz;
             VEC_Subtract(&b, &mUnk_188, &b);
-            mUnk_174->mPosition.x = a.x - b.x;
-            mUnk_174->mPosition.y = a.y - b.y;
-            mUnk_174->mPosition.z = a.z - b.z;
+            VecFx32 t;
+            t.z = a.z - b.z;
+            t.y = a.y - b.y;
+            t.x = a.x - b.x;
+            mUnk_174->mPosition = t;
             break;
         }
         case 3:
@@ -2047,20 +2059,11 @@ void BattleTarget::func_ov007_02257f3c(GimmickSetData *set, u32 index, VecFx32 *
         case 5:
         case 7:
             break;
-        case 4:
-            if (mUnk_1e0 == 3) {
-                mUnk_1e0 = 0;
-            }
-            break;
         case 6:
             VEC_Add(&selfp->mPos, &mUnk_1a8->mUnk_810, &selfp->mPos);
-            self.mRotX += mUnk_1a8->mRotX;
-            self.mRotY += mUnk_1a8->mRotY;
-            self.mRotZ += mUnk_1a8->mRotZ;
+            AddRot(&self, mUnk_1a8);
             VEC_Add(&other.mPos, &set->mUnk_810, &other.mPos);
-            other.mRotX += set->mRotX;
-            other.mRotY += set->mRotY;
-            other.mRotZ += set->mRotZ;
+            AddRot(&other, set);
             func_ov007_02257c80((BattleSphere *) &self, vel, &other, out, 0, 0);
             if (out->x != 0 || out->z != 0) {
                 SoundManager::Get().func_020246f8(4);
@@ -2071,6 +2074,25 @@ void BattleTarget::func_ov007_02257f3c(GimmickSetData *set, u32 index, VecFx32 *
                 }
                 mUnk_58.z = other.mPos.y + other.mHalfY + self.mHalfY;
             }
+            break;
+        case 4:
+            if (mUnk_1e0 == 3) {
+                mUnk_1e0 = 0;
+            }
+            break;
+        case 0x46:
+            if (record->mUnk_09 == 3) {
+                return;
+            }
+            if (mUnk_1dd != 4) {
+                return;
+            }
+            if (mUnk_1db >= 2) {
+                return;
+            }
+            mUnk_140 = 0x19;
+            mUnk_1db = 2;
+            mUnk_c4  = 0x1dc - 0x19;
             break;
         case 0x32:
             if (record->mUnk_09 != 5) {
@@ -2092,30 +2114,12 @@ void BattleTarget::func_ov007_02257f3c(GimmickSetData *set, u32 index, VecFx32 *
             break;
         case 0x3c:
             VEC_Add(&selfp->mPos, &mUnk_1a8->mUnk_810, &selfp->mPos);
-            self.mRotX += mUnk_1a8->mRotX;
-            self.mRotY += mUnk_1a8->mRotY;
-            self.mRotZ += mUnk_1a8->mRotZ;
+            AddRot(&self, mUnk_1a8);
             VEC_Add(&other.mPos, &set->mUnk_810, &other.mPos);
-            other.mRotX += set->mRotX;
-            other.mRotY += set->mRotY;
-            other.mRotZ += set->mRotZ;
+            AddRot(&other, set);
             if (mag < 0x6800) {
                 func_ov007_02257c80((BattleSphere *) &self, vel, &other, out, 0, 0);
             }
-            break;
-        case 0x46:
-            if (record->mUnk_09 == 3) {
-                return;
-            }
-            if (mUnk_1dd != 4) {
-                return;
-            }
-            if (mUnk_1db >= 2) {
-                return;
-            }
-            mUnk_140 = 0x19;
-            mUnk_1db = 2;
-            mUnk_c4  = 0x1dc - 0x19;
             break;
         case 0x47:
             mUnk_1cd = 1;
@@ -3274,60 +3278,52 @@ void BattleTarget::func_ov007_0225b298(s32 *pair, u8 mode, VecFx32 *out) {
 BOOL BattleTarget::func_ov007_0225b4a0(VecFx32 *pos, u16 *angle, VecFx32 *vel, u8 *outA, u8 *outB) {
     u8 a = 0;
     u8 b = 0;
+    s32 speed;
+    BattleRecord *record;
     s32 x = vel->x;
     s32 z = vel->z;
-    BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
     if (x < 0) {
         x = -x;
     }
     if (z < 0) {
         z = -z;
     }
-    s32 speed = z + x;
-    if (mUnk_1d1 == 0) {
-        return 0;
-    }
-    if (pos->y > 0x899a) {
-        return 0;
-    }
-    u32 k = record->mUnk_02_9;
-    if (speed >= data_ov007_0227a6d0[k]) {
-        return 0;
-    }
-    u16 lim = data_ov007_0227a5f6[k];
-    if (*angle > lim && *angle < (u16) -lim) {
-        return 0;
-    }
-    if (!func_ov007_02248998(pos, &a, &b)) {
-        return 0;
-    }
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    BattlePlayer *p0 = list->mPlayers[mUnk_1d4];
-    BattlePlayer *p1 = list->mPlayers[mUnk_1d5];
-    u8 cell = *(u8 *) &list->mUnk_16c[a][b];
-    if (cell == 0) {
-        return 0;
-    }
-    *outA = a;
-    *outB = b;
-    u8 m = list->mUnk_1c[(u8) (cell - 1)].mUnk_5;
-    if (m == 0) {
-        return 1;
-    }
-    BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) (m - 1)];
-    if (p0->IsActive()) {
-        if (!p1->IsActive() && unit->mUnk_0f == mUnk_1d5) {
-            if (speed >= 0x1000) {
-                return 0;
+    speed = z + x;
+    record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
+    if (mUnk_1d1 != 0 && pos->y <= 0x899a) {
+        u32 k = record->mUnk_02_9;
+        if (speed < data_ov007_0227a6d0[k]) {
+            u16 lim = data_ov007_0227a5f6[k];
+            if (!(*angle > lim && *angle < (u16) -lim)) {
+                if (func_ov007_02248998(pos, &a, &b)) {
+                    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                    BattlePlayer *p0 = list->mPlayers[mUnk_1d4];
+                    BattlePlayer *p1 = list->mPlayers[mUnk_1d5];
+                    u8 cell = *(u8 *) &list->mUnk_16c[a][b];
+                    if (cell != 0) {
+                        *outA = a;
+                        *outB = b;
+                        u8 m = list->mUnk_1c[(u8) (cell - 1)].mUnk_5;
+                        if (m != 0) {
+                            BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) (m - 1)];
+                            if (p0->IsActive() && !p1->IsActive() && unit->mUnk_0f == mUnk_1d5) {
+                                if (speed < 0x1000) {
+                                    if (!(*angle > 0xe38 && *angle < 0x10000 - 0xe38)) {
+                                        return 1;
+                                    }
+                                }
+                            } else {
+                                return 1;
+                            }
+                        } else {
+                            return 1;
+                        }
+                    }
+                }
             }
-            if (*angle > 0xe38 && *angle < 0x10000 - 0xe38) {
-                return 0;
-            }
-            return 1;
         }
-        return 1;
     }
-    return 1;
+    return 0;
 }
 
 void BattleTarget::func_ov007_0225b69c(u8 a, u8 b) {

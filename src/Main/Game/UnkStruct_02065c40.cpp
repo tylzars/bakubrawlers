@@ -1932,23 +1932,27 @@ void UnkStruct_02065c40::func_0206abf4(u32 index) {
     if (anim->mUnk_10 == 0) {
         return;
     }
+    u8 cur = mUnk_11b4[index].mUnk_39;
     u8 target = mUnk_11b4[index].mUnk_3a;
     s32 value;
-    BOOL loop = FALSE;
-    if (mUnk_11b4[index].mUnk_39 != target) {
-        if (mUnk_11b4[index].mUnk_39 == 0) {
+    BOOL loop;
+    if (cur != target) {
+        loop = FALSE;
+        if (cur == 0) {
             value = func_020687a8((u8) kind, target, 1);
             mUnk_11b4[index].mUnk_39 = target;
         } else {
-            value = func_020687a8((u8) kind, mUnk_11b4[index].mUnk_39, 2);
+            value = func_020687a8((u8) kind, cur, 2);
             mUnk_11b4[index].mUnk_39 = 0;
         }
         if (value < 0) {
-            value = func_020687a8(mUnk_11b4[index].mUnk_36, target, 0);
+            value = func_020687a8((u8) mUnk_11b4[index].mUnk_36, target, 0);
             mUnk_11b4[index].mUnk_39 = target;
             mUnk_11b4[index].mUnk_3b = 0;
-            if (func_020687a8(mUnk_11b4[index].mUnk_36, target, 4) == 0) {
+            if (func_020687a8((u8) mUnk_11b4[index].mUnk_36, target, 4) == 0) {
                 loop = TRUE;
+            } else {
+                loop = FALSE;
             }
         }
     } else {
@@ -1956,7 +1960,7 @@ void UnkStruct_02065c40::func_0206abf4(u32 index) {
         mUnk_11b4[index].mUnk_3b = 0;
         loop = TRUE;
     }
-    u8 other = func_020687a8(mUnk_11b4[index].mUnk_36, target, 3);
+    u8 other = func_020687a8((u8) mUnk_11b4[index].mUnk_36, target, 3);
     mUnk_11b4[index].mUnk_2c->func_02054644(other, (u8) value);
     mUnk_11b4[index].mUnk_3c = 0;
     anim->mUnk_08 = loop;

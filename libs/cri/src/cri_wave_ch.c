@@ -132,7 +132,7 @@ void func_020483f0(void *p, int n)
 Ch *func_02048430(int **srcs, int n, int a2)
 {
     Ch *c;
-    int i, j, k;
+    int i, j;
     unsigned char id;
     PlObj *p;
     if (n <= 0) return 0;
@@ -157,11 +157,10 @@ Ch *func_02048430(int **srcs, int n, int a2)
         if (data_02218450.cb != 0) {
             data_02218450.cb(&id);
         } else {
-            int m = data_02218450.n;
-            for (k = 0; k < m; k++) {
-                if (data_02218450.use[k] == 0) {
-                    data_02218450.use[k] = 1;
-                    id = data_02218450.ids[k];
+            for (i = 0; i < data_02218450.n; i++) {
+                if (data_02218450.use[i] == 0) {
+                    data_02218450.use[i] = 1;
+                    id = data_02218450.ids[i];
                     break;
                 }
             }

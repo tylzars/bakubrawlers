@@ -88,11 +88,12 @@ extern int func_02051500(int, int), func_02051530(int);
 
 void func_02043c14(Pl *o)
 {
+    int r4, r5;
     int h = o->h;
     Io *io = o->io;
     short s2, s0;
     Out A, C, B, D;
-    int r8, r0, r9, r11, r5, r4;
+    int r8, r0, r9, r11;
     if (o->b98 == 0) return;
     s0 = 0;
     s2 = 0;
@@ -129,12 +130,14 @@ void func_02043c14(Pl *o)
     }
     if (r8 == 0) {
         io->vt->f1c(io, 1, &B);
-        func_0204604c(&A, r9 + r5, &A, &C);
+        r9 += r5;
+        func_0204604c(&A, r9, &A, &C);
         io->vt->f20(io, 0, &A);
         io->vt->f1c(io, 1, &C);
     } else {
         io->vt->f20(io, 0, &A);
-        func_0204604c(&B, r11 + r4, &B, &D);
+        r11 += r4;
+        func_0204604c(&B, r11, &B, &D);
         io->vt->f20(io, 0, &B);
         io->vt->f1c(io, 1, &D);
     }

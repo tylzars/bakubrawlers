@@ -20,9 +20,9 @@ void func_02051534(void) {}
 void func_02051538(void) {}
 void func_0205153c(void) {}
 
-void func_02051540(void)
+int *func_02051540(void)
 {
-    data_020b01f8 = &data_0209e4f0;
+    return data_020b01f8 = &data_0209e4f0;
 }
 
 int func_02051558(void *a, int b, int c) { return func_02015a6c(a, c); }

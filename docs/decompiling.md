@@ -204,6 +204,17 @@ Other findings from linking:
     created first), `*q++ = x` vs `*q = x; q++;` (the first moves `q` to the end of the order), and the type of the
     variable (`u8` vs `u32` with explicit `(u8)` wraps).
   - A value that is also returned is forced into r0: `return g = &x;` where a plain store gives the other order.
+- **Constants kept in registers (from small synthetic test functions).**
+  - The backend reuses a register that already holds a needed constant within an extended basic block: `mov rd, rs`,
+    or `add rd, rs, #(K-C)` from a nearby constant. Knowledge passes only into single-predecessor blocks (a join,
+    even an if-converted one, clears it; a call doesn't clear callee-saved registers), and only if the constant's
+    definition comes first. So `i = 0;` placed after an `if (n > lim) n = lim;` clamp gives `mov r5, r6`, before it
+    `mov r5, #0` (BattleResult's text renderer).
+  - A variable updated by compound assignment (`x += e`, `x |= e`, or `x = x + e`) keeps its constant start value in
+    a register: `int r = 0; r += 0xe0;` gives `mov r2,#0; add r3,r2,#0xe0`. Its other uses still fold.
+  - A constant stored to memory (a member) and read back is forwarded late: `n = 8; f(n * 12);` keeps
+    `mov #8; mov #12; smulbb`.
+  - Mixing signed and unsigned stops constants combining: `t + 0x24 + 0x28c0u` keeps two adds.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

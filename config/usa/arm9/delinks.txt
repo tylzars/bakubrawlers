@@ -28,12 +28,14 @@ libs/cri/src/cri_stm_ctl.c:
     .text       start:0x02041f50 end:0x02042760
 
 libs/cri/src/cri_adx_obj.c:
+    complete
     .text       start:0x02042760 end:0x02043220
 
 libs/cri/src/cri_ring2.c:
     .text       start:0x020450a4 end:0x02045f90
 
 libs/cri/src/cri_adx_ctrl.c:
+    complete
     .text       start:0x02043220 end:0x02043c14
 
 libs/cri/src/cri_adx_ctrl2.c:
@@ -53,6 +55,7 @@ libs/cri/src/cri_adx_err.c:
     .text       start:0x02040110 end:0x0204046c
 
 libs/cri/src/cri_fs.c:
+    complete
     .text       start:0x020477d8 end:0x02047d80
 
 libs/cri/src/cri_err.c:
@@ -129,6 +132,7 @@ libs/cri/src/cri_snd_out.c:
     .text       start:0x02049c34 end:0x0204ab10
 
 libs/cri/src/cri_snd_tbl.c:
+    complete
     .text       start:0x0204ab10 end:0x0204ad88
 
 libs/cri/src/cri_snd_play.c:
@@ -177,9 +181,11 @@ libs/msl/src/msl_strtoul.c:
     .text       start:0x02016ec0 end:0x020177ac
 
 libs/msl/src/e_acos.c:
+    complete
     .text       start:0x020177ac end:0x02017fa4
 
 libs/msl/src/e_asin.c:
+    complete
     .text       start:0x02017fa4 end:0x020186f0
 
 libs/msl/src/e_log.c:
@@ -212,6 +218,7 @@ libs/msl/src/s_copysign.c:
     .text       start:0x0201b9a8 end:0x0201b9d0
 
 libs/msl/src/s_cos.c:
+    complete
     .text       start:0x0201b9d0 end:0x0201bb40
 
 libs/msl/src/s_fabs.c:
@@ -231,6 +238,7 @@ libs/msl/src/s_scalbn.c:
     .text       start:0x0201bddc end:0x0201c028
 
 libs/msl/src/s_sin.c:
+    complete
     .text       start:0x0201c028 end:0x0201c19c
 
 libs/msl/src/msl_math_wrappers.c:
@@ -291,6 +299,7 @@ libs/nns/src/gfd/gfd_lnkvram.c:
     .text       start:0x02036538 end:0x020366f8
 
 libs/nns/src/snd/nns_snd_main.c:
+    complete
     .text       start:0x020366f8 end:0x02036918
 
 libs/nns/src/snd/nns_snd_player.c:
@@ -301,6 +310,7 @@ libs/nns/src/snd/nns_snd_arc_cache.c:
     .text       start:0x020381b0 end:0x0203824c
 
 libs/nns/src/snd/nns_snd_heap.c:
+    complete
     .text       start:0x0203824c end:0x020385b8
 
 libs/nns/src/snd/nns_snd_group.c:
@@ -322,6 +332,7 @@ libs/nns/src/snd/nns_snd_strm.c:
     .text       start:0x02037264 end:0x02037884
 
 libs/nns/src/snd/nns_snd_capture.c:
+    complete
     .text       start:0x02037884 end:0x02037af8
 
 libs/nns/src/snd/nns_snd_arc.c:
@@ -389,12 +400,15 @@ libs/nds/src/gx/g3c.c:
     .text       start:0x020033c8 end:0x02003438
 
 libs/nds/src/gx/g3x.c:
+    complete
     .text       start:0x02003438 end:0x020037f8
 
 libs/nds/src/gx/gx_load.c:
+    complete
     .text       start:0x0200388c end:0x02004144
 
 libs/nds/src/gx/gx_extpltt.c:
+    complete
     .text       start:0x02004144 end:0x0200450c
 
 libs/nds/src/gx/gx_tex.c:

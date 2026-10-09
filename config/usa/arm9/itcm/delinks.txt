@@ -9,6 +9,7 @@ libs/nds/src/fx/fx_vec_mtx.c:
     .text       start:0x01ff81a0 end:0x01ff9284
 
 libs/nds/src/gx/g3_fifo.c:
+    complete
     .text       start:0x01ff9284 end:0x01ff94c8
 
 libs/nns/src/g3d/g3d_anm_itcm.c:

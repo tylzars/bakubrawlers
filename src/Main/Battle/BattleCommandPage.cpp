@@ -733,9 +733,9 @@ void BattleCommandPage::func_020571a8() {
         u8 cur   = data_020d433c.mBattlePlayers->mUnk_2a9;
         BOOL has = 0;
         if (mUnk_fa == cur) {
-            mCells[8]->func_0202a3ec(0, mUnk_fa, 0x24, 0x18, 0);
+            mCells[8]->func_0202a3ec(0, mUnk_fa, 0x24, 0x18, has);
         } else {
-            if (data_020d433c.mBattlePlayers->mPlayers[mUnk_fa]->mUnk_c8 != NULL) {
+            if (data_020d433c.mBattlePlayers->mPlayers[(u8)mUnk_fa]->mUnk_c8 != NULL) {
                 has = 1;
             }
             if (has == 1) {
@@ -751,9 +751,11 @@ void BattleCommandPage::func_020571a8() {
         return;
     }
     s16 a;
-    s32 b;
-    s32 c;
+    u8 k;
+    int n;
     s32 d;
+    s32 b;
+    s16 c;
     if (big) {
         a = 0x32;
         b = -4;
@@ -765,9 +767,9 @@ void BattleCommandPage::func_020571a8() {
         c = 0x18;
         d = 4;
     }
-    for (u8 k = 0; k < 6; k++) {
+    for (k = 0; k < 6; k++) {
         s16 y = k * 0x28 + 0x14;
-        int n = func_02065bf4(mUnk_f8, k);
+        n = func_02065bf4(mUnk_f8, k);
         if (n != 0) {
             int v  = n;
             u8 cnt = 3;
@@ -777,11 +779,12 @@ void BattleCommandPage::func_020571a8() {
             }
             v *= 10;
             s32 half = (3 - cnt) * 4 / 2;
-            s32 left = c + b;
-            s16 yy   = a + d;
+            s32 left = c;
+            left += b;
+            s16 yy = a + d;
             u8 i     = 0;
             do {
-                u8 digit = v % 10;
+                int digit = v % 10;
                 mCells[2]->func_0202a3ec(0, digit, y + (3 - i) * 7, 0xb0, 0);
                 mCells[5]->func_0202a3ec(0, digit, left + (cnt - i) * 4 + half, yy, 0);
                 v = (u32) v / 10;

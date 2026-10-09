@@ -372,7 +372,6 @@ void SpriteScreen::func_02027fec(const char *path, u32 unk2, u32 unk3) {
 
 
 
-// non-matching: 4 bytes long; register allocation.
 void *SpriteScreen::func_02028054(u8 *data) {
     u8 *buffer = (u8 *) OS_Alloc(0x1000);
     MI_CpuClear32(buffer, 0x1000);
@@ -382,8 +381,8 @@ void *SpriteScreen::func_02028054(u8 *data) {
         u8 b = i / 32;
         u8 x = a * 2;
         u8 y = b * 2;
-        u16 source = x % 8 + y % 8 * 8 + (y / 64) * 4096 + (x / 8) % 8 * 64 + (y / 8) % 8 * 512;
-        u16 dest   = a % 8 + (a / 8) % 8 * 64 + (b / 8) % 8 * 512 + b % 8 * 8 + (b / 64) * 4096;
+        u16 source = x % 8 + (x / 8) % 8 * 64 + (y % 8 << 3) + (y / 8) % 8 * 512 + (y / 64) * 4096;
+        u16 dest = a % 8 + (a / 8) % 8 * 64 + (b % 8 << 3) + (b / 8) % 8 * 512 + (b / 64) * 8 * 512;
         buffer[dest] = (data + source)[0x1000];
         i++;
     } while (i < 0x800);
@@ -393,8 +392,8 @@ void *SpriteScreen::func_02028054(u8 *data) {
         u8 b = j / 16;
         u8 x = a * 2;
         u8 y = b * 2;
-        u16 source = (y / 8) % 8 * 256 + (x / 8) % 8 * 64 + y % 8 * 8 + x % 8 + (y / 64) * 2048;
-        u16 dest   = a % 8 + (a / 8) % 8 * 64 + (b / 64) * 4096 + (b / 8) % 8 * 512 + b % 8 * 8;
+        u16 source = x % 8 + (x / 8) % 8 * 64 + (y % 8 << 3) + (y / 8) % 8 * 256 + (y / 64) * 2048;
+        u16 dest = a % 8 + (a / 8) % 8 * 64 + (b % 8 << 3) + (b / 8) % 8 * 512 + (b / 64) * 8 * 512;
         (buffer + dest)[0x100] = data[source];
         j++;
     } while (j < 0x400);

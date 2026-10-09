@@ -104,38 +104,39 @@ void *func_020323b8(void) {   // inverse of the current position matrix (cached)
     }
     return data_02211474;
 }
-s32 func_020323fc(s32 *src, s32 *dst) {   // MTX_Inverse44 (Gauss-Jordan, fixed point)
-    s32 tmp[16];
-    s32 i, j, k;
-    func_01ff9604(src, tmp);
-    func_02000d88(dst);
+s32 func_020323fc(s32 *src, s32 *dstp) {   // MTX_Inverse44 (Gauss-Jordan, fixed point)
+    s32 tmp[4][4];
+    s32 (*dst)[4] = (s32 (*)[4]) dstp;
+    s32 piv, i, j, k, best;
+    func_01ff9604(src, (s32 *) tmp);
+    func_02000d88(dstp);
     for (i = 0; i < 4; i++) {
-        s32 piv = i;
-        s32 best = 0;
         long long inv;
+        piv = i;
+        best = 0;
         for (j = i; j < 4; j++) {
-            s32 v = tmp[j * 4 + i];
+            s32 v = tmp[j][i];
             if (v < 0) v = -v;
             if (v > best) { piv = j; best = v; }
         }
         if (best == 0) return -1;
         if (piv != i) {
             for (k = 0; k < 4; k++) {
-                s32 t = tmp[i * 4 + k]; tmp[i * 4 + k] = tmp[piv * 4 + k]; tmp[piv * 4 + k] = t;
-                t = dst[i * 4 + k]; dst[i * 4 + k] = dst[piv * 4 + k]; dst[piv * 4 + k] = t;
+                s32 t = tmp[i][k]; tmp[i][k] = tmp[piv][k]; tmp[piv][k] = t;
+                t = dst[i][k]; dst[i][k] = dst[piv][k]; dst[piv][k] = t;
             }
         }
-        inv = func_01ff803c(tmp[i * 4 + i]);
+        inv = func_01ff803c(tmp[i][i]);
         for (k = 0; k < 4; k++) {
-            tmp[i * 4 + k] = (s32)(((long long)tmp[i * 4 + k] * inv + 0x80000000LL) >> 32);
-            dst[i * 4 + k] = (s32)(((long long)dst[i * 4 + k] * inv + 0x80000000LL) >> 32);
+            tmp[i][k] = (s32)(((long long)tmp[i][k] * inv + 0x80000000LL) >> 32);
+            dst[i][k] = (s32)(((long long)dst[i][k] * inv + 0x80000000LL) >> 32);
         }
         for (j = 0; j < 4; j++) {
             if (j != i) {
-                s32 f = tmp[j * 4 + i];
+                s32 f = tmp[j][i];
                 for (k = 0; k < 4; k++) {
-                    tmp[j * 4 + k] -= FxMul(f, tmp[i * 4 + k]);
-                    dst[j * 4 + k] -= FxMul(f, dst[i * 4 + k]);
+                    tmp[j][k] -= FxMul(f, tmp[i][k]);
+                    dst[j][k] -= FxMul(f, dst[i][k]);
                 }
             }
         }

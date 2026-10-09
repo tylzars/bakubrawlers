@@ -37,8 +37,22 @@ def original_callees(blob, base, start, size):
     return out
 
 
+def load_sizes():
+    import re
+    sizes = {}
+    files = [ROOT / "config/usa/arm9/symbols.txt", ROOT / "config/usa/arm9/itcm/symbols.txt",
+             *sorted((ROOT / "config/usa/arm9/overlays").glob("*/symbols.txt"))]
+    for path in files:
+        for line in path.read_text().splitlines():
+            m = re.match(r"(\S+) kind:function\(\w+,size=(0x[0-9a-f]+)\)", line)
+            if m:
+                sizes.setdefault(m.group(1), int(m.group(2), 16))
+    return sizes
+
+
 def main():
     tables = load_symbols()
+    sizes = load_sizes()
     objs = [Path(p).resolve() for p in sys.argv[1:]] or sorted(
         [*(ROOT / "build/usa/src").rglob("*.o"), *(ROOT / "build/usa/libs").rglob("*.o")])
     names_at = {}
@@ -80,7 +94,8 @@ def main():
             for f in funcs:
                 if unknown[f.name]:
                     continue
-                theirs = original_callees(blob, base, local[f.name], f["st_size"])
+                # scan the original over the ORIGINAL function's size, not ours
+                theirs = original_callees(blob, base, local[f.name], sizes.get(f.name, f["st_size"]))
                 if ours[f.name] != theirs:
                     extra = ours[f.name] - theirs
                     missing = theirs - ours[f.name]

@@ -390,16 +390,21 @@ blend:
     }
 
 void func_01ffa548(s32 *out, s32 ratio, u32 *info, u8 *res) {
-    u32 hdr = info[0];
+    u32 o2;
+    u32 hdr;
+    u32 o1;
+    u16 *data;
+    int fl;
     s32 tA[9];
     s32 tB[9];
-    u16 *data = (u16 *) (res + info[1]);
-    u32 o1 = *(u32 *) (res + 0xc);
-    u32 o2 = *(u32 *) (res + 0x10);
-    u32 f = ratio >> 12;
+    u32 f;
     u32 g;
     u32 a, b;
-    int fl;
+    hdr = info[0];
+    f = ratio >> 12;
+    data = (u16 *) (res + info[1]);
+    o1 = *(u32 *) (res + 0xc);
+    o2 = *(u32 *) (res + 0x10);
     if (hdr & 0xc0000000) {
         u32 last = (hdr & 0x1fff0000) >> 16;
         if (hdr & 0x40000000) {
@@ -415,25 +420,22 @@ void func_01ffa548(s32 *out, s32 ratio, u32 *info, u8 *res) {
             goto fetch;
         } else {
             u32 r = f & 3;
-            if (r == 0) {
-                f = f >> 2;
-                goto fetch;
-            }
+            if (r != 0) {
             if (f > last) {
                 f = r + (last >> 2);
                 goto fetch;
             }
             if (f & 1) {
+                fl = 0;
                 if (f & 2) {
-                    a = (f >> 2) + 1;
-                    b = f >> 2;
-                } else {
                     b = f >> 2;
                     a = b + 1;
+                } else {
+                    a = f >> 2;
+                    b = a + 1;
                 }
-                fl = 0;
-                fl |= func_01ffaca4(out, res + o1, res + o2, data[b]);
-                fl |= func_01ffaca4(tA, res + o1, res + o2, data[a]);
+                fl |= func_01ffaca4(out, res + o1, res + o2, data[a]);
+                fl |= func_01ffaca4(tA, res + o1, res + o2, data[b]);
                 out[0] = tA[0] + out[0] * 3;
                 out[1] = tA[1] + out[1] * 3;
                 out[2] = tA[2] + out[2] * 3;
@@ -454,13 +456,17 @@ void func_01ffa548(s32 *out, s32 ratio, u32 *info, u8 *res) {
             }
             g = f >> 2;
             goto avg;
+            } else {
+                f = f >> 2;
+                goto fetch;
+            }
         }
     }
     goto fetch;
 avg:
     fl = 0;
     fl |= func_01ffaca4(out, res + o1, res + o2, data[g]);
-    fl |= func_01ffaca4(tB, res + o1, res + o2, data[g + 1]);
+    fl |= func_01ffaca4(tB, res + o1, res + o2, (&data[g])[1]);
     out[0] += tB[0];
     out[1] += tB[1];
     out[2] += tB[2];

@@ -252,7 +252,7 @@ int func_0200d268(void)
     int ret = func_0200d214(func_0200cd44, &r);
     if (ret != 0) return ret;
     pmWaitFunc = func_0200cc98;
-    func_0200cc98();
+    pmWaitFunc();
     pmWaitFunc = func_0200cc58;
     return r;
 }

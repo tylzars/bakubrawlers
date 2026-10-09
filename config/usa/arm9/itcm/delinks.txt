@@ -2,6 +2,7 @@
     .bss        start:0x01ffd1a0 end:0x01ffd1c0 kind:bss align:32
 
 libs/nds/src/fx/fx_cp.c:
+    complete
     .text       start:0x01ff8000 end:0x01ff817c
 
 libs/nds/src/fx/fx_vec_mtx.c:
@@ -23,6 +24,7 @@ libs/nds/src/os/os_boot_itcm.c:
     .text       start:0x01ffcb20 end:0x01ffcdbc
 
 libs/nds/src/mi/mi_dma_itcm.c:
+    complete
     .text       start:0x01ffcdbc end:0x01ffcef4
 
 libs/nds/src/mi/mi_memory_itcm.c:

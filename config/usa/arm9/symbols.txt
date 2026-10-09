@@ -4548,23 +4548,24 @@ data_020bdf6c kind:bss addr:0x020bdf6c
 data_020bdf70 kind:bss addr:0x020bdf70
 data_020bdf74 kind:bss addr:0x020bdf74
 data_020bdf98 kind:bss addr:0x020bdf98
-data_020be018 kind:bss addr:0x020be018
+timerReserved kind:bss addr:0x020be018 local
 data_020be01c kind:bss addr:0x020be01c
 data_020be02c kind:bss addr:0x020be02c
-data_020be038 kind:bss addr:0x020be038
+valarmState kind:bss addr:0x020be038 local
 data_020be04c kind:bss addr:0x020be04c
-data_020be050 kind:bss addr:0x020be050
-data_020be054 kind:bss addr:0x020be054
-data_020be068 kind:bss addr:0x020be068
-data_020be088 kind:bss addr:0x020be088
-data_020be08c kind:bss addr:0x020be08c
+irqOwnerMask kind:bss addr:0x020be050 local
+irqOwnerTable kind:bss addr:0x020be054 local
+gxState kind:bss addr:0x020be068 local
+sndInitialized kind:bss addr:0x020be088 local
+sndMutex kind:bss addr:0x020be08c local
+data_020be0a4 kind:bss addr:0x020be0a4
 data_020be0c0 kind:bss addr:0x020be0c0
 data_020be0e4 kind:bss addr:0x020be0e4
 data_020be120 kind:bss addr:0x020be120
 data_020be3a0 kind:bss addr:0x020be3a0
 data_020bf0c0 kind:bss addr:0x020bf0c0
 data_020bfb88 kind:bss addr:0x020bfb88
-data_020bfba0 kind:bss addr:0x020bfba0
+alarmTable kind:bss addr:0x020bfba0 local
 data_020bfc00 kind:bss addr:0x020bfc00
 data_020bfc04 kind:bss addr:0x020bfc04
 data_020bfc08 kind:bss addr:0x020bfc08

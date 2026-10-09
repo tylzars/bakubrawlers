@@ -194,6 +194,16 @@ Other findings from linking:
 - **Loops without a pre-test.** If the original enters a loop body without first testing the count (no
   `cmp; bls` guard), the source was `do { ... } while (k < count);`, not a `for` loop.
 - **`%` vs the expanded form.** `x % 300` and `x - x / 300 * 300` compile differently (different `smull` use).
+- **How mwcc picks registers (from small synthetic test functions).**
+  - Named locals that survive as variables are coloured in declaration order (first declared, lowest register);
+    parameters the other way round, and after all locals. A single-use local folds into its expression.
+  - Under register pressure the value that interferes with more others gets the lower register whatever its
+    declaration position, which is why permuting declarations often does nothing.
+  - What does move a pair: a named local copy of a field vs repeating the field access (the compiler shares the
+    repeated read; only when no real call sits between the uses), the expression's tree shape (which temporary is
+    created first), `*q++ = x` vs `*q = x; q++;` (the first moves `q` to the end of the order), and the type of the
+    variable (`u8` vs `u32` with explicit `(u8)` wraps).
+  - A value that is also returned is forced into r0: `return g = &x;` where a plain store gives the other order.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

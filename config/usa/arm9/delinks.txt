@@ -18,6 +18,7 @@ libs/cri/src/cri_stm_c.c:
     .text       start:0x020407bc end:0x02041744
 
 libs/cri/src/cri_slot.c:
+    complete
     .text       start:0x02044614 end:0x02044a20
 
 libs/cri/src/cri_ring.c:
@@ -48,6 +49,7 @@ libs/cri/src/cri_adx_dec.c:
     .text       start:0x0203f714 end:0x02040110
 
 libs/cri/src/cri_adx_err.c:
+    complete
     .text       start:0x02040110 end:0x0204046c
 
 libs/cri/src/cri_fs.c:
@@ -57,12 +59,14 @@ libs/cri/src/cri_err.c:
     .text       start:0x02045f90 end:0x02046924
 
 libs/cri/src/cri_dev.c:
+    complete
     .text       start:0x02046924 end:0x0204713c
 
 libs/cri/src/cri_thread.c:
     .text       start:0x0204713c end:0x020477d8
 
 libs/cri/src/cri_adx_api.c:
+    complete
     .text       start:0x0204e844 end:0x0204ecf0
 
 libs/cri/src/cri_file.c:
@@ -72,6 +76,7 @@ libs/cri/src/cri_adx_vol.c:
     .text       start:0x02050f68 end:0x02051528
 
 libs/cri/src/cri_file_obj.c:
+    complete
     .text       start:0x02047d80 end:0x02048304
 
 libs/cri/src/cri_wave_ch.c:
@@ -81,6 +86,7 @@ libs/cri/src/cri_fade_grp.c:
     .text       start:0x0204fc00 end:0x02050e60
 
 libs/cri/src/cri_mem_blk.c:
+    complete
     .text       start:0x02050e60 end:0x02050f68
 
 libs/cri/src/cri_ahx_play.c:
@@ -102,12 +108,14 @@ libs/cri/src/cri_misc_tail.c:
     .text       start:0x02051528 end:0x02051804
 
 libs/cri/src/cri_adxm.c:
+    complete
     .text       start:0x02051804 end:0x02052320
 
 libs/cri/src/cri_mpa_l2.c:
     .text       start:0x0204b314 end:0x0204bdd4
 
 libs/cri/src/cri_mpa_dec.c:
+    complete
     .text       start:0x0204bdd4 end:0x0204c088
 
 // 0x0204c088-0x0204c40c (func_0204c088): hand-written asm in CRI's MPEG synthesis (ldmib + smlatt dot products).
@@ -130,13 +138,16 @@ libs/msl/src/msl_dec2num.c:
     .text       start:0x0201cfc4 end:0x0201d5e8
 
 libs/nns/src/gfd/gfd_vram_state.c:
+    complete
     .text       start:0x020360c4 end:0x02036538
 
 libs/cri/src/cri_adx_hooks.c:
+    complete
     .text       start:0x0203de40 end:0x0203dee8
 
 // MSL C runtime (2.0/sp1p5, C); code only so far.
 libs/msl/src/msl_string.c:
+    complete
     .text       start:0x020122b0 end:0x020125b4
 
 libs/msl/src/msl_printf.c:
@@ -146,6 +157,7 @@ libs/msl/src/msl_printf_fmt.c:
     .text       start:0x0201368c end:0x02014614
 
 libs/msl/src/msl_printf_glue.c:
+    complete
     .text       start:0x02014614 end:0x02014704
 
 libs/msl/src/msl_scan_spec.c:
@@ -158,6 +170,7 @@ libs/msl/src/msl_strtod.c:
     .text       start:0x02015c74 end:0x02016ec0
 
 libs/msl/src/msl_string_tail.c:
+    complete
     .text       start:0x02015950 end:0x02015c74
 
 libs/msl/src/msl_strtoul.c:
@@ -170,9 +183,11 @@ libs/msl/src/e_asin.c:
     .text       start:0x02017fa4 end:0x020186f0
 
 libs/msl/src/e_log.c:
+    complete
     .text       start:0x020186f0 end:0x02018e28
 
 libs/msl/src/e_log10.c:
+    complete
     .text       start:0x02018e28 end:0x02019000
 
 libs/msl/src/e_pow.c:
@@ -182,42 +197,51 @@ libs/msl/src/e_rem_pio2.c:
     .text       start:0x0201a188 end:0x0201a850
 
 libs/msl/src/k_cos.c:
+    complete
     .text       start:0x0201a850 end:0x0201ab70
 
 libs/msl/src/k_rem_pio2.c:
     .text       start:0x0201ab70 end:0x0201b72c
 
 libs/msl/src/k_sin.c:
+    complete
     .text       start:0x0201b72c end:0x0201b9a8
 
 libs/msl/src/s_copysign.c:
+    complete
     .text       start:0x0201b9a8 end:0x0201b9d0
 
 libs/msl/src/s_cos.c:
     .text       start:0x0201b9d0 end:0x0201bb40
 
 libs/msl/src/s_fabs.c:
+    complete
     .text       start:0x0201bb40 end:0x0201bb60
 
 libs/msl/src/s_floor.c:
+    complete
     .text       start:0x0201bb60 end:0x0201bd20
 
 libs/msl/src/s_frexp.c:
+    complete
     .text       start:0x0201bd20 end:0x0201bddc
 
 libs/msl/src/s_scalbn.c:
+    complete
     .text       start:0x0201bddc end:0x0201c028
 
 libs/msl/src/s_sin.c:
     .text       start:0x0201c028 end:0x0201c19c
 
 libs/msl/src/msl_math_wrappers.c:
+    complete
     .text       start:0x0201c19c end:0x0201c1cc
 
 libs/msl/src/msl_dec_a.c:
     .text       start:0x0201c1cc end:0x0201c5b4
 
 libs/msl/src/msl_dec_b.c:
+    complete
     .text       start:0x0201c5b4 end:0x0201ca18
 
 libs/msl/src/msl_dec_c.c:
@@ -227,12 +251,15 @@ libs/msl/src/msl_dec_e.c:
     .text       start:0x0201caf8 end:0x0201cd9c
 
 libs/msl/src/msl_dec_d.c:
+    complete
     .text       start:0x0201cd9c end:0x0201cfc4
 
 libs/msl/src/msl_popcount64.c:
+    complete
     .text       start:0x0201d5e8 end:0x0201d67c
 
 libs/msl/src/msl_fpclassify.c:
+    complete
     .text       start:0x0201d67c end:0x0201d72c
 
 // NitroSystem (2.0, C); code only so far.
@@ -270,21 +297,25 @@ libs/nns/src/snd/nns_snd_player.c:
     .text       start:0x02036918 end:0x02037090
 
 libs/nns/src/snd/nns_snd_arc_cache.c:
+    complete
     .text       start:0x020381b0 end:0x0203824c
 
 libs/nns/src/snd/nns_snd_heap.c:
     .text       start:0x0203824c end:0x020385b8
 
 libs/nns/src/snd/nns_snd_group.c:
+    complete
     .text       start:0x020385b8 end:0x02038984
 
 libs/nns/src/snd/nns_snd_load.c:
     .text       start:0x02038984 end:0x02038fac
 
 libs/nns/src/snd/nns_snd_player_init.c:
+    complete
     .text       start:0x02038fac end:0x0203913c
 
 libs/nns/src/snd/nns_snd_slot.c:
+    complete
     .text       start:0x02037090 end:0x02037264
 
 libs/nns/src/snd/nns_snd_strm.c:
@@ -307,15 +338,19 @@ libs/nds/src/fx/fx_mtx44_persp.c:
     .text       start:0x02001688 end:0x020017d4
 
 libs/nds/src/mi/mi_wram.c:
+    complete
     .text       start:0x0200753c end:0x0200754c
 
 libs/nds/src/mi/mi_gx_cd8.c:
+    complete
     .text       start:0x02007cd8 end:0x02007d4c
 
 libs/nds/src/mi/mi_uncompress.c:
+    complete
     .text       start:0x02007d4c end:0x02007d94
 
 libs/nds/src/mi/mi_init.c:
+    complete
     .text       start:0x02007f18 end:0x02007f30
 
 libs/nds/src/fx/fx_mtx22.c:
@@ -328,6 +363,7 @@ libs/nds/src/fx/fx_atan.c:
     .text       start:0x020017d4 end:0x02001b34
 
 libs/nds/src/fx/fx_misc.c:
+    complete
     .text       start:0x02001b34 end:0x02001c6c
 
 libs/nds/src/gx/gx.c:
@@ -337,15 +373,19 @@ libs/nds/src/gx/gx_bank.c:
     .text       start:0x02002070 end:0x02002e64
 
 libs/nds/src/gx/gx_g2ptr.c:
+    complete
     .text       start:0x02002e64 end:0x020030fc
 
 libs/nds/src/gx/gx_g2chr.c:
+    complete
     .text       start:0x020030fc end:0x020032d4
 
 libs/nds/src/gx/gx_g2.c:
+    complete
     .text       start:0x020032d4 end:0x020033c8
 
 libs/nds/src/gx/g3c.c:
+    complete
     .text       start:0x020033c8 end:0x02003438
 
 libs/nds/src/gx/g3x.c:
@@ -382,7 +422,9 @@ libs/nds/src/os/os_exception.c:
     .text       start:0x02006884 end:0x020068f4
 
 libs/nds/src/os/os_timer.c:
+    complete
     .text       start:0x02006a98 end:0x02006ab4
+    .bss        start:0x020be018 end:0x020be01c
 
 libs/nds/src/os/os_tick.c:
     .text       start:0x02006ab4 end:0x02006c44
@@ -391,9 +433,12 @@ libs/nds/src/os/os_alarm.c:
     .text       start:0x02006c44 end:0x020070b0
 
 libs/nds/src/os/os_valarm.c:
+    complete
     .text       start:0x020070b0 end:0x020070f8
+    .bss        start:0x020be038 end:0x020be04c
 
 libs/nds/src/os/os_irqwait.c:
+    complete
     .text       start:0x02007188 end:0x02007230
 
 libs/nds/src/os/os_reset.c:
@@ -403,28 +448,39 @@ libs/nds/src/os/os_owner.c:
     .text       start:0x020073bc end:0x0200745c
 
 libs/nds/src/os/os_irqowner.c:
+    complete
     .text       start:0x02007464 end:0x02007520
+    .bss        start:0x020be050 end:0x020be068
 
 libs/nds/src/os/os_terminate.c:
+    complete
     .text       start:0x02007520 end:0x02007530
 
 libs/nds/src/mi/mi_dma.c:
+    complete
     .text       start:0x0200754c end:0x020079e8
 
 libs/nds/src/mi/mi_gx.c:
+    complete
     .text       start:0x020079e8 end:0x02007cd0
+    .bss        start:0x020be068 end:0x020be088
 
 libs/nds/src/snd/snd_cmdwrap.c:
+    complete
     .text       start:0x02007f30 end:0x020082e8
 
 libs/nds/src/snd/snd_main.c:
+    complete
     .text       start:0x020082e8 end:0x02008348
+    .bss        start:0x020be088 end:0x020be0a4
 
 libs/nds/src/snd/snd_command.c:
     .text       start:0x02008348 end:0x02008a58
 
 libs/nds/src/snd/snd_alarm.c:
+    complete
     .text       start:0x02008a58 end:0x02008b1c
+    .bss        start:0x020bfba0 end:0x020bfc00
 
 libs/nds/src/snd/snd_work.c:
     .text       start:0x02008b1c end:0x02008bec

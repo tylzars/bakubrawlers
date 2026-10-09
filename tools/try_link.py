@@ -4,7 +4,8 @@
 For each unit: data_ranges.py --write, mark complete, `ninja` (ROM SHA-1), then sync_linked_symbols.py --write and
 `ninja check`. On any failure the config files are restored to their state before that unit.
 
-  try_link.py [units...]      (default: every fully matching unit that isn't complete yet)
+  try_link.py [units...]      (default: every fully matching game unit that isn't complete yet)
+  try_link.py --libs          (every fully matching library unit)
 """
 import json
 import shutil
@@ -23,13 +24,13 @@ def run(*cmd):
     return subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
 
 
-def candidates():
+def candidates(prefixes=("src/",)):
     done = {u["file"] for _, p in delinks_files() for u in parse_units(p) if u["complete"]}
     report = json.loads((BUILD / "report.json").read_text())
     out = []
     for unit in report["units"]:
         m = unit.get("measures", {})
-        if not unit["name"].startswith("src/") or not m.get("total_functions"):
+        if not unit["name"].startswith(prefixes) or not m.get("total_functions"):
             continue
         if m["total_functions"] != m.get("matched_functions"):
             continue
@@ -41,7 +42,8 @@ def candidates():
 
 
 def main():
-    units = sys.argv[1:] or candidates()
+    args = [a for a in sys.argv[1:] if a != "--libs"]
+    units = args or candidates(("libs/",) if "--libs" in sys.argv else ("src/",))
     files = [p for p in CFG.rglob("*.txt")]
     ok, bad = [], []
     for unit in units:

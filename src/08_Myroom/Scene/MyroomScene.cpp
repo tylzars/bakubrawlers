@@ -923,7 +923,6 @@ void MyroomScene::func_ov008_0221d450() {
     }
 }
 
-// non-matching: mUnk_5b store vs guard-flag load scheduling, as in MyroomStatusScene::RenderLine (10 words, +0x94)
 void MyroomScene::PrintStatus() {
     u8 index = 0;
     SceneInfo *info = &mContext->mInfo;

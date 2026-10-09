@@ -456,7 +456,6 @@ void func_ov007_02273e3c(BattleCardModel *model) {
     SpriteManager::sFade.mMain = 3;
 }
 
-// non-matching: 5 words, the guard load before a preceding store (TextManager::mUnk_5b, see docs/decompiling.md).
 void BattleCardModel::func_ov007_02273ec0() {
     if (mType != 0) {
         return;

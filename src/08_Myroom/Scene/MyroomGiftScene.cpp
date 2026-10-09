@@ -313,7 +313,6 @@ void MyroomGiftScene::ClearTextBuffers(u8 index) {
     MI_CpuClear16(mTextBuffers[index], mTextBufferSize[index]);
 }
 
-// non-matching: mUnk_5b store vs guard-flag load scheduling, as in MyroomStatusScene::RenderLine (10 words, +0x198)
 void MyroomGiftScene::func_ov008_0221e9a0() {
     ClearTextBuffers(0);
     TextManager &text = TextManager::Get();

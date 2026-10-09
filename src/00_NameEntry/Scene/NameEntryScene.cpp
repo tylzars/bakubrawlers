@@ -658,8 +658,6 @@ void NameEntryScene::Load() {
     }
 }
 
-// non-matching: 5 words at the end. The original loads the SpriteManager guard before the TextManager::mUnk_5b = 0 store;
-// ours stores first (same scheduling problem as StoreScene::PrintStatus).
 void NameEntryScene::RenderName() {
     ClearTextBuffer();
     TextManager::Get().mUnk_5b = 1;

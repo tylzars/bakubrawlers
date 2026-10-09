@@ -414,7 +414,6 @@ void BattleStatusPanels::func_ov007_0223619c(u32 index) {
     }
 }
 
-// non-matching: 5 words, the guard load before a preceding store (see docs/decompiling.md).
 void BattleStatusPanels::func_ov007_022361c4(u32 index) {
     s16 height;
     s16 width;

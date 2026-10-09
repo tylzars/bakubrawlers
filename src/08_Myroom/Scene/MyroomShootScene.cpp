@@ -401,7 +401,6 @@ void MyroomShootScene::ClearTextBuffers(u8 index) {
     MI_CpuClear16(mTextBuffers[index], mTextBufferSize[index]);
 }
 
-// non-matching: TextManager::mUnk_5b store vs singleton guard-flag load scheduling (known open problem, 10 words at +0x194)
 void MyroomShootScene::func_ov008_02222a78() {
     ClearTextBuffers(0);
     TextManager &text = TextManager::Get();

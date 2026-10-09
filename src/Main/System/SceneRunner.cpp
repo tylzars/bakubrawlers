@@ -129,7 +129,6 @@ SceneRunner::SceneRunner() : SceneBase(0, 3) {
     mOverlayState = 0;
 }
 
-// non-matching: 5 words, the guard load before a preceding store (see docs/decompiling.md).
 void SceneRunner::func_02024968(s32 scene) {
     FrameTask::Get().func_0203dd90();
     if ((scene < 1) | (scene >= 14)) {

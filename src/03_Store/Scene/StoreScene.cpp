@@ -651,11 +651,10 @@ void StoreScene::DrawText() {
     }
 }
 
-// non-matching: the guard loads around the TextManager::mUnk_5b stores are scheduled differently and one stm
-// differs
 void StoreScene::PrintStatus() {
+    u8 index;
     SceneInfo *info = &mContext->mInfo;
-    u8 index        = sMessageIndices[info->mSelection];
+    index           = sMessageIndices[info->mSelection];
     ClearTextBuffer();
     TextManager::Get().mUnk_5b = 1;
     TextManager &text          = TextManager::Get();

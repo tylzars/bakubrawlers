@@ -267,7 +267,6 @@ void AttrSelScene::LoadGraphics() {
     LoadSubBg();
 }
 
-// non-matching: 10 words, the guard load before a preceding store (see docs/decompiling.md).
 void AttrSelScene::PrintName(void *buffer, u32 size, u32 vram, u16 width, u16 height, u32 unk) {
     s16 outWidth = 0;
     s16 outHeight = 0;

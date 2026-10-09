@@ -2830,8 +2830,6 @@ void CharacterEditScene::func_02064f80() {
     MI_CpuClear16(mUnk_1d4, mUnk_1dc);
 }
 
-// non-matching: 10 words. The guard load of the second TextManager::Get() comes after the store to mUnk_5b in the
-// build and before it in the original (the open "guard load before a preceding store" problem of docs/decompiling.md).
 void CharacterEditScene::func_02064f98() {
     s16 a = 0;
     s16 b = 0;

@@ -210,7 +210,6 @@ void MyroomStatusScene::ClearTextBuffers() {
     }
 }
 
-// non-matching: scheduling of the `TextManager::Get().mUnk_5b = 1` store against the singleton guard-flag load (5 words, +0x70)
 void MyroomStatusScene::RenderLine(u8 line) {
     UnkStruct_020758f4 *info = mUnk_50;
     s16 x;

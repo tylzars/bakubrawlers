@@ -63,21 +63,11 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
     of GameOverScene's five copies, and so does moving a table without strings. Literals used inside functions are
     not in that list (they come out in creation order). No combination of table order and the first two singleton
     includes reproduces the original yet; `build/lit2/gos.py` measures the order for a source variant.
-- **Guard load before a preceding store.** Cause found: mwcc moves the guard load above the store only when the
-  store's base pointer is defined in an earlier basic block (a store through a `TextManager &` bound earlier
-  reorders; `TextManager::Get().mUnk_5b = 0` with its own guard check does not). Holding the reference from the
-  top of the function reproduces the order but costs a callee-saved register the original doesn't use; the
-  original rematerializes the address. The source form is still open. Previously: Before a singleton `Get()`, the original loads the guard word ahead of
-  a store from the previous statement: the `TextManager::mUnk_5b` store (`StoreScene::PrintStatus`,
-  `MapScene::LoadPanelText2`, ov000 `RenderName`, ov002 `0221dbd4`/`0221df48`, ov001 `0221c1d8`) or an unrelated
-  global (`MapScene::func_ov005_0221bde8`, a `u16` copy inside `data_020d48f0`). No 2.0 or DSi compiler build
-  moves a load above a store on its own, for compiler guards or plain globals; the only case found that does is a
-  load of a `const`-qualified global. Changing the field type (`bool`, `s8`, bitfields), writing through a
-  reference, comma expressions, inline setters and `const` singletons all leave the store first. The pragmas
-  `opt_pointer_analysis` (on crashes the compiler on a full file), `opt_pointer_analysis_mode` and
-  `thread_safe_init` don't change it either. The guards are separate objects in the original (all of them sit
-  together at 0x020c17ac-0x020c17e0), so offset-based disambiguation within one object is not the reason.
-
+- **Guard load before a preceding store (solved).** mwcc lets a following load (e.g. the next singleton's guard)
+  move above a store only when the store's offset is below half of the declared size of the object stored into.
+  `TextManager` was declared 0x5c bytes, so the `mUnk_5b` store (offset 0x5b) blocked it; with its real size,
+  0xe8 (an unused trailing member, so `Widths()` keeps its code), 22 functions match. So when a store seems to
+  pin a later load, check the declared size of the stored-to object.
 ## Data layout within a section
 
 mwcc does not lay out a file's objects in declaration order. Found by experiment (and checked against 14 random

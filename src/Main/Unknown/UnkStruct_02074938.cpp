@@ -327,7 +327,6 @@ void UnkStruct_02074938::func_0207520c() {
     }
 }
 
-// non-matching: 5 words at the end: the original loads the SpriteManager guard before the `mUnk_5b = 0` store (see docs/decompiling.md, guard load before a preceding store).
 void UnkStruct_02074938::func_020754b8() {
     MI_CpuClear16(mUnk_68, mUnk_70);
     TextManager::Get().mUnk_5b = 1;

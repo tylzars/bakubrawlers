@@ -463,7 +463,6 @@ void ArenaScene::func_ov001_0221c1a0() {
     }
 }
 
-// non-matching: 6 words, the original loads the TextManager guard before the mUnk_5b store (see docs/decompiling.md)
 void ArenaScene::func_ov001_0221c1d8() {
     func_ov001_0221c1a0();
     for (u8 i = 0; i < 4; i++) {

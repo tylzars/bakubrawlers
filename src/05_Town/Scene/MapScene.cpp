@@ -836,7 +836,6 @@ void MapScene::func_ov005_0221bd48() {
     }
 }
 
-// non-matching: in case 0 the guard load and the strh are in a different order (2 words)
 void MapScene::func_ov005_0221bde8(u32 index) {
     mUnk_7e = 0;
     switch (index) {
@@ -1013,7 +1012,6 @@ void MapScene::DrawPanelText() {
                                                  0);
 }
 
-// non-matching: guard load vs mUnk_5b store order (see docs/decompiling.md).
 void MapScene::LoadPanelText2(int index) {
     int id;
     switch (index) {

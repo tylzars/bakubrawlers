@@ -92,6 +92,8 @@ public:
     /* 5c */ // the instance really extends to 0xe8: u8 widths of the bitmap font glyphs from +0x5c (see Widths());
     //        declaring them as a member changes the code of the users, so they are reached by offset
 
+    /* 5c */ u8 mTail[0x8c]; // glyph widths of the bitmap font, reached through Widths(); declared so sizeof is the real 0xe8
+
     u8 *Widths() {
         return (u8 *) this + 0x5c;
     }

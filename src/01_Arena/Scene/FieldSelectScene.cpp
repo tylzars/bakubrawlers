@@ -2696,7 +2696,6 @@ void FieldSelectScene::func_ov001_0222659c() {
     TextManager::Get().SetColor(0, 0, 0xf);
 }
 
-// non-matching: guard load vs mUnk_5b store order (see docs/decompiling.md).
 void FieldSelectScene::func_ov001_022267d0(u32 slot) {
     func_ov001_02226bf8(slot);
     u32 useName = 0;

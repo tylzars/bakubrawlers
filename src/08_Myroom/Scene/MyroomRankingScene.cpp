@@ -482,7 +482,6 @@ void MyroomRankingScene::func_ov008_02220b88() {
     func_ov008_02220d14();
 }
 
-// non-matching: 5 words differ at +0x224
 void MyroomRankingScene::func_ov008_02220d14() {
     u8 i = 0;
     if (mUnk_1bc == mUnk_1b9) {

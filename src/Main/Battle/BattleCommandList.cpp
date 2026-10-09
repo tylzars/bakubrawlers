@@ -687,7 +687,6 @@ void BattleCommandList::func_020597d0() {
     func_0205a774();
 }
 
-// non-matching: 10 words, the guard load before a preceding store (see docs/decompiling.md), twice.
 void BattleCommandList::func_02059c50(u8 index) {
     mUnk_156 = index;
     func_0205a774();

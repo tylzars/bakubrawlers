@@ -464,8 +464,6 @@ void BattleUnk022767c8::func_ov007_02277c44() {
     }
 }
 
-// non-matching: the stores to TextManager::mUnk_5b come after the guard load of the following TextManager::Get() in the original
-// (known open problem, 8 words)
 void BattleUnk022767c8::func_ov007_02277f3c() {
     func_ov007_02278250();
     s16 y;

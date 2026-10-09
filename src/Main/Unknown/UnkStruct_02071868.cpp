@@ -648,8 +648,6 @@ static inline void PrintResultText(TextManager &text, MessageFile *file, u32 ind
                1);
 }
 
-// non-matching: 6 words. In the original the guard word of the second TextManager::Get() is loaded before the preceding
-// `mUnk_5b = 1` store (the guard-load-before-store problem of docs/decompiling.md); everything else is identical.
 void UnkStruct_02071d24::func_020739e4() {
     s16 curW;
     s16 curH;

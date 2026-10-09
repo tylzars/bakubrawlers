@@ -26,6 +26,7 @@ libs/cri/src/cri_ring.c:
     .text       start:0x02044a20 end:0x020450a4
 
 libs/cri/src/cri_stm_ctl.c:
+    complete
     .text       start:0x02041f50 end:0x02042760
 
 libs/cri/src/cri_adx_obj.c:

@@ -1,0 +1,213 @@
+// NitroSystem sound library: PCM stream (NNSSndStrm). 0x02037264-0x02037884
+#include <nnsys/private/nns_snd_types.h>
+
+extern u32 data_022142e4;             // list initialised flag
+extern NNSFndList data_022142e8;      // active streams
+extern SndStrmChan data_02214334[16]; // per hardware channel buffer address
+extern void *data_022142f4[16];       // callback buffer pointers
+
+extern void NNS_FndInitList(void *list, u16 offset);
+extern void NNS_FndAppendListObject(void *list, void *obj);
+extern void NNS_FndRemoveListObject(void *list, void *obj);
+#define func_02030880 NNS_FndInitList
+#define func_020308c4 NNS_FndAppendListObject
+#define func_020309cc NNS_FndRemoveListObject
+extern int func_02036800(u32 mask);
+extern void func_02036848(u32 mask);
+extern int func_02036894(void);
+extern void func_020368dc(int slot);
+extern u32 func_0201fb7c(u32 a, u32 b);
+extern void func_02008160(u32 ch, u32 fmt, void *addr, u32 loop, u32 loopStart, u32 loopEnd, u32 vol, u32 shift, u32 timer, u32 pan);
+extern void func_02008098(int slot, u32 start, u32 period, void (*cb)(void *), void *arg);
+extern u32 func_0200710c(void);
+extern void func_02007120(u32 irq);
+extern void func_0200800c(u32 chMask, u32 capMask, u32 alarmMask, u32 flags);
+extern void func_02008034(u32 chMask, u32 capMask, u32 alarmMask, u32 flags);
+extern void func_0200da20(void *);
+extern void func_0200da38(void *);
+extern void func_0200da50(void *);
+extern void func_0200da68(void *);
+extern u32 func_02008814(void);
+extern void func_020085ec(int);
+extern void func_020087a8(u32);
+extern s32 func_02008bec(u32);
+extern void func_02008118(u32 mask, u32 a, u32 b);
+extern void func_02008140(u32 mask, u32 a, u32 b, u32 c);
+void func_02037558(SndStrm *s);
+void func_02037664(SndStrm *s);
+void func_020376d8(SndStrm *s);
+void func_02037708(SndStrm *s);
+void func_02037718(SndStrm *s, int phase);
+void func_020377c8(SndStrm *s);
+void func_02037814(SndStrm *s);
+
+void func_02037264(SndStrm *s) {   // stream init
+    if (data_022142e4 == 0) {
+        func_02030880(&data_022142e8, 0);
+        data_022142e4 = 1;
+    }
+    s->cbA.fn = (void (*)(void *))func_020377c8;
+    s->cbA.arg = s;
+    s->cbB.fn = (void (*)(void *))func_02037814;
+    s->cbB.arg = s;
+    s->chMask = 0;
+    s->chCount = 0;
+    s->active = 0;
+    s->registered = 0;
+}
+
+int func_020372dc(SndStrm *s, int count, u8 *chans) {   // reserve channels
+    u32 mask = 0;
+    int i;
+    for (i = 0; i < count; i++) {
+        s->chan[i] = chans[i];
+        mask |= 1 << chans[i];
+    }
+    if (func_02036800(mask) == 0) return 0;
+    s->chCount = count;
+    s->chMask = mask;
+    return 1;
+}
+
+void func_0203733c(SndStrm *s) {   // release channels
+    if (s->chMask == 0) return;
+    func_02036848(s->chMask);
+    s->chMask = 0;
+    s->chCount = 0;
+}
+
+int func_02037364(SndStrm *s, int fmt, void *buf, u32 size, u32 timer, s32 frames, SndStrmCallback cb, void *cbArg) {   // setup
+    int i;
+    u32 alarmPeriod;
+    u32 q;
+    u32 n;
+    if (s->active) func_02037558(s);
+    q = func_0201fb7c(size, s->chCount * (frames << 5));
+    n = q * frames;
+    s->bufSize = n << 5;
+    {
+        u32 half = s->bufSize;
+        if (fmt == 1) half >>= 1;
+        alarmPeriod = func_0201fb7c(timer * half, frames);
+    }
+    s->slot = func_02036894();
+    if (s->slot < 0) return 0;
+    for (i = 0; i < s->chCount; i++) {
+        u32 ch = s->chan[i];
+        data_02214334[ch].addr = (u8 *)buf + s->bufSize * i;
+        data_02214334[ch].off = 0;
+        func_02008160(ch, fmt, data_02214334[ch].addr, 1, 0, s->bufSize >> 2, 127, 0, timer << 5, 64);
+    }
+    func_02008098(s->slot, alarmPeriod, alarmPeriod, (void (*)(void *))func_02037708, s);
+    func_020308c4(&data_022142e8, s);
+    s->fmt = fmt;
+    s->frames = frames;
+    s->cb = cb;
+    s->cbArg = cbArg;
+    s->pos = 0;
+    s->offset = 0;
+    s->active = 1;
+    {
+        u32 irq = func_0200710c();
+        s->frames = 1;
+        func_02037718(s, 0);
+        s->frames = frames;
+        func_02007120(irq);
+    }
+    return 1;
+}
+
+void func_02037504(SndStrm *s) {   // start
+    func_0200800c(s->chMask, 0, 1 << s->slot, 0);
+    if (s->registered) return;
+    func_0200da20(&s->cbA);
+    func_0200da38(&s->cbB);
+    s->registered = 1;
+}
+
+void func_02037558(SndStrm *s) {   // stop if running
+    if (!s->active) return;
+    func_02037664(s);
+}
+
+void func_02037574(SndStrm *s, int pos) {   // seek all channels
+    u32 ch;
+    int i;
+    s->offset = pos;
+    for (i = 0; i < s->chCount; i++) {
+        s32 v;
+        ch = s->chan[i];
+        v = func_02008bec(s->offset + data_02214334[ch].off);
+        func_02008118(1 << ch, v & 0xff, v >> 8);
+    }
+}
+
+void func_020375e0(SndStrm *s, int idx, u32 off) {   // seek one channel
+    u32 ch;
+    s32 v;
+    if (idx > s->chCount - 1) return;
+    ch = s->chan[idx];
+    data_02214334[ch].off = off;
+    v = func_02008bec(s->offset + off);
+    func_02008118(1 << ch, v & 0xff, v >> 8);
+}
+
+void func_02037634(SndStrm *s, int idx, u32 v) {
+    if (idx > s->chCount - 1) return;
+    func_02008140(1 << s->chan[idx], v, v, 1);
+}
+
+void func_02037664(SndStrm *s) {   // stop
+    if (s->registered) {
+        u32 irq;
+        func_02008034(s->chMask, 0, 1 << s->slot, 0);
+        func_0200da50(&s->cbA);
+        func_0200da68(&s->cbB);
+        s->registered = 0;
+        irq = func_02008814();
+        func_020085ec(1);
+        func_020087a8(irq);
+    }
+    func_020376d8(s);
+}
+
+void func_020376d8(SndStrm *s) {   // release slot and unlink
+    func_020368dc(s->slot);
+    func_020309cc(&data_022142e8, s);
+    s->active = 0;
+}
+
+void func_02037708(SndStrm *s) {
+    func_02037718(s, 1);
+}
+
+void func_02037718(SndStrm *s, int phase) {   // fill callback
+    u32 size = func_0201fb7c(s->bufSize, s->frames);
+    int i;
+    u32 off = size * s->pos;
+    for (i = 0; i < s->chCount; i++) {
+        data_022142f4[i] = (u8 *)data_02214334[s->chan[i]].addr + off;
+    }
+    s->cb(phase, s->chCount, data_022142f4, size, s->fmt, s->cbArg);
+    s->pos++;
+    if (s->pos >= s->frames) s->pos = 0;
+}
+
+void func_020377c8(SndStrm *s) {
+    u32 irq;
+    if (!s->registered) return;
+    func_02008034(s->chMask, 0, 1 << s->slot, 0);
+    irq = func_02008814();
+    func_020085ec(1);
+    func_020087a8(irq);
+}
+
+void func_02037814(SndStrm *s) {
+    if (!s->registered) return;
+    while (s->pos != 0) {
+        u32 irq = func_0200710c();
+        func_02037718(s, 1);
+        func_02007120(irq);
+    }
+    func_0200800c(s->chMask, 0, 1 << s->slot, 0);
+}

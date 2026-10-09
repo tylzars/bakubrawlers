@@ -53,6 +53,18 @@ libs/nns/src/snd/nns_snd_load.c:
 libs/nns/src/snd/nns_snd_player_init.c:
     .text       start:0x02038fac end:0x0203913c
 
+libs/nns/src/snd/nns_snd_slot.c:
+    .text       start:0x02037090 end:0x02037264
+
+libs/nns/src/snd/nns_snd_strm.c:
+    .text       start:0x02037264 end:0x02037884
+
+libs/nns/src/snd/nns_snd_capture.c:
+    .text       start:0x02037884 end:0x02037af8
+
+libs/nns/src/snd/nns_snd_arc.c:
+    .text       start:0x02037af8 end:0x020381b0
+
 // NitroSDK (2.0/sp1p5, C); code only so far.
 libs/nds/src/fx/fx_mtx22.c:
     .text       start:0x02000cd8 end:0x02000d88

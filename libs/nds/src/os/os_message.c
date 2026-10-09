@@ -12,7 +12,7 @@ u32 func_02005a60(void) {
     return 0;
 }
 
-static u32 consoleTypeCache;   // data_020a4f38
+static u32 consoleTypeCache = 0xffffffff;   // data_020a4f38
 
 u32 func_02005a68(void) {
     consoleTypeCache = 0x82000001;

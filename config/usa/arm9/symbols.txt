@@ -3303,7 +3303,7 @@ data_020a4ea0 kind:data(any) addr:0x020a4ea0
 data_020a4f20 kind:data(any) addr:0x020a4f20
 data_020a4f24 kind:data(any) addr:0x020a4f24
 data_020a4f28 kind:data(any) addr:0x020a4f28
-data_020a4f38 kind:data(any) addr:0x020a4f38
+consoleTypeCache kind:data(any) addr:0x020a4f38 local
 data_020a4f3c kind:data(any) addr:0x020a4f3c
 data_020a4f40 kind:data(any) addr:0x020a4f40
 data_020a4f44 kind:data(any) addr:0x020a4f44

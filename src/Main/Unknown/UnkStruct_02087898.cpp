@@ -275,8 +275,11 @@ void func_020882c4(UnkStruct_02087898 *self) {
         self->mUnk_38++;
     }
     if (self->mUnk_39 != 0) {
+        TextManager &first = TextManager::Get();
         TextManager &t1 = TextManager::Get();
-        TextManager &text = TextManager::Get();
+        TextManager &text = first;
+
+
         s16 y;
         s16 x;
         x = -(self->mUnk_37 * 0x30);
@@ -312,9 +315,10 @@ void func_020882c4(UnkStruct_02087898 *self) {
     }
     func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x6000, self->mUnk_20[0], 0x1800, 0);
     if (self->mUnk_37 != 0) {
-        TextManager::Get();
+        TextManager &first = TextManager::Get();
         TextManager &text = TextManager::Get();
-        u16 a2            = text.func_0202c1a8((u8) ((self->mUnk_37 + 1) * 3));
+        u16 a2            = first.func_0202c1a8((u8) ((self->mUnk_37 + 1) * 3));
+
         u16 b2            = text.func_0202c1a8((u8) (self->mUnk_37 * 3));
         self->mUnk_3c     = a2 - b2;
     } else {
@@ -328,13 +332,18 @@ void func_020882c4(UnkStruct_02087898 *self) {
     if (self->mUnk_42 == 0x15) {
         h = 0;
         w = 0;
-        TextManager::Get().Print(data_020d441a, 0x18, self->mUnk_20[1], 0x20, 2, &h, &w, NULL, 0, 0, 2, 0x21, 0, 0, 0, 1, 1);
+        TextManager::Get().Print(data_020d441a, 0x18, self->mUnk_20[1], 0x20, 2, &h, &w, NULL, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
     } else {
-        s16 x = 0;
-        s16 y = 0;
+        TextManager &text = TextManager::Get();
+        s16 y;
+        s16 x;
+        x = 0;
+        y = 0;
+
         MessageFile *file = (MessageFile *) self->mUnk_1c;
         u16 index         = self->mUnk_42;
-        TextManager::Get().Print(file->GetText(index), file->GetLength(index), self->mUnk_20[1], 0x20, 2, &y, &x, NULL, 0, 0, 2, 0x21, 0, 0, 0, 1, 1);
+        text.Print(
+file->GetText(index), file->GetLength(index), self->mUnk_20[1], 0x20, 2, &y, &x, NULL, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
     }
     TextManager::Get().mUnk_5b = 0;
     func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x7800, self->mUnk_20[1], self->mUnk_28[1], 0);

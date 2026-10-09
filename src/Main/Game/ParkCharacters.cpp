@@ -294,9 +294,9 @@ void func_02089278() {
         u8 perm[4] = {0, 0, 1, 2};
         u8 n = 0;
         do {
-            ParkCategory *category = &data_020a4ccc[data_020d43f0[0].mUnk_5c2[n].mCategory];
-            ParkGroup *group       = &category->mGroups[data_020d43f0[0].mUnk_5c2[n].mGroup];
-            ParkEntry *entry       = group->mEntries;
+            u8 cat           = data_020d43f0[0].mUnk_5c2[n].mCategory;
+            u8 grp           = data_020d43f0[0].mUnk_5c2[n].mGroup;
+            ParkEntry *entry = data_020a4ccc[cat].mGroups[grp].mEntries;
             u8 k                   = 0;
             do {
                 u8 r = MATH_Rand32(&data_020d42e8, 4);
@@ -313,8 +313,10 @@ void func_02089278() {
                 }
                 e++;
                 entry++;
-            } while (e < group->mCount);
+            } while (e < data_020a4ccc[cat].mGroups[grp].mCount);
+
             n++;
+
         } while (n < data_020d43f0[0].mUnk_5c1);
     } else {
         s32 index              = func_02088f38();

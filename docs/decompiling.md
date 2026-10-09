@@ -215,6 +215,15 @@ Other findings from linking:
   - A constant stored to memory (a member) and read back is forwarded late: `n = 8; f(n * 12);` keeps
     `mov #8; mov #12; smulbb`.
   - Mixing signed and unsigned stops constants combining: `t + 0x24 + 0x28c0u` keeps two adds.
+- **Globals: declare the size.** A store through any pointer makes mwcc re-read a global declared with a complete
+  type (`extern T g;`, `extern T g[1];`) but not one declared `extern T g[];`, which it keeps in a register or hoists.
+  So save-data style globals need their real size: `data_020d43f0` is `UnkStruct_020d43f0[1]`, padded to 0xff4.
+  The half-size store-scheduling rule (a later load may move above a store only if the store offset is below half
+  the object's size) applies to globals too. Loads through a pointer local die at any global store; loads written
+  as `g[i].f` don't.
+- **Singleton references.** With `T &a = T::Get(); T &b = T::Get();` the address from the second guard block is
+  kept in a callee-saved register and serves `a`; uses of `b` reload from the pool. A single reference reloads at
+  every use. mwcc never forwards a stored value to a later load of the same member.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

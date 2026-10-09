@@ -140,10 +140,10 @@ BattleCommand::BattleCommand(u32 unk)
         mUnk_139 = 4;
     }
     u8 side = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mUnk_f1;
-    if (side > 1) {
-        mUnk_135 = 1;
-    } else {
+    if (side <= 1) {
         mUnk_135 = 0;
+    } else {
+        mUnk_135 = 1;
     }
     u8 i = 0;
     do {
@@ -155,14 +155,13 @@ BattleCommand::BattleCommand(u32 unk)
         data_ov007_02287c74[i + 6].mY = data_ov007_02279ab0[f].mY;
         i++;
     } while (i < data_020d433c.mPlayerCount);
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    if (list->mUnk_28a != list->mUnk_2a9) {
+    if (data_020d433c.mBattlePlayers->mUnk_28a != data_020d433c.mBattlePlayers->mUnk_2a9) {
         data_ov007_02287c74[1].mUnk_04 = 0x8000;
         data_ov007_02287c74[4].mUnk_04 = 0x8000;
         data_ov007_02287c74[2].mUnk_04 = 0x8000;
         data_ov007_02287c74[5].mUnk_04 = 0x8000;
     } else {
-        if (list->mUnk_292 == 1) {
+        if (data_020d433c.mBattlePlayers->mUnk_292 == 1) {
             data_ov007_02287c74[1].mY      = 0xc0;
             data_ov007_02287c74[1].mUnk_04 = 0x8000;
             data_ov007_02287c74[4].mY      = 0x22;
@@ -173,7 +172,7 @@ BattleCommand::BattleCommand(u32 unk)
             data_ov007_02287c74[4].mY      = 0xc0;
             data_ov007_02287c74[4].mUnk_04 = 0x8000;
         }
-        if (list->mUnk_28f != 0) {
+        if (data_020d433c.mBattlePlayers->mUnk_28f != 0) {
             data_ov007_02287c74[2].mUnk_04 = 1;
         } else {
             data_ov007_02287c74[2].mUnk_04 = 0x8000;
@@ -222,8 +221,12 @@ BattleCommand::BattleCommand(u32 unk)
     mUnk_128 = 0;
     mUnk_12c = data_ov007_02279ab8[side].mX;
     mUnk_12d = data_ov007_02279ab8[side].mY;
-    data_020d433c.mBattlePlayers->mUnk_28b = mUnk_12c;
-    data_020d433c.mBattlePlayers->mUnk_28c = mUnk_12d;
+    BattlePlayerList *players = data_020d433c.mBattlePlayers;
+    players->mUnk_28b = mUnk_12c;
+    players->mUnk_28c = data_ov007_02279ab8[side].mY;
+
+
+
     func_ov007_0223ca80();
     if (data_020d433c.mBattlePlayers->mUnk_29c) {
         data_020d433c.mBattlePlayers->mUnk_29c->mUnk_a0 = 0;

@@ -113,10 +113,11 @@ struct UnkStruct_020d43f0 {
     /* 5c1 */ u8 mUnk_5c1;
     /* 5c2 */ ParkSlot mUnk_5c2[8];
     /* 5d2 */ u8 mUnk_5d2;
+    /* 5d3 */ PAD(0x5d3, 0xff4);
 };
 
 // Declared as an array: code that stores through it only matches when indexed (`data_020d43f0[0]`).
-extern UnkStruct_020d43f0 data_020d43f0[];
+extern UnkStruct_020d43f0 data_020d43f0[1];
 
 // Bit-flag arrays inside data_020d43f0 (at +0x578, +0x57d, +0x580) that code addresses directly.
 extern u8 data_020d4968[];

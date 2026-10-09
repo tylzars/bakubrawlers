@@ -98,7 +98,7 @@ void func_0200e45c(void)
     c->lockTarget = 0;
     c->arg = &data_020bfe00;
     MI_CpuClearFast(&data_020bfe00, 0x60);
-    DC_StoreRange(&data_020bfe00, 0x60);
+    DC_FlushRange(&data_020bfe00, 0x60);
     c->f118 = -1;
     c->f11c = -1;
     if (!IsNitro()) {
@@ -592,21 +592,21 @@ int func_0200f060(CardRomReq *r)
         ok = 1;
         e = OS_DisableInterrupts();
         if (len < c->f118) {
-            DC_FlushRange((void *)dst, len);
+            IC_InvalidateRange((void *)dst, len);
         } else {
-            DC_FlushAll();
+            IC_InvalidateAll();
         }
         if (len < c->f11c) {
             if (mis != 0) {
                 dst -= mis;
-                DC_StoreRange2((void *)dst, 0x20);
-                DC_StoreRange2((void *)(dst + len), 0x20);
+                DC_StoreRange((void *)dst, 0x20);
+                DC_StoreRange((void *)(dst + len), 0x20);
                 len += 0x20;
             }
             DC_InvalidateRange((void *)dst, len);
             DC_WaitWriteBufferEmpty();
         } else {
-            DC_InvalidateAll();
+            DC_FlushAll();
         }
         OS_SetIrqFunction(0x80000, func_0200ef90);
         OS_ResetRequestIrqMask(0x80000);

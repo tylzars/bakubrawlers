@@ -64,7 +64,7 @@ int func_0200f914(void *buf, u32 dma, u32 size)
     OS_InitMessageQueue(data_020c06e8, data_020c0708, 10);
     for (i = 0; i < 10; i++) {
         *(u16 *)(data_020c0780 + i * 0x100) = 0x8000;
-        DC_StoreRange2(data_020c0780 + i * 0x100, 2);
+        DC_StoreRange(data_020c0780 + i * 0x100, 2);
         OS_SendMessage(data_020c06e8, data_020c0780 + i * 0x100, 1);
     }
     PXI_SetFifoRecvCallback(0xa, func_0200fdfc);
@@ -128,7 +128,7 @@ int func_0200fbd8(u32 cmd, u16 argc, ...)
     for (i = 0; i < argc; i++) {
         msg[1 + i] = *ap++;
     }
-    DC_StoreRange2(msg, 0x100);
+    DC_StoreRange(msg, 0x100);
     r = PXI_SendWordByFifo(0xa, (u32)msg, 0);
     OS_SendMessage(data_020c06e8, msg, 1);
     return r < 0 ? 8 : 2;
@@ -142,7 +142,7 @@ int func_0200fc84(void *src, u32 len)
         return 8;
     }
     MI_CpuCopy8(src, msg, len);
-    DC_StoreRange2(msg, len);
+    DC_StoreRange(msg, len);
     r = PXI_SendWordByFifo(0xa, (u32)msg, 0);
     OS_SendMessage(data_020c06e8, msg, 1);
     return r < 0 ? 8 : 2;

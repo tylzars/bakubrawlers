@@ -111,12 +111,12 @@ void MI_CpuFill8(void *dst, u8 v, u32 n);
 void MIi_CpuClearFast(u32 v, void *dst, u32 n);
 static inline void MI_CpuClearFast(void *d, u32 n) { MIi_CpuClearFast(0, d, n); }
 void DC_InvalidateRange(void *p, u32 n);        // 0x02005e64
-void DC_StoreRange2(void *p, u32 n);            // 0x02005e80
-void DC_StoreRange(void *p, u32 n);             // 0x02005e9c
+void DC_StoreRange(void *p, u32 n);             // 0x02005e80
+void DC_FlushRange(void *p, u32 n);             // 0x02005e9c
 void DC_WaitWriteBufferEmpty(void);             // 0x02005ec0
-void DC_FlushAll(void);                         // 0x02005ecc
-void DC_FlushRange(void *p, u32 n);             // 0x02005ed8
-void DC_InvalidateAll(void);                    // 0x02005e30
+void IC_InvalidateAll(void);                    // 0x02005ecc
+void IC_InvalidateRange(void *p, u32 n);        // 0x02005ed8
+void DC_FlushAll(void);                         // 0x02005e30
 void PXI_Init(void);                            // 0x02009050
 void PXI_SetFifoRecvCallback(u32 tag, void *cb);        // 0x0200915c
 int PXI_IsCallbackReady(u32 tag, int);          // 0x020091a8

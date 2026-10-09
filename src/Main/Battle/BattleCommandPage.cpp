@@ -621,43 +621,47 @@ void BattleCommandPage::func_02056814(u32 index) {
         total    = 0x80;
         height   = 0x10;
     }
-    u8 base = (total / 14) * 14;
     u8 rem  = total % 14;
+    u8 base = (total / 14) * 14;
     if (mUnk_fb == 0) {
         u16 w1;
         u16 h1;
-        void *buffer = mUnk_60[1];
         TextManager &text = TextManager::Get();
-        MessageFile *file = *textFile;
         h1 = rem - base * mUnk_fb;
         w1 = 0x10;
+        void *buffer = mUnk_60[1];
+        MessageFile *file = *textFile;
         MI_CpuClear16(data_020c1a4c, 0x20);
         text.mUnk_58 = 1;
         text.Print(file->GetText(id), file->GetLength(id), buffer, 0x10, height, (s16 *) &w1, (s16 *) &h1, NULL, 0, 2, 0x21, 0xe, 0, 1, 0,
                    1, 1);
+        u16 hh = h1;
         for (u8 i = 1; i < 0x10; i++) {
             if (text.mUnk_36[i + 1] == 0) {
                 text.mUnk_36[i + 1] = text.mUnk_36[i];
             }
         }
-        mUnk_fc = (h1 - 0xe) / base;
+        mUnk_fc = (hh - 0xe) / base;
     }
     {
         u16 w2;
         u16 h2;
         TextManager &text = TextManager::Get();
-        MessageFile *file = *textFile;
         h2 = rem - base * mUnk_fb;
         w2 = 0x10;
+        MessageFile *file = *textFile;
         text.Print(file->GetText(id), file->GetLength(id), mUnk_60[1], 0x10, height, (s16 *) &w2, (s16 *) &h2, NULL, 0, 2, 0x21, 0xe, 0, 0,
                    0, 1, 1);
     }
     TextManager::Get().mUnk_5b = 1;
     {
-        u16 w3 = 0;
-        u16 h3 = 0;
+        u16 w3;
+        u16 h3;
+        TextManager &text = TextManager::Get();
+        h3 = 0;
+        w3 = 0;
         MessageFile *file = *nameFile;
-        TextManager::Get().Print(file->GetText(id2), file->GetLength(id2), mUnk_60[2], 0x40, 2, (s16 *) &w3, (s16 *) &h3, &mUnk_100, 0, 2,
+        text.Print(file->GetText(id2), file->GetLength(id2), mUnk_60[2], 0x40, 2, (s16 *) &w3, (s16 *) &h3, &mUnk_100, 0, 2,
                                  0x21, 0xe, 0, 0, 0, 1, 1);
     }
     TextManager::Get().mUnk_5b = 0;

@@ -353,9 +353,8 @@ void BattleShoot::Update() {
                 SpriteManager::Get().StartFade(2);
                 u8 mode = data_020d433c.mUnk_85;
                 if (mode >= 3 && mode <= 12) {
-                    BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                    list->mUnk_2a4->func_02087eec();
-                    list->mUnk_2a4->func_02088e64(list->mUnk_2af, 0x64, 0, 0);
+                    data_020d433c.mBattlePlayers->mUnk_2a4->func_02087eec();
+                    data_020d433c.mBattlePlayers->mUnk_2a4->func_02088e64(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
                     G2S_SetBlendBrightness(0x1f, -10);
                     mUnk_6186 = 2;
                 } else {

@@ -126,16 +126,16 @@ void SpriteScreen::func_02027778(void *buffer, u8 count, u32 unk3, u32 unk4, u32
         }
         s32 attr2 = source->mAttr2;
         s32 palette = paletteBase + ((attr2 & 0xf000) >> 12);
-        s32 x = source->mX;
         s32 tile = (attr2 & 0x3ff) + tileBase;
         u32 attr = source->mAttr01;
+        s32 x = source->mX;
         u32 mode = (attr & 0xc00) >> 10;
         u32 flip = attr & 0x30000300;
-        s32 shape = attr & 0xc000c000;
         s32 y = source->mY;
+        s32 shape = attr & 0xc000c000;
         if (transform != NULL) {
-            func_02027cf4(&x, &y, shape, transform);
             flip = 0x300;
+            func_02027cf4(&x, &y, shape, transform);
         } else if ((flip == 0x300) | (flip == 0x100)) {
             SpriteTransform identity(0x1000, 0x1000, 0);
             func_02027c18((u8 *) this + mUnk_405 * 0x20, &identity);
@@ -194,9 +194,9 @@ void SpriteScreen::func_02027778(void *buffer, u8 count, u32 unk3, u32 unk4, u32
             cull = y + offsetY;
         }
         if ((cull > -0x40) & (cull < 0xc0)) {
-            u32 colorBit = (source->mAttr01 & 0x2000) >> 13;
-            u32 mosaic = (source->mAttr01 & 0x1000) >> 12;
             s32 px = (y + offsetY);
+            u32 mosaic = (source->mAttr01 & 0x1000) >> 12;
+            u32 colorBit = (source->mAttr01 & 0x2000) >> 13;
             s32 py = x + unk3;
             u32 value;
             if (flip == 0x100 || flip == 0x300) {
@@ -204,7 +204,7 @@ void SpriteScreen::func_02027778(void *buffer, u8 count, u32 unk3, u32 unk4, u32
                     value = (px & 0xff) | (matrix << 25) | (mode << 10) | (mosaic << 12) | shape | ((py & 0x1ff) << 16) | flip;
                     entry->mAttr01 = value;
                 } else {
-                    value = (colorBit << 13) | (matrix << 25) | (px & 0xff) | (mode << 10) | (mosaic << 12) | shape | ((py & 0x1ff) << 16) | flip;
+                    value = (matrix << 25) | (colorBit << 13) | (px & 0xff) | (mode << 10) | (mosaic << 12) | shape | ((py & 0x1ff) << 16) | flip;
                     entry->mAttr01 = value;
                 }
             } else {

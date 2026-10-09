@@ -219,12 +219,12 @@ void BattleData::func_ov007_0223db20(u8 side, s16 x, s16 y) {
         int shift = side == 0 ? 0x20 : 0;
         mUnk_34[13]->func_0202a3ec(1, owner, x + shift, y, 3);
     }
-    int ix = (s16) (x + (side == 0 ? 0x22 : 0x18));
-    int iy = (s16) (y + 0x10);
+    s16 iy = y + 0x10;
     u8 k = 0;
+    s16 ix = x + (side == 0 ? 0x22 : 0x18);
     do {
         mUnk_34[10]->func_0202a3ec(1, k >= mUnk_08[side], ix, iy, 3);
-        ix = (s16) (ix + (side == 0 ? 6 : -6));
+        ix = ix + (side == 0 ? 6 : -6);
         k++;
     } while (k < mUnk_0a);
 }

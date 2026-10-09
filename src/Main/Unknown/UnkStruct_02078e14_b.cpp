@@ -2434,10 +2434,13 @@ void UnkStruct_02078e14::func_020823d8(u32 unk1, u32 unk2, u32 unk3) {
     func_02025b64(second, 4, offset, path, 0, 0, 0);
 }
 
+static inline void PrintMessageY(TextManager &tm, const u8 *data, u32 offset, u32 length, void *buffer, s16 y, s16 x) {
+    tm.Print(data + offset, length, buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0x10, 0, 0, 0, 1, 1);
+}
+
 void UnkStruct_02078e14::func_0208250c(u32 unk1, u32 unk2) {
     TextManager::Get().mUnk_5b = 1;
-    u16 *entry = (u16 *) ((u8 *) mUnk_18 + unk1 * 4);
-    PrintMessage(TextManager::Get(), (u8 *) mUnk_18, entry[1], entry[2], mUnk_28[0], (s16) (unk2 << 5), 0);
+    PrintMessageY(TextManager::Get(), (u8 *) mUnk_18, ((u16 *) ((u8 *) mUnk_18 + unk1 * 4))[1], ((u16 *) ((u8 *) mUnk_18 + unk1 * 4))[2], mUnk_28[0], 0, (s16) (unk2 << 5));
     TextManager::Get().mUnk_5b = 0;
 }
 
@@ -3829,18 +3832,23 @@ void func_02086668(UnkStruct_02078e14 *self, u32 unk1) {
         for (t = s + 1; t < self->mUnk_fc; t++) {
             u32 va;
             u32 vb;
-            u16 a = self->mUnk_106[s];
-            u16 b = self->mUnk_106[t];
+            u16 a;
+            u16 b;
+            u16 *pb = &self->mUnk_106[t];
             if (unk1 != 0) {
+                b  = *pb;
+                a  = self->mUnk_106[s];
                 vb = data_020a3248[b];
                 va = data_020a3248[a];
             } else {
+                b  = *pb;
+                a  = self->mUnk_106[s];
                 va = data_020a3ba8[a];
                 vb = data_020a3ba8[b];
             }
             if (va > vb) {
                 self->mUnk_106[s] = b;
-                self->mUnk_106[t] = a;
+                *pb = a;
             }
         }
     }

@@ -313,7 +313,8 @@ void BattleStatusPanels::func_ov007_02235480() {
                     } else {
                         f = 1;
                     }
-                    mPanels[i].mAnims[1]->func_0202a3ec(0, f, dir * ((k + mPanels[i].mUnk_25) * 9 + 0x14) + q, y + 0xc, mUnk_f2);
+                    u8 n25 = mPanels[i].mUnk_25;
+                    mPanels[i].mAnims[1]->func_0202a3ec(0, f, dir * ((n25 + k) * 9 + 0x14) + q, y + 0xc, mUnk_f2);
                     k++;
                 } while (k < mPanels[i].mUnk_29);
             }

@@ -449,11 +449,10 @@ void UnkStruct_02076058::func_02077458() {
         u8 slot = i + 3;
         UnkStruct_02023248 *entry = mUnk_54[i + mUnk_75];
         if (entry != NULL && (s32) entry->mUnk_00_0 < 9 && mUnk_14[slot] != NULL) {
-            CellAnimation *anim = mUnk_14[slot];
-            u32 frames = anim->mFrames[anim->mUnk_0e].mUnk_10;
+            u32 frames = mUnk_14[slot]->mFrames[mUnk_14[slot]->mUnk_0e].mUnk_10;
             int gauge = entry->mPad;
             u8 count = gauge / 300;
-            u8 last = frames - 1;
+            u32 last = frames - 1;
             u8 n = 0;
             if (count != 0) {
                 u8 x = data_020a308c[slot][0];
@@ -461,7 +460,7 @@ void UnkStruct_02076058::func_02077458() {
                 do {
                     u8 cellX = x + n % 3 * 32;
                     u8 cellY = n / 3 * 6 + y;
-                    anim->func_0202a3ec(1, last, cellX, cellY, 1);
+                    mUnk_14[slot]->func_0202a3ec(1, (u8) last, cellX, cellY, 1);
                     n++;
                 } while (n < count);
             }

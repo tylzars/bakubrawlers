@@ -2333,23 +2333,27 @@ void UnkStruct_02078e14::func_02081c2c(u32 unk1, u32 unk2, u32 unk3) {
     func_02025b64(second, 4, offset, path, 0, 0, 0);
 }
 
+static inline void PrintMessageFW(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x, u16 *width) {
+    tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, width, 0, 2, 0x44, 0, 0, 0, 0, 1, 1);
+}
+
 void UnkStruct_02078e14::func_02081d5c(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
     s16 b = 0;
     s16 a = 0;
     u16 w;
     TextManager::Get().mUnk_5b = 1;
     a                          = unk2 << 5;
-    PrintMessage(TextManager::Get(), (u8 *) mUnk_10, MessageEntry(mUnk_10, unk1)[1], MessageEntry(mUnk_10, unk1)[2], mUnk_28[0], a, b);
+    PrintMessageF(TextManager::Get(), (MessageFile *) mUnk_10, unk1, mUnk_28[0], b, a);
     b = 0x73;
-    PrintMessage(TextManager::Get(), (u8 *) mUnk_0c, MessageEntry(mUnk_0c, 0x18)[1], MessageEntry(mUnk_0c, 0x18)[2], mUnk_28[0], a, b);
+    PrintMessageF(TextManager::Get(), (MessageFile *) mUnk_0c, 0x18, mUnk_28[0], b, a);
     b = 0x87;
     TextManager::Get().PrintNumber(unk3, 3, 0, mUnk_28[0], 0x18, 0x10, &b, &a, 0, 2, 0x44, 0, 0, 1, 1);
-    a += 12;
     b = 0;
-    PrintMessageWidth(TextManager::Get(), (u8 *) mUnk_20, MessageEntry(mUnk_20, 5)[1], MessageEntry(mUnk_20, 5)[2], mUnk_28[0], a, b, &w);
+    a += 12;
+    PrintMessageFW(TextManager::Get(), (MessageFile *) mUnk_20, 5, mUnk_28[0], b, a, &w);
     b += w;
     if (*(u8 *) &unk4 >= 9) {
-        PrintMessage(TextManager::Get(), (u8 *) mUnk_20, MessageEntry(mUnk_20, 6)[1], MessageEntry(mUnk_20, 6)[2], mUnk_28[0], a, b);
+        PrintMessageF(TextManager::Get(), (MessageFile *) mUnk_20, 6, mUnk_28[0], b, a);
     } else {
         b += 7;
         TextManager::Get().PrintNumber(*(u8 *) &unk4 + 1, 1, 0, mUnk_28[0], 0x18, 0x10, &b, &a, 0, 2, 0x44, 0, 0, 1, 1);

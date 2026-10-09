@@ -8489,7 +8489,7 @@ from:0x020522fc kind:arm_call to:0x020146d8 module:main
 from:0x02052314 kind:load to:0x02219190 module:main
 from:0x02052318 kind:load to:0x020b24a0 module:main
 from:0x0205231c kind:load to:0x02218fd0 module:main
-from:0x02052344 kind:load to:0x020b24b0 module:main
+from:0x02052344 kind:load to:0x020b24a8 add:0x8 module:main
 from:0x02052388 kind:arm_call to:0x02051804 module:main
 from:0x02052398 kind:arm_call to:0x02051ab0 module:main
 from:0x020523ac kind:arm_call to:0x02051ab0 module:main

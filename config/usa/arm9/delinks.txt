@@ -646,7 +646,9 @@ src/Main/System/FrameTask.cpp:
     .data       start:0x020ac94c end:0x020ac960
 
 src/Main/System/TaskBase.cpp:
+    complete
     .text       start:0x02052320 end:0x02052548
+    .data       start:0x020b24a8 end:0x020b24bc
 
 src/Main/Graphics/ModelTransform.cpp:
     complete

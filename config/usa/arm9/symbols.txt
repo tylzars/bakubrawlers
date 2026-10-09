@@ -2463,9 +2463,9 @@ _ZN8TaskBase13func_020524a8Ev kind:function(arm,size=0x10) addr:0x020524a8
 _ZN8TaskBase13func_020524b8Ev kind:function(arm,size=0x10) addr:0x020524b8
 _ZN8TaskBase10SetVolume0Ef kind:function(arm,size=0x10) addr:0x020524c8
 _ZN8TaskBase10SetVolume1Ef kind:function(arm,size=0x10) addr:0x020524d8
-_Z13func_020524e8j kind:function(arm,size=0x18) addr:0x020524e8
-_Z13func_02052500Pv kind:function(arm,size=0x18) addr:0x02052500
-_Z13func_02052518Pv kind:function(arm,size=0x4) addr:0x02052518
+_Z13func_020524e8j kind:function(arm,size=0x18) addr:0x020524e8 local
+_Z13func_02052500Pv kind:function(arm,size=0x18) addr:0x02052500 local
+_Z13func_02052518Pv kind:function(arm,size=0x4) addr:0x02052518 local
 _ZN8TaskBase13func_0205251cEv kind:function(arm,size=0x20) addr:0x0205251c
 func_0205253c kind:function(arm,size=0xc) addr:0x0205253c
 _ZN14ModelTransformC2Ev kind:function(arm,size=0x3c) addr:0x02052548
@@ -3789,7 +3789,7 @@ data_020b2454 kind:data(any) addr:0x020b2454
 data_020b2474 kind:data(any) addr:0x020b2474
 data_020b2490 kind:data(any) addr:0x020b2490
 data_020b24a0 kind:data(any) addr:0x020b24a0
-data_020b24b0 kind:data(any) addr:0x020b24b0
+_ZTV8TaskBase kind:data(any) addr:0x020b24a8
 data_020b24bc kind:data(any) addr:0x020b24bc
 data_020b24c0 kind:data(any) addr:0x020b24c0
 data_020b24c4 kind:data(any) addr:0x020b24c4

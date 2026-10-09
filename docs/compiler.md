@@ -11,7 +11,8 @@ the evidence and how to reproduce it.
 | NitroSDK 4.2 (Nintendo prebuilt) | CodeWarrior for DS **2.0 sp1, sp1p2 or sp1p5** | `-O4,p -ipa file -enum int`, C |
 | NitroSystem (NNS foundation, G3d, Gfd) | CodeWarrior **2.0** (every 2.0 build gives the same code; built with sp1p5 here) | `-O4,p -enum int` (`-ipa file` makes no difference), C |
 | MSL C runtime (C parts) | CodeWarrior **2.0 sp1p5 or later** (`func_02012d90` is 0x24 bytes short on base..sp1p2) | `-O4,p` (`-ipa file -enum int` identical), C; soft float and division are hand-written assembly |
-| CRI ADX/Sofdec, Mobiclip | vendor prebuilt, not identified | keep delinked |
+| CRI ADX audio | CodeWarrior **2.0** (every 2.0 build gives the same code) | `-O4,p -enum int` (`-ipa file` makes no difference), C |
+| Mobiclip wrapper | CodeWarrior 2.0 (C++, the game's flags) | the decoder kernels at 0x02090b24+ are not identified |
 
 Every game-code setting above is backed by an exact match that fails when that setting changes. For NitroSDK, `-char` and `-O` variants are unverified (see Open).
 

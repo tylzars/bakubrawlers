@@ -2999,10 +2999,10 @@ data_0209d6f8 kind:data(any) addr:0x0209d6f8
 data_0209d9f8 kind:data(any) addr:0x0209d9f8
 data_0209da08 kind:data(any) addr:0x0209da08
 data_0209dabc kind:data(any) addr:0x0209dabc
-data_0209dae4 kind:data(any) addr:0x0209dae4
-data_0209dce4 kind:data(any) addr:0x0209dce4
-data_0209dee4 kind:data(any) addr:0x0209dee4
-data_0209e0e4 kind:data(any) addr:0x0209e0e4
+tbl kind:data(any) addr:0x0209dae4
+seed0 kind:data(any) addr:0x0209dce4
+seed1 kind:data(any) addr:0x0209dee4
+seed2 kind:data(any) addr:0x0209e0e4
 data_0209e2e4 kind:data(any) addr:0x0209e2e4
 data_0209e324 kind:data(any) addr:0x0209e324
 data_0209e368 kind:data(any) addr:0x0209e368
@@ -3485,8 +3485,8 @@ data_020ac978 kind:data(any) addr:0x020ac978
 data_020ac998 kind:data(any) addr:0x020ac998
 data_020ac9b8 kind:data(any) addr:0x020ac9b8
 data_020ac9d8 kind:data(any) addr:0x020ac9d8
-data_020ac9fc kind:data(any) addr:0x020ac9fc
-data_020aca24 kind:data(any) addr:0x020aca24
+str_a kind:data(any) addr:0x020ac9fc
+str_f kind:data(any) addr:0x020aca24
 data_020aca2c kind:data(any) addr:0x020aca2c
 data_020aca34 kind:data(any) addr:0x020aca34
 data_020aca3c kind:data(any) addr:0x020aca3c
@@ -4922,9 +4922,9 @@ data_02215890 kind:bss addr:0x02215890
 data_02215894 kind:bss addr:0x02215894
 data_02215898 kind:bss addr:0x02215898
 data_0221589c kind:bss addr:0x0221589c
-data_022158a0 kind:bss addr:0x022158a0
+g_cri kind:bss addr:0x022158a0
 data_022158ac kind:bss addr:0x022158ac
-data_022158bc kind:bss addr:0x022158bc
+g_criObjs kind:bss addr:0x022158bc
 data_02215c6c kind:bss addr:0x02215c6c
 data_02215c78 kind:bss addr:0x02215c78
 data_02215c7c kind:bss addr:0x02215c7c

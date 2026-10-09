@@ -4932,12 +4932,12 @@ data_02215c84 kind:bss addr:0x02215c84
 data_02215ca4 kind:bss addr:0x02215ca4
 data_02215da4 kind:bss addr:0x02215da4
 data_02215db4 kind:bss addr:0x02215db4
-data_02215dbc kind:bss addr:0x02215dbc
+g_criSys kind:bss addr:0x02215dbc
 data_02215dc0 kind:bss addr:0x02215dc0
-data_02215dd4 kind:bss addr:0x02215dd4
-data_022160e4 kind:bss addr:0x022160e4
-data_022160f4 kind:bss addr:0x022160f4
-data_02216108 kind:bss addr:0x02216108
+g_criDrv kind:bss addr:0x02215dd4
+g_criHook kind:bss addr:0x022160e4
+g_criStmSys kind:bss addr:0x022160f4
+g_criStm kind:bss addr:0x02216108
 data_022163d8 kind:bss addr:0x022163d8
 data_022163dc kind:bss addr:0x022163dc
 data_022163f0 kind:bss addr:0x022163f0

@@ -99,9 +99,9 @@ extern char SDK_OVERLAY_OV006_ID[];
 extern char SDK_OVERLAY_OV007_ID[];
 extern char SDK_OVERLAY_OV008_ID[];
 
-extern void func_0200b0d4(UnkStruct_OverlayInfo *info, u32 processor, u32 id);
-extern void func_0200b4e8(u32 processor, u32 id);
-extern void func_0200b53c(u32 processor, u32 id);
+extern "C" void func_0200b0d4(UnkStruct_OverlayInfo *info, u32 processor, u32 id);
+extern "C" void func_0200b4e8(u32 processor, u32 id);
+extern "C" void func_0200b53c(u32 processor, u32 id);
 extern void func_02021d38(void *lo);
 extern void func_02021e10();
 extern "C" void func_02007230();

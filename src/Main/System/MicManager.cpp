@@ -32,12 +32,12 @@ public:
     void func_0202d9ac();
 };
 
-void func_0200c744(void);
-void func_0200d2f0(u32 on);
-void func_0200d338(u32 gain);
-void func_0200c8e0(MicAutoParam *param);
-void func_0200c974(void);
-s8 *func_0200c9ac(void);
+extern "C" void func_0200c744(void);
+extern "C" void func_0200d2f0(u32 on);
+extern "C" void func_0200d338(u32 gain);
+extern "C" void func_0200c8e0(MicAutoParam *param);
+extern "C" void func_0200c974(void);
+extern "C" s8 *func_0200c9ac(void);
 extern u8 data_0220f140[];
 
 void MicManager::func_0202d794() {

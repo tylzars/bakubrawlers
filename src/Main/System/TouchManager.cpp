@@ -4,14 +4,14 @@
 #include <nitro/mi.h>
 
 extern "C" {
-void func_0200c104();
-int func_02007164();
+extern "C" void func_0200c104();
+extern "C" int OS_GetCpsrIrqBits();
 extern "C" void OS_EnableInterrupts();
-void func_0200c338();
-int func_0200c3cc(void *raw);
-void func_0200c608(TouchSample *out, void *raw);
-BOOL func_0200c17c(void *panel);
-void func_0200c210(void *panel);
+extern "C" void func_0200c338();
+extern "C" int func_0200c3cc(void *raw);
+extern "C" void func_0200c608(TouchSample *out, void *raw);
+extern "C" BOOL func_0200c17c(void *panel);
+extern "C" void func_0200c210(void *panel);
 extern "C" u16 FX_Atan2(fx32 a, fx32 b);
 }
 
@@ -59,7 +59,7 @@ void TouchManager::Update(BOOL enabled) {
     if (mEnabled == 0) {
         return;
     }
-    if (func_02007164() != 0) {
+    if (OS_GetCpsrIrqBits() != 0) {
         OS_EnableInterrupts();
     }
     do {

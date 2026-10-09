@@ -5,31 +5,31 @@
 
 // Wireless library (SDK WM) entry points, called only from this file. The names are the original addresses; the
 // comments give the WM function each most likely is (certain only where noted by the code that surrounds the call).
-u32 func_020108e4(void *callback);
-u32 func_02010674(void *buf, void *callback, u32 size);
-u32 func_020110c0(void *buf);
-u32 func_020106e4(void *callback);
-u16 func_02010600();
-u16 func_020104dc();
-u16 func_0201056c();
-u32 func_0201075c(void *callback, void *param);
-u16 func_0201042c();
-u32 func_0201044c();
-u32 func_02010cf8(void *callback, u32 enable);
-u32 func_020109e0(void *callback, void *desc, void *ssid, u32 a, u32 b);
-u32 func_020108f4(void *callback, void *param);
-u32 func_02010d3c(void *callback, u32 a, void *data, u32 size, u32 b, u32 c, u32 d);
-u32 func_02010e6c(void *buf, u32 a, u32 b, u32 c, u32 d);
-u32 func_02010224(u32 port, void *callback, void *arg);
-u32 func_02010c1c(void *callback, void *a, u32 b, void *c, u32 d, u32 e);
-u32 func_02011108(void *buf, void *a, void *b);
-u32 func_02011a64(void *callback, u32 arg);
-u8 *func_02011968(void *buf, void *a, u32 index);
-u32 func_020119ec(void *callback, u32 a, u32 b, u32 channel, u32 c);
+extern "C" u32 func_020108e4(void *callback);
+extern "C" u32 func_02010674(void *buf, void *callback, u32 size);
+extern "C" u32 func_020110c0(void *buf);
+extern "C" u32 func_020106e4(void *callback);
+extern "C" u16 func_02010600();
+extern "C" u16 func_020104dc();
+extern "C" u16 func_0201056c();
+extern "C" u32 func_0201075c(void *callback, void *param);
+extern "C" u16 func_0201042c();
+extern "C" u32 func_0201044c();
+extern "C" u32 func_02010cf8(void *callback, u32 enable);
+extern "C" u32 func_020109e0(void *callback, void *desc, void *ssid, u32 a, u32 b);
+extern "C" u32 func_020108f4(void *callback, void *param);
+extern "C" u32 func_02010d3c(void *callback, u32 a, void *data, u32 size, u32 b, u32 c, u32 d);
+extern "C" u32 func_02010e6c(void *buf, u32 a, u32 b, u32 c, u32 d);
+extern "C" u32 func_02010224(u32 port, void *callback, void *arg);
+extern "C" u32 func_02010c1c(void *callback, void *a, u32 b, void *c, u32 d, u32 e);
+extern "C" u32 func_02011108(void *buf, void *a, void *b);
+extern "C" u32 func_02011a64(void *callback, u32 arg);
+extern "C" u8 *func_02011968(void *buf, void *a, u32 index);
+extern "C" u32 func_020119ec(void *callback, u32 a, u32 b, u32 channel, u32 c);
 void func_02005e64(void *p, u32 size);
 void func_01ff96c4(const void *src, void *dst, u32 size);
 void func_01ff9510(const void *src, void *dst, u32 size);
-u32 func_0201071c(void *callback);
+extern "C" u32 func_0201071c(void *callback);
 
 // Parameters of the scan (the wireless library's WMScanParam).
 struct WmScanParam {

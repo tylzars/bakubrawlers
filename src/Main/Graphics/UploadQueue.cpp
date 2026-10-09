@@ -4,7 +4,7 @@
 #include <nitro/os.h>
 
 extern "C" int G2x_GetMasterBrightness_(vu16 *reg);
-BOOL func_0200d924();
+extern "C" BOOL func_0200d924();
 
 #define UPLOAD_QUEUE_SIZE 32
 #define UPLOAD_KIND_COUNT 15

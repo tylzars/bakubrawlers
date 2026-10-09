@@ -128,6 +128,48 @@ libs/nds/src/pxi/pxi.c:
 libs/nds/src/fs/fs_tail.c:
     .text       start:0x0200936c end:0x02009558
 
+libs/nds/src/fs/fs_archive.c:
+    .text       start:0x02009558 end:0x0200a78c
+
+libs/nds/src/fs/fs_file.c:
+    .text       start:0x0200a78c end:0x0200ad04
+
+libs/nds/src/fs/fs_rom.c:
+    .text       start:0x0200ad04 end:0x0200afdc
+
+libs/nds/src/fs/fs_overlay.c:
+    .text       start:0x0200afdc end:0x0200b588
+
+libs/nds/src/math/math_sha1.c:
+    .text       start:0x0200b588 end:0x0200bb74
+
+libs/nds/src/tp/tp.c:
+    .text       start:0x0200be84 end:0x0200c744
+
+libs/nds/src/mic/mic.c:
+    .text       start:0x0200c744 end:0x0200cc38
+
+libs/nds/src/pm/pm.c:
+    .text       start:0x0200cc38 end:0x0200da80
+
+libs/nds/src/rtc/rtc.c:
+    .text       start:0x0200da80 end:0x0200e310
+
+libs/nds/src/card/card_common.c:
+    .text       start:0x0200e310 end:0x0200f71c
+
+libs/nds/src/card/card_pullout.c:
+    .text       start:0x0200f71c end:0x0200f8e8
+
+libs/nds/src/wm/wm_base.c:
+    .text       start:0x0200f8e8 end:0x0200fdfc
+
+libs/nds/src/wm/wm_0200fdfc.c:
+    .text       start:0x0200fdfc end:0x02011c34
+
+libs/nds/src/ctrdg/ctrdg.c:
+    .text       start:0x02011c34 end:0x020122b0
+
 // provisional: code only; data not assigned yet.
 src/Main/System/Random.cpp:
     complete

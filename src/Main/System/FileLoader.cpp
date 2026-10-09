@@ -8,12 +8,12 @@
 
 extern u32 func_02004f54();
 extern void func_02004fbc(u32 id);
-extern void func_0200e658(u32 id);
-extern void func_0200e668(u32 id);
-extern BOOL func_0200ec04(u32 src, void *dst, u32 len, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f);
-extern BOOL func_0200ed00(u32 cmd);
-extern BOOL func_0200ee44();
-extern int func_0200e60c();
+extern "C" void func_0200e658(u32 id);
+extern "C" void func_0200e668(u32 id);
+extern "C" BOOL func_0200ec04(u32 src, void *dst, u32 len, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f);
+extern "C" BOOL func_0200ed00(u32 cmd);
+extern "C" BOOL func_0200ee44();
+extern "C" int func_0200e60c();
 void func_01ff96c4(const void *src, void *dst, u32 size);
 
 void UnkStruct_020c17a8::func_02023b80() {

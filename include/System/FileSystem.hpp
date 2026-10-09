@@ -8,7 +8,7 @@
 // Path prefix applied to relative file names.
 extern char data_020d5488[];
 
-void func_0200acac(const char *dir);
+extern "C" void func_0200acac(const char *dir);
 
 static inline void ChangeDir(const char *dir) {
     sprintf(data_020d5488, dir);

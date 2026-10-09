@@ -2288,7 +2288,7 @@ from:0x02229c38 kind:arm_call to:0x02029174 module:main
 from:0x02229c40 kind:arm_call to:0x0224954c module:overlay(7)
 from:0x02229c4c kind:load to:0x022791a0 module:overlay(7)
 from:0x02229c50 kind:load to:0x0220e86c module:main
-from:0x02229c68 kind:load to:0x02286c5c module:overlay(7)
+from:0x02229c68 kind:load to:0x02286c54 add:0x8 module:overlay(7)
 from:0x02229c78 kind:arm_call to:0x02021e80 module:main
 from:0x02229d04 kind:load to:0x0220f540 module:main
 from:0x02229d3c kind:arm_call to:0x020202ec module:main

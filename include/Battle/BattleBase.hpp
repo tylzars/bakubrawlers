@@ -91,6 +91,12 @@ class IBattle {
 public:
     IBattle();
     virtual ~IBattle();
+    /* 08 */ virtual void func_ov007_0221cebc(int a) = 0;
+    /* 0c */ virtual void func_ov007_0221ced0(u16 *a, u16 *b, u16 *c) = 0;
+    /* 10 */ virtual void func_ov007_0221cfac(u16 *a, u16 *b) = 0;
+    /* 14 */ virtual int func_ov007_0221d494(u16 *a, u16 *b, u16 *c, u8 *d) = 0;
+    /* 18 */ virtual void func_ov007_0221d488(u16 *p) = 0;
+    /* 1c */ virtual void func_ov007_0221d088(u8 a, u16 *counts) = 0;
 };
 
 // One 0x14-byte player/slot record inside BattleData (array starts at +0x0c).

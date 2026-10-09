@@ -32,7 +32,6 @@ extern void func_02042730(void);
 extern void func_02042748(void);
 extern void func_02042754(void);
 extern void *func_02012484(void *, int, int);
-extern void *memset(void *, int, unsigned);
 extern void func_0204035c(void);
 extern void func_020057dc(int);
 extern int func_0203e6dc(void *), func_0203e6e4(void *), func_0203e6ec(void *), func_0203e6f4(void *);
@@ -69,14 +68,14 @@ int func_02041870(Stm *s) { return *(int *)((char *)s + 0xb0); }
 int func_02041878(void)
 {
     if (++data_022163d8.refs == 1)
-        memset(data_022163f0, 0, sizeof(data_022163f0));
+        __clear(data_022163f0, sizeof(data_022163f0));
     return 1;
 }
 
 void func_020418d0(void)
 {
     if (--data_022163d8.refs == 0)
-        memset(data_022163f0, 0, sizeof(data_022163f0));
+        __clear(data_022163f0, sizeof(data_022163f0));
 }
 
 void func_02041920(Stm *s, void *h, int c, int size, StmIO *io)

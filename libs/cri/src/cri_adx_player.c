@@ -47,7 +47,6 @@ extern short tbl[];                   /* 0x0209dae4 */
 extern short seed0, seed1, seed2;     /* 0x0209dce4 / dee4 / e0e4 */
 extern char str_a[], str_b[], str_c[], str_d[], str_e[], str_f[];
 
-extern void *memset(void *, int, unsigned);
 extern void func_020446b0(void);
 extern void *func_02012484(void *, int, int);
 extern int func_020446e8(void);
@@ -97,7 +96,7 @@ void func_0203e07c(void)
 {
     func_020446b0();
     func_0203dee8();
-    memset(g_criObjs, 0, sizeof(g_criObjs));
+    __clear(g_criObjs, sizeof(g_criObjs));
     func_0203e05c(0);
 }
 

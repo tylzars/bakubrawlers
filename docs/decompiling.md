@@ -170,6 +170,10 @@ Other findings from linking:
   in the inner loop's condition to keep them in the loop.
 - **Product order:** `a*b + c*d` evaluates the right-hand product first; write the terms in reverse to swap
   (also true for the NitroSDK compiler).
+- **Inline zero fill (`__clear`).** A global cleared by `mov r0,#0; mov r1,r0; mov r2,r0; mov r3,r0` and an
+  `stm lr!, {r0-r3}` loop is CodeWarrior's `__clear(ptr, size)` intrinsic (the compiler also knows it as
+  `__builtin__clear`); `memset(p, 0, n)` compiles to a call and a zero-initialised struct goes through the stack.
+  Found in the CRI library (`func_0203e07c` and four more).
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

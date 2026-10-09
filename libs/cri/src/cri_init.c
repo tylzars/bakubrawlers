@@ -75,7 +75,6 @@ extern void func_02042b24(void *);
 extern void func_0205153c(void);
 extern void func_0203e07c(void);
 extern void func_020406c4(void);
-extern void *memset(void *, int, unsigned);
 
 int func_0204046c(void) { func_0204327c(); return 0; }
 
@@ -100,7 +99,7 @@ void func_0204048c(void)
         func_0204668c();
         func_020478e4((void *)func_0204043c, 0);
         func_0205152c((void *)func_0204044c, 0);
-        memset(g_criDrv, 0, sizeof(g_criDrv));
+        __clear(g_criDrv, sizeof(g_criDrv));
         func_020463d8(2, 1, (void *)func_0204046c, 0, data_020aca48);
         g_criSys.h14 = func_0204625c(4, (void *)func_0204047c, 0, data_020aca58);
         g_criSys.h8 = func_0204625c(5, (void *)func_0204045c, 0, data_020aca68);
@@ -166,7 +165,7 @@ void func_02040704(void)
 {
     if (g_criStmSys.refcnt == 0) {
         func_0203e07c();
-        memset(g_criStm, 0, sizeof(g_criStm));
+        __clear(g_criStm, sizeof(g_criStm));
     }
     g_criStmSys.refcnt++;
 }
@@ -175,5 +174,5 @@ void func_02040764(void)
 {
     g_criStmSys.refcnt--;
     if (g_criStmSys.refcnt != 0) return;
-    memset(g_criStm, 0, sizeof(g_criStm));
+    __clear(g_criStm, sizeof(g_criStm));
 }

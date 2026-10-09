@@ -58,7 +58,7 @@ class BattleResult : public SceneBase {
 public:
     /* 0c */ SelectWindow *mUnk_0c;
     /* 10 */ MessageWindow *mMessage;
-    /* 14 */ void *mUnk_14;
+    /* 14 */ MessageFile *mUnk_14;
     /* 18 */ CellAnimation *mAnims[8];
     /* 38 */ void *mUnk_38[3];
     /* 44 */ void *mUnk_44[3];
@@ -893,7 +893,7 @@ void BattleResult::func_ov007_0224fb70() {
 void BattleResult::func_ov007_0224fcdc() {
     SpriteManager::Get().Screen(0).func_02027624(3);
     ChangeDir("/font/");
-    mUnk_14 = func_02023504("mes_result.mes", 0, 0, 0, 0, 0);
+    mUnk_14 = (MessageFile *) func_02023504("mes_result.mes", 0, 0, 0, 0, 0);
     mUnk_50[0] = TextManager::Get().BufferSize(0x20, 0x16);
     mUnk_38[0] = OS_Alloc(mUnk_50[0]);
     MI_CpuClear16(mUnk_38[0], mUnk_50[0]);
@@ -1012,6 +1012,202 @@ void BattleResult::func_ov007_02250010() {
         }
         m++;
     } while (m < count2);
+}
+
+// non-matching: the loop prologue sets the counter and its zero copy (r9, r5) after the clamp; the original sets
+// them before it and loads the pool constants one slot later (6 words).
+void BattleResult::func_ov007_0225047c() {
+    if (mUnk_38[0]) {
+        MI_CpuClear16(mUnk_38[0], mUnk_50[0]);
+    }
+    s16 x = 0;
+    s16 y = 0;
+    s16 ly;
+    TextManager::Get().mUnk_5b = 1;
+    x = 0x94;
+    y = 0;
+    TextManager::Get().PrintNumber(mUnk_9c, 7, 0, mUnk_38[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+    {
+        TextManager &t2 = TextManager::Get();
+        s16 x2;
+        s16 y2;
+        y2 = y;
+        x2 = x;
+        t2.Print(mUnk_14->GetText(2), mUnk_14->GetLength(2), mUnk_38[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+    }
+    {
+        TextManager &t3 = TextManager::Get();
+        s16 x3;
+        s16 y3;
+        y3 = y;
+        x3 = 0;
+        t3.Print(mUnk_14->GetText(7), mUnk_14->GetLength(7), mUnk_38[0], 0x20, 0x16, &x3, &y3, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+    }
+    if (mUnk_b2 >= 2) {
+        u8 n = mUnk_b2 - 2;
+        u8 i = 0;
+        if (n > data_020d433c.mUnk_99) {
+            n = data_020d433c.mUnk_99;
+        }
+        do {
+            if (i != 0 && mUnk_84[i] == 0) {
+                break;
+            }
+            x = 0x94;
+            if (i < 3 && mUnk_84[3] != 0) {
+                x -= 0x3c;
+            }
+            ly = (i % 3) * 16 + 16;
+            TextManager::Get().PrintNumber(mUnk_84[i], 7, 0, mUnk_38[0], 0x20, 0x16, &x, &ly, 0, 2, 0x21, 0, 1, 1, 1);
+            TextManager &t4 = TextManager::Get();
+            s16 x2;
+            s16 y2;
+            y2 = ly;
+            x2 = x;
+            t4.Print(mUnk_14->GetText(2), mUnk_14->GetLength(2), mUnk_38[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+            i++;
+        } while (i < n);
+        {
+            TextManager &t5 = TextManager::Get();
+            s16 a;
+            s16 b;
+            b = 0x10;
+            a = 0;
+            t5.Print(mUnk_14->GetText(8), mUnk_14->GetLength(8), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0xe, 0, 0, 1, 1, 1);
+        }
+        {
+            TextManager &t6 = TextManager::Get();
+            s16 a;
+            s16 b;
+            b = 0x20;
+            a = 8;
+            t6.Print(mUnk_14->GetText(9), mUnk_14->GetLength(9), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0xe, 0, 0, 1, 1, 1);
+        }
+        {
+            TextManager &t7 = TextManager::Get();
+            s16 a;
+            s16 b;
+            b = 0x30;
+            a = 0x10;
+            t7.Print(mUnk_14->GetText(10), mUnk_14->GetLength(10), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0xe, 0, 0, 1, 1, 1);
+        }
+    }
+    if (mUnk_b2 >= 9) {
+        x = 0x94;
+        y = 0x40;
+        TextManager::Get().PrintNumber(100, 7, 0, mUnk_38[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+        {
+            TextManager &t8 = TextManager::Get();
+            s16 x2;
+            s16 y2;
+            y2 = y;
+            x2 = x;
+            t8.Print(mUnk_14->GetText(3), mUnk_14->GetLength(3), mUnk_38[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+        }
+        x += 0x10;
+        TextManager::Get().PrintNumber(mUnk_ad, 0, 0, mUnk_38[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+        {
+            TextManager &t9 = TextManager::Get();
+            s16 x3;
+            s16 y3;
+            y3 = y;
+            x3 = 0;
+            t9.Print(mUnk_14->GetText(11), mUnk_14->GetLength(11), mUnk_38[0], 0x20, 0x16, &x3, &y3, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+        }
+    }
+    if (mUnk_b2 >= 0xb) {
+        x = 0x94;
+        y = 0x50;
+        TextManager::Get().PrintNumber(100, 7, 0, mUnk_38[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+        {
+            TextManager &t10 = TextManager::Get();
+            s16 x2;
+            s16 y2;
+            y2 = y;
+            x2 = x;
+            t10.Print(mUnk_14->GetText(3), mUnk_14->GetLength(3), mUnk_38[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+        }
+        x += 0x10;
+        TextManager::Get().PrintNumber(mUnk_ae, 0, 0, mUnk_38[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+    }
+    if (mUnk_b2 >= 0xc) {
+        x = 0x94;
+        y = 0x60;
+        TextManager::Get().PrintNumber(mUnk_a0, 7, 0, mUnk_38[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+        {
+            TextManager &t11 = TextManager::Get();
+            s16 x2;
+            s16 y2;
+            y2 = y;
+            x2 = x;
+            t11.Print(mUnk_14->GetText(2), mUnk_14->GetLength(2), mUnk_38[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+        }
+        x = 0x94;
+        y = 0x60;
+        {
+            TextManager &t12 = TextManager::Get();
+            s16 x3;
+            s16 y3;
+            y3 = y;
+            x3 = 0;
+            t12.Print(mUnk_14->GetText(12), mUnk_14->GetLength(12), mUnk_38[0], 0x20, 0x16, &x3, &y3, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+        }
+    }
+    if (mUnk_b2 >= 0xe) {
+        if (mUnk_ac) {
+            x = 0xc4;
+            y = 0x70;
+            TextManager &t13 = TextManager::Get();
+            s16 x2;
+            s16 y2;
+            y2 = y;
+            x2 = x;
+            t13.Print(mUnk_14->GetText(4), mUnk_14->GetLength(4), mUnk_38[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+        }
+        x = 0xa2;
+        y = 0x70;
+        TextManager &t14 = TextManager::Get();
+        s16 x3;
+        s16 y3;
+        y3 = y;
+        x3 = 0;
+        t14.Print(mUnk_14->GetText(13), mUnk_14->GetLength(13), mUnk_38[0], 0x20, 0x16, &x3, &y3, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+    }
+    {
+        TextManager &t15 = TextManager::Get();
+        s16 a;
+        s16 b;
+        b = 0x80;
+        a = 0xcc;
+        t15.Print(mUnk_14->GetText(2), mUnk_14->GetLength(2), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+    }
+    {
+        TextManager &t16 = TextManager::Get();
+        s16 a;
+        s16 b;
+        b = 0x80;
+        a = 0;
+        t16.Print(mUnk_14->GetText(14), mUnk_14->GetLength(14), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+    }
+    {
+        TextManager &t17 = TextManager::Get();
+        s16 a;
+        s16 b;
+        b = 0x9e;
+        a = 0xcc;
+        t17.Print(mUnk_14->GetText(2), mUnk_14->GetLength(2), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+    }
+    {
+        TextManager &t18 = TextManager::Get();
+        s16 a;
+        s16 b;
+        b = 0x9e;
+        a = 0;
+        t18.Print(mUnk_14->GetText(15), mUnk_14->GetLength(15), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+    }
+    TextManager::Get().mUnk_5b = 0;
+    func_02005e9c(mUnk_38[0], mUnk_50[0]);
+    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x8000, mUnk_38[0], mUnk_50[0], 0);
 }
 
 void BattleResult::func_ov007_02251724() {

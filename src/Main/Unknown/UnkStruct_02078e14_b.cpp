@@ -74,6 +74,10 @@ void func_02086580(UnkStruct_02078e14 *self, u32 unk1, u32 unk2, BattleCellPair 
 
 // non-matching: register allocation only; the original keeps scale/y/x/over in r5/r6/r7/r8, the compiler uses r5/r7/r8/r6 (declaration order does not move them)
 
+static inline void PrintMessageF3(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x) {
+    tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0x10, 0, 0, 1, 1, 1);
+}
+
 static inline void PrintMessageF(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x) {
     tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0x10, 0, 0, 0, 1, 1);
 }
@@ -2769,7 +2773,7 @@ void func_020834ec(UnkStruct_02078e14 *self, u32 mode) {
 
 void func_020839a0(UnkStruct_02078e14 *self) {
     const u8 *base;
-    u32 index;
+    u8 index;
     self->func_0207cf84();
     base  = NULL;
     index = 0;
@@ -2786,8 +2790,10 @@ void func_020839a0(UnkStruct_02078e14 *self) {
             u32 value;
             s16 y     = 0;
             s16 x     = 0;
-            msg = value = 0;
-            for (i = 0; i < 3; i++) {
+            i = 0;
+            msg = 0;
+            value = 0;
+            for (; i < 3; i++) {
                 y = 8;
                 switch (i) {
                     case 0:
@@ -2856,7 +2862,7 @@ void func_020839a0(UnkStruct_02078e14 *self) {
             break;
     }
     if (base != NULL) {
-        PrintMessageF(TextManager::Get(), (MessageFile *) base, index, self->mUnk_28[0], 0, 0);
+        PrintMessageF3(TextManager::Get(), (MessageFile *) base, index, self->mUnk_28[0], 0, 0);
     }
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, self->mUnk_28[0], self->mUnk_38[0], 0);
 }

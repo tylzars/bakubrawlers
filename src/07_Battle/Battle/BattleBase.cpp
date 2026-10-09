@@ -53,9 +53,9 @@ void func_ov007_02229d08(BattleBase *scene);
 void func_ov007_02229c88(BattleBase *scene, u16 *a, u16 *b, u16 *c, u8 flag);
 
 void func_ov007_02226a34(void *);
-extern s8 data_ov007_02279158;
-extern s8 data_ov007_02279d3c;
-extern s16 data_ov007_02278b1c[];
+extern const s8 data_ov007_02279158[];
+extern const s8 data_ov007_02279d3c[];
+extern const s16 data_ov007_02278b1c[];
 
 
 
@@ -472,7 +472,9 @@ void BattleBase::func_ov007_0221a6b4() {
     }
 }
 
-// non-matching: structure, case order, jump table and every call match; ~52 of 1094 words differ, only instruction scheduling / register choice (BattleCharaAct args in case 2, the s8 data load in cases 14/17, case 15 constant order)
+static inline Camera *GetCam() {
+    return data_020d433c.mBattlePlayers->mCamera;
+}
 BOOL BattleBase::func_ov007_0221a7d0() {
     BattleEntry *entries = mUnk_2c->mEntries;
     switch (mUnk_4d) {
@@ -495,8 +497,7 @@ BOOL BattleBase::func_ov007_0221a7d0() {
         case 2:
             if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
                 func_ov007_0221a55c();
-                Camera *cam = data_020d433c.mBattlePlayers->mCamera;
-                new BattleCharaAct(cam, entries[mUnk_4e].mUnk_0d_4, 6, (func_02065c20(mUnk_56) - 0x190) / 100, 0);
+                new BattleCharaAct(GetCam(), entries[mUnk_4e].mUnk_0d_4, 6, (func_02065c20(mUnk_56) - 0x190) / 100, 0);
                 mUnk_4d++;
             }
             break;
@@ -672,8 +673,8 @@ BOOL BattleBase::func_ov007_0221a7d0() {
                     mUnk_2c->mEntries[0].mUnk_02 = entries[0].mUnk_04;
                     mUnk_2c->mEntries[1].mUnk_02 = entries[1].mUnk_04;
                     mUnk_54_1                    = 1;
-                    s8 v = data_ov007_02279158;
                     mUnk_2c->mUnk_34[4]->mUnk_0f = 1;
+                    s8 v = data_ov007_02279158[0];
                     mUnk_2c->mUnk_34[4]->mUnk_11 = v;
                     mUnk_2c->mUnk_34[3]->mUnk_11 = v;
                     break;
@@ -683,7 +684,7 @@ BOOL BattleBase::func_ov007_0221a7d0() {
                     mUnk_5c = (u32) new BattleCardSpec(0xc, entries[mUnk_4e].mUnk_0c, entries[mUnk_4e].mUnk_0d_0, entries[mUnk_4e].mUnk_0e == 0x15 ? 1 : 0);
                     mUnk_2c->mEntries[mUnk_4e].mUnk_0a = entries[mUnk_4e].mUnk_06 + entries[mUnk_4e].mUnk_08;
                     mUnk_2c->mEntries[mUnk_4e].mUnk_02 = entries[mUnk_4e].mUnk_04;
-                    s8 v = data_ov007_02279158;
+                    s8 v = data_ov007_02279158[0];
                     mUnk_2c->mUnk_34[4]->mUnk_0f = 1;
                     mUnk_2c->mUnk_34[4]->mUnk_11 = v;
                     mUnk_2c->mUnk_34[3]->mUnk_11 = v;
@@ -701,7 +702,7 @@ BOOL BattleBase::func_ov007_0221a7d0() {
                         mUnk_2c->mEntries[mUnk_4e].mUnk_02 = entries[mUnk_4e].mUnk_00 + entries[mUnk_4e].mUnk_0a;
                     }
                     mUnk_2c->mUnk_34[4]->mUnk_0f = 0;
-                    s8 v = data_ov007_02279d3c;
+                    s8 v = data_ov007_02279d3c[0];
                     mUnk_2c->mUnk_34[4]->mUnk_11 = v;
                     mUnk_2c->mUnk_34[3]->mUnk_11 = v;
                     break;
@@ -768,7 +769,7 @@ BOOL BattleBase::func_ov007_0221a7d0() {
                 SpriteManager::Get().StartFade(3);
                 mUnk_4d                      = 0x12;
                 mUnk_2c->mUnk_34[4]->mUnk_0f = 0;
-                s8 v = data_ov007_02279d3c;
+                s8 v = data_ov007_02279d3c[0];
                 mUnk_2c->mUnk_34[4]->mUnk_11 = v;
                 mUnk_2c->mUnk_34[3]->mUnk_11 = v;
             }

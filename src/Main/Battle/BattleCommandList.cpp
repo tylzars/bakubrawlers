@@ -861,8 +861,10 @@ void BattleCommandList::func_0205a804() {
     }
     if (!late) {
         s16 x;
-        u32 max = 0;
-        u8 count = 0;
+        u8 count;
+        u32 max;
+        count = 0;
+        max = 0;
         u8 list[6];
         for (u8 i = 0; i < 6; i++) {
             u32 v = mUnk_142[i];
@@ -889,7 +891,7 @@ void BattleCommandList::func_0205a804() {
                 if ((s32) max < 10) {
                     x -= 7;
                 }
-                mCells58[1]->Draw(0, x + 0x5a, 0xae, 0);
+                mCells58[1]->Draw(0, (s16) (x + 0x5a), 0xae, 0);
                 do {
                     u8 digit = (s32) max % 10;
                     x -= 10;
@@ -897,9 +899,11 @@ void BattleCommandList::func_0205a804() {
                     max /= 10;
                 } while (max != 0);
             }
-            for (u8 i = 0; i < count; i++) {
+            u8 i = 0;
+            do {
                 mCells3c[0]->func_0202a3ec(0, list[i], 0x58 - (count - i - 1) * 0x18, 0xa8, 0);
-            }
+                i++;
+            } while (i < count);
         }
         u32 val = mUnk_166;
         if (val != 0) {
@@ -922,11 +926,12 @@ void BattleCommandList::func_0205a804() {
         if (mUnk_152 == cur) {
             mCells58[4]->func_0202a3ec(0, mUnk_152, 0x24, 0x18, 0);
         } else {
-            if (data_020d433c.mBattlePlayers->mPlayers[mUnk_152]->mUnk_c8 != NULL) {
+            u8 id = mUnk_152;
+            if (data_020d433c.mBattlePlayers->mPlayers[id]->mUnk_c8 != NULL) {
                 has = 1;
             }
             if (has == 1) {
-                mCells58[5]->func_0202a3ec(0, mUnk_152, 0x15, 0x12, 0);
+                mCells58[5]->func_0202a3ec(0, id, 0x15, 0x12, 0);
             }
             if ((data_020d433c.mUnk_98 == 1) & (mUnk_152 == data_020d43d7[cur])) {
                 mCells58[6]->func_0202a3ec(0, mUnk_152, 0x24, 0x18, 0);

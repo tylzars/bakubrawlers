@@ -41,7 +41,6 @@ extern const u8 data_ov008_022286fc[];
 extern const u8 data_ov008_02228704[];
 extern const u8 data_ov008_0222870c[];
 extern const Vec2s data_ov008_02228758[];
-extern const s16 data_ov008_0222875a[];
 
 MyroomScene::MyroomScene() :
     SceneBase(2, 0) {
@@ -444,11 +443,11 @@ void MyroomScene::SwitchPage(u8 page) {
 // non-matching: size 0x61c vs 0x610: register allocation of first/last/count/window differs (r4/r7/r8/r9 vs sl/r4/r7/r8)
 void MyroomScene::func_ov008_0221c2a0() {
     UnkStruct_SceneContext *ctx = mContext;
+    u8 first                    = 0;
+    u8 last                     = 0;
     u8 count                    = 0;
     SelectWindow *window        = NULL;
-    u32 first                   = 0;
-    u32 last                    = 0;
-    ctx->mInfo.mSelection       = (s8) ctx->mInfo.mUnk_06;
+    ctx->mInfo.mSelection       = *(s8 *) &ctx->mInfo.mUnk_06;
     switch (ctx->mInfo.mMenuResult) {
         case 0:
             first  = 6;
@@ -471,8 +470,8 @@ void MyroomScene::func_ov008_0221c2a0() {
         return;
     }
     if (ctx->mInfo.mState == 4) {
-        s32 delta = 0;
         u8 hit    = window->Update(TRUE);
+        s32 delta = 0;
         if ((u8) ctx->mInfo.mPrevSelection != 2) {
             ctx->mInfo.mPrevSelection = hit;
         }
@@ -530,7 +529,8 @@ void MyroomScene::func_ov008_0221c2a0() {
                     default:
                         if (delta == 0) {
                             u8 n = last - first + 1;
-                            for (u8 k = 0; k < n; k++) {
+                            u8 k = 0;
+                            do {
                                 if (TouchManager::Get().func_02022860(data_ov008_02228758[k].x, data_ov008_02228758[k].y, 0x38,
                                                                       0x30)) {
                                     s8 selection = (s8) ctx->mInfo.mUnk_06;
@@ -541,7 +541,8 @@ void MyroomScene::func_ov008_0221c2a0() {
                                         SoundManager::Get().func_020246f8(0);
                                     }
                                 }
-                            }
+                                k++;
+                            } while (k < n);
                             if (window->mUnk_061 == 1) {
                                 if (InputManager::Get().IsTrigger(0x20)) {
                                     s8 selection = (s8) ctx->mInfo.mUnk_06;
@@ -573,9 +574,13 @@ void MyroomScene::func_ov008_0221c2a0() {
         }
     }
     window->Draw();
-    if (ctx->mInfo.mMenuResult == 1 || ctx->mInfo.mMenuResult == 2) {
-        mCellAnim->Update();
-        mCellAnim->Draw(1, data_ov008_02228758[(s8) ctx->mInfo.mUnk_06].x, data_ov008_0222875a[(s8) ctx->mInfo.mUnk_06 * 2], 0);
+    switch (ctx->mInfo.mMenuResult) {
+        case 1:
+        case 2:
+            mCellAnim->Update();
+            s8 cur = ctx->mInfo.mUnk_06;
+            mCellAnim->Draw(1, data_ov008_02228758[cur].x, data_ov008_02228758[cur].y, 0);
+            break;
     }
 }
 

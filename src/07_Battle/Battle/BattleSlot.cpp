@@ -141,7 +141,9 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
     }
     switch (mMode) {
         case 1:
-            mUnk_06 = 50;
+            if (mMode == 1) {
+                mUnk_06 = 50;
+            }
         case 2:
             mUnk_0a = mUnk_24[0];
             mUnk_0a += func_ov007_0221d348(mUnk_24[1]);

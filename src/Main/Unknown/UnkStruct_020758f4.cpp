@@ -62,7 +62,10 @@ UnkStruct_020758f4_Entry *UnkStruct_020758f4::func_02075a00(u32 index) {
 // non-matching: 0x438 vs 0x434. The original keeps `this` in r7 (loop counter r6, zero r4, table r5) where ours puts it in r4,
 // and it adds the 9000 of the score > 1000000 case to a register holding 10000 (ours loads the folded 0x4a38).
 void UnkStruct_020758f4::func_02075a0c() {
-    for (s8 i = 0; i < 13; i++) {
+    s8 i;
+    s8 j;
+    s8 k;
+    for (i = 0; i < 13; i++) {
         u8 id = data_020a3070[mUnk_94][i];
         mUnk_04[i].mUnk_0 = id;
         if (id == 0x15) {
@@ -71,9 +74,10 @@ void UnkStruct_020758f4::func_02075a0c() {
             mUnk_04[i].mUnk_4 = func_02075e40((u8) i);
         }
     }
-    for (s8 i = 1; i < 13; i++) {
-        s8 j = i;
-        for (s8 k = i - 1; k >= 0; k--) {
+    for (i = 1; i < 13; i++) {
+        j = i;
+        k = i - 1;
+        do {
             u32 scoreA = mUnk_04[k].mUnk_4;
             u32 scoreB = mUnk_04[j].mUnk_4;
             if (scoreB > scoreA) {
@@ -85,17 +89,18 @@ void UnkStruct_020758f4::func_02075a0c() {
                 mUnk_04[j].mUnk_0 = idA;
                 j = k;
             }
-        }
+            k--;
+        } while (k >= 0);
     }
     u8 rank = 1;
     mUnk_04[0].mUnk_2 = 1;
-    for (s8 i = 1; i < 13; i++) {
+    for (i = 1; i < 13; i++) {
         if (mUnk_04[i].mUnk_4 < mUnk_04[i - 1].mUnk_4) {
             rank = i + 1;
         }
         mUnk_04[i].mUnk_2 = rank;
     }
-    for (s8 i = 0; (u32) i < 10; i++) {
+    for (i = 0; (u32) i < 10; i++) {
         if (mUnk_90 >= mUnk_04[i].mUnk_4) {
             s8 j = 12;
             do {
@@ -121,23 +126,25 @@ void UnkStruct_020758f4::func_02075a0c() {
         }
     }
     u32 base;
-    u32 ten = 10000;
     u32 score = mUnk_90;
     if (score <= 100000) {
         base = score * 10 / 100;
-    } else if (score > 1000000) {
-        base = ten + 9000;
     } else {
-        base = ten + (score - 100000) / 100;
+        base = 10000;
+        if (score > 1000000) {
+            base += 9000;
+        } else {
+            base += (score - 100000) / 100;
+        }
     }
-    for (s8 i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++) {
         u32 value = (base + data_020a3060[i]) / 10 * 10;
         mUnk_6c[i].mUnk_0 = data_020a305c[i];
         mUnk_6c[i].mUnk_4 = value;
         mUnk_6c[i].mUnk_2 = func_02075ff4(value);
     }
-    for (s8 i = 0; i < 4; i++) {
-        for (s8 j = 0; j < 4; j++) {
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {
             if (i != j && mUnk_6c[i].mUnk_2 == mUnk_6c[j].mUnk_2) {
                 if (mUnk_6c[i].mUnk_4 <= mUnk_6c[j].mUnk_4) {
                     mUnk_6c[j].mUnk_2--;
@@ -148,18 +155,16 @@ void UnkStruct_020758f4::func_02075a0c() {
         }
     }
     if (mUnk_8e > 10) {
-        for (s8 k = 12; k > 10; k--) {
-            UnkStruct_020758f4_Entry *cur = &mUnk_04[k];
-            u32 prevScore = mUnk_04[k - 1].mUnk_4;
-            if (prevScore != 0) {
-                if (prevScore <= mUnk_90) {
+        for (k = 12; k > 10; k--) {
+            if (mUnk_04[k - 1].mUnk_4 != 0) {
+                if (mUnk_04[k - 1].mUnk_4 <= mUnk_90) {
                     mUnk_8e = mUnk_04[k - 1].mUnk_2;
-                    cur->mUnk_0 = mUnk_04[k - 1].mUnk_0;
-                    cur->mUnk_1 = mUnk_04[k - 1].mUnk_1;
-                    cur->mUnk_2 = mUnk_04[k - 1].mUnk_2;
-                    cur->mUnk_4 = prevScore;
-                    if (prevScore < mUnk_90) {
-                        cur->mUnk_2++;
+                    mUnk_04[k].mUnk_0 = mUnk_04[k - 1].mUnk_0;
+                    mUnk_04[k].mUnk_1 = mUnk_04[k - 1].mUnk_1;
+                    mUnk_04[k].mUnk_2 = mUnk_04[k - 1].mUnk_2;
+                    mUnk_04[k].mUnk_4 = mUnk_04[k - 1].mUnk_4;
+                    if (mUnk_04[k - 1].mUnk_4 < mUnk_90) {
+                        mUnk_04[k].mUnk_2++;
                     }
                     mUnk_04[k - 1].mUnk_0 = mUnk_8c;
                     mUnk_04[k - 1].mUnk_1 = mUnk_8d;
@@ -175,7 +180,7 @@ void UnkStruct_020758f4::func_02075a0c() {
             }
         }
     }
-    for (s8 i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++) {
         if (mUnk_8e == mUnk_6c[i].mUnk_2) {
             if (mUnk_6c[i].mUnk_4 > mUnk_90) {
                 mUnk_6c[i].mUnk_2--;

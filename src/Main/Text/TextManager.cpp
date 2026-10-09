@@ -396,11 +396,11 @@ void TextManager::SetColor(u32 unk1, u32 unk2, u32 unk3) {
 }
 
 // non-matching: size 0x74 vs 0x68.
-void TextManager::func_0202ce44(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
+void TextManager::func_0202ce44(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
     if (unk2 == 0) {
         func_02025c1c(unk1, 6, unk3 << 5, mCursor, 0x20, 0);
     } else {
-        func_02025c1c(unk1, 1, (unk3 << 9) + (*(u8 *) &unk4 << 13), mCursor, 0x20, 0);
+        func_02025c1c(unk1, 1, (unk3 << 9) + (unk4 << 13), mCursor, 0x20, 0);
     }
 }
 
@@ -566,29 +566,16 @@ void TextManager::func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color
     } while (row - py < mFont->mHeight);
 }
 
-// non-matching: size 0x198 vs 0x190.
+// non-matching: same size; the prologue computes the screen offset (index * 0x408) later than the original.
 void TextManager::Init(void *glyphs, u32 unk2, u32 unk3, u32 width, u32 height, u32 unk6) {
-    TextSprite *sprite = (TextSprite *) glyphs;
-    s32 flags          = unk6;
-    s32 unitY          = (flags >> 4) & 0xf;
-    s32 unitX          = flags & 0xf;
-    u16 tableIndex     = (unitX - 1) + ((unitY - 1) << 2);
-    u16 tile           = 0;
-    u16 stepX          = unitX << 1;
-    u16 stepY          = unitY << 1;
-    u16 y              = 0;
-    do {
-        u32 blocks = stepY * stepX;
-        u16 x      = 0;
-        do {
-            sprite->mAttr = data_020a56f0[tableIndex] | (unk3 << 13);
-            sprite->mTile = SpriteManager::Get().Screen(unk2).func_020276f4(tile);
-            sprite->mX    = x << 3;
-            sprite->mY    = y << 3;
-            tile += unk3 == 0 ? blocks << 5 : blocks << 6;
-            sprite++;
-            x += stepY;
-        } while (x < width);
-        y += stepX;
-    } while (y < height);
+ TextSprite *sprite = (TextSprite *) glyphs; s32 flags = unk6; s32 unitY = (flags >> 4) & 0xf; s32 unitX = flags & 0xf;
+ u16 tableIndex = (unitX - 1) + ((unitY - 1) << 2); u16 tile = 0; u16 stepX = unitX << 1; u16 stepY = unitY << 1; u16 y = 0;
+ do { s16 py = y << 3; u32 blocks = stepY * stepX; u16 x = 0;
+ do {
+ sprite->mAttr = data_020a56f0[tableIndex] | (unk3 << 13);
+ sprite->mTile = SpriteManager::Get().Screen(unk2).func_020276f4(tile);
+ sprite->mX = x << 3; sprite->mY = py;
+ if (unk3 == 0) { tile += blocks << 5; } else { tile += blocks << 6; }
+ sprite++; x += stepY; } while (x < width);
+ y += stepX; } while (y < height);
 }

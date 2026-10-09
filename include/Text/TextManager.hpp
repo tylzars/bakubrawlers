@@ -131,7 +131,7 @@ public:
                      s16 *outHeight, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13, u32 unk14,
                      u32 unk15); // 0202cb50
     void func_0202cd48(u32 mode, u16 *map, u32 palette, u32 base, u32 width, u32 height, u32 stride);
-    void func_0202ce44(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
+    void func_0202ce44(u32 unk1, u32 unk2, u32 unk3, u8 unk4);
     void func_0202ceac(u32 glyph, void *buffer, u32 eightBit, s32 layout, s16 x, s16 y, u16 width, u16 height);
     u8 func_0202d19c(u32 glyph);
     s32 func_0202d1bc(u32 code);

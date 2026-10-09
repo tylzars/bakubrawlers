@@ -48,7 +48,7 @@ u8 func_02065bf4(u32 id, u32 index);
 extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
 extern "C" void func_ov007_022633f8(BattlePlayerList *list);
 BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
-void func_020383f8(u32 heap);
+extern "C" void func_020383f8(u32 heap);
 extern "C" void GX_SetGraphicsMode(u32 unk1, u32 unk2, u32 unk3);
 extern "C" void GXS_SetGraphicsMode(u32 unk1);
 

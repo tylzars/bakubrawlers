@@ -30,7 +30,7 @@ void func_02088ec4(UnkStruct_02087898 *object);
 void func_01ff9510(const void *src, void *dest, u32 size);
 extern const u32 data_020a23cc[8][6];
 void func_020360cc(UnkStruct_SpriteManager_28 *slot);
-void func_02038444(u32 a, u32 b);
+extern "C" void func_02038444(u32 a, u32 b);
 
 void func_02089278();
 

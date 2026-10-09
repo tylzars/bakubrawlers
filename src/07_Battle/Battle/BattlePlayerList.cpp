@@ -89,7 +89,7 @@ public:
 };
 
 extern "C" void func_ov007_022633f8(BattlePlayerList *list);
-void func_02038444(u32 heap, u32 a);
+extern "C" void func_02038444(u32 heap, u32 a);
 void func_ov007_0226a48c(BattlePlayer *player);
 void func_ov007_0226a404(BattlePlayer *player, u32 index, u32 flag);
 extern const u8 data_ov007_0227aa5c[];
@@ -105,7 +105,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset);
 u32 func_ov007_022696a0(u32 a, u32 b);
 extern const BattleCpuRot data_ov007_0227aa28;
 extern u8 data_020d4444[];
-void func_020383f8(u32 heap);
+extern "C" void func_020383f8(u32 heap);
 
 BattlePlayerList::BattlePlayerList()
     : SceneBase(0x3e8, 0) {

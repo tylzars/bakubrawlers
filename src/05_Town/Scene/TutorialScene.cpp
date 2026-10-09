@@ -50,7 +50,7 @@ static const WindowCellRecord data_ov005_02220238[6] = {
 };
 static const u8 data_ov005_022200d0[8] = {0, 1, 7, 12, 14, 16, 18, 0};
 static const s8 data_ov005_022200d8[16] = {0, 0, 13, 3, 13, 3, 0, 4, 0, 3, 13, 3, 13, 3, 0, 0};
-void func_020383f8(u32 a);
+extern "C" void func_020383f8(u32 a);
 void func_02089278();
 void func_ov005_0221fdc4();
 class TutorialScene;

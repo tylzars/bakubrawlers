@@ -68,6 +68,7 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   `TextManager` was declared 0x5c bytes, so the `mUnk_5b` store (offset 0x5b) blocked it; with its real size,
   0xe8 (an unused trailing member, so `Widths()` keeps its code), 22 functions match. So when a store seems to
   pin a later load, check the declared size of the stored-to object.
+
 ## Data layout within a section
 
 mwcc does not lay out a file's objects in declaration order. Found by experiment (and checked against 14 random

@@ -5,7 +5,7 @@
 void func_01ffcfd8(MtxFx33 *m, u16 angle);
 extern MtxFx33 data_0220e848;
 
-static VecFx32 data_ov007_02279450 = {0, 0, -0x14000};
+static const VecFx32 data_ov007_02279450 = {0, 0, -0x14000};
 
 static ModelResource *sResource;
 

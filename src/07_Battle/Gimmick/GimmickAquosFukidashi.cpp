@@ -6,7 +6,7 @@
 
 extern "C" void func_02024764(SoundManager *manager, u32 a, u32 b);
 
-static VecFx32 data_ov007_02285bd0 = {0, 0x3000, 0};
+static const VecFx32 data_ov007_02285bd0 = {0, 0x3000, 0};
 
 static u8 sCount;
 static ModelResource *sResources[2];

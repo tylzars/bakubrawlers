@@ -16,6 +16,22 @@
 extern MtxFx22 data_0220e838;
 void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
 
+static const WindowItemRecord sTwoButtonItems[2] = {
+    {0, 0x1, 89, 136, 78, 20, 0, {-1, -1, -1, -1}, 0, 2},
+    {1, 0x8000, 120, 35, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+};
+
+static const WindowCellRecord sThreeButtonCells[3] = {
+    {"union_b_obj_window_nce.bin", 3, 0x10000, 12, 0, 1, {3, 5, 4, 0}},
+    {"union_b_obj_window_nce.bin", 7, 0x10000, 12, 0, 1, {6, 8, 7, 0}},
+    {"union_b_obj_window_nce.bin", 10, 0x10000, 12, 0, 1, {10, 10, 10, 0}},
+};
+
+static const WindowCellRecord sTwoButtonCells[2] = {
+    {"union_b_obj_window_nce.bin", 1, 0x10000, 12, 0, 1, {0, 2, 1, 0}},
+    {"union_b_obj_window_nce.bin", 10, 0x10000, 12, 0, 1, {10, 10, 10, 0}},
+};
+
 static const Vec2s sTwoButtonPos[2] = {
     {0x159, 0x88},
     {0x178, 0x23},
@@ -25,22 +41,6 @@ static const Vec2s sThreeButtonPos[3] = {
     {0x12d, 0x88},
     {0x185, 0x88},
     {0x178, 0x23},
-};
-
-static const WindowItemRecord sTwoButtonItems[2] = {
-    {0, 0x1, 89, 136, 78, 20, 0, {-1, -1, -1, -1}, 0, 2},
-    {1, 0x8000, 120, 35, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
-};
-
-static const WindowCellRecord sTwoButtonCells[2] = {
-    {"union_b_obj_window_nce.bin", 1, 0x10000, 12, 0, 1, {0, 2, 1, 0}},
-    {"union_b_obj_window_nce.bin", 10, 0x10000, 12, 0, 1, {10, 10, 10, 0}},
-};
-
-static const WindowCellRecord sThreeButtonCells[3] = {
-    {"union_b_obj_window_nce.bin", 3, 0x10000, 12, 0, 1, {3, 5, 4, 0}},
-    {"union_b_obj_window_nce.bin", 7, 0x10000, 12, 0, 1, {6, 8, 7, 0}},
-    {"union_b_obj_window_nce.bin", 10, 0x10000, 12, 0, 1, {10, 10, 10, 0}},
 };
 
 static const WindowItemRecord sThreeButtonItems[3] = {

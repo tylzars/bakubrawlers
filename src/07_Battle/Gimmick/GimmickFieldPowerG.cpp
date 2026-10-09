@@ -4,8 +4,8 @@
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 
+static const VecFx32 data_ov007_02279420     = {0, 0xf000, -0xa000};
 static const u8 data_ov007_02279414[12] = {3, 4, 5, 0, 0, 0, 0x55, 0x15, 0, 0, 0, 0};
-static VecFx32 data_ov007_02279420     = {0, 0xf000, -0xa000};
 
 static ModelResource *sResource;
 

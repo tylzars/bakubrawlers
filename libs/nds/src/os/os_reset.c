@@ -17,7 +17,7 @@ extern void ResetFifoReceive(int tag, u32 data, BOOL err);
 extern void ResetFifoSend(u32 command);
 
 // 0x020be04c
-static struct {
+struct {
     u16 state;
     u16 initialized;
 } resetState;

@@ -471,7 +471,9 @@ libs/nds/src/os/os_irqwait.c:
     .text       start:0x02007188 end:0x02007230
 
 libs/nds/src/os/os_reset.c:
+    complete
     .text       start:0x02007230 end:0x020073bc
+    .bss        start:0x020be04c end:0x020be050
 
 libs/nds/src/os/os_owner.c:
     complete
@@ -513,7 +515,9 @@ libs/nds/src/snd/snd_alarm.c:
     .bss        start:0x020bfba0 end:0x020bfc00
 
 libs/nds/src/snd/snd_work.c:
+    complete
     .text       start:0x02008b1c end:0x02008bec
+    .bss        start:0x020bfc00 end:0x020bfc04
 
 libs/nds/src/snd/snd_util.c:
     complete

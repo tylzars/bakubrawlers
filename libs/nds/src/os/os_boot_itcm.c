@@ -1,7 +1,7 @@
 // Boot-time card/ROM loader helpers in ITCM: 0x01ffcb20-0x01ffcdb8 (func_01ffcb54 and func_01ffcc20 are hand assembly).
 #include <nitro/internal.h>
 
-extern vu16 data_020be04c;
+extern struct { vu16 state; u16 initialized; } resetState;   // os_reset.c
 extern u32 OS_DisableInterrupts(void);
 extern u32 OS_RestoreInterrupts(u32 state);
 void func_02005e04(void);
@@ -13,7 +13,7 @@ void func_01ffcc3c(void);
 void func_01ffcce4(u32 rom, void *dst, u32 size);
 
 void func_01ffcb20(void) {
-    while (data_020be04c == 0) {
+    while (resetState.state == 0) {
     }
     *(vu16 *) 0x04000208 = 0;
     func_01ffcc3c();

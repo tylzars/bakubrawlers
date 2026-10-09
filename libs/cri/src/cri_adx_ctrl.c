@@ -78,7 +78,6 @@ extern int func_02041860(int);
 extern int func_02041d50(int);
 extern int func_02041d7c(int, int);
 extern int func_02041f50(int, int);
-extern unsigned func_0201f970(unsigned, int);
 extern int func_020479a4(int);
 extern void func_020479b0(int, int);
 extern int func_02051514(int, int, int, int *, int *, int *);
@@ -180,7 +179,7 @@ void func_0204339c(Pl *o, int flag)
         if (r8 <= 0) {
             o->ic0 = 0;
         } else {
-            o->ic0 = r8 * func_0201f970(r5 - r4 * 2048, r8) + r4 * 2048;
+            o->ic0 = r8 * ((r5 - r4 * 2048) / r8) + r4 * 2048;
         }
     }
     o->b6c = flag;

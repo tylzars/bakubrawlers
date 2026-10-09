@@ -39,4 +39,3 @@ typedef struct CriObj {
     int ie8;
 } CriObj;
 
-extern unsigned func_0201f970(unsigned, int);

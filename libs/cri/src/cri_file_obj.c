@@ -35,7 +35,6 @@ extern void func_02012484(void *, int, int);
 extern void func_02046154(void);
 extern void func_02046164(void);
 extern void func_02049230(void);
-extern unsigned func_0201f970(unsigned, unsigned);
 
 FObj *func_02047d80(int name, int unused, int flag)
 {

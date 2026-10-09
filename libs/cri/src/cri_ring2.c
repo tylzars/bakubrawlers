@@ -57,7 +57,6 @@ extern char data_020ad77c[], data_020ad788[], data_020ad7a4[], data_020ad7b0[];
 extern void func_02044a34(const char *, const char *);
 extern void *func_02012464(void *, void *, int);
 extern void *func_02012484(void *, int, int);
-extern unsigned func_0201f970(unsigned, int);
 extern void func_02046200(const char *);
 extern void func_02051558(char *, int, const char *);
 extern void func_0205157c(char *, int, const char *);

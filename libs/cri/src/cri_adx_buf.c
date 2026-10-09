@@ -31,22 +31,22 @@ void func_0203e9dc(CriObj *o)
 {
     int f, t, r5, y, base, a, b, x, pos, lim, yb;
     f = o->i50;
-    a = func_0201f970(o->i4c, f);
+    a = o->i4c / f;
     pos = o->i70;
     b = o->i58;
     t = pos + b - 1;
     base = o->i68;
     r5 = o->i6c;
-    x = func_0201f970(t, b);
+    x = t / b;
     t = b - 1 - (t % b);
     lim = o->i60;
-    y = func_0201f970(lim - base + b - 1, b);
+    y = (lim - base + b - 1) / b;
     yb = y * b;
     if (x < y) {
         if (base + yb - t < lim) y++;
     }
     if (pos < r5) r5 += t;
-    r5 = func_0201f970(r5, b);
+    r5 = r5 / b;
     if (a > r5) a = r5;
     if (a > x) a = x;
     if (a > y) a = y;
@@ -89,8 +89,8 @@ int t = o->i70 + b - 1;
 int rem = b - 1 - (t % b);
 v = func_02044910(o->h);
 f = o->i50;
-q = func_0201f970(v * b, f);
-r = func_0201f970(t, b);
+q = (v * b) / f;
+r = t / b;
 if (r * f <= v) q -= rem;
 n = base + q;
 o->i90 = q;

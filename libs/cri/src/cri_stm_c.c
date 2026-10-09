@@ -48,7 +48,6 @@ extern char str_cri_a[], str_cri_b[];
 
 extern void *func_02012484(void *, int, int);
 extern void *func_02012464(void *, void *, int);
-extern unsigned func_0201f970(unsigned, int);
 extern void func_020401cc(const char *, const char *);
 extern int func_02045524(void *);
 extern int func_0204559c(void *);
@@ -344,7 +343,7 @@ void func_02040d10(CriStm *s)
         if (func_0203e6c4(obj) == 16) {
             int nch = func_0203e6a0(s->obj);
             int base = s->i34;
-            int half = (int)func_0201f970(s->in.n, nch) / 2;
+            int half = (int)(s->in.n / (nch)) / 2;
             if (base + half > pos) {
                 func_0204604c(&s->in, nch * (pos - base) * 2, &s->in, &u);
                 src->vt->put(src, 1, &u);

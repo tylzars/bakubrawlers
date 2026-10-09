@@ -47,7 +47,6 @@ extern char *func_02015a6c(char *, const char *);
 extern char *func_02015b84(char *, const char *);
 extern int func_0200ac30(int, int, int);
 extern int func_0200ac20(int, int, int);
-extern unsigned func_0201f970(unsigned, int);
 extern void func_02046154(void), func_02046164(void);
 extern int func_02048274(char *);
 extern int func_02048264(int), func_0204826c(int);
@@ -165,7 +164,7 @@ int func_02047ae8(CriFile *o)
             o->st = 2;
         }
     }
-    return func_0201f970(r + o->sz - 1, o->sz);
+    return (r + o->sz - 1) / o->sz;
 }
 
 static inline int criIsFlag(struct CriH *h) { int r; if (h->flags & 1) r = 1; else r = 0; return r; }
@@ -177,7 +176,7 @@ void func_02047b60(CriFile *o)
     func_02046154();
     o->st = 0;
     o->b1 = 1;
-    o->p64 = o->p64 + func_0201f970(o->p74, o->sz);
+    o->p64 = o->p64 + o->p74 / o->sz;
     o->p68 = o->p74;
     o->p6c = 0;
     func_02046164();

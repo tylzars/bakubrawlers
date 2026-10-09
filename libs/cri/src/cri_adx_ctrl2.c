@@ -68,7 +68,6 @@ extern int func_02041754(int), func_02041848(int), func_020417a0(int);
 extern int func_020416c0(int, int), func_020416d0(int, void *, void *), func_020416dc(int, int);
 extern int func_020416e4(int, int), func_020416ec(int, int);
 extern int func_02041d50(int), func_02041f50(int, int), func_02041f18(int, void *, void *);
-extern unsigned func_0201f970(unsigned, int);
 extern void func_02042dd8(Pl *, int, int, int, int);
 extern void func_02042f14(Pl *);
 extern int func_02042f94(Pl *), func_02042fdc(Pl *);
@@ -180,14 +179,14 @@ void func_02043f28(Pl *o)
         r6 = func_02041704(h);
         r5 = func_02041754(h);
         if (func_020416f4(h) == 10) {
-            o->i48 = func_0201f970(r6, o->i38);
+            o->i48 = r6 / o->i38;
             r6 = func_02041734(h);
         } else {
-            if (r5 > 0) o->i48 = func_0201f970(r6, o->i38) * 3;
-            else o->i48 = (int)func_0201f970(r6, o->i38) * 3 / 2;
+            if (r5 > 0) o->i48 = (r6 / o->i38) * 3;
+            else o->i48 = (int)(r6 / o->i38) * 3 / 2;
             r6 = func_02041734(h) * 2;
         }
-        o->i48 = r6 * func_0201f970(o->i48 + r6, r6);
+        o->i48 = r6 * ((o->i48 + r6) / r6);
         func_02040964(h, o->i48);
         if (r5 > 0) {
             if (o->s2 == 2) {

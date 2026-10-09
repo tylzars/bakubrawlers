@@ -179,6 +179,8 @@ Other findings from linking:
   `stm lr!, {r0-r3}` loop is CodeWarrior's `__clear(ptr, size)` intrinsic (the compiler also knows it as
   `__builtin__clear`); `memset(p, 0, n)` compiles to a call and a zero-initialised struct goes through the stack.
   Found in the CRI library (`func_0203e07c` and four more).
+- **Division helpers.** `/` and `%` on ints compile to calls to the runtime helper at 0x0201f970 (`_s32_div_f`,
+  quotient in r0, remainder in r1). Write the operator; never call the helper by name.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

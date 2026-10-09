@@ -66,7 +66,6 @@ extern void func_020447f4(int, int, int, int);
 extern void func_02044804(int, short *, short *, short *);
 extern void func_020448d0(int);
 extern void func_020448fc(int);
-extern unsigned func_0201f970(unsigned, int);
 extern void func_020515a0(void *, int, const char *);
 
 int func_0203dee8(void) { g_cri.init++; return 0; }
@@ -309,9 +308,9 @@ void func_0203e87c(CriObj *o, int a, unsigned b)
     int t = o->s98;
     o->i48 = a;
     if (t == 0) {
-        o->i4c = func_0201f970(b, o->f);
+        o->i4c = b / o->f;
     } else {
-        o->i4c = func_0201f970(b, (o->d / 8) * o->e);
+        o->i4c = b / ((o->d / 8) * o->e);
     }
     o->i74 = 0;
     o->i90 = 0;

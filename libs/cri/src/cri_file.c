@@ -56,7 +56,6 @@ extern void *func_02012484(void *, int, int);
 extern void func_02015b34(char *, const char *, int);
 extern int func_02015c04(const char *, const char *, int);
 extern unsigned func_02015a50(const char *);
-extern unsigned func_0201f970(unsigned, int);
 extern unsigned func_02017714(char *, char **, int);
 extern void func_02046154(void);
 extern void func_02046164(void);
@@ -290,7 +289,7 @@ void func_02049518(CriFil *f)
 {
     f->ssize = 0x800;
     f->i8 = func_020494b0(f->name);
-    f->nsec = func_0201f970(f->i8 + (f->ssize - 1), f->ssize);
+    f->nsec = (f->i8 + (f->ssize - 1)) / f->ssize;
     f->pos = 0;
     f->cnt = 0;
     f->i14 = 0;
@@ -451,8 +450,8 @@ void func_020498d0(CriFil *f, int ss)
     }
     t = f->pos * f->ssize;
     f->ssize = ss;
-    f->nsec = func_0201f970(f->i8 + (f->ssize - 1), f->ssize);
-    f->pos = func_0201f970(t, f->ssize);
+    f->nsec = (f->i8 + (f->ssize - 1)) / f->ssize;
+    f->pos = t / f->ssize;
     f->i14 = f->cnt * ss;
 }
 

@@ -224,6 +224,14 @@ Other findings from linking:
 - **Singleton references.** With `T &a = T::Get(); T &b = T::Get();` the address from the second guard block is
   kept in a callee-saved register and serves `a`; uses of `b` reload from the pool. A single reference reloads at
   every use. mwcc never forwards a stored value to a later load of the same member.
+- **Equivalent arithmetic, different schedules.** Inside a long sum, `y % 8 << 3` and `y % 8 * 8` (or
+  `(y/64) * 8 * 512` and `(y/64) * 4096`) produce different instruction orders, and so different registers, even
+  though each term alone compiles the same. Term order doesn't matter; the compiler re-sorts the sum
+  (SpriteScreen::func_02028054).
+- **Single-assignment locals are substituted.** `T x = expr;` is copied into every use and then hoisted out of every
+  enclosing loop where it's invariant; passed straight as a call argument it's recomputed instead. A local assigned
+  twice (`s32 left = c; left += b;`) is not substituted and is computed where written, e.g. in an inner loop's
+  preheader (BattleCommandPage::func_020571a8). Function-scope stack locals get slots in descending declaration order.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

@@ -108,6 +108,7 @@ libs/cri/src/cri_adx_vobj.c:
     .text       start:0x0204f3c8 end:0x0204fc00
 
 libs/cri/src/cri_misc_tail.c:
+    complete
     .text       start:0x02051528 end:0x02051804
 
 libs/cri/src/cri_adxm.c:
@@ -165,6 +166,7 @@ libs/msl/src/msl_printf_glue.c:
     .text       start:0x02014614 end:0x02014704
 
 libs/msl/src/msl_scan_spec.c:
+    complete
     .text       start:0x02014704 end:0x02014bfc
 
 libs/msl/src/msl_scan_core.c:
@@ -200,6 +202,7 @@ libs/msl/src/e_pow.c:
     .text       start:0x02019000 end:0x0201a188
 
 libs/msl/src/e_rem_pio2.c:
+    complete
     .text       start:0x0201a188 end:0x0201a850
 
 libs/msl/src/k_cos.c:
@@ -207,6 +210,7 @@ libs/msl/src/k_cos.c:
     .text       start:0x0201a850 end:0x0201ab70
 
 libs/msl/src/k_rem_pio2.c:
+    complete
     .text       start:0x0201ab70 end:0x0201b72c
 
 libs/msl/src/k_sin.c:
@@ -253,6 +257,7 @@ libs/msl/src/msl_dec_b.c:
     .text       start:0x0201c5b4 end:0x0201ca18
 
 libs/msl/src/msl_dec_c.c:
+    complete
     .text       start:0x0201ca18 end:0x0201caf8
 
 libs/msl/src/msl_dec_e.c:
@@ -303,6 +308,7 @@ libs/nns/src/snd/nns_snd_main.c:
     .text       start:0x020366f8 end:0x02036918
 
 libs/nns/src/snd/nns_snd_player.c:
+    complete
     .text       start:0x02036918 end:0x02037090
 
 libs/nns/src/snd/nns_snd_arc_cache.c:
@@ -371,6 +377,7 @@ libs/nds/src/fx/fx_mtx44.c:
     .text       start:0x0200144c end:0x02001688
 
 libs/nds/src/fx/fx_atan.c:
+    complete
     .text       start:0x020017d4 end:0x02001b34
 
 libs/nds/src/fx/fx_misc.c:
@@ -500,6 +507,7 @@ libs/nds/src/snd/snd_work.c:
     .text       start:0x02008b1c end:0x02008bec
 
 libs/nds/src/snd/snd_util.c:
+    complete
     .text       start:0x02008bec end:0x02008c5c
 
 libs/nds/src/snd/snd_bank.c:
@@ -542,6 +550,7 @@ libs/nds/src/card/card_common.c:
     .text       start:0x0200e310 end:0x0200f71c
 
 libs/nds/src/card/card_pullout.c:
+    complete
     .text       start:0x0200f71c end:0x0200f8e8
 
 libs/nds/src/wm/wm_base.c:

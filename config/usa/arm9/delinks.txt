@@ -32,6 +32,12 @@ libs/cri/src/cri_adx_obj.c:
 libs/cri/src/cri_ring2.c:
     .text       start:0x020450a4 end:0x02045f90
 
+libs/cri/src/cri_adx_ctrl.c:
+    .text       start:0x02043220 end:0x02043c14
+
+libs/cri/src/cri_adx_ctrl2.c:
+    .text       start:0x02043c14 end:0x02044614
+
 // MSL C runtime (2.0/sp1p5, C); code only so far.
 libs/msl/src/msl_string.c:
     .text       start:0x020122b0 end:0x020125b4

@@ -106,6 +106,21 @@ Other findings from linking:
 - When no include order works, look for a boundary problem before anything else (IBattle: its first functions use
   a WirelessManager node that lies among the previous file's nodes).
 
+- **Rules from the layout study (build trials on synthetic files):**
+  - A singleton's three objects join in the order guard, node, instance if the class has a non-trivial
+    constructor (user constructor, virtuals, or a base/member with one), and node, guard, instance if trivial.
+  - Vtables join at the end of the file, in reverse class order, and only those the file emits (a key function
+    defined mid-file still puts its vtable at the end).
+  - String literals in a table's initializer join just before the table; literals inside functions don't join.
+    Function-local static tables join at their function's position.
+  - Separate sections: objects the file never references (inline accessors in included headers count as
+    references), byte-aligned const tables whose size is a multiple of 4, function-local mutable statics, and every
+    string literal. Other referenced objects share one section per kind; mwld starts each section on 4 bytes.
+  - Unit boundaries show in the nodes: the same singleton's node at two original addresses means two files; a
+    smaller object between two larger ones means a boundary; another unit's data on both sides means a shared file.
+  - A function that is only `operator delete(p); return p;` is a deleting destructor and belongs to its class's file
+    (SceneRunner's sat at the start of FrameUpdate's range).
+
 ## Source patterns that matter
 
 - **Narrow reads of stack arguments.** Some callees read a stack-passed argument with `ldrb`/`ldrh` while every

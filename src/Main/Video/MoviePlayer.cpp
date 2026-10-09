@@ -47,10 +47,10 @@ void func_0203a760(MobiclipPlayer *video);
 u32 func_0203a784(MobiclipPlayer *video);
 void func_0203a79c(MobiclipPlayer *video, void *buffer);
 void func_0203a7c0(MobiclipPlayer *video);
-u32 func_0203bdc8();
-u32 func_0203bdd4();
-void func_0203bddc(u32 a, u32 b);
-void func_0203bdfc(u32 a, u32 b);
+extern "C" u32 func_0203bdc8();
+extern "C" u32 func_0203bdd4();
+extern "C" void func_0203bddc(u32 a, u32 b);
+extern "C" void func_0203bdfc(u32 a, u32 b);
 }
 extern "C" u64 OS_GetTick();
 extern "C" BOOL func_0200d924();

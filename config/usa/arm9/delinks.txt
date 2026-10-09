@@ -400,6 +400,12 @@ src/Main/Graphics/ModelResource.cpp:
 src/Main/Video/Mobiclip.cpp:
     .text       start:0x0203a52c end:0x0203afb0
 
+src/Main/Video/MobiclipDecoder.cpp:
+    .text       start:0x0203afb0 end:0x0203b658
+
+src/Main/Video/MobiclipFile.cpp:
+    .text       start:0x0203b658 end:0x0203c18c
+
 // provisional: code only.
 src/Main/Video/MoviePlayer.cpp:
     .text       start:0x0203c18c end:0x0203ced4

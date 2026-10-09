@@ -241,6 +241,15 @@ Other findings from linking:
   - A global read repeated inside a loop is hoisted and coloured after named locals and loop temps, so it gets the
     higher registers; a named local copy is coloured early.
   - `T a[2] = {0, 0};` stores through a base register (`add r1, sp, #N`), separate element stores use sp offsets.
+- **Spills, split variables, post-increments.**
+  - The values the original spills are the ones declared first; the first declared gets the highest stack slot.
+  - A local reassigned to an unrelated value that lands in another register was two variables in the source.
+  - Write post-increments as separate statements on the pointer they move (`*base = *r; base++; r++;`); folding
+    them into the expression (`*p++`) changes the colouring.
+  - Under register pressure, initialisation order can swap a pair when declaration order can't.
+  - A parameter copied into r1-r3 at entry and kept until a later call is usually that call's argument in that
+    position: check the callee or format string (a missing `%d` argument looked like a register problem).
+  - Declaration order doesn't affect `double` locals.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

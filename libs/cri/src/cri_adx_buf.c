@@ -29,7 +29,7 @@ void func_0203e994(CriObj *o, int n)
 
 void func_0203e9dc(CriObj *o)
 {
-    int f, t, r5, y, base, a, b, x, pos, lim, yb;
+    int pos, lim, f, x, u, r5, y, base, t, a, b, yb;
     f = o->i50;
     a = o->i4c / f;
     pos = o->i70;
@@ -38,14 +38,14 @@ void func_0203e9dc(CriObj *o)
     base = o->i68;
     r5 = o->i6c;
     x = t / b;
-    t = b - 1 - (t % b);
+    u = b - 1 - (t % b);
     lim = o->i60;
     y = (lim - base + b - 1) / b;
     yb = y * b;
     if (x < y) {
-        if (base + yb - t < lim) y++;
+        if (base + yb - u < lim) y++;
     }
-    if (pos < r5) r5 += t;
+    if (pos < r5) r5 += u;
     r5 = r5 / b;
     if (a > r5) a = r5;
     if (a > x) a = x;

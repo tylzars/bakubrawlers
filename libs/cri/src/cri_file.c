@@ -366,7 +366,6 @@ int func_020496d8(CriFil *f, int n, char *buf)
     int a;
     int b;
     int rem;
-    int ss;
     unsigned sz;
     unsigned base;
     if (f == 0) {
@@ -391,9 +390,8 @@ int func_020496d8(CriFil *f, int n, char *buf)
     rem = f->nsec - f->pos;
     if (n >= rem) n = rem;
     f->cnt = n;
-    ss = f->ssize;
-    a = f->pos * ss;
-    b = n * ss;
+    a = f->pos * f->ssize;
+    b = f->cnt * f->ssize;
     if (b == 0) {
         f->state = 1;
         func_02049338();

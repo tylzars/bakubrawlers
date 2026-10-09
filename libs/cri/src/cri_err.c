@@ -113,7 +113,7 @@ void func_020460dc(void *x)
     g_lockSt.nest--;
     if (g_lockSt.nest == 0) {
         if (g_lockSt.owner != x) {
-            func_02046194(data_020ad7d0, g_lockSt.owner);
+            func_02046194(data_020ad7d0, g_lockSt.owner, x);
         }
         g_lockSt.owner = 0;
     }

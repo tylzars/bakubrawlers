@@ -8,11 +8,16 @@ typedef struct Dec {
 
 void func_0201caf8(Dec *res, const Dec *a, const Dec *b)
 {
-    int la, lb, diff, m, t, n1;
-    unsigned char *base, *p, *r, *end;
-    const unsigned char *bbase, *q, *q0;
-    int lower;
-    int e1;
+    int e1, m, diff;
+    unsigned char *base;
+    const unsigned char *bbase;
+    unsigned char *p;
+    int lower, n1, la;
+    const unsigned char *q;
+    unsigned char *end;
+    int t, lb;
+    const unsigned char *q0;
+    unsigned char *r;
 
     *res = *a;
     if (b->text[0] == 0) return;
@@ -63,8 +68,8 @@ void func_0201caf8(Dec *res, const Dec *a, const Dec *b)
         if (*q0 < 5) {
             lower = 1;
         } else if (*q0 == 5) {
-            const unsigned char *s = q0 + 1;
             const unsigned char *send = b->text + lb;
+            const unsigned char *s = q0 + 1;
             for (; s < send; s++) {
                 if (*s != 0) goto fin;
             }
@@ -99,7 +104,7 @@ fin:
         end = base + res->len;
         if (r < end) {
             do {
-                *base++ = *r++;
+                *base = *r; base++; r++;
             } while (r < end);
         }
         res->len -= cnt;

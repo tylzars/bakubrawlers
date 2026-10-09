@@ -188,7 +188,7 @@ int func_0204f3c8(Obj *o, Cfg *cfg, char *buf, int size)
         o->p74 = buf + off;
         off += o->cnt * 0x1800;
     }
-    o->p78 = o->p34 = buf + off;
+    o->p34 = o->p78 = buf + off;
     off += 0x100;
     if (cfg->i1c == 1) {
         o->pc8 = buf + off;

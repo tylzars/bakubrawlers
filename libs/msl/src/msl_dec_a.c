@@ -85,8 +85,8 @@ void func_0201c394(Dec *res, const Dec *a, const Dec *b)
     unsigned char buf[64];
     unsigned int sum = 0;
     int n = a->len + b->len - 1;
-    unsigned char *end = buf + n + 1;
-    unsigned char *p = end;
+    unsigned char *p = buf + n + 1;
+    unsigned char *end = p;
     int k;
 
     res->sign = 0;
@@ -104,7 +104,9 @@ void func_0201c394(Dec *res, const Dec *a, const Dec *b)
         cnt = i + 1;
         if (cnt > a->len - j) cnt = a->len - j;
         while (cnt > 0) {
-            sum += *pa++ * *pb--;
+            sum += *pa * *pb;
+            pa++;
+            pb--;
             cnt--;
         }
         n--;
@@ -117,7 +119,7 @@ void func_0201c394(Dec *res, const Dec *a, const Dec *b)
         res->exp++;
     }
     for (k = 0; k < 32 && p < end; k++) {
-        res->text[k] = *p++;
+        res->text[k] = *p; p++;
     }
     res->len = k;
     if (p >= end) return;

@@ -159,7 +159,7 @@ void func_02043c14(Pl *o)
 void func_02043f28(Pl *o)
 {
     int h = o->h;
-    int a, b, n, r5, r6, p, q, t;
+    int a, b, n, r5, r6, t, q, p;
     char buf[32];
     int st;
     a = 0;

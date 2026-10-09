@@ -51,9 +51,11 @@ double func_02019000(double x, double y)
 {
     double z, ax, z_h, z_l, p_h, p_l;
     double y1, t1, t2, r, s, t, u, v, w;
-    int i0, i1, i, j, k, yisint, n;
-    int ix, iy, hx, hy;
-    unsigned lx, ly;
+    int i0, i1, i, j, k, yisint, nn, n;
+    int hx, ix;
+    unsigned lx;
+    int hy, iy;
+    unsigned ly;
 
     i0 = ((*(int *)&one) >> 29) ^ 1;
     i1 = 1 - i0;
@@ -132,7 +134,7 @@ double func_02019000(double x, double y)
         }
         if (ix < 0x3fefffff) return (hy < 0) ? huge * huge : tiny * tiny;
         if (ix > 0x3ff00000) return (hy > 0) ? huge * huge : tiny * tiny;
-        t = ax - one;
+        t = x - one;
         w = (t * t) * (0.5 - t * (0.3333333333333333333333 - t * 0.25));
         u = ivln2_h * t;
         v = t * ivln2_l - w * ivln2;
@@ -141,7 +143,6 @@ double func_02019000(double x, double y)
         t2 = v - (t1 - u);
     } else {
         double ss, s2, s_h, s_l, t_h, t_l;
-        int nn;
         nn = 0;
         if (ix < 0x00100000) {
             ax *= two53;

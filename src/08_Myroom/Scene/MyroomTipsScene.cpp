@@ -741,6 +741,8 @@ BOOL MyroomTipsScene::func_ov008_02227dd4() {
 
 // non-matching: 0x18c vs 0x194 bytes; the original spills this+0x78 to the stack (extra local) and keeps the context pointer in a register
 void MyroomTipsScene::func_ov008_02228214(s32 row) {
+    s16 *widths = mUnk_78;
+    UnkStruct_SceneContext *context = mContext;
     u8 i   = 0;
     u8 end = 4;
     if (row >= 0) {
@@ -750,12 +752,13 @@ void MyroomTipsScene::func_ov008_02228214(s32 row) {
     do {
         MI_CpuClear16(mTextBuffers[i], mTextBufferSize);
         TextManager &text = TextManager::Get();
-        s16 height;
+        u16 *pixelWidth = (mUnk_70[i] == 0) ? (u16 *) &widths[i] : NULL;
         s16 width;
-        height          = 0;
-        width           = mUnk_70[i];
-        u16 *pixelWidth = (mUnk_70[i] == 0) ? (u16 *) &mUnk_78[i] : NULL;
-        u16 index       = data_ov008_022296ac[mContext->mInfo.mMenuResult][mIndices[i] * 2];
+        s16 height;
+        height = 0;
+        width = mUnk_70[i];
+        s8 menu = context->mInfo.mMenuResult;
+        u16 index = data_ov008_022296ac[menu][mIndices[i] * 2];
         MessageFile *file = mMessages;
         text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[i], 0x30, 2, &width, &height, pixelWidth, 0, 2,
                    0x11, 0x10, 0, 0, 1, 1, 1);

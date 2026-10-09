@@ -74,6 +74,10 @@ void func_02086580(UnkStruct_02078e14 *self, u32 unk1, u32 unk2, BattleCellPair 
 
 // non-matching: register allocation only; the original keeps scale/y/x/over in r5/r6/r7/r8, the compiler uses r5/r7/r8/r6 (declaration order does not move them)
 
+static inline void PrintMessageF(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x) {
+    tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0x10, 0, 0, 0, 1, 1);
+}
+
 static inline void PrintMessageWidth(TextManager &tm, const u8 *data, u32 offset, u32 length, void *buffer, s16 x, s16 y, u16 *width) {
     tm.Print(data + offset, length, buffer, 0x18, 0x10, &y, &x, width, 0, 2, 0x44, 0, 0, 0, 0, 1, 1);
 }
@@ -86,8 +90,8 @@ static inline u16 *MessageEntry(void *base, u32 index) {
 
 void func_02082efc(UnkStruct_02078e14 *self);
 
-static inline void PrintMessageB(TextManager &tm, const u8 *data, const u16 *entry, void *buffer, s16 x, s16 y) {
-    tm.Print(data + entry[1], entry[2], buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0, 0, 0, 1, 1, 1);
+static inline void PrintMessageB(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x) {
+    tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0, 0, 0, 1, 1, 1);
 }
 
 void func_020839a0(UnkStruct_02078e14 *self);
@@ -2769,15 +2773,16 @@ void func_020839a0(UnkStruct_02078e14 *self) {
         case 0:
             break;
         case 1:
-            base  = (u8 *) self->mUnk_0c;
             index = 3;
+            base  = (u8 *) self->mUnk_0c;
             break;
         case 2: {
-            u8 i      = 0;
-            u32 msg   = 0;
-            u32 value = 0;
+            u8 i;
+            u32 msg;
+            u32 value;
             s16 y     = 0;
             s16 x     = 0;
+            msg = value = 0;
             for (i = 0; i < 3; i++) {
                 y = 8;
                 switch (i) {
@@ -2797,29 +2802,29 @@ void func_020839a0(UnkStruct_02078e14 *self) {
                         x     = 0x50;
                         break;
                 }
-                PrintMessageB(TextManager::Get(), (u8 *) self->mUnk_0c, MessageEntry(self->mUnk_0c, msg), self->mUnk_28[0], x, y);
+                PrintMessageB(TextManager::Get(), (MessageFile *) self->mUnk_0c, msg, self->mUnk_28[0], y, x);
                 y += 0x80;
                 TextManager::Get().PrintNumber(value, 7, 0, self->mUnk_28[0], 0x18, 0x10, &y, &x, 0, 2, 0x44, 0, 1, 1, 1);
             }
             break;
         }
         case 3:
-            base  = (u8 *) self->mUnk_0c;
             index = 4;
+            base  = (u8 *) self->mUnk_0c;
             break;
         case 4:
         case 5:
             base  = (u8 *) self->mUnk_0c;
             index = 9;
             TextManager::Get().mUnk_5b = 1;
-            PrintMessage(TextManager::Get(), (u8 *) self->mUnk_14, MessageEntry(self->mUnk_14, self->mUnk_106[self->mUnk_fa])[1], MessageEntry(self->mUnk_14, self->mUnk_106[self->mUnk_fa])[2], self->mUnk_28[0], 0x38, 0x1c);
+            PrintMessageF(TextManager::Get(), (MessageFile *) self->mUnk_14, self->mUnk_106[self->mUnk_fa], self->mUnk_28[0], 0x1c, 0x38);
             TextManager::Get().mUnk_5b = 0;
             break;
         case 6:
             base  = (u8 *) self->mUnk_0c;
             index = 0x16;
             TextManager::Get().mUnk_5b = 1;
-            PrintMessage(TextManager::Get(), (u8 *) self->mUnk_18, MessageEntry(self->mUnk_18, self->mUnk_106[self->mUnk_fa])[1], MessageEntry(self->mUnk_18, self->mUnk_106[self->mUnk_fa])[2], self->mUnk_28[0], 0x38, 0x17);
+            PrintMessageF(TextManager::Get(), (MessageFile *) self->mUnk_18, self->mUnk_106[self->mUnk_fa], self->mUnk_28[0], 0x17, 0x38);
             TextManager::Get().mUnk_5b = 0;
             break;
         case 7:
@@ -2847,7 +2852,7 @@ void func_020839a0(UnkStruct_02078e14 *self) {
             break;
     }
     if (base != NULL) {
-        PrintMessage(TextManager::Get(), base, MessageEntry((void *) base, index)[1], MessageEntry((void *) base, index)[2], self->mUnk_28[0], 0, 0);
+        PrintMessageF(TextManager::Get(), (MessageFile *) base, index, self->mUnk_28[0], 0, 0);
     }
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, self->mUnk_28[0], self->mUnk_38[0], 0);
 }

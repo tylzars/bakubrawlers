@@ -261,6 +261,8 @@ void func_0208813c(UnkStruct_02087898 *self, s32 unk1) {
 extern char data_020d441a[];
 
 void func_020882c4(UnkStruct_02087898 *self) {
+    s16 h;
+    s16 w;
     if (self->mUnk_34 < 0) {
         return;
     }
@@ -273,8 +275,8 @@ void func_020882c4(UnkStruct_02087898 *self) {
         self->mUnk_38++;
     }
     if (self->mUnk_39 != 0) {
-        TextManager &text = TextManager::Get();
         TextManager &t1 = TextManager::Get();
+        TextManager &text = TextManager::Get();
         s16 y;
         s16 x;
         x = -(self->mUnk_37 * 0x30);
@@ -284,12 +286,13 @@ void func_020882c4(UnkStruct_02087898 *self) {
         MessageFile *file = (MessageFile *) self->mUnk_18;
         u16 index         = self->mUnk_34;
         u16 len           = file->GetLength(index);
+        const u8 *str     = file->GetText(index);
         u16 n             = count;
         if (len < count * 2) {
             n = len >> 1;
         }
         text.mUnk_58 = 0x10;
-        text.Print(file->GetText(index), n * 2, buffer, 0x20, 6, &y, &x, NULL, 0, 2, 0x21, 0x10, 0, 0, 1, 1, 1);
+        text.Print(str, n * 2, buffer, 0x20, 6, &y, &x, NULL, 0, 2, 0x21, 0x10, 0, 0, 1, 1, 1);
         self->mUnk_3e = 2;
     } else {
         TextManager &text = TextManager::Get();
@@ -323,8 +326,8 @@ void func_020882c4(UnkStruct_02087898 *self) {
     }
     TextManager::Get().mUnk_5b = 1;
     if (self->mUnk_42 == 0x15) {
-        s16 h = 0;
-        s16 w = 0;
+        h = 0;
+        w = 0;
         TextManager::Get().Print(data_020d441a, 0x18, self->mUnk_20[1], 0x20, 2, &h, &w, NULL, 0, 0, 2, 0x21, 0, 0, 0, 1, 1);
     } else {
         s16 x = 0;

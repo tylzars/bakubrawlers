@@ -303,7 +303,7 @@ int func_0203e790(CriObj *o, unsigned a, unsigned b, int c, short *p0, short *p1
 
 int func_0203e874(CriObj *o) { return o->state; }
 
-void func_0203e87c(CriObj *o, int a, unsigned b)
+void func_0203e87c(CriObj *o, int a, int b)
 {
     if (o->s98 == 0) {
         o->i48 = a;

@@ -482,7 +482,6 @@ u8 func_ov007_02226aa0(BattleHud *obj) {
     return obj->mUnk_12b ? 1 : 0;
 }
 
-// non-matching: 2 words: temporary register naming in the and/asr pair.
 void BattleHud::func_ov007_02226ab8() {
     u32 hi;
     u32 lo;
@@ -509,8 +508,8 @@ void BattleHud::func_ov007_02226ab8() {
             mUnk_9f = 0xb;
         }
     } else {
-        u8 t = (int) (lo * 100) / (int) hi;
-        mUnk_9f = t >> 1;
+        mUnk_9f = (int) (lo * 100) / (int) hi;
+        mUnk_9f >>= 1;
         if (swapped == 0) {
             mUnk_9f = 100 - mUnk_9f;
         }

@@ -4150,7 +4150,8 @@ s32 func_02087100() {
         }
     }
     if (result < 0) {
-        if (StageReached(6, 6, 2) | VD.mUnk_5bf_0) {
+        u8 stage = VD.mUnk_42;
+        if ((stage > 6) | ((stage == 6) & (VD.mUnk_43 == 2)) | VD.mUnk_5bf_0) {
             if (data_020d48f0.mUnk_ba <= 1) {
                 if (!(VD.mUnk_5b6 & 0x80)) {
                     result = 7;

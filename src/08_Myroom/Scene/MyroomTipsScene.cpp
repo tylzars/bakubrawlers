@@ -29,7 +29,7 @@ static inline BOOL TestBit(const u8 *flags, int index) {
 
 extern const s8 data_ov008_022296ac[][20];
 
-extern const u8 data_ov008_02229668[];
+extern const u8 data_ov008_02229668[][2];
 
 extern WindowItemRecord data_ov008_02229674[];
 extern WindowCellRecord data_ov008_02229690[];
@@ -393,7 +393,7 @@ void MyroomTipsScene::Draw() {
         u8 i       = first;
         do {
             if (mNew[i] != 0) {
-                mNewCells[0]->Draw(1, data_ov008_02229668[i * 2], data_ov008_02229668[i * 2 + 1], 1);
+                mNewCells[0]->Draw(1, data_ov008_02229668[0][i * 2], data_ov008_02229668[0][i * 2 + 1], 1);
             }
             i++;
         } while (i < 6);
@@ -413,7 +413,6 @@ void MyroomTipsScene::Draw() {
     } while (j < 4);
 }
 
-// non-matching: register allocation of the position table and the hoisted draw-mode constants (9 words)
 void MyroomTipsScene::func_ov008_022271f8() {
     UnkStruct_SceneContext *context = mContext;
     if (mFlags & 1) {
@@ -429,10 +428,10 @@ void MyroomTipsScene::func_ov008_022271f8() {
         }
         do {
             if (mUnlocked[i] == 0) {
-                mCellA->Draw(1, data_ov008_02229668[i * 2], data_ov008_02229668[i * 2 + 1], 2);
+                mCellA->Draw(1, data_ov008_02229668[i][0], data_ov008_02229668[i][1], 2);
             } else {
                 mCells[i]->Update();
-                mCells[i]->Draw(1, data_ov008_02229668[i * 2], data_ov008_02229668[i * 2 + 1], 2);
+                mCells[i]->Draw(1, data_ov008_02229668[i][0], data_ov008_02229668[i][1], 2);
             }
             i++;
         } while (i < 6);
@@ -457,7 +456,7 @@ void MyroomTipsScene::func_ov008_022271f8() {
 void MyroomTipsScene::func_ov008_022273f0() {
     UnkStruct_SceneContext *context = mContext;
     if (mFlags & 1) {
-        func_ov008_022274a4(data_ov008_02229668, context->mInfo.mMenuResult);
+        func_ov008_022274a4(data_ov008_02229668[0], context->mInfo.mMenuResult);
     }
     if (!(mFlags & 2)) {
         return;
@@ -502,7 +501,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
             }
         }
         if (context->mInfo.mState == 0) {
-            s32 selection = func_ov008_02227a08(data_ov008_02229668, 6);
+            s32 selection = func_ov008_02227a08(data_ov008_02229668[0], 6);
             if (selection >= 0) {
                 s8 category = context->mInfo.mMenuResult;
                 if (category != selection) {

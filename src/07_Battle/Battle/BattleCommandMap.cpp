@@ -1005,14 +1005,13 @@ extern "C" void func_ov007_02247a7c(BattleCommandMap *map) {
     SnapshotCamera();
 }
 
-// non-matching: 2 words, the two stack-address computations are in swapped order.
 extern "C" void func_ov007_02247e00(BattleCommandMap *map) {
     if (map->mUnk_14d == 0) {
         return;
     }
     map->func_ov007_022455c0();
     u8 count    = data_020d433c.mPlayerCount;
-    u8 coords[8] = {6, 4, 7, 5, 7, 4, 6, 5};
+    u8 coords[4][2] = {{6, 4}, {7, 5}, {7, 4}, {6, 5}};
     if (data_020d433c.mUnk_8a_0 != 0) {
         if (map->mUnk_50[0] == 0) {
             BattleMapModel *model = new BattleMapModel(4);
@@ -1020,7 +1019,7 @@ extern "C" void func_ov007_02247e00(BattleCommandMap *map) {
             model->mUnk_00        = 1;
             map->mUnk_50[0]->func_02052768(0, 0);
             VecFx32 a;
-            func_ov007_02248944(&a, coords[0], coords[1]);
+            func_ov007_02248944(&a, coords[0][0], coords[0][1]);
             map->mUnk_50[0]->mPosition = a;
         }
     } else {
@@ -1032,7 +1031,7 @@ extern "C" void func_ov007_02247e00(BattleCommandMap *map) {
                 model->mUnk_00        = 1;
                 map->mUnk_50[i]->func_02052768(0, 0);
                 VecFx32 b;
-                func_ov007_02248944(&b, coords[i * 2], coords[i * 2 + 1]);
+                func_ov007_02248944(&b, coords[i][0], coords[i][1]);
                 map->mUnk_50[i]->mPosition = b;
             }
             i++;

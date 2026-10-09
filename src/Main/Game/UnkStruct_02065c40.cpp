@@ -1871,7 +1871,6 @@ void UnkStruct_02065c40::func_0206a850() {
     }
 }
 
-// non-matching: 2 words, y in r1 instead of r3.
 void UnkStruct_02065c40::func_0206aa34() {
     for (u8 i = 0; i < 2; i++) {
         if (mUnk_11b4[i].mUnk_2c != NULL) {
@@ -1881,7 +1880,8 @@ void UnkStruct_02065c40::func_0206aa34() {
             s32 round = FX_FROM_INT_ROUND(h);
             s32 y = mUnk_11b4[i].mUnk_04;
             s32 x = mUnk_11b4[i].mUnk_00;
-            pos.y = y / 2 - 0x64000 + round;
+            y = y / 2 - 0x64000;
+            pos.y = y + round;
             pos.x = x / 2;
             pos.z = z;
             if (mUnk_11b4[i].mUnk_36 == 0x15) {

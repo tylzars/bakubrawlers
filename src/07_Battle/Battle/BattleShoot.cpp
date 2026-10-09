@@ -1121,7 +1121,6 @@ extern MtxFx33 data_0220e848;
 extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
 extern "C" void func_01ff84d0(VecFx32 *v, MtxFx33 *m, VecFx32 *out);
 
-// non-matching: 2 words: add operand order of the right/down clamp checks.
 void BattleShoot::func_ov007_0226daa8() {
     mUnk_617c = 0;
     mUnk_6130->mUnk_1e4 = 0;
@@ -1136,8 +1135,8 @@ void BattleShoot::func_ov007_0226daa8() {
             mUnk_6168 = 0xeaab;
         }
     } else if (InputManager::Get().IsDown(0x10)) {
-        if ((u16) (mUnk_6168 + 0x8000 + mUnk_616c) < 0x9555) {
-            mUnk_6168 = mUnk_6168 + mUnk_616c;
+        if ((u16) (mUnk_616c + (mUnk_6168 + 0x8000)) < 0x9555) {
+            mUnk_6168 += mUnk_616c;
             mUnk_6174++;
             if (mUnk_6174 == 0) {
                 mUnk_6174 = 0xffff;
@@ -1160,8 +1159,8 @@ void BattleShoot::func_ov007_0226daa8() {
             mUnk_616a = 0;
         }
     } else if (InputManager::Get().IsDown(0x80)) {
-        if ((u16) (mUnk_616a + 0x8000 + mUnk_6170) < 0xaaaa) {
-            mUnk_616a = mUnk_616a + mUnk_6170;
+        if ((u16) (mUnk_6170 + (mUnk_616a + 0x8000)) < 0xaaaa) {
+            mUnk_616a += mUnk_6170;
             mUnk_6176++;
             if (mUnk_6176 == 0) {
                 mUnk_6176 = 0xffff;

@@ -184,7 +184,7 @@ void GimmickFieldDestroy::Update() {
 }
 
 // non-matching: the original loads the d4 table literal before e6, and the branch shape differs (bhi/pop vs popls/b).
-u8 func_ov007_0222b328() {
+u8 GimmickFieldDestroy::func_ov007_0222b328() {
     u8 flag   = data_020d433c.mUnk_7a;
     u32 total = 0;
     u8 i;
@@ -286,7 +286,6 @@ void GimmickFieldDestroy::func_ov007_0222b410() {
     }
 }
 
-// non-matching: prologue registers: the original has the player list in r2 and the index in r1.
 void GimmickFieldDestroy::func_ov007_0222b8b4() {
     BattlePlayerList *plist = data_020d433c.mBattlePlayers;
     BattlePlayer *p         = plist->mPlayers[plist->mUnk_28a];

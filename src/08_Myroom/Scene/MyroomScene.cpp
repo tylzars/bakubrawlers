@@ -440,7 +440,6 @@ void MyroomScene::SwitchPage(u8 page) {
     func_ov008_0221cea0();
 }
 
-// non-matching: size 0x61c vs 0x610: register allocation of first/last/count/window differs (r4/r7/r8/r9 vs sl/r4/r7/r8)
 void MyroomScene::func_ov008_0221c2a0() {
     UnkStruct_SceneContext *ctx = mContext;
     u8 first                    = 0;
@@ -471,10 +470,10 @@ void MyroomScene::func_ov008_0221c2a0() {
     }
     if (ctx->mInfo.mState == 4) {
         u8 hit    = window->Update(TRUE);
-        s32 delta = 0;
         if ((u8) ctx->mInfo.mPrevSelection != 2) {
             ctx->mInfo.mPrevSelection = hit;
         }
+        s32 delta = 0;
         switch (ctx->mInfo.mMenuResult) {
             case 0:
                 switch ((u8) ctx->mInfo.mPrevSelection) {

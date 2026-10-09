@@ -342,11 +342,13 @@ void BattleSub48::func_ov007_02224c90() {
         u16 angle = c * 0x2aaa + 0xc000;
         if (mUnk_0e_1) {
             u8 slot = i + 7;
-            CellAnimation *anim = mAnims[slot];
+            u16 x;
+            u16 y;
+            int step;
+            CellAnimation *anim;
+            anim = mAnims[slot];
             if (anim->mUnk_0e != 2) {
-                int step = angle >> 4;
-                u16 y;
-                u16 x;
+                step = angle >> 4;
                 x = 110.0f + 70.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
                 y = (float) (u32) mUnk_16 + 70.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
                 anim->Update();

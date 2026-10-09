@@ -67,6 +67,7 @@ public:
     /* 14 */ virtual void Finish();
 
     void func_ov007_0222accc();
+    u8 func_ov007_0222b328();
     void func_ov007_0222b410();
     void func_ov007_0222b8b4();
     int func_ov007_0222bc24();

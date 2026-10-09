@@ -38,6 +38,18 @@ libs/cri/src/cri_adx_ctrl.c:
 libs/cri/src/cri_adx_ctrl2.c:
     .text       start:0x02043c14 end:0x02044614
 
+libs/cri/src/cri_adx_buf.c:
+    .text       start:0x0203e954 end:0x0203edc4
+
+libs/cri/src/cri_adx_hdr.c:
+    .text       start:0x0203edc4 end:0x0203f714
+
+libs/cri/src/cri_adx_dec.c:
+    .text       start:0x0203f714 end:0x02040110
+
+libs/cri/src/cri_adx_err.c:
+    .text       start:0x02040110 end:0x0204046c
+
 // MSL C runtime (2.0/sp1p5, C); code only so far.
 libs/msl/src/msl_string.c:
     .text       start:0x020122b0 end:0x020125b4

@@ -349,6 +349,18 @@ Other findings from linking:
   fresh load gives smull/smlal: both forms in one function are the sign. `(fx32)((e64 >> 12) + t)` gives `adds`.
 - **mwcc predicates the else arm:** in an if/else whose predicated arm branches over the other, the predicated arm
   is the source's else. Duplicated call tails in both arms are not merged: write them in both arms.
+- **From the BattleTarget/BattlePlayer under-90% pass.**
+  - A struct copy initialised in its declaration (`VecFx32 pos = p->mPosition;`) stays an ldm/stm copy; assigned
+    later it is split into fields. Write-backs through inline setters load the owner pointer once.
+  - Compute all sums before storing (`u16 y = o->mRotY + r[1]; ...; o->mRotX = x; ...`); `o->mRotY += r[1]`
+    interleaves loads and stores.
+  - A signed compare (`bgt`) on an `ldrh` value means `int v = field; if (v > K)`; comparing the field gives `bhi`.
+  - Predicated `movCC/strCC` right after a `bCC` on the same condition is a dead re-test inside the branch
+    (`if (x <= K) { if (x > K) x = 0; ... }`): the original has it, so keep it.
+  - `f = c != 0 ? tbl[i] : g;` branches; `if (c == 0) f = g; else f = tbl[i];` predicates both arms. A two-case
+    `switch` gives a beq chain with the case-0 block out of line where if/else-if predicates it.
+  - A struct member at the head of an array element (`mRecords[k].mHead = ...`) folds the element base into the
+    offset; `*(T *)&mRecords[k] = ...` hoists it.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

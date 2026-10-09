@@ -49,7 +49,8 @@ struct BattlePlayerSlot {
 };
 
 // 12 byte per-slot record of a player, the second field is a 12 bit gauge.
-struct BattleRecord {
+// The first four bytes as a copyable unit (same layout as the save entry, UnkStruct_02023248).
+struct BattleRecordHead {
     /* 00 */ u16 mUnk_00_0 : 4;
     /* 00 */ u16 mGauge : 12;
     /* 02 */ u16 mUnk_02_0 : 3;
@@ -57,6 +58,21 @@ struct BattleRecord {
     /* 02 */ u16 mUnk_02_6 : 3;
     /* 02 */ u16 mUnk_02_9 : 3;
     /* 02 */ u16 mUnk_02_12 : 4;
+};
+
+struct BattleRecord {
+    union {
+        /* 00 */ BattleRecordHead mHead;
+        struct {
+            /* 00 */ u16 mUnk_00_0 : 4;
+            /* 00 */ u16 mGauge : 12;
+            /* 02 */ u16 mUnk_02_0 : 3;
+            /* 02 */ u16 mUnk_02_3 : 3;
+            /* 02 */ u16 mUnk_02_6 : 3;
+            /* 02 */ u16 mUnk_02_9 : 3;
+            /* 02 */ u16 mUnk_02_12 : 4;
+        };
+    };
     /* 04 */ u16 mUnk_04;
     /* 06 */ u16 mUnk_06;
     /* 08 */ u8 mUnk_08;

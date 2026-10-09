@@ -39,6 +39,7 @@ struct BattlePlayerTemplate {
 struct BattlePlayerTemplateSet {
     /* 00 */ BattlePlayerTemplate mUnk_00[3];
     /* 24 */ u16 mUnk_24[3][2];
+    /* 30 */ u16 mUnk_30[3][2];
     /* 3c */
 };
 extern BattlePlayerTemplateSet data_ov007_0227b0a8[][3];
@@ -48,7 +49,6 @@ extern u8 data_020d43d7[];
 extern u8 data_020d43e3[];
 s32 func_020230dc(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2);
 
-// non-matching: 0x54c vs 0x574 bytes. The original keeps `index` in r11 for the whole constructor and passes it to the BattleCpu constructor without masking it to u8; here it is spilled and masked.
 BattlePlayer::BattlePlayer(u32 index)
     : SceneBase(2, 0) {
     mUnk_d4 = 0;
@@ -67,11 +67,7 @@ BattlePlayer::BattlePlayer(u32 index)
     MI_CpuFill8((u8 *) this + 0x84, 0, 0x24);
     MI_CpuFill8((u8 *) this + 0xa8, 0, 8);
     mUnk_f0 = index;
-    if (data_020d433c.mUnk_98 == 0) {
-        mUnk_f2 = mUnk_f0;
-    } else {
-        mUnk_f2 = data_020d43d7[mUnk_f0];
-    }
+    mUnk_f2 = data_020d433c.mUnk_98 != 0 ? data_020d43d7[mUnk_f0] : mUnk_f0;
     mUnk_c8 = 0;
     u32 limit = 1;
     WirelessManager::Get();
@@ -94,49 +90,48 @@ BattlePlayer::BattlePlayer(u32 index)
     if (mUnk_f6 == 0x15) {
         u8 k = 0;
         do {
-            BattleRecord *rec = &mRecords[k];
-            rec->mUnk_09      = func_020230a8(save, 0, k);
-            rec->mUnk_08      = func_020230dc(save, 0, k);
-            rec->mUnk_04      = func_020231f4(save, 0, rec->mUnk_08, rec->mUnk_09);
-            rec->mUnk_0b      = rec->mUnk_04 / 10;
-            UnkStruct_02023248 *entry = func_02023248(save, rec->mUnk_08, rec->mUnk_09);
-            ((u16 *) rec)[0]  = entry->mPad;
-            ((u16 *) rec)[1]  = *(u16 *) ((u8 *) entry + 2);
+            mRecords[k].mUnk_09 = func_020230a8(save, 0, k);
+            mRecords[k].mUnk_08 = func_020230dc(save, 0, k);
+            mRecords[k].mUnk_04 = func_020231f4(save, 0, mRecords[k].mUnk_08, mRecords[k].mUnk_09);
+            mRecords[k].mUnk_0b = mRecords[k].mUnk_04 / 10;
+            mRecords[k].mHead = *(BattleRecordHead *) func_02023248(save, mRecords[k].mUnk_08, mRecords[k].mUnk_09);
             k++;
         } while (k < 3);
     }
     if (mUnk_f6 <= 0x10) {
+        if (mUnk_f6 > 0x10) {
+            mUnk_f6 = 0;
+        }
         u8 k = 0;
         do {
             u32 extra = 0;
             WirelessManager::Get();
-            BOOL bit;
             if (IsWirelessMode(&data_020c4258)) {
-                bit = TestFlagBit(data_020d43e3, data_020d433c.mUnk_af[index]);
-            } else {
-                bit = save->mUnk_5bf_0;
-            }
-            if (bit) {
+                int n = data_020d433c.mUnk_af[index];
+                if (data_020d43e3[(u32) n >> 3] & (1 << (n % 8))) {
+                    extra = 0x64;
+                }
+            } else if (data_020d43f0[0].mUnk_5bf_0) {
                 extra = 0x64;
             }
-            BattlePlayerTemplate *tmpl = &data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_00[k];
-            BattleRecord *rec          = &mRecords[k];
-            rec->mUnk_04               = tmpl->mUnk_04 * 10 + extra;
-            rec->mUnk_0b               = rec->mUnk_04 / 10;
-            rec->mUnk_09               = tmpl->mUnk_09;
-            rec->mUnk_08               = tmpl->mUnk_08;
-            ((u16 *) rec)[0]           = tmpl->mUnk_00;
-            ((u16 *) rec)[1]           = tmpl->mUnk_02;
-            mSlots54[k].mValue         = data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_24[k][0];
-            mSlots6c[k].mValue         = data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_24[k][1];
+            mRecords[k].mUnk_04 = data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_00[k].mUnk_04 * 10 + extra;
+            mRecords[k].mUnk_0b = mRecords[k].mUnk_04 / 10;
+            mRecords[k].mUnk_09 = data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_00[k].mUnk_09;
+            mRecords[k].mUnk_08 = data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_00[k].mUnk_08;
+            mRecords[k].mHead = *(BattleRecordHead *) &data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_00[k];
+            mSlots54[k].mValue = data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_24[k][0];
+            mSlots6c[k].mValue = data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_30[k][0];
             k++;
         } while (k < 3);
     }
     if (data_020d433c.mPlayerCount == 2) {
-        if (index == 0) {
-            mUnk_f1 = 0;
-        } else if (index == 1) {
-            mUnk_f1 = 2;
+        switch (index) {
+            case 0:
+                mUnk_f1 = 0;
+                break;
+            case 1:
+                mUnk_f1 = 2;
+                break;
         }
     } else {
         switch (index) {

@@ -82,20 +82,21 @@ void func_0204b4f8(Bs *bs, SbInfo *si, int (*out)[32]) {
             out[ch][i] = 0;
 }
 
-void func_0204b5f4(Bs *bs, SbInfo *si, int (*alloc)[32], int (*sfsel)[32], int *scf) {
+void func_0204b5f4(Bs *bs, SbInfo *si, int (*alloc)[32], int (*sfsel)[32], int (*scf)[3][32]) {
     int sblimit = si->sblimit;
     int nch = si->nch;
     int sb, ch;
     short m;
-    if (alloc[0][0] == 0) {
-        sfsel[0][0] = 0;
-    } else {
+    if (alloc[0][0] != 0) {
         sfsel[0][0] = func_0204e6f0(bs, 2);
+    } else {
+        sfsel[0][0] = 0;
     }
     m = si->sel[sfsel[0][0]];
     for (sb = 1; sb < sblimit; sb++) {
         if (alloc[0][sb] != 0) {
-            sfsel[0][sb] = func_0204e6f0(bs, 2) ^ (m & 3);
+            sfsel[0][sb] = func_0204e6f0(bs, 2);
+            sfsel[0][sb] ^= m & 3;
         }
         m >>= 2;
     }
@@ -103,72 +104,53 @@ void func_0204b5f4(Bs *bs, SbInfo *si, int (*alloc)[32], int (*sfsel)[32], int *
         for (ch = 0; ch < nch; ch++)
             sfsel[ch][sb] = 0;
     for (sb = 0; sb < sblimit; sb++) {
-        int *p = scf + sb;
         for (ch = 0; ch < nch; ch++) {
             if (alloc[ch][sb] != 0) {
-                int a;
                 switch (sfsel[ch][sb]) {
                 case 0:
-                    p[0] = func_0204e6f0(bs, 6);
-                    p[32] = func_0204e6f0(bs, 6);
-                    p[64] = func_0204e6f0(bs, 6);
+                    scf[ch][0][sb] = func_0204e6f0(bs, 6);
+                    scf[ch][1][sb] = func_0204e6f0(bs, 6);
+                    scf[ch][2][sb] = func_0204e6f0(bs, 6);
                     break;
                 case 1:
-                    a = func_0204e6f0(bs, 6);
-                    p[32] = a;
-                    p[0] = a;
-                    p[64] = func_0204e6f0(bs, 6);
+                    scf[ch][0][sb] = scf[ch][1][sb] = func_0204e6f0(bs, 6);
+                    scf[ch][2][sb] = func_0204e6f0(bs, 6);
                     break;
                 case 3:
-                    a = func_0204e6f0(bs, 6);
-                    p[64] = a;
-                    p[32] = a;
-                    p[0] = a;
+                    scf[ch][0][sb] = func_0204e6f0(bs, 6);
+                    scf[ch][1][sb] = scf[ch][2][sb] = func_0204e6f0(bs, 6);
                     break;
                 case 2:
-                    p[0] = func_0204e6f0(bs, 6);
-                    a = func_0204e6f0(bs, 6);
-                    p[64] = a;
-                    p[32] = a;
+                    scf[ch][0][sb] = scf[ch][1][sb] = scf[ch][2][sb] = func_0204e6f0(bs, 6);
                     break;
                 }
             } else {
-                p[64] = 0x3f;
-                p[32] = 0x3f;
-                p[0] = 0x3f;
+                scf[ch][0][sb] = scf[ch][1][sb] = scf[ch][2][sb] = 0x3f;
             }
-            p += 96;
         }
     }
     for (; sblimit < 32; sblimit++) {
-        int *p = scf + sblimit;
         for (ch = 0; ch < nch; ch++) {
-            p[64] = 0x3f;
-            p[32] = 0x3f;
-            p[0] = 0x3f;
-            p += 96;
+            scf[ch][0][sblimit] = scf[ch][1][sblimit] = scf[ch][2][sblimit] = 0x3f;
         }
     }
 }
 
 extern int data_020ae488[];
 
-void func_0204b880(Bs *bs, SbInfo *si, int (*alloc)[32], int (*scf)[32], int part, short (*out)[3][32], int *mtab) {
+void func_0204b880(Bs *bs, SbInfo *si, int (*alloc)[32], int (*scf)[3][32], int part, short (*out)[3][32], int *mtab) {
     int sblimit = si->sblimit;
     int nch = si->nch;
     int bound = si->bound;
     QEnt (*tab)[16] = si->alloc;
     int sb, ch, i;
     for (sb = 0; sb < sblimit; sb++) {
-        int *sp = &scf[part][sb];
-        short *o = &out[0][0][sb];
-        short *o0 = o;
         for (ch = 0; ch < (sb >= bound ? 1 : nch); ch++) {
             int a = alloc[ch][sb];
             if (a != 0) {
                 QEnt *e = &tab[sb][a];
                 int mul = e->mul, add = e->add;
-                int g = mtab[*sp];
+                int g = mtab[scf[ch][part][sb]];
                 if (e->cls == 3) {
                     int nb = e->bits;
                     if (nb <= 8) {
@@ -177,52 +159,50 @@ void func_0204b880(Bs *bs, SbInfo *si, int (*alloc)[32], int (*scf)[32], int par
                         int x0 = v & m;
                         int x1 = (v >> nb) & m;
                         int x2 = (v >> nb) >> nb;
-                        o[64] = (((x0 * mul + add) >> 2) * g) >> 16;
-                        o[32] = (((x1 * mul + add) >> 2) * g) >> 16;
-                        o[0] = (((x2 * mul + add) >> 2) * g) >> 16;
+                        out[ch][2][sb] = (((x0 * mul + add) >> 2) * g) >> 16;
+                        out[ch][1][sb] = (((x1 * mul + add) >> 2) * g) >> 16;
+                        out[ch][0][sb] = (((x2 * mul + add) >> 2) * g) >> 16;
                     } else {
-                        o[0] = (((func_0204e6f0(bs, nb) * mul + add) >> 2) * g) >> 16;
-                        o[32] = (((func_0204e6f0(bs, nb) * mul + add) >> 2) * g) >> 16;
-                        o[64] = (((func_0204e6f0(bs, nb) * mul + add) >> 2) * g) >> 16;
+                        out[ch][0][sb] = (((func_0204e6f0(bs, nb) * mul + add) >> 2) * g) >> 16;
+                        out[ch][1][sb] = (((func_0204e6f0(bs, nb) * mul + add) >> 2) * g) >> 16;
+                        out[ch][2][sb] = (((func_0204e6f0(bs, nb) * mul + add) >> 2) * g) >> 16;
                     }
                 } else {
                     int grp = e->grp;
                     int v = func_0204e6f0(bs, e->bits);
                     if (grp == 3) {
-                        o[0] = (((v % 3 * mul + add) >> 2) * g) >> 16;
+                        out[ch][0][sb] = (((v % 3 * mul + add) >> 2) * g) >> 16;
                         v /= 3;
-                        o[32] = (((v % 3 * mul + add) >> 2) * g) >> 16;
+                        out[ch][1][sb] = (((v % 3 * mul + add) >> 2) * g) >> 16;
                         v /= 3;
-                        o[64] = (((v % 3 * mul + add) >> 2) * g) >> 16;
+                        out[ch][2][sb] = (((v % 3 * mul + add) >> 2) * g) >> 16;
                     } else if (grp == 5) {
-                        o[0] = (((v % 5 * mul + add) >> 2) * g) >> 16;
+                        out[ch][0][sb] = (((v % 5 * mul + add) >> 2) * g) >> 16;
                         v /= 5;
-                        o[32] = (((v % 5 * mul + add) >> 2) * g) >> 16;
+                        out[ch][1][sb] = (((v % 5 * mul + add) >> 2) * g) >> 16;
                         v /= 5;
-                        o[64] = (((v % 5 * mul + add) >> 2) * g) >> 16;
+                        out[ch][2][sb] = (((v % 5 * mul + add) >> 2) * g) >> 16;
                     } else if (grp == 9) {
-                        o[0] = (((v % 9 * mul + add) >> 2) * g) >> 16;
+                        out[ch][0][sb] = (((v % 9 * mul + add) >> 2) * g) >> 16;
                         v /= 9;
-                        o[32] = (((v % 9 * mul + add) >> 2) * g) >> 16;
+                        out[ch][1][sb] = (((v % 9 * mul + add) >> 2) * g) >> 16;
                         v /= 9;
-                        o[64] = (((v % 9 * mul + add) >> 2) * g) >> 16;
+                        out[ch][2][sb] = (((v % 9 * mul + add) >> 2) * g) >> 16;
                     } else {
                         for (i = 0; i < 3; i++) {
-                            o[i * 32] = (((v % grp * mul + add) >> 2) * g) >> 16;
+                            out[ch][i][sb] = (((v % grp * mul + add) >> 2) * g) >> 16;
                             v /= grp;
                         }
                     }
                 }
             } else {
-                o[0] = 0;
-                o[32] = 0;
-                o[64] = 0;
+                out[ch][0][sb] = 0;
+                out[ch][1][sb] = 0;
+                out[ch][2][sb] = 0;
             }
             if (nch == 2 && sb >= bound) {
-                for (i = 0; i < 3; i++) o0[i * 32 + 96] = o0[i * 32];
+                for (i = 0; i < 3; i++) out[1][i][sb] = out[0][i][sb];
             }
-            o += 96;
-            sp += 96;
         }
     }
     for (; sblimit < 32; sblimit++) {

@@ -250,6 +250,11 @@ Other findings from linking:
   - A parameter copied into r1-r3 at entry and kept until a later call is usually that call's argument in that
     position: check the callee or format string (a missing `%d` argument looked like a register problem).
   - Declaration order doesn't affect `double` locals.
+- **Post-increment reads schedule loads.** `s += *w++ * p[x];` per tap keeps each address `add` next to its load;
+  `s += w[2*k] * p[x]` with `w += 16;` afterwards gives the same instructions but the scheduler groups the address
+  adds (CRI's 16 windowing functions). Indexing through a pointer-to-array type (`int (*scf)[3][32]`,
+  `scf[ch][i][sb]`) recomputes `scf + sb*4` each iteration where a running pointer is strength-reduced; chained
+  stores `a = b = c = k;` evaluate right to left.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

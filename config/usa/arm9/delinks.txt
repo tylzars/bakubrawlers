@@ -287,6 +287,10 @@ libs/nds/src/wm/wm_0200fdfc.c:
 libs/nds/src/ctrdg/ctrdg.c:
     .text       start:0x02011c34 end:0x020122b0
 
+// provisional: code only; main (0x02000c04) is defined here too but delinked with the start-up code.
+src/Main/System/Game.cpp:
+    .text       start:0x0202030c end:0x020219dc
+
 // provisional: code only; data not assigned yet.
 src/Main/System/Random.cpp:
     complete

@@ -111,8 +111,6 @@ void func_0202e374(WmCallbackArg *arg);
 void func_0202e478(WmCallbackArg *arg);
 void func_0202e4e8(WmCallbackArg *arg);
 
-WirelessManager::~WirelessManager() {}
-
 void func_0202db04(WmCallbackArg *arg) {
     WirelessManager &mgr = WirelessManager::Get();
     if (arg->mResult != 0) {

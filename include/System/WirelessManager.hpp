@@ -72,7 +72,7 @@ public:
     /* 1258 */
 
     virtual void func_0202ed28();
-    virtual ~WirelessManager();
+    virtual ~WirelessManager() {}
 
     static WirelessManager &Get() {
         static WirelessManager instance;

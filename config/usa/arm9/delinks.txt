@@ -126,6 +126,15 @@ libs/cri/src/cri_snd_tbl.c:
 libs/cri/src/cri_snd_play.c:
     .text       start:0x0204ad88 end:0x0204b314
 
+libs/msl/src/msl_dec2num.c:
+    .text       start:0x0201cfc4 end:0x0201d5e8
+
+libs/nns/src/gfd/gfd_vram_state.c:
+    .text       start:0x020360c4 end:0x02036538
+
+libs/cri/src/cri_adx_hooks.c:
+    .text       start:0x0203de40 end:0x0203dee8
+
 // MSL C runtime (2.0/sp1p5, C); code only so far.
 libs/msl/src/msl_string.c:
     .text       start:0x020122b0 end:0x020125b4

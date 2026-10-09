@@ -95,5 +95,7 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 - 0x0204c088-0x0204c40c: CRI's MPEG synthesis dot products (`ldmib` + `smlatt`).
 - ITCM: `func_01ff817c` (identity matrix fill), the `MIi_CpuClear*`/copy routines at 0x01ff94c8-0x01ff962f and
   0x01ff97f4, the IRQ dispatcher `func_01ffc93c` and the thread-switch return `func_01ffc9a4`.
+- NitroSDK: the SHA-1 block transform `func_0200bb88`, the divider/sqrt register save and restore
+  (`func_0200be08`, `func_0200be48`) and the LZ streaming decompress step `func_02007d94` (uses `swpb`).
 - The BIOS calls (`SoftReset`, `CpuSet`, ...), `OS_SaveContext`/`OS_LoadContext`, the interrupt helpers and the
   floating-point runtime (`_dadd` ... ) are hand-written assembly too.

@@ -19,12 +19,12 @@
 #include "System/SoundManager.hpp"
 #include "System/TouchManager.hpp"
 
-extern u8 data_ov000_0222622c[];
+extern const u8 data_ov000_0222622c[];
 
 void operator delete(void *ptr);
 extern "C" u32 FX_Atan2Idx(s32 x, s32 y);
-extern u8 data_ov000_02226224[];
-extern u8 data_ov000_0222621c[];
+extern const u8 data_ov000_02226224[];
+extern const u8 data_ov000_0222621c[];
 
 
 
@@ -176,15 +176,15 @@ void AttrSelScene::Update() {
 
 // Same arithmetic as TextManager::GlyphCount(width, height, flags) but with signed operands: the original calls
 // _s32_div_f here (and in ov008 0221e2d8/0221e2ec), the header's u32 parameters would give _u32_div_f.
-extern u8 data_ov000_02226214[];
+extern const u8 data_ov000_02226214[];
 
-extern u8 data_ov000_02226218[];
+extern const u8 data_ov000_02226218[];
 
-extern u32 data_ov000_02226234[];
+extern const u32 data_ov000_02226234[];
 
-extern WindowItemRecord data_ov000_0222623c[];
+extern const WindowItemRecord data_ov000_0222623c[];
 
-extern WindowCellRecord data_ov000_02226258[];
+extern const WindowCellRecord data_ov000_02226258[];
 
 // Same helper as FieldSelectScene.cpp defines locally; belongs in nitro/gx.h next to G2S_SetBlendAlpha.
 void AttrSelScene::InitDisplay() {
@@ -418,7 +418,7 @@ void AttrSelScene::Draw() {
     mSelectWindow->Draw();
 }
 
-extern u8 data_ov000_0222621c[];
+extern const u8 data_ov000_0222621c[];
 
 
 

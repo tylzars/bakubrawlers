@@ -18,15 +18,15 @@
 #include "System/SoundManager.hpp"
 #include "System/TouchManager.hpp"
 
-extern WindowItemRecord data_ov000_02226340[];
+extern const WindowItemRecord data_ov000_02226340[];
 
-extern WindowCellRecord data_ov000_02226394[];
+extern const WindowCellRecord data_ov000_02226394[];
 
-extern Vec2s data_ov000_02226298[];
+extern const Vec2s data_ov000_02226298[];
 
-extern WindowItemRecord data_ov000_022263e8[];
+extern const WindowItemRecord data_ov000_022263e8[];
 
-extern WindowCellRecord data_ov000_02226458[];
+extern const WindowCellRecord data_ov000_02226458[];
 
 OptionScene::OptionScene() :
     SceneBase(2, 0) {
@@ -369,17 +369,17 @@ void OptionScene::Init() {
     func_02025c1c(1, 9, 0x800, map, mapSize, 1);
 }
 
-extern WindowItemRecord data_ov000_022265a8[];
+extern const WindowItemRecord data_ov000_022265a8[];
 
-extern WindowCellRecord data_ov000_02226650[];
+extern const WindowCellRecord data_ov000_02226650[];
 
-extern u8 data_ov000_02226280[];
+extern const u8 data_ov000_02226280[];
 
-extern Vec2s data_ov000_022262a8[];
+extern const Vec2s data_ov000_022262a8[];
 
-extern WindowItemRecord data_ov000_022262d0[];
+extern const WindowItemRecord data_ov000_022262d0[];
 
-extern WindowCellRecord data_ov000_02226308[];
+extern const WindowCellRecord data_ov000_02226308[];
 
 void OptionScene::BuildMainMenu() {
     ClearText(0);
@@ -423,7 +423,7 @@ void OptionScene::BuildSettings() {
     mWindow->Update(1);
 }
 
-extern Vec2s data_ov000_022262bc[];
+extern const Vec2s data_ov000_022262bc[];
 
 extern const u8 data_ov000_02226278[];
 
@@ -450,7 +450,7 @@ extern const u8 data_ov000_02226274[];
 
 extern const u8 data_ov000_02226278[];
 
-extern u8 data_ov000_02226280[];
+extern const u8 data_ov000_02226280[];
 
 void func_02022db4(UnkStruct_020d43f0 *d);
 
@@ -535,9 +535,9 @@ void OptionScene::UpdateSettings() {
     }
 }
 
-extern WindowItemRecord data_ov000_022264c8[];
+extern const WindowItemRecord data_ov000_022264c8[];
 
-extern WindowCellRecord data_ov000_02226538[];
+extern const WindowCellRecord data_ov000_02226538[];
 
 void OptionScene::BuildMenu2() {
     ClearText(2);
@@ -557,7 +557,7 @@ void OptionScene::BuildMenu2() {
     mWindow->mCells[(u8) sel]->SetAnimation(data_ov000_02226538[sel].mUnk_18[2]);
 }
 
-extern Vec2s data_ov000_02226288[];
+extern const Vec2s data_ov000_02226288[];
 
 void OptionScene::DrawMenu2() {
     if (mUnk_4b != 0) {

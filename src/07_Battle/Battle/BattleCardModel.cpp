@@ -15,7 +15,7 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-extern u8 data_ov007_0227c428[];
+extern const u8 data_ov007_0227c428[];
 
 // Copies the active camera into the 3D engine state and the camera manager's snapshot of it.
 static inline void SnapshotCamera() {
@@ -47,13 +47,13 @@ static inline float FramesToFloat(u32 frames) {
     return (float) raw - 0.5f;
 }
 
-extern u8 data_020a1074[];
+extern const u8 data_020a1074[];
 extern BattleCardModelEntry *data_ov007_0228acc0[];
-extern VecFx32 data_ov007_0227c0c4;
+extern const VecFx32 data_ov007_0227c0c4;
 extern MtxFx43 data_0220e86c;
-extern u8 data_ov007_0227c418[];
-extern u8 data_ov007_0227c438[];
-extern u8 data_ov007_0227c3f0[];
+extern const u8 data_ov007_0227c418[];
+extern const u8 data_ov007_0227c438[];
+extern const u8 data_ov007_0227c3f0[];
 extern u32 *data_ov007_0228acf4[];
 
 extern "C" s32 func_0203340c(void *dict, const char *name);

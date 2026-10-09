@@ -28,8 +28,8 @@ public:
 
 
 extern const u8 data_ov007_0227af68[][0x28];
-extern VecFx32 data_ov007_0227ac20;
-extern VecFx32 data_ov007_0227ac2c;
+extern const VecFx32 data_ov007_0227ac20;
+extern const VecFx32 data_ov007_0227ac2c;
 extern const char *data_ov007_0228a394[22];
 extern const u16 *const data_ov007_0228a2e4[];
 extern const u8 *const data_ov007_0228a33c[];

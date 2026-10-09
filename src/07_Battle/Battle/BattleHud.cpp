@@ -26,8 +26,8 @@
 u32 func_ov007_0221d348(u32 max);
 // Object at BattlePlayerList+0x2a4: a timed screen effect (fade) the battle shows before the gauge starts.
 extern const u8 data_ov007_02279178[];
-extern u32 data_ov007_02279184[];
-extern s32 data_ov007_0227918c[];
+extern const u32 data_ov007_02279184[];
+extern const s32 data_ov007_0227918c[];
 
 BattleHud::BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *choice)
     : SceneBase(2, 0) {
@@ -125,8 +125,8 @@ BattleHud::~BattleHud() {
     mData->mUnk_6c->mUnk_27 = 0;
 }
 
-extern u32 data_ov007_02279d44;
-extern s8 data_ov007_02279d40;
+extern const u32 data_ov007_02279d44;
+extern const s8 data_ov007_02279d40;
 u16 func_02065c20(u32 id);
 int func_02065c0c(u32 id, u32 kind);
 

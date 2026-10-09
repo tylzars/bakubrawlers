@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 extern MtxFx43 data_0220e86c;
-extern u8 data_020a1074[];
+extern const u8 data_020a1074[];
 
 UnkStruct_0203d374::UnkStruct_0203d374() {
     mUnk_4b = 0;

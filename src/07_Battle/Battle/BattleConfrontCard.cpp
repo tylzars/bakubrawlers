@@ -2147,7 +2147,7 @@ void BattleConfrontCard::func_ov007_02243dec() {
     G2S_SetWndOutsidePlane(0x3f, FALSE);
 }
 
-extern WindowItemRecord data_ov007_02279d48[3];
+extern const WindowItemRecord data_ov007_02279d48[3];
 extern const WindowCellRecord data_ov007_02279d9c[3];
 
 void BattleConfrontCard::func_ov007_02243e7c() {

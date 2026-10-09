@@ -45,9 +45,9 @@ extern const u8 data_ov008_02228cb0[];
 extern const u8 data_ov008_02228cb1[];
 extern const u8 data_ov008_02228cbc[];
 extern const u8 data_ov008_02228d38[][20];
-extern WindowItemRecord data_ov008_02228eac[];
-extern WindowCellRecord data_ov008_02228db0[];
-extern WindowCellRecord data_ov008_02228cc8[];
+extern const WindowItemRecord data_ov008_02228eac[];
+extern const WindowCellRecord data_ov008_02228db0[];
+extern const WindowCellRecord data_ov008_02228cc8[];
 
 MyroomRankingScene::MyroomRankingScene() :
     SceneBase(1000, 0) {

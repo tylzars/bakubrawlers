@@ -14,7 +14,7 @@
 
 BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag);
 BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
-extern VecFx32 data_ov007_0227aa1c;
+extern const VecFx32 data_ov007_0227aa1c;
 
 
 // Copies the active camera into the 3D engine state and the camera manager's snapshot of it.

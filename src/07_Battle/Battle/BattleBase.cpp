@@ -18,12 +18,12 @@
 #include "Battle/BattleUtil.hpp"
 #include "System/InputManager.hpp"
 
-extern u8 data_ov007_02279160;
+extern const u8 data_ov007_02279160;
 extern const u8 data_ov007_02279164;
 extern const u8 data_ov007_02279168;
-extern u8 data_ov007_0227916c;
+extern const u8 data_ov007_0227916c;
 extern const s16 data_ov007_02279174;
-extern u8 data_ov007_02279178[];
+extern const u8 data_ov007_02279178[];
 extern const s16 data_ov007_0227917c;
 
 BOOL func_ov007_02229524(BattleField3D *field);
@@ -42,13 +42,13 @@ BOOL func_ov007_022297f0(BattleField3D *obj);
 void func_ov007_02226a44(BattleHud *obj, u32 a);
 void func_ov007_0222847c(BattleHud *obj);
 void func_ov007_02227434(BattleHud *obj);
-extern u8 data_ov007_0227915c;
-extern u8 data_ov007_02279170;
+extern const u8 data_ov007_0227915c;
+extern const u8 data_ov007_02279170;
 struct BattleRow {
     s32 mUnk[6];
 };
-extern BattleRow data_ov007_02278b68[];
-extern s32 data_ov007_02278b74;
+extern const BattleRow data_ov007_02278b68[];
+extern const s32 data_ov007_02278b74;
 void func_ov007_02229d08(BattleBase *scene);
 void func_ov007_02229c88(BattleBase *scene, u16 *a, u16 *b, u16 *c, u8 flag);
 

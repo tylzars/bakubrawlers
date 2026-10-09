@@ -209,8 +209,8 @@ public:
     u16 func_ov007_0226e390();
 };
 
-extern u16 data_ov007_0227bcd0[];
-extern s8 data_ov007_0227bce0[12][2];
+extern const u16 data_ov007_0227bcd0[];
+extern const s8 data_ov007_0227bce0[12][2];
 void func_ov007_0226fb50(void *arg);
 
 BattleShoot::BattleShoot(Camera *unk1, u8 unk2)
@@ -945,7 +945,7 @@ struct BattleShootCurve { // pairs at data_ov007_0227bca0
     u8 mUnk_00;
     u8 mUnk_01;
 };
-extern BattleShootCurve data_ov007_0227bca0[5];
+extern const BattleShootCurve data_ov007_0227bca0[5];
 
 BOOL BattleShoot::func_ov007_0226d23c() {
     BOOL moving = FALSE;
@@ -1060,8 +1060,8 @@ void BattleShoot::func_ov007_0226d690() {
 }
 
 extern "C" void func_01ffd138(MtxFx43 *mtx, s32 angle);
-extern u8 data_ov007_0227bc9c[];
-extern VecFx32 data_ov007_0227bcac;
+extern const u8 data_ov007_0227bc9c[];
+extern const VecFx32 data_ov007_0227bcac;
 
 BOOL BattleShoot::func_ov007_0226d7ac() {
     if (InputManager::Get().IsDown(0x200) | InputManager::Get().IsDown(0x100)) {
@@ -1110,12 +1110,12 @@ BOOL BattleShoot::func_ov007_0226d7ac() {
     return 0;
 }
 
-extern s32 data_ov007_0227bcc4[3];
+extern const s32 data_ov007_0227bcc4[3];
 struct BattleShootRange { // at data_ov007_0227bcf8
     u32 mLow;
     u32 mHigh;
 };
-extern BattleShootRange data_ov007_0227bcf8[3];
+extern const BattleShootRange data_ov007_0227bcf8[3];
 extern MtxFx33 data_0220e848;
 extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
 extern "C" void func_01ff84d0(VecFx32 *v, MtxFx33 *m, VecFx32 *out);
@@ -1209,7 +1209,7 @@ public:
 };
 
 extern s16 data_ov007_0208b524[];
-extern s32 data_ov007_0227bcb8[3];
+extern const s32 data_ov007_0227bcb8[3];
 
 // non-matching: register allocation only (original uses ip/r2/r3 where this uses r1/r2/r4), plus 3 words of scheduling.
 void BattleShoot::func_ov007_0226dfb8() {

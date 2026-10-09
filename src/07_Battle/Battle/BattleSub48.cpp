@@ -10,8 +10,8 @@
 
 // Fixed-point conversion of a float value, rounded to nearest.
 
-extern s32 data_ov007_022790c8[][6];
-extern u8 data_ov007_022790c0[];
+extern const s32 data_ov007_022790c8[][6];
+extern const u8 data_ov007_022790c0[];
 
 int func_ov007_022252d0(int x1, int y1, int x2, int y2);
 void func_ov007_02225354(float x, float y, float *out);
@@ -269,7 +269,7 @@ void BattleSub48::Update() {
     }
 }
 
-extern u8 data_ov007_022790bc[];
+extern const u8 data_ov007_022790bc[];
 
 u8 BattleSub48::func_ov007_02224a70() {
     if (mUnk_0c == 0) {

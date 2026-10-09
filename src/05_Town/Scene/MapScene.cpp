@@ -28,11 +28,11 @@ struct MapPagePos {
     s16 mId;
 };
 // Overlay tables still provided by the original data (not yet moved into this file).
-extern u8 data_ov005_0221fe90[];
+extern const u8 data_ov005_0221fe90[];
 extern const u32 data_ov005_0221fea0[];
-extern MapPagePos data_ov005_0221feb8[4];
-extern MapPagePos data_ov005_0221feba[4];
-extern MapPagePos data_ov005_0221febc[4];
+extern const MapPagePos data_ov005_0221feb8[4];
+extern const MapPagePos data_ov005_0221feba[4];
+extern const MapPagePos data_ov005_0221febc[4];
 extern const WindowItemRecord data_ov005_0221fed8[];
 extern const WindowCellRecord data_ov005_0221ff48[];
 extern const WindowItemRecord data_ov005_0221ffb8[];

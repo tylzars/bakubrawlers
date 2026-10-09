@@ -34,7 +34,7 @@ void func_020914e4(Chan *);
 extern "C" void func_0203bff0(Chan *, u8 *);
 extern "C" void func_0203c004(Chan *, u8 *, int, u32);
 extern "C" void func_01ff94e0(void *, u32, u32);
-extern int data_0209d568[];
+extern const int data_0209d568[];
 
 int func_0203b0e8(P *p) {
     if (p->o9c > p->oa0) return 0;

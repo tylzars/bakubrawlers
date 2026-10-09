@@ -12,9 +12,9 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-extern u16 data_ov008_02228660[];
-extern VecFx32 data_ov008_02228634;
-extern VecFx32 data_ov008_02228640;
+extern const u16 data_ov008_02228660[];
+extern const VecFx32 data_ov008_02228634;
+extern const VecFx32 data_ov008_02228640;
 
 extern const u8 data_ov008_02228688[5][3];
 extern const u32 data_ov008_0222864c[5];

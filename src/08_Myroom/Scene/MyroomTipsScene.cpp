@@ -21,7 +21,7 @@ extern u8 data_020d49a1[];
 #include <stdio.h>
 
 extern const s8 data_ov008_02229650[6];
-extern u8 data_ov008_02229660[6];
+extern const u8 data_ov008_02229660[6];
 
 static inline BOOL TestBit(const u8 *flags, int index) {
     return (1 << (index % 8)) & flags[index / 8];
@@ -31,10 +31,10 @@ extern const s8 data_ov008_022296ac[][20];
 
 extern const u8 data_ov008_02229668[][2];
 
-extern WindowItemRecord data_ov008_02229674[];
-extern WindowCellRecord data_ov008_02229690[];
-extern WindowItemRecord data_ov008_02229724[];
-extern WindowCellRecord data_ov008_022297b0[];
+extern const WindowItemRecord data_ov008_02229674[];
+extern const WindowCellRecord data_ov008_02229690[];
+extern const WindowItemRecord data_ov008_02229724[];
+extern const WindowCellRecord data_ov008_022297b0[];
 
 extern "C" void func_020705f0(UnkStruct_02065c40 *event);
 extern "C" void func_0206f88c(UnkStruct_02065c40 *event, u32 category, s32 value, u32 unk4);

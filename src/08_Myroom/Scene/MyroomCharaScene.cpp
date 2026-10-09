@@ -18,10 +18,10 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-extern WindowItemRecord data_ov008_022293e8[];
-extern WindowCellRecord data_ov008_02229378[];
-extern WindowCellRecord data_ov008_022292d4[];
-extern WindowCellRecord data_ov008_0222929c[];
+extern const WindowItemRecord data_ov008_022293e8[];
+extern const WindowCellRecord data_ov008_02229378[];
+extern const WindowCellRecord data_ov008_022292d4[];
+extern const WindowCellRecord data_ov008_0222929c[];
 
 extern const u32 data_ov008_022292b8[7];
 extern const u8 data_ov008_0222934b[];

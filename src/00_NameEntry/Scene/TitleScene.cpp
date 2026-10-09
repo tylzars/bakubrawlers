@@ -22,20 +22,20 @@
 #include "Unknown/UnkStruct_02071868.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 
-extern u8 data_ov000_022266fc[];
+extern const u8 data_ov000_022266fc[];
 
 void operator delete(void *ptr);
 
-extern u8 data_ov000_022266f8[];
+extern const u8 data_ov000_022266f8[];
 extern u8 data_ov000_02227a74[];
 extern u8 data_ov000_02227a88[];
-extern u8 data_ov000_02226910[];
-extern WindowItemRecord data_ov000_02226830[][2];
-extern WindowCellRecord data_ov000_022268a0[][2];
-extern WindowItemRecord data_ov000_02226788[];
-extern WindowCellRecord data_ov000_022267dc[];
-extern WindowItemRecord data_ov000_02226718[];
-extern WindowCellRecord data_ov000_02226750[];
+extern const u8 data_ov000_02226910[];
+extern const WindowItemRecord data_ov000_02226830[][2];
+extern const WindowCellRecord data_ov000_022268a0[][2];
+extern const WindowItemRecord data_ov000_02226788[];
+extern const WindowCellRecord data_ov000_022267dc[];
+extern const WindowItemRecord data_ov000_02226718[];
+extern const WindowCellRecord data_ov000_02226750[];
 
 void func_ov000_02224edc(void *arg);
 s32 func_020230dc(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2);

@@ -117,7 +117,7 @@ BattleData::~BattleData() {
     }
 }
 
-extern u8 data_020a1074[];
+extern const u8 data_020a1074[];
 
 void BattleData::func_ov007_0223d504() {
     char path[0x80];

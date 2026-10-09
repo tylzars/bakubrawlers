@@ -19,8 +19,8 @@ struct AntennaPos {
     /* 00 */ u8 mY;
     /* 01 */ u8 mX;
 };
-extern AntennaLayout data_020a30f8[];
-extern AntennaPos data_020a30dc[];
+extern const AntennaLayout data_020a30f8[];
+extern const AntennaPos data_020a30dc[];
 
 UnkStruct_02078290::UnkStruct_02078290(u32 unk1) :
     SceneBase(0x384, 0) {

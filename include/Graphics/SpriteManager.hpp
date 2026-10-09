@@ -42,11 +42,6 @@ struct SpriteScreen {
     void func_02027778(void *buffer, u8 count, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8);
 };
 
-struct FadeState {
-    /* 00 */ s8 mMain;
-    /* 01 */ s8 mSub;
-};
-
 // One of the eight slots at SpriteManager+0x828 (copied by func_02027578, set up by func_020360cc).
 struct UnkStruct_SpriteManager_28 {
     /* 00 */ u32 mUnk_00[10];
@@ -64,8 +59,9 @@ public:
     /* 968 */ u8 mUnk_968[8];    // slot in use flags
     /* 970 */
 
-    static FadeState sFade;
-    static FadeState sBrightness;
+    // Fade mode and master brightness per screen ([0] main, [1] sub), stepped every frame by func_020256d4.
+    static s8 sFade[2];
+    static s8 sBrightness[2];
 
     static SpriteManager &Get() {
         static SpriteManager instance;
@@ -90,22 +86,22 @@ public:
     void func_02027578(s32 index, const UnkStruct_SpriteManager_28 *src);
 
     void StartFade(s8 mode) {
-        sFade.mMain = mode;
-        sFade.mSub  = mode;
+        sFade[0] = mode;
+        sFade[1] = mode;
     }
 
     void SetFade(s8 mode, s8 brightness) {
-        sFade.mMain       = mode;
-        sBrightness.mMain = brightness;
-        sFade.mSub        = mode;
-        sBrightness.mSub  = brightness;
+        sFade[0]       = mode;
+        sBrightness[0] = brightness;
+        sFade[1]       = mode;
+        sBrightness[1] = brightness;
     }
 
     void StartSubFade(s8 mode) {
-        sFade.mSub = mode;
+        sFade[1] = mode;
     }
 
     BOOL IsFading() {
-        return (sFade.mMain > 1) | (sFade.mSub > 1);
+        return (sFade[0] > 1) | (sFade[1] > 1);
     }
 };

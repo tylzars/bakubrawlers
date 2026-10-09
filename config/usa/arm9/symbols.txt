@@ -821,7 +821,7 @@ _ZdaPv kind:function(arm,size=0x1c) addr:0x02021e9c
 _ZN12SceneManager4InitEP9SceneBase kind:function(arm,size=0x4c) addr:0x02021eb8
 _ZN12SceneManager6UpdateEv kind:function(arm,size=0x34) addr:0x02021f04
 _ZN12SceneManager11UpdateLayerEv kind:function(arm,size=0x7c) addr:0x02021f38
-_ZN9SceneBaseD0Ev kind:function(arm,size=0x14) addr:0x02021fb4
+_ZN9SceneBaseD0Ev kind:function(arm,size=0x14) addr:0x02021fb4 weak
 _ZN12SceneManager8SetSlot1EP9SceneBase kind:function(arm,size=0x74) addr:0x02021fc8
 _ZN12SceneManager8SetSlot0EP9SceneBase kind:function(arm,size=0x70) addr:0x0202203c
 _ZN12SceneManager13LinkSentinelsEP22UnkStruct_SceneContextS1_ kind:function(arm,size=0x3c) addr:0x020220ac
@@ -831,7 +831,7 @@ _ZN12SceneManager5ResetEv kind:function(arm,size=0x7c) addr:0x020221d4
 _ZN12SceneManager3AddEP9SceneBasej kind:function(arm,size=0xd0) addr:0x02022250
 _ZN12SceneManager6RemoveEv kind:function(arm,size=0x4c) addr:0x02022320
 _ZN9SceneBaseC2Ejj kind:function(arm,size=0x188) addr:0x0202236c
-_ZN9SceneBaseD1Ev kind:function(arm,size=0x4) addr:0x020224f4
+_ZN9SceneBaseD1Ev kind:function(arm,size=0x4) addr:0x020224f4 weak
 _ZN12TouchManager4InitEv kind:function(arm,size=0xd8) addr:0x020224f8
 _ZN12TouchManager13func_020225d0Ev kind:function(arm,size=0x18) addr:0x020225d0
 _ZN12TouchManager6UpdateEi kind:function(arm,size=0x1b4) addr:0x020225e8
@@ -3294,9 +3294,9 @@ data_020a4ccc kind:data(any) addr:0x020a4ccc
 sEmblemFiles kind:data(any) addr:0x020a4dac local
 sOkItems kind:data(any) addr:0x020a4db8 local
 sOkCells kind:data(any) addr:0x020a4dd4 local
-data_020a4df0 kind:data(any) addr:0x020a4df0
-data_020a4df4 kind:data(any) addr:0x020a4df4
-data_020a4e2c kind:data(any) addr:0x020a4e2c
+sMessageIds kind:data(any) addr:0x020a4df0 local
+sMenuItems kind:data(any) addr:0x020a4df4 local
+sMenuCells kind:data(any) addr:0x020a4e2c local
 data_020a4e80 kind:data(any) addr:0x020a4e80
 data_020a4e90 kind:data(any) addr:0x020a4e90
 data_020a4ea0 kind:data(any) addr:0x020a4ea0
@@ -3379,7 +3379,7 @@ data_020a5434 kind:data(any) addr:0x020a5434
 _ZTV9NullScene kind:data(any) addr:0x020a5438
 data_020a5440 kind:data(any) addr:0x020a5440
 data_020a544c kind:data(any) addr:0x020a544c
-data_020a5474 kind:data(any) addr:0x020a5474
+_ZTV9SceneBase kind:data(any) addr:0x020a546c weak
 data_020a5480 kind:data(any) addr:0x020a5480
 data_020a5484 kind:data(any) addr:0x020a5484
 data_020a548c kind:data(any) addr:0x020a548c
@@ -3400,8 +3400,8 @@ data_020a5664 kind:data(any) addr:0x020a5664
 data_020a566c kind:data(any) addr:0x020a566c
 _ZTV13ModelInstance kind:data(any) addr:0x020a5674
 _ZTV9ModelAnim kind:data(any) addr:0x020a5684
-data_020a5694 kind:data(any) addr:0x020a5694
-data_020a569c kind:data(any) addr:0x020a569c
+_ZTV10ModelLight kind:data(any) addr:0x020a5694
+data_020a56a4 kind:data(any) addr:0x020a56a4
 data_020a56ac kind:data(any) addr:0x020a56ac
 data_020a56b8 kind:data(any) addr:0x020a56b8
 data_020a56c0 kind:data(any) addr:0x020a56c0
@@ -3455,21 +3455,21 @@ _ZTV10MovieScene kind:data(any) addr:0x020ac788
 @645 kind:data(any) addr:0x020ac814 local
 @646 kind:data(any) addr:0x020ac828 local
 @647 kind:data(any) addr:0x020ac834 local
-@648 kind:data(any) addr:0x020ac840 local
-@649 kind:data(any) addr:0x020ac84c local
-@650 kind:data(any) addr:0x020ac85c local
-@651 kind:data(any) addr:0x020ac868 local
-@652 kind:data(any) addr:0x020ac86c local
-@653 kind:data(any) addr:0x020ac878 local
-@654 kind:data(any) addr:0x020ac880 local
+@641 kind:data(any) addr:0x020ac840 local
+@642 kind:data(any) addr:0x020ac84c local
+@643 kind:data(any) addr:0x020ac85c local
+@644 kind:data(any) addr:0x020ac868 local
+@645 kind:data(any) addr:0x020ac86c local
+@646 kind:data(any) addr:0x020ac878 local
+@647 kind:data(any) addr:0x020ac880 local
 @722 kind:data(any) addr:0x020ac884 local
-@723 kind:data(any) addr:0x020ac898 local
-@724 kind:data(any) addr:0x020ac8ac local
-@725 kind:data(any) addr:0x020ac8c0 local
+@716 kind:data(any) addr:0x020ac898 local
+@717 kind:data(any) addr:0x020ac8ac local
+@718 kind:data(any) addr:0x020ac8c0 local
 @726 kind:data(any) addr:0x020ac8d4 local
-@727 kind:data(any) addr:0x020ac8e8 local
-@728 kind:data(any) addr:0x020ac8fc local
-@729 kind:data(any) addr:0x020ac910 local
+@720 kind:data(any) addr:0x020ac8e8 local
+@721 kind:data(any) addr:0x020ac8fc local
+@722 kind:data(any) addr:0x020ac910 local
 data_020ac914 kind:data(any) addr:0x020ac914
 data_020ac918 kind:data(any) addr:0x020ac918
 data_020ac91c kind:data(any) addr:0x020ac91c
@@ -4489,19 +4489,18 @@ _ZTV18UnkStruct_02089f90 kind:data(any) addr:0x020baae4
 @1114 kind:data(any) addr:0x020bad78 local
 @1115 kind:data(any) addr:0x020bad94 local
 @1116 kind:data(any) addr:0x020badb0 local
-data_020badb4 kind:data(any) addr:0x020badb4
-data_020badbc kind:data(any) addr:0x020badbc
-data_020badc8 kind:data(any) addr:0x020badc8
-data_020badf4 kind:data(any) addr:0x020badf4
-data_020bae20 kind:data(any) addr:0x020bae20
-data_020bae34 kind:data(any) addr:0x020bae34
-data_020bae50 kind:data(any) addr:0x020bae50
-data_020bae6c kind:data(any) addr:0x020bae6c
-data_020bae88 kind:data(any) addr:0x020bae88
-data_020bae9c kind:data(any) addr:0x020bae9c
-data_020baec0 kind:data(any) addr:0x020baec0
-data_020baedc kind:data(any) addr:0x020baedc
-data_020baef4 kind:data(any) addr:0x020baef4
+_ZTV18UnkStruct_0208ab40 kind:data(any) addr:0x020badb4
+@754 kind:data(any) addr:0x020badc8 local
+@755 kind:data(any) addr:0x020badf4 local
+@1110 kind:data(any) addr:0x020bae20 local
+@1111 kind:data(any) addr:0x020bae34 local
+@1112 kind:data(any) addr:0x020bae50 local
+@1113 kind:data(any) addr:0x020bae6c local
+@1114 kind:data(any) addr:0x020bae88 local
+@1115 kind:data(any) addr:0x020bae9c local
+@1116 kind:data(any) addr:0x020baec0 local
+@1117 kind:data(any) addr:0x020baedc local
+@1118 kind:data(any) addr:0x020baef4 local
 data_020baef8 kind:data(any) addr:0x020baef8
 data_020baf00 kind:bss addr:0x020baf00
 data_020baf04 kind:bss addr:0x020baf04
@@ -4544,9 +4543,8 @@ data_020bdcf8 kind:bss addr:0x020bdcf8
 data_020bddb8 kind:bss addr:0x020bddb8
 data_020bdf40 kind:bss addr:0x020bdf40
 heapTable kind:bss addr:0x020bdf48
-data_020bdf6c kind:bss addr:0x020bdf6c
-data_020bdf70 kind:bss addr:0x020bdf70
-data_020bdf74 kind:bss addr:0x020bdf74
+exceptionState kind:bss addr:0x020bdf6c
+data_020bdf78 kind:bss addr:0x020bdf78
 data_020bdf98 kind:bss addr:0x020bdf98
 timerReserved kind:bss addr:0x020be018 local
 data_020be01c kind:bss addr:0x020be01c
@@ -4693,7 +4691,7 @@ data_020d090a kind:bss addr:0x020d090a
 data_020d42dc kind:bss addr:0x020d42dc
 data_020d42e8 kind:bss addr:0x020d42e8
 data_020d4300 kind:bss addr:0x020d4300
-data_020d430c kind:bss addr:0x020d430c
+@48 kind:bss addr:0x020d430c local
 data_020d4318 kind:bss addr:0x020d4318
 data_020d4324 kind:bss addr:0x020d4324
 data_020d4330 kind:bss addr:0x020d4330
@@ -4812,13 +4810,13 @@ data_021f8000 kind:bss addr:0x021f8000
 data_02200001 kind:bss addr:0x02200001
 data_022001ee kind:bss addr:0x022001ee
 data_022018be kind:bss addr:0x022018be
-@520 kind:bss addr:0x0220e520 local
-@439 kind:bss addr:0x0220e52c local
-@318 kind:bss addr:0x0220e538 local
-@348 kind:bss addr:0x0220e544 local
-@372 kind:bss addr:0x0220e550 local
+@517 kind:bss addr:0x0220e520 local
+@436 kind:bss addr:0x0220e52c local
+@315 kind:bss addr:0x0220e538 local
+@345 kind:bss addr:0x0220e544 local
+@369 kind:bss addr:0x0220e550 local
 @384 kind:bss addr:0x0220e55c local
-@470 kind:bss addr:0x0220e568 local
+@467 kind:bss addr:0x0220e568 local
 @642 kind:bss addr:0x0220e574 local
 sQueueWrite kind:bss addr:0x0220e580 local
 @17 kind:bss addr:0x0220e584 local
@@ -4826,9 +4824,7 @@ sHooks kind:bss addr:0x0220e590 local
 sCallbacks kind:bss addr:0x0220e5a0 local
 sCallbackArgs kind:bss addr:0x0220e5e4 local
 _ZN13SpriteManager5sFadeE kind:bss addr:0x0220e628
-data_0220e629 kind:bss addr:0x0220e629
 _ZN13SpriteManager11sBrightnessE kind:bss addr:0x0220e62c
-data_0220e62d kind:bss addr:0x0220e62d
 data_0220e630 kind:bss addr:0x0220e630
 data_0220e638 kind:bss addr:0x0220e638
 data_0220e63c kind:bss addr:0x0220e63c
@@ -4841,7 +4837,7 @@ data_0220e86c kind:bss addr:0x0220e86c
 data_0220e89c kind:bss addr:0x0220e89c
 @86 kind:bss addr:0x0220e8dc local
 sBuffer_0220e900 kind:bss addr:0x0220e900 local
-@187 kind:bss addr:0x0220f100 local
+@180 kind:bss addr:0x0220f100 local
 data_0220f10c kind:bss addr:0x0220f10c
 data_0220f110 kind:bss addr:0x0220f110
 data_0220f114 kind:bss addr:0x0220f114
@@ -5063,7 +5059,7 @@ data_022193ec kind:bss addr:0x022193ec
 data_022193f8 kind:bss addr:0x022193f8
 @17 kind:bss addr:0x02219404 local
 @286 kind:bss addr:0x02219410 local
-data_0221941c kind:bss addr:0x0221941c
+@198 kind:bss addr:0x0221941c local
 FX_AtanIdxTable_ kind:data(any) addr:0x0208f628
 FX_AtanTable_ kind:data(any) addr:0x0208f524
 sndVolumeTable kind:data(any) addr:0x0208ff9c

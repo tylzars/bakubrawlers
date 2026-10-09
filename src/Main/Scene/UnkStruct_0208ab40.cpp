@@ -10,17 +10,17 @@
 
 // Unlock message window (/font/mes_Unlock.mes, Unlock.mes text shown over a union_b window).
 
-static const u8 sMessageIds[4] = {0, 1, 4, 0};
+static const WindowCellRecord sMenuCells[2] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0, 0, 2, 1, {0, 2, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0, 0, 2, 1, {9, 9, 9, 0}},
+};
 
 static const WindowItemRecord sMenuItems[2] = {
     {0, 5, 89, 136, 78, 20, 0, {-1, -1, -1, -1}, 0, 1},
     {1, 0x8000, 120, 35, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
 };
 
-static const WindowCellRecord sMenuCells[2] = {
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0, 0, 2, 1, {0, 2, 1, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0, 0, 2, 1, {9, 9, 9, 0}},
-};
+static const u8 sMessageIds[4] = {0, 1, 4, 0};
 
 UnkStruct_0208ab40::UnkStruct_0208ab40(s32 unk1) :
     SceneBase(0x3e8, 0) {
@@ -57,7 +57,7 @@ void UnkStruct_0208ab40::Update() {
             mState++;
             break;
         case 1:
-            if (SpriteManager::Get().sFade.mSub <= 1) {
+            if (SpriteManager::Get().sFade[1] <= 1) {
                 mMenu->mUnk_064 = 1;
                 mState++;
             }
@@ -69,7 +69,7 @@ void UnkStruct_0208ab40::Update() {
             }
             break;
         case 3:
-            if (SpriteManager::Get().sFade.mSub <= 1) {
+            if (SpriteManager::Get().sFade[1] <= 1) {
                 RequestScene(1);
                 draw      = FALSE;
                 mFinished = 1;

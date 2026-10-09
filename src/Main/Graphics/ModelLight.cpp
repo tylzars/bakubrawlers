@@ -22,6 +22,8 @@ ModelLight::ModelLight(u32 index, u32 enabled, u16 color, const s16 *direction) 
     }
 }
 
+ModelLight::~ModelLight() {}
+
 void ModelLight::func_02029c0c() {
     if (mEnabled == 0) {
         return;

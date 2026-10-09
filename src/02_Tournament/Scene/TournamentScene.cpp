@@ -257,7 +257,7 @@ void TournamentScene::Update() {
             }
             break;
         case 4:
-            if (SpriteManager::Get().sFade.mSub > 1) {
+            if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
             mUnk_b0++;
@@ -278,7 +278,7 @@ void TournamentScene::Update() {
             mUnk_b0++;
             break;
         case 7:
-            if (SpriteManager::Get().sFade.mSub > 1) {
+            if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
             func_ov002_0221c154();
@@ -303,7 +303,7 @@ void TournamentScene::Update() {
             }
             break;
         case 9:
-            if (SpriteManager::Get().sFade.mSub > 1) {
+            if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
             new UnkStruct_0208ab40(mEvent->func_0206797c() - 1);

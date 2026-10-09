@@ -1045,7 +1045,7 @@ void BattleCommand::Update() {
             mUnk_128++;
             func_ov007_02262638(data_020d433c.mBattlePlayers, mUnk_12c, mUnk_12d, mUnk_133, mUnk_132);
             mUnk_130 = 1;
-            SpriteManager::Get().sFade.mMain = 3;
+            SpriteManager::Get().sFade[0] = 3;
             data_020d433c.mBattlePlayers->mUnk_28f = 0;
             WindowItem *items = mUnk_6c->mCursor->mItems;
             items[2].mFlags   = 0x8000;
@@ -1058,7 +1058,7 @@ void BattleCommand::Update() {
             return;
         }
         case 34:
-            if (SpriteManager::Get().sFade.mMain <= 1) {
+            if (SpriteManager::Get().sFade[0] <= 1) {
                 GXS_SetVisibleWnd(0);
                 mUnk_12e = 0;
                 G2S_SetBlendBrightness(0x11, 0);
@@ -1081,7 +1081,7 @@ void BattleCommand::Update() {
             return;
         case 36: {
             func_ov007_0223b38c();
-            if (SpriteManager::Get().sFade.mMain > 1) {
+            if (SpriteManager::Get().sFade[0] > 1) {
                 return;
             }
             mUnk_6c->func_0205c7c8(-1);
@@ -1148,7 +1148,7 @@ void BattleCommand::Update() {
             return;
         case 40:
             func_ov007_0223b38c();
-            if (SpriteManager::Get().sFade.mMain > 1) {
+            if (SpriteManager::Get().sFade[0] > 1) {
                 return;
             }
             func_ov007_0223ce24();
@@ -1265,7 +1265,7 @@ void BattleCommand::Update() {
         case 44:
             mMessage->func_020658d0();
             func_ov007_0223b38c();
-            if (SpriteManager::Get().sFade.mMain > 1) {
+            if (SpriteManager::Get().sFade[0] > 1) {
                 return;
             }
             func_ov007_0223ce24();
@@ -2196,11 +2196,11 @@ void BattleCommand::func_ov007_0223c74c(BOOL flag) {
             return;
     }
     if (flag) {
-        SpriteManager::Get().sFade.mMain = 3;
+        SpriteManager::Get().sFade[0] = 3;
     } else {
         SpriteManager::Get();
-        SpriteManager::sFade.mMain       = 1;
-        SpriteManager::sBrightness.mMain = -16;
+        SpriteManager::sFade[0]       = 1;
+        SpriteManager::sBrightness[0] = -16;
     }
     mMode                = 1;
     mContext->mUnk_12 = 0;
@@ -2241,7 +2241,7 @@ void BattleCommand::func_ov007_0223c8d4(u32 flag) {
         case 2:
             mUnk_84 = new BattleCommandMap(data_020d433c.mUnk_95);
             mUnk_84->vfunc_0c();
-            SpriteManager::Get().sFade.mMain = 2;
+            SpriteManager::Get().sFade[0] = 2;
             break;
         case 3:
             mUnk_78 = new BattleCommandPage(0, -1);

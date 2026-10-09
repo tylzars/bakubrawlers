@@ -155,7 +155,7 @@ void UnkStruct_02071d24::Update() {
                 break;
             }
             SpriteManager::Get();
-            SpriteManager::sFade.mSub = 2;
+            SpriteManager::sFade[1] = 2;
             mUnk_4d++;
             break;
         case 2:

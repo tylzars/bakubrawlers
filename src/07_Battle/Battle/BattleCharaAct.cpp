@@ -331,7 +331,7 @@ const u8 *t = data_ov007_0228a33c[mUnk_38];
                     SpriteManager::Get().StartFade(3);
                 } else {
                     SpriteManager::Get();
-                    SpriteManager::sFade.mMain = 3;
+                    SpriteManager::sFade[0] = 3;
                 }
             }
             mUnk_35++;

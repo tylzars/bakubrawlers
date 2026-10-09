@@ -621,7 +621,7 @@ void UnkStruct_02078e14::Update() {
             break;
         case 34:
             SpriteManager::Get();
-            if (SpriteManager::sFade.mSub <= 1) {
+            if (SpriteManager::sFade[1] <= 1) {
                 if (mUnk_c0 != NULL) {
                     mUnk_c0->func_02058530(0);
                 }

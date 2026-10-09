@@ -158,7 +158,7 @@ void BattleUnk0227532c::func_ov007_02275900() {
     ChangeDir("/Game/2D/union_b/");
     func_02025b64(1, 1, 0x6000, "union_b_bg_window_ncl.bin", 0, 0, 0);
     func_02025b64(1, 14, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 10, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    func_02025b64(1, 10, 0, "union_b_bg_window_a_nsc.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x10000, 0);
     screen.LoadPalette("union_b_obj_window_ncl.bin", 0x180, 0);

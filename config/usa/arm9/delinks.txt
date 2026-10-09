@@ -451,7 +451,9 @@ libs/nds/src/os/os_alloc.c:
     .text       start:0x02006370 end:0x0200682c
 
 libs/nds/src/os/os_exception.c:
+    complete
     .text       start:0x02006884 end:0x020068f4
+    .bss        start:0x020bdf6c end:0x020bdf78
 
 libs/nds/src/os/os_timer.c:
     complete
@@ -597,9 +599,11 @@ src/Main/System/Memory.cpp:
     complete
     .text       start:0x02021c60 end:0x02021eb8
 
-// provisional: code only; data not assigned yet.
 src/Main/Scene/SceneBase.cpp:
+    complete
     .text       start:0x02021eb8 end:0x020224f8
+    .data       start:0x020a546c end:0x020a5480
+    .bss        start:0x020d430c end:0x020d4318
 
 // provisional: code only; data not assigned yet.
 src/Main/System/TouchManager.cpp:
@@ -636,9 +640,11 @@ src/Main/System/FrameUpdate.cpp:
     .data       start:0x020a54e0 end:0x020a54e4
     .bss        start:0x0220e580 end:0x0220e628
 
-// provisional: code only; .data 0x020a54e4-0x020a54ec and .bss 0x0220e628-0x0220e630 belong here.
 src/Main/Graphics/SpriteFade.cpp:
+    complete
     .text       start:0x02025668 end:0x020257c8
+    .data       start:0x020a54e4 end:0x020a54ec
+    .bss        start:0x0220e628 end:0x0220e630
 
 // provisional: code only; .data 0x020a54ec-0x020a5624 and .bss 0x0220e630-0x0220e838 belong here.
 src/Main/Graphics/UploadQueue.cpp:
@@ -683,9 +689,10 @@ src/Main/Graphics/ModelAnim.cpp:
     .text       start:0x020294e8 end:0x02029b5c
     .data       start:0x020a5684 end:0x020a5694
 
-// provisional: code only; .data 0x020a5694-0x020a56a4 belongs here.
 src/Main/Graphics/ModelLight.cpp:
+    complete
     .text       start:0x02029b5c end:0x02029d7c
+    .data       start:0x020a5694 end:0x020a56a4
 
 src/Main/Graphics/CellAnimation.cpp:
     complete
@@ -841,4 +848,8 @@ src/Main/Scene/UnkStruct_02089f90.cpp:
     .bss        start:0x02219404 end:0x0221941c
 
 src/Main/Scene/UnkStruct_0208ab40.cpp:
+    complete
     .text       start:0x0208ab40 end:0x0208b4bc
+    .rodata     start:0x020a4df0 end:0x020a4e64
+    .data       start:0x020badb4 end:0x020baef8
+    .bss        start:0x0221941c end:0x02219440

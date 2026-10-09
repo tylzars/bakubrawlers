@@ -213,14 +213,14 @@ void BattleCommandMap::Update() {
                 SpriteManager::Get().StartFade(3);
             } else {
                 SpriteManager::Get();
-                SpriteManager::sFade.mMain = 3;
+                SpriteManager::sFade[0] = 3;
             }
             mState++;
             break;
         case 2:
             func_ov007_02246450();
             SpriteManager::Get();
-            if (SpriteManager::sFade.mMain <= 1) {
+            if (SpriteManager::sFade[0] <= 1) {
                 mState++;
             }
             break;

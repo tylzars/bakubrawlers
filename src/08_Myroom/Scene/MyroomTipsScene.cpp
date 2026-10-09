@@ -155,7 +155,7 @@ void MyroomTipsScene::Update() {
             Draw();
             return;
         case 2:
-            if (SpriteManager::Get().sFade.mMain <= 1) {
+            if (SpriteManager::Get().sFade[0] <= 1) {
                 mEvent->func_020676f8();
                 context->mInfo.mStep++;
             }
@@ -164,26 +164,26 @@ void MyroomTipsScene::Update() {
         case 3:
             mEvent = new UnkStruct_02065c40(5, 0, 1);
             func_ov008_0222840c(0x2d);
-            SpriteManager::Get().sFade.mMain = 2;
+            SpriteManager::Get().sFade[0] = 2;
             context->mInfo.mStep++;
             Draw();
             return;
         case 4:
-            if (SpriteManager::Get().sFade.mMain <= 1) {
+            if (SpriteManager::Get().sFade[0] <= 1) {
                 if (!mEvent->func_020678e8()) {
                     u32 id = 0x33;
                     if (mUnlocked[0] == 0) {
                         id = 0x34;
                     }
                     func_0206f6f0(mEvent, "mes_tips_Dan", id, 10, 0x15);
-                    SpriteManager::Get().sFade.mMain = 2;
+                    SpriteManager::Get().sFade[0] = 2;
                     context->mInfo.mStep             = 5;
                 }
             }
             Draw();
             return;
         case 5:
-            if (SpriteManager::Get().sFade.mMain <= 1) {
+            if (SpriteManager::Get().sFade[0] <= 1) {
                 mWindowA->mUnk_061 = 4;
                 mWindowA->func_0205c7c8(-1);
                 mFlags = 1;
@@ -546,7 +546,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
                 mWindowB->func_0205c7c8(0);
                 break;
             case 2:
-                SpriteManager::Get().sFade.mMain = 3;
+                SpriteManager::Get().sFade[0] = 3;
                 context->mInfo.mStep             = 2;
                 break;
             case 0:

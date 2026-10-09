@@ -123,11 +123,11 @@ BattleConfrontCard::BattleConfrontCard(u32 unk)
     mUnk_64 = 0;
     mUnk_65 = 0;
     SpriteManager::Get();
-    SpriteManager::sFade.mMain       = 1;
-    SpriteManager::sBrightness.mMain = -16;
+    SpriteManager::sFade[0]       = 1;
+    SpriteManager::sBrightness[0] = -16;
     SpriteManager::Get();
-    SpriteManager::sFade.mSub       = 1;
-    SpriteManager::sBrightness.mSub = -16;
+    SpriteManager::sFade[1]       = 1;
+    SpriteManager::sBrightness[1] = -16;
 }
 
 BattleConfrontCard::~BattleConfrontCard() {
@@ -155,11 +155,11 @@ BattleConfrontCard::~BattleConfrontCard() {
     }
     SoundManager::Get().func_020246d4(6);
     SpriteManager::Get();
-    SpriteManager::sFade.mMain       = 1;
-    SpriteManager::sBrightness.mMain = -16;
+    SpriteManager::sFade[0]       = 1;
+    SpriteManager::sBrightness[0] = -16;
     SpriteManager::Get();
-    SpriteManager::sFade.mSub       = 1;
-    SpriteManager::sBrightness.mSub = -16;
+    SpriteManager::sFade[1]       = 1;
+    SpriteManager::sBrightness[1] = -16;
     SpriteManager::Get().func_0202740c();
 }
 
@@ -497,7 +497,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             } else {
                 BattleCardCamera *cam = mUnk_3c;
                 SpriteManager::Get();
-                SpriteManager::sFade.mMain = 3;
+                SpriteManager::sFade[0] = 3;
                 data_020d433c.mUnk_14 |= 4;
                 cam->mState = 3;
                 mUnk_0d++;
@@ -1223,7 +1223,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             }
             BattleCardCamera *cam = mUnk_3c;
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 3;
+            SpriteManager::sFade[0] = 3;
             data_020d433c.mUnk_14 |= 4;
             cam->mState = 3;
             mContext->mUnk_12 = 0;

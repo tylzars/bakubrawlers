@@ -54,7 +54,7 @@ void UnkStruct_02089f90::Update() {
             mState++;
             break;
         case 1:
-            if (SpriteManager::Get().sFade.mMain <= 1) {
+            if (SpriteManager::Get().sFade[0] <= 1) {
                 FrameTask::Get().func_0203dd90();
                 SoundManager::Get().func_020246f8(0x58);
                 mUnk_1e = 1;

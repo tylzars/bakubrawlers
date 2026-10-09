@@ -158,7 +158,7 @@ void BattleCommandList::Update() {
             }
             break;
         case 2:
-            if (SpriteManager::Get().sFade.mMain <= 1) {
+            if (SpriteManager::Get().sFade[0] <= 1) {
                 mUnk_159++;
             }
             break;
@@ -194,7 +194,7 @@ void BattleCommandList::Update() {
                 mUnk_15f = 0;
             }
             if (mUnk_15e == 0) {
-                SpriteManager::Get().sFade.mMain = 2;
+                SpriteManager::Get().sFade[0] = 2;
             }
             mUnk_159++;
             break;
@@ -223,11 +223,11 @@ void BattleCommandList::Update() {
             break;
         }
         case 8:
-            SpriteManager::Get().sFade.mMain = 3;
+            SpriteManager::Get().sFade[0] = 3;
             mUnk_159++;
             break;
         case 9:
-            if (SpriteManager::Get().sFade.mMain <= 1) {
+            if (SpriteManager::Get().sFade[0] <= 1) {
                 mUnk_15d = 0;
                 UnkStruct_0203d374 *task = mUnk_90;
                 if (task != NULL) {
@@ -251,7 +251,7 @@ void BattleCommandList::Update() {
         func_0205a7ac();
     }
     if (mUnk_158 != 0 && mUnk_15f == 0) {
-        if (SpriteManager::Get().sBrightness.mSub == 0) {
+        if (SpriteManager::Get().sBrightness[1] == 0) {
             if (mUnk_159 == 7) {
                 func_02058558();
             }

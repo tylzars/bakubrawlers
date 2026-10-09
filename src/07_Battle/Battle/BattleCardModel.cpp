@@ -189,8 +189,8 @@ BOOL BattleCardModel::func_ov007_0227292c() {
     switch (mState) {
         case 0:
             SpriteManager::Get();
-            SpriteManager::sFade.mMain       = 1;
-            SpriteManager::sBrightness.mMain = -16;
+            SpriteManager::sFade[0]       = 1;
+            SpriteManager::sBrightness[0] = -16;
             func_ov007_02273ec0();
             func_ov007_022734d8();
             mState++;
@@ -198,7 +198,7 @@ BOOL BattleCardModel::func_ov007_0227292c() {
         case 1:
             func_ov007_02273be8();
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 2;
+            SpriteManager::sFade[0] = 2;
             mState++;
             break;
         case 2:
@@ -215,19 +215,19 @@ BOOL BattleCardModel::func_ov007_0227292c() {
                 }
                 if (mBaku->mModel->func_02028ea4() >= mLastFrame) {
                     SpriteManager::Get();
-                    if (SpriteManager::sFade.mMain <= 1) {
+                    if (SpriteManager::sFade[0] <= 1) {
                         SpriteManager::Get();
-                        SpriteManager::sFade.mMain = 3;
+                        SpriteManager::sFade[0] = 3;
                     } else {
                         s8 brightness = -(s8) ((mBaku->mModel->func_02028ea4() - mLastFrame) >> 12);
                         if (brightness < -16) {
                             brightness = -16;
                         }
                         SpriteManager::Get();
-                        SpriteManager::sFade.mMain       = 1;
-                        SpriteManager::sBrightness.mMain = brightness;
+                        SpriteManager::sFade[0]       = 1;
+                        SpriteManager::sBrightness[0] = brightness;
                         SpriteManager::Get();
-                        SpriteManager::sFade.mMain = 3;
+                        SpriteManager::sFade[0] = 3;
                     }
                 }
                 mCamera->func_020264a4(0);
@@ -273,7 +273,7 @@ BOOL BattleCardModel::func_ov007_0227292c() {
             break;
         case 3:
             SpriteManager::Get();
-            if (SpriteManager::sFade.mMain > 1) {
+            if (SpriteManager::sFade[0] > 1) {
                 mCamera->func_020264a4(1);
                 mCamera->func_02026180();
                 SnapshotCamera();
@@ -453,7 +453,7 @@ void func_ov007_02273e3c(BattleCardModel *model) {
     }
     model->mState = 3;
     SpriteManager::Get();
-    SpriteManager::sFade.mMain = 3;
+    SpriteManager::sFade[0] = 3;
 }
 
 void BattleCardModel::func_ov007_02273ec0() {

@@ -156,7 +156,7 @@ void MapScene::Update() {
             break;
         case 4:
             SpriteManager::Get();
-            if (SpriteManager::sFade.mSub > 1) {
+            if (SpriteManager::sFade[1] > 1) {
                 break;
             }
             LoadWindowGraphics();
@@ -175,7 +175,7 @@ void MapScene::Update() {
             break;
         case 6:
             SpriteManager::Get();
-            if (SpriteManager::sFade.mSub > 1) {
+            if (SpriteManager::sFade[1] > 1) {
                 break;
             }
             func_ov005_0221a9ec();
@@ -198,7 +198,7 @@ void MapScene::Update() {
             break;
         case 8:
             SpriteManager::Get();
-            if (SpriteManager::sFade.mSub > 1) {
+            if (SpriteManager::sFade[1] > 1) {
                 break;
             }
             new UnkStruct_0208ab40(mEvent->func_0206797c() - 1);
@@ -343,7 +343,7 @@ void MapScene::Update() {
             break;
         case 22:
             SpriteManager::Get();
-            if (SpriteManager::sFade.mSub > 1) {
+            if (SpriteManager::sFade[1] > 1) {
                 break;
             }
             mUnk_64++;

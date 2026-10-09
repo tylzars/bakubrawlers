@@ -389,7 +389,7 @@ void BattleObj00::Update() {
             SpriteManager::Get().StartFade(2);
             return;
         case 19: {
-            if (SpriteManager::Get().sFade.mMain > 1) {
+            if (SpriteManager::Get().sFade[0] > 1) {
                 return;
             }
             mUnk_28 = mUnk_28 + 1;

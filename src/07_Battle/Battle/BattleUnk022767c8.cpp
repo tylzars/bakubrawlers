@@ -190,7 +190,7 @@ void BattleUnk022767c8::Update() {
             break;
         case 1:
             SpriteManager::Get();
-            if (SpriteManager::sFade.mMain <= 1) {
+            if (SpriteManager::sFade[0] <= 1) {
                 FrameTask::Get().func_0203dc34(0, 0x18);
                 mUnk_a4 = 1;
                 mState++;

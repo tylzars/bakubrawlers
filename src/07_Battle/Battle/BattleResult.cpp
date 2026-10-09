@@ -128,8 +128,8 @@ BattleResult::BattleResult()
     mUnk_b2 = 0;
     mUnk_b3 = 0;
     SpriteManager::Get();
-    SpriteManager::sFade.mMain = 1;
-    SpriteManager::sBrightness.mMain = -16;
+    SpriteManager::sFade[0] = 1;
+    SpriteManager::sBrightness[0] = -16;
     MI_CpuClear32(mAnims, sizeof(mAnims));
     MI_CpuClear32(mUnk_84, sizeof(mUnk_84));
     mUnk_14 = 0;
@@ -148,8 +148,8 @@ BattleResult::BattleResult()
 // non-matching: 2 words: the original schedules `mov r3, #1` before the sFade address load in the SpriteManager::Get() block (D1 and D0)
 BattleResult::~BattleResult() {
     SpriteManager::Get();
-    SpriteManager::sFade.mMain = 1;
-    SpriteManager::sBrightness.mMain = -16;
+    SpriteManager::sFade[0] = 1;
+    SpriteManager::sBrightness[0] = -16;
     if (mUnk_0c) {
         delete mUnk_0c;
     }
@@ -366,7 +366,7 @@ void BattleResult::Update() {
             func_ov007_0224e6f4();
             func_ov007_0224fcdc();
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 2;
+            SpriteManager::sFade[0] = 2;
             FrameTask::Get().func_0203dc34(0, 0x11);
             mUnk_68 = new UnkStruct_02076058(0);
             mContext->mUnk_12 = 0;
@@ -375,7 +375,7 @@ void BattleResult::Update() {
         }
         case 5:
             SpriteManager::Get();
-            if (SpriteManager::sFade.mMain <= 1) {
+            if (SpriteManager::sFade[0] <= 1) {
                 mUnk_b1++;
             }
             func_ov007_0224fb70();

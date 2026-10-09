@@ -344,7 +344,7 @@ void BattleTarget::Update() {
             case 0:
                 func_ov007_02254020();
                 SpriteManager::Get();
-                SpriteManager::sFade.mMain = 2;
+                SpriteManager::sFade[0] = 2;
                 mUnk_1e2++;
                 break;
             case 1:
@@ -524,7 +524,7 @@ void BattleTarget::Update() {
                 mUnk_1c8 = mUnk_1c8 - 1;
                 if (mUnk_1c8 == 0) {
                     SpriteManager::Get();
-                    SpriteManager::sFade.mMain = 4;
+                    SpriteManager::sFade[0] = 4;
                     SoundManager::Get().func_020246f8(6);
                     mUnk_1e2++;
                 }
@@ -538,7 +538,7 @@ void BattleTarget::Update() {
                 BattleRecord *record   = &list->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
                 mUnk_1a4->func_0203d4dc(record->mUnk_08, record->mUnk_09, 3);
                 SpriteManager::Get();
-                SpriteManager::sFade.mMain = 2;
+                SpriteManager::sFade[0] = 2;
                 mUnk_1c8                   = 0x78;
                 mUnk_1e2++;
                 break;
@@ -562,7 +562,7 @@ void BattleTarget::Update() {
                 u8 b                   = list->mUnk_28e;
                 if (list->mPlayers[cur]->mUnk_fa != 0 && (mUnk_1d2 == 2 || (mUnk_1d2 == 3 && list->Units()[a].mUnk_0f != list->Units()[b].mUnk_0f))) {
                     SpriteManager::Get();
-                    SpriteManager::sFade.mMain = 3;
+                    SpriteManager::sFade[0] = 3;
                     mUnk_1e2++;
                     break;
                 }

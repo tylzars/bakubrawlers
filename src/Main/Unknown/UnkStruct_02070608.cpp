@@ -257,10 +257,10 @@ void UnkStruct_02070608::func_02070d10() {
         mask |= 0x10;
         G2_SetBlendBrightness(mask ^ 0x3f, -8);
         SpriteManager::Get();
-        SpriteManager::sFade.mMain       = 1;
-        SpriteManager::sBrightness.mMain = 0;
-        SpriteManager::sFade.mSub        = 1;
-        SpriteManager::sBrightness.mSub  = -8;
+        SpriteManager::sFade[0]       = 1;
+        SpriteManager::sBrightness[0] = 0;
+        SpriteManager::sFade[1]        = 1;
+        SpriteManager::sBrightness[1]  = -8;
     } else {
         u16 plane = (reg_GXS_DB_DISPCNT & GX_DISPCNT_PLANE_MASK) >> GX_DISPCNT_PLANE_SHIFT;
         switch (mUnk_31) {
@@ -319,10 +319,10 @@ void UnkStruct_02070608::func_02070d10() {
         mask |= 0x10;
         G2S_SetBlendBrightness(mask ^ 0x3f, -8);
         SpriteManager::Get();
-        SpriteManager::sFade.mMain       = 1;
-        SpriteManager::sBrightness.mMain = -8;
-        SpriteManager::sFade.mSub        = 1;
-        SpriteManager::sBrightness.mSub  = 0;
+        SpriteManager::sFade[0]       = 1;
+        SpriteManager::sBrightness[0] = -8;
+        SpriteManager::sFade[1]        = 1;
+        SpriteManager::sBrightness[1]  = 0;
     }
 }
 

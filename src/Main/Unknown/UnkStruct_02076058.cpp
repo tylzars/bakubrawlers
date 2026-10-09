@@ -83,8 +83,8 @@ UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
     mUnk_79 = 0;
     mUnk_7c = NULL;
     SpriteManager::Get();
-    SpriteManager::sFade.mSub = 1;
-    SpriteManager::sBrightness.mSub = -16;
+    SpriteManager::sFade[1] = 1;
+    SpriteManager::sBrightness[1] = -16;
     MI_CpuClear16(mUnk_64, 6);
     MI_CpuClear8(mUnk_6a, 3);
     MI_CpuClear8(mUnk_6d, 3);
@@ -119,8 +119,8 @@ UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
 
 UnkStruct_02076058::~UnkStruct_02076058() {
     SpriteManager::Get();
-    SpriteManager::sFade.mSub = 1;
-    SpriteManager::sBrightness.mSub = -16;
+    SpriteManager::sFade[1] = 1;
+    SpriteManager::sBrightness[1] = -16;
     for (u8 i = 0; i < 12; i++) {
         delete mUnk_14[i];
     }
@@ -150,12 +150,12 @@ void UnkStruct_02076058::Update() {
             func_02076b34();
             func_02077ae8();
             SpriteManager::Get();
-            SpriteManager::sFade.mSub = 2;
+            SpriteManager::sFade[1] = 2;
             mUnk_74++;
             break;
         case 1:
             SpriteManager::Get();
-            if (SpriteManager::sFade.mSub <= 1) {
+            if (SpriteManager::sFade[1] <= 1) {
                 mUnk_74++;
             }
             func_02077458();
@@ -181,8 +181,8 @@ void UnkStruct_02076058::Update() {
             if (mUnk_77 != 0) {
                 mUnk_74++;
                 SpriteManager::Get();
-                SpriteManager::sFade.mMain = 3;
-                SpriteManager::sFade.mSub = 3;
+                SpriteManager::sFade[0] = 3;
+                SpriteManager::sFade[1] = 3;
             } else {
                 switch (mUnk_73) {
                     case 0:
@@ -231,8 +231,8 @@ void UnkStruct_02076058::Update() {
         case 7:
             func_02077458();
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 3;
-            SpriteManager::sFade.mSub = 3;
+            SpriteManager::sFade[0] = 3;
+            SpriteManager::sFade[1] = 3;
             mUnk_74++;
             break;
         case 8:

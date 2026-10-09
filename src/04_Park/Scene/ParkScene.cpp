@@ -160,7 +160,7 @@ void ParkScene::Update() {
             mUnk_0d++;
             break;
         case 3:
-            if (SpriteManager::Get().sFade.mSub > 1) {
+            if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
             {
@@ -182,7 +182,7 @@ void ParkScene::Update() {
             mFinished = TRUE;
             return;
         case 4:
-            if (SpriteManager::Get().sFade.mSub > 1) {
+            if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
             LoadWindowGraphics();
@@ -201,7 +201,7 @@ void ParkScene::Update() {
             mUnk_0d++;
             break;
         case 6:
-            if (SpriteManager::Get().sFade.mSub > 1) {
+            if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
             if (mUnk_12 == 0) {
@@ -213,7 +213,7 @@ void ParkScene::Update() {
             }
             return;
         case 7:
-            if (SpriteManager::Get().sFade.mSub > 1) {
+            if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
             new UnkStruct_0208ab40(mEvent->func_0206797c() - 1);
@@ -324,7 +324,7 @@ void ParkScene::Update() {
             }
             break;
         case 15:
-            if (SpriteManager::Get().sFade.mSub > 1) {
+            if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
             mEvent->func_020676f8();

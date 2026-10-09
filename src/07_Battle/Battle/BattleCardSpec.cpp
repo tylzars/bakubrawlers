@@ -114,7 +114,7 @@ void BattleCardSpec::Update() {
             break;
         case 5:
             SpriteManager::Get();
-            if (SpriteManager::sFade.mMain <= 1) {
+            if (SpriteManager::sFade[0] <= 1) {
                 mState++;
             }
             break;

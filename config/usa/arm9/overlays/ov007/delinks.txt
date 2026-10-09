@@ -199,9 +199,11 @@ src/07_Battle/Gimmick/GimmickUnk_02230cec.cpp:
 src/07_Battle/Battle/BattleCpu.cpp:
     .text       start:0x02230f58 end:0x02233f58
 
-// provisional: code only; .data 0x02287614-0x02287a10 and .rodata 0x022799fc-0x02279aa8 belong here.
 src/07_Battle/Battle/BattleUnionAbility.cpp:
+    complete
     .text       start:0x02233f58 end:0x02234ce8
+    .rodata     start:0x022799fc end:0x02279aa8
+    .data       start:0x0228760c end:0x02287a10
 
 // provisional: code only; .data 0x02287a10-0x02287ad0 belongs here.
 src/07_Battle/Battle/BattleStatusPanels.cpp:
@@ -333,9 +335,12 @@ src/07_Battle/Gimmick/GimmickHaosWall.cpp:
     .data       start:0x0228af94 end:0x0228b000
     .bss        start:0x0228bb80 end:0x0228bb90
 
-// provisional: code only; .rodata 0x02285aa4-0x02285bd0, .data 0x0228b000-0x0228b164 and .bss 0x0228bb90-0x0228bba8 belong here.
 src/07_Battle/Battle/BattleUnk0227532c.cpp:
+    complete
     .text       start:0x0227532c end:0x02275de8
+    .rodata     start:0x02285aa4 end:0x02285bd0
+    .data       start:0x0228b000 end:0x0228b164
+    .bss        start:0x0228bb90 end:0x0228bba8
 
 src/07_Battle/Gimmick/GimmickAquosFukidashi.cpp:
     complete

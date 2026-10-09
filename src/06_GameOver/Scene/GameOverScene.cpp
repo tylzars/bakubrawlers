@@ -1,26 +1,16 @@
 #include "Scene/GameOverScene.hpp"
-#include "Game/UnkStruct_020d433c.hpp"
-#include "Graphics/CellAnimation.hpp"
-#include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
-#include "System/FileSystem.hpp"
-#include "Text/TextManager.hpp"
 #include "UI/SelectWindow.hpp"
 
-#include <nitro/gx.h>
-#include <nitro/mi.h>
-#include <nitro/os.h>
-
-static const WindowCellRecord sRetryCells[3] = {
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0x3000, 2, 0, 1, {3, 5, 4, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0x3000, 2, 0, 1, {6, 8, 7, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x3000, 2, 0, 1, {10, 10, 10, 0}},
-};
-
-static const WindowItemRecord sRetryItems[3] = {
-    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
-    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
-    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+static const WindowItemRecord sResultItems[2][3] = {
+    {
+        {0, 0x1, 48, 52, 160, 24, 0, {2, 1, 0, 0}, 0, 2},
+        {1, 0x1, 48, 84, 160, 24, 0, {0, 2, 1, 1}, 0, 2},
+        {2, 0x1, 48, 116, 160, 24, 0, {1, 0, 2, 2}, 0, 2},
+    },
+    {
+        {0, 0x1, 48, 52, 160, 24, 0, {1, 1, 0, 0}, 0, 2},
+        {1, 0x1, 48, 84, 160, 24, 0, {0, 0, 1, 1}, 0, 2},
+    },
 };
 
 static const WindowCellRecord sResultCells[2][3] = {
@@ -35,17 +25,27 @@ static const WindowCellRecord sResultCells[2][3] = {
     },
 };
 
-static const WindowItemRecord sResultItems[2][3] = {
-    {
-        {0, 0x1, 48, 52, 160, 24, 0, {2, 1, 0, 0}, 0, 2},
-        {1, 0x1, 48, 84, 160, 24, 0, {0, 2, 1, 1}, 0, 2},
-        {2, 0x1, 48, 116, 160, 24, 0, {1, 0, 2, 2}, 0, 2},
-    },
-    {
-        {0, 0x1, 48, 52, 160, 24, 0, {1, 1, 0, 0}, 0, 2},
-        {1, 0x1, 48, 84, 160, 24, 0, {0, 0, 1, 1}, 0, 2},
-    },
+static const WindowItemRecord sRetryItems[3] = {
+    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
+    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
+    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
+
+static const WindowCellRecord sRetryCells[3] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0x3000, 2, 0, 1, {3, 5, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0x3000, 2, 0, 1, {6, 8, 7, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x3000, 2, 0, 1, {10, 10, 10, 0}},
+};
+
+#include "Game/UnkStruct_020d433c.hpp"
+#include "Graphics/CellAnimation.hpp"
+#include "Graphics/Display.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "System/FileSystem.hpp"
+#include "Text/TextManager.hpp"
+#include <nitro/gx.h>
+#include <nitro/mi.h>
+#include <nitro/os.h>
 
 GameOverScene::GameOverScene() :
     SceneBase(1000, 0) {

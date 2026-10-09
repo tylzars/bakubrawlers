@@ -146,7 +146,7 @@ void BattleUnk022637ac::Update() {
                     mUnk_0f = 3;
                     break;
                 case 2:
-                    SpriteManager::Get().sFade.mSub = 3;
+                    SpriteManager::Get().sFade[1] = 3;
                     mUnk_0f                         = 1;
                     break;
             }
@@ -157,7 +157,7 @@ void BattleUnk022637ac::Update() {
             }
             mState = 10;
             if (mUnk_18 == 0xcd) {
-                SpriteManager::Get().sFade.mSub = 3;
+                SpriteManager::Get().sFade[1] = 3;
             }
             WirelessManager::Get();
             if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
@@ -263,7 +263,7 @@ void BattleUnk022637ac::Update() {
             func_02055624(mUnk_24, 1);
             mState = 10;
             if (mUnk_0f == 1 || mUnk_18 == 0xcd) {
-                SpriteManager::Get().sFade.mSub = 3;
+                SpriteManager::Get().sFade[1] = 3;
             }
             break;
         }
@@ -277,7 +277,7 @@ void BattleUnk022637ac::Update() {
                 func_02055624(mUnk_24, 1);
                 mState = 10;
                 if (mUnk_18 == 0xcd) {
-                    SpriteManager::Get().sFade.mSub = 3;
+                    SpriteManager::Get().sFade[1] = 3;
                 }
             }
             break;
@@ -312,8 +312,8 @@ void BattleUnk022637ac::Update() {
             break;
         case 13:
             if ((this->*data_ov007_0228a098[mUnk_11])()) {
-                SpriteManager::Get().sFade.mMain = 3;
-                SpriteManager::sFade.mSub        = 3;
+                SpriteManager::Get().sFade[0] = 3;
+                SpriteManager::sFade[1]        = 3;
                 mState                           = 0xe;
             }
             break;
@@ -615,7 +615,7 @@ u8 BattleUnk022637ac::func_ov007_02265118() {
             func_0202bef4(mEffects, handle, &pos);
             SoundManager::Get().func_020246f8(0x5a);
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 2;
+            SpriteManager::sFade[0] = 2;
             mUnk_28++;
             break;
         }
@@ -644,7 +644,7 @@ u8 BattleUnk022637ac::func_ov007_022652c8() {
             func_0202bef4(mEffects, handle, &pos);
             SoundManager::Get().func_020246f8(0x5a);
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 2;
+            SpriteManager::sFade[0] = 2;
             mUnk_28++;
             break;
         }
@@ -673,7 +673,7 @@ u8 BattleUnk022637ac::func_ov007_0226547c() {
         case 0:
             SoundManager::Get().func_020246f8(0x5b);
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 2;
+            SpriteManager::sFade[0] = 2;
             mUnk_28++;
             break;
         case 1: {
@@ -727,7 +727,7 @@ u8 BattleUnk022637ac::func_ov007_02265718() {
             func_0202bef4(mEffects, handle, &pos);
             SoundManager::Get().func_020246f8(0x5c);
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 2;
+            SpriteManager::sFade[0] = 2;
             mUnk_28++;
             break;
         }
@@ -736,7 +736,7 @@ u8 BattleUnk022637ac::func_ov007_02265718() {
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
                 SpriteManager::Get();
-                SpriteManager::sFade.mMain = 4;
+                SpriteManager::sFade[0] = 4;
                 mUnk_28++;
             }
             break;
@@ -750,7 +750,7 @@ u8 BattleUnk022637ac::func_ov007_02265718() {
                 ((UnkStruct_0203d374 *) mUnk_1c->mUnk_1a4)->func_0203d4dc(record->mUnk_08, record->mUnk_09, 3);
             }
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 2;
+            SpriteManager::sFade[0] = 2;
             mUnk_28++;
             break;
         case 3:
@@ -791,7 +791,7 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
             func_0202bef4(mEffects, handle, &pos);
             SoundManager::Get().func_020246f8(0x5d);
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 2;
+            SpriteManager::sFade[0] = 2;
             mUnk_62_1                  = 0;
             mUnk_28++;
             break;
@@ -874,7 +874,7 @@ u8 BattleUnk022637ac::func_ov007_02265fac() {
             func_0202bef4(mEffects, handle, &pos);
             SoundManager::Get().func_020246f8(0x5d);
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 2;
+            SpriteManager::sFade[0] = 2;
             mUnk_62_1                  = 0;
             mUnk_28++;
             break;
@@ -948,7 +948,7 @@ u8 BattleUnk022637ac::func_ov007_022663f0() {
             func_0202bef4(mEffects, handle, &pos);
             SoundManager::Get().func_020246f8(0x5e);
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 2;
+            SpriteManager::sFade[0] = 2;
             mUnk_28++;
             break;
         }
@@ -977,7 +977,7 @@ u8 BattleUnk022637ac::func_ov007_022665ec() {
         case 0:
             func_0202ba64(mEffects, 0, "gp_pickup2");
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 2;
+            SpriteManager::sFade[0] = 2;
             mUnk_28++;
             break;
         case 1: {
@@ -1025,7 +1025,7 @@ u8 BattleUnk022637ac::func_ov007_02266868() {
             func_0202bef4(mEffects, handle, &pos);
             SoundManager::Get().func_020246f8(0x5f);
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 2;
+            SpriteManager::sFade[0] = 2;
             mUnk_28++;
             break;
         }
@@ -1071,7 +1071,7 @@ u8 BattleUnk022637ac::func_ov007_02266a28() {
         case 0:
             func_0202ba64(mEffects, 0, mUnk_18 == 0xd4 ? "gp_pickup2" : "gp_down");
             SpriteManager::Get();
-            SpriteManager::sFade.mMain = 2;
+            SpriteManager::sFade[0] = 2;
             func_ov007_02267098(this);
             mUnk_28++;
             break;

@@ -121,7 +121,7 @@ void MyroomCharaScene::Update() {
             u8 tab = id;
             if (tab < 4 && tab != mTab) {
                 mTab = tab;
-                SpriteManager::Get().sFade.mMain = 3;
+                SpriteManager::Get().sFade[0] = 3;
                 mState = 4;
                 break;
             }
@@ -143,7 +143,7 @@ void MyroomCharaScene::Update() {
         }
         case 4:
             mWindow->mUnk_064 = 0;
-            if (SpriteManager::Get().sFade.mMain <= 1) {
+            if (SpriteManager::Get().sFade[0] <= 1) {
                 mState = 5;
                 if (mUnk_12 == 0) {
                     SetReady();
@@ -161,7 +161,7 @@ void MyroomCharaScene::Update() {
                     func_ov008_02225910();
                     func_ov008_02224a5c();
                     func_ov008_022256f0();
-                    SpriteManager::Get().sFade.mMain = 2;
+                    SpriteManager::Get().sFade[0] = 2;
                     mState                     = 7;
                     mUnk_12                    = mTab;
                 }
@@ -183,11 +183,11 @@ void MyroomCharaScene::Update() {
             }
             break;
         case 6:
-            SpriteManager::Get().sFade.mMain = 2;
+            SpriteManager::Get().sFade[0] = 2;
             mState++;
             break;
         case 7:
-            if (SpriteManager::Get().sFade.mMain <= 1) {
+            if (SpriteManager::Get().sFade[0] <= 1) {
                 mState = 8;
             }
             break;

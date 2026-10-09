@@ -16,7 +16,7 @@ public:
     /* 14 */
 
     ModelLight(u32 index, u32 enabled, u16 color, const s16 *direction);
-    virtual ~ModelLight() {}
+    virtual ~ModelLight();
     void func_02029c0c(); // sends the light to the 3D engine state
     void func_02029c44(const s16 *direction);
 };

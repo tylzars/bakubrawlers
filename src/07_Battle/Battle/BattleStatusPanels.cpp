@@ -225,7 +225,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                         shown1 = true;
                         if (mPanels[i].mUnk_29 != 0) {
                             if (mPanels[i].mUnk_36 != 0) {
-                                if (SpriteManager::Get().sFade.mMain <= 1) {
+                                if (SpriteManager::Get().sFade[0] <= 1) {
                                     if (mUnk_fd) {
                                         mUnk_fd = 0;
                                         SoundManager::Get().func_020246f8(6);
@@ -261,7 +261,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                         shown2 = true;
                         if (mPanels[i].mUnk_29 != 0) {
                             if (mPanels[i].mUnk_36 != 0) {
-                                if (SpriteManager::Get().sFade.mMain <= 1) {
+                                if (SpriteManager::Get().sFade[0] <= 1) {
                                     if (mUnk_fd) {
                                         mUnk_fd = 0;
                                         SoundManager::Get().func_020246f8(6);
@@ -291,7 +291,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                 }
             } else if (mPanels[i].mUnk_29 != 0) {
                 if (mPanels[i].mUnk_36 != 0) {
-                    if (SpriteManager::Get().sFade.mMain <= 1) {
+                    if (SpriteManager::Get().sFade[0] <= 1) {
                         if (mUnk_fd) {
                             mUnk_fd = 0;
                             SoundManager::Get().func_020246f8(6);

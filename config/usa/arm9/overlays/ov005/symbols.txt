@@ -132,9 +132,9 @@ _ZTV13TutorialScene kind:data(any) addr:0x02220844
 @957 kind:data(any) addr:0x0222092c local
 @958 kind:data(any) addr:0x02220958 local
 @3225 kind:data(any) addr:0x02220984 local
-@3226 kind:data(any) addr:0x02220990 local
-@3227 kind:data(any) addr:0x0222099c local
-@3228 kind:data(any) addr:0x022209ac local
+@3223 kind:data(any) addr:0x02220990 local
+@3224 kind:data(any) addr:0x0222099c local
+@3225 kind:data(any) addr:0x022209ac local
 @3350 kind:data(any) addr:0x022209b8 local
 @3351 kind:data(any) addr:0x022209cc local
 @3352 kind:data(any) addr:0x022209e8 local
@@ -152,23 +152,23 @@ _ZTV13TutorialScene kind:data(any) addr:0x02220844
 @3364 kind:data(any) addr:0x02220b38 local
 @3365 kind:data(any) addr:0x02220b4c local
 @3366 kind:data(any) addr:0x02220b70 local
-@3367 kind:data(any) addr:0x02220b8c local
-@3368 kind:data(any) addr:0x02220bb0 local
-@3369 kind:data(any) addr:0x02220bb4 local
+@3364 kind:data(any) addr:0x02220b8c local
+@3365 kind:data(any) addr:0x02220bb0 local
+@3366 kind:data(any) addr:0x02220bb4 local
 @3400 kind:data(any) addr:0x02220bc4 local
 @3401 kind:data(any) addr:0x02220bd8 local
 @3402 kind:data(any) addr:0x02220bf4 local
 @3403 kind:data(any) addr:0x02220c10 local
 @3404 kind:data(any) addr:0x02220c2c local
-@3405 kind:data(any) addr:0x02220c50 local
-@3406 kind:data(any) addr:0x02220c6c local
-@3407 kind:data(any) addr:0x02220c70 local
-@3449 kind:data(any) addr:0x02220c88 local
-@3450 kind:data(any) addr:0x02220c8c local
+@3402 kind:data(any) addr:0x02220c50 local
+@3403 kind:data(any) addr:0x02220c6c local
+@3404 kind:data(any) addr:0x02220c70 local
+@3446 kind:data(any) addr:0x02220c88 local
+@3447 kind:data(any) addr:0x02220c8c local
 data_ov005_02220cc0 kind:bss addr:0x02220cc0
 data_ov005_02220ccc kind:bss addr:0x02220ccc
 data_ov005_02220cd8 kind:bss addr:0x02220cd8
-@1043 kind:bss addr:0x02220ce4 local
-@1081 kind:bss addr:0x02220cf0 local
-@1203 kind:bss addr:0x02220cfc local
-@1232 kind:bss addr:0x02220d08 local
+@1040 kind:bss addr:0x02220ce4 local
+@1078 kind:bss addr:0x02220cf0 local
+@1200 kind:bss addr:0x02220cfc local
+@1229 kind:bss addr:0x02220d08 local

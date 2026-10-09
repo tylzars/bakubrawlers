@@ -126,7 +126,7 @@ void BattleCommandPage::Update() {
                 mUnk_f8  = mUnk_f4;
                 mUnk_109 = mUnk_10a;
                 if (mUnk_105 == 0) {
-                    SpriteManager::Get().sFade.mMain = 2;
+                    SpriteManager::Get().sFade[0] = 2;
                 }
                 mUnk_f1++;
             }
@@ -148,23 +148,23 @@ void BattleCommandPage::Update() {
         case 5:
             switch (mUnk_105) {
                 case 1:
-                    SpriteManager::Get().sFade.mMain = 3;
+                    SpriteManager::Get().sFade[0] = 3;
                     break;
                 case 2:
                     SpriteManager::Get();
-                    SpriteManager::sFade.mMain = 4;
-                    SpriteManager::sFade.mSub  = 4;
+                    SpriteManager::sFade[0] = 4;
+                    SpriteManager::sFade[1]  = 4;
                     break;
                 case 3:
                     SpriteManager::Get();
-                    SpriteManager::sFade.mMain = 3;
-                    SpriteManager::sFade.mSub  = 3;
+                    SpriteManager::sFade[0] = 3;
+                    SpriteManager::sFade[1]  = 3;
                     break;
             }
             mUnk_f1++;
             break;
         case 6:
-            if (SpriteManager::Get().sFade.mMain <= 1) {
+            if (SpriteManager::Get().sFade[0] <= 1) {
                 mUnk_104 = 0;
                 mUnk_f1++;
             }
@@ -183,7 +183,7 @@ void BattleCommandPage::Update() {
     if (mUnk_fd == 0) {
         return;
     }
-    if (SpriteManager::Get().sBrightness.mSub != 0) {
+    if (SpriteManager::Get().sBrightness[1] != 0) {
         return;
     }
     if (mUnk_fc == 0) {

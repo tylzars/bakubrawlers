@@ -182,25 +182,25 @@ _ZTV17UnkScene_02226e4c kind:data(any) addr:0x02226e44
 _ZTV17UnkScene_02226e60 kind:data(any) addr:0x02226e58
 @1350 kind:data(any) addr:0x02226e6c local
 @1351 kind:data(any) addr:0x02226e74 local
-@1352 kind:data(any) addr:0x02226e8c local
+@1349 kind:data(any) addr:0x02226e8c local
 @1353 kind:data(any) addr:0x02226ea4 local
 @1354 kind:data(any) addr:0x02226ebc local
 @1356 kind:data(any) addr:0x02226ec0 local
 @1357 kind:data(any) addr:0x02226ec8 local
-@1358 kind:data(any) addr:0x02226edc local
+@1355 kind:data(any) addr:0x02226edc local
 @1359 kind:data(any) addr:0x02226ef0 local
 @1360 kind:data(any) addr:0x02226f04 local
 @1362 kind:data(any) addr:0x02226f08 local
 @1363 kind:data(any) addr:0x02226f10 local
-@1364 kind:data(any) addr:0x02226f28 local
-@1365 kind:data(any) addr:0x02226f40 local
-@1366 kind:data(any) addr:0x02226f58 local
+@1361 kind:data(any) addr:0x02226f28 local
+@1362 kind:data(any) addr:0x02226f40 local
+@1363 kind:data(any) addr:0x02226f58 local
 @1370 kind:data(any) addr:0x02226f5c local
 @1371 kind:data(any) addr:0x02226f64 local
 @1372 kind:data(any) addr:0x02226f84 local
 @1373 kind:data(any) addr:0x02226fa4 local
 @1374 kind:data(any) addr:0x02226fc4 local
-@1375 kind:data(any) addr:0x02226fe4 local
+@1372 kind:data(any) addr:0x02226fe4 local
 @1376 kind:data(any) addr:0x02227004 local
 @1377 kind:data(any) addr:0x02227024 local
 @1379 kind:data(any) addr:0x02227028 local
@@ -210,9 +210,9 @@ _ZTV17UnkScene_02226e60 kind:data(any) addr:0x02226e58
 @1383 kind:data(any) addr:0x0222706c local
 @1385 kind:data(any) addr:0x02227070 local
 @1386 kind:data(any) addr:0x02227078 local
-@1387 kind:data(any) addr:0x02227090 local
+@1384 kind:data(any) addr:0x02227090 local
 @1388 kind:data(any) addr:0x022270a8 local
-@1389 kind:data(any) addr:0x022270c0 local
+@1386 kind:data(any) addr:0x022270c0 local
 data_ov000_022270c4 kind:data(any) addr:0x022270c4
 data_ov000_022270cc kind:data(any) addr:0x022270cc
 data_ov000_022270d8 kind:data(any) addr:0x022270d8
@@ -352,10 +352,10 @@ data_ov000_02227f80 kind:bss addr:0x02227f80
 data_ov000_02227f8c kind:bss addr:0x02227f8c
 data_ov000_02227f98 kind:bss addr:0x02227f98
 data_ov000_02227fa4 kind:bss addr:0x02227fa4
-@430 kind:bss addr:0x02227fb0 local
-@455 kind:bss addr:0x02227fbc local
-@445 kind:bss addr:0x02227fc8 local
-@414 kind:bss addr:0x02227fd4 local
+@427 kind:bss addr:0x02227fb0 local
+@452 kind:bss addr:0x02227fbc local
+@442 kind:bss addr:0x02227fc8 local
+@411 kind:bss addr:0x02227fd4 local
 @787 kind:bss addr:0x02227fe0 local
 data_ov000_02227fec kind:bss addr:0x02227fec
 data_ov000_02227ff8 kind:bss addr:0x02227ff8

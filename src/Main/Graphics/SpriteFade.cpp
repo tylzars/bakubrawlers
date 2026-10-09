@@ -9,8 +9,8 @@ void func_02025680(int brightness);
 
 FadeFunc data_020a54e4[2] = {func_02025680, func_02025668};
 
-FadeState SpriteManager::sFade;
-FadeState SpriteManager::sBrightness;
+s8 SpriteManager::sFade[2];
+s8 SpriteManager::sBrightness[2];
 
 void func_02025668(int brightness) {
     G2x_SetMasterBrightness_((vu16 *) 0x400106c, brightness);
@@ -22,15 +22,15 @@ void func_02025680(int brightness) {
 
 UnkStruct_SpriteManager_00::UnkStruct_SpriteManager_00() {
     for (u8 i = 0; i < 2; i++) {
-        (&SpriteManager::sFade.mMain)[i]       = 1;
-        (&SpriteManager::sBrightness.mMain)[i] = 16;
+        SpriteManager::sFade[i]       = 1;
+        SpriteManager::sBrightness[i] = 16;
     }
 }
 
 void func_020256d4() {
     for (s8 i = 1; i >= 0; i--) {
-        s8 *fade       = &(&SpriteManager::sFade.mMain)[i];
-        s8 *brightness = &(&SpriteManager::sBrightness.mMain)[i];
+        s8 *fade       = &SpriteManager::sFade[i];
+        s8 *brightness = &SpriteManager::sBrightness[i];
         switch (*fade) {
             case 1:
                 data_020a54e4[i](*brightness);

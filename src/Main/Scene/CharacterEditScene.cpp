@@ -271,7 +271,7 @@ void CharacterEditScene::func_0205d5fc() {
     switch (mUnk_31) {
     case 2:
         SpriteManager::Get();
-        if (SpriteManager::sFade.mMain > 1 | SpriteManager::sFade.mSub > 1) {
+        if (SpriteManager::sFade[0] > 1 | SpriteManager::sFade[1] > 1) {
             return;
         }
         mWindows[0]->mUnk_064 = 1;
@@ -407,7 +407,7 @@ void CharacterEditScene::func_0205d5fc() {
         } else if (mUnk_18 == 3) {
             if (mWindows[0]->GetSelectedId() == 7) {
                 SpriteManager::Get();
-                SpriteManager::sFade.mMain = 3;
+                SpriteManager::sFade[0] = 3;
                 mUnk_31 = 6;
                 mWindows[0]->mUnk_064 = 0;
                 mWindows[1]->mUnk_064 = 0;
@@ -442,7 +442,7 @@ void CharacterEditScene::func_0205d5fc() {
         break;
     case 6:
         SpriteManager::Get();
-        if (SpriteManager::sFade.mMain > 1) {
+        if (SpriteManager::sFade[0] > 1) {
             return;
         }
         func_02064bb8();
@@ -456,7 +456,7 @@ void CharacterEditScene::func_0205d5fc() {
             return;
         }
         SpriteManager::Get();
-        SpriteManager::sFade.mMain = 2;
+        SpriteManager::sFade[0] = 2;
         mUnk_31 = 8;
         break;
     case 8:

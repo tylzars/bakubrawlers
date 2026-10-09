@@ -1032,10 +1032,10 @@ void UnkStruct_02078e14::func_0207dea4() {
                 mUnk_401          = 1;
                 mUnk_1a0          = 3;
             }
-            SpriteManager::Get().sFade.mMain = 3;
+            SpriteManager::Get().sFade[0] = 3;
             break;
         case 2:
-            if (SpriteManager::Get().sFade.mMain <= 1) {
+            if (SpriteManager::Get().sFade[0] <= 1) {
                 func_02082660();
                 mUnk_1a0 = 4;
             }
@@ -1742,7 +1742,7 @@ void UnkStruct_02078e14::func_0208038c() {
                         func_020823d8(mUnk_c8[i], (u8) (i - 3), 0);
                     }
                 }
-                SpriteManager::Get().sFade.mMain = 2;
+                SpriteManager::Get().sFade[0] = 2;
                 return;
             }
             if (mUnk_e6 < 4) {
@@ -1766,7 +1766,7 @@ void UnkStruct_02078e14::func_0208038c() {
         case 4:
             if (mUnk_e6 == 0) {
                 func_020826ec();
-                SpriteManager::Get().sFade.mMain = 2;
+                SpriteManager::Get().sFade[0] = 2;
                 return;
             }
             if (mUnk_e6 < 7) {

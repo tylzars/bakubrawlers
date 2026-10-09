@@ -42,6 +42,10 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
 
 ## Known open problems
 
+- The GameOverScene/BattleUnionAbility/BattleUnk0227532c "literal order" problem is resolved: GameOverScene's
+  tables come before most of its includes; the other two were loading the wrong file names (probes mask string
+  addresses, so a wrong literal can look like a match).
+
 - **Two literal-pool entries for one address.** `func_02023504` (FileSystem.cpp) loads 0x020d53e4 from two
   different pool words, so two relocations (different symbols, or symbol plus offset) resolve to the same address
   in the original. The source models it with a second extern, `data_020d53e4_h`; the real layout of the loader's
@@ -132,6 +136,10 @@ Other findings from linking:
   `-dead` strips it once a unit is linked from source, so such objects go in `config/usa/arm9/force_active.txt`.
   When data_ranges can't place a unit (nothing references some sections), write the ranges by hand and check the
   layout byte by byte.
+
+- **Char arrays always get their own section**, even when the file references them; a struct of the same size
+  doesn't (SpriteFade: `static s8 sFade[2]`, index 0 main screen, 1 sub).
+- A weak inline vtable copy needs its unit's `.data` range set by hand and the symbol marked `weak` (SceneBase).
 
 ## Source patterns that matter
 

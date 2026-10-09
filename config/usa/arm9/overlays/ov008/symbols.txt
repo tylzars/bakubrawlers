@@ -200,15 +200,15 @@ __sinit_ov008_0222983c kind:function(arm,size=0x54) addr:0x0222983c
 .p__sinit_ov008_0222983c kind:data(word) addr:0x02229890
 OV008_DATA_START kind:data(any) addr:0x022298a0
 @1426 kind:data(any) addr:0x022298b4 local
-@1427 kind:data(any) addr:0x022298c8 local
-@1428 kind:data(any) addr:0x022298d8 local
-@1429 kind:data(any) addr:0x022298e8 local
-@1430 kind:data(any) addr:0x022298f8 local
-@1431 kind:data(any) addr:0x02229920 local
-@1432 kind:data(any) addr:0x02229940 local
-@1433 kind:data(any) addr:0x02229960 local
-@1461 kind:data(any) addr:0x02229964 local
-@1462 kind:data(any) addr:0x0222996c local
+@1420 kind:data(any) addr:0x022298c8 local
+@1421 kind:data(any) addr:0x022298d8 local
+@1422 kind:data(any) addr:0x022298e8 local
+@1423 kind:data(any) addr:0x022298f8 local
+@1424 kind:data(any) addr:0x02229920 local
+@1425 kind:data(any) addr:0x02229940 local
+@1426 kind:data(any) addr:0x02229960 local
+@1454 kind:data(any) addr:0x02229964 local
+@1455 kind:data(any) addr:0x0222996c local
 _ZTV11MyroomScene kind:data(any) addr:0x02229984
 @1099 kind:data(any) addr:0x02229998 local
 @1100 kind:data(any) addr:0x022299c0 local
@@ -241,11 +241,11 @@ data_ov008_02229d14 kind:data(any) addr:0x02229d14
 @3109 kind:data(any) addr:0x02229e58 local
 @3110 kind:data(any) addr:0x02229e6c local
 @3111 kind:data(any) addr:0x02229e90 local
-@3112 kind:data(any) addr:0x02229eac local
-@3113 kind:data(any) addr:0x02229ecc local
-@3114 kind:data(any) addr:0x02229ee8 local
-@3420 kind:data(any) addr:0x02229eec local
-@3421 kind:data(any) addr:0x02229f04 local
+@3109 kind:data(any) addr:0x02229eac local
+@3110 kind:data(any) addr:0x02229ecc local
+@3111 kind:data(any) addr:0x02229ee8 local
+@3417 kind:data(any) addr:0x02229eec local
+@3418 kind:data(any) addr:0x02229f04 local
 data_ov008_02229f10 kind:data(any) addr:0x02229f10
 data_ov008_02229f18 kind:data(any) addr:0x02229f18
 data_ov008_02229f24 kind:data(any) addr:0x02229f24
@@ -438,12 +438,12 @@ data_ov008_0222b5ac kind:data(any) addr:0x0222b5ac
 data_ov008_0222b5b4 kind:data(any) addr:0x0222b5b4
 data_ov008_0222b5c8 kind:data(any) addr:0x0222b5c8
 OV008_BSS_START kind:bss addr:0x0222b5e0
-@551 kind:bss addr:0x0222b5ec local
+@544 kind:bss addr:0x0222b5ec local
 @1329 kind:bss addr:0x0222b5f8 local
-@1184 kind:bss addr:0x0222b604 local
-@1159 kind:bss addr:0x0222b610 local
+@1181 kind:bss addr:0x0222b604 local
+@1156 kind:bss addr:0x0222b610 local
 @1200 kind:bss addr:0x0222b61c local
-@1124 kind:bss addr:0x0222b628 local
+@1121 kind:bss addr:0x0222b628 local
 data_ov008_0222b634 kind:bss addr:0x0222b634
 data_ov008_0222b640 kind:bss addr:0x0222b640
 data_ov008_0222b64c kind:bss addr:0x0222b64c

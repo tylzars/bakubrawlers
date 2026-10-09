@@ -3,7 +3,7 @@
 extern void OSi_ExceptionHandler(void);   // 0x020068f4 (asm)
 
 // 0x020bdf6c
-static struct {
+struct {
     u32 buf;
     u32 unk04;
     u32 unk08;

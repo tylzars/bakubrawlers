@@ -217,19 +217,19 @@ void BattleUnionAbility::func_ov007_0223471c() {
             mAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 5, 1, 1);
             break;
         case 3:
-            func_02025b64(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
-            mAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 0, 1, 1);
-            mAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 2, 1, 1);
+            func_02025b64(1, 4, mCharOffset, "battle_b_obj_fie_ability.nce_ncg1D.bin", 0, 0, 0);
+            mAnimA = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 0, 1, 1);
+            mAnimB = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 2, 1, 1);
             break;
         case 4:
-            func_02025b64(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
-            mAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 0, 1, 1);
-            mAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 1, 1, 1);
+            func_02025b64(1, 4, mCharOffset, "battle_b_obj_wait.nce_ncg1D.bin", 0, 0, 0);
+            mAnimA = new CellAnimation("battle_b_obj_wait_nce.bin", 0, 1, 1);
+            mAnimB = new CellAnimation("battle_b_obj_wait_nce.bin", 1, 1, 1);
             break;
         case 5:
-            func_02025b64(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
-            mAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 1, 1, 1);
-            mAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 3, 1, 1);
+            func_02025b64(1, 4, mCharOffset, "battle_b_obj_fie_ability.nce_ncg1D.bin", 0, 0, 0);
+            mAnimA = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 1, 1, 1);
+            mAnimB = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 3, 1, 1);
             break;
     }
     ChangeDir("/");

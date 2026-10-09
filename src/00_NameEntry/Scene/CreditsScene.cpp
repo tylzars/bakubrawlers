@@ -179,7 +179,6 @@ BOOL CreditsScene::UpdateText() {
     return mColState[0] == 3 && mColState[1] == 3;
 }
 
-// non-matching: 0x254 vs 0x24c, different stack-slot layout for the two Print calls.
 void CreditsScene::PrintLine(u32 message, u32 row, u32 column, u32 shadow) {
     s16 pixelWidth;
     s16 outWidth;
@@ -197,11 +196,12 @@ void CreditsScene::PrintLine(u32 message, u32 row, u32 column, u32 shadow) {
         const u8 *text = mMessages->GetText((u16) message);
         TextManager::Get().Print(text, mMessages->GetLength(message), mBuffers[column], 0x20, 2, &outWidth,
                                  &outHeight, (u16 *) &pixelWidth, 0, 2, 0x21, 0, 0xffff, 0, 0, 1, 1);
-        outHeight = 0;
-        outWidth = (0x100 - (u16) pixelWidth) / 2;
+        TextManager &tm = TextManager::Get();
+        outHeight2 = 0;
+        outWidth2 = (0x100 - (u16) pixelWidth) / 2;
         MessageFile *file = mMessages;
-        TextManager::Get().Print(file->GetText((u16) message), file->GetLength(message), mBuffers[column], 0x20, 2, &outWidth,
-                                 &outHeight, NULL, 0, 2, 0, 0x10, 0, 0, 0, 1, 1);
+        tm.Print(file->GetText((u16) message), file->GetLength((u16) message), mBuffers[column], 0x20, 2, &outWidth2,
+                                 &outHeight2, NULL, 0, 2, 0, 0x10, 0, 0, 0, 1, 1);
     }
     func_02025c1c(column, 12, offset, mBuffers[column], mBufferSize, 0);
 }

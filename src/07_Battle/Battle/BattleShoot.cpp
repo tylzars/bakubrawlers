@@ -28,6 +28,24 @@
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
+#include "Unknown/UnkStruct_02087898.hpp"
+#include "Battle/BattleUnk0227532c.hpp"
+
+BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
+
+struct ShootPacket {
+    u8 mUnk_00;
+    u8 mUnk_01;
+    u16 mUnk_02;
+    u16 mUnk_04;
+    u16 mUnk_06;
+    u16 mUnk_08;
+    u16 mUnk_0a;
+    u16 mUnk_0c;
+    u8 mUnk_0e;
+    u8 mUnk_0f;
+    u8 mUnk_10;
+};
 
 struct BattleShootCell { // 0xc bytes
     /* 00 */ CellAnimation *mAnim;
@@ -83,7 +101,7 @@ public:
     /* 6182 */ u16 mUnk_6182;
     /* 6184 */ u16 mUnk_6184;
     /* 6186 */ u8 mUnk_6186;
-    /* 6187 */ PAD(0x6187, 0x6188);
+    /* 6187 */ u8 mUnk_6187;
     /* 6188 */ u8 mUnk_6188;
     /* 6189 */ u8 mUnk_6189;
     /* 618a */ u8 mUnk_618a;
@@ -279,6 +297,306 @@ BattleShoot::~BattleShoot() {
     }
     G2_BlendNone();
     G2S_BlendNone();
+}
+
+// non-matching: 0xd2c vs 0xd34: this in r4 instead of r5 and small scheduling differences.
+void BattleShoot::Update() {
+    func_ov007_0226cb9c(mUnk_6186 == 12);
+    switch (mUnk_6186) {
+        case 0:
+            func_ov007_0226bd3c();
+            mUnk_6187 = 4;
+            mUnk_6186++;
+            break;
+        case 1:
+            mUnk_6187--;
+            if (mUnk_6187 == 0) {
+                if (data_020d433c.mUnk_85 == 3) {
+                    mUnk_6134->mUnk_064 = 0;
+                } else {
+                    mUnk_6134->mUnk_064 = 1;
+                }
+                SpriteManager::Get().StartFade(2);
+                u8 mode = data_020d433c.mUnk_85;
+                if (mode >= 3 && mode <= 12) {
+                    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+                    list->mUnk_2a4->func_02087eec();
+                    list->mUnk_2a4->func_02088e64(list->mUnk_2af, 0x64, 0, 0);
+                    G2S_SetBlendBrightness(0x1f, -10);
+                    mUnk_6186 = 2;
+                } else {
+                    mUnk_6186 = 3;
+                }
+            }
+            break;
+        case 2: {
+            mCells[0].mX = (mCells[0].mX + 0x80) / 2;
+            mCells[0].mY = (mCells[0].mY + 0xa0) / 2;
+            if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
+                data_020d433c.mBattlePlayers->mUnk_2a4->func_02088dac(1);
+            }
+            u8 limit;
+            if (data_020d433c.mUnk_83 == 3) {
+                limit = 2;
+            } else if (data_020d433c.mUnk_83 == 2) {
+                limit = 2;
+            } else {
+                limit = 4;
+            }
+            if (!data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
+                data_020d433c.mBattlePlayers->mUnk_2af++;
+                if (data_020d433c.mBattlePlayers->mUnk_2af > limit) {
+                    mUnk_6186 = 3;
+                } else {
+                    data_020d433c.mBattlePlayers->mUnk_2a4->func_02088e64(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                }
+            }
+            break;
+        }
+        case 3:
+            func_ov007_0226fb2c(0x17);
+            G2S_SetBlendBrightness(0x1f, 0);
+            mUnk_6186++;
+            break;
+        case 4:
+            if (func_ov007_0226f9e8()) {
+                mUnk_61a0 = 0;
+                break;
+            }
+            if (data_020d433c.mUnk_85 != 3) {
+                mUnk_6134->Draw();
+            }
+            if (func_ov007_0226d23c()) {
+                mUnk_6134->mUnk_064 = 0;
+                func_ov007_0226dfb8();
+                mUnk_61a1 = 0;
+                mUnk_6186++;
+                break;
+            }
+            if (func_ov007_0226d214()) {
+                SpriteManager::Get().StartFade(3);
+                mUnk_6186 = 0x10;
+                func_ov007_0226f378();
+                return;
+            }
+            break;
+        case 5:
+            if (mCells[0].mY > -0x40) {
+                mCells[0].mX += (s8) mUnk_6191;
+                mCells[0].mY += (s8) mUnk_6192;
+            } else {
+                func_ov007_0226fb2c(0x13);
+                WirelessManager::Get();
+                if (IsWirelessMode(&data_020c4030.mUnk_228)) {
+                    mUnk_6186 = 6;
+                } else {
+                    mUnk_61a4 = 1;
+                    mUnk_619c = 3;
+                    mUnk_619d = 0;
+                    if (data_020d433c.mUnk_83 != 0 || mUnk_61a2 != 0) {
+                        mUnk_619d = 1;
+                    }
+                    mUnk_6186 = 11;
+                }
+            }
+            break;
+        case 6: {
+            ShootPacket *pkt = (ShootPacket *) &data_0220f540;
+            pkt->mUnk_04     = mUnk_6154;
+            pkt->mUnk_06     = mUnk_6156;
+            pkt->mUnk_08     = mUnk_6158;
+            pkt->mUnk_0a     = mUnk_6168;
+            pkt->mUnk_0c     = mUnk_616a;
+            pkt->mUnk_0f     = mUnk_6193;
+            pkt->mUnk_10     = mUnk_6198;
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            pkt->mUnk_0e           = list->mPlayers[list->mUnk_28a]->mRecord;
+            if (func_ov007_022631bc(list, 8)) {
+                mUnk_6186 = 10;
+            }
+            break;
+        }
+        case 7:
+            func_ov007_0226bd3c();
+            func_ov007_0226fb2c(0x11);
+            mUnk_6187 = 4;
+            mUnk_6186++;
+            break;
+        case 8:
+            mUnk_6187--;
+            if (mUnk_6187 == 0) {
+                SpriteManager::Get().StartFade(2);
+                mUnk_6186++;
+            }
+            break;
+        case 9: {
+            ShootPacket *pkt = (ShootPacket *) &data_0220f540;
+            pkt->mUnk_04     = mUnk_6154;
+            pkt->mUnk_06     = mUnk_6156;
+            pkt->mUnk_08     = mUnk_6158;
+            pkt->mUnk_0a     = mUnk_6168;
+            pkt->mUnk_0c     = mUnk_616a;
+            pkt->mUnk_0f     = mUnk_6193;
+            pkt->mUnk_10     = mUnk_6198;
+            pkt->mUnk_0e     = 0;
+            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 8)) {
+                mUnk_6186++;
+            }
+            break;
+        }
+        case 10: {
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            BattlePlayer *cur      = list->mPlayers[list->mUnk_28a];
+            if (cur->IsActive()) {
+                u8 kind = mUnk_6198;
+                if (kind == 1 || kind == 3 || kind == 4) {
+                    mUnk_616a = 0;
+                    mUnk_6168 = func_ov007_0226e390();
+                    mUnk_6156 = 0x6000;
+                    mUnk_6158 = 0;
+                    *(u16 *) ((u8 *) mUnk_6130 + 0x1b8) = mUnk_6168;
+                    *(u16 *) ((u8 *) mUnk_6130 + 0x1ba) = mUnk_616a;
+                } else if (kind == 2) {
+                    cur->mUnk_c8->func_ov007_022329cc(0x14000);
+                }
+            }
+            BattlePlayerList *l2 = data_020d433c.mBattlePlayers;
+            u8 idx               = l2->mUnk_28a;
+            l2->mPlayers[idx]->mUnk_ec = mUnk_6193;
+            l2->mPlayers[idx]->mUnk_d4 = 0;
+            l2->mPlayers[idx]->mUnk_d8 = 0;
+            BattlePlayer *p            = data_020d433c.mBattlePlayers->mPlayers[idx];
+            p->mUnk_cc[0]              = mUnk_6154;
+            p->mUnk_cc[1]              = mUnk_6156;
+            p->mUnk_cc[2]              = mUnk_6158;
+            mUnk_6130->mUnk_1df        = mUnk_6198;
+            mUnk_6130->func_ov007_0225b6d0();
+            if (mUnk_6198 == 0) {
+                mUnk_6182 = 0x122;
+            }
+            mUnk_619e = 0x14;
+            mUnk_61a4 = 1;
+            if (data_020d433c.mUnk_85 != 0 && data_020d433c.mBattlePlayers->mUnk_28a != 0) {
+                mUnk_61a4 = 0;
+            }
+            mUnk_61a1 = 0;
+            mUnk_619c = 3;
+            mUnk_619d = 0;
+            if (data_020d433c.mUnk_83 != 0) {
+                mUnk_619c = 0;
+            } else if (mUnk_61a2 != 0) {
+                mUnk_619d = 1;
+            }
+            if (mUnk_6198 == 5) {
+                mUnk_619c = 0;
+                mUnk_619d = 0;
+            }
+            mUnk_6186++;
+            break;
+        }
+        case 11: {
+            BattlePlayerList *l = data_020d433c.mBattlePlayers;
+            if (l->mPlayers[l->mUnk_28a]->mUnk_c8 == 0) {
+                u8 i = 0;
+                do {
+                    BattlePlayerList *l3 = data_020d433c.mBattlePlayers;
+                    if (l3->mPlayers[i]->mUnk_c8 != 0 && i != l3->mUnk_28a) {
+                        l3->mPlayers[i]->mUnk_c8->func_ov007_02232c88();
+                    }
+                    i++;
+                } while (i < data_020d433c.mPlayerCount);
+            }
+            mUnk_6186++;
+            break;
+        }
+        case 12:
+            if (!func_ov007_0226f9e8()) {
+                if (mContext->mUnk_12 != 0) {
+                    mUnk_61a0 = 0;
+                    mUnk_61a6 = 0x30;
+                    mUnk_6182 = 0x122;
+                    mUnk_6186 = 15;
+                } else {
+                    if (mUnk_61a0 != 0 && mUnk_6130->mUnk_1d7 != 0) {
+                        u8 i = 0;
+                        do {
+                            mIcons[i].mUnk_0c = 0;
+                            i++;
+                        } while (i < 5);
+                        mUnk_61a0 = 0;
+                        mUnk_61a6 = 0x30;
+                        mUnk_6182 = 0x122;
+                    }
+                    if (mUnk_6130->func_ov007_0225d078()) {
+                        G2S_SetBG1Priority(3);
+                        mUnk_61a6 = 0x30;
+                    }
+                    if (mUnk_6130->mUnk_1cb == 0) {
+                        BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                        if (l->mPlayers[l->mUnk_28a]->IsActive()) {
+                            func_ov007_0226e430();
+                        }
+                        func_ov007_0226e234();
+                        func_ov007_0226e884();
+                    }
+                    func_ov007_0226d690();
+                }
+            }
+            break;
+        case 13:
+            new BattleUnk0227532c(3);
+            mContext->mUnk_12 = 0;
+            mUnk_6186++;
+            break;
+        case 14:
+            switch (mContext->mUnk_12) {
+                case 1:
+                    mUnk_6186 = mUnk_61a8;
+                    if (mUnk_6186 == 4) {
+                        mUnk_61a0 = 1;
+                        mUnk_61a1 = 1;
+                        mUnk_6186 = 3;
+                    } else {
+                        func_ov007_0226fb2c(0x11);
+                    }
+                    func_ov007_0226f604();
+                    data_020d433c.mUnk_14 &= ~8;
+                    mContext->mUnk_12 = 0;
+                    break;
+                case 2:
+                    if (data_020d433c.mUnk_a8 != 0) {
+                        WirelessManager::Get();
+                        data_020c4030.mUnk_22a = 6;
+                        mUnk_6186++;
+                    } else {
+                        SpriteManager::Get().StartFade(3);
+                        mUnk_6186 = 0x10;
+                    }
+                    break;
+            }
+            break;
+        case 15:
+            u16 scene = mContext->mUnk_12;
+            if (scene != 0) {
+                RequestScene(scene);
+                mFinished = 1;
+            }
+            break;
+        case 16:
+            if (!SpriteManager::Get().IsFading()) {
+                mUnk_6130->func_ov007_02253fbc();
+                mUnk_6186 = 15;
+                data_020d433c.mUnk_14 &= ~8;
+            }
+            break;
+    }
+    func_ov007_0226f378();
+    if (mUnk_61a0 != 0 && mUnk_6186 != 14) {
+        func_ov007_0226f8a8();
+    }
+    if (mUnk_61a4 != 0) {
+        func_ov007_0226f59c();
+    }
 }
 
 void BattleShoot::func_ov007_0226bb2c() {
@@ -1433,13 +1751,13 @@ void BattleShoot::func_ov007_0226f698(u8 x0, u8 y0, u8 x1, u8 y1) {
     func_ov007_0226f644();
 }
 
-// non-matching: 32 words, register allocation and the order of the bounds comparisons.
+// non-matching: 28 words, register assignment of the bounds checks.
 void BattleShoot::func_ov007_0226f76c(u8 x, u8 y) {
     u8 i = 0;
     do {
         s16 py = y + data_ov007_0227bce0[i][1];
         s16 px = x + data_ov007_0227bce0[i][0];
-        if (((u32) py < 0xc0) & (px >= 0) & (py >= 0) & ((u32) px < 0x100)) {
+        if ((px >= 0) & ((u32) py < 0xc0) & (py >= 0) & ((u32) px < 0x100)) {
             func_ov007_0226f820(px, py);
         }
         i++;
@@ -1451,7 +1769,7 @@ void BattleShoot::func_ov007_0226f820(u8 x, u8 y) {
     if (y >= 0xc0) {
         return;
     }
-    u32 index = (y % 8) * 8 + (y / 8) * 2048 + (x / 8) * 64 + x % 8;
+    u32 index = (x / 8) * 64 + x % 8 + ((y / 8) * 2048 + (y % 8) * 8);
     mBitmap[index >> 1] |= (index & 1) ? 0x20 : 2;
 }
 

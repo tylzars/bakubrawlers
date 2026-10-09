@@ -36,6 +36,12 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
+void func_ov007_0226a448(BattlePlayer *player, u8 a, int b);
+extern "C" u32 func_ov007_022234f0(int player, u8 mode, u8 ch);
+extern const s32 data_ov007_02279df0[][6];
+
+void func_ov007_0226a448(BattlePlayer *player, u8 index, int flag);
+
 extern const s8 data_ov007_02279d3c[];
 u8 func_02065bf4(u32 id, u32 index);
 
@@ -1410,6 +1416,219 @@ int BattleConfrontCard::func_ov007_0224251c() {
     return result;
 }
 
+// non-matching: 0x7cc vs 0x7e8; pointer/offset forms of e[side]/e[other] and some reloads.
+u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
+    int result = 0;
+    mUnk_5c   = 0;
+    mUnk_5d   = 0;
+    mUnk_61   = 0;
+    BattleEntry *e = mData->mEntries;
+    u8 i           = 0;
+    do {
+        u8 side  = 0;
+        u8 other = 1;
+        if (i == 1) {
+            side  = 1;
+            other = 0;
+        }
+        BattleEntry *self = &e[side];
+        u8 selfLevel      = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4]->mUnk_ee;
+        u8 oppLevel       = data_020d433c.mBattlePlayers->mPlayers[e[other].mUnk_0d_4]->mUnk_ee;
+        int type          = func_02065c0c(card, 3);
+        switch (type) {
+        case 1: {
+            u8 want = card - 1;
+            if (card >= 7) {
+                want++;
+            } else if (card == 6) {
+                if (e[i].mUnk_0c == 6) {
+                    want = 6;
+                }
+            }
+            if (want == e[i].mUnk_0c) {
+                u16 power = func_02065bf4(card, e[i].mUnk_0d_0) * 10;
+                u16 alt   = 0;
+                if (e[i].mUnk_0c == 5) {
+                    alt = func_02065bf4(card, 3) * 10;
+                } else if (e[i].mUnk_0c == 6) {
+                    alt = func_02065bf4(card, 0) * 10;
+                }
+                if (power < alt) {
+                    power = alt;
+                }
+                mData->mEntries[i].mUnk_08 = power;
+                (&mUnk_5c)[i]              = 1;
+            }
+            break;
+        }
+        case 4:
+            if (e[side].mUnk_00 < e[other].mUnk_00) {
+                mData->mEntries[side].mUnk_08 = e[side].mUnk_00;
+                (&mUnk_5c)[side]              = 1;
+            }
+            break;
+        }
+        switch (card) {
+            case 0x48:
+                mData->mEntries[i].mUnk_0f_0 = 1;
+                (&mUnk_5c)[i]                = 1;
+                break;
+            case 0x49:
+                if (selfLevel > oppLevel) {
+                    mData->mEntries[side].mUnk_0f_0 = 1;
+                    (&mUnk_5c)[side]                = 1;
+                }
+                break;
+            case 0x4a:
+                if (e[side].mUnk_06 > e[other].mUnk_06) {
+                    mData->mEntries[side].mUnk_0f_0 = 1;
+                    (&mUnk_5c)[side]                = 1;
+                }
+                break;
+            case 0x4b:
+                if (e[side].mUnk_04 > e[other].mUnk_04) {
+                    mData->mEntries[side].mUnk_0f_0 = 1;
+                    (&mUnk_5c)[side]                = 1;
+                }
+                break;
+            case 0x4c:
+                if (e[side].mUnk_06 < e[other].mUnk_06) {
+                    mData->mEntries[side].mUnk_0f_0 = 1;
+                    (&mUnk_5c)[side]                = 1;
+                }
+                break;
+            case 0x4d: {
+                u8 j = 0;
+                do {
+                    func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
+                    j++;
+                } while (j < data_020d433c.mUnk_99);
+                (&mUnk_5c)[i] = 1;
+                break;
+            }
+            case 0x4e:
+                if (selfLevel < oppLevel) {
+                    u8 j = 0;
+                    do {
+                        func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
+                        j++;
+                    } while (j < data_020d433c.mUnk_99);
+                    (&mUnk_5c)[side] = 1;
+                }
+                break;
+            case 0x4f:
+            case 0x50:
+            case 0x51:
+                if (selfLevel < oppLevel) {
+                    u8 j = 0;
+                    do {
+                        if (j == (u8) (card - 0x4f)) {
+                            func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
+                        }
+                        j++;
+                    } while (j < data_020d433c.mUnk_99);
+                    (&mUnk_5c)[side] = 1;
+                }
+                break;
+            case 0x52:
+            case 0x53:
+            case 0x54:
+                if (e[side].mUnk_04 < e[other].mUnk_04) {
+                    u8 j = 0;
+                    do {
+                        if (j == (u8) (card - 0x52)) {
+                            func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
+                        }
+                        j++;
+                    } while (j < data_020d433c.mUnk_99);
+                    (&mUnk_5c)[side] = 1;
+                }
+                break;
+            case 0x55:
+                mUnk_61       = 1;
+                (&mUnk_5c)[i] = 1;
+                break;
+            case 0x5d:
+            case 0x5f:
+                (&mUnk_5c)[i] = 1;
+                break;
+            case 0x5e:
+                if (e[i].mUnk_0d_0 == 0 || e[i].mUnk_0c == 6) {
+                    mUnk_5c = 1;
+                    mUnk_5d = 1;
+                }
+                break;
+            case 0x60:
+                if (e[i].mUnk_0d_0 == 3 || e[i].mUnk_0c == 5) {
+                    mUnk_5c = 1;
+                    mUnk_5d = 1;
+                }
+                break;
+            case 0x61:
+                if (e[i].mUnk_0d_0 == 2) {
+                    mUnk_5c = 1;
+                    mUnk_5d = 1;
+                }
+                break;
+            case 0x63:
+                if (e[i].mUnk_0d_0 == 5) {
+                    mUnk_5c = 1;
+                    mUnk_5d = 1;
+                }
+                break;
+            case 0x64:
+                if (e[i].mUnk_0d_0 == 4) {
+                    mUnk_5c = 1;
+                    mUnk_5d = 1;
+                }
+                break;
+            case 0x65:
+                if (e[i].mUnk_0d_0 == 1) {
+                    mUnk_5c = 1;
+                    mUnk_5d = 1;
+                }
+                break;
+            case 0x62: {
+                BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4];
+                u8 j            = 0;
+                u8 n            = 0;
+                do {
+                    if (p->mSlots6c[j].mFlag == 2) {
+                        n++;
+                    }
+                    j++;
+                } while (j < data_020d433c.mUnk_99);
+                mData->mEntries[side].mUnk_08 = n * 100;
+                (&mUnk_5c)[side]              = 1;
+                break;
+            }
+            case 0x66:
+                mData->mEntries[side].mUnk_08 = selfLevel * 100;
+                (&mUnk_5c)[side]              = 1;
+                break;
+            case 0x67: {
+                BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4];
+                u8 j            = 0;
+                u8 n            = 0;
+                do {
+                    if (p->mRecords[j].mUnk_0a == 1) {
+                        n++;
+                    }
+                    j++;
+                } while (j < data_020d433c.mUnk_99);
+                mData->mEntries[side].mUnk_08 = n * 150;
+                (&mUnk_5c)[side]              = 1;
+                break;
+            }
+        }
+        if (mUnk_5c != 0 || mUnk_5d != 0) {
+            result = type;
+        }
+        i++;
+    } while (i < 2);
+    return result;
+}
+
 void BattleConfrontCard::func_ov007_022430bc(int brightness) {
     G2S_SetBlendBrightness(0x1f, brightness);
 }
@@ -1990,4 +2209,68 @@ void BattleConfrontCard::func_ov007_022442d4(u32 index) {
     MessageFile *file = mUnk_84;
     text.Print(file->GetText(index), file->GetLength(index), mUnk_78, 0x18, 0xc, &height, &width, 0, 0, 2, 0x42, 0x10, 0, 0, 0, 1, 1);
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xd000, mUnk_78, mUnk_6c, 0);
+}
+
+// non-matching: 0x390 vs 0x394, the cur pointer / e[i] CSE in the pick loop.
+u8 BattleConfrontCard::func_ov007_02244440() {
+    BattleData *data = mData;
+    BattleEntry *e   = data->mEntries;
+    mUnk_50          = func_ov007_022428d4(data->mUnk_04);
+    if (mUnk_50 == 5) {
+        mData->mEntries[0].mUnk_02 = e[1].mUnk_04 + e[0].mUnk_00 - e[0].mUnk_04;
+        mData->mEntries[1].mUnk_02 = e[0].mUnk_04 + e[1].mUnk_00 - e[1].mUnk_04;
+        u16 b = e[1].mUnk_04;
+        u16 a = e[0].mUnk_04;
+        mData->mEntries[1].mUnk_04 = a;
+        mData->mEntries[0].mUnk_04 = b;
+    }
+    u8 i = 0;
+    do {
+        if (e[i].mUnk_0f_0) {
+            mUnk_56 = 0;
+        } else {
+            u8 j    = 0;
+            u8 k    = 0;
+            u8 mask = 0;
+            do {
+                if (!func_ov007_022433c8(i, data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4]->mSlots6c[j].mValue)) {
+                    (&mask)[k / 8] |= 1 << (k % 8);
+                }
+                j++;
+                k++;
+            } while (j < data_020d433c.mUnk_99);
+            u8 other = (i + 1) % 2;
+            mUnk_53 = func_ov007_0226a700(data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4], mask,
+                                          (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
+            if (mUnk_53 == 0xff) {
+                mUnk_56 = 0;
+            } else {
+                func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4], mUnk_53, 2);
+            }
+        }
+        i++;
+    } while (i < 2);
+    u16 power[2];
+    u8 n = 0;
+    do {
+        power[n] = e[n].mUnk_04;
+        power[n] += e[n].mUnk_06;
+        power[n] += e[n].mUnk_08;
+        power[n] += e[n].mUnk_0a;
+        power[n] = power[n] * func_ov007_022234f0(e[n].mUnk_0d_4, mUnk_20, e[n].mUnk_0e);
+        n++;
+    } while (n < 2);
+    u8 mode = data_020d433c.mUnk_95;
+    if (mode != 0 && mode != 7) {
+        const s32 *row = data_ov007_02279df0[(u8) (mode - 1)];
+        u8 m           = 0;
+        do {
+            float f  = (float) row[e[m].mUnk_0d_0] / 4096.0f;
+            power[m] = (u16) (f * (float) power[m]);
+            m++;
+        } while (m < 2);
+    }
+    u16 chance = (u16) (100.0f * ((float) power[0] / (float) (power[0] + power[1])));
+    u8 r = MATH_Rand32(&data_020d42e8, 100) >= chance;
+    return r;
 }

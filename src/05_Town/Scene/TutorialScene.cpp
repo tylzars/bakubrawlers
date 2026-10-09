@@ -21,14 +21,35 @@
 #include <nitro/os.h>
 
 // Overlay data tables.
-// Overlay tables still provided by the original data (not yet moved into this file).
-extern const u8 data_ov005_022200d0[];
-extern const WindowItemRecord data_ov005_02220190[];
-extern const WindowCellRecord data_ov005_02220238[];
-extern const WindowItemRecord data_ov005_022200e8[];
-extern const WindowCellRecord data_ov005_0222013c[];
-extern const s8 data_ov005_022200d8[];
 extern const s8 data_ov005_022200d9[];
+static const WindowItemRecord data_ov005_022200e8[3] = {
+    {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
+    {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
+    {2, 32768, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+};
+static const WindowCellRecord data_ov005_0222013c[3] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0, 0, 0, 1, {3, 5, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0, 0, 0, 1, {6, 8, 7, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0, 0, 0, 1, {10, 10, 10, 0}},
+};
+static const WindowItemRecord data_ov005_02220190[6] = {
+    {0, 5, 169, 200, 0, 0, 0, {-1, -1, -1, -1}, 0, 1},
+    {1, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {2, 16, 228, 48, 32, 12, 0, {-1, -1, -1, -1}, 0, 0},
+    {3, 32, 228, 28, 32, 20, 0, {-1, -1, -1, -1}, 0, 3},
+    {4, 64, 228, 144, 32, 20, 0, {-1, -1, -1, -1}, 0, 3},
+    {5, 32768, 238, 36, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+};
+static const WindowCellRecord data_ov005_02220238[6] = {
+    {"union_b_obj_cockpit_nce.bin", 0, 24576, 3, 2, 1, {0, 1, 1, 0}},
+    {"union_b_obj_cockpit_nce.bin", 2, 24576, 3, 2, 1, {2, 3, 3, 0}},
+    {"union_b_obj_scroll_nce.bin", 4, 20480, 3, 2, 1, {4, 4, 4, 0}},
+    {"union_b_obj_scroll_nce.bin", 0, 20480, 3, 2, 1, {0, 1, 1, 0}},
+    {"union_b_obj_scroll_nce.bin", 2, 20480, 3, 2, 1, {2, 3, 3, 0}},
+    {"union_b_obj_scroll_nce.bin", 5, 20480, 3, 2, 1, {5, 5, 5, 0}},
+};
+static const u8 data_ov005_022200d0[8] = {0, 1, 7, 12, 14, 16, 18, 0};
+static const s8 data_ov005_022200d8[16] = {0, 0, 13, 3, 13, 3, 0, 4, 0, 3, 13, 3, 13, 3, 0, 0};
 void func_020383f8(u32 a);
 void func_02089278();
 void func_ov005_0221fdc4();

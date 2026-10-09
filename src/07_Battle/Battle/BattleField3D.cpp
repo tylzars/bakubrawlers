@@ -130,7 +130,8 @@ BattleField3D::~BattleField3D() {
     SpriteManager::Get().func_0202740c();
 }
 
-BOOL func_ov007_02229524() {
+// The caller passes its BattleField3D, which the function doesn't use.
+BOOL func_ov007_02229524(BattleField3D *field) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     camera->func_020264a4(0);
     camera->func_02026180();

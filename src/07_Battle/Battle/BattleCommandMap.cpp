@@ -1096,13 +1096,12 @@ extern "C" void func_ov007_02248688(BattleCommandMap *map, VecFx32 *v) {
     func_ov007_022486c4(map, &w, 0);
 }
 
-// non-matching: 14 words, the original copies scale before the stack adjust and reloads map->mUnk_6c for the position stores.
 extern "C" void func_ov007_022486c4(BattleCommandMap *map, VecFx32 *v, u32 mode) {
     if (map->mUnk_6c == 0) {
         return;
     }
     fx32 x = v->x;
-    fx32 y = v->y;
+    fx32 y = v->y + 0x3800;
     fx32 z = v->z;
     VecFx32 scale = data_ov007_02279ed0;
     if (mode != 0 && mode != 1) {
@@ -1111,7 +1110,7 @@ extern "C" void func_ov007_022486c4(BattleCommandMap *map, VecFx32 *v, u32 mode)
     map->mUnk_6c->mScale = scale;
     VecFx32 *dst = &map->mUnk_6c->mPosition;
     dst->x       = x;
-    dst->y       = y + 0x3800;
+    dst->y       = y;
     dst->z       = z;
     map->mUnk_6c->func_020526bc();
 }

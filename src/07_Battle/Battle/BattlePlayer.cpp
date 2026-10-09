@@ -506,15 +506,13 @@ u8 func_ov007_0226a5e8(BattlePlayer *player) {
     return first;
 }
 
-// non-matching: 0x214 vs 0x21c bytes, register allocation (original: list in r10, owner in r8, n in r9, i in r6, count in r7, result in r11; `1` is loaded into r0 before the compare).
 u8 func_ov007_0226a700(BattlePlayer *player, u8 mask, s16 x, s16 y) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    BattlePlayer *owner    = list->mPlayers[player->mUnk_f0];
-    u8 n                   = data_020d433c.mUnk_99;
-    u8 i                   = 0;
-    u8 count               = 0;
-    u8 result              = 0xff;
-    u8 ret                 = 1;
+    u8 i = 0;
+    u8 count = 0;
+    BattlePlayer *owner = list->mPlayers[player->mUnk_f0];
+    u8 n = data_020d433c.mUnk_99;
+    u8 result = 0xff;
     do {
         if (owner->mSlots6c[i].mFlag == 0) {
             if (!TestFlagBit(&mask, i)) {
@@ -526,24 +524,25 @@ u8 func_ov007_0226a700(BattlePlayer *player, u8 mask, s16 x, s16 y) {
     if (!(mask & 2) && owner->mSlots6c[1].mFlag == 0) {
         u16 value = owner->mSlots6c[1].mValue;
         if (value >= 0x92 && value <= 0xa7) {
-            if ((mask & 1) || owner->mSlots6c[0].mFlag != 0) {
-                return ret;
-            }
-            if (MATH_Rand32(&data_020d42e8, 2) != 0) {
-                ret = 0;
+            u8 ret = 1;
+            if (!((mask & 1) || owner->mSlots6c[0].mFlag != 0)) {
+                if (MATH_Rand32(&data_020d42e8, 2) != 0) {
+                    ret = 0;
+                }
             }
             return ret;
         }
     }
     if (count != 0) {
         u8 pick = MATH_Rand32(&data_020d42e8, count);
-        u8 k    = 0;
-        i       = 0;
-        BattlePlayerSlot *slots = owner->mSlots6c;
+        owner = list->mPlayers[player->mUnk_f0];
+        u8 k = 0;
+        i = 0;
         do {
-            if (slots[i].mFlag == 0 && !TestFlagBit(&mask, i)) {
+            BattlePlayerSlot *slot = &owner->mSlots6c[i];
+            if (slot->mFlag == 0 && !TestFlagBit(&mask, i)) {
                 if (pick == k) {
-                    u16 value = slots[i].mValue;
+                    u16 value = slot->mValue;
                     if (value == 0x8c) {
                         if (x > y) {
                             return 0xff;

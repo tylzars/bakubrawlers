@@ -3705,7 +3705,7 @@ void func_ov007_0225ca18(BattleTarget *target, int a, int b) {
     target->mUnk_1db = 0;
 }
 
-// non-matching: size 0x138 vs 0x134: the original loads the record stride 0xc into r0 before the branch on player == 0xff, this version loads it after the join.
+// non-matching: 14 words; the original sets r0 to 12 before the branch.
 void BattleTarget::func_ov007_0225ca48(u32 player, u32 record) {
     BattlePlayer *pl;
     if (player == 0xff) {
@@ -3718,11 +3718,14 @@ void BattleTarget::func_ov007_0225ca48(u32 player, u32 record) {
     BattleRecord *rec = &pl->mRecords[record];
     u16 total         = rec->mUnk_04 + rec->mUnk_06;
     u8 i              = 0;
-    while (total != 0 && i < 4) {
+    do {
+        if (total == 0) {
+            break;
+        }
         mAnims[1]->func_0202a3ec(0, total % 10, 0xc0 + (3 - i) * 12, 0xaa, 1);
         i++;
         total = total / 10;
-    }
+    } while (i < 4);
     if (data_020d433c.mBattlePlayers->mPlayers[player]->mUnk_fa == 0) {
         return;
     }

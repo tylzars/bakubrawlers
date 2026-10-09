@@ -4,6 +4,10 @@
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Unknown/UnkFunctions.hpp"
 
+u8 func_02065bf4(u32 id, u32 index);
+extern const u8 data_ov007_022796e4[];
+extern const u8 data_ov007_022796f8[];
+
 BOOL func_ov007_02262574(BattlePlayerList *list, u8 row, u8 col);
 
 struct BattleCpuRegion {
@@ -305,6 +309,296 @@ u8 BattleCpu::func_ov007_02231300() {
         r++;
     } while (r < 14);
     return 0;
+}
+
+// non-matching: same size; registers, the add scheduled before the byte store in own[nOwn++], blt vs bcc, and a cmp/cmpne chain for type == 2 || type == 3.
+extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
+    cpu->mPos.x = 0;
+    cpu->mPos.y = 0;
+    cpu->mPos.z = 0;
+    u8 own[6]   = {0, 0, 0, 0, 0, 0};
+    u8 other[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    u8 nOwn     = 0;
+    u8 nOther   = 0;
+    u8 cntA     = 0;
+    u8 cntB     = 0;
+    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    u8 kind                = list->mPlayers[cpu->mUnk_79]->mUnk_f6;
+    u8 i                   = 0;
+    do {
+        BattleMarker *m = &list->Entries()[i];
+        if (m->mUnk_2 != 0) {
+            if (cpu->mUnk_79 == m->mUnk_1) {
+                own[nOwn++] = i;
+            } else {
+                other[nOther++] = i;
+            }
+            if (m->mUnk_5 == 0) {
+                cntA++;
+            } else {
+                u8 owner = list->Units()[(u8) (m->mUnk_5 - 1)].mUnk_0f;
+                if (owner != cpu->mUnk_79 && owner != list->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+                    cntB++;
+                }
+            }
+        }
+        i++;
+    } while (i < 12);
+    if (nOwn + nOther == 0) {
+        return;
+    }
+    u8 type = list->mPlayers[cpu->mUnk_79]->mRecords[cpu->mUnk_7a].mUnk_09;
+    cpu->mUnk_7e = 0;
+    BattlePlayerList *list2 = data_020d433c.mBattlePlayers;
+    BattlePlayer *pl        = list2->mPlayers[cpu->mUnk_79];
+    if (pl->mRecords[cpu->mUnk_7a].mUnk_00_0 >= 2 && pl->mUnk_f3 == 0xbe) {
+        u8 roll = MATH_Rand32(&data_020d42e8, 100);
+        if (cpu->mUnk_7b == 0) {
+            roll = 99;
+        } else if (cpu->mUnk_7b == 1) {
+            roll = 0;
+            if (type == 0 || type == 2) {
+                roll = 99;
+            }
+        } else if (cpu->mUnk_7b == 5) {
+            roll = 0;
+        }
+        if (list2->mPlayers[cpu->mUnk_79]->mUnk_f7 == 2) {
+            roll = 0;
+        }
+        if (roll < data_ov007_022796e4[kind]) {
+            cpu->mUnk_7e = type + 1;
+            if (cntB == 0) {
+                switch (type) {
+                    case 0:
+                    case 2:
+                    case 3:
+                        cpu->mUnk_7e = 0;
+                        break;
+                    case 5:
+                        if (cntA == 0) {
+                            cpu->mUnk_7e = 0;
+                        }
+                        break;
+                }
+            }
+        }
+    }
+    u8 state = 4;
+    switch (data_ov007_022796f8[kind]) {
+        case 0:
+            if (cpu->mUnk_7b != 0) {
+                state = 0;
+            }
+            break;
+        case 1:
+            if (cpu->mUnk_7b == 0 || cpu->mUnk_7b == 3) {
+                state = 4;
+            } else {
+                state = 0;
+            }
+            break;
+        case 2:
+            state = 2;
+            break;
+        case 3:
+            if (cpu->mUnk_7b == 0 || cpu->mUnk_7b == 3) {
+                state = 1;
+            } else {
+                state = 0;
+            }
+            break;
+        case 4:
+            state = 5;
+            break;
+    }
+    if (cpu->mUnk_7e != 0 && cntB != 0) {
+        if (type == 0 || type == 2 || type == 3) {
+            state = 3;
+        }
+    }
+    u8 pick = 12;
+    do {
+        switch (state) {
+            case 0: {
+                u8 idx   = MATH_Rand32(&data_020d42e8, 12);
+                u8 found = 0;
+                u8 n     = 0;
+                BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                do {
+                    BattleUnit *u = &l->Units()[idx];
+                    if (u->mUnk_10 != 0 && cpu->mUnk_79 == u->mUnk_0f) {
+                        found++;
+                        break;
+                    }
+                    idx++;
+                    n++;
+                    if (idx >= 12) {
+                        idx = 0;
+                    }
+                } while (n < 12);
+                if (found == 0) {
+                    state = 4;
+                } else {
+                    pick = l->Units()[idx].mUnk_11;
+                }
+                break;
+            }
+            case 1:
+                if (cntA != 0) {
+                    u8 j = 0;
+                    BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                    do {
+                        BattleMarker *m = &l->Entries()[j];
+                        if (m->mUnk_2 != 0 && m->mUnk_5 == 0) {
+                            if (cpu->mUnk_79 == m->mUnk_1) {
+                                pick = j;
+                                break;
+                            }
+                            pick = j;
+                        }
+                        j++;
+                    } while (j < 12);
+                } else {
+                    state = 0;
+                }
+                break;
+            case 2:
+            case 3:
+                if (cntB != 0) {
+                    u8 j = 0;
+                    BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                    do {
+                        BattleMarker *m = &l->Entries()[j];
+                        if (m->mUnk_2 != 0 && m->mUnk_5 != 0) {
+                            u8 owner = l->Units()[(u8) (m->mUnk_5 - 1)].mUnk_0f;
+                            if (owner != cpu->mUnk_79 && owner != l->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+                                if (state == 2) {
+                                    if (!l->mPlayers[owner]->IsActive()) {
+                                        pick = j;
+                                        break;
+                                    }
+                                } else {
+                                    pick = j;
+                                    break;
+                                }
+                            }
+                        }
+                        j++;
+                    } while (j < 12);
+                    if (pick == 12) {
+                        if (state == 2) {
+                            state = 3;
+                        } else {
+                            state = 0;
+                        }
+                    }
+                } else {
+                    state = 5;
+                }
+                break;
+            case 4: {
+                BattleRecord *rec = &data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->mRecords[cpu->mUnk_7a];
+                u8 recKind        = rec->mUnk_08;
+                u16 recValue      = rec->mUnk_04;
+                u8 j              = 0;
+                do {
+                    BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                    BattleMarker *m     = &l->Entries()[j];
+                    if (m->mUnk_2 != 0) {
+                        u8 owner = m->mUnk_1;
+                        u16 val  = l->mPlayers[owner]->Slot54(m->mUnk_0);
+                        bool ok  = false;
+                        if (cpu->mUnk_79 == owner || owner == l->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+                            ok = cpu->func_ov007_02232e04(val, recValue, recKind);
+                        }
+                        if (ok == 1) {
+                            pick = j;
+                            break;
+                        }
+                    }
+                    j++;
+                } while (j < 12);
+                if (pick >= 12) {
+                    u8 bestIdx = 0;
+                    u32 best   = 0;
+                    u8 k       = 0;
+                    do {
+                        BattlePlayerList *l = data_020d433c.mBattlePlayers;
+                        BattleMarker *m     = &l->Entries()[k];
+                        if (m->mUnk_2 != 0) {
+                            if (cpu->mUnk_79 == m->mUnk_1 || m->mUnk_1 == l->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+                                u32 v = func_02065bf4(m->mUnk_0, recKind);
+                                if (v > best) {
+                                    best    = v;
+                                    bestIdx = k;
+                                }
+                            }
+                        }
+                        k++;
+                    } while (k < 12);
+                    if (best != 0) {
+                        pick = bestIdx;
+                    } else {
+                        state = 5;
+                    }
+                }
+                break;
+            }
+            case 5: {
+                BOOL pickOwn = FALSE;
+                if (MATH_Rand32(&data_020d42e8, 100) < 75) {
+                    if (nOwn != 0) {
+                        pickOwn = TRUE;
+                    }
+                } else {
+                    if (nOther == 0) {
+                        pickOwn = TRUE;
+                    }
+                }
+                if (pickOwn) {
+                    pick = own[MATH_Rand32(&data_020d42e8, nOwn) & 0xff];
+                } else {
+                    pick = other[MATH_Rand32(&data_020d42e8, nOther) & 0xff];
+                }
+                break;
+            }
+        }
+    } while (pick >= 12);
+    if (data_020d433c.mUnk_98 != 0) {
+        BattlePlayerList *l = data_020d433c.mBattlePlayers;
+        BattleMarker *m     = &l->Entries()[pick];
+        if (m->mUnk_5 != 0) {
+            u8 owner = l->Units()[(u8) (m->mUnk_5 - 1)].mUnk_0f;
+            BattlePlayer *me = l->mPlayers[cpu->mUnk_79];
+            if (owner == me->mUnk_f2) {
+                u8 j = 0;
+                do {
+                    BattleMarker *m2 = &l->Entries()[j];
+                    if (m2->mUnk_2 != 0) {
+                        if (m2->mUnk_5 != 0) {
+                            if (l->Units()[(u8) (m2->mUnk_5 - 1)].mUnk_0f != me->mUnk_f2) {
+                                pick = j;
+                                break;
+                            }
+                        } else {
+                            pick = j;
+                            break;
+                        }
+                    }
+                    j++;
+                } while (j < 12);
+            }
+        }
+    }
+    if (pick >= 12) {
+        pick = 0;
+    }
+    BattleMarker *chosen = &data_020d433c.mBattlePlayers->Entries()[pick];
+    cpu->mPos.x          = chosen->mUnk_3 * 0x23000 - 0xe3800;
+    cpu->mPos.y          = 0;
+    cpu->mPos.z          = chosen->mUnk_4 * 0x2f000 - 0xd3800;
+    cpu->func_ov007_022328dc();
 }
 
 u8 BattleCpu::func_ov007_02231dd0() {

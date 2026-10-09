@@ -15,6 +15,38 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
+extern u8 data_ov007_0227c428[];
+
+// Copies the active camera into the 3D engine state and the camera manager's snapshot of it.
+static inline void SnapshotCamera() {
+    CameraManager &manager        = CameraManager::Get();
+    Camera *camera                = manager.mCameras[manager.mActive];
+    data_02211374.mCameraPosition = camera->mPosition;
+    data_02211374.mCameraUp       = camera->mUp;
+    data_02211374.mCameraTarget   = camera->mTarget;
+    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    data_02211374.mFlags &= ~0xe8;
+    manager.mProjection[manager.mActive] = data_02211374.mProjection;
+    manager.mView[manager.mActive]       = data_02211374.mView;
+    manager.mMtxA[manager.mActive]       = *func_02032710();
+    manager.mMtxB[manager.mActive]       = *func_02032604();
+    manager.mMtxC[manager.mActive]       = *func_020323b8();
+}
+
+struct BattleCardModelKey {
+    s32 mX;
+    s32 mY;
+};
+
+// Whole number of frames in 20.12 fixed point, rounded (as a float, the caller converts).
+static inline float FramesToFloat(u32 frames) {
+    fx32 raw = frames << 12;
+    if (frames != 0) {
+        return (float) raw + 0.5f;
+    }
+    return (float) raw - 0.5f;
+}
+
 extern u8 data_020a1074[];
 extern BattleCardModelEntry *data_ov007_0228acc0[];
 extern VecFx32 data_ov007_0227c0c4;
@@ -151,6 +183,110 @@ void BattleCardModel::Update() {
             break;
         }
     }
+}
+
+BOOL BattleCardModel::func_ov007_0227292c() {
+    switch (mState) {
+        case 0:
+            SpriteManager::Get();
+            SpriteManager::sFade.mMain       = 1;
+            SpriteManager::sBrightness.mMain = -16;
+            func_ov007_02273ec0();
+            func_ov007_022734d8();
+            mState++;
+            break;
+        case 1:
+            func_ov007_02273be8();
+            SpriteManager::Get();
+            SpriteManager::sFade.mMain = 2;
+            mState++;
+            break;
+        case 2:
+            if (data_ov007_0227c428[mType] != 0) {
+                if (!mBaku->mModel->func_02028d80()) {
+                    mBaku->mModel->func_02028de8(0, 0);
+                    mBaku->mModel->func_02028e70((s32) FramesToFloat(mEntry->mUnk_00));
+                    mUnk_93 = 1;
+                }
+                mCamera->func_020264a4(1);
+            } else {
+                if (!mBaku->mModel->func_02028d80()) {
+                    mState++;
+                }
+                if (mBaku->mModel->func_02028ea4() >= mLastFrame) {
+                    SpriteManager::Get();
+                    if (SpriteManager::sFade.mMain <= 1) {
+                        SpriteManager::Get();
+                        SpriteManager::sFade.mMain = 3;
+                    } else {
+                        s8 brightness = -(s8) ((mBaku->mModel->func_02028ea4() - mLastFrame) >> 12);
+                        if (brightness < -16) {
+                            brightness = -16;
+                        }
+                        SpriteManager::Get();
+                        SpriteManager::sFade.mMain       = 1;
+                        SpriteManager::sBrightness.mMain = brightness;
+                        SpriteManager::Get();
+                        SpriteManager::sFade.mMain = 3;
+                    }
+                }
+                mCamera->func_020264a4(0);
+            }
+            mCamera->func_02026180();
+            SnapshotCamera();
+            if (mUnk_24 != 0) {
+                if (mBaku->mModel->func_02028ea4() >= (s32) FramesToFloat(mEntry->mUnk_0a)) {
+                    mUnk_24 = 0;
+                } else if (mBaku->mModel->func_02028ea4() >= (s32) FramesToFloat(mEntry->mUnk_08)) {
+                    VecFx32 offset;
+                    VecFx32 delta;
+                    Camera *camA = mCamera;
+                    delta.x      = camA->mPosition.x;
+                    delta.y      = camA->mPosition.y;
+                    delta.z      = camA->mPosition.z;
+                    BattleCardModelKey *key = (BattleCardModelKey *) mUnk_24;
+                    s32 kx = key->mX;
+                    s32 ky = key->mY;
+                    offset.x = kx;
+                    offset.y = ky;
+                    offset.z = 0;
+                    MTX_MultVec43(&offset, CameraManager::Get().mMtxC, &offset);
+                    VEC_Subtract(&offset, &delta, &offset);
+                    Camera *camB = mCamera;
+                    delta.x      = camB->mTarget.x;
+                    delta.y      = camB->mTarget.y;
+                    delta.z      = camB->mTarget.z;
+                    VEC_Add(&delta, &offset, &delta);
+                    Camera *camC = mCamera;
+                    camC->mTarget.x = delta.x;
+                    camC->mTarget.y = delta.y;
+                    camC->mTarget.z = delta.z;
+                    SnapshotCamera();
+                    mUnk_24 += 8;
+                    key = (BattleCardModelKey *) mUnk_24;
+                    if ((key->mX == -1) & (key->mY == -1)) {
+                        mUnk_24 = mEntry->mUnk_0c;
+                    }
+                }
+            }
+            func_ov007_02273718();
+            break;
+        case 3:
+            SpriteManager::Get();
+            if (SpriteManager::sFade.mMain > 1) {
+                mCamera->func_020264a4(1);
+                mCamera->func_02026180();
+                SnapshotCamera();
+                func_ov007_02273718();
+            } else {
+                mEffects->func_0202be68();
+                MI_CpuFill8(mHandles, 0, 5);
+                mEffects->func_0202c024(1);
+                return TRUE;
+            }
+            break;
+    }
+    return FALSE;
 }
 
 // non-matching: 0x22c vs 0x240; the original recomputes mParts + i * 0x28 for each of its three reads (separate mla with

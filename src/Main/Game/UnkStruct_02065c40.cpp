@@ -3776,7 +3776,6 @@ s32 UnkStruct_02065c40::func_02070554(s32 kind, s32 index) {
     return result;
 }
 
-s32 func_0201f970(s32 value, s32 divisor);
 
 extern "C" void func_020705f0(UnkStruct_02065c40 *event) {
     if (event->mUnk_1018 != NULL) {

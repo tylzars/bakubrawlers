@@ -53,7 +53,7 @@ def main():
 
         def restore():
             for f in files:
-                shutil.copy2(backup / f.relative_to(CFG), f)
+                shutil.copy(backup / f.relative_to(CFG), f)
 
         r = run("python3", "tools/data_ranges.py", unit, "--write")
         if r.returncode:

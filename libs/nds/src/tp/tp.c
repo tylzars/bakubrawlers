@@ -228,10 +228,13 @@ int func_0200c41c(TPCalibrateParam *p, u16 x1, u16 y1, u16 px1, u16 py1, u16 x2,
 
 void func_0200c608(TPData *out, const TPData *raw)
 {
+    s32 *c;
+    s32 v;
     if (!tpWork.calibrate) {
         *out = *raw;
         return;
     }
+    c = &tpWork.cal.x0;
     out->touch = raw->touch;
     out->validity = raw->validity;
     if (raw->touch == 0) {
@@ -239,18 +242,14 @@ void func_0200c608(TPData *out, const TPData *raw)
         out->y = 0;
         return;
     }
-    {
-        s32 v;
-        s32 *c = &tpWork.cal.x0;
-        out->x = ((s64)c[2] * ((s64)(raw->x << 2) - c[0])) >> 22;
-        v = (s16)out->x;
-        if (v < 0) out->x = 0;
-        else if (v > 0xff) out->x = 0xff;
-        out->y = ((s64)c[5] * ((s64)(raw->y << 2) - c[3])) >> 22;
-        v = (s16)out->y;
-        if (v < 0) out->y = 0;
-        else if (v > 0xbf) out->y = 0xbf;
-    }
+    out->x = ((s64)c[2] * ((s64)(raw->x << 2) - c[0])) >> 22;
+    v = (s16)out->x;
+    if (v < 0) out->x = 0;
+    else if (v > 0xff) out->x = 0xff;
+    out->y = ((s64)c[5] * ((s64)(raw->y << 2) - c[3])) >> 22;
+    v = (s16)out->y;
+    if (v < 0) out->y = 0;
+    else if (v > 0xbf) out->y = 0xbf;
 }
 
 void func_0200c72c(u32 mask)

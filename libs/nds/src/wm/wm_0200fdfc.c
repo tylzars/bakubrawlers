@@ -78,8 +78,8 @@ void func_0200fdfc(u32 tag, u16 *m, int err)
                 if (data) MI_CpuCopy16(data, data_020c06e0.ind.data, 0x18);
                 else MIi_CpuClear16(0, data_020c06e0.ind.data, 0x18);
                 data_020c06e0.ind.h40 = mac2 == 0 ? a : b;
-                if (mac2 != 0) a = b;
-                data_020c06e0.ind.h42 = a;
+                if (mac2 != 0) b = a;
+                data_020c06e0.ind.h42 = b;
                 for (i = 0; i < 16; i++) {
                     data_020c06e0.ind.h6 = i;
                     if (w->indCb[i]) {

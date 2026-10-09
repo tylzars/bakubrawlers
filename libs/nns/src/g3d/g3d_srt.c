@@ -6,7 +6,7 @@
 #define PU16(p, o) (*(u16 *)((u8 *)(p) + (o)))
 extern void func_01ff93d8(u32 cmd, const void *params, u32 count);   // geometry command
 extern s32 func_01ff8154(s32 a, s32 b);
-extern s32 func_01ff80c0(s32 a);
+extern s32 func_01ff80c0();
 extern void func_01ff9510(const void *src, void *dst, u32 size);
 static inline s32 FxMul(s32 a, s32 b) { return (s32)(((long long)a * b) >> 12); }
 
@@ -314,14 +314,14 @@ void func_02035a94(s32 *out, u8 *p) {   // scale and rotate
 void func_02035b60(s32 *out, u8 *p) {   // rotate only
     s32 w = W16 << 12;
     s32 h = H16 << 12;
-    s32 q = func_01ff8154(h, w);
+    func_01ff8154(h, w);
     out[0] = PS16(p, 0x22);
     out[5] = PS16(p, 0x22);
-    out[1] = (PS16(p, 0x20) * func_01ff80c0(q)) >> 12;
-    q = func_01ff8154(w, h);
+    out[1] = (PS16(p, 0x20) * func_01ff80c0()) >> 12;
+    func_01ff8154(w, h);
     out[12] = (W16 * PS16(p, 0x20)) << 4;
     out[13] = (-(s32)H16 * (PS16(p, 0x22) - 0x1000)) << 4;
-    out[4] = (-PS16(p, 0x20) * func_01ff80c0(q)) >> 12;
+    out[4] = (-PS16(p, 0x20) * func_01ff80c0()) >> 12;
 }
 void func_02035c04(s32 *out, u8 *p) {   // scale only
     out[0] = P32(p, 0x18);

@@ -197,11 +197,11 @@ void func_02036bf8(void) {   // reset the sound slots and players
     }
 }
 
+extern s16 data_0208f89c[];
+
 void func_02036cac(void) {   // per-frame update of every active sound
     u32 doneMask = func_02008b1c();
     SndSound *s = func_02030a2c(&data_02213a18, 0);
-    s32 lo = -0x8000;
-    s16 *tbl = (s16 *)0x0208f89c;   // volume (cB) table
     if (s == 0) return;
     do {
         SndSound *next = func_02030a2c(&data_02213a18, s);
@@ -213,11 +213,12 @@ void func_02036cac(void) {   // per-frame update of every active sound
         } else {
             s32 vol, vB, vA, vp;
             func_0203a514(&s->ramp);
-            vB = tbl[s->volB];
-            vA = tbl[s->volA];
-            vp = tbl[s->player->volume];
-            vol = tbl[func_0203a4e0(&s->ramp) >> 8] + (vp + (vA + vB));
-            if (vol < lo) vol = lo;
+            vB = data_0208f89c[s->volB];
+            vA = data_0208f89c[s->volA];
+            vp = data_0208f89c[s->player->volume];
+            vol = data_0208f89c[func_0203a4e0(&s->ramp) >> 8];
+            vol += vp + (vA + vB);
+            if (vol < -0x8000) vol = -0x8000;
             else if (vol > 0x7fff) vol = 0x7fff;
             if (vol != s->volume) {
                 func_02007f98(s->channel, vol);

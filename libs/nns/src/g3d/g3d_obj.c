@@ -112,7 +112,7 @@ BOOL func_02031748(AnmObj **head, AnmObj *n) {   // unlink from an animation lis
     cur = *head;
     if (cur == 0) return 0;
     if (cur == n) {
-        *head = n->next;
+        *head = cur->next;
         n->next = 0;
         return 1;
     }
@@ -273,8 +273,8 @@ void func_02031cf4(ResMdl *mdl) {   // NNS_G3dReleaseMdlTex
 }
 void func_02031d80(ResMat *mat, MatList *list, ResTex *tex, u16 *info) {   // bind one palette to its materials
     u8 *idx = (u8 *)mat + list->idxOfs;
-    u16 key = (u16)tex->plttKey & ~0xe0000000;
     u16 off = info[0];
+    u16 key = (u16)tex->plttKey & ~0xe0000000;
     u32 i;
     if (!(info[1] & 1)) {
         off = off >> 1;

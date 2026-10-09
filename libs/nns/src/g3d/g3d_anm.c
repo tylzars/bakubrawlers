@@ -98,8 +98,8 @@ u32 func_02033994(u8 *base, u32 info, u32 idx) {   // read one byte from an anim
     return (u16)((p[idx >> 2] + p[(idx >> 2) + 1]) << 15 >> 16);
 }
 void func_02033a80(u8 *obj, u8 *anm, u8 *mdl) {   // NNS_G3dAnmObjInitNsBma: map material animation entries to materials
-    u8 *mat;
     u32 i;
+    u8 *mat;
     u32 n;
     if (mdl != 0 && U32(mdl, 8) != 0) mat = mdl + U32(mdl, 8);
     else mat = 0;
@@ -202,10 +202,10 @@ blend:
     }
 }
 void func_02033e50(u8 *res, u32 idx, u32 frame, u8 *out) {   // texture SRT animation entry at a frame
-    u32 *e;
     u32 flags;
     s32 a, b;
     u32 pr;
+    u32 *e;
     if (res + 8 != 0 && idx < U8(res, 9)) {
         u8 *t = res + 8 + U16(res, 0xe);
         e = (u32 *)(t + 4 + *(u16 *)t * idx);
@@ -242,8 +242,8 @@ void func_02033e50(u8 *res, u32 idx, u32 frame, u8 *out) {   // texture SRT anim
     U32(out, 0) = flags;
 }
 void func_02033f50(u8 *obj, u8 *anm, u8 *mdl) {   // map joint animation entries to joints
-    u8 *mat;
     u32 i;
+    u8 *mat;
     u32 n;
     if (mdl != 0 && U32(mdl, 8) != 0) mat = mdl + U32(mdl, 8);
     else mat = 0;
@@ -263,8 +263,8 @@ void func_02034024(u8 *out, u8 *obj, u32 idx) {   // texture SRT animation for o
     U32(out, 0) |= 8;
 }
 void func_02034068(u8 *obj, u8 *anm, u8 *mdl) {   // map texture SRT animation entries to materials
-    u8 *mat;
     u32 i;
+    u8 *mat;
     u32 n;
     if (mdl != 0 && U32(mdl, 8) != 0) mat = mdl + U32(mdl, 8);
     else mat = 0;

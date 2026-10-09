@@ -232,10 +232,10 @@ void OS_AddToHeap(OSArenaId id, OSHeapHandle heap, void *lo, void *hi) {
     HeapDesc *hd;
     Cell *c;
     lo = (void *) (((u32) lo + 0x1f) & ~0x1f);
+    hi = (void *) ((u32) hi & ~0x1f);
     if (heap < 0) {
         heap = info->current;
     }
-    hi = (void *) ((u32) hi & ~0x1f);
     hd = &info->heapArray[heap];
     hd->size = (u32) hi - (u32) lo;
     c = (Cell *) lo;

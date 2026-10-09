@@ -85,10 +85,8 @@ void GxFifoDmaNext(void) {
 void GxFifoDmaEnd(void *arg) {
     void (*cb)(void *);
     void *cbArg;
-    u32 stat;
     OS_DisableIrqMask(0x200000);
-    stat = REG_GXSTAT;
-    REG_GXSTAT = (stat & ~0xc0000000) | (gxState.savedIrqMode << 30);
+    REG_GXSTAT = (gxState.savedIrqMode << 30) | (REG_GXSTAT & ~0xc0000000);
     OS_SetIrqFunction(0x200000, (void (*)(void)) gxState.savedIrqFunc);
     gxState.busy = 0;
     cb = gxState.callback;

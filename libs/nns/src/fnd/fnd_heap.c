@@ -135,9 +135,12 @@ BOOL func_02030f10(ExpBody *h, MBRegion *r) {   // give a region back to the fre
         }
         break;
     }
-    if (prev && prev->size + ((u32)prev + 0x10) == r->start) {
-        reg.start = (u32)prev;
-        prev = func_02030ba8(&h->freeList, prev);
+    if (prev) {
+        u32 pe = prev->size + ((u32)prev + 0x10);
+        if (pe == r->start) {
+            reg.start = (u32)prev;
+            prev = func_02030ba8(&h->freeList, prev);
+        }
     }
     if (reg.end - reg.start < 0x10) return 0;
     func_02030bd0(&h->freeList, func_02030c00(&reg, 0x4652), prev);

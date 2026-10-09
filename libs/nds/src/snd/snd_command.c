@@ -227,7 +227,7 @@ u32 SND_GetCurrentCommandTag(void) {
 BOOL SND_IsFinishedCommandTag(u32 tag) {
     OSIntrMode e = OS_DisableInterrupts();
     if (tag > cmdState.procCount) {
-        tag = (tag - cmdState.procCount) < 0x80000000 ? FALSE : TRUE;
+        if ((tag - cmdState.procCount) < 0x80000000) tag = FALSE; else tag = TRUE;
     } else {
         tag = (cmdState.procCount - tag) < 0x80000000 ? TRUE : FALSE;
     }

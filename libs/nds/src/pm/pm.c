@@ -448,6 +448,7 @@ void func_0200d3e0(u32 flags, u32 a, u32 b)
     u32 dispB;
     u32 lcd;
     vu32 tick;
+    u32 cur;
     u16 ime;
     u32 t;
     func_0200d9f8(pmWork.preList);
@@ -471,13 +472,13 @@ void func_0200d3e0(u32 flags, u32 a, u32 b)
     while (func_0200d354(&led0, &led1)) OS_SpinWait(0xa3a47);
     while (func_0200d1e0(2, 0)) OS_SpinWait(0xa3a47);
     tick = *(vu32 *)0x027ffc3c;
-    while (tick == *(vu32 *)0x027ffc3c) {}
+    do { cur = *(vu32 *)0x027ffc3c; } while (tick == cur);
     tick = *(vu32 *)0x027ffc3c;
     *(vu32 *)0x04000000 &= ~0x30000;
     *(vu32 *)0x04001000 &= ~0x10000;
-    while (tick == *(vu32 *)0x027ffc3c) {}
+    do { cur = *(vu32 *)0x027ffc3c; } while (tick == cur);
     tick = *(vu32 *)0x027ffc3c;
-    while (tick == *(vu32 *)0x027ffc3c) {}
+    do { cur = *(vu32 *)0x027ffc3c; } while (tick == cur);
     pmWork.flag = 0;
     func_0200cf6c((u16)(flags | (led0 ? 0x40 : 0) | (led1 ? 0x80 : 0)), (u16)(a | b));
     while (pmWork.flag == 0) OS_Halt();

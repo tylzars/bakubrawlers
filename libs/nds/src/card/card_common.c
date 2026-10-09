@@ -428,6 +428,7 @@ int func_0200ed00(u32 id)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
     u32 e;
+    u32 e2;
     void *arg;
     void (*fn)(void *);
     func_02000b9c((void *)0x2000bc4);
@@ -452,13 +453,13 @@ int func_0200ed00(u32 id)
     func_0200f5c8(c, 6, 1);
     fn = c->callback;
     arg = c->cbArg;
-    e = OS_DisableInterrupts();
+    e2 = OS_DisableInterrupts();
     c->f114 &= ~0x4c;
     OS_WakeupThread(&c->queue);
     if (c->f114 & CF_TASKWAIT) {
         OS_WakeupThreadDirect(&c->thread);
     }
-    OS_RestoreInterrupts(e);
+    OS_RestoreInterrupts(e2);
     if (fn) {
         fn(arg);
     }

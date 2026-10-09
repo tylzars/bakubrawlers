@@ -77,7 +77,13 @@ src/07_Battle/Battle/BattleField3D.cpp:
 
 // provisional: code only; data not assigned yet.
 src/07_Battle/Battle/IBattle.cpp:
-    .text       start:0x02229c5c end:0x0222a2f8
+    .text       start:0x02229c5c end:0x02229ee4
+
+// touch hit tests used by the battle scenes
+src/07_Battle/Battle/BattleTouch.cpp:
+    complete
+    .text       start:0x02229ee4 end:0x0222a2f8
+    .bss        start:0x0228b700 end:0x0228b710
 
 src/07_Battle/Gimmick/GimmickBakugan.cpp:
     complete

@@ -23,6 +23,15 @@ libs/cri/src/cri_slot.c:
 libs/cri/src/cri_ring.c:
     .text       start:0x02044a20 end:0x020450a4
 
+libs/cri/src/cri_stm_ctl.c:
+    .text       start:0x02041f50 end:0x02042760
+
+libs/cri/src/cri_adx_obj.c:
+    .text       start:0x02042760 end:0x02043220
+
+libs/cri/src/cri_ring2.c:
+    .text       start:0x020450a4 end:0x02045f90
+
 // MSL C runtime (2.0/sp1p5, C); code only so far.
 libs/msl/src/msl_string.c:
     .text       start:0x020122b0 end:0x020125b4

@@ -9,27 +9,26 @@ extern void *data_022142f4[16];       // callback buffer pointers
 extern void NNS_FndInitList(void *list, u16 offset);
 extern void NNS_FndAppendListObject(void *list, void *obj);
 extern void NNS_FndRemoveListObject(void *list, void *obj);
-#define func_02030880 NNS_FndInitList
-#define func_020308c4 NNS_FndAppendListObject
-#define func_020309cc NNS_FndRemoveListObject
+#define NNS_FndInitList NNS_FndInitList
+#define NNS_FndAppendListObject NNS_FndAppendListObject
+#define NNS_FndRemoveListObject NNS_FndRemoveListObject
 extern int func_02036800(u32 mask);
 extern void func_02036848(u32 mask);
 extern int func_02036894(void);
 extern void func_020368dc(int slot);
-extern u32 func_0201fb7c(u32 a, u32 b);
 extern void func_02008160(u32 ch, u32 fmt, void *addr, u32 loop, u32 loopStart, u32 loopEnd, u32 vol, u32 shift, u32 timer, u32 pan);
 extern void func_02008098(int slot, u32 start, u32 period, void (*cb)(void *), void *arg);
-extern u32 func_0200710c(void);
-extern void func_02007120(u32 irq);
+extern u32 OS_DisableInterrupts(void);
+extern void OS_RestoreInterrupts(u32 irq);
 extern void func_0200800c(u32 chMask, u32 capMask, u32 alarmMask, u32 flags);
 extern void func_02008034(u32 chMask, u32 capMask, u32 alarmMask, u32 flags);
 extern void func_0200da20(void *);
 extern void func_0200da38(void *);
 extern void func_0200da50(void *);
 extern void func_0200da68(void *);
-extern u32 func_02008814(void);
-extern void func_020085ec(int);
-extern void func_020087a8(u32);
+extern u32 SND_GetCurrentCommandTag(void);
+extern void SND_FlushCommand(int);
+extern void SND_WaitForCommandProc(u32);
 extern s32 func_02008bec(u32);
 extern void func_02008118(u32 mask, u32 a, u32 b);
 extern void func_02008140(u32 mask, u32 a, u32 b, u32 c);
@@ -43,7 +42,7 @@ void func_02037814(SndStrm *s);
 
 void func_02037264(SndStrm *s) {   // stream init
     if (data_022142e4 == 0) {
-        func_02030880(&data_022142e8, 0);
+        NNS_FndInitList(&data_022142e8, 0);
         data_022142e4 = 1;
     }
     s->cbA.fn = (void (*)(void *))func_020377c8;
@@ -82,13 +81,13 @@ int func_02037364(SndStrm *s, int fmt, void *buf, u32 size, u32 timer, s32 frame
     u32 q;
     u32 n;
     if (s->active) func_02037558(s);
-    q = func_0201fb7c(size, s->chCount * (frames << 5));
+    q = size / (s->chCount * (frames << 5));
     n = q * frames;
     s->bufSize = n << 5;
     {
         u32 half = s->bufSize;
         if (fmt == 1) half >>= 1;
-        alarmPeriod = func_0201fb7c(timer * half, frames);
+        alarmPeriod = timer * half / frames;
     }
     s->slot = func_02036894();
     if (s->slot < 0) return 0;
@@ -99,7 +98,7 @@ int func_02037364(SndStrm *s, int fmt, void *buf, u32 size, u32 timer, s32 frame
         func_02008160(ch, fmt, data_02214334[ch].addr, 1, 0, s->bufSize >> 2, 127, 0, timer << 5, 64);
     }
     func_02008098(s->slot, alarmPeriod, alarmPeriod, (void (*)(void *))func_02037708, s);
-    func_020308c4(&data_022142e8, s);
+    NNS_FndAppendListObject(&data_022142e8, s);
     s->fmt = fmt;
     s->frames = frames;
     s->cb = cb;
@@ -108,11 +107,11 @@ int func_02037364(SndStrm *s, int fmt, void *buf, u32 size, u32 timer, s32 frame
     s->offset = 0;
     s->active = 1;
     {
-        u32 irq = func_0200710c();
+        u32 irq = OS_DisableInterrupts();
         s->frames = 1;
         func_02037718(s, 0);
         s->frames = frames;
-        func_02007120(irq);
+        OS_RestoreInterrupts(irq);
     }
     return 1;
 }
@@ -164,16 +163,16 @@ void func_02037664(SndStrm *s) {   // stop
         func_0200da50(&s->cbA);
         func_0200da68(&s->cbB);
         s->registered = 0;
-        irq = func_02008814();
-        func_020085ec(1);
-        func_020087a8(irq);
+        irq = SND_GetCurrentCommandTag();
+        SND_FlushCommand(1);
+        SND_WaitForCommandProc(irq);
     }
     func_020376d8(s);
 }
 
 void func_020376d8(SndStrm *s) {   // release slot and unlink
     func_020368dc(s->slot);
-    func_020309cc(&data_022142e8, s);
+    NNS_FndRemoveListObject(&data_022142e8, s);
     s->active = 0;
 }
 
@@ -182,7 +181,7 @@ void func_02037708(SndStrm *s) {
 }
 
 void func_02037718(SndStrm *s, int phase) {   // fill callback
-    u32 size = func_0201fb7c(s->bufSize, s->frames);
+    u32 size = s->bufSize / s->frames;
     int i;
     u32 off = size * s->pos;
     for (i = 0; i < s->chCount; i++) {
@@ -197,17 +196,17 @@ void func_020377c8(SndStrm *s) {
     u32 irq;
     if (!s->registered) return;
     func_02008034(s->chMask, 0, 1 << s->slot, 0);
-    irq = func_02008814();
-    func_020085ec(1);
-    func_020087a8(irq);
+    irq = SND_GetCurrentCommandTag();
+    SND_FlushCommand(1);
+    SND_WaitForCommandProc(irq);
 }
 
 void func_02037814(SndStrm *s) {
     if (!s->registered) return;
     while (s->pos != 0) {
-        u32 irq = func_0200710c();
+        u32 irq = OS_DisableInterrupts();
         func_02037718(s, 1);
-        func_02007120(irq);
+        OS_RestoreInterrupts(irq);
     }
     func_0200800c(s->chMask, 0, 1 << s->slot, 0);
 }

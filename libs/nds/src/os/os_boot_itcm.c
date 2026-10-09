@@ -7,7 +7,7 @@ extern u32 OS_RestoreInterrupts(u32 state);
 void func_02005e04(void);
 void func_02005df8(void);
 void func_02005ecc(void);
-void func_02005ec0(void);
+void DC_WaitWriteBufferEmpty(void);
 void func_01ffcb54(void);
 void func_01ffcc3c(void);
 void func_01ffcce4(u32 rom, void *dst, u32 size);
@@ -44,7 +44,7 @@ void func_01ffcc3c(void) {
     func_02005df8();
     OS_RestoreInterrupts(irq);
     func_02005ecc();
-    func_02005ec0();
+    DC_WaitWriteBufferEmpty();
     a9Rom += off;
     if (a9Rom < 0x8000) {
         u32 d = 0x8000 - a9Rom;

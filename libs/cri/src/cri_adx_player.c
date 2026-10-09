@@ -43,8 +43,8 @@ typedef struct CriObj {
 
 extern CriGlobals g_cri;              /* 0x022158a0 */
 extern CriObj g_criObjs[4];           /* 0x022158bc */
-extern short tbl[];                   /* 0x0209dae4 */
-extern short seed0, seed1, seed2;     /* 0x0209dce4 / dee4 / e0e4 */
+extern short data_0209dae4[];                   /* 0x0209dae4 */
+extern short data_0209dce4, data_0209dee4, data_0209e0e4;     /* 0x0209dce4 / dee4 / e0e4 */
 extern char str_a[], str_b[], str_c[], str_d[], str_e[], str_f[];
 
 extern void func_020446b0(void);
@@ -77,12 +77,12 @@ int func_0203df04(signed char *s, int n, short *o0, short *o1, short *o2)
     if (g_cri.init == 0) func_0203dee8();
     *o0 = 0; *o1 = 0; *o2 = 0;
     if (s == 0 && n <= 0) return 0;
-    a = seed0;
-    for (i = 0; i < n; i++) a = tbl[(a * tbl[128 + s[i]]) % 1024];
-    b = seed1;
-    for (i = 0; i < n; i++) b = tbl[(b * tbl[128 + s[i]]) % 1024];
-    c = seed2;
-    for (i = 0; i < n; i++) c = tbl[(c * tbl[128 + s[i]]) % 1024];
+    a = data_0209dce4;
+    for (i = 0; i < n; i++) a = data_0209dae4[(a * data_0209dae4[128 + s[i]]) % 1024];
+    b = data_0209dee4;
+    for (i = 0; i < n; i++) b = data_0209dae4[(b * data_0209dae4[128 + s[i]]) % 1024];
+    c = data_0209e0e4;
+    for (i = 0; i < n; i++) c = data_0209dae4[(c * data_0209dae4[128 + s[i]]) % 1024];
     *o0 = a; *o1 = b; *o2 = c;
     return 0;
 }

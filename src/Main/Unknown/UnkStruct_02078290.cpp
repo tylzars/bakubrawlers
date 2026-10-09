@@ -105,7 +105,7 @@ struct AntennaPalette {
     /* 08 */
 };
 
-void func_01ff94e0(const void *src, void *dst, u32 size);
+extern "C" void func_01ff94e0(const void *src, void *dst, u32 size);
 extern "C" void func_01ff96c4(const void *src, void *dst, u32 size);
 void func_02078ab8(u32 screen, u32 palette, const AntennaPalette *colors, u32 unk4);
 void func_02078a48(u8 *dst, const u8 *src);

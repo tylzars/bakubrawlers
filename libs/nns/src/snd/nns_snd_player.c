@@ -52,11 +52,11 @@ extern void NNS_FndAppendListObject(void *list, void *obj);
 extern void *NNS_FndGetNextListObject(void *list, void *obj);
 extern void NNS_FndInsertListObject(void *list, void *target, void *obj);
 extern void NNS_FndRemoveListObject(void *list, void *obj);
-#define func_02030880 NNS_FndInitList
-#define func_020308c4 NNS_FndAppendListObject
-#define func_02030a2c NNS_FndGetNextListObject
-#define func_02030968 NNS_FndInsertListObject
-#define func_020309cc NNS_FndRemoveListObject
+#define NNS_FndInitList NNS_FndInitList
+#define NNS_FndAppendListObject NNS_FndAppendListObject
+#define NNS_FndGetNextListObject NNS_FndGetNextListObject
+#define NNS_FndInsertListObject NNS_FndInsertListObject
+#define NNS_FndRemoveListObject NNS_FndRemoveListObject
 extern void func_02007f50(u32 ch);
 extern void func_02007f78(u32 ch);
 extern void func_02007f98(u32 ch, s32 vol);
@@ -64,8 +64,8 @@ extern void func_02007fb0(u32 ch, u32 a);
 extern void func_02007fc8(u32 ch, u32 a, int b);
 extern void func_02007fe4(u32 ch, u32 a, u32 b);
 extern u32 func_02008b1c(void);
-extern int func_02008840(u32 tick);
-extern u32 func_02008814(void);
+extern int SND_IsFinishedCommandTag(u32 tick);
+extern u32 SND_GetCurrentCommandTag(void);
 extern void *func_02038390(void *heap, u32 size, void *cb, u32 a, u32 b);
 extern void *func_0203824c(void *where, u32 size);
 extern void func_020382d4(void *heap);
@@ -103,7 +103,7 @@ int func_02036950(u32 player, void *heap, u32 size) {   // NNS_SndPlayerCreateHe
         if (h == 0) return 0;
         b->heap = h;
     }
-    func_020308c4(&data_02213e64[player].heaps, b);
+    NNS_FndAppendListObject(&data_02213e64[player].heaps, b);
     return 1;
 }
 
@@ -140,10 +140,10 @@ void func_02036ac0(SndHandle *h) {   // NNS_SndHandleReleaseSound
 
 int func_02036ae0(int a, int b) {   // number of live sounds with this id pair
     int n = 0;
-    SndSound *s = func_02030a2c(&data_02213a18, 0);
+    SndSound *s = NNS_FndGetNextListObject(&data_02213a18, 0);
     while (s != 0) {
         if (s->kind == 2 && s->idA == a && s->idB == b) n++;
-        s = func_02030a2c(&data_02213a18, s);
+        s = NNS_FndGetNextListObject(&data_02213a18, s);
     }
     return n;
 }
@@ -181,16 +181,16 @@ void func_02036bcc(SndHandle *h, u16 a, u16 b) {   // tag the sound with an id p
 
 void func_02036bf8(void) {   // reset the sound slots and players
     int i;
-    func_02030880(&data_02213a18, 0x14);
-    func_02030880(&data_02213a0c, 0x14);
+    NNS_FndInitList(&data_02213a18, 0x14);
+    NNS_FndInitList(&data_02213a0c, 0x14);
     for (i = 0; i < 16; i++) {
         data_02213a24[i].status = 0;
         data_02213a24[i].channel = i;
-        func_020308c4(&data_02213a0c, &data_02213a24[i]);
+        NNS_FndAppendListObject(&data_02213a0c, &data_02213a24[i]);
     }
     for (i = 0; i < 32; i++) {
-        func_02030880(&data_02213e64[i].sounds, 0xc);
-        func_02030880(&data_02213e64[i].heaps, 0);
+        NNS_FndInitList(&data_02213e64[i].sounds, 0xc);
+        NNS_FndInitList(&data_02213e64[i].heaps, 0);
         data_02213e64[i].volume = 0x7f;
         data_02213e64[i].maxSounds = 1;
         data_02213e64[i].heapSize = 0;
@@ -201,12 +201,12 @@ extern s16 data_0208f89c[];
 
 void func_02036cac(void) {   // per-frame update of every active sound
     u32 doneMask = func_02008b1c();
-    SndSound *s = func_02030a2c(&data_02213a18, 0);
+    SndSound *s = NNS_FndGetNextListObject(&data_02213a18, 0);
     if (s == 0) return;
     do {
-        SndSound *next = func_02030a2c(&data_02213a18, s);
+        SndSound *next = NNS_FndGetNextListObject(&data_02213a18, s);
         if (s->started == 0) {
-            if (func_02008840(s->tick) != 0) s->started = 1;
+            if (SND_IsFinishedCommandTag(s->tick) != 0) s->started = 1;
         }
         if (s->started != 0 && !(doneMask & (1 << s->channel))) {
             func_02037130(s);
@@ -239,7 +239,7 @@ SndSound *func_02036e10(SndHandle *h, u32 player, int prio) {   // allocate a so
     SndSound *s = *(SndSound **)h;
     if (s != 0) func_02036ac0(h);
     if (p->sounds.count >= p->maxSounds) {
-        SndSound *old = func_02030a2c(p, 0);
+        SndSound *old = NNS_FndGetNextListObject(p, 0);
         if (old == 0) return 0;
         if (prio < old->priority) return 0;
         func_02037090(old);
@@ -261,7 +261,7 @@ void func_02036eb4(SndSound *s) {   // start the sound's channel
     func_02007f50(s->channel);
     if (p->heapSize != 0) func_02007fe4(s->channel, 0xffff, p->heapSize);
     func_02036fa4(s);
-    s->tick = func_02008814();
+    s->tick = SND_GetCurrentCommandTag();
     s->pending = 1;
     s->status = 1;
 }
@@ -279,9 +279,9 @@ void func_02036f04(SndSound *s, u32 fade) {   // stop a sound, optionally fading
 
 void *func_02036f50(u32 player, SndPlayerHeapBlk *dst) {   // take a player heap block for use
     SndPlayer *p = &data_02213e64[player];
-    SndPlayerHeapBlk *b = func_02030a2c(&p->heaps, 0);
+    SndPlayerHeapBlk *b = NNS_FndGetNextListObject(&p->heaps, 0);
     if (b == 0) return 0;
-    func_020309cc(&p->heaps, b);
+    NNS_FndRemoveListObject(&p->heaps, b);
     b->owner = dst;
     *(void **)((u8 *)dst + 8) = b;
     func_020382d4(b->heap);
@@ -302,17 +302,17 @@ void func_02036fa4(SndSound *s) {   // reset a slot to defaults
 
 void func_02036fec(SndPlayer *p, SndSound *s) {   // insert into the player's priority-ordered list
     SndSound *o;
-    for (o = func_02030a2c(p, 0); o != 0; o = func_02030a2c(p, o)) {
+    for (o = NNS_FndGetNextListObject(p, 0); o != 0; o = NNS_FndGetNextListObject(p, o)) {
         if (s->priority < o->priority) break;
     }
-    func_02030968(p, o, s);
+    NNS_FndInsertListObject(p, o, s);
     s->player = p;
 }
 
 void func_0203703c(SndSound *s) {   // insert into the global active list
     SndSound *o;
-    for (o = func_02030a2c(&data_02213a18, 0); o != 0; o = func_02030a2c(&data_02213a18, o)) {
+    for (o = NNS_FndGetNextListObject(&data_02213a18, 0); o != 0; o = NNS_FndGetNextListObject(&data_02213a18, o)) {
         if (s->priority < o->priority) break;
     }
-    func_02030968(&data_02213a18, o, s);
+    NNS_FndInsertListObject(&data_02213a18, o, s);
 }

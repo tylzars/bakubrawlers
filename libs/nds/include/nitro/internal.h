@@ -31,9 +31,9 @@ void func_02007498(u16 banks, u16 prev);
 #define reg_GX_DISPSTAT (*(vu16 *) 0x04000004)
 #define reg_GX_DISP3DCNT (*(vu16 *) 0x04000060)
 u32 func_02004f54(void);
-void func_02007520(void);
+void OS_Terminate(void);
 void MIi_CpuClear32(u32 data, void *dest, u32 size);
-void func_0200754c(u32 dmaNo, void *dest, u32 data, u32 size);
+void MI_DmaFill32(u32 dmaNo, void *dest, u32 data, u32 size);
 #define reg_G3X_GXFIFO (*(vu32 *) 0x04000400)
 #define reg_G3X_GXSTAT (*(vu32 *) 0x04000600)
 void func_020047d8(const void *src, volatile void *dst); // MI_Copy48B
@@ -49,12 +49,12 @@ void G3X_InitTable(void);
 #define reg_G3X_MTX_IDENTITY (*(vu32 *) 0x04000454)
 int G3X_GetMtxStackLevelPV(u32 *level);
 int G3X_GetMtxStackLevelPJ(u32 *level);
-void func_020076a8(u32 dmaNo, void *dest, u32 data, u32 size, void *callback, void *arg);
+void MI_DmaFill32Async(u32 dmaNo, void *dest, u32 data, u32 size, void *callback, void *arg);
 void func_01ff9604(const void *src, void *dst); // MI_Copy64B
 void func_01ff94e0(const void *src, void *dst, u32 size); // MIi_CpuCopy16
 void func_01ff9510(const void *src, void *dst, u32 size); // MIi_CpuCopy32
-void func_0200763c(u32 dmaNo, const void *src, void *dest, u32 size); // MI_DmaCopy16
-void func_020075cc(u32 dmaNo, const void *src, void *dest, u32 size); // MI_DmaCopy32
-void func_0200776c(u32 dmaNo, const void *src, void *dest, u32 size, void *callback, void *arg); // MI_DmaCopy32Async
+void MI_DmaCopy16(u32 dmaNo, const void *src, void *dest, u32 size); // MI_DmaCopy16
+void MI_DmaCopy32(u32 dmaNo, const void *src, void *dest, u32 size); // MI_DmaCopy32
+void MI_DmaCopy32Async(u32 dmaNo, const void *src, void *dest, u32 size, void *callback, void *arg); // MI_DmaCopy32Async
 void func_02007804(u32 dmaNo); // MI_WaitDma
 void GX_SetBankForBGExtPltt(int); void GX_SetBankForOBJExtPltt(int); void GX_SetBankForSubBGExtPltt(int); void GX_SetBankForSubOBJExtPltt(int); void GX_SetBankForTex(int); void GX_SetBankForTexPltt(int);

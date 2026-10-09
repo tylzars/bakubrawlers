@@ -75,7 +75,7 @@ extern char data_020b0010[], data_020b0044[];
 extern void func_0204f360(char *);
 extern void func_0204ed2c(void), func_0204ed38(void);
 extern void *func_02012484(void *, int, int);
-extern double func_0201b9d0(double);   /* cos */
+extern double cos(double);   /* cos */
 extern double func_0201c028(double);   /* sin */
 extern double func_0201c19c(double);   /* acos */
 extern double func_0201c1a8(double);   /* asin */
@@ -702,7 +702,7 @@ int func_020509cc(CriFader *f, int x)
         t = (float) (200.0 * func_0201c1b4((double) (3238200.0f * s / 3238200.0f)));
         break;
     case 3:
-        s = (float) func_0201b9d0((double) (1.5707964f * (float) x / 3238200.0f));
+        s = (float) cos((double) (1.5707964f * (float) x / 3238200.0f));
         t = (float) (200.0 * func_0201c1b4((double) (3238200.0f * (1.0f - s) / 3238200.0f)));
         break;
     case 4:

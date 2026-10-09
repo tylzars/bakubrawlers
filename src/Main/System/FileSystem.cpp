@@ -56,7 +56,7 @@ extern "C" int func_0200aa94(void *file, const char *path);
 extern "C" void func_0200a7b4(void *file);
 extern "C" void MI_InitUncompContextLZ(void *ctx, void *dst, const void *header);
 extern int func_02007d94(void *ctx, void *src, u32 len);
-extern void func_02005e9c(void *buf, u32 size);
+extern "C" void func_02005e9c(void *buf, u32 size);
 
 static inline void NextChunk() {
     if (data_020d53e4.mRemaining > 0x2000) {

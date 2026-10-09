@@ -25,9 +25,9 @@
 
 UnkStruct_02065c40 *data_02219288;
 extern "C" void func_01ff96c4(const void *src, void *dest, u32 size);
-void func_02005e9c(void *buffer, u32 size);
+extern "C" void func_02005e9c(void *buffer, u32 size);
 void func_02088ec4(UnkStruct_02087898 *object);
-void func_01ff9510(const void *src, void *dest, u32 size);
+extern "C" void func_01ff9510(const void *src, void *dest, u32 size);
 extern const u32 data_020a23cc[8][6];
 extern "C" void func_020360cc(UnkStruct_SpriteManager_28 *slot);
 extern "C" void func_02038444(u32 a, u32 b);
@@ -3713,7 +3713,7 @@ u32 UnkStruct_02065c40::func_0206f9b4(const char *name, u32 unk2, u32 unk3, u32 
 
 
 
-void func_01ff9510(const void *src, void *dest, u32 size);
+extern "C" void func_01ff9510(const void *src, void *dest, u32 size);
 
 // non-matching: 111 words, scheduling of the index arithmetic in the `case 0xa` and `default` (unk4 == 2) blocks; size matches.
 u8 UnkStruct_02065c40::func_0206fa20(const char *name, const u16 *unk2, const u8 *unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7,

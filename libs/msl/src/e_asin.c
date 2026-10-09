@@ -12,7 +12,7 @@
 #define __HI(x) *(1+(int*)&x)
 #define __LO(x) *(int*)&x
 extern float data_020a5078;
-extern double func_0201e058(double);
+extern double sqrt(double);
 static const double huge = 1.000e+300;
 static const double pio4_hi = 7.85398163397448278999e-01;
 extern double func_0201bb40(double);
@@ -55,7 +55,7 @@ double func_02017fa4(double x)
     t = w * 0.5;
     p = t * (pS0 + t * (pS1 + t * (pS2 + t * (pS3 + t * (pS4 + t * pS5)))));
     q = one + t * (qS1 + t * (qS2 + t * (qS3 + t * qS4)));
-    s = func_0201e058(t);
+    s = sqrt(t);
     if (ix >= 0x3FEF3333) {
         w = p / q;
         t = pio2_hi - (2.0 * (s + s * w) - pio2_lo);

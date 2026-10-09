@@ -1,9 +1,9 @@
 // NitroSystem sound library: sound heap (NNSSndHeap). 0x0203824c-0x020385b8
 #include <nnsys/private/nns_snd_arc.h>
 
-extern u32 func_02008814(void);
-extern void func_020085ec(int);
-extern void func_020087a8(u32);
+extern u32 SND_GetCurrentCommandTag(void);
+extern void SND_FlushCommand(int);
+extern void SND_WaitForCommandProc(u32);
 
 SndHeap *func_0203824c(void *where, u32 size) {   // NNS_SndHeapCreate
     u8 *end = (u8 *)where + size;
@@ -38,7 +38,7 @@ void func_020382d4(SndHeap *h) {   // free every block, running the free callbac
                 called = 1;
             }
         }
-        func_020309cc(&h->states, st);
+        NNS_FndRemoveListObject(&h->states, st);
     }
     func_02031220(h->heap, 3);
     if (called != 0) func_02038598();
@@ -54,7 +54,7 @@ void *func_02038390(SndHeap *h, u32 size, void *cb, u32 a, u32 b) {   // NNS_Snd
     blk->cb = cb;
     blk->a = a;
     blk->b = b;
-    func_020308c4(last, blk);
+    NNS_FndAppendListObject(last, blk);
     return (u8 *)blk + 0x20;
 }
 
@@ -84,7 +84,7 @@ void func_02038444(SndHeap *h, u32 level) {   // NNS_SndHeapLoadState
                     called = 1;
                 }
             }
-            func_020309cc(&h->states, st);
+            NNS_FndRemoveListObject(&h->states, st);
         } while ((s32)level < h->states.count);
     }
     func_0203129c(h->heap, level);
@@ -94,11 +94,11 @@ void func_02038444(SndHeap *h, u32 level) {   // NNS_SndHeapLoadState
 }
 
 void func_02038518(void *list) {   // init a callback list
-    func_02030880(list, 0);
+    NNS_FndInitList(list, 0);
 }
 
 int func_02038528(SndHeap *h, void *frm) {   // init heap header
-    func_02030880(&h->states, 0xc);
+    NNS_FndInitList(&h->states, 0xc);
     h->heap = frm;
     return func_0203855c(h) != 0 ? 1 : 0;
 }
@@ -107,12 +107,12 @@ int func_0203855c(SndHeap *h) {   // push a new state block
     void *st = func_020311ec(h->heap, 0x14, 4);
     if (st == 0) return 0;
     func_02038518(st);
-    func_020308c4(&h->states, st);
+    NNS_FndAppendListObject(&h->states, st);
     return 1;
 }
 
 void func_02038598(void) {   // flush after callbacks
-    u32 irq = func_02008814();
-    func_020085ec(1);
-    func_020087a8(irq);
+    u32 irq = SND_GetCurrentCommandTag();
+    SND_FlushCommand(1);
+    SND_WaitForCommandProc(irq);
 }

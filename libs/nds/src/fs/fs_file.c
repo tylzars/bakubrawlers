@@ -11,7 +11,7 @@ void func_0200a7b4(FSFile *f);
 int func_0200a9dc(FSFile *f, FSArchive *arc, u32 a, u32 b, int c);
 
 
-extern FSDirPos data_cur_dir;      // data_020bfc8c
+extern FSDirPos data_020bfc8c;      // data_020bfc8c
 extern FSArchive *data_arc_list;   // data_020bfc88
 static int fs_initialized;   // data_020bfc98
 FSArchive *func_0200a460(const char *name, int len);
@@ -49,12 +49,12 @@ BOOL func_0200a7dc(FSFile *f, const u8 *path, u32 *idout, u32 *dirout)
     int i;
     if (path[0] == '/' || path[0] == '\\') {
         pos.idx = 0;
-        pos.arc = data_cur_dir.arc;
+        pos.arc = data_020bfc8c.arc;
         pos.pos = 0;
         pos.sub = 0;
         path++;
     } else {
-        pos = data_cur_dir;
+        pos = data_020bfc8c;
         for (i = 0; i <= 3; i++) {
             u32 c = path[i];
             if (c == 0 || c == '/' || c == '\\') break;
@@ -220,6 +220,6 @@ BOOL func_0200acac(const char *path)
     FSDirPos pos;
     func_0200a7b4(&tmp);
     if (!func_0200a7dc(&tmp, (const u8 *) path, NULL, (u32 *) &pos)) return FALSE;
-    data_cur_dir = pos;
+    data_020bfc8c = pos;
     return TRUE;
 }

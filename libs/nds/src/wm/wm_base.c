@@ -47,7 +47,7 @@ int func_0200f914(void *buf, u32 dma, u32 size)
         return 4;
     }
     DC_InvalidateRange(buf, size);
-    func_0200754c(dma, buf, 0, size);
+    MI_DmaFill32(dma, buf, 0, size);
     data_020c06e0.work = (WMWork *)buf;
     *(u32 *)buf = (u32)buf + 0x200;
     data_020c06e0.work->p04 = data_020c06e0.work->p00 + 0x300;

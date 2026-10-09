@@ -9,21 +9,21 @@ u32 OS_DisableInterrupts(void);          // 0x0200710c
 void OS_RestoreInterrupts(u32 mode);     // 0x02007120
 void OS_SleepThread(void *queue);        // 0x02005610
 void SVC_WaitByLoop(u32 count);          // 0x0200717c
-void func_02009050(void);                // PXI init
-BOOL func_020091a8(u32 tag, BOOL port);  // PXI start-up handshake
-void func_0200915c(u32 tag, void *cb);   // PXI set callback
-int func_020091cc(u32 tag, u32 data, BOOL err); // PXI send
+void PXI_Init(void);                // PXI init
+BOOL PXI_IsCallbackReady(u32 tag, BOOL port);  // PXI start-up handshake
+void PXI_SetFifoRecvCallback(u32 tag, void *cb);   // PXI set callback
+int PXI_SendWordByFifo(u32 tag, u32 data, BOOL err); // PXI send
 void MI_CpuFill8(void *dst, u8 data, u32 size);
-u32 func_02004f4c(void *p);              // OS: read lock word
-int func_02004e94(u16 id);               // OS_TryLockCartridge-like
-void func_02004e88(u16 id);              // OS_UnlockCartridge-like
+u32 OS_ReadOwnerOfLockWord(void *p);              // OS: read lock word
+int OS_TryLockCartridge(u16 id);               // OS_TryLockCartridge-like
+void OS_UnLockCartridge(u16 id);              // OS_UnlockCartridge-like
 void func_02006860(u32 a, u32 b);        // OS: set cartridge/exmem wait
-void func_02005404(void *thread, void *func, void *arg, void *stackTop, u32 stackSize, u32 prio); // OS_CreateThread
-void func_020056c8(void *thread);        // OS_WakeupThreadDirect / resume
-void func_02005500(void);                // OS_ExitThread
+void OS_CreateThread(void *thread, void *func, void *arg, void *stackTop, u32 stackSize, u32 prio); // OS_CreateThread
+void OS_WakeupThreadDirect(void *thread);        // OS_WakeupThreadDirect / resume
+void OS_ExitThread(void);                // OS_ExitThread
 void func_02005e64(void *p, u32 size);   // DC_InvalidateRange
 void func_02005e30(void);                // DC_WaitWriteBufferEmpty
-int func_0200763c(int a, u32 b, void *c, u32 d); // DMA
-u32 func_02004b64(u32 mask);             // OS_SetIrqMask-like
-void func_02007520(void);                // OS_Terminate
+int MI_DmaCopy16(int a, u32 b, void *c, u32 d); // DMA
+u32 OS_SetIrqMask(u32 mask);             // OS_SetIrqMask-like
+void OS_Terminate(void);                // OS_Terminate
 void MI_CpuCopy8(const void *src, void *dst, u32 size);

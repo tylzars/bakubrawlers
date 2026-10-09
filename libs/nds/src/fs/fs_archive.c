@@ -14,7 +14,7 @@ FSFile *func_02009fa4(FSArchive *arc);
 void func_0200a1b8(FSFile *f);
 BOOL func_0200a24c(FSFile *f);
 BOOL func_0200a290(FSFile *f, u32 cmd);
-FSDirPos data_cur_dir;      // data_020bfc8c
+FSDirPos data_020bfc8c;      // data_020bfc8c
 extern char data_020a4f3c[];
 FSArchive *data_arc_list;   // data_020bfc88
 int func_02009f8c(FSArchive *arc, void *dst, u32 pos, u32 len);
@@ -566,10 +566,10 @@ BOOL func_0200a4a0(FSArchive *arc, const char *name, int len)
     if (func_0200a460(name, len) == NULL) {
         if (data_arc_list == NULL) {
             data_arc_list = arc;
-            data_cur_dir.arc = arc;
-            data_cur_dir.pos = 0;
-            data_cur_dir.sub = 0;
-            data_cur_dir.idx = 0;
+            data_020bfc8c.arc = arc;
+            data_020bfc8c.pos = 0;
+            data_020bfc8c.sub = 0;
+            data_020bfc8c.idx = 0;
         } else {
             FSArchive *t = data_arc_list;
             while (t->next != NULL) t = t->next;

@@ -17,7 +17,6 @@ typedef struct Locale {
 extern float data_020a5078;
 extern Locale data_020a50d8;
 
-extern double func_0201f17c(float);
 extern void func_02015b34(char *, const char *, size_t_);
 extern void func_02012504(void *, int, size_t_);
 

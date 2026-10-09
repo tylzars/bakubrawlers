@@ -29,8 +29,6 @@ extern const char *func_02014704(const char *, ScanSpec *);
 extern long long func_020172a8(int, int, ReadFn, void *, int *, int *, int *);
 extern int func_02016ec0(int, int, ReadFn, void *, int *, int *, int *);
 extern double func_02015c74(int, ReadFn, void *, int *, int *);
-extern double func_0201f17c(float);
-extern float func_0201da44(double);
 extern int func_02012368(char *, const char *, int);
 
 int func_02014bfc(ReadFn rd, void *ctx, const char *fmt, char *ap, int flag)
@@ -206,20 +204,20 @@ int func_02014bfc(ReadFn rd, void *ctx, const char *fmt, char *ap, int flag)
         case 'a': case 'A': case 'e': case 'E': case 'f': case 'F': case 'g': case 'G': {
             double x;
             if (stop) {
-                x = func_0201f17c(data_020a5078);
+                x = (double)data_020a5078;
             } else {
                 x = func_02015c74(spec.width, rd, ctx, &consumed, &ovf);
                 if (consumed == 0) {
                     if (flag == 0) goto done;
                     stop = 1;
-                    x = func_0201f17c(data_020a5078);
+                    x = (double)data_020a5078;
                 } else {
                     count += consumed;
                 }
             }
             if (dst) {
                 switch (spec.len) {
-                case 0: *(float *)dst = func_0201da44(x); break;
+                case 0: *(float *)dst = (float)x; break;
                 case 8: *(double *)dst = x; break;
                 case 9: *(double *)dst = x; break;
                 }

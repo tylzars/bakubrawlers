@@ -151,9 +151,9 @@ void func_02031868(ResTex *t, u32 key, u32 key4x4) {   // NNS_G3dTexSetTexKey
     if (key4x4 != 0) t->tex4x4Key = key4x4;
 }
 void func_0203187c(ResTex *t, BOOL begin) {   // NNS_G3dTexLoad
-    if (begin) func_0200450c();
+    if (begin) GX_BeginLoadTex();
     if (t->texSize << 3) {
-        func_02004568((u8 *)t + t->texOfs, (u16)t->texKey << 3, t->texSize << 3);
+        GX_LoadTex((u8 *)t + t->texOfs, (u16)t->texKey << 3, t->texSize << 3);
         t->texLoaded |= 1;
     }
     if (t->tex4x4Size << 3) {
@@ -165,11 +165,11 @@ void func_0203187c(ResTex *t, BOOL begin) {   // NNS_G3dTexLoad
         key = t->tex4x4Key << 16;
         off = key >> 13;
         idx = t->tex4x4IdxOfs;
-        func_02004568((u8 *)t + t->tex4x4Ofs, off, size);
-        func_02004568((u8 *)t + idx, (((0x1ffff & (key >> 13)) >> 1) + 0x20000) + ((off & 0x40000) >> 2), size >> 1);
+        GX_LoadTex((u8 *)t + t->tex4x4Ofs, off, size);
+        GX_LoadTex((u8 *)t + idx, (((0x1ffff & (key >> 13)) >> 1) + 0x20000) + ((off & 0x40000) >> 2), size >> 1);
         t->tex4x4Loaded |= 1;
     }
-    if (begin) func_020046a8();
+    if (begin) GX_EndLoadTex();
 }
 void func_02031934(ResTex *t, u32 *key, u32 *key4x4) {   // NNS_G3dTexReleaseTexKey
     if (key != 0) {
@@ -186,10 +186,10 @@ void func_02031934(ResTex *t, u32 *key, u32 *key4x4) {   // NNS_G3dTexReleaseTex
 u32 func_02031980(ResTex *t) { return t ? t->plttSize << 3 : 0; }
 void func_02031994(ResTex *t, u32 key) { t->plttKey = key; }
 void func_0203199c(ResTex *t, BOOL begin) {   // NNS_G3dPlttLoad
-    if (begin) func_020046f4();
-    func_02004728((u8 *)t + t->plttOfs, (t->plttKey << 16) >> 13, t->plttSize << 3);
+    if (begin) GX_BeginLoadTexPltt();
+    GX_LoadTexPltt((u8 *)t + t->plttOfs, (t->plttKey << 16) >> 13, t->plttSize << 3);
     t->plttLoaded |= 1;
-    if (begin) func_02004794();
+    if (begin) GX_EndLoadTexPltt();
 }
 u32 func_020319ec(ResTex *t) {   // NNS_G3dPlttReleasePlttKey
     u32 key;

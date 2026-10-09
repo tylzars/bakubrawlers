@@ -23,7 +23,7 @@ extern const u8 data_020a2e3c[];
 extern const WindowItemRecord data_020a2e48[];
 extern const WindowCellRecord data_020a2f0c[];
 extern const u32 data_020a2dac[];
-void func_02005e9c(void *buffer, u32 size);
+extern "C" void func_02005e9c(void *buffer, u32 size);
 void func_02072614();
 extern u16 data_020a596c;
 

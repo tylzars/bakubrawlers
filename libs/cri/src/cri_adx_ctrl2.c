@@ -45,7 +45,7 @@ typedef struct Glob {
 } Glob;
 
 
-extern Pl data_02215dd4[4];
+extern Pl g_criDrv[4];
 extern int data_02215dc0, data_02216840, data_02216844, data_02216848;
 extern void (*data_0221683c)(Pl *, int, int, int);
 extern char data_020acfc0[];

@@ -6,7 +6,7 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-extern u32 func_02004f54();
+extern "C" u32 func_02004f54();
 extern void func_02004fbc(u32 id);
 extern "C" void func_0200e658(u32 id);
 extern "C" void func_0200e668(u32 id);

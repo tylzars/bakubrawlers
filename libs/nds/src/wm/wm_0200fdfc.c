@@ -13,7 +13,7 @@ void func_0200fdfc(u32 tag, u16 *m, int err)
     id = m[0];
     if (id >= 0x2c) {
         if (id == 0x80) {
-            if (m[1] == 0x13) func_02007520();
+            if (m[1] == 0x13) OS_Terminate();
             if (w->cbInd) w->cbInd(m);
         } else if (id == 0x82) {
             u16 i = m[3];
@@ -152,7 +152,7 @@ int func_02010224(u32 idx, WMCb cb, u32 arg)
         ind.h1a = 0xffff;
         ind.w1c = arg;
         ind.h12 = 0;
-        func_020073bc(ind.mac);
+        OS_GetMacAddress(ind.mac);
     }
     e = OS_DisableInterrupts();
     r = func_0200fd04();
@@ -244,7 +244,7 @@ u16 func_020104dc(void)
     u16 sum;
     u16 t;
     int i;
-    func_020073bc(mac);
+    OS_GetMacAddress(mac);
     i = 0;
     sum = 0;
     for (; i < 6; i++) {
@@ -261,7 +261,7 @@ u16 func_0201056c(void)
     int i;
     u16 sum;
     u16 t;
-    func_020073bc(mac);
+    OS_GetMacAddress(mac);
     i = 0;
     sum = 0;
     for (; i < 6; i++) {

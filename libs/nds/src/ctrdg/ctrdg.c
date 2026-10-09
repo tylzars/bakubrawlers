@@ -63,9 +63,9 @@ void func_02011cb0(u16 id, CTRDGLock *l)
 {
     for (;;) {
         l->irq = OS_DisableInterrupts();
-        l->locked = func_02004f4c((void *)0x027fffe8) & 0x40;
+        l->locked = OS_ReadOwnerOfLockWord((void *)0x027fffe8) & 0x40;
         if (l->locked) return;
-        if (func_02004e94(id) == 0) return;
+        if (OS_TryLockCartridge(id) == 0) return;
         OS_RestoreInterrupts(l->irq);
         WaitByLoop(1);
     }
@@ -73,13 +73,13 @@ void func_02011cb0(u16 id, CTRDGLock *l)
 
 void func_02011d0c(u16 id, CTRDGLock *l)
 {
-    if (l->locked == 0) func_02004e88(id);
+    if (l->locked == 0) OS_UnLockCartridge(id);
     OS_RestoreInterrupts(l->irq);
 }
 
 void func_02011d30(u32 data)
 {
-    while (func_020091cc(0xd, data, 0) != 0) {
+    while (PXI_SendWordByFifo(0xd, data, 0) != 0) {
         WaitByLoop(1);
     }
 }
@@ -100,15 +100,15 @@ void func_02011dc8(void)
     data_020c11a0.init = 1;
     func_02011ab0();
     data_020c11a0.f0c = 0;
-    func_02009050();
-    while (!func_020091a8(0xd, 1)) {}
-    func_0200915c(0xd, (void *)func_02012070);
+    PXI_Init();
+    while (!PXI_IsCallbackReady(0xd, 1)) {}
+    PXI_SetFifoRecvCallback(0xd, (void *)func_02012070);
     func_02011e7c();
-    func_0200915c(0xd, 0);
-    func_0200915c(0xd, (void *)func_0201209c);
+    PXI_SetFifoRecvCallback(0xd, 0);
+    PXI_SetFifoRecvCallback(0xd, (void *)func_0201209c);
     data_020c11a0.cb = 0;
     func_02012120(&data_020c1280);
-    func_0200915c(0x11, (void *)func_0201210c);
+    PXI_SetFifoRecvCallback(0x11, (void *)func_0201210c);
     func_02011d80(0);
 }
 
@@ -125,7 +125,7 @@ void func_02011e7c(void)
     post = *(vu16 *)0x04000300;
     data_020c11a0.f00 = 1;
     if (!(post & 1)) return;
-    irq = func_02004b64(0x40000);
+    irq = OS_SetIrqMask(0x40000);
     ime = *(vu16 *)0x04000208;
     *(vu16 *)0x04000208 = 1;
     func_02011cb0(data_020c1184.id, &lock);
@@ -133,7 +133,7 @@ void func_02011e7c(void)
     func_02011c34(&timing);
     EXMEMCNT &= ~0x8000;
     func_02005e64(data_020c11c0 + 0x80, 0x40);
-    func_0200763c(1, 0x8000080, data_020c11c0 + 0x80, 0x40);
+    MI_DmaCopy16(1, 0x8000080, data_020c11c0 + 0x80, 0x40);
     EXMEMCNT = (EXMEMCNT & ~0x8000) | (cart << 15);
     func_02011c7c(&timing);
     func_02011d0c(data_020c1184.id, &lock);
@@ -161,7 +161,7 @@ void func_02011e7c(void)
     }
     imeold = *(vu16 *)0x04000208;
     *(vu16 *)0x04000208 = ime;
-    func_02004b64(irq);
+    OS_SetIrqMask(irq);
 }
 
 void func_02012070(u32 tag, u32 data)
@@ -170,7 +170,7 @@ void func_02012070(u32 tag, u32 data)
         data_020c1184.flag = 1;
         return;
     }
-    func_02007520();
+    OS_Terminate();
 }
 
 void func_0201209c(u32 tag, u32 data)
@@ -184,13 +184,13 @@ void func_0201209c(u32 tag, u32 data)
         data_020c11a0.f0c = 1;
         return;
     }
-    func_02007520();
+    OS_Terminate();
 }
 
 void func_020120f8(void)
 {
     func_02011d30(2);
-    func_02007520();
+    OS_Terminate();
 }
 
 void func_0201210c(u32 tag, u32 data)
@@ -206,8 +206,8 @@ void func_02012120(u32 *p)
         func_020121ac(p + 0x31);
         func_020121ac(data_020c136c);
         p[0x30] = 0;
-        func_02005404(p, (void *)func_020121c0, p, data_020c1790, 0x400, 0x14);
-        func_020056c8(p);
+        OS_CreateThread(p, (void *)func_020121c0, p, data_020c1790, 0x400, 0x14);
+        OS_WakeupThreadDirect(p);
     }
     OS_RestoreInterrupts(e);
 }
@@ -239,5 +239,5 @@ void func_020121c0(u32 *w)
         w[0x30] = 0;
         OS_RestoreInterrupts(e);
     }
-    func_02005500();
+    OS_ExitThread();
 }

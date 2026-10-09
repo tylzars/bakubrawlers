@@ -8,8 +8,6 @@ extern int data_020c1790;
 #define ISALPHA(c) (((c) < 0 || (c) >= 128) ? 0 : (data_020903a8[c] & 1))
 #define TOUPPER(c) (((c) < 0 || (c) >= 128) ? (c) : data_02090328[c])
 
-extern unsigned int func_0201fb7c(unsigned int, unsigned int);
-extern unsigned long long func_0201f928(unsigned long long, unsigned long long);
 extern int func_02015950(void *, int, int);
 
 typedef struct StrRead { const char *p; int eof; } StrRead;
@@ -40,7 +38,7 @@ unsigned long func_02016ec0(int base, int maxw, int (*rd)(void *, int, int), voi
         ch = rd(ctx, 0, 0);
     }
     if (base != 0) {
-        max_over = func_0201fb7c(-1, base);
+        max_over = 0xffffffffu / base;
     }
     while (count <= maxw && ch != stop && !(state & 0x60)) {
         switch (state) {
@@ -83,7 +81,7 @@ unsigned long func_02016ec0(int base, int maxw, int (*rd)(void *, int, int), voi
         case 8:
         case 0x10:
             if (base == 0) base = 10;
-            if (max_over == 0) max_over = func_0201fb7c(stop, base);
+            if (max_over == 0) max_over = (unsigned)stop / base;
             if (ISDIGIT(ch)) {
                 ch -= '0';
                 if (ch >= base) {
@@ -144,7 +142,7 @@ unsigned long long func_020172a8(int base, int maxw, int (*rd)(void *, int, int)
         ch = rd(ctx, 0, 0);
     }
     if (base != 0) {
-        max_over = func_0201f928(-1, base);
+        max_over = 0xffffffffffffffffull / base;
     }
     while (count <= maxw && ch != stop && !(state & 0x60)) {
         switch (state) {
@@ -187,7 +185,7 @@ unsigned long long func_020172a8(int base, int maxw, int (*rd)(void *, int, int)
         case 8:
         case 0x10:
             if (base == 0) base = 10;
-            if (max_over == 0) max_over = func_0201f928(stop, base);
+            if (max_over == 0) max_over = (unsigned long long)stop / base;
             if (ISDIGIT(ch)) {
                 ch -= '0';
                 if (ch >= base) {

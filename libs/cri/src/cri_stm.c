@@ -33,7 +33,7 @@ extern void func_02042748(void);
 extern void func_02042754(void);
 extern void *func_02012484(void *, int, int);
 extern void func_0204035c(void);
-extern void func_020057dc(int);
+extern void OS_Sleep(int);
 extern int func_0203e6dc(void *), func_0203e6e4(void *), func_0203e6ec(void *), func_0203e6f4(void *);
 extern int func_0203e704(void *), func_0203e70c(void *), func_0203e714(void *), func_0203e71c(void *);
 extern int func_0203e724(void *, int), func_0203e730(void *), func_0203e760(void *);
@@ -238,7 +238,7 @@ void func_02041cfc(Stm *s)
     for (;;) {
         if (s->b4d == 0 && s->b4a == 0) return;
         func_0204035c();
-        if (data_02215db4 != 0) func_020057dc(1);
+        if (data_02215db4 != 0) OS_Sleep(1);
     }
 }
 
@@ -330,7 +330,7 @@ void func_02041ecc(Stm *s)
     for (;;) {
         if (s->state == 1 && s->i28 == 0) return;
         func_0204035c();
-        if (data_02215db4 != 0) func_020057dc(1);
+        if (data_02215db4 != 0) OS_Sleep(1);
     }
 }
 

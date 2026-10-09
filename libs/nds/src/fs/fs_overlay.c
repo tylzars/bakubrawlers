@@ -40,7 +40,7 @@ BOOL func_0200b260(const u32 *expected, const void *data, u32 len);
 void func_0200b2f4(FSOverlayInfo *ov);
 void func_0200b3e8(FSOverlayInfo *ov);
 BOOL func_0200b4d8(FSOverlayInfo *ov);
-void func_02007520(void);
+void OS_Terminate(void);
 void func_02000970(void *p);
 void func_02005e9c(void *p, u32 n);
 
@@ -147,7 +147,7 @@ void func_0200b2f4(FSOverlayInfo *ov)
         }
         if (!ok) {
             MI_CpuFill8((void *) ov->ram_addr, 0, size);
-            func_02007520();
+            OS_Terminate();
             return;
         }
     }

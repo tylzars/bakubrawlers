@@ -62,7 +62,7 @@ public:
 };
 
 void func_02078250(UnkStruct_02076058 *object);
-void func_02005e9c(void *buffer, u32 size);
+extern "C" void func_02005e9c(void *buffer, u32 size);
 void func_020781a0(UnkStruct_02076058 *object);
 
 UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :

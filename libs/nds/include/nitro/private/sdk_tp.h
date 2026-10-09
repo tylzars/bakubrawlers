@@ -36,7 +36,7 @@ typedef struct {
     u16 err;              // 0x38
     u16 busy;             // 0x3a
 } TPWork;
-extern TPWork tpWork;     // data_020bfd10
+extern TPWork tpWork;     // tpWork
 
 #define REG_DIVCNT   (*(vu16*)0x04000280)
 #define REG_DIV_NUMER (*(vu32*)0x04000290)
@@ -67,7 +67,7 @@ typedef struct {
     void *fullArg;       // 0x18
 } MICAutoParam;
 
-extern MICWork micWork;  // data_020bfd4c
+extern MICWork micWork;  // micWork
 
 // ---- PM
 typedef struct PMCallbackInfo PMCallbackInfo;
@@ -85,8 +85,8 @@ typedef struct {
     void *cbArg;         // 0x24
     u16 *resultPtr;      // 0x28
 } PMWork;
-extern PMWork pmWork;    // data_020bfd6c
-extern void (*pmWaitFunc)(void); // data_020a5068
+extern PMWork pmWork;    // pmWork
+extern void (*pmWaitFunc)(void); // pmWaitFunc
 
 u32 OS_GetCpsrIrqBits(void);  // 0x02007164 (returns CPSR I-bit mask)
 u32 OS_GetProcMode(void);     // 0x02007170

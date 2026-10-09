@@ -163,12 +163,12 @@ u32 func_0200e60c(void)
 void func_0200e620(u32 id)
 {
     func_0200e34c(id, 1);
-    func_02004ee4(id);
+    OS_LockCard(id);
 }
 
 void func_0200e63c(u32 id)
 {
-    func_02004f00(id);
+    OS_UnlockCard(id);
     func_0200e3d0(id, 1);
 }
 
@@ -414,7 +414,7 @@ int func_0200ec04(u32 src, void *dst, u32 len, void (*cb)(void *), void *cbarg, 
         func_0200e310(func_0200ea14);
         return 1;
     }
-    ((CardCommon *)data_020bfe60)->curThread = data_020bdce8.curThread;
+    ((CardCommon *)data_020bfe60)->curThread = OSi_ThreadInfo.curThread;
     func_0200ea14(c);
     return c->arg->result == 0;
 }
@@ -445,7 +445,7 @@ int func_0200ed00(u32 id)
     c->cbArg = NULL;
     OS_RestoreInterrupts(e);
     func_0200e690(id);
-    ((CardCommon *)data_020bfe60)->curThread = data_020bdce8.curThread;
+    ((CardCommon *)data_020bfe60)->curThread = OSi_ThreadInfo.curThread;
     func_0200f5c8(c, 2, 1);
     c->arg->f0c = 0;
     c->arg->f10 = (u32)c->buf;
@@ -523,7 +523,7 @@ void func_0200ef3c(void)
 void func_0200ef90(void)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
-    func_0200786c(c->dma);
+    MI_StopDma(c->dma);
     c->src += 0x200;
     c->dst += 0x200;
     if ((c->len -= 0x200) != 0) {
@@ -532,8 +532,8 @@ void func_0200ef90(void)
         void (*fn)(void *);
         void *arg;
         u32 e;
-        func_02004bc0(0x80000);
-        func_02004bf0(0x80000);
+        OS_DisableIrqMask(0x80000);
+        OS_ResetRequestIrqMask(0x80000);
         func_0200f838(func_0200f2dc());
         c->arg->result = 0;
         fn = c->callback;
@@ -608,9 +608,9 @@ int func_0200f060(CardRomReq *r)
         } else {
             DC_InvalidateAll();
         }
-        func_020049c0(0x80000, func_0200ef90);
-        func_02004bf0(0x80000);
-        func_02004b90(0x80000);
+        OS_SetIrqFunction(0x80000, func_0200ef90);
+        OS_ResetRequestIrqMask(0x80000);
+        OS_EnableIrqMask(0x80000);
         OS_RestoreInterrupts(e);
         func_0200ef3c();
     }
@@ -713,7 +713,7 @@ void func_0200f3d0(u32 dma, u32 src, void *dst, u32 len, void (*cb)(void *), voi
     c->src = src + data_020c0480.base;
     c->len = len;
     if (dma <= 3) {
-        func_0200786c(dma);
+        MI_StopDma(dma);
     }
     if (func_0200f060(r)) {
         if (async) {
@@ -726,7 +726,7 @@ void func_0200f3d0(u32 dma, u32 src, void *dst, u32 len, void (*cb)(void *), voi
         func_0200e310(func_0200f338);
         return;
     }
-    c->curThread = data_020bdce8.curThread;
+    c->curThread = OSi_ThreadInfo.curThread;
     func_0200f338();
 }
 

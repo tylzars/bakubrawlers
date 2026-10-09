@@ -17,7 +17,7 @@ extern const double data_020904f0[];   /* bp */
 extern const double data_02090500[];   /* dp_l? */
 extern const double data_020904e0[];   /* dp_h? */
 extern double func_0201bb40(double);
-extern double func_0201e058(double);
+extern double sqrt(double);
 extern double func_0201d700(double, int);
 static const double zero = 0.0, one = 1.0, two = 2.0, two53 = 9007199254740992.0;
 #define huge 1.0e300
@@ -99,7 +99,7 @@ double func_02019000(double x, double y)
         }
         if (hy == 0x40000000) return x * x;
         if (hy == 0x3fe00000) {
-            if (hx >= 0) return func_0201e058(x);
+            if (hx >= 0) return sqrt(x);
         }
     }
 

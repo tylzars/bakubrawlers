@@ -29,8 +29,8 @@ typedef struct Adx {
 typedef struct AdxGlob { int pad[10]; int i28; int i2c; void (*fn30)(void *); } AdxGlob;
 
 extern AdxGlob data_022167d8;
-extern Adx data_02215dd4[4];
-extern int data_02215dbc, data_02215dc0;
+extern Adx g_criDrv[4];
+extern int g_criSys, data_02215dc0;
 extern int data_020acbf0;
 extern char data_020acbf8[], data_020acc20[], data_020acc4c[], data_020acc7c[], data_020acca4[],
             data_020acccc[], data_020accf4[], data_020acd20[], data_020acd54[], data_020acd80[], data_020acdac[];
@@ -44,9 +44,6 @@ extern void *func_020407f8(void *, int, void *);
 extern void *func_020478f0(void *, int, int);
 extern void *func_02051524(void *);
 extern void func_02051534(void *, void *);
-extern int func_0201f274(int);
-extern int func_0201f304(int, int);
-extern int func_0201f200(int);
 extern void func_02043580(Adx *);
 extern void func_02043244(Adx *, int);
 extern void func_020478fc(void *);
@@ -110,13 +107,13 @@ Adx *func_02042794(int nch, int buf, int size)
         return 0;
     }
     for (i = 0; i < 4; i++) {
-        if (data_02215dd4[i].used == 0) break;
+        if (g_criDrv[i].used == 0) break;
     }
     if (i == 4) {
         func_02040170(data_020acc20);
         return 0;
     }
-    o = &data_02215dd4[i];
+    o = &g_criDrv[i];
     func_02012484(o, 0, 0xc4);
     o->nch = nch;
     k = nch * 0x1460;
@@ -172,7 +169,7 @@ Adx *func_02042794(int nch, int buf, int size)
     func_0203eda4();
     o->i38 = data_022167d8.i28;
     o->s3c = o->i24 / 2048;
-    o->s3e = func_0201f200(func_0201f304(0x3f59999a, func_0201f274(o->s3c)));
+    o->s3e = 0.85f * (float)o->s3c;
     o->s40 = 0;
     for (i = 0; i < nch; i++) o->s42[i] = -128;
     o->s46 = 0;
@@ -297,7 +294,7 @@ void func_02042ccc(void)
 void func_02042ce0(void)
 {
     int i;
-    Adx *p = data_02215dd4;
+    Adx *p = g_criDrv;
     for (i = 0; i < 4; i++, p++) {
         if (p->used == 1) func_02042b40(p);
     }
@@ -438,7 +435,7 @@ void func_02043068(Adx *o, int ch, int vol)
     } else {
         a = 0;
     }
-    if (data_02215dbc == 0) {
+    if (g_criSys == 0) {
         if (vol == -128) {
             if (func_02041714(o->p4) == 2) r = (ch == 0) ? -15 : 15;
             else r = 0;

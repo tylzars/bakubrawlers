@@ -12,10 +12,6 @@
 #define __HI(x) *(1+(int*)&x)
 #define __LO(x) *(int*)&x
 extern double func_0201b9a8(double, double);
-extern double func_0201d72c(double, double);
-extern double func_0201dcf4(double, double);
-extern int func_0201e87c(double, double);
-extern int func_0201ea54(double, double);
 extern int func_0201d690(double);
 static const double huge = 1.0e300;
 

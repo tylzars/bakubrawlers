@@ -63,9 +63,9 @@ void func_0200db0c(void)
     data_020bfd98.alarmCb = 0;
     data_020bfd98.p1 = 0;
     data_020bfd98.p2 = 0;
-    func_02009050();
-    while (!func_020091a8(5, 1)) {}
-    func_0200915c(5, func_0200dc24);
+    PXI_Init();
+    while (!PXI_IsCallbackReady(5, 1)) {}
+    PXI_SetFifoRecvCallback(5, func_0200dc24);
 }
 
 int func_0200db78(RTCDate *date, RTCCallback cb, void *arg)
@@ -274,7 +274,7 @@ BOOL func_0200e21c(void) { return func_0200e22c(0x27); }
 
 BOOL func_0200e22c(u32 cmd)
 {
-    return func_020091cc(5, (cmd << 8) & 0x7f00, 0) >= 0;
+    return PXI_SendWordByFifo(5, (cmd << 8) & 0x7f00, 0) >= 0;
 }
 
 u32 func_0200e254(RTCDate *date)

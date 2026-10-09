@@ -47,12 +47,12 @@ typedef struct AnmObj {
     u8 prio; u8 mapCount; u16 map[1];
 } AnmObj;
 
-extern void func_0200450c(void);      // GX_BeginLoadTex
-extern void func_02004568(const void *src, u32 offset, u32 size);   // GX_LoadTex
-extern void func_020046a8(void);      // GX_EndLoadTex
-extern void func_020046f4(void);      // GX_BeginLoadTexPltt
-extern void func_02004728(const void *src, u32 offset, u32 size);  // GX_LoadTexPltt
-extern void func_02004794(void);      // GX_EndLoadTexPltt
+extern void GX_BeginLoadTex(void);      // GX_BeginLoadTex
+extern void GX_LoadTex(const void *src, u32 offset, u32 size);   // GX_LoadTex
+extern void GX_EndLoadTex(void);      // GX_EndLoadTex
+extern void GX_BeginLoadTexPltt(void);      // GX_BeginLoadTexPltt
+extern void GX_LoadTexPltt(const void *src, u32 offset, u32 size);  // GX_LoadTexPltt
+extern void GX_EndLoadTexPltt(void);      // GX_EndLoadTexPltt
 extern s32 func_01ff8000(s32 a, s32 b);   // FX_Div
 extern void *func_0203324c(Dict *dict, const char *name);
 #endif

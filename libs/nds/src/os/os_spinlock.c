@@ -16,7 +16,7 @@ extern void func_02004f34(void);
 
 static BOOL lockInitialized;   // data_020bdcc0
 
-void func_02004c50(void) {
+void OS_InitLock(void) {
     OSLockWord *lockp = OS_LOCKWORD_BUF;
     if (lockInitialized) {
         return;

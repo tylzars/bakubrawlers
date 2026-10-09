@@ -2,7 +2,7 @@
 
 typedef s32 OSArenaId;
 
-extern void func_02009050(void);   // PXI_Init
+extern void PXI_Init(void);   // PXI_Init
 extern void OS_InitLock(void);     // 0x02004c50
 extern void func_020049a8(void);
 extern void func_02004c1c(void);
@@ -11,7 +11,7 @@ extern void func_02007f18(void);
 extern void OS_InitVAlarm(void);   // 0x020070b0
 extern void func_02007464(void);
 extern void OS_InitThread(void);   // 0x020052bc
-extern void func_0200724c(void);   // OS_InitReset
+extern void OS_InitReset(void);   // OS_InitReset
 extern void func_02011dc8(void);
 extern void func_0200f4c8(void);
 extern void func_0200cd80(void);
@@ -46,7 +46,7 @@ void OSi_WaitVCount0(void) {
 
 void OS_Init(void) {
     OS_InitArena();
-    func_02009050();
+    PXI_Init();
     OS_InitLock();
     OS_InitArenaEx();
     func_020049a8();
@@ -56,7 +56,7 @@ void OS_Init(void) {
     OS_InitVAlarm();
     func_02007464();
     OS_InitThread();
-    func_0200724c();
+    OS_InitReset();
     func_02011dc8();
     func_0200f4c8();
     func_0200cd80();

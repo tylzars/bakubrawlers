@@ -1,9 +1,9 @@
 // NitroSystem sound library: loading archive files into the sound heap (sequences, banks, wave archives). 0x02038984-0x02038fac
 #include <nnsys/private/nns_snd_arc.h>
 
-extern void func_02005e80(void *p, u32 size);        // DC_FlushRange
-extern u32 func_0200710c(void);                      // OS_DisableInterrupts
-extern void func_02007120(u32 state);                // OS_RestoreInterrupts
+extern void DC_StoreRange(void *p, u32 size);        // DC_FlushRange
+extern u32 OS_DisableInterrupts(void);                      // OS_DisableInterrupts
+extern void OS_RestoreInterrupts(u32 state);                // OS_RestoreInterrupts
 extern void func_020081ac(void *start, void *end);
 extern void func_020081cc(void *start, void *end);
 extern void func_020081ec(void *start, void *end);
@@ -35,7 +35,7 @@ void *func_02038984(u32 a, void *cb, u32 c, u32 d, SndHeap *heap) {
     blk = func_02038390(heap, size + 0x20, cb, c, d);
     if (blk == 0) return 0;
     if (func_020380e8(a, blk, size, 0) != size) return 0;
-    func_02005e80(blk, size);
+    DC_StoreRange(blk, size);
     return blk;
 }
 
@@ -98,7 +98,7 @@ u32 func_02038bd4(u32 id, SndHeap *heap, int flag) {
         if (n != tblBytes + 0x3c) return 0;
         func_01ff96c4((u8 *)p + 0x3c, (u8 *)p + 0x3c + ((SndWaveHdr *)p)->count * 4, tblBytes);
         MI_CpuFill8((u8 *)p + 0x3c, 0, tblBytes);
-        func_02005e80((void *)p, total + 0x3c);
+        DC_StoreRange((void *)p, total + 0x3c);
         if (flag != 0) func_020381f8(id, p);
     }
     return p;
@@ -109,11 +109,11 @@ void func_02038cdc(void *p, u32 x, u32 id) {
     SndArc *old;
     u32 irq;
     if (x == 0) return;
-    irq = func_0200710c();
+    irq = OS_DisableInterrupts();
     old = func_02037d50((SndArc *)x);
     if ((u32)p == func_020381d0(id)) func_020381f8(id, 0);
     func_02037d50(old);
-    func_02007120(irq);
+    OS_RestoreInterrupts(irq);
 }
 
 void func_02038d34(void *p, u32 size, u32 x, u32 id) {
@@ -158,7 +158,7 @@ int func_02038e24(u32 wave, u32 idx, u32 file, SndHeap *heap) {   // load wave `
     blk = func_02038390(heap, size + 0x20, func_02038ddc, wave, idx);
     if (blk == 0) return 0;
     if (size != func_020380e8(file, blk, size, start)) return 0;
-    func_02005e80(blk, size);
+    DC_StoreRange(blk, size);
     func_02008fe0(wave, idx, (u32)blk);
     return 1;
 }

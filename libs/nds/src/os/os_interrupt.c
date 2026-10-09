@@ -1,6 +1,6 @@
 #include <nitro/private/sdk.h>
 
-u32 func_02004b64(u32 mask) {
+u32 OS_SetIrqMask(u32 mask) {
     u16 prev = REG_IME;
     u32 old;
     REG_IME = 0;
@@ -11,7 +11,7 @@ u32 func_02004b64(u32 mask) {
     return old;
 }
 
-u32 func_02004b90(u32 mask) {
+u32 OS_EnableIrqMask(u32 mask) {
     u16 prev = REG_IME;
     u32 old;
     REG_IME = 0;
@@ -22,7 +22,7 @@ u32 func_02004b90(u32 mask) {
     return old;
 }
 
-u32 func_02004bc0(u32 mask) {
+u32 OS_DisableIrqMask(u32 mask) {
     u16 prev = REG_IME;
     u32 old;
     REG_IME = 0;
@@ -33,7 +33,7 @@ u32 func_02004bc0(u32 mask) {
     return old;
 }
 
-u32 func_02004bf0(u32 mask) {
+u32 OS_ResetRequestIrqMask(u32 mask) {
     u16 prev = REG_IME;
     u32 old;
     REG_IME = 0;

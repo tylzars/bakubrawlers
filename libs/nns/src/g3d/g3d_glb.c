@@ -18,8 +18,8 @@ extern void func_01ff85a8(void *src, void *dst, s32 x, s32 y, s32 z);   // scale
 extern long long func_01ff803c(s32 x);   // FX_Inv (64 bit)
 extern s32 func_01ff8000(s32 a, s32 b);
 extern void MIi_CpuClearFast(u32 data, void *dst, u32 size);
-extern void func_01ff8ee0(void *a, void *b, void *dst);   // VEC_CrossProduct
-extern void func_01ff8fc4(void *src, void *dst);   // VEC_Normalize
+extern void VEC_CrossProduct(void *a, void *b, void *dst);   // VEC_CrossProduct
+extern void VEC_Normalize(void *src, void *dst);   // VEC_Normalize
 static inline s32 FxMul(s32 a, s32 b) { return (s32)(((long long)a * b) >> 12); }
 
 extern u32 data_02211374[];     // G3d global state
@@ -277,12 +277,12 @@ BOOL func_02032854(u8 *out, AnmObj *list, u32 idx) {   // NNS_G3dAnmCalcNode: bl
         }
         n++;
     }
-    func_01ff8ee0(out + 0x28, out + 0x34, out + 0x40);
+    VEC_CrossProduct(out + 0x28, out + 0x34, out + 0x40);
     if (P32(out, 0x28) == 0 && P32(out, 0x2c) == 0 && P32(out, 0x30) == 0) func_01ff9510(keep + 0xc, out + 0x28, 12);
-    else func_01ff8fc4(out + 0x28, out + 0x28);
+    else VEC_Normalize(out + 0x28, out + 0x28);
     if (P32(out, 0x40) == 0 && P32(out, 0x44) == 0 && P32(out, 0x48) == 0) func_01ff9510(keep, out + 0x40, 12);
-    else func_01ff8fc4(out + 0x40, out + 0x40);
-    func_01ff8ee0(out + 0x40, out + 0x28, out + 0x34);
+    else VEC_Normalize(out + 0x40, out + 0x40);
+    VEC_CrossProduct(out + 0x40, out + 0x28, out + 0x34);
     return 1;
 }
 BOOL func_02032c40(u32 *out, AnmObj *o, u32 idx) {   // OR together the flags of all animations driving a node
@@ -299,9 +299,9 @@ BOOL func_02032c40(u32 *out, AnmObj *o, u32 idx) {   // OR together the flags of
     } while (o != 0);
     return r;
 }
-extern s32 func_02003604(void *p);
+extern s32 G3X_GetClipMtx(void *p);
 extern void func_02000db4(void *a, void *b);
-extern s32 func_02003634(void *p);
+extern s32 G3X_GetVectorMtx(void *p);
 extern void func_01ff92a4(void);
 void func_02032cc8(void *a, void *b) {   // reset the geometry engine state
     u8 buf[0x40];
@@ -310,19 +310,19 @@ void func_02032cc8(void *a, void *b) {   // reset the geometry engine state
     *(volatile u32 *)0x4000444 = 0;
     *(volatile u32 *)0x4000454 = 0;
     if (a != 0) {
-        while (func_02003604(buf) != 0) {}
+        while (G3X_GetClipMtx(buf) != 0) {}
         func_02000db4(buf, a);
     }
     if (b != 0) {
-        while (func_02003634(b) != 0) {}
+        while (G3X_GetVectorMtx(b) != 0) {}
     }
     *(volatile u32 *)0x4000448 = 1;
     *(volatile u32 *)0x4000440 = 2;
 }
-extern void func_02003438(void);
+extern void G3X_Init(void);
 void func_02032d54(void) {   // NNS_G3dInit
     u32 v;
-    func_02003438();
+    G3X_Init();
     func_02032130();
     v = *(volatile u32 *)0x4000600;
     *(volatile u32 *)0x4000600 = (v & ~0xc0000000) | 0x80000000;

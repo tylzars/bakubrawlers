@@ -17,7 +17,7 @@ void GX_Init(void) {
         do {
             u32 id = func_02004f54();
             if (id == -3) {
-                func_02007520();
+                OS_Terminate();
             }
             data_020bdc04[1] = (u16) id;
         } while (data_020bdc04[1] == 0);
@@ -25,9 +25,9 @@ void GX_Init(void) {
     reg_GX_DISPSTAT = 0;
     reg_GX_DISPCNT_ = 0;
     if (data_020a4f20.dmaNo != -1) {
-        func_0200754c(data_020a4f20.dmaNo, (void *) 0x04000008, 0, 0x60);
+        MI_DmaFill32(data_020a4f20.dmaNo, (void *) 0x04000008, 0, 0x60);
         *(vu16 *) 0x0400006c = 0;
-        func_0200754c(data_020a4f20.dmaNo, (void *) 0x04001000, 0, 0x70);
+        MI_DmaFill32(data_020a4f20.dmaNo, (void *) 0x04001000, 0, 0x70);
     } else {
         MIi_CpuClear32(0, (void *) 0x04000008, 0x60);
         *(vu16 *) 0x0400006c = 0;

@@ -17,10 +17,10 @@ extern int func_0203a52c(SndRamp *r);
 extern void func_02008118(u32 mask, u32 a, u32 b);
 extern void func_02008034(u32 chMask, u32 capMask, u32 alarmMask, u32 flags);
 extern void func_0200800c(u32 chMask, u32 capMask, u32 alarmMask, u32 flags);
-extern u32 func_02008814(void);
-extern void func_020085ec(int);
-extern void func_020087a8(u32);
-extern int func_02005b3c(void *, u32, u32);
+extern u32 SND_GetCurrentCommandTag(void);
+extern void SND_FlushCommand(int);
+extern void SND_WaitForCommandProc(u32);
+extern int OS_ReceiveMessage(void *, u32, u32);
 extern void func_0200822c(u32, u32, u32, u32);
 extern void func_02036878(u32 mask);
 extern void func_02036848(u32 mask);
@@ -59,10 +59,10 @@ void func_02037924(void) {   // stop
     mask = use ? 1 << c->alarm : 0;
     func_02008034(c->chMask, c->capSlots, mask, 0);
     if (use) {
-        u32 irq = func_02008814();
-        func_020085ec(1);
-        func_020087a8(irq);
-        while (func_02005b3c(data_022143bc, 0, 0) != 0) {}
+        u32 irq = SND_GetCurrentCommandTag();
+        SND_FlushCommand(1);
+        SND_WaitForCommandProc(irq);
+        while (OS_ReceiveMessage(data_022143bc, 0, 0) != 0) {}
     }
     if (c->capSlots != 0) func_02036878(c->capSlots);
     if (c->capMask != 0) func_02036848(c->capMask);
@@ -78,9 +78,9 @@ void func_02037a14(void) {   // pause
     if (data_022143b4.cap.active == 0) return;
     mask = c->alarm >= 0 ? 1 << c->alarm : 0;
     func_02008034(c->chMask, c->capSlots, mask, 0);
-    irq = func_02008814();
-    func_020085ec(1);
-    func_020087a8(irq);
+    irq = SND_GetCurrentCommandTag();
+    SND_FlushCommand(1);
+    SND_WaitForCommandProc(irq);
 }
 
 void func_02037a74(void) {   // clear buffers and restart

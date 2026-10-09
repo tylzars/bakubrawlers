@@ -14,7 +14,6 @@
 extern double func_0201a850(double, double);
 extern double func_0201b72c(double, double, int);
 extern int func_0201a188(double, double *);
-extern double func_0201e20c(double, double);
 
 double func_0201b9a8(double x, double y) {
     __HI(x) = (__HI(x) & 0x7fffffff) | (__HI(y) & 0x80000000);

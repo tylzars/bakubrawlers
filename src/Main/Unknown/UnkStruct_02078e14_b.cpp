@@ -112,7 +112,7 @@ u32 func_02086654(UnkStruct_02078e14 *self, u32 unk1, u32 unk2);
 
 // non-matching: 4 words, two instruction-order swaps (argument setup of the LoadPalette(0x100) call, and `mov r1, #0` ahead of `mov r0, r5` before func_0207ed3c)
 
-void func_01ff94e0(const void *src, void *dst, u32 size);
+extern "C" void func_01ff94e0(const void *src, void *dst, u32 size);
 
 // non-matching: register allocation only (original: this r5, i r10, zero r8, &data_020d433c r6, &data_020d43f0 r9, record r7; the compiler picks a different order); no declaration order tried changes it
 

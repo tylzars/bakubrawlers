@@ -18,11 +18,11 @@ extern void (*data_020a5810[])(void);
 extern void (*data_020a4e80[])(Rs *, u32, u16 *, u32);   // material handlers
 extern void (*data_020a4e90[])(Rs *, u32, u16 *, u32);   // node-description handlers
 
-extern s32 func_01ff8f64(const s32 *v);        // VEC_Mag
-extern void func_01ff8fc4(const s32 *src, s32 *dst);    // VEC_Normalize
+extern s32 VEC_Mag(const s32 *v);        // VEC_Mag
+extern void VEC_Normalize(const s32 *src, s32 *dst);    // VEC_Normalize
 extern void func_01ff8574(const void *src, void *dst);  // 4x3 to 4x4
 extern void func_02000de8(const s32 *a, const s32 *b, s32 *ab);   // MTX_Concat44
-extern int func_02003604(s32 *m);   // G3X_GetClipMtx
+extern int G3X_GetClipMtx(s32 *m);   // G3X_GetClipMtx
 extern void *func_020326a0(void);
 extern void *func_020326d8(void);
 extern void *func_020323b8(void);
@@ -516,7 +516,7 @@ void func_01ffbbac(Rs *rs, u32 op) {
         GXFIFO = 0x151110;
         GXFIFO = 0;
         GXFIFO = 0;
-        while (func_02003604(clip) != 0) {
+        while (G3X_GetClipMtx(clip) != 0) {
         }
         g = data_02211374[0xfc / 4];
         if (g & 1) {
@@ -529,9 +529,9 @@ void func_01ffbbac(Rs *rs, u32 op) {
         v0[0] = clip[12];
         v0[1] = clip[13];
         v0[2] = clip[14];
-        v1[0] = func_01ff8f64(&clip[0]);
-        v1[1] = func_01ff8f64(&clip[4]);
-        v1[2] = func_01ff8f64(&clip[8]);
+        v1[0] = VEC_Mag(&clip[0]);
+        v1[1] = VEC_Mag(&clip[4]);
+        v1[2] = VEC_Mag(&clip[8]);
         g = data_02211374[0xfc / 4];
         if (g & 1) {
             GXFIFO = 0x171012;
@@ -596,7 +596,7 @@ void func_01ffbe2c(Rs *rs, u32 op) {
         GXFIFO = 0x151110;
         GXFIFO = 0;
         GXFIFO = 0;
-        while (func_02003604(clip) != 0) {
+        while (G3X_GetClipMtx(clip) != 0) {
         }
         g = data_02211374[0xfc / 4];
         if (g & 1) {
@@ -609,15 +609,15 @@ void func_01ffbe2c(Rs *rs, u32 op) {
         v0[0] = clip[12];
         v0[1] = clip[13];
         v0[2] = clip[14];
-        v1[0] = func_01ff8f64(&clip[0]);
-        v1[1] = func_01ff8f64(&clip[4]);
-        v1[2] = func_01ff8f64(&clip[8]);
+        v1[0] = VEC_Mag(&clip[0]);
+        v1[1] = VEC_Mag(&clip[4]);
+        v1[2] = VEC_Mag(&clip[8]);
         if (clip[5] != 0 || clip[6] != 0) {
-            func_01ff8fc4(&clip[4], &bb[3]);
+            VEC_Normalize(&clip[4], &bb[3]);
             bb[7] = -bb[5];
             bb[8] = bb[4];
         } else {
-            func_01ff8fc4(&clip[8], &bb[6]);
+            VEC_Normalize(&clip[8], &bb[6]);
             bb[5] = -bb[7];
             bb[4] = bb[8];
         }

@@ -12,8 +12,6 @@ typedef struct DecForm {
 
 extern int func_0201d67c(double);
 extern int func_0201d690(double);
-extern int func_0201ea54(double, double);
-extern double func_0201e20c(double, double);
 extern double func_0201bd20(double, int *);
 extern double func_0201bddc(double, int);
 extern unsigned long long func_0201dbec(double);

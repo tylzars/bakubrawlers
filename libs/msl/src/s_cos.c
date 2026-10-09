@@ -14,15 +14,14 @@
 extern double func_0201a850(double, double);
 extern double func_0201b72c(double, double, int);
 extern int func_0201a188(double, double *);
-extern double func_0201e20c(double, double);
 
-double func_0201b9d0(double x) {
+double cos(double x) {
     double y[2], z = 0.0;
     int n, ix;
     ix = __HI(x);
     ix &= 0x7fffffff;
     if (ix <= 0x3fe921fb) return func_0201a850(x, z);
-    else if (ix >= 0x7ff00000) return func_0201e20c(x, x);
+    else if (ix >= 0x7ff00000) return x - x;
     else {
         n = func_0201a188(x, y);
         switch (n & 3) {

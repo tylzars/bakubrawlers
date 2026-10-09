@@ -20,8 +20,8 @@ struct UnkStruct_020c4230 {
 };
 extern UnkStruct_020c4230 data_020c4230;
 extern u8 data_020d43eb[];
-void func_01ff9510(const void *src, void *dst, u32 size);
-void func_01ff94e0(const void *src, void *dst, u32 size);
+extern "C" void func_01ff9510(const void *src, void *dst, u32 size);
+extern "C" void func_01ff94e0(const void *src, void *dst, u32 size);
 extern u8 data_020d441a[];
 extern u8 data_020d4352[];
 

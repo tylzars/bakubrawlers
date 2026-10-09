@@ -35,9 +35,9 @@ typedef struct SndHeap {
 } SndHeap;
 
 extern void *func_02030a44(void *list, void *obj);   // NNS_FndGetPrevListObject
-extern void func_020308c4(void *list, void *obj);    // NNS_FndAppendListObject
-extern void func_020309cc(void *list, void *obj);    // NNS_FndRemoveListObject
-extern void func_02030880(void *list, u16 off);      // NNS_FndInitList
+extern void NNS_FndAppendListObject(void *list, void *obj);    // NNS_FndAppendListObject
+extern void NNS_FndRemoveListObject(void *list, void *obj);    // NNS_FndRemoveListObject
+extern void NNS_FndInitList(void *list, u16 off);      // NNS_FndInitList
 extern void *func_020311a8(void *start, u32 size, u16 opt);   // NNS_FndCreateFrmHeapEx
 extern void func_020311e0(void *h);
 extern void *func_020311ec(void *h, u32 size, s32 align);

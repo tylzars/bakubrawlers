@@ -36,7 +36,7 @@ extern void *data_020ade04;
 
 extern int func_02047798(void);
 extern void func_0204e8ac(void);
-extern void func_020056c8(void *);
+extern void OS_WakeupThreadDirect(void *);
 extern void func_02048304(void), func_02048398(void), func_020482f8(void), func_02048430(void);
 extern void func_02048718(int), func_0204866c(int);
 extern void func_0204871c(void), func_02048808(void), func_020488f8(void), func_02048914(void);
@@ -70,7 +70,7 @@ int func_02047810(void)
         func_020478a8();
     }
     func_0204e8ac();
-    func_020056c8(data_02217ac0);
+    OS_WakeupThreadDirect(data_02217ac0);
     return 0;
 }
 

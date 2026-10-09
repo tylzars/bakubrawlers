@@ -157,7 +157,7 @@ const char *func_020125b4(const char *fmt, char **ap, FmtSpec *out)
     return p + 1;
 }
 
-extern unsigned func_0201fb7c(unsigned, unsigned);   /* unsigned divide, quotient in r0, remainder in r1 */
+extern unsigned _u32_div_f(unsigned, unsigned);   /* unsigned divide, quotient in r0, remainder in r1 */
 
 /* 0x02012b44: integer to digits, written backwards from end; returns start (0 if too long) */
 char *func_02012b44(int val, char *end, FmtSpec spec)

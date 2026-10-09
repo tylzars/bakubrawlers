@@ -62,7 +62,7 @@ extern "C" void func_01ffd0e0(MtxFx43 *m, u16 angle);
 extern "C" void func_01ffd138(MtxFx43 *m, u16 angle);
 extern "C" void func_01ffcf64(MtxFx43 *m, VecFx32 *v);
 extern "C" void func_01ff89c0(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);
-void func_01ff8634(MtxFx43 *src, MtxFx43 *dst);
+extern "C" void func_01ff8634(MtxFx43 *src, MtxFx43 *dst);
 extern "C" void func_01ff84d0(VecFx32 *vec, MtxFx33 *m, VecFx32 *out);
 extern "C" s32 FX_AsinIdx(s32 value);
 extern "C" s32 FX_AcosIdx(s32 value);

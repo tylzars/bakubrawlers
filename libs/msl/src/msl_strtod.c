@@ -29,8 +29,6 @@ static inline int TOUPPERF(int x)
 }
 #define TOUPPER(c) (((c) < 0 || (c) >= 128) ? (c) : data_02090328[c])
 
-extern double func_0201f17c(float);
-extern float func_0201f4f0(float, float);
 extern double func_02012350(void);
 extern double func_0201cfc4(Dec *);
 
@@ -104,9 +102,9 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
             if (k == 3 || k == 8) {
                 double r;
                 if (neg) {
-                    r = func_0201f17c(func_0201f4f0(0, data_020a5074));
+                    r = (double)(0.0f - data_020a5074);
                 } else {
-                    r = func_0201f17c(data_020a5074);
+                    r = (double)data_020a5074;
                 }
                 *nread = ws + k + signcnt;
                 return r;

@@ -12,7 +12,7 @@
 #define __HI(x) *(1+(int*)&x)
 #define __LO(x) *(int*)&x
 extern float data_020a5078;
-extern double func_0201e058(double);
+extern double sqrt(double);
 static const double one = 1.00000000000000000000e+00;
 static const double pi = 3.14159265358979311600e+00;
 static const double pio2_hi = 1.57079632679489655800e+00;
@@ -52,13 +52,13 @@ double func_020177ac(double x)
         z = (one + x) * 0.5;
         p = z * (pS0 + z * (pS1 + z * (pS2 + z * (pS3 + z * (pS4 + z * pS5)))));
         q = one + z * (qS1 + z * (qS2 + z * (qS3 + z * qS4)));
-        s = func_0201e058(z);
+        s = sqrt(z);
         r = p / q;
         w = r * s - pio2_lo;
         return pi - 2.0 * (s + w);
     } else {
         z = (one - x) * 0.5;
-        s = func_0201e058(z);
+        s = sqrt(z);
         df = s;
         __LO(df) = 0;
         c = (z - df * df) / (s + df);

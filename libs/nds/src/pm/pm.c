@@ -26,10 +26,10 @@ extern void func_0200d954(PMCallbackInfo **head, PMCallbackInfo *node);
 extern void func_0200d9a0(PMCallbackInfo **head, PMCallbackInfo *node);
 extern u32 OS_DisableIrqMask(u32 mask);       // 0x02004bc0
 extern void OS_SetIrqMask(u32 mask);          // 0x02004b64
-extern int func_02006b2c(void);
+extern int OS_IsTickAvailable(void);
 extern void func_02007230(void);
 extern void OS_Halt(void);                    // 0x02007530
-extern void func_020078e8(void);
+extern void MI_StopAllDma(void);
 extern int func_02011b28(void);
 extern void func_0200da80(void);
 
@@ -265,7 +265,7 @@ void func_0200d2b4(void)
         } while (func_0200d268() != 0);
     }
     OS_DisableInterrupts();
-    func_020078e8();
+    MI_StopAllDma();
     while (1) OS_Halt();
 }
 
@@ -456,7 +456,7 @@ void func_0200d3e0(u32 flags, u32 a, u32 b)
     REG_IME = 0;
     e = OS_DisableInterrupts();
     mask = OS_DisableIrqMask(0x3fffff);
-    OS_SetIrqMask((func_02006b2c() ? 8 : 0) | 0x40000);
+    OS_SetIrqMask((OS_IsTickAvailable() ? 8 : 0) | 0x40000);
     OS_RestoreInterrupts(e);
     t = REG_IME;
     REG_IME = 1;

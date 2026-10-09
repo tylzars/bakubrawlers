@@ -45,10 +45,6 @@ extern void func_01ff96c4(void *, void *, int);
 extern void MI_CpuFill8(void *, int, int);
 extern void (*data_02218884)(SndOut *, void *);
 extern char data_020ae2bc[];
-extern int func_0201f274(int);
-extern int func_0201edc4(int, int);
-extern int func_0201e5c0(int, int);
-extern int func_0201f200(int);
 
 extern void func_02049f48(SndOut *);
 extern void func_0204a018(SndOut *);

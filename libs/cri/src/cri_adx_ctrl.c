@@ -45,7 +45,7 @@ typedef struct Glob {
 } Glob;
 
 extern Glob data_022167d8;
-extern Pl data_02215dd4[4];
+extern Pl g_criDrv[4];
 extern int data_0221683c_unused;
 extern char data_020acdd8[], data_020ace04[], data_020ace30[], data_020ace60[], data_020ace8c[];
 extern char data_020aceb0[], data_020acee0[], data_020acf0c[], data_020acf38[], data_020acf64[];
@@ -143,7 +143,7 @@ void func_02043290(void)
     if (data_022167d8.f18 != 0) data_022167d8.f18(data_022167d8.a14);
     func_02041644();
     data_022167d8.st = 2;
-    p = data_02215dd4;
+    p = g_criDrv;
     for (i = 0; i < 4; i++) {
         if (p->used == 1) func_02044614(p);
         p++;

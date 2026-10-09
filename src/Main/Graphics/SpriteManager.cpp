@@ -11,9 +11,9 @@
 
 // SDK matrix helpers (ITCM / main).
 void MTX_Identity22_(MtxFx22 *mtx);
-void func_01ff817c(MtxFx33 *mtx); // MTX_Identity33_
-void func_01ff854c(MtxFx43 *mtx); // MTX_Identity43_
-void func_02000d88(MtxFx44 *mtx); // MTX_Identity44_
+extern "C" void func_01ff817c(MtxFx33 *mtx); // MTX_Identity33_
+extern "C" void func_01ff854c(MtxFx43 *mtx); // MTX_Identity43_
+extern "C" void func_02000d88(MtxFx44 *mtx); // MTX_Identity44_
 
 MtxFx22 data_0220e838;
 MtxFx33 data_0220e848;

@@ -42,8 +42,8 @@ extern int (*data_020a5884)(u32 key);
 extern u32 (*data_020a5888)(u32 size, int is4pltt, u32 opt);
 extern int (*data_020a588c)(u32 key);
 
-void func_02005e9c(void *buffer, u32 size);
-void func_01ff9510(const void *src, void *dst, u32 size);
+extern "C" void func_02005e9c(void *buffer, u32 size);
+extern "C" void func_01ff9510(const void *src, void *dst, u32 size);
 
 // A resource dictionary (NNSG3dResDict) as embedded in the model set block.
 struct NNSG3dResDict {

@@ -39,7 +39,7 @@ extern const u16 data_ov007_0227a5e0[];
 extern const u16 data_ov007_0227a5e4[];
 void func_ov007_0227238c(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out);
 extern "C" void func_01ffcf80(MtxFx33 *m, u16 angle);
-void func_02005e9c(void *buf, u32 size);
+extern "C" void func_02005e9c(void *buf, u32 size);
 extern u8 data_ov007_0227a630[];
 extern const u8 data_ov007_0227a750[];
 extern const s32 data_ov007_0227a6d0[];

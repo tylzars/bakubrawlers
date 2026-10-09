@@ -29,16 +29,16 @@ extern void func_0200da20(void *);
 extern void func_0200da38(void *);
 extern void func_02037884(void);
 extern void func_02036bf8(void);
-extern int func_0200841c(int);
+extern int SND_RecvCommandReply(int);
 extern void func_02036cac(void);
 extern void func_0203789c(void);
 extern void func_020394c8(void);
-extern void func_020085ec(int);
+extern void SND_FlushCommand(int);
 extern void func_0200820c(u32);
 extern void func_02037a14(void);
 extern void func_02008034(u32, u32, u32, u32);
-extern u32 func_02008814(void);
-extern void func_020087a8(u32);
+extern u32 SND_GetCurrentCommandTag(void);
+extern void SND_WaitForCommandProc(u32);
 extern void func_02037a74(void);
 extern void func_020080d8(u32, u32);
 extern void func_020080f8(u32, u32);
@@ -65,11 +65,11 @@ void func_020366f8(void) {   // NNS_SndInit
 
 void func_02036780(void) {   // shutdown: wait for the sound thread, stop everything
     int i = 0;
-    while (func_0200841c(i) != 0) {}
+    while (SND_RecvCommandReply(i) != 0) {}
     func_02036cac();
     func_0203789c();
     func_020394c8();
-    func_020085ec(0);
+    SND_FlushCommand(0);
 }
 
 void func_020367b0(u32 volume) {   // NNS_SndSetMasterVolume
@@ -80,9 +80,9 @@ void func_020367bc(void) {   // start callback
     u32 r;
     func_02037a14();
     func_02008034(0, 0, 0, 0);
-    r = func_02008814();
-    func_020085ec(1);
-    func_020087a8(r);
+    r = SND_GetCurrentCommandTag();
+    SND_FlushCommand(1);
+    SND_WaitForCommandProc(r);
 }
 
 void func_020367f4(void) {

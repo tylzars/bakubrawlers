@@ -69,7 +69,7 @@ typedef struct CardRomReq {
 
 typedef struct { u32 base; u8 pad[0x1c]; void (*romfn)(CardRomReq *); } CardRomInfo; /* data_020c0480 */
 
-typedef struct { u32 pad; void *curThread; } OSThreadInfo; /* data_020bdce8 */
+typedef struct { u32 pad; void *curThread; } OSThreadInfo; /* OSi_ThreadInfo */
 typedef struct { u8 pad[0x60]; u32 romctrl; } CardCfg;      /* *data_020a506c */
 
 /* data_020c06c0 */
@@ -90,7 +90,7 @@ typedef struct { u16 init; u16 pad; WMWork *work; } WMState; /* data_020c06e0 */
 
 extern CardArg data_020bfe00;
 extern CardRomInfo data_020c0480;
-extern OSThreadInfo data_020bdce8;
+extern OSThreadInfo OSi_ThreadInfo;
 extern CardCfg *data_020a506c;
 extern u32 data_020bfde0;
 extern u8 data_020c0480_end[];
@@ -126,12 +126,12 @@ int OS_SendMessage(void *q, void *msg, int flag);    // 0x02005aa8
 int OS_ReceiveMessage(void *q, void *msg, int flag); // 0x02005b3c
 int OS_JamMessage(void *q, void *msg, int flag);     // 0x02005be0
 void func_02007cd8(u32 dma, u32 src, u32 dst, u32 n); // DMA recv
-void func_0200786c(u32 dma);                    // stop DMA
-void func_02004bc0(u32);  void func_02004bf0(u32); void func_02004b90(u32);
-void func_020049c0(u32, void *);
-void func_02004ee4(u32); void func_02004f00(u32);
+void MI_StopDma(u32 dma);                    // stop DMA
+void OS_DisableIrqMask(u32);  void OS_ResetRequestIrqMask(u32); void OS_EnableIrqMask(u32);
+void OS_SetIrqFunction(u32, void *);
+void OS_LockCard(u32); void OS_UnlockCard(u32);
 void *func_0200682c(void);
-void func_0200754c(u32 dma, void *dst, u32 v, u32 n);
+void MI_DmaFill32(u32 dma, void *dst, u32 v, u32 n);
 void WaitByLoop(u32);
 u32 func_0200d2b4(void);
 void func_020101a8(void);

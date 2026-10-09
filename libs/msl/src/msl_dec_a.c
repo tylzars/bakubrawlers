@@ -6,8 +6,6 @@ typedef struct Dec {
     unsigned char text[36];
 } Dec;
 
-extern unsigned long long func_0201f928(unsigned long long, unsigned long long);
-extern unsigned long long func_0201f934(unsigned long long, unsigned long long);
 
 int func_0201c1cc(Dec *d, int n)
 {
@@ -65,8 +63,8 @@ void func_0201c2c8(Dec *d, unsigned long long v)
     if (v != 0) {
         do {
             int k = d->len++;
-            d->text[k] = (unsigned char)func_0201f934(v, 10);
-            v = func_0201f928(v, 10);
+            d->text[k] = (unsigned char)(v % 10);
+            v = v / 10;
         } while (v != 0);
     }
     {

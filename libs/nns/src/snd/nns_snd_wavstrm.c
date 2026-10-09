@@ -27,19 +27,18 @@ extern int func_0200aadc(void *file);
 extern int func_0200abd8(void *file);
 extern int func_0200ac40(void *file, u32 pos, u32 whence);
 extern int func_0200ac30(void *file, void *dst, u32 len);
-extern u32 func_0200710c(void);
-extern void func_02007120(u32 irq);
-extern void func_02005c7c(void *mutex);
-extern void func_02005c94(void *mutex);
-extern void func_02005d18(void *mutex);
-extern void func_02005610(void *queue);
-extern void func_02005404(void *thr, void *fn, void *arg, void *stack, u32 size, u32 prio);
-extern void func_020056c8(void *thr);
+extern u32 OS_DisableInterrupts(void);
+extern void OS_RestoreInterrupts(u32 irq);
+extern void OS_InitMutex(void *mutex);
+extern void OS_LockMutex(void *mutex);
+extern void OS_UnlockMutex(void *mutex);
+extern void OS_SleepThread(void *queue);
+extern void OS_CreateThread(void *thr, void *fn, void *arg, void *stack, u32 size, u32 prio);
+extern void OS_WakeupThreadDirect(void *thr);
 extern void func_01ff96c4(void *src, void *dst, u32 len);
-extern u32 func_0201f928(u32 lo, u32 hi, u32 dlo, u32 dhi);
 extern s32 func_0203a4e0(SndLerp *l);
 extern s16 data_0208f89c[];
-extern void *func_02030a2c(void *list, void *obj);
+extern void *NNS_FndGetNextListObject(void *list, void *obj);
 extern int func_0203a52c(SndLerp *l);
 void func_02039a50(WavStrmCmd *c);
 extern void func_0203990c(WavStrm *s);
@@ -112,11 +111,11 @@ void func_020392fc(u32 a, void *heap) {   // initialise the stream player
         return;
     }
     data_022149f0.init = 1;
-    func_02030880(&data_022149fc, 0);
+    NNS_FndInitList(&data_022149fc, 0);
     for (i = 0; i < 8; i++) {
-        func_020308c4(&data_022149fc, &data_02214a20[i]);
+        NNS_FndAppendListObject(&data_022149fc, &data_02214a20[i]);
     }
-    func_02005c7c(data_02214a08);
+    OS_InitMutex(data_02214a08);
     data_022149f0.adpcmBuf = data_02215660;
     for (i = 0; i < 4; i++) {
         s = &data_0221508c[i];
@@ -202,13 +201,13 @@ void func_020395d8(WavStrm *s) {
 }
 
 void func_02039604(WavStrm *s) {   // stop a stream
-    func_02005c94(data_02215068);
-    if (data_022149f0.mgr != 0) func_02005c94(data_022149f0.mgr->mutex);
+    OS_LockMutex(data_02215068);
+    if (data_022149f0.mgr != 0) OS_LockMutex(data_022149f0.mgr->mutex);
     if (s->b1) func_02037558(s);
     if (s->active) s->done(s);
     func_0203969c(s);
-    func_02005d18(data_02215068);
-    if (data_022149f0.mgr != 0) func_02005d18(data_022149f0.mgr->mutex);
+    OS_UnlockMutex(data_02215068);
+    if (data_022149f0.mgr != 0) OS_UnlockMutex(data_022149f0.mgr->mutex);
 }
 
 void func_0203969c(WavStrm *s) {
@@ -227,50 +226,50 @@ void func_02039700(WavStrm *s) {
 }
 
 void func_02039724(WavStrmMgr *m, u32 prio) {   // create the decode thread
-    func_02005404(m, func_0203a410, m, m->sleepQueue, 0x400, prio);
-    func_02030880(&m->cmds, 0);
-    func_02005c7c(m->mutex);
+    OS_CreateThread(m, func_0203a410, m, m->sleepQueue, 0x400, prio);
+    NNS_FndInitList(&m->cmds, 0);
+    OS_InitMutex(m->mutex);
     ((u32 *)m->sleepQueue)[1] = 0;
     ((u32 *)m->sleepQueue)[0] = 0;
-    func_020056c8(m);
+    OS_WakeupThreadDirect(m);
 }
 
 void func_02039784(NNSFndList *list, WavStrm *owner) {   // drop every queued command of a stream
-    u32 irq = func_0200710c();
-    WavStrmCmd *n = func_02030a2c(list, 0);
+    u32 irq = OS_DisableInterrupts();
+    WavStrmCmd *n = NNS_FndGetNextListObject(list, 0);
     WavStrmCmd *next;
     while (n != 0) {
-        next = func_02030a2c(list, n);
+        next = NNS_FndGetNextListObject(list, n);
         if (n->strm == owner) {
-            func_020309cc(list, n);
+            NNS_FndRemoveListObject(list, n);
             func_02039844(n);
         }
         n = next;
     }
-    func_02007120(irq);
+    OS_RestoreInterrupts(irq);
 }
 
 WavStrmCmd *func_020397f4(NNSFndList *list) {   // pop the next queued command
-    u32 irq = func_0200710c();
-    WavStrmCmd *n = func_02030a2c(list, 0);
+    u32 irq = OS_DisableInterrupts();
+    WavStrmCmd *n = NNS_FndGetNextListObject(list, 0);
     if (n != 0) {
-        func_020309cc(list, n);
+        NNS_FndRemoveListObject(list, n);
         n->strm->queued--;
     }
-    func_02007120(irq);
+    OS_RestoreInterrupts(irq);
     return n;
 }
 
 void func_02039844(WavStrmCmd *n) {   // return a command node to the free list
-    u32 irq = func_0200710c();
-    func_020308c4(&data_022149fc, n);
-    func_02007120(irq);
+    u32 irq = OS_DisableInterrupts();
+    NNS_FndAppendListObject(&data_022149fc, n);
+    OS_RestoreInterrupts(irq);
 }
 
 void func_02039870(void *ptr, u32 size, WavStrm *s) {   // sound-heap free callback of a stream buffer
     if (ptr != s->buf) return;
-    func_02005c94(data_02215068);
-    if (data_022149f0.mgr != 0) func_02005c94(data_022149f0.mgr->mutex);
+    OS_LockMutex(data_02215068);
+    if (data_022149f0.mgr != 0) OS_LockMutex(data_022149f0.mgr->mutex);
     func_02039604(s);
     s->buf = 0;
     s->bufSize = 0;
@@ -279,8 +278,8 @@ void func_02039870(void *ptr, u32 size, WavStrm *s) {   // sound-heap free callb
         func_0203733c(s);
         s->cnt120 = 0;
     }
-    func_02005d18(data_02215068);
-    if (data_022149f0.mgr != 0) func_02005d18(data_022149f0.mgr->mutex);
+    OS_UnlockMutex(data_02215068);
+    if (data_022149f0.mgr != 0) OS_UnlockMutex(data_022149f0.mgr->mutex);
 }
 
 void func_0203990c(WavStrm *s) {   // switch a stream over to its next file
@@ -432,7 +431,7 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
                 if (ch < s->channels) {
                     src = (u8 *)dst;
                     if (s->format == 2) {
-                        func_02005c94(data_02214a08);
+                        OS_LockMutex(data_02214a08);
                         src = (u8 *)data_022149f0.adpcmBuf;
                     }
                     if (s->read(s, src, readBytes, readPos + ch * blockBytes) != readBytes) {
@@ -440,7 +439,7 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
                         s->b5 = 1;
                         samples = 0;
                         loopNow = 0;
-                        if (s->format == 2) func_02005d18(data_02214a08);
+                        if (s->format == 2) OS_UnlockMutex(data_02214a08);
                         break;
                     }
                     if (s->format == 2) {
@@ -471,7 +470,7 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
                             nib = *src & 0xf;
                             ADPCM_STEP(st, nib, dst);
                         }
-                        func_02005d18(data_02214a08);
+                        OS_UnlockMutex(data_02214a08);
                     }
                 } else if (s->b6) {
                     MI_CpuFill8(dst, 0, outBytes);
@@ -558,17 +557,17 @@ void func_0203a40c(WavStrm *s) {
 void func_0203a410(WavStrmMgr *m) {   // decode thread
     WavStrmCmd *c;
     for (;;) {
-        func_02005610(m->sleepQueue);
+        OS_SleepThread(m->sleepQueue);
         for (;;) {
-            func_02005c94(m->mutex);
+            OS_LockMutex(m->mutex);
             c = func_020397f4(&m->cmds);
             if (c == 0) {
-                func_02005d18(m->mutex);
+                OS_UnlockMutex(m->mutex);
                 break;
             }
             func_02039a50(c);
             func_02039844(c);
-            func_02005d18(m->mutex);
+            OS_UnlockMutex(m->mutex);
         }
     }
 }
@@ -605,4 +604,8 @@ s32 func_0203a4e0(SndLerp *l) {   // current ramp value
 
 void func_0203a514(SndLerp *l) {   // advance a ramp
     if (l->pos < l->len) l->pos++;
+}
+
+int func_0203a52c(SndLerp *l) {   // has the ramp finished
+    return l->pos >= l->len;
 }

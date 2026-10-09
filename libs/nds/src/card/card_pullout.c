@@ -41,10 +41,10 @@ BOOL func_0200f79c(void)
 void func_0200f7ac(void)
 {
     int doit = 1;
-    func_0200786c(0);
-    func_0200786c(1);
-    func_0200786c(2);
-    func_0200786c(3);
+    MI_StopDma(0);
+    MI_StopDma(1);
+    MI_StopDma(2);
+    MI_StopDma(3);
     if (((s32)(*(vu16 *)0x27fffa8 & 0x8000)) >> 15) {
         u32 r = func_0200d2b4();
         if (r == 4) {

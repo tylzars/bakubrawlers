@@ -41,7 +41,7 @@ void GX_BeginLoadBGExtPltt(void) {
 void GX_LoadBGExtPltt(const void *src, u32 offset, u32 size) {
     u32 dst = data_020bdc24.bgVram + offset - data_020bdc24.bgOffset;
     if (data_020a4f24 != -1) {
-        func_0200776c(data_020a4f24, src, (void *) dst, size, 0, 0);
+        MI_DmaCopy32Async(data_020a4f24, src, (void *) dst, size, 0, 0);
     } else {
         func_01ff9510(src, (void *) dst, size);
     }
@@ -75,7 +75,7 @@ void GX_BeginLoadOBJExtPltt(void) {
 void GX_LoadOBJExtPltt(const void *src, u32 offset, u32 size) {
     u32 dst = data_020bdc24.objVram;
     if (data_020a4f24 != -1) {
-        func_0200776c(data_020a4f24, src, (void *) (dst + offset), size, 0, 0);
+        MI_DmaCopy32Async(data_020a4f24, src, (void *) (dst + offset), size, 0, 0);
     } else {
         func_01ff9510(src, (void *) (dst + offset), size);
     }
@@ -96,7 +96,7 @@ void GX_BeginLoadSubBGExtPltt(void) {
 
 void GX_LoadSubBGExtPltt(const void *src, u32 offset, u32 size) {
     if (data_020a4f24 != -1) {
-        func_0200776c(data_020a4f24, src, (void *) (0x06898000 + offset), size, 0, 0);
+        MI_DmaCopy32Async(data_020a4f24, src, (void *) (0x06898000 + offset), size, 0, 0);
     } else {
         func_01ff9510(src, (void *) (0x06898000 + offset), size);
     }
@@ -116,7 +116,7 @@ void GX_BeginLoadSubOBJExtPltt(void) {
 
 void GX_LoadSubOBJExtPltt(const void *src, u32 offset, u32 size) {
     if (data_020a4f24 != -1) {
-        func_0200776c(data_020a4f24, src, (void *) (0x068a0000 + offset), size, 0, 0);
+        MI_DmaCopy32Async(data_020a4f24, src, (void *) (0x068a0000 + offset), size, 0, 0);
     } else {
         func_01ff9510(src, (void *) (0x068a0000 + offset), size);
     }

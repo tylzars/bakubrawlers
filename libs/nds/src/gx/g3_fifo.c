@@ -10,8 +10,8 @@ void func_01ff9304(void);
 void func_01ff931c(void *arg);
 void func_01ff9528(const void *src, volatile void *dest, u32 size);
 void func_01ff93d8(u32 cmd, const void *params, u32 count);
-void func_02007bec(s32 ch, const void *src, u32 size, void (*cb)(void *), void *arg);
-void func_020079e8(s32 ch, const void *src, u32 size, void (*cb)(void *), void *arg);
+void MI_SendGXCommandAsyncFast(s32 ch, const void *src, u32 size, void (*cb)(void *), void *arg);
+void MI_SendGXCommandAsync(s32 ch, const void *src, u32 size, void (*cb)(void *), void *arg);
 
 void func_01ff9284(u32 *buf) {
     if (data_01ffd1a0 == 0) {
@@ -49,9 +49,9 @@ void func_01ff9328(const u32 *src, u32 size) {
     func_01ff92a4();
     data_01ffd1a4 = 1;
     if (data_01ffd1a8 != 0) {
-        func_02007bec(data_020a4f24, src, size, func_01ff931c, (void *) &data_01ffd1a4);
+        MI_SendGXCommandAsyncFast(data_020a4f24, src, size, func_01ff931c, (void *) &data_01ffd1a4);
     } else {
-        func_020079e8(data_020a4f24, src, size, func_01ff931c, (void *) &data_01ffd1a4);
+        MI_SendGXCommandAsync(data_020a4f24, src, size, func_01ff931c, (void *) &data_01ffd1a4);
     }
 }
 

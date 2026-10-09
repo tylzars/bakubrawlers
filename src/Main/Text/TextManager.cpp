@@ -22,7 +22,7 @@ struct TextSprite {
     /* 0c */
 };
 
-void func_02005e9c(void *buffer, u32 size);
+extern "C" void func_02005e9c(void *buffer, u32 size);
 
 // non-matching: 5 words.
 void TextManager::func_0202c02c() {

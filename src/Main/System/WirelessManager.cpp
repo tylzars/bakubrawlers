@@ -26,9 +26,9 @@ extern "C" u32 func_02011108(void *buf, void *a, void *b);
 extern "C" u32 func_02011a64(void *callback, u32 arg);
 extern "C" u8 *func_02011968(void *buf, void *a, u32 index);
 extern "C" u32 func_020119ec(void *callback, u32 a, u32 b, u32 channel, u32 c);
-void func_02005e64(void *p, u32 size);
+extern "C" void func_02005e64(void *p, u32 size);
 extern "C" void func_01ff96c4(const void *src, void *dst, u32 size);
-void func_01ff9510(const void *src, void *dst, u32 size);
+extern "C" void func_01ff9510(const void *src, void *dst, u32 size);
 extern "C" u32 func_0201071c(void *callback);
 
 // Parameters of the scan (the wireless library's WMScanParam).

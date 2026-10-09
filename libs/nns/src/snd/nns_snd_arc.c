@@ -3,7 +3,7 @@
 
 extern SndArc *data_022149b0;   // current archive
 
-extern int func_0200a99c(void *fileId, const char *path);
+extern int FS_ConvertPathToFileID(void *fileId, const char *path);
 extern void func_0200a7b4(void *file);
 extern int func_0200aa24(void *file, SndFileId id);
 extern int func_0200ac40(void *file, u32 pos, u32 whence);
@@ -19,7 +19,7 @@ void func_02037af8(SndArc *arc, const char *path, void *heap, u32 flag) {   // o
     arc->fat = 0;
     arc->symb = 0;
     arc->chunk = 0;
-    if (func_0200a99c(&arc->fileId, path) == 0) return;
+    if (FS_ConvertPathToFileID(&arc->fileId, path) == 0) return;
     func_0200a7b4(arc->file);
     if (func_0200aa24(arc->file, arc->fileId) == 0) return;
     arc->opened = 1;

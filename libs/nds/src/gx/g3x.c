@@ -92,8 +92,8 @@ void G3X_SetClearColor(int rgb, int alpha, int depth, int polygonID, BOOL fog) {
 void G3X_InitTable(void) {
     int i;
     if (data_020a4f24 != -1) {
-        func_020076a8(data_020a4f24, (void *) 0x04000330, 0, 0x10, 0, 0);
-        func_0200754c(data_020a4f24, (void *) 0x04000360, 0, 0x60);
+        MI_DmaFill32Async(data_020a4f24, (void *) 0x04000330, 0, 0x10, 0, 0);
+        MI_DmaFill32(data_020a4f24, (void *) 0x04000360, 0, 0x60);
     } else {
         MIi_CpuClear32(0, (void *) 0x04000330, 0x10);
         MIi_CpuClear32(0, (void *) 0x04000360, 0x60);

@@ -93,7 +93,7 @@ struct Player {
     u32 mBase;           // d4
 };
 
-void func_02000b9c(u32 a);
+extern "C" void func_02000b9c(u32 a);
 extern "C" void *func_0203b640(u32 size);
 extern "C" int func_0203b658(Reader *r, u32 a);
 extern "C" void func_0203b64c(Reader *r);
@@ -120,8 +120,6 @@ void func_0203ae04(Player *p);
 void _ZdlPv(void *p);
 extern u32 data_020a592c, data_020a5950;
 void func_02092890();
-
-int func_0203a52c(Reader *r) { return r->mPos >= r->mEnd; }
 
 int func_0203a544(Player *p, Reader *r, u32 a) {
     func_02000b9c(0x2000bdc);

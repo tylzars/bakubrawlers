@@ -14,12 +14,9 @@ extern float data_020a5074;
 extern char data_020a53f4[];
 extern double data_020a52e0[];
 extern double func_0201b9a8(double, double);
-extern double func_0201f17c(float);
 extern double func_0201c1c0(double, double);
 extern double func_0201bddc(double, int);
 extern int func_0201d690(double);
-extern int func_0201ea54(double, double);
-extern double func_0201e20c(double, double);
 extern void func_0201c518(Dec *, const char *, short);
 extern void func_0201cd9c(Dec *, double);
 extern int func_0201c938(const Dec *, const Dec *);
@@ -44,7 +41,7 @@ double func_0201cfc4(Dec *d)
     case '0':
         return func_0201b9a8(0.0, d->sign == 0 ? 1.0 : -1.0);
     case 'I':
-        return func_0201b9a8(func_0201f17c(data_020a5074), d->sign == 0 ? 1.0 : -1.0);
+        return func_0201b9a8((double)data_020a5074, d->sign == 0 ? 1.0 : -1.0);
     case 'N': {
         unsigned long long *q = (unsigned long long *)&r;
         *q = 0x7ff0000000000000ULL;
@@ -64,7 +61,7 @@ double func_0201cfc4(Dec *d)
     e = dd.exp;
     func_0201c518(&lim, data_020a53f4, 0x134);
     if (func_0201ca18(&lim, &dd)) {
-        return func_0201b9a8(func_0201f17c(data_020a5074), d->sign == 0 ? 1.0 : -1.0);
+        return func_0201b9a8((double)data_020a5074, d->sign == 0 ? 1.0 : -1.0);
     }
     q = dd.text;
     p = q + 1;

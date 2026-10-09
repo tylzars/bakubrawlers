@@ -10,7 +10,7 @@ extern const u8 data_0208b4bc[];   // 4-byte stride tables: output slot for each
 extern const u8 data_0208b4bd[];
 extern const u8 data_0208b4be[];
 extern const u8 data_0208b4bf[];
-extern void func_01ff8fc4(const s32 *src, s32 *dst);   // VEC_Normalize
+extern void VEC_Normalize(const s32 *src, s32 *dst);   // VEC_Normalize
 
 extern void func_01ff9f18(s32 *out, s32 frame, u32 *info, u8 *res);   // one value, no interpolation (defined in another unit)
 extern void func_01ff98bc(s32 *out);
@@ -440,13 +440,13 @@ void func_01ffa548(s32 *out, s32 ratio, u32 *info, u8 *res) {
                 out[3] = tA[3] + out[3] * 3;
                 out[4] = tA[4] + out[4] * 3;
                 out[5] = tA[5] + out[5] * 3;
-                func_01ff8fc4(out, out);
-                func_01ff8fc4(out + 3, out + 3);
+                VEC_Normalize(out, out);
+                VEC_Normalize(out + 3, out + 3);
                 if (fl == 0) {
                     out[6] = tA[6] + out[6] * 3;
                     out[7] = tA[7] + out[7] * 3;
                     out[8] = tA[8] + out[8] * 3;
-                    func_01ff8fc4(out + 6, out + 6);
+                    VEC_Normalize(out + 6, out + 6);
                     return;
                 }
                 CROSS(out)
@@ -467,13 +467,13 @@ avg:
     out[3] += tB[3];
     out[4] += tB[4];
     out[5] += tB[5];
-    func_01ff8fc4(out, out);
-    func_01ff8fc4(out + 3, out + 3);
+    VEC_Normalize(out, out);
+    VEC_Normalize(out + 3, out + 3);
     if (fl == 0) {
         out[6] += tB[6];
         out[7] += tB[7];
         out[8] += tB[8];
-        func_01ff8fc4(out + 6, out + 6);
+        VEC_Normalize(out + 6, out + 6);
         return;
     }
     CROSS(out)
@@ -483,7 +483,7 @@ fetch:
         CROSS(out)
         return;
     }
-    func_01ff8fc4(out + 6, out + 6);
+    VEC_Normalize(out + 6, out + 6);
 }
 
 void func_01ffa960(s32 *out, s32 ratio, u32 *info, u8 *res) {
@@ -513,7 +513,7 @@ void func_01ffa960(s32 *out, s32 ratio, u32 *info, u8 *res) {
             CROSS(out)
             return;
         }
-        func_01ff8fc4(out + 6, out + 6);
+        VEC_Normalize(out + 6, out + 6);
         return;
     }
     if (hdr & 0xc0000000) {
@@ -555,13 +555,13 @@ blend:
     out[3] = tA[3] * w1 + ((w0 * (tB[3] - tA[3])) >> 12);
     out[4] = tA[4] * w1 + ((w0 * (tB[4] - tA[4])) >> 12);
     out[5] = tA[5] * w1 + ((w0 * (tB[5] - tA[5])) >> 12);
-    func_01ff8fc4(out, out);
-    func_01ff8fc4(out + 3, out + 3);
+    VEC_Normalize(out, out);
+    VEC_Normalize(out + 3, out + 3);
     if (fl == 0) {
         out[6] = tA[6] * w1 + ((w0 * (tB[6] - tA[6])) >> 12);
         out[7] = tA[7] * w1 + ((w0 * (tB[7] - tA[7])) >> 12);
         out[8] = tA[8] * w1 + ((w0 * (tB[8] - tA[8])) >> 12);
-        func_01ff8fc4(out + 6, out + 6);
+        VEC_Normalize(out + 6, out + 6);
         return;
     }
     CROSS(out)

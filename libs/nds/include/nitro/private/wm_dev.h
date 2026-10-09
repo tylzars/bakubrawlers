@@ -99,8 +99,8 @@ extern void MIi_CpuClearFast(u32 v, void *d, u32 n);      /* 0x01ff9540 */
 extern u32 OS_DisableInterrupts(void);                    /* 0x0200710c */
 extern void OS_RestoreInterrupts(u32 e);                   /* 0x02007120 */
 extern void CpuSet(void *src, void *dst, u32 ctl);
-extern void func_02007520(void);
-extern void func_020073bc(void *p);
+extern void OS_Terminate(void);
+extern void OS_GetMacAddress(void *p);
 extern u16 func_02004f54(void);
 extern void func_0200faf8(void);
 extern WMWork *func_0200fcf4(void);

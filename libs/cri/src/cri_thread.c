@@ -30,7 +30,7 @@ extern int data_02217a5c[5];
 extern int data_02217a70;
 extern int data_02217a3c;
 extern int data_0209e388, data_0209e38c;
-extern int data_020bdce8[2];
+extern int OSi_ThreadInfo[2];
 extern char data_02217a3c_dummy;
 extern char data_020adcd8[], data_020add50[];
 extern int data_020add08, data_020add0c, data_020add14, data_020add90, data_020add1c;
@@ -46,13 +46,13 @@ extern void func_020479f0(void);
 extern void func_02046924(int *);
 extern void func_02007230(void);
 extern void func_02047884(void);
-extern void func_020056c8(void *);
-extern void func_02005610(int);
+extern void OS_WakeupThreadDirect(void *);
+extern void OS_SleepThread(int);
 extern void func_0204e854(void);
 extern void func_02046154(void);
 extern void func_02046164(void);
-extern void func_02004bc0(int);
-extern void func_02004b90(int);
+extern void OS_DisableIrqMask(int);
+extern void OS_EnableIrqMask(int);
 extern void func_0204658c(void);
 extern void func_0204659c(void);
 extern void func_020477e8(void);
@@ -69,7 +69,7 @@ extern void func_020464e0(void *, int);
 extern void func_020464f0(void *, int);
 extern int func_020492f0(int *, int *);
 extern void func_020477fc(void);
-extern void func_02005404(void *, void *, int, int, int, int);
+extern void OS_CreateThread(void *, void *, int, int, int, int);
 extern void func_02047248(void);
 extern void func_02047294(void);
 extern void func_020472bc(void);
@@ -78,7 +78,7 @@ extern void func_02047388(void);
 extern void func_02047484(CriCfg *);
 extern int func_02047680(void);
 extern void func_020477c0(void);
-extern void func_02005734(void *);
+extern void OS_SetThreadPriority(void *);
 extern int func_020477d8(void);
 extern void func_020466bc(void);
 
@@ -108,8 +108,8 @@ void func_020471d0(void)
     if (m != 2) return;
     func_02047884();
     data_02217a5c[4] = 0;
-    func_020056c8(data_02217c40);
-    func_02005610(0);
+    OS_WakeupThreadDirect(data_02217c40);
+    OS_SleepThread(0);
 }
 
 void func_02047224(void) { func_0204e854(); }
@@ -120,7 +120,7 @@ void func_02047248(void)
 {
     if (data_02217a40.cnt == 0) {
         int ie = *(volatile int *)0x4000210;
-        func_02004bc0(1);
+        OS_DisableIrqMask(1);
         data_02217a70 = ie;
     }
     data_02217a40.cnt++;
@@ -132,7 +132,7 @@ void func_02047294(void)
     c--;
     data_02217a40.cnt = c;
     if (c != 0) return;
-    func_02004b90(1);
+    OS_EnableIrqMask(1);
 }
 
 void func_020472bc(void)
@@ -140,14 +140,14 @@ void func_020472bc(void)
     if (data_02217a9c.run0 == 1) {
         do {
             if (data_02217a9c.done1 == 1) {
-                func_020056c8((void *)data_02217a9c.arg);
+                OS_WakeupThreadDirect((void *)data_02217a9c.arg);
             } else {
-                func_020056c8(data_02217b80);
+                OS_WakeupThreadDirect(data_02217b80);
             }
             func_0204658c();
             func_0204659c();
             data_02217a9c.cnt0++;
-            func_02005610(0);
+            OS_SleepThread(0);
         } while (data_02217a9c.run0 == 1);
     }
     func_020477e8();
@@ -157,10 +157,10 @@ void func_02047330(void)
 {
     if (data_02217a9c.run1 == 1) {
         do {
-            func_020056c8((void *)data_02217a9c.arg);
+            OS_WakeupThreadDirect((void *)data_02217a9c.arg);
             func_020465bc();
             data_02217a9c.cnt1++;
-            func_02005610(0);
+            OS_SleepThread(0);
         } while (data_02217a9c.run1 == 1);
     }
     data_02217a9c.done1 = 1;
@@ -177,7 +177,7 @@ void func_02047388(void)
                     func_020478a8();
                 }
                 func_02046164();
-                func_02005610(0);
+                OS_SleepThread(0);
             }
             data_02217a9c.cnt2++;
         } while (data_02217a9c.run2 == 1);
@@ -210,7 +210,7 @@ void func_02047484(CriCfg *cfg)
     }
     func_020477a8();
     if (func_02047798() != 1) return;
-    data_02217a9c.arg = data_020bdce8[1];
+    data_02217a9c.arg = OSi_ThreadInfo[1];
     if (data_02217a9c.mode != 2) data_02217a9c.mode = 2;
     func_0204668c();
     func_020464e0((void *)func_02047248, 0);
@@ -229,16 +229,16 @@ void func_02047484(CriCfg *cfg)
         int stk = (int)cfg->stk0;
         int sz = cfg->size0;
         stk = (stk + 3) & ~3;
-        func_02005404(data_02217ac0, (void *)func_020472bc, 0, stk + sz, sz, data_02217a78.prio0);
+        OS_CreateThread(data_02217ac0, (void *)func_020472bc, 0, stk + sz, sz, data_02217a78.prio0);
     }
     data_02217a9c.run1 = 1;
     data_02217a9c.done1 = 0;
-    func_02005404(data_02217b80, (void *)func_02047330, 0,
+    OS_CreateThread(data_02217b80, (void *)func_02047330, 0,
                   (((int)cfg->stk1 + 3) & ~3) + cfg->size1, cfg->size1, data_02217a78.prio1);
     if (data_02217a9c.mode == 2) {
         data_02217a9c.run2 = 1;
         data_02217a9c.done2 = 0;
-        func_02005404(data_02217c40, (void *)func_02047388, 0,
+        OS_CreateThread(data_02217c40, (void *)func_02047388, 0,
                       (((int)cfg->stk2 + 3) & ~3) + cfg->size2, cfg->size2, data_02217a78.prio2);
     } else {
         data_02217a9c.run2 = 0;
@@ -263,16 +263,16 @@ int func_02047698(void)
     func_020477c0();
     if (func_02047798() == 0) {
         data_02217a9c.run2 = 0;
-        func_02005734(data_02217c40);
-        while (data_02217a9c.done2 == 0) func_020056c8(data_02217c40);
+        OS_SetThreadPriority(data_02217c40);
+        while (data_02217a9c.done2 == 0) OS_WakeupThreadDirect(data_02217c40);
         data_02217a9c.run1 = 0;
-        func_02005734(data_02217b80);
-        while (data_02217a9c.done1 == 0) func_020056c8(data_02217b80);
+        OS_SetThreadPriority(data_02217b80);
+        while (data_02217a9c.done1 == 0) OS_WakeupThreadDirect(data_02217b80);
         data_02217a9c.run0 = 0;
-        func_02005734(data_02217ac0);
+        OS_SetThreadPriority(data_02217ac0);
         if (func_020477d8() == 0) {
             do {
-                func_020056c8(data_02217ac0);
+                OS_WakeupThreadDirect(data_02217ac0);
             } while (func_020477d8() == 0);
         }
         func_020466bc();

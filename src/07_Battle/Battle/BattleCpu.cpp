@@ -127,7 +127,7 @@ static const BattleCpuShot data_ov007_0227987c[8][4][3] = {
 static inline fx32 Abs(fx32 v);
 
 
-BattleCpu::BattleCpu(u8 player) {
+BattleCpu::BattleCpu(u32 player) {
     mUnk_78 = 0;
     mUnk_7a = 0xff;
     mUnk_79 = player;

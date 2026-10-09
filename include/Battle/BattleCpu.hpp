@@ -38,7 +38,7 @@ public:
     /* 8d */ u8 mUnk_8d;
     /* 8e */
 
-    BattleCpu(u8 player);
+    BattleCpu(u32 player);
     virtual ~BattleCpu();
     void func_ov007_02231038();
     u8 func_ov007_022310f0();

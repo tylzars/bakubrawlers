@@ -1,11 +1,11 @@
 #include "Game/Random.hpp"
 
-extern u32 func_02006ba4();
+extern "C" u32 OS_GetTick();
 
 void func_020219ec(u32 seed);
 
 void func_020219dc() {
-    func_020219ec(func_02006ba4());
+    func_020219ec(OS_GetTick());
 }
 
 void func_020219ec(u32 seed) {

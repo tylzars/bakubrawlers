@@ -67,7 +67,7 @@ void func_02002dec();
 void func_02002e00();
 extern "C" void GX_ResetBankForSubBGExtPltt();
 extern "C" void GX_ResetBankForSubOBJExtPltt();
-void func_0200754c(u32 dmaNo, void *dest, u32 data, u32 size);
+extern "C" void MI_DmaFill32(u32 dmaNo, void *dest, u32 data, u32 size);
 s32 func_02021e00();
 void func_020313f8(void *obj, u32 unk2, s32 heap);
 void func_02035e58(u32 unk1, u32 unk2);
@@ -639,9 +639,9 @@ void SpriteManager::func_02027354(u32 unk1) {
     GX_ResetBankForSubOBJExtPltt();
     GX_ResetBankForSubOBJ();
     GX_SetBankForLCDC(0x1ff);
-    func_0200754c(3, (void *) 0x6800000, 0, 0xa4000);
+    MI_DmaFill32(3, (void *) 0x6800000, 0, 0xa4000);
     MIi_CpuClear16(0xc0, (void *) 0x7000000, 0x800);
-    func_0200754c(3, (void *) 0x5000000, 0, 0x800);
+    MI_DmaFill32(3, (void *) 0x5000000, 0, 0x800);
     func_02002dd8();
 }
 

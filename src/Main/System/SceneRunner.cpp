@@ -104,7 +104,7 @@ extern void func_0200b4e8(u32 processor, u32 id);
 extern void func_0200b53c(u32 processor, u32 id);
 extern void func_02021d38(void *lo);
 extern void func_02021e10();
-extern void func_02007230();
+extern "C" void func_02007230();
 extern void func_0202555c();
 extern void func_020255f8(void (*hook)());
 extern void func_02025df8();

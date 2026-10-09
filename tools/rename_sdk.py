@@ -27,6 +27,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("names")
     ap.add_argument("--write", action="store_true")
+    ap.add_argument("--sources-only", action="store_true",
+                    help="input lines are `<address> <old symbol> <new name>`; only src/ and include/ change")
     a = ap.parse_args()
     pairs = [ln.split() for ln in Path(a.names).read_text().splitlines() if ln.strip()]
     syms = SYMS.read_text().splitlines()
@@ -36,6 +38,13 @@ def main():
         if m:
             by_addr.setdefault(int(m.group(2), 16), i)
     renames = {}
+    if a.sources_only:
+        # lines: <address> <old symbol> <new name>; symbols.txt already renamed (e.g. by sync_symbols.py)
+        for addr, old, name in (p[:3] for p in pairs):
+            m = re.search(r"func_[0-9a-f]{8}", old)
+            if m:
+                renames[m.group(0)] = name
+        pairs = []
     for addr, name in pairs:
         i = by_addr.get(int(addr, 16))
         if i is None:
@@ -70,7 +79,7 @@ def main():
             if a.write:
                 p.write_text(new)
     print(f"{len(renames)} functions renamed, {changed} files")
-    if a.write:
+    if a.write and not a.sources_only:
         SYMS.write_text("\n".join(syms) + "\n")
 
 

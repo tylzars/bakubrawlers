@@ -47,6 +47,87 @@ libs/nds/src/gx/gx_extpltt.c:
 libs/nds/src/gx/gx_tex.c:
     .text       start:0x0200450c end:0x020047d8
 
+libs/nds/src/os/os_interrupt.c:
+    .text       start:0x02004b64 end:0x02004c50
+
+libs/nds/src/os/os_spinlock.c:
+    .text       start:0x02004c50 end:0x02004f54
+
+libs/nds/src/os/os_thread.c:
+    .text       start:0x02005004 end:0x020059d0
+
+libs/nds/src/os/os_message.c:
+    .text       start:0x02005a60 end:0x02005df8
+
+libs/nds/src/os/os_init.c:
+    .text       start:0x02005ef4 end:0x02006370
+
+libs/nds/src/os/os_alloc.c:
+    .text       start:0x02006370 end:0x0200682c
+
+libs/nds/src/os/os_exception.c:
+    .text       start:0x02006884 end:0x020068f4
+
+libs/nds/src/os/os_timer.c:
+    .text       start:0x02006a98 end:0x02006ab4
+
+libs/nds/src/os/os_tick.c:
+    .text       start:0x02006ab4 end:0x02006c44
+
+libs/nds/src/os/os_alarm.c:
+    .text       start:0x02006c44 end:0x020070b0
+
+libs/nds/src/os/os_valarm.c:
+    .text       start:0x020070b0 end:0x020070f8
+
+libs/nds/src/os/os_irqwait.c:
+    .text       start:0x02007188 end:0x02007230
+
+libs/nds/src/os/os_reset.c:
+    .text       start:0x02007230 end:0x020073bc
+
+libs/nds/src/os/os_owner.c:
+    .text       start:0x020073bc end:0x0200745c
+
+libs/nds/src/os/os_irqowner.c:
+    .text       start:0x02007464 end:0x02007520
+
+libs/nds/src/os/os_terminate.c:
+    .text       start:0x02007520 end:0x02007530
+
+libs/nds/src/mi/mi_dma.c:
+    .text       start:0x0200754c end:0x020079e8
+
+libs/nds/src/mi/mi_gx.c:
+    .text       start:0x020079e8 end:0x02007cd0
+
+libs/nds/src/snd/snd_cmdwrap.c:
+    .text       start:0x02007f30 end:0x020082e8
+
+libs/nds/src/snd/snd_main.c:
+    .text       start:0x020082e8 end:0x02008348
+
+libs/nds/src/snd/snd_command.c:
+    .text       start:0x02008348 end:0x02008a58
+
+libs/nds/src/snd/snd_alarm.c:
+    .text       start:0x02008a58 end:0x02008b1c
+
+libs/nds/src/snd/snd_work.c:
+    .text       start:0x02008b1c end:0x02008bec
+
+libs/nds/src/snd/snd_util.c:
+    .text       start:0x02008bec end:0x02008c5c
+
+libs/nds/src/snd/snd_bank.c:
+    .text       start:0x02008c5c end:0x02009050
+
+libs/nds/src/pxi/pxi.c:
+    .text       start:0x02009050 end:0x0200936c
+
+libs/nds/src/fs/fs_tail.c:
+    .text       start:0x0200936c end:0x02009558
+
 // provisional: code only; data not assigned yet.
 src/Main/System/Random.cpp:
     complete

@@ -7,14 +7,14 @@
 
 class UnkStruct_02071868;
 
-// Filled by func_020073d8; the first byte is a kind (1 or 2 skips the scene).
+// Filled by OS_GetOwnerInfo; the first byte is a kind (1 or 2 skips the scene).
 struct UnkStruct_020073d8 {
     /* 00 */ u8 mKind;
     /* 01 */ PAD(0x01, 0x54);
     /* 54 */
 };
 
-void func_020073d8(UnkStruct_020073d8 *info);
+extern "C" void OS_GetOwnerInfo(UnkStruct_020073d8 *info);
 
 // Overlay 0 scene with vtable 0x02226e4c: shows an object until A or a touch, then requests scene 1.
 class UnkScene_02226e4c : public SceneBase {

@@ -9,7 +9,7 @@ extern GlyphMetrics data_020ab80c;
 extern FontData data_020ab150;
 extern u16 data_020a596c;
 extern u8 data_020b48dc[];
-void func_02007520();
+extern "C" void OS_Terminate();
 extern u32 data_020a56f0[];
 
 // One glyph block of a text buffer registered as an OBJ: attribute word, tile number, position.
@@ -36,7 +36,7 @@ void TextManager::func_0202c02c() {
     mUnk_5b  = 0;
     u16 count = mData->mCodeSize >> 1;
     if (count > 0x8b) {
-        func_02007520();
+        OS_Terminate();
     }
     MI_CpuFill8(Widths(), 0, count);
     u8 g = 0;

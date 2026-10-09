@@ -6,7 +6,7 @@
 extern "C" {
 void func_0200c104();
 int func_02007164();
-void func_020070f8();
+extern "C" void OS_EnableInterrupts();
 void func_0200c338();
 int func_0200c3cc(void *raw);
 void func_0200c608(TouchSample *out, void *raw);
@@ -60,7 +60,7 @@ void TouchManager::Update(BOOL enabled) {
         return;
     }
     if (func_02007164() != 0) {
-        func_020070f8();
+        OS_EnableInterrupts();
     }
     do {
         func_0200c338();

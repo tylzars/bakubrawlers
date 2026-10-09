@@ -6,14 +6,14 @@
 #include <nitro/os.h>
 
 extern "C" {
-void func_02005e80(void *buffer, u32 size);
-void func_0200800c(u32 a, u32 b, u32 c, u32 d);
-void func_02008034(u32 a, u32 b, u32 c, u32 d);
-void func_02008098(u32 a, u32 b, u32 c, void (*callback)(void *), void *arg);
-void func_020080d8(u32 a, u32 b);
-void func_020080f8(u32 a, u32 b);
-void func_02008160(u32 a, u32 b, void *data, u32 c, u32 d, u32 e, u32 f, u32 g, u32 h, u32 i);
-void func_020085ec(u32 a);
+extern "C" void DC_StoreRange(void *buffer, u32 size);
+extern "C" void func_0200800c(u32 a, u32 b, u32 c, u32 d);
+extern "C" void func_02008034(u32 a, u32 b, u32 c, u32 d);
+extern "C" void func_02008098(u32 a, u32 b, u32 c, void (*callback)(void *), void *arg);
+extern "C" void func_020080d8(u32 a, u32 b);
+extern "C" void func_020080f8(u32 a, u32 b);
+extern "C" void func_02008160(u32 a, u32 b, void *data, u32 c, u32 d, u32 e, u32 f, u32 g, u32 h, u32 i);
+extern "C" void SND_FlushCommand(u32 a);
 extern "C" u32 G2S_GetBG2ScrPtr(u32 a);
 extern "C" void GX_DisableBankForBG();
 extern "C" void GX_DisableBankForOBJ();
@@ -25,14 +25,14 @@ extern "C" void GX_DisableBankForSubBG();
 extern "C" void GX_DisableBankForSubOBJ();
 extern "C" void GX_DisableBankForSubBGExtPltt();
 extern "C" void GX_DisableBankForSubOBJExtPltt();
-u32 func_02005a68();
+extern "C" u32 func_02005a68();
 void func_0200d3e0(u32 a, u32 b, u32 c);
 void func_0200d904(u32 a);
-void func_02007188(u32 a, u32 b);
+extern "C" void OS_WaitIrq(u32 a, u32 b);
 u32 func_0200682c();
-void func_02006d10(void *alarm);
-void func_02006eb8(void *alarm, u64 start, u64 period, void (*handler)(void *), void *arg);
-void func_02006f28(void *alarm);
+extern "C" void OS_CreateAlarm(void *alarm);
+extern "C" void OS_SetPeriodicAlarm(void *alarm, u64 start, u64 period, void (*handler)(void *), void *arg);
+extern "C" void OS_CancelAlarm(void *alarm);
 u32 func_0203a574(void *decoder, u32 a);
 void func_0203a65c(MobiclipPlayer *video);
 u32 func_0203a67c(MobiclipPlayer *video);
@@ -52,7 +52,7 @@ u32 func_0203bdd4();
 void func_0203bddc(u32 a, u32 b);
 void func_0203bdfc(u32 a, u32 b);
 }
-u64 func_02006ba4();
+extern "C" u64 OS_GetTick();
 BOOL func_0200d924();
 extern "C" void GX_SetBankForLCDC(u32 a);
 extern "C" void GX_SetBankForSubBG(u32 a);
@@ -63,8 +63,8 @@ extern "C" void GXS_LoadOAM(const void *data, u32 offset, u32 size);
 void func_0200a7b4(void *decoder);
 void func_0200aa94(void *decoder, const char *path);
 void func_0200aadc(void *decoder);
-int func_020060e0(int a);
-int func_020060cc(int a);
+extern "C" int OS_GetArenaLo(int a);
+extern "C" int OS_GetArenaHi(int a);
 void func_020254f0(void (*callback)(void *), void *arg);
 
 MoviePlayer::MoviePlayer() {
@@ -90,9 +90,9 @@ void MoviePlayer::func_0203c1d8(u32 rate) {
     u32 v      = 0xffb0ff / rate;
     u32 size   = mUnk_f8 * mUnk_fc;
     u32 total  = (mUnk_fc >> 6) * (v << 1);
-    func_02005e80(mBuffer, size << 1);
+    DC_StoreRange(mBuffer, size << 1);
     if (mUnk_108 == 1) {
-        func_02005e80(mBuffer2, mUnk_f8 * mUnk_fc << 1);
+        DC_StoreRange(mBuffer2, mUnk_f8 * mUnk_fc << 1);
     }
     func_020080d8(3, 0);
     if (mUnk_108 == 1) {
@@ -103,13 +103,13 @@ void MoviePlayer::func_0203c1d8(u32 rate) {
     }
     func_02008098(0, total, total, (void (*)(void *)) func_0203c1bc, this);
     func_0200800c(3, 0, 1, 0);
-    func_020085ec(1);
+    SND_FlushCommand(1);
 }
 
 void MoviePlayer::func_0203c354() {
     func_02008034(3, 0, 1, 0);
     func_020080f8(3, 0);
-    func_020085ec(1);
+    SND_FlushCommand(1);
 }
 
 u32 MoviePlayer::func_0203c384() {
@@ -215,18 +215,18 @@ void MoviePlayer::func_0203c5b4(void *a, void *b, u8 c, u32 d) {
         a       = b;
         *powcnt = *powcnt & ~0x8000;
     }
-    u32 startA = func_020060e0(3);
-    u32 sizeA  = func_020060cc(3) - startA;
+    u32 startA = OS_GetArenaLo(3);
+    u32 sizeA  = OS_GetArenaHi(3) - startA;
     if (sizeA >= func_0203bdc8()) {
         sizeA = func_0203bdc8();
     }
-    u32 sizeB = func_020060e0(4);
+    u32 sizeB = OS_GetArenaLo(4);
     sizeB     = func_0200682c() + 0x4000 - sizeB;
     if (sizeB >= func_0203bdd4()) {
         sizeB = func_0203bdd4();
     }
-    func_0203bddc(func_020060e0(3), sizeA);
-    func_0203bdfc(func_020060e0(4), sizeB);
+    func_0203bddc(OS_GetArenaLo(3), sizeA);
+    func_0203bdfc(OS_GetArenaLo(4), sizeB);
     func_0200a7b4(mDecoder);
     func_0200aa94(mDecoder, (const char *) a);
     mUnk_d4 = 6;
@@ -254,10 +254,10 @@ void MoviePlayer::func_0203c5b4(void *a, void *b, u8 c, u32 d) {
     mFrames = 0;
     mUnk_ec = 0;
     mUnk_f0 = 1;
-    func_02006d10(mAlarm);
-    u64 tick   = func_02006ba4();
+    OS_CreateAlarm(mAlarm);
+    u64 tick   = OS_GetTick();
     u64 period = (((((u64) 1000000 << 24) / func_0203a6ac(mVideo)) * 0x82ea) >> 6) / 1000;
-    func_02006eb8(mAlarm, tick + 5, (u32) period, (void (*)(void *)) func_0203c448, this);
+    OS_SetPeriodicAlarm(mAlarm, tick + 5, (u32) period, (void (*)(void *)) func_0203c448, this);
     mUnk_10f = func_0203a694(mVideo);
     int n    = mUnk_108 + 1;
     int q    = mUnk_10f / n;
@@ -273,7 +273,7 @@ void MoviePlayer::func_0203c9c4() {
             func_0203c354();
         }
     }
-    func_02006f28(mAlarm);
+    OS_CancelAlarm(mAlarm);
     if (mUnk_108 == 1) {
         OS_Free(mBuffer2);
     }
@@ -321,9 +321,9 @@ BOOL MoviePlayer::func_0203ca70() {
                             if (mUnk_108 == 1) {
                                 func_0203a79c(mVideo, mBuffer2 + mUnk_f4);
                             }
-                            func_02005e80(mBuffer + mUnk_f4, mUnk_fc * 2);
+                            DC_StoreRange(mBuffer + mUnk_f4, mUnk_fc * 2);
                             if (mUnk_108 == 1) {
-                                func_02005e80(mBuffer2 + mUnk_f4, mUnk_fc * 2);
+                                DC_StoreRange(mBuffer2 + mUnk_f4, mUnk_fc * 2);
                             }
                             mUnk_f4 += mUnk_fc;
                             if (mUnk_f4 == mUnk_f8 * mUnk_fc) {
@@ -367,12 +367,12 @@ BOOL MoviePlayer::func_0203ca70() {
             func_0200d904(0);
             func_0200d3e0(0xc, 0, 0);
             while ((*(vu16 *) 0x27fffa8 & 0x8000) >> 15) {
-                func_02007188(0, 1);
+                OS_WaitIrq(0, 1);
             }
             if (!func_0200d924()) {
                 do {
                     func_0200d904(1);
-                    func_02007188(0, 1);
+                    OS_WaitIrq(0, 1);
                 } while (!func_0200d924());
             }
             if (mUnk_109 == 1) {

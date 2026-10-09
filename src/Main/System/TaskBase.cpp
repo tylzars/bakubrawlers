@@ -19,7 +19,7 @@ extern void func_02051fb8(void *handle, int a);
 extern void func_02051f5c(void *handle);
 extern void func_0205201c(void *handle, float volume);
 extern void func_02051a88();
-extern void func_02007230();
+extern "C" void func_02007230();
 extern void func_02051a5c();
 extern const u8 data_0209e538[];
 

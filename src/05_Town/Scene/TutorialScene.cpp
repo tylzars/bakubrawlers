@@ -1,37 +1,18 @@
-#include "System/InputManager.hpp"
-#include "Graphics/SpriteManager.hpp"
-#include "System/TouchManager.hpp"
 #include "Scene/TutorialScene.hpp"
 #include "Game/UnkStruct_02065c40.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
-#include "System/InputManager.hpp"
-#include "System/SoundManager.hpp"
-#include "System/TouchManager.hpp"
-#include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
-
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-// Overlay data tables.
-extern const s8 data_ov005_022200d9[];
-static const WindowItemRecord data_ov005_022200e8[3] = {
-    {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
-    {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
-    {2, 32768, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
-};
-static const WindowCellRecord data_ov005_0222013c[3] = {
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0, 0, 0, 1, {3, 5, 4, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0, 0, 0, 1, {6, 8, 7, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0, 0, 0, 1, {10, 10, 10, 0}},
-};
+static const u8 data_ov005_022200d0[8] = {0, 1, 7, 12, 14, 16, 18, 0};
+static const s8 data_ov005_022200d8[8][2] = {{0, 0}, {13, 3}, {13, 3}, {0, 4}, {0, 3}, {13, 3}, {13, 3}, {0, 0}};
 static const WindowItemRecord data_ov005_02220190[6] = {
     {0, 5, 169, 200, 0, 0, 0, {-1, -1, -1, -1}, 0, 1},
     {1, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
@@ -48,8 +29,25 @@ static const WindowCellRecord data_ov005_02220238[6] = {
     {"union_b_obj_scroll_nce.bin", 2, 20480, 3, 2, 1, {2, 3, 3, 0}},
     {"union_b_obj_scroll_nce.bin", 5, 20480, 3, 2, 1, {5, 5, 5, 0}},
 };
-static const u8 data_ov005_022200d0[8] = {0, 1, 7, 12, 14, 16, 18, 0};
-static const s8 data_ov005_022200d8[16] = {0, 0, 13, 3, 13, 3, 0, 4, 0, 3, 13, 3, 13, 3, 0, 0};
+static const WindowItemRecord data_ov005_022200e8[3] = {
+    {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
+    {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
+    {2, 32768, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+};
+static const WindowCellRecord data_ov005_0222013c[3] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0, 0, 0, 1, {3, 5, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0, 0, 0, 1, {6, 8, 7, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0, 0, 0, 1, {10, 10, 10, 0}},
+};
+
+#include "Graphics/SpriteManager.hpp"
+#include "System/SoundManager.hpp"
+#include "System/TouchManager.hpp"
+#include "Text/TextManager.hpp"
+#include "System/InputManager.hpp"
+
+
+
 extern "C" void func_020383f8(u32 a);
 void func_02089278();
 void func_ov005_0221fdc4();
@@ -446,12 +444,12 @@ void TutorialScene::Update() {
             data_020d433c.mUnk_98 = 0;
             data_020d433c.mUnk_9f[0] = 0x15;
             u8 idx = data_020d433c.mUnk_83;
-            data_020d433c.mUnk_9f[1] = data_ov005_022200d8[idx * 2];
+            data_020d433c.mUnk_9f[1] = data_ov005_022200d8[idx][0];
             data_020d433c.mUnk_a3[1] = 0;
             data_020d433c.mUnk_9b[0] = 0;
             data_020d433c.mUnk_9b[1] = 1;
             data_020d433c.mUnk_95 = 0;
-            data_020d433c.mUnk_96 = data_ov005_022200d9[idx * 2];
+            data_020d433c.mUnk_96 = data_ov005_022200d8[idx][1];
             u8 id = func_ov005_0221fd0c(this);
             if (id == 9) {
                 id = 10;

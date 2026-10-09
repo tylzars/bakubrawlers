@@ -1,5 +1,9 @@
-#include "Text/TextManager.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "System/InputManager.hpp"
+#include "System/TouchManager.hpp"
+#include "System/FrameTask.hpp"
 #include "System/SoundManager.hpp"
+#include "Text/TextManager.hpp"
 #include "Scene/OptionScene.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
@@ -9,14 +13,8 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 #include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
-#include "Text/TextManager.hpp"
 #include <nitro/gx.h>
-#include "System/FrameTask.hpp"
-#include "System/InputManager.hpp"
-#include "System/SoundManager.hpp"
-#include "System/TouchManager.hpp"
 
 extern const WindowItemRecord data_ov000_02226340[];
 

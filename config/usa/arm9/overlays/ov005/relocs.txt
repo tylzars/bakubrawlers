@@ -497,7 +497,7 @@ from:0x0221cec0 kind:load to:0x020c2acc module:main
 from:0x0221cee0 kind:arm_call to:0x0205b3c4 module:main
 from:0x0221cf1c kind:arm_call to:0x0202236c module:main
 from:0x0221cf74 kind:arm_call to:0x01ff94fc module:itcm
-from:0x0221cff0 kind:load to:0x0222084c module:overlay(5)
+from:0x0221cff0 kind:load to:0x02220844 add:0x8 module:overlay(5)
 from:0x0221cff4 kind:load to:0x020d49ae module:main
 from:0x0221cff8 kind:load to:0x020d433c module:main
 from:0x0221cffc kind:load to:0x020d43f0 module:main
@@ -507,7 +507,7 @@ from:0x0221d088 kind:arm_call to:0x02006564 module:main
 from:0x0221d0a0 kind:arm_call to:0x02006564 module:main
 from:0x0221d0b8 kind:arm_call to:0x02006564 module:main
 from:0x0221d0d0 kind:arm_call to:0x02006564 module:main
-from:0x0221d120 kind:load to:0x0222084c module:overlay(5)
+from:0x0221d120 kind:load to:0x02220844 add:0x8 module:overlay(5)
 from:0x0221d124 kind:load to:0x020d49ae module:main
 from:0x0221d180 kind:arm_call to:0x02029e18 module:main
 from:0x0221d188 kind:arm_call to:0x02021e80 module:main
@@ -516,7 +516,7 @@ from:0x0221d1c8 kind:arm_call to:0x02006564 module:main
 from:0x0221d1e0 kind:arm_call to:0x02006564 module:main
 from:0x0221d1f8 kind:arm_call to:0x02006564 module:main
 from:0x0221d244 kind:arm_call to:0x02021e80 module:main
-from:0x0221d250 kind:load to:0x0222084c module:overlay(5)
+from:0x0221d250 kind:load to:0x02220844 add:0x8 module:overlay(5)
 from:0x0221d254 kind:load to:0x020d49ae module:main
 from:0x0221d338 kind:arm_call to:0x020202ec module:main
 from:0x0221d350 kind:arm_call to:0x020245a4 module:main
@@ -640,7 +640,7 @@ from:0x0221e7a4 kind:arm_call to:0x02089278 module:main
 from:0x0221e800 kind:arm_call to:0x020202ec module:main
 from:0x0221e818 kind:arm_call to:0x020245a4 module:main
 from:0x0221e844 kind:load to:0x022200d8 module:overlay(5)
-from:0x0221e848 kind:load to:0x022200d9 module:overlay(5)
+from:0x0221e848 kind:load to:0x022200d8 add:0x1 module:overlay(5)
 from:0x0221e84c kind:load to:0x020d43f0 module:main
 from:0x0221e850 kind:load to:0x020d4478 module:main
 from:0x0221e854 kind:load to:0x020d49b0 module:main

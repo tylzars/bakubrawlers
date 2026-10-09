@@ -249,7 +249,7 @@ def main():
             if name in bounds and not any(hi <= a < bounds[name][1] for a in sym_addrs):
                 ranges[name] = (lo, bounds[name][1])
         write_ranges(delinks_path, args.source, ranges)
-        add_boundaries(module, ranges)
+        add_boundaries(module, ranges, bounds)
 
 
 def write_ranges(path: Path, src: str, ranges: dict[str, tuple[int, int]]):
@@ -287,7 +287,7 @@ def load_symbols_any(module: str) -> set[int]:
             if "kind:function" not in ln and (m := re.search(r" addr:(0x[0-9a-f]+)", ln))}
 
 
-def add_boundaries(module: str, ranges: dict[str, tuple[int, int]]):
+def add_boundaries(module: str, ranges: dict[str, tuple[int, int]], bounds: dict | None = None):
     """dsd sizes a data symbol up to the next symbol, so a range must not end inside one: add a symbol at the
     range's end (and start) when the symbols around it would straddle the boundary."""
     path = CFG / "symbols.txt" if module == "main" else (
@@ -304,6 +304,8 @@ def add_boundaries(module: str, ranges: dict[str, tuple[int, int]]):
         for at in (lo, hi):
             if at in have:
                 continue
+            if bounds and name in bounds and at == bounds[name][1]:
+                continue  # the section ends here: nothing follows to straddle, and the name would be lost
             before = [a for a, _ in data_lines if a < at]
             after = [a for a, _ in data_lines if a > at]
             if before:  # the symbol before would otherwise extend over the boundary

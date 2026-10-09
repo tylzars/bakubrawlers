@@ -187,7 +187,7 @@ void CreditsScene::PrintLine(u32 message, u32 row, u32 column, u32 shadow) {
     s16 outHeight2;
     u32 offset = row * mBufferSize;
     MI_CpuClear16(mBuffers[column], mBufferSize);
-    func_02005e9c(mBuffers[column], mBufferSize);
+    DC_FlushRange(mBuffers[column], mBufferSize);
     if (shadow) {
         pixelWidth = 0;
         outWidth = 0;
@@ -219,11 +219,11 @@ void CreditsScene::LoadText() {
     TextManager::Get().func_0202ce44(1, 0, 0, 0);
     void *chars = OS_Alloc(TextManager::Get().BufferSize(0x20, 0x20));
     MI_CpuClear16(chars, 0x8000);
-    func_02005e9c(chars, 0x8000);
+    DC_FlushRange(chars, 0x8000);
     func_02025c1c(0, 12, 0, chars, 0x8000, 1);
     chars = OS_Alloc(0x8000);
     MI_CpuClear16(chars, 0x8000);
-    func_02005e9c(chars, 0x8000);
+    DC_FlushRange(chars, 0x8000);
     func_02025c1c(1, 12, 0, chars, 0x8000, 1);
     mBufferSize = TextManager::Get().BufferSize(8, 8);
     for (u32 i = 0; i < 2; i++) {

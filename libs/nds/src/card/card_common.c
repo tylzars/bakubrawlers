@@ -111,7 +111,7 @@ void func_0200e45c(void)
     c->queue.a = 0;
     OS_CreateThread(&c->thread, func_0200f578, 0, &data_020c0480, 0x400, c->priority);
     OS_WakeupThreadDirect(&c->thread);
-    PXI_SetCallback(0xb, func_0200f544);
+    PXI_SetFifoRecvCallback(0xb, func_0200f544);
     if (IsNitro()) {
         return;
     }
@@ -802,11 +802,11 @@ int func_0200f5c8(CardCommon *c, u32 cmd, int tries)
     for (;;) {
         c->f04 = cmd;
         c->f114 |= CF_PXIWAIT;
-        while (PXI_SendWord(0xb, cmd, 1) < 0) {
+        while (PXI_SendWordByFifo(0xb, cmd, 1) < 0) {
         }
         if (cmd == 0) {
             CardArg *a = c->arg;
-            while (PXI_SendWord(0xb, (u32)a, 1) < 0) {
+            while (PXI_SendWordByFifo(0xb, (u32)a, 1) < 0) {
             }
         }
         e = OS_DisableInterrupts();

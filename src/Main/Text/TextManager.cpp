@@ -22,7 +22,7 @@ struct TextSprite {
     /* 0c */
 };
 
-extern "C" void func_02005e9c(void *buffer, u32 size);
+extern "C" void DC_FlushRange(void *buffer, u32 size);
 
 // non-matching: 5 words.
 void TextManager::func_0202c02c() {
@@ -326,7 +326,7 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u
     }
     if (unk16 & drawFlag) {
         u32 area = width * height;
-        func_02005e9c(buffer, (unk9 == 0 ? 0x20 : 0x40) * area);
+        DC_FlushRange(buffer, (unk9 == 0 ? 0x20 : 0x40) * area);
     }
     mUnk_5b = savedFontMode;
 }
@@ -384,7 +384,7 @@ void TextManager::func_0202cd48(u32 mode, u16 *map, u32 palette, u32 base, u32 w
         } while (x < width);
         y++;
     } while (y < height);
-    func_02005e9c(map, pitch * height * 2);
+    DC_FlushRange(map, pitch * height * 2);
 }
 
 void TextManager::SetColor(u32 unk1, u32 unk2, u32 unk3) {

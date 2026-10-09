@@ -1084,7 +1084,7 @@ void func_02011ab0(void)
 {
     u32 z = 0;
     CpuSet(&z, data_020c1184, 0x5000001);
-    data_020c1180.h6 = func_02004f54();
+    data_020c1180.h6 = OS_GetLockID();
 }
 
 extern CtrdgInfo data_027ffc30;

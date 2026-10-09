@@ -86,9 +86,9 @@ void GimmickVentKaze::Update() {
         func_01ff84d0(&a, &m, &a);
         VEC_Add(&a, &mPosition, &a);
         VEC_Subtract(&a, &h->mPosition, &b);
-        fx32 z = func_01ff8000(0x2800, -b.y);
-        fx32 y = func_01ff8000(0x8000, -b.y);
-        fx32 x = func_01ff8000(0, -b.y);
+        fx32 z = FX_Div(0x2800, -b.y);
+        fx32 y = FX_Div(0x8000, -b.y);
+        fx32 x = FX_Div(0, -b.y);
         c.x    = x;
         c.y    = y;
         c.z    = z;

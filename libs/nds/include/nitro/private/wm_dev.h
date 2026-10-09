@@ -101,7 +101,7 @@ extern void OS_RestoreInterrupts(u32 e);                   /* 0x02007120 */
 extern void CpuSet(void *src, void *dst, u32 ctl);
 extern void OS_Terminate(void);
 extern void OS_GetMacAddress(void *p);
-extern u16 func_02004f54(void);
+extern u16 OS_GetLockID(void);
 extern void func_0200faf8(void);
 extern WMWork *func_0200fcf4(void);
 extern int func_0200fd04(void);

@@ -1204,7 +1204,7 @@ void BattleResult::func_ov007_0225047c() {
         t18.Print(mUnk_14->GetText(15), mUnk_14->GetLength(15), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
     }
     TextManager::Get().mUnk_5b = 0;
-    func_02005e9c(mUnk_38[0], mUnk_50[0]);
+    DC_FlushRange(mUnk_38[0], mUnk_50[0]);
     func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x8000, mUnk_38[0], mUnk_50[0], 0);
 }
 
@@ -1225,7 +1225,7 @@ void BattleResult::func_ov007_02251724() {
         TextManager::Get().PrintNumber(data_020d43f0[0].mMoney, 7, 0, mUnk_38[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
     }
     TextManager::Get().mUnk_5b = 0;
-    func_02005e9c(mUnk_38[1], mUnk_50[1]);
+    DC_FlushRange(mUnk_38[1], mUnk_50[1]);
     func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0xf000, mUnk_38[1], mUnk_50[1], 0);
 }
 

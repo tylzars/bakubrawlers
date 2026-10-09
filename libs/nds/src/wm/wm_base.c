@@ -67,7 +67,7 @@ int func_0200f914(void *buf, u32 dma, u32 size)
         DC_StoreRange2(data_020c0780 + i * 0x100, 2);
         OS_SendMessage(data_020c06e8, data_020c0780 + i * 0x100, 1);
     }
-    PXI_SetCallback(0xa, func_0200fdfc);
+    PXI_SetFifoRecvCallback(0xa, func_0200fdfc);
     data_020c06e0.init = 1;
     OS_RestoreInterrupts(e);
     return 0;
@@ -88,7 +88,7 @@ int func_0200faf8(void)
         return r;
     }
     func_020101a8();
-    PXI_SetCallback(0xa, NULL);
+    PXI_SetFifoRecvCallback(0xa, NULL);
     data_020c06e0.work = NULL;
     data_020c06e0.init = 0;
     OS_RestoreInterrupts(e);
@@ -129,7 +129,7 @@ int func_0200fbd8(u32 cmd, u16 argc, ...)
         msg[1 + i] = *ap++;
     }
     DC_StoreRange2(msg, 0x100);
-    r = PXI_SendWord(0xa, (u32)msg, 0);
+    r = PXI_SendWordByFifo(0xa, (u32)msg, 0);
     OS_SendMessage(data_020c06e8, msg, 1);
     return r < 0 ? 8 : 2;
 }
@@ -143,7 +143,7 @@ int func_0200fc84(void *src, u32 len)
     }
     MI_CpuCopy8(src, msg, len);
     DC_StoreRange2(msg, len);
-    r = PXI_SendWord(0xa, (u32)msg, 0);
+    r = PXI_SendWordByFifo(0xa, (u32)msg, 0);
     OS_SendMessage(data_020c06e8, msg, 1);
     return r < 0 ? 8 : 2;
 }

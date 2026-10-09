@@ -222,9 +222,9 @@ void func_02031a0c(ResMat *mat, MatList *list, ResTex *tex, TexInfo *info) {   /
         w = info->size & 0x7ff;
         h = (info->size & (0x7ff << 11)) >> 11;
         if (w == m->texW) m->scaleS = 0x1000;
-        else m->scaleS = func_01ff8000(w << 12, m->texW << 12);
+        else m->scaleS = FX_Div(w << 12, m->texW << 12);
         if (h == m->texH) m->scaleT = 0x1000;
-        else m->scaleT = func_01ff8000(h << 12, m->texH << 12);
+        else m->scaleT = FX_Div(h << 12, m->texH << 12);
     }
     list->flag |= 1;
 }

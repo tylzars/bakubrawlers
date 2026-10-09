@@ -480,7 +480,7 @@ void ArenaScene::func_ov001_0221c1d8() {
         height = 0;
         width  = 0;
         TextManager::Get().PrintNumber(i + 1, 0, 0, mBuffers[i], 0x20, 2, &height, &width, 0, 2, 0x21, 0, 0, 0, 1);
-        func_02005e9c(mBuffers[i], mTextBufferSize);
+        DC_FlushRange(mBuffers[i], mTextBufferSize);
         func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, i << 11, mBuffers[i], mTextBufferSize, 0);
     }
 }

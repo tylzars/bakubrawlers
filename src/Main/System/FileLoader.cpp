@@ -6,7 +6,7 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-extern "C" u32 func_02004f54();
+extern "C" u32 OS_GetLockID();
 extern void func_02004fbc(u32 id);
 extern "C" void func_0200e658(u32 id);
 extern "C" void func_0200e668(u32 id);
@@ -17,7 +17,7 @@ extern "C" int func_0200e60c();
 extern "C" void func_01ff96c4(const void *src, void *dst, u32 size);
 
 void UnkStruct_020c17a8::func_02023b80() {
-    u16 id = func_02004f54();
+    u16 id = OS_GetLockID();
     func_0200e658(id);
     func_0200ed00(0xd01);
     func_0200e668(id);
@@ -48,7 +48,7 @@ u32 UnkStruct_020c17a8::func_02023c38(u32 unk1) {
     u32 result = 2;
     u32 magicA;
     u32 magicB;
-    id = func_02004f54();
+    id = OS_GetLockID();
     func_0200e658(id);
     func_0200ec04(unk1 << 13, &magicA, 4, 0, 0, 0, 6, 1, 0);
     BOOL ok = func_0200ec04((unk1 << 13) + 0x1000, &magicB, 4, 0, 0, 0, 6, 1, 0);
@@ -72,7 +72,7 @@ u32 UnkStruct_020c17a8::func_02023c38(u32 unk1) {
 u32 UnkStruct_020c17a8::func_02023d30(u32 unk1) {
     u32 magic = 0x19691015;
     u32 result = 1;
-    u16 id = func_02004f54();
+    u16 id = OS_GetLockID();
     func_0200e658(id);
     if (func_0200ec04((u32) &magic, (void *) (unk1 << 13), 4, 0, 0, 0, 8, 10, result)) {
         if (func_0200ec04((u32) &magic, (void *) ((unk1 << 13) + 0x1000), 4, 0, 0, 0, 8, 10, result)) {
@@ -142,7 +142,7 @@ void UnkScene_020a54a8::Update() {
             ((UnkStruct_SaveBlock *) task->mBuffer)->mCrc    = crc;
             ((UnkStruct_SaveBlock *) task->mBuffer)->mMagic0 = 0x20071019;
             ((UnkStruct_SaveBlock *) task->mBuffer)->mMagic1 = 0x19721021;
-            task->mLock = func_02004f54();
+            task->mLock = OS_GetLockID();
             func_0200e658(task->mLock);
             task->mState++;
             break;
@@ -207,7 +207,7 @@ void UnkScene_020a5494::Update() {
             task->mState++;
             break;
         case 2:
-            task->mLock = func_02004f54();
+            task->mLock = OS_GetLockID();
             func_0200e658(task->mLock);
             func_0200ec04((u32) (task->mBase + (task->mSlot << 13) + (task->mTry << 12)), task->mBuffer, 0x1000, 0, 0, 1, 6, 1, 0);
             task->mState++;

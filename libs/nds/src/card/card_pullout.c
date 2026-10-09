@@ -7,7 +7,7 @@ void func_0200f898(u32 a, u32 b);
 void func_0200f71c(void)
 {
     PXI_Init();
-    PXI_SetCallback(0xe, func_0200f748);
+    PXI_SetFifoRecvCallback(0xe, func_0200f748);
     ((CardPullout *)data_020c06c0)->callback = NULL;
 }
 
@@ -84,10 +84,10 @@ void func_0200f838(u32 id)
 
 void func_0200f898(u32 a, u32 b)
 {
-    if (PXI_SendWord(0xe, a, 0) == 0) {
+    if (PXI_SendWordByFifo(0xe, a, 0) == 0) {
         return;
     }
     do {
         WaitByLoop(b);
-    } while (PXI_SendWord(0xe, a, 0) != 0);
+    } while (PXI_SendWordByFifo(0xe, a, 0) != 0);
 }

@@ -15,7 +15,7 @@ void GX_Init(void) {
     GX_InitGXState();
     if (data_020bdc04[1] == 0) {
         do {
-            u32 id = func_02004f54();
+            u32 id = OS_GetLockID();
             if (id == -3) {
                 OS_Terminate();
             }

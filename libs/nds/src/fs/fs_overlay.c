@@ -42,7 +42,7 @@ void func_0200b3e8(FSOverlayInfo *ov);
 BOOL func_0200b4d8(FSOverlayInfo *ov);
 void OS_Terminate(void);
 void func_02000970(void *p);
-void func_02005e9c(void *p, u32 n);
+void DC_FlushRange(void *p, u32 n);
 
 BOOL func_0200afdc(FSOverlayInfo *out, int target, int id, FSArchive *arc, FSOvtHdr hdr)
 {
@@ -154,7 +154,7 @@ void func_0200b2f4(FSOverlayInfo *ov)
     if ((ov->flags & 1) != 0) {
         func_02000970((void *) (ov->ram_addr + size));
     }
-    func_02005e9c((void *) ov->ram_addr, ov->ram_size);
+    DC_FlushRange((void *) ov->ram_addr, ov->ram_size);
     p = (void (**)(void)) ov->sinit_start;
     end = (void (**)(void)) ov->sinit_end;
     for (; p < end; p++) {

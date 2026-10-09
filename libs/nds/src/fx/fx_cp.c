@@ -21,7 +21,7 @@ fx32 func_01ff80c0(void);
 void func_01ff80f8(fx32 x);
 fx32 func_01ff8128(void);
 
-fx32 func_01ff8000(fx32 num, fx32 den) {
+fx32 FX_Div(fx32 num, fx32 den) {
     func_01ff8154(num, den);
     return func_01ff80c0();
 }

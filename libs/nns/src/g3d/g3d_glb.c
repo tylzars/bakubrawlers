@@ -16,7 +16,7 @@ extern void func_02000de8(const void *a, const void *b, void *dst);   // MTX_Con
 extern void func_01ff89c0(void *a, void *b, void *dst);   // MTX_Concat43
 extern void func_01ff85a8(void *src, void *dst, s32 x, s32 y, s32 z);   // scale
 extern long long func_01ff803c(s32 x);   // FX_Inv (64 bit)
-extern s32 func_01ff8000(s32 a, s32 b);
+extern s32 FX_Div(s32 a, s32 b);
 extern void MIi_CpuClearFast(u32 data, void *dst, u32 size);
 extern void VEC_CrossProduct(void *a, void *b, void *dst);   // VEC_CrossProduct
 extern void VEC_Normalize(void *src, void *dst);   // VEC_Normalize
@@ -252,7 +252,7 @@ BOOL func_02032854(u8 *out, AnmObj *list, u32 idx) {   // NNS_G3dAnmCalcNode: bl
                 func_01ff9510(tmp + 0x40, keep, 12);
             }
             if (total == 0x1000) w = o->weight;
-            else w = func_01ff8000(o->weight, total);
+            else w = FX_Div(o->weight, total);
             fl = U32(tmp, 0);
             func_020327e4((s32 *)(out + 4), (s32 *)(tmp + 4), w, fl & 1);
             func_020327e4((s32 *)(out + 0x10), (s32 *)(tmp + 0x10), w, fl & 8);

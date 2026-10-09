@@ -132,7 +132,7 @@ void func_02011e7c(void)
     cart = (EXMEMCNT & 0x8000) >> 15;
     func_02011c34(&timing);
     EXMEMCNT &= ~0x8000;
-    func_02005e64(data_020c11c0 + 0x80, 0x40);
+    DC_InvalidateRange(data_020c11c0 + 0x80, 0x40);
     MI_DmaCopy16(1, 0x8000080, data_020c11c0 + 0x80, 0x40);
     EXMEMCNT = (EXMEMCNT & ~0x8000) | (cart << 15);
     func_02011c7c(&timing);

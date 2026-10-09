@@ -26,7 +26,7 @@ extern "C" u32 func_02011108(void *buf, void *a, void *b);
 extern "C" u32 func_02011a64(void *callback, u32 arg);
 extern "C" u8 *func_02011968(void *buf, void *a, u32 index);
 extern "C" u32 func_020119ec(void *callback, u32 a, u32 b, u32 channel, u32 c);
-extern "C" void func_02005e64(void *p, u32 size);
+extern "C" void DC_InvalidateRange(void *p, u32 size);
 extern "C" void func_01ff96c4(const void *src, void *dst, u32 size);
 extern "C" void func_01ff9510(const void *src, void *dst, u32 size);
 extern "C" u32 func_0201071c(void *callback);
@@ -247,7 +247,7 @@ void func_0202e06c(WmCallbackArg *arg) {
     if (arg->mResult == 0) {
         switch (arg->mUnk_08) {
           case 5:
-            func_02005e64(data_0220f7a0, 0xc0);
+            DC_InvalidateRange(data_0220f7a0, 0xc0);
             if ((SCAN_ENTRY->mUnk_4b & 3) == 1) {
                 bool big   = SCAN_ENTRY->mUnk_3c >= 8;
                 bool equal = SCAN_ENTRY->mUnk_44 == data_020a5744.mGameId;

@@ -31,7 +31,7 @@ void func_02027c18(void *slot_, SpriteTransform *transform);
 
 void func_02027cf4(s32 *x, s32 *y, s32 shape, SpriteTransform *transform);
 
-extern "C" fx32 func_01ff8000(fx32 num, fx32 den);
+extern "C" fx32 FX_Div(fx32 num, fx32 den);
 
 void func_02027c64(MtxFx22 *out, SpriteTransform *transform);
 
@@ -184,7 +184,7 @@ void SpriteScreen::func_02027778(void *buffer, u8 count, u32 unk3, u32 unk4, u32
                 height = 0x40000;
                 break;
             }
-            s16 adjust = (float) func_01ff8000(height - FX_Mul(height, transform->mScaleY), 0x2000) / 4096.0f;
+            s16 adjust = (float) FX_Div(height - FX_Mul(height, transform->mScaleY), 0x2000) / 4096.0f;
             if (source->mY >= 0) {
                 cull = base - adjust;
             } else {
@@ -241,8 +241,8 @@ void func_02027c18(void *slot_, SpriteTransform *transform) {
 void func_02027c64(MtxFx22 *out, SpriteTransform *transform) {
     MtxFx22 scale;
     MtxFx22 rotation;
-    fx32 y = func_01ff8000(0x1000, transform->mScaleY);
-    fx32 x = func_01ff8000(0x1000, transform->mScaleX);
+    fx32 y = FX_Div(0x1000, transform->mScaleY);
+    fx32 x = FX_Div(0x1000, transform->mScaleX);
     func_02000ccc(&scale, x, y);
     s32 index = transform->mRotation >> 4;
     fx32 sin = FX_SinCosTable_[index * 2];
@@ -358,7 +358,7 @@ void SpriteScreen::LoadPalette(const char *path, u32 offset, u32 unk3) {
 
 
 
-extern "C" fx32 func_01ff8000(fx32 num, fx32 den);
+extern "C" fx32 FX_Div(fx32 num, fx32 den);
 float _fdiv(float a, float b);
 
 void SpriteScreen::func_02027fec(const char *path, u32 unk2, u32 unk3) {
@@ -398,7 +398,7 @@ void *SpriteScreen::func_02028054(u8 *data) {
         (buffer + dest)[0x100] = data[source];
         j++;
     } while (j < 0x400);
-    func_02005e9c(buffer, 0x1000);
+    DC_FlushRange(buffer, 0x1000);
     OS_Free(data);
     return buffer;
 }

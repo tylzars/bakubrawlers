@@ -62,7 +62,7 @@ public:
 };
 
 void func_02078250(UnkStruct_02076058 *object);
-extern "C" void func_02005e9c(void *buffer, u32 size);
+extern "C" void DC_FlushRange(void *buffer, u32 size);
 void func_020781a0(UnkStruct_02076058 *object);
 
 UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
@@ -619,7 +619,7 @@ void UnkStruct_02076058::func_02077d2c() {
             }
         }
     }
-    func_02005e9c(mUnk_44, mUnk_4c);
+    DC_FlushRange(mUnk_44, mUnk_4c);
     TextManager::Get().mUnk_5b = 0;
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x6000, mUnk_44, mUnk_4c, 0);
 }

@@ -320,7 +320,7 @@ void func_0203990c(WavStrm *s) {   // switch a stream over to its next file
 extern s16 data_02090a70[];   // ADPCM step table
 extern s8 data_02090a60[];    // ADPCM index adjustment table
 extern void MI_CpuFill8(void *dst, u32 data, u32 size);
-extern void func_02005e9c(void *addr, u32 size);   // DC_FlushRange
+extern void DC_FlushRange(void *addr, u32 size);   // DC_FlushRange
 
 #define ADPCM_STEP(st, nib, dst) { \
     s32 pred_ = (st)->pred; \
@@ -496,7 +496,7 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
         s->fillCb(c->phase, c->channels, c->buf, c->size, s->format != 0 ? 1 : 0, s->fillArg);
     }
     for (i = 0; (s32)i < c->channels; i++) {
-        func_02005e9c(c->buf[i], c->size);
+        DC_FlushRange(c->buf[i], c->size);
     }
     if (c->phase == 0) s->f118 = 1;
 }

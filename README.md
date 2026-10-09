@@ -19,7 +19,7 @@ own dump of the game; see [INSTALL.md](INSTALL.md).
 | Matched code | 63.53% (802,428 / 1,263,096 bytes) |
 | Linked code (complete units) | 10.42% (131,612 bytes) |
 | Overall accuracy (fuzzy) | 94.41% |
-| Matched functions | 3,849 / 4,510 |
+| Matched functions | 3,849 / 4,520 |
 
 _Last updated 2026-10-09. Full history: [`progress/history.csv`](progress/history.csv)._
 <!-- progress:end -->

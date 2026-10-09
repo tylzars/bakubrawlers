@@ -25,7 +25,7 @@
 
 UnkStruct_02065c40 *data_02219288;
 extern "C" void func_01ff96c4(const void *src, void *dest, u32 size);
-extern "C" void func_02005e9c(void *buffer, u32 size);
+extern "C" void DC_FlushRange(void *buffer, u32 size);
 void func_02088ec4(UnkStruct_02087898 *object);
 extern "C" void func_01ff9510(const void *src, void *dest, u32 size);
 extern const u32 data_020a23cc[8][6];
@@ -3371,10 +3371,10 @@ BOOL UnkStruct_02065c40::func_0206ed40() {
     u32 size = mUnk_12b4;
     u8 *name = (u8 *) OS_Alloc(0x20);
     func_01ff96c4(data, name, 0x20);
-    func_02005e9c(name, 0x20);
+    DC_FlushRange(name, 0x20);
     u8 *body = (u8 *) OS_Alloc(size - 0x20);
     func_01ff96c4(data + 0x20, body, size - 0x20);
-    func_02005e9c(body, size - 0x20);
+    DC_FlushRange(body, size - 0x20);
     mUnk_12be = (size - 0x20) / 3;
     if (mUnk_12be >= 0x400) {
         mUnk_12be = 0x400;

@@ -134,7 +134,7 @@ void func_0207889c(u32 screen, u32 offset, u32 palette, const void *colors, u32 
     } else {
         func_02078a48(buffer, file + (b * 0x200 + 0x800));
     }
-    func_02005e9c(buffer, 0x200);
+    DC_FlushRange(buffer, 0x200);
     func_02025c1c(screen, 4, offset, buffer, 0x200, 1);
     OS_Free(file);
     func_02078ab8(screen, palette, pal, unk5);
@@ -203,7 +203,7 @@ void func_02078ab8(u32 screen, u32 palette, const AntennaPalette *colors, u32 un
         file = (u8 *) func_02023504("icon_ch_edit_grayscale_ncl.bin", 0, 0, 0, &size, 0);
         func_01ff94e0(file, buffer, 0x20);
     }
-    func_02005e9c(buffer, 0x20);
+    DC_FlushRange(buffer, 0x20);
     func_02025c1c(screen, 5, palette << 5, buffer, 0x20, 1);
     if (extra != NULL) {
         OS_Free(extra);

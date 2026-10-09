@@ -1,7 +1,7 @@
 #include <nitro/private/fs_dev.h>
 
 typedef struct {
-    u32 w0;     // result of func_02004f54
+    u32 w0;     // result of OS_GetLockID
     u32 dma;    // dma channel argument of FS_Init
     u32 w8, wc, w10, w14;
 } FSRomWork;
@@ -23,14 +23,14 @@ extern FSRomWork data_020bfc9c;
 extern FSArchive data_020bfcb4;
 extern char data_020a4f40[];
 
-u32 func_02004f54(void);
+u32 OS_GetLockID(void);
 void func_0200f4c8(void);
 int func_0200f79c(void);
 void func_0200f3d0(u32 dma, u32 src, void *dst, u32 len, void (*cb)(void *), void *arg, int async);
 void func_0200e620(u32 v);
 void func_0200e63c(u32 v);
 void func_02005ed8(void *p, u32 n);
-void func_02005e64(void *p, u32 n);
+void DC_InvalidateRange(void *p, u32 n);
 void func_0200a434(FSArchive *a);
 BOOL func_0200a4a0(FSArchive *a, const char *name, int len);
 void func_0200a6e8(FSArchive *a, void (*proc)(void *, int), u32 mask);
@@ -90,7 +90,7 @@ void func_0200adf4(u32 dma)
     volatile RomHdr *hdr;
     u32 fnt, fat;
     data_020bfc9c.dma = dma;
-    data_020bfc9c.w0 = func_02004f54();
+    data_020bfc9c.w0 = OS_GetLockID();
     data_020bfc9c.w8 = 0;
     data_020bfc9c.wc = 0;
     data_020bfc9c.w10 = 0;
@@ -133,7 +133,7 @@ void func_0200af78(FSOverlayInfo *ov)
     u32 size = ov->ram_size;
     u32 end = size + ov->bss_size;
     func_02005ed8((void *) base, end);
-    func_02005e64((void *) base, end);
+    DC_InvalidateRange((void *) base, end);
     MI_CpuFill8((void *) (base + size), 0, end - size);
 }
 

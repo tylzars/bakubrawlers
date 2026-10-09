@@ -30,7 +30,7 @@ void func_02007498(u16 banks, u16 prev);
 #define HW_DB_BG_VRAM 0x06200000
 #define reg_GX_DISPSTAT (*(vu16 *) 0x04000004)
 #define reg_GX_DISP3DCNT (*(vu16 *) 0x04000060)
-u32 func_02004f54(void);
+u32 OS_GetLockID(void);
 void OS_Terminate(void);
 void MIi_CpuClear32(u32 data, void *dest, u32 size);
 void MI_DmaFill32(u32 dmaNo, void *dest, u32 data, u32 size);

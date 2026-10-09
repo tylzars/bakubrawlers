@@ -39,7 +39,7 @@ extern const u16 data_ov007_0227a5e0[];
 extern const u16 data_ov007_0227a5e4[];
 void func_ov007_0227238c(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out);
 extern "C" void func_01ffcf80(MtxFx33 *m, u16 angle);
-extern "C" void func_02005e9c(void *buf, u32 size);
+extern "C" void DC_FlushRange(void *buf, u32 size);
 extern u8 data_ov007_0227a630[];
 extern const u8 data_ov007_0227a750[];
 extern const s32 data_ov007_0227a6d0[];
@@ -1429,9 +1429,9 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             }
             func_ov007_02233ed8(&v, mUnk_1b0, &v);
             VEC_Subtract(&v, &cam, &diff);
-            fx32 dz = func_01ff8000(diff.z, 0x14000);
-            fx32 dy = func_01ff8000(diff.y, 0x14000);
-            fx32 dx = func_01ff8000(diff.x, 0x14000);
+            fx32 dz = FX_Div(diff.z, 0x14000);
+            fx32 dy = FX_Div(diff.y, 0x14000);
+            fx32 dx = FX_Div(diff.x, 0x14000);
             u.x     = dx;
             u.y     = dy;
             u.z     = dz;
@@ -1681,7 +1681,7 @@ void BattleTarget::func_ov007_02256c4c(VecFx32 *target) {
             off0.z = -mUnk_1a4->mPosition.z;
             func_ov007_02233ed8(&off0, -mUnk_1b8, &mUnk_128);
             VEC_Add(&mUnk_1a4->mPosition, &mUnk_128, &mUnk_128);
-            mUnk_128.y = FX_Mul(func_01ff8000(INT_TO_FX(mUnk_1ba), 0xb6000), 0x2000);
+            mUnk_128.y = FX_Mul(FX_Div(INT_TO_FX(mUnk_1ba), 0xb6000), 0x2000);
             Camera *c = mUnk_174;
             c->mTarget.x = mUnk_128.x;
             c->mTarget.y = mUnk_128.y;
@@ -1694,13 +1694,13 @@ void BattleTarget::func_ov007_02256c4c(VecFx32 *target) {
             off1.z = -mUnk_1a4->mPosition.z;
             func_ov007_02233ed8(&off1, -mUnk_1b8, &mUnk_128);
             VEC_Add(&mUnk_1a4->mPosition, &mUnk_128, &mUnk_128);
-            mUnk_128.y = FX_Mul(func_01ff8000(INT_TO_FX(mUnk_1ba), 0xb6000), 0x2000);
+            mUnk_128.y = FX_Mul(FX_Div(INT_TO_FX(mUnk_1ba), 0xb6000), 0x2000);
             v.x = mUnk_128.x;
             v.y = mUnk_128.y;
             v.z = mUnk_128.z;
-            fx32 vz = func_01ff8000(v.z, 0x14000);
-            fx32 vy = func_01ff8000(v.y, 0x14000);
-            fx32 vx = func_01ff8000(v.x, 0x14000);
+            fx32 vz = FX_Div(v.z, 0x14000);
+            fx32 vy = FX_Div(v.y, 0x14000);
+            fx32 vx = FX_Div(v.x, 0x14000);
             v.x     = vx;
             v.y     = vy;
             v.z     = vz;
@@ -1795,7 +1795,7 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
             len = FX_Atan2(vel->x, vel->z);
             speed = ABS(vel->z) + ABS(vel->x);
         }
-        fx32 q = func_01ff8000(len, 0x47);
+        fx32 q = FX_Div(len, 0x47);
         angle  = (float) q / 4096.0f;
         if (angle < 0.0f) {
             angle += 360.0f;
@@ -1896,7 +1896,7 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
     VEC_Add(vel, &mUnk_b8, vel);
     if (b->x != 0 || b->z != 0 || a->x != 0 || a->y != 0 || a->z != 0 || mUnk_b8.x != 0 || mUnk_b8.z != 0) {
         if (mode == 0) {
-            fx32 q = func_01ff8000(INT_TO_FX(speed), 0x5dc000);
+            fx32 q = FX_Div(INT_TO_FX(speed), 0x5dc000);
             q      = FX_Mul(q, 0x280000);
             rot[0] = rot[0] + (fx32) ((float) q / 4096.0f);
             rot[1] = (u32) (angle * 65535.0f / 360.0f);
@@ -3023,7 +3023,7 @@ BOOL BattleTarget::func_ov007_0225a8d4(VecFx32 *a, VecFx32 *b, BattlePlane *plan
     if (den == 0) {
         *t = plane->mDist - dot;
     } else {
-        *t = func_01ff8000(plane->mDist - dot, den);
+        *t = FX_Div(plane->mDist - dot, den);
     }
     fx32 tt = *t;
     if ((float) tt >= 0.0f && tt <= 0x1000) {
@@ -3558,8 +3558,8 @@ void BattleTarget::func_ov007_0225c2e4(VecFx32 *v) {
 void BattleTarget::func_ov007_0225c360(u16 *in, s32 a, u16 *out) {
     u16 n    = *in - 910;
     int base = 0x1c71;
-    fx32 q   = func_01ff8000(INT_TO_FX(n), INT_TO_FX(base));
-    fx32 d   = func_01ff8000(0x4000000, 0x2aaa000);
+    fx32 q   = FX_Div(INT_TO_FX(n), INT_TO_FX(base));
+    fx32 d   = FX_Div(0x4000000, 0x2aaa000);
     fx32 m   = FX_Mul(a / 182, d);
     int rem  = 100 - m;
     fx32 r   = INT_TO_FX(rem) / 100;
@@ -3767,7 +3767,7 @@ void BattleTarget::func_ov007_0225cb7c() {
             }
             i++;
         } while (i < 0x80);
-        func_02005e9c(buf, 0x80);
+        DC_FlushRange(buf, 0x80);
         func_02025c1c(0, 4, 0xe00, buf, 0x80, 1);
     }
     mAnims[2]->Draw(0, 0xbe, 0xb7, 1);

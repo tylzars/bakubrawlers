@@ -1121,17 +1121,17 @@ void func_ov007_022337ec(VecFx32 *A, VecFx32 *B, VecFx32 *C, VecFx32 *D, VecFx32
         if (a.x != 0) {
             float fa = a.x > 0 ? 0.5f + (float) (a.x << 12) : (float) (a.x << 12) - 0.5f;
             float fb = A->x > 0 ? 0.5f + (float) (A->x << 12) : (float) (A->x << 12) - 0.5f;
-            ratio.x  = func_01ff8000((s32) fb, (s32) fa);
+            ratio.x  = FX_Div((s32) fb, (s32) fa);
         }
         if (a.y != 0) {
             float fa = a.y > 0 ? 0.5f + (float) (a.y << 12) : (float) (a.y << 12) - 0.5f;
             float fb = A->y > 0 ? 0.5f + (float) (A->y << 12) : (float) (A->y << 12) - 0.5f;
-            ratio.y  = func_01ff8000((s32) fb, (s32) fa);
+            ratio.y  = FX_Div((s32) fb, (s32) fa);
         }
         if (a.z != 0) {
             float fa = a.z > 0 ? 0.5f + (float) (a.z << 12) : (float) (a.z << 12) - 0.5f;
             float fb = A->z > 0 ? 0.5f + (float) (A->z << 12) : (float) (A->z << 12) - 0.5f;
-            ratio.z  = func_01ff8000((s32) fb, (s32) fa);
+            ratio.z  = FX_Div((s32) fb, (s32) fa);
         }
         a.x = FX_Mul(a.x, FX32_CONST(-1.0f));
         a.y = FX_Mul(a.y, FX32_CONST(-1.0f));

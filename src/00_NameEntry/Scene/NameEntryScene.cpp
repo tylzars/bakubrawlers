@@ -676,7 +676,7 @@ void NameEntryScene::RenderName() {
         TextManager::Get().Print(&mName[i], 2, mTextBuffer, 0x18, 8, &x, &y, 0, 0, 2, 0x44, 0, 0, 0, 0, 1, 1);
         i++;
     } while (i < mMaxLength);
-    func_02005e9c(mTextBuffer, mTextBufferSize);
+    DC_FlushRange(mTextBuffer, mTextBufferSize);
     TextManager &endText = TextManager::Get();
     endText.mUnk_5b = 0;
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x4000, mTextBuffer, mTextBufferSize, 0);

@@ -130,9 +130,9 @@ void GimmickPyrusEruption::Update() {
         d.x      = FX_Mul(d.x, 0x1e000);
         d.y      = FX_Mul(d.y, 0x1e000);
         d.z      = FX_Mul(d.z, 0x1e000);
-        fx32 z   = -func_01ff8000(d.z, len);
-        fx32 y   = -func_01ff8000(d.y, len);
-        d.x      = -func_01ff8000(d.x, len);
+        fx32 z   = -FX_Div(d.z, len);
+        fx32 y   = -FX_Div(d.y, len);
+        d.x      = -FX_Div(d.x, len);
         d.y      = y;
         d.z      = z;
         VEC_Add(&data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0, &d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0);

@@ -204,7 +204,7 @@ OS_UnlockCard kind:function(arm,size=0x1c) addr:0x02004f00
 func_02004f1c kind:function(arm,size=0x18) addr:0x02004f1c
 func_02004f34 kind:function(arm,size=0x18) addr:0x02004f34
 OS_ReadOwnerOfLockWord kind:function(arm,size=0x8) addr:0x02004f4c
-func_02004f54 kind:function(arm,size=0x68) addr:0x02004f54
+OS_GetLockID kind:function(arm,size=0x68) addr:0x02004f54
 _Z13func_02004fbcj kind:function(arm,size=0x48) addr:0x02004fbc
 OSi_GetUnusedThreadId kind:function(arm,size=0x18) addr:0x02005004
 OSi_InsertLinkToQueue kind:function(arm,size=0x78) addr:0x0200501c
@@ -251,9 +251,9 @@ HeldMutexUnlink kind:function(arm,size=0x24) addr:0x02005dd4
 func_02005df8 kind:function(arm,size=0xc) addr:0x02005df8
 func_02005e04 kind:function(arm,size=0x2c) addr:0x02005e04
 func_02005e30 kind:function(arm,size=0x34) addr:0x02005e30
-func_02005e64 kind:function(arm,size=0x1c) addr:0x02005e64
+DC_InvalidateRange kind:function(arm,size=0x1c) addr:0x02005e64
 DC_StoreRange kind:function(arm,size=0x1c) addr:0x02005e80
-func_02005e9c kind:function(arm,size=0x24) addr:0x02005e9c
+DC_FlushRange kind:function(arm,size=0x24) addr:0x02005e9c
 DC_WaitWriteBufferEmpty kind:function(arm,size=0xc) addr:0x02005ec0
 func_02005ecc kind:function(arm,size=0xc) addr:0x02005ecc
 func_02005ed8 kind:function(arm,size=0x1c) addr:0x02005ed8
@@ -5064,3 +5064,13 @@ data_022193f8 kind:bss addr:0x022193f8
 @17 kind:bss addr:0x02219404 local
 @286 kind:bss addr:0x02219410 local
 data_0221941c kind:bss addr:0x0221941c
+FX_AtanIdxTable_ kind:data(any) addr:0x0208f628
+FX_AtanTable_ kind:data(any) addr:0x0208f524
+sndVolumeTable kind:data(any) addr:0x0208ff9c
+data_020903a8 kind:data(any) addr:0x020903a8
+data_02090510 kind:data(any) addr:0x02090510
+data_02090590 kind:data(any) addr:0x02090590
+data_02090698 kind:data(any) addr:0x02090698
+data_020906a8 kind:data(any) addr:0x020906a8
+data_0208f89c kind:data(any) addr:0x0208f89c
+data_020904a8 kind:data(any) addr:0x020904a8

@@ -26,7 +26,7 @@ extern void func_02036878(u32 mask);
 extern void func_02036848(u32 mask);
 extern void func_020368dc(int slot);
 extern void MIi_CpuClear32(u32 data, void *dest, u32 size);
-extern void func_02005e9c(void *, u32);
+extern void DC_FlushRange(void *, u32);
 void func_02037924(void);
 
 void func_02037884(void) {   // init
@@ -90,8 +90,8 @@ void func_02037a74(void) {   // clear buffers and restart
     c->pos = 0;
     MIi_CpuClear32(0, c->buf0, c->size);
     MIi_CpuClear32(0, c->buf1, c->size);
-    func_02005e9c(c->buf0, c->size);
-    func_02005e9c(c->buf1, c->size);
+    DC_FlushRange(c->buf0, c->size);
+    DC_FlushRange(c->buf1, c->size);
     mask = c->alarm >= 0 ? 1 << c->alarm : 0;
     func_0200800c(c->chMask, c->capSlots, mask, 0);
 }

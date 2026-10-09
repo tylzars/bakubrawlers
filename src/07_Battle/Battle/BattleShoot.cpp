@@ -1726,7 +1726,7 @@ void BattleShoot::func_ov007_0226f604() {
 
 void BattleShoot::func_ov007_0226f644() {
     if (mUnk_61a1 != 0) {
-        func_02005e9c(mBitmap, 0x6000);
+        DC_FlushRange(mBitmap, 0x6000);
         func_02025c1c(1, 0xd, 0, mBitmap, 0x6000, 0);
     }
 }

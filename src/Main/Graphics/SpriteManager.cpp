@@ -106,7 +106,7 @@ static inline fx32 CosIdx(int idx) {
     return FX_SinCosTable_[(idx >> 4) * 2 + 1];
 }
 
-extern "C" fx32 func_01ff8000(fx32 a, fx32 b); // FX_Div
+extern "C" fx32 FX_Div(fx32 a, fx32 b); // FX_Div
 
 void func_02025e18() {
     MTX_Identity22_(&data_0220e838);
@@ -164,11 +164,11 @@ void Camera::func_02026004(u32 fov) {
     mFov      = angle;
     mSin      = SinIdx(half);
     mCos      = CosIdx(half);
-    mUnk_44   = func_01ff8000(mNear * 2, mCos);
+    mUnk_44   = FX_Div(mNear * 2, mCos);
     mUnk_44   = FX_Mul(mSin, mUnk_44);
     mUnk_40   = FX_Mul(mUnk_44 / 2, 0x1555);
     mUnk_48   = mUnk_44 * 0x69 / 192;
-    mUnk_34   = func_01ff8000(mCos << 7, mSin) * 3 / 4;
+    mUnk_34   = FX_Div(mCos << 7, mSin) * 3 / 4;
 }
 
 void Camera::func_0202610c(void *file, u32 frameCount) {
@@ -236,9 +236,9 @@ void Camera::func_020262cc(VecFx32 *out, u32 track, fx32 t) {
     VecFx32 a = keys[index];
     VecFx32 b = keys[next];
     VecFx32 r;
-    r.z  = func_01ff8000(FX_Mul(a.z, w) + FX_Mul(b.z, frac), 0x1000);
-    r.y  = func_01ff8000(FX_Mul(a.y, w) + FX_Mul(b.y, frac), 0x1000);
-    r.x  = func_01ff8000(FX_Mul(a.x, w) + FX_Mul(b.x, frac), 0x1000);
+    r.z  = FX_Div(FX_Mul(a.z, w) + FX_Mul(b.z, frac), 0x1000);
+    r.y  = FX_Div(FX_Mul(a.y, w) + FX_Mul(b.y, frac), 0x1000);
+    r.x  = FX_Div(FX_Mul(a.x, w) + FX_Mul(b.x, frac), 0x1000);
     *out = r;
 }
 
@@ -454,8 +454,8 @@ void func_02026c4c(void *arg) {
 }
 
 void SpriteManager::func_02026cc0() {
-    func_02005e9c(&mScreens[0], 0x400);
-    func_02005e9c(&mScreens[1], 0x400);
+    DC_FlushRange(&mScreens[0], 0x400);
+    DC_FlushRange(&mScreens[1], 0x400);
     CameraManager::Get().func_020267f0();
     func_020254f0(func_02026c4c, this);
 }

@@ -6,7 +6,7 @@
 
 struct UnkStruct_020d43f0;
 s32 func_020230a8(UnkStruct_020d43f0 *data, u32 unk2, u32 unk3);
-extern "C" void func_02005e9c(void *buffer, u32 size); // probably DC_FlushRange
+extern "C" void DC_FlushRange(void *buffer, u32 size); // probably DC_FlushRange
 void func_020219ec(u32 unk1);
 int func_02065c0c(u32 id, u32 kind);
 BOOL func_020876f0(u32 unk1);

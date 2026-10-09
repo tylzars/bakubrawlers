@@ -295,9 +295,9 @@ void func_02034144(ResTex *tex, u8 *name, u8 *out) {   // texture pattern: textu
     w = info[1] & 0x7ff;
     h = (info[1] & (0x7ff << 11)) >> 11;
     if (w == U16(out, 0x2c)) U32(out, 0x30) = 0x1000;
-    else U32(out, 0x30) = func_01ff8000(w << 12, U16(out, 0x2c) << 12);
+    else U32(out, 0x30) = FX_Div(w << 12, U16(out, 0x2c) << 12);
     if (h == U16(out, 0x2e)) U32(out, 0x34) = 0x1000;
-    else U32(out, 0x34) = func_01ff8000(h << 12, U16(out, 0x2e) << 12);
+    else U32(out, 0x34) = FX_Div(h << 12, U16(out, 0x2e) << 12);
 }
 void func_0203421c(ResTex *tex, u8 *name, u8 *out) {   // palette pattern
     u16 *info = (tex == 0 || tex->plttDictOfs == 0) ? 0 : func_0203324c((Dict *)((u8 *)tex + tex->plttDictOfs), (char *)name);

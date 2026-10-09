@@ -145,7 +145,7 @@ void GimmickAquosFukidashi::Update() {
                     if (dy <= 0x1000) {
                         dy = 0x1000;
                     }
-                    a.y = func_01ff8000(a.y, FX_Mul(dy, 0x800));
+                    a.y = FX_Div(a.y, FX_Mul(dy, 0x800));
                     VEC_Add(&b, &a, &b);
                     b.x = FX_Mul(b.x, 0xc00);
                     b.z = FX_Mul(b.z, 0xc00);

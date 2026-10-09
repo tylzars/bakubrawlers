@@ -23,7 +23,7 @@ extern const u8 data_020a2e3c[];
 extern const WindowItemRecord data_020a2e48[];
 extern const WindowCellRecord data_020a2f0c[];
 extern const u32 data_020a2dac[];
-extern "C" void func_02005e9c(void *buffer, u32 size);
+extern "C" void DC_FlushRange(void *buffer, u32 size);
 void func_02072614();
 extern u16 data_020a596c;
 
@@ -691,7 +691,7 @@ void UnkStruct_02071d24::func_020739e4() {
         }
         TextManager::Get().mUnk_5b = 0;
     }
-    func_02005e9c(mUnk_24, mUnk_2c);
+    DC_FlushRange(mUnk_24, mUnk_2c);
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, mUnk_24, mUnk_2c, 0);
 }
 

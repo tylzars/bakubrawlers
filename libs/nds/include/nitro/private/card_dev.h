@@ -118,9 +118,9 @@ void DC_FlushAll(void);                         // 0x02005ecc
 void DC_FlushRange(void *p, u32 n);             // 0x02005ed8
 void DC_InvalidateAll(void);                    // 0x02005e30
 void PXI_Init(void);                            // 0x02009050
-void PXI_SetCallback(u32 tag, void *cb);        // 0x0200915c
+void PXI_SetFifoRecvCallback(u32 tag, void *cb);        // 0x0200915c
 int PXI_IsCallbackReady(u32 tag, int);          // 0x020091a8
-int PXI_SendWord(u32 tag, u32 data, int err);   // 0x020091cc
+int PXI_SendWordByFifo(u32 tag, u32 data, int err);   // 0x020091cc
 void OS_InitMessageQueue(void *q, void *buf, u32 n); // 0x02005a80
 int OS_SendMessage(void *q, void *msg, int flag);    // 0x02005aa8
 int OS_ReceiveMessage(void *q, void *msg, int flag); // 0x02005b3c

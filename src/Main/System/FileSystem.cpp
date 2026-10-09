@@ -56,7 +56,7 @@ extern "C" int func_0200aa94(void *file, const char *path);
 extern "C" void func_0200a7b4(void *file);
 extern "C" void MI_InitUncompContextLZ(void *ctx, void *dst, const void *header);
 extern int func_02007d94(void *ctx, void *src, u32 len);
-extern "C" void func_02005e9c(void *buf, u32 size);
+extern "C" void DC_FlushRange(void *buf, u32 size);
 
 static inline void NextChunk() {
     if (data_020d53e4.mRemaining > 0x2000) {
@@ -139,7 +139,7 @@ void *func_02023504(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
         }
     }
     if (buffer) {
-        func_02005e9c(buffer, size);
+        DC_FlushRange(buffer, size);
     }
     return buffer;
 }
@@ -218,7 +218,7 @@ void func_02023884() {
     if (data_020d53e4.mMode == 0) {
         func_0200aadc(&data_020d5440);
         data_020d53e4.mActive = 0;
-        func_02005e9c(data_020d53e4.mBuffer, data_020d53e4.mSize);
+        DC_FlushRange(data_020d53e4.mBuffer, data_020d53e4.mSize);
         return;
     }
     if (data_020d53e4.mMode == 1) {
@@ -251,7 +251,7 @@ void func_02023884() {
     func_0200aadc(&data_020d5440);
     data_020d53e4.mActive = 0;
     OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, data_020d53e4.mTemp);
-    func_02005e9c(data_020d53e4.mBuffer, data_020d53e4.mSize);
+    DC_FlushRange(data_020d53e4.mBuffer, data_020d53e4.mSize);
 }
 
 void func_02023a54() {

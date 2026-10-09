@@ -302,6 +302,7 @@ char *func_0201308c(double x, char *end, FmtSpec spec)
     DecForm f;
     FmtSpec e;
     DecDigits d;
+    unsigned char *xb;
     int i, n, bit, ex;
     double ld;
     unsigned snum;
@@ -361,13 +362,14 @@ char *func_0201308c(double x, char *end, FmtSpec spec)
     p = func_02012b44(ex, p, e);
     if (spec.conv == 'a') *--p = 'p';
     else *--p = 'P';
+    xb = (unsigned char *)&x;
     bit = spec.prec * 4 + 11;
     for (n = spec.prec; n >= 1; n--) {
         unsigned char ch;
         if (bit < 64) {
-            unsigned char v = XB[bit >> 3] >> (7 - (bit & 7));
+            unsigned char v = xb[bit >> 3] >> (7 - (bit & 7));
             if ((bit & ~7) != ((bit - 4) & ~7)) {
-                v = (v | (XB[(bit >> 3) - 1] << 8) >> (7 - (bit & 7))) & 0xff;
+                v = (v | (xb[(bit >> 3) - 1] << 8) >> (7 - (bit & 7))) & 0xff;
             }
             v &= 0xf;
             if (v < 10) ch = v + '0';

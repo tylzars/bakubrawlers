@@ -2177,6 +2177,7 @@ void UnkStruct_02078e14::func_020816ec(u32 unk1, u32 unk2) {
     s16 x;
     s16 y;
     u32 scale;
+    u8 i;
     if (unk2 == 4) {
         scale = 1;
         x     = 0x5a;
@@ -2201,7 +2202,7 @@ void UnkStruct_02078e14::func_020816ec(u32 unk1, u32 unk2) {
     x = x + 12;
     if (unk1 >= 10000000) {
         mUnk_74[13]->SetAnimation(3);
-        for (u8 i = 0; i < 7; i++) {
+        for (i = 0; i < 7; i++) {
             mUnk_74[13]->Draw(1, (s16) (x + i * 5), y, scale);
         }
         return;
@@ -2218,7 +2219,7 @@ void UnkStruct_02078e14::func_020816ec(u32 unk1, u32 unk2) {
     } else {
         mUnk_74[13]->SetAnimation(0);
     }
-    u8 i = 0;
+    i = 0;
     if (unk2 == 4) {
         for (; i < 7; i++) {
             if (digits[i] >= 0) {
@@ -3929,9 +3930,8 @@ BOOL func_02086938() {
 
 BOOL func_02086a58() {
     BOOL result = FALSE;
+    const UnlockTable *table = &data_020a4098[data_020d43f0[0].mUnk_42];
     u8 sub      = data_020d43f0[0].mUnk_43;
-    u8 stage    = data_020d43f0[0].mUnk_42;
-    const UnlockTable *table = &data_020a4098[stage];
     if (table->mCount <= sub) {
         return result;
     }

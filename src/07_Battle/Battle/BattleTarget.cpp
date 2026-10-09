@@ -1306,7 +1306,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                     u.z   = k << 13;
                     VecFx32 tp;
                     tp.z = mUnk_11c.z + 0x37000 + (k << 13);
-                    tp.y = mUnk_11c.y + 0x19000 + k * 0x333;
+                    tp.y = u.y + (mUnk_11c.y + 0x19000);
                     tp.x = mUnk_11c.x + 0x37000 + (k << 13);
                     pos = tp;
                     func_01ffcfd8(&rot, (u16) (data_ov007_0227a5ee[player->mUnk_f1] - mUnk_1b8));

@@ -318,6 +318,10 @@ Other findings from linking:
     `switch (x) { case 0: case 2: case 3: ... }`. Write `||` chains in the order the original tests.
   - Compares on an unsigned bitfield are unsigned (`bcc`); `(s32) bf >= 2` gives `blt`.
   - One function-scope loop variable reused by several loops colours differently from per-loop variables.
+- **Where a pointer local is assigned.** `T *xb;` declared with the other locals and assigned (`xb = (T *)&x;`)
+  just before a loop puts the address computation before the loop guard; `((T *)&x)[k]` at each use moves it after
+  the guard, and initialising it in the declaration recolours the whole function (MSL printf's float formatter).
+  Index a table with the global field in place (`&tbl[g.a]`) rather than through a named copy of the index.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

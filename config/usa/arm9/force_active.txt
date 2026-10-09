@@ -1,0 +1,8 @@
+# Data objects the original link kept although nothing references them (mwld -dead would strip them once their
+# unit is linked from source).
+data_ov007_0227945c   # VecFx32 {0, 0x8000, 0x2800} between GimmickVentKaze's and GimmickAbilityField's .rodata
+data_ov008_0222871c   # MyroomScene: five unreferenced s16[2][3] tables
+data_ov008_02228728
+data_ov008_02228734
+data_ov008_02228740
+data_ov008_0222874c

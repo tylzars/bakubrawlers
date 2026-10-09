@@ -10,6 +10,10 @@ active restores the original reachability.
 The entry symbol is looked up by address in each overlay's symbols.txt, so
 renaming it there is picked up automatically.
 
+It also keeps the data symbols listed in <config-dir>/force_active.txt (one per line, `#` comments): objects the
+original link kept although nothing references them, which -dead would otherwise strip from a unit linked from
+source.
+
 (mwldarm's -force_active flag would be simpler but segfaults under wibo.)
 """
 import argparse
@@ -40,6 +44,13 @@ for ov_dir in sorted((args.config_dir / "overlays").iterdir()):
             break
     else:
         raise SystemExit(f"{ov_dir}: no function symbol at overlay base {base:#010x}")
+
+extra = args.config_dir / "force_active.txt"
+if extra.exists():
+    for line in extra.read_text().splitlines():
+        name = line.split("#", 1)[0].strip()
+        if name:
+            entries.append(name)
 
 lcf = args.lcf_in.read_text()
 # Linker-defined constants the linker script has to provide (values read from the original's literal pools):

@@ -127,6 +127,12 @@ Other findings from linking:
   - A function that is only `operator delete(p); return p;` is a deleting destructor and belongs to its class's file
     (SceneRunner's sat at the start of FrameUpdate's range).
 
+- **Unreferenced data and the link.** Unreferenced global objects take part in the size sort and get their own
+  sections; unreferenced statics are dropped and don't. The original link kept unreferenced data, but our mwld
+  `-dead` strips it once a unit is linked from source, so such objects go in `config/usa/arm9/force_active.txt`.
+  When data_ranges can't place a unit (nothing references some sections), write the ranges by hand and check the
+  layout byte by byte.
+
 ## Source patterns that matter
 
 - **Narrow reads of stack arguments.** Some callees read a stack-passed argument with `ldrb`/`ldrh` while every

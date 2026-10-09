@@ -177,9 +177,12 @@ src/07_Battle/Gimmick/GimmickPyrusEruption.cpp:
     .data       start:0x02287434 end:0x02287504
     .bss        start:0x0228b7ec end:0x0228b800
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Gimmick/GimmickAbilityField.cpp:
+    complete
     .text       start:0x022300dc end:0x022308a8
+    .rodata     start:0x02279468 end:0x022796d0
+    .data       start:0x02287504 end:0x022875b4
+    .bss        start:0x0228b800 end:0x0228b820
 
 src/07_Battle/Gimmick/GimmickUnk_022308a8.cpp:
     complete

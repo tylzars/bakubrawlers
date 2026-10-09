@@ -1,9 +1,4 @@
 #include "Graphics/SpriteManager.hpp"
-#include "System/InputManager.hpp"
-#include "System/TouchManager.hpp"
-#include "System/FrameTask.hpp"
-#include "System/SoundManager.hpp"
-#include "Text/TextManager.hpp"
 #include "Scene/OptionScene.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
@@ -16,15 +11,85 @@
 #include "System/FileSystem.hpp"
 #include <nitro/gx.h>
 
-extern const WindowItemRecord data_ov000_02226340[];
+static const WindowItemRecord data_ov000_02226340[3] = {
+    {0, 0x1, 45, 136, 78, 20, 0x0, {-1, -1, 1, 1}, 0, 2},
+    {1, 0x1, 133, 136, 78, 20, 0x0, {-1, -1, 0, 0}, 0, 2},
+    {2, 0x8000, 120, 35, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
+};
+static const WindowCellRecord data_ov000_02226650[6] = {
+    {"option_b_obj_00_nce.bin", 3, 0x0, 0, 0, 1, {3, 5, 4, 0}},
+    {"option_b_obj_00_nce.bin", 6, 0x0, 0, 0, 1, {6, 8, 7, 0}},
+    {"option_b_obj_00_nce.bin", 9, 0x0, 0, 0, 1, {9, 11, 10, 0}},
+    {"option_b_obj_00_nce.bin", 12, 0x0, 0, 0, 1, {12, 14, 13, 0}},
+    {"option_b_obj_00_nce.bin", 15, 0x0, 0, 0, 1, {15, 17, 16, 0}},
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 9, 0, 1, {2, 3, 3, 0}},
+};
+static const Vec2s data_ov000_02226298[4] = {
+    {301, 136}, {389, 136}, {376, 35}, {0, 0},
+};
+static const Vec2s data_ov000_02226288[4] = {
+    {-32, 0}, {-32, 0}, {-32, 0}, {32, 0},
+};
+static const u8 data_ov000_02226274[4] = {0x34, 0x54, 0x74, 0x0};
+static const WindowItemRecord data_ov000_022262d0[2] = {
+    {0, 0x5, 169, 170, 52, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
+    {1, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
+};
+static const WindowCellRecord data_ov000_02226308[2] = {
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xb000, 9, 0, 1, {0, 1, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 9, 0, 1, {2, 3, 3, 0}},
+};
+static const WindowCellRecord data_ov000_02226538[4] = {
+    {"option_b_obj_00_nce.bin", 24, 0x0, 0, 0, 1, {24, 26, 25, 0}},
+    {"option_b_obj_00_nce.bin", 27, 0x0, 0, 0, 1, {27, 29, 28, 0}},
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xb000, 9, 0, 1, {0, 1, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 9, 0, 1, {2, 3, 3, 0}},
+};
+static const u8 data_ov000_02226278[6] = {0x60, 0x7c, 0x98, 0xb4, 0xd0, 0xec};
+static const Vec2s data_ov000_022262bc[5] = {
+    {0, 2}, {0, 0}, {-32, 0}, {-32, 0}, {-32, 0},
+};
+static const Vec2s data_ov000_022262a8[5] = {
+    {128, 80}, {256, 0}, {256, 52}, {256, 84}, {256, 116},
+};
+static const u8 data_ov000_02226280[8] = {0x0, 0x24, 0x12, 0x14, 0x16, 0x13, 0x15, 0x17};
+static const WindowItemRecord data_ov000_022263e8[4] = {
+    {0, 0x1, 48, 64, 160, 24, 0x303, {1, 1, -1, -1}, 0, 2},
+    {1, 0x1, 48, 96, 160, 24, 0x303, {0, 0, -1, -1}, 0, 2},
+    {2, 0x1, 169, 170, 52, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
+    {3, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
+};
+static const WindowCellRecord data_ov000_02226394[3] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0xd000, 10, 0, 1, {3, 5, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0xd000, 10, 0, 1, {6, 8, 7, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0xd000, 10, 0, 1, {10, 10, 10, 0}},
+};
+static const WindowItemRecord data_ov000_022265a8[6] = {
+    {0, 0x1, 48, 38, 160, 24, 0x303, {4, 1, -1, -1}, 0, 2},
+    {1, 0x1, 48, 62, 160, 24, 0x303, {0, 2, -1, -1}, 0, 2},
+    {2, 0x1, 48, 86, 160, 24, 0x303, {1, 3, -1, -1}, 0, 2},
+    {3, 0x1, 48, 110, 160, 24, 0x303, {2, 4, -1, -1}, 0, 2},
+    {4, 0x1, 48, 134, 160, 24, 0x303, {3, 0, -1, -1}, 0, 2},
+    {5, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
+};
+static const WindowCellRecord data_ov000_02226458[4] = {
+    {"option_b_obj_00_nce.bin", 30, 0x0, 0, 0, 1, {30, 32, 31, 0}},
+    {"option_b_obj_00_nce.bin", 33, 0x0, 0, 0, 1, {33, 35, 34, 0}},
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xb000, 9, 0, 1, {0, 1, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 9, 0, 1, {2, 3, 3, 0}},
+};
+static const WindowItemRecord data_ov000_022264c8[4] = {
+    {0, 0x1, 48, 64, 160, 24, 0x303, {1, 1, -1, -1}, 0, 2},
+    {1, 0x1, 48, 96, 160, 24, 0x303, {0, 0, -1, -1}, 0, 2},
+    {2, 0x1, 169, 170, 52, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
+    {3, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
+};
+#include "System/TouchManager.hpp"
+#include "Text/TextManager.hpp"
+#include "System/InputManager.hpp"
+#include "System/SoundManager.hpp"
+#include "System/FrameTask.hpp"
 
-extern const WindowCellRecord data_ov000_02226394[];
-
-extern const Vec2s data_ov000_02226298[];
-
-extern const WindowItemRecord data_ov000_022263e8[];
-
-extern const WindowCellRecord data_ov000_02226458[];
 
 OptionScene::OptionScene() :
     SceneBase(2, 0) {
@@ -367,18 +432,6 @@ void OptionScene::Init() {
     func_02025c1c(1, 9, 0x800, map, mapSize, 1);
 }
 
-extern const WindowItemRecord data_ov000_022265a8[];
-
-extern const WindowCellRecord data_ov000_02226650[];
-
-extern const u8 data_ov000_02226280[];
-
-extern const Vec2s data_ov000_022262a8[];
-
-extern const WindowItemRecord data_ov000_022262d0[];
-
-extern const WindowCellRecord data_ov000_02226308[];
-
 void OptionScene::BuildMainMenu() {
     ClearText(0);
     delete mWindow;
@@ -421,12 +474,6 @@ void OptionScene::BuildSettings() {
     mWindow->Update(1);
 }
 
-extern const Vec2s data_ov000_022262bc[];
-
-extern const u8 data_ov000_02226278[];
-
-extern const u8 data_ov000_02226274[];
-
 void OptionScene::DrawSettings() {
     if (mUnk_4b != 0) {
         for (u8 i = 0; i < 5; i++) {
@@ -443,12 +490,6 @@ void OptionScene::DrawSettings() {
         mCells[i]->Draw(1, mPosX[i], mPosY[i], 0);
     }
 }
-
-extern const u8 data_ov000_02226274[];
-
-extern const u8 data_ov000_02226278[];
-
-extern const u8 data_ov000_02226280[];
 
 void func_02022db4(UnkStruct_020d43f0 *d);
 
@@ -533,10 +574,6 @@ void OptionScene::UpdateSettings() {
     }
 }
 
-extern const WindowItemRecord data_ov000_022264c8[];
-
-extern const WindowCellRecord data_ov000_02226538[];
-
 void OptionScene::BuildMenu2() {
     ClearText(2);
     SpriteManager::Get();
@@ -554,8 +591,6 @@ void OptionScene::BuildMenu2() {
     int sel = data_020d43f0[0].mUnk_28_6 == 0 ? 1 : 0;
     mWindow->mCells[(u8) sel]->SetAnimation(data_ov000_02226538[sel].mUnk_18[2]);
 }
-
-extern const Vec2s data_ov000_02226288[];
 
 void OptionScene::DrawMenu2() {
     if (mUnk_4b != 0) {

@@ -4,6 +4,31 @@
     .data       start:0x020a4e80 end:0x020baf00 kind:data align:32
     .bss        start:0x020baf00 end:0x02219440 kind:bss align:32
 
+// NitroSystem (2.0, C); code only so far.
+libs/nns/src/fnd/fnd.c:
+    .text       start:0x02030880 end:0x02030b7c
+
+libs/nns/src/fnd/fnd_heap.c:
+    .text       start:0x02030b7c end:0x02031418
+
+libs/nns/src/g3d/g3d_obj.c:
+    .text       start:0x02031418 end:0x02032130
+
+libs/nns/src/g3d/g3d_glb.c:
+    .text       start:0x02032130 end:0x02033574
+
+libs/nns/src/g3d/g3d_res.c:
+    .text       start:0x02033574 end:0x0203382c
+
+libs/nns/src/g3d/g3d_anm.c:
+    .text       start:0x0203382c end:0x02034d5c
+
+libs/nns/src/g3d/g3d_srt.c:
+    .text       start:0x02034d5c end:0x02035c68
+
+libs/nns/src/gfd/gfd_vram.c:
+    .text       start:0x02035c68 end:0x020360c4
+
 // NitroSDK (2.0/sp1p5, C); code only so far.
 libs/nds/src/fx/fx_mtx22.c:
     .text       start:0x02000cd8 end:0x02000d88

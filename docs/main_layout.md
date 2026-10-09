@@ -23,7 +23,8 @@ middleware) is not decompiled as game source; it will be matched or linked separ
 | 0x02011c34-0x020122b0 | CTRDG (approx.) |
 | 0x020122b0-0x020202bc | MSL C runtime: printf family, string, math, soft float, integer division (`_s32_div_f` at 0x0201f970) |
 | 0x020202bc-0x0202030c | C++ runtime glue (`__init_cpp`, `__register_global_object`) |
-| 0x02036000-0x0203a52c | NNS sound (approx.) |
+| 0x02030880-0x02036538 | NitroSystem: FND lists and heaps (0x02030880-0x02031418), G3d (to 0x02035c68), Gfd texture VRAM manager (to about 0x02036538) |
+| 0x02036538-0x0203a52c | NNS sound (approx.) |
 | 0x0203a544-0x0203c1d8 | Mobiclip video wrapper; its ARM kernels are at 0x02090b24-0x0209d490 |
 | 0x0203dee8-0x02052320 | CRI audio middleware (ADX/AHX and friends) |
 | 0x0208b4bc-0x02090b24 | Tables (sine/cosine and others) |

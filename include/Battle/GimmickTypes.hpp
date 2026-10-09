@@ -320,7 +320,7 @@ struct GimmickAbilityRow {
     /* 0c */
 };
 extern const GimmickAbilityRow data_ov007_02279568[];
-void func_020331a4(void *nsbmd, u32 value, u32 mask); // sets the bits of `mask` of every material's polygon attribute
+extern "C" void func_020331a4(void *nsbmd, u32 value, u32 mask); // sets the bits of `mask` of every material's polygon attribute
 
 class GimmickAbilityField : public Gimmick { // 022300dc, vtable 0228750c, models ability_filed0 / ability_filed1
 public:

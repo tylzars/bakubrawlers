@@ -113,9 +113,9 @@ struct UnkStruct_02211374 {
 extern UnkStruct_02211374 data_02211374;
 extern MtxFx43 data_0220e86c;
 
-MtxFx44 *func_02032710();
-MtxFx44 *func_02032604();
-MtxFx43 *func_020323b8();
+extern "C" MtxFx44 *func_02032710();
+extern "C" MtxFx44 *func_02032604();
+extern "C" MtxFx43 *func_020323b8();
 
 // Matrix routines in ITCM (not identified as SDK functions; by shape func_01ff8d34 is a look-at builder,
 // func_01ffcf64 applies a translation and func_01ff89c0 concatenates two matrices).

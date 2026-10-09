@@ -8,8 +8,8 @@
 const char *data_020b24e4[6] = {"head", "up", "down", "hair", "glasse", "cap"}; // part names, .data 0x020b24bc-0x020b24fc
 extern MtxFx43 data_0220e86c;
 extern MtxFx43 data_022191d4;
-void func_02031838(void *renderObj, void (*callback)(NNSG3dRS *));
-MtxFx43 *func_020323b8();
+extern "C" void func_02031838(void *renderObj, void (*callback)(NNSG3dRS *));
+extern "C" MtxFx43 *func_020323b8();
 void func_01ff89c0(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);
 void func_01ff96c4(const void *src, void *dst, u32 size);
 void func_02053fc0(NNSG3dRS *rs);

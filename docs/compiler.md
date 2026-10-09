@@ -9,6 +9,7 @@ the evidence and how to reproduce it.
 |---|---|---|
 | Game code (main + all overlays) | CodeWarrior for DS **2.0 sp2p2** (sp2p3/sp2p4 equivalent) | `-O4,p -ipa file -inline on,noauto -enum int -char signed -str noreuse -proc arm946e -fp soft -interworking -Cpp_exceptions off -RTTI off`, C++ |
 | NitroSDK 4.2 (Nintendo prebuilt) | CodeWarrior for DS **2.0 sp1, sp1p2 or sp1p5** | `-O4,p -ipa file -enum int`, C |
+| NitroSystem (NNS foundation, G3d, Gfd) | CodeWarrior **2.0** (every 2.0 build gives the same code; built with sp1p5 here) | `-O4,p -enum int` (`-ipa file` makes no difference), C |
 | CRI ADX/Sofdec, Mobiclip | vendor prebuilt, not identified | keep delinked |
 
 Every game-code setting above is backed by an exact match that fails when that setting changes. For NitroSDK, `-char` and `-O` variants are unverified (see Open).

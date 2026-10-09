@@ -61,11 +61,11 @@ struct NNSG3dResMdlSet {
     /* 08 */ NNSG3dResDict mDict;
 };
 
-NNSG3dResMdlSet *func_02033598(void *file);
-void func_0203209c(NNSG3dResMdlSet *set);
-void func_02032fb4(void *file);
-void func_02032d7c(void *file);
-void func_02031fec(NNSG3dResMdlSet *set, NNSG3dResTex *tex);
+extern "C" NNSG3dResMdlSet *func_02033598(void *file);
+extern "C" void func_0203209c(NNSG3dResMdlSet *set);
+extern "C" void func_02032fb4(void *file);
+extern "C" void func_02032d7c(void *file);
+extern "C" void func_02031fec(NNSG3dResMdlSet *set, NNSG3dResTex *tex);
 
 // Animation resource set (the dictionary count is at +9) and a running animation object.
 struct NNSG3dResAnmSet {
@@ -82,15 +82,15 @@ struct NNSG3dAnmObj {
     /* 08 */ NNSG3dResAnm *mRes;
 };
 
-NNSG3dResAnmSet *func_02033810(void *file);
-NNSG3dResAnmSet *func_020336a0(void *file);
-NNSG3dResAnmSet *func_020337f4(void *file);
-NNSG3dResAnmSet *func_020337bc(void *file);
-NNSG3dResAnmSet *func_020337d8(void *file);
-void func_02031518(NNSG3dAnmObj *obj, u32 id);
-void *func_020335e8(void *file, u32 index);
-u32 func_02031418(void *anm, void *model);
-void func_02031478(void *mem, void *anm, void *model, void *tex);
+extern "C" NNSG3dResAnmSet *func_02033810(void *file);
+extern "C" NNSG3dResAnmSet *func_020336a0(void *file);
+extern "C" NNSG3dResAnmSet *func_020337f4(void *file);
+extern "C" NNSG3dResAnmSet *func_020337bc(void *file);
+extern "C" NNSG3dResAnmSet *func_020337d8(void *file);
+extern "C" void func_02031518(NNSG3dAnmObj *obj, u32 id);
+extern "C" void *func_020335e8(void *file, u32 index);
+extern "C" u32 func_02031418(void *anm, void *model);
+extern "C" void func_02031478(void *mem, void *anm, void *model, void *tex);
 
 struct NNSG3dRenderObj {
     /* 00 */ u8 mUnk_00[0x2c];
@@ -110,22 +110,22 @@ struct NNSG3dRS {
     /* ae */ u8 mUnk_ae;
 };
 
-void func_02031554(void *renderObj, void *model);
-void func_020316c8(void *renderObj, NNSG3dAnmObj *obj);
-void func_020317bc(void *renderObj, NNSG3dAnmObj *obj);
-void func_02031810(void *renderObj, void (*callback)(NNSG3dRS *), u32 unk2, u32 unk3, u32 unk4);
-void func_02031824(void *renderObj);
-void func_02032cc8(MtxFx43 *mtx, void *unk2);
+extern "C" void func_02031554(void *renderObj, void *model);
+extern "C" void func_020316c8(void *renderObj, NNSG3dAnmObj *obj);
+extern "C" void func_020317bc(void *renderObj, NNSG3dAnmObj *obj);
+extern "C" void func_02031810(void *renderObj, void (*callback)(NNSG3dRS *), u32 unk2, u32 unk3, u32 unk4);
+extern "C" void func_02031824(void *renderObj);
+extern "C" void func_02032cc8(MtxFx43 *mtx, void *unk2);
 void func_01ff92a4();
 extern "C" BOOL G3X_GetBoxTestResult(s32 *result);
-void func_020322c0(const VecFx32 *trans); // NNS_G3dGlbSetBaseTrans
-void func_020322f0(const VecFx32 *scale); // NNS_G3dGlbSetBaseScale
-void func_02032284();
+extern "C" void func_020322c0(const VecFx32 *trans); // NNS_G3dGlbSetBaseTrans
+extern "C" void func_020322f0(const VecFx32 *scale); // NNS_G3dGlbSetBaseScale
+extern "C" void func_02032284();
 void func_01ffb0ec(void *renderObj);
 
 void func_01ff90dc(s16 *in, s16 *out);
-void func_0203235c(u32 index, u32 color);
-void func_02032320(u32 index, s32 x, s32 y, s32 z);
+extern "C" void func_0203235c(u32 index, u32 color);
+extern "C" void func_02032320(u32 index, s32 x, s32 y, s32 z);
 
 void func_01ffd0e0(MtxFx43 *mtx, u16 angle);
 void func_01ffd088(MtxFx43 *mtx, u16 angle);

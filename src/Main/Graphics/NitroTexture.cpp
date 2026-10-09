@@ -4,14 +4,14 @@
 #include <nitro/mi.h>
 #include <stdio.h>
 
-NNSG3dResTex *func_020335a8(void *file);
-u32 func_02031840(NNSG3dResTex *tex);
-u32 func_02031854(NNSG3dResTex *tex);
-u32 func_02031980(NNSG3dResTex *tex);
-void func_02031868(NNSG3dResTex *tex, u32 texKey, u32 tex4x4Key);
-void func_02031994(NNSG3dResTex *tex, u32 plttKey);
+extern "C" NNSG3dResTex *func_020335a8(void *file);
+extern "C" u32 func_02031840(NNSG3dResTex *tex);
+extern "C" u32 func_02031854(NNSG3dResTex *tex);
+extern "C" u32 func_02031980(NNSG3dResTex *tex);
+extern "C" void func_02031868(NNSG3dResTex *tex, u32 texKey, u32 tex4x4Key);
+extern "C" void func_02031994(NNSG3dResTex *tex, u32 plttKey);
 
-void *func_0203324c(void *dict, const char *name);
+extern "C" void *func_0203324c(void *dict, const char *name);
 
 void NitroTexture::func_02028280(const char *name) {
     void *file = func_02023504(name, 0, 0, 0, 0, 0);

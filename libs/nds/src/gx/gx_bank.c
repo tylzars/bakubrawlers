@@ -1,4 +1,5 @@
 #include <nitro/internal.h>
+extern u16 data_020bdc08[];
 
 
 
@@ -417,4 +418,18 @@ void GX_ResetBankForSubBGExtPltt(void) {
 void GX_ResetBankForSubOBJExtPltt(void) {
     reg_GXS_DISPCNT &= ~0x80000000;
     func_02002c38(&data_020bdc08[12]);
+}
+
+
+
+void func_02002dd8(void) {
+    func_02002c38(&data_020bdc08[0]);
+}
+
+void func_02002dec(void) {
+    func_02002c38(&data_020bdc08[9]);
+}
+
+void func_02002e00(void) {
+    func_02002c38(&data_020bdc08[10]);
 }

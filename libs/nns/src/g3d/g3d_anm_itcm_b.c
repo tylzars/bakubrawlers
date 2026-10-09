@@ -618,3 +618,74 @@ int func_01ffaca4(s32 *m, u8 *res1, u8 *res2, u32 idx) {
     }
 }
 
+void func_01ff9f18(s32 *out, s32 frame, u32 *info, u8 *res) {
+    u32 idx = frame >> 12;
+    u32 flags = info[0];
+    u8 *data = res + info[1];
+    u32 last, rem;
+    if (flags & 0xc0000000) {
+        last = (flags & 0x1fff0000) >> 16;
+        if (flags & 0x40000000) {
+            if (idx & 1) {
+                if (idx > last) {
+                    idx = (last >> 1) + 1;
+                    goto single;
+                }
+                idx = idx >> 1;
+                goto blend;
+            }
+            idx = idx >> 1;
+            goto single;
+        }
+        rem = idx & 3;
+        if (rem) {
+            if (idx > last) {
+                idx = rem + (last >> 2);
+                goto single;
+            }
+            if (idx & 1) {
+                u32 a, b;
+                if (idx & 2) {
+                    a = (idx >> 2) + 1;
+                    b = idx >> 2;
+                } else {
+                    a = idx >> 2;
+                    b = a + 1;
+                }
+                if (flags & 0x20000000) {
+                    s32 x = *(s16 *) (data + a * 2);
+                    s32 y = *(s16 *) (data + b * 2);
+                    *out = (x * 3 + y) >> 2;
+                } else {
+                    s32 x = *(s32 *) (data + a * 4);
+                    s32 y = *(s32 *) (data + b * 4);
+                    *out = (s32) (((s64) x * 3 + y) >> 2);
+                }
+                return;
+            }
+            idx = idx >> 2;
+            goto blend;
+        }
+        idx = idx >> 2;
+        goto single;
+    }
+    goto single;
+blend:
+    if (flags & 0x20000000) {
+        s32 x = *(s16 *) (data + idx * 2);
+        s32 y = *(s16 *) (data + idx * 2 + 2);
+        *out = (x + y) >> 1;
+    } else {
+        s32 x = *(s32 *) (data + idx * 4);
+        s32 y = *(s32 *) (data + idx * 4 + 4);
+        *out = (x >> 1) + (y >> 1);
+    }
+    return;
+single:
+    if (flags & 0x20000000) {
+        *out = *(s16 *) (data + idx * 2);
+    } else {
+        *out = *(s32 *) (data + idx * 4);
+    }
+    return;
+}

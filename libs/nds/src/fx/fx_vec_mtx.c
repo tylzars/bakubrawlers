@@ -1,6 +1,10 @@
 // Fixed-point matrix and vector math in ITCM: 0x01ff81a0-0x01ff9208.
 // 0x01ff817c, 0x01ff854c, 0x01ff8574, 0x01ff85dc, 0x01ff85fc, 0x01ff8618 (stm-heavy identity/rotation fills) are hand assembly.
 #include <nitro/internal.h>
+extern void func_01ff80f8(fx32 x);                // FX_InvAsync
+extern fx32 func_01ff80c0(void);                  // FX_GetDivResult
+extern void func_01ff95e0(const void *src, void *dst);   // 48-byte copy
+#define NEG(x) (-(x))
 
 #define REG_DIVCNT (*(vu16 *) 0x04000280)
 #define REG_DIV_NUMER (*(vs64 *) 0x04000290)
@@ -264,4 +268,41 @@ fx32 func_01ff9208(const VecFx32 *a, const VecFx32 *b) {
     while (REG_SQRTCNT & 0x8000) {
     }
     return (REG_SQRT_RESULT + 1) >> 1;
+}
+
+int func_01ff8634(const MtxFx43 *src, MtxFx43 *dst) {
+    MtxFx43 tmp;
+    MtxFx43 *p = (src == dst) ? &tmp : dst;
+    fx64 A, B, C;
+    fx32 D, E, F, G, det, inv;
+    const fx32 *m = src->_;
+    A = (fx32) (((fx64) m[3] * m[8] - (fx64) m[5] * m[6] + 0x800) >> 12);
+    B = (fx32) (((fx64) m[4] * m[8] - (fx64) m[5] * m[7] + 0x800) >> 12);
+    C = (fx32) (((fx64) m[3] * m[7] - (fx64) m[4] * m[6] + 0x800) >> 12);
+    det = (fx32) (((fx64) m[0] * B - (fx64) m[1] * A + (fx64) m[2] * C + 0x800) >> 12);
+    if (det == 0) {
+        return -1;
+    }
+    func_01ff80f8(det);
+    D = (fx32) (((fx64) m[1] * m[8] - (fx64) m[7] * m[2]) >> 12);
+    E = (fx32) (((fx64) m[1] * m[5] - (fx64) m[4] * m[2]) >> 12);
+    F = (fx32) (((fx64) m[0] * m[8] - (fx64) m[6] * m[2]) >> 12);
+    G = (fx32) (((fx64) m[0] * m[5] - (fx64) m[3] * m[2]) >> 12);
+    inv = func_01ff80c0();
+    p->_[0] = (fx32) (((fx64) inv * B) >> 12);
+    p->_[1] = NEG((fx32) (((fx64) inv * D) >> 12));
+    p->_[2] = (fx32) (((fx64) inv * E) >> 12);
+    p->_[3] = NEG((fx32) (((fx64) inv * A) >> 12));
+    p->_[4] = (fx32) (((fx64) inv * F) >> 12);
+    p->_[5] = NEG((fx32) (((fx64) inv * G) >> 12));
+    p->_[6] = (fx32) (((fx64) inv * C) >> 12);
+    p->_[7] = NEG((fx32) (((fx64) inv * (fx32) (((fx64) m[0] * m[7] - (fx64) m[6] * m[1]) >> 12)) >> 12));
+    p->_[8] = (fx32) (((fx64) inv * (fx32) (((fx64) m[0] * m[4] - (fx64) m[3] * m[1]) >> 12)) >> 12);
+    p->_[9] = NEG((fx32) (((fx64) p->_[0] * m[9] + (fx64) p->_[3] * m[10] + (fx64) p->_[6] * m[11]) >> 12));
+    p->_[10] = NEG((fx32) (((fx64) p->_[1] * m[9] + (fx64) p->_[4] * m[10] + (fx64) p->_[7] * m[11]) >> 12));
+    p->_[11] = NEG((fx32) (((fx64) p->_[2] * m[9] + (fx64) p->_[5] * m[10] + (fx64) p->_[8] * m[11]) >> 12));
+    if (p == &tmp) {
+        func_01ff95e0(&tmp, dst);
+    }
+    return 0;
 }

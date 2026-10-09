@@ -135,31 +135,72 @@ void func_02033b54(u32 *out, u8 *obj, u32 idx) {   // material colour animation 
     out[2] = b | (a << 16) | (((out[2] & 0x8000) != 0) << 15);
     out[3] = (out[3] & ~0x1f0000) | (func_02033994(res, e[4], frame) << 16);
 }
-s32 func_02033c44(u8 *base, u32 info, u32 value, u32 idx) {   // read an interpolated value from a track
-    u8 *p;
+s32 func_02033c44(u8 *base, u32 info, u32 value, u32 idx) {
     u32 last, rem;
     if (info & 0x20000000) return value;
-    p = base + value;
-    if ((info & 0xc0000000) == 0) return SampleAt(p, info, idx);
-    last = (u16)info;
-    if (info & 0x40000000) {
-        if (idx & 1) {
-            if (idx > last) return SampleAt(p, info, (last >> 1) + 1);
-            return SampleBlend(p, info, idx >> 1);
+    base += value;
+    if (info & 0xc0000000) {
+        last = (u16) info;
+        if (info & 0x40000000) {
+            if (idx & 1) {
+                if (idx > last) {
+                    idx = (last >> 1) + 1;
+                    goto single;
+                }
+                idx = idx >> 1;
+                goto blend;
+            }
+            idx = idx >> 1;
+            goto single;
         }
-        return SampleAt(p, info, idx >> 1);
+        rem = idx & 3;
+        if (rem) {
+            if (idx > last) {
+                idx = rem + (last >> 2);
+                goto single;
+            }
+            if (idx & 1) {
+                u32 a, b;
+                s32 x, y;
+                if (idx & 2) {
+                    a = (idx >> 2) + 1;
+                    b = idx >> 2;
+                } else {
+                    a = idx >> 2;
+                    b = a + 1;
+                }
+                if (info & 0x10000000) {
+                    x = *(s16 *) (base + a * 2);
+                    y = *(s16 *) (base + b * 2);
+                } else {
+                    x = *(s32 *) (base + a * 4);
+                    y = *(s32 *) (base + b * 4);
+                }
+                x *= 3;
+                return (x + y) >> 2;
+            }
+            idx = idx >> 2;
+            goto blend;
+        }
+        idx = idx >> 2;
+        goto single;
     }
-    rem = idx & 3;
-    if (rem == 0) return SampleAt(p, info, idx >> 2);
-    if (idx > last) return SampleAt(p, info, rem + (last >> 2));
-    if (idx & 1) {
-        u32 c = idx >> 2;
-        s32 first, second;
-        if (idx & 2) { first = SampleAt(p, info, c + 1); second = SampleAt(p, info, c); }
-        else { first = SampleAt(p, info, c); second = SampleAt(p, info, c + 1); }
-        return (first * 3 + second) >> 2;
+    single:
+    if (info & 0x10000000) return *(s16 *) (base + idx * 2);
+    return *(s32 *) (base + idx * 4);
+blend:
+    {
+        s32 x, y;
+        if (info & 0x10000000) {
+            s16 *q = (s16 *) base + idx;
+            x = ((s16 *) base)[idx];
+            y = q[1];
+        } else {
+            x = *(s32 *) (base + idx * 4);
+            y = *(s32 *) (base + idx * 4 + 4);
+        }
+        return (x + y) >> 1;
     }
-    return SampleBlend(p, info, idx >> 2);
 }
 u32 func_02033d44(u8 *base, u32 info, u32 value, u32 idx) {   // read an interpolated pair of 16-bit values
     u8 *p;

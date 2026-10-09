@@ -58,7 +58,7 @@ extern "C" void GX_SetBankForLCDC(u32 a);
 extern "C" void GX_SetBankForSubBG(u32 a);
 extern "C" void GX_SetBankForSubOBJ(u32 a);
 extern "C" void GX_SetBankForSubBGExtPltt(u32 a);
-void func_02002dd8();
+extern "C" void func_02002dd8();
 extern "C" void GXS_LoadOAM(const void *data, u32 offset, u32 size);
 extern "C" void func_0200a7b4(void *decoder);
 extern "C" void func_0200aa94(void *decoder, const char *path);

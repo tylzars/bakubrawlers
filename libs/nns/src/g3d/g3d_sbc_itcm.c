@@ -38,6 +38,19 @@ extern s32 data_01ffae40[3];  // translation of the camera-space origin
 extern s32 data_01ffae4c[3];  // axis scales
 extern u32 data_01ffae58[], data_01ffae5c[];
 extern s32 data_01ffae64[], data_01ffae88[3], data_01ffae94[3];
+extern void func_020033e4(void *p);
+extern int func_02003604(void *p);
+extern int func_02003634(void *p);
+extern void func_02003400(void *p);
+extern void func_020033c8(void *p);
+extern u8 data_020bc304[];   // per-matrix cache entries, 100 bytes each: 4x4 position matrix then 3x3 normal matrix
+#define MTX_MODE (*(vu32 *) 0x04000440)
+#define MTX_STORE (*(vu32 *) 0x0400044c)
+#define MTX_RESTORE (*(vu32 *) 0x04000450)
+#define MTX_IDENTITY (*(vu32 *) 0x04000454)
+#define NRM(k) acc.nrm[k] += (w64 * prevNrm[k]) >> 12
+#define NRMALL NRM(0); NRM(1); NRM(2); NRM(3); NRM(4); NRM(5); NRM(6); NRM(7); NRM(8);
+#define POS(k, e) acc.pos[k] += ((s64) (s32) w64 * pos[e]) >> 12
 
 void func_01ffaea0(Rs *rs) {
     do {
@@ -671,3 +684,73 @@ void func_01ffc8cc(Rs *rs, u32 op) {
     rs->cmd += 1;
 }
 
+void func_01ffc108(Rs *rs) {
+    struct {
+        s32 pos[12];
+        s32 nrm[9];
+    } acc;
+    u8 *cmd = rs->cmd;
+    u8 *mdl = rs->obj->mdl;
+    u32 n = cmd[2];
+    u8 *tbl = mdl + *(u32 *) (mdl + 0x10);
+    s64 w64 = 0;
+    s32 *prevNrm;
+    u32 j;
+    int i;
+    cmd += 3;
+    MIi_CpuClearFast(0, &acc, sizeof(acc));
+    func_01ff92a4();
+    MTX_MODE = 0;
+    MTX_STORE = 1;
+    MTX_IDENTITY = 0;
+    MTX_MODE = 2;
+    for (j = 0; j < n; j++) {
+        u32 idx = cmd[1];
+        u8 *ent = data_020bc304 + idx * 100;
+        u32 bit = rs->shpDone[idx >> 5] & (1 << (idx & 31));
+        s32 *pos = (s32 *) ent;
+        if (!bit) {
+            rs->shpDone[idx >> 5] |= 1 << (idx & 31);
+            MTX_RESTORE = cmd[0];
+            MTX_MODE = 1;
+            func_020033e4(tbl + idx * 0x54);
+        }
+        if (j != 0) {
+            NRMALL
+        }
+        if (!bit) {
+            while (func_02003604(ent)) {
+            }
+            MTX_MODE = 2;
+            func_02003400(tbl + idx * 0x54 + 0x30);
+        }
+        w64 = cmd[2] << 4;
+        POS(0, 0);
+        POS(1, 1);
+        POS(2, 2);
+        POS(3, 4);
+        POS(4, 5);
+        POS(5, 6);
+        POS(6, 8);
+        POS(7, 9);
+        POS(8, 10);
+        POS(9, 12);
+        POS(10, 13);
+        POS(11, 14);
+        cmd += 3;
+        prevNrm = (s32 *) (data_020bc304 + 0x40 + idx * 100);
+        if (!bit) {
+            while (func_02003634(prevNrm)) {
+            }
+        }
+    }
+    NRMALL
+    func_020033c8(acc.nrm);
+    MTX_MODE = 1;
+    func_020033c8(acc.pos);
+    MTX_MODE = 0;
+    MTX_RESTORE = 1;
+    MTX_MODE = 2;
+    MTX_STORE = rs->cmd[1];
+    rs->cmd += (rs->cmd[2] + 1) * 3;
+}

@@ -2945,6 +2945,281 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
     }
 }
 
+// FX32_CONST with an integer scale: the original converts after the shift.
+#define FXC(x) ((fx32) (((x) > 0) ? ((x) * 4096 + 0.5f) : ((x) * 4096 - 0.5f)))
+#define LERP_FX(dst, a, b) do { s32 av = (a); s32 v = av + (mUnk_14da * ((b) - av)) / mUnk_14dc; dst = FXC(v); } while (0)
+#define LERP_S(dst, a, b) dst = (a) + (mUnk_14da * (s16) ((b) - (a))) / mUnk_14dc
+#define LERP_N(dst, a, b) dst = (a) + (mUnk_14da * ((b) - (a))) / mUnk_14dc
+
+// non-matching: one block indexes mUnk_101c with a zero the original keeps in a register (smulbb); ours folds it (10 words).
+void UnkStruct_02065c40::func_0206d3b8() {
+    BOOL done = FALSE;
+    switch (mUnk_12c5) {
+        case 2:
+            if (mUnk_12cc == mUnk_12ce) {
+                done = TRUE;
+            }
+            break;
+        case 3:
+            if (mUnk_14d4 == 0) {
+                if (mUnk_14d9 == 0) {
+                    done = TRUE;
+                }
+            } else {
+                done = TRUE;
+            }
+            break;
+        case 5: {
+            u32 idx = func_0206b05c(mUnk_12c6);
+            s32 value = mUnk_12c8;
+            if (value == -2) {
+                value = mUnk_11b4[idx].mUnk_3a;
+                func_02067e2c(idx, 0);
+                UnkStruct_0205401c *model = mUnk_11b4[idx].mUnk_2c;
+                if (model != NULL) {
+                    model->func_02054034();
+                    delete model;
+                }
+                mUnk_11b4[idx].mUnk_2c = NULL;
+            }
+            if (func_02067f30(idx, value) == FALSE) {
+                done = TRUE;
+            } else {
+                mUnk_12c4 = 0;
+                mUnk_12c5 = 6;
+            }
+            break;
+        }
+        case 6:
+            if (mUnk_12c4 != 0) {
+                mUnk_12c4--;
+                break;
+            }
+            switch (mUnk_12c6) {
+                case 0x4a:
+                case 0x61:
+                    done = func_020680f8(func_0206b05c(mUnk_12c6), 0);
+                    break;
+                case 0x4c:
+                case 0x63:
+                    done = func_020680f8(func_0206b05c(mUnk_12c6), 1);
+                    break;
+                case 0x3b:
+                    done = func_02068954();
+                    break;
+                case 0xa9:
+                case 0xbf:
+                    done = func_02068e14(func_0206b05c(mUnk_12c6));
+                    break;
+                case 0xaa:
+                case 0xc0:
+                    done = func_02069194(func_0206b05c(mUnk_12c6));
+                    break;
+                case 0x77:
+                case 0x78:
+                case 0x90:
+                case 0x91:
+                    done = func_020697c8(func_0206b05c(mUnk_12c6), 0);
+                    break;
+                case 0x79:
+                case 0x92:
+                    done = func_020697c8(func_0206b05c(mUnk_12c6), 1);
+                    break;
+            }
+            break;
+        case 1:
+            if (mUnk_12c4 != 0) {
+                mUnk_12c4--;
+            } else {
+                done = TRUE;
+            }
+            break;
+        case 4: {
+            int n = mUnk_14da + 1;
+            if (n > mUnk_14dc) {
+                n = mUnk_14dc;
+            }
+            mUnk_14da = n;
+            for (u8 i = 0; i < 2; i++) {
+                LERP_FX(mUnk_11b4[i].mUnk_00, mUnk_11b4[i].mUnk_0c[0], mUnk_11b4[i].mUnk_12[0]);
+                LERP_FX(mUnk_11b4[i].mUnk_04, mUnk_11b4[i].mUnk_0c[1], mUnk_11b4[i].mUnk_12[1]);
+                LERP_FX(mUnk_11b4[i].mUnk_08, mUnk_11b4[i].mUnk_0c[2], mUnk_11b4[i].mUnk_12[2]);
+                LERP_FX(mUnk_112c[i].mUnk_00, mUnk_112c[i].mUnk_0c[0], mUnk_112c[i].mUnk_12[0]);
+                LERP_FX(mUnk_112c[i].mUnk_04, mUnk_112c[i].mUnk_0c[1], mUnk_112c[i].mUnk_12[1]);
+                LERP_FX(mUnk_112c[i].mUnk_08, mUnk_112c[i].mUnk_0c[2], mUnk_112c[i].mUnk_12[2]);
+                LERP_FX(mUnk_1084[i].mUnk_00, mUnk_1084[i].mUnk_0c[0], mUnk_1084[i].mUnk_12[0]);
+                LERP_FX(mUnk_1084[i].mUnk_04, mUnk_1084[i].mUnk_0c[1], mUnk_1084[i].mUnk_12[1]);
+                LERP_FX(mUnk_1084[i].mUnk_08, mUnk_1084[i].mUnk_0c[2], mUnk_1084[i].mUnk_12[2]);
+                LERP_N(mUnk_11b4[i].mUnk_3f, mUnk_11b4[i].mUnk_41, mUnk_11b4[i].mUnk_40);
+                LERP_N(mUnk_112c[i].mUnk_38, mUnk_112c[i].mUnk_3a, mUnk_112c[i].mUnk_39);
+                LERP_S(mUnk_11b4[i].mUnk_18[0], mUnk_11b4[i].mUnk_1e[0], mUnk_11b4[i].mUnk_24[0]);
+                LERP_S(mUnk_11b4[i].mUnk_18[1], mUnk_11b4[i].mUnk_1e[1], mUnk_11b4[i].mUnk_24[1]);
+                LERP_S(mUnk_11b4[i].mUnk_18[2], mUnk_11b4[i].mUnk_1e[2], mUnk_11b4[i].mUnk_24[2]);
+                LERP_S(mUnk_112c[i].mUnk_18[0], mUnk_112c[i].mUnk_1e[0], mUnk_112c[i].mUnk_24[0]);
+                LERP_S(mUnk_112c[i].mUnk_18[1], mUnk_112c[i].mUnk_1e[1], mUnk_112c[i].mUnk_24[1]);
+                LERP_S(mUnk_112c[i].mUnk_18[2], mUnk_112c[i].mUnk_1e[2], mUnk_112c[i].mUnk_24[2]);
+                LERP_S(mUnk_1084[i].mUnk_18[0], mUnk_1084[i].mUnk_1e[0], mUnk_1084[i].mUnk_24[0]);
+                LERP_S(mUnk_1084[i].mUnk_18[1], mUnk_1084[i].mUnk_1e[1], mUnk_1084[i].mUnk_24[1]);
+                LERP_S(mUnk_1084[i].mUnk_18[2], mUnk_1084[i].mUnk_1e[2], mUnk_1084[i].mUnk_24[2]);
+                {
+                    fx32 q = FXC(mUnk_14da) / mUnk_14dc;
+                    s16 a = mUnk_1244[i].mUnk_0c;
+                    mUnk_1244[i].mUnk_00 = FX_Mul(FXC(mUnk_1244[i].mUnk_12 - a), q) + FXC(a);
+                }
+                {
+                    fx32 q = FXC(mUnk_14da) / mUnk_14dc;
+                    s16 a = mUnk_1244[i].mUnk_0e;
+                    mUnk_1244[i].mUnk_04 = FX_Mul(FXC(mUnk_1244[i].mUnk_14 - a), q) + FXC(a);
+                }
+                {
+                    fx32 q = FXC(mUnk_14da) / mUnk_14dc;
+                    s16 a = mUnk_1244[i].mUnk_10;
+                    mUnk_1244[i].mUnk_08 = FX_Mul(FXC(mUnk_1244[i].mUnk_16 - a), q) + FXC(a);
+                }
+            }
+            LERP_S(mUnk_1274.mVec[0].x, mUnk_1274.mVec[1].x, mUnk_1274.mVec[2].x);
+            LERP_S(mUnk_1274.mVec[0].y, mUnk_1274.mVec[1].y, mUnk_1274.mVec[2].y);
+            LERP_S(mUnk_1274.mVec[0].z, mUnk_1274.mVec[1].z, mUnk_1274.mVec[2].z);
+            LERP_N(mUnk_128c[0], mUnk_128c[1], mUnk_128c[2]);
+            func_02069d0c();
+            LERP_S(mUnk_1298.x, mUnk_129e.x, mUnk_12a4.x);
+            LERP_S(mUnk_1298.y, mUnk_129e.y, mUnk_12a4.y);
+            LERP_S(mUnk_1298.z, mUnk_129e.z, mUnk_12a4.z);
+            {
+                s16 j = 0;
+                LERP_FX(mUnk_101c[j].mUnk_00, mUnk_101c[j].mUnk_0c[0], mUnk_101c[j].mUnk_12[0]);
+                LERP_FX(mUnk_101c[j].mUnk_04, mUnk_101c[j].mUnk_0c[1], mUnk_101c[j].mUnk_12[1]);
+                LERP_FX(mUnk_101c[j].mUnk_08, mUnk_101c[j].mUnk_0c[2], mUnk_101c[j].mUnk_12[2]);
+                LERP_N(mUnk_101c[j].mUnk_18[0], mUnk_101c[j].mUnk_1e[0], mUnk_101c[j].mUnk_24[0]);
+                LERP_N(mUnk_101c[j].mUnk_18[1], mUnk_101c[j].mUnk_1e[1], mUnk_101c[j].mUnk_24[1]);
+                LERP_N(mUnk_101c[j].mUnk_18[2], mUnk_101c[j].mUnk_1e[2], mUnk_101c[j].mUnk_24[2]);
+            }
+            {
+                s8 a = mUnk_14d7;
+                s8 d = mUnk_14d6 - a;
+                int v = a + (d * mUnk_14da) / mUnk_14dc;
+                if (v > 16) {
+                    v = 16;
+                } else if (v < -16) {
+                    v = -16;
+                }
+                mUnk_14d5 = v;
+            }
+            if (mUnk_14da >= mUnk_14dc) {
+                done = TRUE;
+                for (u8 i = 0; i < 2; i++) {
+                    mUnk_11b4[i].mUnk_00 = FXC(mUnk_11b4[i].mUnk_12[0]);
+                    mUnk_11b4[i].mUnk_04 = FXC(mUnk_11b4[i].mUnk_12[1]);
+                    mUnk_11b4[i].mUnk_08 = FXC(mUnk_11b4[i].mUnk_12[2]);
+                    mUnk_11b4[i].mUnk_0c[0] = mUnk_11b4[i].mUnk_12[0];
+                    mUnk_11b4[i].mUnk_0c[1] = mUnk_11b4[i].mUnk_12[1];
+                    mUnk_11b4[i].mUnk_0c[2] = mUnk_11b4[i].mUnk_12[2];
+                    mUnk_11b4[i].mUnk_18[0] = mUnk_11b4[i].mUnk_24[0];
+                    mUnk_11b4[i].mUnk_18[1] = mUnk_11b4[i].mUnk_24[1];
+                    mUnk_11b4[i].mUnk_18[2] = mUnk_11b4[i].mUnk_24[2];
+                    mUnk_11b4[i].mUnk_1e[0] = mUnk_11b4[i].mUnk_24[0];
+                    mUnk_11b4[i].mUnk_1e[1] = mUnk_11b4[i].mUnk_24[1];
+                    mUnk_11b4[i].mUnk_1e[2] = mUnk_11b4[i].mUnk_24[2];
+                    mUnk_101c[i].mUnk_00 = FXC(mUnk_101c[i].mUnk_12[0]);
+                    mUnk_101c[i].mUnk_04 = FXC(mUnk_101c[i].mUnk_12[1]);
+                    mUnk_101c[i].mUnk_08 = FXC(mUnk_101c[i].mUnk_12[2]);
+                    mUnk_101c[i].mUnk_0c[0] = mUnk_101c[i].mUnk_12[0];
+                    mUnk_101c[i].mUnk_0c[1] = mUnk_101c[i].mUnk_12[1];
+                    mUnk_101c[i].mUnk_0c[2] = mUnk_101c[i].mUnk_12[2];
+                    mUnk_101c[i].mUnk_18[0] = mUnk_101c[i].mUnk_24[0];
+                    mUnk_101c[i].mUnk_18[1] = mUnk_101c[i].mUnk_24[1];
+                    mUnk_101c[i].mUnk_18[2] = mUnk_101c[i].mUnk_24[2];
+                    mUnk_101c[i].mUnk_1e[0] = mUnk_101c[i].mUnk_24[0];
+                    mUnk_101c[i].mUnk_1e[1] = mUnk_101c[i].mUnk_24[1];
+                    mUnk_101c[i].mUnk_1e[2] = mUnk_101c[i].mUnk_24[2];
+                    mUnk_112c[i].mUnk_00 = FXC(mUnk_112c[i].mUnk_12[0]);
+                    mUnk_112c[i].mUnk_04 = FXC(mUnk_112c[i].mUnk_12[1]);
+                    mUnk_112c[i].mUnk_08 = FXC(mUnk_112c[i].mUnk_12[2]);
+                    mUnk_112c[i].mUnk_0c[0] = mUnk_112c[i].mUnk_12[0];
+                    mUnk_112c[i].mUnk_0c[1] = mUnk_112c[i].mUnk_12[1];
+                    mUnk_112c[i].mUnk_0c[2] = mUnk_112c[i].mUnk_12[2];
+                    mUnk_112c[i].mUnk_18[0] = mUnk_112c[i].mUnk_24[0];
+                    mUnk_112c[i].mUnk_18[1] = mUnk_112c[i].mUnk_24[1];
+                    mUnk_112c[i].mUnk_18[2] = mUnk_112c[i].mUnk_24[2];
+                    mUnk_112c[i].mUnk_1e[0] = mUnk_112c[i].mUnk_24[0];
+                    mUnk_112c[i].mUnk_1e[1] = mUnk_112c[i].mUnk_24[1];
+                    mUnk_112c[i].mUnk_1e[2] = mUnk_112c[i].mUnk_24[2];
+                    mUnk_1084[i].mUnk_00 = FXC(mUnk_1084[i].mUnk_12[0]);
+                    mUnk_1084[i].mUnk_04 = FXC(mUnk_1084[i].mUnk_12[1]);
+                    mUnk_1084[i].mUnk_08 = FXC(mUnk_1084[i].mUnk_12[2]);
+                    mUnk_1084[i].mUnk_0c[0] = mUnk_1084[i].mUnk_12[0];
+                    mUnk_1084[i].mUnk_0c[1] = mUnk_1084[i].mUnk_12[1];
+                    mUnk_1084[i].mUnk_0c[2] = mUnk_1084[i].mUnk_12[2];
+                    mUnk_1084[i].mUnk_18[0] = mUnk_1084[i].mUnk_24[0];
+                    mUnk_1084[i].mUnk_18[1] = mUnk_1084[i].mUnk_24[1];
+                    mUnk_1084[i].mUnk_18[2] = mUnk_1084[i].mUnk_24[2];
+                    mUnk_1084[i].mUnk_1e[0] = mUnk_1084[i].mUnk_24[0];
+                    mUnk_1084[i].mUnk_1e[1] = mUnk_1084[i].mUnk_24[1];
+                    mUnk_1084[i].mUnk_1e[2] = mUnk_1084[i].mUnk_24[2];
+                    mUnk_1244[i].mUnk_00 = FXC(mUnk_1244[i].mUnk_12);
+                    mUnk_1244[i].mUnk_04 = FXC(mUnk_1244[i].mUnk_14);
+                    mUnk_1244[i].mUnk_08 = FXC(mUnk_1244[i].mUnk_16);
+                    mUnk_1244[i].mUnk_0c = mUnk_1244[i].mUnk_12;
+                    mUnk_1244[i].mUnk_0e = mUnk_1244[i].mUnk_14;
+                    mUnk_1244[i].mUnk_10 = mUnk_1244[i].mUnk_16;
+                }
+                mUnk_1274.mVec[0].x = mUnk_1274.mVec[2].x;
+                mUnk_1274.mVec[1].x = mUnk_1274.mVec[2].x;
+                mUnk_1274.mVec[0].y = mUnk_1274.mVec[2].y;
+                mUnk_1274.mVec[1].y = mUnk_1274.mVec[2].y;
+                mUnk_1274.mVec[0].z = mUnk_1274.mVec[2].z;
+                mUnk_1274.mVec[1].z = mUnk_1274.mVec[2].z;
+                mUnk_128c[0] = mUnk_128c[2];
+                mUnk_128c[1] = mUnk_128c[2];
+                func_02069d0c();
+                mUnk_12a4.x = mUnk_1298.x;
+                mUnk_12a4.y = mUnk_1298.y;
+                mUnk_12a4.z = mUnk_1298.z;
+                mUnk_129e.x = mUnk_1298.x;
+                mUnk_129e.y = mUnk_1298.y;
+                mUnk_129e.z = mUnk_1298.z;
+                mUnk_14d5 = mUnk_14d6;
+                mUnk_14d7 = mUnk_14d6;
+                func_0206e9d0(0);
+            }
+            G2_SetBlendBrightness(0x21, mUnk_14d5);
+            break;
+        }
+        case 7:
+            mUnk_12b9 = 4;
+            break;
+        case 8:
+            if (mUnk_14e7 == 0) {
+                mUnk_14e8 = 1;
+                done = TRUE;
+                mUnk_14f1 = 1;
+            }
+            break;
+        case 9:
+            func_02067b08();
+            mUnk_14e6 = 1;
+            mUnk_12c5 = 10;
+            break;
+        case 10:
+            if (mUnk_14e6 == 0) {
+                done = TRUE;
+            }
+            break;
+        case 0:
+        default:
+            done = TRUE;
+            break;
+    }
+    if (done) {
+        mUnk_12b9 = 3;
+        mUnk_12bc++;
+    }
+}
+#undef FXC
+#undef LERP_FX
+#undef LERP_S
+#undef LERP_N
+
 void UnkStruct_02065c40::func_0206e9d0(u32 flag) {
     if (mUnk_14f3 == flag) {
         return;

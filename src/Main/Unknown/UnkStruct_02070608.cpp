@@ -155,8 +155,6 @@ extern const u32 data_020a2dac[];
 extern WindowCellRecord data_020b8ea0[4];
 extern const WindowItemRecord data_020a2dcc[];
 
-// non-matching: 1 word shorter (0x99c vs 0x9a0). The tile fix-up loop (the original masks with the pool constant 0x1fff and
-// keeps the tile offset in r5) and the register allocation differ; the rest has the same structure.
 void UnkStruct_02070608::func_02070d10() {
     ChangeDir("/Game/2D/union_b/");
     func_02025b64(mUnk_30, 1, mUnk_1c, "union_b_bg_window_ncl.bin", 0, 0, 0);
@@ -164,16 +162,18 @@ void UnkStruct_02070608::func_02070d10() {
     u32 size;
     u16 *tiles = (u16 *) func_02023504("union_b_bg_window_a_nsc.bin", 0, 0, 0, &size, 0);
     size >>= 1;
-    u32 tileAdd = mUnk_18 >> 6;
-    u32 palAdd  = ((mUnk_1c & 0x1fff) << 7) >> 16;
-    if ((palAdd | (u16) tileAdd) != 0) {
+    u16 tileAdd = mUnk_18 >> 6;
+    u16 palAdd  = (mUnk_1c & 0x1fff) / 0x200;
+    if ((palAdd | tileAdd) != 0) {
         u16 i = 0;
         do {
             u16 tile = tiles[i] & 0x3ff;
             u16 flipH = (tiles[i] & 0x400) >> 10;
             u16 pal = (tiles[i] & 0xf000) >> 12;
             u16 flipV = (tiles[i] & 0x800) >> 11;
-            tiles[i] = (u16) (tile + tileAdd) | (flipH << 10) | (flipV << 11) | ((u16) (pal + palAdd) << 12);
+            tile += tileAdd;
+            pal += palAdd;
+            tiles[i] = tile | (flipH << 10) | (flipV << 11) | (pal << 12);
             i++;
         } while (size > i);
     }
@@ -183,7 +183,7 @@ void UnkStruct_02070608::func_02070d10() {
     TextManager::Get().func_0202ce44(mUnk_30, 0, (mUnk_24 >> 5) & 0xff, 0);
     TextManager::Get();
     u16 *buffer = (u16 *) OS_Alloc(0x600);
-    MIi_CpuClear16((u16) (((mUnk_24 >> 5) << 12) | (mUnk_20 >> 5)), buffer, 0x600);
+    MIi_CpuClear16((u16) ((mUnk_20 >> 5) | ((mUnk_24 >> 5) << 12)), buffer, 0x600);
     TextManager::Get().func_0202cd48(0, buffer, (mUnk_24 >> 5) & 0xff, (u16) mUnk_20, 0x18, 0x18, 0x20);
     func_02025c1c(mUnk_30, data_020a2dac[mUnk_32], 0, buffer, 0x600, 1);
     TextManager::Get();
@@ -194,7 +194,7 @@ void UnkStruct_02070608::func_02070d10() {
     screen.LoadPalette("/Game/2D/union_b/union_b_obj_window_ncl.bin", mUnk_2c, 0);
     for (u8 i = 0; i < 4; i++) {
         data_020b8ea0[i].mUnk_08 = mUnk_28;
-        data_020b8ea0[i].mUnk_0c = mUnk_2c >> 5;
+        data_020b8ea0[i].mUnk_0c = mUnk_2c / 32;
     }
     mWindow = new SelectWindow(4, data_020a2dcc, 1);
     mWindow->SetCells(4, data_020b8ea0);

@@ -80,30 +80,31 @@ u16 TextManager::func_0202c1a8(u32 index) {
     return 0;
 }
 
-// non-matching: prologue: order of the stack-argument copies and spill slots; the body is the same. MW copies
-// each stack parameter onto itself in the prologue, in an order that follows the statements that first use them;
-// the original's order is width, height, unk12, unk13, unk10, unk14, outWidth, outHeight, unk11, unk15, unk17,
-// which suggests locals initialised from those parameters at the top of the function.
+// non-matching: 73 words. The prologue copies the stack parameters onto themselves in a different order (the
+// original's is width, height, unk12, unk13, unk10, unk14, outWidth, outHeight, unk11, unk15, unk17, with the
+// mUnk_59 store after them; reordering the first statements doesn't change ours), two pairs of spill slots are
+// swapped (pixelWidth/pixelHeight, savedFontMode/the in-loop fontHeight), and the `x = startX` stores come after
+// the `y` load instead of before it.
 void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u32 height, s16 *outWidth,
                         s16 *outHeight, u16 *outPixelWidth, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13,
                         u32 unk14, u32 unk15, u32 unk16, u32 unk17) {
     s32 lastAdvance;
-    s32 startY;
-    s16 x;
-    u16 pixelHeight;
-    u8 savedFontMode;
-    s32 fontHeight;
-    s32 maxX;
-    u16 pixelWidth;
-    const u16 *line = (const u16 *) text;
-    s16 y;
-    u16 remaining;
-    u16 charCount;
-    s16 startX;
-    u32 drawFlag;
-    u32 more;
-    s32 fontMode;
     u32 color = unk10;
+    u16 remaining;
+    s32 fontHeight;
+    u16 charCount;
+    u8 savedFontMode;
+    s32 startY;
+    s32 maxX;
+    u32 drawFlag;
+    u16 pixelHeight;
+    u32 more;
+    s16 startX;
+    s16 x;
+    const u16 *line = (const u16 *) text;
+    u16 pixelWidth;
+    s16 y;
+    s32 fontMode;
     maxX        = 0;
     pixelWidth  = width * 8;
     pixelHeight = height * 8;
@@ -138,10 +139,10 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u
                 }
                 break;
             }
+            u16 code = *p++;
             units++;
             charCount++;
             remaining -= 2;
-            u16 code = *p++;
             switch (code) {
             case 0xff84:
             case 0xff85:
@@ -325,8 +326,7 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u
         *outPixelWidth = maxX - startX;
     }
     if (unk16 & drawFlag) {
-        u32 area = width * height;
-        DC_FlushRange(buffer, (unk9 == 0 ? 0x20 : 0x40) * area);
+        DC_FlushRange(buffer, width * height * (unk9 == 0 ? 0x20 : 0x40));
     }
     mUnk_5b = savedFontMode;
 }
@@ -404,16 +404,14 @@ void TextManager::func_0202ce44(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
     }
 }
 
-// non-matching: size 0x2ec vs 0x2f0.
+// non-matching: size 0x2f4 vs 0x2f0. The original keeps the stack copy of `width` and shifts it inside the row loop;
+// here `width / 8` is hoisted out of it, which also reorders the row setup. The layout branch's divisions and sum match
+// apart from registers (the original has absX in r7, the tile units in r5/r6).
 void TextManager::func_0202ceac(u32 glyph, void *buffer, u32 eightBit, s32 layout, s16 x, s16 y, u16 width, u16 height) {
-    s16 px  = *(s16 *) &x;
-    u16 pw  = *(u16 *) &width;
-    if ((px < 0) | (px >= pw)) {
+    if ((x < 0) | (x >= width)) {
         return;
     }
-    s16 py = *(s16 *) &y;
-    u16 ph = *(u16 *) &height;
-    if ((py < 0) | (py >= ph)) {
+    if ((y < 0) | (y >= height)) {
         return;
     }
     s32 idx = func_0202d1bc(glyph);
@@ -427,12 +425,11 @@ void TextManager::func_0202ceac(u32 glyph, void *buffer, u32 eightBit, s32 layou
     u8 *font    = data_020b48dc + idx * 0x80;
     u16 unitA   = (layout & 0xf) << 4;
     u16 unitB   = ((layout >> 4) & 0xf) << 4;
-    u16 pw2 = *(u16 *) &width;
     u16 row     = 0;
     do {
-        s32 absY = row + py;
+        s32 absY = row + y;
         u8 *fontRow = font + (row % 8) * 4 + (row / 8) * 0x40;
-        s32 tileRow = (pw2 >> 3) * (absY / 8);
+        s32 tileRow = (width / 8) * (absY / 8);
         s32 yMod = absY % 8;
         u16 col = 0;
         do {
@@ -444,13 +441,25 @@ void TextManager::func_0202ceac(u32 glyph, void *buffer, u32 eightBit, s32 layou
                 v = b & 0xf;
             }
             if (v != 0) {
-                s32 absX = col + px;
                 u32 pos;
                 if (layout == 0) {
+                    s32 absX = col + x;
                     pos = (tileRow + absX / 8) * 0x40 + yMod * 8 + absX % 8;
                 } else {
-                    s32 part = unitA * (pw * (absY / unitA) + unitB * (absX / unitB));
-                    pos = part + unitB * ((absY % unitA) / 8) * 8 + ((absX % unitB) / 8) * 0x40 + yMod * 8 + absX % 8;
+                    s32 absX = col + x;
+                    s32 qy = absY;
+                    qy /= unitA;
+                    s32 qx = absX;
+                    qx /= unitB;
+                    s32 ry = absY;
+                    ry %= unitA;
+                    s32 rx = absX;
+                    rx %= unitB;
+                    pos = unitA * (width * qy + unitB * qx);
+                    pos += unitB * (ry / 8) * 8;
+                    pos += (rx / 8) * 0x40;
+                    pos += yMod * 8;
+                    pos += absX % 8;
                 }
                 u8 *buf = (u8 *) buffer;
                 if (eightBit == 0) {

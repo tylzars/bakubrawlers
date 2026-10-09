@@ -335,6 +335,14 @@ Other findings from linking:
   gets its own pool word. Don't change the shared SetFlagBit/TestFlagBit helpers: existing matches depend on them.
 - **The register of a zero stack argument can depend on the calls before it** (a 7-call cycle with
   `func_02025b64(1, 8, 0, ...)` in tests); the source difference behind it is still open (func_02072734).
+- **More from the 90%-band passes.**
+  - A register-form `and` with a pool-loaded mask comes from division plus u16 truncation:
+    `u16 v = (x & 0x1fff) / 0x200;` (a shift pair would fold).
+  - On u16 values `/ 32` emits `lsr`, `>> 5` emits `asr` (promotion to int).
+  - Compound-assigned locals (`s32 q = a; q /= b;`) fix the order of division-helper calls; one big expression
+    lets mwcc reorder them. An accumulated `pos += ...` keeps adds left to right.
+  - Narrow stack parameters (`s16 x`) need no `*(s16 *)&x` placeholders.
+  - `a[n++] = 0;` computes n+1 before the store (counter-example to the separate post-increment rule).
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

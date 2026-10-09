@@ -160,19 +160,29 @@ void func_02078a48(u8 *dst, const u8 *src) {
     }
 }
 
-// non-matching: 75 words, register allocation of the locals (original keeps unk4 in r7, buffer in r6, field B in r5, extra in sl, pos in r9, field D in fp)
+// non-matching: 21 words. The original computes the last `pos += 2` before freeing the "fr" file and keeps it in r9;
+// here it is sunk below the "len" load into a scratch register. The final call reloads `screen` last instead of first.
 void func_02078ab8(u32 screen, u32 palette, const AntennaPalette *colors, u32 unk4) {
-    u8 *buffer = (u8 *) OS_Alloc(0x20);
-    u32 h      = colors->mUnk_02_6;
-    u32 i      = colors->mUnk_02_9;
-    u32 d      = colors->mUnk_00_10;
-    u32 b      = colors->mUnk_00_4;
-    u32 f      = colors->mUnk_02_0;
-    u8 *extra  = NULL;
-    u32 j16    = colors->mUnk_06_0 << 4;
-    u8 pos     = 1;
-    u32 size;
+    u32 h;
+    u32 i;
+    u32 d;
+    u32 f;
+    u32 b;
+    u8 *buffer;
     u8 *file;
+    u32 j16;
+    u32 size;
+    u8 pos;
+    u8 *extra;
+    buffer = (u8 *) OS_Alloc(0x20);
+    j16    = colors->mUnk_06_0 << 4;
+    b      = colors->mUnk_00_4;
+    d      = colors->mUnk_00_10;
+    f      = colors->mUnk_02_0;
+    i      = colors->mUnk_02_9;
+    h      = colors->mUnk_02_6;
+    extra  = NULL;
+    pos    = 1;
     ChangeDir("/Game/Character/EditedIcon/");
     if (unk4 == 0) {
         file = (u8 *) func_02023504("icon_ch_edit_ncl.bin", 0, 0, 0, &size, 0);

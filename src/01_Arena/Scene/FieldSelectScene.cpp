@@ -68,7 +68,9 @@ extern const u8 data_ov001_022270bc[];
 
 extern u8 data_020d43eb[];
 
-// non-matching: register allocation and scheduling of the mUnk_33b loads in the first flag loop.
+// non-matching: the first flag loop's inner test adds data_020d496a and `byte` once outside the loop (the original adds
+// `byte` last, after base + k * 3) and shifts `byte` with asr where the original has lsr; the j/row registers of the
+// mUnk_25c loop differ (r3/r7/r9 vs r7/r9/r3).
 FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     mWindows[0] = NULL;
     mWindows[1] = NULL;
@@ -146,7 +148,7 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
         } else {
             u8 f                  = data_ov001_02227194[i];
             mUnk_266[mUnk_33b][i] = 0;
-            u32 byte = (u32) f >> 3;
+            int byte = f >> 3;
             int bit  = f % 8;
             for (u8 k = 0; k < 3; k++) {
                 if (data_020d496a[k * 3 + byte] & (1 << bit)) {
@@ -175,24 +177,25 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
             }
         }
     }
-    u8 n = 0;
-    for (u8 i = 0; i < 5; i++) {
-        for (u8 j = 0; j < 2; j++) {
+    u8 j;
+    u8 i;
+    for (i = 0; i < 5; i++) {
+        for (j = 0; j < 2; j++) {
             mUnk_25c[i * 2 + j] = 0;
         }
         mUnk_25c[i * 2 + 1] = 2;
     }
     mUnk_25c[1] = 3;
+    u8 n = 0;
     if (mUnk_33a == 0) {
         WirelessManager::Get();
         if (IsWirelessMode(mode)) {
-            mUnk_2ed[0] = 5;
             n++;
+            mUnk_2ed[0] = 5;
         }
         mUnk_329 = n;
         if (mUnk_32a < 4) {
-            mUnk_2ed[n] = 0;
-            n++;
+            mUnk_2ed[n++] = 0;
         }
         u8 n1 = n + 1;
         u8 n2 = n1 + 1;

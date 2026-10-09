@@ -343,6 +343,12 @@ Other findings from linking:
     lets mwcc reorder them. An accumulated `pos += ...` keeps adds left to right.
   - Narrow stack parameters (`s16 x`) need no `*(s16 *)&x` placeholders.
   - `a[n++] = 0;` computes n+1 before the store (counter-example to the separate post-increment rule).
+- **NitroSDK matrix concat reuses a column between rows.** Load the last column used in a row into locals
+  (`xx = b->_[2]; yy = b->_[5]; zz = b->_[8];`) and reuse them for the first element of the next row, alternating
+  the column order row by row. A product of two locals gives umull+mla with sign words on the stack, a local times a
+  fresh load gives smull/smlal: both forms in one function are the sign. `(fx32)((e64 >> 12) + t)` gives `adds`.
+- **mwcc predicates the else arm:** in an if/else whose predicated arm branches over the other, the predicated arm
+  is the source's else. Duplicated call tails in both arms are not merged: write them in both arms.
 - **Bool stores:** `if (x) { f = 1; } else { f = 0; }` computes into the result register
   and stores before the return-value move. `f = x != 0;`, `?:` and `!!` don't.
 - **Bool-returning inline getters:** `bool r = false; if (cond) r = true; return r;`

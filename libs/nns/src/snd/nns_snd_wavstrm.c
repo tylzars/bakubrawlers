@@ -388,11 +388,11 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
             samples = remaining;
             if (s->format != 0) samples = remaining >> 1;
             if (s->b4) {
-                if (startSample != 0) {
+                if (startSample == 0) {
+                    s->b4 = 0;
+                } else {
                     samples = startSample;
                     startSample = 0;
-                } else {
-                    s->b4 = 0;
                 }
             }
             loopNow = 0;
@@ -413,16 +413,19 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
                 readBytes = samples;
                 break;
             case 1:
-                outBytes = samples * 2;
+                outBytes *= 2;
                 readBytes = outBytes;
                 i = startSample * 2;
                 break;
             case 2:
                 readBytes = ((startSample + samples + 1) >> 1) - (startSample >> 1);
-                if (startSample == 0) readBytes += 4;
                 i = startSample >> 1;
-                if (startSample != 0) i += 4;
-                outBytes = samples * 2;
+                if (startSample == 0) {
+                    readBytes += 4;
+                } else {
+                    i += 4;
+                }
+                outBytes *= 2;
                 break;
             }
             readPos = s->dataOff + s->channels * (blk * s->blockSize) + i;

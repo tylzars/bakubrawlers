@@ -34,11 +34,12 @@ extern double func_0201cfc4(Dec *);
 
 double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nread, int *ovf)
 {
+    int hexst, idx;
     int ws, neg, expneg, expv, adj, signcnt;
     unsigned char *mp;
     int hexexp, hexneg;
     unsigned hexcnt;
-    int count, state, hexst, idx, c;
+    int count, state, c;
     hexst = 0;
     count = 0;
     ws = 0;
@@ -256,13 +257,19 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
                         v = mp[idx / 2];
                         c = TOUPPER(c);
                         if (c >= 'A') c -= '7'; else c -= '0';
-                        if (idx % 2 == 0) v |= (unsigned char)(c << 4);
-                        else v |= (unsigned char)c;
+                        {
+                            unsigned char n = c;
+                            if (idx % 2 == 0) v |= (unsigned char)(n << 4);
+                            else v |= n;
+                        }
                         mp[idx / 2] = v;
                         idx++;
+                        count++;
+                        c = rd(ctx, 0, 0);
+                    } else {
+                        count++;
+                        c = rd(ctx, 0, 0);
                     }
-                    count++;
-                    c = rd(ctx, 0, 0);
                 }
                 break;
             case 8:
@@ -273,13 +280,19 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
                         v = mp[idx / 2];
                         c = TOUPPER(c);
                         if (c >= 'A') c -= '7'; else c -= '0';
-                        if (idx % 2 == 0) v |= (unsigned char)(c << 4);
-                        else v |= (unsigned char)c;
+                        {
+                            unsigned char n = c;
+                            if (idx % 2 == 0) v |= (unsigned char)(n << 4);
+                            else v |= n;
+                        }
                         mp[idx / 2] = v;
                         idx++;
+                        count++;
+                        c = rd(ctx, 0, 0);
+                    } else {
+                        count++;
+                        c = rd(ctx, 0, 0);
                     }
-                    count++;
-                    c = rd(ctx, 0, 0);
                 }
                 break;
             case 0x10:
@@ -353,7 +366,8 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
     } else {
         union { unsigned char b[8]; double d; } tu;
         unsigned char *tmp = tu.b;
-        int i, j, k, dst, n;
+        unsigned i;
+        int j, k, dst, n;
         unsigned char first;
         if (hexneg) hexexp = -hexexp;
         hexexp = hexexp + hexcnt * 4;

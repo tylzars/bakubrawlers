@@ -69,26 +69,42 @@ void func_01ff8298(MtxFx33 *mtx, fx32 sin, fx32 cos) {
 }
 #pragma thumb off
 
-// not matching: original keeps b elements in registers and mixes umull/mla forms for two of the nine outputs
 void func_01ff82b0(const MtxFx33 *a, const MtxFx33 *b, MtxFx33 *ab) {
     MtxFx33 tmp;
-    MtxFx33 *p = (ab == b) ? &tmp : ab;
-    fx32 a00 = a->_[0], a01 = a->_[1], a02 = a->_[2];
-    p->_[0] = (fx32) (((fx64) a00 * b->_[0] + (fx64) a01 * b->_[3] + (fx64) a02 * b->_[6]) >> 12);
-    p->_[1] = (fx32) (((fx64) a00 * b->_[1] + (fx64) a01 * b->_[4] + (fx64) a02 * b->_[7]) >> 12);
-    p->_[2] = (fx32) (((fx64) a00 * b->_[2] + (fx64) a01 * b->_[5] + (fx64) a02 * b->_[8]) >> 12);
-    {
-        fx32 a10 = a->_[3], a11 = a->_[4], a12 = a->_[5];
-        p->_[5] = (fx32) (((fx64) a10 * b->_[2] + (fx64) a11 * b->_[5] + (fx64) a12 * b->_[8]) >> 12);
-        p->_[4] = (fx32) (((fx64) a10 * b->_[1] + (fx64) a11 * b->_[4] + (fx64) a12 * b->_[7]) >> 12);
-        p->_[3] = (fx32) (((fx64) a10 * b->_[0] + (fx64) a11 * b->_[3] + (fx64) a12 * b->_[6]) >> 12);
+    MtxFx33 *p;
+    fx32 x, y, z;
+    fx32 xx, yy, zz;
+
+    if (ab == b) {
+        p = &tmp;
+    } else {
+        p = ab;
     }
-    {
-        fx32 a20 = a->_[6], a21 = a->_[7], a22 = a->_[8];
-        p->_[6] = (fx32) (((fx64) a20 * b->_[0] + (fx64) a21 * b->_[3] + (fx64) a22 * b->_[6]) >> 12);
-        p->_[7] = (fx32) (((fx64) a20 * b->_[1] + (fx64) a21 * b->_[4] + (fx64) a22 * b->_[7]) >> 12);
-        p->_[8] = (fx32) (((fx64) a20 * b->_[2] + (fx64) a21 * b->_[5] + (fx64) a22 * b->_[8]) >> 12);
-    }
+    x = a->_[0];
+    y = a->_[1];
+    z = a->_[2];
+    p->_[0] = (fx32) (((fx64) x * b->_[0] + (fx64) y * b->_[3] + (fx64) z * b->_[6]) >> FX32_SHIFT);
+    p->_[1] = (fx32) (((fx64) x * b->_[1] + (fx64) y * b->_[4] + (fx64) z * b->_[7]) >> FX32_SHIFT);
+    xx = b->_[2];
+    yy = b->_[5];
+    zz = b->_[8];
+    p->_[2] = (fx32) (((fx64) x * xx + (fx64) y * yy + (fx64) z * zz) >> FX32_SHIFT);
+    x = a->_[3];
+    y = a->_[4];
+    z = a->_[5];
+    p->_[5] = (fx32) (((fx64) x * xx + (fx64) y * yy + (fx64) z * zz) >> FX32_SHIFT);
+    p->_[4] = (fx32) (((fx64) x * b->_[1] + (fx64) y * b->_[4] + (fx64) z * b->_[7]) >> FX32_SHIFT);
+    xx = b->_[0];
+    yy = b->_[3];
+    zz = b->_[6];
+    p->_[3] = (fx32) (((fx64) x * xx + (fx64) y * yy + (fx64) z * zz) >> FX32_SHIFT);
+    x = a->_[6];
+    y = a->_[7];
+    z = a->_[8];
+    p->_[6] = (fx32) (((fx64) x * xx + (fx64) y * yy + (fx64) z * zz) >> FX32_SHIFT);
+    p->_[7] = (fx32) (((fx64) x * b->_[1] + (fx64) y * b->_[4] + (fx64) z * b->_[7]) >> FX32_SHIFT);
+    p->_[8] = (fx32) (((fx64) x * b->_[2] + (fx64) y * b->_[5] + (fx64) z * b->_[8]) >> FX32_SHIFT);
+
     if (p == &tmp) {
         *ab = tmp;
     }
@@ -108,32 +124,54 @@ void func_01ff85a8(const MtxFx43 *src, MtxFx43 *dst, fx32 x, fx32 y, fx32 z) {
     dst->_[11] = src->_[11];
 }
 
-// not matching: same mixed umull/mla pattern as func_01ff82b0
 void func_01ff89c0(const MtxFx43 *a, const MtxFx43 *b, MtxFx43 *ab) {
     MtxFx43 tmp;
-    MtxFx43 *p = (ab == b) ? &tmp : ab;
-    fx32 a00 = a->_[0], a01 = a->_[1], a02 = a->_[2];
-    p->_[0] = (fx32) (((fx64) a00 * b->_[0] + (fx64) a01 * b->_[3] + (fx64) a02 * b->_[6]) >> 12);
-    p->_[1] = (fx32) (((fx64) a00 * b->_[1] + (fx64) a01 * b->_[4] + (fx64) a02 * b->_[7]) >> 12);
-    p->_[2] = (fx32) (((fx64) a00 * b->_[2] + (fx64) a01 * b->_[5] + (fx64) a02 * b->_[8]) >> 12);
-    {
-        fx32 a10 = a->_[3], a11 = a->_[4], a12 = a->_[5];
-        p->_[5] = (fx32) (((fx64) a10 * b->_[2] + (fx64) a11 * b->_[5] + (fx64) a12 * b->_[8]) >> 12);
-        p->_[4] = (fx32) (((fx64) a10 * b->_[1] + (fx64) a11 * b->_[4] + (fx64) a12 * b->_[7]) >> 12);
-        p->_[3] = (fx32) (((fx64) a10 * b->_[0] + (fx64) a11 * b->_[3] + (fx64) a12 * b->_[6]) >> 12);
+    MtxFx43 *p;
+    fx32 x, y, z;
+    fx32 xx, yy, zz;
+
+    if (ab == b) {
+        p = &tmp;
+    } else {
+        p = ab;
     }
-    {
-        fx32 a20 = a->_[6], a21 = a->_[7], a22 = a->_[8];
-        p->_[6] = (fx32) (((fx64) a20 * b->_[0] + (fx64) a21 * b->_[3] + (fx64) a22 * b->_[6]) >> 12);
-        p->_[7] = (fx32) (((fx64) a20 * b->_[1] + (fx64) a21 * b->_[4] + (fx64) a22 * b->_[7]) >> 12);
-        p->_[8] = (fx32) (((fx64) a20 * b->_[2] + (fx64) a21 * b->_[5] + (fx64) a22 * b->_[8]) >> 12);
-    }
-    {
-        fx32 t0 = a->_[9], t1 = a->_[10], t2 = a->_[11];
-        p->_[11] = (fx32) (((fx64) t0 * b->_[2] + (fx64) t1 * b->_[5] + (fx64) t2 * b->_[8]) >> 12) + b->_[11];
-        p->_[10] = (fx32) (((fx64) t0 * b->_[1] + (fx64) t1 * b->_[4] + (fx64) t2 * b->_[7]) >> 12) + b->_[10];
-        p->_[9] = (fx32) (((fx64) t0 * b->_[0] + (fx64) t1 * b->_[3] + (fx64) t2 * b->_[6]) >> 12) + b->_[9];
-    }
+    x = a->_[0];
+    y = a->_[1];
+    z = a->_[2];
+    p->_[0] = (fx32) (((fx64) x * b->_[0] + (fx64) y * b->_[3] + (fx64) z * b->_[6]) >> FX32_SHIFT);
+    p->_[1] = (fx32) (((fx64) x * b->_[1] + (fx64) y * b->_[4] + (fx64) z * b->_[7]) >> FX32_SHIFT);
+    xx = b->_[2];
+    yy = b->_[5];
+    zz = b->_[8];
+    p->_[2] = (fx32) (((fx64) x * xx + (fx64) y * yy + (fx64) z * zz) >> FX32_SHIFT);
+    x = a->_[3];
+    y = a->_[4];
+    z = a->_[5];
+    p->_[5] = (fx32) (((fx64) x * xx + (fx64) y * yy + (fx64) z * zz) >> FX32_SHIFT);
+    p->_[4] = (fx32) (((fx64) x * b->_[1] + (fx64) y * b->_[4] + (fx64) z * b->_[7]) >> FX32_SHIFT);
+    xx = b->_[0];
+    yy = b->_[3];
+    zz = b->_[6];
+    p->_[3] = (fx32) (((fx64) x * xx + (fx64) y * yy + (fx64) z * zz) >> FX32_SHIFT);
+    x = a->_[6];
+    y = a->_[7];
+    z = a->_[8];
+    p->_[6] = (fx32) (((fx64) x * xx + (fx64) y * yy + (fx64) z * zz) >> FX32_SHIFT);
+    p->_[7] = (fx32) (((fx64) x * b->_[1] + (fx64) y * b->_[4] + (fx64) z * b->_[7]) >> FX32_SHIFT);
+    xx = b->_[2];
+    yy = b->_[5];
+    zz = b->_[8];
+    p->_[8] = (fx32) (((fx64) x * xx + (fx64) y * yy + (fx64) z * zz) >> FX32_SHIFT);
+    x = a->_[9];
+    y = a->_[10];
+    z = a->_[11];
+    p->_[11] = (fx32) ((((fx64) x * xx + (fx64) y * yy + (fx64) z * zz) >> FX32_SHIFT) + b->_[11]);
+    p->_[10] = (fx32) ((((fx64) x * b->_[1] + (fx64) y * b->_[4] + (fx64) z * b->_[7]) >> FX32_SHIFT) + b->_[10]);
+    xx = b->_[0];
+    yy = b->_[3];
+    zz = b->_[6];
+    p->_[9] = (fx32) ((((fx64) x * xx + (fx64) y * yy + (fx64) z * zz) >> FX32_SHIFT) + b->_[9]);
+
     if (p == &tmp) {
         *ab = tmp;
     }

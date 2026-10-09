@@ -93,7 +93,7 @@ treated as game code. Proposed source files follow the class boundaries (vtables
   (bitstream unpacking, an audio lattice filter over 256 samples, 8x8 block filters); it uses pc-relative table
   reads and non-standard argument registers.
 - 0x0204c088-0x0204c40c: CRI's MPEG synthesis dot products (`ldmib` + `smlatt`).
-- ITCM: `func_01ff817c` (identity matrix fill), the `MIi_CpuClear*`/copy routines at 0x01ff94c8-0x01ff962f and
+- ITCM: `func_01ff817c` (identity matrix fill), `func_01ff8298` (Thumb, single-register `stmia` with writeback), the `MIi_CpuClear*`/copy routines at 0x01ff94c8-0x01ff962f and
   0x01ff97f4, the IRQ dispatcher `func_01ffc93c` and the thread-switch return `func_01ffc9a4`.
 - NitroSDK: the SHA-1 block transform `func_0200bb88`, the divider/sqrt register save and restore
   (`func_0200be08`, `func_0200be48`) and the LZ streaming decompress step `func_02007d94` (uses `swpb`).

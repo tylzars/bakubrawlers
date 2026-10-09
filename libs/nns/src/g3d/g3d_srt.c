@@ -237,6 +237,8 @@ void func_02035640(u32 *m) {   // load the texture matrix built from a texture S
     }
     func_01ff93d8(buf[0], &buf[1], 0x12);
 }
+// non-matching: same instructions as the original except register allocation and the order of the two
+// translation terms (the original computes the x*sT term first and spills W16)
 void func_02035788(s32 *out, u8 *p) {   // scale, rotate and translate (translation in the rotated frame)
     s32 w = W16 << 12;
     s32 h = H16 << 12;
@@ -246,17 +248,17 @@ void func_02035788(s32 *out, u8 *p) {   // scale, rotate and translate (translat
     s32 s = PS16(p, 0x20);
     s32 sT = P32(p, 0x1c);
     s32 r4, r5;
-    s32 x, y;
+    long long x, y;
     out[0] = FxMul(sS, c);
     r4 = FxMul(sT, c);
     r5 = FxMul(sS, s);
     out[5] = r4;
     out[1] = (FxMul(sT, s) * func_01ff80c0(q)) >> 12;
     q = func_01ff8154(w, h);
-    x = (s32)((((long long)P32(p, 0x24) * s) - ((long long)P32(p, 0x28) * c)) >> 12);
-    y = (s32)((((long long)P32(p, 0x28) * s) + ((long long)P32(p, 0x24) * c)) >> 12);
-    out[12] = ((s32)W16 * (r5 - FxMul(x, sS))) << 4;
-    out[13] = (-(s32)H16 * (r4 + FxMul(y, sT) - 0x1000)) << 4;
+    x = (((long long)P32(p, 0x24) * PS16(p, 0x20)) - ((long long)P32(p, 0x28) * PS16(p, 0x22))) >> 12;
+    y = (((long long)P32(p, 0x28) * PS16(p, 0x20)) + ((long long)P32(p, 0x24) * PS16(p, 0x22))) >> 12;
+    out[12] = ((s32)W16 * (r5 - (s32)((y * P32(p, 0x18)) >> 12))) << 4;
+    out[13] = (-(s32)H16 * (r4 + (s32)((x * P32(p, 0x1c)) >> 12) - 0x1000)) << 4;
     out[4] = (-r5 * func_01ff80c0(q)) >> 12;
 }
 void func_020358dc(s32 *out, u8 *p) {   // rotate and translate (translation in the rotated frame)

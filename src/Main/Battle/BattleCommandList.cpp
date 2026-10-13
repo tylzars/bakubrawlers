@@ -1043,7 +1043,6 @@ void BattleCommandList::func_0205b0dc(const BattleCellPair *pair) {
  // per command, six message indices (.rodata 0x0209e68c)
    // 0x20 bytes cleared before the first text of a page
 
-// non-matching: 20 words, scheduling of the last table loads.
 void func_0205b1c4(u32 index, u32 unk2) {
     UnkStruct_02023248 *entry = func_02023248(data_020d43f0, index, unk2);
     entry->mUnk_0  = data_0209e5bc[index][0];

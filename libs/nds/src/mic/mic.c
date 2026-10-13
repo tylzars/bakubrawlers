@@ -86,8 +86,8 @@ u32 func_0200c9ac(void)
 
 void func_0200c9bc(u32 tag, u32 data, int err)
 {
-    u32 res, r;
-    u16 cmd;
+    u32 res;
+    u16 cmd, r;
     if (err) {
         if (micWork.busy) micWork.busy = 0;
         if (micWork.cb) {

@@ -278,13 +278,10 @@ void func_02044440(Pl *o)
     n = func_02041714(o->h);
     data_02216848 = n;
     func_02047998(o->ic);
-    i = 0;
-    if (n > 0) {
-        do {
-            v = o->ch[i]->vt->f24(o->ch[i], 1);
-            if (v < 0x40) i++;
-            data_02216844 = v;
-        } while (v < 0x40 && i < n);
+    for (i = 0; i < n; i++) {
+        v = o->ch[i]->vt->f24(o->ch[i], 1);
+        data_02216844 = v;
+        if (v >= 0x40) break;
     }
     if (i != n) return;
     func_02047914(o->ic, 0);

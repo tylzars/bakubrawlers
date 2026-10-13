@@ -1771,7 +1771,6 @@ void BattleShoot::func_ov007_0226f76c(u8 x, u8 y) {
     } while (i < 12);
 }
 
-// non-matching: 12 words, register allocation of the index computation (original uses one register less).
 void BattleShoot::func_ov007_0226f820(u8 x, u8 y) {
     if (y >= 0xc0) {
         return;

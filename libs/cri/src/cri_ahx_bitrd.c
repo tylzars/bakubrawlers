@@ -86,10 +86,11 @@ void func_0204e478(CriBits *r)
     int a;
     if (r->avail < 4) {
         int len = r->len;
+        CriPair *pp = &pa;
         pa.p = r->base;
         pa.n = len;
         if (len != 0) {
-            func_0204e67c(&pa, len - r->avail, &pa, &pb);
+            func_0204e67c(pp, len - r->avail, pp, &pb);
             r->src->vt->commit(r->src, 0, &pa);
             r->src->vt->put(r->src, 1, &pb);
         }

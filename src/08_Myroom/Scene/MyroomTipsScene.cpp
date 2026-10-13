@@ -741,9 +741,8 @@ BOOL MyroomTipsScene::func_ov008_02227dd4() {
     return confirm;
 }
 
-// non-matching: 0x18c vs 0x194 bytes; the original spills this+0x78 to the stack (extra local) and keeps the context pointer in a register
 void MyroomTipsScene::func_ov008_02228214(s32 row) {
-    s16 *widths = mUnk_78;
+    s16 *widths;
     UnkStruct_SceneContext *context = mContext;
     u8 i   = 0;
     u8 end = 4;
@@ -751,6 +750,7 @@ void MyroomTipsScene::func_ov008_02228214(s32 row) {
         i   = row;
         end = i;
     }
+    widths = mUnk_78;
     do {
         MI_CpuClear16(mTextBuffers[i], mTextBufferSize);
         TextManager &text = TextManager::Get();

@@ -576,7 +576,6 @@ void BattleCommandPage::func_02056414() {
     func_02056f38();
 }
 
-// non-matching: 0x530 vs 0x524, register allocation of total, base and rem.
 void BattleCommandPage::func_02056814(u32 index) {
     mUnk_fb = index;
     func_02056f38();

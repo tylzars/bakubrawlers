@@ -85,7 +85,6 @@ void MicManager::func_0202d94c() {
     mEvents = 0;
 }
 
-// non-matching: 2 words in the else-branch store sequence.
 void MicManager::func_0202d9ac() {
     s32 level = 0;
     mEvents   = 0;
@@ -116,8 +115,6 @@ void MicManager::func_0202d9ac() {
         mEvents |= (mPrevBlowing & (mBlowing ^ mPrevBlowing)) ? 4 : 0;
         mEvents |= mBlowing ? 1 : 0;
     } else {
-        mPrevBlowing = level & 0xff;
-        mHold = level;
-        mBlowing = mPrevBlowing;
+        mBlowing = mPrevBlowing = mHold = level;
     }
 }

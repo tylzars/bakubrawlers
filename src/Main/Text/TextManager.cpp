@@ -24,7 +24,6 @@ struct TextSprite {
 
 extern "C" void DC_FlushRange(void *buffer, u32 size);
 
-// non-matching: 5 words.
 void TextManager::func_0202c02c() {
     mCursor  = &data_020a596c;
     *mCursor = 0;
@@ -65,12 +64,12 @@ void TextManager::func_0202c02c() {
         g++;
     } while (g < count);
     u16 idx;
-    u8 i = 1;
     idx = func_0202d1bc(*(u16 *) ((u8 *) mData + mData->mTables[0].mOffset + 0x20));
+    g = 1;
     do {
-        Widths()[idx + i] = Widths()[idx];
-        i++;
-    } while (i < 10);
+        Widths()[idx + g] = Widths()[idx];
+        g++;
+    } while (g < 10);
 }
 
 u16 TextManager::func_0202c1a8(u32 index) {

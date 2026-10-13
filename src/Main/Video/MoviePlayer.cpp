@@ -145,8 +145,6 @@ void func_0203c448(MoviePlayer *player) {
     player->mUnk_e8 = 1;
 }
 
-// non-matching: 7 instructions, register allocation of the OAM fill loop (original keeps row in r6 and col in r5, computes
-// row << 6 before col, and has one more `mov` for the post-incremented pointer; same size 0x160 vs 0x15c)
 void func_0203c454(MoviePlayer *player) {
     if (player->mUnk_f0 != 0) {
         return;
@@ -162,7 +160,7 @@ void func_0203c454(MoviePlayer *player) {
                 int col = i % 4;
                 SpriteOamEntry *e = oam++;
                 e->mAttr01 = ((row * 64) & 0xff) | 0xc0000c00 | ((col & 7) << 22);
-                e->mAttr2  = ((row << 8) + (col << 3)) | 0xf000;
+                e->mAttr2  = ((col << 3) + (row << 8)) | 0xf000;
             }
             GXS_LoadOAM(oam, 0, 0x400);
         }

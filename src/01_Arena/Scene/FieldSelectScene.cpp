@@ -292,7 +292,6 @@ FieldSelectScene::~FieldSelectScene() {
     }
 }
 
-// non-matching: 16 words, the base register for the MATH_Rand32 update of data_020d42e8 differs
 void FieldSelectScene::Update() {
     func_ov001_02222040();
     switch (mState) {

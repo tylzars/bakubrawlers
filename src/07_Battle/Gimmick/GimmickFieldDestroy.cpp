@@ -125,7 +125,6 @@ void GimmickFieldDestroy::Finish() {
     mState = 5;
 }
 
-// non-matching: same .bss ordering difference as Load.
 void GimmickFieldDestroy::Update() {
     switch (mState) {
     case 0:

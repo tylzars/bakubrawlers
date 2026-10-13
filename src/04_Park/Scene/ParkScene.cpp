@@ -110,8 +110,6 @@ ParkScene::~ParkScene() {
     Cleanup();
 }
 
-// non-matching: 2 words in case 24. The original computes the func_0206fa20 address arguments in the order
-// r2, r1, r3; every source form tried gives r1, r2, r3.
 void ParkScene::Update() {
     switch (mUnk_0d) {
         case 0: {

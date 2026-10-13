@@ -5,8 +5,6 @@ extern "C" u32 func_02012328(const char *str);
 extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 void *operator new[](size_t size);
 
-// non-matching: 1 word. The original reads the stack argument with `ldr`, we emit `ldrb` for u8 (the callee-side
-// narrow-argument problem); with a u32 parameter (different mangling) it matches 4/4.
 ModelResource::ModelResource(const char *nsbmd, const char *data, const char *nsbtx, u32 unk4) {
     mModelFile   = NULL;
     mTextureFile = NULL;

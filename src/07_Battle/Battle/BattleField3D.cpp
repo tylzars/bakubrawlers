@@ -216,7 +216,6 @@ void func_ov007_02229998(BattleField3D *obj) {
     }
 }
 
-// non-matching: delta in r3 instead of r2, and one load register.
 void BattleField3D::func_ov007_022299f4(u32 frame) {
     if (frame < 0x14) {
         frame = 0x14;

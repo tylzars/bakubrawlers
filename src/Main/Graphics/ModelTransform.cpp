@@ -27,8 +27,6 @@ ModelTransform::~ModelTransform() {
     }
 }
 
-// non-matching: 1 word. Same stack-argument `ldr` vs `ldrb` as ModelResource's constructor; matches 7/7 with a u32
-// parameter (different mangling).
 void ModelTransform::func_020525c0(const char *nsbtx, const char *nsbmd, const char *data, u32 unk0) {
     NitroTexture *texture = new NitroTexture(nsbtx);
     NitroModel *model     = new NitroModel(nsbmd, texture);

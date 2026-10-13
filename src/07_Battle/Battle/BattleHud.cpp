@@ -537,9 +537,8 @@ void BattleHud::func_ov007_02226ab8() {
     mUnk_20 = mParam->mUnk_01;
 }
 
-// non-matching: 2 words: the mov r2, #0 is scheduled before the second float load.
 BOOL BattleHud::func_ov007_02226c70() {
-    BOOL done = 0;
+    u8 done = 0;
     mUnk_a8[0] = mUnk_a8[0] + mUnk_a0[0];
     mUnk_a8[1] = mUnk_a8[1] + mUnk_a0[1];
     if (mUnk_98 == mUnk_9c - mUnk_c0) {

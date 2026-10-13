@@ -1,5 +1,4 @@
-/* MSL strtoul/strtoull, main 0x02016ec0-0x020177ac: __strtoul (16ec0), __strtoull (172a8), strtoul (17714).
-   Remaining: 16ec0 differs in register assignment of state/count/ch + one extra tail-merged block (4 bytes); 17714 differs by one word (mvn vs sub for return -1). */
+/* MSL strtoul/strtoull, main 0x02016ec0-0x020177ac: __strtoul (16ec0), __strtoull (172a8), strtoul (17714). */
 extern const unsigned short data_020903a8[];
 extern const unsigned char data_02090328[];
 extern int data_020c1790;
@@ -78,21 +77,21 @@ unsigned long func_02016ec0(int base, int maxw, int (*rd)(void *, int, int), voi
             if (ISDIGIT(ch)) {
                 ch -= '0';
                 if (ch >= base) {
-                    state = (state == 0x10) ? 0x20 : 0x40;
+                    if (state == 0x10) state = 0x20; else state = 0x40;
                     ch += '0';
                     break;
                 }
             } else if (!ISALPHA(ch) || TOUPPER(ch) - 'A' + 10 >= base) {
-                state = (state == 0x10) ? 0x20 : 0x40;
+                if (state == 0x10) state = 0x20; else state = 0x40;
                 break;
             } else {
                 ch = TOUPPER(ch) - 'A' + 10;
             }
-            state = 0x10;
             if (value > max_over) *ovf = 1;
             value *= base;
             if (ch > (unsigned long)(stop - value)) *ovf = 1;
             value += ch;
+            state = 0x10;
             count++;
             ch = rd(ctx, 0, 0);
             break;
@@ -112,22 +111,15 @@ unsigned long func_02016ec0(int base, int maxw, int (*rd)(void *, int, int), voi
 unsigned long long func_020172a8(int base, int maxw, int (*rd)(void *, int, int), void *ctx,
                             int *nread, int *neg, int *ovf)
 {
-    int state;
-    int count;
+    int state = 1;
+    int count = 0;
+    int nspace = 0;
+    unsigned long long value = 0;
+    unsigned long long max_over = 0;
     int ch;
-    unsigned long long value;
-    unsigned long long max_over;
-    int nspace;
-    int dig;
     int stop = -1;
 
-    *ovf = 0;
-    max_over = 0;
-    *neg = 0;
-    nspace = 0;
-    count = 0;
-    value = 0;
-    state = 1;
+    *neg = *ovf = 0;
     if (base < 0 || base == 1 || base > 36 || maxw < 1) {
         state = 0x40;
     } else {
@@ -182,21 +174,21 @@ unsigned long long func_020172a8(int base, int maxw, int (*rd)(void *, int, int)
             if (ISDIGIT(ch)) {
                 ch -= '0';
                 if (ch >= base) {
-                    state = (state == 0x10) ? 0x20 : 0x40;
+                    if (state == 0x10) state = 0x20; else state = 0x40;
                     ch += '0';
                     break;
                 }
             } else if (!ISALPHA(ch) || TOUPPER(ch) - 'A' + 10 >= base) {
-                state = (state == 0x10) ? 0x20 : 0x40;
+                if (state == 0x10) state = 0x20; else state = 0x40;
                 break;
             } else {
                 ch = TOUPPER(ch) - 'A' + 10;
             }
-            state = 0x10;
             if (value > max_over) *ovf = 1;
             value *= base;
             if (ch > (unsigned long long)(stop - value)) *ovf = 1;
             value += ch;
+            state = 0x10;
             count++;
             ch = rd(ctx, 0, 0);
             break;
@@ -223,8 +215,8 @@ unsigned long func_02017714(const char *str, char **end, int base)
     v = func_02016ec0(base, 0x7fffffff, func_02015950, &s, &scanned, &neg, &ovf);
     if (end) *end = (char *)str + scanned;
     if (ovf) {
-        data_020c1790 = 34;
         v = -1;
+        data_020c1790 = 34;
     } else if (neg) {
         v = -v;
     }

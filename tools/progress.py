@@ -80,12 +80,30 @@ def _theme_css(light: bool) -> str:
     return css
 
 
+BREAK_GAP = 3600  # seconds; longer pauses between points are collapsed
+BREAK_WIDTH = 1800  # seconds of x axis a collapsed pause takes up
+
+
+def active_times(stamps: list[float]) -> tuple[list[float], list[int]]:
+    """Maps timestamps onto working time: a pause longer than BREAK_GAP counts as BREAK_WIDTH, so days without
+    work don't stretch the x axis. Also returns the indices of points that follow such a break."""
+    times, breaks = [0.0], []
+    for i in range(1, len(stamps)):
+        gap = stamps[i] - stamps[i - 1]
+        if gap > BREAK_GAP:
+            gap = BREAK_WIDTH
+            breaks.append(i)
+        times.append(times[-1] + gap)
+    return times, breaks
+
+
 def render_svg(rows: list[dict]) -> str:
     W, H = 720, 300
     L, R, T, B = 48, 176, 24, 36
     pw, ph = W - L - R, H - T - B
-    times = [datetime.fromisoformat(r["date"]).timestamp() for r in rows]
-    t0, t1 = min(times), max(times)
+    dates = [datetime.fromisoformat(r["date"]) for r in rows]
+    times, breaks = active_times([d.timestamp() for d in dates])
+    t0, t1 = times[0], times[-1]
     ymax = nice_ceiling(max(pct(r, k) for r in rows for k, *_ in SERIES))
 
     def x(t):
@@ -108,9 +126,22 @@ def render_svg(rows: list[dict]) -> str:
         v = ymax * i / 4
         out.append(f'<line x1="{L}" x2="{L + pw}" y1="{y(v):.1f}" y2="{y(v):.1f}" class="grid" stroke-width="1"/>')
         out.append(f'<text x="{L - 8}" y="{y(v) + 4:.1f}" class="muted" text-anchor="end">{v:g}%</text>')
-    for t, anchor in ((t0, "start"), (t1, "end")) if t1 != t0 else ((t0, "middle"),):
-        out.append(f'<text class="muted" x="{x(t):.1f}" y="{H - 12}" text-anchor="{anchor}">'
-                   f'{datetime.fromtimestamp(t, timezone.utc):%Y-%m-%d}</text>')
+    # Collapsed pauses: a dashed rule midway through the gap.
+    for i in breaks:
+        bx = (x(times[i - 1]) + x(times[i])) / 2
+        out.append(f'<line x1="{bx:.1f}" x2="{bx:.1f}" y1="{T}" y2="{T + ph}" class="grid" stroke-width="1" '
+                   f'stroke-dasharray="3 3"/>')
+    # Date labels (local time) at the start of each work session, skipping any that would overlap the previous one.
+    last = None
+    for i in [0, *breaks]:
+        day = dates[i].astimezone().date()
+        lx = x(times[i])
+        anchor = "start" if lx < L + 36 else "end" if lx > L + pw - 36 else "middle"
+        left = lx if anchor == "start" else lx - 72 if anchor == "end" else lx - 36
+        if last is not None and left < last + 8:
+            continue
+        last = left + 72
+        out.append(f'<text class="muted" x="{lx:.1f}" y="{H - 12}" text-anchor="{anchor}">{day:%Y-%m-%d}</text>')
 
     # Lines first, then end dots with surface rings, then direct labels (nudged apart).
     ends = []

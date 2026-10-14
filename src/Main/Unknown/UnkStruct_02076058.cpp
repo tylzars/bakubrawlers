@@ -277,7 +277,7 @@ void UnkStruct_02076058::func_02076b34() {
     func_02025b64(1, 7, 0, "result_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/Battle/Obj/");
     u8 i;
-    SpriteScreen &screen = SpriteManager::Get().Screen(1);
+    SpriteScreen &screen = SpriteManager::Get().mScreens[1];
     screen.func_02027624(3);
     screen.LoadCharacters("bakugan_sub.nce_ncg1D.bin", 0, 0);
     screen.func_02027fec("bakugan_sub_ncl.bin", 0, 0);
@@ -341,7 +341,7 @@ void UnkStruct_02076058::func_02076b34() {
         }
     }
     ChangeDir("/Game/2D/union_b/");
-    SpriteScreen &window = SpriteManager::Get().Screen(1);
+    SpriteScreen &window = SpriteManager::Get().mScreens[1];
     window.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0xa000, 0);
     window.LoadPalette("union_b_obj_cockpit_ncl.bin", 0x40, 0);
     mUnk_7c = new SelectWindow(1, data_020a30a4, 0);

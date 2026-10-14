@@ -352,19 +352,16 @@ typedef struct WMParent {
     u16 h36;
 } WMParent;
 
-int func_02010838(WMParent *p)
-{
-    if (p->h4 > 0x70) {
-        return 0;
-    }
-    if (p->h18 < 10 || p->h18 > 0x3e8) {
-        return 0;
-    }
-    if (p->h32 < 1 || p->h32 > 14) {
-        return 0;
-    }
-    return 1;
-}
+// Defined in the original function order, after some of their callers.
+int func_02010838(WMParent *p);
+int func_0201075c(WMCb cb, WMParent *p);
+void func_02011450(u16 *m);
+int func_02011108(u8 *buf, void *pa, void *pb);
+u8 *func_020119bc(u8 *buf, u32 mask, u8 *base, u32 n);
+u8 *func_02011968(u8 *buf, u16 *p, u32 n);
+int func_02011b10(void);
+int func_02011b28(void);
+int func_02011ae8(void);
 
 int func_0201075c(WMCb cb, WMParent *p)
 {
@@ -394,6 +391,20 @@ int func_0201075c(WMCb cb, WMParent *p)
         r = 2;
     }
     return r;
+}
+
+int func_02010838(WMParent *p)
+{
+    if (p->h4 > 0x70) {
+        return 0;
+    }
+    if (p->h18 < 10 || p->h18 > 0x3e8) {
+        return 0;
+    }
+    if (p->h32 < 1 || p->h32 > 14) {
+        return 0;
+    }
+    return 1;
 }
 
 int func_02010888(WMCb cb, int x)
@@ -720,40 +731,6 @@ int func_020110c0(u8 *buf)
     return 0;
 }
 
-void func_02011450(u16 *m)
-{
-    WMWork *w = func_0200fcf4();
-    WMCb cb = w->indCb[m[5]];
-    u8 *buf = (u8 *)w->indArg[m[5]];
-    u16 aid;
-    if (cb != func_02011528 && cb != func_02011654) {
-        return;
-    }
-    if (buf == 0) {
-        return;
-    }
-    if ((u32)buf != *(u32 *)(m + 0x10)) {
-        return;
-    }
-    aid = func_020101c4();
-    if (m[1] == 0) {
-        if (aid != 0) {
-            return;
-        }
-        H(buf, H(buf, 5)) = m[0xd] >> 1;
-        H(buf, 5) = (H(buf, 5) + 1) & 3;
-        return;
-    }
-    if (m[1] == 10) {
-        if (aid != 0) {
-            H(buf, 5) = (H(buf, 5) + 3) & 3;
-        }
-        H(buf, 0xe) = 4;
-        return;
-    }
-    H(buf, 0xe) = 5;
-}
-
 int func_02011108(u8 *buf, void *pa, void *pb)
 {
     u32 bm;
@@ -852,6 +829,40 @@ int func_02011108(u8 *buf, void *pa, void *pb)
         }
     }
     return res;
+}
+
+void func_02011450(u16 *m)
+{
+    WMWork *w = func_0200fcf4();
+    WMCb cb = w->indCb[m[5]];
+    u8 *buf = (u8 *)w->indArg[m[5]];
+    u16 aid;
+    if (cb != func_02011528 && cb != func_02011654) {
+        return;
+    }
+    if (buf == 0) {
+        return;
+    }
+    if ((u32)buf != *(u32 *)(m + 0x10)) {
+        return;
+    }
+    aid = func_020101c4();
+    if (m[1] == 0) {
+        if (aid != 0) {
+            return;
+        }
+        H(buf, H(buf, 5)) = m[0xd] >> 1;
+        H(buf, 5) = (H(buf, 5) + 1) & 3;
+        return;
+    }
+    if (m[1] == 10) {
+        if (aid != 0) {
+            H(buf, 5) = (H(buf, 5) + 3) & 3;
+        }
+        H(buf, 0xe) = 4;
+        return;
+    }
+    H(buf, 0xe) = 5;
 }
 
 void func_02011528(WMInd *m)
@@ -1018,12 +1029,6 @@ void func_02011814(u8 *buf, int flag)
     }
 }
 
-u8 *func_020119bc(u8 *buf, u32 mask, u8 *base, u32 n)
-{
-    u32 cnt = func_020122b0(mask & ((1 << n) - 1));
-    return base + H(buf, 8) * cnt;
-}
-
 u8 *func_02011968(u8 *buf, u16 *p, u32 n)
 {
     u16 a = p[0];
@@ -1042,6 +1047,12 @@ u8 *func_02011968(u8 *buf, u16 *p, u32 n)
         return 0;
     }
     return func_020119bc(buf, a, (u8 *)(p + 2), n);
+}
+
+u8 *func_020119bc(u8 *buf, u32 mask, u8 *base, u32 n)
+{
+    u32 cnt = func_020122b0(mask & ((1 << n) - 1));
+    return base + H(buf, 8) * cnt;
 }
 
 int func_020119ec(WMCb cb, u16 a, u16 b, u16 c, u16 d)
@@ -1090,6 +1101,16 @@ void func_02011ab0(void)
 }
 
 extern CtrdgInfo data_027ffc30; // the cartridge info block the boot code leaves in main RAM (lcf_edits.txt)
+int func_02011ae8(void)
+{
+    if (func_02011b28() != 0) {
+        if (func_02011b10() == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int func_02011b10(void)
 {
     return data_027ffc30.b.f0;
@@ -1129,14 +1150,4 @@ done:
     func_02011c7c(a);
     func_02011d0c(data_020c1180.h6, b);
     return ok;
-}
-
-int func_02011ae8(void)
-{
-    if (func_02011b28() != 0) {
-        if (func_02011b10() == 0) {
-            return 1;
-        }
-    }
-    return 0;
 }

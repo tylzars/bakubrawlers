@@ -1435,27 +1435,32 @@ int BattleConfrontCard::func_ov007_0224251c() {
     return result;
 }
 
-// non-matching: 0x7c8 vs 0x7e8; the original keeps side*20 / other*20 as offsets from e and re-adds them in every
-// case (`ldrh r0, [r6, r7]`, `add r0, r6, r8`), where this CSEs e+side*20 / e+other*20 into pointer registers.
 u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
+    u8 j;
     u8 result = 0;
     u8 type;
     u16 power;
     mUnk_5c   = 0;
     mUnk_5d   = 0;
     mUnk_61   = 0;
-    BattleEntry *e = mData->mEntries;
     u8 i           = 0;
+    u8 side;
+    BattleEntry *e = mData->mEntries;
     do {
-        u8 side  = 0;
+        side  = 0;
         u8 other = 1;
         if (i == 1) {
             side  = 1;
             other = 0;
         }
-        BattleEntry *self = &e[side];
-        u8 selfLevel      = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4]->mUnk_ee;
-        u8 oppLevel       = data_020d433c.mBattlePlayers->mPlayers[e[other].mUnk_0d_4]->mUnk_ee;
+        BattleEntry *opp;
+        u8 oppLevel;
+        BattleEntry *self = e;
+        self += side;
+        u8 selfLevel = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4]->mUnk_ee;
+        opp          = e;
+        opp += other;
+        oppLevel = data_020d433c.mBattlePlayers->mPlayers[opp->mUnk_0d_4]->mUnk_ee;
         type              = func_02065c0c(card, 3);
         switch (type) {
         case 1: {
@@ -1520,7 +1525,7 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
                 }
                 break;
             case 0x4d: {
-                u8 j = 0;
+                j = 0;
                 do {
                     func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
                     j++;
@@ -1530,7 +1535,7 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
             }
             case 0x4e:
                 if (selfLevel < oppLevel) {
-                    u8 j = 0;
+                    j = 0;
                     do {
                         func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
                         j++;
@@ -1542,7 +1547,7 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
             case 0x50:
             case 0x51:
                 if (selfLevel < oppLevel) {
-                    u8 j = 0;
+                    j = 0;
                     do {
                         if (j == (u8) (card - 0x4f)) {
                             func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
@@ -1556,7 +1561,7 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
             case 0x53:
             case 0x54:
                 if (e[side].mUnk_04 < e[other].mUnk_04) {
-                    u8 j = 0;
+                    j = 0;
                     do {
                         if (j == (u8) (card - 0x52)) {
                             func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
@@ -1611,11 +1616,10 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
                 }
                 break;
             case 0x62: {
-                BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4];
-                u8 j            = 0;
+                u8 j = 0;
                 u8 n            = 0;
                 do {
-                    if (p->mSlots6c[j].mFlag == 2) {
+                    if (data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4]->mSlots6c[j].mFlag == 2) {
                         n++;
                     }
                     j++;
@@ -1629,11 +1633,10 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
                 (&mUnk_5c)[side]              = 1;
                 break;
             case 0x67: {
-                BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4];
-                u8 j            = 0;
+                u8 j = 0;
                 u8 n            = 0;
                 do {
-                    if (p->mRecords[j].mUnk_0a == 1) {
+                    if (data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4]->mRecords[j].mUnk_0a == 1) {
                         n++;
                     }
                     j++;

@@ -204,6 +204,11 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **`p = e; p += idx;` splits the address CSE.** Built that way, only `idx * size` is shared and the base is re-added
+  at each use (`ldrh r0, [r6, r7]`); `&e[idx]` or `e + idx` shares the whole address (BattleConfrontCard::func_ov007_022428d4).
+- **Declared before, computed after.** Declaring `opp`/`oppLevel` before `self`/`selfLevel` but computing the self
+  chain first changes which value is spilled, independently of either order alone (same function).
+
 - **Zeros from one declaration share a register.** `s32 done = 0, advance = 0, pending = 0;` as one declaration lets
   the three zeros share one register, where separate declarations (or `= done`) don't (UnkStruct_02065c40::func_02066814).
 - **`u8 now = ++field;`** gives `add; and; strb` with no reload of the field; `field++; now = field;` reloads it.

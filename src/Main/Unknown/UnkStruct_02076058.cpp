@@ -1,4 +1,18 @@
 #include "System/TouchManager.hpp"
+#include "UI/SelectWindow.hpp"
+
+// Defined between the headers: where they sit among the singletons' objects sets the data layout.
+static const u8 data_020a308c[12][2] = {
+    {0x28, 0x2b}, {0x28, 0x53}, {0x28, 0x7b}, {0x78, 0x33}, {0x78, 0x5b}, {0x78, 0x83},
+    {0x78, 0x33}, {0x78, 0x5b}, {0x78, 0x83}, {0x74, 0x35}, {0x74, 0x5d}, {0x74, 0x85},
+};
+static const WindowItemRecord data_020a30a4[1] = {
+    {0, 0x5, 201, 170, 52, 20, 1, {-1, -1, -1, -1}, 0, 1},
+};
+static const WindowCellRecord data_020a30c0[1] = {
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xa000, 2, 0, 0, {0, 1, 1, 0}},
+};
+
 #include "Text/TextManager.hpp"
 #include "System/InputManager.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
@@ -264,9 +278,6 @@ void UnkStruct_02076058::func_02076a28() {
     G2S_BlendNone();
 }
 
-extern const u8 data_020a308c[][2];
-extern const WindowItemRecord data_020a30a4[];
-extern const WindowCellRecord data_020a30c0[];
 
 void UnkStruct_02076058::func_02076b34() {
     ChangeDir("/Game/Battle/Bg/");

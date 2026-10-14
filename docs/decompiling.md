@@ -47,9 +47,8 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   addresses, so a wrong literal can look like a match).
 
 - **Fully matched units that don't link yet** (2026-10-14):
-  - UnkStruct_02076058 and MessageWindow: tables in their data ranges are still `extern` (UnkStruct_02076058 is
-    0x44 bytes short of its .data range). Define them from the original bytes (see the BattleCommand,
-    TournamentScene, MyroomShootScene and BattleCommandMap passes).
+  - MessageWindow: tables in its data range are still `extern`. Define them from the original bytes (see the
+    BattleCommand, TournamentScene, MyroomShootScene, BattleCommandMap and UnkStruct_02076058 passes).
   - AttrSelScene: `.bss` destructor-node order (`.bss#22 (@838, @54)`), a layout search.
   - MyroomGiftScene: `.data` is defined and exact; `.rodata` order needs table shapes (2D u8 arrays, a94/aa0/aac
     merged into one [3][12] table), which leaves func_ov008_0221de34 3 words off on literal-pool order.
@@ -77,6 +76,10 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   definition order against the original, keeping each static before its first use. The first order found compiled
   to the original layout of all three sections. Defining every table in the range matters: with only the `.data`
   tables defined, no order gave the original string order, because the `.rodata` tables take part in the same sort.
+- **Statics between includes (UnkStruct_02076058).** Defining its three window tables reordered the four
+  singleton nodes in `.bss`. `layout_search.py` lists working orders with a cost (how many things move, not how many
+  objects are off); the one used defines the tables right after the first header (TouchManager), with
+  `UI/SelectWindow.hpp` included early for the record types since it pulls in no singletons.
 - **BattleCharaAct's data layout (open).** All functions match and the data is defined from the original bytes,
   but `layout_search.py`-style modelling finds no declaration order: in the original the 17 16-byte rows follow the
   17 32-byte arrays (only possible if they and the 0x28-byte rows at 0x0227af68 are one 592-byte object), and the

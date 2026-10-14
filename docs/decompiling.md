@@ -107,6 +107,10 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
 - **A singleton node at two addresses splits a file (UnkStruct_02071868).** The UnkStruct_02071868 constructor's
   TextManager node is at 0x02219308, while UnkStruct_02071d24's functions use one at 0x02219314, and the
   constructor's strings sit between the two classes' vtables. Split at 0x02071d24, both link.
+- **A shared section can't put a bigger object first.** BattleTarget's `.rodata` has a 10-byte table before an 8-byte
+  one, which the size sort never produces from separate tables: the block 0x0227a5e0-0x0227a74c is one struct
+  (`TargetTables`, members named by original address), as in MyroomGiftScene. Byte tables indexed by a variable stay
+  separate (inside a struct the indexing becomes an immediate offset).
 - **One class, two names.** UnkStruct_02070608.cpp constructed FileLoader's `UnkScene_020a54a8` under the name
   `UnkStruct_020a54a0` (its vtable symbol's address), which only showed as an undefined vtable once FileLoader linked.
 - **The main module's code ends at 0x0208b4bc.** dsd had put the `.text`/`.rodata` boundary at 0x0209d490, so ~70 KB

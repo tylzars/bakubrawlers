@@ -1,4 +1,7 @@
+#include "Graphics/Camera.hpp"
 #include "System/SoundManager.hpp"
+#include "System/TouchManager.hpp"
+#include "System/WirelessManager.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "Battle/BattleCpu.hpp"
 #include <nitro/fx.h>
@@ -32,47 +35,83 @@ struct GimmickBuffer {
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define INT_TO_FX(n) ((fx32) ((n) > 0 ? 0.5f + (float) ((n) << 12) : (float) ((n) << 12) - 0.5f))
 
-u8 func_ov007_02262768(BattlePlayerList *list, VecFx32 *pos, u16 rot, u8 player, u8 record, u8 cell, u32 flag);
+// The constant tables at 0x0227a5e0-0x0227a74c are one object: as separate tables mwcc sorts them by size, and the
+// original has them in this (unsorted) order, followed by the three byte tables in their own sections. Header order
+// above (Camera, Sound, Touch, Wireless, Sprite) gives the original .bss node order.
+struct TargetTables {
+    /* 000 */ u16 mUnk_00[2];
+    /* 004 */ u16 mUnk_04[5];
+    /* 00e */ u16 mUnk_0e[4];
+    /* 016 */ u16 mUnk_16[5];
+    /* 020 */ u16 mUnk_20[5];
+    /* 02c */ VecFx32 mUnk_2c;
+    /* 038 */ VecFx32 mUnk_38;
+    /* 044 */ VecFx32 mUnk_44;
+    /* 050 */ u8 mUnk_50[12];
+    /* 05c */ VecFx32 mUnk_5c;
+    /* 068 */ VecFx32 mUnk_68;
+    /* 074 */ VecFx32 mUnk_74;
+    /* 080 */ u16 mUnk_80[8];
+    /* 090 */ u16 mUnk_90[8];
+    /* 0a0 */ u32 mUnk_a0[5];
+    /* 0b4 */ s32 mUnk_b4[5];
+    /* 0c8 */ s32 mUnk_c8[5];
+    /* 0dc */ s32 mUnk_dc[5];
+    /* 0f0 */ s32 mUnk_f0[5];
+    /* 104 */ s32 mUnk_104[8];
+    /* 124 */ VecFx32 mUnk_124[3];
+    /* 148 */ VecFx32 mUnk_148[3];
+};
+
+static const TargetTables data_ov007_0227a5e0 = {
+    {0x2d, 0x2d},
+    {0x28, 0x23, 0x3c, 0x4f, 0x59},
+    {0, 0xc000, 0x8000, 0x4000},
+    {0x18e3, 0x2000, 0x271c, 0x31c7, 0x3c71},
+    {0x4fa, 0x38e, 0x222, 0x222, 0xb6},
+    {0, 0xf000, 0xa000},
+    {0x37000, 0xf000, 0x37000},
+    {0, 0x19000, 0},
+    {0x00, 0x40, 0x00, 0x40, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0x800, 0x1000, 0x800},
+    {0, 0, 0xa000},
+    {0x14000, 0x5a000, 0x14000},
+    {0x14, 0x14, 0x14, 0x14, 0x1e, 0x14, 0x14, 0x1e},
+    {0x38e3, 0x3777, 0x3555, 0x3555, 0x31c7, 0x3a4f, 0x36c1, 0x3555},
+    {0xf, 0x32, 0xaa, 0xaa, 0xaa},
+    {0x5000, 0x5333, 0x5800, 0x5ccd, 0x6000},
+    {0xf33, 0xf9a, 0xfae, 0xfc3, 0xfd7},
+    {0x384, 0x3fc, 0x4b0, 0x5a0, 0x708},
+    {0x2800, 0x3000, 0x3800, 0x4000, 0x4800},
+    {0x12c000, 0x12c000, 0x12c000, 0x12c000, 0x12c000, 0x12c000, 0x12c000, 0x12c000},
+    {{0x1e000, 0x32000, -0xa000}, {-0x14000, 0xf000, 0x19000}, {0x28000, 0x1e000, 0x28000}},
+    {{-0xf000, 0x19000, -0x1e000}, {-0xf000, 0x14000, 0x1e000}, {0x46000, 0x32000, 0x46000}},
+};
+static const u8 data_ov007_0227a74c[4] = {0xc, 0xa, 0xb, 0};
+static const u8 data_ov007_0227a750[4] = {0, 1, 1, 0};
+static const s8 data_ov007_0227a754[5] = {-10, -5, 0, 5, 10};
+
+u8 func_ov007_02262768(BattlePlayerList *list, const VecFx32 *pos, u16 rot, u8 player, u8 record, u8 cell, u8 flag);
 void func_ov007_02262a64(BattlePlayerList *list, u8 a, u8 b);
-void func_02028e54(void *model, u32 a, u32 b, u32 c);
-extern const u16 data_ov007_0227a5e0[];
-extern const u16 data_ov007_0227a5e4[];
 void func_ov007_0227238c(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out);
 extern "C" void func_01ffcf80(MtxFx33 *m, u16 angle);
 extern "C" void DC_FlushRange(void *buf, u32 size);
-extern u8 data_ov007_0227a630[];
-extern const u8 data_ov007_0227a750[];
-extern const s32 data_ov007_0227a6d0[];
-extern const u16 data_ov007_0227a5f6[];
 extern "C" void func_01ffd030(MtxFx33 *m, u16 angle);
 // Two callers leave r2 as it is (the original passes a value already in r2); call through a two-argument type.
 static inline void ReleaseSlot(BattlePlayerList *list, u8 index) {
     ((void (*)(BattlePlayerList *, u8)) func_ov007_02262828)(list, index);
 }
-extern const VecFx32 data_ov007_0227a60c;
 void func_ov007_022337ec(VecFx32 *A, VecFx32 *B, VecFx32 *C, VecFx32 *D, VecFx32 *E, fx32 F, fx32 G, int flag);
 extern "C" fx32 FX_Atan2(fx32 x, fx32 z);
-extern const u16 data_ov007_0227a5ee[];
-extern const s32 data_ov007_0227a6bc[];
-extern const s8 data_ov007_0227a754[];
-extern const u16 data_ov007_0227a660[];
-extern const u16 data_ov007_0227a670[];
 void func_ov007_02233f38(const VecFx32 *a, const VecFx32 *b, int unused, VecFx32 *out);
-extern const VecFx32 data_ov007_0227a648;
 void func_ov007_0226a380(BattlePlayer *player, u8 record, int unk);
 void func_ov007_02233730(VecFx32 *a, VecFx32 *b, VecFx32 *speed, VecFx32 *out);
 extern "C" u32 FX_AcosIdx(s32 value);
-extern const s32 data_ov007_0227a694[];
-extern const VecFx32 data_ov007_0227a624;
-extern const s32 data_ov007_0227a6a8[];
-extern const u16 data_ov007_0227a600[];
 
 extern "C" void func_ov007_022488ac(BattleCommandMap *map, u32 a, u32 b, u32 c);
 extern "C" void func_ov007_02248688(BattleCommandMap *map, VecFx32 *v);
 extern "C" void func_0203d45c(UnkStruct_0203d374 *pose);
 BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
-extern const u32 data_ov007_0227a680[];
-extern const u8 data_ov007_0227a74c[];
 
 static inline void SetSphere(BattleSphere *s, const VecFx32 *pos, fx32 radius) {
     s->mPos   = *pos;
@@ -384,7 +423,7 @@ void BattleTarget::Update() {
                         break;
                     case 3: {
                         u32 idx = data_020d433c.mUnk_95;
-                        func_ov007_022488ac(mUnk_178, (u16) (0x6000 - mUnk_1b8), data_ov007_0227a670[idx], (u16) (data_ov007_0227a660[idx] + 0x50));
+                        func_ov007_022488ac(mUnk_178, (u16) (0x6000 - mUnk_1b8), data_ov007_0227a5e0.mUnk_90[idx], (u16) (data_ov007_0227a5e0.mUnk_80[idx] + 0x50));
                         break;
                     }
                 }
@@ -453,7 +492,7 @@ void BattleTarget::Update() {
                             break;
                     }
                 }
-                if (mUnk_1c6 > data_ov007_0227a680[mUnk_1d2]) {
+                if (mUnk_1c6 > data_ov007_0227a5e0.mUnk_a0[mUnk_1d2]) {
                     SoundManager::Get().func_02024754(0x3c);
                     BattlePlayerList *list = data_020d433c.mBattlePlayers;
                     u8 kind                = list->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3].mUnk_08;
@@ -855,14 +894,14 @@ BOOL BattleTarget::func_ov007_02254938(VecFx32 *a, VecFx32 *b, VecFx32 *vel, u8 
     dir.y  = 0;
     diff.y = 0;
     fx32 mag = VEC_Mag(vel);
-    if (mag > data_ov007_0227a694[index]) {
+    if (mag > data_ov007_0227a5e0.mUnk_b4[index]) {
         VEC_Normalize(&diff, &diff);
         VEC_Normalize(&dir, &dir);
         fx32 dot = VEC_DotProduct(&diff, &dir);
         if (dot > 0x1000) {
             dot = 0x1000;
         }
-        if (FX_AcosIdx(dot) <= data_ov007_0227a600[index]) {
+        if (FX_AcosIdx(dot) <= data_ov007_0227a5e0.mUnk_20[index]) {
             return 1;
         }
     }
@@ -1210,7 +1249,7 @@ void BattleTarget::func_ov007_02255640() {
     if (mUnk_50 != 0) {
         if (mUnk_1d0 != 0 && mUnk_4c % 30 == 0 && mUnk_1df != 2) {
             BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
-            mUnk_8c              = FX_Mul(mUnk_8c, data_ov007_0227a6a8[record->mUnk_02_6]);
+            mUnk_8c              = FX_Mul(mUnk_8c, data_ov007_0227a5e0.mUnk_c8[record->mUnk_02_6]);
         }
         if (mUnk_1df != 2) {
             mUnk_50--;
@@ -1241,9 +1280,6 @@ void BattleTarget::func_ov007_02255b0c() {
     SoundManager::Get().func_020246f8(4);
 }
 
-extern const VecFx32 data_ov007_0227a704[];
-extern const VecFx32 data_ov007_0227a728[];
-extern const s32 data_ov007_0227a6e4[];
 void BattleTarget::func_ov007_02255b78(VecFx32 *b, VecFx32 *c, VecFx32 *in, VecFx32 *out) {
     VecFx32 diff;
     MtxFx33 mtx;
@@ -1315,7 +1351,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                     tp.y = u.y + (mUnk_11c.y + 0x19000);
                     tp.x = mUnk_11c.x + 0x37000 + (k << 13);
                     pos = tp;
-                    func_01ffcfd8(&rot, (u16) (data_ov007_0227a5ee[player->mUnk_f1] - mUnk_1b8));
+                    func_01ffcfd8(&rot, (u16) (data_ov007_0227a5e0.mUnk_0e[player->mUnk_f1] - mUnk_1b8));
                     func_01ff84d0(&pos, &rot, &pos);
                     func_01ff84d0(&mUnk_188, &rot, &mUnk_188);
                     pos.x = FX_Mul(pos.x, ident._[4]);
@@ -1363,13 +1399,13 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                         return;
                     }
                     if (mUnk_1df == 1) {
-                        pos.x = data_ov007_0227a704[slot - 1].x;
-                        pos.y = data_ov007_0227a704[slot - 1].y;
-                        pos.z = data_ov007_0227a704[slot - 1].z;
+                        pos.x = data_ov007_0227a5e0.mUnk_124[slot - 1].x;
+                        pos.y = data_ov007_0227a5e0.mUnk_124[slot - 1].y;
+                        pos.z = data_ov007_0227a5e0.mUnk_124[slot - 1].z;
                     } else {
-                        pos.x = data_ov007_0227a728[slot - 1].x;
-                        pos.y = data_ov007_0227a728[slot - 1].y;
-                        pos.z = data_ov007_0227a728[slot - 1].z;
+                        pos.x = data_ov007_0227a5e0.mUnk_148[slot - 1].x;
+                        pos.y = data_ov007_0227a5e0.mUnk_148[slot - 1].y;
+                        pos.z = data_ov007_0227a5e0.mUnk_148[slot - 1].z;
                     }
                     func_01ffcfd8(&rot, mUnk_1a4->mRotY);
                     func_01ff84d0(&pos, &rot, &pos);
@@ -1394,7 +1430,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             tp.y = mUnk_11c.y + 0x19000;
             tp.x = mUnk_11c.x + 0x37000;
             pos = tp;
-            func_01ffcfd8(&rot, (u16) (data_ov007_0227a5ee[player->mUnk_f1] - mUnk_1b8));
+            func_01ffcfd8(&rot, (u16) (data_ov007_0227a5e0.mUnk_0e[player->mUnk_f1] - mUnk_1b8));
             func_01ff84d0(&pos, &rot, &pos);
             pos.x = FX_Mul(pos.x, ident._[4]);
             pos.z = FX_Mul(pos.z, ident._[8]);
@@ -1403,7 +1439,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             t.y = pos.y + mUnk_1a4->mPosition.y + 0x4000;
             t.x = pos.x + mUnk_1a4->mPosition.x;
             cam = t;
-            SetVec(&v, mUnk_1a4->mPosition.x, data_ov007_0227a6e4[data_020d433c.mUnk_95], mUnk_1a4->mPosition.z);
+            SetVec(&v, mUnk_1a4->mPosition.x, data_ov007_0227a5e0.mUnk_104[data_020d433c.mUnk_95], mUnk_1a4->mPosition.z);
             if (v.x < 0) {
                 v.x = v.x - 0x14000;
             } else {
@@ -1578,7 +1614,7 @@ void BattleTarget::func_ov007_022567ac() {
             u16 pitch = FX_Atan2Idx(mUnk_64.y, 0x1000);
             c.y       = FX_Mul(c.y, -FX_SinCosTable_[(pitch >> 4) * 2]);
             VEC_Add(&c, &mUnk_1a4->mPosition, &c);
-            VEC_Add(&c, &data_ov007_0227a624, &c);
+            VEC_Add(&c, &data_ov007_0227a5e0.mUnk_44, &c);
             VEC_Subtract(&a, &c, &b);
             fx32 k = mUnk_184;
             b.x = FX_Mul(b.x, k);
@@ -2180,9 +2216,9 @@ void BattleTarget::func_ov007_02258660() {
             mUnk_1db++;
             func_ov007_02258cec(&mUnk_15c, &mUnk_168, &mUnk_134, mUnk_1de);
             if (mUnk_1df == 1) {
-                mUnk_140 = data_ov007_0227a5e0[mUnk_1dc];
+                mUnk_140 = data_ov007_0227a5e0.mUnk_00[mUnk_1dc];
             } else {
-                mUnk_140 = data_ov007_0227a5e4[mUnk_1dc];
+                mUnk_140 = data_ov007_0227a5e0.mUnk_04[mUnk_1dc];
             }
             mUnk_64.x = 0;
             mUnk_64.y = 0;
@@ -2228,7 +2264,7 @@ void BattleTarget::func_ov007_02258660() {
             mUnk_140--;
             if (mUnk_140 == 0) {
                 mUnk_1db = 0;
-                func_02028e54(mUnk_1a4->mModel, 0, 0, 0x1000);
+                mUnk_1a4->mModel->func_02028e54(0, 0, 0x1000);
             }
             break;
         case 2:
@@ -2278,7 +2314,7 @@ void BattleTarget::func_ov007_02258a34() {
             }
             MtxFx43 mtx = CameraManager::Get().mMtxC[0];
             VecFx32 a   = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
-            VecFx32 b   = data_ov007_0227a60c;
+            VecFx32 b   = data_ov007_0227a5e0.mUnk_2c;
             mtx._[11]   = 0;
             mtx._[10]   = 0;
             mtx._[9]    = 0;
@@ -3184,8 +3220,8 @@ BOOL BattleTarget::func_ov007_0225b4a0(VecFx32 *pos, u16 *angle, VecFx32 *vel, u
     record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
     if (mUnk_1d1 != 0 && pos->y <= 0x899a) {
         u32 k = record->mUnk_02_9;
-        if (speed < data_ov007_0227a6d0[k]) {
-            u16 lim = data_ov007_0227a5f6[k];
+        if (speed < data_ov007_0227a5e0.mUnk_f0[k]) {
+            u16 lim = data_ov007_0227a5e0.mUnk_16[k];
             if (!(*angle > lim && *angle < (u16) -lim)) {
                 if (func_ov007_02248998(pos, &a, &b)) {
                     BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -3246,9 +3282,9 @@ void BattleTarget::func_ov007_0225b6d0() {
     dir.y                = 0;
     dir.z                = 0;
     *(Rot3 *) rot = *(Rot3 *) player->mUnk_cc;
-    rot[1]               = rot[1] + data_ov007_0227a5ee[player->mUnk_f1];
+    rot[1]               = rot[1] + data_ov007_0227a5e0.mUnk_0e[player->mUnk_f1];
     power             = (u8) (data_ov007_0227a754[record->mUnk_02_0] + player->mUnk_ec);
-    mUnk_50 = mUnk_54 = data_ov007_0227a6bc[record->mUnk_02_6];
+    mUnk_50 = mUnk_54 = data_ov007_0227a5e0.mUnk_dc[record->mUnk_02_6];
     if (player->mUnk_ec == 0) {
         power = 10;
     }
@@ -3297,8 +3333,8 @@ void BattleTarget::func_ov007_0225b6d0() {
         case 3: {
             mUnk_1dd = 2;
             u8 k     = data_020d433c.mUnk_95;
-            u16 a    = data_ov007_0227a660[k];
-            u16 b    = data_ov007_0227a670[k];
+            u16 a    = data_ov007_0227a5e0.mUnk_80[k];
+            u16 b    = data_ov007_0227a5e0.mUnk_90[k];
             rot[2]   = b;
             func_ov007_022334f4(rot, (u16) (a + 0x50), &dir, &vel);
             mUnk_1c0  = func_0202bd40(data_020d433c.mEffects, 1, 0xb, 0, 0);
@@ -3545,7 +3581,7 @@ void BattleTarget::func_ov007_0225c4dc() {
     }
     MtxFx43 mtx = CameraManager::Get().mMtxC[0];
     VecFx32 pos = mUnk_1a4->mPosition;
-    VecFx32 off = data_ov007_0227a648;
+    VecFx32 off = data_ov007_0227a5e0.mUnk_68;
     mtx._[11]   = 0;
     mtx._[10]   = 0;
     mtx._[9]    = 0;
@@ -3663,7 +3699,7 @@ void BattleTarget::func_ov007_0225cb7c() {
     }
     mAnims[2]->Draw(0, 0xbe, 0xb7, 1);
     mAnims[3]->Draw(0, 0xce, 0xba, 1);
-    SpriteManager::Get().Screen(0).func_02027778(data_ov007_0227a630, 1, 0xce, 0xba, 1, 0x70, 0xb, 0);
+    SpriteManager::Get().Screen(0).func_02027778((void *) data_ov007_0227a5e0.mUnk_50, 1, 0xce, 0xba, 1, 0x70, 0xb, 0);
 }
 
 void BattleTarget::func_ov007_0225cd6c() {

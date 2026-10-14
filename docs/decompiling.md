@@ -217,6 +217,15 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **Recompute differences instead of naming them.** BattleShoot::func_ov007_0226f698 matched once `x0 - x1` and
+  `y0 - y1` were written out at each use (with an `ABS` macro) instead of held in `dx`/`dy` locals.
+- **Where a shift sits matters.** `fx32 distance = f(...) << 12;` then `FX_Mul(distance, k)` matched
+  func_ov007_0226dfb8; shifting inside the `FX_Mul` argument did not.
+- **A zero shared by two spilled stores keeps its own register.** With one spilled variable zeroed before a loop,
+  the loop counter takes over the zero (`mov r5, #0; str r5, [sp]`); when the same zero also feeds a second spilled
+  store first, mwcc emits `mov r0, #0; str; str; mov r5, r0`. BattleShoot's e884 shows
+  the second pattern with only one visible store, so its other zero consumer is still unknown.
+
 - **A callee declared `void` that returns a value changes scheduling in its callers.** `SpriteScreen::LoadCharacters`
   ends in `return func_02025c1c(...)`; declaring it `u32` flipped two scheduling ties (`mov r0, r4` against `ldr r1`)
   in func_020843ac (UnkStruct_02078e14_b), not only register choices.

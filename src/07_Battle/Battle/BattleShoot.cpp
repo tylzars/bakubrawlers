@@ -1214,7 +1214,6 @@ public:
 extern s16 data_ov007_0208b524[];
 extern const s32 data_ov007_0227bcb8[3];
 
-// non-matching: 7 words, registers inside the inlined FX_Mul (original: operand in ip, low word r3, high word r2; here r2, ip, r3).
 void BattleShoot::func_ov007_0226dfb8() {
     s32 diff = mUnk_618b - mUnk_618f;
     if (diff < 0) {
@@ -1240,10 +1239,10 @@ void BattleShoot::func_ov007_0226dfb8() {
     } else if (power < 0xa) {
         power = 0xa;
     }
-    u16 distance = func_ov007_0226df24((s16) (mUnk_618b - mUnk_618f), (s16) (mUnk_618c - mUnk_6190));
+    fx32 distance = func_ov007_0226df24((s16) (mUnk_618b - mUnk_618f), (s16) (mUnk_618c - mUnk_6190)) << 12;
     u8 limit = 0x50 - (power - 10) * 50 / 20;
     u32 result;
-    int speed = (u16) (FX_Mul(distance << 12, 0xa66) / 4096);
+    int speed = (u16) (FX_Mul(distance, 0xa66) / 4096);
     if (limit < speed) {
         result = limit;
     } else {
@@ -1429,7 +1428,9 @@ extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);
 struct Bytes2 { u8 b[2]; };
 
 // non-matching: one instruction short (0x860 vs 0x864): the original puts the zero for animState in r0, stores it and copies it to
-// the loop counter (mov r5, r0); here the counter's own mov r5, #0 is reused for the store.
+// the loop counter (mov r5, r0); here the counter's own mov r5, #0 is reused for the store. Statement order, chained
+// assignments, the types of i and animState (enum too), where i is declared and a separate first-loop counter don't move it.
+// In experiments the copy form appears when the zero also feeds a second spilled variable's store in that block.
 void BattleShoot::func_ov007_0226e884() {
     s32 animState;
     s32 sumX;
@@ -1740,31 +1741,22 @@ void BattleShoot::func_ov007_0226f644() {
     }
 }
 
-// non-matching: 11 words, register assignment only (original: dx r8, steps r6).
+#define ABS(x) ((x) < 0 ? -(x) : (x))
+
 void BattleShoot::func_ov007_0226f698(u8 x0, u8 y0, u8 x1, u8 y1) {
     u8 steps;
     u8 i;
-    s32 dx;
-    s32 dy;
     if (mUnk_61a1 == 0) {
         return;
     }
     if (data_020d433c.mBattlePlayers->mUnk_28a != data_020d433c.mBattlePlayers->mUnk_2a9) {
         return;
     }
-    dy = y0 - y1;
-    s32 ay = dy < 0 ? -dy : dy;
-    dx = x0 - x1;
-    s32 ax = dx < 0 ? -dx : dx;
-    if (ax >= ay) {
-        steps = dx < 0 ? -dx : dx;
-    } else {
-        steps = dy < 0 ? -dy : dy;
-    }
+    steps = ABS(x0 - x1) >= ABS(y0 - y1) ? ABS(x0 - x1) : ABS(y0 - y1);
     i = 0;
     do {
-        s32 a = (i * dx) / steps;
-        s32 b = (i * dy) / steps;
+        s32 a = (i * (x0 - x1)) / steps;
+        s32 b = (i * (y0 - y1)) / steps;
         func_ov007_0226f76c(x0 - a, y0 - b);
         i++;
     } while (i < steps);

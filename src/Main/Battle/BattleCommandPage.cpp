@@ -1,12 +1,62 @@
+#include "UI/SelectWindow.hpp"
+
+// item table of the page window (positions are patched by func_02055764)
+inline WindowItemRecord *PageItems() {
+    static WindowItemRecord sItems[4] = {
+        { 0, 0x208, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 1 },
+        { 1, 0x408, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 1 },
+        { 2, 0x8000, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
+        { 3, 0x8000, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
+    };
+    return sItems;
+}
+
+// tables passed to SpriteScreen::func_02027778
+static const u16 data_0209e558[3][6] = {
+    {0x2000, 0xc000, 0, 0, 0, 0},
+    {0xa000, 0xc000, 0, 0, 0, 0},
+    {0x4000, 0x8000, 0, 0, 0, 0},
+};
+
+#define PAGE "/Game/2D/union_b/union_b_obj_page_nce.bin"
+inline WindowCellRecord *PageCells() {
+    static WindowCellRecord sCells[4] = {
+        { PAGE, {0}, 0, {0}, {0}, 1, {0, 1, 1, 0} },
+        { PAGE, {3}, 0, {0}, {0}, 1, {3, 4, 4, 0} },
+        { PAGE, {6}, 0, {0}, {0}, 1, {6, 6, 6, 0} },
+        { PAGE, {7}, 0, {0}, {0}, 1, {7, 7, 7, 0} },
+    };
+    return sCells;
+}
+
 #include "Text/TextManager.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Battle/BattleCommandPage.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
+
+// paths loaded by func_02055c28 and func_020561c4
+inline const char **PagePaths() {
+    static const char *sPaths[12] = {
+        "/Game/Card/Graphic/cardspec_u_obj_00_ncl.bin",
+        "/Game/Card/Graphic/cardspec_u_obj_00.nce_ncg1D.bin",
+        "/Game/Card/Graphic/cardspec_u_obj_00_nce.bin",
+        "/Game/Card/Graphic/icon_cbattle_ncl.bin",
+        "/Game/Card/Graphic/icon_cbattle.nce_ncg1D.bin",
+        "/Game/Card/Graphic/icon_cbattle_nce.bin",
+        "/Game/2D/union_b/union_b_obj_you_ncl.bin",
+        "/Game/2D/union_b/union_b_obj_you.nce_ncg1D.bin",
+        "/Game/2D/union_b/union_b_obj_you_nce.bin",
+        "/Game/Card/Graphic/cardspec_u_bg_00_ncl.bin",
+        "/Game/Card/Graphic/cardspec_u_bg_00_ncg.bin",
+        "/Game/Card/Graphic/cardspec_u_bg_00_nsc.bin",
+    };
+    return sPaths;
+}
+
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 #include "Text/TextManager.hpp"
-#include "UI/SelectWindow.hpp"
 #include "Graphics/Display.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
@@ -15,13 +65,6 @@
 u16 func_02065c20(u32 id);
 u8 func_02065c0c(u32 id, u32 kind);
 extern u16 data_020c1a4c[0x10]; // palette scratch (cleared before each text)
-extern const char *const data_020b3070[12]; // paths loaded by func_02055c28 and func_020561c4
-
-extern WindowItemRecord data_020b30d4[4]; // item table of the page window (positions are patched by func_02055764)
-extern WindowCellRecord data_020b3144[4];
-extern u8 data_0209e558[]; // tables passed to SpriteScreen::func_02027778 (.rodata 0x0209e558-0x0209e57c)
-extern u8 data_0209e564[];
-extern u8 data_0209e570[];
 
 BattleCommandPage::BattleCommandPage(u16 a, s32 b) :
     SceneBase(0x3e8, 0) {
@@ -260,30 +303,30 @@ void func_02055764(BattleCommandPage *page, u32 a, u32 b, s16 c, s16 d, s16 e, s
     if (page->mUnk_50 != NULL) {
         delete page->mUnk_50;
     }
-    data_020b30d4[0].mUnk_04 = 0x208;
-    data_020b30d4[0].mUnk_18 = 1;
-    data_020b30d4[1].mUnk_04 = 0x408;
-    data_020b30d4[1].mUnk_18 = 1;
-    data_020b30d4[2].mUnk_04 = 0x8000;
-    data_020b30d4[2].mUnk_18 = 0;
-    data_020b30d4[3].mUnk_04 = 0x8000;
-    data_020b30d4[3].mUnk_18 = 0;
-    data_020b30d4[0].mX      = c;
-    data_020b30d4[0].mY      = d;
-    data_020b30d4[1].mX      = e;
-    data_020b30d4[1].mY      = f;
-    data_020b30d4[2].mX      = c;
-    data_020b30d4[2].mY      = d;
-    data_020b30d4[3].mX      = e;
-    data_020b30d4[3].mY      = f;
-    data_020b3144[0].mUnk_08 = a;
-    data_020b3144[0].mUnk_0c = b;
-    data_020b3144[1].mUnk_08 = a;
-    data_020b3144[1].mUnk_0c = b;
-    data_020b3144[2].mUnk_08 = a;
-    data_020b3144[2].mUnk_0c = b;
-    data_020b3144[3].mUnk_08 = a;
-    data_020b3144[3].mUnk_0c = b;
+    PageItems()[0].mUnk_04 = 0x208;
+    PageItems()[0].mUnk_18 = 1;
+    PageItems()[1].mUnk_04 = 0x408;
+    PageItems()[1].mUnk_18 = 1;
+    PageItems()[2].mUnk_04 = 0x8000;
+    PageItems()[2].mUnk_18 = 0;
+    PageItems()[3].mUnk_04 = 0x8000;
+    PageItems()[3].mUnk_18 = 0;
+    PageItems()[0].mX      = c;
+    PageItems()[0].mY      = d;
+    PageItems()[1].mX      = e;
+    PageItems()[1].mY      = f;
+    PageItems()[2].mX      = c;
+    PageItems()[2].mY      = d;
+    PageItems()[3].mX      = e;
+    PageItems()[3].mY      = f;
+    PageCells()[0].mUnk_08 = a;
+    PageCells()[0].mUnk_0c = b;
+    PageCells()[1].mUnk_08 = a;
+    PageCells()[1].mUnk_0c = b;
+    PageCells()[2].mUnk_08 = a;
+    PageCells()[2].mUnk_0c = b;
+    PageCells()[3].mUnk_08 = a;
+    PageCells()[3].mUnk_0c = b;
     u32 count;
     page->mUnk_fe = g;
     if (page->mUnk_fe != 0) {
@@ -291,8 +334,8 @@ void func_02055764(BattleCommandPage *page, u32 a, u32 b, s16 c, s16 d, s16 e, s
     } else {
         count = 2;
     }
-    page->mUnk_50 = new SelectWindow(count, data_020b30d4, -1);
-    page->mUnk_50->SetCells(count, data_020b3144);
+    page->mUnk_50 = new SelectWindow(count, PageItems(), -1);
+    page->mUnk_50->SetCells(count, PageCells());
     page->mUnk_50->mCursor->mSelection = -1;
     page->mUnk_fd                      = 1;
     page->func_02055940();
@@ -404,7 +447,7 @@ BOOL BattleCommandPage::func_02055c28() {
         mUnk_90[mUnk_f0 - 1] = func_02023864();
     }
     if (mUnk_f0 < 12) {
-        func_02023708(data_020b3070[mUnk_f0], 0, 0, 0, &mUnk_c0[mUnk_f0], 0);
+        func_02023708(PagePaths()[mUnk_f0], 0, 0, 0, &mUnk_c0[mUnk_f0], 0);
         mUnk_f0++;
         return FALSE;
     }
@@ -686,7 +729,7 @@ void BattleCommandPage::func_02056d38() {
     do {
         s16 x = mUnk_102 + (i << 5);
         if ((x < 0x120) & (x > -0x20)) {
-            SpriteManager::Get().mScreens[0].func_02027778(data_0209e570, 1, x, 8, 1, (u16) (0x80 + i * 2), 0xf, 0);
+            SpriteManager::Get().mScreens[0].func_02027778((void *) data_0209e558[2], 1, x, 8, 1, (u16) (0x80 + i * 2), 0xf, 0);
         }
         i++;
     } while (i < (s32) ((u32) mUnk_100 >> 5) + 1);
@@ -702,10 +745,10 @@ void BattleCommandPage::func_02056f70() {
     if (mUnk_106 != 0) {
         return;
     }
-    SpriteManager::Get().mScreens[0].func_02027778(data_0209e564, 1, 0x54, 0x25, 3, 0xa0, 0, 0);
-    SpriteManager::Get().mScreens[0].func_02027778(data_0209e564, 1, 0x54, 0x65, 3, 0xb0, 0, 0);
-    SpriteManager::Get().mScreens[0].func_02027778(data_0209e558, 1, 0x14, 0x25, 3, 0xc0, 0, 0);
-    SpriteManager::Get().mScreens[0].func_02027778(data_0209e558, 1, 0x14, 0x65, 3, 0xe0, 0, 0);
+    SpriteManager::Get().mScreens[0].func_02027778((void *) data_0209e558[1], 1, 0x54, 0x25, 3, 0xa0, 0, 0);
+    SpriteManager::Get().mScreens[0].func_02027778((void *) data_0209e558[1], 1, 0x54, 0x65, 3, 0xb0, 0, 0);
+    SpriteManager::Get().mScreens[0].func_02027778((void *) data_0209e558[0], 1, 0x14, 0x25, 3, 0xc0, 0, 0);
+    SpriteManager::Get().mScreens[0].func_02027778((void *) data_0209e558[0], 1, 0x14, 0x65, 3, 0xe0, 0, 0);
 }
 
 u8 func_02065bf4(u32 id, u32 index);

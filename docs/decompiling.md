@@ -60,6 +60,10 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   indexes; every normal form colours it first. They match with the index read as its own statement through
   `*(volatile u8 *) &field`, marked as a placeholder at each site. Tried without effect: named or split locals,
   `+`/`+=`, inline accessors, both argument orders, a bitfield. Finding the real form likely fixes all of them.
+  BattleConfrontCard::func_ov007_0223f918 (case 29's loop head, 7 words, no placeholder possible: the index is the
+  loop counter `j`) is the same family: ours colours `j*4` before the slot pointer. A dummy consumer of `j*4` placed
+  between the player load and the slot pointer gives the original registers exactly, so the original creates the
+  scaled index there with no visible use; about 80 forms and 1,200 random combinations did not reproduce it.
 - **Fully matched units that don't link yet** (2026-10-14):
 
 - **Game.cpp (linked).** What it took:
@@ -251,6 +255,14 @@ Other findings from linking:
   original finishes the third Draw's y before loading `this`, which no source form tried reproduces.
 
 ## Source patterns that matter
+
+- **Separate globals, not a struct.** UploadQueue's count/head/free/tail bytes and byte total only match as five
+  globals (defined in the order that gives the original offsets): as one struct, the entry accesses and the state
+  stores reorder across each other.
+- **A zero-initialised table that the original has in `.data`** needs `#pragma explicit_zero_data on` around it
+  (UploadQueue's data_020a55a4); `= {0}` alone puts it in `.bss`.
+- **A table offset as its own variable before the bounds check** (`u32 pos = id * 0x20; if (pos >= size) ...`) gives
+  the separate shift the original has (fs_overlay, fs_archive).
 
 - **`x + x + x + y` for a times-three blend.** The G3D animation blends (func_0203382c, func_01ff9f18, func_01ffa1cc)
   match only with the sum spelled out (`(s64) x + x + x + y` for the 32-bit arm); `x * 3 + y` creates temporaries in

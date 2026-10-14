@@ -4670,9 +4670,6 @@ data_020c1c74 kind:bss addr:0x020c1c74
 data_020c1cf4 kind:bss addr:0x020c1cf4
 _ZZN9FrameTask3GetEvE8instance kind:bss addr:0x020c1d54 weak
 _ZZN13SpriteManager3GetEvE8instance kind:bss addr:0x020c26c0 weak
-data_020c26c4 kind:bss addr:0x020c26c4
-data_020c2acc kind:bss addr:0x020c2acc
-data_020c2ed4 kind:bss addr:0x020c2ed4
 _ZZN15WirelessManager3GetEvE8instance kind:bss addr:0x020c3030 weak
 data_020c3938 kind:bss addr:0x020c3938
 data_020c4030 kind:bss addr:0x020c4030

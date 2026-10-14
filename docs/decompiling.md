@@ -204,6 +204,12 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **Zeros from one declaration share a register.** `s32 done = 0, advance = 0, pending = 0;` as one declaration lets
+  the three zeros share one register, where separate declarations (or `= done`) don't (UnkStruct_02065c40::func_02066814).
+- **`u8 now = ++field;`** gives `add; and; strb` with no reload of the field; `field++; now = field;` reloads it.
+- **A chained assignment as an argument:** `SetAnimation(mUnk_14f2 = value)` schedules the store differently from two
+  statements (func_0206a1c8).
+
 - **Parameter width shows in the caller.** Passing a `u8` to a `u32` parameter makes a conversion temporary that
   shifts the caller's registers; FieldSelectScene's `func_ov001_022267d0(u8)` fixed two callers' loops.
 - **A pointer kept only part of the way is a second `Get()`.** When the original holds a SpriteScreen (or other

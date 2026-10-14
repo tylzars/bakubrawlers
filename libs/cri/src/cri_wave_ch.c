@@ -316,6 +316,8 @@ void func_02048808(Ch *c, int m)
     }
 }
 
+// non-matching: 41 words, all one r4/r6 swap between the count (s2c / sp[0].n) and the get24 / bic /
+// func_0204a05c results; declaration order does not move it
 void func_02048940(Ch *c)
 {
     unsigned short so;
@@ -328,7 +330,7 @@ void func_02048940(Ch *c)
     unsigned short s0;
     int r7;
     int r6;
-    int r8;
+    long r8;
     int zero;
     SpanV tm[2];
     if (c->ncnt == 1) {
@@ -369,15 +371,15 @@ void func_02048940(Ch *c)
                         func_020515dc(r5, r8, c->buf + c->s30, r6);
                         r4 = r6 * 2;
                         c->s30 += r6;
-                        c->s2c += (unsigned short)r4;
                         r5 = c->buf + c->s2e;
+                        c->s2c += (unsigned short)r4;
                     }
                 }
             } else {
                 r4 = c->s2c;
                 if (r4 == 0) return;
-                sp[0].p = 0;
                 r5 = c->buf + c->s2e;
+                sp[0].p = 0;
             }
         }
         if (c->nch == 2 && c->b4 >= 1) {

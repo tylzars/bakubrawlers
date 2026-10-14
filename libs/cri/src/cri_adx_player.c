@@ -113,6 +113,8 @@ void func_0203e0f4(CriObj *o, int unused, int n)
     o->i88 += n;
 }
 
+// non-matching: 0x44 vs 0x40 bytes; the original keeps the first zero in r2 and stores it in the loop,
+// the compiled code derives -128 from that zero in r1 and rematerialises mov r0, #0 before the loop
 void func_0203e110(CriObj *o)
 {
     unsigned i;

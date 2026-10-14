@@ -138,19 +138,27 @@ void func_0204b5f4(Bs *bs, SbInfo *si, int (*alloc)[32], int (*sfsel)[32], int (
 
 extern int data_020ae488[];
 
-void func_0204b880(Bs *bs, SbInfo *si, int (*alloc)[32], int (*scf)[3][32], int part, short (*out)[3][32], int *mtab) {
-    int sblimit = si->sblimit;
-    int nch = si->nch;
-    int bound = si->bound;
-    QEnt (*tab)[16] = si->alloc;
-    int sb, ch, i;
+// non-matching: 26 words, all one register swap: the strength-reduced &out[ch][0][sb] pointer and the
+// generic-group loop counter i trade r9/sl. `long` part/sb/ch/nch/bound fix the stack frame.
+void func_0204b880(Bs *bs, SbInfo *si, int (*alloc)[32], int (*scf)[3][32], long part, short (*out)[3][32], int *mtab) {
+    long sb, ch, nch, bound;
+    QEnt (*tab)[16];
+    int sblimit;
+    sblimit = si->sblimit;
+    nch = si->nch;
+    bound = si->bound;
+    tab = si->alloc;
     for (sb = 0; sb < sblimit; sb++) {
-        for (ch = 0; ch < (sb >= bound ? 1 : nch); ch++) {
+        for (ch = 0; ch < (sb < bound ? nch : 1); ch++) {
             int a = alloc[ch][sb];
             if (a != 0) {
                 QEnt *e = &tab[sb][a];
-                int mul = e->mul, add = e->add;
-                int g = mtab[scf[ch][part][sb]];
+                int mul, add;
+                int g;
+                int t;
+                add = e->add;
+                mul = e->mul;
+                g = mtab[scf[ch][part][sb]];
                 if (e->cls == 3) {
                     int nb = e->bits;
                     if (nb <= 8) {
@@ -159,38 +167,37 @@ void func_0204b880(Bs *bs, SbInfo *si, int (*alloc)[32], int (*scf)[3][32], int 
                         int x0 = v & m;
                         int x1 = (v >> nb) & m;
                         int x2 = (v >> nb) >> nb;
-                        out[ch][2][sb] = (((x0 * mul + add) >> 2) * g) >> 16;
-                        out[ch][1][sb] = (((x1 * mul + add) >> 2) * g) >> 16;
-                        out[ch][0][sb] = (((x2 * mul + add) >> 2) * g) >> 16;
+                        t = (mul * x0 + add) >> 2; t = (t * g) >> 16; out[ch][2][sb] = t;
+                        t = (mul * x1 + add) >> 2; t = (t * g) >> 16; out[ch][1][sb] = t;
+                        t = (x2 * mul + add) >> 2; t = (t * g) >> 16; out[ch][0][sb] = t;
                     } else {
-                        out[ch][0][sb] = (((func_0204e6f0(bs, nb) * mul + add) >> 2) * g) >> 16;
-                        out[ch][1][sb] = (((func_0204e6f0(bs, nb) * mul + add) >> 2) * g) >> 16;
-                        out[ch][2][sb] = (((func_0204e6f0(bs, nb) * mul + add) >> 2) * g) >> 16;
+                        t = func_0204e6f0(bs, nb); t = (t * mul + add) >> 2; t = (t * g) >> 16; out[ch][0][sb] = t;
+                        t = func_0204e6f0(bs, nb); t = (t * mul + add) >> 2; t = (t * g) >> 16; out[ch][1][sb] = t;
+                        t = func_0204e6f0(bs, nb); t = (t * mul + add) >> 2; t = (t * g) >> 16; out[ch][2][sb] = t;
                     }
                 } else {
                     int grp = e->grp;
                     int v = func_0204e6f0(bs, e->bits);
                     if (grp == 3) {
-                        out[ch][0][sb] = (((v % 3 * mul + add) >> 2) * g) >> 16;
+                        t = (v % 3 * mul + add) >> 2; t = (t * g) >> 16; out[ch][0][sb] = t;
                         v /= 3;
-                        out[ch][1][sb] = (((v % 3 * mul + add) >> 2) * g) >> 16;
+                        t = (v % 3 * mul + add) >> 2; t = (t * g) >> 16; out[ch][1][sb] = t;
                         v /= 3;
-                        out[ch][2][sb] = (((v % 3 * mul + add) >> 2) * g) >> 16;
+                        t = (v % 3 * mul + add) >> 2; t = (t * g) >> 16; out[ch][2][sb] = t;
                     } else if (grp == 5) {
-                        out[ch][0][sb] = (((v % 5 * mul + add) >> 2) * g) >> 16;
+                        t = v % 5; v /= 5; t = (t * mul + add) >> 2; t = (t * g) >> 16; out[ch][0][sb] = t;
+                        t = (v % 5 * mul + add) >> 2; t = (t * g) >> 16; out[ch][1][sb] = t;
                         v /= 5;
-                        out[ch][1][sb] = (((v % 5 * mul + add) >> 2) * g) >> 16;
-                        v /= 5;
-                        out[ch][2][sb] = (((v % 5 * mul + add) >> 2) * g) >> 16;
+                        t = (v % 5 * mul + add) >> 2; t = (t * g) >> 16; out[ch][2][sb] = t;
                     } else if (grp == 9) {
-                        out[ch][0][sb] = (((v % 9 * mul + add) >> 2) * g) >> 16;
+                        t = v % 9; v /= 9; t = (t * mul + add) >> 2; t = (t * g) >> 16; out[ch][0][sb] = t;
+                        t = (v % 9 * mul + add) >> 2; t = (t * g) >> 16; out[ch][1][sb] = t;
                         v /= 9;
-                        out[ch][1][sb] = (((v % 9 * mul + add) >> 2) * g) >> 16;
-                        v /= 9;
-                        out[ch][2][sb] = (((v % 9 * mul + add) >> 2) * g) >> 16;
+                        t = (v % 9 * mul + add) >> 2; t = (t * g) >> 16; out[ch][2][sb] = t;
                     } else {
+                        int i;
                         for (i = 0; i < 3; i++) {
-                            out[ch][i][sb] = (((v % grp * mul + add) >> 2) * g) >> 16;
+                            t = v % grp; t = (t * mul + add) >> 2; t = (t * g) >> 16; out[ch][i][sb] = t;
                             v /= grp;
                         }
                     }
@@ -201,15 +208,14 @@ void func_0204b880(Bs *bs, SbInfo *si, int (*alloc)[32], int (*scf)[3][32], int 
                 out[ch][2][sb] = 0;
             }
             if (nch == 2 && sb >= bound) {
+                int i;
                 for (i = 0; i < 3; i++) out[1][i][sb] = out[0][i][sb];
             }
         }
     }
     for (; sblimit < 32; sblimit++) {
-        short *o = &out[0][0][sblimit];
-        for (ch = 0; ch < nch; ch++) {
-            for (i = 0; i < 3; i++) o[i * 32] = 0;
-            o += 96;
+        for (sb = 0; sb < nch; sb++) {
+            for (ch = 0; ch < 3; ch++) out[sb][ch][sblimit] = 0;
         }
     }
 }

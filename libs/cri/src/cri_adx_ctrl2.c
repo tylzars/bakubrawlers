@@ -156,6 +156,8 @@ void func_02043c14(Pl *o)
     func_020416e4(h, 0);
 }
 
+// non-matching: 9 words in the i50/i8c block: the original keeps 2048 - x % 2048 in r5 and stores i50
+// before computing i8c; the compiled code puts the intermediate in r2 and the final % in r5
 void func_02043f28(Pl *o)
 {
     int h = o->h;

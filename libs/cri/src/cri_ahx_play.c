@@ -197,7 +197,7 @@ void func_0204dc9c(CriPlay *o)
     int c = o->f0b;
     void *dec = o->dec;
     CriVObj *src = o->src;
-    int unit, blk, n, lim;
+    int unit, blk, n, take, lim;
     void (*cb)(int, int, void *, int);
 
     if (c == 1 && src->vt->size(src, 1) == 0 && func_0204e764(o->bits) == 1) {
@@ -221,17 +221,17 @@ void func_0204dc9c(CriPlay *o)
         return;
     }
     n = func_0204b238(dec, (int)in.p, 0, blk);
-    blk = (o->i20 < 0x1e0) ? 0 : n;
+    if (o->i20 < 0x1e0) take = 0; else take = n;
     lim = func_0204b2f4(o->dec);
-    if (blk + o->i28 > lim) blk = lim - o->i28;
-    func_0204df00(&in, blk * unit, &in, &out);
+    if (take + o->i28 > lim) take = lim - o->i28;
+    func_0204df00(&in, take * unit, &in, &out);
     cb = (void (*)(int, int, void *, int))o->cb4c;
-    if (cb && blk > 0) cb(o->arg50, 0, in.p, in.n);
+    if (cb && take > 0) cb(o->arg50, 0, in.p, in.n);
     o->ch[0]->vt->commit(o->ch[0], 1, &in);
     o->ch[0]->vt->put(o->ch[0], 0, &out);
     o->i20 += n;
     o->i24 = (func_0204e75c(o->bits) + 7) / 8;
-    o->i28 += blk;
+    o->i28 += take;
     o->i2c += n;
     o->i38 += n;
     if (o->i34 >= 0 && o->i38 >= o->i34) {

@@ -147,7 +147,7 @@ void func_0204af3c(SndPlayer *p, int src)
     p->src = src;
 }
 
-// non-matching: same code; h/q swap registers (r6/r7) and the 8-byte tail copy has source and destination swapped
+/* the tail copy is the __memcpy intrinsic: a struct copy swaps the source and destination registers */
 void func_0204af54(SndPlayer *p)
 {
     u8 *end;
@@ -181,7 +181,7 @@ void func_0204af54(SndPlayer *p)
             return;
         }
         if (hdr.b3d >= 8) {
-            info->tail = p->tail;
+            __memcpy(&info->tail, &p->tail, 8);
             return;
         }
         info->tail.b[0] = 0;

@@ -69,8 +69,8 @@ void func_0204e148(unsigned char *ss, CriHdrB *d)
 
 int func_0204e1c8(unsigned char *src, int size, int *outsize, CriHdr *dst)
 {
-    int n;
-    int i;
+    long n;
+    long i;
     if (outsize) *outsize = 0;
     if (size < 4) return -1;
     if ((unsigned short)((src[0] << 8) | src[1]) != 0x8000) return -4;

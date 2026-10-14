@@ -104,53 +104,58 @@ static BOOL (*sTests[6])(BattleObstacle *, BattleObstacle *) = {
     func_ov007_02272308, func_ov007_02272170, func_ov007_0227212c, func_ov007_022720ac, 0, 0,
 };
 
-// non-matching: same instructions and size (0x1f4) but the registers differ (a/b in r6/r5 instead of r7/r6, j r4 instead of r5, fileB fp instead of r4), the zero for i/j is not shared and hoisted before the loops, and the spill slots of i/fileA/entry differ (~87 instructions)
 void UnkStruct_020d433c_0c::func_ov007_02271e48(GimmickSetData *a, GimmickSetData *b) {
     BattleObstacle shapeA;
     BattleObstacle shapeB;
-    u8 i;
-    u8 j;
-    if (!((a->mUnk_0a & b->mUnk_08) | (b->mUnk_0a & a->mUnk_08))) {
+    u16 ab = a->mUnk_0a & b->mUnk_08;
+    u16 ba = b->mUnk_0a & a->mUnk_08;
+    if (!(ab | ba)) {
         return;
     }
+    u8 *eA;
     GimmickSetFile *fileA = (GimmickSetFile *) &a->mUnk_0c;
     GimmickSetFile *fileB = (GimmickSetFile *) &b->mUnk_0c;
-    for (i = 0; i < fileA->mCount; i++) {
-        for (j = 0; j < fileB->mCount; j++) {
-            *(ObstacleRaw *) &shapeA = *(ObstacleRaw *) ((u8 *) fileA + i * 0x20 + 4);
-            *(ObstacleRaw *) &shapeB = *(ObstacleRaw *) ((u8 *) fileB + j * 0x20 + 4);
-            VEC_Add(&shapeA.mPos, &a->mUnk_810, &shapeA.mPos);
-            u16 rxA = shapeA.mRotX + a->mRotX;
-            u16 ryA = shapeA.mRotY + a->mRotY;
-            u16 rzA = shapeA.mRotZ + a->mRotZ;
-            shapeA.mRotX = rxA;
-            shapeA.mRotY = ryA;
-            shapeA.mRotZ = rzA;
-            VEC_Add(&shapeB.mPos, &b->mUnk_810, &shapeB.mPos);
-            u16 rxB = shapeB.mRotX + b->mRotX;
-            u16 ryB = shapeB.mRotY + b->mRotY;
-            u16 rzB = shapeB.mRotZ + b->mRotZ;
-            shapeB.mRotX = rxB;
-            shapeB.mRotY = ryB;
-            shapeB.mRotZ = rzB;
-            if (!func_ov007_0227203c(&shapeA, &shapeB)) {
-                continue;
-            }
-            if (a->mUnk_823 < 8) {
-                a->mUnk_824[a->mUnk_823] = b->mUnk_822;
-                a->mUnk_82c[a->mUnk_823] = j;
-                a->mUnk_823++;
-            }
-            if (b->mUnk_823 < 8) {
-                b->mUnk_824[b->mUnk_823] = a->mUnk_822;
-                b->mUnk_82c[b->mUnk_823] = j;
-                b->mUnk_823++;
-            }
+    u8 i = 0;
+    u8 j = 0;
+    do {
+        if (fileA->mCount != 0) {
+            eA = (u8 *) fileA + i * 0x20;
+            do {
+                if (fileB->mCount != 0) {
+                    *(ObstacleRaw *) &shapeA = *(ObstacleRaw *) (eA + 4);
+                    *(ObstacleRaw *) &shapeB = *(ObstacleRaw *) ((u8 *) fileB + j * 0x20 + 4);
+                    VEC_Add(&shapeA.mPos, &a->mUnk_810, &shapeA.mPos);
+                    u16 rxA = shapeA.mRotX + a->mRotX;
+                    u16 ryA = shapeA.mRotY + a->mRotY;
+                    u16 rzA = shapeA.mRotZ + a->mRotZ;
+                    shapeA.mRotX = rxA;
+                    shapeA.mRotY = ryA;
+                    shapeA.mRotZ = rzA;
+                    VEC_Add(&shapeB.mPos, &b->mUnk_810, &shapeB.mPos);
+                    u16 rxB = shapeB.mRotX + b->mRotX;
+                    u16 ryB = shapeB.mRotY + b->mRotY;
+                    u16 rzB = shapeB.mRotZ + b->mRotZ;
+                    shapeB.mRotX = rxB;
+                    shapeB.mRotY = ryB;
+                    shapeB.mRotZ = rzB;
+                    if (!func_ov007_0227203c(&shapeA, &shapeB)) {
+                        continue;
+                    }
+                    if (a->mUnk_823 < 8) {
+                        a->mUnk_824[a->mUnk_823] = b->mUnk_822;
+                        a->mUnk_82c[a->mUnk_823] = j;
+                        a->mUnk_823++;
+                    }
+                    if (b->mUnk_823 < 8) {
+                        b->mUnk_824[b->mUnk_823] = a->mUnk_822;
+                        b->mUnk_82c[b->mUnk_823] = j;
+                        b->mUnk_823++;
+                    }
+                }
+            } while (++j < fileB->mCount);
         }
-    }
+    } while (++i < fileA->mCount);
 }
-
-
 
 BOOL UnkStruct_020d433c_0c::func_ov007_0227203c(BattleObstacle *a, BattleObstacle *b) {
     BOOL result = 0;

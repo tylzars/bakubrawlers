@@ -111,14 +111,13 @@ BattleCardModel::BattleCardModel(EffectManager *effects, Camera *camera, u32 a, 
     func_ov007_022725f0(a, b, *(u8 *) &c); // narrow read of a stack argument (placeholder, see docs/decompiling.md)
 }
 
-// non-matching: 14 words differ, the table address loads are hoisted and the entry lives in r3.
 void BattleCardModel::func_ov007_022725f0(u32 type, u32 id, u32 c) {
+    mUnk_93   = 0;
     mUnk_8c = id;
     u8 charId = data_020a1074[id];
-    mUnk_93   = 0;
+    mUnk_8d   = c;
     mType     = type;
     mId       = charId;
-    mUnk_8d   = c;
     BattleCardModelEntry *entry = data_ov007_0228acc0[mType] + charId;
     mEntry                      = entry;
     mUnk_24                     = entry->mUnk_0c;

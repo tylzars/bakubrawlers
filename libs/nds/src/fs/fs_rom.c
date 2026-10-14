@@ -85,10 +85,12 @@ int func_0200adec(void *arc, int ev)
     return 4;
 }
 
+typedef enum { HDR_BASE = 0x027ffc40 } HdrBase;
 void func_0200adf4(u32 dma)
 {
     volatile RomHdr *hdr;
     u32 fnt, fat;
+    HdrBase base;
     data_020bfc9c.dma = dma;
     data_020bfc9c.w0 = OS_GetLockID();
     data_020bfc9c.w8 = 0;
@@ -98,7 +100,8 @@ void func_0200adf4(u32 dma)
     func_0200f4c8();
     func_0200a434(&data_020bfcb4);
     func_0200a4a0(&data_020bfcb4, data_020a4f40, 3);
-    hdr = (volatile RomHdr *) 0x027ffc40;
+    base = HDR_BASE;
+    hdr = (volatile RomHdr *) base;
     if (hdr->mode == 2) {
         data_020bfc9c.w8 = -1;
         data_020bfc9c.wc = 0;
@@ -109,10 +112,12 @@ void func_0200adf4(u32 dma)
     } else {
         func_0200a6e8(&data_020bfcb4, (void (*)(void *, int)) func_0200ad78, 0x602);
         fnt = hdr->fnt;
-        if (fnt == -1 || fnt == 0) return;
-        fat = hdr->fat;
-        if (fat == -1 || fat == 0) return;
-        func_0200a554(&data_020bfcb4, 0, fat, hdr->fat_size, fnt, hdr->fnt_size, func_0200ad28, func_0200ad70);
+        if (fnt != -1 && fnt != 0) {
+            fat = hdr->fat;
+            if (fat != -1 && fat != 0) {
+                func_0200a554(&data_020bfcb4, 0, fat, hdr->fat_size, fnt, hdr->fnt_size, func_0200ad28, func_0200ad70);
+            }
+        }
     }
 }
 

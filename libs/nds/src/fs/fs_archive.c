@@ -501,9 +501,9 @@ BOOL func_0200a290(FSFile *f, u32 cmd)
     FSArchive *arc = f->arc;
     u32 bit = 1 << cmd;
     u32 e;
-    FSFile *next;
-    FSFile *prev;
     FSFile *t;
+    FSFile *prev;
+    FSFile *next;
     f->command = cmd;
     f->error = 2;
     f->stat |= 1;
@@ -514,11 +514,11 @@ BOOL func_0200a290(FSFile *f, u32 cmd)
         return FALSE;
     }
     if (bit & 0x1fc) f->stat |= 4;
+    t = (FSFile *) &arc->list_prev;
     prev = f->prev;
     next = f->next;
     if (prev != NULL) prev->next = next;
     if (next != NULL) next->prev = prev;
-    t = (FSFile *) &arc->list_prev;
     while (t->next != NULL) t = t->next;
     t->next = f;
     f->prev = t;

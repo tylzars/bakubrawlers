@@ -2318,9 +2318,6 @@ void FieldSelectScene::func_ov001_02225338() {
     G2S_SetBlendAlpha(2, 0x3d, mUnk_32e, 0x10 - mUnk_32e);
 }
 
-// non-matching: 22 words: the original sets count and sel (mov r5, #6; mov r6, #1) after the mUnk_266 load, yet keeps
-// idx in its own register (r7); assigning them before the message calls gives the original registers but moves
-// the two movs up (and the message call reuses sel's 1).
 void FieldSelectScene::func_ov001_022253f0(u32 slot, u32 value, u32 idx) {
     if (value == mInput[slot].mUnk_0a) {
         return;
@@ -2351,15 +2348,15 @@ void FieldSelectScene::func_ov001_022253f0(u32 slot, u32 value, u32 idx) {
                 sel   = 1;
                 break;
             default:
-                count = 6;
-                sel   = 1;
                 if (mUnk_333 != 0 && mUnk_33c != 0) {
                     mMessage->func_02065890(0xe, 0, 1);
                 } else {
                     mMessage->func_02065890(0xf, 0, 1);
                 }
-                u32 row = slot;
                 set     = 2;
+                count = 6;
+                sel   = 1;
+                u32 row = slot;
                 if (slot >= mUnk_32b) {
                     row = 0;
                 }

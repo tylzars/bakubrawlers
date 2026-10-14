@@ -237,7 +237,9 @@ u32 UnkStruct_02065c40::func_020667ec() {
     return data_020b4324[type]->mUnk_78;
 }
 
-// non-matching: 57 words, register assignment (`volatile s32 result` is a placeholder for the stack slot).
+// non-matching: 17 words, the stack slots of result and pending are swapped (original: result at [sp], pending at
+// [sp, #4]), the result store is scheduled after the type load, and `mUnk_42++` reloads (needs mUnk_42 non-volatile
+// and `if (++mUnk_42 == 10)` to match). `s32 done = 0, advance = 0, pending = 0;` as one declaration shares the zero.
 s32 UnkStruct_02065c40::func_02066814(u32 unk1) {
     volatile s32 result = -1;
     u8 type    = data_020d43f0[0].mUnk_42;
@@ -246,14 +248,12 @@ s32 UnkStruct_02065c40::func_02066814(u32 unk1) {
     }
     if (mUnk_14e2 == data_020b4324[type]->mUnk_78) {
         u8 saved = data_020d433c.mUnk_7d;
-        s32 done = 0;
+        s32 done = 0, advance = 0, pending = 0;
         if (unk1 != 0) {
             data_020d433c.mUnk_7d = 1;
         }
         u8 position = data_020d43f0[0].mUnk_43;
-        s32 advance = 0;
         u8 index    = position % 10;
-        s32 pending = 0;
         if ((index == 0) & (saved == 0)) {
             result = data_020b4324[type]->mUnk_79;
         } else {
@@ -327,8 +327,7 @@ s32 UnkStruct_02065c40::func_02066814(u32 unk1) {
                 if (data_020d43f0[0].mUnk_5bf_0) {
                     limit = func_02067240(type);
                 }
-                data_020d43f0[0].mUnk_43++;
-                u8 now = data_020d43f0[0].mUnk_43;
+                u8 now = ++data_020d43f0[0].mUnk_43;
                 if (now >= limit) {
                     done = 1;
                 } else if (data_020b4324[type]->mEntries[now].mUnk_06 == 0) {
@@ -369,8 +368,9 @@ s32 UnkStruct_02065c40::func_02066814(u32 unk1) {
                     if (next != 0) {
                         func_0206791c(next);
                     }
-                    data_020d43f0[0].mUnk_42++;
-                    if (data_020d43f0[0].mUnk_42 == 10) {
+                    u8 t42 = data_020d43f0[0].mUnk_42 + 1;
+                    data_020d43f0[0].mUnk_42 = t42;
+                    if (t42 == 10) {
                         func_0206791c(8);
                     }
                 }
@@ -1662,7 +1662,6 @@ void UnkStruct_02065c40::func_0206a01c() {
     mUnk_1018->func_02088a18(first, second);
 }
 
-// non-matching: 3 words, the original emits the `and` after the cell pointer load.
 void UnkStruct_02065c40::func_0206a1c8(u32 value, u32 force) {
     if (force == 0 && mUnk_14f2 == value) {
         return;
@@ -1670,8 +1669,7 @@ void UnkStruct_02065c40::func_0206a1c8(u32 value, u32 force) {
     if (mUnk_100c == NULL) {
         return;
     }
-    mUnk_14f2 = value;
-    mUnk_100c->SetAnimation(value);
+    mUnk_100c->SetAnimation(mUnk_14f2 = value);
 }
 
 void UnkStruct_02065c40::func_0206a208() {
@@ -3622,16 +3620,24 @@ inline s16 Identity16(s16 v) {
     return v;
 }
 
-// non-matching: size 0x1a0 vs 0x19c. Code is identical, but the original shares one literal-pool word (the static script at
-// 0x020b467c) between the run-time init and the copy call, while the compiler emits two (.data and the named static).
+extern UnkStruct_02065c40_cmd data_020b467c[17];
+static u32 sScriptGuard;
+// The script table at 0x020b467c is addressed through its own symbol both for the run-time init of its four computed
+// entries and for the copy (one literal-pool word); a function-local static gives two (.data and the named static).
+// So it is declared extern here and filled once under a hand-written guard (the compiler's guard would sit at
+// 0x0221928c, right after data_02219288).
 extern "C" BOOL func_0206f6f0(UnkStruct_02065c40 *event, const char *name, u32 id, u32 unk3, u32 unk4) {
     BOOL idle = event->mUnk_12bc == event->mUnk_12be;
     BOOL nine = event->mUnk_12b9 == 9;
     if (nine & idle) {
-        static UnkStruct_02065c40_cmd script[17] = {
-            {1, 0xe}, {-16, 0xf}, {0, 0x19}, {3, 9}, {9, 0x3b}, {0, 0x3c}, {0x2d, 0x2f}, {FxScale(0.27f), 0x31},
-            {FxScale(0.43f), 0x33}, {FxScale(0.86f), 0x35}, {Identity16(0x7fff), 0x3a}, {10, 0xe}, {0, 0xf}, {0, 0x19}, {0, 0xd7}, {0, 8}, {0, 1}};
-        func_01ff9510(script, event->mUnk_0c, 0x44);
+        if (!(sScriptGuard & 1)) {
+            data_020b467c[7].mValue  = FxScale(0.27f);
+            data_020b467c[8].mValue  = FxScale(0.43f);
+            data_020b467c[9].mValue  = FxScale(0.86f);
+            data_020b467c[10].mValue = Identity16(0x7fff);
+            sScriptGuard |= 1;
+        }
+        func_01ff9510(data_020b467c, event->mUnk_0c, 0x44);
         event->mUnk_0c[14].mValue = event->func_02070554((s8) *(s16 *) &unk4, unk3);
         event->mUnk_0c[15].mValue = *(s16 *) &unk4;
         event->mUnk_0c[16].mValue = id;

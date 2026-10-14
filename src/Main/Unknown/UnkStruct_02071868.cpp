@@ -358,11 +358,13 @@ void UnkStruct_02071d24::func_02072b60() {
     func_020231c0(data_020d43f0, current, base);
 }
 
-// non-matching: 2 words. The original reloads mUnk_20 into lr (not r0) for the buttons[3] store (+0x64 ldr, +0x6c str);
-// 60+ statement-order permutations and constant/local variants did not change this.
 void UnkStruct_02071d24::func_02072c40() {
     WindowItem *items = mUnk_20->mCursor->mItems;
-    mUnk_53 = func_02072d20() ? 1 : 2;
+    if (func_02072d20()) {
+        mUnk_53 = 1;
+    } else {
+        mUnk_53 = 2;
+    }
     GXS_SetVisiblePlane(0x13);
     mUnk_20->mButtons[0].mEnabled = 0;
     mUnk_20->mButtons[1].mEnabled = 0;

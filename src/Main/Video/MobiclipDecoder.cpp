@@ -170,6 +170,14 @@ int func_0203b550(P *p) {
     p->occ++;
     return 1;
 }
-void *func_0203b640(u32 n) { return func_0203c15c(n); }
+}
+
+// the byte reader Mobiclip.cpp allocates with new
+struct Reader {
+    static void *operator new(unsigned long size);
+};
+void *Reader::operator new(unsigned long n) { return func_0203c15c(n); }
+
+extern "C" {
 void func_0203b64c(void *q) { func_0203c174(q); }
 }

@@ -98,7 +98,6 @@ struct Player {
 };
 
 extern "C" void func_02000b9c(u32 a);
-extern "C" void *func_0203b640(u32 size);
 extern "C" int func_0203b658(Reader *r, u32 a);
 extern "C" void func_0203b64c(Reader *r);
 extern "C" void *func_0203c15c(u32 size);

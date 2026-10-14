@@ -73,6 +73,12 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   0xe8 (an unused trailing member, so `Widths()` keeps its code), 22 functions match. So when a store seems to
   pin a later load, check the declared size of the stored-to object.
 
+- **Both CameraManager mode loads before the compares.** `(Get().mMode == 2) | (Get().mMode == 3)`
+  (BattleCardEffect::func_ov007_02271888, UnkStruct_02078290::Update and func_020785d8): the original loads the
+  instance address, then both modes, then compares (first mode and its 0/1 result share r1); we compare the first
+  mode before loading the second. Every form tried compiles to the same code: operand order, `||`, negations,
+  temporaries before or after the second `Get()`, references, pointers, inline wrappers around `Get()` or the
+  compares, and `mMode` as volatile, unsigned or at another offset. No other 2.0 build differs.
 - **Call checks.** `tools/check_calls.py` compares every call in matching functions with the original;
   `tools/check_callees.py` compares, per function (matching or not), the set of callees with the `bl` targets in
   the original's range. Probes and objdiff mask call targets, so both are needed: a near-identical neighbour
@@ -139,6 +145,12 @@ Other findings from linking:
   When data_ranges can't place a unit (nothing references some sections), write the ranges by hand and check the
   layout byte by byte.
 
+- **Data no relocation points at can still be referenced.** A const table read only with constant indices is
+  folded into immediates, so no code relocation reaches it, yet it stays referenced and joins the shared section.
+  StoreScene's 0x24 bytes between its 7-byte table and `sMenuItems` are the three event-camera position rows that
+  `Update` passes to `func_020702e0` as immediates; declaring `sEventPositions[3][6]` after `sMenuCells` and reading
+  it there fixed `.rodata` and `.data` at once. An unused inline accessor does not count as a reference. Look for a
+  gap's values among a function's immediates before writing it off as dead data.
 - **Char arrays always get their own section**, even when the file references them; a struct of the same size
   doesn't (SpriteFade: `static s8 sFade[2]`, index 0 main screen, 1 sub).
 - A weak inline vtable copy needs its unit's `.data` range set by hand and the symbol marked `weak` (SceneBase).

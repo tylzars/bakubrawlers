@@ -154,15 +154,16 @@ int func_0203f4a0(unsigned char *p, int len, int *total, signed char *tbl, short
     src = p + (off + 8);
     i = 8;
     do {
-        tbl[0] = src[0];
-        tbl[1] = src[1];
+        unsigned char a = src[0];
+        unsigned char b = src[1];
         src += 2;
+        tbl[0] = a;
+        tbl[1] = b;
         tbl += 2;
     } while (--i);
-    q = p + off;
-    *s0 = SW16(S16(q + 0x18));
-    s1[0] = SW16(S16(q + 0x1c));
-    s1[1] = SW16(S16(q + 0x1e));
+    *s0 = SW16(S16(p + 0x18 + off));
+    s1[0] = SW16(S16(p + 0x1c + off));
+    s1[1] = SW16(S16(p + 0x1e + off));
     return 0;
 }
 

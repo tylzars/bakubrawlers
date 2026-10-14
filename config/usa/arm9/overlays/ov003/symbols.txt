@@ -16,44 +16,44 @@ _ZN10StoreScene8DrawTextEv kind:function(arm,size=0xe0) addr:0x0221b2c8
 _ZN10StoreScene11PrintStatusEv kind:function(arm,size=0x1e0) addr:0x0221b3a8
 _ZN10StoreScene15ClearTextBufferEv kind:function(arm,size=0x20) addr:0x0221b588
 _ZN10StoreScene9DrawMoneyEv kind:function(arm,size=0x124) addr:0x0221b5a8
-data_ov003_0221b6cc kind:data(any) addr:0x0221b6cc
-data_ov003_0221b6d0 kind:data(any) addr:0x0221b6d0
-data_ov003_0221b6d4 kind:data(any) addr:0x0221b6d4
-data_ov003_0221b6d8 kind:data(any) addr:0x0221b6d8
-data_ov003_0221b6dc kind:data(any) addr:0x0221b6dc
-data_ov003_0221b6e0 kind:data(any) addr:0x0221b6e0
-data_ov003_0221b70c kind:data(any) addr:0x0221b70c
-data_ov003_0221b7b4 kind:data(any) addr:0x0221b7b4
-data_ov003_0221b868 kind:data(any) addr:0x0221b868
-data_ov003_0221b874 kind:data(any) addr:0x0221b874
-data_ov003_0221b898 kind:data(any) addr:0x0221b898
-data_ov003_0221b8bc kind:data(any) addr:0x0221b8bc
-data_ov003_0221b8e0 kind:data(any) addr:0x0221b8e0
-data_ov003_0221b90c kind:data(any) addr:0x0221b90c
-data_ov003_0221b938 kind:data(any) addr:0x0221b938
-data_ov003_0221b968 kind:data(any) addr:0x0221b968
-data_ov003_0221b97c kind:data(any) addr:0x0221b97c
-data_ov003_0221b98c kind:data(any) addr:0x0221b98c
-data_ov003_0221b99c kind:data(any) addr:0x0221b99c
-data_ov003_0221b9b4 kind:data(any) addr:0x0221b9b4
-data_ov003_0221b9cc kind:data(any) addr:0x0221b9cc
-data_ov003_0221b9e4 kind:data(any) addr:0x0221b9e4
-data_ov003_0221b9f4 kind:data(any) addr:0x0221b9f4
-data_ov003_0221ba10 kind:data(any) addr:0x0221ba10
-data_ov003_0221ba28 kind:data(any) addr:0x0221ba28
-data_ov003_0221ba3c kind:data(any) addr:0x0221ba3c
-data_ov003_0221ba60 kind:data(any) addr:0x0221ba60
-data_ov003_0221ba7c kind:data(any) addr:0x0221ba7c
-data_ov003_0221ba9c kind:data(any) addr:0x0221ba9c
-data_ov003_0221bab8 kind:data(any) addr:0x0221bab8
-data_ov003_0221bad8 kind:data(any) addr:0x0221bad8
-data_ov003_0221baf4 kind:data(any) addr:0x0221baf4
-data_ov003_0221bb18 kind:data(any) addr:0x0221bb18
-data_ov003_0221bb34 kind:data(any) addr:0x0221bb34
-data_ov003_0221bb50 kind:data(any) addr:0x0221bb50
-data_ov003_0221bb6c kind:data(any) addr:0x0221bb6c
-data_ov003_0221bb88 kind:data(any) addr:0x0221bb88
-data_ov003_0221bba0 kind:bss addr:0x0221bba0
-data_ov003_0221bbac kind:bss addr:0x0221bbac
-data_ov003_0221bbb8 kind:bss addr:0x0221bbb8
-data_ov003_0221bbc4 kind:bss addr:0x0221bbc4
+OV003_RODATA_START kind:data(any) addr:0x0221b6cc
+sSelectEventIds kind:data(any) addr:0x0221b6d0 local
+sSelectedFrames kind:data(any) addr:0x0221b6d4 local
+sSelectScriptIds kind:data(any) addr:0x0221b6d8 local
+sMessageIndices kind:data(any) addr:0x0221b6dc local
+@1624 kind:data(any) addr:0x0221b6e0 local
+sMenuItems kind:data(any) addr:0x0221b70c local
+sMenuCells kind:data(any) addr:0x0221b7b4 local
+OV003_CTOR_END kind:data(any) addr:0x0221b860
+@1276 kind:data(any) addr:0x0221b874 local
+@1277 kind:data(any) addr:0x0221b898 local
+@1278 kind:data(any) addr:0x0221b8bc local
+@1280 kind:data(any) addr:0x0221b8e0 local
+@1281 kind:data(any) addr:0x0221b90c local
+@1279 kind:data(any) addr:0x0221b938 local
+@2496 kind:data(any) addr:0x0221b968 local
+@2502 kind:data(any) addr:0x0221b97c local
+@2551 kind:data(any) addr:0x0221b98c local
+@2552 kind:data(any) addr:0x0221b99c local
+@2553 kind:data(any) addr:0x0221b9b4 local
+@2554 kind:data(any) addr:0x0221b9cc local
+@2555 kind:data(any) addr:0x0221b9e4 local
+@2556 kind:data(any) addr:0x0221b9f4 local
+@2557 kind:data(any) addr:0x0221ba10 local
+@2558 kind:data(any) addr:0x0221ba28 local
+@2559 kind:data(any) addr:0x0221ba3c local
+@2560 kind:data(any) addr:0x0221ba60 local
+@2561 kind:data(any) addr:0x0221ba7c local
+@2562 kind:data(any) addr:0x0221ba9c local
+@2563 kind:data(any) addr:0x0221bab8 local
+@2564 kind:data(any) addr:0x0221bad8 local
+@2565 kind:data(any) addr:0x0221baf4 local
+@2566 kind:data(any) addr:0x0221bb18 local
+@2567 kind:data(any) addr:0x0221bb34 local
+@2568 kind:data(any) addr:0x0221bb50 local
+@2776 kind:data(any) addr:0x0221bb6c local
+@2777 kind:data(any) addr:0x0221bb88 local
+OV003_BSS_START kind:bss addr:0x0221bba0
+@40 kind:bss addr:0x0221bbac local
+@748 kind:bss addr:0x0221bbb8 local
+@870 kind:bss addr:0x0221bbc4 local

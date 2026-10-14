@@ -1,3 +1,5 @@
+#include "System/SoundManager.hpp"
+#include "System/FrameTask.hpp"
 #include "Scene/StoreScene.hpp"
 #include "Unknown/UnkStruct_02078e14.hpp"
 #include "Game/UnkStruct_02065c40.hpp"
@@ -8,13 +10,10 @@
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
-#include "System/FrameTask.hpp"
 #include "System/InputManager.hpp"
-#include "System/SoundManager.hpp"
 #include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
-
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
@@ -23,11 +22,11 @@
 s32 func_02087468();
 void func_02086d48();
 
-static const u8 sIdleFrames[3]      = {3, 0, 6};
-static const u8 sSelectEventIds[3]  = {1, 2, 3};
-static const u8 sSelectedFrames[3]  = {4, 1, 7};
 static const u8 sSelectScriptIds[3] = {2, 1, 3};
 static const u8 sMessageIndices[3]  = {0x12, 0x13, 0x14};
+static const u8 sIdleFrames[3]      = {3, 0, 6};
+static const u8 sSelectedFrames[3]  = {4, 1, 7};
+static const u8 sSelectEventIds[3]  = {1, 2, 3};
 
 static const WindowItemRecord sMenuItems[6] = {
     {0, 0x8000, 88, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
@@ -45,6 +44,13 @@ static const WindowCellRecord sMenuCells[6] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x0, 0, 2, 1, {2, 3, 3, 0}},
     {"/Game/2D/union_b/union_b_obj_arrow_nce.bin", 0, 0x4000, 1, 2, 1, {0, 2, 0, 0}},
     {"/Game/2D/union_b/union_b_obj_arrow_nce.bin", 1, 0x4000, 1, 2, 1, {1, 3, 1, 0}},
+};
+
+// Event camera positions per shop counter (read with constant indices, so the code holds them as immediates).
+static const s16 sEventPositions[3][6] = {
+    {0x53, -8, 0x39, 0xad, -0x26, 0xe},
+    {0x8e, 0x44, -0x33, 0xe9, 0x40, -0x5e},
+    {0x4c, 0x2c, 0x3c, 0xa6, 2, 0x11},
 };
 
 StoreScene::StoreScene() :
@@ -194,13 +200,16 @@ void StoreScene::Update() {
             SpriteManager::Get().StartSubFade(3);
             switch (ctx->mInfo.mUnk_06) {
                 case 0:
-                    mEvent->func_020702e0(0x4c, 0x2c, 0x3c, 0xa6, 2, 0x11);
+                    mEvent->func_020702e0(sEventPositions[2][0], sEventPositions[2][1], sEventPositions[2][2],
+                                          sEventPositions[2][3], sEventPositions[2][4], sEventPositions[2][5]);
                     break;
                 case 1:
-                    mEvent->func_020702e0(0x53, -8, 0x39, 0xad, -0x26, 0xe);
+                    mEvent->func_020702e0(sEventPositions[0][0], sEventPositions[0][1], sEventPositions[0][2],
+                                          sEventPositions[0][3], sEventPositions[0][4], sEventPositions[0][5]);
                     break;
                 case 2:
-                    mEvent->func_020702e0(0x8e, 0x44, -0x33, 0xe9, 0x40, -0x5e);
+                    mEvent->func_020702e0(sEventPositions[1][0], sEventPositions[1][1], sEventPositions[1][2],
+                                          sEventPositions[1][3], sEventPositions[1][4], sEventPositions[1][5]);
                     break;
             }
             ctx->mInfo.mState++;

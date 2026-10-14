@@ -166,7 +166,7 @@ void func_0203e21c(CriObj *o)
 int func_0203e254(CriObj *o, int flag, int len)
 {
     int s30;
-    short s2e, s2c, s2a;
+    short s2[4];
     short s28, s26, s24;
     short s22;
     short r20;
@@ -199,9 +199,9 @@ int func_0203e254(CriObj *o, int flag, int len)
         if (func_0203e790(o, c19, c18, o->i18, &s1e, &s1c, &s1a) < 0) return -1;
         func_020447f4(o->h, s1e, s1c, s1a);
         if (func_0203f060(flag, len, &o->s1c) < 0) return 0;
-        if (func_0203f174(flag, len, &s2e, &s2a) < 0) return 0;
+        if (func_0203f174(flag, len, &s2[2], &s2[0]) < 0) return 0;
         func_02044790(o->h, o->i14, o->s1c);
-        func_020447ac(o->h, (int *)&s2e, (int *)&s2a);
+        func_020447ac(o->h, (int *)&s2[2], (int *)&s2[0]);
         func_0203f2a8(flag, len, &o->i20, &o->s24, &o->s26, &o->i28, &o->i2c, &o->i30, &o->i34);
         func_0203f4a0(flag, len, &o->ic0, o->bc4, &o->sd4, &o->sd6);
         o->s98 = 0;

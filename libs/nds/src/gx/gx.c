@@ -64,13 +64,14 @@ u16 GX_VBlankIntr(BOOL enable) {
 }
 
 void GX_DispOn(void) {
-    u16 mode = data_020bdc04[0];
+    u16 mode;
     data_020a4f20.dispOn = 1;
-    if (mode == 0) {
-        reg_GX_DISPCNT_ |= 0x10000;
-    } else {
+    mode = data_020bdc04[0];
+    if (mode != 0) {
         reg_GX_DISPCNT_ = (reg_GX_DISPCNT_ & ~0x30000) | (mode << 16);
+        return;
     }
+    reg_GX_DISPCNT_ |= 0x10000;
 }
 
 void GX_SetGraphicsMode(u32 dispMode, u32 bgMode, u32 bg0_2d3d) {

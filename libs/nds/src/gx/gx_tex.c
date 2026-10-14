@@ -14,7 +14,7 @@ typedef struct {
     u32 texLimit;
 } GXTexState;
 extern GXTexState data_020bdc40;
-extern u16 data_0208f73c[][3]; // per bank layout: first address, second address, first limit (in 4KB)
+extern const u16 data_0208f73c[][3]; // per bank layout: first address, second address, first limit (in 4KB)
 extern u16 data_0208f72c[];
 
 void GX_BeginLoadTex(void) {

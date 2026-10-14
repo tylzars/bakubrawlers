@@ -9,14 +9,12 @@ fx64 FX_GetDivResultFx64(void); // 0x01ff809c (itcm)
 #define reg_DIV_DENOM_H (*(vu32 *) 0x0400029c)
 
 static inline void StartFxReciprocal(fx32 den) {
-    reg_DIV_NUMER_L = 0;
-    reg_DIV_NUMER_H = 0x1000;
-    reg_DIV_DENOM_L = den;
-    reg_DIV_DENOM_H = 0;
+    *(volatile u64 *) 0x04000290 = 0x1000ULL << 32;
+    *(volatile u64 *) 0x04000298 = (u32) den;
 }
 
 static inline fx32 FX_Mul32x64c(fx32 a, fx64 b) {
-    return (fx32) (((fx64) a * b + 0x80000000LL) >> 32);
+    return (fx32) ((b * (fx64) a + 0x80000000LL) >> 32);
 }
 
 void MTX_Frustum(fx32 t, fx32 b, fx32 l, fx32 r, fx32 n, fx32 f, fx32 scale, MtxFx44 *mtx) {

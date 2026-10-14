@@ -58,8 +58,9 @@ void OSi_InsertAlarm(OSAlarm *alarm, OSTick fire) {
     OSAlarm *next;
     if (alarm->period != 0) {
         OSTick tick = OS_GetTick();
-        if (alarm->start < tick) {
-            fire = alarm->start + alarm->period * ((tick - alarm->start) / alarm->period + 1);
+        fire = alarm->start;
+        if (fire < tick) {
+            fire += alarm->period * ((tick - fire) / alarm->period + 1);
         }
     }
     alarm->fire = fire;
@@ -85,6 +86,7 @@ void OSi_InsertAlarm(OSAlarm *alarm, OSTick fire) {
         alarm->prev->next = alarm;
         return;
     }
+    alarmQueue.tail = alarm;
     alarmQueue.head = alarm;
     OSi_ArrangeTimer(alarm);
 }

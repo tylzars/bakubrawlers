@@ -12,7 +12,7 @@ extern void OSi_CountUpTick(void);
 static struct {
     u16 initialized;
     int needReset;
-    OSTick counter;
+    volatile OSTick counter;
 } tickState;
 
 void OS_InitTick(void) {
@@ -48,7 +48,7 @@ void OSi_CountUpTick(void) {
 OSTick OS_GetTick(void) {
     OSIntrMode e = OS_DisableInterrupts();
     volatile u16 countL = *(vu16 *) 0x4000100;
-    volatile u64 countH = tickState.counter & 0x0000ffffffff0000ULL;
+    volatile u64 countH = tickState.counter & 0x0000ffffffffffffULL;
     if ((*(vu32 *) 0x4000214 & 8) && !(countL & 0x8000)) {
         countH++;
     }

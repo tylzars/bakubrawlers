@@ -32,5 +32,6 @@ libs/nds/src/mi/mi_memory_itcm.c:
     .text       start:0x01ff9630 end:0x01ff97f4
 
 libs/nds/src/fx/fx_rot_itcm.c:
+    complete
     .text       start:0x01ffcef4 end:0x01ffd190
 

@@ -4455,15 +4455,15 @@ data_020ba9f0 kind:data(any) addr:0x020ba9f0
 data_020baa00 kind:data(any) addr:0x020baa00
 data_020baa10 kind:data(any) addr:0x020baa10
 data_020baa28 kind:data(any) addr:0x020baa28
-data_020baa58 kind:data(any) addr:0x020baa58
-data_020baa64 kind:data(any) addr:0x020baa64
-data_020baa68 kind:data(any) addr:0x020baa68
-data_020baa6c kind:data(any) addr:0x020baa6c
-data_020baa8c kind:data(any) addr:0x020baa8c
-data_020baa94 kind:data(any) addr:0x020baa94
-data_020baab0 kind:data(any) addr:0x020baab0
-data_020baac8 kind:data(any) addr:0x020baac8
-data_020baae0 kind:data(any) addr:0x020baae0
+_ZTV18UnkStruct_02087898 kind:data(any) addr:0x020baa50
+@1623 kind:data(any) addr:0x020baa64 local
+@1643 kind:data(any) addr:0x020baa68 local
+@1644 kind:data(any) addr:0x020baa6c local
+@1675 kind:data(any) addr:0x020baa8c local
+@1676 kind:data(any) addr:0x020baa94 local
+@1677 kind:data(any) addr:0x020baab0 local
+@1678 kind:data(any) addr:0x020baac8 local
+@1679 kind:data(any) addr:0x020baae0 local
 _ZTV18UnkStruct_02089f90 kind:data(any) addr:0x020baae4
 @637 kind:data(any) addr:0x020baaf8 local
 @1094 kind:data(any) addr:0x020bab28 local
@@ -4547,7 +4547,7 @@ exceptionState kind:bss addr:0x020bdf6c
 data_020bdf78 kind:bss addr:0x020bdf78
 data_020bdf98 kind:bss addr:0x020bdf98
 timerReserved kind:bss addr:0x020be018 local
-data_020be01c kind:bss addr:0x020be01c
+tickState kind:bss addr:0x020be01c local
 data_020be02c kind:bss addr:0x020be02c
 valarmState kind:bss addr:0x020be038 local
 resetState kind:bss addr:0x020be04c
@@ -4569,7 +4569,7 @@ data_020bfc04 kind:bss addr:0x020bfc04
 data_020bfc08 kind:bss addr:0x020bfc08
 data_020bfc88 kind:bss addr:0x020bfc88
 data_020bfc8c kind:bss addr:0x020bfc8c
-data_020bfc98 kind:bss addr:0x020bfc98
+fs_initialized kind:bss addr:0x020bfc98 local
 data_020bfc9c kind:bss addr:0x020bfc9c
 data_020bfca4 kind:bss addr:0x020bfca4
 data_020bfcac kind:bss addr:0x020bfcac
@@ -5055,8 +5055,8 @@ data_022193bc kind:bss addr:0x022193bc
 data_022193c8 kind:bss addr:0x022193c8
 data_022193d4 kind:bss addr:0x022193d4
 data_022193e0 kind:bss addr:0x022193e0
-data_022193ec kind:bss addr:0x022193ec
-data_022193f8 kind:bss addr:0x022193f8
+@120 kind:bss addr:0x022193ec local
+@640 kind:bss addr:0x022193f8 local
 @17 kind:bss addr:0x02219404 local
 @286 kind:bss addr:0x02219410 local
 @198 kind:bss addr:0x0221941c local
@@ -5076,3 +5076,7 @@ data_02090968 kind:data(any) addr:0x02090968
 data_02090978 kind:data(any) addr:0x02090978
 data_020909c0 kind:data(any) addr:0x020909c0
 data_02090328 kind:data(any) addr:0x02090328
+data_0208f72c kind:data(any) addr:0x0208f72c
+data_0208f73c kind:data(any) addr:0x0208f73c
+data_02090a58 kind:data(any) addr:0x02090a58
+fsCommandTable kind:data(any) addr:0x02090270

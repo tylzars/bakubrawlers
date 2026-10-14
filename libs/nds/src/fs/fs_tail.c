@@ -17,7 +17,7 @@ struct FSFileLike {
     FSFileLike *next;        // 0x00
     FSFileLike *prev;        // 0x04
     FSArchiveLike *archive;  // 0x08
-    u32 flag;                // 0x0c
+    volatile u32 flag;       // 0x0c
     u32 pad10;
     int result;              // 0x14
     OSThreadQueue queue;     // 0x18
@@ -45,11 +45,10 @@ void func_0200936c(FSFileLike *file, int result) {
 }
 
 int func_020093c8(FSFileLike *file, int cmd) {
-    FSArchiveLike *ar = file->archive;
-    BOOL async = (file->flag & 4) ? TRUE : FALSE;
-    u32 bit = 1 << cmd;
     int result;
-    if (async) {
+    FSArchiveLike *ar = file->archive;
+    u32 bit = 1 << cmd;
+    if (((file->flag & 4) ? TRUE : FALSE) != 0) {
         ar->flag |= 0x200;
     } else {
         ar->flag |= 0x100;
@@ -76,22 +75,24 @@ int func_020093c8(FSFileLike *file, int cmd) {
         result = fsCommandTable[cmd](file);
     }
     if (result == 6) {
-        if ((file->flag & 4) ? TRUE : FALSE) {
+        if (((file->flag & 4) ? TRUE : FALSE) != 0) {
             OSIntrMode e = OS_DisableInterrupts();
-            if ((ar->flag & 0x200) ? TRUE : FALSE) {
+            if (((ar->flag & 0x200) ? TRUE : FALSE) != 0) {
                 do {
                     OS_SleepThread(&ar->queue);
-                } while ((ar->flag & 0x200) ? TRUE : FALSE);
+                } while (((ar->flag & 0x200) ? TRUE : FALSE) != 0);
             }
             result = file->result;
             OS_RestoreInterrupts(e);
         }
-    } else if (!((file->flag & 4) ? TRUE : FALSE)) {
-        ar->flag &= ~0x100;
-        func_0200936c(file, result);
     } else {
-        ar->flag &= ~0x200;
-        file->result = result;
+        if (((file->flag & 4) ? TRUE : FALSE) == 0) {
+            ar->flag &= ~0x100;
+            func_0200936c(file, result);
+        } else {
+            ar->flag &= ~0x200;
+            file->result = result;
+        }
     }
     return result;
 }

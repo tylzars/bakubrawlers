@@ -406,6 +406,7 @@ libs/nds/src/fx/fx_misc.c:
     .text       start:0x02001b34 end:0x02001c6c
 
 libs/nds/src/gx/gx.c:
+    complete
     .text       start:0x02001c6c end:0x02002070
 
 libs/nds/src/gx/gx_bank.c:
@@ -461,6 +462,7 @@ libs/nds/src/os/os_init.c:
     .text       start:0x02005ef4 end:0x02006370
 
 libs/nds/src/os/os_alloc.c:
+    complete
     .text       start:0x02006370 end:0x0200682c
 
 libs/nds/src/os/os_exception.c:
@@ -474,7 +476,9 @@ libs/nds/src/os/os_timer.c:
     .bss        start:0x020be018 end:0x020be01c
 
 libs/nds/src/os/os_tick.c:
+    complete
     .text       start:0x02006ab4 end:0x02006c44
+    .bss        start:0x020be01c end:0x020be02c
 
 libs/nds/src/os/os_alarm.c:
     .text       start:0x02006c44 end:0x020070b0
@@ -554,7 +558,9 @@ libs/nds/src/fs/fs_archive.c:
     .text       start:0x02009558 end:0x0200a78c
 
 libs/nds/src/fs/fs_file.c:
+    complete
     .text       start:0x0200a78c end:0x0200ad04
+    .bss        start:0x020bfc98 end:0x020bfc9c
 
 libs/nds/src/fs/fs_rom.c:
     .text       start:0x0200ad04 end:0x0200afdc
@@ -847,9 +853,11 @@ src/Main/Unknown/UnkStruct_02078e14.cpp:
 src/Main/Unknown/UnkStruct_02078e14_b.cpp:
     .text       start:0x0207b3a8 end:0x02087898
 
-// provisional: code only; the end is a guess (0x02088f38 may start a separate progress-function group); .rodata 0x020a41c8-0x020a41d8, .data 0x020baa50-0x020baae4 and .bss 0x022193ec-0x02219404 belong here.
 src/Main/Unknown/UnkStruct_02087898.cpp:
+    complete
     .text       start:0x02087898 end:0x02088f38
+    .data       start:0x020baa50 end:0x020baae4
+    .bss        start:0x022193ec end:0x02219404
 
 src/Main/Game/ParkCharacters.cpp:
     .text       start:0x02088f38 end:0x02089f90

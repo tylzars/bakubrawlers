@@ -406,8 +406,6 @@ u8 func_02089a64(u32 index) {
     return (u8) category->mGroups[data_020d43f0[0].mUnk_5c2[index].mGroup].mId;
 }
 
-// non-matching: the original re-loads the data_020d43f0+0x5c2 pool constants before the stores into the slot list
-// (one extra ldr, 0x1dc vs 0x1e0 bytes) and numbers flag/slotGroup r2/r3 where this gets r1/r1.
 void func_02089a9c(u32 index) {
     ParkEntry entry;
     func_02089924(index, &entry);
@@ -422,18 +420,19 @@ void func_02089a9c(u32 index) {
             if (data_020d43f0[0].mUnk_5c1 <= 4) {
                 return;
             }
+            u8 i;
+            u8 slotCat = data_020d43f0[0].mUnk_5c2[index].mCategory;
             u8 slotGroup = data_020d43f0[0].mUnk_5c2[index].mGroup;
             u8 charSlot;
             if (flag) {
                 charSlot = data_020d433c.mUnk_8d[index];
             }
-            u8 slotCat = data_020d43f0[0].mUnk_5c2[index].mCategory;
             data_020d43f0[0].mUnk_5c2[index].mCategory = data_020d43f0[0].mUnk_5c2[4].mCategory;
             data_020d43f0[0].mUnk_5c2[index].mGroup = data_020d43f0[0].mUnk_5c2[4].mGroup;
             if (data_020d43f0[0].mUnk_5bf_0) {
                 data_020d433c.mUnk_8d[index] = data_020d433c.mUnk_8d[4];
             }
-            u8 i = 4;
+            i = 4;
             do {
                 data_020d43f0[0].mUnk_5c2[i].mCategory = data_020d43f0[0].mUnk_5c2[i + 1].mCategory;
                 data_020d43f0[0].mUnk_5c2[i].mGroup    = data_020d43f0[0].mUnk_5c2[i + 1].mGroup;

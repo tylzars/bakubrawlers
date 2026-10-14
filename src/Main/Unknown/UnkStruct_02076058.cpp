@@ -428,8 +428,6 @@ u32 UnkStruct_02076058::func_020771d8(u32 index, u32 unk2) {
     return result;
 }
 
-// non-matching: 0x2fc vs 0x318. The first two loops match; in the third (growing gauge bar) the original keeps the slot and the loop
-// counter in stack slots and uses other registers/ordering for the frame count and the cell positions.
 void UnkStruct_02076058::func_02077458() {
     for (u8 i = 0; i < 3; i++) {
         u8 slot = i + 9;
@@ -449,10 +447,8 @@ void UnkStruct_02076058::func_02077458() {
         u8 slot = i + 3;
         UnkStruct_02023248 *entry = mUnk_54[i + mUnk_75];
         if (entry != NULL && (s32) entry->mUnk_00_0 < 9 && mUnk_14[slot] != NULL) {
-            u32 frames = mUnk_14[slot]->mFrames[mUnk_14[slot]->mUnk_0e].mUnk_10;
-            int gauge = entry->mPad;
-            u8 count = gauge / 300;
-            u32 last = frames - 1;
+            u32 last = mUnk_14[slot]->mFrames[mUnk_14[slot]->mUnk_0e].mUnk_10 - 1;
+            u8 count = entry->mPad / 300;
             u8 n = 0;
             if (count != 0) {
                 u8 x = data_020a308c[slot][0];
@@ -465,7 +461,7 @@ void UnkStruct_02076058::func_02077458() {
                 } while (n < count);
             }
             u8 drawX = data_020a308c[slot][0] + n % 3 * 32;
-            u8 drawY = n / 3 * 6 + data_020a308c[slot][1];
+            u8 drawY = data_020a308c[slot][1] + n / 3 * 6;
             mUnk_14[slot]->Draw(1, drawX, drawY, 1);
         }
     }

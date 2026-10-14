@@ -88,23 +88,19 @@ BOOL func_0200a7dc(FSFile *f, const u8 *path, u32 *idout, u32 *dirout)
 int func_0200a920(FSFile *f, void *buf, int len, BOOL async)
 {
     u32 pos = f->f2c;
-    int n = len;
     int remain = f->f28 - pos;
+    int org = len;
     f->f30 = (u32) buf;
-    if (n > remain) n = remain;
-    if (n < 0) n = 0;
-    f->f34 = len;
-    f->f38 = n;
+    if (len > remain) len = remain;
+    if (len < 0) len = 0;
+    f->f34 = org;
+    f->f38 = len;
     if (!async) f->stat |= 4;
     func_0200a290(f, 0);
     if (!async) {
-        if (func_0200ab18(f)) {
-            n = f->f2c - pos;
-        } else {
-            n = -1;
-        }
+        if (func_0200ab18(f)) { len = f->f2c - pos; } else { len = -1; }
     }
-    return n;
+    return len;
 }
 
 BOOL FS_ConvertPathToFileID(FSFileID *id, const char *path)
@@ -125,11 +121,12 @@ BOOL func_0200a9dc(FSFile *f, FSArchive *arc, u32 start, u32 end, int id)
     return TRUE;
 }
 
-BOOL func_0200aa24(FSFile *f, FSFileID id)
+BOOL func_0200aa24(FSFile *f, volatile FSFileID id)
 {
-    if (id.arc == NULL) return FALSE;
-    f->arc = id.arc;
-    f->f30 = (u32) id.arc;
+    FSArchive *arc = id.arc;
+    if (arc == NULL) return FALSE;
+    f->arc = arc;
+    f->f30 = (u32) arc;
     f->f34 = id.file_id;
     if (!func_0200a290(f, 6)) return FALSE;
     f->stat = (f->stat | 0x10) & ~0x20;

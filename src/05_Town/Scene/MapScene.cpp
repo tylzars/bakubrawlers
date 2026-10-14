@@ -872,8 +872,6 @@ void MapScene::func_ov005_0221bde8(u32 index) {
     }
 }
 
-// non-matching: size 0x424 vs 0x430. The original computes (0x6c - 0x20) / 2 + 0x1e at run time from a register
-// holding 0x20 (later stored to y); every form tried here is folded to a constant.
 void MapScene::ShowNumbers() {
     s16 x;
     s16 x2;
@@ -896,10 +894,10 @@ void MapScene::ShowNumbers() {
     if (&mUnk_38 != NULL) {
         mUnk_38 = width;
     }
-    int h   = 0x20;
     mUnk_36 = (256 - mUnk_36) / 2;
-    mUnk_38 = (0x6c - h) / 2 + 0x1e;
-    y       = h;
+    mUnk_38 = 0x20;
+    mUnk_38 = (0x6c - mUnk_38) / 2 + 0x1e;
+    y       = 0x20;
     if (data_020d48f0.mUnk_bc >= 100) {
         x = 0x58 - mUnk_36;
     } else if (data_020d48f0.mUnk_bc >= 10) {

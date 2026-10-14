@@ -383,8 +383,8 @@ void func_02088b30(UnkStruct_02087898 *self) {
     }
     s16 shift = -(self->mUnk_32 * self->mUnk_32) / 8;
     u8 i;
-    s32 x;
-    s32 y;
+    s16 x;
+    s16 y;
     if (self->mUnk_4b != 0) {
         x = self->mUnk_3a;
         y = self->mUnk_3b;

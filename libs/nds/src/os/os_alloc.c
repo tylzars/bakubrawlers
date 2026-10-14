@@ -190,8 +190,8 @@ OSHeapHandle OS_CreateHeap(OSArenaId id, void *lo, void *hi) {
     int i;
     lo = (void *) (((u32) lo + 0x1f) & ~0x1f);
     hi = (void *) ((u32) hi & ~0x1f);
-    hd = info->heapArray;
-    for (i = 0; i < info->numHeaps; i++, hd++) {
+    for (i = 0; i < info->numHeaps; i++) {
+        hd = &info->heapArray[i];
         if (hd->size < 0) {
             Cell *c = (Cell *) lo;
             hd->size = (u32) hi - (u32) lo;

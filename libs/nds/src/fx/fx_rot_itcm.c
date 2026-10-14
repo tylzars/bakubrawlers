@@ -13,19 +13,14 @@ void func_01ff89c0(const MtxFx43 *a, const MtxFx43 *b, MtxFx43 *ab);
 void MTX_Concat22(const fx32 *a, const fx32 *b, fx32 *ab);
 
 void func_01ffcef4(MtxFx22 *out, fx32 sx, fx32 sy, u16 angle) {
-    int idx = angle >> 4;
-    fx32 sn = FX_SinCosTable_[idx * 2];
-    fx32 cs = FX_SinCosTable_[idx * 2 + 1];
     fx32 scale[4];
     fx32 rot[4];
-    scale[0] = sx;
-    scale[1] = 0;
-    scale[2] = 0;
-    scale[3] = sy;
-    rot[0] = cs;
-    rot[1] = sn;
-    rot[2] = -sn;
-    rot[3] = cs;
+    int idx = angle >> 4;
+    fx32 sn, cs;
+    scale[0] = sx; scale[1] = 0; scale[2] = 0; scale[3] = sy;
+    sn = FX_SinCosTable_[idx * 2];
+    cs = FX_SinCosTable_[idx * 2 + 1];
+    rot[0] = cs; rot[1] = sn; rot[2] = -sn; rot[3] = cs;
     MTX_Concat22(scale, rot, (fx32 *) out);
 }
 

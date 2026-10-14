@@ -293,10 +293,8 @@ void BattleConfrontCard::func_ov007_0223f168() {
     G2S_BlendNone();
 }
 
-// non-matching: 10 words, register assignment only (screen r7 / loop animation r8 / loop index r9 in the original; r8 / r7 / r8-r9 here).
 void BattleConfrontCard::func_ov007_0223f398() {
     char buffer[0x80];
-    CellAnimation *a;
     ChangeDir("/Game/Confrontation/Bg");
     func_02025b64(1, 1, 0, "vs_b_bg_00_ncl.bin", 0, 0, 0);
     func_02025b64(1, 0xb, 0, "vs_b_bg_00_ncg.bin", 0, 0, 0);
@@ -310,9 +308,8 @@ void BattleConfrontCard::func_ov007_0223f398() {
     screen.LoadPalette(buffer, 0xa0, 0);
     sprintf(buffer, "vs_b_obj_boost_ncl.bin");
     screen.LoadPalette(buffer, 0x160, 0);
-    CellAnimation *old = mUnk_24[4];
-    if (old) {
-        delete old;
+    if (mUnk_24[4]) {
+        delete mUnk_24[4];
     }
     mUnk_24[4]            = 0;
     mUnk_24[4]            = new CellAnimation("vs_b_obj_00_nce.bin", 0, 1, 1);
@@ -323,9 +320,8 @@ void BattleConfrontCard::func_ov007_0223f398() {
     func_02025b64(1, 4, 0x18000, "cardspec_b_obj_00.nce_ncg1D.bin", 0, 0, 0);
     u8 i = 2;
     do {
-        a = mUnk_24[i];
-        if (a) {
-            delete a;
+        if (mUnk_24[i]) {
+            delete mUnk_24[i];
         }
         mUnk_24[i]            = 0;
         mUnk_24[i]            = new CellAnimation("cardspec_b_obj_00_nce.bin", 0, 1, 1);
@@ -1663,7 +1659,6 @@ void BattleConfrontCard::func_ov007_022430d8(int blend) {
     G2S_SetBlendAlpha(0x10, 0x2f, 0x10 - blend, blend);
 }
 
-// non-matching: register assignment, and the original fuses the call result test (`movs r6, r0`) into the variable.
 void BattleConfrontCard::func_ov007_02243100() {
     u8 i = 0;
     do {
@@ -1677,32 +1672,32 @@ void BattleConfrontCard::func_ov007_02243100() {
     if (mUnk_5f == 0) {
         return;
     }
-    u8 k = 0;
+    i = 0;
     do {
         u32 value;
         u8 digits;
         int margin;
-        s16 y;
         u8 j;
-        value = func_02065bf4(mData->mUnk_04, k);
+        value = func_02065bf4(mData->mUnk_04, i);
         if (value != 0) {
             digits = 3;
             if (value < 10) {
                 digits--;
             }
-            value  = (u16) (value * 10);
+            value *= 10;
+            value &= 0xffff;
             margin = (3 - digits) * 4;
-            y      = k * 17 + 0x28;
             j      = 0;
             do {
-                mUnk_24[3]->func_0202a3ec(1, (s32) value % 10, (s16) ((digits - j) * 4 + 0x50 + margin / 2), y, 2);
+                mUnk_24[3]->func_0202a3ec(1, (s32) value % 10, (s16) ((digits - j) * 4 + 0x50 + margin / 2),
+                                          (s16) (i * 17 + 0x28), 2);
                 value /= 10;
                 j++;
             } while (j < digits);
         }
-        mUnk_24[2]->func_0202a3ec(1, k, 0x53, (s16) (k * 17 + 0x24), 2);
-        k++;
-    } while (k < 6);
+        mUnk_24[2]->func_0202a3ec(1, i, 0x53, (s16) (i * 17 + 0x24), 2);
+        i++;
+    } while (i < 6);
 }
 
 void BattleConfrontCard::func_ov007_022432dc(u8 kind, u32 mode, u32 flag) {
@@ -1722,17 +1717,15 @@ u8 BattleConfrontCard::func_ov007_022433ac() {
     return kind;
 }
 
-// non-matching: same instruction sequence and jump table; register assignment differs (result r5/self r6 in the original) and case 42 emits a `mov r1, r6` the original does not.
 BOOL BattleConfrontCard::func_ov007_022433c8(u8 side, u16 id) {
-    BattleData *data   = mData;
-    BattleEntry *self  = &data->mEntries[side];
-    u8 opponent        = side ^ 1;
-    BattleEntry *other = &data->mEntries[opponent];
     BOOL result        = FALSE;
-    u8 owner           = data->mUnk_06;
     u8 i               = 0;
     u8 found           = 0;
     u32 type           = 0;
+    BattleEntry *self  = &mData->mEntries[side];
+    u8 opponent        = side ^ 1;
+    BattleEntry *other = &mData->mEntries[opponent];
+    u8 owner           = mData->mUnk_06;
     u8 pattern[3];
     switch (id) {
         case 0x68:
@@ -1824,7 +1817,7 @@ BOOL BattleConfrontCard::func_ov007_022433c8(u8 side, u16 id) {
         case 0x91:
             type = 2;
         kind:
-            if (type == func_02065c0c(data->mUnk_04, 1)) {
+            if (type == func_02065c0c(mData->mUnk_04, 1)) {
                 result = TRUE;
             }
             break;
@@ -1963,6 +1956,17 @@ BOOL BattleConfrontCard::func_ov007_022433c8(u8 side, u16 id) {
             if (other->mUnk_0d_0 != 0 && other->mUnk_0c != 6) {
                 break;
             }
+        case 0xa8:
+        case 0xa9:
+        case 0xaa:
+        case 0xab:
+        case 0xaf:
+        case 0xb0:
+        case 0xb1:
+        case 0xb2:
+        case 0xb3:
+        case 0xb4:
+        case 0xb8:
         abilityCard:
             if (self->mUnk_0c == 5) {
                 if (func_02065bf4(id, 3) != 0) {
@@ -1991,7 +1995,7 @@ BOOL BattleConfrontCard::func_ov007_022433c8(u8 side, u16 id) {
             pattern[1] = 1;
         scan2 : {
             BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4];
-            u8 playerCount       = data_020d433c.mPlayerCount;
+            u8 playerCount       = data_020d433c.mUnk_99;
             do {
                 u8 kind = player->mRecords[i].mUnk_09;
                 u8 j    = 0;
@@ -2020,7 +2024,7 @@ BOOL BattleConfrontCard::func_ov007_022433c8(u8 side, u16 id) {
             pattern[2] = 5;
         scan3 : {
             BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4];
-            u8 playerCount       = data_020d433c.mPlayerCount;
+            u8 playerCount       = data_020d433c.mUnk_99;
             do {
                 u8 kind = player->mRecords[i].mUnk_09;
                 u8 j    = 0;

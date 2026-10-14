@@ -169,6 +169,15 @@ Other findings from linking:
 - **A local array filled from a one-use rodata table is an aggregate initializer.** `u8 buf[3] = {0, 1, 4};` makes
   mwcc emit an anonymous rodata object (often first in the unit's .rodata) and changes which temporary is created
   first; copying `buf[i] = data_xxx[i]` element by element does not match (TitleScene::Update, BattleTarget::Update).
+- **From the BattleConfrontCard pass.**
+  - Gaps in a jump table that lead to a label inside the switch are case labels the source is missing (not the
+    default).
+  - `x *= 10; x &= 0xffff;` keeps a call result and its narrowed product in one callee-saved register
+    (`movs rN, r0`); `x = (u16) (x * 10)` splits them.
+  - A pointer built by `p = base; p += idx;` is not substituted, so identical `base[idx]` accesses elsewhere don't
+    share its address.
+  - Reading a member directly (`mData->x`) rather than through a `T *data = mData;` local makes the pointer a
+    temporary; it is still loaded once when no store or call comes between the reads.
 - **From the BattleTarget pass.**
   - A narrow (`u8`) stack parameter is loaded first in the prologue; `BOOL` puts it later (two functions fixed by
     `u8 flag`).

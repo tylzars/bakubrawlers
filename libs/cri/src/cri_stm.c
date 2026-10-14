@@ -108,14 +108,11 @@ void func_02041920(Stm *s, void *h, int c, int size, StmIO *io)
 Stm *func_02041a04(void *a, int b, int c, StmIO *d)
 {
     Stm *p = 0;
-    int n = 0;
+    int n;
     int cnt = data_020acb8c.countA;
-    if (cnt > 0) {
-        int idx = data_022163d8.idxA;
-        do {
-            p = &data_022163f0[idx++];
-            if (p->used == 0) break;
-        } while (++n < cnt);
+    for (n = 0; n < cnt; n++) {
+        p = &data_022163f0[data_022163d8.idxA + n];
+        if (p->used == 0) break;
     }
     if (n == cnt) return 0;
     func_02041920(p, a, b, c, d);
@@ -126,14 +123,11 @@ Stm *func_02041a04(void *a, int b, int c, StmIO *d)
 Stm *func_02041aa0(void *a, int b, int c, StmIO *d)
 {
     Stm *p = 0;
-    int n = 0;
+    int n;
     int cnt = data_020acb8c.countB;
-    if (cnt > 0) {
-        int idx = data_020acb8c.startB;
-        do {
-            p = &data_022163f0[idx++];
-            if (p->used == 0) break;
-        } while (++n < cnt);
+    for (n = 0; n < cnt; n++) {
+        p = &data_022163f0[data_020acb8c.startB + n];
+        if (p->used == 0) break;
     }
     if (n == cnt) return 0;
     func_02041920(p, a, b, c, d);

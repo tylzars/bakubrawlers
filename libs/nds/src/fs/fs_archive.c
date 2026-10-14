@@ -159,51 +159,43 @@ int func_020098b8(FSFile *f)
     FSDirEntry ent;
     const u8 *path = (const u8 *) f->f3c;
     u32 wantdir = f->f40;
-    u32 c;
     func_020093c8(f, 2);
-    c = *path;
-    if (c != 0) {
+    while (*path != 0) {
+        int len = 0;
+        u32 term;
+        while (IsPathNameChar(term = path[len])) {
+            len++;
+        }
+        if (term != 0 || wantdir != 0) term = 1;
+        if (len == 0) return 1;
+        if (*path == '.') {
+            if (len == 1) {
+                path += 1;
+                goto next;
+            }
+            if ((len == 2) & (path[1] == '.')) {
+                if (FH(f, 0x24) != 0) func_02009668(f, f->f2c);
+                path += 2;
+                goto next;
+            }
+        }
+        if (len > 0x7f) return 1;
+        *(FSDirEntry **) &f->f30 = &ent;
+        f->f34 = 0;
         do {
-            int len = 0;
-            u32 term;
-            while (IsPathNameChar(term = path[len])) {
-                len++;
-            }
-            if (term != 0 || wantdir != 0) term = 1;
-            if (len == 0) return 1;
-            if (c == '.') {
-                if (len == 1) {
-                    path += 1;
-                    goto next;
-                }
-                if ((len == 2) & (path[1] == '.')) {
-                    if (FH(f, 0x24) != 0) func_02009668(f, f->f2c);
-                    path += 2;
-                    goto next;
-                }
-            }
-            if (len > 0x7f) return 1;
-            f->f30 = (u32) &ent;
-            f->f34 = 0;
-            do {
-                if (func_020093c8(f, 3) != 0) return 1;
-            } while (term != ent.is_dir || len != ent.name_len || func_02009558(path, (u8 *) ent.name, len) != 0);
-            if (term != 0) {
-                *(FSDirPos *) &f->f30 = *(FSDirPos *) &ent;
-                func_020093c8(f, 2);
-                path += len;
-            } else {
-                u32 *out;
-                if (wantdir != 0) return 1;
-                out = (u32 *) f->f44;
-                out[0] = (u32) ent.arc;
-                out[1] = ent.id;
-                return 0;
-            }
-        next:
-            path += (*path != 0);
-            c = *path;
-        } while (c != 0);
+            if (func_020093c8(f, 3) != 0) return 1;
+        } while (term != ent.is_dir || len != ent.name_len || func_02009558(path, (u8 *) ent.name, len) != 0);
+        if (term != 0) {
+            *(FSDirPos *) &f->f30 = *(FSDirPos *) &ent;
+            path += len;
+            func_020093c8(f, 2);
+        } else {
+            if (wantdir != 0) return 1;
+            *(FSFileID *) f->f44 = *(FSFileID *) &ent;
+            return 0;
+        }
+    next:
+        path += (*path != 0);
     }
     if (wantdir == 0) return 1;
     *(FSDirPos *) f->f44 = *(FSDirPos *) &f->f20;
@@ -240,7 +232,7 @@ int func_02009a9c(FSFile *f)
             do {
                 func_02009668(&tmp, i);
                 if (i == 0) ndirs = tmp.f2c;
-                tmp.f30 = (u32) &ent;
+                *(FSDirEntry **) &tmp.f30 = &ent;
                 tmp.f34 = 1;
                 if (func_020093c8(&tmp, 3) == 0) {
                     do {
@@ -273,8 +265,8 @@ int func_02009a9c(FSFile *f)
             func_02009668(&tmp, dir);
             do {
                 func_02009668(&tmp, tmp.f2c);
+                *(FSDirEntry **) &tmp.f30 = &ent;
                 tmp.f34 = 1;
-                tmp.f30 = (u32) &ent;
                 if (func_020093c8(&tmp, 3) == 0) {
                     do {
                         if (ent.is_dir != 0 && FH(&ent, 4) == j) {
@@ -305,7 +297,7 @@ int func_02009a9c(FSFile *f)
     }
     func_02009668(&tmp, dir);
     if (target != 0x10000) {
-        tmp.f30 = (u32) &ent;
+        *(FSDirEntry **) &tmp.f30 = &ent;
         tmp.f34 = 0;
         if (func_020093c8(&tmp, 3) == 0) {
             do {
@@ -321,7 +313,7 @@ int func_02009a9c(FSFile *f)
     }
     while (dir != 0) {
         func_02009668(&tmp, tmp.f2c);
-        tmp.f30 = (u32) &ent;
+        *(FSDirEntry **) &tmp.f30 = &ent;
         tmp.f34 = 0;
         *(buf + pos - 1) = '/';
         pos--;
@@ -344,13 +336,13 @@ int func_02009e48(FSFile *f)
 {
     FSArchive *arc = f->arc;
     u32 idx = f->f34;
-    u32 off = idx << 3;
+    u32 pos = idx * 8;
     u32 ent[2];
     FSTablePos tp;
     int r;
-    if (arc->fat_size <= idx * 8) return 1;
+    if (pos >= arc->fat_size) return 1;
     tp.arc = arc;
-    tp.pos = arc->fat + off;
+    tp.pos = arc->fat + pos;
     r = func_020095a8(&tp, ent, 8);
     if (r != 0) return r;
     f->f30 = ent[0];

@@ -44,6 +44,8 @@ struct FSFile {
     u32 command;    // 0x10
     u32 error;      // 0x14
     OSThrQ queue;   // 0x18
+    // Per-command argument words; the directory commands keep an FSDirEntry pointer in f30 (stored through a pointer
+    // cast: storing it as an integer lets mwcc hoist the address).
     u32 f20, f24, f28, f2c, f30, f34, f38, f3c, f40, f44;
 };
 typedef struct { FSArchive *arc; u32 id; u32 pos; u32 is_dir; u32 name_len; char name[0x80]; } FSDirEntry;

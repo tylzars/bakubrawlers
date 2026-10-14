@@ -36,7 +36,7 @@ BOOL func_0200afdc(FSOverlayInfo *out, int target, int id, FSArchive *arc, u32 o
 BOOL func_0200b0d4(FSOverlayInfo *out, int target, int id);
 BOOL func_0200b1d0(FSOverlayInfo *ov);
 void func_0200b928(u8 *digest, const void *data, u32 len, const void *key, u32 keylen);
-BOOL func_0200b260(const u32 *expected, const void *data, u32 len);
+BOOL func_0200b260(const u8 *expected, const void *data, u32 len);
 void func_0200b2f4(FSOverlayInfo *ov);
 void func_0200b3e8(FSOverlayInfo *ov);
 BOOL func_0200b4d8(FSOverlayInfo *ov);
@@ -46,20 +46,21 @@ void DC_FlushRange(void *p, u32 n);
 
 BOOL func_0200afdc(FSOverlayInfo *out, int target, int id, FSArchive *arc, u32 off9, u32 size9, u32 off7, u32 size7)
 {
+    FSOvtLoc pr;
     FSFile tmp;
     FSFileID fid;
-    u32 off, size;
-    u32 ofs = id << 5;
+    u32 pos;
     if (target == 0) {
-        off = off9;
-        size = size9;
+        pr.ptr = off9;
+        pr.size = size9;
     } else {
-        off = off7;
-        size = size7;
+        pr.ptr = off7;
+        pr.size = size7;
     }
-    if (size <= id * 0x20) return FALSE;
+    pos = (u32) id * 0x20;
+    if (pos >= pr.size) return FALSE;
     func_0200a7b4(&tmp);
-    if (!func_0200a9dc(&tmp, arc, off + ofs, off + size, -1)) return FALSE;
+    if (!func_0200a9dc(&tmp, arc, pr.ptr + pos, pr.ptr + pr.size, -1)) return FALSE;
     if (func_0200ac30(&tmp, out, 0x20) != 0x20) {
         func_0200aadc(&tmp);
         return FALSE;
@@ -80,8 +81,9 @@ BOOL func_0200b0d4(FSOverlayInfo *out, int target, int id)
     FSFile tmp;
     FSFileID fid;
     if (loc->ptr != 0) {
-        if (loc->size <= id * 0x20) return FALSE;
-        MI_CpuCopy8((void *) (loc->ptr + id * 0x20), out, 0x20);
+        u32 pos = (u32) id * 0x20;
+        if (pos >= loc->size) return FALSE;
+        MI_CpuCopy8((void *) (loc->ptr + pos), out, 0x20);
         out->target = target;
         func_0200a7b4(&tmp);
         fid = func_0200afb4(out);
@@ -118,20 +120,18 @@ extern FSHmacKey data_020a4f44;
 
 void MI_CpuCopy8(const void *src, void *dst, u32 n);
 
-BOOL func_0200b260(const u32 *expected, const void *data, u32 len)
+BOOL func_0200b260(const u8 *expected, const void *data, u32 len)
 {
-    u32 digest[5];
+    int i;
+    u8 digest[20];
     u8 key[0x40];
-    u32 i;
-    u32 *p;
-    MI_CpuFill8(digest, 0, 0x14);
+    MI_CpuFill8(digest, 0, sizeof(digest));
     MI_CpuCopy8(data_020a4f44.key, key, data_020a4f44.keylen);
-    func_0200b928((u8 *) digest, data, len, key, data_020a4f44.keylen);
-    p = digest;
-    for (i = 0; i < 0x14; i += 4) {
-        if (*p++ != *(u32 *) ((u8 *) expected + i)) break;
+    func_0200b928(digest, data, len, key, data_020a4f44.keylen);
+    for (i = 0; i < sizeof(digest); i += sizeof(u32)) {
+        if (*(const u32 *) (digest + i) != *(const u32 *) (expected + i)) break;
     }
-    return i == 0x14;
+    return i == sizeof(digest);
 }
 
 void func_0200b2f4(FSOverlayInfo *ov)
@@ -144,7 +144,7 @@ void func_0200b2f4(FSOverlayInfo *ov)
         if ((ov->flags & 2) != 0) {
             int n = ((int) data_020baef8_end - (int) data_020baef8) / 0x14;
             if (ov->id < n) {
-                ok = func_0200b260((u32 *) ((u8 *) data_020baef8 + ov->id * 0x14), (void *) ov->ram_addr, size);
+                ok = func_0200b260(((const u8 *) data_020baef8 + ov->id * 0x14), (void *) ov->ram_addr, size);
             }
         }
         if (!ok) {

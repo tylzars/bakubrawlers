@@ -350,23 +350,23 @@ SpriteTransform::SpriteTransform(s32 scaleX, s32 scaleY, u16 rotation) {
     mRotation = rotation;
 }
 
-void SpriteScreen::LoadCharacters(const char *path, u32 offset, u32 unk3) {
+u32 SpriteScreen::LoadCharacters(const char *path, u32 offset, u32 unk3) {
     u32 size;
     void *data = func_02023504(path, 0, 0, 0, &size, 0);
     if (unk3 != 0) {
         size = unk3;
     }
-    func_02025c1c(mBgIndex, 4, offset, data, size, 1);
+    return func_02025c1c(mBgIndex, 4, offset, data, size, 1);
 }
 
 
-void SpriteScreen::LoadPalette(const char *path, u32 offset, u32 unk3) {
+u32 SpriteScreen::LoadPalette(const char *path, u32 offset, u32 unk3) {
     u32 size;
     void *data = func_02023504(path, 0, 0, 0, &size, 0);
     if (unk3 != 0) {
         size = unk3;
     }
-    func_02025c1c(mBgIndex, 5, offset, data, size, 1);
+    return func_02025c1c(mBgIndex, 5, offset, data, size, 1);
 }
 
 

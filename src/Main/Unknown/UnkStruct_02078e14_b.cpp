@@ -26,11 +26,15 @@
 #include "Unknown/UnkStruct_02078290.hpp"
 #include "System/SoundManager.hpp"
 
+// Bit tests written as macros (as in MyroomTipsScene): unlike the TestFlagBit/SetFlagBit inlines they let mwcc reuse the
+// loaded byte for the following set, and they colour the registers of func_020875ac's loops like the original.
+#define TEST_BIT(flags, index) ((flags)[(index) / 8] & (1 << ((index) % 8)))
+#define SET_BIT(flags, index) ((flags)[(index) / 8] |= 1 << ((index) % 8))
+
 void func_02081a4c(void *arg);
 
 // Which screen a sprite or text goes to (passed to SpriteManager::Screen and the cell animation draws).
 enum ScreenId { SCREEN_MAIN, SCREEN_SUB };
-
 
 extern u16 data_020a39fc[];
 
@@ -38,23 +42,13 @@ u8 func_020230dc(UnkStruct_020d43f0 *d, u32 a, u32 b);
 
 extern u8 data_020a3194[];
 
-// non-matching: 2 words, movne/moveq order when computing `second = unk3 != 0` (original emits moveq r4,#0 first)
-
 extern u8 data_020a3188[];
 
 extern u8 data_020a1074[];
 
-// non-matching: 2 words, movne/moveq order when computing `second = unk3 != 0` (original emits moveq r4,#0 first)
-
-// non-matching: 2 words, movne/moveq order when computing `second = unk3 != 0` (original emits moveq r4,#0 first)
-
-// non-matching: 2 words, movne/moveq order when computing `second = unk3 != 0` (original emits moveq r4,#0 first)
-
 static inline void PrintMessage(TextManager &tm, const u8 *data, u32 offset, u32 length, void *buffer, s16 x, s16 y) {
     tm.Print(data + offset, length, buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0x10, 0, 0, 0, 1, 1);
 }
-
-// non-matching: guard load of TextManager::Get() is ahead of the preceding mUnk_5b store in the original (known open problem), plus 4 bytes of schedule
 
 extern const u8 data_020a3768[0x29][6];
 
@@ -64,17 +58,11 @@ extern u8 data_020d4976[];
 
 extern u8 data_020d497b[];
 
-// non-matching: 8 words, register assignment of the loop variables (original: i in r7, j in r8, row pointer in r9)
-
 void func_02023134(UnkStruct_020d43f0 *d, u32 a, u32 b, u32 c, u32 e, u32 f);
 
 void func_02086668(UnkStruct_02078e14 *self, u32 unk1);
 
 void func_02086580(UnkStruct_02078e14 *self, u32 unk1, u32 unk2, BattleCellPair *out);
-
-// non-matching: case 3/5 only, register allocation: the original keeps kind/pair/id/value in r4/r5/r7/r8, the compiler picks r5/r4/r8/r7
-
-// non-matching: register allocation only; the original keeps scale/y/x/over in r5/r6/r7/r8, the compiler uses r5/r7/r8/r6 (declaration order does not move them)
 
 static inline void PrintMessageF3(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x) {
     tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0x10, 0, 0, 1, 1, 1);
@@ -92,8 +80,6 @@ static inline u16 *MessageEntry(void *base, u32 index) {
     return (u16 *) ((u8 *) base + index * 4);
 }
 
-// non-matching: TextManager::Get() guard load of the second call is ahead of the mUnk_5b store in the original (known open problem); the argument setup of each Print is scheduled differently
-
 void func_02082efc(UnkStruct_02078e14 *self);
 
 static inline void PrintMessageB(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x) {
@@ -101,8 +87,6 @@ static inline void PrintMessageB(TextManager &tm, MessageFile *file, int index, 
 }
 
 void func_020839a0(UnkStruct_02078e14 *self);
-
-// non-matching: Print argument setup is scheduled differently (the original loads the message entry before the stack argument stores, the compiler after them) and the x/y copies are loaded in the other order; case 2 register assignment follows
 
 extern const u8 data_020a35b8[];
 
@@ -115,8 +99,6 @@ extern const u8 data_020a35bb[];
 extern const u8 data_020a35bc[];
 
 u32 func_02086654(UnkStruct_02078e14 *self, u32 unk1, u32 unk2);
-
-// non-matching: 4 words, two instruction-order swaps (argument setup of the LoadPalette(0x100) call, and `mov r1, #0` ahead of `mov r0, r5` before func_0207ed3c)
 
 extern "C" void func_01ff94e0(const void *src, void *dst, u32 size);
 
@@ -140,8 +122,6 @@ BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
 
 #define MESSAGE ((BattleListMessage *) &data_0220f540)
 
-// non-matching: 4 words, the original loads &data_020d433c and the mBattlePlayers pointer before the `mList_1c = 3` store (the compiler stores first)
-
 // Layout of the slot message (type 4) of a battle player and of the communication buffer.
 
 struct BattleSlotMessage {
@@ -155,11 +135,7 @@ struct BattleSlotMessage {
 
 #define SLOT_MESSAGE ((BattleSlotMessage *) &data_0220f540)
 
-// non-matching: 6 words, the original loads &data_020d433c ahead of the two message-length stores (the compiler loads it after the first store)
-
 u8 func_020230dc(UnkStruct_020d43f0 *d, u32 a, u32 b);
-
-// non-matching: 2 words, the original sets `state = 0` (mov r5, #0) before the first `cmp r6, #0`; the compiler schedules it after the cmp
 
 void func_0208671c(UnkStruct_02078e14 *self, u32 unk1);
 
@@ -193,13 +169,9 @@ extern const u8 data_020a338e[];
 
 extern const u8 data_020a3860[];
 
-// non-matching: 5 words, instruction order after the join (the original does `add total` then `lsr`, then i++; the compiler hoists i++ above the 16-bit truncation)
-
 extern const u8 data_020a3248[];
 
 extern const u16 data_020a3ba8[];
-
-// non-matching: register allocation and address CSE: the original keeps &mUnk_106[t] in one register across the table lookups and the swap, the compiler reuses it and recomputes the address for the stores
 
 u8 func_02065bf4(u32 id, u32 index);
 
@@ -211,13 +183,9 @@ extern const u32 data_020a3fe8[][2];
 
 extern const u16 *const data_020a3fec[][2];
 
-// non-matching: register allocation (the original keeps the flag array in r1, the constant 1 in r2 and the flag id in r9; the compiler swaps r1/r2, uses r8 for the id and stores the flag byte after the bitfield update)
-
 extern u8 data_020d499c[];
 
 extern u8 data_020d49a6[];
-
-// non-matching: the original reads mUnk_43 between the two halves of the `stage == 8` / `stage == 9` conditional moves (reloading the base register); the compiler loads it next to mUnk_42
 
 struct UnlockTable {
     /* 0 */ u32 mCount;
@@ -232,8 +200,6 @@ extern u8 data_020d496d[];
 
 extern u8 data_020d4970[];
 
-// non-matching: 7 words, register assignment in the prologue (original: table base r4, stage r3, sub r2; the compiler picks table r2, sub r4)
-
 s32 func_02087468();
 
 BOOL func_020875ac(u32 index);
@@ -247,10 +213,6 @@ static inline BOOL StageReached(u32 greater, u32 equal, u32 sub) {
     return (stage > greater) | ((stage == equal) & (VD.mUnk_43 == sub));
 }
 
-// non-matching: 5 words, register choice for the temporaries of the last `StageReached(6, 6, 2) | mUnk_5bf_0` test (original: `and r1`, `ldrb r3`; compiler: `and r3`, `ldrb r1`)
-
-// non-matching: register allocation only (original: result r7, base r6, (u8)i r4, count r8, i r9, j r10; the compiler is one register off)
-
 struct ProgressEntry {
     /* 0 */ const void *mList;
     /* 4 */ u8 mType;
@@ -261,10 +223,6 @@ struct ProgressEntry {
 extern const ProgressEntry data_020a40f0[];
 
 extern const u8 data_020a40f4[][8];
-
-// non-matching: register allocation only (original: list r2, i r1 in the first case; the compiler picks list r1, i r2)
-
-// non-matching: the original stores the updated flag byte before the mUnk_5b9 update, reusing r0 for the temporary; registers differ throughout
 
 #define SET_FLAG_LOOP(first, last)                                      \
     {                                                                   \
@@ -1907,7 +1865,7 @@ void UnkStruct_02078e14::func_02080bdc(u32 unk1) {
                         mUnk_fc++;
                     }
                 }
-                if (!(data_020d43f0[0].mUnk_58a & 4) && mUnk_104 == 0 && data_020d43f0[0].mUnk_5d2 != 0) {
+                if (!(data_020d43f0[0].mUnk_586[4] & 4) && mUnk_104 == 0 && data_020d43f0[0].mUnk_5d2 != 0) {
                     mUnk_106[mUnk_fc] = 0x22;
                     mUnk_fc++;
                 }
@@ -3210,8 +3168,8 @@ void func_02085220(UnkStruct_02078e14 *self, u32 mode) {
             self->mUnk_e1           = 9;
             return;
         case 0xb:
-            flag  = 0;
             state = 1;
+            flag  = 0;
             break;
         case 0xc:
             break;
@@ -3829,25 +3787,28 @@ void func_02086668(UnkStruct_02078e14 *self, u32 unk1) {
     u8 t;
     for (s = 0; s < self->mUnk_fc - 1; s++) {
         for (t = s + 1; t < self->mUnk_fc; t++) {
-            u32 va;
-            u32 vb;
             u16 a;
             u16 b;
-            u16 *pb = &self->mUnk_106[t];
+            u32 vb;
+            u32 va;
             if (unk1 != 0) {
-                b  = *pb;
+                b  = self->mUnk_106[t];
                 a  = self->mUnk_106[s];
                 vb = data_020a3248[b];
                 va = data_020a3248[a];
+                if (va > vb) {
+                    self->mUnk_106[s] = b;
+                    self->mUnk_106[t] = a;
+                }
             } else {
-                b  = *pb;
+                b  = self->mUnk_106[t];
                 a  = self->mUnk_106[s];
-                va = data_020a3ba8[a];
                 vb = data_020a3ba8[b];
-            }
-            if (va > vb) {
-                self->mUnk_106[s] = b;
-                *pb = a;
+                va = data_020a3ba8[a];
+                if (va > vb) {
+                    self->mUnk_106[s] = b;
+                    self->mUnk_106[t] = a;
+                }
             }
         }
     }
@@ -3890,31 +3851,49 @@ void func_02086874(UnkStruct_02078e14 *self) {
     }
 }
 
+static inline BOOL MarkFlag(u8 *flags, int id) {
+    u8 byte = flags[(u32) id >> 3];
+    if (!(byte & (1 << (id % 8)))) {
+        flags[(u32) id >> 3] = byte | (1 << (id % 8));
+        data_020d43f0[0].mUnk_5b9_0 = 1;
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// non-matching: 16 words, register allocation only: the original keeps the flag array in r1 and the constant 1 in r2 (the
+// compiler swaps them) and loads the count table before the flag array. The flag arrays are addressed as members of
+// data_020d43f0 (mUnk_586/mUnk_58b) so that the flag byte is stored before mUnk_5b9 is reloaded, as in the original.
 BOOL func_02086938() {
-    BOOL result    = FALSE;
-    u8 kind        = data_020d43f0[0].mUnk_42;
-    const u8 *list = data_020a4044[kind][0];
+    BOOL result;
+    u8 kind;
+    u8 *flags1;
+    u8 *flags2;
+    u8 i;
+    const u16 *list2;
+    const u8 *list;
+    result = FALSE;
+    kind   = data_020d43f0[0].mUnk_42;
+    list   = data_020a4044[kind][0];
     if (list != NULL) {
-        u8 i = 0;
+        i = 0;
         do {
-            u8 id = list[i];
-            u8 byte = data_020d4976[(u32) id >> 3];
-            if (!(byte & (1 << (id % 8)))) {
-                data_020d4976[(u32) id >> 3] = byte | (1 << (id % 8));
+            flags1 = data_020d43f0[0].mUnk_586;
+            if (!TEST_BIT(flags1, list[i])) {
+                SET_BIT(flags1, list[i]);
                 data_020d43f0[0].mUnk_5b9_0 = 1;
                 result                      = TRUE;
             }
             i++;
         } while (i < data_020a4040[kind = data_020d43f0[0].mUnk_42][0]);
     }
-    const u16 *list2 = data_020a3fec[kind][0];
+    list2 = data_020a3fec[kind][0];
     if (list2 != NULL) {
-        u8 i = 0;
+        i = 0;
         do {
-            u16 id = list2[i];
-            u8 byte = data_020d497b[(u32) id >> 3];
-            if (!(byte & (1 << (id % 8)))) {
-                data_020d497b[(u32) id >> 3] = byte | (1 << (id % 8));
+            flags2 = data_020d43f0[0].mUnk_58b;
+            if (!TEST_BIT(flags2, list2[i])) {
+                SET_BIT(flags2, list2[i]);
                 data_020d43f0[0].mUnk_5b9_0 = 1;
                 result                      = TRUE;
             }
@@ -4212,6 +4191,8 @@ s32 func_02087468() {
     return result;
 }
 
+// non-matching: 9 words in case 2 (cases 0 and 1 match): the original loads the count between list[1] and list[0] and
+// reuses the table register for the entry pointer; the compiler loads the count last and keeps the entry in lr.
 BOOL func_020875ac(u32 index) {
     BOOL result = TRUE;
     switch (data_020a40f4[index][0]) {
@@ -4219,7 +4200,7 @@ BOOL func_020875ac(u32 index) {
             u8 i = 0;
             const u16 *list = (const u16 *) data_020a40f0[index].mList;
             do {
-                if (!TestFlagBit(data_020d497b, list[i])) {
+                if (!TEST_BIT(data_020d497b, list[i])) {
                     result = FALSE;
                     break;
                 }
@@ -4231,7 +4212,7 @@ BOOL func_020875ac(u32 index) {
             const u8 *list = (const u8 *) data_020a40f0[index].mList;
             u8 i = 0;
             do {
-                if (!TestFlagBit(data_020d4976, list[i])) {
+                if (!TEST_BIT(data_020d4976, list[i])) {
                     result = FALSE;
                     break;
                 }
@@ -4240,20 +4221,24 @@ BOOL func_020875ac(u32 index) {
             break;
         }
         case 2: {
-            u8 i = 0;
-            const u8 *list = (const u8 *) data_020a40f0[index].mList;
+            const ProgressEntry *e = &data_020a40f0[index];
+            u8 count       = e->mCount;
+            u8 i           = 0;
+            const u8 *list = (const u8 *) e->mList;
             do {
-                if (!TestFlagBit(data_020d496a + list[1] * 3, list[0])) {
+                if (!TEST_BIT(data_020d496a + list[1] * 3, list[0])) {
                     result = FALSE;
                 }
                 i++;
-            } while (i < data_020a40f0[index].mCount);
+            } while (i < count);
             break;
         }
     }
     return result;
 }
 
+// non-matching: 27 words in cases 0 and 1 (case 2 matches), the same colouring as func_02086938: the original keeps the
+// flag array in r1 and the constant 1 in r2, the compiler swaps them (and moves the list pointer).
 BOOL func_020876f0(u32 index) {
     BOOL result = TRUE;
     switch (data_020a40f4[index][0]) {
@@ -4261,10 +4246,9 @@ BOOL func_020876f0(u32 index) {
             const u16 *list = (const u16 *) data_020a40f0[index].mList;
             u8 i            = 0;
             do {
-                u16 id   = list[i];
-                u8 byte  = data_020d497b[(u32) id >> 3];
-                if (!(byte & (1 << (id % 8)))) {
-                    data_020d497b[(u32) id >> 3] = byte | (1 << (id % 8));
+                u8 *flags = data_020d43f0[0].mUnk_58b;
+                if (!TEST_BIT(flags, list[i])) {
+                    SET_BIT(flags, list[i]);
                     data_020d43f0[0].mUnk_5b9_0 = 1;
                     result                       = TRUE;
                 }
@@ -4276,10 +4260,9 @@ BOOL func_020876f0(u32 index) {
             const u8 *list = (const u8 *) data_020a40f0[index].mList;
             u8 i           = 0;
             do {
-                u8 id    = list[i];
-                u8 byte  = data_020d4976[(u32) id >> 3];
-                if (!(byte & (1 << (id % 8)))) {
-                    data_020d4976[(u32) id >> 3] = byte | (1 << (id % 8));
+                u8 *flags = data_020d43f0[0].mUnk_586;
+                if (!TEST_BIT(flags, list[i])) {
+                    SET_BIT(flags, list[i]);
                     data_020d43f0[0].mUnk_5b9_0 = 1;
                     result                       = TRUE;
                 }
@@ -4288,16 +4271,21 @@ BOOL func_020876f0(u32 index) {
             break;
         }
         case 2: {
-            const u8 *list = (const u8 *) data_020a40f0[index].mList;
-            u8 i           = 0;
+            const u8 *list;
+            u8 count;
+            u8 i;
+            const ProgressEntry *e = &data_020a40f0[index];
+            count = e->mCount;
+            list  = (const u8 *) data_020a40f0[index].mList;
+            i     = 0;
             do {
                 u8 id = list[0];
                 if (!((data_020d496a[(u32) id >> 3] | data_020d496d[(u32) id >> 3] | data_020d4970[(u32) id >> 3]) & (1 << (id % 8)))) {
                     result = TRUE;
                 }
-                i++;
                 (data_020d496a + list[1] * 3)[(u32) id >> 3] |= 1 << (id % 8);
-            } while (i < data_020a40f0[index].mCount);
+                i++;
+            } while (i < count);
             break;
         }
     }

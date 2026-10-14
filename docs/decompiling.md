@@ -209,6 +209,10 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **A callee declared `void` that returns a value changes scheduling in its callers.** `SpriteScreen::LoadCharacters`
+  ends in `return func_02025c1c(...)`; declaring it `u32` flipped two scheduling ties (`mov r0, r4` against `ldr r1`)
+  in func_020843ac (UnkStruct_02078e14_b), not only register choices.
+
 - **`x[n] = v; n++;` vs `x[n++] = v;`** schedule differently; BattleCpu::func_ov007_02231300 needs the split form. A
   counter also passed to `MATH_Rand32` matched as `u32 n` with `n = (u8) (n + 1)` (func_ov007_022329cc).
 - **Re-read instead of caching.** Where the original reloads a table element or a global chain in a loop, read it at

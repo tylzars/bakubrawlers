@@ -33,8 +33,8 @@ struct SpriteScreen {
     void func_020275e8(u32 unk1); // set mBgIndex
     void func_020275f0();         // upload the OAM copy and reset it
     void func_02027750();         // reset the OAM copy
-    void LoadCharacters(const char *path, u32 offset, u32 unk3);
-    void LoadPalette(const char *path, u32 offset, u32 unk3);
+    u32 LoadCharacters(const char *path, u32 offset, u32 unk3);
+    u32 LoadPalette(const char *path, u32 offset, u32 unk3);
     void func_02027fec(const char *path, u32 unk2, u32 unk3); // palette load variant
     void *func_02028054(u8 *data); // reorders 0x1000 bytes of character data into a new buffer and frees data
     u32 func_020276f4(u32 unk1);

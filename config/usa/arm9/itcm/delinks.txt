@@ -6,6 +6,7 @@ libs/nds/src/fx/fx_cp.c:
     .text       start:0x01ff8000 end:0x01ff817c
 
 libs/nds/src/fx/fx_vec_mtx.c:
+    complete
     .text       start:0x01ff81a0 end:0x01ff9284
 
 libs/nds/src/gx/g3_fifo.c:

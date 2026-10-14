@@ -79,6 +79,8 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   mode before loading the second. Every form tried compiles to the same code: operand order, `||`, negations,
   temporaries before or after the second `Get()`, references, pointers, inline wrappers around `Get()` or the
   compares, and `mMode` as volatile, unsigned or at another offset. No other 2.0 build differs.
+- **objdiff and calls inside a unit.** A `bl` to another function of the same unit counts as a mismatch while that
+  callee does not match, even though name and addend agree; such a caller reaches 100% once the callee does.
 - **Call checks.** `tools/check_calls.py` compares every call in matching functions with the original;
   `tools/check_callees.py` compares, per function (matching or not), the set of callees with the `bl` targets in
   the original's range. Probes and objdiff mask call targets, so both are needed: a near-identical neighbour

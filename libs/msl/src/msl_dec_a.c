@@ -41,7 +41,6 @@ void func_0201c238(Dec *d, int n)
     }
 }
 
-void func_0201c284(void) {}
 
 void func_0201c288(Dec *d, int n)
 {

@@ -30,20 +30,16 @@ void func_01ff9b64(u8 *res, int idx, int frame, s32 *out) {
     s32 sB[2];
     s32 sC[2];
     u32 hdr;
-    u32 *p;
     int interp;
+    u32 *p;
     u32 ofs = *(u16 *) (res + 0x14 + idx * 2);
     hdr = *(u32 *) (res + ofs);
-    p = (u32 *) (res + ofs + 4);
     if (hdr & 1) {
         out[0] = 7;
         goto emit;
     }
-    if ((frame & 0xfff) && (*(u32 *) (res + 8) & 1)) {
-        interp = 1;
-    } else {
-        interp = 0;
-    }
+    p = (u32 *) (res + ofs + 4);
+    interp = ((frame & 0xfff) && (*(u32 *) (res + 8) & 1)) ? 1 : 0;
     out[0] = 0;
     if (!(hdr & 6)) {
         if (!(hdr & 8)) {
@@ -91,12 +87,18 @@ void func_01ff9b64(u8 *res, int idx, int frame, s32 *out) {
             p += 2;
         } else {
             if (func_01ffaca4(out + 0x28 / 4, res + *(u32 *) (res + 0xc), res + *(u32 *) (res + 0x10), p[0]) != 0) {
-                s32 m5 = out[0x3c / 4];
-                s32 m1 = out[0x2c / 4];
-                s32 m0 = out[0x28 / 4];
-                s32 m4 = out[0x38 / 4];
-                s32 m2 = out[0x30 / 4];
-                s32 m3 = out[0x34 / 4];
+                s32 m4;
+                s32 m3;
+                s32 m1;
+                s32 m0;
+                s32 m2;
+                s32 m5;
+                m5 = out[0x3c / 4];
+                m0 = out[0x28 / 4];
+                m3 = out[0x34 / 4];
+                m2 = out[0x30 / 4];
+                m1 = out[0x2c / 4];
+                m4 = out[0x38 / 4];
                 out[0x40 / 4] = (m1 * m5 - m2 * m4) >> 12;
                 out[0x44 / 4] = (m2 * m3 - m0 * m5) >> 12;
                 out[0x48 / 4] = (m0 * m4 - m1 * m3) >> 12;
@@ -153,8 +155,8 @@ void func_01ff9b64(u8 *res, int idx, int frame, s32 *out) {
     }
 emit:
     {
-        Rs *g = data_020baf00;
         u32 fl = (out[0] & 1) ? 4 : 0;
+        Rs *g = data_020baf00;
         ((AnmCb) g->cbE8)(out, scale, g->cmd, fl);
     }
 }
@@ -233,11 +235,14 @@ blend:
 }
 
 void func_01ffa1cc(s32 *out, s32 frame, u32 *info, u8 *res) {
-    u32 f = frame >> 12;
-    u32 hdr = info[0];
-    u8 *data = res + info[1];
-    u32 last;
+    u32 hdr;
+    u32 f;
+    u8 *data;
     u32 a, b, g;
+    u32 last;
+    f = frame >> 12;
+    data = res + info[1];
+    hdr = info[0];
     if (hdr & 0xc0000000) {
         last = (hdr & 0x1fff0000) >> 16;
         if (hdr & 0x40000000) {
@@ -250,26 +255,35 @@ void func_01ffa1cc(s32 *out, s32 frame, u32 *info, u8 *res) {
             goto fetch;
         } else {
             u32 r = f & 3;
-            if (r == 0) { f = f >> 2; goto fetch; }
-            if (f > last) { f = r + (last >> 2); goto fetch; }
-            if (f & 1) {
-                if (f & 2) { f >>= 2; a = f + 1; b = f; }
-                else { a = f >> 2; b = a + 1; }
-                if (hdr & 0x20000000) {
-                    P16 *pa = (P16 *) data + a;
-                    P16 *pb = (P16 *) data + b;
-                    out[0] = (pa->x * 3 + pb->x) >> 2;
-                    out[1] = (pa->y * 3 + pb->y) >> 2;
-                } else {
-                    P32 *pa = (P32 *) data + a;
-                    P32 *pb = (P32 *) data + b;
-                    out[0] = (s32) (((s64) pa->x * 3 + pb->x) >> 2);
-                    out[1] = (s32) (((s64) pa->y * 3 + pb->y) >> 2);
+            if (r != 0) {
+                if (f > last) {
+                    f = r + (last >> 2);
+                    goto fetch;
                 }
-                return;
+                if (f & 1) {
+                    if (f & 2) {
+                        f >>= 2;
+                        a = f + 1;
+                        b = f;
+                    } else {
+                        a = f >> 2;
+                        b = a + 1;
+                    }
+                    if (hdr & 0x20000000) {
+                        out[0] = (((P16 *) data)[a].x * 3 + ((P16 *) data)[b].x) >> 2;
+                        out[1] = (((P16 *) data)[a].y * 3 + ((P16 *) data)[b].y) >> 2;
+                    } else {
+                        out[0] = (s32) (((s64) ((P32 *) data)[a].x * 3 + ((P32 *) data)[b].x) >> 2);
+                        out[1] = (s32) (((s64) ((P32 *) data)[a].y * 3 + ((P32 *) data)[b].y) >> 2);
+                    }
+                    return;
+                }
+                g = f >> 2;
+                goto avg;
+            } else {
+                f = f >> 2;
+                goto fetch;
             }
-            g = f >> 2;
-            goto avg;
         }
     }
 fetch:
@@ -394,12 +408,12 @@ void func_01ffa548(s32 *out, s32 ratio, u32 *info, u8 *res) {
     u32 hdr;
     u32 o1;
     u16 *data;
-    int fl;
     s32 tA[9];
     s32 tB[9];
     u32 f;
     u32 g;
     u32 a, b;
+    int fl;
     hdr = info[0];
     f = ratio >> 12;
     data = (u16 *) (res + info[1]);
@@ -493,16 +507,21 @@ fetch:
 }
 
 void func_01ffa960(s32 *out, s32 ratio, u32 *info, u8 *res) {
-    u16 *data = (u16 *) (res + info[1]);
-    s32 f = ratio >> 12;
-    u32 o1 = *(u32 *) (res + 0xc);
-    u32 o2 = *(u32 *) (res + 0x10);
-    u32 hdr = info[0];
+    u32 o2;
     s32 tA[9];
     s32 tB[9];
+    u32 o1;
     u32 b;
+    u32 f;
     s32 w0, w1;
+    u16 *data;
+    u32 hdr;
     int fl;
+    o1 = *(u32 *) (res + 0xc);
+    o2 = *(u32 *) (res + 0x10);
+    data = (u16 *) (res + info[1]);
+    hdr = info[0];
+    f = ratio >> 12;
     if (*(u16 *) (res + 4) - 1 == f) {
         if (hdr & 0xc0000000) {
             if (hdr & 0x40000000) {
@@ -550,10 +569,11 @@ void func_01ffa960(s32 *out, s32 ratio, u32 *info, u8 *res) {
     }
     b = f + 1;
 one:
-    w1 = 1;
     w0 = ratio & 0xfff;
+    w1 = 1;
 blend:
-    fl = func_01ffaca4(tA, res + o1, res + o2, data[f]);
+    fl = 0;
+    fl |= func_01ffaca4(tA, res + o1, res + o2, data[f]);
     fl |= func_01ffaca4(tB, res + o1, res + o2, data[b]);
     out[0] = tA[0] * w1 + ((w0 * (tB[0] - tA[0])) >> 12);
     out[1] = tA[1] * w1 + ((w0 * (tB[1] - tA[1])) >> 12);

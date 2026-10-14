@@ -1153,12 +1153,11 @@ void TournamentScene::func_ov002_0221cd10() {
             base = 0x96;
         }
         for (row = 0; row < 3; row++) {
-            int r7 = row * 7;
-            s16 y = row * 0xc + base;
+            int y = row * 0xc + base;
             u8 col = 0;
             do {
                 SpriteManager::Get().Screen(0).func_02027778(mGlyphBuffers[2], 1, (s16) (col * 0x20 + 0x14), y, 0,
-                                                             (u16) ((col + r7) * 2 + 0x3a0), 0xf, 0);
+                                                             (u16) ((col + row * 7) * 2 + 0x3a0), 0xf, 0);
                 col++;
             } while (col < 7);
         }

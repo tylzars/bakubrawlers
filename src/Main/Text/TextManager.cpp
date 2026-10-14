@@ -79,16 +79,14 @@ u16 TextManager::func_0202c1a8(u32 index) {
     return 0;
 }
 
-// non-matching: 73 words. The prologue copies the stack parameters onto themselves in a different order (the
-// original's is width, height, unk12, unk13, unk10, unk14, outWidth, outHeight, unk11, unk15, unk17, with the
-// mUnk_59 store after them; reordering the first statements doesn't change ours), two pairs of spill slots are
-// swapped (pixelWidth/pixelHeight, savedFontMode/the in-loop fontHeight), and the `x = startX` stores come after
-// the `y` load instead of before it.
+// non-matching: 53 words. In the prologue the original copies width, height, unk12, unk13 and unk10 to the stack
+// before it stores maxX = 0 and tests unk14; ours copies unk12 and unk13 in the later group. pixelWidth and
+// pixelHeight have swapped spill slots. `volatile` on x and y is a placeholder: it is the only form found that keeps
+// the `x = startX` store ahead of the `y` load.
 void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u32 height, s16 *outWidth,
                         s16 *outHeight, u16 *outPixelWidth, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13,
                         u32 unk14, u32 unk15, u32 unk16, u32 unk17) {
-    s32 lastAdvance;
-    u32 color = unk10;
+    u32 color;
     u16 remaining;
     s32 fontHeight;
     u16 charCount;
@@ -97,27 +95,26 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u
     s32 maxX;
     u32 drawFlag;
     u16 pixelHeight;
-    u32 more;
     s16 startX;
-    s16 x;
+    volatile s16 x;
     const u16 *line = (const u16 *) text;
     u16 pixelWidth;
-    s16 y;
-    s32 fontMode;
-    maxX        = 0;
+    volatile s16 y;
     pixelWidth  = width * 8;
     pixelHeight = height * 8;
-    mUnk_59       = unk15;
-    savedFontMode = mUnk_5b;
-    startX        = *outWidth;
-    startY        = *outHeight;
-    charCount     = maxX;
-    drawFlag      = charCount;
-    x             = startX;
-    y             = startY;
     if (unk14 != 0) {
-        unk17 = maxX;
+        unk17 = 0;
     }
+    color = unk10;
+    maxX = 0;
+    mUnk_59 = unk15;
+    savedFontMode = mUnk_5b;
+    startX = *outWidth;
+    startY = *outHeight;
+    charCount = 0;
+    drawFlag = 0;
+    x = startX;
+    y = startY;
     if (mUnk_5b != 0) {
         fontHeight = 12;
     } else {
@@ -125,6 +122,9 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u
     }
     remaining = length;
     do {
+        u32 more;
+        u8 fontMode;
+        s32 lastAdvance;
         s16 tx             = x;
         s16 ty             = y;
         const u16 *p       = line;
@@ -261,14 +261,14 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u
                 case 0xff81: {
                     u16 index = *line++;
                     units--;
-                    PrintNumber((&mUnk_10)[index], 0, 0, buffer, width, height, &x, &y, unk9, color, unk11, unk12, unk15, 0,
+                    PrintNumber((&mUnk_10)[index], 0, 0, buffer, width, height, (s16 *) &x, (s16 *) &y, unk9, color, unk11, unk12, unk15, 0,
                                 unk17);
                     break;
                 }
                 case 0xff82: {
                     u16 index = *line++;
                     units--;
-                    Print(mStrings[index].mText, mStrings[index].mLength, buffer, width, height, &x, &y, NULL, unk9, color,
+                    Print(mStrings[index].mText, mStrings[index].mLength, buffer, width, height, (s16 *) &x, (s16 *) &y, NULL, unk9, color,
                           unk11, unk12, 0, 0, unk15, 1, unk17);
                     break;
                 }

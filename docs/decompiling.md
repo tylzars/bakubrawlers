@@ -252,6 +252,9 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **A named local loaded from a const table can take a register ahead of an earlier local;** reading the table at
+  each use (the reads are merged, even across calls) gives the original order (UnkStruct_02065c40::func_02068954).
+
 - **A spilled s16 keeps its reload at an early return.** A spilled `s32` whose register still holds the value at a
   predicated early return has the reload dropped; as `s16` (still stored and loaded as a word) it keeps
   `ldrcs r0, [sp]` (UnkStruct_02065c40::func_02066814).

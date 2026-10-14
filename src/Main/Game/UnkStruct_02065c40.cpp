@@ -966,7 +966,6 @@ static inline fx32 FxRound(s32 v) {
 
 #define FX_FROM_INT_ROUND(x) ((fx32) (((x) > 0) ? (((x) << 12) + 0.5f) : (((x) << 12) - 0.5f)))
 
-// non-matching: 27 words, r4/r5 swapped for id, the path pointer and the texture.
 BOOL UnkStruct_02065c40::func_02068954() {
     char path[0x80];
     SpriteManager::Get().func_0202753c(0);
@@ -999,13 +998,11 @@ BOOL UnkStruct_02065c40::func_02068954() {
     MI_CpuClear16(mUnk_101c[0].mUnk_18, 0x14);
     MI_CpuClear16(&mUnk_101c[0], 0x18);
     mUnk_101c[0].mUnk_00 = 0;
-    s16 x = data_020a22ac[id].mX;
-    mUnk_101c[0].mUnk_04 = FX_FROM_INT_ROUND(x);
-    s16 y = data_020a22ac[id].mY;
-    mUnk_101c[0].mUnk_08 = FX_FROM_INT_ROUND(y);
+    mUnk_101c[0].mUnk_04 = FX_FROM_INT_ROUND(data_020a22ac[id].mX);
+    mUnk_101c[0].mUnk_08 = FX_FROM_INT_ROUND(data_020a22ac[id].mY);
     mUnk_101c[0].mUnk_0c[0] = 0;
-    mUnk_101c[0].mUnk_0c[1] = x;
-    mUnk_101c[0].mUnk_0c[2] = y;
+    mUnk_101c[0].mUnk_0c[1] = data_020a22ac[id].mX;
+    mUnk_101c[0].mUnk_0c[2] = data_020a22ac[id].mY;
     mUnk_101c[0].mUnk_12[0] = mUnk_101c[0].mUnk_0c[0];
     mUnk_101c[0].mUnk_12[1] = mUnk_101c[0].mUnk_0c[1];
     mUnk_101c[0].mUnk_12[2] = mUnk_101c[0].mUnk_0c[2];

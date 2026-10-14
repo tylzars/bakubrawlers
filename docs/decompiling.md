@@ -221,6 +221,10 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **A declared 2-D member is not the same as a cast to one.** FieldSelectScene's constructor needed `u8
+  mOptionBytes[5][2]` (a union view of the flat `mUnk_25c[10]`): a declared 2-D member builds the address as
+  `j + row` (`add r2, r9, r3`); `((u8 (*)[2]) mUnk_25c)[i][j]` fixes the registers but emits `row + j`.
+
 - **Locals shared by two blocks colour as named locals.** In BattleSub48::func_ov007_02224c90 per-block `u16 x` was a
   call-result temporary (higher register); declaring `x`, `y`, `step` once at function scope and assigning them in
   both blocks matched.

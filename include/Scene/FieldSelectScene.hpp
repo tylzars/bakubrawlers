@@ -63,6 +63,7 @@ public:
     union {
         /* 25c */ u8 mUnk_25c[10];
         /* 25c */ struct { u8 mValue; u8 mCount; } mOptions[5];
+        /* 25c */ u8 mOptionBytes[5][2];
     };
     /* 266 */ u8 mUnk_266[4][0x12];
     /* 2ae */ u8 mUnk_2ae[4][9];

@@ -67,8 +67,6 @@ extern const u8 data_ov001_022270bc[];
 
 extern u8 data_020d43eb[];
 
-// non-matching: 5 words in the mUnk_25c loop: the original keeps the j start value in r7 and this + i * 2 in r3,
-// here they are swapped (r3/r7).
 FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     mWindows[0] = NULL;
     mWindows[1] = NULL;
@@ -180,9 +178,9 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     }
     for (i = 0; i < 5; i++) {
         for (j = 0; j < 2; j++) {
-            mUnk_25c[i * 2 + j] = 0;
+            mOptionBytes[i][j] = 0;
         }
-        mUnk_25c[i * 2 + 1] = 2;
+        mOptionBytes[i][1] = 2;
     }
     mUnk_25c[1] = 3;
     u8 n = 0;
@@ -989,7 +987,8 @@ BOOL FieldSelectScene::func_ov001_02221aa8(u32 unk1) {
     return matches == count;
 }
 
-// non-matching: 5 words: this + i * 0x12 (original r9) and its + j (original r8) swap registers.
+// non-matching: 5 words: this + i * 0x12 (original r9) and its + j (original r8) swap registers. Flat and
+// struct-row views of mUnk_266, row pointers, inline helpers and counter types don't move it.
 BOOL FieldSelectScene::func_ov001_02221c0c() {
     MI_CpuCopy8(data_020d496a, (u8 *) &data_0220f540 + 4, 9);
     MI_CpuCopy8(data_020d4968, (u8 *) &data_0220f540 + 0xd, 1);
@@ -2416,7 +2415,9 @@ s16 FieldSelectScene::func_ov001_022256c8(u32 idx) {
 }
 
 // non-matching: 23 words in the mUnk_338 loop: x and y swap registers (original x r6, y r7) and the hoisted
-// (s16) (y + 4/2/0x16) values get the reverse stack slots. (s16) (int) (x + 4) is a placeholder that keeps
+// (s16) (y + 4/2/0x16) values get the reverse stack slots (original y + 4 at sp+8, y + 0x16 at sp+16).
+// Declaration orders, types, named offset locals and inline helpers don't move it; a function-scope y shared
+// with the mUnk_334 loop moves y to r9 instead. (s16) (int) (x + 4) is a placeholder that keeps
 // x + 4 in a register and narrows it at each use, as the original does.
 void FieldSelectScene::func_ov001_022256e4() {
     if (mUnk_348 != 0) {

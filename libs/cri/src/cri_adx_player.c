@@ -182,7 +182,7 @@ int func_0203e254(CriObj *o, int flag, int len)
     short s1e, s1c, s1a;
     unsigned char c19, c18;
     if ((flag & 1) && func_0203e06c() == 0) {
-        func_020401cc(str_a, str_b);
+        func_020401cc(str_e, str_b);
         return -1;
     }
     o->s2 = 1;

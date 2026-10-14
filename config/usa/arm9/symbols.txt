@@ -3483,7 +3483,7 @@ data_020ac934 kind:data(any) addr:0x020ac934
 data_020ac940 kind:data(any) addr:0x020ac940
 _ZTV9FrameTask kind:data(any) addr:0x020ac94c
 data_020ac960 kind:data(any) addr:0x020ac960
-data_020ac978 kind:data(any) addr:0x020ac978
+str_e kind:data(any) addr:0x020ac978
 str_b kind:data(any) addr:0x020ac998
 str_c kind:data(any) addr:0x020ac9b8
 str_d kind:data(any) addr:0x020ac9d8

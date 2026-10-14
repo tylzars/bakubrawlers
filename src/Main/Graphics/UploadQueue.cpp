@@ -21,13 +21,6 @@ struct UploadEntry {
     /* 0d */ u8 mFree;
 };
 
-struct UploadQueue {
-    /* 0 */ u8 mCount;
-    /* 1 */ u8 mHead;
-    /* 2 */ u8 mFreeCount;
-    /* 3 */ u8 mTail;
-    /* 4 */ u32 mBytes;
-};
 
 // VRAM/BG upload helpers (GX/G2 region of main).
 extern "C" void GXS_LoadBGPltt(void *data, u32 offset, u32 size);
@@ -81,15 +74,23 @@ UploadFunc data_020a552c[30] = {
     GX_LoadBG3Char, GX_LoadSubOBJExtPltt, GX_LoadSubBGExtPltt, GX_LoadTex, GX_LoadTexPltt, GXS_LoadOBJ, GXS_LoadOBJPltt,
     GX_LoadOBJPltt, GXS_LoadBG0Scr, GXS_LoadBG1Scr, GXS_LoadBG2Scr, GXS_LoadBG3Scr, GXS_LoadBG0Char, GXS_LoadBG1Char,
     GXS_LoadBG2Char, GXS_LoadBG3Char};
+// Zero-initialised but in .data in the original.
+#pragma explicit_zero_data on
 void *data_020a55a4[UPLOAD_FREE_COUNT] = {0};
+#pragma explicit_zero_data reset
 
-UploadQueue data_0220e630;
+// The queue state is five separate globals, not one struct: as members of one struct, the entry accesses and the
+// stores to the free count and the tail reorder across each other, which the original never does. Defined in this
+// order they get the original's addresses (count, head, free count, tail, byte total).
+u8 data_0220e630;  // queued entries
+u8 data_0220e631;  // head index
+u8 data_0220e633;  // tail index
+u8 data_0220e632;  // pending frees in data_020a55a4
+u32 data_0220e634; // bytes queued this frame
 UploadEntry data_0220e638[UPLOAD_QUEUE_SIZE];
 
-// non-matching: 5 words, the original increments mFreeCount before loading the entry's data (the queue and the entries
-// probably form one object, which keeps their accesses in order).
 void func_020257c8() {
-    u32 head = data_0220e630.mHead;
+    u32 head = data_0220e631;
     do {
         UploadEntry *e = &data_0220e638[(u8) head];
         u32 kind       = e->mKind;
@@ -97,19 +98,19 @@ void func_020257c8() {
             u8 k    = kind;
             u8 bank = k % UPLOAD_KIND_COUNT + (k >= UPLOAD_KIND_COUNT) * 4;
             data_020a550c[bank]();
-            data_020a552c[kind](data_0220e638[data_0220e630.mHead].mData, data_0220e638[data_0220e630.mHead].mOffset,
-                                data_0220e638[data_0220e630.mHead].mSize);
+            data_020a552c[kind](data_0220e638[data_0220e631].mData, data_0220e638[data_0220e631].mOffset,
+                                data_0220e638[data_0220e631].mSize);
             data_020a54ec[bank]();
         } else {
             data_020a552c[kind](data_0220e638[(u8) head].mData, e->mOffset, e->mSize);
         }
-        if (data_0220e638[data_0220e630.mHead].mFree != 0) {
-            u32 n = data_0220e630.mFreeCount++;
-            data_020a55a4[n] = data_0220e638[data_0220e630.mHead].mData;
+        if (data_0220e638[data_0220e631].mFree != 0) {
+            u32 n = data_0220e632++;
+            data_020a55a4[n] = data_0220e638[data_0220e631].mData;
         }
-        head                = (data_0220e630.mHead + 1) % UPLOAD_QUEUE_SIZE;
-        data_0220e630.mHead = head;
-    } while (--data_0220e630.mCount != 0);
+        head          = (data_0220e631 + 1) % UPLOAD_QUEUE_SIZE;
+        data_0220e631 = head;
+    } while (--data_0220e630 != 0);
 }
 
 BOOL func_020258f4(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 freeData) {
@@ -145,13 +146,13 @@ BOOL func_020258f4(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 f
 }
 
 BOOL func_02025a4c(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 freeData) {
-    u8 n = data_0220e630.mCount;
+    u8 n = data_0220e630;
     if (n == 0) {
         return FALSE;
     }
     u32 slot = kind + screen * UPLOAD_KIND_COUNT;
     u32 end  = offset + size;
-    u8 i     = data_0220e630.mHead;
+    u8 i     = data_0220e631;
     do {
         if (slot == data_0220e638[i].mKind) {
             BOOL after  = offset <= data_0220e638[i].mOffset;
@@ -173,9 +174,9 @@ BOOL func_02025a4c(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 f
 }
 
 static inline void FlushPendingFrees() {
-    while (data_0220e630.mFreeCount != 0) {
-        data_0220e630.mFreeCount--;
-        OS_Free(data_020a55a4[data_0220e630.mFreeCount]);
+    while (data_0220e632 != 0) {
+        data_0220e632--;
+        OS_Free(data_020a55a4[data_0220e632]);
     }
 }
 
@@ -186,7 +187,6 @@ u32 func_02025b64(u32 screen, u32 kind, u32 offset, const char *path, u32 unk5, 
     return func_02025c1c(screen, kind, offset, data, size, 1);
 }
 
-// non-matching: 19 words, the original stores mTail after the five entry fields (same ordering as above).
 u32 func_02025c1c(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 freeData) {
     FlushPendingFrees();
     if (func_020258f4(screen, kind, offset, data, size, freeData)) {
@@ -195,28 +195,28 @@ u32 func_02025c1c(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 fr
     if (func_02025a4c(screen, kind, offset, data, size, freeData)) {
         return offset + size;
     }
-    data_0220e638[data_0220e630.mTail].mKind   = kind + screen * UPLOAD_KIND_COUNT;
-    data_0220e638[data_0220e630.mTail].mOffset = offset;
-    data_0220e638[data_0220e630.mTail].mData   = data;
-    data_0220e638[data_0220e630.mTail].mSize   = size;
-    data_0220e638[data_0220e630.mTail].mFree   = freeData;
-    data_0220e630.mTail                        = (data_0220e630.mTail + 1) % UPLOAD_QUEUE_SIZE;
-    data_0220e630.mCount++;
-    data_0220e630.mBytes += size;
+    data_0220e638[data_0220e633].mKind   = kind + screen * UPLOAD_KIND_COUNT;
+    data_0220e638[data_0220e633].mOffset = offset;
+    data_0220e638[data_0220e633].mData   = data;
+    data_0220e638[data_0220e633].mSize   = size;
+    data_0220e638[data_0220e633].mFree   = freeData;
+    data_0220e633 = (data_0220e633 + 1) % UPLOAD_QUEUE_SIZE;
+    data_0220e630++;
+    data_0220e634 += size;
     return offset + size;
 }
 
 void func_02025d74() {
     FlushPendingFrees();
-    if (data_0220e630.mCount != 0) {
+    if (data_0220e630 != 0) {
         func_020254f0((FrameCallback) func_020257c8, NULL);
     }
-    data_0220e630.mBytes = 0;
+    data_0220e634 = 0;
 }
 
 void func_02025df8() {
-    data_0220e630.mHead      = 0;
-    data_0220e630.mTail      = 0;
-    data_0220e630.mFreeCount = 0;
-    data_0220e630.mBytes     = 0;
+    data_0220e631 = 0;
+    data_0220e633 = 0;
+    data_0220e632 = 0;
+    data_0220e634 = 0;
 }

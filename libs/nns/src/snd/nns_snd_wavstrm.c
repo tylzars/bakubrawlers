@@ -166,6 +166,9 @@ int func_02039400(void *heap) {   // reserve each stream's decode buffer from th
     return 1;
 }
 
+// non-matching: 1 word, the volume sum adds the fader term and v as `add r1, r6, r1` where the original has
+// `add r1, r1, r6` (fader term first). Every one-expression form gives v first; splitting the sum or an inline helper
+// fixes the order but moves the fader index out of r0.
 void func_020394c8(void) {   // per-frame update of all streams
     int i;
     s16 v;
@@ -346,10 +349,13 @@ extern void DC_FlushRange(void *addr, u32 size);   // DC_FlushRange
     *(dst) = (s16)pred_; \
 }
 
+// non-matching: the ADPCM loop's long-lived values get other callee-saved registers (ours: 0x7fff r4, -0x8000 r5, step
+// table r6, dst r7, st r8, end & ~1 r9; original: dst r4, st r5, end & ~1 r6, 0x7fff r7, -0x8000 r8, step table r9);
+// everything before the channel loop matches.
 void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
     WavStrm *s;
     int loopNow;
-    u32 offset;
+    unsigned long offset;
     u32 remaining;
     u32 blockBytes;
     u32 startSample;
@@ -410,8 +416,8 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
                     }
                 }
             }
-            outBytes = samples;
             i = startSample;
+            outBytes = samples;
             switch (s->format) {
             case 0:
                 readBytes = samples;
@@ -432,61 +438,67 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
                 outBytes *= 2;
                 break;
             }
-            readPos = s->dataOff + s->channels * (blk * s->blockSize) + i;
-            endSample = startSample + samples;
-            odd = startSample & 1;
-            st = s->adpcm;
-            for (ch = 0; ch < c->channels; ch++, st++) {
-                dst = (s16 *)(c->buf[ch] + offset);
-                if (ch < s->channels) {
-                    src = (u8 *)dst;
-                    if (s->format == 2) {
-                        OS_LockMutex(data_02214a08);
-                        src = (u8 *)data_022149f0.adpcmBuf;
+            readPos = s->channels * (blk * s->blockSize) + i;
+            readPos += s->dataOff;
+            ch = 0;
+            if (c->channels > 0) {
+                st = s->adpcm;
+                endSample = startSample + samples;
+                odd = startSample & 1;
+                do {
+                    dst = (s16 *)(c->buf[ch] + offset);
+                    if (ch < s->channels) {
+                        src = (u8 *)dst;
+                        if (s->format == 2) {
+                            OS_LockMutex(data_02214a08);
+                            src = (u8 *)data_022149f0.adpcmBuf;
+                        }
+                        if (s->read(s, src, readBytes, readPos + ch * blockBytes) != readBytes) {
+                            outBytes = 0;
+                            s->b5 = 1;
+                            samples = 0;
+                            loopNow = 0;
+                            if (s->format == 2) OS_UnlockMutex(data_02214a08);
+                            break;
+                        }
+                        if (s->format == 2) {
+                            src = (u8 *)data_022149f0.adpcmBuf;
+                            if (startSample == 0) {
+                                st->pred = ((u16 *)src)[0];
+                                st->index = ((u16 *)src)[1];
+                                src += 4;
+                            }
+                            i = startSample;
+                            if (odd != 0) {
+                                nib = (*src >> 4) & 0xf;
+                                ADPCM_STEP(st, nib, dst);
+                                dst++;
+                                i++;
+                                src++;
+                            }
+                            while (i < (endSample & ~1)) {
+                                nib = *src & 0xf;
+                                ADPCM_STEP(st, nib, dst);
+                                dst++;
+                                nib = (*src >> 4) & 0xf;
+                                ADPCM_STEP(st, nib, dst);
+                                dst++;
+                                i += 2;
+                                src++;
+                            }
+                            if (i < endSample) {
+                                nib = *src & 0xf;
+                                ADPCM_STEP(st, nib, dst);
+                            }
+                            OS_UnlockMutex(data_02214a08);
+                        }
+                    } else if (s->b6) {
+                        MI_CpuFill8(dst, 0, outBytes);
+                    } else {
+                        MI_CpuCopy8(c->buf[0] + offset, dst, outBytes);
                     }
-                    if (s->read(s, src, readBytes, readPos + ch * blockBytes) != readBytes) {
-                        outBytes = 0;
-                        s->b5 = 1;
-                        samples = 0;
-                        loopNow = 0;
-                        if (s->format == 2) OS_UnlockMutex(data_02214a08);
-                        break;
-                    }
-                    if (s->format == 2) {
-                        if (startSample == 0) {
-                            st->pred = ((u16 *)src)[0];
-                            st->index = ((u16 *)src)[1];
-                            src += 4;
-                        }
-                        i = startSample;
-                        if (odd != 0) {
-                            nib = (*src >> 4) & 0xf;
-                            ADPCM_STEP(st, nib, dst);
-                            dst++;
-                            i++;
-                            src++;
-                        }
-                        while (i < (endSample & ~1)) {
-                            nib = *src & 0xf;
-                            ADPCM_STEP(st, nib, dst);
-                            dst++;
-                            nib = (*src >> 4) & 0xf;
-                            ADPCM_STEP(st, nib, dst);
-                            dst++;
-                            i += 2;
-                            src++;
-                        }
-                        if (i < endSample) {
-                            nib = *src & 0xf;
-                            ADPCM_STEP(st, nib, dst);
-                        }
-                        OS_UnlockMutex(data_02214a08);
-                    }
-                } else if (s->b6) {
-                    MI_CpuFill8(dst, 0, outBytes);
-                } else {
-                    MI_CpuCopy8(c->buf[0] + offset, dst, outBytes);
-                }
+                    st++;
+                } while (++ch < c->channels);
             }
             if (s->b4) {
                 s->b4 = 0;

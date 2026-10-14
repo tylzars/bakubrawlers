@@ -1,5 +1,5 @@
-// non-matching: func_0201368c (0x768 vs 0x764) and func_02013df0 (0x820 vs 0x824) differ in register allocation;
-// func_02013df0 also ends its second switch table at 'o' where the original continues to 'u'.
+// non-matching: func_02013df0 (0x820 vs 0x824) ends its second switch table at 'o' where the original continues to
+// 'u' (s/u/x are then tested with compares), and keeps s and len in r6/r4 where the original has r7/r6.
 typedef struct FmtSpec {
     unsigned char justify;   /* 0 left, 1 right, 2 right with zero fill */
     unsigned char sign;      /* 0 none, 1 '+', 2 ' ' */
@@ -40,16 +40,22 @@ extern const char dA[], dB[], dC[], dD[];
 
 char *func_0201368c(double x, char *end, FmtSpec spec)
 {
-    int sign = spec.sign;
-    int alt = spec.alt;
-    int prec = spec.prec;
-    int conv = spec.conv;
+    int sign;
+    int alt;
+    int prec;
+    int conv;
     char *p;
     char *q;
     DecForm f;
     DecDigits d;
     int ex, n, i, k;
     char esign;
+    int whole;   /* digits before the point (%f) */
+    int frac;    /* digits after the point (%f) */
+    alt = spec.alt;
+    sign = spec.sign;
+    prec = spec.prec;
+    conv = spec.conv;
     if (prec > 509) return 0;
     f.mode = 0;
     f.ndigits = 32;
@@ -66,23 +72,23 @@ char *func_0201368c(double x, char *end, FmtSpec spec)
     case 'I':
         if (x < 0.0) {
             p = end - 5;
-            if (ISUPPER(conv)) *(B5 *)p = data_020a52a8;
-            else *(B5 *)p = data_020a52b0;
+            if (ISUPPER(conv)) __memcpy(p, &data_020a52a8, 5);
+            else __memcpy(p, &data_020a52b0, 5);
         } else {
             p = end - 4;
-            if (ISUPPER(conv)) *(B4 *)p = data_020a52b8;
-            else *(B4 *)p = data_020a52bc;
+            if (ISUPPER(conv)) __memcpy(p, &data_020a52b8, 4);
+            else __memcpy(p, &data_020a52bc, 4);
         }
         return p;
     case 'N':
         if (d.sign) {
             p = end - 5;
-            if (ISUPPER(conv)) *(B5 *)p = data_020a52c0;
-            else *(B5 *)p = data_020a52c8;
+            if (ISUPPER(conv)) __memcpy(p, &data_020a52c0, 5);
+            else __memcpy(p, &data_020a52c8, 5);
         } else {
             p = end - 4;
-            if (ISUPPER(conv)) *(B4 *)p = data_020a52d0;
-            else *(B4 *)p = data_020a52d4;
+            if (ISUPPER(conv)) __memcpy(p, &data_020a52d0, 4);
+            else __memcpy(p, &data_020a52d4, 4);
         }
         return p;
     }
@@ -96,7 +102,7 @@ char *func_0201368c(double x, char *end, FmtSpec spec)
         if (d.exp < -4 || d.exp >= prec) {
             if (alt) prec--;
             else prec = d.len - 1;
-            spec.conv = (spec.conv == 'g') ? 'e' : 'E';
+            if (spec.conv == 'g') spec.conv = 'e'; else spec.conv = 'E';
             goto do_e;
         } else {
             if (alt) {
@@ -140,24 +146,24 @@ char *func_0201368c(double x, char *end, FmtSpec spec)
     case 'f':
     case 'F':
     do_f:
-        n = d.len - d.exp - 1;
-        if (n < 0) n = 0;
-        if (n > prec) {
-            func_02013568(&d, d.len - (n - prec));
-            n = d.len - d.exp - 1;
-            if (n < 0) n = 0;
+        frac = d.len - d.exp - 1;
+        if (frac < 0) frac = 0;
+        if (frac > prec) {
+            func_02013568(&d, d.len - (frac - prec));
+            frac = d.len - d.exp - 1;
+            if (frac < 0) frac = 0;
         }
-        ex = d.exp + 1;
-        if (ex < 0) ex = 0;
-        if (ex + n > 509) return 0;
+        whole = d.exp + 1;
+        if (whole < 0) whole = 0;
+        if (whole + frac > 509) return 0;
         q = d.text + d.len;
-        for (k = 0; k < prec - n; k++) *--p = '0';
-        for (i = 0; i < n && i < d.len; i++) *--p = *--q;
-        for (; i < n; i++) *--p = '0';
+        for (i = 0; i < prec - frac; i++) *--p = '0';
+        for (i = 0; i < frac && i < d.len; i++) *--p = *--q;
+        for (; i < frac; i++) *--p = '0';
         if (prec != 0 || alt != 0) *--p = '.';
-        if (ex != 0) {
-            for (k = 0; k < ex - d.len; k++) *--p = '0';
-            for (; k < ex; k++) *--p = *--q;
+        if (whole != 0) {
+            for (k = 0; k < whole - d.len; k++) *--p = '0';
+            for (; k < whole; k++) *--p = *--q;
         } else {
             *--p = '0';
         }

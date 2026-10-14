@@ -261,17 +261,12 @@ u16 *UnkStruct_0205401c::func_020546cc() {
     return &model->mRotX;
 }
 
-// non-matching: 6 words, the original keeps the model pointer in r3 and loads rot[0] between the conditional loads.
 void UnkStruct_0205401c::func_020546e4(const u16 *rot) {
-    ModelTransform *model;
     if (mUnk_0c == 0) {
-        model = (StoryCharacterModel *) mUnk_08;
+        SetRotation((StoryCharacterModel *) mUnk_08, rot);
     } else {
-        model = (CharacterModel *) mUnk_04;
+        SetRotation((CharacterModel *) mUnk_04, rot);
     }
-    model->mRotX = rot[0];
-    model->mRotY = rot[1];
-    model->mRotZ = rot[2];
 }
 
 s32 UnkStruct_0205401c::func_02054710() {
@@ -414,7 +409,12 @@ void StoryCharacterModel::func_02054cc4(u32 a, u32 b) {
     mUnk_3a = 0;
 }
 
-// non-matching: 0x98 vs 0xa0, same problem as CharacterModel::func_02053eec.
+// non-matching: 0x98 vs 0xa0, same two differences as CharacterModel::func_02053eec. Our mModel load is hoisted
+// above the `bne` (the original loads it in each arm, into r2 in the restart arm), and the original reads mUnk_5d
+// through a copy of the anim pointer (`mov r2, r0; ldrb r6, [r2, #0x5d]`). Registers follow: this r7 (original r4),
+// loop/channel/frame r4/r5/r6 (original r5/r6/r7). Not fixed by: the anim2 copy, GetSet(), mModel->mAnim at each
+// use, a shared anim/obj for both arms, the inverted test, a switch, an early return, testing mUnk_3a, an inline
+// helper on the ModelTransform or the ModelInstance, a (u8 *) read of mUnk_5d.
 void StoryCharacterModel::func_02054d08(u32 flag) {
     mUnk_3a = flag;
     if (!(flag & 0xff)) {

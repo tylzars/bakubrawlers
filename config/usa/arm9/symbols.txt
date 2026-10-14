@@ -4829,6 +4829,10 @@ sCallbackArgs kind:bss addr:0x0220e5e4 local
 _ZN13SpriteManager5sFadeE kind:bss addr:0x0220e628
 _ZN13SpriteManager11sBrightnessE kind:bss addr:0x0220e62c
 data_0220e630 kind:bss addr:0x0220e630
+data_0220e631 kind:bss addr:0x0220e631
+data_0220e632 kind:bss addr:0x0220e632
+data_0220e633 kind:bss addr:0x0220e633
+data_0220e634 kind:bss addr:0x0220e634
 data_0220e638 kind:bss addr:0x0220e638
 data_0220e63c kind:bss addr:0x0220e63c
 data_0220e640 kind:bss addr:0x0220e640

@@ -1,3 +1,4 @@
+#include "Graphics/SpriteManager.hpp"
 #include "System/WirelessManager.hpp"
 #include "System/FrameTask.hpp"
 
@@ -5,10 +6,19 @@ extern void func_020219dc();
 #include "Scene/ArenaWindowScene.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
-#include "Text/TextManager.hpp"
 #include "UI/SelectWindow.hpp"
+
+static const WindowCellRecord data_ov001_0222704c[2] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 8192, 0, 0, 1, {0, 2, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 8192, 0, 0, 1, {9, 9, 9, 0}},
+};
+static const WindowItemRecord data_ov001_02227084[2] = {
+    {0, 1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, 1},
+    {1, 32768, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+};
+
+#include "Text/TextManager.hpp"
 #include "Scene/ArenaScene.hpp"
 #include "Scene/FieldSelectScene.hpp"
 #include "System/FrameTask.hpp"
@@ -229,14 +239,6 @@ void ArenaWindowScene::Update() {
     }
 }
 
-static const WindowCellRecord data_ov001_0222704c[2] = {
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 8192, 0, 0, 1, {0, 2, 1, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 8192, 0, 0, 1, {9, 9, 9, 0}},
-};
-static const WindowItemRecord data_ov001_02227084[2] = {
-    {0, 1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, 1},
-    {1, 32768, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
-};
 void ArenaWindowScene::func_ov001_0221d6dc() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);

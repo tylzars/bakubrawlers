@@ -1,3 +1,5 @@
+#include "System/InputManager.hpp"
+#include "System/SoundManager.hpp"
 #include "Battle/BattleCommandPrompt.hpp"
 #include "Battle/BattleCommandList.hpp"
 #include "Battle/BattleCommandPage.hpp"
@@ -17,8 +19,23 @@
 #include <nitro/mi.h>
 #include <stdio.h>
 
-extern const WindowCellRecord data_ov007_0227a77c[];
-extern const WindowItemRecord data_ov007_0227a7b4[];
+struct PromptRect {
+    u8 x;
+    u8 y;
+    u8 w;
+    u8 h;
+};
+static const WindowItemRecord data_ov007_0227a7b4[2] = {
+    {0, 5, 0xa1, 0x85, 0x36, 0x14, 0, {-1, -1, -1, -1}, 0, 1},
+    {1, 2, 0xd9, 0x85, 0x1e, 0x14, 0, {-1, -1, -1, -1}, 0, 1},
+};
+static const WindowCellRecord data_ov007_0227a77c[2] = {
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0x1c800, 14, 0, 1, {0, 1, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x1c800, 14, 0, 1, {2, 3, 3, 0}},
+};
+static const PromptRect data_ov007_0227a764[3] = {{0x28, 0x3f, 0x30, 0x40}, {0x68, 0x3f, 0x30, 0x40}, {0xa8, 0x3f, 0x30, 0x40}};
+static const PromptRect data_ov007_0227a75c[2] = {{0xa1, 0x85, 0x36, 0x14}, {0xd9, 0x85, 0x1e, 0x14}};
+static const u16 data_ov007_0227a770[6] = {0x2000, 0xc000, 0, 0, 0, 0};
 extern MtxFx22 data_0220e838;
 extern "C" void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
 
@@ -164,15 +181,6 @@ BattleCommandPrompt::~BattleCommandPrompt() {
     G2S_SetBlendBrightness(0x1f, 0);
 }
 
-struct PromptRect {
-    u8 x;
-    u8 y;
-    u8 w;
-    u8 h;
-};
-extern const PromptRect data_ov007_0227a764[];
-extern const PromptRect data_ov007_0227a75c[];
-extern u8 data_ov007_0227a770[];
 void func_ov007_0225f080(s16 *x);
 void func_ov007_0225e698(BattleCommandPrompt *prompt);
 
@@ -484,7 +492,7 @@ void BattleCommandPrompt::Update() {
                     }
                     u8 i = 0;
                     do {
-                        screen.func_02027778(data_ov007_0227a770, 1, (s16) (mUnk_50 + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0,
+                        screen.func_02027778((void *)data_ov007_0227a770, 1, (s16) (mUnk_50 + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0,
                                              ((mUnk_4c + (i + mUnk_90) * 0x1800) << 9) >> 16, (s8) (mUnk_90 + (i + 10)), 0);
                         i++;
                     } while (i < n);

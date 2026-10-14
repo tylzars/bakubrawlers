@@ -260,9 +260,12 @@ src/07_Battle/Battle/BattleResult.cpp:
 src/07_Battle/Battle/BattleTarget.cpp:
     .text       start:0x02252730 end:0x0225d08c
 
-// provisional: code only; .data 0x0228998c-0x02289dd8, .rodata about 0x0227a75c-0x0227aa1c and .bss 0x0228b9c4-0x0228b9e8 belong here.
 src/07_Battle/Battle/BattleCommandPrompt.cpp:
+    complete
     .text       start:0x0225d08c end:0x0225f33c
+    .rodata     start:0x0227a75c end:0x0227a7ec
+    .data       start:0x0228998c end:0x02289dd8
+    .bss        start:0x0228b9c4 end:0x0228b9e8
 
 src/07_Battle/Battle/BattleCardSpec.cpp:
     complete

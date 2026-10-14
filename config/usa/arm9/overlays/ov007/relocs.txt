@@ -8214,7 +8214,7 @@ from:0x0225d310 kind:arm_call to:0x02021e50 module:main
 from:0x0225d328 kind:arm_call to:0x0205b288 module:main
 from:0x0225d340 kind:arm_call to:0x01ffcef4 module:itcm
 from:0x0225d364 kind:arm_call to:0x020032d4 module:main
-from:0x0225d374 kind:load to:0x02289994 module:overlay(7)
+from:0x0225d374 kind:load to:0x0228998c add:0x8 module:overlay(7)
 from:0x0225d378 kind:load to:0x020d433c module:main
 from:0x0225d37c kind:load to:0x0227a7b4 module:overlay(7)
 from:0x0225d3b0 kind:arm_call to:0x02029e18 module:main
@@ -8232,7 +8232,7 @@ from:0x0225d4a4 kind:arm_call to:0x02021e80 module:main
 from:0x0225d4c8 kind:arm_call to:0x01ffcef4 module:itcm
 from:0x0225d4e4 kind:arm_call to:0x020032d4 module:main
 from:0x0225d518 kind:arm_call to:0x020033a0 module:main
-from:0x0225d528 kind:load to:0x02289994 module:overlay(7)
+from:0x0225d528 kind:load to:0x0228998c add:0x8 module:overlay(7)
 from:0x0225d560 kind:arm_call to:0x02029e18 module:main
 from:0x0225d568 kind:arm_call to:0x02021e80 module:main
 from:0x0225d594 kind:arm_call to:0x02029e18 module:main
@@ -8249,7 +8249,7 @@ from:0x0225d678 kind:arm_call to:0x01ffcef4 module:itcm
 from:0x0225d694 kind:arm_call to:0x020032d4 module:main
 from:0x0225d6c8 kind:arm_call to:0x020033a0 module:main
 from:0x0225d6d0 kind:arm_call to:0x02021e80 module:main
-from:0x0225d6e0 kind:load to:0x02289994 module:overlay(7)
+from:0x0225d6e0 kind:load to:0x0228998c add:0x8 module:overlay(7)
 from:0x0225d728 kind:arm_call to:0x0225e698 module:overlay(7)
 from:0x0225d730 kind:arm_call to:0x0225e6d4 module:overlay(7)
 from:0x0225d810 kind:arm_call to:0x02065890 module:main
@@ -8322,7 +8322,7 @@ from:0x0225e658 kind:load to:0x02020a20 module:main
 from:0x0225e65c kind:load to:0x020c17c8 module:main
 from:0x0225e660 kind:load to:0x0228b9d0 module:overlay(7)
 from:0x0225e664 kind:load to:0x0227a764 module:overlay(7)
-from:0x0225e668 kind:load to:0x0227a765 module:overlay(7)
+from:0x0225e668 kind:load to:0x0227a764 add:0x1 module:overlay(7)
 from:0x0225e66c kind:load to:0x0227a75c module:overlay(7)
 from:0x0225e670 kind:load to:0x020c17cc module:main
 from:0x0225e674 kind:load to:0x020c26c0 module:main

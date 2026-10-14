@@ -260,7 +260,6 @@ u8 BattleCpu::func_ov007_022310f0() {
     return result;
 }
 
-// non-matching: 15 words, registers only.
 u8 BattleCpu::func_ov007_02231300() {
     u8 roll = MATH_Rand32(&data_020d42e8, 100);
     u8 t    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f1;
@@ -273,25 +272,23 @@ u8 BattleCpu::func_ov007_02231300() {
             t = t - 2;
         }
     }
-    const BattleCpuRegion *region = &data_ov007_022796d8[t];
     u8 row;
     u8 col;
     u8 n;
     u8 row0;
-    u8 col0;
     u8 cells[12];
-    row0 = region->mRow;
-    col0 = region->mCol;
+    row0 = data_ov007_022796d8[t].mRow;
     n = 0;
     row = row0;
     do {
-        col = col0;
+        col = data_ov007_022796d8[t].mCol;
         do {
             if (func_ov007_02262574(data_020d433c.mBattlePlayers, row, col)) {
-                cells[n++] = col | (row << 4);
+                cells[n] = col | (row << 4);
+                n++;
             }
             col++;
-        } while (col < col0 + 3);
+        } while (col < data_ov007_022796d8[t].mCol + 3);
         row++;
     } while (row < row0 + 4);
     if (n != 0) {
@@ -311,9 +308,8 @@ u8 BattleCpu::func_ov007_02231300() {
     return 0;
 }
 
-// non-matching: 0x90c vs 0x914; the mUnk_98 pass keeps l->mPlayers[mUnk_79]->mUnk_f2 from the check before the loop
-// where the original reloads it in the loop, case 4 swaps the two index temporaries of the record address, and the
-// best-value loop loads mUnk_79 / m->mUnk_1 in the other order.
+// non-matching: registers only; case 4 swaps the two index temporaries of the record address, and the final mUnk_98 pass
+// has its invariant temporaries (record slot address, entry base, unit address) in other registers.
 extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     cpu->mPos.x = 0;
     cpu->mPos.y = 0;
@@ -582,17 +578,16 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
         }
     } while (pick >= 12);
     if (data_020d433c.mUnk_98 != 0) {
-        BattlePlayerList *l = data_020d433c.mBattlePlayers;
-        BattleMarker *m     = &l->Entries()[pick];
+        BattleMarker *m     = &data_020d433c.mBattlePlayers->Entries()[pick];
         if (m->mUnk_5 != 0) {
-            u8 owner = l->Units()[(u8) (m->mUnk_5 - 1)].mUnk_0f;
-            if (owner == l->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+            u8 owner = data_020d433c.mBattlePlayers->Units()[(u8) (m->mUnk_5 - 1)].mUnk_0f;
+            if (owner == data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->mUnk_f2) {
                 j = 0;
                 do {
-                    BattleMarker *m2 = &l->Entries()[j];
+                    BattleMarker *m2 = &data_020d433c.mBattlePlayers->Entries()[j];
                     if (m2->mUnk_2 != 0) {
                         if (m2->mUnk_5 != 0) {
-                            if (l->Units()[(u8) (m2->mUnk_5 - 1)].mUnk_0f != l->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+                            if (data_020d433c.mBattlePlayers->Units()[(u8) (m2->mUnk_5 - 1)].mUnk_0f != data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->mUnk_f2) {
                                 pick = j;
                                 break;
                             }
@@ -805,18 +800,18 @@ void BattleCpu::func_ov007_022328dc() {
     }
 }
 
-// non-matching: registers and 4 bytes of size.
 void BattleCpu::func_ov007_022329cc(int limit) {
     u8 cand[0x40];
     u8 i = 0;
-    u8 n = 0;
-    u8 k;
+    u32 n = 0;
+    u32 k;
     do {
         GimmickNode *node = &data_020d433c.mGimmicks->mNodes[i];
         if (node && node->mGimmick) {
             Gimmick *g = node->mGimmick;
             if (g->mUnk_3a == 4 && (limit == 0 || g->mPosition.y < limit)) {
-                cand[n++] = i;
+                cand[n] = i;
+                n = (u8) (n + 1);
             }
         }
         i++;
@@ -830,8 +825,7 @@ void BattleCpu::func_ov007_022329cc(int limit) {
         if (n == k) {
             break;
         }
-        u8 pick  = MATH_Rand32(&data_020d42e8, n);
-        mUnk_7f[k] = cand[pick];
+        mUnk_7f[k] = cand[MATH_Rand32(&data_020d42e8, n)];
         if (k != 0) {
             u8 j = 0;
             do {
@@ -842,7 +836,7 @@ void BattleCpu::func_ov007_022329cc(int limit) {
                 j++;
             } while (j < k);
             if (j == k + 1) {
-                k--;
+                k = (u8) (k - 1);
                 goto next;
             }
         }
@@ -853,7 +847,7 @@ void BattleCpu::func_ov007_022329cc(int limit) {
             }
         }
     next:
-        k++;
+        k = (u8) (k + 1);
     } while (k < 4);
     mUnk_76    = 1;
     mSavedPos  = mPos;

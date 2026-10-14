@@ -5,7 +5,6 @@
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Battle/BattleTarget.hpp"
 #include "Battle/BattleMapTypes.hpp"
-#include "Graphics/Camera.hpp"
 #include "Graphics/UnkStruct_0203d374.hpp"
 
 
@@ -274,6 +273,13 @@ void BattleUnk29c::func_ov007_02270350() {
     } while (i < 3);
 }
 
+// func_ov007_0227044c's scale and offset are file statics defined before the camera header is first parsed: the
+// size sort needs them ahead of CameraManager's guard, node and instance to give the original .rodata order.
+static const VecFx32 sMarkerScale  = {0x4cd, 0x4cd, 0x4cd};
+static const VecFx32 sMarkerOffset = {-0x5000, 0, 0};
+
+#include "Graphics/Camera.hpp"
+
 void BattleUnk29c::func_ov007_0227044c() {
     if (mUnk_a0 != 1) {
         return;
@@ -285,11 +291,11 @@ void BattleUnk29c::func_ov007_0227044c() {
     do {
         if (mUnk_9b[i] && mUnk_00[mUnk_9b[i] - 1]) {
             VecFx32 pos = mUnk_00[mUnk_9b[i] - 1]->mPosition;
-            VecFx32 sc  = {0x4cd, 0x4cd, 0x4cd};
+            VecFx32 sc  = sMarkerScale;
             u8 idx = mUnk_9b[i] - 1;
             u8 sel = data_020d433c.mBattlePlayers->mUnits[idx].mUnk_0f;
             u8 cur = data_020d433c.mBattlePlayers->mUnk_2a9;
-            VecFx32 off = {-0x5000, 0, 0};
+            VecFx32 off = sMarkerOffset;
             MtxFx43 mtx = CameraManager::Get().mMtxC[0];
             mtx._[9]    = 0;
             mtx._[10]   = 0;

@@ -5,7 +5,7 @@
 
 #include <nitro/fx.h>
 
-#include "Graphics/Camera.hpp"
+class Camera;
 #include "Graphics/UnkStruct_0203d374.hpp"
 #include "Scene/SceneBase.hpp"
 

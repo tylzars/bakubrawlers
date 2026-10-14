@@ -12,6 +12,7 @@ class Camera;
 class BattleUnionAbility;
 class BattleCommandPage;
 class BattleCommandList;
+#include "Graphics/Camera.hpp"
 #include "Battle/BattleTarget.hpp"
 
 // View of a 0x14 byte BattleUnit entry with its position.

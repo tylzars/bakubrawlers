@@ -595,6 +595,7 @@ libs/nds/src/fs/fs_rom.c:
     .text       start:0x0200ad04 end:0x0200afdc
 
 libs/nds/src/fs/fs_overlay.c:
+    complete
     .text       start:0x0200afdc end:0x0200b588
 
 libs/nds/src/math/math_sha1.c:

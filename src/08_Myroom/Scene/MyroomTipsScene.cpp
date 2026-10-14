@@ -20,9 +20,6 @@ extern u8 data_020d49a1[];
 #include <nitro/os.h>
 #include <stdio.h>
 
-extern const s8 data_ov008_02229650[6];
-extern const u8 data_ov008_02229660[6];
-
 #define TEST_BIT(flags, index) ((flags)[(index) / 8] & (1 << ((index) % 8)))
 #define SET_BIT(flags, index) ((flags)[(index) / 8] |= 1 << ((index) % 8))
 
@@ -31,20 +28,51 @@ struct TipsEntry {
     s8 mText;
     s8 mMessage;
 };
-extern const TipsEntry data_ov008_022296ac[][10];
-
-extern const u8 data_ov008_02229668[][2];
-
-extern const WindowItemRecord data_ov008_02229674[];
-extern const WindowCellRecord data_ov008_02229690[];
-extern const WindowItemRecord data_ov008_02229724[];
-extern const WindowCellRecord data_ov008_022297b0[];
 
 extern "C" void func_020705f0(UnkStruct_02065c40 *event);
 extern "C" void func_0206f88c(UnkStruct_02065c40 *event, u32 category, s32 value, u32 unk4);
-extern const s8 data_ov008_02229658[];
-
 extern "C" void func_0206f6f0(UnkStruct_02065c40 *event, const char *name, u32 id, u32 unk3, u32 unk4);
+
+const s8 data_ov008_02229658[6] = {0, 11, 17, 24, 31, 44};
+
+const u8 data_ov008_02229668[6][2] = {{0x14, 0x22}, {0x64, 0x22}, {0xb4, 0x22}, {0x14, 0x68}, {0x64, 0x68}, {0xb4, 0x68}};
+
+const WindowCellRecord data_ov008_022297b0[5] = {
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0, 4, 3, 1, {2, 3, 3, 0}},
+    {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 4, 28672, 4, 3, 1, {4, 4, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 0, 28672, 4, 3, 1, {0, 1, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 2, 28672, 4, 3, 1, {2, 3, 3, 0}},
+    {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 5, 28672, 4, 3, 1, {5, 5, 5, 0}},
+};
+
+const s8 data_ov008_02229650[6] = {10, 5, 6, 6, 6, 6};
+
+const TipsEntry data_ov008_022296ac[6][10] = {
+    {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {9, 10}, {4, 5}, {5, 6}, {6, 7}, {7, 8}, {8, 9}},
+    {{10, 12}, {11, 13}, {12, 14}, {13, 15}, {14, 16}, {-1, -1}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},
+    {{15, 18}, {16, 19}, {17, 20}, {18, 21}, {19, 22}, {20, 23}, {-1, -1}, {0, 0}, {0, 0}, {0, 0}},
+    {{21, 25}, {22, 26}, {23, 27}, {24, 28}, {25, 29}, {26, 30}, {-1, -1}, {0, 0}, {0, 0}, {0, 0}},
+    {{27, 32}, {28, 33}, {29, 34}, {32, 37}, {30, 35}, {31, 36}, {-1, -1}, {0, 0}, {0, 0}, {0, 0}},
+    {{33, 45}, {34, 46}, {35, 47}, {36, 48}, {37, 49}, {38, 50}, {-1, -1}, {0, 0}, {0, 0}, {0, 0}},
+};
+
+const WindowItemRecord data_ov008_02229724[5] = {
+    {0, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {1, 0x10, 228, 48, 32, 12, 0x0, {-1, -1, -1, -1}, 0, 0},
+    {2, 0x20, 228, 28, 32, 20, 0x0, {-1, -1, -1, -1}, 0, 3},
+    {3, 0x40, 228, 144, 32, 20, 0x0, {-1, -1, -1, -1}, 0, 3},
+    {4, 0x8000, 238, 36, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
+};
+
+const WindowItemRecord data_ov008_02229674[1] = {
+    {0, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
+};
+
+const u8 data_ov008_02229660[6] = {0x00, 0x10, 0x15, 0x1b, 0x0a, 0x21};
+
+const WindowCellRecord data_ov008_02229690[1] = {
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0, 4, 3, 1, {2, 3, 3, 0}},
+};
 
 MyroomTipsScene::MyroomTipsScene() :
     SceneBase(2, 0) {

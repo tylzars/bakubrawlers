@@ -1,3 +1,45 @@
+#include "UI/SelectWindow.hpp"
+const u8 data_ov008_02228cb0[6][2] = {{0x10, 0x2e}, {0x10, 0x42}, {0x10, 0x56}, {0x10, 0x6a}, {0x10, 0x7e}, {0x10, 0x92}};
+
+const WindowCellRecord data_ov008_02228db0[9] = {
+    {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 6, 0, 0, 0, 1, {6, 6, 6, 0}},
+    {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 4, 0, 0, 1, 1, {4, 4, 4, 0}},
+    {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 4, 0, 0, 1, 1, {4, 4, 4, 0}},
+    {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 4, 0, 0, 1, 1, {4, 4, 4, 0}},
+    {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 4, 0, 0, 1, 1, {4, 4, 4, 0}},
+    {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 4, 0, 0, 1, 1, {4, 4, 4, 0}},
+    {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 0, 0, 0, 1, 1, {0, 0, 0, 0}},
+    {"Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 49152, 12, 0, 1, {2, 3, 3, 0}},
+    {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 7, 0, 0, 0, 1, {7, 7, 7, 0}},
+};
+
+const WindowCellRecord data_ov008_02228cc8[4] = {
+    {"union_b_obj_scroll_nce.bin", 4, 24576, 10, 0, 1, {4, 4, 4, 0}},
+    {"union_b_obj_scroll_nce.bin", 0, 24576, 10, 0, 1, {0, 1, 1, 0}},
+    {"union_b_obj_scroll_nce.bin", 2, 24576, 10, 0, 1, {2, 3, 3, 0}},
+    {"union_b_obj_scroll_nce.bin", 7, 24576, 10, 0, 1, {7, 7, 7, 0}},
+};
+
+const WindowItemRecord data_ov008_02228eac[13] = {
+    {0, 0x8000, 120, 30, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
+    {1, 0x8, 16, 46, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {2, 0x8, 16, 66, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {3, 0x8, 16, 86, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {4, 0x8, 16, 106, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {5, 0x8, 16, 126, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {6, 0x8, 16, 146, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {7, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {8, 0x8000, 16, 36, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
+    {9, 0x10, 228, 63, 32, 12, 0x0, {-1, -1, -1, -1}, 0, 0},
+    {10, 0x20, 228, 44, 32, 20, 0x0, {-1, -1, -1, -1}, 0, 3},
+    {11, 0x40, 228, 144, 32, 20, 0x0, {-1, -1, -1, -1}, 0, 3},
+    {12, 0x8000, 238, 64, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
+};
+
+const u8 data_ov008_02228d38[6][20] = {{0x2e, 0x32, 0x26, 0x32, 0x1e, 0x32, 0xd0, 0x32, 0xca, 0x32, 0xc4, 0x32, 0xbe, 0x32, 0xb8, 0x32, 0xb2, 0x32, 0xac, 0x32}, {0x2e, 0x46, 0x26, 0x46, 0x1e, 0x46, 0xd0, 0x46, 0xca, 0x46, 0xc4, 0x46, 0xbe, 0x46, 0xb8, 0x46, 0xb2, 0x46, 0xac, 0x46}, {0x2e, 0x5a, 0x26, 0x5a, 0x1e, 0x5a, 0xd0, 0x5a, 0xca, 0x5a, 0xc4, 0x5a, 0xbe, 0x5a, 0xb8, 0x5a, 0xb2, 0x5a, 0xac, 0x5a}, {0x2e, 0x6e, 0x26, 0x6e, 0x1e, 0x6e, 0xd0, 0x6e, 0xca, 0x6e, 0xc4, 0x6e, 0xbe, 0x6e, 0xb8, 0x6e, 0xb2, 0x6e, 0xac, 0x6e}, {0x2e, 0x82, 0x26, 0x82, 0x1e, 0x82, 0xd0, 0x82, 0xca, 0x82, 0xc4, 0x82, 0xbe, 0x82, 0xb8, 0x82, 0xb2, 0x82, 0xac, 0x82}, {0x2e, 0x96, 0x26, 0x96, 0x1e, 0x96, 0xd0, 0x96, 0xca, 0x96, 0xc4, 0x96, 0xbe, 0x96, 0xb8, 0x96, 0xb2, 0x96, 0xac, 0x96}};
+
+const u8 data_ov008_02228cbc[6][2] = {{0x37, 0x31}, {0x37, 0x45}, {0x37, 0x59}, {0x37, 0x6d}, {0x37, 0x81}, {0x37, 0x95}};
+
 #include "Text/TextManager.hpp"
 #include "Scene/MyroomRankingScene.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
@@ -40,14 +82,6 @@ inline void MyroomRankingScene::UpdateRowAnimations() {
         }
     }
 }
-
-extern const u8 data_ov008_02228cb0[];
-extern const u8 data_ov008_02228cb1[];
-extern const u8 data_ov008_02228cbc[][2];
-extern const u8 data_ov008_02228d38[][20];
-extern const WindowItemRecord data_ov008_02228eac[];
-extern const WindowCellRecord data_ov008_02228db0[];
-extern const WindowCellRecord data_ov008_02228cc8[];
 
 MyroomRankingScene::MyroomRankingScene() :
     SceneBase(1000, 0) {
@@ -313,7 +347,7 @@ void MyroomRankingScene::func_ov008_0221fe9c() {
         mUnk_1b9 = mUnk_42 - 4;
         mUnk_1ba = 3;
     }
-    Vec2s pos = {data_ov008_02228cb0[mUnk_1ba * 2], data_ov008_02228cb1[mUnk_1ba * 2]};
+    Vec2s pos = {data_ov008_02228cb0[mUnk_1ba][0], data_ov008_02228cb0[mUnk_1ba][1]};
     mWindow->mCellPos[8] = pos;
     mWindow->mCursor->SetScroll(mUnk_1b9);
     if ((s32) mUnk_42 > 10) {
@@ -476,7 +510,7 @@ void MyroomRankingScene::func_ov008_02220b88() {
         mRows[i].mUnk_2c = entry->mUnk_4;
     }
     UpdateRowAnimations();
-    Vec2s pos = {data_ov008_02228cb0[mUnk_1ba * 2], data_ov008_02228cb1[mUnk_1ba * 2]};
+    Vec2s pos = {data_ov008_02228cb0[mUnk_1ba][0], data_ov008_02228cb0[mUnk_1ba][1]};
     mWindow->mCellPos[8] = pos;
     func_ov008_02220d14();
 }

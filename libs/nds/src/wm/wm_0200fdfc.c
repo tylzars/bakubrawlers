@@ -287,6 +287,13 @@ u16 func_02010600(void)
     return data_020a5070;
 }
 
+int func_02010684(WMCb cb, int b, int c, int d);
+
+int func_02010674(WMCb cb, int b, int c)
+{
+    return func_02010684(cb, b, c, 0);
+}
+
 int func_02010684(WMCb cb, int b, int c, int d)
 {
     int r;
@@ -302,11 +309,6 @@ int func_02010684(WMCb cb, int b, int c, int d)
         r = 2;
     }
     return r;
-}
-
-int func_02010674(WMCb cb, int b, int c)
-{
-    return func_02010684(cb, b, c, 0);
 }
 
 int func_020106e4(WMCb cb)

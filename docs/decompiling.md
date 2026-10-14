@@ -47,8 +47,6 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   addresses, so a wrong literal can look like a match).
 
 - **Fully matched units that don't link yet** (2026-10-14):
-  - MessageWindow: tables in its data range are still `extern`. Define them from the original bytes (see the
-    BattleCommand, TournamentScene, MyroomShootScene, BattleCommandMap and UnkStruct_02076058 passes).
   - AttrSelScene: `.bss` destructor-node order (`.bss#22 (@838, @54)`), a layout search.
   - MyroomGiftScene: `.data` is defined and exact; `.rodata` order needs table shapes (2D u8 arrays, a94/aa0/aac
     merged into one [3][12] table), which leaves func_ov008_0221de34 3 words off on literal-pool order.
@@ -76,6 +74,9 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   definition order against the original, keeping each static before its first use. The first order found compiled
   to the original layout of all three sections. Defining every table in the range matters: with only the `.data`
   tables defined, no order gave the original string order, because the `.rodata` tables take part in the same sort.
+- **Literals before a vtable mean an earlier file (MessageWindow).** Function literals are emitted after a file's
+  shared `.data` section, so UnkStruct_020651bc's six path strings lying before MessageWindow's vtable showed the
+  two classes were separate files; split at 0x0206550c, both link.
 - **Statics between includes (UnkStruct_02076058).** Defining its three window tables reordered the four
   singleton nodes in `.bss`. `layout_search.py` lists working orders with a cost (how many things move, not how many
   objects are off); the one used defines the tables right after the first header (TouchManager), with

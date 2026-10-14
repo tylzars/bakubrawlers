@@ -130,9 +130,6 @@ extern const s8 data_ov007_02279d40;
 u16 func_02065c20(u32 id);
 u8 func_02065c0c(u32 id, u32 kind);
 
-// non-matching: 96 words (all 2-word-shifted literal pool offsets plus registers): screen is r7 (original r5), the palette
-// buffer r5 (original r6), and in the entry loop at the end the original shares one k*0x14 multiply between two separate
-// adds (mul; add r1,r4,r0; add r8,r4,r0) while this fuses mla.
 void BattleHud::func_ov007_022257e0() {
     BattleEntry *entries = mData->mEntries;
     ChangeDir("/Game/Confrontation/Bg/");
@@ -144,7 +141,7 @@ void BattleHud::func_ov007_022257e0() {
     void *fill = OS_Alloc(0x20);
     MI_CpuFill8(fill, 0x11, 0x20);
     func_02025c1c(1, 0xd, 0, fill, 0x20, 1);
-    SpriteScreen &screen = SpriteManager::Get().Screen(1);
+    SpriteScreen &screen = SpriteManager::Get().mScreens[1];
     screen.func_02027624(3);
     ChangeDir("/Game/Confrontation/Obj/");
     screen.LoadCharacters("vs_b_obj_01.nce_ncg1D.bin", 0x7000, 0);
@@ -200,14 +197,13 @@ void BattleHud::func_ov007_022257e0() {
     mAnims[11]->SetAnimation(4);
     screen.LoadCharacters("vs_b_obj_ability.nce_ncg1D.bin", 0x10000, 0);
     screen.LoadPalette("vs_b_obj_ability_ncl.bin", 0x140, 0x20);
-    u8 side = 0;
+    i = 0;
     u8 slot = 14;
     do {
         mAnims[slot] = new CellAnimation("vs_b_obj_ability_nce.bin", 0, 1, 1);
         mAnims[slot]->mCharBase = screen.func_020276f4(0x10000);
-        BattleEntry *entry = &entries[side];
         mAnims[slot]->mUnk_11 = 10;
-        switch (func_02065c0c(entry->mUnk_12, 3)) {
+        switch (func_02065c0c(entries[i].mUnk_12, 3)) {
             case 0:
                 mAnims[slot]->SetAnimation(0);
                 break;
@@ -224,10 +220,10 @@ void BattleHud::func_ov007_022257e0() {
                 mAnims[slot]->SetAnimation(4);
                 break;
             case 4:
-                if (entry->mUnk_12 >= 0x8e && entry->mUnk_12 <= 0x91) {
+                if (entries[i].mUnk_12 >= 0x8e && entries[i].mUnk_12 <= 0x91) {
                     mAnims[slot]->SetAnimation(9);
-                } else if (func_ov007_02222764(side, entries) == 5) {
-                    if (func_02065c0c(entries[(u8) (side ^ 1)].mUnk_12, 3) != 5) {
+                } else if (func_ov007_02222764(i, entries) == 5) {
+                    if (func_02065c0c(entries[(u8) (i ^ 1)].mUnk_12, 3) != 5) {
                         mAnims[slot]->SetAnimation(6);
                     } else {
                         mAnims[slot]->SetAnimation(5);
@@ -238,8 +234,8 @@ void BattleHud::func_ov007_022257e0() {
                 break;
         }
         slot++;
-        side++;
-    } while (side < 2);
+        i++;
+    } while (i < 2);
     mAnims[20] = new CellAnimation("vs_b_obj_ability_nce.bin", 0, 1, 1);
     mAnims[20]->mCharBase = screen.func_020276f4(0x10000);
     mAnims[20]->mUnk_11 = 10;
@@ -298,15 +294,16 @@ void BattleHud::func_ov007_022257e0() {
     mAnims[12]->SetAnimation(7);
     mAnims[13]->SetAnimation(7);
     ChangeDir("/");
-    u8 k = 0;
+    i = 0;
     do {
-        if (((u8 *) data_020d433c.mBattlePlayers->mPlayers[entries[k].mUnk_0d_4])[0xf9] == 0) {
-            mUnk_118[k] = 0xff;
+        if (data_020d433c.mBattlePlayers->mPlayers[entries[i].mUnk_0d_4]->mUnk_f9 == 0) {
+            mUnk_118[i] = 0xff;
         }
-        BattleEntry *e = &entries[(int) k];
+        BattleEntry *e = entries;
+        e += i;
         u32 card;
         if (e->mUnk_12 == 0) {
-            if (mUnk_0c == k) {
+            if (mUnk_0c == i) {
                 mUnk_117_1 = 1;
             }
             card = 0;
@@ -317,9 +314,9 @@ void BattleHud::func_ov007_022257e0() {
             }
             card = func_02065c20(e->mUnk_12);
         }
-        func_ov007_0222644c(k, card);
-        k++;
-    } while (k < 2);
+        func_ov007_0222644c(i, card);
+        i++;
+    } while (i < 2);
     if (mUnk_0c >= 2) {
         mUnk_117_1 = 1;
     }
@@ -332,19 +329,18 @@ void BattleHud::func_ov007_022257e0() {
     }
     mData->mUnk_6c->mUnk_27 = 1;
     func_ov007_02226ab8();
-    k = 0;
+    i = 0;
     do {
-        if (entries[k].mUnk_0f_1) {
-            mUnk_118[k] = 0xff;
+        if (entries[i].mUnk_0f_1) {
+            mUnk_118[i] = 0xff;
         }
-        k++;
-    } while (k < 2);
+        i++;
+    } while (i < 2);
 }
 
-// non-matching: register order: the original has screen r5, entries r6, selected r7.
 void BattleHud::func_ov007_0222644c(u8 side, int card) {
     u8 index;
-    SpriteScreen &screen = SpriteManager::Get().Screen(1);
+    SpriteScreen &screen = SpriteManager::Get().mScreens[1];
     BattleEntry *entries = mData->mEntries;
     u8 selected = data_020d433c.mBattlePlayers->mUnk_2a9;
     u8 i;

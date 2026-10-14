@@ -570,6 +570,7 @@ libs/nds/src/fs/fs_file.c:
     .bss        start:0x020bfc98 end:0x020bfc9c
 
 libs/nds/src/fs/fs_rom.c:
+    complete
     .text       start:0x0200ad04 end:0x0200afdc
 
 libs/nds/src/fs/fs_overlay.c:

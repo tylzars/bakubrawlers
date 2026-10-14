@@ -19,7 +19,7 @@ BOOL func_0200a290(FSFile *f, u32 cmd);
 BOOL func_0200a24c(FSFile *f);
 FSFile *func_02009fa4(FSArchive *arc);
 void func_0200a1b8(FSFile *f);
-void func_0200adf4(u32 a);
+void FS_Init(u32 a);
 int func_02009f8c(FSArchive *arc, void *dst, u32 pos, u32 len);
 BOOL func_0200ab18(FSFile *f);
 BOOL func_0200aadc(FSFile *f);
@@ -30,7 +30,7 @@ void func_0200a78c(u32 a)
 {
     if (fs_initialized) return;
     fs_initialized = 1;
-    func_0200adf4(a);
+    FS_Init(a);
 }
 
 void func_0200a7b4(FSFile *f)

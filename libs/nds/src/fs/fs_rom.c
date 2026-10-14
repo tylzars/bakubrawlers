@@ -29,7 +29,7 @@ int func_0200f79c(void);
 void func_0200f3d0(u32 dma, u32 src, void *dst, u32 len, void (*cb)(void *), void *arg, int async);
 void func_0200e620(u32 v);
 void func_0200e63c(u32 v);
-void func_02005ed8(void *p, u32 n);
+void IC_InvalidateRange(void *p, u32 n);
 void DC_InvalidateRange(void *p, u32 n);
 void func_0200a434(FSArchive *a);
 BOOL func_0200a4a0(FSArchive *a, const char *name, int len);
@@ -86,7 +86,7 @@ int func_0200adec(void *arc, int ev)
 }
 
 typedef enum { HDR_BASE = 0x027ffc40 } HdrBase;
-void func_0200adf4(u32 dma)
+void FS_Init(u32 dma)
 {
     volatile RomHdr *hdr;
     u32 fnt, fat;
@@ -137,7 +137,7 @@ void func_0200af78(FSOverlayInfo *ov)
     u32 base = ov->ram_addr;
     u32 size = ov->ram_size;
     u32 end = size + ov->bss_size;
-    func_02005ed8((void *) base, end);
+    IC_InvalidateRange((void *) base, end);
     DC_InvalidateRange((void *) base, end);
     MI_CpuFill8((void *) (base + size), 0, end - size);
 }

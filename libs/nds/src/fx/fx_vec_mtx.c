@@ -157,6 +157,127 @@ void func_01ff85a8(const MtxFx43 *src, MtxFx43 *dst, fx32 x, fx32 y, fx32 z) {
     dst->_[11] = src->_[11];
 }
 
+#pragma thumb on
+asm void func_01ff85dc(MtxFx43 *m, fx32 sin, fx32 cos) {
+    str r1, [r0, #0x14]
+    neg r1, r1
+    str r1, [r0, #0x1c]
+    mov r1, #1
+    lsl r1, r1, #12
+    stmia r0!, {r1}
+    mov r3, #0
+    mov r1, #0
+    stmia r0!, {r1, r3}
+    stmia r0!, {r1, r2}
+    str r1, [r0, #4]
+    add r0, #0xc
+    stmia r0!, {r2, r3}
+    stmia r0!, {r1, r3}
+    bx lr
+}
+asm void func_01ff85fc(MtxFx43 *m, fx32 sin, fx32 cos) {
+    str r1, [r0, #0x18]
+    mov r3, #0
+    stmia r0!, {r2, r3}
+    neg r1, r1
+    stmia r0!, {r1, r3}
+    mov r1, #1
+    lsl r1, r1, #12
+    stmia r0!, {r1, r3}
+    add r0, #4
+    mov r1, #0
+    stmia r0!, {r1, r2, r3}
+    stmia r0!, {r1, r3}
+    bx lr
+}
+asm void func_01ff8618(MtxFx43 *m, fx32 sin, fx32 cos) {
+    stmia r0!, {r2}
+    mov r3, #0
+    stmia r0!, {r1, r3}
+    neg r1, r1
+    stmia r0!, {r1, r2, r3}
+    mov r1, #0
+    mov r2, #0
+    mov r3, #1
+    lsl r3, r3, #12
+    stmia r0!, {r1, r2, r3}
+    mov r3, #0
+    stmia r0!, {r1, r2, r3}
+    bx lr
+}
+#pragma thumb off
+
+// a*d - b*c on fx32 inputs, kept as a 64-bit product sum (no shift yet).
+#define CROSS64(a, d, b, c) ((fx64) (a) * (d) - (fx64) (b) * (c))
+// Back from a 64-bit product sum to fx32: truncated, or rounded to the nearest 1/4096.
+#define TRUNC12(x) ((fx32) ((x) >> 12))
+#define ROUND12(x) ((fx32) (((x) + (fx64) 0x800) >> 12))
+
+// MTX_Inverse43: inverts the 3x3 part through its 2x2 minors and the determinant, then sets the translation row to
+// minus the old translation times the new 3x3 part. Elements are numbered row by row (0-8 the 3x3 part, 9-11 the
+// translation). Returns -1 and leaves dst alone when the determinant is zero, 0 otherwise. src may equal dst; the
+// result then goes through a stack copy.
+int func_01ff8634(const MtxFx43 *src, MtxFx43 *dst) {
+    MtxFx43 tmp;
+    MtxFx43 *out;
+    fx32 det;                  // the determinant, later its reciprocal
+    fx32 minor0, minor1, minor2;
+    fx32 minor3, minor6, minor4, minor7;   // named after the element each one ends up in (transposed)
+
+    if (src == dst) {
+        out = &tmp;
+    } else {
+        out = dst;
+    }
+
+    // Minors of the first row (rounded), then the determinant by expansion along that row.
+    minor0 = ROUND12(CROSS64(src->_[4], src->_[8], src->_[5], src->_[7]));
+    minor1 = ROUND12(CROSS64(src->_[3], src->_[8], src->_[5], src->_[6]));
+    minor2 = ROUND12(CROSS64(src->_[3], src->_[7], src->_[4], src->_[6]));
+
+    det = ROUND12(CROSS64(src->_[0], minor0, src->_[1], minor1) + (fx64) src->_[2] * minor2);
+
+    if (det == 0) {
+        return -1;
+    }
+
+    // Start 1/det on the divider and fill the wait with four more minors (truncated).
+    FX_InvAsync(det);
+
+    minor3 = TRUNC12(CROSS64(src->_[1], src->_[8], src->_[7], src->_[2]));
+    minor6 = TRUNC12(CROSS64(src->_[1], src->_[5], src->_[4], src->_[2]));
+    minor4 = TRUNC12(CROSS64(src->_[0], src->_[8], src->_[6], src->_[2]));
+    minor7 = TRUNC12(CROSS64(src->_[0], src->_[5], src->_[3], src->_[2]));
+
+    // Adjugate times 1/det, with the checkerboard signs; the last two minors are formed in place.
+    det = FX_GetDivResult();
+    out->_[0] = MUL33(det, minor0);
+    out->_[1] = -MUL33(det, minor3);
+    out->_[2] = MUL33(det, minor6);
+
+    out->_[3] = -MUL33(det, minor1);
+    out->_[4] = MUL33(det, minor4);
+    out->_[5] = -MUL33(det, minor7);
+
+    out->_[6] = MUL33(det, minor2);
+    out->_[7] = -MUL33(det, TRUNC12(CROSS64(src->_[0], src->_[7], src->_[6], src->_[1])));
+    out->_[8] = MUL33(det, TRUNC12(CROSS64(src->_[0], src->_[4], src->_[3], src->_[1])));
+
+    // New translation: -(old translation) * (new 3x3 part), one column at a time.
+    out->_[9] = -TRUNC12((fx64) out->_[0] * src->_[9] + (fx64) out->_[3] * src->_[10] + (fx64) out->_[6] * src->_[11]);
+    out->_[10] = -TRUNC12((fx64) out->_[1] * src->_[9] + (fx64) out->_[4] * src->_[10] + (fx64) out->_[7] * src->_[11]);
+    out->_[11] = -TRUNC12((fx64) out->_[2] * src->_[9] + (fx64) out->_[5] * src->_[10] + (fx64) out->_[8] * src->_[11]);
+
+    if (out == &tmp) {
+        func_01ff95e0(&tmp, dst);
+    }
+    return 0;
+}
+
+#undef CROSS64
+#undef TRUNC12
+#undef ROUND12
+
 void func_01ff89c0(const MtxFx43 *a, const MtxFx43 *b, MtxFx43 *ab) {
     MtxFx43 tmp;
     MtxFx43 *p;
@@ -341,123 +462,3 @@ fx32 func_01ff9208(const VecFx32 *a, const VecFx32 *b) {
     return (REG_SQRT_RESULT + 1) >> 1;
 }
 
-#pragma thumb on
-asm void func_01ff85dc(MtxFx43 *m, fx32 sin, fx32 cos) {
-    str r1, [r0, #0x14]
-    neg r1, r1
-    str r1, [r0, #0x1c]
-    mov r1, #1
-    lsl r1, r1, #12
-    stmia r0!, {r1}
-    mov r3, #0
-    mov r1, #0
-    stmia r0!, {r1, r3}
-    stmia r0!, {r1, r2}
-    str r1, [r0, #4]
-    add r0, #0xc
-    stmia r0!, {r2, r3}
-    stmia r0!, {r1, r3}
-    bx lr
-}
-asm void func_01ff85fc(MtxFx43 *m, fx32 sin, fx32 cos) {
-    str r1, [r0, #0x18]
-    mov r3, #0
-    stmia r0!, {r2, r3}
-    neg r1, r1
-    stmia r0!, {r1, r3}
-    mov r1, #1
-    lsl r1, r1, #12
-    stmia r0!, {r1, r3}
-    add r0, #4
-    mov r1, #0
-    stmia r0!, {r1, r2, r3}
-    stmia r0!, {r1, r3}
-    bx lr
-}
-asm void func_01ff8618(MtxFx43 *m, fx32 sin, fx32 cos) {
-    stmia r0!, {r2}
-    mov r3, #0
-    stmia r0!, {r1, r3}
-    neg r1, r1
-    stmia r0!, {r1, r2, r3}
-    mov r1, #0
-    mov r2, #0
-    mov r3, #1
-    lsl r3, r3, #12
-    stmia r0!, {r1, r2, r3}
-    mov r3, #0
-    stmia r0!, {r1, r2, r3}
-    bx lr
-}
-#pragma thumb off
-
-// a*d - b*c on fx32 inputs, kept as a 64-bit product sum (no shift yet).
-#define CROSS64(a, d, b, c) ((fx64) (a) * (d) - (fx64) (b) * (c))
-// Back from a 64-bit product sum to fx32: truncated, or rounded to the nearest 1/4096.
-#define TRUNC12(x) ((fx32) ((x) >> 12))
-#define ROUND12(x) ((fx32) (((x) + (fx64) 0x800) >> 12))
-
-// MTX_Inverse43: inverts the 3x3 part through its 2x2 minors and the determinant, then sets the translation row to
-// minus the old translation times the new 3x3 part. Elements are numbered row by row (0-8 the 3x3 part, 9-11 the
-// translation). Returns -1 and leaves dst alone when the determinant is zero, 0 otherwise. src may equal dst; the
-// result then goes through a stack copy.
-int func_01ff8634(const MtxFx43 *src, MtxFx43 *dst) {
-    MtxFx43 tmp;
-    MtxFx43 *out;
-    fx32 det;                  // the determinant, later its reciprocal
-    fx32 minor0, minor1, minor2;
-    fx32 minor3, minor6, minor4, minor7;   // named after the element each one ends up in (transposed)
-
-    if (src == dst) {
-        out = &tmp;
-    } else {
-        out = dst;
-    }
-
-    // Minors of the first row (rounded), then the determinant by expansion along that row.
-    minor0 = ROUND12(CROSS64(src->_[4], src->_[8], src->_[5], src->_[7]));
-    minor1 = ROUND12(CROSS64(src->_[3], src->_[8], src->_[5], src->_[6]));
-    minor2 = ROUND12(CROSS64(src->_[3], src->_[7], src->_[4], src->_[6]));
-
-    det = ROUND12(CROSS64(src->_[0], minor0, src->_[1], minor1) + (fx64) src->_[2] * minor2);
-
-    if (det == 0) {
-        return -1;
-    }
-
-    // Start 1/det on the divider and fill the wait with four more minors (truncated).
-    FX_InvAsync(det);
-
-    minor3 = TRUNC12(CROSS64(src->_[1], src->_[8], src->_[7], src->_[2]));
-    minor6 = TRUNC12(CROSS64(src->_[1], src->_[5], src->_[4], src->_[2]));
-    minor4 = TRUNC12(CROSS64(src->_[0], src->_[8], src->_[6], src->_[2]));
-    minor7 = TRUNC12(CROSS64(src->_[0], src->_[5], src->_[3], src->_[2]));
-
-    // Adjugate times 1/det, with the checkerboard signs; the last two minors are formed in place.
-    det = FX_GetDivResult();
-    out->_[0] = MUL33(det, minor0);
-    out->_[1] = -MUL33(det, minor3);
-    out->_[2] = MUL33(det, minor6);
-
-    out->_[3] = -MUL33(det, minor1);
-    out->_[4] = MUL33(det, minor4);
-    out->_[5] = -MUL33(det, minor7);
-
-    out->_[6] = MUL33(det, minor2);
-    out->_[7] = -MUL33(det, TRUNC12(CROSS64(src->_[0], src->_[7], src->_[6], src->_[1])));
-    out->_[8] = MUL33(det, TRUNC12(CROSS64(src->_[0], src->_[4], src->_[3], src->_[1])));
-
-    // New translation: -(old translation) * (new 3x3 part), one column at a time.
-    out->_[9] = -TRUNC12((fx64) out->_[0] * src->_[9] + (fx64) out->_[3] * src->_[10] + (fx64) out->_[6] * src->_[11]);
-    out->_[10] = -TRUNC12((fx64) out->_[1] * src->_[9] + (fx64) out->_[4] * src->_[10] + (fx64) out->_[7] * src->_[11]);
-    out->_[11] = -TRUNC12((fx64) out->_[2] * src->_[9] + (fx64) out->_[5] * src->_[10] + (fx64) out->_[8] * src->_[11]);
-
-    if (out == &tmp) {
-        func_01ff95e0(&tmp, dst);
-    }
-    return 0;
-}
-
-#undef CROSS64
-#undef TRUNC12
-#undef ROUND12

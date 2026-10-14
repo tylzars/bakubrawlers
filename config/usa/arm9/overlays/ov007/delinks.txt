@@ -210,9 +210,12 @@ src/07_Battle/Battle/BattleUnionAbility.cpp:
 src/07_Battle/Battle/BattleStatusPanels.cpp:
     .text       start:0x02234ce8 end:0x02236494
 
-// provisional: code only; .data 0x02287ad0-0x022881e8 and .rodata ~0x02279aa8-0x02279bd0 belong here.
 src/07_Battle/Battle/BattleCommand.cpp:
+    complete
     .text       start:0x02236494 end:0x0223cfe8
+    .rodata     start:0x02279aa8 end:0x02279d3c
+    .data       start:0x02287ac8 end:0x022881e0
+    .bss        start:0x0228b844 end:0x0228b880
 
 src/07_Battle/Battle/BattleData.cpp:
     .text       start:0x0223cfe8 end:0x0223e238

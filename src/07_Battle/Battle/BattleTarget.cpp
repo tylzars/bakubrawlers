@@ -72,7 +72,6 @@ extern "C" void func_ov007_02248688(BattleCommandMap *map, VecFx32 *v);
 extern "C" void func_0203d45c(UnkStruct_0203d374 *pose);
 BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
 extern const u32 data_ov007_0227a680[];
-extern const u8 data_ov007_0227a5dc[];
 extern const u8 data_ov007_0227a74c[];
 
 static inline void SetVec(VecFx32 *v, fx32 x, fx32 y, fx32 z) {
@@ -336,7 +335,6 @@ BattleTarget::~BattleTarget() {
     SpriteManager::Get().func_0202740c();
 }
 
-// non-matching: 38 words, all in case 6 (the inline MATH_Rand32 block, +0x768-+0x80c) plus the saved-register list: the original keeps the rand context in r7, the 0x0227a5dc table in r5 and uses r8/r9 for the 64-bit products (push {r4-r9, lr}); here r0/r1 and r5/r6 are used (push {r4-r7, lr}). Everything else matches.
 void BattleTarget::Update() {
     data_020d433c.mUnk_14 &= 8;
     if (data_020d433c.mUnk_14 == 0) {
@@ -475,18 +473,16 @@ void BattleTarget::Update() {
                 break;
             }
             case 6: {
+                u8 pick;
                 u32 n   = mUnk_34 + 1;
                 mUnk_34 = n;
                 if (n % 3 == 0) {
                     SoundManager::Get().func_020246f8(0x59);
                 }
                 if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0x15)) {
-                    u8 pick = MATH_Rand32(&data_020d42e8, 3);
-                    u8 values[3];
-                    values[0]            = data_ov007_0227a5dc[0];
-                    values[1]            = data_ov007_0227a5dc[1];
-                    values[2]            = data_ov007_0227a5dc[2];
                     BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
+                    u8 values[3]         = {1, 2, 4};
+                    pick                 = MATH_Rand32(&data_020d42e8, 3);
                     mAnims[4]->SetAnimation(pick + 3);
                     mAnims[5]->SetAnimation(1);
                     record->mUnk_09 = values[pick];

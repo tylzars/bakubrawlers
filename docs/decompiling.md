@@ -160,6 +160,9 @@ Other findings from linking:
 - **A pointer kept only part of the way is a second `Get()`.** When the original holds a SpriteScreen (or other
   singleton part) in a register through some loops and then reloads it from the pool, the later uses come from a fresh
   `SpriteManager::Get().Screen(n)` (FieldSelectScene::func_ov001_0221fa94: 1082 differing words to 0).
+- **A local array filled from a one-use rodata table is an aggregate initializer.** `u8 buf[3] = {0, 1, 4};` makes
+  mwcc emit an anonymous rodata object (often first in the unit's .rodata) and changes which temporary is created
+  first; copying `buf[i] = data_xxx[i]` element by element does not match (TitleScene::Update, BattleTarget::Update).
 - **Enum-typed locals are not constant-propagated.** A known constant the original keeps in a register and computes
   with (`mov r2, #0; mov r1, #52; smulbb r4, r2, r1` for `array[0]`, then `this + r4` re-added at every access) comes
   from an enum local: `UnkStruct_02065c40_Kind j = UNK_02065C40_KIND_0;` matched func_0206d3b8 where `s16`/`int`

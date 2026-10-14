@@ -155,6 +155,19 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **How mwcc picks callee-saved registers (lab results, `int`-sized values live across calls).**
+  - Named locals loaded from memory (or assigned later) are coloured in declaration order: the first declared gets
+    the lowest free register.
+  - Values that come from a call (`int a = g();`, or `a = g();`) and loop invariants the compiler hoists are
+    coloured as compiler temporaries: before the named locals, in reverse order of creation (the first hoisted
+    invariant or the first call result gets the highest of them).
+  - Use counts make no difference; the shape of the live ranges does (where a value is last used).
+  - Types and casts matter in combination with order: TournamentScene::Update matched only with `u32 id = (u8) x`
+    (not `u8 id`) *and* a particular declaration order. Search order and type together:
+    `tools/permute.py` takes `//PERM T=u8|u32|int`, and `tools/auto_permute.py <unit>` tries every order of each
+    run of declarations in every non-matching function of a unit (before 2026-10-13 permute.py could not report a
+    match at all, so older "every order tried" notes may be wrong).
+
 - **Const-ness of extern tables changes scheduling.** Loads from `const` data may move above stores, loads from
   non-const data may not: `extern const int data_0209e424[]` (AHX bit reader) and `extern const u16
   data_0208f73c[][3]` (GX_BeginLoadTex) each turned a near-miss into a match. Read-only tables should be declared const.

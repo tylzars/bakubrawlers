@@ -34,7 +34,7 @@ extern "C" void func_ov007_022482a8(BattleCommandMap *map);
 extern "C" void func_ov007_02247e00(BattleCommandMap *map);
 extern "C" void func_ov007_02247a08(BattleCommandMap *map, u32 a);
 
-extern const u8 data_ov007_0227a33c[];
+extern const BattleObjPair data_ov007_0227a33c[];
 extern const u8 data_ov007_0227a33d[];
 
 class BattleObj00 : public SceneBase {
@@ -105,7 +105,7 @@ BattleObj00::BattleObj00(u8 flag)
     } else {
         mUnk_3c = 1;
     }
-    mUnk_34 = data_ov007_0227a33c[v * 2];
+    mUnk_34 = data_ov007_0227a33c[v].mRow;
     u8 b    = data_ov007_0227a33d[v * 2];
     mUnk_35 = b;
     BattlePlayerList *l = data_020d433c.mBattlePlayers;
@@ -132,7 +132,6 @@ BattleObj00::~BattleObj00() {
     SpriteManager::Get().func_0202740c();
 }
 
-// non-matching: 11 instructions, register assignment only: in the case 19 loop the original keeps the 0x0227a33c table in r7 and the WirelessManager vtable address in r11 (here r11 / r7).
 void BattleObj00::Update() {
     switch (mUnk_32) {
         case 0: {
@@ -416,19 +415,17 @@ void BattleObj00::Update() {
                 u8 i = 0; 
                 BattlePlayer *p; 
                 u8 kind; 
-                const BattleObjPair *pairs = (const BattleObjPair *) data_ov007_0227a33c; 
                 do {
                     p = data_020d433c.mBattlePlayers->mPlayers[i];
                     kind         = p->mUnk_f1;
                     if (p->mUnk_f8 != 0) {
                         if (p->IsActive() || data_020d433c.mUnk_9a_3) {
-                            func_ov007_02262638(data_020d433c.mBattlePlayers, pairs[kind].mRow, pairs[kind].mCol, i, func_ov007_0226a5e8(p));
+                            func_ov007_02262638(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mRow, data_ov007_0227a33c[kind].mCol, i, func_ov007_0226a5e8(p));
                         } else {
-                            WirelessManager::Get();
-                            if (IsWirelessMode(&data_020c4258)) {
-                                func_ov007_02262638(data_020d433c.mBattlePlayers, pairs[kind].mRow, pairs[kind].mCol, i, (u8) *(u32 *) ((u8 *) data_020d433c.mBattlePlayers->mPlayers[i] + 0x104));
+                            if (IsWirelessMode((const u8 *) &WirelessManager::Get().mUnk_1228)) {
+                                func_ov007_02262638(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mRow, data_ov007_0227a33c[kind].mCol, i, (u8) *(u32 *) ((u8 *) data_020d433c.mBattlePlayers->mPlayers[i] + 0x104));
                             } else {
-                                func_ov007_02262638(data_020d433c.mBattlePlayers, pairs[kind].mRow, pairs[kind].mCol, i, mUnk_39);
+                                func_ov007_02262638(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mRow, data_ov007_0227a33c[kind].mCol, i, mUnk_39);
                             }
                         }
                     }

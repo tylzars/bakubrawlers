@@ -300,7 +300,6 @@ void BattleOrderSelect::func_ov007_0224ba0c() {
     G2S_BlendNone();
 }
 
-// non-matching: register allocation only: the original keeps `this` in r10 and the loop counter/constants in r4-r9; same instruction sequence otherwise (29 words differ)
 void BattleOrderSelect::func_ov007_0224bbf8() {
     ChangeDir("/Game/Battle/Bg/");
     func_02025b64(0, 1, 0, "select_order_u_bg_00_ncl.bin", 0, 0, 0);
@@ -332,7 +331,7 @@ void BattleOrderSelect::func_ov007_0224bbf8() {
     mA[0].mAnim->SetAnimation(7);
     mA[1].mAnim->SetAnimation(0);
     ChangeDir("/Game/Battle/Obj/");
-    SpriteScreen &screen1 = SpriteManager::Get().mScreens[1];
+    SpriteScreen &screen1 = SpriteManager::Get().Screen(1);
     screen0.LoadCharacters("select_order_b_obj_00.nce_ncg1D.bin", 0, 0);
     screen0.LoadPalette("select_order_b_obj_00_ncl.bin", 0, 0);
     screen1.LoadCharacters("select_order_b_obj_00.nce_ncg1D.bin", 0, 0);
@@ -347,9 +346,8 @@ void BattleOrderSelect::func_ov007_0224bbf8() {
         mC[a].mX               = 0x84 - mCount * 0x20 + i * 0x40;
         mC[a].mY               = 0x60;
         mC[a].mUnk_08          = 0;
-        u32 n                  = i + 4;
-        mC[a].mAnim->SetAnimation(n);
-        u32 b                  = n & 0xff;
+        mC[a].mAnim->SetAnimation(i + 4);
+        u8 b = i + 4;
         mC[b].mAnim            = new CellAnimation("select_order_b_obj_00_nce.bin", 0, 1, 1);
         mC[b].mAnim->mCharBase = screen1.func_020276f4(0);
         mC[b].mAnim->mUnk_11   = 0;
@@ -480,7 +478,6 @@ BOOL BattleOrderSelect::func_ov007_0224c720() {
     return 1;
 }
 
-// non-matching: register allocation only: the original uses r5 for `this` and r4 for the item pointer, r6 for this+i and r7 for &data_020d433c (mine r4/r5/r5/r6); same instruction sequence (50 words differ)
 void BattleOrderSelect::func_ov007_0224c810() {
     u8 i = 0;
     do {
@@ -489,7 +486,7 @@ void BattleOrderSelect::func_ov007_0224c810() {
         mC[i & 0xff].mAnim->Update();
         mC[i & 0xff].mAnim->Draw(0, mC[i & 0xff].mX, (s16) (mC[i & 0xff].mY + mUnk_c4[i]), mC[i & 0xff].mUnk_08);
         if (mUnk_c0[i] >= 0) {
-            u8 slot = mUnk_bc[mUnk_c0[i]];
+            u32 slot = mUnk_bc[mUnk_c0[i]];
             if (mUnk_c8[i] != 0) {
                 mUnk_c8[i]--;
             } else {

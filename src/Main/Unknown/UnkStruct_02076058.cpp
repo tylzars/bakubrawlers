@@ -268,8 +268,6 @@ extern const u8 data_020a308c[][2];
 extern const WindowItemRecord data_020a30a4[];
 extern const WindowCellRecord data_020a30c0[];
 
-// non-matching: 53 words, register allocation only (same size). The original keeps SpriteScreen in r6, the loop counter in r7
-// and the case 3-5 animation pointer in r8; ours uses r7, r8 and r6.
 void UnkStruct_02076058::func_02076b34() {
     ChangeDir("/Game/Battle/Bg/");
     func_02025b64(1, 1, 0, "result_b_bg_00_ncl.bin", 0, 0, 0);
@@ -321,10 +319,9 @@ void UnkStruct_02076058::func_02076b34() {
                 mUnk_14[i]->mUnk_0f = 0;
                 UnkStruct_02023248 *entry = mUnk_54[i % 3];
                 if (entry != NULL) {
-                    CellAnimation *anim = mUnk_14[i];
                     int gauge = entry->mPad;
-                    u16 rest = gauge - gauge / 300 * 300;
-                    anim->mUnk_0f = (u8) ((float) (rest * (anim->mFrames[anim->mUnk_0e].mUnk_10 - 1)) / 300.0f);
+                    u16 rest = gauge % 300;
+                    mUnk_14[i]->mUnk_0f = (u8) ((float) (rest * (mUnk_14[i]->mFrames[mUnk_14[i]->mUnk_0e].mUnk_10 - 1)) / 300.0f);
                 }
                 break;
             }

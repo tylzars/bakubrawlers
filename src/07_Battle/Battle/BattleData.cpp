@@ -193,7 +193,9 @@ void BattleData::func_ov007_0223d504() {
     mUnk_6c->func_02065be4(0xd8);
 }
 
-// non-matching: register assignment only (original: x r5, y r4, px r7, top r6, left r8; compiled: x r8, y r7, px r6, top r4, left r5).
+// non-matching: 29 words, register assignment only (original: y r4, x r5, top r6, px r7, left r8, list r6, ix r8, iy r5;
+// compiled: x r4, left r5, top r6, px r7, y r8, list r5, ix r7, iy r5) and the original computing ix before iy. The
+// `frame` local gives the loop's `mov r2, #0; movcs r2, #1` (passing `k >= mUnk_08[side]` gives movcs/movcc).
 void BattleData::func_ov007_0223db20(u8 side, s16 x, s16 y) {
     int offset;
     int left;
@@ -223,7 +225,11 @@ void BattleData::func_ov007_0223db20(u8 side, s16 x, s16 y) {
     u8 k = 0;
     s16 ix = x + (side == 0 ? 0x22 : 0x18);
     do {
-        mUnk_34[10]->func_0202a3ec(1, k >= mUnk_08[side], ix, iy, 3);
+        u8 frame = 0;
+        if (k >= mUnk_08[side]) {
+            frame = 1;
+        }
+        mUnk_34[10]->func_0202a3ec(1, frame, ix, iy, 3);
         ix = ix + (side == 0 ? 6 : -6);
         k++;
     } while (k < mUnk_0a);
@@ -269,7 +275,10 @@ BOOL BattleData::func_ov007_0223ddac(u8 side) {
     return done;
 }
 
-// non-matching: 15 words, register assignment and the prologue order.
+// non-matching: 15 words. The original stores r1-r3 before `mov sl, r0` and reloads x/y after the `str r9, [sp]` of
+// each Draw (as if they were memory, not spill slots); x + 0x2f is r7 and py r4, with py's narrowing after x + 0x2f
+// (the later temporary). A px statement before the call with py inline, int/s16 py, py declared first, s16 params:
+// no better.
 void BattleData::func_ov007_0223de88(u8 side, int x, int y, u32 flag, u32 value) {
     if (value == 0xffff) {
         value = mEntries[side].mUnk_00;
@@ -295,6 +304,10 @@ void BattleData::func_ov007_0223de88(u8 side, int x, int y, u32 flag, u32 value)
     mUnk_34[side]->Draw(1, x, y, flag);
 }
 
+// non-matching: 16 words in the scheduling stretch at +0x9c..+0x10c and the swapped spill slots of x + 0x30 and
+// (s16) delta. Spill slots follow creation order: the original creates x + 0x30 (hoisted) before the narrowed delta,
+// so the narrowing is not the one shared with the shift's smulbb. Shift with `(s16) (u16) delta` (not shared) plus an
+// `int px = x + 0x30;` created at the top of the loop body gives the original's slots (other words then differ).
 void BattleData::func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u32 flag, u32 mode, u16 a, u16 b) {
     int delta;
     int shift;

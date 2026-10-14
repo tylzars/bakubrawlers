@@ -288,8 +288,11 @@ BOOL BattleCardModel::func_ov007_0227292c() {
     return FALSE;
 }
 
-// non-matching: 0x22c vs 0x240; the original recomputes mParts + i * 0x28 for each of its three reads (separate mla with
-// three constant registers) where mwcc shares one product.
+// non-matching: 0x22c vs 0x240; the original loads mParts and computes mParts + i * 0x28 (one mla each, with three
+// registers holding 0x28) for each of its three reads, where mwcc shares the load and the product. Part(i) (which
+// matches func_ov007_02273718) still shares both here. An accessor with an enum-typed local stride gives the three mla
+// but shares the load (0x23c); separate loads only came from reading mParts through a different type in one of the
+// two kind reads (size matches, 19 words: registers of the strides and the 0/1 constants).
 void BattleCardModel::func_ov007_022734d8() {
     char name[0x80];
     char bone[0x11];
@@ -321,14 +324,12 @@ void BattleCardModel::func_ov007_022734d8() {
     mUnk_28 = new UnkStruct_02029ca8(data_ov007_0227c3f0);
 }
 
-// non-matching: 0xc4 vs 0xc8; the original adds the base to i * 0x28 once per field read (kind bit, script) where mwcc
-// shares one address.
 void BattleCardModel::func_ov007_02273718() {
     if (mCount) {
         u8 i = 0;
         do {
             if (mUnk_93 == 0) {
-                s32 frame = mParts[i].mFrame;
+                s32 frame = Part(i)->mFrame;
                 if (frame == 0) {
                     frame = 0x1000;
                 }
@@ -336,9 +337,11 @@ void BattleCardModel::func_ov007_02273718() {
                     if (mHandles[i]) {
                         func_0202beb8(mEffects, mHandles[i]);
                     }
-    u32 group = 1;
- if (!mParts[i].mUnk_17_0) group = 0;
- mHandles[i] = func_0202bd40(mEffects, group, mParts[i].mScript, 0, 0);
+                    u32 group = 1;
+                    if (!Part(i)->mUnk_17_0) {
+                        group = 0;
+                    }
+                    mHandles[i] = func_0202bd40(mEffects, group, Part(i)->mScript, 0, 0);
                 }
             }
             i++;

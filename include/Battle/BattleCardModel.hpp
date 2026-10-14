@@ -87,6 +87,13 @@ public:
     void func_ov007_02273be8();
     void func_ov007_02273ec0();
     void func_ov007_02274238();
+
+    // Part `index` of the card's table.
+    BattleCardModelPart *Part(u8 index) {
+        BattleCardModelPart *part = mParts;
+        part += index;
+        return part;
+    }
 };
 
 void func_ov007_02273e3c(BattleCardModel *model); // releases the model

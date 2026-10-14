@@ -729,9 +729,11 @@ src/Main/Graphics/CellAnimFile.cpp:
     .text       start:0x0202a594 end:0x0202ab24
     .bss        start:0x0220f10c end:0x0220f110
 
-// provisional: code only; .data 0x020a56a4-0x020a56f0 and .bss 0x0220f110-0x0220f114 belong here.
 src/Main/Graphics/EffectManager.cpp:
+    complete
     .text       start:0x0202ab24 end:0x0202c02c
+    .data       start:0x020a56a4 end:0x020a56f0
+    .bss        start:0x0220f110 end:0x0220f114
 
 // provisional: code only; Print and PrintNumber are near-misses.
 src/Main/Text/TextManager.cpp:

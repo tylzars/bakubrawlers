@@ -2,6 +2,8 @@
 #   place <stub>.o <function> <unit>.o
 #   alias <symbol> <base> <offset>
 #   inner <symbol> <size>
+# Aliases are absolute symbols: a bl to one gets an 8-byte linker veneer, so call targets need their real
+# name in the defining source instead.
 
 # GameData's globals: other units still name some of their fields by address.
 inner data_020d433c 0xb4

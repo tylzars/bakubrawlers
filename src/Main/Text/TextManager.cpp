@@ -79,10 +79,11 @@ u16 TextManager::func_0202c1a8(u32 index) {
     return 0;
 }
 
-// non-matching: 53 words. In the prologue the original copies width, height, unk12, unk13 and unk10 to the stack
-// before it stores maxX = 0 and tests unk14; ours copies unk12 and unk13 in the later group. pixelWidth and
-// pixelHeight have swapped spill slots. `volatile` on x and y is a placeholder: it is the only form found that keeps
-// the `x = startX` store ahead of the `y` load.
+// non-matching: 47 words, entry block only. The original copies width, height, unk12, unk13 and unk10 to the stack
+// before it stores maxX = 0 and tests unk14; ours copies unk12, unk13 and unk10 in the later group. The original
+// sets unk17 = 0 by reloading maxX's slot (`ldrne r0, [sp, #92]`), so maxX = 0 comes first there, but every order
+// tried that puts it before the unk14 test shares the zero in a register and is 3 words shorter. `volatile` on x and
+// y is a placeholder: it is the only form found that keeps the `x = startX` store ahead of the `y` load.
 void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u32 height, s16 *outWidth,
                         s16 *outHeight, u16 *outPixelWidth, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13,
                         u32 unk14, u32 unk15, u32 unk16, u32 unk17) {
@@ -494,13 +495,8 @@ s32 TextManager::func_0202d1bc(u32 code) {
     return -1;
 }
 
-// non-matching: 50 words, registers only. The instruction stream and stack slots match the original under the
-// renaming col r8->r4, row r4->r5, mask r5->r6, unitB r6->r8 (original: col r4, row r5, mask r6, unitA r7, unitB r8).
-// The shadow `if (mUnk_59)` block inside the pixel test is what moves col to the top of the group; declaration order,
-// types and the startCol forms tried do not change it. (`((row + 1) / 8) * (width / 8)` with the operands swapped
-// also fixes the two shadow/main `mul` words, but that is probably an allocation artifact, so it is not used here.)
-void TextManager::func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color, s32 layout, s16 x, s16 y, u32 width,
-                                u32 height) {
+void TextManager::func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color, s32 layout, s16 x, s16 y, u16 width,
+                                u16 height) {
     if ((x < 0) | (x >= (s32) width)) {
         return;
     }
@@ -523,7 +519,7 @@ void TextManager::func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color
             if (mUnk_59 != 0) {
                 u32 pos;
                 if (layout == 0) {
-                    pos = ((width / 8) * ((row + 1) / 8) + col / 8) * 0x40 + ((row + 1) % 8) * 8 + col % 8;
+                    pos = (((row + 1) / 8) * (width / 8) + col / 8) * 0x40 + ((row + 1) % 8) * 8 + col % 8;
                 } else {
                     s32 qy = row + 1;
                     s32 qx = col;
@@ -552,7 +548,7 @@ void TextManager::func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color
             }
             u32 pos;
             if (layout == 0) {
-                pos = ((width / 8) * (row / 8) + col / 8) * 0x40 + (row % 8) * 8 + col % 8;
+                pos = ((row / 8) * (width / 8) + col / 8) * 0x40 + (row % 8) * 8 + col % 8;
             } else {
                 s32 qy = row;
                 s32 qx = col;

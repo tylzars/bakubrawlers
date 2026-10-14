@@ -135,5 +135,5 @@ public:
     void func_0202ceac(u32 glyph, void *buffer, u32 eightBit, s32 layout, s16 x, s16 y, u16 width, u16 height);
     u8 func_0202d19c(u32 glyph);
     s32 func_0202d1bc(u32 code);
-    void func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color, s32 layout, s16 x, s16 y, u32 width, u32 height);
+    void func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color, s32 layout, s16 x, s16 y, u16 width, u16 height);
 };

@@ -708,8 +708,6 @@ void BattleCommandPage::func_02056f70() {
     SpriteManager::Get().mScreens[0].func_02027778(data_0209e558, 1, 0x14, 0x65, 3, 0xe0, 0, 0);
 }
 
-// non-matching: 18 words, registers only: y/cnt/left are r7/r8/r6 where the original has r6/r7/r8, and a + d is
-// computed after c + b instead of before; declaration order (function, loop and block scope) does not change it.
 u8 func_02065bf4(u32 id, u32 index);
 extern u8 data_020d43d7[];
 
@@ -776,9 +774,10 @@ void BattleCommandPage::func_020571a8() {
         if (n != 0) {
             u8 cnt;
             s32 half;
-            u8 i;
+            u32 i;
             u32 v;
-            u32 left;
+            s32 left;
+            s32 ty;
             v = n;
             cnt = 3;
             if (n < 10) {
@@ -787,14 +786,16 @@ void BattleCommandPage::func_020571a8() {
             }
             v *= 10;
             half = (3 - cnt) * 4 / 2;
+            ty = a;
+            ty += d;
             left = c;
             left += b;
             i    = 0;
             do {
                 mCells[2]->func_0202a3ec(0, (s32) v % 10, y + (3 - i) * 7, 0xb0, 0);
-                mCells[5]->func_0202a3ec(0, (s32) v % 10, left + (cnt - i) * 4 + half, a + d, 0);
+                mCells[5]->func_0202a3ec(0, (s32) v % 10, left + (cnt - i) * 4 + half, ty, 0);
                 v /= 10;
-                i++;
+                i = (u8) (i + 1);
             } while (i < cnt);
         }
         u8 idx = 3;

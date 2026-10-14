@@ -787,7 +787,12 @@ void BattleResult::func_ov007_0224f8f4() {
 }
 
 // non-matching: 5 words: for the third Draw the original computes (s16) (base + 0x25) through r0 (`add r0, r7, #37; lsl r0;
-// asr r3, r0`) after the `str #1, [sp]`; ours builds it in r3 and schedules the add before the store
+// asr r3, r0`) after the `str #1, [sp]`; ours builds it in r3 and schedules the add before the store.
+// When y's operand is the last use of `top` the whole add/lsl/asr chain goes ahead of `mov #1; str`; with `base` the add
+// lands between `mov #1` and `str`. Neither inline wrappers, twice-assigned or compound locals, an assignment in the
+// argument, an enum zero, unsigned base/top nor `u32 i` with `i = (u8) (i + 1)` give the original order. In matched
+// code (TutorialScene::DrawList, func_02088cd8) that order only occurs at the start of a basic block; here the call
+// follows the second Draw's bl in the same block.
 void BattleResult::func_ov007_0224f9a0() {
     mMessage->func_020658d0();
     mAnimsB[3]->Draw(0, 0x80, 0x60, 0);

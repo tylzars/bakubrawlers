@@ -371,6 +371,9 @@ void BattleConfrontCard::func_ov007_0223f90c(u16 value) {
 }
 
 // non-matching: 7 words in case 29's loop head; the original keeps mBattlePlayers and the slot pointer in r1 and j*4 in r2 (`ldr r1,[r5]; lsl r2,r8,#2; ...; add r1,r0,#108; ...; ldrh r2,[r1,r2]`), here the two swap.
+// With -proc generic ours has mBattlePlayers in r1 and j*4 in r0; the swap appears once the scheduler hoists the lsl to the
+// loop head. Unchanged across slot/player/list locals, CurrentPlayer(), flag/id read order and types, `slots += j`,
+// j/bit/count as u32 with (u8) increments, the callee's parameter types, and the function-scope j or k for the counters.
 BOOL BattleConfrontCard::func_ov007_0223f918() {
     u8 j;
     u8 k;

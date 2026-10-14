@@ -252,6 +252,10 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **A dead product still shapes the code.** GimmickUnk_02274830::Update copies a vector whole and scales all three
+  components (`v.y = FX_Mul(v.y, 0x2000);`) before overwriting y; dropping the dead product changes registers and
+  order (BattleUnk29c and GimmickExePoint do the same).
+
 - **A guarded allocation that calls a constructor returning `this` is `new T`** (Mobiclip's Player: operator new,
   operator delete, constructor and destructor are members); the new-expression's result is a temporary, which fixed a
   register swap.

@@ -201,7 +201,6 @@ BattleResult::~BattleResult() {
     } while (i < 3);
 }
 
-// non-matching: register allocation only (about 50 words): case 1 (winner loop: original has count/team in r6/r7, loop counter r0, list r3), case 3 (r1/r2 swapped for the data_020d43e5 base/index) and case 4 (locals shifted by one register)
 void BattleResult::Update() {
     if (data_020d433c.mUnk_a8) {
         WirelessManager::Get();
@@ -217,16 +216,17 @@ void BattleResult::Update() {
         case 1: {
             u8 best = 0;
             u8 count = data_020d433c.mUnk_99;
-            u8 team = data_020d433c.mUnk_98;
-            BattlePlayerList *list = data_020d433c.mBattlePlayers;
             u8 i = 0;
+            u32 v;
+            u32 limit;
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
             do {
                 BattlePlayer *player = list->mPlayers[i];
-                u32 limit = count;
-                u32 v = player->mUnk_ee;
-                if (team != 0) {
-                    limit = 3;
+                limit = count;
+                v = player->mUnk_ee;
+                if (data_020d433c.mUnk_98 != 0) {
                     v = (u8) (v + list->mPlayers[player->mUnk_f2]->mUnk_ee);
+                    limit = 3;
                 }
                 if (v >= limit) {
                     best = i;
@@ -260,12 +260,12 @@ void BattleResult::Update() {
             }
             mContext->mUnk_12 = 0;
             if (data_020d43e5[best] < 99) {
-                data_020d43e5[best]++;
+                data_020d43e5[best] = data_020d43e5[best] + 1;
             }
             if (me != partner) {
                 u8 other = data_020d433c.mBattlePlayers->mPlayers[best]->mUnk_f2;
                 if (data_020d43e5[other] < 99) {
-                    data_020d43e5[other]++;
+                    data_020d43e5[other] = data_020d43e5[other] + 1;
                 }
             }
             mUnk_b1++;
@@ -297,17 +297,17 @@ void BattleResult::Update() {
             }
             break;
         case 4: {
+            u8 k;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            u8 count = data_020d433c.mUnk_99;
             u8 me = list->mUnk_2a9;
             u8 numPlayers = data_020d433c.mPlayerCount;
             BattlePlayer *player = list->mPlayers[me];
             u8 own = player->mUnk_ee;
             u8 partner = player->mUnk_f2;
-            if (own >= count) {
+            if (own >= data_020d433c.mUnk_99) {
                 mUnk_b3 = 1;
             } else if (data_020d433c.mUnk_98 != 0) {
-                if ((u8) (own + list->mPlayers[partner]->mUnk_ee) >= count) {
+                if ((u8) (own + list->mPlayers[partner]->mUnk_ee) >= data_020d433c.mUnk_99) {
                     mUnk_b3 = 1;
                 }
             }
@@ -315,8 +315,7 @@ void BattleResult::Update() {
                 if (data_020d43f0[0].mUnk_48 < 9999) {
                     data_020d43f0[0].mUnk_48++;
                 }
-                u8 team = data_020d433c.mUnk_98;
-                if (team != 0) {
+                if (data_020d433c.mUnk_98 != 0) {
                     if (data_020d43f0[0].mUnk_82 < 999) {
                         data_020d43f0[0].mUnk_82++;
                     }
@@ -329,20 +328,19 @@ void BattleResult::Update() {
                         data_020d43f0[0].mUnk_80++;
                     }
                 }
-                BattlePlayerList *list2 = data_020d433c.mBattlePlayers;
-                u8 k = 1;
+                k = 1;
                 do {
                     u8 idx = (me + k) % numPlayers;
-                    if (team == 0 || idx != partner) {
-                        u8 f6 = list2->mPlayers[idx]->mUnk_f6;
+                    if (data_020d433c.mUnk_98 == 0 || idx != partner) {
+                        u8 f6 = data_020d433c.mBattlePlayers->mPlayers[idx]->mUnk_f6;
                         if (data_020d43f0[0].mUnk_5e[f6] < 999) {
                             data_020d43f0[0].mUnk_5e[f6]++;
                         }
                     }
-                    k = (u8) (k + 1);
+                    k++;
                 } while (k < numPlayers);
-                if (list2->mUnk_288 != 0) {
-                    int rounds = (u16) ((list2->mUnk_288 - 1) / numPlayers + 1);
+                if (data_020d433c.mBattlePlayers->mUnk_288 != 0) {
+                    int rounds = (u16) ((data_020d433c.mBattlePlayers->mUnk_288 - 1) / numPlayers + 1);
                     if (rounds > 99) {
                         rounds = 99;
                     }

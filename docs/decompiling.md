@@ -287,7 +287,9 @@ Other findings from linking:
   depends on the loop variable's own type (casting its uses either way changes nothing). A sweep of 39 other
   near-misses (every u32/s32 local, counter and cast as long/unsigned long) helped none: in 32 the code didn't change
   at all, in 7 it got worse. cri_adx_vobj matched with an `unsigned long` counter too. So it is a rare fix for loop
-  counters, not a general one.
+  counters in game code. CRI code is different: `long` locals and parameters matched cri_adx_hdrparse (`long i` turns
+  a `mul` into the original's `smulbb`) and fixed cri_mpa_l2's stack frame and cri_wave_ch's temporaries, so try
+  `long` early there.
 - **A shared exit label.** GimmickFieldDestroy::func_ov007_0222b328's two early `return i;` became `goto found;` to one
   `found: return i;` after `return 0;`, which gives the original branch shape and table load order.
 

@@ -132,7 +132,7 @@ BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
 class BattleUnk0227532c {
 public:
     u8 mPad[0x1c];
-    BattleUnk0227532c(u32 a);
+    BattleUnk0227532c(u8 planes);
 };
 
 void func_ov007_022470e4(BattleCommandMap *map, u8 a, u8 b);
@@ -150,7 +150,7 @@ struct BattleCellInfo {
 
 BattleCellInfo *func_ov007_02262530(BattlePlayerList *list, u8 row, u8 col);
 
-void func_ov007_022471c8(BattleCommandMap *map, u32 a);
+extern "C" void func_ov007_022471c8(BattleCommandMap *map, u32 direction);
 
 BattleCommand::BattleCommand(u32 unk)
     : SceneBase(0x3e8, 0) {

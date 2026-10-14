@@ -157,6 +157,18 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **Const-ness of extern tables changes scheduling.** Loads from `const` data may move above stores, loads from
+  non-const data may not: `extern const int data_0209e424[]` (AHX bit reader) and `extern const u16
+  data_0208f73c[][3]` (GX_BeginLoadTex) each turned a near-miss into a match. Read-only tables should be declared const.
+- **Volatile fields and parameters.** A field or by-value parameter that is loaded again where mwcc would reuse or
+  hoist it is volatile in the original (`OS_GetTick`'s counter, the FS file flags, `func_0200aa24`'s FSFileID).
+- **A constant stored to a member and read back** stays a run-time computation (`mUnk_38 = 0x20;
+  mUnk_38 = (0x6c - mUnk_38) / 2 + 0x1e;` in MapScene::ShowNumbers); from a local it folds.
+- **Loops whose entry test sits inside the body** (the back edge jumps to a `count != 0` guard) are do-while loops with
+  the guard as an `if` inside; the gimmick overlap test also never resets its inner counter, which plain `for` loops
+  cannot express.
+- **`s16` locals colour differently from `s32` ones** in otherwise identical code (func_02088b30).
+
 - **Narrow reads of stack arguments.** Some callees read a stack-passed argument with `ldrb`/`ldrh` while every
   caller stores it as a full word, so a `u8`/`u16` parameter type breaks the callers (they add an `and`). Until the
   real source form is known, these read the parameter as `*(u8 *) &param` (CellAnimation, MessageWindow); treat

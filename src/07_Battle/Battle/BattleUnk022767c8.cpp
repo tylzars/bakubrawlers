@@ -174,7 +174,6 @@ BattleUnk022767c8::~BattleUnk022767c8() {
     FrameTask::Get().func_0203dd90();
 }
 
-// non-matching: 6 words, the flag clear in data_020d49a1 and the brightness argument order are scheduled differently
 void BattleUnk022767c8::Update() {
     u8 draw = 1;
     switch (mState) {
@@ -328,7 +327,8 @@ void BattleUnk022767c8::Update() {
             mUnk_a9 = 0;
         } else {
             mFade--;
-            G2S_SetBlendBrightness(0x1f, -((u32) mFade >> 2));
+            u8 level = mFade / 4;
+            G2S_SetBlendBrightness(0x1f, -level);
         }
     }
     if (draw) {

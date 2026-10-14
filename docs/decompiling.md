@@ -428,7 +428,13 @@ Other findings from linking:
   the lower register. The cast also stops reuse of an already loaded base: `*(u8 *)&data_020d43f0[0].mUnk_24 |= 1`
   gets its own pool word. Don't change the shared SetFlagBit/TestFlagBit helpers: existing matches depend on them.
 - **The register of a zero stack argument can depend on the calls before it** (a 7-call cycle with
-  `func_02025b64(1, 8, 0, ...)` in tests); the source difference behind it is still open (func_02072734).
+  `func_02025b64(1, 8, 0, ...)` in tests). func_02072734 matched by passing an enum-typed zero local
+  (`LoadArg z = LOAD_ARG_NONE;`) for the three zero arguments. The same trick fixes one call in
+  BattleUnk022767c8::func_ov007_02277514 but moves the reorder to calls 9 and 10, so that one is still open (2 words:
+  the string's `ldr r3` between the second and third zero stack stores).
+- **Narrowing changes scheduling, not just instructions.** `-(u8) (mFade / 4)` (or a `u8 level` local) and
+  `-((u32) mFade >> 2)` emit the same `and`/`lsr`/`rsb`, but the `u8` form schedules the `rsb` before the next
+  literal-pool load (BattleUnk022767c8::Update).
 - **More from the 90%-band passes.**
   - A register-form `and` with a pool-loaded mask comes from division plus u16 truncation:
     `u16 v = (x & 0x1fff) / 0x200;` (a shift pair would fold).

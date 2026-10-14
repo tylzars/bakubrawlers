@@ -340,29 +340,26 @@ void UnkStruct_02071d24::func_02072b14() {
     func_0205afb4(mUnk_18, mUnk_5e[mUnk_4e], value, mUnk_34[mUnk_4e]);
 }
 
-// non-matching: 1 word. The original computes the u16 end value before the func_0205b048 call and keeps it in r6 (extra mov
-// r2, r6 before func_020231c0); the compiler sinks the computation behind the call. Also the table pointer is loaded after the
-// shift in the original.
 void UnkStruct_02071d24::func_02072b60() {
     u16 total = 0;
     BattleCellPair *pair = mUnk_34[mUnk_4e];
-    u8 count = mUnk_64[mUnk_4e];
     u8 i = 0;
     do {
         total += data_020a2e3c[pair->mUnk_00_0 - i];
         i++;
-    } while (i < count);
+    } while (i < mUnk_64[mUnk_4e]);
     int current = func_0202317c(data_020d43f0, 0, mUnk_58[mUnk_4e], mUnk_5e[mUnk_4e]);
-    int base    = func_020231f4(data_020d43f0, 0, mUnk_58[mUnk_4e], mUnk_5e[mUnk_4e]);
+    u16 base    = func_020231f4(data_020d43f0, 0, mUnk_58[mUnk_4e], mUnk_5e[mUnk_4e]);
     if (base + total > 0x3de) {
         total = 0x3de - base;
     }
-    u16 end = base + total;
+    base += total;
     mUnk_18->func_0205b048(total);
-    func_020231c0(data_020d43f0, current, end);
+    func_020231c0(data_020d43f0, current, base);
 }
 
-// non-matching: 2 words. The original reloads mUnk_20 into lr (not r0) for the buttons[3] store.
+// non-matching: 2 words. The original reloads mUnk_20 into lr (not r0) for the buttons[3] store (+0x64 ldr, +0x6c str);
+// 60+ statement-order permutations and constant/local variants did not change this.
 void UnkStruct_02071d24::func_02072c40() {
     WindowItem *items = mUnk_20->mCursor->mItems;
     mUnk_53 = func_02072d20() ? 1 : 2;

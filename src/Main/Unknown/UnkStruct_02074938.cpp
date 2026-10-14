@@ -28,6 +28,13 @@ struct UnkStruct_ModelPos {
     /* 10 */
 };
 
+// Sets the position of a model object; the pointer is the first argument so the three values are computed before it.
+static inline void SetModelPos(UnkStruct_ModelPos *model, fx32 x, fx32 y, fx32 z) {
+    model->mPosition.x = x;
+    model->mPosition.y = y;
+    model->mPosition.z = z;
+}
+
 UnkStruct_02074938::UnkStruct_02074938(u8 unk1, u16 unk2, u32 unk3, u32 unk4) :
     SceneBase(0x3e8, 0) {
     mUnk_44 = NULL;
@@ -373,7 +380,6 @@ void UnkStruct_02074938::func_02075758() {
     func_02075878(0);
 }
 
-// non-matching: 8 words, register naming only (original loads data_020a302c into r2 and data_020a3044 into r1); size matches.
 BOOL UnkStruct_02074938::func_02075878(s32 target) {
     if (mUnk_78 == target) {
         return TRUE;
@@ -390,13 +396,7 @@ BOOL UnkStruct_02074938::func_02075878(s32 target) {
         }
     }
     u8 kind = mUnk_58;
-    VecFx32 pos = {mUnk_78, data_020a3044[kind] << 12, data_020a302c[kind] << 12};
-    UnkStruct_ModelPos *model;
-    if (mUnk_58 == 0x15) {
-        model = (UnkStruct_ModelPos *) mUnk_50->mUnk_04;
-    } else {
-        model = (UnkStruct_ModelPos *) mUnk_50->mUnk_08;
-    }
-    model->mPosition = pos;
+    SetModelPos(mUnk_58 == 0x15 ? (UnkStruct_ModelPos *) mUnk_50->mUnk_04 : (UnkStruct_ModelPos *) mUnk_50->mUnk_08, mUnk_78,
+                data_020a3044[kind] << 12, data_020a302c[kind] << 12);
     return FALSE;
 }

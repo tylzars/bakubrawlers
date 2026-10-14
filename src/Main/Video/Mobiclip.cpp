@@ -6,15 +6,15 @@ typedef unsigned short u16;
 typedef unsigned int u32;
 typedef int s32;
 
-// byte source (vtables _ZTV6Reader 0x020a5950 over _ZTV10ReaderBase 0x020a592c)
+// byte source (vtables _ZTV6Reader 0x020a5948 over _ZTV10ReaderBase 0x020a5924, whose virtuals are pure)
 struct ReaderBase {
     ReaderBase() { mUnk_4 = 0; mPos = 0; }
     virtual ~ReaderBase();
-    virtual int Seek(void *addr);
-    virtual int Read(void *dst, u32 size);
-    virtual int v4();
-    virtual int v5();
-    virtual void Close();
+    virtual int Seek(void *addr) = 0;
+    virtual int Read(void *dst, u32 size) = 0;
+    virtual int v4() = 0;
+    virtual int v5() = 0;
+    virtual void Close() = 0;
     s32 mUnk_4;
     s32 mPos;   // 08
 };

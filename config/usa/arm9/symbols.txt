@@ -3440,8 +3440,10 @@ data_020a58c4 kind:data(any) addr:0x020a58c4
 data_020a58dc kind:data(any) addr:0x020a58dc
 data_020a58f4 kind:data(any) addr:0x020a58f4
 data_020a590c kind:data(any) addr:0x020a590c
-_ZTV10ReaderBase kind:data(any) addr:0x020a592c
-_ZTV6Reader kind:data(any) addr:0x020a5950
+_ZTV10ReaderBase kind:data(any) addr:0x020a5924
+data_020a592c kind:data(any) addr:0x020a592c
+_ZTV6Reader kind:data(any) addr:0x020a5948
+data_020a5950 kind:data(any) addr:0x020a5950
 data_020a596c kind:data(any) addr:0x020a596c
 data_020a598c kind:data(any) addr:0x020a598c
 data_020ab150 kind:data(any) addr:0x020ab150

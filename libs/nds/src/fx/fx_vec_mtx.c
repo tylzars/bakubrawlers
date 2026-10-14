@@ -41,31 +41,36 @@ void func_01ff8260(MtxFx33 *mtx, fx32 sin, fx32 cos) {
     mtx->_[8] = cos;
 }
 
-// near match (zero kept in r2 instead of r3)
-void func_01ff827c(MtxFx33 *mtx, fx32 sin, fx32 cos) {
-    mtx->_[0] = cos;
-    mtx->_[8] = cos;
-    mtx->_[1] = 0;
-    mtx->_[3] = 0;
-    mtx->_[5] = 0;
-    mtx->_[7] = 0;
-    mtx->_[2] = -sin;
-    mtx->_[6] = sin;
-    mtx->_[4] = 0x1000;
+asm void func_01ff827c(MtxFx33 *m, fx32 sin, fx32 cos) {
+    str r2, [r0, #0]
+    str r2, [r0, #0x20]
+    mov r3, #0
+    str r3, [r0, #4]
+    str r3, [r0, #0xc]
+    str r3, [r0, #0x14]
+    str r3, [r0, #0x1c]
+    neg r2, r1
+    mov r3, #1
+    lsl r3, r3, #12
+    str r1, [r0, #0x18]
+    str r2, [r0, #8]
+    str r3, [r0, #0x10]
+    bx lr
 }
 
-// not matching (original uses stm; probably assembly)
-void func_01ff8298(MtxFx33 *mtx, fx32 sin, fx32 cos) {
-    fx32 *p = mtx->_;
-    *p++ = cos;
-    *p++ = sin;
-    *p++ = 0;
-    *p++ = -sin;
-    *p++ = cos;
-    p[0] = 0;
-    p[1] = 0;
-    p[2] = 0;
-    p[3] = 0x1000;
+asm void func_01ff8298(MtxFx33 *m, fx32 sin, fx32 cos) {
+    stmia r0!, {r2}
+    mov r3, #0
+    stmia r0!, {r1, r3}
+    neg r1, r1
+    stmia r0!, {r1, r2}
+    mov r1, #1
+    lsl r1, r1, #12
+    str r3, [r0, #0]
+    str r3, [r0, #4]
+    str r3, [r0, #8]
+    str r1, [r0, #0xc]
+    bx lr
 }
 #pragma thumb off
 
@@ -115,6 +120,35 @@ void func_01ff84d0(const VecFx32 *v, const MtxFx33 *m, VecFx32 *out) {
     out->x = (fx32) (((fx64) x * m->_[0] + (fx64) y * m->_[3] + (fx64) z * m->_[6]) >> 12);
     out->y = (fx32) (((fx64) x * m->_[1] + (fx64) y * m->_[4] + (fx64) z * m->_[7]) >> 12);
     out->z = (fx32) (((fx64) x * m->_[2] + (fx64) y * m->_[5] + (fx64) z * m->_[8]) >> 12);
+}
+
+asm void func_01ff854c(MtxFx43 *m) {
+    mov r2, #0x1000
+    mov r3, #0
+    stmia r0!, {r2, r3}
+    mov r1, #0
+    stmia r0!, {r1, r3}
+    stmia r0!, {r2, r3}
+    stmia r0!, {r1, r3}
+    stmia r0!, {r2, r3}
+    stmia r0!, {r1, r3}
+    bx lr
+}
+
+asm void func_01ff8574(const MtxFx43 *src, void *dst) {
+    stmfd sp!, {r4}
+    mov ip, #0
+    ldmia r0!, {r2, r3, r4}
+    stmia r1!, {r2, r3, r4, ip}
+    ldmia r0!, {r2, r3, r4}
+    stmia r1!, {r2, r3, r4, ip}
+    ldmia r0!, {r2, r3, r4}
+    stmia r1!, {r2, r3, r4, ip}
+    mov ip, #0x1000
+    ldmia r0!, {r2, r3, r4}
+    stmia r1!, {r2, r3, r4, ip}
+    ldmfd sp!, {r4}
+    bx lr
 }
 
 void func_01ff85a8(const MtxFx43 *src, MtxFx43 *dst, fx32 x, fx32 y, fx32 z) {
@@ -230,13 +264,13 @@ fx32 VEC_DotProduct(const VecFx32 *a, const VecFx32 *b) {
     return (fx32) (((fx64) a->x * b->x + (fx64) a->y * b->y + (fx64) a->z * b->z + 0x800LL) >> 12);
 }
 
-// not matching: right size and schedule, registers differ
 void VEC_CrossProduct(const VecFx32 *a, const VecFx32 *b, VecFx32 *axb) {
-    fx32 ax = a->x, ay = a->y, az = a->z;
-    fx32 bx = b->x, by = b->y, bz = b->z;
-    axb->x = (fx32) (((fx64) ay * bz - (fx64) az * by + 0x800LL) >> 12);
-    axb->y = (fx32) (((fx64) az * bx - (fx64) ax * bz + 0x800LL) >> 12);
-    axb->z = (fx32) (((fx64) ax * by - (fx64) ay * bx + 0x800LL) >> 12);
+    fx32 x = (fx32) (((fx64) a->y * b->z - (fx64) a->z * b->y + 0x800LL) >> 12);
+    fx32 y = (fx32) (((fx64) a->z * b->x - (fx64) a->x * b->z + 0x800LL) >> 12);
+    fx32 z = (fx32) (((fx64) a->x * b->y - (fx64) a->y * b->x + 0x800LL) >> 12);
+    axb->x = x;
+    axb->y = y;
+    axb->z = z;
 }
 
 fx32 VEC_Mag(const VecFx32 *v) {
@@ -307,6 +341,56 @@ fx32 func_01ff9208(const VecFx32 *a, const VecFx32 *b) {
     }
     return (REG_SQRT_RESULT + 1) >> 1;
 }
+
+#pragma thumb on
+asm void func_01ff85dc(MtxFx43 *m, fx32 sin, fx32 cos) {
+    str r1, [r0, #0x14]
+    neg r1, r1
+    str r1, [r0, #0x1c]
+    mov r1, #1
+    lsl r1, r1, #12
+    stmia r0!, {r1}
+    mov r3, #0
+    mov r1, #0
+    stmia r0!, {r1, r3}
+    stmia r0!, {r1, r2}
+    str r1, [r0, #4]
+    add r0, #0xc
+    stmia r0!, {r2, r3}
+    stmia r0!, {r1, r3}
+    bx lr
+}
+asm void func_01ff85fc(MtxFx43 *m, fx32 sin, fx32 cos) {
+    str r1, [r0, #0x18]
+    mov r3, #0
+    stmia r0!, {r2, r3}
+    neg r1, r1
+    stmia r0!, {r1, r3}
+    mov r1, #1
+    lsl r1, r1, #12
+    stmia r0!, {r1, r3}
+    add r0, #4
+    mov r1, #0
+    stmia r0!, {r1, r2, r3}
+    stmia r0!, {r1, r3}
+    bx lr
+}
+asm void func_01ff8618(MtxFx43 *m, fx32 sin, fx32 cos) {
+    stmia r0!, {r2}
+    mov r3, #0
+    stmia r0!, {r1, r3}
+    neg r1, r1
+    stmia r0!, {r1, r2, r3}
+    mov r1, #0
+    mov r2, #0
+    mov r3, #1
+    lsl r3, r3, #12
+    stmia r0!, {r1, r2, r3}
+    mov r3, #0
+    stmia r0!, {r1, r2, r3}
+    bx lr
+}
+#pragma thumb off
 
 int func_01ff8634(const MtxFx43 *src, MtxFx43 *dst) {
     MtxFx43 tmp;

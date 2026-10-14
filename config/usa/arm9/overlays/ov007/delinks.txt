@@ -325,9 +325,11 @@ src/07_Battle/Battle/BattlePlayer.cpp:
 src/07_Battle/Battle/BattleShoot.cpp:
     .text       start:0x0226a91c end:0x0226fb74
 
-// provisional: code only; .rodata 0x0227bf94-0x0227c018 and .bss 0x0228bb14-0x0228bb20 belong here.
 src/07_Battle/Battle/BattleUnk29c.cpp:
+    complete
     .text       start:0x0226fb74 end:0x02271410
+    .rodata     start:0x0227bf94 end:0x0227c018
+    .bss        start:0x0228bb14 end:0x0228bb20
 
 // provisional: code only; .data 0x0228ab70-0x0228abe4, .rodata 0x0227c018-0x0227c0c4 and .bss 0x0228bb20-0x0228bb2c belong here (shared with GimmickSetFile.cpp if they are one file).
 src/07_Battle/Battle/BattleCardEffect.cpp:

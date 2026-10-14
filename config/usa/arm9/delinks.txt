@@ -326,6 +326,7 @@ libs/nns/src/gfd/gfd_vram.c:
     .text       start:0x02035c68 end:0x020360c4
 
 libs/nns/src/gfd/gfd_lnkvram.c:
+    complete
     .text       start:0x02036538 end:0x020366f8
 
 libs/nns/src/snd/nns_snd_main.c:

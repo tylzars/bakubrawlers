@@ -317,24 +317,17 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     data_020d433c.mUnk_0c->mUnk_212 = 1;
 }
 
-// non-matching: 2 words (+0x4/+0x8): the original loads the vtable pointer before `mov r4, r0`; all other instructions are identical.
 BattleTarget::~BattleTarget() {
     data_020d433c.mUnk_0c->mUnk_212 = 0;
     data_020d433c.mEffects->func_0202be68();
     func_0202bc58(data_020d433c.mEffects, 1);
-    UnkStruct_0203d374 *pose = mUnk_1a4;
-    if (pose) {
-        delete pose;
-    }
+    delete mUnk_1a4;
     if (mUnk_e0) {
         delete mUnk_e0;
     }
     u8 i = 0;
     do {
-        CellAnimation *anim = mAnims[i];
-        if (anim) {
-            delete anim;
-        }
+        delete mAnims[i];
         i++;
     } while (i < 7);
     u8 j = 0;
@@ -351,10 +344,7 @@ BattleTarget::~BattleTarget() {
     if (mUnk_1ac) {
         func_ov007_02271d78(data_020d433c.mUnk_0c, mUnk_1ac);
     }
-    BattleStatusPanels *panels = mUnk_28;
-    if (panels) {
-        delete panels;
-    }
+    delete mUnk_28;
     if (mUnk_2c) {
         OS_Free(mUnk_2c);
     }
@@ -1279,7 +1269,6 @@ void BattleTarget::func_ov007_02255c04(VecFx32 *vec, s32 *out) {
     out[0] = rotated.z;
 }
 
-// non-matching: 6 words, case 0 only: instruction order inside the two SetVec(&cam, ...) arms (target == 0: the original adds pos.y + pose.y before loading pose.x; else: it loads pose.y before pos.y and adds z before y). Same instructions and registers; operand orders, temporaries and field-store orders tried.
 void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
     VecFx32 pos;
     VecFx32 u;
@@ -1323,11 +1312,10 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                     func_01ff84d0(&mUnk_188, &rot, &mUnk_188);
                     pos.x = FX_Mul(pos.x, ident._[4]);
                     pos.z = FX_Mul(pos.z, ident._[8]);
-                    UnkStruct_0203d374 *pose = mUnk_1a4;
                     if (target == 0) {
-                        SetVec(&cam, pos.x + pose->mPosition.x, pos.y + pose->mPosition.y + 0x4000, pos.z + pose->mPosition.z);
+                        SetVec(&cam, pos.x + mUnk_1a4->mPosition.x, pos.y + mUnk_1a4->mPosition.y + 0x4000, pos.z + mUnk_1a4->mPosition.z);
                     } else {
-                        SetVec(&cam, target->x + pos.x, pos.y + pose->mPosition.y + 0x4000, target->z + pos.z);
+                        SetVec(&cam, target->x + pos.x, pos.y + mUnk_1a4->mPosition.y + 0x4000, target->z + pos.z);
                     }
                     curr = mUnk_194;
                     VEC_Subtract(&curr, &cam, &diff);

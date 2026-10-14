@@ -177,6 +177,10 @@ Other findings from linking:
   makes `p * 4` a common subexpression with a later `p * 4 + 0x28`, and mwcc hoists it above the `if`. Keeping the
   container in a local and indexing inside each arm (`list->mPlayers[p]->mUnk_f1`) stops it
   (BattleCommand::func_ov007_0223a734). A `(u8 *)` cast store recolours differently from a real `u8` field store.
+- **An `&` chain no single expression reproduces.** `BOOL lo = (a >= 0) & (b >= 0); if (lo & (a < 0x100) & ...)`
+  gave the original's evaluation order where none of the 120 one-expression forms did (BattleShoot::func_ov007_0226f76c).
+  Reading `tbl[idx]` into a local before an `f++` puts the table load ahead of the store, and `if (field)` right after
+  `field = var;` compiles to `tst #255`.
 - **A wrong constant can look like a scheduling difference.** When the original builds a value from a neighbouring
   constant (`mov r7, #34; sub r7, r7, #47`), that shows the true value (-13 where the source had 3,
   UnkStruct_02065c40::func_0206fa20). Likewise a literal-pool word that differs is often a wrong divisor or constant

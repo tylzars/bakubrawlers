@@ -161,6 +161,13 @@ struct BattlePlayer : public SceneBase {
         mUnk_f4++;
     }
 
+    u8 RecordIndex() {
+        return mRecord;
+    }
+    BattleRecord *CurrentRecord() {
+        return &mRecords[mRecord];
+    }
+
     bool IsActive() const {
         bool active = false;
         if (mUnk_c8) {

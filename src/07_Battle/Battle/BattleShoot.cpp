@@ -333,7 +333,6 @@ BattleShoot::~BattleShoot() {
     G2S_BlendNone();
 }
 
-// non-matching: 0xd2c vs 0xd34: this in r4 instead of r5 and small scheduling differences.
 static inline bool CpuActive(BattleCpu *cpu) {
     bool active = false;
     if (cpu) {
@@ -693,14 +692,13 @@ void BattleShoot::func_ov007_0226bd3c() {
     mUnk_6130->mUnk_1ba                    = mUnk_616a;
 }
 
-// non-matching: 17 words, register assignment only (original keeps the string literal in r4 and the record in r5, here r5/r4).
 void BattleShoot::func_ov007_0226bdfc() {
     char buffer[0x80];
     u8 player;
     u8 record;
     func_0202ba64(data_020d433c.mEffects, 0, "jammer");
     player = data_020d433c.mBattlePlayers->mUnk_28a;
-    record = data_020d433c.mBattlePlayers->mPlayers[player]->mRecord;
+    record = data_020d433c.mBattlePlayers->mPlayers[player]->RecordIndex();
     ChangeDir("/Game/Battle/Bg/");
     func_02025b64(1, 1, 0, "battle_shoot_b_bg_00_ncl.bin", 0, 0, 0);
     func_02025b64(1, 0xb, 0, "battle_shoot_b_bg_00_ncg.bin", 0, 0, 0);
@@ -778,13 +776,11 @@ void BattleShoot::func_ov007_0226bdfc() {
     mCells[2].mY               = 0x18;
     mCells[2].mUnk_08          = 1;
     bool flag = false;
-    BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_28a];
-    if (p->mUnk_f3 >= 0xbe) {
-        BattleRecord *rec = &p->mRecords[p->mRecord];
-        u8 kind = rec->mUnk_08;
+    if (data_020d433c.mBattlePlayers->Current()->mUnk_f3 >= 0xbe) {
+        u8 kind = data_020d433c.mBattlePlayers->Current()->CurrentRecord()->mUnk_08;
         if ((kind == 0x24) | (kind == 0x25)) {
             flag = true;
-        } else if ((u8) rec->mUnk_00_0 >= 2) {
+        } else if ((u8) data_020d433c.mBattlePlayers->Current()->CurrentRecord()->mUnk_00_0 >= 2) {
             flag = true;
         }
     }
@@ -1218,7 +1214,7 @@ public:
 extern s16 data_ov007_0208b524[];
 extern const s32 data_ov007_0227bcb8[3];
 
-// non-matching: register allocation only (original uses ip/r2/r3 where this uses r1/r2/r4), plus 3 words of scheduling.
+// non-matching: 7 words, registers inside the inlined FX_Mul (original: operand in ip, low word r3, high word r2; here r2, ip, r3).
 void BattleShoot::func_ov007_0226dfb8() {
     s32 diff = mUnk_618b - mUnk_618f;
     if (diff < 0) {
@@ -1244,10 +1240,10 @@ void BattleShoot::func_ov007_0226dfb8() {
     } else if (power < 0xa) {
         power = 0xa;
     }
-    u8 limit = 0x50 - (power - 10) * 50 / 20;
     u16 distance = func_ov007_0226df24((s16) (mUnk_618b - mUnk_618f), (s16) (mUnk_618c - mUnk_6190));
+    u8 limit = 0x50 - (power - 10) * 50 / 20;
+    u32 result;
     int speed = (u16) (FX_Mul(distance << 12, 0xa66) / 4096);
-    int result;
     if (limit < speed) {
         result = limit;
     } else {
@@ -1260,9 +1256,10 @@ void BattleShoot::func_ov007_0226dfb8() {
     }
     u8 index = data_020d433c.mBattlePlayers->mUnk_28a;
     data_020d433c.mBattlePlayers->mPlayers[index]->mUnk_ec = mUnk_6193;
-    data_020d433c.mBattlePlayers->mPlayers[index]->mUnk_d4 = 0;
-    data_020d433c.mBattlePlayers->mPlayers[index]->mUnk_d8 = 0;
     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[index];
+    player->mUnk_d4 = 0;
+    player->mUnk_d8 = 0;
+    player = data_020d433c.mBattlePlayers->mPlayers[index];
     player->mUnk_cc[0] = mUnk_6154;
     player->mUnk_cc[1] = mUnk_6156;
     player->mUnk_cc[2] = mUnk_6158;
@@ -1321,16 +1318,15 @@ void BattleShoot::func_ov007_0226e234() {
     }
 }
 
-// non-matching: 2 words, the copy of the player's position uses ip instead of r5 as the destination pointer.
 u16 BattleShoot::func_ov007_0226e390() {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 index               = list->mUnk_28a;
     VecFx32 cpuPos         = list->mPlayers[index]->mUnk_c8->mPos;
-    UnkStruct_0203d374 *target = mUnk_6130->mUnk_1a4;
+    VecFx32 *pos = &mUnk_6130->mUnk_1a4->mPosition;
     VecFx32 delta;
     VecFx32 offset = {0, 0, 0};
-    VEC_Subtract(&offset, &target->mPosition, &offset);
-    VEC_Subtract(&cpuPos, &target->mPosition, &delta);
+    VEC_Subtract(&offset, pos, &offset);
+    VEC_Subtract(&cpuPos, pos, &delta);
     u16 first = FX_Atan2Idx(offset.z, offset.x);
     u16 second = FX_Atan2Idx(delta.z, delta.x);
     return second - first;
@@ -1432,10 +1428,16 @@ extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);
 
 struct Bytes2 { u8 b[2]; };
 
-// non-matching: register allocation: the original keeps this in r10 and the running sums in stack slots; this version has the same structure (size 0x870 vs 0x864).
+// non-matching: one instruction short (0x860 vs 0x864): the original puts the zero for animState in r0, stores it and copies it to
+// the loop counter (mov r5, r0); here the counter's own mov r5, #0 is reused for the store.
 void BattleShoot::func_ov007_0226e884() {
-    s32 limitedX;
-    s32 limitedZ;
+    s32 animState;
+    s32 sumX;
+    s32 sumZ;
+    s32 power;
+    s32 spread;
+    u8 charged;
+    u8 sent;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 self                = list->mUnk_28a;
     data_0220f540.mUnk_00  = 9;
@@ -1483,8 +1485,9 @@ void BattleShoot::func_ov007_0226e884() {
             }
         }
     }
-    s32 animState = 0;
-    u8 i = 0;
+    u8 i;
+    animState = 0;
+    i = 0;
     do {
         BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[i];
         if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
@@ -1508,58 +1511,61 @@ void BattleShoot::func_ov007_0226e884() {
         }
         i++;
     } while (i < data_020d433c.mPlayerCount);
-    u8 j = 0;
+    i = 0;
     do {
-        BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[j];
+        BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[i];
         BattleCpu *cpu  = p->mUnk_c8;
-        if (cpu != 0 && self != j && self != p->mUnk_f2) {
+        if (cpu != 0 && self != i && self != p->mUnk_f2) {
             s32 outX = 0;
             s32 outZ = 0;
             if (mUnk_6130->mUnk_4c <= cpu->mUnk_5c) {
                 cpu->func_ov007_02232eb8(&outX, &outZ);
-                mMsgs[j].mUnk_00        = 9;
-                mMsgs[j].mUnk_04        = outX;
-                mMsgs[j].mUnk_08        = outZ;
-                mMsgs[j].mUnk_0c        = 0;
+                mMsgs[i].mUnk_00        = 9;
+                mMsgs[i].mUnk_04        = outX;
+                mMsgs[i].mUnk_08        = outZ;
+                mMsgs[i].mUnk_0c        = 0;
+                u16 limit = cpu->mUnk_60[cpu->mUnk_8d];
                 cpu->mUnk_70++;
-                if (cpu->mUnk_70 >= cpu->mUnk_60[cpu->mUnk_8d]) {
+                if (cpu->mUnk_70 >= limit) {
                     cpu->mUnk_70 = 0;
                     cpu->mUnk_8d = (cpu->mUnk_8d + 1) % 8;
                     cpu->func_ov007_02232d8c();
                 }
             }
         }
-        j++;
-    } while (j < data_020d433c.mPlayerCount);
+        i++;
+    } while (i < data_020d433c.mPlayerCount);
     BattlePlayer *me = data_020d433c.mBattlePlayers->mPlayers[self];
     if (me->mUnk_c8 != 0) {
-        u8 k = 0;
+        i = 0;
         do {
-            if (data_020d433c.mBattlePlayers->mPlayers[k]->mUnk_c8 == 0) {
-                if (mMsgs[k].mUnk_04 != 0) {
-                    mMsgs[k].mUnk_04 = FX_Mul(mMsgs[k].mUnk_04, data_ov007_0227bcb8[me->mUnk_f7]);
+            if (data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_c8 == 0) {
+                if (mMsgs[i].mUnk_04 != 0) {
+                    mMsgs[i].mUnk_04 = FX_Mul(mMsgs[i].mUnk_04, data_ov007_0227bcb8[me->mUnk_f7]);
                 }
-                if (mMsgs[k].mUnk_08 != 0) {
-                    mMsgs[k].mUnk_08 = FX_Mul(mMsgs[k].mUnk_08, data_ov007_0227bcb8[me->mUnk_f7]);
+                if (mMsgs[i].mUnk_08 != 0) {
+                    mMsgs[i].mUnk_08 = FX_Mul(mMsgs[i].mUnk_08, data_ov007_0227bcb8[me->mUnk_f7]);
                 }
             }
-            k++;
-        } while (k < data_020d433c.mPlayerCount);
+            i++;
+        } while (i < data_020d433c.mPlayerCount);
     }
-    s32 sumX     = 0;
-    s32 sumZ     = 0;
-    s32 charged  = 0;
-    s32 power    = me->mUnk_dc;
-    s32 spread   = me->mUnk_e4;
-    u8 sent      = 0;
+    sent    = 0;
+    sumX    = 0;
+    sumZ    = 0;
+    charged = 0;
+    power   = data_020d433c.mBattlePlayers->mPlayers[self]->mUnk_dc;
+    spread  = data_020d433c.mBattlePlayers->mPlayers[self]->mUnk_e4;
     if (!(mUnk_6130->mUnk_1dd == 4 && mUnk_6130->mUnk_38 <= 0x1e)) {
-        u8 n = 0;
+        i = 0;
         do {
-            BattleShootMsg *m = &mMsgs[n];
+            s32 msgX;
+            s32 msgZ;
+            BattleShootMsg *m = &mMsgs[i];
             if (m->mUnk_00 == 9) {
-                s32 msgX = m->mUnk_04;
-                s32 msgZ = m->mUnk_08;
-                if (self == n) {
+                msgX = m->mUnk_04;
+                msgZ = m->mUnk_08;
+                if (self == i) {
                     sumX += msgX;
                     sumZ += msgZ;
                     if (!(m->mUnk_0c != 0 && mUnk_6130->mUnk_1cc != 1)) {
@@ -1579,12 +1585,12 @@ void BattleShoot::func_ov007_0226e884() {
                     }
                 }
                 sent = 1;
-                if (self == n || !(mUnk_6130->mUnk_1df == 5 || mUnk_6130->mUnk_1cc == 1)) {
-                    func_ov007_0226f0e8(n, msgX, msgZ);
+                if (self == i || !(mUnk_6130->mUnk_1df == 5 || mUnk_6130->mUnk_1cc == 1)) {
+                    func_ov007_0226f0e8(i, msgX, msgZ);
                 }
             }
-            n++;
-        } while (n < data_020d433c.mPlayerCount);
+            i++;
+        } while (i < data_020d433c.mPlayerCount);
     }
     if (power > 0x1333) {
         power = 0x1333;
@@ -1609,14 +1615,15 @@ void BattleShoot::func_ov007_0226e884() {
     data_020d433c.mBattlePlayers->mPlayers[self]->mUnk_dc = power;
     data_020d433c.mBattlePlayers->mPlayers[self]->mUnk_e4 = spread;
     if (sent == 1) {
-        data_020d433c.mBattlePlayers->mPlayers[self]->mUnk_d4 = sumX;
-        data_020d433c.mBattlePlayers->mPlayers[self]->mUnk_d8 = sumZ;
+        BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[self];
+        pl->mUnk_d4 = sumX;
+        pl->mUnk_d8 = sumZ;
         mUnk_6130->func_ov007_0225bf38();
     }
     if (data_020d433c.mUnk_9a_0 && data_020d433c.mUnk_83 == 0) {
         if (mUnk_61a5 != animState) {
             mUnk_61a5 = animState;
-            if (animState) {
+            if (mUnk_61a5) {
                 mCells[4].mAnim->SetAnimation(2);
             } else {
                 mCells[4].mAnim->SetAnimation(0);
@@ -1627,7 +1634,6 @@ void BattleShoot::func_ov007_0226e884() {
 
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);
 
-// non-matching: scheduling of the stores into the offset vector and the constant 1 in r1 (size 0x28c vs 0x290).
 void BattleShoot::func_ov007_0226f0e8(u8 kind, s32 x, s32 z) {
     if ((x | z) == 0) {
         return;
@@ -1645,10 +1651,10 @@ void BattleShoot::func_ov007_0226f0e8(u8 kind, s32 x, s32 z) {
     dir.z       = z;
     VEC_Normalize(&dir, &dir);
     fx32 dot    = VEC_DotProduct(&dir, &ref);
-    s32 angle   = z >= 0 ? 0xc000 : 0x4000;
     off.x       = 0;
     off.y       = 0;
     off.z       = 0xa000;
+    s32 angle   = z >= 0 ? 0xc000 : 0x4000;
     if ((dot < 0x800) & (dot > -0x800)) {
         if (x > 0) {
             off.x = -0x5000;
@@ -1660,9 +1666,9 @@ void BattleShoot::func_ov007_0226f0e8(u8 kind, s32 x, s32 z) {
     }
     CameraManager::Get();
     MtxFx43 mtx = data_020c1cf4;
-    mtx._[11]   = 0;
-    mtx._[10]   = 0;
-    mtx._[9]    = 0;
+    mtx._[9]  = 0;
+    mtx._[10] = 0;
+    mtx._[11] = 0;
     MTX_MultVec43(&off, &mtx, &off);
     VEC_Add(&pos, &off, &pos);
     if (angle != 0) {
@@ -1765,13 +1771,15 @@ void BattleShoot::func_ov007_0226f698(u8 x0, u8 y0, u8 x1, u8 y1) {
     func_ov007_0226f644();
 }
 
-// non-matching: 28 words, register assignment of the bounds checks.
 void BattleShoot::func_ov007_0226f76c(u8 x, u8 y) {
+    s16 px;
+    s16 py;
     u8 i = 0;
     do {
-        s16 py = y + data_ov007_0227bce0[i][1];
-        s16 px = x + data_ov007_0227bce0[i][0];
-        if ((px >= 0) & ((u32) py < 0xc0) & (py >= 0) & ((u32) px < 0x100)) {
+        px = x + data_ov007_0227bce0[i][0];
+        py = y + data_ov007_0227bce0[i][1];
+        BOOL nonNegative = (px >= 0) & (py >= 0);
+        if (nonNegative & ((u32) px < 0x100) & ((u32) py < 0xc0)) {
             func_ov007_0226f820(px, py);
         }
         i++;

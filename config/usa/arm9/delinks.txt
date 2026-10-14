@@ -1,5 +1,5 @@
-    .text       start:0x02000000 end:0x0209d490 kind:code align:32
-    .rodata     start:0x0209d490 end:0x020a4e64 kind:rodata align:4
+    .text       start:0x02000000 end:0x0208b4bc kind:code align:32
+    .rodata     start:0x0208b4bc end:0x020a4e64 kind:rodata align:4
     .ctor       start:0x020a4e64 end:0x020a4e64 kind:rodata align:4
     .data       start:0x020a4e80 end:0x020baf00 kind:data align:32
     .bss        start:0x020baf00 end:0x02219440 kind:bss align:32
@@ -576,7 +576,9 @@ libs/nds/src/fs/fs_overlay.c:
     .text       start:0x0200afdc end:0x0200b588
 
 libs/nds/src/math/math_sha1.c:
+    complete
     .text       start:0x0200b588 end:0x0200bb74
+    .rodata     start:0x020902d4 end:0x020902f0
 
 libs/nds/src/tp/tp.c:
     .text       start:0x0200be84 end:0x0200c744

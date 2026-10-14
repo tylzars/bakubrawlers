@@ -106,6 +106,11 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   functions (`UnkScene_020a54a8::~UnkScene_020a54a8() {}`), which emits D1, D0, D2 (the linker drops D2).
 - **One class, two names.** UnkStruct_02070608.cpp constructed FileLoader's `UnkScene_020a54a8` under the name
   `UnkStruct_020a54a0` (its vtable symbol's address), which only showed as an undefined vtable once FileLoader linked.
+- **The main module's code ends at 0x0208b4bc.** dsd had put the `.text`/`.rodata` boundary at 0x0209d490, so ~70 KB
+  of constant data (the SDK's FX tables, sndVolumeTable, GameData's and math_sha1's tables) counted as code and no
+  unit could own it. With `.rodata` starting at 0x0208b4bc math_sha1 links and the progress numbers stop counting
+  those tables as code. A few hand-written routines inside that block (func_02090b24, func_02091768, ...) are now in
+  `.rodata`; they still disassemble and link.
 - **False relocations in data blobs.** dsd reads any word that looks like an address as a pointer: a font bitmap
   in main's `.data` at 0x020a8d10 held the bytes of 0x02220842, recorded as a relocation into ov005. Once MapScene
   linked from source that symbol was gone and the word became 0. Deleting the line from relocs.txt fixed it; check

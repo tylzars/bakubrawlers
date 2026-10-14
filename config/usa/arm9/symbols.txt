@@ -5075,6 +5075,8 @@ data_02090958 kind:data(any) addr:0x02090958
 data_02090968 kind:data(any) addr:0x02090968
 data_02090978 kind:data(any) addr:0x02090978
 data_020909c0 kind:data(any) addr:0x020909c0
+data_020902d4 kind:data(any) addr:0x020902d4
+data_020902f0 kind:data(any) addr:0x020902f0
 data_02090328 kind:data(any) addr:0x02090328
 data_0208f72c kind:data(any) addr:0x0208f72c
 data_0208f73c kind:data(any) addr:0x0208f73c

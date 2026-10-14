@@ -26,7 +26,6 @@ extern const u8 data_ov000_022266fc[];
 
 void operator delete(void *ptr);
 
-extern const u8 data_ov000_022266f8[];
 extern u8 data_ov000_02227a74[];
 extern u8 data_ov000_02227a88[];
 extern const u8 data_ov000_02226910[];
@@ -159,7 +158,6 @@ TitleScene::~TitleScene() {
     }
 }
 
-// non-matching: register allocation in the state 12 / case 4 save-fixup block (data_020d43f0 pointer, buf pointer, 0x22/0 constants and loop counters land in different registers; 31 differing instructions, same size)
 void TitleScene::Update() {
     switch (mUnk_cb) {
         case 0:
@@ -325,28 +323,26 @@ void TitleScene::Update() {
                     mUnk_cb = 0xf;
                     break;
                 case 4: {
-                    u8 buf[3];
-                    buf[0] = data_ov000_022266f8[0];
-                    buf[1] = data_ov000_022266f8[1];
-                    buf[2] = data_ov000_022266f8[2];
+                    u8 buf[3] = {0, 1, 4};
                     u8 changed = 0;
-                    for (u8 i = 0; i < 3; i++) {
+                    u8 i;
+                    for (i = 0; i < 3; i++) {
                         if (func_020230dc(data_020d43f0, 0, i) == 0x28) {
                             u8 v = buf[i];
                             func_02023134(data_020d43f0, 0, i, 0, 0x22, v);
                             changed = 1;
                         }
                     }
-                    for (u8 i = 0; i < 6; i++) {
+                    for (i = 0; i < 6; i++) {
                         if (func_020231f4(data_020d43f0, 0, 0x28, i)) {
                             int r = func_0202317c(data_020d43f0, 0, 0x28, i);
                             func_020231c0(data_020d43f0, r, 0);
                             changed = 1;
                         }
                     }
-Vec2s tmp = {0, 0};
+                    Vec2s tmp = {0, 0};
                     if (changed) {
-                        for (u8 i = 0; i < 3; i++) {
+                        for (i = 0; i < 3; i++) {
                             u8 v = buf[i];
                             int r = func_0202317c(data_020d43f0, 0, 0x22, v);
                             func_020231c0(data_020d43f0, r, 0xc8);

@@ -293,8 +293,8 @@ _ZTV10TitleScene kind:data(any) addr:0x02227918
 @1144 kind:data(any) addr:0x022279f0 local
 @1138 kind:data(any) addr:0x02227a1c local
 @1138 kind:data(any) addr:0x02227a48 local
-@3303 kind:data(any) addr:0x02227a74 local
-@3319 kind:data(any) addr:0x02227a88 local
+@3301 kind:data(any) addr:0x02227a74 local
+@3317 kind:data(any) addr:0x02227a88 local
 @3454 kind:data(any) addr:0x02227aa0 local
 @3455 kind:data(any) addr:0x02227ab0 local
 @3456 kind:data(any) addr:0x02227ac8 local
@@ -336,8 +336,8 @@ _ZTV10TitleScene kind:data(any) addr:0x02227918
 @3455 kind:data(any) addr:0x02227e68 local
 @3456 kind:data(any) addr:0x02227e6c local
 @3537 kind:data(any) addr:0x02227e78 local
-@3538 kind:data(any) addr:0x02227e7c local
-@3539 kind:data(any) addr:0x02227e90 local
+@3536 kind:data(any) addr:0x02227e7c local
+@3537 kind:data(any) addr:0x02227e90 local
 data_ov000_02227ea4 kind:data(any) addr:0x02227ea4
 data_ov000_02227eac kind:data(any) addr:0x02227eac
 data_ov000_02227eb8 kind:data(any) addr:0x02227eb8
@@ -356,7 +356,7 @@ data_ov000_02227fa4 kind:bss addr:0x02227fa4
 @488 kind:bss addr:0x02227fbc local
 @478 kind:bss addr:0x02227fc8 local
 @447 kind:bss addr:0x02227fd4 local
-@796 kind:bss addr:0x02227fe0 local
+@820 kind:bss addr:0x02227fe0 local
 data_ov000_02227fec kind:bss addr:0x02227fec
 data_ov000_02227ff8 kind:bss addr:0x02227ff8
 data_ov000_02228004 kind:bss addr:0x02228004

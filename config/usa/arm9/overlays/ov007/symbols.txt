@@ -1944,29 +1944,29 @@ _ZTV14GimmickBakugan kind:data(any) addr:0x02286c7c
 @898 kind:data(any) addr:0x02286cb4 local
 @923 kind:data(any) addr:0x02286ccc local
 @924 kind:data(any) addr:0x02286ce0 local
-@901 kind:data(any) addr:0x02286cf0 local
-@902 kind:data(any) addr:0x02286d00 local
-@903 kind:data(any) addr:0x02286d10 local
+@919 kind:data(any) addr:0x02286cf0 local
+@920 kind:data(any) addr:0x02286d00 local
+@921 kind:data(any) addr:0x02286d10 local
 @928 kind:data(any) addr:0x02286d20 local
 @929 kind:data(any) addr:0x02286d30 local
 @930 kind:data(any) addr:0x02286d40 local
 @898 kind:data(any) addr:0x02286d54 local
 @932 kind:data(any) addr:0x02286d6c local
 @933 kind:data(any) addr:0x02286d80 local
-@901 kind:data(any) addr:0x02286d98 local
-@902 kind:data(any) addr:0x02286db0 local
-@903 kind:data(any) addr:0x02286dc8 local
-@904 kind:data(any) addr:0x02286dd8 local
-@905 kind:data(any) addr:0x02286dec local
+@928 kind:data(any) addr:0x02286d98 local
+@929 kind:data(any) addr:0x02286db0 local
+@930 kind:data(any) addr:0x02286dc8 local
+@931 kind:data(any) addr:0x02286dd8 local
+@932 kind:data(any) addr:0x02286dec local
 @906 kind:data(any) addr:0x02286dfc local
 @940 kind:data(any) addr:0x02286e08 local
 @941 kind:data(any) addr:0x02286e14 local
 @942 kind:data(any) addr:0x02286e24 local
 _ZTV12GimmickBlock kind:data(any) addr:0x02286e28
-@766 kind:data(any) addr:0x02286e4c local
-@767 kind:data(any) addr:0x02286e60 local
-@768 kind:data(any) addr:0x02286e74 local
-@769 kind:data(any) addr:0x02286e84 local
+@760 kind:data(any) addr:0x02286e4c local
+@761 kind:data(any) addr:0x02286e60 local
+@762 kind:data(any) addr:0x02286e74 local
+@763 kind:data(any) addr:0x02286e84 local
 data_ov007_02286e88 kind:data(any) addr:0x02286e88
 data_ov007_02286e90 kind:data(any) addr:0x02286e90
 data_ov007_02286eac kind:data(any) addr:0x02286eac
@@ -1985,48 +1985,48 @@ _ZTV15GimmickSuteWall kind:data(any) addr:0x02286f8c
 @861 kind:data(any) addr:0x02286fd8 local
 @862 kind:data(any) addr:0x02286fec local
 @863 kind:data(any) addr:0x02287000 local
-@864 kind:data(any) addr:0x02287014 local
-@865 kind:data(any) addr:0x02287028 local
-@866 kind:data(any) addr:0x02287038 local
+@882 kind:data(any) addr:0x02287014 local
+@883 kind:data(any) addr:0x02287028 local
+@884 kind:data(any) addr:0x02287038 local
 _ZTV15GimmickDashBase kind:data(any) addr:0x0228703c
 @832 kind:data(any) addr:0x02287060 local
-@866 kind:data(any) addr:0x02287074 local
-@867 kind:data(any) addr:0x0228708c local
+@860 kind:data(any) addr:0x02287074 local
+@861 kind:data(any) addr:0x0228708c local
 @832 kind:data(any) addr:0x022870a0 local
-@869 kind:data(any) addr:0x022870b0 local
+@863 kind:data(any) addr:0x022870b0 local
 _ZTV15GimmickExePoint kind:data(any) addr:0x022870b4
-@796 kind:data(any) addr:0x022870d8 local
-@821 kind:data(any) addr:0x022870ec local
-@822 kind:data(any) addr:0x02287100 local
-@823 kind:data(any) addr:0x02287110 local
+@814 kind:data(any) addr:0x022870d8 local
+@815 kind:data(any) addr:0x022870ec local
+@816 kind:data(any) addr:0x02287100 local
+@817 kind:data(any) addr:0x02287110 local
 _ZTV18GimmickFieldPowerG kind:data(any) addr:0x02287114
-@835 kind:data(any) addr:0x02287138 local
-@836 kind:data(any) addr:0x02287150 local
-@837 kind:data(any) addr:0x02287168 local
-@838 kind:data(any) addr:0x02287178 local
+@829 kind:data(any) addr:0x02287138 local
+@830 kind:data(any) addr:0x02287150 local
+@831 kind:data(any) addr:0x02287168 local
+@832 kind:data(any) addr:0x02287178 local
 _ZTV15GimmickHaosBall kind:data(any) addr:0x0228717c
 @832 kind:data(any) addr:0x022871a0 local
-@866 kind:data(any) addr:0x022871b0 local
-@867 kind:data(any) addr:0x022871c4 local
+@860 kind:data(any) addr:0x022871b0 local
+@861 kind:data(any) addr:0x022871c4 local
 @832 kind:data(any) addr:0x022871d4 local
-@869 kind:data(any) addr:0x022871e4 local
+@863 kind:data(any) addr:0x022871e4 local
 _ZTV14GimmickJumpObj kind:data(any) addr:0x022871e8
-@852 kind:data(any) addr:0x0228720c local
+@846 kind:data(any) addr:0x0228720c local
 @853 kind:data(any) addr:0x02287220 local
 @854 kind:data(any) addr:0x02287234 local
 @855 kind:data(any) addr:0x02287248 local
 @832 kind:data(any) addr:0x02287258 local
-data_ov007_0228725c kind:data(any) addr:0x0228725c
-data_ov007_02287260 kind:data(any) addr:0x02287260
-data_ov007_02287278 kind:data(any) addr:0x02287278
-data_ov007_02287290 kind:data(any) addr:0x02287290
+sSetDataFormat kind:data(any) addr:0x0228725c local
+@687 kind:data(any) addr:0x02287260 local
+@1120 kind:data(any) addr:0x02287278 local
+@1121 kind:data(any) addr:0x02287290 local
 _ZTV7Gimmick kind:data(any) addr:0x02287294
 _ZTV18GimmickFieldPowerS kind:data(any) addr:0x022872b8
-@901 kind:data(any) addr:0x022872dc local
-@902 kind:data(any) addr:0x022872f4 local
-@903 kind:data(any) addr:0x0228730c local
-@904 kind:data(any) addr:0x02287324 local
-@905 kind:data(any) addr:0x0228733c local
+@895 kind:data(any) addr:0x022872dc local
+@896 kind:data(any) addr:0x022872f4 local
+@897 kind:data(any) addr:0x0228730c local
+@898 kind:data(any) addr:0x02287324 local
+@899 kind:data(any) addr:0x0228733c local
 @882 kind:data(any) addr:0x0228734c local
 _ZTV14GimmickTornado kind:data(any) addr:0x02287350
 @715 kind:data(any) addr:0x02287374 local
@@ -2037,8 +2037,8 @@ _ZTV14GimmickTornado kind:data(any) addr:0x02287350
 _ZTV15GimmickVentKaze kind:data(any) addr:0x022873c8
 @760 kind:data(any) addr:0x022873ec local
 @760 kind:data(any) addr:0x022873fc local
-@794 kind:data(any) addr:0x02287410 local
-@795 kind:data(any) addr:0x02287420 local
+@788 kind:data(any) addr:0x02287410 local
+@789 kind:data(any) addr:0x02287420 local
 @760 kind:data(any) addr:0x02287430 local
 _ZTV20GimmickPyrusEruption kind:data(any) addr:0x02287434
 @919 kind:data(any) addr:0x02287458 local
@@ -2047,16 +2047,16 @@ _ZTV20GimmickPyrusEruption kind:data(any) addr:0x02287434
 @898 kind:data(any) addr:0x022874a4 local
 @923 kind:data(any) addr:0x022874bc local
 @924 kind:data(any) addr:0x022874d8 local
-@901 kind:data(any) addr:0x022874f0 local
-@902 kind:data(any) addr:0x02287500 local
+@919 kind:data(any) addr:0x022874f0 local
+@920 kind:data(any) addr:0x02287500 local
 _ZTV19GimmickAbilityField kind:data(any) addr:0x02287504
 @861 kind:data(any) addr:0x02287528 local
 @862 kind:data(any) addr:0x02287540 local
 @863 kind:data(any) addr:0x02287558 local
-@864 kind:data(any) addr:0x02287570 local
+@858 kind:data(any) addr:0x02287570 local
 @832 kind:data(any) addr:0x02287588 local
-@866 kind:data(any) addr:0x022875a0 local
-@867 kind:data(any) addr:0x022875b0 local
+@860 kind:data(any) addr:0x022875a0 local
+@861 kind:data(any) addr:0x022875b0 local
 _ZTV19GimmickUnk_022308a8 kind:data(any) addr:0x022875b4
 _ZTV19GimmickUnk_02230cec kind:data(any) addr:0x022875d8
 data_ov007_022875fc kind:data(any) addr:0x022875fc
@@ -2115,8 +2115,8 @@ _ZTV13BattleCommand kind:data(any) addr:0x02287ac8
 @1424 kind:data(any) addr:0x02287bcc local
 @1420 kind:data(any) addr:0x02287be4 local
 @1425 kind:data(any) addr:0x02287bfc local
-@1427 kind:data(any) addr:0x02287c14 local
-@1428 kind:data(any) addr:0x02287c44 local
+@1421 kind:data(any) addr:0x02287c14 local
+@1422 kind:data(any) addr:0x02287c44 local
 _ZZ12CommandItemsvE6sItems kind:data(any) addr:0x02287c74 weak
 @6864 kind:data(any) addr:0x02287d8c local
 @6865 kind:data(any) addr:0x02287da0 local
@@ -2129,12 +2129,12 @@ _ZZ12CommandItemsvE6sItems kind:data(any) addr:0x02287c74 weak
 @6872 kind:data(any) addr:0x02287e40 local
 @6873 kind:data(any) addr:0x02287e58 local
 @6874 kind:data(any) addr:0x02287e70 local
-@6875 kind:data(any) addr:0x02287e88 local
-@6876 kind:data(any) addr:0x02287ea4 local
-@6877 kind:data(any) addr:0x02287ec0 local
-@6878 kind:data(any) addr:0x02287ed8 local
-@6879 kind:data(any) addr:0x02287ef0 local
-@6880 kind:data(any) addr:0x02287ef4 local
+@6869 kind:data(any) addr:0x02287e88 local
+@6870 kind:data(any) addr:0x02287ea4 local
+@6871 kind:data(any) addr:0x02287ec0 local
+@6872 kind:data(any) addr:0x02287ed8 local
+@6873 kind:data(any) addr:0x02287ef0 local
+@6874 kind:data(any) addr:0x02287ef4 local
 @6905 kind:data(any) addr:0x02287f00 local
 @6906 kind:data(any) addr:0x02287f10 local
 @6907 kind:data(any) addr:0x02287f2c local
@@ -2154,16 +2154,16 @@ _ZZ12CommandItemsvE6sItems kind:data(any) addr:0x02287c74 weak
 @6921 kind:data(any) addr:0x022880bc local
 @6922 kind:data(any) addr:0x022880d0 local
 @6923 kind:data(any) addr:0x022880f4 local
-@6924 kind:data(any) addr:0x02288110 local
+@6918 kind:data(any) addr:0x02288110 local
 @6925 kind:data(any) addr:0x0228812c local
 @6926 kind:data(any) addr:0x02288140 local
 @6927 kind:data(any) addr:0x02288154 local
 @6928 kind:data(any) addr:0x02288168 local
-@6929 kind:data(any) addr:0x02288188 local
-@6931 kind:data(any) addr:0x0228818c local
-@6932 kind:data(any) addr:0x022881a0 local
-@6933 kind:data(any) addr:0x022881c0 local
-@6934 kind:data(any) addr:0x022881dc local
+@6923 kind:data(any) addr:0x02288188 local
+@6925 kind:data(any) addr:0x0228818c local
+@6926 kind:data(any) addr:0x022881a0 local
+@6927 kind:data(any) addr:0x022881c0 local
+@6928 kind:data(any) addr:0x022881dc local
 data_ov007_022881e0 kind:data(any) addr:0x022881e0
 data_ov007_022881e8 kind:data(any) addr:0x022881e8
 data_ov007_022881f0 kind:data(any) addr:0x022881f0
@@ -2327,12 +2327,12 @@ data_ov007_02288d18 kind:data(any) addr:0x02288d18
 @1018 kind:data(any) addr:0x02288d4c local
 @1019 kind:data(any) addr:0x02288d60 local
 @996 kind:data(any) addr:0x02288d74 local
-@997 kind:data(any) addr:0x02288d88 local
+@1021 kind:data(any) addr:0x02288d88 local
 @994 kind:data(any) addr:0x02288da0 local
 @995 kind:data(any) addr:0x02288db4 local
 @996 kind:data(any) addr:0x02288dc8 local
-@997 kind:data(any) addr:0x02288de0 local
-@998 kind:data(any) addr:0x02288df0 local
+@1025 kind:data(any) addr:0x02288de0 local
+@1026 kind:data(any) addr:0x02288df0 local
 @1003 kind:data(any) addr:0x02288e00 local
 @1028 kind:data(any) addr:0x02288e14 local
 @1029 kind:data(any) addr:0x02288e28 local
@@ -2341,12 +2341,12 @@ _ZTV11BattleObj00 kind:data(any) addr:0x02288e44
 @2762 kind:data(any) addr:0x02288e58 local
 @2763 kind:data(any) addr:0x02288e6c local
 @2764 kind:data(any) addr:0x02288e84 local
-@2765 kind:data(any) addr:0x02288e98 local
-@2766 kind:data(any) addr:0x02288e9c local
-@2767 kind:data(any) addr:0x02288eb0 local
-@2768 kind:data(any) addr:0x02288ec8 local
-@2769 kind:data(any) addr:0x02288ee0 local
-@2770 kind:data(any) addr:0x02288ef8 local
+@2759 kind:data(any) addr:0x02288e98 local
+@2760 kind:data(any) addr:0x02288e9c local
+@2761 kind:data(any) addr:0x02288eb0 local
+@2762 kind:data(any) addr:0x02288ec8 local
+@2763 kind:data(any) addr:0x02288ee0 local
+@2764 kind:data(any) addr:0x02288ef8 local
 _ZTV17BattleOrderSelect kind:data(any) addr:0x02288f0c
 @2350 kind:data(any) addr:0x02288f20 local
 @2351 kind:data(any) addr:0x02288f34 local
@@ -2703,10 +2703,10 @@ data_ov007_0228af70 kind:data(any) addr:0x0228af70
 data_ov007_0228af78 kind:data(any) addr:0x0228af78
 _ZTV15GimmickHaosWall kind:data(any) addr:0x0228af94
 @832 kind:data(any) addr:0x0228afb8 local
-@833 kind:data(any) addr:0x0228afc8 local
-@834 kind:data(any) addr:0x0228afdc local
-@835 kind:data(any) addr:0x0228afec local
-@836 kind:data(any) addr:0x0228affc local
+@827 kind:data(any) addr:0x0228afc8 local
+@828 kind:data(any) addr:0x0228afdc local
+@829 kind:data(any) addr:0x0228afec local
+@830 kind:data(any) addr:0x0228affc local
 _ZTV17BattleUnk0227532c kind:data(any) addr:0x0228b000
 @1005 kind:data(any) addr:0x0228b014 local
 @1006 kind:data(any) addr:0x0228b030 local
@@ -2722,14 +2722,14 @@ _ZTV17BattleUnk0227532c kind:data(any) addr:0x0228b000
 @1485 kind:data(any) addr:0x0228b148 local
 @1486 kind:data(any) addr:0x0228b160 local
 _ZTV21GimmickAquosFukidashi kind:data(any) addr:0x0228b164
-@968 kind:data(any) addr:0x0228b188 local
+@986 kind:data(any) addr:0x0228b188 local
 @993 kind:data(any) addr:0x0228b1a0 local
 @994 kind:data(any) addr:0x0228b1bc local
 @995 kind:data(any) addr:0x0228b1d4 local
 @996 kind:data(any) addr:0x0228b1ec local
-@997 kind:data(any) addr:0x0228b208 local
-@998 kind:data(any) addr:0x0228b220 local
-@999 kind:data(any) addr:0x0228b230 local
+@991 kind:data(any) addr:0x0228b208 local
+@992 kind:data(any) addr:0x0228b220 local
+@993 kind:data(any) addr:0x0228b230 local
 data_ov007_0228b234 kind:data(any) addr:0x0228b234
 data_ov007_0228b23c kind:data(any) addr:0x0228b23c
 data_ov007_0228b248 kind:data(any) addr:0x0228b248
@@ -2766,7 +2766,7 @@ _ZTV20GimmickIkazuchiStart kind:data(any) addr:0x0228b520
 @943 kind:data(any) addr:0x0228b558 local
 @944 kind:data(any) addr:0x0228b570 local
 @945 kind:data(any) addr:0x0228b584 local
-@970 kind:data(any) addr:0x0228b594 local
+@964 kind:data(any) addr:0x0228b594 local
 @938 kind:data(any) addr:0x0228b5a4 local
 @939 kind:data(any) addr:0x0228b5b4 local
 @940 kind:data(any) addr:0x0228b5c4 local
@@ -2825,13 +2825,13 @@ sResources kind:bss addr:0x0228b7ec local
 sResources kind:bss addr:0x0228b800 local
 @86 kind:bss addr:0x0228b808 local
 @645 kind:bss addr:0x0228b814 local
-@637 kind:bss addr:0x0228b820 local
+@631 kind:bss addr:0x0228b820 local
 @516 kind:bss addr:0x0228b82c local
 @645 kind:bss addr:0x0228b838 local
 @1327 kind:bss addr:0x0228b844 local
-@1340 kind:bss addr:0x0228b850 local
+@1334 kind:bss addr:0x0228b850 local
 @1528 kind:bss addr:0x0228b85c local
-@1365 kind:bss addr:0x0228b868 local
+@1359 kind:bss addr:0x0228b868 local
 @1392 kind:bss addr:0x0228b874 local
 data_ov007_0228b880 kind:bss addr:0x0228b880
 data_ov007_0228b88c kind:bss addr:0x0228b88c

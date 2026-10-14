@@ -332,7 +332,7 @@ OV001_BSS_START kind:bss addr:0x02229260
 @39 kind:bss addr:0x02229290 local
 @93 kind:bss addr:0x0222929c local
 @131 kind:bss addr:0x022292a8 local
-@669 kind:bss addr:0x022292b4 local
+@697 kind:bss addr:0x022292b4 local
 data_ov001_022292c0 kind:bss addr:0x022292c0
 data_ov001_022292cc kind:bss addr:0x022292cc
 data_ov001_022292d8 kind:bss addr:0x022292d8

@@ -145,44 +145,24 @@ BattleResult::BattleResult()
     mAnimsB[4] = 0;
 }
 
-// non-matching: 2 words: the original schedules `mov r3, #1` before the sFade address load in the SpriteManager::Get() block (D1 and D0)
 BattleResult::~BattleResult() {
     SpriteManager::Get();
     SpriteManager::sFade[0] = 1;
     SpriteManager::sBrightness[0] = -16;
-    if (mUnk_0c) {
-        delete mUnk_0c;
-    }
-    if (mMessage) {
-        delete mMessage;
-    }
+    delete mUnk_0c;
+    delete mMessage;
     FrameTask::Get().func_0203dd90();
     u8 i = 0;
     do {
-        CellAnimation *anim = mAnims[i];
-        if (anim) {
-            delete anim;
-        }
+        delete mAnims[i];
         i++;
     } while (i < 8);
-    if (mIcons) {
-        delete mIcons;
-    }
-    if (mAnimsB[0]) {
-        delete mAnimsB[0];
-    }
-    if (mAnimsB[1]) {
-        delete mAnimsB[1];
-    }
-    if (mAnimsB[2]) {
-        delete mAnimsB[2];
-    }
-    if (mAnimsB[3]) {
-        delete mAnimsB[3];
-    }
-    if (mAnimsB[4]) {
-        delete mAnimsB[4];
-    }
+    delete mIcons;
+    delete mAnimsB[0];
+    delete mAnimsB[1];
+    delete mAnimsB[2];
+    delete mAnimsB[3];
+    delete mAnimsB[4];
     if (mUnk_14) {
         OS_Free(mUnk_14);
         mUnk_14 = 0;
@@ -806,7 +786,8 @@ void BattleResult::func_ov007_0224f8f4() {
     SpriteManager::Get().Screen(1).func_02027778(mUnk_44[2], mUnk_5c[2], 0x20, 0x38, 0, 0xe0, 0xf, 0);
 }
 
-// non-matching: 5 words: original emits `mov r0,#1; str r0,[sp]` before computing (s16)(base + 0x25) for the third Draw
+// non-matching: 5 words: for the third Draw the original computes (s16) (base + 0x25) through r0 (`add r0, r7, #37; lsl r0;
+// asr r3, r0`) after the `str #1, [sp]`; ours builds it in r3 and schedules the add before the store
 void BattleResult::func_ov007_0224f9a0() {
     mMessage->func_020658d0();
     mAnimsB[3]->Draw(0, 0x80, 0x60, 0);
@@ -913,7 +894,6 @@ void BattleResult::func_ov007_0224fcdc() {
 
 
 
-// non-matching: register allocation only (15 words): the original keeps &data_020d433c in r6 and &data_020d43f0 in r5 during the loop
 void BattleResult::func_ov007_02250010() {
     if (mUnk_b3 != 0) {
         if (data_020d433c.mUnk_7b == 0xd) {
@@ -941,11 +921,10 @@ void BattleResult::func_ov007_02250010() {
                     break;
             }
         } else {
-            u32 me = data_020d433c.mBattlePlayers->mUnk_2a9;
             const u8 (*tbl)[3] = data_ov007_0227a37b;
             u32 count = data_020d433c.mPlayerCount;
-            UnkStruct_020d43f0 *save = &data_020d43f0[0];
             u8 i = 1;
+            u32 me = data_020d433c.mBattlePlayers->mUnk_2a9;
             do {
                 u32 idx = (u8) (me + i);
                 u8 rem = idx % count;
@@ -954,7 +933,7 @@ void BattleResult::func_ov007_02250010() {
                 u8 b = player->mUnk_f7;
                 if (data_020d433c.mUnk_98 == 0 || rem != data_020d433c.mBattlePlayers->mPlayers[me]->mUnk_f2) {
                     mUnk_9c += tbl[a][b % 3] * 100;
-                    if (save->mUnk_5bf_0) {
+                    if (data_020d43f0[0].mUnk_5bf_0) {
                         mUnk_9c += 0x308 + 0x400;
                     }
                 }

@@ -177,6 +177,9 @@ Other findings from linking:
   makes `p * 4` a common subexpression with a later `p * 4 + 0x28`, and mwcc hoists it above the `if`. Keeping the
   container in a local and indexing inside each arm (`list->mPlayers[p]->mUnk_f1`) stops it
   (BattleCommand::func_ov007_0223a734). A `(u8 *)` cast store recolours differently from a real `u8` field store.
+- **`delete p;` versus `if (p) delete p;`.** mwcc emits the null check for a plain `delete` itself; an explicit `if`
+  changes the block shape and the scheduling around it (BattleResult's destructors). Try both: BattleConfrontCard's
+  func_0223f398 needed the explicit `if`.
 - **`stm` where the original has two `str`s for stack arguments.** Declare the flag without an initialiser and assign
   it only in the arm that needs it (`BOOL has; if (...) {...} else { has = 0; ...}`), passing literals in the other
   arm (BattleCommandList::func_0205a804).

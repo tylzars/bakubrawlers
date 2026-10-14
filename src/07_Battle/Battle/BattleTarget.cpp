@@ -3604,21 +3604,21 @@ void func_ov007_0225ca18(BattleTarget *target, int a, int b) {
     target->mUnk_1db = 0;
 }
 
-// non-matching: 13 words, a two-register swap. The original holds the record size 12 in r0 (set before the bne) and
-// the player pointer in r1 in both arms, with mla r0, r2, r0, r1; here the size is in r1 and the pointer in r0. The
-// enum-typed size (a placeholder) is what keeps the 12 in a register set before the branch, as the original does.
-enum RecSize { REC_SIZE = 12 };
+// Both arms compute the record address, so the size 12 is set before the branch and the identical tails are merged.
+// Arm 1 needs its index load kept as its own statement (a placeholder volatile read); a plain read is folded into the
+// address and the arm takes other registers, so the tails no longer merge.
 void BattleTarget::func_ov007_0225ca48(u32 player, u32 record) {
-    RecSize sz = REC_SIZE;
     BattlePlayer *pl;
+    BattleRecord *rec;
     if (player == 0xff) {
         player = data_020d433c.mBattlePlayers->mUnk_28a;
         pl     = data_020d433c.mBattlePlayers->mPlayers[player];
-        record = pl->mRecord;
+        record = *(volatile u8 *) &pl->mRecord;
+        rec    = &pl->mRecords[record];
     } else {
-        pl = data_020d433c.mBattlePlayers->mPlayers[player];
+        pl  = data_020d433c.mBattlePlayers->mPlayers[player];
+        rec = &pl->mRecords[record];
     }
-    BattleRecord *rec = (BattleRecord *) ((u8 *) pl->mRecords + record * sz);
     u16 total         = rec->mUnk_04 + rec->mUnk_06;
     u8 i              = 0;
     do {

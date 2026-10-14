@@ -237,18 +237,19 @@ u32 UnkStruct_02065c40::func_020667ec() {
     return data_020b4324[type]->mUnk_78;
 }
 
-// non-matching: 17 words, the stack slots of result and pending are swapped (original: result at [sp], pending at
-// [sp, #4]), the result store is scheduled after the type load, and `mUnk_42++` reloads (needs mUnk_42 non-volatile
-// and `if (++mUnk_42 == 10)` to match). `s32 done = 0, advance = 0, pending = 0;` as one declaration shares the zero.
+// non-matching: 1 word, the original reloads result from its stack slot at the early return (`ldrcs r0, [sp]`)
+// where this keeps the -1 still in r0. `pending` declared first puts it in the higher stack slot, like the original.
 s32 UnkStruct_02065c40::func_02066814(u32 unk1) {
-    volatile s32 result = -1;
+    s32 pending;
+    s32 result = -1;
     u8 type    = data_020d43f0[0].mUnk_42;
     if (type >= 10) {
         return result;
     }
     if (mUnk_14e2 == data_020b4324[type]->mUnk_78) {
         u8 saved = data_020d433c.mUnk_7d;
-        s32 done = 0, advance = 0, pending = 0;
+        s32 done = 0, advance = 0;
+        pending = 0;
         if (unk1 != 0) {
             data_020d433c.mUnk_7d = 1;
         }
@@ -368,9 +369,7 @@ s32 UnkStruct_02065c40::func_02066814(u32 unk1) {
                     if (next != 0) {
                         func_0206791c(next);
                     }
-                    u8 t42 = data_020d43f0[0].mUnk_42 + 1;
-                    data_020d43f0[0].mUnk_42 = t42;
-                    if (t42 == 10) {
+                    if (++data_020d43f0[0].mUnk_42 == 10) {
                         func_0206791c(8);
                     }
                 }
@@ -514,19 +513,17 @@ u32 UnkStruct_02065c40::func_020670b4(u32 id) {
     return 0;
 }
 
-// non-matching: 17 words, register allocation of the % 5 block.
 u8 UnkStruct_02065c40::func_02067120(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
     if (unk3 != 0) {
         u8 slot = unk3 - 1;
         if (data_020d43f0[0].mUnk_5bf_0) {
             u32 kind = func_020670b4(unk1);
-            u8 flag = *(u8 *) &unk4;
-            u8 group = data_020d43f0[0].mUnk_25;
-            u8 row = group % 5;
             if (kind == 0) {
                 kind = 1;
             }
-            
+            u8 group = data_020d43f0[0].mUnk_25;
+            u8 row = group % 5;
+            u8 flag = *(u8 *) &unk4;
             if (flag == 0) {
                 return data_020a26a4[kind - 1][row][unk2][slot].mUnk_0;
             }

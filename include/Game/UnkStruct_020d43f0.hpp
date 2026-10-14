@@ -64,7 +64,7 @@ struct UnkStruct_020d43f0 {
     /* 028 */ u16 mUnk_28_10 : 3;
     /* 028 */ u16 mUnk_28_13 : 3;
     /* 02a */ u16 mName[12]; // player name, UTF-16
-    /* 042 */ volatile u8 mUnk_42; // reloaded after a switch on it (ov002 0221e984)
+    /* 042 */ u8 mUnk_42;
     /* 043 */ u8 mUnk_43;
     /* 044 */ u32 mPlayFrames; // play time in frames (60 per second)
     /* 048 */ u16 mUnk_48;

@@ -461,9 +461,10 @@ void func_02032fb4(void *file) {   // release what NNS_G3dResDefaultSetup set up
     if (key != 0) data_020a5884(key);
 }
 void func_020330fc(u8 *mdl, BOOL set, u32 mask) {   // set or clear bits in every material's 16-bit flags
-    u32 i;
-    ResMat *mat = (mdl != 0 && U32(mdl, 8) != 0) ? (ResMat *)(mdl + U32(mdl, 8)) : 0;
     u32 n = U8(mdl, 0x18);
+    u32 i;
+    ResMat *mat;
+    if (mdl != 0 && U32(mdl, 8) != 0) mat = (ResMat *)(mdl + U32(mdl, 8)); else mat = 0;
     for (i = 0; i < n; i++) {
         u16 *m = (u16 *)MatByIdx2(mat, i);
         if (set) m[0x1e / 2] |= mask;
@@ -471,9 +472,10 @@ void func_020330fc(u8 *mdl, BOOL set, u32 mask) {   // set or clear bits in ever
     }
 }
 void func_020331a4(u8 *mdl, BOOL set, u32 mask) {   // set or clear bits in every material's 32-bit flags
-    u32 i;
-    ResMat *mat = (mdl != 0 && U32(mdl, 8) != 0) ? (ResMat *)(mdl + U32(mdl, 8)) : 0;
     u32 n = U8(mdl, 0x18);
+    u32 i;
+    ResMat *mat;
+    if (mdl != 0 && U32(mdl, 8) != 0) mat = (ResMat *)(mdl + U32(mdl, 8)); else mat = 0;
     for (i = 0; i < n; i++) {
         u32 *m = (u32 *)MatByIdx2(mat, i);
         u32 v = m[0x10 / 4];

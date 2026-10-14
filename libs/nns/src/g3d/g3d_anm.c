@@ -105,9 +105,9 @@ u32 func_02033994(u8 *base, u32 info, u32 idx) {   // read one byte from an anim
         if (idx & 1) {
             if (idx & 2) { idx >>= 2; a = idx + 1; }
             else { a = idx >> 2; idx = a + 1; }
-            v1 = p[a];
+            v1 = p[a] * 3;
             v2 = p[idx];
-            return (u32)(v1 * 3 + v2) << 14 >> 16;
+            return (u32)(v1 + v2) << 14 >> 16;
         }
         q = p + (idx >> 2);
         return (u32)(q[0] + q[1]) << 15 >> 16;

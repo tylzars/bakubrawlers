@@ -92,6 +92,10 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 - 0x02090b24-0x0209d490 (main `.text`, interleaved with data tables): the Mobiclip video decoder's assembly
   (bitstream unpacking, an audio lattice filter over 256 samples, 8x8 block filters); it uses pc-relative table
   reads and non-standard argument registers.
+- 0x0203b808 (size 0x5c0, in the MobiclipFile unit): the YUV-to-RGB555 converter called from MobiclipDecoder with an
+  argument block (Y plane, interleaved U/V, destination, stride, width, height, lookup table). It pushes ip, keeps
+  six computed row skips in a data block on the stack, saves a register mid-function and unrolls its inner loop by
+  hand into 8 blocks.
 - 0x0204c088-0x0204c40c: CRI's MPEG synthesis dot products (`ldmib` + `smlatt`).
 - ITCM: `func_01ff817c` (identity matrix fill), `func_01ff8298` (Thumb, single-register `stmia` with writeback), the `MIi_CpuClear*`/copy routines at 0x01ff94c8-0x01ff962f and
   0x01ff97f4, the IRQ dispatcher `func_01ffc93c` and the thread-switch return `func_01ffc9a4`.

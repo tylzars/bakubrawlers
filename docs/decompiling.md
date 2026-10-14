@@ -177,6 +177,12 @@ Other findings from linking:
   makes `p * 4` a common subexpression with a later `p * 4 + 0x28`, and mwcc hoists it above the `if`. Keeping the
   container in a local and indexing inside each arm (`list->mPlayers[p]->mUnk_f1`) stops it
   (BattleCommand::func_ov007_0223a734). A `(u8 *)` cast store recolours differently from a real `u8` field store.
+- **A wrong constant can look like a scheduling difference.** When the original builds a value from a neighbouring
+  constant (`mov r7, #34; sub r7, r7, #47`), that shows the true value (-13 where the source had 3,
+  UnkStruct_02065c40::func_0206fa20). Likewise a literal-pool word that differs is often a wrong divisor or constant
+  (BattleCommand's `/ 24`).
+- **A table pointer created before the index load** (`e = tbl; id = ...; ... e[id]; e += id;`) colours differently
+  from `e = &tbl[id]`.
 - **From the BattleConfrontCard pass.**
   - Gaps in a jump table that lead to a label inside the switch are case labels the source is missing (not the
     default).

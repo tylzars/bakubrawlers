@@ -1431,7 +1431,9 @@ static inline fx32 CosIdx(int idx) {
     return FX_SinCosTable_[(idx >> 4) * 2 + 1];
 }
 
-// non-matching: 10 words, r6/r7 swapped between mode and the index*0x44 offset.
+// The mode passed to func_0203d4dc is an enum local: as `u32 mode = c ? 5 : 1;` it colours differently (r6/r7 swapped).
+enum UnkStruct_02065c40_ModelMode { UNK_02065C40_MODEL_MODE_1 = 1, UNK_02065C40_MODEL_MODE_5 = 5 };
+
 BOOL UnkStruct_02065c40::func_020697c8(u32 index, u32 flag) {
     if (index == 0) {
         SpriteManager::Get().func_0202753c(4);
@@ -1444,7 +1446,12 @@ BOOL UnkStruct_02065c40::func_020697c8(u32 index, u32 flag) {
         }
     } else {
         s32 kind = mUnk_112c[index].mUnk_34;
-        u32 mode = mUnk_112c[index].mUnk_36 != 0 ? 5 : 1;
+        UnkStruct_02065c40_ModelMode mode;
+        if (mUnk_112c[index].mUnk_36 != 0) {
+            mode = UNK_02065C40_MODEL_MODE_5;
+        } else {
+            mode = UNK_02065C40_MODEL_MODE_1;
+        }
         ChangeDir("/");
         mUnk_112c[index].mUnk_2c = new UnkStruct_0203d374();
         u8 value = func_02069780(kind);
@@ -1916,19 +1923,17 @@ void UnkStruct_02065c40::func_0206aa34() {
     }
 }
 
-// non-matching: 0x1bc vs 0x1b0, the original hoists per-field address pointers.
 void UnkStruct_02065c40::func_0206abf4(u32 index) {
     if (mUnk_11b4[index].mUnk_3b == 0) {
         return;
     }
     s32 kind = mUnk_11b4[index].mUnk_36;
-    ModelInstance *instance;
+    ModelAnim *anim;
     if (kind == 0x15) {
-        instance = ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0];
+        anim = ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim;
     } else {
-        instance = ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel;
+        anim = ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim;
     }
-    ModelAnim *anim = instance->mAnim;
     if (anim->mUnk_10 == 0) {
         return;
     }
@@ -1949,19 +1954,19 @@ void UnkStruct_02065c40::func_0206abf4(u32 index) {
             value = func_020687a8((u8) mUnk_11b4[index].mUnk_36, target, 0);
             mUnk_11b4[index].mUnk_39 = target;
             mUnk_11b4[index].mUnk_3b = 0;
-            if (func_020687a8((u8) mUnk_11b4[index].mUnk_36, target, 4) == 0) {
-                loop = TRUE;
-            } else {
+            if (func_020687a8((u8) mUnk_11b4[index].mUnk_36, target, 4) != 0) {
                 loop = FALSE;
+            } else {
+                loop = TRUE;
             }
         }
     } else {
-        value = func_020687a8((u8) kind, target, 0);
+        value = func_020687a8((u8) kind, cur, 0);
         mUnk_11b4[index].mUnk_3b = 0;
         loop = TRUE;
     }
-    u8 other = func_020687a8((u8) mUnk_11b4[index].mUnk_36, target, 3);
-    mUnk_11b4[index].mUnk_2c->func_02054644(other, (u8) value);
+    s8 other = func_020687a8((u8) mUnk_11b4[index].mUnk_36, target, 3);
+    mUnk_11b4[index].mUnk_2c->func_02054644((u8) other, (u8) value);
     mUnk_11b4[index].mUnk_3c = 0;
     anim->mUnk_08 = loop;
 }
@@ -3235,15 +3240,14 @@ void UnkStruct_02065c40::func_0206e9d0(u32 flag) {
     }
 }
 
-// non-matching: 0x100 vs 0xfc, the angle is truncated differently.
 extern "C" void func_0206ea14() {
     s32 line = *(vu16 *) 0x4000006;
     if (line >= 0xc0) {
         return;
     }
-    UnkStruct_02065c40 *event = data_02219288;
     u32 time = line + UnkStruct_020c1884::Get().mFrame;
-    u32 angle = ((time << 16) / 3) >> 6;
+    UnkStruct_02065c40 *event = data_02219288;
+    u16 angle = (time << 16) / 192;
     u16 height = event->mUnk_14dc;
     u16 width  = event->mUnk_14da;
     u16 third  = height / 3;
@@ -3257,7 +3261,7 @@ extern "C" void func_0206ea14() {
         }
     }
     s32 offset = span * (SinIdx(angle) << 5) / third;
-    func_020037e8((s16) ((offset << 4) >> 16));
+    func_020037e8((offset << 4) >> 16);
 }
 
 
@@ -3648,7 +3652,6 @@ extern "C" BOOL func_0206f6f0(UnkStruct_02065c40 *event, const char *name, u32 i
     return FALSE;
 }
 
-// non-matching: 30 words, the original keeps event in r8 and category in r7.
 extern "C" void func_0206f88c(UnkStruct_02065c40 *event, u32 category, s32 value, u32 unk4) {
     BOOL idle    = event->mUnk_12bc >= event->mUnk_12be;
     BOOL waiting = event->mUnk_12ba == 3;
@@ -3659,11 +3662,10 @@ extern "C" void func_0206f88c(UnkStruct_02065c40 *event, u32 category, s32 value
     func_01ff9510(data_020a2118, event->mUnk_0c, 0x80);
     s32 offset = data_020a1b12[category].mUnk_3;
     if (offset < 0) {
-        offset = -1;
+        event->mUnk_0c[5].mValue = -1;
     } else {
-        offset += 0x24;
+        event->mUnk_0c[5].mValue = offset + 0x24;
     }
-    event->mUnk_0c[5].mValue = offset;
     u8 kind                  = data_020a1b12[category].mUnk_2;
     s16 extra                = data_020a1b12[category].mUnk_0;
     event->mUnk_0c[10].mValue = kind;
@@ -3695,28 +3697,16 @@ extern const UnkStruct_s8x2 data_020a1b68[];
 extern const UnkStruct_s16x4 data_020a22a4;
 extern const UnkStruct_s16x4 data_020a221c[];
 
-// non-matching: 0x64 vs 0x6c, the original keeps two named pointers into a local record.
 u32 UnkStruct_02065c40::func_0206f9b4(const char *name, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7) {
-    struct {
-        u8 bytes[2];
-        u16 shorts[2];
-    } data;
-    u8 *p  = data.bytes;
-    u16 *q = data.shorts;
-    p[0] = 0;
-    q[0] = 0;
-    data.bytes[0]  = unk3;
-    data.shorts[0] = unk2;
-    q[1] = 0;
-    p[1] = 0;
-    return func_0206fa20(name, q, p, 1, *(u16 *) &unk4, unk5, *(u8 *) &unk6, unk7, 0);
+    u16 shorts[2] = {unk2, 0};
+    u8 bytes[2]   = {unk3, 0};
+    return func_0206fa20(name, shorts, bytes, 1, *(u16 *) &unk4, unk5, *(u8 *) &unk6, unk7, 0);
 }
 
 
 
 extern "C" void func_01ff9510(const void *src, void *dest, u32 size);
 
-// non-matching: 111 words, scheduling of the index arithmetic in the `case 0xa` and `default` (unk4 == 2) blocks; size matches.
 u8 UnkStruct_02065c40::func_0206fa20(const char *name, const u16 *unk2, const u8 *unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7,
                                      u32 unk8, u32 unk9) {
     if (mUnk_12b9 != 9 || mUnk_12bc != mUnk_12be) {
@@ -3820,7 +3810,7 @@ u8 UnkStruct_02065c40::func_0206fa20(const char *name, const u16 *unk2, const u8
         mUnk_0c[n].mValue = -21;
         n++;
         mUnk_0c[n].mCommand = 34;
-        mUnk_0c[n].mValue = 3;
+        mUnk_0c[n].mValue = -13;
         n++;
         mUnk_0c[n].mCommand = 35;
         mUnk_0c[n].mValue = 7;
@@ -3855,8 +3845,8 @@ u8 UnkStruct_02065c40::func_0206fa20(const char *name, const u16 *unk2, const u8
             mUnk_0c[n].mCommand = 87;
             mUnk_0c[n].mValue = data_020a22a4.mUnk_6;
             n++;
+            const UnkStruct_s16x4 *e = data_020a221c;
             u16 id = unk2[1];
-            const UnkStruct_s16x4 *e = &data_020a221c[id];
             mUnk_0c[n].mCommand = 96;
             mUnk_0c[n].mValue = unk2[1] % 22;
             n++;
@@ -3866,7 +3856,8 @@ u8 UnkStruct_02065c40::func_0206fa20(const char *name, const u16 *unk2, const u8
             mUnk_0c[n].mCommand = 101;
             n++;
             mUnk_0c[n].mCommand = 103;
-            mUnk_0c[n].mValue = e->mUnk_0;
+            mUnk_0c[n].mValue = e[id].mUnk_0;
+            e += id;
             n++;
             mUnk_0c[n].mCommand = 104;
             mUnk_0c[n].mValue = e->mUnk_2;
@@ -3954,7 +3945,7 @@ u8 UnkStruct_02065c40::func_0206fa20(const char *name, const u16 *unk2, const u8
     return TRUE;
 }
 
-// non-matching: 10 words, the original schedules `mov r2, #9` later.
+// non-matching: 2 words, the original computes `this + 0x1200` before `mov r3, #0` (scheduling).
 BOOL UnkStruct_02065c40::func_020702e0(s32 unk1, s32 unk2, s32 unk3, s32 unk4, s32 unk5, s32 unk6) {
     if (mUnk_12bc != mUnk_12be) {
         return FALSE;
@@ -3969,8 +3960,7 @@ BOOL UnkStruct_02065c40::func_020702e0(s32 unk1, s32 unk2, s32 unk3, s32 unk4, s
     mUnk_12bc  = 0;
     mUnk_12be  = 9;
     mUnk_12ca  = 0;
-    mUnk_12ce  = 0;
-    mUnk_12cc  = 0;
+    mUnk_12cc = mUnk_12ce = 0;
     mUnk_12d2[0] = -1;
     func_02088ec4(mUnk_1018);
     mUnk_101c[0].mUnk_32 = 1;

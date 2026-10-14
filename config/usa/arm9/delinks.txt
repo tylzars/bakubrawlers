@@ -298,6 +298,7 @@ libs/nns/src/fnd/fnd.c:
     .text       start:0x02030880 end:0x02030b7c
 
 libs/nns/src/fnd/fnd_heap.c:
+    complete
     .text       start:0x02030b7c end:0x02031418
 
 libs/nns/src/g3d/g3d_obj.c:
@@ -441,6 +442,7 @@ libs/nds/src/gx/gx_extpltt.c:
     .text       start:0x02004144 end:0x0200450c
 
 libs/nds/src/gx/gx_tex.c:
+    complete
     .text       start:0x0200450c end:0x020047d8
 
 libs/nds/src/os/os_interrupt.c:
@@ -546,12 +548,14 @@ libs/nds/src/snd/snd_util.c:
     .text       start:0x02008bec end:0x02008c5c
 
 libs/nds/src/snd/snd_bank.c:
+    complete
     .text       start:0x02008c5c end:0x02009050
 
 libs/nds/src/pxi/pxi.c:
     .text       start:0x02009050 end:0x0200936c
 
 libs/nds/src/fs/fs_tail.c:
+    complete
     .text       start:0x0200936c end:0x02009558
 
 libs/nds/src/fs/fs_archive.c:

@@ -252,6 +252,13 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **A guarded allocation that calls a constructor returning `this` is `new T`** (Mobiclip's Player: operator new,
+  operator delete, constructor and destructor are members); the new-expression's result is a temporary, which fixed a
+  register swap.
+- **`else { return x; }` keeps a branch** where `if (!c) return x;` predicates the return (MobiclipFile's allocators).
+- **One function-scope pointer reused in both branches** of an if/else changes how the second value is coloured
+  (FileSystem's func_02023504).
+
 - **Create the first operand early, add the second late:** `u16 rx = p->mRotX; ...other sums...; rx += r[0];`
   instead of `u16 rx = p->mRotX + r[0];` (which is substituted into its store and created last) gave BattleUnk29c's
   four rotation tails the original's reverse-creation register order.

@@ -5585,8 +5585,10 @@ from:0x0203bdf8 kind:load to:0x02215860 module:main
 from:0x0203be20 kind:load to:0x02215860 module:main
 from:0x0203be54 kind:arm_call to:0x01ff958c module:itcm
 from:0x0203be94 kind:load to:0x02215860 module:main
+from:0x0203be9c kind:load to:0x02096a90 module:main
 from:0x0203bed0 kind:arm_call to:0x01ff958c module:itcm
 from:0x0203bf08 kind:load to:0x02215860 module:main
+from:0x0203bf0c kind:load to:0x02094990 module:main
 from:0x0203bf40 kind:arm_call to:0x01ff958c module:itcm
 from:0x0203bf78 kind:load to:0x02215860 module:main
 from:0x0203bf7c kind:load to:0x0209d6f8 module:main

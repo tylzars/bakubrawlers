@@ -79,12 +79,12 @@ void func_020234c8() {
     MI_CpuFill8(&data_020d5408, 0, 0x38);
 }
 
-// non-matching: 12 words, registers of outSize and chunk swapped.
 void *func_02023504(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32 unk6) {
     void *buffer      = (void *) unk2;
     u32 offset        = unk3;
     u32 size          = unk4;
     u32 mode          = unk6;
+    void *p;
     if (mode == 0) {
         mode = (offset | size) != 0 ? 1 : 2;
     }
@@ -96,7 +96,7 @@ void *func_02023504(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
         if (outSize) {
             *outSize = size;
         }
-        void *p = buffer;
+        p = buffer;
         if (buffer == NULL) {
             p = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, size);
         }
@@ -123,16 +123,16 @@ void *func_02023504(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
         if (buffer == NULL) {
             buffer = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, unpacked);
         }
-        void *temp = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, 0x2000);
+        p = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, 0x2000);
         MI_InitUncompContextLZ(data_020d53f4, buffer, &data_020d53e4);
         u32 chunk;
         do {
             chunk = size > 0x2000 ? 0x2000 : size;
-            func_0200ac30(&data_020d5440, temp, chunk);
+            func_0200ac30(&data_020d5440, p, chunk);
             size -= chunk;
-        } while (func_02007d94(data_020d53f4, temp, chunk) != 0);
+        } while (func_02007d94(data_020d53f4, p, chunk) != 0);
         func_0200aadc(&data_020d5440);
-        OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, temp);
+        OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, p);
         size = unpacked;
         if (outSize) {
             *outSize = size;

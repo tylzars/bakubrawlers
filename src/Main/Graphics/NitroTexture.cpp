@@ -192,8 +192,6 @@ BOOL UnkStruct_02028308::func_02028858(const char *name, const char *file, u32 s
     return result;
 }
 
-// non-matching: 6 words; the original keeps `aligned` in r7 and `addr` in r6 (here swapped), with the
-// lsl/bic pair in the other order. Everything else (loads, calls, stack) matches.
 BOOL UnkStruct_02028308::func_020288d4(const char *name, void *data, u32 size) {
     char buf[0x14];
     MI_CpuFill8(buf, 0, 0x14);
@@ -206,8 +204,7 @@ BOOL UnkStruct_02028308::func_020288d4(const char *name, void *data, u32 size) {
         entry = (u16 *) func_0203324c((u8 *) tex + tex->mPlttNames, buf);
     }
     if (entry != NULL) {
-        u32 key     = mTex->mPlttHandle;
-        u32 addr    = (*entry << 3) + ((key << 19) >> 16);
+        u32 addr    = (*entry << 3) + (u16) (mTex->mPlttHandle << 3);
         u32 aligned = (size + 3) & ~3;
         void *dst   = OS_Alloc(aligned);
         MIi_CpuCopy32(data, dst, aligned);

@@ -1518,10 +1518,10 @@ _Z13func_0203a79cP6PlayerPv kind:function(arm,size=0x24) addr:0x0203a79c
 _Z13func_0203a7c0P6Player kind:function(arm,size=0x24) addr:0x0203a7c0
 _ZN10ReaderBaseD2Ev kind:function(arm,size=0x4) addr:0x0203a7e4
 _Z13func_0203a7e8Pv kind:function(arm,size=0x14) addr:0x0203a7e8
-_Z13func_0203a7fcj kind:function(arm,size=0xc) addr:0x0203a7fc
-_Z13func_0203a808Pv kind:function(arm,size=0xc) addr:0x0203a808
-_Z13func_0203a814P6Player kind:function(arm,size=0x30) addr:0x0203a814
-_Z13func_0203a844P6Player kind:function(arm,size=0x14) addr:0x0203a844
+_ZN6PlayernwEm kind:function(arm,size=0xc) addr:0x0203a7fc
+_ZN6PlayerdlEPv kind:function(arm,size=0xc) addr:0x0203a808
+_ZN6PlayerC1Ev kind:function(arm,size=0x30) addr:0x0203a814
+_ZN6PlayerD1Ev kind:function(arm,size=0x14) addr:0x0203a844
 _Z13func_0203a858P6PlayerP6Readerj kind:function(arm,size=0x5ac) addr:0x0203a858
 _Z13func_0203ae04P6Player kind:function(arm,size=0x168) addr:0x0203ae04
 _Z13func_0203af6cP6Player kind:function(arm,size=0x8) addr:0x0203af6c
@@ -2993,6 +2993,8 @@ func_02091ef0 kind:function(arm,size=0x1a0) addr:0x02091ef0
 func_0209d02c kind:function(arm,size=0xe4) addr:0x0209d02c
 func_0209d15c kind:function(arm,size=0x138) addr:0x0209d15c
 func_0209d388 kind:function(arm,size=0x108) addr:0x0209d388
+data_02094990 kind:data(any) addr:0x02094990
+data_02096a90 kind:data(any) addr:0x02096a90
 data_0209d568 kind:data(any) addr:0x0209d568
 data_0209d578 kind:data(any) addr:0x0209d578
 data_0209d6f8 kind:data(any) addr:0x0209d6f8

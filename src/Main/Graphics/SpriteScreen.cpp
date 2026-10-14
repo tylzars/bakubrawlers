@@ -76,7 +76,9 @@ static inline void GX_SetOBJVRamModeBmp(GXOBJVRamModeBmp mode) {
 static inline void GXS_SetOBJVRamModeBmp(GXOBJVRamModeBmp mode) {
     reg_GXS_DB_DISPCNT = (u32) (reg_GXS_DB_DISPCNT & ~0x60 | mode);
 }
-// non-matching: 3 words: the original stores mUnk_403 before mUnk_400 and compares after both stores.
+// non-matching: 3 words, scheduling only: the original fills the table load's delay with the mUnk_403 store and
+// keeps `add r2, r0, #0x400` and `cmp r1, #5` after it (same order as a -proc generic build of the
+// `u16 unit = tbl[mode]; mUnk_403 = mode; mUnk_400 = unit;` form, which the arm946e scheduler reorders).
 void SpriteScreen::func_02027624(s32 mode) {
     mUnk_400 = data_020a5624[mode];
     mUnk_403 = mode;
@@ -275,7 +277,8 @@ void func_02027c64(MtxFx22 *out, SpriteTransform *transform) {
 
 
 
-// non-matching: register allocation only.
+// non-matching: register allocation only (33 words): `cx` is r6 where the original keeps it in r5, the load
+// register, swapping it with the switch compare temporaries; the FX_Mul temporaries for px/py differ the same way.
 void func_02027cf4(s32 *x, s32 *y, s32 shape, SpriteTransform *transform) {
     fx32 cx = *x << 12;
     fx32 cy = *y << 12;

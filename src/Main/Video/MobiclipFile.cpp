@@ -52,6 +52,379 @@ void func_0203b7c8(F *f) {
 }
 void func_0203b7f0(Src *s) { s->adv(); }
 void func_0203b804() {}
+// YUV-to-RGB555 conversion (hand-written assembly): args points at {Y, UV, dst, stride, width, height, table}.
+asm void func_0203b808(void *args) {
+    stmfd sp!, {r4, r5, r6, r7, r8, r9, r10, r11, ip, lr}
+    ldr r8, [r0, #0xc]
+    ldr r9, [r0, #0x10]
+    ldr r10, [r0, #0x14]
+    ldr r3, [r0, #0x18]
+    mov r4, #0x100
+    rsb r5, r9, r4, lsl #0x1
+    sub r6, r4, r9, lsr #0x1
+    sub r7, r8, r9
+    mov r7, r7, lsl #0x1
+    stmfd sp!, {r5, r6, r7, r8, r9, r10}
+    ldr r1, [r0, #0x4]
+    ldr r2, [r0, #0x8]
+    ldr r0, [r0, #0x0]
+    add r3, r3, #0x100
+    add lr, r2, r8
+L0203b848:
+    str r10, [sp, #-4]!
+    ldr r10, [sp, #0x14]
+L0203b850:
+    ldrb r5, [r1], #0x80
+    ldrb r6, [r1], #-0x7f
+    ldrb r4, [r0], #0x1
+    sub r5, r5, #0x80
+    sub r6, r6, #0x80
+    add r7, r3, r6
+    sub r6, r5, r6
+    add r6, r6, r3
+    sub r5, r6, r5, lsl #0x1
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    sub r4, r4, #0x4
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0x1
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [r2], #0x4
+    sub r4, r4, #0x4
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #-0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [lr], #0x4
+    ldrb r5, [r1], #0x80
+    ldrb r6, [r1], #-0x7f
+    ldrb r4, [r0], #0x1
+    sub r5, r5, #0x80
+    sub r6, r6, #0x80
+    add r7, r3, r6
+    sub r6, r5, r6
+    add r6, r6, r3
+    sub r5, r6, r5, lsl #0x1
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    sub r4, r4, #0x4
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0x1
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [r2], #0x4
+    sub r4, r4, #0x4
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #-0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [lr], #0x4
+    ldrb r5, [r1], #0x80
+    ldrb r6, [r1], #-0x7f
+    ldrb r4, [r0], #0x1
+    sub r5, r5, #0x80
+    sub r6, r6, #0x80
+    add r7, r3, r6
+    sub r6, r5, r6
+    add r6, r6, r3
+    sub r5, r6, r5, lsl #0x1
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    sub r4, r4, #0x4
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0x1
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [r2], #0x4
+    sub r4, r4, #0x4
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #-0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [lr], #0x4
+    ldrb r5, [r1], #0x80
+    ldrb r6, [r1], #-0x7f
+    ldrb r4, [r0], #0x1
+    sub r5, r5, #0x80
+    sub r6, r6, #0x80
+    add r7, r3, r6
+    sub r6, r5, r6
+    add r6, r6, r3
+    sub r5, r6, r5, lsl #0x1
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    sub r4, r4, #0x4
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0x1
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [r2], #0x4
+    sub r4, r4, #0x4
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #-0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [lr], #0x4
+    ldrb r5, [r1], #0x80
+    ldrb r6, [r1], #-0x7f
+    ldrb r4, [r0], #0x1
+    sub r5, r5, #0x80
+    sub r6, r6, #0x80
+    add r7, r3, r6
+    sub r6, r5, r6
+    add r6, r6, r3
+    sub r5, r6, r5, lsl #0x1
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    sub r4, r4, #0x4
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0x1
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [r2], #0x4
+    sub r4, r4, #0x4
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #-0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [lr], #0x4
+    ldrb r5, [r1], #0x80
+    ldrb r6, [r1], #-0x7f
+    ldrb r4, [r0], #0x1
+    sub r5, r5, #0x80
+    sub r6, r6, #0x80
+    add r7, r3, r6
+    sub r6, r5, r6
+    add r6, r6, r3
+    sub r5, r6, r5, lsl #0x1
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    sub r4, r4, #0x4
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0x1
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [r2], #0x4
+    sub r4, r4, #0x4
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #-0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [lr], #0x4
+    ldrb r5, [r1], #0x80
+    ldrb r6, [r1], #-0x7f
+    ldrb r4, [r0], #0x1
+    sub r5, r5, #0x80
+    sub r6, r6, #0x80
+    add r7, r3, r6
+    sub r6, r5, r6
+    add r6, r6, r3
+    sub r5, r6, r5, lsl #0x1
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    sub r4, r4, #0x4
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0x1
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [r2], #0x4
+    sub r4, r4, #0x4
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #-0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [lr], #0x4
+    ldrb r5, [r1], #0x80
+    ldrb r6, [r1], #-0x7f
+    ldrb r4, [r0], #0x1
+    sub r5, r5, #0x80
+    sub r6, r6, #0x80
+    add r7, r3, r6
+    sub r6, r5, r6
+    add r6, r6, r3
+    sub r5, r6, r5, lsl #0x1
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    sub r4, r4, #0x4
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #0x1
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [r2], #0x4
+    sub r4, r4, #0x4
+    ldrb r8, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    ldrb r4, [r0], #-0xff
+    add r8, r11, r8, lsl #0x5
+    add r8, r8, ip, lsl #0xa
+    orr r8, r8, #0x8000
+    ldrb r9, [r7, r4]
+    ldrb r11, [r6, r4]
+    ldrb ip, [r5, r4]
+    add r8, r8, r9, lsl #0x15
+    add r8, r8, r11, lsl #0x10
+    add r8, r8, ip, lsl #0x1a
+    orr r8, r8, #0x80000000
+    str r8, [lr], #0x4
+    subs r10, r10, #0x10
+    bgt L0203b850
+    ldr r10, [sp], #4
+    ldr r5, [sp, #0x0]
+    ldr r6, [sp, #0x4]
+    ldr r7, [sp, #0x8]
+    add r0, r0, r5
+    add r1, r1, r6
+    add r2, r2, r7
+    add lr, lr, r7
+    subs r10, r10, #0x2
+    bgt L0203b848
+    add sp, sp, #0x18
+    ldmfd sp!, {r4, r5, r6, r7, r8, r9, r10, r11, ip, pc}
+}
 
 struct G { u32 a, b, c, s0c; u8 *p10; u32 s14; u8 *p18; u32 pad; u32 d; };
 extern G data_02215860;
@@ -72,69 +445,47 @@ void func_0203bdfc(u8 *p, u32 n) {
 #define ALLOC(name, field, size, src) \
 void *name() { \
     if (data_02215860.field == 0) { \
-        if (data_02215860.s0c < size) return (void *) src; \
-        data_02215860.field = (u32) data_02215860.p10; \
-        MIi_CpuCopyFast((void *) src, (void *) data_02215860.field, size); \
-        data_02215860.p10 += size; \
-        data_02215860.s0c -= size; \
+        if (data_02215860.s0c >= size) { \
+            data_02215860.field = (u32) data_02215860.p10; \
+            MIi_CpuCopyFast((void *) src, data_02215860.p10, size); \
+            data_02215860.p10 += size; \
+            data_02215860.s0c -= size; \
+        } else { \
+            return (void *) src; \
+        } \
     } \
     return (void *) data_02215860.field; \
 }
+extern u8 data_02096a90[];
 void *func_0203be24() {
     if (data_02215860.c == 0) {
-        if (data_02215860.s14 < 0x659c) return (void *) 0x2096a90;
-        data_02215860.c = (u32) data_02215860.p18;
-        MIi_CpuCopyFast((void *) 0x2096a90, data_02215860.p18, 0x659c);
-        data_02215860.p18 += 0x659c;
-        data_02215860.s14 -= 0x659c;
+        if (data_02215860.s14 >= 0x659c) {
+            data_02215860.c = (u32) data_02215860.p18;
+            MIi_CpuCopyFast(data_02096a90, data_02215860.p18, 0x659c);
+            data_02215860.p18 += 0x659c;
+            data_02215860.s14 -= 0x659c;
+        } else {
+            return data_02096a90;
+        }
     }
     return (void *) data_02215860.c;
 }
-void *func_0203bea0() {
-    if (data_02215860.b == 0) {
-        if (data_02215860.s0c < 0x2100) return (void *) 0x2094990;
-        data_02215860.b = (u32) data_02215860.p10;
-        MIi_CpuCopyFast((void *) 0x2094990, data_02215860.p10, 0x2100);
-        data_02215860.p10 += 0x2100;
-        data_02215860.s0c -= 0x2100;
-    }
-    return (void *) data_02215860.b;
-}
-extern u8 data_0209d6f8[], data_0209d578[];
-void *func_0203bf10() {
-    if (data_02215860.a == 0) {
-        if (data_02215860.s0c < 0x300) return data_0209d6f8;
-        data_02215860.a = (u32) data_02215860.p10;
-        MIi_CpuCopyFast(data_0209d6f8, data_02215860.p10, 0x300);
-        data_02215860.p10 += 0x300;
-        data_02215860.s0c -= 0x300;
-    }
-    return (void *) data_02215860.a;
-}
-void *func_0203bf80() {
-    if (data_02215860.d == 0) {
-        if (data_02215860.s0c < 0x180) return data_0209d578;
-        data_02215860.d = (u32) data_02215860.p10;
-        MIi_CpuCopyFast(data_0209d578, data_02215860.p10, 0x180);
-        data_02215860.p10 += 0x180;
-        data_02215860.s0c -= 0x180;
-    }
-    return (void *) data_02215860.d;
-}
+extern u8 data_02094990[], data_0209d6f8[], data_0209d578[];
+ALLOC(func_0203bea0, b, 0x2100, data_02094990)
+ALLOC(func_0203bf10, a, 0x300, data_0209d6f8)
+ALLOC(func_0203bf80, d, 0x180, data_0209d578)
 void func_0203bff0(u32 *s, u8 *p) {
     s[1] = p[0];
     s[0] = *(s16 *) (p + 2);
 }
-// non-matching: 0x150 vs 0x158; the clamp constants and table pointers are allocated differently and a zero is hoisted (mov r5, r7) where the original uses movmi.
 struct AdSt { int pred; int idx; };
 extern const s8 data_0209d9f8[];
 extern const s16 data_0209da08[];
 #define NIB(n) \
     { \
-        int idx = st->idx; \
-        st->idx = idx + data_0209d9f8[(n) & 7]; \
+        s16 step = data_0209da08[st->idx]; \
+        st->idx += data_0209d9f8[(n) & 7]; \
         if (st->idx < 0) st->idx = 0; \
-        int step = data_0209da08[idx]; \
         if (st->idx > 0x58) st->idx = 0x58; \
         int diff = step >> 3; \
         if ((n) & 4) diff += step; \
@@ -145,14 +496,13 @@ extern const s16 data_0209da08[];
         if (st->pred > 0x7fff) st->pred = 0x7fff; \
     }
 void func_0203c004(AdSt *st, u8 *in, int n, u32 *out) {
-    for (int i = 0; i < n;) {
+    for (int i = 0; i < n; i++) {
         int b = in[i];
-        i++;
         NIB(b)
         int s1 = st->pred;
         b >>= 4;
         NIB(b)
-        *out++ = (st->pred << 16) | ((u32) (s1 << 16) >> 16);
+        *out++ = (u16) s1 | (st->pred << 16);
     }
 }
 

@@ -91,6 +91,10 @@ struct Player {
     u32 mUnk_c4;         // c4
     u32 mUnk_c8[3];      // c8
     u32 mBase;           // d4
+    static void *operator new(unsigned long size);
+    static void operator delete(void *p);
+    Player();
+    ~Player();
 };
 
 extern "C" void func_02000b9c(u32 a);
@@ -110,10 +114,6 @@ extern "C" int func_0203b350(Player *p);
 extern "C" int func_0203b390(Player *p);
 extern "C" int func_0203b3a0(Player *p, void *buffer);
 extern "C" int func_0203b550(Player *p);
-Player *func_0203a844(Player *p);
-void *func_0203a7fc(u32 size);
-void func_0203a808(void *p);
-Player *func_0203a814(Player *p);
 int func_0203a544(Player *p, Reader *r, u32 a);
 int func_0203a858(Player *p, Reader *r, u32 a);
 void func_0203ae04(Player *p);
@@ -134,20 +134,12 @@ Player *func_0203a574(Reader *src, u32 a) {
         return 0;
     }
     if (func_0203b658(r, (u32) src) == 0) {
-        if (r != 0) {
-            delete r;
-        }
+        delete r;
         return 0;
     }
-    p = (Player *) func_0203a7fc(0xd8);
-    if (p != 0) {
-        p = func_0203a814(p);
-    }
+    p = new Player;
     if (func_0203a544(p, r, a) == 0) {
-        if (p != 0) {
-            func_0203a844(p);
-            func_0203a808(p);
-        }
+        delete p;
         return 0;
     }
     return p;
@@ -158,15 +150,9 @@ Reader *func_0203a648(Reader *r) {
     return r;
 }
 
-static inline void DestroyPlayer(Player *p) {
-    if (p != 0) {
-        func_0203a844(p);
-        func_0203a808(p);
-    }
-}
 void func_0203a65c(Player *p) {
     if (p != 0) {
-        DestroyPlayer(p);
+        delete p;
     }
 }
 
@@ -230,26 +216,24 @@ void *func_0203a7e8(void *p) {
     _ZdlPv(p);
     return p;
 }
-void *func_0203a7fc(u32 size) { return func_0203c15c(size); }
-void func_0203a808(void *p) { func_0203c174(p); }
+void *Player::operator new(unsigned long size) { return func_0203c15c(size); }
+void Player::operator delete(void *p) { func_0203c174(p); }
 
-Player *func_0203a814(Player *p) {
-    p->mReader = 0;
-    p->mPlaneY = 0;
-    p->mPlaneC = 0;
-    p->mUnk_68 = 0;
-    p->mUnk_6c = 0;
-    p->mBuf[0] = 0;
-    p->mBuf[1] = 0;
-    p->mUnk_64 = 0;
-    p->mAudio = 0;
-    p->mUnk_94 = 0;
-    return p;
+Player::Player() {
+    mReader = 0;
+    mPlaneY = 0;
+    mPlaneC = 0;
+    mUnk_68 = 0;
+    mUnk_6c = 0;
+    mBuf[0] = 0;
+    mBuf[1] = 0;
+    mUnk_64 = 0;
+    mAudio = 0;
+    mUnk_94 = 0;
 }
 
-Player *func_0203a844(Player *p) {
-    func_0203ae04(p);
-    return p;
+Player::~Player() {
+    func_0203ae04(this);
 }
 
 int func_0203af6c(Player *p) { return p->mFrames; }

@@ -208,6 +208,11 @@ Other findings from linking:
   gave the original's evaluation order where none of the 120 one-expression forms did (BattleShoot::func_ov007_0226f76c).
   Reading `tbl[idx]` into a local before an `f++` puts the table load ahead of the store, and `if (field)` right after
   `field = var;` compiles to `tst #255`.
+- **`(u8)` casts at a call site often stand in for the callee's parameter types.** Making `func_020231f4` take
+  `u8, u8` matched three callers in UnkStruct_02078e14_b.cpp. An `extern` object's declared size can matter too:
+  stores at 0x1c/0x1d into `UnkStruct_0220f540` scheduled like the original only once the type was at least 0x3c bytes.
+- **Code that leaves no instructions can still move the scheduler.** The choice between equally ready instructions
+  depends on where they sit in the block; dummy calls before a block flip such ties (func_020843ac, func_02085220).
 - **A negative constant stored with `strh` means a signed 16-bit destination.** `mov r0, #0xe000; sub r1, r0, #0x12000`
   (0xffffc000) stored to a halfword can't come from a `u16` field: every form folds to 0xc000. Only a signed 16-bit
   lvalue gives it (`*(s16 *) &p->mRotY = -0x4000;` as a placeholder, BattleCardCamera::func_ov007_02244bb4).

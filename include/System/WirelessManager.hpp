@@ -166,6 +166,7 @@ struct UnkStruct_0220f540 {
             /* 1f */ u8 mUnk_1f;
         };
     };
+    /* 20 */ PAD(0x20, 0x40); // the slot-message stores at 0x1c/0x1d schedule like an object of at least 0x3c bytes
 };
 
 extern UnkStruct_0220f540 data_0220f540;

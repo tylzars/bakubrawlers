@@ -144,7 +144,7 @@ void func_020231c0(UnkStruct_020d43f0 *d, int idx, u32 v) {
     d->mUnk_460[idx] = v;
 }
 
-u16 func_020231f4(UnkStruct_020d43f0 *d, u32 a, u32 b, u32 c) {
+u16 func_020231f4(UnkStruct_020d43f0 *d, u32 a, u8 b, u8 c) {
     int idx = func_0202317c(d, a, b, c);
     return d->mUnk_460[idx] * 10;
 }

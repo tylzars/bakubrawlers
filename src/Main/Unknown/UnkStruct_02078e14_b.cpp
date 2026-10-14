@@ -2016,6 +2016,10 @@ void UnkStruct_02078e14::func_02080bdc(u32 unk1) {
 }
 
 void UnkStruct_02078e14::func_02081128() {
+    BattleCellPair *pair;
+    u8 id;
+    u8 kind;
+    u32 value;
     if (mUnk_c0 == NULL) {
         return;
     }
@@ -2050,17 +2054,13 @@ void UnkStruct_02078e14::func_02081128() {
                 return;
             }
             func_02058228(mUnk_c0, 0);
-            BattleCellPair *pair = (BattleCellPair *) func_02023248(data_020d43f0, (u8) mUnk_106[mUnk_fa], mUnk_104);
+            pair = (BattleCellPair *) func_02023248(data_020d43f0, (u8) mUnk_106[mUnk_fa], mUnk_104);
             func_02058260(mUnk_c0, (u8) mUnk_106[mUnk_fa], mUnk_104, -1);
             func_0205afb4(mUnk_c0, mUnk_104, func_020231f4(data_020d43f0, 0, (u8) mUnk_106[mUnk_fa], mUnk_104), pair);
             return;
         }
         case 3:
         case 5: {
-            u8 kind;
-            BattleCellPair *pair;
-            u8 id;
-            u32 value;
             if (mUnk_e6 == 0) {
                 return;
             }
@@ -2440,13 +2440,10 @@ void UnkStruct_02078e14::func_020823d8(u32 unk1, u32 unk2, u32 unk3) {
     func_02025b64(second, 4, offset, path, 0, 0, 0);
 }
 
-static inline void PrintMessageY(TextManager &tm, const u8 *data, u32 offset, u32 length, void *buffer, s16 y, s16 x) {
-    tm.Print(data + offset, length, buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0x10, 0, 0, 0, 1, 1);
-}
-
 void UnkStruct_02078e14::func_0208250c(u32 unk1, u32 unk2) {
     TextManager::Get().mUnk_5b = 1;
-    PrintMessageY(TextManager::Get(), (u8 *) mUnk_18, ((u16 *) ((u8 *) mUnk_18 + unk1 * 4))[1], ((u16 *) ((u8 *) mUnk_18 + unk1 * 4))[2], mUnk_28[0], 0, (s16) (unk2 << 5));
+    s16 x = unk2 << 5;
+    PrintMessageF(TextManager::Get(), (MessageFile *) mUnk_18, unk1, mUnk_28[0], 0, x);
     TextManager::Get().mUnk_5b = 0;
 }
 
@@ -2613,12 +2610,10 @@ void UnkStruct_02078e14::func_020832bc() {
         mUnk_1a2[6].mUnk_b += 1;
     }
     u8 i;
-    const u8 *row;
     u8 j;
     for (i = 0; i < 0x29; i++) {
-        row = data_020a3768[i];
         for (j = 0; j < 6; j++) {
-            if (row[j] != 0) {
+            if (data_020a3768[i][j] != 0) {
                 if (func_020231f4(data_020d43f0, 0, i, j) != 0) {
                     mUnk_1a2[j].mUnk_a += 1;
                     mUnk_1a2[6].mUnk_a += 1;
@@ -3783,13 +3778,11 @@ s32 UnkStruct_02078e14::func_0208644c() {
     u16 total = 0;
     u8 i      = 0;
     do {
-        u32 value;
         if (mUnk_1f1 != 0x15) {
-            value = data_020d433c.mBattlePlayers->mPlayers[mUnk_1f0]->mRecords[i].mUnk_04;
+            total += data_020d433c.mBattlePlayers->mPlayers[mUnk_1f0]->mRecords[i].mUnk_04;
         } else {
-            value = func_020231f4(data_020d43f0, 0, (u8) mUnk_c8[i], (u8) mUnk_c8[9 + i]);
+            total += func_020231f4(data_020d43f0, 0, (u8) mUnk_c8[i], (u8) mUnk_c8[9 + i]);
         }
-        total += value;
         i++;
     } while (i < 3 && mUnk_3f4 == 0);
     return total;
@@ -4187,7 +4180,7 @@ s32 func_02087468() {
         do {
             u16 j = 0;
             do {
-                if (func_020231f4(data_020d43f0, 0, (u8) i, (u8) j) != 0) {
+                if (func_020231f4(data_020d43f0, 0, i, j) != 0) {
                     count++;
                     break;
                 }
@@ -4197,7 +4190,7 @@ s32 func_02087468() {
         } while (i < 0x29);
         if (count >= (u16) (data_020d43f0[0].mUnk_5d2 + 0x24)) {
             result = 8;
-            data_020d49a6[1] |= 0x1;
+            ((u8 *) data_020d49a6)[1] |= 0x1;
         }
     }
     if (result < 0) {
@@ -4212,7 +4205,7 @@ s32 func_02087468() {
             } while (i < 0x102);
             if (count >= 200) {
                 result = 9;
-                data_020d49a6[1] |= 0x2;
+                ((u8 *) data_020d49a6)[1] |= 0x2;
             }
         }
     }
@@ -4223,8 +4216,8 @@ BOOL func_020875ac(u32 index) {
     BOOL result = TRUE;
     switch (data_020a40f4[index][0]) {
         case 0: {
+            u8 i = 0;
             const u16 *list = (const u16 *) data_020a40f0[index].mList;
-            u8 i            = 0;
             do {
                 if (!TestFlagBit(data_020d497b, list[i])) {
                     result = FALSE;
@@ -4236,7 +4229,7 @@ BOOL func_020875ac(u32 index) {
         }
         case 1: {
             const u8 *list = (const u8 *) data_020a40f0[index].mList;
-            u8 i           = 0;
+            u8 i = 0;
             do {
                 if (!TestFlagBit(data_020d4976, list[i])) {
                     result = FALSE;
@@ -4247,8 +4240,8 @@ BOOL func_020875ac(u32 index) {
             break;
         }
         case 2: {
+            u8 i = 0;
             const u8 *list = (const u8 *) data_020a40f0[index].mList;
-            u8 i           = 0;
             do {
                 if (!TestFlagBit(data_020d496a + list[1] * 3, list[0])) {
                     result = FALSE;

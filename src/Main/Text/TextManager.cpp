@@ -17,7 +17,7 @@ struct TextSprite {
     /* 00 */ u32 mAttr;
     /* 04 */ u16 mTile;
     /* 06 */ u16 mX;
-    /* 08 */ u16 mY;
+    /* 08 */ s16 mY;
     /* 0a */ PAD(0x0a, 0x0c);
     /* 0c */
 };
@@ -330,7 +330,8 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u
     mUnk_5b = savedFontMode;
 }
 
-// non-matching: the digit count and the reversed number swap registers (r4/r5).
+// non-matching: 15 words, prologue scheduling only. The original copies unk12 to its home slot through r5 and
+// loads unk13 (r6) late; here unk13 is loaded first and every copy goes through r0.
 void TextManager::PrintNumber(u32 value, u32 minDigits, u32 unk3, void *buffer, u32 width, u32 height,
                               s16 *outWidth, s16 *outHeight, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13,
                               u32 unk14, u32 unk15) {
@@ -355,7 +356,9 @@ void TextManager::PrintNumber(u32 value, u32 minDigits, u32 unk3, void *buffer, 
     u32 table = (u16) unk3;
     do {
         u16 glyph = reversed % 10 + 0x10;
-        glyph = ((u16 *) ((u8 *) mData + *(u16 *) ((u8 *) mData + table * 4 + 2)))[glyph];
+        u8 *codes = (u8 *) mData;
+        codes += *(u16 *) ((u8 *) mData + table * 4 + 2);
+        glyph = ((u16 *) codes)[glyph];
         Print(&glyph, 2, buffer, width, height, outWidth, outHeight, NULL, unk9, unk10, unk11, unk12, 0, 0, unk13, unk14,
               unk15);
         reversed = reversed / 10;
@@ -363,22 +366,25 @@ void TextManager::PrintNumber(u32 value, u32 minDigits, u32 unk3, void *buffer, 
     } while (count != 0);
 }
 
-// non-matching: register allocation.
 void TextManager::func_0202cd48(u32 mode, u16 *map, u32 palette, u32 base, u32 width, u32 height, u32 stride) {
     u16 start;
-    u32 pitch = *(u16 *) &stride;
+    u16 pitch;
+    u16 n;
+    u16 x;
+    u16 y;
+    pitch = *(u16 *) &stride;
     if (mode == 0) {
         start = *(u16 *) &base >> 5;
     } else {
         start = *(u16 *) &base >> 6;
     }
-    u16 y = 0;
-    u16 n = 0;
+    y = 0;
+    n = 0;
     do {
-        u16 x = 0;
-        u16 *row = map + pitch * y;
+        x = 0;
         do {
-            row[x] = (start + n++) | (palette << 12);
+            map[y * pitch + x] = (start + n) | (palette << 12);
+            n++;
             x++;
         } while (x < width);
         y++;
@@ -394,18 +400,14 @@ void TextManager::SetColor(u32 unk1, u32 unk2, u32 unk3) {
     }
 }
 
-// non-matching: size 0x74 vs 0x68.
 void TextManager::func_0202ce44(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
     if (unk2 == 0) {
         func_02025c1c(unk1, 6, unk3 << 5, mCursor, 0x20, 0);
     } else {
-        func_02025c1c(unk1, 1, (unk3 << 9) + (unk4 << 13), mCursor, 0x20, 0);
+        func_02025c1c(unk1, 1, (unk4 << 13) + (unk3 << 9), mCursor, 0x20, 0);
     }
 }
 
-// non-matching: size 0x2f4 vs 0x2f0. The original keeps the stack copy of `width` and shifts it inside the row loop;
-// here `width / 8` is hoisted out of it, which also reorders the row setup. The layout branch's divisions and sum match
-// apart from registers (the original has absX in r7, the tile units in r5/r6).
 void TextManager::func_0202ceac(u32 glyph, void *buffer, u32 eightBit, s32 layout, s16 x, s16 y, u16 width, u16 height) {
     if ((x < 0) | (x >= width)) {
         return;
@@ -426,13 +428,9 @@ void TextManager::func_0202ceac(u32 glyph, void *buffer, u32 eightBit, s32 layou
     u16 unitB   = ((layout >> 4) & 0xf) << 4;
     u16 row     = 0;
     do {
-        s32 absY = row + y;
-        u8 *fontRow = font + (row % 8) * 4 + (row / 8) * 0x40;
-        s32 tileRow = (width / 8) * (absY / 8);
-        s32 yMod = absY % 8;
         u16 col = 0;
         do {
-            u8 b = (fontRow + (col % 8) / 2)[(col / 8) * 0x20];
+            u8 b = (font + (row % 8) * 4 + (row / 8) * 0x40 + (col % 8) / 2)[(col / 8) * 0x20];
             u8 v;
             if ((col & 1) != 0) {
                 v = (b & 0xf0) >> 4;
@@ -442,23 +440,21 @@ void TextManager::func_0202ceac(u32 glyph, void *buffer, u32 eightBit, s32 layou
             if (v != 0) {
                 u32 pos;
                 if (layout == 0) {
-                    s32 absX = col + x;
-                    pos = (tileRow + absX / 8) * 0x40 + yMod * 8 + absX % 8;
+                    pos = ((width / 8) * ((row + y) / 8) + (col + x) / 8) * 0x40 + ((row + y) % 8) * 8 + (col + x) % 8;
                 } else {
-                    s32 absX = col + x;
-                    s32 qy = absY;
+                    s32 qy = row + y;
+                    s32 qx = col + x;
                     qy /= unitA;
-                    s32 qx = absX;
                     qx /= unitB;
-                    s32 ry = absY;
+                    s32 ry = row + y;
                     ry %= unitA;
-                    s32 rx = absX;
+                    s32 rx = col + x;
                     rx %= unitB;
                     pos = unitA * (width * qy + unitB * qx);
                     pos += unitB * (ry / 8) * 8;
                     pos += (rx / 8) * 0x40;
-                    pos += yMod * 8;
-                    pos += absX % 8;
+                    pos += ((row + y) % 8) * 8;
+                    pos += (col + x) % 8;
                 }
                 u8 *buf = (u8 *) buffer;
                 if (eightBit == 0) {
@@ -498,26 +494,26 @@ s32 TextManager::func_0202d1bc(u32 code) {
     return -1;
 }
 
-// non-matching: size 0x404 vs 0x3fc.
+// non-matching: 50 words, registers only. The instruction stream and stack slots match the original under the
+// renaming col r8->r4, row r4->r5, mask r5->r6, unitB r6->r8 (original: col r4, row r5, mask r6, unitA r7, unitB r8).
+// The shadow `if (mUnk_59)` block inside the pixel test is what moves col to the top of the group; declaration order,
+// types and the startCol forms tried do not change it. (`((row + 1) / 8) * (width / 8)` with the operands swapped
+// also fixes the two shadow/main `mul` words, but that is probably an allocation artifact, so it is not used here.)
 void TextManager::func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color, s32 layout, s16 x, s16 y, u32 width,
                                 u32 height) {
-    s32 px = *(s16 *) &x;
-    if ((px < 0) | (px >= (s32) width)) {
+    if ((x < 0) | (x >= (s32) width)) {
         return;
     }
-    s32 py = *(s16 *) &y;
-    if ((py < 0) | (py >= (s32) height)) {
+    if ((y < 0) | (y >= (s32) height)) {
         return;
     }
-    u8 *bits    = (u8 *) mFont + 8 + glyph * mFont->mGlyphSize;
-    u16 col     = *(u16 *) &x;
-    u16 row     = *(u16 *) &y;
-    u16 unitA   = (layout & 0xf) << 4;
-    u16 unitB   = ((layout >> 4) & 0xf) << 4;
-    u32 tiles   = width >> 3;
-    u8 mask     = 0;
+    u8 *bits  = (u8 *) mFont + 8 + glyph * mFont->mGlyphSize;
+    u16 col   = x;
+    u16 row   = y;
+    u16 unitA = (layout & 0xf) << 4;
+    u16 unitB = ((layout >> 4) & 0xf) << 4;
+    u8 mask   = 0;
     u32 bitsVal;
-    u8 c8       = color;
     do {
         if (mask == 0) {
             bitsVal = *bits++;
@@ -525,13 +521,23 @@ void TextManager::func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color
         }
         if (col < width && (u8) (bitsVal & mask) != 0) {
             if (mUnk_59 != 0) {
-                s32 sy = row + 1;
                 u32 pos;
                 if (layout == 0) {
-                    pos = (tiles * (sy / 8) + col / 8) * 0x40 + (sy % 8) * 8 + col % 8;
+                    pos = ((width / 8) * ((row + 1) / 8) + col / 8) * 0x40 + ((row + 1) % 8) * 8 + col % 8;
                 } else {
-                    pos = unitA * (width * (sy / unitA) + unitB * (col / unitB)) + unitB * ((sy % unitA) / 8) * 8 +
-                          ((col % unitB) / 8) * 0x40 + (sy % 8) * 8 + col % 8;
+                    s32 qy = row + 1;
+                    s32 qx = col;
+                    qy /= unitA;
+                    qx /= unitB;
+                    s32 ry = row + 1;
+                    ry %= unitA;
+                    s32 rx = col;
+                    rx %= unitB;
+                    pos = unitA * (width * qy + unitB * qx);
+                    pos += unitB * (ry / 8) * 8;
+                    pos += (rx / 8) * 0x40;
+                    pos += ((row + 1) % 8) * 8;
+                    pos += col % 8;
                 }
                 u8 *buf = (u8 *) buffer;
                 if (eightBit == 0) {
@@ -546,10 +552,21 @@ void TextManager::func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color
             }
             u32 pos;
             if (layout == 0) {
-                pos = (tiles * (row / 8) + col / 8) * 0x40 + (row % 8) * 8 + col % 8;
+                pos = ((width / 8) * (row / 8) + col / 8) * 0x40 + (row % 8) * 8 + col % 8;
             } else {
-                pos = unitA * (width * (row / unitA) + unitB * (col / unitB)) + unitB * ((row % unitA) / 8) * 8 +
-                      ((col % unitB) / 8) * 0x40 + (row % 8) * 8 + col % 8;
+                s32 qy = row;
+                s32 qx = col;
+                qy /= unitA;
+                qx /= unitB;
+                s32 ry = row;
+                ry %= unitA;
+                s32 rx = col;
+                rx %= unitB;
+                pos = unitA * (width * qy + unitB * qx);
+                pos += unitB * (ry / 8) * 8;
+                pos += (rx / 8) * 0x40;
+                pos += (row % 8) * 8;
+                pos += col % 8;
             }
             u8 *buf = (u8 *) buffer;
             if (eightBit == 0) {
@@ -559,31 +576,48 @@ void TextManager::func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color
                     buf[pos >> 1] = (buf[pos >> 1] & 0xf0) | color;
                 }
             } else {
-                buf[pos] = c8;
+                buf[pos] = color;
             }
         }
         col++;
         mask >>= 1;
-        if (col - px >= mFont->mWidth) {
+        if (col - x >= mFont->mWidth) {
             row++;
-            col = *(u16 *) &x;
+            col = x;
         }
         if (row >= height) {
             return;
         }
-    } while (row - py < mFont->mHeight);
+    } while (row - y < mFont->mHeight);
 }
 
-// non-matching: same size; the prologue computes the screen offset (index * 0x408) later than the original.
+// non-matching: 27 words, entry block only: the original puts the screen offset (unk2 * 0x408) in r4 and unk6 in r0,
+// unitY/unitX in r8/r7, and copies width/height through r2; here they land in r0/r4/r7/r5, which reorders the block.
 void TextManager::Init(void *glyphs, u32 unk2, u32 unk3, u32 width, u32 height, u32 unk6) {
- TextSprite *sprite = (TextSprite *) glyphs; s32 flags = unk6; s32 unitY = (flags >> 4) & 0xf; s32 unitX = flags & 0xf;
- u16 tableIndex = (unitX - 1) + ((unitY - 1) << 2); u16 tile = 0; u16 stepX = unitX << 1; u16 stepY = unitY << 1; u16 y = 0;
- do { s16 py = y << 3; u32 blocks = stepY * stepX; u16 x = 0;
- do {
- sprite->mAttr = data_020a56f0[tableIndex] | (unk3 << 13);
- sprite->mTile = SpriteManager::Get().Screen(unk2).func_020276f4(tile);
- sprite->mX = x << 3; sprite->mY = py;
- if (unk3 == 0) { tile += blocks << 5; } else { tile += blocks << 6; }
- sprite++; x += stepY; } while (x < width);
- y += stepX; } while (y < height);
+    TextSprite *sprite = (TextSprite *) glyphs;
+    s32 flags          = unk6;
+    s32 unitY          = (flags >> 4) & 0xf;
+    s32 unitX          = flags & 0xf;
+    u16 tableIndex     = (unitX - 1) + ((unitY - 1) << 2);
+    u16 tile           = 0;
+    u16 stepX          = unitX << 1;
+    u16 stepY          = unitY << 1;
+    u16 y              = 0;
+    do {
+        u16 x = 0;
+        do {
+            sprite->mAttr = data_020a56f0[tableIndex] | (unk3 << 13);
+            sprite->mTile = SpriteManager::Get().Screen(unk2).func_020276f4(tile);
+            sprite->mX    = x << 3;
+            sprite->mY    = y << 3;
+            if (unk3 == 0) {
+                tile += (stepY * stepX) << 5;
+            } else {
+                tile += (stepY * stepX) << 6;
+            }
+            sprite++;
+            x += stepY;
+        } while (x < width);
+        y += stepX;
+    } while (y < height);
 }

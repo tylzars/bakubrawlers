@@ -777,7 +777,9 @@ void func_ov007_02262768(BattlePlayerList *list, BattleUnk022637acUnit *unit, u1
 void func_ov007_02262a64(BattlePlayerList *list, u8 a, u8 b);
 BOOL func_ov007_02267304(BattleUnk022637ac *self, VecFx32 *out);
 
-// non-matching: 0x4bc vs 0x4b4, the original keeps this in r5, unit in r4 and 0x14 live in sl.
+// non-matching: same size now (the unit stride 0x14 is an enum-typed local, so it is kept in a register across the calls like the original's sl);
+// the remaining diff is register assignment only: the original has this=r5, done=r8, unit=r4, caster=r6, base+0x7c=r7, marker=r9, stride=sl.
+enum UnitSize { UNIT_SIZE = 0x14 };
 u8 BattleUnk022637ac::func_ov007_02265af8() {
     u8 done = 0;
     switch (mUnk_28) {
@@ -798,11 +800,12 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
         case 1:
             if (mUnk_1a >= 0x50 && !mUnk_62_1) {
                 mUnk_62_1               = 1;
+                u8 caster               = mUnk_16;
+                UnitSize sz = UNIT_SIZE;
                 BattlePlayerList *list  = data_020d433c.mBattlePlayers;
                 BattleUnit *units       = list->Units();
-                BattleUnit *unit        = &units[mUnk_29];
+                BattleUnit *unit        = (BattleUnit *) ((u8 *) units + mUnk_29 * sz);
                 BattleMarker *marker    = &list->Entries()[unit->mUnk_11];
-                u8 caster               = mUnk_16;
                 func_ov007_02248944(&mUnk_54, marker->mUnk_3, marker->mUnk_4);
                 func_0203db8c(mUnk_1c->mUnk_1a4, mUnk_54.x, 0x899a, mUnk_54.z);
                 VecFx32 a = mUnk_1c->mUnk_1a4->mPosition;
@@ -816,7 +819,7 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
                 u16 r6               = record->mUnk_06;
                 u8 r9                = record->mUnk_09;
                 BattleUnk022637acUnit tmp;
-                MI_CpuCopy8(&units[caster], &tmp, 0x14);
+                MI_CpuCopy8((u8 *) units + caster * sz, &tmp, sz);
                 tmp.mPos.x = mUnk_1c->mUnk_1a4->mPosition.x;
                 tmp.mPos.z = mUnk_1c->mUnk_1a4->mPosition.z;
                 func_ov007_02262828(data_020d433c.mBattlePlayers, mUnk_16, 2);
@@ -1424,7 +1427,10 @@ BOOL func_ov007_022677cc(BattleUnk022637ac *self) {
         }
         i++;
     } while (i < 12);
-if (a >= c || b == 0) { r = 0; } return r;
+    if (a >= c || b == 0) {
+        r = 0;
+    }
+    return r;
 }
 
 enum UnitCompare { UNIT_COMPARE_0, UNIT_COMPARE_1, UNIT_COMPARE_2 };

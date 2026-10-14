@@ -43,7 +43,7 @@ inline void MyroomRankingScene::UpdateRowAnimations() {
 
 extern const u8 data_ov008_02228cb0[];
 extern const u8 data_ov008_02228cb1[];
-extern const u8 data_ov008_02228cbc[];
+extern const u8 data_ov008_02228cbc[][2];
 extern const u8 data_ov008_02228d38[][20];
 extern const WindowItemRecord data_ov008_02228eac[];
 extern const WindowCellRecord data_ov008_02228db0[];
@@ -328,11 +328,10 @@ void MyroomRankingScene::func_ov008_022205ac() {
     func_ov008_022205b8();
 }
 
-// non-matching: 22 words differ from +0x18 (register allocation of the loop locals)
 void MyroomRankingScene::func_ov008_022205b8() {
     for (u8 i = 0; i < 6; i++) {
-        u8 y        = data_ov008_02228cbc[i * 2 + 1];
-        u8 x        = data_ov008_02228cbc[i * 2];
+        u8 y        = data_ov008_02228cbc[i][1];
+        u8 x        = data_ov008_02228cbc[i][0];
         u32 base    = (i << 11) + 0x8000;
         for (u8 j = 0; j < 2; j++) {
             SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffers[i], 1,
@@ -343,7 +342,6 @@ void MyroomRankingScene::func_ov008_022205b8() {
         u16 a;
         u32 b;
         u8 digit;
-        const u8 *pos = data_ov008_02228d38[i];
         a             = mRows[i].mUnk_2a;
         b             = mRows[i].mUnk_2c;
         for (u8 j = 0; j < 10; j++) {
@@ -367,12 +365,13 @@ void MyroomRankingScene::func_ov008_022205b8() {
                 }
             }
             mRows[i].mCells[j]->Update();
-            mRows[i].mCells[j]->func_0202a3ec(1, digit, pos[j * 2], pos[j * 2 + 1], 0);
+            mRows[i].mCells[j]->func_0202a3ec(1, digit, data_ov008_02228d38[i][j * 2], data_ov008_02228d38[i][j * 2 + 1], 0);
         }
     }
     SelectWindow *window = mWindow;
+    u8 cy = window->mCursor->mUnk_0b;
     window->mCellPos[9].x = 0xe4;
-    window->mCellPos[9].y = window->mCursor->mUnk_0b;
+    window->mCellPos[9].y = cy;
     mWindow->Draw();
     mMessage->func_020658d0();
 }

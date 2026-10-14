@@ -376,8 +376,6 @@ void MyroomTipsScene::func_ov008_02226e00() {
     func_ov008_02228214(-1);
 }
 
-// non-matching: in the first loop's Draw call the two data_ov008_02229668 byte loads come x then y; the original loads y
-// first (2 words; same source shape gives either order in func_ov008_022271f8)
 void MyroomTipsScene::Draw() {
     UnkStruct_SceneContext *context = mContext;
     func_ov008_022271f8();
@@ -392,9 +390,11 @@ void MyroomTipsScene::Draw() {
         BOOL first = (show == FALSE);
         u8 i       = first;
         do {
-            if (mNew[i] != 0) {
-                mNewCells[0]->Draw(1, data_ov008_02229668[i][0], data_ov008_02229668[i][1], 1);
+            if (mNew[i] == 0) {
+                i++;
+                continue;
             }
+            mNewCells[0]->Draw(1, data_ov008_02229668[i][0], data_ov008_02229668[i][1], 1);
             i++;
         } while (i < 6);
     }

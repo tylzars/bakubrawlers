@@ -1,6 +1,7 @@
 // WM wireless / ctrdg-detect library, 0x0200fdfc-0x02011c34 (2.0/sp1p5 -O4,p -ipa file -enum int)
 #include <nitro/private/wm_dev.h>
 #define H(b, i) (((u16 *)((b) + 0x800))[i])
+typedef struct { u16 aidBitmap; u8 pad[0x1fe]; } WMDataSet;  /* 0x200 bytes, one of 4 at the start of WMDataSharingInfo */
 void func_0200fdfc(u32 tag, u16 *m, int err)
 {
     WMWork *w = data_020c06e0.work;
@@ -637,12 +638,12 @@ int func_02010d3c(WMCb cb, void *a, void *buf, u32 size, u16 x, u16 y, u16 z)
 
 int func_02010e6c(u8 *buf, u16 n, u16 mask, u16 m, int flag)
 {
-    u32 bm;
-    u32 i;
+    int i;
     u32 cnt;
     u8 *cur;
+    u32 bm = 1;
     u32 aid;
-    u32 k;
+    int k;
     int r = func_0200fd68(2, 9, 10);
     if (r != 0) {
         return r;
@@ -656,7 +657,6 @@ int func_02010e6c(u8 *buf, u16 n, u16 mask, u16 m, int flag)
     if (mask == 0) {
         return 6;
     }
-    bm = 1;
     aid = func_020101c4();
     if (aid == 0) {
         bm = func_020101f4();
@@ -669,8 +669,7 @@ int func_02010e6c(u8 *buf, u16 n, u16 mask, u16 m, int flag)
     H(buf, 0xb) = n;
     H(buf, 7) = 0;
     H(buf, 0xc) = flag != 0 ? 1 : 0;
-    H(buf, 7) = mask | (1 << aid);
-    cnt = func_020122b0(H(buf, 7));
+    {u16 t = mask | (1 << aid); H(buf, 7) = t; cnt = func_020122b0(t);}
     H(buf, 9) = cnt;
     H(buf, 10) = m * cnt;
     if (H(buf, 10) > 0x1fc) {
@@ -682,7 +681,7 @@ int func_02010e6c(u8 *buf, u16 n, u16 mask, u16 m, int flag)
     if (aid == 0) {
         aid = bm | 1;
         for (i = 0; i < 4; i++) {
-            ((u16 *)buf)[i << 8] = H(buf, 7) & aid;
+            ((WMDataSet *)buf)[i].aidBitmap = H(buf, 7) & aid;
         }
         func_02010224(n, func_02011528, (u32)buf);
         cur = buf;
@@ -879,10 +878,10 @@ void func_02011528(WMInd *m)
         e = OS_DisableInterrupts();
         idx = H(buf, 4);
         mask = ~bit;
-        *(u16 *)(buf + (idx << 9)) &= mask;
+        ((WMDataSet *)buf)[idx].aidBitmap &= mask;
         if (H(buf, 0xc) == 1) {
             j = (idx + 1) & 3;
-            *(u16 *)(buf + (j << 9)) &= mask;
+            ((WMDataSet *)buf)[j].aidBitmap &= mask;
         }
         OS_RestoreInterrupts(e);
         func_02011814(buf, 0);

@@ -8,7 +8,9 @@ tools/probe_compilers.py (number of differing instructions, plus a penalty for a
   * split `T x = e;` into `T x;` + `x = e;` (and merge them back),
   * change the type of a local (int, s32, u32, u16, s16, u8, s8),
   * swap the operands of a commutative operator,
-  * add or drop an integer cast around an identifier.
+  * add or drop an integer cast around an identifier,
+  * rewrite `x++` / `x += 1` / `x = x + 1` (and the same for --),
+  * replace a pointer local (`T *p = e;`) by its initializer at each use and drop the declaration.
 Only byte-identical output counts as a match, so an edit that changes the meaning can only "win" if the original
 compiled to the same thing. Review the result anyway (statement swaps can move side effects).
 
@@ -60,7 +62,7 @@ def score(text, workdir, opts):
 def mutate(lines, rng):
     out = list(lines)
     for _ in range(rng.choice([1, 1, 1, 2, 3])):
-        kind = rng.randrange(5)
+        kind = rng.randrange(7)
         idx = list(range(len(out)))
         if kind == 0:  # swap adjacent simple lines
             cand = [i for i in idx[:-1] if SIMPLE.match(out[i]) and SIMPLE.match(out[i + 1])]
@@ -95,6 +97,22 @@ def mutate(lines, rng):
                 ms = list(COMM.finditer(out[i]))
                 m = rng.choice(ms)
                 out[i] = out[i][:m.start()] + f"{m.group(3)} {m.group(2)} {m.group(1)}" + out[i][m.end():]
+        elif kind == 5:  # increment forms
+            cand = [i for i in idx if re.search(r"(\b[\w.\[\]>-]+)(\+\+|--|\s*[+-]=\s*1\b);", out[i])]
+            if cand:
+                i = rng.choice(cand)
+                m = re.search(r"(\b[\w.\[\]>-]+)(\+\+|--|\s*([+-])=\s*1\b);", out[i])
+                v, sign = m.group(1), "+" if ("+" in m.group(2)) else "-"
+                forms = [f"{v}{sign}{sign};", f"{v} {sign}= 1;", f"{v} = {v} {sign} 1;"]
+                out[i] = out[i][:m.start()] + rng.choice(forms) + out[i][m.end():]
+        elif kind == 6:  # inline a pointer local
+            cand = [i for i in idx if re.match(r"^\s*(?:const\s+)?\w+\s*\*\s*(\w+)\s*=\s*([^;]+);\s*$", out[i])]
+            if cand:
+                i = rng.choice(cand)
+                m = re.match(r"^\s*(?:const\s+)?\w+\s*\*\s*(\w+)\s*=\s*([^;]+);\s*$", out[i])
+                name, init = m.group(1), m.group(2).strip()
+                rest = [re.sub(r"\b" + name + r"\b", f"({init})", l) for l in out[i + 1:]]
+                out = out[:i] + rest
         else:  # add or drop a cast
             cand = [i for i in idx if SIMPLE.match(out[i])]
             if cand:

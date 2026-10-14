@@ -492,7 +492,6 @@ void FieldSelectScene::func_ov001_0221f4e8() {
     }
 }
 
-// non-matching: 2053 words each side; zero/constant kept in callee-saved registers, the SpriteScreen pointer in r9 in some loops.
 void FieldSelectScene::func_ov001_0221fa94() {
     MI_CpuClearFast((void *) 0x6004000, 0xc000);
     MI_CpuClearFast((void *) 0x6204000, 0xc000);
@@ -543,7 +542,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
     mUnk_33f = mUnk_33b;
     mUnk_340 = 0;
     mUnk_331 = 0;
-    for (u8 i = 0; i < 9; i++) {
+    u8 i;
+    for (i = 0; i < 9; i++) {
         CellAnimation *anim = mCells[i].mAnim;
         if (anim != NULL) {
             delete anim;
@@ -553,7 +553,7 @@ void FieldSelectScene::func_ov001_0221fa94() {
         mCells[i].mVisible = 0;
         mCells[i].mUnk_09  = 1;
     }
-    for (u8 i = 0; i < 9; i++) {
+    for (i = 0; i < 9; i++) {
         CellAnimation *anim = mCells2[i].mAnim;
         if (anim != NULL) {
             delete anim;
@@ -664,8 +664,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
                     mCells[k].mAnim->mUnk_11   = 8;
                     mCells[k].mX               = 0x88;
                     mCells[k].mY               = k * 0x18 + 0x26;
-                    mCells[k].mVisible         = 1;
                     mCells[k].mUnk_09          = 1;
+                    mCells[k].mVisible         = 1;
                     mCells[k].mUnk_0a          = 0;
                     k++;
                 } while (k < 5);
@@ -720,8 +720,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
             mCells2[5].mAnim->SetAnimation(4);
             mCells2[6].mAnim->SetAnimation(0x18);
             ChangeDir("/Game/Battle/Obj/");
-            SpriteManager::Get();
             SpriteScreen &main = SpriteManager::Get().Screen(0);
+            SpriteScreen &sub2 = SpriteManager::Get().Screen(1);
             main.LoadCharacters("select_order_u_obj_00.nce_ncg1D.bin", 0x4000, 0);
             main.LoadPalette("select_order_u_obj_00_ncl.bin", 0xa0, 0);
             main.LoadCharacters("select_ch_u_obj_00.nce_ncg1D.bin", 0x8000, 0);
@@ -754,17 +754,17 @@ void FieldSelectScene::func_ov001_0221fa94() {
             mCells[7].mAnim->mCharBase = main.func_020276f4(0x10000);
             mCells[7].mAnim->mUnk_11   = 9;
             mCells[7].mVisible         = 0;
-            sub.LoadCharacters("icon_ch_base.nce_ncg1D.bin", 0x13000, 0);
-            sub.LoadPalette("icon_ch_base_ncl.bin", 0x40, 0);
+            sub2.LoadCharacters("icon_ch_base.nce_ncg1D.bin", 0x13000, 0);
+            sub2.LoadPalette("icon_ch_base_ncl.bin", 0x40, 0);
             mCells2[7].mAnim            = new CellAnimation("icon_ch_base_nce.bin", 2, 1, 1);
-            mCells2[7].mAnim->mCharBase = sub.func_020276f4(0x13000);
+            mCells2[7].mAnim->mCharBase = sub2.func_020276f4(0x13000);
             mCells2[7].mAnim->mUnk_11   = 2;
             mCells2[7].mVisible         = 0;
             ChangeDir("/Game/2D/union_b/");
-            sub.LoadCharacters("union_b_obj_new.nce_ncg1D.bin", 0x14400, 0);
-            sub.LoadPalette("union_b_obj_new_ncl.bin", 0x20, 0);
+            sub2.LoadCharacters("union_b_obj_new.nce_ncg1D.bin", 0x14400, 0);
+            sub2.LoadPalette("union_b_obj_new_ncl.bin", 0x20, 0);
             mCells2[8].mAnim            = new CellAnimation("union_b_obj_new_nce.bin", 0, 1, 1);
-            mCells2[8].mAnim->mCharBase = sub.func_020276f4(0x14400);
+            mCells2[8].mAnim->mCharBase = sub2.func_020276f4(0x14400);
             mCells2[8].mAnim->mUnk_11   = 1;
             mCells2[8].mUnk_09          = 3;
             mCells2[8].mVisible         = 0;
@@ -774,8 +774,7 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 mPanel[0]->func_02065204(p, -1, 0, 0);
                 mPanel[1]->func_02065204(p, -1, 0, 0);
                 func_ov001_02226bf8(p);
-                WirelessManager::Get();
-                if (IsWirelessMode(&data_020c4258) && p < mUnk_32b) {
+                if (IsWirelessMode((const u8 *) &WirelessManager::Get().mUnk_1228) && p < mUnk_32b) {
                     func_ov001_022267d0(p);
                 }
                 p++;
@@ -1517,7 +1516,7 @@ void FieldSelectScene::func_ov001_022231ec(u32 slot, u32 value, u32 playSound) {
     }
 }
 
-BOOL FieldSelectScene::func_ov001_02223430(u32 slot) {
+BOOL FieldSelectScene::func_ov001_02223430(u8 slot) {
     switch (mUnk_2ed[mUnk_329]) {
         case 2:
             if (mInput[slot].mUnk_02 == 0x11) {
@@ -2698,7 +2697,7 @@ void FieldSelectScene::func_ov001_0222659c() {
     TextManager::Get().SetColor(0, 0, 0xf);
 }
 
-void FieldSelectScene::func_ov001_022267d0(u32 slot) {
+void FieldSelectScene::func_ov001_022267d0(u8 slot) {
     func_ov001_02226bf8(slot);
     u32 useName = 0;
     u8 id       = data_ov001_02227194[mInput[slot].mUnk_08];

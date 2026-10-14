@@ -137,7 +137,7 @@ public:
     void func_ov001_02222e10();
     void func_ov001_0221fa94();
     void func_ov001_022231ec(u32 slot, u32 value, u32 playSound);
-    BOOL func_ov001_02223430(u32 slot);
+    BOOL func_ov001_02223430(u8 slot);
     BOOL func_ov001_022237d0(u32 slot);
     BOOL func_ov001_02223914();
     void func_ov001_02223d70(u32 unk1);
@@ -151,7 +151,7 @@ public:
     s16 func_ov001_022256c8(u32 unk1);
     void func_ov001_022262d0(u32 unk1);
     void func_ov001_0222657c();
-    void func_ov001_022267d0(u32 unk1);
+    void func_ov001_022267d0(u8 unk1);
     void func_ov001_02226b18();
     void func_ov001_02226bf8(u32 unk1);
     void func_ov001_02226d18(u32 unk1);

@@ -186,7 +186,6 @@ void BattlePlayerList::Update() {
     u8 owner;
     u8 slot;
     u8 id;
-    BattleRecord *first;
     u8 result;
     u8 rec;
     MicManager::Get().func_0202d9ac();
@@ -538,10 +537,10 @@ void BattlePlayerList::Update() {
                         p->mUnk_fe = 1;
                         p->mUnk_ee++;
                         mUnk_2a8 = 0x14;
-                        first    = &mPlayers[ownerA]->mRecords[mUnits[mUnk_28d].mUnk_0e];
-                        mUnk_2aa = func_ov007_022696a0(first->mUnk_08, first->mUnk_09);
-                        first    = &mPlayers[ownerA]->mRecords[mUnits[mUnk_28e].mUnk_0e];
-                        mUnk_2ab = func_ov007_022696a0(first->mUnk_08, first->mUnk_09);
+                        BattleRecord *recs = mPlayers[ownerA]->mRecords;
+                        mUnk_2aa = func_ov007_022696a0(recs[mUnits[mUnk_28d].mUnk_0e].mUnk_08, recs[mUnits[mUnk_28d].mUnk_0e].mUnk_09);
+                        recs    = mPlayers[ownerA]->mRecords;
+                        mUnk_2ab = func_ov007_022696a0(recs[mUnits[mUnk_28e].mUnk_0e].mUnk_08, recs[mUnits[mUnk_28e].mUnk_0e].mUnk_09);
                         func_ov007_022626b8(this, mUnits[mUnk_28d].mUnk_11);
                         func_ov007_02262828(this, mUnk_28d, 2);
                         func_ov007_02262828(this, mUnk_28e, 2);
@@ -578,8 +577,8 @@ void BattlePlayerList::Update() {
                     break;
                 }
                 case 4: {
-                    slot  = mUnits[mUnk_28e].mUnk_0f;
-                    owner = mUnits[mUnk_28d].mUnk_0f;
+                    u8 slot  = mUnits[mUnk_28e].mUnk_0f;
+                    u8 owner = mUnits[mUnk_28d].mUnk_0f;
                     BattlePlayer *p = mPlayers[slot];
                     p->mUnk_fe = 1;
                     p->mUnk_ee++;
@@ -681,7 +680,12 @@ void BattlePlayerList::Update() {
                 func_020383f8(SoundManager::Get().mUnk_9c);
                 mUnk_2a8 = 0x22;
                 SpriteManager::Get().StartFade(3);
-                data_020d433c.mUnk_86 = mUnk_2b0 ? 0 : data_020d433c.mUnk_86 + 1;
+                if (mUnk_2b0 != 0) {
+                    data_020d433c.mUnk_86 = 0;
+                } else {
+                    data_020d433c.mUnk_86++;
+                }
+                return;
             } else if (func_ov007_02263150(this)) {
                 mUnk_2a8 = 0x1d;
             } else {
@@ -713,8 +717,9 @@ void BattlePlayerList::Update() {
             mUnk_28a = mUnk_284[idx];
             mUnk_2a8 = 0xc;
             func_ov007_02269ee4(mPlayers[mUnk_28a], flag);
-            u8 found = 0;
-            u8 i     = 0;
+            u8 found;
+            u8 i = 0;
+            found = 0;
             do {
                 if (mUnk_1c[i].mUnk_2 != 0) {
                     found = 1;

@@ -6,7 +6,7 @@ extern void func_0200cc10(u32 res, void *arg);
 extern void func_0200cc20(void);
 extern void func_0200c9bc(u32 tag, u32 data, int err);
 
-void func_0200c744(void)
+void MIC_Init(void)
 {
     if (micWork.init) return;
     micWork.init = 1;
@@ -18,7 +18,7 @@ void func_0200c744(void)
     PXI_SetFifoRecvCallback(9, func_0200c9bc);
 }
 
-u32 func_0200c7b4(MICAutoParam *p, void (*cb)(u32, void *), void *arg)
+u32 MIC_StartAutoSamplingAsync(MICAutoParam *p, void (*cb)(u32, void *), void *arg)
 {
     u32 type, e;
     if ((u32)p->buffer & 0x1f) return 2;
@@ -51,14 +51,14 @@ u32 func_0200c7b4(MICAutoParam *p, void (*cb)(u32, void *), void *arg)
     return func_0200cae4((u32)p->buffer, p->size, p->rate, type) ? 0 : 3;
 }
 
-u32 func_0200c8e0(MICAutoParam *p)
+u32 MIC_StartAutoSampling(MICAutoParam *p)
 {
-    micWork.result = func_0200c7b4(p, (void (*)(u32, void *))func_0200cc10, NULL);
+    micWork.result = MIC_StartAutoSamplingAsync(p, (void (*)(u32, void *))func_0200cc10, NULL);
     if (micWork.result == 0) func_0200cc20();
     return micWork.result;
 }
 
-u32 func_0200c918(void (*cb)(u32, void *), void *arg)
+u32 MIC_StopAutoSamplingAsync(void (*cb)(u32, void *), void *arg)
 {
     u32 e = OS_DisableInterrupts();
     if (micWork.busy) {
@@ -72,9 +72,9 @@ u32 func_0200c918(void (*cb)(u32, void *), void *arg)
     return func_0200cbe8() ? 0 : 3;
 }
 
-u32 func_0200c974(void)
+u32 MIC_StopAutoSampling(void)
 {
-    micWork.result = func_0200c918((void (*)(u32, void *))func_0200cc10, NULL);
+    micWork.result = MIC_StopAutoSamplingAsync((void (*)(u32, void *))func_0200cc10, NULL);
     if (micWork.result == 0) func_0200cc20();
     return micWork.result;
 }

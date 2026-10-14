@@ -4,14 +4,14 @@
 #include <nitro/mi.h>
 
 extern "C" {
-extern "C" void func_0200c104();
+extern "C" void TP_Init();
 extern "C" int OS_GetCpsrIrqBits();
 extern "C" void OS_EnableInterrupts();
 extern "C" void func_0200c338();
 extern "C" int func_0200c3cc(void *raw);
-extern "C" void func_0200c608(TouchSample *out, void *raw);
-extern "C" BOOL func_0200c17c(void *panel);
-extern "C" void func_0200c210(void *panel);
+extern "C" void TP_GetCalibratedPoint(TouchSample *out, void *raw);
+extern "C" BOOL TP_GetUserInfo(void *panel);
+extern "C" void TP_SetCalibrateParam(void *panel);
 extern "C" u16 FX_Atan2(fx32 a, fx32 b);
 }
 
@@ -48,7 +48,7 @@ void TouchManager::Init() {
 }
 
 void TouchManager::func_020225d0() {
-    func_0200c104();
+    TP_Init();
     Init();
 }
 
@@ -65,7 +65,7 @@ void TouchManager::Update(BOOL enabled) {
     do {
         func_0200c338();
     } while (func_0200c3cc(raw) != 0);
-    func_0200c608(&sample, raw);
+    TP_GetCalibratedPoint(&sample, raw);
     if (enabled == 0) {
         sample.touch = 0;
         sample.valid = 3;
@@ -239,10 +239,10 @@ void TouchManager::func_02022988() {
 }
 
 BOOL TouchManager::func_02022ae0() {
-    return func_0200c17c(&mPanel);
+    return TP_GetUserInfo(&mPanel);
 }
 
 void TouchManager::func_02022af0() {
-    func_0200c210(&mPanel);
+    TP_SetCalibrateParam(&mPanel);
     mEnabled = 1;
 }

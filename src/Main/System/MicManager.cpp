@@ -32,16 +32,16 @@ public:
     void func_0202d9ac();
 };
 
-extern "C" void func_0200c744(void);
+extern "C" void MIC_Init(void);
 extern "C" void func_0200d2f0(u32 on);
 extern "C" void func_0200d338(u32 gain);
-extern "C" void func_0200c8e0(MicAutoParam *param);
-extern "C" void func_0200c974(void);
+extern "C" void MIC_StartAutoSampling(MicAutoParam *param);
+extern "C" void MIC_StopAutoSampling(void);
 extern "C" s8 *func_0200c9ac(void);
 extern u8 data_0220f140[];
 
 void MicManager::func_0202d794() {
-    func_0200c744();
+    MIC_Init();
 }
 
 // non-matching: the zero and the instance pointer swap registers (r0/r1).
@@ -49,7 +49,7 @@ void MicManager::func_0202d7a0() {
     if (mActive != 0) {
         return;
     }
-    func_0200c744();
+    MIC_Init();
     func_0200d2f0(1);
     func_0200d338(1);
     func_0200d338(2);
@@ -60,7 +60,7 @@ void MicManager::func_0202d7a0() {
     mParam.mLoop     = 1;
     mParam.mCallback = NULL;
     mParam.mArg      = NULL;
-    func_0200c8e0(&mParam);
+    MIC_StartAutoSampling(&mParam);
     mActive = 1;
     SoundManager::Get().func_020245c4(0x32);
     mTime        = UnkStruct_020c1884::Get().mFrame;
@@ -73,7 +73,7 @@ void MicManager::func_0202d8cc() {
     if (mActive != 1) {
         return;
     }
-    func_0200c974();
+    MIC_StopAutoSampling();
     func_0200d2f0(0);
     mActive = 0;
     SoundManager::Get().func_020245c4(0x32);

@@ -65,7 +65,7 @@ void func_0200a78c(s32 unk1);
 void func_0200f4c8(void);
 void OS_InitTick(void);
 void OS_InitAlarm(void);
-void func_0200db0c(void);
+extern "C" void RTC_Init(void);
 void GX_DispOn(void);
 void OS_SetIrqFunction(u32 mask, void (*func)(void));
 void OS_EnableIrqMask(u32 mask);
@@ -122,7 +122,7 @@ void UnkStruct_020c1884::func_02020328() {
     func_0200f4c8();
     OS_InitTick();
     OS_InitAlarm();
-    func_0200db0c();
+    RTC_Init();
     reg_GX_POWCNT = (u16) ((reg_GX_POWCNT & ~0x20e) | 0xe | 0x200);
     G2x_SetMasterBrightness_((vu16 *) 0x400006c, 0x10);
     G2x_SetMasterBrightness_((vu16 *) 0x400106c, 0x10);

@@ -278,8 +278,8 @@ u16 func_02010600(void)
 {
     u32 buf[3];
     if (data_020a5070 == 0x10000) {
-        func_0200db0c();
-        if (func_0200dbec(buf) == 0) {
+        RTC_Init();
+        if (RTC_GetDate(buf) == 0) {
             data_020a5070 = (u16)(buf[2] + (buf[1] << 8));
         }
     }

@@ -54,7 +54,7 @@ void func_0200da80(void)
     }
 }
 
-void func_0200db0c(void)
+void RTC_Init(void)
 {
     if (data_020bfd98.init != 0) return;
     data_020bfd98.init = 1;
@@ -68,7 +68,7 @@ void func_0200db0c(void)
     PXI_SetFifoRecvCallback(5, func_0200dc24);
 }
 
-int func_0200db78(RTCDate *date, RTCCallback cb, void *arg)
+int RTC_GetDateAsync(RTCDate *date, RTCCallback cb, void *arg)
 {
     u32 e = OS_DisableInterrupts();
     if (data_020bfd98.busy) {
@@ -85,9 +85,9 @@ int func_0200db78(RTCDate *date, RTCCallback cb, void *arg)
     return func_0200e20c() ? 0 : 3;
 }
 
-u32 func_0200dbec(RTCDate *date)
+u32 RTC_GetDate(RTCDate *date)
 {
-    u32 r = func_0200db78(date, (RTCCallback)func_0200e1e4, 0);
+    u32 r = RTC_GetDateAsync(date, (RTCCallback)func_0200e1e4, 0);
     data_020bfd98.result = r;
     if (r == 0) func_0200e1f4();
     return data_020bfd98.result;

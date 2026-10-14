@@ -3,7 +3,7 @@
 #define TP_SHARED ((vu16 *)0x027fffaa)
 #define NVRAM_TP ((vu16 *)0x027ffc80)
 
-extern int func_0200c41c(TPCalibrateParam *p, u16 x1, u16 y1, u16 px1, u16 py1, u16 x2, u16 y2, u16 px2, u16 py2);
+extern int TP_CalcCalibrateParam(TPCalibrateParam *p, u16 x1, u16 y1, u16 px1, u16 py1, u16 x2, u16 y2, u16 px2, u16 py2);
 extern void func_0200c72c(u32 mask);
 
 typedef union { TPRawBits b; u16 h[2]; } TPRawUnion;
@@ -74,7 +74,7 @@ term:
     OS_Terminate();
 }
 
-void func_0200c104(void)
+void TP_Init(void)
 {
     if (tpWork.initialized) return;
     tpWork.initialized = 1;
@@ -92,13 +92,13 @@ void func_0200c104(void)
 
 typedef struct { u8 pad[0x58]; u16 x1, y1; u8 px1, py1; u16 x2, y2; u8 px2, py2; } TPNvCal;
 
-int func_0200c17c(TPCalibrateParam *p)
+int TP_GetUserInfo(TPCalibrateParam *p)
 {
     TPNvCal *c = (TPNvCal *)0x027ffc80;
     u16 ax1 = c->x1, ay1 = c->y1;
     u16 ax2 = c->x2, ay2 = c->y2;
     u8 px1 = c->px1, py1 = c->py1, px2 = c->px2, py2 = c->py2;
-    if ((ax1 == 0 && ax2 == 0 && ay1 == 0 && ay2 == 0) || func_0200c41c(p, ax1, ay1, px1, py1, ax2, ay2, px2, py2) != 0) {
+    if ((ax1 == 0 && ax2 == 0 && ay1 == 0 && ay2 == 0) || TP_CalcCalibrateParam(p, ax1, ay1, px1, py1, ax2, ay2, px2, py2) != 0) {
         p->x0 = 0;
         p->y0 = 0;
         p->xDotSize = 0;
@@ -108,7 +108,7 @@ int func_0200c17c(TPCalibrateParam *p)
     return 1;
 }
 
-void func_0200c210(const TPCalibrateParam *p)
+void TP_SetCalibrateParam(const TPCalibrateParam *p)
 {
     u32 e;
     s32 xd, yd;
@@ -176,7 +176,7 @@ int func_0200c3cc(TPData *out)
     return 0;
 }
 
-int func_0200c41c(TPCalibrateParam *p, u16 x1, u16 y1, u16 px1, u16 py1, u16 x2, u16 y2, u16 px2, u16 py2)
+int TP_CalcCalibrateParam(TPCalibrateParam *p, u16 x1, u16 y1, u16 px1, u16 py1, u16 x2, u16 y2, u16 px2, u16 py2)
 {
     u32 e;
     s32 r, dy, ty;
@@ -226,7 +226,7 @@ int func_0200c41c(TPCalibrateParam *p, u16 x1, u16 y1, u16 px1, u16 py1, u16 x2,
     return 0;
 }
 
-void func_0200c608(TPData *out, const TPData *raw)
+void TP_GetCalibratedPoint(TPData *out, const TPData *raw)
 {
     s32 *c;
     s32 v;

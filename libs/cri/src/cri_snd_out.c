@@ -189,7 +189,6 @@ void func_0204a018(SndOut *o)
     REG_IME = old;
 }
 
-// non-matching: same code, but 'first' and 'mode' swap registers (r7/r6 vs r6/r7)
 u16 func_0204a05c(SndOut *o, u32 n, u16 *out)
 {
     u16 a, b;

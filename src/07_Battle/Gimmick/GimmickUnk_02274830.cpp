@@ -3,7 +3,7 @@
 #include "Graphics/Camera.hpp"
 #include "System/SoundManager.hpp"
 
-static VecFx32 data_ov007_02285a98 = {0, 0xf000, 0xa000};
+static const VecFx32 data_ov007_02285a98 = {0, 0xf000, 0xa000};
 
 GimmickUnk_02274830::GimmickUnk_02274830(u8 id)
     : Gimmick(id, 0) {

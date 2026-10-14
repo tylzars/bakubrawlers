@@ -236,6 +236,11 @@ Other findings from linking:
     (`SetSphere(s, &pos, radius)`).
   - `(n + 1) * x; ...; n++;` keeps the unmasked `n + 1` in the multiply.
   - Where the original loads every component before storing, write the store as `SetVec(...)` or a struct copy.
+- **Reused locals are coloured in order of first appearance.** When a function-scope local is reused in several
+  loops, mwcc colours its later live ranges in the order the variables first *appear* in the function, not their
+  declaration order; a dead `j = 0;` near the top (or moving `g = 0;` above other assignments) reorders them
+  (func_02089278 in ParkCharacters.cpp). Separate variables still go by declaration order, ahead of those ranges. A
+  `u8` passed to `MATH_Rand32` merges into the inline's 64-bit temporary, so its declaration position doesn't matter.
 - **One loop counter for every loop.** Original functions often reuse one function-scope `u8 i` (and a second `j`)
   for all their loops, even where one counts down; per-loop locals colour differently, and no declaration order
   fixes that. A counter shared by several loops is coloured above a hoisted singleton address, separate per-loop

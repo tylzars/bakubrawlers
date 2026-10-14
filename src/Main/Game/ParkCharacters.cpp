@@ -143,38 +143,44 @@ struct ParkPick {
     /* 03 */ u8 mValue;
 };
 
-// non-matching: same size; the pick loop's group->mId compare and the fill loop's stores and pointer steps get other
-// registers/order, and the perm loop keeps n+1 in another register.
+// The register allocator orders each loop's reused locals by where the variable first appears in the function, so
+// some placements here are load-bearing: `j = 0` at its declaration puts j (the fill loop's index) first, `g = 0` comes
+// before `category`/`group` in the first loop, the perm loop counts with g, `flag` is shared by the duplicate check and
+// the else branch, and `k` is declared right after `group`.
 void func_02089278() {
     ParkGroup *group;
+    u8 k;
     ParkEntry *entry;
+    ParkCategory *category;
     u8 count;
     u8 cat;
     u8 g;
     u8 e;
-    ParkCategory *category;
+    BOOL flag;
+    s32 last;
+    u8 i;
+    u8 j = 0;
     if (data_020d43f0[0].mUnk_5bf_0) {
         ParkPick picks[26] = {0};
         count = 0;
         cat   = 0;
         do {
+            g        = 0;
             category = &data_020a4ccc[cat];
             group    = category->mGroups;
-            g        = 0;
             do {
                 entry = group->mEntries;
                 e     = 0;
                 do {
                     if (entry->mUnk_06 != 0xff && func_02089c7c(entry->mUnk_06)) {
-                        BOOL duplicate = FALSE;
-                        u8 k;
+                        flag = FALSE;
                         for (k = 0; k < count; k++) {
                             if (group->mId == picks[k].mId) {
-                                duplicate = TRUE;
+                                flag = TRUE;
                                 break;
                             }
                         }
-                        if (!duplicate) {
+                        if (!flag) {
                             ParkPick *pick = &picks[count];
                             pick->mCategory = cat;
                             pick->mGroup    = g;
@@ -197,9 +203,7 @@ void func_02089278() {
             cat++;
         } while (cat < 0x1c);
         if (count > 1) {
-            s32 last = count - 1;
-            u8 i;
-            u8 j;
+            last = count - 1;
             for (i = 0; i < last; i++) {
                 for (j = last; j > i; j--) {
                     u8 d = picks[j].mValue;
@@ -222,39 +226,37 @@ void func_02089278() {
         if (count > 8) {
             count = 8;
         }
-        u8 i;
         for (i = 0; i < count; i++) {
             data_020d43f0[0].mUnk_5c2[i].mCategory = picks[i].mCategory;
             data_020d43f0[0].mUnk_5c2[i].mGroup    = picks[i].mGroup;
         }
         if (count < 8) {
-            u8 pool[16] = {0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+            u8 pool[16]   = {0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
             u8 chosen[16] = {0};
             u8 used       = 0;
-            u8 p          = 0;
+            u8 n;
+            i = 0;
             do {
-                u8 j;
                 for (j = 0; j < count; j++) {
-                    if (pool[p] == picks[j].mId) {
-                        pool[p] = 0xff;
+                    if (pool[i] == picks[j].mId) {
+                        pool[i] = 0xff;
                     }
                 }
-                u8 v = pool[p];
-                p++;
+                u8 v = pool[i];
+                i++;
                 if (v != 0xff) {
-                    chosen[used] = v;
-                    used++;
+                    chosen[used++] = v;
                 }
-            } while (p < 16);
-            u8 s = 0;
+            } while (i < 16);
+            i = 0;
             do {
                 u8 r = MATH_Rand32(&data_020d42e8, used);
-                u8 t = chosen[s];
-                chosen[s] = chosen[r];
+                u8 t = chosen[i];
+                chosen[i] = chosen[r];
                 chosen[r] = t;
-                s++;
-            } while (s < used);
-            u8 w = 0;
+                i++;
+            } while (i < used);
+            j = 0;
             do {
                 cat = 0;
                 do {
@@ -262,97 +264,99 @@ void func_02089278() {
                     group    = category->mGroups;
                     g        = 0;
                     do {
-                        if (chosen[w] == group->mId) {
+                        if (chosen[j] == group->mId) {
                             entry = group->mEntries;
-                            e     = 0;
+                            n     = 0;
                             do {
                                 if (entry->mType <= 2) {
                                     data_020d43f0[0].mUnk_5c2[count].mCategory = cat;
                                     data_020d43f0[0].mUnk_5c2[count].mGroup    = g;
                                     count++;
-                                    g = category->mCount;
+                                    g   = category->mCount;
                                     cat = 0x1c;
                                     if (count >= 8) {
-                                        w = used;
+                                        j = used;
                                     }
                                     break;
                                 }
-                                e++;
                                 entry++;
-                            } while (e < group->mCount);
+                                n++;
+                            } while (n < group->mCount);
                         }
-                        g++;
                         group++;
+                        g++;
                     } while (g < category->mCount);
                     cat++;
                 } while (cat < 0x1c);
-                w++;
-            } while (w < used);
+                j++;
+            } while (j < used);
         }
         data_020d43f0[0].mUnk_5c1 = 8;
-        u8 s = 0;
+        i = 0;
         do {
             u8 r = MATH_Rand32(&data_020d42e8, 8);
-            u8 t0 = data_020d43f0[0].mUnk_5c2[s].mCategory;
-            u8 t1 = data_020d43f0[0].mUnk_5c2[s].mGroup;
-            data_020d43f0[0].mUnk_5c2[s].mCategory = data_020d43f0[0].mUnk_5c2[r].mCategory;
-            data_020d43f0[0].mUnk_5c2[s].mGroup    = data_020d43f0[0].mUnk_5c2[r].mGroup;
+            u8 t0 = data_020d43f0[0].mUnk_5c2[i].mCategory;
+            u8 t1 = data_020d43f0[0].mUnk_5c2[i].mGroup;
+            data_020d43f0[0].mUnk_5c2[i].mCategory = data_020d43f0[0].mUnk_5c2[r].mCategory;
+            data_020d43f0[0].mUnk_5c2[i].mGroup    = data_020d43f0[0].mUnk_5c2[r].mGroup;
             data_020d43f0[0].mUnk_5c2[r].mCategory = t0;
             data_020d43f0[0].mUnk_5c2[r].mGroup    = t1;
-            s++;
-        } while (s < data_020d43f0[0].mUnk_5c1);
+            i++;
+        } while (i < data_020d43f0[0].mUnk_5c1);
         u8 perm[4] = {0, 0, 1, 2};
-        u8 n = 0;
+        g = 0;
         do {
-            u8 cat           = data_020d43f0[0].mUnk_5c2[n].mCategory;
-            u8 grp           = data_020d43f0[0].mUnk_5c2[n].mGroup;
-            ParkEntry *entry = data_020a4ccc[cat].mGroups[grp].mEntries;
-            u8 k                   = 0;
+            u8 grp;
+            cat   = data_020d43f0[0].mUnk_5c2[g].mCategory;
+            grp   = data_020d43f0[0].mUnk_5c2[g].mGroup;
+            entry = data_020a4ccc[cat].mGroups[grp].mEntries;
+            j = 0;
             do {
                 u8 r = MATH_Rand32(&data_020d42e8, 4);
-                u8 t = perm[k];
-                perm[k] = perm[r];
+                u8 t = perm[j];
+                perm[j] = perm[r];
                 perm[r] = t;
-                k++;
-            } while (k < 4);
-            u8 e = 0;
+                j++;
+            } while (j < 4);
+            e = 0;
             do {
                 if (entry->mType == perm[0]) {
-                    data_020d433c.mUnk_8d[n] = e;
+                    data_020d433c.mUnk_8d[g] = e;
                     break;
                 }
                 e++;
                 entry++;
             } while (e < data_020a4ccc[cat].mGroups[grp].mCount);
-
-            n++;
-
-        } while (n < data_020d43f0[0].mUnk_5c1);
+            g++;
+        } while (g < data_020d43f0[0].mUnk_5c1);
     } else {
-        u8 index = func_02088f38();
-        category = &data_020a4ccc[index];
-        group    = category->mGroups;
-        count    = 0;
-        g        = 0;
+        ParkGroup *stageGroup;
+        ParkEntry *stageEntry;
+        u8 stage;
+        stage      = func_02088f38();
+        category   = &data_020a4ccc[stage];
+        stageGroup = category->mGroups;
+        count      = 0;
+        g          = 0;
         do {
-            entry = &group->mEntries[group->mDefault];
-            BOOL skip        = FALSE;
-            if (entry->mType == 6) {
-                if (entry->mUnk_0a == 0) {
+            stageEntry = &stageGroup->mEntries[stageGroup->mDefault];
+            flag       = FALSE;
+            if (stageEntry->mType == 6) {
+                if (stageEntry->mUnk_0a == 0) {
                     if ((data_020d43f0[0].mUnk_5be & 8) && (data_020d43f0[0].mUnk_5be & 0x10)) {
-                        skip = TRUE;
+                        flag = TRUE;
                     }
                 } else if (data_020d43f0[0].mUnk_5be & 0x10) {
-                    skip = TRUE;
+                    flag = TRUE;
                 }
             }
-            if (!skip) {
-                data_020d43f0[0].mUnk_5c2[count].mCategory = index;
+            if (!flag) {
+                data_020d43f0[0].mUnk_5c2[count].mCategory = stage;
                 data_020d43f0[0].mUnk_5c2[count].mGroup    = g;
                 count++;
             }
             g++;
-            group++;
+            stageGroup++;
         } while (g < category->mCount);
         data_020d43f0[0].mUnk_5c1 = count;
     }

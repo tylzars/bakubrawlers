@@ -2219,10 +2219,10 @@ data_ov007_022886a0 kind:data(any) addr:0x022886a0
 data_ov007_022886b4 kind:data(any) addr:0x022886b4
 data_ov007_022886d8 kind:data(any) addr:0x022886d8
 data_ov007_022886f4 kind:data(any) addr:0x022886f4
-data_ov007_02288700 kind:data(any) addr:0x02288700
-data_ov007_0228870c kind:data(any) addr:0x0228870c
-data_ov007_02288724 kind:data(any) addr:0x02288724
-data_ov007_02288734 kind:data(any) addr:0x02288734
+_ZTV16BattleCardCamera kind:data(any) addr:0x022886f8
+@1269 kind:data(any) addr:0x0228870c local
+@1270 kind:data(any) addr:0x02288724 local
+@1271 kind:data(any) addr:0x02288734 local
 data_ov007_02288738 kind:data(any) addr:0x02288738
 data_ov007_0228874c kind:data(any) addr:0x0228874c
 data_ov007_02288760 kind:data(any) addr:0x02288760
@@ -2840,7 +2840,7 @@ data_ov007_0228b8a4 kind:bss addr:0x0228b8a4
 data_ov007_0228b8b0 kind:bss addr:0x0228b8b0
 data_ov007_0228b8bc kind:bss addr:0x0228b8bc
 data_ov007_0228b8c8 kind:bss addr:0x0228b8c8
-data_ov007_0228b8d4 kind:bss addr:0x0228b8d4
+@717 kind:bss addr:0x0228b8d4 local
 data_ov007_0228b8e0 kind:bss addr:0x0228b8e0
 data_ov007_0228b8ec kind:bss addr:0x0228b8ec
 @168 kind:bss addr:0x0228b8f8 local

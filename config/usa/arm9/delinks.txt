@@ -840,6 +840,7 @@ src/Main/Unknown/UnkStruct_02074938.cpp:
     .bss        start:0x02219344 end:0x0221935c
 
 src/Main/Unknown/UnkStruct_020758f4.cpp:
+    complete
     .text       start:0x020758f4 end:0x02076058
     .data       start:0x020b94ec end:0x020b94fc
 

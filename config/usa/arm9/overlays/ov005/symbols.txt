@@ -122,28 +122,28 @@ data_ov005_02220828 kind:data(any) addr:0x02220828
 data_ov005_0222082c kind:data(any) addr:0x0222082c
 data_ov005_02220842 kind:data(any) addr:0x02220842
 _ZTV13TutorialScene kind:data(any) addr:0x02220844
-@953 kind:data(any) addr:0x02220858 local
-@955 kind:data(any) addr:0x02220874 local
-@952 kind:data(any) addr:0x02220890 local
-@954 kind:data(any) addr:0x022208ac local
-@951 kind:data(any) addr:0x022208c8 local
-@951 kind:data(any) addr:0x022208e4 local
-@956 kind:data(any) addr:0x02220900 local
-@957 kind:data(any) addr:0x0222092c local
-@958 kind:data(any) addr:0x02220958 local
-@3226 kind:data(any) addr:0x02220984 local
-@3227 kind:data(any) addr:0x02220990 local
-@3228 kind:data(any) addr:0x0222099c local
-@3229 kind:data(any) addr:0x022209ac local
-@3351 kind:data(any) addr:0x022209b8 local
-@3351 kind:data(any) addr:0x022209cc local
-@3352 kind:data(any) addr:0x022209e8 local
-@3353 kind:data(any) addr:0x02220a04 local
-@3354 kind:data(any) addr:0x02220a20 local
-@3355 kind:data(any) addr:0x02220a3c local
-@3356 kind:data(any) addr:0x02220a58 local
-@3357 kind:data(any) addr:0x02220a74 local
-@3358 kind:data(any) addr:0x02220a88 local
+@962 kind:data(any) addr:0x02220858 local
+@964 kind:data(any) addr:0x02220874 local
+@961 kind:data(any) addr:0x02220890 local
+@963 kind:data(any) addr:0x022208ac local
+@959 kind:data(any) addr:0x022208c8 local
+@960 kind:data(any) addr:0x022208e4 local
+@965 kind:data(any) addr:0x02220900 local
+@966 kind:data(any) addr:0x0222092c local
+@967 kind:data(any) addr:0x02220958 local
+@3234 kind:data(any) addr:0x02220984 local
+@3235 kind:data(any) addr:0x02220990 local
+@3236 kind:data(any) addr:0x0222099c local
+@3237 kind:data(any) addr:0x022209ac local
+@3359 kind:data(any) addr:0x022209b8 local
+@3360 kind:data(any) addr:0x022209cc local
+@3361 kind:data(any) addr:0x022209e8 local
+@3362 kind:data(any) addr:0x02220a04 local
+@3363 kind:data(any) addr:0x02220a20 local
+@3364 kind:data(any) addr:0x02220a3c local
+@3365 kind:data(any) addr:0x02220a58 local
+@3366 kind:data(any) addr:0x02220a74 local
+@3367 kind:data(any) addr:0x02220a88 local
 @3359 kind:data(any) addr:0x02220aa8 local
 @3360 kind:data(any) addr:0x02220ac4 local
 @3361 kind:data(any) addr:0x02220ae0 local
@@ -155,20 +155,20 @@ _ZTV13TutorialScene kind:data(any) addr:0x02220844
 @3364 kind:data(any) addr:0x02220b8c local
 @3365 kind:data(any) addr:0x02220bb0 local
 @3366 kind:data(any) addr:0x02220bb4 local
-@3401 kind:data(any) addr:0x02220bc4 local
-@3401 kind:data(any) addr:0x02220bd8 local
-@3402 kind:data(any) addr:0x02220bf4 local
-@3403 kind:data(any) addr:0x02220c10 local
-@3404 kind:data(any) addr:0x02220c2c local
-@3402 kind:data(any) addr:0x02220c50 local
-@3403 kind:data(any) addr:0x02220c6c local
-@3404 kind:data(any) addr:0x02220c70 local
+@3409 kind:data(any) addr:0x02220bc4 local
+@3410 kind:data(any) addr:0x02220bd8 local
+@3411 kind:data(any) addr:0x02220bf4 local
+@3412 kind:data(any) addr:0x02220c10 local
+@3413 kind:data(any) addr:0x02220c2c local
+@3414 kind:data(any) addr:0x02220c50 local
+@3415 kind:data(any) addr:0x02220c6c local
+@3416 kind:data(any) addr:0x02220c70 local
 @3450 kind:data(any) addr:0x02220c88 local
 @3451 kind:data(any) addr:0x02220c8c local
 data_ov005_02220cc0 kind:bss addr:0x02220cc0
 data_ov005_02220ccc kind:bss addr:0x02220ccc
 data_ov005_02220cd8 kind:bss addr:0x02220cd8
-@1044 kind:bss addr:0x02220ce4 local
-@1082 kind:bss addr:0x02220cf0 local
-@1200 kind:bss addr:0x02220cfc local
-@1233 kind:bss addr:0x02220d08 local
+@1052 kind:bss addr:0x02220ce4 local
+@1090 kind:bss addr:0x02220cf0 local
+@1212 kind:bss addr:0x02220cfc local
+@1241 kind:bss addr:0x02220d08 local

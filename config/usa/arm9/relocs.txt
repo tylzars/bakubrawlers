@@ -13158,7 +13158,7 @@ from:0x02075874 kind:load to:0x020c26c0 add:0x814 module:main
 from:0x020758ec kind:load to:0x020a302c module:main
 from:0x020758f0 kind:load to:0x020a3044 module:main
 from:0x0207596c kind:arm_call to:0x02075a0c module:main
-from:0x02075978 kind:load to:0x020b94f4 module:main
+from:0x02075978 kind:load to:0x020b94ec add:0x8 module:main
 from:0x0207597c kind:load to:0x020d43f0 module:main
 from:0x0207598c kind:arm_call to:0x02021e80 module:main
 from:0x02075a4c kind:arm_call to:0x02075e40 module:main

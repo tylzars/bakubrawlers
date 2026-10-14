@@ -187,7 +187,8 @@ build("delink", "phony", delink_files)
 lcf_raw = delinks["arm9_lcf_file"]
 lcf_final = str(Path(lcf_raw).with_name("arm9_final.lcf"))
 build([lcf_raw, delinks["arm9_objects_file"], lcf_final], "lcf", dsd_config_files + [str(extract_cfg)],
-      implicit=[DSD, "tools/lcf_force_active.py", str(Path(config_dir) / "force_active.txt")],
+      implicit=[DSD, "tools/lcf_force_active.py", str(Path(config_dir) / "force_active.txt"),
+                str(Path(config_dir) / "lcf_edits.txt")],
       variables={"config": str(dsd_config), "lcf_raw": lcf_raw, "lcf_final": lcf_final})
 
 # ---- compile ----

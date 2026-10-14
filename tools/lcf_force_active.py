@@ -14,6 +14,12 @@ It also keeps the data symbols listed in <config-dir>/force_active.txt (one per 
 original link kept although nothing references them, which -dead would otherwise strip from a unit linked from
 source.
 
+It also applies <config-dir>/lcf_edits.txt (one edit per line, `#` comments), for what dsd's per-unit ranges can't say:
+  place <stub>.o <function> <unit>.o   the stub unit's line becomes OBJECT(<function>, <unit>.o): one function of a
+                                       unit placed apart from the rest of it
+  alias <symbol> <base> <offset>       defines <symbol> = <base> + <offset>, for names other units use for a point
+                                       inside an object of a linked unit (a field of a singleton instance)
+
 (mwldarm's -force_active flag would be simpler but segfaults under wibo.)
 """
 import argparse
@@ -57,5 +63,22 @@ lcf = args.lcf_in.read_text()
 # overlay ids under their SDK names, and the IRQ/system stack sizes.
 sdk = [f"    SDK_OVERLAY_OV{n:03d}_ID = {n};" for n in range(lcf.count("_ID = "))]
 sdk += ["    SDK_IRQ_STACKSIZE = 0x1000;", "    SDK_SYS_STACKSIZE = 0;"]
+edits = args.config_dir / "lcf_edits.txt"
+if edits.exists():
+    for line in edits.read_text().splitlines():
+        words = line.split("#", 1)[0].split()
+        if not words:
+            continue
+        if words[0] == "place":
+            stub, func, unit = words[1:]
+            old = f"        {stub}(.text)\n"
+            if old not in lcf:
+                raise SystemExit(f"lcf_edits: no line for {stub} in the LCF")
+            lcf = lcf.replace(old, f"        OBJECT({func}, {unit})\n", 1)
+        elif words[0] == "alias":
+            name, base, offset = words[1:]
+            sdk.append(f"    {name} = {base} + {offset};")
+        else:
+            raise SystemExit(f"lcf_edits: unknown edit {words[0]!r}")
 lcf = lcf.replace("SECTIONS {\n", "SECTIONS {\n" + "\n".join(sdk) + "\n", 1)
 args.lcf_out.write_text(f"FORCE_ACTIVE {{ {', '.join(entries)} }}\n\n{lcf}")

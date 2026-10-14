@@ -1,0 +1,3 @@
+# Linker-script edits applied by tools/lcf_force_active.py (see its docstring):
+#   place <stub>.o <function> <unit>.o
+#   alias <symbol> <base> <offset>

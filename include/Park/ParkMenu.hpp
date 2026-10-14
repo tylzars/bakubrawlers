@@ -49,6 +49,7 @@ public:
     void Setup();                // 0221ce58
     BOOL Slide();                // 0221d014
     void DrawText();             // 0221d1fc
+    u32 TextEntry(u8 i);         // inline, DrawText
     void ClearBuffers();         // 0221d460
     void Draw();                 // 0221d4a0
     void DrawNumber();           // 0221d6d4

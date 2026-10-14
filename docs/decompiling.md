@@ -248,6 +248,9 @@ Other findings from linking:
   defined in the file through its own pool word, define it as a function-local static of an inline accessor
   (`inline WindowItemRecord *ListItems() { static WindowItemRecord sItems[4] = {...}; return sItems; }`, as in
   BattleCommand and BattleCommandList).
+- **A value set in both arms of an if/else is coloured after `this`; the same if/else in an inline member that returns
+  it gets the lowest register** (ParkMenu::DrawText's `u32 entry = TextEntry(i);`). The helper must keep the
+  `u32 entry; if (...) {...} else {...} return entry;` shape; an early return changes it.
 - **A macro where an inline won't do.** `#define TEST_BIT(f, i) ((f)[(i) / 8] & (1 << ((i) % 8)))` (and a matching
   `SET_BIT`) lets mwcc reuse the loaded byte for a following set, which the inline helpers don't
   (MyroomTipsScene::func_ov008_022274f8). A caller passing an `ldrsb` value with no `and` means the parameter is wider

@@ -89,7 +89,6 @@ ParkMenu::~ParkMenu() {
     delete mWindow;
 }
 
-// non-matching: register allocation (original keeps screen in r9, charBase/palette/index in r6/r7/r8; 34 words)
 void ParkMenu::LoadGraphics() {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/Park/");
@@ -101,9 +100,9 @@ void ParkMenu::LoadGraphics() {
     mCells[5] = new CellAnimation("park_b_obj_nce.bin", 3, 1, 1);
     mCells[5]->mCharBase = screen.func_020276f4(0);
     mCells[5]->mUnk_11   = 0;
-    u8 i         = 0;
     u32 charBase = 0x8000;
-    u8 palette   = 7;
+    u32 palette  = 7;
+    u8 i         = 0;
     do {
         char name[64];
         int id = func_02089a64(i);
@@ -116,7 +115,7 @@ void ParkMenu::LoadGraphics() {
         mCells[i]->mCharBase = screen.func_020276f4(charBase);
         charBase += 0x1000;
         mCells[i]->mUnk_11 = palette;
-        palette            = palette + 2;
+        palette            = (u8) (palette + 2);
         i++;
     } while (i < mCount);
     ChangeDir("/Game/2D/union_b/");
@@ -342,18 +341,24 @@ BOOL ParkMenu::Slide() {
     return result;
 }
 
-// non-matching: guard load vs mUnk_5b store order (see docs/decompiling.md); size 0x268 vs 0x264
+// Message entry for text line i: line 0 is entry 0 of mes_park, shown from the character's record offset; line 1
+// is the character's name in mes_StoryCharaName.
+inline u32 ParkMenu::TextEntry(u8 i) {
+    u32 entry;
+    if (i == 0) {
+        entry = 0;
+        UnkStruct_020758f4_Record *e = mUnk_5c->func_02075998(func_02089a64(mCurrent));
+        TextManager::Get().mUnk_10 = e->mTextOffset;
+    } else {
+        entry = func_02089a64(mCurrent);
+    }
+    return entry;
+}
+
 void ParkMenu::DrawText() {
     ClearBuffers();
     for (u8 i = 0; i < 2; i++) {
-        u32 entry;
-        if (i == 0) {
-            entry = 0;
-            UnkStruct_020758f4_Record *e = mUnk_5c->func_02075998(func_02089a64(mCurrent));
-            TextManager::Get().mUnk_10 = e->mTextOffset;
-        } else {
-            entry = func_02089a64(mCurrent);
-        }
+        u32 entry = TextEntry(i);
         TextManager::Get().mUnk_5b = 1;
         TextManager &text = TextManager::Get();
         s16 w;

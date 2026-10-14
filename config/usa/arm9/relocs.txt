@@ -16761,7 +16761,6 @@ from:0x020a7a60 kind:load to:0x02110080 module:main
 from:0x020a7bf8 kind:load to:0x02120080 module:main
 from:0x020a7d44 kind:load to:0x0214a000 module:main
 from:0x020a82e4 kind:load to:0x021040fc module:main
-from:0x020a8d10 kind:load to:0x02220842 module:overlay(5)
 from:0x020a8f1c kind:load to:0x0212f0f3 module:main
 from:0x020a943c kind:load to:0x02144000 module:main
 from:0x020a94c0 kind:load to:0x021080e0 module:main

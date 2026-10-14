@@ -67,6 +67,7 @@ data_ov005_022200e8 kind:data(any) addr:0x022200e8 local
 data_ov005_0222013c kind:data(any) addr:0x0222013c local
 data_ov005_02220190 kind:data(any) addr:0x02220190 local
 data_ov005_02220238 kind:data(any) addr:0x02220238 local
+data_ov005_02220300 kind:data(any) addr:0x02220300
 data_ov005_02220308 kind:data(any) addr:0x02220308
 data_ov005_02220314 kind:data(any) addr:0x02220314
 data_ov005_02220330 kind:data(any) addr:0x02220330

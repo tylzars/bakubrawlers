@@ -27,18 +27,34 @@ struct MapPagePos {
     s16 mUnk_04;
     s16 mId;
 };
-// Overlay tables still provided by the original data (not yet moved into this file).
-extern const u8 data_ov005_0221fe90[];
-extern const u32 data_ov005_0221fea0[];
-extern const MapPagePos data_ov005_0221feb8[4];
-extern const MapPagePos data_ov005_0221feba[4];
-extern const MapPagePos data_ov005_0221febc[4];
-extern const WindowItemRecord data_ov005_0221fed8[];
-extern const WindowCellRecord data_ov005_0221ff48[];
-extern const WindowItemRecord data_ov005_0221ffb8[];
-extern const WindowCellRecord data_ov005_02220044[];
-extern const char data_ov005_02220464[];
-extern const char data_ov005_02220470[];
+static const u8 data_ov005_0221fe90[5] = {1, 2, 0, 3, 0};
+static const u32 data_ov005_0221fea0[6] = {0x12, 0x13, 0x14, 0x15, 0x16, 0x17};
+static const MapPagePos data_ov005_0221feb8[4] = {
+    {147, 134, 147, 3},
+    {224, 141, 224, 2},
+    {383, 114, 320, 1},
+    {471, 159, 471, 0},
+};
+static const WindowItemRecord data_ov005_0221fed8[4] = {
+    {0, 1, 45, 136, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
+    {1, 1, 133, 136, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
+    {2, 32768, 120, 35, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+    {3, 32768, 128, 96, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+};
+static const WindowItemRecord data_ov005_0221ffb8[5] = {
+    {0, 1, 4, 160, 48, 32, 0, {0, 0, 0, 1}, 0, 2},
+    {1, 1, 52, 160, 48, 32, 0, {1, 1, 0, 2}, 0, 2},
+    {2, 1, 100, 160, 48, 32, 0, {2, 2, 1, 3}, 0, 2},
+    {3, 1, 148, 160, 48, 32, 0, {3, 3, 2, 3}, 0, 2},
+    {4, 2, 200, 170, 54, 20, 0, {-1, -1, -1, -1}, 0, 1},
+};
+static const WindowCellRecord data_ov005_02220044[5] = {
+    {"story/map_b_obj_00_nce.bin", 0, 0x0, 0, 2, 1, {0, 10, 5, 0}},
+    {"story/map_b_obj_00_nce.bin", 2, 0x0, 0, 2, 1, {2, 12, 7, 0}},
+    {"story/map_b_obj_00_nce.bin", 3, 0x0, 0, 2, 1, {3, 13, 8, 0}},
+    {"story/map_b_obj_00_nce.bin", 4, 0x0, 0, 2, 1, {4, 14, 9, 0}},
+    {"/Game/2D/union_b/union_b_obj_quit_nce.bin", 0, 0x4000, 12, 2, 1, {0, 1, 1, 0}},
+};
 
 MapScene::MapScene() :
     SceneBase(1000, 0) {
@@ -222,7 +238,7 @@ void MapScene::Update() {
             }
             FrameTask::Get().func_0203dc34(0, 0x12);
             CreateMenu();
-            mEvent->func_0206ef4c(data_ov005_02220464, data_ov005_0221fe90[mTab], 10, 7, 0x15);
+            mEvent->func_0206ef4c("mes_town", data_ov005_0221fe90[mTab], 10, 7, 0x15);
             SpriteManager::Get().StartFade(2);
             mUnk_64++;
             break;
@@ -356,7 +372,7 @@ void MapScene::Update() {
             if (mEvent->func_020678e8()) {
                 break;
             }
-            mEvent->func_0206eb10(data_ov005_02220470);
+            mEvent->func_0206eb10("cmd_ST_mev_011.bin");
             SpriteManager::Get().StartFade(2);
             mUnk_64++;
             break;
@@ -738,7 +754,7 @@ s16 MapScene::func_ov005_0221b760(u32 index) {
         mPage = found;
         LoadPanelText2(index);
     }
-    s32 pos = data_ov005_0221febc[found].mX - 0x80;
+    s32 pos = data_ov005_0221feb8[found].mUnk_04 - 0x80;
     if (pos > 0xff) {
         pos = 0xff;
     } else if (pos < 0) {
@@ -831,7 +847,7 @@ void MapScene::func_ov005_0221bd48() {
     s16 x = data_ov005_0221feb8[mPage].mX - ((u32) mScrollPos >> 4);
     if ((x > -0x40) & (x < 0x140)) {
         mCellAnims[0]->Update();
-        mCellAnims[0]->Draw(1, x, data_ov005_0221feba[mPage].mX, 2);
+        mCellAnims[0]->Draw(1, x, data_ov005_0221feb8[mPage].mY, 2);
         DrawPanelText2(x);
     }
 }
@@ -970,6 +986,13 @@ BOOL MapScene::ShowCurrent() {
     }
     return FALSE;
 }
+
+static const WindowCellRecord data_ov005_0221ff48[4] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0xb000, 10, 0, 1, {3, 5, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0xb000, 10, 0, 1, {6, 8, 7, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0xb000, 10, 0, 1, {10, 10, 10, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_a_nce.bin", 0, 0x9000, 0, 0, 1, {0, 0, 0, 0}},
+};
 
 void MapScene::CreatePanelWindow() {
     delete mPanelWindow;

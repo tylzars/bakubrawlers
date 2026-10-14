@@ -138,6 +138,7 @@ data_ov000_022267dc kind:data(any) addr:0x022267dc local
 data_ov000_02226830 kind:data(any) addr:0x02226830 local
 data_ov000_022268a0 kind:data(any) addr:0x022268a0 local
 data_ov000_02226910 kind:data(any) addr:0x02226910 local
+data_ov000_022269a0 kind:data(any) addr:0x022269a0
 data_ov000_022269a8 kind:data(any) addr:0x022269a8
 data_ov000_022269b4 kind:data(any) addr:0x022269b4
 data_ov000_022269e0 kind:data(any) addr:0x022269e0

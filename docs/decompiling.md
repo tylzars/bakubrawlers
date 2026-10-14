@@ -95,6 +95,10 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   reproduces the original's a7d pool word. A two-byte `{x, y}` struct instead of `u8[2]` keeps a54 out of its own
   section. Pool order in func_ov008_0221de34 came from building the pointer inside the loop
   (`const u8 *ids = t.ids; ids += i;`).
+- **False relocations in data blobs.** dsd reads any word that looks like an address as a pointer: a font bitmap
+  in main's `.data` at 0x020a8d10 held the bytes of 0x02220842, recorded as a relocation into ov005. Once MapScene
+  linked from source that symbol was gone and the word became 0. Deleting the line from relocs.txt fixed it; check
+  relocations into a newly linked range from other modules when the ROM differs by a single word.
 - **Function order is definition order.** g3d_res matched but its ROM differed once linked: `func_02033788` was
   defined before its caller `func_02033714` (for the declaration), so mwcc emitted it first. A prototype and the
   definition after the caller fixed it.

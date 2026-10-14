@@ -1,5 +1,43 @@
-#include "System/TouchManager.hpp"
+#include "UI/SelectWindow.hpp"
+
+static const u16 data_ov000_02225fc8[6] = {0, 10, 50, 100, 1000, 5000};
+static const u8 data_ov000_02226044[6][12] = {
+    {0x44, 0x44, 0x49, 0x48, 0x42, 0x44, 0x49, 0x43, 0x44, 0x40, 0x47, 0x41},
+    {0x41, 0x48, 0x40, 0x49, 0x47, 0x48, 0x47, 0x47, 0x42, 0x42, 0x46, 0x49},
+    {0x43, 0x43, 0x42, 0x40, 0x44, 0x44, 0x42, 0x49, 0x42, 0x49, 0x42, 0x45},
+    {0x44, 0x42, 0x43, 0x44, 0x48, 0x42, 0x49, 0x44, 0x42, 0x49, 0x46, 0x48},
+    {0x44, 0x46, 0x48, 0x43, 0x46, 0x44, 0x47, 0x48, 0x43, 0x41, 0x45, 0x47},
+    {0x48, 0x47, 0x48, 0x42, 0x48, 0x49, 0x48, 0x41, 0x42, 0x41, 0x41, 0x40},
+};
+static const WindowItemRecord data_ov000_0222608c[7] = {
+    {0, 16, 230, 76, 28, 12, 0, {-1, -1, -1, -1}, 0, 0},
+    {1, 32, 230, 56, 32, 16, 0, {-1, -1, -1, -1}, 0, 3},
+    {2, 64, 230, 132, 32, 16, 0, {-1, -1, -1, -1}, 0, 3},
+    {3, 32768, 239, 72, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+    {4, 8, 32, 160, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {5, 8, 80, 160, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {6, 8, 176, 160, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
+};
+static const WindowCellRecord data_ov000_02226150[7] = {
+    {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 4, 0x2000, 13, 2, 1, {4, 4, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 0, 0x2000, 13, 2, 1, {0, 1, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 2, 0x2000, 13, 2, 1, {2, 3, 3, 0}},
+    {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 6, 0x2000, 13, 2, 1, {6, 6, 6, 0}},
+    {"/Game/NameEntry/keyboard_b_obj_00_nce.bin", 0, 0x0, 10, 2, 1, {0, 1, 0, 0}},
+    {"/Game/NameEntry/keyboard_b_obj_00_nce.bin", 2, 0x0, 10, 2, 1, {2, 3, 2, 0}},
+    {"/Game/NameEntry/keyboard_b_obj_00_nce.bin", 4, 0x0, 10, 2, 1, {4, 5, 4, 0}},
+};
+static const WindowItemRecord data_ov000_02225fd4[2] = {
+    {0, 32768, 120, 35, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+    {1, 8, 89, 136, 78, 20, 0, {1, 1, 1, 1}, 0, 2},
+};
+static const WindowCellRecord data_ov000_0222600c[2] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0x10000, 0, 0, 1, {9, 9, 9, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0x10000, 0, 0, 1, {0, 2, 1, 0}},
+};
+
 #include "Text/TextManager.hpp"
+#include "System/TouchManager.hpp"
 #include "System/InputManager.hpp"
 #include "Scene/NameEntryScene.hpp"
 
@@ -18,13 +56,6 @@
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
-
-extern const u16 data_ov000_02225fc8[]; // {0, 10, 50, 100, 1000, 5000}
-extern u8 data_ov000_02226044[6][12];
-extern const WindowItemRecord data_ov000_0222608c[];
-extern const WindowCellRecord data_ov000_02226150[];
-extern const WindowItemRecord data_ov000_02225fd4[];
-extern const WindowCellRecord data_ov000_0222600c[];
 
 
 NameEntryScene::NameEntryScene(u8 mode) :
@@ -739,7 +770,7 @@ void NameEntryScene::CheckSpecialName() {
                 break;
         }
         u8 c;
-        u8 *row = data_ov000_02226044[i];
+        const u8 *row = data_ov000_02226044[i];
         u8 k = 0;
         match = TRUE;
         do {

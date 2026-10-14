@@ -4,9 +4,12 @@
     .data       start:0x02220300 end:0x02220cc0 kind:data align:32
     .bss        start:0x02220cc0 end:0x02220d20 kind:bss align:32
 
-// provisional: code only; data sections not assigned to files yet.
 src/05_Town/Scene/MapScene.cpp:
+    complete
     .text       start:0x02219440 end:0x0221cf0c
+    .rodata     start:0x0221fe90 end:0x022200d0
+    .data       start:0x02220300 end:0x02220844
+    .bss        start:0x02220cc0 end:0x02220ce4
 
 src/05_Town/Scene/TutorialScene.cpp:
     complete

@@ -6,6 +6,7 @@
 
 // CRI audio middleware (2.0, C); code only so far.
 libs/cri/src/cri_adx_player.c:
+    complete
     .text       start:0x0203dee8 end:0x0203e954
 
 libs/cri/src/cri_stm.c:

@@ -46,7 +46,6 @@ void GimmickManager::func_ov007_0222e25c() {
     }
 }
 
-// non-matching: the loop index and the object pointer swap registers (r7/r6).
 void GimmickManager::func_ov007_0222e290(GimmickSetFile *file) {
     u8 i = 0;
     if (file->mCount == 0) {
@@ -54,7 +53,7 @@ void GimmickManager::func_ov007_0222e290(GimmickSetFile *file) {
     }
     do {
         Gimmick *g = 0;
-        switch (((u8 *)file)[i * 0x20 + 0x23]) {
+        switch (file->mEntries[i].mType) {
         case 3:
             g = new GimmickFieldPowerS(mIds[mTop], 0);
             break;
@@ -71,7 +70,7 @@ void GimmickManager::func_ov007_0222e290(GimmickSetFile *file) {
             g = new GimmickTornado(mIds[mTop], 1);
             break;
         case 8:
-            g = new GimmickBakugan(mIds[mTop], file->Entry(i)->mParam);
+            g = new GimmickBakugan(mIds[mTop], file->mEntries[i].mParam);
             break;
         case 5:
             g = new GimmickDashBase(mIds[mTop]);
@@ -89,7 +88,7 @@ void GimmickManager::func_ov007_0222e290(GimmickSetFile *file) {
             g = new GimmickHaosBall(mIds[mTop]);
             break;
         case 0x47:
-            g = new GimmickHaosWall(mIds[mTop], file->Entry(i)->mParam);
+            g = new GimmickHaosWall(mIds[mTop], file->mEntries[i].mParam);
             break;
         case 0x33:
             g = new GimmickVentKaze(mIds[mTop]);
@@ -108,7 +107,7 @@ void GimmickManager::func_ov007_0222e290(GimmickSetFile *file) {
             g = new GimmickUnk_02274830(mIds[mTop]);
             break;
         case 9:
-            g = new GimmickAbilityField(mIds[mTop], file->Entry(i)->mParam);
+            g = new GimmickAbilityField(mIds[mTop], file->mEntries[i].mParam);
             break;
         case 0x28:
             g = new GimmickUnk_022308a8(mIds[mTop]);
@@ -121,10 +120,10 @@ void GimmickManager::func_ov007_0222e290(GimmickSetFile *file) {
             break;
         }
         func_ov007_0222e7f4(g);
-        g->mPosition = file->Entry(i)->mPosition;
-        g->mRotX = file->Entry(i)->mRotX;
-        g->mRotY = file->Entry(i)->mRotY;
-        g->mRotZ = file->Entry(i)->mRotZ;
+        g->mPosition = file->mEntries[i].mPosition;
+        g->mRotX = file->mEntries[i].mRotX;
+        g->mRotY = file->mEntries[i].mRotY;
+        g->mRotZ = file->mEntries[i].mRotZ;
         i++;
     } while (i < file->mCount);
 }

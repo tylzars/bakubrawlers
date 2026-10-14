@@ -16,7 +16,9 @@ extern const u8 data_ov007_022790c0[];
 int func_ov007_022252d0(int x1, int y1, int x2, int y2);
 void func_ov007_02225354(float x, float y, float *out);
 
-// non-matching: register naming only.
+// non-matching: 26 words: the original computes `entries` (add sl, r6, #12) at the top of the entry block and loads
+// 10 for mUnk_3a late; here `entries` is substituted and its address is computed after the member stores, which
+// shifts the registers of the bitfield clears.
 BattleSub48::BattleSub48(BattleData *data, u8 mode)
     : SceneBase(2, 0) {
     BattleEntry *entries = data->mEntries;
@@ -54,8 +56,9 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
                     mUnk_12[k] = 0;
                 }
             }
+            u8 c = data_ov007_022790c0[mUnk_12[k]];
             mUnk_16 = 90;
-            int step = (u16) (data_ov007_022790c0[mUnk_12[k]] * 0x2aaa + 0xc000) >> 4;
+            int step = (u16) (c * 0x2aaa + 0xc000) >> 4;
             mPos[k][0] = 110.0f + 50.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
             mPos[k][1] = (float) (u32) mUnk_16 + 50.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
             k++;
@@ -127,18 +130,20 @@ void BattleSub48::func_ov007_02224270() {
     ChangeDir("/");
 }
 
-// non-matching: kind, other, i, entries and screen in different registers.
 void BattleSub48::func_ov007_02224444() {
     func_ov007_02224270();
-    BattleEntry *entries = mUnk_40->mEntries;
+    BattleEntry *entries = mUnk_40->Entries();
+    int kind;
+    int other;
     u8 i;
+    u8 j;
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
     screen.func_02027624(1);
     ChangeDir("/Game/Confrontation/Obj/");
     if (mUnk_3c < 2) {
         if (entries[mUnk_3c].mUnk_12 != 0) {
-            int kind = func_02065c0c(entries[(u8) mUnk_3c].mUnk_12, 3);
-            int other = func_ov007_02222764((u8) mUnk_3c, entries);
+            kind = func_02065c0c(entries[(u8) mUnk_3c].mUnk_12, 3);
+            other = func_ov007_02222764((u8) mUnk_3c, entries);
             if (kind != 5 && other != 5) {
                 i = 0;
                 do {
@@ -198,37 +203,37 @@ void BattleSub48::func_ov007_02224444() {
     } while (i < 7);
     mAnims[4]->SetAnimation(11);
     i = 0;
-    u8 idx = 5;
+    j = 5;
     do {
         if (entries[i].mUnk_0f_2) {
-            mAnims[idx]->SetAnimation(3);
+            mAnims[j]->SetAnimation(3);
         } else {
             int k = func_02065c0c(entries[i].mUnk_12, 3);
             if (k == 1) {
-                mAnims[idx]->SetAnimation(1);
+                mAnims[j]->SetAnimation(1);
             } else if (k == 3) {
-                mAnims[idx]->SetAnimation(3);
+                mAnims[j]->SetAnimation(3);
             }
         }
+        j++;
         i++;
-        idx++;
     } while (i < 2);
     if (!mUnk_0e_3) {
         i = 0;
-        u8 slot = 7;
+        j = 7;
         do {
             s32 value = data_ov007_022790c8[mUnk_0f][i];
-            mAnims[slot] = new CellAnimation("vs_u_obj_updown_32k_nce.bin", 0, 1, 1);
-            mAnims[slot]->mCharBase = screen.func_020276f4(0x3400);
-            mAnims[slot]->mUnk_11 = 3;
+            mAnims[j] = new CellAnimation("vs_u_obj_updown_32k_nce.bin", 0, 1, 1);
+            mAnims[j]->mCharBase = screen.func_020276f4(0x3400);
+            mAnims[j]->mUnk_11 = 3;
             if (value > 0x1000) {
-                mAnims[slot]->SetAnimation(0);
+                mAnims[j]->SetAnimation(0);
             } else if (value < 0x1000) {
-                mAnims[slot]->SetAnimation(1);
+                mAnims[j]->SetAnimation(1);
             } else {
-                mAnims[slot]->SetAnimation(2);
+                mAnims[j]->SetAnimation(2);
             }
-            slot++;
+            j++;
             i++;
         } while (i < 6);
         mAnims[13] = new CellAnimation("vs_emblem_00_32k_nce.bin", 0, 1, 1);
@@ -333,7 +338,8 @@ u8 BattleSub48::func_ov007_02224a70() {
     return ret;
 }
 
-// non-matching: stack-slot order and one r8/r9 swap.
+// non-matching: 7 words in the second block: the original keeps step * 2 (and then the float of mUnk_16) in r9
+// and x in r8; here they are swapped.
 void BattleSub48::func_ov007_02224c90() {
     mAnims[13]->Draw(0, 0x6e, (s16) mUnk_16, 1);
     u8 i = 0;
@@ -345,13 +351,11 @@ void BattleSub48::func_ov007_02224c90() {
             u16 x;
             u16 y;
             int step;
-            CellAnimation *anim;
-            anim = mAnims[slot];
-            if (anim->mUnk_0e != 2) {
+            if (mAnims[slot]->mUnk_0e != 2) {
                 step = angle >> 4;
                 x = 110.0f + 70.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
                 y = (float) (u32) mUnk_16 + 70.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
-                anim->Update();
+                mAnims[slot]->Update();
                 mAnims[slot]->Draw(0, (s16) x, (s16) y, 1);
             }
         }
@@ -383,18 +387,22 @@ void BattleSub48::func_ov007_02224ef8() {
     } while (i < 2);
 }
 
-// non-matching: the original reloads xs[i] around the draw calls; registers differ.
+// The volatile reads in the first loop's draw calls are a placeholder: the original reloads xs[i] after the if/else
+// instead of reusing the value both arms loaded.
 void BattleSub48::func_ov007_02224fdc() {
-    s16 y = mUnk_38;
+    int y;
     s16 xs[2];
+    BattleEntry *entries;
+    int x;
+    u8 i;
+    y = mUnk_38;
     xs[0] = 0x24;
     xs[1] = 0xdc;
-    BattleEntry *entries = mUnk_40->mEntries;
-    u8 i;
+    entries = mUnk_40->mEntries;
+    i = 0;
     if (y >= 0xc0) {
         return;
     }
-    i = 0;
     do {
         if (entries[i].mUnk_12 != 0) {
             if (mAnims[3] == 0) {
@@ -405,11 +413,11 @@ void BattleSub48::func_ov007_02224fdc() {
                 if (!entries[other].mUnk_0f_3) {
                     if (!mUnk_0e_0) {
                         mAnims[1]->Update();
-                        mAnims[1]->Draw(0, xs[i], y, 1);
+                        mAnims[1]->Draw(0, ((volatile s16 *) xs)[i], y, 1);
                     } else {
-                        mAnims[2]->Draw(0, xs[i], y, 1);
+                        mAnims[2]->Draw(0, ((volatile s16 *) xs)[i], y, 1);
                     }
-                    s16 x = xs[i];
+                    x = xs[i];
                     mAnims[3]->Draw(0, x, y, 1);
                     mAnims[0]->Draw(0, x, y, 1);
                     if (i == 0) {

@@ -205,28 +205,24 @@ struct GimmickNode {
     /* 0c */
 };
 
-// Object record of a SetData_%02d_%02d.bin file. The records are 0x20 bytes apart and start 4 bytes into
-// the file: fields sit at +04 (position), +1c (angles), +22 and +23, counted from the file start.
+// Object record of a SetData_%02d_%02d.bin file as loaded by func_ov007_02271a00 (0x20 bytes).
 struct GimmickSetEntry {
-    /* 00 */ PAD(0x00, 0x04);
-    /* 04 */ VecFx32 mPosition;
-    /* 10 */ PAD(0x10, 0x1c);
-    /* 1c */ u16 mRotX;
-    /* 1e */ u16 mRotY;
-    /* 20 */ u16 mRotZ;
-    /* 22 */ u8 mParam;
-    /* 23 */ u8 mType;
-    /* 24 */
+    /* 00 */ VecFx32 mPosition;
+    /* 0c */ VecFx32 mScale; // half the stored value
+    /* 18 */ u16 mRotX;
+    /* 1a */ u16 mRotY;
+    /* 1c */ u16 mRotZ;
+    /* 1e */ u8 mParam;
+    /* 1f */ u8 mType;
+    /* 20 */
 };
 
 struct GimmickSetFile {
-    /* 00 */ PAD(0x00, 0x02);
-    /* 02 */ u8 mCount;
-    /* 03 */ PAD(0x03, 0x04);
-
-    GimmickSetEntry *Entry(int i) {
-        return (GimmickSetEntry *)((u8 *)this + i * 0x20);
-    }
+    /* 000 */ PAD(0x000, 0x002);
+    /* 002 */ u8 mCount;
+    /* 003 */ PAD(0x003, 0x004);
+    /* 004 */ GimmickSetEntry mEntries[64];
+    /* 804 */
 };
 
 // Owns up to 63 gimmick objects (ids come from a ring of free ids).

@@ -43,18 +43,17 @@ int func_ov007_02271a00(GimmickSetFile *file, const char *path) {
         for (u8 i = 0; i < src->mCount; i++) {
             GimmickSetSrcEntry *e = &src->mEntries[i];
             if (e) {
-                GimmickSetEntry *d = file->Entry(i);
-                d->mParam = e->mParam;
-                d->mType  = e->mType;
-                d->mPosition.x = e->mPosition[0];
-                d->mPosition.y = e->mPosition[1];
-                d->mPosition.z = e->mPosition[2];
-                *(s32 *) ((u8 *) d + 0x10) = e->mScale[0] / 2;
-                *(s32 *) ((u8 *) d + 0x14) = e->mScale[1] / 2;
-                *(s32 *) ((u8 *) d + 0x18) = e->mScale[2] / 2;
-                d->mRotX = e->mRotX;
-                d->mRotY = e->mRotY;
-                d->mRotZ = e->mRotZ;
+                file->mEntries[i].mParam = e->mParam;
+                file->mEntries[i].mType = e->mType;
+                file->mEntries[i].mPosition.x = e->mPosition[0];
+                file->mEntries[i].mPosition.y = e->mPosition[1];
+                file->mEntries[i].mPosition.z = e->mPosition[2];
+                file->mEntries[i].mScale.x = e->mScale[0] / 2;
+                file->mEntries[i].mScale.y = e->mScale[1] / 2;
+                file->mEntries[i].mScale.z = e->mScale[2] / 2;
+                file->mEntries[i].mRotX = e->mRotX;
+                file->mEntries[i].mRotY = e->mRotY;
+                file->mEntries[i].mRotZ = e->mRotZ;
             }
         }
         OS_Free(src);

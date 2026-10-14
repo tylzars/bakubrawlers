@@ -12,9 +12,9 @@
 #include <nitro/gx.h>
 #include "System/FileSystem.hpp"
 #include <stdio.h>
+#include "System/FrameTask.hpp"
 #include "Text/TextManager.hpp"
 #include <nitro/fx.h>
-#include "System/FrameTask.hpp"
 #include "System/FrameUpdate.hpp"
 #include "Unknown/UnkStruct_020c17a8.hpp"
 #include "Unknown/UnkStruct_02070608.hpp"
@@ -28,16 +28,6 @@ void operator delete(void *ptr);
 static const WindowCellRecord data_ov000_02226750[2] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0x1b000, 0, 0, 1, {0, 2, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0x1b000, 0, 0, 1, {9, 9, 9, 0}},
-};
-static const WindowCellRecord data_ov000_022268a0[2][2] = {
-    {
-        {"/Game/Title/title_b_obj_01_nce.bin", 7, 0x13000, 1, 0, 1, {6, 8, 7, 0}},
-        {NULL, 0, 0x0, 0, 0, 0, {0, 0, 0, 0}},
-    },
-    {
-        {"/Game/Title/title_b_obj_01_nce.bin", 0, 0x13000, 1, 0, 1, {0, 2, 1, 0}},
-        {"/Game/Title/title_b_obj_01_nce.bin", 3, 0x13000, 1, 0, 1, {3, 5, 4, 0}},
-    },
 };
 static const WindowCellRecord data_ov000_022267dc[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0x1b000, 0, 0, 1, {3, 5, 4, 0}},
@@ -61,10 +51,15 @@ static const WindowItemRecord data_ov000_02226718[2] = {
     {0, 0x1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, 1},
     {1, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
-static const WindowItemRecord data_ov000_02226788[3] = {
-    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
-    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
-    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+static const WindowCellRecord data_ov000_022268a0[2][2] = {
+    {
+        {"/Game/Title/title_b_obj_01_nce.bin", 7, 0x13000, 1, 0, 1, {6, 8, 7, 0}},
+        {NULL, 0, 0x0, 0, 0, 0, {0, 0, 0, 0}},
+    },
+    {
+        {"/Game/Title/title_b_obj_01_nce.bin", 0, 0x13000, 1, 0, 1, {0, 2, 1, 0}},
+        {"/Game/Title/title_b_obj_01_nce.bin", 3, 0x13000, 1, 0, 1, {3, 5, 4, 0}},
+    },
 };
 static const WindowItemRecord data_ov000_02226910[5] = {
     {0, 0x1, 2, 35, 148, 25, 0, {4, 1, 0, 0}, 0, 2},
@@ -72,6 +67,11 @@ static const WindowItemRecord data_ov000_02226910[5] = {
     {2, 0x1, 4, 90, 127, 25, 0, {1, 3, 2, 2}, 0, 2},
     {3, 0x1, 14, 118, 127, 25, 0, {2, 4, 3, 3}, 0, 2},
     {4, 0x1, 23, 147, 145, 25, 0, {3, 0, 4, 4}, 0, 2},
+};
+static const WindowItemRecord data_ov000_02226788[3] = {
+    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
+    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
+    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
 
 

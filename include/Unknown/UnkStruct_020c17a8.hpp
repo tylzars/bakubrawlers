@@ -7,7 +7,8 @@
 class UnkStruct_020c17a8 {
 public:
     /* 00 */ u8 mBusy; // set while a save operation is running
-    /* 01 */ PAD(0x01, 0x30); // size unknown
+    /* 01 */
+    // One byte: Game's copy of the instance (0x020c17a8) is followed by a guard at 0x020c17ac.
 
     ~UnkStruct_020c17a8();
 

@@ -180,7 +180,6 @@ void GimmickFieldDestroy::Update() {
     func_ov007_0222b410();
 }
 
-// non-matching: the original loads the d4 table literal before e6, and the branch shape differs (bhi/pop vs popls/b).
 u8 GimmickFieldDestroy::func_ov007_0222b328() {
     u8 flag   = data_020d433c.mUnk_7a;
     u32 total = 0;
@@ -199,16 +198,18 @@ u8 GimmickFieldDestroy::func_ov007_0222b328() {
         if (flag) {
             acc += data_ov007_022793d4[i];
             if (r <= acc) {
-                return i;
+                goto found;
             }
         } else {
             acc += data_ov007_022793e6[i];
             if (r <= acc) {
-                return i;
+                goto found;
             }
         }
     }
     return 0;
+found:
+    return i;
 }
 
 void GimmickFieldDestroy::func_ov007_0222b410() {

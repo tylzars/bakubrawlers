@@ -246,6 +246,12 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **`unsigned long` vs `unsigned int`.** NitroSDK's `u32` is `unsigned long`; this repo's is `unsigned int`. They
+  colour differently: CreditsScene::UpdateText's `for (unsigned long i ...)` matched where `u32 i` made a second copy
+  of `this + i`. Other near-misses with a `u32` loop index may be the same case.
+- **A shared exit label.** GimmickFieldDestroy::func_ov007_0222b328's two early `return i;` became `goto found;` to one
+  `found: return i;` after `return 0;`, which gives the original branch shape and table load order.
+
 - **Two u8 zeros share a register, and that steers the scheduler.** In BattleCpu::func_ov007_022310f0 the zeros of
   `free` and the counter shared one register, which put `mov r5, #0` ahead of a load; a `u32` counter with a `(u8)`
   wrap stops the sharing and gives the original order.

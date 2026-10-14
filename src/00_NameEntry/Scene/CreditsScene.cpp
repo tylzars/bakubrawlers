@@ -117,14 +117,13 @@ void CreditsScene::Update() {
     }
 }
 
-// non-matching: 0x288 vs 0x284, the zero constants are allocated to different registers.
 BOOL CreditsScene::UpdateText() {
     u32 step = 0;
     if (InputManager::Get().IsHeld(8)) {
         mColState[0] = 3;
         mColState[1] = 3;
-        G2_SetBG0Priority(3);
-        G2S_SetBG0Priority(3);
+        G2_SetBG1Priority(3);
+        G2S_SetBG1Priority(3);
     }
     mTick++;
     if (mTick > 1) {
@@ -137,7 +136,8 @@ BOOL CreditsScene::UpdateText() {
     func_020254f0(func_ov000_02225f98, this);
     while (mSubScroll >= 0x10) {
         mSubScroll -= 0x10;
-        for (u32 i = 0; i < 2; i++) {
+        // unsigned long, not u32 (unsigned int): the index conversion changes how mwcc shares `this + i`.
+        for (unsigned long i = 0; i < 2; i++) {
             switch (mColState[i]) {
                 case 0:
                     mTimer[i]++;

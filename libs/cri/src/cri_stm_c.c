@@ -59,7 +59,7 @@ extern int func_0203e06c(void);
 extern void *func_0203e150(int, int, int, int);
 extern void func_0203e21c(void *);
 extern void func_0203e67c(void *, void *, void *);
-extern int func_0203e634(void *, void *);
+extern int func_0203e634(void *, void *, int);
 extern void func_0203e590(void *);
 extern int func_0203e688(void *);
 extern int func_0203e690(void *);
@@ -199,7 +199,7 @@ void func_020409bc(CriStm *s)
         src->vt->put(src, 1, &a);
         return;
     }
-    n = func_0203e634(obj, a.p);
+    n = func_0203e634(obj, a.p, a.n);
     if (n == 0 || n > a.n) {
         src->vt->put(src, 1, &a);
         return;

@@ -5,8 +5,8 @@
 #define PS16(p, o) (*(s16 *)((u8 *)(p) + (o)))
 #define PU16(p, o) (*(u16 *)((u8 *)(p) + (o)))
 extern void func_01ff93d8(u32 cmd, const void *params, u32 count);   // geometry command
-extern s32 func_01ff8154(s32 a, s32 b);
-extern s32 func_01ff80c0();
+extern s32 FX_DivAsync(s32 a, s32 b);
+extern s32 FX_GetDivResult();
 extern void func_01ff9510(const void *src, void *dst, u32 size);
 static inline s32 FxMul(s32 a, s32 b) { return (s32)(((long long)a * b) >> 12); }
 
@@ -102,7 +102,7 @@ void func_02034f78(u32 *mm) {   // load the texture matrix (translation form)
 void func_02035144(s32 *out, u8 *p) {   // scale, rotate and translate about the texture centre
     s32 w = W16 << 12;
     s32 h = H16 << 12;
-    s32 q = func_01ff8154(h, w);
+    s32 q = FX_DivAsync(h, w);
     s32 c = PS16(p, 0x22);
     s32 sS = P32(p, 0x18);
     s32 s = PS16(p, 0x20);
@@ -114,28 +114,28 @@ void func_02035144(s32 *out, u8 *p) {   // scale, rotate and translate about the
     s32 a, b;
     out[0] = r7;
     out[5] = r5;
-    out[1] = (r4 * func_01ff80c0()) >> 12;
-    q = func_01ff8154(w, h);
+    out[1] = (r4 * FX_GetDivResult()) >> 12;
+    q = FX_DivAsync(w, h);
     b = (-(s32)W16 << 11) - P32(p, 0x24) * W16;
     a = P32(p, 0x28) * H16 + (-(s32)H16 << 11);
     out[12] = (s32)((((long long)r7 * b) - ((long long)r6 * a)) >> 8) + (W16 << 15);
     out[13] = (s32)((((long long)r4 * b) + ((long long)r5 * a)) >> 8) + (H16 << 15);
-    out[4] = (-r6 * func_01ff80c0()) >> 12;
+    out[4] = (-r6 * FX_GetDivResult()) >> 12;
 }
 void func_0203524c(s32 *out, u8 *p) {   // rotate and translate about the texture centre
     s32 w = W16 << 12;
     s32 h = H16 << 12;
-    s32 q = func_01ff8154(h, w);
+    s32 q = FX_DivAsync(h, w);
     s32 a, b;
     out[0] = PS16(p, 0x22);
     out[5] = PS16(p, 0x22);
-    out[1] = (PS16(p, 0x20) * func_01ff80c0()) >> 12;
-    q = func_01ff8154(w, h);
+    out[1] = (PS16(p, 0x20) * FX_GetDivResult()) >> 12;
+    q = FX_DivAsync(w, h);
     b = (-(s32)W16 << 11) - P32(p, 0x24) * W16;
     a = P32(p, 0x28) * H16 + (-(s32)H16 << 11);
     out[12] = (s32)((((long long)PS16(p, 0x22) * b) - ((long long)PS16(p, 0x20) * a)) >> 8) + (W16 << 15);
     out[13] = (s32)((((long long)PS16(p, 0x20) * b) + ((long long)PS16(p, 0x22) * a)) >> 8) + (H16 << 15);
-    out[4] = (-PS16(p, 0x20) * func_01ff80c0()) >> 12;
+    out[4] = (-PS16(p, 0x20) * FX_GetDivResult()) >> 12;
 }
 void func_02035334(s32 *out, u8 *p) {   // scale and translate about the texture centre
     s32 a, b;
@@ -165,7 +165,7 @@ void func_020353b4(s32 *out, u8 *p) {   // translate only
 void func_020353fc(s32 *out, u8 *p) {   // scale and rotate about the texture centre
     s32 w = W16 << 12;
     s32 h = H16 << 12;
-    s32 q = func_01ff8154(h, w);
+    s32 q = FX_DivAsync(h, w);
     s32 c = PS16(p, 0x22);
     s32 sS = P32(p, 0x18);
     s32 s = PS16(p, 0x20);
@@ -177,28 +177,28 @@ void func_020353fc(s32 *out, u8 *p) {   // scale and rotate about the texture ce
     s32 a, b;
     out[0] = r7;
     out[5] = r5;
-    out[1] = (r4 * func_01ff80c0()) >> 12;
-    q = func_01ff8154(w, h);
+    out[1] = (r4 * FX_GetDivResult()) >> 12;
+    q = FX_DivAsync(w, h);
     b = -(s32)W16 << 11;
     a = -(s32)H16 << 11;
     out[12] = (s32)((((long long)r7 * b) - ((long long)r6 * a)) >> 8) + (W16 << 15);
     out[13] = (s32)((((long long)r4 * b) + ((long long)r5 * a)) >> 8) + (H16 << 15);
-    out[4] = (-r6 * func_01ff80c0()) >> 12;
+    out[4] = (-r6 * FX_GetDivResult()) >> 12;
 }
 void func_020354f4(s32 *out, u8 *p) {   // rotate about the texture centre
     s32 w = W16 << 12;
     s32 h = H16 << 12;
-    s32 q = func_01ff8154(h, w);
+    s32 q = FX_DivAsync(h, w);
     s32 a, b;
     out[0] = PS16(p, 0x22);
     out[5] = PS16(p, 0x22);
-    out[1] = (PS16(p, 0x20) * func_01ff80c0()) >> 12;
-    q = func_01ff8154(w, h);
+    out[1] = (PS16(p, 0x20) * FX_GetDivResult()) >> 12;
+    q = FX_DivAsync(w, h);
     b = -(s32)W16 << 11;
     a = -(s32)H16 << 11;
     out[12] = (s32)((((long long)PS16(p, 0x22) * b) - ((long long)PS16(p, 0x20) * a)) >> 8) + (W16 << 15);
     out[13] = (s32)((((long long)PS16(p, 0x20) * b) + ((long long)PS16(p, 0x22) * a)) >> 8) + (H16 << 15);
-    out[4] = (-PS16(p, 0x20) * func_01ff80c0()) >> 12;
+    out[4] = (-PS16(p, 0x20) * FX_GetDivResult()) >> 12;
 }
 void func_020355cc(s32 *out, u8 *p) {   // scale about the texture centre
     out[0] = P32(p, 0x18);
@@ -249,7 +249,7 @@ void func_02035640(u32 *mm) {   // load the texture matrix built from a texture 
 void func_02035788(s32 *out, u8 *p) {
     s32 w = W16 << 12;
     s32 h = H16 << 12;
-    s32 q = func_01ff8154(h, w);
+    s32 q = FX_DivAsync(h, w);
     s32 c = PS16(p, 0x22);
     s32 sS = P32(p, 0x18);
     s32 s = PS16(p, 0x20);
@@ -261,29 +261,29 @@ void func_02035788(s32 *out, u8 *p) {
     r5 = FxMul(sS, s);
     r4 = FxMul(sT, c);
     out[5] = r4;
-    out[1] = (FxMul(sT, s) * func_01ff80c0()) >> 12;
-    q = func_01ff8154(w, h);
+    out[1] = (FxMul(sT, s) * FX_GetDivResult()) >> 12;
+    q = FX_DivAsync(w, h);
     x = (((long long)P32(p, 0x24) * PS16(p, 0x20)) - ((long long)P32(p, 0x28) * PS16(p, 0x22))) >> 12;
     y = (((long long)P32(p, 0x24) * PS16(p, 0x22)) + ((long long)P32(p, 0x28) * PS16(p, 0x20))) >> 12;
     t13 = r4 + (s32)((x * P32(p, 0x1c)) >> 12) - 0x1000;
     out[12] = ((s32)W16 * (r5 - (s32)((y * P32(p, 0x18)) >> 12))) << 4;
     out[13] = (-(s32)H16 * t13) << 4;
-    out[4] = (-r5 * func_01ff80c0()) >> 12;
+    out[4] = (-r5 * FX_GetDivResult()) >> 12;
 }
 void func_020358dc(s32 *out, u8 *p) {   // rotate and translate (translation in the rotated frame)
     s32 w = W16 << 12;
     s32 h = H16 << 12;
-    s32 q = func_01ff8154(h, w);
+    s32 q = FX_DivAsync(h, w);
     s32 x, y;
     out[0] = PS16(p, 0x22);
     out[5] = PS16(p, 0x22);
-    out[1] = (PS16(p, 0x20) * func_01ff80c0()) >> 12;
-    q = func_01ff8154(w, h);
+    out[1] = (PS16(p, 0x20) * FX_GetDivResult()) >> 12;
+    q = FX_DivAsync(w, h);
     x = (s32)((((long long)P32(p, 0x24) * PS16(p, 0x22)) + ((long long)P32(p, 0x28) * PS16(p, 0x20))) >> 12);
     y = (s32)((((long long)P32(p, 0x24) * PS16(p, 0x20)) - ((long long)P32(p, 0x28) * PS16(p, 0x22))) >> 12);
     out[12] = (W16 * (PS16(p, 0x20) - x)) << 4;
     out[13] = (-(s32)H16 * (PS16(p, 0x22) + y - 0x1000)) << 4;
-    out[4] = (-PS16(p, 0x20) * func_01ff80c0()) >> 12;
+    out[4] = (-PS16(p, 0x20) * FX_GetDivResult()) >> 12;
 }
 void func_020359bc(s32 *out, u8 *p) {   // scale and translate
     out[0] = P32(p, 0x18);
@@ -309,7 +309,7 @@ void func_02035a40(s32 *out, u8 *p) {   // translate only
 void func_02035a94(s32 *out, u8 *p) {   // scale and rotate
     s32 w = W16 << 12;
     s32 h = H16 << 12;
-    s32 q = func_01ff8154(h, w);
+    s32 q = FX_DivAsync(h, w);
     s32 c = PS16(p, 0x22);
     s32 sS = P32(p, 0x18);
     s32 s = PS16(p, 0x20);
@@ -319,23 +319,23 @@ void func_02035a94(s32 *out, u8 *p) {   // scale and rotate
     r4 = FxMul(sT, c);
     r6 = FxMul(sS, s);
     out[5] = r4;
-    out[1] = (FxMul(sT, s) * func_01ff80c0(q)) >> 12;
-    q = func_01ff8154(w, h);
+    out[1] = (FxMul(sT, s) * FX_GetDivResult(q)) >> 12;
+    q = FX_DivAsync(w, h);
     out[12] = (W16 * r6) << 4;
     out[13] = (-(s32)H16 * (r4 - 0x1000)) << 4;
-    out[4] = (-r6 * func_01ff80c0(q)) >> 12;
+    out[4] = (-r6 * FX_GetDivResult(q)) >> 12;
 }
 void func_02035b60(s32 *out, u8 *p) {   // rotate only
     s32 w = W16 << 12;
     s32 h = H16 << 12;
-    func_01ff8154(h, w);
+    FX_DivAsync(h, w);
     out[0] = PS16(p, 0x22);
     out[5] = PS16(p, 0x22);
-    out[1] = (PS16(p, 0x20) * func_01ff80c0()) >> 12;
-    func_01ff8154(w, h);
+    out[1] = (PS16(p, 0x20) * FX_GetDivResult()) >> 12;
+    FX_DivAsync(w, h);
     out[12] = (W16 * PS16(p, 0x20)) << 4;
     out[13] = (-(s32)H16 * (PS16(p, 0x22) - 0x1000)) << 4;
-    out[4] = (-PS16(p, 0x20) * func_01ff80c0()) >> 12;
+    out[4] = (-PS16(p, 0x20) * FX_GetDivResult()) >> 12;
 }
 void func_02035c04(s32 *out, u8 *p) {   // scale only
     out[0] = P32(p, 0x18);

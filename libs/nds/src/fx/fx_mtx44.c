@@ -1,7 +1,7 @@
 #include <nitro/internal.h>
 
 void FX_InvAsync(fx32 den);   // 0x01ff80f8 (itcm)
-fx64 FX_GetDivResultFx64(void); // 0x01ff809c (itcm)
+fx64 FX_GetDivResultFx64c(void); // 0x01ff809c (itcm)
 
 #define reg_DIV_NUMER_L (*(vu32 *) 0x04000290)
 #define reg_DIV_NUMER_H (*(vu32 *) 0x04000294)
@@ -35,13 +35,13 @@ void MTX_Frustum(fx32 t, fx32 b, fx32 l, fx32 r, fx32 n, fx32 f, fx32 scale, Mtx
     mtx->_[13] = 0;
     mtx->_[15] = 0;
     n2 = n * 2;
-    val1 = FX_GetDivResultFx64();
+    val1 = FX_GetDivResultFx64c();
     StartFxReciprocal(t - b);
     if (scale != 0x1000) {
         val1 = (val1 * scale) / 0x1000;
     }
     mtx->_[0] = FX_Mul32x64c(n2, val1);
-    val2 = FX_GetDivResultFx64();
+    val2 = FX_GetDivResultFx64c();
     StartFxReciprocal(n - f);
     if (scale != 0x1000) {
         val2 = (val2 * scale) / 0x1000;
@@ -49,7 +49,7 @@ void MTX_Frustum(fx32 t, fx32 b, fx32 l, fx32 r, fx32 n, fx32 f, fx32 scale, Mtx
     mtx->_[5] = FX_Mul32x64c(n2, val2);
     mtx->_[8] = FX_Mul32x64c(r + l, val1);
     mtx->_[9] = FX_Mul32x64c(t + b, val2);
-    val3 = FX_GetDivResultFx64();
+    val3 = FX_GetDivResultFx64c();
     if (scale != 0x1000) {
         val3 = (val3 * scale) / 0x1000;
     }

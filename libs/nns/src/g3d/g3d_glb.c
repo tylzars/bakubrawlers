@@ -15,7 +15,7 @@ extern void func_01ff8574(const void *src, void *dst);   // 4x3 to 4x4
 extern void func_02000de8(const void *a, const void *b, void *dst);   // MTX_Concat44
 extern void func_01ff89c0(void *a, void *b, void *dst);   // MTX_Concat43
 extern void func_01ff85a8(void *src, void *dst, s32 x, s32 y, s32 z);   // scale
-extern long long func_01ff803c(s32 x);   // FX_Inv (64 bit)
+extern long long FX_InvFx64c(s32 x);   // FX_Inv (64 bit)
 extern s32 FX_Div(s32 a, s32 b);
 extern void MIi_CpuClearFast(u32 data, void *dst, u32 size);
 extern void VEC_CrossProduct(void *a, void *b, void *dst);   // VEC_CrossProduct
@@ -131,7 +131,7 @@ s32 func_020323fc(s32 *src, s32 *dstp) {   // MTX_Inverse44 (Gauss-Jordan, fixed
                 t = dst[i][k]; dst[i][k] = dst[piv][k]; dst[piv][k] = t;
             }
         }
-        inv = func_01ff803c(tmp[i][i]);
+        inv = FX_InvFx64c(tmp[i][i]);
         for (k = 0; k < 4; k++) {
             tmp[i][k] = (s32)(((long long)tmp[i][k] * inv + 0x80000000LL) >> 32);
             dst[i][k] = (s32)(((long long)dst[i][k] * inv + 0x80000000LL) >> 32);

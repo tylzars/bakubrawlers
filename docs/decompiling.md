@@ -49,7 +49,7 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
 - **Fully matched units that don't link yet** (2026-10-14):
   - MyroomGiftScene: `.data` is defined and exact; `.rodata` order needs table shapes (2D u8 arrays, a94/aa0/aac
     merged into one [3][12] table), which leaves func_ov008_0221de34 3 words off on literal-pool order.
-  - `g3d_res` links but the ROM differs; `fx_mtx44` has an undefined reference from MTX_Frustum.
+  - `g3d_res` links but the ROM differs.
 
 - **Game.cpp can't link because of `main`.** Every function in Game.cpp matches and its data layout is solved (include
   order plus where MicManager and SceneRunner are defined), but `main` (0x02000c04) belongs to it too: the node it

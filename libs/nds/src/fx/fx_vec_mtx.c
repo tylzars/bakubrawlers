@@ -1,8 +1,8 @@
 // Fixed-point matrix and vector math in ITCM: 0x01ff81a0-0x01ff9208.
 // 0x01ff817c, 0x01ff854c, 0x01ff8574, 0x01ff85dc, 0x01ff85fc, 0x01ff8618 (stm-heavy identity/rotation fills) are hand assembly.
 #include <nitro/internal.h>
-extern void func_01ff80f8(fx32 x);                // FX_InvAsync
-extern fx32 func_01ff80c0(void);                  // FX_GetDivResult
+extern void FX_InvAsync(fx32 x);
+extern fx32 FX_GetDivResult(void);
 extern void func_01ff95e0(const void *src, void *dst);   // 48-byte copy
 #define NEG(x) (-(x))
 
@@ -321,12 +321,12 @@ int func_01ff8634(const MtxFx43 *src, MtxFx43 *dst) {
     if (det == 0) {
         return -1;
     }
-    func_01ff80f8(det);
+    FX_InvAsync(det);
     D = (fx32) (((fx64) m[1] * m[8] - (fx64) m[7] * m[2]) >> 12);
     E = (fx32) (((fx64) m[1] * m[5] - (fx64) m[4] * m[2]) >> 12);
     F = (fx32) (((fx64) m[0] * m[8] - (fx64) m[6] * m[2]) >> 12);
     G = (fx32) (((fx64) m[0] * m[5] - (fx64) m[3] * m[2]) >> 12);
-    inv = func_01ff80c0();
+    inv = FX_GetDivResult();
     p->_[0] = (fx32) (((fx64) inv * B) >> 12);
     p->_[1] = NEG((fx32) (((fx64) inv * D) >> 12));
     p->_[2] = (fx32) (((fx64) inv * E) >> 12);

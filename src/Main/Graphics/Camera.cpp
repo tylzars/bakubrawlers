@@ -27,7 +27,7 @@ extern "C" void func_01ff8260(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_Rot
 extern "C" void func_01ff82b0(MtxFx33 *a, MtxFx33 *b, MtxFx33 *out);  // MTX_Concat33
 extern "C" void func_01ff84d0(VecFx32 *v, MtxFx33 *m, VecFx32 *out);  // MTX_MultVec33
 
-extern "C" s64 func_01ff8010(fx32 a, fx32 b); // 64-bit fixed-point division (32 fraction bits)
+extern "C" s64 FX_DivFx64c(fx32 a, fx32 b); // 64-bit fixed-point division (32 fraction bits)
 extern "C" fx32 FX_Modf(fx32 value, fx32 *integer); // splits into integer part and fraction
 
 // MTX_Perspective
@@ -202,7 +202,7 @@ void Camera::func_02026180() {
     }
     fx32 keys   = INT_TO_FX(mPath[0]);
     fx32 frames = INT_TO_FX(mUnk_50);
-    s64 ratio   = func_01ff8010(keys, frames);
+    s64 ratio   = FX_DivFx64c(keys, frames);
     fx32 t      = (fx32) ((ratio * INT_TO_FX(mUnk_52) + 0x80000000LL) >> 32);
     VecFx32 v;
     func_020262cc(&v, 0, t);

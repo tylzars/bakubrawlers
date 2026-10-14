@@ -758,8 +758,8 @@ src/Main/Video/MobiclipDecoder.cpp:
 src/Main/Video/MobiclipFile.cpp:
     .text       start:0x0203b658 end:0x0203c18c
 
-// provisional: code only.
 src/Main/Video/MoviePlayer.cpp:
+    complete
     .text       start:0x0203c18c end:0x0203ced4
 
 src/Main/Video/MovieScene.cpp:

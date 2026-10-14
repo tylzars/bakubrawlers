@@ -105,10 +105,10 @@ extern "C" u32 func_0203bf10();
 extern "C" u32 func_0203bf80();
 extern "C" int func_0203afb0(Player *p);
 extern "C" int func_0203b0e8(Player *p);
-extern "C" int func_0203b1cc(Player *p);
+extern "C" int func_0203b1cc(Player *p, u32 a, u32 b, int c);
 extern "C" int func_0203b350(Player *p);
 extern "C" int func_0203b390(Player *p);
-extern "C" int func_0203b3a0(Player *p);
+extern "C" int func_0203b3a0(Player *p, void *buffer);
 extern "C" int func_0203b550(Player *p);
 Player *func_0203a844(Player *p);
 void *func_0203a7fc(u32 size);
@@ -205,9 +205,9 @@ int func_0203a718(Player *p) {
     if (p == 0) return 0;
     return func_0203b0e8(p) == 1;
 }
-int func_0203a73c(Player *p) {
+int func_0203a73c(Player *p, u32 a, u32 b, int c) {
     if (p == 0) return 0;
-    return func_0203b1cc(p) == 1;
+    return func_0203b1cc(p, a, b, c) == 1;
 }
 int func_0203a760(Player *p) {
     if (p == 0) return 0;
@@ -217,9 +217,9 @@ int func_0203a784(Player *p) {
     if (p == 0) return 0;
     return func_0203b390(p);
 }
-int func_0203a79c(Player *p) {
+int func_0203a79c(Player *p, void *buffer) {
     if (p == 0) return 0;
-    return func_0203b3a0(p) == 1;
+    return func_0203b3a0(p, buffer) == 1;
 }
 int func_0203a7c0(Player *p) {
     if (p == 0) return 0;

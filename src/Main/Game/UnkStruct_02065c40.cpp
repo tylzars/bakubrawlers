@@ -27,7 +27,7 @@ UnkStruct_02065c40 *data_02219288;
 extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 extern "C" void DC_FlushRange(void *buffer, u32 size);
 void func_02088ec4(UnkStruct_02087898 *object);
-extern "C" void func_01ff9510(const void *src, void *dest, u32 size);
+extern "C" void MIi_CpuCopy32(const void *src, void *dest, u32 size);
 extern const u32 data_020a23cc[8][6];
 extern "C" void func_020360cc(UnkStruct_SpriteManager_28 *slot);
 extern "C" void func_02038444(u32 a, u32 b);
@@ -3634,7 +3634,7 @@ extern "C" BOOL func_0206f6f0(UnkStruct_02065c40 *event, const char *name, u32 i
             data_020b467c[10].mValue = Identity16(0x7fff);
             sScriptGuard |= 1;
         }
-        func_01ff9510(data_020b467c, event->mUnk_0c, 0x44);
+        MIi_CpuCopy32(data_020b467c, event->mUnk_0c, 0x44);
         event->mUnk_0c[14].mValue = event->func_02070554((s8) *(s16 *) &unk4, unk3);
         event->mUnk_0c[15].mValue = *(s16 *) &unk4;
         event->mUnk_0c[16].mValue = id;
@@ -3662,7 +3662,7 @@ extern "C" void func_0206f88c(UnkStruct_02065c40 *event, u32 category, s32 value
     if (!(idle & (waiting & changed))) {
         return;
     }
-    func_01ff9510(data_020a2118, event->mUnk_0c, 0x80);
+    MIi_CpuCopy32(data_020a2118, event->mUnk_0c, 0x80);
     s32 offset = data_020a1b12[category].mUnk_3;
     if (offset < 0) {
         event->mUnk_0c[5].mValue = -1;
@@ -3708,7 +3708,7 @@ u32 UnkStruct_02065c40::func_0206f9b4(const char *name, u32 unk2, u32 unk3, u32 
 
 
 
-extern "C" void func_01ff9510(const void *src, void *dest, u32 size);
+extern "C" void MIi_CpuCopy32(const void *src, void *dest, u32 size);
 
 u8 UnkStruct_02065c40::func_0206fa20(const char *name, const u16 *unk2, const u8 *unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7,
                                      u32 unk8, u32 unk9) {

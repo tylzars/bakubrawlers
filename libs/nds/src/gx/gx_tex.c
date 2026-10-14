@@ -48,12 +48,12 @@ void GX_LoadTex(const void *src, u32 offset, u32 size) {
             if (data_020a4f24 != -1 && first > 0x30) {
                 MI_DmaCopy32(data_020a4f24, src, (void *) (base + offset), first);
             } else {
-                func_01ff9510(src, (void *) (base + offset), first);
+                MIi_CpuCopy32(src, (void *) (base + offset), first);
             }
             if (data_020a4f24 != -1) {
                 MI_DmaCopy32Async(data_020a4f24, (const u8 *) src + first, (void *) tex2, size - first, 0, 0);
             } else {
-                func_01ff9510((const u8 *) src + first, (void *) tex2, size - first);
+                MIi_CpuCopy32((const u8 *) src + first, (void *) tex2, size - first);
             }
             return;
         }
@@ -61,7 +61,7 @@ void GX_LoadTex(const void *src, u32 offset, u32 size) {
     if (data_020a4f24 != -1) {
         MI_DmaCopy32Async(data_020a4f24, src, (void *) dst, size, 0, 0);
     } else {
-        func_01ff9510(src, (void *) dst, size);
+        MIi_CpuCopy32(src, (void *) dst, size);
     }
 }
 
@@ -87,7 +87,7 @@ void GX_LoadTexPltt(const void *src, u32 offset, u32 size) {
     if (data_020a4f24 != -1) {
         MI_DmaCopy32Async(data_020a4f24, src, (void *) (dst + offset), size, 0, 0);
     } else {
-        func_01ff9510(src, (void *) (dst + offset), size);
+        MIi_CpuCopy32(src, (void *) (dst + offset), size);
     }
 }
 

@@ -43,7 +43,7 @@ void GX_LoadBGExtPltt(const void *src, u32 offset, u32 size) {
     if (data_020a4f24 != -1) {
         MI_DmaCopy32Async(data_020a4f24, src, (void *) dst, size, 0, 0);
     } else {
-        func_01ff9510(src, (void *) dst, size);
+        MIi_CpuCopy32(src, (void *) dst, size);
     }
 }
 
@@ -77,7 +77,7 @@ void GX_LoadOBJExtPltt(const void *src, u32 offset, u32 size) {
     if (data_020a4f24 != -1) {
         MI_DmaCopy32Async(data_020a4f24, src, (void *) (dst + offset), size, 0, 0);
     } else {
-        func_01ff9510(src, (void *) (dst + offset), size);
+        MIi_CpuCopy32(src, (void *) (dst + offset), size);
     }
 }
 
@@ -98,7 +98,7 @@ void GX_LoadSubBGExtPltt(const void *src, u32 offset, u32 size) {
     if (data_020a4f24 != -1) {
         MI_DmaCopy32Async(data_020a4f24, src, (void *) (0x06898000 + offset), size, 0, 0);
     } else {
-        func_01ff9510(src, (void *) (0x06898000 + offset), size);
+        MIi_CpuCopy32(src, (void *) (0x06898000 + offset), size);
     }
 }
 
@@ -118,7 +118,7 @@ void GX_LoadSubOBJExtPltt(const void *src, u32 offset, u32 size) {
     if (data_020a4f24 != -1) {
         MI_DmaCopy32Async(data_020a4f24, src, (void *) (0x068a0000 + offset), size, 0, 0);
     } else {
-        func_01ff9510(src, (void *) (0x068a0000 + offset), size);
+        MIi_CpuCopy32(src, (void *) (0x068a0000 + offset), size);
     }
 }
 

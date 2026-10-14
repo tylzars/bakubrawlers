@@ -107,7 +107,7 @@ struct AntennaPalette {
     /* 08 */
 };
 
-extern "C" void func_01ff94e0(const void *src, void *dst, u32 size);
+extern "C" void MIi_CpuCopy16(const void *src, void *dst, u32 size);
 extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 void func_02078ab8(u32 screen, u32 palette, const AntennaPalette *colors, u32 unk4);
 void func_02078a48(u8 *dst, const u8 *src);
@@ -188,32 +188,32 @@ void func_02078ab8(u32 screen, u32 palette, const AntennaPalette *colors, u32 un
     ChangeDir("/Game/Character/EditedIcon/");
     if (unk4 == 0) {
         file = (u8 *) func_02023504("icon_ch_edit_ncl.bin", 0, 0, 0, &size, 0);
-        func_01ff94e0(file, buffer, 0x20);
+        MIi_CpuCopy16(file, buffer, 0x20);
         u8 *p = (u8 *) func_02023504("icon_ch_edit_skin_ncl.bin", 0, 0, 0, &size, 0);
-        func_01ff94e0(p + (j16 + 1) * 2, buffer + 2, 6);
+        MIi_CpuCopy16(p + (j16 + 1) * 2, buffer + 2, 6);
         pos += 3;
         OS_Free(p);
         p = (u8 *) func_02023504("icon_ch_edit_eye_ncl.bin", 0, 0, 0, &size, 0);
-        func_01ff94e0(p + (pos + b * 16) * 2, buffer + pos * 2, 6);
+        MIi_CpuCopy16(p + (pos + b * 16) * 2, buffer + pos * 2, 6);
         pos += 3;
         OS_Free(p);
         p = (u8 *) func_02023504("icon_ch_edit_hair_ncl.bin", 0, 0, 0, &size, 0);
-        func_01ff94e0(p + (pos + d * 16) * 2, buffer + pos * 2, 6);
+        MIi_CpuCopy16(p + (pos + d * 16) * 2, buffer + pos * 2, 6);
         pos += 3;
         OS_Free(p);
         p = (u8 *) func_02023504("icon_ch_edit_cap_ncl.bin", 0, 0, 0, &size, 0);
-        func_01ff94e0(p + (pos + f * 16) * 2, buffer + pos * 2, 4);
+        MIi_CpuCopy16(p + (pos + f * 16) * 2, buffer + pos * 2, 4);
         pos += 2;
         OS_Free(p);
         p = (u8 *) func_02023504("icon_ch_edit_fr_ncl.bin", 0, 0, 0, &size, 0);
-        func_01ff94e0(p + (pos + h * 16) * 2, buffer + pos * 2, 4);
+        MIi_CpuCopy16(p + (pos + h * 16) * 2, buffer + pos * 2, 4);
         pos += 2;
         OS_Free(p);
         extra = (u8 *) func_02023504("icon_ch_edit_len_ncl.bin", 0, 0, 0, &size, 0);
-        func_01ff94e0(extra + (pos + i * 16) * 2, buffer + pos * 2, 2);
+        MIi_CpuCopy16(extra + (pos + i * 16) * 2, buffer + pos * 2, 2);
     } else {
         file = (u8 *) func_02023504("icon_ch_edit_grayscale_ncl.bin", 0, 0, 0, &size, 0);
-        func_01ff94e0(file, buffer, 0x20);
+        MIi_CpuCopy16(file, buffer, 0x20);
     }
     DC_FlushRange(buffer, 0x20);
     func_02025c1c(screen, 5, palette << 5, buffer, 0x20, 1);

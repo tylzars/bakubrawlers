@@ -51,8 +51,8 @@ int G3X_GetMtxStackLevelPV(u32 *level);
 int G3X_GetMtxStackLevelPJ(u32 *level);
 void MI_DmaFill32Async(u32 dmaNo, void *dest, u32 data, u32 size, void *callback, void *arg);
 void func_01ff9604(const void *src, void *dst); // MI_Copy64B
-void func_01ff94e0(const void *src, void *dst, u32 size); // MIi_CpuCopy16
-void func_01ff9510(const void *src, void *dst, u32 size); // MIi_CpuCopy32
+void MIi_CpuCopy16(const void *src, void *dst, u32 size);
+void MIi_CpuCopy32(const void *src, void *dst, u32 size);
 void MI_DmaCopy16(u32 dmaNo, const void *src, void *dest, u32 size); // MI_DmaCopy16
 void MI_DmaCopy32(u32 dmaNo, const void *src, void *dest, u32 size); // MI_DmaCopy32
 void MI_DmaCopy32Async(u32 dmaNo, const void *src, void *dest, u32 size, void *callback, void *arg); // MI_DmaCopy32Async

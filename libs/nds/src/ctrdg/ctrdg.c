@@ -32,7 +32,7 @@ extern u8 data_020c1790[];
 extern u32 data_020c136c[];
 typedef struct { void *work; u8 pad[0x22]; u8 f26; } CTRDGGlobal;
 extern CTRDGGlobal data_020c1368;
-void func_01ff9510(const void *src, void *dst, u32 size); // MI word copy (ITCM)
+void MIi_CpuCopy32(const void *src, void *dst, u32 size); // MI word copy (ITCM)
 void func_02012070(u32 tag, u32 data);
 void func_0201209c(u32 tag, u32 data);
 void func_0201210c(u32 tag, u32 data);
@@ -153,7 +153,7 @@ void func_02011e7c(void)
         *(u8 *)0x027fff9b = func_02011b28() != 0;
         *(u8 *)0x027fff9a = 1;
     }
-    func_01ff9510((void *)0xffff0020, data_020c11c4, 0x9c);
+    MIi_CpuCopy32((void *)0xffff0020, data_020c11c4, 0x9c);
     func_02005e30();
     func_02011d30((((u32)data_020c11c0 - 0x02000000) >> 5 << 6) | 1);
     while (data_020c1184.flag != 1) {

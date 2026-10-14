@@ -90,8 +90,8 @@ typedef struct { u8 pad[5]; u8 f0 : 1; u8 f1 : 1; } CtrdgBits;
 extern void DC_InvalidateRange(void *p, u32 n);   /* 0x02005e64 */
 extern void DC_StoreRange(void *p, u32 n);        /* 0x02005e80 */
 extern void MI_CpuCopy8(const void *s, void *d, u32 n);   /* 0x01ff96c4 */
-extern void MI_CpuCopy16(const void *s, void *d, u32 n);  /* 0x01ff94e0 */
-extern void MI_CpuCopy32(const void *s, void *d, u32 n);  /* 0x01ff9510 */
+extern void MIi_CpuCopy16(const void *s, void *d, u32 n);  /* 0x01ff94e0 */
+extern void MIi_CpuCopy32(const void *s, void *d, u32 n);  /* 0x01ff9510 */
 extern void MI_CpuFill8(void *d, u8 v, u32 n);            /* 0x01ff9630 */
 extern void MIi_CpuClear16(u16 v, void *d, u32 n);        /* 0x01ff94c8 */
 extern void MIi_CpuClear32(u32 v, void *d, u32 n);        /* 0x01ff94fc */

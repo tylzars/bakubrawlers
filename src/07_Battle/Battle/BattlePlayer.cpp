@@ -20,8 +20,8 @@ struct UnkStruct_020c4230 {
 };
 extern UnkStruct_020c4230 data_020c4230;
 extern u8 data_020d43eb[];
-extern "C" void func_01ff9510(const void *src, void *dst, u32 size);
-extern "C" void func_01ff94e0(const void *src, void *dst, u32 size);
+extern "C" void MIi_CpuCopy32(const void *src, void *dst, u32 size);
+extern "C" void MIi_CpuCopy16(const void *src, void *dst, u32 size);
 extern u8 data_020d441a[];
 extern u8 data_020d4352[];
 
@@ -187,10 +187,10 @@ void BattlePlayer::Update() {
                 if (!received) {
                     mMsg.mType = 0;
                 } else {
-                    func_01ff9510(received, &mMsg, 0x20);
+                    MIi_CpuCopy32(received, &mMsg, 0x20);
                 }
                 if (mMsg.mType != 0) {
-                    func_01ff9510(&mMsg, (u8 *) this + 0x120, 0x20);
+                    MIi_CpuCopy32(&mMsg, (u8 *) this + 0x120, 0x20);
                 }
             }
             InputManager::Get();
@@ -342,13 +342,13 @@ void func_ov007_0226a1d8(BattlePlayer *player) {
         if (length == 0) {
             length = 1;
         }
-        func_01ff94e0(name, (u8 *) player + 0xb0, length * sizeof(u16));
+        MIi_CpuCopy16(name, (u8 *) player + 0xb0, length * sizeof(u16));
         player->mUnk_ed = length * 2;
     } else {
         MessageFile *file = (MessageFile *) func_02023504("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
         player->mUnk_ed   = file->GetLength(player->mUnk_f6);
         TextManager::Get();
-        func_01ff94e0(file->GetText(player->mUnk_f6), (u8 *) player + 0xb0, player->mUnk_ed);
+        MIi_CpuCopy16(file->GetText(player->mUnk_f6), (u8 *) player + 0xb0, player->mUnk_ed);
         OS_Free(file);
     }
 }

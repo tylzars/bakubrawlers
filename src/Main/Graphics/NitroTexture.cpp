@@ -109,7 +109,7 @@ void UnkStruct_02028308::func_020284e8() {
         ofs       = tex->mTexData;
         u32 addr  = (tex->mTexHandle & 0xffff) << 3;
         void *buf = OS_Alloc(size);
-        func_01ff9510((u8 *) tex + ofs, buf, size);
+        MIi_CpuCopy32((u8 *) tex + ofs, buf, size);
         DC_FlushRange(buf, size);
         func_02025c1c(0, 2, addr, buf, size, 1);
         mTex->mTexState |= 1;
@@ -126,12 +126,12 @@ void UnkStruct_02028308::func_020284e8() {
     addr2       = (tex2->m4x4Handle & 0xffff) << 3;
     idx         = tex2->m4x4IndexData;
     void *buf2  = OS_Alloc(size2);
-    func_01ff9510((u8 *) tex2 + ofs2, buf2, size2);
+    MIi_CpuCopy32((u8 *) tex2 + ofs2, buf2, size2);
     DC_FlushRange(buf2, size2);
     func_02025c1c(0, 2, addr2, buf2, size2, 1);
     size2 >>= 1;
     void *buf3 = OS_Alloc(size2);
-    func_01ff9510((u8 *) tex2 + idx, buf3, size2);
+    MIi_CpuCopy32((u8 *) tex2 + idx, buf3, size2);
     DC_FlushRange(buf3, size2);
     func_02025c1c(0, 2, 0x20000 + ((addr2 & 0x1ffff) >> 1) + ((addr2 & 0x40000) >> 2), buf3, size2, 1);
     mTex->m4x4State |= 1;
@@ -144,7 +144,7 @@ void UnkStruct_02028308::func_0202866c() {
     ofs           = tex->mPlttData;
     u32 addr          = (tex->mPlttHandle & 0xffff) << 3;
     void *buf         = OS_Alloc(size);
-    func_01ff9510((u8 *) tex + ofs, buf, size);
+    MIi_CpuCopy32((u8 *) tex + ofs, buf, size);
     DC_FlushRange(buf, size);
     func_02025c1c(0, 3, addr, buf, size, 1);
     mTex->mPlttState |= 1;
@@ -173,7 +173,7 @@ BOOL UnkStruct_02028308::func_02028778(const char *name, void *data, u32 size) {
     if (entry != NULL) {
         u32 addr  = (mTex->mTexHandle << 16 >> 13) + (*entry << 16 >> 13);
         void *dst = OS_Alloc(size);
-        func_01ff9510(data, dst, size);
+        MIi_CpuCopy32(data, dst, size);
         DC_FlushRange(dst, size);
         func_02025c1c(0, 2, addr, dst, size, 1);
     } else {
@@ -210,7 +210,7 @@ BOOL UnkStruct_02028308::func_020288d4(const char *name, void *data, u32 size) {
         u32 addr    = (*entry << 3) + ((key << 19) >> 16);
         u32 aligned = (size + 3) & ~3;
         void *dst   = OS_Alloc(aligned);
-        func_01ff9510(data, dst, aligned);
+        MIi_CpuCopy32(data, dst, aligned);
         DC_FlushRange(dst, aligned);
         func_02025c1c(0, 3, addr, dst, aligned, 1);
     } else {

@@ -100,11 +100,11 @@ extern const u8 data_020a35bc[];
 
 u32 func_02086654(UnkStruct_02078e14 *self, u32 unk1, u32 unk2);
 
-extern "C" void func_01ff94e0(const void *src, void *dst, u32 size);
+extern "C" void MIi_CpuCopy16(const void *src, void *dst, u32 size);
 
-// Inline wrapper around MIi_CpuCopy16 (func_01ff94e0).
+// Inline wrapper around MIi_CpuCopy16 (MIi_CpuCopy16).
 static inline void MI_CpuCopy16(const void *src, void *dst, u32 size) {
-    func_01ff94e0(src, dst, size);
+    MIi_CpuCopy16(src, dst, size);
 }
 
 // Layout of the list message of a battle player (BattlePlayer::mMsg) and of the communication buffer data_0220f540.
@@ -3101,7 +3101,7 @@ BOOL func_02084f40(UnkStruct_02078e14 *self) {
 BOOL func_0208501c(UnkStruct_02078e14 *self) {
     for (u8 i = 0; i < 3; i++) {
         if (self->mUnk_1f1 != 0x15) {
-            func_01ff94e0(&data_020d433c.mBattlePlayers->mPlayers[self->mUnk_1f0]->mRecords[i], (u8 *) &data_0220f540 + 4 + i * 4, 4);
+            MIi_CpuCopy16(&data_020d433c.mBattlePlayers->mPlayers[self->mUnk_1f0]->mRecords[i], (u8 *) &data_0220f540 + 4 + i * 4, 4);
         } else {
             u8 id;
             u32 kind;
@@ -3114,7 +3114,7 @@ BOOL func_0208501c(UnkStruct_02078e14 *self) {
             if (invalid != 0) {
                 MI_CpuClear16((u8 *) &data_0220f540 + 4 + i * 4, 4);
             } else {
-                func_01ff94e0(func_02023248(data_020d43f0, id, kind), (u8 *) &data_0220f540 + 4 + i * 4, 4);
+                MIi_CpuCopy16(func_02023248(data_020d43f0, id, kind), (u8 *) &data_0220f540 + 4 + i * 4, 4);
             }
         }
     }

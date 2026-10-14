@@ -1,7 +1,7 @@
 #include <nitro/private/os_types.h>
 
 extern void MI_CpuCopy8(const void *src, void *dest, u32 size);       // 0x01ff96c4 (ITCM)
-extern void func_01ff94e0(const void *src, void *dest, u32 size);    // ITCM
+extern void MIi_CpuCopy16(const void *src, void *dest, u32 size);    // ITCM
 
 typedef struct {
     u8 favoriteColor;      // 0x00
@@ -28,8 +28,8 @@ void OS_GetOwnerInfo(OSOwnerInfo *info) {
     info->unk03 = src[4];
     info->nickNameLength = src[0x1a];
     info->commentLength = src[0x50];
-    func_01ff94e0((const void *) (src + 6), info->nickName, 0x14);
-    func_01ff94e0((const void *) (src + 0x1c), info->comment, 0x34);
+    MIi_CpuCopy16((const void *) (src + 6), info->nickName, 0x14);
+    MIi_CpuCopy16((const void *) (src + 0x1c), info->comment, 0x34);
     info->nickNameEnd = 0;
     info->commentEnd = 0;
 }

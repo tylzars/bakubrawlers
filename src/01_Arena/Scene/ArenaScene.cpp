@@ -32,7 +32,7 @@ struct UnkStruct_020c3938 {
 extern UnkStruct_020c3938 data_020c3938[];
 extern u8 data_020d43eb[];
 extern u8 data_020d441a[];
-extern "C" void func_01ff94e0(const void *src, void *dest, u32 size);
+extern "C" void MIi_CpuCopy16(const void *src, void *dest, u32 size);
 extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 void func_020233f8(UnkStruct_020d433c *data);
 void func_0202330c(UnkStruct_020d433c *data);
@@ -240,7 +240,7 @@ void ArenaScene::Update() {
         func_ov001_0221993c(2);
     } else if (mode > 1) {
         if (mMode < 0xc) {
-            func_01ff94e0(data_020d441a, (u8 *) &data_0220f540 + 4, 0x18);
+            MIi_CpuCopy16(data_020d441a, (u8 *) &data_0220f540 + 4, 0x18);
             data_0220f540.mUnk_1f = 0;
         }
     }
@@ -373,7 +373,7 @@ void ArenaScene::Update() {
                 u8 *p = WirelessManager::Get().func_0202f0cc(i);
                 if (p != NULL) {
                     count = i + 1;
-                    func_01ff94e0(p + 4, data_020d433c.mNames[i], 0x18);
+                    MIi_CpuCopy16(p + 4, data_020d433c.mNames[i], 0x18);
                 } else if (i != 0) {
                     MI_CpuClear16(data_020d433c.mNames[i], 0x18);
                 }
@@ -437,7 +437,7 @@ void ArenaScene::Update() {
                     WirelessManager::Get();
                     UnkStruct_020c3938 *e = &data_020c3938[i];
                     if (e != NULL && e->mUnk_68 == 0xfffc) {
-                        func_01ff94e0(e->mName, data_020d433c.mNames[i], 0x18);
+                        MIi_CpuCopy16(e->mName, data_020d433c.mNames[i], 0x18);
                     }
                     i++;
                 } while (i < count);
@@ -518,7 +518,7 @@ void ArenaScene::Update() {
                 u8 *p = WirelessManager::Get().func_0202f0cc(i);
                 if (p != NULL) {
                     count = i + 1;
-                    func_01ff94e0(p + 4, data_020d433c.mNames[i], 0x18);
+                    MIi_CpuCopy16(p + 4, data_020d433c.mNames[i], 0x18);
                     if (i == 0) {
                         flag = p[0x1f];
                     }
@@ -545,7 +545,7 @@ void ArenaScene::Update() {
                 for (u8 i = 0; i < 4; i++) {
                     u8 *p = WirelessManager::Get().func_0202f0cc(i);
                     if (p != NULL) {
-                        func_01ff94e0(p + 4, data_020d433c.mNames[i], 0x18);
+                        MIi_CpuCopy16(p + 4, data_020d433c.mNames[i], 0x18);
                     }
                 }
                 if (mode == 6) {
@@ -554,7 +554,7 @@ void ArenaScene::Update() {
                 }
                 mMode++;
             }
-            func_01ff94e0(data_020d441a, (u8 *) &data_0220f540 + 4, 0x18);
+            MIi_CpuCopy16(data_020d441a, (u8 *) &data_0220f540 + 4, 0x18);
             break;
         case 13:
             MI_CpuCopy8(data_020d43eb, (u8 *) &data_0220f540 + 4, 4);

@@ -5,7 +5,7 @@
 #define U8(p, o) (*((u8 *)(p) + (o)))
 #define P32(p, o) (*(s32 *)((u8 *)(p) + (o)))
 extern void func_01ff93d8(u32 cmd, const void *params, u32 count);
-extern void func_01ff9510(const void *src, void *dst, u32 size);
+extern void MIi_CpuCopy32(const void *src, void *dst, u32 size);
 extern void func_01ff854c(void *m43);      // MTX_Identity43
 extern void func_02000d88(void *m44);      // MTX_Identity44
 extern void func_01ff817c(void *m33);      // MTX_Identity33
@@ -262,8 +262,8 @@ BOOL func_02032854(u8 *out, AnmObj *list, u32 idx) {   // NNS_G3dAnmCalcNode: bl
         if (idx < list->mapCount && (list->map[idx] & 0x300) == 0x100 && list->weight > 0 && list->f0c != 0) {
             ((void (*)(void *, AnmObj *, u32))list->f0c)(tmp, list, list->map[idx] & 0xff);
             if (n == 0) {
-                func_01ff9510(tmp + 0x28, keep + 0xc, 12);
-                func_01ff9510(tmp + 0x40, keep, 12);
+                MIi_CpuCopy32(tmp + 0x28, keep + 0xc, 12);
+                MIi_CpuCopy32(tmp + 0x40, keep, 12);
             }
             if (total == 0x1000) w = list->weight;
             else w = FX_Div(list->weight, total);
@@ -292,9 +292,9 @@ BOOL func_02032854(u8 *out, AnmObj *list, u32 idx) {   // NNS_G3dAnmCalcNode: bl
         n++;
     } while (list != 0);
     VEC_CrossProduct(out + 0x28, out + 0x34, out + 0x40);
-    if (P32(out, 0x28) == 0 && P32(out, 0x2c) == 0 && P32(out, 0x30) == 0) func_01ff9510(keep + 0xc, out + 0x28, 12);
+    if (P32(out, 0x28) == 0 && P32(out, 0x2c) == 0 && P32(out, 0x30) == 0) MIi_CpuCopy32(keep + 0xc, out + 0x28, 12);
     else VEC_Normalize(out + 0x28, out + 0x28);
-    if (P32(out, 0x40) == 0 && P32(out, 0x44) == 0 && P32(out, 0x48) == 0) func_01ff9510(keep, out + 0x40, 12);
+    if (P32(out, 0x40) == 0 && P32(out, 0x44) == 0 && P32(out, 0x48) == 0) MIi_CpuCopy32(keep, out + 0x40, 12);
     else VEC_Normalize(out + 0x40, out + 0x40);
     VEC_CrossProduct(out + 0x40, out + 0x28, out + 0x34);
     return 1;

@@ -7,7 +7,7 @@
 extern void func_01ff93d8(u32 cmd, const void *params, u32 count);   // geometry command
 extern s32 FX_DivAsync(s32 a, s32 b);
 extern s32 FX_GetDivResult();
-extern void func_01ff9510(const void *src, void *dst, u32 size);
+extern void MIi_CpuCopy32(const void *src, void *dst, u32 size);
 static inline s32 FxMul(s32 a, s32 b) { return (s32)(((long long)a * b) >> 12); }
 
 typedef struct { u32 cmd; u32 mode; s32 m[12]; u32 mode2; } GeBuf;
@@ -28,15 +28,15 @@ void func_02034d5c(u32 *m, s32 *v, u8 *idx, u32 flags) {   // combine a node tra
             m[0] |= 0x18;
             return;
         }
-        func_01ff9510(data_020bbd04[b], data_020bbd04[a], 0x18);
-        func_01ff9510(data_020bbd04[b], &m[4], 0x18);
+        MIi_CpuCopy32(data_020bbd04[b], data_020bbd04[a], 0x18);
+        MIi_CpuCopy32(data_020bbd04[b], &m[4], 0x18);
         return;
     }
     m[1] = v[0];
     m[2] = v[1];
     m[3] = v[2];
     if (data_020baf00->bits[b >> 5] & (1 << (b & 0x1f))) {
-        func_01ff9510(v, data_020bbd04[a], 0x18);
+        MIi_CpuCopy32(v, data_020bbd04[a], 0x18);
         data_020baf00->bits[a >> 5] &= ~(1 << (a & 0x1f));
         m[0] |= 0x18;
         return;
@@ -48,7 +48,7 @@ void func_02034d5c(u32 *m, s32 *v, u8 *idx, u32 flags) {   // combine a node tra
     data_020bbd04[a][3] = FxMul(v[3], data_020bbd04[b][3]);
     data_020bbd04[a][4] = FxMul(v[4], data_020bbd04[b][4]);
     data_020bbd04[a][5] = FxMul(v[5], data_020bbd04[b][5]);
-    func_01ff9510(data_020bbd04[a], &m[4], 0x18);
+    MIi_CpuCopy32(data_020bbd04[a], &m[4], 0x18);
 }
 void func_02034f78(u32 *mm) {   // load the texture matrix (translation form)
     GeBuf t;

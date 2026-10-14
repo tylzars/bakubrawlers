@@ -73,11 +73,11 @@ int G3X_GetVectorMtx(MtxFx33 *dst) {
 }
 
 void G3X_SetEdgeColorTable(const u16 *rgb) {
-    func_01ff94e0(rgb, (void *) 0x04000330, 0x10);
+    MIi_CpuCopy16(rgb, (void *) 0x04000330, 0x10);
 }
 
 void G3X_SetToonTable(const u16 *rgb) {
-    func_01ff94e0(rgb, (void *) 0x04000380, 0x40);
+    MIi_CpuCopy16(rgb, (void *) 0x04000380, 0x40);
 }
 
 void G3X_SetClearColor(int rgb, int alpha, int depth, int polygonID, BOOL fog) {

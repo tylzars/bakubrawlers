@@ -76,7 +76,7 @@ void func_0200fdfc(u32 tag, u16 *m, int err)
                 data_020c06e0.ind.h1a = 0xffff;
                 data_020c06e0.ind.h3c = extra;
                 MI_CpuCopy8(mac, data_020c06e0.ind.mac, 6);
-                if (data) MI_CpuCopy16(data, data_020c06e0.ind.data, 0x18);
+                if (data) MIi_CpuCopy16(data, data_020c06e0.ind.data, 0x18);
                 else MIi_CpuClear16(0, data_020c06e0.ind.data, 0x18);
                 data_020c06e0.ind.h40 = mac2 == 0 ? a : b;
                 if (mac2 != 0) b = a;
@@ -549,7 +549,7 @@ int func_02010aac(WMCb cb, u32 a, int b, u32 c, u16 e, void *f)
     buf[3] = c;
     buf[4] = e;
     MIi_CpuClear32(0, &buf[5], 0x1c);
-    MI_CpuCopy32(f, &buf[12], 0x10);
+    MIi_CpuCopy32(f, &buf[12], 0x10);
     r = func_0200fc84(buf, 0x40);
     if (r == 0) {
         r = 2;
@@ -579,7 +579,7 @@ int func_02010c84(WMCb cb, void *p)
     func_0200fb68(0x23, cb);
     MIi_CpuClear32(0, buf, 0x20);
     *(u16 *)buf = 0x23;
-    MI_CpuCopy32(p, &buf[1], 0x1c);
+    MIi_CpuCopy32(p, &buf[1], 0x1c);
     r = func_0200fc84(buf, 0x20);
     if (r == 0) {
         r = 2;
@@ -803,7 +803,7 @@ int func_02011108(u8 *buf, void *pa, void *pb)
         if (H(buf, 6) != H(buf, 5)) {
             off = H(buf, 6) << 9;
             *(u16 *)(buf + off) |= 1;
-            MI_CpuCopy16(buf + (H(buf, 6) << 9), pb, 0x200);
+            MIi_CpuCopy16(buf + (H(buf, 6) << 9), pb, 0x200);
             got = 1;
             res = 0;
             H(buf, 0xd) = H(buf, H(buf, 6));
@@ -831,7 +831,7 @@ int func_02011108(u8 *buf, void *pa, void *pb)
             if ((*(u16 *)(buf + off) & 1) == 0) {
                 *(u16 *)(buf + off) |= 1;
             } else {
-                MI_CpuCopy16(buf + off, pb, 0x200);
+                MIi_CpuCopy16(buf + off, pb, 0x200);
                 H(buf, 0xd) = H(buf, H(buf, 6));
                 got = 1;
                 res = 0;
@@ -840,7 +840,7 @@ int func_02011108(u8 *buf, void *pa, void *pb)
         }
         if (got != 0) {
             u8 *p = buf + (H(buf, 5) << 9);
-            MI_CpuCopy16(pa, p + 0x20, H(buf, 8));
+            MIi_CpuCopy16(pa, p + 0x20, H(buf, 8));
             r = func_02010d3c(func_02011450, buf, p + 0x20, H(buf, 8), H(buf, 7), H(buf, 0xb), 1);
             H(buf, 5) = (H(buf, 5) + 1) & 3;
             if (r != 2 && r != 0) {
@@ -927,7 +927,7 @@ void func_02011654(WMInd *m)
         if (!(bits & (1 << aid))) {
             return;
         }
-        MI_CpuCopy16(data, buf + (H(buf, 4) << 9), len);
+        MIi_CpuCopy16(data, buf + (H(buf, 4) << 9), len);
         H(buf, H(buf, 4)) = m->h1a >> 1;
         H(buf, 4) = (H(buf, 4) + 1) & 3;
         return;
@@ -966,7 +966,7 @@ void func_02011748(u8 *buf, u32 idx, void *src)
     }
     p = func_020119bc(buf, H(buf, 7), buf + cur * 0x200 + 4, idx);
     if (src != 0) {
-        MI_CpuCopy16(src, p, H(buf, 8));
+        MIi_CpuCopy16(src, p, H(buf, 8));
     } else {
         MIi_CpuClear16(0, p, H(buf, 8));
     }
@@ -1087,10 +1087,9 @@ void func_02011ab0(void)
     data_020c1180.h6 = OS_GetLockID();
 }
 
-extern CtrdgInfo data_027ffc30;
 int func_02011b10(void)
 {
-    return data_027ffc30.b.f0;
+    return ((CtrdgInfo *) 0x027ffc30)->b.f0; // the cartridge info block the boot code leaves in main RAM
 }
 
 int func_02011b28(void)

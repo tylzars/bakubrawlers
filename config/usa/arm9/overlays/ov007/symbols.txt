@@ -2480,7 +2480,7 @@ _ZTV19BattleCommandPrompt kind:data(any) addr:0x0228998c
 @3012 kind:data(any) addr:0x02289c90 local
 @3013 kind:data(any) addr:0x02289cac local
 @3014 kind:data(any) addr:0x02289ccc local
-@2974 kind:data(any) addr:0x02289ce0 local
+@3015 kind:data(any) addr:0x02289ce0 local
 @2975 kind:data(any) addr:0x02289cfc local
 @2976 kind:data(any) addr:0x02289d10 local
 @2977 kind:data(any) addr:0x02289d24 local

@@ -102,7 +102,10 @@ def analyse(src: str):
         for idx, sec in enumerate(sections):
             if sec["sh_flags"] & 2 and sec["sh_size"] and sec.name != ".text":
                 weak = binds_in.get(idx) and binds_in[idx] <= {"STB_WEAK", 14}
-                if not weak:
+                # Weak singleton guards and instances are the kept copies of another unit (Game.cpp's); a weak
+                # function-local static of an inline accessor (a table) belongs to this unit.
+                singleton = any(n.startswith("_ZGV") or n.endswith("GetEvE8instance") for n in names_in.get(idx, []))
+                if not weak or not singleton:
                     data_secs[idx] = sec
         contents = {idx: (sec.data() if sec["sh_type"] != "SHT_NOBITS" else b"") for idx, sec in data_secs.items()}
 

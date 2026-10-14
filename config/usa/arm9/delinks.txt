@@ -822,9 +822,12 @@ src/Main/UI/SelectWindow.cpp:
     .text       start:0x0205b288 end:0x0205c8f0
     .data       start:0x020b3764 end:0x020b3774
 
-// provisional: code only; .data 0x020b3774-0x020b4274, .rodata 0x0209e784-0x0209fd34 and .bss 0x02219240-0x0221927c belong here.
 src/Main/Scene/CharacterEditScene.cpp:
+    complete
     .text       start:0x0205c8f0 end:0x02065158
+    .rodata     start:0x0209e784 end:0x0209fd34
+    .data       start:0x020b3774 end:0x020b4274
+    .bss        start:0x02219240 end:0x0221927c
 
 src/Main/Unknown/UnkStruct_020651bc.cpp:
     complete

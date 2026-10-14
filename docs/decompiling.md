@@ -95,6 +95,11 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   reproduces the original's a7d pool word. A two-byte `{x, y}` struct instead of `u8[2]` keeps a54 out of its own
   section. Pool order in func_ov008_0221de34 came from building the pointer inside the loop
   (`const u8 *ids = t.ids; ids += i;`).
+- **Non-const tables after a file's strings (CharacterEditScene).** Two writable cell tables sit after the 24 strings
+  of the item tables' initializers, not right behind the vtable; as function-local statics of inline accessors
+  (`inline WindowCellRecord *CellTable_020b3a44() { static WindowCellRecord t[7] = {...}; return t; }`) each gets its
+  own `.data` section there. A table read only with constant indices (camera rows) was kept referenced by reading
+  it in the code (`FxRound(t[r][k] * 0x1000)` folds to the same immediates).
 - **False relocations in data blobs.** dsd reads any word that looks like an address as a pointer: a font bitmap
   in main's `.data` at 0x020a8d10 held the bytes of 0x02220842, recorded as a relocation into ov005. Once MapScene
   linked from source that symbol was gone and the word became 0. Deleting the line from relocs.txt fixed it; check

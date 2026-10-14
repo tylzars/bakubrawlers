@@ -1,33 +1,170 @@
 #include "Scene/CharacterEditScene.hpp"
 #include "Graphics/CharacterModel.hpp"
-#include "System/InputManager.hpp"
 #include "System/FrameTask.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include <nitro/gx.h>
 #include <nitro/os.h>
 #include <nitro/mi.h>
-#include "Text/TextManager.hpp"
 #include "System/FileSystem.hpp"
+#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/Random.hpp"
+#include <nitro/math.h>
+
+static const WindowItemRecord data_0209ec5c[22] = {
+    { 2, 0x1, 135, 26, 114, 24, {0x403}, {-1, -1, -1, -1}, 0, 1 },
+    { 9, 0x8, 8, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 10, 0x8, 100, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 11, 0x8, 40, 170, 56, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+    { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+    { 13, 0x8000, 128, 96, 0, 0, {0}, {-1, -1, -1, -1}, 0, 0 },
+};
+
+static const WindowItemRecord data_0209f12c[22] = {
+    { 0, 0x1, 68, 56, 112, 32, {0x403}, {1, 1, 0, 0}, 0, 2 },
+    { 1, 0x1, 68, 104, 112, 32, {0x304}, {0, 0, 1, 1}, 0, 2 },
+};
+
+// Camera position and target (in whole units) of the four views.
+static const s16 data_0209e7c4[4][6] = {
+    {180, 110, 90, 5, 80, 0},
+    {60, 130, 30, 5, 130, 0},
+    {70, 110, 35, 5, 90, 0},
+    {100, 100, 50, 5, 40, 0},
+};
+
+static const u16 data_0209e79c[20] = {1, 0x7fff, 0xf666, 0xf5ec, 0xf829};
+
+static const WindowItemRecord data_0209f394[22] = {
+    { 2, 0x1, 135, 26, 114, 24, {0x403}, {2, 1, 0, 0}, 0, 2 },
+    { 3, 0x1, 140, 54, 114, 24, {0x403}, {0, 2, 1, 1}, 0, 2 },
+    { 4, 0x1, 140, 82, 114, 24, {0x403}, {1, 0, 2, 2}, 0, 2 },
+    { 9, 0x8, 8, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 10, 0x8, 100, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 11, 0x8, 40, 170, 56, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+    { 8, 0x1, 134, 170, 88, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+    { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+};
+
+static const WindowCellRecord data_0209e888[13] = {
+    { "union_b_obj_edit_nce.bin", {0}, 0x6000, {0}, {0x1}, 0, {0, 2, 1, 0} },
+    { "union_b_obj_edit_nce.bin", {0}, 0x6000, {0}, {0x1}, 0, {0, 2, 1, 0} },
+    { "union_b_obj_edit_nce.bin", {0x3}, 0x6000, {0}, {0x1}, 0, {3, 5, 4, 0} },
+    { "union_b_obj_edit_nce.bin", {0x3}, 0x6000, {0}, {0x1}, 0, {3, 5, 4, 0} },
+    { "union_b_obj_edit_nce.bin", {0x3}, 0x6000, {0}, {0x1}, 0, {3, 5, 4, 0} },
+    { "union_b_obj_edit_nce.bin", {0x3}, 0x6000, {0}, {0x1}, 0, {3, 5, 4, 0} },
+    { "union_b_obj_edit_nce.bin", {0x3}, 0x6000, {0}, {0x1}, 0, {3, 5, 4, 0} },
+    { "union_b_obj_edit_nce.bin", {0x18}, 0x6000, {0}, {0x1}, 0, {24, 26, 25, 0} },
+    { "union_b_obj_edit_nce.bin", {0x9}, 0x6000, {0}, {0x1}, 0, {9, 11, 10, 0} },
+    { "union_b_obj_edit_nce.bin", {0xc}, 0x6000, {0}, {0x1}, 0, {12, 13, 13, 0} },
+    { "union_b_obj_edit_nce.bin", {0xe}, 0x6000, {0}, {0x1}, 0, {14, 15, 15, 0} },
+    { "union_b_obj_edit_nce.bin", {0x10}, 0x6000, {0}, {0x1}, 0, {16, 17, 16, 0} },
+    { "union_b_obj_cockpit_nce.bin", {0x2}, 0xd000, {0x4}, {0x1}, 0, {2, 3, 3, 0} },
+};
+
+inline WindowCellRecord *CellTable_020b3a28() {
+    static WindowCellRecord data_020b3a28[1] = {
+        { "edit_ch_b_obj_00_nce.bin", {0}, 0xf000, {0x5}, {0x2}, 0, {0, 0, 0, 0} },
+    };
+    return data_020b3a28;
+}
+
+inline WindowCellRecord *CellTable_020b3a44() {
+    static WindowCellRecord data_020b3a44[7] = {
+        { "edit_ch_b_obj_00_nce.bin", {0x1}, 0xf000, {0x5}, {0x2}, 0, {1, 1, 1, 0} },
+        { "edit_ch_b_obj_00_nce.bin", {0x2}, 0xf000, {0x5}, {0x1}, 0, {2, 2, 2, 0} },
+        { "edit_ch_b_obj_00_nce.bin", {0x3}, 0xf000, {0x5}, {0x1}, 0, {3, 3, 3, 0} },
+        { "edit_ch_b_obj_00_nce.bin", {0x4}, 0xf000, {0x5}, {0x1}, 0, {4, 4, 4, 0} },
+        { "edit_ch_b_obj_00_nce.bin", {0x5}, 0xf000, {0x5}, {0x1}, 0, {5, 5, 5, 0} },
+        { "edit_ch_b_obj_00_nce.bin", {0x6}, 0xf000, {0x5}, {0x1}, 0, {6, 6, 6, 0} },
+        { "edit_ch_b_obj_00_nce.bin", {0x7}, 0xf000, {0x5}, {0x1}, 0, {7, 7, 7, 0} },
+    };
+    return data_020b3a44;
+}
+
+static const WindowCellRecord data_0209e834[3] = {
+    { "union_b_obj_window_nce.bin", {0x3}, 0x19000, {0xd}, {0}, 0, {3, 5, 4, 0} },
+    { "union_b_obj_window_nce.bin", {0x6}, 0x19000, {0xd}, {0}, 0, {6, 8, 7, 0} },
+    { "union_b_obj_window_nce.bin", {0xa}, 0x19000, {0xd}, {0}, 0, {10, 10, 10, 0} },
+};
+
+static const WindowItemRecord data_0209f5fc[22] = {
+    { 0, 0x8000, 128, 96, 0, 0, {0}, {-1, -1, -1, -1}, 0, 0 },
+    { 1, 0x8, 56, 34, 24, 24, {0}, {-1, -1, -1, -1}, 0, 1 },
+    { 2, 0x8, 34, 63, 21, 47, {0}, {-1, -1, -1, -1}, 0, 1 },
+    { 3, 0x8, 81, 63, 21, 47, {0}, {-1, -1, -1, -1}, 0, 1 },
+    { 4, 0x8, 60, 63, 16, 38, {0}, {-1, -1, -1, -1}, 0, 1 },
+    { 5, 0x8, 49, 102, 17, 60, {0}, {-1, -1, -1, -1}, 0, 1 },
+    { 6, 0x8, 70, 102, 17, 60, {0}, {-1, -1, -1, -1}, 0, 1 },
+};
+
+static const Vec2s data_0209e7f4[16] = {
+    {145, 52}, {177, 52}, {209, 52}, {145, 84}, {177, 84}, {209, 84}, {145, 116}, {177, 116}, {146, 136}, {146, 152}, {219, 134}, {219, 150}, {145, 52}, {145, 52}, {144, 134}, {144, 150},
+};
+
+static const WindowItemRecord data_0209f864[22] = {
+    { 0, 0x8, 145, 52, 30, 30, {0}, {14, 3, 2, 1}, 0, 1 },
+    { 1, 0x8, 177, 52, 30, 30, {0}, {16, 4, 0, 2}, 0, 1 },
+    { 2, 0x8, 209, 52, 30, 30, {0}, {18, 5, 1, 0}, 0, 1 },
+    { 3, 0x8, 145, 84, 30, 30, {0}, {0, 6, 5, 4}, 0, 1 },
+    { 4, 0x8, 177, 84, 30, 30, {0}, {1, 7, 3, 5}, 0, 1 },
+    { 5, 0x8, 209, 84, 30, 30, {0}, {2, 12, 4, 3}, 0, 1 },
+    { 6, 0x8, 145, 116, 30, 30, {0}, {3, 8, 7, 7}, 0, 1 },
+    { 7, 0x8, 177, 116, 30, 30, {0}, {4, 10, 6, 6}, 0, 1 },
+    { 8, 0x8, 146, 136, 12, 11, {0}, {6, 14, 13, 9}, 0, 1 },
+    { 9, 0x8, 161, 136, 12, 11, {0}, {6, 15, 8, 10}, 0, 1 },
+    { 10, 0x8, 176, 136, 12, 11, {0}, {7, 16, 9, 11}, 0, 1 },
+    { 11, 0x8, 191, 136, 12, 11, {0}, {7, 17, 10, 12}, 0, 1 },
+    { 12, 0x8, 206, 136, 12, 11, {0}, {5, 18, 11, 13}, 0, 1 },
+    { 13, 0x8, 221, 136, 12, 11, {0}, {5, 19, 12, 8}, 0, 1 },
+    { 14, 0x8, 146, 152, 12, 11, {0}, {8, 0, 19, 15}, 0, 1 },
+    { 15, 0x8, 161, 152, 12, 11, {0}, {9, 0, 14, 16}, 0, 1 },
+    { 16, 0x8, 176, 152, 12, 11, {0}, {10, 1, 15, 17}, 0, 1 },
+    { 17, 0x8, 191, 152, 12, 11, {0}, {11, 1, 16, 18}, 0, 1 },
+    { 18, 0x8, 206, 152, 12, 11, {0}, {12, 2, 17, 19}, 0, 1 },
+    { 19, 0x8, 221, 152, 12, 11, {0}, {13, 2, 18, 14}, 0, 1 },
+};
+
+static const WindowItemRecord data_0209facc[22] = {
+    { 0, 0x1, 45, 152, 78, 20, {0}, {0, 0, 1, 1}, 0, 2 },
+    { 1, 0x2, 133, 152, 78, 20, {0}, {1, 1, 0, 0}, 0, 2 },
+    { 2, 0x8000, 120, 18, 0, 0, {0}, {-1, -1, -1, -1}, 0, 0 },
+};
+
+static const WindowItemRecord data_0209e9f4[22] = {
+    { 7, 0x8, 135, 26, 114, 24, {0x403}, {4, 1, 0, 0}, 0, 2 },
+    { 3, 0x1, 135, 54, 114, 24, {0x403}, {0, 2, 1, 1}, 0, 2 },
+    { 4, 0x1, 135, 82, 114, 24, {0x403}, {1, 3, 2, 2}, 0, 2 },
+    { 5, 0x1, 135, 110, 114, 24, {0x403}, {2, 4, 3, 3}, 0, 2 },
+    { 6, 0x1, 135, 138, 114, 24, {0x403}, {3, 0, 4, 4}, 0, 2 },
+    { 9, 0x8, 8, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 10, 0x8, 100, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 11, 0x8, 40, 170, 56, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+    { 8, 0x1, 134, 170, 88, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+    { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+};
+
+static const u32 data_0209e784[6] = {0, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000};
+
+static const WindowItemRecord data_0209eec4[22] = {
+    { 2, 0x1, 135, 26, 114, 24, {0x403}, {4, 1, 0, 0}, 0, 2 },
+    { 3, 0x1, 140, 54, 114, 24, {0x403}, {0, 2, 1, 1}, 0, 2 },
+    { 4, 0x1, 140, 82, 114, 24, {0x403}, {1, 3, 2, 2}, 0, 2 },
+    { 5, 0x1, 140, 110, 114, 24, {0x403}, {2, 4, 3, 3}, 0, 2 },
+    { 6, 0x1, 140, 138, 114, 24, {0x403}, {3, 0, 4, 4}, 0, 2 },
+    { 9, 0x8, 8, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 10, 0x8, 100, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 11, 0x8, 40, 170, 56, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+    { 8, 0x1, 134, 170, 88, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+    { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+};
+
+#include "Graphics/SpriteManager.hpp"
+#include "System/InputManager.hpp"
 #include "System/SoundManager.hpp"
-
-extern const u32 data_0209e784[6];
-
+#include "Text/TextManager.hpp"
 // The look fields of the save data (+0x14..+0x1c of data_020d43f0) as CharacterLook.
 #define SAVE_LOOK ((CharacterLook *) ((u8 *) data_020d43f0 + 0x14))
-extern WindowItem data_0209e9f4[];
-extern const WindowItemRecord data_0209f5fc[];
-extern const WindowItemRecord data_0209facc[];
-extern const u8 data_0209f864[];
-extern const WindowCellRecord data_0209e834[];
-extern const WindowCellRecord data_0209e888[];
-extern const WindowCellRecord data_020b3a28[];
-extern const WindowCellRecord data_020b3a44[];
-extern WindowItem data_0209ec5c[];
-extern WindowItem data_0209eec4[];
-extern WindowItem data_0209f12c[];
-extern WindowItem data_0209f394[];
 
 // Rounds an integer through float, the way the camera set-up code does (the temporary keeps it from being folded).
 static inline fx32 FxRound(s32 v) {
@@ -36,15 +173,10 @@ static inline fx32 FxRound(s32 v) {
 }
 
 
-extern const Vec2s data_0209e7f4[16];
 
 extern MtxFx43 data_0220e86c;
 
-#include "Game/UnkStruct_020d43f0.hpp"
-#include "Game/Random.hpp"
-#include <nitro/math.h>
 
-extern const u8 data_0209e79c[];
 
 CharacterEditScene::CharacterEditScene(u32 unk) :
     SceneBase(2, 0) {
@@ -279,7 +411,7 @@ void CharacterEditScene::func_0205d5fc() {
         if (mUnk_158 != 2) {
             mUnk_155[mUnk_154] = 0;
         }
-        mWindows[0]->func_0205c74c(10, data_0209e9f4, (s8) mUnk_155[mUnk_154]);
+        mWindows[0]->func_0205c74c(10, (WindowItem *) data_0209e9f4, (s8) mUnk_155[mUnk_154]);
         if (mUnk_155[mUnk_154] == 0) {
             mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(0x19);
         } else {
@@ -293,11 +425,11 @@ void CharacterEditScene::func_0205d5fc() {
         func_020638a8(0);
         GXS_SetVisiblePlane(0x15);
         {
-            fx32 posZ = FxRound(0x5a000);
-            fx32 posY = FxRound(0x6e000);
+            fx32 posZ = FxRound(data_0209e7c4[0][2] * 0x1000);
+            fx32 posY = FxRound(data_0209e7c4[0][1] * 0x1000);
             Camera *cam = mCamera;
-            cam->SetPosition(FxRound(0xb4000), posY, posZ);
-            mCamera->SetTarget(FxRound(0x5000), FxRound(0x50000), FxRound(0));
+            cam->SetPosition(FxRound(data_0209e7c4[0][0] * 0x1000), posY, posZ);
+            mCamera->SetTarget(FxRound(data_0209e7c4[0][3] * 0x1000), FxRound(data_0209e7c4[0][4] * 0x1000), FxRound(data_0209e7c4[0][5] * 0x1000));
         }
         {
             CameraManager &manager = CameraManager::Get();
@@ -612,7 +744,7 @@ void CharacterEditScene::func_0205d5fc() {
 void CharacterEditScene::func_0205e6ac() {
     switch (mUnk_31) {
     case 0x10:
-        mWindows[0]->func_0205c74c(6, data_0209ec5c, -1);
+        mWindows[0]->func_0205c74c(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->func_0205c7c8(-1);
         func_02063b10(0);
         func_02063c64();
@@ -694,7 +826,7 @@ void CharacterEditScene::func_0205e958() {
         if (mUnk_158 != 2) {
             mUnk_155[mUnk_154] = 1;
         }
-        mWindows[0]->func_0205c74c(10, data_0209eec4, (s8) mUnk_155[mUnk_154]);
+        mWindows[0]->func_0205c74c(10, (WindowItem *) data_0209eec4, (s8) mUnk_155[mUnk_154]);
         mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
         mWindows[1]->func_0205c7c8(-1);
         func_02063b10(0);
@@ -702,12 +834,12 @@ void CharacterEditScene::func_0205e958() {
         func_020637a8();
         func_020637dc();
         func_020638a8(0);
-        fx32 posZ = FxRound(0x1e000);
-        fx32 posY = FxRound(0x82000);
-        mCamera->SetPosition(FxRound(0x3c000), posY, posZ);
-        fx32 tgtZ = FxRound(0);
-        fx32 tgtY = FxRound(0x82000);
-        mCamera->SetTarget(FxRound(0x5000), tgtY, tgtZ);
+        fx32 posZ = FxRound(data_0209e7c4[1][2] * 0x1000);
+        fx32 posY = FxRound(data_0209e7c4[1][1] * 0x1000);
+        mCamera->SetPosition(FxRound(data_0209e7c4[1][0] * 0x1000), posY, posZ);
+        fx32 tgtZ = FxRound(data_0209e7c4[1][5] * 0x1000);
+        fx32 tgtY = FxRound(data_0209e7c4[1][4] * 0x1000);
+        mCamera->SetTarget(FxRound(data_0209e7c4[1][3] * 0x1000), tgtY, tgtZ);
         CameraManager &manager = CameraManager::Get();
         Camera *camera = manager.mCameras[manager.mActive];
         data_02211374.mCameraPosition = camera->mPosition;
@@ -910,7 +1042,7 @@ void CharacterEditScene::func_0205e958() {
 void CharacterEditScene::func_0205f3c0() {
     switch (mUnk_31) {
     case 0x1c:
-        mWindows[0]->func_0205c74c(6, data_0209ec5c, -1);
+        mWindows[0]->func_0205c74c(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->func_0205c7c8(-1);
         func_02063b10(0);
         func_02063c64();
@@ -990,7 +1122,7 @@ void CharacterEditScene::func_0205f3c0() {
 void CharacterEditScene::func_0205f698() {
     switch (mUnk_31) {
     case 0x23:
-        mWindows[0]->func_0205c74c(6, data_0209ec5c, -1);
+        mWindows[0]->func_0205c74c(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->func_0205c7c8(-1);
         func_02063b10(0);
         func_02063c64();
@@ -1070,7 +1202,7 @@ void CharacterEditScene::func_0205f698() {
 void CharacterEditScene::func_0205f970() {
     switch (mUnk_31) {
     case 0x2a:
-        mWindows[0]->func_0205c74c(6, data_0209ec5c, -1);
+        mWindows[0]->func_0205c74c(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->func_0205c7c8(-1);
         func_02063b10(0);
         func_02063c64();
@@ -1150,7 +1282,7 @@ void CharacterEditScene::func_0205f970() {
 void CharacterEditScene::func_0205fc48() {
     switch (mUnk_31) {
     case 0x31:
-        mWindows[0]->func_0205c74c(6, data_0209ec5c, -1);
+        mWindows[0]->func_0205c74c(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->func_0205c7c8(-1);
         func_02063b10(0);
         func_02063c64();
@@ -1230,7 +1362,7 @@ void CharacterEditScene::func_0205fc48() {
 void CharacterEditScene::func_0205ff20() {
     switch (mUnk_31) {
     case 0x38: {
-        mWindows[0]->func_0205c74c(6, data_0209ec5c, -1);
+        mWindows[0]->func_0205c74c(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->func_0205c7c8(-1);
         func_02063b10(0);
         func_02063c64();
@@ -1240,8 +1372,8 @@ void CharacterEditScene::func_0205ff20() {
         func_020642ac();
         func_02062fe4("sub_top_male.nce_ncg1D.bin", "sub_top_male_ncl.bin", "sub_top_male_nce.bin",
                       "color_top_male_ncl.bin");
-        mCamera->SetPosition(FxRound(0x46000), FxRound(0x6e000), FxRound(0x23000));
-        mCamera->SetTarget(FxRound(0x5000), FxRound(0x5a000), FxRound(0));
+        mCamera->SetPosition(FxRound(data_0209e7c4[2][0] * 0x1000), FxRound(data_0209e7c4[2][1] * 0x1000), FxRound(data_0209e7c4[2][2] * 0x1000));
+        mCamera->SetTarget(FxRound(data_0209e7c4[2][3] * 0x1000), FxRound(data_0209e7c4[2][4] * 0x1000), FxRound(data_0209e7c4[2][5] * 0x1000));
         CameraManager &manager = CameraManager::Get();
         Camera *camera = manager.mCameras[manager.mActive];
         data_02211374.mCameraPosition = camera->mPosition;
@@ -1330,7 +1462,7 @@ void CharacterEditScene::func_020604e8() {
         if (mUnk_158 != 2) {
             mUnk_155[mUnk_154] = 1;
         }
-        mWindows[0]->func_0205c74c(8, data_0209f394, (s8) mUnk_155[mUnk_154]);
+        mWindows[0]->func_0205c74c(8, (WindowItem *) data_0209f394, (s8) mUnk_155[mUnk_154]);
         mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
         mWindows[1]->func_0205c7c8(-1);
         func_02063b10(0);
@@ -1338,8 +1470,8 @@ void CharacterEditScene::func_020604e8() {
         func_020637a8();
         func_020637dc();
         func_020638a8(0);
-        mCamera->SetPosition(FxRound(0x64000), FxRound(0x64000), FxRound(0x32000));
-        mCamera->SetTarget(FxRound(0x5000), FxRound(0x28000), FxRound(0));
+        mCamera->SetPosition(FxRound(data_0209e7c4[3][0] * 0x1000), FxRound(data_0209e7c4[3][1] * 0x1000), FxRound(data_0209e7c4[3][2] * 0x1000));
+        mCamera->SetTarget(FxRound(data_0209e7c4[3][3] * 0x1000), FxRound(data_0209e7c4[3][4] * 0x1000), FxRound(data_0209e7c4[3][5] * 0x1000));
         CameraManager &manager = CameraManager::Get();
         Camera *camera = manager.mCameras[manager.mActive];
         data_02211374.mCameraPosition = camera->mPosition;
@@ -1468,7 +1600,7 @@ void CharacterEditScene::func_020604e8() {
 void CharacterEditScene::func_02060cd4() {
     switch (mUnk_31) {
     case 0x45:
-        mWindows[0]->func_0205c74c(6, data_0209ec5c, -1);
+        mWindows[0]->func_0205c74c(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->func_0205c7c8(-1);
         func_02063b10(0);
         func_02063c64();
@@ -1547,7 +1679,7 @@ void CharacterEditScene::func_02060cd4() {
 void CharacterEditScene::func_02060fd0() {
     switch (mUnk_31) {
     case 0x4c:
-        mWindows[0]->func_0205c74c(6, data_0209ec5c, -1);
+        mWindows[0]->func_0205c74c(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->func_0205c7c8(-1);
         func_02063b10(0);
         func_02063c64();
@@ -1626,17 +1758,17 @@ void CharacterEditScene::func_02060fd0() {
 void CharacterEditScene::func_020612cc() {
     switch (mUnk_31) {
     case 0x53: {
-        mWindows[0]->func_0205c74c(2, data_0209f12c, 0);
+        mWindows[0]->func_0205c74c(2, (WindowItem *) data_0209f12c, 0);
         mWindows[0]->mCells[0]->SetAnimation(1);
         func_020637a8();
         func_020637dc();
         func_020638a8(0);
         GXS_SetVisiblePlane(0x14);
-        fx32 posZ = FxRound(0x5a000);
-        fx32 posY = FxRound(0x6e000);
+        fx32 posZ = FxRound(data_0209e7c4[0][2] * 0x1000);
+        fx32 posY = FxRound(data_0209e7c4[0][1] * 0x1000);
         Camera *cam = mCamera;
-        cam->SetPosition(FxRound(0xb4000), posY, posZ);
-        mCamera->SetTarget(FxRound(0x5000), FxRound(0x50000), FxRound(0));
+        cam->SetPosition(FxRound(data_0209e7c4[0][0] * 0x1000), posY, posZ);
+        mCamera->SetTarget(FxRound(data_0209e7c4[0][3] * 0x1000), FxRound(data_0209e7c4[0][4] * 0x1000), FxRound(data_0209e7c4[0][5] * 0x1000));
         CameraManager &manager = CameraManager::Get();
         Camera *camera = manager.mCameras[manager.mActive];
         data_02211374.mCameraPosition = camera->mPosition;
@@ -1857,11 +1989,11 @@ void CharacterEditScene::func_02061c3c() {
     mCamera->SetUp(0, 0x1000, 0);
     mCamera->SetClip(0x1000, 0x1388000);
     mCamera->func_02026004(0x2aaa);
-    fx32 posZ = FxRound(0x5a000);
-    fx32 posY = FxRound(0x6e000);
+    fx32 posZ = FxRound(data_0209e7c4[0][2] * 0x1000);
+    fx32 posY = FxRound(data_0209e7c4[0][1] * 0x1000);
     Camera *cam = mCamera;
-    cam->SetPosition(FxRound(0xb4000), posY, posZ);
-    mCamera->SetTarget(FxRound(0x5000), FxRound(0x50000), FxRound(0));
+    cam->SetPosition(FxRound(data_0209e7c4[0][0] * 0x1000), posY, posZ);
+    mCamera->SetTarget(FxRound(data_0209e7c4[0][3] * 0x1000), FxRound(data_0209e7c4[0][4] * 0x1000), FxRound(data_0209e7c4[0][5] * 0x1000));
     CameraManager::Get().mActive = 0;
     CameraManager::Get().func_02026504(1, mCamera, 0);
     CameraManager &manager = CameraManager::Get();
@@ -1925,8 +2057,8 @@ void CharacterEditScene::func_02062194() {
     screen1.LoadCharacters("edit_ch_b_obj_00.nce_ncg1D.bin", 0xf000, 0);
     const char *pal = "edit_ch_b_obj_00_ncl.bin";
     screen1.LoadPalette(pal, 0xa0, 0);
-    mWindows[0]->SetCells(1, data_020b3a28);
-    mWindows[1]->SetCells(7, data_020b3a44);
+    mWindows[0]->SetCells(1, CellTable_020b3a28());
+    mWindows[1]->SetCells(7, CellTable_020b3a44());
     ChangeDir("/");
     ChangeDir("/Game/2d/CharacterEditor/Obj");
     screen1.LoadCharacters("color_base.nce_ncg1D.bin", 0x14000, 0);

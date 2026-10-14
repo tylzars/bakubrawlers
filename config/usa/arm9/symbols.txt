@@ -3039,6 +3039,7 @@ data_0209f394 kind:data(any) addr:0x0209f394
 data_0209f5fc kind:data(any) addr:0x0209f5fc
 data_0209f864 kind:data(any) addr:0x0209f864
 data_0209facc kind:data(any) addr:0x0209facc
+data_0209fd34 kind:data(any) addr:0x0209fd34
 data_020a0000 kind:data(any) addr:0x020a0000
 data_020a0001 kind:data(any) addr:0x020a0001
 data_020a0101 kind:data(any) addr:0x020a0101

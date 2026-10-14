@@ -14,6 +14,7 @@ static const u8 data_ov007_022793cc[4]  = {3, 4, 5, 0};
 static const u8 data_ov007_022793d0[4]  = {1, 3, 5, 0};
 static const u16 data_ov007_022793d4[6] = {30, 50, 50, 0, 0x1555, 0};
 static const u16 data_ov007_022793e0[3] = {10, 10, 6};
+static ModelResource *sResources[3];
 static const u16 data_ov007_022793e6[3] = {30, 50, 0};
 extern VecFx32 data_ov007_022793f8;
 
@@ -22,7 +23,6 @@ extern MtxFx43 data_0220e86c;
 extern VecFx32 data_ov007_02279404;
 extern VecFx32 data_ov007_022793ec;
 
-static ModelResource *sResources[3];
 
 GimmickFieldDestroy::GimmickFieldDestroy(u8 a)
     : Gimmick(a, 0) {
@@ -49,7 +49,6 @@ void GimmickFieldDestroy::func_ov007_0222accc() {
     mScale    = v;
 }
 
-// non-matching: only the .bss offset of sResources differs: with Update in the file the compiler orders the singleton chain nodes before it.
 void GimmickFieldDestroy::Load() {
     if (!sResources[2]) {
         char nsbmd[0x40];
@@ -85,7 +84,6 @@ void GimmickFieldDestroy::Load() {
     ChangeDir("/");
 }
 
-// non-matching: same .bss ordering difference as Load.
 void GimmickFieldDestroy::Unload() {
     if (mState == 2) {
         mState++;

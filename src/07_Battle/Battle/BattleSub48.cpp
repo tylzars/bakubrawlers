@@ -338,19 +338,17 @@ u8 BattleSub48::func_ov007_02224a70() {
     return ret;
 }
 
-// non-matching: 7 words in the second block: the original keeps step * 2 (and then the float of mUnk_16) in r9
-// and x in r8; here they are swapped.
 void BattleSub48::func_ov007_02224c90() {
     mAnims[13]->Draw(0, 0x6e, (s16) mUnk_16, 1);
+    u16 x;
+    u16 y;
+    int step;
     u8 i = 0;
     do {
         u8 c = data_ov007_022790c0[i];
         u16 angle = c * 0x2aaa + 0xc000;
         if (mUnk_0e_1) {
             u8 slot = i + 7;
-            u16 x;
-            u16 y;
-            int step;
             if (mAnims[slot]->mUnk_0e != 2) {
                 step = angle >> 4;
                 x = 110.0f + 70.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
@@ -360,9 +358,7 @@ void BattleSub48::func_ov007_02224c90() {
             }
         }
         if (data_ov007_022790c0[mUnk_12[0]] != c && data_ov007_022790c0[mUnk_12[1]] != c) {
-            int step = angle >> 4;
-            u16 y;
-            u16 x;
+            step = angle >> 4;
             x = 110.0f + 50.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
             y = (float) (u32) mUnk_16 + 50.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
             mAnims[14]->func_0202a3ec(0, i, x, y, 1);

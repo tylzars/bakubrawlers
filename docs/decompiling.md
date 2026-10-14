@@ -221,6 +221,13 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **Locals shared by two blocks colour as named locals.** In BattleSub48::func_ov007_02224c90 per-block `u16 x` was a
+  call-result temporary (higher register); declaring `x`, `y`, `step` once at function scope and assigning them in
+  both blocks matched.
+- **A static's place in `.bss` shows in relocations too.** GimmickFieldDestroy::Load/Unload were byte-identical but
+  addressed `sResources` at the wrong `.bss` offset; defining it between two tables put it at offset 0, before the
+  singleton nodes.
+
 - **An inline's wider parameter can turn a local into a temporary.** Passing MapScene::ShowText's `u16 cols` to
   `TextManager::BufferSize(u32, u32)` created a conversion temporary that merged with `cols`, so it took the
   temporaries' register whatever the declaration order; with `u16` parameters it is a named local again.

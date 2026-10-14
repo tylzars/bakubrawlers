@@ -169,6 +169,19 @@ Other findings from linking:
 - **A local array filled from a one-use rodata table is an aggregate initializer.** `u8 buf[3] = {0, 1, 4};` makes
   mwcc emit an anonymous rodata object (often first in the unit's .rodata) and changes which temporary is created
   first; copying `buf[i] = data_xxx[i]` element by element does not match (TitleScene::Update, BattleTarget::Update).
+- **From the BattleTarget pass.**
+  - A narrow (`u8`) stack parameter is loaded first in the prologue; `BOOL` puts it later (two functions fixed by
+    `u8 flag`).
+  - A `u16` local spilled to the stack is reloaded before each store of the zero it shares; `s32`/`u32`/`int` share
+    one register for all the stores.
+  - `VecFx32 v = {0, 0, 0};` stores through an `add rN, sp, #off` base; field stores and `SetVec` use sp offsets.
+  - `if (n) { i = 0; do ... while (++i < n); }` has one guard; a `for` loop keeps a second `cmp`/`bls`.
+  - Re-reading a global chain (`g.list->mPlayers[k]->a + g.list->mPlayers[k]->b`) forces fresh loads where a named
+    pointer lets mwcc reuse earlier ones.
+  - A scalar argument of an inline setter is loaded before the struct copy in its body
+    (`SetSphere(s, &pos, radius)`).
+  - `(n + 1) * x; ...; n++;` keeps the unmasked `n + 1` in the multiply.
+  - Where the original loads every component before storing, write the store as `SetVec(...)` or a struct copy.
 - **One loop counter for every loop.** Original functions often reuse one function-scope `u8 i` (and a second `j`)
   for all their loops, even where one counts down; per-loop locals colour differently, and no declaration order
   fixes that. A counter shared by several loops is coloured above a hoisted singleton address, separate per-loop

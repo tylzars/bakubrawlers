@@ -74,6 +74,11 @@ BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
 extern const u32 data_ov007_0227a680[];
 extern const u8 data_ov007_0227a74c[];
 
+static inline void SetSphere(BattleSphere *s, const VecFx32 *pos, fx32 radius) {
+    s->mPos   = *pos;
+    s->mRadius = radius;
+}
+
 static inline void SetVec(VecFx32 *v, fx32 x, fx32 y, fx32 z) {
     v->x = x;
     v->y = y;
@@ -86,11 +91,12 @@ struct Rot3 {
 };
 
 // True when the effect with this handle (slot number + 1) is still running.
+enum EffectState { EFFECT_DEAD, EFFECT_ALIVE };
 static inline BOOL EffectAlive(EffectManager *manager, u16 handle) {
-    BOOL alive = FALSE;
+    EffectState alive = EFFECT_DEAD;
     if (handle != 0) {
         if (manager->mEffects[handle - 1] != 0) {
-            alive = TRUE;
+            alive = EFFECT_ALIVE;
         }
     }
     return alive;
@@ -141,6 +147,27 @@ static inline void AddRot(BattleObstacle *o, GimmickSetData *s) {
     o->mRotY += r[1];
     o->mRotZ += r[2];
     o->mRotX += r[0];
+}
+
+// Like AddRot, but all three sums are computed before any store (func_ov007_02254ae8, func_ov007_02257f3c).
+static inline void AddRotAtOnce(BattleObstacle *o, GimmickSetData *s) {
+    u16 *r = &s->mRotX;
+    u16 y  = o->mRotY + r[1];
+    u16 z  = o->mRotZ + r[2];
+    u16 x  = o->mRotX + r[0];
+    o->mRotX = x;
+    o->mRotY = y;
+    o->mRotZ = z;
+}
+
+// Same, reading the set's angles as fields rather than through a pointer.
+static inline void AddRotAtOnceFields(BattleObstacle *o, GimmickSetData *s) {
+    u16 y = o->mRotY + s->mRotY;
+    u16 z = o->mRotZ + s->mRotZ;
+    u16 x = o->mRotX + s->mRotX;
+    o->mRotX = x;
+    o->mRotY = y;
+    o->mRotZ = z;
 }
 
 BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
@@ -868,32 +895,22 @@ void BattleTarget::func_ov007_02254a14(GimmickSetData *set) {
 
 
 
-// non-matching: ~89% of instructions aligned; the original zeroes the three vectors through base registers and reloads the zero from the marker slot, the rotation adds of the second obstacle are scheduled differently, and some stack slots/registers differ.
 void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
-    VecFx32 move;
-    VecFx32 hitOut;
-    VecFx32 vel;
+    VecFx32 move   = {0, 0, 0};
+    VecFx32 hitOut = {0, 0, 0};
+    VecFx32 vel    = {0, 0, 0};
     ObstacleBuf self;
     ObstacleBuf obs;
     u8 hit;
     u32 none = 0xffff;
     s32 wallFree;
-    s32 marker;
+    u16 marker;
     s32 moved;
     s32 ceilingHit;
     u16 handle;
     BattleRecord *record;
     u8 i;
     marker     = 0;
-    move.x     = 0;
-    move.y     = 0;
-    move.z     = 0;
-    hitOut.x   = 0;
-    hitOut.y   = 0;
-    hitOut.z   = 0;
-    vel.x      = 0;
-    vel.y      = 0;
-    vel.z      = 0;
     hit        = 0;
     mUnk_1d8   = 0;
     moved      = 0;
@@ -904,7 +921,8 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
     }
     record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
     if (mUnk_1a8->mUnk_823 != 0) {
-        for (i = 0; i < mUnk_1a8->mUnk_823; i++) {
+        i = 0;
+        do {
             GimmickSetData *set = &data_020d433c.mUnk_0c->mUnk_0c[mUnk_1a8->mUnk_824[i]];
             if (!set) {
                 continue;
@@ -951,11 +969,9 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                     *c = 0x666;
                     *d = 0x4cd;
                     VEC_Add(&self.o.mPos, &mUnk_1a8->mUnk_810, &self.o.mPos);
-                    AddRot(&self.o, mUnk_1a8);
+                    AddRotAtOnce(&self.o, mUnk_1a8);
                     VEC_Add(&obs.o.mPos, &set->mUnk_810, &obs.o.mPos);
-                    obs.o.mRotY += set->mRotY;
-                    obs.o.mRotZ += set->mRotZ;
-                    obs.o.mRotX += set->mRotX;
+                    AddRotAtOnceFields(&obs.o, set);
                     marker = 0;
                     if (data_020d433c.mUnk_85 == 0 && unit->mUnk_0f != mUnk_1d4 && unit->mUnk_0f != mUnk_1d5 && unit->mUnk_10 != 3 &&
                         (mUnk_1e1 != 0 || func_ov007_02254938(&self.o.mPos, &obs.o.mPos, a, ((RecordBits *) ((u8 *) record + 2))->mIndex))) {
@@ -999,11 +1015,9 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                             }
                             *d = 0x4cd;
                             VEC_Add(&self.o.mPos, &mUnk_1a8->mUnk_810, &self.o.mPos);
-                            AddRot(&self.o, mUnk_1a8);
+                            AddRotAtOnce(&self.o, mUnk_1a8);
                             VEC_Add(&obs.o.mPos, &set->mUnk_810, &obs.o.mPos);
-                            obs.o.mRotY += set->mRotY;
-                    obs.o.mRotZ += set->mRotZ;
-                    obs.o.mRotX += set->mRotX;
+                            AddRotAtOnceFields(&obs.o, set);
                             vel.x = a->x;
                             vel.y = a->y;
                             vel.z = a->z;
@@ -1052,7 +1066,7 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                     marker = 0;
                     break;
             }
-        }
+        } while (++i < mUnk_1a8->mUnk_823);
     }
     if (wallFree != 0) {
         if (mUnk_1ce == 0) {
@@ -1265,7 +1279,7 @@ void BattleTarget::func_ov007_02255c04(VecFx32 *vec, s32 *out) {
     out[0] = rotated.z;
 }
 
-// non-matching: 7 words, case 0 only: one operand order (`k * 0x333` added first) and the load order inside the two SetVec(&cam, ...) arms.
+// non-matching: 6 words, case 0 only: instruction order inside the two SetVec(&cam, ...) arms (target == 0: the original adds pos.y + pose.y before loading pose.x; else: it loads pose.y before pos.y and adds z before y). Same instructions and registers; operand orders, temporaries and field-store orders tried.
 void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
     VecFx32 pos;
     VecFx32 u;
@@ -1492,7 +1506,6 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
     }
 }
 
-// non-matching: size 0x4bc vs 0x4a0: case 0 builds the direction/target vectors differently (the original loads all three components first and keeps 9 registers live) and the 64-bit products are scheduled differently; cases 1 and 2 are close.
 void BattleTarget::func_ov007_022567ac() {
     VecFx32 c;
     VecFx32 b;
@@ -1572,15 +1585,10 @@ void BattleTarget::func_ov007_022567ac() {
             VEC_Add(&c, &data_ov007_0227a624, &c);
             VEC_Subtract(&a, &c, &b);
             fx32 k = mUnk_184;
-            fx32 bx = FX_Mul(b.x, k);
-            b.x = bx;
-            fx32 by = FX_Mul(b.y, k);
-            fx32 bz = FX_Mul(b.z, k);
-            b.y = by;
-            b.z = bz;
-            mUnk_194.x = a.x - bx;
-            mUnk_194.y = a.y - by;
-            mUnk_194.z = a.z - bz;
+            b.x = FX_Mul(b.x, k);
+            b.y = FX_Mul(b.y, k);
+            b.z = FX_Mul(b.z, k);
+            SetVec(&mUnk_194, a.x - b.x, a.y - b.y, a.z - b.z);
             VEC_Subtract(&b, &mUnk_188, &b);
             VecFx32 t;
             t.z = a.z - b.z;
@@ -1597,7 +1605,6 @@ void BattleTarget::func_ov007_022567ac() {
     }
 }
 
-// non-matching: size 0x590 vs 0x588: the cases 2-5 of the original load the pose and camera pointers (and the position components) in a different order; the other cases match.
 void BattleTarget::func_ov007_02256c4c(VecFx32 *target) {
     VecFx32 cam;
     VecFx32 diff;
@@ -1686,38 +1693,24 @@ void BattleTarget::func_ov007_02256c4c(VecFx32 *target) {
         }
         case 2: {
             UnkStruct_0203d374 *pose = mUnk_1a4;
-            fx32 y                   = mUnk_180 + pose->mPosition.y;
-            fx32 z                   = pose->mPosition.z;
-            Camera *c                = mUnk_174;
-            c->mTarget.x             = pose->mPosition.x;
-            c->mTarget.y             = y;
-            c->mTarget.z             = z;
+            SetVec(&mUnk_174->mTarget, pose->mPosition.x, mUnk_180 + pose->mPosition.y, pose->mPosition.z);
             mUnk_180                 = FX_Mul(mUnk_180, -0xf33);
             return;
         }
         case 3: {
             UnkStruct_0203d374 *pose = mUnk_1a4;
-            Camera *c                = mUnk_174;
-            c->mTarget               = pose->mPosition;
+            SetVec(&mUnk_174->mTarget, pose->mPosition.x, pose->mPosition.y, pose->mPosition.z);
             return;
         }
         case 4: {
             UnkStruct_0203d374 *pose = mUnk_1a4;
-            Camera *c                = mUnk_174;
-            c->mTarget.x             = pose->mPosition.x;
-            c->mTarget.y             = pose->mPosition.y + 0x64cd;
-            c->mTarget.z             = pose->mPosition.z;
+            SetVec(&mUnk_174->mTarget, pose->mPosition.x, pose->mPosition.y + 0x64cd, pose->mPosition.z);
             return;
         }
         case 5: {
             UnkStruct_0203d374 *pose = mUnk_1a4;
-            Camera *c                = mUnk_174;
-            c->mTarget.x             = pose->mPosition.x;
-            c->mTarget.y             = pose->mPosition.y + 0x64cd;
-            c->mTarget.z             = pose->mPosition.z;
-            mUnk_128.x   = mUnk_174->mTarget.x;
-            mUnk_128.y   = mUnk_174->mTarget.y;
-            mUnk_128.z   = mUnk_174->mTarget.z;
+            SetVec(&mUnk_174->mTarget, pose->mPosition.x, pose->mPosition.y + 0x64cd, pose->mPosition.z);
+            mUnk_128 = mUnk_174->mTarget;
             return;
         }
         case 6:
@@ -1748,7 +1741,6 @@ void BattleTarget::func_ov007_022573e4() {
     }
 }
 
-// non-matching: register allocation of the whole function (the original keeps this in r9, the pose position in r8, the velocity in r7 and a, b in r6, r5 and reserves a 4-byte slot between the float and the tmp vector, 0x14 vs 0x10 frame); the control flow and all constants are the same.
 void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, VecFx32 *a, VecFx32 *b, u32 *counter, u8 flag,
                                        u32 mode) {
     float angle = 0;
@@ -1907,7 +1899,7 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
         }
     }
     if (mUnk_1dd != 4 && data_020d433c.mUnk_85 == 0 && charged) {
-        s32 sum = player->mUnk_dc + player->mUnk_e4;
+        s32 sum = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mUnk_dc + data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mUnk_e4;
         if (sum != 0) {
             tmp.x = vel->x;
             tmp.z = vel->z;
@@ -1934,8 +1926,7 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
     pos->z += vel->z + tmp.z;
 }
 
-// non-matching: size 0x2b8 vs 0x2bc: the original re-stores the second stack argument to its own slot at entry and loads the stack arguments in a different order.
-BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, BattleObstacle *obj, VecFx32 *out, BOOL flag, u8 *outFlag) {
+BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, BattleObstacle *obj, VecFx32 *out, u8 flag, u8 *outFlag) {
     BattleHitBox box;
     VecFx32 center = sphere->mPos;
     BattleSphere ball;
@@ -1953,10 +1944,7 @@ BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, Battl
                 box.mRotX  = obj->mRotX;
                 box.mRotY  = obj->mRotY;
                 box.mRotZ  = obj->mRotZ;
-                ball.mPos.x = center.x;
-                ball.mPos.y = center.y;
-                ball.mPos.z = center.z;
-                ball.mRadius = sphere->mRadius;
+                SetSphere(&ball, &center, sphere->mRadius);
                 if (func_ov007_0225ac28(&box, &ball, dir, out, flag, outFlag)) {
                     return 1;
                 }
@@ -1966,9 +1954,9 @@ BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, Battl
                 center.x = sphere->mPos.x;
                 center.y = sphere->mPos.y;
                 center.z = sphere->mPos.z;
+                center.x -= (tries + 1) * ((center.x - mUnk_58.x) * 2 / 10);
+                center.z -= (tries + 1) * ((center.z - mUnk_58.z) * 2 / 10);
                 tries++;
-                center.x -= tries * ((center.x - mUnk_58.x) * 2 / 10);
-                center.z -= tries * ((center.z - mUnk_58.z) * 2 / 10);
                 sphere->mPos.x = center.x;
                 sphere->mPos.y = center.y;
                 sphere->mPos.z = center.z;
@@ -1977,28 +1965,16 @@ BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, Battl
         case 1: {
             BattleSphere a;
             BattleSphere b;
-            a.mPos.x = obj->mPos.x;
-            a.mPos.y = obj->mPos.y;
-            a.mPos.z = obj->mPos.z;
-            a.mRadius = obj->mHalfX;
-            b.mPos.x = sphere->mPos.x;
-            b.mPos.y = sphere->mPos.y;
-            b.mPos.z = sphere->mPos.z;
-            b.mRadius = sphere->mRadius;
+            SetSphere(&a, &obj->mPos, obj->mHalfX);
+            SetSphere(&b, &sphere->mPos, sphere->mRadius);
             func_ov007_02233f38(&b.mPos, &a.mPos, (int) dir, out);
             return 1;
         }
         case 4: {
             BattleSphere a;
             BattleSphere b;
-            a.mPos.x = obj->mPos.x;
-            a.mPos.y = obj->mPos.y;
-            a.mPos.z = obj->mPos.z;
-            a.mRadius = obj->mHalfX;
-            b.mPos.x = center.x;
-            b.mPos.y = center.y;
-            b.mPos.z = center.z;
-            b.mRadius = sphere->mRadius;
+            SetSphere(&a, &obj->mPos, obj->mHalfX);
+            SetSphere(&b, &center, sphere->mRadius);
             fx32 top = obj->mPos.y + obj->mHalfY;
             if (top >= center.y && obj->mPos.y - obj->mHalfY <= center.y) {
                 func_ov007_02233f38(&b.mPos, &a.mPos, (int) dir, out);
@@ -2012,26 +1988,6 @@ BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, Battl
     return tries;
 }
 
-// Like AddRot, but all three sums are computed before any store (func_ov007_02257f3c).
-static inline void AddRotAtOnce(BattleObstacle *o, GimmickSetData *s) {
-    u16 *r = &s->mRotX;
-    u16 y  = o->mRotY + r[1];
-    u16 z  = o->mRotZ + r[2];
-    u16 x  = o->mRotX + r[0];
-    o->mRotX = x;
-    o->mRotY = y;
-    o->mRotZ = z;
-}
-
-// Same, reading the set's angles as fields rather than through a pointer.
-static inline void AddRotAtOnceFields(BattleObstacle *o, GimmickSetData *s) {
-    u16 y = o->mRotY + s->mRotY;
-    u16 z = o->mRotZ + s->mRotZ;
-    u16 x = o->mRotX + s->mRotX;
-    o->mRotX = x;
-    o->mRotY = y;
-    o->mRotZ = z;
-}
 
 void BattleTarget::func_ov007_02257f3c(GimmickSetData *set, u32 index, VecFx32 *vel, VecFx32 *out) {
     fx32 mag = VEC_Mag(vel);
@@ -2371,12 +2327,10 @@ void BattleTarget::func_ov007_02258a34() {
     }
 }
 
-// non-matching: size 0x1f4 vs 0x1f0: register allocation of the pose rotation temporaries and the order of the pose/other position stores.
 BOOL BattleTarget::func_ov007_02258cec(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d) {
     BattleMoveState state;
-    VecFx32 tmp = {0, 0, 0};
-    u8 x        = 0;
-    u8 y        = 0;
+    u8 y = 0;
+    u8 x = 0;
     state.mVelocity.x = 0;
     state.mVelocity.y = 0;
     state.mVelocity.z = 0;
@@ -2384,55 +2338,55 @@ BOOL BattleTarget::func_ov007_02258cec(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d)
     state.mRot[1]     = 0;
     state.mRot[2]     = 0;
     state.mMode       = 2;
+    BattlePlayerList *list   = data_020d433c.mBattlePlayers;
     UnkStruct_0203d374 *pose = mUnk_1a4;
     u16 rotY                 = pose->mRotY;
     u16 rotZ                 = pose->mRotZ;
     func_ov007_02248998(b, &y, &x);
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
     UnkStruct_0203d374 *other = list->mUnk_29c->func_ov007_0226fc4c(d - 1);
-    if (!other) {
-        return 0;
+    if (other) {
+        VecFx32 tmp = {0, 0, 0};
+        func_ov007_02233730(a, b, c, &tmp);
+        pose              = mUnk_1a4;
+        pose->mPosition.x = b->x;
+        pose->mPosition.y = b->y;
+        pose->mPosition.z = b->z;
+        mUnk_58.x         = b->x;
+        mUnk_58.y         = b->y;
+        mUnk_58.z         = b->z;
+        pose              = mUnk_1a4;
+        pose->mRotX       = 0;
+        pose->mRotY       = rotY;
+        pose->mRotZ       = rotZ;
+        mUnk_1a4->mUnk_49 = 1;
+        mUnk_1d2          = 4;
+        other->mPosition.x = b->x;
+        other->mPosition.y = b->y;
+        other->mPosition.z = b->z;
+        pose              = mUnk_1a4;
+        u16 r0            = pose->mRotX;
+        u16 r1            = pose->mRotY;
+        u16 r2            = pose->mRotZ;
+        state.mVelocity = tmp;
+        other->mRotX      = r0 + 0x4000;
+        other->mRotY      = r1;
+        other->mRotZ      = r2;
+        list->mUnk_29c->func_ov007_02270ae0(d - 1, &state);
+        func_ov007_02256c4c(&mUnk_1a4->mPosition);
+        func_ov007_02255cb4(&mUnk_1a4->mPosition);
+        if (mUnk_1c0 != 0) {
+            func_0202beb8(data_020d433c.mEffects, mUnk_1c0);
+            mUnk_1c0 = 0;
+        }
+        BattleStatusPanels *panels = mUnk_28;
+        if (panels) {
+            delete panels;
+        }
+        mUnk_28  = 0;
+        mUnk_1cf = 1;
+        return 1;
     }
-    func_ov007_02233730(a, b, c, &tmp);
-    mUnk_1a4->mPosition.x = b->x;
-    mUnk_1a4->mPosition.y = b->y;
-    mUnk_1a4->mPosition.z = b->z;
-    mUnk_58.x             = b->x;
-    mUnk_58.y             = b->y;
-    mUnk_58.z             = b->z;
-    pose                  = mUnk_1a4;
-    pose->mRotX         = 0;
-    pose->mRotY         = rotY;
-    pose->mRotZ         = rotZ;
-    mUnk_1a4->mUnk_49     = 1;
-    mUnk_1d2              = 4;
-    other->mPosition.x    = b->x;
-    other->mPosition.y    = b->y;
-    other->mPosition.z    = b->z;
-    pose                  = mUnk_1a4;
-    u16 r0                = pose->mRotX;
-    u16 r1                = pose->mRotY;
-    u16 r2                = pose->mRotZ;
-    state.mVelocity.x     = tmp.x;
-    state.mVelocity.z     = tmp.z;
-    state.mVelocity.y     = tmp.y;
-    other->mRotX        = r0 + 0x4000;
-    other->mRotY        = r1;
-    other->mRotZ        = r2;
-    list->mUnk_29c->func_ov007_02270ae0(d - 1, &state);
-    func_ov007_02256c4c(&mUnk_1a4->mPosition);
-    func_ov007_02255cb4(&mUnk_1a4->mPosition);
-    if (mUnk_1c0 != 0) {
-        func_0202beb8(data_020d433c.mEffects, mUnk_1c0);
-        mUnk_1c0 = 0;
-    }
-    BattleStatusPanels *panels = mUnk_28;
-    if (panels) {
-        delete panels;
-    }
-    mUnk_28  = 0;
-    mUnk_1cf = 1;
-    return 1;
+    return 0;
 }
 
 void BattleTarget::func_ov007_02258edc() {
@@ -3047,8 +3001,8 @@ BOOL BattleTarget::func_ov007_0225aba0(VecFx32 *a, VecFx32 *b, VecFx32 *tri, fx3
     return 1;
 }
 
-// non-matching: 35 words, register allocation only: the original keeps the loop counter in r6 and f[i] in r7 (here r7 / r6) and loads the `flag` stack argument first in the prologue.
-BOOL BattleTarget::func_ov007_0225ac28(BattleHitBox *box, BattleSphere *sphere, VecFx32 *dir, VecFx32 *out, BOOL flag, u8 *outFlag) {
+// non-matching: 20 words, register allocation only: in the second loop the original keeps the counter in r6 and f[i] (and the pos.y / FX_Mul temporaries) in r7; here r7 / r6.
+BOOL BattleTarget::func_ov007_0225ac28(BattleHitBox *box, BattleSphere *sphere, VecFx32 *dir, VecFx32 *out, u8 flag, u8 *outFlag) {
     VecFx32 c[8];
     VecFx32 e1;
     VecFx32 e0;
@@ -3119,7 +3073,7 @@ BOOL BattleTarget::func_ov007_0225ac28(BattleHitBox *box, BattleSphere *sphere, 
     VecFx32 q;
     VecFx32 hit;
     fx32 t;
-    u32 idx;
+    u8 idx;
     fx32 best = 0xffff;
     i = 0;
     idx = i;
@@ -3436,7 +3390,7 @@ void BattleTarget::func_ov007_0225bf70(VecFx32 *a, VecFx32 *b) {
     VEC_Subtract(b, &rest, b);
 }
 
-// non-matching: 45 words, register allocation: the original keeps the scale in r0 (3 words saved less) and builds the camera vector through ip; the multiplications use umull because the scale is an unsigned value.
+// non-matching: 44 words, register allocation: the original keeps the scale in r0 (3 words saved less) and computes &mUnk_c8 for VEC_Add after the third product; here the scale is in r3 and the address is scheduled early, which pushes the products into r5/ip/lr and the camera vector through r5 instead of ip.
 void BattleTarget::func_ov007_0225c098(s32 *pair) {
     VecFx32 target;
     VecFx32 cam;
@@ -3505,7 +3459,6 @@ void BattleTarget::func_ov007_0225c360(u16 *in, s32 a, u16 *out) {
     *out     = (u16) (u32) (910.0f + (float) res / 4096.0f);
 }
 
-// non-matching: size 0x478 vs 0x484: the original keeps a redundant `mUnk_1c0 != 0` test inside the liveness check of case 0.
 void BattleTarget::func_ov007_0225c4dc() {
     switch (mUnk_1df) {
         case 0: {
@@ -3595,10 +3548,10 @@ void BattleTarget::func_ov007_0225c4dc() {
     }
     MtxFx43 mtx = CameraManager::Get().mMtxC[0];
     VecFx32 pos = mUnk_1a4->mPosition;
+    VecFx32 off = data_ov007_0227a648;
     mtx._[11]   = 0;
     mtx._[10]   = 0;
     mtx._[9]    = 0;
-    VecFx32 off = data_ov007_0227a648;
     MTX_MultVec43(&off, &mtx, &off);
     VEC_Add(&pos, &off, &pos);
     func_01ffcf64(&mtx, &pos);
@@ -3654,7 +3607,7 @@ void func_ov007_0225ca18(BattleTarget *target, int a, int b) {
     target->mUnk_1db = 0;
 }
 
-// non-matching: 14 words; the original sets r0 to 12 before the branch.
+// non-matching: 14 words; the original sets r0 to 12 (the record size) before the branch and keeps pl in r1. Computing the record pointer in both arms hoists the 12, but arm 1 then colours pl/record as r2/r1 and the two tails are not merged.
 void BattleTarget::func_ov007_0225ca48(u32 player, u32 record) {
     BattlePlayer *pl;
     if (player == 0xff) {

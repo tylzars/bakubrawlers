@@ -81,7 +81,7 @@ public:
     /* 70 */ VecFx32 mUnk_70;
     /* 7c */ VecFx32 mUnk_7c;
     /* 88 */ u32 mUnk_88;
-    /* 8c */ u32 mUnk_8c;
+    /* 8c */ fx32 mUnk_8c;
     /* 90 */ u32 mUnk_90;
     /* 94 */ VecFx32 mUnk_94;
     /* a0 */ VecFx32 mUnk_a0;
@@ -192,7 +192,7 @@ public:
     BOOL func_ov007_0225d078();
     void func_ov007_0225b6d0();
     void func_ov007_02257f3c(GimmickSetData *set, u32 index, VecFx32 *vel, VecFx32 *out);
-    BOOL func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, BattleObstacle *obj, VecFx32 *out, BOOL flag, u8 *outFlag);
+    BOOL func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, BattleObstacle *obj, VecFx32 *out, u8 flag, u8 *outFlag);
     void func_ov007_0225c4dc();
     void func_ov007_0225b298(s32 *pair, u8 mode, VecFx32 *out);
     BOOL func_ov007_0225b4a0(VecFx32 *pos, u16 *angle, VecFx32 *vel, u8 *outA, u8 *outB);
@@ -214,7 +214,7 @@ public:
     void func_ov007_0225bf70(VecFx32 *a, VecFx32 *b);
     void func_ov007_02255a9c();
     void func_ov007_022585e0();
-    BOOL func_ov007_0225ac28(BattleHitBox *box, BattleSphere *sphere, VecFx32 *dir, VecFx32 *out, BOOL flag, u8 *outFlag);
+    BOOL func_ov007_0225ac28(BattleHitBox *box, BattleSphere *sphere, VecFx32 *dir, VecFx32 *out, u8 flag, u8 *outFlag);
     BOOL func_ov007_0225aa80(BattleHitBox *box, VecFx32 *point);
     BOOL func_ov007_0225aba0(VecFx32 *a, VecFx32 *b, VecFx32 *tri, fx32 *t, VecFx32 *out);
     void func_ov007_0225b69c(u8 a, u8 b);

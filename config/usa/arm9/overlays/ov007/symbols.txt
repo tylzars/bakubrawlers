@@ -659,7 +659,7 @@ _ZN12BattleTarget19func_ov007_02256c4cEP7VecFx32 kind:function(arm,size=0x588) a
 _ZN12BattleTarget19func_ov007_022571d4Ev kind:function(arm,size=0x210) addr:0x022571d4
 _ZN12BattleTarget19func_ov007_022573e4Ev kind:function(arm,size=0x78) addr:0x022573e4
 _ZN12BattleTarget19func_ov007_0225745cEP7VecFx32PtS1_S1_S1_Pjhj kind:function(arm,size=0x824) addr:0x0225745c
-_ZN12BattleTarget19func_ov007_02257c80EP12BattleSphereP7VecFx32P14BattleObstacleS3_iPh kind:function(arm,size=0x2bc) addr:0x02257c80
+_ZN12BattleTarget19func_ov007_02257c80EP12BattleSphereP7VecFx32P14BattleObstacleS3_hPh kind:function(arm,size=0x2bc) addr:0x02257c80
 _ZN12BattleTarget19func_ov007_02257f3cEP14GimmickSetDatajP7VecFx32S3_ kind:function(arm,size=0x47c) addr:0x02257f3c
 _ZN12BattleTarget19func_ov007_022583b8Ev kind:function(arm,size=0x90) addr:0x022583b8
 _ZN12BattleTarget19func_ov007_02258448Ev kind:function(arm,size=0x198) addr:0x02258448
@@ -679,7 +679,7 @@ _ZN12BattleTarget19func_ov007_0225a8d4EP7VecFx32S1_P11BattlePlanePiS1_ kind:func
 _ZN12BattleTarget19func_ov007_0225a9c8EP7VecFx32S1_S1_S1_S1_PiS1_ kind:function(arm,size=0xb8) addr:0x0225a9c8
 _ZN12BattleTarget19func_ov007_0225aa80EP12BattleHitBoxP7VecFx32 kind:function(arm,size=0x120) addr:0x0225aa80
 _ZN12BattleTarget19func_ov007_0225aba0EP7VecFx32S1_S1_PiS1_ kind:function(arm,size=0x88) addr:0x0225aba0
-_ZN12BattleTarget19func_ov007_0225ac28EP12BattleHitBoxP12BattleSphereP7VecFx32S5_iPh kind:function(arm,size=0x670) addr:0x0225ac28
+_ZN12BattleTarget19func_ov007_0225ac28EP12BattleHitBoxP12BattleSphereP7VecFx32S5_hPh kind:function(arm,size=0x670) addr:0x0225ac28
 _ZN12BattleTarget19func_ov007_0225b298EPihP7VecFx32 kind:function(arm,size=0x208) addr:0x0225b298
 _ZN12BattleTarget19func_ov007_0225b4a0EP7VecFx32PtS1_PhS3_ kind:function(arm,size=0x1fc) addr:0x0225b4a0
 _ZN12BattleTarget19func_ov007_0225b69cEhh kind:function(arm,size=0x34) addr:0x0225b69c

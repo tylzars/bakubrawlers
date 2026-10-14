@@ -208,6 +208,11 @@ Other findings from linking:
   gave the original's evaluation order where none of the 120 one-expression forms did (BattleShoot::func_ov007_0226f76c).
   Reading `tbl[idx]` into a local before an `f++` puts the table load ahead of the store, and `if (field)` right after
   `field = var;` compiles to `tst #255`.
+- **Arguments with side effects are evaluated before the stack-argument stores.** A volatile read or `x++` in an
+  argument is computed before the `[sp]` stores and the other arguments; every side-effect-free form is folded into
+  the call and loaded after the stores, because the scheduler never lifts a `[this]` load above a `[sp]` store.
+  `Screen(*(volatile u8 *) &mScreen)` is the placeholder used in MessageWindow::func_020658d0. A value whose only
+  consumer is one later call is substituted into that call; a compound assignment or a later read keeps it in place.
 - **`(u8)` casts at a call site often stand in for the callee's parameter types.** Making `func_020231f4` take
   `u8, u8` matched three callers in UnkStruct_02078e14_b.cpp. An `extern` object's declared size can matter too:
   stores at 0x1c/0x1d into `UnkStruct_0220f540` scheduled like the original only once the type was at least 0x3c bytes.

@@ -182,7 +182,6 @@ void MessageWindow::func_02065890(u32 unk1, u32 unk2, u32 unk3) {
     mUnk_20 = mWidth;
 }
 
-// non-matching: argument setup order for the func_02025c1c call.
 void MessageWindow::func_020658d0() {
     if (mMessage < 0) {
         return;
@@ -204,7 +203,9 @@ void MessageWindow::func_020658d0() {
         MessageFile *file = mFile;
         text.Print(file->GetText((u16) mMessage), file->GetLength((u16) mMessage), mBuffer, 0x28, 2, &width, &height,
                    &mUnk_20, 0, 2, 0x11, 0x10, 0, 0, 0, 1, 1);
-        func_02025c1c(SpriteManager::Get().Screen(mScreen).mBgIndex, 4, mVram, mBuffer, 0x800, 0);
+        // The screen index is read where it is written (before the stack arguments); a plain read is folded into the
+        // call and loaded after them.
+        func_02025c1c(SpriteManager::Get().Screen(*(volatile u8 *) &mScreen).mBgIndex, 4, mVram, mBuffer, 0x800, 0);
         BOOL negative = mUnk_22 < 0;
         BOOL last     = mUnk_20 == -mUnk_22;
         if (negative & last) {
@@ -216,7 +217,7 @@ void MessageWindow::func_020658d0() {
     do {
         screen.func_02027778(data_020a10a0, 1, (s16)(mX + i * 16), (s16)(mY + 1), mUnk_27, (u16)(i + (mVram >> 7)), 0xf, 0);
         i++;
-    } while (i < ((u32) mWidth >> 4));
+    } while (i < mWidth / 16);
 }
 
 void MessageWindow::func_02065bcc(u32 vram) {
@@ -229,9 +230,8 @@ void MessageWindow::func_02065bd4(u32 unk1, u32 unk2, u32 unk3) {
     mUnk_27 = unk3;
 }
 
-// non-matching: the original clears the low nibble with lsr/lsl; every form here folds to bic.
 void MessageWindow::func_02065be4(u32 unk1) {
-    mWidth = (unk1 >> 4) << 4;
+    mWidth = (s32) (unk1 >> 4) << 4;
 }
 
 extern const u8 data_020a15ac[][6];

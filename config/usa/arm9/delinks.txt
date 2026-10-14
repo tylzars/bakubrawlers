@@ -739,9 +739,11 @@ src/Main/System/MicManager.cpp:
     .text       start:0x0202d794 end:0x0202db04
     .bss        start:0x0220f114 end:0x0220f12c
 
-// provisional: code only; .data 0x020a5730-0x020a5784 and .bss 0x0220f560-0x02210fdc belong here.
 src/Main/System/WirelessManager.cpp:
+    complete
     .text       start:0x0202db04 end:0x0202f420
+    .data       start:0x020a5730 end:0x020a5784
+    .bss        start:0x0220f560 end:0x02210fdc
 
 src/Main/UI/SelectWindowCursor.cpp:
     complete

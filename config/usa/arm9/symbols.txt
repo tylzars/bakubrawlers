@@ -1153,7 +1153,7 @@ _ZN15WirelessManager13func_0202f184Ev kind:function(arm,size=0x20) addr:0x0202f1
 _ZN15WirelessManager13func_0202f1a4Ej kind:function(arm,size=0x94) addr:0x0202f1a4
 _ZN15WirelessManager13func_0202f238Ev kind:function(arm,size=0xc) addr:0x0202f238
 _ZN15WirelessManager13func_0202f244Ev kind:function(arm,size=0x1c8) addr:0x0202f244
-_ZN15WirelessManagerD0Ev kind:function(arm,size=0x14) addr:0x0202f40c
+_ZN15WirelessManagerD0Ev kind:function(arm,size=0x14) addr:0x0202f40c weak
 _ZN18SelectWindowCursorC1EjPKvj kind:function(arm,size=0x48) addr:0x0202f420
 _ZN18SelectWindowCursor13func_0202f468Ej kind:function(arm,size=0x1b4) addr:0x0202f468
 _ZN18SelectWindowCursor13func_0202f61cEj kind:function(arm,size=0xe58) addr:0x0202f61c
@@ -3410,7 +3410,7 @@ data_020a56e0 kind:data(any) addr:0x020a56e0
 data_020a56ec kind:data(any) addr:0x020a56ec
 data_020a56f0 kind:data(any) addr:0x020a56f0
 _ZTV15WirelessManager kind:data(any) addr:0x020a5730
-data_020a5744 kind:data(any) addr:0x020a5744
+data_020a5744 kind:data(any) addr:0x020a5744 local
 data_020a5784 kind:data(any) addr:0x020a5784
 data_020a5788 kind:data(any) addr:0x020a5788
 data_020a578c kind:data(any) addr:0x020a578c
@@ -4842,22 +4842,26 @@ data_0220f12c kind:bss addr:0x0220f12c
 data_0220f140 kind:bss addr:0x0220f140
 data_0220f540 kind:bss addr:0x0220f540
 data_0220f544 kind:bss addr:0x0220f544
-data_0220f560 kind:bss addr:0x0220f560
-data_0220f580 kind:bss addr:0x0220f580
-data_0220f584 kind:bss addr:0x0220f584
-data_0220f5a0 kind:bss addr:0x0220f5a0
-data_0220f5c0 kind:bss addr:0x0220f5c0
-data_0220f5e0 kind:bss addr:0x0220f5e0
-data_0220f600 kind:bss addr:0x0220f600
-data_0220f620 kind:bss addr:0x0220f620
-data_0220f640 kind:bss addr:0x0220f640
-data_0220f680 kind:bss addr:0x0220f680
-data_0220f700 kind:bss addr:0x0220f700
-data_0220f7a0 kind:bss addr:0x0220f7a0
-data_0220f860 kind:bss addr:0x0220f860
-data_0220fa20 kind:bss addr:0x0220fa20
-data_0220fc20 kind:bss addr:0x0220fc20
-data_02210440 kind:bss addr:0x02210440
+data_0220f560 kind:bss addr:0x0220f560 local
+data_0220f564 kind:bss addr:0x0220f564 local
+data_0220f568 kind:bss addr:0x0220f568 local
+data_0220f56c kind:bss addr:0x0220f56c local
+data_0220f570 kind:bss addr:0x0220f570 local
+data_0220f574 kind:bss addr:0x0220f574 local
+data_0220f578 kind:bss addr:0x0220f578 local
+data_0220f57c kind:bss addr:0x0220f57c local
+data_0220f580 kind:bss addr:0x0220f580 local
+@70 kind:bss addr:0x0220f584 local
+data_0220f590 kind:bss addr:0x0220f590 local
+data_0220f620 kind:bss addr:0x0220f620 local
+data_0220f640 kind:bss addr:0x0220f640 local
+data_0220f680 kind:bss addr:0x0220f680 local
+data_0220f700 kind:bss addr:0x0220f700 local
+data_0220f7a0 kind:bss addr:0x0220f7a0 local
+data_0220f860 kind:bss addr:0x0220f860 local
+data_0220fa20 kind:bss addr:0x0220fa20 local
+data_0220fc20 kind:bss addr:0x0220fc20 local
+data_02210440 kind:bss addr:0x02210440 local
 data_02210fdc kind:bss addr:0x02210fdc
 @52 kind:bss addr:0x02211340 local
 @14 kind:bss addr:0x0221134c local

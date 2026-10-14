@@ -63,22 +63,36 @@ struct WmParentParam {
 static u8 data_0220f680[0x70] ALIGN32;
 static WmParentParam data_020a5744 = {data_0220f680, 0x70, 0, 0x400904, 0, 1, 3, 0, 0, 0, 200, {0}, 0, 1, 0x28008e, {0}};
 
-// The 4-byte aligned statics of the original object, 0x0220f560-0x0220f620 (addressed from the start of the shared
-// section, which also holds the 0xc-byte atexit node first, hence offsets are the original ones minus 0xc).
-struct WmWork {
-    /* 00 */ PAD(0x00, 0x14);
-    /* 14 */ u32 mCmd; // message sent to the other side (data_0220f580)
-    /* 18 */ PAD(0x18, 0x34);
-    /* 34 */ u32 mRecv[4]; // received 4-byte messages (data_0220f5a0)
-    /* 44 */ PAD(0x44, 0x54);
-    /* 54 */ u32 mSend[4]; // messages waiting to be sent (data_0220f5c0)
-    /* 64 */ PAD(0x64, 0x74);
-    /* 74 */ WmScanParam mScan; // data_0220f5e0
-    /* 82 */ PAD(0x82, 0x94);
-    /* 94 */ u32 mTmp; // data_0220f600
-    /* 98 */
+// The 4-byte aligned statics of the original object share one section, 0x0220f560-0x0220f620, with the WirelessManager
+// singleton's atexit node at 0x0220f584 between them; the code addresses them from the start of the section.
+struct WmWorkB {
+    /* 00 */ PAD(0x00, 0x10);
+    /* 10 */ u32 mRecv[4]; // received 4-byte messages (data_0220f5a0)
+    /* 20 */ PAD(0x20, 0x30);
+    /* 30 */ u32 mSend[4]; // messages waiting to be sent (data_0220f5c0)
+    /* 40 */ PAD(0x40, 0x50);
+    /* 50 */ WmScanParam mScan; // data_0220f5e0
+    /* 60 */ PAD(0x60, 0x70);
+    /* 70 */ u32 mTmp; // data_0220f600
+    /* 74 */ PAD(0x74, 0x90);
 };
-static WmWork data_0220f560;
+static u32 data_0220f570;
+static u32 data_0220f57c;
+static u32 data_0220f578;
+static u32 data_0220f580;
+static u32 data_0220f568;
+static u32 data_0220f56c;
+static u32 data_0220f560;
+static u32 data_0220f564;
+static u32 data_0220f574;
+
+// Gives the eight statics above a use (no code in the ROM uses them, but the .bss layout has them): without a
+// use the compiler drops them, and they are what puts data_0220f580 0x20 bytes into the section.
+void WirelessManager_StrippedStatics() {
+    data_0220f570 = data_0220f57c = data_0220f578 = data_0220f574 = 0;
+    data_0220f568 = data_0220f56c = data_0220f560 = data_0220f564 = 0;
+}
+static WmWorkB data_0220f590;
 
 static u8 data_0220f620[0x20] ALIGN32;
 static u8 data_0220f640[0x40] ALIGN32;
@@ -88,11 +102,10 @@ static u8 data_0220f860[0x1c0] ALIGN32;
 static u8 data_0220fa20[0x200] ALIGN32;
 static u8 data_0220fc20[0x820] ALIGN32;
 static u8 data_02210440[0xb9c] ALIGN32;
-#define data_0220f580 (data_0220f560.mCmd)
-#define data_0220f5a0 (data_0220f560.mRecv)
-#define data_0220f5c0 (data_0220f560.mSend)
-#define data_0220f5e0 (data_0220f560.mScan)
-#define data_0220f600 (data_0220f560.mTmp)
+#define data_0220f5a0 (data_0220f590.mRecv)
+#define data_0220f5c0 (data_0220f590.mSend)
+#define data_0220f5e0 (data_0220f590.mScan)
+#define data_0220f600 (data_0220f590.mTmp)
 #define SCAN_ENTRY ((WmEntry *) data_0220f7a0)
 #define PARENT_PARAM ((WmParentParam *) data_0220f640)
 

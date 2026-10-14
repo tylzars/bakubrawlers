@@ -4338,7 +4338,7 @@ from:0x0202dcc8 kind:load to:0x020a5730 add:0x8 module:main
 from:0x0202dccc kind:load to:0x020c3030 module:main
 from:0x0202dcd0 kind:load to:0x02020a2c module:main
 from:0x0202dcd4 kind:load to:0x0220f584 module:main
-from:0x0202dcd8 kind:load to:0x0220f5a0 module:main
+from:0x0202dcd8 kind:load to:0x0220f590 add:0x10 module:main
 from:0x0202dd08 kind:arm_call to:0x020202ec module:main
 from:0x0202dd4c kind:load to:0x020c17dc module:main
 from:0x0202dd50 kind:load to:0x020a5730 add:0x8 module:main
@@ -4451,7 +4451,7 @@ from:0x0202e770 kind:arm_call to:0x0201042c module:main
 from:0x0202e7c4 kind:load to:0x0220f560 module:main
 from:0x0202e7d8 kind:arm_call to:0x020108f4 module:main
 from:0x0202e7f4 kind:load to:0x0202e06c module:main
-from:0x0202e7f8 kind:load to:0x0220f5e0 module:main
+from:0x0202e7f8 kind:load to:0x0220f590 add:0x50 module:main
 from:0x0202e81c kind:arm_call to:0x01ff96c4 module:itcm
 from:0x0202e83c kind:arm_call to:0x020109e0 module:main
 from:0x0202e85c kind:load to:0x0220f7a0 module:main
@@ -4467,8 +4467,8 @@ from:0x0202ea7c kind:load to:0x0220f860 module:main
 from:0x0202ea80 kind:load to:0x0220f700 module:main
 from:0x0202eac4 kind:arm_call to:0x01ff96c4 module:itcm
 from:0x0202ead4 kind:arm_call to:0x0202eb08 module:main
-from:0x0202eb00 kind:load to:0x0220f5c0 module:main
-from:0x0202eb04 kind:load to:0x0220f600 module:main
+from:0x0202eb00 kind:load to:0x0220f590 add:0x30 module:main
+from:0x0202eb04 kind:load to:0x0220f590 add:0x70 module:main
 from:0x0202eb3c kind:arm_call to:0x02010d3c module:main
 from:0x0202eb6c kind:load to:0x0202e224 module:main
 from:0x0202eb94 kind:arm_call to:0x02010e6c module:main
@@ -4505,7 +4505,7 @@ from:0x0202ef64 kind:arm_call to:0x0202e544 module:main
 from:0x0202eff4 kind:arm_call to:0x01ff96c4 module:itcm
 from:0x0202f044 kind:arm_call to:0x01ff96c4 module:itcm
 from:0x0202f068 kind:arm_call to:0x0202ea84 module:main
-from:0x0202f074 kind:load to:0x0220f5c0 module:main
+from:0x0202f074 kind:load to:0x0220f590 add:0x30 module:main
 from:0x0202f0bc kind:arm_call to:0x01ff96c4 module:itcm
 from:0x0202f0c8 kind:load to:0x0220f620 module:main
 from:0x0202f124 kind:arm_call to:0x02011968 module:main

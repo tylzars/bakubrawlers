@@ -246,6 +246,14 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **Two u8 zeros share a register, and that steers the scheduler.** In BattleCpu::func_ov007_022310f0 the zeros of
+  `free` and the counter shared one register, which put `mov r5, #0` ahead of a load; a `u32` counter with a `(u8)`
+  wrap stops the sharing and gives the original order.
+- **Store, then scale in place:** `d->x = FX_Mul(s->x, len); d->x = FX_Mul(d->x, k);` colours differently from one
+  expression through a temporary (func_ov007_022337ec).
+- **A pointer declared before a loop and assigned inside it** (`u = &list->Units()[i];`) fixed a base/element
+  register swap no declaration order did.
+
 - **A load folded into an address is a temporary.** `rec = &pl->mRecords[pl->mRecord]` makes the index a temporary
   coloured before `pl`; kept as its own statement it is coloured after `pl`, which let identical if/else tails merge
   in BattleTarget::func_ov007_0225ca48. There the separate statement needed a `*(volatile u8 *) &pl->mRecord`

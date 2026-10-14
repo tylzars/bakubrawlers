@@ -192,7 +192,6 @@ void BattleCpu::func_ov007_02231038() {
     }
 }
 
-// non-matching: registers only: the two hoisted loads land in ip/lr in the original.
 u8 BattleCpu::func_ov007_022310f0() {
     u8 result = 0xff;
     if (data_020d433c.mUnk_85 != 0 || data_020d433c.mUnk_8a_0 != 0) {
@@ -201,13 +200,14 @@ u8 BattleCpu::func_ov007_022310f0() {
     BOOL c = FALSE;
     if (data_020d433c.mUnk_98) {
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
-        u8 a                   = list->mUnk_294;
-        u8 b                   = list->mPlayers[mUnk_79]->mUnk_f2;
-        u8 n                   = 0;
+        u8 a                   = list->Unk294();
+        u8 b                   = list->mPlayers[mUnk_79]->Partner();
         u8 i                   = 0;
-        BattleUnit *units      = list->Units();
+        BattleUnit *u;
+        u8 n                   = 0;
         do {
-            if (units[i].mUnk_10 != 0 && b == units[i].mUnk_0f) {
+            u = &list->Units()[i];
+            if (u->mUnk_10 != 0 && b == u->mUnk_0f) {
                 n++;
             }
             i++;
@@ -222,29 +222,34 @@ u8 BattleCpu::func_ov007_022310f0() {
         }
     }
     if (c) {
-        BattlePlayer *pl       = data_020d433c.mBattlePlayers->mPlayers[mUnk_79];
-        u8 count               = data_020d433c.mUnk_99;
-        u8 free                = 0;
-        u8 i                   = 0;
+        u8 free;
+        u8 count;
+        u32 i;
+        u8 m;
+        BattlePlayer *pl;
+        i     = 0;
+        count = data_020d433c.mUnk_99;
+        pl    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79];
+        free  = 0;
         do {
             if (pl->Flag56(i) == 0) {
                 free++;
             }
-            i++;
+            i = (u8) (i + 1);
         } while (i < count);
-        i = 0;
+        m = 0;
         do {
-            if (pl->Flag56(i) == 0) {
-                result = i;
+            if (pl->Flag56(m) == 0) {
+                result = m;
                 break;
             }
-            i++;
-        } while (i < count);
+            m++;
+        } while (m < count);
         if (free != 0) {
             u8 pick          = MATH_Rand32(&data_020d42e8, free);
             u8 k             = 0;
-            u8 j             = 0;
             BattlePlayer *p2 = data_020d433c.mBattlePlayers->mPlayers[mUnk_79];
+            u8 j             = 0;
             do {
                 if (p2->Flag56(j) == 0) {
                     if (pick == k) {
@@ -308,8 +313,10 @@ u8 BattleCpu::func_ov007_02231300() {
     return 0;
 }
 
-// non-matching: registers only; case 4 swaps the two index temporaries of the record address, and the final mUnk_98 pass
-// has its invariant temporaries (record slot address, entry base, unit address) in other registers.
+// non-matching (14 words, registers and one schedule): case 4 loads mUnk_79 into r2 and mUnk_7a into r1 where the
+// original has r1/r2 (the player and record base follow mUnk_79's register); the final mUnk_98 pass keeps the
+// &mPlayers[mUnk_79] slot address in r0 and the entry base in r1 (original r1/r0), and schedules `mov r3, #0` after
+// `add #28` instead of before it.
 extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     cpu->mPos.x = 0;
     cpu->mPos.y = 0;
@@ -338,7 +345,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                 cntA++;
             } else {
                 u8 owner = list->Units()[(u8) (m->mUnk_5 - 1)].mUnk_0f;
-                if (owner != cpu->mUnk_79 && owner != list->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+                if (owner != cpu->mUnk_79 && owner != list->mPlayers[cpu->mUnk_79]->Partner()) {
                     cntB++;
                 }
             }
@@ -480,7 +487,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                         BattleMarker *m = &l->Entries()[j];
                         if (m->mUnk_2 != 0 && m->mUnk_5 != 0) {
                             u8 owner = l->Units()[(u8) (m->mUnk_5 - 1)].mUnk_0f;
-                            if (owner != cpu->mUnk_79 && owner != l->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+                            if (owner != cpu->mUnk_79 && owner != l->mPlayers[cpu->mUnk_79]->Partner()) {
                                 if (state == 2) {
                                     if (!l->mPlayers[owner]->IsActive()) {
                                         pick = j;
@@ -517,7 +524,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                         bool ok  = false;
                         u8 owner = m->mUnk_1;
                         u16 val  = l->mPlayers[owner]->Slot54(m->mUnk_0);
-                        if (cpu->mUnk_79 == owner || owner == l->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+                        if (cpu->mUnk_79 == owner || owner == l->mPlayers[cpu->mUnk_79]->Partner()) {
                             ok = cpu->func_ov007_02232e04(val, recValue, recKind);
                         }
                         if (ok == 1) {
@@ -538,7 +545,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                         BattleMarker *m     = &l->Entries()[j];
                         if (m->mUnk_2 != 0) {
                             u8 me = cpu->mUnk_79;
-                            if (me == m->mUnk_1 || m->mUnk_1 == l->mPlayers[me]->mUnk_f2) {
+                            if (me == m->mUnk_1 || m->mUnk_1 == l->mPlayers[me]->Partner()) {
                                 u32 v = func_02065bf4(m->mUnk_0, recKind);
                                 if (v > best) {
                                     best    = v;
@@ -581,13 +588,13 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
         BattleMarker *m     = &data_020d433c.mBattlePlayers->Entries()[pick];
         if (m->mUnk_5 != 0) {
             u8 owner = data_020d433c.mBattlePlayers->Units()[(u8) (m->mUnk_5 - 1)].mUnk_0f;
-            if (owner == data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+            if (owner == data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->Partner()) {
                 j = 0;
                 do {
                     BattleMarker *m2 = &data_020d433c.mBattlePlayers->Entries()[j];
                     if (m2->mUnk_2 != 0) {
                         if (m2->mUnk_5 != 0) {
-                            if (data_020d433c.mBattlePlayers->Units()[(u8) (m2->mUnk_5 - 1)].mUnk_0f != data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+                            if (data_020d433c.mBattlePlayers->Units()[(u8) (m2->mUnk_5 - 1)].mUnk_0f != data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->Partner()) {
                                 pick = j;
                                 break;
                             }
@@ -1088,28 +1095,26 @@ void func_ov007_02233730(VecFx32 *a, VecFx32 *b, VecFx32 *speed, VecFx32 *out) {
     out->z   = d.z;
 }
 
-// non-matching: registers in the flag != 0 branch (r2 vs r3 for the FX_Mul temporary).
 void func_ov007_022337ec(VecFx32 *A, VecFx32 *B, VecFx32 *C, VecFx32 *D, VecFx32 *E, fx32 F, fx32 G, int flag) {
     if (flag) {
         fx32 len = VEC_Mag(B);
-        fx32 t;
-        t    = (fx32) (((fx64) E->x * len + 0x800LL) >> 12);
-        B->x = (fx32) (((fx64) t * F + 0x800LL) >> 12);
-        t    = (fx32) (((fx64) E->y * len + 0x800LL) >> 12);
-        B->y = (fx32) (((fx64) t * G + 0x800LL) >> 12);
-        t    = (fx32) (((fx64) E->z * len + 0x800LL) >> 12);
-        B->z = (fx32) (((fx64) t * F + 0x800LL) >> 12);
-        t    = (fx32) (((fx64) E->x * Abs(C->x) + 0x800LL) >> 12);
-        C->x = (fx32) (((fx64) t * F + 0x800LL) >> 12);
-        t    = (fx32) (((fx64) E->y * Abs(C->y) + 0x800LL) >> 12);
-        C->y = (fx32) (((fx64) t * G + 0x800LL) >> 12);
-        t    = (fx32) (((fx64) E->z * Abs(C->z) + 0x800LL) >> 12);
-        C->z = (fx32) (((fx64) t * F + 0x800LL) >> 12);
+        B->x = FX_Mul(E->x, len);
+        B->x = FX_Mul(B->x, F);
+        B->y = FX_Mul(E->y, len);
+        B->y = FX_Mul(B->y, G);
+        B->z = FX_Mul(E->z, len);
+        B->z = FX_Mul(B->z, F);
+        C->x = FX_Mul(E->x, Abs(C->x));
+        C->x = FX_Mul(C->x, F);
+        C->y = FX_Mul(E->y, Abs(C->y));
+        C->y = FX_Mul(C->y, G);
+        C->z = FX_Mul(E->z, Abs(C->z));
+        C->z = FX_Mul(C->z, F);
         len  = VEC_Mag(D);
-        t    = (fx32) (((fx64) E->x * len + 0x800LL) >> 12);
-        D->x = (fx32) (((fx64) t * F + 0x800LL) >> 12);
-        t    = (fx32) (((fx64) E->z * len + 0x800LL) >> 12);
-        D->z = (fx32) (((fx64) t * F + 0x800LL) >> 12);
+        D->x = FX_Mul(E->x, len);
+        D->x = FX_Mul(D->x, F);
+        D->z = FX_Mul(E->z, len);
+        D->z = FX_Mul(D->z, F);
         return;
     }
     VecFx32 e = *E;

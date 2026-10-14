@@ -175,6 +175,11 @@ struct BattlePlayer : public SceneBase {
         }
         return active;
     }
+
+    // Index of the allied player (own side = this player or its partner).
+    u8 Partner() {
+        return mUnk_f2;
+    }
 };
 
 // 0x14 byte entry of the unit table at BattlePlayerList+0x7c.
@@ -251,6 +256,10 @@ struct BattlePlayerList : public SceneBase {
     // Index of the player whose units are being commanded (compared with BattleUnit::mUnk_0f).
     u8 CurrentPlayer() {
         return mUnk_2a9;
+    }
+
+    u8 Unk294() {
+        return mUnk_294;
     }
     BattleUnit *Units() {
         return mUnits;

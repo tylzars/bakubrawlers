@@ -461,7 +461,11 @@ void CharacterModel::func_02053ea0(u32 a, u32 b) {
     mUnk_77 = 0;
 }
 
-// non-matching: 0x90 vs 0x98, the original keeps this in r4 and does not hoist the branch.
+// non-matching: 0x90 vs 0x98 (same shape as StoryCharacterModel::func_02054d08). Two differences, likely one cause:
+// our mParts[0] load is hoisted above the `bne` (already before scheduling, -proc generic), where the original
+// loads it in each arm (into r2 in the restart arm); and the original reads mUnk_5d through a copy of the anim
+// pointer (`mov r2, r0; ldrb r6, [r2, #0x5d]`). The extra value also moves this to r4 (loop r5, channel r6, frame
+// r7), as an extra temporary does in a `switch ((u8) flag)` test function.
 void CharacterModel::func_02053eec(u32 flag) {
     if (mParts[0] == NULL) {
         return;

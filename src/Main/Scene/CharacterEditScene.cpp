@@ -2346,8 +2346,6 @@ void CharacterEditScene::func_02063c64() {
     }
 }
 
-// non-matching: 10 words, register allocation only (the window pointer lands in lr and the stored value in ip, the
-// original has them the other way round).
 void CharacterEditScene::func_02063d10() {
     WindowItem *items = mWindows[0]->mCursor->mItems;
     items[0].mSlideOut = 2;
@@ -2357,11 +2355,7 @@ void CharacterEditScene::func_02063d10() {
         w->mCellPos[id].x = 0x8c;
         w->mCellPos[id].y = 0x1a;
     }
-    u8 prev = mUnk_155[mUnk_154 - 1];
-    SelectWindow *w = mWindows[0];
-    w->mUnk_068[(u8) items[0].mId] = 1;
-    w->mUnk_0d8 = 0x87;
-    w->mUnk_0da = prev * 0x1c + 0x1a;
+    mWindows[0]->SlideCellTo(items[0].mId, 0x87, mUnk_155[mUnk_154 - 1] * 0x1c + 0x1a);
     mWindows[0]->mCells[(u8) items[0].mId]->SetAnimation(3);
 }
 
@@ -2373,10 +2367,7 @@ void CharacterEditScene::func_02063dac() {
         return;
     }
     items[sel].mSlideOut = 1;
-    SelectWindow *w = mWindows[0];
-    w->mUnk_068[(u8) items[sel].mId] = 1;
-    w->mUnk_0d8 = 0x87;
-    w->mUnk_0da = 0x1a;
+    mWindows[0]->SlideCellTo(items[sel].mId, 0x87, 0x1a);
     mWindows[0]->mCells[(u8) items[sel].mId]->SetAnimation(3);
 }
 

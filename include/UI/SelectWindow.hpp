@@ -145,6 +145,12 @@ public:
     BOOL func_0205bdf4();
     void func_0205c2e0();
 
+    // Starts sliding cell `index` towards (x, y).
+    void SlideCellTo(u8 index, s16 x, s16 y) {
+        mUnk_068[index] = 1;
+        mUnk_0d8        = x;
+        mUnk_0da        = y;
+    }
     Vec2s GetCellPos(int index) {
         return mCellPos[index];
     }

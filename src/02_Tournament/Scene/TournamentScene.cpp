@@ -170,8 +170,6 @@ void TournamentScene::Cleanup() {
 }
 
 
-// non-matching: 16 words in case 41. The original keeps id in r7 and pos in r9; this gives the swap (every
-// declaration order, loop form and id type tried).
 void TournamentScene::Update() {
     switch (mUnk_b0) {
         case 0:
@@ -707,7 +705,7 @@ void TournamentScene::Update() {
                 data_020d433c.mUnk_9a   = 0x11;
                 data_020d433c.mUnk_9a_0 = data_020d43f0[0].mUnk_28_6;
                 if (data_020d433c.mUnk_8a_0 != 0) {
-                    int slot; int idx; u8 i; s8 pos; u8 id = data_020d43f0[0].mUnk_1a_8;
+                    int idx; u8 i; u32 id = (u8) data_020d43f0[0].mUnk_1a_8; int slot; s8 pos;
                     slot = func_0202317c(data_020d43f0, 0, 0x25, id);
                     func_020231c0(data_020d43f0, slot, 0x29e);
                     idx = func_0202317c(data_020d43f0, 0, 0x24, id);

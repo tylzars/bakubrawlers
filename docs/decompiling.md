@@ -46,6 +46,12 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   tables come before most of its includes; the other two were loading the wrong file names (probes mask string
   addresses, so a wrong literal can look like a match).
 
+- **Game.cpp can't link because of `main`.** Every function in Game.cpp matches and its data layout is solved (include
+  order plus where MicManager and SceneRunner are defined), but `main` (0x02000c04) belongs to it too: the node it
+  registers lies in Game's `.bss`, so the original linker placed that one function right after the start-up code. dsd allows one `.text` range per unit, and a separate
+  unit for `main` takes the node out of Game's `.bss`. Linking needs either `main` in its own code section in Game.o
+  or linker-script support for placing one function.
+
 - **Two literal-pool entries for one address.** `func_02023504` (FileSystem.cpp) loads 0x020d53e4 from two
   different pool words, so two relocations (different symbols, or symbol plus offset) resolve to the same address
   in the original. The source models it with a second extern, `data_020d53e4_h`; the real layout of the loader's

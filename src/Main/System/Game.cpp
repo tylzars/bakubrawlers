@@ -1,31 +1,22 @@
-#include "Graphics/Camera.hpp"
-#include "Graphics/SpriteManager.hpp"
-#include "Scene/SceneManager.hpp"
 #include "System/FrameClock.hpp"
-#include "System/FrameTask.hpp"
-#include "System/FrameUpdate.hpp"
+#include "Text/TextManager.hpp"
+#include "Graphics/Camera.hpp"
 #include "System/InputManager.hpp"
+#include "Unknown/UnkStruct_020c17a8.hpp"
 #include "System/SoundManager.hpp"
+#include "Graphics/SpriteManager.hpp"
 #include "System/TouchManager.hpp"
 #include "System/WirelessManager.hpp"
-#include "Text/TextManager.hpp"
-#include "Unknown/UnkStruct_020c17a8.hpp"
+#include "System/FrameUpdate.hpp"
+#include "Scene/SceneBase.hpp"
 
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include <nitro/gx.h>
 #include <nitro/os.h>
 
-class SceneRunner : public SceneBase {
-public:
-    SceneRunner();
-    virtual ~SceneRunner() {}
-    virtual void Update();
-    static SceneRunner &Get() {
-        static SceneRunner instance;
-        return instance;
-    }
-};
+// The include order and the placement of these two classes fix the order of the singletons' static data (see
+// "Data layout within a section" in docs/decompiling.md).
 
 class MicManager {
 public:
@@ -43,6 +34,21 @@ public:
     void func_0202d794();
     void func_0202d94c();
 };
+
+#include "System/FrameTask.hpp"
+
+class SceneRunner : public SceneBase {
+public:
+    SceneRunner();
+    virtual ~SceneRunner() {}
+    virtual void Update();
+    static SceneRunner &Get() {
+        static SceneRunner instance;
+        return instance;
+    }
+};
+
+#include "Scene/SceneManager.hpp"
 
 extern "C" {
 void OS_Init(void);
@@ -86,7 +92,6 @@ void func_02001eec(vu16 *reg, int value);
 void UpdateFrame();
 void func_020254bc();
 void func_020255f8(void (*callback)());
-extern u8 data_020c427e;
 void SetFrameInterval(u8 frames);
 
 
@@ -321,9 +326,12 @@ void UnkStruct_020c1884::func_02021700() {
     }
 }
 
+UnkStruct_020c1884::~UnkStruct_020c1884() {}
+
 extern "C" void func_01ff9284(void *buffer);
 extern void *data_020baf00;
 
+// Placed by the linker right after the start-up code (0x02000c04), apart from the rest of this file.
 void main() {
     u8 buffer[0x304];
     u8 state[0x188];

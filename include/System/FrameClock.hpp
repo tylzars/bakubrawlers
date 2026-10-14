@@ -22,7 +22,7 @@ public:
     /* 16 */ PAD(0x16, 0x18);
     /* 18 */
 
-    ~UnkStruct_020c1884() {}
+    ~UnkStruct_020c1884(); // out of line in Game.cpp (0x020219c0)
 
     static UnkStruct_020c1884 &Get() {
         static UnkStruct_020c1884 instance;

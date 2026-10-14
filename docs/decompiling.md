@@ -217,6 +217,11 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **An inline's wider parameter can turn a local into a temporary.** Passing MapScene::ShowText's `u16 cols` to
+  `TextManager::BufferSize(u32, u32)` created a conversion temporary that merged with `cols`, so it took the
+  temporaries' register whatever the declaration order; with `u16` parameters it is a named local again.
+- **`p[c]` vs `p += c; *p`:** indexing in place loads the other operand first (NameEntryScene::CheckSpecialName).
+
 - **A pointer local hoists an address early.** Through a pointer local, a flag array's address is hoisted (so placed
   in the pool and coloured) before a table read only in the loop condition; used directly in the expression it is
   hoisted after it. `(u8 *) g[0].member` gets the direct order and keeps aliasing with `g`, which an extern alias for

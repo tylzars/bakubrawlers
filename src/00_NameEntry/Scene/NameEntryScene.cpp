@@ -698,8 +698,6 @@ void NameEntryScene::ClearTextBuffer() {
     }
 }
 
-// non-matching: 17 words in the inner loop. Original: row ptr r6, name char loaded before the table char, guard value in r2;
-// ours has row in r5 and the guard in r1 and loads the table char first.
 void NameEntryScene::CheckSpecialName() {
     BOOL match;
     mUnk_74 = 0;
@@ -754,8 +752,7 @@ void NameEntryScene::CheckSpecialName() {
             MessageFile *table = mCharTable;
             u16 tab = row[k] >= 0x60 ? 1 : 0;
             const u16 *chars = (const u16 *) table->GetText(tab);
-            chars += c;
-            if (mName[k] != *chars) {
+            if (mName[k] != chars[c]) {
                 match = FALSE;
                 break;
             }

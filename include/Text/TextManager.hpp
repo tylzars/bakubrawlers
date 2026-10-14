@@ -105,7 +105,7 @@ public:
         return instance;
     }
 
-    u32 BufferSize(u32 width, u32 height) {
+    u32 BufferSize(u16 width, u16 height) {
         return width * height * 0x20;
     }
     u32 GlyphCount(u32 count) {

@@ -919,15 +919,14 @@ void MapScene::ShowNumbers() {
     TextManager::Get().SetColor(1, 0, 0xf);
 }
 
-// non-matching: 21 words, register assignment only (original: cols r4, file r5, buffer r6, size r7).
 void MapScene::ShowText(u16 index, s32 unk2) {
-    void *buffer;
     u16 cols;
     MessageFile *file;
+    void *buffer;
     u16 size;
     cols = (256 - unk2 * 2) / 8;
     if (mGlyphBuffer != NULL) {
-        mGlyphCount = TextManager::Get().GlyphCount(((cols * 8 + 0x3f) / 0x40) * 2);
+        mGlyphCount = TextManager::Get().GlyphCount(cols, 0x10, 0x44);
         TextManager::Get().Init(mGlyphBuffer, 1, 0, cols, 0x10, 0x44);
     }
     file   = (MessageFile *) func_02023504("/font/mes_town_info.mes", 0, 0, 0, 0, 0);

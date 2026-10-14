@@ -54,8 +54,8 @@ typedef struct SpanV { short *p; int n; } SpanV;
 typedef struct SrcVt { int v[6]; void (*get18)(void *, int, int, SpanV *); void (*put1c)(void *, int, SpanV *);
                        void (*put20)(void *, int, SpanV *); int (*get24)(void *, int); } SrcVt;
 typedef struct SrcObj { SrcVt *vt; } SrcObj;
-extern unsigned func_0204a05c(PlObj *, int, unsigned short *);
-extern void func_0204a244(PlObj *, short *, int);
+extern unsigned short func_0204a05c(PlObj *, unsigned, unsigned short *);
+extern unsigned func_0204a244(PlObj *, short *, unsigned);
 extern void func_020515dc(short *, int, short *, int);
 extern void func_0204604c(SpanV *, int, SpanV *, SpanV *);
 extern void func_020482e0(void);
@@ -318,16 +318,19 @@ void func_02048808(Ch *c, int m)
 
 void func_02048940(Ch *c)
 {
-    unsigned short so, s2, s0;
-    SpanV sp[2];
-    SpanV tm[2];
-    int r4;
-    short *r5;
-    int r6;
-    int r7, r8;
-    unsigned short n2;
-    int zero;
+    unsigned short so;
     unsigned short k;
+    short *r5;
+    SpanV sp[2];
+    int r4;
+    unsigned t7;
+    unsigned short s2;
+    unsigned short s0;
+    int r7;
+    int r6;
+    int r8;
+    int zero;
+    SpanV tm[2];
     if (c->ncnt == 1) {
         if (c->s2c >= 6) {
             sp[0].p = 0;
@@ -340,11 +343,10 @@ void func_02048940(Ch *c)
                 r5 = sp[0].p;
                 r4 = sp[0].n;
                 if (c->b5 != 0) {
-                    n2 = c->s32;
-                    if (r6 >= n2 * 2) {
-                        r8 = n2;
-                        if (r4 >= n2 * 2) {
-                            r7 = (unsigned short)(n2 * 2);
+                    if (r6 >= c->s32 * 2) {
+                        r8 = c->s32;
+                        if (r4 >= c->s32 * 2) {
+                            r7 = (unsigned short)(c->s32 * 2);
                         } else {
                             func_02012464(data_02218450.tmp, r5, r4);
                             ((SrcObj *)c->src[0])->vt->put20(c->src[0], 0, &sp[0]);
@@ -380,9 +382,9 @@ void func_02048940(Ch *c)
         }
         if (c->nch == 2 && c->b4 >= 1) {
             r6 = func_0204a05c(c->pl[0], r4, &s2);
-            r7 = func_0204a05c(c->pl[1], r4, &s0);
-            if ((unsigned)r6 > (unsigned)r7) {
-                r6 = r7;
+            t7 = func_0204a05c(c->pl[1], r4, &s0);
+            if ((unsigned)r6 > t7) {
+                r6 = t7;
                 so = s0;
             } else {
                 so = s2;

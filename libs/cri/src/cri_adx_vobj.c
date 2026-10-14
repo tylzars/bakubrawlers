@@ -121,11 +121,10 @@ extern int func_0204fbc8(Obj *);
 
 typedef struct Par { int a, b, c; } Par;
 
-/* non-matching: same code, r4/r5/r6 allocation differs (original: i=r4, off=r5, entry pointer=r6) */
 int func_0204f3c8(Obj *o, Cfg *cfg, char *buf, int size)
 {
+    unsigned long i;
     int off;
-    int i;
     Par par;
     int n;
     off = 0;
@@ -151,7 +150,7 @@ int func_0204f3c8(Obj *o, Cfg *cfg, char *buf, int size)
         o->i64 = 0;
         o->cnt = 1;
     }
-    for (i = 0; i < o->cnt; i++) {
+    for (i = 0; (int)i < o->cnt; i++) {
         if (cfg->i1c == 0) {
             VObj *v = func_02050e60(buf + off, 0xc);
             o->slot[i] = v;

@@ -229,7 +229,6 @@ void func_0204ef90(Pool *p, Obj *o)
     }
 }
 
-/* non-matching: 0x210 vs 0x20c bytes; the original keeps 0xe0 in r0 as a non-constant (add r0, r3, #0xe0) and loads 0x1460/0x28c0 from the pool */
 int func_0204efd8(int unused, Cfg *c)
 {
     int base = 0;
@@ -239,28 +238,16 @@ int func_0204efd8(int unused, Cfg *c)
     if (has != 0) {
         base += 0x10;
         if (c->i24 != 0) {
-            int t = (c->w8 / 1000) * 2500;
-            t = (c->w0 + 1) * (t / 16);
-            t = ((t + 0x800) / 0x800) * 0x800;
-            base += c->wc * (t + 0x24 + 0x28c0u) + 0x40;
+            base += c->wc * (((((c->w8 / 1000) * 2500) / 16 * (c->w0 + 1) + 0x800) / 0x800) * 0x800 + 0x24 + 0x28c0u) + 0x40;
         } else {
-            int t = (c->w8 / 1000) * (c->w4 * 2500);
-            t = (c->w0 + 1) * (t / 16);
-            t = ((t + 0x800) / 0x800) * 0x800;
-            base += c->wc * (t + 0x24 + ((c->w4 * 0x1460) << 1)) + 0x40;
+            base += c->wc * (((((c->w8 / 1000) * (c->w4 * 2500)) / 16 * (c->w0 + 1) + 0x800) / 0x800) * 0x800 + 0x24 + ((c->w4 * 0x1460) << 1)) + 0x40;
         }
     } else {
         base += 0xc;
         if (c->i24 != 0) {
-            int t = (c->w8 / 1000) * 2500;
-            t = (c->w0 + 1) * (t / 16);
-            t = ((t + 0x800) / 0x800) * 0x800;
-            base += c->w10 * (t + 0x24) + 0x2900;
+            base += c->w10 * (((((c->w8 / 1000) * 2500) / 16 * (c->w0 + 1) + 0x800) / 0x800) * 0x800 + 0x24) + 0x2900;
         } else {
-            int t = (c->w8 / 1000) * (c->w4 * 2500);
-            t = (c->w0 + 1) * (t / 16);
-            t = ((t + 0x800) / 0x800) * 0x800;
-            base += c->w10 * (t + 0x24) + ((c->w4 * 0x1460) << 1) + 0x40;
+            base += c->w10 * (((((c->w8 / 1000) * (c->w4 * 2500)) / 16 * (c->w0 + 1) + 0x800) / 0x800) * 0x800 + 0x24) + ((c->w4 * 0x1460) << 1) + 0x40;
         }
     }
     if (c->i20 != 0) base += 0x1800;

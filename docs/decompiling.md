@@ -50,11 +50,22 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   - MyroomGiftScene: `.data` is defined and exact; `.rodata` order needs table shapes (2D u8 arrays, a94/aa0/aac
     merged into one [3][12] table), which leaves func_ov008_0221de34 3 words off on literal-pool order.
 
-- **Game.cpp can't link because of `main`.** Every function in Game.cpp matches and its data layout is solved (include
-  order plus where MicManager and SceneRunner are defined), but `main` (0x02000c04) belongs to it too: the node it
-  registers lies in Game's `.bss`, so the original linker placed that one function right after the start-up code. dsd allows one `.text` range per unit, and a separate
-  unit for `main` takes the node out of Game's `.bss`. Linking needs either `main` in its own code section in Game.o
-  or linker-script support for placing one function.
+- **Game.cpp doesn't link yet (`main`, then its `.bss`).** Every function matches. Found while trying (2026-10-14):
+  - `main` (0x02000c04) is Game's but sits right after the start-up code.
+    Placing it works: a stub unit for 0x02000c04-0x02000cb4 whose LCF line is rewritten to
+    `OBJECT(main, Game.o)` links and puts `main` there.
+  - The singleton destructors must be `inline` in Game.cpp (done): they then come out as weak copies after
+    `func_02020328` in its first-use order, which is the original function order at 0x02020a08-0x02020a44.
+  - Game's copies of the singleton guards (0x020c17a8-0x020c17e0) and instances (0x020c1870-0x020d42e8) are the
+    ones the original kept, so Game's `.bss` range must cover them. Then two names other files use for fields
+    inside instances need linker-script definitions: `data_020c1a4c` (TextManager instance + 0x38) and
+    `data_020c3938` (WirelessManager instance + 0x908). Both were tested and link.
+  - SceneRunner is 0x14 bytes (done), and `UnkStruct_020c17a8` is at most 4 bytes: its instance at 0x020c17a8 is
+    followed by a guard at 0x020c17ac. TitleScene's solved layout only works with it at 16 bytes or more, so
+    TitleScene's layout has to be solved again first (its model doesn't reproduce; a brute force over singleton
+    include order and table position found nothing).
+  - The 13 guards still come out in another tie order; `layout_search.py --weak` (places a unit's own guards and
+    instances) finds no order with the current participants.
 
 - **Two literal-pool entries for one address.** `func_02023504` (FileSystem.cpp) loads 0x020d53e4 from two
   different pool words, so two relocations (different symbols, or symbol plus offset) resolve to the same address

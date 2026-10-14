@@ -48,7 +48,7 @@ void SoundManager::func_020244cc() {
     mUnk_ae = 0x7f;
 }
 
-void func_02024598() {
+void SoundManager::func_02024598() {
     func_02036780();
 }
 

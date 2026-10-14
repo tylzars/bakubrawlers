@@ -111,6 +111,8 @@ def main():
     ap.add_argument("src")
     ap.add_argument("--max-statics", type=int, default=8, help="most statics to permute (8! orders)")
     ap.add_argument("--show", type=int, default=5)
+    ap.add_argument("--weak", action="store_true",
+                    help="also place the singleton guards and instances that lie in the unit's own ranges")
     ap.add_argument("--climb", type=int, default=0, metavar="RESTARTS",
                     help="hill-climb with this many restarts instead of permuting (for many statics)")
     a = ap.parse_args()
@@ -198,7 +200,20 @@ def main():
     for lit, (tab, off) in ref_off.items():
         if tab in orig and lit not in orig:
             orig[lit] = struct.unpack_from("<I", blob, orig[tab] + off - mbase)[0]
-    placed = [n for n in actual if n in orig and not n.startswith(("_ZGVZ", "_ZZ"))]
+    weak_owned = set()
+    if a.weak:
+        # Singleton guards and instances this unit's copy provides in the original link: their symbols.txt
+        # addresses lie inside the unit's own ranges (set those by hand first).
+        _, _, unit = find_unit(src)
+        cfg = ROOT / "config/usa/arm9" / ("symbols.txt" if module == "main" else f"overlays/{module}/symbols.txt")
+        for ln in cfg.read_text().splitlines():
+            m = re.match(r"(_ZGVZ\S+|_ZZ\S+) kind:(bss|data)\S* addr:(0x[0-9a-f]+)", ln)
+            if m and m.group(1) in size:
+                addr = int(m.group(3), 16)
+                if any(lo <= addr < hi for lo, hi in unit["ranges"].values()):
+                    orig[m.group(1)] = addr
+                    weak_owned.add(m.group(1))
+    placed = [n for n in actual if n in orig and (n in weak_owned or not n.startswith(("_ZGVZ", "_ZZ")))]
     kind = {o.name: objs_secname[o.name] for o in objs}
 
     def matches(out):

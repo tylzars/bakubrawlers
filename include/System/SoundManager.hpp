@@ -34,6 +34,7 @@ public:
     }
 
     void func_020244cc();
+    void func_02024598();
     void func_020245a4();
     void func_020245c4(u32 unk1);
     void func_020245d4(u32 unk1);

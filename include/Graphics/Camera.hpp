@@ -86,6 +86,7 @@ public:
     void func_020264e0();
     void func_0202655c();
     void func_020267f0();
+    void func_02026848();
     void func_02026890();
 
     static CameraManager &Get() {

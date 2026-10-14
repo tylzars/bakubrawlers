@@ -348,7 +348,7 @@ void CameraManager::func_020267f0() {
     *(vu32 *) 0x4000540 = 3;
 }
 
-void func_02026848() {
+void CameraManager::func_02026848() {
     MI_Copy36B(&data_0220e848, &data_02211430);
     data_02211374.mFlags &= ~0xa4;
     func_020322c0(&data_02090958);

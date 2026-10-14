@@ -39,6 +39,11 @@ public:
 
 class SceneRunner : public SceneBase {
 public:
+    /* 0c */ s32 mOverlay;
+    /* 10 */ s16 mNextScene;
+    /* 12 */ u8 mOverlayState;
+    /* 13 */
+
     SceneRunner();
     virtual ~SceneRunner() {}
     virtual void Update();
@@ -68,6 +73,13 @@ void GX_VBlankIntr(BOOL enable);
 void GX_HBlankIntr(BOOL enable);
 int func_0200d354(void *a, void *b);
 u32 func_0200af3c(u32 a, u32 b);
+u64 OS_GetTick(void);
+u64 _ll_udiv(u64 a, u64 b);
+int func_0200f79c(void);
+void func_0200f7ac(void);
+int func_0200d1e0(u32 a, u32 b);
+void func_0200d3e0(u32 a, u32 b, u32 c);
+}
 u32 func_02021c60(u32 a);
 void func_020234c8(void);
 void func_020219dc(void);
@@ -77,18 +89,9 @@ void func_02025e18(void);
 void func_02023884(void);
 void func_02025d74(void);
 void func_0202555c(void);
-u64 OS_GetTick(void);
-u64 _ll_udiv(u64 a, u64 b);
-int func_0200f79c(void);
-void func_0200f7ac(void);
-int func_0200d1e0(u32 a, u32 b);
-void func_0200d3e0(u32 a, u32 b, u32 c);
-}
 extern u32 data_020a4f24;
 extern const char *data_020a544c[];
-void func_02024598(SoundManager *unused);
-void func_02026848(CameraManager *unused);
-void func_02001eec(vu16 *reg, int value);
+extern "C" void G2x_SetMasterBrightness_(vu16 *reg, int value);
 void UpdateFrame();
 void func_020254bc();
 void func_020255f8(void (*callback)());
@@ -98,6 +101,16 @@ void SetFrameInterval(u8 frames);
 const char *UnkStruct_020c1884::func_0202030c() {
     return data_020a544c[data_020d433c.mUnk_79];
 }
+
+// The singletons' destructors are inline here only: like the inline ones from the headers, they come out as weak
+// copies after func_02020328 in the order it first uses each singleton, which is the original order.
+inline FrameTask::~FrameTask() {}
+inline InputManager::~InputManager() {}
+inline TouchManager::~TouchManager() {}
+inline TextManager::~TextManager() {}
+inline SoundManager::~SoundManager() {}
+inline CameraManager::~CameraManager() {}
+inline UnkStruct_020c17a8::~UnkStruct_020c17a8() {}
 
 void UnkStruct_020c1884::func_02020328() {
     u32 heap;
@@ -112,8 +125,8 @@ void UnkStruct_020c1884::func_02020328() {
     OS_InitAlarm();
     func_0200db0c();
     reg_GX_POWCNT = (u16) ((reg_GX_POWCNT & ~0x20e) | 0xe | 0x200);
-    func_02001eec((vu16 *) 0x400006c, 0x10);
-    func_02001eec((vu16 *) 0x400106c, 0x10);
+    G2x_SetMasterBrightness_((vu16 *) 0x400006c, 0x10);
+    G2x_SetMasterBrightness_((vu16 *) 0x400106c, 0x10);
     GX_DispOn();
     reg_GXS_DB_DISPCNT |= 0x10000;
     func_0202555c();
@@ -170,15 +183,6 @@ void UnkStruct_020c1884::func_02020328() {
     mUnk_14 = 0;
 }
 
-// The singletons' destructors are defined here, in the order the original emits them.
-FrameTask::~FrameTask() {}
-InputManager::~InputManager() {}
-TouchManager::~TouchManager() {}
-TextManager::~TextManager() {}
-SoundManager::~SoundManager() {}
-CameraManager::~CameraManager() {}
-UnkStruct_020c17a8::~UnkStruct_020c17a8() {}
-
 static inline u8 IsAtLeast3(const u8 *value) {
     return (*value >= 3) & 1;
 }
@@ -202,13 +206,13 @@ void UnkStruct_020c1884::func_02020a48() {
         mUnk_0a = 0;
         if (mUnk_0d > 1) {
             CameraManager::Get().func_0202655c();
-            func_02026848(&CameraManager::Get());
+            CameraManager::Get().func_02026848();
             CameraManager::Get().mUnk_01 = 0;
             do {
                 InputManager::Get().Update(mUnk_09);
                 TouchManager::Get().Update(mUnk_09);
                 FrameTask::Get().func_0203dc04();
-                func_02024598(&SoundManager::Get());
+                SoundManager::Get().func_02024598();
                 SceneManager::Get().Update();
                 mFrame++;
                 InputManager::Get();
@@ -220,10 +224,10 @@ void UnkStruct_020c1884::func_02020a48() {
         InputManager::Get().Update(mUnk_09);
         TouchManager::Get().Update(mUnk_09);
         FrameTask::Get().func_0203dc04();
-        func_02024598(&SoundManager::Get());
+        SoundManager::Get().func_02024598();
         CameraManager::Get().mUnk_01 = 1;
         CameraManager::Get().func_0202655c();
-        func_02026848(&CameraManager::Get());
+        CameraManager::Get().func_02026848();
         SceneManager::Get().Update();
         mFrame++;
         InputManager::Get();
@@ -236,15 +240,15 @@ void UnkStruct_020c1884::func_02020a48() {
                     FrameTask::Get().func_0203dc10();
                     WirelessManager::Get().func_0202f244();
                 }
-                func_02001eec((vu16 *) 0x400006c, -16);
-                func_02001eec((vu16 *) 0x400106c, -16);
+                G2x_SetMasterBrightness_((vu16 *) 0x400006c, -16);
+                G2x_SetMasterBrightness_((vu16 *) 0x400106c, -16);
                 OS_ResetSystem(1);
             } else {
                 if (UnkStruct_020c17a8::Get().mBusy != 0) {
                     mUnk_08 = 0;
                 } else {
-                    func_02001eec((vu16 *) 0x400006c, -16);
-                    func_02001eec((vu16 *) 0x400106c, -16);
+                    G2x_SetMasterBrightness_((vu16 *) 0x400006c, -16);
+                    G2x_SetMasterBrightness_((vu16 *) 0x400106c, -16);
                     OS_ResetSystem(1);
                 }
             }
@@ -283,7 +287,7 @@ void UnkStruct_020c1884::func_02020a48() {
                 func_02021700();
                 FrameTask::Get().func_0203dc10();
                 WirelessManager::Get().func_0202f244();
-                func_02024598(&SoundManager::Get());
+                SoundManager::Get().func_02024598();
             }
         }
     }

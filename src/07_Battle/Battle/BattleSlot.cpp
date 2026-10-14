@@ -54,7 +54,8 @@ extern const u8 data_ov007_02278d7d[];
 
 extern const u8 data_ov007_02278d7e[];
 
-// non-matching: this and the vtable temporary have swapped registers (r5/r4).
+// non-matching: 8 words. unk4 and the constant 12 of `unk4 * 12` have swapped registers (here ip/r5, original
+// r5/ip; 6 words at +0x10..+0x94), and the c table load goes to r0 instead of r1 (+0x180/+0x184).
 BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8 unk6, BattleParam *param, u8 unk8) {
     mMode = mode;
     mCharacter = unk4;
@@ -77,12 +78,14 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
     mParam = param;
     mHelper = 0;
     mData = data;
+    BattleData *d = mData;
     mUnk_24 = data_ov007_02286570[mode];
     int row = unk4 * 12;
     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[index];
     u8 base = player->mUnk_f7;
     u8 *rowp = data_ov007_02278d74 + row;
-    u32 a = (u8) (rowp[mode] + base);
+    u32 a = rowp[mode];
+    a = (u8) (a + base);
     u32 b = (u8) (data_ov007_02278d7c[row] + base);
     if (data_020d433c.mUnk_7a) {
         if (data_020d433c.mUnk_98) {
@@ -107,7 +110,9 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
     mUnk_28 = data_ov007_02278c34 + b * 2;
     if (mMode == 0 || mMode == 3) {
         u8 *q = mMode == 0 ? data_ov007_02278d7a : data_ov007_02278d7b;
-        u32 c = (u8) (q[row] + base);
+        u32 c = q[row];
+        c += base;
+        c = (u8) c;
         if (c >= 8) {
             c = 7;
         }
@@ -154,7 +159,7 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
             break;
     }
     u8 side = mRole - 2;
-    mHelper = new BattleSideHelper(side, unk4, data->mEntries);
+    mHelper = new BattleSideHelper(side, unk4, d->mEntries);
 }
 
 BattleSlot::~BattleSlot() {

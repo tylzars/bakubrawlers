@@ -26,9 +26,6 @@ void GimmickUnk_02274830::Finish() {
     mState = 3;
 }
 
-// non-matching: 20 words after VEC_Normalize: the order of the y, z, x stores now matches (x and z read into locals
-// first), but the original puts the x product in r6 and the loaded z in r2 (here r4 and r6), and loads the
-// data_020d433c address into r1 (here r0).
 void GimmickUnk_02274830::Update() {
     switch (mState) {
     case 0:
@@ -72,16 +69,12 @@ void GimmickUnk_02274830::Update() {
             func_ov007_0226a380(p, rec, (s16)-d);
         }
         SoundManager::Get().func_020246f8(0x60);
-        BattleTarget *t = data_020d433c.mBattlePlayers->mUnk_298;
-        v.x = t->mUnk_64.x;
-        v.y = t->mUnk_64.y;
-        v.z = t->mUnk_64.z;
+        v = data_020d433c.mBattlePlayers->mUnk_298->mUnk_64;
         v.y = 0;
         VEC_Normalize(&v, &v);
-        fx32 x = v.x;
-        fx32 z = v.z;
-        v.x = FX_Mul(x, 0x2000);
-        v.z = FX_Mul(z, 0x2000);
+        v.x = FX_Mul(v.x, 0x2000);
+        v.y = FX_Mul(v.y, 0x2000);
+        v.z = FX_Mul(v.z, 0x2000);
         v.y = 0x2000;
         func_ov007_0225c960(data_020d433c.mBattlePlayers->mUnk_298, &v, 0);
         CameraManager::Get();

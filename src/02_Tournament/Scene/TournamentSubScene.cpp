@@ -254,7 +254,6 @@ void TournamentSubScene::Draw() {
     func_ov002_02220184();
 }
 
-// non-matching: size +4; i is reloaded from its stack slot after y is computed, the original computes i * 5 from the same load (no variant of declaration order/types found)
 
 void TournamentSubScene::func_ov002_02220184() {
     u8 i = 0;

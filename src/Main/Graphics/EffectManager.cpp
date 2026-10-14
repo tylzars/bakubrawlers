@@ -357,7 +357,6 @@ EffectManager::~EffectManager() {
     }
 }
 
-// non-matching: 12 words, register naming in the model-loading loop.
 void func_0202ba64(EffectManager *manager, u32 slot, const char *name) {
     char path[0x80];
     ChangeDir("/effect");
@@ -379,14 +378,14 @@ void func_0202ba64(EffectManager *manager, u32 slot, const char *name) {
     manager->mModels[slot]   = new NitroModel *[manager->mFiles[slot]->mNumModels];
     MI_CpuClear32(manager->mModels[slot], manager->mFiles[slot]->mNumModels * 4);
     char *modelName = manager->mFiles[slot]->mNames;
-    u8 j            = 0;
+    i = 0;
     do {
         sprintf(path, "%s.nsbmd", modelName);
-        manager->mModels[slot][j] = new NitroModel(path, manager->mTextures[slot]);
+        manager->mModels[slot][i] = new NitroModel(path, manager->mTextures[slot]);
         while (*modelName++ != 0) {
         }
-        j++;
-    } while (j < manager->mFiles[slot]->mNumModels);
+        i++;
+    } while (i < manager->mFiles[slot]->mNumModels);
     manager->mTextures[slot]->func_02028344();
     ChangeDir("/");
 }

@@ -459,11 +459,11 @@ void func_ov007_0226a48c(BattlePlayer *player) {
 // non-matching: 0x114 vs 0x118 bytes, register allocation (original: list in lr, n in ip, owner in r3, i in r5, count in r2) and the random number state is stored as two words instead of with stm.
 u8 func_ov007_0226a5e8(BattlePlayer *player) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    u8 n                   = data_020d433c.mUnk_99;
-    BattlePlayer *owner    = list->mPlayers[player->mUnk_f0];
     u8 i                   = 0;
-    u8 count               = 0;
+    BattlePlayer *owner    = list->mPlayers[player->mUnk_f0];
     u8 first               = 0xff;
+    u8 count               = 0;
+    u8 n                   = data_020d433c.mUnk_99;
     do {
         if (owner->mSlots54[i].mFlag == 0) {
             count++;

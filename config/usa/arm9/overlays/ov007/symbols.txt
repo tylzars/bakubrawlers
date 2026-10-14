@@ -1086,6 +1086,7 @@ data_ov007_02279a1c kind:data(any) addr:0x02279a1c local
 data_ov007_02279a38 kind:data(any) addr:0x02279a38 local
 data_ov007_02279a70 kind:data(any) addr:0x02279a70 local
 data_ov007_02279aa8 kind:data(any) addr:0x02279aa8
+data_ov007_02279aac kind:data(any) addr:0x02279aac local
 data_ov007_02279ab0 kind:data(any) addr:0x02279ab0
 data_ov007_02279ab8 kind:data(any) addr:0x02279ab8
 data_ov007_02279ab9 kind:data(any) addr:0x02279ab9
@@ -2119,7 +2120,7 @@ data_ov007_02287be4 kind:data(any) addr:0x02287be4
 data_ov007_02287bfc kind:data(any) addr:0x02287bfc
 data_ov007_02287c14 kind:data(any) addr:0x02287c14
 data_ov007_02287c44 kind:data(any) addr:0x02287c44
-data_ov007_02287c74 kind:data(any) addr:0x02287c74
+_ZZ12CommandItemsvE6sItems kind:data(any) addr:0x02287c74 weak
 data_ov007_02287d8c kind:data(any) addr:0x02287d8c
 data_ov007_02287da0 kind:data(any) addr:0x02287da0
 data_ov007_02287db8 kind:data(any) addr:0x02287db8

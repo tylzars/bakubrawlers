@@ -5,9 +5,6 @@
 #include "Battle/GimmickTypes.hpp"
 #include "Unknown/UnkStruct_02087898.hpp"
 #include "Battle/BattleCpu.hpp"
-#include "System/WirelessManager.hpp"
-#include "System/TouchManager.hpp"
-#include "System/FrameClock.hpp"
 #include "Battle/BattleCommandPrompt.hpp"
 #include "Battle/BattleCommandList.hpp"
 #include "Battle/BattleCommandPage.hpp"
@@ -15,38 +12,98 @@
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
 #include "System/FrameUpdate.hpp"
-#include "System/InputManager.hpp"
-#include "System/SoundManager.hpp"
-#include "System/TouchManager.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 
-void func_ov007_02245888(BattleCommandMap *map);
-
-void func_ov007_0224587c(BattleCommandMap *map);
-
-extern WindowItemRecord data_ov007_02287c74[10];
-
 struct BattleCommandPoint {
     u8 mX;
     u8 mY;
 };
+struct BattleScrollBounds {
+    s16 mMin;
+    s16 mMax;
+};
+
+static const WindowItemRecord data_ov007_02279b0c[2] = {
+    {0, 0x5, 169, 170, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {1, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+};
+
+#include "System/SoundManager.hpp"
+static const BattleScrollBounds data_ov007_02279acc[8] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 40}, {0, 0}, {0, 10}, {0, 0}};
 
 static const BattleCommandPoint data_ov007_02279ab0[4] = {{0xc2, 0x86}, {0x1e, 0x86}, {0x1e, 0x22}, {0xc2, 0x22}};
 
+#include "System/FrameClock.hpp"
+#include "System/InputManager.hpp"
+inline WindowItemRecord *CommandItems() {
+    static WindowItemRecord sItems[10] = {
+        {0, 0x8000, 128, 96, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+        {1, 0x1, 222, 34, 32, 32, 1027, {-1, -1, -1, -1}, 0, 1},
+        {2, 0x1, 222, 66, 32, 32, 1027, {-1, -1, -1, -1}, 0, 1},
+        {3, 0x8, 222, 98, 32, 32, 1027, {-1, -1, -1, -1}, 0, 1},
+        {4, 0x1, 222, 34, 32, 32, 1027, {-1, -1, -1, -1}, 0, 1},
+        {5, 0x800, 222, 66, 32, 32, 1027, {-1, -1, -1, -1}, 0, 1},
+        {6, 0x8, 0, 0, 28, 28, 0, {-1, -1, -1, -1}, 0, 1},
+        {7, 0x8, 0, 0, 28, 28, 0, {-1, -1, -1, -1}, 0, 1},
+        {8, 0x8, 0, 0, 28, 28, 0, {-1, -1, -1, -1}, 0, 1},
+        {9, 0x8, 0, 0, 28, 28, 0, {-1, -1, -1, -1}, 0, 1},
+    };
+    return sItems;
+}
+
+#include "System/WirelessManager.hpp"
 static const u8 data_ov007_02279aa8[2]                 = {0x04, 0xde};
 
-extern const WindowItemRecord data_ov007_02279b0c[2];
-
-extern const WindowItemRecord data_ov007_02279b7c[3];
-
 static const BattleCommandPoint data_ov007_02279ab8[4] = {{6, 4}, {7, 4}, {7, 5}, {6, 5}};
+
+static const WindowCellRecord data_ov007_02279bd0[3] = {
+    {"battle_b_obj_00_nce.bin", 8, 0xa000, 0, 0, 1, {8, 11, 10, 0}},
+    {"battle_b_obj_00_nce.bin", 0, 0xa000, 0, 0, 1, {0, 3, 2, 0}},
+    {"battle_b_obj_00_nce.bin", 12, 0xa000, 0, 0, 1, {12, 15, 14, 0}},
+};
+
+static const WindowCellRecord data_ov007_02279c24[10] = {
+    {"battle_b_obj_00_nce.bin", 20, 0xa000, 0, 0, 1, {20, 20, 20, 0}},
+    {"battle_b_obj_00_nce.bin", 0, 0xa000, 0, 0, 1, {0, 3, 2, 0}},
+    {"battle_b_obj_00_nce.bin", 8, 0xa000, 0, 0, 1, {8, 11, 10, 0}},
+    {"battle_b_obj_00_nce.bin", 16, 0xa000, 0, 0, 1, {16, 19, 18, 0}},
+    {"battle_b_obj_00_nce.bin", 4, 0xa000, 0, 0, 1, {4, 7, 6, 0}},
+    {"battle_b_obj_00_nce.bin", 9, 0xa000, 0, 0, 1, {9, 9, 9, 0}},
+    {"battle_b_obj_00_nce.bin", 28, 0xa000, 0, 0, 1, {28, 36, 32, 0}},
+    {"battle_b_obj_00_nce.bin", 29, 0xa000, 0, 0, 1, {29, 37, 33, 0}},
+    {"battle_b_obj_00_nce.bin", 30, 0xa000, 0, 0, 1, {30, 38, 34, 0}},
+    {"battle_b_obj_00_nce.bin", 31, 0xa000, 0, 0, 1, {31, 39, 35, 0}},
+};
+
+static const WindowItemRecord data_ov007_02279b7c[3] = {
+    {0, 0x8, 32, 4, 32, 32, 0, {-1, -1, -1, -1}, 0, 1},
+    {1, 0x8, 64, 4, 32, 32, 0, {-1, -1, -1, -1}, 0, 1},
+    {2, 0x8, 96, 4, 32, 32, 0, {-1, -1, -1, -1}, 0, 1},
+};
+
+static const u16 data_ov007_02279ac0[6] = {0xa000, 0x8000, 0, 0, 0, 0};
+
+static const WindowCellRecord data_ov007_02279b44[2] = {
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0x1c800, 14, 0, 1, {0, 1, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x1c800, 14, 0, 1, {2, 3, 3, 0}},
+};
+
+static const BattleScrollBounds data_ov007_02279aec[8] = {{0, 0}, {0, 0}, {-20, 20}, {0, 0}, {-40, 40}, {-20, 20}, {-40, 40}, {0, 0}};
+
+#include "Graphics/SpriteManager.hpp"
+static const s16 data_ov007_02279aac[2] = {0x82, 0x9e};
+
+#include "System/TouchManager.hpp"
+
+void func_ov007_02245888(BattleCommandMap *map);
+
+void func_ov007_0224587c(BattleCommandMap *map);
 
 void func_ov007_0223a5a4(BattleCommand *command, u32 mode);
 
@@ -93,25 +150,6 @@ struct BattleCellInfo {
 
 BattleCellInfo *func_ov007_02262530(BattlePlayerList *list, u8 row, u8 col);
 
-extern const WindowCellRecord data_ov007_02279c24[];
-
-extern const WindowCellRecord data_ov007_02279b44[];
-
-extern const WindowCellRecord data_ov007_02279bd0[];
-
-extern u8 data_ov007_02279ac0[];
-
-struct BattleScrollBounds {
-    s16 mMin;
-    s16 mMax;
-};
-
-extern const BattleScrollBounds data_ov007_02279acc[];
-
-
-
-extern const BattleScrollBounds data_ov007_02279aec[];
-
 void func_ov007_022471c8(BattleCommandMap *map, u32 a);
 
 BattleCommand::BattleCommand(u32 unk)
@@ -150,49 +188,49 @@ BattleCommand::BattleCommand(u32 unk)
         if (mUnk_135) {
             f = (f + 2) % 4;
         }
-        data_ov007_02287c74[i + 6].mX = mUnk_139 + data_ov007_02279ab0[f].mX;
-        data_ov007_02287c74[i + 6].mY = data_ov007_02279ab0[f].mY;
+        CommandItems()[i + 6].mX = mUnk_139 + data_ov007_02279ab0[f].mX;
+        CommandItems()[i + 6].mY = data_ov007_02279ab0[f].mY;
         i++;
     } while (i < data_020d433c.mPlayerCount);
     if (data_020d433c.mBattlePlayers->mUnk_28a != data_020d433c.mBattlePlayers->mUnk_2a9) {
-        data_ov007_02287c74[1].mUnk_04 = 0x8000;
-        data_ov007_02287c74[4].mUnk_04 = 0x8000;
-        data_ov007_02287c74[2].mUnk_04 = 0x8000;
-        data_ov007_02287c74[5].mUnk_04 = 0x8000;
+        CommandItems()[1].mUnk_04 = 0x8000;
+        CommandItems()[4].mUnk_04 = 0x8000;
+        CommandItems()[2].mUnk_04 = 0x8000;
+        CommandItems()[5].mUnk_04 = 0x8000;
     } else {
         if (data_020d433c.mBattlePlayers->mUnk_292 == 1) {
-            data_ov007_02287c74[1].mY      = 0xc0;
-            data_ov007_02287c74[1].mUnk_04 = 0x8000;
-            data_ov007_02287c74[4].mY      = 0x22;
-            data_ov007_02287c74[4].mUnk_04 = 1;
+            CommandItems()[1].mY      = 0xc0;
+            CommandItems()[1].mUnk_04 = 0x8000;
+            CommandItems()[4].mY      = 0x22;
+            CommandItems()[4].mUnk_04 = 1;
         } else {
-            data_ov007_02287c74[1].mY      = 0x22;
-            data_ov007_02287c74[1].mUnk_04 = 1;
-            data_ov007_02287c74[4].mY      = 0xc0;
-            data_ov007_02287c74[4].mUnk_04 = 0x8000;
+            CommandItems()[1].mY      = 0x22;
+            CommandItems()[1].mUnk_04 = 1;
+            CommandItems()[4].mY      = 0xc0;
+            CommandItems()[4].mUnk_04 = 0x8000;
         }
         if (data_020d433c.mBattlePlayers->mUnk_28f != 0) {
-            data_ov007_02287c74[2].mUnk_04 = 1;
+            CommandItems()[2].mUnk_04 = 1;
         } else {
-            data_ov007_02287c74[2].mUnk_04 = 0x8000;
-            data_ov007_02287c74[5].mUnk_04 = 0x800;
+            CommandItems()[2].mUnk_04 = 0x8000;
+            CommandItems()[5].mUnk_04 = 0x800;
         }
     }
     if (data_020d433c.mUnk_9a_3) {
-        data_ov007_02287c74[2].mUnk_04 = 0x8000;
-        data_ov007_02287c74[5].mUnk_04 = 0x8000;
+        CommandItems()[2].mUnk_04 = 0x8000;
+        CommandItems()[5].mUnk_04 = 0x8000;
     }
     u8 x = data_ov007_02279aa8[data_020d43f0[0].mUnk_28_5];
     i = 1;
     do {
-        data_ov007_02287c74[i].mX = x;
+        CommandItems()[i].mX = x;
         if (data_020d43f0[0].mUnk_28_5 == 0) {
-            data_ov007_02287c74[i].mSlideIn  = 4;
-            data_ov007_02287c74[i].mSlideOut = 3;
+            CommandItems()[i].mSlideIn  = 4;
+            CommandItems()[i].mSlideOut = 3;
         }
         i++;
     } while (i <= 5);
-    mUnk_6c = new SelectWindow(10, data_ov007_02287c74, -1);
+    mUnk_6c = new SelectWindow(10, CommandItems(), -1);
     mUnk_70 = new SelectWindow(2, data_ov007_02279b0c, -1);
     mUnk_74 = new SelectWindow(3, data_ov007_02279b7c, -1);
     mUnk_80 = unk;
@@ -1605,7 +1643,7 @@ void func_ov007_0223a5a4(BattleCommand *command, u32 mode) {
 void func_ov007_0223a690(int x, int y) {
     G2S_SetBG0Control(3, 1, 0, 1, 1);
     G2S_SetBG3Control(1, 0, 4, 5, 0);
-    G2S_SetBG0Offset(x + 0x82, y + 0x9e);
+    G2S_SetBG0Offset(x + data_ov007_02279aac[0], y + data_ov007_02279aac[1]);
     G2S_SetBG2Offset(0, 0);
     G2S_SetBG3Offset(0, 0);
     G2S_BlendNone();
@@ -1689,7 +1727,6 @@ void BattleCommand::func_ov007_0223a734() {
     func_ov007_0223ce24();
 }
 
-
 // Loads the battle background; `variant` is the screen variant (BattleObj00 passes its mUnk_3c), overridden for some
 // field types.
 void func_ov007_0223ad70(u32 variant) {
@@ -1752,18 +1789,7 @@ void func_ov007_0223ad70(u32 variant) {
 
 class Camera;
 
-
-
-
-
-
 void func_ov007_02247a3c(BattleCommandMap *map);
-
-
-
-
-
-
 
 void BattleCommand::func_ov007_0223b2f0() {
     ChangeDir("/Game/Battle/Obj");
@@ -1771,10 +1797,6 @@ void BattleCommand::func_ov007_0223b2f0() {
     func_02025b64(1, 5, 0x120, "battle_b_obj_turn_ncl.bin", 0, 0, 0);
     ChangeDir("/");
 }
-
-
-
-
 
 void BattleCommand::func_ov007_0223b38c() {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
@@ -1815,7 +1837,7 @@ void BattleCommand::func_ov007_0223b38c() {
                     }
                 }
                 if (show) {
-                    screen.func_02027778(data_ov007_02279ac0, 1, (s16) (x * 16 + 14 - mUnk_120 + mUnk_139), (s16) (y * 24 - 22 - mUnk_122), 1, 0x120, 0, 0);
+                    screen.func_02027778((void *) data_ov007_02279ac0, 1, (s16) (x * 16 + 14 - mUnk_120 + mUnk_139), (s16) (y * 24 - 22 - mUnk_122), 1, 0x120, 0, 0);
                 }
             }
             j++;
@@ -1853,11 +1875,6 @@ void BattleCommand::func_ov007_0223b38c() {
 }
 
 // Record of a battle cell returned by func_ov007_02262530.
-
-
-
-
-
 
 void func_ov007_02247a3c(BattleCommandMap *map);
 
@@ -2150,12 +2167,6 @@ void BattleCommand::func_ov007_0223c578() {
     }
 }
 
-
-
-
-
-
-
 void BattleCommand::func_ov007_0223c74c(BOOL flag) {
     switch (mMode) {
         case 2:
@@ -2201,18 +2212,6 @@ void BattleCommand::func_ov007_0223c8ac() {
 // Window items of the command screen (modified at run time, so not const): slot 0 the main button, 1..5 the
 // commands, 6..9 the player markers.
 
-
-
-
-
-
-
-
-
-
-
-
-
 void BattleCommand::func_ov007_0223c8d4(u32 flag) {
     if (mMode != 0) {
         return;
@@ -2237,7 +2236,6 @@ void BattleCommand::func_ov007_0223c8d4(u32 flag) {
     mMode     = mNextMode;
     mNextMode = 0;
 }
-
 
 // Marks the cells of the battle grid that exist on the current field (data_020d433c.mUnk_95 is the field type).
 void BattleCommand::func_ov007_0223ca80() {
@@ -2346,10 +2344,6 @@ void BattleCommand::func_ov007_0223ca80() {
     }
 }
 
-
-
-
-
 void BattleCommand::func_ov007_0223ce24() {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     if (list->mUnk_28a == list->mUnk_2a9) {
@@ -2377,10 +2371,8 @@ void BattleCommand::func_ov007_0223ce90() {
     mUnk_20->Draw(1, 0x80, 0x60, 0);
 }
 
-
-
 void func_ov007_0223cf8c(void *arg) {
     BattleCommand *command = (BattleCommand *) arg;
     int adjust             = data_020d43f0[0].mUnk_28_5 ? 0 : 4;
-    G2S_SetBG0Offset(command->mUnk_120 + 0x82 - adjust, command->mUnk_122 + 0x9e);
+    G2S_SetBG0Offset(command->mUnk_120 + data_ov007_02279aac[0] - adjust, command->mUnk_122 + data_ov007_02279aac[1]);
 }

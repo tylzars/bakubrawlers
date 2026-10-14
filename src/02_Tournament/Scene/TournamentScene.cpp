@@ -8,14 +8,14 @@
 #include "Graphics/CellAnimation.hpp"
 #include "Scene/TournamentSubScene.hpp"
 #include "System/FrameTask.hpp"
-#include "Unknown/UnkStruct_02070608.hpp"
-#include "Unknown/UnkStruct_0208ab40.hpp"
-#include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
-#include "System/FileSystem.hpp"
-#include "System/InputManager.hpp"
 #include "System/SoundManager.hpp"
+#include "System/InputManager.hpp"
 #include "Text/TextManager.hpp"
+#include "Unknown/UnkStruct_0208ab40.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "Unknown/UnkStruct_02070608.hpp"
+#include "Graphics/Display.hpp"
+#include "System/FileSystem.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkStruct_020651bc.hpp"
@@ -30,38 +30,79 @@ struct TourPoint {
     u8 y;
 };
 
-extern const WindowItemRecord data_ov002_02220bc4[]; // 6 items
-extern const WindowCellRecord data_ov002_02220c6c[];
-extern const WindowItemRecord data_ov002_02220d14[]; // 7 items
-extern const WindowCellRecord data_ov002_02220dd8[];
-extern const u8 data_ov002_022209fc[];
-extern const u8 data_ov002_02220a00[];
-extern const u8 data_ov002_02220a04[];
-extern const u8 data_ov002_02220a08[];
-extern const u8 data_ov002_02220a0c[];
-extern const u8 data_ov002_02220a10[];
-extern const u8 data_ov002_02220a20[];
-extern const TourPoint data_ov002_02220a28[];
-extern const TourPoint data_ov002_02220a2e[];
-extern const u8 data_ov002_02220a4c[];
-extern const u8 data_ov002_02220a54[];
-extern const u8 data_ov002_02220a6c[][3];
-extern const TourPoint data_ov002_02220b58[][9];
+static const u8 data_ov002_02220a18[6] = {0, 1, 2, 3, 4, 5};
+static const u8 data_ov002_022209fc[3] = {4, 1, 10};
+static const u8 data_ov002_02220a08[3] = {0, 2, 5};
+static const u8 data_ov002_02220a00[3] = {5, 2, 11};
+static const u8 data_ov002_02220a04[3] = {9, 10, 8};
+static const u8 data_ov002_02220a0c[3] = {1, 0, 2};
+static const TourPoint data_ov002_02220b58[6][9] = {
+    {{0x36, 0x3b}, {0x71, 0x53}, {0xad, 0x3b}, {0x0, 0x0}, {0x0, 0x0}, {0x0, 0x0}, {0x0, 0x0}, {0x0, 0x0}, {0x0, 0x0}},
+    {{0xa, 0x37}, {0x2a, 0x37}, {0x44, 0x58}, {0x64, 0x58}, {0x7e, 0x37}, {0x9e, 0x37}, {0xb8, 0x58}, {0xd8, 0x58}, {0x0, 0x0}},
+    {{0x13, 0x47}, {0x30, 0x38}, {0x30, 0x56}, {0x63, 0x47}, {0x80, 0x38}, {0x80, 0x56}, {0xb3, 0x47}, {0xd0, 0x38}, {0xd0, 0x56}},
+    {{0x22, 0x40}, {0x4a, 0x50}, {0x72, 0x40}, {0x9a, 0x50}, {0xc2, 0x40}, {0x0, 0x0}, {0x0, 0x0}, {0x0, 0x0}, {0x0, 0x0}},
+    {{0x12, 0x4c}, {0x52, 0x44}, {0x92, 0x4c}, {0xd2, 0x44}, {0x0, 0x0}, {0x0, 0x0}, {0x0, 0x0}, {0x0, 0x0}, {0x0, 0x0}},
+    {{0x1b, 0x40}, {0x38, 0x4f}, {0x55, 0x40}, {0x72, 0x4f}, {0x8f, 0x40}, {0xac, 0x4f}, {0xc9, 0x40}, {0x0, 0x0}, {0x0, 0x0}},
+};
+static const u8 sTotals[6] = {3, 8, 9, 5, 4, 7};
+static const u8 sCounts[6] = {1, 2, 3, 1, 1, 1};
+static const WindowItemRecord data_ov002_02220bc4[6] = {
+    {0, 0x8000, 88, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
+    {1, 0x8000, 186, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
+    {2, 0x8000, 284, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
+    {3, 0x8, 0, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, 1},
+    {4, 0x8, 176, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, 1},
+    {5, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+};
+static const TourPoint data_ov002_02220a2e[7] = {{0x72, 0x51}, {0x62, 0x51}, {0x63, 0x51}, {0x72, 0x51}, {0x72, 0x51}, {0x72, 0x51}, {0, 0}};
+static const u8 data_ov002_02220a6c[22][3] = {
+    {3, 4, 5}, {6, 7, 8}, {9, 10, 11}, {12, 13, 14}, {15, 16, 17}, {0, 0, 0}, {18, 19, 20}, {0, 1, 2},
+    {21, 22, 23}, {24, 25, 26}, {27, 28, 29}, {30, 31, 32}, {33, 34, 35}, {36, 37, 38}, {39, 40, 41},
+    {42, 43, 44}, {45, 46, 47}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0},
+};
+static const TourPoint data_ov002_02220a28[3] = {{0x80, 0x60}, {0x80, 0x60}, {0x80, 0x60}};
+static const WindowCellRecord data_ov002_02220dd8[7] = {
+    {"/Game/Tournament/Obj/tournament_b_obj_02_nce.bin", 1, 0x0, 0, 3, 1, {1, 2, 1, 0}},
+    {"/Game/Tournament/Obj/tournament_b_obj_02_nce.bin", 3, 0x0, 0, 3, 1, {3, 4, 3, 0}},
+    {"/Game/Tournament/Obj/tournament_b_obj_02_nce.bin", 5, 0x0, 0, 3, 1, {5, 6, 5, 0}},
+    {"/Game/Tournament/Obj/tournament_b_obj_02_nce.bin", 7, 0x0, 0, 3, 1, {7, 8, 7, 0}},
+    {"/Game/Tournament/Obj/tournament_b_obj_02_nce.bin", 9, 0x0, 0, 3, 1, {9, 10, 9, 0}},
+    {"/Game/Tournament/Obj/tournament_b_obj_02_nce.bin", 11, 0x0, 0, 3, 1, {11, 12, 11, 0}},
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x4000, 3, 3, 1, {2, 3, 3, 0}},
+};
+static const u8 data_ov002_02220a54[1][24] = {{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}};
+static const WindowCellRecord data_ov002_02220c6c[6] = {
+    {"/Game/Tournament/Obj/tournament_b_obj_00_nce.bin", 4, 0x0, 0, 3, 1, {5, 6, 5, 0}},
+    {"/Game/Tournament/Obj/tournament_b_obj_00_nce.bin", 1, 0x0, 0, 3, 1, {2, 3, 2, 0}},
+    {"/Game/Tournament/Obj/tournament_b_obj_00_nce.bin", 10, 0x0, 0, 3, 1, {11, 12, 11, 0}},
+    {"/Game/2D/union_b/union_b_obj_arrow_nce.bin", 0, 0x6000, 4, 3, 0, {0, 2, 0, 0}},
+    {"/Game/2D/union_b/union_b_obj_arrow_nce.bin", 1, 0x6000, 4, 3, 1, {1, 3, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x4000, 3, 3, 1, {2, 3, 3, 0}},
+};
+static const u8 sModeTables[3][8] = {{0x12, 0x13, 0x14, 0x15, 0x16, 0x17}, {1, 3, 6, 7, 8, 9}, {6, 1, 2, 5, 0, 3}};
+static const WindowItemRecord data_ov002_02220d14[7] = {
+    {0, 0x1, 16, 24, 64, 42, 0, {3, 3, 2, 1}, 0, 2},
+    {1, 0x1, 96, 24, 64, 42, 0, {4, 4, 0, 2}, 0, 2},
+    {2, 0x1, 176, 24, 64, 42, 0, {5, 5, 1, 0}, 0, 2},
+    {3, 0x1, 16, 80, 64, 42, 0, {0, 0, 5, 4}, 0, 2},
+    {4, 0x1, 96, 80, 64, 42, 0, {1, 1, 3, 5}, 0, 2},
+    {5, 0x1, 176, 80, 64, 42, 0, {2, 2, 4, 3}, 0, 2},
+    {6, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+};
+static const WindowCellRecord sWindowCells[3] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0x10000, 13, 0, 1, {3, 5, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0x10000, 13, 0, 1, {6, 8, 7, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x10000, 13, 0, 1, {10, 10, 10, 0}},
+};
+static const WindowItemRecord sWindowItems[3] = {
+    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
+    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
+    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+};
 
 extern const u8 data_020d441a[];
-extern const char data_ov002_02221304[];
-extern const char data_ov002_02221314[];
-extern const char data_ov002_0222132c[];
-extern const u8 data_ov002_02220a18[];
-extern const u8 data_ov002_02220a3c[];
-extern const u8 data_ov002_02220a44[];
-
-
-
-
 
  // text shown in the lower box
-
 
 TournamentScene::TournamentScene() :
     SceneBase(1000, 0) {
@@ -125,7 +166,6 @@ TournamentScene::TournamentScene() :
     Cleanup();
 }
 
-
 TournamentScene::~TournamentScene() {
     Cleanup();
 }
@@ -168,7 +208,6 @@ void TournamentScene::Cleanup() {
     MI_CpuClearFast((void *) 0x06400000, 0x40000);
     MI_CpuClearFast((void *) 0x06600000, 0x20000);
 }
-
 
 void TournamentScene::Update() {
     switch (mUnk_b0) {
@@ -366,7 +405,7 @@ void TournamentScene::Update() {
             mUnk_b0++;
             break;
         case 16:
-            if (mEvent->func_0206f9b4(data_ov002_02221304, 0x15, 0, 6, 10, 4, 0)) {
+            if (mEvent->func_0206f9b4("mes_Im_button", 0x15, 0, 6, 10, 4, 0)) {
                 SpriteManager::Get().StartFade(2);
                 mUnk_b0++;
             }
@@ -390,7 +429,7 @@ void TournamentScene::Update() {
             mUnk_b9 = 0;
             func_ov002_0221b78c(TRUE, TRUE);
             func_ov002_0221c154();
-            func_ov002_0221ebe4(data_ov002_02221314, 0);
+            func_ov002_0221ebe4("/font/mes_tornament.mes", 0);
             mUnk_a0 = 0x100;
             mUnk_b0++;
             break;
@@ -539,10 +578,10 @@ void TournamentScene::Update() {
             mUnk_b9 = 1;
             func_ov002_0221b78c(FALSE, FALSE);
             func_ov002_0221c4a0();
-            func_ov002_0221ebe4(data_ov002_0222132c, 2);
+            func_ov002_0221ebe4("/font/mes_tornament.mes", 2);
             mUnk_d4 = 1;
             func_ov002_0221ddf8(data_ov002_02220a18[mMode]);
-            func_ov002_0221dbd4(data_ov002_02220a3c[mMode]);
+            func_ov002_0221dbd4(sModeTables[0][mMode]);
             SpriteManager::Get().StartFade(2);
             mUnk_b0 = 0x1f;
             if (mUnk_d3 != 0) {
@@ -620,7 +659,7 @@ void TournamentScene::Update() {
                 CellAnimation *cell = mCellsA[0];
                 cell->mUnk_0f       = cell->mFrames[cell->mUnk_0e].mUnk_10 - 1;
                 func_ov002_0221ddf8(data_ov002_02220a18[mMode]);
-                func_ov002_0221dbd4(data_ov002_02220a3c[mMode]);
+                func_ov002_0221dbd4(sModeTables[0][mMode]);
                 mUnk_b0++;
             }
             break;
@@ -650,7 +689,7 @@ void TournamentScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            data_020d43f0[0].mUnk_42 = data_ov002_02220a44[mMode];
+            data_020d43f0[0].mUnk_42 = sModeTables[1][mMode];
             data_020d43f0[0].mUnk_43 = 0;
             data_020d43f0[0].mUnk_25 = MATH_Rand32(&data_020d42e8, 5);
             mSelection = 0;
@@ -748,7 +787,6 @@ void TournamentScene::Update() {
     func_ov002_0221cd10();
 }
 
-
 void TournamentScene::func_ov002_0221b424() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 7);
@@ -772,7 +810,6 @@ void TournamentScene::func_ov002_0221b424() {
 }
 
 // non-matching: 8 words at +0x168; the original loads the table addresses as (a10, data_020d43f0, a20) into (r1, r0, r2) before the idx multiply, the compiler here emits (data_020d43f0, a10, a20); about 15 reorderings of the idx/x computation did not change the pool order
-
 
 void TournamentScene::func_ov002_0221b5b0() {
     GX_SetDispSelect(1);
@@ -803,7 +840,6 @@ void TournamentScene::func_ov002_0221b5b0() {
     G2S_BlendNone();
 }
 
-
 void TournamentScene::func_ov002_0221b78c(BOOL a, BOOL b) {
     func_ov002_0221b5b0();
     MI_CpuClearFast((void *) 0x06200000, 0x20000);
@@ -811,11 +847,11 @@ void TournamentScene::func_ov002_0221b78c(BOOL a, BOOL b) {
     ChangeDir("/game/Tournament/Bg/");
     if (b) {
         char name[0x40];
-        sprintf(name, "tournament_u_bg_0%d_nsc.bin", data_ov002_02220a4c[mMode]);
+        sprintf(name, "tournament_u_bg_0%d_nsc.bin", sModeTables[2][mMode]);
         func_02025b64(0, 7, 0, name, 0, 0, 0);
-        sprintf(name, "tournament_u_bg_0%d_ncg.bin", data_ov002_02220a4c[mMode]);
+        sprintf(name, "tournament_u_bg_0%d_ncg.bin", sModeTables[2][mMode]);
         func_02025b64(0, 0xb, 0, name, 0, 0, 0);
-        sprintf(name, "tournament_u_bg_0%d_ncl.bin", data_ov002_02220a4c[mMode]);
+        sprintf(name, "tournament_u_bg_0%d_ncl.bin", sModeTables[2][mMode]);
         func_02025b64(0, 1, 0, name, 0, 0, 0);
     } else {
         func_02025b64(0, 7, 0, "tournament_u_bg_06_nsc.bin", 0, 0, 0);
@@ -823,10 +859,10 @@ void TournamentScene::func_ov002_0221b78c(BOOL a, BOOL b) {
         func_02025b64(0, 1, 0, "tournament_u_bg_06_ncl.bin", 0, 0, 0);
     }
     u8 idx;
-    int count = data_ov002_02220a10[mMode];
+    int count = sCounts[mMode];
     int x     = data_020d43f0[0].mUnk_43;
     idx       = x * count;
-    if (x >= data_ov002_02220a20[mMode] / count - 1) {
+    if (x >= sTotals[mMode] / count - 1) {
         x = 6;
     }
     ChangeDir("/Game/Tournament/Obj/");
@@ -881,7 +917,7 @@ void TournamentScene::func_ov002_0221b78c(BOOL a, BOOL b) {
             mObj38->func_0206547c(i, data_ov002_02220b58[mMode][idx + i].x, data_ov002_02220b58[mMode][idx + i].y,
                                   0);
             i++;
-        } while (i < data_ov002_02220a10[mMode]);
+        } while (i < sCounts[mMode]);
         if (mMode == 1) {
             mObj38->func_02065204(3, (s8) mUnk_cb, 0, 0);
             mObj38->func_020654f8(3, 1);
@@ -899,7 +935,6 @@ void TournamentScene::func_ov002_0221b78c(BOOL a, BOOL b) {
     mUnk_b6 = 1;
     ChangeDir("/");
 }
-
 
 void TournamentScene::func_ov002_0221bf88() {
     MI_CpuClearFast((void *) 0x06200000, 0x20000);
@@ -919,7 +954,6 @@ void TournamentScene::func_ov002_0221bf88() {
     mUnk_b5 = 0;
 }
 
-
 void TournamentScene::func_ov002_0221c154() {
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     GXS_SetVisiblePlane(0x11);
@@ -928,7 +962,6 @@ void TournamentScene::func_ov002_0221c154() {
     G2S_BlendNone();
     func_ov002_0221c1b0();
 }
-
 
 void TournamentScene::func_ov002_0221c1b0() {
     ChangeDir("/Game/Tournament/bg/");
@@ -961,7 +994,6 @@ void TournamentScene::func_ov002_0221c1b0() {
     func_ov002_0221da5c();
 }
 
-
 void TournamentScene::func_ov002_0221c4a0() {
     ChangeDir("/Game/Tournament/bg/");
     func_02025b64(1, 1, 0, "tournament_b_bg_00_ncl.bin", 0, 0, 0);
@@ -990,7 +1022,6 @@ void TournamentScene::func_ov002_0221c4a0() {
     mMenu = new SelectWindow(7, data_ov002_02220d14, 0);
     mMenu->SetCells(7, data_ov002_02220dd8);
 }
-
 
 void TournamentScene::func_ov002_0221c7a0(const char *mes) {
     for (u8 i = 2; i < 4; i++) {
@@ -1023,7 +1054,6 @@ void TournamentScene::func_ov002_0221c7a0(const char *mes) {
 
 // non-matching: 10 words; register assignment of the row/column text-sprite loop (row * 7 and y swap registers with the loop limit). Also needs mUnk_ac to be u16 in the header (compare is unsigned)
 
-
 void TournamentScene::func_ov002_0221cabc(const char *mes, u8 rows) {
     for (u8 i = 0; i < 2; i++) {
         if (mMessages[i] != NULL) {
@@ -1048,7 +1078,6 @@ void TournamentScene::func_ov002_0221cabc(const char *mes, u8 rows) {
     TextManager::Get().Init(mGlyphBuffers[0], 1, 0, 0x20, mTextRows, 0x21);
     TextManager::Get().SetColor(1, 0, 0xf);
 }
-
 
 void TournamentScene::func_ov002_0221cd10() {
     if (mUnk_b5 != 0) {
@@ -1078,7 +1107,7 @@ void TournamentScene::func_ov002_0221cd10() {
     }
     if (mUnk_b6 != 0) {
         s16 off = mUnk_a2;
-        u8 idx  = data_020d43f0[0].mUnk_43 * data_ov002_02220a10[mMode];
+        u8 idx  = data_020d43f0[0].mUnk_43 * sCounts[mMode];
         for (u8 i = 0; i < 3; i++) {
             if (i == 2) {
                 off = 0;
@@ -1092,7 +1121,7 @@ void TournamentScene::func_ov002_0221cd10() {
                 mObj38->func_0206547c(j, mUnk_a0 + (mUnk_a4 + data_ov002_02220b58[mMode][idx + j].x),
                                       mUnk_a6 + data_ov002_02220b58[mMode][idx + j].y, 0);
                 j++;
-            } while (j < data_ov002_02220a10[mMode]);
+            } while (j < sCounts[mMode]);
             if (mMode == 1) {
                 mObj38->func_0206547c(3, mUnk_a2 + 8, 0xa, 1);
             }
@@ -1103,14 +1132,14 @@ void TournamentScene::func_ov002_0221cd10() {
             do {
                 mCellsA[3]->Draw(0, (s16) (mUnk_a0 + data_ov002_02220b58[mMode][k].x), data_ov002_02220b58[mMode][k].y, 1);
                 k++;
-            } while (k < data_ov002_02220a20[mMode]);
+            } while (k < sTotals[mMode]);
         } else {
             do {
                 s16 dx   = 0;
                 s16 dy   = 0;
                 u32 flag = 1;
                 if (k >= idx) {
-                    if (k < idx + data_ov002_02220a20[mMode]) {
+                    if (k < idx + sTotals[mMode]) {
                         dx   = mUnk_a4;
                         dy   = mUnk_a6;
                         flag = 0;
@@ -1119,7 +1148,7 @@ void TournamentScene::func_ov002_0221cd10() {
                 mCellsA[3]->func_0202a3ec(0, mUnk_c2[k], mUnk_a0 + (dx + data_ov002_02220b58[mMode][k].x),
                                           dy + data_ov002_02220b58[mMode][k].y, flag);
                 k++;
-            } while (k < data_ov002_02220a20[mMode]);
+            } while (k < sTotals[mMode]);
         }
         if (idx != 0) {
             u8 m = 0;
@@ -1141,7 +1170,7 @@ void TournamentScene::func_ov002_0221cd10() {
                     mCellsB[3]->Draw(0, (s16) (mUnk_a0 + (mUnk_a4 + data_ov002_02220b58[mMode][idx + p].x)),
                                      (s16) (mUnk_a6 + data_ov002_02220b58[mMode][idx + p].y), 0);
                     p++;
-                } while (p < data_ov002_02220a10[mMode]);
+                } while (p < sCounts[mMode]);
             }
             if (mMode == 1) {
                 mCellsB[3]->Draw(0, (s16) (mUnk_a2 + 8), 0xa, 0);
@@ -1168,7 +1197,6 @@ void TournamentScene::func_ov002_0221cd10() {
         SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffers[1], 9, 0x20, 0x28, 0, 0x360, 0xf, 0);
     }
 }
-
 
 u8 TournamentScene::func_ov002_0221d4b0(u8 input) {
     mNewSelection = mSelection;
@@ -1227,7 +1255,6 @@ u8 TournamentScene::func_ov002_0221d4b0(u8 input) {
     return result;
 }
 
-
 u8 TournamentScene::func_ov002_0221d69c() {
     u8 result = 0;
     if (InputManager::Get().IsTrigger(0x20)) {
@@ -1246,7 +1273,6 @@ u8 TournamentScene::func_ov002_0221d69c() {
     }
     return result;
 }
-
 
 BOOL TournamentScene::func_ov002_0221d7e4() {
     int r = mEvent->func_02067900();
@@ -1267,7 +1293,6 @@ BOOL TournamentScene::func_ov002_0221d7e4() {
     }
     return FALSE;
 }
-
 
 BOOL TournamentScene::func_ov002_0221d848() {
     BOOL done = FALSE;
@@ -1363,7 +1388,6 @@ void TournamentScene::func_ov002_0221da5c() {
     mMenu->mCursor->mSelection = mSelection;
 }
 
-
 void TournamentScene::func_ov002_0221dbd4(u8 index) {
     func_ov002_0221ddb8();
     TextManager::Get().mUnk_5b = 1;
@@ -1380,7 +1404,6 @@ void TournamentScene::func_ov002_0221dbd4(u8 index) {
     TextManager::Get().mUnk_5b = 0;
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x8000, mTextBuffers[0], mTextSizes[0], 0);
 }
-
 
 void TournamentScene::func_ov002_0221ddb8() {
     for (u8 i = 0; i < 2; i++) {
@@ -1417,7 +1440,6 @@ void TournamentScene::func_ov002_0221ddf8(u8 index) {
     func_ov002_0221df48(index);
 }
 
-
 void TournamentScene::func_ov002_0221df48(u32 index) {
     s16 height2;
     s16 width2;
@@ -1450,8 +1472,6 @@ void TournamentScene::func_ov002_0221df48(u32 index) {
     func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x1f000, mTextBuffers[3], mTextSizes[3], 0);
 }
 
-
-
 void TournamentScene::func_ov002_0221e270() {
     for (u8 i = 2; i < 4; i++) {
         if (mTextBuffers[i] != NULL) {
@@ -1459,7 +1479,6 @@ void TournamentScene::func_ov002_0221e270() {
         }
     }
 }
-
 
 BOOL TournamentScene::func_ov002_0221e2b0() {
     BOOL result = FALSE;
@@ -1479,7 +1498,7 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
             break;
         case 2: {
             u8 mode = mMode;
-            u8 idx  = data_020d43f0[0].mUnk_43 * data_ov002_02220a10[mode];
+            u8 idx  = data_020d43f0[0].mUnk_43 * sCounts[mode];
             mUnk_a8 = data_ov002_02220a2e[mode].x - (mUnk_a0 + data_ov002_02220b58[mode][idx].x);
             mUnk_aa = data_ov002_02220a2e[mMode].y - data_ov002_02220b58[mMode][idx].y;
             mStep = 0;
@@ -1544,10 +1563,10 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
         case 10:
             if (!mEvent->func_020678e8()) {
                 u8 mode = mMode;
-                u8 idx = data_020d43f0[0].mUnk_43 * data_ov002_02220a10[mode];
+                u8 idx = data_020d43f0[0].mUnk_43 * sCounts[mode];
                 u32 pick = MATH_Rand32(&data_020d42e8, 3);
                 u8 id   = mUnk_c2[mUnk_c1 + idx];
-                if (mEvent->func_0206f9b4("mes_tm_battle", id, data_ov002_02220a54[id], data_ov002_02220a6c[id][pick], 2, 3,
+                if (mEvent->func_0206f9b4("mes_tm_battle", id, data_ov002_02220a54[0][id], data_ov002_02220a6c[id][pick], 2, 3,
                                   0)) {
                     SpriteManager::Get().StartFade(2);
                     mState++;
@@ -1557,7 +1576,7 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
         case 11:
             if (!mEvent->func_020678e8()) {
                 mUnk_c1++;
-                if (mUnk_c1 < data_ov002_02220a10[mMode]) {
+                if (mUnk_c1 < sCounts[mMode]) {
                     mState = 10;
                 } else {
                     mState++;
@@ -1577,11 +1596,6 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
     return result;
 }
 
-
-
-static const u8 sCounts[6]  = {1, 2, 3, 1, 1, 1};
-static const u8 sTotals[6]  = {3, 8, 9, 5, 4, 7};
-
 void TournamentScene::func_ov002_0221e8f0() {
     GX_SetVisibleWnd(4);
     G2_SetWndOutsidePlane(0x31, FALSE);
@@ -1596,7 +1610,6 @@ void TournamentScene::func_ov002_0221e8f0() {
         mCellsB[0]->func_02029fb8(0);
     }
 }
-
 
 void TournamentScene::func_ov002_0221e984() {
     switch (data_020d43f0[0].mUnk_42) {
@@ -1644,7 +1657,6 @@ void TournamentScene::func_ov002_0221e984() {
     } while (i < sTotals[mMode]);
 }
 
-
 void TournamentScene::func_ov002_0221ead8() {
     GXS_SetVisiblePlane(0x13);
     mWindow->func_0205c7c8(1);
@@ -1657,19 +1669,6 @@ void TournamentScene::func_ov002_0221ead8() {
     G2S_SetBlendBrightness(0x11, -8);
 }
 
-
-static const WindowCellRecord sWindowCells[3] = {
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0x10000, 13, 0, 1, {3, 5, 4, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0x10000, 13, 0, 1, {6, 8, 7, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x10000, 13, 0, 1, {10, 10, 10, 0}},
-};
-
-static const WindowItemRecord sWindowItems[3] = {
-    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
-    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
-    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
-};
-
 void TournamentScene::func_ov002_0221eb78() {
     GXS_SetVisiblePlane(0x11);
     mWindow->mUnk_064 = 0;
@@ -1679,7 +1678,6 @@ void TournamentScene::func_ov002_0221eb78() {
     G2S_SetWnd0InsidePlane(0x1f, FALSE);
     G2S_SetWndOutsidePlane(0x3f, FALSE);
 }
-
 
 void TournamentScene::func_ov002_0221ebe4(const char *path, u32 index) {
     ChangeDir("/Game/2D/union_b/");
@@ -1713,9 +1711,6 @@ void TournamentScene::func_ov002_0221ebe4(const char *path, u32 index) {
     ChangeDir("/");
 }
 
-
-static const u8 sBgIds[6] = {6, 1, 2, 5, 0, 3};
-
 void TournamentScene::func_ov002_0221ef34(u32 index) {
     MI_CpuClear16(mTextBuffers[1], mTextSizes[1]);
     TextManager &text = TextManager::Get();
@@ -1728,10 +1723,9 @@ void TournamentScene::func_ov002_0221ef34(u32 index) {
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x1b000, mTextBuffers[1], mTextSizes[1], 0);
 }
 
-
 void TournamentScene::func_ov002_0221f098(u32 index) {
     ChangeDir("/game/Tournament/Bg/");
-    index      = sBgIds[index];
+    index      = sModeTables[2][index];
     u32 nsc    = 7;
     u32 ncg    = 0xb;
     u32 offset = 0;
@@ -1761,16 +1755,6 @@ void TournamentScene::func_ov002_0221f098(u32 index) {
     }
     GX_SetVisiblePlane(0x13);
 }
-
-
-
-
-
-
-
-
-
-
 
 BOOL TournamentScene::func_ov002_0221f250() {
     BOOL done = TRUE;

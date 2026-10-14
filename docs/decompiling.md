@@ -301,7 +301,11 @@ Other findings from linking:
   at all, in 7 it got worse. cri_adx_vobj matched with an `unsigned long` counter too. So it is a rare fix for loop
   counters in game code. CRI code is different: `long` locals and parameters matched cri_adx_hdrparse (`long i` turns
   a `mul` into the original's `smulbb`) and fixed cri_mpa_l2's stack frame and cri_wave_ch's temporaries, so try
-  `long` early there.
+  `long` early there. It only matters where it makes a mixed-type expression (`v % grp` with `long grp`); on values
+  used only with `int` it changed nothing.
+- **An enum-typed zero stays in its register.** cri_adx_player's func_0203e110 keeps one zero in r2 through a loop of
+  byte stores: `enum { ZERO } z = ZERO;` and `p[k] = (unsigned char) z;` (the cast avoids a sign extension), since
+  mwcc does not propagate enum values. Plain `int`/`long` zero locals fold back to constants.
 - **A shared exit label.** GimmickFieldDestroy::func_ov007_0222b328's two early `return i;` became `goto found;` to one
   `found: return i;` after `return 0;`, which gives the original branch shape and table load order.
 

@@ -155,6 +155,10 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **Enum-typed locals are not constant-propagated.** A known constant the original keeps in a register and computes
+  with (`mov r2, #0; mov r1, #52; smulbb r4, r2, r1` for `array[0]`, then `this + r4` re-added at every access) comes
+  from an enum local: `UnkStruct_02065c40_Kind j = UNK_02065C40_KIND_0;` matched func_0206d3b8 where `s16`/`int`
+  locals, casts, loops and inline parameters all fold.
 - **How mwcc picks callee-saved registers (lab results, `int`-sized values live across calls).**
   - Named locals loaded from memory (or assigned later) are coloured in declaration order: the first declared gets
     the lowest free register.

@@ -2954,7 +2954,6 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
 #define LERP_S(dst, a, b) dst = (a) + (mUnk_14da * (s16) ((b) - (a))) / mUnk_14dc
 #define LERP_N(dst, a, b) dst = (a) + (mUnk_14da * ((b) - (a))) / mUnk_14dc
 
-// non-matching: one block indexes mUnk_101c with a zero the original keeps in a register (smulbb); ours folds it (10 words).
 void UnkStruct_02065c40::func_0206d3b8() {
     BOOL done = FALSE;
     switch (mUnk_12c5) {
@@ -3089,7 +3088,7 @@ void UnkStruct_02065c40::func_0206d3b8() {
             LERP_S(mUnk_1298.y, mUnk_129e.y, mUnk_12a4.y);
             LERP_S(mUnk_1298.z, mUnk_129e.z, mUnk_12a4.z);
             {
-                s16 j = 0;
+                UnkStruct_02065c40_Kind j = UNK_02065C40_KIND_0;
                 LERP_FX(mUnk_101c[j].mUnk_00, mUnk_101c[j].mUnk_0c[0], mUnk_101c[j].mUnk_12[0]);
                 LERP_FX(mUnk_101c[j].mUnk_04, mUnk_101c[j].mUnk_0c[1], mUnk_101c[j].mUnk_12[1]);
                 LERP_FX(mUnk_101c[j].mUnk_08, mUnk_101c[j].mUnk_0c[2], mUnk_101c[j].mUnk_12[2]);

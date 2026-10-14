@@ -259,9 +259,12 @@ Other findings from linking:
   predicated early return has the reload dropped; as `s16` (still stored and loaded as a word) it keeps
   `ldrcs r0, [sp]` (UnkStruct_02065c40::func_02066814).
 
-- **`unsigned long` vs `unsigned int`.** NitroSDK's `u32` is `unsigned long`; this repo's is `unsigned int`. They
-  colour differently: CreditsScene::UpdateText's `for (unsigned long i ...)` matched where `u32 i` made a second copy
-  of `this + i`. Other near-misses with a `u32` loop index may be the same case.
+- **`unsigned long` vs `unsigned int`.** NitroSDK's `u32` is `unsigned long`; this repo's is `unsigned int`.
+  CreditsScene::UpdateText's `for (unsigned long i ...)` matched where `u32 i` made a second copy of `this + i`; it
+  depends on the loop variable's own type (casting its uses either way changes nothing). A sweep of 39 other
+  near-misses (every u32/s32 local, counter and cast as long/unsigned long) helped none: in 32 the code didn't change
+  at all, in 7 it got worse. cri_adx_vobj matched with an `unsigned long` counter too. So it is a rare fix for loop
+  counters, not a general one.
 - **A shared exit label.** GimmickFieldDestroy::func_ov007_0222b328's two early `return i;` became `goto found;` to one
   `found: return i;` after `return 0;`, which gives the original branch shape and table load order.
 

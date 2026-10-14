@@ -223,11 +223,9 @@ void UnkStruct_020c1884::func_02020a48() {
         mFrame++;
         InputManager::Get();
         if (IsAtLeast3(&mUnk_08)) {
-            WirelessManager::Get();
-            if (data_020c4258 != 0) {
-                while (WirelessManager::Get(), data_020c4258 != 0) {
-                    WirelessManager::Get();
-                    if (data_020c4258 != 8) {
+            if (WirelessManager::Get().mUnk_1228 != 0) {
+                while (WirelessManager::Get().mUnk_1228 != 0) {
+                    if (WirelessManager::Get().mUnk_1228 != 8) {
                         WirelessManager::Get().func_0202edd0();
                     }
                     FrameTask::Get().func_0203dc10();
@@ -265,14 +263,12 @@ void UnkStruct_020c1884::func_02020a48() {
         prev = OS_GetTick();
         WirelessManager::Get().func_0202f244();
         mUnk_15 = 0;
-        WirelessManager::Get();
-        if (IsWirelessMode(&data_020c4258)) {
-            while (WirelessManager::Get(), data_020c427e == 0) {
+        if (IsWirelessMode((const u8 *) &WirelessManager::Get().mUnk_1228)) {
+            while (WirelessManager::Get().mUnk_124e == 0) {
                 mUnk_15++;
                 FrameTask::Get().func_0203dc10();
                 WirelessManager::Get().func_0202f244();
-                WirelessManager::Get();
-                if (!IsWirelessMode(&data_020c4258)) {
+                if (!IsWirelessMode((const u8 *) &WirelessManager::Get().mUnk_1228)) {
                     break;
                 }
             }

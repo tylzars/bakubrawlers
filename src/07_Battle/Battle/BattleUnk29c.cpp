@@ -468,7 +468,16 @@ void BattleUnk29c::func_ov007_02270ae0(u8 index, BattleMoveState *state) {
     }
 }
 
-// non-matching: tail (rotation add loop) differs, see func_ov007_02270dbc; original loads all six rotation halfwords before the first strh and reloads mRot[0] after the zero test (m in r1), mine interleaves loads/stores and CSEs mRot[0]
+// non-matching (rotation tail, shared by four functions): AddRot makes mwcc reload all six halfwords as the original does; what is left is
+// register colouring (the original has m in r1 and the loads in r5, r4, r3, r2, r1).
+static inline void AddRot(UnkStruct_0203d374 *p, const u16 *r) {
+    u16 rx = p->mRotX + r[0];
+    u16 ry = p->mRotY + r[1];
+    u16 rz = p->mRotZ + r[2];
+    p->mRotX = rx;
+    p->mRotY = ry;
+    p->mRotZ = rz;
+}
 void BattleUnk29c::func_ov007_02270dbc(u32 index) {
     BattleMoveState *m = mUnk_30[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
@@ -486,17 +495,12 @@ void BattleUnk29c::func_ov007_02270dbc(u32 index) {
     }
     m = mUnk_30[index];
     if (m->mRot[0] != 0 || m->mRot[1] != 0 || m->mRot[2] != 0) {
-        UnkStruct_0203d374 *p = mUnk_00[index];
-        u16 rx = p->mRotX + m->mRot[0];
-        u16 ry = p->mRotY + m->mRot[1];
-        u16 rz = p->mRotZ + m->mRot[2];
-        p->mRotX = rx;
-        p->mRotY = ry;
-        p->mRotZ = rz;
+        AddRot(mUnk_00[index], m->mRot);
     }
 }
 
-// non-matching: tail (rotation add loop) differs, see func_ov007_02270dbc; original loads all six rotation halfwords before the first strh and reloads mRot[0] after the zero test (m in r1), mine interleaves loads/stores and CSEs mRot[0]
+// non-matching (rotation tail, shared by four functions): AddRot makes mwcc reload all six halfwords as the original does; what is left is
+// register colouring (the original has m in r1 and the loads in r5, r4, r3, r2, r1).
 void BattleUnk29c::func_ov007_02270f1c(u32 index) {
     BattleMoveState *m = mUnk_30[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
@@ -522,17 +526,12 @@ void BattleUnk29c::func_ov007_02270f1c(u32 index) {
     }
     m = mUnk_30[index];
     if (m->mRot[0] != 0 || m->mRot[1] != 0 || m->mRot[2] != 0) {
-        UnkStruct_0203d374 *p = mUnk_00[index];
-        u16 rx = p->mRotX + m->mRot[0];
-        u16 ry = p->mRotY + m->mRot[1];
-        u16 rz = p->mRotZ + m->mRot[2];
-        p->mRotX = rx;
-        p->mRotY = ry;
-        p->mRotZ = rz;
+        AddRot(mUnk_00[index], m->mRot);
     }
 }
 
-// non-matching: tail (rotation add loop) differs, see func_ov007_02270dbc; original loads all six rotation halfwords before the first strh and reloads mRot[0] after the zero test (m in r1), mine interleaves loads/stores and CSEs mRot[0]
+// non-matching (rotation tail, shared by four functions): AddRot makes mwcc reload all six halfwords as the original does; what is left is
+// register colouring (the original has m in r1 and the loads in r5, r4, r3, r2, r1).
 void BattleUnk29c::func_ov007_02271054(u32 index) {
     BattleMoveState *m = mUnk_30[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
@@ -558,17 +557,12 @@ void BattleUnk29c::func_ov007_02271054(u32 index) {
     }
     m = mUnk_30[index];
     if (m->mRot[0] != 0 || m->mRot[1] != 0 || m->mRot[2] != 0) {
-        UnkStruct_0203d374 *p = mUnk_00[index];
-        u16 rx = p->mRotX + m->mRot[0];
-        u16 ry = p->mRotY + m->mRot[1];
-        u16 rz = p->mRotZ + m->mRot[2];
-        p->mRotX = rx;
-        p->mRotY = ry;
-        p->mRotZ = rz;
+        AddRot(mUnk_00[index], m->mRot);
     }
 }
 
-// non-matching: tail (rotation add loop) differs, see func_ov007_02270dbc; original loads all six rotation halfwords before the first strh and reloads mRot[0] after the zero test (m in r1), mine interleaves loads/stores and CSEs mRot[0]
+// non-matching (rotation tail, shared by four functions): AddRot makes mwcc reload all six halfwords as the original does; what is left is
+// register colouring (the original has m in r1 and the loads in r5, r4, r3, r2, r1).
 void BattleUnk29c::func_ov007_0227118c(u32 index) {
     BattleMoveState *m = mUnk_30[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
@@ -594,13 +588,7 @@ void BattleUnk29c::func_ov007_0227118c(u32 index) {
     }
     m = mUnk_30[index];
     if (m->mRot[0] != 0 || m->mRot[1] != 0 || m->mRot[2] != 0) {
-        UnkStruct_0203d374 *p = mUnk_00[index];
-        u16 rx = p->mRotX + m->mRot[0];
-        u16 ry = p->mRotY + m->mRot[1];
-        u16 rz = p->mRotZ + m->mRot[2];
-        p->mRotX = rx;
-        p->mRotY = ry;
-        p->mRotZ = rz;
+        AddRot(mUnk_00[index], m->mRot);
     }
 }
 

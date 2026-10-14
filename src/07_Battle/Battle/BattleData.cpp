@@ -196,9 +196,9 @@ void BattleData::func_ov007_0223d504() {
 // non-matching: register assignment only (original: x r5, y r4, px r7, top r6, left r8; compiled: x r8, y r7, px r6, top r4, left r5).
 void BattleData::func_ov007_0223db20(u8 side, s16 x, s16 y) {
     int offset;
-    s16 px;
-    int top;
     int left;
+    int top;
+    s16 px;
     offset = side == 0 ? 0 : 0x24;
     px     = x + offset;
     top    = y - 4;
@@ -228,6 +228,7 @@ void BattleData::func_ov007_0223db20(u8 side, s16 x, s16 y) {
         k++;
     } while (k < mUnk_0a);
 }
+
 
 BOOL BattleData::func_ov007_0223dd6c() {
     BOOL result = TRUE;
@@ -294,8 +295,9 @@ void BattleData::func_ov007_0223de88(u8 side, int x, int y, u32 flag, u32 value)
     mUnk_34[side]->Draw(1, x, y, flag);
 }
 
-// non-matching: 41 words, registers only: the original keeps `mode` in fp and spills x + 0x30 and y.
 void BattleData::func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u32 flag, u32 mode, u16 a, u16 b) {
+    int delta;
+    int shift;
     u32 value = 0;
     switch (kind) {
         case 0:
@@ -318,13 +320,13 @@ void BattleData::func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u32 flag, u
             count--;
         }
     }
-    int delta = a - (b * 2) / 3;
-    int shift = (s16) delta * (s16) delta / 8;
+    delta = a - (b * 2) / 3;
+    shift = (s16) delta * (s16) delta / 8;
     u8 offset = 0x20;
     u8 i      = 0;
     do {
         if (mode == 0) {
-            offset = shift > 0xff ? 0xff : shift;
+            offset = shift <= 0xff ? shift : 0xff;
             if (offset > 0x20) {
                 if ((s16) delta >= 0) {
                     goto next;

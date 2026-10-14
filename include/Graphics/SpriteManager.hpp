@@ -39,7 +39,7 @@ struct SpriteScreen {
     void *func_02028054(u8 *data); // reorders 0x1000 bytes of character data into a new buffer and frees data
     u16 func_020276f4(u32 unk1);
     void func_02027624(s32 unk1);
-    void func_02027778(void *buffer, u8 count, u32 unk3, s16 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8);
+    void func_02027778(void *buffer, u8 count, s16 unk3, s16 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8);
 };
 
 // One of the eight slots at SpriteManager+0x828 (copied by func_02027578, set up by func_020360cc).

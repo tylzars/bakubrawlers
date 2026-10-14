@@ -158,7 +158,6 @@ void MyroomGiftScene::InitDisplay() {
     G2S_BlendNone();
 }
 
-// non-matching: size 0x6d8 vs 0x6d4: one extra instruction, and the SpriteManager/CellAnimation setup is ordered differently near +0xe4
 void MyroomGiftScene::func_ov008_0221de34() {
     ChangeDir("/Game/Card/Graphic/");
     func_02025b64(0, 7, 0, "cardspec_u_bg_00_nsc.bin", 0, 0, 0);
@@ -167,7 +166,8 @@ void MyroomGiftScene::func_ov008_0221de34() {
     ChangeDir("/Game/Myroom/");
     func_02025b64(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
     func_02025b64(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadArg z = LOAD_ARG_NONE;
+    func_02025b64(1, 1, 0, "myroom_b_bg_00_ncl.bin", z, z, z);
     SpriteScreen &main = SpriteManager::Get().Screen(0);
     main.func_02027624(3);
     LoadEmblem(6);
@@ -260,7 +260,6 @@ void MyroomGiftScene::Draw() {
     DrawWindows();
 }
 
-// non-matching: register allocation of the loop locals (sl/r6/r7 swapped, 27 words)
 void MyroomGiftScene::func_ov008_0221e670() {
     if (mCellAnim != NULL) {
         mCellAnim->Update();
@@ -269,39 +268,42 @@ void MyroomGiftScene::func_ov008_0221e670() {
     if (mHasEmblem[mEmblem] == 0) {
         return;
     }
-    u8 row = 0;
+    u8 j;
+    u8 i = 0;
     do {
-        u32 base = row * 0x18;
-        s16 y = row * 32 + 0x24;
-        u8 col = 0;
+        int y = i * 32 + 0x24;
+        j     = 0;
         do {
-            SpriteManager::Get().Screen(0).func_02027778(data_ov008_02228a70, 1, (s16) (col * 32 + 0xe), y, 0, (u16) (base + col * 8), 0, 0);
-            col++;
-        } while (col < 3);
-        row++;
-    } while (row < 4);
+            SpriteManager::Get().Screen(0).func_02027778(data_ov008_02228a70, 1, j * 32 + 0xe, y, 0, (u16) (i * 0x18 + j * 8), 0, 0);
+            j++;
+        } while (j < 3);
+        i++;
+    } while (i < 4);
     SpriteManager::Get().Screen(0).func_02027778(mGlyphBuffers[0], 4, 0x70, 0x1e, 0, 0xa0, 0xf, 0);
-    s16 x = 0x80 - ((u32) mUnk_40 >> 1);
-    if (mUnk_40 > 0xf0) {
-        x = mUnk_42;
+    s16 x;
+    u8 first;
+    u8 last;
+    x = 0x80 - mUnk_40 / 2;
+    if ((s32) mUnk_40 > 0xf0) {
+        x       = mUnk_42;
         mUnk_42 = x - 1;
         if (mUnk_42 <= -mUnk_40) {
             mUnk_42 = 0x100;
         }
     }
-    u8 first = 0;
+    first = 0;
     if (x < 0) {
         first = (-x) / 32;
     }
-    u8 last = first + 9 - x / 32;
+    last = first + 9 - x / 32;
     if (last > 0x10) {
         last = 0x10;
     }
-    u8 k = first;
+    j = first;
     do {
-        SpriteManager::Get().Screen(0).func_02027778((u8 *) mGlyphBuffers[1] + k * 0xc, 1, x, 8, 0, 0x100, 0xf, 0);
-        k++;
-    } while (k < last);
+        SpriteManager::Get().Screen(0).func_02027778((u8 *) mGlyphBuffers[1] + j * 0xc, 1, x, 8, 0, 0x100, 0xf, 0);
+        j++;
+    } while (j < last);
 }
 
 void MyroomGiftScene::DrawWindows() {

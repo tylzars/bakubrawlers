@@ -22,6 +22,9 @@ u8 func_02023874();    // nonzero while the asynchronous load is busy
 void func_02023a54();
 
 // Loads a BG resource file (palette, characters or screen) and uploads it. Returns offset + size.
+// An enum-typed zero for func_02025b64's last three arguments: mwcc doesn't constant-propagate enum locals, so a
+// `LoadArg z = LOAD_ARG_NONE;` passed three times keeps the zero in a register the way some of the original's calls do.
+enum LoadArg { LOAD_ARG_NONE };
 u32 func_02025b64(u32 screen, u32 kind, u32 offset, const char *path, u32 unk5, u32 unk6, u32 unk7);
 // Uploads a buffer to BG memory. Returns offset + size.
 u32 func_02025c1c(u32 bg, u32 kind, u32 offset, void *data, u32 size, u32 unk6);

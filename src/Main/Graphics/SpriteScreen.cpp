@@ -103,8 +103,8 @@ void SpriteScreen::func_02027750() {
     mUnk_405 = 0;
 }
 
-// non-matching: same size; loop-head register allocation and stack slots.
-void SpriteScreen::func_02027778(void *buffer, u8 count, u32 unk3, s16 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8) {
+// non-matching: same size; register allocation and stack slots (13 words, first +0x350).
+void SpriteScreen::func_02027778(void *buffer, u8 count, s16 unk3, s16 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8) {
     OamEntry *entry = (OamEntry *) this + mUnk_404;
     OamSource *source = (OamSource *) buffer;
     SpriteTransform *transform = (SpriteTransform *) unk8;

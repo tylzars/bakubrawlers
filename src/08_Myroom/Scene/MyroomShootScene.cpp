@@ -339,7 +339,6 @@ void MyroomShootScene::Draw() {
     DrawWindows();
 }
 
-// non-matching: register allocation of the glyph-loop locals (x/first/last and the SpriteManager guard-loop temp rotate), 17 words differ (+0x194)
 void MyroomShootScene::DrawSprites() {
     if (mCellAnim != NULL) {
         mCellAnim->Update();
@@ -365,9 +364,9 @@ void MyroomShootScene::DrawSprites() {
         return;
     }
     SpriteManager::Get().Screen(0).func_02027778(mGlyphBuffers[0], 4, 0x70, 0x1e, 0, 0, 0xf, 0);
-    s16 x;
     u8 first;
     u8 k;
+    s16 x;
     u8 last;
     x = 0x80 - ((u32) mUnk_58 >> 1);
     if ((s32) mUnk_58 > 0xf0) {

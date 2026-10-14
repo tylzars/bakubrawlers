@@ -296,8 +296,6 @@ void func_02072614() {
     G2S_BlendNone();
 }
 
-// Held in a register for the last three arguments: an enum-typed zero is not constant-propagated.
-enum LoadArg { LOAD_ARG_NONE };
 void UnkStruct_02071d24::func_02072734() {
     ChangeDir("/Game/Battle/Bg/");
     func_02025b64(1, 7, 0, "result_b_bg_01_nsc.bin", 0, 0, 0);

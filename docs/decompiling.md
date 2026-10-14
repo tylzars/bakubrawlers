@@ -169,6 +169,13 @@ Other findings from linking:
 - **A local array filled from a one-use rodata table is an aggregate initializer.** `u8 buf[3] = {0, 1, 4};` makes
   mwcc emit an anonymous rodata object (often first in the unit's .rodata) and changes which temporary is created
   first; copying `buf[i] = data_xxx[i]` element by element does not match (TitleScene::Update, BattleTarget::Update).
+- **Check a callee's real parameter type before fighting a caller's registers.** An `s16` local passed to a `u32`
+  parameter inside a loop is widened by a hoisted temporary that mwcc coalesces with the local, so declaration order
+  stops affecting it. With `func_02027778`'s third parameter as `s16` (its prologue then matches too), MyroomGiftScene
+  and MyroomShootScene matched by declaration order alone.
+- **Repeated calls with constant arguments schedule in a cycle.** In a lab of 20 identical `func_02025b64` calls the
+  argument-setup pattern repeats every 7 calls; an enum-typed zero (`LoadArg z`, in System/FileSystem.hpp) for one
+  call's last three arguments shifts it (MyroomGiftScene::func_ov008_0221de34, UnkStruct_02071d24::func_02072734).
 - **A stack parameter the callee reads as `*(s16 *)&param` is really `s16`.** Declaring it so makes callers narrow at
   the call, which creates the value later and gives it the low register: with
   `SpriteScreen::func_02027778(..., s16 unk4, ...)`, `int y = row * 0xc + base;` passed straight through matched

@@ -46,6 +46,14 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   tables come before most of its includes; the other two were loading the wrong file names (probes mask string
   addresses, so a wrong literal can look like a match).
 
+- **Two CameraManager mode tests, loads scheduled first (open).** UnkStruct_02078290::Update, func_020785d8 and
+  BattleCardEffect::func_ov007_02271888 (the last thing keeping BattleCardEffect from linking) test
+  `(mode == 2) | (mode == 3)` on two `CameraManager::Get()` results. The original loads both modes before the first
+  compare: the `== 2` operand comes from the address kept in r4, the `== 3` one from a fresh pool load issued first.
+  `CameraManager &b = Get(); CameraManager &a = Get(); if ((a.mMode == 2) | (b.mMode == 3))` is 4 words off (wrong
+  pairing, right order); swapping the pairing gives the right registers but compares before the second load. About 60
+  forms tried (temporaries, inline helpers, `||`, negations, pointer locals), and `-proc generic` shows our compare
+  directly after its load in all of them.
 - **Fully matched units that don't link yet** (2026-10-14):
 
 - **Game.cpp doesn't link yet (`main`, then its `.bss`).** Every function matches. Found while trying (2026-10-14):

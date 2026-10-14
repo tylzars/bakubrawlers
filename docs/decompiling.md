@@ -246,6 +246,11 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **A load folded into an address is a temporary.** `rec = &pl->mRecords[pl->mRecord]` makes the index a temporary
+  coloured before `pl`; kept as its own statement it is coloured after `pl`, which let identical if/else tails merge
+  in BattleTarget::func_ov007_0225ca48. There the separate statement needed a `*(volatile u8 *) &pl->mRecord`
+  placeholder; computing the address in both arms is what puts the shared constant 12 before the branch.
+
 - **A local reused for an earlier, separate value** gets its later live range coloured after the loop counter
   (BattleTarget::func_ov007_0225ac28: one `fx32 value` for the magnitude test and for `f[i]` in the loop).
 - **A helper called with a different constant in each arm** of an if/else is compiled per arm and merged into

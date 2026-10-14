@@ -169,6 +169,13 @@ Other findings from linking:
 - **A local array filled from a one-use rodata table is an aggregate initializer.** `u8 buf[3] = {0, 1, 4};` makes
   mwcc emit an anonymous rodata object (often first in the unit's .rodata) and changes which temporary is created
   first; copying `buf[i] = data_xxx[i]` element by element does not match (TitleScene::Update, BattleTarget::Update).
+- **A `mov` where a spill reload was expected.** When a spilled value's register is still intact at its next use in
+  the same block, mwcc replaces the reload with a `mov` (or drops it). So `mov rX, rY` next to a spill store, where
+  the original has `ldr rX, [sp, #n]` (or the reverse), means the defining register was or wasn't reused before that
+  use. How the variable is built moves this: `s16 x = base; x += off;` versus `s16 x = off + base;`, and statement
+  order (BattleStatusPanels::func_ov007_02235480).
+- **Narrowing shared between uses.** `(s16) (y - 8)` passed to two calls narrows once and keeps the narrowed value;
+  the original kept `y - 8` and narrowed at each call. `(s16) (int) (y - 8)` stops the sharing (a placeholder form).
 - **`Screen(n)` versus `mScreens[n]`.** `SpriteScreen &screen = SpriteManager::Get().Screen(1);` goes through an inline,
   so the reference is a compiler temporary (coloured before named locals); `SpriteManager::Get().mScreens[1]` is
   coloured like a named local. Notes like "screen is r7, original r5" (BattleHud) come from this.

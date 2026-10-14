@@ -314,7 +314,7 @@ void BattleOrderSelect::func_ov007_0224bbf8() {
     func_02025b64(1, 1, 0x4000, "select_order_b_bg_00_ncl.bin", 0, 0, 0);
     func_02025b64(1, 13, 0, "select_order_b_bg_00_ncg.bin", 0, 0, 0);
     func_02025b64(1, 9, 0, "select_order_b_bg_00_nsc.bin", 0, 0, 0);
-    SpriteScreen &screen0 = SpriteManager::Get().Screen(0);
+    SpriteScreen &screen0 = SpriteManager::Get().mScreens[0];
     ChangeDir("/Game/Character/Icon/");
     screen0.LoadCharacters("icon_ch_base.nce_ncg1D.bin", 0xb000, 0);
     screen0.LoadPalette("icon_ch_base_ncl.bin", 0x160, 0);
@@ -332,7 +332,7 @@ void BattleOrderSelect::func_ov007_0224bbf8() {
     mA[0].mAnim->SetAnimation(7);
     mA[1].mAnim->SetAnimation(0);
     ChangeDir("/Game/Battle/Obj/");
-    SpriteScreen &screen1 = SpriteManager::Get().Screen(1);
+    SpriteScreen &screen1 = SpriteManager::Get().mScreens[1];
     screen0.LoadCharacters("select_order_b_obj_00.nce_ncg1D.bin", 0, 0);
     screen0.LoadPalette("select_order_b_obj_00_ncl.bin", 0, 0);
     screen1.LoadCharacters("select_order_b_obj_00.nce_ncg1D.bin", 0, 0);

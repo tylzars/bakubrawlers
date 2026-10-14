@@ -72,14 +72,14 @@ static inline void SetCellPos(SelectWindow *window, int index, s16 x, s16 y) {
     window->mCellPos[index].y = y;
 }
 
-// Small scene created once the save dialog is done (vtable 0x020a54a0).
-class UnkStruct_020a54a0 : public SceneBase {
+// Writes the save data (vtable 0x020a54a8; defined in FileLoader.cpp). Created once the save dialog is done.
+class UnkScene_020a54a8 : public SceneBase {
 public:
-    UnkStruct_020a54a0() :
+    UnkScene_020a54a8() :
         SceneBase(0xffdc, 0) {
         ((u8 *) mContext)[0x23] = 0;
     }
-    virtual ~UnkStruct_020a54a0();
+    virtual ~UnkScene_020a54a8();
     virtual void Update();
 };
 
@@ -124,7 +124,7 @@ void UnkStruct_02070608::Update() {
             }
             data_020d43f0[0].mUnk_26 = data_020d433c.mUnk_79;
             UnkStruct_020c17a8::Get();
-            new UnkStruct_020a54a0();
+            new UnkScene_020a54a8();
             mUnk_33++;
             break;
         case 4:

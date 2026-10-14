@@ -100,6 +100,12 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   (`inline WindowCellRecord *CellTable_020b3a44() { static WindowCellRecord t[7] = {...}; return t; }`) each gets its
   own `.data` section there. A table read only with constant indices (camera rows) was kept referenced by reading
   it in the code (`FxRound(t[r][k] * 0x1000)` folds to the same immediates).
+- **Vtable order and destructor order can disagree (FileLoader).** Vtables come out in reverse class order, and
+  inline virtual destructors are emitted with them (D0 then D1). The original has the two vtables in one order and
+  the destructors in the other, with D1 before D0: the destructors were defined out of line after the other
+  functions (`UnkScene_020a54a8::~UnkScene_020a54a8() {}`), which emits D1, D0, D2 (the linker drops D2).
+- **One class, two names.** UnkStruct_02070608.cpp constructed FileLoader's `UnkScene_020a54a8` under the name
+  `UnkStruct_020a54a0` (its vtable symbol's address), which only showed as an undefined vtable once FileLoader linked.
 - **False relocations in data blobs.** dsd reads any word that looks like an address as a pointer: a font bitmap
   in main's `.data` at 0x020a8d10 held the bytes of 0x02220842, recorded as a relocation into ov005. Once MapScene
   linked from source that symbol was gone and the word became 0. Deleting the line from relocs.txt fixed it; check

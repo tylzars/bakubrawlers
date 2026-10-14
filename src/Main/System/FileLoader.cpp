@@ -106,17 +106,18 @@ struct UnkStruct_SaveBlock {
     /* 0c */ u8 mData[0xff4];
 };
 
-// Loads the save data (vtable 0x020a5494).
-class UnkScene_020a5494 : public SceneBase {
-public:
-    virtual ~UnkScene_020a5494() {}
-    virtual void Update();
-};
-
 // Writes the save data (vtable 0x020a54a8).
 class UnkScene_020a54a8 : public SceneBase {
 public:
-    virtual ~UnkScene_020a54a8() {}
+    virtual ~UnkScene_020a54a8();
+    virtual void Update();
+};
+
+// Declared second: vtables come out in reverse class order, and 0x020a5494 is the first of the two.
+// Loads the save data (vtable 0x020a5494).
+class UnkScene_020a5494 : public SceneBase {
+public:
+    virtual ~UnkScene_020a5494();
     virtual void Update();
 };
 
@@ -241,3 +242,7 @@ void UnkScene_020a5494::Update() {
             break;
     }
 }
+
+UnkScene_020a54a8::~UnkScene_020a54a8() {}
+
+UnkScene_020a5494::~UnkScene_020a5494() {}

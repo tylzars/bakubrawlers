@@ -3380,7 +3380,7 @@ data_020a5480 kind:data(any) addr:0x020a5480
 data_020a5484 kind:data(any) addr:0x020a5484
 _ZTV17UnkScene_020a5494 kind:data(any) addr:0x020a548c
 data_020a5494 kind:data(any) addr:0x020a5494
-_ZTV18UnkStruct_020a54a0 kind:data(any) addr:0x020a54a0
+_ZTV17UnkScene_020a54a8 kind:data(any) addr:0x020a54a0
 @174 kind:data(any) addr:0x020a54b4 local
 _ZTV11SceneRunner kind:data(any) addr:0x020a54cc
 sFrameInterval kind:data(any) addr:0x020a54e0 local
@@ -4733,6 +4733,7 @@ data_020d540c kind:bss addr:0x020d540c
 data_020d5440 kind:bss addr:0x020d5440
 data_020d5488 kind:bss addr:0x020d5488
 data_020d5508 kind:bss addr:0x020d5508
+data_020d5514 kind:bss addr:0x020d5514
 data_020d5520 kind:bss addr:0x020d5520
 data_020e0206 kind:bss addr:0x020e0206
 data_020e020d kind:bss addr:0x020e020d

@@ -646,9 +646,11 @@ src/Main/System/FileSystem.cpp:
     .data       start:0x020a5480 end:0x020a548c
     .bss        start:0x020d53e8 end:0x020d53f4
 
-// provisional: code only; .data 0x020a548c-0x020a54b4 and .bss 0x020d5508-0x020d5520 belong here.
 src/Main/System/FileLoader.cpp:
+    complete
     .text       start:0x02023b80 end:0x020244cc
+    .data       start:0x020a548c end:0x020a54b4
+    .bss        start:0x020d5508 end:0x020d5514
 
 src/Main/System/SoundManager.cpp:
     complete

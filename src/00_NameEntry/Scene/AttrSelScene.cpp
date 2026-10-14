@@ -174,8 +174,6 @@ void AttrSelScene::Update() {
     Draw();
 }
 
-// Same arithmetic as TextManager::GlyphCount(width, height, flags) but with signed operands: the original calls
-// _s32_div_f here (and in ov008 0221e2d8/0221e2ec), the header's u32 parameters would give _u32_div_f.
 extern const u8 data_ov000_02226214[];
 
 extern const u8 data_ov000_02226218[];
@@ -186,7 +184,6 @@ extern const WindowItemRecord data_ov000_0222623c[];
 
 extern const WindowCellRecord data_ov000_02226258[];
 
-// Same helper as FieldSelectScene.cpp defines locally; belongs in nitro/gx.h next to G2S_SetBlendAlpha.
 void AttrSelScene::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
@@ -205,7 +202,6 @@ void AttrSelScene::InitDisplay() {
 
 
 
-// non-matching: 7 words, registers only: the original keeps flags in r8 and unitX in r6.
 void AttrSelScene::LoadGraphics() {
     ChangeDir("/Game/AttrSel/Bg");
     func_02025b64(0, 1, 0, "edit_attribute_u_bg_00_ncl.bin", 0, 0, 0);
@@ -250,17 +246,13 @@ void AttrSelScene::LoadGraphics() {
     mSelectWindow->SetCells(1, data_ov000_02226258);
     mSelectWindow->mCursor->mSelection = -1;
     TextManager::Get().SetColor(0, 0, 0xf);
-    u8 i;
-    u8 height;
-    s32 flags;
-    u8 width;
-    for (i = 0; i < 2; i++) {
-        mBufferSize[i] = (u16) TextManager::Get().BufferSize((s16) (width = data_ov000_02226214[i]), (s16) (height = data_ov000_02226218[i]));
+    for (u8 i = 0; i < 2; i++) {
+        mBufferSize[i] = (u16) TextManager::Get().BufferSize((s16) data_ov000_02226214[i], (s16) data_ov000_02226218[i]);
         mTextBuffer[i] = OS_Alloc(mBufferSize[i]);
         MI_CpuClear16(mTextBuffer[i], mBufferSize[i]);
-        mGlyphCount[i] = TextManager::Get().GlyphCount(width, height, flags = data_ov000_02226234[i]);
+        mGlyphCount[i] = TextManager::Get().GlyphCount(data_ov000_02226214[i], data_ov000_02226218[i], data_ov000_02226234[i]);
         mGlyphBuffer[i] = OS_Alloc(mGlyphCount[i] * 0xc);
-        TextManager::Get().Init(mGlyphBuffer[i], 0, 0, width, height, flags);
+        TextManager::Get().Init(mGlyphBuffer[i], 0, 0, data_ov000_02226214[i], data_ov000_02226218[i], data_ov000_02226234[i]);
     }
     PrintName(mTextBuffer[0], mBufferSize[0], 0x2000, 0x10, 2, 0x21);
     mMessages = (MessageFile *) func_02023504("/font/mes_chara_edit.mes", 0, 0, 0, 0, 0);

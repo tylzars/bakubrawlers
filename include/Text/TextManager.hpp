@@ -98,6 +98,10 @@ public:
         return (u8 *) this + 0x5c;
     }
 
+#ifdef GAME_SINGLETON_CTORS
+    // As Game.cpp saw the class: an empty constructor, so its copies of the singleton objects join guard first.
+    TextManager() {}
+#endif
     ~TextManager();
 
     static TextManager &Get() {

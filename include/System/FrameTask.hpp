@@ -41,7 +41,8 @@ public:
     /* 954 */ float mVolume0;
     /* 958 */ float mVolume1;
     /* 95c */ float mVolume2;
-    /* 960 */
+    /* 960 */ PAD(0x960, 0x96c); // size from the instance's place in Game's .bss
+    /* 96c */
 
     FrameTask() {}
     ~FrameTask();

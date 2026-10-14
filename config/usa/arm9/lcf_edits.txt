@@ -6,3 +6,19 @@
 # GameData's globals: other units still name some of their fields by address.
 inner data_020d433c 0xb4
 inner data_020d43f0 0xff4
+
+# Game.cpp: main is placed right after the start-up code; Game.o keeps the singletons' instances, and other units
+# still name fields inside them by address.
+place GameMain.o main Game.o
+inner _ZZN11SceneRunner3GetEvE8instance 0x14
+inner _ZZN18UnkStruct_020c18843GetEvE8instance 0x18
+inner _ZZN10MicManager3GetEvE8instance 0x28
+inner _ZZN12InputManager3GetEvE8instance 0x3c
+inner _ZZN12TouchManager3GetEvE8instance 0x64
+inner _ZZN12SoundManager3GetEvE8instance 0xb0
+inner _ZZN11TextManager3GetEvE8instance 0xe8
+inner _ZZN13CameraManager3GetEvE8instance 0x258
+inner _ZZN9FrameTask3GetEvE8instance 0x96c
+inner _ZZN13SpriteManager3GetEvE8instance 0x970
+inner _ZZN15WirelessManager3GetEvE8instance 0x1258
+inner _ZZN12SceneManager3GetEvE8instance 0x10060

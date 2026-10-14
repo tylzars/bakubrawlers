@@ -1,12 +1,7 @@
-#include "System/FrameClock.hpp"
-#include "Text/TextManager.hpp"
-#include "Graphics/Camera.hpp"
-#include "System/InputManager.hpp"
-#include "Unknown/UnkStruct_020c17a8.hpp"
-#include "System/SoundManager.hpp"
-#include "Graphics/SpriteManager.hpp"
-#include "System/TouchManager.hpp"
-#include "System/WirelessManager.hpp"
+// Game.cpp saw six singleton classes with an empty constructor that no other file has (their objects join guard
+// first here, node first everywhere else); the headers declare it only under this macro.
+#define GAME_SINGLETON_CTORS
+
 #include "System/FrameUpdate.hpp"
 #include "Scene/SceneBase.hpp"
 
@@ -15,9 +10,14 @@
 #include <nitro/gx.h>
 #include <nitro/os.h>
 
-// The include order and the placement of these two classes fix the order of the singletons' static data (see
-// "Data layout within a section" in docs/decompiling.md).
-
+const char *data_020a544c[] = {NULL, "F", "G", "I", "S", "D", "V", "J"};
+#include "System/FrameTask.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "System/InputManager.hpp"
+#include "System/TouchManager.hpp"
+#include "Text/TextManager.hpp"
+#include "System/SoundManager.hpp"
+#include "System/WirelessManager.hpp"
 class MicManager {
 public:
     /* 00 */ PAD(0x00, 0x20);
@@ -35,8 +35,7 @@ public:
     void func_0202d94c();
 };
 
-#include "System/FrameTask.hpp"
-
+#include "Scene/SceneManager.hpp"
 class SceneRunner : public SceneBase {
 public:
     /* 0c */ s32 mOverlay;
@@ -53,8 +52,9 @@ public:
     }
 };
 
-#include "Scene/SceneManager.hpp"
-
+#include "Graphics/Camera.hpp"
+#include "Unknown/UnkStruct_020c17a8.hpp"
+#include "System/FrameClock.hpp"
 extern "C" {
 void OS_Init(void);
 void OS_ResetSystem(u32 unk1);
@@ -90,7 +90,6 @@ void func_02023884(void);
 void func_02025d74(void);
 void func_0202555c(void);
 extern u32 data_020a4f24;
-extern const char *data_020a544c[];
 extern "C" void G2x_SetMasterBrightness_(vu16 *reg, int value);
 void UpdateFrame();
 void func_020254bc();

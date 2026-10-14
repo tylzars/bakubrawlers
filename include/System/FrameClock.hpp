@@ -22,6 +22,10 @@ public:
     /* 16 */ PAD(0x16, 0x18);
     /* 18 */
 
+#ifdef GAME_SINGLETON_CTORS
+    // As Game.cpp saw the class: an empty constructor, so its copies of the singleton objects join guard first.
+    UnkStruct_020c1884() {}
+#endif
     ~UnkStruct_020c1884(); // out of line in Game.cpp (0x020219c0)
 
     static UnkStruct_020c1884 &Get() {

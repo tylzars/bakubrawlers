@@ -49,6 +49,10 @@ public:
     /* 62 */ PAD(0x62, 0x64);
     /* 64 */
 
+#ifdef GAME_SINGLETON_CTORS
+    // As Game.cpp saw the class: an empty constructor, so its copies of the singleton objects join guard first.
+    TouchManager() {}
+#endif
     ~TouchManager();
 
     static TouchManager &Get() {

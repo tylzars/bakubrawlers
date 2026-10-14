@@ -393,6 +393,11 @@ libs/nds/src/mi/mi_init.c:
     complete
     .text       start:0x02007f18 end:0x02007f30
 
+// main's slot: the function itself comes from Game.o (see the source file and lcf_edits.txt).
+src/Main/System/GameMain.cpp:
+    complete
+    .text       start:0x02000c04 end:0x02000cb4
+
 libs/nds/src/fx/fx_mtx22.c:
     complete
     .text       start:0x02000cd8 end:0x02000d88
@@ -610,9 +615,11 @@ libs/nds/src/wm/wm_0200fdfc.c:
 libs/nds/src/ctrdg/ctrdg.c:
     .text       start:0x02011c34 end:0x020122b0
 
-// provisional: code only; main (0x02000c04) is defined here too but delinked with the start-up code.
 src/Main/System/Game.cpp:
+    complete
     .text       start:0x0202030c end:0x020219dc
+    .data       start:0x020a541c end:0x020a546c
+    .bss        start:0x020c17a8 end:0x020d42e8
 
 // provisional: code only; data not assigned yet.
 src/Main/System/Random.cpp:

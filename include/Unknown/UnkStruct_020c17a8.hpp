@@ -10,6 +10,10 @@ public:
     /* 01 */
     // One byte: Game's copy of the instance (0x020c17a8) is followed by a guard at 0x020c17ac.
 
+#ifdef GAME_SINGLETON_CTORS
+    // As Game.cpp saw the class: an empty constructor, so its copies of the singleton objects join guard first.
+    UnkStruct_020c17a8() {}
+#endif
     ~UnkStruct_020c17a8();
 
     static UnkStruct_020c17a8 &Get() {

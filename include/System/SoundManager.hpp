@@ -26,6 +26,10 @@ public:
     /* af */ PAD(0xaf, 0xb0);
     /* b0 */
 
+#ifdef GAME_SINGLETON_CTORS
+    // As Game.cpp saw the class: an empty constructor, so its copies of the singleton objects join guard first.
+    SoundManager() {}
+#endif
     ~SoundManager();
 
     static SoundManager &Get() {

@@ -56,23 +56,19 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   directly after its load in all of them.
 - **Fully matched units that don't link yet** (2026-10-14):
 
-- **Game.cpp doesn't link yet (`main`, then its `.bss`).** Every function matches. Found while trying (2026-10-14):
-  - `main` (0x02000c04) is Game's but sits right after the start-up code.
-    Placing it works: a stub unit for 0x02000c04-0x02000cb4 whose LCF line is rewritten to
-    `OBJECT(main, Game.o)` links and puts `main` there.
-  - The singleton destructors must be `inline` in Game.cpp (done): they then come out as weak copies after
-    `func_02020328` in its first-use order, which is the original function order at 0x02020a08-0x02020a44.
-  - Game's copies of the singleton guards (0x020c17a8-0x020c17e0) and instances (0x020c1870-0x020d42e8) are the
-    ones the original kept, so Game's `.bss` range must cover them. Then two names other files use for fields
-    inside instances need linker-script definitions: `data_020c1a4c` (TextManager instance + 0x38) and
-    `data_020c3938` (WirelessManager instance + 0x908). Both were tested and link.
-  - SceneRunner is 0x14 bytes (done), and `UnkStruct_020c17a8` is at most 4 bytes: its instance at 0x020c17a8 is
-    followed by a guard at 0x020c17ac. TitleScene's solved layout only works with it at 16 bytes or more, so
-    TitleScene's layout has to be solved again first (its model doesn't reproduce; a brute force over singleton
-    include order and table position found nothing).
-  - The 13 guards still come out in another tie order; `layout_search.py --weak` (places a unit's own guards and
-    instances) finds no order with the current participants.
-
+- **Game.cpp (linked).** What it took:
+  - `main` (0x02000c04) is Game's but placed right after the start-up code: a stub unit GameMain.cpp holds its slot and
+    `place GameMain.o main Game.o` in config/usa/arm9/lcf_edits.txt puts `OBJECT(main, Game.o)` there;
+    tools/objdiff_place.py scores it against Game.o.
+  - Game.o's copies of the singletons' guards (0x020c17a8-0x020c17e0) and instances (0x020c1870-0x020d42e8) are the
+    kept ones, so its `.bss` range covers them; `inner <instance> <size>` lines alias the field names other units
+    use (data_020c1a4c, data_020c3938, ...).
+  - The singleton destructors are `inline` in Game.cpp, which gives the original function order.
+  - Six singleton classes have an empty constructor as Game.cpp saw them (guard before node there, node before guard
+    in every other unit): the headers declare it under `#ifdef GAME_SINGLETON_CTORS`, defined only in Game.cpp. An
+    exhaustive search over all 14! orders found no layout without it, and declaring it everywhere breaks 32 units.
+  - data_020a544c (the language-letter table) and its strings are Game's `.data`; UnkStruct_020c17a8 is one byte,
+    SceneRunner 0x14 and FrameTask 0x96c (sizes read from Game's `.bss`).
 - **Two literal-pool entries for one address.** `func_02023504` (FileSystem.cpp) loads 0x020d53e4 from two
   different pool words, so two relocations (different symbols, or symbol plus offset) resolve to the same address
   in the original. The source models it with a second extern, `data_020d53e4_h`; the real layout of the loader's

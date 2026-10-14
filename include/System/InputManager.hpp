@@ -20,6 +20,10 @@ public:
     /* 3b */ PAD(0x3b, 0x3c);
     /* 3c */
 
+#ifdef GAME_SINGLETON_CTORS
+    // As Game.cpp saw the class: an empty constructor, so its copies of the singleton objects join guard first.
+    InputManager() {}
+#endif
     ~InputManager();
 
     void Init();

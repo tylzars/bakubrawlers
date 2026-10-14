@@ -58,7 +58,7 @@ public:
 
     BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8 unk6, BattleParam *param, u8 unk8);
     ~BattleSlot();
-    int func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 *choice, u8 n, u8 *d);
+    int func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 n, u8 *d);
     BOOL func_ov007_02222bac();
     int func_ov007_02222c34(u8 n, u16 *a, u16 *b);
     u32 func_ov007_022230b4(u16 value, u8 n);

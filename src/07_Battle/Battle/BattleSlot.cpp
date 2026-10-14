@@ -333,8 +333,7 @@ u32 BattleSlot::func_ov007_022230b4(u16 value, u8 n) {
     return value;
 }
 
-// non-matching: the original spills data and keeps choice in r6; here it is the reverse.
-int BattleSlot::func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 *choice, u8 n, u8 *d) {
+int BattleSlot::func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 n, u8 *d) {
     int role = mRole;
     if (role == 4) {
         return -1;
@@ -364,7 +363,7 @@ int BattleSlot::func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 *choice, u8 n, u8
             if (c[side] == 0) {
                 if (func_ov007_02222bac()) {
                     u16 v = func_ov007_02222c34(n, a, b);
-                    u16 w = func_ov007_022230b4(v, n);
+                    u32 w = func_ov007_022230b4(v, n);
                     if (mIndex == data->mEntries[0].mUnk_0d_4) {
                         a[mIndex] = w;
                     } else {
@@ -382,10 +381,10 @@ int BattleSlot::func_ov007_02223260(u16 *a, u16 *b, u16 *c, s8 *choice, u8 n, u8
         }
     }
     if (mRole <= 1) {
-        if (choice[mRole * 2] == -1) {
-            choice[mRole * 2] = mIndex;
+        if (choice[mRole][0] == -1) {
+            choice[mRole][0] = mIndex;
         } else {
-            choice[mRole * 2 + 1] = mIndex;
+            choice[mRole][1] = mIndex;
         }
     }
     return ret;

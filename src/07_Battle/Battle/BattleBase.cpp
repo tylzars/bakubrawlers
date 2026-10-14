@@ -1168,7 +1168,7 @@ int BattleBase::func_ov007_0221c850(u16 *a, u16 *b, u16 *c, u8 *d) {
     u8 i = 0;
     do {
         if (data_020d433c.mBattlePlayers->mPlayers[i]->IsActive()) {
-            if (mSlots[i]->func_ov007_02223260(a, b, c, (s8 *) &mUnk_1c, mUnk_44->mUnk_13, d) != -1) {
+            if (mSlots[i]->func_ov007_02223260(a, b, c, (s8 (*)[2]) &mUnk_1c, mUnk_44->mUnk_13, d) != -1) {
                 break;
             }
         }

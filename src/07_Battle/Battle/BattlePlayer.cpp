@@ -203,14 +203,16 @@ void BattlePlayer::Update() {
     }
 }
 
-// non-matching: 0x300 vs 0x2f4 bytes, register allocation of the loop variables and the player table walk.
 void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
+    u8 i = 0;
+    BOOL hasZero;
+    u8 n;
+    u8 ones;
     player->mUnk_d4 = 0;
     player->mUnk_d8 = 0;
-    u8 n            = data_020d433c.mUnk_99;
-    u32 hasZero     = 0;
-    u8 ones         = 0;
-    u8 i            = 0;
+    n       = data_020d433c.mUnk_99;
+    hasZero = 0;
+    ones    = 0;
     do {
         u8 state = player->mRecords[i].mUnk_0a;
         if (state == 0) {
@@ -259,24 +261,21 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
     player->mUnk_fa = 0;
     if (reset == 0) {
         u32 flagA = 0;
-        u32 best  = 0;
+        u8 best  = 0;
         if (data_020d433c.mUnk_98) {
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
             u8 mine                = player->mUnk_ee;
-            u8 self                = player->mUnk_f0;
             u8 total               = mine + list->mPlayers[player->mUnk_f2]->mUnk_ee;
-            u8 count               = data_020d433c.mPlayerCount;
-            u8 other               = 0;
             u8 sum                 = 0;
-            u8 j                   = 0;
+            i                      = 0;
             do {
-                u8 partner = list->mPlayers[j]->mUnk_f2;
-                if (j != self && partner != self) {
-                    sum = data_020d433c.mBattlePlayers->mPlayers[j]->mUnk_ee + data_020d433c.mBattlePlayers->mPlayers[partner]->mUnk_ee;
+                u8 partner = list->mPlayers[i]->mUnk_f2;
+                if (i != player->mUnk_f0 && partner != player->mUnk_f0) {
+                    sum = data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_ee + data_020d433c.mBattlePlayers->mPlayers[partner]->mUnk_ee;
                     break;
                 }
-                j++;
-            } while (j < count);
+                i++;
+            } while (i < data_020d433c.mPlayerCount);
             s8 diff = sum - total;
             if (sum == 2) {
                 flagA = 1;
@@ -285,29 +284,27 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
                 best = (u8) diff;
             }
         } else {
-            u8 count   = data_020d433c.mPlayerCount;
-            u8 mine    = player->mUnk_ee;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            u8 j       = 0;
-            u8 top     = data_020d433c.mUnk_99 - 1;
+            int top                = data_020d433c.mUnk_99 - 1;
+            u8 mine                = player->mUnk_ee;
+            i                      = 0;
             do {
-                u8 level = list->mPlayers[j]->mUnk_ee;
+                u8 level = list->mPlayers[i]->mUnk_ee;
                 if (top == level) {
-                    if (j != player->mUnk_f0) {
+                    if (i != player->mUnk_f0) {
                         flagA = 1;
                     }
                 }
                 s8 diff = level - mine;
-                if ((s8) best < diff) {
+                if (best < diff) {
                     best = (u8) diff;
                 }
-                j++;
-            } while (j < count);
+                i++;
+            } while (i < data_020d433c.mPlayerCount);
         }
         u8 gain = best * 0x28 + 0x1e + flagA * 0x19;
-        u32 t   = player->mUnk_f3 + gain;
-        if (t < 0xbe) {
-            player->mUnk_f3 = t;
+        if (player->mUnk_f3 + gain < 0xbe) {
+            player->mUnk_f3 += gain;
         } else {
             player->mUnk_f3 = 0xbe;
         }
@@ -316,9 +313,8 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
         player->mRecords[1].mUnk_0a = 2;
         player->mRecords[2].mUnk_0a = 2;
         if (player->mUnk_f0 != 0) {
-            u32 t = player->mUnk_f3 + 0xbe;
-            if (t < 0xbe) {
-                player->mUnk_f3 = t;
+            if (player->mUnk_f3 + 0xbe < 0xbe) {
+                player->mUnk_f3 += 0xbe;
             } else {
                 player->mUnk_f3 = 0xbe;
             }
@@ -327,7 +323,6 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
     }
 }
 
-// non-matching: 11 words, `length` is kept in r2 instead of r4 (the original recomputes length * 2 after the copy call).
 void func_ov007_0226a1d8(BattlePlayer *player) {
     if (player->mUnk_f6 == 0x15) {
         WirelessManager::Get();
@@ -347,7 +342,7 @@ void func_ov007_0226a1d8(BattlePlayer *player) {
         if (length == 0) {
             length = 1;
         }
-        func_01ff94e0(name, (u8 *) player + 0xb0, length * 2);
+        func_01ff94e0(name, (u8 *) player + 0xb0, length * sizeof(u16));
         player->mUnk_ed = length * 2;
     } else {
         MessageFile *file = (MessageFile *) func_02023504("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
@@ -412,7 +407,6 @@ void func_ov007_0226a448(BattlePlayer *player, u8 index, int flag) {
 }
 
 
-// non-matching: 0x154 vs 0x15c bytes. The original reads data_020d43f0[0].mUnk_1a_8 again for the +0x6c store (here it is reused) and keeps the constant 2 in r2 across the second flag group.
 void func_ov007_0226a48c(BattlePlayer *player) {
     if (data_020d433c.mUnk_85 != 0xe) {
         u8 two = 2;
@@ -421,11 +415,13 @@ void func_ov007_0226a48c(BattlePlayer *player) {
         player->mSlots6c[2].mFlag = two;
         if (data_020d433c.mUnk_85 == 1) {
             player->mSlots54[0].mFlag = 0;
+            player->mSlots54[1].mFlag = two;
+            player->mSlots54[2].mFlag = two;
         } else {
             player->mSlots54[0].mFlag = two;
+            player->mSlots54[1].mFlag = two;
+            player->mSlots54[2].mFlag = two;
         }
-        player->mSlots54[1].mFlag = two;
-        player->mSlots54[2].mFlag = two;
         if (player->mUnk_f0 != 0) {
             player->mRecords[0].mUnk_04 = 0xe6;
             player->mRecords[0].mUnk_0b = 0x17;

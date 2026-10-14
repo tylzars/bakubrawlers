@@ -451,7 +451,9 @@ Other findings from linking:
   as `g[i].f` don't.
 - **Singleton references.** With `T &a = T::Get(); T &b = T::Get();` the address from the second guard block is
   kept in a callee-saved register and serves `a`; uses of `b` reload from the pool. A single reference reloads at
-  every use. mwcc never forwards a stored value to a later load of the same member.
+  every use. Through a singleton reference a stored member is not forwarded to a later load, but a store
+  immediately followed by a reload of the same member through `this` is (`mData = data; data = mData;` compiles
+  with no load; BattleSlot's constructor).
 - **Equivalent arithmetic, different schedules.** Inside a long sum, `y % 8 << 3` and `y % 8 * 8` (or
   `(y/64) * 8 * 512` and `(y/64) * 4096`) produce different instruction orders, and so different registers, even
   though each term alone compiles the same. Term order doesn't matter; the compiler re-sorts the sum

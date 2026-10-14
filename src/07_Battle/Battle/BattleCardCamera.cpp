@@ -85,8 +85,9 @@ void BattleCardCamera::Update() {
 
 
 extern const u8 data_ov007_02279e88[];
+// The battle camera through an inline: the original keeps it as a compiler temporary (r5, above the path strings).
+static inline Camera *BattleCamera() { return data_020d433c.mBattlePlayers->mCamera; }
 
-// non-matching: 40 words, register assignment only (original keeps `camera` in r5 and the string pointer in r4).
 void BattleCardCamera::func_ov007_02244bb4() {
     mUnk_10[0] = new UnkStruct_0203d374();
     mUnk_10[0]->func_0203d4dc(mUnk_2b, mUnk_2d, 3);
@@ -109,7 +110,8 @@ void BattleCardCamera::func_ov007_02244bb4() {
     p1->mPosition.z = 0;
     p1 = mUnk_10[1];
     p1->mRotX = 0;
-    p1->mRotY = 0xc000;
+    // Placeholder: the original stores -0x4000 as a signed 16-bit value (built as 0xe000 - 0x12000).
+    *(s16 *) &p1->mRotY = -0x4000;
     p1->mRotZ = 0;
     mUnk_18 = new BattleMapModel(2);
     mUnk_18->func_02052768(0, 0);
@@ -119,7 +121,7 @@ void BattleCardCamera::func_ov007_02244bb4() {
     model->mRotZ = 0;
     mUnk_0c = new BattleMapObj(0xc);
     mUnk_0c->func_ov007_022493fc();
-    Camera *camera = data_020d433c.mBattlePlayers->mCamera;
+    Camera *camera = BattleCamera();
     camera->SetUp(0, 0x1000, 0);
     camera->SetClip(0x1000, 0x1388000);
     camera->func_02026004(0x18e3);

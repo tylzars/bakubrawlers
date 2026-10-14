@@ -208,6 +208,9 @@ Other findings from linking:
   gave the original's evaluation order where none of the 120 one-expression forms did (BattleShoot::func_ov007_0226f76c).
   Reading `tbl[idx]` into a local before an `f++` puts the table load ahead of the store, and `if (field)` right after
   `field = var;` compiles to `tst #255`.
+- **A negative constant stored with `strh` means a signed 16-bit destination.** `mov r0, #0xe000; sub r1, r0, #0x12000`
+  (0xffffc000) stored to a halfword can't come from a `u16` field: every form folds to 0xc000. Only a signed 16-bit
+  lvalue gives it (`*(s16 *) &p->mRotY = -0x4000;` as a placeholder, BattleCardCamera::func_ov007_02244bb4).
 - **A wrong constant can look like a scheduling difference.** When the original builds a value from a neighbouring
   constant (`mov r7, #34; sub r7, r7, #47`), that shows the true value (-13 where the source had 3,
   UnkStruct_02065c40::func_0206fa20). Likewise a literal-pool word that differs is often a wrong divisor or constant

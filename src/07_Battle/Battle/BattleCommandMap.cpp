@@ -789,7 +789,6 @@ extern "C" void func_ov007_022471c8(BattleCommandMap *map, u32 direction) {
     }
 }
 
-// non-matching: 9 words, the original loads target.x, target.z, then position.y before the three stores.
 extern "C" void func_ov007_0224724c(BattleCommandMap *map) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera == 0) {
@@ -805,10 +804,12 @@ extern "C" void func_ov007_0224724c(BattleCommandMap *map) {
     s32 radius = (s32) ((float) map->mUnk_130 / 4096.0f);
     s32 x      = (s32) ((float) radius * (float) sinv);
     s32 z      = (s32) ((float) radius * (float) cosv);
+    x += camera->mTarget.x;
+    z += camera->mTarget.z;
     VecFx32 p;
-    p.x = x + camera->mTarget.x;
+    p.x = x;
     p.y = camera->mPosition.y;
-    p.z = z + camera->mTarget.z;
+    p.z = z;
     camera->mPosition = p;
     SnapshotCamera();
 }

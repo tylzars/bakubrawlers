@@ -177,6 +177,15 @@ Other findings from linking:
   makes `p * 4` a common subexpression with a later `p * 4 + 0x28`, and mwcc hoists it above the `if`. Keeping the
   container in a local and indexing inside each arm (`list->mPlayers[p]->mUnk_f1`) stops it
   (BattleCommand::func_ov007_0223a734). A `(u8 *)` cast store recolours differently from a real `u8` field store.
+- **From the FieldSelectScene pass.**
+  - `u32 k = 0; ... k = (u8) (k + 1);` fixed a counter/coordinate register swap where `u8 k` in every order failed
+    (the TournamentScene idiom again).
+  - `const u8 *p = tbl; p += k * 3; p[byte]` stops mwcc reassociating `tbl[k * 3 + byte]` into a hoisted
+    `tbl + byte`; every single-expression form hoists.
+  - `byte = f / 8` gives `lsr` where `f >> 3` gives `asr` (on a signed `f`).
+  - A value the original keeps across a loop without reloading, written in place, is a temporary; a named local
+    shifts registers.
+  - `switch` instead of an if-chain stops mwcc predicating the arms.
 - **An `&` chain no single expression reproduces.** `BOOL lo = (a >= 0) & (b >= 0); if (lo & (a < 0x100) & ...)`
   gave the original's evaluation order where none of the 120 one-expression forms did (BattleShoot::func_ov007_0226f76c).
   Reading `tbl[idx]` into a local before an `f++` puts the table load ahead of the store, and `if (field)` right after

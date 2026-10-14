@@ -25,7 +25,6 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-// non-matching: same size and same structure, 102 words differ (register allocation and the scheduling of the mUnk_33b loads in the first flag loop)
 extern const u8 data_ov001_02227194[];
 extern const u8 data_ov001_022270c4[];
 
@@ -62,15 +61,14 @@ extern const u8 data_ov001_022270d0[];
 extern const WindowItemRecord data_ov001_02227218[][6];
 extern const WindowCellRecord data_ov001_02227560[][6];
 
-extern const u8 data_ov001_022270dc[];
+extern const u8 data_ov001_022270dc[][4];
 extern const u8 data_ov001_022270c0[];
 extern const u8 data_ov001_022270bc[];
 
 extern u8 data_020d43eb[];
 
-// non-matching: the first flag loop's inner test adds data_020d496a and `byte` once outside the loop (the original adds
-// `byte` last, after base + k * 3) and shifts `byte` with asr where the original has lsr; the j/row registers of the
-// mUnk_25c loop differ (r3/r7/r9 vs r7/r9/r3).
+// non-matching: 5 words in the mUnk_25c loop: the original keeps the j start value in r7 and this + i * 2 in r3,
+// here they are swapped (r3/r7).
 FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     mWindows[0] = NULL;
     mWindows[1] = NULL;
@@ -123,6 +121,8 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     MI_CpuClear32(mUnk_30c, sizeof(mUnk_30c));
     MI_CpuFill8(mUnk_2d2, 0, sizeof(mUnk_2d2));
     MI_CpuFill8(mUnk_2e4, 0, sizeof(mUnk_2e4));
+    u8 j;
+    u8 i;
     WirelessManager::Get();
     const u8 *mode = &data_020c4258;
     if (IsWirelessMode(mode)) {
@@ -141,28 +141,29 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     } else {
         mUnk_33b = 0;
     }
-    for (u8 i = 0; i < 0x12; i++) {
+    for (i = 0; i < 0x12; i++) {
         if (i == 0 || i == 0x11) {
             mUnk_266[mUnk_33b][i] = 3;
             mUnk_2d2[i]           = 0;
         } else {
-            u8 f                  = data_ov001_02227194[i];
             mUnk_266[mUnk_33b][i] = 0;
-            int byte = f >> 3;
-            int bit  = f % 8;
+            u8 f                  = data_ov001_02227194[i];
+            int byte = f / 8;
             for (u8 k = 0; k < 3; k++) {
-                if (data_020d496a[k * 3 + byte] & (1 << bit)) {
+                const u8 *flags = data_020d496a;
+                flags += k * 3;
+                if (flags[byte] & (1 << (f % 8))) {
                     mUnk_266[mUnk_33b][i] = k + 1;
                 }
             }
             if (mUnk_266[mUnk_33b][i] != 0) {
-                if (!(data_020d4973[byte] & (1 << bit))) {
+                if (!(data_020d4973[byte] & (1 << (f % 8)))) {
                     mUnk_2d2[i] = 1;
                 }
             }
         }
     }
-    for (u8 j = 0; j < 9; j++) {
+    for (j = 0; j < 9; j++) {
         if (j == 8) {
             mUnk_2ae[mUnk_33b][j] = 1;
         } else {
@@ -177,8 +178,6 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
             }
         }
     }
-    u8 j;
-    u8 i;
     for (i = 0; i < 5; i++) {
         for (j = 0; j < 2; j++) {
             mUnk_25c[i * 2 + j] = 0;
@@ -316,7 +315,6 @@ void FieldSelectScene::Update() {
             }
             break;
         case 2:
-// non-matching: the original does not predicate the single-store branches of `j == 0 || j == 0x11` and `j == 8`.
             if (func_ov001_02221c0c()) {
                 mState++;
             }
@@ -991,6 +989,7 @@ BOOL FieldSelectScene::func_ov001_02221aa8(u32 unk1) {
     return matches == count;
 }
 
+// non-matching: 5 words: this + i * 0x12 (original r9) and its + j (original r8) swap registers.
 BOOL FieldSelectScene::func_ov001_02221c0c() {
     MI_CpuCopy8(data_020d496a, (u8 *) &data_0220f540 + 4, 9);
     MI_CpuCopy8(data_020d4968, (u8 *) &data_0220f540 + 0xd, 1);
@@ -1003,30 +1002,41 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
             u8 *p = WirelessManager::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
             if (p != NULL) {
                 for (u8 j = 0; j < 0x12; j++) {
-                    if (j == 0 || j == 0x11) {
+                    switch (j) {
+                    case 0:
+                    case 0x11:
                         mUnk_266[i][j] = 3;
-                    } else {
+                        break;
+                    default: {
                         u8 f           = data_ov001_02227194[j];
                         mUnk_266[i][j] = 0;
                         u32 byte       = (u32) f >> 3;
                         int bit        = f % 8;
                         for (u8 k = 0; k < 3; k++) {
-                            if (p[k * 3 + byte + 4] & (1 << bit)) {
+                            const u8 *flags = p;
+                            flags += k * 3;
+                            if (flags[byte + 4] & (1 << bit)) {
                                 mUnk_266[i][j] = k + 1;
                             }
                         }
+                        break;
+                    }
                     }
                 }
                 for (u8 j = 0; j < 9; j++) {
-                    if (j == 8) {
+                    switch (j) {
+                    case 8:
                         mUnk_2ae[i][j] = 1;
-                    } else {
+                        break;
+                    default: {
                         u8 f = data_ov001_022270c4[j];
                         if (p[0xd + ((u32) f >> 3)] & (1 << (f % 8))) {
                             mUnk_2ae[i][j] = 1;
                         } else {
                             mUnk_2ae[i][j] = 0;
                         }
+                        break;
+                    }
                     }
                 }
                 if (i == 0) {
@@ -1348,7 +1358,6 @@ void FieldSelectScene::func_ov001_02222e10() {
     func_ov001_0221fa94();
 }
 
-// non-matching: block layout in the result == 2 loop (the v == 3 block comes after v == 2 in the original).
 u32 FieldSelectScene::func_ov001_02222e44() {
     if (func_ov001_02225240()) {
         return 0;
@@ -1439,21 +1448,20 @@ u32 FieldSelectScene::func_ov001_02222e44() {
                 } else {
                     return 2;
                 }
-                if (mUnk_2ed[mUnk_329] == 3) {
-                    if (mUnk_32a == 4) {
-                        break;
+                if (mUnk_2ed[mUnk_329] != 3) {
+                    if (mUnk_2ed[mUnk_329] == 2) {
+                        u8 i = 0;
+                        do {
+                            mInput[i].mUnk_06 = 1;
+                            mInput[i].mUnk_02 = func_ov001_02226d48(data_020d433c.mUnk_9f[i]);
+                            i++;
+                        } while (i < mUnk_32a);
                     }
-                    continue;
+                    break;
                 }
-                if (mUnk_2ed[mUnk_329] == 2) {
-                    u8 i = 0;
-                    do {
-                        mInput[i].mUnk_06 = 1;
-                        mInput[i].mUnk_02 = func_ov001_02226d48(data_020d433c.mUnk_9f[i]);
-                        i++;
-                    } while (i < mUnk_32a);
+                if (mUnk_32a == 4) {
+                    break;
                 }
-                break;
             }
             break;
         case 3:
@@ -1528,7 +1536,6 @@ BOOL FieldSelectScene::func_ov001_02223430(u8 slot) {
                 mCells2[slot].mX = func_ov001_02225628(mInput[slot].mUnk_02);
                 mCells2[slot].mY = func_ov001_0222565c(mInput[slot].mUnk_02);
             } else {
-// non-matching: register allocation only.
                 if (func_ov001_022237d0(slot) != 0) {
                     if (slot < mUnk_32b) {
                         if (slot == mUnk_33b) {
@@ -1602,8 +1609,10 @@ BOOL FieldSelectScene::func_ov001_022237d0(u32 slot) {
     u8 i        = 0;
     do {
         if (i != slot && mInput[i].mUnk_06 != 0) {
-            if (mInput[i].mUnk_02 == idx) {
-                return TRUE;
+            u8 v = mInput[i].mUnk_02;
+            if (v == idx) {
+                result = TRUE;
+                break;
             }
         }
         i++;
@@ -1757,7 +1766,6 @@ void FieldSelectScene::func_ov001_02223e5c() {
     }
 }
 
-// non-matching: registers only (34 words): the original keeps n in r1 and 0x30 in sl, here n is in sl and 0x30 in r9.
 u32 FieldSelectScene::func_ov001_02223f5c() {
     u32 result = 0;
     if (func_ov001_02223914()) {
@@ -1769,14 +1777,13 @@ u32 FieldSelectScene::func_ov001_02223f5c() {
         u8 cur = mInput[0].mUnk_02;
         int dx = (s16) (mInput[0].mTouchX - 0x20);
         if ((dx >= 0) & (dx < 0xc0)) {
-            u8 n = mUnk_32b;
             u8 i = 0;
-            if (n > 2) {
+            if (mUnk_32b > 2) {
                 i++;
             }
             do {
                 s16 base = 0x30;
-                if (n > 2) {
+                if (mUnk_32b > 2) {
                     base -= 0x10;
                 }
                 int dy = (s16) (mInput[0].mTouchY - base - i * 0x24);
@@ -1792,17 +1799,15 @@ u32 FieldSelectScene::func_ov001_02223f5c() {
             } while (i < 3);
         }
     } else if (mInput[0].mKeys != 0) {
-        u8 cur = mInput[0].mUnk_02;
-        u8 v   = cur % 3;
-        u8 n   = mUnk_32b;
+        u8 v   = mInput[0].mUnk_02 % 3;
         do {
             if (mInput[0].mKeys & 0x40) {
                 v = (v + 2) % 3;
             } else if (mInput[0].mKeys & 0x80) {
                 v = (v + 1) % 3;
             }
-        } while (n > 2 && v == 0);
-        if (v != cur) {
+        } while (mUnk_32b > 2 && v == 0);
+        if (v != mInput[0].mUnk_02) {
             func_ov001_022231ec(0, v, 1);
         }
     }
@@ -1899,15 +1904,14 @@ u32 FieldSelectScene::func_ov001_02224178() {
     return result;
 }
 
-// non-matching: register allocation and prologue.
 u32 FieldSelectScene::func_ov001_02224538() {
-    u32 result = 0;
+    u8 result = 0;
     u8 numDone = 0;
     if (func_ov001_02223914()) {
         result = 2;
     } else {
         u8 numOpen = 0;
-        u8 flagB   = 0;
+        BOOL flagB   = 0;
         mUnk_33f   = 4;
         u8 i       = 0;
         do {
@@ -1978,11 +1982,12 @@ u32 FieldSelectScene::func_ov001_02224538() {
                     event = 1;
                 } else if (mInput[owner].mTouching != 0) {
                     u8 cur = mInput[i].mUnk_02;
-                    u8 k   = 0;
+                    u32 k  = 0;
                     do {
                         int dx = (s16) (mInput[owner].mTouchX - func_ov001_02225628(k));
                         int dy = (s16) (mInput[owner].mTouchY - func_ov001_0222565c(k));
-                        if (((dy >= 0) & ((dx >= 0) & (dx <= 0x28))) & (dy <= 0x20)) {
+                        BOOL hit = ((dy >= 0) & ((dx >= 0) & (dx <= 0x28)));
+                        if (hit & (dy <= 0x20)) {
                             if (cur == k) {
                                 event = 1;
                             } else {
@@ -1990,7 +1995,7 @@ u32 FieldSelectScene::func_ov001_02224538() {
                             }
                             break;
                         }
-                        k++;
+                        k = (u8) (k + 1);
                     } while (k < 0x12);
                 } else if (keys & 0xf0) {
                     u8 cur = mInput[i].mUnk_02;
@@ -2009,7 +2014,7 @@ u32 FieldSelectScene::func_ov001_02224538() {
                     if (n > 0x11) {
                         n = 0x11;
                     }
-                    func_ov001_022231ec(i, n, 1);
+                    func_ov001_022231ec(i, (u8) n, 1);
                 }
             }
             if (owner == 0) {
@@ -2061,9 +2066,7 @@ u32 FieldSelectScene::func_ov001_02224538() {
             }
             u8 j = 0;
             do {
-                u8 v                     = data_ov001_02227194[mInput[j].mUnk_02];
-                data_020d433c.mUnk_9f[j] = v;
-                if (v == 0x15) {
+                if ((data_020d433c.mUnk_9f[j] = data_ov001_02227194[mInput[j].mUnk_02]) == 0x15) {
                     data_020d433c.mUnk_a3[j] = 0;
                 } else {
                     data_020d433c.mUnk_a3[j] = mInput[j].mUnk_0c;
@@ -2150,7 +2153,6 @@ u32 FieldSelectScene::func_ov001_02224be0() {
     return result;
 }
 
-// non-matching: loop counter and dx swap registers.
 u32 FieldSelectScene::func_ov001_02224df0() {
     u32 result = 0;
     if (func_ov001_02223914()) {
@@ -2176,11 +2178,12 @@ u32 FieldSelectScene::func_ov001_02224df0() {
                 ev = 1;
             } else if (mInput[0].mTouching != 0) {
                 u8 cur = mInput[0].mUnk_02;
-                u8 k   = 0;
+                u32 k  = 0;
                 do {
                     int dx = (s16) (mInput[0].mTouchX - func_ov001_02225698(k));
                     int dy = (s16) (mInput[0].mTouchY - func_ov001_022256c8(k));
-                    if (((dy >= 0) & ((dx >= 0) & (dx <= 0x38))) & (dy <= 0x20)) {
+                    BOOL hit = ((dy >= 0) & ((dx >= 0) & (dx <= 0x38)));
+                    if (hit & (dy <= 0x20)) {
                         if (cur == k) {
                             ev = 1;
                         } else {
@@ -2188,12 +2191,11 @@ u32 FieldSelectScene::func_ov001_02224df0() {
                         }
                         break;
                     }
-                    k++;
+                    k = (u8) (k + 1);
                 } while (k < 9);
             } else if (keys != 0) {
-                u8 cur = mInput[0].mUnk_02;
-                u8 col = cur % 4;
-                u8 row = cur / 4;
+                u8 col = mInput[0].mUnk_02 % 4;
+                u8 row = mInput[0].mUnk_02 / 4;
                 if (keys & 0x40) {
                     row = (row + 2) % 3;
                 } else if (keys & 0x80) {
@@ -2207,8 +2209,8 @@ u32 FieldSelectScene::func_ov001_02224df0() {
                 if (n > 8) {
                     n = 8;
                 }
-                if ((u8) n != cur) {
-                    func_ov001_022231ec(0, n, 1);
+                if ((u8) n != mInput[0].mUnk_02) {
+                    func_ov001_022231ec(0, (u8) n, 1);
                 }
             }
             if (ev) {
@@ -2316,7 +2318,9 @@ void FieldSelectScene::func_ov001_02225338() {
     G2S_SetBlendAlpha(2, 0x3d, mUnk_32e, 0x10 - mUnk_32e);
 }
 
-// non-matching: this, slot and idx in different registers.
+// non-matching: 22 words: the original sets count and sel (mov r5, #6; mov r6, #1) after the mUnk_266 load, yet keeps
+// idx in its own register (r7); assigning them before the message calls gives the original registers but moves
+// the two movs up (and the message call reuses sel's 1).
 void FieldSelectScene::func_ov001_022253f0(u32 slot, u32 value, u32 idx) {
     if (value == mInput[slot].mUnk_0a) {
         return;
@@ -2331,7 +2335,7 @@ void FieldSelectScene::func_ov001_022253f0(u32 slot, u32 value, u32 idx) {
         }
         u32 set;
         u32 count;
-        u32 sel;
+        u8 sel;
         switch (mUnk_2ed[mUnk_329]) {
             case 4:
                 func_ov001_022262d0(0x12);
@@ -2347,6 +2351,8 @@ void FieldSelectScene::func_ov001_022253f0(u32 slot, u32 value, u32 idx) {
                 sel   = 1;
                 break;
             default:
+                count = 6;
+                sel   = 1;
                 if (mUnk_333 != 0 && mUnk_33c != 0) {
                     mMessage->func_02065890(0xe, 0, 1);
                 } else {
@@ -2357,13 +2363,14 @@ void FieldSelectScene::func_ov001_022253f0(u32 slot, u32 value, u32 idx) {
                 if (slot >= mUnk_32b) {
                     row = 0;
                 }
-                count = 6;
-                sel   = 1;
-                if (mUnk_266[row][idx] == 1) {
-                    set = 0;
-                    sel = 0;
-                } else if (mUnk_266[row][idx] == 2) {
-                    set = 1;
+                switch (mUnk_266[row][idx]) {
+                    case 1:
+                        set = 0;
+                        sel = 0;
+                        break;
+                    case 2:
+                        set = 1;
+                        break;
                 }
                 break;
         }
@@ -2411,7 +2418,9 @@ s16 FieldSelectScene::func_ov001_022256c8(u32 idx) {
     return (idx >> 2) * 0x26 + 0x2c;
 }
 
-// non-matching: y/v/x registers and the spill order of the (s16) (y + k) temporaries.
+// non-matching: 23 words in the mUnk_338 loop: x and y swap registers (original x r6, y r7) and the hoisted
+// (s16) (y + 4/2/0x16) values get the reverse stack slots. (s16) (int) (x + 4) is a placeholder that keeps
+// x + 4 in a register and narrows it at each use, as the original does.
 void FieldSelectScene::func_ov001_022256e4() {
     if (mUnk_348 != 0) {
         mMessage->func_020658d0();
@@ -2446,22 +2455,22 @@ void FieldSelectScene::func_ov001_022256e4() {
                 if (mUnk_32b <= i) {
                     if (mUnk_33c > i) {
                         if (mInput[i].mUnk_06 != 0) {
-                            sel = mInput[i].mUnk_0c;
+                            sel = (s8) mInput[i].mUnk_0c;
                         }
                     } else if (mUnk_33c == i && mInput[0].mUnk_0a == 0) {
                         if (mInput[i].mUnk_06 != 0) {
-                            sel = mInput[i].mUnk_0c;
+                            sel = (s8) mInput[i].mUnk_0c;
                         }
                     }
                 } else {
                     if (mInput[i].mUnk_0a == 0) {
                         if (mInput[i].mUnk_06 != 0) {
-                            sel = mInput[i].mUnk_0c;
+                            sel = (s8) mInput[i].mUnk_0c;
                         }
                     }
                     if (i == 0) {
                         if (mUnk_33c != 0 && mInput[i].mUnk_06 != 0) {
-                            sel = mInput[i].mUnk_0c;
+                            sel = (s8) mInput[i].mUnk_0c;
                         }
                     }
                 }
@@ -2507,13 +2516,13 @@ void FieldSelectScene::func_ov001_022256e4() {
             s16 y = r * 0x24 + 0x18;
             u8 col = 0;
             do {
-                int v = data_ov001_022270dc[r * 4 + col];
+                s16 v = data_ov001_022270dc[r][col];
                 s16 x = data_ov001_022270c0[col];
                 if (r == 0) {
                     x = data_ov001_022270bc[col];
                 }
                 mPanel[1]->func_0206547c(v, (s16) (x + 6), (s16) (y + 4), 1);
-                mCells2[5].mAnim->Draw(1, (s16) (x + 4), (s16) (y + 2), 2);
+                mCells2[5].mAnim->Draw(1, (s16) (int) (x + 4), (s16) (y + 2), 2);
                 if (mUnk_32b <= v) {
                     mCells2[7].mAnim->SetAnimation(0xb);
                     mCells2[7].mAnim->func_0202a3ec(1, v, x, y, 1);
@@ -2537,13 +2546,12 @@ void FieldSelectScene::func_ov001_022256e4() {
         }
         do {
             u8 n    = mUnk_32b;
-            int lim = j + 2;
-            if (n < lim) {
+            if (n < j + 2) {
                 do {
                     mCells2[7].mAnim->func_0202a3ec(1, n, (s16) (mCells2[j].mX + 0x14 + n * 32), mCells2[j].mY,
                                                     mCells2[j].mUnk_09);
                     n++;
-                } while (n < lim);
+                } while (n < j + 2);
             }
             j++;
         } while (j < 3);
@@ -2787,15 +2795,16 @@ u32 FieldSelectScene::func_ov001_02226d48(u32 id) {
     return i;
 }
 
-// non-matching: the original keeps i in r5 and tests the loaded value directly.
 void FieldSelectScene::func_ov001_02226d74() {
     WirelessManager::Get();
     if (IsWirelessMode(&data_020c4030.mUnk_228)) {
+        u8 *flags;
         u8 i = mUnk_32b;
-        if (i < mUnk_32a) {
+        if (mUnk_32a > i) {
+            flags = data_020d43e3;
             do {
                 if (data_020d433c.mUnk_a7 & 1) {
-                    SetFlagBit(data_020d43e3, i);
+                    SetFlagBit(flags, i);
                 }
                 i++;
             } while (i < mUnk_32a);

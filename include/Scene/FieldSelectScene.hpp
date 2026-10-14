@@ -36,7 +36,7 @@ struct FieldInput {
     /* 09 */ PAD(0x09, 0x0a);
     /* 0a */ u8 mUnk_0a;
     /* 0b */ u8 mUnk_0b;
-    /* 0c */ s8 mUnk_0c;
+    /* 0c */ u8 mUnk_0c;
     /* 0d */ u8 mUnk_0d;
     /* 0e */ u8 mUnk_0e;
     /* 0f */ u8 mUnk_0f;

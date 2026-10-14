@@ -665,6 +665,7 @@ src/Main/Game/GameData.cpp:
     .bss        start:0x020d4318 end:0x020d53e4
 
 src/Main/System/FileSystem.cpp:
+    complete
     .text       start:0x020234c8 end:0x02023b80
     .data       start:0x020a5480 end:0x020a548c
     .bss        start:0x020d53e8 end:0x020d53f4
@@ -718,9 +719,10 @@ src/Main/Graphics/SpriteManager.cpp:
 src/Main/Graphics/SpriteScreen.cpp:
     .text       start:0x020275bc end:0x02028280
 
-// provisional: code only; .data 0x020a565c-0x020a567c belongs here.
 src/Main/Graphics/NitroTexture.cpp:
+    complete
     .text       start:0x02028280 end:0x020289c8
+    .data       start:0x020a565c end:0x020a5674
 
 src/Main/Graphics/NitroModel.cpp:
     complete
@@ -792,6 +794,7 @@ src/Main/Video/MobiclipDecoder.cpp:
     .text       start:0x0203afb0 end:0x0203b658
 
 src/Main/Video/MobiclipFile.cpp:
+    complete
     .text       start:0x0203b658 end:0x0203c18c
 
 src/Main/Video/MoviePlayer.cpp:

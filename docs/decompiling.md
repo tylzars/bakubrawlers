@@ -177,6 +177,9 @@ Other findings from linking:
   makes `p * 4` a common subexpression with a later `p * 4 + 0x28`, and mwcc hoists it above the `if`. Keeping the
   container in a local and indexing inside each arm (`list->mPlayers[p]->mUnk_f1`) stops it
   (BattleCommand::func_ov007_0223a734). A `(u8 *)` cast store recolours differently from a real `u8` field store.
+- **An enum-typed result stops the return being folded.** `UnitCompare result` kept a `return result` that a `u32`
+  version folded into `mov r0, #0` (BattleUnk022637ac's func_ov007_02267884). Reading components into named locals
+  in the original's order (`z = p->z; y = p->y; x = p->x;`) fixes the load order before a call.
 - **`delete p;` versus `if (p) delete p;`.** mwcc emits the null check for a plain `delete` itself; an explicit `if`
   changes the block shape and the scheduling around it (BattleResult's destructors). Try both: BattleConfrontCard's
   func_0223f398 needed the explicit `if`.

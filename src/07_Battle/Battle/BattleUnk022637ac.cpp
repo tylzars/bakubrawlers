@@ -390,7 +390,7 @@ BOOL func_ov007_022677cc(BattleUnk022637ac *self);
 u32 func_ov007_02267884(BattleUnk022637ac *self);
 BOOL func_ov007_02267944(BattleUnk022637ac *self, u16 *out);
 
-// non-matching: 0x6b0 vs 0x6bc, register allocation in cases 3, 5 and 6.
+// non-matching: 7 words in case 8: the original puts the player list in r4 (ours r3); it loads the player pointer into the register that held the mUnk_0f index and gives the mUnk_0e load a new one.
 BOOL BattleUnk022637ac::func_ov007_02264a5c() {
     BOOL result = 1;
     switch (mUnk_18 - 0xc9) {
@@ -456,12 +456,10 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
             break;
         case 5:
             if (mUnk_1c->mUnk_1d2 == 2) {
-                u8 mode;
                 u8 x;
                 u8 y;
                 u8 n         = 0;
                 u8 found[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-                mode                = data_020d433c.mUnk_98;
                 x = 0;
                 do {
                     y = 0;
@@ -469,10 +467,11 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
                         u8 v = data_020d433c.mBattlePlayers->mUnk_1f8[y][x];
                         if (v != 0) {
                             u8 unit = v - 1;
+                            u8 me = mUnk_15;
                             u8 owner = data_020d433c.mBattlePlayers->mUnits[unit].mUnk_0f;
-                            if (owner != mUnk_15) {
-                                if (mode != 0) {
-                                    if (owner != data_020d433c.mBattlePlayers->mPlayers[mUnk_15]->mUnk_f2) {
+                            if (owner != me) {
+                                if (data_020d433c.mUnk_98 != 0) {
+                                    if (owner != data_020d433c.mBattlePlayers->mPlayers[me]->mUnk_f2) {
                                         found[n] = unit;
                                         n++;
                                     }
@@ -1064,7 +1063,6 @@ static const BattleUnk022637acEffect data_ov007_0227ab00[8] = {
 void func_0202bf18(EffectManager *manager, u16 handle, VecFx32 *scale);
 BOOL func_ov007_02267100(BattleUnk022637ac *self);
 
-// non-matching: 5 words in case 6, the original loads z, x, y with entry/base registers swapped.
 u8 BattleUnk022637ac::func_ov007_02266a28() {
     u8 done = 0;
     switch (mUnk_28) {
@@ -1152,10 +1150,11 @@ u8 BattleUnk022637ac::func_ov007_02266a28() {
             mUnk_70--;
             BattleUnit *units = data_020d433c.mBattlePlayers->Units();
             VecFx32 *p        = (VecFx32 *) &units[mUnk_71[mUnk_70]];
-            fx32 x, z;
+            fx32 x, y, z;
             z = p->z;
+            y = p->y;
             x = p->x;
-            mUnk_30->SetTarget(x, p->y, z);
+            mUnk_30->SetTarget(x, y, z);
             func_ov007_02267098(this);
             s16 handle  = func_0202bd40(mEffects, 0, 0, 0, 1);
             VecFx32 pos = {0, 0x4800, 0};
@@ -1406,48 +1405,47 @@ BOOL func_ov007_0226745c(BattleUnk022637ac *self, u8 player, u8 slot) {
     return done;
 }
 
-// non-matching: 30 words, register assignment only (original keeps i in ip, a/b/c in lr/r4/r5 and the list in r6).
+// non-matching: 4 words, the same player/mUnk_0e register swap as case 8 of func_ov007_02264a5c.
 BOOL func_ov007_022677cc(BattleUnk022637ac *self) {
     BOOL r = 1;
     u8 i                   = 0;
-    u16 b                  = 0;
     u16 a                  = 0;
-    BattlePlayerList *list = data_020d433c.mBattlePlayers;
+    u16 b                  = 0;
     u16 c                  = 0;
+    BattlePlayerList *list = data_020d433c.mBattlePlayers;
     do {
         BattleUnit *unit = &list->mUnits[i];
         if (unit->mUnk_10) {
-            c += 0x3de;
             BattleRecord *rec = &list->mPlayers[unit->mUnk_0f]->mRecords[unit->mUnk_0e];
+            c += 0x3de;
             a += rec->mUnk_04;
-            a += rec->mUnk_06;
             b += rec->mUnk_06;
+            a += rec->mUnk_06;
         }
         i++;
     } while (i < 12);
 if (a >= c || b == 0) { r = 0; } return r;
 }
 
-// non-matching: 0xc4 vs 0xc0, the original returns the loop-invariant zero from r0 (here a separate mov r0,#0 at the end).
+enum UnitCompare { UNIT_COMPARE_0, UNIT_COMPARE_1, UNIT_COMPARE_2 };
 u32 func_ov007_02267884(BattleUnk022637ac *self) {
     if (self->mUnk_1c->mUnk_1d2 != 3) {
         return 0;
     }
     BattleUnit *units    = data_020d433c.mBattlePlayers->mUnits;
     u8 i                 = 0;
-    u8 me                = self->mUnk_16;
-    u32 result           = 0;
-    BattleUnit *selfUnit = &units[me];
+    BattleUnit *selfUnit = &units[self->mUnk_16];
+    UnitCompare result   = UNIT_COMPARE_0;
     do {
-        if (me != i) {
+        if (self->mUnk_16 != i) {
             BattleUnit *unit = &units[i];
             if (selfUnit->mUnk_11 == unit->mUnk_11) {
                 u16 a = data_020d433c.mBattlePlayers->mPlayers[selfUnit->mUnk_0f]->mRecords[selfUnit->mUnk_0e].mUnk_06;
                 u16 b = data_020d433c.mBattlePlayers->mPlayers[unit->mUnk_0f]->mRecords[unit->mUnk_0e].mUnk_06;
                 if (a > b) {
-                    result = 2;
+                    result = UNIT_COMPARE_2;
                 } else if (a < b) {
-                    result = 1;
+                    result = UNIT_COMPARE_1;
                 }
                 return result;
             }

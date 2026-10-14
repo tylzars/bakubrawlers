@@ -390,7 +390,6 @@ BOOL func_ov007_022677cc(BattleUnk022637ac *self);
 u32 func_ov007_02267884(BattleUnk022637ac *self);
 BOOL func_ov007_02267944(BattleUnk022637ac *self, u16 *out);
 
-// non-matching: 7 words in case 8: the original puts the player list in r4 (ours r3); it loads the player pointer into the register that held the mUnk_0f index and gives the mUnk_0e load a new one.
 BOOL BattleUnk022637ac::func_ov007_02264a5c() {
     BOOL result = 1;
     switch (mUnk_18 - 0xc9) {
@@ -544,7 +543,9 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
             break;
         case 8: {
             BattleUnit *unit      = &data_020d433c.mBattlePlayers->mUnits[mUnk_16];
-            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[unit->mUnk_0f]->mRecords[unit->mUnk_0e];
+            // The record index is read as its own statement (volatile placeholder), so it is coloured after the player.
+            u8 rec                = *(volatile u8 *) &unit->mUnk_0e;
+            BattleRecord *record  = &data_020d433c.mBattlePlayers->mPlayers[unit->mUnk_0f]->mRecords[rec];
             u16 b                 = record->mUnk_06;
             if (record->mUnk_04 + b >= 0x3de || b == 0) {
                 result = 1;
@@ -665,7 +666,10 @@ void func_ov007_02262714(BattlePlayerList *list, u8 a, u8 b, u8 c);
 void func_ov007_02248944(VecFx32 *out, u8 a, u8 b);
 void func_ov007_02248910(void *p);
 
-// non-matching: 0x298 vs 0x29c, the original has one more `mov r2, ip` and schedules SetTarget/SetPosition differently.
+// non-matching: 0x298 vs 0x29c, only case 1 after func_ov007_02248944 differs: the original loads pos.x (ip), the
+// data_0208bd24 pointer, mUnk_30 (r6), dx and the 50 above the SetTarget stores and stores pos.x through a copy
+// (`mov r2, ip`; 0xc000 then goes to r2), with dz loaded after the stores. Reading pos.x in both calls (no x local)
+// gives the right size (23 words) but the second load stays below the stores.
 u8 BattleUnk022637ac::func_ov007_0226547c() {
     u8 done = 0;
     switch (mUnk_28) {
@@ -680,7 +684,8 @@ u8 BattleUnk022637ac::func_ov007_0226547c() {
                 break;
             }
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            u8 marker              = list->mUnits[mUnk_16].mUnk_11;
+            // The marker index is read as its own statement (volatile placeholder), so it is coloured after the entries.
+            u8 marker              = *(volatile u8 *) &list->mUnits[mUnk_16].mUnk_11;
             BattleMarker *entries  = list->Entries();
             list->mUnk_1c[marker].mUnk_2 = 3;
             VecFx32 pos;
@@ -777,11 +782,23 @@ void func_ov007_02262768(BattlePlayerList *list, BattleUnk022637acUnit *unit, u1
 void func_ov007_02262a64(BattlePlayerList *list, u8 a, u8 b);
 BOOL func_ov007_02267304(BattleUnk022637ac *self, VecFx32 *out);
 
-// non-matching: same size now (the unit stride 0x14 is an enum-typed local, so it is kept in a register across the calls like the original's sl);
-// the remaining diff is register assignment only: the original has this=r5, done=r8, unit=r4, caster=r6, base+0x7c=r7, marker=r9, stride=sl.
+// The unit stride 0x14 is an enum-typed value, so it is kept in a register across the calls (sl).
 enum UnitSize { UNIT_SIZE = 0x14 };
+
+// Unit `index` of the table: an inline, so the address is a temporary (coloured before `this`).
+static inline BattleUnit *UnitAt(BattleUnit *units, u32 index, UnitSize size) {
+    return (BattleUnit *) ((u8 *) units + index * size);
+}
+
 u8 BattleUnk022637ac::func_ov007_02265af8() {
+    // Declared here, in this order, for the original's register assignment.
+    u8 caster;
+    BattleUnit *units;
     u8 done = 0;
+    BattleMarker *marker;
+    UnitSize sz;
+    BattlePlayerList *list;
+    BattleUnit *unit;
     switch (mUnk_28) {
         case 0: {
             VecFx32 pos = {0, 0x4800, 0};
@@ -800,12 +817,12 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
         case 1:
             if (mUnk_1a >= 0x50 && !mUnk_62_1) {
                 mUnk_62_1               = 1;
-                u8 caster               = mUnk_16;
-                UnitSize sz = UNIT_SIZE;
-                BattlePlayerList *list  = data_020d433c.mBattlePlayers;
-                BattleUnit *units       = list->Units();
-                BattleUnit *unit        = (BattleUnit *) ((u8 *) units + mUnk_29 * sz);
-                BattleMarker *marker    = &list->Entries()[unit->mUnk_11];
+                caster    = mUnk_16;
+                sz        = UNIT_SIZE;
+                list      = data_020d433c.mBattlePlayers;
+                units     = list->mUnits;
+                unit      = UnitAt(units, mUnk_29, sz);
+                marker    = &list->Entries()[unit->mUnk_11];
                 func_ov007_02248944(&mUnk_54, marker->mUnk_3, marker->mUnk_4);
                 func_0203db8c(mUnk_1c->mUnk_1a4, mUnk_54.x, 0x899a, mUnk_54.z);
                 VecFx32 a = mUnk_1c->mUnk_1a4->mPosition;
@@ -814,12 +831,16 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
                 mUnk_1c->mUnk_1a4->mPosition = a;
                 mUnk_1c->mUnk_1d2       = 3;
                 mUnk_1c->mUnk_1a4->mUnk_4a = 0;
-                BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_15]->mRecords[mUnk_10];
+                // Both indices are read as their own statements (volatile placeholders), the list before them.
+                u8 ri;
+                BattlePlayer *pl     = data_020d433c.mBattlePlayers->mPlayers[*(volatile u8 *) &mUnk_15];
+                ri                   = *(volatile u8 *) &mUnk_10;
+                BattleRecord *record = &pl->mRecords[ri];
                 u16 r4               = record->mUnk_04;
                 u16 r6               = record->mUnk_06;
                 u8 r9                = record->mUnk_09;
                 BattleUnk022637acUnit tmp;
-                MI_CpuCopy8((u8 *) units + caster * sz, &tmp, sz);
+                MI_CpuCopy8((u8 *) units + caster * sz, &tmp, sizeof(tmp));
                 tmp.mPos.x = mUnk_1c->mUnk_1a4->mPosition.x;
                 tmp.mPos.z = mUnk_1c->mUnk_1a4->mPosition.z;
                 func_ov007_02262828(data_020d433c.mBattlePlayers, mUnk_16, 2);
@@ -1408,7 +1429,6 @@ BOOL func_ov007_0226745c(BattleUnk022637ac *self, u8 player, u8 slot) {
     return done;
 }
 
-// non-matching: 4 words, the same player/mUnk_0e register swap as case 8 of func_ov007_02264a5c.
 BOOL func_ov007_022677cc(BattleUnk022637ac *self) {
     BOOL r = 1;
     u8 i                   = 0;
@@ -1419,7 +1439,9 @@ BOOL func_ov007_022677cc(BattleUnk022637ac *self) {
     do {
         BattleUnit *unit = &list->mUnits[i];
         if (unit->mUnk_10) {
-            BattleRecord *rec = &list->mPlayers[unit->mUnk_0f]->mRecords[unit->mUnk_0e];
+            // The record index is read as its own statement (volatile placeholder), so it is coloured after the player.
+            u8 e              = *(volatile u8 *) &unit->mUnk_0e;
+            BattleRecord *rec = &list->mPlayers[unit->mUnk_0f]->mRecords[e];
             c += 0x3de;
             a += rec->mUnk_04;
             b += rec->mUnk_06;

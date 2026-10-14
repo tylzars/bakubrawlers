@@ -54,6 +54,12 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   pairing, right order); swapping the pairing gives the right registers but compares before the second load. About 60
   forms tried (temporaries, inline helpers, `||`, negations, pointer locals), and `-proc generic` shows our compare
   directly after its load in all of them.
+- **A u8 index coloured after its base (open, 8 placeholders).** In BattleTarget::func_ov007_0225ca48,
+  BattleUnk022637ac (func_ov007_022677cc, 02264a5c, 02265af8, 0226547c) and BattlePlayerList (Update, 022628e0) the
+  original colours a u8 index load (`unit->mUnk_0e`, a record or row index) after the base or player pointer it
+  indexes; every normal form colours it first. They match with the index read as its own statement through
+  `*(volatile u8 *) &field`, marked as a placeholder at each site. Tried without effect: named or split locals,
+  `+`/`+=`, inline accessors, both argument orders, a bitfield. Finding the real form likely fixes all of them.
 - **Fully matched units that don't link yet** (2026-10-14):
 
 - **Game.cpp (linked).** What it took:

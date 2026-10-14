@@ -181,7 +181,9 @@ BattlePlayerList::~BattlePlayerList() {
     GX_SetDispSelect(0);
 }
 
-// non-matching: 38 words differ, register naming in states 13/17 and the predicated mUnk_86 tail of state 25
+// non-matching: 3 words, case 4: the second record (`target`) gets the index in r0 and the base in r1 where the
+// original has r2/r0 (0x11f0). Reading that index through a volatile placeholder fixes the registers but schedules
+// the mPlayers[slot] reload above the mUnk_28e load (5 words).
 void BattlePlayerList::Update() {
     u8 owner;
     u8 slot;
@@ -537,8 +539,10 @@ void BattlePlayerList::Update() {
                         p->mUnk_fe = 1;
                         p->mUnk_ee++;
                         mUnk_2a8 = 0x14;
+                        // Record indices are read as their own statements (volatile placeholders), before the base.
+                        u8 ea              = *(volatile u8 *) &mUnits[mUnk_28d].mUnk_0e;
                         BattleRecord *recs = mPlayers[ownerA]->mRecords;
-                        mUnk_2aa = func_ov007_022696a0(recs[mUnits[mUnk_28d].mUnk_0e].mUnk_08, recs[mUnits[mUnk_28d].mUnk_0e].mUnk_09);
+                        mUnk_2aa           = func_ov007_022696a0(recs[ea].mUnk_08, recs[ea].mUnk_09);
                         recs    = mPlayers[ownerA]->mRecords;
                         mUnk_2ab = func_ov007_022696a0(recs[mUnits[mUnk_28e].mUnk_0e].mUnk_08, recs[mUnits[mUnk_28e].mUnk_0e].mUnk_09);
                         func_ov007_022626b8(this, mUnits[mUnk_28d].mUnk_11);
@@ -585,7 +589,9 @@ void BattlePlayerList::Update() {
                     mUnk_2a8 = 0x16;
                     func_ov007_022626b8(this, mUnits[mUnk_28d].mUnk_11);
                     BattlePlayer *q      = mPlayers[slot];
-                    BattleRecord *source = &mPlayers[owner]->mRecords[mUnits[mUnk_28d].mUnk_0e];
+                    // The record index is read as its own statement (volatile placeholder).
+                    u8 e                 = *(volatile u8 *) &mUnits[mUnk_28d].mUnk_0e;
+                    BattleRecord *source = &mPlayers[owner]->mRecords[e];
                     u8 flagValue  = source->mUnk_09;
                     u16 wordValue = source->mUnk_04;
                     ((BattleHistory *) ((u8 *) q + 0x84))[q->mUnk_f4].mValue = wordValue;
@@ -1019,10 +1025,10 @@ void func_ov007_02262828(BattlePlayerList *list, u8 index, u8 value) {
     list->mUnk_295--;
 }
 
-// non-matching: 3 words differ, base (list + 0x1f8) and the row temp swap registers (r7/r8)
 void func_ov007_022628e0(BattlePlayerList *list, u8 index, const VecFx32 *pos, u8 marker) {
     u8 old      = list->mUnits[index].mUnk_11;
-    u8 r        = list->mUnk_1c[old].mUnk_3;
+    // The row index is read as its own statement (volatile placeholder), so it is coloured after the base.
+    u8 r        = *(volatile u8 *) &list->mUnk_1c[old].mUnk_3;
     u8 col      = list->mUnk_1c[old].mUnk_4;
     s8 *row     = list->mUnk_1f8[r];
     u8 i        = 0;

@@ -196,6 +196,12 @@ Other findings from linking:
   doesn't (SpriteFade: `static s8 sFade[2]`, index 0 main screen, 1 sub).
 - A weak inline vtable copy needs its unit's `.data` range set by hand and the symbol marked `weak` (SceneBase).
 
+- **Seeing the order before scheduling.** Compiling the same file with `-proc generic` instead of `-proc arm946e`
+  (other flags unchanged) skips the ARM9 instruction scheduler, which runs before register allocation. Comparing
+  the two shows whether a register difference comes from scheduling (an instruction moved past a definition) or
+  from allocation itself. BattleResult::func_ov007_0224f9a0's last 5 words are a scheduling difference: the
+  original finishes the third Draw's y before loading `this`, which no source form tried reproduces.
+
 ## Source patterns that matter
 
 - **Parameter width shows in the caller.** Passing a `u8` to a `u32` parameter makes a conversion temporary that

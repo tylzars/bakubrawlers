@@ -3,6 +3,12 @@
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
 
+// The three animation indices of a cell (WindowButton::mUnk_08..mUnk_0a), copied as one object.
+// Placeholder for a real struct shared by WindowCellRecord::mUnk_18 and WindowButton::mUnk_08.
+struct WindowCellAnims {
+    u8 mAnims[3];
+};
+
 SelectWindow::SelectWindow(u32 itemCount, const WindowItemRecord *items, s32 unk3) {
     mCellCount = 0;
     mUnk_061   = 0;
@@ -34,7 +40,6 @@ SelectWindow::~SelectWindow() {
     func_0205bcf4();
 }
 
-// non-matching: 4 bytes long: spill-slot order of items/newPrev, a reload of mCursor->mItems, register choice in states 2 and 5.
 BOOL SelectWindow::Update(BOOL input) {
     int result = 0;
     u32 event  = 0;
@@ -244,7 +249,6 @@ BOOL SelectWindow::Update(BOOL input) {
     return result;
 }
 
-// non-matching: 3 words: the original loads button mUnk_08/mUnk_09 into r2/r1 and stores r2 first.
 void SelectWindow::SetCells(u32 count, const WindowCellRecord *cells) {
     u8 i                 = 0;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
@@ -260,9 +264,7 @@ void SelectWindow::SetCells(u32 count, const WindowCellRecord *cells) {
         i++;
         button->mUnk_00  = cell->mUnk_10;
         button->mEnabled = cell->mUnk_14;
-        button->mUnk_08  = cell->mUnk_18[0];
-        button->mUnk_09  = cell->mUnk_18[1];
-        button->mUnk_0a  = cell->mUnk_18[2];
+        *(WindowCellAnims *) &button->mUnk_08 = *(const WindowCellAnims *) cell->mUnk_18;
         mCellCount++;
     } while (i < count);
 }
@@ -435,11 +437,14 @@ BOOL SelectWindow::func_0205bdf4() {
     return FALSE;
 }
 
-// non-matching: second loop: the original keeps the counter in lr and the item pointer in r3.
 void SelectWindow::func_0205c2e0() {
-    u8 i             = 0;
-    BOOL done        = TRUE;
-    WindowItem *item = mCursor->mItems;
+    SelectWindowCursor *cursor;
+    BOOL done;
+    WindowItem *item;
+    u8 i;
+    i    = 0;
+    done = TRUE;
+    item = mCursor->mItems;
     switch (mUnk_062) {
     case 0:
         mUnk_062 = 1;
@@ -488,12 +493,13 @@ void SelectWindow::func_0205c2e0() {
                     }
                 }
             }
+            cursor = mCursor;
             i++;
             item++;
-        } while (i < mCursor->mCount);
+        } while (i < cursor->mCount);
         if (done) {
             i    = 0;
-            item = mCursor->mItems;
+            item = cursor->mItems;
             do {
                 u8 type = item->mSlideOut;
                 if (type == 4) {

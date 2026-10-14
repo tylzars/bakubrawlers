@@ -146,9 +146,10 @@ public:
         mCellPos[index] = pos;
     }
     s8 GetSelectedId() {
-        if (mCursor->mSelection == -1) {
+        SelectWindowCursor *c = mCursor;
+        if (c->mSelection == -1) {
             return -1;
         }
-        return mCursor->mItems[mCursor->mSelection].mId;
+        return c->mItems[c->mSelection].mId;
     }
 };

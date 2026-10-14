@@ -49,7 +49,6 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
 - **Fully matched units that don't link yet** (2026-10-14):
   - MyroomGiftScene: `.data` is defined and exact; `.rodata` order needs table shapes (2D u8 arrays, a94/aa0/aac
     merged into one [3][12] table), which leaves func_ov008_0221de34 3 words off on literal-pool order.
-  - `g3d_res` links but the ROM differs.
 
 - **Game.cpp can't link because of `main`.** Every function in Game.cpp matches and its data layout is solved (include
   order plus where MicManager and SceneRunner are defined), but `main` (0x02000c04) belongs to it too: the node it
@@ -73,6 +72,9 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   definition order against the original, keeping each static before its first use. The first order found compiled
   to the original layout of all three sections. Defining every table in the range matters: with only the `.data`
   tables defined, no order gave the original string order, because the `.rodata` tables take part in the same sort.
+- **Function order is definition order.** g3d_res matched but its ROM differed once linked: `func_02033788` was
+  defined before its caller `func_02033714` (for the declaration), so mwcc emitted it first. A prototype and the
+  definition after the caller fixed it.
 - **Literals before a vtable mean an earlier file (MessageWindow).** Function literals are emitted after a file's
   shared `.data` section, so UnkStruct_020651bc's six path strings lying before MessageWindow's vtable showed the
   two classes were separate files; split at 0x0206550c, both link.

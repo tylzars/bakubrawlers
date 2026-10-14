@@ -309,6 +309,7 @@ libs/nns/src/g3d/g3d_glb.c:
     .text       start:0x02032130 end:0x02033574
 
 libs/nns/src/g3d/g3d_res.c:
+    complete
     .text       start:0x02033574 end:0x0203382c
 
 libs/nns/src/g3d/g3d_anm.c:

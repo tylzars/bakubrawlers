@@ -17,7 +17,6 @@ extern const float data_02090724[];
 extern const float data_0209070c[];
 extern const float data_0209073c[];
 extern const u16 data_02090754[][6];
-extern u8 data_020d4946[];
 extern u16 data_020c4250;
 int func_0205b1c4(u32 a, u32 b);
 
@@ -28,7 +27,6 @@ void func_02022b0c() {
     MI_CpuFill8(&data_020d433c, 0, 0xb4);
 }
 
-// non-matching: 10 words, store and flag-bit scheduling in the second loop.
 void func_02022b28() {
     MI_CpuFill8(data_020d43f0, 0, 0xff4);
     func_02022d48(data_020d43f0);
@@ -36,8 +34,10 @@ void func_02022b28() {
     func_02086938();
     func_02086a58();
     func_02086b74();
-    data_020d48f0.mUnk_bc = 999;
-    data_020d48f0.mUnk_ba = 999;
+    // data_020d48f0 lies inside data_020d43f0 (+0x500); going through the member keeps the stores ordered before
+    // the bit-field updates below. The `mUnk_460 + 0xa0` cast is a placeholder for the real member at +0x500.
+    ((UnkStruct_020d48f0 *) (data_020d43f0[0].mUnk_460 + 0xa0))->mUnk_bc = 999;
+    ((UnkStruct_020d48f0 *) (data_020d43f0[0].mUnk_460 + 0xa0))->mUnk_ba = 999;
     u8 i = 0;
     data_020d43f0[0].mUnk_1a_0 = 1;
     data_020d43f0[0].mUnk_14_1 = 0;
@@ -66,12 +66,10 @@ void func_02022b28() {
         func_02023168(base, 0, n, idx);
         func_020231c0(base, idx, rec[3]);
         func_0205b1c4(rec[1] & 0xff, rec[2] & 0xff);
-        u16 a = rec[4];
-        u16 b = rec[5];
-        base->mUnk_06[n] = a;
-        SetFlagBit(data_020d4946, a);
-        base->mUnk_0c[n] = b;
-        SetFlagBit(data_020d4946, b);
+        base->mUnk_06[n] = rec[4];
+        SetFlagBit((u8 *) data_020d43f0[0].mUnk_556, rec[4]);
+        base->mUnk_0c[n] = rec[5];
+        SetFlagBit((u8 *) data_020d43f0[0].mUnk_556, rec[5]);
         n++;
     } while (n < 3);
 }

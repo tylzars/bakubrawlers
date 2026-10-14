@@ -84,7 +84,7 @@ struct UnkStruct_020d43f0 {
     /* 086 */ PAD(0x086, 0x088);
     /* 088 */ u16 mUnk_88[0xf6][2];
     /* 460 */ u8 mUnk_460[0xf6];
-    /* 556 */ PAD(0x556, 0x578);
+    /* 556 */ u8 mUnk_556[0x22];
     /* 578 */ volatile u8 mUnk_578;
     /* 579 */ PAD(0x579, 0x580);
     /* 580 */ u8 mUnk_580;

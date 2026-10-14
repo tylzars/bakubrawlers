@@ -42,16 +42,16 @@ u16 UnkStruct_020c17a8::func_02023bc4(const void *data, u32 size) {
     return crc ^ 0xffff;
 }
 
-// non-matching: 12 words, result/id registers swapped and the original's `add r0, r6, #0` for `mov r0, r6`.
 u32 UnkStruct_020c17a8::func_02023c38(u32 unk1) {
-    u16 id;
+    u32 id;
     u32 result = 2;
     u32 magicA;
     u32 magicB;
-    id = OS_GetLockID();
+    u8 *base = 0; // placeholder: the original adds the offsets to a zero base (add rX, rY, #0); its real form is unknown
+    id       = (u16) OS_GetLockID();
     func_0200e658(id);
-    func_0200ec04(unk1 << 13, &magicA, 4, 0, 0, 0, 6, 1, 0);
-    BOOL ok = func_0200ec04((unk1 << 13) + 0x1000, &magicB, 4, 0, 0, 0, 6, 1, 0);
+    func_0200ec04((u32) (base + (unk1 << 13)), &magicA, 4, 0, 0, 0, 6, 1, 0);
+    BOOL ok = func_0200ec04((u32) (base + (unk1 << 13) + 0x1000), &magicB, 4, 0, 0, 0, 6, 1, 0);
     func_0200e668(id);
     func_02004fbc(id);
     if (!ok) {
@@ -68,14 +68,15 @@ u32 UnkStruct_020c17a8::func_02023c38(u32 unk1) {
     return result;
 }
 
-// non-matching: 17 words, same two causes as func_02023c38.
 u32 UnkStruct_020c17a8::func_02023d30(u32 unk1) {
     u32 magic = 0x19691015;
+    u32 id;
     u32 result = 1;
-    u16 id = OS_GetLockID();
+    u8 *base   = 0; // placeholder, as in func_02023c38
+    id         = (u16) OS_GetLockID();
     func_0200e658(id);
-    if (func_0200ec04((u32) &magic, (void *) (unk1 << 13), 4, 0, 0, 0, 8, 10, result)) {
-        if (func_0200ec04((u32) &magic, (void *) ((unk1 << 13) + 0x1000), 4, 0, 0, 0, 8, 10, result)) {
+    if (func_0200ec04((u32) &magic, base + (unk1 << 13), 4, 0, 0, 0, 8, 10, result)) {
+        if (func_0200ec04((u32) &magic, base + (unk1 << 13) + 0x1000, 4, 0, 0, 0, 8, 10, result)) {
             result = 4;
         }
     }

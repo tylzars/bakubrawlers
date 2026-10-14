@@ -86,10 +86,13 @@ void *data_020a55a4[UPLOAD_FREE_COUNT] = {0};
 UploadQueue data_0220e630;
 UploadEntry data_0220e638[UPLOAD_QUEUE_SIZE];
 
-// non-matching: 4 bytes short: the original carries mHead through the loop back edge.
+// non-matching: 5 words, the original increments mFreeCount before loading the entry's data (the queue and the entries
+// probably form one object, which keeps their accesses in order).
 void func_020257c8() {
+    u32 head = data_0220e630.mHead;
     do {
-        u32 kind = data_0220e638[data_0220e630.mHead].mKind;
+        UploadEntry *e = &data_0220e638[(u8) head];
+        u32 kind       = e->mKind;
         if (kind % UPLOAD_KIND_COUNT < 4) {
             u8 k    = kind;
             u8 bank = k % UPLOAD_KIND_COUNT + (k >= UPLOAD_KIND_COUNT) * 4;
@@ -98,13 +101,14 @@ void func_020257c8() {
                                 data_0220e638[data_0220e630.mHead].mSize);
             data_020a54ec[bank]();
         } else {
-            data_020a552c[kind](data_0220e638[data_0220e630.mHead].mData, data_0220e638[data_0220e630.mHead].mOffset,
-                                data_0220e638[data_0220e630.mHead].mSize);
+            data_020a552c[kind](data_0220e638[(u8) head].mData, e->mOffset, e->mSize);
         }
         if (data_0220e638[data_0220e630.mHead].mFree != 0) {
-            data_020a55a4[data_0220e630.mFreeCount++] = data_0220e638[data_0220e630.mHead].mData;
+            u32 n = data_0220e630.mFreeCount++;
+            data_020a55a4[n] = data_0220e638[data_0220e630.mHead].mData;
         }
-        data_0220e630.mHead = (data_0220e630.mHead + 1) % UPLOAD_QUEUE_SIZE;
+        head                = (data_0220e630.mHead + 1) % UPLOAD_QUEUE_SIZE;
+        data_0220e630.mHead = head;
     } while (--data_0220e630.mCount != 0);
 }
 
@@ -182,7 +186,7 @@ u32 func_02025b64(u32 screen, u32 kind, u32 offset, const char *path, u32 unk5, 
     return func_02025c1c(screen, kind, offset, data, size, 1);
 }
 
-// non-matching: the original stores the tail and count after the five entry fields.
+// non-matching: 19 words, the original stores mTail after the five entry fields (same ordering as above).
 u32 func_02025c1c(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 freeData) {
     FlushPendingFrees();
     if (func_020258f4(screen, kind, offset, data, size, freeData)) {

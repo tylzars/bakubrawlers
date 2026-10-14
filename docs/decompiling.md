@@ -50,23 +50,10 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   different pool words, so two relocations (different symbols, or symbol plus offset) resolve to the same address
   in the original. The source models it with a second extern, `data_020d53e4_h`; the real layout of the loader's
   statics (header word, registration node, two MI contexts, state fields) is still to be worked out.
-- **Order of identical string literals.** With `-str noreuse`, every copy of a literal gets its own object
-  (`@N`, in its own `.data` section). The compiler emits the copies of one string in a permuted order, and the
-  linker keeps that section order. `GameOverScene.cpp`'s result-window table uses five copies of one path;
-  table entries 0..4 point at copies 4 2 0 1 3 (in emission order) where the original has 2 4 3 1 0. This is the
-  only thing stopping that unit from linking (`complete`). What is known:
-  - The permutation is stable under renaming, under extra declarations or literal-using functions placed
-    before the tables, under `-sym on/off` and under small edits inside other functions.
-  - It changes when whole functions are removed (even ones without strings, e.g. the destructor), when the
-    tables move into functions, and when other tables of identical strings are added or moved.
-  - Named `char[]` arrays instead of literals are permuted the same way, so they are not a way around it.
-  `build/lit/both.py`-style probing (compile, read the relocations of the table, rank the target sections) is the
-  quickest way to test ideas.
-  - New (see "Data layout within a section"): the literals of data initializers are sorted by size together with
-    every other object of the file, `.bss` included. Putting `Text/TextManager.hpp` first changes the order
-    of GameOverScene's five copies, and so does moving a table without strings. Literals used inside functions are
-    not in that list (they come out in creation order). No combination of table order and the first two singleton
-    includes reproduces the original yet; `build/lit2/gos.py` measures the order for a source variant.
+- **Order of identical string literals (solved).** Copies of one literal in a table's initializer are ordinary
+  participants of the file's size sort (below), so their order follows from the whole list. `tools/layout_search.py`
+  models that sort and finds the include and definition orders that reproduce the original (ArenaScene's five window
+  paths, UnkStruct_02070608's four).
 - **Guard load before a preceding store (solved).** mwcc lets a following load (e.g. the next singleton's guard)
   move above a store only when the store's offset is below half of the declared size of the object stored into.
   `TextManager` was declared 0x5c bytes, so the `mUnk_5b` store (offset 0x5b) blocked it; with its real size,
@@ -106,9 +93,13 @@ layouts), for the objects of one section kind (`.bss`, and likely `.data`/`.roda
 So header include order and the definition order of statics decide the layout, and an object of a smaller
 size can never follow a bigger one from the same list. The synthetic rule above is exact, but real files have more
 participants than it accounts for (function-local statics with destructors, objects from other sections), so
-predictions from `tools/data_order.py` are only a hint. `python3 tools/fix_layout.py <unit>` is the reliable
-route: it tries putting the unit's singleton headers first (one to three of them, in every order), recompiles
-and keeps the first order for which `data_ranges.py` reports no layout conflicts. `.clang-format` keeps include
+predictions from `tools/data_order.py` are only a hint. `python3 tools/layout_search.py <unit>` is the model that
+works: one list for the whole file (`.bss`, `.data` and `.rodata` together; each shared section is emitted at the place
+of its first member), each singleton contributing node, guard, instance or guard, node, instance (calibrated per
+singleton against the compiled object), each static preceded by its initializer's literals, vtables last. It refuses
+to search unless it reproduces the current compile, then searches singleton order, static order and where the statics
+sit among the headers, offline. `python3 tools/fix_layout.py <unit>` tries header orders by compiling them.
+`.clang-format` keeps include
 order (`SortIncludes: Never`), and it is load-bearing.
 
 Other findings from linking:

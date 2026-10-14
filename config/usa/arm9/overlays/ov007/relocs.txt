@@ -1310,7 +1310,7 @@ from:0x022235c0 kind:arm_call to:0x01ff958c module:itcm
 from:0x022235d4 kind:arm_call to:0x01ff958c module:itcm
 from:0x022235e8 kind:arm_call to:0x01ff958c module:itcm
 from:0x022235fc kind:arm_call to:0x01ff958c module:itcm
-from:0x02223614 kind:load to:0x02286590 module:overlay(7)
+from:0x02223614 kind:load to:0x02286588 add:0x8 module:overlay(7)
 from:0x02223618 kind:load to:0x02279060 module:overlay(7)
 from:0x0222361c kind:load to:0x02278e40 module:overlay(7)
 from:0x0222362c kind:arm_call to:0x02021e80 module:main

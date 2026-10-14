@@ -1861,7 +1861,8 @@ _ZTV12ConfrontBg06 kind:data(any) addr:0x02286434
 data_ov007_02286560 kind:data(any) addr:0x02286560
 data_ov007_02286568 kind:data(any) addr:0x02286568
 data_ov007_02286570 kind:data(any) addr:0x02286570
-data_ov007_02286590 kind:data(any) addr:0x02286590
+_ZTV16BattleSideHelper kind:data(any) addr:0x02286588
+data_ov007_02286598 kind:data(any) addr:0x02286598
 data_ov007_022865a0 kind:data(any) addr:0x022865a0
 data_ov007_022865a8 kind:data(any) addr:0x022865a8
 data_ov007_022865c0 kind:data(any) addr:0x022865c0

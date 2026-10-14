@@ -41,12 +41,37 @@ def find_unit(src: str):
 
 
 def matched_functions(src: str) -> set[str]:
+    """Functions at 100% in the report, plus those whose bytes equal the original's with relocated words masked
+    (objdiff counts a differently named relocation target, e.g. an `@N` static, as a mismatch)."""
     report = json.loads((BUILD / "report.json").read_text())
     name = str(Path(src).with_suffix(""))
+    good = set()
     for unit in report["units"]:
         if unit["name"] == name:
-            return {f["name"] for f in unit.get("functions", []) if f.get("fuzzy_match_percent", 0) == 100}
-    return set()
+            good = {f["name"] for f in unit.get("functions", []) if f.get("fuzzy_match_percent", 0) == 100}
+    try:
+        module, _, _ = find_unit(src)
+        syms = load_symbols(module)
+        mbase, blob = module_bytes(module)
+        with (BUILD / Path(src).with_suffix(".o")).open("rb") as fh:
+            elf = ELFFile(fh)
+            secs = list(elf.iter_sections())
+            masked = {}
+            for sec in secs:
+                if isinstance(sec, RelocationSection):
+                    masked.setdefault(sec["sh_info"], set()).update(r["r_offset"] & ~3 for r in sec.iter_relocations())
+            for s in elf.get_section_by_name(".symtab").iter_symbols():
+                if s["st_info"]["type"] != "STT_FUNC" or s.name in good or s.name not in syms or not s["st_size"]:
+                    continue
+                data = secs[s["st_shndx"]].data()[s["st_value"]:s["st_value"] + s["st_size"]]
+                start = syms[s.name] - mbase
+                orig = blob[start:start + len(data)]
+                if len(orig) == len(data) and all(data[i:i + 4] == orig[i:i + 4] for i in range(0, len(data) - 3, 4)
+                                                  if (s["st_value"] + i) not in masked.get(s["st_shndx"], ())):
+                    good.add(s.name)
+    except Exception:
+        pass
+    return good
 
 
 def analyse(src: str):

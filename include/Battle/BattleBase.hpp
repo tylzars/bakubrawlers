@@ -83,6 +83,7 @@ public:
     /* 14 */
 
     BattleSideHelper(u8 index, u8 unk2, BattleEntry *entries);
+    virtual ~BattleSideHelper();
     BOOL func_ov007_02223638(int side, u8 n);
 };
 

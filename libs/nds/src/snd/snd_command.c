@@ -16,16 +16,19 @@ static struct {
 } cmdState;
 
 static SNDCommand *cmdRing[9];  // 0x020be0e4
-static u8 sharedWork[0x280];    // 0x020be120
+static u32 sharedWork[0xa0] __attribute__((aligned(32)));    // 0x020be120
 static SNDCommand cmdPool[256]; // 0x020be3a0
 
 void SND_CommandInit(void) {
     SNDCommand *cmd;
-    int i;
+    int i; SNDCommand *n;
     func_02008948();
     cmdState.freeList = cmdPool;
-    for (i = 0; i < 255; i++) {
-        cmdPool[i].next = &cmdPool[i + 1];
+    i = 0;
+    while (i < 255) {
+        n = &cmdPool[i + 1];
+        cmdPool[i].next = n;
+        i++;
     }
     cmdPool[255].next = NULL;
     cmdState.freeTail = &cmdPool[255];
@@ -126,12 +129,15 @@ SNDCommand *SND_AllocCommand(u32 flags) {
 
 void SND_PushCommand(SNDCommand *cmd) {
     OSIntrMode e = OS_DisableInterrupts();
-    if (cmdState.pendingTail == NULL) {
+    SNDCommand *t;
+    t = cmdState.pendingTail;
+    if (t == NULL) {
         cmdState.pendingHead = cmd;
+        cmdState.pendingTail = cmd;
     } else {
-        cmdState.pendingTail->next = cmd;
+        t->next = cmd;
+        cmdState.pendingTail = cmd;
     }
-    cmdState.pendingTail = cmd;
     cmd->next = NULL;
     OS_RestoreInterrupts(e);
 }
@@ -161,7 +167,7 @@ BOOL SND_FlushCommand(u32 flags) {
             OS_RestoreInterrupts(e);
             return FALSE;
         }
-        while (1) {
+        while (cmdState.pendingCount >= 8 || PXI_SendWordByFifo(7, (u32) cmdState.pendingHead, FALSE) < 0) {
             OS_RestoreInterrupts(e);
             SND_RecvCommandReply(0);
             e = OS_DisableInterrupts();
@@ -170,18 +176,17 @@ BOOL SND_FlushCommand(u32 flags) {
                 OS_RestoreInterrupts(e);
                 return TRUE;
             }
-            if (cmdState.pendingCount >= 8) {
-                continue;
-            }
-            if (PXI_SendWordByFifo(7, (u32) cmdState.pendingHead, FALSE) < 0) {
-                continue;
-            }
-            break;
         }
     }
-    cmdRing[cmdState.ringWrite++] = cmdState.pendingHead;
-    if (cmdState.ringWrite > 8) {
-        cmdState.ringWrite = 0;
+    {
+        int w = cmdState.ringWrite;
+        SNDCommand *h = cmdState.pendingHead;
+        int nw = w + 1;
+        cmdRing[w] = h;
+        cmdState.ringWrite = nw;
+        if (nw > 8) {
+            cmdState.ringWrite = 0;
+        }
     }
     cmdState.pendingHead = NULL;
     cmdState.pendingTail = NULL;

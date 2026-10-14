@@ -21,7 +21,7 @@ void func_0200ef90(void);
 int func_0200f060(CardRomReq *r);
 void func_0200f1ec(CardRomReq *r);
 u32 func_0200f2dc(void);
-void func_0200f338(void);
+void func_0200f338(CardCommon *c);
 int func_0200f52c(void);
 void *func_0200f538(void);
 void func_0200f544(u32 tag, u32 data, int err);
@@ -42,6 +42,8 @@ void func_0200e310(void *task)
     OS_WakeupThreadDirect(&c->thread);
 }
 
+#pragma optimize_for_size on
+#pragma dont_inline on
 void func_0200e34c(u32 id, u32 type)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
@@ -51,10 +53,7 @@ void func_0200e34c(u32 id, u32 type)
             OS_Terminate();
         }
     } else {
-        for (;;) {
-            if (c->owner == -3) {
-                break;
-            }
+        while (c->owner != -3) {
             OS_SleepThread(&c->lockQueue);
         }
         c->owner = id;
@@ -64,6 +63,8 @@ void func_0200e34c(u32 id, u32 type)
     c->arg->result = 0;
     OS_RestoreInterrupts(e);
 }
+#pragma dont_inline reset
+#pragma optimize_for_size reset
 
 void func_0200e3d0(u32 id, u32 type)
 {
@@ -479,7 +480,7 @@ int func_0200ee44(void)
 int func_0200ee50(CardRomReq *r)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
-    u32 page = c->src & ~0x1ff;
+    u32 page = *(vu32 *)&c->src & ~0x1ff;
     if (page == r->page) {
         u32 off = c->src - page;
         u32 n = 0x200 - off;
@@ -522,18 +523,22 @@ void func_0200ef3c(void)
 
 void func_0200ef90(void)
 {
-    CardCommon *c = (CardCommon *)data_020bfe60;
-    MI_StopDma(c->dma);
-    c->src += 0x200;
-    c->dst += 0x200;
-    if ((c->len -= 0x200) != 0) {
-        func_0200ef3c();
-    } else {
+    CardCommon *c;
+    CardCommon *p;
+    u32 more;
+    MI_StopDma(((CardCommon *)data_020bfe60)->dma);
+    p = (CardCommon *)data_020bfe60;
+    p->src += 0x200;
+    p->dst += 0x200;
+    p->len -= 0x200;
+    more = p->len != 0;
+    if (!more) {
         void (*fn)(void *);
         void *arg;
         u32 e;
         OS_DisableIrqMask(0x80000);
         OS_ResetRequestIrqMask(0x80000);
+        c = (CardCommon *)data_020bfe60;
         func_0200f838(func_0200f2dc());
         c->arg->result = 0;
         fn = c->callback;
@@ -548,36 +553,38 @@ void func_0200ef90(void)
         if (fn) {
             fn(arg);
         }
+    } else {
+        func_0200ef3c();
     }
 }
 
 int func_0200f060(CardRomReq *r)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
-    u32 dst = c->dst;
     u32 len = c->len;
-    u32 mis = dst & 0x1f;
     int ok = 0;
     int pageAligned = 0;
     int noTcm = 0;
-    int dmaOk = 0;
-    if (mis == 0 && c->dma <= 3) {
-        dmaOk = 1;
+    u32 dst = c->dst;
+    u32 mis = dst & 0x1f;
+    u32 dmaOk = 0;
+    if (mis == 0) {
+        dmaOk = c->dma <= 3;
     }
     if (dmaOk) {
         u32 dtcm = (u32)func_0200682c();
         u32 end = dst + len;
-        int inItcm = 0;
-        int tcm = 1;
-        if (end > 0x1ff8000 && dst < 0x2000000) {
-            inItcm = 1;
+        u32 tcm = 1;
+        u32 inItcm = 0;
+        if (end > 0x1ff8000) {
+            inItcm = dst < 0x2000000;
         }
-        if (!inItcm) {
+        if (inItcm == 0) {
             if (dtcm >= end || dtcm + 0x4000 <= dst) {
                 tcm = 0;
             }
         }
-        if (!tcm) {
+        if (tcm == 0) {
             noTcm = 1;
         }
     }
@@ -586,10 +593,12 @@ int func_0200f060(CardRomReq *r)
             pageAligned = 1;
         }
     }
-    r->ctrl = (data_020a506c->romctrl & ~0x7000000) | 0xa1000000;
     if (pageAligned && len != 0) {
-        u32 e;
         ok = 1;
+    }
+    r->ctrl = (data_020a506c->romctrl & ~0x7000000) | 0xa1000000;
+    if (ok) {
+        u32 e;
         e = OS_DisableInterrupts();
         if (len < c->f118) {
             IC_InvalidateRange((void *)dst, len);
@@ -620,18 +629,22 @@ int func_0200f060(CardRomReq *r)
 void func_0200f1ec(CardRomReq *r)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
+    volatile CardCommon *d;
+    u32 t;
     for (;;) {
         u32 page = c->src & ~0x1ff;
         u32 *dst;
-        u32 i = 0;
-        u32 n = 0;
         u32 st;
+        u32 i;
+        u32 n;
         if (page != c->src || ((u32)(dst = (u32 *)c->dst) & 3) || c->len < 0x200) {
             r->page = page;
             dst = (u32 *)r->cache;
         }
         func_0200eedc((page >> 8) | 0xb7000000, page << 24);
+        i = 0;
         *(vu32 *)0x40001a4 = r->ctrl;
+        n = 0;
         do {
             st = *(vu32 *)0x40001a4;
             if (st & 0x800000) {
@@ -644,10 +657,13 @@ void func_0200f1ec(CardRomReq *r)
             }
         } while (st & 0x80000000);
         if ((u32)dst == c->dst) {
-            c->src += 0x200;
-            c->dst += 0x200;
-            if ((c->len -= 0x200) == 0) {
-                return;
+            d = (CardCommon *)data_020bfe60;
+            d->src += 0x200;
+            d->dst += 0x200;
+            t = d->len - 0x200;
+            d->len = t;
+            if (t == 0) {
+                break;
             }
         } else {
             if (!func_0200ee50(r)) {
@@ -668,9 +684,9 @@ u32 func_0200f2dc(void)
     return *(vu32 *)0x4100010;
 }
 
-void func_0200f338(void)
+void func_0200f338(CardCommon *unused)
 {
-    CardCommon *c = (CardCommon *)data_020bfe60;
+    CardCommon *c;
     CardRomReq *r = &data_020c04a0;
     void (*fn)(void *);
     void *arg;
@@ -678,6 +694,7 @@ void func_0200f338(void)
     if (func_0200ee50(r)) {
         r->func(r);
     }
+    c = (CardCommon *)data_020bfe60;
     func_0200f838(func_0200f2dc());
     c->arg->result = 0;
     fn = c->callback;
@@ -694,6 +711,7 @@ void func_0200f338(void)
     }
 }
 
+#pragma optimize_for_size on
 void func_0200f3d0(u32 dma, u32 src, void *dst, u32 len, void (*cb)(void *), void *cbarg, int async)
 {
     CardRomReq *r = &data_020c04a0;
@@ -727,8 +745,10 @@ void func_0200f3d0(u32 dma, u32 src, void *dst, u32 len, void (*cb)(void *), voi
         return;
     }
     c->curThread = OSi_ThreadInfo.curThread;
-    func_0200f338();
+    func_0200f338(c);
 }
+
+#pragma optimize_for_size reset
 
 void func_0200f4c8(void)
 {
@@ -761,13 +781,14 @@ void *func_0200f538(void)
 
 void func_0200f544(u32 tag, u32 data, int err)
 {
-    CardCommon *c = (CardCommon *)data_020bfe60;
+    CardCommon *c;
     if (tag != 0xb) {
         return;
     }
     if (err == 0) {
         return;
     }
+    c = (CardCommon *)data_020bfe60;
     c->f114 &= ~CF_PXIWAIT;
     OS_WakeupThreadDirect(c->curThread);
 }

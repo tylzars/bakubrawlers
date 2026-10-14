@@ -62,27 +62,40 @@ void SpriteScreen::func_020275f0() {
 static u16 data_020a5624[10] = {0x20, 0x20, 0x40, 0x80, 0x100, 0x80, 0x100, 0x80, 0x100, 0x100};
 static u32 data_020a5638[9]  = {0x0, 0x10, 0x100010, 0x200010, 0x300010, 0x40, 0x400040, 0x0, 0x20};
 
-// non-matching: store and scheduling order (the ROM's store order fits inlined OBJ VRAM mode setters).
+enum GXOBJVRamModeChar { GX_OBJVRAMMODE_CHAR_2D = 0 };
+enum GXOBJVRamModeBmp { GX_OBJVRAMMODE_BMP_2D_W128 = 0 };
+static inline void GX_SetOBJVRamModeChar(GXOBJVRamModeChar mode) {
+    reg_GX_DISPCNT = (u32) (reg_GX_DISPCNT & ~(0x00300000 | 0x10) | mode);
+}
+static inline void GXS_SetOBJVRamModeChar(GXOBJVRamModeChar mode) {
+    reg_GXS_DB_DISPCNT = (u32) (reg_GXS_DB_DISPCNT & ~(0x00300000 | 0x10) | mode);
+}
+static inline void GX_SetOBJVRamModeBmp(GXOBJVRamModeBmp mode) {
+    reg_GX_DISPCNT = (u32) (reg_GX_DISPCNT & ~(0x00400000 | 0x60) | mode);
+}
+static inline void GXS_SetOBJVRamModeBmp(GXOBJVRamModeBmp mode) {
+    reg_GXS_DB_DISPCNT = (u32) (reg_GXS_DB_DISPCNT & ~0x60 | mode);
+}
+// non-matching: 3 words: the original stores mUnk_403 before mUnk_400 and compares after both stores.
 void SpriteScreen::func_02027624(s32 mode) {
-    mUnk_403 = mode;
     mUnk_400 = data_020a5624[mode];
+    mUnk_403 = mode;
     if (mode < 5) {
         if (mBgIndex == 0) {
-            reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xffcfffef) | data_020a5638[mode];
+            GX_SetOBJVRamModeChar((GXOBJVRamModeChar) data_020a5638[mode]);
         } else {
-            reg_GXS_DB_DISPCNT = (reg_GXS_DB_DISPCNT & 0xffcfffef) | data_020a5638[mode];
+            GXS_SetOBJVRamModeChar((GXOBJVRamModeChar) data_020a5638[mode]);
         }
     } else {
         if (mBgIndex == 0) {
-            reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xffbfff9f) | data_020a5638[mode];
+            GX_SetOBJVRamModeBmp((GXOBJVRamModeBmp) data_020a5638[mode]);
         } else {
-            reg_GXS_DB_DISPCNT = (reg_GXS_DB_DISPCNT & ~0x60) | data_020a5638[mode];
+            GXS_SetOBJVRamModeBmp((GXOBJVRamModeBmp) data_020a5638[mode]);
         }
     }
 }
 
-// non-matching: 4 bytes long: the original returns the value untruncated, but callers need the u16 return type.
-u16 SpriteScreen::func_020276f4(u32 offset) {
+u32 SpriteScreen::func_020276f4(u32 offset) {
     u32 result = offset;
     if (mUnk_403 < 7) {
         result = result / mUnk_400;
@@ -103,7 +116,6 @@ void SpriteScreen::func_02027750() {
     mUnk_405 = 0;
 }
 
-// non-matching: same size; register allocation and stack slots (13 words, first +0x350).
 void SpriteScreen::func_02027778(void *buffer, u8 count, s16 unk3, s16 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8) {
     OamEntry *entry = (OamEntry *) this + mUnk_404;
     OamSource *source = (OamSource *) buffer;
@@ -194,10 +206,14 @@ void SpriteScreen::func_02027778(void *buffer, u8 count, s16 unk3, s16 unk4, u32
             cull = y + offsetY;
         }
         if ((cull > -0x40) & (cull < 0xc0)) {
-            s32 px = (y + offsetY);
-            u32 mosaic = (source->mAttr01 & 0x1000) >> 12;
-            u32 colorBit = (source->mAttr01 & 0x2000) >> 13;
-            s32 py = x + unk3;
+            s32 px;
+            u32 mosaic;
+            u32 colorBit;
+            s32 py;
+            colorBit = (source->mAttr01 & 0x2000) >> 13;
+            mosaic = (source->mAttr01 & 0x1000) >> 12;
+            px = (y + offsetY);
+            py = x + unk3;
             u32 value;
             if (flip == 0x100 || flip == 0x300) {
                 if (mode == 3) {

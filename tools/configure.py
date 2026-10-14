@@ -160,7 +160,8 @@ w(f"rule rom_build\n  command = {DSD} rom build --config $in --rom $out {bios_fl
 w(f"rule fix_header\n  command = {PY} tools/fix_header.py $in $out --secure-area-crc $crc\n  description = FIX HEADER $out\n")
 w(f"rule sha1\n  command = sha1sum -c $sha1_file && touch $out\n  description = SHA1 $in\n")
 w(f"rule objdiff_config\n  command = {DSD} objdiff -c $config -o . --scratch --compiler {DECOMP_ME_COMPILER} "
-  f"--c-flags {shlex.quote(' '.join(CC_FLAGS + ['-lang=c++']))} --custom-make ninja\n  description = OBJDIFF CONFIG\n")
+  f"--c-flags {shlex.quote(' '.join(CC_FLAGS + ['-lang=c++']))} --custom-make ninja "
+  f"&& {PY} tools/objdiff_place.py objdiff.json $edits\n  description = OBJDIFF CONFIG\n")
 w(f"rule objdiff_report\n  command = {OBJDIFF} report generate -o $out\n  description = REPORT\n")
 w(f"rule check_symbols\n  command = {DSD} check symbols -c $config --elf-path $in --fail --max-lines 20 && touch $out\n  description = CHECK SYMBOLS\n")
 w(f"rule configure\n  command = {PY} tools/configure.py {' '.join(shlex.quote(a) for a in sys.argv[1:])}\n  generator = 1\n  description = CONFIGURE\n")
@@ -184,11 +185,12 @@ build(delink_files, "delink", dsd_config_files + [str(extract_cfg)], implicit=[D
       variables={"config": str(dsd_config)})
 build("delink", "phony", delink_files)
 
+lcf_edits = str(Path(config_dir) / "lcf_edits.txt")
 lcf_raw = delinks["arm9_lcf_file"]
 lcf_final = str(Path(lcf_raw).with_name("arm9_final.lcf"))
 build([lcf_raw, delinks["arm9_objects_file"], lcf_final], "lcf", dsd_config_files + [str(extract_cfg)],
       implicit=[DSD, "tools/lcf_force_active.py", str(Path(config_dir) / "force_active.txt"),
-                str(Path(config_dir) / "lcf_edits.txt")],
+                lcf_edits],
       variables={"config": str(dsd_config), "lcf_raw": lcf_raw, "lcf_final": lcf_final})
 
 # ---- compile ----
@@ -240,7 +242,8 @@ build(str(build_dir / "asm" / ".stamp"), "disassemble", dsd_config_files, implic
 build("dis", "phony", [str(build_dir / "asm" / ".stamp")])
 
 # ---- objdiff ----
-build("objdiff.json", "objdiff_config", dsd_config_files, implicit=[DSD], variables={"config": str(dsd_config)})
+build("objdiff.json", "objdiff_config", dsd_config_files, implicit=[DSD, "tools/objdiff_place.py", lcf_edits],
+      variables={"config": str(dsd_config), "edits": lcf_edits})
 build("objdiff", "phony", ["objdiff.json"] + delink_files + compiled_objects)
 build(str(build_dir / "report.json"), "objdiff_report", ["objdiff.json"] + delink_files + compiled_objects + [arm9_o],
       implicit=[OBJDIFF])

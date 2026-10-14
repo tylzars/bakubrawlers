@@ -21,20 +21,20 @@ sSelectEventIds kind:data(any) addr:0x0221b6d0 local
 sSelectedFrames kind:data(any) addr:0x0221b6d4 local
 sSelectScriptIds kind:data(any) addr:0x0221b6d8 local
 sMessageIndices kind:data(any) addr:0x0221b6dc local
-@1636 kind:data(any) addr:0x0221b6e0 local
+@1637 kind:data(any) addr:0x0221b6e0 local
 sMenuItems kind:data(any) addr:0x0221b70c local
 sMenuCells kind:data(any) addr:0x0221b7b4 local
 OV003_CTOR_END kind:data(any) addr:0x0221b860
-@1288 kind:data(any) addr:0x0221b874 local
+@1289 kind:data(any) addr:0x0221b874 local
 @1289 kind:data(any) addr:0x0221b898 local
 @1290 kind:data(any) addr:0x0221b8bc local
 @1292 kind:data(any) addr:0x0221b8e0 local
 @1293 kind:data(any) addr:0x0221b90c local
 @1291 kind:data(any) addr:0x0221b938 local
-@2508 kind:data(any) addr:0x0221b968 local
-@2514 kind:data(any) addr:0x0221b97c local
-@2563 kind:data(any) addr:0x0221b98c local
-@2564 kind:data(any) addr:0x0221b99c local
+@2510 kind:data(any) addr:0x0221b968 local
+@2516 kind:data(any) addr:0x0221b97c local
+@2565 kind:data(any) addr:0x0221b98c local
+@2566 kind:data(any) addr:0x0221b99c local
 @2565 kind:data(any) addr:0x0221b9b4 local
 @2566 kind:data(any) addr:0x0221b9cc local
 @2567 kind:data(any) addr:0x0221b9e4 local
@@ -45,14 +45,14 @@ OV003_CTOR_END kind:data(any) addr:0x0221b860
 @2572 kind:data(any) addr:0x0221ba60 local
 @2573 kind:data(any) addr:0x0221ba7c local
 @2574 kind:data(any) addr:0x0221ba9c local
-@2563 kind:data(any) addr:0x0221bab8 local
-@2564 kind:data(any) addr:0x0221bad8 local
+@2577 kind:data(any) addr:0x0221bab8 local
+@2578 kind:data(any) addr:0x0221bad8 local
 @2565 kind:data(any) addr:0x0221baf4 local
 @2566 kind:data(any) addr:0x0221bb18 local
 @2567 kind:data(any) addr:0x0221bb34 local
 @2568 kind:data(any) addr:0x0221bb50 local
-@2788 kind:data(any) addr:0x0221bb6c local
-@2789 kind:data(any) addr:0x0221bb88 local
+@2784 kind:data(any) addr:0x0221bb6c local
+@2785 kind:data(any) addr:0x0221bb88 local
 OV003_BSS_START kind:bss addr:0x0221bba0
 @40 kind:bss addr:0x0221bbac local
 @760 kind:bss addr:0x0221bbb8 local

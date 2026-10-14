@@ -126,16 +126,16 @@ _ZTV13TutorialScene kind:data(any) addr:0x02220844
 @964 kind:data(any) addr:0x02220874 local
 @961 kind:data(any) addr:0x02220890 local
 @963 kind:data(any) addr:0x022208ac local
-@959 kind:data(any) addr:0x022208c8 local
+@960 kind:data(any) addr:0x022208c8 local
 @960 kind:data(any) addr:0x022208e4 local
 @965 kind:data(any) addr:0x02220900 local
 @966 kind:data(any) addr:0x0222092c local
 @967 kind:data(any) addr:0x02220958 local
-@3234 kind:data(any) addr:0x02220984 local
+@3235 kind:data(any) addr:0x02220984 local
 @3235 kind:data(any) addr:0x02220990 local
 @3236 kind:data(any) addr:0x0222099c local
 @3237 kind:data(any) addr:0x022209ac local
-@3359 kind:data(any) addr:0x022209b8 local
+@3360 kind:data(any) addr:0x022209b8 local
 @3360 kind:data(any) addr:0x022209cc local
 @3361 kind:data(any) addr:0x022209e8 local
 @3362 kind:data(any) addr:0x02220a04 local
@@ -144,7 +144,7 @@ _ZTV13TutorialScene kind:data(any) addr:0x02220844
 @3365 kind:data(any) addr:0x02220a58 local
 @3366 kind:data(any) addr:0x02220a74 local
 @3367 kind:data(any) addr:0x02220a88 local
-@3359 kind:data(any) addr:0x02220aa8 local
+@3369 kind:data(any) addr:0x02220aa8 local
 @3360 kind:data(any) addr:0x02220ac4 local
 @3361 kind:data(any) addr:0x02220ae0 local
 @3362 kind:data(any) addr:0x02220b00 local
@@ -155,7 +155,7 @@ _ZTV13TutorialScene kind:data(any) addr:0x02220844
 @3364 kind:data(any) addr:0x02220b8c local
 @3365 kind:data(any) addr:0x02220bb0 local
 @3366 kind:data(any) addr:0x02220bb4 local
-@3409 kind:data(any) addr:0x02220bc4 local
+@3410 kind:data(any) addr:0x02220bc4 local
 @3410 kind:data(any) addr:0x02220bd8 local
 @3411 kind:data(any) addr:0x02220bf4 local
 @3412 kind:data(any) addr:0x02220c10 local
@@ -168,7 +168,7 @@ _ZTV13TutorialScene kind:data(any) addr:0x02220844
 data_ov005_02220cc0 kind:bss addr:0x02220cc0
 data_ov005_02220ccc kind:bss addr:0x02220ccc
 data_ov005_02220cd8 kind:bss addr:0x02220cd8
-@1052 kind:bss addr:0x02220ce4 local
-@1090 kind:bss addr:0x02220cf0 local
+@1053 kind:bss addr:0x02220ce4 local
+@1091 kind:bss addr:0x02220cf0 local
 @1212 kind:bss addr:0x02220cfc local
-@1241 kind:bss addr:0x02220d08 local
+@1242 kind:bss addr:0x02220d08 local

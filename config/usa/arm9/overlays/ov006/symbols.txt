@@ -22,7 +22,7 @@ OV006_DATA_START kind:data(any) addr:0x0221a6a0
 @82 kind:data(any) addr:0x0221a790 local
 @83 kind:data(any) addr:0x0221a7bc local
 @84 kind:data(any) addr:0x0221a7e8 local
-@1672 kind:data(any) addr:0x0221a814 local
+@1673 kind:data(any) addr:0x0221a814 local
 @1673 kind:data(any) addr:0x0221a824 local
 @1674 kind:data(any) addr:0x0221a840 local
 @1675 kind:data(any) addr:0x0221a85c local
@@ -34,13 +34,13 @@ OV006_DATA_START kind:data(any) addr:0x0221a6a0
 @1681 kind:data(any) addr:0x0221a908 local
 @1682 kind:data(any) addr:0x0221a928 local
 @1683 kind:data(any) addr:0x0221a944 local
-@1672 kind:data(any) addr:0x0221a960 local
+@1685 kind:data(any) addr:0x0221a960 local
 @1673 kind:data(any) addr:0x0221a974 local
 @1674 kind:data(any) addr:0x0221a990 local
 @1675 kind:data(any) addr:0x0221a9ac local
 @1676 kind:data(any) addr:0x0221a9c8 local
 @1677 kind:data(any) addr:0x0221a9ec local
 @1678 kind:data(any) addr:0x0221aa08 local
-@1740 kind:data(any) addr:0x0221aa0c local
+@1741 kind:data(any) addr:0x0221aa0c local
 @1741 kind:data(any) addr:0x0221aa10 local
 OV006_BSS_START kind:bss addr:0x0221aa40

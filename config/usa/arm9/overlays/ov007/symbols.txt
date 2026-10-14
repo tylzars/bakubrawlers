@@ -1788,20 +1788,20 @@ _ZTV12ConfrontBg01 kind:data(any) addr:0x02285d44
 @907 kind:data(any) addr:0x02285da8 local
 @908 kind:data(any) addr:0x02285dc0 local
 @909 kind:data(any) addr:0x02285dd8 local
-@893 kind:data(any) addr:0x02285df0 local
+@914 kind:data(any) addr:0x02285df0 local
 @911 kind:data(any) addr:0x02285e08 local
 @895 kind:data(any) addr:0x02285e20 local
 @896 kind:data(any) addr:0x02285e38 local
 @897 kind:data(any) addr:0x02285e50 local
 _ZTV16ConfrontEmblem02 kind:data(any) addr:0x02285e54
 _ZTV12ConfrontBg02 kind:data(any) addr:0x02285e64
-@1486 kind:data(any) addr:0x02285ec8 local
-@1487 kind:data(any) addr:0x02285ee4 local
-@1488 kind:data(any) addr:0x02285efc local
+@1490 kind:data(any) addr:0x02285ec8 local
+@1491 kind:data(any) addr:0x02285ee4 local
+@1492 kind:data(any) addr:0x02285efc local
 @1789 kind:data(any) addr:0x02285f00 local
-@1790 kind:data(any) addr:0x02285f18 local
-@1791 kind:data(any) addr:0x02285f2c local
-@1792 kind:data(any) addr:0x02285f40 local
+@1794 kind:data(any) addr:0x02285f18 local
+@1795 kind:data(any) addr:0x02285f2c local
+@1796 kind:data(any) addr:0x02285f40 local
 @1793 kind:data(any) addr:0x02285f54 local
 @1794 kind:data(any) addr:0x02285f58 local
 @1795 kind:data(any) addr:0x02285f74 local
@@ -1818,28 +1818,28 @@ _ZTV10Confront03 kind:data(any) addr:0x02286070
 @1383 kind:data(any) addr:0x022860d4 local
 @1371 kind:data(any) addr:0x022860f0 local
 @1372 kind:data(any) addr:0x02286108 local
-@1612 kind:data(any) addr:0x0228610c local
-@1613 kind:data(any) addr:0x02286128 local
-@1614 kind:data(any) addr:0x02286148 local
-@1615 kind:data(any) addr:0x02286160 local
+@1616 kind:data(any) addr:0x0228610c local
+@1617 kind:data(any) addr:0x02286128 local
+@1618 kind:data(any) addr:0x02286148 local
+@1619 kind:data(any) addr:0x02286160 local
 _ZTV12ConfrontBg04 kind:data(any) addr:0x02286164
-@934 kind:data(any) addr:0x022861c8 local
-@935 kind:data(any) addr:0x022861e0 local
-@936 kind:data(any) addr:0x022861f8 local
-@937 kind:data(any) addr:0x02286210 local
+@938 kind:data(any) addr:0x022861c8 local
+@939 kind:data(any) addr:0x022861e0 local
+@940 kind:data(any) addr:0x022861f8 local
+@941 kind:data(any) addr:0x02286210 local
 @938 kind:data(any) addr:0x02286228 local
 @939 kind:data(any) addr:0x02286240 local
 @940 kind:data(any) addr:0x02286258 local
 @941 kind:data(any) addr:0x02286270 local
 _ZTV16ConfrontEmblem05 kind:data(any) addr:0x02286274
 _ZTV12ConfrontBg05 kind:data(any) addr:0x02286284
-@1166 kind:data(any) addr:0x022862e8 local
-@1167 kind:data(any) addr:0x02286304 local
-@1168 kind:data(any) addr:0x0228631c local
-@1320 kind:data(any) addr:0x02286320 local
-@1321 kind:data(any) addr:0x02286338 local
-@1322 kind:data(any) addr:0x02286350 local
-@1323 kind:data(any) addr:0x02286368 local
+@1170 kind:data(any) addr:0x022862e8 local
+@1171 kind:data(any) addr:0x02286304 local
+@1172 kind:data(any) addr:0x0228631c local
+@1324 kind:data(any) addr:0x02286320 local
+@1325 kind:data(any) addr:0x02286338 local
+@1326 kind:data(any) addr:0x02286350 local
+@1327 kind:data(any) addr:0x02286368 local
 @1324 kind:data(any) addr:0x02286380 local
 @1325 kind:data(any) addr:0x02286398 local
 @1326 kind:data(any) addr:0x022863b0 local
@@ -1935,10 +1935,10 @@ data_ov007_02286bd0 kind:data(any) addr:0x02286bd0
 data_ov007_02286be4 kind:data(any) addr:0x02286be4
 data_ov007_02286bf8 kind:data(any) addr:0x02286bf8
 _ZTV13BattleField3D kind:data(any) addr:0x02286bfc
-@1302 kind:data(any) addr:0x02286c0c local
-@1303 kind:data(any) addr:0x02286c24 local
-@1304 kind:data(any) addr:0x02286c38 local
-@1305 kind:data(any) addr:0x02286c3c local
+@1306 kind:data(any) addr:0x02286c0c local
+@1307 kind:data(any) addr:0x02286c24 local
+@1308 kind:data(any) addr:0x02286c38 local
+@1309 kind:data(any) addr:0x02286c3c local
 @1306 kind:data(any) addr:0x02286c48 local
 _ZTV7IBattle kind:data(any) addr:0x02286c54
 _ZTV14GimmickBakugan kind:data(any) addr:0x02286c7c
@@ -1947,7 +1947,7 @@ _ZTV14GimmickBakugan kind:data(any) addr:0x02286c7c
 @899 kind:data(any) addr:0x02286ccc local
 @900 kind:data(any) addr:0x02286ce0 local
 @901 kind:data(any) addr:0x02286cf0 local
-@893 kind:data(any) addr:0x02286d00 local
+@902 kind:data(any) addr:0x02286d00 local
 @903 kind:data(any) addr:0x02286d10 local
 @895 kind:data(any) addr:0x02286d20 local
 @896 kind:data(any) addr:0x02286d30 local
@@ -2050,7 +2050,7 @@ _ZTV20GimmickPyrusEruption kind:data(any) addr:0x02287434
 @899 kind:data(any) addr:0x022874bc local
 @900 kind:data(any) addr:0x022874d8 local
 @901 kind:data(any) addr:0x022874f0 local
-@893 kind:data(any) addr:0x02287500 local
+@902 kind:data(any) addr:0x02287500 local
 _ZTV19GimmickAbilityField kind:data(any) addr:0x02287504
 @829 kind:data(any) addr:0x02287528 local
 @829 kind:data(any) addr:0x02287540 local
@@ -2066,14 +2066,14 @@ data_ov007_02287604 kind:data(any) addr:0x02287604
 _ZTV18BattleUnionAbility kind:data(any) addr:0x0228760c
 @825 kind:data(any) addr:0x02287620 local
 @826 kind:data(any) addr:0x02287654 local
-@824 kind:data(any) addr:0x02287688 local
+@825 kind:data(any) addr:0x02287688 local
 @1503 kind:data(any) addr:0x022876bc local
 @1504 kind:data(any) addr:0x022876d0 local
 @1505 kind:data(any) addr:0x022876fc local
-@1506 kind:data(any) addr:0x02287720 local
-@1507 kind:data(any) addr:0x0228774c local
-@1508 kind:data(any) addr:0x02287770 local
-@1509 kind:data(any) addr:0x02287790 local
+@1502 kind:data(any) addr:0x02287720 local
+@1503 kind:data(any) addr:0x0228774c local
+@1504 kind:data(any) addr:0x02287770 local
+@1505 kind:data(any) addr:0x02287790 local
 @1589 kind:data(any) addr:0x02287794 local
 @1590 kind:data(any) addr:0x022877a8 local
 @1591 kind:data(any) addr:0x022877cc local
@@ -2328,19 +2328,19 @@ data_ov007_02288d18 kind:data(any) addr:0x02288d18
 @965 kind:data(any) addr:0x02288d40 local
 @964 kind:data(any) addr:0x02288d4c local
 @965 kind:data(any) addr:0x02288d60 local
-@992 kind:data(any) addr:0x02288d74 local
-@993 kind:data(any) addr:0x02288d88 local
+@996 kind:data(any) addr:0x02288d74 local
+@997 kind:data(any) addr:0x02288d88 local
 @994 kind:data(any) addr:0x02288da0 local
 @995 kind:data(any) addr:0x02288db4 local
 @996 kind:data(any) addr:0x02288dc8 local
 @997 kind:data(any) addr:0x02288de0 local
 @998 kind:data(any) addr:0x02288df0 local
-@990 kind:data(any) addr:0x02288e00 local
+@1003 kind:data(any) addr:0x02288e00 local
 @1000 kind:data(any) addr:0x02288e14 local
 @1001 kind:data(any) addr:0x02288e28 local
-@990 kind:data(any) addr:0x02288e40 local
+@1006 kind:data(any) addr:0x02288e40 local
 _ZTV11BattleObj00 kind:data(any) addr:0x02288e44
-@2733 kind:data(any) addr:0x02288e58 local
+@2734 kind:data(any) addr:0x02288e58 local
 @2734 kind:data(any) addr:0x02288e6c local
 @2735 kind:data(any) addr:0x02288e84 local
 @2736 kind:data(any) addr:0x02288e98 local
@@ -2348,7 +2348,7 @@ _ZTV11BattleObj00 kind:data(any) addr:0x02288e44
 @2738 kind:data(any) addr:0x02288eb0 local
 @2739 kind:data(any) addr:0x02288ec8 local
 @2740 kind:data(any) addr:0x02288ee0 local
-@2733 kind:data(any) addr:0x02288ef8 local
+@2742 kind:data(any) addr:0x02288ef8 local
 data_ov007_02288f0c kind:data(any) addr:0x02288f0c
 data_ov007_02288f14 kind:data(any) addr:0x02288f14
 data_ov007_02288f20 kind:data(any) addr:0x02288f20
@@ -2452,7 +2452,7 @@ data_ov007_0228994c kind:data(any) addr:0x0228994c
 data_ov007_0228996c kind:data(any) addr:0x0228996c
 data_ov007_02289988 kind:data(any) addr:0x02289988
 _ZTV19BattleCommandPrompt kind:data(any) addr:0x0228998c
-@1042 kind:data(any) addr:0x022899a0 local
+@1043 kind:data(any) addr:0x022899a0 local
 @1043 kind:data(any) addr:0x022899d0 local
 @2950 kind:data(any) addr:0x02289a00 local
 @2951 kind:data(any) addr:0x02289a0c local
@@ -2466,7 +2466,7 @@ _ZTV19BattleCommandPrompt kind:data(any) addr:0x0228998c
 @2967 kind:data(any) addr:0x02289aec local
 @2968 kind:data(any) addr:0x02289b10 local
 @2969 kind:data(any) addr:0x02289b2c local
-@2958 kind:data(any) addr:0x02289b48 local
+@2971 kind:data(any) addr:0x02289b48 local
 @2959 kind:data(any) addr:0x02289b64 local
 @2960 kind:data(any) addr:0x02289b80 local
 @2961 kind:data(any) addr:0x02289b90 local
@@ -2719,12 +2719,12 @@ _ZTV17BattleUnk0227532c kind:data(any) addr:0x0228b000
 @1456 kind:data(any) addr:0x0228b0b4 local
 @1457 kind:data(any) addr:0x0228b0d0 local
 @1458 kind:data(any) addr:0x0228b0ec local
-@1459 kind:data(any) addr:0x0228b108 local
-@1460 kind:data(any) addr:0x0228b12c local
-@1461 kind:data(any) addr:0x0228b148 local
-@1462 kind:data(any) addr:0x0228b160 local
+@1455 kind:data(any) addr:0x0228b108 local
+@1456 kind:data(any) addr:0x0228b12c local
+@1457 kind:data(any) addr:0x0228b148 local
+@1458 kind:data(any) addr:0x0228b160 local
 _ZTV21GimmickAquosFukidashi kind:data(any) addr:0x0228b164
-@959 kind:data(any) addr:0x0228b188 local
+@968 kind:data(any) addr:0x0228b188 local
 @960 kind:data(any) addr:0x0228b1a0 local
 @961 kind:data(any) addr:0x0228b1bc local
 @962 kind:data(any) addr:0x0228b1d4 local
@@ -2764,11 +2764,11 @@ data_ov007_0228b4ec kind:data(any) addr:0x0228b4ec
 data_ov007_0228b504 kind:data(any) addr:0x0228b504
 data_ov007_0228b508 kind:data(any) addr:0x0228b508
 _ZTV20GimmickIkazuchiStart kind:data(any) addr:0x0228b520
-@934 kind:data(any) addr:0x0228b544 local
-@934 kind:data(any) addr:0x0228b558 local
-@935 kind:data(any) addr:0x0228b570 local
-@936 kind:data(any) addr:0x0228b584 local
-@937 kind:data(any) addr:0x0228b594 local
+@942 kind:data(any) addr:0x0228b544 local
+@943 kind:data(any) addr:0x0228b558 local
+@944 kind:data(any) addr:0x0228b570 local
+@945 kind:data(any) addr:0x0228b584 local
+@946 kind:data(any) addr:0x0228b594 local
 @938 kind:data(any) addr:0x0228b5a4 local
 @939 kind:data(any) addr:0x0228b5b4 local
 @940 kind:data(any) addr:0x0228b5c4 local
@@ -2776,28 +2776,28 @@ data_ov007_0228b5e0 kind:bss addr:0x0228b5e0
 data_ov007_0228b5ec kind:bss addr:0x0228b5ec
 data_ov007_0228b5f8 kind:bss addr:0x0228b5f8
 data_ov007_0228b604 kind:bss addr:0x0228b604
-@384 kind:bss addr:0x0228b610 local
-@400 kind:bss addr:0x0228b61c local
+@388 kind:bss addr:0x0228b610 local
+@404 kind:bss addr:0x0228b61c local
 @45 kind:bss addr:0x0228b628 local
 @29 kind:bss addr:0x0228b634 local
 @45 kind:bss addr:0x0228b640 local
 @29 kind:bss addr:0x0228b64c local
-@373 kind:bss addr:0x0228b658 local
-@411 kind:bss addr:0x0228b664 local
+@377 kind:bss addr:0x0228b658 local
+@415 kind:bss addr:0x0228b664 local
 @29 kind:bss addr:0x0228b670 local
-@527 kind:bss addr:0x0228b67c local
+@531 kind:bss addr:0x0228b67c local
 @22 kind:bss addr:0x0228b688 local
-@679 kind:bss addr:0x0228b694 local
+@692 kind:bss addr:0x0228b694 local
 @1096 kind:bss addr:0x0228b6a0 local
 data_ov007_0228b6ac kind:bss addr:0x0228b6ac
 data_ov007_0228b6b8 kind:bss addr:0x0228b6b8
 data_ov007_0228b6c4 kind:bss addr:0x0228b6c4
 data_ov007_0228b6d0 kind:bss addr:0x0228b6d0
 data_ov007_0228b6dc kind:bss addr:0x0228b6dc
-@596 kind:bss addr:0x0228b6e8 local
-@607 kind:bss addr:0x0228b6f4 local
+@600 kind:bss addr:0x0228b6e8 local
+@611 kind:bss addr:0x0228b6f4 local
 sTouchTicks kind:bss addr:0x0228b700 local
-@583 kind:bss addr:0x0228b704 local
+@587 kind:bss addr:0x0228b704 local
 sResources kind:bss addr:0x0228b710 local
 sResource kind:bss addr:0x0228b718 local
 data_ov007_0228b71c kind:bss addr:0x0228b71c
@@ -2807,26 +2807,26 @@ sResources kind:bss addr:0x0228b740 local
 @14 kind:bss addr:0x0228b748 local
 @109 kind:bss addr:0x0228b754 local
 sResource kind:bss addr:0x0228b760 local
-@637 kind:bss addr:0x0228b764 local
+@645 kind:bss addr:0x0228b764 local
 sResource kind:bss addr:0x0228b770 local
-@637 kind:bss addr:0x0228b774 local
+@645 kind:bss addr:0x0228b774 local
 @86 kind:bss addr:0x0228b780 local
 sResource kind:bss addr:0x0228b78c local
-@637 kind:bss addr:0x0228b790 local
+@645 kind:bss addr:0x0228b790 local
 @86 kind:bss addr:0x0228b79c local
 sResource kind:bss addr:0x0228b7a8 local
-@637 kind:bss addr:0x0228b7ac local
+@645 kind:bss addr:0x0228b7ac local
 sResource kind:bss addr:0x0228b7b8 local
-@637 kind:bss addr:0x0228b7bc local
+@645 kind:bss addr:0x0228b7bc local
 sResources kind:bss addr:0x0228b7c8 local
-@637 kind:bss addr:0x0228b7d0 local
+@645 kind:bss addr:0x0228b7d0 local
 @86 kind:bss addr:0x0228b7dc local
 sResource kind:bss addr:0x0228b7e8 local
 sResources kind:bss addr:0x0228b7ec local
-@637 kind:bss addr:0x0228b7f4 local
+@645 kind:bss addr:0x0228b7f4 local
 sResources kind:bss addr:0x0228b800 local
 @86 kind:bss addr:0x0228b808 local
-@637 kind:bss addr:0x0228b814 local
+@645 kind:bss addr:0x0228b814 local
 @613 kind:bss addr:0x0228b820 local
 data_ov007_0228b82c kind:bss addr:0x0228b82c
 data_ov007_0228b838 kind:bss addr:0x0228b838
@@ -2867,7 +2867,7 @@ data_ov007_0228b9b8 kind:bss addr:0x0228b9b8
 @39 kind:bss addr:0x0228b9dc local
 @23 kind:bss addr:0x0228b9e8 local
 @543 kind:bss addr:0x0228b9f4 local
-@400 kind:bss addr:0x0228ba00 local
+@409 kind:bss addr:0x0228ba00 local
 data_ov007_0228ba0c kind:bss addr:0x0228ba0c
 data_ov007_0228ba18 kind:bss addr:0x0228ba18
 data_ov007_0228ba24 kind:bss addr:0x0228ba24
@@ -2900,15 +2900,15 @@ data_ov007_0228bb5c kind:bss addr:0x0228bb5c
 data_ov007_0228bb68 kind:bss addr:0x0228bb68
 data_ov007_0228bb74 kind:bss addr:0x0228bb74
 sResource kind:bss addr:0x0228bb80 local
-@637 kind:bss addr:0x0228bb84 local
+@645 kind:bss addr:0x0228bb84 local
 @564 kind:bss addr:0x0228bb90 local
 @442 kind:bss addr:0x0228bb9c local
 sCount kind:bss addr:0x0228bba8 local
-@637 kind:bss addr:0x0228bbb4 local
+@645 kind:bss addr:0x0228bbb4 local
 data_ov007_0228bbc0 kind:bss addr:0x0228bbc0
 data_ov007_0228bbcc kind:bss addr:0x0228bbcc
 data_ov007_0228bbd8 kind:bss addr:0x0228bbd8
 data_ov007_0228bbe4 kind:bss addr:0x0228bbe4
 data_ov007_0228bbf0 kind:bss addr:0x0228bbf0
 sCount kind:bss addr:0x0228bbfc local
-@637 kind:bss addr:0x0228bc08 local
+@645 kind:bss addr:0x0228bc08 local

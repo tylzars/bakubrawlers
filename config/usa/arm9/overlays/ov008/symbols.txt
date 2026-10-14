@@ -222,7 +222,7 @@ _ZTV11MyroomScene kind:data(any) addr:0x02229984
 @1107 kind:data(any) addr:0x02229b00 local
 @1101 kind:data(any) addr:0x02229b28 local
 @1102 kind:data(any) addr:0x02229b50 local
-@1094 kind:data(any) addr:0x02229b78 local
+@1104 kind:data(any) addr:0x02229b78 local
 @1096 kind:data(any) addr:0x02229ba0 local
 @1097 kind:data(any) addr:0x02229bcc local
 @1101 kind:data(any) addr:0x02229bf8 local
@@ -230,20 +230,20 @@ _ZTV11MyroomScene kind:data(any) addr:0x02229984
 @1095 kind:data(any) addr:0x02229c58 local
 data_ov008_02229c88 kind:data(any) addr:0x02229c88
 data_ov008_02229d14 kind:data(any) addr:0x02229d14
-@3057 kind:data(any) addr:0x02229da0 local
-@3111 kind:data(any) addr:0x02229db0 local
-@3112 kind:data(any) addr:0x02229dc0 local
-@3113 kind:data(any) addr:0x02229dd8 local
+@3060 kind:data(any) addr:0x02229da0 local
+@3114 kind:data(any) addr:0x02229db0 local
+@3115 kind:data(any) addr:0x02229dc0 local
+@3116 kind:data(any) addr:0x02229dd8 local
 @3114 kind:data(any) addr:0x02229df0 local
 @3115 kind:data(any) addr:0x02229e08 local
 @3116 kind:data(any) addr:0x02229e28 local
 @3117 kind:data(any) addr:0x02229e40 local
 @3118 kind:data(any) addr:0x02229e58 local
 @3119 kind:data(any) addr:0x02229e6c local
-@3111 kind:data(any) addr:0x02229e90 local
+@3123 kind:data(any) addr:0x02229e90 local
 @3121 kind:data(any) addr:0x02229eac local
 @3122 kind:data(any) addr:0x02229ecc local
-@3111 kind:data(any) addr:0x02229ee8 local
+@3126 kind:data(any) addr:0x02229ee8 local
 @3429 kind:data(any) addr:0x02229eec local
 @3430 kind:data(any) addr:0x02229f04 local
 data_ov008_02229f10 kind:data(any) addr:0x02229f10
@@ -440,10 +440,10 @@ data_ov008_0222b5c8 kind:data(any) addr:0x0222b5c8
 OV008_BSS_START kind:bss addr:0x0222b5e0
 @544 kind:bss addr:0x0222b5ec local
 @1329 kind:bss addr:0x0222b5f8 local
-@1193 kind:bss addr:0x0222b604 local
-@1168 kind:bss addr:0x0222b610 local
+@1194 kind:bss addr:0x0222b604 local
+@1169 kind:bss addr:0x0222b610 local
 @1209 kind:bss addr:0x0222b61c local
-@1133 kind:bss addr:0x0222b628 local
+@1134 kind:bss addr:0x0222b628 local
 data_ov008_0222b634 kind:bss addr:0x0222b634
 data_ov008_0222b640 kind:bss addr:0x0222b640
 data_ov008_0222b64c kind:bss addr:0x0222b64c

@@ -9834,14 +9834,14 @@ from:0x0205b280 kind:load to:0x0209e5c0 module:main
 from:0x0205b284 kind:load to:0x0209e5bd module:main
 from:0x0205b2dc kind:arm_call to:0x02021e50 module:main
 from:0x0205b2f4 kind:arm_call to:0x0202f420 module:main
-from:0x0205b368 kind:load to:0x020b376c module:main
+from:0x0205b368 kind:load to:0x020b3764 add:0x8 module:main
 from:0x0205b37c kind:arm_call to:0x0205bd10 module:main
 from:0x0205b384 kind:arm_call to:0x0205bcf4 module:main
-from:0x0205b390 kind:load to:0x020b376c module:main
+from:0x0205b390 kind:load to:0x020b3764 add:0x8 module:main
 from:0x0205b3a4 kind:arm_call to:0x0205bd10 module:main
 from:0x0205b3ac kind:arm_call to:0x0205bcf4 module:main
 from:0x0205b3b4 kind:arm_call to:0x02021e80 module:main
-from:0x0205b3c0 kind:load to:0x020b376c module:main
+from:0x0205b3c0 kind:load to:0x020b3764 add:0x8 module:main
 from:0x0205b414 kind:arm_call to:0x0205bdf4 module:main
 from:0x0205b48c kind:arm_call to:0x0202f468 module:main
 from:0x0205b578 kind:arm_call to:0x02029f6c module:main

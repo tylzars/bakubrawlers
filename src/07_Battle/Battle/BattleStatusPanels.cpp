@@ -81,7 +81,7 @@ void BattleStatusPanels::func_ov007_02234efc() {
     mIcons = new UnkStruct_020651bc(mCharBase + 0x1800, (u8) (mPalette + 6), 0);
     ChangeDir("/Game/Battle/Obj/");
     u8 j;
-    SpriteScreen &screen = SpriteManager::Get().Screen(0);
+    SpriteScreen &screen = SpriteManager::Get().mScreens[0];
     u8 i;
     screen.func_02027624(1);
     screen.LoadCharacters("battle_u.nce_ncg1D.bin", mCharBase, 0);
@@ -180,9 +180,6 @@ void BattleStatusPanels::func_ov007_02235280(u32 index, s32 character, u32 team,
     }
 }
 
-// non-matching: ~42 words. Head of the loop body is scheduled differently (the data_020d433c pointer load and the
-// x/y/dir temporaries use other registers), the args of func_02027778 get other registers (0xf, 0 and the VRAM offset),
-// and one add has its operands swapped (k + mUnk_25).
 void BattleStatusPanels::func_ov007_02235480() {
     int shown1 = 0;
     int shown2 = 0;
@@ -203,11 +200,11 @@ void BattleStatusPanels::func_ov007_02235480() {
                     mPanels[i].mUnk_1c[1]--;
                 }
             }
-            s16 baseX = mPanels[i].mUnk_26 * 0xd8 + 6;
-            s16 baseY = mPanels[i].mUnk_27 * 0x90 + 8;
-            s16 x     = mPanels[i].mUnk_1c[0] + baseX;
-            s16 y     = mPanels[i].mUnk_1c[1] + baseY;
+            s16 x = mPanels[i].mUnk_26 * 0xd8 + 6;
+            s16 y = mPanels[i].mUnk_27 * 0x90 + 8;
+            x += mPanels[i].mUnk_1c[0];
             s8 dir    = 1 - mPanels[i].mUnk_25 * 2;
+            y += mPanels[i].mUnk_1c[1];
             s16 q     = x + 0xe;
             if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
                 mPanels[i].mAnims[4]->Draw(0, (s16) (dir * (mPanels[i].mUnk_25 * 0x24 - 0x10) + q), (s16) (y + 0x22), mUnk_f2);
@@ -339,7 +336,7 @@ void BattleStatusPanels::func_ov007_02235480() {
             mPanels[i].mUnk_2b = level;
                         mPanels[i].mAnims[3]->Draw(0, (s16) (q + dir * mPanels[i].mUnk_25 * 16 + dir * -0x12), (s16) (y - 8), mUnk_f2);
             if (data_020d433c.mBattlePlayers->mPlayers[i]->IsActive()) {
-                mPanels[i].mAnims[5]->Draw(0, (s16) (dir * (mPanels[i].mUnk_25 * 0x18 - 2) + q), (s16) (y - 8), mUnk_f2);
+                mPanels[i].mAnims[5]->Draw(0, (s16) (dir * (mPanels[i].mUnk_25 * 0x18 - 2) + q), (s16) (int) (y - 8), mUnk_f2);
             }
             s16 px = dir * (mPanels[i].mUnk_34 * mPanels[i].mUnk_25 + 0xe) + q;
             if (dir < 0) {
@@ -356,12 +353,12 @@ void BattleStatusPanels::func_ov007_02235480() {
             switch (mMode) {
                 case 0:
                     SpriteManager::Get().Screen(0).func_02027778(mPanels[i].mBuffer2, (u8) mGlyphCount, px, (s16) (y - 1), mUnk_f2,
-                                                                 ((mCharBase + 0x2000 + (i << 11)) << 11) >> 16, 0xf,
+                                                                 (u16) ((mCharBase + 0x2000 + (i << 11)) >> 5), 0xf,
                                                                  0);
                     break;
                 case 1:
                     SpriteManager::Get().Screen(0).func_02027778(mPanels[i].mBuffer2, (u8) mGlyphCount, px, (s16) (y - 1), mUnk_f2,
-                                                                 ((mCharBase + 0x2000) << 11) >> 16, 0xf, 0);
+                                                                 (u16) ((mCharBase + 0x2000) >> 5), 0xf, 0);
                     break;
             }
             mIcons->func_0206547c(i, x, y, mUnk_f2);

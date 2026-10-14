@@ -1,9 +1,20 @@
 #include "UI/SelectWindow.hpp"
+struct GiftPos {
+    u8 x;
+    u8 y;
+};
+struct GiftLayout {
+    GiftPos pos[3][4];
+    u8 order[12];
+    u8 ids[12];
+    s8 slots[12];
+};
+
 #include "System/InputManager.hpp"
-extern const u8 data_ov008_02228a54[2];
-const u8 data_ov008_02228a54[2] = {0x80, 0x60};
-const u8 data_ov008_02228a56[3][2] = {{0x10, 0x12}, {0x40, 0x02}, {0x00, 0x00}};
 #include "System/SoundManager.hpp"
+const GiftPos data_ov008_02228a54 = {0x80, 0x60};
+
+#include "Graphics/SpriteManager.hpp"
 WindowCellRecord data_ov008_0222a160[10] = {
     {"Game/Myroom/myroom_gift_b_obj_nce.bin", 0, 0, 0, 1, 1, {0, 0, 0, 0}},
     {"Game/Myroom/myroom_gift_b_obj_nce.bin", 1, 0, 0, 1, 1, {1, 1, 1, 0}},
@@ -17,11 +28,15 @@ WindowCellRecord data_ov008_0222a160[10] = {
     {"Game/Myroom/myroom_gift_b_obj_nce.bin", 9, 0, 0, 1, 1, {9, 9, 9, 0}},
 };
 
-#include "Scene/MyroomGiftScene.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
-#include "Graphics/CellAnimation.hpp"
-#include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
+#include "Text/TextManager.hpp"
+const u8 data_ov008_02228a56[3][2] = {{0x10, 0x12}, {0x40, 0x02}, {0x00, 0x00}};
+
+const u32 data_ov008_02228a5c[2] = {0x44, 0x21};
+
+const u8 data_ov008_02228a64[3][4] = {{0x01, 0x01, 0x01, 0x01}, {0x01, 0x01, 0x01, 0x01}, {0x01, 0x01, 0x00, 0x00}};
+
+const u8 data_ov008_02228a70[3][4] = {{0, 0x20, 0, 0x80}, {0, 0, 0, 0}, {0, 0, 0, 0}};
+
 const WindowCellRecord data_ov008_02228ab8[4] = {
     {"Game/Myroom/myroom_gift_b_obj_nce.bin", 10, 0, 0, 0, 1, {10, 10, 10, 0}},
     {"Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 16384, 13, 0, 1, {2, 3, 3, 0}},
@@ -29,24 +44,13 @@ const WindowCellRecord data_ov008_02228ab8[4] = {
     {"Game/2D/union_b/union_b_obj_page_nce.bin", 3, 28672, 14, 0, 1, {3, 4, 4, 0}},
 };
 
-#include "System/FileSystem.hpp"
-#include "System/InputManager.hpp"
-#include "System/SoundManager.hpp"
-#include "Text/TextManager.hpp"
-#include "UI/MessageWindow.hpp"
+const GiftLayout data_ov008_02228a7c = {
+    {{{0x2d, 0x23}, {0x59, 0x23}, {0x85, 0x23}, {0xb1, 0x23}}, {{0x2d, 0x4f}, {0x59, 0x4f}, {0x85, 0x4f}, {0xb1, 0x4f}}, {{0x2d, 0x7b}, {0x59, 0x7b}, {0x00, 0x00}, {0x00, 0x00}}},
+    {6, 1, 4, 5, 0, 2, 3, 7, 8, 9, 0, 0},
+    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0},
+    {4, 1, 5, 6, 2, 3, 0, 7, 8, 9, 0, 0},
+};
 
-#include <nitro/gx.h>
-#include <nitro/mi.h>
-#include <nitro/os.h>
-#include <stdio.h>
-extern const u8 data_ov008_02228a7d[][8];
-const u32 data_ov008_02228a5c[2] = {0x44, 0x21};
-const u8 data_ov008_02228a64[3][4] = {{0x01, 0x01, 0x01, 0x01}, {0x01, 0x01, 0x01, 0x01}, {0x01, 0x01, 0x00, 0x00}};
-const u8 data_ov008_02228a70[12] = {0x00, 0x20, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-const u8 data_ov008_02228a7c[3][8] = {{0x2d, 0x23, 0x59, 0x23, 0x85, 0x23, 0xb1, 0x23}, {0x2d, 0x4f, 0x59, 0x4f, 0x85, 0x4f, 0xb1, 0x4f}, {0x2d, 0x7b, 0x59, 0x7b, 0x00, 0x00, 0x00, 0x00}};
-const u8 data_ov008_02228a94[12] = {0x06, 0x01, 0x04, 0x05, 0x00, 0x02, 0x03, 0x07, 0x08, 0x09, 0x00, 0x00};
-const u8 data_ov008_02228aa0[12] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x00, 0x00};
-const s8 data_ov008_02228aac[12] = {4, 1, 5, 6, 2, 3, 0, 7, 8, 9, 0, 0};
 const WindowItemRecord data_ov008_02228b28[14] = {
     {0, 0x8, 46, 80, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
     {1, 0x8, 90, 36, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
@@ -64,7 +68,17 @@ const WindowItemRecord data_ov008_02228b28[14] = {
     {13, 0x408, 224, 20, 32, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
 };
 
+#include "Scene/MyroomGiftScene.hpp"
+#include "Game/UnkStruct_020d43f0.hpp"
+#include "Graphics/CellAnimation.hpp"
+#include "Graphics/Display.hpp"
+#include "System/FileSystem.hpp"
+#include "UI/MessageWindow.hpp"
 
+#include <nitro/gx.h>
+#include <nitro/mi.h>
+#include <nitro/os.h>
+#include <stdio.h>
 
 MyroomGiftScene::MyroomGiftScene() :
     SceneBase(1000, 0) {
@@ -228,7 +242,9 @@ void MyroomGiftScene::func_ov008_0221de34() {
     sub.LoadPalette("Game/2D/union_b/union_b_obj_page_ncl.bin", 0x1c0, 0);
     for (u8 i = 0; i < 10; i++) {
         if (mHasEmblem[i] != 0) {
-            u8 value = data_ov008_02228aa0[i];
+            const u8 *ids = data_ov008_02228a7c.ids;
+            ids += i;
+            u8 value = *ids;
             *(u8 *) &data_ov008_0222a160[i].mUnk_04 = value;
             data_ov008_0222a160[i].mUnk_18[0] = value;
             data_ov008_0222a160[i].mUnk_18[1] = value;
@@ -299,7 +315,7 @@ void MyroomGiftScene::Draw() {
 void MyroomGiftScene::func_ov008_0221e670() {
     if (mCellAnim != NULL) {
         mCellAnim->Update();
-        mCellAnim->Draw(0, 0x80, 0x60, 0);
+        mCellAnim->Draw(0, data_ov008_02228a54.x, data_ov008_02228a54.y, 0);
     }
     if (mHasEmblem[mEmblem] == 0) {
         return;
@@ -390,10 +406,11 @@ s32 MyroomGiftScene::func_ov008_0221ece8() {
     if (mResult == 3) {
         s8 id = mWindow->GetSelectedId();
         if (id >= 0 && id <= 9) {
-            result  = data_ov008_02228aac[id];
+            result  = data_ov008_02228a7c.slots[id];
             mUnk_51 = result % 4;
             mUnk_52 = result / 4;
-            if (data_ov008_02228a94[result] != mEmblem) {
+            u8 emblem = data_ov008_02228a7c.order[result];
+            if (emblem != mEmblem) {
                 SoundManager::Get().func_020246f8(0);
             }
         } else {
@@ -479,7 +496,7 @@ void MyroomGiftScene::func_ov008_0221f194() {
     } else {
         s32 selection = func_ov008_0221ece8();
         if (selection >= 0) {
-            LoadEmblem(data_ov008_02228a94[selection]);
+            LoadEmblem(data_ov008_02228a7c.order[selection]);
             func_ov008_0221e9a0();
             if (mWindow->mUnk_061 != 1) {
                 mWindow->mUnk_061 = 4;
@@ -510,6 +527,6 @@ void MyroomGiftScene::func_ov008_0221f194() {
             items[13].mFlags = 0x8000;
         }
     }
-    Vec2s pos = {data_ov008_02228a7c[mUnk_52][mUnk_51 * 2], data_ov008_02228a7d[mUnk_52][mUnk_51 * 2]};
+    Vec2s pos = {data_ov008_02228a7c.pos[mUnk_52][mUnk_51].x, data_ov008_02228a7c.pos[mUnk_52][mUnk_51].y};
     mWindow->mCellPos[10] = pos;
 }

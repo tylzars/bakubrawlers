@@ -47,8 +47,6 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   addresses, so a wrong literal can look like a match).
 
 - **Fully matched units that don't link yet** (2026-10-14):
-  - MyroomGiftScene: `.data` is defined and exact; `.rodata` order needs table shapes (2D u8 arrays, a94/aa0/aac
-    merged into one [3][12] table), which leaves func_ov008_0221de34 3 words off on literal-pool order.
 
 - **Game.cpp doesn't link yet (`main`, then its `.bss`).** Every function matches. Found while trying (2026-10-14):
   - `main` (0x02000c04) is Game's but sits right after the start-up code.
@@ -83,6 +81,12 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   definition order against the original, keeping each static before its first use. The first order found compiled
   to the original layout of all three sections. Defining every table in the range matters: with only the `.data`
   tables defined, no order gave the original string order, because the `.rodata` tables take part in the same sort.
+- **Merging tables changes what the size sort can reach (MyroomGiftScene).** With the position table (a7c) and the
+  three 12-byte order tables as separate objects no definition order gave the original `.rodata`; as one 60-byte
+  struct (`GiftPos pos[3][4]; u8 order[12]; u8 ids[12]; s8 slots[12];`) it does, and the folded `+1` of `.pos[r][c].y`
+  reproduces the original's a7d pool word. A two-byte `{x, y}` struct instead of `u8[2]` keeps a54 out of its own
+  section. Pool order in func_ov008_0221de34 came from building the pointer inside the loop
+  (`const u8 *ids = t.ids; ids += i;`).
 - **Function order is definition order.** g3d_res matched but its ROM differed once linked: `func_02033788` was
   defined before its caller `func_02033714` (for the declaration), so mwcc emitted it first. A prototype and the
   definition after the caller fixed it.

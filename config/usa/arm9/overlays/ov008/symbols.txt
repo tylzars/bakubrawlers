@@ -289,6 +289,7 @@ data_ov008_0222a4ec kind:data(any) addr:0x0222a4ec
 data_ov008_0222a4fc kind:data(any) addr:0x0222a4fc
 data_ov008_0222a528 kind:data(any) addr:0x0222a528
 data_ov008_0222a550 kind:data(any) addr:0x0222a550
+data_ov008_0222a554 kind:data(any) addr:0x0222a554
 data_ov008_0222a55c kind:data(any) addr:0x0222a55c
 data_ov008_0222a568 kind:data(any) addr:0x0222a568
 data_ov008_0222a584 kind:data(any) addr:0x0222a584

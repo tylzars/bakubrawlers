@@ -9,6 +9,7 @@ extern u32 OS_DisableIrqMask(u32 mask);       // 0x02004bc0
 extern void OSi_SetTimerReserved(int timerNum);
 extern void OS_Terminate(void);
 extern void AlarmTimerEntry(void *arg);   // 0x02006fb0 (asm)
+extern void OSi_AlarmHandler(void);
 extern void OSi_ArrangeTimer(OSAlarm *alarm);
 extern void OSi_InsertAlarm(OSAlarm *alarm, OSTick fire);
 
@@ -144,6 +145,13 @@ void OS_CancelAlarm(OSAlarm *alarm) {
     alarm->handler = NULL;
     alarm->period = 0;
     OS_RestoreInterrupts(e);
+}
+
+asm void AlarmTimerEntry(void *arg) {
+    stmfd sp!, {r0, lr}
+    bl OSi_AlarmHandler
+    ldmfd sp!, {r0, lr}
+    bx lr
 }
 
 void OSi_AlarmHandler(void) {

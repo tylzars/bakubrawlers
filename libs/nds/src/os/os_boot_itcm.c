@@ -9,6 +9,7 @@ void func_02005df8(void);
 void IC_InvalidateAll(void);
 void DC_WaitWriteBufferEmpty(void);
 void func_01ffcb54(void);
+void func_01ffcc20(u32 v, u32 *dst, u32 size);
 void func_01ffcc3c(void);
 void func_01ffcce4(u32 rom, void *dst, u32 size);
 
@@ -24,6 +25,67 @@ typedef struct {
     u32 arm9Rom, arm9Entry, arm9Ram, arm9Size;
     u32 arm7Rom, arm7Entry, arm7Ram, arm7Size;
 } BootHdr;
+
+asm void func_01ffcb54(void) {
+    mov ip, #0x4000000
+    str ip, [ip, #0x208]
+    ldr r1, =0x27e0000
+    add r1, r1, #0x3fc0
+    add r1, r1, #0x3c
+    mov r0, #0
+    str r0, [r1]
+    ldr r1, =0x4000180
+L1:
+    ldrh r0, [r1]
+    and r0, r0, #0xf
+    cmp r0, #1
+    bne L1
+    mov r0, #0x100
+    strh r0, [r1]
+    mov r0, #0
+    ldr r3, =0x27ffd9c
+    ldr r4, [r3]
+    ldr r1, =0x27ffd80
+    mov r2, #0x80
+    bl func_01ffcc20
+    str r4, [r3]
+    ldr r1, =0x27fff80
+    mov r2, #0x18
+    bl func_01ffcc20
+    ldr r1, =0x27fff98
+    strh r0, [r1]
+    ldr r1, =0x27fff9c
+    mov r2, #0x64
+    bl func_01ffcc20
+    ldr r1, =0x4000180
+L2:
+    ldrh r0, [r1]
+    and r0, r0, #0xf
+    cmp r0, #1
+    beq L2
+    mov r0, #0
+    strh r0, [r1]
+    ldr r3, =0x27ffe00
+    ldr ip, [r3, #0x24]
+    mov lr, ip
+    ldr r11, =0x27fff80
+    ldmia r11, {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10}
+    mov r11, #0
+    bx ip
+}
+
+asm void func_01ffcc20(u32 v, u32 *dst, u32 size) {
+    add ip, r1, r2
+L1:
+    cmp r1, ip
+    blt L2
+    b L3
+L2:
+    stmia r1!, {r0}
+L3:
+    blt L1
+    bx lr
+}
 
 void func_01ffcc3c(void) {
     u32 off = *(u32 *) 0x027ffc2c;

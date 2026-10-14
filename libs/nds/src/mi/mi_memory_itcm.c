@@ -1,5 +1,4 @@
-// MI_CpuFill8 and the byte copy (ITCM). non-matching: MI_CpuFill8 differs in scheduling (14 words), MI_CpuCopy8
-// is 0x134 vs 0x130 (register choice); same on every 2.0 build.
+// MI_CpuFill8 and MI_CpuCopy8 (ITCM) are asm bodies as well: their byte loops don't come out of C.
 // ITCM NitroSDK memory routines 0x01ff94c8-0x01ff9802 (compiler 2.0/sp1p5, -O4,p -ipa file).
 // Hand-written asm (not reproducible from C: conditional-execution loops, single-register ldm/stm, 8-register stm runs):
 //   MIi_CpuClear16 0x01ff94c8, MIi_CpuCopy16 0x01ff94e0, MIi_CpuClear32 0x01ff94fc, MIi_CpuCopy32, func_01ff9528,
@@ -8,142 +7,137 @@
 // Not matching (scheduling/register allocation only): MI_CpuFill8, MI_CpuCopy8 (byte copy).
 #include <nitro/internal.h>
 
-void MI_CpuFill8(void *dstp, u32 data, u32 size) {
-    if (size == 0) {
-        return;
-    }
-    if ((u32) dstp & 1) {
-        u16 *dst = (u16 *) ((u32) dstp - 1);
-        u32 lo = *dst & 0xff;
-        *dst = (u16) (lo | (data << 8));
-        dstp = (u8 *) dstp + 1;
-        size--;
-        if (size == 0) {
-            return;
-        }
-    }
-    if (size >= 2) {
-        data = data | (data << 8);
-        if ((u32) dstp & 2) {
-            *(u16 *) dstp = (u16) data;
-            dstp = (u16 *) dstp + 1;
-            size -= 2;
-            if (size == 0) {
-                return;
-            }
-        }
-        data = data | (data << 16);
-        {
-            u32 n = size & ~3;
-            if (n) {
-                u32 *w = (u32 *) dstp;
-                u32 *e = (u32 *) ((u8 *) dstp + n);
-                size -= n;
-                do {
-                    *w++ = data;
-                } while (w < e);
-                dstp = w;
-            }
-        }
-        if (size & 2) {
-            *(u16 *) dstp = (u16) data;
-            dstp = (u16 *) dstp + 1;
-        }
-    }
-    if (size & 1) {
-        u32 hi = *(u16 *) dstp & 0xff00;
-        *(u16 *) dstp = (u16) ((data & 0xff) | hi);
-    }
+asm void MI_CpuFill8(void *dstp, u32 data, u32 size) {
+    cmp r2, #0x0
+    bxeq lr
+    tst r0, #0x1
+    beq L965c
+    ldrh ip, [r0, #-0x1]
+    and ip, ip, #0xff
+    orr r3, ip, r1, lsl #0x8
+    strh r3, [r0, #-0x1]
+    add r0, r0, #0x1
+    subs r2, r2, #0x1
+    bxeq lr
+L965c:
+    cmp r2, #0x2
+    blo L96a4
+    orr r1, r1, r1, lsl #0x8
+    tst r0, #0x2
+    beq L967c
+    strh r1, [r0], #0x2
+    subs r2, r2, #0x2
+    bxeq lr
+L967c:
+    orr r1, r1, r1, lsl #0x10
+    bics r3, r2, #0x3
+    beq L969c
+    sub r2, r2, r3
+    add ip, r3, r0
+L9690:
+    str r1, [r0], #0x4
+    cmp r0, ip
+    blo L9690
+L969c:
+    tst r2, #0x2
+    strneh r1, [r0], #0x2
+L96a4:
+    tst r2, #0x1
+    bxeq lr
+    ldrh r3, [r0]
+    and r3, r3, #0xff00
+    and r1, r1, #0xff
+    orr r1, r1, r3
+    strh r1, [r0]
+    bx lr
 }
 
-void MI_CpuCopy8(const void *srcp, void *dstp, u32 size) {
-    if (size == 0) {
-        return;
-    }
-    if ((u32) dstp & 1) {
-        u32 lo = *(u16 *) ((u8 *) dstp - 1) & 0xff;
-        u32 b;
-        if ((u32) srcp & 1) {
-            b = (u32) *(u16 *) ((u8 *) srcp - 1) >> 8;
-        } else {
-            b = *(u16 *) srcp;
-        }
-        *(u16 *) ((u8 *) dstp - 1) = (u16) (lo | (b << 8));
-        srcp = (u8 *) srcp + 1;
-        dstp = (u8 *) dstp + 1;
-        size--;
-        if (size == 0) {
-            return;
-        }
-    }
-    if (((u32) dstp ^ (u32) srcp) & 1) {
-        u32 t;
-        u32 v;
-        srcp = (const void *) ((u32) srcp & ~1);
-        v = *(const u16 *) srcp;
-        srcp = (const u16 *) srcp + 1;
-        t = v >> 8;
-        size -= 2;
-        if ((s32) size >= 0) {
-            do {
-                v = *(const u16 *) srcp;
-                srcp = (const u16 *) srcp + 1;
-                v = t | (v << 8);
-                *(u16 *) dstp = (u16) v;
-                dstp = (u16 *) dstp + 1;
-                t = v >> 16;
-                size -= 2;
-            } while ((s32) size >= 0);
-        }
-        if (size & 1) {
-            *(u16 *) dstp = (u16) ((*(u16 *) dstp & 0xff00) | t);
-        }
-        return;
-    }
-    if (((u32) dstp ^ (u32) srcp) & 2) {
-        u32 n = size & ~1;
-        if (n) {
-            const u16 *s = (const u16 *) srcp;
-            u16 *d = (u16 *) dstp;
-            u16 *e = (u16 *) ((u8 *) dstp + n);
-            size -= n;
-            do {
-                *d++ = *s++;
-            } while (d < e);
-            srcp = s;
-            dstp = d;
-        }
-    } else if (size >= 2) {
-        if ((u32) dstp & 2) {
-            *(u16 *) dstp = *(const u16 *) srcp;
-            srcp = (const u16 *) srcp + 1;
-            dstp = (u16 *) dstp + 1;
-            size -= 2;
-            if (size == 0) {
-                return;
-            }
-        }
-        {
-            u32 n = size & ~3;
-            if (n) {
-                const u32 *s = (const u32 *) srcp;
-                u32 *d = (u32 *) dstp;
-                u32 *e = (u32 *) ((u8 *) dstp + n);
-                size -= n;
-                do {
-                    *d++ = *s++;
-                } while (d < e);
-                srcp = s;
-                dstp = d;
-            }
-        }
-        if (size & 2) {
-            *(u16 *) dstp = *(const u16 *) srcp;
-            srcp = (const u16 *) srcp + 1;
-            dstp = (u16 *) dstp + 1;
-        }
-    }
-    if (size & 1) {
-        *(u16 *) dstp = (u16) ((*(u16 *) dstp & 0xff00) | (*(const u16 *) srcp & 0xff));
-    }
+asm void MI_CpuCopy8(const void *srcp, void *dstp, u32 size) {
+    cmp r2, #0x0
+    bxeq lr
+    tst r1, #0x1
+    beq L9704
+    ldrh ip, [r1, #-0x1]
+    and ip, ip, #0xff
+    tst r0, #0x1
+    ldrneh r3, [r0, #-0x1]
+    movne r3, r3, lsr #0x8
+    ldreqh r3, [r0]
+    orr r3, ip, r3, lsl #0x8
+    strh r3, [r1, #-0x1]
+    add r0, r0, #0x1
+    add r1, r1, #0x1
+    subs r2, r2, #0x1
+    bxeq lr
+L9704:
+    eor ip, r1, r0
+    tst ip, #0x1
+    beq L9758
+    bic r0, r0, #0x1
+    ldrh ip, [r0], #0x2
+    mov r3, ip, lsr #0x8
+    subs r2, r2, #0x2
+    blo L973c
+L9724:
+    ldrh ip, [r0], #0x2
+    orr ip, r3, ip, lsl #0x8
+    strh ip, [r1], #0x2
+    mov r3, ip, lsr #0x10
+    subs r2, r2, #0x2
+    bhs L9724
+L973c:
+    tst r2, #0x1
+    bxeq lr
+    ldrh ip, [r1]
+    and ip, ip, #0xff00
+    orr ip, ip, r3
+    strh ip, [r1]
+    bx lr
+L9758:
+    tst ip, #0x2
+    beq L9784
+    bics r3, r2, #0x1
+    beq L97d0
+    sub r2, r2, r3
+    add ip, r3, r1
+L9770:
+    ldrh r3, [r0], #0x2
+    strh r3, [r1], #0x2
+    cmp r1, ip
+    blo L9770
+    b L97d0
+L9784:
+    cmp r2, #0x2
+    blo L97d0
+    tst r1, #0x2
+    beq L97a4
+    ldrh r3, [r0], #0x2
+    strh r3, [r1], #0x2
+    subs r2, r2, #0x2
+    bxeq lr
+L97a4:
+    bics r3, r2, #0x3
+    beq L97c4
+    sub r2, r2, r3
+    add ip, r3, r1
+L97b4:
+    ldr r3, [r0], #0x4
+    str r3, [r1], #0x4
+    cmp r1, ip
+    blo L97b4
+L97c4:
+    tst r2, #0x2
+    ldrneh r3, [r0], #0x2
+    strneh r3, [r1], #0x2
+L97d0:
+    tst r2, #0x1
+    bxeq lr
+    ldrh r2, [r1]
+    ldrh r0, [r0]
+    and r2, r2, #0xff00
+    and r0, r0, #0xff
+    orr r0, r2, r0
+    strh r0, [r1]
+    bx lr
 }
+

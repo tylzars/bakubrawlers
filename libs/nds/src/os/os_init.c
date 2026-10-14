@@ -36,12 +36,16 @@ static struct {
     BOOL exArena;
 } arenaState;
 
-void OSi_WaitVCount0(void) {
-    u32 ime = *(vu32 *) 0x4000208;
-    *(vu32 *) 0x4000208 = 0x4000000;
-    while (*(vu16 *) 0x4000006 != 0) {
-    }
-    *(vu32 *) 0x4000208 = ime;
+asm void OSi_WaitVCount0(void) {
+    mov ip, #0x4000000
+    ldr r1, [ip, #0x208]
+    str ip, [ip, #0x208]
+L1:
+    ldrh r0, [ip, #6]
+    cmp r0, #0
+    bne L1
+    str r1, [ip, #0x208]
+    bx lr
 }
 
 void OS_Init(void) {

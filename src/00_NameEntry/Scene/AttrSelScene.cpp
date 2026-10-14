@@ -1,33 +1,39 @@
-#include "System/InputManager.hpp"
+#include "Text/TextManager.hpp"
 #include "System/TouchManager.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "System/InputManager.hpp"
+#include "UI/SelectWindow.hpp"
+
+// Defined among the headers: where they sit among the singletons' objects sets the data layout.
+static const u8 data_ov000_02226218[2] = {2, 0x10};
+static const u8 data_ov000_02226224[6] = {3, 2, 1, 0, 5, 4};
+static const u8 data_ov000_0222621c[6] = {0, 2, 3, 4, 1, 5};
+static const u32 data_ov000_02226234[2] = {0x21, 0x44};
+static const u8 data_ov000_02226214[2] = {0x10, 0x1c};
+static const u8 data_ov000_0222622c[6] = {0, 4, 1, 2, 3, 5};
+static const WindowItemRecord data_ov000_0222623c[1] = {
+    {0, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+};
+static const WindowCellRecord data_ov000_02226258[1] = {
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xd000, 12, 0, 1, {2, 3, 3, 0}},
+};
+
 #include "Scene/AttrSelScene.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "UI/MessageWindow.hpp"
-#include "UI/SelectWindow.hpp"
 #include <nitro/gx.h>
 #include <nitro/os.h>
 #include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
-#include "Text/TextManager.hpp"
 #include <nitro/mi.h>
 #include <stdio.h>
 #include "System/FrameUpdate.hpp"
 #include <nitro/fx.h>
-#include "System/InputManager.hpp"
 #include "System/SoundManager.hpp"
-#include "System/TouchManager.hpp"
-
-extern const u8 data_ov000_0222622c[];
 
 void operator delete(void *ptr);
 extern "C" u32 FX_Atan2Idx(s32 x, s32 y);
-extern const u8 data_ov000_02226224[];
-extern const u8 data_ov000_0222621c[];
-
-
-
 
 AttrSelScene::AttrSelScene() :
     SceneBase(1000, 0) {
@@ -174,16 +180,6 @@ void AttrSelScene::Update() {
     Draw();
 }
 
-extern const u8 data_ov000_02226214[];
-
-extern const u8 data_ov000_02226218[];
-
-extern const u32 data_ov000_02226234[];
-
-extern const WindowItemRecord data_ov000_0222623c[];
-
-extern const WindowCellRecord data_ov000_02226258[];
-
 void AttrSelScene::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
@@ -199,8 +195,6 @@ void AttrSelScene::InitDisplay() {
     G2_SetBlendAlpha(8, 1, 0x1f, 0);
     G2S_SetBlendAlpha(0, 1, 0x1f, 0);
 }
-
-
 
 void AttrSelScene::LoadGraphics() {
     ChangeDir("/Game/AttrSel/Bg");
@@ -409,12 +403,6 @@ void AttrSelScene::Draw() {
     mMessageWindow->func_020658d0();
     mSelectWindow->Draw();
 }
-
-extern const u8 data_ov000_0222621c[];
-
-
-
-
 
 int AttrSelScene::Distance(s16 x1, s16 y1, s16 x2, s16 y2) {
     s16 dy = y2 - y1;

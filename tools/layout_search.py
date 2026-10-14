@@ -15,7 +15,7 @@ order until the model reproduces the compiled order exactly (it stops if it can'
 orders and static orders for ones whose output puts the unit's objects in their original address order (taken from
 relocations in matching functions, as data_ranges.py does), and prints the closest few.
 
-  layout_search.py src/01_Arena/Scene/ArenaScene.cpp [--max-statics 8]
+  layout_search.py src/01_Arena/Scene/ArenaScene.cpp [--max-statics 8] [--climb 300]
 """
 import argparse
 import itertools
@@ -61,11 +61,58 @@ def read_object(src):
     return objs, order, refs, {o.name: secs[o["st_shndx"]].name for o in objs}
 
 
+def climb(singles, statics, restarts, emitted, predict, build, triv, placed, kind, orig, cost):
+    """Random-restart hill climb over singleton order, static order and split, for files with too many statics to
+    permute. Scores an order by how many placed objects are out of their original order."""
+    import random
+
+    random.seed(1)
+
+    def bad(so, st, split):
+        out = emitted(predict(build(so, triv, list(st), split)))
+        n = 0
+        for k in set(kind[x] for x in placed):
+            got = [x for x in out if x in placed and kind[x] == k]
+            n += sum(1 for x, y in zip(got, sorted(got, key=lambda x: orig[x])) if x != y)
+        return n
+
+    hits, seen = [], set()
+    for _ in range(restarts):
+        so, st = list(singles), list(statics)
+        random.shuffle(so)
+        random.shuffle(st)
+        split = random.randint(0, len(so))
+        c = bad(so, st, split)
+        for _ in range(4000):
+            if c == 0:
+                break
+            nso, nst, nsp = so[:], st[:], split
+            r = random.random()
+            if r < 0.3 and len(nso) > 1:
+                i, j = random.sample(range(len(nso)), 2)
+                nso[i], nso[j] = nso[j], nso[i]
+            elif r < 0.85 and len(nst) > 1:
+                i, j = random.sample(range(len(nst)), 2)
+                nst.insert(j, nst.pop(i))
+            else:
+                nsp = random.randint(0, len(nso))
+            nc = bad(nso, nst, nsp)
+            if nc <= c:
+                so, st, split, c = nso, nst, nsp, nc
+        key = (tuple(so), tuple(st), split)
+        if c == 0 and key not in seen:
+            seen.add(key)
+            hits.append((cost(so, st, split), tuple(so), tuple(st), split))
+    return hits
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("src")
     ap.add_argument("--max-statics", type=int, default=8, help="most statics to permute (8! orders)")
     ap.add_argument("--show", type=int, default=5)
+    ap.add_argument("--climb", type=int, default=0, metavar="RESTARTS",
+                    help="hill-climb with this many restarts instead of permuting (for many statics)")
     a = ap.parse_args()
     src = a.src
 
@@ -166,17 +213,23 @@ def main():
         print("current layout already matches the original")
         return
     print(f"{len(placed)} placed objects; searching...")
-    movable = statics if len(statics) <= a.max_statics else statics[:a.max_statics]
-    fixed = [s for s in statics if s not in movable]
+    def cost(so, st, split):
+        return (sum(1 for i, c in enumerate(so) if c != singles[i])
+                + sum(1 for i, s in enumerate(st) if s != statics[i]) + (len(so) - split))
+
     hits = []
-    for so in itertools.permutations(singles):
-        for st in itertools.permutations(movable):
-            for split in range(len(so), -1, -1):
-                out = emitted(predict(build(so, triv, list(st) + fixed, split)))
-                if matches(out):
-                    cost = (sum(1 for i, c in enumerate(so) if c != singles[i])
-                            + sum(1 for i, s in enumerate(st) if s != movable[i]) + (len(so) - split))
-                    hits.append((cost, so, st, split))
+    if a.climb:
+        hits = climb(singles, statics, a.climb, emitted, predict, build, triv, placed, kind, orig, cost)
+        fixed = []
+    else:
+        movable = statics if len(statics) <= a.max_statics else statics[:a.max_statics]
+        fixed = [s for s in statics if s not in movable]
+        for so in itertools.permutations(singles):
+            for st in itertools.permutations(movable):
+                for split in range(len(so), -1, -1):
+                    out = emitted(predict(build(so, triv, list(st) + fixed, split)))
+                    if matches(out):
+                        hits.append((cost(so, list(st) + fixed, split), so, st, split))
     if not hits:
         print("no order found (other participants, or statics beyond --max-statics)")
         sys.exit(1)

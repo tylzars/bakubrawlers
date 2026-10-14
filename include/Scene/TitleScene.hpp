@@ -65,6 +65,6 @@ public:
     BOOL IsFadeDone(BOOL tick);  // 02224ca4
     void UploadSubBg(u32 index); // 02224ce0
     BOOL UpdateCursorCell();     // 02224d64
-    void ApplyScroll();          // 02224edc
+    static void ApplyScroll(void *arg); // 02224edc, the vblank callback
     void DrawLogo();             // 02224f08
 };

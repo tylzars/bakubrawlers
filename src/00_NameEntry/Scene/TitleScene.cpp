@@ -22,24 +22,62 @@
 #include "Unknown/UnkStruct_02071868.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 
-extern const u8 data_ov000_022266fc[];
 
 void operator delete(void *ptr);
 
-extern u8 data_ov000_02227a74[];
-extern u8 data_ov000_02227a88[];
-extern const u8 data_ov000_02226910[];
-extern const WindowItemRecord data_ov000_02226830[][2];
-extern const WindowCellRecord data_ov000_022268a0[][2];
-extern const WindowItemRecord data_ov000_02226788[];
-extern const WindowCellRecord data_ov000_022267dc[];
-extern const WindowItemRecord data_ov000_02226718[];
-extern const WindowCellRecord data_ov000_02226750[];
+static const WindowCellRecord data_ov000_02226750[2] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0x1b000, 0, 0, 1, {0, 2, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0x1b000, 0, 0, 1, {9, 9, 9, 0}},
+};
+static const WindowCellRecord data_ov000_022268a0[2][2] = {
+    {
+        {"/Game/Title/title_b_obj_01_nce.bin", 7, 0x13000, 1, 0, 1, {6, 8, 7, 0}},
+        {NULL, 0, 0x0, 0, 0, 0, {0, 0, 0, 0}},
+    },
+    {
+        {"/Game/Title/title_b_obj_01_nce.bin", 0, 0x13000, 1, 0, 1, {0, 2, 1, 0}},
+        {"/Game/Title/title_b_obj_01_nce.bin", 3, 0x13000, 1, 0, 1, {3, 5, 4, 0}},
+    },
+};
+static const WindowCellRecord data_ov000_022267dc[3] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0x1b000, 0, 0, 1, {3, 5, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0x1b000, 0, 0, 1, {6, 8, 7, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x1b000, 0, 0, 1, {10, 10, 10, 0}},
+};
+static const WindowItemRecord data_ov000_02226830[2][2] = {
+    {
+        {0, 0x1, 24, 84, 208, 24, 0, {0, 0, 0, 0}, 0, 1},
+        {0, 0x0, 0, 0, 0, 0, 0, {0, 0, 0, 0}, 0, 0},
+    },
+    {
+        {0, 0x1, 24, 104, 208, 24, 0, {1, 1, 0, 0}, 0, 2},
+        {1, 0x1, 24, 64, 208, 24, 0, {0, 0, 1, 1}, 0, 2},
+    },
+};
+static const WindowItemRecord data_ov000_022266fc[1] = {
+    {0, 0x1, 0, 0, 255, 255, 0, {0, 0, 0, 0}, 0, 1},
+};
+static const WindowItemRecord data_ov000_02226718[2] = {
+    {0, 0x1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, 1},
+    {1, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+};
+static const WindowItemRecord data_ov000_02226788[3] = {
+    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
+    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
+    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+};
+static const WindowItemRecord data_ov000_02226910[5] = {
+    {0, 0x1, 2, 35, 148, 25, 0, {4, 1, 0, 0}, 0, 2},
+    {1, 0x1, 14, 63, 121, 25, 0, {0, 2, 1, 1}, 0, 2},
+    {2, 0x1, 4, 90, 127, 25, 0, {1, 3, 2, 2}, 0, 2},
+    {3, 0x1, 14, 118, 127, 25, 0, {2, 4, 3, 3}, 0, 2},
+    {4, 0x1, 23, 147, 145, 25, 0, {3, 0, 4, 4}, 0, 2},
+};
 
-void func_ov000_02224edc(void *arg);
+
 s32 func_020230dc(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2);
 void func_02023134(UnkStruct_020d43f0 *base, u32 a, u32 b, u32 c, u32 d, u32 e);
-void func_0202321c(UnkStruct_020d43f0 *base, const Vec2s *src, u32 b, u32 c);
+void func_0202321c(UnkStruct_020d43f0 *base, const u16 *src, u32 b, u32 c);
 void func_02022db4(UnkStruct_020d43f0 *base);
 void func_02022b28();
 void func_02022b0c();
@@ -47,35 +85,35 @@ s32 func_02087100();
 void func_02086d48();
 void func_02089278();
 
-class UnkObj_0203ced4 {
+class MovieScene {
 public:
     u8 mPad[0x14];
-    UnkObj_0203ced4(const void *data, u8 value);
+    MovieScene(void *data, u32 value);
 };
-class UnkObj_0221d6a8 {
+class AttrSelScene {
 public:
     u8 mPad[0x68];
-    UnkObj_0221d6a8();
+    AttrSelScene();
 };
-class UnkObj_0205c8f0 {
+class CharacterEditScene {
 public:
     u8 mPad[0x1e8];
-    UnkObj_0205c8f0(u32 unk);
+    CharacterEditScene(u32 unk);
 };
-class UnkObj_0221f4fc {
+class OptionScene {
 public:
     u8 mPad[0x50];
-    UnkObj_0221f4fc();
+    OptionScene();
 };
-class UnkObj_02224f60 {
+class CreditsScene {
 public:
     u8 mPad[0x34];
-    UnkObj_02224f60();
+    CreditsScene();
 };
-class UnkObj_02089f90 {
+class UnkStruct_02089f90 {
 public:
     u8 mPad[0x24];
-    UnkObj_02089f90(s32 unk);
+    UnkStruct_02089f90(s32 unk);
 };
 
 // Loads the save data (vtable 0x020a5494).
@@ -174,7 +212,7 @@ void TitleScene::Update() {
             mUnk_cb++;
             break;
         case 1:
-            new UnkObj_0203ced4(data_ov000_02227a74, data_020d433c.mUnk_79);
+            new MovieScene((void *) "/movie/bknd_op.mods", data_020d433c.mUnk_79);
             mUnk_cb++;
             break;
         case 2:
@@ -346,7 +384,7 @@ void TitleScene::Update() {
                             u8 v = buf[i];
                             int r = func_0202317c(data_020d43f0, 0, 0x22, v);
                             func_020231c0(data_020d43f0, r, 0xc8);
-                            func_0202321c(data_020d43f0, &tmp, 0x22, v);
+                            func_0202321c(data_020d43f0, (const u16 *) &tmp, 0x22, v);
                         }
                     }
                     func_02022db4(data_020d43f0);
@@ -436,7 +474,7 @@ void TitleScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            new UnkObj_0203ced4(data_ov000_02227a88, data_020d433c.mUnk_79);
+            new MovieScene((void *) "/movie/bknd_op2.mods", data_020d433c.mUnk_79);
             mUnk_cb++;
             break;
         case 21:
@@ -464,7 +502,7 @@ void TitleScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            new UnkObj_0221d6a8();
+            new AttrSelScene();
             mContext->mUnk_12 = 0;
             mUnk_cb++;
             break;
@@ -482,7 +520,7 @@ void TitleScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            new UnkObj_0205c8f0(0);
+            new CharacterEditScene(0);
             mContext->mUnk_12 = 0;
             mUnk_cb++;
             break;
@@ -536,7 +574,7 @@ void TitleScene::Update() {
             mCursor->mSelection = mUnk_ce;
             UploadSubBg(mUnk_ce);
             GXS_SetVisiblePlane(0x17);
-            func_020254f0(func_ov000_02224edc, this);
+            func_020254f0(TitleScene::ApplyScroll, this);
             mUnk_da = -0xc0;
             mUnk_cc = 0x13;
             mUnk_cb++;
@@ -545,12 +583,12 @@ void TitleScene::Update() {
             mUnk_cc--;
             u8 cc = mUnk_cc;
             if (cc != 0) {
-                func_020254f0(func_ov000_02224edc, this);
+                func_020254f0(TitleScene::ApplyScroll, this);
                 s8 d = cc - 3;
                 mUnk_da = -((s16) ((d * d - 9) * 0xc0 / 0x100));
                 break;
             }
-            func_020254f0(func_ov000_02224edc, this);
+            func_020254f0(TitleScene::ApplyScroll, this);
             mUnk_da = 0;
             mUnk_cd = 1;
             func_ov000_02224678();
@@ -647,7 +685,7 @@ void TitleScene::Update() {
                     break;
                 case 4:
                     mContext->mUnk_12 = 0;
-                    new UnkObj_0221f4fc();
+                    new OptionScene();
                     mUnk_cb = 0x29;
                     return;
             }
@@ -663,7 +701,7 @@ void TitleScene::Update() {
             }
             break;
         case 42:
-            new UnkObj_02224f60();
+            new CreditsScene();
             mContext->mUnk_12 = 0;
             mUnk_cb++;
             break;
@@ -676,7 +714,7 @@ void TitleScene::Update() {
             data_020d43f0[0].mUnk_5bf_0 = 1;
             s32 id = func_02087100();
             if (id >= 0) {
-                new UnkObj_02089f90(id);
+                new UnkStruct_02089f90(id);
                 mContext->mUnk_12 = 0;
                 mUnk_cb--;
             } else {
@@ -1004,9 +1042,10 @@ BOOL TitleScene::UpdateCursorCell() {
     return FALSE;
 }
 
-void TitleScene::ApplyScroll() {
-    G2S_SetBG1Offset(0, mUnk_da);
-    G2S_SetBG2Offset(0, mUnk_da);
+void TitleScene::ApplyScroll(void *arg) {
+    TitleScene *self = (TitleScene *) arg;
+    G2S_SetBG1Offset(0, self->mUnk_da);
+    G2S_SetBG2Offset(0, self->mUnk_da);
 }
 
 void TitleScene::DrawLogo() {

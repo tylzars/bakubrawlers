@@ -31,9 +31,12 @@ src/00_NameEntry/Scene/OptionScene.cpp:
     .data       start:0x022273d4 end:0x02227918
     .bss        start:0x0222801c end:0x02228058
 
-// provisional: code only; .rodata 0x022266f8-0x0222699c, .data 0x02227918-0x02227ea4 and .bss 0x02228058-0x02228088 belong here.
 src/00_NameEntry/Scene/TitleScene.cpp:
+    complete
     .text       start:0x0222198c end:0x02224f60
+    .rodata     start:0x022266f8 end:0x0222699c
+    .data       start:0x02227918 end:0x02227ea4
+    .bss        start:0x02228058 end:0x02228088
 
 // provisional: code only; .data 0x02227ea4-0x02227f80 and .bss 0x02228088-0x022280c0 belong here.
 src/00_NameEntry/Scene/CreditsScene.cpp:

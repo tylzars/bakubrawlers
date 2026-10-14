@@ -3381,7 +3381,7 @@ data_020a544c kind:data(any) addr:0x020a544c
 _ZTV9SceneBase kind:data(any) addr:0x020a546c weak
 data_020a5480 kind:data(any) addr:0x020a5480
 data_020a5484 kind:data(any) addr:0x020a5484
-data_020a548c kind:data(any) addr:0x020a548c
+_ZTV17UnkScene_020a5494 kind:data(any) addr:0x020a548c
 data_020a5494 kind:data(any) addr:0x020a5494
 _ZTV18UnkStruct_020a54a0 kind:data(any) addr:0x020a54a0
 @174 kind:data(any) addr:0x020a54b4 local

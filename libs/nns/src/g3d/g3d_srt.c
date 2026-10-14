@@ -10,6 +10,9 @@ extern s32 func_01ff80c0();
 extern void func_01ff9510(const void *src, void *dst, u32 size);
 static inline s32 FxMul(s32 a, s32 b) { return (s32)(((long long)a * b) >> 12); }
 
+typedef struct { u32 cmd; u32 mode; s32 m[12]; u32 mode2; } GeBuf;
+typedef struct { u32 cmd; u32 mode; s32 m[16]; u32 mode2; } GeBuf4;
+
 // Node matrix cache owned by the G3d state (pointer at data_020baf00, bit set at +0xc4, 6-word records).
 typedef struct { u32 pad[0x31]; u32 bits[1]; } NodeCache;
 extern NodeCache *data_020baf00;
@@ -47,51 +50,51 @@ void func_02034d5c(u32 *m, s32 *v, u8 *idx, u32 flags) {   // combine a node tra
     data_020bbd04[a][5] = FxMul(v[5], data_020bbd04[b][5]);
     func_01ff9510(data_020bbd04[a], &m[4], 0x18);
 }
-void func_02034f78(u32 *m) {   // load the texture matrix (translation form)
-    u32 buf[15];
-    s32 *out = (s32 *)&buf[2];
-    if (m[0] & 8) buf[0] = 0x101710;
-    else buf[0] = 0x101910;
-    buf[1] = 3;
-    buf[14] = 2;
-    out[13] = 0;
-    out[10] = 0;
-    out[9] = 0;
-    out[8] = 0;
-    out[7] = 0;
-    out[5] = 0;
-    out[4] = 0;
-    out[3] = 0;
-    if (m[0] & 4) {
-        out[11] = 0;
-        out[12] = 0;
-        if (m[0] & 1) {
-            out[0] = 0x1000;
-            out[4 + 6 - 4] = 0x1000;
+void func_02034f78(u32 *mm) {   // load the texture matrix (translation form)
+    GeBuf t;
+
+    if (mm[0] & 8) t.cmd = 0x101710;
+    else t.cmd = 0x101910;
+    t.mode = 3;
+    t.m[11] = 0;
+    t.m[8] = 0;
+    t.m[7] = 0;
+    t.m[6] = 0;
+    t.m[5] = 0;
+    t.m[3] = 0;
+    t.m[2] = 0;
+    t.m[1] = 0;
+    t.mode2 = 2;
+    if (mm[0] & 4) {
+        t.m[9] = 0;
+        t.m[10] = 0;
+        if (mm[0] & 1) {
+            t.m[0] = 0x1000;
+            t.m[4] = 0x1000;
         } else {
-            out[0] = m[6];
-            out[4 + 6 - 4] = m[7];
+            t.m[0] = mm[6];
+            t.m[4] = mm[7];
         }
-    } else if (m[0] & 1) {
-        out[11] = -(P32(m, 0x24) << 4) * PU16(m, 0x2c);
-        out[12] = -(P32(m, 0x28) << 4) * PU16(m, 0x2e);
-        out[0] = 0x1000;
-        out[4 + 6 - 4] = 0x1000;
+    } else if (mm[0] & 1) {
+        t.m[9] = -(P32(mm, 0x24) << 4) * PU16(mm, 0x2c);
+        t.m[10] = -(P32(mm, 0x28) << 4) * PU16(mm, 0x2e);
+        t.m[0] = 0x1000;
+        t.m[4] = 0x1000;
     } else {
-        out[11] = -(s32)(((long long)P32(m, 0x18) * P32(m, 0x24)) >> 8) * PU16(m, 0x2c);
-        out[12] = -(s32)(((long long)P32(m, 0x1c) * P32(m, 0x28)) >> 8) * PU16(m, 0x2e);
-        out[0] = m[6];
-        out[4 + 6 - 4] = m[7];
+        t.m[9] = -(s32)(((long long)P32(mm, 0x18) * P32(mm, 0x24)) >> 8) * PU16(mm, 0x2c);
+        t.m[10] = -(s32)(((long long)P32(mm, 0x1c) * P32(mm, 0x28)) >> 8) * PU16(mm, 0x2e);
+        t.m[0] = mm[6];
+        t.m[4] = mm[7];
     }
-    if (m[12] != 0x1000) {
-        out[0] = FxMul(m[12], out[0]);
-        out[11] = FxMul(m[12], out[11]);
+    if (mm[12] != 0x1000) {
+        t.m[0] = FxMul(mm[12], t.m[0]);
+        t.m[9] = FxMul(mm[12], t.m[9]);
     }
-    if (m[13] != 0x1000) {
-        out[6] = FxMul(m[13], out[6]);
-        out[12] = FxMul(m[13], out[12]);
+    if (mm[13] != 0x1000) {
+        t.m[4] = FxMul(mm[13], t.m[4]);
+        t.m[10] = FxMul(mm[13], t.m[10]);
     }
-    func_01ff93d8(buf[0], &buf[1], 14);
+    { u32 *b = (u32 *)&t; func_01ff93d8(t.cmd, b + 1, 14); }
 }
 
 #define W16 PU16(p, 0x2c)
@@ -111,13 +114,13 @@ void func_02035144(s32 *out, u8 *p) {   // scale, rotate and translate about the
     s32 a, b;
     out[0] = r7;
     out[5] = r5;
-    out[1] = (r4 * func_01ff80c0(q)) >> 12;
+    out[1] = (r4 * func_01ff80c0()) >> 12;
     q = func_01ff8154(w, h);
-    a = P32(p, 0x28) * H16 + (-(s32)H16 << 11);
     b = (-(s32)W16 << 11) - P32(p, 0x24) * W16;
+    a = P32(p, 0x28) * H16 + (-(s32)H16 << 11);
     out[12] = (s32)((((long long)r7 * b) - ((long long)r6 * a)) >> 8) + (W16 << 15);
-    out[13] = (s32)((((long long)r5 * a) + ((long long)r4 * b)) >> 8) + (H16 << 15);
-    out[4] = (-r6 * func_01ff80c0(q)) >> 12;
+    out[13] = (s32)((((long long)r4 * b) + ((long long)r5 * a)) >> 8) + (H16 << 15);
+    out[4] = (-r6 * func_01ff80c0()) >> 12;
 }
 void func_0203524c(s32 *out, u8 *p) {   // rotate and translate about the texture centre
     s32 w = W16 << 12;
@@ -126,22 +129,28 @@ void func_0203524c(s32 *out, u8 *p) {   // rotate and translate about the textur
     s32 a, b;
     out[0] = PS16(p, 0x22);
     out[5] = PS16(p, 0x22);
-    out[1] = (PS16(p, 0x20) * func_01ff80c0(q)) >> 12;
+    out[1] = (PS16(p, 0x20) * func_01ff80c0()) >> 12;
     q = func_01ff8154(w, h);
-    a = P32(p, 0x28) * H16 + (-(s32)H16 << 11);
     b = (-(s32)W16 << 11) - P32(p, 0x24) * W16;
+    a = P32(p, 0x28) * H16 + (-(s32)H16 << 11);
     out[12] = (s32)((((long long)PS16(p, 0x22) * b) - ((long long)PS16(p, 0x20) * a)) >> 8) + (W16 << 15);
-    out[13] = (s32)((((long long)PS16(p, 0x22) * a) + ((long long)PS16(p, 0x20) * b)) >> 8) + (H16 << 15);
-    out[4] = (-PS16(p, 0x20) * func_01ff80c0(q)) >> 12;
+    out[13] = (s32)((((long long)PS16(p, 0x20) * b) + ((long long)PS16(p, 0x22) * a)) >> 8) + (H16 << 15);
+    out[4] = (-PS16(p, 0x20) * func_01ff80c0()) >> 12;
 }
 void func_02035334(s32 *out, u8 *p) {   // scale and translate about the texture centre
     s32 a, b;
+    u32 w, h;
+    s32 tx, ty;
     out[0] = P32(p, 0x18);
     out[5] = P32(p, 0x1c);
     out[1] = 0;
-    b = (-(s32)W16 << 11) - P32(p, 0x24) * W16;
-    out[12] = (s32)(((long long)P32(p, 0x18) * b) >> 8) + (W16 << 15);
-    a = P32(p, 0x28) * H16 + (-(s32)H16 << 11);
+    ty = P32(p, 0x28);
+    tx = P32(p, 0x24);
+    h = H16;
+    w = W16;
+    b = (-(s32)w << 11) - tx * w;
+    out[12] = (s32)(((long long)P32(p, 0x18) * b) >> 8) + (w << 15);
+    a = ty * h + (-(s32)h << 11);
     out[13] = (s32)(((long long)P32(p, 0x1c) * a) >> 8) + (H16 << 15);
     out[4] = 0;
 }
@@ -165,15 +174,16 @@ void func_020353fc(s32 *out, u8 *p) {   // scale and rotate about the texture ce
     s32 r6 = FxMul(sS, s);
     s32 r5 = FxMul(sT, c);
     s32 r4 = FxMul(sT, s);
-    s32 a = -(s32)H16 << 11;
-    s32 b = -(s32)W16 << 11;
+    s32 a, b;
     out[0] = r7;
     out[5] = r5;
-    out[1] = (r4 * func_01ff80c0(q)) >> 12;
+    out[1] = (r4 * func_01ff80c0()) >> 12;
     q = func_01ff8154(w, h);
+    b = -(s32)W16 << 11;
+    a = -(s32)H16 << 11;
     out[12] = (s32)((((long long)r7 * b) - ((long long)r6 * a)) >> 8) + (W16 << 15);
-    out[13] = (s32)((((long long)r5 * a) + ((long long)r4 * b)) >> 8) + (H16 << 15);
-    out[4] = (-r6 * func_01ff80c0(q)) >> 12;
+    out[13] = (s32)((((long long)r4 * b) + ((long long)r5 * a)) >> 8) + (H16 << 15);
+    out[4] = (-r6 * func_01ff80c0()) >> 12;
 }
 void func_020354f4(s32 *out, u8 *p) {   // rotate about the texture centre
     s32 w = W16 << 12;
@@ -182,13 +192,13 @@ void func_020354f4(s32 *out, u8 *p) {   // rotate about the texture centre
     s32 a, b;
     out[0] = PS16(p, 0x22);
     out[5] = PS16(p, 0x22);
-    out[1] = (PS16(p, 0x20) * func_01ff80c0(q)) >> 12;
+    out[1] = (PS16(p, 0x20) * func_01ff80c0()) >> 12;
     q = func_01ff8154(w, h);
     b = -(s32)W16 << 11;
     a = -(s32)H16 << 11;
     out[12] = (s32)((((long long)PS16(p, 0x22) * b) - ((long long)PS16(p, 0x20) * a)) >> 8) + (W16 << 15);
-    out[13] = (s32)((((long long)PS16(p, 0x22) * a) + ((long long)PS16(p, 0x20) * b)) >> 8) + (H16 << 15);
-    out[4] = (-PS16(p, 0x20) * func_01ff80c0(q)) >> 12;
+    out[13] = (s32)((((long long)PS16(p, 0x20) * b) + ((long long)PS16(p, 0x22) * a)) >> 8) + (H16 << 15);
+    out[4] = (-PS16(p, 0x20) * func_01ff80c0()) >> 12;
 }
 void func_020355cc(s32 *out, u8 *p) {   // scale about the texture centre
     out[0] = P32(p, 0x18);
@@ -207,39 +217,36 @@ void func_0203561c(s32 *out) {
     out[13] = 0;
 }
 extern void (*data_020a5840[8])(s32 *out, u32 *m);
-void func_02035640(u32 *m) {   // load the texture matrix built from a texture SRT (centre-rotate family)
-    u32 buf[19];
-    s32 *out = (s32 *)&buf[2];
-    if (m[0] & 8) buf[0] = 0x101610;
-    else buf[0] = 0x101810;
-    buf[17] = 0x1000;
-    buf[1] = 3;
-    buf[18] = 2;
-    out[14] = 0;
-    out[11] = 0;
-    out[10] = 0;
-    out[9] = 0;
-    out[8] = 0;
-    out[7] = 0;
-    out[6] = 0;
-    out[3] = 0;
-    out[2] = 0;
-    data_020a5840[m[0] & 7](out, m);
-    if (m[12] != 0x1000) {
-        out[0] = FxMul(m[12], out[0]);
-        out[1] = FxMul(m[12], out[1]);
-        out[12] = FxMul(m[12], out[12]);
+void func_02035640(u32 *mm) {   // load the texture matrix built from a texture SRT (centre-rotate family)
+    GeBuf4 t;
+    if (mm[0] & 8) t.cmd = 0x101610;
+    else t.cmd = 0x101810;
+    t.mode = 3;
+    t.mode2 = 2;
+    t.m[14] = 0;
+    t.m[15] = 0x1000;
+    t.m[11] = 0;
+    t.m[10] = 0;
+    t.m[9] = 0;
+    t.m[8] = 0;
+    t.m[7] = 0;
+    t.m[6] = 0;
+    t.m[3] = 0;
+    t.m[2] = 0;
+    data_020a5840[mm[0] & 7](t.m, mm);
+    if (mm[12] != 0x1000) {
+        t.m[0] = FxMul(mm[12], t.m[0]);
+        t.m[1] = FxMul(mm[12], t.m[1]);
+        t.m[12] = FxMul(mm[12], t.m[12]);
     }
-    if (m[13] != 0x1000) {
-        out[4] = FxMul(m[13], out[4]);
-        out[5] = FxMul(m[13], out[5]);
-        out[13] = FxMul(m[13], out[13]);
+    if (mm[13] != 0x1000) {
+        t.m[4] = FxMul(mm[13], t.m[4]);
+        t.m[5] = FxMul(mm[13], t.m[5]);
+        t.m[13] = FxMul(mm[13], t.m[13]);
     }
-    func_01ff93d8(buf[0], &buf[1], 0x12);
+    { u32 *b = (u32 *)&t; func_01ff93d8(t.cmd, b + 1, 0x12); }
 }
-// non-matching: same instructions as the original except register allocation and the order of the two
-// translation terms (the original computes the x*sT term first and spills W16)
-void func_02035788(s32 *out, u8 *p) {   // scale, rotate and translate (translation in the rotated frame)
+void func_02035788(s32 *out, u8 *p) {
     s32 w = W16 << 12;
     s32 h = H16 << 12;
     s32 q = func_01ff8154(h, w);
@@ -247,36 +254,36 @@ void func_02035788(s32 *out, u8 *p) {   // scale, rotate and translate (translat
     s32 sS = P32(p, 0x18);
     s32 s = PS16(p, 0x20);
     s32 sT = P32(p, 0x1c);
-    s32 r4, r5;
+    s32 r4, r5, t12, t13;
     long long x, y;
+    
     out[0] = FxMul(sS, c);
-    r4 = FxMul(sT, c);
     r5 = FxMul(sS, s);
+    r4 = FxMul(sT, c);
     out[5] = r4;
-    out[1] = (FxMul(sT, s) * func_01ff80c0(q)) >> 12;
+    out[1] = (FxMul(sT, s) * func_01ff80c0()) >> 12;
     q = func_01ff8154(w, h);
     x = (((long long)P32(p, 0x24) * PS16(p, 0x20)) - ((long long)P32(p, 0x28) * PS16(p, 0x22))) >> 12;
-    y = (((long long)P32(p, 0x28) * PS16(p, 0x20)) + ((long long)P32(p, 0x24) * PS16(p, 0x22))) >> 12;
+    y = (((long long)P32(p, 0x24) * PS16(p, 0x22)) + ((long long)P32(p, 0x28) * PS16(p, 0x20))) >> 12;
+    t13 = r4 + (s32)((x * P32(p, 0x1c)) >> 12) - 0x1000;
     out[12] = ((s32)W16 * (r5 - (s32)((y * P32(p, 0x18)) >> 12))) << 4;
-    out[13] = (-(s32)H16 * (r4 + (s32)((x * P32(p, 0x1c)) >> 12) - 0x1000)) << 4;
-    out[4] = (-r5 * func_01ff80c0(q)) >> 12;
+    out[13] = (-(s32)H16 * t13) << 4;
+    out[4] = (-r5 * func_01ff80c0()) >> 12;
 }
 void func_020358dc(s32 *out, u8 *p) {   // rotate and translate (translation in the rotated frame)
     s32 w = W16 << 12;
     s32 h = H16 << 12;
     s32 q = func_01ff8154(h, w);
-    s32 s = PS16(p, 0x20);
-    s32 c = PS16(p, 0x22);
     s32 x, y;
-    out[0] = c;
-    out[5] = c;
-    out[1] = (s * func_01ff80c0(q)) >> 12;
+    out[0] = PS16(p, 0x22);
+    out[5] = PS16(p, 0x22);
+    out[1] = (PS16(p, 0x20) * func_01ff80c0()) >> 12;
     q = func_01ff8154(w, h);
-    x = (s32)((((long long)P32(p, 0x28) * s) + ((long long)P32(p, 0x24) * c)) >> 12);
-    y = (s32)((((long long)P32(p, 0x24) * s) - ((long long)P32(p, 0x28) * c)) >> 12);
-    out[12] = (W16 * (s - x)) << 4;
-    out[13] = (-(s32)H16 * (c + y - 0x1000)) << 4;
-    out[4] = (-s * func_01ff80c0(q)) >> 12;
+    x = (s32)((((long long)P32(p, 0x24) * PS16(p, 0x22)) + ((long long)P32(p, 0x28) * PS16(p, 0x20))) >> 12);
+    y = (s32)((((long long)P32(p, 0x24) * PS16(p, 0x20)) - ((long long)P32(p, 0x28) * PS16(p, 0x22))) >> 12);
+    out[12] = (W16 * (PS16(p, 0x20) - x)) << 4;
+    out[13] = (-(s32)H16 * (PS16(p, 0x22) + y - 0x1000)) << 4;
+    out[4] = (-PS16(p, 0x20) * func_01ff80c0()) >> 12;
 }
 void func_020359bc(s32 *out, u8 *p) {   // scale and translate
     out[0] = P32(p, 0x18);
@@ -287,11 +294,16 @@ void func_020359bc(s32 *out, u8 *p) {   // scale and translate
     out[4] = 0;
 }
 void func_02035a40(s32 *out, u8 *p) {   // translate only
+    s32 tx, ty;
+    u32 w;
     out[0] = 0x1000;
     out[5] = 0x1000;
     out[1] = 0;
-    out[12] = (W16 * -P32(p, 0x24)) << 4;
-    out[13] = (-(s32)H16 * -P32(p, 0x28)) << 4;
+    tx = P32(p, 0x24);
+    w = W16;
+    ty = P32(p, 0x28);
+    out[12] = (w * -tx) << 4;
+    out[13] = (-ty * (s32)(0 - H16)) << 4;
     out[4] = 0;
 }
 void func_02035a94(s32 *out, u8 *p) {   // scale and rotate

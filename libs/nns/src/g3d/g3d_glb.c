@@ -22,14 +22,16 @@ extern void VEC_CrossProduct(void *a, void *b, void *dst);   // VEC_CrossProduct
 extern void VEC_Normalize(void *src, void *dst);   // VEC_Normalize
 static inline s32 FxMul(s32 a, s32 b) { return (s32)(((long long)a * b) >> 12); }
 
-extern u32 data_02211374[];     // G3d global state
+// G3d global state (NNS_G3dGlb): one struct, which every access fits; the base translation/scale and the dirty flags sit at 0xe0/0xec/0xfc.
+typedef struct { s32 x, y, z; } VecFx32;
+typedef union { u32 w[0x99]; struct { u32 pad0[0x38]; VecFx32 trans; VecFx32 scale; u32 pad; u32 flag; } s; } G3dGlb;
+extern G3dGlb data_02211374;
+#define GU (data_02211374.w)
 extern u8 data_0221137c[], data_022113c0[], data_02211430[], data_02211474[], data_022114a4[], data_022114d4[], data_02211534[], data_02211574[];
 extern u32 data_022113f4[], data_0221141c[];
-typedef struct { s32 x, y, z; } VecFx32;
-extern VecFx32 data_02211454, data_02211460;
 
 void func_02032130(void) {   // NNS_G3dGlbInit
-    u32 *g = data_02211374;
+    u32 *g = GU;
     g[0] = 0x17101610;
     g[1] = 0;
     g[0x48 / 4] = 2;
@@ -71,36 +73,39 @@ void func_02032130(void) {   // NNS_G3dGlbInit
     g[0x260 / 4] = -0x1000;
 }
 void func_02032284(void) {   // NNS_G3dGlbFlushP
-    func_01ff93d8(data_02211374[0], &data_02211374[1], 0x3e);
-    data_02211374[0xfc / 4] &= ~1;
-    data_02211374[0xfc / 4] &= ~2;
+    func_01ff93d8(GU[0], &GU[1], 0x3e);
+    GU[0xfc / 4] &= ~1;
+    GU[0xfc / 4] &= ~2;
 }
 void func_020322c0(const VecFx32 *trans) {   // NNS_G3dGlbSetBaseTrans
     if (trans == 0) return;
-    data_02211454 = *trans;
-    data_02211374[0xfc / 4] &= ~0xa4;
+    data_02211374.s.trans = *trans;
+    data_02211374.s.flag &= ~0xa4;
 }
 void func_020322f0(const VecFx32 *scale) {   // NNS_G3dGlbSetBaseScale
     if (scale == 0) return;
-    data_02211460 = *scale;
-    data_02211374[0xfc / 4] &= ~0xa4;
+    data_02211374.s.scale = *scale;
+    data_02211374.s.flag &= ~0xa4;
 }
 void func_02032320(u32 idx, s32 x, s32 y, s32 z) {   // NNS_G3dGlbLightVector
-    data_022113f4[idx] = (idx << 30) | ((z >> 3 & 0x3ff) << 20) | ((y >> 3 & 0x3ff) << 10) | (x >> 3 & 0x3ff);
+    s32 vx = x >> 3;
+    s32 vy = y >> 3;
+    s32 vz = z >> 3;
+    data_022113f4[idx] = (vx & 0x3ff) | ((vy & 0x3ff) << 10) | ((vz & 0x3ff) << 20) | (idx << 30);
 }
 void func_0203235c(u32 idx, u32 color) {   // NNS_G3dGlbLightColor
     data_0221141c[idx] = color | (idx << 30);
 }
 void func_02032370(u32 diffuse, u32 ambient, BOOL setVtx) {   // NNS_G3dGlbMaterialColorDiffAmb
-    data_02211374[0x94 / 4] = diffuse | (ambient << 16) | ((setVtx != 0) << 15);
+    GU[0x94 / 4] = diffuse | (ambient << 16) | ((setVtx != 0) << 15);
 }
 void func_02032394(u32 specular, u32 emission, BOOL shininess) {   // NNS_G3dGlbMaterialColorSpecEmi
-    data_02211374[0x98 / 4] = specular | (emission << 16) | ((shininess != 0) << 15);
+    GU[0x98 / 4] = specular | (emission << 16) | ((shininess != 0) << 15);
 }
 void *func_020323b8(void) {   // inverse of the current position matrix (cached)
-    if (!(data_02211374[0xfc / 4] & 8)) {
+    if (!(GU[0xfc / 4] & 8)) {
         func_01ff8634(data_022113c0, data_02211474);
-        data_02211374[0xfc / 4] |= 8;
+        GU[0xfc / 4] |= 8;
     }
     return data_02211474;
 }
@@ -144,39 +149,39 @@ s32 func_020323fc(s32 *src, s32 *dstp) {   // MTX_Inverse44 (Gauss-Jordan, fixed
     return 0;
 }
 void *func_02032604(void) {   // inverse of the projection matrix (cached)
-    if (!(data_02211374[0xfc / 4] & 0x10)) {
+    if (!(GU[0xfc / 4] & 0x10)) {
         func_020323fc((s32 *)data_0221137c, (s32 *)data_02211534);
-        data_02211374[0xfc / 4] |= 0x10;
+        GU[0xfc / 4] |= 0x10;
     }
     return data_02211534;
 }
 void func_02032648(void) {   // base matrix = position * base scale, and its inverse
     func_01ff89c0(data_02211430, data_022113c0, data_022114a4);
-    func_01ff85a8(data_022114a4, data_022114a4, data_02211374[0xec / 4], data_02211374[0xf0 / 4], data_02211374[0xf4 / 4]);
+    func_01ff85a8(data_022114a4, data_022114a4, GU[0xec / 4], GU[0xf0 / 4], GU[0xf4 / 4]);
     func_01ff8634(data_022114a4, data_022114d4);
 }
 void *func_020326a0(void) {
-    if (!(data_02211374[0xfc / 4] & 0x80)) {
+    if (!(GU[0xfc / 4] & 0x80)) {
         func_02032648();
-        data_02211374[0xfc / 4] |= 0x80;
+        GU[0xfc / 4] |= 0x80;
     }
     return data_022114a4;
 }
 void *func_020326d8(void) {
-    if (!(data_02211374[0xfc / 4] & 0x80)) {
+    if (!(GU[0xfc / 4] & 0x80)) {
         func_02032648();
-        data_02211374[0xfc / 4] |= 0x80;
+        GU[0xfc / 4] |= 0x80;
     }
     return data_022114d4;
 }
 void *func_02032710(void) {   // combined position and projection matrix (cached)
     u8 tmp[0x40];
-    if (!(data_02211374[0xfc / 4] & 0x40)) {
+    if (!(GU[0xfc / 4] & 0x40)) {
         void *a = func_020323b8();
         void *b = func_02032604();
         func_01ff8574(a, tmp);
         func_02000de8(b, tmp, data_02211574);
-        data_02211374[0xfc / 4] |= 0x40;
+        GU[0xfc / 4] |= 0x40;
     }
     return data_02211574;
 }
@@ -212,52 +217,59 @@ BOOL func_02032854(u8 *out, AnmObj *list, u32 idx) {   // NNS_G3dAnmCalcNode: bl
     u8 tmp[0x58];
     u8 keep[0x18];
     AnmObj *o;
-    s32 total = 0;
-    s32 count = 0;
-    AnmObj *last = 0;
-    s32 n = 0;
+    s32 total;
+    s32 count;
+    AnmObj *last;
+    s32 n;
     s32 w;
     if (list == 0) return 0;
     if (list->next == 0) {
-        if (idx < list->mapCount && (list->map[idx] & 0x300) == 0x100) {
-            void (*cb)(void *, AnmObj *, u32) = (void (*)(void *, AnmObj *, u32))list->f0c;
-            if (cb == 0) return 0;
-            cb(out, list, list->map[idx] & 0xff);
-            return 1;
+        if (idx < list->mapCount) {
+            if ((list->map[idx] & 0x300) == 0x100) {
+                void (*cb)(void *, AnmObj *, u32) = (void (*)(void *, AnmObj *, u32))list->f0c;
+                if (cb == 0) return 0;
+                cb(out, list, list->map[idx] & 0xff);
+                return 1;
+            }
+            return 0;
         }
         return 0;
     }
-    for (o = list; o != 0; o = o->next) {
+    total = 0;
+    count = 0;
+    n = 0;
+    o = list;
+    do {
         if (idx < o->mapCount && (o->map[idx] & 0x300) == 0x100) {
             if (o->weight > 0x1000) total += 0x1000;
             else if (o->weight > 0) total += o->weight;
             last = o;
             count++;
         }
-    }
+        o = o->next;
+    } while (o != 0);
     if (total == 0) return 0;
     if (count == 1) {
         void (*cb)(void *, AnmObj *, u32) = (void (*)(void *, AnmObj *, u32))last->f0c;
+        u32 mi = last->map[idx];
         if (cb == 0) return 0;
-        cb(out, last, last->map[idx] & 0xff);
+        cb(out, last, mi & 0xff);
         return 1;
     }
     MIi_CpuClearFast(0, out, 0x58);
     U32(out, 0) = -1;
-    for (o = list; o != 0; o = o->next) {
-        if (idx < o->mapCount && (o->map[idx] & 0x300) == 0x100 && o->weight > 0 && o->f0c != 0) {
-            u32 fl;
-            ((void (*)(void *, AnmObj *, u32))o->f0c)(tmp, o, o->map[idx] & 0xff);
+    do {
+        if (idx < list->mapCount && (list->map[idx] & 0x300) == 0x100 && list->weight > 0 && list->f0c != 0) {
+            ((void (*)(void *, AnmObj *, u32))list->f0c)(tmp, list, list->map[idx] & 0xff);
             if (n == 0) {
                 func_01ff9510(tmp + 0x28, keep + 0xc, 12);
                 func_01ff9510(tmp + 0x40, keep, 12);
             }
-            if (total == 0x1000) w = o->weight;
-            else w = FX_Div(o->weight, total);
-            fl = U32(tmp, 0);
-            func_020327e4((s32 *)(out + 4), (s32 *)(tmp + 4), w, fl & 1);
-            func_020327e4((s32 *)(out + 0x10), (s32 *)(tmp + 0x10), w, fl & 8);
-            func_020327e4((s32 *)(out + 0x1c), (s32 *)(tmp + 0x1c), w, fl & 0x10);
+            if (total == 0x1000) w = list->weight;
+            else w = FX_Div(list->weight, total);
+            func_020327e4((s32 *)(out + 4), (s32 *)(tmp + 4), w, U32(tmp, 0) & 1);
+            func_020327e4((s32 *)(out + 0x10), (s32 *)(tmp + 0x10), w, U32(tmp, 0) & 8);
+            func_020327e4((s32 *)(out + 0x1c), (s32 *)(tmp + 0x1c), w, U32(tmp, 0) & 0x10);
             if (!(U32(tmp, 0) & 4)) {
                 P32(out, 0x4c) += FxMul(w, P32(tmp, 0x4c));
                 P32(out, 0x50) += FxMul(w, P32(tmp, 0x50));
@@ -276,8 +288,9 @@ BOOL func_02032854(u8 *out, AnmObj *list, u32 idx) {   // NNS_G3dAnmCalcNode: bl
             }
             U32(out, 0) &= U32(tmp, 0);
         }
+        list = list->next;
         n++;
-    }
+    } while (list != 0);
     VEC_CrossProduct(out + 0x28, out + 0x34, out + 0x40);
     if (P32(out, 0x28) == 0 && P32(out, 0x2c) == 0 && P32(out, 0x30) == 0) func_01ff9510(keep + 0xc, out + 0x28, 12);
     else VEC_Normalize(out + 0x28, out + 0x28);
@@ -357,16 +370,22 @@ static inline u8 *MatByIdx2(ResMat *mat, u32 idx) {
 BOOL func_02032d7c(void *file) {   // NNS_G3dResDefaultSetup: allocate VRAM, upload textures, bind
     u32 magic = U32(file, 0);
     ResTex *tex;
-    u32 sz, sz4x4, szP;
-    u32 key, key4x4, keyP;
-    BOOL ok1, ok2, ok3;
+    BOOL ok1;
+    BOOL ok2;
+    u32 sz4x4;
+    u32 szP;
+    u32 key;
+    BOOL ok3;
+    u32 key4x4;
+    u32 keyP;
+    u32 sz;
     switch (magic) {
     case 0x30414342: case 0x30414d42: case 0x30415642: case 0x30415442: case 0x30505442:
-        return 1;
+        goto yes;
     case 0x30444d42: case 0x30585442:
         break;
     default:
-        return 0;
+        goto no;
     }
     ok1 = 1;
     ok2 = 1;
@@ -410,6 +429,10 @@ BOOL func_02032d7c(void *file) {   // NNS_G3dResDefaultSetup: allocate VRAM, upl
         if (tex != 0) func_02031fec(set, tex);
     }
     return 1;
+yes:
+    return 1;
+no:
+    return 0;
 }
 void func_02032fb4(void *file) {   // release what NNS_G3dResDefaultSetup set up
     u32 magic = U32(file, 0);
@@ -443,10 +466,8 @@ void func_020330fc(u8 *mdl, BOOL set, u32 mask) {   // set or clear bits in ever
     u32 n = U8(mdl, 0x18);
     for (i = 0; i < n; i++) {
         u16 *m = (u16 *)MatByIdx2(mat, i);
-        u16 v = m[0x1e / 2];
-        if (set) v |= mask;
-        else v &= ~mask;
-        m[0x1e / 2] = v;
+        if (set) m[0x1e / 2] |= mask;
+        else m[0x1e / 2] &= ~mask;
     }
 }
 void func_020331a4(u8 *mdl, BOOL set, u32 mask) {   // set or clear bits in every material's 32-bit flags
@@ -469,67 +490,98 @@ static inline BOOL NameEq(const u32 *a, const u32 *b) {
 void *func_0203324c(Dict *dictp, const char *namep) {   // data pointer by name, or NULL
     u8 *dict = (u8 *)dictp;
     const u32 *name = (const u32 *)namep;
-    u32 n;
+    u8 n;
     u32 i;
     if (name == 0) return 0;
     n = U8(dict, 1);
     if (n < 16) {
+        u32 n0 = name[0], n1 = name[1], n2 = name[2], n3 = name[3];
         for (i = 0; i < U8(dict, 1); i++) {
-            u8 *ent = DictName((Dict *)dict, i);
-            if (NameEq((u32 *)ent, name)) return DictEntry((Dict *)dict, i);
+            u32 *e4 = (u32 *)DictName((Dict *)dict, i);
+            if (e4[0] == n0 && e4[1] == n1 && e4[2] == n2 && e4[3] == n3) {
+                if (dict != 0 && i < n) {
+                    u8 *e = dict + *(u16 *)(dict + 6);
+                    return e + 4 + *(u16 *)e * i;
+                }
+                return 0;
+            }
         }
-        return 0;
     } else {
         u8 *t = dict + 8;
         u8 *node;
-        u32 ref, idx;
+        u8 *prev;
+        u8 ref;
+        u32 idx;
         u8 *ent;
-        if (U8(t, 1) == 0) return 0;
-        node = t + U8(t, 1) * 4;
-        ref = U8(node, 0);
-        while (U8(t, 0) > ref) {
-            u32 bit = (name[ref >> 5] >> (ref & 0x1f)) & 1;
-            u32 next = U8(node, bit + 1);
-            u8 *c = t + next * 4;
-            ref = U8(c, 0);
-            node = c;
-            /* the original re-reads the node's own reference bit each round */
+        if (U8(t, 1) != 0) {
+            node = t + U8(t, 1) * 4;
+            ref = U8(node, 0);
+            prev = t;
+            while (U8(prev, 0) > ref) {
+                u32 bit = (name[ref >> 5] >> (ref & 0x1f)) & 1;
+                u32 next = U8(node, bit + 1);
+                prev = node;
+                node = t + next * 4;
+                ref = U8(node, 0);
+            }
+            idx = U8(node, 3);
+            if (dict != 0 && idx < n) {
+                u8 *e = dict + *(u16 *)(dict + 6);
+                ent = e + *(u16 *)(e + 2) + idx * 16;
+            } else {
+                ent = 0;
+            }
+            if (NameEq((u32 *)ent, name)) {
+                if (dict != 0 && idx < n) {
+                    u8 *e = dict + *(u16 *)(dict + 6);
+                    return e + 4 + *(u16 *)e * idx;
+                }
+                return 0;
+            }
         }
-        idx = U8(node, 3);
-        ent = DictName((Dict *)dict, idx);
-        if (NameEq((u32 *)ent, name)) return DictEntry((Dict *)dict, idx);
-        return 0;
     }
+    return 0;
 }
 s32 func_0203340c(Dict *dictp, const u8 *namep) {   // index by name, or -1
     u8 *dict = (u8 *)dictp;
     const u32 *name = (const u32 *)namep;
-    u32 n;
+    u8 n;
     u32 i;
     if (name == 0) return -1;
     n = U8(dict, 1);
     if (n < 16) {
+        u32 n0 = name[0], n1 = name[1], n2 = name[2], n3 = name[3];
         for (i = 0; i < U8(dict, 1); i++) {
-            u8 *ent = DictName((Dict *)dict, i);
-            if (NameEq((u32 *)ent, name)) return i;
+            u32 *e4 = (u32 *)DictName((Dict *)dict, i);
+            if (e4[0] == n0 && e4[1] == n1 && e4[2] == n2 && e4[3] == n3) return i;
         }
     } else {
         u8 *t = dict + 8;
         u8 *node;
-        u32 ref, idx;
+        u8 *prev;
+        u8 ref;
+        u32 idx;
         u8 *ent;
-        if (U8(t, 1) == 0) return -1;
-        node = t + U8(t, 1) * 4;
-        ref = U8(node, 0);
-        while (U8(t, 0) > ref) {
-            u32 bit = (name[ref >> 5] >> (ref & 0x1f)) & 1;
-            u32 next = U8(node, bit + 1);
-            node = t + next * 4;
+        if (U8(t, 1) != 0) {
+            node = t + U8(t, 1) * 4;
             ref = U8(node, 0);
+            prev = t;
+            while (U8(prev, 0) > ref) {
+                u32 bit = (name[ref >> 5] >> (ref & 0x1f)) & 1;
+                u32 next = U8(node, bit + 1);
+                prev = node;
+                node = t + next * 4;
+                ref = U8(node, 0);
+            }
+            idx = U8(node, 3);
+            if (dict != 0 && idx < n) {
+                u8 *e = dict + *(u16 *)(dict + 6);
+                ent = e + *(u16 *)(e + 2) + idx * 16;
+            } else {
+                ent = 0;
+            }
+            if (NameEq((u32 *)ent, name)) return idx;
         }
-        idx = U8(node, 3);
-        ent = DictName((Dict *)dict, idx);
-        if (NameEq((u32 *)ent, name)) return idx;
     }
     return -1;
 }

@@ -716,11 +716,12 @@ void BattleCommand::Update() {
                                 func_ov007_0223a1c8();
                                 return;
                         }
-                        return;
+                        break;
                     }
                     func_ov007_0223a1c8();
                     return;
             }
+            break;
         }
         case 15:
             func_ov007_0223c8ac();
@@ -1180,14 +1181,14 @@ void BattleCommand::Update() {
             u8 flag                = 0;
             if (v > 0) {
                 idx = v - 1;
-                if (list->mUnk_2a9 == list->mUnits[idx].mUnk_0f) {
+                if (list->CurrentPlayer() == list->mUnits[idx].mUnk_0f) {
                     item->mFlags = 5;
                     if (mUnk_13b != 0) {
                         flag = 1;
                         SoundManager::Get().func_020246f8(0);
                     }
                 } else {
-                    item->mFlags = v + 0x7f0;
+                    item->mFlags = 0x804;
                     if (mUnk_13b != 0) {
                         SoundManager::Get().func_020246f8(2);
                     }
@@ -1214,20 +1215,20 @@ void BattleCommand::Update() {
             }
             mMessage->func_020658d0();
             u8 b                = mUnk_12d;
-            BattlePlayerList *l = data_020d433c.mBattlePlayers;
             u8 a                = mUnk_12c;
+            BattlePlayerList *l = data_020d433c.mBattlePlayers;
             l->mUnk_28b         = a;
             l->mUnk_28c         = b;
             func_ov007_0223b38c();
-            mUnk_10->Update();
             u8 y = 0;
+            mUnk_10->Update();
             do {
                 u8 x = 0;
                 do {
                     s8 cell = data_020d433c.mBattlePlayers->mUnk_1f8[y][x];
                     if (cell > 0) {
                         BattlePlayerList *l2 = data_020d433c.mBattlePlayers;
-                        if (l2->mUnk_2a9 == l2->mUnits[(u8) (cell - 1)].mUnk_0f) {
+                        if (l2->CurrentPlayer() == l2->mUnits[(u8) (cell - 1)].mUnk_0f) {
                             if (mUnk_135 == 0) {
                                 mUnk_10->Draw(1, (s16) (mUnk_139 + (y * 16 + 14 - mUnk_120)), (s16) (x * 24 - 22 - mUnk_122), 0);
                             } else {

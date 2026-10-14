@@ -234,6 +234,10 @@ struct BattlePlayerList : public SceneBase {
         return mPlayers[mUnk_28a];
     }
 
+    // Index of the player whose units are being commanded (compared with BattleUnit::mUnk_0f).
+    u8 CurrentPlayer() {
+        return mUnk_2a9;
+    }
     BattleUnit *Units() {
         return mUnits;
     }

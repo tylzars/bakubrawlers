@@ -541,7 +541,8 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                         BattlePlayerList *l = data_020d433c.mBattlePlayers;
                         BattleMarker *m     = &l->Entries()[j];
                         if (m->mUnk_2 != 0) {
-                            if (m->mUnk_1 == cpu->mUnk_79 || m->mUnk_1 == l->mPlayers[cpu->mUnk_79]->mUnk_f2) {
+                            u8 me = cpu->mUnk_79;
+                            if (me == m->mUnk_1 || m->mUnk_1 == l->mPlayers[me]->mUnk_f2) {
                                 u32 v = func_02065bf4(m->mUnk_0, recKind);
                                 if (v > best) {
                                     best    = v;
@@ -630,21 +631,16 @@ u8 BattleCpu::func_ov007_02231dd0() {
     return found;
 }
 
-// non-matching: register allocation and stack slots only (396 of 684 words differ by register or
-// spill slot; structure, call targets and literal pool match; the original spills mUnk_95 to sp+0x10).
 void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC) {
     u8 a    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f6;
     u8 idx2 = 0;
-    s8 tilt;
+    u8 spin;
     u8 idx1 = 6;
     u8 power;
     u8 i    = 0;
-    u8 spin;
+    s8 tilt;
     u8 roll = MATH_Rand32(&data_020d42e8, 100);
     u8 sum  = 0;
-    u8 i2;
-    u8 sum2;
-    u8 roll2;
     do {
         sum += data_ov007_02279804[a][i];
         if (sum > roll) {
@@ -653,22 +649,22 @@ void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 
         }
         i++;
     } while (i < 7);
-    roll2 = MATH_Rand32(&data_020d42e8, 100);
-    i2   = 0;
-    sum2 = 0;
+    roll = MATH_Rand32(&data_020d42e8, 100);
+    i   = 0;
+    sum = 0;
     do {
-        sum2 += data_ov007_022797ac[a][i2];
-        if (sum2 > roll2) {
-            idx2 = i2;
+        sum += data_ov007_022797ac[a][i];
+        if (sum > roll) {
+            idx2 = i;
             break;
         }
-        i2++;
-    } while (i2 < 5);
+        i++;
+    } while (i < 5);
     BattleCpuRot r = {0, 0, 0};
     r.y = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 125) * 65536.0f / 360.0f);
     r.z = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 10) * 65536.0f / 360.0f);
     power = MATH_Rand32(&data_020d42e8, 30) + 50;
-    spin  = 0;
+    spin  = 30; // never read (idx1 is always 0..6), but the original keeps 30 in spin's register
     tilt  = 0;
     switch (idx1) {
     case 0:
@@ -707,15 +703,15 @@ void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 
         r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 5) * 65536.0f / 360.0f);
         break;
     }
-    u8 attr = data_020d433c.mUnk_95;
-    if (attr == 3) {
+    if (data_020d433c.mUnk_95 == 3) {
         r.y = (u16) ((float) (MATH_Rand32(&data_020d42e8, 30) + 120) * 65536.0f / 360.0f);
     } else {
         r.y = (u16) ((float) (data_ov007_022796d0[idx2] + MATH_Rand32(&data_020d42e8, 20)) * 65536.0f / 360.0f);
     }
-    if (MATH_Rand32(&data_020d42e8, 100) < data_ov007_0227970c[a]) {
-        u8 sel = data_020d433c.mUnk_96;
+    roll = MATH_Rand32(&data_020d42e8, 100);
+    if (roll < data_ov007_0227970c[a]) {
         u8 f1  = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f1;
+        u8 sel = data_020d433c.mUnk_96;
         switch (sel) {
         case 0:
         case 1:
@@ -728,22 +724,22 @@ void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 
             sel = MATH_Rand32(&data_020d42e8, 3);
             break;
         }
+        power = data_ov007_0227987c[data_020d433c.mUnk_95][f1][sel].mPower;
         r.y   = 0x6000;
-        power = data_ov007_0227987c[attr][f1][sel].mPower;
-        r.z   = (u16) ((float) data_ov007_0227987c[attr][f1][sel].mPitch * 65536.0f / 360.0f);
-        tilt  = data_ov007_0227987c[attr][f1][sel].mTilt;
+        r.z   = (u16) ((float) data_ov007_0227987c[data_020d433c.mUnk_95][f1][sel].mPitch * 65536.0f / 360.0f);
+        tilt  = data_ov007_0227987c[data_020d433c.mUnk_95][f1][sel].mTilt;
         spin  = 0;
     }
     if (data_020d433c.mUnk_85 == 2) {
+        r.y  = 0x6000;
         spin  = 0;
         tilt  = 0;
-        r.y  = 0x6000;
         r.z  = 0x1777;
         power = 0x3e;
     } else if (data_020d433c.mUnk_85 == 7) {
+        r.y  = 0x6000;
         spin  = 0;
         tilt  = 0;
-        r.y  = 0x6000;
         r.z  = 0x1555;
         power = 0x32;
     }
@@ -1103,23 +1099,23 @@ void func_ov007_022337ec(VecFx32 *A, VecFx32 *B, VecFx32 *C, VecFx32 *D, VecFx32
     if (flag) {
         fx32 len = VEC_Mag(B);
         fx32 t;
-        t    = FX_Mul(E->x, len);
-        B->x = FX_Mul(t, F);
-        t    = FX_Mul(E->y, len);
-        B->y = FX_Mul(t, G);
-        t    = FX_Mul(E->z, len);
-        B->z = FX_Mul(t, F);
-        t    = FX_Mul(E->x, Abs(C->x));
-        C->x = FX_Mul(t, F);
-        t    = FX_Mul(E->y, Abs(C->y));
-        C->y = FX_Mul(t, G);
-        t    = FX_Mul(E->z, Abs(C->z));
-        C->z = FX_Mul(t, F);
+        t    = (fx32) (((fx64) E->x * len + 0x800LL) >> 12);
+        B->x = (fx32) (((fx64) t * F + 0x800LL) >> 12);
+        t    = (fx32) (((fx64) E->y * len + 0x800LL) >> 12);
+        B->y = (fx32) (((fx64) t * G + 0x800LL) >> 12);
+        t    = (fx32) (((fx64) E->z * len + 0x800LL) >> 12);
+        B->z = (fx32) (((fx64) t * F + 0x800LL) >> 12);
+        t    = (fx32) (((fx64) E->x * Abs(C->x) + 0x800LL) >> 12);
+        C->x = (fx32) (((fx64) t * F + 0x800LL) >> 12);
+        t    = (fx32) (((fx64) E->y * Abs(C->y) + 0x800LL) >> 12);
+        C->y = (fx32) (((fx64) t * G + 0x800LL) >> 12);
+        t    = (fx32) (((fx64) E->z * Abs(C->z) + 0x800LL) >> 12);
+        C->z = (fx32) (((fx64) t * F + 0x800LL) >> 12);
         len  = VEC_Mag(D);
-        t    = FX_Mul(E->x, len);
-        D->x = FX_Mul(t, F);
-        t    = FX_Mul(E->z, len);
-        D->z = FX_Mul(t, F);
+        t    = (fx32) (((fx64) E->x * len + 0x800LL) >> 12);
+        D->x = (fx32) (((fx64) t * F + 0x800LL) >> 12);
+        t    = (fx32) (((fx64) E->z * len + 0x800LL) >> 12);
+        D->z = (fx32) (((fx64) t * F + 0x800LL) >> 12);
         return;
     }
     VecFx32 e = *E;

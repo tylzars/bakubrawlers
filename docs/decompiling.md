@@ -169,6 +169,13 @@ Other findings from linking:
 - **A local array filled from a one-use rodata table is an aggregate initializer.** `u8 buf[3] = {0, 1, 4};` makes
   mwcc emit an anonymous rodata object (often first in the unit's .rodata) and changes which temporary is created
   first; copying `buf[i] = data_xxx[i]` element by element does not match (TitleScene::Update, BattleTarget::Update).
+- **Spill slots.** Spilled parameters take the lowest stack slots, in parameter order; spilled named locals go above
+  them in reverse declaration order (the first declared gets the highest slot); a spilled compiler temporary (such as
+  a repeated global read that mwcc merges into one value) sits just above the parameters. A local that won't take its
+  slot by declaration order may need to be a repeated expression instead (BattleCpu::func_ov007_02231e2c: reading
+  `data_020d433c.mUnk_95` at both uses rather than through a local).
+- **A dead store can be load-bearing.** In BattleCpu::func_ov007_02231e2c, `spin = 30;` before a switch whose cases
+  all overwrite `spin` keeps 30 in spin's register for later `MATH_Rand32(..., 30)` calls; `spin = 0` breaks it.
 - **A `mov` where a spill reload was expected.** When a spilled value's register is still intact at its next use in
   the same block, mwcc replaces the reload with a `mov` (or drops it). So `mov rX, rY` next to a spill store, where
   the original has `ldr rX, [sp, #n]` (or the reverse), means the defining register was or wasn't reused before that

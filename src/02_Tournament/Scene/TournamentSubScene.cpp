@@ -259,12 +259,10 @@ void TournamentSubScene::Draw() {
 void TournamentSubScene::func_ov002_02220184() {
     u8 i = 0;
     do {
-        u32 base = i * 5;
-        s16 y    = i * 0x10 + 0x2c;
         u8 j = 0;
         do {
-            SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, 1, (s16) (j * 0x20 + 0x3c), y, 2,
-                                                          (u16) ((j + base) * 2 + 0x100), 0xf, 0);
+            SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, 1, j * 0x20 + 0x3c, i * 0x10 + 0x2c, 2,
+                                                          (u16) ((j + i * 5) * 2 + 0x100), 0xf, 0);
             j++;
         } while (j < 5);
         i++;

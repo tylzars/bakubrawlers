@@ -236,6 +236,18 @@ Other findings from linking:
     (`SetSphere(s, &pos, radius)`).
   - `(n + 1) * x; ...; n++;` keeps the unmasked `n + 1` in the multiply.
   - Where the original loads every component before storing, write the store as `SetVec(...)` or a struct copy.
+- **Which tables are addressed through their own symbol (verified in a lab).** mwcc's object writer puts every
+  *referenced* initialised (or .bss) object into one shared `.data` section; unreferenced objects each get their own.
+  A load or store at a constant offset into an object in the shared section is addressed from the section base
+  (re-anchored at `off & ~0xff` for strh, `& ~0xfff` for str), so two tables can share one pool word; taking the
+  address as a value or indexing with a variable keeps the symbol. Objects that stay out of the shared section, and
+  so are addressed through their own symbol, are: `extern` objects; arrays of char/u8/s8 (own sections, like
+  strings); weak objects (function-local statics of `inline` functions, template statics); and objects under
+  `#pragma section npdata begin`/`end`. Nothing else matters (size, alignment, definition order, static or global,
+  optimisation level). `const` always wins: a const object goes to `.rodata`. So when the original loads a table
+  defined in the file through its own pool word, define it as a function-local static of an inline accessor
+  (`inline WindowItemRecord *ListItems() { static WindowItemRecord sItems[4] = {...}; return sItems; }`, as in
+  BattleCommand and BattleCommandList).
 - **A macro where an inline won't do.** `#define TEST_BIT(f, i) ((f)[(i) / 8] & (1 << ((i) % 8)))` (and a matching
   `SET_BIT`) lets mwcc reuse the loaded byte for a following set, which the inline helpers don't
   (MyroomTipsScene::func_ov008_022274f8). A caller passing an `ldrsb` value with no `and` means the parameter is wider

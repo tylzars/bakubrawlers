@@ -25,8 +25,6 @@ void func_02023a54();
 extern u8 data_0209e57c[]; // table of func_0205aea4 (.rodata 0x0209e57c)
 extern const u8 data_0209e5bc[][5]; // per cell values, five columns (.rodata 0x0209e5bc)
 
-extern WindowItemRecord data_020b3688[4]; // item table of the list window (positions are patched by func_02058404)
-extern WindowCellRecord data_020b3618[4];
 
 BattleCommandList::BattleCommandList(u8 a, u8 b, s32 c, u8 d) :
     SceneBase(0x3e8, 0) {
@@ -337,34 +335,55 @@ BOOL BattleCommandList::func_020583f0() {
     return mUnk_159 < 7;
 }
 
+#define PAGE "/Game/2D/union_b/union_b_obj_page_nce.bin"
+inline WindowCellRecord *ListCells() {
+    static WindowCellRecord sCells[4] = {
+        { PAGE, {0}, 0, {0}, {0}, 1, {0, 1, 1, 0} },
+        { PAGE, {3}, 0, {0}, {0}, 1, {3, 4, 4, 0} },
+        { PAGE, {6}, 0, {0}, {0}, 1, {6, 6, 6, 0} },
+        { PAGE, {7}, 0, {0}, {0}, 1, {7, 7, 7, 0} },
+    };
+    return sCells;
+}
+// item table of the list window (positions are patched by func_02058404)
+inline WindowItemRecord *ListItems() {
+    static WindowItemRecord sItems[4] = {
+        { 0, 0x208, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 1 },
+        { 1, 0x408, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 1 },
+        { 2, 0x8000, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
+        { 3, 0x8000, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
+    };
+    return sItems;
+}
+
 void func_02058404(BattleCommandList *list, u32 a, u32 b, s16 c, s16 d, s16 e, s16 f, u32 g) {
     if (list->mUnk_8c != NULL) {
         delete list->mUnk_8c;
     }
-    data_020b3688[0].mUnk_04 = 0x208;
-    data_020b3688[0].mUnk_18 = 1;
-    data_020b3688[1].mUnk_04 = 0x408;
-    data_020b3688[1].mUnk_18 = 1;
-    data_020b3688[2].mUnk_04 = 0x8000;
-    data_020b3688[2].mUnk_18 = 0;
-    data_020b3688[3].mUnk_04 = 0x8000;
-    data_020b3688[3].mUnk_18 = 0;
-    data_020b3688[0].mX      = c;
-    data_020b3688[0].mY      = d;
-    data_020b3688[1].mX      = e;
-    data_020b3688[1].mY      = f;
-    data_020b3688[2].mX      = c;
-    data_020b3688[2].mY      = d;
-    data_020b3688[3].mX      = e;
-    data_020b3688[3].mY      = f;
-    data_020b3618[0].mUnk_08 = a;
-    data_020b3618[0].mUnk_0c = b;
-    data_020b3618[1].mUnk_08 = a;
-    data_020b3618[1].mUnk_0c = b;
-    data_020b3618[2].mUnk_08 = a;
-    data_020b3618[2].mUnk_0c = b;
-    data_020b3618[3].mUnk_08 = a;
-    data_020b3618[3].mUnk_0c = b;
+    ListItems()[0].mUnk_04 = 0x208;
+    ListItems()[0].mUnk_18 = 1;
+    ListItems()[1].mUnk_04 = 0x408;
+    ListItems()[1].mUnk_18 = 1;
+    ListItems()[2].mUnk_04 = 0x8000;
+    ListItems()[2].mUnk_18 = 0;
+    ListItems()[3].mUnk_04 = 0x8000;
+    ListItems()[3].mUnk_18 = 0;
+    ListItems()[0].mX      = c;
+    ListItems()[0].mY      = d;
+    ListItems()[1].mX      = e;
+    ListItems()[1].mY      = f;
+    ListItems()[2].mX      = c;
+    ListItems()[2].mY      = d;
+    ListItems()[3].mX      = e;
+    ListItems()[3].mY      = f;
+    ListCells()[0].mUnk_08 = a;
+    ListCells()[0].mUnk_0c = b;
+    ListCells()[1].mUnk_08 = a;
+    ListCells()[1].mUnk_0c = b;
+    ListCells()[2].mUnk_08 = a;
+    ListCells()[2].mUnk_0c = b;
+    ListCells()[3].mUnk_08 = a;
+    ListCells()[3].mUnk_0c = b;
     u32 count;
     list->mUnk_163 = g;
     if (list->mUnk_163 != 0) {
@@ -372,8 +391,8 @@ void func_02058404(BattleCommandList *list, u32 a, u32 b, s16 c, s16 d, s16 e, s
     } else {
         count = 2;
     }
-    list->mUnk_8c  = new SelectWindow(count, data_020b3688, -1);
-    list->mUnk_8c->SetCells(count, data_020b3618);
+    list->mUnk_8c  = new SelectWindow(count, ListItems(), -1);
+    list->mUnk_8c->SetCells(count, ListCells());
     list->mUnk_8c->mCursor->mSelection = -1;
     list->mUnk_158                     = 1;
     list->func_020585e0();
@@ -493,7 +512,27 @@ void BattleCommandList::func_020589e8() {
     mUnk_140 = 0;
 }
 
-extern const char *const data_020b35e0[14]; // paths loaded by func_020589f4
+// paths loaded by func_020589f4
+// paths loaded by func_020589f4
+inline const char **ListPaths() {
+    static const char *sPaths[14] = {
+        "/Game/Card/Graphic/cardspec_u_obj_back_ncl.bin",
+        "/Game/Card/Graphic/cardspec_u_obj_back.nce_ncg1D.bin",
+        "/Game/Card/Graphic/cardspec_u_obj_00_ncl.bin",
+        "/Game/Card/Graphic/cardspec_u_obj_00.nce_ncg1D.bin",
+        "/Game/Card/Graphic/cardspec_u_obj_00_nce.bin",
+        "/Game/2D/union_b/union_b_obj_gp_ncl.bin",
+        "/Game/2D/union_b/union_b_obj_gp.nce_ncg1D.bin",
+        "/Game/2D/union_b/union_b_obj_gp_nce.bin",
+        "/Game/2D/union_b/union_b_obj_you_ncl.bin",
+        "/Game/2D/union_b/union_b_obj_you.nce_ncg1D.bin",
+        "/Game/2D/union_b/union_b_obj_you_nce.bin",
+        "/Game/Card/Graphic/bakugan_sub_l_ncl.bin",
+        "/Game/Card/Graphic/bakugan_sub_l.nce_ncg1D.bin",
+        "/Game/Card/Graphic/bakugan_sub_l_nce.bin",
+    };
+    return sPaths;
+}
 extern const u8 data_0209e594[];             // light table of the list model
 
 BOOL BattleCommandList::func_020589f4() {
@@ -506,7 +545,7 @@ BOOL BattleCommandList::func_020589f4() {
     u32 n = mUnk_140;
     if (n < 14) {
         u32 *out = &mUnk_108[n];
-        func_02023708(data_020b35e0[n], 0, 0, 0, out, 0);
+        func_02023708(ListPaths()[n], 0, 0, 0, out, 0);
         mUnk_140++;
         return FALSE;
     }
@@ -1049,3 +1088,4 @@ void func_0205b1c4(u32 index, u32 unk2) {
     entry->mUnk_9  = data_0209e5bc[index][4];
     entry->mUnk_12 = data_0209e5bc[index][1];
 }
+

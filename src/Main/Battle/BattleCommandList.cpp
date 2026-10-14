@@ -2,7 +2,6 @@
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/SoundManager.hpp"
-// non-matching: TextManager mUnk_5b store precedes guard load in original (see docs/decompiling.md open problems); 10 words differ
 #include "Battle/BattleCommandList.hpp"
 #include "Graphics/UnkStruct_0203d374.hpp"
 #include "System/FileSystem.hpp"
@@ -848,7 +847,6 @@ void BattleCommandList::func_0205a7ac() {
     mCells58[7]->func_0202a3ec(0, mUnk_150, 0x22, 0x4c, 0);
 }
 
-// non-matching: 0x694 vs 0x6a0; count/max registers swapped (original count r8, max r9), stm where the original has str+str, and the 0x84 constant is not hoisted in the 5-iteration loop.
 extern u8 data_020d43d7[];
 extern u8 data_0209e588[];
 
@@ -860,7 +858,7 @@ void BattleCommandList::func_0205a804() {
     }
     if (!late) {
         s16 x;
-        u8 count;
+        u32 count;
         u32 max;
         count = 0;
         max = 0;
@@ -869,7 +867,7 @@ void BattleCommandList::func_0205a804() {
             u32 v = mUnk_142[i];
             if (v != 0) {
                 list[count] = i;
-                count++;
+                count = (u8) (count + 1);
                 if (max < v) {
                     max = v;
                 }
@@ -904,13 +902,14 @@ void BattleCommandList::func_0205a804() {
                 i++;
             } while (i < count);
         }
+        s16 x3;
         u32 val = mUnk_166;
         if (val != 0) {
-            s16 x = 0xe6;
+            x3 = 0xe6;
             for (u8 i = 0; i < 3; i++) {
                 u8 digit = (s32) val % 10;
-                x -= 10;
-                mCells58[0]->func_0202a3ec(0, digit, x, 0xae, 0);
+                x3 -= 10;
+                mCells58[0]->func_0202a3ec(0, digit, x3, 0xae, 0);
                 val /= 10;
                 if (val == 0) {
                     break;
@@ -921,16 +920,16 @@ void BattleCommandList::func_0205a804() {
     }
     if (mUnk_152 > -1) {
         u8 cur = data_020d433c.mBattlePlayers->mUnk_2a9;
-        BOOL has = 0;
+        BOOL has;
         if (mUnk_152 == cur) {
             mCells58[4]->func_0202a3ec(0, mUnk_152, 0x24, 0x18, 0);
         } else {
-            u8 id = mUnk_152;
-            if (data_020d433c.mBattlePlayers->mPlayers[id]->mUnk_c8 != NULL) {
+            has = 0;
+            if (data_020d433c.mBattlePlayers->mPlayers[(u8) mUnk_152]->mUnk_c8 != NULL) {
                 has = 1;
             }
             if (has == 1) {
-                mCells58[5]->func_0202a3ec(0, id, 0x15, 0x12, 0);
+                mCells58[5]->func_0202a3ec(0, mUnk_152, 0x15, 0x12, 0);
             }
             if ((data_020d433c.mUnk_98 == 1) & (mUnk_152 == data_020d43d7[cur])) {
                 mCells58[6]->func_0202a3ec(0, mUnk_152, 0x24, 0x18, 0);
@@ -941,39 +940,38 @@ void BattleCommandList::func_0205a804() {
     mCells3c[3]->Draw(0, 0x80, 0x60, 1);
     if (!late && mUnk_15b == 0) {
         for (u8 i = 0; i < 5; i++) {
-            u8 target = mUnk_0c[i * 2 + 1];
-            u8 cur    = mUnk_0c[i * 2];
+            u8 target = mUnk_0c[i].mTarget;
+            u8 cur    = mUnk_0c[i].mCur;
             if (cur != target) {
                 if (cur < target) {
-                    mUnk_0c[i * 2] = cur + 1;
+                    mUnk_0c[i].mCur = cur + 1;
                 } else {
-                    mUnk_0c[i * 2] = cur - 1;
+                    mUnk_0c[i].mCur = cur - 1;
                 }
             }
-            mCells3c[5]->func_0202a3ec(0, mUnk_0c[i * 2] + 1, 0x84, i * 0x1a + 0x2a, 1);
-            mCells3c[6]->func_0202a3ec(0, mUnk_0c[i * 2] + 1, 0xe1, i * 0x1a + 0x1e, 1);
+            mCells3c[5]->func_0202a3ec(0, mUnk_0c[i].mCur + 1, 0x84, i * 0x1a + 0x2a, 1);
+            mCells3c[6]->func_0202a3ec(0, mUnk_0c[i].mCur + 1, 0xe1, i * 0x1a + 0x1e, 1);
         }
         mCells3c[2]->Draw(0, 0x80, 0x60, 1);
     } else {
         for (u8 i = 0; i < 0x20; i++) {
-            SpriteManager::Get().mScreens[0].func_02027778(data_0209e588, 1, (s16) ((i % 4) * 0x20 + 0x73),
-                                                           (s16) ((i / 4) * 0x10 + 0x20), 3, (u16) (i << 1), 0xf, 0);
+            SpriteManager::Get().Screen(0).func_02027778(data_0209e588, 1, (s16) ((i % 4) * 0x20 + 0x73),
+                                                         (s16) ((i / 4) * 0x10 + 0x20), 3, (u16) (i << 1), 0xf, 0);
         }
     }
     if (late) {
         return;
     }
-    SpriteManager::Get().mScreens[0].func_02027778(mUnk_ac[2], mUnk_c4[2], 0x2a, 0x8e, 0, 0x60, 0xf, 0);
+    SpriteManager::Get().Screen(0).func_02027778(mUnk_ac[2], mUnk_c4[2], 0x2a, 0x8e, 0, 0x60, 0xf, 0);
     if (mUnk_162 != 0) {
         mCells3c[4]->Draw(0, 0x80, 0x60, 1);
     }
 }
 
-// non-matching: 18 words, registers of the loop index and the inlined Get() temporary.
 void BattleCommandList::func_0205aea4() {
     for (u8 i = 0; i < 12; i++) {
-        SpriteManager::Get().mScreens[0].func_02027778(data_0209e57c, 1, (s16) ((i % 4) << 6), (s16) ((i / 4) << 6), 3,
-                                                       (u16) (0x280 + i * 0x20), 0, 0);
+        SpriteManager::Get().Screen(0).func_02027778(data_0209e57c, 1, (s16) ((i % 4) << 6), (s16) ((i / 4) << 6), 3,
+                                                     (u16) (0x280 + i * 0x20), 0, 0);
     }
 }
 
@@ -1033,7 +1031,7 @@ void BattleCommandList::func_0205b0dc(const BattleCellPair *pair) {
         mUnk_164   = pair->mUnk_00_0;
     }
     for (u8 i = 0; i < 5; i++) {
-        mUnk_0c[1 + i * 2] = mUnk_16[i];
+        mUnk_0c[i].mTarget = mUnk_16[i];
     }
     if (mUnk_7c != NULL) {
         func_02059c50(mUnk_156);

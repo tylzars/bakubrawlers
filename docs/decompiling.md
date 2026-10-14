@@ -177,6 +177,11 @@ Other findings from linking:
   makes `p * 4` a common subexpression with a later `p * 4 + 0x28`, and mwcc hoists it above the `if`. Keeping the
   container in a local and indexing inside each arm (`list->mPlayers[p]->mUnk_f1`) stops it
   (BattleCommand::func_ov007_0223a734). A `(u8 *)` cast store recolours differently from a real `u8` field store.
+- **`stm` where the original has two `str`s for stack arguments.** Declare the flag without an initialiser and assign
+  it only in the arm that needs it (`BOOL has; if (...) {...} else { has = 0; ...}`), passing literals in the other
+  arm (BattleCommandList::func_0205a804).
+- **A byte array that is really an array of small structs.** `u8 mUnk_0c[10]` used as `{cur, target}` pairs: struct
+  indexing (`mUnk_0c[i].mCur`) stops mwcc sharing the address across a call, which frees a register for hoisting.
 - **From the FieldSelectScene pass.**
   - `u32 k = 0; ... k = (u8) (k + 1);` fixed a counter/coordinate register swap where `u8 k` in every order failed
     (the TournamentScene idiom again).

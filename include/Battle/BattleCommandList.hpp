@@ -13,10 +13,17 @@ class Camera;
 class UnkStruct_0203d374;
 struct BattleCellPair;
 
+// A value at 0x0c of BattleCommandList that func_0205a804 steps towards its target by one per frame.
+struct UnkStruct_BattleCommandList_0c {
+    /* 0 */ u8 mCur;
+    /* 1 */ u8 mTarget;
+    /* 2 */
+};
+
 // List page of the battle command screen (0x168 bytes, ctor 020575e0, vtable 020b3298).
 class BattleCommandList : public SceneBase {
 public:
-    /* 0c */ u8 mUnk_0c[10];
+    /* 0c */ UnkStruct_BattleCommandList_0c mUnk_0c[5];
     /* 16 */ u8 mUnk_16[5];
     /* 1b */ PAD(0x1b, 0x1c);
     /* 1c */ void *mUnk_1c[4];

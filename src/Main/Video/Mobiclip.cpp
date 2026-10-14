@@ -9,7 +9,7 @@ typedef int s32;
 // byte source (vtables _ZTV6Reader 0x020a5950 over _ZTV10ReaderBase 0x020a592c)
 struct ReaderBase {
     ReaderBase() { mUnk_4 = 0; mPos = 0; }
-    virtual ~ReaderBase() {}
+    virtual ~ReaderBase();
     virtual int Seek(void *addr);
     virtual int Read(void *dst, u32 size);
     virtual int v4();
@@ -209,7 +209,7 @@ int func_0203a7c0(Player *p) {
     if (p == 0) return 0;
     return func_0203b550(p) == 1;
 }
-void func_0203a7e4() {}
+ReaderBase::~ReaderBase() {}
 void *func_0203a7e8(void *p) {
     ::operator delete(p);
     return p;
@@ -232,66 +232,6 @@ Player::Player() {
 
 Player::~Player() {
     func_0203ae04(this);
-}
-
-int func_0203af6c(Player *p) { return p->mFrames; }
-int func_0203af74(Player *p) { return p->mChannels; }
-int func_0203af7c(Player *p) { return p->mRate; }
-int func_0203af84(Player *p) { return p->mUnk_c; }
-int func_0203af8c(Player *p) {
-    if (p->mFrames == 0) return 0;
-    return p->mUnk_28 != 0 ? 0x80 : 0x100;
-}
-
-void func_0203ae04(Player *p) {
-    if (p->mReader != 0) {
-        p->mReader->Close();
-        if (p->mReader != 0) {
-            delete p->mReader;
-        }
-    }
-    func_0203c174(p->mCtx);
-    if (p->mPlaneY != 0) {
-        for (u32 i = 0; i < p->mNumPlanes; i++) {
-            func_0203c174(p->mPlaneY[i]);
-        }
-        func_0203c174(p->mPlaneY);
-    }
-    if (p->mPlaneC != 0) {
-        for (u32 i = 0; i < p->mNumPlanes; i++) {
-            func_0203c174(p->mPlaneC[i]);
-        }
-        func_0203c174(p->mPlaneC);
-    }
-    if (p->mUnk_64 != 0) {
-        func_0203c174(p->mUnk_64);
-    }
-    if (p->mUnk_68 != 0) {
-        func_0203c174(p->mUnk_68);
-    }
-    if (p->mUnk_6c != 0) {
-        func_0203c174(p->mUnk_6c);
-    }
-    for (int i = 0; i < 2; i++) {
-        if (p->mBuf[i] != 0) {
-            func_0203c174(p->mBuf[i]);
-        }
-        p->mBuf[i] = 0;
-    }
-    if (p->mUnk_94 != 0) {
-        func_0203c174(p->mUnk_94);
-    }
-    if (p->mAudio != 0) {
-        func_0203c174(p->mAudio);
-    }
-    p->mReader = 0;
-    p->mPlaneY = 0;
-    p->mPlaneC = 0;
-    p->mUnk_68 = 0;
-    p->mUnk_6c = 0;
-    p->mUnk_64 = 0;
-    p->mAudio = 0;
-    p->mUnk_94 = 0;
 }
 
 int func_0203a858(Player *p, Reader *r, u32 n) {
@@ -418,3 +358,68 @@ int func_0203a858(Player *p, Reader *r, u32 n) {
     p->mUnk_90 = 1;
     return 1;
 }
+
+void func_0203ae04(Player *p) {
+    if (p->mReader != 0) {
+        p->mReader->Close();
+        if (p->mReader != 0) {
+            delete p->mReader;
+        }
+    }
+    func_0203c174(p->mCtx);
+    if (p->mPlaneY != 0) {
+        for (u32 i = 0; i < p->mNumPlanes; i++) {
+            func_0203c174(p->mPlaneY[i]);
+        }
+        func_0203c174(p->mPlaneY);
+    }
+    if (p->mPlaneC != 0) {
+        for (u32 i = 0; i < p->mNumPlanes; i++) {
+            func_0203c174(p->mPlaneC[i]);
+        }
+        func_0203c174(p->mPlaneC);
+    }
+    if (p->mUnk_64 != 0) {
+        func_0203c174(p->mUnk_64);
+    }
+    if (p->mUnk_68 != 0) {
+        func_0203c174(p->mUnk_68);
+    }
+    if (p->mUnk_6c != 0) {
+        func_0203c174(p->mUnk_6c);
+    }
+    for (int i = 0; i < 2; i++) {
+        if (p->mBuf[i] != 0) {
+            func_0203c174(p->mBuf[i]);
+        }
+        p->mBuf[i] = 0;
+    }
+    if (p->mUnk_94 != 0) {
+        func_0203c174(p->mUnk_94);
+    }
+    if (p->mAudio != 0) {
+        func_0203c174(p->mAudio);
+    }
+    p->mReader = 0;
+    p->mPlaneY = 0;
+    p->mPlaneC = 0;
+    p->mUnk_68 = 0;
+    p->mUnk_6c = 0;
+    p->mUnk_64 = 0;
+    p->mAudio = 0;
+    p->mUnk_94 = 0;
+}
+
+int func_0203af6c(Player *p) { return p->mFrames; }
+
+int func_0203af74(Player *p) { return p->mChannels; }
+
+int func_0203af7c(Player *p) { return p->mRate; }
+
+int func_0203af84(Player *p) { return p->mUnk_c; }
+
+int func_0203af8c(Player *p) {
+    if (p->mFrames == 0) return 0;
+    return p->mUnk_28 != 0 ? 0x80 : 0x100;
+}
+

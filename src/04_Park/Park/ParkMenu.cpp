@@ -3,11 +3,7 @@
 #include "Park/ParkMenu.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
-#include "System/InputManager.hpp"
-#include "System/SoundManager.hpp"
-#include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkFunctions.hpp"
@@ -16,8 +12,9 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
+// overlay data tables; the singleton headers come after most of them, which gives the original layout
+static const u32 sTextVramOffsets[2] = {0xc000, 0x12000};
 
-// overlay data tables
 static const WindowItemRecord sItems[7] = {
     {0, 0x8000, 88, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
     {1, 0x8000, 186, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
@@ -28,6 +25,11 @@ static const WindowItemRecord sItems[7] = {
     {6, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
 };
 
+struct ParkDigits {
+    s8 d[7];
+};
+static const ParkDigits sEmptyDigits = {{-1, -1, -1, -1, -1, -1, -1}};
+
 static const WindowCellRecord sCells[7] = {
     {"/Game/Park/park_b_obj_nce.bin", 0, 0x0, 0, 2, 0, {2, 2, 2, 0}},
     {"/Game/Park/park_b_obj_nce.bin", 0, 0x0, 0, 2, 0, {2, 2, 2, 0}},
@@ -37,12 +39,13 @@ static const WindowCellRecord sCells[7] = {
     {"/Game/2D/union_b/union_b_obj_arrow_nce.bin", 1, 0x5000, 5, 1, 1, {1, 3, 2, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x6000, 6, 2, 1, {2, 3, 3, 0}},
 };
+
+#include "Graphics/SpriteManager.hpp"
+#include "System/InputManager.hpp"
+#include "System/SoundManager.hpp"
+#include "Text/TextManager.hpp"
+
 static const u8 sTextY[2] = {40, 144};
-static const u32 sTextVramOffsets[2] = {0xc000, 0x12000};
-struct ParkDigits {
-    s8 d[7];
-};
-static const ParkDigits sEmptyDigits = {{-1, -1, -1, -1, -1, -1, -1}};
 
 ParkMenu::ParkMenu(u8 current) {
     mCurrent = current;

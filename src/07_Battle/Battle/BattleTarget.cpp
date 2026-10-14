@@ -85,6 +85,14 @@ static inline void SetVec(VecFx32 *v, fx32 x, fx32 y, fx32 z) {
     v->z = z;
 }
 
+// Scales v by an unsigned fx32 factor. Called with a constant in both arms of an if/else (func_ov007_0225c098): mwcc
+// merges the two copies only after scheduling, which keeps the following call's argument setup after the products.
+static inline void ScaleVec(VecFx32 *v, u32 scale) {
+    v->x = (fx32) (((fx64) v->x * scale + 0x800LL) >> 12);
+    v->y = (fx32) (((fx64) v->y * scale + 0x800LL) >> 12);
+    v->z = (fx32) (((fx64) v->z * scale + 0x800LL) >> 12);
+}
+
 // A rotation (three u16 angles) copied as one 6-byte object; see func_ov007_0225a278 / func_ov007_0225b6d0.
 struct Rot3 {
     u16 r[3];
@@ -2989,7 +2997,6 @@ BOOL BattleTarget::func_ov007_0225aba0(VecFx32 *a, VecFx32 *b, VecFx32 *tri, fx3
     return 1;
 }
 
-// non-matching: 20 words, register allocation only: in the second loop the original keeps the counter in r6 and f[i] (and the pos.y / FX_Mul temporaries) in r7; here r7 / r6.
 BOOL BattleTarget::func_ov007_0225ac28(BattleHitBox *box, BattleSphere *sphere, VecFx32 *dir, VecFx32 *out, u8 flag, u8 *outFlag) {
     VecFx32 c[8];
     VecFx32 e1;
@@ -3063,11 +3070,13 @@ BOOL BattleTarget::func_ov007_0225ac28(BattleHitBox *box, BattleSphere *sphere, 
     fx32 t;
     u8 idx;
     fx32 best = 0xffff;
+    fx32 value;
     i = 0;
     idx = i;
     func_ov007_0227238c(sphere, box, &nearest);
     VEC_Subtract(&nearest, &sphere->mPos, &va0);
-    if (VEC_Mag(&va0) == 0) {
+    value = VEC_Mag(&va0);
+    if (value == 0) {
         if (outFlag) {
             *outFlag = 1;
         }
@@ -3091,9 +3100,9 @@ BOOL BattleTarget::func_ov007_0225ac28(BattleHitBox *box, BattleSphere *sphere, 
             VEC_CrossProduct(&e1, &e0, &n);
             f[i] = t;
         }
-        fx32 fk = f[i];
-        if (0.0f != (float) fk && best >= fk) {
-            best = fk;
+        value = f[i];
+        if (0.0f != (float) value && best >= value) {
+            best = value;
             idx  = (u8) (i + 1);
         }
         i++;
@@ -3378,7 +3387,6 @@ void BattleTarget::func_ov007_0225bf70(VecFx32 *a, VecFx32 *b) {
     VEC_Subtract(b, &rest, b);
 }
 
-// non-matching: 44 words, register allocation: the original keeps the scale in r0 (3 words saved less) and computes &mUnk_c8 for VEC_Add after the third product; here the scale is in r3 and the address is scheduled early, which pushes the products into r5/ip/lr and the camera vector through r5 instead of ip.
 void BattleTarget::func_ov007_0225c098(s32 *pair) {
     VecFx32 target;
     VecFx32 cam;
@@ -3397,10 +3405,11 @@ void BattleTarget::func_ov007_0225c098(s32 *pair) {
         cam.y          = mUnk_194.y;
         cam.z          = mUnk_194.z;
         func_ov007_02255b78(&target, &cam, &mUnk_94, &mUnk_94);
-        u32 scale = mUnk_1dd == 2 ? 0x14000 : 0x5000;
-        mUnk_94.x = (fx32) (((fx64) mUnk_94.x * scale + 0x800LL) >> 12);
-        mUnk_94.y = (fx32) (((fx64) mUnk_94.y * scale + 0x800LL) >> 12);
-        mUnk_94.z = (fx32) (((fx64) mUnk_94.z * scale + 0x800LL) >> 12);
+        if (mUnk_1dd == 2) {
+            ScaleVec(&mUnk_94, 0x14000);
+        } else {
+            ScaleVec(&mUnk_94, 0x5000);
+        }
         VEC_Add(&mUnk_c8, &mUnk_94, &mUnk_c8);
     } else if (mUnk_8c >= 0x800) {
         if (mUnk_118 == 0 && mUnk_114 == 0) {
@@ -3595,8 +3604,12 @@ void func_ov007_0225ca18(BattleTarget *target, int a, int b) {
     target->mUnk_1db = 0;
 }
 
-// non-matching: 14 words; the original sets r0 to 12 (the record size) before the branch and keeps pl in r1. Computing the record pointer in both arms hoists the 12, but arm 1 then colours pl/record as r2/r1 and the two tails are not merged.
+// non-matching: 13 words, a two-register swap. The original holds the record size 12 in r0 (set before the bne) and
+// the player pointer in r1 in both arms, with mla r0, r2, r0, r1; here the size is in r1 and the pointer in r0. The
+// enum-typed size (a placeholder) is what keeps the 12 in a register set before the branch, as the original does.
+enum RecSize { REC_SIZE = 12 };
 void BattleTarget::func_ov007_0225ca48(u32 player, u32 record) {
+    RecSize sz = REC_SIZE;
     BattlePlayer *pl;
     if (player == 0xff) {
         player = data_020d433c.mBattlePlayers->mUnk_28a;
@@ -3605,7 +3618,7 @@ void BattleTarget::func_ov007_0225ca48(u32 player, u32 record) {
     } else {
         pl = data_020d433c.mBattlePlayers->mPlayers[player];
     }
-    BattleRecord *rec = &pl->mRecords[record];
+    BattleRecord *rec = (BattleRecord *) ((u8 *) pl->mRecords + record * sz);
     u16 total         = rec->mUnk_04 + rec->mUnk_06;
     u8 i              = 0;
     do {

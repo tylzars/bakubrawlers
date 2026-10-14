@@ -243,6 +243,12 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **A local reused for an earlier, separate value** gets its later live range coloured after the loop counter
+  (BattleTarget::func_ov007_0225ac28: one `fx32 value` for the magnitude test and for `f[i]` in the loop).
+- **A helper called with a different constant in each arm** of an if/else is compiled per arm and merged into
+  `moveq`/`movne` only after the first scheduling pass, so a later call's argument setup is not moved up into the
+  products (func_ov007_0225c098: `ScaleVec(&v, 0x14000)` / `ScaleVec(&v, 0x5000)` instead of a selected scale).
+
 - **A declared 2-D member is not the same as a cast to one.** FieldSelectScene's constructor needed `u8
   mOptionBytes[5][2]` (a union view of the flat `mUnk_25c[10]`): a declared 2-D member builds the address as
   `j + row` (`add r2, r9, r3`); `((u8 (*)[2]) mUnk_25c)[i][j]` fixes the registers but emits `row + j`.

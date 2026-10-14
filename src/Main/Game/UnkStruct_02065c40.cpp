@@ -237,11 +237,11 @@ u32 UnkStruct_02065c40::func_020667ec() {
     return data_020b4324[type]->mUnk_78;
 }
 
-// non-matching: 1 word, the original reloads result from its stack slot at the early return (`ldrcs r0, [sp]`)
-// where this keeps the -1 still in r0. `pending` declared first puts it in the higher stack slot, like the original.
+// `result` as s16 gives the original's reload at the early return (`ldrcs r0, [sp]`); as a spilled s32 the -1 still
+// in r0 is reused and the reload dropped. `pending` declared first puts it in the higher stack slot, like the original.
 s32 UnkStruct_02065c40::func_02066814(u32 unk1) {
     s32 pending;
-    s32 result = -1;
+    s16 result = -1;
     u8 type    = data_020d43f0[0].mUnk_42;
     if (type >= 10) {
         return result;

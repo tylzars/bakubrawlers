@@ -246,6 +246,10 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **A spilled s16 keeps its reload at an early return.** A spilled `s32` whose register still holds the value at a
+  predicated early return has the reload dropped; as `s16` (still stored and loaded as a word) it keeps
+  `ldrcs r0, [sp]` (UnkStruct_02065c40::func_02066814).
+
 - **`unsigned long` vs `unsigned int`.** NitroSDK's `u32` is `unsigned long`; this repo's is `unsigned int`. They
   colour differently: CreditsScene::UpdateText's `for (unsigned long i ...)` matched where `u32 i` made a second copy
   of `this + i`. Other near-misses with a `u32` loop index may be the same case.

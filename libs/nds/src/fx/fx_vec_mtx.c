@@ -4,7 +4,6 @@
 extern void FX_InvAsync(fx32 x);
 extern fx32 FX_GetDivResult(void);
 extern void func_01ff95e0(const void *src, void *dst);   // 48-byte copy
-#define NEG(x) (-(x))
 
 #define REG_DIVCNT (*(vu16 *) 0x04000280)
 #define REG_DIV_NUMER (*(vs64 *) 0x04000290)
@@ -392,39 +391,73 @@ asm void func_01ff8618(MtxFx43 *m, fx32 sin, fx32 cos) {
 }
 #pragma thumb off
 
+// a*d - b*c on fx32 inputs, kept as a 64-bit product sum (no shift yet).
+#define CROSS64(a, d, b, c) ((fx64) (a) * (d) - (fx64) (b) * (c))
+// Back from a 64-bit product sum to fx32: truncated, or rounded to the nearest 1/4096.
+#define TRUNC12(x) ((fx32) ((x) >> 12))
+#define ROUND12(x) ((fx32) (((x) + (fx64) 0x800) >> 12))
+
+// MTX_Inverse43: inverts the 3x3 part through its 2x2 minors and the determinant, then sets the translation row to
+// minus the old translation times the new 3x3 part. Elements are numbered row by row (0-8 the 3x3 part, 9-11 the
+// translation). Returns -1 and leaves dst alone when the determinant is zero, 0 otherwise. src may equal dst; the
+// result then goes through a stack copy.
 int func_01ff8634(const MtxFx43 *src, MtxFx43 *dst) {
     MtxFx43 tmp;
-    MtxFx43 *p = (src == dst) ? &tmp : dst;
-    fx64 A, B, C;
-    fx32 D, E, F, G, det, inv;
-    const fx32 *m = src->_;
-    A = (fx32) (((fx64) m[3] * m[8] - (fx64) m[5] * m[6] + 0x800) >> 12);
-    B = (fx32) (((fx64) m[4] * m[8] - (fx64) m[5] * m[7] + 0x800) >> 12);
-    C = (fx32) (((fx64) m[3] * m[7] - (fx64) m[4] * m[6] + 0x800) >> 12);
-    det = (fx32) (((fx64) m[0] * B - (fx64) m[1] * A + (fx64) m[2] * C + 0x800) >> 12);
+    MtxFx43 *out;
+    fx32 det;                  // the determinant, later its reciprocal
+    fx32 minor0, minor1, minor2;
+    fx32 minor3, minor6, minor4, minor7;   // named after the element each one ends up in (transposed)
+
+    if (src == dst) {
+        out = &tmp;
+    } else {
+        out = dst;
+    }
+
+    // Minors of the first row (rounded), then the determinant by expansion along that row.
+    minor0 = ROUND12(CROSS64(src->_[4], src->_[8], src->_[5], src->_[7]));
+    minor1 = ROUND12(CROSS64(src->_[3], src->_[8], src->_[5], src->_[6]));
+    minor2 = ROUND12(CROSS64(src->_[3], src->_[7], src->_[4], src->_[6]));
+
+    det = ROUND12(CROSS64(src->_[0], minor0, src->_[1], minor1) + (fx64) src->_[2] * minor2);
+
     if (det == 0) {
         return -1;
     }
+
+    // Start 1/det on the divider and fill the wait with four more minors (truncated).
     FX_InvAsync(det);
-    D = (fx32) (((fx64) m[1] * m[8] - (fx64) m[7] * m[2]) >> 12);
-    E = (fx32) (((fx64) m[1] * m[5] - (fx64) m[4] * m[2]) >> 12);
-    F = (fx32) (((fx64) m[0] * m[8] - (fx64) m[6] * m[2]) >> 12);
-    G = (fx32) (((fx64) m[0] * m[5] - (fx64) m[3] * m[2]) >> 12);
-    inv = FX_GetDivResult();
-    p->_[0] = (fx32) (((fx64) inv * B) >> 12);
-    p->_[1] = NEG((fx32) (((fx64) inv * D) >> 12));
-    p->_[2] = (fx32) (((fx64) inv * E) >> 12);
-    p->_[3] = NEG((fx32) (((fx64) inv * A) >> 12));
-    p->_[4] = (fx32) (((fx64) inv * F) >> 12);
-    p->_[5] = NEG((fx32) (((fx64) inv * G) >> 12));
-    p->_[6] = (fx32) (((fx64) inv * C) >> 12);
-    p->_[7] = NEG((fx32) (((fx64) inv * (fx32) (((fx64) m[0] * m[7] - (fx64) m[6] * m[1]) >> 12)) >> 12));
-    p->_[8] = (fx32) (((fx64) inv * (fx32) (((fx64) m[0] * m[4] - (fx64) m[3] * m[1]) >> 12)) >> 12);
-    p->_[9] = NEG((fx32) (((fx64) p->_[0] * m[9] + (fx64) p->_[3] * m[10] + (fx64) p->_[6] * m[11]) >> 12));
-    p->_[10] = NEG((fx32) (((fx64) p->_[1] * m[9] + (fx64) p->_[4] * m[10] + (fx64) p->_[7] * m[11]) >> 12));
-    p->_[11] = NEG((fx32) (((fx64) p->_[2] * m[9] + (fx64) p->_[5] * m[10] + (fx64) p->_[8] * m[11]) >> 12));
-    if (p == &tmp) {
+
+    minor3 = TRUNC12(CROSS64(src->_[1], src->_[8], src->_[7], src->_[2]));
+    minor6 = TRUNC12(CROSS64(src->_[1], src->_[5], src->_[4], src->_[2]));
+    minor4 = TRUNC12(CROSS64(src->_[0], src->_[8], src->_[6], src->_[2]));
+    minor7 = TRUNC12(CROSS64(src->_[0], src->_[5], src->_[3], src->_[2]));
+
+    // Adjugate times 1/det, with the checkerboard signs; the last two minors are formed in place.
+    det = FX_GetDivResult();
+    out->_[0] = MUL33(det, minor0);
+    out->_[1] = -MUL33(det, minor3);
+    out->_[2] = MUL33(det, minor6);
+
+    out->_[3] = -MUL33(det, minor1);
+    out->_[4] = MUL33(det, minor4);
+    out->_[5] = -MUL33(det, minor7);
+
+    out->_[6] = MUL33(det, minor2);
+    out->_[7] = -MUL33(det, TRUNC12(CROSS64(src->_[0], src->_[7], src->_[6], src->_[1])));
+    out->_[8] = MUL33(det, TRUNC12(CROSS64(src->_[0], src->_[4], src->_[3], src->_[1])));
+
+    // New translation: -(old translation) * (new 3x3 part), one column at a time.
+    out->_[9] = -TRUNC12((fx64) out->_[0] * src->_[9] + (fx64) out->_[3] * src->_[10] + (fx64) out->_[6] * src->_[11]);
+    out->_[10] = -TRUNC12((fx64) out->_[1] * src->_[9] + (fx64) out->_[4] * src->_[10] + (fx64) out->_[7] * src->_[11]);
+    out->_[11] = -TRUNC12((fx64) out->_[2] * src->_[9] + (fx64) out->_[5] * src->_[10] + (fx64) out->_[8] * src->_[11]);
+
+    if (out == &tmp) {
         func_01ff95e0(&tmp, dst);
     }
     return 0;
 }
+
+#undef CROSS64
+#undef TRUNC12
+#undef ROUND12

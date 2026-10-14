@@ -44,6 +44,8 @@ src/00_NameEntry/Scene/TitleScene.cpp:
     .data       start:0x02227918 end:0x02227ea4
     .bss        start:0x02228058 end:0x02228088
 
-// provisional: code only; .data 0x02227ea4-0x02227f80 and .bss 0x02228088-0x022280c0 belong here.
 src/00_NameEntry/Scene/CreditsScene.cpp:
+    complete
     .text       start:0x02224f60 end:0x02225fc8
+    .data       start:0x02227ea4 end:0x02227f80
+    .bss        start:0x02228088 end:0x022280c0

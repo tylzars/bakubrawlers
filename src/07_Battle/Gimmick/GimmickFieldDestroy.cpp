@@ -1,27 +1,25 @@
+#include "System/SoundManager.hpp"
 #include "Battle/GimmickTypes.hpp"
 #include <nitro/fx.h>
 #include "Game/Random.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/Camera.hpp"
 #include "System/FileSystem.hpp"
-#include "System/SoundManager.hpp"
 
 void func_ov007_02271d78(UnkStruct_020d433c_0c *data, GimmickSetData *set);
 void func_ov007_022719c8(void *buf, u8 id);
 GimmickSetData *func_ov007_02271ca8(UnkStruct_020d433c_0c *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
 
 static const u8 data_ov007_022793cc[4]  = {3, 4, 5, 0};
+static const u16 data_ov007_022793d4[3] = {30, 50, 50};
 static const u8 data_ov007_022793d0[4]  = {1, 3, 5, 0};
-static const u16 data_ov007_022793d4[6] = {30, 50, 50, 0, 0x1555, 0};
-static const u16 data_ov007_022793e0[3] = {10, 10, 6};
-static ModelResource *sResources[3];
+static const u16 data_ov007_022793da[3] = {0, 0x1555, 0};
 static const u16 data_ov007_022793e6[3] = {30, 50, 0};
-extern VecFx32 data_ov007_022793f8;
+static ModelResource *sResources[3];
+static const u16 data_ov007_022793e0[3] = {10, 10, 6};
 
 extern MtxFx43 data_020c1cf4;
 extern MtxFx43 data_0220e86c;
-extern VecFx32 data_ov007_02279404;
-extern VecFx32 data_ov007_022793ec;
 
 
 GimmickFieldDestroy::GimmickFieldDestroy(u8 a)
@@ -45,7 +43,7 @@ void GimmickFieldDestroy::func_ov007_0222accc() {
     char buf[0x804];
     func_ov007_022719c8(buf, 0x32);
     mUnk_3c = func_ov007_02271ca8(data_020d433c.mUnk_0c, 0x20, buf, &mPosition, &mRotX, mUnk_3a);
-    VecFx32 v = data_ov007_022793f8;
+    VecFx32 v = {0x1000, 0x1000, 0x1000};
     mScale    = v;
 }
 
@@ -229,7 +227,7 @@ void GimmickFieldDestroy::func_ov007_0222b410() {
                 CameraManager::Get();
                 MtxFx43 mtx    = data_020c1cf4;
                 VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
-                VecFx32 v      = data_ov007_022793ec;
+                VecFx32 v      = {0, 0xf000, -0xa000};
                 u8 handle      = func_0202bd40(data_020d433c.mEffects, 1, 3, 0, 0);
                 if (handle) {
                     mtx._[11] = 0;
@@ -304,13 +302,13 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
         MtxFx43 mtx            = data_0220e86c;
         VecFx32 camPos         = list->mUnk_298->mUnk_1a4->mPosition;
-        VecFx32 v2             = data_ov007_02279404;
+        VecFx32 v2             = {0, 0, 0x1e000};
         mtx2._[11]             = 0;
         mtx2._[10]             = 0;
         mtx2._[9]              = 0;
         MTX_MultVec43(&v2, &mtx2, &v2);
         VEC_Add(&camPos, &v2, &camPos);
-        func_01ffd088(&mtx, 0x1555);
+        func_01ffd088(&mtx, data_ov007_022793da[1]);
         func_01ff89c0(&mtx, &mtx2, &mtx2);
         func_01ffcf64(&mtx2, &camPos);
         func_0202bf60(data_020d433c.mEffects, handle, &mtx2);
@@ -372,6 +370,3 @@ int GimmickFieldDestroy::func_ov007_0222bc24() {
     mModelE->func_02029174(&mtx, &mScale);
 }
 
-VecFx32 data_ov007_022793f8 = {0x1000, 0x1000, 0x1000};
-VecFx32 data_ov007_022793ec = {0, 0xf000, -0xa000};
-VecFx32 data_ov007_02279404 = {0, 0, 0x1e000};

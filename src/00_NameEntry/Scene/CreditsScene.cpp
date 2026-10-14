@@ -1,13 +1,13 @@
 #include "Text/TextManager.hpp"
 #include "Scene/CreditsScene.hpp"
 #include "System/FrameTask.hpp"
+#include "System/InputManager.hpp"
 #include <nitro/gx.h>
 #include <nitro/os.h>
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
 #include "System/FrameUpdate.hpp"
-#include "System/InputManager.hpp"
 #include "Text/TextManager.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include <nitro/mi.h>

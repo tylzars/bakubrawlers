@@ -113,19 +113,26 @@ void func_0203e0f4(CriObj *o, int unused, int n)
     o->i88 += n;
 }
 
-// non-matching: 0x44 vs 0x40 bytes; the original keeps the first zero in r2 and stores it in the loop,
-// the compiled code derives -128 from that zero in r1 and rematerialises mov r0, #0 before the loop
+// The zero is an enum-typed local so it stays in a register through the loop (mwcc does not propagate enum
+// values); storing it as (unsigned char) avoids a sign-extension before the signed char stores.
 void func_0203e110(CriObj *o)
 {
+    enum { ZERO } z = ZERO;
     unsigned i;
     signed char *p;
-    o->ic0 = 0;
-    o->sd4 = 0;
+    o->ic0 = z;
+    o->sd4 = z;
     o->sd6 = -128;
     o->sd8 = -128;
     p = o->bc4;
     i = 4;
-    do { p[0] = 0; p[1] = 0; p[2] = 0; p[3] = 0; p += 4; } while (--i);
+    do {
+        p[0] = (unsigned char)z;
+        p[1] = (unsigned char)z;
+        p[2] = (unsigned char)z;
+        p[3] = (unsigned char)z;
+        p += 4;
+    } while (--i);
 }
 
 extern void func_0203e21c(CriObj *);

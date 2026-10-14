@@ -316,8 +316,10 @@ void func_02048808(Ch *c, int m)
     }
 }
 
-// non-matching: 41 words, all one r4/r6 swap between the count (s2c / sp[0].n) and the get24 / bic /
-// func_0204a05c results; declaration order does not move it
+// non-matching: 39 words, all one r4/r6 swap: the count (s2c / sp[0].n / r6 * 2) gets r6 and the get24 / bic /
+// func_0204a05c results get r4 (plus the vtable temps that follow from it); declaration order, `long` types and
+// splitting r6 into per-branch locals do not move it. Computing r4 = r6 * 2 before the func_020515dc call gives
+// the original's schedule there.
 void func_02048940(Ch *c)
 {
     unsigned short so;
@@ -368,8 +370,8 @@ void func_02048940(Ch *c)
                     }
                     if (r4 != 0) {
                         r6 = (r8 * c->b5 / 100) & ~3;
-                        func_020515dc(r5, r8, c->buf + c->s30, r6);
                         r4 = r6 * 2;
+                        func_020515dc(r5, r8, c->buf + c->s30, r6);
                         c->s30 += r6;
                         r5 = c->buf + c->s2e;
                         c->s2c += (unsigned short)r4;

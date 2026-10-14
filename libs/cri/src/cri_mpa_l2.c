@@ -138,8 +138,9 @@ void func_0204b5f4(Bs *bs, SbInfo *si, int (*alloc)[32], int (*sfsel)[32], int (
 
 extern int data_020ae488[];
 
-// non-matching: 26 words, all one register swap: the strength-reduced &out[ch][0][sb] pointer and the
-// generic-group loop counter i trade r9/sl. `long` part/sb/ch/nch/bound fix the stack frame.
+// non-matching: 10 words, one register swap: the generic-group divisor grp and the loop counter i trade r7/sl.
+// `long` part/sb/ch/nch/bound fix the stack frame; a `long grp` (with i declared just before it) fixes the
+// r9/sl swap of the strength-reduced &out[ch][0][sb] pointer.
 void func_0204b880(Bs *bs, SbInfo *si, int (*alloc)[32], int (*scf)[3][32], long part, short (*out)[3][32], int *mtab) {
     long sb, ch, nch, bound;
     QEnt (*tab)[16];
@@ -176,7 +177,8 @@ void func_0204b880(Bs *bs, SbInfo *si, int (*alloc)[32], int (*scf)[3][32], long
                         t = func_0204e6f0(bs, nb); t = (t * mul + add) >> 2; t = (t * g) >> 16; out[ch][2][sb] = t;
                     }
                 } else {
-                    int grp = e->grp;
+                    int i;
+                    long grp = e->grp;
                     int v = func_0204e6f0(bs, e->bits);
                     if (grp == 3) {
                         t = (v % 3 * mul + add) >> 2; t = (t * g) >> 16; out[ch][0][sb] = t;
@@ -195,7 +197,6 @@ void func_0204b880(Bs *bs, SbInfo *si, int (*alloc)[32], int (*scf)[3][32], long
                         v /= 9;
                         t = (v % 9 * mul + add) >> 2; t = (t * g) >> 16; out[ch][2][sb] = t;
                     } else {
-                        int i;
                         for (i = 0; i < 3; i++) {
                             t = v % grp; t = (t * mul + add) >> 2; t = (t * g) >> 16; out[ch][i][sb] = t;
                             v /= grp;

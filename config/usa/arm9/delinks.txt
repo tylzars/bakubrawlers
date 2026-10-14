@@ -806,9 +806,12 @@ src/Main/Graphics/CharacterPreview.cpp:
 src/Main/Battle/BattleCommandPage.cpp:
     .text       start:0x02054df0 end:0x020575e0
 
-// provisional: code only; .data 0x020b3290-0x020b376c and .rodata about 0x0209e57c-0x0209e68c belong here.
 src/Main/Battle/BattleCommandList.cpp:
+    complete
     .text       start:0x020575e0 end:0x0205b288
+    .rodata     start:0x0209e57c end:0x0209e784
+    .data       start:0x020b3290 end:0x020b3764
+    .bss        start:0x0221921c end:0x02219240
 
 src/Main/UI/SelectWindow.cpp:
     complete

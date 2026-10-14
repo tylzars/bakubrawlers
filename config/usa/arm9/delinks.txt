@@ -74,6 +74,7 @@ libs/cri/src/cri_dev.c:
     .text       start:0x02046924 end:0x0204713c
 
 libs/cri/src/cri_thread.c:
+    complete
     .text       start:0x0204713c end:0x020477d8
 
 libs/cri/src/cri_adx_api.c:
@@ -114,9 +115,11 @@ libs/cri/src/cri_ahx_bitrd.c:
     .text       start:0x0204e330 end:0x0204e844
 
 libs/cri/src/cri_adx_pool.c:
+    complete
     .text       start:0x0204ecf0 end:0x0204f3c8
 
 libs/cri/src/cri_adx_vobj.c:
+    complete
     .text       start:0x0204f3c8 end:0x0204fc00
 
 libs/cri/src/cri_misc_tail.c:

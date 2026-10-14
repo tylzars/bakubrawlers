@@ -1087,9 +1087,10 @@ void func_02011ab0(void)
     data_020c1180.h6 = OS_GetLockID();
 }
 
+extern CtrdgInfo data_027ffc30; // the cartridge info block the boot code leaves in main RAM (lcf_edits.txt)
 int func_02011b10(void)
 {
-    return ((CtrdgInfo *) 0x027ffc30)->b.f0; // the cartridge info block the boot code leaves in main RAM
+    return data_027ffc30.b.f0;
 }
 
 int func_02011b28(void)

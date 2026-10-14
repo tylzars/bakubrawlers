@@ -22,3 +22,6 @@ inner _ZZN9FrameTask3GetEvE8instance 0x96c
 inner _ZZN13SpriteManager3GetEvE8instance 0x970
 inner _ZZN15WirelessManager3GetEvE8instance 0x1258
 inner _ZZN12SceneManager3GetEvE8instance 0x10060
+
+# Fixed main-RAM addresses outside every module that linked units name.
+alias data_027ffc30 0x027ffc30 0

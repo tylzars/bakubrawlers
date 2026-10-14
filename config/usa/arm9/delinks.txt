@@ -349,6 +349,7 @@ libs/nns/src/snd/nns_snd_group.c:
     .text       start:0x020385b8 end:0x02038984
 
 libs/nns/src/snd/nns_snd_load.c:
+    complete
     .text       start:0x02038984 end:0x02038fac
 
 libs/nns/src/snd/nns_snd_player_init.c:
@@ -598,6 +599,7 @@ libs/nds/src/tp/tp.c:
     .text       start:0x0200be84 end:0x0200c744
 
 libs/nds/src/mic/mic.c:
+    complete
     .text       start:0x0200c744 end:0x0200cc38
 
 libs/nds/src/pm/pm.c:

@@ -754,6 +754,7 @@ src/Main/Graphics/CellAnimation.cpp:
     .text       start:0x02029d7c end:0x0202a594
 
 src/Main/Graphics/CellAnimFile.cpp:
+    complete
     .text       start:0x0202a594 end:0x0202ab24
     .bss        start:0x0220f10c end:0x0220f110
 
@@ -768,6 +769,7 @@ src/Main/Text/TextManager.cpp:
     .text       start:0x0202c02c end:0x0202d794
 
 src/Main/System/MicManager.cpp:
+    complete
     .text       start:0x0202d794 end:0x0202db04
     .bss        start:0x0220f114 end:0x0220f12c
 

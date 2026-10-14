@@ -1,30 +1,164 @@
-#include "Text/TextManager.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Graphics/SpriteManager.hpp"
-#include "System/SoundManager.hpp"
 #include "Battle/BattleCommandList.hpp"
 #include "Graphics/UnkStruct_0203d374.hpp"
 #include "System/FileSystem.hpp"
-#include "Graphics/Camera.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/Model.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
-#include "Graphics/SpriteManager.hpp"
-#include "System/SoundManager.hpp"
-#include "Text/TextManager.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
+#include "Text/TextManager.hpp"
+
+// per cell values, five columns
+static const u8 data_0209e5bc[41][5] = {
+    {3, 1, 1, 0, 2},
+    {3, 2, 2, 0, 2},
+    {2, 1, 0, 1, 2},
+    {3, 2, 0, 1, 2},
+    {1, 1, 3, 2, 0},
+    {0, 1, 3, 2, 2},
+    {0, 1, 3, 2, 2},
+    {2, 3, 2, 0, 0},
+    {3, 3, 2, 0, 0},
+    {1, 0, 2, 3, 1},
+    {2, 0, 3, 3, 1},
+    {2, 2, 0, 3, 1},
+    {3, 2, 1, 2, 1},
+    {2, 1, 3, 2, 0},
+    {1, 3, 1, 0, 2},
+    {0, 1, 3, 3, 1},
+    {2, 1, 1, 1, 3},
+    {2, 2, 3, 0, 0},
+    {3, 0, 0, 3, 1},
+    {0, 1, 0, 0, 0},
+    {0, 0, 1, 0, 0},
+    {0, 0, 0, 1, 0},
+    {1, 0, 0, 0, 0},
+    {2, 0, 0, 0, 1},
+    {0, 0, 0, 0, 1},
+    {2, 1, 0, 1, 0},
+    {3, 1, 0, 1, 0},
+    {0, 1, 0, 0, 0},
+    {0, 0, 0, 1, 1},
+    {0, 2, 0, 0, 1},
+    {0, 3, 1, 0, 0},
+    {0, 0, 1, 1, 0},
+    {0, 0, 0, 1, 0},
+    {1, 0, 0, 1, 0},
+    {0, 1, 2, 1, 1},
+    {1, 0, 0, 2, 0},
+    {2, 1, 1, 2, 1},
+    {2, 1, 2, 3, 1},
+    {1, 3, 0, 3, 1},
+    {1, 2, 1, 3, 2},
+    {3, 1, 1, 0, 3},
+};
+
+static const u16 data_0209e588[6] = {0x4000, 0x8000, 0, 0, 0, 0};
+
+// per command, six message indices (rows of six; 0xf8 bytes, which puts the table in a section of its own)
+static const u8 data_0209e68c[0xf8] = {
+    0, 0, 0, 0, 0, 0,
+    1, 0, 0, 0, 0, 0,
+    0, 0, 0, 2, 0, 0,
+    0, 0, 0, 3, 0, 0,
+    0, 4, 0, 0, 0, 0,
+    0, 5, 0, 0, 0, 0,
+    0, 5, 0, 0, 0, 0,
+    0, 0, 6, 0, 0, 0,
+    0, 0, 7, 0, 0, 0,
+    0, 0, 0, 0, 0, 8,
+    0, 0, 0, 0, 0, 9,
+    0, 0, 0, 0, 10, 0,
+    0, 0, 0, 0, 11, 0,
+    124, 125, 127, 126, 12, 128,
+    0, 0, 13, 0, 0, 0,
+    0, 14, 0, 0, 0, 0,
+    15, 0, 0, 0, 0, 0,
+    0, 16, 0, 16, 0, 0,
+    0, 0, 0, 0, 0, 17,
+    22, 23, 26, 24, 25, 27,
+    28, 29, 32, 30, 31, 33,
+    34, 35, 38, 36, 37, 39,
+    40, 41, 44, 42, 43, 45,
+    46, 47, 50, 48, 49, 51,
+    52, 53, 56, 54, 55, 57,
+    112, 113, 116, 114, 115, 117,
+    58, 59, 62, 60, 61, 63,
+    64, 65, 68, 66, 67, 69,
+    70, 71, 74, 72, 73, 75,
+    76, 77, 80, 78, 79, 81,
+    82, 83, 86, 84, 85, 87,
+    88, 89, 92, 90, 91, 93,
+    94, 95, 98, 96, 97, 99,
+    100, 101, 104, 102, 103, 105,
+    106, 107, 110, 108, 109, 111,
+    118, 119, 122, 120, 121, 123,
+    18, 18, 18, 18, 18, 18,
+    19, 19, 19, 19, 19, 19,
+    0, 0, 0, 0, 20, 0,
+    0, 0, 0, 0, 21, 0,
+    0, 0, 0, 0, 0, 0,
+};
+
+// item table of the list window (positions are patched by func_02058404)
+inline WindowItemRecord *ListItems() {
+    static WindowItemRecord sItems[4] = {
+        { 0, 0x208, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 1 },
+        { 1, 0x408, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 1 },
+        { 2, 0x8000, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
+        { 3, 0x8000, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
+    };
+    return sItems;
+}
+
+#define PAGE "/Game/2D/union_b/union_b_obj_page_nce.bin"
+inline WindowCellRecord *ListCells() {
+    static WindowCellRecord sCells[4] = {
+        { PAGE, {0}, 0, {0}, {0}, 1, {0, 1, 1, 0} },
+        { PAGE, {3}, 0, {0}, {0}, 1, {3, 4, 4, 0} },
+        { PAGE, {6}, 0, {0}, {0}, 1, {6, 6, 6, 0} },
+        { PAGE, {7}, 0, {0}, {0}, 1, {7, 7, 7, 0} },
+    };
+    return sCells;
+}
+
+#include "Graphics/SpriteManager.hpp"
+#include "Graphics/Camera.hpp"
+#include "System/SoundManager.hpp"
+
+// paths loaded by func_020589f4
+inline const char **ListPaths() {
+    static const char *sPaths[14] = {
+        "/Game/Card/Graphic/cardspec_u_obj_back_ncl.bin",
+        "/Game/Card/Graphic/cardspec_u_obj_back.nce_ncg1D.bin",
+        "/Game/Card/Graphic/cardspec_u_obj_00_ncl.bin",
+        "/Game/Card/Graphic/cardspec_u_obj_00.nce_ncg1D.bin",
+        "/Game/Card/Graphic/cardspec_u_obj_00_nce.bin",
+        "/Game/2D/union_b/union_b_obj_gp_ncl.bin",
+        "/Game/2D/union_b/union_b_obj_gp.nce_ncg1D.bin",
+        "/Game/2D/union_b/union_b_obj_gp_nce.bin",
+        "/Game/2D/union_b/union_b_obj_you_ncl.bin",
+        "/Game/2D/union_b/union_b_obj_you.nce_ncg1D.bin",
+        "/Game/2D/union_b/union_b_obj_you_nce.bin",
+        "/Game/Card/Graphic/bakugan_sub_l_ncl.bin",
+        "/Game/Card/Graphic/bakugan_sub_l.nce_ncg1D.bin",
+        "/Game/Card/Graphic/bakugan_sub_l_nce.bin",
+    };
+    return sPaths;
+}
+
+// light table of the list model
+static const u16 data_0209e594[20] = {1, 0x7fff, 0xf666, 0xf5ec, 0xf829};
+
+// table of func_0205aea4
+static const u16 data_0209e57c[6] = {0x2000, 0xc000, 0, 0, 0, 0};
 
 extern u16 data_020c1a4c[];
 
-extern const u8 data_0209e68c[][6];
-
 void func_02023a54();
-extern u8 data_0209e57c[]; // table of func_0205aea4 (.rodata 0x0209e57c)
-extern const u8 data_0209e5bc[][5]; // per cell values, five columns (.rodata 0x0209e5bc)
-
 
 BattleCommandList::BattleCommandList(u8 a, u8 b, s32 c, u8 d) :
     SceneBase(0x3e8, 0) {
@@ -335,27 +469,6 @@ BOOL BattleCommandList::func_020583f0() {
     return mUnk_159 < 7;
 }
 
-#define PAGE "/Game/2D/union_b/union_b_obj_page_nce.bin"
-inline WindowCellRecord *ListCells() {
-    static WindowCellRecord sCells[4] = {
-        { PAGE, {0}, 0, {0}, {0}, 1, {0, 1, 1, 0} },
-        { PAGE, {3}, 0, {0}, {0}, 1, {3, 4, 4, 0} },
-        { PAGE, {6}, 0, {0}, {0}, 1, {6, 6, 6, 0} },
-        { PAGE, {7}, 0, {0}, {0}, 1, {7, 7, 7, 0} },
-    };
-    return sCells;
-}
-// item table of the list window (positions are patched by func_02058404)
-inline WindowItemRecord *ListItems() {
-    static WindowItemRecord sItems[4] = {
-        { 0, 0x208, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 1 },
-        { 1, 0x408, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 1 },
-        { 2, 0x8000, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
-        { 3, 0x8000, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
-    };
-    return sItems;
-}
-
 void func_02058404(BattleCommandList *list, u32 a, u32 b, s16 c, s16 d, s16 e, s16 f, u32 g) {
     if (list->mUnk_8c != NULL) {
         delete list->mUnk_8c;
@@ -511,29 +624,6 @@ void BattleCommandList::func_020587b4() {
 void BattleCommandList::func_020589e8() {
     mUnk_140 = 0;
 }
-
-// paths loaded by func_020589f4
-// paths loaded by func_020589f4
-inline const char **ListPaths() {
-    static const char *sPaths[14] = {
-        "/Game/Card/Graphic/cardspec_u_obj_back_ncl.bin",
-        "/Game/Card/Graphic/cardspec_u_obj_back.nce_ncg1D.bin",
-        "/Game/Card/Graphic/cardspec_u_obj_00_ncl.bin",
-        "/Game/Card/Graphic/cardspec_u_obj_00.nce_ncg1D.bin",
-        "/Game/Card/Graphic/cardspec_u_obj_00_nce.bin",
-        "/Game/2D/union_b/union_b_obj_gp_ncl.bin",
-        "/Game/2D/union_b/union_b_obj_gp.nce_ncg1D.bin",
-        "/Game/2D/union_b/union_b_obj_gp_nce.bin",
-        "/Game/2D/union_b/union_b_obj_you_ncl.bin",
-        "/Game/2D/union_b/union_b_obj_you.nce_ncg1D.bin",
-        "/Game/2D/union_b/union_b_obj_you_nce.bin",
-        "/Game/Card/Graphic/bakugan_sub_l_ncl.bin",
-        "/Game/Card/Graphic/bakugan_sub_l.nce_ncg1D.bin",
-        "/Game/Card/Graphic/bakugan_sub_l_nce.bin",
-    };
-    return sPaths;
-}
-extern const u8 data_0209e594[];             // light table of the list model
 
 BOOL BattleCommandList::func_020589f4() {
     if (mUnk_140 != 0) {
@@ -786,7 +876,7 @@ void BattleCommandList::func_02059c50(u8 index) {
             u16 x;
             x = 2 - (mUnk_156 << 7);
             y = 0x10;
-            u8 row = data_0209e68c[cmd][mUnk_150];
+            u8 row = ((const u8(*)[6]) data_0209e68c)[cmd][mUnk_150];
             MessageFile *file;
             void *buffer;
             buffer = mUnk_a0[0];
@@ -809,7 +899,7 @@ void BattleCommandList::func_02059c50(u8 index) {
             u16 x;
             x = 2 - (mUnk_156 << 7);
             y = 0x10;
-            u8 row = data_0209e68c[cmd][mUnk_150];
+            u8 row = ((const u8(*)[6]) data_0209e68c)[cmd][mUnk_150];
             MessageFile *file = (MessageFile *) mUnk_7c;
             text.Print(file->GetText(row), file->GetLength(row), mUnk_a0[0], 0x10, 0x12, &y, (s16 *) &x,
                                      0, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
@@ -887,7 +977,6 @@ void BattleCommandList::func_0205a7ac() {
 }
 
 extern u8 data_020d43d7[];
-extern u8 data_0209e588[];
 
 void BattleCommandList::func_0205a804() {
     bool late = mUnk_14e >= 0x2b;
@@ -994,7 +1083,7 @@ void BattleCommandList::func_0205a804() {
         mCells3c[2]->Draw(0, 0x80, 0x60, 1);
     } else {
         for (u8 i = 0; i < 0x20; i++) {
-            SpriteManager::Get().Screen(0).func_02027778(data_0209e588, 1, (s16) ((i % 4) * 0x20 + 0x73),
+            SpriteManager::Get().Screen(0).func_02027778((void *) data_0209e588, 1, (s16) ((i % 4) * 0x20 + 0x73),
                                                          (s16) ((i / 4) * 0x10 + 0x20), 3, (u16) (i << 1), 0xf, 0);
         }
     }
@@ -1009,7 +1098,7 @@ void BattleCommandList::func_0205a804() {
 
 void BattleCommandList::func_0205aea4() {
     for (u8 i = 0; i < 12; i++) {
-        SpriteManager::Get().Screen(0).func_02027778(data_0209e57c, 1, (s16) ((i % 4) << 6), (s16) ((i / 4) << 6), 3,
+        SpriteManager::Get().Screen(0).func_02027778((void *) data_0209e57c, 1, (s16) ((i % 4) << 6), (s16) ((i / 4) << 6), 3,
                                                      (u16) (0x280 + i * 0x20), 0, 0);
     }
 }
@@ -1077,7 +1166,6 @@ void BattleCommandList::func_0205b0dc(const BattleCellPair *pair) {
     }
 }
 
- // per command, six message indices (.rodata 0x0209e68c)
    // 0x20 bytes cleared before the first text of a page
 
 void func_0205b1c4(u32 index, u32 unk2) {

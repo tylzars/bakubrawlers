@@ -1,34 +1,70 @@
+#include "UI/SelectWindow.hpp"
 #include "System/InputManager.hpp"
+extern const u8 data_ov008_02228a54[2];
+const u8 data_ov008_02228a54[2] = {0x80, 0x60};
+const u8 data_ov008_02228a56[3][2] = {{0x10, 0x12}, {0x40, 0x02}, {0x00, 0x00}};
 #include "System/SoundManager.hpp"
+WindowCellRecord data_ov008_0222a160[10] = {
+    {"Game/Myroom/myroom_gift_b_obj_nce.bin", 0, 0, 0, 1, 1, {0, 0, 0, 0}},
+    {"Game/Myroom/myroom_gift_b_obj_nce.bin", 1, 0, 0, 1, 1, {1, 1, 1, 0}},
+    {"Game/Myroom/myroom_gift_b_obj_nce.bin", 2, 0, 0, 1, 1, {2, 2, 2, 0}},
+    {"Game/Myroom/myroom_gift_b_obj_nce.bin", 3, 0, 0, 1, 1, {3, 3, 3, 0}},
+    {"Game/Myroom/myroom_gift_b_obj_nce.bin", 4, 0, 0, 1, 1, {4, 4, 4, 0}},
+    {"Game/Myroom/myroom_gift_b_obj_nce.bin", 5, 0, 0, 1, 1, {5, 5, 5, 0}},
+    {"Game/Myroom/myroom_gift_b_obj_nce.bin", 6, 0, 0, 1, 1, {6, 6, 6, 0}},
+    {"Game/Myroom/myroom_gift_b_obj_nce.bin", 7, 0, 0, 1, 1, {7, 7, 7, 0}},
+    {"Game/Myroom/myroom_gift_b_obj_nce.bin", 8, 0, 0, 1, 1, {8, 8, 8, 0}},
+    {"Game/Myroom/myroom_gift_b_obj_nce.bin", 9, 0, 0, 1, 1, {9, 9, 9, 0}},
+};
+
 #include "Scene/MyroomGiftScene.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
+const WindowCellRecord data_ov008_02228ab8[4] = {
+    {"Game/Myroom/myroom_gift_b_obj_nce.bin", 10, 0, 0, 0, 1, {10, 10, 10, 0}},
+    {"Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 16384, 13, 0, 1, {2, 3, 3, 0}},
+    {"Game/2D/union_b/union_b_obj_page_nce.bin", 0, 28672, 14, 0, 1, {0, 1, 1, 0}},
+    {"Game/2D/union_b/union_b_obj_page_nce.bin", 3, 28672, 14, 0, 1, {3, 4, 4, 0}},
+};
+
 #include "System/FileSystem.hpp"
 #include "System/InputManager.hpp"
 #include "System/SoundManager.hpp"
 #include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
-#include "UI/SelectWindow.hpp"
 
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
 #include <stdio.h>
-
-extern const u8 data_ov008_02228a64[3][4];
-extern const u8 data_ov008_02228a7c[][8];
 extern const u8 data_ov008_02228a7d[][8];
-extern const u8 data_ov008_02228a94[];
-extern const s8 data_ov008_02228aac[];
-extern u8 data_ov008_02228a70[];
-extern const WindowItemRecord data_ov008_02228b28[];
-extern WindowCellRecord data_ov008_0222a160[];
-extern const WindowCellRecord data_ov008_02228ab8[];
-extern const u8 data_ov008_02228aa0[];
-extern const u8 data_ov008_02228a56[][2];
-extern const u32 data_ov008_02228a5c[];
+const u32 data_ov008_02228a5c[2] = {0x44, 0x21};
+const u8 data_ov008_02228a64[3][4] = {{0x01, 0x01, 0x01, 0x01}, {0x01, 0x01, 0x01, 0x01}, {0x01, 0x01, 0x00, 0x00}};
+const u8 data_ov008_02228a70[12] = {0x00, 0x20, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+const u8 data_ov008_02228a7c[3][8] = {{0x2d, 0x23, 0x59, 0x23, 0x85, 0x23, 0xb1, 0x23}, {0x2d, 0x4f, 0x59, 0x4f, 0x85, 0x4f, 0xb1, 0x4f}, {0x2d, 0x7b, 0x59, 0x7b, 0x00, 0x00, 0x00, 0x00}};
+const u8 data_ov008_02228a94[12] = {0x06, 0x01, 0x04, 0x05, 0x00, 0x02, 0x03, 0x07, 0x08, 0x09, 0x00, 0x00};
+const u8 data_ov008_02228aa0[12] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x00, 0x00};
+const s8 data_ov008_02228aac[12] = {4, 1, 5, 6, 2, 3, 0, 7, 8, 9, 0, 0};
+const WindowItemRecord data_ov008_02228b28[14] = {
+    {0, 0x8, 46, 80, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {1, 0x8, 90, 36, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {2, 0x8, 90, 80, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {3, 0x8, 134, 80, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {4, 0x8, 134, 36, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {5, 0x8, 178, 36, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {6, 0x8, 46, 36, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {7, 0x8, 178, 80, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {8, 0x8, 46, 124, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {9, 0x8, 90, 124, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {10, 0x8000, 46, 36, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
+    {11, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {12, 0x208, 192, 20, 32, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {13, 0x408, 224, 20, 32, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
+};
+
+
 
 MyroomGiftScene::MyroomGiftScene() :
     SceneBase(1000, 0) {
@@ -274,7 +310,7 @@ void MyroomGiftScene::func_ov008_0221e670() {
         int y = i * 32 + 0x24;
         j     = 0;
         do {
-            SpriteManager::Get().Screen(0).func_02027778(data_ov008_02228a70, 1, j * 32 + 0xe, y, 0, (u16) (i * 0x18 + j * 8), 0, 0);
+            SpriteManager::Get().Screen(0).func_02027778((void *) data_ov008_02228a70, 1, j * 32 + 0xe, y, 0, (u16) (i * 0x18 + j * 8), 0, 0);
             j++;
         } while (j < 3);
         i++;

@@ -3574,7 +3574,7 @@ extern const u8 data_020a1b8a[];
 extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 void func_02088ec4(UnkStruct_02087898 *object);
 
-void UnkStruct_02065c40::func_0206f564(u8 unk1, u32 unk2, s32 unk3) {
+void UnkStruct_02065c40::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
     BOOL isTwo   = mUnk_12ba == 2;
     BOOL isThree = mUnk_12ba == 3;
     if (!(isTwo | isThree)) {
@@ -3595,7 +3595,7 @@ void UnkStruct_02065c40::func_0206f564(u8 unk1, u32 unk2, s32 unk3) {
         mUnk_12b9 = 3;
         return;
     }
-    mUnk_1018->func_02088e64((s16) (s32) unk1, mUnk_13d2[0], 0, 0);
+    mUnk_1018->func_02088e64((s16) unk1, mUnk_13d2[0], 0, 0);
     mUnk_12ca = 2;
     if (mUnk_14e2 != 0) {
         return;

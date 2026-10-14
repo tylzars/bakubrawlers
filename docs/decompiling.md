@@ -236,6 +236,10 @@ Other findings from linking:
     (`SetSphere(s, &pos, radius)`).
   - `(n + 1) * x; ...; n++;` keeps the unmasked `n + 1` in the multiply.
   - Where the original loads every component before storing, write the store as `SetVec(...)` or a struct copy.
+- **A macro where an inline won't do.** `#define TEST_BIT(f, i) ((f)[(i) / 8] & (1 << ((i) % 8)))` (and a matching
+  `SET_BIT`) lets mwcc reuse the loaded byte for a following set, which the inline helpers don't
+  (MyroomTipsScene::func_ov008_022274f8). A caller passing an `ldrsb` value with no `and` means the parameter is wider
+  than `u8` (`func_0206f564(s32 unk1, ...)`).
 - **Reused locals are coloured in order of first appearance.** When a function-scope local is reused in several
   loops, mwcc colours its later live ranges in the order the variables first *appear* in the function, not their
   declaration order; a dead `j = 0;` near the top (or moving `g = 0;` above other assignments) reorders them

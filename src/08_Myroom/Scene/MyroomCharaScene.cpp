@@ -487,8 +487,8 @@ void MyroomCharaScene::func_ov008_02224ca4(u32 line, u32 value, u32 digits, s16 
                 0, 0, 0, 1, 1);
 }
 
-// non-matching: register assignment of x/ratio/value in the switch (r6/r7 swapped), the TextManager::mUnk_5b store scheduling and the stack slots of width/height in case 10 (47 words)
 void MyroomCharaScene::func_ov008_02224f80(u32 line, u32 kind) {
+    s32 value;
     s16 x     = 0;
     s32 ratio = 0;
     switch (kind) {
@@ -497,7 +497,7 @@ void MyroomCharaScene::func_ov008_02224f80(u32 line, u32 kind) {
             x += 0x30;
             func_ov008_02224ca4(line, data_020d43f0[0].mUnk_4a, 4, x, 3);
             x += 0x2a;
-            s32 value = 0;
+            value = 0;
             if (data_020d43f0[0].mUnk_48 + data_020d43f0[0].mUnk_4a > 0) {
                 value = data_020d43f0[0].mUnk_48 * 1000 / (data_020d43f0[0].mUnk_48 + data_020d43f0[0].mUnk_4a);
             }
@@ -553,8 +553,8 @@ void MyroomCharaScene::func_ov008_02224f80(u32 line, u32 kind) {
             TextManager &text          = TextManager::Get();
             s16 width;
             s16 height;
-            width     = 0;
             height    = 0;
+            width     = 0;
             u8 index  = mList[mPage * 7 + line];
             MessageFile *file = mNames;
             text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[line], 0x20, 2, &width, &height, 0, 0, 2, 0x21, 0, 0,

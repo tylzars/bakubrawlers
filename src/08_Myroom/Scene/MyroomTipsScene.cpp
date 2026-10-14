@@ -23,11 +23,15 @@ extern u8 data_020d49a1[];
 extern const s8 data_ov008_02229650[6];
 extern const u8 data_ov008_02229660[6];
 
-static inline BOOL TestBit(const u8 *flags, int index) {
-    return (1 << (index % 8)) & flags[index / 8];
-}
+#define TEST_BIT(flags, index) ((flags)[(index) / 8] & (1 << ((index) % 8)))
+#define SET_BIT(flags, index) ((flags)[(index) / 8] |= 1 << ((index) % 8))
 
-extern const s8 data_ov008_022296ac[][20];
+// One row per tips category: each entry holds the text id shown in the list and the event message it opens.
+struct TipsEntry {
+    s8 mText;
+    s8 mMessage;
+};
+extern const TipsEntry data_ov008_022296ac[][10];
 
 extern const u8 data_ov008_02229668[][2];
 
@@ -39,11 +43,6 @@ extern const WindowCellRecord data_ov008_022297b0[];
 extern "C" void func_020705f0(UnkStruct_02065c40 *event);
 extern "C" void func_0206f88c(UnkStruct_02065c40 *event, u32 category, s32 value, u32 unk4);
 extern const s8 data_ov008_02229658[];
-extern const s8 data_ov008_022296ad[][20];
-
-static inline void SetBit(u8 *flags, int index) {
-    flags[index / 8] |= 1 << (index % 8);
-}
 
 extern "C" void func_0206f6f0(UnkStruct_02065c40 *event, const char *name, u32 id, u32 unk3, u32 unk4);
 
@@ -377,7 +376,8 @@ void MyroomTipsScene::func_ov008_02226e00() {
     func_ov008_02228214(-1);
 }
 
-// non-matching: register allocation of the table and constants (15 words)
+// non-matching: in the first loop's Draw call the two data_ov008_02229668 byte loads come x then y; the original loads y
+// first (2 words; same source shape gives either order in func_ov008_022271f8)
 void MyroomTipsScene::Draw() {
     UnkStruct_SceneContext *context = mContext;
     func_ov008_022271f8();
@@ -393,7 +393,7 @@ void MyroomTipsScene::Draw() {
         u8 i       = first;
         do {
             if (mNew[i] != 0) {
-                mNewCells[0]->Draw(1, data_ov008_02229668[0][i * 2], data_ov008_02229668[0][i * 2 + 1], 1);
+                mNewCells[0]->Draw(1, data_ov008_02229668[i][0], data_ov008_02229668[i][1], 1);
             }
             i++;
         } while (i < 6);
@@ -406,7 +406,7 @@ void MyroomTipsScene::Draw() {
     do {
         SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mUnk_6c, 0x26, (s16) (j * 32 + 0x29), 1,
                                                      (u16) ((j * 3 * 0x400 + 0x8000) >> 7), 0xf, 0);
-        if (!TestBit(data_020d49a1, data_ov008_02229660[(s8) context->mInfo.mMenuResult] + mIndices[j])) {
+        if (!TEST_BIT(data_020d49a1, data_ov008_02229660[(s8) context->mInfo.mMenuResult] + mIndices[j])) {
             mNewCells[1]->Draw(1, 0x20, (s16) (j * 32 + 0x20), 1);
         }
         j++;
@@ -480,7 +480,6 @@ void MyroomTipsScene::func_ov008_022274a4(const u8 *pos, u32 index) {
     mCellB->Draw(1, pos[index * 2], pos[index * 2 + 1], 2);
 }
 
-// non-matching: scheduling of the mButtons[1].mEnabled store and of the flag-bit set at the end (31 words)
 void MyroomTipsScene::func_ov008_022274f8() {
     if (mEvent->func_020678e8()) {
         mWindowA->mUnk_064 = 0;
@@ -580,9 +579,9 @@ void MyroomTipsScene::func_ov008_022274f8() {
         cell->SetAnimation(2);
         mUnk_85 = 0;
         s32 category = (s8) context->mInfo.mMenuResult;
-        u32 entry    = mIndices[mRow] * 2;
-        s32 message  = data_ov008_022296ad[category][entry];
-        if (category == 4 && data_ov008_022296ac[category][entry] == 0x20) {
+        u8 entry     = mIndices[mRow];
+        u16 message  = data_ov008_022296ac[category][entry].mMessage;
+        if (category == 4 && data_ov008_022296ac[category][entry].mText == 0x20) {
             if (data_020d43f0[0].mUnk_5bf_0) {
                 message = 0x2b;
             } else {
@@ -606,8 +605,8 @@ void MyroomTipsScene::func_ov008_022274f8() {
         mEvent->func_0206f564(message, 11, -1);
         context->mInfo.mStep = 0xb;
         int flag             = data_ov008_02229660[(s8) context->mInfo.mMenuResult] + mIndices[mRow];
-        if (!TestBit(data_020d49a1, flag)) {
-            SetBit(data_020d49a1, flag);
+        if (!TEST_BIT(data_020d49a1, flag)) {
+            SET_BIT(data_020d49a1, flag);
             mNew[(s8) context->mInfo.mMenuResult]--;
         }
     }
@@ -660,9 +659,8 @@ s8 MyroomTipsScene::func_ov008_02227a08(const u8 *pos, u8 count) {
     return -1;
 }
 
-// non-matching: stack slots / scheduling of the two locals kept across the touch loop (13 words)
 BOOL MyroomTipsScene::func_ov008_02227dd4() {
-    BOOL confirm = FALSE;
+    u8 confirm = FALSE;
     u8 row       = mRow;
     u8 scroll    = mScroll;
     mScroll      = mWindowB->mCursor->mScroll;
@@ -760,7 +758,7 @@ void MyroomTipsScene::func_ov008_02228214(s32 row) {
         height = 0;
         width = mUnk_70[i];
         s8 menu = context->mInfo.mMenuResult;
-        u16 index = data_ov008_022296ac[menu][mIndices[i] * 2];
+        u16 index = data_ov008_022296ac[menu][mIndices[i]].mText;
         MessageFile *file = mMessages;
         text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[i], 0x30, 2, &width, &height, pixelWidth, 0, 2,
                    0x11, 0x10, 0, 0, 1, 1, 1);
@@ -793,7 +791,6 @@ void MyroomTipsScene::func_ov008_0222844c() {
     }
 }
 
-// non-matching: the three loop invariants (1, data_020d499c, data_020d49a1) land in r2/r3 swapped (18 words)
 void MyroomTipsScene::func_ov008_02228464() {
     for (u8 i = 0; i < 6; i++) {
         mUnlocked[i] = 0;
@@ -802,9 +799,9 @@ void MyroomTipsScene::func_ov008_02228464() {
         u8 start     = data_ov008_02229660[i];
         u8 j         = 0;
         do {
-            if (TestBit(data_020d499c, start + j)) {
+            if (TEST_BIT(data_020d499c, start + j)) {
                 mUnlocked[i]++;
-                if (!TestBit(data_020d49a1, data_ov008_02229660[i] + j)) {
+                if (!TEST_BIT(data_020d49a1, data_ov008_02229660[i] + j)) {
                     mNew[i]++;
                 }
             }
@@ -813,21 +810,18 @@ void MyroomTipsScene::func_ov008_02228464() {
     }
 }
 
-// non-matching: register allocation of count/category (13 words)
 u32 MyroomTipsScene::func_ov008_0222852c(s16 index) {
-    s8 category = mContext->mInfo.mMenuResult;
-    u8 start    = data_ov008_02229660[category];
-    s8 count    = data_ov008_02229650[category];
+    UnkStruct_SceneContext *context = mContext;
     u8 i        = 0;
     do {
-        if (TestBit(data_020d499c, start + i)) {
+        if (TEST_BIT(data_020d499c, data_ov008_02229660[(s8) context->mInfo.mMenuResult] + i)) {
             index--;
             if (index < 0) {
                 return i;
             }
         }
         i++;
-    } while (i < count);
+    } while (i < data_ov008_02229650[(s8) context->mInfo.mMenuResult]);
     return 0;
 }
 

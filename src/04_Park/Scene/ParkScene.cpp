@@ -379,7 +379,7 @@ void ParkScene::Update() {
                             if (n >= 5) {
                                 n = (u8) (n - 1);
                             }
-                            mEvent->func_0206f564(n + 6, 10, -1);
+                            mEvent->func_0206f564((u8) (n + 6), 10, -1);
                         }
                         mUnk_0d = 0x14;
                     }

@@ -76,7 +76,8 @@ def main():
                     tsec = elf.get_section(sym["st_shndx"])
                     if tsec.name not in (".data", ".rodata") or tsec["sh_type"] == "SHT_NOBITS":
                         continue
-                    addend = struct.unpack_from("<I", tdata, r["r_offset"])[0]
+                    # RELA entries carry the addend; REL ones keep it in the pool word.
+                    addend = r["r_addend"] if r.is_RELA() else struct.unpack_from("<I", tdata, r["r_offset"])[0]
                     ours = cstring(tsec.data(), sym["st_value"] + addend)
                     if not ours or len(ours) < 3 or not all(32 <= c < 127 for c in ours):
                         continue  # only printable strings

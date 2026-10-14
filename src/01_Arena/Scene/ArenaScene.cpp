@@ -1,22 +1,19 @@
 #include "System/InputManager.hpp"
 #include "System/SoundManager.hpp"
+#include "System/TouchManager.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "System/WirelessManager.hpp"
 #include "Text/TextManager.hpp"
 #include "Scene/ArenaScene.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
-#include "System/InputManager.hpp"
-#include "System/SoundManager.hpp"
-#include "System/TouchManager.hpp"
-#include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
-#include "System/WirelessManager.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
@@ -43,32 +40,7 @@ void func_0202330c(UnkStruct_020d433c *data);
 #define MINU(a, b) ((u32) (b) > (u32) (a) ? (u32) (a) : (u32) (b))
 extern UnkStruct_020c4230 data_020c4230;
 
-static const WindowCellRecord data_ov001_02226e54[2] = {
-    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xb000, 6, 2, 1, {0, 1, 1, 0}},
-    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 6, 2, 1, {2, 3, 3, 0}},
-};
-static const WindowItemRecord data_ov001_02226e8c[2] = {
-    {0, 1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, 1},
-    {1, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
-};
-static const WindowCellRecord data_ov001_02226ec4[2] = {
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0xc000, 7, 0, 1, {0, 2, 1, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0xc000, 7, 0, 1, {9, 9, 9, 0}},
-};
-static const WindowItemRecord data_ov001_02226efc[2] = {
-    {0, 1, 32, 48, 192, 40, 0, {1, 1, 0, 0}, 0, 2},
-    {1, 1, 32, 96, 192, 40, 0, {0, 0, 1, 1}, 0, 2},
-};
-static const WindowItemRecord data_ov001_02226f34[3] = {
-    {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
-    {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
-    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
-};
-static const WindowCellRecord data_ov001_02226f88[3] = {
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0xc000, 7, 0, 1, {3, 5, 4, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0xc000, 7, 0, 1, {6, 8, 7, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0xc000, 7, 0, 1, {10, 10, 10, 0}},
-};
+
 static const WindowItemRecord data_ov001_02226fdc[2][2] = {
     {
         {0, 5, 169, 170, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
@@ -78,6 +50,32 @@ static const WindowItemRecord data_ov001_02226fdc[2][2] = {
         {0, 5, 169, 200, 0, 0, 0, {-1, -1, -1, -1}, 0, 1},
         {1, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
     },
+};
+static const WindowItemRecord data_ov001_02226e8c[2] = {
+    {0, 1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, 1},
+    {1, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+};
+static const WindowCellRecord data_ov001_02226f88[3] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0xc000, 7, 0, 1, {3, 5, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0xc000, 7, 0, 1, {6, 8, 7, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0xc000, 7, 0, 1, {10, 10, 10, 0}},
+};
+static const WindowCellRecord data_ov001_02226e54[2] = {
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xb000, 6, 2, 1, {0, 1, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 6, 2, 1, {2, 3, 3, 0}},
+};
+static const WindowItemRecord data_ov001_02226f34[3] = {
+    {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
+    {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
+    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+};
+static const WindowCellRecord data_ov001_02226ec4[2] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0xc000, 7, 0, 1, {0, 2, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0xc000, 7, 0, 1, {9, 9, 9, 0}},
+};
+static const WindowItemRecord data_ov001_02226efc[2] = {
+    {0, 1, 32, 48, 192, 40, 0, {1, 1, 0, 0}, 0, 2},
+    {1, 1, 32, 96, 192, 40, 0, {0, 0, 1, 1}, 0, 2},
 };
 
 ArenaScene::ArenaScene() : SceneBase(1000, 0) {

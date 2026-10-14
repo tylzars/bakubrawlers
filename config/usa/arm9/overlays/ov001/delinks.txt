@@ -4,9 +4,12 @@
     .data       start:0x022278c0 end:0x02229260 kind:data align:32
     .bss        start:0x02229260 end:0x02229300 kind:bss align:32
 
-// provisional: code only; data not assigned yet.
 src/01_Arena/Scene/ArenaScene.cpp:
+    complete
     .text       start:0x02219440 end:0x0221cb4c
+    .rodata     start:0x02226e54 end:0x0222704c
+    .data       start:0x022278c0 end:0x02227dc0
+    .bss        start:0x02229260 end:0x0222929c
 
 // provisional: code only; data not assigned yet.
 src/01_Arena/Scene/ArenaWindowScene.cpp:

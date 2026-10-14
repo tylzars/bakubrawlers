@@ -16,10 +16,10 @@ own dump of the game; see [INSTALL.md](INSTALL.md).
 
 | Measure | Progress |
 |---|---|
-| Matched code | 78.27% (988,636 / 1,263,096 bytes) |
-| Linked code (complete units) | 28.81% (363,892 bytes) |
+| Matched code | 78.55% (992,120 / 1,263,096 bytes) |
+| Linked code (complete units) | 29.26% (369,628 bytes) |
 | Overall accuracy (fuzzy) | 95.75% |
-| Matched functions | 4,065 / 4,529 |
+| Matched functions | 4,068 / 4,529 |
 
 _Last updated 2026-10-14. Full history: [`progress/history.csv`](progress/history.csv)._
 <!-- progress:end -->

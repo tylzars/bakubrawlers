@@ -45,6 +45,7 @@ libs/cri/src/cri_adx_ctrl2.c:
     .text       start:0x02043c14 end:0x02044614
 
 libs/cri/src/cri_adx_buf.c:
+    complete
     .text       start:0x0203e954 end:0x0203edc4
 
 libs/cri/src/cri_adx_hdr.c:
@@ -131,9 +132,11 @@ libs/cri/src/cri_mpa_dec.c:
 
 // 0x0204c088-0x0204c40c (func_0204c088): hand-written asm in CRI's MPEG synthesis (ldmib + smlatt dot products).
 libs/cri/src/cri_mpa_win.c:
+    complete
     .text       start:0x0204c40c end:0x0204d78c
 
 libs/cri/src/cri_mpa_synth.c:
+    complete
     .text       start:0x0204d78c end:0x0204d968
 
 libs/cri/src/cri_snd_out.c:
@@ -164,6 +167,7 @@ libs/msl/src/msl_string.c:
     .text       start:0x020122b0 end:0x020125b4
 
 libs/msl/src/msl_printf.c:
+    complete
     .text       start:0x020125b4 end:0x0201368c
 
 libs/msl/src/msl_printf_fmt.c:
@@ -188,6 +192,7 @@ libs/msl/src/msl_string_tail.c:
     .text       start:0x02015950 end:0x02015c74
 
 libs/msl/src/msl_strtoul.c:
+    complete
     .text       start:0x02016ec0 end:0x020177ac
 
 libs/msl/src/e_acos.c:
@@ -358,6 +363,7 @@ libs/nns/src/snd/nns_snd_wavstrm.c:
 
 // NitroSDK (2.0/sp1p5, C); code only so far.
 libs/nds/src/fx/fx_mtx44_concat.c:
+    complete
     .text       start:0x02000de8 end:0x0200144c
 
 libs/nds/src/fx/fx_mtx44_persp.c:
@@ -380,6 +386,7 @@ libs/nds/src/mi/mi_init.c:
     .text       start:0x02007f18 end:0x02007f30
 
 libs/nds/src/fx/fx_mtx22.c:
+    complete
     .text       start:0x02000cd8 end:0x02000d88
 
 libs/nds/src/fx/fx_mtx44.c:
@@ -431,6 +438,7 @@ libs/nds/src/gx/gx_tex.c:
     .text       start:0x0200450c end:0x020047d8
 
 libs/nds/src/os/os_interrupt.c:
+    complete
     .text       start:0x02004b64 end:0x02004c50
 
 libs/nds/src/os/os_spinlock.c:

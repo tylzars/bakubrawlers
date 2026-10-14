@@ -778,7 +778,7 @@ _fsub kind:function(arm,size=0x278) addr:0x0201f4f0
 func_0201f768 kind:function(arm,size=0x1c0) addr:0x0201f768
 _ll_sdiv kind:label(arm) addr:0x0201f778
 _ll_udiv kind:function(arm,size=0x48) addr:0x0201f928
-.L_0201f934 kind:label(arm) addr:0x0201f934
+_ull_mod kind:label(arm) addr:0x0201f934
 _s32_div_f kind:function(arm,size=0x20c) addr:0x0201f970
 _u32_div_f kind:function(arm,size=0x1e4) addr:0x0201fb7c
 .L_0201fb84 kind:label(arm) addr:0x0201fb84
@@ -5075,3 +5075,4 @@ data_02090958 kind:data(any) addr:0x02090958
 data_02090968 kind:data(any) addr:0x02090968
 data_02090978 kind:data(any) addr:0x02090978
 data_020909c0 kind:data(any) addr:0x020909c0
+data_02090328 kind:data(any) addr:0x02090328

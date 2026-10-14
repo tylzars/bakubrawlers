@@ -482,9 +482,11 @@ Other findings from linking:
   a repeated global read that mwcc merges into one value) sits just above the parameters. A local that won't take its
   slot by declaration order may need to be a repeated expression instead (BattleCpu::func_ov007_02231e2c: reading
   `data_020d433c.mUnk_95` at both uses rather than through a local).
-- **Which parameters are copied to the stack first.** A stack parameter's copy lands in the early group of the
-  prologue only if the parameter is referenced before the first branch of the entry block; the rest are copied
-  later, in parameter order. Moving an `if` up splits the entry block (TextManager::Print).
+- **Which parameters are copied to the stack first.** mwcc emits every stack-parameter copy at entry, in parameter
+  order (`-proc generic` shows it); the arm946e scheduler then moves a copy early only when its loaded value has a
+  consumer in the same scheduled region, and leaves the rest late. A local with two definitions (`u32 spacing = unk12;`
+  plus a second assignment) is not propagated, shares the parameter's home slot and pulls its copy early
+  (TextManager::Print, whose original still has two copies early that no tried form reproduces).
 - **A dead store can be load-bearing.** In BattleCpu::func_ov007_02231e2c, `spin = 30;` before a switch whose cases
   all overwrite `spin` keeps 30 in spin's register for later `MATH_Rand32(..., 30)` calls; `spin = 0` breaks it.
 - **A `mov` where a spill reload was expected.** When a spilled value's register is still intact at its next use in

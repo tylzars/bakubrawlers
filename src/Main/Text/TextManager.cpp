@@ -333,7 +333,7 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u
 
 // non-matching: 15 words, prologue scheduling only. The original copies unk12 to its home slot through r5 and
 // loads unk13 (r6) late; here unk13 is loaded first and every copy goes through r0.
-void TextManager::PrintNumber(u32 value, u32 minDigits, u32 unk3, void *buffer, u32 width, u32 height,
+void TextManager::PrintNumber(u32 value, u8 minDigits, u32 unk3, void *buffer, u32 width, u32 height,
                               s16 *outWidth, s16 *outHeight, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13,
                               u32 unk14, u32 unk15) {
     u32 count    = 0;
@@ -592,8 +592,8 @@ void TextManager::func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color
 void TextManager::Init(void *glyphs, u32 unk2, u32 unk3, u32 width, u32 height, u32 unk6) {
     TextSprite *sprite = (TextSprite *) glyphs;
     s32 flags          = unk6;
-    s32 unitY          = (flags >> 4) & 0xf;
-    s32 unitX          = flags & 0xf;
+    u16 unitY          = (flags >> 4) & 0xf;
+    u16 unitX          = flags & 0xf;
     u16 tableIndex     = (unitX - 1) + ((unitY - 1) << 2);
     u16 tile           = 0;
     u16 stepX          = unitX << 1;

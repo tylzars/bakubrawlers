@@ -131,7 +131,7 @@ public:
     void Print(const void *text, u16 length, void *buffer, u32 width, u32 height, s16 *outWidth, s16 *outHeight,
                u16 *outPixelWidth, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13, u32 unk14, u32 unk15,
                u32 unk16, u32 unk17);
-    void PrintNumber(u32 value, u32 unk2, u32 unk3, void *buffer, u32 width, u32 height, s16 *outWidth,
+    void PrintNumber(u32 value, u8 minDigits, u32 unk3, void *buffer, u32 width, u32 height, s16 *outWidth,
                      s16 *outHeight, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13, u32 unk14,
                      u32 unk15); // 0202cb50
     void func_0202cd48(u32 mode, u16 *map, u32 palette, u32 base, u32 width, u32 height, u32 stride);

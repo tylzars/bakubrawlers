@@ -61,7 +61,7 @@ public:
     u8 func_ov008_02224a4c();
     void func_ov008_02224a5c();
     void ClearTextBuffers(); // 0x02224c60
-    void func_ov008_02224ca4(u32 line, u32 value, u32 digits, s16 x, s32 suffix);
+    void func_ov008_02224ca4(u32 line, u32 value, u8 digits, s16 x, s32 suffix);
     void func_ov008_02224f80(u32 line, u32 kind);
     void DrawText();         // 0x02225544
     void FreeText();         // 0x0222563c

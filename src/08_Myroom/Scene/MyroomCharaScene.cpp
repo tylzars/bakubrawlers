@@ -441,7 +441,7 @@ void MyroomCharaScene::ClearTextBuffers() {
 // copy, double assignment, suffix/type mixes, declaration orders, array/struct forms of pos/unused, uses in later
 // blocks and a store through a pointer in the entry block all leave it sunk. So the original's entry block must
 // use suffix in an instruction that does not survive to the final code (a copy merged away, or similar).
-void MyroomCharaScene::func_ov008_02224ca4(u32 line, u32 value, u32 digits, s16 x, s32 suffix) {
+void MyroomCharaScene::func_ov008_02224ca4(u32 line, u32 value, u8 digits, s16 x, s32 suffix) {
     s16 pos = x;
     BOOL special = FALSE;
     s16 unused;

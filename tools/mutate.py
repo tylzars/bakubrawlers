@@ -44,6 +44,8 @@ def score(text, workdir, opts):
                               f"--flags={opts.flags}", "--show"], cwd=ROOT, capture_output=True, text=True).stdout
     finally:
         os.unlink(path)
+    if not out.strip() or "COMPILE ERROR" in out:
+        return 10 ** 6
     if " 1/1 " in out or out.rstrip().endswith("1/1"):
         return 0
     n = sum(1 for ln in out.splitlines() if re.match(r"\s+[0-9a-f]+ \*", ln))

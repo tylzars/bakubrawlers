@@ -54,7 +54,9 @@ def score(text, func, workdir):
                               f"--flags={FLAGS}", "--show"], cwd=ROOT, capture_output=True, text=True).stdout
     finally:
         os.unlink(path)
-    last = out.strip().splitlines()[-1] if out.strip() else ""
+    if not out.strip() or "COMPILE ERROR" in out:
+        return 10 ** 6
+    last = out.strip().splitlines()[-1]
     if re.match(r"\s+2\.0/sp2p2\s+1/1(\s|$)", last):
         return 0
     n = sum(1 for ln in out.splitlines() if re.match(r"\s+[0-9a-f]+ \* ", ln))

@@ -105,9 +105,11 @@ libs/cri/src/cri_mem_blk.c:
     .text       start:0x02050e60 end:0x02050f68
 
 libs/cri/src/cri_ahx_play.c:
+    complete
     .text       start:0x0204d968 end:0x0204dff4
 
 libs/cri/src/cri_adx_hdrparse.c:
+    complete
     .text       start:0x0204dff4 end:0x0204e330
 
 libs/cri/src/cri_ahx_bitrd.c:
@@ -154,6 +156,7 @@ libs/cri/src/cri_snd_tbl.c:
     .text       start:0x0204ab10 end:0x0204ad88
 
 libs/cri/src/cri_snd_play.c:
+    complete
     .text       start:0x0204ad88 end:0x0204b314
 
 libs/msl/src/msl_dec2num.c:

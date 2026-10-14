@@ -52,10 +52,10 @@ public:
     /* 10b */ PAD(0x10b, 0x10c);
     /* 10c */
 
-    BattleCommandPage(u32 a, s32 b);
+    BattleCommandPage(u16 a, s32 b);
     virtual ~BattleCommandPage();
     virtual void Update();
-    u32 func_02055644(u32 id);
+    u16 func_02055644(u16 id);
     void func_020556d0(u32 flag);
     BOOL func_02055724();
     void func_02055890(u32 enable);
@@ -76,6 +76,6 @@ public:
 
 void func_02055624(BattleCommandPage *page, u32 a);
 void func_0205562c(BattleCommandPage *page, u32 a);
-void func_02055668(BattleCommandPage *page, u32 a, s32 b);
+void func_02055668(BattleCommandPage *page, u16 a, s32 b);
 void func_02055738(BattleCommandPage *page, u32 a, u32 b, u32 c);
 void func_02055764(BattleCommandPage *page, u32 a, u32 b, s16 c, s16 d, s16 e, s16 f, u32 g);

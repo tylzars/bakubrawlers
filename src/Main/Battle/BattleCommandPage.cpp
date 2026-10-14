@@ -23,7 +23,7 @@ extern u8 data_0209e558[]; // tables passed to SpriteScreen::func_02027778 (.rod
 extern u8 data_0209e564[];
 extern u8 data_0209e570[];
 
-BattleCommandPage::BattleCommandPage(u32 a, s32 b) :
+BattleCommandPage::BattleCommandPage(u16 a, s32 b) :
     SceneBase(0x3e8, 0) {
     mUnk_50 = NULL;
     mUnk_54 = NULL;
@@ -207,7 +207,7 @@ void func_0205562c(BattleCommandPage *page, u32 a) {
     }
 }
 
-u32 BattleCommandPage::func_02055644(u32 id) {
+u16 BattleCommandPage::func_02055644(u16 id) {
     if (id == 0xd6) {
         mUnk_10a = 1;
         return 0;
@@ -216,11 +216,10 @@ u32 BattleCommandPage::func_02055644(u32 id) {
     return id;
 }
 
-// non-matching: 0x70 vs 0x68, the original stores one call result to two u16 fields without truncating or reloading.
-void func_02055668(BattleCommandPage *page, u32 a, s32 b) {
+void func_02055668(BattleCommandPage *page, u16 a, s32 b) {
     page->mUnk_fa = b;
     if (page->mUnk_f1 == 0) {
-        u32 value      = page->func_02055644(a);
+        u16 value      = page->func_02055644(a);
         page->mUnk_f4  = value;
         page->mUnk_f6  = value;
         page->mUnk_106 = 0;
@@ -709,8 +708,9 @@ void BattleCommandPage::func_02056f70() {
     SpriteManager::Get().mScreens[0].func_02027778(data_0209e558, 1, 0x14, 0x65, 3, 0xe0, 0, 0);
 }
 
-// non-matching: 0x430 vs 0x438; stm where the original has str+str, and the original keeps the -4/0x17/3 constants in stack slots and adds them inside the digit block (the sum is hoisted here).
-int func_02065bf4(u32 id, u32 index);
+// non-matching: 18 words, registers only: y/cnt/left are r7/r8/r6 where the original has r6/r7/r8, and a + d is
+// computed after c + b instead of before; declaration order (function, loop and block scope) does not change it.
+u8 func_02065bf4(u32 id, u32 index);
 extern u8 data_020d43d7[];
 
 void BattleCommandPage::func_020571a8() {
@@ -733,10 +733,11 @@ void BattleCommandPage::func_020571a8() {
     }
     if (mUnk_fa > -1) {
         u8 cur   = data_020d433c.mBattlePlayers->mUnk_2a9;
-        BOOL has = 0;
+        BOOL has;
         if (mUnk_fa == cur) {
-            mCells[8]->func_0202a3ec(0, mUnk_fa, 0x24, 0x18, has);
+            mCells[8]->func_0202a3ec(0, mUnk_fa, 0x24, 0x18, 0);
         } else {
+            has = 0;
             if (data_020d433c.mBattlePlayers->mPlayers[(u8)mUnk_fa]->mUnk_c8 != NULL) {
                 has = 1;
             }
@@ -754,7 +755,7 @@ void BattleCommandPage::func_020571a8() {
     }
     s16 a;
     u8 k;
-    int n;
+    s16 n;
     s32 d;
     s32 b;
     s16 c;
@@ -773,23 +774,26 @@ void BattleCommandPage::func_020571a8() {
         s16 y = k * 0x28 + 0x14;
         n = func_02065bf4(mUnk_f8, k);
         if (n != 0) {
-            int v  = n;
-            u8 cnt = 3;
-            if (v < 10) {
-                y -= 3;
+            u8 cnt;
+            s32 half;
+            u8 i;
+            u32 v;
+            u32 left;
+            v = n;
+            cnt = 3;
+            if (n < 10) {
                 cnt--;
+                y -= 3;
             }
             v *= 10;
-            s32 half = (3 - cnt) * 4 / 2;
-            s32 left = c;
+            half = (3 - cnt) * 4 / 2;
+            left = c;
             left += b;
-            s16 yy = a + d;
-            u8 i     = 0;
+            i    = 0;
             do {
-                int digit = v % 10;
-                mCells[2]->func_0202a3ec(0, digit, y + (3 - i) * 7, 0xb0, 0);
-                mCells[5]->func_0202a3ec(0, digit, left + (cnt - i) * 4 + half, yy, 0);
-                v = (u32) v / 10;
+                mCells[2]->func_0202a3ec(0, (s32) v % 10, y + (3 - i) * 7, 0xb0, 0);
+                mCells[5]->func_0202a3ec(0, (s32) v % 10, left + (cnt - i) * 4 + half, a + d, 0);
+                v /= 10;
                 i++;
             } while (i < cnt);
         }

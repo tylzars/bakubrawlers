@@ -46,6 +46,16 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   tables come before most of its includes; the other two were loading the wrong file names (probes mask string
   addresses, so a wrong literal can look like a match).
 
+- **Fully matched units that don't link yet** (2026-10-14):
+  - UnkStruct_02076058, BattleCommandMap and MessageWindow: tables in their data ranges are still `extern`
+    (UnkStruct_02076058 is 0x44 bytes short of its .data range; BattleCommandMap misses data_ov007_022887f0 and
+    data_ov007_02288810). Define them from the original bytes (see the BattleCommand, TournamentScene and
+    MyroomShootScene passes).
+  - AttrSelScene: `.bss` destructor-node order (`.bss#22 (@838, @54)`), a layout search.
+  - MyroomGiftScene: `.data` is defined and exact; `.rodata` order needs table shapes (2D u8 arrays, a94/aa0/aac
+    merged into one [3][12] table), which leaves func_ov008_0221de34 3 words off on literal-pool order.
+  - `g3d_res` links but the ROM differs; `fx_mtx44` has an undefined reference from MTX_Frustum.
+
 - **Game.cpp can't link because of `main`.** Every function in Game.cpp matches and its data layout is solved (include
   order plus where MicManager and SceneRunner are defined), but `main` (0x02000c04) belongs to it too: the node it
   registers lies in Game's `.bss`, so the original linker placed that one function right after the start-up code. dsd allows one `.text` range per unit, and a separate

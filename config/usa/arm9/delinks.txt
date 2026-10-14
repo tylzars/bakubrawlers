@@ -9,6 +9,7 @@ libs/cri/src/cri_adx_player.c:
     .text       start:0x0203dee8 end:0x0203e954
 
 libs/cri/src/cri_stm.c:
+    complete
     .text       start:0x02041744 end:0x02041f50
 
 libs/cri/src/cri_init.c:
@@ -580,7 +581,9 @@ libs/nds/src/fs/fs_tail.c:
     .text       start:0x0200936c end:0x02009558
 
 libs/nds/src/fs/fs_archive.c:
+    complete
     .text       start:0x02009558 end:0x0200a78c
+    .bss        start:0x020bfc88 end:0x020bfc98
 
 libs/nds/src/fs/fs_file.c:
     complete

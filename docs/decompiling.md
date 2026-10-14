@@ -163,6 +163,11 @@ Other findings from linking:
 - **A local array filled from a one-use rodata table is an aggregate initializer.** `u8 buf[3] = {0, 1, 4};` makes
   mwcc emit an anonymous rodata object (often first in the unit's .rodata) and changes which temporary is created
   first; copying `buf[i] = data_xxx[i]` element by element does not match (TitleScene::Update, BattleTarget::Update).
+- **Named pointer locals change what survives calls.** A local like `ShootPacket *pkt = (ShootPacket *) &g;` keeps
+  its value (or a shared base such as `this + 0x6000`) in a callee-saved register across calls, where the original
+  writes through the cast global each time and recomputes the base after every call (BattleShoot::Update). Likewise a
+  struct-typed table indexed directly, and a field read through `Get().mField`, are temporaries where a named local is
+  not (BattleObj00::Update).
 - **Enum-typed locals are not constant-propagated.** A known constant the original keeps in a register and computes
   with (`mov r2, #0; mov r1, #52; smulbb r4, r2, r1` for `array[0]`, then `this + r4` re-added at every access) comes
   from an enum local: `UnkStruct_02065c40_Kind j = UNK_02065C40_KIND_0;` matched func_0206d3b8 where `s16`/`int`

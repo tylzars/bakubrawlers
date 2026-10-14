@@ -101,11 +101,12 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   singleton nodes in `.bss`. `layout_search.py` lists working orders with a cost (how many things move, not how many
   objects are off); the one used defines the tables right after the first header (TouchManager), with
   `UI/SelectWindow.hpp` included early for the record types since it pulls in no singletons.
-- **BattleCharaAct's data layout (open).** All functions match and the data is defined from the original bytes,
-  but `layout_search.py`-style modelling finds no declaration order: in the original the 17 16-byte rows follow the
-  17 32-byte arrays (only possible if they and the 0x28-byte rows at 0x0227af68 are one 592-byte object), and the
-  17 name strings come out in an order their table's initializer can't produce (named arrays would allow it, but
-  only declared after the table or interleaved with the two VecFx32s).
+- **BattleCharaAct's data layout (solved).** The 0x28-byte light rows at 0x0227af68 are a 1-D `u8[8 * 0x28]`: as
+  `u8[][0x28]` they stayed in the shared `.rodata` and came out before the 17 `u8[16]` rows. A 1-D char array gets its
+  own section even when referenced, a 2-D one stays in the shared section, and own sections are emitted at their place
+  in the size sort, after the shared one. With that, the five singleton headers at the end of the includes and one
+  definition order of the 39 tables found by an offline model give the original in all three
+  sections. Also: FrameTask's singleton objects join guard first, which a compile where both orders fit can't tell.
 - **Guard load before a preceding store (solved).** mwcc lets a following load (e.g. the next singleton's guard)
   move above a store only when the store's offset is below half of the declared size of the object stored into.
   `TextManager` was declared 0x5c bytes, so the `mUnk_5b` store (offset 0x5b) blocked it; with its real size,

@@ -304,9 +304,12 @@ src/07_Battle/Battle/BattleMapPiece.cpp:
 src/07_Battle/Battle/BattleUnk022637ac.cpp:
     .text       start:0x022637ac end:0x02267a10
 
-// provisional: code only; .data 0x0228a23c-0x0228a56c, .rodata 0x0227ac20-0x0227b0a8 and .bss 0x0228ba6c-0x0228ba9c belong here.
 src/07_Battle/Battle/BattleCharaAct.cpp:
+    complete
     .text       start:0x02267a10 end:0x022696b4
+    .rodata     start:0x0227ac20 end:0x0227b0a8
+    .data       start:0x0228a23c end:0x0228a56c
+    .bss        start:0x0228ba6c end:0x0228ba9c
 
 // provisional: code only; .data 0x0228a56c-0x0228a5a0, .rodata 0x0227b0a8-about 0x0227bcd0 and .bss 0x0228ba9c-0x0228bac0 belong here.
 src/07_Battle/Battle/BattlePlayer.cpp:

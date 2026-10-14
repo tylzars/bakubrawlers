@@ -2590,6 +2590,7 @@ data_ov007_0228a52c kind:data(any) addr:0x0228a52c
 data_ov007_0228a530 kind:data(any) addr:0x0228a530
 data_ov007_0228a544 kind:data(any) addr:0x0228a544
 data_ov007_0228a558 kind:data(any) addr:0x0228a558
+data_ov007_0228a56c kind:data(any) addr:0x0228a56c
 data_ov007_0228a574 kind:data(any) addr:0x0228a574
 data_ov007_0228a580 kind:data(any) addr:0x0228a580
 data_ov007_0228a5a8 kind:data(any) addr:0x0228a5a8

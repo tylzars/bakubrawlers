@@ -14,6 +14,7 @@ typedef struct {
     u8 pad[0x388];
     vu32 flags[2];    // 0x388: registered tag bits, per processor
 } PXIWork;
+typedef enum { PXW_BASE = 0x27ffc00 } PXWB;
 static PXIWork *const pxiWork = (PXIWork *) 0x27ffc00;
 #define PXI_WORK pxiWork
 #define PXI_PROC_FLAGS(proc) (PXI_WORK->flags[proc])
@@ -29,7 +30,7 @@ typedef union {
     } bits;
 } PXIFifoMessage;
 
-static u16 pxiInitialized;                  // 0x020bfc04
+static vu16 pxiInitialized;                  // 0x020bfc04
 static PXIFifoCallback pxiCallback[32];    // 0x020bfc08
 
 void PXI_Init(void) {
@@ -37,7 +38,6 @@ void PXI_Init(void) {
 }
 
 void PxiFifoSetup(void) {
-    PXIWork *w = (PXIWork *) 0x27ffc00;
     OSIntrMode e = OS_DisableInterrupts();
     int timeout;
     u32 remote;
@@ -45,7 +45,8 @@ void PxiFifoSetup(void) {
     if (pxiInitialized == 0) {
         int i;
         pxiInitialized = 1;
-        w->flags[0] = 0;
+        { PXWB wb = PXW_BASE;
+        ((PXIWork *) wb)->flags[0] = 0; }
         for (i = 0; i < 32; i++) {
             pxiCallback[i] = NULL;
         }
@@ -81,16 +82,15 @@ void PxiFifoSetup(void) {
 
 void PXI_SetFifoRecvCallback(int fifoTag, PXIFifoCallback callback) {
     OSIntrMode e = OS_DisableInterrupts();
+    u32 v;
+    PXWB b = PXW_BASE;
     pxiCallback[fifoTag] = callback;
-    {
-        u32 v;
-        if (callback != NULL) {
-            v = PXI_PROC_FLAGS(0) | (1 << fifoTag);
-        } else {
-            v = PXI_PROC_FLAGS(0) & ~(1 << fifoTag);
-        }
-        PXI_PROC_FLAGS(0) = v;
+    if (callback != NULL) {
+        v = ((PXIWork *) b)->flags[0] | (1 << fifoTag);
+    } else {
+        v = ((PXIWork *) b)->flags[0] & ~(1 << fifoTag);
     }
+    ((PXIWork *) b)->flags[0] = v;
     OS_RestoreInterrupts(e);
 }
 

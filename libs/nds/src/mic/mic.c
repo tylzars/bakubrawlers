@@ -142,8 +142,14 @@ void func_0200cc10(u32 res, void *arg)
     micWork.result = res;
 }
 
-void func_0200cc20(void)
+extern vu32 data_020bfd50;   // micWork.busy as a pool symbol
+
+asm void func_0200cc20(void)
 {
-    vu32 *b = &micWork.busy;
-    while (*b == 1) {}
+    ldr ip, =data_020bfd50
+loop:
+    ldr r0, [ip, #0]
+    cmp r0, #1
+    beq loop
+    bx lr
 }

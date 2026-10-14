@@ -454,25 +454,44 @@ void OS_SetThreadDestructor(OSThread *thread, void (*dtor)(void *)) {
     thread->destructor = dtor;
 }
 
-void OS_InitContext(OSContext *context, u32 newpc, u32 newsp) {
-    u32 sp;
-    context->pc_plus4 = newpc + 4;
-    context->sp_svc = newsp;
-    sp = newsp - 0x40;
-    context->sp = (sp & 4) ? sp - 4 : sp;
-    context->cpsr = (newpc & 1) ? 0x3f : 0x1f;
-    context->r[0] = 0;
-    context->r[1] = 0;
-    context->r[2] = 0;
-    context->r[3] = 0;
-    context->r[4] = 0;
-    context->r[5] = 0;
-    context->r[6] = 0;
-    context->r[7] = 0;
-    context->r[8] = 0;
-    context->r[9] = 0;
-    context->r[10] = 0;
-    context->r[11] = 0;
-    context->r[12] = 0;
-    context->lr = 0;
+asm void OS_InitContext(OSContext *context, u32 newpc, u32 newsp) {
+    add r1, r1, #4
+    str r1, [r0, #0x40]
+    str r2, [r0, #0x44]
+    sub r2, r2, #0x40
+    tst r2, #4
+    bne sp_adj
+    b sp_done
+sp_adj:
+    sub r2, r2, #4
+sp_done:
+    str r2, [r0, #0x38]
+    ands r1, r1, #1
+    bne thumb
+    b chk
+thumb:
+    mov r1, #0x3f
+chk:
+    beq arm
+    b store
+arm:
+    mov r1, #0x1f
+store:
+    str r1, [r0, #0]
+    mov r1, #0
+    str r1, [r0, #4]
+    str r1, [r0, #8]
+    str r1, [r0, #0xc]
+    str r1, [r0, #0x10]
+    str r1, [r0, #0x14]
+    str r1, [r0, #0x18]
+    str r1, [r0, #0x1c]
+    str r1, [r0, #0x20]
+    str r1, [r0, #0x24]
+    str r1, [r0, #0x28]
+    str r1, [r0, #0x2c]
+    str r1, [r0, #0x30]
+    str r1, [r0, #0x34]
+    str r1, [r0, #0x3c]
+    bx lr
 }

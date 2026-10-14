@@ -69,14 +69,10 @@ SNDCommand *SND_RecvCommandReply(u32 flags) {
             return NULL;
         }
     }
-    {
-        int idx = cmdState.ringRead;
-        int nextIdx = idx + 1;
-        node = cmdRing[idx];
-        cmdState.ringRead = nextIdx;
-        if (nextIdx > 8) {
-            cmdState.ringRead = 0;
-        }
+    node = cmdRing[cmdState.ringRead];
+    cmdState.ringRead++;
+    if (cmdState.ringRead > 8) {
+        cmdState.ringRead = 0;
     }
     tail = node;
     if (tail->next != NULL) {
@@ -179,12 +175,9 @@ BOOL SND_FlushCommand(u32 flags) {
         }
     }
     {
-        int w = cmdState.ringWrite;
-        SNDCommand *h = cmdState.pendingHead;
-        int nw = w + 1;
-        cmdRing[w] = h;
-        cmdState.ringWrite = nw;
-        if (nw > 8) {
+        cmdRing[cmdState.ringWrite] = cmdState.pendingHead;
+        cmdState.ringWrite++;
+        if (cmdState.ringWrite > 8) {
             cmdState.ringWrite = 0;
         }
     }

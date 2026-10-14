@@ -108,8 +108,9 @@ s32 OS_UnlockCartridge(u16 lockID) {
     return OSi_DoUnlockByWord(lockID, OS_CARTRIDGE_LOCK, func_02004ecc, TRUE);
 }
 
-void OS_UnLockCartridge(u16 lockID) {
-    OS_UnlockCartridge(lockID);
+asm void OS_UnLockCartridge(u16 lockID) {
+    ldr r1, =OS_UnlockCartridge
+    bx r1
 }
 
 s32 OS_TryLockCartridge(u16 lockID) {

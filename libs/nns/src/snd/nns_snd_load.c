@@ -18,6 +18,7 @@ extern void MI_CpuCopy8(void *dst, void *src, u32 n);
 extern void MI_CpuFill8(void *dst, u32 data, u32 size);
 typedef struct { u8 pad[0x38]; u32 count; } SndWaveHdr;   // 0x3c bytes of wave archive header
 extern SndWaveHdr data_022149b4;
+extern SndWaveHdr data_022149b4_h; // same address as data_022149b4 (second literal-pool word)
 
 typedef void (*SndFreeCb)(void *, u32, u32, u32);
 void func_02038d34(void *p, u32 size, u32 x, u32 id);
@@ -88,7 +89,7 @@ u32 func_02038bd4(u32 id, SndHeap *heap, int flag) {
         u32 x;
         int n;
         if (func_020380e8(id, &data_022149b4, 0x3c, 0) != 0x3c) return 0;
-        tblBytes = data_022149b4.count * 4;
+        tblBytes = data_022149b4_h.count * 4;
         total = tblBytes * 2;
         if (heap == 0) return 0;
         x = flag != 0 ? (u32)func_02037d68() : 0;

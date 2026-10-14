@@ -104,12 +104,18 @@ void func_0200cd80(void)
 
 void func_0200ce18(u32 tag, u32 data, int err)
 {
-    u16 cmd = (data & 0x7f00) >> 8;
     u32 arg = data & 0xff;
+    u16 cmd = (data & 0x7f00) >> 8;
     if (err) {
-        if (cmd == 0x61) arg = 1;
-        else if (cmd == 0x62) arg = 1;
-        else arg = 2;
+        switch (cmd) {
+        case 0x61:
+        case 0x62:
+            arg = 1;
+            break;
+        default:
+            arg = 2;
+            break;
+        }
         func_0200cd50(arg);
         return;
     }

@@ -4906,6 +4906,7 @@ data_022143bc kind:bss addr:0x022143bc
 data_022143fc kind:bss addr:0x022143fc
 data_022149b0 kind:bss addr:0x022149b0
 data_022149b4 kind:bss addr:0x022149b4
+data_022149b4_h kind:bss addr:0x022149b4
 data_022149f0 kind:bss addr:0x022149f0
 data_022149fc kind:bss addr:0x022149fc
 data_02214a08 kind:bss addr:0x02214a08

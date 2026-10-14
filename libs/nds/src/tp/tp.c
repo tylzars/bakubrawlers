@@ -179,7 +179,7 @@ int func_0200c3cc(TPData *out)
 int func_0200c41c(TPCalibrateParam *p, u16 x1, u16 y1, u16 px1, u16 py1, u16 x2, u16 y2, u16 px2, u16 py2)
 {
     u32 e;
-    s32 r, dy, ny;
+    s32 r, dy, ty;
     u16 lx2, lpx2, lpy2, lpy1, ly2;
     if (!(x1 < 0x1000 && y1 < 0x1000 && x2 < 0x1000 && y2 < 0x1000)) return 1;
     if (!(px1 < 0x100 && px2 < 0x100 && py1 < 0xc0 && py2 < 0xc0)) return 1;
@@ -193,13 +193,13 @@ int func_0200c41c(TPCalibrateParam *p, u16 x1, u16 y1, u16 px1, u16 py1, u16 x2,
     REG_DIVCNT = 0;
     REG_DIV_NUMER = (x1 - lx2) << 8;
     *(vu64 *)0x04000298 = (u32)(px1 - lpx2);
+    ty = y1 - ly2;
     dy = lpy1 - lpy2;
-    ny = (y1 - ly2) << 8;
     while (REG_DIVCNT & 0x8000) {}
     r = REG_DIV_RESULT;
     REG_DIVCNT = 0;
-    REG_DIV_NUMER = ny;
-    *(vu64 *)0x04000298 = (u32)dy;
+    REG_DIV_NUMER = ty << 8;
+    *(u64 *)0x04000298 = (u32)dy;
     if (r >= 0x8000 || r < -0x8000) {
         OS_RestoreInterrupts(e);
         return 1;

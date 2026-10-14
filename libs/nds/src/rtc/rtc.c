@@ -229,6 +229,8 @@ void func_0200dc24(u32 tag, u32 data, u32 err)
         case 1: res = 4; break;
         case 2: res = 5; break;
         case 3: res = 1; break;
+        case 0:
+        case 4:
         default: res = 6; break;
         }
     }
@@ -263,10 +265,14 @@ void func_0200e1e4(u32 result, void *arg)
     data_020bfd98.result = result;
 }
 
-void func_0200e1f4(void)
+asm void func_0200e1f4(void)
 {
-    vu32 *p = &data_020bfda4;
-    while (*p == 1) {}
+    ldr ip, =data_020bfda4
+loop:
+    ldr r0, [ip, #0]
+    cmp r0, #1
+    beq loop
+    bx lr
 }
 
 BOOL func_0200e20c(void) { return func_0200e22c(0x12); }
@@ -285,13 +291,12 @@ u32 func_0200e254(RTCDate *date)
     s32 yy;
     s32 t;
     s32 d;
-    m = date->month - 2;
-    y = date->year + 2000;
-    if (m < 1) y -= 1;
     d = date->day;
-    yy = y % 100;
+    y = date->year + 2000;
+    m = date->month - 2;
+    if (m < 1) { y -= 1; m += 12; }
     c = y / 100;
-    if (m < 1) m += 12;
-    t = yy + d + (m * 26 - 2) / 10 + yy / 4 + c / 4 + c * 5;
+    yy = y % 100;
+    t = yy + (d + (m * 26 - 2) / 10) + yy / 4 + c / 4 + c * 5;
     return t % 7;
 }

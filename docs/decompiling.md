@@ -239,6 +239,12 @@ Other findings from linking:
 - **Repeated calls with constant arguments schedule in a cycle.** In a lab of 20 identical `func_02025b64` calls the
   argument-setup pattern repeats every 7 calls; an enum-typed zero (`LoadArg z`, in System/FileSystem.hpp) for one
   call's last three arguments shifts it (MyroomGiftScene::func_ov008_0221de34, UnkStruct_02071d24::func_02072734).
+  The period depends on the stack arguments: 10, 8, 7, 6, 6 calls for 1-5 of them (about 56-60 instructions), and 8
+  with 3 stack arguments plus a register-sourced one. Within a period the first 4 calls store `[sp]` last, the rest
+  first. Code before the run shifts it (about 10 global stores or 20 argument-less calls per call). An enum zero only
+  acts on a call next to a load with a nonzero offset, and can flip later calls (BattleUnk022767c8::func_ov007_02277514)
+  or earlier ones (TournamentSubScene::func_ov002_0221fb24); in both, one enum zero fixes the last differing call but
+  flips others, so the right shape is still unknown. `-proc generic` shows no difference there: it's a scheduler tie.
 - **A stack parameter the callee reads as `*(s16 *)&param` is really `s16`.** Declaring it so makes callers narrow at
   the call, which creates the value later and gives it the low register: with
   `SpriteScreen::func_02027778(..., s16 unk4, ...)`, `int y = row * 0xc + base;` passed straight through matched

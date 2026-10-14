@@ -943,8 +943,9 @@ void BattleHud::func_ov007_02227bbc(u8 index) {
     } while (i < 2);
 }
 
-// non-matching: register order in the aura loop (original i=r9, j=r8, frame=r7, x=r6).
 void BattleHud::func_ov007_02227c54() {
+    u8 i;
+    u8 j;
     if (!mUnk_22_3) {
         if (mUnk_26 == 0 && mUnk_a8[0] != 0.0f) {
             s16 x = (s16) (s32) (192.0f * mUnk_a8[0] + 32.0f + 8.0f);
@@ -956,15 +957,15 @@ void BattleHud::func_ov007_02227c54() {
             mAnims[4]->Update();
             mAnims[4]->Draw(1, x, 0x42, 1);
         }
-        u8 n = 0;
+        i = 0;
         do {
-            mObjs[n]->Update();
-            n++;
-        } while (n < 15);
-        u8 i = 0;
-        u8 j = 0;
-        int frame = 0;
+            mObjs[i]->Update();
+            i++;
+        } while (i < 15);
+        i = 0;
+        j = 0;
         int x = 0x20;
+        int frame = 0;
         do {
             if (mUnk_a8[i] >= 0.01f) {
                 float f;
@@ -986,10 +987,10 @@ void BattleHud::func_ov007_02227c54() {
                     mAnims[j]->func_0202a494(1, x, 0x40, 3, (s32) f << 1, 0x1000, 0);
                 }
             }
-            j++;
-            i++;
             frame = 2;
             x = 0xe0;
+            j++;
+            i++;
         } while (i < 2);
         return;
     }
@@ -1003,8 +1004,8 @@ void BattleHud::func_ov007_02227c54() {
     }
     if (mUnk_122[0] != 0 || mUnk_122[1] != 0) {
         s16 x = (u16) (mUnk_13 * 0xc0 / 100 + 0x20);
-        u8 j = 3;
-        u8 i = 0;
+        j = 3;
+        i = 0;
         do {
             if (!mUnk_117_3) {
                 if (mAnims[j]->mUnk_12 == 0) {
@@ -1014,8 +1015,8 @@ void BattleHud::func_ov007_02227c54() {
                 }
             }
             mAnims[j]->Draw(1, x, 0x42, 1);
-            i++;
             j++;
+            i++;
         } while (i < 2);
     } else {
         if (!mUnk_117_3) {
@@ -1041,42 +1042,42 @@ void BattleHud::func_ov007_02227c54() {
                     }
                 }
             } else {
-                u8 w = 5;
-                u8 k = 0;
+                i = 0;
+                j = 5;
                 do {
-                    if (mUnk_28[k] != 0) {
-                        if (mUnk_1c[(u8) (k ^ 1)] != 0) {
+                    if (mUnk_28[i] != 0) {
+                        if (mUnk_1c[(u8) (i ^ 1)] != 0) {
                             mAnims[2]->func_02029f6c();
                             mAnims[2]->SetAnimation(6);
                         } else {
-                            if (cur != w) {
+                            if (cur != j) {
                                 mAnims[2]->func_02029f6c();
-                                mAnims[2]->SetAnimation(w);
+                                mAnims[2]->SetAnimation(j);
                             }
-                            mUnk_1c[k] = mAnims[2]->func_0202a54c();
+                            mUnk_1c[i] = mAnims[2]->func_0202a54c();
                         }
                     }
-                    k++;
-                    w--;
-                } while (k < 2);
+                    j--;
+                    i++;
+                } while (i < 2);
             }
-            u8 m = 0;
+            i = 0;
             do {
-                if (mUnk_1c[m] != 0) {
-                    mUnk_1c[m]--;
+                if (mUnk_1c[i] != 0) {
+                    mUnk_1c[i]--;
                 }
-                m++;
-            } while (m < 2);
+                i++;
+            } while (i < 2);
             mAnims[2]->Update();
         }
         mAnims[2]->Draw(1, (s16) (u16) (mUnk_13 * 0xc0 / 100 + 0x20), 0x42, 1);
     }
     mUnk_28[0] = mUnk_28[1] = 0;
-    u8 n = 0;
+    i = 0;
     do {
-        mObjs[n]->Update();
-        n++;
-    } while (n < 15);
+        mObjs[i]->Update();
+        i++;
+    } while (i < 15);
     float p = (float) mUnk_13 / 100.0f;
     float f;
     if (1.0f - p >= 0.5f) {

@@ -144,6 +144,7 @@ struct BattleData {
 
     BattleData();
     virtual ~BattleData();
+    BattleEntry *Entries() { return mEntries; }
     void func_ov007_0223d504();
     void func_ov007_0223db20(u8 side, s16 x, s16 y);
     BOOL func_ov007_0223dd6c();

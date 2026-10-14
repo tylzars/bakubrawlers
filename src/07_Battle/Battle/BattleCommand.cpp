@@ -1916,7 +1916,6 @@ void BattleCommand::func_ov007_0223b874() {
     }
 }
 
-// non-matching: register allocation in the bounds clamp (field/off/data ptr) and the touch cell select (col/row/flip/cur); control flow and calls match
 void BattleCommand::func_ov007_0223bb30(u32 flag) {
     u32 moved = 0;
     mUnk_13b  = 0;
@@ -2039,16 +2038,14 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
             mUnk_120 = mUnk_124 - tx;
             mUnk_122 = mUnk_126 - ty;
         }
-        s16 cx = mUnk_120;
-        if (cx > data_ov007_02279acc[field].mMax) {
+        if (mUnk_120 > data_ov007_02279acc[field].mMax) {
             mUnk_120 = data_ov007_02279acc[field].mMax;
-        } else if (cx < data_ov007_02279acc[field].mMin - off) {
+        } else if (mUnk_120 < data_ov007_02279acc[field].mMin - off) {
             mUnk_120 = data_ov007_02279acc[field].mMin - off;
         }
-        s16 cy = mUnk_122;
-        if (cy > data_ov007_02279aec[field].mMax) {
+        if (mUnk_122 > data_ov007_02279aec[field].mMax) {
             mUnk_122 = data_ov007_02279aec[field].mMax;
-        } else if (cy < data_ov007_02279aec[field].mMin) {
+        } else if (mUnk_122 < data_ov007_02279aec[field].mMin) {
             mUnk_122 = data_ov007_02279aec[field].mMin;
         }
         if (TouchManager::Get().mUnk_57 != 0) {
@@ -2059,29 +2056,23 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
         if (TouchManager::Get().mTouching != 0) {
             mUnk_124 = tx + mUnk_120;
             mUnk_126 = ty + mUnk_122;
-            u8 flip;
-            u8 cur;
             s16 col  = (mUnk_124 - 0xe - mUnk_139) / 16;
-            s16 row  = (mUnk_126 + 0x16) / 10;
+            s16 row  = (mUnk_126 + 0x16) / 24;
             if (col >= 0 && col <= 13 && row >= 0 && row <= 9 && mUnk_90[col][row] != 0) {
-                flip = mUnk_135;
-                cur  = mUnk_12c;
-                if (flip == 0) {
-                    if (cur != col || mUnk_12d != row) {
+                if (mUnk_135 == 0) {
+                    if (mUnk_12c != col || mUnk_12d != row) {
                         mUnk_12c = col;
                         mUnk_12d = row;
                         moved    = 1;
-                    } else if (cur == col && mUnk_12d == row) {
+                    } else if (mUnk_12c == col && mUnk_12d == row) {
                         mUnk_13b = 1;
                     }
                 } else {
-                    int fc = 13 - col;
-                    int fr = 9 - row;
-                    if (cur != fc || mUnk_12d != fr) {
-                        mUnk_12c = fc;
-                        mUnk_12d = fr;
+                    if (mUnk_12c != 13 - col || mUnk_12d != 9 - row) {
+                        mUnk_12c = 13 - col;
+                        mUnk_12d = 9 - row;
                         moved    = 1;
-                    } else if (cur == fc && mUnk_12d == fr) {
+                    } else if (mUnk_12c == 13 - col && mUnk_12d == 9 - row) {
                         mUnk_13b = 1;
                     }
                 }
@@ -2155,9 +2146,7 @@ void BattleCommand::func_ov007_0223c578() {
                 u8 c                 = func_ov007_02262530(data_020d433c.mBattlePlayers, mUnk_12c, mUnk_12d)->mUnk_09;
                 u32 d                = func_ov007_02262530(data_020d433c.mBattlePlayers, mUnk_12c, mUnk_12d)->mUnk_08;
                 BattleCellInfo *e    = func_ov007_02262530(data_020d433c.mBattlePlayers, mUnk_12c, mUnk_12d);
-                BattleCellPair pair;
-                pair.mUnk_00 = e->mUnk_00;
-                pair.mUnk_02 = e->mUnk_02;
+                BattleCellPair pair = *(BattleCellPair *) e;
                 if (mUnk_7c) {
                     func_02058260(mUnk_7c, d, c, (s8) data_020d433c.mBattlePlayers->Units()[(u8) (cell - 1)].mUnk_0f);
                     func_0205afb4(mUnk_7c, c, sum, &pair);

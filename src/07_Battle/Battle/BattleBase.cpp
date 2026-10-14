@@ -60,10 +60,8 @@ extern const s16 data_ov007_02278b1c[];
 
 
 
-// non-matching: 4 bytes short. The original truncates a zero (`and r2, r1, #0xff`) for the mUnk_52 store.
 BattleBase::BattleBase()
     : IBattle(), SceneBase(0x3e8, 0) {
-    u8 zero = 0;
     mUnk_10 = 0;
     mUnk_11 = 0;
     mUnk_12 = 0;
@@ -103,18 +101,11 @@ BattleBase::BattleBase()
     mUnk_56 = 0;
     mUnk_58 = 0;
     mUnk_5c = 0;
-    mSlots[3] = 0;
-    mSlots[2] = 0;
-    mSlots[1] = 0;
-    mSlots[0] = 0;
-    mUnk_1d = -1;
-    mUnk_1c = mUnk_1d;
-    mUnk_1f = -1;
-    mUnk_1e = mUnk_1f;
-    mUnk_52[1] = 0;
-    mUnk_52[0] = zero;
-    mHelpers[1] = 0;
-    mHelpers[0] = 0;
+    mSlots[0] = mSlots[1] = mSlots[2] = mSlots[3] = 0;
+    mUnk_1c = mUnk_1d = -1;
+    mUnk_1e = mUnk_1f = -1;
+    mUnk_52[0] = mUnk_52[1] = 0;
+    mHelpers[0] = mHelpers[1] = 0;
     if (data_020d433c.mUnk_95 != 0 && data_020d433c.mUnk_95 != 7) {
         mUnk_14 = data_020d433c.mUnk_95 - 1;
     }
@@ -204,9 +195,8 @@ void BattleBase::func_ov007_02219888(BattleData *data, u32 mode) {
     }
 }
 
-// non-matching: register allocation only (entries lands in r5 instead of r6), same size.
 void BattleBase::Update() {
-    BattleEntry *entries = mUnk_2c->mEntries;
+    BattleEntry *entries = mUnk_2c->Entries();
     switch (mUnk_10) {
         case 0:
             SpriteManager::Get().StartFade(2);
@@ -222,8 +212,8 @@ void BattleBase::Update() {
             }
             break;
         case 3: {
-            BOOL found = 0;
             s8 i       = 1;
+            BOOL found = 0;
             do {
                 u32 v = 0xff;
                 if (entries[i].mUnk_12 != 0) {
@@ -247,8 +237,8 @@ void BattleBase::Update() {
             break;
         }
         case 4: {
-            BOOL found = 0;
             s8 i       = 1;
+            BOOL found = 0;
             do {
                 if (entries[i].mUnk_12 != 0) {
                     u8 idx = i;
@@ -272,8 +262,8 @@ void BattleBase::Update() {
             break;
         }
         case 5: {
-            BOOL found = 0;
             s8 i       = 1;
+            BOOL found = 0;
             do {
                 u16 card = entries[i].mUnk_12;
                 if (card >= 0x8e && card <= 0x91) {
@@ -1197,7 +1187,7 @@ void BattleBase::func_ov007_0221c8f8(u16 *p) {
     }
 }
 
-// non-matching: 8 bytes long; register choice for a[] and value/side, and the wireless (u8) n << 8 form.
+// non-matching: register allocation only (value lands in r8 and the TouchManager address in r9, swapped).
 void BattleBase::func_ov007_0221c938() {
     u16 a[4] = {0, 0, 0, 0};
     u16 b[4] = {0, 0, 0, 0};
@@ -1232,6 +1222,7 @@ void BattleBase::func_ov007_0221c938() {
             }
         }
         u8 side;
+        u8 k;
         u16 value = 0;
         if (a[sel] != 0) {
             side = 0;
@@ -1243,7 +1234,7 @@ void BattleBase::func_ov007_0221c938() {
         WirelessManager::Get();
         if (!IsWirelessMode(&data_020c4258)) {
             if (doneB) {
-                u8 k = 0;
+                k = 0;
                 u32 n;
                 do {
                     mUnk_44->func_ov007_022275c0(side, TouchManager::Get().mX, TouchManager::Get().mY, mUnk_15);
@@ -1257,11 +1248,11 @@ void BattleBase::func_ov007_0221c938() {
             }
         } else {
             if (doneB) {
-                u8 n = mUnk_44->func_ov007_022275a0(value, mUnk_20->mUnk_09, mUnk_20->mUnk_0a);
+                u16 n = mUnk_44->func_ov007_022275a0(value, mUnk_20->mUnk_09, mUnk_20->mUnk_0a) << 8;
                 if (a[sel] != 0) {
-                    a[sel] |= n << 8;
+                    a[sel] |= n;
                 } else {
-                    b[sel] |= n << 8;
+                    b[sel] |= n;
                 }
             }
             if (!doneA) {
@@ -1273,38 +1264,38 @@ void BattleBase::func_ov007_0221c938() {
     WirelessManager::Get();
     if (!IsWirelessMode(&data_020c4258)) {
         func_ov007_0221c850(a, b, c, &flag);
-        u8 count = data_020d433c.mPlayerCount;
         u8 i = 0;
+        u8 count = data_020d433c.mPlayerCount;
         do {
             sums[0] += a[i];
             sums[1] += b[i];
             i++;
         } while (i < count);
-        BattleEntry *entries = mUnk_2c->mEntries;
-        u8 s = 0;
+        BattleEntry *entries = mUnk_2c->Entries();
+        i = 0;
         do {
-            if (sums[s] != 0) {
+            if (sums[i] != 0) {
                 s32 v = 0x1000;
                 s8 cur = mUnk_14;
                 if (cur != -1) {
-                    v = data_ov007_02278b68[cur].mUnk[entries[s].mUnk_0d_4];
-                    if (entries[s].mUnk_0c == 5) {
+                    v = data_ov007_02278b68[cur].mUnk[entries[i].mUnk_0d_0];
+                    if (entries[i].mUnk_0c == 5) {
                         if (v < data_ov007_02278b68[cur].mUnk[3]) {
                             v = data_ov007_02278b68[cur].mUnk[3];
                         }
-                    } else if (entries[s].mUnk_0c == 6) {
+                    } else if (entries[i].mUnk_0c == 6) {
                         if (v < data_ov007_02278b68[cur].mUnk[0]) {
                             v = data_ov007_02278b68[cur].mUnk[0];
                         }
                     }
                 }
-                if (mUnk_29 == s && v < 0x1000) {
+                if (mUnk_29 == i && v < 0x1000) {
                     v = 0x1000;
                 }
-                mUnk_44->func_ov007_02227490(s, FX_Mul(v, mUnk_20->mUnk_04), sums[s], mUnk_52[s], 1);
+                mUnk_44->func_ov007_02227490(i, FX_Mul(v, mUnk_20->mUnk_04), sums[i], mUnk_52[i], 1);
             }
-            s++;
-        } while (s < 2);
+            i++;
+        } while (i < 2);
         func_ov007_0221c8f8(c);
     } else {
         func_ov007_02229c88(this, a, b, c, flag);
@@ -1379,7 +1370,6 @@ void BattleBase::func_ov007_0221cfac(u16 *a, u16 *b) {
     } while (i < data_020d433c.mPlayerCount);
 }
 
-// non-matching: 4 bytes long. The original reloads counts[i] after the hi[i] store.
 void BattleBase::func_ov007_0221d088(u8 a, u16 *counts) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 sel = list->mUnk_2a9;
@@ -1391,27 +1381,27 @@ void BattleBase::func_ov007_0221d088(u8 a, u16 *counts) {
         i++;
     } while (i < data_020d433c.mPlayerCount);
     u8 k;
-    u8 p = 0;
+    i = 0;
     do {
-        if (hi[p] != 0) {
+        if (hi[i] != 0) {
             k = 0;
             do {
-                if (sel == p) {
+                if (sel == i) {
                     mUnk_44->func_ov007_022275c0(a, TouchManager::Get().mX, TouchManager::Get().mY, mUnk_15);
-                } else if (!data_020d433c.mBattlePlayers->mPlayers[p]->IsActive()) {
+                } else if (!data_020d433c.mBattlePlayers->mPlayers[i]->IsActive()) {
                     func_ov007_0221d348(0xffff);
                 }
                 k++;
-            } while (k < hi[p]);
+            } while (k < hi[i]);
         }
-        p++;
-    } while (p < data_020d433c.mPlayerCount);
+        i++;
+    } while (i < data_020d433c.mPlayerCount);
     s32 total = 0;
-    u8 j = 0;
+    i = 0;
     do {
-        total += counts[j];
-        j++;
-    } while (j < data_020d433c.mPlayerCount);
+        total += counts[i];
+        i++;
+    } while (i < data_020d433c.mPlayerCount);
     if (total != 0) {
         s32 v = 0x1000;
         BattleEntry *entries = mUnk_2c->mEntries;

@@ -169,6 +169,15 @@ Other findings from linking:
 - **A local array filled from a one-use rodata table is an aggregate initializer.** `u8 buf[3] = {0, 1, 4};` makes
   mwcc emit an anonymous rodata object (often first in the unit's .rodata) and changes which temporary is created
   first; copying `buf[i] = data_xxx[i]` element by element does not match (TitleScene::Update, BattleTarget::Update).
+- **One loop counter for every loop.** Original functions often reuse one function-scope `u8 i` (and a second `j`)
+  for all their loops, even where one counts down; per-loop locals colour differently, and no declaration order
+  fixes that. A counter shared by several loops is coloured above a hoisted singleton address, separate per-loop
+  counters below it (BattleHud::func_ov007_02227c54, BattleBase::func_ov007_0221d088). When two counters step together,
+  the order of `j++; i++;` matters too.
+- **Chained member assignments in constructors.** `a = b = 0;` reproduces the reload-and-truncate sequences
+  (`ldrb`/`and #0xff`) that separate stores don't (BattleBase's constructor).
+- **An inline accessor turns a field read into a temporary.** `mUnk_2c->Entries()` instead of `mUnk_2c->mEntries`
+  moved a pointer from r5 to r6 (BattleBase::Update), like `CurrentPlayer()` and `Screen(n)`.
 - **Spill slots.** Spilled parameters take the lowest stack slots, in parameter order; spilled named locals go above
   them in reverse declaration order (the first declared gets the highest slot); a spilled compiler temporary (such as
   a repeated global read that mwcc merges into one value) sits just above the parameters. A local that won't take its

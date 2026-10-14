@@ -270,11 +270,11 @@ void func_01ffa1cc(s32 *out, s32 frame, u32 *info, u8 *res) {
                         b = a + 1;
                     }
                     if (hdr & 0x20000000) {
-                        out[0] = (((P16 *) data)[a].x * 3 + ((P16 *) data)[b].x) >> 2;
-                        out[1] = (((P16 *) data)[a].y * 3 + ((P16 *) data)[b].y) >> 2;
+                        out[0] = (((P16 *) data)[a].x + ((P16 *) data)[a].x + ((P16 *) data)[a].x + ((P16 *) data)[b].x) >> 2;
+                        out[1] = (((P16 *) data)[a].y + ((P16 *) data)[a].y + ((P16 *) data)[a].y + ((P16 *) data)[b].y) >> 2;
                     } else {
-                        out[0] = (s32) (((s64) ((P32 *) data)[a].x * 3 + ((P32 *) data)[b].x) >> 2);
-                        out[1] = (s32) (((s64) ((P32 *) data)[a].y * 3 + ((P32 *) data)[b].y) >> 2);
+                        out[0] = (s32) (((s64) ((P32 *) data)[a].x + ((P32 *) data)[a].x + ((P32 *) data)[a].x + ((P32 *) data)[b].x) >> 2);
+                        out[1] = (s32) (((s64) ((P32 *) data)[a].y + ((P32 *) data)[a].y + ((P32 *) data)[a].y + ((P32 *) data)[b].y) >> 2);
                     }
                     return;
                 }
@@ -598,7 +598,10 @@ int func_01ffaca4(s32 *m, u8 *res1, u8 *res2, u32 idx) {
     s16 *t2 = (s16 *) res2;
     if (idx & 0x8000) {
         s16 *p;
-        s32 v0, v1, v2, k;
+        s32 v0;
+        s32 v2;
+        s32 k;
+        s32 v1;
         s32 w;
         m[0] = m[1] = m[2] = m[3] = m[4] = m[5] = m[6] = m[7] = m[8] = 0;
         idx &= 0x7fff;
@@ -645,10 +648,14 @@ int func_01ffaca4(s32 *m, u8 *res1, u8 *res2, u32 idx) {
 }
 
 void func_01ff9f18(s32 *out, s32 frame, u32 *info, u8 *res) {
-    u32 idx = frame >> 12;
-    u32 flags = info[0];
-    u8 *data = res + info[1];
-    u32 last, rem;
+    u32 flags;
+    u32 idx;
+    u8 *data;
+    u32 last;
+    u32 rem;
+    idx = frame >> 12;
+    data = res + info[1];
+    flags = info[0];
     if (flags & 0xc0000000) {
         last = (flags & 0x1fff0000) >> 16;
         if (flags & 0x40000000) {
@@ -681,11 +688,11 @@ void func_01ff9f18(s32 *out, s32 frame, u32 *info, u8 *res) {
                 if (flags & 0x20000000) {
                     s32 x = *(s16 *) (data + a * 2);
                     s32 y = *(s16 *) (data + b * 2);
-                    *out = (x * 3 + y) >> 2;
+                    *out = (x + x + x + y) >> 2;
                 } else {
                     s32 x = *(s32 *) (data + a * 4);
                     s32 y = *(s32 *) (data + b * 4);
-                    *out = (s32) (((s64) x * 3 + y) >> 2);
+                    *out = (s32) (((s64) x + x + x + y) >> 2);
                 }
                 return;
             }
@@ -699,7 +706,9 @@ void func_01ff9f18(s32 *out, s32 frame, u32 *info, u8 *res) {
 blend:
     if (flags & 0x20000000) {
         s32 x = *(s16 *) (data + idx * 2);
-        s32 y = *(s16 *) (data + idx * 2 + 2);
+        s32 y;
+        data += idx * 2;
+        y = *(s16 *) (data + 2);
         *out = (x + y) >> 1;
     } else {
         s32 x = *(s32 *) (data + idx * 4);

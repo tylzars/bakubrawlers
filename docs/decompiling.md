@@ -252,6 +252,12 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **`x + x + x + y` for a times-three blend.** The G3D animation blends (func_0203382c, func_01ff9f18, func_01ffa1cc)
+  match only with the sum spelled out (`(s64) x + x + x + y` for the 32-bit arm); `x * 3 + y` creates temporaries in
+  another order and swaps the `adds` operands.
+- **Advance the pointer, then read past it.** `p += idx * 2; y = *(s16 *)(p + 2);` gives a different register pair
+  than a second `p + idx * 2 + 2` expression.
+
 - **A dead product still shapes the code.** GimmickUnk_02274830::Update copies a vector whole and scales all three
   components (`v.y = FX_Mul(v.y, 0x2000);`) before overwriting y; dropping the dead product changes registers and
   order (BattleUnk29c and GimmickExePoint do the same).

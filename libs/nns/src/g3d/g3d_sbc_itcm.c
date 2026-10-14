@@ -74,12 +74,12 @@ void func_01ffaee8(Rs *rs, RObj *obj) {
     MIi_CpuClearFast(0, rs, 0x188);
     rs->one = 1;
     rs->flag = 1;
-    rs->obj = obj;
     t = (u32) obj->sbcOverride;
     if (t == 0) {
         t = (u32) (obj->mdl + *(u32 *) (obj->mdl + 4));
     }
     rs->cmd = (u8 *) t;
+    *(volatile u32 *) &rs->obj = (u32) obj; // placeholder: volatile keeps this store apart from the one above (no stm); the real form is unknown
     rs->dNode = obj->mdl != 0 ? (Dict *) (obj->mdl + 0x40) : 0;
     rs->dMat = (ResMat *) ResAt(obj->mdl, 8);
     rs->dShp = (Dict *) ResAt(obj->mdl, 0xc);
@@ -451,7 +451,7 @@ void func_01ffb7f8(Rs *rs, u32 op) {
             if (n->flag & 0x400) {
                 b = -b;
             }
-            s->mtx[data_0208b503[k * 4]] = b;
+            s->mtx[data_0208b503[k << 2]] = b;
         } else {
             s->mtx[0] = n->hw02;
             s->mtx[1] = ((s16 *) p)[0];

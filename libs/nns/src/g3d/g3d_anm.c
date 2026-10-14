@@ -34,14 +34,19 @@ static inline s32 SampleBlend(u8 *p, u32 info, u32 i) {
 
 static inline u16 Blend555(u8 *p, u32 a) {
     u32 v1 = *(u16 *)(p + a * 2);
-    u32 v2 = *(u16 *)(p + a * 2 + 2);
+    u32 v2;
+    p += a * 2;
+    v2 = *(u16 *)(p + 2);
     return (u16)((((v1 & 0x7c1f) + (v2 & 0x7c1f)) >> 1 & 0x7c1f) | ((((v1 & 0x3e0) + (v2 & 0x3e0)) >> 1) & 0x3e0));
 }
 u16 func_0203382c(u8 *base, u32 info, u32 idx) {   // read one 5-5-5 colour from an animation track
     u8 *p;
     u32 last;
     u32 rem;
-    u32 a, b;
+    u32 c;
+    u32 d;
+    u32 v1;
+    u32 v2;
     if (info & 0x20000000) return (u16)info;
     p = base + (u16)info;
     if ((info & 0xc0000000) == 0) return *(u16 *)(p + idx * 2);
@@ -58,13 +63,11 @@ u16 func_0203382c(u8 *base, u32 info, u32 idx) {   // read one 5-5-5 colour from
     if (rem != 0) {
         if (idx > last) return *(u16 *)(p + (last >> 2) * 2 + rem * 2);
         if (idx & 1) {
-            u32 v1, v2;
-            u32 c, d;
             if (idx & 2) { d = idx >> 2; c = d + 1; }
             else { c = idx >> 2; d = c + 1; }
             v1 = *(u16 *)(p + c * 2);
             v2 = *(u16 *)(p + d * 2);
-            return (u16)((((v1 & 0x7c1f) * 3 + (v2 & 0x7c1f)) >> 2 & 0x7c1f) | ((((v1 & 0x3e0) * 3 + (v2 & 0x3e0)) >> 2) & 0x3e0));
+            return (u16)((((v1 & 0x7c1f) + (v1 & 0x7c1f) + (v1 & 0x7c1f) + (v2 & 0x7c1f)) >> 2 & 0x7c1f) | ((((v1 & 0x3e0) + (v1 & 0x3e0) + (v1 & 0x3e0) + (v2 & 0x3e0)) >> 2) & 0x3e0));
         }
         rem = idx >> 2;
         goto blend;
@@ -251,7 +254,7 @@ u32 func_02033d44(u8 *base, u32 info, u32 value, u32 idx) {   // read an interpo
                     f0 = *(s16 *)(p + a * 4);
                     s1 = *(s16 *)(p + b * 4 + 2);
                     s0 = *(s16 *)(p + b * 4);
-                    return (((f1 * 3 + s1) >> 2) << 16) | (u16)((f0 * 3 + s0) >> 2);
+                    return (((f1 + f1 + f1 + s1) >> 2) << 16) | (u16)((f0 + f0 + f0 + s0) >> 2);
                 } else {
                     c = idx >> 2;
                     goto blend;
@@ -366,8 +369,12 @@ void func_02034144(ResTex *tex, u8 *name, u8 *out) {   // texture pattern: textu
     h = (info[1] & (0x7ff << 11)) >> 11;
     if (w == U16(out, 0x2c)) U32(out, 0x30) = 0x1000;
     else U32(out, 0x30) = FX_Div(w << 12, U16(out, 0x2c) << 12);
-    if (h == U16(out, 0x2e)) U32(out, 0x34) = 0x1000;
-    else U32(out, 0x34) = FX_Div(h << 12, U16(out, 0x2e) << 12);
+    {
+        s32 s;
+        if (h == U16(out, 0x2e)) s = 0x1000;
+        else s = FX_Div(h << 12, U16(out, 0x2e) << 12);
+        U32(out, 0x34) = s;
+    }
 }
 void func_0203421c(ResTex *tex, u8 *name, u8 *out) {   // palette pattern
     u16 *info = (tex == 0 || tex->plttDictOfs == 0) ? 0 : func_0203324c((Dict *)((u8 *)tex + tex->plttDictOfs), (char *)name);
@@ -523,7 +530,7 @@ void func_02034824(s32 *out, u8 *p) {   // texture matrix: scale and translate
     out[5] = P32(p, 0x1c);
     out[1] = 0;
     out[12] = -(s32)(((long long)P32(p, 0x18) * P32(p, 0x24)) >> 8) * PU16(p, 0x2c);
-    out[13] = (s32)(((long long)P32(p, 0x1c) * P32(p, 0x28)) >> 8) * PU16(p, 0x2e) + ((PU16(p, 0x2e) * (-(P32(p, 0x1c) * 2) + 0x2000)) << 3);
+    out[13] = (s32)(((long long)P32(p, 0x1c) * P32(p, 0x28)) >> 8) * PU16(p, 0x2e) + ((PU16(p, 0x2e) * (P32(p, 0x1c) * -2 + 0x2000)) << 3);
     out[4] = 0;
 }
 void func_020348a0(s32 *out, u8 *p) {   // texture matrix: translate only

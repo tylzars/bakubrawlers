@@ -4,6 +4,8 @@ fx32 FX_Div(fx32 num, fx32 den);   // 0x01ff8000
 fx64 FX_GetDivResultFx64(void);    // 0x01ff809c
 fx32 FX_GetDivResult(void);        // 0x01ff80c0
 
+#define reg_DIV_NUMER (*(vu64 *) 0x04000290)
+#define reg_DIV_DENOM (*(vu64 *) 0x04000298)
 #define reg_DIV_NUMER_L (*(u32 *) 0x04000290)
 #define reg_DIV_NUMER_H (*(u32 *) 0x04000294)
 #define reg_DIV_DENOM_L (*(u32 *) 0x04000298)
@@ -18,10 +20,8 @@ void func_02001688(fx32 sinFov, fx32 cosFov, fx32 aspect, fx32 n, fx32 f, fx32 s
     fx64 val;
     fx32 tmp;
     cot = FX_Div(cosFov, sinFov);
-    reg_DIV_NUMER_L = 0;
-    reg_DIV_NUMER_H = 0x1000;
-    reg_DIV_DENOM_L = n - f;
-    reg_DIV_DENOM_H = 0;
+    reg_DIV_NUMER = (u64) 0x1000 << 32;
+    reg_DIV_DENOM = (u32) (n - f);
     if (scale != 0x1000) {
         cot = (cot * scale) / 0x1000;
     }

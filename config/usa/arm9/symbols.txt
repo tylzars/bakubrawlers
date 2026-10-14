@@ -4890,6 +4890,7 @@ data_02211534 kind:bss addr:0x02211534
 data_02211574 kind:bss addr:0x02211574
 data_022115d8 kind:bss addr:0x022115d8
 data_022115dc kind:bss addr:0x022115dc
+data_022115dc_h kind:bss addr:0x022115dc
 data_022115e0 kind:bss addr:0x022115e0
 data_02211600 kind:bss addr:0x02211600
 data_02211610 kind:bss addr:0x02211610

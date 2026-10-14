@@ -95,45 +95,43 @@ void func_02035ee0(void) {
         }
     }
 }
-extern TexSlot *data_020a5890_slots[];
-u32 func_02035f54(u32 size, int is4x4, u32 opt) {   // NNS_GfdAllocFrmTexVram
+static inline int Alloc4x4(u32 *key, u32 aligned) {
+    int i;
+    for (i = 0; i < 2; i++) {
+        TexSlot *s = data_020a5890[i];
+        TexSlot *idx;
+        if (s->enabled == 0) continue;
+        if (s->end - s->start < aligned) continue;
+        switch (*(u16 *)((u8 *)s + 0x10)) { case 0: idx = &data_020a58ac[1]; break; case 3: idx = &data_020a58ac[2]; break; default: idx = 0; break; }
+        if (idx->enabled == 0) continue;
+        if (idx->end - idx->start < (aligned >> 1)) continue;
+        s->start += aligned; *key = s->start - aligned + s->pad14; idx->start += aligned >> 1;
+        return 1;
+    }
+    return 0;
+}
+static inline int AllocNormal(u32 *key, u32 aligned) {
+    TexSlot **slots = &data_020a5890[2];
+    int i;
+    for (i = 0; i < 5; i++) {
+        TexSlot *s = slots[i];
+        if (s->enabled == 0) continue;
+        if (s->end - s->start < aligned) continue;
+        s->end = s->end - aligned;
+        *key = s->end + s->pad14;
+        return 1;
+    }
+    return 0;
+}
+u32 func_02035f54(u32 size, int is4x4, u32 opt) {
     u32 key;
     u32 aligned;
-    int i;
+    int ok;
     if (size == 0) aligned = 0x10;
     else aligned = (size + 0xf) & ~0xf;
     if (aligned >= 0x7fff0) return 0;
-    if (is4x4) {
-        for (i = 0; i < 2; i++) {
-            TexSlot *s = data_020a5890[i];
-            TexSlot *idx;
-            u32 old;
-            if (s->enabled == 0) continue;
-            if (s->end - s->start < aligned) continue;
-            if (*(u16 *)((u8 *)s + 0x10) == 0) idx = &data_020a58ac[1];
-            else if (*(u16 *)((u8 *)s + 0x10) == 3) idx = &data_020a58ac[2];
-            else idx = 0;
-            if (idx->enabled == 0) continue;
-            if (idx->end - idx->start < (aligned >> 1)) continue;
-            old = s->start;
-            s->start = old + aligned;
-            idx->start += aligned >> 1;
-            key = old + s->pad14;
-            goto done;
-        }
-        return 0;
-    } else {
-        TexSlot **slots = &data_020a5890[2];
-        for (i = 0; i < 5; i++) {
-            TexSlot *s = slots[i];
-            if (s->enabled == 0) continue;
-            if (s->end - s->start < aligned) continue;
-            s->end = s->end - aligned;
-            key = s->end + s->pad14;
-            goto done;
-        }
-        return 0;
-    }
-done:
+    if (is4x4) ok = Alloc4x4(&key, aligned);
+    else ok = AllocNormal(&key, aligned);
+    if (ok == 0) return 0;
     return ((key << 13) >> 16) | ((aligned >> 4) << 16) | (is4x4 << 31);
 }

@@ -4,6 +4,7 @@
 typedef struct { u32 pad0; u32 pad4; u32 vramBase; u8 *mem; u32 memSize; } GfdLnkMan;
 extern GfdLnkMan data_022115dc;
 extern u8 data_022115e0[];
+extern u8 data_022115dc_h[];   // the manager again under a second name: the binary's literal pool holds the address twice
 extern u32 (*data_020a5888)(u32 size, int is4pltt, u32 opt);
 extern int (*data_020a588c)(u32 key);
 
@@ -56,7 +57,7 @@ int func_02036658(u32 key) {   // free by key
 
 void func_0203669c(void) {   // reset
     data_022115dc.pad4 = func_0203623c(data_022115dc.mem, data_022115dc.memSize >> 4);
-    func_02036230(&data_022115dc);
-    func_02036288(&data_022115dc, data_022115e0, 0, data_022115dc.vramBase);
-    func_02036424(&data_022115dc, data_022115e0);
+    func_02036230(data_022115dc_h);
+    func_02036288(data_022115dc_h, data_022115e0, 0, data_022115dc.vramBase);
+    func_02036424(data_022115dc_h, data_022115e0);
 }

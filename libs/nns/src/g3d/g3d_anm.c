@@ -14,8 +14,8 @@ extern u8 *func_020336bc(u8 *res, u32 idx);
 extern u8 *func_020336e8(u8 *res, u32 idx);
 extern void *data_020a5788;
 extern void func_01ff93d8(u32 cmd, const void *params, u32 count);   // geometry command
-extern s32 func_01ff8154(s32 a, s32 b);
-extern s32 func_01ff80c0(s32 a);
+extern void func_01ff8154(s32 a, s32 b);   // FX_DivAsync
+extern s32 func_01ff80c0(void);   // FX_GetDivResult
 static inline s32 FxMul(s32 a, s32 b) { return (s32)(((long long)a * b) >> 12); }
 #define P32(p, o) (*(s32 *)((u8 *)(p) + (o)))
 #define PS16(p, o) (*(s16 *)((u8 *)(p) + (o)))
@@ -32,6 +32,11 @@ static inline s32 SampleBlend(u8 *p, u32 info, u32 i) {
     return (a + b) >> 1;
 }
 
+static inline u16 Blend555(u8 *p, u32 a) {
+    u32 v1 = *(u16 *)(p + a * 2);
+    u32 v2 = *(u16 *)(p + a * 2 + 2);
+    return (u16)((((v1 & 0x7c1f) + (v2 & 0x7c1f)) >> 1 & 0x7c1f) | ((((v1 & 0x3e0) + (v2 & 0x3e0)) >> 1) & 0x3e0));
+}
 u16 func_0203382c(u8 *base, u32 info, u32 idx) {   // read one 5-5-5 colour from an animation track
     u8 *p;
     u32 last;
@@ -44,58 +49,70 @@ u16 func_0203382c(u8 *base, u32 info, u32 idx) {   // read one 5-5-5 colour from
     if (info & 0x40000000) {
         if (idx & 1) {
             if (idx > last) return *(u16 *)((p + (last & ~1)) + 2);
-            a = idx >> 1;
-        } else {
-            return *(u16 *)(p + (idx & ~1));
+            rem = idx >> 1;
+            goto blend;
         }
-    } else {
-        rem = idx & 3;
-        if (rem == 0) return *(u16 *)(p + (idx >> 2) * 2);
+        return *(u16 *)(p + (idx & ~1));
+    }
+    rem = idx & 3;
+    if (rem != 0) {
         if (idx > last) return *(u16 *)(p + (last >> 2) * 2 + rem * 2);
         if (idx & 1) {
-            u16 v1, v2;
+            u32 v1, v2;
             u32 c, d;
-            if (idx & 2) { c = idx >> 2; d = c + 1; v1 = *(u16 *)(p + d * 2); v2 = *(u16 *)(p + c * 2); }
-            else { c = idx >> 2; d = c + 1; v1 = *(u16 *)(p + c * 2); v2 = *(u16 *)(p + d * 2); }
+            if (idx & 2) { d = idx >> 2; c = d + 1; }
+            else { c = idx >> 2; d = c + 1; }
+            v1 = *(u16 *)(p + c * 2);
+            v2 = *(u16 *)(p + d * 2);
             return (u16)((((v1 & 0x7c1f) * 3 + (v2 & 0x7c1f)) >> 2 & 0x7c1f) | ((((v1 & 0x3e0) * 3 + (v2 & 0x3e0)) >> 2) & 0x3e0));
         }
-        a = idx >> 2;
+        rem = idx >> 2;
+        goto blend;
     }
-    {
-        u16 v1 = *(u16 *)(p + a * 2);
-        u16 v2 = *(u16 *)(p + a * 2 + 2);
-        return (u16)((((v1 & 0x7c1f) + (v2 & 0x7c1f)) >> 1 & 0x7c1f) | ((((v1 & 0x3e0) + (v2 & 0x3e0)) >> 1) & 0x3e0));
-    }
+    idx >>= 2;
+    return *(u16 *)(p + idx * 2);
+blend:
+    return Blend555(p, rem);
 }
 u32 func_02033994(u8 *base, u32 info, u32 idx) {   // read one byte from an animation track
     u8 *p;
-    u32 last;
+    u8 *q;
     u32 rem;
+    u32 last;
+    u32 a, b;
+    u32 v1, v2;
     if (info & 0x20000000) return (u16)info;
     p = base + (u16)info;
     if ((info & 0xc0000000) == 0) return p[idx];
     last = (info & 0x1fff0000) >> 16;
     if (info & 0x40000000) {
         if (idx & 1) {
-            if (idx > last) return p[(last >> 1) + 1];
-            return (u16)((p[idx >> 1] + p[(idx >> 1) + 1]) << 15 >> 16);
+            if (idx > last) {
+                q = p + (last >> 1);
+                return q[1];
+            }
+            q = p + (idx >> 1);
+            return (u32)(q[0] + q[1]) << 15 >> 16;
         }
         return p[idx >> 1];
     }
     rem = idx & 3;
-    if (rem == 0) return p[idx >> 2];
-    if (idx > last) return p[rem + (last >> 2)];
-    if (idx & 1) {
-        u32 c, d;
-        if (idx & 2) { c = idx >> 2; d = c + 1; }
-        else { d = idx >> 2; c = d; d = d + 1; }
-        {
-            u32 first = (idx & 2) ? p[d] : p[c];
-            u32 second = (idx & 2) ? p[c] : p[d];
-            return (u16)((first * 3 + second) << 14 >> 16);
+    if (rem != 0) {
+        if (idx > last) {
+            q = p + (last >> 2);
+            return q[rem];
         }
+        if (idx & 1) {
+            if (idx & 2) { idx >>= 2; a = idx + 1; }
+            else { a = idx >> 2; idx = a + 1; }
+            v1 = p[a];
+            v2 = p[idx];
+            return (u32)(v1 * 3 + v2) << 14 >> 16;
+        }
+        q = p + (idx >> 2);
+        return (u32)(q[0] + q[1]) << 15 >> 16;
     }
-    return (u16)((p[idx >> 2] + p[(idx >> 2) + 1]) << 15 >> 16);
+    return p[idx >> 2];
 }
 void func_02033a80(u8 *obj, u8 *anm, u8 *mdl) {   // NNS_G3dAnmObjInitNsBma: map material animation entries to materials
     u32 i;
@@ -207,39 +224,51 @@ u32 func_02033d44(u8 *base, u32 info, u32 value, u32 idx) {   // read an interpo
     u32 last, rem, c;
     if (info & 0x20000000) return value;
     p = base + value;
-    if ((info & 0xc0000000) == 0) return *(u32 *)(p + idx * 4);
-    last = (u16)info;
-    if (info & 0x40000000) {
-        if (idx & 1) {
-            if (idx > last) return *(u32 *)(p + ((last >> 1) + 1) * 4);
-            c = idx >> 1;
-            goto blend;
+    if ((info & 0xc0000000) != 0) {
+        last = (u16)info;
+        if (info & 0x40000000) {
+            if (idx & 1) {
+                if (idx > last) {
+                    idx = (last >> 1) + 1;
+                } else {
+                    c = idx >> 1;
+                    goto blend;
+                }
+            } else {
+                idx >>= 1;
+            }
+        } else {
+            rem = idx & 3;
+            if (rem != 0) {
+                if (idx > last) {
+                    idx = rem + (last >> 2);
+                } else if (idx & 1) {
+                    u32 a, b;
+                    s32 f0, f1, s0, s1;
+                    if (idx & 2) { b = idx >> 2; a = b + 1; }
+                    else { a = idx >> 2; b = a + 1; }
+                    f1 = *(s16 *)(p + a * 4 + 2);
+                    f0 = *(s16 *)(p + a * 4);
+                    s1 = *(s16 *)(p + b * 4 + 2);
+                    s0 = *(s16 *)(p + b * 4);
+                    return (((f1 * 3 + s1) >> 2) << 16) | (u16)((f0 * 3 + s0) >> 2);
+                } else {
+                    c = idx >> 2;
+                    goto blend;
+                }
+            } else {
+                idx >>= 2;
+            }
         }
-        return *(u32 *)(p + (idx >> 1) * 4);
     }
-    rem = idx & 3;
-    if (rem == 0) return *(u32 *)(p + (idx >> 2) * 4);
-    if (idx > last) return *(u32 *)(p + (rem + (last >> 2)) * 4);
-    if (idx & 1) {
-        u32 a, b;
-        s32 f0, f1, s0, s1;
-        c = idx >> 2;
-        if (idx & 2) { a = c + 1; b = c; }
-        else { a = c; b = c + 1; }
-        f0 = *(s16 *)(p + a * 4);
-        f1 = *(s16 *)(p + a * 4 + 2);
-        s0 = *(s16 *)(p + b * 4);
-        s1 = *(s16 *)(p + b * 4 + 2);
-        return ((u32)((f1 * 3 + s1) >> 2) << 16) | (((f0 * 3 + s0) << 14) >> 16);
-    }
-    c = idx >> 2;
+    return *(u32 *)(p + idx * 4);
 blend:
     {
-        s32 f0 = *(s16 *)(p + c * 4);
         s32 f1 = *(s16 *)(p + c * 4 + 2);
-        s32 s0 = *(s16 *)(p + c * 4 + 4);
         s32 s1 = *(s16 *)(p + c * 4 + 6);
-        return ((u32)((f1 + s1) >> 1) << 16) | (((f0 + s0) << 15) >> 16);
+        s32 f0 = *(s16 *)(p + c * 4);
+        s32 s0 = *(s16 *)(p + c * 4 + 4);
+        return (((f1 + s1) >> 1) << 16) | (u16)((f0 + s0) >> 1);
     }
 }
 void func_02033e50(u8 *res, u32 idx, u32 frame, u8 *out) {   // texture SRT animation entry at a frame
@@ -409,33 +438,36 @@ void func_02034438(u32 *m) {   // send the pending matrix commands (with deferre
 }
 typedef struct { u32 pad[0x31]; u32 bits[1]; } NodeCache;
 extern NodeCache *data_020baf00;
-extern s32 data_020bbd04[][6];
+typedef struct { s32 x, y, z; } TV3;
+typedef struct { TV3 head; TV3 trans; } NodeTrans;
+extern NodeTrans data_020bbd04[];
 void func_020344fc(u32 *m, s32 *v, u8 *idx, u32 flags) {   // record a node translation in the cache
     u32 f = idx[3];
-    u32 a = idx[1];
-    u32 b = idx[2];
     if (flags & 4) {
         m[0] |= 1;
-        if (f & 2) data_020baf00->bits[a >> 5] |= 1 << (a & 0x1f);
+        if (f & 2) {
+            u8 a = idx[1];
+            data_020baf00->bits[(u32)a >> 5] |= 1 << (a & 0x1f);
+        }
     } else {
         m[1] = v[0];
         m[2] = v[1];
         m[3] = v[2];
         if (f & 2) {
-            data_020baf00->bits[a >> 5] &= ~(1 << (a & 0x1f));
-            data_020bbd04[a][3] = v[3];
-            data_020bbd04[a][4] = v[4];
-            data_020bbd04[a][5] = v[5];
+            u8 a = idx[1];
+            data_020baf00->bits[(u32)a >> 5] &= ~(1 << (a & 0x1f));
+            data_020bbd04[a].trans.x = v[3];
+            data_020bbd04[a].trans.y = v[4];
+            data_020bbd04[a].trans.z = v[5];
         }
     }
     if (f & 1) {
+        u8 b = idx[2];
         m[0] |= 0x20;
-        if (data_020baf00->bits[b >> 5] & (1 << (b & 0x1f))) {
+        if (data_020baf00->bits[(u32)b >> 5] & (1 << (b & 0x1f))) {
             m[0] |= 8;
         } else {
-            m[4] = data_020bbd04[b][3];
-            m[5] = data_020bbd04[b][4];
-            m[6] = data_020bbd04[b][5];
+            *(TV3 *)&m[4] = data_020bbd04[b].trans;
         }
     }
     m[0] |= 0x10;
@@ -445,20 +477,19 @@ void func_0203464c(s32 *out, s16 *p) {   // texture matrix from scale / rotation
     s32 w = *(u16 *)((u8 *)p + 0x2c) << 12;
     s32 h = *(u16 *)((u8 *)p + 0x2e) << 12;
     s32 sS, sT, s, c, r4, r5, r6, r7;
-    s32 q;
-    q = func_01ff8154(h, w);
+    func_01ff8154(h, w);
     c = p[0x22 / 2];
     sS = *(s32 *)((u8 *)p + 0x18);
     s = p[0x20 / 2];
     sT = *(s32 *)((u8 *)p + 0x1c);
-    r6 = FxMul(sS, c);
     r7 = FxMul(sS, s);
+    r6 = FxMul(sS, c);
     r5 = FxMul(sT, s);
     r4 = FxMul(sT, c);
     out[0] = r6;
     out[0x14 / 4] = r4;
-    out[4 / 4] = (-r5 * func_01ff80c0(q)) >> 12;
-    q = func_01ff8154(w, h);
+    out[4 / 4] = (-r5 * func_01ff80c0()) >> 12;
+    func_01ff8154(w, h);
     {
         s32 a = r5 - r4;
         s32 b = r7 + r6;
@@ -470,22 +501,22 @@ void func_0203464c(s32 *out, s16 *p) {   // texture matrix from scale / rotation
             s32 sc2 = *(s32 *)((u8 *)p + 0x1c);
             s32 th = *(u16 *)((u8 *)p + 0x2e);
             s32 tT = (s32)(((long long)sc2 * *(s32 *)((u8 *)p + 0x28)) >> 8);
-            out[0x34 / 4] = th * tT + ((th * (a - sc2 + 0x2000)) << 3);
+            out[0x34 / 4] = ((th * (a - sc2 + 0x2000u)) << 3) + th * tT;
         }
     }
-    out[0x10 / 4] = (r7 * func_01ff80c0(q)) >> 12;
+    out[0x10 / 4] = (r7 * func_01ff80c0()) >> 12;
 }
 void func_02034754(s32 *out, u8 *p) {   // texture matrix: rotation with scale 1
     s32 w = PU16(p, 0x2c) << 12;
     s32 h = PU16(p, 0x2e) << 12;
-    s32 q = func_01ff8154(h, w);
+    func_01ff8154(h, w);
     out[0] = PS16(p, 0x22);
     out[5] = PS16(p, 0x22);
-    out[1] = (-PS16(p, 0x20) * func_01ff80c0(q)) >> 12;
-    q = func_01ff8154(w, h);
-    out[12] = ((P32(p, 0x24) * PU16(p, 0x2c)) << 4) * -1 + (PU16(p, 0x2c) * (-(PS16(p, 0x20) + PS16(p, 0x22)) + 0x1000) << 3);
-    out[13] = ((P32(p, 0x28) * PU16(p, 0x2e)) << 4) + (PU16(p, 0x2e) * (PS16(p, 0x20) - PS16(p, 0x22) + 0x1000) << 3);
-    out[4] = (PS16(p, 0x20) * func_01ff80c0(q)) >> 12;
+    out[1] = (-PS16(p, 0x20) * func_01ff80c0()) >> 12;
+    func_01ff8154(w, h);
+    out[12] = (PU16(p, 0x2c) * (-(PS16(p, 0x20) + PS16(p, 0x22)) + 0x1000u) << 3) - ((P32(p, 0x24) * PU16(p, 0x2c)) << 4);
+    out[13] = (PU16(p, 0x2e) * (PS16(p, 0x20) - PS16(p, 0x22) + 0x1000u) << 3) + ((P32(p, 0x28) * PU16(p, 0x2e)) << 4);
+    out[4] = (PS16(p, 0x20) * func_01ff80c0()) >> 12;
 }
 void func_02034824(s32 *out, u8 *p) {   // texture matrix: scale and translate
     out[0] = P32(p, 0x18);
@@ -503,45 +534,46 @@ void func_020348a0(s32 *out, u8 *p) {   // texture matrix: translate only
     out[13] = (P32(p, 0x28) * PU16(p, 0x2e)) << 4;
     out[4] = 0;
 }
-void func_020348e8(s32 *out, u8 *p) {   // texture matrix: scale and rotation, no translate
+void func_020348e8(s32 *out, u8 *p) {
     s32 w = PU16(p, 0x2c) << 12;
     s32 h = PU16(p, 0x2e) << 12;
-    s32 q, r4, r5, r6, r7, sS, sT, s, c;
-    q = func_01ff8154(h, w);
+    s32 r4, r5, r6, r7, c, sS, s, sT;
+    func_01ff8154(h, w);
     c = PS16(p, 0x22);
     sS = P32(p, 0x18);
     s = PS16(p, 0x20);
     sT = P32(p, 0x1c);
-    r6 = FxMul(sS, c);
     r7 = FxMul(sS, s);
+    r6 = FxMul(sS, c);
     r5 = FxMul(sT, s);
     r4 = FxMul(sT, c);
     out[0] = r6;
     out[5] = r4;
-    out[1] = (-r5 * func_01ff80c0(q)) >> 12;
-    q = func_01ff8154(w, h);
+    out[1] = (-r5 * func_01ff80c0()) >> 12;
+    func_01ff8154(w, h);
     out[12] = (PU16(p, 0x2c) * (P32(p, 0x18) - (r7 + r6))) << 3;
-    out[13] = (PU16(p, 0x2e) * (r5 - r4 - P32(p, 0x1c) + 0x2000)) << 3;
-    out[4] = (r7 * func_01ff80c0(q)) >> 12;
+    out[13] = (PU16(p, 0x2e) * (r5 - r4 - P32(p, 0x1c) + 0x2000u)) << 3;
+    out[4] = (r7 * func_01ff80c0()) >> 12;
 }
 void func_020349c8(s32 *out, u8 *p) {   // texture matrix: rotation only
     s32 w = PU16(p, 0x2c) << 12;
     s32 h = PU16(p, 0x2e) << 12;
-    s32 q = func_01ff8154(h, w);
+    func_01ff8154(h, w);
     out[0] = PS16(p, 0x22);
     out[5] = PS16(p, 0x22);
-    out[1] = (-PS16(p, 0x20) * func_01ff80c0(q)) >> 12;
-    q = func_01ff8154(w, h);
-    out[12] = (PU16(p, 0x2c) * (-(PS16(p, 0x20) + PS16(p, 0x22)) + 0x1000)) << 3;
-    out[13] = (PU16(p, 0x2e) * (PS16(p, 0x20) - PS16(p, 0x22) + 0x1000)) << 3;
-    out[4] = (PS16(p, 0x20) * func_01ff80c0(q)) >> 12;
+    out[1] = (-PS16(p, 0x20) * func_01ff80c0()) >> 12;
+    func_01ff8154(w, h);
+    out[12] = (PU16(p, 0x2c) * (-(PS16(p, 0x20) + PS16(p, 0x22)) + 0x1000u)) << 3;
+    out[13] = (PU16(p, 0x2e) * (PS16(p, 0x20) - PS16(p, 0x22) + 0x1000u)) << 3;
+    out[4] = (PS16(p, 0x20) * func_01ff80c0()) >> 12;
 }
 void func_02034a80(s32 *out, u8 *p) {   // texture matrix: scale only
+    s32 t;
     out[0] = P32(p, 0x18);
     out[5] = P32(p, 0x1c);
     out[1] = 0;
     out[12] = 0;
-    out[13] = (PU16(p, 0x2e) * (-(P32(p, 0x1c) * 2) + 0x2000)) << 3;
+    out[13] = (PU16(p, 0x2e) * (-(P32(p, 0x1c) * 2) + 0x2000u)) << 3;
     out[4] = 0;
 }
 void func_02034ac4(s32 *out) {   // texture matrix: identity
@@ -553,34 +585,33 @@ void func_02034ac4(s32 *out) {   // texture matrix: identity
     out[13] = 0;
 }
 void func_02034ae8(u32 *m) {   // load the texture matrix built from a texture SRT
-    u32 buf[19];
-    s32 *out = (s32 *)&buf[2];
-    if (m[0] & 8) buf[0] = 0x101610;
-    else buf[0] = 0x101810;
-    buf[17] = 0x1000;
-    buf[1] = 3;
-    buf[18] = 2;
-    out[14] = 0;
-    out[11] = 0;
-    out[10] = 0;
-    out[9] = 0;
-    out[8] = 0;
-    out[7] = 0;
-    out[6] = 0;
-    out[3] = 0;
-    out[2] = 0;
-    data_020a5820[m[0] & 7](out, m);
+    struct { u32 cmd; u32 mode; s32 mtx[16]; u32 end; } t;
+    if (m[0] & 8) t.cmd = 0x101610;
+    else t.cmd = 0x101810;
+    t.mode = 3;
+    t.end = 2;
+    t.mtx[14] = 0;
+    t.mtx[11] = 0;
+    t.mtx[10] = 0;
+    t.mtx[9] = 0;
+    t.mtx[8] = 0;
+    t.mtx[7] = 0;
+    t.mtx[6] = 0;
+    t.mtx[3] = 0;
+    t.mtx[2] = 0;
+    t.mtx[15] = 0x1000;
+    data_020a5820[m[0] & 7](t.mtx, m);
     if (m[12] != 0x1000) {
-        out[0] = FxMul(m[12], out[0]);
-        out[1] = FxMul(m[12], out[1]);
-        out[12] = FxMul(m[12], out[12]);
+        t.mtx[0] = FxMul(m[12], t.mtx[0]);
+        t.mtx[1] = FxMul(m[12], t.mtx[1]);
+        t.mtx[12] = FxMul(m[12], t.mtx[12]);
     }
     if (m[13] != 0x1000) {
-        out[4] = FxMul(m[13], out[4]);
-        out[5] = FxMul(m[13], out[5]);
-        out[13] = FxMul(m[13], out[13]);
+        t.mtx[4] = FxMul(m[13], t.mtx[4]);
+        t.mtx[5] = FxMul(m[13], t.mtx[5]);
+        t.mtx[13] = FxMul(m[13], t.mtx[13]);
     }
-    func_01ff93d8(buf[0], &buf[1], 0x12);
+    func_01ff93d8(t.cmd, (u32 *)&t + 1, 0x12);
 }
 void func_02034c30(u32 *m) {   // send the pending matrix commands (rotation / scale in one go)
     BOOL scale = 0;

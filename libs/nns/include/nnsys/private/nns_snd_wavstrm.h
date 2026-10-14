@@ -39,7 +39,7 @@ struct WavStrm {                 // stride 0x174, 4 of them at data_0221508c
     SndAdpcmState adpcm[2];      // 0xf8
     u8 pad100[0x10];
     s32 active:1, b1:1, b2:1, b3:1, b4:1, b5:1, b6:1;   // 0x110 flags
-    s32 delay;                   // 0x114
+    volatile s32 delay;          // 0x114
     s32 f118;                    // 0x118
     s32 queued;                  // 0x11c
     s32 cnt120;                  // 0x120

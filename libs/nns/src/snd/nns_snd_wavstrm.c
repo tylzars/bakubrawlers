@@ -106,8 +106,11 @@ int func_02039238(void *a, void *b, int c, u32 d, u32 *e, u8 *f, u32 g, u32 h) {
     return 1;
 }
 
+// The original's loops here are not strength-reduced, which only -O2 produces.
+#pragma optimization_level 2
 void func_020392fc(u32 a, void *heap) {   // initialise the stream player
     int i;
+    int j;
     WavStrm *s;
     if (data_022149f0.init != 0) {
         func_02039400(heap);
@@ -120,12 +123,12 @@ void func_020392fc(u32 a, void *heap) {   // initialise the stream player
     }
     OS_InitMutex(data_02214a08);
     data_022149f0.adpcmBuf = data_02215660;
-    for (i = 0; i < 4; i++) {
-        s = &data_0221508c[i];
+    for (j = 0; j < 4; j++) {
+        s = &data_0221508c[j];
         s->active = 0;
         func_0200a7b4(s->file);
         func_02037264(s);
-        s->slot = i;
+        s->slot = j;
         s->chCount = 0;
         s->buf = 0;
         s->bufSize = 0;
@@ -135,6 +138,7 @@ void func_020392fc(u32 a, void *heap) {   // initialise the stream player
     func_02039724(&data_02214ba0, a);
 }
 
+#pragma optimization_level reset
 int func_02039400(void *heap) {   // reserve each stream's decode buffer from the sound heap
     int i;
     u32 size;
@@ -181,7 +185,7 @@ void func_020394c8(void) {   // per-frame update of all streams
         if (s->b1) {
             func_0203a514(&s->pan);
             v = data_0208f89c[s->f154];
-            sum = v + data_0208f89c[func_0203a4e0(&s->pan) >> 8] + data_0208f89c[s->f158];
+            sum = data_0208f89c[func_0203a4e0(&s->pan) >> 8] + v + data_0208f89c[s->f158];
             if (sum != s->f15c) {
                 func_02037574(s, sum);
                 s->f15c = sum;

@@ -213,14 +213,17 @@ int func_020098b8(FSFile *f)
 int func_02009a9c(FSFile *f)
 {
     FSArchive *arc = f->arc;
-    FSFile tmp;
     FSDirEntry ent;
-    u32 target;
-    u32 dir;
-    u32 i, ndirs;
-    int len, r;
-    u8 *buf;
+    FSFile tmp;
     int pos;
+    u8 *buf;
+    u32 target;
+    int r;
+    u32 i;
+    u32 ndirs;
+    u32 j;
+    int len;
+    u32 dir;
     func_0200a7b4(&tmp);
     tmp.arc = f->arc;
     if (FS_FileTest(f, 0x20)) {
@@ -257,14 +260,16 @@ int func_02009a9c(FSFile *f)
         return 1;
     }
     if (FH(f, 0x38) == 0) {
-        u32 name = arc->name;
-        if (name <= 0xff) len = 1;
-        else if (name <= 0xff00) len = 2;
-        else len = 3;
+        u32 name;
+        len = 0;
+        name = arc->name;
+        if (name <= 0xff) len += 1;
+        else if (name <= 0xff00) len += 2;
+        else len += 3;
         len += 2;
         if (target != 0x10000) len += ent.name_len;
-        i = dir;
-        if (i != 0) {
+        j = dir;
+        if (j != 0) {
             func_02009668(&tmp, dir);
             do {
                 func_02009668(&tmp, tmp.f2c);
@@ -272,14 +277,14 @@ int func_02009a9c(FSFile *f)
                 tmp.f30 = (u32) &ent;
                 if (func_020093c8(&tmp, 3) == 0) {
                     do {
-                        if (ent.is_dir != 0 && FH(&ent, 4) == i) {
+                        if (ent.is_dir != 0 && FH(&ent, 4) == j) {
                             len += ent.name_len + 1;
                             break;
                         }
                     } while (func_020093c8(&tmp, 3) == 0);
                 }
-                i = FH(&tmp, 0x24);
-            } while (i != 0);
+                j = FH(&tmp, 0x24);
+            } while (j != 0);
         }
         FH(f, 0x38) = len + 1;
         FH(f, 0x3a) = dir;
@@ -290,12 +295,14 @@ int func_02009a9c(FSFile *f)
     if (f->f34 < pos) return 1;
     {
         u32 name = arc->name;
+        u32 off = 0;
         if (name <= 0xff) len = 1;
         else if (name <= 0xff00) len = 2;
         else len = 3;
+        MI_CpuCopy8(arc, buf, len);
+        off += len;
+        MI_CpuCopy8(data_020a4f3c, buf + off, 2);
     }
-    MI_CpuCopy8(arc, buf, len);
-    MI_CpuCopy8(data_020a4f3c, buf + len, 2);
     func_02009668(&tmp, dir);
     if (target != 0x10000) {
         tmp.f30 = (u32) &ent;
@@ -309,14 +316,14 @@ int func_02009a9c(FSFile *f)
         MI_CpuCopy8(ent.name, buf + pos - r, r);
         pos -= r;
     } else {
-        buf[pos - 1] = 0;
+        *(buf + pos - 1) = 0;
         pos -= 1;
     }
     while (dir != 0) {
         func_02009668(&tmp, tmp.f2c);
-        buf[pos - 1] = '/';
         tmp.f30 = (u32) &ent;
         tmp.f34 = 0;
+        *(buf + pos - 1) = '/';
         pos--;
         if (func_020093c8(&tmp, 3) == 0) {
             do {
@@ -370,18 +377,21 @@ u32 func_02009ef8(const u8 *s, int len)
 {
     u32 v = 0;
     int i, sh;
-    if (len <= 3 && len > 0) {
-        i = 0;
+    if (len <= 3) {
+      i = 0;
+      if (len > 0) {
         sh = 0;
         do {
             u32 c = s[i];
+            u32 d;
             if (c == 0) break;
-            c -= 'A';
-            if (c <= 25) c = c + 'a'; else c = c + 'A';
+            d = c - 'A';
+            if (d <= 25) c = d + 'a'; else c = d + 'A';
             i++;
             v |= c << sh;
             sh += 8;
         } while (i < len);
+    }
     }
     return v;
 }
@@ -645,8 +655,9 @@ void func_0200a708(FSArchive *arc, int result)
     FSFile *p, *n;
     u32 e;
     if (FS_ArcTest(arc, 0x100)) {
+        FSFile *l = arc->list;
         arc->flags &= ~0x100;
-        func_0200936c(arc->list, result);
+        func_0200936c(l, result);
         n = func_02009fa4(arc);
         if (n != NULL) func_0200a1b8(n);
     } else {

@@ -1884,54 +1884,54 @@ data_ov007_02286750 kind:data(any) addr:0x02286750
 data_ov007_0228676c kind:data(any) addr:0x0228676c
 data_ov007_02286788 kind:data(any) addr:0x02286788
 data_ov007_022867a4 kind:data(any) addr:0x022867a4
-data_ov007_022867b0 kind:data(any) addr:0x022867b0
-data_ov007_022867bc kind:data(any) addr:0x022867bc
-data_ov007_022867d4 kind:data(any) addr:0x022867d4
-data_ov007_022867e8 kind:data(any) addr:0x022867e8
-data_ov007_022867fc kind:data(any) addr:0x022867fc
-data_ov007_02286810 kind:data(any) addr:0x02286810
-data_ov007_02286814 kind:data(any) addr:0x02286814
-data_ov007_02286830 kind:data(any) addr:0x02286830
-data_ov007_0228684c kind:data(any) addr:0x0228684c
-data_ov007_02286860 kind:data(any) addr:0x02286860
-data_ov007_02286874 kind:data(any) addr:0x02286874
-data_ov007_02286898 kind:data(any) addr:0x02286898
-data_ov007_022868b8 kind:data(any) addr:0x022868b8
-data_ov007_022868d8 kind:data(any) addr:0x022868d8
-data_ov007_022868f4 kind:data(any) addr:0x022868f4
-data_ov007_02286910 kind:data(any) addr:0x02286910
-data_ov007_02286934 kind:data(any) addr:0x02286934
-data_ov007_02286950 kind:data(any) addr:0x02286950
-data_ov007_0228696c kind:data(any) addr:0x0228696c
-data_ov007_0228698c kind:data(any) addr:0x0228698c
-data_ov007_022869a8 kind:data(any) addr:0x022869a8
-data_ov007_022869c4 kind:data(any) addr:0x022869c4
-data_ov007_022869e0 kind:data(any) addr:0x022869e0
-data_ov007_022869fc kind:data(any) addr:0x022869fc
-data_ov007_02286a14 kind:data(any) addr:0x02286a14
-data_ov007_02286a30 kind:data(any) addr:0x02286a30
-data_ov007_02286a48 kind:data(any) addr:0x02286a48
-data_ov007_02286a4c kind:data(any) addr:0x02286a4c
-data_ov007_02286a64 kind:data(any) addr:0x02286a64
-data_ov007_02286a7c kind:data(any) addr:0x02286a7c
-data_ov007_02286a94 kind:data(any) addr:0x02286a94
-data_ov007_02286a98 kind:data(any) addr:0x02286a98
-data_ov007_02286aac kind:data(any) addr:0x02286aac
-data_ov007_02286ac8 kind:data(any) addr:0x02286ac8
-data_ov007_02286adc kind:data(any) addr:0x02286adc
-data_ov007_02286af0 kind:data(any) addr:0x02286af0
-data_ov007_02286b04 kind:data(any) addr:0x02286b04
-data_ov007_02286b18 kind:data(any) addr:0x02286b18
-data_ov007_02286b1c kind:data(any) addr:0x02286b1c
-data_ov007_02286b38 kind:data(any) addr:0x02286b38
-data_ov007_02286b5c kind:data(any) addr:0x02286b5c
-data_ov007_02286b78 kind:data(any) addr:0x02286b78
-data_ov007_02286b94 kind:data(any) addr:0x02286b94
-data_ov007_02286b98 kind:data(any) addr:0x02286b98
-data_ov007_02286bb4 kind:data(any) addr:0x02286bb4
-data_ov007_02286bd0 kind:data(any) addr:0x02286bd0
-data_ov007_02286be4 kind:data(any) addr:0x02286be4
-data_ov007_02286bf8 kind:data(any) addr:0x02286bf8
+_ZTV9BattleHud kind:data(any) addr:0x022867a8
+@3166 kind:data(any) addr:0x022867bc local
+@3167 kind:data(any) addr:0x022867d4 local
+@3168 kind:data(any) addr:0x022867e8 local
+@3169 kind:data(any) addr:0x022867fc local
+@3170 kind:data(any) addr:0x02286810 local
+@3171 kind:data(any) addr:0x02286814 local
+@3172 kind:data(any) addr:0x02286830 local
+@3173 kind:data(any) addr:0x0228684c local
+@3174 kind:data(any) addr:0x02286860 local
+@3175 kind:data(any) addr:0x02286874 local
+@3176 kind:data(any) addr:0x02286898 local
+@3177 kind:data(any) addr:0x022868b8 local
+@3178 kind:data(any) addr:0x022868d8 local
+@3179 kind:data(any) addr:0x022868f4 local
+@3180 kind:data(any) addr:0x02286910 local
+@3181 kind:data(any) addr:0x02286934 local
+@3182 kind:data(any) addr:0x02286950 local
+@3183 kind:data(any) addr:0x0228696c local
+@3184 kind:data(any) addr:0x0228698c local
+@3185 kind:data(any) addr:0x022869a8 local
+@3186 kind:data(any) addr:0x022869c4 local
+@3187 kind:data(any) addr:0x022869e0 local
+@3188 kind:data(any) addr:0x022869fc local
+@3189 kind:data(any) addr:0x02286a14 local
+@3190 kind:data(any) addr:0x02286a30 local
+@3191 kind:data(any) addr:0x02286a48 local
+@3192 kind:data(any) addr:0x02286a4c local
+@3193 kind:data(any) addr:0x02286a64 local
+@3194 kind:data(any) addr:0x02286a7c local
+@3195 kind:data(any) addr:0x02286a94 local
+@3199 kind:data(any) addr:0x02286a98 local
+@3218 kind:data(any) addr:0x02286aac local
+@3219 kind:data(any) addr:0x02286ac8 local
+@3220 kind:data(any) addr:0x02286adc local
+@3221 kind:data(any) addr:0x02286af0 local
+@3222 kind:data(any) addr:0x02286b04 local
+@3223 kind:data(any) addr:0x02286b18 local
+@3245 kind:data(any) addr:0x02286b1c local
+@3246 kind:data(any) addr:0x02286b38 local
+@3247 kind:data(any) addr:0x02286b5c local
+@3248 kind:data(any) addr:0x02286b78 local
+@3249 kind:data(any) addr:0x02286b94 local
+@3895 kind:data(any) addr:0x02286b98 local
+@3896 kind:data(any) addr:0x02286bb4 local
+@3897 kind:data(any) addr:0x02286bd0 local
+@3898 kind:data(any) addr:0x02286be4 local
+@3899 kind:data(any) addr:0x02286bf8 local
 _ZTV13BattleField3D kind:data(any) addr:0x02286bfc
 @1330 kind:data(any) addr:0x02286c0c local
 @1331 kind:data(any) addr:0x02286c24 local
@@ -2092,15 +2092,15 @@ _ZTV18BattleUnionAbility kind:data(any) addr:0x0228760c
 @1630 kind:data(any) addr:0x022879c4 local
 @1631 kind:data(any) addr:0x022879e8 local
 @1632 kind:data(any) addr:0x02287a0c local
-data_ov007_02287a10 kind:data(any) addr:0x02287a10
-data_ov007_02287a24 kind:data(any) addr:0x02287a24
-data_ov007_02287a3c kind:data(any) addr:0x02287a3c
-data_ov007_02287a50 kind:data(any) addr:0x02287a50
-data_ov007_02287a6c kind:data(any) addr:0x02287a6c
-data_ov007_02287a80 kind:data(any) addr:0x02287a80
-data_ov007_02287a98 kind:data(any) addr:0x02287a98
-data_ov007_02287ab0 kind:data(any) addr:0x02287ab0
-data_ov007_02287ac4 kind:data(any) addr:0x02287ac4
+@1719 kind:data(any) addr:0x02287a10 local
+@1720 kind:data(any) addr:0x02287a24 local
+@1721 kind:data(any) addr:0x02287a3c local
+@1722 kind:data(any) addr:0x02287a50 local
+@1723 kind:data(any) addr:0x02287a6c local
+@1724 kind:data(any) addr:0x02287a80 local
+@1725 kind:data(any) addr:0x02287a98 local
+@1726 kind:data(any) addr:0x02287ab0 local
+@1727 kind:data(any) addr:0x02287ac4 local
 _ZTV13BattleCommand kind:data(any) addr:0x02287ac8
 @1426 kind:data(any) addr:0x02287adc local
 @1414 kind:data(any) addr:0x02287af4 local
@@ -2789,9 +2789,9 @@ data_ov007_0228b604 kind:bss addr:0x0228b604
 @1124 kind:bss addr:0x0228b6a0 local
 data_ov007_0228b6ac kind:bss addr:0x0228b6ac
 data_ov007_0228b6b8 kind:bss addr:0x0228b6b8
-data_ov007_0228b6c4 kind:bss addr:0x0228b6c4
-data_ov007_0228b6d0 kind:bss addr:0x0228b6d0
-data_ov007_0228b6dc kind:bss addr:0x0228b6dc
+@29 kind:bss addr:0x0228b6c4 local
+@814 kind:bss addr:0x0228b6d0 local
+@54 kind:bss addr:0x0228b6dc local
 @624 kind:bss addr:0x0228b6e8 local
 @611 kind:bss addr:0x0228b6f4 local
 sTouchTicks kind:bss addr:0x0228b700 local
@@ -2826,8 +2826,8 @@ sResources kind:bss addr:0x0228b800 local
 @86 kind:bss addr:0x0228b808 local
 @645 kind:bss addr:0x0228b814 local
 @637 kind:bss addr:0x0228b820 local
-data_ov007_0228b82c kind:bss addr:0x0228b82c
-data_ov007_0228b838 kind:bss addr:0x0228b838
+@516 kind:bss addr:0x0228b82c local
+@645 kind:bss addr:0x0228b838 local
 @1327 kind:bss addr:0x0228b844 local
 @1340 kind:bss addr:0x0228b850 local
 @1528 kind:bss addr:0x0228b85c local

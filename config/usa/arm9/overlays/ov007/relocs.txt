@@ -1617,14 +1617,14 @@ from:0x0222562c kind:arm_call to:0x02223750 module:overlay(7)
 from:0x02225660 kind:arm_call to:0x0201f2bc module:main
 from:0x0222566c kind:arm_call to:0x0201edc4 module:main
 from:0x022256a4 kind:arm_call to:0x022257e0 module:overlay(7)
-from:0x022256b0 kind:load to:0x022867b0 module:overlay(7)
+from:0x022256b0 kind:load to:0x022867a8 add:0x8 module:overlay(7)
 from:0x022256e0 kind:arm_call to:0x02029e18 module:main
 from:0x022256e8 kind:arm_call to:0x02021e80 module:main
-from:0x02225744 kind:load to:0x022867b0 module:overlay(7)
+from:0x02225744 kind:load to:0x022867a8 add:0x8 module:overlay(7)
 from:0x02225770 kind:arm_call to:0x02029e18 module:main
 from:0x02225778 kind:arm_call to:0x02021e80 module:main
 from:0x022257d0 kind:arm_call to:0x02021e80 module:main
-from:0x022257dc kind:load to:0x022867b0 module:overlay(7)
+from:0x022257dc kind:load to:0x022867a8 add:0x8 module:overlay(7)
 from:0x02225800 kind:arm_call to:0x020146d8 module:main
 from:0x02225808 kind:arm_call to:0x0200acac module:main
 from:0x02225828 kind:arm_call to:0x02025b64 module:main

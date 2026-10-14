@@ -68,9 +68,11 @@ src/07_Battle/Battle/BattleBlend.cpp:
 src/07_Battle/Battle/BattleSub48.cpp:
     .text       start:0x02223f28 end:0x0222545c
 
-// provisional: code only; 0x022257e0 (0xc6c bytes) is not decompiled.
 src/07_Battle/Battle/BattleHud.cpp:
+    complete
     .text       start:0x0222545c end:0x02228bcc
+    .data       start:0x022867a8 end:0x02286bfc
+    .bss        start:0x0228b6c4 end:0x0228b6e8
 
 src/07_Battle/Battle/BattleField3D.cpp:
     complete
@@ -206,9 +208,11 @@ src/07_Battle/Battle/BattleUnionAbility.cpp:
     .rodata     start:0x022799fc end:0x02279aa8
     .data       start:0x0228760c end:0x02287a10
 
-// provisional: code only; .data 0x02287a10-0x02287ad0 belongs here.
 src/07_Battle/Battle/BattleStatusPanels.cpp:
+    complete
     .text       start:0x02234ce8 end:0x02236494
+    .data       start:0x02287a10 end:0x02287ac8
+    .bss        start:0x0228b82c end:0x0228b844
 
 src/07_Battle/Battle/BattleCommand.cpp:
     complete

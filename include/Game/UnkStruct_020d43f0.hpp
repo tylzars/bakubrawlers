@@ -89,9 +89,10 @@ struct UnkStruct_020d43f0 {
     /* 579 */ PAD(0x579, 0x580);
     /* 580 */ u8 mUnk_580;
     /* 581 */ PAD(0x581, 0x586);
-    // Flag arrays written through pointers taken from these members (func_02086938, func_020876f0): only a store into
-    // data_020d43f0 itself keeps the following mUnk_5b9 load after it, as in the original. Some callers still address
-    // the same bytes through the data_020d4976/data_020d497b externs and match that way.
+    // Flag arrays read and written as `(u8 *) data_020d43f0[0].mUnk_586` (func_02086938, func_020876f0): the cast gives
+    // them their own pool word, hoisted after the loop's other tables, while still aliasing data_020d43f0 so the
+    // following mUnk_5b9 load stays after the store. Some callers address the same bytes through the
+    // data_020d4976/data_020d497b externs and match that way.
     /* 586 */ u8 mUnk_586[5];
     /* 58b */ u8 mUnk_58b[0x21];
     /* 5ac */ u8 mUnk_5ac;

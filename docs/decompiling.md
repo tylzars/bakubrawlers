@@ -217,6 +217,11 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **A pointer local hoists an address early.** Through a pointer local, a flag array's address is hoisted (so placed
+  in the pool and coloured) before a table read only in the loop condition; used directly in the expression it is
+  hoisted after it. `(u8 *) g[0].member` gets the direct order and keeps aliasing with `g`, which an extern alias for
+  the same bytes doesn't (func_02086938, func_020876f0).
+
 - **Recompute differences instead of naming them.** BattleShoot::func_ov007_0226f698 matched once `x0 - x1` and
   `y0 - y1` were written out at each use (with an `ABS` macro) instead of held in `dx`/`dy` locals.
 - **Where a shift sits matters.** `fx32 distance = f(...) << 12;` then `FX_Mul(distance, k)` matched

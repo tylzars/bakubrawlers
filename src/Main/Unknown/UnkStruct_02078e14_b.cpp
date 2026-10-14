@@ -3851,24 +3851,13 @@ void func_02086874(UnkStruct_02078e14 *self) {
     }
 }
 
-static inline BOOL MarkFlag(u8 *flags, int id) {
-    u8 byte = flags[(u32) id >> 3];
-    if (!(byte & (1 << (id % 8)))) {
-        flags[(u32) id >> 3] = byte | (1 << (id % 8));
-        data_020d43f0[0].mUnk_5b9_0 = 1;
-        return TRUE;
-    }
-    return FALSE;
-}
-
-// non-matching: 16 words, register allocation only: the original keeps the flag array in r1 and the constant 1 in r2 (the
-// compiler swaps them) and loads the count table before the flag array. The flag arrays are addressed as members of
-// data_020d43f0 (mUnk_586/mUnk_58b) so that the flag byte is stored before mUnk_5b9 is reloaded, as in the original.
+// The (u8 *) casts give each flag array its own literal-pool word, hoisted after the count table as in the original
+// (through a pointer local it is hoisted first and trades registers with the constant 1; a plain member folds into the
+// data_020d43f0 base). Unlike the data_020d4976/data_020d497b externs, the cast form still aliases data_020d43f0, which
+// keeps the mUnk_5b9 load after the flag store.
 BOOL func_02086938() {
     BOOL result;
     u8 kind;
-    u8 *flags1;
-    u8 *flags2;
     u8 i;
     const u16 *list2;
     const u8 *list;
@@ -3878,9 +3867,8 @@ BOOL func_02086938() {
     if (list != NULL) {
         i = 0;
         do {
-            flags1 = data_020d43f0[0].mUnk_586;
-            if (!TEST_BIT(flags1, list[i])) {
-                SET_BIT(flags1, list[i]);
+            if (!TEST_BIT((u8 *) data_020d43f0[0].mUnk_586, list[i])) {
+                SET_BIT((u8 *) data_020d43f0[0].mUnk_586, list[i]);
                 data_020d43f0[0].mUnk_5b9_0 = 1;
                 result                      = TRUE;
             }
@@ -3891,9 +3879,8 @@ BOOL func_02086938() {
     if (list2 != NULL) {
         i = 0;
         do {
-            flags2 = data_020d43f0[0].mUnk_58b;
-            if (!TEST_BIT(flags2, list2[i])) {
-                SET_BIT(flags2, list2[i]);
+            if (!TEST_BIT((u8 *) data_020d43f0[0].mUnk_58b, list2[i])) {
+                SET_BIT((u8 *) data_020d43f0[0].mUnk_58b, list2[i]);
                 data_020d43f0[0].mUnk_5b9_0 = 1;
                 result                      = TRUE;
             }
@@ -4237,18 +4224,15 @@ BOOL func_020875ac(u32 index) {
     return result;
 }
 
-// non-matching: 27 words in cases 0 and 1 (case 2 matches), the same colouring as func_02086938: the original keeps the
-// flag array in r1 and the constant 1 in r2, the compiler swaps them (and moves the list pointer).
 BOOL func_020876f0(u32 index) {
     BOOL result = TRUE;
     switch (data_020a40f4[index][0]) {
         case 0: {
-            const u16 *list = (const u16 *) data_020a40f0[index].mList;
             u8 i            = 0;
+            const u16 *list = (const u16 *) data_020a40f0[index].mList;
             do {
-                u8 *flags = data_020d43f0[0].mUnk_58b;
-                if (!TEST_BIT(flags, list[i])) {
-                    SET_BIT(flags, list[i]);
+                if (!TEST_BIT((u8 *) data_020d43f0[0].mUnk_58b, list[i])) {
+                    SET_BIT((u8 *) data_020d43f0[0].mUnk_58b, list[i]);
                     data_020d43f0[0].mUnk_5b9_0 = 1;
                     result                       = TRUE;
                 }
@@ -4257,17 +4241,21 @@ BOOL func_020876f0(u32 index) {
             break;
         }
         case 1: {
-            const u8 *list = (const u8 *) data_020a40f0[index].mList;
-            u8 i           = 0;
+            const u8 *list;
+            u8 count;
+            u8 i;
+            const ProgressEntry *e = &data_020a40f0[index];
+            count = e->mCount;
+            list  = (const u8 *) data_020a40f0[index].mList;
+            i     = 0;
             do {
-                u8 *flags = data_020d43f0[0].mUnk_586;
-                if (!TEST_BIT(flags, list[i])) {
-                    SET_BIT(flags, list[i]);
+                if (!TEST_BIT((u8 *) data_020d43f0[0].mUnk_586, list[i])) {
+                    SET_BIT((u8 *) data_020d43f0[0].mUnk_586, list[i]);
                     data_020d43f0[0].mUnk_5b9_0 = 1;
                     result                       = TRUE;
                 }
                 i++;
-            } while (i < data_020a40f0[index].mCount);
+            } while (i < count);
             break;
         }
         case 2: {

@@ -2347,39 +2347,39 @@ _ZTV11BattleObj00 kind:data(any) addr:0x02288e44
 @2768 kind:data(any) addr:0x02288ec8 local
 @2769 kind:data(any) addr:0x02288ee0 local
 @2770 kind:data(any) addr:0x02288ef8 local
-data_ov007_02288f0c kind:data(any) addr:0x02288f0c
-data_ov007_02288f14 kind:data(any) addr:0x02288f14
-data_ov007_02288f20 kind:data(any) addr:0x02288f20
-data_ov007_02288f34 kind:data(any) addr:0x02288f34
-data_ov007_02288f54 kind:data(any) addr:0x02288f54
-data_ov007_02288f74 kind:data(any) addr:0x02288f74
-data_ov007_02288f94 kind:data(any) addr:0x02288f94
-data_ov007_02288fb4 kind:data(any) addr:0x02288fb4
-data_ov007_02288fd4 kind:data(any) addr:0x02288fd4
-data_ov007_02288ff4 kind:data(any) addr:0x02288ff4
-data_ov007_02289014 kind:data(any) addr:0x02289014
-data_ov007_02289034 kind:data(any) addr:0x02289034
-data_ov007_02289054 kind:data(any) addr:0x02289054
-data_ov007_02289074 kind:data(any) addr:0x02289074
-data_ov007_02289094 kind:data(any) addr:0x02289094
-data_ov007_022890ac kind:data(any) addr:0x022890ac
-data_ov007_022890c8 kind:data(any) addr:0x022890c8
-data_ov007_022890e0 kind:data(any) addr:0x022890e0
-data_ov007_022890f8 kind:data(any) addr:0x022890f8
-data_ov007_0228910c kind:data(any) addr:0x0228910c
-data_ov007_02289130 kind:data(any) addr:0x02289130
-data_ov007_02289150 kind:data(any) addr:0x02289150
-data_ov007_02289174 kind:data(any) addr:0x02289174
-data_ov007_02289194 kind:data(any) addr:0x02289194
-data_ov007_022891b4 kind:data(any) addr:0x022891b4
-data_ov007_022891d4 kind:data(any) addr:0x022891d4
-data_ov007_022891e8 kind:data(any) addr:0x022891e8
-data_ov007_02289208 kind:data(any) addr:0x02289208
-data_ov007_02289220 kind:data(any) addr:0x02289220
-data_ov007_02289238 kind:data(any) addr:0x02289238
-data_ov007_02289250 kind:data(any) addr:0x02289250
-data_ov007_02289268 kind:data(any) addr:0x02289268
-data_ov007_0228926c kind:data(any) addr:0x0228926c
+_ZTV17BattleOrderSelect kind:data(any) addr:0x02288f0c
+@2350 kind:data(any) addr:0x02288f20 local
+@2351 kind:data(any) addr:0x02288f34 local
+@2352 kind:data(any) addr:0x02288f54 local
+@2353 kind:data(any) addr:0x02288f74 local
+@2354 kind:data(any) addr:0x02288f94 local
+@2355 kind:data(any) addr:0x02288fb4 local
+@2356 kind:data(any) addr:0x02288fd4 local
+@2357 kind:data(any) addr:0x02288ff4 local
+@2358 kind:data(any) addr:0x02289014 local
+@2359 kind:data(any) addr:0x02289034 local
+@2360 kind:data(any) addr:0x02289054 local
+@2361 kind:data(any) addr:0x02289074 local
+@2362 kind:data(any) addr:0x02289094 local
+@2363 kind:data(any) addr:0x022890ac local
+@2364 kind:data(any) addr:0x022890c8 local
+@2365 kind:data(any) addr:0x022890e0 local
+@2366 kind:data(any) addr:0x022890f8 local
+@2367 kind:data(any) addr:0x0228910c local
+@2368 kind:data(any) addr:0x02289130 local
+@2369 kind:data(any) addr:0x02289150 local
+@2370 kind:data(any) addr:0x02289174 local
+@2371 kind:data(any) addr:0x02289194 local
+@2372 kind:data(any) addr:0x022891b4 local
+@2373 kind:data(any) addr:0x022891d4 local
+@2374 kind:data(any) addr:0x022891e8 local
+@2375 kind:data(any) addr:0x02289208 local
+@2376 kind:data(any) addr:0x02289220 local
+@2377 kind:data(any) addr:0x02289238 local
+@2378 kind:data(any) addr:0x02289250 local
+@2379 kind:data(any) addr:0x02289268 local
+@2380 kind:data(any) addr:0x0228926c local
+data_ov007_02289278 kind:data(any) addr:0x02289278
 data_ov007_02289280 kind:data(any) addr:0x02289280
 data_ov007_0228928c kind:data(any) addr:0x0228928c
 data_ov007_022892b4 kind:data(any) addr:0x022892b4
@@ -2847,9 +2847,9 @@ data_ov007_0228b8ec kind:bss addr:0x0228b8ec
 @23 kind:bss addr:0x0228b904 local
 @184 kind:bss addr:0x0228b910 local
 @47 kind:bss addr:0x0228b91c local
-data_ov007_0228b928 kind:bss addr:0x0228b928
-data_ov007_0228b934 kind:bss addr:0x0228b934
-data_ov007_0228b940 kind:bss addr:0x0228b940
+@29 kind:bss addr:0x0228b928 local
+@566 kind:bss addr:0x0228b934 local
+@597 kind:bss addr:0x0228b940 local
 data_ov007_0228b94c kind:bss addr:0x0228b94c
 data_ov007_0228b958 kind:bss addr:0x0228b958
 data_ov007_0228b964 kind:bss addr:0x0228b964

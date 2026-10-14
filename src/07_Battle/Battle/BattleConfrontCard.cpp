@@ -374,8 +374,10 @@ void BattleConfrontCard::func_ov007_0223f90c(u16 value) {
     mUnk_10 = value;
 }
 
-// non-matching: all 178 calls and the 54-case jump table match, but the size is 0x2c14 vs 0x2c04 and the register assignment differs (the original keeps `mData->mEntries` in r8, here it lands in r6, which shifts the temporaries of cases 15-35 and 51; case 44 loads the bit from a branch instead of predicated loads; case 35 computes i*0x14 once more).
+// non-matching: 7 words in case 29's loop head; the original keeps mBattlePlayers and the slot pointer in r1 and j*4 in r2 (`ldr r1,[r5]; lsl r2,r8,#2; ...; add r1,r0,#108; ...; ldrh r2,[r1,r2]`), here the two swap.
 BOOL BattleConfrontCard::func_ov007_0223f918() {
+    u8 j;
+    u8 k;
     BattleEntry *e = mData->mEntries;
     switch (mUnk_0d) {
         case 0:
@@ -427,7 +429,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 reg_G2S_DB_WIN0V = 0x20a0;
                 mUnk_14[2] = 0x4f;
                 mUnk_1a[2] = 0x20;
-                func_ov007_0223f90c(0x4f);
+                func_ov007_0223f90c(0x20);
                 mUnk_0d = 3;
             }
             break;
@@ -597,7 +599,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             SpriteManager::Get().func_02026dec(0, 7);
             GX_SetGraphicsMode(1, 0, 1);
             mUnk_50 = func_ov007_022428d4(mData->mUnk_04);
-            u8 side = data_020d433c.mBattlePlayers->mUnk_2a9 == e[1].mUnk_0d_4 ? 1 : 0;
+            u8 side = data_020d433c.mBattlePlayers->CurrentPlayer() == e[1].mUnk_0d_4 ? 1 : 0;
             u32 kind = 6;
             switch (mUnk_50) {
                 case 1:
@@ -669,7 +671,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 break;
             }
             u8 side;
-            if (data_020d433c.mBattlePlayers->mUnk_2a9 == e[1].mUnk_0d_4) {
+            if (data_020d433c.mBattlePlayers->CurrentPlayer() == e[1].mUnk_0d_4) {
                 side = 1;
                 if (mUnk_5d == 0) {
                     side = 0;
@@ -728,7 +730,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             }
             func_ov007_0223f90c(0x40);
             mUnk_0d = 0x19;
-            if (data_020d433c.mBattlePlayers->mUnk_2a9 == e[1].mUnk_0d_4) {
+            if (data_020d433c.mBattlePlayers->CurrentPlayer() == e[1].mUnk_0d_4) {
                 if (mUnk_5d == 0) {
                     BattleCardSpec *spec = mUnk_44;
                     spec->mUnk_1e = 0;
@@ -751,7 +753,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             if (mContext->mUnk_12 == 0) {
                 break;
             }
-            u8 side = data_020d433c.mBattlePlayers->mUnk_2a9 == e[1].mUnk_0d_4 ? 1 : 0;
+            u8 side = data_020d433c.mBattlePlayers->CurrentPlayer() == e[1].mUnk_0d_4 ? 1 : 0;
             mUnk_44 = new BattleCardSpec(3, e[side].mUnk_0c, e[side].mUnk_0d_0, e[side].mUnk_0e == 0x15 ? 1 : 0);
             func_ov007_0223f90c(0x40);
             mUnk_0d++;
@@ -902,15 +904,15 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             u8 done = 0;
             do {
                 if ((&mUnk_62)[i] == 0) {
-                    BattleEntry *ent = &e[i];
-                    if (data_020d433c.mBattlePlayers->mPlayers[ent->mUnk_0d_4]->IsActive()) {
+                    BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4];
+                    if (p->IsActive()) {
                         (&mUnk_62)[i] = 1;
                     } else if (data_020d433c.mUnk_9a_2) {
                         (&mUnk_62)[i] = 1;
                     } else {
                         WirelessManager::Get();
                         if (IsWirelessMode(&data_020c4258)) {
-                            BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[ent->mUnk_0d_4];
+                            p = data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4];
                             if (p->mMsg.mType == 7) {
                                 mData->mEntries[i].mUnk_12 = *(u32 *) ((u8 *) p + 0x104);
                                 mData->mEntries[i].mUnk_11 = *((u8 *) p + 0x10a);
@@ -942,23 +944,24 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
         case 35: {
             u8 i = 0;
             do {
+                BattleEntry *ent = &e[i];
                 
-                if (data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4]->IsActive()) {
+                if (data_020d433c.mBattlePlayers->mPlayers[ent->mUnk_0d_4]->IsActive()) {
                     if (e[i].mUnk_0f_0) {
                         mUnk_56 = 0;
                     } else {
-                        u8 j = 0;
-                        u8 k = 0;
+                        j = 0;
+                        k = 0;
                         u8 mask = 0;
                         do {
                             if (!func_ov007_022433c8(i, data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4]->mSlots6c[j].mValue)) {
                                 (&mask)[k / 8] |= 1 << (k % 8);
                             }
-                            j++;
                             k++;
+                            j++;
                         } while (j < data_020d433c.mUnk_99);
                         u8 other = (i + 1) % 2;
-                        u8 pick  = func_ov007_0226a700(data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4], mask,
+                        u8 pick  = func_ov007_0226a700(data_020d433c.mBattlePlayers->mPlayers[ent->mUnk_0d_4], mask,
                                                        (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
                         if (pick == 0xff) {
                             mUnk_56 = 0;
@@ -973,28 +976,28 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                     if (e[i].mUnk_0f_0) {
                         mUnk_54 = 0;
                     } else {
-                        u8 j = 0;
-                        u8 k = 0;
+                        j = 0;
+                        k = 0;
                         u8 mask = 0;
                         do {
                             if (!func_ov007_022433c8(i, data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4]->mSlots6c[j].mValue)) {
                                 (&mask)[k / 8] |= 1 << (k % 8);
                             }
-                            j++;
                             k++;
+                            j++;
                         } while (j < data_020d433c.mUnk_99);
                         u8 other = (i + 1) % 2;
-                        u8 pick  = func_ov007_0226a700(data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4], mask,
+                        u8 pick  = func_ov007_0226a700(data_020d433c.mBattlePlayers->mPlayers[ent->mUnk_0d_4], mask,
                                                        (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
                         if (pick == 0xff) {
                             mUnk_54 = 0;
                         } else {
-                            mUnk_53 = pick;
-                            BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4];
-                            mUnk_54 = p->mSlots6c[pick].mValue;
-                            mData->mEntries[i].mUnk_12 = p->mSlots6c[pick].mValue;
+                            u8 idx = mUnk_53 = pick;
+                            BattlePlayerSlot *slots = data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4]->mSlots6c;
+                            mUnk_54 = slots[idx].mValue;
+                            mData->mEntries[i].mUnk_12 = slots[idx].mValue;
                             mData->mEntries[i].mUnk_11 = mUnk_53;
-                            mData->mEntries[i].mUnk_0a = func_ov007_02243b24(i, p->mSlots6c[pick].mValue);
+                            mData->mEntries[i].mUnk_0a = func_ov007_02243b24(i, slots[idx].mValue);
                         }
                     }
                 }
@@ -1141,10 +1144,18 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             break;
         case 44: {
             u32 kind;
-            if (mUnk_21 == 0 ? e[0].mUnk_0f_4 : e[1].mUnk_0f_4) {
-                kind = 4;
+            if (mUnk_21 == 0) {
+                if (e[0].mUnk_0f_4) {
+                    kind = 4;
+                } else {
+                    kind = 1;
+                }
             } else {
-                kind = 1;
+                if (e[1].mUnk_0f_4) {
+                    kind = 4;
+                } else {
+                    kind = 1;
+                }
             }
             new BattleCardSpec(kind, e[mUnk_21].mUnk_0c, e[mUnk_21].mUnk_0d_0, e[mUnk_21].mUnk_0e == 0x15 ? 1 : 0);
             mContext->mUnk_12 = 0;
@@ -1272,8 +1283,8 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                                 }
                                 BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[e[mUnk_21].mUnk_0d_4];
                                 BattleRecord *rec = &p->mRecords[data_020d433c.mBattlePlayers->mUnits[sel].mUnk_0e];
-                                if (0xfff - add > rec->mGauge) {
-                                    rec->mGauge = rec->mGauge + add;
+                                if ((int) rec->mGauge < 0xfff - add) {
+                                    rec->mGauge += add;
                                 }
                                 if (data_020d48f0.mUnk_d4 < 9999) {
                                     data_020d48f0.mUnk_d4++;
@@ -1312,10 +1323,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 if (mUnk_21 == 0) {
                     other = 1;
                 }
-                BattlePlayer *q = data_020d433c.mBattlePlayers->mPlayers[e[mUnk_21].mUnk_0d_4];
-                *(u16 *) ((u8 *) q + q->mUnk_f4 * 6 + 0x84) = e[other].mUnk_04;
-                *((u8 *) q + q->mUnk_f4 * 6 + 0x86) = e[other].mUnk_0d_0;
-                q->mUnk_f4++;
+                data_020d433c.mBattlePlayers->mPlayers[e[mUnk_21].mUnk_0d_4]->PushHistory(e[other].mUnk_04, e[other].mUnk_0d_0);
             }
             func_ov007_022626b8(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnits[data_020d433c.mBattlePlayers->mUnk_28d].mUnk_11);
             func_ov007_02262828(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnk_28d, 2);

@@ -59,8 +59,6 @@ UnkStruct_020758f4_Entry *UnkStruct_020758f4::func_02075a00(u32 index) {
     return &mUnk_04[index];
 }
 
-// non-matching: 0x438 vs 0x434. The original keeps `this` in r7 (loop counter r6, zero r4, table r5) where ours puts it in r4,
-// and it adds the 9000 of the score > 1000000 case to a register holding 10000 (ours loads the folded 0x4a38).
 void UnkStruct_020758f4::func_02075a0c() {
     s8 i;
     s8 k;
@@ -139,7 +137,9 @@ void UnkStruct_020758f4::func_02075a0c() {
     }
     for (i = 0; i < 4; i++) {
         mUnk_6c[i].mUnk_0 = data_020a305c[i];
-        mUnk_6c[i].mUnk_4 = (base + data_020a3060[i]) / 10 * 10;
+        mUnk_6c[i].mUnk_4 = base + data_020a3060[i];
+        mUnk_6c[i].mUnk_4 /= 10;
+        mUnk_6c[i].mUnk_4 *= 10;
         mUnk_6c[i].mUnk_2 = func_02075ff4(mUnk_6c[i].mUnk_4);
     }
     for (i = 0; i < 4; i++) {

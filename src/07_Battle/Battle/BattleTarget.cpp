@@ -143,7 +143,6 @@ static inline void AddRot(BattleObstacle *o, GimmickSetData *s) {
     o->mRotX += r[0];
 }
 
-// non-matching: 5 words (first +0x1a8): the constants 0x1c3 / 0x32000 are loaded into r3 in the original (r2 is held by the later constant 1 whose mov is hoisted above the store of 0x32000); the permute search over the constant block found no order that does this.
 BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     : SceneBase(0x3e8, 0) {
     mUnk_28 = 0;
@@ -2223,14 +2222,16 @@ void BattleTarget::func_ov007_022585e0() {
     }
 }
 
-// non-matching: 20 words: the original computes the table pointer in r0 / index in r1 and zeroes r1 after the load (here r3 / r2 and a hoisted zero).
 void BattleTarget::func_ov007_02258660() {
     switch (mUnk_1db) {
         case 0: {
             mUnk_1db++;
             func_ov007_02258cec(&mUnk_15c, &mUnk_168, &mUnk_134, mUnk_1de);
-            const u16 *table = mUnk_1df == 1 ? data_ov007_0227a5e0 : data_ov007_0227a5e4;
-            mUnk_140         = table[mUnk_1dc];
+            if (mUnk_1df == 1) {
+                mUnk_140 = data_ov007_0227a5e0[mUnk_1dc];
+            } else {
+                mUnk_140 = data_ov007_0227a5e4[mUnk_1dc];
+            }
             mUnk_64.x = 0;
             mUnk_64.y = 0;
             mUnk_64.z = 0;
@@ -3274,7 +3275,6 @@ void BattleTarget::func_ov007_0225b69c(u8 a, u8 b) {
     map->mUnk_149         = b;
 }
 
-// non-matching: 8 words, all in case 4: the original materialises the zero for rot2[0]/rot2[2] in r1 before the `+ 0x4000` (here r0, after it).
 void BattleTarget::func_ov007_0225b6d0() {
     char buf[0x804];
     VecFx32 vel;
@@ -3334,8 +3334,9 @@ void BattleTarget::func_ov007_0225b6d0() {
             func_ov007_022334f4(rot, power, &dir, &vel);
             mUnk_1c0  = func_0202bd40(data_020d433c.mEffects, 1, 9, 0, 1);
             u8 handle = func_0202bd40(data_020d433c.mEffects, 1, 10, 0, 0);
-            rot2[1]   = FX_Atan2Idx(vel.x, vel.z) + 0x4000;
+            u16 t = FX_Atan2Idx(vel.x, vel.z);
             rot2[0]   = 0;
+            rot2[1]   = t + 0x4000;
             rot2[2]   = 0;
             func_0202bf3c(data_020d433c.mEffects, handle, rot2);
             func_0202bef4(data_020d433c.mEffects, handle, &mUnk_1a4->mPosition);

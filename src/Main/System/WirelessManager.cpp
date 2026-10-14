@@ -433,15 +433,20 @@ void WirelessManager::func_0202e718() {
     data_0220f5e0.mBssid[5] = 0xff;
 }
 
-// non-matching: 4 words, `start` and the constant 1 swap registers.
+// The mask bit is kept in a register: an enum-typed one is not constant-propagated.
+enum ChannelBit { CHANNEL_BIT_NONE, CHANNEL_BIT };
 void WirelessManager::func_0202e76c() {
     u16 mask = func_0201042c();
     if (mask == 0) { return; }
-    int start = data_0220f5e0.mChannel;
+    int start;
+    ChannelBit one;
     int i;
-    for (i = 0; i < 16; i++) {
+    i = 0;
+    start = data_0220f5e0.mChannel;
+    one = CHANNEL_BIT;
+    for (; i < 16; i++) {
         int ch = (start + i) % 16;
-        if (mask & (1 << ch)) { data_0220f5e0.mChannel = ch + 1; return; }
+        if (mask & (one << ch)) { data_0220f5e0.mChannel = ch + 1; return; }
     }
 }
 

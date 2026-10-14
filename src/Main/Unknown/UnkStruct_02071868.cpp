@@ -296,8 +296,8 @@ void func_02072614() {
     G2S_BlendNone();
 }
 
-// non-matching: 6 words. For the last func_02025b64 call (kind 1, offset 0x2000) the original keeps the zero stack arguments in
-// r5 and sets r0 after the stores; the compiler uses r0 for them. Everything else is identical.
+// Held in a register for the last three arguments: an enum-typed zero is not constant-propagated.
+enum LoadArg { LOAD_ARG_NONE };
 void UnkStruct_02071d24::func_02072734() {
     ChangeDir("/Game/Battle/Bg/");
     func_02025b64(1, 7, 0, "result_b_bg_01_nsc.bin", 0, 0, 0);
@@ -306,7 +306,8 @@ void UnkStruct_02071d24::func_02072734() {
     ChangeDir("/Game/2d/union_b/");
     func_02025b64(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
     func_02025b64(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadArg z = LOAD_ARG_NONE;
+    func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", z, z, z);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.func_02027624(3);
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0xf000, 0);
@@ -475,13 +476,10 @@ void UnkStruct_02071d24::func_02072e7c() {
     func_02073fb0();
 }
 
-// non-matching: 15 words, register allocation only (the original keeps cells in r5, the constant 8 in r6 and r11, items in r8,
-// the loop counter in r7; in the second loop the index temporaries are r10/r5).
 void UnkStruct_02071d24::func_02073040() {
     if (mUnk_34[mUnk_4e] == NULL) {
         return;
     }
-    const WindowCellRecord *cells = data_020a2f0c;
     u8 i;
     WindowItem *items = mUnk_20->mCursor->mItems;
     for (i = 0; i < 5; i++) {
@@ -489,7 +487,7 @@ void UnkStruct_02071d24::func_02073040() {
             case 0:
                 if ((s32) mUnk_34[mUnk_4e]->mUnk_02_0 < 4) {
                     items[i].mFlags = 8;
-                    mUnk_20->mCells[i]->SetAnimation(cells[i].mUnk_18[0]);
+                    mUnk_20->mCells[i]->SetAnimation(data_020a2f0c[i].mUnk_18[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mUnk_20->mCells[i]->SetAnimation(0xf);
@@ -498,7 +496,7 @@ void UnkStruct_02071d24::func_02073040() {
             case 1:
                 if ((s32) mUnk_34[mUnk_4e]->mUnk_02_12 < 4) {
                     items[i].mFlags = 8;
-                    mUnk_20->mCells[i]->SetAnimation(cells[i].mUnk_18[0]);
+                    mUnk_20->mCells[i]->SetAnimation(data_020a2f0c[i].mUnk_18[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mUnk_20->mCells[i]->SetAnimation(0x10);
@@ -507,7 +505,7 @@ void UnkStruct_02071d24::func_02073040() {
             case 2:
                 if ((s32) mUnk_34[mUnk_4e]->mUnk_02_3 < 4) {
                     items[i].mFlags = 8;
-                    mUnk_20->mCells[i]->SetAnimation(cells[i].mUnk_18[0]);
+                    mUnk_20->mCells[i]->SetAnimation(data_020a2f0c[i].mUnk_18[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mUnk_20->mCells[i]->SetAnimation(0x11);
@@ -516,7 +514,7 @@ void UnkStruct_02071d24::func_02073040() {
             case 3:
                 if ((s32) mUnk_34[mUnk_4e]->mUnk_02_6 < 4) {
                     items[i].mFlags = 8;
-                    mUnk_20->mCells[i]->SetAnimation(cells[i].mUnk_18[0]);
+                    mUnk_20->mCells[i]->SetAnimation(data_020a2f0c[i].mUnk_18[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mUnk_20->mCells[i]->SetAnimation(0x12);
@@ -525,7 +523,7 @@ void UnkStruct_02071d24::func_02073040() {
             case 4:
                 if ((s32) mUnk_34[mUnk_4e]->mUnk_02_9 < 4) {
                     items[i].mFlags = 8;
-                    mUnk_20->mCells[i]->SetAnimation(cells[i].mUnk_18[0]);
+                    mUnk_20->mCells[i]->SetAnimation(data_020a2f0c[i].mUnk_18[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mUnk_20->mCells[i]->SetAnimation(0x13);
@@ -536,7 +534,8 @@ void UnkStruct_02071d24::func_02073040() {
     u8 j;
     WindowItem *selectItems = mUnk_20->mCursor->mItems;
     for (j = 0; j < 5; j++) {
-        u8 index = (u8) (j + mUnk_4f) % 5;
+        u8 index = j + mUnk_4f;
+        index %= 5;
         if (selectItems[index].mFlags == 8) {
             mUnk_14->func_02065890((s16) (index + 0x10), 0, 1);
             mUnk_20->mCursor->mSelection = index;

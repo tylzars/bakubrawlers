@@ -120,7 +120,10 @@ u32 func_02086654(UnkStruct_02078e14 *self, u32 unk1, u32 unk2);
 
 extern "C" void func_01ff94e0(const void *src, void *dst, u32 size);
 
-// non-matching: register allocation only (original: this r5, i r10, zero r8, &data_020d433c r6, &data_020d43f0 r9, record r7; the compiler picks a different order); no declaration order tried changes it
+// Inline wrapper around MIi_CpuCopy16 (func_01ff94e0).
+static inline void MI_CpuCopy16(const void *src, void *dst, u32 size) {
+    func_01ff94e0(src, dst, size);
+}
 
 // Layout of the list message of a battle player (BattlePlayer::mMsg) and of the communication buffer data_0220f540.
 
@@ -3006,17 +3009,17 @@ void func_020848c8(UnkStruct_02078e14 *self) {
         record->mUnk_09      = self->mUnk_c8[i + 9];
         record->mUnk_0a      = 0;
         record->mUnk_0b      = record->mUnk_04 / 10;
-        func_01ff94e0(func_02023248(data_020d43f0, record->mUnk_08, record->mUnk_09), &data_020d433c.mBattlePlayers->mPlayers[0]->mRecords[i], 4);
+        MI_CpuCopy16(func_02023248(data_020d43f0, record->mUnk_08, record->mUnk_09), &data_020d433c.mBattlePlayers->mPlayers[0]->mRecords[i], 4);
     }
     for (u8 i = 0; i < 3; i++) {
-        BattlePlayerSlot *slots = data_020d433c.mBattlePlayers->mPlayers[0]->mSlots54;
-        slots[i].mValue         = self->mUnk_c8[3 + i];
-        slots[i].mFlag          = 0;
+        BattlePlayerSlot *slot = &data_020d433c.mBattlePlayers->mPlayers[0]->mSlots54[i];
+        slot->mValue         = self->mUnk_c8[3 + i];
+        slot->mFlag          = 0;
     }
     for (u8 i = 0; i < 3; i++) {
-        BattlePlayerSlot *slots = data_020d433c.mBattlePlayers->mPlayers[0]->mSlots6c;
-        slots[i].mValue         = self->mUnk_c8[6 + i];
-        slots[i].mFlag          = 0;
+        BattlePlayerSlot *slot = &data_020d433c.mBattlePlayers->mPlayers[0]->mSlots6c[i];
+        slot->mValue         = self->mUnk_c8[6 + i];
+        slot->mFlag          = 0;
     }
 }
 

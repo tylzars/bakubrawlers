@@ -3418,13 +3418,15 @@ BOOL UnkStruct_02065c40::func_0206ef08() {
 
 
 
-// non-matching: 53 words, register allocation (the original keeps the zero/index in r9).
 BOOL UnkStruct_02065c40::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4, s32 unk5) {
     BOOL isTwo = mUnk_12ba == 2;
     BOOL isNine = mUnk_12b9 == 9;
     BOOL done = mUnk_12bc == mUnk_12be;
     if (isTwo | (isNine & done)) {
     u8 mode = mUnk_14e2;
+    if (mode >= 6) {
+        mode = 0;
+    }
     u8 n = 0;
     mUnk_0c[n].mCommand = 9;
     mUnk_0c[n].mValue = 2;
@@ -3438,9 +3440,6 @@ BOOL UnkStruct_02065c40::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32
     mUnk_0c[n].mCommand = 0x19;
     mUnk_0c[n].mValue = 0;
     n++;
-    if (mode >= 6) {
-        mode = 0;
-    }
     s16 extra = *(s16 *) &unk4;
     if (extra >= 0) {
         mUnk_0c[n].mCommand = 0x3b;
@@ -3483,8 +3482,8 @@ BOOL UnkStruct_02065c40::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32
     mUnk_0c[n].mValue = data_020a1c04[mode].mUnk_4;
     n++;
     mUnk_0c[n].mCommand = 0x3a;
-    n++;
     mUnk_12ac = data_020a1c04[mode].mUnk_6;
+    n++;
     mUnk_0c[n].mCommand = 0x1c;
     mUnk_0c[n].mValue = data_020a2198[mode].mUnk_00;
     n++;

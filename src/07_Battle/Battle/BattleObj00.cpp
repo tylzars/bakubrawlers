@@ -1,3 +1,8 @@
+#include "System/InputManager.hpp"
+#include "System/WirelessManager.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "System/TouchManager.hpp"
+#include "System/SoundManager.hpp"
 #include "Battle/BattleCommand.hpp"
 #include "Battle/BattleCharaAct.hpp"
 #include "Battle/BattleCommandPage.hpp"
@@ -7,13 +12,8 @@
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "Scene/SceneBase.hpp"
 #include "System/FileSystem.hpp"
-#include "System/InputManager.hpp"
-#include "System/SoundManager.hpp"
-#include "System/TouchManager.hpp"
-#include "System/WirelessManager.hpp"
 #include "Graphics/Camera.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
 #include "Unknown/UnkStruct_02087898.hpp"
@@ -27,7 +27,7 @@ struct BattleObjPair {
 BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
 BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag);
 void func_ov007_02262638(BattlePlayerList *list, u8 row, u8 col, u8 player, u8 slot);
-extern "C" u8 func_ov007_0226a5e8(BattlePlayer *player);
+u8 func_ov007_0226a5e8(BattlePlayer *player);
 void func_ov007_0223a690(int x, int y);
 void func_ov007_02245888(BattleCommandMap *map);
 extern "C" void func_ov007_022482a8(BattleCommandMap *map);

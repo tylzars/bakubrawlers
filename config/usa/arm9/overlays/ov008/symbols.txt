@@ -217,7 +217,7 @@ _ZTV11MyroomScene kind:data(any) addr:0x02229984
 @1098 kind:data(any) addr:0x02229a38 local
 @1104 kind:data(any) addr:0x02229a60 local
 @1105 kind:data(any) addr:0x02229a88 local
-@1090 kind:data(any) addr:0x02229ab0 local
+@1091 kind:data(any) addr:0x02229ab0 local
 @1091 kind:data(any) addr:0x02229ad8 local
 @1107 kind:data(any) addr:0x02229b00 local
 @1092 kind:data(any) addr:0x02229b28 local
@@ -230,8 +230,8 @@ _ZTV11MyroomScene kind:data(any) addr:0x02229984
 @1095 kind:data(any) addr:0x02229c58 local
 data_ov008_02229c88 kind:data(any) addr:0x02229c88
 data_ov008_02229d14 kind:data(any) addr:0x02229d14
-@3048 kind:data(any) addr:0x02229da0 local
-@3102 kind:data(any) addr:0x02229db0 local
+@3049 kind:data(any) addr:0x02229da0 local
+@3103 kind:data(any) addr:0x02229db0 local
 @3103 kind:data(any) addr:0x02229dc0 local
 @3104 kind:data(any) addr:0x02229dd8 local
 @3105 kind:data(any) addr:0x02229df0 local
@@ -244,8 +244,8 @@ data_ov008_02229d14 kind:data(any) addr:0x02229d14
 @3109 kind:data(any) addr:0x02229eac local
 @3110 kind:data(any) addr:0x02229ecc local
 @3111 kind:data(any) addr:0x02229ee8 local
-@3417 kind:data(any) addr:0x02229eec local
-@3418 kind:data(any) addr:0x02229f04 local
+@3421 kind:data(any) addr:0x02229eec local
+@3422 kind:data(any) addr:0x02229f04 local
 data_ov008_02229f10 kind:data(any) addr:0x02229f10
 data_ov008_02229f18 kind:data(any) addr:0x02229f18
 data_ov008_02229f24 kind:data(any) addr:0x02229f24
@@ -440,10 +440,10 @@ data_ov008_0222b5c8 kind:data(any) addr:0x0222b5c8
 OV008_BSS_START kind:bss addr:0x0222b5e0
 @544 kind:bss addr:0x0222b5ec local
 @1329 kind:bss addr:0x0222b5f8 local
-@1181 kind:bss addr:0x0222b604 local
-@1156 kind:bss addr:0x0222b610 local
+@1185 kind:bss addr:0x0222b604 local
+@1160 kind:bss addr:0x0222b610 local
 @1200 kind:bss addr:0x0222b61c local
-@1121 kind:bss addr:0x0222b628 local
+@1125 kind:bss addr:0x0222b628 local
 data_ov008_0222b634 kind:bss addr:0x0222b634
 data_ov008_0222b640 kind:bss addr:0x0222b640
 data_ov008_0222b64c kind:bss addr:0x0222b64c

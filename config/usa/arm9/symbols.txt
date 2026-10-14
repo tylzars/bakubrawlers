@@ -4189,10 +4189,10 @@ _ZTV18UnkStruct_02070608 kind:data(any) addr:0x020b8ddc
 @983 kind:data(any) addr:0x020b8e48 local
 @984 kind:data(any) addr:0x020b8e74 local
 data_020b8ea0 kind:data(any) addr:0x020b8ea0 local
-@1774 kind:data(any) addr:0x020b8f10 local
-@1775 kind:data(any) addr:0x020b8f24 local
-@1776 kind:data(any) addr:0x020b8f40 local
-@1777 kind:data(any) addr:0x020b8f5c local
+@1778 kind:data(any) addr:0x020b8f10 local
+@1779 kind:data(any) addr:0x020b8f24 local
+@1780 kind:data(any) addr:0x020b8f40 local
+@1781 kind:data(any) addr:0x020b8f5c local
 @1778 kind:data(any) addr:0x020b8f78 local
 @1779 kind:data(any) addr:0x020b8f7c local
 @1780 kind:data(any) addr:0x020b8f94 local
@@ -4456,9 +4456,9 @@ data_020baa00 kind:data(any) addr:0x020baa00
 data_020baa10 kind:data(any) addr:0x020baa10
 data_020baa28 kind:data(any) addr:0x020baa28
 _ZTV18UnkStruct_02087898 kind:data(any) addr:0x020baa50
-@1623 kind:data(any) addr:0x020baa64 local
-@1643 kind:data(any) addr:0x020baa68 local
-@1644 kind:data(any) addr:0x020baa6c local
+@1627 kind:data(any) addr:0x020baa64 local
+@1647 kind:data(any) addr:0x020baa68 local
+@1648 kind:data(any) addr:0x020baa6c local
 @1675 kind:data(any) addr:0x020baa8c local
 @1676 kind:data(any) addr:0x020baa94 local
 @1677 kind:data(any) addr:0x020baab0 local
@@ -4807,13 +4807,13 @@ data_021f8000 kind:bss addr:0x021f8000
 data_02200001 kind:bss addr:0x02200001
 data_022001ee kind:bss addr:0x022001ee
 data_022018be kind:bss addr:0x022018be
-@517 kind:bss addr:0x0220e520 local
-@436 kind:bss addr:0x0220e52c local
-@315 kind:bss addr:0x0220e538 local
-@345 kind:bss addr:0x0220e544 local
-@369 kind:bss addr:0x0220e550 local
+@521 kind:bss addr:0x0220e520 local
+@440 kind:bss addr:0x0220e52c local
+@319 kind:bss addr:0x0220e538 local
+@349 kind:bss addr:0x0220e544 local
+@373 kind:bss addr:0x0220e550 local
 @384 kind:bss addr:0x0220e55c local
-@467 kind:bss addr:0x0220e568 local
+@471 kind:bss addr:0x0220e568 local
 @642 kind:bss addr:0x0220e574 local
 sQueueWrite kind:bss addr:0x0220e580 local
 @17 kind:bss addr:0x0220e584 local
@@ -5030,7 +5030,7 @@ data_022192b4 kind:bss addr:0x022192b4
 data_022192c0 kind:bss addr:0x022192c0
 data_022192cc kind:bss addr:0x022192cc
 @201 kind:bss addr:0x022192d8 local
-@1003 kind:bss addr:0x022192e4 local
+@1007 kind:bss addr:0x022192e4 local
 @79 kind:bss addr:0x022192f0 local
 data_022192fc kind:bss addr:0x022192fc
 data_02219308 kind:bss addr:0x02219308

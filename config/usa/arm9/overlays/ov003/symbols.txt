@@ -21,22 +21,22 @@ sSelectEventIds kind:data(any) addr:0x0221b6d0 local
 sSelectedFrames kind:data(any) addr:0x0221b6d4 local
 sSelectScriptIds kind:data(any) addr:0x0221b6d8 local
 sMessageIndices kind:data(any) addr:0x0221b6dc local
-@1624 kind:data(any) addr:0x0221b6e0 local
+@1628 kind:data(any) addr:0x0221b6e0 local
 sMenuItems kind:data(any) addr:0x0221b70c local
 sMenuCells kind:data(any) addr:0x0221b7b4 local
 OV003_CTOR_END kind:data(any) addr:0x0221b860
-@1276 kind:data(any) addr:0x0221b874 local
-@1277 kind:data(any) addr:0x0221b898 local
-@1278 kind:data(any) addr:0x0221b8bc local
+@1280 kind:data(any) addr:0x0221b874 local
+@1281 kind:data(any) addr:0x0221b898 local
+@1282 kind:data(any) addr:0x0221b8bc local
 @1280 kind:data(any) addr:0x0221b8e0 local
 @1281 kind:data(any) addr:0x0221b90c local
-@1279 kind:data(any) addr:0x0221b938 local
-@2496 kind:data(any) addr:0x0221b968 local
-@2502 kind:data(any) addr:0x0221b97c local
-@2551 kind:data(any) addr:0x0221b98c local
-@2552 kind:data(any) addr:0x0221b99c local
-@2553 kind:data(any) addr:0x0221b9b4 local
-@2554 kind:data(any) addr:0x0221b9cc local
+@1283 kind:data(any) addr:0x0221b938 local
+@2500 kind:data(any) addr:0x0221b968 local
+@2506 kind:data(any) addr:0x0221b97c local
+@2555 kind:data(any) addr:0x0221b98c local
+@2556 kind:data(any) addr:0x0221b99c local
+@2557 kind:data(any) addr:0x0221b9b4 local
+@2558 kind:data(any) addr:0x0221b9cc local
 @2555 kind:data(any) addr:0x0221b9e4 local
 @2556 kind:data(any) addr:0x0221b9f4 local
 @2557 kind:data(any) addr:0x0221ba10 local
@@ -51,9 +51,9 @@ OV003_CTOR_END kind:data(any) addr:0x0221b860
 @2566 kind:data(any) addr:0x0221bb18 local
 @2567 kind:data(any) addr:0x0221bb34 local
 @2568 kind:data(any) addr:0x0221bb50 local
-@2776 kind:data(any) addr:0x0221bb6c local
-@2777 kind:data(any) addr:0x0221bb88 local
+@2780 kind:data(any) addr:0x0221bb6c local
+@2781 kind:data(any) addr:0x0221bb88 local
 OV003_BSS_START kind:bss addr:0x0221bba0
 @40 kind:bss addr:0x0221bbac local
-@748 kind:bss addr:0x0221bbb8 local
+@752 kind:bss addr:0x0221bbb8 local
 @870 kind:bss addr:0x0221bbc4 local

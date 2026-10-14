@@ -707,9 +707,11 @@ src/Main/Graphics/SpriteFade.cpp:
     .data       start:0x020a54e4 end:0x020a54ec
     .bss        start:0x0220e628 end:0x0220e630
 
-// provisional: code only; .data 0x020a54ec-0x020a5624 and .bss 0x0220e630-0x0220e838 belong here.
 src/Main/Graphics/UploadQueue.cpp:
+    complete
     .text       start:0x020257c8 end:0x02025e18
+    .data       start:0x020a54ec end:0x020a5624
+    .bss        start:0x0220e630 end:0x0220e838
 
 // CameraManager and the four identity matrices: CameraManager's destructor node follows the matrices in .bss,
 // which only a separate file can produce.

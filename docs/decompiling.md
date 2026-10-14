@@ -54,6 +54,11 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   participants of the file's size sort (below), so their order follows from the whole list. `tools/layout_search.py`
   models that sort and finds the include and definition orders that reproduce the original (ArenaScene's five window
   paths, UnkStruct_02070608's four).
+- **BattleCharaAct's data layout (open).** All functions match and the data is defined from the original bytes,
+  but `layout_search.py`-style modelling finds no declaration order: in the original the 17 16-byte rows follow the
+  17 32-byte arrays (only possible if they and the 0x28-byte rows at 0x0227af68 are one 592-byte object), and the
+  17 name strings come out in an order their table's initializer can't produce (named arrays would allow it, but
+  only declared after the table or interleaved with the two VecFx32s).
 - **Guard load before a preceding store (solved).** mwcc lets a following load (e.g. the next singleton's guard)
   move above a store only when the store's offset is below half of the declared size of the object stored into.
   `TextManager` was declared 0x5c bytes, so the `mUnk_5b` store (offset 0x5b) blocked it; with its real size,

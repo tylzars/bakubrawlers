@@ -50,12 +50,13 @@ def read_object(src):
         owners = [o for o in objs if o["st_shndx"] == rs["sh_info"]]
         for r in sorted(rs.iter_relocations(), key=lambda r: r["r_offset"]):
             tgt = syms[r["r_info_sym"]]
-            if not tgt.name.startswith("@"):
-                continue
             own = [o for o in owners if o["st_value"] <= r["r_offset"] < o["st_value"] + o["st_size"]]
-            if own and tgt.name not in refs.get(own[0].name, []):
-                refs.setdefault(own[0].name, []).append(tgt.name)
+            if not own:
+                continue
+            if tgt.name and tgt.name not in ref_off and tgt["st_info"]["type"] == "STT_OBJECT":
                 ref_off[tgt.name] = (own[0].name, r["r_offset"] - own[0]["st_value"])
+            if tgt.name.startswith("@") and tgt.name not in refs.get(own[0].name, []):
+                refs.setdefault(own[0].name, []).append(tgt.name)
     order = sorted(objs, key=lambda s: (s["st_shndx"], s["st_value"]))
     return objs, order, refs, {o.name: secs[o["st_shndx"]].name for o in objs}
 

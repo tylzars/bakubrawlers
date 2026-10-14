@@ -104,6 +104,9 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   inline virtual destructors are emitted with them (D0 then D1). The original has the two vtables in one order and
   the destructors in the other, with D1 before D0: the destructors were defined out of line after the other
   functions (`UnkScene_020a54a8::~UnkScene_020a54a8() {}`), which emits D1, D0, D2 (the linker drops D2).
+- **A singleton node at two addresses splits a file (UnkStruct_02071868).** The UnkStruct_02071868 constructor's
+  TextManager node is at 0x02219308, while UnkStruct_02071d24's functions use one at 0x02219314, and the
+  constructor's strings sit between the two classes' vtables. Split at 0x02071d24, both link.
 - **One class, two names.** UnkStruct_02070608.cpp constructed FileLoader's `UnkScene_020a54a8` under the name
   `UnkStruct_020a54a0` (its vtable symbol's address), which only showed as an undefined vtable once FileLoader linked.
 - **The main module's code ends at 0x0208b4bc.** dsd had put the `.text`/`.rodata` boundary at 0x0209d490, so ~70 KB

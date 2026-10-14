@@ -857,9 +857,18 @@ src/Main/Unknown/UnkStruct_02070608.cpp:
     .data       start:0x020b8ddc end:0x020b8ff4
     .bss        start:0x022192d8 end:0x022192fc
 
-// provisional: code only; .rodata 0x020a2e3c-0x020a2fd0, .data 0x020b8ff4-0x020b9384 and .bss 0x022192fc-0x02219344 belong here.
 src/Main/Unknown/UnkStruct_02071868.cpp:
-    .text       start:0x02071868 end:0x020741b4
+    complete
+    .text       start:0x02071868 end:0x02071d24
+    .data       start:0x020b8ff4 end:0x020b9030
+    .bss        start:0x022192fc end:0x02219314
+
+src/Main/Unknown/UnkStruct_02071d24.cpp:
+    complete
+    .text       start:0x02071d24 end:0x020741b4
+    .rodata     start:0x020a2e3c end:0x020a2fd0
+    .data       start:0x020b9030 end:0x020b9384
+    .bss        start:0x02219314 end:0x02219344
 
 src/Main/Unknown/UnkStruct_02074938.cpp:
     .text       start:0x020741b4 end:0x020758f4

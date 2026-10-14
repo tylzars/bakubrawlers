@@ -210,10 +210,6 @@ int func_0203a7c0(Player *p) {
     return func_0203b550(p) == 1;
 }
 ReaderBase::~ReaderBase() {}
-void *func_0203a7e8(void *p) {
-    ::operator delete(p);
-    return p;
-}
 void *Player::operator new(unsigned long size) { return func_0203c15c(size); }
 void Player::operator delete(void *p) { func_0203c174(p); }
 

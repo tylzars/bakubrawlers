@@ -10,13 +10,22 @@
 
 #include <nitro/mi.h>
 
-// Tables that sit in the code region (0x020906f0-0x02090754).
-extern const u8 data_020906f0[];
-extern const u8 data_020906f8[];
-extern const float data_02090724[];
-extern const float data_0209070c[];
-extern const float data_0209073c[];
-extern const u16 data_02090754[][6];
+// Volume tables (0x020906f0-0x02090778), indexed by the 3-bit settings in data_020d43f0.
+extern const u8 data_020906f0[6] = {0, 20, 40, 60, 85, 110};
+extern const u8 data_020906f8[6] = {0, 25, 50, 75, 100, 127};
+extern const float data_0209070c[6] = {0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f};
+extern const float data_02090724[6] = {0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 0.9f};
+extern const float data_0209073c[6] = {0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f};
+extern const u16 data_02090754[3][6] = {
+    {0x0000, 0x0016, 0x0000, 0x00be, 0x0013, 0x007e},
+    {0x0000, 0x0017, 0x0005, 0x00d2, 0x0028, 0x008c},
+    {0x0000, 0x0013, 0x0001, 0x00c8, 0x0048, 0x00ab},
+};
+// npdata keeps the code addressing these through their own symbols (data_020d433c + 0x7a, not .bss + 0x9e).
+#pragma section npdata begin
+UnkStruct_020d433c data_020d433c;
+UnkStruct_020d43f0 data_020d43f0[1];
+#pragma section npdata end
 extern u16 data_020c4250;
 int func_0205b1c4(u32 a, u32 b);
 

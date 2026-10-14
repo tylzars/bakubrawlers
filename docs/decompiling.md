@@ -111,6 +111,12 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   unit could own it. With `.rodata` starting at 0x0208b4bc math_sha1 links and the progress numbers stop counting
   those tables as code. A few hand-written routines inside that block (func_02090b24, func_02091768, ...) are now in
   `.rodata`; they still disassemble and link.
+- **Big globals with their own section (GameData).** data_020d433c and data_020d43f0 are defined in GameData.cpp
+  inside `#pragma section npdata begin`/`end`: in the shared `.bss` the code would address them from the section
+  base and stop matching. Other units still name fields inside them by address (data_020d4404 ...);
+  `inner data_020d43f0 0xff4` in config/usa/arm9/lcf_edits.txt defines every such symbols.txt name as base + offset.
+  Linker-script aliases go after the sections, where the base symbols have addresses (before them they resolve to 0
+  without an error).
 - **False relocations in data blobs.** dsd reads any word that looks like an address as a pointer: a font bitmap
   in main's `.data` at 0x020a8d10 held the bytes of 0x02220842, recorded as a relocation into ov005. Once MapScene
   linked from source that symbol was gone and the word became 0. Deleting the line from relocs.txt fixed it; check

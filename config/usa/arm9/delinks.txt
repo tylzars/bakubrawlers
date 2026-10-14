@@ -639,9 +639,11 @@ src/Main/System/TouchManager.cpp:
     complete
     .text       start:0x020224f8 end:0x02022b0c
 
-// provisional: code only; .bss 0x020d4318-0x020d53e4 (data_020d433c, data_020d43f0) and const tables 0x020906f0-0x02090778 belong here.
 src/Main/Game/GameData.cpp:
+    complete
     .text       start:0x02022b0c end:0x020234c8
+    .rodata     start:0x020906f0 end:0x02090778
+    .bss        start:0x020d4318 end:0x020d53e4
 
 src/Main/System/FileSystem.cpp:
     .text       start:0x020234c8 end:0x02023b80

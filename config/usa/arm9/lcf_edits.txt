@@ -1,3 +1,8 @@
 # Linker-script edits applied by tools/lcf_force_active.py (see its docstring):
 #   place <stub>.o <function> <unit>.o
 #   alias <symbol> <base> <offset>
+#   inner <symbol> <size>
+
+# GameData's globals: other units still name some of their fields by address.
+inner data_020d433c 0xb4
+inner data_020d43f0 0xff4

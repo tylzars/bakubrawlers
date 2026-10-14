@@ -19,6 +19,8 @@ It also applies <config-dir>/lcf_edits.txt (one edit per line, `#` comments), fo
                                        unit placed apart from the rest of it
   alias <symbol> <base> <offset>       defines <symbol> = <base> + <offset>, for names other units use for a point
                                        inside an object of a linked unit (a field of a singleton instance)
+  inner <symbol> <size>                aliases every symbols.txt name inside <symbol>'s <size> bytes to <symbol> +
+                                       offset (names of fields of a big global that other units still use)
 
 (mwldarm's -force_active flag would be simpler but segfaults under wibo.)
 """
@@ -63,6 +65,7 @@ lcf = args.lcf_in.read_text()
 # overlay ids under their SDK names, and the IRQ/system stack sizes.
 sdk = [f"    SDK_OVERLAY_OV{n:03d}_ID = {n};" for n in range(lcf.count("_ID = "))]
 sdk += ["    SDK_IRQ_STACKSIZE = 0x1000;", "    SDK_SYS_STACKSIZE = 0;"]
+aliases = []  # defined after the sections, where the base symbols have addresses
 edits = args.config_dir / "lcf_edits.txt"
 if edits.exists():
     for line in edits.read_text().splitlines():
@@ -77,8 +80,22 @@ if edits.exists():
             lcf = lcf.replace(old, f"        OBJECT({func}, {unit})\n", 1)
         elif words[0] == "alias":
             name, base, offset = words[1:]
-            sdk.append(f"    {name} = {base} + {offset};")
+            aliases.append(f"    {name} = {base} + {offset};")
+        elif words[0] == "inner":
+            base, size = words[1], int(words[2], 0)
+            addrs = {}
+            for ln in (args.config_dir / "symbols.txt").read_text().splitlines():
+                m = re.match(r"(\S+) kind:(?:data|bss)\S* addr:(0x[0-9a-fA-F]+)", ln)
+                if m:
+                    addrs[m.group(1)] = int(m.group(2), 16)
+            start = addrs[base]
+            for name, addr in sorted(addrs.items(), key=lambda kv: kv[1]):
+                if start < addr < start + size:
+                    aliases.append(f"    {name} = {base} + {addr - start:#x};")
         else:
             raise SystemExit(f"lcf_edits: unknown edit {words[0]!r}")
 lcf = lcf.replace("SECTIONS {\n", "SECTIONS {\n" + "\n".join(sdk) + "\n", 1)
+if aliases:
+    end = lcf.rstrip().rfind("}")
+    lcf = lcf[:end] + "\n".join(aliases) + "\n" + lcf[end:]
 args.lcf_out.write_text(f"FORCE_ACTIVE {{ {', '.join(entries)} }}\n\n{lcf}")

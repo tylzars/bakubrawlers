@@ -1,20 +1,24 @@
-#include "Text/TextManager.hpp"
+#include "Graphics/SpriteManager.hpp"
 #include "Unknown/UnkStruct_020c17a8.hpp"
+#include "Text/TextManager.hpp"
 #include "Unknown/UnkStruct_02070608.hpp"
-
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
-#include "Text/TextManager.hpp"
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkStruct_02071868.hpp"
-#include "Unknown/UnkStruct_020c17a8.hpp"
-#include "System/FrameTask.hpp"
-
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
+
+static WindowCellRecord data_020b8ea0[4] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0, 0, 0, 1, {3, 5, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0, 0, 0, 1, {6, 8, 7, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0, 0, 0, 1, {10, 10, 10, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 12, 0, 0, 0, 1, {12, 12, 12, 0}},
+};
+
+#include "System/FrameTask.hpp"
 
 UnkStruct_02070608::UnkStruct_02070608(u32 unk1, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8,
                                        u32 unk9) :
@@ -152,12 +156,6 @@ void UnkStruct_02070608::Update() {
 }
 
 extern const u32 data_020a2dac[];
-static WindowCellRecord data_020b8ea0[4] = {
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0, 0, 0, 1, {3, 5, 4, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0, 0, 0, 1, {6, 8, 7, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0, 0, 0, 1, {10, 10, 10, 0}},
-    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 12, 0, 0, 0, 1, {12, 12, 12, 0}},
-};
 extern const WindowItemRecord data_020a2dcc[];
 
 void UnkStruct_02070608::func_02070d10() {

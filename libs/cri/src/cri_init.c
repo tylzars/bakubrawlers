@@ -172,7 +172,8 @@ void func_02040704(void)
 
 void func_02040764(void)
 {
-    g_criStmSys.refcnt--;
-    if (g_criStmSys.refcnt != 0) return;
+    volatile CriStmSys *s = &g_criStmSys;
+    s->refcnt--;
+    if (s->refcnt != 0) return;
     __clear(g_criStm, sizeof(g_criStm));
 }

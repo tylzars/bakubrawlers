@@ -12,6 +12,7 @@ libs/cri/src/cri_stm.c:
     .text       start:0x02041744 end:0x02041f50
 
 libs/cri/src/cri_init.c:
+    complete
     .text       start:0x0204046c end:0x020407bc
 
 libs/cri/src/cri_stm_c.c:
@@ -49,6 +50,7 @@ libs/cri/src/cri_adx_buf.c:
     .text       start:0x0203e954 end:0x0203edc4
 
 libs/cri/src/cri_adx_hdr.c:
+    complete
     .text       start:0x0203edc4 end:0x0203f714
 
 libs/cri/src/cri_adx_dec.c:
@@ -107,6 +109,7 @@ libs/cri/src/cri_adx_hdrparse.c:
     .text       start:0x0204dff4 end:0x0204e330
 
 libs/cri/src/cri_ahx_bitrd.c:
+    complete
     .text       start:0x0204e330 end:0x0204e844
 
 libs/cri/src/cri_adx_pool.c:
@@ -291,6 +294,7 @@ libs/msl/src/msl_fpclassify.c:
 
 // NitroSystem (2.0, C); code only so far.
 libs/nns/src/fnd/fnd.c:
+    complete
     .text       start:0x02030880 end:0x02030b7c
 
 libs/nns/src/fnd/fnd_heap.c:
@@ -356,6 +360,7 @@ libs/nns/src/snd/nns_snd_capture.c:
     .text       start:0x02037884 end:0x02037af8
 
 libs/nns/src/snd/nns_snd_arc.c:
+    complete
     .text       start:0x02037af8 end:0x020381b0
 
 libs/nns/src/snd/nns_snd_wavstrm.c:
@@ -580,6 +585,7 @@ libs/nds/src/card/card_pullout.c:
     .text       start:0x0200f71c end:0x0200f8e8
 
 libs/nds/src/wm/wm_base.c:
+    complete
     .text       start:0x0200f8e8 end:0x0200fdfc
 
 libs/nds/src/wm/wm_0200fdfc.c:

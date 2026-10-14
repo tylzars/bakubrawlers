@@ -5,23 +5,23 @@ extern void func_01ff93d8(u32 cmd, const void *params, u32 count);
 static inline s32 FxMul(s32 a, s32 b) { return (s32)(((long long)a * b) >> 12); }
 
 extern void (*data_020a5860[8])(s32 *out, u32 *m);
+typedef struct { u32 cmd; u32 n; s32 out[16]; u32 last; } TexCmd;
 void func_02035c68(u32 *m) {   // load the texture matrix, forcing identity parts for unset components
-    u32 buf[19];
-    s32 *out = (s32 *)&buf[2];
-    if (m[0] & 8) buf[0] = 0x101610;
-    else buf[0] = 0x101810;
-    buf[1] = 3;
-    buf[18] = 2;
-    buf[17] = 0x1000;
-    out[14] = 0;
-    out[11] = 0;
-    out[10] = 0;
-    out[9] = 0;
-    out[8] = 0;
-    out[7] = 0;
-    out[6] = 0;
-    out[3] = 0;
-    out[2] = 0;
+    TexCmd c;
+    if (m[0] & 8) c.cmd = 0x101610;
+    else c.cmd = 0x101810;
+    c.n = 3;
+    c.last = 2;
+    c.out[15] = 0x1000;
+    c.out[14] = 0;
+    c.out[11] = 0;
+    c.out[10] = 0;
+    c.out[9] = 0;
+    c.out[8] = 0;
+    c.out[7] = 0;
+    c.out[6] = 0;
+    c.out[3] = 0;
+    c.out[2] = 0;
     if (m[0] & 1) {
         m[7] = 0x1000;
         m[6] = 0x1000;
@@ -34,18 +34,18 @@ void func_02035c68(u32 *m) {   // load the texture matrix, forcing identity part
         m[10] = 0;
         m[9] = 0;
     }
-    data_020a5860[m[0] & 7](out, m);
+    data_020a5860[m[0] & 7](c.out, m);
     if (m[12] != 0x1000) {
-        out[0] = FxMul(m[12], out[0]);
-        out[1] = FxMul(m[12], out[1]);
-        out[12] = FxMul(m[12], out[12]);
+        c.out[0] = FxMul(m[12], c.out[0]);
+        c.out[1] = FxMul(m[12], c.out[1]);
+        c.out[12] = FxMul(m[12], c.out[12]);
     }
     if (m[13] != 0x1000) {
-        out[4] = FxMul(m[13], out[4]);
-        out[5] = FxMul(m[13], out[5]);
-        out[13] = FxMul(m[13], out[13]);
+        c.out[4] = FxMul(m[13], c.out[4]);
+        c.out[5] = FxMul(m[13], c.out[5]);
+        c.out[13] = FxMul(m[13], c.out[13]);
     }
-    func_01ff93d8(buf[0], &buf[1], 0x12);
+    func_01ff93d8(c.cmd, (u32 *)&c + 1, 0x12);
 }
 u32 func_02035df0(void) { return 0; }    // default texture VRAM allocator (fails)
 s32 func_02035df8(void) { return -1; }   // default texture VRAM free
@@ -78,13 +78,13 @@ void func_02035e58(u16 mode, BOOL install) {   // NNS_GfdInitFrmTexVramManager
         data_020a5884 = func_020360c4;
     }
 }
-void func_02035ee0(void) {   // reset the five slots
-    int n = data_022115d8;
+void func_02035ee0(void) {
     int i;
     TexSlot *s = data_020a58ac;
+    u32 n = data_022115d8;
     if (n > 1) n++;
     for (i = 0; i < 5; i++, s++) {
-        if (i < n) s->enabled = 1;
+        if (i < (int)n) s->enabled = 1;
         else s->enabled = 0;
         if (s->mapped != 0) {
             s->start = 0;

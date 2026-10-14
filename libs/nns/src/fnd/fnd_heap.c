@@ -250,12 +250,10 @@ void *func_020312ec(void **list) {   // pop a unit from the free list
     if (n) *list = *(void **)n;
     return n;
 }
-void *func_02031304(UnitHeap *h) {   // NNS_FndAllocFromUnitHeap
+void *func_02031304(UnitHeap *h) {
     void *n;
-    u32 sz;
     n = func_020312ec(&h->freeList);
-    sz = h->unitSize;
-    if (n && (GetOpt(&h->head) & 1)) MIi_CpuClear32(0, n, sz);
+    if (n) { u32 sz = h->unitSize; if (GetOpt(&h->head) & 1) MIi_CpuClear32(0, n, sz); }
     return n;
 }
 void func_02031344(UnitHeap *h, void *blk) {   // NNS_FndFreeToUnitHeap

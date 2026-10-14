@@ -1027,16 +1027,17 @@ u8 *func_02011968(u8 *buf, u16 *p, u32 n)
 {
     u16 a = p[0];
     u16 b = p[1];
+    u32 bit = 1 << n;
     if (buf == 0) {
         return 0;
     }
     if (p == 0) {
         return 0;
     }
-    if (!(a & (1 << n))) {
+    if (!(a & bit)) {
         return 0;
     }
-    if (!(b & (1 << n))) {
+    if (!(b & bit)) {
         return 0;
     }
     return func_020119bc(buf, a, (u8 *)(p + 2), n);

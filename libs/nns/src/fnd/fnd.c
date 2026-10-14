@@ -92,13 +92,13 @@ NNSFndList *func_02030ac0(void *ptr) {   // list that holds the heap containing 
     if (h) list = &h->children;
     return list;
 }
-void func_02030ae8(NNSFndHeapHead *h, u32 sig, void *start, void *end, u16 opt) {   // NNS_FndInitHeapHead
+void func_02030ae8(NNSFndHeapHead *h, u32 sig, void *start, void *end, u16 opt) {
     u32 attr = 0;
     h->magic = sig;
     h->start = start;
     h->end = end;
-    attr &= ~0xff; attr |= opt & 0xff;
     h->opts = attr;
+    h->opts = (h->opts & ~0xff) | (opt & 0xff);
     NNS_FndInitList(&h->children, 4);
     if (data_02211364 == 0) {
         NNS_FndInitList(&data_02211368, 4);

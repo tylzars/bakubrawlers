@@ -52,13 +52,14 @@ void *func_02033788(u8 *p, u32 idx) {   // entry of the dictionary at +0xc
     }
     return 0;
 }
-u16 *func_02033714(u8 *p, u32 unused, u32 frame) {   // key index search by frame
+typedef struct { u16 f; u16 v; } KeyE;
+u16 *func_02033714(u8 *p, u32 unused, u32 frame) {
     u8 *e = func_02033788(p, unused);
-    u8 *keys = p + U16(e, 6);
+    KeyE *keys = (KeyE *)(p + U16(e, 6));
     u32 pos = ((s16)U16(e, 4) * frame) >> 12;
-    for (;;) { if (pos == 0) break; if (U16(keys, pos * 4) < frame) break; pos--; }
-    for (;;) { if (pos + 1 >= U16(e, 0)) break; if (U16(keys, pos * 4 + 4) > frame) break; pos++; }
-    return (u16 *)(keys + pos * 4);
+    while (pos > 0 && keys[pos].f >= frame) pos--;
+    while (pos + 1 < U16(e, 0) && keys[pos + 1].f <= frame) pos++;
+    return (u16 *)&keys[pos];
 }
 void *func_020337bc(u8 *file) { return func_02033644(file, 0x30505442, 0x30544150); }   // BTP0 / PAT0
 void *func_020337d8(u8 *file) { return func_02033644(file, 0x30415442, 0x30545253); }   // BTA0 / SRT0

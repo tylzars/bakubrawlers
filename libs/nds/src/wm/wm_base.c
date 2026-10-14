@@ -18,13 +18,14 @@ int func_0200f8e8(void *buf, u32 dma)
     return r;
 }
 
+typedef struct { u16 flag; u8 pad[254]; } WMMsgSlot;   // one 0x100-byte PXI message slot
 #pragma optimize_for_size on
 #pragma dont_inline on
 int func_0200f914(void *buf, u32 dma, u32 size)
 {
     u32 e = OS_DisableInterrupts();
     WMWork *w;
-    int i;
+    u32 i;
     if (data_020c06e0.init != 0) {
         OS_RestoreInterrupts(e);
         return 3;
@@ -57,15 +58,15 @@ int func_0200f914(void *buf, u32 dma, u32 size)
     data_020c06e0.work->dma = dma;
     data_020c06e0.work->f14c = 0;
     data_020c06e0.work->f150 = 0;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; (s32)i < 16; i++) {
         data_020c06e0.work->a[i] = 0;
         data_020c06e0.work->b[i] = 0;
     }
     OS_InitMessageQueue(data_020c06e8, data_020c0708, 10);
-    for (i = 0; i < 10; i++) {
-        *(u16 *)(data_020c0780 + i * 0x100) = 0x8000;
-        DC_StoreRange(data_020c0780 + i * 0x100, 2);
-        OS_SendMessage(data_020c06e8, data_020c0780 + i * 0x100, 1);
+    for (i = 0; (s32)i < 10; i++) {
+        ((WMMsgSlot *)data_020c0780)[i].flag = 0x8000;
+        DC_StoreRange(&((WMMsgSlot *)data_020c0780)[i], 2);
+        OS_SendMessage(data_020c06e8, &((WMMsgSlot *)data_020c0780)[i], 1);
     }
     PXI_SetFifoRecvCallback(0xa, func_0200fdfc);
     data_020c06e0.init = 1;
@@ -116,7 +117,7 @@ void *func_0200fb80(void)
 
 int func_0200fbd8(u32 cmd, u16 argc, ...)
 {
-    u32 *ap;
+    char *ap;
     int i;
     int r;
     u32 *msg = (u32 *)func_0200fb80();
@@ -124,9 +125,9 @@ int func_0200fbd8(u32 cmd, u16 argc, ...)
         return 8;
     }
     *(u16 *)msg = cmd;
-    ap = (u32 *)(((u32)&argc + 3 & ~3) + 4);
+    ap = (char *)(((u32)&argc & ~3) + 4);
     for (i = 0; i < argc; i++) {
-        msg[1 + i] = *ap++;
+        msg[1 + i] = *(u32 *)((ap += 4) - 4);
     }
     DC_StoreRange(msg, 0x100);
     r = PXI_SendWordByFifo(0xa, (u32)msg, 0);
@@ -177,20 +178,20 @@ int func_0200fd20(void)
 int func_0200fd68(int n, ...)
 {
     int r = func_0200fd04();
-    u32 *ap;
+    char *ap;
     u32 st;
     if (r != 0) {
         return r;
     }
     DC_InvalidateRange((void *)data_020c06e0.work->p04, 2);
     st = *(u16 *)data_020c06e0.work->p04;
-    ap = (u32 *)(((u32)&n + 3 & ~3) + 4);
+    ap = (char *)(((u32)&n & ~3) + 4);
     r = 3;
     if (n == 0) {
         return 3;
     }
     do {
-        if (*ap++ == st) {
+        if (*(u32 *)((ap += 4) - 4) == st) {
             r = 0;
         }
     } while (--n != 0);

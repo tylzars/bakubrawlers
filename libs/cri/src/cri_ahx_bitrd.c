@@ -25,7 +25,7 @@ typedef struct CriBits {
 } CriBits;
 
 extern void *func_02012484(void *, int, int);
-extern int data_0209e424[];
+extern const int data_0209e424[];
 extern void func_0204e478(CriBits *);
 extern void func_0204e67c(CriPair *, int, CriPair *, CriPair *);
 extern int func_0204e6f0(CriBits *, int);

@@ -130,9 +130,9 @@ int func_020380e8(u32 idx, void *dst, int len, u32 off) {
     arc = data_022149b0;
     fat = arc->fat;
     if (idx >= fat->count) return -1;
+    ent = &fat->ent[idx];
     chunk = arc->chunk;
     if (chunk == 0) chunk = len;
-    ent = &fat->ent[idx];
     total = 0;
     while (total < len) {
         int r;

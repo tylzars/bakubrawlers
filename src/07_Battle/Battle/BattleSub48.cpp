@@ -16,12 +16,12 @@ extern const u8 data_ov007_022790c0[];
 int func_ov007_022252d0(int x1, int y1, int x2, int y2);
 void func_ov007_02225354(float x, float y, float *out);
 
-// non-matching: 26 words: the original computes `entries` (add sl, r6, #12) at the top of the entry block and loads
-// 10 for mUnk_3a late; here `entries` is substituted and its address is computed after the member stores, which
-// shifts the registers of the bitfield clears.
+// non-matching: 6 words in the first loop iteration's head: the element address `entries + k * 20` and `nib` have
+// swapped registers (original: address r1, nib r2). Taking `entries` from the stored member after `mUnk_40 = data`
+// gives the original's entry block (`add sl, r6, #12` early, 10 loaded late); per-iteration pointer locals, `nib`
+// types and a function-scope `nib`/`k` did not move the pair.
 BattleSub48::BattleSub48(BattleData *data, u8 mode)
     : SceneBase(2, 0) {
-    BattleEntry *entries = data->mEntries;
     mUnk_0c = 0;
     mUnk_0d = 0;
     mUnk_0e_0 = 0;
@@ -35,6 +35,7 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
     mUnk_3a = 10;
     mUnk_3c = mode;
     mUnk_40 = data;
+    BattleEntry *entries = mUnk_40->mEntries;
     u8 i = 0;
     do {
         mAnims[i] = 0;

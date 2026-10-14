@@ -193,21 +193,20 @@ void BattleData::func_ov007_0223d504() {
     mUnk_6c->func_02065be4(0xd8);
 }
 
-// non-matching: 29 words, register assignment only (original: y r4, x r5, top r6, px r7, left r8, list r6, ix r8, iy r5;
-// compiled: x r4, left r5, top r6, px r7, y r8, list r5, ix r7, iy r5) and the original computing ix before iy. The
-// `frame` local gives the loop's `mov r2, #0; movcs r2, #1` (passing `k >= mUnk_08[side]` gives movcs/movcc).
+// The second px (the icons' x) reuses the first one's variable, and `iy` is assigned in two steps: both give the
+// original registers. The `frame` local gives the loop's `mov r2, #0; movcs r2, #1` (passing `k >= mUnk_08[side]`
+// gives movcs/movcc).
 void BattleData::func_ov007_0223db20(u8 side, s16 x, s16 y) {
     int offset;
-    int left;
     int top;
     s16 px;
+    s16 iy;
     offset = side == 0 ? 0 : 0x24;
     px     = x + offset;
     top    = y - 4;
-    left   = px - 6;
-    mUnk_34[side + 7]->Draw(1, (s16) left, (s16) top, 2);
+    mUnk_34[side + 7]->Draw(1, (s16) (px - 6), (s16) top, 2);
     if (data_020d433c.mBattlePlayers->mPlayers[mEntries[side].mUnk_0d_4]->IsActive()) {
-        mUnk_34[12]->func_0202a3ec(1, mEntries[side].mUnk_0d_4, left, top, 2);
+        mUnk_34[12]->func_0202a3ec(1, mEntries[side].mUnk_0d_4, px - 6, top, 2);
     }
     mUnk_34[9]->Draw(1, (s16) (px - 2), (s16) (y - 2), 3);
     mUnk_70->func_0206547c(side, px, y, 2);
@@ -221,16 +220,17 @@ void BattleData::func_ov007_0223db20(u8 side, s16 x, s16 y) {
         int shift = side == 0 ? 0x20 : 0;
         mUnk_34[13]->func_0202a3ec(1, owner, x + shift, y, 3);
     }
-    s16 iy = y + 0x10;
     u8 k = 0;
-    s16 ix = x + (side == 0 ? 0x22 : 0x18);
+    px   = x + (side == 0 ? 0x22 : 0x18);
+    iy   = y;
+    iy += 0x10;
     do {
         u8 frame = 0;
         if (k >= mUnk_08[side]) {
             frame = 1;
         }
-        mUnk_34[10]->func_0202a3ec(1, frame, ix, iy, 3);
-        ix = ix + (side == 0 ? 6 : -6);
+        mUnk_34[10]->func_0202a3ec(1, frame, px, iy, 3);
+        px = px + (side == 0 ? 6 : -6);
         k++;
     } while (k < mUnk_0a);
 }
@@ -275,10 +275,12 @@ BOOL BattleData::func_ov007_0223ddac(u8 side) {
     return done;
 }
 
-// non-matching: 15 words. The original stores r1-r3 before `mov sl, r0` and reloads x/y after the `str r9, [sp]` of
-// each Draw (as if they were memory, not spill slots); x + 0x2f is r7 and py r4, with py's narrowing after x + 0x2f
-// (the later temporary). A px statement before the call with py inline, int/s16 py, py declared first, s16 params:
-// no better.
+// non-matching: 7 words, the scheduling of the spilled side/x/y. The original stores r1-r3 before `mov sl, r0`, and
+// in the first tail Draw loads x/y after the `str r9, [sp]` (as if they were memory) with `mov r1, #1` early. The
+// loop matches with `py` and `px` as single-assignment locals in this order (py is substituted into the call, px
+// hoisted). With `s16 x, s16 y` parameters (callers compile the same) the natural loop
+// `func_0202a3ec(1, value % 10, x + 0x2f - i * 12, y + 0x4d, flag)` matches and so does the tail; only the prologue
+// is left (6 words: str r1/str r2 issued before the two loads, str r3 after `mov sl, r0`).
 void BattleData::func_ov007_0223de88(u8 side, int x, int y, u32 flag, u32 value) {
     if (value == 0xffff) {
         value = mEntries[side].mUnk_00;
@@ -293,10 +295,11 @@ void BattleData::func_ov007_0223de88(u8 side, int x, int y, u32 flag, u32 value)
             }
         }
     }
-    u8 i = 0;
-    s16 py = y + 0x4d;
+    u8 i   = 0;
+    int py = y + 0x4d;
+    int px = x + 0x2f;
     do {
-        mUnk_34[2]->func_0202a3ec(1, (s32) value % 10, (s16) (x + 0x2f - i * 12), py, flag);
+        mUnk_34[2]->func_0202a3ec(1, (s32) value % 10, (s16) (px - i * 12), py, flag);
         value /= 10;
         i++;
     } while (i < count);
@@ -304,10 +307,11 @@ void BattleData::func_ov007_0223de88(u8 side, int x, int y, u32 flag, u32 value)
     mUnk_34[side]->Draw(1, x, y, flag);
 }
 
-// non-matching: 16 words in the scheduling stretch at +0x9c..+0x10c and the swapped spill slots of x + 0x30 and
-// (s16) delta. Spill slots follow creation order: the original creates x + 0x30 (hoisted) before the narrowed delta,
-// so the narrowing is not the one shared with the shift's smulbb. Shift with `(s16) (u16) delta` (not shared) plus an
-// `int px = x + 0x30;` created at the top of the loop body gives the original's slots (other words then differ).
+// non-matching: 13 words, scheduling of the block before the loop: the original issues the `ldrsh` of y right after
+// `delta` and computes x + 0x30 before the shift chain, whose final `asr r4, r1, #3` comes last. The `(s16) (u16)`
+// casts keep the shift's narrowing apart from the loop's `(s16) delta` (delta then takes r4 as in the original), and
+// the `base` local creates x + 0x30 before that narrowing, which gives the original's spill slots (x + 0x30 at
+// sp+12, (s16) delta at sp+16). Both are likely stand-ins for the real form.
 void BattleData::func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u32 flag, u32 mode, u16 a, u16 b) {
     int delta;
     int shift;
@@ -333,8 +337,9 @@ void BattleData::func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u32 flag, u
             count--;
         }
     }
-    delta = a - (b * 2) / 3;
-    shift = (s16) delta * (s16) delta / 8;
+    delta    = a - (b * 2) / 3;
+    shift    = (s16) (u16) delta * (s16) (u16) delta / 8;
+    int base = x + 0x30;
     u8 offset = 0x20;
     u8 i      = 0;
     do {
@@ -347,7 +352,7 @@ void BattleData::func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u32 flag, u
                 offset = 0x20;
             }
         }
-        s16 px = x + 0x30 - i * 12;
+        s16 px = base - i * 12;
         s16 py = y + offset;
         if (i == count) {
             mUnk_34[4]->Draw(1, px, py, flag);

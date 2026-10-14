@@ -468,12 +468,13 @@ void BattleUnk29c::func_ov007_02270ae0(u8 index, BattleMoveState *state) {
     }
 }
 
-// non-matching (rotation tail, shared by four functions): AddRot makes mwcc reload all six halfwords as the original does; what is left is
-// register colouring (the original has m in r1 and the loads in r5, r4, r3, r2, r1).
+// The x angle is read first and added last (`rx += r[0]`): that loads p->mRotX first and r[0] last, which gives the
+// original's registers (a plain `p->mRotX + r[0]` is substituted into the store and loaded after the y and z sums).
 static inline void AddRot(UnkStruct_0203d374 *p, const u16 *r) {
-    u16 rx = p->mRotX + r[0];
+    u16 rx = p->mRotX;
     u16 ry = p->mRotY + r[1];
     u16 rz = p->mRotZ + r[2];
+    rx += r[0];
     p->mRotX = rx;
     p->mRotY = ry;
     p->mRotZ = rz;
@@ -499,8 +500,6 @@ void BattleUnk29c::func_ov007_02270dbc(u32 index) {
     }
 }
 
-// non-matching (rotation tail, shared by four functions): AddRot makes mwcc reload all six halfwords as the original does; what is left is
-// register colouring (the original has m in r1 and the loads in r5, r4, r3, r2, r1).
 void BattleUnk29c::func_ov007_02270f1c(u32 index) {
     BattleMoveState *m = mUnk_30[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
@@ -530,8 +529,6 @@ void BattleUnk29c::func_ov007_02270f1c(u32 index) {
     }
 }
 
-// non-matching (rotation tail, shared by four functions): AddRot makes mwcc reload all six halfwords as the original does; what is left is
-// register colouring (the original has m in r1 and the loads in r5, r4, r3, r2, r1).
 void BattleUnk29c::func_ov007_02271054(u32 index) {
     BattleMoveState *m = mUnk_30[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
@@ -561,8 +558,6 @@ void BattleUnk29c::func_ov007_02271054(u32 index) {
     }
 }
 
-// non-matching (rotation tail, shared by four functions): AddRot makes mwcc reload all six halfwords as the original does; what is left is
-// register colouring (the original has m in r1 and the loads in r5, r4, r3, r2, r1).
 void BattleUnk29c::func_ov007_0227118c(u32 index) {
     BattleMoveState *m = mUnk_30[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {

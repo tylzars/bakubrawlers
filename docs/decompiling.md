@@ -252,6 +252,12 @@ Other findings from linking:
 
 ## Source patterns that matter
 
+- **Create the first operand early, add the second late:** `u16 rx = p->mRotX; ...other sums...; rx += r[0];`
+  instead of `u16 rx = p->mRotX + r[0];` (which is substituted into its store and created last) gave BattleUnk29c's
+  four rotation tails the original's reverse-creation register order.
+- **A pointer taken from a member just after storing it** (`mUnk_40 = data; entries = mUnk_40->mEntries;`) is
+  scheduled where `data->mEntries` is not (BattleSub48's constructor).
+
 - **A named local loaded from a const table can take a register ahead of an earlier local;** reading the table at
   each use (the reads are merged, even across calls) gives the original order (UnkStruct_02065c40::func_02068954).
 

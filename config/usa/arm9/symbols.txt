@@ -4541,7 +4541,7 @@ OSi_ThreadInfo kind:bss addr:0x020bdce8
 data_020bdcec kind:bss addr:0x020bdcec
 data_020bdcf8 kind:bss addr:0x020bdcf8
 data_020bddb8 kind:bss addr:0x020bddb8
-data_020bdf40 kind:bss addr:0x020bdf40
+arenaState kind:bss addr:0x020bdf40
 heapTable kind:bss addr:0x020bdf48
 exceptionState kind:bss addr:0x020bdf6c
 data_020bdf78 kind:bss addr:0x020bdf78

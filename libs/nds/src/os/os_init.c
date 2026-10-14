@@ -30,8 +30,8 @@ extern void OS_SetProtectionRegion2(u32 param);   // 0x0200687c (asm)
 
 #define OS_ARENA_INFO_BASE 0x27ffda0
 
-// 0x020bdf40
-static struct {
+// 0x020bdf40 (global: os code outside this file reads it too)
+struct {
     BOOL initialized;
     BOOL exArena;
 } arenaState;

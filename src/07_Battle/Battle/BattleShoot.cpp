@@ -334,6 +334,14 @@ BattleShoot::~BattleShoot() {
 }
 
 // non-matching: 0xd2c vs 0xd34: this in r4 instead of r5 and small scheduling differences.
+static inline bool CpuActive(BattleCpu *cpu) {
+    bool active = false;
+    if (cpu) {
+        active = true;
+    }
+    return active;
+}
+
 void BattleShoot::Update() {
     func_ov007_0226cb9c(mUnk_6186 == 12);
     switch (mUnk_6186) {
@@ -434,16 +442,15 @@ void BattleShoot::Update() {
             }
             break;
         case 6: {
-            ShootPacket *pkt = (ShootPacket *) &data_0220f540;
-            pkt->mUnk_04     = mUnk_6154;
-            pkt->mUnk_06     = mUnk_6156;
-            pkt->mUnk_08     = mUnk_6158;
-            pkt->mUnk_0a     = mUnk_6168;
-            pkt->mUnk_0c     = mUnk_616a;
-            pkt->mUnk_0f     = mUnk_6193;
-            pkt->mUnk_10     = mUnk_6198;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            pkt->mUnk_0e           = list->mPlayers[list->mUnk_28a]->mRecord;
+            ((ShootPacket *) &data_0220f540)->mUnk_04     = mUnk_6154;
+            ((ShootPacket *) &data_0220f540)->mUnk_06     = mUnk_6156;
+            ((ShootPacket *) &data_0220f540)->mUnk_08     = mUnk_6158;
+            ((ShootPacket *) &data_0220f540)->mUnk_0a     = mUnk_6168;
+            ((ShootPacket *) &data_0220f540)->mUnk_0c     = mUnk_616a;
+            ((ShootPacket *) &data_0220f540)->mUnk_0f     = mUnk_6193;
+            ((ShootPacket *) &data_0220f540)->mUnk_10     = mUnk_6198;
+            ((ShootPacket *) &data_0220f540)->mUnk_0e           = list->mPlayers[list->mUnk_28a]->mRecord;
             if (func_ov007_022631bc(list, 8)) {
                 mUnk_6186 = 10;
             }
@@ -463,24 +470,24 @@ void BattleShoot::Update() {
             }
             break;
         case 9: {
-            ShootPacket *pkt = (ShootPacket *) &data_0220f540;
-            pkt->mUnk_04     = mUnk_6154;
-            pkt->mUnk_06     = mUnk_6156;
-            pkt->mUnk_08     = mUnk_6158;
-            pkt->mUnk_0a     = mUnk_6168;
-            pkt->mUnk_0c     = mUnk_616a;
-            pkt->mUnk_0f     = mUnk_6193;
-            pkt->mUnk_10     = mUnk_6198;
-            pkt->mUnk_0e     = 0;
-            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 8)) {
+            BattlePlayerList *list = data_020d433c.mBattlePlayers;
+            ((ShootPacket *) &data_0220f540)->mUnk_04     = mUnk_6154;
+            ((ShootPacket *) &data_0220f540)->mUnk_06     = mUnk_6156;
+            ((ShootPacket *) &data_0220f540)->mUnk_08     = mUnk_6158;
+            ((ShootPacket *) &data_0220f540)->mUnk_0a     = mUnk_6168;
+            ((ShootPacket *) &data_0220f540)->mUnk_0c     = mUnk_616a;
+            ((ShootPacket *) &data_0220f540)->mUnk_0f     = mUnk_6193;
+            ((ShootPacket *) &data_0220f540)->mUnk_10     = mUnk_6198;
+            ((ShootPacket *) &data_0220f540)->mUnk_0e     = 0;
+            if (func_ov007_022631bc(list, 8)) {
                 mUnk_6186++;
             }
             break;
         }
         case 10: {
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            BattlePlayer *cur      = list->mPlayers[list->mUnk_28a];
-            if (cur->IsActive()) {
+            BattleCpu *cpu = list->mPlayers[list->mUnk_28a]->mUnk_c8;
+            if (CpuActive(cpu)) {
                 u8 kind = mUnk_6198;
                 if (kind == 1 || kind == 3 || kind == 4) {
                     mUnk_616a = 0;
@@ -490,15 +497,15 @@ void BattleShoot::Update() {
                     *(u16 *) ((u8 *) mUnk_6130 + 0x1b8) = mUnk_6168;
                     *(u16 *) ((u8 *) mUnk_6130 + 0x1ba) = mUnk_616a;
                 } else if (kind == 2) {
-                    cur->mUnk_c8->func_ov007_022329cc(0x14000);
+                    cpu->func_ov007_022329cc(0x14000);
                 }
             }
-            BattlePlayerList *l2 = data_020d433c.mBattlePlayers;
-            u8 idx               = l2->mUnk_28a;
-            l2->mPlayers[idx]->mUnk_ec = mUnk_6193;
-            l2->mPlayers[idx]->mUnk_d4 = 0;
-            l2->mPlayers[idx]->mUnk_d8 = 0;
-            BattlePlayer *p            = data_020d433c.mBattlePlayers->mPlayers[idx];
+            u8 idx = data_020d433c.mBattlePlayers->mUnk_28a;
+            data_020d433c.mBattlePlayers->mPlayers[idx]->mUnk_ec = mUnk_6193;
+            BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[idx];
+            p->mUnk_d4 = 0;
+            p->mUnk_d8 = 0;
+            p = data_020d433c.mBattlePlayers->mPlayers[idx];
             p->mUnk_cc[0]              = mUnk_6154;
             p->mUnk_cc[1]              = mUnk_6156;
             p->mUnk_cc[2]              = mUnk_6158;

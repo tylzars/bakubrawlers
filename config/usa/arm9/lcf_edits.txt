@@ -27,3 +27,6 @@ inner _ZZN12SceneManager3GetEvE8instance 0x10060
 
 # Fixed main-RAM addresses outside every module that linked units name.
 alias data_027ffc30 0x027ffc30 0
+
+# fs_overlay: the overlay digest table is empty, so its end is its start.
+alias data_020baef8_end data_020baef8 0

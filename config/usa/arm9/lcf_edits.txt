@@ -25,3 +25,6 @@ inner _ZZN12SceneManager3GetEvE8instance 0x10060
 
 # Fixed main-RAM addresses outside every module that linked units name.
 alias data_027ffc30 0x027ffc30 0
+
+# Mobiclip: the decoder file defines Reader's operator new under its address name.
+alias _ZN6ReadernwEm func_0203b640 0

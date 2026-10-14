@@ -6,7 +6,7 @@ typedef unsigned short u16;
 typedef unsigned int u32;
 typedef int s32;
 
-// byte source (vtable data_020a5950 over base data_020a592c)
+// byte source (vtables _ZTV6Reader 0x020a5950 over _ZTV10ReaderBase 0x020a592c)
 struct ReaderBase {
     ReaderBase() { mUnk_4 = 0; mPos = 0; }
     virtual ~ReaderBase() {}
@@ -117,9 +117,7 @@ extern "C" int func_0203b550(Player *p);
 int func_0203a544(Player *p, Reader *r, u32 a);
 int func_0203a858(Player *p, Reader *r, u32 a);
 void func_0203ae04(Player *p);
-void _ZdlPv(void *p);
-extern u32 data_020a592c, data_020a5950;
-void func_02092890();
+extern "C" void func_02092890(); // a label in the hand-written decoder block
 
 int func_0203a544(Player *p, Reader *r, u32 a) {
     func_02000b9c(0x2000bdc);
@@ -213,7 +211,7 @@ int func_0203a7c0(Player *p) {
 }
 void func_0203a7e4() {}
 void *func_0203a7e8(void *p) {
-    _ZdlPv(p);
+    ::operator delete(p);
     return p;
 }
 void *Player::operator new(unsigned long size) { return func_0203c15c(size); }

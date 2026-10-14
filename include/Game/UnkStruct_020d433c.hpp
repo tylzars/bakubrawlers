@@ -252,6 +252,15 @@ struct BattlePlayerList : public SceneBase {
     BattleMarker *Entries() {
         return mUnk_1c;
     }
+
+    s8 CellAt(u8 row, u8 col) {
+        return mUnk_1f8[row][col];
+    }
+
+    void SetCursor(u8 x, u8 y) {
+        mUnk_28b = x;
+        mUnk_28c = y;
+    }
 };
 
 void func_ov007_022628e0(BattlePlayerList *list, u8 index, const VecFx32 *pos, u8 marker);

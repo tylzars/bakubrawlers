@@ -169,6 +169,10 @@ Other findings from linking:
 - **A local array filled from a one-use rodata table is an aggregate initializer.** `u8 buf[3] = {0, 1, 4};` makes
   mwcc emit an anonymous rodata object (often first in the unit's .rodata) and changes which temporary is created
   first; copying `buf[i] = data_xxx[i]` element by element does not match (TitleScene::Update, BattleTarget::Update).
+- **A pointer local can hoist shared index arithmetic over a branch.** `BattlePlayer *pl = list->mPlayers[p];`
+  makes `p * 4` a common subexpression with a later `p * 4 + 0x28`, and mwcc hoists it above the `if`. Keeping the
+  container in a local and indexing inside each arm (`list->mPlayers[p]->mUnk_f1`) stops it
+  (BattleCommand::func_ov007_0223a734). A `(u8 *)` cast store recolours differently from a real `u8` field store.
 - **From the BattleConfrontCard pass.**
   - Gaps in a jump table that lead to a label inside the switch are case labels the source is missing (not the
     default).

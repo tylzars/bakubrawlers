@@ -114,7 +114,6 @@ extern const BattleScrollBounds data_ov007_02279aec[];
 
 void func_ov007_022471c8(BattleCommandMap *map, u32 a);
 
-// non-matching: 170 words, registers and the CSE of the data_020d43f0[0].mUnk_28_5 load.
 BattleCommand::BattleCommand(u32 unk)
     : SceneBase(0x3e8, 0) {
     mMessage = 0;
@@ -184,15 +183,15 @@ BattleCommand::BattleCommand(u32 unk)
         data_ov007_02287c74[5].mUnk_04 = 0x8000;
     }
     u8 x = data_ov007_02279aa8[data_020d43f0[0].mUnk_28_5];
-    u8 k = 1;
+    i = 1;
     do {
-        data_ov007_02287c74[k].mX = x;
+        data_ov007_02287c74[i].mX = x;
         if (data_020d43f0[0].mUnk_28_5 == 0) {
-            ((u8 *) &data_ov007_02287c74[k].mUnk_10)[0] = 4;
-            ((u8 *) &data_ov007_02287c74[k].mUnk_10)[1] = 3;
+            data_ov007_02287c74[i].mSlideIn  = 4;
+            data_ov007_02287c74[i].mSlideOut = 3;
         }
-        k++;
-    } while (k <= 5);
+        i++;
+    } while (i <= 5);
     mUnk_6c = new SelectWindow(10, data_ov007_02287c74, -1);
     mUnk_70 = new SelectWindow(2, data_ov007_02279b0c, -1);
     mUnk_74 = new SelectWindow(3, data_ov007_02279b7c, -1);
@@ -205,27 +204,23 @@ BattleCommand::BattleCommand(u32 unk)
     mUnk_28 = 0;
     mUnk_20 = 0;
     mTurnDigits = 0;
-    u8 m = 0;
+    i = 0;
     do {
-        mUnk_3c[m] = 0;
-        m++;
-    } while (m < 12);
-    u8 n = 0;
+        mUnk_3c[i] = 0;
+        i++;
+    } while (i < 12);
+    i = 0;
     do {
-        mUnk_2c[n] = 0;
-        n++;
-    } while (n < 4);
+        mUnk_2c[i] = 0;
+        i++;
+    } while (i < 4);
     mUnk_124 = 0;
     mUnk_126 = 0;
     mUnk_133 = data_020d433c.mBattlePlayers->mUnk_28a;
     mUnk_128 = 0;
     mUnk_12c = data_ov007_02279ab8[side].mX;
     mUnk_12d = data_ov007_02279ab8[side].mY;
-    BattlePlayerList *players = data_020d433c.mBattlePlayers;
-    players->mUnk_28b = mUnk_12c;
-    players->mUnk_28c = data_ov007_02279ab8[side].mY;
-
-
+    data_020d433c.mBattlePlayers->SetCursor(mUnk_12c, mUnk_12d);
 
     func_ov007_0223ca80();
     if (data_020d433c.mBattlePlayers->mUnk_29c) {
@@ -293,7 +288,6 @@ BattleCommand::~BattleCommand() {
     }
 }
 
-// non-matching: 21 words differ, all register allocation/scheduling inside case 42 (v/idx registers r6<->r2, one load order, y-loop init order); everything else identical, calls verified
 void BattleCommand::Update() {
     switch (mUnk_128) {
         case 0: {
@@ -1621,7 +1615,6 @@ void func_ov007_0223a690(int x, int y) {
     G2S_SetBG0Priority(3);
 }
 
-// non-matching: 16 words. In the player-animation loop the original loads mUnk_135 before the mPlayers[p] pointer (cmp scheduled before the add/ldr); every variant tried loads the pointer first.
 void BattleCommand::func_ov007_0223a734() {
     ChangeDir("/Game/Battle/Obj");
     func_02025b64(0, 4, 0, "battle_u.nce_ncg1D.bin", 0, 0, 0);
@@ -1677,13 +1670,12 @@ void BattleCommand::func_ov007_0223a734() {
     mTurnDigits->mUnk_11   = 9;
     u8 p = 0;
     do {
-        BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[p];
+        BattlePlayerList *list = data_020d433c.mBattlePlayers;
         if (mUnk_135 == 0) {
-            u8 frame   = pl->mUnk_f1 + (p * 4 + 0x28);
+            u8 frame   = list->mPlayers[p]->mUnk_f1 + (p * 4 + 0x28);
             mUnk_2c[p] = new CellAnimation("battle_b_obj_00_nce.bin", frame, 1, 1);
         } else {
-            u8 side    = (pl->mUnk_f1 + 2) % 4;
-            u8 frame   = side + (p * 4 + 0x28);
+            u8 frame   = (list->mPlayers[p]->mUnk_f1 + 2) % 4 + (p * 4 + 0x28);
             mUnk_2c[p] = new CellAnimation("battle_b_obj_00_nce.bin", frame, 1, 1);
         }
         mUnk_2c[p]->mCharBase = screen.func_020276f4(0xa000);
@@ -2108,7 +2100,6 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
 
 BOOL func_ov007_02262574(BattlePlayerList *list, u8 row, u8 col);
 
-// non-matching: 11 words, registers and the order of the two ldrh copies.
 void BattleCommand::func_ov007_0223c578() {
     switch (mMode) {
         case 2:
@@ -2139,7 +2130,7 @@ void BattleCommand::func_ov007_0223c578() {
             a    = mUnk_12c;
             list = data_020d433c.mBattlePlayers;
             b    = mUnk_12d;
-            cell = list->mUnk_1f8[a][b];
+            cell = list->CellAt(a, b);
             if (cell > 0) {
                 BattleCellInfo *info = func_ov007_02262530(list, a, b);
                 u16 sum              = info->mUnk_04 + func_ov007_02262530(list, a, b)->mUnk_06;

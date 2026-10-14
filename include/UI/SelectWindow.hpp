@@ -35,7 +35,13 @@ struct WindowItemRecord {
     /* 0a */ s16 mY;
     /* 0c */ s16 mWidth;
     /* 0e */ s16 mHeight;
-    /* 10 */ u16 mUnk_10;
+    union {
+        /* 10 */ u16 mUnk_10;
+        struct {
+            /* 10 */ u8 mSlideIn;
+            /* 11 */ u8 mSlideOut;
+        };
+    };
     /* 12 */ s8 mNeighbors[4];
     /* 16 */ u16 mUnk_16;
     /* 18 */ u32 mUnk_18;

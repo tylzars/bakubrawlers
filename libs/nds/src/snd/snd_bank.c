@@ -130,48 +130,40 @@ void func_02008e08(u32 *p) {
     p[1] = 0;
 }
 
+typedef struct { u16 v[5]; } SndU16x5;
+typedef struct { u16 v[6]; } SndU16x6;
+
 BOOL func_02008e28(SNDBank *bank, u16 *out, SNDInstPos *pos) {
     u32 sub = 0;
     if (pos->index < bank->count) {
         do {
+            int type = bank->inst[pos->index] & 0xff;
             u32 entry = bank->inst[pos->index];
-            int type = entry & 0xff;
-            u32 off;
             *(u8 *) out = (u8) entry;
             entry >>= 8;
-            off = entry;
             switch (type) {
             case 1:
             case 2:
             case 3:
             case 4:
             case 5: {
-                u16 *rec = (u16 *) ((u8 *) bank + off);
-                out[1] = rec[0];
-                out[2] = rec[1];
-                out[3] = rec[2];
-                out[4] = rec[3];
-                out[5] = rec[4];
+                u16 *rec = (u16 *) ((u8 *) bank + entry);
+                *(SndU16x5 *) (out + 1) = *(SndU16x5 *) rec;
                 pos->index++;
                 return TRUE;
             }
             case 0x10: {
-                u8 *base = (u8 *) bank + off;
+                u8 *base = (u8 *) bank + entry;
                 while (pos->sub < (u32) (base[1] - base[0] + 1)) {
                     u16 *rec = (u16 *) (base + pos->sub * 12);
-                    out[0] = rec[1];
-                    out[1] = rec[2];
-                    out[2] = rec[3];
-                    out[3] = rec[4];
-                    out[4] = rec[5];
-                    out[5] = rec[6];
+                    *(SndU16x6 *) out = *(SndU16x6 *) (rec + 1);
                     pos->sub++;
                     return TRUE;
                 }
                 break;
             }
             case 0x11: {
-                u8 *base = (u8 *) bank + off;
+                u8 *base = (u8 *) bank + entry;
                 while (pos->sub < 8) {
                     u32 k = pos->sub;
                     u16 *rec;
@@ -179,12 +171,7 @@ BOOL func_02008e28(SNDBank *bank, u16 *out, SNDInstPos *pos) {
                         break;
                     }
                     rec = (u16 *) (base + k * 12);
-                    out[0] = rec[4];
-                    out[1] = rec[5];
-                    out[2] = rec[6];
-                    out[3] = rec[7];
-                    out[4] = rec[8];
-                    out[5] = rec[9];
+                    *(SndU16x6 *) out = *(SndU16x6 *) (rec + 4);
                     pos->sub++;
                     return TRUE;
                 }

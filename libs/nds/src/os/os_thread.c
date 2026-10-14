@@ -233,6 +233,8 @@ void OS_InitThread(void) {
     threadSys.ti.idleThread.state = OS_THREAD_STATE_READY;
 }
 
+static inline void OS_InitThreadQueue(OSThreadQueue *q) { q->head = q->tail = NULL; }
+
 void OS_CreateThread(OSThread *thread, void (*func)(void *), void *arg, void *stack, u32 stackSize, u32 prio) {
     OSIntrMode e = OS_DisableInterrupts();
     u32 stackTop;
@@ -248,8 +250,7 @@ void OS_CreateThread(OSThread *thread, void (*func)(void *), void *arg, void *st
     thread->stackWarningOffset = 0;
     *(u32 *) (thread->stackBottom - 4) = 0xfddb597d;
     *(u32 *) thread->stackTop = 0x7bf9dd5b;
-    thread->joinQueue.tail = NULL;
-    thread->joinQueue.head = NULL;
+    OS_InitThreadQueue(&thread->joinQueue);
     OS_InitContext(&thread->context, (u32) func, (u32) stack - 4);
     thread->context.r[0] = (u32) arg;
     thread->context.lr = (u32) OS_ExitThread;

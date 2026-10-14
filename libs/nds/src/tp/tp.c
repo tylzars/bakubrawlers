@@ -90,15 +90,15 @@ void func_0200c104(void)
     PXI_SetFifoRecvCallback(6, func_0200be84);
 }
 
+typedef struct { u8 pad[0x58]; u16 x1, y1; u8 px1, py1; u16 x2, y2; u8 px2, py2; } TPNvCal;
+
 int func_0200c17c(TPCalibrateParam *p)
 {
-    vu16 *h = (vu16 *)0x027ffc80;
-    vu8 *b = (vu8 *)0x027ffc80;
-    u16 ax1 = h[0x58 / 2], ay1 = h[0x5a / 2];
-    u16 ax2 = h[0x5e / 2], ay2 = h[0x60 / 2];
-    u8 px1 = b[0x5c], py1 = b[0x5d], px2 = b[0x62], py2 = b[0x63];
-    if ((ax1 == 0 && ax2 == 0 && ay1 == 0 && ay2 == 0) ||
-        func_0200c41c(p, ax1, ay1, px1, py1, ax2, ay2, px2, py2) != 0) {
+    TPNvCal *c = (TPNvCal *)0x027ffc80;
+    u16 ax1 = c->x1, ay1 = c->y1;
+    u16 ax2 = c->x2, ay2 = c->y2;
+    u8 px1 = c->px1, py1 = c->py1, px2 = c->px2, py2 = c->py2;
+    if ((ax1 == 0 && ax2 == 0 && ay1 == 0 && ay2 == 0) || func_0200c41c(p, ax1, ay1, px1, py1, ax2, ay2, px2, py2) != 0) {
         p->x0 = 0;
         p->y0 = 0;
         p->xDotSize = 0;
@@ -254,5 +254,5 @@ void func_0200c608(TPData *out, const TPData *raw)
 
 void func_0200c72c(u32 mask)
 {
-    while (tpWork.busy & mask) {}
+    while ((*(vu16 *)&tpWork.busy & mask) != 0) {}
 }

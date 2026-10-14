@@ -152,7 +152,12 @@ void UnkStruct_02070608::Update() {
 }
 
 extern const u32 data_020a2dac[];
-extern WindowCellRecord data_020b8ea0[4];
+static WindowCellRecord data_020b8ea0[4] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0, 0, 0, 1, {3, 5, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0, 0, 0, 1, {6, 8, 7, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0, 0, 0, 1, {10, 10, 10, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 12, 0, 0, 0, 1, {12, 12, 12, 0}},
+};
 extern const WindowItemRecord data_020a2dcc[];
 
 void UnkStruct_02070608::func_02070d10() {

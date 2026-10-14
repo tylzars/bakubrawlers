@@ -37,14 +37,15 @@ void PXI_Init(void) {
 }
 
 void PxiFifoSetup(void) {
+    PXIWork *w = (PXIWork *) 0x27ffc00;
     OSIntrMode e = OS_DisableInterrupts();
-    int count;
-    u16 remote;
     int timeout;
+    u32 remote;
+    int count;
     if (pxiInitialized == 0) {
         int i;
         pxiInitialized = 1;
-        PXI_PROC_FLAGS(0) = 0;
+        w->flags[0] = 0;
         for (i = 0; i < 32; i++) {
             pxiCallback[i] = NULL;
         }
@@ -94,8 +95,9 @@ void PXI_SetFifoRecvCallback(int fifoTag, PXIFifoCallback callback) {
 }
 
 BOOL PXI_IsCallbackReady(int fifoTag, int proc) {
+    PXIWork *w = (PXIWork *) 0x27ffc00;
     BOOL ready = TRUE;
-    if (!(PXI_PROC_FLAGS(proc) & (1 << fifoTag))) {
+    if (!(w->flags[proc] & (1 << fifoTag))) {
         ready = FALSE;
     }
     return ready;

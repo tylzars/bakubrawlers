@@ -237,9 +237,12 @@ src/07_Battle/Battle/BattleCardCamera.cpp:
     .data       start:0x022886f8 end:0x02288738
     .bss        start:0x0228b8d4 end:0x0228b8e0
 
-// provisional: code only; .rodata 0x02279eb0-0x0227a114, .data 0x022887e0-0x0228884c and .bss 0x0228b8e0-0x0228b8ec belong here.
 src/07_Battle/Battle/BattleCommandMap.cpp:
+    complete
     .text       start:0x022450f4 end:0x02248a5c
+    .rodata     start:0x02279eb0 end:0x0227a114
+    .data       start:0x02288738 end:0x0228884c
+    .bss        start:0x0228b8e0 end:0x0228b8ec
 
 src/07_Battle/Battle/BattleFontObj.cpp:
     complete

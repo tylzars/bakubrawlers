@@ -16,9 +16,85 @@
 #include <nitro/os.h>
 #include "System/FileSystem.hpp"
 
-extern const char *const data_ov007_022887f0[];
-extern const s32 data_ov007_0227a0d4[][2];
-extern const s32 data_ov007_0227a0d8[][2];
+// The order of these definitions sets the data layout: mwcc sorts a file's objects by size, and the order of
+// equal sizes depends on where each was defined (docs/decompiling.md, "Data layout within a section").
+
+// Only the middle angle is read, folded to a constant; the 6 bytes at 0x02279eb4 show the table was there.
+static const u16 sCommandCamAngles[3] = {0, 0x2000, 0};
+static const VecFx32 data_ov007_02279f24[4] = {
+    {0x87000, 0x899a, 0x87000},
+    {-0x87000, 0x899a, 0x87000},
+    {-0x87000, 0x899a, -0x87000},
+    {0x87000, 0x899a, -0x87000},
+};
+static const VecFx32 data_ov007_02279ed0 = {0x1000, 0x1000, 0x1000};
+static const VecFx32 data_ov007_02279f54[4] = {
+    {0xaa000, 0x899a, 0xaa000},
+    {-0xaa000, 0x899a, 0xaa000},
+    {-0xaa000, 0x899a, -0xaa000},
+    {0xaa000, 0x899a, -0xaa000},
+};
+static const VecFx32 data_ov007_02279f84[4] = {
+    {0xc8000, 0x899a, 0xc8000},
+    {-0xc8000, 0x899a, 0xc8000},
+    {-0xc8000, 0x899a, -0xc8000},
+    {0xc8000, 0x899a, -0xc8000},
+};
+static const VecFx32 data_ov007_02279fb4[4] = {
+    {0xbe000, 0x899a, 0xbe000},
+    {-0xbe000, 0x899a, 0xbe000},
+    {-0xbe000, 0x899a, -0xbe000},
+    {0xbe000, 0x899a, -0xbe000},
+};
+static const VecFx32 data_ov007_02279fe4[4] = {
+    {0x14a000, 0x899a, 0x14a000},
+    {-0x14a000, 0x899a, 0x14a000},
+    {-0x14a000, 0x899a, -0x14a000},
+    {0x14a000, 0x899a, -0x14a000},
+};
+static const VecFx32 data_ov007_0227a014[4] = {
+    {0x78000, 0x899a, 0x78000},
+    {-0x78000, 0x899a, 0x78000},
+    {-0x78000, 0x899a, -0x78000},
+    {0x78000, 0x899a, -0x78000},
+};
+static const u8 data_ov007_02279eb0[4] = {0, 1, 3, 2};
+static const VecFx32 data_ov007_0227a044[4] = {
+    {0xaf000, 0x899a, 0xaf000},
+    {-0xaf000, 0x899a, 0xaf000},
+    {-0xaf000, 0x899a, -0xaf000},
+    {0xaf000, 0x899a, -0xaf000},
+};
+static const u16 data_ov007_02279efc[20] = {1, 0x7fff, 0xf666, 0xf5ec, 0xf829};
+static const VecFx32 data_ov007_0227a074[4] = {
+    {0x11db0a, 0x899a, 0x11db0a},
+    {-0x11db0a, 0x899a, 0x11db0a},
+    {-0x11db0a, 0x899a, -0x11db0a},
+    {0x11db0a, 0x899a, -0x11db0a},
+};
+static const u32 data_ov007_02279edc[8] = {0x4b000, 0x3a000, 0x46000, 0x46000, 0x46000, 0x46000, 0x46000, 0x46000};
+static const VecFx32 data_ov007_02279ec4 = {-0xf000, 0, 0};
+// Start camera file per stage.
+static const char *sStartCamFiles[] = {
+    "StaStartCam0.cam", "pyruStartCam0.cam", "aquStartCam0.cam", "VenStartCam0.cam",
+    "SubStartCam0.cam", "HaoStartCam0.cam",  "DarkStartCam0.cam", "aniStartCam0.cam",
+};
+// Map cursor start position per stage, indexed by the player's corner.
+static const VecFx32 *sCornerPositions[] = {
+    data_ov007_02279f24, data_ov007_02279f54, data_ov007_02279f84, data_ov007_02279fb4,
+    data_ov007_02279fe4, data_ov007_0227a014, data_ov007_0227a044, data_ov007_0227a074,
+};
+static const VecFx32 data_ov007_0227a0a4[4] = {
+    {0x78000, 0x46000, 0xc8000},
+    {-0x78000, 0x46000, 0xc8000},
+    {-0x78000, 0x46000, -0xc8000},
+    {0x78000, 0x46000, -0xc8000},
+};
+// Camera near and far clip per stage.
+static const fx32 sClipPlanes[8][2] = {
+    {0x2000, 0xe74000}, {0x2000, 0xe74000}, {0x2000, 0xe74000}, {0x2000, 0xe74000},
+    {0x2000, 0xe74000}, {0x2000, 0xe74000}, {0x2000, 0xe74000}, {0x2000, 0xe74000},
+};
 
 extern "C" void func_ov007_02248748(BattleCommandMap *map, VecFx32 *out);
 extern "C" void func_ov007_022476e0(BattleCommandMap *map);
@@ -26,7 +102,6 @@ extern "C" void func_ov007_02247898(BattleCommandMap *map);
 extern "C" void func_ov007_0224796c(BattleCommandMap *map);
 extern "C" void func_ov007_022479d4(BattleCommandMap *map, u32 a);
 extern "C" void func_ov007_02247a1c(BattleCommandMap *map, u32 a);
-extern const u8 data_ov007_02279efc[];
 extern "C" void func_ov007_02246a6c(BattleCommandMap *map);
 extern "C" void func_ov007_02246804(BattleCommandMap *map);
 extern "C" void func_ov007_02246758(BattleCommandMap *map);
@@ -459,7 +534,6 @@ void BattleCommandMap::func_ov007_02246450() {
     }
 }
 
-extern const VecFx32 data_ov007_02279ec4;
 void func_ov007_02248944(VecFx32 *out, u8 a, u8 b);
 
 extern "C" void func_ov007_02246558(BattleCommandMap *map) {
@@ -597,8 +671,6 @@ extern "C" void func_ov007_02246efc(BattleCommandMap *map);
 extern "C" void func_ov007_0224701c(BattleCommandMap *map, VecFx32 *v);
 extern "C" void func_ov007_022470f4(BattleCommandMap *map, u8 a, u8 b, u32 frames);
 extern "C" void func_ov007_02247544(BattleCommandMap *map, VecFx32 *target, VecFx32 *pos, u32 frames);
-extern const VecFx32 data_ov007_0227a0a4[];
-extern const u32 data_ov007_02279edc[];
 extern "C" void func_ov007_02247618(BattleCommandMap *map);
 extern "C" void func_ov007_0224768c(BattleCommandMap *map);
 
@@ -665,10 +737,11 @@ extern "C" void func_ov007_02246ddc(BattleCommandMap *map) {
     camera->mPosition.z = z;
 }
 
+
 extern "C" void func_ov007_02246efc(BattleCommandMap *map) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera) {
-        camera->func_02026004(0x2000);
+        camera->func_02026004(sCommandCamAngles[1]);
         VecFx32 v = data_ov007_0227a0a4[data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mUnk_f1];
         v.y       = data_ov007_02279edc[map->mUnk_14b];
         camera->mPosition = v;
@@ -815,7 +888,6 @@ extern "C" void func_ov007_0224724c(BattleCommandMap *map) {
 }
 
 extern "C" s32 func_01ff9208(VecFx32 *a, VecFx32 *b);
-extern const u8 data_ov007_02279eb0[];
 extern "C" void func_ov007_02247794(BattleCommandMap *map);
 
 extern "C" void func_ov007_02247544(BattleCommandMap *map, VecFx32 *target, VecFx32 *pos, u32 frames) {
@@ -1063,8 +1135,7 @@ extern "C" void func_ov007_02247e00(BattleCommandMap *map) {
 }
 
 extern "C" void func_ov007_022486c4(BattleCommandMap *map, VecFx32 *v, u32 mode);
-extern const VecFx32 data_ov007_02279ed0;
-extern const VecFx32 *const data_ov007_02288810[];
+
 
 extern "C" void func_ov007_022482a8(BattleCommandMap *map) {
     ChangeDir("/Game/Battle/3d/MapCam");
@@ -1072,11 +1143,11 @@ extern "C" void func_ov007_022482a8(BattleCommandMap *map) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera) {
         map->func_ov007_02245594();
-        map->mUnk_0c = func_02023504(data_ov007_022887f0[map->mUnk_14b], 0, 0, 0, 0, 0);
+        map->mUnk_0c = func_02023504(sStartCamFiles[map->mUnk_14b], 0, 0, 0, 0, 0);
         camera->func_0202610c(map->mUnk_0c, 0);
         u8 index      = map->mUnk_14b;
-        camera->mNear = data_ov007_0227a0d4[index][0];
-        camera->mFar  = data_ov007_0227a0d8[index][0];
+        camera->mNear = sClipPlanes[index][0];
+        camera->mFar  = sClipPlanes[index][1];
         new BattleCardEffect(0, 0, 3, 0);
     }
     CameraManager::Get().mActive = 0;
@@ -1128,7 +1199,7 @@ extern "C" void func_ov007_02248748(BattleCommandMap *map, VecFx32 *out) {
     if (map->mUnk_14b >= 8) {
         return;
     }
-    *out = data_ov007_02288810[map->mUnk_14b][data_020d433c.mBattlePlayers->Current()->mUnk_f1];
+    *out = sCornerPositions[map->mUnk_14b][data_020d433c.mBattlePlayers->Current()->mUnk_f1];
 }
 
 extern "C" void func_ov007_0224882c(BattleCommandMap *map);

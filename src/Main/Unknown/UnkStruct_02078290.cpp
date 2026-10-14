@@ -65,7 +65,7 @@ void UnkStruct_02078290::Update() {
 // non-matching: 4 words, same CameraManager mode-load scheduling as Update
 void UnkStruct_02078290::func_020785d8(u32 unk1) {
     mUnk_19 = unk1;
-    u32 width = 0x80;
+    u16 width = 0x80;
     CameraManager &camB = CameraManager::Get();
     CameraManager &camA = CameraManager::Get();
     u32 screen;

@@ -37,7 +37,7 @@ public:
         return instance;
     }
 
-    void func_0202d7a0();
+    u8 func_0202d7a0();
     void func_0202d8cc();
     void func_0202d9ac();
 };

@@ -52,7 +52,7 @@ struct CellAnimFile {
     /* 00 */ CellAnimData *mData;
     /* 04 */
 
-    CellAnimFile(const char *path, u32 unk2, u16 unk3); // 0x0202a710 (0x0202a594 is the base-object constructor)
+    CellAnimFile(const char *path, u16 unk2, u16 unk3); // 0x0202a710 (0x0202a594 is the base-object constructor)
     ~CellAnimFile();                                    // 0x0202a88c
 };
 
@@ -88,7 +88,7 @@ public:
     /* 14 */ CellAnimFile *mFile;
     /* 18 */
 
-    CellAnimation(const char *path, u32 unk2, u32 unk3, u32 unk4);
+    CellAnimation(const char *path, u32 unk2, u16 unk3, u32 unk4);
     CellAnimation(CellAnimFile *file, u32 unk2); // 0x02029d7c, does not own the file
     ~CellAnimation();
     void Update();

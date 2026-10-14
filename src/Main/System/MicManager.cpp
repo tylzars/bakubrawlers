@@ -26,7 +26,7 @@ public:
     /* 25 */ PAD(0x25, 0x28);
 
     void func_0202d794();
-    void func_0202d7a0();
+    u8 func_0202d7a0();
     void func_0202d8cc();
     void func_0202d94c();
     void func_0202d9ac();
@@ -44,10 +44,10 @@ void MicManager::func_0202d794() {
     MIC_Init();
 }
 
-// non-matching: the zero and the instance pointer swap registers (r0/r1).
-void MicManager::func_0202d7a0() {
+// Returns the active flag when already sampling, else 0.
+u8 MicManager::func_0202d7a0() {
     if (mActive != 0) {
-        return;
+        return mActive;
     }
     MIC_Init();
     func_0200d2f0(1);
@@ -67,6 +67,7 @@ void MicManager::func_0202d7a0() {
     mHold = 0;
     mBlowing = mPrevBlowing = 0;
     mEvents = 0;
+    return 0;
 }
 
 void MicManager::func_0202d8cc() {

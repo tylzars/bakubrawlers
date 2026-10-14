@@ -12,7 +12,7 @@ CellAnimData *func_0202aa54(const char *path);
 CellAnimData *func_0202aa8c(void *data);
 CellAnimData *func_0202aa80(void *data);
 void func_0202ab0c(void *data);
-void func_0202a958(CellAnimFile *file, CellAnimData *data, s32 den, s32 num);
+void func_0202a958(CellAnimFile *file, CellAnimData *data, u16 den, s32 num);
 
 // Loaded files are shared: one entry per file id, with a reference count.
 struct CellAnimCacheEntry {
@@ -25,7 +25,7 @@ struct CellAnimCacheEntry {
 
 static CellAnimCacheEntry *sCache;
 
-CellAnimFile::CellAnimFile(const char *path, u32 scaleDen, u16 scaleNum) {
+CellAnimFile::CellAnimFile(const char *path, u16 scaleDen, u16 scaleNum) {
     mData = NULL;
     if (path == NULL) {
         return;
@@ -90,8 +90,9 @@ CellAnimFile::~CellAnimFile() {
 }
 
 // Scales the character numbers of every OAM entry by num / den.
-// non-matching: 5 words, prologue scheduling (the str of den comes before the ldmib in ours).
-void func_0202a958(CellAnimFile *file, CellAnimData *data, s32 den, s32 num) {
+// `den` is 16-bit all the way down (CellAnimation -> CellAnimFile -> here): a narrow parameter's stack copy comes
+// after the loads, as in the original; as s32 the store came first.
+void func_0202a958(CellAnimFile *file, CellAnimData *data, u16 den, s32 num) {
     u16 count            = data->mNumFrames;
     CellAnimFrame *frame = data->mFrames;
     CellAnimCel *cel     = data->mCels;

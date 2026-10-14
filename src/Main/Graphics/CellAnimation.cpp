@@ -9,7 +9,7 @@ CellAnimation::CellAnimation(CellAnimFile *file, u32 unk2) {
     mFile = NULL;
 }
 
-CellAnimation::CellAnimation(const char *path, u32 unk2, u32 unk3, u32 unk4) {
+CellAnimation::CellAnimation(const char *path, u32 unk2, u16 unk3, u32 unk4) {
     mFile = new CellAnimFile(path, unk3, *(u16 *) &unk4);
     func_02029df8(mFile->mData->mFrames, unk2);
 }

@@ -1,18 +1,10 @@
-#include "Graphics/Camera.hpp"
-#include "System/SoundManager.hpp"
-#include "Scene/MyroomShootScene.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
-#include "Graphics/Camera.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/Effect.hpp"
 #include "Graphics/Model.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
-#include "System/InputManager.hpp"
-#include "System/SoundManager.hpp"
-#include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
 
@@ -21,26 +13,63 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-extern const u32 data_ov008_02229068[];
-extern const VecFx32 data_ov008_022290cc[];
-extern const u16 data_ov008_02229038[];
-extern const u16 data_ov008_02229080[][3];
-extern const u16 data_ov008_02229082[][3];
-extern const u16 data_ov008_02229084[][3];
+struct ShootPoint {
+    u8 x;
+    u8 y;
+};
 
-extern const VecFx32 data_ov008_02229044;
-extern const VecFx32 data_ov008_02229050;
+static const WindowCellRecord data_ov008_02229114[4] = {
+    {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 0, 0x0, 0, 0, 1, {0, 0, 0, 0}},
+    {"Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x5000, 10, 0, 1, {2, 3, 3, 0}},
+    {"Game/2D/union_b/union_b_obj_page_nce.bin", 0, 0x8000, 11, 0, 1, {0, 1, 1, 0}},
+    {"Game/2D/union_b/union_b_obj_page_nce.bin", 3, 0x8000, 11, 0, 1, {3, 4, 4, 0}},
+};
+static const ShootPoint data_ov008_0222905c[2][3] = {
+    {{0x28, 0x28}, {0x68, 0x28}, {0xa8, 0x28}},
+    {{0x28, 0x68}, {0x68, 0x68}, {0xa8, 0x68}},
+};
+static const VecFx32 data_ov008_022290cc[6] = {
+    {0xf000, 0x5c000, 0x64000}, {0xf000, 0x5f000, 0x64000}, {0xf000, 0x5f000, 0x64000},
+    {0xf000, 0x5f000, 0x64000}, {0xf000, 0x5f000, 0x64000}, {0xf000, 0x5f000, 0x64000},
+};
+static const VecFx32 data_ov008_02229044 = {0x1000, 0x1000, 0x1000};
+static const VecFx32 data_ov008_02229050 = {0, 0, -0xe6000};
+static const u32 data_ov008_02229024[2] = {0x44, 0x21};
+static const u16 data_ov008_02229080[6][3] = {{0, 15, 15}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+static const u8 data_ov008_0222901e[2][3] = {{1, 1, 1}, {1, 1, 1}};
+static WindowCellRecord data_ov008_0222ab2c[6] = {
+    {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 2, 0x0, 0, 1, 1, {2, 2, 2, 0}},
+    {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 3, 0x0, 0, 1, 1, {3, 3, 3, 0}},
+    {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 4, 0x0, 0, 1, 1, {4, 4, 4, 0}},
+    {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 5, 0x0, 0, 1, 1, {5, 5, 5, 0}},
+    {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 6, 0x0, 0, 1, 1, {6, 6, 6, 0}},
+    {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 7, 0x0, 0, 1, 1, {7, 7, 7, 0}},
+};
+static const u8 data_ov008_0222901a[2][2] = {{0x10, 0x12}, {0x40, 0x02}};
+static const WindowItemRecord data_ov008_02229184[10] = {
+    {0, 0x8, 40, 40, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
+    {1, 0x8, 104, 40, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
+    {2, 0x8, 168, 40, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
+    {3, 0x8, 40, 104, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
+    {4, 0x8, 104, 104, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
+    {5, 0x8, 168, 104, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
+    {6, 0x8000, 40, 40, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+    {7, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {8, 0x208, 192, 20, 32, 16, 0, {-1, -1, -1, -1}, 0, 1},
+    {9, 0x408, 224, 20, 32, 16, 0, {-1, -1, -1, -1}, 0, 1},
+};
 
-extern const u8 data_ov008_0222901e[2][3];
-extern const u8 data_ov008_0222901a[][2];
-extern const u32 data_ov008_02229024[];
-extern const u8 data_ov008_0222902c[][2];
-extern const u8 data_ov008_022290a4[];
-extern const WindowItemRecord data_ov008_02229184[];
-extern const WindowCellRecord data_ov008_02229114[];
-extern WindowCellRecord data_ov008_0222ab2c[];
-extern const u8 data_ov008_0222905c[][6];
-extern const u8 data_ov008_0222905d[][6];
+#include "System/InputManager.hpp"
+#include "System/SoundManager.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "Scene/MyroomShootScene.hpp"
+#include "Text/TextManager.hpp"
+
+static const ShootPoint data_ov008_02229018 = {0x80, 0x60};
+static const u16 data_ov008_022290a4[20] = {1, 0x7fff, 0xfbae, 0xf91f, 0xf23d};
+static const u32 data_ov008_02229068[6] = {0, 4, 7, 2, 11, 25};
+static const u8 data_ov008_0222902c[6][2] = {{2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7}};
+static const u16 data_ov008_02229038[6] = {0, 2, 11, 9, 7, 8};
 
 MyroomShootScene::MyroomShootScene() :
     SceneBase(1000, 0) {
@@ -315,8 +344,8 @@ void MyroomShootScene::func_ov008_02222474(s8 index) {
             mEffect = func_0202bd40(data_020d433c.mEffects, 0, (u8) data_ov008_02229038[mSelected], 0, 0);
             func_0202bef4(data_020d433c.mEffects, mEffect, &pos);
             effectRot[0] = (u16) (65536.0f * (float) data_ov008_02229080[mSelected][0] / 360.0f);
-            effectRot[1] = (u16) (65536.0f * (float) data_ov008_02229082[mSelected][0] / 360.0f);
-            effectRot[2] = (u16) (65536.0f * (float) data_ov008_02229084[mSelected][0] / 360.0f);
+            effectRot[1] = (u16) (65536.0f * (float) data_ov008_02229080[mSelected][1] / 360.0f);
+            effectRot[2] = (u16) (65536.0f * (float) data_ov008_02229080[mSelected][2] / 360.0f);
             func_0202bf3c(data_020d433c.mEffects, mEffect, effectRot);
         }
         mUnk_63 = 0;
@@ -342,7 +371,7 @@ void MyroomShootScene::Draw() {
 void MyroomShootScene::DrawSprites() {
     if (mCellAnim != NULL) {
         mCellAnim->Update();
-        mCellAnim->Draw(0, 0x80, 0x60, 0);
+        mCellAnim->Draw(0, data_ov008_02229018.x, data_ov008_02229018.y, 0);
     }
     MtxFx43 *base = func_020323b8();
     MtxFx43 view  = data_0220e86c;
@@ -565,7 +594,7 @@ void MyroomShootScene::func_ov008_02223264() {
             items[9].mFlags = 0x8000;
         }
     }
-    Vec2s pos = {data_ov008_0222905c[mUnk_62][mUnk_61 * 2], data_ov008_0222905d[mUnk_62][mUnk_61 * 2]};
+    Vec2s pos = {data_ov008_0222905c[mUnk_62][mUnk_61].x, data_ov008_0222905c[mUnk_62][mUnk_61].y};
     mWindow->mCellPos[6] = pos;
     if (mShooter == NULL) {
         return;

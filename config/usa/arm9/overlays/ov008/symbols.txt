@@ -161,6 +161,7 @@ data_ov008_02228cc8 kind:data(any) addr:0x02228cc8
 data_ov008_02228d38 kind:data(any) addr:0x02228d38
 data_ov008_02228db0 kind:data(any) addr:0x02228db0
 data_ov008_02228eac kind:data(any) addr:0x02228eac
+data_ov008_02229018 kind:data(any) addr:0x02229018 local
 data_ov008_0222901a kind:data(any) addr:0x0222901a
 data_ov008_0222901e kind:data(any) addr:0x0222901e
 data_ov008_02229024 kind:data(any) addr:0x02229024

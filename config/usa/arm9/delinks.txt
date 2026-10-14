@@ -16,6 +16,7 @@ libs/cri/src/cri_init.c:
     .text       start:0x0204046c end:0x020407bc
 
 libs/cri/src/cri_stm_c.c:
+    complete
     .text       start:0x020407bc end:0x02041744
 
 libs/cri/src/cri_slot.c:

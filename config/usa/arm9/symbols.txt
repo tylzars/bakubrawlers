@@ -347,7 +347,7 @@ GxFastDmaEnd kind:function(arm,size=0x2c) addr:0x02007ca4
 MI_SwapWord kind:function(arm,size=0x8) addr:0x02007cd0
 func_02007cd8 kind:function(arm,size=0x74) addr:0x02007cd8
 MI_InitUncompContextLZ kind:function(arm,size=0x48) addr:0x02007d4c
-_Z13func_02007d94PvS_j kind:function(arm,size=0x184) addr:0x02007d94
+func_02007d94 kind:function(arm,size=0x184) addr:0x02007d94
 func_02007f18 kind:function(arm,size=0x18) addr:0x02007f18
 func_02007f30 kind:function(arm,size=0x20) addr:0x02007f30
 func_02007f50 kind:function(arm,size=0x28) addr:0x02007f50
@@ -751,6 +751,7 @@ _dflt kind:function(arm,size=0x40) addr:0x0201dc78
 _dfltu kind:function(arm,size=0x3c) addr:0x0201dcb8
 _dmul kind:function(arm,size=0x364) addr:0x0201dcf4
 sqrt kind:function(arm,size=0x19c) addr:0x0201e058
+func_0201e1f4 kind:label(arm) addr:0x0201e1f4
 _dsub kind:function(arm,size=0x3b4) addr:0x0201e20c
 _fadd kind:function(arm,size=0x21c) addr:0x0201e5c0
 func_0201e7dc kind:function(arm,size=0x8) addr:0x0201e7dc
@@ -766,6 +767,7 @@ _fleq kind:function(arm,size=0x68) addr:0x0201ec24
 _fls kind:function(arm,size=0x5c) addr:0x0201ec8c
 _feq kind:function(arm,size=0x68) addr:0x0201ece8
 _fneq kind:function(arm,size=0x68) addr:0x0201ed50
+func_0201edb8 kind:label(arm) addr:0x0201edb8
 _fdiv kind:function(arm,size=0x3b8) addr:0x0201edc4
 _f2d kind:function(arm,size=0x84) addr:0x0201f17c
 _ffix kind:function(arm,size=0x34) addr:0x0201f200
@@ -773,14 +775,16 @@ _ffixu kind:function(arm,size=0x40) addr:0x0201f234
 _fflt kind:function(arm,size=0x48) addr:0x0201f274
 _ffltu kind:function(arm,size=0x48) addr:0x0201f2bc
 _fmul kind:function(arm,size=0x1e0) addr:0x0201f304
+func_0201f4e4 kind:label(arm) addr:0x0201f4e4
 _fsub kind:function(arm,size=0x278) addr:0x0201f4f0
-func_0201f768 kind:function(arm,size=0x1c0) addr:0x0201f768
-_ll_sdiv kind:label(arm) addr:0x0201f778
-_ll_udiv kind:function(arm,size=0x48) addr:0x0201f928
-_ull_mod kind:label(arm) addr:0x0201f934
+func_0201f768 kind:function(arm,size=0x10) addr:0x0201f768
+_ll_sdiv kind:function(arm,size=0x1b0) addr:0x0201f778
+_ll_udiv kind:function(arm,size=0xc) addr:0x0201f928
+_ull_mod kind:function(arm,size=0x3c) addr:0x0201f934
 _s32_div_f kind:function(arm,size=0x20c) addr:0x0201f970
 _u32_div_f kind:function(arm,size=0x1e4) addr:0x0201fb7c
 .L_0201fb84 kind:label(arm) addr:0x0201fb84
+func_0201fd60 kind:label(arm) addr:0x0201fd60
 _ddiv kind:function(arm,size=0x544) addr:0x0201fd78
 func_020202bc kind:function(arm,size=0x4) addr:0x020202bc
 func_020202c0 kind:function(arm,size=0x2c) addr:0x020202c0

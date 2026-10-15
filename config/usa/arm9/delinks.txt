@@ -139,9 +139,8 @@ libs/cri/src/cri_mpa_l2.c:
 
 libs/cri/src/cri_mpa_dec.c:
     complete
-    .text       start:0x0204bdd4 end:0x0204c088
+    .text       start:0x0204bdd4 end:0x0204c40c
 
-// 0x0204c088-0x0204c40c (func_0204c088): hand-written asm in CRI's MPEG synthesis (ldmib + smlatt dot products).
 libs/cri/src/cri_mpa_win.c:
     complete
     .text       start:0x0204c40c end:0x0204d78c
@@ -302,6 +301,14 @@ libs/msl/src/msl_fpclassify.c:
     complete
     .text       start:0x0201d67c end:0x0201d72c
 
+libs/msl/src/rt_soft_float.c:
+    complete
+    .text       start:0x0201d72c end:0x020202bc
+
+libs/msl/src/rt_global_ctors.c:
+    complete
+    .text       start:0x020202bc end:0x0202030c
+
 // NitroSystem (2.0, C); code only so far.
 libs/nns/src/fnd/fnd.c:
     complete
@@ -398,11 +405,15 @@ libs/nds/src/mi/mi_gx_cd8.c:
 
 libs/nds/src/mi/mi_uncompress.c:
     complete
-    .text       start:0x02007d4c end:0x02007d94
+    .text       start:0x02007d4c end:0x02007f18
 
 libs/nds/src/mi/mi_init.c:
     complete
     .text       start:0x02007f18 end:0x02007f30
+
+libs/nds/src/init/crt0.c:
+    complete
+    .text       start:0x02000800 end:0x02000ba0
 
 // main's slot: the function itself comes from Game.o (see the source file and lcf_edits.txt).
 src/Main/System/GameMain.cpp:
@@ -533,7 +544,7 @@ libs/nds/src/os/os_irqowner.c:
 
 libs/nds/src/os/os_terminate.c:
     complete
-    .text       start:0x02007520 end:0x02007530
+    .text       start:0x02007520 end:0x0200753c
 
 libs/nds/src/mi/mi_dma.c:
     complete
@@ -601,8 +612,12 @@ libs/nds/src/fs/fs_overlay.c:
 
 libs/nds/src/math/math_sha1.c:
     complete
-    .text       start:0x0200b588 end:0x0200bb74
+    .text       start:0x0200b588 end:0x0200be08
     .rodata     start:0x020902d4 end:0x020902f0
+
+libs/nds/src/cp/cp_context.c:
+    complete
+    .text       start:0x0200be08 end:0x0200be84
 
 libs/nds/src/tp/tp.c:
     .text       start:0x0200be84 end:0x0200c744

@@ -1,4 +1,4 @@
-/* CRI MPEG audio: decoder object create/destroy/poll, 0x0204bdd4-0x0204c088 */
+/* CRI MPEG audio: decoder object create/destroy/poll and the synthesis dot products (hand-written asm), 0x0204bdd4-0x0204c40c */
 #pragma dont_inline on
 typedef struct MpX {             /* decoder state, X */
     int i0;
@@ -157,4 +157,248 @@ void func_0204bfb0(MpX *x) {
         func_0204dc40(h);
         x->state = 0;
     }
+}
+
+// r0 -> 16-bit coefficient table (read as words, two samples per word), r1 -> sample buffer,
+// r2 -> output halfword array. Keeps r1, r2+0x20 and r2+0x60 on the stack,
+// runs two multiply-accumulate passes (signed 16x16 products, bottom*bottom then top*top) that
+// fill the output array from both ends, then sums the coefficient halfwords and stores the
+// negated total.
+asm void func_0204c088(const short *coef, const short *samples, short *out) {
+    stmfd sp!, {r4, r5, r6, r7, r8, r9, r10, r11, lr}
+    sub sp, sp, #12
+    add r3, r2, #32
+    add r4, r2, #96
+    str r3, [sp, #4]
+    str r1, [sp, #8]
+    add r11, r2, #64
+    add r3, r2, #66
+    str r4, [sp, #0]
+    add ip, r2, #126
+    mov lr, #16
+    // pass 1, 16 iterations: dot product of the 32 halfwords at r0 with 32 halfwords at r1
+    // (accumulated pairwise, low*low + high*high), scaled down by 12 bits; stored forward at r2
+    // and, negated, backward from r2+0x40
+L_0204c0b4:
+    ldr r4, [r0, #0]
+    ldr r5, [r1, #0]
+    ldmib r0, {r6, r8}
+    smulbb r10, r4, r5
+    smlatt r10, r4, r5, r10
+    ldmib r1, {r7, r9}
+    smlabb r10, r6, r7, r10
+    smlatt r10, r6, r7, r10
+    smlabb r10, r8, r9, r10
+    smlatt r10, r8, r9, r10
+    ldr r4, [r0, #12]
+    ldr r5, [r1, #12]
+    ldr r6, [r0, #16]
+    smlabb r10, r4, r5, r10
+    smlatt r10, r4, r5, r10
+    ldr r7, [r1, #16]
+    ldr r8, [r0, #20]
+    smlabb r10, r6, r7, r10
+    smlatt r10, r6, r7, r10
+    ldr r9, [r1, #20]
+    ldr r4, [r0, #24]
+    smlabb r10, r8, r9, r10
+    smlatt r10, r8, r9, r10
+    ldr r5, [r1, #24]
+    ldr r6, [r0, #28]
+    smlabb r10, r4, r5, r10
+    smlatt r10, r4, r5, r10
+    ldr r7, [r1, #28]
+    ldr r8, [r0, #32]
+    smlabb r10, r6, r7, r10
+    smlatt r10, r6, r7, r10
+    ldr r9, [r1, #32]
+    ldr r4, [r0, #36]
+    smlabb r10, r8, r9, r10
+    smlatt r10, r8, r9, r10
+    ldr r5, [r1, #36]
+    ldr r6, [r0, #40]
+    smlabb r10, r4, r5, r10
+    smlatt r10, r4, r5, r10
+    ldr r7, [r1, #40]
+    ldr r8, [r0, #44]
+    smlabb r10, r6, r7, r10
+    smlatt r10, r6, r7, r10
+    ldr r9, [r1, #44]
+    ldr r4, [r0, #48]
+    smlabb r10, r8, r9, r10
+    smlatt r10, r8, r9, r10
+    ldr r5, [r1, #48]
+    ldr r6, [r0, #52]
+    smlabb r10, r4, r5, r10
+    smlatt r10, r4, r5, r10
+    ldr r7, [r1, #52]
+    ldr r8, [r0, #56]
+    smlabb r10, r6, r7, r10
+    ldr r9, [r1, #56]
+    smlatt r10, r6, r7, r10
+    smlabb r10, r8, r9, r10
+    ldr r5, [r1, #60]
+    ldr r4, [r0, #60]
+    smlatt r10, r8, r9, r10
+    smlabb r10, r4, r5, r10
+    smlatt r4, r4, r5, r10
+    mov r4, r4, asr #12
+    strh r4, [r2], #2
+    rsb r4, r4, #0
+    strh r4, [r11], #-2
+    add r1, r1, #64
+    subs lr, lr, #1
+    bne L_0204c0b4
+    // terminate the forward run: zero halfword at the saved r2+0x20
+    ldr r1, [sp, #4]
+    mov r2, #0
+    strh r2, [r1, #0]
+    ldr r1, [sp, #8]
+    mov lr, #15
+    add r1, r1, #2112
+    // pass 2, 15 iterations: the same dot product against the second half (r1+0x840 on), result
+    // reduced by a 4-bit left and 16-bit arithmetic right shift; stored forward from r2+0x42 and
+    // backward from r2+0x7e
+L_0204c1e0:
+    ldr r4, [r0, #0]
+    ldr r5, [r1, #0]
+    ldr r7, [r1, #4]
+    smulbb r10, r4, r5
+    smlatt r10, r4, r5, r10
+    ldmib r0, {r6, r8}
+    smlabb r10, r6, r7, r10
+    smlatt r10, r6, r7, r10
+    ldr r9, [r1, #8]
+    ldr r4, [r0, #12]
+    smlabb r10, r8, r9, r10
+    smlatt r10, r8, r9, r10
+    ldr r5, [r1, #12]
+    ldr r6, [r0, #16]
+    smlabb r10, r4, r5, r10
+    smlatt r10, r4, r5, r10
+    ldr r7, [r1, #16]
+    ldr r8, [r0, #20]
+    smlabb r10, r6, r7, r10
+    smlatt r10, r6, r7, r10
+    ldr r9, [r1, #20]
+    ldr r4, [r0, #24]
+    smlabb r10, r8, r9, r10
+    smlatt r10, r8, r9, r10
+    ldr r5, [r1, #24]
+    ldr r6, [r0, #28]
+    smlabb r10, r4, r5, r10
+    smlatt r10, r4, r5, r10
+    ldr r7, [r1, #28]
+    ldr r8, [r0, #32]
+    smlabb r10, r6, r7, r10
+    smlatt r10, r6, r7, r10
+    ldr r9, [r1, #32]
+    ldr r4, [r0, #36]
+    smlabb r10, r8, r9, r10
+    smlatt r10, r8, r9, r10
+    ldr r5, [r1, #36]
+    ldr r6, [r0, #40]
+    smlabb r10, r4, r5, r10
+    smlatt r10, r4, r5, r10
+    ldr r7, [r1, #40]
+    ldr r8, [r0, #44]
+    smlabb r10, r6, r7, r10
+    smlatt r10, r6, r7, r10
+    ldr r9, [r1, #44]
+    ldr r4, [r0, #48]
+    smlabb r10, r8, r9, r10
+    smlatt r10, r8, r9, r10
+    ldr r5, [r1, #48]
+    ldr r6, [r0, #52]
+    smlabb r10, r4, r5, r10
+    smlatt r10, r4, r5, r10
+    ldr r7, [r1, #52]
+    ldr r8, [r0, #56]
+    smlabb r10, r6, r7, r10
+    ldr r9, [r1, #56]
+    smlatt r10, r6, r7, r10
+    smlabb r10, r8, r9, r10
+    ldr r5, [r1, #60]
+    ldr r4, [r0, #60]
+    smlatt r10, r8, r9, r10
+    smlabb r10, r4, r5, r10
+    smlatt r4, r4, r5, r10
+    mov r2, r4, lsl #4
+    mov r2, r2, asr #16
+    strh r2, [r3], #2
+    strh r2, [ip], #-2
+    add r1, r1, #64
+    subs lr, lr, #1
+    bne L_0204c1e0
+    // final: sum the 33 halfwords at r0 (a 17-entry run, then 16 more starting at r0+0x20) and store the
+    // negated total at the saved r2+0x60
+    ldrsh r4, [r0, #0]
+    ldrsh r3, [r0, #2]
+    ldrsh r1, [r0, #4]
+    ldrsh r2, [r0, #6]
+    add r3, r4, r3
+    add r3, r3, r1
+    ldrsh r1, [r0, #8]
+    add r3, r3, r2
+    ldrsh r2, [r0, #10]
+    add r3, r3, r1
+    ldrsh r1, [r0, #12]
+    add r3, r3, r2
+    ldrsh r2, [r0, #14]
+    add r3, r3, r1
+    ldrsh r1, [r0, #16]
+    add r3, r3, r2
+    ldrsh r2, [r0, #18]
+    add r3, r3, r1
+    ldrsh r1, [r0, #20]
+    add r3, r3, r2
+    ldrsh r2, [r0, #22]
+    add r3, r3, r1
+    ldrsh r1, [r0, #24]
+    add r3, r3, r2
+    ldrsh r2, [r0, #26]
+    add r3, r3, r1
+    ldrsh r1, [r0, #28]
+    add r3, r3, r2
+    ldrsh r2, [r0, #30]
+    add r3, r3, r1
+    ldrsh r1, [r0, #32]
+    add r2, r3, r2
+    add r0, r0, #32
+    add r4, r2, r1
+    ldrsh r3, [r0, #2]
+    ldrsh r1, [r0, #4]
+    ldrsh r2, [r0, #6]
+    add r3, r4, r3
+    add r3, r3, r1
+    ldrsh r1, [r0, #8]
+    add r3, r3, r2
+    ldrsh r2, [r0, #10]
+    add r3, r3, r1
+    ldrsh r1, [r0, #12]
+    add r3, r3, r2
+    ldrsh r2, [r0, #14]
+    add r3, r3, r1
+    ldrsh r1, [r0, #16]
+    add r3, r3, r2
+    ldrsh r2, [r0, #18]
+    add r3, r3, r1
+    ldrsh r1, [r0, #20]
+    add r3, r3, r2
+    ldrsh r2, [r0, #22]
+    add r3, r3, r1
+    ldrsh r1, [r0, #24]
+    add r3, r3, r2
+    ldrsh r2, [r0, #26]
+    add r3, r3, r1
+    ldrsh r1, [r0, #28]
+    add r2, r3, r2
+    ldrsh r0, [r0, #30]
+    add r1, r2, r1
+    add r0, r1, r0
+    rsb r1, r0, #0
+    ldr r0, [sp, #0]
+    strh r1, [r0, #0]
+    add sp, sp, #12
+    ldmfd sp!, {r4, r5, r6, r7, r8, r9, r10, r11, pc}
 }

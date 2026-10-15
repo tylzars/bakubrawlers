@@ -55,7 +55,7 @@ extern "C" void func_0200abd8(void *file);
 extern "C" int func_0200aa94(void *file, const char *path);
 extern "C" void func_0200a7b4(void *file);
 extern "C" void MI_InitUncompContextLZ(void *ctx, void *dst, const void *header);
-extern int func_02007d94(void *ctx, void *src, u32 len);
+extern "C" int func_02007d94(void *ctx, void *src, u32 len);
 extern "C" void DC_FlushRange(void *buf, u32 size);
 
 static inline void NextChunk() {

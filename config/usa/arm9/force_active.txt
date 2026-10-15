@@ -6,3 +6,10 @@ data_ov008_02228728
 data_ov008_02228734
 data_ov008_02228740
 data_ov008_0222874c
+data_0200bb74         # the five-word constant block read pc-relative by the SHA-1 block transform (math_sha1.c)
+func_0201e1f4         # rt_soft_float.c: reverse-operand entries (swap, fall through into the next routine);
+func_0201edb8         # nothing calls them, the original link kept them
+func_0201f4e4
+func_0201fd60
+func_0201f768         # rt_soft_float.c: signed 64-bit remainder; nothing in the program calls it
+func_0201e7dc         # rt_soft_float.c: unreferenced, kept by the original link

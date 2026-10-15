@@ -130,3 +130,46 @@ int G3X_GetBoxTestResult(u32 *result) {
 void func_020037e8(u32 value) {
     reg_G2_BG0OFS = value;
 }
+
+// GXi_NopClearFifo128_: r0 points at a write-only FIFO port. Writes 32 groups of
+// four zero words (128 words in all) to the same address with 4-register
+// block stores, then returns.
+asm void GXi_NopClearFifo128_(volatile void *fifo) {
+    mov r1, #0
+    mov r2, #0
+    mov r3, #0
+    mov ip, #0
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    stmia r0, {r1, r2, r3, ip}
+    bx lr
+}

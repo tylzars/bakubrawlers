@@ -144,3 +144,71 @@ void func_02004f34(void) {
 u16 OS_ReadOwnerOfLockWord(OSLockWord *lockp) {
     return lockp->ownerID;
 }
+
+// OS_GetLockID: allocates an id from a pair of 32-bit free-bit words at
+// 0x027fffb0 (+0 covers ids 0x40-0x5f, +4 covers ids 0x60-0x7f). Takes the
+// highest set bit of the first word, or failing that of the second; the id is
+// base + leading-zero count, and that bit is cleared. Returns -3 when both
+// words are empty. The branch pairs around compares are as in the original
+// (flags are reused across them).
+asm int OS_GetLockID(void) {
+    ldr r3, =0x27fffb0
+    ldr r1, [r3, #0]
+    clz r2, r1
+    cmp r2, #0x20
+    bne Lm1
+    b Lm2
+Lm1:
+    mov r0, #0x40
+Lm2:
+    bne Ltake
+    add r3, r3, #4
+    ldr r1, [r3, #0]
+    clz r2, r1
+    cmp r2, #0x20
+    ldr r0, =0xfffffffd
+    beq Lnone
+    b Lsecond
+Lnone:
+    bx lr                       // nothing free: return -3
+Lsecond:
+    mov r0, #0x60
+Ltake:
+    add r0, r0, r2              // id = base + leading zeros
+    mov r1, #0x80000000
+    mov r1, r1, lsr r2
+    ldr r2, [r3, #0]
+    bic r2, r2, r1              // mark the id as used
+    str r2, [r3, #0]
+    bx lr
+}
+
+// func_02004fbc(id): marks id (0x40-0x7f) free again by setting its bit
+// (0x80000000 >> (id & 0x1f)) in the word at 0x027fffb0 (ids below 0x60) or
+// at 0x027fffb4 (ids 0x60 and up). Returns nothing. Flag-reuse branch pairs as
+// in the original.
+asm void func_02004fbc(unsigned int id) {
+    ldr r3, =0x27fffb0
+    cmp r0, #0x60
+    bpl Lhi
+    b Llo
+Lhi:
+    add r3, r3, #4
+Llo:
+    bpl Lsub60
+    b Lcont
+Lsub60:
+    sub r0, r0, #0x60
+Lcont:
+    bmi Lsub40
+    b Lbit
+Lsub40:
+    sub r0, r0, #0x40
+Lbit:
+    mov r1, #0x80000000
+    mov r1, r1, lsr r0
+    ldr r2, [r3, #0]
+    orr r2, r2, r1
+    str r2, [r3, #0]
+    bx lr
+}

@@ -27,7 +27,7 @@ func_02000b9c kind:function(arm,size=0x4) addr:0x02000b9c
 BuildInfo kind:data(any) addr:0x02000ba0
 main kind:function(arm,size=0xb0) addr:0x02000c04
 MTX_Identity22_ kind:function(arm,size=0x18) addr:0x02000cb4
-_Z13func_02000cccP7MtxFx22ii kind:function(thumb,size=0xc) addr:0x02000ccc
+func_02000ccc kind:function(thumb,size=0xc) addr:0x02000ccc
 MTX_Concat22 kind:function(arm,size=0xb0) addr:0x02000cd8
 func_02000d88 kind:function(arm,size=0x2c) addr:0x02000d88
 func_02000db4 kind:function(arm,size=0x34) addr:0x02000db4
@@ -205,7 +205,7 @@ func_02004f1c kind:function(arm,size=0x18) addr:0x02004f1c
 func_02004f34 kind:function(arm,size=0x18) addr:0x02004f34
 OS_ReadOwnerOfLockWord kind:function(arm,size=0x8) addr:0x02004f4c
 OS_GetLockID kind:function(arm,size=0x68) addr:0x02004f54
-_Z13func_02004fbcj kind:function(arm,size=0x48) addr:0x02004fbc
+func_02004fbc kind:function(arm,size=0x48) addr:0x02004fbc
 OSi_GetUnusedThreadId kind:function(arm,size=0x18) addr:0x02005004
 OSi_InsertLinkToQueue kind:function(arm,size=0x78) addr:0x0200501c
 OSi_RemoveLinkFromQueue kind:function(arm,size=0x34) addr:0x02005094

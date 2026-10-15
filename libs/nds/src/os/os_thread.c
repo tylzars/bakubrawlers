@@ -5,8 +5,8 @@ extern OSIntrMode OS_EnableInterrupts(void);   // 0x020070f8
 extern u32 OS_GetProcMode(void);               // 0x02007170
 extern void OS_Halt(void);                     // 0x02007530
 extern void OS_Terminate(void);                // 0x02007520
-extern u32 OS_SaveContext(OSContext *ctx);     // 0x020059d0 (asm)
-extern void OS_LoadContext(OSContext *ctx);    // 0x02005a1c (asm)
+extern u32 OS_SaveContext(OSContext *ctx);     // 0x020059d0 (asm, below)
+extern void OS_LoadContext(OSContext *ctx);    // 0x02005a1c (asm, below)
 extern void OS_CreateAlarm(OSAlarm *alarm);    // 0x02006d10
 extern void OS_SetAlarm(OSAlarm *alarm, u64 tick, void (*handler)(void *), void *arg); // 0x02006e4c
 extern void OSi_UnlockAllMutex(OSThread *thread); // 0x02005d74
@@ -494,4 +494,59 @@ store:
     str r1, [r0, #0x34]
     str r1, [r0, #0x3c]
     bx lr
+}
+
+extern void func_0200be08(void);
+extern void func_0200be48(void);
+
+// OS_SaveContext: r0 points at a context record. First calls func_0200be08 with
+// r0+0x48 (a save of the coprocessor-side state into the tail of the record),
+// then stores CPSR at +0, the supervisor-mode stack pointer at +0x44, and the
+// registers r0..lr (r0 slot holds 1) at +4.., plus the address of the return
+// point (the instruction after this routine's store sequence) at +0x40.
+// Returns 0 on the direct path; a later restore resumes at the return point
+// with r0 = 1.
+asm u32 OS_SaveContext(OSContext *ctx) {
+    stmfd sp!, {r0, lr}
+    add r0, r0, #0x48
+    ldr r1, =func_0200be08
+    blx r1                      // save extra state into ctx+0x48
+    ldmfd sp!, {r0, lr}
+    add r1, r0, #0
+    mrs r2, cpsr
+    str r2, [r1], #4            // ctx[0] = CPSR, r1 now ctx+4
+    mov r0, #0xd3               // switch to supervisor mode, IRQ/FIFO masked
+    msr cpsr_c, r0
+    str sp, [r1, #0x40]         // save supervisor sp
+    msr cpsr_c, r2              // back to the original mode
+    mov r0, #1
+    stmia r1, {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, ip, sp, lr}
+    add r0, pc, #8              // address of the resume point
+    str r0, [r1, #0x3c]
+    mov r0, #0
+    bx lr
+}
+
+// OS_LoadContext: r0 points at a context record produced by OS_SaveContext.
+// Calls func_0200be48 with r0+0x48 (restoring the extra state), enters
+// supervisor mode with interrupts masked, loads SPSR from the saved CPSR,
+// then restores sp/lr and the register file from the record, and resumes at the
+// saved return point with a flag-restoring return.
+asm void OS_LoadContext(OSContext *ctx) {
+    stmfd sp!, {r0, lr}
+    add r0, r0, #0x48
+    ldr r1, =func_0200be48
+    blx r1                      // restore extra state from ctx+0x48
+    ldmfd sp!, {r0, lr}
+    mrs r1, cpsr
+    bic r1, r1, #0x1f
+    orr r1, r1, #0xd3           // supervisor mode, IRQ/FIQ masked
+    msr cpsr_c, r1
+    ldr r1, [r0], #4            // saved CPSR, r0 now ctx+4
+    msr spsr_fsxc, r1
+    ldr sp, [r0, #0x40]
+    ldr lr, [r0, #0x3c]         // resume address
+    ldmia r0, {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, ip, sp, lr}^
+    mov r0, r0
+    subs pc, lr, #4
 }

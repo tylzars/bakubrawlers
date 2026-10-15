@@ -422,7 +422,7 @@ src/Main/System/GameMain.cpp:
 
 libs/nds/src/fx/fx_mtx22.c:
     complete
-    .text       start:0x02000cd8 end:0x02000d88
+    .text       start:0x02000cb4 end:0x02000de8
 
 libs/nds/src/fx/fx_mtx44.c:
     complete
@@ -461,7 +461,7 @@ libs/nds/src/gx/g3c.c:
 
 libs/nds/src/gx/g3x.c:
     complete
-    .text       start:0x02003438 end:0x020037f8
+    .text       start:0x02003438 end:0x0200388c
 
 libs/nds/src/gx/gx_load.c:
     complete
@@ -475,20 +475,27 @@ libs/nds/src/gx/gx_tex.c:
     complete
     .text       start:0x0200450c end:0x020047d8
 
+libs/nds/src/os/os_irqtable.c:
+    .text       start:0x020047d8 end:0x02004b64
+
 libs/nds/src/os/os_interrupt.c:
     complete
     .text       start:0x02004b64 end:0x02004c50
 
 libs/nds/src/os/os_spinlock.c:
-    .text       start:0x02004c50 end:0x02004f54
+    .text       start:0x02004c50 end:0x02005004
 
 libs/nds/src/os/os_thread.c:
-    .text       start:0x02005004 end:0x020059d0
+    .text       start:0x02005004 end:0x02005a60
 
 libs/nds/src/os/os_message.c:
     complete
     .text       start:0x02005a60 end:0x02005df8
     .data       start:0x020a4f38 end:0x020a4f3c
+
+libs/nds/src/os/os_cache.c:
+    complete
+    .text       start:0x02005df8 end:0x02005ef4
 
 libs/nds/src/os/os_init.c:
     complete
@@ -499,9 +506,13 @@ libs/nds/src/os/os_alloc.c:
     complete
     .text       start:0x02006370 end:0x0200682c
 
+libs/nds/src/os/os_protection.c:
+    complete
+    .text       start:0x0200682c end:0x02006884
+
 libs/nds/src/os/os_exception.c:
     complete
-    .text       start:0x02006884 end:0x020068f4
+    .text       start:0x02006884 end:0x02006a98
     .bss        start:0x020bdf6c end:0x020bdf78
 
 libs/nds/src/os/os_timer.c:
@@ -524,6 +535,10 @@ libs/nds/src/os/os_valarm.c:
     .text       start:0x020070b0 end:0x020070f8
     .bss        start:0x020be038 end:0x020be04c
 
+libs/nds/src/os/os_system.c:
+    complete
+    .text       start:0x020070f8 end:0x02007188
+
 libs/nds/src/os/os_irqwait.c:
     complete
     .text       start:0x02007188 end:0x02007230
@@ -536,6 +551,10 @@ libs/nds/src/os/os_reset.c:
 libs/nds/src/os/os_owner.c:
     complete
     .text       start:0x020073bc end:0x0200745c
+
+libs/nds/src/os/os_clz.c:
+    complete
+    .text       start:0x0200745c end:0x02007464
 
 libs/nds/src/os/os_irqowner.c:
     complete
@@ -554,6 +573,10 @@ libs/nds/src/mi/mi_gx.c:
     complete
     .text       start:0x020079e8 end:0x02007cd0
     .bss        start:0x020be068 end:0x020be088
+
+libs/nds/src/mi/mi_swap.c:
+    complete
+    .text       start:0x02007cd0 end:0x02007cd8
 
 libs/nds/src/snd/snd_cmdwrap.c:
     complete

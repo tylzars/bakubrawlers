@@ -35,7 +35,7 @@ extern "C" fx32 FX_Div(fx32 num, fx32 den);
 
 void func_02027c64(MtxFx22 *out, SpriteTransform *transform);
 
-void func_02000ccc(MtxFx22 *mtx, fx32 x, fx32 y);
+extern "C" void func_02000ccc(MtxFx22 *mtx, fx32 x, fx32 y);
 
 extern "C" void MTX_Concat22(const MtxFx22 *a, const MtxFx22 *b, MtxFx22 *out);
 

@@ -1,6 +1,20 @@
 // Fixed-point matrix and vector math in ITCM: 0x01ff81a0-0x01ff9208.
 // 0x01ff817c, 0x01ff854c, 0x01ff8574, 0x01ff85dc, 0x01ff85fc, 0x01ff8618 (stm-heavy identity/rotation fills) are hand assembly.
 #include <nitro/internal.h>
+
+// func_01ff817c: writes a 3x3 fixed-point identity matrix to r0 (nine words,
+// 0x1000 on the diagonal). Element 8 is stored first, then the rest in order.
+asm void func_01ff817c(void *m) {
+    mov r2, #0x1000
+    str r2, [r0, #32]           // m[8] = 1.0
+    mov r3, #0
+    stmia r0!, {r2, r3}         // m[0]=1.0, m[1]=0
+    mov r1, #0
+    stmia r0!, {r1, r3}         // m[2]=0, m[3]=0
+    stmia r0!, {r2, r3}         // m[4]=1.0, m[5]=0
+    stmia r0!, {r1, r3}         // m[6]=0, m[7]=0
+    bx lr
+}
 extern void FX_InvAsync(fx32 x);
 extern fx32 FX_GetDivResult(void);
 extern void func_01ff95e0(const void *src, void *dst);   // 48-byte copy

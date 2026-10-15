@@ -7,7 +7,7 @@
 #include <nitro/os.h>
 
 extern "C" u32 OS_GetLockID();
-extern void func_02004fbc(u32 id);
+extern "C" void func_02004fbc(u32 id);
 extern "C" void func_0200e658(u32 id);
 extern "C" void func_0200e668(u32 id);
 extern "C" BOOL func_0200ec04(u32 src, void *dst, u32 len, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f);

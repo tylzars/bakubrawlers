@@ -769,6 +769,7 @@ _feq kind:function(arm,size=0x68) addr:0x0201ece8
 _fneq kind:function(arm,size=0x68) addr:0x0201ed50
 func_0201edb8 kind:label(arm) addr:0x0201edb8
 _fdiv kind:function(arm,size=0x3b8) addr:0x0201edc4
+data_0201ee78 kind:data(any) addr:0x0201ee78
 _f2d kind:function(arm,size=0x84) addr:0x0201f17c
 _ffix kind:function(arm,size=0x34) addr:0x0201f200
 _ffixu kind:function(arm,size=0x40) addr:0x0201f234
@@ -786,6 +787,7 @@ _u32_div_f kind:function(arm,size=0x1e4) addr:0x0201fb7c
 .L_0201fb84 kind:label(arm) addr:0x0201fb84
 func_0201fd60 kind:label(arm) addr:0x0201fd60
 _ddiv kind:function(arm,size=0x544) addr:0x0201fd78
+data_0201feb0 kind:data(any) addr:0x0201feb0
 func_020202bc kind:function(arm,size=0x4) addr:0x020202bc
 func_020202c0 kind:function(arm,size=0x2c) addr:0x020202c0
 __register_global_object kind:function(arm,size=0x20) addr:0x020202ec

@@ -363,24 +363,21 @@ void func_02089278() {
     func_02089208();
 }
 
-// non-matching: register allocation only (group/entries come out in r9/r8 where the original has r8/r9, and
-// category/groups are swapped); exhaustive permutation of the six locals gives 10 differing instructions.
 void func_02089924(u32 index, void *out) {
     u8 group;
     ParkGroup *groups;
     BOOL found;
     u8 i;
     u8 category;
-    ParkEntry *entries;
-    category = data_020d43f0[0].mUnk_5c2[index].mCategory;
+    category          = data_020d43f0[0].mUnk_5c2[index].mCategory;
     ParkCategory *cat = &data_020a4ccc[category];
-    group  = data_020d43f0[0].mUnk_5c2[index].mGroup;
-    groups  = cat->mGroups;
-    entries = groups[group].mEntries;
-    found         = FALSE;
-    u32 type           = entries[groups[group].mDefault].mType;
+    group             = data_020d43f0[0].mUnk_5c2[index].mGroup;
+    groups            = cat->mGroups;
+    found             = FALSE;
+    u32 type          = groups[group].mEntries[groups[group].mDefault].mType;
     if ((type != 3 && type != 4 && type != 5) || data_020d43f0[0].mUnk_5bf_0) {
-        i = 0;
+        ParkEntry *entries = groups[group].mEntries;
+        i                  = 0;
         if (data_020d43f0[0].mUnk_5bf_0) {
             category = 0xff;
         }
@@ -397,11 +394,11 @@ void func_02089924(u32 index, void *out) {
     if (found) {
         return;
     }
-    entries = groups[group].mEntries;
+    ParkEntry *list = groups[group].mEntries;
     if (data_020d43f0[0].mUnk_5bf_0) {
-        MIi_CpuCopyFast(&entries[data_020d433c.mUnk_8d[index]], out, 12);
+        MIi_CpuCopyFast(&list[data_020d433c.mUnk_8d[index]], out, 12);
     } else {
-        MIi_CpuCopyFast(&entries[groups[group].mDefault], out, 12);
+        MIi_CpuCopyFast(&list[groups[group].mDefault], out, 12);
     }
 }
 

@@ -1187,10 +1187,6 @@ void BattleBase::func_ov007_0221c8f8(u16 *p) {
     }
 }
 
-// non-matching: 6 words at 0x284-0x29c, the s16 conversion of the touch x/y arguments: the original loads both
-// fields, then shifts each into r2/r3; ours converts each in place with the `this` load between the shifts.
-// (The `(u16) value` cast fixes the value/TouchManager register swap.) func_ov007_0221d088 makes the same call with
-// the in-place form and matches, so this call is written differently in the original.
 void BattleBase::func_ov007_0221c938() {
     u16 a[4] = {0, 0, 0, 0};
     u16 b[4] = {0, 0, 0, 0};
@@ -1203,7 +1199,8 @@ void BattleBase::func_ov007_0221c938() {
     mUnk_1f = -1;
     mUnk_1e = mUnk_1f;
     WirelessManager::Get();
-    if (IsWirelessMode(&data_020c4258)) {
+    const u8 *mode = &data_020c4258;
+    if (IsWirelessMode(mode)) {
         func_ov007_02229d08(this);
     }
     int found = func_ov007_0221c178(a, b, c, &flag);
@@ -1235,14 +1232,13 @@ void BattleBase::func_ov007_0221c938() {
             side = 1;
         }
         WirelessManager::Get();
-        if (!IsWirelessMode(&data_020c4258)) {
+        if (!IsWirelessMode(mode)) {
             if (doneB) {
                 k = 0;
                 u32 n;
                 do {
                     mUnk_44->func_ov007_022275c0(side, TouchManager::Get().mX, TouchManager::Get().mY, mUnk_15);
-                    // Placeholder: the (u16) cast only swaps value and the TouchManager address (r8/r9); the real form is unknown.
-                    n = mUnk_44->func_ov007_022275a0((u16) value, mUnk_20->mUnk_09, mUnk_20->mUnk_0a);
+                    n = mUnk_44->func_ov007_022275a0(value, mUnk_20->mUnk_09, mUnk_20->mUnk_0a);
                     k++;
                 } while (k < n);
             }
@@ -1266,7 +1262,7 @@ void BattleBase::func_ov007_0221c938() {
         }
     }
     WirelessManager::Get();
-    if (!IsWirelessMode(&data_020c4258)) {
+    if (!IsWirelessMode(mode)) {
         func_ov007_0221c850(a, b, c, &flag);
         u8 i = 0;
         u8 count = data_020d433c.mPlayerCount;

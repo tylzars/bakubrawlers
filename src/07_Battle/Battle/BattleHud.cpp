@@ -775,7 +775,7 @@ void BattleHud::func_ov007_02227490(int mode, s32 value, s32 count, u8 boost, bo
     }
 }
 
-u8 BattleHud::func_ov007_022275a0(u16 value, u8 a, u8 b) {
+u8 BattleHud::func_ov007_022275a0(u32 value, u8 a, u8 b) {
     u32 scaled = value * b;
     u8 result = scaled / 100;
     if (result == 0) {

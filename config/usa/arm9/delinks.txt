@@ -1005,7 +1005,9 @@ src/Main/Unknown/UnkStruct_02087898.cpp:
     .bss        start:0x022193ec end:0x02219404
 
 src/Main/Game/ParkCharacters.cpp:
+    complete
     .text       start:0x02088f38 end:0x02089f90
+    .rodata     start:0x020a41d8 end:0x020a41ec
 
 src/Main/Scene/UnkStruct_02089f90.cpp:
     complete

@@ -1,15 +1,66 @@
 #include "Scene/TournamentSubScene.hpp"
+#include "UI/SelectWindow.hpp"
+
+// The tables are defined before the singleton headers are parsed: the size sort then gives the original order of
+// the cell paths in .data and of the singleton nodes in .bss (TextManager, TouchManager, InputManager, SoundManager).
+struct CellPosByte {
+    u8 x;
+    u8 y;
+};
+
+static const WindowCellRecord sCells[9] = {
+    {"Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x2000, 3, 1, 1, {2, 3, 3, 0}},
+    {"Game/Tournament/Obj/tournament_b_obj_01_nce.bin", 2, 0x0, 0, 1, 1, {2, 2, 2, 0}},
+    {"Game/2D/union_b/union_b_obj_scroll_nce.bin", 4, 0x5000, 7, 1, 1, {4, 4, 4, 0}},
+    {"Game/2D/union_b/union_b_obj_scroll_nce.bin", 0, 0x5000, 7, 1, 1, {0, 1, 1, 0}},
+    {"Game/2D/union_b/union_b_obj_scroll_nce.bin", 2, 0x5000, 7, 1, 1, {2, 3, 3, 0}},
+    {"Game/2D/union_b/union_b_obj_scroll_nce.bin", 5, 0x5000, 7, 1, 1, {5, 5, 5, 0}},
+    {"Game/Tournament/Obj/tournament_b_obj_01_nce.bin", 0, 0x0, 0, 2, 1, {0, 1, 1, 0}},
+    {"Game/Tournament/Obj/tournament_b_obj_01_nce.bin", 0, 0x0, 0, 2, 1, {0, 1, 1, 0}},
+    {"Game/Tournament/Obj/tournament_b_obj_01_nce.bin", 0, 0x0, 0, 2, 1, {0, 1, 1, 0}},
+};
+static const CellPosByte sCellPos[3][3] = {
+    {{0x07, 0x26}, {0x00, 0x00}, {0x00, 0x00}},
+    {{0x07, 0x26}, {0x07, 0x46}, {0x00, 0x00}},
+    {{0x07, 0x26}, {0x07, 0x46}, {0x07, 0x66}},
+};
+static const CellPosByte sTouchPos[3][3] = {
+    {{0x07, 0x26}, {0x00, 0x00}, {0x00, 0x00}},
+    {{0x07, 0x26}, {0x07, 0x46}, {0x00, 0x00}},
+    {{0x07, 0x26}, {0x07, 0x46}, {0x07, 0x66}},
+};
+// Touch items, patched by func_ov002_0221fb24. In the original they follow the cell paths, after the vtable, so they
+// are a section of their own: a function-local static of an inline accessor gets one and keeps its place in the size
+// sort.
+inline WindowItemRecord *TouchItems() {
+    static WindowItemRecord sItems[9] = {
+        {0, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+        {1, 0x8000, 32, 48, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+        {2, 0x10, 228, 47, 32, 12, 0, {-1, -1, -1, -1}, 0, 0},
+        {3, 0x20, 228, 28, 32, 20, 0, {-1, -1, -1, -1}, 0, 3},
+        {4, 0x40, 228, 144, 32, 20, 0, {-1, -1, -1, -1}, 0, 3},
+        {5, 0x8000, 238, 36, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+        {6, 0x8000, 0, 0, 32, 32, 0, {-1, -1, -1, -1}, 0, 0},
+        {7, 0x8000, 0, 0, 32, 32, 0, {-1, -1, -1, -1}, 0, 0},
+        {8, 0x8000, 0, 0, 32, 32, 0, {-1, -1, -1, -1}, 0, 0},
+    };
+    return sItems;
+}
+// Placeholder shape: the original packs this table between the position tables and sCells at byte offsets, so it is
+// in the shared .rodata section, which a plain u8 array (always a section of its own) is not. 24 bytes, of which the
+// first 17 are used.
+static const u8 sMessageIds[1][24] = {{0, 1, 2, 3, 4, 5, 6, 7, 0x0a, 8, 9, 0x0b, 0x0c, 0x0d, 0x10, 0x0e, 0x0f}};
+
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
 #include "System/InputManager.hpp"
-#include "System/SoundManager.hpp"
 #include "System/TouchManager.hpp"
+#include "System/SoundManager.hpp"
 #include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
-#include "UI/SelectWindow.hpp"
 #include "Unknown/UnkStruct_020651bc.hpp"
 #include "Unknown/UnkStruct_02074938.hpp"
 #include "Unknown/UnkStruct_020758f4.hpp"
@@ -18,11 +69,6 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 #include <stdio.h>
-
-extern const WindowCellRecord data_ov002_02220ed8[];
-extern const u8 data_ov002_02220eae[];
-extern WindowItemRecord data_ov002_02221c84[9]; // touch items, patched by func_ov002_0221fb24
-
 
 TournamentSubScene::TournamentSubScene() :
     SceneBase(1000, 0) {
@@ -204,12 +250,12 @@ void TournamentSubScene::func_ov002_0221fb24() {
     u8 j;
     j = 0;
     do {
-        (&data_ov002_02221c84[j])[6].mX = *(data_ov002_02220eae + mCount * 6 + j * 2 - 6);
-        (&data_ov002_02221c84[j])[6].mY = *(data_ov002_02220eae + mCount * 6 + j * 2 - 5);
+        (&TouchItems()[j])[6].mX = sTouchPos[mCount - 1][j].x;
+        (&TouchItems()[j])[6].mY = sTouchPos[mCount - 1][j].y;
         j++;
     } while (j < mCount);
     mWindow = NULL;
-    mWindow = new SelectWindow(n, data_ov002_02221c84, -1);
+    mWindow = new SelectWindow(n, TouchItems(), -1);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.func_02027624(3);
     ChangeDir("/");
@@ -219,14 +265,13 @@ void TournamentSubScene::func_ov002_0221fb24() {
     screen.LoadPalette("Game/2D/union_b/union_b_obj_cockpit_ncl.bin", 0x60, 0);
     screen.LoadCharacters("Game/2D/union_b/union_b_obj_scroll.nce_ncg1D.bin", 0x5000, 0);
     screen.LoadPalette("Game/2D/union_b/union_b_obj_scroll_ncl.bin", 0xe0, 0);
-    mWindow->SetCells(n, data_ov002_02220ed8);
+    mWindow->SetCells(n, sCells);
     mUnk_48 = new UnkStruct_020651bc(0x4000, 4, 1);
     u8 k = 0;
     do {
         mUnk_48->func_02065204(k, (s8) mEntries[k].mId, 0, 0);
         mUnk_48->func_020654f8(k, 1);
-        const u8 *pos = data_ov002_02220eae + mCount * 6 + k * 2;
-        mUnk_48->func_0206547c(k, pos[-6] + 2, pos[-5] + 2, 0);
+        mUnk_48->func_0206547c(k, sTouchPos[mCount - 1][k].x + 2, sTouchPos[mCount - 1][k].y + 2, 0);
         k++;
     } while (k < mCount);
     ChangeDir("/font/");
@@ -264,7 +309,7 @@ void TournamentSubScene::func_ov002_02220184() {
         i++;
     } while (i < 7);
     SelectWindow *window = mWindow;
-    s16 x = data_ov002_02221c84[2].mX;
+    s16 x = TouchItems()[2].mX;
     u8 y  = window->mCursor->mUnk_0b;
     window->mCellPos[2].x = x;
     window->mCellPos[2].y = y;
@@ -278,8 +323,8 @@ s32 TournamentSubScene::func_ov002_022202cc() {
     s32 result = -1;
     u8 i       = 0;
     do {
-        if (TouchManager::Get().func_02022860((&data_ov002_02221c84[i])[6].mX, (&data_ov002_02221c84[i])[6].mY,
-                                              (&data_ov002_02221c84[i])[6].mWidth, (&data_ov002_02221c84[i])[6].mHeight)) {
+        if (TouchManager::Get().func_02022860((&TouchItems()[i])[6].mX, (&TouchItems()[i])[6].mY,
+                                              (&TouchItems()[i])[6].mWidth, (&TouchItems()[i])[6].mHeight)) {
             result = (s8) i;
         }
         i++;
@@ -324,17 +369,6 @@ s32 TournamentSubScene::func_ov002_022203ec() {
 }
 
 
-struct CellPosByte {
-    u8 x;
-    u8 y;
-};
-
-static const CellPosByte sCellPos[3][3] = {
-    {{0x07, 0x26}, {0x00, 0x00}, {0x00, 0x00}},
-    {{0x07, 0x26}, {0x07, 0x46}, {0x00, 0x00}},
-    {{0x07, 0x26}, {0x07, 0x46}, {0x07, 0x66}},
-};
-
 void TournamentSubScene::func_ov002_02220618() {
     u8 x = sCellPos[mCount - 1][mSelected].x;
     u8 y = sCellPos[mCount - 1][mSelected].y;
@@ -349,7 +383,6 @@ void TournamentSubScene::func_ov002_02220618() {
 }
 
 
-static const u8 sMessageIds[17] = {0, 1, 2, 3, 4, 5, 6, 7, 0x0a, 8, 9, 0x0b, 0x0c, 0x0d, 0x10, 0x0e, 0x0f};
 
 void TournamentSubScene::func_ov002_02220680() {
     MI_CpuClear16(mTextBuffer, mTextBufferSize);
@@ -358,7 +391,7 @@ void TournamentSubScene::func_ov002_02220680() {
     s16 width;
     width  = mUnk_51 * -14;
     height = 0;
-    u8 index          = sMessageIds[mEntries[mSelected].mId];
+    u8 index          = sMessageIds[0][mEntries[mSelected].mId];
     MessageFile *file = mMessages;
     u16 length        = file->GetLength(index);
     const u8 *message = file->GetText(index);
@@ -380,7 +413,7 @@ void TournamentSubScene::func_ov002_02220830() {
     TextManager &text = TextManager::Get();
     width  = 0;
     height = 0;
-    u8 index          = sMessageIds[mEntries[mSelected].mId];
+    u8 index          = sMessageIds[0][mEntries[mSelected].mId];
     MessageFile *file;
     void *buffer = mTextBuffer;
     file         = mMessages;

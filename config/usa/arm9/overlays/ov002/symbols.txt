@@ -66,11 +66,10 @@ data_ov002_02220bc4 kind:data(any) addr:0x02220bc4 local
 data_ov002_02220c6c kind:data(any) addr:0x02220c6c local
 data_ov002_02220d14 kind:data(any) addr:0x02220d14 local
 data_ov002_02220dd8 kind:data(any) addr:0x02220dd8 local
-data_ov002_02220e9c kind:data(any) addr:0x02220e9c
-data_ov002_02220e9d kind:data(any) addr:0x02220e9d
-data_ov002_02220eae kind:data(any) addr:0x02220eae
-data_ov002_02220ec0 kind:data(any) addr:0x02220ec0
-data_ov002_02220ed8 kind:data(any) addr:0x02220ed8
+sCellPos kind:data(any) addr:0x02220e9c local
+sTouchPos kind:data(any) addr:0x02220eae local
+sMessageIds kind:data(any) addr:0x02220ec0 local
+sCells kind:data(any) addr:0x02220ed8 local
 OV002_DATA_START kind:data(any) addr:0x02220fe0
 @1329 kind:data(any) addr:0x02220ff4 local
 @1330 kind:data(any) addr:0x02221020 local
@@ -168,42 +167,41 @@ OV002_DATA_START kind:data(any) addr:0x02220fe0
 @5368 kind:data(any) addr:0x02221a80 local
 @5369 kind:data(any) addr:0x02221a9c local
 @5370 kind:data(any) addr:0x02221ab8 local
-data_ov002_02221ad4 kind:data(any) addr:0x02221ad4
-data_ov002_02221adc kind:data(any) addr:0x02221adc
-data_ov002_02221ae8 kind:data(any) addr:0x02221ae8
-data_ov002_02221b14 kind:data(any) addr:0x02221b14
-data_ov002_02221b40 kind:data(any) addr:0x02221b40
-data_ov002_02221b6c kind:data(any) addr:0x02221b6c
-data_ov002_02221b98 kind:data(any) addr:0x02221b98
-data_ov002_02221bc4 kind:data(any) addr:0x02221bc4
-data_ov002_02221bf4 kind:data(any) addr:0x02221bf4
-data_ov002_02221c24 kind:data(any) addr:0x02221c24
-data_ov002_02221c54 kind:data(any) addr:0x02221c54
-data_ov002_02221c84 kind:data(any) addr:0x02221c84
-data_ov002_02221d80 kind:data(any) addr:0x02221d80
-data_ov002_02221d90 kind:data(any) addr:0x02221d90
-data_ov002_02221da8 kind:data(any) addr:0x02221da8
-data_ov002_02221dc0 kind:data(any) addr:0x02221dc0
-data_ov002_02221dd8 kind:data(any) addr:0x02221dd8
-data_ov002_02221df0 kind:data(any) addr:0x02221df0
-data_ov002_02221e0c kind:data(any) addr:0x02221e0c
-data_ov002_02221e28 kind:data(any) addr:0x02221e28
-data_ov002_02221e44 kind:data(any) addr:0x02221e44
-data_ov002_02221e48 kind:data(any) addr:0x02221e48
-data_ov002_02221e80 kind:data(any) addr:0x02221e80
-data_ov002_02221eb0 kind:data(any) addr:0x02221eb0
-data_ov002_02221ee4 kind:data(any) addr:0x02221ee4
-data_ov002_02221f10 kind:data(any) addr:0x02221f10
-data_ov002_02221f44 kind:data(any) addr:0x02221f44
-data_ov002_02221f70 kind:data(any) addr:0x02221f70
-data_ov002_02221f78 kind:data(any) addr:0x02221f78
-data_ov002_02221f88 kind:data(any) addr:0x02221f88
-data_ov002_02221f98 kind:data(any) addr:0x02221f98
+_ZTV18TournamentSubScene kind:data(any) addr:0x02221ad4
+@94 kind:data(any) addr:0x02221ae8 local
+@95 kind:data(any) addr:0x02221b14 local
+@96 kind:data(any) addr:0x02221b40 local
+@93 kind:data(any) addr:0x02221b6c local
+@91 kind:data(any) addr:0x02221b98 local
+@92 kind:data(any) addr:0x02221bc4 local
+@97 kind:data(any) addr:0x02221bf4 local
+@98 kind:data(any) addr:0x02221c24 local
+@99 kind:data(any) addr:0x02221c54 local
+_ZZ10TouchItemsvE6sItems kind:data(any) addr:0x02221c84 weak
+@2062 kind:data(any) addr:0x02221d80 local
+@2063 kind:data(any) addr:0x02221d90 local
+@2064 kind:data(any) addr:0x02221da8 local
+@2065 kind:data(any) addr:0x02221dc0 local
+@2066 kind:data(any) addr:0x02221dd8 local
+@2067 kind:data(any) addr:0x02221df0 local
+@2068 kind:data(any) addr:0x02221e0c local
+@2069 kind:data(any) addr:0x02221e28 local
+@2070 kind:data(any) addr:0x02221e44 local
+@2071 kind:data(any) addr:0x02221e48 local
+@2072 kind:data(any) addr:0x02221e80 local
+@2073 kind:data(any) addr:0x02221eb0 local
+@2074 kind:data(any) addr:0x02221ee4 local
+@2075 kind:data(any) addr:0x02221f10 local
+@2076 kind:data(any) addr:0x02221f44 local
+@2077 kind:data(any) addr:0x02221f70 local
+@2078 kind:data(any) addr:0x02221f78 local
+@2079 kind:data(any) addr:0x02221f88 local
+@2080 kind:data(any) addr:0x02221f98 local
 OV002_BSS_START kind:bss addr:0x02221fa0
 @631 kind:bss addr:0x02221fac local
 @579 kind:bss addr:0x02221fb8 local
 @753 kind:bss addr:0x02221fc4 local
-data_ov002_02221fd0 kind:bss addr:0x02221fd0
-data_ov002_02221fdc kind:bss addr:0x02221fdc
-data_ov002_02221fe8 kind:bss addr:0x02221fe8
-data_ov002_02221ff4 kind:bss addr:0x02221ff4
+@774 kind:bss addr:0x02221fd0 local
+@629 kind:bss addr:0x02221fdc local
+@598 kind:bss addr:0x02221fe8 local
+@645 kind:bss addr:0x02221ff4 local

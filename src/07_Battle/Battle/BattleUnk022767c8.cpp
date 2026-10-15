@@ -1,15 +1,17 @@
 #include "Battle/BattleUnk022767c8.hpp"
 
+// Include order is load-bearing: it sets where each singleton joins the size sort, and so the order of the
+// destructor-chain nodes in .bss (TextManager, TouchManager, InputManager, FrameTask, SoundManager).
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
+#include "System/FrameTask.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
-#include "System/FrameTask.hpp"
 #include "System/InputManager.hpp"
 #include "System/SoundManager.hpp"
-#include "System/TouchManager.hpp"
 #include "Text/TextManager.hpp"
+#include "System/TouchManager.hpp"
 #include "UI/SelectWindow.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
@@ -39,8 +41,8 @@ static const u32 sRewards[6][2] = {
     {8000, 40000},
     {10000, 65000},
     {15000, 35000},
-    {20000, 50000},
-    {30000, 40000},
+    {20000, 30000},
+    {50000, 40000},
 };
 
 static const s8 sSparkleSteps[15][4] = {
@@ -53,9 +55,9 @@ static const s8 sSparkleSteps[15][4] = {
     {0, 0, 0, 0},
     {0, 0, 0, 0},
     {0, 0, 0, 0},
-    {0, 0, 0, 0},
-    {0, 0, 0, 0},
-    {0, 0, 0, 0},
+    {0, -1, 0, 2},
+    {0, -1, 0, 3},
+    {0, -1, 0, 4},
     {0, -1, 0, 2},
     {0, -1, 0, 3},
     {0, -1, 0, 4},

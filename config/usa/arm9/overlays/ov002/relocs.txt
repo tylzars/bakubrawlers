@@ -782,7 +782,7 @@ from:0x0221f240 kind:load to:0x02221a80 module:overlay(2)
 from:0x0221f244 kind:load to:0x02221a9c module:overlay(2)
 from:0x0221f248 kind:load to:0x02221ab8 module:overlay(2)
 from:0x0221f2f4 kind:arm_call to:0x0202236c module:main
-from:0x0221f3d0 kind:load to:0x02221adc module:overlay(2)
+from:0x0221f3d0 kind:load to:0x02221ad4 add:0x8 module:overlay(2)
 from:0x0221f3d4 kind:load to:0x020d43f0 module:main
 from:0x0221f3d8 kind:load to:0x020d433c module:main
 from:0x0221f42c kind:arm_call to:0x020651bc module:main
@@ -796,7 +796,7 @@ from:0x0221f4b4 kind:arm_call to:0x01ff9540 module:itcm
 from:0x0221f4cc kind:arm_call to:0x02025698 module:main
 from:0x0221f4dc kind:arm_call to:0x020275bc module:main
 from:0x0221f504 kind:arm_call to:0x0202740c module:main
-from:0x0221f510 kind:load to:0x02221adc module:overlay(2)
+from:0x0221f510 kind:load to:0x02221ad4 add:0x8 module:overlay(2)
 from:0x0221f514 kind:load to:0x020c17cc module:main
 from:0x0221f518 kind:load to:0x020c26c0 module:main
 from:0x0221f51c kind:load to:0x020c26c0 add:0x4 module:main
@@ -813,7 +813,7 @@ from:0x0221f614 kind:arm_call to:0x02025698 module:main
 from:0x0221f624 kind:arm_call to:0x020275bc module:main
 from:0x0221f64c kind:arm_call to:0x0202740c module:main
 from:0x0221f654 kind:arm_call to:0x02021e80 module:main
-from:0x0221f660 kind:load to:0x02221adc module:overlay(2)
+from:0x0221f660 kind:load to:0x02221ad4 add:0x8 module:overlay(2)
 from:0x0221f664 kind:load to:0x020c17cc module:main
 from:0x0221f668 kind:load to:0x020c26c0 module:main
 from:0x0221f66c kind:load to:0x020c26c0 add:0x4 module:main
@@ -981,7 +981,7 @@ from:0x02220610 kind:load to:0x02020a28 module:main
 from:0x02220614 kind:load to:0x02221ff4 module:overlay(2)
 from:0x02220670 kind:arm_call to:0x02220680 module:overlay(2)
 from:0x02220678 kind:load to:0x02220e9c module:overlay(2)
-from:0x0222067c kind:load to:0x02220e9d module:overlay(2)
+from:0x0222067c kind:load to:0x02220e9c add:0x1 module:overlay(2)
 from:0x02220698 kind:arm_call to:0x01ff94c8 module:itcm
 from:0x022206b8 kind:arm_call to:0x020202ec module:main
 from:0x0222078c kind:arm_call to:0x0202c1bc module:main

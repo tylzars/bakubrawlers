@@ -366,7 +366,7 @@ Other findings from linking:
 
 - **A callee declared `void` that returns a value changes scheduling in its callers.** `SpriteScreen::LoadCharacters`
   ends in `return func_02025c1c(...)`; declaring it `u32` flipped two scheduling ties (`mov r0, r4` against `ldr r1`)
-  in func_020843ac (UnkStruct_02078e14_b), not only register choices.
+  in func_020843ac (UnkStruct_02078e14.cpp), not only register choices.
 
 - **`x[n] = v; n++;` vs `x[n++] = v;`** schedule differently; BattleCpu::func_ov007_02231300 needs the split form. A
   counter also passed to `MATH_Rand32` matched as `u32 n` with `n = (u8) (n + 1)` (func_ov007_022329cc).
@@ -471,7 +471,7 @@ Other findings from linking:
   `SpriteManager &` (each alone is not enough). A value whose only
   consumer is one later call is substituted into that call; a compound assignment or a later read keeps it in place.
 - **`(u8)` casts at a call site often stand in for the callee's parameter types.** Making `func_020231f4` take
-  `u8, u8` matched three callers in UnkStruct_02078e14_b.cpp. An `extern` object's declared size can matter too:
+  `u8, u8` matched three callers in UnkStruct_02078e14.cpp. An `extern` object's declared size can matter too:
   stores at 0x1c/0x1d into `UnkStruct_0220f540` scheduled like the original only once the type was at least 0x3c bytes.
 - **Code that leaves no instructions can still move the scheduler.** The choice between equally ready instructions
   depends on where they sit in the block; dummy calls before a block flip such ties (func_020843ac, func_02085220).

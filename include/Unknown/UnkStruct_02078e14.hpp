@@ -170,7 +170,7 @@ public:
     void func_0207cfa4();
 };
 
-// Helpers of the second part of the class (UnkStruct_02078e14_b.cpp), free functions taking the object.
+// Free functions taking the object, defined in UnkStruct_02078e14.cpp after the class functions.
 void func_020834ec(UnkStruct_02078e14 *self, u32 mode);
 void func_0208415c(UnkStruct_02078e14 *self);
 void func_020843ac(UnkStruct_02078e14 *self, u32 unk1);

@@ -166,9 +166,6 @@ int func_02039400(void *heap) {   // reserve each stream's decode buffer from th
     return 1;
 }
 
-// non-matching: 1 word, the volume sum adds the fader term and v as `add r1, r6, r1` where the original has
-// `add r1, r1, r6` (fader term first). Every one-expression form gives v first; splitting the sum or an inline helper
-// fixes the order but moves the fader index out of r0.
 void func_020394c8(void) {   // per-frame update of all streams
     int i;
     s16 v;
@@ -334,26 +331,52 @@ extern s8 data_02090a60[];    // ADPCM index adjustment table
 extern void MI_CpuFill8(void *dst, u32 data, u32 size);
 extern void DC_FlushRange(void *addr, u32 size);   // DC_FlushRange
 
-#define ADPCM_STEP(st, nib, dst) { \
-    s32 pred_ = (st)->pred; \
-    s32 idx_ = *(u8 *)&(st)->index; \
-    s32 step_ = data_02090a70[idx_]; \
-    s32 diff_ = step_ >> 3; \
-    if ((nib) & 4) diff_ += step_; \
-    if ((nib) & 2) diff_ += step_ >> 1; \
-    if ((nib) & 1) diff_ += step_ >> 2; \
-    if ((nib) & 8) { pred_ -= diff_; if (pred_ < -0x8000) pred_ = -0x8000; } \
+#define ADPCM_STEP(st, x, dst) { \
+    s32 pred_; \
+    s32 idx_; \
+    s32 step_; \
+    s32 diff_; \
+    u32 n_; \
+    pred_ = (st)->pred; \
+    idx_ = *(u8 *)&(st)->index; \
+    step_ = data_02090a70[idx_]; \
+    n_ = (x) & 0xf; \
+    diff_ = step_ >> 3; \
+    if (n_ & 4) diff_ += step_; \
+    if (n_ & 2) diff_ += step_ >> 1; \
+    if (n_ & 1) diff_ += step_ >> 2; \
+    if (n_ & 8) { pred_ -= diff_; if (pred_ < -0x8000) pred_ = -0x8000; } \
     else { pred_ += diff_; if (pred_ > 0x7fff) pred_ = 0x7fff; } \
-    idx_ += data_02090a60[nib]; \
+    idx_ += data_02090a60[n_]; \
     if (idx_ < 0) idx_ = 0; else if (idx_ > 0x58) idx_ = 0x58; \
     (st)->pred = (s16)pred_; \
     *(u8 *)&(st)->index = idx_; \
     *(dst) = (s16)pred_; \
 }
 
-// non-matching: the ADPCM loop's long-lived values get other callee-saved registers (ours: 0x7fff r4, -0x8000 r5, step
-// table r6, dst r7, st r8, end & ~1 r9; original: dst r4, st r5, end & ~1 r6, 0x7fff r7, -0x8000 r8, step table r9);
-// everything before the channel loop matches.
+static inline void DecodeAdpcm(u32 i, u32 endSample, u32 odd, s16 *dst, u8 *src, SndAdpcmState *st) {
+    u32 nib;
+    if (odd != 0) {
+        ADPCM_STEP(st, *src >> 4, dst);
+        dst++;
+        i++;
+        src++;
+    }
+    while (i < (endSample & ~1)) {
+        ADPCM_STEP(st, *src, dst);
+        dst++;
+        ADPCM_STEP(st, *src >> 4, dst);
+        dst++;
+        i += 2;
+        src++;
+    }
+    if (i < endSample) {
+        ADPCM_STEP(st, *src, dst);
+    }
+}
+// non-matching: 58 words: the channel-loop preheader computes the st base last (the explicit if/do form gets the
+// original's spill slots, a for loop gets the base first but other slots); the high-nibble step instances 1 and 3
+// use idx/pred/step = ip/lr/sl where the original has sl/ip/lr; instance 3's narrowing and `add r1, #2` order.
 void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
     WavStrm *s;
     int loopNow;
@@ -375,6 +398,7 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
     s16 *dst;
     SndAdpcmState *st;
     u32 nib;
+    u32 got;
     s = c->strm;
     if (s->b5 && s->delay > 0) s->delay--;
     remaining = c->size;
@@ -444,18 +468,19 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
             readPos += s->dataOff;
             ch = 0;
             if (c->channels > 0) {
-                st = s->adpcm;
                 endSample = startSample + samples;
                 odd = startSample & 1;
                 do {
-                    dst = (s16 *)(c->buf[ch] + offset);
+                    st = &s->adpcm[ch];
+                    src = c->buf[ch] + offset;
+                    dst = (s16 *)src;
                     if (ch < s->channels) {
-                        src = (u8 *)dst;
                         if (s->format == 2) {
                             OS_LockMutex(data_02214a08);
                             src = (u8 *)data_022149f0.adpcmBuf;
                         }
-                        if (s->read(s, src, readBytes, readPos + ch * blockBytes) != readBytes) {
+                        got = s->read(s, src, readBytes, readPos + ch * blockBytes);
+                        if (got != readBytes) {
                             outBytes = 0;
                             s->b5 = 1;
                             samples = 0;
@@ -464,34 +489,15 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
                             break;
                         }
                         if (s->format == 2) {
-                            src = (u8 *)data_022149f0.adpcmBuf;
+                            {
+                            SndAdpcmState *h = (SndAdpcmState *)data_022149f0.adpcmBuf;
+                            src = (u8 *)h;
                             if (startSample == 0) {
-                                st->pred = ((u16 *)src)[0];
-                                st->index = ((u16 *)src)[1];
-                                src += 4;
+                                src = (u8 *)(h + 1);
+                                *st = *h;
                             }
-                            i = startSample;
-                            if (odd != 0) {
-                                nib = (*src >> 4) & 0xf;
-                                ADPCM_STEP(st, nib, dst);
-                                dst++;
-                                i++;
-                                src++;
                             }
-                            while (i < (endSample & ~1)) {
-                                nib = *src & 0xf;
-                                ADPCM_STEP(st, nib, dst);
-                                dst++;
-                                nib = (*src >> 4) & 0xf;
-                                ADPCM_STEP(st, nib, dst);
-                                dst++;
-                                i += 2;
-                                src++;
-                            }
-                            if (i < endSample) {
-                                nib = *src & 0xf;
-                                ADPCM_STEP(st, nib, dst);
-                            }
+                            DecodeAdpcm(startSample, endSample, odd, dst, src, st);
                             OS_UnlockMutex(data_02214a08);
                         }
                     } else if (s->b6) {
@@ -499,7 +505,6 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
                     } else {
                         MI_CpuCopy8(c->buf[0] + offset, dst, outBytes);
                     }
-                    st++;
                 } while (++ch < c->channels);
             }
             if (s->b4) {

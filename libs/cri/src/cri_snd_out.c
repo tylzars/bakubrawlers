@@ -282,9 +282,6 @@ u16 func_0204a2c8(SndOut *o, u16 *first, u16 *second)
     return a;
 }
 
-// non-matching: 0x67c vs 0x694 bytes; modes 8, 5, 6, 3 and the prologue are the right size, modes 4/2/1 need
-// the 16-bit halves of the source word materialised as separate s16 locals (extra asr/lsl pairs), and the
-// registers of n/o/src and the loop counters differ
 s16 *func_0204a320(SndOut *o, s16 *src, u32 n)
 {
     u16 wp = o->wpos;
@@ -302,7 +299,7 @@ s16 *func_0204a320(SndOut *o, s16 *src, u32 n)
         int i;
         int cnt = (int)(n >> 1) / 8;
         for (i = 0; i < cnt; i++) {
-            s16 s0 = src[0], s1 = src[1], s2 = src[2], s3 = src[3], s4 = src[4];
+            s16 s0 = *src++, s1 = *src++, s2 = *src++, s3 = *src++, s4 = *src++;
             s16 a0 = AVG(o->prev, s0);
             s16 a1 = AVG(s1, s2);
             s16 a2 = AVG(s3, s4);
@@ -311,27 +308,25 @@ s16 *func_0204a320(SndOut *o, s16 *src, u32 n)
             ((u32 *)dst)[2] = PACK(s2, s3);
             ((u32 *)dst)[3] = PACK(a2, s4);
             o->prev = s4;
-            src += 5;
             dst += 16;
         }
     } else if (mode == 6) {
         int cnt = (int)(n >> 1) / 4;
         int i;
         for (i = 0; i < cnt; i++) {
-            s16 s0 = src[0], s1 = src[1], s2 = src[2];
+            s16 s0 = *src++, s1 = *src++, s2 = *src++;
             ((s16 *)dst)[0] = s0;
             ((s16 *)dst)[1] = (s0 + s1 * 2) / 3;
             ((s16 *)dst)[2] = (s2 + s1 * 2) / 3;
             ((s16 *)dst)[3] = s2;
             o->prev = s2;
-            src += 3;
             dst += 8;
         }
     } else if (mode == 3) {
         int cnt = (int)(n >> 1) / 8;
         int i;
         for (i = 0; i < cnt; i++) {
-            s16 s0 = src[0], s1 = src[1], s2 = src[2];
+            s16 s0 = *src++, s1 = *src++, s2 = *src++;
             s16 q1 = (s0 + s1 * 2) / 3;
             s16 q2 = (s2 + s1 * 2) / 3;
             ((s16 *)dst)[0] = (o->prev + s0) / 2;
@@ -343,7 +338,6 @@ s16 *func_0204a320(SndOut *o, s16 *src, u32 n)
             ((s16 *)dst)[6] = (s2 + q2) / 2;
             ((s16 *)dst)[7] = s2;
             o->prev = s2;
-            src += 3;
             dst += 16;
         }
     } else if (mode == 4) {

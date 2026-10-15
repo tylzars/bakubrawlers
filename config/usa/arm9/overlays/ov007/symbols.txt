@@ -1067,19 +1067,16 @@ data_ov007_02279554 kind:data(any) addr:0x02279554 local
 sAbilityIds26 kind:data(any) addr:0x02279558 local
 sAbilityWeights26 kind:data(any) addr:0x02279560 local
 data_ov007_02279568 kind:data(any) addr:0x02279568
-data_ov007_022796d0 kind:data(any) addr:0x022796d0
-data_ov007_022796d8 kind:data(any) addr:0x022796d8
-data_ov007_022796e4 kind:data(any) addr:0x022796e4
-data_ov007_022796f8 kind:data(any) addr:0x022796f8
-data_ov007_0227970c kind:data(any) addr:0x0227970c
-data_ov007_02279720 kind:data(any) addr:0x02279720
-data_ov007_02279722 kind:data(any) addr:0x02279722
-data_ov007_02279764 kind:data(any) addr:0x02279764
-data_ov007_022797ac kind:data(any) addr:0x022797ac
-data_ov007_02279804 kind:data(any) addr:0x02279804
-data_ov007_0227987c kind:data(any) addr:0x0227987c
-data_ov007_0227987d kind:data(any) addr:0x0227987d
-data_ov007_0227987e kind:data(any) addr:0x0227987e
+data_ov007_022796d0 kind:data(any) addr:0x022796d0 local
+data_ov007_022796d8 kind:data(any) addr:0x022796d8 local
+data_ov007_022796e4 kind:data(any) addr:0x022796e4 local
+data_ov007_022796f8 kind:data(any) addr:0x022796f8 local
+data_ov007_0227970c kind:data(any) addr:0x0227970c local
+data_ov007_02279720 kind:data(any) addr:0x02279720 local
+@1181 kind:data(any) addr:0x02279764 local
+data_ov007_022797ac kind:data(any) addr:0x022797ac local
+data_ov007_02279804 kind:data(any) addr:0x02279804 local
+_ZZ9ShotTablevE6sTable kind:data(any) addr:0x0227987c weak
 data_ov007_022799fc kind:data(any) addr:0x022799fc local
 data_ov007_02279a00 kind:data(any) addr:0x02279a00 local
 data_ov007_02279a1c kind:data(any) addr:0x02279a1c local
@@ -2059,8 +2056,7 @@ _ZTV19GimmickAbilityField kind:data(any) addr:0x02287504
 @861 kind:data(any) addr:0x022875b0 local
 _ZTV19GimmickUnk_022308a8 kind:data(any) addr:0x022875b4
 _ZTV19GimmickUnk_02230cec kind:data(any) addr:0x022875d8
-data_ov007_022875fc kind:data(any) addr:0x022875fc
-data_ov007_02287604 kind:data(any) addr:0x02287604
+_ZTV9BattleCpu kind:data(any) addr:0x022875fc
 _ZTV18BattleUnionAbility kind:data(any) addr:0x0228760c
 @854 kind:data(any) addr:0x02287620 local
 @855 kind:data(any) addr:0x02287654 local

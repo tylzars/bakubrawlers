@@ -983,9 +983,11 @@ src/Main/Unknown/UnkStruct_02076058.cpp:
     .data       start:0x020b964c end:0x020b9848
     .bss        start:0x0221935c end:0x0221938c
 
-// provisional: code only; .data 0x020b9848-0x020b9a04, .rodata about 0x020a30dc-0x020a3168 and .bss 0x0221938c-0x022193b0 belong here.
 src/Main/Unknown/UnkStruct_02078290.cpp:
+    complete
     .text       start:0x02078290 end:0x02078e14
+    .data       start:0x020b9848 end:0x020b9a04
+    .bss        start:0x0221938c end:0x022193b0
 
 src/Main/Unknown/UnkStruct_02078e14.cpp:
     complete

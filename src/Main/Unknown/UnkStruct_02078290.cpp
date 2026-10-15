@@ -1,8 +1,8 @@
 #include "Unknown/UnkStruct_02078290.hpp"
 #include "Graphics/CellAnimation.hpp"
-#include "Graphics/Camera.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/WirelessManager.hpp"
+#include "Graphics/Camera.hpp"
 #include "System/FileSystem.hpp"
 #include "Text/TextManager.hpp"
 #include <nitro/os.h>

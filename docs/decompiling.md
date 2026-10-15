@@ -40,6 +40,22 @@ Lessons from getting functions to match exactly. Compiler and flags: see `compil
 
 A function that doesn't match yet is kept in source with a `// non-matching` comment describing the difference.
 
+## Placeholders
+
+Forms that reproduce the original's bytes but are probably not its source. Each is marked in place; a real form
+that matches should replace it.
+
+- Layout stand-ins: FieldSelectScene's `DataLayoutSlot()` static (one unidentified small object in the data size
+  sort), BattleUnk022637ac's thirteen named `{0, 0x4800, 0}` statics (the order of identical initialisers),
+  TournamentSubScene's `sMessageIds[1][24]` shape (keeps a byte table in the shared .rodata), GameMain.cpp (main's slot).
+- Index/register stand-ins: BattleSub48's enum-typed entry index, BattleUnk022637ac::func_ov007_02265af8's two
+  volatile index reads, BattleOrderSelect's `volatile ry`, TextManager::Print's `y`, BattleCardModel's narrow stack
+  read, the casts through `data_020a3210.mOrder` in UnkStruct_02078e14.cpp.
+- Expression stand-ins: nns_snd_wavstrm func_020394c8's `- -v`, msl_strtod's `mp = (unsigned char *)&mant`,
+  FileLoader's zero `base`, BattleCardCamera's -0x4000 constant, GameData's `mUnk_460 + 0xa0` cast.
+- Judgement calls: CharacterModel::func_02053d9c is declared void (its body is a tail call and every caller
+  ignores the result; void is what keeps func_0205340c matching).
+
 ## Known open problems
 
 - The GameOverScene/BattleUnionAbility/BattleUnk0227532c "literal order" problem is resolved: GameOverScene's

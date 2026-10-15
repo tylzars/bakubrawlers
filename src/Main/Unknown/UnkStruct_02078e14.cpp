@@ -4756,7 +4756,8 @@ void func_02086668(UnkStruct_02078e14 *self, u32 unk1) {
             if (unk1 != 0) {
                 b  = self->mUnk_106[t];
                 a  = self->mUnk_106[s];
-                // The cast keeps the member offset in the literal-pool word, like an access through a symbol of its own.
+                // Placeholder: the casts keep the member offset in the literal-pool word, like an access through a symbol of
+                // its own (plain .mOrder[b] changes the code).
                 vb = ((const u8 *) data_020a3210.mOrder)[b];
                 va = ((const u8 *) data_020a3210.mOrder)[a];
                 if (va > vb) {

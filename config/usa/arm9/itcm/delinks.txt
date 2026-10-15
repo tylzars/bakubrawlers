@@ -21,6 +21,7 @@ libs/nns/src/g3d/g3d_anm_itcm_b.c:
     .text       start:0x01ff9b64 end:0x01ffae10
 
 libs/nns/src/g3d/g3d_sbc_itcm.c:
+    complete
     .text       start:0x01ffae10 end:0x01ffc93c
 
 libs/nds/src/os/os_irq_itcm.c:

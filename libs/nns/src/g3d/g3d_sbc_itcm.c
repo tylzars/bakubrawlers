@@ -1,5 +1,4 @@
-// NitroSystem G3d SBC renderer (NNS_G3dRenderSbc and its opcode handlers), ITCM 0x01ffaea0-0x01ffc8cc.
-// func_01ffc108 (0x75c bytes, envelope-matrix blend) is not decompiled.
+// NitroSystem G3d SBC renderer (NNS_G3dRenderSbc and its opcode handlers), ITCM 0x01ffae10-0x01ffc93c.
 // Compiler: 2.0/sp1p5 (same bytes on sp2p2).
 #include <nnsys/private/g3d_rs.h>
 
@@ -30,19 +29,28 @@ extern void func_01ff92a4(void);
 extern void func_01ff9528(const void *src, void *dst, u32 size);
 #define GXFIFO (*(vu32 *) 0x04000400)
 
-// Static buffers and command tables living in ITCM data after func_01ffaca4.
-extern u32 data_01ffae10[];   // 0x48 bytes: default push/mult command block
-extern u32 data_01ffae14[];   // 8 bytes
-extern u32 data_01ffae1c[];   // 0x3c bytes
-extern s32 data_01ffae40[3];  // translation of the camera-space origin
-extern s32 data_01ffae4c[3];  // axis scales
-extern u32 data_01ffae58[], data_01ffae5c[];
-extern s32 data_01ffae64[], data_01ffae88[3], data_01ffae94[3];
-extern void func_020033e4(void *p);
-extern int func_02003604(void *p);
-extern int func_02003634(void *p);
-extern void func_02003400(void *p);
-extern void func_020033c8(void *p);
+// Two geometry-command blocks kept in ITCM in front of the renderer: MTX_POP(1), MTX_MODE(2), MTX_LOAD_4x3, MTX_SCALE.
+// func_01ffbbac and func_01ffbe2c fill in the translation and scale (and the second block's rotation) before sending.
+typedef struct {
+    u32 op;          // packed command bytes 0x12, 0x10, 0x17, 0x1b
+    u32 pop;
+    u32 mode;
+    s32 mtx[9];      // 3x3 part of the 4x3 load
+    s32 trans[3];
+    s32 scale[3];
+} EnvCmd;
+
+#pragma define_section ITCMDATA ".text" ".text"
+#pragma section ITCMDATA begin
+EnvCmd data_01ffae10[2] = {
+    {0x1b171012, 1, 2, {0x1000, 0, 0, 0, 0x1000, 0, 0, 0, 0x1000}, {0, 0, 0}, {0, 0, 0}},
+    {0x1b171012, 1, 2, {0x1000, 0, 0, 0, 0x1000, 0, 0, 0, 0x1000}, {0, 0, 0}, {0, 0, 0}},
+};
+#pragma section ITCMDATA end
+extern void G3_MultMtx43(void *p);
+extern int G3X_GetVectorMtx(void *p);
+extern void G3_MultMtx33(void *p);
+extern void G3_LoadMtx43(void *p);
 extern u8 data_020bc304[];   // per-matrix cache entries, 100 bytes each: 4x4 position matrix then 3x3 normal matrix
 #define MTX_MODE (*(vu32 *) 0x04000440)
 #define MTX_STORE (*(vu32 *) 0x0400044c)
@@ -70,16 +78,15 @@ static inline u8 *ResAt(u8 *m, int ofs) {
 }
 
 void func_01ffaee8(Rs *rs, RObj *obj) {
-    u32 t;
     MIi_CpuClearFast(0, rs, 0x188);
     rs->one = 1;
     rs->flag = 1;
-    t = (u32) obj->sbcOverride;
-    if (t == 0) {
-        t = (u32) (obj->mdl + *(u32 *) (obj->mdl + 4));
+    if (obj->sbcOverride) {
+        rs->cmd = obj->sbcOverride;
+    } else {
+        rs->cmd = obj->mdl + *(u32 *) (obj->mdl + 4);
     }
-    rs->cmd = (u8 *) t;
-    *(volatile u32 *) &rs->obj = (u32) obj; // placeholder: volatile keeps this store apart from the one above (no stm); the real form is unknown
+    rs->obj = obj;
     rs->dNode = obj->mdl != 0 ? (Dict *) (obj->mdl + 0x40) : 0;
     rs->dMat = (ResMat *) ResAt(obj->mdl, 8);
     rs->dShp = (Dict *) ResAt(obj->mdl, 0xc);
@@ -227,11 +234,11 @@ void func_01ffb2c8(Rs *rs, u32 op, MatRes *md, u32 idx) {
     if (buf != 0) {
         rs->matDone[idx >> 5] |= 1 << (idx & 0x1f);
         cur = *(MatSt **) ((u8 *) rs->obj + 0x38) + idx;
-    } else if (op != 0x40) {
-        cur = (MatSt *) rs->matStore;
-    } else {
+    } else if (op == 0x40) {
         rs->matDone[idx >> 5] |= 1 << (idx & 0x1f);
         cur = data_020baf04 + idx;
+    } else {
+        cur = (MatSt *) rs->matStore;
     }
     cur->flag = 0;
     if (MatLookup(rs->dMat, idx)->flag & 0x20) {
@@ -443,15 +450,9 @@ void func_01ffb7f8(Rs *rs, u32 op) {
             s->mtx[k] = (n->flag & 0x100) ? -0x1000 : 0x1000;
             s->mtx[data_0208b500[k * 4]] = b;
             s->mtx[data_0208b501[k * 4]] = a;
-            if (n->flag & 0x200) {
-                a = -a;
-            }
+            s->mtx[data_0208b502[k << 2]] = (n->flag & 0x200) ? -a : a;
+            s->mtx[data_0208b503[k << 2]] = (n->flag & 0x400) ? -b : b;
             p += 1;
-            s->mtx[data_0208b502[k * 4]] = a;
-            if (n->flag & 0x400) {
-                b = -b;
-            }
-            s->mtx[data_0208b503[k << 2]] = b;
         } else {
             s->mtx[0] = n->hw02;
             s->mtx[1] = ((s16 *) p)[0];
@@ -500,8 +501,8 @@ void func_01ffbbac(Rs *rs, u32 op) {
     u32 arg2;
     u32 arg3;
     u32 len = 2;
-    s32 *v0 = data_01ffae40;
-    s32 *v1 = data_01ffae4c;
+    s32 *v0 = data_01ffae10[0].trans;
+    s32 *v1 = data_01ffae10[0].scale;
     u32 g;
     if (rs->flag & 0x200) {
         if (op == 0x40 || op == 0x60) {
@@ -548,18 +549,18 @@ void func_01ffbbac(Rs *rs, u32 op) {
         g = data_02211374[0xfc / 4];
         if (g & 1) {
             GXFIFO = 0x171012;
-            func_01ff9528(data_01ffae14, (void *) 0x04000400, 8);
+            func_01ff9528(&data_01ffae10[0].pop, (void *) 0x04000400, 8);
             func_01ff9528(func_020326d8(), (void *) 0x04000400, 0x30);
             GXFIFO = 0x1b19;
-            func_01ff9528(data_01ffae1c, (void *) 0x04000400, 0x3c);
+            func_01ff9528(data_01ffae10[0].mtx, (void *) 0x04000400, 0x3c);
         } else if (g & 2) {
             GXFIFO = 0x171012;
-            func_01ff9528(data_01ffae14, (void *) 0x04000400, 8);
+            func_01ff9528(&data_01ffae10[0].pop, (void *) 0x04000400, 8);
             func_01ff9528(func_020323b8(), (void *) 0x04000400, 0x30);
             GXFIFO = 0x1b19;
-            func_01ff9528(data_01ffae1c, (void *) 0x04000400, 0x3c);
+            func_01ff9528(data_01ffae10[0].mtx, (void *) 0x04000400, 0x3c);
         } else {
-            func_01ff9528(data_01ffae10, (void *) 0x04000400, 0x48);
+            func_01ff9528(&data_01ffae10[0], (void *) 0x04000400, 0x48);
         }
     }
     if (op == 0x20 || op == 0x60) {
@@ -579,9 +580,9 @@ void func_01ffbe2c(Rs *rs, u32 op) {
     u32 arg2;
     u32 arg3;
     u32 len = 2;
-    s32 *v0 = data_01ffae88;
-    s32 *v1 = data_01ffae94;
-    s32 *bb = data_01ffae64;
+    s32 *v0 = data_01ffae10[1].trans;
+    s32 *v1 = data_01ffae10[1].scale;
+    s32 *bb = data_01ffae10[1].mtx;
     u32 g;
     if (rs->flag & 0x200) {
         if (op == 0x40 || op == 0x60) {
@@ -637,18 +638,18 @@ void func_01ffbe2c(Rs *rs, u32 op) {
         g = data_02211374[0xfc / 4];
         if (g & 1) {
             GXFIFO = 0x171012;
-            func_01ff9528(data_01ffae5c, (void *) 0x04000400, 8);
+            func_01ff9528(&data_01ffae10[1].pop, (void *) 0x04000400, 8);
             func_01ff9528(func_020326d8(), (void *) 0x04000400, 0x30);
             GXFIFO = 0x1b19;
-            func_01ff9528(data_01ffae64, (void *) 0x04000400, 0x3c);
+            func_01ff9528(data_01ffae10[1].mtx, (void *) 0x04000400, 0x3c);
         } else if (g & 2) {
             GXFIFO = 0x171012;
-            func_01ff9528(data_01ffae5c, (void *) 0x04000400, 8);
+            func_01ff9528(&data_01ffae10[1].pop, (void *) 0x04000400, 8);
             func_01ff9528(func_020323b8(), (void *) 0x04000400, 0x30);
             GXFIFO = 0x1b19;
-            func_01ff9528(data_01ffae64, (void *) 0x04000400, 0x3c);
+            func_01ff9528(data_01ffae10[1].mtx, (void *) 0x04000400, 0x3c);
         } else {
-            func_01ff9528(data_01ffae58, (void *) 0x04000400, 0x48);
+            func_01ff9528(&data_01ffae10[1], (void *) 0x04000400, 0x48);
         }
     }
     if (op == 0x20 || op == 0x60) {
@@ -659,6 +660,81 @@ void func_01ffbe2c(Rs *rs, u32 op) {
         }
     }
     rs->cmd += len;
+}
+
+static inline u32 TestBit(const u32 *p, u32 i) {
+    return p[i >> 5] & (1 << (i & 31));
+}
+
+void func_01ffc108(Rs *rs) {
+    struct {
+        s32 pos[12];
+        s32 nrm[9];
+    } acc;
+    s64 w64 = 0;
+    u8 *mdl = rs->obj->mdl;
+    u8 *cmd = rs->cmd;
+    u8 *tbl = mdl + *(u32 *) (mdl + 0x10);
+    u32 n = cmd[2];
+    s32 *pos;
+    s32 *prevNrm;
+    u32 j;
+    int i;
+    cmd += 3;
+    MIi_CpuClearFast(0, &acc, sizeof(acc));
+    func_01ff92a4();
+    MTX_MODE = 0;
+    MTX_STORE = 1;
+    MTX_IDENTITY = 0;
+    MTX_MODE = 2;
+    for (j = 0; j < n; j++) {
+        u32 idx = cmd[1];
+        u32 bit = TestBit(rs->shpDone, idx);
+        pos = (s32 *) (data_020bc304 + idx * 100);
+        if (!bit) {
+            rs->shpDone[idx >> 5] |= 1 << (idx & 31);
+            MTX_RESTORE = cmd[0];
+            MTX_MODE = 1;
+            G3_MultMtx43(tbl + idx * 0x54);
+        }
+        if (j != 0) {
+            NRMALL
+        }
+        if (!bit) {
+            while (G3X_GetClipMtx(pos)) {
+            }
+            MTX_MODE = 2;
+            G3_MultMtx33(tbl + idx * 0x54 + 0x30);
+        }
+        w64 = cmd[2] << 4;
+        POS(0, 0);
+        POS(1, 1);
+        POS(2, 2);
+        POS(3, 4);
+        POS(4, 5);
+        POS(5, 6);
+        POS(6, 8);
+        POS(7, 9);
+        POS(8, 10);
+        POS(9, 12);
+        POS(10, 13);
+        POS(11, 14);
+        cmd += 3;
+        prevNrm = (s32 *) (data_020bc304 + 0x40 + idx * 100);
+        if (!bit) {
+            while (G3X_GetVectorMtx(prevNrm)) {
+            }
+        }
+    }
+    NRMALL
+    G3_LoadMtx43(acc.nrm);
+    MTX_MODE = 1;
+    G3_LoadMtx43(acc.pos);
+    MTX_MODE = 0;
+    MTX_RESTORE = 1;
+    MTX_MODE = 2;
+    MTX_STORE = rs->cmd[1];
+    rs->cmd += (rs->cmd[2] + 1) * 3;
 }
 
 void func_01ffc864(Rs *rs, u32 op) {
@@ -682,75 +758,4 @@ void func_01ffc8cc(Rs *rs, u32 op) {
         func_01ff93d8(0x1b, v, 3);
     }
     rs->cmd += 1;
-}
-
-void func_01ffc108(Rs *rs) {
-    struct {
-        s32 pos[12];
-        s32 nrm[9];
-    } acc;
-    u8 *cmd = rs->cmd;
-    u8 *mdl = rs->obj->mdl;
-    u32 n = cmd[2];
-    u8 *tbl = mdl + *(u32 *) (mdl + 0x10);
-    s64 w64 = 0;
-    s32 *prevNrm;
-    u32 j;
-    int i;
-    cmd += 3;
-    MIi_CpuClearFast(0, &acc, sizeof(acc));
-    func_01ff92a4();
-    MTX_MODE = 0;
-    MTX_STORE = 1;
-    MTX_IDENTITY = 0;
-    MTX_MODE = 2;
-    for (j = 0; j < n; j++) {
-        u32 idx = cmd[1];
-        u8 *ent = data_020bc304 + idx * 100;
-        u32 bit = rs->shpDone[idx >> 5] & (1 << (idx & 31));
-        s32 *pos = (s32 *) ent;
-        if (!bit) {
-            rs->shpDone[idx >> 5] |= 1 << (idx & 31);
-            MTX_RESTORE = cmd[0];
-            MTX_MODE = 1;
-            func_020033e4(tbl + idx * 0x54);
-        }
-        if (j != 0) {
-            NRMALL
-        }
-        if (!bit) {
-            while (func_02003604(ent)) {
-            }
-            MTX_MODE = 2;
-            func_02003400(tbl + idx * 0x54 + 0x30);
-        }
-        w64 = cmd[2] << 4;
-        POS(0, 0);
-        POS(1, 1);
-        POS(2, 2);
-        POS(3, 4);
-        POS(4, 5);
-        POS(5, 6);
-        POS(6, 8);
-        POS(7, 9);
-        POS(8, 10);
-        POS(9, 12);
-        POS(10, 13);
-        POS(11, 14);
-        cmd += 3;
-        prevNrm = (s32 *) (data_020bc304 + 0x40 + idx * 100);
-        if (!bit) {
-            while (func_02003634(prevNrm)) {
-            }
-        }
-    }
-    NRMALL
-    func_020033c8(acc.nrm);
-    MTX_MODE = 1;
-    func_020033c8(acc.pos);
-    MTX_MODE = 0;
-    MTX_RESTORE = 1;
-    MTX_MODE = 2;
-    MTX_STORE = rs->cmd[1];
-    rs->cmd += (rs->cmd[2] + 1) * 3;
 }

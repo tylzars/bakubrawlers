@@ -1540,9 +1540,9 @@ L_0201e904:
     b L_0201e890
 }
 
-// func_0201e914: returns 1 if a <= b (doubles), else 0. Same structure as _dgeq.
+// _dleq: returns 1 if a <= b (doubles), else 0. Same structure as _dgeq.
 // Unordered gives 0 with Z cleared and C set; equal zeros give 1 with Z set and C cleared.
-asm int func_0201e914(double a, double b) {
+asm int _dleq(double a, double b) {
     mov ip, #0x200000
     cmn ip, r1, lsl #0x1
     bhs L_0201e994
@@ -1598,9 +1598,9 @@ L_0201e9a8:
     b L_0201e928
 }
 
-// func_0201e9b8: returns 1 if a < b (doubles), else 0. Same structure as _dgeq.
+// _dls: returns 1 if a < b (doubles), else 0. Same structure as _dgeq.
 // Unordered and the +0/-0 case give 0 with C set.
-asm int func_0201e9b8(double a, double b) {
+asm int _dls(double a, double b) {
     mov ip, #0x200000
     cmn ip, r1, lsl #0x1
     bhs L_0201ea30
@@ -1704,9 +1704,9 @@ L_0201ead0:
     b L_0201ea68
 }
 
-// func_0201eae0: returns 1 if a != b (doubles), else 0. NaN gives 1 with Z cleared;
+// _dneq: returns 1 if a != b (doubles), else 0. NaN gives 1 with Z cleared;
 // +0 and -0 are equal (0).
-asm int func_0201eae0(double a, double b) {
+asm int _dneq(double a, double b) {
     mov ip, #0x200000
     cmn ip, r1, lsl #0x1
     bhs L_0201eb48

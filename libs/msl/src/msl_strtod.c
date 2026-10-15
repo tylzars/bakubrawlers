@@ -1,9 +1,8 @@
-// non-matching: 0x1210 vs 0x124c; the hex-float state and digit index get different registers.
 /* MSL float scanner (strtod core used by scanf %a %e %f %g): state machine over the reader
    callback rd(ctx, ch, op). Handles sign, INF/INFINITY, NAN/NAN(...), decimal digits with
    fraction/exponent, and 0x hex floats with p-exponent. maxw = field width, *nread = chars
    consumed (0 on failure), *ovf = range error flag. Returns the value as a double.
-   Main 0x02015c74, 0x124c bytes. Not a 1/1 match yet (register allocation, see report). */
+   Main 0x02015c74, 0x124c bytes. */
 typedef struct S9 { char s[9]; } S9;
 typedef struct S5 { char s[5]; } S5;
 typedef struct Dec {
@@ -29,7 +28,7 @@ static inline int TOUPPERF(int x)
 }
 #define TOUPPER(c) (((c) < 0 || (c) >= 128) ? (c) : data_02090328[c])
 
-extern double func_02012350(void);
+extern double func_02012350(const char *);
 extern double func_0201cfc4(Dec *);
 
 double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nread, int *ovf)
@@ -39,7 +38,9 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
     unsigned char *mp;
     int hexexp, hexneg;
     unsigned hexcnt;
+    enum { HEXMAX = 14 } hexmax = HEXMAX; /* the limit is kept in a register (enum locals are not propagated) */
     int count, state, c;
+    char *p;
     hexst = 0;
     count = 0;
     ws = 0;
@@ -90,7 +91,6 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
             {
             S9 inf_s = {"INFINITY"};
             S9 infbuf = inf_s;
-            char *p;
             int k;
             p = infbuf.s + 1;
             while (state < 8 && TOUPPER(c) == *p) {
@@ -114,25 +114,23 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
             break;
         }
         case 0x2000:
-            state = 1;
             {
+            int i = 1;
             S5 nan_s = {"NAN("};
+            int j = 0;
             S5 nbuf = nan_s;
             char nb[32] = {0};
-            char *p;
             p = nbuf.s + 1;
-            while (state < 4 && TOUPPER(c) == *p) {
+            while (i < 4 && TOUPPER(c) == *p) {
                 p++;
-                state++;
+                i++;
                 count++;
                 c = rd(ctx, 0, 0);
             }
-            if ((unsigned)(state - 3) <= 1) {
-                int j = 0;
-                if (state == 4) {
+            if ((unsigned)(i - 3) <= 1) {
+                if (i == 4) {
                     while (j < 32 && (ISDIGIT(c) || ISALPHA(c) || c == '.')) {
-                        nb[j] = c;
-                        j++;
+                        nb[j++] = c;
                         count++;
                         c = rd(ctx, 0, 0);
                     }
@@ -145,9 +143,9 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
                 nb[j] = 0;
                 {
                     double r;
-                    if (neg) r = 0.0 - func_02012350();
-                    else r = func_02012350();
-                    *nread = ws + state + j + signcnt;
+                    if (neg) r = 0.0 - func_02012350(nb);
+                    else r = func_02012350(nb);
+                    *nread = ws + i + j + signcnt;
                     return r;
                 }
             }
@@ -233,14 +231,14 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
         case 0x8000:
             switch (hexst) {
             case 1:
-                mp = mant;
+                mp = (unsigned char *)&mant; /* placeholder: through &mant so the clears below go through mp; the real form is unknown */
                 mp[0] = 0; mp[1] = 0; mp[2] = 0; mp[3] = 0;
                 mp[4] = 0; mp[5] = 0; mp[6] = 0; mp[7] = 0;
-                c = rd(ctx, 0, 0);
                 hexcnt = 0;
                 idx = 0;
                 hexst = 2;
                 count++;
+                c = rd(ctx, 0, 0);
                 break;
             case 2:
                 if (c == '0') { count++; c = rd(ctx, 0, 0); }
@@ -251,7 +249,7 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
                     if (c == '.') { hexst = 8; count++; c = rd(ctx, 0, 0); }
                     else hexst = 0x10;
                 } else {
-                    if (hexcnt < 14) {
+                    if (hexcnt < hexmax) {
                         unsigned char v;
                         hexcnt++;
                         v = mp[idx / 2];
@@ -259,11 +257,10 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
                         if (c >= 'A') c -= '7'; else c -= '0';
                         {
                             unsigned char n = c;
-                            if (idx % 2 == 0) v |= (unsigned char)(n << 4);
-                            else v |= n;
+                            if (idx % 2) v |= n;
+                            else v |= (unsigned char)(n << 4);
                         }
-                        mp[idx / 2] = v;
-                        idx++;
+                        mp[idx++ / 2] = v;
                         count++;
                         c = rd(ctx, 0, 0);
                     } else {
@@ -275,18 +272,17 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
             case 8:
                 if (!ISXDIGIT(c)) hexst = 0x10;
                 else {
-                    if (hexcnt < 14) {
+                    if (hexcnt < hexmax) {
                         unsigned char v;
                         v = mp[idx / 2];
                         c = TOUPPER(c);
                         if (c >= 'A') c -= '7'; else c -= '0';
                         {
                             unsigned char n = c;
-                            if (idx % 2 == 0) v |= (unsigned char)(n << 4);
-                            else v |= n;
+                            if (idx % 2) v |= n;
+                            else v |= (unsigned char)(n << 4);
                         }
-                        mp[idx / 2] = v;
-                        idx++;
+                        mp[idx++ / 2] = v;
                         count++;
                         c = rd(ctx, 0, 0);
                     } else {
@@ -333,11 +329,11 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
         if (state != 0x8000) bad = (state & 0xe2c) ? 0 : 1;
         else bad = (count - 1 > 2 && (hexst & 0x18e)) ? 0 : 1;
         if (bad) *nread = 0;
-        else *nread = ws + (count - 1);
+        else *nread = (count - 1) + ws;
     }
     rd(ctx, c, 1);
     if (hexst == 0) {
-        unsigned char n;
+        int n;
         unsigned char *q;
         double x;
         if (expneg) expv = -expv;
@@ -365,16 +361,19 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
         return x;
     } else {
         union { unsigned char b[8]; double d; } tu;
-        unsigned char *tmp = tu.b;
-        unsigned i;
-        int j, k, dst, n;
         unsigned char first;
+        unsigned dst; /* leading-zero count, then the output byte index */
+        unsigned i;
+        int k;
+        int j;
+        unsigned char *tmp = tu.b;
+        int n;
         if (hexneg) hexexp = -hexexp;
-        hexexp = hexexp + hexcnt * 4;
+        hexexp += hexcnt * 4;
         first = mant[0];
-        i = 0;
-        while (i < 4 && !(first & (0x80 >> i))) { hexexp--; i++; }
-        n = i + 1;
+        dst = 0;
+        while (dst < 4 && !(first & (0x80 >> dst))) { hexexp--; dst++; }
+        n = dst + 1;
         if (n != 0) {
             unsigned char carry = 0;
             mp = mant + 7;
@@ -387,30 +386,30 @@ double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nrea
         }
         tmp[0] = 0; tmp[1] = 0; tmp[2] = 0; tmp[3] = 0;
         tmp[4] = 0; tmp[5] = 0; tmp[6] = 0; tmp[7] = 0;
-        j = 0; k = 12; dst = 1; i = 0;
+        k = 12; dst = 1; i = 0;
         do {
-            unsigned char b = mant[j];
+            unsigned char b = mant[i / 8];
             if (i + 8 > 52) b &= (0xff << (52 - i));
-            tmp[dst] |= b >> (k & 7);
+            tmp[dst] |= (unsigned char)(b >> (k & 7));
             dst++;
-            i += 8;
             tmp[dst] |= (unsigned char)(b << (8 - (k & 7)));
             k += 8;
-            j++;
+            i += 8;
         } while (i < 52);
         {
-            int e = hexexp + 0xfe + 0x300;
+            unsigned e = hexexp + 0xfe + 0x300;
             if (e & -0x800) { *ovf = 1; return 0.0; }
-            tmp[1] |= (e << 21) >> 17;
-            tmp[0] |= (unsigned)(e << 21) >> 25;
+            e <<= 21;
+            tmp[0] |= e >> 25;
+            tmp[1] |= e >> 17;
             if (neg) tmp[0] |= 0x80;
         }
-        for (i = 0; i < 4; i++) {
-            unsigned char t = tmp[i];
-            tmp[i] = tmp[7 - i];
-            tmp[7 - i] = t;
+        for (j = 0; j < 4; j++) {
+            unsigned char t = tmp[j];
+            tmp[j] = tmp[7 - j];
+            tmp[7 - j] = t;
         }
-        return tu.d;
+        return *(double *)tmp;
     }
     }
     }

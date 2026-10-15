@@ -197,7 +197,9 @@ libs/msl/src/msl_scan_core.c:
     .text       start:0x02014bfc end:0x02015950
 
 libs/msl/src/msl_strtod.c:
+    complete
     .text       start:0x02015c74 end:0x02016ec0
+    .rodata     start:0x020904d0 end:0x020904e0
 
 libs/msl/src/msl_string_tail.c:
     complete

@@ -48,8 +48,8 @@ int func_02012328(const char *s)
     return n;
 }
 
-/* 0x02012350: the quiet NaN constant as a double */
-double func_02012350(void)
+/* 0x02012350: the quiet NaN constant as a double; the NAN(...) text argument is ignored */
+double func_02012350(const char *tag)
 {
     return data_020a5078;
 }

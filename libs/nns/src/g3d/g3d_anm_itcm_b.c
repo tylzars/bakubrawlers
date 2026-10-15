@@ -158,6 +158,84 @@ emit:
     }
 }
 
+void func_01ff9f18(s32 *out, s32 frame, u32 *info, u8 *res) {
+    u32 flags;
+    u32 idx;
+    u8 *data;
+    u32 last;
+    u32 rem;
+    idx = frame >> 12;
+    data = res + info[1];
+    flags = info[0];
+    if (flags & 0xc0000000) {
+        last = (flags & 0x1fff0000) >> 16;
+        if (flags & 0x40000000) {
+            if (idx & 1) {
+                if (idx > last) {
+                    idx = (last >> 1) + 1;
+                    goto single;
+                }
+                idx = idx >> 1;
+                goto blend;
+            }
+            idx = idx >> 1;
+            goto single;
+        }
+        rem = idx & 3;
+        if (rem) {
+            if (idx > last) {
+                idx = rem + (last >> 2);
+                goto single;
+            }
+            if (idx & 1) {
+                u32 a, b;
+                if (idx & 2) {
+                    a = (idx >> 2) + 1;
+                    b = idx >> 2;
+                } else {
+                    a = idx >> 2;
+                    b = a + 1;
+                }
+                if (flags & 0x20000000) {
+                    s32 x = *(s16 *) (data + a * 2);
+                    s32 y = *(s16 *) (data + b * 2);
+                    *out = (x + x + x + y) >> 2;
+                } else {
+                    s32 x = *(s32 *) (data + a * 4);
+                    s32 y = *(s32 *) (data + b * 4);
+                    *out = (s32) (((s64) x + x + x + y) >> 2);
+                }
+                return;
+            }
+            idx = idx >> 2;
+            goto blend;
+        }
+        idx = idx >> 2;
+        goto single;
+    }
+    goto single;
+blend:
+    if (flags & 0x20000000) {
+        s32 x = *(s16 *) (data + idx * 2);
+        s32 y;
+        data += idx * 2;
+        y = *(s16 *) (data + 2);
+        *out = (x + y) >> 1;
+    } else {
+        s32 x = *(s32 *) (data + idx * 4);
+        s32 y = *(s32 *) (data + idx * 4 + 4);
+        *out = (x >> 1) + (y >> 1);
+    }
+    return;
+single:
+    if (flags & 0x20000000) {
+        *out = *(s16 *) (data + idx * 2);
+    } else {
+        *out = *(s32 *) (data + idx * 4);
+    }
+    return;
+}
+
 void func_01ffa070(s32 *out, s32 ratio, u32 *info, u8 *res) {
     u8 *data;
     u32 f = ratio >> 12;
@@ -316,6 +394,19 @@ avg:
     }
 }
 
+#define CROSS(m)                                                         \
+    {                                                                    \
+        s32 m5 = (m)[5];                                                 \
+        s32 m0 = (m)[0];                                                 \
+        s32 m2 = (m)[2];                                                 \
+        s32 m3 = (m)[3];                                                 \
+        s32 m1 = (m)[1];                                                 \
+        s32 m4 = (m)[4];                                                 \
+        (m)[6] = (m1 * m5 - m2 * m4) >> 12;                              \
+        (m)[7] = (m2 * m3 - m0 * m5) >> 12;                              \
+        (m)[8] = (m0 * m4 - m1 * m3) >> 12;                              \
+    }
+
 void func_01ffa3b4(s32 *out, s32 ratio, u32 *info, u8 *res) {
     u32 hdr;
     u32 g;
@@ -397,18 +488,6 @@ blend:
     out[1] = (a1 * sc + ((ratio * (b1 - a1)) >> 12)) >> sh;
 }
 
-#define CROSS(m)                                                         \
-    {                                                                    \
-        s32 m5 = (m)[5];                                                 \
-        s32 m0 = (m)[0];                                                 \
-        s32 m2 = (m)[2];                                                 \
-        s32 m3 = (m)[3];                                                 \
-        s32 m1 = (m)[1];                                                 \
-        s32 m4 = (m)[4];                                                 \
-        (m)[6] = (m1 * m5 - m2 * m4) >> 12;                              \
-        (m)[7] = (m2 * m3 - m0 * m5) >> 12;                              \
-        (m)[8] = (m0 * m4 - m1 * m3) >> 12;                              \
-    }
 
 void func_01ffa548(s32 *out, s32 ratio, u32 *info, u8 *res) {
     u32 o2;
@@ -512,7 +591,6 @@ fetch:
     }
     VEC_Normalize(out + 6, out + 6);
 }
-
 void func_01ffa960(s32 *out, s32 ratio, u32 *info, u8 *res) {
     u32 o2;
     s32 tA[9];
@@ -641,82 +719,4 @@ int func_01ffaca4(s32 *m, u8 *res1, u8 *res2, u32 idx) {
         m[5] = ((s32) w << 19) >> 19;
         return 1;
     }
-}
-
-void func_01ff9f18(s32 *out, s32 frame, u32 *info, u8 *res) {
-    u32 flags;
-    u32 idx;
-    u8 *data;
-    u32 last;
-    u32 rem;
-    idx = frame >> 12;
-    data = res + info[1];
-    flags = info[0];
-    if (flags & 0xc0000000) {
-        last = (flags & 0x1fff0000) >> 16;
-        if (flags & 0x40000000) {
-            if (idx & 1) {
-                if (idx > last) {
-                    idx = (last >> 1) + 1;
-                    goto single;
-                }
-                idx = idx >> 1;
-                goto blend;
-            }
-            idx = idx >> 1;
-            goto single;
-        }
-        rem = idx & 3;
-        if (rem) {
-            if (idx > last) {
-                idx = rem + (last >> 2);
-                goto single;
-            }
-            if (idx & 1) {
-                u32 a, b;
-                if (idx & 2) {
-                    a = (idx >> 2) + 1;
-                    b = idx >> 2;
-                } else {
-                    a = idx >> 2;
-                    b = a + 1;
-                }
-                if (flags & 0x20000000) {
-                    s32 x = *(s16 *) (data + a * 2);
-                    s32 y = *(s16 *) (data + b * 2);
-                    *out = (x + x + x + y) >> 2;
-                } else {
-                    s32 x = *(s32 *) (data + a * 4);
-                    s32 y = *(s32 *) (data + b * 4);
-                    *out = (s32) (((s64) x + x + x + y) >> 2);
-                }
-                return;
-            }
-            idx = idx >> 2;
-            goto blend;
-        }
-        idx = idx >> 2;
-        goto single;
-    }
-    goto single;
-blend:
-    if (flags & 0x20000000) {
-        s32 x = *(s16 *) (data + idx * 2);
-        s32 y;
-        data += idx * 2;
-        y = *(s16 *) (data + 2);
-        *out = (x + y) >> 1;
-    } else {
-        s32 x = *(s32 *) (data + idx * 4);
-        s32 y = *(s32 *) (data + idx * 4 + 4);
-        *out = (x >> 1) + (y >> 1);
-    }
-    return;
-single:
-    if (flags & 0x20000000) {
-        *out = *(s16 *) (data + idx * 2);
-    } else {
-        *out = *(s32 *) (data + idx * 4);
-    }
-    return;
 }

@@ -173,7 +173,7 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   in the caller's own last 8 bytes, so objdiff reads it as a branch inside the caller. Linking is the proof for
   these: once the unit is `complete`, the ROM's SHA-1 covers the call. (BattleCommand::Update, BattleObj00::Update,
   BattleResult::Update, BattleCharaAct::Update, BattleCardSpec::Update, ArenaWindowScene::Update,
-  ArenaScene::func_ov001_022197ec, func_01ff9b64.)
+  ArenaScene::func_ov001_022197ec, func_01ff9b64, UnkStruct_02078e14::Update.)
 - **Call checks.** `tools/check_calls.py` compares every call in matching functions with the original;
   `tools/check_callees.py` compares, per function (matching or not), the set of callees with the `bl` targets in
   the original's range. Probes and objdiff mask call targets, so both are needed: a near-identical neighbour

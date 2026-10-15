@@ -3945,7 +3945,6 @@ u8 UnkStruct_02065c40::func_0206fa20(const char *name, const u16 *unk2, const u8
     return TRUE;
 }
 
-// non-matching: 2 words, the original computes `this + 0x1200` before `mov r3, #0` (scheduling).
 BOOL UnkStruct_02065c40::func_020702e0(s32 unk1, s32 unk2, s32 unk3, s32 unk4, s32 unk5, s32 unk6) {
     if (mUnk_12bc != mUnk_12be) {
         return FALSE;
@@ -3958,10 +3957,11 @@ BOOL UnkStruct_02065c40::func_020702e0(s32 unk1, s32 unk2, s32 unk3, s32 unk4, s
     mUnk_0c[4].mValue = *(s16 *) &unk5;
     mUnk_0c[5].mValue = *(s16 *) &unk6;
     mUnk_12bc  = 0;
-    mUnk_12be  = 9;
+    u16 count  = mUnk_12be = 9;
     mUnk_12ca  = 0;
-    mUnk_12cc = mUnk_12ce = 0;
-    mUnk_12d2[0] = -1;
+    mUnk_12ce  = 0;
+    mUnk_12cc  = 0;
+    mUnk_12d2[0] = count - 10;   // -1 derived from the count, as the original computes it
     func_02088ec4(mUnk_1018);
     mUnk_101c[0].mUnk_32 = 1;
     mUnk_12b9            = 3;

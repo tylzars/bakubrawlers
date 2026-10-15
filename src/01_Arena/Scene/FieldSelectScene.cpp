@@ -1,3 +1,115 @@
+#include "UI/SelectWindow.hpp"
+
+static const u8 data_ov001_022270d0[10] = {0x6, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x8, 0x7, 0x9};
+static const WindowItemRecord data_ov001_022270ec[1] = {
+    {0, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+};
+static const WindowItemRecord data_ov001_02227218[5][6] = {
+    {
+        {0, 0x1, 56, 86, 144, 18, 0, {0, 0, 0, 0}, 0, 2},
+        {1, 0x1, 56, 110, 144, 18, 0, {-1, -1, -1, -1}, 0, 2},
+        {2, 0x1, 56, 134, 144, 18, 0, {-1, -1, -1, -1}, 0, 2},
+        {3, 0x8000, 128, 96, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+        {4, 0x1, 169, 200, 0, 0, 0, {-1, -1, -1, -1}, 0, 1},
+        {5, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    },
+    {
+        {0, 0x1, 56, 86, 144, 18, 0, {1, 1, 0, 0}, 0, 2},
+        {1, 0x1, 56, 110, 144, 18, 0, {0, 0, 1, 1}, 0, 2},
+        {2, 0x1, 56, 134, 144, 18, 0, {-1, -1, -1, -1}, 0, 2},
+        {3, 0x8000, 128, 96, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+        {4, 0x1, 169, 200, 0, 0, 0, {-1, -1, -1, -1}, 0, 1},
+        {5, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    },
+    {
+        {0, 0x1, 56, 86, 144, 18, 0, {2, 1, 0, 0}, 0, 2},
+        {1, 0x1, 56, 110, 144, 18, 0, {0, 2, 1, 1}, 0, 2},
+        {2, 0x1, 56, 134, 144, 18, 0, {1, 0, 2, 2}, 0, 2},
+        {3, 0x8000, 128, 96, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+        {4, 0x1, 169, 200, 0, 0, 0, {-1, -1, -1, -1}, 0, 1},
+        {5, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    },
+    {
+        {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
+        {1, 0x2, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
+        {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+    },
+    {
+        {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
+        {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
+        {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+    },
+};
+static const WindowCellRecord data_ov001_02227140[1] = {
+    {"/Game/Battle/Obj/select_field_b_obj_00_nce.bin", 5, 0x8000, 8, 1, 1, {5, 6, 6, 0}},
+};
+static const WindowCellRecord data_ov001_0222715c[2] = {
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0x0, 0, 1, 1, {0, 1, 1, 0}},
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x0, 0, 1, 1, {2, 3, 3, 0}},
+};
+static const u8 data_ov001_022270c0[4] = {0x1a, 0x44, 0x94, 0xbe};
+static const WindowItemRecord data_ov001_02227108[1] = {
+    {0, 0x1, 9, 170, 86, 20, 0, {-1, -1, -1, -1}, 0, 1},
+};
+static const WindowCellRecord data_ov001_02227124[1] = {
+    {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x0, 0, 1, 1, {2, 3, 3, 0}},
+};
+static const struct {
+    u8 ids[17];
+    WindowItemRecord items[2][2];
+} sIdItems = {
+    {0x15, 0x0, 0x1, 0x2, 0x4, 0x3, 0xe, 0xd, 0x10, 0xf, 0x8, 0xc, 0xb, 0xa, 0x9, 0x6, 0x7},
+    {
+        {
+            {0, 0x1, 169, 170, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
+            {1, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+        },
+        {
+            {0, 0x1, 169, 200, 0, 0, 0, {-1, -1, -1, -1}, 0, 1},
+            {1, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+        },
+    },
+};
+static const WindowCellRecord data_ov001_02227560[5][6] = {
+    {
+        {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 12, 0x8000, 4, 0, 1, {11, 13, 12, 0}},
+        {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 18, 0x8000, 4, 0, 1, {18, 18, 18, 0}},
+        {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 22, 0x8000, 4, 0, 1, {22, 22, 22, 0}},
+        {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 23, 0x8000, 4, 0, 1, {23, 23, 23, 0}},
+        {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0x0, 0, 1, 1, {0, 1, 1, 0}},
+        {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x0, 0, 1, 1, {2, 3, 3, 0}},
+    },
+    {
+        {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 11, 0x8000, 4, 0, 1, {11, 13, 12, 0}},
+        {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 16, 0x8000, 4, 0, 1, {15, 17, 16, 0}},
+        {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 22, 0x8000, 4, 0, 1, {22, 22, 22, 0}},
+        {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 23, 0x8000, 4, 0, 1, {23, 23, 23, 0}},
+        {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0x0, 0, 1, 1, {0, 1, 1, 0}},
+        {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x0, 0, 1, 1, {2, 3, 3, 0}},
+    },
+    {
+        {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 11, 0x8000, 4, 0, 1, {11, 13, 12, 0}},
+        {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 16, 0x8000, 4, 0, 1, {15, 17, 16, 0}},
+        {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 19, 0x8000, 4, 0, 1, {19, 21, 20, 0}},
+        {"/Game/Battle/Obj/select_ch_b_obj_00_nce.bin", 23, 0x8000, 4, 0, 1, {23, 23, 23, 0}},
+        {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0x0, 0, 1, 1, {0, 1, 1, 0}},
+        {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x0, 0, 1, 1, {2, 3, 3, 0}},
+    },
+    {
+        {"/Game/2D/union_b/union_b_obj_window_nce.bin", 4, 0x1b000, 2, 0, 1, {3, 5, 4, 0}},
+        {"/Game/2D/union_b/union_b_obj_window_nce.bin", 6, 0x1b000, 2, 0, 1, {6, 8, 7, 0}},
+        {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x1b000, 2, 0, 1, {10, 10, 10, 0}},
+    },
+    {
+        {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0x8000, 8, 0, 1, {3, 5, 4, 0}},
+        {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0x8000, 8, 0, 1, {6, 8, 7, 0}},
+        {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x8000, 8, 0, 1, {10, 10, 10, 0}},
+    },
+};
+static const u8 data_ov001_022270bc[4] = {0x1a, 0x52, 0x88, 0xbe};
+static const u8 data_ov001_022270dc[4][4] = {{0x0, 0x1, 0x2, 0x3}, {0x0, 0x1, 0x2, 0x3}, {0x0, 0x2, 0x1, 0x3}, {0x0, 0x3, 0x1, 0x2}};
+static const u8 data_ov001_022270c4[9] = {0x0, 0x1, 0x2, 0x4, 0x5, 0x6, 0x3, 0x7, 0x0};
+
 #include "Text/TextManager.hpp"
 #include "System/WirelessManager.hpp"
 #include "System/SoundManager.hpp"
@@ -25,8 +137,6 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-extern const u8 data_ov001_02227194[];
-extern const u8 data_ov001_022270c4[];
 
 struct UnkStruct_020c4230 {
     /* 00 */ PAD(0x00, 0x20);
@@ -39,16 +149,6 @@ extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 #define NET_KEYS (*(u16 *) ((u8 *) &data_0220f540 + 4))
 #define NET_BYTE(n) (*((u8 *) &data_0220f540 + (n)))
 
-extern const WindowItemRecord data_ov001_022271a8[][2];
-extern const WindowCellRecord data_ov001_0222715c[];
-extern const WindowItemRecord data_ov001_022270ec[];
-extern const WindowCellRecord data_ov001_02227124[];
-extern const WindowItemRecord data_ov001_02227108[];
-extern const WindowCellRecord data_ov001_02227140[];
-
-extern const u8 data_ov001_022270dd[];
-extern const u8 data_ov001_022270de[];
-extern const u8 data_ov001_022270df[];
 
 static inline u8 IsZeroU8(u8 v) {
     return v == 0;
@@ -56,14 +156,6 @@ static inline u8 IsZeroU8(u8 v) {
 
 extern u8 data_020d43d7[];
 
-extern const u8 data_ov001_022270d0[];
-
-extern const WindowItemRecord data_ov001_02227218[][6];
-extern const WindowCellRecord data_ov001_02227560[][6];
-
-extern const u8 data_ov001_022270dc[][4];
-extern const u8 data_ov001_022270c0[];
-extern const u8 data_ov001_022270bc[];
 
 extern u8 data_020d43eb[];
 
@@ -145,7 +237,7 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
             mUnk_2d2[i]           = 0;
         } else {
             mUnk_266[mUnk_33b][i] = 0;
-            u8 f                  = data_ov001_02227194[i];
+            u8 f                  = sIdItems.ids[i];
             int byte = f / 8;
             for (u8 k = 0; k < 3; k++) {
                 const u8 *flags = data_020d496a;
@@ -506,7 +598,7 @@ void FieldSelectScene::func_ov001_0221fa94() {
             variant = 0;
             break;
     }
-    mWindows[0] = new SelectWindow(mUnk_33e, data_ov001_022271a8[variant], 0);
+    mWindows[0] = new SelectWindow(mUnk_33e, sIdItems.items[variant], 0);
     mWindows[0]->SetCells(mUnk_33e, data_ov001_0222715c);
     mWindows[0]->mCursor->mSelection = -1;
     mWindows[0]->mUnk_064            = 0;
@@ -874,8 +966,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 mPanel[0]->func_02065204(p, -1, 0, 0);
                 mPanel[1]->func_02065204(p, -1, 0, 0);
                 if (p < mUnk_32a) {
-                    mPanel[0]->func_02065204(p, (s8) data_ov001_02227194[mInput[p].mUnk_08], (u32) (mUnk_14c + p * 8), 0);
-                    mPanel[1]->func_02065204(p, (s8) data_ov001_02227194[mInput[p].mUnk_08], (u32) (mUnk_14c + p * 8), 0);
+                    mPanel[0]->func_02065204(p, (s8) sIdItems.ids[mInput[p].mUnk_08], (u32) (mUnk_14c + p * 8), 0);
+                    mPanel[1]->func_02065204(p, (s8) sIdItems.ids[mInput[p].mUnk_08], (u32) (mUnk_14c + p * 8), 0);
                 }
                 func_ov001_022267d0(p);
                 p++;
@@ -1011,7 +1103,7 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
                         row[j + 0x266] = 3;
                         break;
                     default: {
-                        u8 f       = data_ov001_02227194[j];
+                        u8 f       = sIdItems.ids[j];
                         dst        = row + j;
                         dst[0x266] = 0;
                         u32 byte   = (u32) f >> 3;
@@ -1553,7 +1645,7 @@ BOOL FieldSelectScene::func_ov001_02223430(u8 slot) {
             }
             mInput[slot].mUnk_08  = mInput[slot].mUnk_02;
             mCells2[slot].mUnk_09 = 2;
-            mPanel[0]->func_02065204(slot, ((const s8 *) data_ov001_02227194)[mInput[slot].mUnk_02], (u32) (mUnk_14c + slot * 8), 0);
+            mPanel[0]->func_02065204(slot, ((const s8 *) sIdItems.ids)[mInput[slot].mUnk_02], (u32) (mUnk_14c + slot * 8), 0);
             func_ov001_022267d0(slot);
             break;
         case 3: {
@@ -1760,9 +1852,9 @@ void FieldSelectScene::func_ov001_02223e5c() {
         mCells[1].mAnim->SetAnimation(1);
         mCells[2].mAnim->SetAnimation(1);
         mCells[3].mAnim->SetAnimation(1);
-        u8 a = data_ov001_022270dd[r * 4];
-        u8 b = data_ov001_022270de[r * 4];
-        u8 c = data_ov001_022270df[r * 4];
+        u8 a = data_ov001_022270dc[r][1];
+        u8 b = data_ov001_022270dc[r][2];
+        u8 c = data_ov001_022270dc[r][3];
         mCells[0].mAnim->mUnk_0f = 0;
         mCells[a].mAnim->mUnk_0f = 0;
         mCells[b].mAnim->mUnk_0f = 1;
@@ -2036,7 +2128,7 @@ u32 FieldSelectScene::func_ov001_02224538() {
                         }
                         func_ov001_022253f0(owner, 1, mInput[i].mUnk_02);
                         if (owner == mUnk_33b) {
-                            mPanel[1]->func_02065204(3, ((const s8 *) data_ov001_02227194)[mInput[i].mUnk_02], (u32) (mUnk_14c + i * 8), 0);
+                            mPanel[1]->func_02065204(3, ((const s8 *) sIdItems.ids)[mInput[i].mUnk_02], (u32) (mUnk_14c + i * 8), 0);
                             mPanel[1]->func_0206547c(3, 0x72, 0x2f, 0);
                         }
                     }
@@ -2070,7 +2162,7 @@ u32 FieldSelectScene::func_ov001_02224538() {
             }
             u8 j = 0;
             do {
-                if ((data_020d433c.mUnk_9f[j] = data_ov001_02227194[mInput[j].mUnk_02]) == 0x15) {
+                if ((data_020d433c.mUnk_9f[j] = sIdItems.ids[mInput[j].mUnk_02]) == 0x15) {
                     data_020d433c.mUnk_a3[j] = 0;
                 } else {
                     data_020d433c.mUnk_a3[j] = mInput[j].mUnk_0c;
@@ -2141,11 +2233,11 @@ u32 FieldSelectScene::func_ov001_02224be0() {
                 mUnk_32c = 0;
             } else {
                 mUnk_32c                 = 1;
-                u8 a                     = data_ov001_022270dd[idx * 4];
+                u8 a                     = data_ov001_022270dc[idx][1];
                 data_020d433c.mUnk_9b[0] = a;
                 data_020d43d7[a]         = 0;
-                u8 b = data_ov001_022270de[idx * 4];
-                u8 c = data_ov001_022270df[idx * 4];
+                u8 b = data_ov001_022270dc[idx][2];
+                u8 c = data_ov001_022270dc[idx][3];
                 data_020d43d7[b]         = c;
                 data_020d43d7[c]         = b;
             }
@@ -2472,7 +2564,7 @@ void FieldSelectScene::func_ov001_022256e4() {
                         }
                     }
                 }
-                if (data_ov001_02227194[mInput[i].mUnk_02] == 0x15) {
+                if (sIdItems.ids[mInput[i].mUnk_02] == 0x15) {
                     sel = -1;
                 }
             } else if (kind != 0) {
@@ -2706,7 +2798,7 @@ void FieldSelectScene::func_ov001_0222659c() {
 void FieldSelectScene::func_ov001_022267d0(u8 slot) {
     func_ov001_02226bf8(slot);
     u32 useName = 0;
-    u8 id       = data_ov001_02227194[mInput[slot].mUnk_08];
+    u8 id       = sIdItems.ids[mInput[slot].mUnk_08];
     if (id == 0x15) {
         useName = 1;
     } else {
@@ -2785,7 +2877,7 @@ void FieldSelectScene::func_ov001_02226d18(u32 index) {
 u32 FieldSelectScene::func_ov001_02226d48(u32 id) {
     u8 i = 0;
     do {
-        if (data_ov001_02227194[i] == id) {
+        if (sIdItems.ids[i] == id) {
             return i;
         }
         i++;

@@ -73,6 +73,18 @@ def split_top(text):
                 i += 1
             elif c == "'":
                 in_c = False
+        elif c == "#" and (i == 0 or text[text.rfind("\n", 0, i) + 1:i].strip() == ""):
+            # preprocessor line: skip it with its backslash continuations (macro bodies may contain braces)
+            while i < n:
+                j = text.find("\n", i)
+                if j < 0:
+                    i = n
+                    break
+                if text[j - 1] != "\\":
+                    i = j
+                    break
+                i = j + 1
+            continue
         elif text.startswith("//", i):
             in_lc = True
         elif text.startswith("/*", i):

@@ -54,12 +54,12 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
   pairing, right order); swapping the pairing gives the right registers but compares before the second load. About 60
   forms tried (temporaries, inline helpers, `||`, negations, pointer locals), and `-proc generic` shows our compare
   directly after its load in all of them.
-- **A u8 index coloured after its base (open, 8 placeholders).** In BattleTarget::func_ov007_0225ca48,
-  BattleUnk022637ac (func_ov007_022677cc, 02264a5c, 02265af8, 0226547c) and BattlePlayerList (Update, 022628e0) the
-  original colours a u8 index load (`unit->mUnk_0e`, a record or row index) after the base or player pointer it
-  indexes; every normal form colours it first. They match with the index read as its own statement through
-  `*(volatile u8 *) &field`, marked as a placeholder at each site. Tried without effect: named or split locals,
-  `+`/`+=`, inline accessors, both argument orders, a bitfield. Finding the real form likely fixes all of them.
+- **A u8 index coloured after its base.** In BattleTarget::func_ov007_0225ca48, BattleUnk022637ac (func_ov007_022677cc,
+  02264a5c, 02265af8, 0226547c) and BattlePlayerList (Update, 022628e0) the original colours a u8 index load
+  (`unit->mUnk_0e`, a record or row index) after the base or player pointer it indexes; every plain form colours it
+  first. An enum-typed copy (`UnitIndex e = (UnitIndex) unit->mUnk_0e;`) or one index local reassigned for
+  successive records gives the original's order. Only BattleUnk022637ac::func_ov007_02265af8 still needs two
+  `*(volatile u8 *)` placeholders: there the enum copy gets the right registers but is scheduled before the list load.
   BattleConfrontCard::func_ov007_0223f918 (case 29's loop head, 7 words, no placeholder possible: the index is the
   loop counter `j`) is the same family: ours colours `j*4` before the slot pointer. A dummy consumer of `j*4` placed
   between the player load and the slot pointer gives the original registers exactly, so the original creates the
@@ -325,8 +325,8 @@ Other findings from linking:
 
 - **A load folded into an address is a temporary.** `rec = &pl->mRecords[pl->mRecord]` makes the index a temporary
   coloured before `pl`; kept as its own statement it is coloured after `pl`, which let identical if/else tails merge
-  in BattleTarget::func_ov007_0225ca48. There the separate statement needed a `*(volatile u8 *) &pl->mRecord`
-  placeholder; computing the address in both arms is what puts the shared constant 12 before the branch.
+  in BattleTarget::func_ov007_0225ca48. There the separate statement is an enum-typed copy of `pl->mRecord`;
+  computing the address in both arms is what puts the shared constant 12 before the branch.
 
 - **A local reused for an earlier, separate value** gets its later live range coloured after the loop counter
   (BattleTarget::func_ov007_0225ac28: one `fx32 value` for the magnitude test and for `f[i]` in the loop).
@@ -450,7 +450,8 @@ Other findings from linking:
 - **Arguments with side effects are evaluated before the stack-argument stores.** A volatile read or `x++` in an
   argument is computed before the `[sp]` stores and the other arguments; every side-effect-free form is folded into
   the call and loaded after the stores, because the scheduler never lifts a `[this]` load above a `[sp]` store.
-  `Screen(*(volatile u8 *) &mScreen)` is the placeholder used in MessageWindow::func_020658d0. A value whose only
+  MessageWindow::func_020658d0 gets the same effect from an enum-typed copy of mScreen plus a named
+  `SpriteManager &` (each alone is not enough). A value whose only
   consumer is one later call is substituted into that call; a compound assignment or a later read keeps it in place.
 - **`(u8)` casts at a call site often stand in for the callee's parameter types.** Making `func_020231f4` take
   `u8, u8` matched three callers in UnkStruct_02078e14_b.cpp. An `extern` object's declared size can matter too:

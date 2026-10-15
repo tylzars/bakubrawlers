@@ -385,8 +385,8 @@ void BattleSub48::func_ov007_02224ef8() {
     } while (i < 2);
 }
 
-// The volatile reads in the first loop's draw calls are a placeholder: the original reloads xs[i] after the if/else
-// instead of reusing the value both arms loaded.
+// The original reloads xs[i] after the if/else instead of reusing the value both arms loaded: the reload indexes
+// through an enum-typed copy of i, which mwcc does not identify with i.
 void BattleSub48::func_ov007_02224fdc() {
     s16 y;
     s16 xs[2];
@@ -411,11 +411,12 @@ void BattleSub48::func_ov007_02224fdc() {
                 if (!entries[other].mUnk_0f_3) {
                     if (!mUnk_0e_0) {
                         mAnims[1]->Update();
-                        mAnims[1]->Draw(0, ((volatile s16 *) xs)[i], y, 1);
+                        mAnims[1]->Draw(0, xs[i], y, 1);
                     } else {
-                        mAnims[2]->Draw(0, ((volatile s16 *) xs)[i], y, 1);
+                        mAnims[2]->Draw(0, xs[i], y, 1);
                     }
-                    x = xs[i];
+                    EntryIndex k = (EntryIndex) i;
+                    x            = xs[k];
                     mAnims[3]->Draw(0, x, y, 1);
                     mAnims[0]->Draw(0, x, y, 1);
                     if (i == 0) {

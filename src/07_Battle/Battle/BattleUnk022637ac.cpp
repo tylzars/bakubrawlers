@@ -390,6 +390,10 @@ BOOL func_ov007_022677cc(BattleUnk022637ac *self);
 u32 func_ov007_02267884(BattleUnk022637ac *self);
 BOOL func_ov007_02267944(BattleUnk022637ac *self, u16 *out);
 
+// Record and marker indices read into enum-typed locals: a real load (mwcc does not substitute enum locals), so the
+// index is coloured after the player or entry base.
+enum UnitIndex { UNIT_INDEX_0 };
+
 BOOL BattleUnk022637ac::func_ov007_02264a5c() {
     BOOL result = 1;
     switch (mUnk_18 - 0xc9) {
@@ -543,8 +547,7 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
             break;
         case 8: {
             BattleUnit *unit      = &data_020d433c.mBattlePlayers->mUnits[mUnk_16];
-            // The record index is read as its own statement (volatile placeholder), so it is coloured after the player.
-            u8 rec                = *(volatile u8 *) &unit->mUnk_0e;
+            UnitIndex rec         = (UnitIndex) unit->mUnk_0e;
             BattleRecord *record  = &data_020d433c.mBattlePlayers->mPlayers[unit->mUnk_0f]->mRecords[rec];
             u16 b                 = record->mUnk_06;
             if (record->mUnk_04 + b >= 0x3de || b == 0) {
@@ -684,8 +687,7 @@ u8 BattleUnk022637ac::func_ov007_0226547c() {
                 break;
             }
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            // The marker index is read as its own statement (volatile placeholder), so it is coloured after the entries.
-            u8 marker              = *(volatile u8 *) &list->mUnits[mUnk_16].mUnk_11;
+            UnitIndex marker       = (UnitIndex) list->mUnits[mUnk_16].mUnk_11;
             BattleMarker *entries  = list->Entries();
             list->mUnk_1c[marker].mUnk_2 = 3;
             VecFx32 pos;
@@ -1441,8 +1443,7 @@ BOOL func_ov007_022677cc(BattleUnk022637ac *self) {
     do {
         BattleUnit *unit = &list->mUnits[i];
         if (unit->mUnk_10) {
-            // The record index is read as its own statement (volatile placeholder), so it is coloured after the player.
-            u8 e              = *(volatile u8 *) &unit->mUnk_0e;
+            UnitIndex e       = (UnitIndex) unit->mUnk_0e;
             BattleRecord *rec = &list->mPlayers[unit->mUnk_0f]->mRecords[e];
             c += 0x3de;
             a += rec->mUnk_04;

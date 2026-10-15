@@ -3641,16 +3641,18 @@ void func_ov007_0225ca18(BattleTarget *target, int a, int b) {
 }
 
 // Both arms compute the record address, so the size 12 is set before the branch and the identical tails are merged.
-// Arm 1 needs its index load kept as its own statement (a placeholder volatile read); a plain read is folded into the
+// Arm 1 reads its index into an enum-typed local (a real load, coloured after `pl`); a plain read is folded into the
 // address and the arm takes other registers, so the tails no longer merge.
+enum RecordSlot { RECORD_SLOT_0 };
+
 void BattleTarget::func_ov007_0225ca48(u32 player, u32 record) {
     BattlePlayer *pl;
     BattleRecord *rec;
     if (player == 0xff) {
         player = data_020d433c.mBattlePlayers->mUnk_28a;
         pl     = data_020d433c.mBattlePlayers->mPlayers[player];
-        record = *(volatile u8 *) &pl->mRecord;
-        rec    = &pl->mRecords[record];
+        RecordSlot e  = (RecordSlot) pl->mRecord;
+        rec           = &pl->mRecords[e];
     } else {
         pl  = data_020d433c.mBattlePlayers->mPlayers[player];
         rec = &pl->mRecords[record];

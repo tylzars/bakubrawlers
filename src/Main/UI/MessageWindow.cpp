@@ -88,6 +88,8 @@ void MessageWindow::func_02065890(u32 unk1, u32 unk2, u32 unk3) {
     mUnk_20 = mWidth;
 }
 
+enum ScreenIndex { SCREEN_INDEX_0 };
+
 void MessageWindow::func_020658d0() {
     if (mMessage < 0) {
         return;
@@ -109,9 +111,11 @@ void MessageWindow::func_020658d0() {
         MessageFile *file = mFile;
         text.Print(file->GetText((u16) mMessage), file->GetLength((u16) mMessage), mBuffer, 0x28, 2, &width, &height,
                    &mUnk_20, 0, 2, 0x11, 0x10, 0, 0, 0, 1, 1);
-        // The screen index is read where it is written (before the stack arguments); a plain read is folded into the
-        // call and loaded after them.
-        func_02025c1c(SpriteManager::Get().Screen(*(volatile u8 *) &mScreen).mBgIndex, 4, mVram, mBuffer, 0x800, 0);
+        // The screen index is an enum-typed local (a real load, before the stack arguments); a plain read is folded
+        // into the call and loaded after them.
+        SpriteManager &sprites = SpriteManager::Get();
+        ScreenIndex screen     = (ScreenIndex) mScreen;
+        func_02025c1c(sprites.Screen(screen).mBgIndex, 4, mVram, mBuffer, 0x800, 0);
         BOOL negative = mUnk_22 < 0;
         BOOL last     = mUnk_20 == -mUnk_22;
         if (negative & last) {

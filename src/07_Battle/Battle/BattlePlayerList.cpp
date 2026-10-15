@@ -1021,10 +1021,13 @@ void func_ov007_02262828(BattlePlayerList *list, u8 index, u8 value) {
     list->mUnk_295--;
 }
 
+// Grid row of a marker: an enum-typed copy is a real load (mwcc does not substitute enum locals), so it is coloured
+// after the row base.
+enum MarkerRow { MARKER_ROW_0 };
+
 void func_ov007_022628e0(BattlePlayerList *list, u8 index, const VecFx32 *pos, u8 marker) {
     u8 old      = list->mUnits[index].mUnk_11;
-    // The row index is read as its own statement (volatile placeholder), so it is coloured after the base.
-    u8 r        = *(volatile u8 *) &list->mUnk_1c[old].mUnk_3;
+    MarkerRow r = (MarkerRow) list->mUnk_1c[old].mUnk_3;
     u8 col      = list->mUnk_1c[old].mUnk_4;
     s8 *row     = list->mUnk_1f8[r];
     u8 i        = 0;

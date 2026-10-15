@@ -456,7 +456,7 @@ void OptionScene::BuildSettings() {
         mPosX[i] = data_ov000_022262a8[i].x;
         mPosY[i] = data_ov000_022262a8[i].y;
     }
-    volatile UnkStruct_020d43f0 *data = data_020d43f0;
+    UnkStruct_020d43f0 *data = data_020d43f0;
     mUnk_4e = 0;
     mCells[2]->SetAnimation(0x13);
     mUnk_4b = 8;

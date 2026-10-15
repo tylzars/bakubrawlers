@@ -9,7 +9,7 @@ middleware) is not decompiled as game source; it will be matched or linked separ
 | Range | Contents |
 |---|---|
 | 0x02000000-0x02000800 | Secure area, BIOS call thunks |
-| 0x02000800-0x02000c04 | crt0, build info strings (NitroSDK, Mobiclip SDK) |
+| 0x02000800-0x02000c04 | start-up code (`libs/nds/src/init/crt0.c`, to 0x02000ba0), then the build info block (data) |
 | 0x02000c04-0x02000cb4 | `main` (game) |
 | 0x02000cb4-0x02001c6c | FX / MTX math (approx.) |
 | 0x02001c6c-0x02004b50 | GX / G2 / G3 |
@@ -22,8 +22,8 @@ middleware) is not decompiled as game source; it will be matched or linked separ
 | 0x0200e310-0x02011c34 | CARD and CARD backup (save memory) |
 | 0x02011c34-0x020122b0 | CTRDG (approx.) |
 | 0x020122b0-0x0201d72c | MSL C runtime: printf family, string, math |
-| 0x0201d72c-0x020202bc | MSL soft float and double math, 64-bit and 32-bit division (`_s32_div_f` at 0x0201f970): all 37 functions are hand-written assembly |
-| 0x020202bc-0x0202030c | C++ runtime glue (`__init_cpp`, `__register_global_object`) |
+| 0x0201d72c-0x020202bc | soft float and double math, 64-bit and 32-bit division (`_s32_div_f` at 0x0201f970), all hand-written assembly: `libs/msl/src/rt_soft_float.c` |
+| 0x020202bc-0x0202030c | C++ runtime glue: the constructor walk and `__register_global_object` (`libs/msl/src/rt_global_ctors.c`) |
 | 0x02030880-0x02036538 | NitroSystem: FND lists and heaps (0x02030880-0x02031418), G3d (to 0x02035c68), Gfd texture VRAM manager (to about 0x02036538) |
 | 0x02036538-0x0203a52c | NNS sound (approx.) |
 | 0x0203a544-0x0203c1d8 | Mobiclip video wrapper; its ARM kernels are at 0x02090b24-0x0209d490 |
@@ -88,19 +88,25 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 
 0x02030880-0x02030b64 is NitroSystem foundation code (list and heap helpers), not game code.
 
-## Hand-written assembly (no C source)
+## Hand-written assembly
 
-- 0x02090b24-0x0209d490 (main `.text`, interleaved with data tables): the Mobiclip video decoder's assembly
-  (bitstream unpacking, an audio lattice filter over 256 samples, 8x8 block filters); it uses pc-relative table
-  reads and non-standard argument registers.
-- 0x0203b808 (size 0x5c0, in the MobiclipFile unit): the YUV-to-RGB555 converter called from MobiclipDecoder with an
-  argument block (Y plane, interleaved U/V, destination, stride, width, height, lookup table). It pushes ip, keeps
-  six computed row skips in a data block on the stack, saves a register mid-function and unrolls its inner loop by
-  hand into 8 blocks.
-- 0x0204c088-0x0204c40c: CRI's MPEG synthesis dot products (`ldmib` + `smlatt`).
-- ITCM: `func_01ff817c` (identity matrix fill), `func_01ff8298` (Thumb, single-register `stmia` with writeback), the `MIi_CpuClear*`/copy routines at 0x01ff94c8-0x01ff962f and
-  0x01ff97f4, the IRQ dispatcher `func_01ffc93c` and the thread-switch return `func_01ffc9a4`.
-- NitroSDK: the SHA-1 block transform `func_0200bb88`, the divider/sqrt register save and restore
-  (`func_0200be08`, `func_0200be48`) and the LZ streaming decompress step `func_02007d94` (uses `swpb`).
-- The BIOS calls (`SoftReset`, `CpuSet`, ...), `OS_SaveContext`/`OS_LoadContext`, the interrupt helpers and the
-  floating-point runtime (`_dadd` ... ) are hand-written assembly too.
+These routines are not compiler output. Where they are matched, it is as commented `asm` function bodies.
+
+- 0x02090b24-0x0209d490 (inside main `.rodata`, interleaved with data tables): the Mobiclip video decoder's
+  assembly (bitstream unpacking, an audio lattice filter over 256 samples, 8x8 block filters); it uses pc-relative
+  table reads and non-standard argument registers. It links from the original bytes and is not counted as code.
+- 0x0203b808 (size 0x5c0, `func_0203b808` in MobiclipFile.cpp, an asm body): the YUV-to-RGB555 converter called
+  from MobiclipDecoder with an argument block (Y plane, interleaved U/V, destination, stride, width, height, lookup
+  table). It keeps six computed row skips in a data block on the stack and unrolls its inner loop into 8 blocks.
+- The BIOS call thunks (`SoftReset`, `CpuSet`, ... at 0x02000086-0x020007ba, Thumb, between filler bytes): not
+  written yet.
+- Written as asm bodies: start-up code (`init/crt0.c`), the soft-float and division runtime
+  (`rt_soft_float.c`), the SHA-1 block transform (`math/math_sha1.c`), the divider/sqrt register save and restore
+  (`cp/cp_context.c`), the LZ streaming step `func_02007d94` (`mi/mi_uncompress.c`), CRI's MPEG synthesis dot
+  products `func_0204c088` (`cri_mpa_dec.c`), the cache, protection-unit, interrupt-mask and context routines
+  (`os/os_cache.c`, `os/os_protection.c`, `os/os_system.c`, `os/os_thread.c`, `os/os_exception.c`), and in ITCM
+  the identity fills, the `MIi_Cpu*` clear/copy routines and the IRQ dispatcher with the thread-switch return
+  (`os/os_irq_itcm.c`).
+- Labels inside one asm function are not visible to another, so a branch into the middle of a neighbouring routine
+  is written as a raw instruction word (`dcd`) with a comment. objdiff reads such a word as data where the original
+  object has an instruction, so those few routines score just under 100% although the bytes match.

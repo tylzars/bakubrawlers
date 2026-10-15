@@ -1241,6 +1241,7 @@ void BattleBase::func_ov007_0221c938() {
                 u32 n;
                 do {
                     mUnk_44->func_ov007_022275c0(side, TouchManager::Get().mX, TouchManager::Get().mY, mUnk_15);
+                    // Placeholder: the (u16) cast only swaps value and the TouchManager address (r8/r9); the real form is unknown.
                     n = mUnk_44->func_ov007_022275a0((u16) value, mUnk_20->mUnk_09, mUnk_20->mUnk_0a);
                     k++;
                 } while (k < n);

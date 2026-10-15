@@ -180,7 +180,7 @@ _ZN16BattleSideHelperC1EhhP11BattleEntry kind:function(arm,size=0xec) addr:0x022
 _ZN16BattleSideHelperD1Ev kind:function(arm,size=0x4) addr:0x02223620
 _ZN16BattleSideHelperD0Ev kind:function(arm,size=0x14) addr:0x02223624
 _ZN16BattleSideHelper19func_ov007_02223638Eih kind:function(arm,size=0x118) addr:0x02223638
-_ZN11BattleObj01C1Eij kind:function(arm,size=0x184) addr:0x02223750
+_ZN11BattleObj01C1Ehj kind:function(arm,size=0x184) addr:0x02223750
 _ZN11BattleObj01D1Ev kind:function(arm,size=0x50) addr:0x022238d4
 _ZN11BattleObj01D0Ev kind:function(arm,size=0x58) addr:0x02223924
 _ZN11BattleObj015StartEhiissti kind:function(arm,size=0x1a0) addr:0x0222397c
@@ -2654,6 +2654,7 @@ data_ov007_0228ab18 kind:data(any) addr:0x0228ab18
 data_ov007_0228ab2c kind:data(any) addr:0x0228ab2c
 data_ov007_0228ab40 kind:data(any) addr:0x0228ab40
 data_ov007_0228ab54 kind:data(any) addr:0x0228ab54
+data_ov007_0228ab68 kind:data(any) addr:0x0228ab68
 data_ov007_0228ab70 kind:data(any) addr:0x0228ab70
 data_ov007_0228ab7c kind:data(any) addr:0x0228ab7c
 data_ov007_0228ab90 kind:data(any) addr:0x0228ab90

@@ -16,8 +16,7 @@ void func_ov007_02225354(float x, float y, float *out);
 int func_ov007_022252d0(int x1, int y1, int x2, int y2);
 
 
-// non-matching: layer and charBase in swapped registers (r6/r5).
-BattleObj01::BattleObj01(int layer, u32 charBase) {
+BattleObj01::BattleObj01(u8 layer, u32 charBase) {
     mActive = 0;
     mUnk_05 = 0;
     mMotion = 0;
@@ -26,11 +25,10 @@ BattleObj01::BattleObj01(int layer, u32 charBase) {
     ChangeDir("/Game/Confrontation/Obj");
     mAnims[0] = new CellAnimation("vs_b_obj_01_nce.bin", 0, 1, 1);
     mAnims[0]->mCharBase = screen.func_020276f4(charBase);
-    s8 l = layer;
-    mAnims[0]->mUnk_11 = l;
+    mAnims[0]->mUnk_11 = layer;
     mAnims[1] = new CellAnimation("vs_b_obj_01_nce.bin", 0, 1, 1);
     mAnims[1]->mCharBase = screen.func_020276f4(charBase);
-    mAnims[1]->mUnk_11 = l;
+    mAnims[1]->mUnk_11 = layer;
     ChangeDir("/");
 }
 

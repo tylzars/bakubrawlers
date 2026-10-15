@@ -16,10 +16,10 @@ extern const u8 data_ov007_022790c0[];
 int func_ov007_022252d0(int x1, int y1, int x2, int y2);
 void func_ov007_02225354(float x, float y, float *out);
 
-// non-matching: 6 words in the first loop iteration's head: the element address `entries + k * 20` and `nib` have
-// swapped registers (original: address r1, nib r2). Taking `entries` from the stored member after `mUnk_40 = data`
-// gives the original's entry block (`add sl, r6, #12` early, 10 loaded late); per-iteration pointer locals, `nib`
-// types and a function-scope `nib`/`k` did not move the pair.
+// Placeholder: an enum-typed copy of the entry index (mwcc does not propagate enum locals) gives the original
+// register pair for the first entries[] access; the real source form is not known.
+enum EntryIndex { ENTRY_INDEX_0 };
+
 BattleSub48::BattleSub48(BattleData *data, u8 mode)
     : SceneBase(2, 0) {
     mUnk_0c = 0;
@@ -45,7 +45,8 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
         mUnk_0f = data_020d433c.mUnk_95 - 1;
         u8 k = 0;
         do {
-            u8 nib = entries[k].mUnk_0d_0;
+            EntryIndex kk = (EntryIndex) k;
+            u8 nib = entries[kk].mUnk_0d_0;
             s32 value = data_ov007_022790c8[mUnk_0f][nib];
             mUnk_12[k] = nib;
             if (entries[k].mUnk_0c == 5) {

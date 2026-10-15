@@ -36,12 +36,13 @@ UnkStruct_02078290::~UnkStruct_02078290() {
     delete mUnk_10;
 }
 
-// non-matching: 4 words, scheduling of the two CameraManager mode loads in the (mode == 2) | (mode == 3) test (the original loads both before comparing)
 void UnkStruct_02078290::Update() {
     u32 frame;
     CameraManager &camB = CameraManager::Get();
     CameraManager &camA = CameraManager::Get();
-    if ((camA.mMode == 2) | (camB.mMode == 3)) {
+    CameraMode modeB = (CameraMode) camB.mMode;
+    CameraMode modeA = (CameraMode) camA.mMode;
+    if ((modeB == CAMERA_MODE_2) | (modeA == CAMERA_MODE_3)) {
         if (data_020a30f8[mUnk_19].mScreen == 0) {
             if (CameraManager::Get().mActive == 1) {
                 return;
@@ -62,14 +63,15 @@ void UnkStruct_02078290::Update() {
     }
 }
 
-// non-matching: 4 words, same CameraManager mode-load scheduling as Update
 void UnkStruct_02078290::func_020785d8(u32 unk1) {
     mUnk_19 = unk1;
     u16 width = 0x80;
     CameraManager &camB = CameraManager::Get();
     CameraManager &camA = CameraManager::Get();
     u32 screen;
-    if ((camA.mMode == 2) | (camB.mMode == 3)) {
+    CameraMode modeB = (CameraMode) camB.mMode;
+    CameraMode modeA = (CameraMode) camA.mMode;
+    if ((modeB == CAMERA_MODE_2) | (modeA == CAMERA_MODE_3)) {
         screen = 0;
         width  = 0x20;
     } else {

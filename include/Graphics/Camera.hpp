@@ -64,6 +64,16 @@ public:
 
 // Singleton at 020c1afc (ctor 020264dc, dtor 02020a40): two camera slots and a snapshot of the
 // 3D engine's matrices for each (mActive selects the slot that is current).
+// CameraManager::mMode values. Callers that test the mode read it into a local of this type: mwcc keeps an
+// enum-typed local as a real load instead of folding it into the compare.
+enum CameraMode {
+    CAMERA_MODE_0,
+    CAMERA_MODE_1,
+    CAMERA_MODE_2,
+    CAMERA_MODE_3,
+    CAMERA_MODE_4,
+};
+
 class CameraManager {
 public:
     /* 000 */ u8 mDirty; // set when a new mode was requested

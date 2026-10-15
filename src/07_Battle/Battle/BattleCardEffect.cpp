@@ -114,10 +114,13 @@ void BattleCardEffect::func_ov007_022716e8() {
     ChangeDir("/");
 }
 
-// non-matching: 5 words, scheduling only (original loads both CameraManager::mMode values before comparing; ~25 source forms tried)
 int BattleCardEffect::func_ov007_02271888() {
     mAnim->Update();
-    if ((CameraManager::Get().mMode == 2) | (CameraManager::Get().mMode == 3)) {
+    CameraManager &camB = CameraManager::Get();
+    CameraManager &camA = CameraManager::Get();
+    CameraMode modeB = (CameraMode) camB.mMode;
+    CameraMode modeA = (CameraMode) camA.mMode;
+    if ((modeB == CAMERA_MODE_2) | (modeA == CAMERA_MODE_3)) {
         if (CameraManager::Get().mActive != 0) {
             return 0;
         }

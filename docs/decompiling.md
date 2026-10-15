@@ -416,6 +416,11 @@ Other findings from linking:
 - **An enum-typed result stops the return being folded.** `UnitCompare result` kept a `return result` that a `u32`
   version folded into `mov r0, #0` (BattleUnk022637ac's func_ov007_02267884). Reading components into named locals
   in the original's order (`z = p->z; y = p->y; x = p->x;`) fixes the load order before a call.
+- **An enum-typed copy of a field read is a real load.** `CameraMode mode = (CameraMode) cam.mMode;` loads where it
+  is declared and is not substituted into the compare, so two such copies keep both loads ahead of the tests: this
+  matched UnkStruct_02078290::Update/func_020785d8 and BattleCardEffect::func_ov007_02271888 after ~60 int-typed
+  forms failed. Parameter widths matter the same way: BattleMapModel matched once `func_02032370`'s parameters were
+  declared `u16` (the conversion temporary had merged with `color`), BattleObj01 once its own `layer` became `u8`.
 - **`delete p;` versus `if (p) delete p;`.** mwcc emits the null check for a plain `delete` itself; an explicit `if`
   changes the block shape and the scheduling around it (BattleResult's destructors). Try both: BattleConfrontCard's
   func_0223f398 needed the explicit `if`.

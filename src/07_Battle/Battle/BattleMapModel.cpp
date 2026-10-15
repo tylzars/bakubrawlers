@@ -6,8 +6,8 @@
 #include "System/FileSystem.hpp"
 
 extern "C" void func_020330fc(void *model, u32 a, u32 b);
-extern "C" void func_02032370(u32 a, u32 b, u32 c);
-extern "C" void func_02032394(u32 a, u32 b, u32 c);
+extern "C" void func_02032370(u16 a, u16 b, BOOL c);
+extern "C" void func_02032394(u16 a, u16 b, BOOL c);
 
 BattleMapModel::BattleMapModel(u32 unk1) {
     mUnk_2c = unk1;
@@ -55,11 +55,11 @@ void BattleMapModel::func_ov007_02248cf4() {
     ChangeDir("/");
 }
 
-// non-matching: 14 words, registers only (data and color swapped).
 void BattleMapModel::func_ov007_02248eb8() {
     if (mModel == 0) {
         return;
     }
+    u16 color;
     MtxFx43 mtx = data_0220e86c;
     func_01ffcf64(&mtx, &mPosition);
     mModel->func_02028ef0();
@@ -77,7 +77,7 @@ void BattleMapModel::func_ov007_02248eb8() {
     func_020330fc(data, 0, 0x40);
     func_020330fc(data, 0, 0x400);
     func_020330fc(data, 0, 0x200);
-    u16 color = mUnk_2d | (mUnk_2d << 5) | (mUnk_2d << 10);
+    color = mUnk_2d | (mUnk_2d << 5) | (mUnk_2d << 10);
     func_02032370(color, color, 1);
     func_02032394(color, color, 1);
     mModel->func_02029174(&mtx, &mScale);

@@ -64,9 +64,10 @@ src/07_Battle/Battle/BattleBlend.cpp:
     .text       start:0x02223cf0 end:0x02223f28
     .data       start:0x022865ec end:0x022865fc
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Battle/BattleSub48.cpp:
+    complete
     .text       start:0x02223f28 end:0x0222545c
+    .data       start:0x022865fc end:0x022867a8
 
 src/07_Battle/Battle/BattleHud.cpp:
     complete
@@ -252,9 +253,11 @@ src/07_Battle/Battle/BattleFontObj.cpp:
     .text       start:0x02248a5c end:0x02248c84
     .data       start:0x0228884c end:0x022888e0
 
-// provisional: code only; .data 0x022888e0-0x02288ac0 and .bss 0x0228b8ec-0x0228b8f8 belong here.
 src/07_Battle/Battle/BattleMapModel.cpp:
+    complete
     .text       start:0x02248c84 end:0x02249068
+    .data       start:0x022888e0 end:0x02288ac0
+    .bss        start:0x0228b8ec end:0x0228b8f8
 
 src/07_Battle/Battle/BattleMapObj.cpp:
     complete
@@ -331,9 +334,11 @@ src/07_Battle/Battle/BattleUnk29c.cpp:
     .rodata     start:0x0227bf94 end:0x0227c018
     .bss        start:0x0228bb14 end:0x0228bb20
 
-// provisional: code only; .data 0x0228ab70-0x0228abe4, .rodata 0x0227c018-0x0227c0c4 and .bss 0x0228bb20-0x0228bb2c belong here (shared with GimmickSetFile.cpp if they are one file).
 src/07_Battle/Battle/BattleCardEffect.cpp:
+    complete
     .text       start:0x02271410 end:0x022719c8
+    .data       start:0x0228ab68 end:0x0228abc0
+    .bss        start:0x0228bb20 end:0x0228bb2c
 
 // provisional: code only; may be part of BattleCardEffect.cpp.
 src/07_Battle/Battle/GimmickSetFile.cpp:

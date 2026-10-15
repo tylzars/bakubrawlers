@@ -37,7 +37,7 @@ public:
     /* 3c */ BattleObj01Motion *mMotion;
     /* 40 */
 
-    BattleObj01(int layer, u32 charBase);
+    BattleObj01(u8 layer, u32 charBase);
     ~BattleObj01();
     BOOL Start(u8 fast, int x, int y, s16 targetX, s16 targetY, u16 angle, int motion);
     BOOL Update();

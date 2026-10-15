@@ -177,10 +177,7 @@ void TournamentSubScene::func_ov002_0221f930() {
     G2S_BlendNone();
 }
 
-// non-matching: 8 words; the zero for the last func_02025b64 call (kind 1, offset 0x2000) is in r0 instead of r2. UnkStruct_020758f4_Record::mTextLength must be u32 (loaded with ldr)
-
-
-
+// UnkStruct_020758f4_Record::mTextLength must be u32 (loaded with ldr).
 void TournamentSubScene::func_ov002_0221fb24() {
     mUnk_0c = new UnkStruct_020758f4();
     u8 i = 0;

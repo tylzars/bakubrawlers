@@ -359,7 +359,6 @@ void BattleUnk022767c8::func_ov007_02277368() {
     G2S_SetBlendBrightness(0x1f, -16);
 }
 
-// non-matching: 2 words, the argument setup of the third /story/ BG load (map_b_bg_00_nsc.bin) is scheduled differently
 void BattleUnk022767c8::func_ov007_02277514() {
     ChangeDir("/game/Tournament/Bg/");
     func_02025b64(0, 1, 0, "tournament_u_bg_result_ncl.bin", 0, 0, 0);

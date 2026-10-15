@@ -75,7 +75,7 @@ public:
     void func_02053298();
     void func_0205340c(u32 part);
     BOOL func_02053d74(u32 part, const char *name, const char *file);
-    BOOL func_02053d9c(u32 part, const char *name, const char *file);
+    void func_02053d9c(u32 part, const char *name, const char *file);
     void func_02053dc4(u32 part, const char *name, const char *file1, const char *file2, u8 offset);
     void func_02053ea0(u32 a, u32 b);
     void func_02053eec(u32 flag);

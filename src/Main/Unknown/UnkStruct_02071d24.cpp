@@ -261,8 +261,7 @@ void UnkStruct_02071d24::func_02072734() {
     ChangeDir("/Game/2d/union_b/");
     func_02025b64(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
     func_02025b64(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
-    LoadArg z = LOAD_ARG_NONE;
-    func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", z, z, z);
+    func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.func_02027624(3);
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0xf000, 0);

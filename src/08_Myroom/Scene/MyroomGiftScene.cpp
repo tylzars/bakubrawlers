@@ -216,8 +216,7 @@ void MyroomGiftScene::func_ov008_0221de34() {
     ChangeDir("/Game/Myroom/");
     func_02025b64(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
     func_02025b64(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
-    LoadArg z = LOAD_ARG_NONE;
-    func_02025b64(1, 1, 0, "myroom_b_bg_00_ncl.bin", z, z, z);
+    func_02025b64(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
     SpriteScreen &main = SpriteManager::Get().Screen(0);
     main.func_02027624(3);
     LoadEmblem(6);

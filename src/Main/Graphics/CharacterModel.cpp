@@ -430,8 +430,8 @@ BOOL CharacterModel::func_02053d74(u32 part, const char *name, const char *file)
     return mParts[part]->mUnk_58->mUnk_08->func_020286fc(name, file, 0);
 }
 
-BOOL CharacterModel::func_02053d9c(u32 part, const char *name, const char *file) {
-    return mParts[part]->mUnk_58->mUnk_08->func_02028858(name, file, 0);
+void CharacterModel::func_02053d9c(u32 part, const char *name, const char *file) {
+    mParts[part]->mUnk_58->mUnk_08->func_02028858(name, file, 0);
 }
 
 void CharacterModel::func_02053dc4(u32 part, const char *name, const char *file1, const char *file2, u8 offset) {

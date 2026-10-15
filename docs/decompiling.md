@@ -396,15 +396,14 @@ Other findings from linking:
   parameter inside a loop is widened by a hoisted temporary that mwcc coalesces with the local, so declaration order
   stops affecting it. With `func_02027778`'s third parameter as `s16` (its prologue then matches too), MyroomGiftScene
   and MyroomShootScene matched by declaration order alone.
-- **Repeated calls with constant arguments schedule in a cycle.** In a lab of 20 identical `func_02025b64` calls the
-  argument-setup pattern repeats every 7 calls; an enum-typed zero (`LoadArg z`, in System/FileSystem.hpp) for one
-  call's last three arguments shifts it (MyroomGiftScene::func_ov008_0221de34, UnkStruct_02071d24::func_02072734).
-  The period depends on the stack arguments: 10, 8, 7, 6, 6 calls for 1-5 of them (about 56-60 instructions), and 8
-  with 3 stack arguments plus a register-sourced one. Within a period the first 4 calls store `[sp]` last, the rest
-  first. Code before the run shifts it (about 10 global stores or 20 argument-less calls per call). An enum zero only
-  acts on a call next to a load with a nonzero offset, and can flip later calls (BattleUnk022767c8::func_ov007_02277514)
-  or earlier ones (TournamentSubScene::func_ov002_0221fb24); in both, one enum zero fixes the last differing call but
-  flips others, so the right shape is still unknown. `-proc generic` shows no difference there: it's a scheduler tie.
+- **Repeated calls with constant arguments schedule in a cycle, and an earlier call's return type shifts it.** In a
+  lab of 20 identical `func_02025b64` calls the argument-setup pattern repeats every 7 calls; the period depends on
+  the stack arguments (10, 8, 7, 6, 6 calls for 1-5 of them). Code before the run shifts it: a global store, or a
+  call that returns a value (a `void` call shifts it less). The open cases (TournamentSubScene::func_ov002_0221fb24,
+  BattleUnk022767c8::func_ov007_02277514, and the enum-zero placeholders in MyroomGiftScene and UnkStruct_02071d24)
+  were all one cause: `func_0200acac` (called by the `ChangeDir` inline) returns BOOL but was declared void.
+  Declaring it BOOL matched them; CharacterModel::func_02053d9c then needed to be void to keep func_0205340c matching
+  (its body is a tail call and every caller ignores the result, so either type fits the binary).
 - **A stack parameter the callee reads as `*(s16 *)&param` is really `s16`.** Declaring it so makes callers narrow at
   the call, which creates the value later and gives it the low register: with
   `SpriteScreen::func_02027778(..., s16 unk4, ...)`, `int y = row * 0xc + base;` passed straight through matched
@@ -796,11 +795,6 @@ Other findings from linking:
   no-op one (`*(u8 *)&g |= 1`, `((u8 *)fl)[1] &= ...`, or a helper taking `void *` and casting back), gives the value
   the lower register. The cast also stops reuse of an already loaded base: `*(u8 *)&data_020d43f0[0].mUnk_24 |= 1`
   gets its own pool word. Don't change the shared SetFlagBit/TestFlagBit helpers: existing matches depend on them.
-- **The register of a zero stack argument can depend on the calls before it** (a 7-call cycle with
-  `func_02025b64(1, 8, 0, ...)` in tests). func_02072734 matched by passing an enum-typed zero local
-  (`LoadArg z = LOAD_ARG_NONE;`) for the three zero arguments. The same trick fixes one call in
-  BattleUnk022767c8::func_ov007_02277514 but moves the reorder to calls 9 and 10, so that one is still open (2 words:
-  the string's `ldr r3` between the second and third zero stack stores).
 - **Narrowing changes scheduling, not just instructions.** `-(u8) (mFade / 4)` (or a `u8 level` local) and
   `-((u32) mFade >> 2)` emit the same `and`/`lsr`/`rsb`, but the `u8` form schedules the `rsb` before the next
   literal-pool load (BattleUnk022767c8::Update).

@@ -777,9 +777,10 @@ src/Main/Graphics/SpriteManager.cpp:
     .text       start:0x02026c4c end:0x020275bc
     .bss        start:0x0220e8dc end:0x0220f100
 
-// provisional: code only; several functions are near-misses.
 src/Main/Graphics/SpriteScreen.cpp:
+    complete
     .text       start:0x020275bc end:0x02028280
+    .data       start:0x020a5624 end:0x020a565c
 
 src/Main/Graphics/NitroTexture.cpp:
     complete

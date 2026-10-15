@@ -76,7 +76,7 @@ static inline void GXS_SetOBJVRamModeBmp(GXOBJVRamModeBmp mode) {
 // The tables are function-local statics (still .data): mwcc knows no store can reach them, so the table load is
 // scheduled above the mUnk_403 store as with const data.
 void SpriteScreen::func_02027624(s32 mode) {
-    static u16 data_020a5624[10] = {0x20, 0x20, 0x40, 0x80, 0x100, 0x80, 0x100, 0x80, 0x100, 0x100};
+    static u16 data_020a5624[9] = {0x20, 0x20, 0x40, 0x80, 0x100, 0x80, 0x100, 0x80, 0x100};
     static u32 data_020a5638[9]  = {0x0, 0x10, 0x100010, 0x200010, 0x300010, 0x40, 0x400040, 0x0, 0x20};
     mUnk_403 = mode;
     mUnk_400 = data_020a5624[mode];
@@ -275,8 +275,6 @@ void func_02027c64(MtxFx22 *out, SpriteTransform *transform) {
 
 
 
-// non-matching: register allocation only (33 words): `cx` is r6 where the original keeps it in r5, the load
-// register, swapping it with the switch compare temporaries; the FX_Mul temporaries for px/py differ the same way.
 void func_02027cf4(s32 *x, s32 *y, s32 shape, SpriteTransform *transform) {
     fx32 cx = *x << 12;
     fx32 cy = *y << 12;
@@ -334,8 +332,10 @@ void func_02027cf4(s32 *x, s32 *y, s32 shape, SpriteTransform *transform) {
     }
     *x = cx >> 12;
     *y = cy >> 12;
-    fx32 px = FX_Mul(cx + width, transform->mScaleX);
-    fx32 py = FX_Mul(cy + height, transform->mScaleY);
+    cx += width;
+    cy += height;
+    fx32 px = FX_Mul(cx, transform->mScaleX);
+    fx32 py = FX_Mul(cy, transform->mScaleY);
     s32 index = transform->mRotation >> 4;
     fx32 sin = FX_SinCosTable_[index * 2];
     fx32 cos = FX_SinCosTable_[index * 2 + 1];

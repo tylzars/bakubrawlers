@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 extern u8 data_020d4404[];
-void func_0207889c(u32 screen, u32 offset, u32 palette, const void *colors, u32 unk5);
+void func_0207889c(u8 screen, u32 offset, u32 palette, const void *colors, u32 unk5);
 
 UnkStruct_020651bc::UnkStruct_020651bc(u32 unk1, u32 unk2, s32 unk3) {
     mUnk_30 = 0;

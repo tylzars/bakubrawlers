@@ -111,10 +111,10 @@ struct AntennaPalette {
 
 extern "C" void MIi_CpuCopy16(const void *src, void *dst, u32 size);
 extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
-void func_02078ab8(u32 screen, u32 palette, const AntennaPalette *colors, u32 unk4);
+void func_02078ab8(u8 screen, u32 palette, const AntennaPalette *colors, u32 unk4);
 void func_02078a48(u8 *dst, const u8 *src);
 
-void func_0207889c(u32 screen, u32 offset, u32 palette, const void *colors, u32 unk5) {
+void func_0207889c(u8 screen, u32 offset, u32 palette, const void *colors, u32 unk5) {
     const AntennaPalette *pal = (const AntennaPalette *) colors;
     u8 *file;
     u8 *buffer = (u8 *) OS_Alloc(0x200);
@@ -164,21 +164,19 @@ void func_02078a48(u8 *dst, const u8 *src) {
     }
 }
 
-// non-matching: 21 words. The original computes the last `pos += 2` before freeing the "fr" file and keeps it in r9;
-// here it is sunk below the "len" load into a scratch register. The final call reloads `screen` last instead of first.
-void func_02078ab8(u32 screen, u32 palette, const AntennaPalette *colors, u32 unk4) {
+void func_02078ab8(u8 screen, u32 palette, const AntennaPalette *colors, u32 unk4) {
     u32 h;
     u32 i;
     u32 d;
     u32 f;
     u32 b;
-    u8 *buffer;
-    u8 *file;
+    u16 *buffer;
+    u16 *file;
     u32 j16;
     u32 size;
     u8 pos;
-    u8 *extra;
-    buffer = (u8 *) OS_Alloc(0x20);
+    u16 *extra;
+    buffer = (u16 *) OS_Alloc(0x20);
     j16    = colors->mUnk_06_0 << 4;
     b      = colors->mUnk_00_4;
     d      = colors->mUnk_00_10;
@@ -189,32 +187,32 @@ void func_02078ab8(u32 screen, u32 palette, const AntennaPalette *colors, u32 un
     pos    = 1;
     ChangeDir("/Game/Character/EditedIcon/");
     if (unk4 == 0) {
-        file = (u8 *) func_02023504("icon_ch_edit_ncl.bin", 0, 0, 0, &size, 0);
+        file = (u16 *) func_02023504("icon_ch_edit_ncl.bin", 0, 0, 0, &size, 0);
         MIi_CpuCopy16(file, buffer, 0x20);
-        u8 *p = (u8 *) func_02023504("icon_ch_edit_skin_ncl.bin", 0, 0, 0, &size, 0);
-        MIi_CpuCopy16(p + (j16 + 1) * 2, buffer + 2, 6);
+        u16 *p = (u16 *) func_02023504("icon_ch_edit_skin_ncl.bin", 0, 0, 0, &size, 0);
+        MIi_CpuCopy16(&p[pos + j16], &buffer[pos], 6);
         pos += 3;
         OS_Free(p);
-        p = (u8 *) func_02023504("icon_ch_edit_eye_ncl.bin", 0, 0, 0, &size, 0);
-        MIi_CpuCopy16(p + (pos + b * 16) * 2, buffer + pos * 2, 6);
+        p = (u16 *) func_02023504("icon_ch_edit_eye_ncl.bin", 0, 0, 0, &size, 0);
+        MIi_CpuCopy16(&p[pos + b * 16], &buffer[pos], 6);
         pos += 3;
         OS_Free(p);
-        p = (u8 *) func_02023504("icon_ch_edit_hair_ncl.bin", 0, 0, 0, &size, 0);
-        MIi_CpuCopy16(p + (pos + d * 16) * 2, buffer + pos * 2, 6);
+        p = (u16 *) func_02023504("icon_ch_edit_hair_ncl.bin", 0, 0, 0, &size, 0);
+        MIi_CpuCopy16(&p[pos + d * 16], &buffer[pos], 6);
         pos += 3;
         OS_Free(p);
-        p = (u8 *) func_02023504("icon_ch_edit_cap_ncl.bin", 0, 0, 0, &size, 0);
-        MIi_CpuCopy16(p + (pos + f * 16) * 2, buffer + pos * 2, 4);
+        p = (u16 *) func_02023504("icon_ch_edit_cap_ncl.bin", 0, 0, 0, &size, 0);
+        MIi_CpuCopy16(&p[pos + f * 16], &buffer[pos], 4);
         pos += 2;
         OS_Free(p);
-        p = (u8 *) func_02023504("icon_ch_edit_fr_ncl.bin", 0, 0, 0, &size, 0);
-        MIi_CpuCopy16(p + (pos + h * 16) * 2, buffer + pos * 2, 4);
+        p = (u16 *) func_02023504("icon_ch_edit_fr_ncl.bin", 0, 0, 0, &size, 0);
+        MIi_CpuCopy16(&p[pos + h * 16], &buffer[pos], 4);
         pos += 2;
         OS_Free(p);
-        extra = (u8 *) func_02023504("icon_ch_edit_len_ncl.bin", 0, 0, 0, &size, 0);
-        MIi_CpuCopy16(extra + (pos + i * 16) * 2, buffer + pos * 2, 2);
+        extra = (u16 *) func_02023504("icon_ch_edit_len_ncl.bin", 0, 0, 0, &size, 0);
+        MIi_CpuCopy16(&extra[pos + i * 16], &buffer[pos], 2);
     } else {
-        file = (u8 *) func_02023504("icon_ch_edit_grayscale_ncl.bin", 0, 0, 0, &size, 0);
+        file = (u16 *) func_02023504("icon_ch_edit_grayscale_ncl.bin", 0, 0, 0, &size, 0);
         MIi_CpuCopy16(file, buffer, 0x20);
     }
     DC_FlushRange(buffer, 0x20);

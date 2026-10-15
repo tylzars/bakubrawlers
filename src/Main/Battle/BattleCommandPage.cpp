@@ -628,7 +628,7 @@ void BattleCommandPage::func_02056814(u32 index) {
     }
     MessageFile **nameFile;
     u16 id2;
-    u32 height;
+    u16 height;
     int total;
     if (id < 0xd5) {
         id2      = id;

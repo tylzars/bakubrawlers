@@ -434,18 +434,11 @@ void MyroomCharaScene::ClearTextBuffers() {
     }
 }
 
-// non-matching: 11 words, entry block only (+0x8..+0x30). The original loads both stack arguments at the top
-// (ldrsh r5, x; ldr r4, suffix); ours loads x into r4 and the scheduler sinks the suffix load to just before the
-// first branch (+0x30), so x takes r4. In a small test function only a consumer of suffix inside the entry block
-// (e.g. `unused = suffix;`) keeps the load at the top; parameter types, volatile or address-taken reads, an enum
-// copy, double assignment, suffix/type mixes, declaration orders, array/struct forms of pos/unused, uses in later
-// blocks and a store through a pointer in the entry block all leave it sunk. So the original's entry block must
-// use suffix in an instruction that does not survive to the final code (a copy merged away, or similar).
-void MyroomCharaScene::func_ov008_02224ca4(u32 line, u32 value, u8 digits, s16 x, s32 suffix) {
+void MyroomCharaScene::func_ov008_02224ca4(u32 line, u32 value, u8 digits, s16 x, s16 suffix) {
     s16 pos = x;
     BOOL special = FALSE;
     s16 unused;
-    s32 type = suffix;
+    s16 type = suffix;
     unused       = 0;
     switch (mTab) {
         case 1:

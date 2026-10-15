@@ -84,8 +84,8 @@ u16 TextManager::func_0202c1a8(u32 index) {
 // sets unk17 = 0 by reloading maxX's slot (`ldrne r0, [sp, #92]`), so maxX = 0 comes first there, but every order
 // tried that puts it before the unk14 test shares the zero in a register and is 3 words shorter. `volatile` on x and
 // y is a placeholder: it is the only form found that keeps the `x = startX` store ahead of the `y` load.
-void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u32 height, s16 *outWidth,
-                        s16 *outHeight, u16 *outPixelWidth, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13,
+void TextManager::Print(const void *text, u16 length, void *buffer, u16 width, u16 height, s16 *outWidth,
+                        s16 *outHeight, u16 *outPixelWidth, u32 unk9, u32 unk10, u32 unk11, u16 unk12, u32 unk13,
                         u32 unk14, u32 unk15, u32 unk16, u32 unk17) {
     u32 color;
     u16 remaining;
@@ -331,10 +331,8 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u32 width, u
     mUnk_5b = savedFontMode;
 }
 
-// non-matching: 15 words, prologue scheduling only. The original copies unk12 to its home slot through r5 and
-// loads unk13 (r6) late; here unk13 is loaded first and every copy goes through r0.
-void TextManager::PrintNumber(u32 value, u8 minDigits, u32 unk3, void *buffer, u32 width, u32 height,
-                              s16 *outWidth, s16 *outHeight, u32 unk9, u32 unk10, u32 unk11, u32 unk12, u32 unk13,
+void TextManager::PrintNumber(u32 value, u8 minDigits, u32 unk3, void *buffer, u16 width, u16 height,
+                              s16 *outWidth, s16 *outHeight, u32 unk9, u32 unk10, u32 unk11, u16 unk12, u32 unk13,
                               u32 unk14, u32 unk15) {
     u32 count    = 0;
     u32 reversed = 0;

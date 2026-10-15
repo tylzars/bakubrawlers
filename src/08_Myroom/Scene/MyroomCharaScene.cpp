@@ -8,7 +8,6 @@
 #include "System/FileSystem.hpp"
 #include "System/InputManager.hpp"
 #include "System/SoundManager.hpp"
-#include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkFunctions.hpp"
@@ -18,17 +17,56 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-extern const WindowItemRecord data_ov008_022293e8[];
-extern const WindowCellRecord data_ov008_02229378[];
-extern const WindowCellRecord data_ov008_022292d4[];
-extern const WindowCellRecord data_ov008_0222929c[];
-
-extern const u32 data_ov008_022292b8[7];
-extern const u8 data_ov008_0222934b[];
-extern const u8 data_ov008_0222934d[];
 extern u16 data_020d444e[];
 
-extern const u8 data_ov008_0222930c[][21];
+// Where each of the seven list lines is drawn, per tab (x, y and the right edge of the value column; the last row is
+// unused).
+struct CharaTextPos {
+    u8 mX;
+    u8 mY;
+    u8 mRight;
+};
+
+const u32 data_ov008_022292b8[7] = {0x10000, 0x11000, 0x12000, 0x13000, 0x14000, 0x15000, 0x16000};
+
+const WindowCellRecord data_ov008_02229378[4] = {
+    {"myroom_status_b_obj_00_nce.bin", 1, 0, 0, 1, 1, {1, 2, 2, 0}},
+    {"myroom_status_b_obj_00_nce.bin", 4, 0, 0, 1, 1, {4, 5, 5, 0}},
+    {"myroom_status_b_obj_00_nce.bin", 10, 0, 0, 1, 1, {10, 11, 11, 0}},
+    {"myroom_status_b_obj_00_nce.bin", 7, 0, 0, 1, 1, {7, 8, 8, 0}},
+};
+
+const WindowCellRecord data_ov008_0222929c[1] = {
+    {"union_b_obj_cockpit_nce.bin", 2, 0x10000, 4, 1, 1, {2, 3, 3, 0}},
+};
+
+const CharaTextPos data_ov008_0222930c[5][7] = {
+    {{0x6a, 0x37, 0x00}, {0xdc, 0x5b, 0x00}, {0xc4, 0x6d, 0x00}, {0xc4, 0x7f, 0x00}, {0xb8, 0x91, 0x00}},
+    {{0x3e, 0x37, 0x00}, {0xdc, 0x49, 0x00}, {0xdc, 0x5b, 0x00}, {0xca, 0x6d, 0x00},
+     {0xd0, 0x7f, 0x00}, {0xd0, 0x91, 0x00}, {0xd0, 0xa3, 0x00}},
+    {{0xd0, 0x7f, 0x00}, {0xd0, 0x91, 0x00}, {0xd0, 0xa3, 0x00}},
+    {{0x12, 0x37, 0xd0}, {0x12, 0x49, 0xd0}, {0x12, 0x5b, 0xd0}, {0x12, 0x6d, 0xd0},
+     {0x12, 0x7f, 0xd0}, {0x12, 0x91, 0xd0}, {0x12, 0xa3, 0xd0}},
+};
+
+const WindowCellRecord data_ov008_022292d4[2] = {
+    {"union_b_obj_page_nce.bin", 0, 0x12000, 5, 1, 1, {0, 1, 1, 0}},
+    {"union_b_obj_page_nce.bin", 3, 0x12000, 5, 1, 1, {3, 4, 4, 0}},
+};
+
+// Room for 22 items; the window uses the first 7.
+const WindowItemRecord data_ov008_022293e8[22] = {
+    {0, 0x8, 40, 44, 176, 20, 0x0, {3, 1, 0, 0}, 0, 0},
+    {1, 0x8, 40, 72, 176, 20, 0x0, {0, 2, 1, 1}, 0, 0},
+    {2, 0x8, 40, 100, 176, 20, 0x0, {1, 3, 2, 2}, 0, 0},
+    {3, 0x8, 40, 128, 176, 20, 0x0, {2, 0, 3, 3}, 0, 0},
+    {4, 0x208, 192, 26, 32, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {5, 0x408, 224, 26, 32, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {6, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
+};
+
+// Included after the tables: where TextManager::Get() is first parsed decides the order of the file's data.
+#include "Text/TextManager.hpp"
 
 MyroomCharaScene::MyroomCharaScene() :
     SceneBase(2, 0) {
@@ -560,7 +598,7 @@ void MyroomCharaScene::func_ov008_02224f80(u32 line, u32 kind) {
                        0, 0, 1, 1);
             TextManager::Get().mUnk_5b = 0;
             func_ov008_02224ca4(line, data_020d444e[mList[mPage * 7 + line]], 3,
-                                (s16) (data_ov008_0222934d[line * 3] - data_ov008_0222934b[line * 3]), 6);
+                                (s16) (data_ov008_0222930c[3][line].mRight - data_ov008_0222930c[3][line].mX), 6);
             break;
         }
     }
@@ -571,8 +609,8 @@ void MyroomCharaScene::func_ov008_02224f80(u32 line, u32 kind) {
 void MyroomCharaScene::DrawText() {
     for (u8 i = 0; i < 7; i++) {
         if (mUnk_64[i] != 0) {
-            SpriteManager::Get().Screen(0).func_02027778(mGlyphBuffer, mGlyphCount, data_ov008_0222930c[mUnk_12][i * 3],
-                                                         data_ov008_0222930c[mUnk_12][i * 3 + 1], 0,
+            SpriteManager::Get().Screen(0).func_02027778(mGlyphBuffer, mGlyphCount, data_ov008_0222930c[mUnk_12][i].mX,
+                                                         data_ov008_0222930c[mUnk_12][i].mY, 0,
                                                          (u16) (data_ov008_022292b8[i] >> 7), 0xf, 0);
         }
     }

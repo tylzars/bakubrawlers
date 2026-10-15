@@ -55,9 +55,10 @@ src/07_Battle/Battle/BattleSideHelper.cpp:
     .text       start:0x02223534 end:0x02223750
     .data       start:0x02286588 end:0x02286598
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Battle/BattleObj01.cpp:
+    complete
     .text       start:0x02223750 end:0x02223cf0
+    .data       start:0x02286598 end:0x022865ec
 
 src/07_Battle/Battle/BattleBlend.cpp:
     complete

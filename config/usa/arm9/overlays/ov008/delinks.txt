@@ -40,7 +40,9 @@ src/08_Myroom/Scene/MyroomShootScene.cpp:
     .bss        start:0x0222b67c end:0x0222b6ac
 
 src/08_Myroom/Scene/MyroomCharaScene.cpp:
+    complete
     .text       start:0x02223594 end:0x02225a88
+    .rodata     start:0x0222929c end:0x02229650
     .data       start:0x0222ae18 end:0x0222b1d4
     .bss        start:0x0222b6ac end:0x0222b6b8
 

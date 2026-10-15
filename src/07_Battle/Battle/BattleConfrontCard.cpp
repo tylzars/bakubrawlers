@@ -374,6 +374,9 @@ void BattleConfrontCard::func_ov007_0223f90c(u16 value) {
 // With -proc generic ours has mBattlePlayers in r1 and j*4 in r0; the swap appears once the scheduler hoists the lsl to the
 // loop head. Unchanged across slot/player/list locals, CurrentPlayer(), flag/id read order and types, `slots += j`,
 // j/bit/count as u32 with (u8) increments, the callee's parameter types, and the function-scope j or k for the counters.
+// In experiments the original's registers appear only when j*4 itself is used as a value between the player load and
+// `slots = p->mSlots6c` (any store of j*4 there, volatile or not); no consumer is visible in the binary, and every
+// form that creates j*4 earlier (named or compound offsets, helpers, enum copies) compiles like ours.
 BOOL BattleConfrontCard::func_ov007_0223f918() {
     u8 j;
     u8 k;

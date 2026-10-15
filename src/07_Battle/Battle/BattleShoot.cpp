@@ -1431,6 +1431,9 @@ struct Bytes2 { u8 b[2]; };
 // the loop counter (mov r5, r0); here the counter's own mov r5, #0 is reused for the store. Statement order, chained
 // assignments, the types of i and animState (enum too), where i is declared and a separate first-loop counter don't move it.
 // In experiments the copy form appears when the zero also feeds a second spilled variable's store in that block.
+// The copy form depends on how much is live around the zero: a pointer local live across that block gives it (a named
+// &data_0220f540 for the first loop's byte copies reaches 0x864 but swaps i and the address, r5/r6); ~40 spellings
+// of the zero itself change nothing. The extra live value in the original is unidentified.
 void BattleShoot::func_ov007_0226e884() {
     s32 animState;
     s32 sumX;

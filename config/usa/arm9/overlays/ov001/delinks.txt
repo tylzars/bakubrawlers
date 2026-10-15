@@ -19,8 +19,9 @@ src/01_Arena/Scene/ArenaWindowScene.cpp:
     .data       start:0x02227dc0 end:0x02227fbc
     .bss        start:0x0222929c end:0x022292c0
 
-// provisional: code only. Ranges when linked: .rodata 0x022270bc-0x022278a8, .data 0x02227fbc-0x02229260, .bss
-// 0x022292c0-0x02229300. The tables are defined, but one 0x2c path literal (union_b_obj_window_nce.bin, entry 26
-// of data_ov001_02227560) comes out after entry 6 instead of last: the original's size sort had one more object.
 src/01_Arena/Scene/FieldSelectScene.cpp:
+    complete
     .text       start:0x0221e17c end:0x02226e54
+    .rodata     start:0x022270bc end:0x022278a8
+    .data       start:0x02227fbc end:0x02229260
+    .bss        start:0x022292c0 end:0x02229300

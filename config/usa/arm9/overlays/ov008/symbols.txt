@@ -194,7 +194,7 @@ data_ov008_022296ac kind:data(any) addr:0x022296ac
 data_ov008_022296ad kind:data(any) addr:0x022296ad
 data_ov008_02229724 kind:data(any) addr:0x02229724
 data_ov008_022297b0 kind:data(any) addr:0x022297b0
-__sinit_ov008_0222983c kind:function(arm,size=0x54) addr:0x0222983c
+__sinit_MyroomScene.cpp kind:function(arm,size=0x54) addr:0x0222983c
 .p__sinit_ov008_0222983c kind:data(word) addr:0x02229890
 OV008_DATA_START kind:data(any) addr:0x022298a0
 @1426 kind:data(any) addr:0x022298b4 local

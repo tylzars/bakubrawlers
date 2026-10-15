@@ -1,6 +1,18 @@
 #include "UI/SelectWindow.hpp"
 
+// Placeholder for an unidentified object. The original's data layout needs one more participant in this file's
+// size sort, ahead of the tables: a small weak object that no instruction addresses (nothing in the unit's ranges is
+// left over for it, and the Random and wireless-packet globals as inline statics change other units' code). This
+// accessor's static joins the sort here, its call leaves no code, and the link strips it.
+inline u32 *DataLayoutSlot() {
+    static u32 sSlot;
+    return &sSlot;
+}
+static const u8 data_ov001_022270c0[4] = {0x1a, 0x44, 0x94, 0xbe};
 static const u8 data_ov001_022270d0[10] = {0x6, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x8, 0x7, 0x9};
+static const WindowItemRecord data_ov001_02227108[1] = {
+    {0, 0x1, 9, 170, 86, 20, 0, {-1, -1, -1, -1}, 0, 1},
+};
 static const WindowItemRecord data_ov001_022270ec[1] = {
     {0, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
 };
@@ -40,16 +52,12 @@ static const WindowItemRecord data_ov001_02227218[5][6] = {
         {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
     },
 };
-static const WindowCellRecord data_ov001_02227140[1] = {
-    {"/Game/Battle/Obj/select_field_b_obj_00_nce.bin", 5, 0x8000, 8, 1, 1, {5, 6, 6, 0}},
-};
 static const WindowCellRecord data_ov001_0222715c[2] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0x0, 0, 1, 1, {0, 1, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x0, 0, 1, 1, {2, 3, 3, 0}},
 };
-static const u8 data_ov001_022270c0[4] = {0x1a, 0x44, 0x94, 0xbe};
-static const WindowItemRecord data_ov001_02227108[1] = {
-    {0, 0x1, 9, 170, 86, 20, 0, {-1, -1, -1, -1}, 0, 1},
+static const WindowCellRecord data_ov001_02227140[1] = {
+    {"/Game/Battle/Obj/select_field_b_obj_00_nce.bin", 5, 0x8000, 8, 1, 1, {5, 6, 6, 0}},
 };
 static const WindowCellRecord data_ov001_02227124[1] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x0, 0, 1, 1, {2, 3, 3, 0}},
@@ -160,6 +168,7 @@ extern u8 data_020d43d7[];
 extern u8 data_020d43eb[];
 
 FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
+    (void) DataLayoutSlot();
     mWindows[0] = NULL;
     mWindows[1] = NULL;
     mWindows[2] = NULL;

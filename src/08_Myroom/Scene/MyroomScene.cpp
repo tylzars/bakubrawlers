@@ -22,6 +22,12 @@
 static const Vec2s data_ov008_02228758[3] = {
     {16, 72}, {96, 72}, {176, 72},
 };
+static const u8 data_ov008_022286f8[3] = {0x3b, 0x3a, 0x39};
+extern const s16 data_ov008_02228740[2][3] = {{58, 16, -667}, {-28, 4, -717}};
+extern const s16 data_ov008_0222871c[2][3] = {{224, 8, -595}, {146, -39, -657}};
+extern const s16 data_ov008_02228734[2][3] = {{182, 8, -665}, {96, -4, -715}};
+extern const s16 data_ov008_0222874c[2][3] = {{60, 8, -606}, {-26, -4, -656}};
+static const u8 data_ov008_02228714[5] = {0x32, 0x35, 0x31, 0x38, 0x33};
 static const WindowItemRecord data_ov008_02228894[8] = {
     {0, 0x8000, 88, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 1},
     {1, 0x8000, 186, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 1},
@@ -32,30 +38,14 @@ static const WindowItemRecord data_ov008_02228894[8] = {
     {6, 0x8, 0, 72, 80, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
     {7, 0x8, 176, 72, 80, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
 };
-static const u8 data_ov008_022286f8[3] = {0x3b, 0x3a, 0x39};
-extern const s16 data_ov008_0222871c[2][3] = {{224, 8, -595}, {146, -39, -657}};
-extern const s16 data_ov008_02228728[2][3] = {{118, -52, -619}, {31, -64, -669}};
-extern const s16 data_ov008_02228734[2][3] = {{182, 8, -665}, {96, -4, -715}};
-extern const s16 data_ov008_02228740[2][3] = {{58, 16, -667}, {-28, 4, -717}};
-extern const s16 data_ov008_0222874c[2][3] = {{60, 8, -606}, {-26, -4, -656}};
-static const u8 data_ov008_02228714[5] = {0x32, 0x35, 0x31, 0x38, 0x33};
-WindowItemRecord data_ov008_02229c88[5] = {
-    {0, 0x8000, 0, 0, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8000, 0, 0, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8000, 0, 0, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {4, 0x8000, 128, 96, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 2},
-};
-WindowItemRecord data_ov008_02229d14[5] = {
-    {0, 0x8000, 0, 0, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8000, 0, 0, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8000, 0, 0, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {4, 0x8000, 128, 96, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 2},
-};
 static const u8 data_ov008_022286f4[3] = {0x34, 0x36, 0x37};
-static const u8 data_ov008_0222870c[5] = {0x4, 0x5, 0x2, 0x1, 0x3};
+extern const s16 data_ov008_02228728[2][3] = {{118, -52, -619}, {31, -64, -669}};
 static const u8 data_ov008_022286fc[5] = {0x2, 0x5, 0x8, 0xb, 0xe};
+static const u8 data_ov008_0222870c[5] = {0x4, 0x5, 0x2, 0x1, 0x3};
+static const u8 data_ov008_02228704[5] = {0x1, 0x4, 0x7, 0xa, 0xd};
+static const u8 data_ov008_02228764[3][8] = {
+    {3, 6, 8, 10, 4}, {5, 14, 11}, {13, 12, 15},
+};
 static const WindowCellRecord data_ov008_02228974[8] = {
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 1, 0x5000, 2, 2, 1, {2, 3, 2, 0}},
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 4, 0x5000, 2, 2, 1, {5, 6, 5, 0}},
@@ -66,7 +56,15 @@ static const WindowCellRecord data_ov008_02228974[8] = {
     {"/Game/2D/union_b/union_b_obj_arrow_nce.bin", 0, 0x4000, 1, 2, 0, {0, 2, 0, 0}},
     {"/Game/2D/union_b/union_b_obj_arrow_nce.bin", 1, 0x4000, 1, 2, 1, {1, 3, 1, 0}},
 };
-static const u8 data_ov008_02228704[5] = {0x1, 0x4, 0x7, 0xa, 0xd};
+#pragma section npdata begin
+WindowItemRecord data_ov008_02229d14[5] = {
+    {0, 0x8000, data_ov008_02228758[0].x, data_ov008_02228758[0].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {1, 0x8000, data_ov008_02228758[1].x, data_ov008_02228758[1].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {2, 0x8000, data_ov008_02228758[2].x, data_ov008_02228758[2].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {3, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {4, 0x8000, 128, 96, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 2},
+};
+#pragma section npdata end
 static const WindowCellRecord data_ov008_0222877c[5] = {
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 21, 0x5000, 2, 2, 1, {21, 22, 21, 0}},
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 23, 0x5000, 2, 2, 1, {23, 24, 23, 0}},
@@ -74,9 +72,15 @@ static const WindowCellRecord data_ov008_0222877c[5] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x0, 0, 2, 1, {2, 3, 3, 0}},
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 34, 0x5000, 2, 2, 1, {34, 34, 34, 0}},
 };
-static const u8 data_ov008_02228764[3][8] = {
-    {3, 6, 8, 10, 4}, {5, 14, 11}, {13, 12, 15},
+#pragma section npdata begin
+WindowItemRecord data_ov008_02229c88[5] = {
+    {0, 0x8000, data_ov008_02228758[0].x, data_ov008_02228758[0].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {1, 0x8000, data_ov008_02228758[1].x, data_ov008_02228758[1].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {2, 0x8000, data_ov008_02228758[2].x, data_ov008_02228758[2].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {3, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {4, 0x8000, 128, 96, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 2},
 };
+#pragma section npdata end
 static const WindowCellRecord data_ov008_02228808[5] = {
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 27, 0x5000, 2, 2, 1, {27, 28, 27, 0}},
     {"/Game/Myroom/myroom_b_obj_00_nce.bin", 29, 0x5000, 2, 2, 1, {29, 30, 29, 0}},

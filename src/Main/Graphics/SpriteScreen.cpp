@@ -59,9 +59,6 @@ void SpriteScreen::func_020275f0() {
     func_02027750();
 }
 
-static u16 data_020a5624[10] = {0x20, 0x20, 0x40, 0x80, 0x100, 0x80, 0x100, 0x80, 0x100, 0x100};
-static u32 data_020a5638[9]  = {0x0, 0x10, 0x100010, 0x200010, 0x300010, 0x40, 0x400040, 0x0, 0x20};
-
 enum GXOBJVRamModeChar { GX_OBJVRAMMODE_CHAR_2D = 0 };
 enum GXOBJVRamModeBmp { GX_OBJVRAMMODE_BMP_2D_W128 = 0 };
 static inline void GX_SetOBJVRamModeChar(GXOBJVRamModeChar mode) {
@@ -76,12 +73,13 @@ static inline void GX_SetOBJVRamModeBmp(GXOBJVRamModeBmp mode) {
 static inline void GXS_SetOBJVRamModeBmp(GXOBJVRamModeBmp mode) {
     reg_GXS_DB_DISPCNT = (u32) (reg_GXS_DB_DISPCNT & ~0x60 | mode);
 }
-// non-matching: 3 words, scheduling only: the original fills the table load's delay with the mUnk_403 store and
-// keeps `add r2, r0, #0x400` and `cmp r1, #5` after it (same order as a -proc generic build of the
-// `u16 unit = tbl[mode]; mUnk_403 = mode; mUnk_400 = unit;` form, which the arm946e scheduler reorders).
+// The tables are function-local statics (still .data): mwcc knows no store can reach them, so the table load is
+// scheduled above the mUnk_403 store as with const data.
 void SpriteScreen::func_02027624(s32 mode) {
-    mUnk_400 = data_020a5624[mode];
+    static u16 data_020a5624[10] = {0x20, 0x20, 0x40, 0x80, 0x100, 0x80, 0x100, 0x80, 0x100, 0x100};
+    static u32 data_020a5638[9]  = {0x0, 0x10, 0x100010, 0x200010, 0x300010, 0x40, 0x400040, 0x0, 0x20};
     mUnk_403 = mode;
+    mUnk_400 = data_020a5624[mode];
     if (mode < 5) {
         if (mBgIndex == 0) {
             GX_SetOBJVRamModeChar((GXOBJVRamModeChar) data_020a5638[mode]);

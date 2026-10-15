@@ -421,6 +421,10 @@ Other findings from linking:
   matched UnkStruct_02078290::Update/func_020785d8 and BattleCardEffect::func_ov007_02271888 after ~60 int-typed
   forms failed. Parameter widths matter the same way: BattleMapModel matched once `func_02032370`'s parameters were
   declared `u16` (the conversion temporary had merged with `color`), BattleObj01 once its own `layer` became `u8`.
+- **A function-local static table schedules like const data.** mwcc knows no store can reach it, so its load moves
+  above preceding stores, while the table stays in `.data` (a file-scope `const` would move it to `.rodata`).
+  SpriteScreen::func_02027624 matched this way. The statics get `name$N` symbols, to check when the unit's data is
+  claimed.
 - **A u16/s16 stack parameter is loaded at the top of the entry block.** With a 32-bit type the same load sinks
   to its first consumer (or its home-slot copy joins the late r0 chain). It only helps when every consumer has the
   same narrow type: a width mismatch between caller and callee adds a conversion temporary and 8 bytes of frame.

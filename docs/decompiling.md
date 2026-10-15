@@ -421,6 +421,11 @@ Other findings from linking:
   matched UnkStruct_02078290::Update/func_020785d8 and BattleCardEffect::func_ov007_02271888 after ~60 int-typed
   forms failed. Parameter widths matter the same way: BattleMapModel matched once `func_02032370`'s parameters were
   declared `u16` (the conversion temporary had merged with `color`), BattleObj01 once its own `layer` became `u8`.
+- **An identical first instruction in both arms is hoisted after register allocation.** When both arms of an
+  if/else start with the same instruction (same registers), mwcc moves it above the branch; that is not CSE or code
+  motion in the source, so source forms that try to stop a "hoist" cannot work. The original keeps such loads in
+  each arm only because the arms load into different registers (CharacterModel::func_02053eec's restart arm uses
+  r2 for the part pointer, plus a `mov r2, r0` copy).
 - **Which variables exist, and where, moves the schedule; expression forms rarely do.** func_020875ac's case 2
   loaded the count between list[1] and list[0] only with one function-scope `u8 i` shared by all cases and the count
   read in the loop condition (`while (i < table[index].mCount)`); a count local before the loop is never scheduled

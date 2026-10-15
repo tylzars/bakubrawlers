@@ -313,10 +313,9 @@ u8 BattleCpu::func_ov007_02231300() {
     return 0;
 }
 
-// non-matching (14 words, registers and one schedule): case 4 loads mUnk_79 into r2 and mUnk_7a into r1 where the
-// original has r1/r2 (the player and record base follow mUnk_79's register); the final mUnk_98 pass keeps the
-// &mPlayers[mUnk_79] slot address in r0 and the entry base in r1 (original r1/r0), and schedules `mov r3, #0` after
-// `add #28` instead of before it.
+// non-matching: case 4 at 0x594-0x5b0 only: the original loads mUnk_79 into r1 and mUnk_7a into r2, with the
+// player and record base following r1; ours has them the other way round. (Reading the entries through mUnk_1c
+// instead of the Entries() accessor fixes the final mUnk_98 pass.)
 extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     cpu->mPos.x = 0;
     cpu->mPos.y = 0;
@@ -591,7 +590,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
             if (owner == data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->Partner()) {
                 j = 0;
                 do {
-                    BattleMarker *m2 = &data_020d433c.mBattlePlayers->Entries()[j];
+                    BattleMarker *m2 = &data_020d433c.mBattlePlayers->mUnk_1c[j];
                     if (m2->mUnk_2 != 0) {
                         if (m2->mUnk_5 != 0) {
                             if (data_020d433c.mBattlePlayers->Units()[(u8) (m2->mUnk_5 - 1)].mUnk_0f != data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->Partner()) {

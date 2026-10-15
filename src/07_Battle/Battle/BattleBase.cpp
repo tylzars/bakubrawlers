@@ -1187,7 +1187,10 @@ void BattleBase::func_ov007_0221c8f8(u16 *p) {
     }
 }
 
-// non-matching: register allocation only (value lands in r8 and the TouchManager address in r9, swapped).
+// non-matching: 6 words at 0x284-0x29c, the s16 conversion of the touch x/y arguments: the original loads both
+// fields, then shifts each into r2/r3; ours converts each in place with the `this` load between the shifts.
+// (The `(u16) value` cast fixes the value/TouchManager register swap.) func_ov007_0221d088 makes the same call with
+// the in-place form and matches, so this call is written differently in the original.
 void BattleBase::func_ov007_0221c938() {
     u16 a[4] = {0, 0, 0, 0};
     u16 b[4] = {0, 0, 0, 0};
@@ -1238,7 +1241,7 @@ void BattleBase::func_ov007_0221c938() {
                 u32 n;
                 do {
                     mUnk_44->func_ov007_022275c0(side, TouchManager::Get().mX, TouchManager::Get().mY, mUnk_15);
-                    n = mUnk_44->func_ov007_022275a0(value, mUnk_20->mUnk_09, mUnk_20->mUnk_0a);
+                    n = mUnk_44->func_ov007_022275a0((u16) value, mUnk_20->mUnk_09, mUnk_20->mUnk_0a);
                     k++;
                 } while (k < n);
             }

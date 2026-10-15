@@ -666,10 +666,10 @@ void func_ov007_02262714(BattlePlayerList *list, u8 a, u8 b, u8 c);
 void func_ov007_02248944(VecFx32 *out, u8 a, u8 b);
 void func_ov007_02248910(void *p);
 
-// non-matching: 0x298 vs 0x29c, only case 1 after func_ov007_02248944 differs: the original loads pos.x (ip), the
-// data_0208bd24 pointer, mUnk_30 (r6), dx and the 50 above the SetTarget stores and stores pos.x through a copy
-// (`mov r2, ip`; 0xc000 then goes to r2), with dz loaded after the stores. Reading pos.x in both calls (no x local)
-// gives the right size (23 words) but the second load stays below the stores.
+// non-matching: 0x298 vs 0x29c, only case 1 after func_ov007_02248944 differs: the original keeps pos.x in ip and
+// mUnk_30 in r6 (ours swaps them) and stores the target's x through a copy (`mov r2, ip`; 0xc000 then goes to r2).
+// Reading the sine/cosine pair from FX_SinCosTable_ by angle (as func_ov007_02267098 does) gives the original's
+// scheduling of the 50 and the [0] load.
 u8 BattleUnk022637ac::func_ov007_0226547c() {
     u8 done = 0;
     switch (mUnk_28) {
@@ -690,12 +690,14 @@ u8 BattleUnk022637ac::func_ov007_0226547c() {
             list->mUnk_1c[marker].mUnk_2 = 3;
             VecFx32 pos;
             func_ov007_02248944(&pos, entries[marker].mUnk_3, entries[marker].mUnk_4);
-            s16 dx = data_0208bd24[1];
-            s16 dz = data_0208bd24[0];
+            u16 angle = 0x2000;
+            int idx = angle >> 4;
+            s32 sinV = FX_SinCosTable_[idx * 2 + 1];
+            s32 cosV = FX_SinCosTable_[idx * 2];
             fx32 x = pos.x;
             fx32 z = pos.z;
             mUnk_30->SetTarget(x, 0xc000, z);
-            mUnk_30->SetPosition(x + dx * 50, 0x64000, z + dz * 50);
+            mUnk_30->SetPosition(x + sinV * 50, 0x64000, z + cosV * 50);
             func_ov007_02248910(mUnk_1c->mUnk_178);
             mUnk_28++;
             break;

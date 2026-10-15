@@ -61,6 +61,7 @@ public:
     virtual void vfunc_34();
     virtual void vfunc_3c();
     virtual u8 vfunc_40(int a);
+    virtual void vfunc_44(int index, u16 count);
 };
 extern "C" u32 func_ov007_022696a0(u32 a, u32 b);
 extern "C" void func_ov007_022626b8(BattlePlayerList *list, u8 index);

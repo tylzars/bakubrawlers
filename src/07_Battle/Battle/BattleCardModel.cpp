@@ -288,11 +288,12 @@ BOOL BattleCardModel::func_ov007_0227292c() {
     return FALSE;
 }
 
-// non-matching: 0x22c vs 0x240; the original loads mParts and computes mParts + i * 0x28 (one mla each, with three
-// registers holding 0x28) for each of its three reads, where mwcc shares the load and the product. Part(i) (which
-// matches func_ov007_02273718) still shares both here. An accessor with an enum-typed local stride gives the three mla
-// but shares the load (0x23c); separate loads only came from reading mParts through a different type in one of the
-// two kind reads (size matches, 19 words: registers of the strides and the 0/1 constants).
+// Part `index` of a parts table passed by reference; reading the table through it reloads mParts, as the
+// original does for each part read of func_ov007_022734d8.
+static inline BattleCardModelPart *PartAt(BattleCardModelPart *&parts, int index) {
+    return &parts[index];
+}
+
 void BattleCardModel::func_ov007_022734d8() {
     char name[0x80];
     char bone[0x11];
@@ -310,9 +311,11 @@ void BattleCardModel::func_ov007_022734d8() {
     if (mCount) {
         u8 i = 0;
         do {
-            if ((mParts[i].mKind == 1) | (mParts[i].mKind == 3)) {
+            // Placeholder: the (u32) conversion keeps this index product apart from the first read's (the original computes
+            // mParts + i * 0x28 separately for all three reads).
+            if ((mParts[i].mKind == 1) | (PartAt(mParts, (u32) i)->mKind == 3)) {
                 MI_CpuFill8(bone, 0, 0x11);
-                func_020122f4(bone, mParts[i].mName);
+                func_020122f4(bone, PartAt(mParts, i)->mName);
                 u8 *model  = *(u8 **) &mBaku->mModel->mRenderObj[4];
                 void *dict = model ? model + 0x40 : 0;
                 s32 index  = dict ? func_0203340c(dict, bone) : -1;

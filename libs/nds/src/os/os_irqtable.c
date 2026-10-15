@@ -72,8 +72,8 @@ void func_0200489c(void) {
 // calls the callback with its argument, and masks the interrupt again unless
 // the slot is flagged to stay enabled.
 void func_020048a0(int n) {
-    void (*fn)(void *) = data_020bdc60[n].fn;
     u32 bit = 1 << data_020a4f28[n];
+    void (*fn)(void *) = data_020bdc60[n].fn;
     data_020bdc60[n].fn = 0;
     if (fn != 0) {
         fn(data_020bdc60[n].arg);
@@ -103,19 +103,17 @@ void func_020049a8(void) {
 // installs fn: bits 3-6 and 8-11 go to the callback slots (with keep=1,
 // arg=0), every other bit goes into the handler table at the fast-memory base.
 void OS_SetIrqFunction(u32 mask, void (*fn)(void)) {
-    void (**t)(void) = (void (**)(void)) HW_DTCM;
-    IrqSlot *base = data_020bdc60;
     int i;
     IrqSlot *s;
     for (i = 0; i < 22; i++, mask >>= 1) {
         if (mask & 1) {
             s = 0;
             if (i >= 8 && i <= 11) {
-                s = &base[i - 8];
+                s = &data_020bdc60[i - 8];
             } else if (i >= 3 && i <= 6) {
-                s = &base[i + 1];
+                s = &data_020bdc60[i + 1];
             } else {
-                t[i] = fn;
+                ((void (**)(void)) SDK_AUTOLOAD_DTCM_START)[i] = fn;
             }
             if (s != 0) {
                 s->fn = (void (*)(void *)) fn;

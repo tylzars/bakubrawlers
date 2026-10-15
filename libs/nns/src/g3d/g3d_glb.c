@@ -26,6 +26,7 @@ static inline s32 FxMul(s32 a, s32 b) { return (s32)(((long long)a * b) >> 12); 
 typedef struct { s32 x, y, z; } VecFx32;
 typedef union { u32 w[0x99]; struct { u32 pad0[0x38]; VecFx32 trans; VecFx32 scale; u32 pad; u32 flag; } s; } G3dGlb;
 extern G3dGlb data_02211374;
+extern G3dGlb data_02211374_b;   // same address as data_02211374: the second literal-pool word of func_02032284
 #define GU (data_02211374.w)
 extern u8 data_0221137c[], data_022113c0[], data_02211430[], data_02211474[], data_022114a4[], data_022114d4[], data_02211534[], data_02211574[];
 extern u32 data_022113f4[], data_0221141c[];
@@ -73,7 +74,7 @@ void func_02032130(void) {   // NNS_G3dGlbInit
     g[0x260 / 4] = -0x1000;
 }
 void func_02032284(void) {   // NNS_G3dGlbFlushP
-    func_01ff93d8(GU[0], &GU[1], 0x3e);
+    func_01ff93d8(GU[0], (u32 *)&data_02211374_b + 1, 0x3e);
     GU[0xfc / 4] &= ~1;
     GU[0xfc / 4] &= ~2;
 }

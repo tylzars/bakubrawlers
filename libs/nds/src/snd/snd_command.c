@@ -2,18 +2,16 @@
 
 extern void *SNDi_SharedWork;   // 0x020bfc00
 
-// 0x020be0c0
-static struct {
-    SNDCommand *freeList;       // 0x00
-    u32 procCount;              // 0x04
-    SNDCommand *pendingHead;    // 0x08
-    SNDCommand *pendingTail;    // 0x0c
-    SNDCommand *freeTail;       // 0x10
-    int ringRead;               // 0x14
-    int ringWrite;              // 0x18
-    int pendingCount;           // 0x1c
-    u32 replyCount;             // 0x20
-} cmdState;
+// 0x020be0c0-0x020be0e3: separate statics, defined in this order for their original layout in .bss.
+static u32 cmdProcCount;   // 0x020be0c4
+static u32 cmdReplyCount;   // 0x020be0e0
+static SNDCommand *cmdFreeTail;   // 0x020be0d0
+static SNDCommand *cmdPendingHead;   // 0x020be0c8
+static SNDCommand *cmdFreeList;   // 0x020be0c0
+static SNDCommand *cmdPendingTail;   // 0x020be0cc
+static int cmdRingRead;   // 0x020be0d4
+static int cmdRingWrite;   // 0x020be0d8
+static int cmdPendingCount;   // 0x020be0dc
 
 static SNDCommand *cmdRing[9];  // 0x020be0e4
 static u32 sharedWork[0xa0] __attribute__((aligned(32)));    // 0x020be120
@@ -23,7 +21,7 @@ void SND_CommandInit(void) {
     SNDCommand *cmd;
     int i; SNDCommand *n;
     func_02008948();
-    cmdState.freeList = cmdPool;
+    cmdFreeList = cmdPool;
     i = 0;
     while (i < 255) {
         n = &cmdPool[i + 1];
@@ -31,14 +29,14 @@ void SND_CommandInit(void) {
         i++;
     }
     cmdPool[255].next = NULL;
-    cmdState.freeTail = &cmdPool[255];
-    cmdState.pendingHead = NULL;
-    cmdState.pendingTail = NULL;
-    cmdState.pendingCount = 0;
-    cmdState.ringRead = 0;
-    cmdState.ringWrite = 0;
-    cmdState.replyCount = 1;
-    cmdState.procCount = 0;
+    cmdFreeTail = &cmdPool[255];
+    cmdPendingHead = NULL;
+    cmdPendingTail = NULL;
+    cmdPendingCount = 0;
+    cmdRingRead = 0;
+    cmdRingWrite = 0;
+    cmdReplyCount = 1;
+    cmdProcCount = 0;
     SNDi_SharedWork = sharedWork;
     func_02008b70(sharedWork);
     cmd = SND_AllocCommand(1);
@@ -56,23 +54,23 @@ SNDCommand *SND_RecvCommandReply(u32 flags) {
     SNDCommand *node;
     SNDCommand *tail;
     if (flags & 1) {
-        if (func_02008b48() == cmdState.procCount) {
+        if (func_02008b48() == cmdProcCount) {
             do {
                 OS_RestoreInterrupts(e);
                 OS_SpinWait(100);
                 e = OS_DisableInterrupts();
-            } while (func_02008b48() == cmdState.procCount);
+            } while (func_02008b48() == cmdProcCount);
         }
     } else {
-        if (func_02008b48() == cmdState.procCount) {
+        if (func_02008b48() == cmdProcCount) {
             OS_RestoreInterrupts(e);
             return NULL;
         }
     }
-    node = cmdRing[cmdState.ringRead];
-    cmdState.ringRead++;
-    if (cmdState.ringRead > 8) {
-        cmdState.ringRead = 0;
+    node = cmdRing[cmdRingRead];
+    cmdRingRead++;
+    if (cmdRingRead > 8) {
+        cmdRingRead = 0;
     }
     tail = node;
     if (tail->next != NULL) {
@@ -80,14 +78,14 @@ SNDCommand *SND_RecvCommandReply(u32 flags) {
             tail = tail->next;
         } while (tail->next != NULL);
     }
-    if (cmdState.freeTail != NULL) {
-        cmdState.freeTail->next = node;
+    if (cmdFreeTail != NULL) {
+        cmdFreeTail->next = node;
     } else {
-        cmdState.freeList = node;
+        cmdFreeList = node;
     }
-    cmdState.freeTail = tail;
-    cmdState.pendingCount--;
-    cmdState.procCount++;
+    cmdFreeTail = tail;
+    cmdPendingCount--;
+    cmdProcCount++;
     OS_RestoreInterrupts(e);
     return node;
 }
@@ -126,13 +124,13 @@ SNDCommand *SND_AllocCommand(u32 flags) {
 void SND_PushCommand(SNDCommand *cmd) {
     OSIntrMode e = OS_DisableInterrupts();
     SNDCommand *t;
-    t = cmdState.pendingTail;
+    t = cmdPendingTail;   // 0x020be0cc
     if (t == NULL) {
-        cmdState.pendingHead = cmd;
-        cmdState.pendingTail = cmd;
+        cmdPendingHead = cmd;
+        cmdPendingTail = cmd;
     } else {
         t->next = cmd;
-        cmdState.pendingTail = cmd;
+        cmdPendingTail = cmd;
     }
     cmd->next = NULL;
     OS_RestoreInterrupts(e);
@@ -140,51 +138,51 @@ void SND_PushCommand(SNDCommand *cmd) {
 
 BOOL SND_FlushCommand(u32 flags) {
     OSIntrMode e = OS_DisableInterrupts();
-    if (cmdState.pendingHead == NULL) {
+    if (cmdPendingHead == NULL) {
         OS_RestoreInterrupts(e);
         return TRUE;
     }
-    if (cmdState.pendingCount >= 8) {
+    if (cmdPendingCount >= 8) {
         if (!(flags & 1)) {
             OS_RestoreInterrupts(e);
             return FALSE;
         }
         do {
             SND_RecvCommandReply(1);
-        } while (cmdState.pendingCount >= 8);
-        if (cmdState.pendingHead == NULL) {
+        } while (cmdPendingCount >= 8);
+        if (cmdPendingHead == NULL) {
             OS_RestoreInterrupts(e);
             return TRUE;
         }
     }
     DC_FlushRange(cmdPool, 0x1800);
-    if (PXI_SendWordByFifo(7, (u32) cmdState.pendingHead, FALSE) < 0) {
+    if (PXI_SendWordByFifo(7, (u32) cmdPendingHead, FALSE) < 0) {
         if (!(flags & 1)) {
             OS_RestoreInterrupts(e);
             return FALSE;
         }
-        while (cmdState.pendingCount >= 8 || PXI_SendWordByFifo(7, (u32) cmdState.pendingHead, FALSE) < 0) {
+        while (cmdPendingCount >= 8 || PXI_SendWordByFifo(7, (u32) cmdPendingHead, FALSE) < 0) {
             OS_RestoreInterrupts(e);
             SND_RecvCommandReply(0);
             e = OS_DisableInterrupts();
             DC_FlushRange(cmdPool, 0x1800);
-            if (cmdState.pendingHead == NULL) {
+            if (cmdPendingHead == NULL) {
                 OS_RestoreInterrupts(e);
                 return TRUE;
             }
         }
     }
     {
-        cmdRing[cmdState.ringWrite] = cmdState.pendingHead;
-        cmdState.ringWrite++;
-        if (cmdState.ringWrite > 8) {
-            cmdState.ringWrite = 0;
+        cmdRing[cmdRingWrite] = cmdPendingHead;   // 0x020be0c8
+        cmdRingWrite++;
+        if (cmdRingWrite > 8) {
+            cmdRingWrite = 0;
         }
     }
-    cmdState.pendingHead = NULL;
-    cmdState.pendingTail = NULL;
-    cmdState.pendingCount++;
-    cmdState.replyCount++;
+    cmdPendingHead = NULL;
+    cmdPendingTail = NULL;
+    cmdPendingCount++;
+    cmdReplyCount++;
     OS_RestoreInterrupts(e);
     if (flags & 2) {
         func_020089a8();
@@ -213,10 +211,10 @@ void SND_WaitForCommandProc(u32 tag) {
 u32 SND_GetCurrentCommandTag(void) {
     OSIntrMode e = OS_DisableInterrupts();
     u32 tag;
-    if (cmdState.pendingHead == NULL) {
-        tag = cmdState.procCount;
+    if (cmdPendingHead == NULL) {
+        tag = cmdProcCount;   // 0x020be0c4
     } else {
-        tag = cmdState.replyCount;
+        tag = cmdReplyCount;   // 0x020be0e0
     }
     OS_RestoreInterrupts(e);
     return tag;
@@ -224,10 +222,10 @@ u32 SND_GetCurrentCommandTag(void) {
 
 BOOL SND_IsFinishedCommandTag(u32 tag) {
     OSIntrMode e = OS_DisableInterrupts();
-    if (tag > cmdState.procCount) {
-        if ((tag - cmdState.procCount) < 0x80000000) tag = FALSE; else tag = TRUE;
+    if (tag > cmdProcCount) {
+        if ((tag - cmdProcCount) < 0x80000000) tag = FALSE; else tag = TRUE;
     } else {
-        tag = (cmdState.procCount - tag) < 0x80000000 ? TRUE : FALSE;
+        tag = (cmdProcCount - tag) < 0x80000000 ? TRUE : FALSE;
     }
     OS_RestoreInterrupts(e);
     return tag;
@@ -236,7 +234,7 @@ BOOL SND_IsFinishedCommandTag(u32 tag) {
 u32 SND_CountFreeCommand(void) {
     OSIntrMode e = OS_DisableInterrupts();
     u32 count = 0;
-    SNDCommand *c = cmdState.freeList;
+    SNDCommand *c = cmdFreeList;   // 0x020be0c0
     for (; c != NULL; c = c->next) {
         count++;
     }
@@ -247,7 +245,7 @@ u32 SND_CountFreeCommand(void) {
 u32 SND_CountWaitingCommand(void) {
     OSIntrMode e = OS_DisableInterrupts();
     u32 count = 0;
-    SNDCommand *c = cmdState.pendingHead;
+    SNDCommand *c = cmdPendingHead;   // 0x020be0c8
     for (; c != NULL; c = c->next) {
         count++;
     }
@@ -286,16 +284,16 @@ void func_020089a8(void) {
 
 SNDCommand *func_020089d0(void) {
     OSIntrMode e = OS_DisableInterrupts();
-    SNDCommand *cmd = cmdState.freeList;
+    SNDCommand *cmd = cmdFreeList;   // 0x020be0c0
     if (cmd == NULL) {
         OS_RestoreInterrupts(e);
         return NULL;
     }
     {
         SNDCommand *next = cmd->next;
-        cmdState.freeList = next;
+        cmdFreeList = next;
         if (next == NULL) {
-            cmdState.freeTail = NULL;
+            cmdFreeTail = NULL;
         }
     }
     OS_RestoreInterrupts(e);

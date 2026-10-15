@@ -28,8 +28,8 @@ typedef struct { u32 a, b; } CardQueue;
 typedef struct CardCommon {
     CardArg *arg;     // 0x00
     u32 f04;          // last word sent
-    u32 owner;        // 0x08 lock owner (-3 = free)
-    u32 lockCount;    // 0x0c
+    vu32 owner;       // 0x08 lock owner (-3 = free)
+    vu32 lockCount;   // 0x0c
     CardQueue lockQueue; // 0x10
     u32 lockTarget;   // 0x18
     u32 src;          // 0x1c

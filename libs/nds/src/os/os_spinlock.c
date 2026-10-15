@@ -14,15 +14,14 @@ extern void func_02004f34(void);
 #define OS_CARTRIDGE_LOCK ((OSLockWord *) 0x27fffe8)
 #define OS_CARD_LOCK ((OSLockWord *) 0x27fffe0)
 
-static BOOL lockInitialized;   // data_020bdcc0
-
 void OS_InitLock(void) {
+    static BOOL lockInitialized;   // data_020bdcc0
     OSLockWord *lockp = OS_LOCKWORD_BUF;
     if (lockInitialized) {
         return;
     }
-    lockp->lockFlag = 0;
     lockInitialized = TRUE;
+    lockp->lockFlag = 0;
     OS_LockByWord(0x7e, lockp, NULL);
     while (lockp->extension != 0) {
         WaitByLoop(0x400);

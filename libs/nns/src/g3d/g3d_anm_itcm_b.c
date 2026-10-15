@@ -6,10 +6,7 @@
 typedef struct { s16 x, y; } P16;
 typedef struct { s32 x, y; } P32;
 
-extern const u8 data_0208b4bc[];   // 4-byte stride tables: output slot for each of a, b, +-b, +-a
-extern const u8 data_0208b4bd[];
-extern const u8 data_0208b4be[];
-extern const u8 data_0208b4bf[];
+extern const u8 data_0208b4bc[][4];   // per pivot slot: output slots for a, b, +-b, +-a
 extern void VEC_Normalize(const s32 *src, s32 *dst);   // VEC_Normalize
 
 extern void func_01ff9f18(s32 *out, s32 frame, u32 *info, u8 *res);   // one value, no interpolation (defined in another unit)
@@ -240,6 +237,7 @@ void func_01ffa1cc(s32 *out, s32 frame, u32 *info, u8 *res) {
     u8 *data;
     u32 a, b, g;
     u32 last;
+    s32 x, y;
     f = frame >> 12;
     data = res + info[1];
     hdr = info[0];
@@ -270,11 +268,20 @@ void func_01ffa1cc(s32 *out, s32 frame, u32 *info, u8 *res) {
                         b = a + 1;
                     }
                     if (hdr & 0x20000000) {
-                        out[0] = (((P16 *) data)[a].x + ((P16 *) data)[a].x + ((P16 *) data)[a].x + ((P16 *) data)[b].x) >> 2;
-                        out[1] = (((P16 *) data)[a].y + ((P16 *) data)[a].y + ((P16 *) data)[a].y + ((P16 *) data)[b].y) >> 2;
+                        x = ((P16 *) data)[a].x;
+                        y = ((P16 *) data)[b].x;
+                        out[0] = (x * 3 + y) >> 2;
+                        x = ((P16 *) data)[a].y;
+                        data += b * 4;
+                        y = ((P16 *) data)->y;
+                        out[1] = (x * 3 + y) >> 2;
                     } else {
-                        out[0] = (s32) (((s64) ((P32 *) data)[a].x + ((P32 *) data)[a].x + ((P32 *) data)[a].x + ((P32 *) data)[b].x) >> 2);
-                        out[1] = (s32) (((s64) ((P32 *) data)[a].y + ((P32 *) data)[a].y + ((P32 *) data)[a].y + ((P32 *) data)[b].y) >> 2);
+                        x = ((P32 *) data)[a].x;
+                        y = ((P32 *) data)[b].x;
+                        out[0] = (s32) (((s64) x + x + x + y) >> 2);
+                        x = ((P32 *) data)[a].y;
+                        y = ((P32 *) data)[b].y;
+                        out[1] = (s32) (((s64) x + x + x + y) >> 2);
                     }
                     return;
                 }
@@ -598,30 +605,19 @@ int func_01ffaca4(s32 *m, u8 *res1, u8 *res2, u32 idx) {
     s16 *t2 = (s16 *) res2;
     if (idx & 0x8000) {
         s16 *p;
-        s32 v0;
-        s32 v2;
-        s32 k;
-        s32 v1;
-        s32 w;
+        s32 a;
+        s32 b;
+        u32 k;
         m[0] = m[1] = m[2] = m[3] = m[4] = m[5] = m[6] = m[7] = m[8] = 0;
-        idx &= 0x7fff;
-        p = t1 + idx * 3;
-        v0 = p[0];
-        v1 = p[1];
-        v2 = p[2];
-        k = v0 & 0xf;
-        w = (v0 & 0x10) ? -0x1000 : 0x1000;
-        m[k] = w;
-        m[data_0208b4bc[k * 4]] = v1;
-        m[data_0208b4bd[k * 4]] = v2;
-        if (p[0] & 0x20) {
-            v2 = -v2;
-        }
-        m[data_0208b4be[k * 4]] = v2;
-        if (p[0] & 0x40) {
-            v1 = -v1;
-        }
-        m[data_0208b4bf[k * 4]] = v1;
+        p = t1 + (idx & 0x7fff) * 3;
+        a = p[1];
+        b = p[2];
+        k = p[0] & 0xf;
+        m[k] = (p[0] & 0x10) ? -0x1000 : 0x1000;
+        m[data_0208b4bc[k][0]] = a;
+        m[data_0208b4bc[k][1]] = b;
+        m[data_0208b4bc[k][2]] = (p[0] & 0x20) ? -b : b;
+        m[data_0208b4bc[k][3]] = (p[0] & 0x40) ? -a : a;
         return 0;
     } else {
         s16 *q = t2 + (idx & 0x7fff) * 5;

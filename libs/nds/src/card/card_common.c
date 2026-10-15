@@ -1,6 +1,6 @@
 #include <nitro/private/card_dev.h>
 extern u8 data_020bfe60[];
-extern CardRomReq data_020c04a0;
+extern CardRomReq data_020c04a0 __attribute__((aligned(32)));   // ROM page request; its 32-byte alignment keeps its address in a register across calls (func_0200ef3c)
 
 int func_0200e5a4(void);
 int func_0200e5f0(void);
@@ -70,13 +70,16 @@ void func_0200e3d0(u32 id, u32 type)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
     u32 e = OS_DisableInterrupts();
+    u32 n;
     if (c->owner != id || c->lockCount == 0) {
         OS_Terminate();
     } else {
         if (c->lockTarget != type) {
             OS_Terminate();
         }
-        if (--c->lockCount == 0) {
+        n = c->lockCount - 1;
+        c->lockCount = n;
+        if (n == 0) {
             c->owner = -3;
             c->lockTarget = 0;
             OS_WakeupThread(&c->lockQueue);
@@ -368,10 +371,7 @@ void func_0200ea14(CardCommon *c)
             break;
         }
         if (mode == 2) {
-            // Placeholder: the empty then-branch gives the original's branch polarity (`beq exit; b next`); every
-            // plain form inverts it. The real source form is not known.
-            if (func_0200f5c8(c, 9, 1)) {
-            } else {
+            if (!func_0200f5c8(c, 9, 1)) {
                 break;
             }
         } else if (mode == 0) {
@@ -629,7 +629,6 @@ int func_0200f060(CardRomReq *r)
 void func_0200f1ec(CardRomReq *r)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
-    volatile CardCommon *d;
     u32 t;
     for (;;) {
         u32 page = c->src & ~0x1ff;
@@ -657,11 +656,12 @@ void func_0200f1ec(CardRomReq *r)
             }
         } while (st & 0x80000000);
         if ((u32)dst == c->dst) {
-            d = (CardCommon *)data_020bfe60;
-            d->src += 0x200;
-            d->dst += 0x200;
-            t = d->len - 0x200;
-            d->len = t;
+            t = ((CardCommon *)data_020bfe60)->src + 0x200;
+            ((CardCommon *)data_020bfe60)->src = t;
+            t = ((CardCommon *)data_020bfe60)->dst + 0x200;
+            ((CardCommon *)data_020bfe60)->dst = t;
+            t = ((CardCommon *)data_020bfe60)->len - 0x200;
+            ((CardCommon *)data_020bfe60)->len = t;
             if (t == 0) {
                 break;
             }

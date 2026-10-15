@@ -479,6 +479,7 @@ libs/nds/src/gx/gx_tex.c:
     .text       start:0x0200450c end:0x020047d8
 
 libs/nds/src/os/os_irqtable.c:
+    complete
     .text       start:0x020047d8 end:0x02004b64
 
 libs/nds/src/os/os_interrupt.c:
@@ -486,7 +487,9 @@ libs/nds/src/os/os_interrupt.c:
     .text       start:0x02004b64 end:0x02004c50
 
 libs/nds/src/os/os_spinlock.c:
+    complete
     .text       start:0x02004c50 end:0x02005004
+    .bss        start:0x020bdcc0 end:0x020bdcc4
 
 libs/nds/src/os/os_thread.c:
     complete
@@ -592,7 +595,9 @@ libs/nds/src/snd/snd_main.c:
     .bss        start:0x020be088 end:0x020be0a4
 
 libs/nds/src/snd/snd_command.c:
+    complete
     .text       start:0x02008348 end:0x02008a58
+    .bss        start:0x020be0c0 end:0x020bfba0
 
 libs/nds/src/snd/snd_alarm.c:
     complete

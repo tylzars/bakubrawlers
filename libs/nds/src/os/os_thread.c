@@ -454,6 +454,11 @@ void OS_SetThreadDestructor(OSThread *thread, void (*dtor)(void *)) {
     thread->destructor = dtor;
 }
 
+// OS_InitContext(context, newpc, newsp): fills a context record for a fresh
+// start: +0x40 = newpc + 4 (the resume address OS_LoadContext uses), +0x44 =
+// newsp, +0x38 (sp slot) = newsp - 0x40, lowered by 4 more if that leaves bit
+// 2 set; +0 (CPSR) = 0x3f if newpc has bit 0 set, else 0x1f; zeroes r0-r12
+// (+4..+0x34) and lr (+0x3c). Returns nothing.
 asm void OS_InitContext(OSContext *context, u32 newpc, u32 newsp) {
     add r1, r1, #4
     str r1, [r0, #0x40]
@@ -500,12 +505,12 @@ extern void func_0200be08(void);
 extern void func_0200be48(void);
 
 // OS_SaveContext: r0 points at a context record. First calls func_0200be08 with
-// r0+0x48 (a save of the coprocessor-side state into the tail of the record),
-// then stores CPSR at +0, the supervisor-mode stack pointer at +0x44, and the
-// registers r0..lr (r0 slot holds 1) at +4.., plus the address of the return
-// point (the instruction after this routine's store sequence) at +0x40.
-// Returns 0 on the direct path; a later restore resumes at the return point
-// with r0 = 1.
+// r0+0x48 (saves the divider and square-root registers into the tail of the record),
+// then stores CPSR at +0, the supervisor-mode stack pointer at +0x44, and
+// r0..lr at +4..+0x3c (the r0 slot holds 1, the r1 slot ctx+4 and the r2 slot
+// the CPSR value), plus at +0x40 the address 4 bytes past the final 'bx lr'.
+// Returns 0 on the direct path; OS_LoadContext resumes at that address minus
+// 4, i.e. at the 'bx lr', with r0 = 1, so the caller sees a second return of 1.
 asm u32 OS_SaveContext(OSContext *ctx) {
     stmfd sp!, {r0, lr}
     add r0, r0, #0x48
@@ -515,23 +520,24 @@ asm u32 OS_SaveContext(OSContext *ctx) {
     add r1, r0, #0
     mrs r2, cpsr
     str r2, [r1], #4            // ctx[0] = CPSR, r1 now ctx+4
-    mov r0, #0xd3               // switch to supervisor mode, IRQ/FIFO masked
+    mov r0, #0xd3               // switch to supervisor mode, IRQ/FIQ masked
     msr cpsr_c, r0
     str sp, [r1, #0x40]         // save supervisor sp
     msr cpsr_c, r2              // back to the original mode
     mov r0, #1
     stmia r1, {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, ip, sp, lr}
-    add r0, pc, #8              // address of the resume point
+    add r0, pc, #8              // pc reads 8 ahead: address past the 'bx lr' below
     str r0, [r1, #0x3c]
     mov r0, #0
     bx lr
 }
 
 // OS_LoadContext: r0 points at a context record produced by OS_SaveContext.
-// Calls func_0200be48 with r0+0x48 (restoring the extra state), enters
-// supervisor mode with interrupts masked, loads SPSR from the saved CPSR,
-// then restores sp/lr and the register file from the record, and resumes at the
-// saved return point with a flag-restoring return.
+// Calls func_0200be48 with r0+0x48 (restoring those registers), enters
+// supervisor mode with IRQ/FIQ masked, loads SPSR from the saved CPSR (+0),
+// supervisor sp from +0x44 and lr from +0x40, then loads r0-r12 and the
+// user/system-bank sp and lr from +4..+0x3c, and returns to lr - 4 with CPSR
+// restored from SPSR.
 asm void OS_LoadContext(OSContext *ctx) {
     stmfd sp!, {r0, lr}
     add r0, r0, #0x48
@@ -545,7 +551,7 @@ asm void OS_LoadContext(OSContext *ctx) {
     ldr r1, [r0], #4            // saved CPSR, r0 now ctx+4
     msr spsr_fsxc, r1
     ldr sp, [r0, #0x40]
-    ldr lr, [r0, #0x3c]         // resume address
+    ldr lr, [r0, #0x3c]         // resume address + 4
     ldmia r0, {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, ip, sp, lr}^
     mov r0, r0
     subs pc, lr, #4

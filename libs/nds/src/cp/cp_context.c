@@ -1,8 +1,8 @@
 // Divider and square-root unit register save/restore (0x0200be08-0x0200be84), hand-written assembly.
 
-// Copies the eight words at 0x04000290.. into the buffer at r0: four words, then (from 0x040002b8)
-// two more, then the 16-bit value at 0x04000280 masked to 2 bits and the one at 0x040002b0 masked
-// to 1 bit as two halfwords.
+// Saves to the buffer at r0 (0x1c bytes): the four words at 0x04000290..0x0400029c, then the two
+// words at 0x040002b8/0x040002bc, then two halfwords: the 16-bit value at 0x04000280 masked to
+// 2 bits and the one at 0x040002b0 masked to 1 bit.
 asm void func_0200be08(unsigned *dst) {
     ldr r1, =0x4000290
     stmfd sp!, {r4}

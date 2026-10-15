@@ -1,10 +1,10 @@
 // MI_CpuFill8 and MI_CpuCopy8 (ITCM) are asm bodies as well: their byte loops don't come out of C.
-// ITCM NitroSDK memory routines 0x01ff94c8-0x01ff9802 (compiler 2.0/sp1p5, -O4,p -ipa file).
+// ITCM memory routines 0x01ff94c8-0x01ff9802 (compiler 2.0/sp1p5, -O4,p -ipa file).
 // Hand-written asm (not reproducible from C: conditional-execution loops, single-register ldm/stm, 8-register stm runs):
 //   MIi_CpuClear16 0x01ff94c8, MIi_CpuCopy16 0x01ff94e0, MIi_CpuClear32 0x01ff94fc, MIi_CpuCopy32, func_01ff9528,
 //   MIi_CpuClearFast 0x01ff9540, MIi_CpuCopyFast(fast, ldm/stm x8) 0x01ff958c, MI_Copy36B, func_01ff95e0, func_01ff9604,
 //   func_01ff97f4 (thumb, stm x3).
-// Not matching (scheduling/register allocation only): MI_CpuFill8, MI_CpuCopy8 (byte copy).
+// MI_CpuFill8 and MI_CpuCopy8 (byte fill/copy) follow near the end.
 #include <nitro/internal.h>
 
 // MIi_CpuClear16(value, dst, size): stores the halfword 'value' over 'size'
@@ -53,8 +53,8 @@ L1:
 }
 
 // func_01ff9528(src, dst, size): reads size bytes of words from src (advancing)
-// and stores each to the same single word at dst (a fixed destination, e.g. a
-// FIFO port). Ends when the source pointer reaches src+size.
+// and stores each to the same single word at dst (dst never advances). Ends
+// when the source pointer reaches src+size.
 asm void func_01ff9528(const void *src, volatile void *dst, unsigned int size) {
     add ip, r0, r2
 L1:
@@ -155,6 +155,11 @@ asm void func_01ff9604(const void *src, void *dst) {
     bx lr
 }
 
+// MI_CpuFill8(dst, data, size): fills size bytes at dst with the low byte of
+// data using only halfword and word stores. An odd leading byte and an odd
+// trailing byte are merged into their halfword by read-modify-write; between
+// them a halfword store reaches word alignment, then words, then a last
+// halfword if two bytes remain. Returns at once when size is 0.
 asm void MI_CpuFill8(void *dstp, u32 data, u32 size) {
     cmp r2, #0x0
     bxeq lr
@@ -200,6 +205,13 @@ L96a4:
     bx lr
 }
 
+// MI_CpuCopy8(src, dst, size): copies size bytes using only halfword and word
+// stores. An odd leading destination byte is merged into its halfword first.
+// If src and dst then differ in bit 0, aligned source halfwords are shifted
+// together and stored as halfwords; if they differ only in bit 1, halfwords are
+// copied; otherwise a halfword reaches word alignment, then words, then a last
+// halfword. An odd trailing byte is merged by read-modify-write. Returns at
+// once when size is 0.
 asm void MI_CpuCopy8(const void *srcp, void *dstp, u32 size) {
     cmp r2, #0x0
     bxeq lr

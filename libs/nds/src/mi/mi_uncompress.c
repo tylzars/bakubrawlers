@@ -19,8 +19,11 @@ void MI_InitUncompContextLZ(MIUncompContextLZ *context, u8 *dest, const MICompre
 // back-reference word, +0xf current flag byte, +0x10 flag bits left, +0x11 phase of the
 // back-reference header parse, +0x12 header format (1 = extended form). r1 = input pointer,
 // r2 = input bytes available. Each flag byte is consumed top bit first: a clear bit copies one
-// literal byte; a set bit starts a back-reference whose header is 1..4 bytes depending on the
-// format, giving a length and a 12-bit distance, and the referenced bytes are copied one at a time.
+// literal byte; a set bit starts a back-reference whose header is 2..4 bytes: one length byte in
+// the basic format (count = high nibble + 3), or one to three length bytes in the extended format
+// (chosen by the first byte's top bits), then a distance low byte. The low nibble of the last
+// length byte supplies the distance's top four bits (distance = 12-bit value + 1), and the
+// referenced bytes are copied one at a time.
 // All output bytes are written with an atomic byte swap. Runs until the output count reaches zero
 // or the input runs out; the state is stored back and the remaining output count is returned in r0.
 asm int func_02007d94(void *state, const unsigned char *in, unsigned avail) {
@@ -60,7 +63,7 @@ L_ref:
     ldrb r7, [r1], #1                   // first header byte
     tst r7, #0xe0
     beq L_long
-    add r7, r7, #0x10                   // short form: length from the byte itself
+    add r7, r7, #0x10                   // short form (top 3 bits non-zero): count = high nibble + 1
     mov r8, #0
     b L_hdrdone
 L_long:
@@ -89,7 +92,7 @@ L_more:
     beq L_save
     b L_ref
 L_fmt0:
-    ldrb r7, [r1], #1                   // basic format: one byte, length = byte + 0x30
+    ldrb r7, [r1], #1                   // basic format: one byte, length word = byte + 0x30
     add r7, r7, #0x30
     mov r8, #0
 L_hdrdone:
@@ -103,7 +106,7 @@ L_copyhdr:
     sub r2, r2, #1
     orr r9, r9, r10
     add r9, r9, #1                      // distance
-    movs r7, r7, asr #4                 // copy count
+    movs r7, r7, asr #4                 // copy count (not limited by bytes left)
     beq L_next
 L_copy:
     ldrb r10, [r3, -r9]                 // byte from earlier output

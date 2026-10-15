@@ -16,11 +16,13 @@ void func_02000b98(void);
 void AutoloadCallback(void);
 
 // Startup entry. Masks interrupts, waits for scanline 0, sets up the memory protection/cache,
-// builds the supervisor and IRQ stacks near the top of the fast data RAM, switches to system mode,
-// clears three RAM areas, unpacks the compressed block described by the build table, copies and
-// zero-fills the autoload areas, clears the BSS range, flushes the data cache over it, stores the
-// IRQ handler address, runs two empty hooks around the call to func_020202bc/func_020202c0, and
-// finally jumps to main with a bogus return address.
+// sets the supervisor, IRQ and system-mode stacks inside the data TCM (below +0x3fc0, +0x3f80 and
+// +0x2f80), switches to system mode, clears the 16 KB data TCM and 1 KB of palette memory, fills
+// 1 KB of OAM with the word 0x200, unpacks the compressed block described by the build table,
+// copies and zero-fills the autoload areas, clears the BSS range and flushes both caches over it,
+// zeroes the word at 0x027fff9c, stores the IRQ handler address at data TCM + 0x3ffc, calls
+// func_020202bc (empty), func_02000b98 (empty) and func_020202c0, and finally jumps to main with
+// lr = 0xffff0000 and sp lowered to an 8-byte boundary.
 asm void Entry(void) {
     mov ip, #0x4000000
     str ip, [ip, #0x208]            // master interrupt enable off
@@ -40,7 +42,7 @@ L_wait0:
     add r0, r0, #0x3fc0
     sub r0, r0, #0x40
     sub sp, r0, #4
-    tst sp, #4                      // keep the IRQ stack 8-byte aligned
+    tst sp, #4                      // lower by 4 if bit 2 is clear (leaves bit 2 set)
     beq L_al1
     b L_al2
 L_al1:
@@ -51,7 +53,7 @@ L_al2:
     mov r0, #0x1f
     msr cpsr_fsxc, r0               // system mode
     sub sp, r1, #4
-    mov r0, #0                      // clear the fast data RAM
+    mov r0, #0                      // clear the 16 KB data TCM
     ldr r1, =SDK_AUTOLOAD_DTCM_START
     mov r2, #0x4000
     bl func_02000954
@@ -59,7 +61,7 @@ L_al2:
     ldr r1, =0x5000000
     mov r2, #0x400
     bl func_02000954
-    mov r0, #0x200                  // fill 1 KB of OAM
+    mov r0, #0x200                  // fill 1 KB of OAM with the word 0x200
     ldr r1, =0x7000000
     mov r2, #0x400
     bl func_02000954
@@ -88,7 +90,7 @@ L_flush:
     add r1, r1, #0x20
     cmp r1, r2
     blt L_flush
-    ldr r1, =0x27fff9c
+    ldr r1, =0x27fff9c              // zero this word
     str r0, [r1, #0]
     ldr r1, =SDK_AUTOLOAD_DTCM_START
     add r1, r1, #0x3fc0
@@ -100,7 +102,7 @@ L_flush:
     bl func_020202c0
     ldr r1, =main
     ldr lr, =0xffff0000
-    tst sp, #4
+    tst sp, #4                      // lower by 4 if bit 2 is set (8-byte boundary)
     bne L_ex1
     b L_ex2
 L_ex1:
@@ -126,8 +128,10 @@ L_nx:
 // Expands a backwards-packed stream. r0 points just past the packed data; the word pair before
 // it holds the packed length/header-size (top byte = header bytes) and the growth in size. Reads
 // bytes downward, each flag byte (MSB first) selects a literal copy or a back-reference
-// (12-bit distance, length from the high nibble + 3); output is written downward. Does nothing
-// if r0 is null. Afterwards cleans/invalidates the cache lines covering the output.
+// (12-bit distance, length from the high nibble + 3); output is written downward. Stops when the
+// source cursor reaches the lower bound. Does nothing if r0 is null. Afterwards, for each 32-byte
+// line from the packed data's lower bound up to the output end, drains the write buffer,
+// invalidates the instruction line and cleans and invalidates the data line.
 asm void func_02000970(void *end) {
     cmp r0, #0
     beq L_ret
@@ -184,7 +188,8 @@ L_ret:
 
 // Walks the table at BuildInfo (start, end, source pointer). Each entry is (dest, copy length,
 // zero length): copies the words from the source stream to dest, zero-fills the following
-// words, then flushes the cache lines. Ends by jumping to AutoloadCallback.
+// words, then for every 32-byte line of the whole area drains the write buffer, invalidates the
+// instruction line and cleans and invalidates the data line. Ends by jumping to AutoloadCallback.
 asm void func_02000a1c(void) {
     ldr r0, =BuildInfo
     ldr r1, [r0, #0]                // table cursor
@@ -239,9 +244,11 @@ asm void AutoloadCallback(void) {
     bx lr
 }
 
-// Cache and protection setup: turns off the MPU and caches, invalidates both caches and drains
-// the write buffer, programs the eight protection regions, the data/instruction TCM windows, the
-// cacheability / bufferability / access-permission registers, then re-enables MPU and caches.
+// Cache and protection setup: clears control-register bits 0xf9005 (among them MPU, caches, TCMs),
+// invalidates both caches and drains the write buffer, programs the eight protection regions, the
+// data/instruction TCM windows, the cacheability / bufferability / access-permission registers,
+// then sets control-register bits 0x5707d (MPU, caches, write buffer, both TCMs, high exception
+// vectors, round-robin replacement).
 asm void func_02000ab0(void) {
     mrc p15, 0, r0, c1, c0, 0
     ldr r1, =0xf9005
@@ -287,7 +294,7 @@ asm void func_02000ab0(void) {
     mrc p15, 0, r0, c1, c0, 0
     ldr r1, =0x5707d
     orr r0, r0, r1
-    mcr p15, 0, r0, c1, c0, 0       // enable MPU and caches
+    mcr p15, 0, r0, c1, c0, 0       // enable MPU, caches and TCMs
     bx lr
 }
 

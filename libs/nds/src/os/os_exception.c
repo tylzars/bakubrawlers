@@ -31,15 +31,16 @@ extern void func_02006a1c(void);
 extern void func_02006840(void);
 extern void func_02006850(void);
 
-// OSi_ExceptionHandler: entry for processor exceptions (data/prefetch abort).
-// If the first word of exceptionState holds a user hook, it is called
-// first (lr set to the following code so it returns here). Then r0-r3, the
-// entry sp and lr are pushed onto a small stack at 0x02000000 going down, r0
-// is set to the entry sp's low bit, and sp is moved to that stack. The mode
-// bits of CPSR are tested: for modes 0x17 and 0x1b (abort/undefined) the
-// context capture is run (func_02006978). Afterwards, if the hook word is
-// still non-zero the code spins forever; otherwise it restores r0-r3, sp
-// (through ip) and lr and returns.
+// OSi_ExceptionHandler: entry for processor exceptions (abort or undefined
+// instruction). If the first word of exceptionState is non-zero (the
+// address OS_InitException took from 0x027ffd9c), it is called first (lr set
+// to the following branch so it returns here). Then r0-r3, the entry sp and lr
+// are pushed onto a small stack at 0x02000000 going down, r0 is set to the
+// entry sp's low bit, and sp is moved to that stack. The mode bits of CPSR are
+// tested: for modes 0x17 and 0x1b (abort/undefined) the context capture is run
+// (func_02006978). Afterwards the code loops forever whether or not the first
+// word is non-zero; the trailing restore of r0-r3, sp (through ip) and lr and
+// the return are never reached.
 asm void OSi_ExceptionHandler(void) {
     ldr ip, =exceptionState
     ldr ip, [ip]
@@ -73,10 +74,11 @@ Ldone:
     ldr ip, [ip]
     cmp ip, #0
 Lspin:
-    beq Lspin                   // no hook: halt here
+    beq Lspin                   // first word zero: halt here
 Lnop:
     mov r0, r0
-    b Lnop                      // hook present: loop forever as well
+    b Lnop                      // non-zero: loop forever as well
+    // unreachable: both paths above loop forever
     ldmfd sp!, {r0, r1, r2, r3, ip, lr}
     mov sp, ip
     bx lr
@@ -93,12 +95,12 @@ asm void func_02006978(void) {
 }
 
 // func_0200698c: captures the faulting context into the block at
-// data_020bdf98. r0 is the value saved at entry, ip points at the pushed
-// exception frame { r0, r1, r2, r3, sp, lr }. Stores CPSR (+0x74), r0 (+0x6c),
+// data_020bdf98. r0 is the entry sp's low bit as set by the handler, ip
+// points at the pushed exception frame { r0, r1, r2, r3, sp, lr }. Stores CPSR (+0x74), r0 (+0x6c),
 // the pushed r0-r3 (+4..+0x10), r4-r11 (+0x14), the frame address (+0x70), then
 // reads four words from the address in the frame's fifth word with bit 0
-// cleared (+0x64, +0, +0x34, +0x40). It then briefly switches to the mode held
-// in the second of those words (with interrupts masked, Thumb bit cleared) to
+// cleared (+0x64, +0, +0x34, +0x40). It then briefly writes the second of
+// those words to CPSR (IRQ bit set, Thumb bit cleared), entering that mode, to
 // grab that mode's sp (+0x38), lr (+0x3c) and SPSR (+0x7c), and restores the
 // original CPSR.
 asm void func_0200698c(void) {
@@ -139,12 +141,14 @@ asm void func_0200698c(void) {
     bx lr
 }
 
-// func_02006a1c: if the third word of exceptionState is non-zero, runs it
-// as a hook in system mode (CPSR 0x9f): saves the caller's CPSR and sp, calls
-// func_02006840, then jumps to the function in the third word with r0 =
+// func_02006a1c: if the third word of exceptionState is non-zero, calls it
+// in system mode with IRQ masked (CPSR 0x9f): switches mode but keeps the
+// caller's stack, pushes system mode's own sp and the caller's CPSR there,
+// calls func_02006840, then jumps to the function in the third word with r0 =
 // data_020bdf98 and r1 = the second word, lr preset to the following
 // 'bl func_02006850' instruction (address 0x02006a6c, held as a constant).
-// After the hook returns, calls func_02006850, restores sp and CPSR and returns.
+// After that function returns, calls func_02006850, restores system mode's sp
+// and the caller's CPSR and returns.
 asm void func_02006a1c(void) {
     stmfd sp!, {r3, lr}
     ldr r0, =exceptionState

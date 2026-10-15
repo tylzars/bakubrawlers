@@ -10,12 +10,14 @@ extern void func_01ffc9a4(void);
 // func_01ffc93c: top-level interrupt dispatcher. Reads the interrupt master
 // enable (register at +0x208 from 0x04000000); returns at once if it is zero.
 // Otherwise ANDs the enable and request words (+0x210, +0x214); returns if no
-// enabled request is pending. It then picks the highest-numbered pending bit
-// (leading-zero count), acknowledges it by writing that single bit back to the
-// request register, and jumps to the handler stored at index (31 - bit) of the
-// table at the start of the fast-memory area. The link register is preset to
-// func_01ffc9a4, so the handler returns into the thread-switch code.
-// The routine ends with two literal words (table base, return address).
+// enabled request is pending. It then picks the lowest-numbered pending bit
+// (clearing the highest set bit until one remains, by leading-zero count),
+// acknowledges it by writing that single bit back to the request register, and
+// jumps to the handler stored at index = bit number (31 - leading zeros) of the
+// word table at SDK_AUTOLOAD_DTCM_START. The link register is preset to
+// func_01ffc9a4, so the handler returns into the thread-switch code; the lr
+// pushed on entry is popped there. The routine ends with two literal words
+// (table base, return address).
 asm void func_01ffc93c(void) {
     stmfd sp!, {lr}
     mov ip, #0x4000000
@@ -48,21 +50,26 @@ Lfind:
     bx r0
 }
 
-// func_01ffc9a4: runs after an interrupt handler returns. First, if the
-// thread-state pointer in the first literal (data_027e0060) is non-NULL, walks
-// a chain of records: for each it stores 1 at +0x64, zeroes +0x78/+0x7c/+0x80
-// (reading the old +0x80 as the next link), then clears the pointer and its
-// neighbour and sets a halfword flag (at OSi_ThreadInfo) to 1. If that flag is
-// zero it returns. Otherwise it clears the flag, enters IRQ mode with
-// interrupts masked and scans the thread list (starting at flag area + 8)
-// for the first thread whose state (+0x64 halfword) is 1 (linked through +0x68).
-// With none found, or when the thread equals the current one (+4), it switches
-// back to supervisor mode and returns. Otherwise it calls the optional switch
-// hook (+0xc) if set, records the new current thread, saves the interrupted
-// context (SPSR plus registers, user-mode registers via the ^ forms) into the
-// old thread's context record, restores the new thread's context from its
-// record (supervisor sp, SPSR, user registers, resume address), and resumes it
-// via the final stack-popped return. Four literal words follow the routine.
+// func_01ffc9a4: runs after an interrupt handler returns. First, if the word
+// at data_027e0060 is non-zero, walks a chain of records from it: for each it
+// stores 1 at +0x64, zeroes +0x78/+0x7c/+0x80 (reading the old +0x80 as the
+// next link), then zeroes both words at data_027e0060 and sets the halfword
+// flag at OSi_ThreadInfo to 1. If that flag is zero it returns (popping the
+// lr pushed by func_01ffc93c). Otherwise it clears the flag, enters IRQ mode
+// with IRQ/FIQ masked (0xd2) and scans the thread list (head word at
+// OSi_ThreadInfo + 8, linked through +0x68) for the first thread whose
+// halfword at +0x64 is 1. With none found, or when that thread equals the
+// current one (OSi_ThreadInfo + 4), it sets the CPSR control byte to 0x92 (IRQ mode, only IRQ
+// masked) and returns. Otherwise it calls the function at OSi_ThreadInfo + 0xc
+// if non-zero (r0 = current thread, r1 = new one), records the new current
+// thread, and saves into the old thread's context record: SPSR (+0), the
+// interrupted r0-r3/ip from the IRQ stack frame, r4-r11 and user-bank sp/lr
+// (+4..+0x3c), the IRQ lr (+0x40), the supervisor sp (+0x44) and, through
+// func_0200be08, the divider/square-root registers (+0x48). It then restores
+// the new thread's divider/square-root registers (func_0200be48), supervisor
+// sp, SPSR and user-bank registers from its record, writes r0-r3, ip and the
+// resume address (+0x40) over the IRQ stack frame, and returns through the
+// word popped from the stack. Four literal words follow the routine.
 asm void func_01ffc9a4(void) {
     ldr ip, =data_027e0060
     mov r3, #0
@@ -96,7 +103,7 @@ Lskip1:
 Lgo:
     mov r1, #0
     strh r1, [ip]
-    mov r3, #0xd2               // IRQ mode, interrupts masked
+    mov r3, #0xd2               // IRQ mode, IRQ/FIQ masked
     msr cpsr_c, r3
     add r2, ip, #8
     ldr r1, [r2]
@@ -150,7 +157,7 @@ Lnohook:
     ldmib sp!, {r2, r3, ip, lr}
     stmib r0!, {r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, ip, sp, lr}^
     stmib r0!, {lr}
-    mov r3, #0xd3               // supervisor mode, interrupts masked
+    mov r3, #0xd3               // supervisor mode, IRQ/FIQ masked
     msr cpsr_c, r3
     stmib r0!, {sp}
     stmfd sp!, {r1}

@@ -108,6 +108,8 @@ s32 OS_UnlockCartridge(u16 lockID) {
     return OSi_DoUnlockByWord(lockID, OS_CARTRIDGE_LOCK, func_02004ecc, TRUE);
 }
 
+// OS_UnLockCartridge(lockID): jumps straight to OS_UnlockCartridge with the
+// argument unchanged.
 asm void OS_UnLockCartridge(u16 lockID) {
     ldr r1, =OS_UnlockCartridge
     bx r1
@@ -149,8 +151,8 @@ u16 OS_ReadOwnerOfLockWord(OSLockWord *lockp) {
 // 0x027fffb0 (+0 covers ids 0x40-0x5f, +4 covers ids 0x60-0x7f). Takes the
 // highest set bit of the first word, or failing that of the second; the id is
 // base + leading-zero count, and that bit is cleared. Returns -3 when both
-// words are empty. The branch pairs around compares are as in the original
-// (flags are reused across them).
+// words are empty. Some compares feed two consecutive conditional branches
+// (the flags are reused across them).
 asm int OS_GetLockID(void) {
     ldr r3, =0x27fffb0
     ldr r1, [r3, #0]
@@ -183,10 +185,11 @@ Ltake:
     bx lr
 }
 
-// func_02004fbc(id): marks id (0x40-0x7f) free again by setting its bit
-// (0x80000000 >> (id & 0x1f)) in the word at 0x027fffb0 (ids below 0x60) or
-// at 0x027fffb4 (ids 0x60 and up). Returns nothing. Flag-reuse branch pairs as
-// in the original.
+// func_02004fbc(id): marks id (0x40-0x7f) free again by setting bit
+// 0x80000000 >> (id - 0x40) in the word at 0x027fffb0 (ids below 0x60) or
+// 0x80000000 >> (id - 0x60) in the word at 0x027fffb4 (ids 0x60 and up; the
+// compare is signed). Returns nothing. The flags of the single compare are
+// reused by all the conditional branches.
 asm void func_02004fbc(unsigned int id) {
     ldr r3, =0x27fffb0
     cmp r0, #0x60

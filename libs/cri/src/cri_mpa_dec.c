@@ -159,11 +159,13 @@ void func_0204bfb0(MpX *x) {
     }
 }
 
-// r0 -> 16-bit coefficient table (read as words, two samples per word), r1 -> sample buffer,
-// r2 -> output halfword array. Keeps r1, r2+0x20 and r2+0x60 on the stack,
-// runs two multiply-accumulate passes (signed 16x16 products, bottom*bottom then top*top) that
-// fill the output array from both ends, then sums the coefficient halfwords and stores the
-// negated total.
+// r0 -> one fixed vector of 32 signed halfwords (read as words, two per word, never advanced),
+// r1 -> rows of 32 halfwords (64 bytes apart), r2 -> 64-entry output halfword array. Keeps r1,
+// r2+0x20 and r2+0x60 on the stack. Each output is the dot product of the r0 vector with one row
+// (signed 16x16 products, bottom*bottom then top*top per word). Pass 1 (rows 0-15) fills
+// out[0..15] and, negated, out[32] down to out[17]; out[16] is set to 0; pass 2 (rows 33-47) fills
+// out[33..47] and out[63] down to out[49] with the same value; out[48] gets the negated plain sum
+// of the 32 halfwords at r0.
 asm void func_0204c088(const short *coef, const short *samples, short *out) {
     stmfd sp!, {r4, r5, r6, r7, r8, r9, r10, r11, lr}
     sub sp, sp, #12
@@ -176,9 +178,9 @@ asm void func_0204c088(const short *coef, const short *samples, short *out) {
     str r4, [sp, #0]
     add ip, r2, #126
     mov lr, #16
-    // pass 1, 16 iterations: dot product of the 32 halfwords at r0 with 32 halfwords at r1
-    // (accumulated pairwise, low*low + high*high), scaled down by 12 bits; stored forward at r2
-    // and, negated, backward from r2+0x40
+    // pass 1, 16 iterations: dot product of the 32 halfwords at r0 with the 32 halfwords at r1
+    // (accumulated pairwise, low*low + high*high), shifted right 12 bits; stored forward at r2
+    // and, negated, backward from r2+0x40; r1 advances one 64-byte row per iteration
 L_0204c0b4:
     ldr r4, [r0, #0]
     ldr r5, [r1, #0]
@@ -249,16 +251,16 @@ L_0204c0b4:
     add r1, r1, #64
     subs lr, lr, #1
     bne L_0204c0b4
-    // terminate the forward run: zero halfword at the saved r2+0x20
+    // store 0 at the saved r2+0x20 (out[16])
     ldr r1, [sp, #4]
     mov r2, #0
     strh r2, [r1, #0]
     ldr r1, [sp, #8]
     mov lr, #15
     add r1, r1, #2112
-    // pass 2, 15 iterations: the same dot product against the second half (r1+0x840 on), result
-    // reduced by a 4-bit left and 16-bit arithmetic right shift; stored forward from r2+0x42 and
-    // backward from r2+0x7e
+    // pass 2, 15 iterations: the same dot product against the rows from the original r1+0x840
+    // (row 33) on, result reduced by a 4-bit left and 16-bit arithmetic right shift; the same
+    // value is stored forward from r2+0x42 and backward from r2+0x7e
 L_0204c1e0:
     ldr r4, [r0, #0]
     ldr r5, [r1, #0]
@@ -330,8 +332,8 @@ L_0204c1e0:
     add r1, r1, #64
     subs lr, lr, #1
     bne L_0204c1e0
-    // final: sum the 33 halfwords at r0 (a 17-entry run, then 16 more starting at r0+0x20) and store the
-    // negated total at the saved r2+0x60
+    // final: sum the 32 halfwords at r0 (offsets 0-0x20, then r0 += 0x20 and offsets 2-0x1e) and
+    // store the negated total at the saved r2+0x60 (out[48])
     ldrsh r4, [r0, #0]
     ldrsh r3, [r0, #2]
     ldrsh r1, [r0, #4]

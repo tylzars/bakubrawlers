@@ -194,7 +194,9 @@ L_0201d950:
     movs r1, r1, rrx
     mov r0, r0, rrx
     orr r0, r0, r4
-    // renormalize and pack, rounding to nearest even
+    // pack (exponent 0 unless the sum reached bit 63); returns when the round bits are clear or a
+    // tie meets an even result. A denormal sum has no round bits, so the round-up case never
+    // occurs; the code would fall through into the next block
 L_0201d970:
     cmp r1, #0x0
     subges ip, ip, #0x1
@@ -240,12 +242,13 @@ L_0201d9e8:
     // NaN result: all-ones mantissa, exponent 0x7ff, sign cleared
 L_0201d9fc:
     mov r1, r3
-    // (entry used when r1 already holds the NaN source)
+    // second entry; both give the same constant (r1 is overwritten)
 L_0201da00:
     mvn r0, #0x0
     bic r1, r0, #0x80000000
     ldmfd sp!, {r4, lr}
     bx lr
+    // unreachable duplicate of the NaN return
     mvn r0, #0x0
     bic r1, r0, #0x80000000
     ldmfd sp!, {r4, lr}
@@ -334,7 +337,8 @@ L_0201dacc:
     andeqs r1, r0, #0x1
     addne r0, r0, #0x1
     bx lr
-    // exactly at the half-way exponent: any mantissa bit set rounds up to the smallest denormal
+    // rebiased exponent -23: the value is at least half the smallest denormal; any fraction bit
+    // set rounds up to it, an exact half rounds to signed zero
 L_0201db20:
     orr r0, r0, r1, lsl #0xc
     movs r1, r0
@@ -516,7 +520,7 @@ L_0201dcdc:
 // lr = sign of the result (xor of the input signs). Both mantissas are unpacked
 // left-justified with the hidden bit; the 64x64 -> 128-bit product is formed from four
 // 32x32 umull partial products, the top 64 bits are kept and any nonzero low half is
-// folded into bit 0 as a sticky bit. The exponent is ea + eb - bias; if the product's
+// folded into bit 0 as a sticky bit. The exponent is ea + eb - 0x3fe; if the product's
 // top bit is clear it is shifted left once and the exponent decremented.
 // Special cases: NaN operand -> NaN (0x7fffffffffffffff); Inf * 0 -> the same NaN;
 // Inf * nonzero -> signed Inf; zero * finite -> signed zero; denormal operands are
@@ -789,11 +793,13 @@ L_0201e044:
 // +Inf is returned unchanged, anything else is an invalid operation: the result is the
 // input with the quiet-NaN bits 0x7ff80000 or'ed in, and the value 0x21 is stored to the
 // global data_020c1790 (a domain-error code). Zero returns itself; denormals are
-// normalized with a leading-zero count. Otherwise the unbiased exponent is halved (an odd
-// exponent shifts the mantissa left one extra place) and the root is produced by a
-// bit-at-a-time restoring method: 22 steps for the high word (result bits in r2,
-// remainder in r1/r4) and 32 steps for the low word (r0). A nonzero remainder sets a
-// sticky bit; the final shift right by one rounds to nearest and the exponent is rebiased.
+// normalized with a leading-zero count. Otherwise the biased exponent is halved, rounding
+// down; when it is even (odd unbiased exponent) the half is lowered by one and the mantissa
+// shifted left one extra place. The root is produced bit by bit: 22 steps for the high word
+// (root bits in r2, remainder in r1:r3, r4 = twice the partial root), then one step for bit 31
+// and 31 more for the rest of the low word (r0). The last root bit is the round bit: it is
+// cleared when the remainder is zero, then added in after the final shift right by one, and
+// the exponent is rebiased.
 asm double sqrt(double x) {
     stmfd sp!, {r4, r5, r6, lr}
     ldr r2, =0x7ff00000
@@ -803,7 +809,7 @@ asm double sqrt(double x) {
     beq L_0201e150
     bic r1, r1, r2
     orr r1, r1, #0x100000
-    // ip = biased exponent, r1:r0 = mantissa with hidden bit; halve the exponent
+    // ip = biased exponent, r1:r0 = mantissa with hidden bit (bit 52); halve the exponent
 L_0201e078:
     movs ip, ip, asr #0x1
     bhs L_0201e08c
@@ -852,12 +858,13 @@ L_0201e0f4:
     subs r3, r3, r6
     sbc r1, r1, r4
     add r0, r0, lr
-    // round, merge the two halves, rebias the exponent
+    // loop tail: shift the remainder, move to the next bit
 L_0201e114:
     movs r3, r3, lsl #0x1
     adc r1, r1, r1
     movs lr, lr, lsr #0x1
     bne L_0201e0f4
+    // round, merge the two halves, rebias the exponent
     orrs r1, r1, r3
     biceq r0, r0, #0x1
     movs r1, r2, lsr #0x1
@@ -1045,7 +1052,7 @@ L_0201e354:
     rsb r4, r4, #0x20
     mov r0, r0, lsl r4
     sub ip, ip, r4
-    // exponent <= 0: result is denormal, shift right by 12 - exponent
+    // exponent > 0: pack; otherwise the result is denormal: shift right by 12 - exponent
 L_0201e370:
     cmp ip, #0x0
     bgt L_0201e3ac
@@ -1060,7 +1067,8 @@ L_0201e370:
     orr r1, lr, r1, lsr ip
     ldmfd sp!, {r4, lr}
     bx lr
-    // top bit set: normalized already (exponent adjust if r1 positive)
+    // top bit set: already normalized (reached only with r1 negative, so the decrement
+    // never applies)
 L_0201e3a4:
     cmp r1, #0x0
     subges ip, ip, #0x1
@@ -1158,7 +1166,8 @@ L_0201e4ac:
     orr r3, r3, #0x80000000
     orr ip, ip, lr, lsr #0x14
     b L_0201e274
-    // first operand is zero: result is the second operand (sign as given)
+    // first operand is zero: a zero second operand gives +0, a finite nonzero one is returned
+    // as is, Inf/NaN give +-Inf/NaN
 L_0201e4ec:
     mov ip, r3, lsr #0x14
     mov r1, r3, lsl #0xb
@@ -1239,7 +1248,8 @@ L_0201e5ac:
 // bit at bit 31, b is shifted right by the exponent difference keeping a sticky bit,
 // the mantissas are added (a carry shifts right by one and bumps the exponent; exponent
 // 255 gives +-Inf), and the 8 dropped bits are rounded to nearest, ties to even.
-// NaN -> 0x7fffffff, Inf + finite -> Inf, zero/denormal inputs treated as exponent 1.
+// NaN -> 0x7fffffff, Inf + finite or Inf + Inf -> Inf, a zero operand returns the other
+// one, denormal inputs are treated as exponent 1 without hidden bit.
 // The `dcd` word below is the cross-routine branch (no label can be shared between asm functions).
 asm float _fadd(float a, float b) {
     // different signs? flip b and take the subtract path
@@ -1364,7 +1374,7 @@ L_0201e720:
     and r1, r0, #0x1
     orr r0, r1, r0, rrx
     add ip, ip, #0x1
-    // renormalize and pack
+    // pack (exponent 0 unless the sum reached bit 31), round to nearest even
 L_0201e754:
     cmp r0, #0x0
     subge ip, ip, #0x1
@@ -1969,10 +1979,12 @@ asm void func_0201edb8(void) {
 //
 // Notes:
 //  - A few routines branch into the middle of a neighbouring routine (_fsub into _fadd+0xc,
-//    _ll_udiv into the divide loop of func_0201f768 and into _u32_div_f past its zero test).
+//    func_0201f768 into _ll_sdiv+0x10, _ll_udiv into _ull_mod+0x8, and _ull_mod into the
+//    64-bit divide inside _ll_sdiv and into _u32_div_f past its zero test).
 //    Labels cannot be shared between asm functions, so those branches are written as raw
 //    instruction words (`dcd`) with the encoded displacement; the addresses are fixed.
-//  - Labels _ll_sdiv, _ull_mod are secondary entry points inside func_0201f768 / _ll_udiv.
+//  - func_0201f768 and _ll_udiv are short entry stubs: they set a mode flag in r4 and branch
+//    into the bodies of _ll_sdiv and _ull_mod.
 //  - _fdiv and _ddiv carry a 256-byte lookup table (initial reciprocal estimates) in the
 //    middle of the code, read with a pc-relative address.
 
@@ -2192,7 +2204,8 @@ L_0201f07c:
     rsb ip, ip, #0x0
     mov lr, lr, lsr #0x8
     b L_0201edf4
-    // exponent below range: build a denormal (or zero) result with correct rounding
+    // exponent below range: build a denormal (or zero) result; the shifted quotient is
+    // corrected and rounded (nearest, ties to even) with exact remainder checks
 L_0201f09c:
     and r0, r0, #0x80000000
     cmn ip, #0x18
@@ -2220,15 +2233,19 @@ L_0201f09c:
     addeq r0, r0, r3
     ldmia sp!, {lr}
     bx lr
+    // quotient was one too low and is exact after the increment
 L_0201f104:
     add r0, r0, #0x1
     ldmia sp!, {lr}
     bx lr
+    // exponent -24: rounds up to the smallest denormal unless the mantissas are equal
+    // (an exact half, which rounds to the even zero)
 L_0201f110:
     cmn r2, lr
     addne r0, r0, #0x1
     ldmia sp!, {lr}
     bx lr
+    // NaN
 L_0201f120:
     mov r0, r1
     b L_0201f138
@@ -2416,7 +2433,8 @@ L_0201f2d8:
 // _fmul: single-precision multiply, r0 = a * b, round to nearest even.
 // Sign is a^b. Both mantissas are left-aligned with the implicit bit at bit 31 and multiplied
 // with umull; if the product's top bit is clear it is doubled and the exponent reduced. The
-// exponent is ea + eb - 0x7f. Too large gives a signed infinity; too small goes to a denormal
+// exponent is ea + eb - 0x7f (less one when doubled); packing then adds the implicit bit into
+// the exponent field. Too large gives a signed infinity; too small goes to a denormal
 // path (shift right with a sticky bit, round to even) or to signed zero. Rounding uses the 8
 // bits below the mantissa plus a sticky bit from the low product word.
 // Special cases: NaN operand or 0 * inf return 0x7fffffff; inf * finite gives signed infinity;
@@ -2538,6 +2556,8 @@ L_0201f44c:
     andeqs r1, r0, #0x1
     addne r0, r0, #0x1
     bx lr
+    // exponent -24: the top bit is the round bit; rounds up to the smallest denormal if any
+    // other bit of the high product word is set (the low word is not consulted)
 L_0201f494:
     mov r0, r0, lsl #0x1
     b L_0201f4c4
@@ -2572,8 +2592,9 @@ L_0201f4dc:
     bx lr
 }
 
-// Operand swap: exchanges r0 and r1 with three exclusive-or steps. Nothing in this file
-// falls into it; it is entered from elsewhere.
+// func_0201f4e4: reverse-operand entry for _fsub: swaps r0 and r1 with three exclusive-ors
+// and falls through into _fsub, which follows directly. Nothing in the program calls it, so
+// the link keeps it with a force_active entry.
 asm void func_0201f4e4(void) {
     eor r0, r0, r1
     eor r1, r0, r1
@@ -2647,7 +2668,8 @@ L_0201f5b0:
     orr r0, r2, r0, lsr #0x9
     orr r0, r0, r3, lsl #0x17
     bx lr
-    // different exponents: result is positive and normal-ish, renormalise
+    // different exponents, top bit cleared by the subtraction: renormalise with clz; an
+    // exponent <= 0 gives an unrounded denormal, otherwise pack and round to nearest even
 L_0201f5c0:
     mov r2, r3, lsl #0x17
     and r2, r2, #0x80000000
@@ -2719,7 +2741,7 @@ L_0201f680:
     orr r3, r3, r2, lsr #0x17
     orr ip, ip, r2, lsr #0x17
     b L_0201f534
-    // a is zero: examine b, which then supplies the result
+    // a is zero: a zero b gives +0, a finite nonzero b is returned
 L_0201f6b8:
     mov r3, r1, lsr #0x17
     mov r0, r1, lsl #0x9
@@ -2746,7 +2768,7 @@ L_0201f6e8:
 L_0201f704:
     mov r0, r1
     bx lr
-    // b is zero: result is a (renormalised and repacked)
+    // b is zero: result is a, repacked (exponent 0 if a was denormal)
 L_0201f70c:
     cmp r0, #0x0
     subges r3, r3, #0x1
@@ -2758,6 +2780,7 @@ L_0201f70c:
 L_0201f724:
     mov r0, #0x0
     bx lr
+    // unreachable repack sequence (no label leads here)
     cmp r0, #0x0
     subges r3, r3, #0x1
     add r0, r0, r0
@@ -2793,9 +2816,9 @@ L_0201f760:
 // result is sign-extended. Otherwise: both operands are made positive, the divisor is shifted
 // left until its top bit is set (r5 counts the shifts), the dividend is shifted similarly to
 // set the loop count (r6), and a bit-at-a-time non-restoring long division runs with the
-// quotient in ip:r11 and partial remainder in r1:r0:r7. The remainder case shifts the partial
-// remainder back right by r5; finally the result is negated if the sign flag in r4 is set.
-// The loop head L_0201f7ec is also the target of a branch in _ll_udiv.
+// quotient in r11:ip (high:low) and the partial remainder in r7:r1:r0. The remainder case shifts
+// the partial remainder back right by r5; finally the result is negated if bit 31 of r4 is set.
+// L_0201f7ec in _ll_sdiv is also the target of a branch in _ull_mod (code shared with _ll_udiv).
 asm long long func_0201f768(long long a, long long b) {
     stmdb sp!, {r4, r5, r6, r7, r11, ip, lr}
     mov r4, r1
@@ -2917,6 +2940,7 @@ L_0201f8b8:
     orr r0, r0, r1, lsl r7
     mov r1, r1, lsr r5
     b L_0201f8f0
+    // unreachable (no label leads here)
     mov r0, r1, lsr r7
     mov r1, #0x0
     // apply the result sign
@@ -2943,9 +2967,10 @@ L_0201f914:
 
 // _ll_udiv: unsigned 64-bit divide, quotient of a / b (a in r1:r0, b in r3:r2). It sets r4 = 0
 // and branches into the shared code in _ull_mod, which follows; _ull_mod's own entry sets r4 = 1
-// to return the remainder instead (low word in r0 after the call, high word 0). Zero divisor returns unchanged. If both high words are zero it is a 32-bit
-// divide: the compare/divide part of _u32_div_f (_u32_div_f+0x8) is called and r1 cleared.
-// Otherwise it jumps to the 64-bit loop in func_0201f768 (its loop head at 0x0201f7ec).
+// to return the remainder instead. Zero divisor returns a unchanged. If both high words are zero
+// it is a 32-bit divide: the compare/divide part of _u32_div_f (_u32_div_f+0x8) is called, r0
+// takes the quotient (or the remainder) and r1 is cleared. Otherwise it jumps into the 64-bit
+// divide in _ll_sdiv at L_0201f7ec (0x0201f7ec), past the absolute-value step.
 asm unsigned long long _ll_udiv(unsigned long long a, unsigned long long b) {
     stmdb sp!, {r4, r5, r6, r7, r11, ip, lr}
     mov r4, #0x0
@@ -2964,7 +2989,7 @@ L_0201f93c:
     bx lr
 L_0201f94c:
     orrs r5, r1, r3
-    dcd 0x1affffa5                      // bne to the divide loop in func_0201f768 (raw word)
+    dcd 0x1affffa5                      // bne L_0201f7ec in _ll_sdiv, the 64-bit divide (raw word)
     mov r1, r2
     dcd 0xeb000089                      // bl _u32_div_f+0x8, past its zero test (raw word)
     cmp r4, #0x0
@@ -2977,7 +3002,8 @@ L_0201f94c:
 // _s32_div_f: signed 32-bit divide, a / b, quotient in r0 and remainder in r1.
 // The sign flags go in ip (bit 31: quotient negative; bit 0: dividend negative, so the
 // remainder follows the dividend). Both operands are made positive. Divisor zero, or dividend
-// smaller than divisor, skips the loop (r0 = 0 and r1 = dividend in the second case). Otherwise
+// smaller than divisor, skips the loop (divisor zero leaves r0 = a and r1 = 0 once the signs
+// are applied; a smaller dividend gives r0 = 0 and r1 = dividend). Otherwise
 // the number of significant quotient bits is found by comparing against shifted copies of the
 // dividend in steps of 16, 8 and 4 bits; the dividend is shifted up by that count, and a
 // computed jump (add pc, pc, r2*12) lands in an unrolled sequence of 32 three-instruction
@@ -3120,7 +3146,8 @@ L_0201fb68:
 }
 
 // _u32_div_f: unsigned 32-bit divide, quotient in r0 and remainder in r1. Divisor zero returns
-// immediately. The part after the zero test (0x0201fb84, also entered from _ll_udiv) is the same
+// immediately. The part after the zero test (0x0201fb84, also called from the code _ll_udiv and
+// _ull_mod share) is the same
 // shift-count search and unrolled 32-step computed-jump divide as in _s32_div_f, without sign
 // handling. If a < b the quotient is 0 and the remainder is a.
 asm unsigned _u32_div_f(unsigned a, unsigned b) {
@@ -3249,8 +3276,9 @@ L_0201fb84:
     bx lr
 }
 
-// Operand swaps: exchanges r1/r3 and then r0/r2 with exclusive-or steps (swapping the two
-// halves of a double pair). Nothing in this file falls into it; entered from elsewhere.
+// func_0201fd60: reverse-operand entry for _ddiv: swaps the two double operands (r1:r0 with
+// r3:r2) with three exclusive-ors per word and falls through into _ddiv, which follows
+// directly. Nothing in the program calls it, so the link keeps it with a force_active entry.
 asm void func_0201fd60(void) {
     eor r1, r1, r3
     eor r3, r1, r3
@@ -3261,16 +3289,20 @@ asm void func_0201fd60(void) {
 }
 
 // _ddiv: double-precision divide, a / b (a in r1:r0, b in r3:r2), round to nearest even.
-// Sign is a^b (kept in r4). Exponent fields are extracted with the mask 0xffe (a literal-pool constant),
-// so each exponent is held doubled in the working registers; mantissas get the implicit
-// bit. The quotient is built from a reciprocal of b: an 8-bit table estimate (256-byte table in
-// the middle of the code, read pc-relative) is refined with several multiplies, producing a
-// quotient estimate of a little over 53 bits in r4:r5 plus a guard word in lr. The remainder b*q - a is then
-// computed exactly to decide the last rounding bit. Overflow gives a signed infinity; underflow
-// builds a denormal (shifting right with sticky bits) or signed zero.
-// Special cases: NaN operands, 0/0 and inf/inf return the quiet NaN 0x7fffffff_ffffffff; x/0 and
-// inf/finite give a signed infinity; 0/finite and finite/inf give signed zero; denormal
-// operands are normalised with clz first.
+// Sign is a^b (computed in r4, then carried in bit 0 of ip). Exponent fields are extracted with
+// the mask 0xffe (a literal-pool constant), so each exponent is held doubled in the working
+// registers; mantissas get the implicit bit. The quotient is built from a reciprocal of b: an
+// 8-bit table estimate (256-byte table in the middle of the code, read pc-relative) is refined
+// with several multiplies, producing a quotient estimate in r4:r5 plus a guard word in lr. If
+// the guard word's top bit is set the result is rounded up directly; otherwise the low bits of
+// b*(2q+1) are compared with a to decide the round bit. Overflow gives a signed infinity;
+// underflow builds a denormal, corrected and rounded (nearest, ties to even) with exact
+// remainder checks, or a signed zero.
+// Special cases: a signaling NaN in a is returned quieted; otherwise a quiet NaN in b is
+// returned, else a quiet NaN in a. The other NaN cases (signaling NaN in b, 0/0, inf/inf) or
+// 0x7ff80000 into the working high word with r0 unchanged, which for 0/0 and inf/inf gives
+// 0x7ff80000_00000000 with a's sign. x/0 and inf/finite give a signed infinity; 0/finite and
+// finite/inf give signed zero; denormal operands are normalised with clz first.
 asm double _ddiv(double a, double b) {
     stmdb sp!, {r4, r5, r6, lr}
     ldr lr, =0xffe
@@ -3632,7 +3664,7 @@ L_02020248:
     and r1, r1, #0x80000000
     ldmia sp!, {r4, r5, r6, lr}
     bx lr
-    // a is NaN
+    // a is NaN: a signaling one is quieted; a quiet one is returned unless b is a NaN
 L_02020270:
     tst r1, #0x80000
     beq L_020202a8
@@ -3642,7 +3674,7 @@ L_02020270:
     bhi L_02020290
     ldmia sp!, {r4, r5, r6, lr}
     bx lr
-    // b is NaN: return it
+    // b is NaN: return it if quiet, else take the exit below
 L_02020290:
     tst r3, #0x80000
     beq L_020202a8
@@ -3650,7 +3682,7 @@ L_02020290:
     mov r0, r2
     ldmia sp!, {r4, r5, r6, lr}
     bx lr
-    // return quiet NaN
+    // or 0x7ff80000 into the high word (quiet NaN), r0 unchanged
 L_020202a8:
     orr r1, r1, #0x7f000000
     orr r1, r1, #0xf80000

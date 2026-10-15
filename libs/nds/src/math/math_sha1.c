@@ -210,13 +210,15 @@ asm void data_0200bb74(void) {
 }
 
 // Hashes whole 64-byte blocks. r0 -> five-word running state, r1 -> input bytes, r2 = byte count
-// (consumed 64 at a time while positive). Per block: the first 16 words are loaded big-endian
-// (byte-swapped through the 0x00ff00ff mask) into a 64-word schedule kept on the stack (a
-// 16-word window is stored twice, 0x40 apart, so the later words read a flat run); the other
-// words are the rotate-by-1 of the xor of the words 16, 14, 8 and 3 positions back. Four stages
-// of 20 steps follow, each step mixing the five state words with a different boolean function
-// (select, parity, majority, parity) and its constant, rotating the first word left by 5 and the
-// third right by 2. The block result is added back into the state at r0.
+// (one block is always processed; further blocks follow while the count, less 64 per block,
+// stays positive). Per block: the first 16 words are loaded big-endian (byte-swapped through the
+// 0x00ff00ff mask) into a 16-word circular schedule on the stack, every word stored twice, 0x40
+// bytes apart, so a 16-word window can be read without wrapping; the later words are the xor of
+// the words 16, 14, 8 and 3 positions back, rotated left by 1. Four stages of 20 steps follow,
+// each with its own boolean function (select, parity, majority, parity) and constant; a step adds
+// the first word rotated left by 5, the fifth word, the constant, the schedule word and the
+// function of words two to four, and the second word rotated right by 2 moves into the third
+// position. The block result is added back into the state at r0.
 asm void func_0200bb88(unsigned *state, const void *data, int len) {
     stmfd sp!, {r4, r5, r6, r7, r8, r9, r10, r11, ip, lr}
     ldmia r0, {r3, r9, r10, r11, ip}    // load the five state words

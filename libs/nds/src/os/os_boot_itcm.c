@@ -1,6 +1,7 @@
 // Boot-time card/ROM loader helpers in ITCM: 0x01ffcb20-0x01ffcdb8 (func_01ffcb54 and func_01ffcc20 are hand assembly).
 #include <nitro/internal.h>
 
+extern char SDK_AUTOLOAD_DTCM_START[];
 extern struct { vu16 state; u16 initialized; } resetState;   // os_reset.c
 extern u32 OS_DisableInterrupts(void);
 extern u32 OS_RestoreInterrupts(u32 state);
@@ -29,7 +30,7 @@ typedef struct {
 asm void func_01ffcb54(void) {
     mov ip, #0x4000000
     str ip, [ip, #0x208]
-    ldr r1, =0x27e0000
+    ldr r1, =SDK_AUTOLOAD_DTCM_START
     add r1, r1, #0x3fc0
     add r1, r1, #0x3c
     mov r0, #0

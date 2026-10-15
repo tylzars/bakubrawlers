@@ -196,12 +196,10 @@ void OSi_RescheduleThread(void) {
 }
 
 void OS_InitThread(void) {
-    OSThread *mainThread;
     u32 stackTop;
     if (threadSys.initialized != 0) {
         return;
     }
-    mainThread = &threadSys.ti.mainThread;
     threadSys.initialized = TRUE;
     threadSys.pCurrent = &threadSys.ti.current;
     threadSys.ti.mainThread.priority = 0x10;
@@ -209,15 +207,15 @@ void OS_InitThread(void) {
     threadSys.ti.mainThread.state = OS_THREAD_STATE_READY;
     threadSys.ti.mainThread.next = NULL;
     threadSys.ti.mainThread.profiler = NULL;
-    threadSys.ti.list = mainThread;
-    threadSys.ti.current = mainThread;
+    threadSys.ti.list = &threadSys.ti.mainThread;
+    threadSys.ti.current = &threadSys.ti.mainThread;
     if ((s32) SDK_SYS_STACKSIZE > 0) {
-        stackTop = OSi_IRQ_STACK_BOTTOM;
+        stackTop = OSi_IRQ_STACK_BOTTOM - (s32) SDK_SYS_STACKSIZE;
     } else {
-        stackTop = 0x27e0080;
+        stackTop = 0x27e0080 - (s32) SDK_SYS_STACKSIZE;
     }
-    threadSys.ti.mainThread.stackTop = stackTop - (u32) SDK_SYS_STACKSIZE;
     threadSys.ti.mainThread.stackBottom = OSi_IRQ_STACK_BOTTOM;
+    threadSys.ti.mainThread.stackTop = stackTop;
     threadSys.ti.mainThread.stackWarningOffset = 0;
     *(u32 *) (threadSys.ti.mainThread.stackBottom - 4) = 0xfddb597d;
     *(u32 *) threadSys.ti.mainThread.stackTop = 0x7bf9dd5b;

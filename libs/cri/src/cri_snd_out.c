@@ -33,6 +33,7 @@ typedef volatile u16 vu16;
 
 #define AVG(a, b) ((s16)(((a) + (b)) / 2))
 #define PACK(lo, hi) (((u32)(u16)(lo)) | ((u32)(u16)(hi) << 16))
+#define PACK2(lo, hi) (((u32)(u16)(hi) << 16) | ((u32)(u16)(lo)))
 
 extern void MIi_CpuClearFast(u32, void *, u32);
 extern int func_02037364(void *, int, void *, int, int, int, void *, void *);
@@ -346,71 +347,88 @@ s16 *func_0204a320(SndOut *o, s16 *src, u32 n)
             dst += 16;
         }
     } else if (mode == 4) {
-        int cnt = n >> 2;
         s16 prev = o->prev;
+        int cnt = n >> 2;
         while (cnt > 0) {
             int w = *(int *)src;
-            s16 s0 = w;
+            s16 s0 = w << 16 >> 16;
             s16 a0 = AVG(prev, s0);
             s16 a1;
             prev = w >> 16;
-            a1 = AVG(s0, prev);
+            a1 = AVG(prev, s0);
             src += 2;
             cnt -= 2;
-            ((u32 *)dst)[0] = PACK(a0, s0);
-            ((u32 *)dst)[1] = PACK(a1, prev);
+            ((u32 *)dst)[0] = PACK2(a0, s0);
+            ((u32 *)dst)[1] = PACK2(a1, prev);
             dst += 8;
         }
         o->prev = prev;
     } else if (mode == 2) {
-        int cnt = n >> 3;
         s16 prev = o->prev;
+        int cnt = n >> 3;
         while (cnt > 0) {
             int w = *(int *)src;
-            s16 s0 = w, s1 = w >> 16;
-            s16 a = AVG(prev, s0);
-            s16 b = AVG(prev, a);
-            s16 c = AVG(s0, s1);
+            s16 s0, s1, a, b, c, v1, v2, v3;
+            s0 = w << 16 >> 16;
+            a = AVG(prev, s0);
+            b = AVG(prev, a);
+            v1 = AVG(a, s0);
+            ((u32 *)dst)[0] = PACK(b, a);
+            ((u32 *)dst)[1] = PACK(v1, s0);
+            s1 = w >> 16;
+            c = AVG(s0, s1);
+            v2 = AVG(s0, c);
+            ((u32 *)dst)[2] = PACK(v2, c);
+            v3 = AVG(c, s1);
+            ((u32 *)dst)[3] = PACK(v3, s1);
             src += 2;
             cnt -= 2;
-            ((u32 *)dst)[0] = PACK(b, a);
-            ((u32 *)dst)[1] = PACK(AVG(a, s0), s0);
-            ((u32 *)dst)[2] = PACK(AVG(s0, c), c);
-            ((u32 *)dst)[3] = PACK(AVG(c, s1), s1);
             prev = s1;
             dst += 16;
         }
         o->prev = prev;
     } else if (mode == 1) {
-        int cnt = (int)(n >> 1) / 8;
         s16 prev = o->prev;
+        int cnt = (int)(n >> 1) / 8;
         int i;
         for (i = 0; i < cnt; i++) {
-            int w = *(int *)src;
-            s16 a = AVG(prev, (s16)w);
-            s16 b = AVG(prev, a);
-            s16 d, c, e, f;
-            ((u32 *)dst)[0] = PACK(AVG(prev, b), b);
-            ((u32 *)dst)[1] = PACK(AVG(b, a), a);
-            d = AVG(a, (s16)w);
-            ((u32 *)dst)[2] = PACK(AVG(a, d), d);
-            ((u32 *)dst)[3] = PACK(AVG(d, (s16)w), (s16)w);
-            c = AVG((s16)w, w >> 16);
-            e = AVG((s16)w, c);
-            ((u32 *)dst)[4] = PACK(AVG((s16)w, e), e);
-            ((u32 *)dst)[5] = PACK(AVG(e, c), c);
-            f = AVG(c, w >> 16);
-            ((u32 *)dst)[6] = PACK(AVG(c, f), f);
-            ((u32 *)dst)[7] = PACK(AVG(f, w >> 16), w >> 16);
+            int w;
+            s16 s0, s1, a, b, d, c, e, f;
+            s16 v0, v1, v2, v3, v4, v5, v6, v7;
+            w = *(int *)src;
             src += 2;
-            prev = w >> 16;
+            s0 = w << 16 >> 16;
+            a = AVG(prev, s0);
+            b = AVG(prev, a);
+            v0 = AVG(prev, b);
+            ((u32 *)dst)[0] = PACK(v0, b);
+            v1 = AVG(b, a);
+            ((u32 *)dst)[1] = PACK(v1, a);
+            d = AVG(a, s0);
+            v2 = AVG(a, d);
+            ((u32 *)dst)[2] = PACK(v2, d);
+            v3 = AVG(d, s0);
+            ((u32 *)dst)[3] = PACK(v3, s0);
+            s1 = w >> 16;
+            c = AVG(s0, s1);
+            e = AVG(s0, c);
+            v4 = AVG(s0, e);
+            ((u32 *)dst)[4] = PACK(v4, e);
+            v5 = AVG(e, c);
+            ((u32 *)dst)[5] = PACK(v5, c);
+            f = AVG(c, s1);
+            v6 = AVG(c, f);
+            ((u32 *)dst)[6] = PACK(v6, f);
+            v7 = AVG(f, s1);
+            ((u32 *)dst)[7] = PACK(v7, s1);
+            prev = s1;
             dst += 32;
         }
         o->prev = prev;
     }
     } else {
         MI_CpuCopy8(src, dst, n);
-        src += n / 2;
+        src += (int)(n >> 1);
     }
     if (o->cb != 0) o->cb(o->id, o->buf + wp, n);
     return src;

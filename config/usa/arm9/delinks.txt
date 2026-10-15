@@ -332,6 +332,7 @@ libs/nns/src/g3d/g3d_anm.c:
     .text       start:0x0203382c end:0x02034d5c
 
 libs/nns/src/g3d/g3d_srt.c:
+    complete
     .text       start:0x02034d5c end:0x02035c68
 
 libs/nns/src/gfd/gfd_vram.c:
@@ -487,6 +488,7 @@ libs/nds/src/os/os_spinlock.c:
     .text       start:0x02004c50 end:0x02005004
 
 libs/nds/src/os/os_thread.c:
+    complete
     .text       start:0x02005004 end:0x02005a60
 
 libs/nds/src/os/os_message.c:
@@ -657,6 +659,7 @@ libs/nds/src/pm/pm.c:
     .text       start:0x0200cc38 end:0x0200da80
 
 libs/nds/src/rtc/rtc.c:
+    complete
     .text       start:0x0200da80 end:0x0200e310
 
 libs/nds/src/card/card_common.c:

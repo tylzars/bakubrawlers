@@ -8,7 +8,7 @@ int func_02011ae8(void);
 u32 OS_DisableInterrupts(void);          // 0x0200710c
 void OS_RestoreInterrupts(u32 mode);     // 0x02007120
 void OS_SleepThread(void *queue);        // 0x02005610
-void SVC_WaitByLoop(u32 count);          // 0x0200717c
+void OS_SpinWait(u32 count);             // 0x0200717c
 void PXI_Init(void);                // PXI init
 BOOL PXI_IsCallbackReady(u32 tag, BOOL port);  // PXI start-up handshake
 void PXI_SetFifoRecvCallback(u32 tag, void *cb);   // PXI set callback

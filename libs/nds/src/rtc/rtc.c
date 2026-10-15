@@ -44,13 +44,13 @@ extern int func_0200d904(int a);
 
 void func_0200da80(void)
 {
-    SVC_WaitByLoop(0x360000);
+    OS_SpinWait(0x360000);
     if (func_0200d924() == 1) return;
     while (func_0200d1e0(2, 0)) {
-        SVC_WaitByLoop(0xa3a47);
+        OS_SpinWait(0xa3a47);
     }
     while (!func_0200d904(1)) {
-        SVC_WaitByLoop(10);
+        OS_SpinWait(10);
     }
 }
 
@@ -114,8 +114,8 @@ void func_0200dc24(u32 tag, u32 data, u32 err)
         if (data_020bfd98.alarmCb) data_020bfd98.alarmCb();
         return;
     }
-    res = 0;
     if (err == 0) {
+        res = 0;
         switch (data_020bfd98.command) {
         case 0: {
             RTCDate *d = (RTCDate *)data_020bfd98.p1;
@@ -147,7 +147,7 @@ void func_0200dc24(u32 tag, u32 data, u32 err)
         }
         case 6: {
             s32 *p = (s32 *)data_020bfd98.p1;
-            if (RAW_STAT->mode != 4) { *p = res; } else { *p = 1; }
+            switch (RAW_STAT->mode) { case 4: *p = 1; break; default: *p = res; break; }
             break;
         }
         case 7: {

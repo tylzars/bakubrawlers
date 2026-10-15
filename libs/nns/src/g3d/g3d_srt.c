@@ -48,7 +48,7 @@ void func_02034d5c(u32 *m, s32 *v, u8 *idx, u32 flags) {   // combine a node tra
     data_020bbd04[a][3] = FxMul(v[3], data_020bbd04[b][3]);
     data_020bbd04[a][4] = FxMul(v[4], data_020bbd04[b][4]);
     data_020bbd04[a][5] = FxMul(v[5], data_020bbd04[b][5]);
-    MIi_CpuCopy32(data_020bbd04[a], &m[4], 0x18);
+    MIi_CpuCopy32(data_020bbd04[b], &m[4], 0x18);
 }
 void func_02034f78(u32 *mm) {   // load the texture matrix (translation form)
     GeBuf t;

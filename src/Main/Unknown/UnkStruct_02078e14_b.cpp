@@ -4178,13 +4178,12 @@ s32 func_02087468() {
     return result;
 }
 
-// non-matching: 9 words in case 2 (cases 0 and 1 match): the original loads the count between list[1] and list[0] and
-// reuses the table register for the entry pointer; the compiler loads the count last and keeps the entry in lr.
 BOOL func_020875ac(u32 index) {
     BOOL result = TRUE;
+    u8 i;
     switch (data_020a40f4[index][0]) {
         case 0: {
-            u8 i = 0;
+            i               = 0;
             const u16 *list = (const u16 *) data_020a40f0[index].mList;
             do {
                 if (!TEST_BIT(data_020d497b, list[i])) {
@@ -4197,7 +4196,7 @@ BOOL func_020875ac(u32 index) {
         }
         case 1: {
             const u8 *list = (const u8 *) data_020a40f0[index].mList;
-            u8 i = 0;
+            i              = 0;
             do {
                 if (!TEST_BIT(data_020d4976, list[i])) {
                     result = FALSE;
@@ -4208,16 +4207,14 @@ BOOL func_020875ac(u32 index) {
             break;
         }
         case 2: {
-            const ProgressEntry *e = &data_020a40f0[index];
-            u8 count       = e->mCount;
-            u8 i           = 0;
-            const u8 *list = (const u8 *) e->mList;
+            const u8 *list = (const u8 *) data_020a40f0[index].mList;
+            i              = 0;
             do {
                 if (!TEST_BIT(data_020d496a + list[1] * 3, list[0])) {
                     result = FALSE;
                 }
                 i++;
-            } while (i < count);
+            } while (i < data_020a40f0[index].mCount);
             break;
         }
     }

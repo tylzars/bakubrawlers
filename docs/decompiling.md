@@ -421,6 +421,10 @@ Other findings from linking:
   matched UnkStruct_02078290::Update/func_020785d8 and BattleCardEffect::func_ov007_02271888 after ~60 int-typed
   forms failed. Parameter widths matter the same way: BattleMapModel matched once `func_02032370`'s parameters were
   declared `u16` (the conversion temporary had merged with `color`), BattleObj01 once its own `layer` became `u8`.
+- **Which variables exist, and where, moves the schedule; expression forms rarely do.** func_020875ac's case 2
+  loaded the count between list[1] and list[0] only with one function-scope `u8 i` shared by all cases and the count
+  read in the loop condition (`while (i < table[index].mCount)`); a count local before the loop is never scheduled
+  ahead of list[0]. Macro vs inline, ternary vs if/else and index spellings all compiled the same.
 - **A function-local static table schedules like const data.** mwcc knows no store can reach it, so its load moves
   above preceding stores, while the table stays in `.data` (a file-scope `const` would move it to `.rodata`).
   SpriteScreen::func_02027624 matched this way. The statics get `name$N` symbols, to check when the unit's data is

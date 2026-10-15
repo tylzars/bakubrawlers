@@ -1,4 +1,22 @@
 #include "Battle/BattleUnk022637ac.hpp"
+
+// Placeholder: the ROM has thirteen identical {0, 0x4800, 0} constants (one per use below). As literals they
+// sort into a different order than the original's, and no include or definition order found reproduces it, so
+// they are named here and defined in the order that gives the original layout.
+static const VecFx32 sEffectPos_02266868 = {0, 0x4800, 0};
+static const VecFx32 sEffectPos_022665ec = {0, 0x4800, 0};
+static const VecFx32 sEffectPos_02265718 = {0, 0x4800, 0};
+static const VecFx32 sEffectPos_02265af8_1 = {0, 0x4800, 0};
+static const VecFx32 sEffectPos_022663f0 = {0, 0x4800, 0};
+static const VecFx32 sEffectPos_02266a28_1 = {0, 0x4800, 0};
+static const VecFx32 sEffectPos_022652c8 = {0, 0x4800, 0};
+static const VecFx32 sEffectPos_02265fac_1 = {0, 0x4800, 0};
+static const VecFx32 sEffectPos_02265fac_0 = {0, 0x4800, 0};
+static const VecFx32 sEffectPos_02266a28_0 = {0, 0x4800, 0};
+static const VecFx32 sEffectPos_02265af8_0 = {0, 0x4800, 0};
+static const VecFx32 sEffectPos_02266a28_2 = {0, 0x4800, 0};
+static const VecFx32 sEffectPos_02265118 = {0, 0x4800, 0};
+
 #include "Battle/BattleUnk29c.hpp"
 #include "Battle/BattleCommandPage.hpp"
 #include "Battle/BattleCommandList.hpp"
@@ -610,7 +628,7 @@ u8 BattleUnk022637ac::func_ov007_02265118() {
     u8 done = 0;
     switch (mUnk_28) {
         case 0: {
-            VecFx32 pos = {0, 0x4800, 0};
+            VecFx32 pos = sEffectPos_02265118;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
             func_0202ba64(mEffects, 0, "shuto_return");
@@ -639,7 +657,7 @@ u8 BattleUnk022637ac::func_ov007_022652c8() {
     u8 done = 0;
     switch (mUnk_28) {
         case 0: {
-            VecFx32 pos = {0, 0x4800, 0};
+            VecFx32 pos = sEffectPos_022652c8;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
             func_0202ba64(mEffects, 0, "shuto_return");
@@ -667,7 +685,7 @@ u8 BattleUnk022637ac::func_ov007_022652c8() {
 extern const s16 data_0208bd24[2];
 void func_ov007_02262714(BattlePlayerList *list, u8 a, u8 b, u8 c);
 void func_ov007_02248944(VecFx32 *out, u8 a, u8 b);
-void func_ov007_02248910(void *p);
+extern "C" void func_ov007_02248910(BattleCommandMap *map);
 
 // The target and eye are built as whole vectors and stored by struct copy (the `mov r2, ip` copy of pos.x), with the
 // eye computed before either store; the camera pointer is read once up front and again for the eye store.
@@ -732,7 +750,7 @@ u8 BattleUnk022637ac::func_ov007_02265718() {
     u8 done = 0;
     switch (mUnk_28) {
         case 0: {
-            VecFx32 pos = {0, 0x4800, 0};
+            VecFx32 pos = sEffectPos_02265718;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
             func_0202ba64(mEffects, 0, "bkn_exchange");
@@ -787,7 +805,7 @@ u8 BattleUnk022637ac::func_ov007_02265718() {
 extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 void func_0203db8c(void *obj, fx32 x, fx32 y, fx32 z);
 void func_ov007_02262828(BattlePlayerList *list, u8 a, u8 b);
-void func_ov007_02262768(BattlePlayerList *list, BattleUnk022637acUnit *unit, u16 a, u8 b, u8 c, u8 d, u8 e);
+u8 func_ov007_02262768(BattlePlayerList *list, const VecFx32 *pos, u16 value, u8 player, u8 record, u8 marker, u8 flag);
 void func_ov007_02262a64(BattlePlayerList *list, u8 a, u8 b);
 BOOL func_ov007_02267304(BattleUnk022637ac *self, VecFx32 *out);
 
@@ -810,7 +828,7 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
     BattleUnit *unit;
     switch (mUnk_28) {
         case 0: {
-            VecFx32 pos = {0, 0x4800, 0};
+            VecFx32 pos = sEffectPos_02265af8_0;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
             func_0202ba64(mEffects, 0, "bkn_move");
@@ -853,7 +871,7 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
                 tmp.mPos.x = mUnk_1c->mUnk_1a4->mPosition.x;
                 tmp.mPos.z = mUnk_1c->mUnk_1a4->mPosition.z;
                 func_ov007_02262828(data_020d433c.mBattlePlayers, mUnk_16, 2);
-                func_ov007_02262768(data_020d433c.mBattlePlayers, &tmp, tmp.mUnk_0c, tmp.mUnk_0f, tmp.mUnk_0e, unit->mUnk_11, 1);
+                func_ov007_02262768(data_020d433c.mBattlePlayers, &tmp.mPos, tmp.mUnk_0c, tmp.mUnk_0f, tmp.mUnk_0e, unit->mUnk_11, 1);
                 u8 *rec2 = (u8 *) data_020d433c.mBattlePlayers->mPlayers[mUnk_15] + mUnk_10 * 12;
                 *(u16 *) (rec2 + 0x10) = r4;
                 *(u16 *) (rec2 + 0x12) = r6;
@@ -869,7 +887,7 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
         case 2:
             if (func_ov007_02267304(this, &mUnk_54)) {
                 s16 handle  = func_0202bd40(mEffects, 0, 0, 0, 1);
-                VecFx32 pos = {0, 0x4800, 0};
+                VecFx32 pos = sEffectPos_02265af8_1;
                 pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
                 pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
                 func_0202bef4(mEffects, handle, &pos);
@@ -898,7 +916,7 @@ u8 BattleUnk022637ac::func_ov007_02265fac() {
     u8 done = 0;
     switch (mUnk_28) {
         case 0: {
-            VecFx32 pos = {0, 0x4800, 0};
+            VecFx32 pos = sEffectPos_02265fac_0;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
             func_0202ba64(mEffects, 0, "bkn_move");
@@ -944,7 +962,7 @@ u8 BattleUnk022637ac::func_ov007_02265fac() {
         case 2:
             if (func_ov007_02267304(this, &mUnk_54)) {
                 s16 handle  = func_0202bd40(mEffects, 0, 0, 0, 1);
-                VecFx32 pos = {0, 0x4800, 0};
+                VecFx32 pos = sEffectPos_02265fac_1;
                 pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
                 pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
                 func_0202bef4(mEffects, handle, &pos);
@@ -972,7 +990,7 @@ u8 BattleUnk022637ac::func_ov007_022663f0() {
     u8 done = 0;
     switch (mUnk_28) {
         case 0: {
-            VecFx32 pos = {0, 0x4800, 0};
+            VecFx32 pos = sEffectPos_022663f0;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
             func_0202ba64(mEffects, 0, "defense_up");
@@ -1016,7 +1034,7 @@ u8 BattleUnk022637ac::func_ov007_022665ec() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            VecFx32 pos = {0, 0x4800, 0};
+            VecFx32 pos = sEffectPos_022665ec;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
             s16 handle  = func_0202bd40(mEffects, 0, 0, 0, 1);
@@ -1049,7 +1067,7 @@ u8 BattleUnk022637ac::func_ov007_02266868() {
     u8 done = 0;
     switch (mUnk_28) {
         case 0: {
-            VecFx32 pos = {0, 0x4800, 0};
+            VecFx32 pos = sEffectPos_02266868;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
             func_0202ba64(mEffects, 0, "gp_pickup2");
@@ -1110,7 +1128,7 @@ u8 BattleUnk022637ac::func_ov007_02266a28() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            VecFx32 pos = {0, 0x4800, 0};
+            VecFx32 pos = sEffectPos_02266a28_0;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
             s16 handle  = func_0202bd40(mEffects, 0, 0, 0, 1);
@@ -1147,7 +1165,7 @@ u8 BattleUnk022637ac::func_ov007_02266a28() {
             if (func_ov007_02267100(this)) {
                 mUnk_1a = 0;
                 const BattleUnk022637acEffect *entry = &data_ov007_0227ab00[data_020d433c.mUnk_95];
-                VecFx32 pos                          = {0, 0x4800, 0};
+                VecFx32 pos                          = sEffectPos_02266a28_1;
                 pos.x                                = entry->mPos.x;
                 pos.z                                = entry->mPos.z;
                 u16 handle                           = (u16) (s16) func_0202bd40(mEffects, 0, 0, 0, 1);
@@ -1190,7 +1208,7 @@ u8 BattleUnk022637ac::func_ov007_02266a28() {
             mUnk_30->SetTarget(x, y, z);
             func_ov007_02267098(this);
             s16 handle  = func_0202bd40(mEffects, 0, 0, 0, 1);
-            VecFx32 pos = {0, 0x4800, 0};
+            VecFx32 pos = sEffectPos_02266a28_2;
             pos.x       = x;
             pos.z       = z;
             func_0202bef4(mEffects, handle, &pos);

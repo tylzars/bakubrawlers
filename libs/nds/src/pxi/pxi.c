@@ -12,7 +12,7 @@ extern void PXIi_HandlerRecvFifoNotEmpty(void);
 #define REG_IPCFIFORECV (*(vu32 *) 0x4100000)
 typedef struct {
     u8 pad[0x388];
-    vu32 flags[2];    // 0x388: registered tag bits, per processor
+    u32 flags[2];    // 0x388: registered tag bits, per processor
 } PXIWork;
 typedef enum { PXW_BASE = 0x27ffc00 } PXWB;
 static PXIWork *const pxiWork = (PXIWork *) 0x27ffc00;
@@ -82,15 +82,13 @@ void PxiFifoSetup(void) {
 
 void PXI_SetFifoRecvCallback(int fifoTag, PXIFifoCallback callback) {
     OSIntrMode e = OS_DisableInterrupts();
-    u32 v;
-    PXWB b = PXW_BASE;
+    PXIWork *w = (PXIWork *) 0x27ffc00;
     pxiCallback[fifoTag] = callback;
     if (callback != NULL) {
-        v = ((PXIWork *) b)->flags[0] | (1 << fifoTag);
+        w->flags[0] |= 1 << fifoTag;
     } else {
-        v = ((PXIWork *) b)->flags[0] & ~(1 << fifoTag);
+        w->flags[0] &= ~(1 << fifoTag);
     }
-    ((PXIWork *) b)->flags[0] = v;
     OS_RestoreInterrupts(e);
 }
 

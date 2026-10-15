@@ -393,6 +393,7 @@ libs/nds/src/fx/fx_mtx44_concat.c:
     .text       start:0x02000de8 end:0x0200144c
 
 libs/nds/src/fx/fx_mtx44_persp.c:
+    complete
     .text       start:0x02001688 end:0x020017d4
 
 libs/nds/src/mi/mi_wram.c:
@@ -609,7 +610,9 @@ libs/nds/src/snd/snd_bank.c:
     .text       start:0x02008c5c end:0x02009050
 
 libs/nds/src/pxi/pxi.c:
+    complete
     .text       start:0x02009050 end:0x0200936c
+    .bss        start:0x020bfc04 end:0x020bfc88
 
 libs/nds/src/fs/fs_tail.c:
     complete
@@ -650,6 +653,7 @@ libs/nds/src/mic/mic.c:
     .text       start:0x0200c744 end:0x0200cc38
 
 libs/nds/src/pm/pm.c:
+    complete
     .text       start:0x0200cc38 end:0x0200da80
 
 libs/nds/src/rtc/rtc.c:

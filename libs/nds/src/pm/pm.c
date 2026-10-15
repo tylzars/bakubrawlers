@@ -48,7 +48,7 @@ void func_0200cc58(void)
     vu32 *l = (vu32 *)&pmWork.lock;
     if (pmWork.lock == 0) return;
     do {
-        if (OS_GetProcMode() == 0x12) PXI_ProcessRecvFifo();
+        if (OS_GetProcMode() == 0x12) PXIi_HandlerRecvFifoNotEmpty();
     } while (*l != 0);
 }
 
@@ -57,7 +57,7 @@ void func_0200cc98(void)
     vu32 *l = (vu32 *)&pmWork.lock;
     if (pmWork.lock == 0) return;
     do {
-        if (OS_GetCpsrIrqBits() == 0x80 || REG_IME == 0) PXI_ProcessRecvFifo();
+        if (OS_GetCpsrIrqBits() == 0x80 || REG_IME == 0) PXIi_HandlerRecvFifoNotEmpty();
     } while (*l != 0);
 }
 
@@ -66,7 +66,7 @@ void func_0200cce8(void)
     vu32 *l = (vu32 *)&pmWork.lock;
     if (pmWork.lock == 0) return;
     do {
-        if (OS_GetCpsrIrqBits() == 0x80 || REG_IME == 0 || OS_GetProcMode() == 0x12) PXI_ProcessRecvFifo();
+        if (OS_GetCpsrIrqBits() == 0x80 || REG_IME == 0 || OS_GetProcMode() == 0x12) PXIi_HandlerRecvFifoNotEmpty();
     } while (*l != 0);
 }
 
@@ -94,7 +94,7 @@ void func_0200cd80(void)
     PXI_Init();
     if (!PXI_IsCallbackReady(8, 1)) {
         while (1) {
-            SVC_WaitByLoop(100);
+            WaitByLoop(100);
             if (PXI_IsCallbackReady(8, 1)) break;
         }
     }
@@ -104,8 +104,8 @@ void func_0200cd80(void)
 
 void func_0200ce18(u32 tag, u32 data, int err)
 {
-    u32 arg = data & 0xff;
     u16 cmd = (data & 0x7f00) >> 8;
+    u16 arg = data & 0xff;
     if (err) {
         switch (cmd) {
         case 0x61:
@@ -308,6 +308,75 @@ void func_0200d3b4(u32 word)
     while (PXI_SendWordByFifo(8, word, 0) != 0) {}
 }
 
+void func_0200d3e0(u32 flags, u32 a, u32 b)
+{
+    int ok = 0;
+    u32 dispA;
+    u32 led0;
+    u32 e;
+    u32 mask;
+    u32 led1;
+    u32 dispB;
+    u32 lcd;
+    vu32 tick;
+    u32 cur;
+    u16 ime;
+    u32 t;
+    func_0200d9f8(pmWork.preList);
+    ime = REG_IME;
+    REG_IME = 0;
+    e = OS_DisableInterrupts();
+    mask = OS_DisableIrqMask(0x3fffff);
+    OS_SetIrqMask((OS_IsTickAvailable() ? 8 : 0) | 0x40000);
+    OS_RestoreInterrupts(e);
+    t = REG_IME;
+    REG_IME = 1;
+    if (flags & 8) {
+        if (*(vu16 *)0x027ffc40 == 2) flags &= ~8;
+    }
+    if (flags & 0x10) {
+        if (func_02011b28() == 0) flags &= ~0x10;
+    }
+    dispA = *(vu32 *)0x04000000;
+    dispB = *(vu32 *)0x04001000;
+    lcd = func_0200d924();
+    while (func_0200d354(&led0, &led1)) OS_SpinWait(0xa3a47);
+    while (func_0200d1e0(2, 0)) OS_SpinWait(0xa3a47);
+    tick = *(vu32 *)0x027ffc3c;
+    do { cur = *(vu32 *)0x027ffc3c; } while (tick == cur);
+    tick = *(vu32 *)0x027ffc3c;
+    *(vu32 *)0x04000000 &= ~0x30000;
+    *(vu32 *)0x04001000 &= ~0x10000;
+    do { cur = *(vu32 *)0x027ffc3c; } while (tick == cur);
+    tick = *(vu32 *)0x027ffc3c;
+    do { cur = *(vu32 *)0x027ffc3c; } while (tick == cur);
+    pmWork.flag = 0;
+    func_0200cf6c((u16)(flags | (led0 ? 0x40 : 0) | (led1 ? 0x80 : 0)), (u16)(a | b));
+    while (pmWork.flag == 0) OS_Halt();
+    if (flags & 8) {
+        if (*(vu32 *)0x04000214 & 0x100000) ok = 1;
+    }
+    if (!ok) {
+        if (lcd == 1) {
+            while (func_0200d6ec(1, 1, 1, 1) != 1) {}
+        } else {
+            if (func_0200d124(1)) {
+                do { OS_SpinWait(0xa3a47); } while (func_0200d124(1));
+            }
+        }
+        *(vu32 *)0x04000000 = dispA;
+        *(vu32 *)0x04001000 = dispB;
+    }
+    OS_SpinWait(0x360000);
+    OS_DisableInterrupts();
+    OS_SetIrqMask(mask);
+    OS_RestoreInterrupts(e);
+    t = REG_IME;
+    REG_IME = ime;
+    if (ok) func_0200d2b4();
+    func_0200d9f8(pmWork.postList);
+}
+
 int func_0200d6ec(int a, int b, int c, int d)
 {
     switch (a) {
@@ -441,73 +510,4 @@ void func_0200da50(PMCallbackInfo *node)
 void func_0200da68(PMCallbackInfo *node)
 {
     func_0200d9a0(&pmWork.postList, node);
-}
-
-void func_0200d3e0(u32 flags, u32 a, u32 b)
-{
-    int ok = 0;
-    u32 dispA;
-    u32 led0;
-    u32 e;
-    u32 mask;
-    u32 led1;
-    u32 dispB;
-    u32 lcd;
-    vu32 tick;
-    u32 cur;
-    u16 ime;
-    u32 t;
-    func_0200d9f8(pmWork.preList);
-    ime = REG_IME;
-    REG_IME = 0;
-    e = OS_DisableInterrupts();
-    mask = OS_DisableIrqMask(0x3fffff);
-    OS_SetIrqMask((OS_IsTickAvailable() ? 8 : 0) | 0x40000);
-    OS_RestoreInterrupts(e);
-    t = REG_IME;
-    REG_IME = 1;
-    if (flags & 8) {
-        if (*(vu16 *)0x027ffc40 == 2) flags &= ~8;
-    }
-    if (flags & 0x10) {
-        if (func_02011b28() == 0) flags &= ~0x10;
-    }
-    dispA = *(vu32 *)0x04000000;
-    dispB = *(vu32 *)0x04001000;
-    lcd = func_0200d924();
-    while (func_0200d354(&led0, &led1)) OS_SpinWait(0xa3a47);
-    while (func_0200d1e0(2, 0)) OS_SpinWait(0xa3a47);
-    tick = *(vu32 *)0x027ffc3c;
-    do { cur = *(vu32 *)0x027ffc3c; } while (tick == cur);
-    tick = *(vu32 *)0x027ffc3c;
-    *(vu32 *)0x04000000 &= ~0x30000;
-    *(vu32 *)0x04001000 &= ~0x10000;
-    do { cur = *(vu32 *)0x027ffc3c; } while (tick == cur);
-    tick = *(vu32 *)0x027ffc3c;
-    do { cur = *(vu32 *)0x027ffc3c; } while (tick == cur);
-    pmWork.flag = 0;
-    func_0200cf6c((u16)(flags | (led0 ? 0x40 : 0) | (led1 ? 0x80 : 0)), (u16)(a | b));
-    while (pmWork.flag == 0) OS_Halt();
-    if (flags & 8) {
-        if (*(vu32 *)0x04000214 & 0x100000) ok = 1;
-    }
-    if (!ok) {
-        if (lcd == 1) {
-            while (func_0200d6ec(1, 1, 1, 1) != 1) {}
-        } else {
-            if (func_0200d124(1)) {
-                do { OS_SpinWait(0xa3a47); } while (func_0200d124(1));
-            }
-        }
-        *(vu32 *)0x04000000 = dispA;
-        *(vu32 *)0x04001000 = dispB;
-    }
-    OS_SpinWait(0x360000);
-    OS_DisableInterrupts();
-    OS_SetIrqMask(mask);
-    OS_RestoreInterrupts(e);
-    t = REG_IME;
-    REG_IME = ime;
-    if (ok) func_0200d2b4();
-    func_0200d9f8(pmWork.postList);
 }

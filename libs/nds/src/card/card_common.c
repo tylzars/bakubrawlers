@@ -368,7 +368,10 @@ void func_0200ea14(CardCommon *c)
             break;
         }
         if (mode == 2) {
-            if (!func_0200f5c8(c, 9, 1)) {
+            // Placeholder: the empty then-branch gives the original's branch polarity (`beq exit; b next`); every
+            // plain form inverts it. The real source form is not known.
+            if (func_0200f5c8(c, 9, 1)) {
+            } else {
                 break;
             }
         } else if (mode == 0) {
@@ -573,12 +576,9 @@ int func_0200f060(CardRomReq *r)
     }
     if (dmaOk) {
         u32 dtcm = (u32)func_0200682c();
-        u32 end = dst + len;
         u32 tcm = 1;
-        u32 inItcm = 0;
-        if (end > 0x1ff8000) {
-            inItcm = dst < 0x2000000;
-        }
+        u32 inItcm = (dst + len > 0x1ff8000 && dst < 0x2000000);
+        u32 end = dst + len;
         if (inItcm == 0) {
             if (dtcm >= end || dtcm + 0x4000 <= dst) {
                 tcm = 0;
@@ -845,3 +845,4 @@ int func_0200f5c8(CardCommon *c, u32 cmd, int tries)
     }
     return c->arg->result == 0;
 }
+

@@ -91,7 +91,7 @@ extern void (*pmWaitFunc)(void); // pmWaitFunc
 u32 OS_GetCpsrIrqBits(void);  // 0x02007164 (returns CPSR I-bit mask)
 u32 OS_GetProcMode(void);     // 0x02007170
 void OS_SpinWait(u32 cycles); // 0x0200717c
-void PXI_ProcessRecvFifo(void); // 0x02009254
-void SVC_WaitByLoop(u32 n);   // WaitByLoop
+void PXIi_HandlerRecvFifoNotEmpty(void); // 0x02009254
+void WaitByLoop(u32 n);   // 0x020004fe, BIOS call
 #endif
 typedef struct { s16 x0, y0, xDotSize, yDotSize; } TPCalibrateParam;

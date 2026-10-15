@@ -188,7 +188,9 @@ void func_020394c8(void) {   // per-frame update of all streams
         if (s->b1) {
             func_0203a514(&s->pan);
             v = data_0208f89c[s->f154];
-            sum = data_0208f89c[func_0203a4e0(&s->pan) >> 8] + v + data_0208f89c[s->f158];
+            // Placeholder: `- -v` only reproduces the original's operand order of the first add (`add r1, r1, r6`);
+            // the real source form is not known.
+            sum = data_0208f89c[func_0203a4e0(&s->pan) >> 8] - -v + data_0208f89c[s->f158];
             if (sum != s->f15c) {
                 func_02037574(s, sum);
                 s->f15c = sum;

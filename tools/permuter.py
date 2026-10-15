@@ -95,6 +95,9 @@ def split_top(text):
                     "=" in head.split(";")[-1].split(")")[-1]
                 last = head.rfind(";")
                 last = max(last, head.rfind("}"))
+                for pm in re.finditer(r"(?m)^[ \t]*#.*$", head):  # preprocessor lines end a header too
+                    if pm.end() > last:
+                        last = pm.end()
                 if not is_type and "(" in head[last + 1:] and not head[last + 1:].strip().startswith("#"):
                     out.append(("pre", text[start:head_start + last + 1]))
                     out.append(("func", text[head_start + last + 1:tail_end]))

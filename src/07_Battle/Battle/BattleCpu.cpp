@@ -313,9 +313,11 @@ u8 BattleCpu::func_ov007_02231300() {
     return 0;
 }
 
-// non-matching: case 4 at 0x594-0x5b0 only: the original loads mUnk_79 into r1 and mUnk_7a into r2, with the
-// player and record base following r1; ours has them the other way round. (Reading the entries through mUnk_1c
-// instead of the Entries() accessor fixes the final mUnk_98 pass.)
+// Record index read into an enum-typed local: a real load (mwcc does not substitute enum locals), so the index is
+// coloured after the player and record base (case 4).
+enum RecordIndex { RECORD_INDEX_0 };
+
+// The final mUnk_98 pass reads the entries through mUnk_1c, not the Entries() accessor.
 extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     cpu->mPos.x = 0;
     cpu->mPos.y = 0;
@@ -512,7 +514,8 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                 }
                 break;
             case 4: {
-                BattleRecord *rec = &data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->mRecords[cpu->mUnk_7a];
+                RecordIndex index = (RecordIndex) cpu->mUnk_7a;
+                BattleRecord *rec = &data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->mRecords[index];
                 u32 recKind       = rec->mUnk_08;
                 u16 recValue      = rec->mUnk_04;
                 j                 = 0;

@@ -12175,6 +12175,7 @@ from:0x02285b44 kind:load to:0x0228b068 module:overlay(7)
 from:0x02285b60 kind:load to:0x0228b084 module:overlay(7)
 from:0x02285bf4 kind:load to:0x0228b248 module:overlay(7)
 from:0x02285c5c kind:load to:0x020a0101 module:main
+from:0x02285cb4 kind:load to:0x020906e8 module:main
 from:0x02285cb8 kind:load to:0x0228a098 module:overlay(7)
 from:0x02285cbc kind:load to:0x02285c98 module:overlay(7)
 from:0x02285ce8 kind:load to:0x022195bc module:overlay(7)

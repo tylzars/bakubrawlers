@@ -32,7 +32,11 @@ UnkStruct_020d433c_0c::~UnkStruct_020d433c_0c() {
     delete[] mUnk_0c;
 }
 
-// non-matching: 2 instructions: the two halfword loads from buf and the strh into +0c/+0e come out as (r1=[2], r0=[0]; strh +e, +c) or loads swapped, never the original (r1=[0], r0=[2]; strh +c, +e)
+// The first 4 bytes of a set file, copied as one object.
+struct GimmickSetHead {
+    u16 mData[2];
+};
+
 GimmickSetData *func_ov007_02271ca8(UnkStruct_020d433c_0c *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk) {
     GimmickSetData *set = data->mUnk_10[data->mUnk_211];
     data->mUnk_211      = (data->mUnk_211 + 1) & 0x7f;
@@ -43,10 +47,7 @@ GimmickSetData *func_ov007_02271ca8(UnkStruct_020d433c_0c *data, int count, void
         set->mNext->mPrev = set;
     }
     func_ov007_02271b24(set, count);
-    u16 hi       = ((u16 *) buf)[1];
-    u16 lo       = ((u16 *) buf)[0];
-    set->mUnk_0e = hi;
-    set->mUnk_0c = lo;
+    *(GimmickSetHead *) &set->mUnk_0c = *(GimmickSetHead *) buf;
     set->mUnk_10 = *(GimmickSetBlock *) ((u8 *) buf + 4);
     set->mUnk_810 = *pos;
     set->mRotX    = rot[0];

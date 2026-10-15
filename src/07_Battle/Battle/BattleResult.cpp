@@ -1,3 +1,10 @@
+#include "Graphics/SpriteManager.hpp"
+#include "System/InputManager.hpp"
+#include "Text/TextManager.hpp"
+#include "System/FrameTask.hpp"
+#include "System/TouchManager.hpp"
+#include "System/WirelessManager.hpp"
+#include "System/SoundManager.hpp"
 #include "Battle/BattleBase.hpp"
 #include "Battle/BattleUnk022767c8.hpp"
 #include "Battle/BattleCharaAct.hpp"
@@ -5,17 +12,10 @@
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "Scene/SceneBase.hpp"
 #include "System/FileSystem.hpp"
-#include "System/FrameTask.hpp"
-#include "System/InputManager.hpp"
-#include "System/SoundManager.hpp"
-#include "System/TouchManager.hpp"
-#include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
-#include "System/WirelessManager.hpp"
 #include "Unknown/UnkStruct_020758f4.hpp"
 #include "Game/UnkStruct_020d48f0.hpp"
 #include "Unknown/UnkFunctions.hpp"
@@ -41,7 +41,7 @@ public:
     /* 00 */ PAD(0x00, 0x78);
     /* 78 */ u8 mUnk_78;
     /* 79 */ PAD(0x79, 0x80);
-    UnkStruct_02076058(u32 unk1);
+    UnkStruct_02076058(u8 unk1);
 };
 struct UnkStruct_020c4230 {
     /* 00 */ PAD(0x00, 0x20);

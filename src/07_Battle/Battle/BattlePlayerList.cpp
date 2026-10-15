@@ -2,12 +2,12 @@
 #include "Unknown/UnkStruct_02087898.hpp"
 #include "Battle/GimmickTypes.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
-#include "Graphics/Camera.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/Effect.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FrameTask.hpp"
+#include "Graphics/Camera.hpp"
 #include "System/SoundManager.hpp"
 #include "System/WirelessManager.hpp"
 #include <nitro/gx.h>

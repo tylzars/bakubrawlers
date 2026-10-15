@@ -276,9 +276,10 @@ src/07_Battle/Battle/BattleOrderSelect.cpp:
     .data       start:0x02288f0c end:0x02289278
     .bss        start:0x0228b928 end:0x0228b94c
 
-// provisional: code only; .data 0x02289280-0x02289810, .rodata 0x0227a350-0x0227a5dc and .bss 0x0228b94c-0x0228b994 belong here.
+// provisional: code only; .data 0x02289280-0x02289810, .rodata 0x0227a350-0x0227a5dc belong here.
 src/07_Battle/Battle/BattleResult.cpp:
     .text       start:0x0224cb84 end:0x02252730
+    .bss        start:0x0228b94c end:0x0228b994
 
 src/07_Battle/Battle/BattleTarget.cpp:
     complete
@@ -300,9 +301,10 @@ src/07_Battle/Battle/BattleCardSpec.cpp:
     .data       start:0x02289dd8 end:0x02289e70
     .bss        start:0x0228b9e8 end:0x0228ba0c
 
-// provisional: code only; .data 0x02289e70-0x02289ff0, .rodata 0x0227aa28-0x0227aa64 and .bss 0x0228ba0c-0x0228ba48 belong here.
+// provisional: code only; .data 0x02289e70-0x02289ff0, .rodata 0x0227aa28-0x0227aa64 belong here.
 src/07_Battle/Battle/BattlePlayerList.cpp:
     .text       start:0x0225fd5c end:0x0226368c
+    .bss        start:0x0228ba0c end:0x0228ba48
 
 src/07_Battle/Battle/BattleMapPiece.cpp:
     complete
@@ -312,6 +314,8 @@ src/07_Battle/Battle/BattleMapPiece.cpp:
 // provisional: code only; .data 0x0228a084-0x0228a23c, .rodata 0x0227aa64-0x0227ac20 and .bss 0x0228ba48-0x0228ba6c belong here.
 src/07_Battle/Battle/BattleUnk022637ac.cpp:
     .text       start:0x022637ac end:0x02267a10
+    .init       start:0x02285c98 end:0x02285cbc
+    .ctor       start:0x02285cbc end:0x02285cc0
 
 src/07_Battle/Battle/BattleCharaAct.cpp:
     complete

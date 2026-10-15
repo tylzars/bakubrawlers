@@ -7,16 +7,16 @@
 #include "Battle/BattleCommandPage.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "System/SoundManager.hpp"
+#include "Graphics/SpriteManager.hpp"
 #include "System/TouchManager.hpp"
 #include "Unknown/UnkFunctions.hpp"
-#include "System/WirelessManager.hpp"
+#include "System/InputManager.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
 #include <nitro/fx.h>
 #include <nitro/gx.h>
 #include "Battle/BattleUtil.hpp"
-#include "System/InputManager.hpp"
+#include "System/WirelessManager.hpp"
 
 extern const u8 data_ov007_02279160;
 extern const u8 data_ov007_02279164;

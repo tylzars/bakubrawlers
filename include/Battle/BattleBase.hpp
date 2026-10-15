@@ -516,7 +516,7 @@ public:
     /* 38 */ virtual BOOL func_ov007_0221bfa4();
     /* 3c */ virtual void vfunc_3c() = 0;
     /* 40 */ virtual u8 vfunc_40(int fast) = 0;
-    /* 44 */ virtual void vfunc_44(int index, u16 count);
+    /* 44 */ virtual void vfunc_44(int index, u16 count) = 0;
 
     BOOL func_ov007_0221a664();
     void func_ov007_0221bb28(s16 a, s16 b);

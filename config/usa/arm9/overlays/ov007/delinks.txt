@@ -6,9 +6,10 @@
     .bss        start:0x0228b5e0 end:0x0228bc20 kind:bss align:32
 
 src/07_Battle/Battle/BattleBase.cpp:
+    complete
     .text       start:0x02219440 end:0x0221d4d8
     .data       start:0x02285ce0 end:0x02285d44
-    .bss        start:0x0228b5ec end:0x0228b610
+    .bss        start:0x0228b5e0 end:0x0228b610
 
 src/07_Battle/Battle/ConfrontBg01.cpp:
     complete

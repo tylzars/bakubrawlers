@@ -1,5 +1,5 @@
-_ZN10BattleBaseC1Ev kind:function(arm,size=0x17c) addr:0x02219440
-_ZN10BattleBaseC2Ev kind:label(arm) addr:0x02219440
+_ZN10BattleBaseC2Ev kind:function(arm,size=0x17c) addr:0x02219440
+_ZN10BattleBaseC1Ev kind:label(arm) addr:0x02219440
 _ZN10BattleBaseD1Ev kind:function(arm,size=0xec) addr:0x022195bc
 _ZN10BattleBaseD0Ev kind:function(arm,size=0xf4) addr:0x022196a8
 _ZN10BattleBaseD2Ev kind:function(arm,size=0xec) addr:0x0221979c
@@ -34,9 +34,9 @@ _Z19func_ov007_0221d348j kind:function(arm,size=0x50) addr:0x0221d348
 _ZN10BattleBase19func_ov007_0221d398Ev kind:function(arm,size=0xf0) addr:0x0221d398
 _ZN10BattleBase19func_ov007_0221d488EPt kind:function(arm,size=0xc) addr:0x0221d488
 _ZN10BattleBase19func_ov007_0221d494EPtS0_S0_Ph kind:function(arm,size=0x14) addr:0x0221d494
-_ZThn4_N10BattleBaseD0Ev kind:function(arm,size=0x10) addr:0x0221d4a8
-_ZThn4_N10BattleBase6UpdateEv kind:function(arm,size=0x10) addr:0x0221d4b8
-_ZThn4_N10BattleBaseD1Ev kind:function(arm,size=0x10) addr:0x0221d4c8
+_ZThn4_N10BattleBaseD0Ev kind:function(arm,size=0x10) addr:0x0221d4a8 weak
+_ZThn4_N10BattleBase6UpdateEv kind:function(arm,size=0x10) addr:0x0221d4b8 weak
+_ZThn4_N10BattleBaseD1Ev kind:function(arm,size=0x10) addr:0x0221d4c8 weak
 _ZN12ConfrontBg01C1Ev kind:function(arm,size=0x6c) addr:0x0221d4d8
 _ZN12ConfrontBg01D1Ev kind:function(arm,size=0x48) addr:0x0221d544
 _ZN12ConfrontBg01D0Ev kind:function(arm,size=0x50) addr:0x0221d58c
@@ -1775,9 +1775,7 @@ sRewards kind:data(any) addr:0x02285c2c local
 sSparkleSteps kind:data(any) addr:0x02285c5c local
 __sinit_BattleUnk022637ac.cpp kind:function(arm,size=0x24) addr:0x02285c98 local
 .p__sinit_ov007_02285c98 kind:data(word) addr:0x02285cbc
-data_ov007_02285ce0 kind:data(any) addr:0x02285ce0
-data_ov007_02285ce8 kind:data(any) addr:0x02285ce8
-data_ov007_02285d38 kind:data(any) addr:0x02285d38
+OV007_DATA_START kind:data(any) addr:0x02285ce0
 _ZTV12ConfrontBg01 kind:data(any) addr:0x02285d44
 @911 kind:data(any) addr:0x02285da8 local
 @912 kind:data(any) addr:0x02285dc0 local
@@ -2766,10 +2764,10 @@ _ZTV20GimmickIkazuchiStart kind:data(any) addr:0x0228b520
 @938 kind:data(any) addr:0x0228b5a4 local
 @939 kind:data(any) addr:0x0228b5b4 local
 @940 kind:data(any) addr:0x0228b5c4 local
-data_ov007_0228b5e0 kind:bss addr:0x0228b5e0
-data_ov007_0228b5ec kind:bss addr:0x0228b5ec
-data_ov007_0228b5f8 kind:bss addr:0x0228b5f8
-data_ov007_0228b604 kind:bss addr:0x0228b604
+OV007_BSS_START kind:bss addr:0x0228b5e0
+@1283 kind:bss addr:0x0228b5ec local
+@907 kind:bss addr:0x0228b5f8 local
+@798 kind:bss addr:0x0228b604 local
 @388 kind:bss addr:0x0228b610 local
 @404 kind:bss addr:0x0228b61c local
 @45 kind:bss addr:0x0228b628 local

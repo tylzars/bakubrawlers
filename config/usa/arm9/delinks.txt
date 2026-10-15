@@ -932,9 +932,11 @@ src/Main/UI/MessageWindow.cpp:
     .data       start:0x020b42f4 end:0x020b4314
     .bss        start:0x0221927c end:0x02219288
 
-// provisional: code only; .data 0x020b4314-0x020b48dc, .rodata 0x020a1ac6-0x020a2dac and .bss 0x02219288-0x022192d8 belong here.
 src/Main/Game/UnkStruct_02065c40.cpp:
+    complete
     .text       start:0x02065c40 end:0x02070608
+    .data       start:0x020b4668 end:0x020b48dc
+    .bss        start:0x02219288 end:0x022192d8
 
 src/Main/Unknown/UnkStruct_02070608.cpp:
     complete

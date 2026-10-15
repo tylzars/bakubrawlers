@@ -1,14 +1,16 @@
 #include "Game/UnkStruct_02065c40.hpp"
+#include "System/TouchManager.hpp"
+#include "System/SoundManager.hpp"
 #include "System/FrameClock.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "Graphics/Camera.hpp"
+#include "System/InputManager.hpp"
+#include "System/FrameTask.hpp"
 #include "Unknown/UnkStruct_02087898.hpp"
 
-#include "Graphics/Camera.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/Model.hpp"
-#include "Graphics/SpriteManager.hpp"
-#include "System/FrameTask.hpp"
-#include "System/SoundManager.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 
@@ -19,8 +21,6 @@
 #include "Graphics/CharacterModel.hpp"
 #include "System/FileSystem.hpp"
 #include "Graphics/UnkStruct_0203d374.hpp"
-#include "System/InputManager.hpp"
-#include "System/TouchManager.hpp"
 #include "Graphics/ModelInternal.hpp"
 
 UnkStruct_02065c40 *data_02219288;
@@ -818,6 +818,52 @@ void UnkStruct_02065c40::func_02067a30() {
     }
 }
 
+extern const u8 data_020a1bae[];
+#define REG_G3_DISP3DCNT (*(vu16 *) 0x4000060)
+
+void UnkStruct_02065c40::func_02067b08() {
+    char path[0x80];
+    GX_SetVisiblePlane(0x11);
+    G2_SetBG0Offset(0, 0);
+    G2_SetBG0Priority(3);
+    REG_G3_DISP3DCNT = (REG_G3_DISP3DCNT & ~0x3000) | 0x20;
+    ChangeDir("/story/");
+    if (mUnk_14e4 == 0 && (mUnk_14f1 | func_02066c7c())) {
+        ChangeDir("/story/");
+        SpriteScreen &screen = SpriteManager::Get().Screen(1);
+        screen.func_02027624(3);
+        sprintf(path, "cutscene_b_obj.nce_ncg1D.bin");
+        screen.LoadCharacters(path, 0xd000, 0);
+        sprintf(path, "cutscene_b_obj_ncl.bin");
+        screen.func_02027fec(path, 0, 0);
+        if (mUnk_100c != NULL) {
+            delete mUnk_100c;
+        }
+        mUnk_14f2 = 0;
+        mUnk_100c = new CellAnimation("cutscene_b_obj_nce.bin", mUnk_14f2, 1, 1);
+        mUnk_100c->mCharBase = 0x1a0;
+        mUnk_100c->mUnk_11   = 0;
+        if (mUnk_14e2 == 5) {
+            mUnk_14f1 = 0;
+            mUnk_14ed = 1;
+        }
+    }
+    ChangeDir("/");
+    if (mUnk_1010 == NULL) {
+        SpriteManager::Get().func_0202753c(7);
+        NitroTexture *texture = new NitroTexture("story/mdl/cut_shadow.nsbtx");
+        NitroModel *model     = new NitroModel;
+        model->func_020289e0("story/mdl/cut_shadow.nsbmd", texture);
+        texture->func_02028344();
+        mUnk_1010 = model->func_02028b78(NULL);
+    }
+    if (mUnk_1014 == NULL) {
+        mUnk_1014 = new UnkStruct_02029ca8(data_020a1bae);
+        func_02069c6c();
+    }
+    mUnk_1018->func_02087eec();
+}
+
 void UnkStruct_02065c40::func_02067e2c(u32 index, u8 unk2) {
     UnkStruct_0205401c *model = mUnk_11b4[index].mUnk_2c;
     if (model == NULL) {
@@ -966,49 +1012,6 @@ static inline fx32 FxRound(s32 v) {
 
 #define FX_FROM_INT_ROUND(x) ((fx32) (((x) > 0) ? (((x) << 12) + 0.5f) : (((x) << 12) - 0.5f)))
 
-BOOL UnkStruct_02065c40::func_02068954() {
-    char path[0x80];
-    SpriteManager::Get().func_0202753c(0);
-    s32 index = mUnk_101c[0].mUnk_30;
-    if (index > 0x11) {
-        index = 0x11;
-    } else if (index < 0) {
-        index = 0;
-    }
-    u8 id = index;
-    ChangeDir("/Story/Map/");
-    sprintf(path, "%s.nsbtx", data_020a22ac[id].mName);
-    NitroTexture *texture = new NitroTexture(path);
-    sprintf(path, "%s.nsbmd", data_020a22ac[id].mName);
-    NitroModel *model = new NitroModel;
-    model->func_020289e0(path, texture);
-    texture->func_02028344();
-    if ((id != 8) & (id != 9)) {
-        sprintf(path, "%s_data.bin", data_020a22ac[id].mName);
-        ModelAnimData *animData = new ModelAnimData(path);
-        ModelAnim *anim         = new ModelAnim(animData, model);
-        mUnk_101c[0].mUnk_2c    = model->func_02028b78(anim);
-        mUnk_101c[0].mUnk_2c->func_02028e54(0, 1, 0x1000);
-    } else {
-        mUnk_101c[0].mUnk_2c = model->func_02028b78(NULL);
-    }
-    ChangeDir("/");
-    func_02069bdc();
-    func_02069c6c();
-    MI_CpuClear16(mUnk_101c[0].mUnk_18, 0x14);
-    MI_CpuClear16(&mUnk_101c[0], 0x18);
-    mUnk_101c[0].mUnk_00 = 0;
-    mUnk_101c[0].mUnk_04 = FX_FROM_INT_ROUND(data_020a22ac[id].mX);
-    mUnk_101c[0].mUnk_08 = FX_FROM_INT_ROUND(data_020a22ac[id].mY);
-    mUnk_101c[0].mUnk_0c[0] = 0;
-    mUnk_101c[0].mUnk_0c[1] = data_020a22ac[id].mX;
-    mUnk_101c[0].mUnk_0c[2] = data_020a22ac[id].mY;
-    mUnk_101c[0].mUnk_12[0] = mUnk_101c[0].mUnk_0c[0];
-    mUnk_101c[0].mUnk_12[1] = mUnk_101c[0].mUnk_0c[1];
-    mUnk_101c[0].mUnk_12[2] = mUnk_101c[0].mUnk_0c[2];
-    mUnk_101c[0].mUnk_32 = 0;
-    return TRUE;
-}
 
 struct UnkStruct_020a2554 {
     /* 0 */ const char *mName;
@@ -1185,6 +1188,50 @@ BOOL UnkStruct_02065c40::func_020688e0(s32 value) {
     if (mUnk_101c[0].mUnk_30 < 0) {
         return FALSE;
     }
+    return TRUE;
+}
+
+BOOL UnkStruct_02065c40::func_02068954() {
+    char path[0x80];
+    SpriteManager::Get().func_0202753c(0);
+    s32 index = mUnk_101c[0].mUnk_30;
+    if (index > 0x11) {
+        index = 0x11;
+    } else if (index < 0) {
+        index = 0;
+    }
+    u8 id = index;
+    ChangeDir("/Story/Map/");
+    sprintf(path, "%s.nsbtx", data_020a22ac[id].mName);
+    NitroTexture *texture = new NitroTexture(path);
+    sprintf(path, "%s.nsbmd", data_020a22ac[id].mName);
+    NitroModel *model = new NitroModel;
+    model->func_020289e0(path, texture);
+    texture->func_02028344();
+    if ((id != 8) & (id != 9)) {
+        sprintf(path, "%s_data.bin", data_020a22ac[id].mName);
+        ModelAnimData *animData = new ModelAnimData(path);
+        ModelAnim *anim         = new ModelAnim(animData, model);
+        mUnk_101c[0].mUnk_2c    = model->func_02028b78(anim);
+        mUnk_101c[0].mUnk_2c->func_02028e54(0, 1, 0x1000);
+    } else {
+        mUnk_101c[0].mUnk_2c = model->func_02028b78(NULL);
+    }
+    ChangeDir("/");
+    func_02069bdc();
+    func_02069c6c();
+    MI_CpuClear16(mUnk_101c[0].mUnk_18, 0x14);
+    MI_CpuClear16(&mUnk_101c[0], 0x18);
+    mUnk_101c[0].mUnk_00 = 0;
+    mUnk_101c[0].mUnk_04 = FX_FROM_INT_ROUND(data_020a22ac[id].mX);
+    mUnk_101c[0].mUnk_08 = FX_FROM_INT_ROUND(data_020a22ac[id].mY);
+    mUnk_101c[0].mUnk_0c[0] = 0;
+    mUnk_101c[0].mUnk_0c[1] = data_020a22ac[id].mX;
+    mUnk_101c[0].mUnk_0c[2] = data_020a22ac[id].mY;
+    mUnk_101c[0].mUnk_12[0] = mUnk_101c[0].mUnk_0c[0];
+    mUnk_101c[0].mUnk_12[1] = mUnk_101c[0].mUnk_0c[1];
+    mUnk_101c[0].mUnk_12[2] = mUnk_101c[0].mUnk_0c[2];
+    mUnk_101c[0].mUnk_32 = 0;
     return TRUE;
 }
 
@@ -3310,51 +3357,6 @@ BOOL UnkStruct_02065c40::func_0206eb10(const char *path) {
     return TRUE;
 }
 
-extern const u8 data_020a1bae[];
-#define REG_G3_DISP3DCNT (*(vu16 *) 0x4000060)
-
-void UnkStruct_02065c40::func_02067b08() {
-    char path[0x80];
-    GX_SetVisiblePlane(0x11);
-    G2_SetBG0Offset(0, 0);
-    G2_SetBG0Priority(3);
-    REG_G3_DISP3DCNT = (REG_G3_DISP3DCNT & ~0x3000) | 0x20;
-    ChangeDir("/story/");
-    if (mUnk_14e4 == 0 && (mUnk_14f1 | func_02066c7c())) {
-        ChangeDir("/story/");
-        SpriteScreen &screen = SpriteManager::Get().Screen(1);
-        screen.func_02027624(3);
-        sprintf(path, "cutscene_b_obj.nce_ncg1D.bin");
-        screen.LoadCharacters(path, 0xd000, 0);
-        sprintf(path, "cutscene_b_obj_ncl.bin");
-        screen.func_02027fec(path, 0, 0);
-        if (mUnk_100c != NULL) {
-            delete mUnk_100c;
-        }
-        mUnk_14f2 = 0;
-        mUnk_100c = new CellAnimation("cutscene_b_obj_nce.bin", mUnk_14f2, 1, 1);
-        mUnk_100c->mCharBase = 0x1a0;
-        mUnk_100c->mUnk_11   = 0;
-        if (mUnk_14e2 == 5) {
-            mUnk_14f1 = 0;
-            mUnk_14ed = 1;
-        }
-    }
-    ChangeDir("/");
-    if (mUnk_1010 == NULL) {
-        SpriteManager::Get().func_0202753c(7);
-        NitroTexture *texture = new NitroTexture("story/mdl/cut_shadow.nsbtx");
-        NitroModel *model     = new NitroModel;
-        model->func_020289e0("story/mdl/cut_shadow.nsbmd", texture);
-        texture->func_02028344();
-        mUnk_1010 = model->func_02028b78(NULL);
-    }
-    if (mUnk_1014 == NULL) {
-        mUnk_1014 = new UnkStruct_02029ca8(data_020a1bae);
-        func_02069c6c();
-    }
-    mUnk_1018->func_02087eec();
-}
 
 BOOL UnkStruct_02065c40::func_0206ed40() {
     if (func_02023874() != 0) {
@@ -3605,8 +3607,8 @@ void UnkStruct_02065c40::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
     mUnk_12b9                 = 3;
 }
 
-// The calls keep the initializer of the static script below from being a constant expression, so it is filled at run time
-// (guard 0x0221928c) on the first call, like the original.
+// The four computed entries of the script below (FxScale, Identity16) are filled at run time on the first call, under a
+// guard at 0x0221928c (right after data_02219288).
 inline s16 FxScale(float v) {
     return (s16) (v * 4096.0f + 0.5f);
 }
@@ -3614,12 +3616,18 @@ inline s16 Identity16(s16 v) {
     return v;
 }
 
-extern UnkStruct_02065c40_cmd data_020b467c[17];
+// The script table at 0x020b467c follows the vtable in .data and is addressed through its own symbol, both for the
+// run-time init and for the copy (one literal-pool word). Under `npdata` it gets its own section, which gives that; in
+// the shared .data it would be addressed from the section base, and as a function-local static with a dynamic
+// initializer the compiler's init addresses it through the section symbol and the copy through its own (two pool
+// words). The hand-written guard and the init are stand-ins for the original's form.
+#pragma section npdata begin
+UnkStruct_02065c40_cmd data_020b467c[17] = {
+    {1, 0xe}, {-16, 0xf}, {0, 0x19}, {3, 9}, {9, 0x3b}, {0, 0x3c}, {0x2d, 0x2f}, {0, 0x31},
+    {0, 0x33}, {0, 0x35}, {0, 0x3a}, {10, 0xe}, {0, 0xf}, {0, 0x19}, {0, 0xd7}, {0, 8}, {0, 1}};
+#pragma section npdata end
 static u32 sScriptGuard;
-// The script table at 0x020b467c is addressed through its own symbol both for the run-time init of its four computed
-// entries and for the copy (one literal-pool word); a function-local static gives two (.data and the named static).
-// So it is declared extern here and filled once under a hand-written guard (the compiler's guard would sit at
-// 0x0221928c, right after data_02219288).
+
 extern "C" BOOL func_0206f6f0(UnkStruct_02065c40 *event, const char *name, u32 id, u32 unk3, u32 unk4) {
     BOOL idle = event->mUnk_12bc == event->mUnk_12be;
     BOOL nine = event->mUnk_12b9 == 9;

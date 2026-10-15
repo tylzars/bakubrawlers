@@ -5,7 +5,8 @@
 
 void *operator new[](size_t size);
 void operator delete[](void *p);
-void func_ov007_02271b24(GimmickSetData *set, int count);
+struct GimmickSetDataHead;
+void func_ov007_02271b24(GimmickSetDataHead *data, int mode);
 
 struct ObstacleRaw {
     u32 w[8];
@@ -46,7 +47,7 @@ GimmickSetData *func_ov007_02271ca8(UnkStruct_020d433c_0c *data, int count, void
     if (set->mNext) {
         set->mNext->mPrev = set;
     }
-    func_ov007_02271b24(set, count);
+    func_ov007_02271b24((GimmickSetDataHead *) set, count);
     *(GimmickSetHead *) &set->mUnk_0c = *(GimmickSetHead *) buf;
     set->mUnk_10 = *(GimmickSetBlock *) ((u8 *) buf + 4);
     set->mUnk_810 = *pos;
@@ -100,9 +101,10 @@ BOOL func_ov007_02272170(BattleObstacle *a, BattleObstacle *b);
 BOOL func_ov007_0227212c(BattleObstacle *a, BattleObstacle *b);
 BOOL func_ov007_022720ac(BattleObstacle *a, BattleObstacle *b);
 
-// Tests indexed by the type of the second object minus one (the first one is a ball); the last two entries are empty.
-static BOOL (*sTests[6])(BattleObstacle *, BattleObstacle *) = {
-    func_ov007_02272308, func_ov007_02272170, func_ov007_0227212c, func_ov007_022720ac, 0, 0,
+// Tests indexed by the type of the second object minus one (the first one is a ball). Four entries: the vtable follows
+// the table in .data (its size puts it before the vtable in the layout).
+static BOOL (*sTests[4])(BattleObstacle *, BattleObstacle *) = {
+    func_ov007_02272308, func_ov007_02272170, func_ov007_0227212c, func_ov007_022720ac,
 };
 
 void UnkStruct_020d433c_0c::func_ov007_02271e48(GimmickSetData *a, GimmickSetData *b) {

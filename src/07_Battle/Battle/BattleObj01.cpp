@@ -94,7 +94,7 @@ BOOL BattleObj01::Update() {
     mAnims[1]->Update();
     mAnims[1]->Draw(1, mScreenX, mScreenY, 1);
     mAnims[0]->Update();
-    mAnims[0]->Draw(1, (s32) mX, (s32) mY, 1);
+    mAnims[0]->Draw(1, mX, mY, 1);
     mScreenX = (s32) mX;
     mScreenY = (s32) mY;
     if (func_ov007_022252d0((s32) mTargetX, (s32) mTargetY, (s32) mX, (s32) mY) > 2) {

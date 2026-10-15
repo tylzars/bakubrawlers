@@ -94,7 +94,7 @@ void ConfrontEmblem06::func_ov007_02221884() {
         case 2:
             if (mAnims[1]->mUnk_12 == 0) {
                 mAnims[1]->Update();
-                mAnims[1]->Draw(1, (s32) mUnk_10, (s32) mUnk_14, 0);
+                mAnims[1]->Draw(1, mUnk_10, mUnk_14, 0);
                 return;
             }
             WirelessManager::Get();

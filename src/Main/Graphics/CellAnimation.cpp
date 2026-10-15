@@ -131,7 +131,7 @@ void CellAnimation::func_0202a244(SpriteScreen *screen, s32 x, s32 y, u8 unk4, s
                           mCharBase, mUnk_11, (u32)&transform);
 }
 
-void CellAnimation::Draw(u8 unk1, s32 x, s32 y, u32 unk4) {
+void CellAnimation::Draw(u8 unk1, s16 x, s16 y, u32 unk4) {
     func_02029ffc(&SpriteManager::Get().Screen(unk1), x, y, *(u8 *) &unk4);
 }
 

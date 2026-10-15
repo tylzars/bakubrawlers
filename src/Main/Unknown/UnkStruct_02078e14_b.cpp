@@ -2136,8 +2136,8 @@ void UnkStruct_02078e14::func_02081594() {
 void UnkStruct_02078e14::func_020816ec(u32 unk1, u32 unk2) {
     u32 over;
     s16 x;
-    s16 y;
     u32 scale;
+    s16 y;
     u8 i;
     if (unk2 == 4) {
         scale = 1;

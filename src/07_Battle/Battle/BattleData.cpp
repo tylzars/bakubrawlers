@@ -275,13 +275,8 @@ BOOL BattleData::func_ov007_0223ddac(u8 side) {
     return done;
 }
 
-// non-matching: 7 words, the scheduling of the spilled side/x/y. The original stores r1-r3 before `mov sl, r0`, and
-// in the first tail Draw loads x/y after the `str r9, [sp]` (as if they were memory) with `mov r1, #1` early. The
-// loop matches with `py` and `px` as single-assignment locals in this order (py is substituted into the call, px
-// hoisted). With `s16 x, s16 y` parameters (callers compile the same) the natural loop
-// `func_0202a3ec(1, value % 10, x + 0x2f - i * 12, y + 0x4d, flag)` matches and so does the tail; only the prologue
-// is left (6 words: str r1/str r2 issued before the two loads, str r3 after `mov sl, r0`).
-void BattleData::func_ov007_0223de88(u8 side, int x, int y, u32 flag, u32 value) {
+// non-matching: 6 words in the prologue: str r1/str r2 are issued before the two loads and str r3 after `mov sl, r0`.
+void BattleData::func_ov007_0223de88(u8 side, s16 x, s16 y, u32 flag, u32 value) {
     if (value == 0xffff) {
         value = mEntries[side].mUnk_00;
     }
@@ -295,11 +290,9 @@ void BattleData::func_ov007_0223de88(u8 side, int x, int y, u32 flag, u32 value)
             }
         }
     }
-    u8 i   = 0;
-    int py = y + 0x4d;
-    int px = x + 0x2f;
+    u8 i = 0;
     do {
-        mUnk_34[2]->func_0202a3ec(1, (s32) value % 10, (s16) (px - i * 12), py, flag);
+        mUnk_34[2]->func_0202a3ec(1, (s32) value % 10, x + 0x2f - i * 12, y + 0x4d, flag);
         value /= 10;
         i++;
     } while (i < count);

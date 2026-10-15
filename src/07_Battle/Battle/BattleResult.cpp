@@ -798,7 +798,7 @@ void BattleResult::func_ov007_0224f9a0() {
     mAnimsB[3]->Draw(0, 0x80, 0x60, 0);
     u8 i = 0;
     do {
-        u32 x;
+        s16 x;
         s16 y;
         s32 base = i * 0x28;
         s32 top  = base + 0x21;
@@ -823,11 +823,11 @@ void BattleResult::func_ov007_0224f9a0() {
             mAnimsB[1]->mUnk_0f = 0;
         }
         mAnimsB[1]->Draw(0, x, y, 0);
-        mAnimsB[2]->Draw(0, 0x20, (s16) (top + 4), 1);
-        mAnimsB[0]->Draw(0, 0x20, (s16) ((i + 1) * 0x28), 1);
+        mAnimsB[2]->Draw(0, 0x20, top + 4, 1);
+        mAnimsB[0]->Draw(0, 0x20, (i + 1) * 0x28, 1);
         if (data_020d433c.mUnk_9f[i] != 0x15) {
             mAnimsB[4]->mUnk_0f = data_020d433c.mUnk_a3[i];
-            mAnimsB[4]->Draw(0, 0x48, (s16) (base + 0x37), 0);
+            mAnimsB[4]->Draw(0, 0x48, base + 0x37, 0);
         }
         i++;
     } while (i < data_020d433c.mPlayerCount);

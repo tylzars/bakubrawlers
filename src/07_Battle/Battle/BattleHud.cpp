@@ -855,13 +855,18 @@ void BattleHud::func_ov007_02227730() {
         }
     }
     mAnims[5]->Draw(1, 0x80, 0x22, 1);
-    mAnims[6]->Draw(1, (s32) mUnk_108, 0x54, 1);
-    mAnims[7]->Draw(1, (s32) mUnk_10c, 0x54, 1);
+    mAnims[6]->Draw(1, mUnk_108, 0x54, 1);
+    mAnims[7]->Draw(1, mUnk_10c, 0x54, 1);
     if (mUnk_22_3) {
         u8 j = 12;
         i = 0;
         do {
-            int x = i == 0 ? 0xb : 0xe7;
+            s16 x;
+            if (i == 0) {
+                x = 0xb;
+            } else {
+                x = 0xe7;
+            }
             s8 first = mChoice[i][0];
             if (first != -1) {
                 mAnims[j]->SetAnimation(first + 7);

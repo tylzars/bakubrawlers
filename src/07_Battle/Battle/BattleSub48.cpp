@@ -388,10 +388,10 @@ void BattleSub48::func_ov007_02224ef8() {
 // The volatile reads in the first loop's draw calls are a placeholder: the original reloads xs[i] after the if/else
 // instead of reusing the value both arms loaded.
 void BattleSub48::func_ov007_02224fdc() {
-    int y;
+    s16 y;
     s16 xs[2];
     BattleEntry *entries;
-    int x;
+    s16 x;
     u8 i;
     y = mUnk_38;
     xs[0] = 0x24;

@@ -92,7 +92,7 @@ public:
     CellAnimation(CellAnimFile *file, u32 unk2); // 0x02029d7c, does not own the file
     ~CellAnimation();
     void Update();
-    void Draw(u8 unk1, s32 x, s32 y, u32 unk4);
+    void Draw(u8 unk1, s16 x, s16 y, u32 unk4);
     void func_02029f6c();
     void SetAnimation(u8 index) {
         mUnk_0e = index;

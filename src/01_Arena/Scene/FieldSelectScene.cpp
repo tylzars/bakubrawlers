@@ -2419,12 +2419,6 @@ s16 FieldSelectScene::func_ov001_022256c8(u32 idx) {
     return (idx >> 2) * 0x26 + 0x2c;
 }
 
-// non-matching: 23 words in the mUnk_338 loop: x and y swap registers (original x r6, y r7) and the hoisted
-// (s16) (y + 4/2/0x16) values get the reverse stack slots (original y + 4 at sp+8, y + 0x16 at sp+16).
-// Declaration orders (also of x, y, v, col and a row pointer declared in the r loop), types, named offset locals,
-// inline helpers and loop counters shared with other loops don't move it; a function-scope y shared with the
-// mUnk_334 loop moves y to r9 instead (x r6, v r7, x + 4 r8). (s16) (int) (x + 4) is a placeholder that keeps
-// x + 4 in a register and narrows it at each use, as the original does.
 void FieldSelectScene::func_ov001_022256e4() {
     if (mUnk_348 != 0) {
         mMessage->func_020658d0();
@@ -2517,7 +2511,6 @@ void FieldSelectScene::func_ov001_022256e4() {
     if (mUnk_338 != 0) {
         u8 r = 0;
         do {
-            s16 y = r * 0x24 + 0x18;
             u8 col = 0;
             do {
                 s16 v = data_ov001_022270dc[r][col];
@@ -2525,15 +2518,16 @@ void FieldSelectScene::func_ov001_022256e4() {
                 if (r == 0) {
                     x = data_ov001_022270bc[col];
                 }
-                mPanel[1]->func_0206547c(v, (s16) (x + 6), (s16) (y + 4), 1);
-                mCells2[5].mAnim->Draw(1, (s16) (int) (x + 4), (s16) (y + 2), 2);
+                s16 y = r * 0x24 + 0x18;
+                mPanel[1]->func_0206547c(v, x + 6, y + 4, 1);
+                mCells2[5].mAnim->Draw(1, x + 4, y + 2, 2);
                 if (mUnk_32b <= v) {
                     mCells2[7].mAnim->SetAnimation(0xb);
                     mCells2[7].mAnim->func_0202a3ec(1, v, x, y, 1);
                 }
                 if (mUnk_33b == v) {
                     mCells2[7].mAnim->SetAnimation(v + 2);
-                    mCells2[7].mAnim->Draw(1, (s16) (x + 4), (s16) (y + 0x16), 1);
+                    mCells2[7].mAnim->Draw(1, x + 4, y + 0x16, 1);
                 }
                 mCells2[7].mAnim->SetAnimation(v + 7);
                 mCells2[7].mAnim->Draw(1, x, y, 1);

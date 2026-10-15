@@ -425,6 +425,15 @@ Other findings from linking:
   motion in the source, so source forms that try to stop a "hoist" cannot work. The original keeps such loads in
   each arm only because the arms load into different registers (CharacterModel::func_02053eec's restart arm uses
   r2 for the part pointer, plus a `mov r2, r0` copy).
+- **One more live value across a loop changes the loop body's schedule.** BattleBase::func_ov007_0221c938 matched with
+  `const u8 *mode = &data_020c4258;` used by the three IsWirelessMode calls: the pointer is reloaded from the pool,
+  so it leaves no visible code, but it changes the schedule before allocation. A block-local pointer also gets a
+  different register from a function-scope one (ParkCharacters func_02089924's loop pointer). A local reassigned in
+  place keeps its register (`cx += width;` before the multiply in func_02027cf4), and `u16 *` indexing keeps an index
+  update in place where byte-pointer arithmetic lets it sink past calls (func_02078ab8).
+- **Search tool.** tools/permuter.py runs a simulated-annealing search over many source transformations (statement
+  order, scopes, enum-typed copies, temporaries, an inline identity, casts, compound forms) with a graded distance and
+  stripped compiles; run it in the background on a near-miss.
 - **Which variables exist, and where, moves the schedule; expression forms rarely do.** func_020875ac's case 2
   loaded the count between list[1] and list[0] only with one function-scope `u8 i` shared by all cases and the count
   read in the loop condition (`while (i < table[index].mCount)`); a count local before the loop is never scheduled

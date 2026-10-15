@@ -539,12 +539,13 @@ void BattlePlayerList::Update() {
                         p->mUnk_fe = 1;
                         p->mUnk_ee++;
                         mUnk_2a8 = 0x14;
-                        // Record indices are read as their own statements (volatile placeholders), before the base.
-                        u8 ea              = *(volatile u8 *) &mUnits[mUnk_28d].mUnk_0e;
+                        // Each record index goes through the reused `slot`: a reassigned local keeps its own late register.
+                        slot = mUnits[mUnk_28d].mUnk_0e;
                         BattleRecord *recs = mPlayers[ownerA]->mRecords;
-                        mUnk_2aa           = func_ov007_022696a0(recs[ea].mUnk_08, recs[ea].mUnk_09);
+                        mUnk_2aa           = func_ov007_022696a0(recs[slot].mUnk_08, recs[slot].mUnk_09);
                         recs    = mPlayers[ownerA]->mRecords;
-                        mUnk_2ab = func_ov007_022696a0(recs[mUnits[mUnk_28e].mUnk_0e].mUnk_08, recs[mUnits[mUnk_28e].mUnk_0e].mUnk_09);
+                        slot = mUnits[mUnk_28e].mUnk_0e;
+                        mUnk_2ab = func_ov007_022696a0(recs[slot].mUnk_08, recs[slot].mUnk_09);
                         func_ov007_022626b8(this, mUnits[mUnk_28d].mUnk_11);
                         func_ov007_02262828(this, mUnk_28d, 2);
                         func_ov007_02262828(this, mUnk_28e, 2);
@@ -581,23 +582,18 @@ void BattlePlayerList::Update() {
                     break;
                 }
                 case 4: {
-                    u8 slot  = mUnits[mUnk_28e].mUnk_0f;
-                    u8 owner = mUnits[mUnk_28d].mUnk_0f;
-                    BattlePlayer *p = mPlayers[slot];
+                    u8 tp  = mUnits[mUnk_28e].mUnk_0f;
+                    u8 sp = mUnits[mUnk_28d].mUnk_0f;
+                    BattlePlayer *p = mPlayers[tp];
                     p->mUnk_fe = 1;
                     p->mUnk_ee++;
                     mUnk_2a8 = 0x16;
                     func_ov007_022626b8(this, mUnits[mUnk_28d].mUnk_11);
-                    BattlePlayer *q      = mPlayers[slot];
-                    // The record index is read as its own statement (volatile placeholder).
-                    u8 e                 = *(volatile u8 *) &mUnits[mUnk_28d].mUnk_0e;
-                    BattleRecord *source = &mPlayers[owner]->mRecords[e];
-                    u8 flagValue  = source->mUnk_09;
-                    u16 wordValue = source->mUnk_04;
-                    ((BattleHistory *) ((u8 *) q + 0x84))[q->mUnk_f4].mValue = wordValue;
-                    ((BattleHistory *) ((u8 *) q + 0x84))[q->mUnk_f4].mFlag  = flagValue;
-                    q->mUnk_f4++;
-                    BattleRecord *target = &mPlayers[slot]->mRecords[mUnits[mUnk_28e].mUnk_0e];
+                    slot = mUnits[mUnk_28d].mUnk_0e;
+                    BattleRecord *source = &mPlayers[sp]->mRecords[slot];
+                    mPlayers[tp]->PushHistory(source->mUnk_04, source->mUnk_09);
+                    slot = mUnits[mUnk_28e].mUnk_0e;
+                    BattleRecord *target = &mPlayers[tp]->mRecords[slot];
                     mUnk_2aa             = func_ov007_022696a0(target->mUnk_08, target->mUnk_09);
                     func_ov007_02262828(this, mUnk_28d, 2);
                     func_ov007_02262828(this, mUnk_28e, 2);

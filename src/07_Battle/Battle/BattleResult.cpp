@@ -793,6 +793,9 @@ void BattleResult::func_ov007_0224f8f4() {
 // argument, an enum zero, unsigned base/top nor `u32 i` with `i = (u8) (i + 1)` give the original order. In matched
 // code (TutorialScene::DrawList, func_02088cd8) that order only occurs at the start of a basic block; here the call
 // follows the second Draw's bl in the same block.
+// The original's third y is `base + 0x25` (`add r0, r7, #37`), so the `top + 4` below is a closer stand-in, not the
+// original expression: with `base + 0x25` the add lands between `mov #1` and the stack store (7 words). Mutation
+// searches and ~1,200 other forms leave it; an inner loop (as in TutorialScene::DrawList) flips the order.
 void BattleResult::func_ov007_0224f9a0() {
     mMessage->func_020658d0();
     mAnimsB[3]->Draw(0, 0x80, 0x60, 0);

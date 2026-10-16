@@ -5,22 +5,22 @@
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Battle/BattleTarget.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "Text/TextManager.hpp"
+#include "System/SoundManager.hpp"
+#include "System/WirelessManager.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Effect.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "UI/SelectWindow.hpp"
 #include "UI/MessageWindow.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
 #include "System/FileSystem.hpp"
-#include "Text/TextManager.hpp"
 #include "System/FrameUpdate.hpp"
 #include <nitro/math.h>
 #include "Game/Random.hpp"
 #include "Battle/BattleCpu.hpp"
 #include "Battle/GimmickTypes.hpp"
-#include "System/SoundManager.hpp"
 #include "System/TouchManager.hpp"
-#include "System/WirelessManager.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include "Battle/BattleCpu.hpp"
 #include "System/InputManager.hpp"
@@ -1192,7 +1192,7 @@ void BattleShoot::func_ov007_0226daa8() {
     }
 }
 
-class ShootMicManager { // instance 0x020c189c, see MicManager in BattlePlayerList.cpp
+class MicManager { // the microphone singleton of Game.cpp and BattlePlayerList.cpp (instance 0x020c189c)
 public:
     /* 00 */ PAD(0x00, 0x20);
     /* 20 */ u8 mActive;
@@ -1200,19 +1200,28 @@ public:
     /* 24 */ u8 mUnk_24;
     /* 25 */ PAD(0x25, 0x28);
 
-    ShootMicManager() {
+    MicManager() {
         mActive = 0;
     }
-    ~ShootMicManager();
+    ~MicManager();
 
-    static ShootMicManager &Get() {
-        static ShootMicManager instance;
+    static MicManager &Get() {
+        static MicManager instance;
         return instance;
     }
 };
 
-extern s16 data_ov007_0208b524[];
 extern const s32 data_ov007_0227bcb8[3];
+
+#define INT_TO_FX(n) ((fx32) ((n) > 0 ? 0.5f + (float) ((n) << 12) : (float) ((n) << 12) - 0.5f))
+
+u16 BattleShoot::func_ov007_0226df24(int a, int b) {
+    VecFx32 v;
+    v.x = INT_TO_FX(a);
+    v.y = INT_TO_FX(b);
+    v.z = 0;
+    return VEC_Mag(&v) >> 12;
+}
 
 void BattleShoot::func_ov007_0226dfb8() {
     s32 diff = mUnk_618b - mUnk_618f;
@@ -1413,16 +1422,6 @@ void BattleShoot::func_ov007_0226e430() {
     mUnk_6164++;
 }
 
-#define INT_TO_FX(n) ((fx32) ((n) > 0 ? 0.5f + (float) ((n) << 12) : (float) ((n) << 12) - 0.5f))
-
-u16 BattleShoot::func_ov007_0226df24(int a, int b) {
-    VecFx32 v;
-    v.x = INT_TO_FX(a);
-    v.y = INT_TO_FX(b);
-    v.z = 0;
-    return VEC_Mag(&v) >> 12;
-}
-
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);
 
 struct Bytes2 { u8 b[2]; };
@@ -1441,7 +1440,7 @@ void BattleShoot::func_ov007_0226e884() {
     data_0220f540.mUnk_04  = 0;
     *(s32 *) &data_0220f540.mUnk_08 = 0;
     data_0220f540.mUnk_0c  = 0;
-    if (ShootMicManager::Get().mUnk_24 != 0) {
+    if (MicManager::Get().mUnk_24 != 0) {
         if (data_020d433c.mUnk_9a_0) {
             data_0220f540.mUnk_0c = 1;
         }
@@ -1462,8 +1461,8 @@ void BattleShoot::func_ov007_0226e884() {
             if (distance >= 0x20) {
                 data_0220f540.mUnk_00 = 9;
                 s32 idx               = FX_Atan2Idx(-mUnk_615c, mUnk_6160) >> 4;
-                data_0220f540.mUnk_04 = -FX_Mul(data_ov007_0208b524[idx * 2], 0x4cd);
-                *(s32 *) &data_0220f540.mUnk_08 = -FX_Mul(data_ov007_0208b524[idx * 2 + 1], 0x4cd);
+                data_0220f540.mUnk_04 = -FX_Mul(FX_SinCosTable_[idx * 2], 0x4cd);
+                *(s32 *) &data_0220f540.mUnk_08 = -FX_Mul(FX_SinCosTable_[idx * 2 + 1], 0x4cd);
             }
             mUnk_615c = 0;
             mUnk_6160 = 0;

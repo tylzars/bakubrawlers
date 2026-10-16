@@ -338,9 +338,14 @@ src/07_Battle/Battle/BattlePlayer.cpp:
     .data       start:0x0228a56c end:0x0228a5a0
     .bss        start:0x0228ba9c end:0x0228bac0
 
-// provisional: code only; the class ends where BattleUnk29c's ctor starts; .data 0x0228a5a0-0x0228aa30, .rodata 0x0227bc9c-0x0227bf94 and .bss 0x0228bac0-0x0228bb14 belong here.
+// .rodata 0x0227bc9c-0x0227bd10 (eight small tables read only by this file) belongs here too; the source still
+// declares them extern, so it stays in the gap before this range.
 src/07_Battle/Battle/BattleShoot.cpp:
+    complete
     .text       start:0x0226a91c end:0x0226fb74
+    .rodata     start:0x0227bd10 end:0x0227bf94
+    .data       start:0x0228a5a0 end:0x0228aa30
+    .bss        start:0x0228bac0 end:0x0228bb14
 
 src/07_Battle/Battle/BattleUnk29c.cpp:
     complete

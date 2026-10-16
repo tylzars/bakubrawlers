@@ -25,7 +25,7 @@ extern CTRDGWork data_020c11a0;
 
 typedef struct { u16 flag; u16 id; } CTRDGState;
 extern CTRDGState data_020c1184;
-extern u8 data_020c11c0[];
+extern u32 data_020c11c0[] __attribute__((aligned(32)));   // cartridge header buffer; 32-byte aligned for the cache/DMA calls
 extern u8 data_020c11c4[];
 extern u32 data_020c1280;
 extern u8 data_020c1790[];
@@ -112,6 +112,14 @@ void func_02011dc8(void)
     func_02011d80(0);
 }
 
+typedef struct { u8 pad[0xac]; u32 fac; u16 fb0; u8 pad2[3]; u8 fb5[3]; u8 pad3[6]; u16 fbe; } CartHeader;
+typedef struct { u16 f0; u8 f2[3]; u8 pad5; u16 f6; u32 f8; } CartInfo;
+
+// non-matching: 5 words in the head after the first early return. The original loads the 0x04000300 register,
+// stores the constant 1 and then tests (`ldr r1; mov r2,#1; ldrh r1,[r1]; str r2,[r0]; tst r1,#1`); here the two
+// swap registers and the tst comes before the str. The swap only appears when the test feeds the conditional
+// epilogue. Using data_020c11c0 as a 32-byte-aligned object makes the compiler skip its IR optimizer for this
+// function, which gives the original's unrotated loops and pool reloads.
 void func_02011e7c(void)
 {
     CTRDGLock lock;
@@ -132,24 +140,24 @@ void func_02011e7c(void)
     cart = (EXMEMCNT & 0x8000) >> 15;
     func_02011c34(&timing);
     EXMEMCNT &= ~0x8000;
-    DC_InvalidateRange(data_020c11c0 + 0x80, 0x40);
-    MI_DmaCopy16(1, 0x8000080, data_020c11c0 + 0x80, 0x40);
+    DC_InvalidateRange((u8 *)data_020c11c0 + 0x80, 0x40);
+    MI_DmaCopy16(1, 0x8000080, (u8 *)data_020c11c0 + 0x80, 0x40);
     EXMEMCNT = (EXMEMCNT & ~0x8000) | (cart << 15);
     func_02011c7c(&timing);
     func_02011d0c(data_020c1184.id, &lock);
     if (*(u8 *)0x027fff9b == 0 && *(u8 *)0x027fff9a != 0) {
     } else {
-        u8 *hdr = data_020c11c0;
-        u16 *dst = (u16 *)0x027ffc30;
         int i;
-        dst[0] = *(u16 *)(hdr + 0xbe);
+        CartHeader *hdr = (CartHeader *)data_020c11c0;
+        CartInfo *dst = (CartInfo *)0x027ffc30;
+        dst->f0 = hdr->fbe;
         i = 0;
         while (i < 3) {
-            ((u8 *)dst)[2 + i] = hdr[0xb5 + i];
+            dst->f2[i] = hdr->fb5[i];
             i++;
         }
-        dst[3] = *(u16 *)(hdr + 0xb0);
-        *(u32 *)(dst + 4) = *(u32 *)(hdr + 0xac);
+        dst->f6 = hdr->fb0;
+        dst->f8 = hdr->fac;
         *(u8 *)0x027fff9b = func_02011b28() != 0;
         *(u8 *)0x027fff9a = 1;
     }

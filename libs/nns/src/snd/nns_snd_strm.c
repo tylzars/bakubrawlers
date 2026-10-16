@@ -181,10 +181,12 @@ void func_02037708(SndStrm *s) {
 
 void func_02037718(SndStrm *s, int phase) {   // fill callback
     u32 size = s->bufSize / s->frames;
-    int i;
     u32 off = size * s->pos;
+    u32 base;
+    int i;
     for (i = 0; i < s->chCount; i++) {
-        data_022142f4[i] = (u8 *)data_02214334[s->chan[i]].addr + off;
+        base = (u32)data_02214334[s->chan[i]].addr;
+        data_022142f4[i] = (void *)(base + off);
     }
     s->cb(phase, s->chCount, data_022142f4, size, s->fmt, s->cbArg);
     s->pos++;

@@ -1487,7 +1487,6 @@ from:0x0200f1c0 kind:arm_call to:0x02004b90 module:main
 from:0x0200f1c8 kind:arm_call to:0x02007120 module:main
 from:0x0200f1cc kind:arm_call to:0x0200ef3c module:main
 from:0x0200f1d8 kind:load to:0x020bfe60 module:main
-from:0x0200f1dc kind:load to:0x01ff8000 module:itcm
 from:0x0200f1e4 kind:load to:0x020a506c module:main
 from:0x0200f1e8 kind:load to:0x0200ef90 module:main
 from:0x0200f23c kind:arm_call to:0x0200eedc module:main

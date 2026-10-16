@@ -83,6 +83,10 @@ Diff the traces of two variants to find the first stage where they part. Facts r
   TextManager::Init matched once `height` was u16 (one store-order edge lengthened the critical path by a cycle),
   Print once `maxX` was u16 (it keeps a real `ldrne r0,[sp,#92]` reload) and `startY` s16.
 - `--sched` logs only the first scheduling pass.
+- A function that really uses an object declared `__attribute__((aligned(N)))` skips the IR optimizer entirely
+  (one pass in the dump instead of ~100): loops stay unrotated, no strength reduction, globals are reloaded from the
+  pool. A dead reference doesn't trigger it (ctrdg func_02011e7c).
+- `#pragma scheduling` does not exist in this compiler; sweeps that set it changed nothing.
 - Library files built with 2.0/sp1p5 can be traced with `--sp2p2-stand-in` when their probe shows the same
   difference under 2.0/sp2p2 (true for e_pow and cri_wave_ch).
 - The IR keeps an assignment to a local that lives across blocks as its own statement only when the same local is

@@ -2125,24 +2125,23 @@ _ZZ12CommandItemsvE6sItems kind:data(any) addr:0x02287c74 weak
 @6926 kind:data(any) addr:0x022881a0 local
 @6927 kind:data(any) addr:0x022881c0 local
 @6928 kind:data(any) addr:0x022881dc local
-data_ov007_022881e0 kind:data(any) addr:0x022881e0
-data_ov007_022881e8 kind:data(any) addr:0x022881e8
-data_ov007_022881f0 kind:data(any) addr:0x022881f0
-data_ov007_02288204 kind:data(any) addr:0x02288204
-data_ov007_02288224 kind:data(any) addr:0x02288224
-data_ov007_0228823c kind:data(any) addr:0x0228823c
-data_ov007_02288254 kind:data(any) addr:0x02288254
-data_ov007_02288270 kind:data(any) addr:0x02288270
-data_ov007_02288294 kind:data(any) addr:0x02288294
-data_ov007_022882ac kind:data(any) addr:0x022882ac
-data_ov007_022882c8 kind:data(any) addr:0x022882c8
-data_ov007_022882e0 kind:data(any) addr:0x022882e0
-data_ov007_022882f8 kind:data(any) addr:0x022882f8
-data_ov007_02288310 kind:data(any) addr:0x02288310
-data_ov007_0228832c kind:data(any) addr:0x0228832c
-data_ov007_02288344 kind:data(any) addr:0x02288344
-data_ov007_0228835c kind:data(any) addr:0x0228835c
-data_ov007_02288360 kind:data(any) addr:0x02288360
+_ZTV10BattleData kind:data(any) addr:0x022881e0
+@1664 kind:data(any) addr:0x022881f0 local
+@1665 kind:data(any) addr:0x02288204 local
+@1666 kind:data(any) addr:0x02288224 local
+@1667 kind:data(any) addr:0x0228823c local
+@1668 kind:data(any) addr:0x02288254 local
+@1669 kind:data(any) addr:0x02288270 local
+@1670 kind:data(any) addr:0x02288294 local
+@1671 kind:data(any) addr:0x022882ac local
+@1672 kind:data(any) addr:0x022882c8 local
+@1673 kind:data(any) addr:0x022882e0 local
+@1674 kind:data(any) addr:0x022882f8 local
+@1675 kind:data(any) addr:0x02288310 local
+@1676 kind:data(any) addr:0x0228832c local
+@1677 kind:data(any) addr:0x02288344 local
+@1678 kind:data(any) addr:0x0228835c local
+@1679 kind:data(any) addr:0x02288360 local
 _ZTV18BattleConfrontCard kind:data(any) addr:0x02288370
 @1709 kind:data(any) addr:0x02288384 local
 @1710 kind:data(any) addr:0x022883b0 local
@@ -2788,7 +2787,7 @@ sResources kind:bss addr:0x0228b800 local
 @1528 kind:bss addr:0x0228b85c local
 @1359 kind:bss addr:0x0228b868 local
 @1392 kind:bss addr:0x0228b874 local
-data_ov007_0228b880 kind:bss addr:0x0228b880
+@748 kind:bss addr:0x0228b880 local
 @17 kind:bss addr:0x0228b88c local
 @297 kind:bss addr:0x0228b898 local
 @143 kind:bss addr:0x0228b8a4 local

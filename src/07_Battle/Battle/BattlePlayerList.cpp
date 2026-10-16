@@ -5,11 +5,11 @@
 #include "Graphics/Display.hpp"
 #include "Graphics/Effect.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "System/FrameTask.hpp"
-#include "Graphics/Camera.hpp"
-#include "System/SoundManager.hpp"
 #include "System/WirelessManager.hpp"
+#include "Graphics/Camera.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "System/SoundManager.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/math.h>
@@ -19,6 +19,13 @@
 #include "Battle/BattleCpu.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include "Unknown/UnkStruct_02078e14.hpp"
+// Placeholder for an unidentified object. The original's data layout needs one more participant in this file's
+// size sort: a small weak object that no instruction addresses. This accessor's static joins the sort here, its
+// call leaves no code, and the link strips it.
+inline u32 *DataLayoutSlot() {
+    static u32 sSlot[4];
+    return sSlot;
+}
 
 // Microphone singleton (instance 0x020c189c).
 class MicManager {
@@ -41,6 +48,10 @@ public:
     void func_0202d8cc();
     void func_0202d9ac();
 };
+
+// Placeholder for an unidentified object. The original's data layout needs one more participant in this file's
+// size sort: a small weak object that no instruction addresses. This accessor's static joins the sort here, its
+// call leaves no code, and the link strips it.
 
 struct BattleHistory {
     u16 mValue;
@@ -92,7 +103,6 @@ extern "C" void func_ov007_022633f8(BattlePlayerList *list);
 extern "C" void func_02038444(u32 heap, u32 a);
 void func_ov007_0226a48c(BattlePlayer *player);
 void func_ov007_0226a404(BattlePlayer *player, u32 index, u32 flag);
-extern const u8 data_ov007_0227aa5c[];
 BOOL func_0202326c(UnkStruct_020d43f0 *d);
 
 void func_ov007_02262328(BattlePlayerList *list);
@@ -103,10 +113,10 @@ void func_ov007_022626b8(BattlePlayerList *list, u8 index);
 extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
 void func_ov007_02269ee4(BattlePlayer *player, u32 reset);
 u32 func_ov007_022696a0(u32 a, u32 b);
-extern const BattleCpuRot data_ov007_0227aa28;
 extern u8 data_020d4444[];
 extern "C" void func_020383f8(u32 heap);
 
+static const u8 sFrameTaskIds[8] = {6, 0, 8, 9, 4, 2, 10, 1};
 BattlePlayerList::BattlePlayerList()
     : SceneBase(0x3e8, 0) {
     mCamera = 0;
@@ -354,7 +364,7 @@ void BattlePlayerList::Update() {
                     break;
                 }
                 case 4: {
-                    BattleCpuRot rot = data_ov007_0227aa28;
+                    BattleCpuRot rot = {0x71c, 0x6000, 0x71c};
                     u16 outA         = 0;
                     u16 outB         = 0;
                     u8 outC          = 0;
@@ -1329,11 +1339,12 @@ BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag) {
 }
 
 extern "C" void func_ov007_022633f8(BattlePlayerList *list) {
+    (void) DataLayoutSlot();
     if (data_020d433c.mUnk_84) {
         return;
     }
     if (data_020d433c.mUnk_7b != 0xd) {
-        FrameTask::Get().func_0203dc34(0, data_ov007_0227aa5c[data_020d433c.mUnk_95]);
+        FrameTask::Get().func_0203dc34(0, sFrameTaskIds[data_020d433c.mUnk_95]);
         return;
     }
     if (data_020d433c.mUnk_8a_0) {
@@ -1352,6 +1363,6 @@ extern "C" void func_ov007_022633f8(BattlePlayerList *list) {
         FrameTask::Get().func_0203dc34(0, 10);
         return;
     }
-    FrameTask::Get().func_0203dc34(0, data_ov007_0227aa5c[data_020d433c.mUnk_95]);
+    FrameTask::Get().func_0203dc34(0, sFrameTaskIds[data_020d433c.mUnk_95]);
 }
 

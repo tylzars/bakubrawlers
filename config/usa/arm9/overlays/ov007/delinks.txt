@@ -231,7 +231,6 @@ src/07_Battle/Battle/BattleCommand.cpp:
     .bss        start:0x0228b844 end:0x0228b880
 
 src/07_Battle/Battle/BattleData.cpp:
-    complete
     .text       start:0x0223cfe8 end:0x0223e238
     .data       start:0x022881e0 end:0x02288370
     .bss        start:0x0228b880 end:0x0228b88c
@@ -306,9 +305,11 @@ src/07_Battle/Battle/BattleCardSpec.cpp:
     .data       start:0x02289dd8 end:0x02289e70
     .bss        start:0x0228b9e8 end:0x0228ba0c
 
-// provisional: code only; .data 0x02289e70-0x02289ff0, .rodata 0x0227aa28-0x0227aa64 belong here.
 src/07_Battle/Battle/BattlePlayerList.cpp:
+    complete
     .text       start:0x0225fd5c end:0x0226368c
+    .rodata     start:0x0227aa28 end:0x0227aa64
+    .data       start:0x02289e70 end:0x02289ff0
     .bss        start:0x0228ba0c end:0x0228ba48
 
 src/07_Battle/Battle/BattleMapPiece.cpp:

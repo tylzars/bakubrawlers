@@ -119,7 +119,7 @@ Diff the traces of two variants to find the first stage where they part. Facts r
 Forms that reproduce the original's bytes but are probably not its source. Each is marked in place; a real form
 that matches should replace it.
 
-- Layout stand-ins: FieldSelectScene's and BattlePlayer's `DataLayoutSlot()` statics (one unidentified small object
+- Layout stand-ins: FieldSelectScene's, BattlePlayer's and BattlePlayerList's (16 bytes) `DataLayoutSlot()` statics (one unidentified small object
   in the data size sort; in BattlePlayer it puts the TextManager, InputManager, WirelessManager destructor nodes in
   the original order), BattleUnk022637ac's thirteen named `{0, 0x4800, 0}` statics (the order of identical initialisers),
   TournamentSubScene's `sMessageIds[1][24]` shape (keeps a byte table in the shared .rodata), GameMain.cpp (main's slot).

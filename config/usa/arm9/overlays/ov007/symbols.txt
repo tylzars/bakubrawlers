@@ -1189,12 +1189,12 @@ data_ov007_0227a77c kind:data(any) addr:0x0227a77c local
 data_ov007_0227a7b4 kind:data(any) addr:0x0227a7b4 local
 data_ov007_0227a7ec kind:data(any) addr:0x0227a7ec
 data_ov007_0227aa1c kind:data(any) addr:0x0227aa1c
-data_ov007_0227aa28 kind:data(any) addr:0x0227aa28
-data_ov007_0227aa2e kind:data(any) addr:0x0227aa2e
-data_ov007_0227aa38 kind:data(any) addr:0x0227aa38
-data_ov007_0227aa44 kind:data(any) addr:0x0227aa44
-data_ov007_0227aa50 kind:data(any) addr:0x0227aa50
-data_ov007_0227aa5c kind:data(any) addr:0x0227aa5c
+@1813 kind:data(any) addr:0x0227aa28 local
+sNeighbors kind:data(any) addr:0x0227aa2e local
+@2317 kind:data(any) addr:0x0227aa38 local
+@2304 kind:data(any) addr:0x0227aa44 local
+@2334 kind:data(any) addr:0x0227aa50 local
+sFrameTaskIds kind:data(any) addr:0x0227aa5c local
 sEffectPos_022665ec kind:data(any) addr:0x0227aa64 local
 sEffectPos_022663f0 kind:data(any) addr:0x0227aa70 local
 sEffectPos_02265718 kind:data(any) addr:0x0227aa7c local
@@ -2494,22 +2494,21 @@ _ZTV14BattleCardSpec kind:data(any) addr:0x02289dd8
 @1384 kind:data(any) addr:0x02289e40 local
 @1388 kind:data(any) addr:0x02289e54 local
 @1386 kind:data(any) addr:0x02289e6c local
-data_ov007_02289e70 kind:data(any) addr:0x02289e70
-data_ov007_02289e78 kind:data(any) addr:0x02289e78
-data_ov007_02289e84 kind:data(any) addr:0x02289e84
-data_ov007_02289e9c kind:data(any) addr:0x02289e9c
-data_ov007_02289eb8 kind:data(any) addr:0x02289eb8
-data_ov007_02289ed0 kind:data(any) addr:0x02289ed0
-data_ov007_02289eec kind:data(any) addr:0x02289eec
-data_ov007_02289f04 kind:data(any) addr:0x02289f04
-data_ov007_02289f20 kind:data(any) addr:0x02289f20
-data_ov007_02289f38 kind:data(any) addr:0x02289f38
-data_ov007_02289f54 kind:data(any) addr:0x02289f54
-data_ov007_02289f6c kind:data(any) addr:0x02289f6c
-data_ov007_02289f88 kind:data(any) addr:0x02289f88
-data_ov007_02289fa0 kind:data(any) addr:0x02289fa0
-data_ov007_02289fbc kind:data(any) addr:0x02289fbc
-data_ov007_02289fd4 kind:data(any) addr:0x02289fd4
+_ZTV16BattlePlayerList kind:data(any) addr:0x02289e70
+@4459 kind:data(any) addr:0x02289e84 local
+@4460 kind:data(any) addr:0x02289e9c local
+@4461 kind:data(any) addr:0x02289eb8 local
+@4462 kind:data(any) addr:0x02289ed0 local
+@4463 kind:data(any) addr:0x02289eec local
+@4464 kind:data(any) addr:0x02289f04 local
+@4467 kind:data(any) addr:0x02289f20 local
+@4468 kind:data(any) addr:0x02289f38 local
+@4471 kind:data(any) addr:0x02289f54 local
+@4472 kind:data(any) addr:0x02289f6c local
+@4475 kind:data(any) addr:0x02289f88 local
+@4476 kind:data(any) addr:0x02289fa0 local
+@4477 kind:data(any) addr:0x02289fbc local
+@4478 kind:data(any) addr:0x02289fd4 local
 @268 kind:data(any) addr:0x02289ff0 local
 @262 kind:data(any) addr:0x0228a008 local
 @263 kind:data(any) addr:0x0228a01c local
@@ -2859,11 +2858,11 @@ data_ov007_0228b9b8 kind:bss addr:0x0228b9b8
 @23 kind:bss addr:0x0228b9e8 local
 @567 kind:bss addr:0x0228b9f4 local
 @433 kind:bss addr:0x0228ba00 local
-data_ov007_0228ba0c kind:bss addr:0x0228ba0c
-data_ov007_0228ba18 kind:bss addr:0x0228ba18
-data_ov007_0228ba24 kind:bss addr:0x0228ba24
-data_ov007_0228ba30 kind:bss addr:0x0228ba30
-data_ov007_0228ba3c kind:bss addr:0x0228ba3c
+@677 kind:bss addr:0x0228ba0c local
+@705 kind:bss addr:0x0228ba18 local
+@875 kind:bss addr:0x0228ba24 local
+@1606 kind:bss addr:0x0228ba30 local
+@781 kind:bss addr:0x0228ba3c local
 @899 kind:bss addr:0x0228ba48 local
 @397 kind:bss addr:0x0228ba54 local
 @667 kind:bss addr:0x0228ba60 local

@@ -16,7 +16,15 @@
 ## Naming
 - Source files are named after the class they define: `src/06_GameOver/Scene/GameOverScene.cpp` with its header at
   `include/Scene/GameOverScene.hpp`. C++ headers use `.hpp`, C headers `.h`.
-- Classes and methods use `PascalCase`; members use an `m` prefix (`mState`).
+- Classes, structs, enum types, methods and free functions use `PascalCase`; members use an `m` prefix (`mState`).
+- File-scope statics use an `s` prefix (`sFrameCount`), globals shared between units a `g` prefix (`gGameData`).
+- Locals and parameters use `camelCase`; `i`/`j`/`k` are fine for loop counters.
+- Enum values are `UPPER_SNAKE` prefixed with their type (`BATTLE_MODE_TAG`); `#define` constants are `UPPER_SNAKE`.
+- Magic numbers get a named constant once their meaning is clear from the code, but a variable's or member's type
+  never changes to an enum type: the compiler treats enum-typed values differently and the output would move. A
+  `#define` keeps the literal exactly as written, suffix included (`0x8000u`).
+- A name has to be supported by what this repository shows: what the code does, the game's own strings and file
+  paths, and names already given. New names carry no address (symbols.txt keeps it).
 - Anything not yet understood keeps an address-based name: functions `func_<addr>` / `func_ovNNN_<addr>`, data
   `data_<addr>`, members `mUnk_<offset>`, virtual slots `vfunc_<offset>`.
 - Annotate struct members and vtables with their offsets: `/* 2c */ u8 mState;`.

@@ -13,13 +13,14 @@
 #define __LO(x) *(int*)&x
 extern float data_020a5078;
 extern int data_020c1790;
-extern const double data_020904f0[];   /* bp */
-extern const double data_02090500[];   /* dp_l? */
-extern const double data_020904e0[];   /* dp_h? */
 extern double func_0201bb40(double);
 extern double sqrt(double);
 extern double func_0201d700(double, int);
 static const double zero = 0.0, one = 1.0, two = 2.0, two53 = 9007199254740992.0;
+// Tables indexed by the reduction step k (0 or 1): high and low parts of log2 of bp[k], and bp[k] itself.
+static const double bp[] = {1.0, 1.5};
+static const double dp_h[] = {0.0, 0.58496248722076416};
+static const double dp_l[] = {0.0, 1.350039202129749e-08};
 #define huge 1.0e300
 #define tiny 1.0e-300
 static const double L1 = 5.99999999999994648725e-01;
@@ -43,22 +44,17 @@ static const double cp_l = -7.02846165095275826516e-09;
 static const double ivln2 = 1.44269504088896338700e+00;
 static const double ivln2_h = 1.44269502162933349609e+00;
 static const double ivln2_l = 1.92596299112661746887e-08;
-#define bp data_020904f0
-#define dp_h data_020904e0
-#define dp_l data_02090500
 
 double func_02019000(double x, double y)
 {
-    double z, ax, z_h, z_l, p_h, p_l;
-    double y1, t1, t2, r, s, t, u, v, w;
-    int i0, i1, i, j, k, yisint, nn, n;
+    int i, j, k, yisint, nn, n, m;
     int hx, ix;
     unsigned lx;
     int hy, iy;
     unsigned ly;
+    double z, ax, z_h, z_l, p_h, p_l;
+    double y1, t1, t2, r, s, t, u, v, w;
 
-    i0 = ((*(int *)&one) >> 29) ^ 1;
-    i1 = 1 - i0;
     hx = __HI(x);
     lx = __LO(x);
     hy = __HI(y);
@@ -215,14 +211,14 @@ double func_02019000(double x, double y)
     }
     i = j & 0x7fffffff;
     k = (i >> 20) - 0x3ff;
-    n = 0;
+    m = 0;
     if (i > 0x3fe00000) {
         n = j + (0x00100000 >> (k + 1));
         k = ((n & 0x7fffffff) >> 20) - 0x3ff;
         t = zero;
         __HI(t) = (n & ~(0x000fffff >> k));
-        n = ((n & 0x000fffff) | 0x00100000) >> (20 - k);
-        if (j < 0) n = -n;
+        m = ((n & 0x000fffff) | 0x00100000) >> (20 - k);
+        if (j < 0) m = -m;
         p_h -= t;
     }
     t = p_l + p_h;
@@ -236,8 +232,8 @@ double func_02019000(double x, double y)
     r = (z * t1) / (t1 - two) - (w + z * w);
     z = one - (r - z);
     j = __HI(z);
-    j += (n << 20);
-    if ((j >> 20) <= 0) z = func_0201d700(z, n);
-    else __HI(z) += (n << 20);
+    j += (m << 20);
+    if ((j >> 20) <= 0) z = func_0201d700(z, m);
+    else __HI(z) += (m << 20);
     return s * z;
 }

@@ -5085,7 +5085,9 @@ FX_AtanTable_ kind:data(any) addr:0x0208f524
 sndVolumeTable kind:data(any) addr:0x0208ff9c
 data_020903a8 kind:data(any) addr:0x020903a8
 data_020904d0 kind:data(any) addr:0x020904d0
-data_020904e0 kind:data(any) addr:0x020904e0
+dp_h kind:data(any) addr:0x020904e0 local
+bp kind:data(any) addr:0x020904f0 local
+dp_l kind:data(any) addr:0x02090500 local
 data_02090510 kind:data(any) addr:0x02090510
 data_02090590 kind:data(any) addr:0x02090590
 data_02090698 kind:data(any) addr:0x02090698

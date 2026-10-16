@@ -1,4 +1,3 @@
-// non-matching: 9 words in the format-side whitespace skip differ in register choice (zero/one constants).
 /* MSL scanf core: walks the format string, reads input through the reader
    callback rd(ctx, ch, op) (op 0 = get, 1 = unget, 2 = test eof), stores converted values
    through ap. flag != 0 selects the "secure"/length-checked mode (%c/%s/%[ take a buffer size).
@@ -62,8 +61,8 @@ int func_02014bfc(ReadFn rd, void *ctx, const char *fmt, char *ap, int flag)
     do {
         if (ISSPACEM((int)*fmt)) {
             do {
-                fmt++;
-            } while (ISSPACEM(*fmt));
+                fc = *++fmt;
+            } while (ISSPACEM((int)fc));
             if (!stop) {
                 while (ISSPACE(ch = rd(ctx, 0, 0))) {
                     count++;

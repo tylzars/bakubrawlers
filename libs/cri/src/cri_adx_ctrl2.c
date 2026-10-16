@@ -156,8 +156,6 @@ void func_02043c14(Pl *o)
     func_020416e4(h, 0);
 }
 
-// non-matching: 7 words in the i50/i8c block: the i50 sign temporary and the i8c `asr` temporary have swapped
-// registers (r2/r1, original r1/r2), and the original stores i50 before the final i8c shift.
 void func_02043f28(Pl *o)
 {
     int h = o->h;
@@ -200,8 +198,9 @@ void func_02043f28(Pl *o)
                 int x = func_020417a0(h);
                 o->i50 = 2048 - x % 2048;
                 o->i50 %= 2048;
-                o->i8c = (x + 0x7ff) / 2048;
-                func_02041f50(o->i8, o->i8c);
+                n = (x + 0x7ff) / 2048;
+                o->i8c = n;
+                func_02041f50(o->i8, n);
                 func_02041f18(o->i8, func_02043b44, o);
             }
             func_02041790(h);

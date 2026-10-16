@@ -456,15 +456,13 @@ void func_ov007_0226a48c(BattlePlayer *player) {
     }
 }
 
-// non-matching: 0x114 vs 0x118 bytes, one colouring difference. The original keeps owner/n/list in r3/ip/lr, here
-// n/list/owner are r3/ip/r6; with r3 taken by n the random state's high word lands in lr, which lets the two stores
-// merge into one stm (the original has two str, hence its 4 extra bytes). In the last loop the original has k, owner, i in r4, r5, r6.
 u8 func_ov007_0226a5e8(BattlePlayer *player) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    u8 i                   = 0;
-    BattlePlayer *owner    = list->mPlayers[player->mUnk_f0];
     u8 first               = 0xff;
+    u8 i                   = 0;
     u8 count               = 0;
+    u8 j;
+    BattlePlayer *owner    = list->mPlayers[player->mUnk_f0];
     u8 n                   = data_020d433c.mUnk_99;
     do {
         if (owner->mSlots54[i].mFlag == 0) {
@@ -472,21 +470,21 @@ u8 func_ov007_0226a5e8(BattlePlayer *player) {
         }
         i++;
     } while (i < n);
-    i = 0;
+    j = 0;
     do {
-        if (owner->mSlots54[i].mFlag == 0) {
-            first = i;
+        if (owner->mSlots54[j].mFlag == 0) {
+            first = j;
             break;
         }
-        i++;
-    } while (i < n);
+        j++;
+    } while (j < n);
     if (count != 0) {
-        u8 pick = MATH_Rand32(&data_020d42e8, count);
-        u8 k    = 0;
-        i       = 0;
-        owner   = list->mPlayers[player->mUnk_f0];
+        u8 pick              = MATH_Rand32(&data_020d42e8, count);
+        u8 k                 = 0;
+        BattlePlayer *owner2 = list->mPlayers[player->mUnk_f0];
+        i                    = 0;
         do {
-            if (owner->mSlots54[i].mFlag == 0) {
+            if (owner2->mSlots54[i].mFlag == 0) {
                 if (pick == k) {
                     first = i;
                     break;

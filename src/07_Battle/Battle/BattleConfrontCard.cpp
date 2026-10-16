@@ -387,6 +387,10 @@ void BattleConfrontCard::func_ov007_0223f90c(u16 value) {
 // reusing `id` for j<<2), so no natural statement keeps j*4 early. Closest IR: integer sums through a player local
 // (`(u32)p->mSlots6c + (j << 2)`) give the right order after the first CSE pass, but the local is substituted away
 // in the second and the list load is rebuilt after j*4. About 500 variants were tried.
+// Further: j*4 must be numbered after the whole list-to-player chain (ldrb index, add, ldr #12), so the IR
+// needs a surviving player statement before the one creating j*4; only the slot reads use j and the loop is a
+// plain u8 counter, so no dominating shift exists. Every form that keeps the player local (a store between, a use
+// in the call block, reads through it) adds an instruction or moves other registers.
 BOOL BattleConfrontCard::func_ov007_0223f918() {
     u8 j;
     u8 k;

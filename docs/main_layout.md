@@ -112,3 +112,7 @@ These routines are not compiler output. Where they are matched, it is as comment
 - Labels inside one asm function are not visible to another, so a branch into the middle of a neighbouring routine
   is written as a raw instruction word (`dcd`) with a comment. objdiff reads such a word as data where the original
   object has an instruction, so those few routines score just under 100% although the bytes match.
+- `init/build_info.s` is the parameter block crt0 reads (autoload list and BSS bounds, a version word, a marker
+  pair, two library ID strings). Its object marks the block as data (`$d`); dsd's delinked target has no mapping
+  symbol there, so objdiff disassembles the target as instructions and scores the block 40% though the bytes and
+  relocations are identical (the same mapping-symbol difference as above).

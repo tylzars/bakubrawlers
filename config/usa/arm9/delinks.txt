@@ -435,6 +435,10 @@ libs/nds/src/init/crt0.c:
     complete
     .text       start:0x02000800 end:0x02000ba0
 
+libs/nds/src/init/build_info.s:
+    complete
+    .text       start:0x02000ba0 end:0x02000c04
+
 // main's slot: the function itself comes from Game.o (see the source file and lcf_edits.txt).
 src/Main/System/GameMain.cpp:
     complete

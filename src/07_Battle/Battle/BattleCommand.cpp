@@ -39,7 +39,7 @@ static const BattleScrollBounds data_ov007_02279acc[8] = {{0, 0}, {0, 0}, {0, 0}
 
 static const BattleCommandPoint data_ov007_02279ab0[4] = {{0xc2, 0x86}, {0x1e, 0x86}, {0x1e, 0x22}, {0xc2, 0x22}};
 
-#include "System/FrameClock.hpp"
+#include "System/GameSystem.hpp"
 #include "System/InputManager.hpp"
 inline WindowItemRecord *CommandItems() {
     static WindowItemRecord sItems[10] = {
@@ -1832,7 +1832,7 @@ void BattleCommand::func_ov007_0223b38c() {
                 u8 who    = data_020d433c.mBattlePlayers->mUnk_1c[(u8) (mark - 1)].mUnk_1;
                 show      = TRUE;
                 if (data_020d433c.mBattlePlayers->mUnk_2a9 == who) {
-                    if (!(UnkStruct_020c1884::Get().mFrame & 0x20)) {
+                    if (!(GameSystem::Get().mFrame & 0x20)) {
                         show = FALSE;
                     }
                 }

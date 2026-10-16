@@ -3,7 +3,7 @@
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
-#include "System/FrameClock.hpp"
+#include "System/GameSystem.hpp"
 #include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
 
@@ -68,7 +68,7 @@ UnkStruct_02071868::UnkStruct_02071868(u32 unk1) {
     GX_EndLoadSubBGExtPltt();
     G2S_SetBG0Offset(0x10, 0);
     if (unk1 != 2) {
-        UnkStruct_020c1884::Get().mUnk_14 = 1;
+        GameSystem::Get().mHalted = 1;
     }
 }
 

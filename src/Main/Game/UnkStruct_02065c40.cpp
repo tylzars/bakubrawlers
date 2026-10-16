@@ -1,7 +1,7 @@
 #include "Game/UnkStruct_02065c40.hpp"
 #include "System/TouchManager.hpp"
 #include "System/SoundManager.hpp"
-#include "System/FrameClock.hpp"
+#include "System/GameSystem.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "Graphics/Camera.hpp"
 #include "System/InputManager.hpp"
@@ -3284,7 +3284,7 @@ extern "C" void func_0206ea14() {
     if (line >= 0xc0) {
         return;
     }
-    u32 time = line + UnkStruct_020c1884::Get().mFrame;
+    u32 time = line + GameSystem::Get().mFrame;
     UnkStruct_02065c40 *event = data_02219288;
     u16 angle = (time << 16) / 192;
     u16 height = event->mUnk_14dc;

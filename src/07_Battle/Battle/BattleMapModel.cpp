@@ -1,5 +1,5 @@
 #include "Battle/BattleMapTypes.hpp"
-#include "System/FrameClock.hpp"
+#include "System/GameSystem.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/ModelTransform.hpp"
@@ -63,7 +63,7 @@ void BattleMapModel::func_ov007_02248eb8() {
     MtxFx43 mtx = data_0220e86c;
     func_01ffcf64(&mtx, &mPosition);
     mModel->func_02028ef0();
-    if (UnkStruct_020c1884::Get().mFrame & 0x20) {
+    if (GameSystem::Get().mFrame & 0x20) {
         if (mUnk_2d > 0xf) {
             mUnk_2d--;
         }

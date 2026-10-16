@@ -791,8 +791,8 @@ data_0201feb0 kind:data(any) addr:0x0201feb0
 func_020202bc kind:function(arm,size=0x4) addr:0x020202bc
 func_020202c0 kind:function(arm,size=0x2c) addr:0x020202c0
 __register_global_object kind:function(arm,size=0x20) addr:0x020202ec
-_ZN18UnkStruct_020c188413func_0202030cEv kind:function(arm,size=0x1c) addr:0x0202030c
-_ZN18UnkStruct_020c188413func_02020328Ev kind:function(arm,size=0x6e0) addr:0x02020328
+_ZN10GameSystem17GetLanguageSuffixEv kind:function(arm,size=0x1c) addr:0x0202030c
+_ZN10GameSystem4InitEv kind:function(arm,size=0x6e0) addr:0x02020328
 _ZN9FrameTaskD1Ev kind:function(arm,size=0x14) addr:0x02020a08 weak
 _ZN12InputManagerD1Ev kind:function(arm,size=0x4) addr:0x02020a1c weak
 _ZN12TouchManagerD1Ev kind:function(arm,size=0x4) addr:0x02020a20 weak
@@ -805,9 +805,9 @@ _ZN12SceneManagerD1Ev kind:function(arm,size=0x4) addr:0x02020a38 weak
 _ZN11SceneRunnerD1Ev kind:function(arm,size=0x4) addr:0x02020a3c weak
 _ZN13CameraManagerD1Ev kind:function(arm,size=0x4) addr:0x02020a40 weak
 _ZN18UnkStruct_020c17a8D1Ev kind:function(arm,size=0x4) addr:0x02020a44 weak
-_ZN18UnkStruct_020c188413func_02020a48Ev kind:function(arm,size=0xcb8) addr:0x02020a48
-_ZN18UnkStruct_020c188413func_02021700Ev kind:function(arm,size=0x2c0) addr:0x02021700
-_ZN18UnkStruct_020c1884D1Ev kind:function(arm,size=0x4) addr:0x020219c0
+_ZN10GameSystem3RunEv kind:function(arm,size=0xcb8) addr:0x02020a48
+_ZN10GameSystem13func_02021700Ev kind:function(arm,size=0x2c0) addr:0x02021700
+_ZN10GameSystemD1Ev kind:function(arm,size=0x4) addr:0x020219c0
 _ZN9NullScene6UpdateEv kind:function(arm,size=0x4) addr:0x020219c4
 _ZN9NullSceneD0Ev kind:function(arm,size=0x14) addr:0x020219c8 weak
 _Z13func_020219dcv kind:function(arm,size=0x10) addr:0x020219dc
@@ -872,7 +872,7 @@ _Z13func_02023864v kind:function(arm,size=0x10) addr:0x02023864
 _Z13func_02023874v kind:function(arm,size=0x10) addr:0x02023874
 _Z13func_02023884v kind:function(arm,size=0x1d0) addr:0x02023884
 _Z13func_02023a54v kind:function(arm,size=0x80) addr:0x02023a54
-_Z13func_02023ad4PKc kind:function(arm,size=0xac) addr:0x02023ad4
+_Z17OpenLocalizedFilePKc kind:function(arm,size=0xac) addr:0x02023ad4
 _ZN18UnkStruct_020c17a813func_02023b80Ev kind:function(arm,size=0x44) addr:0x02023b80
 _ZN18UnkStruct_020c17a813func_02023bc4EPKvj kind:function(arm,size=0x74) addr:0x02023bc4
 _ZN18UnkStruct_020c17a813func_02023c38Ej kind:function(arm,size=0xf8) addr:0x02023c38
@@ -3382,7 +3382,7 @@ data_020a53f4 kind:data(any) addr:0x020a53f4
 @695 kind:data(any) addr:0x020a5430 local
 @692 kind:data(any) addr:0x020a5434 local
 _ZTV9NullScene kind:data(any) addr:0x020a5438
-data_020a544c kind:data(any) addr:0x020a544c
+gLanguageSuffixes kind:data(any) addr:0x020a544c
 _ZTV9SceneBase kind:data(any) addr:0x020a546c weak
 @340 kind:data(any) addr:0x020a5480 local
 @438 kind:data(any) addr:0x020a5484 local
@@ -4626,7 +4626,7 @@ data_020c17a4 kind:bss addr:0x020c17a4
 _ZZN18UnkStruct_020c17a83GetEvE8instance kind:bss addr:0x020c17a8 weak
 _ZGVZN11TextManager3GetEvE8instance kind:bss addr:0x020c17ac weak
 _ZGVZN12SoundManager3GetEvE8instance kind:bss addr:0x020c17b0 weak
-_ZGVZN18UnkStruct_020c18843GetEvE8instance kind:bss addr:0x020c17b4 weak
+_ZGVZN10GameSystem3GetEvE8instance kind:bss addr:0x020c17b4 weak
 _ZGVZN11SceneRunner3GetEvE8instance kind:bss addr:0x020c17b8 weak
 _ZGVZN9FrameTask3GetEvE8instance kind:bss addr:0x020c17bc weak
 _ZGVZN10MicManager3GetEvE8instance kind:bss addr:0x020c17c0 weak
@@ -4650,7 +4650,7 @@ _ZGVZN15WirelessManager3GetEvE8instance kind:bss addr:0x020c17dc weak
 @1171 kind:bss addr:0x020c1858 local
 @817 kind:bss addr:0x020c1864 local
 _ZZN11SceneRunner3GetEvE8instance kind:bss addr:0x020c1870 weak
-_ZZN18UnkStruct_020c18843GetEvE8instance kind:bss addr:0x020c1884 weak
+_ZZN10GameSystem3GetEvE8instance kind:bss addr:0x020c1884 weak
 _ZZN10MicManager3GetEvE8instance kind:bss addr:0x020c189c weak
 _ZZN12InputManager3GetEvE8instance kind:bss addr:0x020c18c4 weak
 _ZZN12TouchManager3GetEvE8instance kind:bss addr:0x020c1900 weak

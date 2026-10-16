@@ -198,7 +198,7 @@ that matches should replace it.
   - Six singleton classes have an empty constructor as Game.cpp saw them (guard before node there, node before guard
     in every other unit): the headers declare it under `#ifdef GAME_SINGLETON_CTORS`, defined only in Game.cpp. An
     exhaustive search over all 14! orders found no layout without it, and declaring it everywhere breaks 32 units.
-  - data_020a544c (the language-letter table) and its strings are Game's `.data`; UnkStruct_020c17a8 is one byte,
+  - gLanguageSuffixes (the language-letter table) and its strings are Game's `.data`; UnkStruct_020c17a8 is one byte,
     SceneRunner 0x14 and FrameTask 0x96c (sizes read from Game's `.bss`).
 - **Two literal-pool entries for one address.** `func_02023504` (FileSystem.cpp) loads 0x020d53e4 from two
   different pool words, so two relocations (different symbols, or symbol plus offset) resolve to the same address

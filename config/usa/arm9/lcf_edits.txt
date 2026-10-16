@@ -13,7 +13,7 @@ inner data_020d43f0 0xff4
 # still name fields inside them by address.
 place GameMain.o main Game.o
 inner _ZZN11SceneRunner3GetEvE8instance 0x14
-inner _ZZN18UnkStruct_020c18843GetEvE8instance 0x18
+inner _ZZN10GameSystem3GetEvE8instance 0x18
 inner _ZZN10MicManager3GetEvE8instance 0x28
 inner _ZZN12InputManager3GetEvE8instance 0x3c
 inner _ZZN12TouchManager3GetEvE8instance 0x64

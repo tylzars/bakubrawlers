@@ -1,5 +1,5 @@
 #include "System/SoundManager.hpp"
-#include "System/FrameClock.hpp"
+#include "System/GameSystem.hpp"
 
 // Parameters of the microphone's automatic sampling (same layout as the microphone library's MICAutoParam).
 struct MicAutoParam {
@@ -63,7 +63,7 @@ u8 MicManager::func_0202d7a0() {
     MIC_StartAutoSampling(&mParam);
     mActive = 1;
     SoundManager::Get().func_020245c4(0x32);
-    mTime        = UnkStruct_020c1884::Get().mFrame;
+    mTime        = GameSystem::Get().mFrame;
     mHold = 0;
     mBlowing = mPrevBlowing = 0;
     mEvents = 0;
@@ -82,7 +82,7 @@ void MicManager::func_0202d8cc() {
 }
 
 void MicManager::func_0202d94c() {
-    mTime   = UnkStruct_020c1884::Get().mFrame;
+    mTime   = GameSystem::Get().mFrame;
     mEvents = 0;
 }
 
@@ -90,7 +90,7 @@ void MicManager::func_0202d9ac() {
     s32 level = 0;
     mEvents   = 0;
     if (mActive == 1) {
-        if (UnkStruct_020c1884::Get().mFrame - mTime >= 0xb4) {
+        if (GameSystem::Get().mFrame - mTime >= 0xb4) {
             s8 *sample = func_0200c9ac();
             if (sample != NULL) {
                 level = *sample;

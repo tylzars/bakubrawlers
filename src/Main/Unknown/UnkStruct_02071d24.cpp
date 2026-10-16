@@ -5,7 +5,7 @@
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FileSystem.hpp"
-#include "System/FrameClock.hpp"
+#include "System/GameSystem.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
 

@@ -12,18 +12,18 @@
 #include "Graphics/SpriteManager.hpp"
 #include "Graphics/Camera.hpp"
 
-// Frame clock singleton (instance 0x020c1884, destructor 0x020219c0).
-class UnkStruct_020c1884 {
+// Game system singleton (instance 0x020c1884, destructor 0x020219c0); this file reads only mWirelessWaitFrames.
+class GameSystem {
 public:
     /* 00 */ PAD(0x00, 0x15);
-    /* 15 */ u8 mUnk_15;
+    /* 15 */ u8 mWirelessWaitFrames;
     /* 16 */ PAD(0x16, 0x18);
     /* 18 */
 
-    ~UnkStruct_020c1884();
+    ~GameSystem();
 
-    static UnkStruct_020c1884 &Get() {
-        static UnkStruct_020c1884 instance;
+    static GameSystem &Get() {
+        static GameSystem instance;
         return instance;
     }
 };
@@ -290,7 +290,7 @@ BattleCardModel::~BattleCardModel() {
 }
 
 void BattleCardModel::Update() {
-    mPasses = UnkStruct_020c1884::Get().mUnk_15 + 1;
+    mPasses = GameSystem::Get().mWirelessWaitFrames + 1;
     mEffects->func_0202c024(mPasses);
     mUnk_96 = 0;
     u8 state;

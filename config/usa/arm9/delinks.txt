@@ -711,6 +711,7 @@ libs/nds/src/wm/wm_0200fdfc.c:
     .text       start:0x0200fdfc end:0x02011c34
 
 libs/nds/src/ctrdg/ctrdg.c:
+    complete
     .text       start:0x02011c34 end:0x020122b0
 
 src/Main/System/Game.cpp:

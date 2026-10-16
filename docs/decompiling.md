@@ -93,6 +93,12 @@ Diff the traces of two variants to find the first stage where they part. Facts r
   (one pass in the dump instead of ~100): loops stay unrotated, no strength reduction, globals are reloaded from the
   pool. A dead reference doesn't trigger it (ctrdg func_02011e7c).
 - `#pragma scheduling` does not exist in this compiler; sweeps that set it changed nothing.
+- Memory-dependence edges come from alias classes, set by what defines an access's base register: an integer
+  constant (a hardware register such as `*(vu16 *)0x04000300`) gets the worst-case class, so it is ordered after
+  every earlier global store whatever the volatility or casts; an address taken from a symbol (`lda &sym`) gets that
+  symbol's own class and can move past stores to other objects. When the original reads a hardware register ahead
+  of an earlier store, declare the register as an extern object and pin its address with an `alias` line in
+  config/usa/arm9/lcf_edits.txt (ctrdg func_02011e7c, as wm's 0x027ffc30).
 - Switch layout: cases are sorted and merged left to right into jump-table clusters while count/range >= 0.4,
   computed in x87 floating point; the tree's root is item (lo+hi)/2. The comparison is sensitive to the host's x87
   precision when a density is exactly 0.4, which is why the build needs wibo with Windows' 53-bit precision
@@ -112,7 +118,8 @@ that matches should replace it.
   in the data size sort; in BattlePlayer it puts the TextManager, InputManager, WirelessManager destructor nodes in
   the original order), BattleUnk022637ac's thirteen named `{0, 0x4800, 0}` statics (the order of identical initialisers),
   TournamentSubScene's `sMessageIds[1][24]` shape (keeps a byte table in the shared .rodata), GameMain.cpp (main's slot).
-- Index/register stand-ins: nns_snd_wavstrm func_02039a50's mix of the ADPCM_STEP macro (high nibbles) and an
+- Index/register stand-ins: ctrdg func_02011e7c's `reg` pointer local for the 0x04000300 read (keeps the address
+  numbered among the variables), nns_snd_wavstrm func_02039a50's mix of the ADPCM_STEP macro (high nibbles) and an
   inline AdpcmStep (low nibbles), which only sets the locals' numbering, TP_CalcCalibrateParam's `(s16)` casts on x0/y0 (possibly not original: they make the
   following range checks unable to fail, though the compiler still emits them), gfd_vram func_02035f54's `data_020a5898` (a second name for the +8 range of the slot
   table at 0x020a5890, so the loop base stays a hoisted temporary), cri_adx_dec's unread zero initialisers in func_0203f714 and func_0203fcd8 (register and

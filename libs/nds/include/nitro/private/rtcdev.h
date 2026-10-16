@@ -22,7 +22,7 @@ void OS_CreateThread(void *thread, void *func, void *arg, void *stackTop, u32 st
 void OS_WakeupThreadDirect(void *thread);        // OS_WakeupThreadDirect / resume
 void OS_ExitThread(void);                // OS_ExitThread
 void DC_InvalidateRange(void *p, u32 size);   // DC_InvalidateRange
-void func_02005e30(void);                // DC_WaitWriteBufferEmpty
+void DC_FlushAll(void);
 int MI_DmaCopy16(int a, u32 b, void *c, u32 d); // DMA
 u32 OS_SetIrqMask(u32 mask);             // OS_SetIrqMask-like
 void OS_Terminate(void);                // OS_Terminate

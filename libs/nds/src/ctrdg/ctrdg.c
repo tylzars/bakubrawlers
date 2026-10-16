@@ -22,6 +22,7 @@ typedef struct CTRDGWork {
 
 extern u32 data_020c1180;
 extern CTRDGWork data_020c11a0;
+extern vu16 data_04000300; // the 0x04000300 register, an absolute symbol (lcf_edits.txt)
 
 typedef struct { u16 flag; u16 id; } CTRDGState;
 extern CTRDGState data_020c1184;
@@ -115,13 +116,12 @@ void func_02011dc8(void)
 typedef struct { u8 pad[0xac]; u32 fac; u16 fb0; u8 pad2[3]; u8 fb5[3]; u8 pad3[6]; u16 fbe; } CartHeader;
 typedef struct { u16 f0; u8 f2[3]; u8 pad5; u16 f6; u32 f8; } CartInfo;
 
-// non-matching: 5 words in the head after the first early return. The original loads the 0x04000300 register,
-// stores the constant 1 and then tests (`ldr r1; mov r2,#1; ldrh r1,[r1]; str r2,[r0]; tst r1,#1`); here the two
-// swap registers and the tst comes before the str: the second scheduling pass (run because the conditional epilogue
-// is merged into this block) takes tst first since it makes the stack restore ready. The original's numbering (#1
-// before the 0x04000300 address) and order fit a store-first source with no memory edge between the f00 store and
-// the register read, which no constant-address read form here produces. Using data_020c11c0 as a 32-byte-aligned object makes the compiler skip its IR optimizer for this
-// function, which gives the original's unrotated loops and pool reloads.
+// The 0x04000300 register is read through an absolute symbol (data_04000300, defined in lcf_edits.txt) via a
+// pointer local. The backend gives a read through a constant address the worst-case alias class, so it stays
+// ordered after the f00 store; a read through a symbol's address gets that symbol's own class, so the scheduler can
+// put the ldrh ahead of the store as the original does. The pointer local (numbered before temporaries) keeps the
+// original's registers. Using data_020c11c0 as a 32-byte-aligned object makes the compiler skip its IR optimizer for
+// this function, which gives the original's unrotated loops and pool reloads.
 void func_02011e7c(void)
 {
     CTRDGLock lock;
@@ -129,12 +129,12 @@ void func_02011e7c(void)
     u32 irq;
     u16 ime;
     s32 cart;
-    u16 post;
+    vu16 *reg;
     u16 imeold;
     if (data_020c11a0.f00 != 0) return;
-    post = *(vu16 *)0x04000300;
+    reg = &data_04000300;
     data_020c11a0.f00 = 1;
-    if (!(post & 1)) return;
+    if (!(*reg & 1)) return;
     irq = OS_SetIrqMask(0x40000);
     ime = *(vu16 *)0x04000208;
     *(vu16 *)0x04000208 = 1;
@@ -164,7 +164,7 @@ void func_02011e7c(void)
         *(u8 *)0x027fff9a = 1;
     }
     MIi_CpuCopy32((void *)0xffff0020, data_020c11c4, 0x9c);
-    func_02005e30();
+    DC_FlushAll();
     func_02011d30((((u32)data_020c11c0 - 0x02000000) >> 5 << 6) | 1);
     while (data_020c1184.flag != 1) {
         WaitByLoop(1);

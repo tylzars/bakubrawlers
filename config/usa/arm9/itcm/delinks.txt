@@ -14,6 +14,7 @@ libs/nds/src/gx/g3_fifo.c:
     .text       start:0x01ff9284 end:0x01ff94c8
 
 libs/nns/src/g3d/g3d_anm_itcm.c:
+    complete
     .text       start:0x01ff9804 end:0x01ff9b64
 
 libs/nns/src/g3d/g3d_anm_itcm_b.c:

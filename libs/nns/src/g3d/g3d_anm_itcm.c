@@ -38,7 +38,7 @@ typedef struct G3dState {
     u8 pad4[0xd0];
     Dict *mDict;                                 // 0xd4
     u8 padd8[0x10];
-    void (*mCallback)(void *out, void *data);    // 0xe8
+    void (*mCallback)(void *out, void *data, u8 *cmd, u32 flags);    // 0xe8
 } G3dState;
 extern G3dState *data_020baf00;
 
@@ -64,7 +64,8 @@ void func_01ff98bc(u32 *out) {
 
 void func_01ff9954(void *out) {
     G3dState *s = data_020baf00;
-    u32 idx = s->mCur[1];
+    u8 *cmd = s->mCur;
+    u32 idx = cmd[1];
     Dict *dict = s->mDict;
     u16 *p;
     u32 *e;
@@ -86,7 +87,7 @@ void func_01ff9954(void *out) {
             p += 8;
         }
     }
-    s->mCallback(out, p);
+    s->mCallback(out, p, cmd, flags);
 }
 
 extern const u8 data_0208b4bc[][4]; // 4-byte stride tables: output slot for each of a, b, +-b, +-a

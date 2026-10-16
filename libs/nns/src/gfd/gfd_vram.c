@@ -133,5 +133,5 @@ u32 func_02035f54(u32 size, int is4x4, u32 opt) {
     if (is4x4) ok = Alloc4x4(&key, aligned);
     else ok = AllocNormal(&key, aligned);
     if (ok == 0) return 0;
-    return ((key << 13) >> 16) | ((aligned >> 4) << 16) | (is4x4 << 31);
+    return ((aligned >> 4) << 16) | ((key << 13) >> 16) | (is4x4 << 31);
 }

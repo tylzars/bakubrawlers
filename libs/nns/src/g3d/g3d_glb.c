@@ -563,7 +563,6 @@ s32 func_0203340c(Dict *dictp, const u8 *namep) {   // index by name, or -1
         u8 *node;
         u8 *prev;
         u8 ref;
-        u32 idx;
         u8 *ent;
         if (U8(t, 1) != 0) {
             node = t + U8(t, 1) * 4;
@@ -576,14 +575,14 @@ s32 func_0203340c(Dict *dictp, const u8 *namep) {   // index by name, or -1
                 node = t + next * 4;
                 ref = U8(node, 0);
             }
-            idx = U8(node, 3);
-            if (dict != 0 && idx < n) {
+            i = U8(node, 3);
+            if (dict != 0 && i < n) {
                 u8 *e = dict + *(u16 *)(dict + 6);
-                ent = e + *(u16 *)(e + 2) + idx * 16;
+                ent = e + *(u16 *)(e + 2) + i * 16;
             } else {
                 ent = 0;
             }
-            if (NameEq((u32 *)ent, name)) return idx;
+            if (NameEq((u32 *)ent, name)) return i;
         }
     }
     return -1;

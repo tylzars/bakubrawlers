@@ -212,9 +212,8 @@ void func_02031a0c(ResMat *mat, MatList *list, ResTex *tex, TexInfo *info) {   /
     u8 *idx = (u8 *)mat + list->idxOfs;
     u32 key;
     u32 i;
-    if ((info->imageParam & 0x1c000000) != 0x14000000) key = tex->texKey;
-    else key = tex->tex4x4Key;
-    key = (u16)key & ~0xe0000000;
+    if ((info->imageParam & 0x1c000000) != 0x14000000) key = (u16)tex->texKey & ~0xe0000000;
+    else key = (u16)tex->tex4x4Key & ~0xe0000000;
     for (i = 0; i < list->count; i++) {
         MatData *m = (MatData *)MatByIdx(mat, idx[i]);
         u32 w, h;

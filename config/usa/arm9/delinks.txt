@@ -322,9 +322,11 @@ libs/nns/src/fnd/fnd_heap.c:
     .text       start:0x02030b7c end:0x02031418
 
 libs/nns/src/g3d/g3d_obj.c:
+    complete
     .text       start:0x02031418 end:0x02032130
 
 libs/nns/src/g3d/g3d_glb.c:
+    complete
     .text       start:0x02032130 end:0x02033574
 
 libs/nns/src/g3d/g3d_res.c:
@@ -332,6 +334,7 @@ libs/nns/src/g3d/g3d_res.c:
     .text       start:0x02033574 end:0x0203382c
 
 libs/nns/src/g3d/g3d_anm.c:
+    complete
     .text       start:0x0203382c end:0x02034d5c
 
 libs/nns/src/g3d/g3d_srt.c:

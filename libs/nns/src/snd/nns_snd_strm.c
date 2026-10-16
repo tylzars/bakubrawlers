@@ -142,13 +142,12 @@ void func_02037574(SndStrm *s, int pos) {   // seek all channels
 }
 
 void func_020375e0(SndStrm *s, int idx, u32 off) {   // seek one channel
-    u32 ch;
     s32 v;
     if (idx > s->chCount - 1) return;
-    ch = s->chan[idx];
-    data_02214334[ch].off = off;
-    v = func_02008bec(s->offset + off);
-    func_02008118(1 << ch, v & 0xff, v >> 8);
+    idx = s->chan[idx];
+    data_02214334[idx].off = off;
+    v = func_02008bec(s->offset + data_02214334[idx].off);
+    func_02008118(1 << idx, v & 0xff, v >> 8);
 }
 
 void func_02037634(SndStrm *s, int idx, u32 v) {

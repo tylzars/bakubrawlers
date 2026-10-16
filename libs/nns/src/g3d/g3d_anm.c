@@ -254,7 +254,7 @@ u32 func_02033d44(u8 *base, u32 info, u32 value, u32 idx) {   // read an interpo
                     f0 = *(s16 *)(p + a * 4);
                     s1 = *(s16 *)(p + b * 4 + 2);
                     s0 = *(s16 *)(p + b * 4);
-                    return (((f1 + f1 + f1 + s1) >> 2) << 16) | (u16)((f0 + f0 + f0 + s0) >> 2);
+                    return (u16)((f0 + f0 + f0 + s0) >> 2) | (((f1 + f1 + f1 + s1) >> 2) << 16);
                 } else {
                     c = idx >> 2;
                     goto blend;
@@ -267,11 +267,13 @@ u32 func_02033d44(u8 *base, u32 info, u32 value, u32 idx) {   // read an interpo
     return *(u32 *)(p + idx * 4);
 blend:
     {
-        s32 f1 = *(s16 *)(p + c * 4 + 2);
-        s32 s1 = *(s16 *)(p + c * 4 + 6);
         s32 f0 = *(s16 *)(p + c * 4);
-        s32 s0 = *(s16 *)(p + c * 4 + 4);
-        return (((f1 + s1) >> 1) << 16) | (u16)((f0 + s0) >> 1);
+        s32 f1, s0, s1;
+        p += c * 4;
+        f1 = *(s16 *)(p + 2);
+        s0 = *(s16 *)(p + 4);
+        s1 = *(s16 *)(p + 6);
+        return (u16)((f0 + s0) >> 1) | (((f1 + s1) >> 1) << 16);
     }
 }
 void func_02033e50(u8 *res, u32 idx, u32 frame, u8 *out) {   // texture SRT animation entry at a frame
@@ -357,9 +359,8 @@ void func_02034144(ResTex *tex, u8 *name, u8 *out) {   // texture pattern: textu
     u32 key;
     u32 w, h;
     u32 t;
-    if ((info[0] & 0x1c000000) != 0x14000000) key = tex->texKey;
-    else key = tex->tex4x4Key;
-    key = (u16)key & ~0xe0000000;
+    if ((info[0] & 0x1c000000) != 0x14000000) key = (u16)tex->texKey & ~0xe0000000;
+    else key = (u16)tex->tex4x4Key & ~0xe0000000;
     t = U32(out, 0x10) & 0xc00f0000;
     U32(out, 0x10) = t;
     U32(out, 0x10) = t | (info[0] + key);

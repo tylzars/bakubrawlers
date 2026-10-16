@@ -2987,6 +2987,9 @@ _ZN18UnkStruct_0208ab4013func_0208b284Ev kind:function(arm,size=0xb4) addr:0x020
 _ZN18UnkStruct_0208ab4013func_0208b338Ev kind:function(arm,size=0x16c) addr:0x0208b338
 _ZN18UnkStruct_0208ab4013func_0208b4a4Ev kind:function(arm,size=0x18) addr:0x0208b4a4
 data_0208b4bc kind:data(any) addr:0x0208b4bc
+data_0208b4bd kind:data(any) addr:0x0208b4bd
+data_0208b4be kind:data(any) addr:0x0208b4be
+data_0208b4bf kind:data(any) addr:0x0208b4bf
 data_0208b4e0 kind:data(any) addr:0x0208b4e0
 data_0208b500 kind:data(any) addr:0x0208b500
 data_0208b501 kind:data(any) addr:0x0208b501

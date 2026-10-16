@@ -378,6 +378,10 @@ void BattleConfrontCard::func_ov007_0223f90c(u16 value) {
 // In experiments the original's registers appear only when j*4 itself is used as a value between the player load and
 // `slots = p->mSlots6c` (any store of j*4 there, volatile or not); no consumer is visible in the binary, and every
 // form that creates j*4 earlier (named or compound offsets, helpers, enum copies) compiles like ours.
+// In the compiler's backend the IR is the same for every natural form; colouring takes higher virtual registers first, and
+// here j*4 is numbered after `slots`, so it gets r1. Operands are emitted left to right (`slots + j*4` gives
+// `ldrh [slots, j4]`), so j*4 must be numbered before `slots` yet stay a temporary, as a shift CSE'd from an earlier
+// statement would.
 BOOL BattleConfrontCard::func_ov007_0223f918() {
     u8 j;
     u8 k;

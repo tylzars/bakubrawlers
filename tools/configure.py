@@ -154,7 +154,7 @@ w("ninja_required_version = 1.10")
 w("")
 
 # ---- rules ----
-w(f"rule download_tool\n  command = {PY} tools/download_tool.py $tool $tag --path $path\n  description = DOWNLOAD $tool\n")
+w(f"rule download_tool\n  command = {PY} tools/download_tool.py $tool $tag --path $path --outputs $out\n  description = DOWNLOAD $tool\n")
 w(f"rule extract\n  command = {DSD} rom extract --rom $in --output-path $outdir {bios_flag}\n  description = EXTRACT $in\n")
 w(f"rule delink\n  command = {DSD} delink -c $config && {PY} tools/delink_multidef.py $out\n  description = DELINK\n")
 w(f"rule lcf\n  command = {DSD} lcf -c $config && {PY} tools/lcf_force_active.py $lcf_raw $lcf_final --config-dir {config_dir}\n  description = LCF\n")
@@ -181,8 +181,9 @@ if WINE == "tools/bin/wibo":
     tool_outputs.append(WINE)
 if args.compiler is None:
     # One zip holds every version, including the PATH_COMPILERS ones.
+    # Every file of it an edge uses must be an output here, or a fresh checkout has no rule for it (the assembler).
     extra = [str(MWCC_ROOT / v / "mwccarm.exe") for v in sorted(set(PATH_COMPILERS.values())) if v != MWCC_VERSION]
-    build([CC, LD] + extra, "download_tool", variables={"tool": "mwccarm", "tag": "latest", "path": "tools"})
+    build([CC, LD, ASM] + extra, "download_tool", variables={"tool": "mwccarm", "tag": "latest", "path": "tools"})
 build(OBJDIFF, "download_tool", variables={"tool": "objdiff", "tag": OBJDIFF_TAG, "path": OBJDIFF})
 
 # ---- extract / delink / lcf ----

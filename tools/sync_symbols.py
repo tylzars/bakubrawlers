@@ -52,6 +52,7 @@ def module_of(addr: int, current: str) -> str:
 
 class Symbols:
     def __init__(self, module: str):
+        self.module = module
         self.path = symbols_path(module)
         self.lines = self.path.read_text().splitlines()
         self.by_addr: dict[int, list[int]] = {}
@@ -134,16 +135,28 @@ def tu_text_range(obj: Path, module: str):
     return None
 
 
-def retarget_relocs(interior: int, start: int) -> int:
-    """Points relocations at `interior` to `start` with an addend instead, in every module's relocs.txt."""
-    pattern = re.compile(rf"to:{interior:#010x}(?: add:(0x[0-9a-f]+))?")
+def reloc_targets(field: str, module: str) -> bool:
+    """True if a relocs.txt `module:` field names exactly `module` (main, itcm, dtcm or ovNNN)."""
+    if module.startswith("ov"):
+        return field == f"overlay({int(module[2:])})"
+    return field == module
+
+
+def retarget_relocs(interior: int, start: int, module: str) -> int:
+    """Points relocations at `interior` in `module` to `start` with an addend instead, in every module's relocs.txt.
+
+    Overlays share one address range, so only relocations whose `module:` field names `module` are touched.
+    """
+    pattern = re.compile(rf"to:{interior:#010x}(?: add:(0x[0-9a-f]+))? module:(\S+)")
     count = 0
 
     def fix(m: re.Match) -> str:
         nonlocal count
+        if not reloc_targets(m.group(2), module):
+            return m.group(0)
         count += 1
         add = int(m.group(1), 16) if m.group(1) else 0
-        return f"to:{start:#010x} add:{add + interior - start:#x}"
+        return f"to:{start:#010x} add:{add + interior - start:#x} module:{m.group(2)}"
 
     for path in CFG.rglob("relocs.txt"):
         text = path.read_text()
@@ -296,7 +309,7 @@ def main() -> None:
         for t in tables.values():
             t.save()
             for interior, start in t.retarget:
-                print(f"relocations retargeted for {interior:#010x}: {retarget_relocs(interior, start)}")
+                print(f"relocations retargeted for {interior:#010x}: {retarget_relocs(interior, start, t.module)}")
         print("symbols.txt updated" if any(t.changed for t in tables.values()) else "no changes")
     else:
         print("(dry run; pass --write to apply)")

@@ -65,7 +65,14 @@ lcf = args.lcf_in.read_text()
 # overlay ids under their SDK names, and the IRQ/system stack sizes.
 sdk = [f"    SDK_OVERLAY_OV{n:03d}_ID = {n};" for n in range(lcf.count("_ID = "))]
 sdk += ["    SDK_IRQ_STACKSIZE = 0x1000;", "    SDK_SYS_STACKSIZE = 0;"]
-aliases = []  # defined after the sections, where the base symbols have addresses
+# Aliases of main symbols go at the end of the ARM9 block, where their bases have addresses. mwldarm files a symbol
+# that the script defines outside every block under the last section (OV008), which tells `dsd check symbols` it
+# belongs to overlay 8; inside the block it is filed under ARM9 like its base. Absolute aliases stay outside.
+aliases = []  # (in ARM9 block, line)
+main_syms = {}
+for ln in (args.config_dir / "symbols.txt").read_text().splitlines():
+    if m := re.match(r"(\S+) kind:\S+ addr:(0x[0-9a-fA-F]+)", ln):
+        main_syms.setdefault(m.group(1), int(m.group(2), 16))
 edits = args.config_dir / "lcf_edits.txt"
 if edits.exists():
     for line in edits.read_text().splitlines():
@@ -80,7 +87,7 @@ if edits.exists():
             lcf = lcf.replace(old, f"        OBJECT({func}, {unit})\n", 1)
         elif words[0] == "alias":
             name, base, offset = words[1:]
-            aliases.append(f"    {name} = {base} + {offset};")
+            aliases.append((base in main_syms, f"    {name} = {base} + {offset};"))
         elif words[0] == "inner":
             base, size = words[1], int(words[2], 0)
             addrs = {}
@@ -91,11 +98,16 @@ if edits.exists():
             start = addrs[base]
             for name, addr in sorted(addrs.items(), key=lambda kv: kv[1]):
                 if start < addr < start + size:
-                    aliases.append(f"    {name} = {base} + {addr - start:#x};")
+                    aliases.append((True, f"        {name} = {base} + {addr - start:#x};"))
         else:
             raise SystemExit(f"lcf_edits: unknown edit {words[0]!r}")
 lcf = lcf.replace("SECTIONS {\n", "SECTIONS {\n" + "\n".join(sdk) + "\n", 1)
-if aliases:
+inside = [line.strip() for in_main, line in aliases if in_main]
+outside = [line for in_main, line in aliases if not in_main]
+if inside:
+    end = lcf.index("    } > ARM9\n")
+    lcf = lcf[:end] + "".join(f"        {line}\n" for line in inside) + lcf[end:]
+if outside:
     end = lcf.rstrip().rfind("}")
-    lcf = lcf[:end] + "\n".join(aliases) + "\n" + lcf[end:]
+    lcf = lcf[:end] + "\n".join(outside) + "\n" + lcf[end:]
 args.lcf_out.write_text(f"FORCE_ACTIVE {{ {', '.join(entries)} }}\n\n{lcf}")

@@ -13,3 +13,5 @@ func_0201f4e4
 func_0201fd60
 func_0201f768         # rt_soft_float.c: signed 64-bit remainder; nothing in the program calls it
 func_0201e7dc         # rt_soft_float.c: unreferenced, kept by the original link
+data_020be0a4         # 28 bss bytes between snd_main.c and snd_command.c: a gap unit nothing references, kept so its
+                      # symbol (the end of sndMutex for dsd) is in the linked binary

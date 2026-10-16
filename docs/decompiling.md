@@ -35,8 +35,13 @@ Lessons from getting functions to match exactly. Compiler and flags: see `compil
      `.data` in the original's `.rodata`: the source has the const-ness wrong), are laid out in a different
      order, or hold different bytes. It also adds the boundary symbols dsd needs.
    - `python3 tools/mark_complete.py <unit>`, `ninja`: the ROM must still match.
-   - `python3 tools/sync_linked_symbols.py --write`, then `ninja check`: inside complete units, symbols.txt takes
-     the linked binary's names (`@N` literals, statics marked `local`) and binding.
+   - `python3 tools/sync_linked_symbols.py --write`, then `ninja` and `ninja check`: inside complete units,
+     symbols.txt takes the linked binary's names (`@N` literals, statics marked `local`) and binding (`weak` inline
+     functions), and names inside a linked object fold into it. A name the check already accepts is kept (`@N`
+     matches any `@M`), so renumbering after a source edit needs no resync. `ninja check` then reports three
+     mismatches that config can't remove: `@1200` (main's destructor node: dsd can't delink GameMain.cpp's
+     reference to it if it is local, and main lives in Game.cpp's translation unit) and `data_0201ee78` /
+     `data_0201feb0` (the reciprocal tables inside `_fdiv`/`_ddiv`; asm labels emit no symbol).
 
 A function that doesn't match yet is kept in source with a `// non-matching` comment describing the difference.
 

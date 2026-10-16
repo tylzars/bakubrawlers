@@ -36,4 +36,4 @@ Without an ARM7 BIOS dump, the secure-area CRC in the ROM header is restored by 
 | `ninja` | Build the ROM and verify its SHA-1 |
 | `ninja objdiff` | Write `objdiff.json` for the objdiff GUI |
 | `ninja report` | Write `build/usa/report.json` (matching progress) |
-| `ninja check` | SHA-1 plus `dsd check symbols` |
+| `ninja check` | SHA-1 plus `dsd check symbols` (three known mismatches, see docs/decompiling.md) |

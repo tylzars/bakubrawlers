@@ -79,33 +79,25 @@ u16 TextManager::func_0202c1a8(u32 index) {
     return 0;
 }
 
-// non-matching: 47 words, entry block only. The original copies width, height, unk12, unk13 and unk10 to the stack
-// before it stores maxX = 0 and tests unk14; ours copies unk12, unk13 and unk10 in the later group. The original
-// sets unk17 = 0 by reloading maxX's slot (`ldrne r0, [sp, #92]`), so maxX = 0 comes first there, but every order
-// tried that puts it before the unk14 test shares the zero in a register and is 3 words shorter. `volatile` on x and
-// y is a placeholder: it is the only form found that keeps the `x = startX` store ahead of the `y` load.
 void TextManager::Print(const void *text, u16 length, void *buffer, u16 width, u16 height, s16 *outWidth,
-                        s16 *outHeight, u16 *outPixelWidth, u32 unk9, u32 unk10, u32 unk11, u16 unk12, u32 unk13,
+                        s16 *outHeight, u16 *outPixelWidth, u32 unk9, u32 unk10, u32 unk11, u16 unk12, u16 unk13,
                         u32 unk14, u32 unk15, u32 unk16, u32 unk17) {
     u32 color;
     u16 remaining;
     s32 fontHeight;
     u16 charCount;
     u8 savedFontMode;
-    s32 startY;
-    s32 maxX;
+    s16 startY;
+    u16 maxX;
     u32 drawFlag;
     u16 pixelHeight;
     s16 startX;
-    volatile s16 x;
+    s16 x;
     const u16 *line = (const u16 *) text;
     u16 pixelWidth;
-    volatile s16 y;
+    s16 y;
     pixelWidth  = width * 8;
     pixelHeight = height * 8;
-    if (unk14 != 0) {
-        unk17 = 0;
-    }
     color = unk10;
     maxX = 0;
     mUnk_59 = unk15;
@@ -116,6 +108,9 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u16 width, u
     drawFlag = 0;
     x = startX;
     y = startY;
+    if (unk14 != 0) {
+        unk17 = 0;
+    }
     if (mUnk_5b != 0) {
         fontHeight = 12;
     } else {
@@ -135,7 +130,7 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u16 width, u
         do {
             if (remaining == 0) {
                 if (maxX < tx) {
-                    maxX = (u16) tx;
+                    maxX = tx;
                 }
                 break;
             }
@@ -147,7 +142,7 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u16 width, u
             case 0xff84:
             case 0xff85:
                 if (maxX < tx) {
-                    maxX = (u16) tx;
+                    maxX = tx;
                 }
                 more = 0;
                 break;
@@ -158,7 +153,7 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u16 width, u
                     }
                 }
                 if (maxX < tx) {
-                    maxX = (u16) tx;
+                    maxX = tx;
                 }
                 more = 0;
                 break;
@@ -229,7 +224,7 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u16 width, u
                     units--;
                     remaining += 2;
                     if (maxX < tx) {
-                        maxX = (u16) tx;
+                        maxX = tx;
                     }
                 }
                 more = 0;
@@ -262,14 +257,14 @@ void TextManager::Print(const void *text, u16 length, void *buffer, u16 width, u
                 case 0xff81: {
                     u16 index = *line++;
                     units--;
-                    PrintNumber((&mUnk_10)[index], 0, 0, buffer, width, height, (s16 *) &x, (s16 *) &y, unk9, color, unk11, unk12, unk15, 0,
+                    PrintNumber((&mUnk_10)[index], 0, 0, buffer, width, height, &x, &y, unk9, color, unk11, unk12, unk15, 0,
                                 unk17);
                     break;
                 }
                 case 0xff82: {
                     u16 index = *line++;
                     units--;
-                    Print(mStrings[index].mText, mStrings[index].mLength, buffer, width, height, (s16 *) &x, (s16 *) &y, NULL, unk9, color,
+                    Print(mStrings[index].mText, mStrings[index].mLength, buffer, width, height, &x, &y, NULL, unk9, color,
                           unk11, unk12, 0, 0, unk15, 1, unk17);
                     break;
                 }
@@ -585,18 +580,15 @@ void TextManager::func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color
     } while (row - y < mFont->mHeight);
 }
 
-// non-matching: 27 words, entry block only: the original puts the screen offset (unk2 * 0x408) in r4 and unk6 in r0,
-// unitY/unitX in r8/r7, and copies width/height through r2; here they land in r0/r4/r7/r5, which reorders the block.
-void TextManager::Init(void *glyphs, u32 unk2, u32 unk3, u32 width, u32 height, u32 unk6) {
+void TextManager::Init(void *glyphs, u32 unk2, u32 unk3, u16 width, u16 height, s32 flags) {
     TextSprite *sprite = (TextSprite *) glyphs;
-    s32 flags          = unk6;
     u16 unitY          = (flags >> 4) & 0xf;
     u16 unitX          = flags & 0xf;
     u16 tableIndex     = (unitX - 1) + ((unitY - 1) << 2);
-    u16 tile           = 0;
-    u16 stepX          = unitX << 1;
-    u16 stepY          = unitY << 1;
-    u16 y              = 0;
+    unitY <<= 1;
+    unitX <<= 1;
+    u16 tile = 0;
+    u16 y    = 0;
     do {
         u16 x = 0;
         do {
@@ -605,13 +597,13 @@ void TextManager::Init(void *glyphs, u32 unk2, u32 unk3, u32 width, u32 height, 
             sprite->mX    = x << 3;
             sprite->mY    = y << 3;
             if (unk3 == 0) {
-                tile += (stepY * stepX) << 5;
+                tile += (unitY * unitX) << 5;
             } else {
-                tile += (stepY * stepX) << 6;
+                tile += (unitY * unitX) << 6;
             }
             sprite++;
-            x += stepY;
+            x += unitY;
         } while (x < width);
-        y += stepX;
+        y += unitX;
     } while (y < height);
 }

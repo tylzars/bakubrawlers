@@ -126,10 +126,10 @@ public:
 
     void func_0202c02c(); // sets up the font pointers and measures the bitmap font
     u16 func_0202c1a8(u32 index); // character count of a recorded line
-    void Init(void *glyphs, u32 unk2, u32 unk3, u32 width, u32 height, u32 unk6);
+    void Init(void *glyphs, u32 unk2, u32 unk3, u16 width, u16 height, s32 flags);
     void SetColor(u32 unk1, u32 unk2, u32 unk3);
     void Print(const void *text, u16 length, void *buffer, u16 width, u16 height, s16 *outWidth, s16 *outHeight,
-               u16 *outPixelWidth, u32 unk9, u32 unk10, u32 unk11, u16 unk12, u32 unk13, u32 unk14, u32 unk15,
+               u16 *outPixelWidth, u32 unk9, u32 unk10, u32 unk11, u16 unk12, u16 unk13, u32 unk14, u32 unk15,
                u32 unk16, u32 unk17);
     void PrintNumber(u32 value, u8 minDigits, u32 unk3, void *buffer, u16 width, u16 height, s16 *outWidth,
                      s16 *outHeight, u32 unk9, u32 unk10, u32 unk11, u16 unk12, u32 unk13, u32 unk14,

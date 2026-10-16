@@ -75,6 +75,14 @@ Diff the traces of two variants to find the first stage where they part. Facts r
   one goes by lowest spill cost / conflicts). Registers are then handed out popping the stack, so the last pushed
   picks first and takes the lowest free register. A rotation of callee-saved registers between a few values means
   they left the graph in a different scan: count their conflicts at the scan where they're visited.
+- The schedulers (one before colouring, one after) pick an instruction whose latest start time has arrived first,
+  then the one that makes the most successors ready, then the taller one, then list order.
+- A u16/s16 local or stack parameter is spilled to a full 32-bit slot. Its spill stores and reloads use the
+  worst-case alias set, so they're ordered against each other, and the clean-up after allocation won't reuse a
+  register value across them. So a parameter's or local's width can move both scheduling and copies:
+  TextManager::Init matched once `height` was u16 (one store-order edge lengthened the critical path by a cycle),
+  Print once `maxX` was u16 (it keeps a real `ldrne r0,[sp,#92]` reload) and `startY` s16.
+- `--sched` logs only the first scheduling pass.
 - Library files built with 2.0/sp1p5 can be traced with `--sp2p2-stand-in` when their probe shows the same
   difference under 2.0/sp2p2 (true for e_pow and cri_wave_ch).
 - The IR keeps an assignment to a local that lives across blocks as its own statement only when the same local is
@@ -92,7 +100,7 @@ that matches should replace it.
   TournamentSubScene's `sMessageIds[1][24]` shape (keeps a byte table in the shared .rodata), GameMain.cpp (main's slot).
 - Index/register stand-ins: BattlePlayerList::Update's two volatile reads in case 4's second record (keep the player
   reload and the slot read apart so they number as the original's registers need), BattleSub48's enum-typed entry index, BattleUnk022637ac::func_ov007_02265af8's two
-  volatile index reads, BattleOrderSelect's `volatile ry`, TextManager::Print's `y`, BattleCardModel's narrow stack
+  volatile index reads, BattleOrderSelect's `volatile ry`, BattleCardModel's narrow stack
   read, the casts through `data_020a3210.mOrder` in UnkStruct_02078e14.cpp.
 - Expression stand-ins: nns_snd_wavstrm func_020394c8's `- -v`, msl_strtod's `mp = (unsigned char *)&mant`,
   FileLoader's zero `base`, BattleCardCamera's -0x4000 constant, GameData's `mUnk_460 + 0xa0` cast.
@@ -620,7 +628,8 @@ Other findings from linking:
   order (`-proc generic` shows it); the arm946e scheduler then moves a copy early only when its loaded value has a
   consumer in the same scheduled region, and leaves the rest late. A local with two definitions (`u32 spacing = unk12;`
   plus a second assignment) is not propagated, shares the parameter's home slot and pulls its copy early
-  (TextManager::Print, whose original still has two copies early that no tried form reproduces).
+  (TextManager::Print; its remaining early copies came from parameter widths: `u16 unk13` puts that parameter's
+  copy at the top of the function).
 - **A dead store can be load-bearing.** In BattleCpu::func_ov007_02231e2c, `spin = 30;` before a switch whose cases
   all overwrite `spin` keeps 30 in spin's register for later `MATH_Rand32(..., 30)` calls; `spin = 0` breaks it.
 - **A `mov` where a spill reload was expected.** When a spilled value's register is still intact at its next use in

@@ -326,8 +326,19 @@ void func_0203990c(WavStrm *s) {   // switch a stream over to its next file
     s->b5 = 0;
 }
 
-extern s16 data_02090a70[];   // ADPCM step table
-extern s8 data_02090a60[];    // ADPCM index adjustment table
+// ADPCM index adjustment per 4-bit code (sign bit ignored).
+static const s8 data_02090a60[16] = {-1, -1, -1, -1, 2, 4, 6, 8, -1, -1, -1, -1, 2, 4, 6, 8};
+// ADPCM step sizes, indexed by the running index (0..88).
+static const s16 data_02090a70[89] = {
+    7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 19, 21,
+    23, 25, 28, 31, 34, 37, 41, 45, 50, 55, 60, 66,
+    73, 80, 88, 97, 107, 118, 130, 143, 157, 173, 190, 209,
+    230, 253, 279, 307, 337, 371, 408, 449, 494, 544, 598, 658,
+    724, 796, 876, 963, 1060, 1166, 1282, 1411, 1552, 1707, 1878, 2066,
+    2272, 2499, 2749, 3024, 3327, 3660, 4026, 4428, 4871, 5358, 5894, 6484,
+    7132, 7845, 8630, 9493, 10442, 11487, 12635, 13899, 15289, 16818, 18500, 20350,
+    22385, 24623, 27086, 29794, 32767,
+};
 extern void MI_CpuFill8(void *dst, u32 data, u32 size);
 extern void DC_FlushRange(void *addr, u32 size);   // DC_FlushRange
 
@@ -354,33 +365,51 @@ extern void DC_FlushRange(void *addr, u32 size);   // DC_FlushRange
     *(dst) = (s16)pred_; \
 }
 
+static inline void AdpcmStep(SndAdpcmState *st, u32 x, s16 *dst) {
+    u32 n;
+    s32 diff;
+    s32 idx;
+    s32 pred;
+    s32 step;
+    pred = st->pred;
+    idx = *(u8 *)&st->index;
+    step = data_02090a70[idx];
+    n = x & 0xf;
+    diff = step >> 3;
+    if (n & 4) diff += step;
+    if (n & 2) diff += step >> 1;
+    if (n & 1) diff += step >> 2;
+    if (n & 8) { pred -= diff; if (pred < -0x8000) pred = -0x8000; }
+    else { pred += diff; if (pred > 0x7fff) pred = 0x7fff; }
+    idx += data_02090a60[n];
+    if (idx < 0) idx = 0; else if (idx > 0x58) idx = 0x58;
+    st->pred = (s16)pred;
+    *(u8 *)&st->index = idx;
+    *dst = (s16)pred;
+}
+
 static inline void DecodeAdpcm(u32 i, u32 n, s16 *dst, u8 *src, SndAdpcmState *st) {
     u32 endSample = i + n;
     if (i & 1) {
-        ADPCM_STEP(st, *src >> 4, dst);
-        dst++;
+        ADPCM_STEP(st, *src >> 4, dst++);
         i++;
         src++;
     }
     while (i < (endSample & ~1)) {
-        ADPCM_STEP(st, *src, dst);
-        dst++;
-        ADPCM_STEP(st, *src >> 4, dst);
-        dst++;
+        AdpcmStep(st, *src, dst++);
+        ADPCM_STEP(st, *src >> 4, dst++);
         i += 2;
         src++;
     }
     if (i < endSample) {
-        ADPCM_STEP(st, *src, dst);
+        AdpcmStep(st, *src, dst);
     }
 }
-// non-matching: 45 words, all in the pair loop of the ADPCM decode. Colouring pops the four step instances' locals
-// from one simplify scan, highest number first, so the in-loop high-nibble step (numbered last) takes the free ip/lr
-// and a new sl first; the original colours the in-loop low-nibble step first (idx/pred/step = ip/lr/sl) and both
-// high-nibble steps after it (sl/ip/lr). Within a step the order idx, pred, step is right (ADPCM_STEP declares
-// step_, pred_, idx_ in that order).
-// The high-nibble step's tail also differs: the original narrows pred into r3 and schedules `add r1, #2` before the
-// dst store (in ours the first scheduling pass runs that block in register-pressure mode and takes the store first).
+// The low-nibble steps go through AdpcmStep and the high-nibble steps through ADPCM_STEP. The two forms number
+// their locals differently (the macro's block locals in source order, the inline function's after them and in
+// reverse declaration order), and that numbering is what gives the pair loop's low-nibble step the original's
+// registers. The mixed form is a structural stand-in for that order; a single helper of either kind (all macro or
+// all inline) does not match. ADPCM_STEP evaluates its dst argument exactly once, so `dst++` there is safe.
 void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
     WavStrm *s;
     int loopNow;

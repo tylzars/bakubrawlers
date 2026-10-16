@@ -401,7 +401,9 @@ libs/nns/src/snd/nns_snd_arc.c:
     .text       start:0x02037af8 end:0x020381b0
 
 libs/nns/src/snd/nns_snd_wavstrm.c:
+    complete
     .text       start:0x0203913c end:0x0203a544
+    .rodata     start:0x02090a60 end:0x02090b24
 
 // NitroSDK (2.0/sp1p5, C); code only so far.
 libs/nds/src/fx/fx_mtx44_concat.c:

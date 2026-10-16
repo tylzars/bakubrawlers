@@ -3010,6 +3010,8 @@ func_02092890 kind:label(arm) addr:0x02092890
 func_0209d02c kind:function(arm,size=0xe4) addr:0x0209d02c
 func_0209d15c kind:function(arm,size=0x138) addr:0x0209d15c
 func_0209d388 kind:function(arm,size=0x108) addr:0x0209d388
+data_02090a60 kind:data(any) addr:0x02090a60 local
+data_02090b24 kind:data(any) addr:0x02090b24
 data_02094990 kind:data(any) addr:0x02094990
 data_02096a90 kind:data(any) addr:0x02096a90
 data_0209d568 kind:data(any) addr:0x0209d568

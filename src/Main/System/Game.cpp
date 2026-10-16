@@ -96,7 +96,9 @@ void func_020254bc();
 void func_020255f8(void (*callback)());
 void SetFrameInterval(u8 frames);
 
-// Keys that, held together for three frames, reset the system.
+// Keys that, all down (IsDown) for three passes of Run, reset the system (OS_ResetSystem(1)): when
+// WirelessManager::mUnk_1228 is non-zero, after Run waits for it to reach 0; when it is 0, only if no save is running
+// (UnkStruct_020c17a8::mBusy == 0), otherwise the count restarts.
 #define RESET_KEYS 0x30c
 
 
@@ -140,7 +142,7 @@ void GameSystem::Init() {
     GX_HBlankIntr(TRUE);
     u16 prev = *(vu16 *) 0x4000208;
     *(vu16 *) 0x4000208 = 1;
-    while (func_0200d354(this, &mLed1) == 1) {
+    while (func_0200d354(this, &mUnk_04) == 1) {
     }
     heap = func_0200af3c(0, 0);
     func_0200af3c(func_02021c60(heap), heap);
@@ -205,7 +207,7 @@ void GameSystem::Run() {
             mFrameInterval = mMaxInterval;
         }
         SetFrameInterval(mFrameInterval);
-        mSubFrame = 0;
+        mExtraFrames = 0;
         if (mFrameInterval > 1) {
             CameraManager::Get().func_0202655c();
             CameraManager::Get().func_02026848();
@@ -220,8 +222,8 @@ void GameSystem::Run() {
                 InputManager::Get();
                 SpriteManager::Get().Screen(0).func_02027750();
                 SpriteManager::Get().Screen(1).func_02027750();
-                mSubFrame++;
-            } while (mSubFrame < mFrameInterval - 1);
+                mExtraFrames++;
+            } while (mExtraFrames < mFrameInterval - 1);
         }
         InputManager::Get().Update(mInputEnabled);
         TouchManager::Get().Update(mInputEnabled);
@@ -317,9 +319,9 @@ void GameSystem::func_02021700() {
             }
         }
     } else if (mInputEnabled == 0) {
-        while (func_0200d1e0(0, mLed0) != 0) {
+        while (func_0200d1e0(0, mUnk_00) != 0) {
         }
-        while (func_0200d1e0(1, mLed1) != 0) {
+        while (func_0200d1e0(1, mUnk_04) != 0) {
         }
         MicManager::Get().func_0202d94c();
         mInputEnabled = 1;

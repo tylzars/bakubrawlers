@@ -71,7 +71,7 @@ static inline void ReadChunk() {
     func_0200ac20(&data_020d5440, data_020d53e4.mTemp, data_020d53e4.mChunk);
 }
 
-BOOL OpenLocalizedFile(const char *path);
+BOOL OpenFileWithLanguageSuffix(const char *path);
 
 void func_020234c8() {
     sprintf(data_020d5488, "/");
@@ -89,7 +89,7 @@ void *func_02023504(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
         mode = (offset | size) != 0 ? 1 : 2;
     }
     if (mode == 1) {
-        OpenLocalizedFile(path);
+        OpenFileWithLanguageSuffix(path);
         if (size == 0) {
             size = data_020d5440.mEnd - data_020d5440.mStart - offset;
         }
@@ -113,7 +113,7 @@ void *func_02023504(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
         func_0200aadc(&data_020d5440);
         buffer = p;
     } else {
-        OpenLocalizedFile(path);
+        OpenFileWithLanguageSuffix(path);
         if (size == 0) {
             size = data_020d5440.mEnd - data_020d5440.mStart - offset;
         }
@@ -167,7 +167,7 @@ void *func_02023708(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
     }
     data_020d53e4.mRequestedSize = size;
     if (compressed == 0) {
-        OpenLocalizedFile(path);
+        OpenFileWithLanguageSuffix(path);
         if (size == 0) {
             size = data_020d5440.mEnd - data_020d5440.mStart - offset;
         }
@@ -183,7 +183,7 @@ void *func_02023708(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
         func_0200ac40(&data_020d5440, offset, 0);
         func_0200ac20(&data_020d5440, buffer, size);
     } else {
-        OpenLocalizedFile(path);
+        OpenFileWithLanguageSuffix(path);
         if (size == 0) {
             size = data_020d5440.mEnd - data_020d5440.mStart - offset;
         }
@@ -270,12 +270,14 @@ void func_02023a54() {
     data_020d53e4.mActive = 0;
 }
 
-BOOL OpenLocalizedFile(const char *path) {
+// Opens data_020d5440 on "<path>_<GetLanguageSuffix()>"; when the suffix is NULL or that open fails, on <path>.
+// TRUE when one opened (the callers ignore it).
+BOOL OpenFileWithLanguageSuffix(const char *path) {
     char buf[0x80];
     BOOL ok = FALSE;
-    const char *prefix = GameSystem::Get().GetLanguageSuffix();
-    if (prefix) {
-        sprintf(buf, "%s_%s", path, prefix);
+    const char *suffix = GameSystem::Get().GetLanguageSuffix();
+    if (suffix) {
+        sprintf(buf, "%s_%s", path, suffix);
         ok = func_0200aa94(&data_020d5440, buf);
     }
     if (!ok) {

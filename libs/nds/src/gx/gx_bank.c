@@ -405,31 +405,33 @@ void GX_ResetBankForTex(void) {
 void GX_ResetBankForTexPltt(void) {
     func_02002c38(&data_020bdc08[5]);
 }
+// These two reset bank fields 6 and 3, which no function in this file assigns; the resets of the sub-screen BG
+// and OBJ fields (9 and 10) are func_02002dec and func_02002e00 below, so the two names may belong to those.
 void GX_ResetBankForSubBG(void) {
-    func_02002c38(&data_020bdc08[9]);
+    func_02002c38(&data_020bdc08[6]);
 }
 void GX_ResetBankForSubOBJ(void) {
-    func_02002c38(&data_020bdc08[10]);
+    func_02002c38(&data_020bdc08[3]);
 }
-void GX_ResetBankForSubBGExtPltt(void) {
-    reg_GXS_DISPCNT &= ~0x40000000;
-    func_02002c38(&data_020bdc08[11]);
-}
-void GX_ResetBankForSubOBJExtPltt(void) {
-    reg_GXS_DISPCNT &= ~0x80000000;
-    func_02002c38(&data_020bdc08[12]);
-}
-
-
-
 void func_02002dd8(void) {
     func_02002c38(&data_020bdc08[0]);
 }
-
 void func_02002dec(void) {
     func_02002c38(&data_020bdc08[9]);
 }
 
+
+
 void func_02002e00(void) {
     func_02002c38(&data_020bdc08[10]);
+}
+
+void GX_ResetBankForSubBGExtPltt(void) {
+    reg_GXS_DISPCNT &= ~0x40000000;
+    func_02002c38(&data_020bdc08[11]);
+}
+
+void GX_ResetBankForSubOBJExtPltt(void) {
+    reg_GXS_DISPCNT &= ~0x80000000;
+    func_02002c38(&data_020bdc08[12]);
 }

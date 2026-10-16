@@ -40,6 +40,12 @@ Lessons from getting functions to match exactly. Compiler and flags: see `compil
 
 A function that doesn't match yet is kept in source with a `// non-matching` comment describing the difference.
 
+Matching masks relocated words, so a function can score 100% while referring to the wrong object or the wrong
+field of one (`&banks[9]` where the original has `&banks[6]`). `tools/check_calls.py` covers calls only; the link
+catches the rest, because the ROM no longer matches. When a fully matched unit breaks the ROM on linking, diff the
+linked `build/usa/build/arm9.bin` against `extract/usa/arm9/arm9.bin` and read the differing pool words
+(gx_bank's two sub-screen resets were found this way).
+
 ### Watching the compiler's backend
 
 When the source shape looks right but registers or instruction order still differ, `tools/mwcc_trace.py` shows what

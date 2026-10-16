@@ -21,6 +21,8 @@ own dump of the game; see [INSTALL.md](INSTALL.md).
 | Overall accuracy (fuzzy) | 99.97% |
 | Matched functions | 4,485 / 4,505 |
 
+All code is linked from this repository's source and the ROM matches byte for byte. The functions objdiff still scores below 100% have identical code; their scores come from objdiff quirks documented in [docs/decompiling.md](docs/decompiling.md): calls to the next function, stripped weak copies, data inside asm bodies and literal-pool relocation names.
+
 _Last updated 2026-10-16. Full history: [`progress/history.csv`](progress/history.csv)._
 <!-- progress:end -->
 

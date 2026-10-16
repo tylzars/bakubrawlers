@@ -86,6 +86,17 @@ Diff the traces of two variants to find the first stage where they part. Facts r
   one goes by lowest spill cost / conflicts). Registers are then handed out popping the stack, so the last pushed
   picks first and takes the lowest free register. A rotation of callee-saved registers between a few values means
   they left the graph in a different scan: count their conflicts at the scan where they're visited.
+- So between two values pushed in the same scan, the one with the lower virtual-register number is coloured later.
+  Named locals are numbered below every temporary. When a short-lived temporary has to share a callee-saved
+  register with a value that lives across calls (the original reuses it once the long-lived value is dead), the
+  long-lived value must be coloured first, so it needs the higher number: keep it out of a named local. Express it
+  through an expression whose result is a temporary and whose arithmetic folds into its one later use. In the
+  BattleSlot constructor, `BattleData *d = mData;` (a named local, numbered below the `unk4` byte) let `d` be
+  coloured after the byte, so the byte took ip; `BattleEntry *entries = mData->mEntries;` leaves the pointer
+  living across the calls as a temporary numbered above the byte (the `+12` folds into its use after the `new`),
+  so it is coloured first, takes r5, and the byte then shares r5 as in the original. Routes that try to make the
+  short-lived value a named local instead fail when the backend's copy propagation removes the local in a
+  straight-line block.
 - The schedulers (one before colouring, one after) pick an instruction whose latest start time has arrived first,
   then the one that makes the most successors ready, then the taller one, then list order.
 - A u16/s16 local or stack parameter is spilled to a full 32-bit slot. Its spill stores and reloads use the

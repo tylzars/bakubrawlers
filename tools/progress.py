@@ -131,17 +131,28 @@ def render_svg(rows: list[dict]) -> str:
         bx = (x(times[i - 1]) + x(times[i])) / 2
         out.append(f'<line x1="{bx:.1f}" x2="{bx:.1f}" y1="{T}" y2="{T + ph}" class="grid" stroke-width="1" '
                    f'stroke-dasharray="3 3"/>')
-    # Date labels (local time) at the start of each work session, skipping any that would overlap the previous one.
-    last = None
+    # Date labels (local time) at the start of each work session that begins a new day. The first and the latest
+    # day always show; a day in between is skipped if its label would overlap one already placed.
+    starts, seen = [], set()
     for i in [0, *breaks]:
         day = dates[i].astimezone().date()
+        if day not in seen:
+            seen.add(day)
+            starts.append((i, day))
+    # Only the first label carries the year; the rest are month-day, which keeps them narrow enough to fit.
+    spans = []
+    for k, (i, day) in enumerate(starts):
+        text, w = (f"{day:%Y-%m-%d}", 72) if k == 0 else (f"{day:%m-%d}", 36)
         lx = x(times[i])
-        anchor = "start" if lx < L + 36 else "end" if lx > L + pw - 36 else "middle"
-        left = lx if anchor == "start" else lx - 72 if anchor == "end" else lx - 36
-        if last is not None and left < last + 8:
-            continue
-        last = left + 72
-        out.append(f'<text class="muted" x="{lx:.1f}" y="{H - 12}" text-anchor="{anchor}">{day:%Y-%m-%d}</text>')
+        anchor = "start" if lx < L + w / 2 else "end" if lx > L + pw - w / 2 else "middle"
+        left = lx if anchor == "start" else lx - w if anchor == "end" else lx - w / 2
+        spans.append((left, left + w, lx, anchor, text, k in (0, len(starts) - 1)))
+    placed = [sp for sp in spans if sp[5]]
+    for sp in spans:
+        if not sp[5] and all(sp[1] + 8 <= q[0] or sp[0] >= q[1] + 8 for q in placed):
+            placed.append(sp)
+    for _, _, lx, anchor, text, _ in sorted(placed):
+        out.append(f'<text class="muted" x="{lx:.1f}" y="{H - 12}" text-anchor="{anchor}">{text}</text>')
 
     # Lines first, then end dots with surface rings, then direct labels (nudged apart).
     ends = []
@@ -159,6 +170,10 @@ def render_svg(rows: list[dict]) -> str:
     ends[0][0] = min(ends[0][0], T + ph)
     for j in range(1, len(ends)):
         ends[j][0] = min(ends[j][0], ends[j - 1][0] - 16)
+    # If the stack ran above the plot (all series near the top), move it down so the top label is not clipped.
+    if ends[-1][0] < T:
+        for e in ends:
+            e[0] += T - ends[-1][0]
     for ly, i, label, v, _ in ends:
         out.append(f'<line x1="{L + pw + 10}" x2="{L + pw + 22}" y1="{ly:.1f}" y2="{ly:.1f}" class="ln{i}" stroke-width="2"/>')
         out.append(f'<text class="lbl" x="{L + pw + 28}" y="{ly + 4:.1f}">{label} {v:.2f}%</text>')
@@ -180,6 +195,10 @@ def readme_section(rows: list[dict]) -> str:
         f"| Overall accuracy (fuzzy) | {r['fuzzy_match_percent']:.2f}% |",
         f"| Matched functions | {fn} |",
         "",
+        *([("All code is linked from this repository's source and the ROM matches byte for byte. The functions "
+            "objdiff still scores below 100% have identical code; their scores come from objdiff quirks documented "
+            "in [docs/decompiling.md](docs/decompiling.md): calls to the next function, stripped weak copies, data "
+            "inside asm bodies and literal-pool relocation names."), ""] if r["complete_code"] == r["total_code"] else []),
         f"_Last updated {r['date'][:10]}. Full history: [`progress/history.csv`](progress/history.csv)._",
         END,
     ])

@@ -40,6 +40,27 @@ Lessons from getting functions to match exactly. Compiler and flags: see `compil
 
 A function that doesn't match yet is kept in source with a `// non-matching` comment describing the difference.
 
+### Watching the compiler's backend
+
+When the source shape looks right but registers or instruction order still differ, `tools/mwcc_trace.py` shows what
+the 2.0/sp2p2 backend does with one function. It runs the stock compiler under gdb (nothing is patched) and prints
+the function's instruction lists at chosen points: after selection, at each coalescing loop, before and after
+register colouring, and the final list. `=` marks a definition, `vN` a virtual register, `rN` a physical one,
+`[copy]` a register copy, and `--merges` logs each coalescer merge (`keep vA drop vB`).
+
+    tools/mwcc_trace.py my_variant.cpp func_ov007_0226e884 --flags-from src/07_Battle/Battle/BattleShoot.cpp \
+        --at coalesce --at color --at after-color --merges > trace.txt
+
+Diff the traces of two variants to find the first stage where they part. Facts read from it so far:
+- The coalescer is greedy: blocks and instructions in order, each copy whose two sides don't interfere is folded
+  into the lower-numbered register and deleted. Variables get their numbers before temporaries, in declaration
+  order.
+- When a variable is spilled, a use that directly follows its definition reuses the defining register
+  (`mov r5,#0; str r5,[sp,#n]`). A use with any instruction in between reloads it from the stack, and the later
+  local clean-up turns that store-then-load into a register copy (`mov r0,#0; str r0,[sp,#n]; mov r5,r0`).
+- Loop invariants hoisted by the backend go into a block of their own just before the loop, after the code of
+  the block that precedes it.
+
 ## Placeholders
 
 Forms that reproduce the original's bytes but are probably not its source. Each is marked in place; a real form

@@ -98,7 +98,8 @@ that matches should replace it.
   in the data size sort; in BattlePlayer it puts the TextManager, InputManager, WirelessManager destructor nodes in
   the original order), BattleUnk022637ac's thirteen named `{0, 0x4800, 0}` statics (the order of identical initialisers),
   TournamentSubScene's `sMessageIds[1][24]` shape (keeps a byte table in the shared .rodata), GameMain.cpp (main's slot).
-- Index/register stand-ins: BattlePlayerList::Update's two volatile reads in case 4's second record (keep the player
+- Index/register stand-ins: cri_adx_dec's unread zero initialisers in func_0203f714 and func_0203fcd8 (register and
+  stack-slot order), BattlePlayerList::Update's two volatile reads in case 4's second record (keep the player
   reload and the slot read apart so they number as the original's registers need), BattleSub48's enum-typed entry index, BattleUnk022637ac::func_ov007_02265af8's two
   volatile index reads, BattleOrderSelect's `volatile ry`, BattleCardModel's narrow stack
   read, the casts through `data_020a3210.mOrder` in UnkStruct_02078e14.cpp.

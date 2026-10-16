@@ -320,6 +320,10 @@ void func_02048808(Ch *c, int m)
 // func_0204a05c results get r4 (plus the vtable temps that follow from it); declaration order, `long` types and
 // splitting r6 into per-branch locals do not move it. Computing r4 = r6 * 2 before the func_020515dc call gives
 // the original's schedule there.
+// In the compiler's backend the get24 result W1 is a single-assignment local copied from the call result, and between the
+// first two CSE passes every use of such a local is replaced by the call-result temporary, which is numbered after
+// all locals, so W1 pops first in colouring and takes r4. The original's registers come out exactly when W1 stays
+// a local (a second assignment to it) and r4 is declared before r5; no natural second assignment has been found.
 void func_02048940(Ch *c)
 {
     unsigned short so;

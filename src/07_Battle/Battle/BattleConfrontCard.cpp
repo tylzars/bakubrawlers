@@ -1,5 +1,14 @@
-#include "System/InputManager.hpp"
+// Include and definition order here is load-bearing (docs/decompiling.md, "Data layout within a section"): the seven
+// singleton headers come first, in this order, then the three tables. That reproduces the original's .bss order of
+// the six destructor nodes (FrameTask, TouchManager, TextManager, SoundManager, InputManager, WirelessManager);
+// found with tools/layout_search.py.
+#include "System/FrameTask.hpp"
+#include "Text/TextManager.hpp"
 #include "System/SoundManager.hpp"
+#include "System/InputManager.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "System/TouchManager.hpp"
+#include "System/WirelessManager.hpp"
 #include "Battle/BattleConfrontCard.hpp"
 #include "Battle/BattleCardSpec.hpp"
 #include "Battle/BattleCommandPrompt.hpp"
@@ -9,11 +18,7 @@
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
-#include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
-#include "System/FrameTask.hpp"
-#include "System/SoundManager.hpp"
-#include "Text/TextManager.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkStruct_02078290.hpp"
@@ -26,10 +31,7 @@
 #include "Game/UnkStruct_020d48f0.hpp"
 #include "Unknown/UnkStruct_02087898.hpp"
 #include "Graphics/Camera.hpp"
-#include "System/InputManager.hpp"
-#include "System/TouchManager.hpp"
 #include "Game/Random.hpp"
-#include "System/WirelessManager.hpp"
 #include <nitro/math.h>
 #include <nitro/gx.h>
 #include <nitro/mi.h>
@@ -38,7 +40,25 @@
 
 void func_ov007_0226a448(BattlePlayer *player, u8 a, int b);
 extern "C" u32 func_ov007_022234f0(int player, u8 mode, u8 ch);
-extern const s32 data_ov007_02279df0[][6];
+static const WindowItemRecord sWindowItems[3] = {
+    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
+    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
+    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+};
+static const WindowCellRecord sWindowCells[3] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0xc000, 7, 0, 1, {3, 5, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0xc000, 7, 0, 1, {6, 8, 7, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0xc000, 7, 0, 1, {10, 10, 10, 0}},
+};
+// Power multipliers (fx32) by battle mode (row, mode - 1) and attribute (column).
+static const s32 sAttributeRates[6][6] = {
+    {0x1333, 0xccd, 0x1000, 0x1000, 0x1000, 0x1000},
+    {0xccd, 0x1333, 0x1000, 0x1000, 0x1000, 0x1000},
+    {0x1000, 0x1000, 0xccd, 0x1000, 0x1000, 0x1333},
+    {0x1000, 0x1000, 0x1333, 0x1000, 0x1000, 0xccd},
+    {0x1000, 0x1000, 0x1000, 0x1333, 0xccd, 0x1000},
+    {0x1000, 0x1000, 0x1000, 0xccd, 0x1333, 0x1000},
+};
 
 void func_ov007_0226a448(BattlePlayer *player, u8 index, int flag);
 
@@ -2174,9 +2194,6 @@ void BattleConfrontCard::func_ov007_02243dec() {
     G2S_SetWndOutsidePlane(0x3f, FALSE);
 }
 
-extern const WindowItemRecord data_ov007_02279d48[3];
-extern const WindowCellRecord data_ov007_02279d9c[3];
-
 void BattleConfrontCard::func_ov007_02243e7c() {
     if (mUnk_80) {
         delete mUnk_80;
@@ -2233,8 +2250,8 @@ void BattleConfrontCard::func_ov007_02243f04(const char *path, u32 mode) {
         if (mUnk_80) {
             delete mUnk_80;
         }
-        mUnk_80 = new SelectWindow(3, data_ov007_02279d48, 1);
-        mUnk_80->SetCells(3, data_ov007_02279d9c);
+        mUnk_80 = new SelectWindow(3, sWindowItems, 1);
+        mUnk_80->SetCells(3, sWindowCells);
         mUnk_80->mCursor->mSelection = -1;
         mUnk_80->mUnk_064            = 0;
     }
@@ -2304,7 +2321,7 @@ u8 BattleConfrontCard::func_ov007_02244440() {
     } while (n < 2);
     u8 mode = data_020d433c.mUnk_95;
     if (mode != 0 && mode != 7) {
-        const s32 *row = data_ov007_02279df0[(u8) (mode - 1)];
+        const s32 *row = sAttributeRates[(u8) (mode - 1)];
         u8 m           = 0;
         do {
             float f  = (float) row[e[m].mUnk_0d_0] / 4096.0f;

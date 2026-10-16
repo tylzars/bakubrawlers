@@ -17,7 +17,7 @@ own dump of the game; see [INSTALL.md](INSTALL.md).
 | Measure | Progress |
 |---|---|
 | Matched code | 93.49% (1,157,860 / 1,238,536 bytes) |
-| Linked code (complete units) | 89.13% (1,103,848 bytes) |
+| Linked code (complete units) | 89.61% (1,109,840 bytes) |
 | Overall accuracy (fuzzy) | 99.89% |
 | Matched functions | 4,449 / 4,505 |
 

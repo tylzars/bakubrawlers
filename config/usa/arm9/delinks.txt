@@ -46,6 +46,7 @@ libs/cri/src/cri_adx_ctrl.c:
     .text       start:0x02043220 end:0x02043c14
 
 libs/cri/src/cri_adx_ctrl2.c:
+    complete
     .text       start:0x02043c14 end:0x02044614
 
 libs/cri/src/cri_adx_buf.c:
@@ -135,6 +136,7 @@ libs/cri/src/cri_adxm.c:
     .text       start:0x02051804 end:0x02052320
 
 libs/cri/src/cri_mpa_l2.c:
+    complete
     .text       start:0x0204b314 end:0x0204bdd4
 
 libs/cri/src/cri_mpa_dec.c:
@@ -194,6 +196,7 @@ libs/msl/src/msl_scan_spec.c:
     .text       start:0x02014704 end:0x02014bfc
 
 libs/msl/src/msl_scan_core.c:
+    complete
     .text       start:0x02014bfc end:0x02015950
 
 libs/msl/src/msl_strtod.c:

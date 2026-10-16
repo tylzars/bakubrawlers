@@ -300,13 +300,9 @@ void BattleData::func_ov007_0223de88(u8 side, s16 x, s16 y, u8 flag, u16 value) 
     mUnk_34[side]->Draw(1, x, y, flag);
 }
 
-// non-matching: 13 words, scheduling of the block before the loop: the original issues the `ldrsh` of y right after
-// `delta` and computes x + 0x30 before the shift chain, whose final `asr r4, r1, #3` comes last. The `(s16) (u16)`
-// casts keep the shift's narrowing apart from the loop's `(s16) delta` (delta then takes r4 as in the original), and
-// the `base` local creates x + 0x30 before that narrowing, which gives the original's spill slots (x + 0x30 at
-// sp+12, (s16) delta at sp+16). Both are likely stand-ins for the real form.
 void BattleData::func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u8 flag, u32 mode, u16 a, u16 b) {
     int delta;
+    s16 sdelta;
     int shift;
     u32 value = 0;
     switch (kind) {
@@ -331,15 +327,16 @@ void BattleData::func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u8 flag, u3
         }
     }
     delta    = a - (b * 2) / 3;
-    shift    = (s16) (u16) delta * (s16) (u16) delta / 8;
     int base = x + 0x30;
     u8 offset = 0x20;
     u8 i      = 0;
     do {
         if (mode == 0) {
+            sdelta = delta;
+            shift  = sdelta * sdelta / 8;
             offset = shift <= 0xff ? shift : 0xff;
             if (offset > 0x20) {
-                if ((s16) delta >= 0) {
+                if (sdelta >= 0) {
                     goto next;
                 }
                 offset = 0x20;

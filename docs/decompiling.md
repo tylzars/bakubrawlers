@@ -103,6 +103,11 @@ Diff the traces of two variants to find the first stage where they part. Facts r
   computed in x87 floating point; the tree's root is item (lo+hi)/2. The comparison is sensitive to the host's x87
   precision when a density is exactly 0.4, which is why the build needs wibo with Windows' 53-bit precision
   (tools/build_wibo.sh); msl_printf_fmt and GX_SetBankForSubBG only match with it.
+- The register a popped node takes: the lowest free of r0-r3; else a callee-saved register already handed out; else
+  r12, then r14; else a new callee-saved register (traced on BattleSlot's constructor in four states).
+- A value assigned inside a loop is loop-variant to the IR, so `s16 sdelta; ... sdelta = delta; shift = sdelta *
+  sdelta / 8;` inside the loop keeps the product there for the backend's own invariant pass, where a pre-loop form
+  is hoisted by the IR into the preheader and scheduled differently (BattleData::func_ov007_0223dfcc).
 - Library files built with 2.0/sp1p5 can be traced with `--sp2p2-stand-in` when their probe shows the same
   difference under 2.0/sp2p2 (true for e_pow and cri_wave_ch).
 - The IR keeps an assignment to a local that lives across blocks as its own statement only when the same local is

@@ -141,7 +141,14 @@ class Scorer:
         self.a = a
         self.sym, self.mod, self.addr = probe
         base, blob = pc.module_bytes(self.mod)
-        self.orig = blob[self.addr - base: self.addr - base + pc.orig_size(self.mod, self.addr)]
+        if getattr(a, "goal", None):
+            # lab mode: compare the lab function against an excerpt of the original (module:addr:len)
+            gm, ga, gl = a.goal.split(":")
+            gbase, gblob = pc.module_bytes(gm)
+            ga, gl = int(ga, 16), int(gl, 16)
+            self.orig = gblob[ga - gbase: ga - gbase + gl]
+        else:
+            self.orig = blob[self.addr - base: self.addr - base + pc.orig_size(self.mod, self.addr)]
         self.lang = "-lang=c++ -Cpp_exceptions off -RTTI off" if a.src.suffix == ".cpp" else "-lang=c"
         self.tmp = Path(tempfile.mkdtemp(prefix="perm", dir="/dev/shm"))
 
@@ -170,6 +177,8 @@ class Scorer:
         if got is None:
             return 10 ** 9
         code, mask = got
+        if getattr(self.a, "goal", None):
+            return self.aligned(code, mask) + 2 * abs(len(code) - len(self.orig)) // 4
         if len(code) == len(self.orig):
             return self.words(code, mask)
         return self.aligned(code, mask) + 6 * abs(len(code) - len(self.orig)) // 4
@@ -221,7 +230,7 @@ class Mutator:
         r = self.rng
         ops = [self.swap, self.swap, self.swap_far, self.move_decl, self.split_merge, self.retype, self.retype,
                self.enum_copy, self.temp, self.permid, self.commute, self.cast, self.compound, self.incdec,
-               self.inline_ptr, self.reuse, self.hoist_decl]
+               self.inline_ptr, self.reuse, self.hoist_decl, self.sink_decl, self.inplace_add]
         for _ in range(8):
             if r.choice(ops)(body_lines, extra):
                 return True
@@ -425,6 +434,41 @@ class Mutator:
         L[j + 1:] = [re.sub(r"\b" + bname + r"\b", aname, l) for l in L[j + 1:]]
         return True
 
+    def sink_decl(self, L, extra):
+        """Move a declaration without initialiser down to the line before its first use (into an inner block)."""
+        cand = [i for i, l in enumerate(L) if (m := DECL.match(l)) and not m.group(4)]
+        if not cand:
+            return False
+        i = self.rng.choice(cand)
+        m = DECL.match(L[i])
+        name = m.group(3)
+        use = next((j for j in range(i + 1, len(L)) if re.search(r"\b" + name + r"\b", L[j])), None)
+        if use is None or use == i + 1:
+            return False
+        del L[i]
+        use -= 1
+        ind = " " * self.indent(L[use])
+        a = ASSIGN.match(L[use])
+        if a and a.group(2) == name and name not in a.group(3):
+            L[use] = f"{ind}{m.group(2)} {name} = {a.group(3)};"
+        else:
+            L.insert(use, f"{ind}{m.group(2)} {name};")
+        return True
+
+    def inplace_add(self, L, extra):
+        """Turn `... f(x + k) ...` (x a local) into `x += k;` before the statement and `x` in it."""
+        locals_ = {DECL.match(l).group(3) for l in L if DECL.match(l)}
+        st = self.statements(L)
+        self.rng.shuffle(st)
+        for i in st:
+            for m in re.finditer(r"\b(" + IDENT + r")\s*([+-])\s*(" + IDENT + r"|0x[0-9a-fA-F]+|\d+)\b(?=\s*[,)])", L[i]):
+                if m.group(1) in locals_:
+                    ind = " " * self.indent(L[i])
+                    L[i] = L[i][:m.start()] + m.group(1) + L[i][m.end():]
+                    L.insert(i, f"{ind}{m.group(1)} {m.group(2)}= {m.group(3)};")
+                    return True
+        return False
+
     def hoist_decl(self, L, extra):
         """Move a block-scope declaration (with its initialiser split off) to the top of the function."""
         cand = [i for i, l in enumerate(L) if DECL.match(l) and self.indent(l) > self.indent(L[0])]
@@ -493,6 +537,8 @@ def main():
     ap.add_argument("--steps", type=int, default=60, help="steps per chain")
     ap.add_argument("--temp", type=float, default=8.0)
     ap.add_argument("--out", type=Path, default=None)
+    ap.add_argument("--goal", default=None, help="lab mode: score against original bytes MODULE:0xADDR:0xLEN "
+                    "(the lab file needs a // PROBE: line naming its own function; implies --full)")
     a = ap.parse_args()
     a.src = a.src.resolve()
     text = a.src.read_text()
@@ -500,6 +546,8 @@ def main():
     if not probes:
         raise SystemExit("need a // PROBE: line")
     probe = next((p for p in probes if a.ident in p[0]), probes[0])
+    if a.goal:
+        a.full = True
     chunks = split_top(text)
     k = find_function(chunks, a.ident)
     func = chunks[k][1]

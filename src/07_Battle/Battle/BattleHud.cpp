@@ -848,8 +848,8 @@ void BattleHud::func_ov007_02227730() {
             }
             i++;
         } while (i < 2);
-        mData->func_ov007_0223de88(0, pos[0], 0x5a, 2, (u32) mUnk_b0[0]);
-        mData->func_ov007_0223de88(1, pos[1], 0x5a, 2, (u32) mUnk_b0[1]);
+        mData->func_ov007_0223de88(0, pos[0], 0x5a, 2, mUnk_b0[0]);
+        mData->func_ov007_0223de88(1, pos[1], 0x5a, 2, mUnk_b0[1]);
         if (mUnk_22_7) {
             func_ov007_022273b4();
         }

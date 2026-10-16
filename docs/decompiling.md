@@ -536,10 +536,15 @@ Other findings from linking:
   TextManager::PrintNumber matched with u16 width/height/unk12 on it and on Print (BattleCommandPage needed a u16
   `height` local to stay identical), MyroomCharaScene::func_ov008_02224ca4 with `s16 suffix`.
 - **Implicit narrowing at a short parameter is not shared between calls.** With `CellAnimation::Draw(u8, s16 x,
-  s16 y, u32)` the original keeps one `x + 4` (int) and narrows it again at each call, and hoists the narrowed stack
+  s16 y, u8)` the original keeps one `x + 4` (int) and narrows it again at each call, and hoists the narrowed stack
   arguments in source order; an explicit `(s16)` cast passed to an `s32` parameter is shared and hoisted
   differently. Getting the callee's parameter types right matched FieldSelectScene::func_ov001_022256e4 and let
   several `(s16)`/`(s32)` casts at other call sites go.
+- **A narrow parameter type changes the caller's spill scheduling.** A word-sized access to a u8/u16/s16 parameter's
+  home slot shares the worst-case alias set with pointer accesses, so such stores and loads chain in the
+  post-allocation scheduler (ties go to input order). BattleData::func_ov007_0223de88 matched once its `value` was
+  u16 and `flag` u8, which needed CellAnimation::Draw and func_0202a3ec's last parameter to be u8 as well; callers
+  then pass u8 variables (a u32 variable gains an `and #0xff`).
 - **`delete p;` versus `if (p) delete p;`.** mwcc emits the null check for a plain `delete` itself; an explicit `if`
   changes the block shape and the scheduling around it (BattleResult's destructors). Try both: BattleConfrontCard's
   func_0223f398 needed the explicit `if`.

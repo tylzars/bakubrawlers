@@ -275,8 +275,7 @@ BOOL BattleData::func_ov007_0223ddac(u8 side) {
     return done;
 }
 
-// non-matching: 6 words in the prologue: str r1/str r2 are issued before the two loads and str r3 after `mov sl, r0`.
-void BattleData::func_ov007_0223de88(u8 side, s16 x, s16 y, u32 flag, u32 value) {
+void BattleData::func_ov007_0223de88(u8 side, s16 x, s16 y, u8 flag, u16 value) {
     if (value == 0xffff) {
         value = mEntries[side].mUnk_00;
     }
@@ -290,10 +289,11 @@ void BattleData::func_ov007_0223de88(u8 side, s16 x, s16 y, u32 flag, u32 value)
             }
         }
     }
-    u8 i = 0;
+    u32 n = value;
+    u8 i  = 0;
     do {
-        mUnk_34[2]->func_0202a3ec(1, (s32) value % 10, x + 0x2f - i * 12, y + 0x4d, flag);
-        value /= 10;
+        mUnk_34[2]->func_0202a3ec(1, (s32) n % 10, x + 0x2f - i * 12, y + 0x4d, flag);
+        n /= 10;
         i++;
     } while (i < count);
     mUnk_34[side + 5]->Draw(1, x, y, flag);
@@ -305,7 +305,7 @@ void BattleData::func_ov007_0223de88(u8 side, s16 x, s16 y, u32 flag, u32 value)
 // casts keep the shift's narrowing apart from the loop's `(s16) delta` (delta then takes r4 as in the original), and
 // the `base` local creates x + 0x30 before that narrowing, which gives the original's spill slots (x + 0x30 at
 // sp+12, (s16) delta at sp+16). Both are likely stand-ins for the real form.
-void BattleData::func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u32 flag, u32 mode, u16 a, u16 b) {
+void BattleData::func_ov007_0223dfcc(u8 side, u8 kind, s32 x, s16 y, u8 flag, u32 mode, u16 a, u16 b) {
     int delta;
     int shift;
     u32 value = 0;

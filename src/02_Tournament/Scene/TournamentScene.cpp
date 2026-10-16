@@ -1137,7 +1137,7 @@ void TournamentScene::func_ov002_0221cd10() {
             do {
                 s16 dx   = 0;
                 s16 dy   = 0;
-                u32 flag = 1;
+                u8 flag = 1;
                 if (k >= idx) {
                     if (k < idx + sTotals[mMode]) {
                         dx   = mUnk_a4;

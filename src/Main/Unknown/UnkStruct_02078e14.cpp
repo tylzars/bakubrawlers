@@ -3098,7 +3098,7 @@ void UnkStruct_02078e14::func_02081594() {
 void UnkStruct_02078e14::func_020816ec(u32 unk1, u32 unk2) {
     u32 over;
     s16 x;
-    u32 scale;
+    u8 scale;
     s16 y;
     u8 i;
     if (unk2 == 4) {
@@ -3191,7 +3191,7 @@ void func_02081a4c(void *arg) {
 void UnkStruct_02078e14::func_02081a74(u8 unk1, u32 unk2, u32 unk3, s16 unk4, s16 unk5) {
     BOOL second = unk3 == 0 ? SCREEN_MAIN : SCREEN_SUB;
     u16 pos     = 0;
-    u32 priority = 0;
+    u8 priority = 0;
     switch (unk3) {
         case 0:
             pos = unk2 * 8 + 0xa0;
@@ -3294,7 +3294,7 @@ void UnkStruct_02078e14::func_02081d5c(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
 void UnkStruct_02078e14::func_02082264(u8 unk1, u8 unk2, u32 unk3, s16 unk4, s16 unk5) {
     BOOL second = unk3 == 0 ? SCREEN_MAIN : SCREEN_SUB;
     u16 pos      = 0;
-    u32 priority = 0;
+    u8 priority = 0;
     switch (unk3) {
         case 0:
             pos = unk2 * 4 + 0xc0;

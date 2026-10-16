@@ -63,8 +63,8 @@ public:
     virtual u8 vfunc_40(int a);
     virtual void vfunc_44(int index, u16 count);
 };
-extern "C" u32 func_ov007_022696a0(u32 a, u32 b);
-extern "C" void func_ov007_022626b8(BattlePlayerList *list, u8 index);
+u32 func_ov007_022696a0(u32 a, u32 b);
+void func_ov007_022626b8(BattlePlayerList *list, u8 index);
 u8 func_ov007_0226a700(BattlePlayer *player, u8 mask, s16 x, s16 y);
 
 
@@ -371,26 +371,11 @@ void BattleConfrontCard::func_ov007_0223f90c(u16 value) {
     mUnk_10 = value;
 }
 
-// non-matching: 7 words in case 29's loop head; the original keeps mBattlePlayers and the slot pointer in r1 and j*4 in r2 (`ldr r1,[r5]; lsl r2,r8,#2; ...; add r1,r0,#108; ...; ldrh r2,[r1,r2]`), here the two swap.
-// With -proc generic ours has mBattlePlayers in r1 and j*4 in r0; the swap appears once the scheduler hoists the lsl to the
-// loop head. Unchanged across slot/player/list locals, CurrentPlayer(), flag/id read order and types, `slots += j`,
-// j/bit/count as u32 with (u8) increments, the callee's parameter types, and the function-scope j or k for the counters.
-// In experiments the original's registers appear only when j*4 itself is used as a value between the player load and
-// `slots = p->mSlots6c` (any store of j*4 there, volatile or not); no consumer is visible in the binary, and every
-// form that creates j*4 earlier (named or compound offsets, helpers, enum copies) compiles like ours.
-// In the compiler's backend the IR is the same for every natural form; colouring takes higher virtual registers first, and
-// here j*4 is numbered after `slots`, so it gets r1. Operands are emitted left to right (`slots + j*4` gives
-// `ldrh [slots, j4]`), so j*4 must be numbered before `slots` yet stay a temporary, as a shift CSE'd from an earlier
-// statement would. More precisely: the numbering must be exactly list < j*4 < slots (j*4 below the
-// list pointer is visited at full degree and coloured first, taking r0); the IR forward-substitutes every cheap
-// single-use register expression (named, compound, function-scope, reassigned or unread offsets, inline arguments,
-// reusing `id` for j<<2), so no natural statement keeps j*4 early. Closest IR: integer sums through a player local
-// (`(u32)p->mSlots6c + (j << 2)`) give the right order after the first CSE pass, but the local is substituted away
-// in the second and the list load is rebuilt after j*4. About 500 variants were tried.
-// Further: j*4 must be numbered after the whole list-to-player chain (ldrb index, add, ldr #12), so the IR
-// needs a surviving player statement before the one creating j*4; only the slot reads use j and the loop is a
-// plain u8 counter, so no dominating shift exists. Every form that keeps the player local (a store between, a use
-// in the call block, reads through it) adds an instruction or moves other registers.
+// Placeholder (case 29): `idx = count ? list->mUnk_2a9 : data_020d433c.mBattlePlayers->mUnk_2a9` reads the same byte
+// on both arms and compiles to nothing extra. As a two-arm value the player index is not forward-substituted into
+// `slots`, and the arms are merged only after the last expression propagation, so idx stays its own statement; with
+// `off = j << 2` that numbers list < idx < j*4 < slots, giving the original's registers (`ldr r1,[r5]; lsl r2,r8,#2;
+// ...; ldrh r2,[r1,r2]`). The original's own form is not known.
 BOOL BattleConfrontCard::func_ov007_0223f918() {
     u8 j;
     u8 k;
@@ -845,9 +830,12 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             u8 count = 0;
             mUnk_60  = 0;
             do {
-                BattlePlayerSlot *slots = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mSlots6c;
-                u8 flag                 = slots[j].mFlag;
-                u16 id                  = slots[j].mValue;
+                BattlePlayerList *list  = data_020d433c.mBattlePlayers;
+                u8 idx                  = count ? list->mUnk_2a9 : data_020d433c.mBattlePlayers->mUnk_2a9; // placeholder, see above
+                u32 off                 = j << 2;
+                BattlePlayerSlot *slots = list->mPlayers[idx]->mSlots6c;
+                u8 flag                 = *((u8 *) slots + off + 2);
+                u16 id                  = *(u16 *) ((u32) slots + off);
                 if (flag == 0) {
                     if (func_ov007_022433c8(mUnk_52, id)) {
                         count++;

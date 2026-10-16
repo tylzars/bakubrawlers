@@ -45,8 +45,9 @@ A function that doesn't match yet is kept in source with a `// non-matching` com
 Forms that reproduce the original's bytes but are probably not its source. Each is marked in place; a real form
 that matches should replace it.
 
-- Layout stand-ins: FieldSelectScene's `DataLayoutSlot()` static (one unidentified small object in the data size
-  sort), BattleUnk022637ac's thirteen named `{0, 0x4800, 0}` statics (the order of identical initialisers),
+- Layout stand-ins: FieldSelectScene's and BattlePlayer's `DataLayoutSlot()` statics (one unidentified small object
+  in the data size sort; in BattlePlayer it puts the TextManager, InputManager, WirelessManager destructor nodes in
+  the original order), BattleUnk022637ac's thirteen named `{0, 0x4800, 0}` statics (the order of identical initialisers),
   TournamentSubScene's `sMessageIds[1][24]` shape (keeps a byte table in the shared .rodata), GameMain.cpp (main's slot).
 - Index/register stand-ins: BattleSub48's enum-typed entry index, BattleUnk022637ac::func_ov007_02265af8's two
   volatile index reads, BattleOrderSelect's `volatile ry`, TextManager::Print's `y`, BattleCardModel's narrow stack

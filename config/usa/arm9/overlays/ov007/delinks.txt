@@ -331,9 +331,12 @@ src/07_Battle/Battle/BattleCharaAct.cpp:
     .data       start:0x0228a23c end:0x0228a56c
     .bss        start:0x0228ba6c end:0x0228ba9c
 
-// provisional: code only; .data 0x0228a56c-0x0228a5a0, .rodata 0x0227b0a8-about 0x0227bcd0 and .bss 0x0228ba9c-0x0228bac0 belong here.
 src/07_Battle/Battle/BattlePlayer.cpp:
+    complete
     .text       start:0x022696b4 end:0x0226a91c
+    .rodata     start:0x0227b0a8 end:0x0227bc9c
+    .data       start:0x0228a56c end:0x0228a5a0
+    .bss        start:0x0228ba9c end:0x0228bac0
 
 // provisional: code only; the class ends where BattleUnk29c's ctor starts; .data 0x0228a5a0-0x0228aa30, .rodata 0x0227bc9c-0x0227bf94 and .bss 0x0228bac0-0x0228bb14 belong here.
 src/07_Battle/Battle/BattleShoot.cpp:

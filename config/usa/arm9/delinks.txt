@@ -98,6 +98,7 @@ libs/cri/src/cri_file_obj.c:
     .text       start:0x02047d80 end:0x02048304
 
 libs/cri/src/cri_wave_ch.c:
+    complete
     .text       start:0x02048304 end:0x02049150
 
 libs/cri/src/cri_fade_grp.c:

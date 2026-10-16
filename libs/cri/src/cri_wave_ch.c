@@ -215,12 +215,52 @@ void func_0204866c(Ch *c)
 
 void func_02048718(void) {}
 
+void func_0204871c(Ch *c, int m)
+{
+    int n, i;
+    if (c == 0) return;
+    if (m == func_020487e8(c)) return;
+    if (m == 1) {
+        func_020482e0();
+        n = nplay(c);
+        for (i = 0; i < n; i++) {
+            func_02049f48(c->pl[i]);
+            c->pl[i]->i14 = 0;
+            func_02049c34(c->pl[i]);
+        }
+        c->b6 = 2;
+        c->flags |= 1;
+        func_020482ec();
+        c->s2e = 0;
+        c->s30 = 0;
+        c->s2c = 0;
+    } else if (m == 0) {
+        c->flags ^= 1;
+    }
+}
+
 int func_020487e8(Ch *c)
 {
     int r;
     if (c == 0) return -1;
     if (c->flags & 1) r = 1; else r = 0;
     return r;
+}
+
+void func_02048808(Ch *c, int m)
+{
+    int n, i;
+    if (c == 0) return;
+    if (m == func_020488d8(c)) return;
+    n = nplay(c);
+    if (m == 1) {
+        if ((c->flags & 8) == 8) return;
+        for (i = 0; i < n; i++) func_02049f30(c->pl[i]);
+        c->flags = (c->flags | 2) & ~4;
+    } else if (m == 0) {
+        for (i = 0; i < n; i++) func_02049f48(c->pl[i]);
+        c->flags ^= 2;
+    }
 }
 
 int func_020488d8(Ch *c)
@@ -249,88 +289,20 @@ int func_02048930(Ch *c)
     return c->b6;
 }
 
-void func_02048f2c(Ch *c, int v)
-{
-    if (c != 0) c->ncnt = v;
-}
-
-void func_02049118(Ch *c, int v)
-{
-    if (c != 0) c->s0e = v;
-}
-
-void func_02049124(Ch *c)
-{
-    if (c != 0) c->flags |= 4;
-}
-
-int func_02049138(Ch *c)
-{
-    return (c->flags & 8) == 8 ? 1 : 0;
-}
-
-static inline int nplay(Ch *c)
-{
-    int n;
-    if (c->b4 >= 1 && c->ncnt == 1 && c->nch == 2) n = 2; else n = c->ncnt;
-    return n;
-}
-
-void func_0204871c(Ch *c, int m)
-{
-    int n, i;
-    if (c == 0) return;
-    if (m == func_020487e8(c)) return;
-    if (m == 1) {
-        func_020482e0();
-        n = nplay(c);
-        for (i = 0; i < n; i++) {
-            func_02049f48(c->pl[i]);
-            c->pl[i]->i14 = 0;
-            func_02049c34(c->pl[i]);
-        }
-        c->b6 = 2;
-        c->flags |= 1;
-        func_020482ec();
-        c->s2e = 0;
-        c->s30 = 0;
-        c->s2c = 0;
-    } else if (m == 0) {
-        c->flags ^= 1;
-    }
-}
-
-void func_02048808(Ch *c, int m)
-{
-    int n, i;
-    if (c == 0) return;
-    if (m == func_020488d8(c)) return;
-    n = nplay(c);
-    if (m == 1) {
-        if ((c->flags & 8) == 8) return;
-        for (i = 0; i < n; i++) func_02049f30(c->pl[i]);
-        c->flags = (c->flags | 2) & ~4;
-    } else if (m == 0) {
-        for (i = 0; i < n; i++) func_02049f48(c->pl[i]);
-        c->flags ^= 2;
-    }
-}
-
-// non-matching: 39 words, all one r4/r6 swap: the count (s2c / sp[0].n / r6 * 2) gets r6 and the get24 / bic /
-// func_0204a05c results get r4 (plus the vtable temps that follow from it); declaration order, `long` types and
-// splitting r6 into per-branch locals do not move it. Computing r4 = r6 * 2 before the func_020515dc call gives
-// the original's schedule there.
-// In the compiler's backend the get24 result W1 is a single-assignment local copied from the call result, and between the
-// first two CSE passes every use of such a local is replaced by the call-result temporary, which is numbered after
-// all locals, so W1 pops first in colouring and takes r4. The original's registers come out exactly when W1 stays
-// a local (a second assignment to it) and r4 is declared before r5; no natural second assignment has been found.
+// Placeholder: the repeated `r6 > 0` test changes no code but gives the original's registers. Both halves of the
+// `||` branch into the get18 block, so at the backend's first local CSE that block has two predecessors and starts
+// a new extended block: the uses of r6 below it are not replaced by the get24 call temporary, the copy into r6 stays
+// live and the coalescer folds the temporary into r6. With r4 declared before r5, the count then takes r4, the
+// pointer r5 and the get24 value r6. After colouring, the head/tail merge and the conditional optimisation drop the
+// repeated compare and its branch. The same repeat on the c->b5 test works too; a different-looking second test
+// (`r6 >= 1`) keeps its compare. The original's own form of this is not known.
 void func_02048940(Ch *c)
 {
     unsigned short so;
     unsigned short k;
+    int r4;
     short *r5;
     SpanV sp[2];
-    int r4;
     unsigned t7;
     unsigned short s2;
     unsigned short s0;
@@ -346,7 +318,7 @@ void func_02048940(Ch *c)
             r5 = c->buf + c->s2e;
         } else {
             r6 = ((SrcObj *)c->src[0])->vt->get24(c->src[0], 1);
-            if (r6 > 0) {
+            if (r6 > 0 || r6 > 0) {
                 ((SrcObj *)c->src[0])->vt->get18(c->src[0], 1, r6, &sp[0]);
                 r5 = sp[0].p;
                 r4 = sp[0].n;
@@ -458,6 +430,13 @@ void func_02048e30(Ch *c)
     for (i = 0; i < n; i++) func_0204a9b4(c->pl[i]);
 }
 
+static inline int nplay(Ch *c)
+{
+    int n;
+    if (c->b4 >= 1 && c->ncnt == 1 && c->nch == 2) n = 2; else n = c->ncnt;
+    return n;
+}
+
 void func_02048e88(Ch *c)
 {
     if (func_020487e8(c) == 1) {
@@ -477,6 +456,11 @@ void func_02048ef4(void)
     for (i = 0; i < 4; i++) {
         if (data_02218450.ch[i].used == 1) func_02048e88(&data_02218450.ch[i]);
     }
+}
+
+void func_02048f2c(Ch *c, int v)
+{
+    if (c != 0) c->ncnt = v;
 }
 
 void func_02048f38(Ch *c, int rate)
@@ -526,4 +510,19 @@ void func_02049088(Ch *c, int idx, int v)
     } else {
         func_0204aab0(c->pl[idx], c->s1a[idx]);
     }
+}
+
+void func_02049118(Ch *c, int v)
+{
+    if (c != 0) c->s0e = v;
+}
+
+void func_02049124(Ch *c)
+{
+    if (c != 0) c->flags |= 4;
+}
+
+int func_02049138(Ch *c)
+{
+    return (c->flags & 8) == 8 ? 1 : 0;
 }

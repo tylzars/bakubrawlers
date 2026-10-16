@@ -113,6 +113,13 @@ Diff the traces of two variants to find the first stage where they part. Facts r
 - The IR keeps an assignment to a local that lives across blocks as its own statement only when the same local is
   assigned again later in that block; otherwise the value is folded into its use. Reusing one variable for two
   arguments (BattleResult::func_ov007_0224f9a0's `y`) is a natural way to pin the first one's evaluation point.
+- A call result kept in a local loses its name in the backend's first local CSE: inside the call's extended block
+  (the call's block and every following block with a single predecessor) each use of the local is replaced by the
+  call's result temporary, the copy into the local becomes dead, and the temporary, numbered after all locals, is
+  coloured on its own. The local keeps the value only if one use sits in a block with two predecessors. A repeated
+  identical test `a || a` makes such a block for free: the IR keeps both halves (both branch into the same block),
+  and after colouring the head/tail merge and the conditional optimisation drop the repeated compare and its branch
+  (cri_wave_ch func_02048940). A different-looking second test (`n >= 1` after `n > 0`) keeps its compare.
 
 ## Placeholders
 
@@ -131,7 +138,8 @@ that matches should replace it.
   stack-slot order), BattlePlayerList::Update's two volatile reads in case 4's second record (keep the player
   reload and the slot read apart so they number as the original's registers need), BattleSub48's enum-typed entry index, BattleUnk022637ac::func_ov007_02265af8's two
   volatile index reads, BattleOrderSelect's `volatile ry`, BattleCardModel's narrow stack
-  read, the casts through `data_020a3210.mOrder` in UnkStruct_02078e14.cpp.
+  read, the casts through `data_020a3210.mOrder` in UnkStruct_02078e14.cpp, cri_wave_ch func_02048940's repeated
+  `r6 > 0 || r6 > 0` test (a join below the get24 call, so its result stays in r6's local).
 - Expression stand-ins: nns_snd_wavstrm func_020394c8's `- -v`, msl_strtod's `mp = (unsigned char *)&mant`,
   FileLoader's zero `base`, BattleCardCamera's -0x4000 constant, GameData's `mUnk_460 + 0xa0` cast.
 - Judgement calls: CharacterModel::func_02053d9c is declared void (its body is a tail call and every caller

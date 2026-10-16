@@ -134,13 +134,11 @@ void UnkStruct_02087898::Update() {
 
 extern u16 data_020c1a4c[];
 
-// non-matching: 2 words, the original loads mUnk_20[0] (r6) before mUnk_18 (r5); the compiler loads them in the other order
 
 extern const u8 data_020a41cc[];
 
 extern const s8 data_020a41c8[];
 
-// non-matching: register allocation only (original: i r6, SpriteManager init pointer r7, x r8, y r9; the compiler puts x r7, y r8 and the init pointer r9)
 
 void func_02087ccc(UnkStruct_02087898 *self, void *data);
 void func_02087d68(UnkStruct_02087898 *self);
@@ -257,7 +255,6 @@ void func_0208813c(UnkStruct_02087898 *self, s32 unk1) {
     }
 }
 
-// non-matching: same size; in the first mUnk_39 print the text/buffer registers are swapped (r5/r6) and file + index*4 is computed twice here, once in the original.
 extern char data_020d441a[];
 
 void func_020882c4(UnkStruct_02087898 *self) {

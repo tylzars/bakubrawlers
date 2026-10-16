@@ -809,7 +809,6 @@ void TournamentScene::func_ov002_0221b424() {
     G2S_BlendNone();
 }
 
-// non-matching: 8 words at +0x168; the original loads the table addresses as (a10, data_020d43f0, a20) into (r1, r0, r2) before the idx multiply, the compiler here emits (data_020d43f0, a10, a20); about 15 reorderings of the idx/x computation did not change the pool order
 
 void TournamentScene::func_ov002_0221b5b0() {
     GX_SetDispSelect(1);
@@ -1052,7 +1051,6 @@ void TournamentScene::func_ov002_0221c7a0(const char *mes) {
     TextManager::Get().SetColor(0, 0, 0xf);
 }
 
-// non-matching: 10 words; register assignment of the row/column text-sprite loop (row * 7 and y swap registers with the loop limit). Also needs mUnk_ac to be u16 in the header (compare is unsigned)
 
 void TournamentScene::func_ov002_0221cabc(const char *mes, u8 rows) {
     for (u8 i = 0; i < 2; i++) {
@@ -1347,7 +1345,6 @@ BOOL TournamentScene::func_ov002_0221d848() {
     return done;
 }
 
-// non-matching: 10 words; the second TextManager::Get() guard load is placed after the mUnk_5b store, the original loads it before (known open problem in docs/decompiling.md)
 
 void TournamentScene::func_ov002_0221da5c() {
     WindowItem *items = mMenu->mCursor->mItems;
@@ -1413,7 +1410,6 @@ void TournamentScene::func_ov002_0221ddb8() {
     }
 }
 
-// non-matching: 10 words; same TextManager guard-load ordering around the mUnk_5b stores as 0221dbd4
 
 void TournamentScene::func_ov002_0221ddf8(u8 index) {
     mUnk_ae = 0xc8;

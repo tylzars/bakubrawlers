@@ -452,7 +452,6 @@ void func_020504c4(CriFadeGrp *g)
     }
 }
 
-// non-matching: g->cc / pc8[i] swap r2/r3 in the loop body (3 words)
 void func_0205058c(CriFadeGrp *g, CriSlot *s)
 {
     int i;

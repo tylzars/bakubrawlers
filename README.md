@@ -1,6 +1,6 @@
 # Bakugan: Battle Brawlers (DS) decompilation
 
-A work-in-progress matching decompilation of *Bakugan: Battle Brawlers* for the Nintendo DS. The C++ in this
+A matching decompilation of *Bakugan: Battle Brawlers* for the Nintendo DS. The C++ in this
 repository is written by hand so that, built with the original compiler, it reproduces the game's code byte for byte.
 
 **No game content is included.** The repository holds no ROM, no assets and no disassembly. To build, you need your

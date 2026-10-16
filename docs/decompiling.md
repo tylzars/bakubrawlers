@@ -154,39 +154,39 @@ that matches should replace it.
   stack-slot order), BattlePlayerList::Update's two volatile reads in case 4's second record (keep the player
   reload and the slot read apart so they number as the original's registers need), BattleSub48's enum-typed entry index, BattleUnk022637ac::func_ov007_02265af8's two
   volatile index reads, BattleOrderSelect's `volatile ry`, BattleCardModel's narrow stack
-  read, the casts through `data_020a3210.mOrder` in UnkStruct_02078e14.cpp, cri_wave_ch func_02048940's repeated
+  read, the casts through `data_020a3210.mOrder` in UnkStruct_02078e14.cpp, BattleConfrontCard::func_ov007_0223f918's
+  two-arm player index in case 29 (both arms read the same byte), cri_wave_ch func_02048940's repeated
   `r6 > 0 || r6 > 0` test (a join below the get24 call, so its result stays in r6's local).
 - Expression stand-ins: nns_snd_wavstrm func_020394c8's `- -v`, msl_strtod's `mp = (unsigned char *)&mant`,
   FileLoader's zero `base`, BattleCardCamera's -0x4000 constant, GameData's `mUnk_460 + 0xa0` cast.
 - Judgement calls: CharacterModel::func_02053d9c is declared void (its body is a tail call and every caller
   ignores the result; void is what keeps func_0205340c matching).
 
-## Known open problems
+## Hard problems and how they were solved
 
 - The GameOverScene/BattleUnionAbility/BattleUnk0227532c "literal order" problem is resolved: GameOverScene's
   tables come before most of its includes; the other two were loading the wrong file names (probes mask string
   addresses, so a wrong literal can look like a match).
 
-- **Two CameraManager mode tests, loads scheduled first (open).** UnkStruct_02078290::Update, func_020785d8 and
+- **Two CameraManager mode tests, loads scheduled first (solved).** UnkStruct_02078290::Update, func_020785d8 and
   BattleCardEffect::func_ov007_02271888 (the last thing keeping BattleCardEffect from linking) test
   `(mode == 2) | (mode == 3)` on two `CameraManager::Get()` results. The original loads both modes before the first
   compare: the `== 2` operand comes from the address kept in r4, the `== 3` one from a fresh pool load issued first.
   `CameraManager &b = Get(); CameraManager &a = Get(); if ((a.mMode == 2) | (b.mMode == 3))` is 4 words off (wrong
   pairing, right order); swapping the pairing gives the right registers but compares before the second load. About 60
   forms tried (temporaries, inline helpers, `||`, negations, pointer locals), and `-proc generic` shows our compare
-  directly after its load in all of them.
+  directly after its load in all of them. Solved with enum-typed copies of the two modes, which are not
+  constant-propagated, so both loads stay ahead of the compares.
 - **A u8 index coloured after its base.** In BattleTarget::func_ov007_0225ca48, BattleUnk022637ac (func_ov007_022677cc,
   02264a5c, 02265af8, 0226547c) and BattlePlayerList (Update, 022628e0) the original colours a u8 index load
   (`unit->mUnk_0e`, a record or row index) after the base or player pointer it indexes; every plain form colours it
   first. An enum-typed copy (`UnitIndex e = (UnitIndex) unit->mUnk_0e;`) or one index local reassigned for
   successive records gives the original's order. Only BattleUnk022637ac::func_ov007_02265af8 still needs two
   `*(volatile u8 *)` placeholders: there the enum copy gets the right registers but is scheduled before the list load.
-  BattleConfrontCard::func_ov007_0223f918 (case 29's loop head, 7 words, no placeholder possible: the index is the
-  loop counter `j`) is the same family: ours colours `j*4` before the slot pointer. A dummy consumer of `j*4` placed
-  between the player load and the slot pointer gives the original registers exactly, so the original creates the
-  scaled index there with no visible use; about 80 forms and 1,200 random combinations did not reproduce it.
-- **Fully matched units that don't link yet** (2026-10-14):
-
+  BattleConfrontCard::func_ov007_0223f918 (case 29's loop head) is the same family: the original numbers the list
+  pointer, the player index, `j*4` and the slot pointer in that order. It matches with a placeholder two-arm index
+  (see Placeholders): `idx = count ? list->mUnk_2a9 : data_020d433c.mBattlePlayers->mUnk_2a9` keeps the index a
+  statement of its own until after the last expression propagation, and the merged arms leave no code.
 - **Game.cpp (linked).** What it took:
   - `main` (0x02000c04) is Game's but placed right after the start-up code: a stub unit GameMain.cpp holds its slot and
     `place GameMain.o main Game.o` in config/usa/arm9/lcf_edits.txt puts `OBJECT(main, Game.o)` there;
@@ -381,8 +381,9 @@ Other findings from linking:
 - **Seeing the order before scheduling.** Compiling the same file with `-proc generic` instead of `-proc arm946e`
   (other flags unchanged) skips the ARM9 instruction scheduler, which runs before register allocation. Comparing
   the two shows whether a register difference comes from scheduling (an instruction moved past a definition) or
-  from allocation itself. BattleResult::func_ov007_0224f9a0's last 5 words are a scheduling difference: the
-  original finishes the third Draw's y before loading `this`, which no source form tried reproduces.
+  from allocation itself. BattleResult::func_ov007_0224f9a0's last 5 words were a scheduling difference: the
+  original finishes the third Draw's y before loading `this`. Reusing one `y` variable for the third and fourth Draw
+  calls reproduces it.
 
 ## Source patterns that matter
 

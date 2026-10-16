@@ -76,7 +76,6 @@ BattleStatusPanels::~BattleStatusPanels() {
     }
 }
 
-// non-matching: 18 words, register naming only.
 void BattleStatusPanels::func_ov007_02234efc() {
     mIcons = new UnkStruct_020651bc(mCharBase + 0x1800, (u8) (mPalette + 6), 0);
     ChangeDir("/Game/Battle/Obj/");

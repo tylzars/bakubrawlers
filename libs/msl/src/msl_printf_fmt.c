@@ -1,5 +1,7 @@
-// non-matching: func_02013df0 (0x820 vs 0x824) ends its second switch table at 'o' where the original continues to
-// 'u' (s/u/x are then tested with compares), and keeps s and len in r6/r4 where the original has r7/r6.
+// func_02013df0's switch depends on the build host's x87 precision: mwcc merges cases into a jump table while
+// count/range >= 0.4, computed with x87 division, and here the 'X'..'u' step is exactly 12/30. With Windows' 53-bit
+// precision (the pinned wibo, tools/build_wibo.sh) the table runs 'd'..'u' as in the original; with 64-bit
+// precision the quotient falls just below 0.4 and the table stops at 'o'.
 typedef struct FmtSpec {
     unsigned char justify;   /* 0 left, 1 right, 2 right with zero fill */
     unsigned char sign;      /* 0 none, 1 '+', 2 ' ' */
@@ -189,13 +191,12 @@ extern const char data_020a52d8[], data_020a52dc[];
 
 size_t_ func_02013df0(int (*cb)(void *, const char *, size_t_), void *arg, const char *fmt, char *ap)
 {
-    int len, n;
+    int count, v, len, n;
     FmtSpec spec;
     long long ll;
     double d;
     char *s;
     const char *pct;
-    int v;
     char fill = ' ';
     char space;
     char buf[512];
@@ -356,7 +357,7 @@ size_t_ func_02013df0(int (*cb)(void *, const char *, size_t_), void *arg, const
             }
             return total + n;
         }
-        n = len;
+        count = len;
         if (spec.justify != 0) {
             fill = (spec.justify == 2) ? '0' : ' ';
             if ((*s == '+' || *s == '-' || *s == ' ') && fill == '0') {
@@ -364,22 +365,22 @@ size_t_ func_02013df0(int (*cb)(void *, const char *, size_t_), void *arg, const
                 s++;
                 len--;
             }
-            if (n < spec.width) {
+            if (count < spec.width) {
                 do {
                     if (!cb(arg, &fill, 1)) return -1;
-                } while (++n < spec.width);
+                } while (++count < spec.width);
             }
         }
         if (len) {
             if (!cb(arg, s, len)) return -1;
         }
-        if (spec.justify == 0 && n < spec.width) {
+        if (spec.justify == 0 && count < spec.width) {
             do {
                 space = ' ';
                 if (!cb(arg, &space, 1)) return -1;
-            } while (++n < spec.width);
+            } while (++count < spec.width);
         }
-        total += n;
+        total += count;
     }
     return total;
 }

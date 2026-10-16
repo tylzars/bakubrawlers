@@ -27,7 +27,8 @@ VERSIONS = {
     },
 }
 
-WIBO_TAG = "1.2.0"
+# tools/build_wibo.sh builds this upstream commit (53-bit x87 precision for the guest, as on Windows).
+WIBO_VERSION = "g420a75b"
 OBJDIFF_TAG = "v3.8.2"
 # Compiler and flags are pinned by evidence in docs/compiler.md.
 # Game code: CodeWarrior for DS 2.0 sp2p2+ (sp2p2/sp2p3/sp2p4 are codegen-identical on C++).
@@ -107,6 +108,10 @@ bios_flag = f"--arm7-bios {args.arm7_bios}" if have_bios else ""
 
 if not args.dsd.is_file():
     sys.exit(f"{args.dsd} not found; run tools/build_dsd.sh first (stock dsd releases can't rebuild this ROM)")
+if WINE == "tools/bin/wibo":
+    version = subprocess.run([WINE, "--version"], capture_output=True, text=True).stdout if Path(WINE).is_file() else ""
+    if WIBO_VERSION not in version:
+        sys.exit(f"{WINE} missing or not the pinned build ({WIBO_VERSION}); run tools/build_wibo.sh first")
 if not baserom.is_file():
     sys.exit(f"{baserom} not found; see extract/README.md")
 
@@ -169,7 +174,6 @@ w(f"rule configure\n  command = {PY} tools/configure.py {' '.join(shlex.quote(a)
 # ---- tools ----
 tool_outputs = []
 if WINE == "tools/bin/wibo":
-    build(WINE, "download_tool", variables={"tool": "wibo", "tag": WIBO_TAG, "path": WINE})
     tool_outputs.append(WINE)
 if args.compiler is None:
     # One zip holds every version, including the PATH_COMPILERS ones.

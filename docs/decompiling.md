@@ -87,6 +87,10 @@ Diff the traces of two variants to find the first stage where they part. Facts r
   (one pass in the dump instead of ~100): loops stay unrotated, no strength reduction, globals are reloaded from the
   pool. A dead reference doesn't trigger it (ctrdg func_02011e7c).
 - `#pragma scheduling` does not exist in this compiler; sweeps that set it changed nothing.
+- Switch layout: cases are sorted and merged left to right into jump-table clusters while count/range >= 0.4,
+  computed in x87 floating point; the tree's root is item (lo+hi)/2. The comparison is sensitive to the host's x87
+  precision when a density is exactly 0.4, which is why the build needs wibo with Windows' 53-bit precision
+  (tools/build_wibo.sh); msl_printf_fmt and GX_SetBankForSubBG only match with it.
 - Library files built with 2.0/sp1p5 can be traced with `--sp2p2-stand-in` when their probe shows the same
   difference under 2.0/sp2p2 (true for e_pow and cri_wave_ch).
 - The IR keeps an assignment to a local that lives across blocks as its own statement only when the same local is

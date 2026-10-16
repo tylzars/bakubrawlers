@@ -786,16 +786,9 @@ void BattleResult::func_ov007_0224f8f4() {
     SpriteManager::Get().Screen(1).func_02027778(mUnk_44[2], mUnk_5c[2], 0x20, 0x38, 0, 0xe0, 0xf, 0);
 }
 
-// non-matching: 5 words: for the third Draw the original computes (s16) (base + 0x25) through r0 (`add r0, r7, #37; lsl r0;
-// asr r3, r0`) after the `str #1, [sp]`; ours builds it in r3 and schedules the add before the store.
-// When y's operand is the last use of `top` the whole add/lsl/asr chain goes ahead of `mov #1; str`; with `base` the add
-// lands between `mov #1` and `str`. Neither inline wrappers, twice-assigned or compound locals, an assignment in the
-// argument, an enum zero, unsigned base/top nor `u32 i` with `i = (u8) (i + 1)` give the original order. In matched
-// code (TutorialScene::DrawList, func_02088cd8) that order only occurs at the start of a basic block; here the call
-// follows the second Draw's bl in the same block.
-// The original's third y is `base + 0x25` (`add r0, r7, #37`), so the `top + 4` below is a closer stand-in, not the
-// original expression: with `base + 0x25` the add lands between `mov #1` and the stack store (7 words). Mutation
-// searches and ~1,200 other forms leave it; an inner loop (as in TutorialScene::DrawList) flips the order.
+// The third and fourth Draws take y through the reused `y`. Because `y` is assigned again before the fourth call, its
+// assignment for the third stays a statement of its own, so the y computation is emitted before that call's arguments
+// and the scheduler keeps it after the stack store and ahead of the register arguments (as the original does).
 void BattleResult::func_ov007_0224f9a0() {
     mMessage->func_020658d0();
     mAnimsB[3]->Draw(0, 0x80, 0x60, 0);
@@ -826,8 +819,10 @@ void BattleResult::func_ov007_0224f9a0() {
             mAnimsB[1]->mUnk_0f = 0;
         }
         mAnimsB[1]->Draw(0, x, y, 0);
-        mAnimsB[2]->Draw(0, 0x20, top + 4, 1);
-        mAnimsB[0]->Draw(0, 0x20, (i + 1) * 0x28, 1);
+        y = base + 0x25;
+        mAnimsB[2]->Draw(0, 0x20, y, 1);
+        y = (i + 1) * 0x28;
+        mAnimsB[0]->Draw(0, 0x20, y, 1);
         if (data_020d433c.mUnk_9f[i] != 0x15) {
             mAnimsB[4]->mUnk_0f = data_020d433c.mUnk_a3[i];
             mAnimsB[4]->Draw(0, 0x48, base + 0x37, 0);

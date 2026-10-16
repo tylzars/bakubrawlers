@@ -66,6 +66,13 @@ Diff the traces of two variants to find the first stage where they part. Facts r
 - A `mov rX, rY` just before a load through rX, with rY still live, can be a second identical load that the
   post-allocation clean-up turned into a copy. A read through a `const T *` (e.g. a const-parameter inline helper)
   keeps that second load apart in the optimizer (CharacterModel::func_02053eec, StoryCharacterModel::func_02054d08).
+- Before colouring, a scheduler orders each block. Once live values reach the register limit it picks by a
+  pressure score (start 16; each last use subtracts 1 + max(1, live - limit), each new value adds max(1, live -
+  limit)), keeping source order on ties. Colouring then goes in falling virtual-register order, high-degree nodes
+  first.
+- The IR keeps an assignment to a local that lives across blocks as its own statement only when the same local is
+  assigned again later in that block; otherwise the value is folded into its use. Reusing one variable for two
+  arguments (BattleResult::func_ov007_0224f9a0's `y`) is a natural way to pin the first one's evaluation point.
 
 ## Placeholders
 
@@ -76,7 +83,8 @@ that matches should replace it.
   in the data size sort; in BattlePlayer it puts the TextManager, InputManager, WirelessManager destructor nodes in
   the original order), BattleUnk022637ac's thirteen named `{0, 0x4800, 0}` statics (the order of identical initialisers),
   TournamentSubScene's `sMessageIds[1][24]` shape (keeps a byte table in the shared .rodata), GameMain.cpp (main's slot).
-- Index/register stand-ins: BattleSub48's enum-typed entry index, BattleUnk022637ac::func_ov007_02265af8's two
+- Index/register stand-ins: BattlePlayerList::Update's two volatile reads in case 4's second record (keep the player
+  reload and the slot read apart so they number as the original's registers need), BattleSub48's enum-typed entry index, BattleUnk022637ac::func_ov007_02265af8's two
   volatile index reads, BattleOrderSelect's `volatile ry`, TextManager::Print's `y`, BattleCardModel's narrow stack
   read, the casts through `data_020a3210.mOrder` in UnkStruct_02078e14.cpp.
 - Expression stand-ins: nns_snd_wavstrm func_020394c8's `- -v`, msl_strtod's `mp = (unsigned char *)&mant`,

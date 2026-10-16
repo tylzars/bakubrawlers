@@ -181,9 +181,12 @@ BattlePlayerList::~BattlePlayerList() {
     GX_SetDispSelect(0);
 }
 
-// non-matching: 3 words, case 4: the second record (`target`) gets the index in r0 and the base in r1 where the
-// original has r2/r0 (0x11f0). Reading that index through a volatile placeholder fixes the registers but schedules
-// the mPlayers[slot] reload above the mUnk_28e load (5 words).
+// Placeholder (case 4, second record): the two volatile reads stand in for an unknown source form. The original
+// numbers the reloaded mPlayers[tp] first, the slot index second and the `+ 12` record base last, so the colourer
+// (which takes these temporaries in falling number order) gives the base r0 and the index r2. With plain reads the
+// slot and player loads are folded into the `target` expression and the index is coloured first (r0, 3 words); a
+// volatile slot read alone fixes the index but numbers the player load last (5 words); a volatile player read alone
+// changes nothing.
 void BattlePlayerList::Update() {
     u8 owner;
     u8 slot;
@@ -592,8 +595,9 @@ void BattlePlayerList::Update() {
                     slot = mUnits[mUnk_28d].mUnk_0e;
                     BattleRecord *source = &mPlayers[sp]->mRecords[slot];
                     mPlayers[tp]->PushHistory(source->mUnk_04, source->mUnk_09);
-                    slot = mUnits[mUnk_28e].mUnk_0e;
-                    BattleRecord *target = &mPlayers[tp]->mRecords[slot];
+                    BattlePlayer *holder = *(BattlePlayer *volatile *) &mPlayers[tp];
+                    slot                 = *(volatile u8 *) &mUnits[mUnk_28e].mUnk_0e;
+                    BattleRecord *target = &holder->mRecords[slot];
                     mUnk_2aa             = func_ov007_022696a0(target->mUnk_08, target->mUnk_09);
                     func_ov007_02262828(this, mUnk_28d, 2);
                     func_ov007_02262828(this, mUnk_28e, 2);

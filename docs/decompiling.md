@@ -450,6 +450,10 @@ Other findings from linking:
 - **Search tool.** tools/permuter.py runs a simulated-annealing search over many source transformations (statement
   order, scopes, enum-typed copies, temporaries, an inline identity, casts, compound forms) with a graded distance and
   stripped compiles; run it in the background on a near-miss.
+- **Declaring locals ahead of a call-surviving local can swap `this` with it.** In BattleSlot::BattleSlot, declaring
+  `a`, `b` and `base` at function scope before `BattleData *d = mData;` pulls the stack parameter unk4 into the chain
+  of non-overlapping values sharing one callee-saved register (as in the original) but gives that chain r4 and `this`
+  r5, the original's registers renamed. Only these two allocation states turned up in ~6,000 variants.
 - **Which variables exist, and where, moves the schedule; expression forms rarely do.** func_020875ac's case 2
   loaded the count between list[1] and list[0] only with one function-scope `u8 i` shared by all cases and the count
   read in the loop condition (`while (i < table[index].mCount)`); a count local before the loop is never scheduled

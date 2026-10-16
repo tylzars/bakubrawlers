@@ -241,6 +241,9 @@ that matches should replace it.
   `--climb 300` hill-climbs singleton order, static order and the split instead. AttrSelScene (8 tables, 5
   singletons) linked with its first answer: TextManager, TouchManager, SpriteManager and InputManager headers, then the
   tables, then SoundManager's.
+  BattleResult (8 tables, 7 singletons) the same way: SoundManager, SpriteManager and InputManager headers, the tables,
+  then WirelessManager, TouchManager, FrameTask and TextManager; its `.rodata`, `.data` string and `.bss` node orders
+  all follow from that one list.
 - **Statics between includes (UnkStruct_02076058).** Defining its three window tables reordered the four
   singleton nodes in `.bss`. `layout_search.py` lists working orders with a cost (how many things move, not how many
   objects are off); the one used defines the tables right after the first header (TouchManager), with

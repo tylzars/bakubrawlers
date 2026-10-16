@@ -1,10 +1,11 @@
+// Include and definition order here is load-bearing (docs/decompiling.md, "Data layout within a section"): the
+// SoundManager, SpriteManager and InputManager singletons join the file's data size sort before the eight tables,
+// WirelessManager, TouchManager, FrameTask and TextManager after them. That order reproduces the original's
+// .rodata (the four 84-byte window tables), .data (the three retry_b_obj_00_nce.bin strings) and .bss (the six
+// destructor nodes); found with tools/layout_search.py --climb.
+#include "System/SoundManager.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/InputManager.hpp"
-#include "Text/TextManager.hpp"
-#include "System/FrameTask.hpp"
-#include "System/TouchManager.hpp"
-#include "System/WirelessManager.hpp"
-#include "System/SoundManager.hpp"
 #include "Battle/BattleBase.hpp"
 #include "Battle/BattleUnk022767c8.hpp"
 #include "Battle/BattleCharaAct.hpp"
@@ -25,6 +26,51 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 #include "Unknown/UnkStruct_02089f90.hpp"
+static const u8 sRankTable[19][3] = {{44, 90, 120}, {19, 38, 82}, {21, 38, 86}, {35, 60, 110}, {27, 47, 89}, {1, 2, 3}, {47, 82, 120}, {70, 140, 180}, {23, 42, 72}, {40, 61, 100}, {33, 54, 92}, {30, 48, 85}, {28, 47, 86}, {9, 25, 50}, {4, 15, 37}, {13, 29, 59}, {14, 31, 59}, {1, 2, 3}, {0, 0, 0}};
+static const WindowCellRecord sResultCells[3] = {
+    {"/Game/Battle/Obj/retry_b_obj_00_nce.bin", 1, 0, 0, 0, 1, {0, 2, 1, 0}},
+    {"/Game/Battle/Obj/retry_b_obj_00_nce.bin", 3, 0, 0, 0, 1, {3, 5, 4, 0}},
+    {"/Game/Battle/Obj/retry_b_obj_00_nce.bin", 6, 0, 0, 0, 1, {6, 8, 7, 0}},
+};
+static const WindowItemRecord sRetryItems[3] = {
+    {0, 1, 45, 152, 78, 20, {0}, {0, 0, 1, 1}, 0, 2},
+    {1, 1, 133, 152, 78, 20, {0}, {1, 1, 0, 0}, 0, 2},
+    {2, 0x8000, 120, 18, 78, 20, {0}, {-1, -1, -1, -1}, 0, 0},
+};
+static const u8 sRewardRates[3][3] = {{10, 5, 2}, {30, 15, 6}, {10, 5, 2}};
+static const WindowCellRecord sRetryCells[3] = {
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0x5000, 2, 0, 1, {3, 5, 4, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0x5000, 2, 0, 1, {6, 8, 7, 0}},
+    {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x5000, 2, 0, 1, {10, 10, 10, 0}},
+};
+static const u8 sAnimPos[17][2] = {{170, 74}, {170, 90}, {110, 26}, {110, 42}, {110, 58}, {170, 26}, {170, 42}, {170, 58}, {0, 8}, {0, 24}, {0, 72}, {0, 104}, {0, 120}, {0, 136}, {0, 166}, {8, 40}, {16, 56}};
+static const WindowItemRecord sResultItems[3] = {
+    {0, 1, 48, 58, 160, 20, {0}, {2, 1, -1, -1}, 0, 2},
+    {1, 1, 48, 86, 160, 20, {0}, {0, 2, -1, -1}, 0, 2},
+    {2, 1, 48, 114, 160, 20, {0}, {1, 0, -1, -1}, 0, 2},
+};
+static const u16 sPrizeTable[2][6][9] = {
+    {
+        {10, 15, 20, 0, 0, 0, 0, 0, 0},
+        {30, 40, 50, 60, 0, 0, 0, 0, 0},
+        {100, 120, 150, 100, 0, 0, 0, 0, 0},
+        {50, 70, 90, 110, 130, 150, 0, 0, 0},
+        {70, 95, 120, 150, 0, 0, 0, 0, 0},
+        {100, 120, 150, 180, 200, 220, 280, 0, 350},
+    },
+    {
+        {120, 140, 200, 0, 0, 0, 0, 0, 0},
+        {200, 250, 300, 350, 0, 0, 0, 0, 0},
+        {300, 400, 500, 0, 0, 0, 0, 0, 0},
+        {100, 130, 160, 180, 250, 0, 0, 0, 0},
+        {130, 150, 170, 200, 0, 0, 0, 0, 0},
+        {100, 120, 150, 180, 210, 240, 270, 0, 0},
+    },
+};
+#include "System/WirelessManager.hpp"
+#include "System/TouchManager.hpp"
+#include "System/FrameTask.hpp"
+#include "Text/TextManager.hpp"
 
 u32 func_020779ec(void *unk);
 BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
@@ -48,10 +94,6 @@ struct UnkStruct_020c4230 {
     /* 20 */ u16 mUnk_20;
 };
 extern UnkStruct_020c4230 data_020c4230;
-extern const WindowItemRecord data_ov007_0227a3b4[3];
-extern const WindowCellRecord data_ov007_0227a408[3];
-extern const WindowItemRecord data_ov007_0227a45c[3];
-extern const WindowCellRecord data_ov007_0227a4b0[3];
 
 // Result screen of the battle (result_u_*, retry_*, select_arena_*): shows the outcome and the rewards per player.
 class BattleResult : public SceneBase {
@@ -101,14 +143,6 @@ public:
     void func_ov007_022525c4();
     void func_ov007_022526f0();
 };
-extern const u8 data_ov007_0227a359[];
-extern const u16 data_ov007_0227a504[2][6][9];
-extern const u8 data_ov007_0227a37b[][3];
-extern const u8 data_ov007_0227a350[3][3];
-
-
-
-
 
 BattleResult::BattleResult()
     : SceneBase(0x3e8, 0) {
@@ -453,8 +487,8 @@ void BattleResult::Update() {
                 if (mUnk_0c) {
                     delete mUnk_0c;
                 }
-                mUnk_0c = new SelectWindow(3, data_ov007_0227a3b4, 0);
-                mUnk_0c->SetCells(3, data_ov007_0227a408);
+                mUnk_0c = new SelectWindow(3, sResultItems, 0);
+                mUnk_0c->SetCells(3, sResultCells);
             }
             GXS_SetVisiblePlane(0x12);
             SpriteManager::Get().StartFade(2);
@@ -501,8 +535,8 @@ void BattleResult::Update() {
             if (mUnk_0c) {
                 delete mUnk_0c;
             }
-            mUnk_0c = new SelectWindow(3, data_ov007_0227a45c, 0);
-            mUnk_0c->SetCells(3, data_ov007_0227a4b0);
+            mUnk_0c = new SelectWindow(3, sRetryItems, 0);
+            mUnk_0c->SetCells(3, sRetryCells);
             mUnk_0c->mCursor->mSelection = 1;
             GXS_SetVisiblePlane(0x13);
             mUnk_b1++;
@@ -843,12 +877,12 @@ void BattleResult::func_ov007_0224fb70() {
             switch (i) {
                 case 0:
                     if (mUnk_b2 >= 9) {
-                        mAnims[i]->func_0202a3ec(0, 0, data_ov007_0227a359[i * 2], data_ov007_0227a359[i * 2 + 1], 1);
+                        mAnims[i]->func_0202a3ec(0, 0, ((const u8 *) sAnimPos)[i * 2], ((const u8 *) sAnimPos)[i * 2 + 1], 1);
                     }
                     break;
                 case 1:
                     if (mUnk_b2 >= 11) {
-                        mAnims[i]->Draw(0, data_ov007_0227a359[i * 2], data_ov007_0227a359[i * 2 + 1], 1);
+                        mAnims[i]->Draw(0, ((const u8 *) sAnimPos)[i * 2], ((const u8 *) sAnimPos)[i * 2 + 1], 1);
                     }
                     break;
                 case 2:
@@ -859,9 +893,9 @@ void BattleResult::func_ov007_0224fb70() {
                 case 7:
                     if (mUnk_b2 >= (u8) (i - 2) + 3) {
                         if (mUnk_84[3] != 0) {
-                            mAnims[i]->Draw(0, data_ov007_0227a359[i * 2], data_ov007_0227a359[i * 2 + 1], 1);
+                            mAnims[i]->Draw(0, ((const u8 *) sAnimPos)[i * 2], ((const u8 *) sAnimPos)[i * 2 + 1], 1);
                         } else {
-                            mAnims[i]->Draw(0, data_ov007_0227a359[i * 2 + 6], data_ov007_0227a359[i * 2 + 7], 1);
+                            mAnims[i]->Draw(0, ((const u8 *) sAnimPos)[i * 2 + 6], ((const u8 *) sAnimPos)[i * 2 + 7], 1);
                         }
                     }
                     break;
@@ -895,36 +929,34 @@ void BattleResult::func_ov007_0224fcdc() {
     func_ov007_02251724();
 }
 
-
-
 void BattleResult::func_ov007_02250010() {
     if (mUnk_b3 != 0) {
         if (data_020d433c.mUnk_7b == 0xd) {
             switch (data_020d43f0[0].mUnk_42) {
                 case 1:
-                    mUnk_9c = data_ov007_0227a504[data_020d43f0[0].mUnk_5bf_0][0][data_020d43f0[0].mUnk_43] * 100;
+                    mUnk_9c = sPrizeTable[data_020d43f0[0].mUnk_5bf_0][0][data_020d43f0[0].mUnk_43] * 100;
                     break;
                 case 3:
-                    mUnk_9c = data_ov007_0227a504[data_020d43f0[0].mUnk_5bf_0][1][data_020d43f0[0].mUnk_43] * 100;
+                    mUnk_9c = sPrizeTable[data_020d43f0[0].mUnk_5bf_0][1][data_020d43f0[0].mUnk_43] * 100;
                     break;
                 case 6:
-                    mUnk_9c = data_ov007_0227a504[data_020d43f0[0].mUnk_5bf_0][2][data_020d43f0[0].mUnk_43] * 100;
+                    mUnk_9c = sPrizeTable[data_020d43f0[0].mUnk_5bf_0][2][data_020d43f0[0].mUnk_43] * 100;
                     break;
                 case 7:
-                    mUnk_9c = data_ov007_0227a504[data_020d43f0[0].mUnk_5bf_0][3][data_020d43f0[0].mUnk_43] * 100;
+                    mUnk_9c = sPrizeTable[data_020d43f0[0].mUnk_5bf_0][3][data_020d43f0[0].mUnk_43] * 100;
                     break;
                 case 8:
-                    mUnk_9c = data_ov007_0227a504[data_020d43f0[0].mUnk_5bf_0][4][data_020d43f0[0].mUnk_43] * 100;
+                    mUnk_9c = sPrizeTable[data_020d43f0[0].mUnk_5bf_0][4][data_020d43f0[0].mUnk_43] * 100;
                     break;
                 case 9:
-                    mUnk_9c = data_ov007_0227a504[data_020d43f0[0].mUnk_5bf_0][5][data_020d43f0[0].mUnk_43] * 100;
+                    mUnk_9c = sPrizeTable[data_020d43f0[0].mUnk_5bf_0][5][data_020d43f0[0].mUnk_43] * 100;
                     break;
                 case 10:
-                    mUnk_9c = data_ov007_0227a504[data_020d43f0[0].mUnk_5bf_0][0][data_020d43f0[0].mUnk_43] * 100;
+                    mUnk_9c = sPrizeTable[data_020d43f0[0].mUnk_5bf_0][0][data_020d43f0[0].mUnk_43] * 100;
                     break;
             }
         } else {
-            const u8 (*tbl)[3] = data_ov007_0227a37b;
+            const u8 (*tbl)[3] = sRankTable;
             u32 count = data_020d433c.mPlayerCount;
             u8 i = 1;
             u32 me = data_020d433c.mBattlePlayers->mUnk_2a9;
@@ -967,11 +999,11 @@ void BattleResult::func_ov007_02250010() {
         }
         if (k < 3) {
             if (data_020d433c.mUnk_98 != 0) {
-                mUnk_a0 = data_ov007_0227a350[1][k] * 100;
+                mUnk_a0 = sRewardRates[1][k] * 100;
             } else if (data_020d433c.mUnk_99 < 6) {
-                mUnk_a0 = data_ov007_0227a350[0][k] * 100;
+                mUnk_a0 = sRewardRates[0][k] * 100;
             } else {
-                mUnk_a0 = data_ov007_0227a350[2][k] * 100;
+                mUnk_a0 = sRewardRates[2][k] * 100;
             }
         }
     }
@@ -1209,25 +1241,6 @@ void BattleResult::func_ov007_02251724() {
     func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0xf000, mUnk_38[1], mUnk_50[1], 0);
 }
 
-void BattleResult::func_ov007_022525c4() {
-    SpriteManager::Get().Screen(0).func_02027778(mUnk_44[0], mUnk_5c[0], 10, 12, 0, 0x100, 14, 0);
-    SpriteManager::Get().Screen(0).func_02027778(mUnk_44[1], mUnk_5c[1], 0x9e, 0x8c, 0, 0x1e0, 14, 0);
-}
-
-
-
-
-
-void BattleResult::func_ov007_022526f0() {
-    u8 i = 0;
-    do {
-        if (mUnk_38[i]) {
-            MI_CpuClear16(mUnk_38[i], mUnk_50[i]);
-        }
-        i++;
-    } while (i < 3);
-}
-
 #define COUNT_STEP(CLEAR_ONLY)                                                         \
     if ((u32) mUnk_a4 < 10 || (InputManager::Get().IsHeld(1) | TouchManager::Get().mUnk_57)) { \
         if (!(CLEAR_ONLY)) {                                                           \
@@ -1390,4 +1403,19 @@ void BattleResult::func_ov007_02251ae4() {
             break;
     }
     func_ov007_02251724();
+}
+
+void BattleResult::func_ov007_022525c4() {
+    SpriteManager::Get().Screen(0).func_02027778(mUnk_44[0], mUnk_5c[0], 10, 12, 0, 0x100, 14, 0);
+    SpriteManager::Get().Screen(0).func_02027778(mUnk_44[1], mUnk_5c[1], 0x9e, 0x8c, 0, 0x1e0, 14, 0);
+}
+
+void BattleResult::func_ov007_022526f0() {
+    u8 i = 0;
+    do {
+        if (mUnk_38[i]) {
+            MI_CpuClear16(mUnk_38[i], mUnk_50[i]);
+        }
+        i++;
+    } while (i < 3);
 }

@@ -189,6 +189,10 @@ void func_0200e668(u32 id)
     func_0200e3d0(id, 2);
 }
 
+// The 4 MB and 8 MB cases set their flag bits with two ORs, like the other cases. The two immediates fold into one
+// orr after register allocation, and a block rewritten after allocation is scheduled a second time, which keeps the
+// f4c/f44 stores ahead of the literal loads that follow them. Which bits go in which OR is not visible in the binary.
+// The chained clear at fail works the same way: the register copy it leaves is dropped after allocation.
 void func_0200e690(s32 id)
 {
     CardArg *a = ((CardCommon *)data_020bfe60)->arg;
@@ -270,7 +274,8 @@ void func_0200e690(s32 id)
             a->f3c = 0xc3500;
             a->f54 = 0;
             a->f20 = 0x1000;
-            a->f58 |= 0xd000;
+            a->f58 |= 0x1000;
+            a->f58 |= 0xc000;
             break;
         case 0x800000:
             if (variant == 0) {
@@ -279,14 +284,16 @@ void func_0200e690(s32 id)
                 a->f38 = 0x109a0;
                 a->f3c = 0x27100;
                 a->f54 = 0;
-                a->f58 |= 0x5000;
+                a->f58 |= 0x1000;
+                a->f58 |= 0x4000;
             } else if (variant == 1) {
                 a->f40 = 0x3e8;
                 a->f44 = 0xbb8;
                 a->f38 = 0x109a0;
                 a->f3c = 0x27100;
                 a->f54 = 0x84;
-                a->f58 |= 0x5000;
+                a->f58 |= 0x1000;
+                a->f58 |= 0x4000;
             }
             break;
         default:
@@ -310,8 +317,7 @@ void func_0200e690(s32 id)
         }
     }
 fail:
-    a->id = 0;
-    a->f18 = 0;
+    a->f18 = a->id = 0;
     ((CardCommon *)data_020bfe60)->arg->result = 3;
 }
 

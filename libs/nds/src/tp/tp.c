@@ -205,8 +205,12 @@ int TP_CalcCalibrateParam(TPCalibrateParam *p, u16 x1, u16 y1, u16 px1, u16 py1,
         return 1;
     }
     p->xDotSize = r;
+    // The halfword conversion becomes a shift pair (lsl #9, asr #16) in the backend, and the register for its first
+    // shift is numbered after the shared -0x8000 constant, so it is coloured first: that puts the y0 value in r0 and
+    // the constant in r1. With the conversion the range checks below can no longer fail in C terms, but they are still
+    // emitted. The cast may stand in for a different construct with the same codegen.
     {
-        s32 v = ((((x1 + lx2) << 8) - p->xDotSize * (px1 + lpx2)) << 9) >> 16;
+        s32 v = (s16)((((x1 + lx2) << 8) - p->xDotSize * (px1 + lpx2)) >> 7);
         if (v >= 0x8000 || v < -0x8000) {
             OS_RestoreInterrupts(e);
             return 1;
@@ -219,7 +223,7 @@ int TP_CalcCalibrateParam(TPCalibrateParam *p, u16 x1, u16 y1, u16 px1, u16 py1,
     if (r >= 0x8000 || r < -0x8000) return 1;
     p->yDotSize = r;
     {
-        s32 v = ((((y1 + ly2) << 8) - p->yDotSize * (lpy1 + lpy2)) << 9) >> 16;
+        s32 v = (s16)((((y1 + ly2) << 8) - p->yDotSize * (lpy1 + lpy2)) >> 7);
         if (v >= 0x8000 || v < -0x8000) return 1;
         p->y0 = v;
     }

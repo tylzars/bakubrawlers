@@ -677,6 +677,7 @@ libs/nds/src/cp/cp_context.c:
     .text       start:0x0200be08 end:0x0200be84
 
 libs/nds/src/tp/tp.c:
+    complete
     .text       start:0x0200be84 end:0x0200c744
 
 libs/nds/src/mic/mic.c:
@@ -692,6 +693,7 @@ libs/nds/src/rtc/rtc.c:
     .text       start:0x0200da80 end:0x0200e310
 
 libs/nds/src/card/card_common.c:
+    complete
     .text       start:0x0200e310 end:0x0200f71c
 
 libs/nds/src/card/card_pullout.c:

@@ -117,8 +117,10 @@ typedef struct { u16 f0; u8 f2[3]; u8 pad5; u16 f6; u32 f8; } CartInfo;
 
 // non-matching: 5 words in the head after the first early return. The original loads the 0x04000300 register,
 // stores the constant 1 and then tests (`ldr r1; mov r2,#1; ldrh r1,[r1]; str r2,[r0]; tst r1,#1`); here the two
-// swap registers and the tst comes before the str. The swap only appears when the test feeds the conditional
-// epilogue. Using data_020c11c0 as a 32-byte-aligned object makes the compiler skip its IR optimizer for this
+// swap registers and the tst comes before the str: the second scheduling pass (run because the conditional epilogue
+// is merged into this block) takes tst first since it makes the stack restore ready. The original's numbering (#1
+// before the 0x04000300 address) and order fit a store-first source with no memory edge between the f00 store and
+// the register read, which no constant-address read form here produces. Using data_020c11c0 as a 32-byte-aligned object makes the compiler skip its IR optimizer for this
 // function, which gives the original's unrotated loops and pool reloads.
 void func_02011e7c(void)
 {

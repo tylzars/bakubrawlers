@@ -2669,15 +2669,15 @@ data_ov007_0228ac6c kind:data(any) addr:0x0228ac6c
 data_ov007_0228ac7c kind:data(any) addr:0x0228ac7c
 data_ov007_0228ac8c kind:data(any) addr:0x0228ac8c
 data_ov007_0228ac9c kind:data(any) addr:0x0228ac9c
-data_ov007_0228acb4 kind:data(any) addr:0x0228acb4
+_ZTV15BattleCardModel kind:data(any) addr:0x0228acac
 data_ov007_0228acc0 kind:data(any) addr:0x0228acc0
 data_ov007_0228acf4 kind:data(any) addr:0x0228acf4
-data_ov007_0228adfc kind:data(any) addr:0x0228adfc
-data_ov007_0228ae08 kind:data(any) addr:0x0228ae08
-data_ov007_0228ae10 kind:data(any) addr:0x0228ae10
-data_ov007_0228ae24 kind:data(any) addr:0x0228ae24
-data_ov007_0228ae3c kind:data(any) addr:0x0228ae3c
-data_ov007_0228ae40 kind:data(any) addr:0x0228ae40
+@2038 kind:data(any) addr:0x0228adfc local
+@2039 kind:data(any) addr:0x0228ae08 local
+@2040 kind:data(any) addr:0x0228ae10 local
+@2041 kind:data(any) addr:0x0228ae24 local
+@2042 kind:data(any) addr:0x0228ae3c local
+@2200 kind:data(any) addr:0x0228ae40 local
 _ZTV14BattleRealBaku kind:data(any) addr:0x0228ae5c
 @683 kind:data(any) addr:0x0228ae6c local
 @680 kind:data(any) addr:0x0228ae80 local
@@ -2884,11 +2884,11 @@ data_ov007_0228bafc kind:bss addr:0x0228bafc
 data_ov007_0228bb08 kind:bss addr:0x0228bb08
 data_ov007_0228bb14 kind:bss addr:0x0228bb14
 data_ov007_0228bb20 kind:bss addr:0x0228bb20
-data_ov007_0228bb2c kind:bss addr:0x0228bb2c
-data_ov007_0228bb38 kind:bss addr:0x0228bb38
-data_ov007_0228bb44 kind:bss addr:0x0228bb44
-data_ov007_0228bb50 kind:bss addr:0x0228bb50
-data_ov007_0228bb5c kind:bss addr:0x0228bb5c
+@645 kind:bss addr:0x0228bb2c local
+@790 kind:bss addr:0x0228bb38 local
+@432 kind:bss addr:0x0228bb44 local
+@777 kind:bss addr:0x0228bb50 local
+@587 kind:bss addr:0x0228bb5c local
 data_ov007_0228bb68 kind:bss addr:0x0228bb68
 data_ov007_0228bb74 kind:bss addr:0x0228bb74
 sResource kind:bss addr:0x0228bb80 local

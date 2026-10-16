@@ -2,15 +2,32 @@
 #include <nitro/fx.h>
 
 #include "Battle/BattleBase.hpp"
-#include "Graphics/Camera.hpp"
+#include "Text/TextManager.hpp"
 #include "Graphics/Effect.hpp"
 #include "Graphics/Model.hpp"
 #include "Graphics/ModelResource.hpp"
-#include "Graphics/SpriteManager.hpp"
+#include "System/SoundManager.hpp"
 #include "System/FileSystem.hpp"
 #include "System/FrameTask.hpp"
-#include "System/SoundManager.hpp"
-#include "Text/TextManager.hpp"
+#include "Graphics/SpriteManager.hpp"
+#include "Graphics/Camera.hpp"
+
+// Frame clock singleton (instance 0x020c1884, destructor 0x020219c0).
+class UnkStruct_020c1884 {
+public:
+    /* 00 */ PAD(0x00, 0x15);
+    /* 15 */ u8 mUnk_15;
+    /* 16 */ PAD(0x16, 0x18);
+    /* 18 */
+
+    ~UnkStruct_020c1884();
+
+    static UnkStruct_020c1884 &Get() {
+        static UnkStruct_020c1884 instance;
+        return instance;
+    }
+};
+
 #include <nitro/mi.h>
 #include <nitro/os.h>
 #include <stdio.h>
@@ -48,13 +65,147 @@ static inline float FramesToFloat(u32 frames) {
 }
 
 extern const u8 data_020a1074[];
-extern BattleCardModelEntry *data_ov007_0228acc0[];
+extern BattleCardModelEntry data_ov007_02282318[];
+extern BattleCardModelEntry data_ov007_02282738[];
+extern BattleCardModelEntry data_ov007_02282b58[];
+extern BattleCardModelEntry data_ov007_02282f78[];
+extern BattleCardModelEntry data_ov007_02283398[];
+extern BattleCardModelEntry data_ov007_022837b8[];
+extern BattleCardModelEntry data_ov007_02283bd8[];
+extern BattleCardModelEntry data_ov007_02283ff8[];
+extern BattleCardModelEntry data_ov007_02284418[];
+extern BattleCardModelEntry data_ov007_02284838[];
+extern BattleCardModelEntry data_ov007_02284c58[];
+extern BattleCardModelEntry data_ov007_02285078[];
+extern BattleCardModelEntry data_ov007_02285498[];
+BattleCardModelEntry *data_ov007_0228acc0[13] = {
+    data_ov007_02282318,
+    data_ov007_02282738,
+    data_ov007_02282b58,
+    data_ov007_02282f78,
+    data_ov007_02283398,
+    data_ov007_022837b8,
+    data_ov007_02283bd8,
+    data_ov007_02283ff8,
+    data_ov007_02284418,
+    data_ov007_02284838,
+    data_ov007_02284c58,
+    data_ov007_02285078,
+    data_ov007_02285498,
+};
 extern const VecFx32 data_ov007_0227c0c4;
 extern MtxFx43 data_0220e86c;
 extern const u8 data_ov007_0227c418[];
 extern const u8 data_ov007_0227c438[];
 extern const u8 data_ov007_0227c3f0[];
-extern u32 *data_ov007_0228acf4[];
+extern u32 data_ov007_0227c0d0[];
+extern u32 data_ov007_0227c0e4[];
+extern u32 data_ov007_0227c0f8[];
+extern u32 data_ov007_0227c10c[];
+extern u32 data_ov007_0227c120[];
+extern u32 data_ov007_0227c134[];
+extern u32 data_ov007_0227c148[];
+extern u32 data_ov007_0227c15c[];
+extern u32 data_ov007_0227c170[];
+extern u32 data_ov007_0227c184[];
+extern u32 data_ov007_0227c198[];
+extern u32 data_ov007_0227c1ac[];
+extern u32 data_ov007_0227c1c0[];
+extern u32 data_ov007_0227c1d4[];
+extern u32 data_ov007_0227c1e8[];
+extern u32 data_ov007_0227c1fc[];
+extern u32 data_ov007_0227c210[];
+extern u32 data_ov007_0227c224[];
+extern u32 data_ov007_0227c238[];
+extern u32 data_ov007_0227c24c[];
+extern u32 data_ov007_0227c260[];
+extern u32 data_ov007_0227c274[];
+extern u32 data_ov007_0227c288[];
+extern u32 data_ov007_0227c29c[];
+extern u32 data_ov007_0227c2b0[];
+extern u32 data_ov007_0227c2c4[];
+extern u32 data_ov007_0227c2d8[];
+extern u32 data_ov007_0227c2ec[];
+extern u32 data_ov007_0227c300[];
+extern u32 data_ov007_0227c314[];
+extern u32 data_ov007_0227c328[];
+extern u32 data_ov007_0227c33c[];
+extern u32 data_ov007_0227c350[];
+extern u32 data_ov007_0227c364[];
+extern u32 data_ov007_0227c378[];
+extern u32 data_ov007_0227c38c[];
+extern u32 data_ov007_0227c3a0[];
+extern u32 data_ov007_0227c3b4[];
+extern u32 data_ov007_0227c3c8[];
+extern u32 data_ov007_0227c3dc[];
+u32 *data_ov007_0228acf4[66] = {
+    data_ov007_0227c0d0,
+    data_ov007_0227c0f8,
+    0,
+    0,
+    data_ov007_0227c170,
+    data_ov007_0227c184,
+    data_ov007_0227c210,
+    data_ov007_0227c1ac,
+    data_ov007_0227c1c0,
+    data_ov007_0227c1e8,
+    data_ov007_0227c1fc,
+    data_ov007_0227c238,
+    data_ov007_0227c260,
+    data_ov007_0227c134,
+    data_ov007_0227c29c,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    data_ov007_0227c2ec,
+    data_ov007_0227c300,
+    data_ov007_0227c328,
+    data_ov007_0227c350,
+    data_ov007_0227c378,
+    data_ov007_0227c38c,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    data_ov007_0227c3c8,
+    data_ov007_0227c3a0,
+    data_ov007_0227c3b4,
+    data_ov007_0227c10c,
+    data_ov007_0227c148,
+    data_ov007_0227c2c4,
+    data_ov007_0227c15c,
+    data_ov007_0227c33c,
+    data_ov007_0227c198,
+    data_ov007_0227c224,
+    data_ov007_0227c1d4,
+    data_ov007_0227c24c,
+    0,
+    data_ov007_0227c274,
+    0,
+    0,
+    0,
+    data_ov007_0227c2d8,
+    0,
+    data_ov007_0227c314,
+    0,
+    data_ov007_0227c364,
+    data_ov007_0227c3dc,
+    data_ov007_0227c0e4,
+    data_ov007_0227c120,
+    data_ov007_0227c2b0,
+    data_ov007_0227c288,
+};
 
 extern "C" s32 func_0203340c(void *dict, const char *name);
 extern "C" void func_01ffd088(MtxFx43 *m, u16 angle);
@@ -68,21 +219,6 @@ extern "C" s32 FX_AsinIdx(s32 value);
 extern "C" s32 FX_AcosIdx(s32 value);
 extern "C" void func_020122f4(char *dst, const char *name);
 
-// Frame clock singleton (instance 0x020c1884, destructor 0x020219c0).
-class UnkStruct_020c1884 {
-public:
-    /* 00 */ PAD(0x00, 0x15);
-    /* 15 */ u8 mUnk_15;
-    /* 16 */ PAD(0x16, 0x18);
-    /* 18 */
-
-    ~UnkStruct_020c1884();
-
-    static UnkStruct_020c1884 &Get() {
-        static UnkStruct_020c1884 instance;
-        return instance;
-    }
-};
 
 BattleCardModel::BattleCardModel(EffectManager *effects, Camera *camera, u32 a, u32 b, u32 c, u32 d)
     : SceneBase(2, 0) {

@@ -365,9 +365,11 @@ src/07_Battle/Battle/BattleCollision.cpp:
     complete
     .text       start:0x022720ac end:0x02272540
 
-// provisional: code only; .data 0x0228ac08-0x0228ae64, .rodata 0x0227c0c4-0x022858b8 and .bss 0x0228bb2c-0x0228bb68 belong here.
 src/07_Battle/Battle/BattleCardModel.cpp:
+    complete
     .text       start:0x02272540 end:0x0227430c
+    .data       start:0x0228acac end:0x0228ae5c
+    .bss        start:0x0228bb2c end:0x0228bb68
 
 src/07_Battle/Battle/BattleRealBaku.cpp:
     complete

@@ -39,7 +39,7 @@ POINTS = {
     "licm": 0x507A20,
     "coalesce": 0x50AEE0,
     "color": 0x513DC0,
-    "after-color": 0x471D15,  # the call that follows colouring
+    "after-color": 0x471CE8,
     "final": 0x4FE7D0,
 }
 MERGE_SITE = 0x50B068  # inside the coalescing loop, after a merge has been accepted
@@ -71,6 +71,12 @@ def pe_reader(path: Path):
         raise ValueError(hex(addr))
 
     return read
+
+
+def pe_entry(path: Path) -> int:
+    data = path.read_bytes()
+    pe = struct.unpack_from("<I", data, 0x3C)[0]
+    return struct.unpack_from("<I", data, pe + 24 + 28)[0] + struct.unpack_from("<I", data, pe + 24 + 16)[0]
 
 
 def opcode_names(read) -> list[str]:
@@ -152,7 +158,7 @@ def dump(label):
     print('\n'.join(out), flush=True)
 class Point(gdb.Breakpoint):
     def __init__(self, addr, label):
-        super().__init__('*0x%%x' %% addr, type=gdb.BP_HARDWARE_BREAKPOINT, internal=True); self.label = label
+        super().__init__('*0x%%x' %% addr, type=gdb.BP_BREAKPOINT, internal=True); self.label = label
     def stop(self):
         if FUNC in curfunc(): dump(self.label)
         return False
@@ -166,7 +172,7 @@ class Merge(gdb.Breakpoint):
 for label, addr in POINTS:
     Point(addr, label)
 if MERGES:
-    Merge('*0x%%x' %% %(merge_site)d, type=gdb.BP_HARDWARE_BREAKPOINT, internal=True)
+    Merge('*0x%%x' %% %(merge_site)d, type=gdb.BP_BREAKPOINT, internal=True)
 '''
 
 
@@ -183,6 +189,7 @@ def main():
     for addr, want in CHECKS.items():
         if read(addr, len(want) // 2).hex() != want:
             sys.exit(f"{COMPILER} is not the expected 2.0/sp2p2 build (mismatch at {addr:#x})")
+    entry = pe_entry(COMPILER)
     flags_src = args.flags_from or os.path.relpath(Path(args.source).resolve(), ROOT)
     flags = ninja_flags(flags_src)
     points = [(p, POINTS[p]) for p in (args.at or ["coalesce", "color", "after-color"])]
@@ -193,7 +200,14 @@ def main():
         script.write_text(GDB_SCRIPT % dict(names=opcode_names(read), func=args.func, points=points,
                                             merges=args.merges, merge_site=MERGE_SITE))
         cmd = ["gdb", "-q", "-batch", "-nx", "-ex", "set pagination off", "-ex", "set debuginfod enabled off",
-               "-ex", "starti", "-ex", f"source {script}", "-ex", "continue", "--args",
+               # gdb decodes this 32-bit code as 64-bit; stepping over a breakpoint out of line would treat an
+               # absolute address operand as rip-relative and fault, so step over breakpoints in place.
+               "-ex", "set displaced-stepping off",
+               "-ex", "starti",
+               # The compiler's code is not mapped yet at the first instruction, so software breakpoints can't be
+               # written. Stop once at its entry point with one hardware breakpoint, then plant the rest.
+               "-ex", f"hbreak *{entry:#x}", "-ex", "continue", "-ex", "delete",
+               "-ex", f"source {script}", "-ex", "continue", "--args",
                str(WIBO), str(COMPILER), *flags, "-lang=" + lang, "-c", str(Path(args.source).resolve()),
                "-o", str(Path(tmp) / "out.o")]
         proc = subprocess.run(cmd, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)

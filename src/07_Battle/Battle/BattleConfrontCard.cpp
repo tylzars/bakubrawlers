@@ -381,7 +381,12 @@ void BattleConfrontCard::func_ov007_0223f90c(u16 value) {
 // In the compiler's backend the IR is the same for every natural form; colouring takes higher virtual registers first, and
 // here j*4 is numbered after `slots`, so it gets r1. Operands are emitted left to right (`slots + j*4` gives
 // `ldrh [slots, j4]`), so j*4 must be numbered before `slots` yet stay a temporary, as a shift CSE'd from an earlier
-// statement would.
+// statement would. More precisely: the numbering must be exactly list < j*4 < slots (j*4 below the
+// list pointer is visited at full degree and coloured first, taking r0); the IR forward-substitutes every cheap
+// single-use register expression (named, compound, function-scope, reassigned or unread offsets, inline arguments,
+// reusing `id` for j<<2), so no natural statement keeps j*4 early. Closest IR: integer sums through a player local
+// (`(u32)p->mSlots6c + (j << 2)`) give the right order after the first CSE pass, but the local is substituted away
+// in the second and the list load is rebuilt after j*4. About 500 variants were tried.
 BOOL BattleConfrontCard::func_ov007_0223f918() {
     u8 j;
     u8 k;

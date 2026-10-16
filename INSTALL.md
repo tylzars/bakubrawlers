@@ -27,8 +27,9 @@
    ```
 
 ## Matching the header
-Without an ARM7 BIOS dump, the secure-area CRC in the ROM header is restored by `tools/fix_header.py`. With one
-(`arm7_bios.bin` in the repository root), `dsd` writes the header checksum at 0x6C itself. Either way the ROM matches.
+This is optional: put your own ARM7 BIOS dump at `arm7_bios.bin` in the repository root and `dsd` writes the header
+checksum at 0x6C itself. Without it, `tools/fix_header.py` writes your base ROM's value there and recomputes the
+header checksum. Either way the ROM matches.
 
 ## Useful targets
 | Command | Result |

@@ -11,6 +11,7 @@ Pipeline:  baserom --dsd rom extract--> extract/<ver>/
 import argparse
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -161,6 +162,7 @@ w(f"rule lcf\n  command = {DSD} lcf -c $config && {PY} tools/lcf_force_active.py
 w(f"rule mwcc\n  command = {WINE} $cc $base_flags $cc_flags {' '.join('-i ' + d for d in include_dirs)} "
   f"-d version_{ver.upper()} -MD -c $in -o $outdir && {PY} tools/transform_dep.py $basefile.d $basefile.d && {PY} tools/demote_multidef.py $out\n"
   f"  depfile = $basefile.d\n  deps = gcc\n  description = MWCC $in\n")
+w(f"rule expand_incbin\n  command = {PY} tools/expand_incbin.py $in $out\n  description = EXPAND $in\n")
 w(f"rule mwasm\n  command = {WINE} {ASM} -proc arm5TE $in -o $out\n  description = MWASM $in\n")
 w(f"rule mwld\n  command = {WINE} {LD} {' '.join(LD_FLAGS)} @$objects $lcf -o $out\n  description = LINK $out\n")
 w(f"rule disassemble\n  command = {DSD} dis -c $config -a $outdir --ual && touch $out\n  description = DIS\n")
@@ -187,7 +189,9 @@ if args.compiler is None:
 build(OBJDIFF, "download_tool", variables={"tool": "objdiff", "tag": OBJDIFF_TAG, "path": OBJDIFF})
 
 # ---- extract / delink / lcf ----
-build(str(extract_cfg), "extract", [str(baserom)], implicit=[DSD], variables={"outdir": str(extract_dir)})
+# The extracted ARM9 binary is listed as an output too: assembly units take filler from it (.incbin, see below).
+build([str(extract_cfg), str(extract_dir / "arm9" / "arm9.bin")], "extract", [str(baserom)], implicit=[DSD],
+      variables={"outdir": str(extract_dir)})
 
 delink_files = [f["delink_file"] for f in delinks["files"]]
 build(delink_files, "delink", dsd_config_files + [str(extract_cfg)], implicit=[DSD, "tools/delink_multidef.py"],
@@ -209,7 +213,14 @@ for src in sources:
     obj = build_dir / src.with_suffix(".o")
     compiled_objects.append(str(obj))
     if src.suffix == ".s":
-        build(str(obj), "mwasm", [str(src)], implicit=[ASM] + tool_outputs)
+        # .incbin data (filler from the extracted ROM) is expanded into a copy under build/ first: the assembler
+        # reads .incbin input as text and rewrites lone 0x0a bytes. The included files are dependencies.
+        incbins = sorted(set(re.findall(r'^\s*\.incbin\s+"([^"]+)"', src.read_text(), re.M)))
+        asm_src = str(src)
+        if incbins:
+            asm_src = str(build_dir / src)
+            build(asm_src, "expand_incbin", [str(src)], implicit=["tools/expand_incbin.py"] + incbins)
+        build(str(obj), "mwasm", [asm_src], implicit=[ASM] + tool_outputs)
         continue
     cc = next((str(MWCC_ROOT / v / "mwccarm.exe") for prefix, v in PATH_COMPILERS.items()
                if str(src).startswith(prefix)), CC)

@@ -54,25 +54,32 @@ static const u8 data_ov007_022797ac[17][5] = {
     {20, 50, 30, 0, 0}
 };
 
-static const u8 data_ov007_02279804[17 * 7] = {
-    10, 20, 20, 0, 20, 20, 10,
-    0, 5, 5, 25, 30, 25, 10,
-    20, 20, 0, 30, 20, 0, 10,
-    10, 10, 10, 20, 20, 20, 10,
-    0, 20, 30, 0, 20, 20, 10,
-    20, 20, 20, 10, 10, 10, 10,
-    10, 10, 20, 20, 20, 20, 0,
-    20, 20, 20, 10, 10, 10, 10,
-    10, 20, 30, 20, 10, 0, 10,
-    0, 10, 30, 20, 30, 10, 0,
-    0, 5, 45, 0, 5, 40, 5,
-    10, 10, 40, 10, 10, 10, 10,
-    10, 20, 15, 15, 20, 10, 10,
-    30, 10, 0, 20, 10, 10, 20,
-    10, 20, 0, 20, 10, 10, 30,
-    0, 0, 20, 10, 30, 30, 10,
-    10, 10, 0, 30, 30, 10, 10,
-};
+// Seven weights per row, one row per value of the player's mUnk_f6, summed until they pass a random roll. A
+// function-local static of an inline accessor gets a section of its own; defined ahead of ShotTable() it keeps its
+// place before that table.
+typedef u8 RollWeightRow[7];
+inline const RollWeightRow *RollWeights() {
+    static const u8 data_ov007_02279804[17][7] = {
+        {10, 20, 20, 0, 20, 20, 10},
+        {0, 5, 5, 25, 30, 25, 10},
+        {20, 20, 0, 30, 20, 0, 10},
+        {10, 10, 10, 20, 20, 20, 10},
+        {0, 20, 30, 0, 20, 20, 10},
+        {20, 20, 20, 10, 10, 10, 10},
+        {10, 10, 20, 20, 20, 20, 0},
+        {20, 20, 20, 10, 10, 10, 10},
+        {10, 20, 30, 20, 10, 0, 10},
+        {0, 10, 30, 20, 30, 10, 0},
+        {0, 5, 45, 0, 5, 40, 5},
+        {10, 10, 40, 10, 10, 10, 10},
+        {10, 20, 15, 15, 20, 10, 10},
+        {30, 10, 0, 20, 10, 10, 20},
+        {10, 20, 0, 20, 10, 10, 30},
+        {0, 0, 20, 10, 30, 30, 10},
+        {10, 10, 0, 30, 30, 10, 10},
+    };
+    return data_ov007_02279804;
+}
 
 typedef BattleCpuShot BattleCpuShotTable[8][4][3];
 
@@ -653,7 +660,7 @@ void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 
     u8 roll = MATH_Rand32(&data_020d42e8, 100);
     u8 sum  = 0;
     do {
-        sum += data_ov007_02279804[a * 7 + i];
+        sum += RollWeights()[a][i];
         if (sum > roll) {
             idx1 = i;
             break;

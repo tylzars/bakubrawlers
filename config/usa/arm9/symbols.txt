@@ -3045,7 +3045,7 @@ data_0209e57c kind:data(any) addr:0x0209e57c local
 data_0209e588 kind:data(any) addr:0x0209e588 local
 data_0209e594 kind:data(any) addr:0x0209e594 local
 data_0209e5bc kind:data(any) addr:0x0209e5bc local
-data_0209e68c kind:data(any) addr:0x0209e68c local
+_ZZ15CommandMessagesvE13data_0209e68c kind:data(any) addr:0x0209e68c weak
 data_0209e784 kind:data(any) addr:0x0209e784 local
 data_0209e79c kind:data(any) addr:0x0209e79c local
 data_0209e7f4 kind:data(any) addr:0x0209e7f4 local
@@ -3169,7 +3169,7 @@ data_020a34f4 kind:data(any) addr:0x020a34f4 local
 data_020a35b8 kind:data(any) addr:0x020a35b8 local
 data_020a3688 kind:data(any) addr:0x020a3688 local
 data_020a3768 kind:data(any) addr:0x020a3768 local
-data_020a3860 kind:data(any) addr:0x020a3860 local
+_ZZ14Table_020a3860vE13data_020a3860 kind:data(any) addr:0x020a3860 weak
 _ZZ14Table_020a39fcvE13data_020a39fc kind:data(any) addr:0x020a39fc weak
 _ZZ14Table_020a3ba8vE13data_020a3ba8 kind:data(any) addr:0x020a3ba8 weak
 data_020a3d54 kind:data(any) addr:0x020a3d54 local

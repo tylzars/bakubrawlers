@@ -161,43 +161,43 @@ asm void func_01ff9604(const void *src, void *dst) {
 // them a halfword store reaches word alignment, then words, then a last
 // halfword if two bytes remain. Returns at once when size is 0.
 asm void MI_CpuFill8(void *dstp, u32 data, u32 size) {
-    cmp r2, #0x0
-    bxeq lr
-    tst r0, #0x1
-    beq L965c
-    ldrh ip, [r0, #-0x1]
+    cmp r2, #0
+    bxeq lr                     // nothing to fill
+    tst r0, #1
+    beq L_even                  // dst already halfword aligned
+    ldrh ip, [r0, #-1]          // odd start: keep the byte below dst
     and ip, ip, #0xff
-    orr r3, ip, r1, lsl #0x8
-    strh r3, [r0, #-0x1]
-    add r0, r0, #0x1
-    subs r2, r2, #0x1
+    orr r3, ip, r1, lsl #8      // and put the fill byte above it
+    strh r3, [r0, #-1]
+    add r0, r0, #1
+    subs r2, r2, #1
     bxeq lr
-L965c:
-    cmp r2, #0x2
-    blo L96a4
-    orr r1, r1, r1, lsl #0x8
-    tst r0, #0x2
-    beq L967c
-    strh r1, [r0], #0x2
-    subs r2, r2, #0x2
+L_even:
+    cmp r2, #2
+    blo L_last_byte             // a single byte left
+    orr r1, r1, r1, lsl #8      // fill byte in both halves of a halfword
+    tst r0, #2
+    beq L_word_aligned
+    strh r1, [r0], #2           // one halfword up to word alignment
+    subs r2, r2, #2
     bxeq lr
-L967c:
-    orr r1, r1, r1, lsl #0x10
-    bics r3, r2, #0x3
-    beq L969c
+L_word_aligned:
+    orr r1, r1, r1, lsl #16     // fill byte in all four bytes
+    bics r3, r2, #3             // r3 = bytes to store as words
+    beq L_tail_half
     sub r2, r2, r3
-    add ip, r3, r0
-L9690:
-    str r1, [r0], #0x4
+    add ip, r3, r0              // end of the word run
+L_words:
+    str r1, [r0], #4
     cmp r0, ip
-    blo L9690
-L969c:
-    tst r2, #0x2
-    strneh r1, [r0], #0x2
-L96a4:
-    tst r2, #0x1
+    blo L_words
+L_tail_half:
+    tst r2, #2
+    strneh r1, [r0], #2         // two bytes left: one halfword
+L_last_byte:
+    tst r2, #1
     bxeq lr
-    ldrh r3, [r0]
+    ldrh r3, [r0]               // odd end: keep the byte above
     and r3, r3, #0xff00
     and r1, r1, #0xff
     orr r1, r1, r3
@@ -213,86 +213,88 @@ L96a4:
 // halfword. An odd trailing byte is merged by read-modify-write. Returns at
 // once when size is 0.
 asm void MI_CpuCopy8(const void *srcp, void *dstp, u32 size) {
-    cmp r2, #0x0
-    bxeq lr
-    tst r1, #0x1
-    beq L9704
-    ldrh ip, [r1, #-0x1]
+    cmp r2, #0
+    bxeq lr                     // nothing to copy
+    tst r1, #1
+    beq L_dst_even              // dst already halfword aligned
+    ldrh ip, [r1, #-1]          // odd dst: keep the byte below it
     and ip, ip, #0xff
-    tst r0, #0x1
-    ldrneh r3, [r0, #-0x1]
-    movne r3, r3, lsr #0x8
+    tst r0, #1
+    ldrneh r3, [r0, #-1]        // first source byte, from whichever half holds it
+    movne r3, r3, lsr #8
     ldreqh r3, [r0]
-    orr r3, ip, r3, lsl #0x8
-    strh r3, [r1, #-0x1]
-    add r0, r0, #0x1
-    add r1, r1, #0x1
-    subs r2, r2, #0x1
+    orr r3, ip, r3, lsl #8
+    strh r3, [r1, #-1]
+    add r0, r0, #1
+    add r1, r1, #1
+    subs r2, r2, #1
     bxeq lr
-L9704:
+L_dst_even:
     eor ip, r1, r0
-    tst ip, #0x1
-    beq L9758
-    bic r0, r0, #0x1
-    ldrh ip, [r0], #0x2
-    mov r3, ip, lsr #0x8
-    subs r2, r2, #0x2
-    blo L973c
-L9724:
-    ldrh ip, [r0], #0x2
-    orr ip, r3, ip, lsl #0x8
-    strh ip, [r1], #0x2
-    mov r3, ip, lsr #0x10
-    subs r2, r2, #0x2
-    bhs L9724
-L973c:
-    tst r2, #0x1
+    tst ip, #1
+    beq L_same_parity
+    // src odd, dst even: read aligned source halfwords and shift each byte pair together.
+    bic r0, r0, #1
+    ldrh ip, [r0], #2
+    mov r3, ip, lsr #8          // r3 = byte carried into the next store
+    subs r2, r2, #2
+    blo L_shift_tail
+L_shift_loop:
+    ldrh ip, [r0], #2
+    orr ip, r3, ip, lsl #8
+    strh ip, [r1], #2
+    mov r3, ip, lsr #16
+    subs r2, r2, #2
+    bhs L_shift_loop
+L_shift_tail:
+    tst r2, #1
     bxeq lr
-    ldrh ip, [r1]
+    ldrh ip, [r1]               // last byte: merge the carried byte under the one above
     and ip, ip, #0xff00
     orr ip, ip, r3
     strh ip, [r1]
     bx lr
-L9758:
-    tst ip, #0x2
-    beq L9784
-    bics r3, r2, #0x1
-    beq L97d0
+L_same_parity:
+    tst ip, #2
+    beq L_same_word
+    // Same halfword alignment but different word alignment: copy halfwords.
+    bics r3, r2, #1
+    beq L_last_byte
     sub r2, r2, r3
-    add ip, r3, r1
-L9770:
-    ldrh r3, [r0], #0x2
-    strh r3, [r1], #0x2
+    add ip, r3, r1              // end of the halfword run
+L_halves:
+    ldrh r3, [r0], #2
+    strh r3, [r1], #2
     cmp r1, ip
-    blo L9770
-    b L97d0
-L9784:
-    cmp r2, #0x2
-    blo L97d0
-    tst r1, #0x2
-    beq L97a4
-    ldrh r3, [r0], #0x2
-    strh r3, [r1], #0x2
-    subs r2, r2, #0x2
+    blo L_halves
+    b L_last_byte
+L_same_word:
+    cmp r2, #2
+    blo L_last_byte
+    tst r1, #2
+    beq L_word_aligned
+    ldrh r3, [r0], #2           // one halfword up to word alignment
+    strh r3, [r1], #2
+    subs r2, r2, #2
     bxeq lr
-L97a4:
-    bics r3, r2, #0x3
-    beq L97c4
+L_word_aligned:
+    bics r3, r2, #3             // r3 = bytes to copy as words
+    beq L_tail_half
     sub r2, r2, r3
-    add ip, r3, r1
-L97b4:
-    ldr r3, [r0], #0x4
-    str r3, [r1], #0x4
+    add ip, r3, r1              // end of the word run
+L_words:
+    ldr r3, [r0], #4
+    str r3, [r1], #4
     cmp r1, ip
-    blo L97b4
-L97c4:
-    tst r2, #0x2
-    ldrneh r3, [r0], #0x2
-    strneh r3, [r1], #0x2
-L97d0:
-    tst r2, #0x1
+    blo L_words
+L_tail_half:
+    tst r2, #2
+    ldrneh r3, [r0], #2         // two bytes left: one halfword
+    strneh r3, [r1], #2
+L_last_byte:
+    tst r2, #1
     bxeq lr
-    ldrh r2, [r1]
+    ldrh r2, [r1]               // odd end: keep the dst byte above, take the low source byte
     ldrh r0, [r0]
     and r2, r2, #0xff00
     and r0, r0, #0xff

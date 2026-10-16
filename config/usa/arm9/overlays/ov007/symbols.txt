@@ -1075,7 +1075,7 @@ data_ov007_0227970c kind:data(any) addr:0x0227970c local
 data_ov007_02279720 kind:data(any) addr:0x02279720 local
 @1181 kind:data(any) addr:0x02279764 local
 data_ov007_022797ac kind:data(any) addr:0x022797ac local
-data_ov007_02279804 kind:data(any) addr:0x02279804 local
+_ZZ11RollWeightsvE19data_ov007_02279804 kind:data(any) addr:0x02279804 weak
 _ZZ9ShotTablevE6sTable kind:data(any) addr:0x0227987c weak
 data_ov007_022799fc kind:data(any) addr:0x022799fc local
 data_ov007_02279a00 kind:data(any) addr:0x02279a00 local
@@ -1216,7 +1216,7 @@ data_ov007_0227af28 kind:data(any) addr:0x0227af28 local
 data_ov007_0227af38 kind:data(any) addr:0x0227af38 local
 data_ov007_0227af48 kind:data(any) addr:0x0227af48 local
 data_ov007_0227af58 kind:data(any) addr:0x0227af58 local
-data_ov007_0227af68 kind:data(any) addr:0x0227af68 local
+_ZZ11LightSetupsvE7sLights kind:data(any) addr:0x0227af68 weak
 data_ov007_0227b0a8 kind:data(any) addr:0x0227b0a8 local
 data_ov007_0227bc9c kind:data(any) addr:0x0227bc9c
 data_ov007_0227bca0 kind:data(any) addr:0x0227bca0

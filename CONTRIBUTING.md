@@ -34,4 +34,8 @@
 - Never commit anything taken from the game: ROMs, assets, extracted files or disassembly. Text the game code
   itself uses (string literals, file paths) belongs in source like any other constant.
 - Don't copy code or prose from other projects. Write SDK headers yourself from the public API and observed codegen.
+- Data the code uses is written as typed source (structs and arrays with their values), not as raw byte dumps.
+  Bytes with no meaning as data (the secure-area filler) are read from your ROM at build time (`tools/expand_incbin.py`).
+- Third-party code: the sixteen `libs/msl/src/` math files `e_*.c`, `k_*.c` and `s_*.c` are fdlibm, which the game's
+  runtime library uses; they keep fdlibm's copyright and permission notice.
 - Format C/C++ with the repository's `.clang-format`.

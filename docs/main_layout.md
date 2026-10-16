@@ -100,7 +100,9 @@ These routines are not compiler output. Where they are matched, it is as comment
   table). It keeps six computed row skips in a data block on the stack and unrolls its inner loop into 8 blocks.
 - The secure area (0x02000000-0x02000800) is `init/secure_area.s`, assembled with the toolchain's mwasmarm: the 18
   BIOS call thunks (`SoftReset`, `CpuSet`, ...; Thumb, at halfword-aligned addresses) as functions, the filler
-  between them as data. Each compiled function gets its own 4-byte-aligned section, so the thunks can't come from C;
+  between them as data taken from the extracted ARM9 binary at build time (`.incbin`; `tools/expand_incbin.py` turns
+  those lines into `.byte` lines in a copy under build/, since mwasmarm reads `.incbin` input as text and rewrites
+  lone 0x0a bytes). Each compiled function gets its own 4-byte-aligned section, so the thunks can't come from C;
   an assembly file can place global function labels anywhere inside one section.
 - Written as asm bodies: start-up code (`init/crt0.c`), the soft-float and division runtime
   (`rt_soft_float.c`), the SHA-1 block transform (`math/math_sha1.c`), the divider/sqrt register save and restore

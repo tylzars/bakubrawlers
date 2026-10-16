@@ -33,7 +33,8 @@ functions by their SDK names, declared `extern "C"` (`tools/rename_sdk.py` renam
 
 ## Compiler family: CodeWarrior for DS 2.0
 
-The compiler was identified with 20 distinct real functions, decompiled as stand-alone probes, from main and ov000, ov001, ov006, ov007 and ov008
+The compiler was identified with 20 distinct real functions from main and ov000, ov001, ov006, ov007 and ov008,
+decompiled as stand-alone probes
 (constructors, destructors, virtual calls, singletons, soft float, 64-bit fixed point, switch
 tables, register-heavy loops, SDK struct access, string tables). With the game flags
 (1.2 builds at plain `-O4,p`, since they reject `-ipa`):
@@ -46,7 +47,8 @@ tables, register-heavy loops, SDK struct access, string tables). With the game f
 | DSi 1.x (9 builds) | 8/20 |
 
 The remaining miss (`func_02025b64`, 4 words) fails identically on all 25 builds, so it is a
-source detail. To repeat the test, decompile a function into a stand-alone file and run `python3 tools/probe_compilers.py <file> --flags='-O4,p -ipa file -inline on,noauto'`.
+source detail. To repeat the test on a function, decompile it into a stand-alone file and run
+`python3 tools/probe_compilers.py <file> --flags='-O4,p -ipa file -inline on,noauto'`.
 
 `func_0203eb4c` lies in a block of main (about 0x02030000–0x02054000)
 that never uses the game's singleton guards and appears to be library code (CRI from about

@@ -95,15 +95,16 @@ def opcode_names(read) -> list[str]:
     return names
 
 
-def ninja_flags(source: str) -> list[str]:
+def ninja_flags(source: str, stand_in: bool = False) -> list[str]:
     """Compiler flags for `source` from build.ninja's mwcc rule (base_flags + cc_flags + include/define flags)."""
     text = (ROOT / "build.ninja").read_text()
     m = re.search(r"^build \S+: mwcc " + re.escape(source) + r"\b.*?\n((?:  \S.*\n)+)", text, re.M)
     if not m:
         sys.exit(f"{source}: no mwcc build line in build.ninja")
     var = dict(re.findall(r"^  (\w+) = (.*)$", m.group(1), re.M))
-    if "sp2p2" not in var.get("cc", ""):
-        sys.exit(f"{source} builds with {var.get('cc')}; only 2.0/sp2p2 is supported")
+    if "sp2p2" not in var.get("cc", "") and not stand_in:
+        sys.exit(f"{source} builds with {var.get('cc')}; only 2.0/sp2p2 is supported. If its probe shows the same "
+                 "difference under 2.0/sp2p2, rerun with --sp2p2-stand-in to trace it with that compiler")
     flags = shlex.split(var.get("base_flags", "")) + shlex.split(var.get("cc_flags", ""))
     for inc in ("include", "libs/c/include", "libs/cpp/include", "libs/nds/include", "libs/nns/include"):
         flags += ["-i", str(ROOT / inc)]
@@ -198,6 +199,25 @@ class SchedLog(gdb.Breakpoint):
                 cyc & 0xffff, u32(0x63a364), u32(0x616680), u32(0x61667c), s16(node + 0x14), s16(node + 0x16),
                 s16(node + 0x18), insn(ins)), flush=True)
         return False
+class PushLog(gdb.Breakpoint):
+    # simplify has removed a node from the interference graph and pushed it; colouring pops in reverse order
+    def __init__(self, addr, reg, kind):
+        super().__init__('*0x%%x' %% addr, type=gdb.BP_BREAKPOINT, internal=True); self.reg = reg; self.kind = kind
+    def stop(self):
+        if FUNC in curfunc():
+            node = int(gdb.selected_frame().read_register(self.reg)) & 0xffffffff
+            idx = (node - u32(0x63ba40)) // 0x36
+            print('     push: v%%d conflicts=%%d cost=%%d %%s' %% (idx, s16(node + 0x2e), u32(node + 0xc), self.kind), flush=True)
+        return False
+class SimplifyStart(gdb.Breakpoint):
+    def stop(self):
+        if FUNC in curfunc(): print('     simplify: start', flush=True)
+        return False
+if %(simplify)r:
+    SimplifyStart('*0x5136b0', type=gdb.BP_BREAKPOINT, internal=True)
+    PushLog(0x51377f, 'rcx', 'low')
+    PushLog(0x5138d9, 'rdx', 'stuck: lowest cost/conflicts')
+    PushLog(0x51399a, 'rax', 'low')
 if %(color_order)r:
     ColorLog('*0x513b80', type=gdb.BP_BREAKPOINT, internal=True)
 if %(sched)r:
@@ -212,7 +232,13 @@ def main():
     ap.add_argument("--flags-from", help="repo-relative source whose build.ninja flags to use (default: source)")
     ap.add_argument("--at", action="append", choices=sorted(POINTS), help="dump points (repeatable)")
     ap.add_argument("--merges", action="store_true", help="log every coalescer merge")
+    ap.add_argument("--sp2p2-stand-in", action="store_true",
+                    help="trace a file that builds with another compiler using 2.0/sp2p2 (check first that the probe "
+                         "shows the same difference under 2.0/sp2p2)")
     ap.add_argument("--color-order", action="store_true", help="log each register the colourer assigns, in order")
+    ap.add_argument("--simplify", action="store_true",
+                    help="log the colourer's simplify pushes (vreg, conflicts, spill cost); colouring pops them in "
+                         "reverse, so the last pushed gets the first choice of register")
     ap.add_argument("--sched", action="store_true",
                     help="log each pick of the pre-colouring scheduler (pressure score, live count, limit)")
     args = ap.parse_args()
@@ -223,7 +249,7 @@ def main():
             sys.exit(f"{COMPILER} is not the expected 2.0/sp2p2 build (mismatch at {addr:#x})")
     entry = pe_entry(COMPILER)
     flags_src = args.flags_from or os.path.relpath(Path(args.source).resolve(), ROOT)
-    flags = ninja_flags(flags_src)
+    flags = ninja_flags(flags_src, args.sp2p2_stand_in)
     points = [(p, POINTS[p]) for p in (args.at or ["coalesce", "color", "after-color"])]
     lang = "c" if args.source.endswith(".c") else "c++"
 
@@ -231,7 +257,8 @@ def main():
         script = Path(tmp) / "trace.py"
         script.write_text(GDB_SCRIPT % dict(names=opcode_names(read), func=args.func, points=points,
                                             merges=args.merges, merge_site=MERGE_SITE,
-                                            color_order=args.color_order, sched=args.sched))
+                                            color_order=args.color_order, sched=args.sched,
+                                            simplify=args.simplify))
         cmd = ["gdb", "-q", "-batch", "-nx", "-ex", "set pagination off", "-ex", "set debuginfod enabled off",
                # gdb decodes this 32-bit code as 64-bit; stepping over a breakpoint out of line would treat an
                # absolute address operand as rip-relative and fault, so step over breakpoints in place.
@@ -247,7 +274,7 @@ def main():
     if "----" not in proc.stdout:
         sys.exit(proc.stdout[-3000:])
     for line in proc.stdout.splitlines():
-        if line.startswith(("----", "B", "   ", "     merge", "     color", "     sched", "###", "#")):
+        if line.startswith(("----", "B", "   ", "     merge", "     color", "     sched", "     push", "     simplify", "###", "#")):
             print(line)
 
 

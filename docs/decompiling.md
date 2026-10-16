@@ -70,6 +70,13 @@ Diff the traces of two variants to find the first stage where they part. Facts r
   pressure score (start 16; each last use subtracts 1 + max(1, live - limit), each new value adds max(1, live -
   limit)), keeping source order on ties. Colouring then goes in falling virtual-register order, high-degree nodes
   first.
+- Colouring order in detail (`--simplify`): scans run over the virtual registers in increasing number; each one
+  with fewer conflicts than the register count is removed and pushed, and scans repeat until none is left (a stuck
+  one goes by lowest spill cost / conflicts). Registers are then handed out popping the stack, so the last pushed
+  picks first and takes the lowest free register. A rotation of callee-saved registers between a few values means
+  they left the graph in a different scan: count their conflicts at the scan where they're visited.
+- Library files built with 2.0/sp1p5 can be traced with `--sp2p2-stand-in` when their probe shows the same
+  difference under 2.0/sp2p2 (true for e_pow and cri_wave_ch).
 - The IR keeps an assignment to a local that lives across blocks as its own statement only when the same local is
   assigned again later in that block; otherwise the value is folded into its use. Reusing one variable for two
   arguments (BattleResult::func_ov007_0224f9a0's `y`) is a natural way to pin the first one's evaluation point.

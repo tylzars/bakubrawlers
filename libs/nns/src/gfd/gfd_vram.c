@@ -54,7 +54,12 @@ s32 func_02035e08(void) { return -1; }   // default palette VRAM free
 
 typedef struct { u32 start; u32 end; u32 enabled; u32 mapped; u32 pad10; u32 pad14; } TexSlot;   // 0x18 bytes
 extern TexSlot data_020a58ac[5];
-extern TexSlot *data_020a5890[];   // slot pointers used from +8
+extern TexSlot *data_020a5890[];   // slot pointers: two for 4x4 texels, then five (written from +8 by func_02035e10)
+// The same five pointers under the second label the gap data already carries. func_02035f54's normal loop takes its
+// base from a pool word for 0x020a5898 kept as a separate constant (ldr [base, i, lsl #2] with the base in lr); a
+// pointer local into data_020a5890 is coloured after the temporaries (r6), and indexing it directly folds the +8 into
+// the load. Stand-in for a layout still to be worked out, like data_020d53e4_h.
+extern TexSlot *data_020a5898[5];
 extern u16 data_022115d8;
 void func_02035e10(u32 a, u32 b, u32 c, u32 d, u32 e) {   // order the five texture slots
     data_020a5890[2] = &data_020a58ac[a];
@@ -95,28 +100,34 @@ void func_02035ee0(void) {
         }
     }
 }
+// Read through a const pointer, the size check keeps its own loads: start/end are loaded again for the update.
+static inline u32 FreeSize(const TexSlot *s) { return s->end - s->start; }
 static inline int Alloc4x4(u32 *key, u32 aligned) {
     int i;
     for (i = 0; i < 2; i++) {
         TexSlot *s = data_020a5890[i];
         TexSlot *idx;
         if (s->enabled == 0) continue;
-        if (s->end - s->start < aligned) continue;
+        if (FreeSize(s) < aligned) continue;
         switch (*(u16 *)((u8 *)s + 0x10)) { case 0: idx = &data_020a58ac[1]; break; case 3: idx = &data_020a58ac[2]; break; default: idx = 0; break; }
         if (idx->enabled == 0) continue;
-        if (idx->end - idx->start < (aligned >> 1)) continue;
-        s->start += aligned; *key = s->start - aligned + s->pad14; idx->start += aligned >> 1;
+        if (FreeSize(idx) < (aligned >> 1)) continue;
+        {
+            u32 start = s->start;
+            s->start = start + aligned;
+            idx->start += aligned >> 1;
+            *key = start + s->pad14;
+        }
         return 1;
     }
     return 0;
 }
 static inline int AllocNormal(u32 *key, u32 aligned) {
-    TexSlot **slots = &data_020a5890[2];
     int i;
     for (i = 0; i < 5; i++) {
-        TexSlot *s = slots[i];
+        TexSlot *s = data_020a5898[i];
         if (s->enabled == 0) continue;
-        if (s->end - s->start < aligned) continue;
+        if (FreeSize(s) < aligned) continue;
         s->end = s->end - aligned;
         *key = s->end + s->pad14;
         return 1;

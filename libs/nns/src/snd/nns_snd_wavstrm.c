@@ -332,9 +332,9 @@ extern void MI_CpuFill8(void *dst, u32 data, u32 size);
 extern void DC_FlushRange(void *addr, u32 size);   // DC_FlushRange
 
 #define ADPCM_STEP(st, x, dst) { \
+    s32 step_; \
     s32 pred_; \
     s32 idx_; \
-    s32 step_; \
     s32 diff_; \
     u32 n_; \
     pred_ = (st)->pred; \
@@ -354,9 +354,9 @@ extern void DC_FlushRange(void *addr, u32 size);   // DC_FlushRange
     *(dst) = (s16)pred_; \
 }
 
-static inline void DecodeAdpcm(u32 i, u32 endSample, u32 odd, s16 *dst, u8 *src, SndAdpcmState *st) {
-    u32 nib;
-    if (odd != 0) {
+static inline void DecodeAdpcm(u32 i, u32 n, s16 *dst, u8 *src, SndAdpcmState *st) {
+    u32 endSample = i + n;
+    if (i & 1) {
         ADPCM_STEP(st, *src >> 4, dst);
         dst++;
         i++;
@@ -374,9 +374,13 @@ static inline void DecodeAdpcm(u32 i, u32 endSample, u32 odd, s16 *dst, u8 *src,
         ADPCM_STEP(st, *src, dst);
     }
 }
-// non-matching: 58 words: the channel-loop preheader computes the st base last (the explicit if/do form gets the
-// original's spill slots, a for loop gets the base first but other slots); the high-nibble step instances 1 and 3
-// use idx/pred/step = ip/lr/sl where the original has sl/ip/lr; instance 3's narrowing and `add r1, #2` order.
+// non-matching: 45 words, all in the pair loop of the ADPCM decode. Colouring pops the four step instances' locals
+// from one simplify scan, highest number first, so the in-loop high-nibble step (numbered last) takes the free ip/lr
+// and a new sl first; the original colours the in-loop low-nibble step first (idx/pred/step = ip/lr/sl) and both
+// high-nibble steps after it (sl/ip/lr). Within a step the order idx, pred, step is right (ADPCM_STEP declares
+// step_, pred_, idx_ in that order).
+// The high-nibble step's tail also differs: the original narrows pred into r3 and schedules `add r1, #2` before the
+// dst store (in ours the first scheduling pass runs that block in register-pressure mode and takes the store first).
 void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
     WavStrm *s;
     int loopNow;
@@ -388,8 +392,6 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
     u32 samples;
     u32 outBytes;
     u32 readBytes;
-    u32 endSample;
-    u32 odd;
     int ch;
     u32 blk;
     u32 blockSamples;
@@ -397,7 +399,6 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
     u8 *src;
     s16 *dst;
     SndAdpcmState *st;
-    u32 nib;
     u32 got;
     s = c->strm;
     if (s->b5 && s->delay > 0) s->delay--;
@@ -406,8 +407,8 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
     if (remaining != 0) {
         do {
             if (s->b5) {
-                for (i = 0; (s32)i < c->channels; i++) {
-                    MI_CpuFill8(c->buf[i] + offset, 0, remaining);
+                for (ch = 0; ch < c->channels; ch++) {
+                    MI_CpuFill8(c->buf[ch] + offset, 0, remaining);
                 }
                 break;
             }
@@ -468,8 +469,6 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
             readPos += s->dataOff;
             ch = 0;
             if (c->channels > 0) {
-                endSample = startSample + samples;
-                odd = startSample & 1;
                 do {
                     st = &s->adpcm[ch];
                     src = c->buf[ch] + offset;
@@ -497,7 +496,7 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
                                 *st = *h;
                             }
                             }
-                            DecodeAdpcm(startSample, endSample, odd, dst, src, st);
+                            DecodeAdpcm(startSample, samples, dst, src, st);
                             OS_UnlockMutex(data_02214a08);
                         }
                     } else if (s->b6) {
@@ -524,8 +523,8 @@ void func_02039a50(WavStrmCmd *c) {   // fill one decode buffer of a stream
     if (s->fillCb != 0) {
         s->fillCb(c->phase, c->channels, c->buf, c->size, s->format == 0 ? STRM_FORMAT_PCM8 : STRM_FORMAT_PCM16, s->fillArg);
     }
-    for (i = 0; (s32)i < c->channels; i++) {
-        DC_FlushRange(c->buf[i], c->size);
+    for (ch = 0; ch < c->channels; ch++) {
+        DC_FlushRange(c->buf[ch], c->size);
     }
     if (c->phase == 0) s->f118 = 1;
 }

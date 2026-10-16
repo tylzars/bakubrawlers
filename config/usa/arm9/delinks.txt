@@ -58,6 +58,7 @@ libs/cri/src/cri_adx_hdr.c:
     .text       start:0x0203edc4 end:0x0203f714
 
 libs/cri/src/cri_adx_dec.c:
+    complete
     .text       start:0x0203f714 end:0x02040110
 
 libs/cri/src/cri_adx_err.c:

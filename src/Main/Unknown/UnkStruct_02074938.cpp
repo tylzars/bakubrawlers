@@ -159,24 +159,19 @@ void UnkStruct_02074938::Update() {
     }
 }
 
-// non-matching: 11 words, register naming only (the original loads the data_020a302c table first and keeps the tables in r1/r0 swapped); size matches.
 void UnkStruct_02074938::func_02074828(u32 kind) {
     mUnk_50 = new UnkStruct_0205401c();
     SpriteManager::Get().func_02027504(0);
     mUnk_50->func_0205411c(kind & 0xff, 0, 0, 0);
     mUnk_50->func_0205461c(0, 1);
     mUnk_50->func_02054694(1);
-    VecFx32 pos;
-    pos.x = 0;
-    pos.y = data_020a3044[kind] << 12;
-    pos.z = data_020a302c[kind] << 12;
-    UnkStruct_ModelPos *model;
+    fx32 z = data_020a302c[kind] << 12;
+    fx32 y = data_020a3044[kind] << 12;
     if (kind == 0x15) {
-        model = (UnkStruct_ModelPos *) mUnk_50->mUnk_04;
+        SetModelPos((UnkStruct_ModelPos *) mUnk_50->mUnk_04, 0, y, z);
     } else {
-        model = (UnkStruct_ModelPos *) mUnk_50->mUnk_08;
+        SetModelPos((UnkStruct_ModelPos *) mUnk_50->mUnk_08, 0, y, z);
     }
-    model->mPosition = pos;
     u16 *rot = mUnk_50->func_020546cc();
     rot[1] += 0x4cd;
 }

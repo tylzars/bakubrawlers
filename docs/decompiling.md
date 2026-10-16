@@ -60,6 +60,12 @@ Diff the traces of two variants to find the first stage where they part. Facts r
   local clean-up turns that store-then-load into a register copy (`mov r0,#0; str r0,[sp,#n]; mov r5,r0`).
 - Loop invariants hoisted by the backend go into a block of their own just before the loop, after the code of
   the block that precedes it.
+- Colouring takes named locals from the highest virtual-register number down, each getting the lowest free
+  register. A variable assigned in both arms of an if/else gets a low number and so is coloured last; a short-lived
+  value per arm gets a high one (UnkStruct_02074938::func_02074828).
+- A `mov rX, rY` just before a load through rX, with rY still live, can be a second identical load that the
+  post-allocation clean-up turned into a copy. A read through a `const T *` (e.g. a const-parameter inline helper)
+  keeps that second load apart in the optimizer (CharacterModel::func_02053eec, StoryCharacterModel::func_02054d08).
 
 ## Placeholders
 

@@ -60,8 +60,9 @@ public:
     void func_02054dd8(u32 a, u32 b);
 };
 
-static inline u8 GetSet(ModelAnim *a) {
-    return a->mUnk_5d;
+// The current animation set of a model (read through a const pointer, so it is a load of its own).
+static inline u8 GetSet(const ModelInstance *model) {
+    return model->mAnim->mUnk_5d;
 }
 
 static inline void SetRotation(ModelTransform *model, const u16 *rot) {
@@ -409,26 +410,15 @@ void StoryCharacterModel::func_02054cc4(u32 a, u32 b) {
     mUnk_3a = 0;
 }
 
-// non-matching: 0x98 vs 0xa0, same two differences as CharacterModel::func_02053eec. Our mModel load is hoisted
-// above the `bne` (the original loads it in each arm, into r2 in the restart arm), and the original reads mUnk_5d
-// through a copy of the anim pointer (`mov r2, r0; ldrb r6, [r2, #0x5d]`). Registers follow: this r7 (original r4),
-// loop/channel/frame r4/r5/r6 (original r5/r6/r7). Not fixed by: the anim2 copy, GetSet(), mModel->mAnim at each
-// use, a shared anim/obj for both arms, the inverted test, a switch, an early return, testing mUnk_3a, an inline
-// helper on the ModelTransform or the ModelInstance, a (u8 *) read of mUnk_5d.
 void StoryCharacterModel::func_02054d08(u32 flag) {
     mUnk_3a = flag;
     if (!(flag & 0xff)) {
-        ModelAnim *anim;
-        ModelAnim *anim2;
-        u32 loop;
-        u8 channel;
-        s32 frame;
+        ModelAnim *anim = mModel->mAnim;
+        u8 channel      = GetSet(mModel);
+        u32 loop        = anim->mUnk_08;
         NNSG3dAnmObj *obj;
-        anim    = mModel->mAnim;
-        anim2   = anim;
-        channel = anim2->mUnk_5d;
-        loop    = anim->mUnk_08;
-        obj     = anim->func_02029a48(0);
+        s32 frame;
+        obj = anim->func_02029a48(0);
         if (obj == NULL) {
             frame = 0;
         } else {

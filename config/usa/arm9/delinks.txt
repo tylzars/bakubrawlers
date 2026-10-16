@@ -898,11 +898,14 @@ src/Main/Graphics/ModelTransform.cpp:
     complete
     .text       start:0x02052548 end:0x020527a4
 
-// provisional: code only; .data 0x020b24bc-0x020b2c6c and .rodata 0x0209e53c-0x0209e558 belong here.
 src/Main/Graphics/CharacterModel.cpp:
+    complete
     .text       start:0x020527a4 end:0x0205401c
+    .rodata     start:0x0209e53c end:0x0209e558
+    .data       start:0x020b24bc end:0x020b2c6c
 
 src/Main/Graphics/CharacterPreview.cpp:
+    complete
     .text       start:0x0205401c end:0x02054df0
     .data       start:0x020b2c6c end:0x020b2dc0
 
@@ -970,6 +973,7 @@ src/Main/Unknown/UnkStruct_02071d24.cpp:
     .bss        start:0x02219314 end:0x02219344
 
 src/Main/Unknown/UnkStruct_02074938.cpp:
+    complete
     .text       start:0x020741b4 end:0x020758f4
     .data       start:0x020b9384 end:0x020b94ec
     .bss        start:0x02219344 end:0x0221935c

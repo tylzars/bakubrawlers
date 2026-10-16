@@ -47,9 +47,11 @@ src/07_Battle/Battle/ConfrontBg06.cpp:
     .data       start:0x02286424 end:0x02286560
     .bss        start:0x0228b688 end:0x0228b6ac
 
-// provisional: code only; data not assigned yet.
 src/07_Battle/Battle/BattleSlot.cpp:
+    complete
     .text       start:0x02222764 end:0x02223534
+    .data       start:0x02286560 end:0x02286588
+    .bss        start:0x0228b6ac end:0x0228b6c4
 
 src/07_Battle/Battle/BattleSideHelper.cpp:
     complete

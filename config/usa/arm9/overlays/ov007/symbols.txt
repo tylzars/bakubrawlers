@@ -1821,8 +1821,7 @@ _ZTV12ConfrontBg06 kind:data(any) addr:0x02286434
 @1728 kind:data(any) addr:0x02286524 local
 @1729 kind:data(any) addr:0x02286540 local
 @1730 kind:data(any) addr:0x0228655c local
-data_ov007_02286560 kind:data(any) addr:0x02286560
-data_ov007_02286568 kind:data(any) addr:0x02286568
+_ZTV10BattleSlot kind:data(any) addr:0x02286560
 data_ov007_02286570 kind:data(any) addr:0x02286570
 _ZTV16BattleSideHelper kind:data(any) addr:0x02286588
 _ZTV11BattleObj01 kind:data(any) addr:0x02286598
@@ -2741,8 +2740,8 @@ OV007_BSS_START kind:bss addr:0x0228b5e0
 @22 kind:bss addr:0x0228b688 local
 @692 kind:bss addr:0x0228b694 local
 @1124 kind:bss addr:0x0228b6a0 local
-data_ov007_0228b6ac kind:bss addr:0x0228b6ac
-data_ov007_0228b6b8 kind:bss addr:0x0228b6b8
+@636 kind:bss addr:0x0228b6ac local
+@605 kind:bss addr:0x0228b6b8 local
 @29 kind:bss addr:0x0228b6c4 local
 @814 kind:bss addr:0x0228b6d0 local
 @54 kind:bss addr:0x0228b6dc local

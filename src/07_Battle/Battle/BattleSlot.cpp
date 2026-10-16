@@ -1,6 +1,22 @@
 #include "Battle/BattleBase.hpp"
 #include "Game/Random.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
+
+extern u8 data_ov007_02278c44[];
+extern u8 data_ov007_02278c6c[];
+extern u8 data_ov007_02278c94[];
+extern u8 data_ov007_02278cbc[];
+extern u8 data_ov007_02278ce4[];
+extern u8 data_ov007_02278d0c[];
+
+// One 0x28-byte record per battle mode (BattleSlot::mUnk_24). Defined between the includes on purpose
+// (docs/decompiling.md, "Data layout within a section"): here, before the SoundManager and WirelessManager headers, it
+// gives the original's .bss order of their destructor nodes (WirelessManager's first).
+u8 *data_ov007_02286570[6] = {
+    data_ov007_02278cbc, data_ov007_02278c44, data_ov007_02278c6c,
+    data_ov007_02278ce4, data_ov007_02278d0c, data_ov007_02278c94,
+};
+
 #include "System/SoundManager.hpp"
 #include "System/WirelessManager.hpp"
 #include <nitro/math.h>
@@ -35,8 +51,6 @@ int func_ov007_02222764(int side, BattleEntry *entry) {
 }
 
 u32 func_ov007_0221d348(u32 max);
-
-extern u8 *data_ov007_02286570[6];
 
 extern u8 data_ov007_02278c34[];
 

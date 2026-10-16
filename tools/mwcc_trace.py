@@ -4,7 +4,9 @@
 Runs the stock compiler under gdb (nothing is patched or rebuilt) and, each time it reaches one of the chosen
 points, prints that function's backend instruction lists: blocks, opcodes, virtual registers (vN), physical
 registers (rN), `=` marking a definition and `[copy]` a register copy. With --merges it also logs every merge made
-by the register coalescer ("keep vA drop vB": vB's live range is folded into vA and the copy between them deleted).
+by the register coalescer ("keep vA drop vB": vB's live range is folded into vA and the copy between them deleted),
+with --color-order the order in which colouring gives each virtual register its physical one, and with --sched each
+pick of the scheduler that runs before colouring (with its register-pressure score).
 
 Points (repeatable --at, default: coalesce,color,after-color):
   cse          entry of local common-subexpression elimination (runs several times, before and after selection)
@@ -173,6 +175,33 @@ for label, addr in POINTS:
     Point(addr, label)
 if MERGES:
     Merge('*0x%%x' %% %(merge_site)d, type=gdb.BP_BREAKPOINT, internal=True)
+def insn(i):
+    op = int.from_bytes(rd(i + 0x28, 2), 'little'); cnt = s16(i + 0x2c)
+    name = NAMES[op] if op < len(NAMES) else 'op%%d' %% op
+    return name + ' ' + ', '.join(opnd(i + 0x2e + 0xe * k) for k in range(max(0, min(cnt, 10))))
+class ColorLog(gdb.Breakpoint):
+    # the colourer has just given a virtual register its physical register
+    def stop(self):
+        if FUNC in curfunc():
+            node = int(gdb.selected_frame().read_register('rbx')) & 0xffffffff
+            print('     color: v%%d -> r%%d' %% (s16(node + 0x28), s16(node + 0x2a)), flush=True)
+        return False
+class SchedLog(gdb.Breakpoint):
+    # the pre-colouring scheduler has picked its next instruction
+    def stop(self):
+        if FUNC in curfunc():
+            f = gdb.selected_frame()
+            node = int(f.read_register('rbx')) & 0xffffffff
+            ins = int(f.read_register('rbp')) & 0xffffffff
+            cyc = u32(int(f.read_register('rsp')) & 0xffffffff)
+            print('     sched: c%%d pressure=%%d live=%%d limit=%%d ready=%%d slack=%%d height=%%d | %%s' %% (
+                cyc & 0xffff, u32(0x63a364), u32(0x616680), u32(0x61667c), s16(node + 0x14), s16(node + 0x16),
+                s16(node + 0x18), insn(ins)), flush=True)
+        return False
+if %(color_order)r:
+    ColorLog('*0x513b80', type=gdb.BP_BREAKPOINT, internal=True)
+if %(sched)r:
+    SchedLog('*0x4ff9b7', type=gdb.BP_BREAKPOINT, internal=True)
 '''
 
 
@@ -183,6 +212,9 @@ def main():
     ap.add_argument("--flags-from", help="repo-relative source whose build.ninja flags to use (default: source)")
     ap.add_argument("--at", action="append", choices=sorted(POINTS), help="dump points (repeatable)")
     ap.add_argument("--merges", action="store_true", help="log every coalescer merge")
+    ap.add_argument("--color-order", action="store_true", help="log each register the colourer assigns, in order")
+    ap.add_argument("--sched", action="store_true",
+                    help="log each pick of the pre-colouring scheduler (pressure score, live count, limit)")
     args = ap.parse_args()
 
     read = pe_reader(COMPILER)
@@ -198,7 +230,8 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         script = Path(tmp) / "trace.py"
         script.write_text(GDB_SCRIPT % dict(names=opcode_names(read), func=args.func, points=points,
-                                            merges=args.merges, merge_site=MERGE_SITE))
+                                            merges=args.merges, merge_site=MERGE_SITE,
+                                            color_order=args.color_order, sched=args.sched))
         cmd = ["gdb", "-q", "-batch", "-nx", "-ex", "set pagination off", "-ex", "set debuginfod enabled off",
                # gdb decodes this 32-bit code as 64-bit; stepping over a breakpoint out of line would treat an
                # absolute address operand as rip-relative and fault, so step over breakpoints in place.
@@ -214,7 +247,7 @@ def main():
     if "----" not in proc.stdout:
         sys.exit(proc.stdout[-3000:])
     for line in proc.stdout.splitlines():
-        if line.startswith(("----", "B", "   ", "     merge", "###", "#")):
+        if line.startswith(("----", "B", "   ", "     merge", "     color", "     sched", "###", "#")):
             print(line)
 
 

@@ -385,6 +385,7 @@ libs/nns/src/snd/nns_snd_slot.c:
     .text       start:0x02037090 end:0x02037264
 
 libs/nns/src/snd/nns_snd_strm.c:
+    complete
     .text       start:0x02037264 end:0x02037884
 
 libs/nns/src/snd/nns_snd_capture.c:

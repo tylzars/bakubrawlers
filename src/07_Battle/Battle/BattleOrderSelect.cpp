@@ -10,8 +10,8 @@
 #include "System/TouchManager.hpp"
 #include "System/WirelessManager.hpp"
 #include "UI/MessageWindow.hpp"
-#include "Unknown/UnkStruct_02078290.hpp"
-#include "Unknown/UnkStruct_020651bc.hpp"
+#include "Graphics/AntennaIndicator.hpp"
+#include "Graphics/CharacterIcons.hpp"
 #include <nitro/gx.h>
 #include <nitro/math.h>
 #include <nitro/mi.h>
@@ -35,7 +35,7 @@ public:
     /* 10 */ OrderItem mA[2];
     /* 28 */ OrderItem mB[3];
     /* 4c */ OrderItem mC[8];
-    /* ac */ UnkStruct_020651bc *mIcons;
+    /* ac */ CharacterIcons *mIcons;
     /* b0 */ MessageWindow *mMessage;
     /* b4 */ s8 mUnk_b4[4];
     /* b8 */ u8 mUnk_b8[4];
@@ -374,19 +374,19 @@ void BattleOrderSelect::func_ov007_0224bbf8() {
     mB[2].mAnim->mUnk_11   = 10;
     mB[2].mUnk_09          = 0;
     ChangeDir("/");
-    mIcons = new UnkStruct_020651bc(0xa000, 6, 0);
+    mIcons = new CharacterIcons(0xa000, 6, 0);
     i      = 0;
     do {
-        mIcons->func_02065204(i, mUnk_b4[i], data_020d433c.mBattlePlayers->mPlayers[i]->NameInfo(), 0);
-        mIcons->func_020654f8(i, 0);
+        mIcons->SetCharacter(i, mUnk_b4[i], data_020d433c.mBattlePlayers->mPlayers[i]->NameInfo(), 0);
+        mIcons->SetVisible(i, 0);
         i++;
     } while (i < mCount);
     mMessage = new MessageWindow("mes_Command", 1, 0x10000);
     mMessage->func_02065bd4(0x14, 4, 1);
     mMessage->func_02065be4(0xd8);
-    UnkStruct_02078290 *unk = data_020d433c.mUnk_10;
+    AntennaIndicator *unk = data_020d433c.mUnk_10;
     if (unk) {
-        unk->func_020785d8(6);
+        unk->SetupLayout(6);
     }
 }
 
@@ -510,8 +510,8 @@ void BattleOrderSelect::func_ov007_0224c810() {
                         mB[2].mAnim->func_0202a3ec(0, i, mC[slot].mX + 0x10, mC[slot].mY - 0x38 - off, 2);
                     }
                 }
-                mIcons->func_020654f8(i, 1);
-                mIcons->func_0206547c(i, mC[slot].mX + 0x10, mC[slot].mY - 0x28 - off, 2);
+                mIcons->SetVisible(i, 1);
+                mIcons->SetDrawArgs(i, mC[slot].mX + 0x10, mC[slot].mY - 0x28 - off, 2);
                 mA[0].mAnim->SetAnimation(i + 7);
                 mA[0].mAnim->Draw(0, (s16) (mC[slot].mX + 0xc), (s16) (mC[slot].mY - 0x2c - off), 2);
                 mA[1].mAnim->Draw(0, (s16) (mC[slot].mX + 0xe), (s16) (mC[slot].mY - 0x2a - off), 3);
@@ -520,7 +520,7 @@ void BattleOrderSelect::func_ov007_0224c810() {
         i++;
     } while (i < mCount);
     mMessage->func_020658d0();
-    mIcons->func_020654a0();
+    mIcons->DrawIcons();
 }
 
 // ry is volatile as a placeholder: the original reads the stack argument twice (see docs/decompiling.md).

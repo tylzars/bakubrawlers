@@ -9,7 +9,7 @@ class Camera;
 class CellAnimation;
 class ModelInstance;
 class UnkStruct_02029ca8;
-class UnkStruct_020758f4;
+class Ranking;
 class UnkStruct_0205401c;
 struct MessageFile;
 
@@ -30,7 +30,7 @@ public:
     /* 44 */ u32 mReady;
     /* 48 */ u8 mState;
     /* 4c */ u32 mUnk_4c;
-    /* 50 */ UnkStruct_020758f4 *mUnk_50;
+    /* 50 */ Ranking *mUnk_50;
     /* 54 */ u16 mHours;
     /* 56 */ u8 mMinutes;
     /* 57 */ u8 mSeconds;

@@ -4,7 +4,7 @@
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
 #include "UI/SelectWindow.hpp"
-#include "Unknown/UnkStruct_02078290.hpp"
+#include "Graphics/AntennaIndicator.hpp"
 #include <nitro/gx.h>
 
 static const WindowCellRecord data_ov007_02279a1c[1] = {
@@ -71,7 +71,7 @@ BattleUnionAbility::~BattleUnionAbility() {
     GXS_SetVisibleWnd(0);
     G2S_SetBlendBrightness(0x11, 0);
     if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->mUnk_1a = 0;
+        data_020d433c.mUnk_10->mSecondVisible = 0;
     }
 }
 
@@ -158,7 +158,7 @@ void BattleUnionAbility::func_ov007_02234428() {
         case 4:
         case 5:
             if (data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->mUnk_1a = 1;
+                data_020d433c.mUnk_10->mSecondVisible = 1;
             }
             GXS_SetVisibleWnd(4);
             G2S_SetWndOBJInsidePlane(0x10, FALSE);

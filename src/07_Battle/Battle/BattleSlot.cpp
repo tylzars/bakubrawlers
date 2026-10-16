@@ -21,13 +21,13 @@ u8 *data_ov007_02286570[6] = {
 #include "System/WirelessManager.hpp"
 #include <nitro/math.h>
 
-u8 func_02065c0c(u32 id, u32 kind);
+u8 GetCardInfo(u32 id, u32 kind);
 
 int func_ov007_02222764(int side, BattleEntry *entry) {
     int result = -1;
     u16 *ids   = &entry->mUnk_12;
     int off    = side * sizeof(BattleEntry);
-    if (func_02065c0c(*(u16 *) ((u8 *) ids + off), 3) == 4) {
+    if (GetCardInfo(*(u16 *) ((u8 *) ids + off), 3) == 4) {
         switch (*(u16 *) ((u8 *) ids + off)) {
             case 0x88:
                 result = 2;

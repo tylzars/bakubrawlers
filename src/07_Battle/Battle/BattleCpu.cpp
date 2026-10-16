@@ -925,7 +925,7 @@ void BattleCpu::func_ov007_02232d8c() {
 
 bool BattleCpu::func_ov007_02232e04(u32 a, u32 b, u32 c) {
     bool result = false;
-    if (func_02065c0c(a, 3) == 1) {
+    if (GetCardInfo(a, 3) == 1) {
         u8 t = a - 1;
         if (a >= 7) {
             t++;

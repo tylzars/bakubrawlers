@@ -18,7 +18,7 @@ struct CharacterIconSlot {
 };
 
 // Four character icons (icon_ch_NN files). Owned by pointer and destroyed with a plain (non-virtual) destructor.
-class UnkStruct_020651bc {
+class CharacterIcons {
 public:
     /* 00 */ CharacterIconSlot mSlots[4];
     /* 30 */ u8 mUnk_30;
@@ -29,10 +29,10 @@ public:
     /* 3a */ PAD(0x3a, 0x3c);
     /* 3c */
 
-    UnkStruct_020651bc(u32 unk1, u32 unk2, s32 unk3); // 0x02065158
-    ~UnkStruct_020651bc();
-    void func_02065204(u32 slot, s32 character, u32 unk3, u32 unk4);
-    void func_0206547c(u8 slot, s16 x, s16 y, u32 unk4);
-    void func_020654a0();
-    void func_020654f8(u32 slot, u32 visible);
+    CharacterIcons(u32 unk1, u32 unk2, s32 unk3); // 0x02065158
+    ~CharacterIcons();
+    void SetCharacter(u32 slot, s32 character, u32 unk3, u32 unk4);
+    void SetDrawArgs(u8 slot, s16 x, s16 y, u32 unk4);
+    void DrawIcons();
+    void SetVisible(u32 slot, u32 visible);
 };

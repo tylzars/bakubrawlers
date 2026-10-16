@@ -29,12 +29,12 @@ struct ParkCategory {
 
 extern ParkCategory data_020a4ccc[];
 extern BOOL func_020875ac(u32 index);
-void func_02089924(u32 index, void *out);
+void GetParkEntry(u32 index, void *out);
 BOOL func_02089c7c(u32 id);
 BOOL func_02089ec8();
 BOOL func_02089f2c();
 
-// Moved here from UnkStruct_02087898.cpp, where it currently sits past the end of that unit (0x02088f38).
+// Moved here from StorytalkWindow.cpp, where it currently sits past the end of that unit (0x02088f38).
 u8 func_02088f38() {
     u8 stage = data_020d43f0[0].mUnk_42;
     if (stage == 0 || (stage == 1 && data_020d43f0[0].mUnk_43 == 0)) {
@@ -126,7 +126,7 @@ void func_02089208() {
     u8 buf[12];
     data_020d43f0[0].mUnk_5b9_1 = 0;
     do {
-        func_02089924(i, buf);
+        GetParkEntry(i, buf);
         if (buf[6] != 0xff) {
             data_020d43f0[0].mUnk_5b9_1 = 1;
             return;
@@ -363,7 +363,7 @@ void func_02089278() {
     func_02089208();
 }
 
-void func_02089924(u32 index, void *out) {
+void GetParkEntry(u32 index, void *out) {
     u8 group;
     ParkGroup *groups;
     BOOL found;
@@ -402,14 +402,14 @@ void func_02089924(u32 index, void *out) {
     }
 }
 
-u8 func_02089a64(u32 index) {
+u8 GetParkGroupId(u32 index) {
     ParkCategory *category = &data_020a4ccc[data_020d43f0[0].mUnk_5c2[index].mCategory];
     return (u8) category->mGroups[data_020d43f0[0].mUnk_5c2[index].mGroup].mId;
 }
 
 void func_02089a9c(u32 index) {
     ParkEntry entry;
-    func_02089924(index, &entry);
+    GetParkEntry(index, &entry);
     u32 flag = data_020d43f0[0].mUnk_5bf_0;
     if (flag && entry.mType != 0 && entry.mType != 1 && entry.mType != 2) {
         entry.mType = 0;

@@ -3,7 +3,7 @@
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Scene/CreditsScene.hpp"
-#include "Unknown/UnkStruct_02070608.hpp"
+#include "UI/SaveWindow.hpp"
 #include "UI/SelectWindow.hpp"
 #include <nitro/mi.h>
 #include <nitro/os.h>
@@ -353,7 +353,7 @@ void OptionScene::Update() {
                     mState = 0x17;
                 } else {
                     GX_SetVisiblePlane(0x11);
-                    new UnkStruct_02070608(1, 1, 0, 0x2000, 2, 0, 0, 0xd000, 0x120);
+                    new SaveWindow(1, 1, 0, 0x2000, 2, 0, 0, 0xd000, 0x120);
                     mContext->mUnk_12 = 0;
                     mState++;
                 }

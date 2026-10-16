@@ -184,9 +184,9 @@ void BattleData::func_ov007_0223d504() {
     } while (n < 2);
     mUnk_34[12]->SetAnimation(0xb);
     mUnk_34[13]->SetAnimation(6);
-    mUnk_70 = new UnkStruct_020651bc(0x6800, 3, 1);
-    mUnk_70->func_02065204(0, *(s8 *) &mEntries[0].mUnk_0e, data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mUnk_0d_4]->NameInfo(), 0);
-    mUnk_70->func_02065204(1, *(s8 *) &mEntries[1].mUnk_0e, data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mUnk_0d_4]->NameInfo(), 0);
+    mUnk_70 = new CharacterIcons(0x6800, 3, 1);
+    mUnk_70->SetCharacter(0, *(s8 *) &mEntries[0].mUnk_0e, data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mUnk_0d_4]->NameInfo(), 0);
+    mUnk_70->SetCharacter(1, *(s8 *) &mEntries[1].mUnk_0e, data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mUnk_0d_4]->NameInfo(), 0);
     ChangeDir("/");
     mUnk_6c = new MessageWindow("mes_CardName", 1, 0x1f800);
     mUnk_6c->func_02065bd4(0x14, 4, 0);
@@ -209,7 +209,7 @@ void BattleData::func_ov007_0223db20(u8 side, s16 x, s16 y) {
         mUnk_34[12]->func_0202a3ec(1, mEntries[side].mUnk_0d_4, px - 6, top, 2);
     }
     mUnk_34[9]->Draw(1, (s16) (px - 2), (s16) (y - 2), 3);
-    mUnk_70->func_0206547c(side, px, y, 2);
+    mUnk_70->SetDrawArgs(side, px, y, 2);
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 owner               = mEntries[side].mUnk_0d_4;
     u8 current             = list->mUnk_2a9;

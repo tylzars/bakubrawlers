@@ -7,9 +7,9 @@
 
 class MessageWindow;
 class SelectWindow;
-class UnkStruct_020651bc;
-class UnkStruct_02074938;
-class UnkStruct_020758f4;
+class CharacterIcons;
+class RankingCharacterView;
+class Ranking;
 struct MessageFile;
 
 struct TournamentEntry {
@@ -23,8 +23,8 @@ struct TournamentEntry {
 class TournamentSubScene : public SceneBase {
 public:
     /* 00 (base) */
-    /* 0c */ UnkStruct_020758f4 *mUnk_0c;
-    /* 10 */ UnkStruct_02074938 *mUnk_10;
+    /* 0c */ Ranking *mUnk_0c;
+    /* 10 */ RankingCharacterView *mUnk_10;
     /* 14 */ SelectWindow *mWindow;
     /* 18 */ TournamentEntry mEntries[3];
     /* 30 */ MessageFile *mMessages;
@@ -33,7 +33,7 @@ public:
     /* 3c */ u32 mTextBufferSize;
     /* 40 */ u32 mGlyphCount;
     /* 44 */ MessageWindow *mMessage;
-    /* 48 */ UnkStruct_020651bc *mUnk_48;
+    /* 48 */ CharacterIcons *mUnk_48;
     /* 4c */ s32 mResult;
     /* 50 */ u8 mUnk_50;
     /* 51 */ s8 mUnk_51;

@@ -4,7 +4,7 @@
 
 
 #include "Battle/BattleBase.hpp"
-#include "Unknown/UnkStruct_02087898.hpp"
+#include "UI/StorytalkWindow.hpp"
 #include "UI/MessageWindow.hpp"
 #include "Battle/BattleObj01.hpp"
 
@@ -15,7 +15,7 @@
 #include "System/InputManager.hpp"
 #include "System/SoundManager.hpp"
 #include "System/TouchManager.hpp"
-#include "Unknown/UnkStruct_020651bc.hpp"
+#include "Graphics/CharacterIcons.hpp"
 #include <nitro/gx.h>
 #include <nitro/fx.h>
 #include <nitro/mi.h>
@@ -128,7 +128,7 @@ BattleHud::~BattleHud() {
 extern const u32 data_ov007_02279d44;
 extern const s8 data_ov007_02279d40;
 u16 func_02065c20(u32 id);
-u8 func_02065c0c(u32 id, u32 kind);
+u8 GetCardInfo(u32 id, u32 kind);
 
 void BattleHud::func_ov007_022257e0() {
     BattleEntry *entries = mData->mEntries;
@@ -203,7 +203,7 @@ void BattleHud::func_ov007_022257e0() {
         mAnims[slot] = new CellAnimation("vs_b_obj_ability_nce.bin", 0, 1, 1);
         mAnims[slot]->mCharBase = screen.func_020276f4(0x10000);
         mAnims[slot]->mUnk_11 = 10;
-        switch (func_02065c0c(entries[i].mUnk_12, 3)) {
+        switch (GetCardInfo(entries[i].mUnk_12, 3)) {
             case 0:
                 mAnims[slot]->SetAnimation(0);
                 break;
@@ -223,7 +223,7 @@ void BattleHud::func_ov007_022257e0() {
                 if (entries[i].mUnk_12 >= 0x8e && entries[i].mUnk_12 <= 0x91) {
                     mAnims[slot]->SetAnimation(9);
                 } else if (func_ov007_02222764(i, entries) == 5) {
-                    if (func_02065c0c(entries[(u8) (i ^ 1)].mUnk_12, 3) != 5) {
+                    if (GetCardInfo(entries[(u8) (i ^ 1)].mUnk_12, 3) != 5) {
                         mAnims[slot]->SetAnimation(6);
                     } else {
                         mAnims[slot]->SetAnimation(5);
@@ -308,7 +308,7 @@ void BattleHud::func_ov007_022257e0() {
             }
             card = 0;
         } else {
-            int kind = func_02065c0c(entries[(u8) mUnk_0c].mUnk_12, 3);
+            int kind = GetCardInfo(entries[(u8) mUnk_0c].mUnk_12, 3);
             if ((u8) (kind + 0xfc) <= 1) {
                 mUnk_117_1 = 1;
             }
@@ -392,8 +392,8 @@ void BattleHud::Update() {
         case 1:
             if (data_020d433c.mUnk_85 == 0xe || (data_020d433c.mUnk_85 >= 7 && data_020d433c.mUnk_85 <= 10)) {
                 mUnk_12b = 2;
-                data_020d433c.mBattlePlayers->mUnk_2a4->func_02087eec();
-                data_020d433c.mBattlePlayers->mUnk_2a4->func_02088e64(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
+                data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
                 G2S_SetBlendBrightness(0x1f, -10);
             } else {
                 func_ov007_02226ab8();
@@ -402,7 +402,7 @@ void BattleHud::Update() {
             break;
         case 2: {
             if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
-                data_020d433c.mBattlePlayers->mUnk_2a4->func_02088dac(1);
+                data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
             }
             u32 limit = data_020d433c.mUnk_83 == 4 ? 0 : 5;
             if (!data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
@@ -413,7 +413,7 @@ void BattleHud::Update() {
                     mUnk_12b = 3;
                     G2S_SetBlendBrightness(0x1f, 0);
                 } else {
-                    data_020d433c.mBattlePlayers->mUnk_2a4->func_02088e64(n, 0x64, 0, 0);
+                    data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(n, 0x64, 0, 0);
                 }
             }
             break;
@@ -827,7 +827,7 @@ void BattleHud::func_ov007_02227730() {
     u8 i;
     mData->func_ov007_0223db20(0, 8, 0x1e);
     mData->func_ov007_0223db20(1, 0xb8, 0x1e);
-    mData->mUnk_70->func_020654a0();
+    mData->mUnk_70->DrawIcons();
     if (mUnk_22_6) {
         s16 pos[2];
         pos[0] = mUnk_18;

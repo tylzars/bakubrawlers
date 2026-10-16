@@ -10,7 +10,7 @@ class MessageWindow;
 class BattleCommandPage;
 class BattleCommandList;
 class SelectWindow;
-class UnkStruct_020651bc;
+class CharacterIcons;
 struct BattleRecord;
 
 struct BattlePromptSlot {
@@ -30,7 +30,7 @@ public:
     /* 30 */ BattleCommandPage *mUnk_30;
     /* 34 */ BattleCommandList *mUnk_34;
     /* 38 */ SelectWindow *mUnk_38;
-    /* 3c */ UnkStruct_020651bc *mUnk_3c;
+    /* 3c */ CharacterIcons *mUnk_3c;
     /* 40 */ CellAnimation *mUnk_40[3];
     /* 4c */ u32 mUnk_4c;
     /* 50 */ s16 mUnk_50;

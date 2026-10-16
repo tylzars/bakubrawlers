@@ -9,7 +9,7 @@
 #include "Graphics/ModelInternal.hpp"
 #include "System/FileSystem.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
-#include "Unknown/UnkStruct_02078290.hpp"
+#include "Graphics/AntennaIndicator.hpp"
 #include "System/InputManager.hpp"
 #include "System/WirelessManager.hpp"
 #include "System/FrameTask.hpp"
@@ -549,7 +549,7 @@ void BattleCharaAct::func_ov007_02269380() {
     mUnk_18 = new BattleMapObj(type);
     mUnk_18->func_ov007_022493fc();
     if (mUnk_36 != 5 && mUnk_36 != 6 && data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->func_020785d8(0xd);
+        data_020d433c.mUnk_10->SetupLayout(0xd);
     }
 }
 

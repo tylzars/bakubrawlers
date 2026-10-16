@@ -15,8 +15,8 @@
 #include "Scene/SceneBase.hpp"
 #include "System/FileSystem.hpp"
 #include "Graphics/Camera.hpp"
-#include "Unknown/UnkStruct_02078290.hpp"
-#include "Unknown/UnkStruct_02087898.hpp"
+#include "Graphics/AntennaIndicator.hpp"
+#include "UI/StorytalkWindow.hpp"
 #include <nitro/gx.h>
 
 struct BattleObjPair {
@@ -166,7 +166,7 @@ void BattleObj00::Update() {
             return;
         case 4:
             if (data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->func_020785d8(0xd);
+                data_020d433c.mUnk_10->SetupLayout(0xd);
             }
             SpriteManager::Get().StartFade(2);
             mUnk_32++;
@@ -434,9 +434,9 @@ void BattleObj00::Update() {
             }
             if (data_020d433c.mUnk_85 != 0) {
                 mUnk_32 = 0x14;
-                data_020d433c.mBattlePlayers->mUnk_2a4->func_02087eec();
+                data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                list->mUnk_2a4->func_02088e64(list->mUnk_2af, 0x64, 0, 0);
+                list->mUnk_2a4->SetMessage(list->mUnk_2af, 0x64, 0, 0);
                 G2S_SetBlendBrightness(0x1f, -10);
                 func_ov007_02247a08(mMap, 0);
                 return;
@@ -448,7 +448,7 @@ void BattleObj00::Update() {
         }
         case 20:
             if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
-                data_020d433c.mBattlePlayers->mUnk_2a4->func_02088dac(1);
+                data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
             }
             if (data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
                 return;
@@ -459,7 +459,7 @@ void BattleObj00::Update() {
                 G2S_SetBlendBrightness(0x1f, 0);
                 return;
             }
-            data_020d433c.mBattlePlayers->mUnk_2a4->func_02088e64(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+            data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
             return;
         case 21:
             func_ov007_02245888(mMap);

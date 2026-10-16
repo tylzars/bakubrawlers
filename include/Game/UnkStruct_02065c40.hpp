@@ -10,7 +10,7 @@
 class CellAnimation;
 class ModelInstance;
 class UnkStruct_02029ca8;
-class UnkStruct_02087898;
+class StorytalkWindow;
 class Camera;
 class UnkStruct_0205401c;
 class UnkStruct_0203d374;
@@ -174,7 +174,7 @@ public:
     /* 100c */ CellAnimation *mUnk_100c;
     /* 1010 */ ModelInstance *mUnk_1010;
     /* 1014 */ UnkStruct_02029ca8 *mUnk_1014;
-    /* 1018 */ UnkStruct_02087898 *mUnk_1018;
+    /* 1018 */ StorytalkWindow *mUnk_1018;
     /* 101c */ UnkStruct_02065c40_34 mUnk_101c[2];
     /* 1084 */ UnkStruct_02065c40_54 mUnk_1084[2];
     /* 112c */ UnkStruct_02065c40_44 mUnk_112c[2];

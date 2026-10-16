@@ -79,12 +79,12 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 | 0x020575e0-0x0205b288 | Battle/BattleCommandList.cpp | battle command screen: list scene |
 | 0x0205b288-0x0205c8f0 | UI/SelectWindow.cpp | |
 | 0x0205c8f0-0x02065158 | Scene/CharacterEditScene.cpp | character editor scene (looks, colours, name) |
-| 0x02065158-0x0206550c | Unknown/UnkStruct_020651bc.cpp | four character icons; its own file (its strings come before MessageWindow's vtable) |
+| 0x02065158-0x0206550c | Unknown/CharacterIcons.cpp | four character icons; its own file (its strings come before MessageWindow's vtable) |
 | 0x0206550c-0x02065c40 | UI/MessageWindow.cpp | |
 | 0x02052320-0x02052548 | System/TaskBase.cpp | `TaskBase`, the game's wrapper over the CRI audio library; 0x0203de40-0x0203dee8 are CRI-side hooks, left with the library |
 | 0x02088f38-0x02089f90 | Game/ParkCharacters.cpp | builds and maintains the park's eight character slots (`data_020a4ccc` categories) |
-| 0x02089f90-0x0208ab40 | Scene/UnkStruct_02089f90.cpp | gift unlock popup (`/Game/Giftunlock/`) |
-| 0x0208ab40-0x0208b4bc | Scene/UnkStruct_0208ab40.cpp | unlock message window (`/font/mes_Unlock.mes`) |
+| 0x02089f90-0x0208ab40 | Scene/GiftUnlockScene.cpp | gift unlock scene (`/Game/Giftunlock/`) |
+| 0x0208ab40-0x0208b4bc | Scene/UnlockPopup.cpp | unlock message window (`/font/mes_Unlock.mes`) |
 
 0x02030880-0x02030b64 is NitroSystem foundation code (list and heap helpers), not game code.
 

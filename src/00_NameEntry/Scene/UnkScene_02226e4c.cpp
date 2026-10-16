@@ -1,13 +1,13 @@
 
 void func_ov000_0221d150();
 #include "Scene/UnkScene_ov000.hpp"
-#include "Unknown/UnkStruct_020c17a8.hpp"
+#include "System/SaveManager.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/TouchManager.hpp"
 #include "System/InputManager.hpp"
-#include "Unknown/UnkStruct_02071868.hpp"
+#include "UI/MessageScreen.hpp"
 #include <nitro/gx.h>
 #include "System/FileSystem.hpp"
 
@@ -37,7 +37,7 @@ void UnkScene_02226e4c::Update() {
                 mState = 8;
             } else {
                 data_020d433c.mUnk_79 = 0;
-                mObj0c = new UnkStruct_02071868(2);
+                mObj0c = new MessageScreen(MESSAGE_SCREEN_TITLE_8);
                 mState = 3;
             }
             break;

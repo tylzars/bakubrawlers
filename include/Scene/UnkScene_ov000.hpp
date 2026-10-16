@@ -5,7 +5,7 @@
 
 #include "Scene/SceneBase.hpp"
 
-class UnkStruct_02071868;
+class MessageScreen;
 
 // Filled by OS_GetOwnerInfo; the first byte is a kind (1 or 2 skips the scene).
 struct UnkStruct_020073d8 {
@@ -20,8 +20,8 @@ extern "C" void OS_GetOwnerInfo(UnkStruct_020073d8 *info);
 class UnkScene_02226e4c : public SceneBase {
 public:
     /* 00 (base) */
-    /* 0c */ UnkStruct_02071868 *mObj0c;
-    /* 10 */ UnkStruct_02071868 *mObj10;
+    /* 0c */ MessageScreen *mObj0c;
+    /* 10 */ MessageScreen *mObj10;
     /* 14 */ u8 mState;
     /* 15 */
 

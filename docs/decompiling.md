@@ -73,7 +73,7 @@ Diff the traces of two variants to find the first stage where they part. Facts r
   the block that precedes it.
 - Colouring takes named locals from the highest virtual-register number down, each getting the lowest free
   register. A variable assigned in both arms of an if/else gets a low number and so is coloured last; a short-lived
-  value per arm gets a high one (UnkStruct_02074938::func_02074828).
+  value per arm gets a high one (RankingCharacterView::CreateCharacterModel).
 - A `mov rX, rY` just before a load through rX, with rY still live, can be a second identical load that the
   post-allocation clean-up turned into a copy. A read through a `const T *` (e.g. a const-parameter inline helper)
   keeps that second load apart in the optimizer (CharacterModel::func_02053eec, StoryCharacterModel::func_02054d08).
@@ -154,7 +154,7 @@ that matches should replace it.
   stack-slot order), BattlePlayerList::Update's two volatile reads in case 4's second record (keep the player
   reload and the slot read apart so they number as the original's registers need), BattleSub48's enum-typed entry index, BattleUnk022637ac::func_ov007_02265af8's two
   volatile index reads, BattleOrderSelect's `volatile ry`, BattleCardModel's narrow stack
-  read, the casts through `data_020a3210.mOrder` in UnkStruct_02078e14.cpp, BattleConfrontCard::func_ov007_0223f918's
+  read, the casts through `data_020a3210.mOrder` in ListScene.cpp, BattleConfrontCard::func_ov007_0223f918's
   two-arm player index in case 29 (both arms read the same byte), cri_wave_ch func_02048940's repeated
   `r6 > 0 || r6 > 0` test (a join below the get24 call, so its result stays in r6's local).
 - Expression stand-ins: nns_snd_wavstrm func_020394c8's `- -v`, msl_strtod's `mp = (unsigned char *)&mant`,
@@ -168,7 +168,7 @@ that matches should replace it.
   tables come before most of its includes; the other two were loading the wrong file names (probes mask string
   addresses, so a wrong literal can look like a match).
 
-- **Two CameraManager mode tests, loads scheduled first (solved).** UnkStruct_02078290::Update, func_020785d8 and
+- **Two CameraManager mode tests, loads scheduled first (solved).** AntennaIndicator::Update, SetupLayout and
   BattleCardEffect::func_ov007_02271888 (the last thing keeping BattleCardEffect from linking) test
   `(mode == 2) | (mode == 3)` on two `CameraManager::Get()` results. The original loads both modes before the first
   compare: the `== 2` operand comes from the address kept in r4, the `== 3` one from a fresh pool load issued first.
@@ -198,7 +198,7 @@ that matches should replace it.
   - Six singleton classes have an empty constructor as Game.cpp saw them (guard before node there, node before guard
     in every other unit): the headers declare it under `#ifdef GAME_SINGLETON_CTORS`, defined only in Game.cpp. An
     exhaustive search over all 14! orders found no layout without it, and declaring it everywhere breaks 32 units.
-  - gLanguageSuffixes (the language-letter table) and its strings are Game's `.data`; UnkStruct_020c17a8 is one byte,
+  - gLanguageSuffixes (the language-letter table) and its strings are Game's `.data`; SaveManager is one byte,
     SceneRunner 0x14 and FrameTask 0x96c (sizes read from Game's `.bss`).
 - **Two literal-pool entries for one address.** `func_02023504` (FileSystem.cpp) loads 0x020d53e4 from two
   different pool words, so two relocations (different symbols, or symbol plus offset) resolve to the same address
@@ -207,7 +207,7 @@ that matches should replace it.
 - **Order of identical string literals (solved).** Copies of one literal in a table's initializer are ordinary
   participants of the file's size sort (below), so their order follows from the whole list. `tools/layout_search.py`
   models that sort and finds the include and definition orders that reproduce the original (ArenaScene's five window
-  paths, UnkStruct_02070608's four).
+  paths, SaveWindow's four).
 - **Fitting the size sort by hand (BattleCommandMap).** When `layout_search.py` refuses a file (its model misses a
   participant, such as a local array's initializer `@N` in `.rodata`, which joins at its function's position), a
   small script does the job: list the participants with sizes (strings of a table's initializer just before it, the
@@ -231,14 +231,14 @@ that matches should replace it.
   inline virtual destructors are emitted with them (D0 then D1). The original has the two vtables in one order and
   the destructors in the other, with D1 before D0: the destructors were defined out of line after the other
   functions (`UnkScene_020a54a8::~UnkScene_020a54a8() {}`), which emits D1, D0, D2 (the linker drops D2).
-- **A singleton node at two addresses splits a file (UnkStruct_02071868).** The UnkStruct_02071868 constructor's
+- **A singleton node at two addresses splits a file (MessageScreen).** The MessageScreen constructor's
   TextManager node is at 0x02219308, while UnkStruct_02071d24's functions use one at 0x02219314, and the
   constructor's strings sit between the two classes' vtables. Split at 0x02071d24, both link.
 - **A shared section can't put a bigger object first.** BattleTarget's `.rodata` has a 10-byte table before an 8-byte
   one, which the size sort never produces from separate tables: the block 0x0227a5e0-0x0227a74c is one struct
   (`TargetTables`, members named by original address), as in MyroomGiftScene. Byte tables indexed by a variable stay
   separate (inside a struct the indexing becomes an immediate offset).
-- **One class, two names.** UnkStruct_02070608.cpp constructed FileLoader's `UnkScene_020a54a8` under the name
+- **One class, two names.** SaveWindow.cpp constructed FileLoader's `UnkScene_020a54a8` under the name
   `UnkStruct_020a54a0` (its vtable symbol's address), which only showed as an undefined vtable once FileLoader linked.
 - **The main module's code ends at 0x0208b4bc.** dsd had put the `.text`/`.rodata` boundary at 0x0209d490, so ~70 KB
   of constant data (the SDK's FX tables, sndVolumeTable, GameData's and math_sha1's tables) counted as code and no
@@ -259,7 +259,7 @@ that matches should replace it.
   defined before its caller `func_02033714` (for the declaration), so mwcc emitted it first. A prototype and the
   definition after the caller fixed it.
 - **Literals before a vtable mean an earlier file (MessageWindow).** Function literals are emitted after a file's
-  shared `.data` section, so UnkStruct_020651bc's six path strings lying before MessageWindow's vtable showed the
+  shared `.data` section, so CharacterIcons' six path strings lying before MessageWindow's vtable showed the
   two classes were separate files; split at 0x0206550c, both link.
 - **Many statics: `layout_search.py --climb N`.** Permuting more than about 7 statics with 5 singletons is too slow;
   `--climb 300` hill-climbs singleton order, static order and the split instead. AttrSelScene (8 tables, 5
@@ -285,7 +285,7 @@ that matches should replace it.
   pin a later load, check the declared size of the stored-to object.
 
 - **Both CameraManager mode loads before the compares.** `(Get().mMode == 2) | (Get().mMode == 3)`
-  (BattleCardEffect::func_ov007_02271888, UnkStruct_02078290::Update and func_020785d8): the original loads the
+  (BattleCardEffect::func_ov007_02271888, AntennaIndicator::Update and SetupLayout): the original loads the
   instance address, then both modes, then compares (first mode and its 0/1 result share r1); we compare the first
   mode before loading the second. Every form tried compiles to the same code: operand order, `||`, negations,
   temporaries before or after the second `Get()`, references, pointers, inline wrappers around `Get()` or the
@@ -297,7 +297,7 @@ that matches should replace it.
   in the caller's own last 8 bytes, so objdiff reads it as a branch inside the caller. Linking is the proof for
   these: once the unit is `complete`, the ROM's SHA-1 covers the call. (BattleCommand::Update, BattleObj00::Update,
   BattleResult::Update, BattleCharaAct::Update, BattleCardSpec::Update, ArenaWindowScene::Update,
-  ArenaScene::func_ov001_022197ec, func_01ff9b64, UnkStruct_02078e14::Update.)
+  ArenaScene::func_ov001_022197ec, func_01ff9b64, ListScene::Update.)
 - **Call checks.** `tools/check_calls.py` compares every call in matching functions with the original;
   `tools/check_callees.py` compares, per function (matching or not), the set of callees with the `bl` targets in
   the original's range. Probes and objdiff mask call targets, so both are needed: a near-identical neighbour
@@ -478,7 +478,7 @@ Other findings from linking:
 - **A pointer local hoists an address early.** Through a pointer local, a flag array's address is hoisted (so placed
   in the pool and coloured) before a table read only in the loop condition; used directly in the expression it is
   hoisted after it. `(u8 *) g[0].member` gets the direct order and keeps aliasing with `g`, which an extern alias for
-  the same bytes doesn't (func_02086938, func_020876f0).
+  the same bytes doesn't (UnlockStoreItems, UnlockProgressEntry).
 
 - **Recompute differences instead of naming them.** BattleShoot::func_ov007_0226f698 matched once `x0 - x1` and
   `y0 - y1` were written out at each use (with an `ABS` macro) instead of held in `dx`/`dy` locals.
@@ -491,7 +491,7 @@ Other findings from linking:
 
 - **A callee declared `void` that returns a value changes scheduling in its callers.** `SpriteScreen::LoadCharacters`
   ends in `return func_02025c1c(...)`; declaring it `u32` flipped two scheduling ties (`mov r0, r4` against `ldr r1`)
-  in func_020843ac (UnkStruct_02078e14.cpp), not only register choices.
+  in func_020843ac (ListScene.cpp), not only register choices.
 
 - **`x[n] = v; n++;` vs `x[n++] = v;`** schedule differently; BattleCpu::func_ov007_02231300 needs the split form. A
   counter also passed to `MATH_Rand32` matched as `u32 n` with `n = (u8) (n + 1)` (func_ov007_022329cc).
@@ -542,7 +542,7 @@ Other findings from linking:
   in the original's order (`z = p->z; y = p->y; x = p->x;`) fixes the load order before a call.
 - **An enum-typed copy of a field read is a real load.** `CameraMode mode = (CameraMode) cam.mMode;` loads where it
   is declared and is not substituted into the compare, so two such copies keep both loads ahead of the tests: this
-  matched UnkStruct_02078290::Update/func_020785d8 and BattleCardEffect::func_ov007_02271888 after ~60 int-typed
+  matched AntennaIndicator::Update/SetupLayout and BattleCardEffect::func_ov007_02271888 after ~60 int-typed
   forms failed. Parameter widths matter the same way: BattleMapModel matched once `func_02032370`'s parameters were
   declared `u16` (the conversion temporary had merged with `color`), BattleObj01 once its own `layer` became `u8`.
 - **An identical first instruction in both arms is hoisted after register allocation.** When both arms of an
@@ -553,7 +553,7 @@ Other findings from linking:
 - **One more live value across a loop changes the loop body's schedule.** BattleBase::func_ov007_0221c938 matched with
   `const u8 *mode = &data_020c4258;` used by the three IsWirelessMode calls: the pointer is reloaded from the pool,
   so it leaves no visible code, but it changes the schedule before allocation. A block-local pointer also gets a
-  different register from a function-scope one (ParkCharacters func_02089924's loop pointer). A local reassigned in
+  different register from a function-scope one (ParkCharacters GetParkEntry's loop pointer). A local reassigned in
   place keeps its register (`cx += width;` before the multiply in func_02027cf4), and `u16 *` indexing keeps an index
   update in place where byte-pointer arithmetic lets it sink past calls (func_02078ab8).
 - **Search tool.** tools/permuter.py runs a simulated-annealing search over many source transformations (statement
@@ -614,7 +614,7 @@ Other findings from linking:
   `SpriteManager &` (each alone is not enough). A value whose only
   consumer is one later call is substituted into that call; a compound assignment or a later read keeps it in place.
 - **`(u8)` casts at a call site often stand in for the callee's parameter types.** Making `func_020231f4` take
-  `u8, u8` matched three callers in UnkStruct_02078e14.cpp. An `extern` object's declared size can matter too:
+  `u8, u8` matched three callers in ListScene.cpp. An `extern` object's declared size can matter too:
   stores at 0x1c/0x1d into `UnkStruct_0220f540` scheduled like the original only once the type was at least 0x3c bytes.
 - **Code that leaves no instructions can still move the scheduler.** The choice between equally ready instructions
   depends on where they sit in the block; dummy calls before a block flip such ties (func_020843ac, func_02085220).
@@ -756,7 +756,7 @@ Other findings from linking:
 - **Narrow read-modify-write toggles.** `f++; f &= 1;` as two statements on a `u8` field matches where a temporary
   (`u8 t = f + 1; f = t & 1;`) keeps the add in its own register (`UnkStruct_02065c40::Update`).
 - **Arguments a callee ignores.** If callers load a register before a call (e.g. `this` into r0) that the callee
-  never reads, the callee still takes that parameter: `func_02084e64(UnkStruct_02078e14 *self)` is passed `self`
+  never reads, the callee still takes that parameter: `func_02084e64(ListScene *self)` is passed `self`
   although its body ignores it, and declaring it without the parameter makes the caller 8 bytes short.
 - **Declare return values.** A function declared `void` that really returns a value changes the caller's
   register allocation: `func_02025b64` returns `offset + size`, and declaring it `u32` (callers ignore the result)

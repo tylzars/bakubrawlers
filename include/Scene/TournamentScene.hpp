@@ -8,7 +8,7 @@
 class CellAnimation;
 class MessageWindow;
 class SelectWindow;
-class UnkStruct_020651bc;
+class CharacterIcons;
 class UnkStruct_02065c40;
 class TournamentSubScene;
 struct MessageFile;
@@ -20,7 +20,7 @@ public:
     /* 0c */ CellAnimation *mCellsA[5];
     /* 20 */ CellAnimation *mCell20;
     /* 24 */ CellAnimation *mCellsB[5];
-    /* 38 */ UnkStruct_020651bc *mObj38;
+    /* 38 */ CharacterIcons *mObj38;
     /* 3c */ UnkStruct_02065c40 *mEvent;
     /* 40 */ SelectWindow *mMenu;
     /* 44 */ SelectWindow *mWindow;

@@ -29,7 +29,7 @@ BattleSideHelper::BattleSideHelper(u8 index, u8 unk2, BattleEntry *entries) {
             row = &data_ov007_02278e40[unk2];
         }
         mUnk_04 = 1;
-        switch (func_02065c0c(*id, 3)) {
+        switch (GetCardInfo(*id, 3)) {
             case 0:
                 MIi_CpuCopyFast(row->mUnk_00, &mUnk_0c, 8);
                 break;

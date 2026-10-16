@@ -8,8 +8,8 @@
 #include "Park/ParkPopup.hpp"
 #include "Game/Random.hpp"
 #include "Unknown/UnkFunctions.hpp"
-#include "Unknown/UnkStruct_02070608.hpp"
-#include "Unknown/UnkStruct_0208ab40.hpp"
+#include "UI/SaveWindow.hpp"
+#include "UI/UnlockPopup.hpp"
 #include "Game/UnkStruct_02065c40.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
@@ -22,7 +22,7 @@
 #include <stdio.h>
 
 
-// One record of the park character table, filled by func_02089924.
+// One record of the park character table, filled by GetParkEntry.
 struct ParkEntry {
     /* 00 */ u32 mType;
     /* 04 */ u8 mUnk_04;
@@ -184,7 +184,7 @@ void ParkScene::Update() {
                 break;
             }
             LoadWindowGraphics();
-            new UnkStruct_02070608(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
+            new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mUnk_12 = 0;
             data_020d433c.mUnk_14_1 = 0;
             SpriteManager::Get().StartSubFade(2);
@@ -214,7 +214,7 @@ void ParkScene::Update() {
             if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
-            new UnkStruct_0208ab40(mEvent->func_0206797c() - 1);
+            new UnlockPopup(mEvent->func_0206797c() - 1);
             mContext->mUnk_12 = 0;
             mUnk_0d++;
             break;
@@ -248,7 +248,7 @@ void ParkScene::Update() {
                 break;
             }
             ParkEntry entry;
-            func_02089924(data_020d433c.mUnk_8b_0, &entry);
+            GetParkEntry(data_020d433c.mUnk_8b_0, &entry);
             if (entry.mType == 6) {
                 SpriteManager::Get().StartSubFade(3);
                 mUnk_0d++;
@@ -287,8 +287,8 @@ void ParkScene::Update() {
             break;
         case 13: {
             ParkEntry entry;
-            func_02089924(data_020d433c.mUnk_8b_0, &entry);
-            u32 idx = func_02089a64(data_020d433c.mUnk_8b_0);
+            GetParkEntry(data_020d433c.mUnk_8b_0, &entry);
+            u32 idx = GetParkGroupId(data_020d433c.mUnk_8b_0);
             u8 pick = MATH_Rand32(&data_020d42e8, 3);
             u8 nib  = data_020d433c.mUnk_8c_4;
             if (nib == 0) {
@@ -375,7 +375,7 @@ void ParkScene::Update() {
                         u8 target = mMenu->mTarget;
                         if (mUnk_0c != target) {
                             mUnk_0c = target;
-                            u32 n   = func_02089a64(target);
+                            u32 n   = GetParkGroupId(target);
                             if (n >= 5) {
                                 n = (u8) (n - 1);
                             }
@@ -421,10 +421,10 @@ void ParkScene::Update() {
             break;
         case 24: {
             u32 shown;
-            u32 idx = func_02089a64(mUnk_0c);
+            u32 idx = GetParkGroupId(mUnk_0c);
             shown = idx;
             ParkEntry entry;
-            func_02089924(mUnk_0c, &entry);
+            GetParkEntry(mUnk_0c, &entry);
             if (idx >= 5) {
                 shown = (u16) (idx - 1);
             }
@@ -478,7 +478,7 @@ void ParkScene::Update() {
         case 25:
             if (mEvent->mUnk_14e7 != 0) {
                 ParkEntry entry;
-                func_02089924(mUnk_0c, &entry);
+                GetParkEntry(mUnk_0c, &entry);
                 switch (entry.mType) {
                     case 0:
                     case 1:
@@ -522,7 +522,7 @@ void ParkScene::Update() {
             break;
         case 28: {
             ParkEntry entry;
-            func_02089924(mUnk_0c, &entry);
+            GetParkEntry(mUnk_0c, &entry);
             reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", (u8) (entry.mUnk_06 + 5), 1);
             ShowWindow();
             mUnk_0d++;
@@ -558,9 +558,9 @@ void ParkScene::Update() {
             }
             HideWindow();
             if (mWindow->mCursor->mSelection == 0) {
-                u32 idx = func_02089a64(mUnk_0c);
+                u32 idx = GetParkGroupId(mUnk_0c);
                 ParkEntry entry;
-                func_02089924(mUnk_0c, &entry);
+                GetParkEntry(mUnk_0c, &entry);
                 switch (entry.mType) {
                     case 0:
                         data_020d433c.mPlayerCount = 2;
@@ -662,7 +662,7 @@ void ParkScene::Update() {
             HideWindow();
             if (mWindow->mCursor->mSelection == 0) {
                 ParkEntry entry;
-                func_02089924(mUnk_0c, &entry);
+                GetParkEntry(mUnk_0c, &entry);
                 if (entry.mUnk_0a_h == 0) {
                     if (data_020d43f0[0].mUnk_5be & 8) {
                         data_020d433c.mUnk_83 = 4;
@@ -931,7 +931,7 @@ BOOL ParkRules::func_ov004_0221bf5c() {
     u8 saved = data_020d43f0[0].mUnk_5b8;
     ParkRulesBuf buf;
     data_020d43f0[0].mUnk_5b8 = hi;
-    func_02089924(lo, &buf);
+    GetParkEntry(lo, &buf);
     u8 id = buf.mId;
     data_020d43f0[0].mUnk_5b8 = saved;
     BOOL ok = 1;
@@ -955,9 +955,9 @@ BOOL ParkRules::func_ov004_0221bf5c() {
         case 25: if (data_020d433c.mUnk_8c_0 == 0) ok = 0; break;
     }
     if (ok) {
-        func_020876f0(buf.mId);
+        UnlockProgressEntry(buf.mId);
         if (buf.mId == 0x19) {
-            func_020876f0(0x1a);
+            UnlockProgressEntry(0x1a);
         }
     }
     return ok;

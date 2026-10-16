@@ -7,10 +7,10 @@
 
 #include "Scene/SceneBase.hpp"
 
-class UnkStruct_02078290;
+class AntennaIndicator;
 class Camera;
 class BattleTarget;
-class UnkStruct_02087898; // timed screen effect (Unknown/UnkStruct_02087898.hpp)
+class StorytalkWindow; // UI/StorytalkWindow.hpp
 
 // Battle message a player sends over the communication link (type 0xe).
 struct BattlePlayerMessage {
@@ -232,7 +232,7 @@ struct BattlePlayerList : public SceneBase {
     /* 298 */ BattleTarget *mUnk_298;
     /* 29c */ BattleUnk29c *mUnk_29c;
     /* 2a0 */ Camera *mCamera;
-    /* 2a4 */ UnkStruct_02087898 *mUnk_2a4;
+    /* 2a4 */ StorytalkWindow *mUnk_2a4;
     /* 2a8 */ u8 mUnk_2a8;
     /* 2a9 */ u8 mUnk_2a9;
     /* 2aa */ u8 mUnk_2aa;
@@ -314,7 +314,7 @@ struct UnkStruct_020d433c {
     /* 04 */ EffectManager *mEffects;
     /* 08 */ GimmickManager *mGimmicks;
     /* 0c */ UnkStruct_020d433c_0c *mUnk_0c;
-    /* 10 */ UnkStruct_02078290 *mUnk_10;
+    /* 10 */ AntennaIndicator *mUnk_10;
     union {
         /* 14 */ u16 mUnk_14;
         struct {

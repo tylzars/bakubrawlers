@@ -13,8 +13,8 @@
 #include "UI/SelectWindow.hpp"
 #include "System/FrameTask.hpp"
 #include "Unknown/UnkFunctions.hpp"
-#include "Unknown/UnkStruct_02070608.hpp"
-#include "Unknown/UnkStruct_0208ab40.hpp"
+#include "UI/SaveWindow.hpp"
+#include "UI/UnlockPopup.hpp"
 
 #include <nitro/gx.h>
 #include <nitro/mi.h>
@@ -176,7 +176,7 @@ void MapScene::Update() {
                 break;
             }
             LoadWindowGraphics();
-            new UnkStruct_02070608(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
+            new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mUnk_12 = 0;
             data_020d433c.mUnk_14_1 = 0;
             SpriteManager::Get().StartSubFade(2);
@@ -217,7 +217,7 @@ void MapScene::Update() {
             if (SpriteManager::sFade[1] > 1) {
                 break;
             }
-            new UnkStruct_0208ab40(mEvent->func_0206797c() - 1);
+            new UnlockPopup(mEvent->func_0206797c() - 1);
             mContext->mUnk_12 = 0;
             mUnk_64++;
             break;
@@ -345,7 +345,7 @@ void MapScene::Update() {
             if (mUnk_65 != 0) {
                 break;
             }
-            new UnkStruct_02070608(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
+            new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mUnk_12 = 0;
             data_020d433c.mUnk_14_1 = 0;
             mUnk_64++;

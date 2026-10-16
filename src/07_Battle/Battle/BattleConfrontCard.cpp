@@ -21,7 +21,7 @@
 #include "System/FileSystem.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include "UI/SelectWindow.hpp"
-#include "Unknown/UnkStruct_02078290.hpp"
+#include "Graphics/AntennaIndicator.hpp"
 #include "Battle/BattleCharaAct.hpp"
 #include "Battle/ConfrontBg01.hpp"
 #include "Battle/ConfrontBg02.hpp"
@@ -29,7 +29,7 @@
 #include "Battle/ConfrontBg04.hpp"
 #include "Battle/ConfrontBg05.hpp"
 #include "Game/UnkStruct_020d48f0.hpp"
-#include "Unknown/UnkStruct_02087898.hpp"
+#include "UI/StorytalkWindow.hpp"
 #include "Graphics/Camera.hpp"
 #include "Game/Random.hpp"
 #include <nitro/math.h>
@@ -301,7 +301,7 @@ void BattleConfrontCard::func_ov007_0223f168() {
     G2_SetWnd0Position(0, 0, 0, 0);
     G2_SetWnd1Position(0, 0, 0, 0);
     if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->mUnk_1a = 0;
+        data_020d433c.mUnk_10->mSecondVisible = 0;
     }
     GXS_SetVisibleWnd(0);
     G2S_SetWndOutsidePlane(0x1f, FALSE);
@@ -361,7 +361,7 @@ void BattleConfrontCard::func_ov007_0223f398() {
         func_ov007_0223f780(mData->mUnk_04);
     }
     if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->func_020785d8(10);
+        data_020d433c.mUnk_10->SetupLayout(10);
     }
 }
 
@@ -403,7 +403,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
     switch (mUnk_0d) {
         case 0:
             if (data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->mUnk_1a = 1;
+                data_020d433c.mUnk_10->mSecondVisible = 1;
             }
             GXS_SetVisibleWnd(5);
             G2S_SetWndOutsidePlane(0x1f, FALSE);
@@ -593,7 +593,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 break;
             }
             if (data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->func_020785d8(10);
+                data_020d433c.mUnk_10->SetupLayout(10);
             }
             if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
                 mUnk_0d++;
@@ -797,20 +797,20 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             break;
         case 26:
             if (data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->mUnk_1a = 0;
+                data_020d433c.mUnk_10->mSecondVisible = 0;
             }
             GXS_SetVisibleWnd(0);
-            data_020d433c.mBattlePlayers->mUnk_2a4->func_02087eec();
+            data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
             {
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                list->mUnk_2a4->func_02088e64(list->mUnk_2af, 0x64, 0, 0);
+                list->mUnk_2a4->SetMessage(list->mUnk_2af, 0x64, 0, 0);
             }
             G2S_SetBlendBrightness(0x1f, -10);
             mUnk_0d++;
             break;
         case 27:
             if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
-                data_020d433c.mBattlePlayers->mUnk_2a4->func_02088dac(1);
+                data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
             }
             if (data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
                 break;
@@ -1154,7 +1154,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 mUnk_21 = 1;
             }
             if (data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->mUnk_1a = 1;
+                data_020d433c.mUnk_10->mSecondVisible = 1;
             }
             GXS_SetVisibleWnd(5);
             G2S_SetWndOutsidePlane(0x1f, FALSE);
@@ -1489,7 +1489,7 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
         opp          = e;
         opp += other;
         oppLevel = data_020d433c.mBattlePlayers->mPlayers[opp->mUnk_0d_4]->mUnk_ee;
-        type              = func_02065c0c(card, 3);
+        type              = GetCardInfo(card, 3);
         switch (type) {
         case 1: {
             u8 want = card - 1;
@@ -1698,7 +1698,7 @@ void BattleConfrontCard::func_ov007_02243100() {
     } while (i < 2);
     mData->func_ov007_0223db20(0, mUnk_14[0], (s16) (mUnk_1a[0] - 0x1e));
     mData->func_ov007_0223db20(1, mUnk_14[1], (s16) (mUnk_1a[1] - 0x1e));
-    mData->mUnk_70->func_020654a0();
+    mData->mUnk_70->DrawIcons();
     mUnk_24[0]->Draw(1, mUnk_14[2], mUnk_1a[2], 3);
     if (mUnk_5f == 0) {
         return;
@@ -1744,7 +1744,7 @@ void BattleConfrontCard::func_ov007_022432dc(u8 kind, u32 mode, u32 flag) {
 }
 
 u8 BattleConfrontCard::func_ov007_022433ac() {
-    int kind = func_02065c0c(mData->mUnk_04, 2);
+    int kind = GetCardInfo(mData->mUnk_04, 2);
     return kind;
 }
 
@@ -1848,7 +1848,7 @@ BOOL BattleConfrontCard::func_ov007_022433c8(u8 side, u16 id) {
         case 0x91:
             type = 2;
         kind:
-            if (type == func_02065c0c(mData->mUnk_04, 1)) {
+            if (type == GetCardInfo(mData->mUnk_04, 1)) {
                 result = TRUE;
             }
             break;
@@ -2170,7 +2170,7 @@ void BattleConfrontCard::func_ov007_02243d40() {
     }
     mUnk_69 = 1;
     if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->mUnk_1a = 1;
+        data_020d433c.mUnk_10->mSecondVisible = 1;
     }
     G2S_SetWnd0Position(0x10, 0x10, 0xf0, 0xb0);
     GXS_SetVisibleWnd(5);
@@ -2187,7 +2187,7 @@ void BattleConfrontCard::func_ov007_02243dec() {
     mUnk_69 = 0;
     G2S_SetBlendBrightness(0x11, 0);
     if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->mUnk_1a = 0;
+        data_020d433c.mUnk_10->mSecondVisible = 0;
     }
     GXS_SetVisibleWnd(0);
     G2S_SetWnd0InsidePlane(0x1f, FALSE);

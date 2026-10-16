@@ -7,10 +7,10 @@
 #include "Text/TextManager.hpp"
 #include "UI/SelectWindow.hpp"
 
-class UnkStruct_0208ab40 : public SceneBase {
+class UnlockPopup : public SceneBase {
 public:
     /* 00 SceneBase */
-    /* 0c */ SelectWindow *mMenu;
+    /* 0c */ SelectWindow *mWindow;
     /* 10 */ MessageFile *mMessages;
     /* 14 */ void *mTextBuffer;
     /* 18 */ void *mGlyphBuffer;
@@ -21,13 +21,13 @@ public:
     /* 26 */ PAD(0x26, 0x28);
     /* 28 */
 
-    UnkStruct_0208ab40(s32 unk1);
-    /* 00 */ virtual ~UnkStruct_0208ab40() override;
+    UnlockPopup(s32 unk1);
+    /* 00 */ virtual ~UnlockPopup() override;
     /* 08 */ virtual void Update() override;
 
-    void func_0208aec4();
-    void func_0208af20();
-    void func_0208b284();
-    void func_0208b338();
-    void func_0208b4a4();
+    void InitDisplay();
+    void Load();
+    void Draw();
+    void PrintMessage();
+    void ClearText();
 };

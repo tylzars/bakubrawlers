@@ -7,7 +7,7 @@
 
 #include "Scene/SceneBase.hpp"
 #include "UI/MessageWindow.hpp"
-#include "Unknown/UnkStruct_020651bc.hpp"
+#include "Graphics/CharacterIcons.hpp"
 
 class CellAnimation;
 struct BattleData;
@@ -139,7 +139,7 @@ struct BattleData {
     /* 0c */ BattleEntry mEntries[2];
     /* 34 */ CellAnimation *mUnk_34[14];
     /* 6c */ MessageWindow *mUnk_6c;
-    /* 70 */ UnkStruct_020651bc *mUnk_70;
+    /* 70 */ CharacterIcons *mUnk_70;
     /* 74 */
 
     BattleData();

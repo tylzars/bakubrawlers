@@ -40,8 +40,8 @@ void func_02022b28() {
     MI_CpuFill8(data_020d43f0, 0, 0xff4);
     func_02022d48(data_020d43f0);
     data_020d43f0[0].mMoney = 3000;
-    func_02086938();
-    func_02086a58();
+    UnlockStoreItems();
+    UnlockCharacters();
     func_02086b74();
     // data_020d48f0 lies inside data_020d43f0 (+0x500); going through the member keeps the stores ordered before
     // the bit-field updates below. The `mUnk_460 + 0xa0` cast is a placeholder for the real member at +0x500.

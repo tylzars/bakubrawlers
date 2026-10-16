@@ -8,7 +8,7 @@
 class CellAnimation;
 class MessageWindow;
 class SelectWindow;
-class UnkStruct_020651bc;
+class CharacterIcons;
 struct MessageFile;
 
 // A cell animation entry (one per button or marker).
@@ -52,7 +52,7 @@ public:
     /* 84 */ CellEntry mCells2[9];
     /* f0 */ SelectWindow *mWindows[4];
     /* 100 */ MessageWindow *mMessage;
-    /* 104 */ UnkStruct_020651bc *mPanel[2];
+    /* 104 */ CharacterIcons *mPanel[2];
     union {
         /* 10c */ u8 mUnk_10c[0x40];
         /* 10c */ FieldInput mInput[4];

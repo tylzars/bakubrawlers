@@ -1,4 +1,4 @@
-#include "Unknown/UnkStruct_02071868.hpp"
+#include "UI/MessageScreen.hpp"
 
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -13,7 +13,7 @@
 
 extern u16 data_020a596c;
 
-UnkStruct_02071868::UnkStruct_02071868(u32 unk1) {
+MessageScreen::MessageScreen(u32 unk1) {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
@@ -27,7 +27,7 @@ UnkStruct_02071868::UnkStruct_02071868(u32 unk1) {
     SpriteManager::Get().SetFade(1, 0);
     G2S_SetBG0Control(0, 1, 0, 1, 1);
     MessageFile *file;
-    if (unk1 != 2) {
+    if (unk1 != MESSAGE_SCREEN_TITLE_8) {
         file = (MessageFile *) func_02023504("/font/mes_system.mes", 0, 0, 0, 0, 0);
     } else {
         file = (MessageFile *) func_02023504("/font/mes_title.mes", 0, 0, 0, 0, 0);
@@ -40,13 +40,13 @@ UnkStruct_02071868::UnkStruct_02071868(u32 unk1) {
     MIi_CpuClear16(0, map, 0x600);
     u32 index;
     switch (unk1) {
-        case 0:
+        case MESSAGE_SCREEN_SYSTEM_5_HALT:
             index = 5;
             break;
-        case 1:
+        case MESSAGE_SCREEN_SYSTEM_4_HALT:
             index = 4;
             break;
-        case 2:
+        case MESSAGE_SCREEN_TITLE_8:
             index = 8;
             break;
     }
@@ -67,11 +67,11 @@ UnkStruct_02071868::UnkStruct_02071868(u32 unk1) {
     GX_LoadSubBGExtPltt(&data_020a596c, 0x4000, 0x20);
     GX_EndLoadSubBGExtPltt();
     G2S_SetBG0Offset(0x10, 0);
-    if (unk1 != 2) {
+    if (unk1 != MESSAGE_SCREEN_TITLE_8) {
         GameSystem::Get().mHalted = 1;
     }
 }
 
-UnkStruct_02071868::~UnkStruct_02071868() {
+MessageScreen::~MessageScreen() {
 }
 

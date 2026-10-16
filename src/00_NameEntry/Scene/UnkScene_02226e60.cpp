@@ -6,10 +6,10 @@ void func_ov000_0221d150();
 #include "Graphics/SpriteManager.hpp"
 #include "System/InputManager.hpp"
 #include "System/TouchManager.hpp"
-#include "Unknown/UnkStruct_02071868.hpp"
+#include "UI/MessageScreen.hpp"
 #include <nitro/gx.h>
 #include "System/FileSystem.hpp"
-#include "Unknown/UnkStruct_020c17a8.hpp"
+#include "System/SaveManager.hpp"
 
 UnkScene_02226e60::UnkScene_02226e60() :
     SceneBase(2, 0) {
@@ -39,19 +39,19 @@ void UnkScene_02226e60::Update() {
             }
             break;
         case 2:
-            switch (UnkStruct_020c17a8::Get().func_02023c38(0)) {
-                case 1:
-                    new UnkStruct_02071868(0);
+            switch (SaveManager::Get().GetSlotStatus(0)) {
+                case SAVE_STATUS_ERROR:
+                    new MessageScreen(MESSAGE_SCREEN_SYSTEM_5_HALT);
                     break;
-                case 2:
+                case SAVE_STATUS_NO_MAGIC:
                     data_020d433c.mUnk_77 = 0;
                     mState++;
                     break;
-                case 5:
+                case SAVE_STATUS_MARKER:
                     data_020d433c.mUnk_77 = 1;
                     mState++;
                     break;
-                case 4:
+                case SAVE_STATUS_OK:
                     data_020d433c.mUnk_77 = 2;
                     mState++;
                     break;

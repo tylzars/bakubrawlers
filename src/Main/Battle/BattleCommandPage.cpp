@@ -63,7 +63,7 @@ inline const char **PagePaths() {
 #include <nitro/os.h>
 
 u16 func_02065c20(u32 id);
-u8 func_02065c0c(u32 id, u32 kind);
+u8 GetCardInfo(u32 id, u32 kind);
 extern u16 data_020c1a4c[0x10]; // palette scratch (cleared before each text)
 
 BattleCommandPage::BattleCommandPage(u16 a, s32 b) :
@@ -634,7 +634,7 @@ void BattleCommandPage::func_02056814(u32 index) {
         id2      = id;
         textFile = (MessageFile **) &mUnk_58;
         nameFile = (MessageFile **) &mUnk_5c;
-        if (func_02065c0c(id, 0) == 0) {
+        if (GetCardInfo(id, 0) == 0) {
             mUnk_108 = 0;
             total    = 0x58;
             height   = 0xc;
@@ -759,7 +759,7 @@ void BattleCommandPage::func_020571a8() {
     if (mUnk_109 != 0) {
         big = 1;
     } else if (mUnk_f8 < 0xd5) {
-        big = func_02065c0c(mUnk_f8, 0);
+        big = GetCardInfo(mUnk_f8, 0);
     } else if (mUnk_f8 < 0xda) {
         big = 0;
     } else {
@@ -861,5 +861,5 @@ void BattleCommandPage::func_020571a8() {
     if (mUnk_f8 == 0) {
         return;
     }
-    mCells[6]->func_0202a3ec(0, func_02065c0c(mUnk_f8, 2), 0x80, 0x84, 0);
+    mCells[6]->func_0202a3ec(0, GetCardInfo(mUnk_f8, 2), 0x80, 0x84, 0);
 }

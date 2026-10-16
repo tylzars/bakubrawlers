@@ -1,5 +1,5 @@
 #include "System/FrameTask.hpp"
-#include "Unknown/UnkStruct_02089f90.hpp"
+#include "Scene/GiftUnlockScene.hpp"
 
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -10,7 +10,7 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-// Gift unlock popup (assets in /Game/Giftunlock): shows the unlocked emblem and a confirm button.
+// Gift unlock scene (assets in /Game/Giftunlock): shows the unlocked emblem and one button.
 
 static const u8 sEmblemFiles[12] = {3, 3, 3, 4, 3, 3, 3, 0, 1, 2, 5, 0};
 
@@ -22,33 +22,33 @@ static const WindowCellRecord sOkCells[1] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0, 0, 3, 1, {0, 1, 1, 0}},
 };
 
-UnkStruct_02089f90::UnkStruct_02089f90(s32 unk1) :
+GiftUnlockScene::GiftUnlockScene(s32 unk1) :
     SceneBase(0x3e8, 0) {
-    mMenu   = NULL;
+    mWindow   = NULL;
     mOffset = 0x108;
     mUnk_1e = 0;
     mState  = 0;
     mIndex  = unk1;
     mCell   = NULL;
     for (u8 i = 0; i < 2; i++) {
-        mCells[i] = NULL;
+        mCellAnims[i] = NULL;
     }
 }
 
-UnkStruct_02089f90::~UnkStruct_02089f90() {
-    delete mMenu;
+GiftUnlockScene::~GiftUnlockScene() {
+    delete mWindow;
     delete mCell;
     for (u8 i = 0; i < 2; i++) {
-        delete mCells[i];
+        delete mCellAnims[i];
     }
 }
 
-void UnkStruct_02089f90::Update() {
+void GiftUnlockScene::Update() {
     BOOL draw = TRUE;
     switch (mState) {
         case 0:
-            func_0208a454();
-            func_0208a598();
+            InitDisplay();
+            LoadGraphics();
             SpriteManager::Get().StartFade(2);
             draw = FALSE;
             mState++;
@@ -71,12 +71,12 @@ void UnkStruct_02089f90::Update() {
                     mOffset = 0;
                 }
             } else {
-                mMenu->mUnk_064 = 1;
+                mWindow->mUnk_064 = 1;
                 mState++;
             }
             break;
         case 3:
-            if (mMenu->Update(TRUE) == 1) {
+            if (mWindow->Update(TRUE) == 1) {
                 SpriteManager::Get().StartFade(3);
                 mState++;
             }
@@ -90,11 +90,11 @@ void UnkStruct_02089f90::Update() {
             break;
     }
     if (draw) {
-        func_0208aa5c();
+        Draw();
     }
 }
 
-void UnkStruct_02089f90::func_0208a454() {
+void GiftUnlockScene::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
@@ -111,7 +111,7 @@ void UnkStruct_02089f90::func_0208a454() {
     G2S_SetBlendBrightness(0x1f, 0);
 }
 
-void UnkStruct_02089f90::func_0208a598() {
+void GiftUnlockScene::LoadGraphics() {
     char path[0x40];
     char name[0x40];
     ChangeDir("/game/Giftunlock/Bg/");
@@ -140,37 +140,37 @@ void UnkStruct_02089f90::func_0208a598() {
     sprintf(name, "myroom_gift_u_obj_emblem_%02d_ncl.bin", mIndex + 1);
     bottom.func_02027fec(name, 0, 0);
     sprintf(name, "myroom_gift_u_obj_emblem_%02d_nce.bin", mIndex + 1);
-    mCells[0]            = new CellAnimation(name, 0, 1, 1);
-    mCells[0]->mCharBase = bottom.func_020276f4(0x2000);
-    mCells[0]->mUnk_11   = 0;
+    mCellAnims[0]            = new CellAnimation(name, 0, 1, 1);
+    mCellAnims[0]->mCharBase = bottom.func_020276f4(0x2000);
+    mCellAnims[0]->mUnk_11   = 0;
     ChangeDir("/Game/Giftunlock/Obj/");
     bottom.LoadCharacters("gift_unlock_b_ob.nce_ncg1D.bin", 0x5000, 0);
     bottom.LoadPalette("gift_unlock_b_ob_ncl.bin", 0x20, 0);
-    mCells[1]            = new CellAnimation("gift_unlock_b_ob_nce.bin", 0, 1, 1);
-    mCells[1]->mCharBase = bottom.func_020276f4(0x5000);
-    mCells[1]->mUnk_11   = 1;
+    mCellAnims[1]            = new CellAnimation("gift_unlock_b_ob_nce.bin", 0, 1, 1);
+    mCellAnims[1]->mCharBase = bottom.func_020276f4(0x5000);
+    mCellAnims[1]->mUnk_11   = 1;
     ChangeDir("/");
-    delete mMenu;
-    mMenu = new SelectWindow(1, sOkItems, -1);
-    mMenu->SetCells(1, sOkCells);
-    mMenu->mCursor->mSelection = -1;
-    mMenu->mUnk_064            = 0;
+    delete mWindow;
+    mWindow = new SelectWindow(1, sOkItems, -1);
+    mWindow->SetCells(1, sOkCells);
+    mWindow->mCursor->mSelection = -1;
+    mWindow->mUnk_064            = 0;
 }
 
-void UnkStruct_02089f90::func_0208aa5c() {
+void GiftUnlockScene::Draw() {
     CellAnimation *cell = mCell;
     if (cell->mUnk_0e == 0 && cell->mUnk_12 != 0) {
         cell->SetAnimation(1);
     }
     mCell->Update();
     mCell->Draw(0, 0x80, 0x60, 2);
-    mMenu->Draw();
-    mCells[0]->Update();
-    mCells[0]->Draw(1, (s16) (mOffset + 0x50), 0, 2);
-    cell = mCells[1];
+    mWindow->Draw();
+    mCellAnims[0]->Update();
+    mCellAnims[0]->Draw(1, (s16) (mOffset + 0x50), 0, 2);
+    cell = mCellAnims[1];
     if (cell->mUnk_0e == 0 && cell->mUnk_12 != 0) {
         cell->SetAnimation(1);
     }
-    mCells[1]->Update();
-    mCells[1]->Draw(1, 0x80, 0x60, 2);
+    mCellAnims[1]->Update();
+    mCellAnims[1]->Draw(1, 0x80, 0x60, 2);
 }

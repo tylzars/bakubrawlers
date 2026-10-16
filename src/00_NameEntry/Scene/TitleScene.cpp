@@ -1,4 +1,4 @@
-#include "Unknown/UnkStruct_020c17a8.hpp"
+#include "System/SaveManager.hpp"
 #include "Scene/TitleScene.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/CellAnimation.hpp"
@@ -16,10 +16,10 @@
 #include "Text/TextManager.hpp"
 #include <nitro/fx.h>
 #include "System/FrameUpdate.hpp"
-#include "Unknown/UnkStruct_020c17a8.hpp"
-#include "Unknown/UnkStruct_02070608.hpp"
+#include "System/SaveManager.hpp"
+#include "UI/SaveWindow.hpp"
 #include "Scene/NameEntryScene.hpp"
-#include "Unknown/UnkStruct_02071868.hpp"
+#include "UI/MessageScreen.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 
 
@@ -110,10 +110,10 @@ public:
     u8 mPad[0x34];
     CreditsScene();
 };
-class UnkStruct_02089f90 {
+class GiftUnlockScene {
 public:
     u8 mPad[0x24];
-    UnkStruct_02089f90(s32 unk);
+    GiftUnlockScene(s32 unk);
 };
 
 // Loads the save data (vtable 0x020a5494).
@@ -294,8 +294,8 @@ void TitleScene::Update() {
             switch (data_020d433c.mUnk_77) {
                 case 0:
                     data_020d433c.mUnk_77 = idx;
-                    if (UnkStruct_020c17a8::Get().func_02023d30(0) == 1) {
-                        new UnkStruct_02071868(1);
+                    if (SaveManager::Get().WriteSlotMarker(0) == SAVE_STATUS_ERROR) {
+                        new MessageScreen(MESSAGE_SCREEN_SYSTEM_4_HALT);
                     }
                 case 1:
                     count--;
@@ -346,21 +346,21 @@ void TitleScene::Update() {
                 break;
             }
             mContext->mUnk_12 = 0;
-            UnkStruct_020c17a8::Get();
+            SaveManager::Get();
             new UnkScene_020a5494();
             mUnk_cb++;
             break;
         case 12:
             switch (mContext->mUnk_12) {
-                case 1:
-                case 2:
-                case 5:
-                    new UnkStruct_02071868(0);
+                case SAVE_STATUS_ERROR:
+                case SAVE_STATUS_NO_MAGIC:
+                case SAVE_STATUS_MARKER:
+                    new MessageScreen(MESSAGE_SCREEN_SYSTEM_5_HALT);
                     break;
-                case 3:
+                case SAVE_STATUS_CORRUPT:
                     mUnk_cb = 0xf;
                     break;
-                case 4: {
+                case SAVE_STATUS_OK: {
                     u8 buf[3] = {0, 1, 4};
                     u8 changed = 0;
                     u8 i;
@@ -433,8 +433,8 @@ void TitleScene::Update() {
             if ((u8) mWindow30->Update(1) == 1) {
                 if ((u8) mWindow30->mCursor->mSelection == 0) {
                     data_020d433c.mUnk_77 = 1;
-                    if (UnkStruct_020c17a8::Get().func_02023d30(0) == 1) {
-                        new UnkStruct_02071868(1);
+                    if (SaveManager::Get().WriteSlotMarker(0) == SAVE_STATUS_ERROR) {
+                        new MessageScreen(MESSAGE_SCREEN_SYSTEM_4_HALT);
                     }
                     mUnk_cb++;
                 } else {
@@ -536,7 +536,7 @@ void TitleScene::Update() {
             break;
         case 28:
             func_ov000_02223cdc();
-            new UnkStruct_02070608(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
+            new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mUnk_12 = 0;
             data_020d433c.mUnk_14_1 = 0;
             SpriteManager::Get().StartFade(2);
@@ -714,7 +714,7 @@ void TitleScene::Update() {
             data_020d43f0[0].mUnk_5bf_0 = 1;
             s32 id = func_02087100();
             if (id >= 0) {
-                new UnkStruct_02089f90(id);
+                new GiftUnlockScene(id);
                 mContext->mUnk_12 = 0;
                 mUnk_cb--;
             } else {
@@ -725,7 +725,7 @@ void TitleScene::Update() {
         }
         case 45:
             func_ov000_02223cdc();
-            new UnkStruct_02070608(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
+            new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mUnk_12 = 0;
             SpriteManager::Get().StartFade(2);
             mUnk_cb++;

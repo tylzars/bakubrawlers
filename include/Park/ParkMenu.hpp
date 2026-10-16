@@ -6,7 +6,7 @@
 class CellAnimation;
 class MessageWindow;
 class SelectWindow;
-class UnkStruct_020758f4;
+class Ranking;
 struct MessageFile;
 
 // The park's character carousel: up to four panels slid left/right, with arrows and a number readout.
@@ -19,7 +19,7 @@ public:
     /* 07 */ u8 mTimer;
     /* 08 */ u8 mCount;
     /* 09 */ PAD(0x09, 0x0c);
-    /* 0c */ u8 mUnk_0c[6]; // filled by func_02089924
+    /* 0c */ u8 mUnk_0c[6]; // filled by GetParkEntry
     /* 12 */ u8 mUnk_12;    // 0xff: none
     /* 13 */ PAD(0x13, 0x18);
     union {
@@ -36,7 +36,7 @@ public:
         };
     };
     /* 58 */ SelectWindow *mWindow;
-    /* 5c */ UnkStruct_020758f4 *mUnk_5c;
+    /* 5c */ Ranking *mUnk_5c;
     /* 60 */ MessageWindow *mMessage;
     /* 64 */
 

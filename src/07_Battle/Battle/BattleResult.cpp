@@ -17,15 +17,15 @@
 #include "System/FileSystem.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
-#include "Unknown/UnkStruct_020758f4.hpp"
+#include "Game/Ranking.hpp"
 #include "Game/UnkStruct_020d48f0.hpp"
 #include "Unknown/UnkFunctions.hpp"
-#include "Unknown/UnkStruct_02078290.hpp"
-#include "Unknown/UnkStruct_020651bc.hpp"
+#include "Graphics/AntennaIndicator.hpp"
+#include "Graphics/CharacterIcons.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
-#include "Unknown/UnkStruct_02089f90.hpp"
+#include "Scene/GiftUnlockScene.hpp"
 static const u8 sRankTable[19][3] = {{44, 90, 120}, {19, 38, 82}, {21, 38, 86}, {35, 60, 110}, {27, 47, 89}, {1, 2, 3}, {47, 82, 120}, {70, 140, 180}, {23, 42, 72}, {40, 61, 100}, {33, 54, 92}, {30, 48, 85}, {28, 47, 86}, {9, 25, 50}, {4, 15, 37}, {13, 29, 59}, {14, 31, 59}, {1, 2, 3}, {0, 0, 0}};
 static const WindowCellRecord sResultCells[3] = {
     {"/Game/Battle/Obj/retry_b_obj_00_nce.bin", 1, 0, 0, 0, 1, {0, 2, 1, 0}},
@@ -107,7 +107,7 @@ public:
     /* 50 */ u32 mUnk_50[3];
     /* 5c */ u32 mUnk_5c[3];
     /* 68 */ void *mUnk_68;
-    /* 6c */ UnkStruct_020651bc *mIcons;
+    /* 6c */ CharacterIcons *mIcons;
     /* 70 */ CellAnimation *mAnimsB[5];
     /* 84 */ u32 mUnk_84[6];
     /* 9c */ s32 mUnk_9c;
@@ -435,8 +435,8 @@ void BattleResult::Update() {
         case 12:
             if (data_020d433c.mUnk_7b != 8) {
                 data_020d48f0.mUnk_bc = data_020d48f0.mUnk_ba;
-                UnkStruct_020758f4 *p = new UnkStruct_020758f4();
-                data_020d48f0.mUnk_ba = p->mUnk_8e;
+                Ranking *p = new Ranking();
+                data_020d48f0.mUnk_ba = p->mPlayerRank;
                 delete p;
             }
             mUnk_b1++;
@@ -451,7 +451,7 @@ void BattleResult::Update() {
                 id = func_02087468();
             }
             if (id >= 0) {
-                new UnkStruct_02089f90(id);
+                new GiftUnlockScene(id);
                 mContext->mUnk_12 = 0;
                 mUnk_b1++;
             } else {
@@ -678,9 +678,9 @@ void BattleResult::func_ov007_0224e6f4() {
         }
         i++;
     } while (i < data_020d433c.mUnk_99);
-    UnkStruct_02078290 *unk = data_020d433c.mUnk_10;
+    AntennaIndicator *unk = data_020d433c.mUnk_10;
     if (unk) {
-        unk->func_020785d8(12);
+        unk->SetupLayout(12);
     }
     ChangeDir("/");
 }
@@ -710,9 +710,9 @@ void BattleResult::func_ov007_0224e9f4() {
     func_02025b64(1, 1, 0x2000, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
     func_02025b64(1, 12, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
     func_02025b64(1, 8, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
-    UnkStruct_02078290 *unk = data_020d433c.mUnk_10;
+    AntennaIndicator *unk = data_020d433c.mUnk_10;
     if (unk) {
-        unk->func_020785d8(12);
+        unk->SetupLayout(12);
     }
     ChangeDir("/Game/Battle/Obj/");
     SpriteScreen &screen1 = SpriteManager::Get().Screen(1);
@@ -733,13 +733,13 @@ void BattleResult::func_ov007_0224e9f4() {
     mAnimsB[4] = new CellAnimation("select_ch_u_obj_00_nce.bin", 2, 1, 1);
     mAnimsB[4]->mCharBase = screen0.func_020276f4(0x1400);
     mAnimsB[4]->mUnk_11   = 2;
-    mIcons = new UnkStruct_020651bc(0x5000, 10, 0);
+    mIcons = new CharacterIcons(0x5000, 10, 0);
     u8 i = 0;
     do {
         BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[i];
-        mIcons->func_02065204(i, (s8) player->mUnk_f6, player->NameInfo(), 0);
+        mIcons->SetCharacter(i, (s8) player->mUnk_f6, player->NameInfo(), 0);
         s16 y = i * 0x28 + 0x25;
-        mIcons->func_0206547c(i, 0x22, y + 2, 0);
+        mIcons->SetDrawArgs(i, 0x22, y + 2, 0);
         i++;
     } while (i < data_020d433c.mPlayerCount);
     ChangeDir("/Game/Character/Icon/");
@@ -863,7 +863,7 @@ void BattleResult::func_ov007_0224f9a0() {
         }
         i++;
     } while (i < data_020d433c.mPlayerCount);
-    mIcons->func_020654a0();
+    mIcons->DrawIcons();
 }
 
 void BattleResult::func_ov007_0224fb70() {

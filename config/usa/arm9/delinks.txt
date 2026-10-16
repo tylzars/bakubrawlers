@@ -959,7 +959,7 @@ src/Main/Scene/CharacterEditScene.cpp:
     .data       start:0x020b3774 end:0x020b4274
     .bss        start:0x02219240 end:0x0221927c
 
-src/Main/Unknown/UnkStruct_020651bc.cpp:
+src/Main/Unknown/CharacterIcons.cpp:
     complete
     .text       start:0x02065158 end:0x0206550c
     .data       start:0x020b4274 end:0x020b42f4
@@ -977,13 +977,13 @@ src/Main/Game/UnkStruct_02065c40.cpp:
     .data       start:0x020b4668 end:0x020b48dc
     .bss        start:0x02219288 end:0x022192d8
 
-src/Main/Unknown/UnkStruct_02070608.cpp:
+src/Main/Unknown/SaveWindow.cpp:
     complete
     .text       start:0x02070608 end:0x02071868
     .data       start:0x020b8ddc end:0x020b8ff4
     .bss        start:0x022192d8 end:0x022192fc
 
-src/Main/Unknown/UnkStruct_02071868.cpp:
+src/Main/Unknown/MessageScreen.cpp:
     complete
     .text       start:0x02071868 end:0x02071d24
     .data       start:0x020b8ff4 end:0x020b9030
@@ -996,13 +996,13 @@ src/Main/Unknown/UnkStruct_02071d24.cpp:
     .data       start:0x020b9030 end:0x020b9384
     .bss        start:0x02219314 end:0x02219344
 
-src/Main/Unknown/UnkStruct_02074938.cpp:
+src/Main/Unknown/RankingCharacterView.cpp:
     complete
     .text       start:0x020741b4 end:0x020758f4
     .data       start:0x020b9384 end:0x020b94ec
     .bss        start:0x02219344 end:0x0221935c
 
-src/Main/Unknown/UnkStruct_020758f4.cpp:
+src/Main/Unknown/Ranking.cpp:
     complete
     .text       start:0x020758f4 end:0x02076058
     .data       start:0x020b94ec end:0x020b94fc
@@ -1014,13 +1014,13 @@ src/Main/Unknown/UnkStruct_02076058.cpp:
     .data       start:0x020b964c end:0x020b9848
     .bss        start:0x0221935c end:0x0221938c
 
-src/Main/Unknown/UnkStruct_02078290.cpp:
+src/Main/Unknown/AntennaIndicator.cpp:
     complete
     .text       start:0x02078290 end:0x02078e14
     .data       start:0x020b9848 end:0x020b9a04
     .bss        start:0x0221938c end:0x022193b0
 
-src/Main/Unknown/UnkStruct_02078e14.cpp:
+src/Main/Unknown/ListScene.cpp:
     complete
     .text       start:0x02078e14 end:0x02086938
     .rodata     start:0x020a3168 end:0x020a3d54
@@ -1033,7 +1033,7 @@ src/Main/Unknown/UnkFunctions_02086938.cpp:
     .rodata     start:0x020a3d54 end:0x020a41c8
     .data       start:0x020ba9c4 end:0x020baa50
 
-src/Main/Unknown/UnkStruct_02087898.cpp:
+src/Main/Unknown/StorytalkWindow.cpp:
     complete
     .text       start:0x02087898 end:0x02088f38
     .data       start:0x020baa50 end:0x020baae4
@@ -1044,14 +1044,14 @@ src/Main/Game/ParkCharacters.cpp:
     .text       start:0x02088f38 end:0x02089f90
     .rodata     start:0x020a41d8 end:0x020a41ec
 
-src/Main/Scene/UnkStruct_02089f90.cpp:
+src/Main/Scene/GiftUnlockScene.cpp:
     complete
     .text       start:0x02089f90 end:0x0208ab40
     .rodata     start:0x020a4dac end:0x020a4df0
     .data       start:0x020baae4 end:0x020badb4
     .bss        start:0x02219404 end:0x0221941c
 
-src/Main/Scene/UnkStruct_0208ab40.cpp:
+src/Main/Scene/UnlockPopup.cpp:
     complete
     .text       start:0x0208ab40 end:0x0208b4bc
     .rodata     start:0x020a4df0 end:0x020a4e64

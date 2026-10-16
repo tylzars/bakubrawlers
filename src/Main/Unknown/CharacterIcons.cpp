@@ -1,4 +1,4 @@
-#include "Unknown/UnkStruct_020651bc.hpp"
+#include "Graphics/CharacterIcons.hpp"
 
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -9,7 +9,7 @@
 extern u8 data_020d4404[];
 void func_0207889c(u8 screen, u32 offset, u32 palette, const void *colors, u32 unk5);
 
-UnkStruct_020651bc::UnkStruct_020651bc(u32 unk1, u32 unk2, s32 unk3) {
+CharacterIcons::CharacterIcons(u32 unk1, u32 unk2, s32 unk3) {
     mUnk_30 = 0;
     mVram   = unk1;
     mPalette = unk2;
@@ -24,7 +24,7 @@ UnkStruct_020651bc::UnkStruct_020651bc(u32 unk1, u32 unk2, s32 unk3) {
     }
 }
 
-UnkStruct_020651bc::~UnkStruct_020651bc() {
+CharacterIcons::~CharacterIcons() {
     for (u8 i = 0; i < 4; i++) {
         CellAnimation *anim = mSlots[i].mAnim;
         if (anim != NULL) {
@@ -33,7 +33,7 @@ UnkStruct_020651bc::~UnkStruct_020651bc() {
     }
 }
 
-void UnkStruct_020651bc::func_02065204(u32 slot, s32 character, u32 unk3, u32 unk4) {
+void CharacterIcons::SetCharacter(u32 slot, s32 character, u32 unk3, u32 unk4) {
     char path[0x80];
     if (slot >= 4) {
         return;
@@ -76,7 +76,7 @@ void UnkStruct_020651bc::func_02065204(u32 slot, s32 character, u32 unk3, u32 un
     ChangeDir("/");
 }
 
-void UnkStruct_020651bc::func_0206547c(u8 slot, s16 x, s16 y, u32 unk4) {
+void CharacterIcons::SetDrawArgs(u8 slot, s16 x, s16 y, u32 unk4) {
     if (slot >= 4) {
         return;
     }
@@ -85,7 +85,7 @@ void UnkStruct_020651bc::func_0206547c(u8 slot, s16 x, s16 y, u32 unk4) {
     mSlots[slot].mUnk_0a = *(u8 *) &unk4;
 }
 
-void UnkStruct_020651bc::func_020654a0() {
+void CharacterIcons::DrawIcons() {
     for (u8 i = 0; i < 4; i++) {
         CharacterIconSlot *slot = &mSlots[i];
         if (slot->mVisible != 0) {
@@ -94,7 +94,7 @@ void UnkStruct_020651bc::func_020654a0() {
     }
 }
 
-void UnkStruct_020651bc::func_020654f8(u32 slot, u32 visible) {
+void CharacterIcons::SetVisible(u32 slot, u32 visible) {
     CharacterIconSlot *s = &mSlots[slot];
     if (s != NULL) {
         s->mVisible = visible;

@@ -4,7 +4,7 @@
 #include "types.h"
 
 class CellAnimation;
-class UnkStruct_020651bc;
+class CharacterIcons;
 
 // One player's panel on the upper screen (battle_u): sprites, the name text buffers and a few state bytes. 0x38 bytes.
 struct BattlePanel {
@@ -31,7 +31,7 @@ class BattleStatusPanels;
 
 class BattleStatusPanels {
 public:
-    /* 00 */ UnkStruct_020651bc *mIcons;
+    /* 00 */ CharacterIcons *mIcons;
     /* 04 */ BattlePanel mPanels[4];
     /* e4 */ CellAnimation *mAnimC;
     /* e8 */ CellAnimation *mAnimD;

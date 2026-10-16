@@ -1,4 +1,4 @@
-#include "Unknown/UnkStruct_0208ab40.hpp"
+#include "UI/UnlockPopup.hpp"
 
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -22,9 +22,9 @@ static const WindowItemRecord sMenuItems[2] = {
 
 static const u8 sMessageIds[4] = {0, 1, 4, 0};
 
-UnkStruct_0208ab40::UnkStruct_0208ab40(s32 unk1) :
+UnlockPopup::UnlockPopup(s32 unk1) :
     SceneBase(0x3e8, 0) {
-    mMenu        = NULL;
+    mWindow        = NULL;
     mMessages    = NULL;
     mTextBuffer  = NULL;
     mGlyphBuffer = NULL;
@@ -32,9 +32,9 @@ UnkStruct_0208ab40::UnkStruct_0208ab40(s32 unk1) :
     mIndex       = unk1;
 }
 
-UnkStruct_0208ab40::~UnkStruct_0208ab40() {
-    delete mMenu;
-    func_0208b4a4();
+UnlockPopup::~UnlockPopup() {
+    delete mWindow;
+    ClearText();
     if (mMessages != NULL) {
         OS_Free(mMessages);
     }
@@ -46,24 +46,24 @@ UnkStruct_0208ab40::~UnkStruct_0208ab40() {
     }
 }
 
-void UnkStruct_0208ab40::Update() {
+void UnlockPopup::Update() {
     BOOL draw = TRUE;
     switch (mState) {
         case 0:
-            func_0208aec4();
-            func_0208af20();
+            InitDisplay();
+            Load();
             SpriteManager::Get().StartSubFade(2);
             draw = FALSE;
             mState++;
             break;
         case 1:
             if (SpriteManager::Get().sFade[1] <= 1) {
-                mMenu->mUnk_064 = 1;
+                mWindow->mUnk_064 = 1;
                 mState++;
             }
             break;
         case 2:
-            if (mMenu->Update(TRUE) == 1) {
+            if (mWindow->Update(TRUE) == 1) {
                 SpriteManager::Get().StartSubFade(3);
                 mState++;
             }
@@ -77,11 +77,11 @@ void UnkStruct_0208ab40::Update() {
             break;
     }
     if (draw) {
-        func_0208b284();
+        Draw();
     }
 }
 
-void UnkStruct_0208ab40::func_0208aec4() {
+void UnlockPopup::InitDisplay() {
     MI_CpuClearFast((void *) 0x06200000, 0x20000);
     MI_CpuClearFast((void *) 0x06600000, 0x20000);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
@@ -89,7 +89,7 @@ void UnkStruct_0208ab40::func_0208aec4() {
     GXS_SetVisiblePlane(0x11);
 }
 
-void UnkStruct_0208ab40::func_0208af20() {
+void UnlockPopup::Load() {
     ChangeDir("/Game/2D/union_b/");
     func_02025b64(1, 1, 0, "union_b_bg_window_b_ncl.bin", 0, 0, 0);
     func_02025b64(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
@@ -102,27 +102,27 @@ void UnkStruct_0208ab40::func_0208af20() {
     mTextBufferSize = TextManager::Get().BufferSize(0x18, 0xc);
     mGlyphCount     = TextManager::Get().GlyphCount(9);
     mTextBuffer     = OS_Alloc(mTextBufferSize);
-    func_0208b4a4();
+    ClearText();
     mGlyphBuffer = OS_Alloc(mGlyphCount * 0xc);
     TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x18, 0xc, 0x42);
     TextManager::Get().SetColor(1, 0, 0xf);
-    func_0208b338();
+    PrintMessage();
     ChangeDir("/");
-    delete mMenu;
-    mMenu = new SelectWindow(2, sMenuItems, -1);
-    mMenu->SetCells(2, sMenuCells);
-    mMenu->mCursor->mSelection = -1;
-    mMenu->mCursor->mSelection = 0;
-    mMenu->mUnk_064            = 0;
+    delete mWindow;
+    mWindow = new SelectWindow(2, sMenuItems, -1);
+    mWindow->SetCells(2, sMenuCells);
+    mWindow->mCursor->mSelection = -1;
+    mWindow->mCursor->mSelection = 0;
+    mWindow->mUnk_064            = 0;
 }
 
-void UnkStruct_0208ab40::func_0208b284() {
-    mMenu->Draw();
+void UnlockPopup::Draw() {
+    mWindow->Draw();
     SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, 9, 0x20, 0x38, 2, 0x40, 0xf, 0);
 }
 
-void UnkStruct_0208ab40::func_0208b338() {
-    func_0208b4a4();
+void UnlockPopup::PrintMessage() {
+    ClearText();
     TextManager &text = TextManager::Get();
     s16 height;
     s16 width;
@@ -135,6 +135,6 @@ void UnkStruct_0208ab40::func_0208b338() {
     func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x2000, mTextBuffer, mTextBufferSize, 0);
 }
 
-void UnkStruct_0208ab40::func_0208b4a4() {
+void UnlockPopup::ClearText() {
     MI_CpuClear16(mTextBuffer, mTextBufferSize);
 }

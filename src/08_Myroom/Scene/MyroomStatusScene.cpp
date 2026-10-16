@@ -7,7 +7,7 @@
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
 #include "Text/TextManager.hpp"
-#include "Unknown/UnkStruct_020758f4.hpp"
+#include "Game/Ranking.hpp"
 
 #include <nitro/mi.h>
 #include <nitro/os.h>
@@ -36,7 +36,7 @@ MyroomStatusScene::MyroomStatusScene(u32 unk) :
     mTextBufferSize = 0;
     mGlyphCount = 0;
     mPalette = new UnkStruct_02029ca8(data_ov008_02228660);
-    mUnk_50 = new UnkStruct_020758f4();
+    mUnk_50 = new Ranking();
     u32 frames = data_020d43f0[0].mPlayFrames;
     mHours     = frames / 216000;
     frames -= mHours * 216000;
@@ -211,7 +211,7 @@ void MyroomStatusScene::ClearTextBuffers() {
 }
 
 void MyroomStatusScene::RenderLine(u8 line) {
-    UnkStruct_020758f4 *info = mUnk_50;
+    Ranking *info = mUnk_50;
     s16 x;
     s16 y;
     s16 zeroMin;
@@ -230,14 +230,14 @@ void MyroomStatusScene::RenderLine(u8 line) {
             TextManager::Get().mUnk_5b = 0;
             break;
         case 1:
-            TextManager::Get().PrintNumber(info->mUnk_8e, 3, 0, mTextBuffers[line], 0x20, 2, &x, &y, 0, 2, 0x21, 0, 0, 1, 1);
+            TextManager::Get().PrintNumber(info->mPlayerRank, 3, 0, mTextBuffers[line], 0x20, 2, &x, &y, 0, 2, 0x21, 0, 0, 1, 1);
             break;
         case 2:
             TextManager::Get().PrintNumber(data_020d43f0[0].mMoney, 7, 0, mTextBuffers[line], 0x20, 2, &x, &y, 0, 2,
                                            0x21, 0, 0, 1, 1);
             break;
         case 3:
-            TextManager::Get().PrintNumber(info->mUnk_90, 7, 0, mTextBuffers[line], 0x20, 2, &x, &y, 0, 2, 0x21, 0, 0,
+            TextManager::Get().PrintNumber(info->mPlayerScore, 7, 0, mTextBuffers[line], 0x20, 2, &x, &y, 0, 2, 0x21, 0, 0,
                                            1, 1);
             break;
         case 4:

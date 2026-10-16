@@ -152,7 +152,7 @@ u8 func_02065bf4(u32 id, u32 index) {
     return data_020a15ac[id][index];
 }
 
-u8 func_02065c0c(u32 id, u32 kind) {
+u8 GetCardInfo(u32 id, u32 kind) {
     return data_020a1258[id][kind];
 }
 

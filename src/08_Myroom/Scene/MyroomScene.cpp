@@ -1,12 +1,12 @@
 #include "Scene/MyroomScene.hpp"
-#include "Unknown/UnkStruct_02078e14.hpp"
+#include "Scene/ListScene.hpp"
 #include "Scene/CharacterEditScene.hpp"
 #include "Scene/MyroomCharaScene.hpp"
 #include "Scene/MyroomGiftScene.hpp"
 #include "Scene/MyroomRankingScene.hpp"
 #include "Scene/MyroomShootScene.hpp"
 #include "Scene/MyroomTipsScene.hpp"
-#include "Unknown/UnkStruct_02070608.hpp"
+#include "UI/SaveWindow.hpp"
 #include "Game/UnkStruct_02065c40.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/CellAnimation.hpp"
@@ -292,10 +292,10 @@ void MyroomScene::Update() {
                     new MyroomTipsScene();
                     break;
                 case 6:
-                    new UnkStruct_02078e14(3, 0);
+                    new ListScene(3, 0);
                     break;
                 case 7:
-                    new UnkStruct_02078e14(4, 0);
+                    new ListScene(4, 0);
                     break;
             }
             mContext->mUnk_12 = 0;
@@ -321,7 +321,7 @@ void MyroomScene::Update() {
             if (mEvent->func_020678e8()) {
                 return;
             }
-            new UnkStruct_02070608(1, 1, 0, 0x2000, 2, 0, 0, 0x1e000, 0x1a0);
+            new SaveWindow(1, 1, 0, 0x2000, 2, 0, 0, 0x1e000, 0x1a0);
             mContext->mUnk_12 = 0;
             data_020d433c.mUnk_14_1 = 0;
             ctx->mInfo.mState++;
@@ -337,7 +337,7 @@ void MyroomScene::Update() {
             break;
         case 15:
             if ((data_020d433c.mUnk_14 & 2) && data_020d433c.mUnk_7f == 4) {
-                new UnkStruct_02070608(1, 1, 0, 0x2000, 2, 0, 0, 0x1e000, 0x1a0);
+                new SaveWindow(1, 1, 0, 0x2000, 2, 0, 0, 0x1e000, 0x1a0);
                 mContext->mUnk_12 = 0;
                 ctx->mInfo.mState++;
             } else {

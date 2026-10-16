@@ -2,13 +2,13 @@
 
 extern "C" u32 OS_GetTick();
 
-void func_020219ec(u32 seed);
+void SeedRandom(u32 seed);
 
 void func_020219dc() {
-    func_020219ec(OS_GetTick());
+    SeedRandom(OS_GetTick());
 }
 
-void func_020219ec(u32 seed) {
+void SeedRandom(u32 seed) {
     MATH_InitRand32(&data_020d42e8, seed);
 }
 

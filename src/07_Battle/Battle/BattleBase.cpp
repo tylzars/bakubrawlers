@@ -12,7 +12,7 @@
 #include "System/TouchManager.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include "System/InputManager.hpp"
-#include "Unknown/UnkStruct_02078290.hpp"
+#include "Graphics/AntennaIndicator.hpp"
 #include <nitro/fx.h>
 #include <nitro/gx.h>
 #include "Battle/BattleUtil.hpp"
@@ -191,7 +191,7 @@ void BattleBase::func_ov007_02219888(BattleData *data, u32 mode) {
     mUnk_48 = new BattleSub48(data, mUnk_12);
     mUnk_40 = new BattleField3D(data, 0);
     if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->func_020785d8(0xb);
+        data_020d433c.mUnk_10->SetupLayout(0xb);
     }
 }
 
@@ -217,7 +217,7 @@ void BattleBase::Update() {
             do {
                 u32 v = 0xff;
                 if (entries[i].mUnk_12 != 0) {
-                    v = func_02065c0c(entries[i].mUnk_12, 3);
+                    v = GetCardInfo(entries[i].mUnk_12, 3);
                 }
                 if (v == 5) {
                     mUnk_4e = i;
@@ -440,7 +440,7 @@ BOOL BattleBase::func_ov007_0221a664() {
 void BattleBase::func_ov007_0221a6b4() {
     BattleEntry *entries = mUnk_2c->mEntries;
     mUnk_56 = entries[mUnk_4e].mUnk_12;
-    mUnk_4f = func_02065c0c(entries[mUnk_4e].mUnk_12, 3);
+    mUnk_4f = GetCardInfo(entries[mUnk_4e].mUnk_12, 3);
     mUnk_2a = 0;
     func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[entries[mUnk_4e].mUnk_0d_4], entries[mUnk_4e].mUnk_11, 2);
     BattleBase::func_ov007_0221a624();
@@ -640,7 +640,7 @@ BOOL BattleBase::func_ov007_0221a7d0() {
                 mUnk_4e   = other;
                 mUnk_56   = entries[other & 0xff].mUnk_12;
                 mUnk_50   = mUnk_4f;
-                mUnk_4f   = func_02065c0c(entries[mUnk_4e].mUnk_12, 3);
+                mUnk_4f   = GetCardInfo(entries[mUnk_4e].mUnk_12, 3);
                 func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[entries[mUnk_4e].mUnk_0d_4], entries[mUnk_4e].mUnk_11, 2);
                 mUnk_44->mUnk_118[mUnk_4e] = 0;
                 mUnk_4d                    = 2;
@@ -816,7 +816,7 @@ BOOL func_ov007_0221b998(int a, int mode, BattleEntry *entry) {
     }
     BOOL result = 0;
     if (entry->mUnk_12 != 0) {
-        if (func_02065c0c(entry->mUnk_12, 3) == 5) {
+        if (GetCardInfo(entry->mUnk_12, 3) == 5) {
             result = 1;
         }
     }
@@ -866,7 +866,7 @@ BOOL func_ov007_0221ba38(int a, u8 side, int value, BattleEntry *entries) {
 
 int func_ov007_0221ba88(int a, int index, BattleEntry *entries) {
     int result = 0;
-    if (func_02065c0c(entries[index].mUnk_12, 3) == 2) {
+    if (GetCardInfo(entries[index].mUnk_12, 3) == 2) {
         switch (entries[index].mUnk_12) {
         case 0x78: result = 1; break;
         case 0x79: result = 2; break;
@@ -1062,7 +1062,7 @@ int BattleBase::func_ov007_0221c178(u16 *a, u16 *b, u16 *c, u8 *flag) {
                 }
             } else if (entries[mUnk_12].mUnk_12 != 0) {
                 if (mUnk_44->mUnk_118[mUnk_12] == 1) {
-                    if (func_02065c0c(entries[mUnk_12].mUnk_12, 3) != 4) {
+                    if (GetCardInfo(entries[mUnk_12].mUnk_12, 3) != 4) {
                         if (TouchManager::Get().func_02022860(data_ov007_02279178[mUnk_12], data_ov007_0227916c, 0x10, 0x18) ||
                             InputManager::Get().IsHeld(0x300)) {
                             c[mUnk_12] = 1;

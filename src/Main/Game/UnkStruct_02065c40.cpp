@@ -6,7 +6,7 @@
 #include "Graphics/Camera.hpp"
 #include "System/InputManager.hpp"
 #include "System/FrameTask.hpp"
-#include "Unknown/UnkStruct_02087898.hpp"
+#include "UI/StorytalkWindow.hpp"
 
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -26,7 +26,7 @@
 UnkStruct_02065c40 *data_02219288;
 extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 extern "C" void DC_FlushRange(void *buffer, u32 size);
-void func_02088ec4(UnkStruct_02087898 *object);
+void func_02088ec4(StorytalkWindow *object);
 extern "C" void MIi_CpuCopy32(const void *src, void *dest, u32 size);
 extern const u32 data_020a23cc[8][6];
 extern "C" void func_020360cc(UnkStruct_SpriteManager_28 *slot);
@@ -43,9 +43,9 @@ struct UnkStruct_Pair {
 
 extern const UnkStruct_Pair data_020a26a4[][5][10][3];
 
-void func_02086938();
+void UnlockStoreItems();
 
-BOOL func_02086a58();
+BOOL UnlockCharacters();
 
 BOOL func_02086b74();
 
@@ -144,7 +144,7 @@ UnkStruct_02065c40::UnkStruct_02065c40(u32 unk1, u32 unk2, u32 unk3) :
     CameraManager::Get().func_02026504(1, mUnk_1288, 0);
     func_02069bdc();
     func_02069c6c();
-    mUnk_1018 = new UnkStruct_02087898();
+    mUnk_1018 = new StorytalkWindow();
     G2_SetBlendBrightness(1, -16);
     if (mUnk_14f0 != 0) {
         FrameTask::Get().func_0203dd74(0);
@@ -599,8 +599,8 @@ void UnkStruct_02065c40::Update() {
             break;
         case 5:
             if (mUnk_14ea != 0) {
-                func_02086938();
-                if (func_02086a58()) {
+                UnlockStoreItems();
+                if (UnlockCharacters()) {
                     mUnk_14eb = 1;
                     mUnk_12b9 = 7;
                 } else if (func_02086b74()) {
@@ -645,7 +645,7 @@ void UnkStruct_02065c40::Update() {
             }
             break;
         case 10:
-            mUnk_1018->func_02087cc0();
+            mUnk_1018->Close();
             func_02067708(1);
             RequestScene(1);
             mFinished = 1;
@@ -861,7 +861,7 @@ void UnkStruct_02065c40::func_02067b08() {
         mUnk_1014 = new UnkStruct_02029ca8(data_020a1bae);
         func_02069c6c();
     }
-    mUnk_1018->func_02087eec();
+    mUnk_1018->LoadGraphics();
 }
 
 void UnkStruct_02065c40::func_02067e2c(u32 index, u8 unk2) {
@@ -1130,7 +1130,7 @@ void UnkStruct_02065c40::func_02068714() {
         if (kind < 0) {
             continue;
         }
-        if (kind == mUnk_1018->mUnk_42) {
+        if (kind == mUnk_1018->mCharacterId) {
             if (mUnk_1018->func_02088ef4()) {
                 func_0206867c(i, 1);
             } else {
@@ -1655,7 +1655,7 @@ void UnkStruct_02065c40::func_0206a01c() {
     }
     u32 first  = 0;
     u32 second = 0;
-    s32 current = mUnk_1018->mUnk_42;
+    s32 current = mUnk_1018->mCharacterId;
     if (current >= 0) {
         if (current == 0x1a) {
             second = 0x80;
@@ -1733,24 +1733,24 @@ void UnkStruct_02065c40::func_0206a208() {
             if (mUnk_14e2 == 5) {
                 flag = 1;
             }
-            mUnk_1018->func_02088e64(mUnk_12d2[mUnk_12cc], mUnk_13d2[mUnk_12cc], flag, mUnk_14ee);
+            mUnk_1018->SetMessage(mUnk_12d2[mUnk_12cc], mUnk_13d2[mUnk_12cc], flag, mUnk_14ee);
             mUnk_12ca = 1;
             break;
         case 1:
-            if (!mUnk_1018->func_02088f14()) {
+            if (!mUnk_1018->IsTextShown()) {
                 return;
             }
             if (mUnk_12ba == 0) {
                 mUnk_12ca = 3;
             } else if (mUnk_12ba == 3) {
                 mUnk_1018->mUnk_4a = 1;
-                u8 r      = mUnk_1018->func_02088efc();
+                u8 r      = mUnk_1018->HasMorePages();
                 mUnk_14f1 = r;
                 if (r) {
-                    mUnk_1018->func_02088ebc(1);
+                    mUnk_1018->SetCell1Visible(1);
                     mUnk_12ca = 4;
                 } else {
-                    mUnk_1018->func_02088ebc(0);
+                    mUnk_1018->SetCell1Visible(0);
                     mUnk_12ca = 6;
                     mUnk_12b9 = 9;
                 }
@@ -1762,7 +1762,7 @@ void UnkStruct_02065c40::func_0206a208() {
             break;
         case 2:
             if (mUnk_12ba == 3) {
-                if (mUnk_1018->func_02088efc()) {
+                if (mUnk_1018->HasMorePages()) {
                     func_0206a1c8(2, 0);
                     mUnk_14f1 = 1;
                     mUnk_12ca = 4;
@@ -1776,24 +1776,24 @@ void UnkStruct_02065c40::func_0206a208() {
             }
             break;
         case 5:
-            if (!mUnk_1018->func_02088efc()) {
+            if (!mUnk_1018->HasMorePages()) {
                 return;
             }
             mUnk_12ca = 7;
             mUnk_12d0 = 200;
-            mUnk_1018->func_02088ebc(0);
+            mUnk_1018->SetCell1Visible(0);
             break;
         case 7:
             if (mUnk_12d0 != 0) {
                 mUnk_12d0--;
                 return;
             }
-            if (!mUnk_1018->func_02088dac(1)) {
-                mUnk_1018->mUnk_34 = -1;
-                mUnk_1018->func_02088e64(mUnk_12d2[0], mUnk_13d2[0], 0, 0);
+            if (!mUnk_1018->NextPage(1)) {
+                mUnk_1018->mMessageIndex = -1;
+                mUnk_1018->SetMessage(mUnk_12d2[0], mUnk_13d2[0], 0, 0);
                 mUnk_12d0 = 200;
             } else {
-                if (mUnk_1018->func_02088efc()) {
+                if (mUnk_1018->HasMorePages()) {
                     mUnk_12d0 = 200;
                 } else {
                     mUnk_12d0 = 300;
@@ -1841,9 +1841,9 @@ void UnkStruct_02065c40::func_0206a208() {
                 mUnk_12cb--;
                 return;
             }
-            if (!mUnk_1018->func_02088dac(0)) {
+            if (!mUnk_1018->NextPage(0)) {
                 if (mUnk_12ca == 9) {
-                    mUnk_1018->func_02088ebc(0);
+                    mUnk_1018->SetCell1Visible(0);
                     mUnk_14f1 = 0;
                     mUnk_12ca = 6;
                     mUnk_12b9 = 9;
@@ -1869,8 +1869,8 @@ extern const s16 data_020a233c[][12];
 void func_02025588(void (*callback)());
 void func_020255f8(void (*callback)());
 extern "C" void func_0206ea14();
-void func_02087ccc(UnkStruct_02087898 *object, void *data);
-void func_02088ec4(UnkStruct_02087898 *object);
+void func_02087ccc(StorytalkWindow *object, void *data);
+void func_02088ec4(StorytalkWindow *object);
 
 void UnkStruct_02065c40::func_0206a850() {
     for (u8 i = 0; i < 2; i++) {
@@ -2148,7 +2148,7 @@ void UnkStruct_02065c40::func_0206b09c() {
     }
 }
 
-void func_02088f28(UnkStruct_02087898 *self, u8 unk1);
+void func_02088f28(StorytalkWindow *self, u8 unk1);
 
 void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
     mUnk_12c6 = command;
@@ -2981,7 +2981,7 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
             mUnk_14e5 = 1;
             GXS_SetVisiblePlane(1);
             func_02088f28(mUnk_1018, 1);
-            mUnk_1018->func_02087eec();
+            mUnk_1018->LoadGraphics();
             break;
         case 234:
             mUnk_14e7 = 1;
@@ -3552,7 +3552,7 @@ BOOL UnkStruct_02065c40::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32
     char file[0x80];
     sprintf(file, "/font/%s.mes", name);
     func_02023708(file, 0, 0, 0, &mUnk_12b4, 0);
-    mUnk_1018->func_02088ebc(0);
+    mUnk_1018->SetCell1Visible(0);
     mUnk_12ca = 0;
     func_02088ec4(mUnk_1018);
     mUnk_12cc = 0;
@@ -3566,7 +3566,7 @@ BOOL UnkStruct_02065c40::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32
 
 extern const u8 data_020a1b8a[];
 extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
-void func_02088ec4(UnkStruct_02087898 *object);
+void func_02088ec4(StorytalkWindow *object);
 
 void UnkStruct_02065c40::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
     BOOL isTwo   = mUnk_12ba == 2;
@@ -3577,7 +3577,7 @@ void UnkStruct_02065c40::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
     if (mUnk_12bc < mUnk_12be - 1) {
         return;
     }
-    if (!(((mUnk_12ca == 6) | ((mUnk_12ca == 5) | (mUnk_12ca == 7))) & (unk1 != mUnk_1018->mUnk_34))) {
+    if (!(((mUnk_12ca == 6) | ((mUnk_12ca == 5) | (mUnk_12ca == 7))) & (unk1 != mUnk_1018->mMessageIndex))) {
         return;
     }
     if (mUnk_14e2 == 5) {
@@ -3589,7 +3589,7 @@ void UnkStruct_02065c40::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
         mUnk_12b9 = 3;
         return;
     }
-    mUnk_1018->func_02088e64((s16) unk1, mUnk_13d2[0], 0, 0);
+    mUnk_1018->SetMessage((s16) unk1, mUnk_13d2[0], 0, 0);
     mUnk_12ca = 2;
     if (mUnk_14e2 != 0) {
         return;
@@ -3649,7 +3649,7 @@ extern "C" BOOL func_0206f6f0(UnkStruct_02065c40 *event, const char *name, u32 i
         char file[0x80];
         sprintf(file, "/font/%s.mes", name);
         func_02023708(file, 0, 0, 0, &event->mUnk_12b4, 0);
-        event->mUnk_1018->func_02088ebc(0);
+        event->mUnk_1018->SetCell1Visible(0);
         event->mUnk_12ca = 0;
         func_02088ec4(event->mUnk_1018);
         event->mUnk_12cc = 0;
@@ -3663,7 +3663,7 @@ extern "C" BOOL func_0206f6f0(UnkStruct_02065c40 *event, const char *name, u32 i
 extern "C" void func_0206f88c(UnkStruct_02065c40 *event, u32 category, s32 value, u32 unk4) {
     BOOL idle    = event->mUnk_12bc >= event->mUnk_12be;
     BOOL waiting = event->mUnk_12ba == 3;
-    BOOL changed = value != event->mUnk_1018->mUnk_34;
+    BOOL changed = value != event->mUnk_1018->mMessageIndex;
     if (!(idle & (waiting & changed))) {
         return;
     }
@@ -4053,6 +4053,6 @@ s32 UnkStruct_02065c40::func_02070554(s32 kind, s32 index) {
 
 extern "C" void func_020705f0(UnkStruct_02065c40 *event) {
     if (event->mUnk_1018 != NULL) {
-        event->mUnk_1018->mUnk_34 = -1;
+        event->mUnk_1018->mMessageIndex = -1;
     }
 }

@@ -64,8 +64,8 @@ const u8 data_ov008_02228cbc[6][2] = {{0x37, 0x31}, {0x37, 0x45}, {0x37, 0x59}, 
 #include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
-#include "Unknown/UnkStruct_020758f4.hpp"
-#include "Unknown/UnkStruct_02074938.hpp"
+#include "Game/Ranking.hpp"
+#include "Scene/RankingCharacterView.hpp"
 
 #include <nitro/gx.h>
 #include <nitro/mi.h>
@@ -183,7 +183,7 @@ void MyroomRankingScene::Update() {
         case 2:
             if (mUnk_1c0 != 0) {
                 SpriteManager::Get().StartFade(3);
-                mUnk_10->mUnk_84 = 1;
+                mUnk_10->mFinishRequested = 1;
                 mUnk_1b8         = 4;
             } else {
                 if (func_ov008_02220848() != -1) {
@@ -193,17 +193,17 @@ void MyroomRankingScene::Update() {
                     } else {
                         mUnk_1bb = index;
                     }
-                    UnkStruct_020758f4_Entry *entry;
+                    RankingEntry *entry;
                     if (mUnk_1bb >= 10) {
-                        entry = (UnkStruct_020758f4_Entry *) ((u8 *) mUnk_0c + 0x8c);
+                        entry = (RankingEntry *) ((u8 *) mUnk_0c + 0x8c);
                     } else {
-                        entry = mUnk_0c->func_02075a00(mUnk_1bb);
+                        entry = mUnk_0c->GetEntry(mUnk_1bb);
                     }
-                    mUnk_168 = entry->mUnk_0;
-                    mUnk_16a = entry->mUnk_2;
-                    mUnk_16c = entry->mUnk_4;
-                    if (mUnk_168 != mUnk_10->mUnk_58) {
-                        mUnk_10->func_02074938(mUnk_168, mUnk_16a, mUnk_16c);
+                    mUnk_168 = entry->mCharacterId;
+                    mUnk_16a = entry->mRank;
+                    mUnk_16c = entry->mScore;
+                    if (mUnk_168 != mUnk_10->mCharacterId) {
+                        mUnk_10->ChangeCharacter(mUnk_168, mUnk_16a, mUnk_16c);
                         mUnk_1b8 = 3;
                     }
                 }
@@ -211,7 +211,7 @@ void MyroomRankingScene::Update() {
             func_ov008_02220b88();
             break;
         case 3:
-            if (mUnk_10->mUnk_80 == 0) {
+            if (mUnk_10->mChanging == 0) {
                 mUnk_1b8 = 2;
             }
             break;
@@ -282,21 +282,21 @@ void MyroomRankingScene::InitDisplay() {
 }
 
 void MyroomRankingScene::func_ov008_0221fe9c() {
-    UnkStruct_020758f4 *list = new UnkStruct_020758f4();
+    Ranking *list = new Ranking();
     mUnk_0c                  = list;
-    mUnk_40                  = list->mUnk_8c;
-    mUnk_42                  = list->mUnk_8e;
-    mUnk_44                  = list->mUnk_90;
+    mUnk_40                  = list->mPlayerCharacterId;
+    mUnk_42                  = list->mPlayerRank;
+    mUnk_44                  = list->mPlayerScore;
     for (u8 i = 0; i < 6; i++) {
-        UnkStruct_020758f4_Entry *entry = mUnk_0c->func_02075a00(i);
-        mRows[i].mUnk_28                = entry->mUnk_0;
-        mRows[i].mUnk_2a                = entry->mUnk_2;
-        mRows[i].mUnk_2c                = entry->mUnk_4;
+        RankingEntry *entry = mUnk_0c->GetEntry(i);
+        mRows[i].mUnk_28                = entry->mCharacterId;
+        mRows[i].mUnk_2a                = entry->mRank;
+        mRows[i].mUnk_2c                = entry->mScore;
     }
     mUnk_168 = mUnk_40;
     mUnk_16a = mUnk_42;
     mUnk_16c = mUnk_44;
-    mUnk_10  = new UnkStruct_02074938(mUnk_168, mUnk_16a, mUnk_16c, 0);
+    mUnk_10  = new RankingCharacterView(mUnk_168, mUnk_16a, mUnk_16c, 0);
     ChangeDir("/Game/Myroom/");
     func_02025b64(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
     func_02025b64(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
@@ -510,16 +510,16 @@ s32 MyroomRankingScene::func_ov008_022209d4() {
 void MyroomRankingScene::func_ov008_02220b88() {
     mUnk_1b9 = mWindow->mCursor->mScroll;
     for (u8 i = 0; i < 6; i++) {
-        UnkStruct_020758f4_Entry *entry;
+        RankingEntry *entry;
         s32 index = mUnk_1b9 + i;
         if (index >= 10) {
-            entry = (UnkStruct_020758f4_Entry *) ((u8 *) mUnk_0c + 0x8c);
+            entry = (RankingEntry *) ((u8 *) mUnk_0c + 0x8c);
         } else {
-            entry = mUnk_0c->func_02075a00((u8) index);
+            entry = mUnk_0c->GetEntry((u8) index);
         }
-        mRows[i].mUnk_28 = entry->mUnk_0;
-        mRows[i].mUnk_2a = entry->mUnk_2;
-        mRows[i].mUnk_2c = entry->mUnk_4;
+        mRows[i].mUnk_28 = entry->mCharacterId;
+        mRows[i].mUnk_2a = entry->mRank;
+        mRows[i].mUnk_2c = entry->mScore;
     }
     UpdateRowAnimations();
     Vec2s pos = {data_ov008_02228cb0[mUnk_1ba][0], data_ov008_02228cb0[mUnk_1ba][1]};

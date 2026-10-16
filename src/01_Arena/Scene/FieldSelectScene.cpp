@@ -136,8 +136,8 @@ static const u8 data_ov001_022270c4[9] = {0x0, 0x1, 0x2, 0x4, 0x5, 0x6, 0x3, 0x7
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkFunctions.hpp"
-#include "Unknown/UnkStruct_02078290.hpp"
-#include "Unknown/UnkStruct_020651bc.hpp"
+#include "Graphics/AntennaIndicator.hpp"
+#include "Graphics/CharacterIcons.hpp"
 #include "System/FrameTask.hpp"
 #include "System/WirelessManager.hpp"
 #include <nitro/gx.h>
@@ -368,14 +368,14 @@ FieldSelectScene::~FieldSelectScene() {
     if (mMessage != NULL) {
         delete mMessage;
     }
-    UnkStruct_020651bc *panel0 = mPanel[0];
+    CharacterIcons *panel0 = mPanel[0];
     if (panel0 != NULL) {
-        panel0->~UnkStruct_020651bc();
+        panel0->~CharacterIcons();
         operator delete(panel0);
     }
-    UnkStruct_020651bc *panel1 = mPanel[1];
+    CharacterIcons *panel1 = mPanel[1];
     if (panel1 != NULL) {
-        panel1->~UnkStruct_020651bc();
+        panel1->~CharacterIcons();
         operator delete(panel1);
     }
     for (u8 i = 0; i < 10; i++) {
@@ -430,7 +430,7 @@ void FieldSelectScene::Update() {
             if (func_ov001_02221aa8(2)) {
                 u8 *p = WirelessManager::Get().func_0202f0cc(0);
                 if (p != NULL) {
-                    func_020219ec(*(u32 *) (p + 4));
+                    SeedRandom(*(u32 *) (p + 4));
                 }
                 mState++;
             }
@@ -577,15 +577,15 @@ void FieldSelectScene::func_ov001_0221f4e8() {
     if (mUnk_333 == 0) {
         mUnk_33e--;
     }
-    mPanel[0] = new UnkStruct_020651bc(0x12000, 0xb, 0);
-    mPanel[1] = new UnkStruct_020651bc(0x1f000, 0xb, 1);
+    mPanel[0] = new CharacterIcons(0x12000, 0xb, 0);
+    mPanel[1] = new CharacterIcons(0x1f000, 0xb, 1);
     if (data_020d433c.mUnk_a8 == 0) {
         return;
     }
     if (data_020d433c.mUnk_10 != NULL) {
-        data_020d433c.mUnk_10->func_020785d8(2);
+        data_020d433c.mUnk_10->SetupLayout(2);
     } else {
-        data_020d433c.mUnk_10 = new UnkStruct_02078290(2);
+        data_020d433c.mUnk_10 = new AntennaIndicator(2);
     }
 }
 
@@ -868,18 +868,18 @@ void FieldSelectScene::func_ov001_0221fa94() {
             ChangeDir("/");
             u8 p = 0;
             do {
-                mPanel[0]->func_02065204(p, -1, 0, 0);
-                mPanel[1]->func_02065204(p, -1, 0, 0);
+                mPanel[0]->SetCharacter(p, -1, 0, 0);
+                mPanel[1]->SetCharacter(p, -1, 0, 0);
                 func_ov001_02226bf8(p);
                 if (IsWirelessMode((const u8 *) &WirelessManager::Get().mUnk_1228) && p < mUnk_32b) {
                     func_ov001_022267d0(p);
                 }
                 p++;
             } while (p < 4);
-            mPanel[1]->func_02065204(0, 0x15, (u32) (mUnk_14c + mUnk_33b * 8), 0);
+            mPanel[1]->SetCharacter(0, 0x15, (u32) (mUnk_14c + mUnk_33b * 8), 0);
             s16 px = func_ov001_02225628(0);
             s16 py = func_ov001_0222565c(0);
-            mPanel[1]->func_0206547c(0, px + 6, py + 3, 1);
+            mPanel[1]->SetDrawArgs(0, px + 6, py + 3, 1);
             mUnk_334 = 1;
             mUnk_335 = 1;
             mUnk_336 = 1;
@@ -972,11 +972,11 @@ void FieldSelectScene::func_ov001_0221fa94() {
             func_ov001_02223e5c();
             u8 p = 0;
             do {
-                mPanel[0]->func_02065204(p, -1, 0, 0);
-                mPanel[1]->func_02065204(p, -1, 0, 0);
+                mPanel[0]->SetCharacter(p, -1, 0, 0);
+                mPanel[1]->SetCharacter(p, -1, 0, 0);
                 if (p < mUnk_32a) {
-                    mPanel[0]->func_02065204(p, (s8) sIdItems.ids[mInput[p].mUnk_08], (u32) (mUnk_14c + p * 8), 0);
-                    mPanel[1]->func_02065204(p, (s8) sIdItems.ids[mInput[p].mUnk_08], (u32) (mUnk_14c + p * 8), 0);
+                    mPanel[0]->SetCharacter(p, (s8) sIdItems.ids[mInput[p].mUnk_08], (u32) (mUnk_14c + p * 8), 0);
+                    mPanel[1]->SetCharacter(p, (s8) sIdItems.ids[mInput[p].mUnk_08], (u32) (mUnk_14c + p * 8), 0);
                 }
                 func_ov001_022267d0(p);
                 p++;
@@ -1471,7 +1471,7 @@ u32 FieldSelectScene::func_ov001_02222e44() {
         if (mInput[0].mUnk_0a != 0) {
             switch (mUnk_2ed[mUnk_329]) {
                 case 2:
-                    mPanel[1]->func_020654a0();
+                    mPanel[1]->DrawIcons();
                     mCells2[6].mAnim->Draw(1, 0x70, 0x2d, 0);
                     break;
                 case 4:
@@ -1492,7 +1492,7 @@ u32 FieldSelectScene::func_ov001_02222e44() {
     } else {
         if (mUnk_2ed[mUnk_329] == 2) {
             if (mInput[mUnk_33b].mUnk_0a != 0) {
-                mPanel[1]->func_020654a0();
+                mPanel[1]->DrawIcons();
                 mCells2[6].mAnim->Draw(1, 0x70, 0x2d, 0);
                 mWindows[1]->Draw();
             } else if (mUnk_33d != 0) {
@@ -1545,7 +1545,7 @@ u32 FieldSelectScene::func_ov001_02222e44() {
             break;
         case 2:
             if (mUnk_2ed[mUnk_329] == 2) {
-                mPanel[1]->func_02065204(3, -1, 0, 0);
+                mPanel[1]->SetCharacter(3, -1, 0, 0);
             }
             for (;;) {
                 if (mUnk_329 != 0) {
@@ -1654,7 +1654,7 @@ BOOL FieldSelectScene::func_ov001_02223430(u8 slot) {
             }
             mInput[slot].mUnk_08  = mInput[slot].mUnk_02;
             mCells2[slot].mUnk_09 = 2;
-            mPanel[0]->func_02065204(slot, ((const s8 *) sIdItems.ids)[mInput[slot].mUnk_02], (u32) (mUnk_14c + slot * 8), 0);
+            mPanel[0]->SetCharacter(slot, ((const s8 *) sIdItems.ids)[mInput[slot].mUnk_02], (u32) (mUnk_14c + slot * 8), 0);
             func_ov001_022267d0(slot);
             break;
         case 3: {
@@ -1745,7 +1745,7 @@ BOOL FieldSelectScene::func_ov001_02223914() {
                         } while (j < n);
                     }
                     if (mInput[slot].mUnk_06 != 0) {
-                        mPanel[0]->func_02065204(slot, -1, 0, 0);
+                        mPanel[0]->SetCharacter(slot, -1, 0, 0);
                         WirelessManager::Get();
                         if (IsWirelessMode(mode)) {
                             if (slot >= mUnk_32b) {
@@ -1755,7 +1755,7 @@ BOOL FieldSelectScene::func_ov001_02223914() {
                             func_ov001_02226bf8(slot);
                         }
                         if (slot == mUnk_33b) {
-                            mPanel[1]->func_02065204(3, -1, 0, 0);
+                            mPanel[1]->SetCharacter(3, -1, 0, 0);
                         }
                         mCells2[slot].mUnk_09 = 1;
                         mInput[slot].mUnk_06  = 0;
@@ -1766,7 +1766,7 @@ BOOL FieldSelectScene::func_ov001_02223914() {
                     }
                 } else {
                     if (mInput[i].mUnk_06 != 0) {
-                        mPanel[0]->func_02065204(i, -1, 0, 0);
+                        mPanel[0]->SetCharacter(i, -1, 0, 0);
                         WirelessManager::Get();
                         if (IsWirelessMode(mode)) {
                             if (i >= mUnk_32b) {
@@ -1776,7 +1776,7 @@ BOOL FieldSelectScene::func_ov001_02223914() {
                             func_ov001_02226bf8(i);
                         }
                         if (i == mUnk_33b) {
-                            mPanel[1]->func_02065204(3, -1, 0, 0);
+                            mPanel[1]->SetCharacter(3, -1, 0, 0);
                         }
                         mCells2[i].mUnk_09 = 1;
                         mInput[i].mUnk_06  = 0;
@@ -1786,8 +1786,8 @@ BOOL FieldSelectScene::func_ov001_02223914() {
                     }
                 }
                 if (slot == mUnk_33b) {
-                    mPanel[1]->func_02065204(0, -1, 0, 0);
-                    mPanel[1]->func_02065204(0, 0x15, (u32) (mUnk_14c + mUnk_33b * 8), 0);
+                    mPanel[1]->SetCharacter(0, -1, 0, 0);
+                    mPanel[1]->SetCharacter(0, 0x15, (u32) (mUnk_14c + mUnk_33b * 8), 0);
                     mUnk_340 = 0;
                 }
             }
@@ -2040,7 +2040,7 @@ u32 FieldSelectScene::func_ov001_02224538() {
                         }
                         if (event) {
                             if (mUnk_33b == 0) {
-                                mPanel[1]->func_02065204(3, -1, 0, 0);
+                                mPanel[1]->SetCharacter(3, -1, 0, 0);
                             }
                             func_ov001_022253f0(0, 0, 0);
                             break;
@@ -2071,7 +2071,7 @@ u32 FieldSelectScene::func_ov001_02224538() {
                         flagB = 1;
                     }
                     if (i == mUnk_33b) {
-                        mPanel[1]->func_02065204(3, -1, 0, 0);
+                        mPanel[1]->SetCharacter(3, -1, 0, 0);
                     }
                     func_ov001_022253f0(i, 0, 0);
                     continue;
@@ -2137,8 +2137,8 @@ u32 FieldSelectScene::func_ov001_02224538() {
                         }
                         func_ov001_022253f0(owner, 1, mInput[i].mUnk_02);
                         if (owner == mUnk_33b) {
-                            mPanel[1]->func_02065204(3, ((const s8 *) sIdItems.ids)[mInput[i].mUnk_02], (u32) (mUnk_14c + i * 8), 0);
-                            mPanel[1]->func_0206547c(3, 0x72, 0x2f, 0);
+                            mPanel[1]->SetCharacter(3, ((const s8 *) sIdItems.ids)[mInput[i].mUnk_02], (u32) (mUnk_14c + i * 8), 0);
+                            mPanel[1]->SetDrawArgs(3, 0x72, 0x2f, 0);
                         }
                     }
                     if (mInput[i].mUnk_02 == 0) {
@@ -2153,8 +2153,8 @@ u32 FieldSelectScene::func_ov001_02224538() {
                         }
                     }
                     if (show) {
-                        mPanel[1]->func_02065204(0, -1, 0, 0);
-                        mPanel[1]->func_02065204(0, 0x15, (u32) (mUnk_14c + mUnk_33b * 8), 1);
+                        mPanel[1]->SetCharacter(0, -1, 0, 0);
+                        mPanel[1]->SetCharacter(0, 0x15, (u32) (mUnk_14c + mUnk_33b * 8), 1);
                         mUnk_340 = 1;
                     }
                 }
@@ -2536,7 +2536,7 @@ void FieldSelectScene::func_ov001_022256e4() {
         u8 i = 0;
         do {
             s16 y = i * 0x24 + 0x27;
-            mPanel[0]->func_0206547c(i, 0x1b, (s16) (y + 4), 1);
+            mPanel[0]->SetDrawArgs(i, 0x1b, (s16) (y + 4), 1);
             mCells[6].mAnim->Draw(0, 0x19, (s16) (y + 2), 3);
             if (mUnk_32b <= i) {
                 mCells[7].mAnim->SetAnimation(0xb);
@@ -2588,7 +2588,7 @@ void FieldSelectScene::func_ov001_022256e4() {
             }
             i++;
         } while (i < mUnk_32a);
-        mPanel[0]->func_020654a0();
+        mPanel[0]->DrawIcons();
     }
     if (mUnk_336 != 0) {
         u8 slot = mUnk_33f;
@@ -2607,7 +2607,7 @@ void FieldSelectScene::func_ov001_022256e4() {
         }
     }
     if (mUnk_335 != 0) {
-        mPanel[1]->func_020654a0();
+        mPanel[1]->DrawIcons();
     }
     if (mUnk_338 != 0) {
         u8 r = 0;
@@ -2620,7 +2620,7 @@ void FieldSelectScene::func_ov001_022256e4() {
                     x = data_ov001_022270bc[col];
                 }
                 s16 y = r * 0x24 + 0x18;
-                mPanel[1]->func_0206547c(v, x + 6, y + 4, 1);
+                mPanel[1]->SetDrawArgs(v, x + 6, y + 4, 1);
                 mCells2[5].mAnim->Draw(1, x + 4, y + 2, 2);
                 if (mUnk_32b <= v) {
                     mCells2[7].mAnim->SetAnimation(0xb);
@@ -2634,7 +2634,7 @@ void FieldSelectScene::func_ov001_022256e4() {
                 mCells2[7].mAnim->Draw(1, x, y, 1);
                 col++;
             } while (col < 4);
-            mPanel[1]->func_020654a0();
+            mPanel[1]->DrawIcons();
             r++;
         } while (r < 4);
     }

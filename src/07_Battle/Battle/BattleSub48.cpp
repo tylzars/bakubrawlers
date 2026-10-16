@@ -144,7 +144,7 @@ void BattleSub48::func_ov007_02224444() {
     ChangeDir("/Game/Confrontation/Obj/");
     if (mUnk_3c < 2) {
         if (entries[mUnk_3c].mUnk_12 != 0) {
-            kind = func_02065c0c(entries[(u8) mUnk_3c].mUnk_12, 3);
+            kind = GetCardInfo(entries[(u8) mUnk_3c].mUnk_12, 3);
             other = func_ov007_02222764((u8) mUnk_3c, entries);
             if (kind != 5 && other != 5) {
                 i = 0;
@@ -210,7 +210,7 @@ void BattleSub48::func_ov007_02224444() {
         if (entries[i].mUnk_0f_2) {
             mAnims[j]->SetAnimation(3);
         } else {
-            int k = func_02065c0c(entries[i].mUnk_12, 3);
+            int k = GetCardInfo(entries[i].mUnk_12, 3);
             if (k == 1) {
                 mAnims[j]->SetAnimation(1);
             } else if (k == 3) {

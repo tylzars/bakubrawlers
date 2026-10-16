@@ -22,7 +22,7 @@ static const WindowItemRecord data_ov001_02227084[2] = {
 #include "Scene/ArenaScene.hpp"
 #include "Scene/FieldSelectScene.hpp"
 #include "System/FrameTask.hpp"
-#include "Unknown/UnkStruct_02070608.hpp"
+#include "UI/SaveWindow.hpp"
 #include "System/WirelessManager.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include <nitro/gx.h>
@@ -196,7 +196,7 @@ void ArenaWindowScene::Update() {
                 return;
             }
             func_ov001_0221db10();
-            new UnkStruct_02070608(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
+            new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mUnk_12     = 0;
             data_020d433c.mUnk_87 = 0;
             data_020d433c.mUnk_14_1 = 0;

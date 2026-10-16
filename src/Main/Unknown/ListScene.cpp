@@ -1,4 +1,4 @@
-#include "Unknown/UnkStruct_02078e14.hpp"
+#include "Scene/ListScene.hpp"
 #include "Unknown/UnkStruct_02071d24.hpp"
 #include "Battle/BattleCommandList.hpp"
 #include "Battle/BattleCommandPage.hpp"
@@ -16,7 +16,7 @@
 #include "UI/MessageWindow.hpp"
 #include "Game/Random.hpp"
 #include "Game/UnkStruct_020d48f0.hpp"
-#include "Unknown/UnkStruct_02078290.hpp"
+#include "Graphics/AntennaIndicator.hpp"
 #include "System/WirelessManager.hpp"
 #include "System/TouchManager.hpp"
 
@@ -296,7 +296,7 @@ inline const u16 *Table_020a3ba8() {
     return data_020a3ba8;
 }
 
-// Ten-byte records (0x020a3860); func_020864ec reads the first halfword. As a function-local static of an inline
+// Ten-byte records (0x020a3860); GetPrice reads the first halfword. As a function-local static of an inline
 // accessor the table gets a section of its own, so the table after it starts on a 4-byte boundary as in the original.
 struct UnkStruct_020a3860 {
     /* 0 */ u16 mUnk_00;
@@ -398,9 +398,9 @@ extern u8 data_020d497b[];
 
 void func_02023134(UnkStruct_020d43f0 *d, u32 a, u32 b, u32 c, u32 e, u32 f);
 
-void func_02086668(UnkStruct_02078e14 *self, u32 unk1);
+void func_02086668(ListScene *self, u32 unk1);
 
-void func_02086580(UnkStruct_02078e14 *self, u32 unk1, u32 unk2, BattleCellPair *out);
+void func_02086580(ListScene *self, u32 unk1, u32 unk2, BattleCellPair *out);
 
 static inline void PrintMessageF3(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x) {
     tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0x10, 0, 0, 1, 1, 1);
@@ -418,20 +418,20 @@ static inline u16 *MessageEntry(void *base, u32 index) {
     return (u16 *) ((u8 *) base + index * 4);
 }
 
-void func_02082efc(UnkStruct_02078e14 *self);
+void func_02082efc(ListScene *self);
 
 static inline void PrintMessageB(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x) {
     tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0, 0, 0, 1, 1, 1);
 }
 
-void func_020839a0(UnkStruct_02078e14 *self);
+void func_020839a0(ListScene *self);
 
 
 
 
 
 
-u32 func_02086654(UnkStruct_02078e14 *self, u32 unk1, u32 unk2);
+u32 func_02086654(ListScene *self, u32 unk1, u32 unk2);
 
 extern "C" void MIi_CpuCopy16(const void *src, void *dst, u32 size);
 
@@ -470,27 +470,27 @@ struct BattleSlotMessage {
 
 u8 func_020230dc(UnkStruct_020d43f0 *d, u32 a, u32 b);
 
-void func_0208671c(UnkStruct_02078e14 *self, u32 unk1);
+void func_0208671c(ListScene *self, u32 unk1);
 
-void func_020867b8(UnkStruct_02078e14 *self);
+void func_020867b8(ListScene *self);
 
-void func_020858d4(UnkStruct_02078e14 *self);
+void func_020858d4(ListScene *self);
 
-void func_02085990(UnkStruct_02078e14 *self);
+void func_02085990(ListScene *self);
 
-void func_02085b8c(UnkStruct_02078e14 *self);
+void func_02085b8c(ListScene *self);
 
-void func_02085fec(UnkStruct_02078e14 *self);
+void func_02085fec(ListScene *self);
 
-void func_02086874(UnkStruct_02078e14 *self);
+void func_02086874(ListScene *self);
 
-BOOL func_02085a7c(UnkStruct_02078e14 *self, u32 unk1, u32 unk2);
+BOOL func_02085a7c(ListScene *self, u32 unk1, u32 unk2);
 
-BOOL func_02085da8(UnkStruct_02078e14 *self, u32 unk1, u32 unk2, u32 unk3);
+BOOL func_02085da8(ListScene *self, u32 unk1, u32 unk2, u32 unk3);
 
-BOOL func_02086044(UnkStruct_02078e14 *self, u32 unk1);
+BOOL func_02086044(ListScene *self, u32 unk1);
 
-BOOL func_020861f4(UnkStruct_02078e14 *self, u32 unk1);
+BOOL func_020861f4(ListScene *self, u32 unk1);
 
 
 
@@ -510,85 +510,85 @@ extern const u32 data_020a3fe8[][2];
 extern const u16 *const data_020a3fec[][2];
 
 void func_02081a4c(void *arg);
-void func_02082efc(UnkStruct_02078e14 *self);
-void func_020834ec(UnkStruct_02078e14 *self, u32 mode);
-void func_020839a0(UnkStruct_02078e14 *self);
-void func_0208415c(UnkStruct_02078e14 *self);
-void func_020843ac(UnkStruct_02078e14 *self, u32 unk1);
-void func_020848c8(UnkStruct_02078e14 *self);
-BOOL func_02084a10(UnkStruct_02078e14 *self);
-BOOL func_02084c38(UnkStruct_02078e14 *self);
-BOOL func_02084e64(UnkStruct_02078e14 *self); // self is passed but unused
-BOOL func_02084f40(UnkStruct_02078e14 *self); // self is passed but unused
-BOOL func_0208501c(UnkStruct_02078e14 *self);
-void func_02085220(UnkStruct_02078e14 *self, u32 mode);
-void func_0208550c(UnkStruct_02078e14 *self);
-void func_020858d4(UnkStruct_02078e14 *self);
-BOOL func_0208596c(UnkStruct_02078e14 *self, u32 unk1, u32 unk2);
-void func_02085990(UnkStruct_02078e14 *self);
-BOOL func_02085a7c(UnkStruct_02078e14 *self, u32 unk1, u32 unk2);
-void func_02085b8c(UnkStruct_02078e14 *self);
-BOOL func_02085da8(UnkStruct_02078e14 *self, u32 unk1, u32 unk2, u32 unk3);
-void func_02085fec(UnkStruct_02078e14 *self);
-BOOL func_02086044(UnkStruct_02078e14 *self, u32 unk1);
-BOOL func_020861f4(UnkStruct_02078e14 *self, u32 unk1);
-void func_02086580(UnkStruct_02078e14 *self, u32 unk1, u32 unk2, BattleCellPair *out);
-u32 func_02086654(UnkStruct_02078e14 *self, u32 unk1, u32 unk2);
-void func_02086668(UnkStruct_02078e14 *self, u32 unk1);
-void func_0208671c(UnkStruct_02078e14 *self, u32 unk1);
-void func_020867b8(UnkStruct_02078e14 *self);
-void func_02086874(UnkStruct_02078e14 *self);
+void func_02082efc(ListScene *self);
+void func_020834ec(ListScene *self, u32 mode);
+void func_020839a0(ListScene *self);
+void func_0208415c(ListScene *self);
+void func_020843ac(ListScene *self, u32 unk1);
+void func_020848c8(ListScene *self);
+BOOL func_02084a10(ListScene *self);
+BOOL func_02084c38(ListScene *self);
+BOOL func_02084e64(ListScene *self); // self is passed but unused
+BOOL func_02084f40(ListScene *self); // self is passed but unused
+BOOL func_0208501c(ListScene *self);
+void func_02085220(ListScene *self, u32 mode);
+void func_0208550c(ListScene *self);
+void func_020858d4(ListScene *self);
+BOOL func_0208596c(ListScene *self, u32 unk1, u32 unk2);
+void func_02085990(ListScene *self);
+BOOL func_02085a7c(ListScene *self, u32 unk1, u32 unk2);
+void func_02085b8c(ListScene *self);
+BOOL func_02085da8(ListScene *self, u32 unk1, u32 unk2, u32 unk3);
+void func_02085fec(ListScene *self);
+BOOL func_02086044(ListScene *self, u32 unk1);
+BOOL func_020861f4(ListScene *self, u32 unk1);
+void func_02086580(ListScene *self, u32 unk1, u32 unk2, BattleCellPair *out);
+u32 func_02086654(ListScene *self, u32 unk1, u32 unk2);
+void func_02086668(ListScene *self, u32 unk1);
+void func_0208671c(ListScene *self, u32 unk1);
+void func_020867b8(ListScene *self);
+void func_02086874(ListScene *self);
 
 
-UnkStruct_02078e14::UnkStruct_02078e14(u32 unk1, u32 unk2) :
+ListScene::ListScene(u32 unk1, u32 unk2) :
     SceneBase(0x3e8, 0) {
-    mUnk_0c   = NULL;
-    mUnk_10   = NULL;
-    mUnk_14   = NULL;
-    mUnk_18   = NULL;
-    mUnk_1c   = NULL;
-    mUnk_20   = NULL;
+    mStorecommentMessages   = NULL;
+    mBakuganNameShortMessages   = NULL;
+    mBakuganNameMessages   = NULL;
+    mCardNameShortMessages   = NULL;
+    mDeckSelectMessages   = NULL;
+    mResultMessages   = NULL;
     mUnk_48   = NULL;
     mUnk_4c   = NULL;
     mUnk_50   = NULL;
     mUnk_54   = NULL;
     mUnk_58   = NULL;
-    mUnk_c0   = NULL;
-    mUnk_c4   = NULL;
-    mUnk_e0   = unk1;
-    mUnk_e1   = 0;
+    mCommandList   = NULL;
+    mCommandPage   = NULL;
+    mMode   = unk1;
+    mState   = 0;
     mUnk_e2   = 0;
     mUnk_1e0  = 0;
     mUnk_1e4  = 0;
-    mUnk_1e8  = NULL;
-    mUnk_1ec  = NULL;
-    mUnk_1f0  = unk2;
+    mAntenna  = NULL;
+    mMessageWindow  = NULL;
+    mPlayer  = unk2;
     mUnk_3f4  = 0;
-    mUnk_3f8  = 0;
-    mUnk_3f9  = 0;
+    mAppliedWndMode  = 0;
+    mWndMode  = 0;
     mUnk_3fa  = 0;
     mUnk_3fc  = 0;
     mUnk_3fe  = 0;
     mUnk_3ff  = 0;
     mUnk_400  = 0;
     mUnk_401  = 0;
-    mUnk_404  = -1;
+    mPendingPlanes  = -1;
     SpriteManager::Get().SetFade(1, -16);
-    mUnk_1f1 = mUnk_e0 == 5 ? data_020d43db[mUnk_1f0] : 0x15;
+    mCharacterId = mMode == 5 ? data_020d43db[mPlayer] : 0x15;
     for (u8 i = 0; i < 2; i++) {
-        mUnk_28[i] = NULL;
-        mUnk_30[i] = NULL;
-        mUnk_38[i] = NULL;
-        mUnk_40[i] = NULL;
+        mTextBuffers[i] = NULL;
+        mGlyphBuffers[i] = NULL;
+        mTextBufferSizes[i] = NULL;
+        mGlyphCounts[i] = NULL;
     }
     for (u8 i = 0; i < 6; i++) {
         mUnk_5c[i] = NULL;
     }
     for (u8 i = 0; i < 0x13; i++) {
-        mUnk_74[i] = NULL;
+        mSubScreenCellAnims[i] = NULL;
     }
     mUnk_f4 = 0;
-    if (mUnk_1f1 != 0x15) {
+    if (mCharacterId != 0x15) {
         mUnk_f4 = 1;
     }
     mUnk_e4 = 0;
@@ -600,16 +600,16 @@ UnkStruct_02078e14::UnkStruct_02078e14(u32 unk1, u32 unk2) :
     mUnk_ec = 0;
     mUnk_f0 = 1;
     mUnk_f5 = 0;
-    mUnk_3f9 = 2;
+    mWndMode = 2;
     mUnk_f8  = 0;
-    mUnk_fa  = 0;
+    mCursorItem  = 0;
     mUnk_fb  = 0;
-    mUnk_fc  = 0;
-    mUnk_fd  = 0;
+    mItemCount  = 0;
+    mScroll  = 0;
     mUnk_100 = 0;
     mUnk_104 = 0;
     for (u8 i = 0; i < 0x40; i++) {
-        mUnk_106[i] = 0;
+        mItemIds[i] = 0;
     }
     for (u8 i = 0; i < 13; i++) {
         mUnk_186[i] = 0;
@@ -619,75 +619,78 @@ UnkStruct_02078e14::UnkStruct_02078e14(u32 unk1, u32 unk2) :
     }
     mUnk_1a0 = 4;
     mUnk_1a1 = 0;
-    mUnk_1dc = 0;
+    mPrice = 0;
     MI_CpuClear16(&mUnk_24, 2);
     mUnk_3f4 = data_020d433c.mUnk_8a_0;
 }
 
-UnkStruct_02078e14::~UnkStruct_02078e14() {
+ListScene::~ListScene() {
     u8 i;
     for (i = 0; i < 6; i++) {
         delete mUnk_5c[i];
     }
     for (i = 0; i < 0x13; i++) {
-        delete mUnk_74[i];
+        delete mSubScreenCellAnims[i];
     }
     delete mUnk_4c;
     delete mUnk_48;
     delete mUnk_50;
     operator delete(mUnk_54);
     operator delete(mUnk_58);
-    if (mUnk_0c != NULL) {
-        OS_Free(mUnk_0c);
-        mUnk_0c = NULL;
+    if (mStorecommentMessages != NULL) {
+        OS_Free(mStorecommentMessages);
+        mStorecommentMessages = NULL;
     }
-    if (mUnk_10 != NULL) {
-        OS_Free(mUnk_10);
-        mUnk_10 = NULL;
+    if (mBakuganNameShortMessages != NULL) {
+        OS_Free(mBakuganNameShortMessages);
+        mBakuganNameShortMessages = NULL;
     }
-    if (mUnk_14 != NULL) {
-        OS_Free(mUnk_14);
-        mUnk_14 = NULL;
+    if (mBakuganNameMessages != NULL) {
+        OS_Free(mBakuganNameMessages);
+        mBakuganNameMessages = NULL;
     }
-    if (mUnk_18 != NULL) {
-        OS_Free(mUnk_18);
-        mUnk_18 = NULL;
+    if (mCardNameShortMessages != NULL) {
+        OS_Free(mCardNameShortMessages);
+        mCardNameShortMessages = NULL;
     }
-    if (mUnk_1c != NULL) {
-        OS_Free(mUnk_1c);
-        mUnk_1c = NULL;
+    if (mDeckSelectMessages != NULL) {
+        OS_Free(mDeckSelectMessages);
+        mDeckSelectMessages = NULL;
     }
-    if (mUnk_20 != NULL) {
-        OS_Free(mUnk_20);
-        mUnk_20 = NULL;
+    if (mResultMessages != NULL) {
+        OS_Free(mResultMessages);
+        mResultMessages = NULL;
     }
     for (u8 i = 0; i < 2; i++) {
-        if (mUnk_28[i] != NULL) {
-            OS_Free(mUnk_28[i]);
-            mUnk_28[i] = NULL;
+        if (mTextBuffers[i] != NULL) {
+            OS_Free(mTextBuffers[i]);
+            mTextBuffers[i] = NULL;
         }
-        if (mUnk_30[i] != NULL) {
-            OS_Free(mUnk_30[i]);
-            mUnk_30[i] = NULL;
+        if (mGlyphBuffers[i] != NULL) {
+            OS_Free(mGlyphBuffers[i]);
+            mGlyphBuffers[i] = NULL;
         }
     }
     SpriteManager::Get().SetFade(1, -16);
     if (data_020d433c.mUnk_a8 != 0) {
-        mUnk_1e8->mUnk_04 = 1;
+        mAntenna->mUnk_04 = 1;
     }
-    delete mUnk_1ec;
-    mUnk_3f9 = 0;
-    func_0207ed3c();
+    delete mMessageWindow;
+    mWndMode = 0;
+    ApplyWndMode();
 }
 
-void UnkStruct_02078e14::func_0207966c(u32 unk1) {
+// Frees what LoadSubScreenGraphics, LoadMessages and InitMainScreenText built; also finishes the antenna task
+// (mAntenna, :736-738) and turns the sub-screen windows off. With releaseCommands it also frees mCommandList /
+// mCommandPage and writes mContext->mUnk_12 (:741-754).
+void ListScene::Release(u32 releaseCommands) {
     for (u8 i = 0; i < 6; i++) {
         delete mUnk_5c[i];
         mUnk_5c[i] = NULL;
     }
     for (u8 i = 0; i < 0x13; i++) {
-        delete mUnk_74[i];
-        mUnk_74[i] = NULL;
+        delete mSubScreenCellAnims[i];
+        mSubScreenCellAnims[i] = NULL;
     }
     delete mUnk_4c;
     mUnk_4c = NULL;
@@ -699,79 +702,79 @@ void UnkStruct_02078e14::func_0207966c(u32 unk1) {
     mUnk_54 = NULL;
     operator delete(mUnk_58);
     mUnk_58 = NULL;
-    if (mUnk_0c != NULL) {
-        OS_Free(mUnk_0c);
-        mUnk_0c = NULL;
+    if (mStorecommentMessages != NULL) {
+        OS_Free(mStorecommentMessages);
+        mStorecommentMessages = NULL;
     }
-    if (mUnk_10 != NULL) {
-        OS_Free(mUnk_10);
-        mUnk_10 = NULL;
+    if (mBakuganNameShortMessages != NULL) {
+        OS_Free(mBakuganNameShortMessages);
+        mBakuganNameShortMessages = NULL;
     }
-    if (mUnk_14 != NULL) {
-        OS_Free(mUnk_14);
-        mUnk_14 = NULL;
+    if (mBakuganNameMessages != NULL) {
+        OS_Free(mBakuganNameMessages);
+        mBakuganNameMessages = NULL;
     }
-    if (mUnk_18 != NULL) {
-        OS_Free(mUnk_18);
-        mUnk_18 = NULL;
+    if (mCardNameShortMessages != NULL) {
+        OS_Free(mCardNameShortMessages);
+        mCardNameShortMessages = NULL;
     }
-    if (mUnk_1c != NULL) {
-        OS_Free(mUnk_1c);
-        mUnk_1c = NULL;
+    if (mDeckSelectMessages != NULL) {
+        OS_Free(mDeckSelectMessages);
+        mDeckSelectMessages = NULL;
     }
-    if (mUnk_20 != NULL) {
-        OS_Free(mUnk_20);
-        mUnk_20 = NULL;
+    if (mResultMessages != NULL) {
+        OS_Free(mResultMessages);
+        mResultMessages = NULL;
     }
     for (u8 i = 0; i < 2; i++) {
-        if (mUnk_28[i] != NULL) {
-            OS_Free(mUnk_28[i]);
-            mUnk_28[i] = NULL;
+        if (mTextBuffers[i] != NULL) {
+            OS_Free(mTextBuffers[i]);
+            mTextBuffers[i] = NULL;
         }
-        if (mUnk_30[i] != NULL) {
-            OS_Free(mUnk_30[i]);
-            mUnk_30[i] = NULL;
+        if (mGlyphBuffers[i] != NULL) {
+            OS_Free(mGlyphBuffers[i]);
+            mGlyphBuffers[i] = NULL;
         }
     }
     if (data_020d433c.mUnk_a8 != 0) {
-        mUnk_1e8->mUnk_04 = 1;
+        mAntenna->mUnk_04 = 1;
     }
-    delete mUnk_1ec;
-    mUnk_1ec = NULL;
-    if (unk1 != 0) {
+    delete mMessageWindow;
+    mMessageWindow = NULL;
+    if (releaseCommands != 0) {
         if (mUnk_400 == 0 && mUnk_401 == 0) {
             mContext->mUnk_12 = 1;
         }
-        if (mUnk_c0 != NULL && mUnk_400 == 0) {
-            func_0205821c(mUnk_c0);
-            mUnk_c0           = NULL;
+        if (mCommandList != NULL && mUnk_400 == 0) {
+            func_0205821c(mCommandList);
+            mCommandList           = NULL;
             mContext->mUnk_12 = 0;
         }
-        if (mUnk_c4 != NULL && mUnk_401 == 0) {
-            func_02055624(mUnk_c4, 1);
-            mUnk_c4           = NULL;
+        if (mCommandPage != NULL && mUnk_401 == 0) {
+            func_02055624(mCommandPage, 1);
+            mCommandPage           = NULL;
             mContext->mUnk_12 = 0;
         }
     }
-    mUnk_3f9 = 0;
-    func_0207ed3c();
+    mWndMode = 0;
+    ApplyWndMode();
 }
 
 #define UPDATE_TAIL()                      \
     func_0207eec4();                       \
-    mUnk_74[18]->Update();                 \
-    mUnk_74[18]->Draw(1, 0x80, 0x60, 0);   \
+    mSubScreenCellAnims[18]->Update();                 \
+    mSubScreenCellAnims[18]->Draw(1, 0x80, 0x60, 0);   \
     return
 
-void UnkStruct_02078e14::Update() {
-    if (mUnk_404 != -1) {
-        GXS_SetVisiblePlane(mUnk_404);
-        mUnk_404 = -1;
-        if (mUnk_e1 == 3) {
+void ListScene::Update() {
+    if (mPendingPlanes != -1) {
+        GXS_SetVisiblePlane(mPendingPlanes);
+        mPendingPlanes = -1;
+        if (mState == 3) {
             if (mUnk_f0 != 0) {
-                mUnk_3f9 = 2;
+                mWndMode = 2;
             } else {
-                mUnk_3f9 = 1;
+                mWndMode = 1;
             }
         }
     }
@@ -786,21 +789,21 @@ void UnkStruct_02078e14::Update() {
         mUnk_3ff = 0;
         u32 one = 1;
         if (mUnk_e6 < 4) {
-            mUnk_c8[mUnk_e6 - 1] = mUnk_106[mUnk_fa];
+            mUnk_c8[mUnk_e6 - 1] = mItemIds[mCursorItem];
             mUnk_c8[mUnk_e6 + 8] = mUnk_104;
             mUnk_f0              = one;
-            mUnk_3f9             = 2;
-            mUnk_186[mUnk_e6]    = mUnk_fa;
+            mWndMode             = 2;
+            mUnk_186[mUnk_e6]    = mCursorItem;
             mUnk_194[0]          = one;
             mUnk_194[1]          = one;
             mUnk_194[2]          = one;
             func_02081128();
             data_020d433c.mUnk_14 |= 2;
         } else {
-            mUnk_c8[mUnk_e6 - 1] = mUnk_106[mUnk_fa];
+            mUnk_c8[mUnk_e6 - 1] = mItemIds[mCursorItem];
             mUnk_f0              = one;
-            mUnk_3f9             = 2;
-            mUnk_186[mUnk_e6]    = mUnk_fa;
+            mWndMode             = 2;
+            mUnk_186[mUnk_e6]    = mCursorItem;
             mUnk_194[0]          = one;
             mUnk_194[1]          = one;
             mUnk_194[2]          = one;
@@ -814,15 +817,15 @@ void UnkStruct_02078e14::Update() {
             mUnk_3fc = 0;
         }
     }
-    switch (mUnk_e1) {
+    switch (mState) {
         case 0:
-            func_0207b3a8();
+            InitDisplay();
             func_0207b6e8();
-            func_0207b760();
-            func_0207c568();
-            mUnk_e1++;
-            if (mUnk_e0 == 5) {
-                mUnk_e1 = 7;
+            LoadSubScreenGraphics();
+            LoadMessages();
+            mState++;
+            if (mMode == 5) {
+                mState = 7;
                 func_020851d0();
                 return;
             }
@@ -832,13 +835,13 @@ void UnkStruct_02078e14::Update() {
             mUnk_4c->mUnk_064 = 0;
             if (!func_020842a0()) {
                 SpriteManager::Get().StartFade(2);
-                mUnk_e1++;
+                mState++;
             }
             break;
         case 2:
             if (!SpriteManager::Get().IsFading()) {
                 mUnk_4c->mUnk_064 = 1;
-                mUnk_e1++;
+                mState++;
             }
             break;
         case 3:
@@ -848,10 +851,10 @@ void UnkStruct_02078e14::Update() {
             if (!func_020842a0()) {
                 switch (mUnk_48->Update(1)) {
                     case 1:
-                        mUnk_e1 = 5;
+                        mState = 5;
                         break;
                     case 2:
-                        mUnk_e1 = 6;
+                        mState = 6;
                         break;
                 }
             }
@@ -861,19 +864,19 @@ void UnkStruct_02078e14::Update() {
             if (mUnk_48->mUnk_061 == 4) {
                 switch (mUnk_1a1) {
                     case 2:
-                        switch (mUnk_e0) {
+                        switch (mMode) {
                             case 0:
-                                data_020d43f0[0].mMoney -= mUnk_1dc;
+                                data_020d43f0[0].mMoney -= mPrice;
                                 func_020834ec(this, 4);
                                 break;
                             case 1:
-                                data_020d43f0[0].mMoney -= mUnk_1dc;
+                                data_020d43f0[0].mMoney -= mPrice;
                                 func_020834ec(this, 0);
-                                mUnk_186[mUnk_e6] = mUnk_fa;
-                                mUnk_e1           = 0x21;
+                                mUnk_186[mUnk_e6] = mCursorItem;
+                                mState           = 0x21;
                                 break;
                             case 2:
-                                data_020d43f0[0].mMoney -= mUnk_1dc;
+                                data_020d43f0[0].mMoney -= mPrice;
                                 func_020834ec(this, 6);
                                 break;
                         }
@@ -890,10 +893,10 @@ void UnkStruct_02078e14::Update() {
                         break;
                     case 10:
                         func_020834ec(this, 0);
-                        mUnk_e1 = 0x26;
+                        mState = 0x26;
                         break;
                     case 6:
-                        SetFlagBit(data_020d4946, mUnk_106[mUnk_fa]);
+                        SetFlagBit(data_020d4946, mItemIds[mCursorItem]);
                         func_020834ec(this, 0);
                         break;
                     case 8:
@@ -924,13 +927,13 @@ void UnkStruct_02078e14::Update() {
             mUnk_4c->mUnk_064 = 0;
             mUnk_50->mUnk_064 = 0;
             SpriteManager::Get().StartFade(2);
-            mUnk_e1++;
+            mState++;
             func_020851d0();
             return;
         case 8:
             if (!SpriteManager::Get().IsFading()) {
                 mUnk_50->mUnk_064 = 1;
-                mUnk_e1++;
+                mState++;
                 if (mUnk_3f4 != 0) {
                     func_02085220(this, 0xc);
                 }
@@ -950,10 +953,10 @@ void UnkStruct_02078e14::Update() {
                             mUnk_e7 = mUnk_f4;
                             mUnk_e8 = mUnk_f4;
                             mUnk_ea = mUnk_f4;
-                            if (mUnk_1f1 != 0x15) {
+                            if (mCharacterId != 0x15) {
                                 mUnk_1a0 = 1;
                             }
-                            mUnk_e1++;
+                            mState++;
                             break;
                     }
                 }
@@ -963,12 +966,12 @@ void UnkStruct_02078e14::Update() {
         case 10:
             SpriteManager::Get().StartFade(3);
             mUnk_50->mUnk_064 = 0;
-            mUnk_e1++;
+            mState++;
             func_020851d0();
             return;
         case 11:
             if (!SpriteManager::Get().IsFading()) {
-                mUnk_e1++;
+                mState++;
             }
             func_020851d0();
             return;
@@ -977,28 +980,28 @@ void UnkStruct_02078e14::Update() {
                 return;
             }
             func_020843ac(this, 0);
-            mUnk_e1++;
+            mState++;
             break;
         case 13:
             if (!func_020842a0()) {
                 SpriteManager::Get().StartFade(2);
-                mUnk_e1++;
+                mState++;
             }
             break;
         case 14:
             if (!SpriteManager::Get().IsFading()) {
                 mUnk_4c->mUnk_064 = 1;
-                mUnk_e1           = 3;
+                mState           = 3;
             }
             break;
         case 15:
             SpriteManager::Get().StartFade(3);
             mUnk_4c->mUnk_064 = 0;
-            mUnk_e1++;
+            mState++;
             break;
         case 16:
             if (!SpriteManager::Get().IsFading()) {
-                mUnk_e1++;
+                mState++;
             }
             break;
         case 17:
@@ -1006,30 +1009,30 @@ void UnkStruct_02078e14::Update() {
                 return;
             }
             func_020843ac(this, 1);
-            mUnk_e1++;
+            mState++;
             func_020851d0();
             return;
         case 18:
             if (!func_020842a0() && mUnk_1a0 == 0) {
                 SpriteManager::Get().StartFade(2);
-                mUnk_e1++;
+                mState++;
             }
             func_020851d0();
             return;
         case 19:
             if (!SpriteManager::Get().IsFading()) {
                 mUnk_50->mUnk_064 = 1;
-                mUnk_e1           = 9;
+                mState           = 9;
             }
             func_020851d0();
             return;
         case 20: {
             switch (mUnk_48->Update(1)) {
                 case 1:
-                    mUnk_e1 = 0x15;
+                    mState = 0x15;
                     break;
                 case 2:
-                    mUnk_e1 = 0x16;
+                    mState = 0x16;
                     break;
             }
             func_020851d0();
@@ -1043,11 +1046,11 @@ void UnkStruct_02078e14::Update() {
                         SoundManager::Get().func_020246f8(0x6a);
                         func_02085220(this, 0);
                         mUnk_50->mCells[0]->SetAnimation(0);
-                        mUnk_e1 = 0x17;
+                        mState = 0x17;
                         WirelessManager::Get();
                         if (IsWirelessMode(&data_020c4030.mUnk_228)) {
                             mUnk_50->mUnk_064 = 0;
-                            mUnk_e1           = 0x1b;
+                            mState           = 0x1b;
                             UPDATE_TAIL();
                         }
                         break;
@@ -1067,25 +1070,25 @@ void UnkStruct_02078e14::Update() {
             return;
         case 23:
             mUnk_50->mUnk_064 = 0;
-            if (mUnk_1f1 == 0x15) {
+            if (mCharacterId == 0x15) {
                 func_020848c8(this);
             }
             MIi_CpuCopyFast(data_020d4404, (u8 *) ((u32 *) data_020d433c.mBattlePlayers)[3] + 0xa8, 8);
             SpriteManager::Get().StartFade(3);
-            mUnk_e1++;
+            mState++;
             func_020851d0();
             return;
         case 24:
             if (!SpriteManager::Get().IsFading()) {
-                func_0207966c(1);
-                mUnk_e1++;
+                Release(1);
+                mState++;
                 return;
             }
             func_020851d0();
             return;
         case 25:
             if (mContext->mUnk_12 != 0) {
-                mUnk_e1++;
+                mState++;
             }
             return;
         case 26:
@@ -1094,78 +1097,78 @@ void UnkStruct_02078e14::Update() {
             return;
         case 27:
             if (func_02084a10(this)) {
-                mUnk_e1++;
+                mState++;
             }
             UPDATE_TAIL();
         case 28:
             if (func_02084c38(this)) {
-                mUnk_e1++;
+                mState++;
             }
             UPDATE_TAIL();
         case 29:
             if (func_0208501c(this)) {
-                mUnk_e1++;
+                mState++;
             }
             UPDATE_TAIL();
         case 30:
             if (func_02084f40(this)) {
-                mUnk_e1++;
+                mState++;
             }
             UPDATE_TAIL();
         case 31:
             if (func_02084e64(this)) {
                 SpriteManager::Get().StartFade(3);
-                mUnk_e1++;
+                mState++;
             }
             UPDATE_TAIL();
         case 32:
             if (!SpriteManager::Get().IsFading()) {
-                func_0207966c(1);
-                mUnk_e1 = 0x19;
+                Release(1);
+                mState = 0x19;
                 return;
             }
             UPDATE_TAIL();
         case 33:
             SpriteManager::Get().StartSubFade(3);
-            mUnk_e1++;
+            mState++;
             break;
         case 34:
             SpriteManager::Get();
             if (SpriteManager::sFade[1] <= 1) {
-                if (mUnk_c0 != NULL) {
-                    mUnk_c0->func_02058530(0);
+                if (mCommandList != NULL) {
+                    mCommandList->func_02058530(0);
                 }
-                func_0207966c(0);
+                Release(0);
                 mUnk_1e0 = new UnkStruct_02076058(1);
-                mUnk_1e0->func_02077a30(1, mUnk_106[mUnk_fa] & 0xff, mUnk_104, 1);
+                mUnk_1e0->func_02077a30(1, mItemIds[mCursorItem] & 0xff, mUnk_104, 1);
                 mContext->mUnk_12 = 0;
-                mUnk_e1++;
+                mState++;
                 return;
             }
             break;
         case 35:
             if (func_02078270(mUnk_1e0)) {
-                UnkStruct_02023248 *pair = func_02023248(&data_020d43f0[0], mUnk_106[mUnk_fa] & 0xff, mUnk_104);
-                u16 val = func_020231f4(&data_020d43f0[0], 0, mUnk_106[mUnk_fa] & 0xff, mUnk_104);
-                func_0205afb4(mUnk_c0, mUnk_104, val, (BattleCellPair *) pair);
+                UnkStruct_02023248 *pair = func_02023248(&data_020d43f0[0], mItemIds[mCursorItem] & 0xff, mUnk_104);
+                u16 val = func_020231f4(&data_020d43f0[0], 0, mItemIds[mCursorItem] & 0xff, mUnk_104);
+                func_0205afb4(mCommandList, mUnk_104, val, (BattleCellPair *) pair);
             }
             if (func_020779ec(mUnk_1e0) == 0) {
                 return;
             }
-            if (mUnk_c0 != NULL) {
-                func_0205821c(mUnk_c0);
+            if (mCommandList != NULL) {
+                func_0205821c(mCommandList);
             }
-            mUnk_e1++;
+            mState++;
             return;
         case 36:
-            if (mUnk_c0 != NULL) {
+            if (mCommandList != NULL) {
                 if (mContext->mUnk_12 == 0) {
                     return;
                 }
                 mUnk_1e0->mUnk_78 = 1;
-                mUnk_c0           = NULL;
+                mCommandList           = NULL;
             }
-            mUnk_e1++;
+            mState++;
             return;
         case 37:
             if (mContext->mUnk_12 != 3) {
@@ -1173,22 +1176,22 @@ void UnkStruct_02078e14::Update() {
             }
             mContext->mUnk_12 = 0;
             mUnk_1e0          = NULL;
-            mUnk_e1           = 0;
+            mState           = 0;
             mUnk_f0           = 0;
             mUnk_1a0          = 4;
             mUnk_194[0]       = 1;
             mUnk_194[1]       = 1;
             mUnk_194[2]       = 1;
-            mUnk_3f9          = 1;
+            mWndMode          = 1;
             return;
         case 38:
             SpriteManager::Get().StartFade(3);
-            mUnk_e1++;
+            mState++;
             break;
         case 39:
             if (!SpriteManager::Get().IsFading()) {
-                func_0207966c(1);
-                mUnk_e1++;
+                Release(1);
+                mState++;
                 return;
             }
             break;
@@ -1197,9 +1200,9 @@ void UnkStruct_02078e14::Update() {
                 return;
             }
             mUnk_1e4 = new UnkStruct_02071d24(2);
-            mUnk_1e4->func_02074148(0, mUnk_106[mUnk_fa] & 0xff, mUnk_104, 1);
+            mUnk_1e4->SetBakugan(0, mItemIds[mCursorItem] & 0xff, mUnk_104, 1);
             mContext->mUnk_12 = 0;
-            mUnk_e1++;
+            mState++;
             return;
         case 41:
             if (mContext->mUnk_12 != 2) {
@@ -1207,33 +1210,33 @@ void UnkStruct_02078e14::Update() {
             }
             mContext->mUnk_12 = 0;
             mUnk_1e4          = NULL;
-            mUnk_e1           = 0;
+            mState           = 0;
             mUnk_f0           = 1;
             mUnk_1a0          = 4;
             mUnk_194[0]       = 1;
             mUnk_194[1]       = 1;
             mUnk_194[2]       = 1;
-            mUnk_3f9          = 2;
+            mWndMode          = 2;
             return;
         case 43:
-            if (mUnk_e0 == 3 || mUnk_e0 == 5) {
+            if (mMode == 3 || mMode == 5) {
                 func_020842e8();
             }
             SpriteManager::Get().StartFade(3);
             mUnk_48->mUnk_064 = 0;
             mUnk_4c->mUnk_064 = 0;
-            mUnk_e1++;
+            mState++;
             break;
         case 44:
             if (!SpriteManager::Get().IsFading()) {
-                func_0207966c(1);
-                mUnk_e1++;
+                Release(1);
+                mState++;
                 return;
             }
             break;
         case 45:
             if (mContext->mUnk_12 != 0) {
-                mUnk_e1++;
+                mState++;
             }
             return;
         case 46:
@@ -1241,22 +1244,22 @@ void UnkStruct_02078e14::Update() {
             mFinished = 1;
             return;
     }
-    func_0207ed3c();
+    ApplyWndMode();
     func_0207dea4();
     func_0207e074();
     func_0207e424();
     func_0207ea3c();
     func_0207eec4();
     func_0208403c();
-    func_0207ceb0();
+    DrawSubScreenText();
     func_02080104();
-    func_0207f2f0();
+    DrawWindows();
     func_0207f32c();
     func_0207f90c();
 }
 
 
-void UnkStruct_02078e14::func_0207b3a8() {
+void ListScene::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().func_02026dec(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
@@ -1286,9 +1289,9 @@ void UnkStruct_02078e14::func_0207b3a8() {
     G2S_SetBG2Priority(2);
     G2S_SetBG3Priority(1);
     GX_SetVisiblePlane(0x11);
-    if (mUnk_e0 == 4) {
+    if (mMode == 4) {
         GXS_SetVisiblePlane(0x19);
-    } else if (mUnk_e0 == 5) {
+    } else if (mMode == 5) {
         GXS_SetVisiblePlane(0x11);
     } else {
         GXS_SetVisiblePlane(0x1d);
@@ -1313,8 +1316,8 @@ void UnkStruct_02078e14::func_0207b3a8() {
     G2S_BlendNone();
 }
 
-void UnkStruct_02078e14::func_0207b6e8() {
-    switch (mUnk_e0) {
+void ListScene::func_0207b6e8() {
+    switch (mMode) {
         case 0:
         case 1:
             mUnk_e9 = 6;
@@ -1332,16 +1335,16 @@ void UnkStruct_02078e14::func_0207b6e8() {
             break;
     }
     func_02080210();
-    func_02080bdc(1);
+    BuildList(1);
 }
 
 
-void UnkStruct_02078e14::func_0207b760() {
+void ListScene::LoadSubScreenGraphics() {
     ChangeDir("/Game/2d/union_b/");
     func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
     func_02025b64(1, 0xc, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
     func_02025b64(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
-    switch (mUnk_e0) {
+    switch (mMode) {
         case 0:
         case 1:
         case 2:
@@ -1387,23 +1390,23 @@ void UnkStruct_02078e14::func_0207b760() {
     screen.LoadCharacters("list_b_obj_00.nce_ncg1D.bin", 0xc000, 0);
     screen.LoadPalette("list_b_obj_00_ncl.bin", 0xc0, 0);
     for (u8 i = 0; i <= 12; i++) {
-        mUnk_74[i]            = new CellAnimation("list_b_obj_00_nce.bin", 0, 1, 1);
-        mUnk_74[i]->mCharBase = screen.func_020276f4(0xc000);
-        mUnk_74[i]->mUnk_11   = 6;
+        mSubScreenCellAnims[i]            = new CellAnimation("list_b_obj_00_nce.bin", 0, 1, 1);
+        mSubScreenCellAnims[i]->mCharBase = screen.func_020276f4(0xc000);
+        mSubScreenCellAnims[i]->mUnk_11   = 6;
     }
-    mUnk_74[0]->SetAnimation(0x23);
-    mUnk_74[1]->SetAnimation(0x24);
-    mUnk_74[2]->SetAnimation(0x22);
-    mUnk_74[3]->SetAnimation(0);
-    mUnk_74[4]->SetAnimation(1);
-    mUnk_74[5]->SetAnimation(2);
-    mUnk_74[6]->SetAnimation(3);
-    mUnk_74[7]->SetAnimation(0x10);
-    mUnk_74[8]->SetAnimation(0x10);
-    mUnk_74[9]->SetAnimation(0x1c);
-    mUnk_74[10]->SetAnimation(0x1d);
-    mUnk_74[11]->SetAnimation(0x1e);
-    mUnk_74[12]->SetAnimation(0x1f);
+    mSubScreenCellAnims[0]->SetAnimation(0x23);
+    mSubScreenCellAnims[1]->SetAnimation(0x24);
+    mSubScreenCellAnims[2]->SetAnimation(0x22);
+    mSubScreenCellAnims[3]->SetAnimation(0);
+    mSubScreenCellAnims[4]->SetAnimation(1);
+    mSubScreenCellAnims[5]->SetAnimation(2);
+    mSubScreenCellAnims[6]->SetAnimation(3);
+    mSubScreenCellAnims[7]->SetAnimation(0x10);
+    mSubScreenCellAnims[8]->SetAnimation(0x10);
+    mSubScreenCellAnims[9]->SetAnimation(0x1c);
+    mSubScreenCellAnims[10]->SetAnimation(0x1d);
+    mSubScreenCellAnims[11]->SetAnimation(0x1e);
+    mSubScreenCellAnims[12]->SetAnimation(0x1f);
     ChangeDir("/Game/2d/union_b/");
     screen.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0x6000, 0);
     screen.LoadPalette("union_b_obj_cockpit_ncl.bin", 0, 0);
@@ -1419,22 +1422,22 @@ void UnkStruct_02078e14::func_0207b760() {
     screen.LoadPalette("union_b_obj_point_ncl.bin", 0x60, 0);
     screen.LoadCharacters("union_b_obj_page.nce_ncg1D.bin", 0x1d000, 0);
     screen.LoadPalette("union_b_obj_page_ncl.bin", 0, 0);
-    mUnk_74[13]            = new CellAnimation("union_b_obj_number_nce.bin", 0, 1, 1);
-    mUnk_74[13]->mCharBase = screen.func_020276f4(0x9000);
-    mUnk_74[13]->mUnk_11   = 3;
-    mUnk_74[13]->SetAnimation(0);
-    mUnk_74[15]            = new CellAnimation("union_b_obj_new_nce.bin", 0, 1, 1);
-    mUnk_74[15]->mCharBase = screen.func_020276f4(0xb000);
-    mUnk_74[15]->mUnk_11   = 5;
-    mUnk_74[15]->SetAnimation(0);
-    mUnk_74[16]            = new CellAnimation("union_b_obj_gp_nce.bin", 0, 1, 1);
-    mUnk_74[16]->mCharBase = screen.func_020276f4(0xa000);
-    mUnk_74[16]->mUnk_11   = 4;
-    mUnk_74[16]->SetAnimation(2);
-    mUnk_74[17]            = new CellAnimation("union_b_obj_point_nce.bin", 0, 1, 1);
-    mUnk_74[17]->mCharBase = screen.func_020276f4(0x1c000);
-    mUnk_74[17]->mUnk_11   = 3;
-    mUnk_74[17]->SetAnimation(0);
+    mSubScreenCellAnims[13]            = new CellAnimation("union_b_obj_number_nce.bin", 0, 1, 1);
+    mSubScreenCellAnims[13]->mCharBase = screen.func_020276f4(0x9000);
+    mSubScreenCellAnims[13]->mUnk_11   = 3;
+    mSubScreenCellAnims[13]->SetAnimation(0);
+    mSubScreenCellAnims[15]            = new CellAnimation("union_b_obj_new_nce.bin", 0, 1, 1);
+    mSubScreenCellAnims[15]->mCharBase = screen.func_020276f4(0xb000);
+    mSubScreenCellAnims[15]->mUnk_11   = 5;
+    mSubScreenCellAnims[15]->SetAnimation(0);
+    mSubScreenCellAnims[16]            = new CellAnimation("union_b_obj_gp_nce.bin", 0, 1, 1);
+    mSubScreenCellAnims[16]->mCharBase = screen.func_020276f4(0xa000);
+    mSubScreenCellAnims[16]->mUnk_11   = 4;
+    mSubScreenCellAnims[16]->SetAnimation(2);
+    mSubScreenCellAnims[17]            = new CellAnimation("union_b_obj_point_nce.bin", 0, 1, 1);
+    mSubScreenCellAnims[17]->mCharBase = screen.func_020276f4(0x1c000);
+    mSubScreenCellAnims[17]->mUnk_11   = 3;
+    mSubScreenCellAnims[17]->SetAnimation(0);
     ChangeDir("/");
     mUnk_4c = new SelectWindow(7, data_020a3430, -1);
     mUnk_4c->SetCells(7, data_020a34f4);
@@ -1442,17 +1445,17 @@ void UnkStruct_02078e14::func_0207b760() {
     mUnk_48->SetCells(5, data_020a3274);
     mUnk_54 = new SelectWindowCursor(8, data_020a3688, -1);
     mUnk_58 = new SelectWindowCursor(2, data_020a3210.mCursor, -1);
-    if (mUnk_e0 == 5) {
+    if (mMode == 5) {
         ChangeDir("/Game/Deck/");
         screen.LoadCharacters("select_deck_b_obj_01.nce_ncg1D.bin", 0x1c000, 0);
         screen.LoadPalette("select_deck_b_obj_01_ncl.bin", 0xc0, 0);
         ChangeDir("/Game/Battle/Obj/");
         screen.LoadCharacters("battle_b_obj_wait.nce_ncg1D.bin", 0x1e000, 0);
         screen.LoadPalette("battle_b_obj_ability_ncl.bin", 0x100, 0);
-        mUnk_74[18]            = new CellAnimation("battle_b_obj_wait_nce.bin", 0, 1, 1);
-        mUnk_74[18]->mCharBase = screen.func_020276f4(0x1e000);
-        mUnk_74[18]->mUnk_11   = 8;
-        mUnk_74[18]->SetAnimation(0);
+        mSubScreenCellAnims[18]            = new CellAnimation("battle_b_obj_wait_nce.bin", 0, 1, 1);
+        mSubScreenCellAnims[18]->mCharBase = screen.func_020276f4(0x1e000);
+        mSubScreenCellAnims[18]->mUnk_11   = 8;
+        mSubScreenCellAnims[18]->SetAnimation(0);
         ChangeDir("/");
         mUnk_50 = new SelectWindow(2, data_020a31a0, 0);
         mUnk_50->SetCells(2, data_020a31d8);
@@ -1471,105 +1474,105 @@ void UnkStruct_02078e14::func_0207b760() {
     func_02025b64(1, 0, 0x200, "bakugan_s_000_ncl.bin", 0, 0, 0);
     func_02025b64(1, 0, 0, "bakugan_s_base_ncl.bin", 0, 0, 0);
     func_02025b64(1, 4, 0x12000, "bakugan_s_base.nce_ncg1D.bin", 0, 0, 0);
-    mUnk_74[14]            = new CellAnimation("bakugan_s_base_nce.bin", 0, 1, 1);
-    mUnk_74[14]->mCharBase = screen.func_020276f4(0x12000);
-    mUnk_74[14]->mUnk_11   = 0;
-    mUnk_74[14]->SetAnimation(0);
+    mSubScreenCellAnims[14]            = new CellAnimation("bakugan_s_base_nce.bin", 0, 1, 1);
+    mSubScreenCellAnims[14]->mCharBase = screen.func_020276f4(0x12000);
+    mSubScreenCellAnims[14]->mUnk_11   = 0;
+    mSubScreenCellAnims[14]->SetAnimation(0);
     ChangeDir("/Game/Card/Graphic/Small");
     func_02025b64(1, 0, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
     if (data_020d433c.mUnk_a8 == 0) {
         return;
     }
-    if (mUnk_1e8 != NULL) {
-        ((UnkStruct_02078290 *) mUnk_1e8)->func_020785d8(3);
+    if (mAntenna != NULL) {
+        ((AntennaIndicator *) mAntenna)->SetupLayout(3);
         return;
     }
-    mUnk_1e8 = (UnkObject_02078e14 *) new UnkStruct_02078290(3);
+    mAntenna = (UnkObject_02078e14 *) new AntennaIndicator(3);
 }
 
-void UnkStruct_02078e14::func_0207c568() {
+void ListScene::LoadMessages() {
     SpriteManager::Get().Screen(1).func_02027624(3);
     ChangeDir("/font/");
-    mUnk_0c    = func_02023504("mes_storecomment.mes", 0, 0, 0, 0, 0);
-    mUnk_10    = func_02023504("mes_BakuganNameShort.mes", 0, 0, 0, 0, 0);
-    mUnk_14    = func_02023504("mes_BakuganName.mes", 0, 0, 0, 0, 0);
-    mUnk_18    = func_02023504("mes_CardNameShort.mes", 0, 0, 0, 0, 0);
-    mUnk_1c    = func_02023504("mes_DeckSelect.mes", 0, 0, 0, 0, 0);
-    mUnk_20    = func_02023504("mes_Result.mes", 0, 0, 0, 0, 0);
-    mUnk_38[0] = TextManager::Get().BufferSize(0x18, 0x10);
-    mUnk_28[0] = OS_Alloc(mUnk_38[0]);
-    MI_CpuClear16(mUnk_28[0], mUnk_38[0]);
-    mUnk_40[0] = TextManager::Get().GlyphCount(6);
-    mUnk_30[0] = OS_Alloc((s16) mUnk_40[0] * (s16) 0xc);
-    TextManager::Get().Init(mUnk_30[0], 1, 0, 0x18, 0x10, 0x44);
+    mStorecommentMessages    = func_02023504("mes_storecomment.mes", 0, 0, 0, 0, 0);
+    mBakuganNameShortMessages    = func_02023504("mes_BakuganNameShort.mes", 0, 0, 0, 0, 0);
+    mBakuganNameMessages    = func_02023504("mes_BakuganName.mes", 0, 0, 0, 0, 0);
+    mCardNameShortMessages    = func_02023504("mes_CardNameShort.mes", 0, 0, 0, 0, 0);
+    mDeckSelectMessages    = func_02023504("mes_DeckSelect.mes", 0, 0, 0, 0, 0);
+    mResultMessages    = func_02023504("mes_Result.mes", 0, 0, 0, 0, 0);
+    mTextBufferSizes[0] = TextManager::Get().BufferSize(0x18, 0x10);
+    mTextBuffers[0] = OS_Alloc(mTextBufferSizes[0]);
+    MI_CpuClear16(mTextBuffers[0], mTextBufferSizes[0]);
+    mGlyphCounts[0] = TextManager::Get().GlyphCount(6);
+    mGlyphBuffers[0] = OS_Alloc((s16) mGlyphCounts[0] * (s16) 0xc);
+    TextManager::Get().Init(mGlyphBuffers[0], 1, 0, 0x18, 0x10, 0x44);
     TextManager::Get().SetColor(1, 0, 0xf);
     u8 *alphabet = (u8 *) func_02023504("mes_Alphabet.mes", 0, 0, 0, 0, 0);
     TextManager::Get();
     mUnk_24 = *(u16 *) (alphabet + *(u16 *) (alphabet + 2) + 0xb4);
     OS_Free(alphabet);
-    switch (mUnk_e0) {
+    switch (mMode) {
         case 0:
-            mUnk_1ec = new MessageWindow("mes_storecomment", 1, 0x1b000);
-            mUnk_1ec->func_02065890(0xb, 0, 1);
+            mMessageWindow = new MessageWindow("mes_storecomment", 1, 0x1b000);
+            mMessageWindow->func_02065890(0xb, 0, 1);
             break;
         case 1:
-            mUnk_1ec = new MessageWindow("mes_storecomment", 1, 0x1b000);
-            mUnk_1ec->func_02065890(0xd, 0, 1);
+            mMessageWindow = new MessageWindow("mes_storecomment", 1, 0x1b000);
+            mMessageWindow->func_02065890(0xd, 0, 1);
             break;
         case 2:
-            mUnk_1ec = new MessageWindow("mes_storecomment", 1, 0x1b000);
-            mUnk_1ec->func_02065890(0xc, 0, 1);
+            mMessageWindow = new MessageWindow("mes_storecomment", 1, 0x1b000);
+            mMessageWindow->func_02065890(0xc, 0, 1);
             break;
         case 3:
-            mUnk_1ec = new MessageWindow("mes_DeckSelect", 1, 0x1b000);
-            mUnk_1ec->func_02065890(6, 0, 1);
+            mMessageWindow = new MessageWindow("mes_DeckSelect", 1, 0x1b000);
+            mMessageWindow->func_02065890(6, 0, 1);
             break;
         case 5:
-            mUnk_1ec = new MessageWindow("mes_DeckSelect", 1, 0x1b000);
-            mUnk_1ec->func_02065890(5, 0, 1);
+            mMessageWindow = new MessageWindow("mes_DeckSelect", 1, 0x1b000);
+            mMessageWindow->func_02065890(5, 0, 1);
             break;
         case 4:
-            mUnk_1ec = new MessageWindow("mes_myroom", 1, 0x1b000);
-            mUnk_1ec->func_02065890(0x30, 0, 1);
+            mMessageWindow = new MessageWindow("mes_myroom", 1, 0x1b000);
+            mMessageWindow->func_02065890(0x30, 0, 1);
             break;
     }
-    if (mUnk_1ec != NULL) {
-        mUnk_1ec->func_02065bd4(0x14, 4, 0);
-        mUnk_1ec->func_02065be4(0xd8);
+    if (mMessageWindow != NULL) {
+        mMessageWindow->func_02065bd4(0x14, 4, 0);
+        mMessageWindow->func_02065be4(0xd8);
     }
 }
 
-void UnkStruct_02078e14::func_0207ca60() {
+void ListScene::PrintRows() {
     u8 i = 0;
-    func_0207cf84();
-    switch (mUnk_e0) {
+    ClearSubScreenText();
+    switch (mMode) {
         case 0:
             for (; i < 4; i++) {
-                s32 index = mUnk_fd + i;
-                if (index >= mUnk_fc) {
+                s32 index = mScroll + i;
+                if (index >= mItemCount) {
                     break;
                 }
-                u32 a = func_02086548((u8) mUnk_106[index], mUnk_104);
-                u32 b = func_02086570((u8) mUnk_106[index], mUnk_104);
-                func_02081d5c((u8) mUnk_106[mUnk_fd + i], i, a, b);
+                u32 a = func_02086548((u8) mItemIds[index], mUnk_104);
+                u32 b = func_02086570((u8) mItemIds[index], mUnk_104);
+                func_02081d5c((u8) mItemIds[mScroll + i], i, a, b);
             }
             break;
         case 1:
             for (; i < 4; i++) {
-                if (mUnk_fd + i >= mUnk_fc) {
+                if (mScroll + i >= mItemCount) {
                     break;
                 }
-                UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mUnk_106[mUnk_fd + i], mUnk_104);
-                u32 v = func_020231f4(data_020d43f0, 0, (u8) mUnk_106[mUnk_fd + i], mUnk_104);
-                func_02081d5c((u8) mUnk_106[mUnk_fd + i], i, v, (u8) entry->mUnk_00_0);
+                UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mItemIds[mScroll + i], mUnk_104);
+                u32 v = func_020231f4(data_020d43f0, 0, (u8) mItemIds[mScroll + i], mUnk_104);
+                func_02081d5c((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
             }
             break;
         case 2:
             for (; i < 4; i++) {
-                if (mUnk_fd + i >= mUnk_fc) {
+                if (mScroll + i >= mItemCount) {
                     break;
                 }
-                func_0208250c(mUnk_106[mUnk_fd + i], i);
+                func_0208250c(mItemIds[mScroll + i], i);
             }
             break;
         case 3:
@@ -1579,19 +1582,19 @@ void UnkStruct_02078e14::func_0207ca60() {
             }
             if (mUnk_e6 < 4) {
                 for (; i < 4; i++) {
-                    if (mUnk_fd + i >= mUnk_fc) {
+                    if (mScroll + i >= mItemCount) {
                         break;
                     }
-                    UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mUnk_106[mUnk_fd + i], mUnk_104);
-                    u32 v = func_020231f4(data_020d43f0, 0, (u8) mUnk_106[mUnk_fd + i], mUnk_104);
-                    func_02081d5c((u8) mUnk_106[mUnk_fd + i], i, v, (u8) entry->mUnk_00_0);
+                    UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mItemIds[mScroll + i], mUnk_104);
+                    u32 v = func_020231f4(data_020d43f0, 0, (u8) mItemIds[mScroll + i], mUnk_104);
+                    func_02081d5c((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
                 }
             } else {
                 for (; i < 4; i++) {
-                    if (mUnk_fd + i >= mUnk_fc) {
+                    if (mScroll + i >= mItemCount) {
                         break;
                     }
-                    func_0208250c(mUnk_106[mUnk_fd + i], i);
+                    func_0208250c(mItemIds[mScroll + i], i);
                 }
             }
             break;
@@ -1601,45 +1604,45 @@ void UnkStruct_02078e14::func_0207ca60() {
             }
             if (mUnk_e6 < 7) {
                 for (; i < 4; i++) {
-                    if (mUnk_fd + i >= mUnk_fc) {
+                    if (mScroll + i >= mItemCount) {
                         break;
                     }
-                    UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mUnk_106[mUnk_fd + i], mUnk_104);
-                    u32 v = func_020231f4(data_020d43f0, 0, (u8) mUnk_106[mUnk_fd + i], mUnk_104);
-                    func_02081d5c((u8) mUnk_106[mUnk_fd + i], i, v, (u8) entry->mUnk_00_0);
+                    UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mItemIds[mScroll + i], mUnk_104);
+                    u32 v = func_020231f4(data_020d43f0, 0, (u8) mItemIds[mScroll + i], mUnk_104);
+                    func_02081d5c((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
                 }
             } else {
                 for (; i < 4; i++) {
-                    if (mUnk_fd + i >= mUnk_fc) {
+                    if (mScroll + i >= mItemCount) {
                         break;
                     }
-                    func_0208250c(mUnk_106[mUnk_fd + i], i);
+                    func_0208250c(mItemIds[mScroll + i], i);
                 }
             }
             break;
     }
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, mUnk_28[0], mUnk_38[0], 0);
+    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, mTextBuffers[0], mTextBufferSizes[0], 0);
 }
 
-void UnkStruct_02078e14::func_0207ceb0() {
+void ListScene::DrawSubScreenText() {
     if (mUnk_1a1 != 0) {
         return;
     }
-    if (mUnk_1ec != NULL) {
-        mUnk_1ec->func_020658d0();
+    if (mMessageWindow != NULL) {
+        mMessageWindow->func_020658d0();
     }
-    SpriteManager::Get().Screen(1).func_02027778(mUnk_30[0], (u8) mUnk_40[0], 0x41, (s16) (mUnk_f8 + 0x48), 2, 0, 0xf, 0);
+    SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffers[0], (u8) mGlyphCounts[0], 0x41, (s16) (mUnk_f8 + 0x48), 2, 0, 0xf, 0);
 }
 
-void UnkStruct_02078e14::func_0207cf84() {
-    if (mUnk_28[0] != NULL) {
-        MI_CpuClear16(mUnk_28[0], mUnk_38[0]);
+void ListScene::ClearSubScreenText() {
+    if (mTextBuffers[0] != NULL) {
+        MI_CpuClear16(mTextBuffers[0], mTextBufferSizes[0]);
     }
 }
 
-void UnkStruct_02078e14::func_0207cfa4() {
+void ListScene::func_0207cfa4() {
     u32 act = 0;
-    if (mUnk_ec != 0 || mUnk_e7 != mUnk_e8 || mUnk_100 != 0 || mUnk_fb != mUnk_fa || mUnk_3ff != 0) {
+    if (mUnk_ec != 0 || mUnk_e7 != mUnk_e8 || mUnk_100 != 0 || mUnk_fb != mCursorItem || mUnk_3ff != 0) {
         return;
     }
     if (mUnk_e2 == 3) {
@@ -1773,7 +1776,7 @@ void UnkStruct_02078e14::func_0207cfa4() {
                     mUnk_e7                = mUnk_ea + cur;
                     mUnk_54->mSelection = 0;
                 } else {
-                    mUnk_fb = mUnk_fd + cur - 5;
+                    mUnk_fb = mScroll + cur - 5;
                 }
                 SoundManager::Get().func_020246f8(5);
             }
@@ -1783,24 +1786,24 @@ void UnkStruct_02078e14::func_0207cfa4() {
         switch (act) {
             case 1:
             case 8:
-                if (mUnk_fc == 0) {
+                if (mItemCount == 0) {
                     return;
                 }
                 mUnk_f0     = 0;
-                mUnk_3f9    = 1;
+                mWndMode    = 1;
                 mUnk_194[0] = 1;
                 func_02081128();
                 func_02081594();
-                if ((mUnk_e0 == 3 || mUnk_e0 == 5) && mUnk_e6 == 0) {
-                    func_02085460(-1);
+                if ((mMode == 3 || mMode == 5) && mUnk_e6 == 0) {
+                    SetMessage(-1);
                 }
                 SoundManager::Get().func_020246f8(0);
                 return;
             case 2:
-                if (mUnk_e0 == 5) {
-                    mUnk_e1 = 0xf;
+                if (mMode == 5) {
+                    mState = 0xf;
                 } else {
-                    mUnk_e1 = 0x2b;
+                    mState = 0x2b;
                 }
                 SoundManager::Get().func_020246f8(1);
                 return;
@@ -1824,15 +1827,15 @@ void UnkStruct_02078e14::func_0207cfa4() {
     } else {
         switch (act) {
             case 1:
-                if (mUnk_fc == 0) {
+                if (mItemCount == 0) {
                     return;
                 }
-                switch (mUnk_e0) {
+                switch (mMode) {
                     case 0:
-                        mUnk_1dc = func_020864ec((u8) mUnk_106[mUnk_fa], mUnk_104);
-                        if (data_020d43f0[0].mMoney < mUnk_1dc) {
+                        mPrice = GetPrice((u8) mItemIds[mCursorItem], mUnk_104);
+                        if (data_020d43f0[0].mMoney < mPrice) {
                             func_020834ec(this, 1);
-                        } else if (func_020231f4(data_020d43f0, 0, (u8) mUnk_106[mUnk_fa], mUnk_104) != 0) {
+                        } else if (func_020231f4(data_020d43f0, 0, (u8) mItemIds[mCursorItem], mUnk_104) != 0) {
                             func_020834ec(this, 3);
                         } else {
                             func_020834ec(this, 2);
@@ -1840,11 +1843,11 @@ void UnkStruct_02078e14::func_0207cfa4() {
                         SoundManager::Get().func_020246f8(0);
                         return;
                     case 1: {
-                        UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mUnk_106[mUnk_fa], mUnk_104);
-                        mUnk_1dc                  = func_02086224((u8) mUnk_106[mUnk_fa], mUnk_104);
+                        UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mItemIds[mCursorItem], mUnk_104);
+                        mPrice                  = func_02086224((u8) mItemIds[mCursorItem], mUnk_104);
                         if ((s32) entry->mUnk_00_0 >= 9) {
                             func_020834ec(this, 7);
-                        } else if (data_020d43f0[0].mMoney < mUnk_1dc) {
+                        } else if (data_020d43f0[0].mMoney < mPrice) {
                             func_020834ec(this, 1);
                         } else {
                             func_020834ec(this, 2);
@@ -1853,8 +1856,8 @@ void UnkStruct_02078e14::func_0207cfa4() {
                         return;
                     }
                     case 2:
-                        mUnk_1dc = Table_020a39fc()[mUnk_106[mUnk_fa]];
-                        if (data_020d43f0[0].mMoney < mUnk_1dc) {
+                        mPrice = Table_020a39fc()[mItemIds[mCursorItem]];
+                        if (data_020d43f0[0].mMoney < mPrice) {
                             func_020834ec(this, 1);
                         } else {
                             func_020834ec(this, 2);
@@ -1864,20 +1867,20 @@ void UnkStruct_02078e14::func_0207cfa4() {
                     case 3:
                     case 5:
                         if (mUnk_e6 == 0) {
-                            if (mUnk_fa == 0) {
+                            if (mCursorItem == 0) {
                                 func_020834ec(this, 8);
-                            } else if (mUnk_fa == 1) {
+                            } else if (mCursorItem == 1) {
                                 func_020834ec(this, 9);
                             }
                         } else if (mUnk_e6 < 4) {
-                            if (func_02082d00(1, (u8) mUnk_106[mUnk_fa], mUnk_104) == 0) {
-                                mUnk_3fc = (mUnk_fa - mUnk_fd) * 0x20 + 0x24;
+                            if (func_02082d00(1, (u8) mItemIds[mCursorItem], mUnk_104) == 0) {
+                                mUnk_3fc = (mCursorItem - mScroll) * 0x20 + 0x24;
                                 mUnk_3fe = mUnk_3fc / 8;
                                 mUnk_3ff = 1;
                             }
                         } else {
-                            if (func_02082d00(0, (u8) mUnk_106[mUnk_fa], 0) == 0) {
-                                mUnk_3fc = (mUnk_fa - mUnk_fd) * 0x20 + 0x24;
+                            if (func_02082d00(0, (u8) mItemIds[mCursorItem], 0) == 0) {
+                                mUnk_3fc = (mCursorItem - mScroll) * 0x20 + 0x24;
                                 mUnk_3fe = mUnk_3fc / 8;
                                 mUnk_3ff = 1;
                             }
@@ -1889,13 +1892,13 @@ void UnkStruct_02078e14::func_0207cfa4() {
             case 2:
             case 7:
                 mUnk_f0                = 1;
-                mUnk_3f9               = 2;
-                mUnk_186[mUnk_e6]      = mUnk_fa;
+                mWndMode               = 2;
+                mUnk_186[mUnk_e6]      = mCursorItem;
                 mUnk_194[0]            = 1;
                 func_02081128();
                 func_02081594();
-                if ((mUnk_e0 == 3 || mUnk_e0 == 5) && mUnk_e6 == 0) {
-                    func_02085460(-1);
+                if ((mMode == 3 || mMode == 5) && mUnk_e6 == 0) {
+                    SetMessage(-1);
                 }
                 if (act == 2) {
                     SoundManager::Get().func_020246f8(1);
@@ -1905,16 +1908,16 @@ void UnkStruct_02078e14::func_0207cfa4() {
                 return;
             case 3:
             case 4:
-                if ((mUnk_e0 == 3 || mUnk_e0 == 5) && mUnk_e6 != 0 && mUnk_e6 < 4) {
+                if ((mMode == 3 || mMode == 5) && mUnk_e6 != 0 && mUnk_e6 < 4) {
                     if (act == 3) {
                         mUnk_104 = (mUnk_104 + 5) % 6;
                     } else {
                         mUnk_104 = (mUnk_104 + 1) % 6;
                     }
-                    func_02080bdc(1);
-                    mUnk_fa     = 0;
+                    BuildList(1);
+                    mCursorItem     = 0;
                     mUnk_fb     = 0;
-                    mUnk_fd     = 0;
+                    mScroll     = 0;
                     mUnk_194[2] = 1;
                     mUnk_194[0] = 1;
                     func_02081128();
@@ -1923,22 +1926,22 @@ void UnkStruct_02078e14::func_0207cfa4() {
                 mUnk_f5 = 0;
                 return;
             case 5:
-                if (mUnk_fc <= 1) {
+                if (mItemCount <= 1) {
                     return;
                 }
-                if (mUnk_fa != 0) {
-                    mUnk_fb = mUnk_fa - 1;
+                if (mCursorItem != 0) {
+                    mUnk_fb = mCursorItem - 1;
                 } else {
-                    mUnk_fb = mUnk_fc - 1;
+                    mUnk_fb = mItemCount - 1;
                 }
                 SoundManager::Get().func_020246f8(5);
                 return;
             case 6:
-                if (mUnk_fc <= 1) {
+                if (mItemCount <= 1) {
                     return;
                 }
-                if (mUnk_fa < mUnk_fc - 1) {
-                    mUnk_fb = mUnk_fa + 1;
+                if (mCursorItem < mItemCount - 1) {
+                    mUnk_fb = mCursorItem + 1;
                 } else {
                     mUnk_fb = 0;
                 }
@@ -1948,19 +1951,19 @@ void UnkStruct_02078e14::func_0207cfa4() {
     }
 }
 
-void UnkStruct_02078e14::func_0207dea4() {
+void ListScene::func_0207dea4() {
     switch (mUnk_1a0) {
         case 1:
             mUnk_4c->mUnk_064 = 0;
-            if (mUnk_c0 != NULL) {
-                func_0205821c(mUnk_c0);
+            if (mCommandList != NULL) {
+                func_0205821c(mCommandList);
                 mContext->mUnk_12 = 0;
                 mUnk_400          = 1;
                 mUnk_1a0          = 3;
-            } else if (mUnk_c4 == NULL) {
+            } else if (mCommandPage == NULL) {
                 mUnk_1a0 = 2;
             } else {
-                func_02055624(mUnk_c4, 1);
+                func_02055624(mCommandPage, 1);
                 mContext->mUnk_12 = 0;
                 mUnk_401          = 1;
                 mUnk_1a0          = 3;
@@ -1975,11 +1978,11 @@ void UnkStruct_02078e14::func_0207dea4() {
             break;
         case 3:
             if (mContext->mUnk_12 != 0) {
-                if (mUnk_c0 != NULL) {
-                    mUnk_c0 = NULL;
+                if (mCommandList != NULL) {
+                    mCommandList = NULL;
                 }
-                if (mUnk_c4 != NULL) {
-                    mUnk_c4 = NULL;
+                if (mCommandPage != NULL) {
+                    mCommandPage = NULL;
                 }
                 mUnk_1a0 = 4;
             }
@@ -1992,7 +1995,7 @@ void UnkStruct_02078e14::func_0207dea4() {
     }
 }
 
-void UnkStruct_02078e14::func_0207e074() {
+void ListScene::func_0207e074() {
     if (mUnk_194[0] != 0) {
         mUnk_194[0] = 0;
         if (mUnk_e8 > mUnk_f4 && mUnk_f0 != 0) {
@@ -2015,14 +2018,14 @@ void UnkStruct_02078e14::func_0207e074() {
             }
         }
         for (u8 i = 5; i <= 7; i++) {
-            if (i - 5 >= mUnk_fc || mUnk_f0 != 0) {
+            if (i - 5 >= mItemCount || mUnk_f0 != 0) {
                 func_02081994(2, i, 0x8000);
             } else {
                 func_02081994(2, i, 8);
             }
         }
         func_02081994(0, 0, 8);
-        if (mUnk_fc < 2 || mUnk_f0 != 0) {
+        if (mItemCount < 2 || mUnk_f0 != 0) {
             func_02081994(0, 5, 0x8000);
             func_02081994(0, 6, 0x8000);
         } else {
@@ -2031,7 +2034,7 @@ void UnkStruct_02078e14::func_0207e074() {
             func_02081994(0, 6, 8);
             mUnk_4c->mCells[6]->func_02029fc0();
         }
-        switch (mUnk_e0) {
+        switch (mMode) {
             case 0:
             case 1:
             case 2:
@@ -2044,8 +2047,8 @@ void UnkStruct_02078e14::func_0207e074() {
                 if (mUnk_e6 != 0 && mUnk_e6 < 4 && mUnk_f0 == 0) {
                     func_02081994(0, 3, 8);
                     func_02081994(0, 4, 8);
-                    mUnk_74[7]->SetAnimation((mUnk_104 + 5) % 6 * 2 + 0x10);
-                    mUnk_74[8]->SetAnimation((mUnk_104 + 1) % 6 * 2 + 0x10);
+                    mSubScreenCellAnims[7]->SetAnimation((mUnk_104 + 5) % 6 * 2 + 0x10);
+                    mSubScreenCellAnims[8]->SetAnimation((mUnk_104 + 1) % 6 * 2 + 0x10);
                 } else {
                     func_02081994(0, 3, 0x8000);
                     func_02081994(0, 4, 0x8000);
@@ -2055,13 +2058,13 @@ void UnkStruct_02078e14::func_0207e074() {
         if (mUnk_f0 != 0) {
             mUnk_54->mSelection = 0;
         } else {
-            mUnk_54->mSelection = mUnk_fa - mUnk_fd + 5;
+            mUnk_54->mSelection = mCursorItem - mScroll + 5;
         }
     }
     mUnk_e2 = mUnk_4c->Update(0);
 }
 
-void UnkStruct_02078e14::func_0207e424() {
+void ListScene::func_0207e424() {
     switch (mUnk_f5) {
         case 2:
             if (InputManager::Get().IsDown(0x20) == 0 && mUnk_ec == 0) {
@@ -2136,33 +2139,33 @@ void UnkStruct_02078e14::func_0207e424() {
     }
 }
 
-void UnkStruct_02078e14::func_0207e7e4() {
+void ListScene::func_0207e7e4() {
     if (mUnk_f5 != 5 && mUnk_f5 != 7) {
         mUnk_f5 = 0;
     }
     mUnk_e6      = mUnk_e7;
     mUnk_194[2] = 1;
-    switch (mUnk_e0) {
+    switch (mMode) {
         case 0:
         case 1:
         case 2:
             mUnk_104 = mUnk_e6;
-            func_02080bdc(1);
+            BuildList(1);
             func_02081128();
             func_02081594();
             break;
         case 3:
         case 5:
-            func_02085460(-1);
+            SetMessage(-1);
             if (mUnk_e6 == 0) {
-                func_02080bdc(1);
+                BuildList(1);
                 if (mUnk_1a0 == 0) {
                     mUnk_1a0 = 1;
                 }
             } else if (mUnk_e6 < 4) {
                 mUnk_104 = mUnk_c8[mUnk_e6 + 8];
-                func_02080bdc(1);
-                if (mUnk_c0 == NULL || mUnk_400 != 0) {
+                BuildList(1);
+                if (mCommandList == NULL || mUnk_400 != 0) {
                     if (mUnk_1a0 == 0) {
                         mUnk_1a0 = 1;
                     }
@@ -2171,8 +2174,8 @@ void UnkStruct_02078e14::func_0207e7e4() {
                 }
             } else {
                 mUnk_104 = mUnk_e6 - 4;
-                func_02080bdc(1);
-                if (mUnk_c4 == NULL || mUnk_401 != 0) {
+                BuildList(1);
+                if (mCommandPage == NULL || mUnk_401 != 0) {
                     if (mUnk_1a0 == 0) {
                         mUnk_1a0 = 1;
                     }
@@ -2183,15 +2186,15 @@ void UnkStruct_02078e14::func_0207e7e4() {
             break;
         case 4:
             if (mUnk_e6 == 0) {
-                func_02080bdc(1);
+                BuildList(1);
                 if (mUnk_1a0 == 0) {
                     mUnk_1a0 = 1;
                 }
                 GXS_SetVisiblePlane(0x19);
             } else if (mUnk_e6 < 7) {
                 mUnk_104 = mUnk_e6 - 1;
-                func_02080bdc(1);
-                if (mUnk_c0 == NULL || mUnk_400 != 0) {
+                BuildList(1);
+                if (mCommandList == NULL || mUnk_400 != 0) {
                     if (mUnk_1a0 == 0) {
                         mUnk_1a0 = 1;
                     }
@@ -2201,8 +2204,8 @@ void UnkStruct_02078e14::func_0207e7e4() {
                 GXS_SetVisiblePlane(0x1d);
             } else {
                 mUnk_104 = mUnk_e6 - 7;
-                func_02080bdc(1);
-                if (mUnk_c4 == NULL || mUnk_401 != 0) {
+                BuildList(1);
+                if (mCommandPage == NULL || mUnk_401 != 0) {
                     if (mUnk_1a0 == 0) {
                         mUnk_1a0 = 1;
                     }
@@ -2215,60 +2218,60 @@ void UnkStruct_02078e14::func_0207e7e4() {
     }
 }
 
-void UnkStruct_02078e14::func_0207ea3c() {
-    if (mUnk_100 != 0 || mUnk_fb != mUnk_fa) {
-        if (mUnk_100 == 0 && mUnk_fd <= mUnk_fb && mUnk_fb < mUnk_fd + 3) {
-            mUnk_fa = mUnk_fb;
+void ListScene::func_0207ea3c() {
+    if (mUnk_100 != 0 || mUnk_fb != mCursorItem) {
+        if (mUnk_100 == 0 && mScroll <= mUnk_fb && mUnk_fb < mScroll + 3) {
+            mCursorItem = mUnk_fb;
             func_02081128();
             func_02081594();
-            func_02085460(-1);
+            SetMessage(-1);
             mUnk_194[0] = 1;
         } else if (func_020842a0() == 0) {
             u32 moved = 0;
             if (mUnk_100 == 0) {
                 mUnk_100 = 1;
-                if (mUnk_fb > mUnk_fa) {
-                    if (mUnk_fb - mUnk_fa > 1) {
-                        mUnk_fa = mUnk_fb;
-                        mUnk_fd = mUnk_fb;
-                        if (mUnk_fd >= mUnk_fc - 3) {
-                            mUnk_fd = mUnk_fc - 3;
+                if (mUnk_fb > mCursorItem) {
+                    if (mUnk_fb - mCursorItem > 1) {
+                        mCursorItem = mUnk_fb;
+                        mScroll = mUnk_fb;
+                        if (mScroll >= mItemCount - 3) {
+                            mScroll = mItemCount - 3;
                         }
                         moved   = 1;
                     } else {
-                        func_02081c2c((u8) mUnk_106[mUnk_fd + 3], (u8) ((mUnk_fd + 3) % 4), 2);
-                        func_020823d8(mUnk_106[mUnk_fd + 3], (u8) ((mUnk_fd + 3) % 4), 2);
+                        func_02081c2c((u8) mItemIds[mScroll + 3], (u8) ((mScroll + 3) % 4), 2);
+                        func_020823d8(mItemIds[mScroll + 3], (u8) ((mScroll + 3) % 4), 2);
                     }
                 } else {
-                    if (mUnk_fa - mUnk_fb > 1) {
-                        mUnk_fa = mUnk_fb;
-                        mUnk_fd = mUnk_fb;
-                        if (mUnk_fd >= mUnk_fc - 3) {
-                            mUnk_fd = mUnk_fc - 3;
+                    if (mCursorItem - mUnk_fb > 1) {
+                        mCursorItem = mUnk_fb;
+                        mScroll = mUnk_fb;
+                        if (mScroll >= mItemCount - 3) {
+                            mScroll = mItemCount - 3;
                         }
                         moved   = 1;
                     } else {
                         mUnk_f8 = -0x20;
-                        mUnk_fd--;
-                        mUnk_fa--;
-                        func_02081c2c((u8) mUnk_106[mUnk_fd], (u8) (mUnk_fd % 4), 2);
-                        func_020823d8(mUnk_106[mUnk_fd], (u8) (mUnk_fd % 4), 2);
-                        func_0207ca60();
+                        mScroll--;
+                        mCursorItem--;
+                        func_02081c2c((u8) mItemIds[mScroll], (u8) (mScroll % 4), 2);
+                        func_020823d8(mItemIds[mScroll], (u8) (mScroll % 4), 2);
+                        PrintRows();
                     }
                 }
             }
             if (moved == 0) {
-                if (mUnk_fb > mUnk_fa) {
+                if (mUnk_fb > mCursorItem) {
                     mUnk_f8 -= 8;
                 } else {
                     mUnk_f8 += 8;
                 }
                 if (mUnk_f8 >= 0 || mUnk_f8 <= -0x20) {
                     mUnk_100 = 0;
-                    if (mUnk_fb > mUnk_fa) {
-                        mUnk_fd++;
-                        mUnk_fa++;
-                        func_0207ca60();
+                    if (mUnk_fb > mCursorItem) {
+                        mScroll++;
+                        mCursorItem++;
+                        PrintRows();
                     }
                     mUnk_f8 = 0;
                     func_02081128();
@@ -2290,15 +2293,15 @@ void UnkStruct_02078e14::func_0207ea3c() {
             func_02080898();
             mUnk_194[2] = 0;
         }
-        func_0207ca60();
+        PrintRows();
     }
 }
 
-void UnkStruct_02078e14::func_0207ed3c() {
-    if (mUnk_3f8 == mUnk_3f9) {
+void ListScene::ApplyWndMode() {
+    if (mAppliedWndMode == mWndMode) {
         return;
     }
-    switch (mUnk_3f9) {
+    switch (mWndMode) {
         case 0:
             GXS_SetVisibleWnd(0);
             G2S_SetWndOutsidePlane(0x1f, FALSE);
@@ -2325,18 +2328,18 @@ void UnkStruct_02078e14::func_0207ed3c() {
             G2S_SetBlendBrightness(0x1f, -8);
             break;
     }
-    mUnk_3f8 = mUnk_3f9;
+    mAppliedWndMode = mWndMode;
 }
 
-void UnkStruct_02078e14::func_0207eec4() {
-    if (mUnk_c0 != NULL || mUnk_c4 != NULL) {
+void ListScene::func_0207eec4() {
+    if (mCommandList != NULL || mCommandPage != NULL) {
         return;
     }
     if (mUnk_1a0 > 2) {
         return;
     }
     u8 i = 0;
-    switch (mUnk_e0) {
+    switch (mMode) {
         case 3:
         case 5:
             if (mUnk_5c[0] != NULL) {
@@ -2375,7 +2378,7 @@ void UnkStruct_02078e14::func_0207eec4() {
             if (mUnk_5c[3] != NULL) {
                 mUnk_5c[3]->func_0202a3ec(0, 1, 0x80, 0x60, 0);
             }
-            func_020831f4();
+            DrawMainScreenText();
             if (mUnk_5c[2] == NULL) {
                 return;
             }
@@ -2391,7 +2394,7 @@ void UnkStruct_02078e14::func_0207eec4() {
     }
 }
 
-void UnkStruct_02078e14::func_0207f2f0() {
+void ListScene::DrawWindows() {
     if (mUnk_4c != NULL) {
         mUnk_4c->Draw();
     }
@@ -2403,12 +2406,12 @@ void UnkStruct_02078e14::func_0207f2f0() {
     }
 }
 
-void UnkStruct_02078e14::func_0207f32c() {
+void ListScene::func_0207f32c() {
     if (mUnk_3ff != 0) {
         if (mUnk_e6 < 4) {
-            func_02081a74(mUnk_104, (u8) (mUnk_fa % 4), 4, 0x1d, mUnk_3fc + 0x25);
+            func_02081a74(mUnk_104, (u8) (mCursorItem % 4), 4, 0x1d, mUnk_3fc + 0x25);
         } else {
-            func_02082264(mUnk_104, (u8) (mUnk_fa % 4), 4, 0x20, mUnk_3fc + 0x24);
+            func_02082264(mUnk_104, (u8) (mCursorItem % 4), 4, 0x20, mUnk_3fc + 0x24);
         }
     }
     u8 limit = 6;
@@ -2420,19 +2423,19 @@ void UnkStruct_02078e14::func_0207f32c() {
         if (mUnk_ea + i >= mUnk_e9) {
             break;
         }
-        switch (mUnk_e0) {
+        switch (mMode) {
             case 0:
             case 1:
-                mUnk_74[4]->func_0202a3ec(1, (u8) (mUnk_ea + i), mUnk_e4 + 0x1e + i * 0x2c, 0x26, 1);
+                mSubScreenCellAnims[4]->func_0202a3ec(1, (u8) (mUnk_ea + i), mUnk_e4 + 0x1e + i * 0x2c, 0x26, 1);
                 break;
             case 2:
-                mUnk_74[5]->func_0202a3ec(1, (u8) (mUnk_ea + i), mUnk_e4 + 0x20 + i * 0x2c, 0x24, 1);
+                mSubScreenCellAnims[5]->func_0202a3ec(1, (u8) (mUnk_ea + i), mUnk_e4 + 0x20 + i * 0x2c, 0x24, 1);
                 break;
             case 3:
             case 5:
                 if ((mUnk_ea + i) == 0) {
-                    mUnk_74[10]->SetAnimation(0x1d);
-                    mUnk_74[10]->Draw(1, (s16) (mUnk_e4 + 0x19 + i * 0x2c), 0x21, 1);
+                    mSubScreenCellAnims[10]->SetAnimation(0x1d);
+                    mSubScreenCellAnims[10]->Draw(1, (s16) (mUnk_e4 + 0x19 + i * 0x2c), 0x21, 1);
                 } else if ((mUnk_ea + i) < 4) {
                     if (mUnk_3f4 == 0 || (mUnk_ea + i) == 1) {
                         func_02081a74((u8) mUnk_c8[(mUnk_ea + i) + 8], (u8) ((mUnk_ea + i) - 1), 1, mUnk_e4 + 0x1d + i * 0x2c, 0x25);
@@ -2443,115 +2446,115 @@ void UnkStruct_02078e14::func_0207f32c() {
                 break;
             case 4:
                 if ((mUnk_ea + i) == 0) {
-                    mUnk_74[10]->SetAnimation(0x20);
-                    mUnk_74[10]->Draw(1, (s16) (mUnk_e4 + 0x19 + i * 0x2c), 0x21, 1);
+                    mSubScreenCellAnims[10]->SetAnimation(0x20);
+                    mSubScreenCellAnims[10]->Draw(1, (s16) (mUnk_e4 + 0x19 + i * 0x2c), 0x21, 1);
                 } else if ((mUnk_ea + i) < 7) {
-                    mUnk_74[4]->func_0202a3ec(1, (u8) ((mUnk_ea + i) - 1), mUnk_e4 + 0x1e + i * 0x2c, 0x26, 1);
+                    mSubScreenCellAnims[4]->func_0202a3ec(1, (u8) ((mUnk_ea + i) - 1), mUnk_e4 + 0x1e + i * 0x2c, 0x26, 1);
                 } else {
-                    mUnk_74[5]->func_0202a3ec(1, (u8) ((mUnk_ea + i) - 7), mUnk_e4 + 0x20 + i * 0x2c, 0x24, 1);
+                    mSubScreenCellAnims[5]->func_0202a3ec(1, (u8) ((mUnk_ea + i) - 7), mUnk_e4 + 0x20 + i * 0x2c, 0x24, 1);
                 }
                 break;
         }
         i++;
     } while (i < limit);
-    mUnk_74[0]->Draw(1, 0x80, 0x60, 1);
-    switch (mUnk_e0) {
+    mSubScreenCellAnims[0]->Draw(1, 0x80, 0x60, 1);
+    switch (mMode) {
         case 0:
         case 1:
-            mUnk_74[1]->func_0202a3ec(1, 1, mUnk_e4 + 0x14 - mUnk_ea * 0x2c, 0x22, 1);
+            mSubScreenCellAnims[1]->func_0202a3ec(1, 1, mUnk_e4 + 0x14 - mUnk_ea * 0x2c, 0x22, 1);
             break;
         case 2:
-            mUnk_74[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x14 - mUnk_ea * 0x2c, 0x22, 1);
-            mUnk_74[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x98 - mUnk_ea * 0x2c, 0x22, 1);
+            mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x14 - mUnk_ea * 0x2c, 0x22, 1);
+            mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x98 - mUnk_ea * 0x2c, 0x22, 1);
             break;
         case 3:
         case 5:
             if (mUnk_ea < 6) {
-                mUnk_74[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x40 - mUnk_ea * 0x2c, 0x22, 1);
+                mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x40 - mUnk_ea * 0x2c, 0x22, 1);
             }
-            mUnk_74[1]->func_0202a3ec(1, 0, mUnk_e4 + 0xc4 - mUnk_ea * 0x2c, 0x22, 1);
+            mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0xc4 - mUnk_ea * 0x2c, 0x22, 1);
             if (mUnk_ea != 0) {
-                mUnk_74[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x148 - mUnk_ea * 0x2c, 0x22, 1);
+                mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x148 - mUnk_ea * 0x2c, 0x22, 1);
             }
             break;
         case 4:
             if (mUnk_ea < 8) {
-                mUnk_74[1]->func_0202a3ec(1, 1, mUnk_e4 + 0x40 - mUnk_ea * 0x2c, 0x22, 1);
+                mSubScreenCellAnims[1]->func_0202a3ec(1, 1, mUnk_e4 + 0x40 - mUnk_ea * 0x2c, 0x22, 1);
             }
             if (mUnk_ea != 0) {
-                mUnk_74[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x148 - mUnk_ea * 0x2c, 0x22, 1);
+                mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x148 - mUnk_ea * 0x2c, 0x22, 1);
             }
             if (mUnk_ea > 3) {
-                mUnk_74[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x1cc - mUnk_ea * 0x2c, 0x22, 1);
+                mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x1cc - mUnk_ea * 0x2c, 0x22, 1);
             }
             break;
     }
 }
 
-void UnkStruct_02078e14::func_0207f90c() {
-    if (mUnk_e0 == 4 && mUnk_e6 == 0) {
+void ListScene::func_0207f90c() {
+    if (mMode == 4 && mUnk_e6 == 0) {
         return;
     }
-    mUnk_74[15]->Update();
+    mSubScreenCellAnims[15]->Update();
     u8 count = 4;
     u8 i     = 0;
     if (mUnk_100 == 0) {
         count--;
     }
     do {
-        if (mUnk_fd + i >= mUnk_fc) {
-            if (mUnk_fc == 0 && i == 0) {
-                mUnk_74[12]->SetAnimation(0x21);
-                mUnk_74[12]->Draw(1, 0x71, (s16) (mUnk_f8 + 0x4b + i * 32), 2);
+        if (mScroll + i >= mItemCount) {
+            if (mItemCount == 0 && i == 0) {
+                mSubScreenCellAnims[12]->SetAnimation(0x21);
+                mSubScreenCellAnims[12]->Draw(1, 0x71, (s16) (mUnk_f8 + 0x4b + i * 32), 2);
             }
         } else {
-            switch (mUnk_e0) {
+            switch (mMode) {
                 case 0:
-                    if (func_020231f4(data_020d43f0, 0, (u8) mUnk_106[mUnk_fd + i], mUnk_104) == 0) {
-                        mUnk_74[15]->Draw(1, 0x19, (s16) (mUnk_f8 + 0x5b + i * 32), 2);
+                    if (func_020231f4(data_020d43f0, 0, (u8) mItemIds[mScroll + i], mUnk_104) == 0) {
+                        mSubScreenCellAnims[15]->Draw(1, 0x19, (s16) (mUnk_f8 + 0x5b + i * 32), 2);
                     }
-                    func_02081a74(mUnk_104, (u8) ((mUnk_fd + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
-                    func_020816ec(func_020864ec((u8) mUnk_106[mUnk_fd + i], mUnk_104), i);
+                    func_02081a74(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
+                    func_020816ec(GetPrice((u8) mItemIds[mScroll + i], mUnk_104), i);
                     break;
                 case 1:
-                    func_02081a74(mUnk_104, (u8) ((mUnk_fd + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
-                    func_020816ec(func_02086224((u8) mUnk_106[mUnk_fd + i], mUnk_104), i);
-                    if (func_02082d00(1, (u8) mUnk_106[mUnk_fd + i], mUnk_104) != 0) {
-                        mUnk_74[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
+                    func_02081a74(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
+                    func_020816ec(func_02086224((u8) mItemIds[mScroll + i], mUnk_104), i);
+                    if (func_02082d00(1, (u8) mItemIds[mScroll + i], mUnk_104) != 0) {
+                        mSubScreenCellAnims[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
                     }
                     break;
                 case 2:
-                    func_02082264(mUnk_104, (u8) ((mUnk_fd + i) % 4), 2, 0x20, mUnk_f8 + 0x48 + i * 32);
-                    func_020816ec(Table_020a39fc()[mUnk_106[mUnk_fd + i]], i);
+                    func_02082264(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x20, mUnk_f8 + 0x48 + i * 32);
+                    func_020816ec(Table_020a39fc()[mItemIds[mScroll + i]], i);
                     break;
                 case 3:
                 case 5:
                     if (mUnk_e6 == 0) {
-                        mUnk_74[11]->func_0202a3ec(1, (u8) (i + 1), 0x19, mUnk_f8 + 0x45 + i * 32, 2);
-                        mUnk_74[12]->SetAnimation(0x1f);
-                        mUnk_74[12]->func_0202a3ec(1, (u8) (i + 1), 0x71, mUnk_f8 + 0x4b + i * 32, 2);
+                        mSubScreenCellAnims[11]->func_0202a3ec(1, (u8) (i + 1), 0x19, mUnk_f8 + 0x45 + i * 32, 2);
+                        mSubScreenCellAnims[12]->SetAnimation(0x1f);
+                        mSubScreenCellAnims[12]->func_0202a3ec(1, (u8) (i + 1), 0x71, mUnk_f8 + 0x4b + i * 32, 2);
                     } else if (mUnk_e6 < 4) {
-                        func_02081a74(mUnk_104, (u8) ((mUnk_fd + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
-                        if (func_02082d00(1, (u8) mUnk_106[mUnk_fd + i], mUnk_104) != 0) {
-                            mUnk_74[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
+                        func_02081a74(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
+                        if (func_02082d00(1, (u8) mItemIds[mScroll + i], mUnk_104) != 0) {
+                            mSubScreenCellAnims[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
                         }
                     } else {
-                        func_02082264(mUnk_104, (u8) ((mUnk_fd + i) % 4), 2, 0x20, mUnk_f8 + 0x48 + i * 32);
-                        if (func_02082d00(0, (u8) mUnk_106[mUnk_fd + i], 0) != 0) {
-                            mUnk_74[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
+                        func_02082264(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x20, mUnk_f8 + 0x48 + i * 32);
+                        if (func_02082d00(0, (u8) mItemIds[mScroll + i], 0) != 0) {
+                            mSubScreenCellAnims[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
                         }
                     }
                     break;
                 case 4:
                     if (mUnk_e6 < 7) {
-                        func_02081a74(mUnk_104, (u8) ((mUnk_fd + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
-                        if (func_02082d00(1, (u8) mUnk_106[mUnk_fd + i], mUnk_104) != 0) {
-                            mUnk_74[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
+                        func_02081a74(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
+                        if (func_02082d00(1, (u8) mItemIds[mScroll + i], mUnk_104) != 0) {
+                            mSubScreenCellAnims[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
                         }
                     } else {
-                        func_02082264(mUnk_104, (u8) ((mUnk_fd + i) % 4), 2, 0x20, mUnk_f8 + 0x48 + i * 32);
-                        if (func_02082d00(0, (u8) mUnk_106[mUnk_fd + i], 0) != 0) {
-                            mUnk_74[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
+                        func_02082264(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x20, mUnk_f8 + 0x48 + i * 32);
+                        if (func_02082d00(0, (u8) mItemIds[mScroll + i], 0) != 0) {
+                            mSubScreenCellAnims[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
                         }
                     }
                     break;
@@ -2559,38 +2562,38 @@ void UnkStruct_02078e14::func_0207f90c() {
         }
         i++;
     } while (i < count);
-    if ((mUnk_e0 == 3 || mUnk_e0 == 5) && mUnk_e6 == 0) {
+    if ((mMode == 3 || mMode == 5) && mUnk_e6 == 0) {
         return;
     }
     func_0207ff54();
 }
 
-void UnkStruct_02078e14::func_0207ff54() {
+void ListScene::func_0207ff54() {
     s16 x = 0xb7;
-    u8 a  = mUnk_fa + 1;
-    if (mUnk_fc == 0) {
+    u8 a  = mCursorItem + 1;
+    if (mItemCount == 0) {
         a = 0;
     }
-    mUnk_74[13]->SetAnimation(0);
+    mSubScreenCellAnims[13]->SetAnimation(0);
     if (a >= 10) {
-        mUnk_74[13]->func_0202a3ec(1, (u8) (a / 10), 0xb7, 0xaf, 1);
+        mSubScreenCellAnims[13]->func_0202a3ec(1, (u8) (a / 10), 0xb7, 0xaf, 1);
     }
     x += 6;
-    mUnk_74[13]->func_0202a3ec(1, (u8) (a % 10), x, 0xaf, 1);
-    mUnk_74[13]->SetAnimation(2);
+    mSubScreenCellAnims[13]->func_0202a3ec(1, (u8) (a % 10), x, 0xaf, 1);
+    mSubScreenCellAnims[13]->SetAnimation(2);
     x += 6;
-    mUnk_74[13]->Draw(1, x, 0xaf, 1);
-    mUnk_74[13]->SetAnimation(0);
+    mSubScreenCellAnims[13]->Draw(1, x, 0xaf, 1);
+    mSubScreenCellAnims[13]->SetAnimation(0);
     x += 6;
-    if (mUnk_fc >= 10) {
-        mUnk_74[13]->func_0202a3ec(1, (u8) (mUnk_fc / 10), x, 0xaf, 1);
+    if (mItemCount >= 10) {
+        mSubScreenCellAnims[13]->func_0202a3ec(1, (u8) (mItemCount / 10), x, 0xaf, 1);
     }
-    mUnk_74[13]->func_0202a3ec(1, (u8) (mUnk_fc % 10), x + 6, 0xaf, 1);
-    mUnk_74[2]->Draw(1, 0xaf, 0xaa, 1);
+    mSubScreenCellAnims[13]->func_0202a3ec(1, (u8) (mItemCount % 10), x + 6, 0xaf, 1);
+    mSubScreenCellAnims[2]->Draw(1, 0xaf, 0xaa, 1);
 }
 
-void UnkStruct_02078e14::func_02080104() {
-    switch (mUnk_e0) {
+void ListScene::func_02080104() {
+    switch (mMode) {
         case 0:
         case 1:
         case 2:
@@ -2599,35 +2602,35 @@ void UnkStruct_02078e14::func_02080104() {
         case 3:
         case 5:
             if (mUnk_4c->mButtons[3].mEnabled != 0) {
-                mUnk_74[7]->Update();
-                mUnk_74[7]->Draw(1, 5, 0x6c, 1);
+                mSubScreenCellAnims[7]->Update();
+                mSubScreenCellAnims[7]->Draw(1, 5, 0x6c, 1);
             }
             if (mUnk_4c->mButtons[4].mEnabled != 0) {
-                mUnk_74[8]->Update();
-                mUnk_74[8]->Draw(1, 0xed, 0x6c, 1);
+                mSubScreenCellAnims[8]->Update();
+                mSubScreenCellAnims[8]->Draw(1, 0xed, 0x6c, 1);
             }
             break;
     }
-    mUnk_74[3]->Update();
+    mSubScreenCellAnims[3]->Update();
     if (mUnk_f0 != 0) {
-        mUnk_74[3]->Draw(1, 0x19, 0x21, 1);
+        mSubScreenCellAnims[3]->Draw(1, 0x19, 0x21, 1);
     } else {
-        mUnk_74[3]->Draw(1, 0x19, (s16) ((mUnk_fa - mUnk_fd) * 32 + 0x45), 1);
+        mSubScreenCellAnims[3]->Draw(1, 0x19, (s16) ((mCursorItem - mScroll) * 32 + 0x45), 1);
     }
 }
 
-void UnkStruct_02078e14::func_02080210() {
-    if (mUnk_1f1 != 0x15) {
+void ListScene::func_02080210() {
+    if (mCharacterId != 0x15) {
         for (u8 i = 0; i < 3; i++) {
-            u8 *entry = (u8 *) ((u32 *) data_020d433c.mBattlePlayers)[mUnk_1f0 + 3] + 0xc + i * 12;
+            u8 *entry = (u8 *) ((u32 *) data_020d433c.mBattlePlayers)[mPlayer + 3] + 0xc + i * 12;
             mUnk_c8[i] = entry[8];
             mUnk_c8[9 + i] = entry[9];
         }
         for (u8 i = 0; i < 3; i++) {
-            mUnk_c8[3 + i] = *(u16 *) ((u8 *) ((u32 *) data_020d433c.mBattlePlayers)[mUnk_1f0 + 3] + i * 4 + 0x54);
+            mUnk_c8[3 + i] = *(u16 *) ((u8 *) ((u32 *) data_020d433c.mBattlePlayers)[mPlayer + 3] + i * 4 + 0x54);
         }
         for (u8 i = 0; i < 3; i++) {
-            mUnk_c8[6 + i] = *(u16 *) ((u8 *) ((u32 *) data_020d433c.mBattlePlayers)[mUnk_1f0 + 3] + i * 4 + 0x6c);
+            mUnk_c8[6 + i] = *(u16 *) ((u8 *) ((u32 *) data_020d433c.mBattlePlayers)[mPlayer + 3] + i * 4 + 0x6c);
         }
     } else {
         for (u8 i = 0; i < 3; i++) {
@@ -2643,24 +2646,24 @@ void UnkStruct_02078e14::func_02080210() {
     }
 }
 
-void UnkStruct_02078e14::func_0208038c() {
-    switch (mUnk_e0) {
+void ListScene::func_0208038c() {
+    switch (mMode) {
         case 0:
         case 1:
-            if (mUnk_c0 != NULL) {
+            if (mCommandList != NULL) {
                 return;
             }
-            mUnk_c0 = new BattleCommandList(0, 0, -1, 0);
-            func_02058404(mUnk_c0, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
+            mCommandList = new BattleCommandList(0, 0, -1, 0);
+            func_02058404(mCommandList, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
             mUnk_400 = 0;
             func_02081128();
             break;
         case 2:
-            if (mUnk_c4 != NULL) {
+            if (mCommandPage != NULL) {
                 return;
             }
-            mUnk_c4 = new BattleCommandPage(0, -1);
-            func_02055764(mUnk_c4, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
+            mCommandPage = new BattleCommandPage(0, -1);
+            func_02055764(mCommandPage, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
             mUnk_401 = 0;
             func_02081594();
             break;
@@ -2679,20 +2682,20 @@ void UnkStruct_02078e14::func_0208038c() {
                 return;
             }
             if (mUnk_e6 < 4) {
-                if (mUnk_c0 != NULL) {
+                if (mCommandList != NULL) {
                     return;
                 }
-                mUnk_c0 = new BattleCommandList(0, 0, -1, 0);
-                func_02058404(mUnk_c0, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
+                mCommandList = new BattleCommandList(0, 0, -1, 0);
+                func_02058404(mCommandList, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
                 mUnk_400 = 0;
                 func_02081128();
                 return;
             }
-            if (mUnk_c4 != NULL) {
+            if (mCommandPage != NULL) {
                 return;
             }
-            mUnk_c4 = new BattleCommandPage(0, -1);
-            func_02055764(mUnk_c4, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
+            mCommandPage = new BattleCommandPage(0, -1);
+            func_02055764(mCommandPage, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
             mUnk_401 = 0;
             func_02081594();
             return;
@@ -2703,29 +2706,29 @@ void UnkStruct_02078e14::func_0208038c() {
                 return;
             }
             if (mUnk_e6 < 7) {
-                if (mUnk_c0 != NULL) {
+                if (mCommandList != NULL) {
                     return;
                 }
-                mUnk_c0 = new BattleCommandList(0, 0, -1, 0);
-                func_02058404(mUnk_c0, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
+                mCommandList = new BattleCommandList(0, 0, -1, 0);
+                func_02058404(mCommandList, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
                 mUnk_400 = 0;
                 func_02081128();
                 return;
             }
-            if (mUnk_c4 != NULL) {
+            if (mCommandPage != NULL) {
                 return;
             }
-            mUnk_c4 = new BattleCommandPage(0, -1);
-            func_02055764(mUnk_c4, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
+            mCommandPage = new BattleCommandPage(0, -1);
+            func_02055764(mCommandPage, 0x1d000, 0, 0xc0, 0x14, 0xe0, 0x14, 0);
             mUnk_401 = 0;
             func_02081594();
             break;
     }
 }
 
-void UnkStruct_02078e14::func_020807cc() {
+void ListScene::func_020807cc() {
     SpriteManager::Get();
-    if (mUnk_e0 != 3 && mUnk_e0 != 5) {
+    if (mMode != 3 && mMode != 5) {
         return;
     }
     for (u8 i = 0; i < 9; i++) {
@@ -2737,25 +2740,25 @@ void UnkStruct_02078e14::func_020807cc() {
     }
 }
 
-void UnkStruct_02078e14::func_02080898() {
+void ListScene::func_02080898() {
     SpriteManager::Get();
     u8 i = 0;
-    switch (mUnk_e0) {
+    switch (mMode) {
         case 0:
         case 1:
             for (; i < 3; i++) {
-                if (mUnk_fd + i >= mUnk_fc) {
+                if (mScroll + i >= mItemCount) {
                     return;
                 }
-                func_02081c2c((u8) mUnk_106[mUnk_fd + i], (u8) ((mUnk_fd + i) % 4), 2);
+                func_02081c2c((u8) mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
             }
             break;
         case 2:
             for (; i < 3; i++) {
-                if (mUnk_fd + i >= mUnk_fc) {
+                if (mScroll + i >= mItemCount) {
                     return;
                 }
-                func_020823d8(mUnk_106[mUnk_fd + i], (u8) ((mUnk_fd + i) % 4), 2);
+                func_020823d8(mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
             }
             break;
         case 3:
@@ -2765,17 +2768,17 @@ void UnkStruct_02078e14::func_02080898() {
             }
             if (mUnk_e6 < 4) {
                 for (; i < 3; i++) {
-                    if (mUnk_fd + i >= mUnk_fc) {
+                    if (mScroll + i >= mItemCount) {
                         return;
                     }
-                    func_02081c2c((u8) mUnk_106[mUnk_fd + i], (u8) ((mUnk_fd + i) % 4), 2);
+                    func_02081c2c((u8) mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
                 }
             } else {
                 for (; i < 3; i++) {
-                    if (mUnk_fd + i >= mUnk_fc) {
+                    if (mScroll + i >= mItemCount) {
                         return;
                     }
-                    func_020823d8(mUnk_106[mUnk_fd + i], (u8) ((mUnk_fd + i) % 4), 2);
+                    func_020823d8(mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
                 }
             }
             break;
@@ -2785,24 +2788,24 @@ void UnkStruct_02078e14::func_02080898() {
             }
             if (mUnk_e6 < 7) {
                 for (; i < 3; i++) {
-                    if (mUnk_fd + i >= mUnk_fc) {
+                    if (mScroll + i >= mItemCount) {
                         return;
                     }
-                    func_02081c2c((u8) mUnk_106[mUnk_fd + i], (u8) ((mUnk_fd + i) % 4), 2);
+                    func_02081c2c((u8) mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
                 }
             } else {
                 for (; i < 3; i++) {
-                    if (mUnk_fd + i >= mUnk_fc) {
+                    if (mScroll + i >= mItemCount) {
                         return;
                     }
-                    func_020823d8(mUnk_106[mUnk_fd + i], (u8) ((mUnk_fd + i) % 4), 2);
+                    func_020823d8(mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
                 }
             }
             break;
     }
 }
 
-BOOL UnkStruct_02078e14::func_02080b48(u32 unk1, u32 unk2) {
+BOOL ListScene::func_02080b48(u32 unk1, u32 unk2) {
     BOOL result = FALSE;
     if (unk1 == 0x22) {
         if (unk2 == 0) {
@@ -2824,28 +2827,30 @@ BOOL UnkStruct_02078e14::func_02080b48(u32 unk1, u32 unk2) {
     return result;
 }
 
-void UnkStruct_02078e14::func_02080bdc(u32 unk1) {
+// Fills mItemIds for the mode and sorts it, then puts the cursor back (mUnk_186[mUnk_e6], or the stored selection in
+// modes 3/5) and clamps mScroll; unk1 != 0 scrolls to the cursor. Page 0 of modes 3/5 sets mItemCount = 2 with no ids.
+void ListScene::BuildList(u32 unk1) {
     u8 i = 0;
-    mUnk_fc = 0;
-    switch (mUnk_e0) {
+    mItemCount = 0;
+    switch (mMode) {
         case 0:
         case 1:
-            if (mUnk_e0 == 0) {
+            if (mMode == 0) {
                 for (; i < 0x29; i++) {
                     if (TestFlagBit(data_020d4976, i) && data_020a3768[i][mUnk_104] != 0 && func_02080b48(i, mUnk_104)) {
-                        mUnk_106[mUnk_fc] = i;
-                        mUnk_fc++;
+                        mItemIds[mItemCount] = i;
+                        mItemCount++;
                     }
                 }
                 if (!(data_020d43f0[0].mUnk_586[4] & 4) && mUnk_104 == 0 && data_020d43f0[0].mUnk_5d2 != 0) {
-                    mUnk_106[mUnk_fc] = 0x22;
-                    mUnk_fc++;
+                    mItemIds[mItemCount] = 0x22;
+                    mItemCount++;
                 }
-            } else if (mUnk_e0 == 1) {
+            } else if (mMode == 1) {
                 for (; i < 0x29; i++) {
                     if (func_020231f4(data_020d43f0, 0, i, mUnk_104) != 0) {
-                        mUnk_106[mUnk_fc] = i;
-                        mUnk_fc++;
+                        mItemIds[mItemCount] = i;
+                        mItemCount++;
                     }
                 }
             }
@@ -2853,9 +2858,9 @@ void UnkStruct_02078e14::func_02080bdc(u32 unk1) {
             break;
         case 2: {
             for (u16 k = 1; k < 0xd5; k++) {
-                if (TestFlagBit(data_020d497b, k) && !TestFlagBit(data_020d4946, k) && func_02065c0c(k, 1) == mUnk_104 && func_02065c20(k) < 0x2bc) {
-                    mUnk_106[mUnk_fc] = k;
-                    mUnk_fc++;
+                if (TestFlagBit(data_020d497b, k) && !TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == mUnk_104 && func_02065c20(k) < 0x2bc) {
+                    mItemIds[mItemCount] = k;
+                    mItemCount++;
                 }
             }
             func_02086668(this, 0);
@@ -2863,45 +2868,45 @@ void UnkStruct_02078e14::func_02080bdc(u32 unk1) {
         }
         case 3:
         case 5:
-            if (mUnk_1f1 != 0x15) {
-                mUnk_fc = 0;
+            if (mCharacterId != 0x15) {
+                mItemCount = 0;
             } else if (mUnk_e6 == 0) {
-                mUnk_fc = 2;
-                mUnk_fa = 0;
+                mItemCount = 2;
+                mCursorItem = 0;
             } else if (mUnk_e6 < 4) {
                 if (mUnk_3f4 != 0) {
-                    mUnk_fc = 0;
+                    mItemCount = 0;
                 } else {
                     for (; i < 0x29; i++) {
                         if (func_020231f4(data_020d43f0, 0, i, mUnk_104) != 0) {
-                            mUnk_106[mUnk_fc] = i;
-                            mUnk_fc++;
+                            mItemIds[mItemCount] = i;
+                            mItemCount++;
                         }
                     }
                     func_02086668(this, 1);
                     u8 j = 0;
                     do {
-                        if (mUnk_106[j] == mUnk_c8[mUnk_e6 - 1] && mUnk_104 == mUnk_c8[mUnk_e6 + 8]) {
-                            mUnk_fa = j;
+                        if (mItemIds[j] == mUnk_c8[mUnk_e6 - 1] && mUnk_104 == mUnk_c8[mUnk_e6 + 8]) {
+                            mCursorItem = j;
                         }
                         j++;
-                    } while (j < mUnk_fc);
+                    } while (j < mItemCount);
                 }
             } else {
                 for (u16 k = 1; k < 0xd5; k++) {
-                    if (TestFlagBit(data_020d4946, k) && func_02065c0c(k, 1) == mUnk_104 && func_02065c20(k) < 0x2bc) {
-                        mUnk_106[mUnk_fc] = k;
-                        mUnk_fc++;
+                    if (TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == mUnk_104 && func_02065c20(k) < 0x2bc) {
+                        mItemIds[mItemCount] = k;
+                        mItemCount++;
                     }
                 }
                 func_02086668(this, 0);
                 u16 j = 0;
                 do {
-                    if (mUnk_106[j] == mUnk_c8[mUnk_e6 - 1]) {
-                        mUnk_fa = j;
+                    if (mItemIds[j] == mUnk_c8[mUnk_e6 - 1]) {
+                        mCursorItem = j;
                     }
                     j++;
-                } while (j < mUnk_fc);
+                } while (j < mItemCount);
             }
             break;
         case 4:
@@ -2909,16 +2914,16 @@ void UnkStruct_02078e14::func_02080bdc(u32 unk1) {
                 if (mUnk_e6 < 7) {
                     for (; i < 0x29; i++) {
                         if (func_020231f4(data_020d43f0, 0, i, mUnk_104) != 0) {
-                            mUnk_106[mUnk_fc] = i;
-                            mUnk_fc++;
+                            mItemIds[mItemCount] = i;
+                            mItemCount++;
                         }
                     }
                     func_02086668(this, 1);
                 } else {
                     for (u16 k = 1; k < 0xd5; k++) {
-                        if (TestFlagBit(data_020d4946, k) && func_02065c0c(k, 1) == mUnk_104 && func_02065c20(k) < 0x2bc) {
-                            mUnk_106[mUnk_fc] = k;
-                            mUnk_fc++;
+                        if (TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == mUnk_104 && func_02065c20(k) < 0x2bc) {
+                            mItemIds[mItemCount] = k;
+                            mItemCount++;
                         }
                     }
                     func_02086668(this, 0);
@@ -2926,67 +2931,67 @@ void UnkStruct_02078e14::func_02080bdc(u32 unk1) {
             }
             break;
     }
-    if (mUnk_e0 != 3 && mUnk_e0 != 5) {
-        mUnk_fa = mUnk_186[mUnk_e6];
+    if (mMode != 3 && mMode != 5) {
+        mCursorItem = mUnk_186[mUnk_e6];
     }
-    if (mUnk_fc == 0) {
-        mUnk_fa = 0;
-    } else if (mUnk_fa > mUnk_fc - 1) {
-        mUnk_fa = mUnk_fc - 1;
+    if (mItemCount == 0) {
+        mCursorItem = 0;
+    } else if (mCursorItem > mItemCount - 1) {
+        mCursorItem = mItemCount - 1;
     }
-    mUnk_fb = mUnk_fa;
+    mUnk_fb = mCursorItem;
     if (unk1 != 0) {
-        mUnk_fd = mUnk_fa;
+        mScroll = mCursorItem;
     }
-    if (mUnk_fc < 3) {
-        mUnk_fd = 0;
-    } else if (mUnk_fd >= mUnk_fc - 3) {
-        mUnk_fd = mUnk_fc - 3;
+    if (mItemCount < 3) {
+        mScroll = 0;
+    } else if (mScroll >= mItemCount - 3) {
+        mScroll = mItemCount - 3;
     }
 }
 
-void UnkStruct_02078e14::func_02081128() {
+void ListScene::func_02081128() {
     BattleCellPair *pair;
     u8 id;
     u8 kind;
     u32 value;
-    if (mUnk_c0 == NULL) {
+    if (mCommandList == NULL) {
         return;
     }
     if (mUnk_400 != 0) {
         return;
     }
-    switch (mUnk_e0) {
+    switch (mMode) {
         case 0: {
             BattleCellPair cell;
-            mUnk_c0->func_02058240(0);
+            mCommandList->func_02058240(0);
             if (mUnk_f0 != 0) {
-                func_02058248(mUnk_c0, mUnk_e6);
+                func_02058248(mCommandList, mUnk_e6);
                 return;
             }
-            if (mUnk_fc == 0) {
-                func_02058228(mUnk_c0, 1);
+            if (mItemCount == 0) {
+                func_02058228(mCommandList, 1);
                 return;
             }
-            func_02058228(mUnk_c0, 0);
-            func_02086580(this, (u8) mUnk_106[mUnk_fa], mUnk_104, &cell);
-            func_02058260(mUnk_c0, (u8) mUnk_106[mUnk_fa], mUnk_104, -1);
-            func_0205afb4(mUnk_c0, mUnk_104, func_02086548((u8) mUnk_106[mUnk_fa], mUnk_104), &cell);
+            func_02058228(mCommandList, 0);
+            func_02086580(this, (u8) mItemIds[mCursorItem], mUnk_104, &cell);
+            func_02058260(mCommandList, (u8) mItemIds[mCursorItem], mUnk_104, -1);
+            func_0205afb4(mCommandList, mUnk_104, func_02086548((u8) mItemIds[mCursorItem], mUnk_104), &cell);
             return;
         }
         case 1: {
             if (mUnk_f0 != 0) {
-                func_02058248(mUnk_c0, mUnk_e6);
+                func_02058248(mCommandList, mUnk_e6);
                 return;
             }
-            if (mUnk_fc == 0) {
-                func_02058228(mUnk_c0, 1);
+            if (mItemCount == 0) {
+                func_02058228(mCommandList, 1);
                 return;
             }
-            func_02058228(mUnk_c0, 0);
-            pair = (BattleCellPair *) func_02023248(data_020d43f0, (u8) mUnk_106[mUnk_fa], mUnk_104);
-            func_02058260(mUnk_c0, (u8) mUnk_106[mUnk_fa], mUnk_104, -1);
-            func_0205afb4(mUnk_c0, mUnk_104, func_020231f4(data_020d43f0, 0, (u8) mUnk_106[mUnk_fa], mUnk_104), pair);
+            func_02058228(mCommandList, 0);
+            pair = (BattleCellPair *) func_02023248(data_020d43f0, (u8) mItemIds[mCursorItem], mUnk_104);
+            func_02058260(mCommandList, (u8) mItemIds[mCursorItem], mUnk_104, -1);
+            func_0205afb4(mCommandList, mUnk_104, func_020231f4(data_020d43f0, 0, (u8) mItemIds[mCursorItem], mUnk_104), pair);
             return;
         }
         case 3:
@@ -2999,11 +3004,11 @@ void UnkStruct_02078e14::func_02081128() {
             }
             if (mUnk_f0 != 0) {
                 if (mUnk_3f4 != 0 && mUnk_e6 != 1) {
-                    func_02058228(mUnk_c0, 1);
+                    func_02058228(mCommandList, 1);
                     return;
                 }
-                if (mUnk_1f1 != 0x15) {
-                    BattleRecord *rec = &data_020d433c.mBattlePlayers->mPlayers[mUnk_1f0]->mRecords[(u8) (mUnk_e6 - 1)];
+                if (mCharacterId != 0x15) {
+                    BattleRecord *rec = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[(u8) (mUnk_e6 - 1)];
                     pair  = (BattleCellPair *) rec;
                     value = rec->mUnk_04;
                     id    = mUnk_c8[mUnk_e6 - 1];
@@ -3015,18 +3020,18 @@ void UnkStruct_02078e14::func_02081128() {
                     value = func_020231f4(data_020d43f0, 0, id, kind);
                 }
             } else {
-                if (mUnk_fc == 0) {
-                    func_02058228(mUnk_c0, 1);
+                if (mItemCount == 0) {
+                    func_02058228(mCommandList, 1);
                     return;
                 }
                 kind  = mUnk_104;
-                id    = mUnk_106[mUnk_fa];
+                id    = mItemIds[mCursorItem];
                 pair  = (BattleCellPair *) func_02023248(data_020d43f0, id, kind);
                 value = func_020231f4(data_020d43f0, 0, id, kind);
             }
-            func_02058228(mUnk_c0, 0);
-            func_02058260(mUnk_c0, id, kind, -1);
-            func_0205afb4(mUnk_c0, kind, value, pair);
+            func_02058228(mCommandList, 0);
+            func_02058260(mCommandList, id, kind, -1);
+            func_0205afb4(mCommandList, kind, value, pair);
             return;
         }
         case 4: {
@@ -3037,44 +3042,44 @@ void UnkStruct_02078e14::func_02081128() {
                 return;
             }
             if (mUnk_f0 != 0) {
-                func_02058248(mUnk_c0, (u8) (mUnk_e6 - 1));
+                func_02058248(mCommandList, (u8) (mUnk_e6 - 1));
                 return;
             }
-            if (mUnk_fc == 0) {
-                func_02058228(mUnk_c0, 1);
+            if (mItemCount == 0) {
+                func_02058228(mCommandList, 1);
                 return;
             }
-            func_02058228(mUnk_c0, 0);
-            BattleCellPair *pair = (BattleCellPair *) func_02023248(data_020d43f0, (u8) mUnk_106[mUnk_fa], mUnk_104);
-            func_02058260(mUnk_c0, (u8) mUnk_106[mUnk_fa], mUnk_104, -1);
-            u32 value = func_020231f4(data_020d43f0, 0, (u8) mUnk_106[mUnk_fa], mUnk_104);
-            func_0205afb4(mUnk_c0, mUnk_104, value, pair);
+            func_02058228(mCommandList, 0);
+            BattleCellPair *pair = (BattleCellPair *) func_02023248(data_020d43f0, (u8) mItemIds[mCursorItem], mUnk_104);
+            func_02058260(mCommandList, (u8) mItemIds[mCursorItem], mUnk_104, -1);
+            u32 value = func_020231f4(data_020d43f0, 0, (u8) mItemIds[mCursorItem], mUnk_104);
+            func_0205afb4(mCommandList, mUnk_104, value, pair);
             break;
         }
     }
 }
 
-void UnkStruct_02078e14::func_02081594() {
-    if (mUnk_c4 == NULL) {
+void ListScene::func_02081594() {
+    if (mCommandPage == NULL) {
         return;
     }
     if (mUnk_401 != 0) {
         return;
     }
-    switch (mUnk_e0) {
+    switch (mMode) {
         case 2:
             if (mUnk_f0 != 0) {
-                func_02055668(mUnk_c4, (u16) (mUnk_e6 + 0xd7), -1);
+                func_02055668(mCommandPage, (u16) (mUnk_e6 + 0xd7), -1);
                 return;
             }
-            if (mUnk_fc == 0) {
+            if (mItemCount == 0) {
                 if (mUnk_e6 < 3) {
-                    func_02055668(mUnk_c4, 0, -1);
+                    func_02055668(mCommandPage, 0, -1);
                 } else {
-                    func_02055668(mUnk_c4, 0xd6, -1);
+                    func_02055668(mCommandPage, 0xd6, -1);
                 }
             } else {
-                func_02055668(mUnk_c4, mUnk_106[mUnk_fa], -1);
+                func_02055668(mCommandPage, mItemIds[mCursorItem], -1);
             }
             break;
         case 3:
@@ -3087,9 +3092,9 @@ void UnkStruct_02078e14::func_02081594() {
                 if (mUnk_f0 != 0) {
                     v = mUnk_c8[mUnk_e6 - 1];
                 } else {
-                    v = mUnk_106[mUnk_fa];
+                    v = mItemIds[mCursorItem];
                 }
-                func_02055668(mUnk_c4, (u8) v, -1);
+                func_02055668(mCommandPage, (u8) v, -1);
             }
             break;
         case 4:
@@ -3097,15 +3102,15 @@ void UnkStruct_02078e14::func_02081594() {
                 return;
             }
             if (mUnk_f0 != 0) {
-                func_02055668(mUnk_c4, (u16) (mUnk_e6 + 0xd0), -1);
+                func_02055668(mCommandPage, (u16) (mUnk_e6 + 0xd0), -1);
             } else {
-                func_02055668(mUnk_c4, mUnk_106[mUnk_fa], -1);
+                func_02055668(mCommandPage, mItemIds[mCursorItem], -1);
             }
             break;
     }
 }
 
-void UnkStruct_02078e14::func_020816ec(u32 unk1, u32 unk2) {
+void ListScene::func_020816ec(u32 unk1, u32 unk2) {
     u32 over;
     s16 x;
     u8 scale;
@@ -3126,17 +3131,17 @@ void UnkStruct_02078e14::func_020816ec(u32 unk1, u32 unk2) {
             over = 0;
         }
         if (over != 0) {
-            mUnk_74[13]->SetAnimation(5);
+            mSubScreenCellAnims[13]->SetAnimation(5);
         } else {
-            mUnk_74[13]->SetAnimation(4);
+            mSubScreenCellAnims[13]->SetAnimation(4);
         }
-        mUnk_74[13]->Draw(1, x, y, scale);
+        mSubScreenCellAnims[13]->Draw(1, x, y, scale);
     }
     x = x + 12;
     if (unk1 >= 10000000) {
-        mUnk_74[13]->SetAnimation(3);
+        mSubScreenCellAnims[13]->SetAnimation(3);
         for (i = 0; i < 7; i++) {
-            mUnk_74[13]->Draw(1, (s16) (x + i * 5), y, scale);
+            mSubScreenCellAnims[13]->Draw(1, (s16) (x + i * 5), y, scale);
         }
         return;
     }
@@ -3148,28 +3153,28 @@ void UnkStruct_02078e14::func_020816ec(u32 unk1, u32 unk2) {
         n--;
     } while (n >= 0 && unk1 != 0);
     if (over != 0) {
-        mUnk_74[13]->SetAnimation(1);
+        mSubScreenCellAnims[13]->SetAnimation(1);
     } else {
-        mUnk_74[13]->SetAnimation(0);
+        mSubScreenCellAnims[13]->SetAnimation(0);
     }
     i = 0;
     if (unk2 == 4) {
         for (; i < 7; i++) {
             if (digits[i] >= 0) {
-                mUnk_74[13]->func_0202a3ec(1, digits[i], x + i * 7, y, scale);
+                mSubScreenCellAnims[13]->func_0202a3ec(1, digits[i], x + i * 7, y, scale);
             }
         }
-        mUnk_74[17]->Draw(1, (s16) (x - 0x2b), (s16) (y - 3), scale);
+        mSubScreenCellAnims[17]->Draw(1, (s16) (x - 0x2b), (s16) (y - 3), scale);
     } else {
         for (; i < 7; i++) {
             if (digits[i] >= 0) {
-                mUnk_74[13]->func_0202a3ec(1, digits[i], x + i * 5, y, scale);
+                mSubScreenCellAnims[13]->func_0202a3ec(1, digits[i], x + i * 5, y, scale);
             }
         }
     }
 }
 
-void UnkStruct_02078e14::func_02081994(u32 unk1, u32 unk2, u32 unk3) {
+void ListScene::func_02081994(u32 unk1, u32 unk2, u32 unk3) {
     WindowItem *items;
     switch (unk1) {
         case 0:
@@ -3194,11 +3199,11 @@ void UnkStruct_02078e14::func_02081994(u32 unk1, u32 unk2, u32 unk3) {
 }
 
 void func_02081a4c(void *arg) {
-    UnkStruct_02078e14 *self = (UnkStruct_02078e14 *) arg;
+    ListScene *self = (ListScene *) arg;
     reg_G2S_DB_BG2OFS = (u32) ((-0x20 - self->mUnk_f8) << 16) & G2_BGOFS_V_MASK;
 }
 
-void UnkStruct_02078e14::func_02081a74(u8 unk1, u32 unk2, u32 unk3, s16 unk4, s16 unk5) {
+void ListScene::func_02081a74(u8 unk1, u32 unk2, u32 unk3, s16 unk4, s16 unk5) {
     BOOL second = unk3 == 0 ? SCREEN_MAIN : SCREEN_SUB;
     u16 pos     = 0;
     u8 priority = 0;
@@ -3228,12 +3233,12 @@ void UnkStruct_02078e14::func_02081a74(u8 unk1, u32 unk2, u32 unk3, s16 unk4, s1
         }
         mUnk_5c[4]->func_0202a3ec(second, unk1, unk4, unk5, priority);
     } else {
-        mUnk_74[14]->func_0202a3ec(second, unk1, unk4, unk5, priority);
+        mSubScreenCellAnims[14]->func_0202a3ec(second, unk1, unk4, unk5, priority);
     }
 }
 
-void UnkStruct_02078e14::func_02081c2c(u32 unk1, u32 unk2, u32 unk3) {
-    switch (mUnk_e0) {
+void ListScene::func_02081c2c(u32 unk1, u32 unk2, u32 unk3) {
+    switch (mMode) {
         case 2:
             return;
         case 3:
@@ -3277,31 +3282,31 @@ static inline void PrintMessageFW(TextManager &tm, MessageFile *file, int index,
     tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, width, 0, 2, 0x44, 0, 0, 0, 0, 1, 1);
 }
 
-void UnkStruct_02078e14::func_02081d5c(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
+void ListScene::func_02081d5c(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
     s16 b = 0;
     s16 a = 0;
     u16 w;
     TextManager::Get().mUnk_5b = 1;
     a                          = unk2 << 5;
-    PrintMessageF(TextManager::Get(), (MessageFile *) mUnk_10, unk1, mUnk_28[0], b, a);
+    PrintMessageF(TextManager::Get(), (MessageFile *) mBakuganNameShortMessages, unk1, mTextBuffers[0], b, a);
     b = 0x73;
-    PrintMessageF(TextManager::Get(), (MessageFile *) mUnk_0c, 0x18, mUnk_28[0], b, a);
+    PrintMessageF(TextManager::Get(), (MessageFile *) mStorecommentMessages, 0x18, mTextBuffers[0], b, a);
     b = 0x87;
-    TextManager::Get().PrintNumber(unk3, 3, 0, mUnk_28[0], 0x18, 0x10, &b, &a, 0, 2, 0x44, 0, 0, 1, 1);
+    TextManager::Get().PrintNumber(unk3, 3, 0, mTextBuffers[0], 0x18, 0x10, &b, &a, 0, 2, 0x44, 0, 0, 1, 1);
     b = 0;
     a += 12;
-    PrintMessageFW(TextManager::Get(), (MessageFile *) mUnk_20, 5, mUnk_28[0], b, a, &w);
+    PrintMessageFW(TextManager::Get(), (MessageFile *) mResultMessages, 5, mTextBuffers[0], b, a, &w);
     b += w;
     if (*(u8 *) &unk4 >= 9) {
-        PrintMessageF(TextManager::Get(), (MessageFile *) mUnk_20, 6, mUnk_28[0], b, a);
+        PrintMessageF(TextManager::Get(), (MessageFile *) mResultMessages, 6, mTextBuffers[0], b, a);
     } else {
         b += 7;
-        TextManager::Get().PrintNumber(*(u8 *) &unk4 + 1, 1, 0, mUnk_28[0], 0x18, 0x10, &b, &a, 0, 2, 0x44, 0, 0, 1, 1);
+        TextManager::Get().PrintNumber(*(u8 *) &unk4 + 1, 1, 0, mTextBuffers[0], 0x18, 0x10, &b, &a, 0, 2, 0x44, 0, 0, 1, 1);
     }
     TextManager::Get().mUnk_5b = 0;
 }
 
-void UnkStruct_02078e14::func_02082264(u8 unk1, u8 unk2, u32 unk3, s16 unk4, s16 unk5) {
+void ListScene::func_02082264(u8 unk1, u8 unk2, u32 unk3, s16 unk4, s16 unk5) {
     BOOL second = unk3 == 0 ? SCREEN_MAIN : SCREEN_SUB;
     u16 pos      = 0;
     u8 priority = 0;
@@ -3328,11 +3333,11 @@ void UnkStruct_02078e14::func_02082264(u8 unk1, u8 unk2, u32 unk3, s16 unk4, s16
     if (unk3 == 0) {
         return;
     }
-    mUnk_74[6]->func_0202a3ec(second, unk1, unk4, unk5, priority);
+    mSubScreenCellAnims[6]->func_0202a3ec(second, unk1, unk4, unk5, priority);
 }
 
-void UnkStruct_02078e14::func_020823d8(u32 unk1, u32 unk2, u32 unk3) {
-    switch (mUnk_e0) {
+void ListScene::func_020823d8(u32 unk1, u32 unk2, u32 unk3) {
+    switch (mMode) {
         case 0:
         case 1:
             return;
@@ -3370,29 +3375,29 @@ void UnkStruct_02078e14::func_020823d8(u32 unk1, u32 unk2, u32 unk3) {
     func_02025b64(second, 4, offset, path, 0, 0, 0);
 }
 
-void UnkStruct_02078e14::func_0208250c(u32 unk1, u32 unk2) {
+void ListScene::func_0208250c(u32 unk1, u32 unk2) {
     TextManager::Get().mUnk_5b = 1;
     s16 x = unk2 << 5;
-    PrintMessageF(TextManager::Get(), (MessageFile *) mUnk_18, unk1, mUnk_28[0], 0, x);
+    PrintMessageF(TextManager::Get(), (MessageFile *) mCardNameShortMessages, unk1, mTextBuffers[0], 0, x);
     TextManager::Get().mUnk_5b = 0;
 }
 
-void UnkStruct_02078e14::func_02082660() {
+void ListScene::func_02082660() {
     for (u8 i = 0; i < 6; i++) {
         delete mUnk_5c[i];
         mUnk_5c[i] = NULL;
     }
-    if (mUnk_28[1] != NULL) {
-        OS_Free(mUnk_28[1]);
-        mUnk_28[1] = NULL;
+    if (mTextBuffers[1] != NULL) {
+        OS_Free(mTextBuffers[1]);
+        mTextBuffers[1] = NULL;
     }
-    if (mUnk_30[1] != NULL) {
-        OS_Free(mUnk_30[1]);
-        mUnk_30[1] = NULL;
+    if (mGlyphBuffers[1] != NULL) {
+        OS_Free(mGlyphBuffers[1]);
+        mGlyphBuffers[1] = NULL;
     }
 }
 
-void UnkStruct_02078e14::func_020826ec() {
+void ListScene::func_020826ec() {
     SpriteManager::Get().func_02026dec(0, 1);
     GX_SetGraphicsMode(1, 0, 0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
@@ -3420,7 +3425,7 @@ void UnkStruct_02078e14::func_020826ec() {
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     MI_CpuClearFast((void *) 0x6400000, 0x40000);
     ChangeDir("/Game/List/");
-    switch (mUnk_e0) {
+    switch (mMode) {
         case 3:
         case 5:
             func_02025b64(0, 1, 0, "list_edit_u_bg_00_ncl.bin", 0, 0, 0);
@@ -3464,11 +3469,11 @@ void UnkStruct_02078e14::func_020826ec() {
     mUnk_5c[5]->SetAnimation(2);
     ChangeDir("/Game/Card/Graphic/Small");
     func_02025b64(0, 0, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
-    func_02082d70();
+    InitMainScreenText();
     func_02082efc(this);
 }
 
-BOOL UnkStruct_02078e14::func_02082d00(u32 unk1, u32 unk2, u32 unk3) {
+BOOL ListScene::func_02082d00(u32 unk1, u32 unk2, u32 unk3) {
     if (unk1 != 0) {
         for (u8 i = 0; i <= 2; i++) {
             if (unk2 == mUnk_c8[i] && unk3 == mUnk_c8[9 + i]) {
@@ -3485,21 +3490,21 @@ BOOL UnkStruct_02078e14::func_02082d00(u32 unk1, u32 unk2, u32 unk3) {
     return FALSE;
 }
 
-void UnkStruct_02078e14::func_02082d70() {
+void ListScene::InitMainScreenText() {
     ChangeDir("/font/");
-    mUnk_38[1] = TextManager::Get().BufferSize(0x18, 0x14);
-    mUnk_28[1] = OS_Alloc(mUnk_38[1]);
-    MI_CpuClear16(mUnk_28[1], mUnk_38[1]);
-    mUnk_40[1] = TextManager::Get().GlyphCount(0xf);
-    mUnk_30[1] = OS_Alloc((s16) mUnk_40[1] * (s16) 0xc);
-    TextManager::Get().Init(mUnk_30[1], 0, 0, 0x18, 0x14, 0x42);
+    mTextBufferSizes[1] = TextManager::Get().BufferSize(0x18, 0x14);
+    mTextBuffers[1] = OS_Alloc(mTextBufferSizes[1]);
+    MI_CpuClear16(mTextBuffers[1], mTextBufferSizes[1]);
+    mGlyphCounts[1] = TextManager::Get().GlyphCount(0xf);
+    mGlyphBuffers[1] = OS_Alloc((s16) mGlyphCounts[1] * (s16) 0xc);
+    TextManager::Get().Init(mGlyphBuffers[1], 0, 0, 0x18, 0x14, 0x42);
     TextManager::Get().SetColor(0, 0, 0xf);
 }
 
-void func_02082efc(UnkStruct_02078e14 *self) {
+void func_02082efc(ListScene *self) {
     s16 b = 0;
     s16 a = 0;
-    self->func_0208329c();
+    self->ClearMainScreenText();
     for (u8 i = 0; i < 14; i++) {
         b = (i / 7) * 0x78 + 0x13;
         s32 col = i % 7;
@@ -3507,24 +3512,24 @@ void func_02082efc(UnkStruct_02078e14 *self) {
         if (col == 6) {
             a += 6;
         }
-        TextManager::Get().PrintNumber(self->mUnk_1a2[i].mUnk_a, 3, 0, self->mUnk_28[1], 0x18, 0x14, &b, &a, 0, 2, 0x42, 0, 0, 1, 1);
-        TextManager::Get().Print(&self->mUnk_24, 2, self->mUnk_28[1], 0x18, 0x14, &b, &a, NULL, 0, 2, 0x42, 0, 0, 0, 0, 1, 1);
-        TextManager::Get().PrintNumber(self->mUnk_1a2[i].mUnk_b, 3, 0, self->mUnk_28[1], 0x18, 0x14, &b, &a, 0, 2, 0x42, 0, 0, 1, 1);
+        TextManager::Get().PrintNumber(self->mUnk_1a2[i].mUnk_a, 3, 0, self->mTextBuffers[1], 0x18, 0x14, &b, &a, 0, 2, 0x42, 0, 0, 1, 1);
+        TextManager::Get().Print(&self->mUnk_24, 2, self->mTextBuffers[1], 0x18, 0x14, &b, &a, NULL, 0, 2, 0x42, 0, 0, 0, 0, 1, 1);
+        TextManager::Get().PrintNumber(self->mUnk_1a2[i].mUnk_b, 3, 0, self->mTextBuffers[1], 0x18, 0x14, &b, &a, 0, 2, 0x42, 0, 0, 1, 1);
     }
-    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x10000, self->mUnk_28[1], self->mUnk_38[1], 0);
+    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x10000, self->mTextBuffers[1], self->mTextBufferSizes[1], 0);
 }
 
-void UnkStruct_02078e14::func_020831f4() {
-    SpriteManager::Get().Screen(0).func_02027778(mUnk_30[1], (u8) mUnk_40[1], 0x40, 0x22, 0, 0x200, 0xf, 0);
+void ListScene::DrawMainScreenText() {
+    SpriteManager::Get().Screen(0).func_02027778(mGlyphBuffers[1], (u8) mGlyphCounts[1], 0x40, 0x22, 0, 0x200, 0xf, 0);
 }
 
-void UnkStruct_02078e14::func_0208329c() {
-    if (mUnk_28[1] != NULL) {
-        MI_CpuClear16(mUnk_28[1], mUnk_38[1]);
+void ListScene::ClearMainScreenText() {
+    if (mTextBuffers[1] != NULL) {
+        MI_CpuClear16(mTextBuffers[1], mTextBufferSizes[1]);
     }
 }
 
-void UnkStruct_02078e14::func_020832bc() {
+void ListScene::func_020832bc() {
     MI_CpuClear16(&mUnk_1a2[0], 0x38);
     mUnk_1a2[0].mUnk_b = 0x11;
     mUnk_1a2[1].mUnk_b = 0x11;
@@ -3553,7 +3558,7 @@ void UnkStruct_02078e14::func_020832bc() {
     }
     for (u16 k = 1; k < 0xd5; k++) {
         if (func_02065c20(k) < 0x2bc) {
-            u8 sel = func_02065c0c(k, 1) + 7;
+            u8 sel = GetCardInfo(k, 1) + 7;
             mUnk_1a2[sel].mUnk_b += 1;
             mUnk_1a2[13].mUnk_b += 1;
             if (TestFlagBit(data_020d4946, k)) {
@@ -3564,7 +3569,7 @@ void UnkStruct_02078e14::func_020832bc() {
     }
 }
 
-u8 UnkStruct_02078e14::func_0208349c(u32 unk1) {
+u8 ListScene::func_0208349c(u32 unk1) {
     s32 a = mUnk_1a2[unk1].mUnk_a;
     if (a == 0) {
         return 0;
@@ -3583,7 +3588,7 @@ u8 UnkStruct_02078e14::func_0208349c(u32 unk1) {
     return v;
 }
 
-void func_020834ec(UnkStruct_02078e14 *self, u32 mode) {
+void func_020834ec(ListScene *self, u32 mode) {
     u8 i;
     u8 flag  = 1;
     u8 state = 0;
@@ -3593,19 +3598,19 @@ void func_020834ec(UnkStruct_02078e14 *self, u32 mode) {
     state = 0;
     switch (mode) {
         case 0:
-            if (self->mUnk_c0 != NULL) {
-                self->mUnk_c0->func_02058530(1);
+            if (self->mCommandList != NULL) {
+                self->mCommandList->func_02058530(1);
             }
-            if (self->mUnk_c4 != NULL) {
-                self->mUnk_c4->func_02055890(1);
+            if (self->mCommandPage != NULL) {
+                self->mCommandPage->func_02055890(1);
             }
-            self->mUnk_404                   = 0x1d;
+            self->mPendingPlanes                   = 0x1d;
             self->mUnk_4c->mUnk_064 = 1;
             self->mUnk_48->mUnk_064 = 0;
             state                      = 0;
             if (self->mUnk_1a1 == 10 || self->mUnk_1a1 == 6) {
-                self->mUnk_186[self->mUnk_e6] = self->mUnk_fa;
-                self->func_02080bdc(0);
+                self->mUnk_186[self->mUnk_e6] = self->mCursorItem;
+                self->BuildList(0);
                 self->func_02081128();
                 self->func_02081594();
                 self->mUnk_194[2] = 1;
@@ -3619,15 +3624,15 @@ void func_020834ec(UnkStruct_02078e14 *self, u32 mode) {
                     }
                 }
                 self->mUnk_194[1] = 1;
-                self->func_0207ca60();
+                self->PrintRows();
             } else {
                 if (self->mUnk_1a1 == 3) {
                     self->func_02081128();
                 }
-                self->func_0207ca60();
+                self->PrintRows();
             }
             self->mUnk_1a1 = mode;
-            self->mUnk_e1  = 3;
+            self->mState  = 3;
             return;
         case 1:
         case 7:
@@ -3638,11 +3643,11 @@ void func_020834ec(UnkStruct_02078e14 *self, u32 mode) {
             state = 2;
             break;
         case 3: {
-            BattleCellPair *pair = (BattleCellPair *) func_02023248(data_020d43f0, (u8) self->mUnk_106[self->mUnk_fa], self->mUnk_104);
-            func_02058260(self->mUnk_c0, (u8) self->mUnk_106[self->mUnk_fa], self->mUnk_104, -1);
-            u32 value = func_020231f4(data_020d43f0, state, (u8) self->mUnk_106[self->mUnk_fa], self->mUnk_104);
-            func_0205afb4(self->mUnk_c0, self->mUnk_104, value, pair);
-            self->mUnk_c0->func_02058240(1);
+            BattleCellPair *pair = (BattleCellPair *) func_02023248(data_020d43f0, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104);
+            func_02058260(self->mCommandList, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104, -1);
+            u32 value = func_020231f4(data_020d43f0, state, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104);
+            func_0205afb4(self->mCommandList, self->mUnk_104, value, pair);
+            self->mCommandList->func_02058240(1);
             state = 1;
             flag  = 0;
             break;
@@ -3653,18 +3658,18 @@ void func_020834ec(UnkStruct_02078e14 *self, u32 mode) {
             break;
         case 4:
         case 5:
-            self->func_02081c2c((u8) self->mUnk_106[self->mUnk_fa], state, 3);
-            self->func_02081c2c((u8) self->mUnk_106[self->mUnk_fa], 1, 3);
+            self->func_02081c2c((u8) self->mItemIds[self->mCursorItem], state, 3);
+            self->func_02081c2c((u8) self->mItemIds[self->mCursorItem], 1, 3);
             break;
         case 6:
-            self->func_020823d8(self->mUnk_106[self->mUnk_fa], state, 3);
+            self->func_020823d8(self->mItemIds[self->mCursorItem], state, 3);
             break;
     }
-    if (self->mUnk_c0 != NULL) {
-        self->mUnk_c0->func_02058530(0);
+    if (self->mCommandList != NULL) {
+        self->mCommandList->func_02058530(0);
     }
-    if (self->mUnk_c4 != NULL) {
-        self->mUnk_c4->func_02055890(0);
+    if (self->mCommandPage != NULL) {
+        self->mCommandPage->func_02055890(0);
     }
     GXS_SetVisiblePlane(0x1f);
     self->mUnk_4c->mUnk_064 = 0;
@@ -3701,14 +3706,14 @@ void func_020834ec(UnkStruct_02078e14 *self, u32 mode) {
     }
     self->mUnk_1a1 = mode;
     func_020839a0(self);
-    self->mUnk_e1  = 4;
-    self->mUnk_3f9 = 0;
+    self->mState  = 4;
+    self->mWndMode = 0;
 }
 
-void func_020839a0(UnkStruct_02078e14 *self) {
+void func_020839a0(ListScene *self) {
     const u8 *base;
     u8 index;
-    self->func_0207cf84();
+    self->ClearSubScreenText();
     base  = NULL;
     index = 0;
     switch (self->mUnk_1a1) {
@@ -3716,7 +3721,7 @@ void func_020839a0(UnkStruct_02078e14 *self) {
             break;
         case 1:
             index = 3;
-            base  = (u8 *) self->mUnk_0c;
+            base  = (u8 *) self->mStorecommentMessages;
             break;
         case 2: {
             u8 i;
@@ -3736,72 +3741,72 @@ void func_020839a0(UnkStruct_02078e14 *self) {
                         value = data_020d43f0[0].mMoney;
                         break;
                     case 1:
-                        value = self->mUnk_1dc;
+                        value = self->mPrice;
                         x     = 0x28;
                         msg   = 7;
                         break;
                     case 2:
                         msg   = y;
-                        value = data_020d43f0[0].mMoney - self->mUnk_1dc;
+                        value = data_020d43f0[0].mMoney - self->mPrice;
                         x     = 0x50;
                         break;
                 }
-                PrintMessageB(TextManager::Get(), (MessageFile *) self->mUnk_0c, msg, self->mUnk_28[0], y, x);
+                PrintMessageB(TextManager::Get(), (MessageFile *) self->mStorecommentMessages, msg, self->mTextBuffers[0], y, x);
                 y += 0x80;
-                TextManager::Get().PrintNumber(value, 7, 0, self->mUnk_28[0], 0x18, 0x10, &y, &x, 0, 2, 0x44, 0, 1, 1, 1);
+                TextManager::Get().PrintNumber(value, 7, 0, self->mTextBuffers[0], 0x18, 0x10, &y, &x, 0, 2, 0x44, 0, 1, 1, 1);
             }
             break;
         }
         case 3:
             index = 4;
-            base  = (u8 *) self->mUnk_0c;
+            base  = (u8 *) self->mStorecommentMessages;
             break;
         case 4:
         case 5:
-            base  = (u8 *) self->mUnk_0c;
+            base  = (u8 *) self->mStorecommentMessages;
             index = 9;
             TextManager::Get().mUnk_5b = 1;
-            PrintMessageF(TextManager::Get(), (MessageFile *) self->mUnk_14, self->mUnk_106[self->mUnk_fa], self->mUnk_28[0], 0x1c, 0x38);
+            PrintMessageF(TextManager::Get(), (MessageFile *) self->mBakuganNameMessages, self->mItemIds[self->mCursorItem], self->mTextBuffers[0], 0x1c, 0x38);
             TextManager::Get().mUnk_5b = 0;
             break;
         case 6:
-            base  = (u8 *) self->mUnk_0c;
+            base  = (u8 *) self->mStorecommentMessages;
             index = 0x16;
             TextManager::Get().mUnk_5b = 1;
-            PrintMessageF(TextManager::Get(), (MessageFile *) self->mUnk_18, self->mUnk_106[self->mUnk_fa], self->mUnk_28[0], 0x17, 0x38);
+            PrintMessageF(TextManager::Get(), (MessageFile *) self->mCardNameShortMessages, self->mItemIds[self->mCursorItem], self->mTextBuffers[0], 0x17, 0x38);
             TextManager::Get().mUnk_5b = 0;
             break;
         case 7:
-            base  = (u8 *) self->mUnk_0c;
+            base  = (u8 *) self->mStorecommentMessages;
             index = 0xf;
             break;
         case 8:
-            base  = (u8 *) self->mUnk_1c;
+            base  = (u8 *) self->mDeckSelectMessages;
             index = 0x13;
             break;
         case 9:
-            base  = (u8 *) self->mUnk_1c;
+            base  = (u8 *) self->mDeckSelectMessages;
             index = 0x15;
             break;
         case 10:
-            base  = (u8 *) self->mUnk_0c;
+            base  = (u8 *) self->mStorecommentMessages;
             index = 0x15;
             break;
         case 11:
-            base = (u8 *) self->mUnk_1c;
+            base = (u8 *) self->mDeckSelectMessages;
             break;
         case 12:
-            base  = (u8 *) self->mUnk_1c;
+            base  = (u8 *) self->mDeckSelectMessages;
             index = 0x17;
             break;
     }
     if (base != NULL) {
-        PrintMessageF3(TextManager::Get(), (MessageFile *) base, index, self->mUnk_28[0], 0, 0);
+        PrintMessageF3(TextManager::Get(), (MessageFile *) base, index, self->mTextBuffers[0], 0, 0);
     }
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, self->mUnk_28[0], self->mUnk_38[0], 0);
+    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, self->mTextBuffers[0], self->mTextBufferSizes[0], 0);
 }
 
-void UnkStruct_02078e14::func_0208403c() {
+void ListScene::func_0208403c() {
     switch (mUnk_1a1) {
         case 0:
             return;
@@ -3813,11 +3818,11 @@ void UnkStruct_02078e14::func_0208403c() {
             func_02082264(mUnk_104, 0, 3, 0x23, 0x5a);
             break;
     }
-    SpriteManager::Get().Screen(1).func_02027778(mUnk_30[0], (u8) mUnk_40[0], 0x20, 0x28, 0, 0, 0xf, 0);
+    SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffers[0], (u8) mGlyphCounts[0], 0x20, 0x28, 0, 0, 0xf, 0);
 }
 
-void func_0208415c(UnkStruct_02078e14 *self) {
-    u8 id     = self->mUnk_106[self->mUnk_fa];
+void func_0208415c(ListScene *self) {
+    u8 id     = self->mItemIds[self->mCursorItem];
     int value = func_0202317c(data_020d43f0, 0, id, self->mUnk_104);
     func_020231c0(data_020d43f0, value, self->func_02086548(id, self->mUnk_104));
     UnkStruct_02023248 *entry = func_02023248(data_020d43f0, id, self->mUnk_104);
@@ -3831,18 +3836,18 @@ void func_0208415c(UnkStruct_02078e14 *self) {
     entry->mUnk_9             = data_020a35b8[index][4];
 }
 
-BOOL UnkStruct_02078e14::func_020842a0() {
-    if (mUnk_c0 != NULL && mUnk_c0->func_020583f0()) {
+BOOL ListScene::func_020842a0() {
+    if (mCommandList != NULL && mCommandList->func_020583f0()) {
         return TRUE;
     }
-    if (mUnk_c4 != NULL && mUnk_c4->func_02055724()) {
+    if (mCommandPage != NULL && mCommandPage->func_02055724()) {
         return TRUE;
     }
     return FALSE;
 }
 
-void UnkStruct_02078e14::func_020842e8() {
-    if (mUnk_1f1 != 0x15) {
+void ListScene::func_020842e8() {
+    if (mCharacterId != 0x15) {
         return;
     }
     for (u8 i = 0; i < 3; i++) {
@@ -3856,7 +3861,7 @@ void UnkStruct_02078e14::func_020842e8() {
     }
 }
 
-void func_020843ac(UnkStruct_02078e14 *self, u32 unk1) {
+void func_020843ac(ListScene *self, u32 unk1) {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     if (unk1 != 0) {
         ChangeDir("/Game/Battle/Bg/");
@@ -3890,16 +3895,16 @@ void func_020843ac(UnkStruct_02078e14 *self, u32 unk1) {
         self->mUnk_e7 = 0;
         self->mUnk_e8 = 0;
         self->mUnk_ea = 0;
-        self->mUnk_fc = 2;
-        self->mUnk_fa = 0;
+        self->mItemCount = 2;
+        self->mCursorItem = 0;
         self->mUnk_fb = 0;
-        self->mUnk_fd = 0;
-        if (self->mUnk_1f1 != 0x15) {
-            self->mUnk_fc = 0;
+        self->mScroll = 0;
+        if (self->mCharacterId != 0x15) {
+            self->mItemCount = 0;
         }
-        self->func_02085460(5);
-        self->mUnk_3f9 = 0;
-        self->func_0207ed3c();
+        self->SetMessage(5);
+        self->mWndMode = 0;
+        self->ApplyWndMode();
     } else {
         ChangeDir("/Game/List/");
         func_02025b64(1, 1, 0, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
@@ -3921,12 +3926,12 @@ void func_020843ac(UnkStruct_02078e14 *self, u32 unk1) {
         self->mUnk_194[0] = 1;
         self->mUnk_194[1] = 1;
         self->mUnk_194[2] = 1;
-        self->func_02085460(-1);
-        self->mUnk_3f9 = 2;
+        self->SetMessage(-1);
+        self->mWndMode = 2;
     }
 }
 
-void func_020848c8(UnkStruct_02078e14 *self) {
+void func_020848c8(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
         BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[0]->mRecords[i];
         record->mUnk_08      = self->mUnk_c8[i];
@@ -3948,10 +3953,10 @@ void func_020848c8(UnkStruct_02078e14 *self) {
     }
 }
 
-BOOL func_02084a10(UnkStruct_02078e14 *self) {
+BOOL func_02084a10(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
-        if (self->mUnk_1f1 != 0x15) {
-            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[self->mUnk_1f0]->mRecords[i];
+        if (self->mCharacterId != 0x15) {
+            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mRecords[i];
             MESSAGE->mUnk_10[i]     = record->mUnk_08;
             MESSAGE->mUnk_04[i]     = record->mUnk_04;
             MESSAGE->mUnk_16[i]     = record->mUnk_09;
@@ -3991,17 +3996,17 @@ BOOL func_02084a10(UnkStruct_02078e14 *self) {
     return FALSE;
 }
 
-BOOL func_02084c38(UnkStruct_02078e14 *self) {
+BOOL func_02084c38(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
-        if (self->mUnk_1f1 != 0x15) {
-            SLOT_MESSAGE->mUnk_04[i] = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_1f0]->mSlots54[i].mValue;
+        if (self->mCharacterId != 0x15) {
+            SLOT_MESSAGE->mUnk_04[i] = data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mSlots54[i].mValue;
         } else {
             SLOT_MESSAGE->mUnk_04[i] = self->mUnk_c8[3 + i];
         }
     }
     for (u8 i = 0; i < 3; i++) {
-        if (self->mUnk_1f1 != 0x15) {
-            SLOT_MESSAGE->mUnk_10[i] = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_1f0]->mSlots6c[i].mValue;
+        if (self->mCharacterId != 0x15) {
+            SLOT_MESSAGE->mUnk_10[i] = data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mSlots6c[i].mValue;
         } else {
             SLOT_MESSAGE->mUnk_10[i] = self->mUnk_c8[6 + i];
         }
@@ -4043,19 +4048,19 @@ BOOL func_02084c38(UnkStruct_02078e14 *self) {
     return FALSE;
 }
 
-BOOL func_02084e64(UnkStruct_02078e14 *self) {
+BOOL func_02084e64(ListScene *self) {
     data_0220f540.mUnk_04 = MATH_Rand32(&data_020d42e8, 0);
     if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 2)) {
         u8 *info = WirelessManager::Get().func_0202f0cc(0);
         if (info != NULL) {
-            func_020219ec(*(u32 *) (info + 4));
+            SeedRandom(*(u32 *) (info + 4));
         }
         return TRUE;
     }
     return FALSE;
 }
 
-BOOL func_02084f40(UnkStruct_02078e14 *self) {
+BOOL func_02084f40(ListScene *self) {
     MIi_CpuCopyFast(data_020d4404, (u8 *) &data_0220f540 + 4, 8);
     if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 6)) {
         u32 count = WirelessManager::Get().func_0202f134();
@@ -4070,10 +4075,10 @@ BOOL func_02084f40(UnkStruct_02078e14 *self) {
     return FALSE;
 }
 
-BOOL func_0208501c(UnkStruct_02078e14 *self) {
+BOOL func_0208501c(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
-        if (self->mUnk_1f1 != 0x15) {
-            MIi_CpuCopy16(&data_020d433c.mBattlePlayers->mPlayers[self->mUnk_1f0]->mRecords[i], (u8 *) &data_0220f540 + 4 + i * 4, 4);
+        if (self->mCharacterId != 0x15) {
+            MIi_CpuCopy16(&data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mRecords[i], (u8 *) &data_0220f540 + 4 + i * 4, 4);
         } else {
             u8 id;
             u32 kind;
@@ -4107,19 +4112,19 @@ BOOL func_0208501c(UnkStruct_02078e14 *self) {
     return FALSE;
 }
 
-void UnkStruct_02078e14::func_020851d0() {
+void ListScene::func_020851d0() {
     func_0207dea4();
     func_0207eec4();
     func_0208403c();
-    if (mUnk_1ec != NULL && mUnk_1a1 == 0) {
-        mUnk_1ec->func_020658d0();
+    if (mMessageWindow != NULL && mUnk_1a1 == 0) {
+        mMessageWindow->func_020658d0();
     }
-    if (mUnk_e1 < 0x17) {
-        func_0207f2f0();
+    if (mState < 0x17) {
+        DrawWindows();
     }
 }
 
-void func_02085220(UnkStruct_02078e14 *self, u32 mode) {
+void func_02085220(ListScene *self, u32 mode) {
     u8 i;
     u8 flag  = 1;
     u8 state = 0;
@@ -4129,7 +4134,7 @@ void func_02085220(UnkStruct_02078e14 *self, u32 mode) {
     state = 0;
     switch (mode) {
         case 0:
-            self->mUnk_404                      = 0x11;
+            self->mPendingPlanes                      = 0x11;
             self->mUnk_50->mUnk_064             = 1;
             self->mUnk_50->mCursor->mSelection = state;
             self->mUnk_50->mCells[0]->SetAnimation(1);
@@ -4137,7 +4142,7 @@ void func_02085220(UnkStruct_02078e14 *self, u32 mode) {
             self->func_02081994(3, 1, 8);
             self->mUnk_48->mUnk_064 = state;
             self->mUnk_1a1          = mode;
-            self->mUnk_e1           = 9;
+            self->mState           = 9;
             return;
         case 0xb:
             state = 1;
@@ -4175,15 +4180,15 @@ void func_02085220(UnkStruct_02078e14 *self, u32 mode) {
     }
     self->mUnk_1a1 = mode;
     func_020839a0(self);
-    self->mUnk_e1 = 0x14;
+    self->mState = 0x14;
 }
 
-void UnkStruct_02078e14::func_02085460(s32 unk1) {
+void ListScene::SetMessage(s32 unk1) {
     if (unk1 >= 0) {
-        mUnk_1ec->func_02065890(unk1, 0, 1);
+        mMessageWindow->func_02065890(unk1, 0, 1);
         return;
     }
-    switch (mUnk_e0) {
+    switch (mMode) {
         case 0:
         case 1:
         case 2:
@@ -4193,18 +4198,18 @@ void UnkStruct_02078e14::func_02085460(s32 unk1) {
         case 5:
             if (mUnk_e6 == 0) {
                 if (mUnk_f0 != 0) {
-                    mUnk_1ec->func_02065890(6, 0, 1);
+                    mMessageWindow->func_02065890(6, 0, 1);
                 } else {
-                    mUnk_1ec->func_02065890((s16) (mUnk_fa + 7), 0, 1);
+                    mMessageWindow->func_02065890((s16) (mCursorItem + 7), 0, 1);
                 }
             } else {
-                mUnk_1ec->func_02065890((s16) (mUnk_e6 + 8), 0, 1);
+                mMessageWindow->func_02065890((s16) (mUnk_e6 + 8), 0, 1);
             }
             break;
     }
 }
 
-void func_0208550c(UnkStruct_02078e14 *self) {
+void func_0208550c(ListScene *self) {
     u32 found = 0;
     u8 i;
     u8 j;
@@ -4274,7 +4279,7 @@ void func_0208550c(UnkStruct_02078e14 *self) {
     func_02085fec(self);
 }
 
-void func_020858d4(UnkStruct_02078e14 *self) {
+void func_020858d4(ListScene *self) {
     u8 j;
     u8 i = 0;
     do {
@@ -4292,7 +4297,7 @@ void func_020858d4(UnkStruct_02078e14 *self) {
     self->mUnk_c8[3] = self->mUnk_1f2[0];
 }
 
-BOOL func_0208596c(UnkStruct_02078e14 *self, u32 unk1, u32 unk2) {
+BOOL func_0208596c(ListScene *self, u32 unk1, u32 unk2) {
     u8 value = unk1 - 1;
     if (unk1 >= 7) {
         value = value + 1;
@@ -4300,7 +4305,7 @@ BOOL func_0208596c(UnkStruct_02078e14 *self, u32 unk1, u32 unk2) {
     return unk2 == value ? 1 : 0;
 }
 
-void func_02085990(UnkStruct_02078e14 *self) {
+void func_02085990(ListScene *self) {
     const u8 order[4] = {3, 0, 1, 2};
     u8 c;
     u8 b;
@@ -4311,7 +4316,7 @@ void func_02085990(UnkStruct_02078e14 *self) {
         do {
             c = 0;
             do {
-                if (wanted == func_02065c0c(self->mUnk_1f2[c], 3) && func_02085a7c(self, self->mUnk_1f2[c], (u8) self->mUnk_c8[9 + b])) {
+                if (wanted == GetCardInfo(self->mUnk_1f2[c], 3) && func_02085a7c(self, self->mUnk_1f2[c], (u8) self->mUnk_c8[9 + b])) {
                     self->mUnk_c8[6] = self->mUnk_1f2[c];
                     return;
                 }
@@ -4323,7 +4328,7 @@ void func_02085990(UnkStruct_02078e14 *self) {
     } while (a < 4);
 }
 
-BOOL func_02085a7c(UnkStruct_02078e14 *self, u32 unk1, u32 unk2) {
+BOOL func_02085a7c(ListScene *self, u32 unk1, u32 unk2) {
     switch (unk1) {
         case 0x68:
         case 0x70:
@@ -4388,13 +4393,13 @@ BOOL func_02085a7c(UnkStruct_02078e14 *self, u32 unk1, u32 unk2) {
     return FALSE;
 }
 
-void func_02085b8c(UnkStruct_02078e14 *self) {
+void func_02085b8c(ListScene *self) {
     u8 c;
     u8 a = 0;
     do {
         c = 0;
         do {
-            if (func_02065c0c(self->mUnk_1f2[c], 3) == 5 && func_02085da8(self, self->mUnk_1f2[c], (u8) self->mUnk_c8[a], (u8) self->mUnk_c8[9 + a])) {
+            if (GetCardInfo(self->mUnk_1f2[c], 3) == 5 && func_02085da8(self, self->mUnk_1f2[c], (u8) self->mUnk_c8[a], (u8) self->mUnk_c8[9 + a])) {
                 self->mUnk_c8[7] = self->mUnk_1f2[c];
                 return;
             }
@@ -4438,7 +4443,7 @@ void func_02085b8c(UnkStruct_02078e14 *self) {
     do {
         u8 c2 = 0;
         do {
-            if (func_02065c0c(self->mUnk_1f2[c2], 3) == 4 && func_02085da8(self, self->mUnk_1f2[c2], (u8) self->mUnk_c8[a2], (u8) self->mUnk_c8[9 + a2])) {
+            if (GetCardInfo(self->mUnk_1f2[c2], 3) == 4 && func_02085da8(self, self->mUnk_1f2[c2], (u8) self->mUnk_c8[a2], (u8) self->mUnk_c8[9 + a2])) {
                 self->mUnk_c8[7] = self->mUnk_1f2[c2];
                 return;
             }
@@ -4448,7 +4453,7 @@ void func_02085b8c(UnkStruct_02078e14 *self) {
     } while (a2 < 3 && self->mUnk_3f4 == 0);
 }
 
-BOOL func_02085da8(UnkStruct_02078e14 *self, u32 unk1, u32 unk2, u32 unk3) {
+BOOL func_02085da8(ListScene *self, u32 unk1, u32 unk2, u32 unk3) {
     switch (unk1) {
         case 0x88:
         case 0x89:
@@ -4575,7 +4580,7 @@ BOOL func_02085da8(UnkStruct_02078e14 *self, u32 unk1, u32 unk2, u32 unk3) {
     return FALSE;
 }
 
-void func_02085fec(UnkStruct_02078e14 *self) {
+void func_02085fec(ListScene *self) {
     func_02086874(self);
     u8 i = 0;
     do {
@@ -4587,7 +4592,7 @@ void func_02085fec(UnkStruct_02078e14 *self) {
     } while (i < self->mUnk_3f2);
 }
 
-BOOL func_02086044(UnkStruct_02078e14 *self, u32 unk1) {
+BOOL func_02086044(ListScene *self, u32 unk1) {
     switch (unk1) {
         case 0xbe:
             if (self->mUnk_3f4 != 0) {
@@ -4642,7 +4647,7 @@ BOOL func_02086044(UnkStruct_02078e14 *self, u32 unk1) {
     return FALSE;
 }
 
-BOOL func_020861f4(UnkStruct_02078e14 *self, u32 unk1) {
+BOOL func_020861f4(ListScene *self, u32 unk1) {
     u8 i = 0;
     do {
         if (unk1 == self->mUnk_c8[9 + i]) {
@@ -4653,12 +4658,12 @@ BOOL func_020861f4(UnkStruct_02078e14 *self, u32 unk1) {
     return FALSE;
 }
 
-u32 UnkStruct_02078e14::func_02086224(u32 unk1, u32 unk2) {
+u32 ListScene::func_02086224(u32 unk1, u32 unk2) {
     UnkStruct_02023248 *pair = func_02023248(data_020d43f0, unk1, unk2);
     if ((s32) pair->mUnk_00_0 >= 9) {
         return 10000000;
     }
-    u32 cost = func_020864ec(unk1, unk2);
+    u32 cost = GetPrice(unk1, unk2);
     if (cost == 0) {
         cost = 5000;
     }
@@ -4666,7 +4671,7 @@ u32 UnkStruct_02078e14::func_02086224(u32 unk1, u32 unk2) {
     return price - price * pair->mPad / ((pair->mUnk_00_0 + 1) * 300);
 }
 
-BOOL UnkStruct_02078e14::func_020862d0() {
+BOOL ListScene::func_020862d0() {
     switch (mUnk_f5) {
         case 2:
             if (mUnk_e8 <= mUnk_f4) {
@@ -4704,12 +4709,12 @@ BOOL UnkStruct_02078e14::func_020862d0() {
     return TRUE;
 }
 
-s32 UnkStruct_02078e14::func_0208644c() {
+s32 ListScene::func_0208644c() {
     u16 total = 0;
     u8 i      = 0;
     do {
-        if (mUnk_1f1 != 0x15) {
-            total += data_020d433c.mBattlePlayers->mPlayers[mUnk_1f0]->mRecords[i].mUnk_04;
+        if (mCharacterId != 0x15) {
+            total += data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[i].mUnk_04;
         } else {
             total += func_020231f4(data_020d43f0, 0, (u8) mUnk_c8[i], (u8) mUnk_c8[9 + i]);
         }
@@ -4718,7 +4723,7 @@ s32 UnkStruct_02078e14::func_0208644c() {
     return total;
 }
 
-u32 UnkStruct_02078e14::func_020864ec(u32 unk1, u32 unk2) {
+u32 ListScene::GetPrice(u32 unk1, u32 unk2) {
     u32 index = func_02086654(this, unk1, unk2);
     if (data_020d43f0[0].mUnk_5bf_0 == 0 && index == 0x24) {
         return Table_020a3860()[index].mUnk_00 * 10;
@@ -4726,17 +4731,17 @@ u32 UnkStruct_02078e14::func_020864ec(u32 unk1, u32 unk2) {
     return data_020a338c[index].mUnk_00 * 10;
 }
 
-u32 UnkStruct_02078e14::func_02086548(u32 unk1, u32 unk2) {
+u32 ListScene::func_02086548(u32 unk1, u32 unk2) {
     u32 index = func_02086654(this, unk1, unk2);
     return (u16) (data_020a338c[index].mUnk_02 * 10);
 }
 
-u32 UnkStruct_02078e14::func_02086570(u32 unk1, u32 unk2) {
+u32 ListScene::func_02086570(u32 unk1, u32 unk2) {
     func_02086654(this, unk1, unk2);
     return 0;
 }
 
-void func_02086580(UnkStruct_02078e14 *self, u32 unk1, u32 unk2, BattleCellPair *out) {
+void func_02086580(ListScene *self, u32 unk1, u32 unk2, BattleCellPair *out) {
     u32 index       = func_02086654(self, unk1, unk2);
     out->mUnk_00_0  = 0;
     out->mUnk_00_4  = 0;
@@ -4747,51 +4752,51 @@ void func_02086580(UnkStruct_02078e14 *self, u32 unk1, u32 unk2, BattleCellPair 
     out->mUnk_02_9  = data_020a35b8[index][4];
 }
 
-u32 func_02086654(UnkStruct_02078e14 *self, u32 unk1, u32 unk2) {
+u32 func_02086654(ListScene *self, u32 unk1, u32 unk2) {
     if (unk1 == 0x22 && unk2 == 0) {
         return 0x28;
     }
     return unk1;
 }
 
-void func_02086668(UnkStruct_02078e14 *self, u32 unk1) {
+void func_02086668(ListScene *self, u32 unk1) {
     u8 s;
     u8 t;
-    for (s = 0; s < self->mUnk_fc - 1; s++) {
-        for (t = s + 1; t < self->mUnk_fc; t++) {
+    for (s = 0; s < self->mItemCount - 1; s++) {
+        for (t = s + 1; t < self->mItemCount; t++) {
             u16 a;
             u16 b;
             u32 vb;
             u32 va;
             if (unk1 != 0) {
-                b  = self->mUnk_106[t];
-                a  = self->mUnk_106[s];
+                b  = self->mItemIds[t];
+                a  = self->mItemIds[s];
                 // Placeholder: the casts keep the member offset in the literal-pool word, like an access through a symbol of
                 // its own (plain .mOrder[b] changes the code).
                 vb = ((const u8 *) data_020a3210.mOrder)[b];
                 va = ((const u8 *) data_020a3210.mOrder)[a];
                 if (va > vb) {
-                    self->mUnk_106[s] = b;
-                    self->mUnk_106[t] = a;
+                    self->mItemIds[s] = b;
+                    self->mItemIds[t] = a;
                 }
             } else {
-                b  = self->mUnk_106[t];
-                a  = self->mUnk_106[s];
+                b  = self->mItemIds[t];
+                a  = self->mItemIds[s];
                 vb = Table_020a3ba8()[b];
                 va = Table_020a3ba8()[a];
                 if (va > vb) {
-                    self->mUnk_106[s] = b;
-                    self->mUnk_106[t] = a;
+                    self->mItemIds[s] = b;
+                    self->mItemIds[t] = a;
                 }
             }
         }
     }
 }
 
-void func_0208671c(UnkStruct_02078e14 *self, u32 unk1) {
+void func_0208671c(ListScene *self, u32 unk1) {
     self->mUnk_3f2 = 0;
     for (u16 k = 1; k < 0xd5; k++) {
-        if (func_02065c20(k) < 0x2bc && TestFlagBit(data_020d4946, k) && func_02065c0c(k, 1) == unk1) {
+        if (func_02065c20(k) < 0x2bc && TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == unk1) {
             self->mUnk_1f2[self->mUnk_3f2] = k;
             self->mUnk_3f2++;
         }
@@ -4799,7 +4804,7 @@ void func_0208671c(UnkStruct_02078e14 *self, u32 unk1) {
     func_020867b8(self);
 }
 
-void func_020867b8(UnkStruct_02078e14 *self) {
+void func_020867b8(ListScene *self) {
     u8 i;
     for (i = 0; i < self->mUnk_3f2 - 1; i++) {
         u16 value = self->mUnk_1f2[i];
@@ -4809,7 +4814,7 @@ void func_020867b8(UnkStruct_02078e14 *self) {
     }
 }
 
-void func_02086874(UnkStruct_02078e14 *self) {
+void func_02086874(ListScene *self) {
     u8 s;
     u8 t;
     for (s = 0; s < self->mUnk_3f2 - 1; s++) {

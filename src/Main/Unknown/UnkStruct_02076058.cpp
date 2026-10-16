@@ -229,7 +229,7 @@ void UnkStruct_02076058::Update() {
                 if (mUnk_54[i] != NULL) {
                     u8 gain = mUnk_54[i]->mUnk_00_0 - mUnk_70[i];
                     if (gain != 0) {
-                        mUnk_60->func_02074148(count, mUnk_6a[i], mUnk_6d[i], gain);
+                        mUnk_60->SetBakugan(count, mUnk_6a[i], mUnk_6d[i], gain);
                         count++;
                     }
                 }

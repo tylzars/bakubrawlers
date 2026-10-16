@@ -7,7 +7,7 @@
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkFunctions.hpp"
-#include "Unknown/UnkStruct_020758f4.hpp"
+#include "Game/Ranking.hpp"
 #include <nitro/mi.h>
 #include <nitro/os.h>
 #include <stdio.h>
@@ -65,8 +65,8 @@ ParkMenu::ParkMenu(u8 current) {
     mWindow->mCursor->mSelection = -1;
     mWindow->func_0205c7c8(sel);
     mWindow->mCursor->mSelection = sel;
-    mUnk_5c = new UnkStruct_020758f4();
-    mUnk_5c->func_02075a0c();
+    mUnk_5c = new Ranking();
+    mUnk_5c->Build();
     mCount = data_020d43f0[0].mUnk_5c1;
     if (mCount >= 4) {
         mCount = 4;
@@ -108,7 +108,7 @@ void ParkMenu::LoadGraphics() {
     u8 i         = 0;
     do {
         char name[64];
-        int id = func_02089a64(i);
+        int id = GetParkGroupId(i);
         sprintf(name, "park_b_ch_obj_%02d.nce_ncg1D.bin", id);
         screen.LoadCharacters(name, charBase, 0);
         sprintf(name, "park_b_ch_obj_%02d_ncl.bin", id);
@@ -282,7 +282,7 @@ void ParkMenu::Setup() {
     }
     mWindow->mCursor->mSelection = mCurrent;
     DrawText();
-    func_02089924(mCurrent, mUnk_0c);
+    GetParkEntry(mCurrent, mUnk_0c);
 }
 
 BOOL ParkMenu::Slide() {
@@ -314,7 +314,7 @@ BOOL ParkMenu::Slide() {
         items[mCurrent].mFlags = 0x8000;
         mWindow->mCursor->mSelection = mTarget;
         mCurrent = mTarget;
-        func_02089924(mCurrent, mUnk_0c);
+        GetParkEntry(mCurrent, mUnk_0c);
         if (mCurrent == 0) {
             mWindow->mButtons[4].mEnabled = 0;
             items[4].mFlags               = 0x8000;
@@ -350,10 +350,10 @@ inline u32 ParkMenu::TextEntry(u8 i) {
     u32 entry;
     if (i == 0) {
         entry = 0;
-        UnkStruct_020758f4_Record *e = mUnk_5c->func_02075998(func_02089a64(mCurrent));
+        UnkStruct_020758f4_Record *e = mUnk_5c->FindEntry(GetParkGroupId(mCurrent));
         TextManager::Get().mUnk_10 = e->mTextOffset;
     } else {
-        entry = func_02089a64(mCurrent);
+        entry = GetParkGroupId(mCurrent);
     }
     return entry;
 }
@@ -397,7 +397,7 @@ void ParkMenu::Draw() {
             }
             mCells[i]->Draw(1, pt.x, pt.y, 0);
         } else {
-            mCells[4]->func_0202a3ec(1, func_02089a64(i), pt.x, pt.y, 0);
+            mCells[4]->func_0202a3ec(1, GetParkGroupId(i), pt.x, pt.y, 0);
         }
         CellAnimation *c = mCells[i];
         if (c->mUnk_0e == 1 && c->mUnk_12 != 0) {

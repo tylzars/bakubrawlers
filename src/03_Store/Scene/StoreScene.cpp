@@ -1,7 +1,7 @@
 #include "System/SoundManager.hpp"
 #include "System/FrameTask.hpp"
 #include "Scene/StoreScene.hpp"
-#include "Unknown/UnkStruct_02078e14.hpp"
+#include "Scene/ListScene.hpp"
 #include "Game/UnkStruct_02065c40.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
@@ -17,7 +17,7 @@
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
-#include "Unknown/UnkStruct_02089f90.hpp"
+#include "Scene/GiftUnlockScene.hpp"
 
 s32 func_02087468();
 void func_02086d48();
@@ -250,13 +250,13 @@ void StoreScene::Update() {
             }
             switch (ctx->mInfo.mUnk_06) {
                 case 0:
-                    new UnkStruct_02078e14(0, 0);
+                    new ListScene(0, 0);
                     break;
                 case 1:
-                    new UnkStruct_02078e14(2, 0);
+                    new ListScene(2, 0);
                     break;
                 case 2:
-                    new UnkStruct_02078e14(1, 0);
+                    new ListScene(1, 0);
                     break;
             }
             mContext->mUnk_12 = 0;
@@ -298,7 +298,7 @@ void StoreScene::Update() {
         case 22: {
             s32 result = func_02087468();
             if (result >= 0) {
-                new UnkStruct_02089f90(result);
+                new GiftUnlockScene(result);
                 mContext->mUnk_12 = 0;
                 ctx->mInfo.mState++;
             } else {

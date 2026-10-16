@@ -11,14 +11,14 @@
 #include "System/SoundManager.hpp"
 #include "System/InputManager.hpp"
 #include "Text/TextManager.hpp"
-#include "Unknown/UnkStruct_0208ab40.hpp"
+#include "UI/UnlockPopup.hpp"
 #include "Graphics/SpriteManager.hpp"
-#include "Unknown/UnkStruct_02070608.hpp"
+#include "UI/SaveWindow.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FileSystem.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
-#include "Unknown/UnkStruct_020651bc.hpp"
+#include "Graphics/CharacterIcons.hpp"
 
 #include <nitro/gx.h>
 #include <nitro/mi.h>
@@ -301,7 +301,7 @@ void TournamentScene::Update() {
             break;
         case 5:
             func_ov002_0221bf88();
-            new UnkStruct_02070608(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
+            new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mUnk_12       = 0;
             data_020d433c.mUnk_14_1 = 0;
             SpriteManager::Get().StartSubFade(2);
@@ -343,7 +343,7 @@ void TournamentScene::Update() {
             if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
-            new UnkStruct_0208ab40(mEvent->func_0206797c() - 1);
+            new UnlockPopup(mEvent->func_0206797c() - 1);
             mContext->mUnk_12 = 0;
             mUnk_b0++;
             break;
@@ -363,12 +363,12 @@ void TournamentScene::Update() {
                 break;
             }
             mContext->mUnk_12 = 0;
-            func_02086938();
-            if (func_02086a58()) {
-                new UnkStruct_0208ab40(0);
+            UnlockStoreItems();
+            if (UnlockCharacters()) {
+                new UnlockPopup(0);
                 mUnk_b0++;
             } else if (func_02086b74()) {
-                new UnkStruct_0208ab40(1);
+                new UnlockPopup(1);
                 mUnk_b0++;
             } else {
                 mUnk_b0 = 0x18;
@@ -908,19 +908,19 @@ void TournamentScene::func_ov002_0221b78c(BOOL a, BOOL b) {
     ChangeDir("/");
     if (a) {
         delete mObj38;
-        mObj38 = new UnkStruct_020651bc(0x19000, 7, 0);
+        mObj38 = new CharacterIcons(0x19000, 7, 0);
         u8 i = 0;
         do {
-            mObj38->func_02065204(i, (s8) mUnk_c2[idx + i], 0, 0);
-            mObj38->func_020654f8(i, 1);
-            mObj38->func_0206547c(i, data_ov002_02220b58[mMode][idx + i].x, data_ov002_02220b58[mMode][idx + i].y,
+            mObj38->SetCharacter(i, (s8) mUnk_c2[idx + i], 0, 0);
+            mObj38->SetVisible(i, 1);
+            mObj38->SetDrawArgs(i, data_ov002_02220b58[mMode][idx + i].x, data_ov002_02220b58[mMode][idx + i].y,
                                   0);
             i++;
         } while (i < sCounts[mMode]);
         if (mMode == 1) {
-            mObj38->func_02065204(3, (s8) mUnk_cb, 0, 0);
-            mObj38->func_020654f8(3, 1);
-            mObj38->func_0206547c(3, 8, 0xa, 0);
+            mObj38->SetCharacter(3, (s8) mUnk_cb, 0, 0);
+            mObj38->SetVisible(3, 1);
+            mObj38->SetDrawArgs(3, 8, 0xa, 0);
         }
     }
     ChangeDir("/story/");
@@ -1116,14 +1116,14 @@ void TournamentScene::func_ov002_0221cd10() {
         if (mObj38 != NULL) {
             u8 j = 0;
             do {
-                mObj38->func_0206547c(j, mUnk_a0 + (mUnk_a4 + data_ov002_02220b58[mMode][idx + j].x),
+                mObj38->SetDrawArgs(j, mUnk_a0 + (mUnk_a4 + data_ov002_02220b58[mMode][idx + j].x),
                                       mUnk_a6 + data_ov002_02220b58[mMode][idx + j].y, 0);
                 j++;
             } while (j < sCounts[mMode]);
             if (mMode == 1) {
-                mObj38->func_0206547c(3, mUnk_a2 + 8, 0xa, 1);
+                mObj38->SetDrawArgs(3, mUnk_a2 + 8, 0xa, 1);
             }
-            mObj38->func_020654a0();
+            mObj38->DrawIcons();
         }
         u8 k = 0;
         if (mUnk_b9 != 0) {

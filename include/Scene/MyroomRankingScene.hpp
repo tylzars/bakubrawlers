@@ -8,8 +8,8 @@
 class CellAnimation;
 class MessageWindow;
 class SelectWindow;
-class UnkStruct_020758f4;
-class UnkStruct_02074938;
+class Ranking;
+class RankingCharacterView;
 struct MessageFile;
 
 // One row of cell animations of the ranking list.
@@ -26,8 +26,8 @@ struct MyroomRankingRow {
 class MyroomRankingScene : public SceneBase {
 public:
     /* 00 (base) */
-    /* 0c */ UnkStruct_020758f4 *mUnk_0c;
-    /* 10 */ UnkStruct_02074938 *mUnk_10;
+    /* 0c */ Ranking *mUnk_0c;
+    /* 10 */ RankingCharacterView *mUnk_10;
     /* 14 */ SelectWindow *mWindow;
     /* 18 */ PAD(0x18, 0x40);
     /* 40 */ u8 mUnk_40;

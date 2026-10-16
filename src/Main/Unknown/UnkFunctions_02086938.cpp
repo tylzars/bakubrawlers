@@ -26,7 +26,7 @@ s32 func_02087468();
 
 BOOL func_020875ac(u32 index);
 
-BOOL func_020876f0(u32 index);
+BOOL UnlockProgressEntry(u32 index);
 
 #define VD (((volatile UnkStruct_020d43f0 *) data_020d43f0)[0])
 
@@ -78,15 +78,15 @@ struct ProgressEntry {
     /* 6 */ PAD(0x6, 0x8);
 };
 
-BOOL func_02086938();
-BOOL func_02086a58();
+BOOL UnlockStoreItems();
+BOOL UnlockCharacters();
 BOOL func_02086b74();
 BOOL func_02086d48();
 BOOL func_02086e08();
 s32 func_02087100();
 s32 func_02087468();
 BOOL func_020875ac(u32 index);
-BOOL func_020876f0(u32 index);
+BOOL UnlockProgressEntry(u32 index);
 
 // mwcc emits a file's objects sorted by size, byte arrays and the inline accessors' tables as sections of their own;
 // the order of equal sizes follows from the whole declaration sequence. This definition order gives the original
@@ -294,7 +294,7 @@ inline const ProgressEntry *Table_020a40f0() {
 // (through a pointer local it is hoisted first and trades registers with the constant 1; a plain member folds into the
 // data_020d43f0 base). Unlike the data_020d4976/data_020d497b externs, the cast form still aliases data_020d43f0, which
 // keeps the mUnk_5b9 load after the flag store.
-BOOL func_02086938() {
+BOOL UnlockStoreItems() {
     BOOL result;
     u8 kind;
     u8 i;
@@ -329,7 +329,7 @@ BOOL func_02086938() {
     return result;
 }
 
-BOOL func_02086a58() {
+BOOL UnlockCharacters() {
     BOOL result = FALSE;
     const UnlockTable *table = &Table_020a4098()[data_020d43f0[0].mUnk_42];
     u8 sub      = data_020d43f0[0].mUnk_43;
@@ -660,7 +660,7 @@ BOOL func_020875ac(u32 index) {
     return result;
 }
 
-BOOL func_020876f0(u32 index) {
+BOOL UnlockProgressEntry(u32 index) {
     BOOL result = TRUE;
     switch (Table_020a40f0()[index].mType) {
         case 0: {

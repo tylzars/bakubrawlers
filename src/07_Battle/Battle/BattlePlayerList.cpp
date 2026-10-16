@@ -1,10 +1,10 @@
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Unknown/UnkStruct_02087898.hpp"
+#include "UI/StorytalkWindow.hpp"
 #include "Battle/GimmickTypes.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/Effect.hpp"
-#include "Unknown/UnkStruct_02078290.hpp"
+#include "Graphics/AntennaIndicator.hpp"
 #include "System/FrameTask.hpp"
 #include "System/WirelessManager.hpp"
 #include "Graphics/Camera.hpp"
@@ -18,7 +18,7 @@
 #include "Battle/BattleConfrontCard.hpp"
 #include "Battle/BattleCpu.hpp"
 #include "Unknown/UnkFunctions.hpp"
-#include "Unknown/UnkStruct_02078e14.hpp"
+#include "Scene/ListScene.hpp"
 // Placeholder for an unidentified object. The original's data layout needs one more participant in this file's
 // size sort: a small weak object that no instruction addresses. This accessor's static joins the sort here, its
 // call leaves no code, and the link strips it.
@@ -232,14 +232,14 @@ void BattlePlayerList::Update() {
             func_ov007_02262acc(this);
             break;
         case 4:
-            new UnkStruct_02078e14(5, mUnk_2a9);
+            new ListScene(5, mUnk_2a9);
             mContext->mUnk_12 = 0;
             mUnk_2a8++;
             break;
         case 5: {
             u8 result = mContext->mUnk_12;
             if (result != 0 && data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->func_020785d8(0);
+                data_020d433c.mUnk_10->SetupLayout(0);
             }
             if (result == 0) {
                 return;
@@ -263,7 +263,7 @@ void BattlePlayerList::Update() {
         case 7:
             data_0220f540.mUnk_04 = MATH_Rand32(&data_020d42e8, 0);
             if (func_ov007_022631bc(this, 2)) {
-                func_020219ec(*(u32 *) ((u8 *) mPlayers[0] + 0x104));
+                SeedRandom(*(u32 *) ((u8 *) mPlayers[0] + 0x104));
                 mUnk_2a8 = 8;
             }
             break;
@@ -864,7 +864,7 @@ void BattlePlayerList::Update() {
             mFinished = 1;
             break;
         case 34:
-            mUnk_2a4->func_02087cc0();
+            mUnk_2a4->Close();
             mUnk_2a8++;
             break;
         case 35:
@@ -925,7 +925,7 @@ void func_ov007_02262328(BattlePlayerList *list) {
     data_020d433c.mGimmicks = new GimmickManager();
     list->mUnk_29c = new BattleUnk29c();
     if (data_020d433c.mUnk_a8) {
-        data_020d433c.mUnk_10 = new UnkStruct_02078290(0);
+        data_020d433c.mUnk_10 = new AntennaIndicator(0);
     }
     u8 i = 0;
     do {
@@ -1102,14 +1102,14 @@ void func_ov007_02262a70(BattlePlayerList *list, u8 slot, u8 player) {
 }
 
 void func_ov007_02262acc(BattlePlayerList *list) {
-    list->mUnk_2a4 = new UnkStruct_02087898();
+    list->mUnk_2a4 = new StorytalkWindow();
     MIi_CpuCopyFast(data_020d4404, (u8 *) list->mPlayers[0] + 0xa8, 8);
     switch (data_020d433c.mUnk_85) {
         case 1:
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->func_02087cf8("font/mes_T001_ba.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T001_ba.mes");
             } else {
-                list->mUnk_2a4->func_02087cf8("font/mes_T001_ba_Ali.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T001_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             func_ov007_0226a404(list->mPlayers[0], 1, 2);
@@ -1127,9 +1127,9 @@ void func_ov007_02262acc(BattlePlayerList *list) {
         case 3:
         case 4:
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->func_02087cf8("font/mes_T001_ba.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T001_ba.mes");
             } else {
-                list->mUnk_2a4->func_02087cf8("font/mes_T001_ba_Ali.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T001_ba_Ali.mes");
             }
             list->mUnk_2af = 2;
             list->mUnk_288 = 3;
@@ -1147,9 +1147,9 @@ void func_ov007_02262acc(BattlePlayerList *list) {
         case 7: {
             list->mUnk_28f = 0;
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->func_02087cf8("font/mes_T002_ba.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba.mes");
             } else {
-                list->mUnk_2a4->func_02087cf8("font/mes_T002_ba_Ali.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             list->mUnk_288 = 10;
@@ -1173,9 +1173,9 @@ void func_ov007_02262acc(BattlePlayerList *list) {
         case 8: {
             list->mUnk_28f = 0;
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->func_02087cf8("font/mes_T002_ba.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba.mes");
             } else {
-                list->mUnk_2a4->func_02087cf8("font/mes_T002_ba_Ali.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             list->mUnk_288 = 11;
@@ -1201,9 +1201,9 @@ void func_ov007_02262acc(BattlePlayerList *list) {
         case 10: {
             list->mUnk_28f = 0;
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->func_02087cf8("font/mes_T002_ba.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba.mes");
             } else {
-                list->mUnk_2a4->func_02087cf8("font/mes_T002_ba_Ali.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba_Ali.mes");
             }
             list->mUnk_2af = 3;
             list->mUnk_288 = 11;
@@ -1231,9 +1231,9 @@ void func_ov007_02262acc(BattlePlayerList *list) {
         }
         case 12:
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->func_02087cf8("font/mes_T003_ba.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T003_ba.mes");
             } else {
-                list->mUnk_2a4->func_02087cf8("font/mes_T003_ba_Ali.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T003_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             list->mUnk_2a8 = 14;
@@ -1243,9 +1243,9 @@ void func_ov007_02262acc(BattlePlayerList *list) {
             break;
         case 14: {
             if (data_020d433c.mUnk_82) {
-                list->mUnk_2a4->func_02087cf8("font/mes_T004_ba.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T004_ba.mes");
             } else {
-                list->mUnk_2a4->func_02087cf8("font/mes_T004_ba_Ali.mes");
+                list->mUnk_2a4->LoadMessageFile("font/mes_T004_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
             list->mUnk_2a8 = 24;

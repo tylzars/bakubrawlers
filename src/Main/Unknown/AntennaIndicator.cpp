@@ -1,4 +1,4 @@
-#include "Unknown/UnkStruct_02078290.hpp"
+#include "Graphics/AntennaIndicator.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/WirelessManager.hpp"
@@ -22,28 +22,28 @@ struct AntennaPos {
 extern const AntennaLayout data_020a30f8[];
 extern const AntennaPos data_020a30dc[];
 
-UnkStruct_02078290::UnkStruct_02078290(u32 unk1) :
+AntennaIndicator::AntennaIndicator(u32 unk1) :
     SceneBase(0x384, 0) {
-    mUnk_0c = NULL;
-    mUnk_10 = NULL;
-    mUnk_19 = unk1;
-    mUnk_1a = 0;
-    func_020785d8(unk1);
+    mFirstAnim = NULL;
+    mSecondAnim = NULL;
+    mLayoutIndex = unk1;
+    mSecondVisible = 0;
+    SetupLayout(unk1);
 }
 
-UnkStruct_02078290::~UnkStruct_02078290() {
-    delete mUnk_0c;
-    delete mUnk_10;
+AntennaIndicator::~AntennaIndicator() {
+    delete mFirstAnim;
+    delete mSecondAnim;
 }
 
-void UnkStruct_02078290::Update() {
+void AntennaIndicator::Update() {
     u32 frame;
     CameraManager &camB = CameraManager::Get();
     CameraManager &camA = CameraManager::Get();
     CameraMode modeB = (CameraMode) camB.mMode;
     CameraMode modeA = (CameraMode) camA.mMode;
     if ((modeB == CAMERA_MODE_2) | (modeA == CAMERA_MODE_3)) {
-        if (data_020a30f8[mUnk_19].mScreen == 0) {
+        if (data_020a30f8[mLayoutIndex].mScreen == 0) {
             if (CameraManager::Get().mActive == 1) {
                 return;
             }
@@ -54,17 +54,17 @@ void UnkStruct_02078290::Update() {
         }
         frame = 0;
     } else {
-        frame = data_020a30f8[mUnk_19].mScreen;
+        frame = data_020a30f8[mLayoutIndex].mScreen;
     }
     WirelessManager::Get();
-    mUnk_0c->func_0202a3ec(frame, data_020c4030.mUnk_24d, data_020a30dc[mUnk_19].mY, data_020a30dc[mUnk_19].mX, 0);
-    if (mUnk_1a) {
-        mUnk_10->Draw(frame, data_020a30dc[mUnk_19].mY, data_020a30dc[mUnk_19].mX, 0);
+    mFirstAnim->func_0202a3ec(frame, data_020c4030.mUnk_24d, data_020a30dc[mLayoutIndex].mY, data_020a30dc[mLayoutIndex].mX, 0);
+    if (mSecondVisible) {
+        mSecondAnim->Draw(frame, data_020a30dc[mLayoutIndex].mY, data_020a30dc[mLayoutIndex].mX, 0);
     }
 }
 
-void UnkStruct_02078290::func_020785d8(u32 unk1) {
-    mUnk_19 = unk1;
+void AntennaIndicator::SetupLayout(u32 unk1) {
+    mLayoutIndex = unk1;
     u16 width = 0x80;
     CameraManager &camB = CameraManager::Get();
     CameraManager &camA = CameraManager::Get();
@@ -75,19 +75,19 @@ void UnkStruct_02078290::func_020785d8(u32 unk1) {
         screen = 0;
         width  = 0x20;
     } else {
-        screen = data_020a30f8[mUnk_19].mScreen;
+        screen = data_020a30f8[mLayoutIndex].mScreen;
     }
     SpriteScreen &sprites = SpriteManager::Get().Screen(screen);
-    sprites.LoadCharacters("/Game/2D/antenna/antenna.nce_ncg1D.bin", data_020a30f8[mUnk_19].mCharOffset, 0);
-    TextManager::Get().SetColor(screen, 0, data_020a30f8[mUnk_19].mPalette);
-    delete mUnk_0c;
-    delete mUnk_10;
-    mUnk_0c = new CellAnimation("/Game/2D/antenna/antenna_nce.bin", 0, width, 0x80);
-    mUnk_0c->mCharBase = sprites.func_020276f4(data_020a30f8[mUnk_19].mCharOffset);
-    mUnk_0c->mUnk_11   = data_020a30f8[mUnk_19].mPalette;
-    mUnk_10 = new CellAnimation("/Game/2D/antenna/antenna_nce.bin", 1, width, 0x80);
-    mUnk_10->mCharBase = sprites.func_020276f4(data_020a30f8[mUnk_19].mCharOffset);
-    mUnk_10->mUnk_11   = data_020a30f8[mUnk_19].mPalette;
+    sprites.LoadCharacters("/Game/2D/antenna/antenna.nce_ncg1D.bin", data_020a30f8[mLayoutIndex].mCharOffset, 0);
+    TextManager::Get().SetColor(screen, 0, data_020a30f8[mLayoutIndex].mPalette);
+    delete mFirstAnim;
+    delete mSecondAnim;
+    mFirstAnim = new CellAnimation("/Game/2D/antenna/antenna_nce.bin", 0, width, 0x80);
+    mFirstAnim->mCharBase = sprites.func_020276f4(data_020a30f8[mLayoutIndex].mCharOffset);
+    mFirstAnim->mUnk_11   = data_020a30f8[mLayoutIndex].mPalette;
+    mSecondAnim = new CellAnimation("/Game/2D/antenna/antenna_nce.bin", 1, width, 0x80);
+    mSecondAnim->mCharBase = sprites.func_020276f4(data_020a30f8[mLayoutIndex].mCharOffset);
+    mSecondAnim->mUnk_11   = data_020a30f8[mLayoutIndex].mPalette;
 }
 
 // Packed palette selection of the character icon: 3-bit indices into the palette files.

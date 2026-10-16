@@ -53,7 +53,7 @@ public:
 };
 
 #include "Graphics/Camera.hpp"
-#include "Unknown/UnkStruct_020c17a8.hpp"
+#include "System/SaveManager.hpp"
 #include "System/GameSystem.hpp"
 extern "C" {
 void OS_Init(void);
@@ -98,7 +98,7 @@ void SetFrameInterval(u8 frames);
 
 // Keys that, all down (IsDown) for three passes of Run, reset the system (OS_ResetSystem(1)): when
 // WirelessManager::mUnk_1228 is non-zero, after Run waits for it to reach 0; when it is 0, only if no save is running
-// (UnkStruct_020c17a8::mBusy == 0), otherwise the count restarts.
+// (SaveManager::mBusy == 0), otherwise the count restarts.
 #define RESET_KEYS 0x30c
 
 
@@ -114,7 +114,7 @@ inline TouchManager::~TouchManager() {}
 inline TextManager::~TextManager() {}
 inline SoundManager::~SoundManager() {}
 inline CameraManager::~CameraManager() {}
-inline UnkStruct_020c17a8::~UnkStruct_020c17a8() {}
+inline SaveManager::~SaveManager() {}
 
 void GameSystem::Init() {
     u32 heap;
@@ -183,7 +183,7 @@ void GameSystem::Init() {
     mFrameInterval = 1;
     mMinInterval = 1;
     mMaxInterval = 1;
-    UnkStruct_020c17a8::Get().func_02023b80();
+    SaveManager::Get().Init();
     mHalted = 0;
 }
 
@@ -248,7 +248,7 @@ void GameSystem::Run() {
                 G2x_SetMasterBrightness_((vu16 *) 0x400106c, -16);
                 OS_ResetSystem(1);
             } else {
-                if (UnkStruct_020c17a8::Get().mBusy != 0) {
+                if (SaveManager::Get().mBusy != 0) {
                     mResetHoldFrames = 0;
                 } else {
                     G2x_SetMasterBrightness_((vu16 *) 0x400006c, -16);
@@ -300,7 +300,7 @@ void GameSystem::Run() {
 void GameSystem::func_02021700() {
     if ((*(vu16 *) 0x27fffa8 & 0x8000) >> 15) {
         MicManager::Get().func_0202d94c();
-        if (UnkStruct_020c17a8::Get().mBusy != 0) {
+        if (SaveManager::Get().mBusy != 0) {
             if (mInputEnabled != 0) {
                 while (func_0200d1e0(2, 0) != 0) {
                 }

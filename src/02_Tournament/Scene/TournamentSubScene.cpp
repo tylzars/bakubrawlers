@@ -61,9 +61,9 @@ static const u8 sMessageIds[1][24] = {{0, 1, 2, 3, 4, 5, 6, 7, 0x0a, 8, 9, 0x0b,
 #include "System/SoundManager.hpp"
 #include "Text/TextManager.hpp"
 #include "UI/MessageWindow.hpp"
-#include "Unknown/UnkStruct_020651bc.hpp"
-#include "Unknown/UnkStruct_02074938.hpp"
-#include "Unknown/UnkStruct_020758f4.hpp"
+#include "Graphics/CharacterIcons.hpp"
+#include "Scene/RankingCharacterView.hpp"
+#include "Game/Ranking.hpp"
 
 #include <nitro/gx.h>
 #include <nitro/mi.h>
@@ -148,13 +148,13 @@ void TournamentSubScene::Update() {
         case 2:
             if (mUnk_58 != 0) {
                 SpriteManager::Get().StartFade(3);
-                mUnk_10->mUnk_84 = 1;
+                mUnk_10->mFinishRequested = 1;
                 mState           = 4;
             } else {
                 if (func_ov002_022202cc() != -1) {
                     u8 id = mEntries[mSelected].mId;
-                    if (id != mUnk_10->mUnk_58) {
-                        mUnk_10->func_02074938(id, mEntries[mSelected].mUnk_02,
+                    if (id != mUnk_10->mCharacterId) {
+                        mUnk_10->ChangeCharacter(id, mEntries[mSelected].mUnk_02,
                                                mEntries[mSelected].mUnk_04);
                         mState = 3;
                     }
@@ -163,7 +163,7 @@ void TournamentSubScene::Update() {
             func_ov002_02220618();
             break;
         case 3:
-            if (mUnk_10->mUnk_80 == 0) {
+            if (mUnk_10->mChanging == 0) {
                 func_ov002_02220830();
                 mState = 2;
             }
@@ -225,17 +225,17 @@ void TournamentSubScene::func_ov002_0221f930() {
 
 // UnkStruct_020758f4_Record::mTextLength must be u32 (loaded with ldr).
 void TournamentSubScene::func_ov002_0221fb24() {
-    mUnk_0c = new UnkStruct_020758f4();
+    mUnk_0c = new Ranking();
     u8 i = 0;
     do {
-        UnkStruct_020758f4_Record *info = mUnk_0c->func_02075998(mEntries[i].mId);
+        UnkStruct_020758f4_Record *info = mUnk_0c->FindEntry(mEntries[i].mId);
         if (info != NULL) {
             mEntries[i].mUnk_02 = info->mTextOffset;
             mEntries[i].mUnk_04 = info->mTextLength;
         }
         i++;
     } while (i < mCount);
-    mUnk_10 = new UnkStruct_02074938(mEntries[mSelected].mId, mEntries[mSelected].mUnk_02,
+    mUnk_10 = new RankingCharacterView(mEntries[mSelected].mId, mEntries[mSelected].mUnk_02,
                                      mEntries[mSelected].mUnk_04, 1);
     ChangeDir("/Game/Myroom/");
     func_02025b64(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
@@ -266,12 +266,12 @@ void TournamentSubScene::func_ov002_0221fb24() {
     screen.LoadCharacters("Game/2D/union_b/union_b_obj_scroll.nce_ncg1D.bin", 0x5000, 0);
     screen.LoadPalette("Game/2D/union_b/union_b_obj_scroll_ncl.bin", 0xe0, 0);
     mWindow->SetCells(n, sCells);
-    mUnk_48 = new UnkStruct_020651bc(0x4000, 4, 1);
+    mUnk_48 = new CharacterIcons(0x4000, 4, 1);
     u8 k = 0;
     do {
-        mUnk_48->func_02065204(k, (s8) mEntries[k].mId, 0, 0);
-        mUnk_48->func_020654f8(k, 1);
-        mUnk_48->func_0206547c(k, sTouchPos[mCount - 1][k].x + 2, sTouchPos[mCount - 1][k].y + 2, 0);
+        mUnk_48->SetCharacter(k, (s8) mEntries[k].mId, 0, 0);
+        mUnk_48->SetVisible(k, 1);
+        mUnk_48->SetDrawArgs(k, sTouchPos[mCount - 1][k].x + 2, sTouchPos[mCount - 1][k].y + 2, 0);
         k++;
     } while (k < mCount);
     ChangeDir("/font/");
@@ -313,7 +313,7 @@ void TournamentSubScene::func_ov002_02220184() {
     u8 y  = window->mCursor->mUnk_0b;
     window->mCellPos[2].x = x;
     window->mCellPos[2].y = y;
-    mUnk_48->func_020654a0();
+    mUnk_48->DrawIcons();
     mWindow->Draw();
     mMessage->func_020658d0();
 }

@@ -1,12 +1,12 @@
 #include "Graphics/SpriteManager.hpp"
-#include "Unknown/UnkStruct_020c17a8.hpp"
+#include "System/SaveManager.hpp"
 #include "Text/TextManager.hpp"
-#include "Unknown/UnkStruct_02070608.hpp"
+#include "UI/SaveWindow.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "System/FileSystem.hpp"
 #include "UI/SelectWindow.hpp"
-#include "Unknown/UnkStruct_02071868.hpp"
+#include "UI/MessageScreen.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
@@ -20,36 +20,36 @@ static WindowCellRecord data_020b8ea0[4] = {
 
 #include "System/FrameTask.hpp"
 
-UnkStruct_02070608::UnkStruct_02070608(u32 unk1, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8,
+SaveWindow::SaveWindow(u32 unk1, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8,
                                        u32 unk9) :
     SceneBase(2, 0) {
     mWindow = NULL;
     mMessages = NULL;
-    mUnk_14 = NULL;
+    mTextBuffer = NULL;
     mUnk_18 = unk3;
     mUnk_1c = unk4;
     mUnk_20 = unk6;
     mUnk_24 = unk7;
     mUnk_28 = unk8;
     mUnk_2c = *(u16 *) &unk9;
-    mUnk_30 = unk1;
-    mUnk_31 = unk2;
-    mUnk_32 = unk5;
-    mUnk_33 = 0;
+    mScreen = unk1;
+    mWindowBg = unk2;
+    mTextBg = unk5;
+    mState = 0;
     FrameTask::Get().func_0203dd90();
 }
 
-UnkStruct_02070608::~UnkStruct_02070608() {
+SaveWindow::~SaveWindow() {
     if (mMessages != NULL) {
         OS_Free(mMessages);
     }
-    if (mUnk_14 != NULL) {
-        OS_Free(mUnk_14);
+    if (mTextBuffer != NULL) {
+        OS_Free(mTextBuffer);
     }
     if (mWindow != NULL) {
         delete mWindow;
     }
-    switch (mUnk_32) {
+    switch (mTextBg) {
         case 0:
             G2S_SetBG0Offset(0, 0);
             break;
@@ -83,19 +83,19 @@ public:
     virtual void Update();
 };
 
-void UnkStruct_02070608::Update() {
-    switch (mUnk_33) {
+void SaveWindow::Update() {
+    switch (mState) {
         case 0:
             if (func_0203dd0c(&FrameTask::Get(), 0) != 0) {
                 break;
             }
-            func_02070d10();
-            if (UnkStruct_020c17a8::Get().func_02023c38(0) == 4) {
-                func_020716b0(0);
+            Load();
+            if (SaveManager::Get().GetSlotStatus(0) == SAVE_STATUS_OK) {
+                PrintMessage(0);
             } else {
-                func_020716b0(9);
+                PrintMessage(9);
             }
-            mUnk_33++;
+            mState++;
             break;
         case 1:
             if ((u8) mWindow->Update(1) != 1) {
@@ -103,10 +103,10 @@ void UnkStruct_02070608::Update() {
             }
             switch (mWindow->GetSelectedId()) {
                 case 0:
-                    mUnk_33++;
+                    mState++;
                     break;
                 case 1:
-                    mUnk_33 = 5;
+                    mState = 5;
                     break;
             }
             break;
@@ -115,31 +115,31 @@ void UnkStruct_02070608::Update() {
             SetCellPos(mWindow, 3, 0x80, 0x60);
             SetCellPos(mWindow, 0, 0x100, 0xc0);
             SetCellPos(mWindow, 1, 0x100, 0xc0);
-            func_020716b0(1);
-            mUnk_33++;
+            PrintMessage(1);
+            mState++;
             break;
         case 3:
             if (func_0203dd0c(&FrameTask::Get(), 0) != 0) {
                 break;
             }
             data_020d43f0[0].mUnk_26 = data_020d433c.mUnk_79;
-            UnkStruct_020c17a8::Get();
+            SaveManager::Get();
             new UnkScene_020a54a8();
-            mUnk_33++;
+            mState++;
             break;
         case 4:
             if (mContext->mUnk_12 == 0) {
                 break;
             }
-            if (mContext->mUnk_12 == 1) {
-                new UnkStruct_02071868(1);
+            if (mContext->mUnk_12 == SAVE_STATUS_ERROR) {
+                new MessageScreen(MESSAGE_SCREEN_SYSTEM_4_HALT);
             } else {
-                mUnk_33 = 5;
+                mState = 5;
             }
             break;
         case 5:
             SpriteManager::Get().StartFade(3);
-            mUnk_33++;
+            mState++;
             break;
         case 6:
             if (!SpriteManager::Get().IsFading()) {
@@ -158,10 +158,12 @@ void UnkStruct_02070608::Update() {
 extern const u32 data_020a2dac[];
 extern const WindowItemRecord data_020a2dcc[];
 
-void UnkStruct_02070608::func_02070d10() {
+// Loads the window files, creates the SelectWindow, and sets the BG offsets/priorities, visible planes, blend
+// brightness and SpriteManager::sFade/sBrightness (:259-266, :321-328).
+void SaveWindow::Load() {
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(mUnk_30, 1, mUnk_1c, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(mUnk_30, data_020a2dbc[mUnk_31], mUnk_18, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    func_02025b64(mScreen, 1, mUnk_1c, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    func_02025b64(mScreen, data_020a2dbc[mWindowBg], mUnk_18, "union_b_bg_window_ncg.bin", 0, 0, 0);
     u32 size;
     u16 *tiles = (u16 *) func_02023504("union_b_bg_window_a_nsc.bin", 0, 0, 0, &size, 0);
     size >>= 1;
@@ -180,19 +182,19 @@ void UnkStruct_02070608::func_02070d10() {
             i++;
         } while (size > i);
     }
-    func_02025c1c(mUnk_30, data_020a2dac[mUnk_31], 0, tiles, size * 2, 1);
+    func_02025c1c(mScreen, data_020a2dac[mWindowBg], 0, tiles, size * 2, 1);
     ChangeDir("/");
     mMessages = (MessageFile *) func_02023504("/font/mes_system.mes", 0, 0, 0, 0, 0);
-    TextManager::Get().func_0202ce44(mUnk_30, 0, (mUnk_24 >> 5) & 0xff, 0);
+    TextManager::Get().func_0202ce44(mScreen, 0, (mUnk_24 >> 5) & 0xff, 0);
     TextManager::Get();
     u16 *buffer = (u16 *) OS_Alloc(0x600);
     MIi_CpuClear16((u16) ((mUnk_20 >> 5) | ((mUnk_24 >> 5) << 12)), buffer, 0x600);
     TextManager::Get().func_0202cd48(0, buffer, (mUnk_24 >> 5) & 0xff, (u16) mUnk_20, 0x18, 0x18, 0x20);
-    func_02025c1c(mUnk_30, data_020a2dac[mUnk_32], 0, buffer, 0x600, 1);
+    func_02025c1c(mScreen, data_020a2dac[mTextBg], 0, buffer, 0x600, 1);
     TextManager::Get();
-    mUnk_2e = 0x4000;
-    mUnk_14 = OS_Alloc(mUnk_2e);
-    SpriteScreen &screen = SpriteManager::Get().Screen(mUnk_30);
+    mTextBufferSize = 0x4000;
+    mTextBuffer = OS_Alloc(mTextBufferSize);
+    SpriteScreen &screen = SpriteManager::Get().Screen(mScreen);
     screen.LoadCharacters("/Game/2D/union_b/union_b_obj_window.nce_ncg1D.bin", mUnk_28, 0);
     screen.LoadPalette("/Game/2D/union_b/union_b_obj_window_ncl.bin", mUnk_2c, 0);
     for (u8 i = 0; i < 4; i++) {
@@ -202,9 +204,9 @@ void UnkStruct_02070608::func_02070d10() {
     mWindow = new SelectWindow(4, data_020a2dcc, 1);
     mWindow->SetCells(4, data_020b8ea0);
     u16 mask = 0;
-    if (mUnk_30 == 0) {
+    if (mScreen == 0) {
         u16 plane = (reg_GX_DISPCNT & GX_DISPCNT_PLANE_MASK) >> GX_DISPCNT_PLANE_SHIFT;
-        switch (mUnk_31) {
+        switch (mWindowBg) {
             case 0:
                 G2_SetBG0Offset(0, 0);
                 G2_SetBG0Priority(1);
@@ -230,7 +232,7 @@ void UnkStruct_02070608::func_02070d10() {
                 mask = 8;
                 break;
         }
-        switch (mUnk_32) {
+        switch (mTextBg) {
             case 0:
                 G2_SetBG0Offset(0, 0);
                 G2_SetBG0Priority(0);
@@ -266,7 +268,7 @@ void UnkStruct_02070608::func_02070d10() {
         SpriteManager::sBrightness[1]  = -8;
     } else {
         u16 plane = (reg_GXS_DB_DISPCNT & GX_DISPCNT_PLANE_MASK) >> GX_DISPCNT_PLANE_SHIFT;
-        switch (mUnk_31) {
+        switch (mWindowBg) {
             case 0:
                 G2S_SetBG0Offset(0, 0);
                 G2S_SetBG0Priority(1);
@@ -292,7 +294,7 @@ void UnkStruct_02070608::func_02070d10() {
                 mask = 8;
                 break;
         }
-        switch (mUnk_32) {
+        switch (mTextBg) {
             case 0:
                 G2S_SetBG0Offset(0, 0);
                 G2S_SetBG0Priority(0);
@@ -329,8 +331,8 @@ void UnkStruct_02070608::func_02070d10() {
     }
 }
 
-void UnkStruct_02070608::func_020716b0(u32 index) {
-    MI_CpuClearFast(mUnk_14, mUnk_2e);
+void SaveWindow::PrintMessage(u32 index) {
+    MI_CpuClearFast(mTextBuffer, mTextBufferSize);
     TextManager &text = TextManager::Get();
     u16 pixelWidth;
     s16 width;
@@ -338,11 +340,11 @@ void UnkStruct_02070608::func_020716b0(u32 index) {
     height = 0x38;
     width  = 0;
     MessageFile *file = mMessages;
-    text.Print(file->GetText(index), file->GetLength(index), mUnk_14, 0x18, 0x10, &width, &height, &pixelWidth, 0, 2, 0,
+    text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x18, 0x10, &width, &height, &pixelWidth, 0, 2, 0,
                0x10, 0, 0, 1, 1, 1);
-    func_02025c1c(mUnk_30, data_020a2dbc[mUnk_32], mUnk_20, mUnk_14, mUnk_2e, 0);
+    func_02025c1c(mScreen, data_020a2dbc[mTextBg], mUnk_20, mTextBuffer, mTextBufferSize, 0);
     s16 offset = (pixelWidth - 0x100) / 2;
-    switch (mUnk_32) {
+    switch (mTextBg) {
         case 0:
             G2S_SetBG0Offset(offset, 0);
             break;

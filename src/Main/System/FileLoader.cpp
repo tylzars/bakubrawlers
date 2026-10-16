@@ -1,7 +1,7 @@
 #include "Scene/SceneBase.hpp"
 #include "Game/UnkStruct_020d43f0.hpp"
 #include "System/FileSystem.hpp"
-#include "Unknown/UnkStruct_020c17a8.hpp"
+#include "System/SaveManager.hpp"
 
 #include <nitro/mi.h>
 #include <nitro/os.h>
@@ -16,7 +16,7 @@ extern "C" BOOL func_0200ee44();
 extern "C" int func_0200e60c();
 extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
-void UnkStruct_020c17a8::func_02023b80() {
+void SaveManager::Init() {
     u16 id = OS_GetLockID();
     func_0200e658(id);
     func_0200ed00(0xd01);
@@ -25,7 +25,7 @@ void UnkStruct_020c17a8::func_02023b80() {
     mBusy = 0;
 }
 
-u16 UnkStruct_020c17a8::func_02023bc4(const void *data, u32 size) {
+u16 SaveManager::ComputeCrc(const void *data, u32 size) {
     const u8 *p = (const u8 *) data;
     int crc = 0xffff;
     for (u32 i = 0; i < size; i++) {
@@ -42,9 +42,9 @@ u16 UnkStruct_020c17a8::func_02023bc4(const void *data, u32 size) {
     return crc ^ 0xffff;
 }
 
-u32 UnkStruct_020c17a8::func_02023c38(u32 unk1) {
+u32 SaveManager::GetSlotStatus(u32 unk1) {
     u32 id;
-    u32 result = 2;
+    u32 result = SAVE_STATUS_NO_MAGIC;
     u32 magicA;
     u32 magicB;
     u8 *base = 0; // placeholder: the original adds the offsets to a zero base (add rX, rY, #0); its real form is unknown
@@ -55,29 +55,29 @@ u32 UnkStruct_020c17a8::func_02023c38(u32 unk1) {
     func_0200e668(id);
     func_02004fbc(id);
     if (!ok) {
-        result = 1;
+        result = SAVE_STATUS_ERROR;
     } else if (magicA == 0x19691015) {
-        result = 5;
+        result = SAVE_STATUS_MARKER;
     } else if (magicB == 0x19691015) {
-        result = 5;
+        result = SAVE_STATUS_MARKER;
     } else if (magicA == 0x20071019) {
-        result = 4;
+        result = SAVE_STATUS_OK;
     } else if (magicB == 0x20071019) {
-        result = 4;
+        result = SAVE_STATUS_OK;
     }
     return result;
 }
 
-u32 UnkStruct_020c17a8::func_02023d30(u32 unk1) {
+u32 SaveManager::WriteSlotMarker(u32 unk1) {
     u32 magic = 0x19691015;
     u32 id;
-    u32 result = 1;
-    u8 *base   = 0; // placeholder, as in func_02023c38
+    u32 result = 1; // SAVE_STATUS_ERROR, kept a literal: it is also the last argument of both calls below
+    u8 *base   = 0; // placeholder, as in GetSlotStatus
     id         = (u16) OS_GetLockID();
     func_0200e658(id);
     if (func_0200ec04((u32) &magic, base + (unk1 << 13), 4, 0, 0, 0, 8, 10, result)) {
         if (func_0200ec04((u32) &magic, base + (unk1 << 13) + 0x1000, 4, 0, 0, 0, 8, 10, result)) {
-            result = 4;
+            result = SAVE_STATUS_OK;
         }
     }
     func_0200e668(id);
@@ -97,7 +97,7 @@ struct UnkStruct_SaveTask {
     /* 24 */ u8 mTry;
 };
 
-// One save slot copy as stored in the backup memory (0x1000 bytes).
+// One save slot copy (0x1000 bytes): two magic words, the CRC of mData, then the 0xff4 bytes of save data.
 struct UnkStruct_SaveBlock {
     /* 00 */ u32 mMagic0;
     /* 04 */ u32 mMagic1;
@@ -126,13 +126,13 @@ void UnkScene_020a54a8::Update() {
     switch (task->mState) {
         case 0: {
             RequestScene(0);
-            if (UnkStruct_020c17a8::Get().func_02023c38(0) == 1) {
-                RequestScene(1);
+            if (SaveManager::Get().GetSlotStatus(0) == SAVE_STATUS_ERROR) {
+                RequestScene(SAVE_STATUS_ERROR);
                 mFinished = 1;
                 return;
             }
             task->mBase = 0;
-            UnkStruct_020c17a8::Get().mBusy = 1;
+            SaveManager::Get().mBusy = 1;
             task->mTry   = 0;
             task->mState = 5;
             break;
@@ -140,7 +140,7 @@ void UnkScene_020a54a8::Update() {
         case 5: {
             task->mBuffer = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, 0x1000);
             MI_CpuCopy8(data_020d43f0, (u8 *) task->mBuffer + 0xc, 0xff4);
-            u16 crc = UnkStruct_020c17a8::Get().func_02023bc4((u8 *) task->mBuffer + 0xc, 0xff4);
+            u16 crc = SaveManager::Get().ComputeCrc((u8 *) task->mBuffer + 0xc, 0xff4);
             ((UnkStruct_SaveBlock *) task->mBuffer)->mCrc    = crc;
             ((UnkStruct_SaveBlock *) task->mBuffer)->mMagic0 = 0x20071019;
             ((UnkStruct_SaveBlock *) task->mBuffer)->mMagic1 = 0x19721021;
@@ -175,12 +175,12 @@ void UnkScene_020a54a8::Update() {
             task->mState = 9;
             break;
         case 9:
-            UnkStruct_020c17a8::Get().mBusy = 0;
+            SaveManager::Get().mBusy = 0;
             if (task->mResult == 0) {
-                RequestScene(4);
+                RequestScene(SAVE_STATUS_OK);
                 mFinished = 1;
             } else {
-                RequestScene(1);
+                RequestScene(SAVE_STATUS_ERROR);
                 mFinished = 1;
             }
             break;
@@ -191,14 +191,14 @@ void UnkScene_020a5494::Update() {
     UnkStruct_SaveTask *task = (UnkStruct_SaveTask *) mContext;
     switch (task->mState) {
         case 0: {
-            u32 status = UnkStruct_020c17a8::Get().func_02023c38(task->mSlot);
-            if (status != 4) {
+            u32 status = SaveManager::Get().GetSlotStatus(task->mSlot);
+            if (status != SAVE_STATUS_OK) {
                 RequestScene(status);
                 mFinished = 1;
                 return;
             }
             RequestScene(0);
-            UnkStruct_020c17a8::Get().mBusy = 1;
+            SaveManager::Get().mBusy = 1;
             task->mBase  = 0;
             task->mTry   = 0;
             task->mState = 1;
@@ -222,21 +222,21 @@ void UnkScene_020a5494::Update() {
             func_0200e668(task->mLock);
             func_02004fbc(task->mLock);
             UnkStruct_SaveBlock *block;
-            u16 crc = UnkStruct_020c17a8::Get().func_02023bc4((block = (UnkStruct_SaveBlock *) task->mBuffer)->mData, 0xff4);
+            u16 crc = SaveManager::Get().ComputeCrc((block = (UnkStruct_SaveBlock *) task->mBuffer)->mData, 0xff4);
             if (block->mCrc == crc && block->mMagic1 == 0x19721021 && block->mMagic0 == 0x20071019) {
                 MI_CpuCopy8(block->mData, data_020d43f0, 0xff4);
-                RequestScene(4);
+                RequestScene(SAVE_STATUS_OK);
                 task->mState++;
             } else if (++task->mTry < 2) {
                 task->mState--;
             } else {
-                RequestScene(3);
+                RequestScene(SAVE_STATUS_CORRUPT);
                 task->mState++;
             }
             break;
         }
         case 4:
-            UnkStruct_020c17a8::Get().mBusy = 0;
+            SaveManager::Get().mBusy = 0;
             OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, task->mBuffer);
             mFinished = 1;
             break;

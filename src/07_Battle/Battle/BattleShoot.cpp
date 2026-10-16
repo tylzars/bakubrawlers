@@ -13,7 +13,7 @@
 #include "Graphics/Effect.hpp"
 #include "UI/SelectWindow.hpp"
 #include "UI/MessageWindow.hpp"
-#include "Unknown/UnkStruct_02078290.hpp"
+#include "Graphics/AntennaIndicator.hpp"
 #include "System/FileSystem.hpp"
 #include "System/FrameUpdate.hpp"
 #include <nitro/math.h>
@@ -28,7 +28,7 @@
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
-#include "Unknown/UnkStruct_02087898.hpp"
+#include "UI/StorytalkWindow.hpp"
 #include "Battle/BattleUnk0227532c.hpp"
 
 BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
@@ -360,8 +360,8 @@ void BattleShoot::Update() {
                 SpriteManager::Get().StartFade(2);
                 u8 mode = data_020d433c.mUnk_85;
                 if (mode >= 3 && mode <= 12) {
-                    data_020d433c.mBattlePlayers->mUnk_2a4->func_02087eec();
-                    data_020d433c.mBattlePlayers->mUnk_2a4->func_02088e64(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                    data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
+                    data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
                     G2S_SetBlendBrightness(0x1f, -10);
                     mUnk_6186 = 2;
                 } else {
@@ -373,7 +373,7 @@ void BattleShoot::Update() {
             mCells[0].mX = (mCells[0].mX + 0x80) / 2;
             mCells[0].mY = (mCells[0].mY + 0xa0) / 2;
             if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
-                data_020d433c.mBattlePlayers->mUnk_2a4->func_02088dac(1);
+                data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
             }
             u8 limit;
             if (data_020d433c.mUnk_83 == 3) {
@@ -388,7 +388,7 @@ void BattleShoot::Update() {
                 if (data_020d433c.mBattlePlayers->mUnk_2af > limit) {
                     mUnk_6186 = 3;
                 } else {
-                    data_020d433c.mBattlePlayers->mUnk_2a4->func_02088e64(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                    data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
                 }
             }
             break;
@@ -813,7 +813,7 @@ void BattleShoot::func_ov007_0226bdfc() {
     mUnk_6138->func_02065be4(0xe0);
     mUnk_6138->func_02065890(0, 0, 1);
     if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->func_020785d8(9);
+        data_020d433c.mUnk_10->SetupLayout(9);
     }
 }
 

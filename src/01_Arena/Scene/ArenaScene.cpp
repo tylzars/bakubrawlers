@@ -13,7 +13,7 @@
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
 #include "Unknown/UnkFunctions.hpp"
-#include "Unknown/UnkStruct_02078290.hpp"
+#include "Graphics/AntennaIndicator.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
@@ -330,7 +330,7 @@ void ArenaScene::Update() {
                                 mVariant = 3;
                                 mMode    = 8;
                             }
-                            data_020d433c.mUnk_10 = new UnkStruct_02078290(1);
+                            data_020d433c.mUnk_10 = new AntennaIndicator(1);
                             MI_CpuClearFast((void *) 0x6600000, 0x2000);
                             func_ov001_0221c1a0();
                             mPlayerCount = 0;
@@ -621,7 +621,7 @@ void ArenaScene::func_ov001_0221b06c() {
 
 void ArenaScene::func_ov001_0221b24c() {
     if (data_020d433c.mUnk_10 != NULL) {
-        data_020d433c.mUnk_10->func_020785d8(1);
+        data_020d433c.mUnk_10->SetupLayout(1);
     }
     ChangeDir("/Game/Battle/bg/");
     func_02025b64(0, 1, 0, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);

@@ -14,7 +14,7 @@
 #include "System/FileSystem.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
-#include "Unknown/UnkStruct_020651bc.hpp"
+#include "Graphics/CharacterIcons.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <stdio.h>
@@ -475,7 +475,7 @@ void BattleCommandPrompt::Update() {
                 if (data_020d433c.mBattlePlayers->mPlayers[mUnk_8c]->IsActive()) {
                     mUnk_40[2]->Draw(1, 0x86, 1, 0);
                 }
-                mUnk_3c->func_020654a0();
+                mUnk_3c->DrawIcons();
                 mUnk_40[0]->Draw(1, 0x86, 3, 0);
             }
             switch (mUnk_8b) {
@@ -657,10 +657,10 @@ void BattleCommandPrompt::func_ov007_0225e6d4() {
         mUnk_40[2]->SetAnimation(0xb);
         mUnk_40[2]->mUnk_0f = mUnk_8c;
         ChangeDir("/");
-        mUnk_3c = new UnkStruct_020651bc(0x16000, 0xb, 1);
+        mUnk_3c = new CharacterIcons(0x16000, 0xb, 1);
         BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mUnk_8c];
-        mUnk_3c->func_02065204(0, (s8) player->mUnk_f6, player->NameInfo(), 0);
-        mUnk_3c->func_0206547c(0, 0x88, 5, 0);
+        mUnk_3c->SetCharacter(0, (s8) player->mUnk_f6, player->NameInfo(), 0);
+        mUnk_3c->SetDrawArgs(0, 0x88, 5, 0);
     }
     }
     ChangeDir("/");

@@ -5,7 +5,7 @@
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 #include "Text/TextManager.hpp"
-#include "Unknown/UnkStruct_020651bc.hpp"
+#include "Graphics/CharacterIcons.hpp"
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
@@ -77,7 +77,7 @@ BattleStatusPanels::~BattleStatusPanels() {
 }
 
 void BattleStatusPanels::func_ov007_02234efc() {
-    mIcons = new UnkStruct_020651bc(mCharBase + 0x1800, (u8) (mPalette + 6), 0);
+    mIcons = new CharacterIcons(mCharBase + 0x1800, (u8) (mPalette + 6), 0);
     ChangeDir("/Game/Battle/Obj/");
     u8 j;
     SpriteScreen &screen = SpriteManager::Get().mScreens[0];
@@ -169,7 +169,7 @@ void BattleStatusPanels::func_ov007_02235280(u32 index, s32 character, u32 team,
         }
     }
     mPanels[index].mUnk_2b = level;
-    mIcons->func_02065204(index, mPanels[index].mUnk_24, data_020d433c.mBattlePlayers->mPlayers[index]->NameInfo(), 0);
+    mIcons->SetCharacter(index, mPanels[index].mUnk_24, data_020d433c.mBattlePlayers->mPlayers[index]->NameInfo(), 0);
     func_ov007_022361c4(index);
     BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[index];
     if (pl->mUnk_fe != 0) {
@@ -360,11 +360,11 @@ void BattleStatusPanels::func_ov007_02235480() {
                                                                  (u16) ((mCharBase + 0x2000) >> 5), 0xf, 0);
                     break;
             }
-            mIcons->func_0206547c(i, x, y, mUnk_f2);
+            mIcons->SetDrawArgs(i, x, y, mUnk_f2);
         }
         i++;
     } while (i < 4);
-    mIcons->func_020654a0();
+    mIcons->DrawIcons();
     u8 j = 0;
     do {
         s16 baseX      = mPanels[j].mUnk_26 * 0xd8 + 6;

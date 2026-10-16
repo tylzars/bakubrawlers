@@ -3,7 +3,7 @@
 #include "Battle/BattleCardEffect.hpp"
 #include "Graphics/Camera.hpp"
 #include "Battle/GimmickTypes.hpp"
-#include "Unknown/UnkStruct_02087898.hpp"
+#include "UI/StorytalkWindow.hpp"
 #include "Battle/BattleCpu.hpp"
 #include "Battle/BattleCommandPrompt.hpp"
 #include "Battle/BattleCommandList.hpp"
@@ -16,7 +16,7 @@
 #include "System/FrameUpdate.hpp"
 #include "UI/MessageWindow.hpp"
 #include "UI/SelectWindow.hpp"
-#include "Unknown/UnkStruct_02078290.hpp"
+#include "Graphics/AntennaIndicator.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 
@@ -466,8 +466,8 @@ void BattleCommand::Update() {
             u8 cur                 = list->mUnk_2a9;
             if (list->mUnk_28a == cur) {
                 if (data_020d433c.mUnk_85 == 3 || data_020d433c.mUnk_85 == 7) {
-                    list->mUnk_2a4->func_02087eec();
-                    data_020d433c.mBattlePlayers->mUnk_2a4->func_02088e64(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
+                    list->mUnk_2a4->LoadGraphics();
+                    data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
                     mUnk_128++;
                     G2S_SetBlendBrightness(0x1f, -10);
                     return;
@@ -515,7 +515,7 @@ void BattleCommand::Update() {
 
         case 8: {
             if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
-                data_020d433c.mBattlePlayers->mUnk_2a4->func_02088dac(1);
+                data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
             }
             if (data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
                 return;
@@ -1782,7 +1782,7 @@ void func_ov007_0223ad70(u32 variant) {
     ChangeDir("/Game/2D/union_b");
     func_02025b64(1, 4, 0x18000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
     if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->func_020785d8(8);
+        data_020d433c.mUnk_10->SetupLayout(8);
     }
     ChangeDir("/");
 }

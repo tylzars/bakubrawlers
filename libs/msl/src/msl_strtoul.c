@@ -1,4 +1,4 @@
-/* MSL strtoul/strtoull, main 0x02016ec0-0x020177ac: __strtoul (16ec0), __strtoull (172a8), strtoul (17714). */
+/* MSL strtoul/strtoull, main 0x02016ec0-0x020177ac: the 32-bit reader (16ec0), the 64-bit reader (172a8), strtoul (17714). */
 extern const unsigned short data_020903a8[];
 extern const unsigned char data_02090328[];
 extern int data_020c1790;

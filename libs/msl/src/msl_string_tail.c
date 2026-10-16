@@ -1,4 +1,4 @@
-/* MSL string.h and sscanf glue, main 0x02015950-0x02015c74 (func_02015c74, the scanf core, is not done). */
+/* MSL string.h and sscanf glue, main 0x02015950-0x02015c74. */
 
 typedef unsigned int size_t_;
 

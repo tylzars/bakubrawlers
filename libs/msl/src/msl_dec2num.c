@@ -7,8 +7,6 @@ typedef struct Dec {
     unsigned char text[33];
 } Dec;
 
-#define __HI(x) *(1+(int*)&x)
-#define __LO(x) *(int*)&x
 
 extern float data_020a5074;
 extern char data_020a53f4[];

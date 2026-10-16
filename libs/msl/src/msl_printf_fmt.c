@@ -36,8 +36,6 @@ extern const B4 data_020a52b8, data_020a52bc, data_020a52d0, data_020a52d4;
 extern void func_0201cf1c(DecForm *, double, DecDigits *);
 extern void func_02013568(DecDigits *, int);
 extern const char *func_020125b4(const char *, char **, FmtSpec *);
-extern void *memcpy(void *, const void *, unsigned);
-extern const char dA[], dB[], dC[], dD[];
 
 
 char *func_0201368c(double x, char *end, FmtSpec spec)

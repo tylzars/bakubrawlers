@@ -54,11 +54,6 @@ extern const u8 data_ov007_02278d7d[];
 
 extern const u8 data_ov007_02278d7e[];
 
-// non-matching: 6 words (+0x10..+0x94): unk4's register and the constant 12 of `unk4 * 12` are swapped (here ip/r5,
-// original r5/ip), which also moves unk8 (r5/r6). The original's allocation is the one the colourer produces when the
-// unk4 value is coloured after `d` (it then shares r5 with d); here the value is a plain temporary, numbered above
-// every local, so it is coloured before d and takes ip. The c-table load matches only with the two-arm if/else below
-// (each arm loads into `c`, the join uses it, and the two identical loads are merged after colouring).
 BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8 unk6, BattleParam *param, u8 unk8) {
     mMode = mode;
     mCharacter = unk4;
@@ -81,7 +76,7 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
     mParam = param;
     mHelper = 0;
     mData = data;
-    BattleData *d = mData;
+    BattleEntry *entries = mData->mEntries;
     mUnk_24 = data_ov007_02286570[mode];
     int row = unk4 * 12;
     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[index];
@@ -165,7 +160,7 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
             break;
     }
     u8 side = mRole - 2;
-    mHelper = new BattleSideHelper(side, unk4, d->mEntries);
+    mHelper = new BattleSideHelper(side, unk4, entries);
 }
 
 BattleSlot::~BattleSlot() {

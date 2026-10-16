@@ -98,8 +98,10 @@ These routines are not compiler output. Where they are matched, it is as comment
 - 0x0203b808 (size 0x5c0, `func_0203b808` in MobiclipFile.cpp, an asm body): the YUV-to-RGB555 converter called
   from MobiclipDecoder with an argument block (Y plane, interleaved U/V, destination, stride, width, height, lookup
   table). It keeps six computed row skips in a data block on the stack and unrolls its inner loop into 8 blocks.
-- The BIOS call thunks (`SoftReset`, `CpuSet`, ... at 0x02000086-0x020007ba, Thumb, between filler bytes): not
-  written yet.
+- The secure area (0x02000000-0x02000800) is `init/secure_area.s`, assembled with the toolchain's mwasmarm: the 18
+  BIOS call thunks (`SoftReset`, `CpuSet`, ...; Thumb, at halfword-aligned addresses) as functions, the filler
+  between them as data. Each compiled function gets its own 4-byte-aligned section, so the thunks can't come from C;
+  an assembly file can place global function labels anywhere inside one section.
 - Written as asm bodies: start-up code (`init/crt0.c`), the soft-float and division runtime
   (`rt_soft_float.c`), the SHA-1 block transform (`math/math_sha1.c`), the divider/sqrt register save and restore
   (`cp/cp_context.c`), the LZ streaming step `func_02007d94` (`mi/mi_uncompress.c`), CRI's MPEG synthesis dot

@@ -427,6 +427,10 @@ libs/nds/src/mi/mi_init.c:
     complete
     .text       start:0x02007f18 end:0x02007f30
 
+libs/nds/src/init/secure_area.s:
+    complete
+    .text       start:0x02000000 end:0x02000800
+
 libs/nds/src/init/crt0.c:
     complete
     .text       start:0x02000800 end:0x02000ba0

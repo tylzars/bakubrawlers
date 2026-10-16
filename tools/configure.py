@@ -4,6 +4,7 @@
 Pipeline:  baserom --dsd rom extract--> extract/<ver>/
            dsd delink                -> build/<ver>/delinks/*.o   (asm-equivalent objects for not-yet-decompiled code)
            mwccarm src/**.c(pp)      -> build/<ver>/src/**.o      (decompiled code, for TUs marked `complete`)
+           mwasmarm libs/**.s        -> build/<ver>/libs/**.o     (data-only or hand-placed regions, see docs)
            dsd lcf + mwldarm         -> build/<ver>/arm9.o + module binaries
            dsd rom config/build      -> build/<ver>/bakugan_<ver>.nds, checked against config/<ver>/rom.sha1
 """
@@ -95,6 +96,8 @@ WINE = args.wine
 OBJDIFF = "tools/bin/objdiff-cli"
 MWCC_ROOT = args.compiler or Path("tools/mwccarm")
 CC = str(MWCC_ROOT / MWCC_VERSION / "mwccarm.exe")
+# The toolchain's assembler, for the few regions written as .s files (2.0 sp2p2 ships none; sp2p3 is the next build).
+ASM = str(MWCC_ROOT / "2.0/sp2p3" / "mwasmarm.exe")
 LD = str(MWCC_ROOT / MWCC_VERSION / "mwldarm.exe")
 
 baserom = Path(info["baserom"])
@@ -124,7 +127,7 @@ delinks = json.loads(subprocess.run([DSD, "json", "delinks", "-c", str(dsd_confi
 
 dsd_config_files = sorted(str(p) for p in config_dir.rglob("*") if p.suffix in (".txt", ".yaml"))
 include_dirs = ["include"] + sorted(str(p) for p in Path("libs").glob("*/include"))
-sources = sorted(p for d in ("src", "libs") for p in Path(d).rglob("*") if p.suffix in (".c", ".cpp"))
+sources = sorted(p for d in ("src", "libs") for p in Path(d).rglob("*") if p.suffix in (".c", ".cpp", ".s"))
 
 lines: list[str] = []
 w = lines.append
@@ -158,6 +161,7 @@ w(f"rule lcf\n  command = {DSD} lcf -c $config && {PY} tools/lcf_force_active.py
 w(f"rule mwcc\n  command = {WINE} $cc $base_flags $cc_flags {' '.join('-i ' + d for d in include_dirs)} "
   f"-d version_{ver.upper()} -MD -c $in -o $outdir && {PY} tools/transform_dep.py $basefile.d $basefile.d && {PY} tools/demote_multidef.py $out\n"
   f"  depfile = $basefile.d\n  deps = gcc\n  description = MWCC $in\n")
+w(f"rule mwasm\n  command = {WINE} {ASM} -proc arm5TE $in -o $out\n  description = MWASM $in\n")
 w(f"rule mwld\n  command = {WINE} {LD} {' '.join(LD_FLAGS)} @$objects $lcf -o $out\n  description = LINK $out\n")
 w(f"rule disassemble\n  command = {DSD} dis -c $config -a $outdir --ual && touch $out\n  description = DIS\n")
 w(f"rule rom_config\n  command = {DSD} rom config --elf $in --config $config\n  description = ROM CONFIG\n")
@@ -203,6 +207,9 @@ compiled_objects = []
 for src in sources:
     obj = build_dir / src.with_suffix(".o")
     compiled_objects.append(str(obj))
+    if src.suffix == ".s":
+        build(str(obj), "mwasm", [str(src)], implicit=[ASM] + tool_outputs)
+        continue
     cc = next((str(MWCC_ROOT / v / "mwccarm.exe") for prefix, v in PATH_COMPILERS.items()
                if str(src).startswith(prefix)), CC)
     drop = next((f for prefix, f in PATH_DROP_FLAGS.items() if str(src).startswith(prefix)), [])

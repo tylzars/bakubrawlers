@@ -120,7 +120,7 @@ void GimmickBakugan::Update() {
         if (!mModel) {
             return;
         }
-        func_020526bc();
+        DrawInstance();
         ModelAnim *anim;
         if (mAnimFrames && (anim = mModel->mAnim) && anim->mReachedEnd) {
             mState++;
@@ -134,7 +134,7 @@ void GimmickBakugan::Update() {
         if (!mModel) {
             return;
         }
-        func_020526bc();
+        DrawInstance();
         if (--mAnimTimer != 0) {
             return;
         }

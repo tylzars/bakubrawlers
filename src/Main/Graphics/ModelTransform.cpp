@@ -47,7 +47,7 @@ void ModelTransform::LoadFilesNoAnim(const char *nsbtx, const char *nsbmd) {
     LoadFiles(nsbtx, nsbmd, NULL, 0);
 }
 
-BOOL ModelTransform::func_020526bc() {
+BOOL ModelTransform::DrawInstance() {
     if (mModel == NULL) {
         return FALSE;
     }

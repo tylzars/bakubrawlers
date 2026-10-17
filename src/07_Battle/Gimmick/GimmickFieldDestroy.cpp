@@ -129,7 +129,7 @@ void GimmickFieldDestroy::Update() {
         break;
     case 1: {
         if ((int)data_020d433c.mGimmicks->mState >= 2) {
-            func_020526bc();
+            DrawInstance();
         }
         GimmickSetData *set = mCollision;
         if (set && set->mHitCount) {

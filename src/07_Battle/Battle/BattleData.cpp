@@ -117,7 +117,7 @@ BattleData::~BattleData() {
     }
 }
 
-extern const u8 data_020a1074[];
+extern const u8 gBakuganNumbers[];
 
 void BattleData::Load() {
     char path[0x80];
@@ -126,7 +126,7 @@ void BattleData::Load() {
     ChangeDir("/Game/Bakugan/Card/");
     u8 i = 0;
     do {
-        u8 id = data_020a1074[mEntries[i].mBakuganId];
+        u8 id = gBakuganNumbers[mEntries[i].mBakuganId];
         u32 size;
         sprintf(path, "bakugan_l_%03d.nce_ncg1D.bin", id);
         screen.LoadCharacters(path, i << 13, 0);

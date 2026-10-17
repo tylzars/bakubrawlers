@@ -29,7 +29,7 @@ struct OamSource {
 
 void WriteOamMatrix(void *slot_, SpriteTransform *transform);
 
-void func_02027cf4(s32 *x, s32 *y, s32 shape, SpriteTransform *transform);
+void ApplySpriteTransform(s32 *x, s32 *y, s32 shape, SpriteTransform *transform);
 
 extern "C" fx32 FX_Div(fx32 num, fx32 den);
 
@@ -147,7 +147,7 @@ void SpriteScreen::AddOam(void *buffer, u8 count, s16 unk3, s16 unk4, u32 unk5, 
         s32 shape = attr & 0xc000c000;
         if (transform != NULL) {
             flip = 0x300;
-            func_02027cf4(&x, &y, shape, transform);
+            ApplySpriteTransform(&x, &y, shape, transform);
         } else if ((flip == 0x300) | (flip == 0x100)) {
             SpriteTransform identity(0x1000, 0x1000, 0);
             WriteOamMatrix((u8 *) this + mMatrixCount * 0x20, &identity);
@@ -275,7 +275,7 @@ void ComputeTransformMatrix(MtxFx22 *out, SpriteTransform *transform) {
 
 
 
-void func_02027cf4(s32 *x, s32 *y, s32 shape, SpriteTransform *transform) {
+void ApplySpriteTransform(s32 *x, s32 *y, s32 shape, SpriteTransform *transform) {
     fx32 cx = *x << 12;
     fx32 cy = *y << 12;
     fx32 width;
@@ -389,7 +389,7 @@ void SpriteScreen::LoadExtPalette(const char *path, u32 unk2, u32 unk3) {
 
 
 
-void *SpriteScreen::func_02028054(u8 *data) {
+void *SpriteScreen::DownsampleCharacters(u8 *data) {
     u8 *buffer = (u8 *) OS_Alloc(0x1000);
     MI_CpuClear32(buffer, 0x1000);
     u16 i = 0;

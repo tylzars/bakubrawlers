@@ -26,12 +26,12 @@ SaveWindow::SaveWindow(u32 unk1, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk
     mWindow = NULL;
     mMessages = NULL;
     mTextBuffer = NULL;
-    mUnk_18 = unk3;
-    mUnk_1c = unk4;
-    mUnk_20 = unk6;
-    mUnk_24 = unk7;
-    mUnk_28 = unk8;
-    mUnk_2c = *(u16 *) &unk9;
+    mWindowCharOffset = unk3;
+    mWindowPaletteOffset = unk4;
+    mTextCharOffset = unk6;
+    mTextPaletteOffset = unk7;
+    mCellCharOffset = unk8;
+    mCellPaletteOffset = *(u16 *) &unk9;
     mScreen = unk1;
     mWindowBg = unk2;
     mTextBg = unk5;
@@ -162,13 +162,13 @@ extern const WindowItemRecord gSaveWindowItems[];
 // brightness and SpriteManager::sFade/sBrightness (:259-266, :321-328).
 void SaveWindow::Load() {
     ChangeDir("/Game/2D/union_b/");
-    LoadAndQueueUpload(mScreen, 1, mUnk_1c, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    LoadAndQueueUpload(mScreen, gBgCharUploadKinds[mWindowBg], mUnk_18, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(mScreen, 1, mWindowPaletteOffset, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(mScreen, gBgCharUploadKinds[mWindowBg], mWindowCharOffset, "union_b_bg_window_ncg.bin", 0, 0, 0);
     u32 size;
     u16 *tiles = (u16 *) LoadFile("union_b_bg_window_a_nsc.bin", 0, 0, 0, &size, 0);
     size >>= 1;
-    u16 tileAdd = mUnk_18 >> 6;
-    u16 palAdd  = (mUnk_1c & 0x1fff) / 0x200;
+    u16 tileAdd = mWindowCharOffset >> 6;
+    u16 palAdd  = (mWindowPaletteOffset & 0x1fff) / 0x200;
     if ((palAdd | tileAdd) != 0) {
         u16 i = 0;
         do {
@@ -185,21 +185,21 @@ void SaveWindow::Load() {
     QueueUpload(mScreen, gBgScrUploadKinds[mWindowBg], 0, tiles, size * 2, 1);
     ChangeDir("/");
     mMessages = (MessageFile *) LoadFile("/font/mes_system.mes", 0, 0, 0, 0, 0);
-    TextManager::Get().func_0202ce44(mScreen, 0, (mUnk_24 >> 5) & 0xff, 0);
+    TextManager::Get().func_0202ce44(mScreen, 0, (mTextPaletteOffset >> 5) & 0xff, 0);
     TextManager::Get();
     u16 *buffer = (u16 *) OS_Alloc(0x600);
-    MIi_CpuClear16((u16) ((mUnk_20 >> 5) | ((mUnk_24 >> 5) << 12)), buffer, 0x600);
-    TextManager::Get().FillScrChars(0, buffer, (mUnk_24 >> 5) & 0xff, (u16) mUnk_20, 0x18, 0x18, 0x20);
+    MIi_CpuClear16((u16) ((mTextCharOffset >> 5) | ((mTextPaletteOffset >> 5) << 12)), buffer, 0x600);
+    TextManager::Get().FillScrChars(0, buffer, (mTextPaletteOffset >> 5) & 0xff, (u16) mTextCharOffset, 0x18, 0x18, 0x20);
     QueueUpload(mScreen, gBgScrUploadKinds[mTextBg], 0, buffer, 0x600, 1);
     TextManager::Get();
     mTextBufferSize = 0x4000;
     mTextBuffer = OS_Alloc(mTextBufferSize);
     SpriteScreen &screen = SpriteManager::Get().Screen(mScreen);
-    screen.LoadCharacters("/Game/2D/union_b/union_b_obj_window.nce_ncg1D.bin", mUnk_28, 0);
-    screen.LoadPalette("/Game/2D/union_b/union_b_obj_window_ncl.bin", mUnk_2c, 0);
+    screen.LoadCharacters("/Game/2D/union_b/union_b_obj_window.nce_ncg1D.bin", mCellCharOffset, 0);
+    screen.LoadPalette("/Game/2D/union_b/union_b_obj_window_ncl.bin", mCellPaletteOffset, 0);
     for (u8 i = 0; i < 4; i++) {
-        sSaveWindowCells[i].mCharOffset = mUnk_28;
-        sSaveWindowCells[i].mPaletteBase = mUnk_2c / 32;
+        sSaveWindowCells[i].mCharOffset = mCellCharOffset;
+        sSaveWindowCells[i].mPaletteBase = mCellPaletteOffset / 32;
     }
     mWindow = new SelectWindow(4, gSaveWindowItems, 1);
     mWindow->SetCells(4, sSaveWindowCells);
@@ -342,7 +342,7 @@ void SaveWindow::PrintMessage(u32 index) {
     MessageFile *file = mMessages;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x18, 0x10, &width, &height, &pixelWidth, 0, 2, 0,
                0x10, 0, 0, 1, 1, 1);
-    QueueUpload(mScreen, gBgCharUploadKinds[mTextBg], mUnk_20, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(mScreen, gBgCharUploadKinds[mTextBg], mTextCharOffset, mTextBuffer, mTextBufferSize, 0);
     s16 offset = (pixelWidth - 0x100) / 2;
     switch (mTextBg) {
         case 0:

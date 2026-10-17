@@ -147,7 +147,7 @@ MyroomShootScene::~MyroomShootScene() {
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     MI_CpuClearFast((void *) 0x6200000, 0x20000);
     SpriteManager::Get().ClearSlotUsed(0);
-    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().ResetSlots();
 }
 
 void MyroomShootScene::Update() {
@@ -291,7 +291,7 @@ void MyroomShootScene::Init() {
     mRoom = model->CreateInstance(0);
     data_020d433c.mEffects = new EffectManager();
     LoadEffectGroup(data_020d433c.mEffects, 0, "shoot");
-    SpriteManager::Get().func_02027504(0);
+    SpriteManager::Get().SaveSlot(0);
     SelectShooter(0);
     ChangeDir("/font/");
     if (mMessages == NULL) {
@@ -557,7 +557,7 @@ void MyroomShootScene::func_ov008_02223264() {
         SpriteManager::Get().StartFade(3);
         mState = 3;
     } else if (mPendingSelection != -1) {
-        SpriteManager::Get().func_0202753c(0);
+        SpriteManager::Get().RestoreSlot(0);
         SelectShooter(mPendingSelection);
         PrintShooterText();
         if (mWindow->mState != 1) {

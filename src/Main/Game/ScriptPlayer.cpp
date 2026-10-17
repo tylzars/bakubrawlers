@@ -28,8 +28,8 @@ extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 extern "C" void DC_FlushRange(void *buffer, u32 size);
 void SetNoStorytalkMessage(StorytalkWindow *object);
 extern "C" void MIi_CpuCopy32(const void *src, void *dest, u32 size);
-extern const u32 data_020a23cc[8][6];
-extern "C" void SaveTexSlotRanges(UnkStruct_SpriteManager_28 *slot);
+extern const u32 gScriptSpriteSlots[8][6];
+extern "C" void SaveTexSlotRanges(TexSlotRanges *slot);
 extern "C" void RestoreSndHeapState(u32 a, u32 b);
 
 void FillParkSlots();
@@ -47,9 +47,9 @@ void UnlockStoreItems();
 
 BOOL UnlockCharacters();
 
-BOOL func_02086b74();
+BOOL UnlockFields();
 
-BOOL func_02086e08();
+BOOL UnlockTips();
 
 extern const u8 data_020a2118[];
 
@@ -95,12 +95,12 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
     mUnk_14e2 = unk1;
     mUnk_14e4 = 0;
     mUnk_14e5 = 0;
-    mUnk_14e6 = 0;
+    mGraphicsLoaded = 0;
     mUnk_14e7 = 0;
     mUnk_14e8 = 0;
     mUnk_14e9 = 0;
-    mUnk_14ea = 0;
-    mUnk_14eb = 0;
+    mSaveRequested = 0;
+    mUnlockPopupHandle = 0;
     mSkipped = 0;
     mUnk_14ed = 0;
     mUnk_14ee = 0;
@@ -122,14 +122,14 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
         mModels[i].mModelId = -1;
         mModels[i].mNextModelId = -1;
         mModels[i].mScale = 1;
-        mModels[i].mUnk_4f = 0x80;
+        mModels[i].mStorytalkCell2X = 0x80;
         mCharacters[i].mShadowScale = 0x28;
-        mCharacters[i].mUnk_3f = 0x80;
+        mCharacters[i].mStorytalkCell2X = 0x80;
         mCharacters[i].mUnk_40 = 0x80;
         mCharacters[i].mUnk_41 = 0x80;
         mSpheres[i].mTableIndex = -1;
         mSpheres[i].mNextTableIndex = -1;
-        mSpheres[i].mUnk_38 = 0x80;
+        mSpheres[i].mStorytalkCell2X = 0x80;
         mSpheres[i].mUnk_39 = 0x80;
         mSpheres[i].mUnk_3a = 0x80;
         mSpheres[i].mShadowY = 0;
@@ -156,10 +156,10 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
     if (data_020d433c.mUnk_84 != 0) {
         RestoreSndHeapState(SoundManager::Get().mHeap, 2);
     } else {
-        SoundManager::Get().func_020245a4();
+        SoundManager::Get().RestoreHeapState();
     }
-    SoundManager::Get().func_020246d4(3);
-    func_020666d8();
+    SoundManager::Get().LoadSoundGroup(3);
+    SetupSpriteSlots();
 }
 
 ScriptPlayer::~ScriptPlayer() {
@@ -190,19 +190,19 @@ ScriptPlayer::~ScriptPlayer() {
         FrameTask::Get().StopChannel(0);
     }
     FrameTask::Get().StopChannel(1);
-    SoundManager::Get().func_02024754(1);
+    SoundManager::Get().StopSeqArcPlayerSounds(1);
     if (data_020d433c.mUnk_84 == 0) {
         SoundManager::Get().StopSeq(1);
     }
 }
 
-void ScriptPlayer::func_020666d8() {
-    SpriteManager::Get().func_0202740c();
-    UnkStruct_SpriteManager_28 slot;
+void ScriptPlayer::SetupSpriteSlots() {
+    SpriteManager::Get().ResetSlots();
+    TexSlotRanges slot;
     SaveTexSlotRanges(&slot);
     for (u8 i = 0; i < 8; i++) {
         for (u8 j = 0; j < 6; j++) {
-            slot.mUnk_00[j] = data_020a23cc[i][j];
+            slot.mUnk_00[j] = gScriptSpriteSlots[i][j];
         }
         SpriteManager::Get().SetSlot(i, &slot);
     }
@@ -321,7 +321,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
         }
         if (unk1 != 0) {
             if ((advance | done) && pending != 0) {
-                mUnk_14ea = 1;
+                mSaveRequested = 1;
             }
             if (advance != 0) {
                 u32 limit = 10;
@@ -360,7 +360,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                     }
                     gSaveData[0].mUnk_42 = 10;
                     StopWithResult(6);
-                    mUnk_14ea = 1;
+                    mSaveRequested = 1;
                 } else {
                     u32 next = 0;
                     if (data_020b4324[type]->mUnk_78 != 0) {
@@ -567,7 +567,7 @@ void ScriptPlayer::Update() {
     UpdateMessages();
     func_0206a01c();
     DrawMap();
-    func_02068714();
+    UpdateCharacterExtraAnims();
     DrawCharacters();
     DrawSpheres();
     DrawModels();
@@ -598,16 +598,16 @@ void ScriptPlayer::Update() {
             UpdateWait();
             break;
         case 5:
-            if (mUnk_14ea != 0) {
+            if (mSaveRequested != 0) {
                 UnlockStoreItems();
                 if (UnlockCharacters()) {
-                    mUnk_14eb = 1;
+                    mUnlockPopupHandle = 1;
                     mState = 7;
-                } else if (func_02086b74()) {
-                    mUnk_14eb = 2;
+                } else if (UnlockFields()) {
+                    mUnlockPopupHandle = 2;
                     mState = 7;
-                } else if (func_02086e08()) {
-                    mUnk_14eb = 3;
+                } else if (UnlockTips()) {
+                    mUnlockPopupHandle = 3;
                     mState = 7;
                 } else {
                     mState++;
@@ -617,14 +617,14 @@ void ScriptPlayer::Update() {
             }
             break;
         case 6:
-            if (mUnk_14ea != 0) {
+            if (mSaveRequested != 0) {
                 break;
             }
             LoadGraphics();
             mState = 8;
             break;
         case 7:
-            if (mUnk_14eb != 0) {
+            if (mUnlockPopupHandle != 0) {
                 break;
             }
             LoadGraphics();
@@ -640,7 +640,7 @@ void ScriptPlayer::Update() {
                     mState = 9;
                 }
             }
-            if (mUnk_14ea != 0) {
+            if (mSaveRequested != 0) {
                 mState = 5;
             }
             break;
@@ -714,7 +714,7 @@ BOOL ScriptPlayer::IsRunning() {
 }
 
 u32 ScriptPlayer::GetResult() {
-    if (mUnk_14ea | mUnk_14eb) {
+    if (mSaveRequested | mUnlockPopupHandle) {
         return 0;
     }
     return mResult;
@@ -726,31 +726,31 @@ void ScriptPlayer::StopWithResult(u32 unk1) {
     mState = 4;
 }
 
-BOOL ScriptPlayer::func_02067938() {
-    return mUnk_14e6;
+BOOL ScriptPlayer::IsGraphicsLoaded() {
+    return mGraphicsLoaded;
 }
 
-void ScriptPlayer::func_02067944() {
-    mUnk_14e6 = 0;
+void ScriptPlayer::ClearGraphicsLoaded() {
+    mGraphicsLoaded = 0;
 }
 
-u32 ScriptPlayer::func_02067954() {
+u32 ScriptPlayer::GetSaveRequest() {
     if (mState == 6) {
-        return mUnk_14ea;
+        return mSaveRequested;
     }
     return 0;
 }
 
-void ScriptPlayer::func_0206796c() {
-    mUnk_14ea = 0;
+void ScriptPlayer::ClearSaveRequest() {
+    mSaveRequested = 0;
 }
 
-u32 ScriptPlayer::func_0206797c() {
-    return mUnk_14eb;
+u32 ScriptPlayer::GetUnlockPopupHandle() {
+    return mUnlockPopupHandle;
 }
 
-void ScriptPlayer::func_02067988() {
-    mUnk_14eb = 0;
+void ScriptPlayer::ClearUnlockPopupHandle() {
+    mUnlockPopupHandle = 0;
 }
 
 extern const s8 data_020a1b2a[][5];
@@ -850,7 +850,7 @@ void ScriptPlayer::LoadGraphics() {
     }
     ChangeDir("/");
     if (mShadowModel == NULL) {
-        SpriteManager::Get().func_0202753c(7);
+        SpriteManager::Get().RestoreSlot(7);
         NitroTexture *texture = new NitroTexture("story/mdl/cut_shadow.nsbtx");
         NitroModel *model     = new NitroModel;
         model->Load("story/mdl/cut_shadow.nsbmd", texture);
@@ -989,11 +989,11 @@ BOOL ScriptPlayer::LoadCharacter(u32 index, u32 flag) {
 
 void ScriptPlayer::func_020682a0(u32 index, u32 kind) {
     if (kind == 0x15) {
-        SpriteManager::Get().func_0202753c(3);
+        SpriteManager::Get().RestoreSlot(3);
     } else if (index == 0) {
-        SpriteManager::Get().func_0202753c(2);
+        SpriteManager::Get().RestoreSlot(2);
     } else {
-        SpriteManager::Get().func_0202753c(1);
+        SpriteManager::Get().RestoreSlot(1);
     }
 }
 
@@ -1024,13 +1024,13 @@ struct UnkStruct_020a2554 {
 extern const UnkStruct_020a2554 data_020a2554[42];
 extern const char *data_020b431c[];
 
-struct UnkStruct_020a1bd6 {
-    /* 0 */ u8 mUnk_0;
-    /* 1 */ u8 mUnk_1;
-    /* 2 */ u8 mUnk_2;
+struct ScriptSphereEntry {
+    /* 0 */ u8 mBakuganId;
+    /* 1 */ u8 mVariant;
+    /* 2 */ u8 mCharacterId;
     /* 3 */
 };
-extern const UnkStruct_020a1bd6 data_020a1bd6[];
+extern const ScriptSphereEntry gScriptSphereEntries[];
 
 void ScriptPlayer::ResetCharacterParams(u32 index) {
     switch (mCharacters[index].mCharacterId) {
@@ -1067,11 +1067,11 @@ void ScriptPlayer::ResetCharacterParams(u32 index) {
             mCharacters[index].mShadowScale = 0x28;
             break;
     }
-    mCharacters[index].mUnk_3f = 0x80;
+    mCharacters[index].mStorytalkCell2X = 0x80;
     mCharacters[index].mUnk_40 = 0x80;
     mCharacters[index].mUnk_41 = 0x80;
-    mCharacters[index].mUnk_42 = 0;
-    mCharacters[index].mUnk_3c = 0;
+    mCharacters[index].mStorytalkCell2Frame = 0;
+    mCharacters[index].mExtraAnimEnabled = 0;
 }
 
 void ScriptPlayer::SwapCharacter(u32 index) {
@@ -1105,15 +1105,15 @@ void ScriptPlayer::SwapCharacter(u32 index) {
     }
 }
 
-void ScriptPlayer::func_0206867c(u32 index, u32 value) {
-    if (value == mCharacters[index].mUnk_3c) {
+void ScriptPlayer::SetCharacterExtraAnimEnabled(u32 index, u32 value) {
+    if (value == mCharacters[index].mExtraAnimEnabled) {
         return;
     }
-    mCharacters[index].mUnk_3c = value;
+    mCharacters[index].mExtraAnimEnabled = value;
     if (mCharacters[index].mCharacter == NULL) {
         return;
     }
-    mCharacters[index].mCharacter->func_0205466c(mCharacters[index].mUnk_3c);
+    mCharacters[index].mCharacter->SetExtraAnimEnabled(mCharacters[index].mExtraAnimEnabled);
     if (mCharacters[index].mUnk_3b == 0) {
         return;
     }
@@ -1124,20 +1124,20 @@ void ScriptPlayer::func_0206867c(u32 index, u32 value) {
     }
 }
 
-void ScriptPlayer::func_02068714() {
+void ScriptPlayer::UpdateCharacterExtraAnims() {
     for (u8 i = 0; i < 2; i++) {
         s32 kind = mCharacters[i].mCharacterId;
         if (kind < 0) {
             continue;
         }
         if (kind == mStorytalkWindow->mCharacterId) {
-            if (mStorytalkWindow->func_02088ef4()) {
-                func_0206867c(i, 1);
+            if (mStorytalkWindow->GetPageTextTimer()) {
+                SetCharacterExtraAnimEnabled(i, 1);
             } else {
-                func_0206867c(i, 0);
+                SetCharacterExtraAnimEnabled(i, 0);
             }
         } else {
-            func_0206867c(i, 0);
+            SetCharacterExtraAnimEnabled(i, 0);
         }
     }
 }
@@ -1193,7 +1193,7 @@ BOOL ScriptPlayer::SetMap(s32 value) {
 
 BOOL ScriptPlayer::LoadMap() {
     char path[0x80];
-    SpriteManager::Get().func_0202753c(0);
+    SpriteManager::Get().RestoreSlot(0);
     s32 index = mMaps[0].mMapId;
     if (index > 0x11) {
         index = 0x11;
@@ -1271,7 +1271,7 @@ void ScriptPlayer::LoadRealbakuPalettes(TextureFile *texture, u32 id) {
         ChangeDir("/Game/Realbaku/Tex");
         u8 i;
         const char *prefix = data_020a2554[id].mName;
-        u8 variant         = gSaveData[0].mUnk_1a_8;
+        u8 variant         = gSaveData[0].mAttribute;
         for (i = 0; i < 11; i++) {
             sprintf(name, "%s_%02d", prefix, i);
             sprintf(file, "%s_%02d_%02d", prefix, i, variant);
@@ -1284,9 +1284,9 @@ void ScriptPlayer::LoadRealbakuPalettes(TextureFile *texture, u32 id) {
 BOOL ScriptPlayer::LoadModel(u32 index) {
     char path[0x80];
     if (index == 0) {
-        SpriteManager::Get().func_0202753c(1);
+        SpriteManager::Get().RestoreSlot(1);
     } else {
-        SpriteManager::Get().func_0202753c(6);
+        SpriteManager::Get().RestoreSlot(6);
     }
     s32 value = mModels[index].mModelId;
     if (value > 0x29) {
@@ -1326,8 +1326,8 @@ BOOL ScriptPlayer::LoadModel(u32 index) {
     mModels[index].mHideAtAnimEnd = 0;
     mModels[index].mVisible = 0;
     mModels[index].mScale = data_020a2554[id].mUnk_05;
-    mModels[index].mUnk_4f = 0x80;
-    mModels[index].mUnk_50 = 0;
+    mModels[index].mStorytalkCell2X = 0x80;
+    mModels[index].mStorytalkCell2Frame = 0;
     return TRUE;
 }
 
@@ -1378,9 +1378,9 @@ BOOL ScriptPlayer::LoadNextModelFiles(u32 index) {
 void ScriptPlayer::SwapModel(u32 index) {
     ReleaseModel(index);
     if (index == 0) {
-        SpriteManager::Get().func_0202753c(1);
+        SpriteManager::Get().RestoreSlot(1);
     } else {
-        SpriteManager::Get().func_0202753c(6);
+        SpriteManager::Get().RestoreSlot(6);
     }
     u8 id = mModels[index].mNextModelId;
     TextureFile *texture = new NitroTextureData(mModels[index].mNextFiles[0]);
@@ -1450,17 +1450,17 @@ void ScriptPlayer::CreateNextSphere(u32 index) {
         return;
     }
     mSpheres[index].mNextSphere = new BakuganModel();
-    u8 value = func_02069780(kind);
-    mSpheres[index].mNextSphere->StoreSetup(data_020a1bd6[kind].mUnk_0, value, 5);
+    u8 value = GetSphereVariant(kind);
+    mSpheres[index].mNextSphere->StoreSetup(gScriptSphereEntries[kind].mBakuganId, value, 5);
 }
 
-u8 ScriptPlayer::func_02069780(u32 index) {
-    switch (data_020a1bd6[index].mUnk_0) {
+u8 ScriptPlayer::GetSphereVariant(u32 index) {
+    switch (gScriptSphereEntries[index].mBakuganId) {
         case 0x24:
         case 0x25:
-            return gSaveData[0].mUnk_1a_8;
+            return gSaveData[0].mAttribute;
     }
-    return data_020a1bd6[index].mUnk_1;
+    return gScriptSphereEntries[index].mVariant;
 }
 
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);
@@ -1477,9 +1477,9 @@ enum UnkStruct_02065c40_ModelMode { UNK_02065C40_MODEL_MODE_1 = 1, UNK_02065C40_
 
 BOOL ScriptPlayer::LoadSphere(u32 index, u32 flag) {
     if (index == 0) {
-        SpriteManager::Get().func_0202753c(4);
+        SpriteManager::Get().RestoreSlot(4);
     } else {
-        SpriteManager::Get().func_0202753c(5);
+        SpriteManager::Get().RestoreSlot(5);
     }
     if (flag) {
         if (!mSpheres[index].mNextSphere->func_0203d6f0()) {
@@ -1495,8 +1495,8 @@ BOOL ScriptPlayer::LoadSphere(u32 index, u32 flag) {
         }
         ChangeDir("/");
         mSpheres[index].mSphere = new BakuganModel();
-        u8 value = func_02069780(kind);
-        mSpheres[index].mSphere->Setup(data_020a1bd6[kind].mUnk_0, value, (u8) mode);
+        u8 value = GetSphereVariant(kind);
+        mSpheres[index].mSphere->Setup(gScriptSphereEntries[kind].mBakuganId, value, (u8) mode);
         mSpheres[index].mVisible = 0;
         MI_CpuClear16(&mSpheres[index], 0x18);
         MI_CpuClear16(mSpheres[index].mRot, 0x14);
@@ -1506,10 +1506,10 @@ BOOL ScriptPlayer::LoadSphere(u32 index, u32 flag) {
 }
 
 void ScriptPlayer::ResetSphereParams(u32 index) {
-    mSpheres[index].mUnk_38 = 0x80;
+    mSpheres[index].mStorytalkCell2X = 0x80;
     mSpheres[index].mUnk_39 = 0x80;
     mSpheres[index].mUnk_3a = 0x80;
-    mSpheres[index].mUnk_3b = 0;
+    mSpheres[index].mStorytalkCell2Frame = 0;
     mSpheres[index].mUnk_3c = 0;
     mSpheres[index].mUnk_3d = 0;
     mSpheres[index].mUnk_3e = 0;
@@ -1535,9 +1535,9 @@ void ScriptPlayer::SwapSphere(u32 index) {
     mSpheres[index].mTableIndex = mSpheres[index].mNextTableIndex;
     mSpheres[index].mUnk_36 = 1;
     if (index == 0) {
-        SpriteManager::Get().func_0202753c(4);
+        SpriteManager::Get().RestoreSlot(4);
     } else {
-        SpriteManager::Get().func_0202753c(5);
+        SpriteManager::Get().RestoreSlot(5);
     }
     mSpheres[index].mSphere->RunStoredSetup();
     ResetSphereParams(index);
@@ -1662,15 +1662,15 @@ void ScriptPlayer::func_0206a01c() {
         } else {
             for (u8 i = 0; i < 2; i++) {
                 if (mCharacters[i].mCharacter != NULL && current == mCharacters[i].mCharacterId) {
-                    second = mCharacters[i].mUnk_3f;
-                    first  = mCharacters[i].mUnk_42;
+                    second = mCharacters[i].mStorytalkCell2X;
+                    first  = mCharacters[i].mStorytalkCell2Frame;
                     break;
                 }
                 if (mSpheres[i].mSphere != NULL) {
                     s32 kind = mSpheres[i].mTableIndex;
-                    if (kind >= 0 && current == data_020a1bd6[kind].mUnk_2) {
-                        second = mSpheres[i].mUnk_38;
-                        first  = mSpheres[i].mUnk_3b;
+                    if (kind >= 0 && current == gScriptSphereEntries[kind].mCharacterId) {
+                        second = mSpheres[i].mStorytalkCell2X;
+                        first  = mSpheres[i].mStorytalkCell2Frame;
                         break;
                     }
                 }
@@ -1692,15 +1692,15 @@ void ScriptPlayer::func_0206a01c() {
                         }
                     }
                     if (match) {
-                        second = mModels[i].mUnk_4f;
-                        first  = mModels[i].mUnk_50;
+                        second = mModels[i].mStorytalkCell2X;
+                        first  = mModels[i].mStorytalkCell2Frame;
                         break;
                     }
                 }
             }
         }
     }
-    mStorytalkWindow->func_02088a18(first, second);
+    mStorytalkWindow->SetCell2FrameAndX(first, second);
 }
 
 void ScriptPlayer::SetCutsceneAnimation(u32 value, u32 force) {
@@ -1743,7 +1743,7 @@ void ScriptPlayer::UpdateMessages() {
             if (mUnk_12ba == 0) {
                 mMessageState = 3;
             } else if (mUnk_12ba == 3) {
-                mStorytalkWindow->mUnk_4a = 1;
+                mStorytalkWindow->mKeepLastPage = 1;
                 u8 r      = mStorytalkWindow->HasMorePages();
                 mUnk_14f1 = r;
                 if (r) {
@@ -2006,7 +2006,7 @@ void ScriptPlayer::UpdateCharacterAnimation(u32 index) {
     }
     s8 other = func_020687a8((u8) mCharacters[index].mCharacterId, target, 3);
     mCharacters[index].mCharacter->func_02054644((u8) other, (u8) value);
-    mCharacters[index].mUnk_3c = 0;
+    mCharacters[index].mExtraAnimEnabled = 0;
     anim->mLoop = loop;
 }
 
@@ -2104,7 +2104,7 @@ struct UnkStruct_020a1c04 {
 extern const UnkStruct_020a2198 data_020a2198[];
 extern const UnkStruct_020a1c04 data_020a1c04[];
 
-UnkStruct_02065c40_Kind ScriptPlayer::func_0206b05c(u32 id) {
+UnkStruct_02065c40_Kind ScriptPlayer::GetCommandSlot(u32 id) {
     if (id < 0x60) {
         return UNK_02065C40_KIND_0;
     }
@@ -2154,7 +2154,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
     mCurrentCommand = command;
     mCurrentValue = value;
     s16 angle = (mCurrentValue << 16) / 360;
-    u32 idx   = func_0206b05c(mCurrentCommand);
+    u32 idx   = GetCommandSlot(mCurrentCommand);
     mWaitKind = 0;
     switch (mCurrentCommand) {
         case 1:
@@ -2190,10 +2190,10 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             mUnk_14ee = mCurrentValue;
             break;
         case 11:
-            mStorytalkWindow->mUnk_3a = mCurrentValue;
+            mStorytalkWindow->mTextOnlyX = mCurrentValue;
             break;
         case 12:
-            mStorytalkWindow->mUnk_3b = mCurrentValue;
+            mStorytalkWindow->mTextOnlyY = mCurrentValue;
             break;
         case 13:
             mWaitTimer = mCurrentValue;
@@ -2511,11 +2511,11 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             break;
         case 186:
         case 208:
-            mModels[idx].mUnk_4f = mCurrentValue;
+            mModels[idx].mStorytalkCell2X = mCurrentValue;
             break;
         case 187:
         case 209:
-            mModels[idx].mUnk_50 = mCurrentValue;
+            mModels[idx].mStorytalkCell2Frame = mCurrentValue;
             break;
         case 59:
             if (SetMap(mCurrentValue)) {
@@ -2663,7 +2663,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             break;
         case 92:
         case 115:
-            mCharacters[idx].mUnk_3f = mCurrentValue;
+            mCharacters[idx].mStorytalkCell2X = mCurrentValue;
             mCharacters[idx].mUnk_40 = mCurrentValue;
             mCharacters[idx].mUnk_41 = mCurrentValue;
             break;
@@ -2672,7 +2672,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             break;
         case 94:
         case 117:
-            mCharacters[idx].mUnk_42 = mCurrentValue;
+            mCharacters[idx].mStorytalkCell2Frame = mCurrentValue;
             break;
         case 95:
         case 118:
@@ -2803,20 +2803,20 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             mSpheres[1].mRotTo[2] = angle;
             break;
         case 137:
-            mSpheres[0].mUnk_38 = mCurrentValue;
+            mSpheres[0].mStorytalkCell2X = mCurrentValue;
             mSpheres[0].mUnk_3a = mCurrentValue;
         case 138:
             mSpheres[0].mUnk_39 = mCurrentValue;
             break;
         case 162:
-            mSpheres[1].mUnk_38 = mCurrentValue;
+            mSpheres[1].mStorytalkCell2X = mCurrentValue;
             mSpheres[1].mUnk_3a = mCurrentValue;
         case 163:
             mSpheres[1].mUnk_39 = mCurrentValue;
             break;
         case 139:
         case 164:
-            mSpheres[idx].mUnk_3b = mCurrentValue;
+            mSpheres[idx].mStorytalkCell2Frame = mCurrentValue;
             break;
         case 140:
         case 165:
@@ -2890,7 +2890,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
                 break;
             }
         case 218:
-            SoundManager::Get().func_02024754(1);
+            SoundManager::Get().StopSeqArcPlayerSounds(1);
             break;
         case 219:
             data_020d433c.mPlayerCount = 2;
@@ -2974,7 +2974,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
         case 233:
             ReleaseModels(1);
             SpriteManager::Get().SetupMode(1, 7);
-            func_020666d8();
+            SetupSpriteSlots();
             CameraManager::Get().SetCamerasAndRequestMode(2, mCamera, (u32) mCamera);
             SpriteManager::Get().SetFade(1, -16);
             mUnk_14e4 = 1;
@@ -3016,7 +3016,7 @@ void ScriptPlayer::UpdateWait() {
             }
             break;
         case 5: {
-            u32 idx = func_0206b05c(mCurrentCommand);
+            u32 idx = GetCommandSlot(mCurrentCommand);
             s32 value = mCurrentValue;
             if (value == -2) {
                 value = mCharacters[idx].mUnk_3a;
@@ -3044,32 +3044,32 @@ void ScriptPlayer::UpdateWait() {
             switch (mCurrentCommand) {
                 case 0x4a:
                 case 0x61:
-                    done = LoadCharacter(func_0206b05c(mCurrentCommand), 0);
+                    done = LoadCharacter(GetCommandSlot(mCurrentCommand), 0);
                     break;
                 case 0x4c:
                 case 0x63:
-                    done = LoadCharacter(func_0206b05c(mCurrentCommand), 1);
+                    done = LoadCharacter(GetCommandSlot(mCurrentCommand), 1);
                     break;
                 case 0x3b:
                     done = LoadMap();
                     break;
                 case 0xa9:
                 case 0xbf:
-                    done = LoadModel(func_0206b05c(mCurrentCommand));
+                    done = LoadModel(GetCommandSlot(mCurrentCommand));
                     break;
                 case 0xaa:
                 case 0xc0:
-                    done = LoadNextModelFiles(func_0206b05c(mCurrentCommand));
+                    done = LoadNextModelFiles(GetCommandSlot(mCurrentCommand));
                     break;
                 case 0x77:
                 case 0x78:
                 case 0x90:
                 case 0x91:
-                    done = LoadSphere(func_0206b05c(mCurrentCommand), 0);
+                    done = LoadSphere(GetCommandSlot(mCurrentCommand), 0);
                     break;
                 case 0x79:
                 case 0x92:
-                    done = LoadSphere(func_0206b05c(mCurrentCommand), 1);
+                    done = LoadSphere(GetCommandSlot(mCurrentCommand), 1);
                     break;
             }
             break;
@@ -3096,8 +3096,8 @@ void ScriptPlayer::UpdateWait() {
                 LERP_FX(mModels[i].mX, mModels[i].mPosFrom[0], mModels[i].mPosTo[0]);
                 LERP_FX(mModels[i].mY, mModels[i].mPosFrom[1], mModels[i].mPosTo[1]);
                 LERP_FX(mModels[i].mZ, mModels[i].mPosFrom[2], mModels[i].mPosTo[2]);
-                LERP_N(mCharacters[i].mUnk_3f, mCharacters[i].mUnk_41, mCharacters[i].mUnk_40);
-                LERP_N(mSpheres[i].mUnk_38, mSpheres[i].mUnk_3a, mSpheres[i].mUnk_39);
+                LERP_N(mCharacters[i].mStorytalkCell2X, mCharacters[i].mUnk_41, mCharacters[i].mUnk_40);
+                LERP_N(mSpheres[i].mStorytalkCell2X, mSpheres[i].mUnk_3a, mSpheres[i].mUnk_39);
                 LERP_S(mCharacters[i].mRot[0], mCharacters[i].mRotFrom[0], mCharacters[i].mRotTo[0]);
                 LERP_S(mCharacters[i].mRot[1], mCharacters[i].mRotFrom[1], mCharacters[i].mRotTo[1]);
                 LERP_S(mCharacters[i].mRot[2], mCharacters[i].mRotFrom[2], mCharacters[i].mRotTo[2]);
@@ -3243,11 +3243,11 @@ void ScriptPlayer::UpdateWait() {
             break;
         case 9:
             LoadGraphics();
-            mUnk_14e6 = 1;
+            mGraphicsLoaded = 1;
             mWaitKind = 10;
             break;
         case 10:
-            if (mUnk_14e6 == 0) {
+            if (mGraphicsLoaded == 0) {
                 done = TRUE;
             }
             break;
@@ -3325,25 +3325,25 @@ BOOL ScriptPlayer::StartScript(const char *path) {
     SetCharacterVisible(1, 0);
     ReleaseModels(0);
     for (u8 i = 0; i < 2; i++) {
-        mCharacters[i].mUnk_3c = 0;
+        mCharacters[i].mExtraAnimEnabled = 0;
         mCharacters[i].mUnk_3b = 0;
         mCharacters[i].mOffsetY = 0;
         mCharacters[i].mShadowScale = 0x28;
-        mCharacters[i].mUnk_3f = 0x80;
+        mCharacters[i].mStorytalkCell2X = 0x80;
         mCharacters[i].mUnk_40 = 0x80;
         mCharacters[i].mUnk_41 = 0x80;
-        mCharacters[i].mUnk_42 = 0;
+        mCharacters[i].mStorytalkCell2Frame = 0;
         MI_CpuClear16(&mCharacters[i], 0x18);
         MI_CpuClear16(mCharacters[i].mRot, 0x14);
         mModels[i].mHideAtAnimEnd = 0;
         mModels[i].mVisible = 0;
         mModels[i].mScale = 1;
-        mModels[i].mUnk_4f = 0x80;
+        mModels[i].mStorytalkCell2X = 0x80;
         mSpheres[i].mVisible = 0;
-        mSpheres[i].mUnk_38 = 0x80;
+        mSpheres[i].mStorytalkCell2X = 0x80;
         mSpheres[i].mUnk_39 = 0x80;
         mSpheres[i].mUnk_3a = 0x80;
-        mSpheres[i].mUnk_3b = 0;
+        mSpheres[i].mStorytalkCell2Frame = 0;
         mSpheres[i].mUnk_36 = 0;
         mSpheres[i].mUnk_3c = 0;
         mSpheres[i].mUnk_3d = 0;

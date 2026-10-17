@@ -109,7 +109,7 @@ RankingCharacterView::~RankingCharacterView() {
     }
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     MI_CpuClearFast((void *) 0x6200000, 0x20000);
-    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().ResetSlots();
 }
 
 void RankingCharacterView::Update() {
@@ -163,7 +163,7 @@ void RankingCharacterView::Update() {
 // not itself a CharacterModel.
 void RankingCharacterView::CreateCharacterModel(u32 kind) {
     mCharacterModel = new UnkStruct_0205401c();
-    SpriteManager::Get().func_02027504(0);
+    SpriteManager::Get().SaveSlot(0);
     mCharacterModel->Create(kind & 0xff, 0, 0, 0);
     mCharacterModel->func_0205461c(0, 1);
     mCharacterModel->SetVisible(1);
@@ -267,7 +267,7 @@ void RankingCharacterView::Load() {
 }
 
 void RankingCharacterView::Draw() {
-    func_0207520c();
+    DrawSprites();
     MtxFx43 *camera = func_020323b8();
     MtxFx43 mtx     = gIdentityMtx43;
     VecFx32 pos     = data_020a2fd8;
@@ -279,7 +279,7 @@ void RankingCharacterView::Draw() {
     mCharacterModel->Draw();
 }
 
-void RankingCharacterView::func_0207520c() {
+void RankingCharacterView::DrawSprites() {
     for (u8 i = 0; i < 4; i++) {
         SpriteManager::Get().Screen(0).AddOam(mGlyphBuffer, 1, (s16) (i * 0x20 + 0x6a), 0x36, 0,
                                                      (u16) (i * 8 + 0x300), 0xf, 0);
@@ -369,7 +369,7 @@ void RankingCharacterView::ApplyNextCharacter() {
     mRank = mNextRank;
     mScore = mNextScore;
     u32 kind = mCharacterId;
-    SpriteManager::Get().func_0202753c(0);
+    SpriteManager::Get().RestoreSlot(0);
     mCharacterModel->Create(kind & 0xff, 0, 0, 0);
     mCharacterModel->func_0205461c(0, 1);
     mCharacterModel->SetVisible(1);

@@ -5,7 +5,7 @@
 
 #include "Graphics/Model.hpp"
 
-// Position / rotation / scale of one ModelInstance, drawn with func_020526bc (0x2c bytes).
+// Position / rotation / scale of one ModelInstance, drawn with DrawInstance (0x2c bytes).
 // ctor 02052548, dtor 02052584 (frees the instance).
 class ModelTransform {
 public:
@@ -25,7 +25,7 @@ public:
 
     ModelTransform();
     ~ModelTransform();
-    BOOL func_020526bc(); // builds the matrix and draws mModel
+    BOOL DrawInstance(); // builds the matrix and draws mModel
     // loads texture, model and optional animation data files and creates the instance (mModel); unk0 -> mUnk_00
     void LoadFiles(const char *nsbtx, const char *nsbmd, const char *data, u32 unk0);
     void LoadFilesNoAnim(const char *nsbtx, const char *nsbmd); // same without animation data

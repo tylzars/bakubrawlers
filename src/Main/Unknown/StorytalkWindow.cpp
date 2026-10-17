@@ -37,9 +37,9 @@ StorytalkWindow::StorytalkWindow() :
     mTextPage = 0;
     mLastTextPage = 0;
     mUnk_39 = 0;
-    mUnk_3a = 0x14;
-    mUnk_3b = 0x40;
-    mUnk_3c = 0;
+    mTextOnlyX = 0x14;
+    mTextOnlyY = 0x40;
+    mPageTextTimer = 0;
     mUnk_3e = 0;
     mCharacterId = -1;
     mHasMessage = 0;
@@ -47,8 +47,8 @@ StorytalkWindow::StorytalkWindow() :
     mCloseRequested = 0;
     mBlink = 0;
     mBlinkHidden = 0;
-    mUnk_4a = 0;
-    mUnk_4b = 0;
+    mKeepLastPage = 0;
+    mTextOnly = 0;
     MI_CpuClear32(mCellAnims, 0xc);
     MI_CpuClear32(mTextBuffers, 8);
     MI_CpuClear32(mTextBufferSizes, 8);
@@ -91,7 +91,7 @@ void StorytalkWindow::Update() {
             break;
         case 2:
             if (mHasMessage != 0) {
-                if (mUnk_4b == 0) {
+                if (mTextOnly == 0) {
                     SoundManager::Get().StartSeqArc(0x18);
                 }
                 mSlideTimer = 0xc;
@@ -117,7 +117,7 @@ void StorytalkWindow::Update() {
             DrawStorytalkName(this);
             DrawStorytalkTextAndCell1(this);
             DrawStorytalkCells0And2(this);
-            if (mLastPageDone != 0 && mUnk_4a == 0) {
+            if (mLastPageDone != 0 && mKeepLastPage == 0) {
                 mHasMessage = 0;
                 mState = 2;
             }
@@ -127,8 +127,8 @@ void StorytalkWindow::Update() {
             mFinished = 1;
             break;
     }
-    if (mUnk_3c != 0) {
-        mUnk_3c--;
+    if (mPageTextTimer != 0) {
+        mPageTextTimer--;
     }
 }
 
@@ -319,11 +319,11 @@ void PrintStorytalkText(StorytalkWindow *self) {
         u16 a2            = first.GetLineStart((u8) ((self->mTextPage + 1) * 3));
 
         u16 b2            = text.GetLineStart((u8) (self->mTextPage * 3));
-        self->mUnk_3c     = a2 - b2;
+        self->mPageTextTimer     = a2 - b2;
     } else {
-        self->mUnk_3c = TextManager::Get().GetLineStart((u8) ((self->mTextPage + 1) * 3));
+        self->mPageTextTimer = TextManager::Get().GetLineStart((u8) ((self->mTextPage + 1) * 3));
     }
-    self->mUnk_3c = self->mUnk_3c * 2 / 3;
+    self->mPageTextTimer = self->mPageTextTimer * 2 / 3;
     if (self->mMessageIndex < 0 || self->mCharacterId < 0) {
         return;
     }
@@ -357,16 +357,16 @@ void SetStorytalkCharacter(StorytalkWindow *self, s32 unk1) {
     MI_CpuClear16(self->mTextBuffers[1], self->mTextBufferSizes[1]);
 }
 
-void StorytalkWindow::func_02088a18(u32 unk1, u32 unk2) {
-    mUnk_3f = unk1;
-    mUnk_40 = unk2;
+void StorytalkWindow::SetCell2FrameAndX(u32 unk1, u32 unk2) {
+    mCell2Frame = unk1;
+    mCell2X = unk2;
 }
 
 void DrawStorytalkName(StorytalkWindow *self) {
     if (self->mBlink != 0 && self->mBlinkHidden != 0) {
         return;
     }
-    if (self->mUnk_4b != 0) {
+    if (self->mTextOnly != 0) {
         return;
     }
     u8 i = 0;
@@ -384,9 +384,9 @@ void DrawStorytalkTextAndCell1(StorytalkWindow *self) {
     u8 i;
     s16 x;
     s16 y;
-    if (self->mUnk_4b != 0) {
-        x = self->mUnk_3a;
-        y = self->mUnk_3b;
+    if (self->mTextOnly != 0) {
+        x = self->mTextOnlyX;
+        y = self->mTextOnlyY;
     } else {
         x = 0x14;
         y = (s16) (data_020a41c8[self->mUnk_3e] + 0x96);
@@ -399,7 +399,7 @@ void DrawStorytalkTextAndCell1(StorytalkWindow *self) {
     if (self->mCell1Visible == 0) {
         return;
     }
-    if (self->mUnk_4b != 0) {
+    if (self->mTextOnly != 0) {
         return;
     }
     self->mCellAnims[1]->Update();
@@ -410,15 +410,15 @@ void DrawStorytalkCells0And2(StorytalkWindow *self) {
     if (self->mBlink != 0 && self->mBlinkHidden != 0) {
         return;
     }
-    if (self->mUnk_4b != 0) {
+    if (self->mTextOnly != 0) {
         return;
     }
     s16 shift = -(self->mSlideTimer * self->mSlideTimer) / 8;
     if (self->mMessageIndex >= 0) {
-        s16 x = self->mUnk_40;
+        s16 x = self->mCell2X;
         if ((x < 0xe8) & (x > 0x18)) {
-            if (self->mUnk_3f < 3) {
-                self->mCellAnims[2]->DrawFrame(0, self->mUnk_3f, x, (s16) (shift + 0x60), 0);
+            if (self->mCell2Frame < 3) {
+                self->mCellAnims[2]->DrawFrame(0, self->mCell2Frame, x, (s16) (shift + 0x60), 0);
             }
         }
     }
@@ -442,7 +442,7 @@ BOOL StorytalkWindow::NextPage(u32 unk1) {
 }
 
 void StorytalkWindow::SetMessage(s32 unk1, s32 unk2, u32 unk3, u32 unk4) {
-    mUnk_4b = unk4;
+    mTextOnly = unk4;
     SetStorytalkMessageIndex(this, unk1);
     if (unk2 == 0x64) {
         if (data_020d433c.mUnk_82 != 0) {
@@ -463,11 +463,11 @@ void StorytalkWindow::SetCell1Visible(u32 unk1) {
 
 void SetNoStorytalkMessage(StorytalkWindow *self) {
     self->SetMessage(-1, -1, 0, 0);
-    self->mUnk_3c = 0;
+    self->mPageTextTimer = 0;
 }
 
-u32 StorytalkWindow::func_02088ef4() {
-    return mUnk_3c;
+u32 StorytalkWindow::GetPageTextTimer() {
+    return mPageTextTimer;
 }
 
 BOOL StorytalkWindow::HasMorePages() {

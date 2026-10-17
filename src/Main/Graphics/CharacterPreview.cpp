@@ -79,7 +79,7 @@ UnkStruct_0205401c::UnkStruct_0205401c() {
 }
 
 UnkStruct_0205401c *UnkStruct_0205401c::Release() {
-    SpriteManager::Get().func_0202753c(0);
+    SpriteManager::Get().RestoreSlot(0);
     StoryCharacterModel *story = (StoryCharacterModel *) mStoryCharacter;
     if (story != NULL) {
         delete story;
@@ -104,7 +104,7 @@ void UnkStruct_0205401c::Create(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
         unk3 = (u32) gCharacterLook;
     }
     if (unk2 != 0) {
-        SpriteManager::Get().func_02027504(0);
+        SpriteManager::Get().SaveSlot(0);
     }
     mUseCharacter = unk1 == 0x15;
     if (mUseCharacter == 0) {
@@ -148,7 +148,7 @@ void UnkStruct_0205401c::SetParams(const CharacterParams *params) {
 
 void UnkStruct_0205401c::StartLoad(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
     if (unk2 != 0) {
-        SpriteManager::Get().func_02027504(0);
+        SpriteManager::Get().SaveSlot(0);
     }
     if (unk1 == 0x15) {
         if (unk3 == 0) {
@@ -229,7 +229,7 @@ void UnkStruct_0205401c::func_02054644(u32 unk1, u32 unk2) {
     }
 }
 
-void UnkStruct_0205401c::func_0205466c(u32 unk1) {
+void UnkStruct_0205401c::SetExtraAnimEnabled(u32 unk1) {
     if (mUseCharacter == 0) {
         ((StoryCharacterModel *) mStoryCharacter)->SetExtraAnimEnabled(unk1);
     } else {
@@ -437,7 +437,7 @@ void StoryCharacterModel::Draw() {
     if (mVisible == 0) {
         return;
     }
-    func_020526bc();
+    DrawInstance();
     if (mExtraAnimEnabled == 0) {
         return;
     }

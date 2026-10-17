@@ -270,8 +270,8 @@ void ScanCallback(WmCallbackArg *arg) {
             }
           case 4:
             if (mgr.mState == 4) {
-                mgr.func_0202e76c();
-                mgr.func_0202e7c8();
+                mgr.SelectNextScanChannel();
+                mgr.RequestScan();
             }
             break;
           default:
@@ -290,11 +290,11 @@ void TestChannelCallback(WmCallbackArg *arg) {
         return;
     }
     u16 a = arg->mUnk_0a;
-    if (mgr.mUnk_1224 >= a) {
-        mgr.mUnk_1224 = a;
-        mgr.mUnk_1226 = arg->mUnk_08;
+    if (mgr.mMinTestResult >= a) {
+        mgr.mMinTestResult = a;
+        mgr.mParentChannel = arg->mUnk_08;
     }
-    mgr.func_0202e618();
+    mgr.TestNextChannel();
 }
 
 void SendCallback(WmCallbackArg *arg) {
@@ -311,12 +311,12 @@ void func_0202e288(WmCallbackArg *arg) {
                 mgr.mUnk_122b = 1;
                 switch (mgr.mState) {
                     case 3:
-                        mgr.func_0202ea18();
+                        mgr.SetRecvCallback();
                         break;
                     case 5:
                         mgr.mState = 7;
                         mgr.mUnk_122a = 3;
-                        mgr.func_0202ea18();
+                        mgr.SetRecvCallback();
                         break;
                 }
                 break;
@@ -394,14 +394,14 @@ void WirelessManager::func_0202e59c() {
     MIi_CpuCopy32(&sDefaultParentParam, sParentParam, 0x40);
     PARENT_PARAM->mUnk_10 = mUnk_122d;
     PARENT_PARAM->mUnk_0c     = func_02010600();
-    PARENT_PARAM->mChannel  = mUnk_1226;
+    PARENT_PARAM->mChannel  = mParentChannel;
     PARENT_PARAM->mUnk_18 = func_020104dc();
     mUnk_122e = 0;
     func_0201075c((void *) func_0202de58, sParentParam);
     mUnk_122a = 4;
 }
 
-void WirelessManager::func_0202e618() {
+void WirelessManager::TestNextChannel() {
     u32 mask = func_0201042c();
     if (mask == 0x8000) {
         mUnk_122a = 6;
@@ -428,13 +428,13 @@ void WirelessManager::func_0202e618() {
     mUnk_122a = 0;
 }
 
-void WirelessManager::func_0202e6f8() {
+void WirelessManager::StartChannelTest() {
     mTestedChannel = 0;
-    mUnk_1224 = 0x65;
-    func_0202e618();
+    mMinTestResult = 0x65;
+    TestNextChannel();
 }
 
-void WirelessManager::func_0202e718() {
+void WirelessManager::SetupScanParam() {
     SCAN_PARAM.mBuffer = SCAN_ENTRY;
     SCAN_PARAM.mChannel = sDefaultParentParam.mChannel;
     SCAN_PARAM.mUnk_06 = func_0201056c();
@@ -448,7 +448,7 @@ void WirelessManager::func_0202e718() {
 
 // The mask bit is kept in a register: an enum-typed one is not constant-propagated.
 enum ChannelBit { CHANNEL_BIT_NONE, CHANNEL_BIT };
-void WirelessManager::func_0202e76c() {
+void WirelessManager::SelectNextScanChannel() {
     u16 mask = func_0201042c();
     if (mask == 0) { return; }
     int start;
@@ -463,7 +463,7 @@ void WirelessManager::func_0202e76c() {
     }
 }
 
-void WirelessManager::func_0202e7c8() {
+void WirelessManager::RequestScan() {
     if (func_020108f4((void *) ScanCallback, &SCAN_PARAM) != 2) {
         mUnk_122a = 6;
     } else {
@@ -522,7 +522,7 @@ void WirelessManager::UpdateScanResultTimers() {
     }
 }
 
-void WirelessManager::func_0202ea18() {
+void WirelessManager::SetRecvCallback() {
     func_02010224(0xc, (void *) RecvCallback, 0);
 }
 
@@ -792,7 +792,7 @@ void WirelessManager::Update() {
         case 2:
             mUnk_124d = func_0201044c();
             if (mUnk_122a == 0) {
-                func_0202e6f8();
+                StartChannelTest();
             }
             break;
         case 3:
@@ -805,8 +805,8 @@ void WirelessManager::Update() {
             mUnk_124d = func_0201044c();
             switch (mUnk_122a) {
                 case 0:
-                    func_0202e718();
-                    func_0202e7c8();
+                    SetupScanParam();
+                    RequestScan();
                 case 1:
                     UpdateScanResultTimers();
                     break;

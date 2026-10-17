@@ -42,4 +42,4 @@ public:
 };
 
 // Looks up a 16-bit value for an id (table of 213 entries; 0 when out of range).
-u16 func_02065c20(u32 id);
+u16 GetCardNumber(u32 id);

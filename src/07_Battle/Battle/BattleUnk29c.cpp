@@ -241,7 +241,7 @@ void BattleUnk29c::Draw() {
             if (pose->mVisible && mShadow) {
                 mShadow->mScale    = sc;
                 mShadow->mPosition = pos;
-                mShadow->func_020526bc();
+                mShadow->DrawInstance();
             }
         }
         i++;
@@ -266,7 +266,7 @@ void BattleUnk29c::func_ov007_02270350() {
             if (mFontObjs[sel]) {
                 mFontObjs[sel]->mPosition = pos;
                 mFontObjs[sel]->mScale    = sc;
-                mFontObjs[sel]->func_020526bc();
+                mFontObjs[sel]->DrawInstance();
             }
         }
         i++;
@@ -307,13 +307,13 @@ void BattleUnk29c::func_ov007_0227044c() {
                 if (mFontObjs[7]) {
                     mFontObjs[7]->mPosition = pos;
                     mFontObjs[7]->mScale    = sc;
-                    mFontObjs[7]->func_020526bc();
+                    mFontObjs[7]->DrawInstance();
                 }
             } else if (sel == data_020d433c.mBattlePlayers->mPlayers[cur]->mPartner) {
                 if (mFontObjs[8]) {
                     mFontObjs[8]->mPosition = pos;
                     mFontObjs[8]->mScale    = sc;
-                    mFontObjs[8]->func_020526bc();
+                    mFontObjs[8]->DrawInstance();
                 }
             }
         }
@@ -344,7 +344,7 @@ void BattleUnk29c::func_ov007_0227068c() {
         f->mScale.x      = 0x1000;
         f->mScale.y      = 0x1000;
         f->mScale.z      = 0x1000;
-        mFontObjs[mUnk_96]->func_020526bc();
+        mFontObjs[mUnk_96]->DrawInstance();
     }
 }
 
@@ -382,7 +382,7 @@ void BattleUnk29c::func_ov007_02270784(u8 index) {
             f->mScale.x      = scale;
             f->mScale.y      = scale;
             f->mScale.z      = scale;
-            mFontObjs[4]->func_020526bc();
+            mFontObjs[4]->DrawInstance();
         }
         slot = 0xff;
     }
@@ -413,7 +413,7 @@ void BattleUnk29c::func_ov007_02270784(u8 index) {
     g->mScale.x      = scale;
     g->mScale.y      = scale;
     g->mScale.z      = scale;
-    mFontObjs[slot]->func_020526bc();
+    mFontObjs[slot]->DrawInstance();
 }
 
 void BattleUnk29c::func_ov007_02270a7c(u8 index, u32 type) {
@@ -597,19 +597,19 @@ void BattleUnk29c::func_ov007_022712c4(u8 index, VecFx32 *pos) {
     VecFx32 scale = {0x1000, 0x1000, 0x1000};
     mFontObjs[index]->mPosition = *pos;
     mFontObjs[index]->mScale    = scale;
-    mFontObjs[index]->func_020526bc();
+    mFontObjs[index]->DrawInstance();
 }
 
 void BattleUnk29c::func_ov007_02271338(VecFx32 *pos) {
     VecFx32 scale = {0x1000, 0x1000, 0x1000};
     mFontObjs[7]->mPosition = *pos;
     mFontObjs[7]->mScale    = scale;
-    mFontObjs[7]->func_020526bc();
+    mFontObjs[7]->DrawInstance();
 }
 
 void BattleUnk29c::func_ov007_022713a4(VecFx32 *pos) {
     VecFx32 scale = {0x1000, 0x1000, 0x1000};
     mFontObjs[8]->mPosition = *pos;
     mFontObjs[8]->mScale    = scale;
-    mFontObjs[8]->func_020526bc();
+    mFontObjs[8]->DrawInstance();
 }

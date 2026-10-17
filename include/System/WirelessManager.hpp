@@ -47,8 +47,8 @@ public:
     /* 1208 */ u16 mScanResultTimers[WM_ENTRY_COUNT]; // age counter per scan result
     /* 1220 */ u16 mUnk_1220;
     /* 1222 */ u16 mTestedChannel; // channel index while a scan is running
-    /* 1224 */ u16 mUnk_1224;
-    /* 1226 */ u16 mUnk_1226;
+    /* 1224 */ u16 mMinTestResult;
+    /* 1226 */ u16 mParentChannel;
     /* 1228 */ volatile u8 mState; // mode (6 and 7 are the wireless modes, see IsWirelessMode)
     /* 1229 */ u8 mJoinIndex;
     /* 122a */ u8 mUnk_122a; // step of the running mode
@@ -83,15 +83,15 @@ public:
     void func_0202e524();
     void func_0202e544();
     void func_0202e59c();
-    void func_0202e618();
-    void func_0202e6f8();
-    void func_0202e718();
-    void func_0202e76c();
-    void func_0202e7c8();
+    void TestNextChannel();
+    void StartChannelTest();
+    void SetupScanParam();
+    void SelectNextScanChannel();
+    void RequestScan();
     void Join(u32 unk1);
     void StoreScanResult();
     void UpdateScanResultTimers();
-    void func_0202ea18();
+    void SetRecvCallback();
     void func_0202ea34();
     void SendNext();
     u32 Send(void *unk1, u32 unk2);

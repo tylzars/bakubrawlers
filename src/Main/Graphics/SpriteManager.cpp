@@ -69,8 +69,8 @@ extern "C" void InitOSHeapAllocator(void *obj, u32 unk2, s32 heap);
 extern "C" void SetupTexSlots(u32 unk1, u32 unk2);
 extern "C" void SetupPlttLnkMan(u32 unk1, void *buffer, u32 size, u32 unk4);
 extern "C" void ResetTexSlots();
-extern "C" void SaveTexSlotRanges(UnkStruct_SpriteManager_28 *slot);
-extern "C" void RestoreTexSlotRanges(UnkStruct_SpriteManager_28 *slot);
+extern "C" void SaveTexSlotRanges(TexSlotRanges *slot);
+extern "C" void RestoreTexSlotRanges(TexSlotRanges *slot);
 extern "C" void InitG3d();
 extern "C" void G3X_InitMtxStack();
 extern "C" void G3X_SetToonTable(const void *unk1);
@@ -189,7 +189,7 @@ void SpriteManager::SetupMode(u32 unk1, u32 mode) {
             mScreens[1].SetObjVramMode(8);
             SET_POWCNT(0xe);
             Init3D();
-            func_020273dc(1, 0x10000);
+            SetupTexAndPltt(1, 0x10000);
             break;
         case 4:
             GX_SetBankForTex(1);
@@ -204,7 +204,7 @@ void SpriteManager::SetupMode(u32 unk1, u32 mode) {
             mScreens[1].SetObjVramMode(8);
             SET_POWCNT(0xe);
             Init3D();
-            func_020273dc(1, 0x10000);
+            SetupTexAndPltt(1, 0x10000);
             break;
         case 5:
             GX_SetBankForTex(3);
@@ -219,7 +219,7 @@ void SpriteManager::SetupMode(u32 unk1, u32 mode) {
             mScreens[1].SetObjVramMode(8);
             SET_POWCNT(0xe);
             Init3D();
-            func_020273dc(2, 0x10000);
+            SetupTexAndPltt(2, 0x10000);
             break;
         case 6:
             GX_SetBankForTex(3);
@@ -233,7 +233,7 @@ void SpriteManager::SetupMode(u32 unk1, u32 mode) {
             mScreens[1].SetObjVramMode(8);
             SET_POWCNT(0xe);
             Init3D();
-            func_020273dc(2, 0x8000);
+            SetupTexAndPltt(2, 0x8000);
             break;
         case 7:
             GX_SetBankForTex(3);
@@ -247,7 +247,7 @@ void SpriteManager::SetupMode(u32 unk1, u32 mode) {
             mScreens[1].SetObjVramMode(3);
             SET_POWCNT(0xe);
             Init3D();
-            func_020273dc(2, 0x10000);
+            SetupTexAndPltt(2, 0x10000);
             break;
         case 8:
             GX_SetBankForTex(3);
@@ -261,7 +261,7 @@ void SpriteManager::SetupMode(u32 unk1, u32 mode) {
             mScreens[1].SetObjVramMode(3);
             SET_POWCNT(0xe);
             Init3D();
-            func_020273dc(2, 0x4000);
+            SetupTexAndPltt(2, 0x4000);
             break;
         case 9:
             GX_SetBankForTex(1);
@@ -276,7 +276,7 @@ void SpriteManager::SetupMode(u32 unk1, u32 mode) {
             mScreens[1].SetObjVramMode(3);
             SET_POWCNT(0xe);
             Init3D();
-            func_020273dc(1, 0x10000);
+            SetupTexAndPltt(1, 0x10000);
             break;
     }
 }
@@ -304,12 +304,12 @@ void SpriteManager::ResetVram(u32 unk1) {
     GX_ResetBankForLCDC();
 }
 
-void SpriteManager::func_020273dc(u32 unk1, u32 unk2) {
+void SpriteManager::SetupTexAndPltt(u32 unk1, u32 unk2) {
     SetupTexSlots(unk1, 1);
     SetupPlttLnkMan(unk2, sBuffer_0220e900, 0x800, 1);
 }
 
-void SpriteManager::func_0202740c() {
+void SpriteManager::ResetSlots() {
     ResetTexSlots();
     for (u8 i = 0; i < 8; i++) {
         mSlotUsed[i] = 0;
@@ -332,29 +332,29 @@ void SpriteManager::Init3D() {
     G3_Shininess(gShininessTable);
 }
 
-void SpriteManager::func_02027504(s32 index) {
+void SpriteManager::SaveSlot(s32 index) {
     if (index >= 8) {
         return;
     }
-    SaveTexSlotRanges(&mUnk_828[index]);
+    SaveTexSlotRanges(&mSlots[index]);
     mSlotUsed[index] = 1;
 }
 
-void SpriteManager::func_0202753c(s32 index) {
+void SpriteManager::RestoreSlot(s32 index) {
     if (mSlotUsed[index] == 0) {
         return;
     }
-    RestoreTexSlotRanges(&mUnk_828[index]);
+    RestoreTexSlotRanges(&mSlots[index]);
 }
 
 void SpriteManager::ClearSlotUsed(s32 index) {
     mSlotUsed[index] = 0;
 }
 
-void SpriteManager::SetSlot(s32 index, const UnkStruct_SpriteManager_28 *src) {
+void SpriteManager::SetSlot(s32 index, const TexSlotRanges *src) {
     if (src == NULL) {
         return;
     }
     mSlotUsed[index] = 1;
-    mUnk_828[index] = *src;
+    mSlots[index] = *src;
 }

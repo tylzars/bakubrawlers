@@ -59,9 +59,9 @@ ConfrontEmblem06::~ConfrontEmblem06() {
 
 void NormalizeXY(float dx, float dy, float *out);
 
-extern "C" void func_02024764(SoundManager *manager, u32 a, u32 b);
+extern "C" void StopSeqArc(SoundManager *manager, u32 a, u32 b);
 
-extern "C" int func_02024790(SoundManager *manager, u32 a);
+extern "C" int CountSeqArcSounds(SoundManager *manager, u32 a);
 
 void ConfrontEmblem06::Update() {
     switch (mState) {
@@ -183,8 +183,8 @@ void ConfrontEmblem06::Bounce() {
     if (mUnk_05_4) {
         return;
     }
-    if (func_02024790(&SoundManager::Get(), 0x2c)) {
-        func_02024764(&SoundManager::Get(), 0x2c, 1);
+    if (CountSeqArcSounds(&SoundManager::Get(), 0x2c)) {
+        StopSeqArc(&SoundManager::Get(), 0x2c, 1);
     }
     SoundManager::Get().StartSeqArc(0x2c);
 }
@@ -227,8 +227,8 @@ int ConfrontEmblem06::func_ov007_0222210c() {
             t /= 2.0f;
             mSpeed = t;
             if (!mUnk_05_4) {
-                if (func_02024790(&SoundManager::Get(), 0x2d)) {
-                    func_02024764(&SoundManager::Get(), 0x2d, 1);
+                if (CountSeqArcSounds(&SoundManager::Get(), 0x2d)) {
+                    StopSeqArc(&SoundManager::Get(), 0x2d, 1);
                 }
             }
             mUnk_05_3 = 0;

@@ -42,7 +42,7 @@ void ResetSaveData() {
     gSaveData[0].mMoney = 3000;
     UnlockStoreItems();
     UnlockCharacters();
-    func_02086b74();
+    UnlockFields();
     // data_020d48f0 lies inside gSaveData (+0x500); going through the member keeps the stores ordered before
     // the bit-field updates below. The `mUnk_460 + 0xa0` cast is a placeholder for the real member at +0x500.
     ((UnkStruct_020d48f0 *) (gSaveData[0].mUnk_460 + 0xa0))->mPrevRank = 999;
@@ -63,7 +63,7 @@ void ResetSaveData() {
     gSaveData[0].mUnk_27 |= 0x1c;
     data_020d433c.mUnk_9a = gSaveData[0].mUnk_27;
     do {
-        func_02023168(gSaveData, 0, i, 0xffff);
+        SetSlotEntryIndex(gSaveData, 0, i, 0xffff);
         i++;
     } while (i < 3);
     u8 n = 0;
@@ -71,8 +71,8 @@ void ResetSaveData() {
     SaveData *base = gSaveData;
     do {
         const u16 *rec = tab[n];
-        int idx = func_0202317c(base, tab[n][0] & 0xff, rec[1] & 0xff, rec[2] & 0xff);
-        func_02023168(base, 0, n, idx);
+        int idx = GetBakuganEntryIndex(base, tab[n][0] & 0xff, rec[1] & 0xff, rec[2] & 0xff);
+        SetSlotEntryIndex(base, 0, n, idx);
         func_020231c0(base, idx, rec[3]);
         func_0205b1c4(rec[1] & 0xff, rec[2] & 0xff);
         base->mUnk_06[n] = rec[4];
@@ -106,7 +106,7 @@ void ApplyVolumeOptions(SaveData *d) {
     FrameTask::Get().SetChannelVolume(1, 4);
 }
 
-s32 func_020230a8(SaveData *d, u32 a, u32 b) {
+s32 GetSlotBakuganAttribute(SaveData *d, u32 a, u32 b) {
     u16 *rec = (u16 *) ((u8 *) d + a * 0x14);
     return (u8) (rec[b] % 6);
 }
@@ -123,15 +123,15 @@ u8 GetSlotBakuganId(SaveData *d, u32 a, u32 b) {
 
 void SetSlotBakugan(SaveData *d, u32 a, u32 b, u32 c, u32 e, u32 f) {
     u16 *rec = (u16 *) ((u8 *) d + a * 0x14);
-    rec[b] = func_0202317c(d, c, *(u8 *) &e, *(u8 *) &f);
+    rec[b] = GetBakuganEntryIndex(d, c, *(u8 *) &e, *(u8 *) &f);
 }
 
-void func_02023168(SaveData *d, u32 a, u32 b, int c) {
+void SetSlotEntryIndex(SaveData *d, u32 a, u32 b, int c) {
     u16 *rec = (u16 *) ((u8 *) d + a * 0x14);
     rec[b] = c;
 }
 
-int func_0202317c(SaveData *d, u32 a, u32 b, u32 c) {
+int GetBakuganEntryIndex(SaveData *d, u32 a, u32 b, u32 c) {
     if (a >= 1) {
         return 0;
     }
@@ -152,18 +152,18 @@ void func_020231c0(SaveData *d, int idx, u32 v) {
 }
 
 u16 func_020231f4(SaveData *d, u32 a, u8 b, u8 c) {
-    int idx = func_0202317c(d, a, b, c);
+    int idx = GetBakuganEntryIndex(d, a, b, c);
     return d->mUnk_460[idx] * 10;
 }
 
-void func_0202321c(SaveData *d, const u16 *src, u32 b, u32 c) {
-    int idx = func_0202317c(d, 0, b, c);
+void SetBakuganEntry(SaveData *d, const u16 *src, u32 b, u32 c) {
+    int idx = GetBakuganEntryIndex(d, 0, b, c);
     d->mUnk_88[idx][0] = src[0];
     d->mUnk_88[idx][1] = src[1];
 }
 
-UnkStruct_02023248 *func_02023248(SaveData *d, u32 a, u32 b) {
-    int idx = func_0202317c(d, 0, a, b);
+UnkStruct_02023248 *GetBakuganEntry(SaveData *d, u32 a, u32 b) {
+    int idx = GetBakuganEntryIndex(d, 0, a, b);
     return (UnkStruct_02023248 *) &d->mUnk_88[idx];
 }
 

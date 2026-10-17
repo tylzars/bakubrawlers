@@ -589,12 +589,12 @@ extern "C" void DrawPredictPieces(BattleCommandMap *map) {
     u8 i = 0;
     do {
         map->mPredictPiece->mPosition = *(VecFx32 *) ((u8 *) map + i * 0xc + 0x78);
-        map->mPredictPiece->func_020526bc();
+        map->mPredictPiece->DrawInstance();
         i++;
     } while (i < 8);
     VecFx32 v = *(VecFx32 *) map->mLandingPosition;
     map->mLandingPiece->mPosition = v;
-    map->mLandingPiece->func_020526bc();
+    map->mLandingPiece->DrawInstance();
 }
 
 
@@ -605,7 +605,7 @@ extern "C" void func_ov007_02246804(BattleCommandMap *map) {
     u8 i = 0;
     do {
         if (map->mUnk_50[i]) {
-            map->mUnk_50[i]->func_020526bc();
+            map->mUnk_50[i]->DrawInstance();
         }
         i++;
     } while (i < 4);
@@ -617,7 +617,7 @@ extern "C" void func_ov007_02246804(BattleCommandMap *map) {
     if (map->mCursorModel) {
         a.y += 0x75c;
         map->mCursorModel->mPosition = a;
-        map->mCursorModel->func_020526bc();
+        map->mCursorModel->DrawInstance();
     }
     s32 neg = -0x6000;
     u8 j    = 0;
@@ -634,7 +634,7 @@ extern "C" void func_ov007_02246804(BattleCommandMap *map) {
                 } else {
                     map->mMarkerModel->mModel->GetAnimFrame();
                     map->mMarkerModel->mModel->SetAnimFrame(0);
-                    map->mMarkerModel->func_020526bc();
+                    map->mMarkerModel->DrawInstance();
                 }
                 map->mMarkerModel->mModel->SetAnimFrame(frame);
             }
@@ -658,7 +658,7 @@ extern "C" void func_ov007_02246804(BattleCommandMap *map) {
                 }
                 c.x += map->mUnk_138;
                 map->mMarkerModel->mPosition = c;
-                map->mMarkerModel->func_020526bc();
+                map->mMarkerModel->DrawInstance();
             }
         }
         j++;
@@ -1192,7 +1192,7 @@ extern "C" void DrawShadowPiece(BattleCommandMap *map, VecFx32 *v, u32 mode) {
     dst->x       = x;
     dst->y       = y;
     dst->z       = z;
-    map->mShadowPiece->func_020526bc();
+    map->mShadowPiece->DrawInstance();
 }
 
 extern "C" void GetCornerPosition(BattleCommandMap *map, VecFx32 *out) {

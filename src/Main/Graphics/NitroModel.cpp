@@ -51,7 +51,7 @@ BOOL ModelFile::LoadData(void *file, TextureFile *texture) {
     return TRUE;
 }
 
-BOOL ModelFile::func_02028ac4(const char *name) {
+BOOL ModelFile::LoadAndSetupResFile(const char *name) {
     if (!Load(name, NULL)) {
         return FALSE;
     }

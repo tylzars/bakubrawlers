@@ -383,7 +383,7 @@ u8 GetSlotBakuganId(SaveData *d, u32 a, u32 b);
 
 
 
-extern u8 data_020a1074[];
+extern u8 gBakuganNumbers[];
 
 static inline void PrintMessage(TextManager &tm, const u8 *data, u32 offset, u32 length, void *buffer, s16 x, s16 y) {
     tm.Print(data + offset, length, buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0x10, 0, 0, 0, 1, 1);
@@ -825,7 +825,7 @@ void ListScene::Update() {
         case 1:
             mUnk_48->mEnabled = 0;
             mUnk_4c->mEnabled = 0;
-            if (!func_020842a0()) {
+            if (!IsCommandListOrPageSettingUp()) {
                 SpriteManager::Get().StartFade(2);
                 mState++;
             }
@@ -840,7 +840,7 @@ void ListScene::Update() {
             func_0207cfa4();
             break;
         case 4:
-            if (!func_020842a0()) {
+            if (!IsCommandListOrPageSettingUp()) {
                 switch (mUnk_48->Update(1)) {
                     case 1:
                         mState = 5;
@@ -892,7 +892,7 @@ void ListScene::Update() {
                         func_020834ec(this, 0);
                         break;
                     case 8:
-                        func_02080210();
+                        ReadSlots();
                         func_020834ec(this, 0);
                         SoundManager::Get().StartSeqArc(0x68);
                         break;
@@ -933,11 +933,11 @@ void ListScene::Update() {
             func_020851d0();
             return;
         case 9:
-            if (!func_020842a0()) {
+            if (!IsCommandListOrPageSettingUp()) {
                 if (mDeckWindow->Update(1) == 3) {
                     switch (mDeckWindow->mCursor->mSelection) {
                         case 0:
-                            func_020842e8();
+                            StoreSlotsInSaveData();
                             func_02085220(this, 0xb);
                             break;
                         case 1:
@@ -968,14 +968,14 @@ void ListScene::Update() {
             func_020851d0();
             return;
         case 12:
-            if (func_020842a0()) {
+            if (IsCommandListOrPageSettingUp()) {
                 return;
             }
             func_020843ac(this, 0);
             mState++;
             break;
         case 13:
-            if (!func_020842a0()) {
+            if (!IsCommandListOrPageSettingUp()) {
                 SpriteManager::Get().StartFade(2);
                 mState++;
             }
@@ -997,7 +997,7 @@ void ListScene::Update() {
             }
             break;
         case 17:
-            if (func_020842a0()) {
+            if (IsCommandListOrPageSettingUp()) {
                 return;
             }
             func_020843ac(this, 1);
@@ -1005,7 +1005,7 @@ void ListScene::Update() {
             func_020851d0();
             return;
         case 18:
-            if (!func_020842a0() && mUnk_1a0 == 0) {
+            if (!IsCommandListOrPageSettingUp() && mUnk_1a0 == 0) {
                 SpriteManager::Get().StartFade(2);
                 mState++;
             }
@@ -1140,7 +1140,7 @@ void ListScene::Update() {
             break;
         case 35:
             if (func_02078270(mUnk_1e0)) {
-                UnkStruct_02023248 *pair = func_02023248(&gSaveData[0], mItemIds[mCursorItem] & 0xff, mUnk_104);
+                UnkStruct_02023248 *pair = GetBakuganEntry(&gSaveData[0], mItemIds[mCursorItem] & 0xff, mUnk_104);
                 u16 val = func_020231f4(&gSaveData[0], 0, mItemIds[mCursorItem] & 0xff, mUnk_104);
                 func_0205afb4(mCommandList, mUnk_104, val, (BattleCellPair *) pair);
             }
@@ -1212,7 +1212,7 @@ void ListScene::Update() {
             return;
         case 43:
             if (mMode == 3 || mMode == 5) {
-                func_020842e8();
+                StoreSlotsInSaveData();
             }
             SpriteManager::Get().StartFade(3);
             mUnk_48->mEnabled = 0;
@@ -1323,10 +1323,10 @@ void ListScene::func_0207b6e8() {
             break;
         case 4:
             mUnk_e9 = 13;
-            func_020832bc();
+            RefreshCounts();
             break;
     }
-    func_02080210();
+    ReadSlots();
     BuildList(1);
 }
 
@@ -1452,15 +1452,15 @@ void ListScene::LoadSubScreenGraphics() {
         mDeckWindow = new SelectWindow(2, data_020a31a0, 0);
         mDeckWindow->SetCells(2, data_020a31d8);
         mDeckWindow->mCells[0]->SetAnimation(1);
-        this->func_02081994(3, 0, 8);
-        this->func_02081994(3, 1, 8);
-        this->func_02081994(0, 0, 0x8000);
-        this->func_02081994(0, 1, 0x8000);
-        this->func_02081994(0, 2, 0x8000);
-        this->func_02081994(0, 3, 0x8000);
-        this->func_02081994(0, 4, 0x8000);
-        this->func_02081994(0, 5, 0x8000);
-        this->func_02081994(0, 6, 0x8000);
+        this->SetItemFlags(3, 0, 8);
+        this->SetItemFlags(3, 1, 8);
+        this->SetItemFlags(0, 0, 0x8000);
+        this->SetItemFlags(0, 1, 0x8000);
+        this->SetItemFlags(0, 2, 0x8000);
+        this->SetItemFlags(0, 3, 0x8000);
+        this->SetItemFlags(0, 4, 0x8000);
+        this->SetItemFlags(0, 5, 0x8000);
+        this->SetItemFlags(0, 6, 0x8000);
     }
     ChangeDir("/Game/Bakugan/mark");
     LoadAndQueueUpload(1, 0, 0x200, "bakugan_s_000_ncl.bin", 0, 0, 0);
@@ -1546,7 +1546,7 @@ void ListScene::PrintRows() {
                 }
                 u32 a = func_02086548((u8) mItemIds[index], mUnk_104);
                 u32 b = func_02086570((u8) mItemIds[index], mUnk_104);
-                func_02081d5c((u8) mItemIds[mScroll + i], i, a, b);
+                PrintBakuganRow((u8) mItemIds[mScroll + i], i, a, b);
             }
             break;
         case 1:
@@ -1554,9 +1554,9 @@ void ListScene::PrintRows() {
                 if (mScroll + i >= mItemCount) {
                     break;
                 }
-                UnkStruct_02023248 *entry = func_02023248(gSaveData, (u8) mItemIds[mScroll + i], mUnk_104);
+                UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, (u8) mItemIds[mScroll + i], mUnk_104);
                 u32 v = func_020231f4(gSaveData, 0, (u8) mItemIds[mScroll + i], mUnk_104);
-                func_02081d5c((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
+                PrintBakuganRow((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
             }
             break;
         case 2:
@@ -1564,7 +1564,7 @@ void ListScene::PrintRows() {
                 if (mScroll + i >= mItemCount) {
                     break;
                 }
-                func_0208250c(mItemIds[mScroll + i], i);
+                PrintCardNameShort(mItemIds[mScroll + i], i);
             }
             break;
         case 3:
@@ -1577,16 +1577,16 @@ void ListScene::PrintRows() {
                     if (mScroll + i >= mItemCount) {
                         break;
                     }
-                    UnkStruct_02023248 *entry = func_02023248(gSaveData, (u8) mItemIds[mScroll + i], mUnk_104);
+                    UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, (u8) mItemIds[mScroll + i], mUnk_104);
                     u32 v = func_020231f4(gSaveData, 0, (u8) mItemIds[mScroll + i], mUnk_104);
-                    func_02081d5c((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
+                    PrintBakuganRow((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
                 }
             } else {
                 for (; i < 4; i++) {
                     if (mScroll + i >= mItemCount) {
                         break;
                     }
-                    func_0208250c(mItemIds[mScroll + i], i);
+                    PrintCardNameShort(mItemIds[mScroll + i], i);
                 }
             }
             break;
@@ -1599,16 +1599,16 @@ void ListScene::PrintRows() {
                     if (mScroll + i >= mItemCount) {
                         break;
                     }
-                    UnkStruct_02023248 *entry = func_02023248(gSaveData, (u8) mItemIds[mScroll + i], mUnk_104);
+                    UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, (u8) mItemIds[mScroll + i], mUnk_104);
                     u32 v = func_020231f4(gSaveData, 0, (u8) mItemIds[mScroll + i], mUnk_104);
-                    func_02081d5c((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
+                    PrintBakuganRow((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
                 }
             } else {
                 for (; i < 4; i++) {
                     if (mScroll + i >= mItemCount) {
                         break;
                     }
-                    func_0208250c(mItemIds[mScroll + i], i);
+                    PrintCardNameShort(mItemIds[mScroll + i], i);
                 }
             }
             break;
@@ -1740,7 +1740,7 @@ void ListScene::func_0207cfa4() {
                 act = 6;
             }
         }
-        if (mUnk_58->func_0202f468(0) == 3) {
+        if (mUnk_58->Update(0) == 3) {
             switch (mUnk_58->mSelection) {
                 case 0:
                     if (act == 0 && mUnk_f0 == 0) {
@@ -1757,7 +1757,7 @@ void ListScene::func_0207cfa4() {
             }
         }
         s8 prev = mUnk_54->mSelection;
-        if (mUnk_54->func_0202f468(0) == 3) {
+        if (mUnk_54->Update(0) == 3) {
             s8 cur = mUnk_54->mSelection;
             if (prev == cur) {
                 if (act == 0) {
@@ -1835,8 +1835,8 @@ void ListScene::func_0207cfa4() {
                         SoundManager::Get().StartSeqArc(0);
                         return;
                     case 1: {
-                        UnkStruct_02023248 *entry = func_02023248(gSaveData, (u8) mItemIds[mCursorItem], mUnk_104);
-                        mPrice                  = func_02086224((u8) mItemIds[mCursorItem], mUnk_104);
+                        UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, (u8) mItemIds[mCursorItem], mUnk_104);
+                        mPrice                  = GetEntryPrice((u8) mItemIds[mCursorItem], mUnk_104);
                         if ((s32) entry->mUnk_00_0 >= 9) {
                             func_020834ec(this, 7);
                         } else if (gSaveData[0].mMoney < mPrice) {
@@ -1865,13 +1865,13 @@ void ListScene::func_0207cfa4() {
                                 func_020834ec(this, 9);
                             }
                         } else if (mUnk_e6 < 4) {
-                            if (func_02082d00(1, (u8) mItemIds[mCursorItem], mUnk_104) == 0) {
+                            if (IsInSlots(1, (u8) mItemIds[mCursorItem], mUnk_104) == 0) {
                                 mUnk_3fc = (mCursorItem - mScroll) * 0x20 + 0x24;
                                 mUnk_3fe = mUnk_3fc / 8;
                                 mUnk_3ff = 1;
                             }
                         } else {
-                            if (func_02082d00(0, (u8) mItemIds[mCursorItem], 0) == 0) {
+                            if (IsInSlots(0, (u8) mItemIds[mCursorItem], 0) == 0) {
                                 mUnk_3fc = (mCursorItem - mScroll) * 0x20 + 0x24;
                                 mUnk_3fe = mUnk_3fc / 8;
                                 mUnk_3ff = 1;
@@ -1964,7 +1964,7 @@ void ListScene::func_0207dea4() {
             break;
         case 2:
             if (SpriteManager::Get().sFade[0] <= 1) {
-                func_02082660();
+                ReleaseMainScreenGraphics();
                 mUnk_1a0 = 4;
             }
             break;
@@ -1991,39 +1991,39 @@ void ListScene::func_0207e074() {
     if (mUnk_194[0] != 0) {
         mUnk_194[0] = 0;
         if (mUnk_e8 > mUnk_f4 && mUnk_f0 != 0) {
-            func_02081994(0, 1, 8);
+            SetItemFlags(0, 1, 8);
             mUnk_4c->mCells[1]->Rewind();
         } else {
-            func_02081994(0, 1, 0x8000);
+            SetItemFlags(0, 1, 0x8000);
         }
         if (mUnk_e8 < mUnk_e9 - 1 && mUnk_f0 != 0) {
-            func_02081994(0, 2, 8);
+            SetItemFlags(0, 2, 8);
             mUnk_4c->mCells[2]->Rewind();
         } else {
-            func_02081994(0, 2, 0x8000);
+            SetItemFlags(0, 2, 0x8000);
         }
         for (u8 i = 0; i <= 4; i++) {
             if (mUnk_e8 + i >= mUnk_e9 || mUnk_f0 == 0) {
-                func_02081994(2, i, 0x8000);
+                SetItemFlags(2, i, 0x8000);
             } else {
-                func_02081994(2, i, 8);
+                SetItemFlags(2, i, 8);
             }
         }
         for (u8 i = 5; i <= 7; i++) {
             if (i - 5 >= mItemCount || mUnk_f0 != 0) {
-                func_02081994(2, i, 0x8000);
+                SetItemFlags(2, i, 0x8000);
             } else {
-                func_02081994(2, i, 8);
+                SetItemFlags(2, i, 8);
             }
         }
-        func_02081994(0, 0, 8);
+        SetItemFlags(0, 0, 8);
         if (mItemCount < 2 || mUnk_f0 != 0) {
-            func_02081994(0, 5, 0x8000);
-            func_02081994(0, 6, 0x8000);
+            SetItemFlags(0, 5, 0x8000);
+            SetItemFlags(0, 6, 0x8000);
         } else {
-            func_02081994(0, 5, 8);
+            SetItemFlags(0, 5, 8);
             mUnk_4c->mCells[5]->Rewind();
-            func_02081994(0, 6, 8);
+            SetItemFlags(0, 6, 8);
             mUnk_4c->mCells[6]->Rewind();
         }
         switch (mMode) {
@@ -2031,19 +2031,19 @@ void ListScene::func_0207e074() {
             case 1:
             case 2:
             case 4:
-                func_02081994(0, 3, 0x8000);
-                func_02081994(0, 4, 0x8000);
+                SetItemFlags(0, 3, 0x8000);
+                SetItemFlags(0, 4, 0x8000);
                 break;
             case 3:
             case 5:
                 if (mUnk_e6 != 0 && mUnk_e6 < 4 && mUnk_f0 == 0) {
-                    func_02081994(0, 3, 8);
-                    func_02081994(0, 4, 8);
+                    SetItemFlags(0, 3, 8);
+                    SetItemFlags(0, 4, 8);
                     mSubScreenCellAnims[7]->SetAnimation((mUnk_104 + 5) % 6 * 2 + 0x10);
                     mSubScreenCellAnims[8]->SetAnimation((mUnk_104 + 1) % 6 * 2 + 0x10);
                 } else {
-                    func_02081994(0, 3, 0x8000);
-                    func_02081994(0, 4, 0x8000);
+                    SetItemFlags(0, 3, 0x8000);
+                    SetItemFlags(0, 4, 0x8000);
                 }
                 break;
         }
@@ -2124,7 +2124,7 @@ void ListScene::func_0207e424() {
         }
     }
     if (mUnk_194[1] != 0) {
-        if (func_020842a0() == 0) {
+        if (IsCommandListOrPageSettingUp() == 0) {
             func_020807cc();
             mUnk_194[1] = 0;
         }
@@ -2218,7 +2218,7 @@ void ListScene::func_0207ea3c() {
             func_02081594();
             SetMessage(-1);
             mUnk_194[0] = 1;
-        } else if (func_020842a0() == 0) {
+        } else if (IsCommandListOrPageSettingUp() == 0) {
             u32 moved = 0;
             if (mUnk_100 == 0) {
                 mUnk_100 = 1;
@@ -2231,8 +2231,8 @@ void ListScene::func_0207ea3c() {
                         }
                         moved   = 1;
                     } else {
-                        func_02081c2c((u8) mItemIds[mScroll + 3], (u8) ((mScroll + 3) % 4), 2);
-                        func_020823d8(mItemIds[mScroll + 3], (u8) ((mScroll + 3) % 4), 2);
+                        LoadBakuganMark((u8) mItemIds[mScroll + 3], (u8) ((mScroll + 3) % 4), 2);
+                        LoadSmallCard(mItemIds[mScroll + 3], (u8) ((mScroll + 3) % 4), 2);
                     }
                 } else {
                     if (mCursorItem - mUnk_fb > 1) {
@@ -2246,8 +2246,8 @@ void ListScene::func_0207ea3c() {
                         mUnk_f8 = -0x20;
                         mScroll--;
                         mCursorItem--;
-                        func_02081c2c((u8) mItemIds[mScroll], (u8) (mScroll % 4), 2);
-                        func_020823d8(mItemIds[mScroll], (u8) (mScroll % 4), 2);
+                        LoadBakuganMark((u8) mItemIds[mScroll], (u8) (mScroll % 4), 2);
+                        LoadSmallCard(mItemIds[mScroll], (u8) (mScroll % 4), 2);
                         PrintRows();
                     }
                 }
@@ -2281,7 +2281,7 @@ void ListScene::func_0207ea3c() {
         }
     }
     if (mUnk_194[2] != 0) {
-        if (func_020842a0() == 0) {
+        if (IsCommandListOrPageSettingUp() == 0) {
             func_02080898();
             mUnk_194[2] = 0;
         }
@@ -2343,10 +2343,10 @@ void ListScene::func_0207eec4() {
             for (; i < 9; i++) {
                 if (i < 3) {
                     if (mUnk_3f4 == 0 || i == 0) {
-                        func_02081a74((u8) mUnk_c8[9 + i], i, 0, i * 24 + 0x15, 0x57);
+                        DrawBakuganMark((u8) mUnk_c8[9 + i], i, 0, i * 24 + 0x15, 0x57);
                     }
                 } else {
-                    func_02082264(i - 3, i - 3, 0, (i + 1) * 24, 0x55);
+                    DrawSmallCard(i - 3, i - 3, 0, (i + 1) * 24, 0x55);
                 }
             }
             {
@@ -2380,7 +2380,7 @@ void ListScene::func_0207eec4() {
                 if (i % 7 == 6) {
                     y += 6;
                 }
-                mMainScreenCellAnims[2]->DrawFrame(0, func_0208349c(i), x, y, 0);
+                mMainScreenCellAnims[2]->DrawFrame(0, GetRatioFrame(i), x, y, 0);
             }
             break;
     }
@@ -2401,9 +2401,9 @@ void ListScene::DrawWindows() {
 void ListScene::func_0207f32c() {
     if (mUnk_3ff != 0) {
         if (mUnk_e6 < 4) {
-            func_02081a74(mUnk_104, (u8) (mCursorItem % 4), 4, 0x1d, mUnk_3fc + 0x25);
+            DrawBakuganMark(mUnk_104, (u8) (mCursorItem % 4), 4, 0x1d, mUnk_3fc + 0x25);
         } else {
-            func_02082264(mUnk_104, (u8) (mCursorItem % 4), 4, 0x20, mUnk_3fc + 0x24);
+            DrawSmallCard(mUnk_104, (u8) (mCursorItem % 4), 4, 0x20, mUnk_3fc + 0x24);
         }
     }
     u8 limit = 6;
@@ -2430,10 +2430,10 @@ void ListScene::func_0207f32c() {
                     mSubScreenCellAnims[10]->Draw(1, (s16) (mUnk_e4 + 0x19 + i * 0x2c), 0x21, 1);
                 } else if ((mUnk_ea + i) < 4) {
                     if (mUnk_3f4 == 0 || (mUnk_ea + i) == 1) {
-                        func_02081a74((u8) mUnk_c8[(mUnk_ea + i) + 8], (u8) ((mUnk_ea + i) - 1), 1, mUnk_e4 + 0x1d + i * 0x2c, 0x25);
+                        DrawBakuganMark((u8) mUnk_c8[(mUnk_ea + i) + 8], (u8) ((mUnk_ea + i) - 1), 1, mUnk_e4 + 0x1d + i * 0x2c, 0x25);
                     }
                 } else {
-                    func_02082264((mUnk_ea + i) - 4, (mUnk_ea + i) - 4, 1, mUnk_e4 + 0x20 + i * 0x2c, 0x24);
+                    DrawSmallCard((mUnk_ea + i) - 4, (mUnk_ea + i) - 4, 1, mUnk_e4 + 0x20 + i * 0x2c, 0x24);
                 }
                 break;
             case 4:
@@ -2505,18 +2505,18 @@ void ListScene::func_0207f90c() {
                     if (func_020231f4(gSaveData, 0, (u8) mItemIds[mScroll + i], mUnk_104) == 0) {
                         mSubScreenCellAnims[15]->Draw(1, 0x19, (s16) (mUnk_f8 + 0x5b + i * 32), 2);
                     }
-                    func_02081a74(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
+                    DrawBakuganMark(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
                     func_020816ec(GetPrice((u8) mItemIds[mScroll + i], mUnk_104), i);
                     break;
                 case 1:
-                    func_02081a74(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
-                    func_020816ec(func_02086224((u8) mItemIds[mScroll + i], mUnk_104), i);
-                    if (func_02082d00(1, (u8) mItemIds[mScroll + i], mUnk_104) != 0) {
+                    DrawBakuganMark(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
+                    func_020816ec(GetEntryPrice((u8) mItemIds[mScroll + i], mUnk_104), i);
+                    if (IsInSlots(1, (u8) mItemIds[mScroll + i], mUnk_104) != 0) {
                         mSubScreenCellAnims[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
                     }
                     break;
                 case 2:
-                    func_02082264(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x20, mUnk_f8 + 0x48 + i * 32);
+                    DrawSmallCard(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x20, mUnk_f8 + 0x48 + i * 32);
                     func_020816ec(Table_020a39fc()[mItemIds[mScroll + i]], i);
                     break;
                 case 3:
@@ -2526,26 +2526,26 @@ void ListScene::func_0207f90c() {
                         mSubScreenCellAnims[12]->SetAnimation(0x1f);
                         mSubScreenCellAnims[12]->DrawFrame(1, (u8) (i + 1), 0x71, mUnk_f8 + 0x4b + i * 32, 2);
                     } else if (mUnk_e6 < 4) {
-                        func_02081a74(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
-                        if (func_02082d00(1, (u8) mItemIds[mScroll + i], mUnk_104) != 0) {
+                        DrawBakuganMark(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
+                        if (IsInSlots(1, (u8) mItemIds[mScroll + i], mUnk_104) != 0) {
                             mSubScreenCellAnims[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
                         }
                     } else {
-                        func_02082264(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x20, mUnk_f8 + 0x48 + i * 32);
-                        if (func_02082d00(0, (u8) mItemIds[mScroll + i], 0) != 0) {
+                        DrawSmallCard(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x20, mUnk_f8 + 0x48 + i * 32);
+                        if (IsInSlots(0, (u8) mItemIds[mScroll + i], 0) != 0) {
                             mSubScreenCellAnims[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
                         }
                     }
                     break;
                 case 4:
                     if (mUnk_e6 < 7) {
-                        func_02081a74(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
-                        if (func_02082d00(1, (u8) mItemIds[mScroll + i], mUnk_104) != 0) {
+                        DrawBakuganMark(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
+                        if (IsInSlots(1, (u8) mItemIds[mScroll + i], mUnk_104) != 0) {
                             mSubScreenCellAnims[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
                         }
                     } else {
-                        func_02082264(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x20, mUnk_f8 + 0x48 + i * 32);
-                        if (func_02082d00(0, (u8) mItemIds[mScroll + i], 0) != 0) {
+                        DrawSmallCard(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x20, mUnk_f8 + 0x48 + i * 32);
+                        if (IsInSlots(0, (u8) mItemIds[mScroll + i], 0) != 0) {
                             mSubScreenCellAnims[9]->Draw(1, 0x80, (s16) (mUnk_f8 + 0x54 + i * 32), 2);
                         }
                     }
@@ -2611,7 +2611,7 @@ void ListScene::func_02080104() {
     }
 }
 
-void ListScene::func_02080210() {
+void ListScene::ReadSlots() {
     if (mCharacterId != 0x15) {
         for (u8 i = 0; i < 3; i++) {
             u8 *entry = (u8 *) ((u32 *) data_020d433c.mBattlePlayers)[mPlayer + 3] + 0xc + i * 12;
@@ -2627,7 +2627,7 @@ void ListScene::func_02080210() {
     } else {
         for (u8 i = 0; i < 3; i++) {
             mUnk_c8[i]     = GetSlotBakuganId(gSaveData, 0, i);
-            mUnk_c8[9 + i] = func_020230a8(gSaveData, 0, i);
+            mUnk_c8[9 + i] = GetSlotBakuganAttribute(gSaveData, 0, i);
         }
         for (u8 i = 0; i < 3; i++) {
             mUnk_c8[3 + i] = gSaveData[0].mUnk_06[i];
@@ -2662,12 +2662,12 @@ void ListScene::func_0208038c() {
         case 3:
         case 5:
             if (mUnk_e6 == 0) {
-                func_020826ec();
+                InitAndLoadMainScreen();
                 for (u8 i = 0; i < 9; i++) {
                     if (i < 3) {
-                        func_02081c2c((u8) mUnk_c8[i], i, 0);
+                        LoadBakuganMark((u8) mUnk_c8[i], i, 0);
                     } else {
-                        func_020823d8(mUnk_c8[i], (u8) (i - 3), 0);
+                        LoadSmallCard(mUnk_c8[i], (u8) (i - 3), 0);
                     }
                 }
                 SpriteManager::Get().sFade[0] = 2;
@@ -2693,7 +2693,7 @@ void ListScene::func_0208038c() {
             return;
         case 4:
             if (mUnk_e6 == 0) {
-                func_020826ec();
+                InitAndLoadMainScreen();
                 SpriteManager::Get().sFade[0] = 2;
                 return;
             }
@@ -2725,9 +2725,9 @@ void ListScene::func_020807cc() {
     }
     for (u8 i = 0; i < 9; i++) {
         if (i < 3) {
-            func_02081c2c((u8) mUnk_c8[i], i, 1);
+            LoadBakuganMark((u8) mUnk_c8[i], i, 1);
         } else {
-            func_020823d8(mUnk_c8[i], (u8) (i - 3), 1);
+            LoadSmallCard(mUnk_c8[i], (u8) (i - 3), 1);
         }
     }
 }
@@ -2742,7 +2742,7 @@ void ListScene::func_02080898() {
                 if (mScroll + i >= mItemCount) {
                     return;
                 }
-                func_02081c2c((u8) mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
+                LoadBakuganMark((u8) mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
             }
             break;
         case 2:
@@ -2750,7 +2750,7 @@ void ListScene::func_02080898() {
                 if (mScroll + i >= mItemCount) {
                     return;
                 }
-                func_020823d8(mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
+                LoadSmallCard(mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
             }
             break;
         case 3:
@@ -2763,14 +2763,14 @@ void ListScene::func_02080898() {
                     if (mScroll + i >= mItemCount) {
                         return;
                     }
-                    func_02081c2c((u8) mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
+                    LoadBakuganMark((u8) mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
                 }
             } else {
                 for (; i < 3; i++) {
                     if (mScroll + i >= mItemCount) {
                         return;
                     }
-                    func_020823d8(mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
+                    LoadSmallCard(mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
                 }
             }
             break;
@@ -2783,14 +2783,14 @@ void ListScene::func_02080898() {
                     if (mScroll + i >= mItemCount) {
                         return;
                     }
-                    func_02081c2c((u8) mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
+                    LoadBakuganMark((u8) mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
                 }
             } else {
                 for (; i < 3; i++) {
                     if (mScroll + i >= mItemCount) {
                         return;
                     }
-                    func_020823d8(mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
+                    LoadSmallCard(mItemIds[mScroll + i], (u8) ((mScroll + i) % 4), 2);
                 }
             }
             break;
@@ -2809,7 +2809,7 @@ BOOL ListScene::func_02080b48(u32 unk1, u32 unk2) {
         }
     } else if ((unk1 != 0x20) & (unk1 != 0x21)) {
         if ((unk1 == 0x24) | (unk1 == 0x25)) {
-            if (unk2 == gSaveData[0].mUnk_1a_8) {
+            if (unk2 == gSaveData[0].mAttribute) {
                 result = TRUE;
             }
         } else {
@@ -2850,7 +2850,7 @@ void ListScene::BuildList(u32 unk1) {
             break;
         case 2: {
             for (u16 k = 1; k < 0xd5; k++) {
-                if (TestFlagBit(data_020d497b, k) && !TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == mUnk_104 && func_02065c20(k) < 0x2bc) {
+                if (TestFlagBit(data_020d497b, k) && !TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == mUnk_104 && GetCardNumber(k) < 0x2bc) {
                     mItemIds[mItemCount] = k;
                     mItemCount++;
                 }
@@ -2886,7 +2886,7 @@ void ListScene::BuildList(u32 unk1) {
                 }
             } else {
                 for (u16 k = 1; k < 0xd5; k++) {
-                    if (TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == mUnk_104 && func_02065c20(k) < 0x2bc) {
+                    if (TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == mUnk_104 && GetCardNumber(k) < 0x2bc) {
                         mItemIds[mItemCount] = k;
                         mItemCount++;
                     }
@@ -2913,7 +2913,7 @@ void ListScene::BuildList(u32 unk1) {
                     SortListSceneItems(this, 1);
                 } else {
                     for (u16 k = 1; k < 0xd5; k++) {
-                        if (TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == mUnk_104 && func_02065c20(k) < 0x2bc) {
+                        if (TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == mUnk_104 && GetCardNumber(k) < 0x2bc) {
                             mItemIds[mItemCount] = k;
                             mItemCount++;
                         }
@@ -2981,7 +2981,7 @@ void ListScene::func_02081128() {
                 return;
             }
             func_02058228(mCommandList, 0);
-            pair = (BattleCellPair *) func_02023248(gSaveData, (u8) mItemIds[mCursorItem], mUnk_104);
+            pair = (BattleCellPair *) GetBakuganEntry(gSaveData, (u8) mItemIds[mCursorItem], mUnk_104);
             SetCommandListBakugan(mCommandList, (u8) mItemIds[mCursorItem], mUnk_104, -1);
             func_0205afb4(mCommandList, mUnk_104, func_020231f4(gSaveData, 0, (u8) mItemIds[mCursorItem], mUnk_104), pair);
             return;
@@ -3008,7 +3008,7 @@ void ListScene::func_02081128() {
                 } else {
                     id    = mUnk_c8[mUnk_e6 - 1];
                     kind  = mUnk_c8[mUnk_e6 + 8];
-                    pair  = (BattleCellPair *) func_02023248(gSaveData, id, kind);
+                    pair  = (BattleCellPair *) GetBakuganEntry(gSaveData, id, kind);
                     value = func_020231f4(gSaveData, 0, id, kind);
                 }
             } else {
@@ -3018,7 +3018,7 @@ void ListScene::func_02081128() {
                 }
                 kind  = mUnk_104;
                 id    = mItemIds[mCursorItem];
-                pair  = (BattleCellPair *) func_02023248(gSaveData, id, kind);
+                pair  = (BattleCellPair *) GetBakuganEntry(gSaveData, id, kind);
                 value = func_020231f4(gSaveData, 0, id, kind);
             }
             func_02058228(mCommandList, 0);
@@ -3042,7 +3042,7 @@ void ListScene::func_02081128() {
                 return;
             }
             func_02058228(mCommandList, 0);
-            BattleCellPair *pair = (BattleCellPair *) func_02023248(gSaveData, (u8) mItemIds[mCursorItem], mUnk_104);
+            BattleCellPair *pair = (BattleCellPair *) GetBakuganEntry(gSaveData, (u8) mItemIds[mCursorItem], mUnk_104);
             SetCommandListBakugan(mCommandList, (u8) mItemIds[mCursorItem], mUnk_104, -1);
             u32 value = func_020231f4(gSaveData, 0, (u8) mItemIds[mCursorItem], mUnk_104);
             func_0205afb4(mCommandList, mUnk_104, value, pair);
@@ -3166,7 +3166,7 @@ void ListScene::func_020816ec(u32 unk1, u32 unk2) {
     }
 }
 
-void ListScene::func_02081994(u32 unk1, u32 unk2, u32 unk3) {
+void ListScene::SetItemFlags(u32 unk1, u32 unk2, u32 unk3) {
     WindowItem *items;
     switch (unk1) {
         case 0:
@@ -3195,7 +3195,7 @@ void ListSceneScrollCallback(void *arg) {
     reg_G2S_DB_BG2OFS = (u32) ((-0x20 - self->mUnk_f8) << 16) & G2_BGOFS_V_MASK;
 }
 
-void ListScene::func_02081a74(u8 unk1, u32 unk2, u32 unk3, s16 unk4, s16 unk5) {
+void ListScene::DrawBakuganMark(u8 unk1, u32 unk2, u32 unk3, s16 unk4, s16 unk5) {
     BOOL second = unk3 == 0 ? SCREEN_MAIN : SCREEN_SUB;
     u16 pos     = 0;
     u8 priority = 0;
@@ -3229,7 +3229,7 @@ void ListScene::func_02081a74(u8 unk1, u32 unk2, u32 unk3, s16 unk4, s16 unk5) {
     }
 }
 
-void ListScene::func_02081c2c(u32 unk1, u32 unk2, u32 unk3) {
+void ListScene::LoadBakuganMark(u32 unk1, u32 unk2, u32 unk3) {
     switch (mMode) {
         case 2:
             return;
@@ -3251,7 +3251,7 @@ void ListScene::func_02081c2c(u32 unk1, u32 unk2, u32 unk3) {
     BOOL second = unk3 == 0 ? SCREEN_MAIN : SCREEN_SUB;
     ChangeDir("/Game/Bakugan/mark");
     char path[0x20];
-    sprintf(path, "bakugan_s_%03d_ncg.bin", data_020a1074[unk1]);
+    sprintf(path, "bakugan_s_%03d_ncg.bin", gBakuganNumbers[unk1]);
     u32 offset = 0;
     switch (unk3) {
         case 0:
@@ -3274,7 +3274,7 @@ static inline void PrintMessageFW(TextManager &tm, MessageFile *file, int index,
     tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, width, 0, 2, 0x44, 0, 0, 0, 0, 1, 1);
 }
 
-void ListScene::func_02081d5c(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
+void ListScene::PrintBakuganRow(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
     s16 b = 0;
     s16 a = 0;
     u16 w;
@@ -3298,7 +3298,7 @@ void ListScene::func_02081d5c(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
     TextManager::Get().mUse4bppFont = 0;
 }
 
-void ListScene::func_02082264(u8 unk1, u8 unk2, u32 unk3, s16 unk4, s16 unk5) {
+void ListScene::DrawSmallCard(u8 unk1, u8 unk2, u32 unk3, s16 unk4, s16 unk5) {
     BOOL second = unk3 == 0 ? SCREEN_MAIN : SCREEN_SUB;
     u16 pos      = 0;
     u8 priority = 0;
@@ -3328,7 +3328,7 @@ void ListScene::func_02082264(u8 unk1, u8 unk2, u32 unk3, s16 unk4, s16 unk5) {
     mSubScreenCellAnims[6]->DrawFrame(second, unk1, unk4, unk5, priority);
 }
 
-void ListScene::func_020823d8(u32 unk1, u32 unk2, u32 unk3) {
+void ListScene::LoadSmallCard(u32 unk1, u32 unk2, u32 unk3) {
     switch (mMode) {
         case 0:
         case 1:
@@ -3348,7 +3348,7 @@ void ListScene::func_020823d8(u32 unk1, u32 unk2, u32 unk3) {
     BOOL second = unk3 == 0 ? SCREEN_MAIN : SCREEN_SUB;
     ChangeDir("/Game/Card/Graphic/Small");
     char path[0x20];
-    sprintf(path, "card_s_%03d_ncg.bin", func_02065c20(unk1));
+    sprintf(path, "card_s_%03d_ncg.bin", GetCardNumber(unk1));
     u32 offset = 0;
     switch (unk3) {
         case 0:
@@ -3367,14 +3367,14 @@ void ListScene::func_020823d8(u32 unk1, u32 unk2, u32 unk3) {
     LoadAndQueueUpload(second, 4, offset, path, 0, 0, 0);
 }
 
-void ListScene::func_0208250c(u32 unk1, u32 unk2) {
+void ListScene::PrintCardNameShort(u32 unk1, u32 unk2) {
     TextManager::Get().mUse4bppFont = 1;
     s16 x = unk2 << 5;
     PrintMessageF(TextManager::Get(), (MessageFile *) mCardNameShortMessages, unk1, mTextBuffers[0], 0, x);
     TextManager::Get().mUse4bppFont = 0;
 }
 
-void ListScene::func_02082660() {
+void ListScene::ReleaseMainScreenGraphics() {
     for (u8 i = 0; i < 6; i++) {
         delete mMainScreenCellAnims[i];
         mMainScreenCellAnims[i] = NULL;
@@ -3389,7 +3389,7 @@ void ListScene::func_02082660() {
     }
 }
 
-void ListScene::func_020826ec() {
+void ListScene::InitAndLoadMainScreen() {
     SpriteManager::Get().SetupMode(0, 1);
     GX_SetGraphicsMode(1, 0, 0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
@@ -3465,7 +3465,7 @@ void ListScene::func_020826ec() {
     PrintListSceneMainScreenText(this);
 }
 
-BOOL ListScene::func_02082d00(u32 unk1, u32 unk2, u32 unk3) {
+BOOL ListScene::IsInSlots(u32 unk1, u32 unk2, u32 unk3) {
     if (unk1 != 0) {
         for (u8 i = 0; i <= 2; i++) {
             if (unk2 == mUnk_c8[i] && unk3 == mUnk_c8[9 + i]) {
@@ -3521,7 +3521,7 @@ void ListScene::ClearMainScreenText() {
     }
 }
 
-void ListScene::func_020832bc() {
+void ListScene::RefreshCounts() {
     MI_CpuClear16(&mUnk_1a2[0], 0x38);
     mUnk_1a2[0].mUnk_b = 0x11;
     mUnk_1a2[1].mUnk_b = 0x11;
@@ -3530,7 +3530,7 @@ void ListScene::func_020832bc() {
     mUnk_1a2[4].mUnk_b = 0x12;
     mUnk_1a2[5].mUnk_b = 0x11;
     mUnk_1a2[6].mUnk_b = 0x67;
-    mUnk_1a2[gSaveData[0].mUnk_1a_8].mUnk_b += 2;
+    mUnk_1a2[gSaveData[0].mAttribute].mUnk_b += 2;
     mUnk_1a2[6].mUnk_b += 2;
     if (gSaveData[0].mUnk_5d2 != 0) {
         mUnk_1a2[0].mUnk_b += 1;
@@ -3549,7 +3549,7 @@ void ListScene::func_020832bc() {
         }
     }
     for (u16 k = 1; k < 0xd5; k++) {
-        if (func_02065c20(k) < 0x2bc) {
+        if (GetCardNumber(k) < 0x2bc) {
             u8 sel = GetCardInfo(k, 1) + 7;
             mUnk_1a2[sel].mUnk_b += 1;
             mUnk_1a2[13].mUnk_b += 1;
@@ -3561,7 +3561,7 @@ void ListScene::func_020832bc() {
     }
 }
 
-u8 ListScene::func_0208349c(u32 unk1) {
+u8 ListScene::GetRatioFrame(u32 unk1) {
     s32 a = mUnk_1a2[unk1].mUnk_a;
     if (a == 0) {
         return 0;
@@ -3585,7 +3585,7 @@ void func_020834ec(ListScene *self, u32 mode) {
     u8 flag  = 1;
     u8 state = 0;
     for (i = 0; i < 5; i++) {
-        self->func_02081994(1, i, 0x8000);
+        self->SetItemFlags(1, i, 0x8000);
     }
     state = 0;
     switch (mode) {
@@ -3610,9 +3610,9 @@ void func_020834ec(ListScene *self, u32 mode) {
             } else if ((u8) (self->mUnk_1a1 + 0xf8) <= 1) {
                 for (state = 0; state < 9; state++) {
                     if (state < 3) {
-                        self->func_02081c2c((u8) self->mUnk_c8[state], state, 0);
+                        self->LoadBakuganMark((u8) self->mUnk_c8[state], state, 0);
                     } else {
-                        self->func_020823d8(self->mUnk_c8[state], (u8) (state - 3), 0);
+                        self->LoadSmallCard(self->mUnk_c8[state], (u8) (state - 3), 0);
                     }
                 }
                 self->mUnk_194[1] = 1;
@@ -3635,7 +3635,7 @@ void func_020834ec(ListScene *self, u32 mode) {
             state = 2;
             break;
         case 3: {
-            BattleCellPair *pair = (BattleCellPair *) func_02023248(gSaveData, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104);
+            BattleCellPair *pair = (BattleCellPair *) GetBakuganEntry(gSaveData, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104);
             SetCommandListBakugan(self->mCommandList, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104, -1);
             u32 value = func_020231f4(gSaveData, state, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104);
             func_0205afb4(self->mCommandList, self->mUnk_104, value, pair);
@@ -3650,11 +3650,11 @@ void func_020834ec(ListScene *self, u32 mode) {
             break;
         case 4:
         case 5:
-            self->func_02081c2c((u8) self->mItemIds[self->mCursorItem], state, 3);
-            self->func_02081c2c((u8) self->mItemIds[self->mCursorItem], 1, 3);
+            self->LoadBakuganMark((u8) self->mItemIds[self->mCursorItem], state, 3);
+            self->LoadBakuganMark((u8) self->mItemIds[self->mCursorItem], 1, 3);
             break;
         case 6:
-            self->func_020823d8(self->mItemIds[self->mCursorItem], state, 3);
+            self->LoadSmallCard(self->mItemIds[self->mCursorItem], state, 3);
             break;
     }
     if (self->mCommandList != NULL) {
@@ -3670,14 +3670,14 @@ void func_020834ec(ListScene *self, u32 mode) {
     self->mUnk_48->mButtons[0].mEnabled = 1;
     switch (state) {
         case 0:
-            self->func_02081994(1, 3, 1);
+            self->SetItemFlags(1, 3, 1);
             self->mUnk_48->mCursor->mSelection = 3;
             self->mUnk_48->mCells[3]->SetAnimation(1);
             self->mUnk_48->mCells[0]->SetAnimation(9);
             break;
         case 1:
-            self->func_02081994(1, 1, 1);
-            self->func_02081994(1, 2, 2);
+            self->SetItemFlags(1, 1, 1);
+            self->SetItemFlags(1, 2, 2);
             if (flag != 0) {
                 self->mUnk_48->mCursor->mSelection = 1;
                 self->mUnk_48->mCells[1]->SetAnimation(4);
@@ -3688,8 +3688,8 @@ void func_020834ec(ListScene *self, u32 mode) {
             self->mUnk_48->mCells[0]->SetAnimation(10);
             break;
         case 2:
-            self->func_02081994(1, 1, 1);
-            self->func_02081994(1, 2, 2);
+            self->SetItemFlags(1, 1, 1);
+            self->SetItemFlags(1, 2, 2);
             self->mUnk_48->mCursor->mSelection = 1;
             self->mUnk_48->mCells[1]->SetAnimation(4);
             self->mUnk_48->mCells[0]->SetAnimation(10);
@@ -3804,10 +3804,10 @@ void ListScene::func_0208403c() {
             return;
         case 4:
         case 5:
-            func_02081a74(mUnk_104, 0, 3, 0x23, 0x5a);
+            DrawBakuganMark(mUnk_104, 0, 3, 0x23, 0x5a);
             break;
         case 6:
-            func_02082264(mUnk_104, 0, 3, 0x23, 0x5a);
+            DrawSmallCard(mUnk_104, 0, 3, 0x23, 0x5a);
             break;
     }
     SpriteManager::Get().Screen(1).AddOam(mGlyphBuffers[0], (u8) mGlyphCounts[0], 0x20, 0x28, 0, 0, 0xf, 0);
@@ -3815,9 +3815,9 @@ void ListScene::func_0208403c() {
 
 void func_0208415c(ListScene *self) {
     u8 id     = self->mItemIds[self->mCursorItem];
-    int value = func_0202317c(gSaveData, 0, id, self->mUnk_104);
+    int value = GetBakuganEntryIndex(gSaveData, 0, id, self->mUnk_104);
     func_020231c0(gSaveData, value, self->func_02086548(id, self->mUnk_104));
-    UnkStruct_02023248 *entry = func_02023248(gSaveData, id, self->mUnk_104);
+    UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, id, self->mUnk_104);
     u32 index                 = func_02086654(self, id, self->mUnk_104);
     entry->mUnk_00_0          = 0;
     entry->mPad               = 0;
@@ -3828,7 +3828,7 @@ void func_0208415c(ListScene *self) {
     entry->mUnk_9             = data_020a35b8[index][4];
 }
 
-BOOL ListScene::func_020842a0() {
+BOOL ListScene::IsCommandListOrPageSettingUp() {
     if (mCommandList != NULL && mCommandList->IsSettingUp()) {
         return TRUE;
     }
@@ -3838,7 +3838,7 @@ BOOL ListScene::func_020842a0() {
     return FALSE;
 }
 
-void ListScene::func_020842e8() {
+void ListScene::StoreSlotsInSaveData() {
     if (mCharacterId != 0x15) {
         return;
     }
@@ -3869,15 +3869,15 @@ void func_020843ac(ListScene *self, u32 unk1) {
         GXS_SetVisiblePlane(0x11);
         self->mDeckWindow->mCursor->mSelection = 1;
         self->mDeckWindow->mCells[1]->SetAnimation(4);
-        self->func_02081994(3, 0, 8);
-        self->func_02081994(3, 1, 8);
-        self->func_02081994(0, 0, 0x8000);
-        self->func_02081994(0, 1, 0x8000);
-        self->func_02081994(0, 2, 0x8000);
-        self->func_02081994(0, 3, 0x8000);
-        self->func_02081994(0, 4, 0x8000);
-        self->func_02081994(0, 5, 0x8000);
-        self->func_02081994(0, 6, 0x8000);
+        self->SetItemFlags(3, 0, 8);
+        self->SetItemFlags(3, 1, 8);
+        self->SetItemFlags(0, 0, 0x8000);
+        self->SetItemFlags(0, 1, 0x8000);
+        self->SetItemFlags(0, 2, 0x8000);
+        self->SetItemFlags(0, 3, 0x8000);
+        self->SetItemFlags(0, 4, 0x8000);
+        self->SetItemFlags(0, 5, 0x8000);
+        self->SetItemFlags(0, 6, 0x8000);
         if (self->mUnk_e6 != 0) {
             if (self->mUnk_1a0 == 0) {
                 self->mUnk_1a0 = 1;
@@ -3913,8 +3913,8 @@ void func_020843ac(ListScene *self, u32 unk1) {
         screen.LoadCharacters("union_b_obj_page.nce_ncg1D.bin", 0x1d000, 0);
         screen.LoadPalette("union_b_obj_page_ncl.bin", 0, 0);
         GXS_SetVisiblePlane(0x1d);
-        self->func_02081994(3, 0, 0x8000);
-        self->func_02081994(3, 1, 0x8000);
+        self->SetItemFlags(3, 0, 0x8000);
+        self->SetItemFlags(3, 1, 0x8000);
         self->mUnk_194[0] = 1;
         self->mUnk_194[1] = 1;
         self->mUnk_194[2] = 1;
@@ -3931,7 +3931,7 @@ void func_020848c8(ListScene *self) {
         record->mAttribute      = self->mUnk_c8[i + 9];
         record->mStatus      = 0;
         record->mUnk_0b      = record->mUnk_04 / 10;
-        MI_CpuCopy16(func_02023248(gSaveData, record->mBakuganId, record->mAttribute), &data_020d433c.mBattlePlayers->mPlayers[0]->mRecords[i], 4);
+        MI_CpuCopy16(GetBakuganEntry(gSaveData, record->mBakuganId, record->mAttribute), &data_020d433c.mBattlePlayers->mPlayers[0]->mRecords[i], 4);
     }
     for (u8 i = 0; i < 3; i++) {
         BattlePlayerSlot *slot = &data_020d433c.mBattlePlayers->mPlayers[0]->mSlots54[i];
@@ -4076,14 +4076,14 @@ BOOL func_0208501c(ListScene *self) {
             u32 kind;
             u32 invalid = 0;
             id   = GetSlotBakuganId(gSaveData, 0, i);
-            kind = func_020230a8(gSaveData, 0, i);
+            kind = GetSlotBakuganAttribute(gSaveData, 0, i);
             if (id >= 0x29) {
                 invalid = 1;
             }
             if (invalid != 0) {
                 MI_CpuClear16((u8 *) &data_0220f540 + 4 + i * 4, 4);
             } else {
-                MIi_CpuCopy16(func_02023248(gSaveData, id, kind), (u8 *) &data_0220f540 + 4 + i * 4, 4);
+                MIi_CpuCopy16(GetBakuganEntry(gSaveData, id, kind), (u8 *) &data_0220f540 + 4 + i * 4, 4);
             }
         }
     }
@@ -4121,7 +4121,7 @@ void func_02085220(ListScene *self, u32 mode) {
     u8 flag  = 1;
     u8 state = 0;
     for (i = 0; i < 5; i++) {
-        self->func_02081994(1, i, 0x8000);
+        self->SetItemFlags(1, i, 0x8000);
     }
     state = 0;
     switch (mode) {
@@ -4130,8 +4130,8 @@ void func_02085220(ListScene *self, u32 mode) {
             self->mDeckWindow->mEnabled             = 1;
             self->mDeckWindow->mCursor->mSelection = state;
             self->mDeckWindow->mCells[0]->SetAnimation(1);
-            self->func_02081994(3, state, 8);
-            self->func_02081994(3, 1, 8);
+            self->SetItemFlags(3, state, 8);
+            self->SetItemFlags(3, 1, 8);
             self->mUnk_48->mEnabled = state;
             self->mUnk_1a1          = mode;
             self->mState           = 9;
@@ -4145,21 +4145,21 @@ void func_02085220(ListScene *self, u32 mode) {
     }
     GXS_SetVisiblePlane(0x13);
     self->mDeckWindow->mEnabled = 0;
-    self->func_02081994(3, 0, 0x8000);
-    self->func_02081994(3, 1, 0x8000);
+    self->SetItemFlags(3, 0, 0x8000);
+    self->SetItemFlags(3, 1, 0x8000);
     self->mUnk_48->Reset(-1);
     self->mUnk_48->mEnabled             = 1;
     self->mUnk_48->mButtons[0].mEnabled = 1;
     switch (state) {
         case 0:
-            self->func_02081994(1, 3, 1);
+            self->SetItemFlags(1, 3, 1);
             self->mUnk_48->mCursor->mSelection = 3;
             self->mUnk_48->mCells[3]->SetAnimation(1);
             self->mUnk_48->mCells[0]->SetAnimation(9);
             break;
         case 1:
-            self->func_02081994(1, 1, 1);
-            self->func_02081994(1, 2, 2);
+            self->SetItemFlags(1, 1, 1);
+            self->SetItemFlags(1, 2, 2);
             if (flag != 0) {
                 self->mUnk_48->mCursor->mSelection = 1;
                 self->mUnk_48->mCells[1]->SetAnimation(4);
@@ -4210,7 +4210,7 @@ void func_0208550c(ListScene *self) {
         for (j = 0; j < 6; j++) {
             if (func_020231f4(gSaveData, 0, i, j) != 0) {
                 if ((u8) (i + 0xdc) <= 1) {
-                    if (j == gSaveData[0].mUnk_1a_8) {
+                    if (j == gSaveData[0].mAttribute) {
                         self->mUnk_c8[0] = i;
                         found            = 1;
                         self->mUnk_c8[9] = j;
@@ -4650,8 +4650,8 @@ BOOL ListSceneHasAttribute(ListScene *self, u32 unk1) {
     return FALSE;
 }
 
-u32 ListScene::func_02086224(u32 unk1, u32 unk2) {
-    UnkStruct_02023248 *pair = func_02023248(gSaveData, unk1, unk2);
+u32 ListScene::GetEntryPrice(u32 unk1, u32 unk2) {
+    UnkStruct_02023248 *pair = GetBakuganEntry(gSaveData, unk1, unk2);
     if ((s32) pair->mUnk_00_0 >= 9) {
         return 10000000;
     }
@@ -4788,7 +4788,7 @@ void SortListSceneItems(ListScene *self, u32 unk1) {
 void func_0208671c(ListScene *self, u32 unk1) {
     self->mUnk_3f2 = 0;
     for (u16 k = 1; k < 0xd5; k++) {
-        if (func_02065c20(k) < 0x2bc && TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == unk1) {
+        if (GetCardNumber(k) < 0x2bc && TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == unk1) {
             self->mUnk_1f2[self->mUnk_3f2] = k;
             self->mUnk_3f2++;
         }
@@ -4811,8 +4811,8 @@ void func_02086874(ListScene *self) {
     u8 t;
     for (s = 0; s < self->mUnk_3f2 - 1; s++) {
         for (t = s + 1; t < self->mUnk_3f2; t++) {
-            u32 va = GetCardAttributeValue(self->mUnk_1f2[s], (u8) gSaveData[0].mUnk_1a_8);
-            u32 vb = GetCardAttributeValue(self->mUnk_1f2[t], (u8) gSaveData[0].mUnk_1a_8);
+            u32 va = GetCardAttributeValue(self->mUnk_1f2[s], (u8) gSaveData[0].mAttribute);
+            u32 vb = GetCardAttributeValue(self->mUnk_1f2[t], (u8) gSaveData[0].mAttribute);
             if (va < vb) {
                 u16 tmp           = self->mUnk_1f2[s];
                 self->mUnk_1f2[s] = self->mUnk_1f2[t];

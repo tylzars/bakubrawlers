@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 extern MtxFx43 gIdentityMtx43;
-extern const u8 data_020a1074[];
+extern const u8 gBakuganNumbers[];
 
 BakuganModel::BakuganModel() {
     mUnk_4b = 0;
@@ -79,7 +79,7 @@ void BakuganModel::Setup(u32 kind, u32 value, u32 mode) {
     LoadModel(kind);
     ChangeDir("/Game/Bakugan/tex");
     TextureFile *texture = mModel->mModelFile->mTexture;
-    u8 id                       = data_020a1074[(u8) kind];
+    u8 id                       = gBakuganNumbers[(u8) kind];
     if ((u8) (mode + 0xff) <= 1) {
         if (kind == 0x22 && value == 0) {
             sprintf(name, "L_sphe83");
@@ -139,7 +139,7 @@ BOOL BakuganModel::LoadModel(u8 kind) {
         delete old;
         mModel = 0;
     }
-    u8 id = data_020a1074[kind];
+    u8 id = gBakuganNumbers[kind];
     if (kind == 0x22 && mVariant == 0) {
         id = 0x53;
     }

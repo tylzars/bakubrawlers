@@ -24,7 +24,7 @@ extern "C" void SetHandleVolB(void *handle, s32 a);
 extern "C" void func_02036b88(void *handle, u32 a, s32 b);
 
 extern u32 gSoundHeapBuffer[];
-extern u32 data_02090778;
+extern u32 gSeqArcPlayerIndex;
 extern SoundEntry gSeqTable[];
 extern SoundEntry gSeqArcTable[];
 
@@ -41,9 +41,9 @@ void SoundManager::Init() {
     RecordSndHeapState(mHeap);
     InitSndHandle(&mSeqHandle);
     InitSndHandle(&mSeqArcHandle);
-    SetPlayerMaxSounds(mUnk_ac, 8);
+    SetPlayerMaxSounds(mSeqArcPlayerIndex, 8);
     mSeqIndex = -1;
-    mUnk_ac = data_02090778;
+    mSeqArcPlayerIndex = gSeqArcPlayerIndex;
     mSeqArcVolume = 0x7f;
     mSeqVolume = 0x7f;
 }
@@ -52,7 +52,7 @@ void SoundManager::Update() {
     UpdateSnd();
 }
 
-void SoundManager::func_020245a4() {
+void SoundManager::RestoreHeapState() {
     RestoreSndHeapState(mHeap, 1);
     mSeqIndex = -1;
 }
@@ -62,11 +62,11 @@ void SoundManager::func_020245c4(u32 unk1) {
 }
 
 void SoundManager::LoadAndStartSeq(u32 unk1) {
-    func_020245f4(unk1);
+    LoadSeqGroup(unk1);
     StartSeq(unk1);
 }
 
-void SoundManager::func_020245f4(u32 unk1) {
+void SoundManager::LoadSeqGroup(u32 unk1) {
     s16 id = mSeqTable[unk1].mUnk_0;
     if (id < 0) {
         return;
@@ -99,7 +99,7 @@ void SoundManager::SetSeqVolume(s32 unk1) {
     SetHandleVolB(&mSeqHandle, mSeqVolume * unk1 / 0x7f);
 }
 
-void SoundManager::func_020246d4(u32 unk1) {
+void SoundManager::LoadSoundGroup(u32 unk1) {
     SetArcReadChunk(0x8000);
     LoadGroup(unk1, mHeap);
 }
@@ -107,23 +107,23 @@ void SoundManager::func_020246d4(u32 unk1) {
 void SoundManager::StartSeqArc(u32 unk1) {
     SoundEntry *table = mSeqArcTable;
     if (table[unk1].mUnk_2 >= 0 && table[unk1].mUnk_0 >= 0) {
-        func_02039090(&mSeqArcHandle, mUnk_ac, -1, -1, table[unk1].mUnk_0, table[unk1].mUnk_2);
+        func_02039090(&mSeqArcHandle, mSeqArcPlayerIndex, -1, -1, table[unk1].mUnk_0, table[unk1].mUnk_2);
         SetSeqArcVolume(0x7f);
     }
 }
 
-void SoundManager::func_02024754(u32 unk1) {
-    StopPlayerSounds(mUnk_ac, unk1);
+void SoundManager::StopSeqArcPlayerSounds(u32 unk1) {
+    StopPlayerSounds(mSeqArcPlayerIndex, unk1);
 }
 
-extern "C" void func_02024764(SoundManager *manager, u32 unk1, u32 unk2) {
+extern "C" void StopSeqArc(SoundManager *manager, u32 unk1, u32 unk2) {
     SoundEntry *table = manager->mSeqArcTable;
     if (table[unk1].mUnk_2 >= 0 && table[unk1].mUnk_0 >= 0) {
         StopSoundsWithIdPair(table[unk1].mUnk_0, table[unk1].mUnk_2, unk2);
     }
 }
 
-extern "C" int func_02024790(SoundManager *manager, u32 unk1) {
+extern "C" int CountSeqArcSounds(SoundManager *manager, u32 unk1) {
     SoundEntry *table = manager->mSeqArcTable;
     if (table[unk1].mUnk_2 < 0) {
         return 0;

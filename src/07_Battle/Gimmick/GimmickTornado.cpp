@@ -72,7 +72,7 @@ void GimmickTornado::Update() {
         if ((int)data_020d433c.mGimmicks->mState < 2) {
             return;
         }
-        func_020526bc();
+        DrawInstance();
         break;
     case 2:
         mFinished = 1;

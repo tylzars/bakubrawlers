@@ -224,11 +224,11 @@ void TournamentScene::Update() {
                 break;
             }
             mEvent->SetupBattle(gSaveData[0].mUnk_42, gSaveData[0].mUnk_43);
-            if (mEvent->func_02067954()) {
+            if (mEvent->GetSaveRequest()) {
                 mState = 5;
                 break;
             }
-            if (mEvent->func_0206797c()) {
+            if (mEvent->GetUnlockPopupHandle()) {
                 mState = 9;
                 break;
             }
@@ -269,17 +269,17 @@ void TournamentScene::Update() {
                 }
                 break;
             }
-            if (mEvent->func_02067938()) {
+            if (mEvent->IsGraphicsLoaded()) {
                 ReloadMenu();
-                mEvent->func_02067944();
+                mEvent->ClearGraphicsLoaded();
                 break;
             }
-            if (mEvent->func_02067954()) {
+            if (mEvent->GetSaveRequest()) {
                 SpriteManager::Get().StartSubFade(3);
                 mState = 4;
                 break;
             }
-            if (mEvent->func_0206797c()) {
+            if (mEvent->GetUnlockPopupHandle()) {
                 SpriteManager::Get().StartSubFade(3);
                 mState = 9;
                 break;
@@ -319,7 +319,7 @@ void TournamentScene::Update() {
                 break;
             }
             ReloadMenu();
-            mEvent->func_0206796c();
+            mEvent->ClearSaveRequest();
             mTimer = 8;
             mState++;
             break;
@@ -343,7 +343,7 @@ void TournamentScene::Update() {
             if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
-            new UnlockPopup(mEvent->func_0206797c() - 1);
+            new UnlockPopup(mEvent->GetUnlockPopupHandle() - 1);
             mContext->mRequest = 0;
             mState++;
             break;
@@ -352,7 +352,7 @@ void TournamentScene::Update() {
                 break;
             }
             ReloadMenu();
-            mEvent->func_02067988();
+            mEvent->ClearUnlockPopupHandle();
             mState++;
             break;
         case 11:
@@ -367,7 +367,7 @@ void TournamentScene::Update() {
             if (UnlockCharacters()) {
                 new UnlockPopup(0);
                 mState++;
-            } else if (func_02086b74()) {
+            } else if (UnlockFields()) {
                 new UnlockPopup(1);
                 mState++;
             } else {
@@ -744,10 +744,10 @@ void TournamentScene::Update() {
                 data_020d433c.mUnk_9a   = 0x11;
                 data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
                 if (data_020d433c.mUnk_8a_0 != 0) {
-                    int idx; u8 i; u32 id = (u8) gSaveData[0].mUnk_1a_8; int slot; s8 pos;
-                    slot = func_0202317c(gSaveData, 0, 0x25, id);
+                    int idx; u8 i; u32 id = (u8) gSaveData[0].mAttribute; int slot; s8 pos;
+                    slot = GetBakuganEntryIndex(gSaveData, 0, 0x25, id);
                     func_020231c0(gSaveData, slot, 0x29e);
-                    idx = func_0202317c(gSaveData, 0, 0x24, id);
+                    idx = GetBakuganEntryIndex(gSaveData, 0, 0x24, id);
                     for (i = 0, pos = -1; i < 3; i++) {
                         if (idx == gSaveData[0].mUnk_00[i]) {
                             pos = i;
@@ -756,19 +756,19 @@ void TournamentScene::Update() {
                     }
                     if (pos > 0) {
                         do {
-                            func_02023168(gSaveData, 0, (u8) pos, gSaveData[0].mUnk_00[pos - 1]);
+                            SetSlotEntryIndex(gSaveData, 0, (u8) pos, gSaveData[0].mUnk_00[pos - 1]);
                             pos--;
                         } while (pos >= 1);
                     }
-                    func_02023168(gSaveData, 0, 0, slot);
+                    SetSlotEntryIndex(gSaveData, 0, 0, slot);
                     data_020d4478[slot].mUnk_0 = 2;
-                    UnkStruct_02023248 *entry           = func_02023248(gSaveData, 0x25, id);
+                    UnkStruct_02023248 *entry           = GetBakuganEntry(gSaveData, 0x25, id);
                     entry->mUnk_0              = 3;
                     entry->mUnk_3              = 2;
                     entry->mUnk_6              = 3;
                     entry->mUnk_9              = 1;
                     entry->mUnk_12             = 2;
-                    data_020d4850[func_0202317c(gSaveData, 0, 0x24, (u8) gSaveData[0].mUnk_1a_8)] = 0;
+                    data_020d4850[GetBakuganEntryIndex(gSaveData, 0, 0x24, (u8) gSaveData[0].mAttribute)] = 0;
                 }
                 RequestScene(5);
                 mFinished = TRUE;

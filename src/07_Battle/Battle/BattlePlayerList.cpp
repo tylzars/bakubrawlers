@@ -130,9 +130,9 @@ BattlePlayerList::BattlePlayerList()
     if (data_020d433c.mUnk_84) {
         RestoreSndHeapState(SoundManager::Get().mHeap, 2);
     } else {
-        SoundManager::Get().func_020245a4();
+        SoundManager::Get().RestoreHeapState();
     }
-    SoundManager::Get().func_020246d4(6);
+    SoundManager::Get().LoadSoundGroup(6);
     data_020d433c.mGimmicks = 0;
     data_020d433c.mEffects  = 0;
     data_020d433c.mGimmickCollision   = 0;
@@ -691,7 +691,7 @@ void BattlePlayerList::Update() {
             }
             mUnk_2b1 = MATH_Rand32(&gRandom, 100);
             if (data_020d433c.mUnk_83 == 2 || data_020d433c.mUnk_83 == 4) {
-                SoundManager::Get().func_020245a4();
+                SoundManager::Get().RestoreHeapState();
                 SoundManager::Get().LoadAndStartSeq(1);
                 RecordSndHeapState(SoundManager::Get().mHeap);
                 mState = 0x22;
@@ -790,7 +790,7 @@ void BattlePlayerList::Update() {
             if (mUnk_2ae == 0) {
                 return;
             }
-            SoundManager::Get().func_020245a4();
+            SoundManager::Get().RestoreHeapState();
             SoundManager::Get().LoadAndStartSeq(1);
             RecordSndHeapState(SoundManager::Get().mHeap);
             break;

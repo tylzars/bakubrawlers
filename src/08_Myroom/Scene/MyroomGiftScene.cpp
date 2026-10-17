@@ -125,7 +125,7 @@ MyroomGiftScene::~MyroomGiftScene() {
     }
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     MI_CpuClearFast((void *) 0x6200000, 0x20000);
-    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().ResetSlots();
 }
 
 void MyroomGiftScene::Update() {

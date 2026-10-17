@@ -469,7 +469,7 @@ BOOL BattleBase::UpdateCardSequence() {
     BattleEntry *entries = mBattleData->mEntries;
     switch (mCardStep) {
         case 0:
-            SoundManager::Get().func_02024754(1);
+            SoundManager::Get().StopSeqArcPlayerSounds(1);
             SoundManager::Get().StartSeqArc(0x30);
             SpriteManager::Get().StartFade(4);
             mCardStep++;
@@ -487,14 +487,14 @@ BOOL BattleBase::UpdateCardSequence() {
         case 2:
             if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 InitMainScreen();
-                new BattleCharaAct(GetCam(), entries[mCardSide].mUnk_0d_4, 6, (func_02065c20(mCardId) - 0x190) / 100, 0);
+                new BattleCharaAct(GetCam(), entries[mCardSide].mUnk_0d_4, 6, (GetCardNumber(mCardId) - 0x190) / 100, 0);
                 mCardStep++;
             }
             break;
         case 3:
             if (mContext->mRequest != 0) {
                 mContext->mRequest = 0;
-                SpriteManager::Get().func_0202740c();
+                SpriteManager::Get().ResetSlots();
                 mHud->mUnk_118[mCardSide] = 0xff;
                 mCardStep++;
             }
@@ -629,7 +629,7 @@ BOOL BattleBase::UpdateCardSequence() {
         case 13:
             if (mContext->mRequest != 0) {
                 mContext->mRequest = 0;
-                SpriteManager::Get().func_0202740c();
+                SpriteManager::Get().ResetSlots();
                 mHud->StartAbilitySlideOut(mCardSide);
                 mCardStep = 0x12;
             }
@@ -755,7 +755,7 @@ BOOL BattleBase::UpdateCardSequence() {
         case 17:
             if (mContext->mRequest != 0) {
                 mContext->mRequest = 0;
-                SpriteManager::Get().func_0202740c();
+                SpriteManager::Get().ResetSlots();
                 SpriteManager::Get().StartFade(3);
                 mCardStep                      = 0x12;
                 mBattleData->mCellAnims[4]->mFrameIndex = 0;
@@ -941,7 +941,7 @@ BOOL BattleBase::CheckBattleEnd() {
     if (done) {
         func_ov007_0222847c(mHud);
         mUnk_18_0 = 1;
-        func_02024764(&SoundManager::Get(), 0x24, 1);
+        StopSeqArc(&SoundManager::Get(), 0x24, 1);
     } else if (!mUnk_18_0) {
         MovePlayerAnimX(mHud);
     }
@@ -1426,7 +1426,7 @@ void BattleBase::func_ov007_0221d088(u8 a, u16 *counts) {
     }
 }
 
-extern "C" void func_02024764(SoundManager *manager, u32 a, u32 b);
+extern "C" void StopSeqArc(SoundManager *manager, u32 a, u32 b);
 
 u32 BattleRand32(u32 max) {
     return MATH_Rand32(&gRandom, max);

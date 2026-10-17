@@ -281,7 +281,7 @@ BattleCommandList::~BattleCommandList() {
         delete task;
     }
     CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
-    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().ResetSlots();
     GX_SetVisibleWnd(0);
     G2_SetBlendBrightness(0, 0);
 }
@@ -311,7 +311,7 @@ void BattleCommandList::Update() {
                 delete task;
             }
             mBakuganModel = NULL;
-            SpriteManager::Get().func_0202740c();
+            SpriteManager::Get().ResetSlots();
             ResetLoadStep();
             mState++;
             break;
@@ -651,7 +651,7 @@ BOOL BattleCommandList::LoadGraphics() {
         mLoadStep++;
         return FALSE;
     }
-    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().ResetSlots();
     SpriteManager::Get().mScreens[0].SetObjVramMode(3);
     QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 0, 0, (void *) mFiles[0], mFileSizes[0], 1);
     QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x14000, (void *) mFiles[1], mFileSizes[1], 1);
@@ -1181,7 +1181,7 @@ void BattleCommandList::func_0205b0dc(const BattleCellPair *pair) {
    // 0x20 bytes cleared before the first text of a page
 
 void func_0205b1c4(u32 index, u32 unk2) {
-    UnkStruct_02023248 *entry = func_02023248(gSaveData, index, unk2);
+    UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, index, unk2);
     entry->mUnk_0  = data_0209e5bc[index][0];
     entry->mUnk_3  = data_0209e5bc[index][2];
     entry->mUnk_6  = data_0209e5bc[index][3];

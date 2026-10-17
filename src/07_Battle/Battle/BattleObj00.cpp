@@ -129,7 +129,7 @@ BattleObj00::~BattleObj00() {
         delete anim;
     }
     mAnims[0] = 0;
-    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().ResetSlots();
 }
 
 void BattleObj00::Update() {

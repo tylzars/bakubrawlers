@@ -64,7 +64,7 @@ static inline float FramesToFloat(u32 frames) {
     return (float) raw - 0.5f;
 }
 
-extern const u8 data_020a1074[];
+extern const u8 gBakuganNumbers[];
 extern BattleCardModelEntry data_ov007_02282318[];
 extern BattleCardModelEntry data_ov007_02282738[];
 extern BattleCardModelEntry data_ov007_02282b58[];
@@ -250,7 +250,7 @@ BattleCardModel::BattleCardModel(EffectManager *effects, Camera *camera, u32 a, 
 void BattleCardModel::Init(u32 type, u32 id, u32 c) {
     mAnimRestarted   = 0;
     mBakuganId = id;
-    u8 charId = data_020a1074[id];
+    u8 charId = gBakuganNumbers[id];
     mVariant   = c;
     mType     = type;
     mId       = charId;

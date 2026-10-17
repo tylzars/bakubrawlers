@@ -60,7 +60,7 @@ BOOL SelectWindow::Update(BOOL input) {
         SelectWindowCursor *cur = mCursor;
         int oldPrevId     = oldPrev == -1 ? -1 : cur->mItems[oldPrev].mId;
         if (mInputLocked == 0) {
-            event = mCursor->func_0202f468(input);
+            event = mCursor->Update(input);
         }
         int newSel    = mCursor->mSelection;
         int newId     = newSel == -1 ? -1 : mCursor->mItems[newSel].mId;
@@ -240,8 +240,8 @@ BOOL SelectWindow::Update(BOOL input) {
         mSavedSelection            = -1;
         SelectWindowCursor *cursor = mCursor;
         cursor->mUnk_05    = -1;
-        cursor->mUnk_07    = -1;
-        cursor->mUnk_08    = 0;
+        cursor->mPressedItem    = -1;
+        cursor->mPressedOnSelection    = 0;
         mState            = 1;
         break;
     }

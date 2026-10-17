@@ -36,8 +36,8 @@ public:
     /* 10c */ u8 mUnk_10c;
     /* 10d */ PAD(0x10d, 0x10e);
     /* 10e */ u8 mUseVideo2;
-    /* 10f */ u8 mUnk_10f;
-    /* 110 */ u8 mUnk_110;
+    /* 10f */ u8 mAudioChannelCount;
+    /* 110 */ u8 mAudioChannelIndex;
     /* 111 */ PAD(0x111, 0x114);
     /* 114 */
 

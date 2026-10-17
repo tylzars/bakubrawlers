@@ -71,8 +71,8 @@ struct SelectWindowCursor {
     /* 04 */ u8 mCount;
     /* 05 */ s8 mUnk_05;
     /* 06 */ s8 mSelection;
-    /* 07 */ s8 mUnk_07;
-    /* 08 */ u8 mUnk_08;
+    /* 07 */ s8 mPressedItem;
+    /* 08 */ u8 mPressedOnSelection;
     /* 09 */ u8 mScrollItem;
     /* 0a */ u8 mDragging;
     /* 0b */ u8 mScrollItemY;
@@ -86,8 +86,8 @@ struct SelectWindowCursor {
     /* 14 */
 
     SelectWindowCursor(u32 count, const void *table, u32 unk3); // 0x0202f420
-    u32 func_0202f468(u32 unk1);
-    u32 func_0202f61c(u32 playSound);
+    u32 Update(u32 unk1);
+    u32 UpdateInput(u32 playSound);
     void SetupScroll(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
     void SetScroll(u32 scroll); // 020304ec, clamps to mUnk_10
     void RefreshScrollItemY();

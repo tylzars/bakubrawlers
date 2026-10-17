@@ -176,7 +176,7 @@ BOOL ConfrontBg05::func_ov007_0221bfa4() {
     }
     if (mSoundTimer != 0) {
         mSoundTimer = 0;
-        func_02024764(&SoundManager::Get(), 0x2b, 1);
+        StopSeqArc(&SoundManager::Get(), 0x2b, 1);
     }
     mEmblem->Update();
     mEmblem->SlowDown();
@@ -202,7 +202,7 @@ u8 ConfrontBg05::UpdateTouch(int a) {
         hit = mEmblem->func_ov007_02220b9c(a);
         if (hit != -1) {
             func_ov007_0221bb3c();
-            if (!func_02024790(&SoundManager::Get(), 0x2b)) {
+            if (!CountSeqArcSounds(&SoundManager::Get(), 0x2b)) {
                 SoundManager::Get().StartSeqArc(0x2b);
             }
             mSoundTimer = 10;
@@ -212,7 +212,7 @@ u8 ConfrontBg05::UpdateTouch(int a) {
         if (mSoundTimer != 0) {
             mSoundTimer--;
             if (mSoundTimer == 0) {
-                func_02024764(&SoundManager::Get(), 0x2b, 1);
+                StopSeqArc(&SoundManager::Get(), 0x2b, 1);
             }
         }
         mBlend->LowerLevel();

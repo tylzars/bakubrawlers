@@ -38,7 +38,7 @@ extern "C" u32 FX_Atan2Idx(s32 x, s32 y);
 AttrSelScene::AttrSelScene() :
     SceneBase(1000, 0) {
     mState = 0;
-    mAttrib = sSavedToAttrib[gSaveData[0].mUnk_1a_8];
+    mAttrib = sSavedToAttrib[gSaveData[0].mAttribute];
     mPulseState = 0;
     mPulseAlpha = 0;
     mUnk_10_0 = 0;
@@ -161,7 +161,7 @@ void AttrSelScene::Update() {
         }
         case 3:
             if (mPulseState != 2) {
-                gSaveData[0].mUnk_1a_8 = sAttribToSaved[mAttrib];
+                gSaveData[0].mAttribute = sAttribToSaved[mAttrib];
                 SpriteManager::Get().StartFade(3);
                 mRequest = 2;
                 mState++;

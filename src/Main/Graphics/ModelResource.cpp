@@ -56,7 +56,7 @@ u16 ModelResource::AddRef(u8 freeTexture) {
             if (mUnk_1a != 0) {
                 NitroModel *model = new NitroModel;
                 mModel            = model;
-                model->func_02028ac4(mModelFile);
+                model->LoadAndSetupResFile(mModelFile);
             } else {
                 mModel = new NitroModel(mModelFile, mTexture);
             }

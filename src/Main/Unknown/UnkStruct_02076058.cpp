@@ -2,14 +2,14 @@
 #include "UI/SelectWindow.hpp"
 
 // Defined between the headers: where they sit among the singletons' objects sets the data layout.
-static const u8 data_020a308c[12][2] = {
+static const u8 sResultCellPositions[12][2] = {
     {0x28, 0x2b}, {0x28, 0x53}, {0x28, 0x7b}, {0x78, 0x33}, {0x78, 0x5b}, {0x78, 0x83},
     {0x78, 0x33}, {0x78, 0x5b}, {0x78, 0x83}, {0x74, 0x35}, {0x74, 0x5d}, {0x74, 0x85},
 };
-static const WindowItemRecord data_020a30a4[1] = {
+static const WindowItemRecord sResultCockpitItems[1] = {
     {0, 0x5, 201, 170, 52, 20, 1, {-1, -1, -1, -1}, 0, 1},
 };
-static const WindowCellRecord data_020a30c0[1] = {
+static const WindowCellRecord sResultCockpitCells[1] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xa000, 2, 0, 0, {0, 1, 1, 0}},
 };
 
@@ -121,7 +121,7 @@ UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
             }
             u8 variant = record->mAttribute;
             mAttributes[slot] = variant;
-            UnkStruct_02023248 *entry = func_02023248(gSaveData, mBakuganIds[slot], variant);
+            UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, mBakuganIds[slot], variant);
             mSaveEntries[slot] = entry;
             u32 base = entry->mPad;
             mRemainingGauge[slot] = record->mGauge - base;
@@ -352,8 +352,8 @@ void UnkStruct_02076058::LoadGraphics() {
     SpriteScreen &window = SpriteManager::Get().mScreens[1];
     window.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0xa000, 0);
     window.LoadPalette("union_b_obj_cockpit_ncl.bin", 0x40, 0);
-    mWindow = new SelectWindow(1, data_020a30a4, 0);
-    mWindow->SetCells(1, data_020a30c0);
+    mWindow = new SelectWindow(1, sResultCockpitItems, 0);
+    mWindow->SetCells(1, sResultCockpitCells);
     mWindow->mCursor->mSelection = -1;
     mWindow->mEnabled = 0;
     ChangeDir("/");
@@ -441,14 +441,14 @@ void UnkStruct_02076058::Draw() {
         u8 slot = i + 9;
         if (mCellAnims[slot] != NULL) {
             mCellAnims[slot]->Update();
-            mCellAnims[slot]->Draw(1, data_020a308c[slot][0], data_020a308c[slot][1], 1);
+            mCellAnims[slot]->Draw(1, sResultCellPositions[slot][0], sResultCellPositions[slot][1], 1);
         }
     }
     for (u32 i = 0; i < 3; i = (u8) (i + 1)) {
         u8 slot = i;
         if (mSaveEntries[i + mSlotOffset] != NULL && mCellAnims[slot] != NULL) {
             mCellAnims[slot]->Update();
-            mCellAnims[slot]->DrawTransformed(1, data_020a308c[slot][0], data_020a308c[slot][1], 1, 0x800, 0x800, 0);
+            mCellAnims[slot]->DrawTransformed(1, sResultCellPositions[slot][0], sResultCellPositions[slot][1], 1, 0x800, 0x800, 0);
         }
     }
     for (u32 i = 0; i < 3; i = (u8) (i + 1)) {
@@ -459,8 +459,8 @@ void UnkStruct_02076058::Draw() {
             u8 count = entry->mPad / 300;
             u8 n = 0;
             if (count != 0) {
-                u8 x = data_020a308c[slot][0];
-                u8 y = data_020a308c[slot][1];
+                u8 x = sResultCellPositions[slot][0];
+                u8 y = sResultCellPositions[slot][1];
                 do {
                     u8 cellX = x + n % 3 * 32;
                     u8 cellY = n / 3 * 6 + y;
@@ -468,15 +468,15 @@ void UnkStruct_02076058::Draw() {
                     n++;
                 } while (n < count);
             }
-            u8 drawX = data_020a308c[slot][0] + n % 3 * 32;
-            u8 drawY = data_020a308c[slot][1] + n / 3 * 6;
+            u8 drawX = sResultCellPositions[slot][0] + n % 3 * 32;
+            u8 drawY = sResultCellPositions[slot][1] + n / 3 * 6;
             mCellAnims[slot]->Draw(1, drawX, drawY, 1);
         }
     }
     for (u8 i = 0; i < 3; i++) {
         u8 slot = i + 6;
         if (mSaveEntries[i + mSlotOffset] != NULL && (s32) mSaveEntries[i + mSlotOffset]->mUnk_00_0 < 9 && mCellAnims[slot] != NULL) {
-            mCellAnims[slot]->Draw(1, data_020a308c[slot][0], data_020a308c[slot][1], 1);
+            mCellAnims[slot]->Draw(1, sResultCellPositions[slot][0], sResultCellPositions[slot][1], 1);
         }
     }
     func_020781a0(this);
@@ -559,10 +559,10 @@ void UnkStruct_02076058::SetBakugan(u32 index, u32 unk2, u32 unk3, u8 unk4) {
     }
     mBakuganIds[index] = unk2;
     mAttributes[index] = unk3;
-    mSaveEntries[index] = func_02023248(gSaveData, unk2, unk3);
+    mSaveEntries[index] = GetBakuganEntry(gSaveData, unk2, unk3);
     mUnk_70[index] = mSaveEntries[index]->mUnk_00_0;
     if (unk4 != 0) {
-        func_02023248(gSaveData, unk2, unk3);
+        GetBakuganEntry(gSaveData, unk2, unk3);
         u16 cost = (mSaveEntries[index]->mUnk_00_0 + 1) * 300;
         mRemainingGauge[index] = cost - mSaveEntries[index]->mPad;
     }

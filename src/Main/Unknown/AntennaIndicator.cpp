@@ -19,8 +19,8 @@ struct AntennaPos {
     /* 00 */ u8 mY;
     /* 01 */ u8 mX;
 };
-extern const AntennaLayout data_020a30f8[];
-extern const AntennaPos data_020a30dc[];
+extern const AntennaLayout gAntennaLayouts[];
+extern const AntennaPos gAntennaPositions[];
 
 AntennaIndicator::AntennaIndicator(u32 unk1) :
     SceneBase(0x384, 0) {
@@ -43,7 +43,7 @@ void AntennaIndicator::Update() {
     CameraMode modeB = (CameraMode) camB.mMode;
     CameraMode modeA = (CameraMode) camA.mMode;
     if ((modeB == CAMERA_MODE_2) | (modeA == CAMERA_MODE_3)) {
-        if (data_020a30f8[mLayoutIndex].mScreen == 0) {
+        if (gAntennaLayouts[mLayoutIndex].mScreen == 0) {
             if (CameraManager::Get().mActive == 1) {
                 return;
             }
@@ -54,12 +54,12 @@ void AntennaIndicator::Update() {
         }
         frame = 0;
     } else {
-        frame = data_020a30f8[mLayoutIndex].mScreen;
+        frame = gAntennaLayouts[mLayoutIndex].mScreen;
     }
     WirelessManager::Get();
-    mFirstAnim->DrawFrame(frame, data_020c4030.mUnk_24d, data_020a30dc[mLayoutIndex].mY, data_020a30dc[mLayoutIndex].mX, 0);
+    mFirstAnim->DrawFrame(frame, data_020c4030.mUnk_24d, gAntennaPositions[mLayoutIndex].mY, gAntennaPositions[mLayoutIndex].mX, 0);
     if (mSecondVisible) {
-        mSecondAnim->Draw(frame, data_020a30dc[mLayoutIndex].mY, data_020a30dc[mLayoutIndex].mX, 0);
+        mSecondAnim->Draw(frame, gAntennaPositions[mLayoutIndex].mY, gAntennaPositions[mLayoutIndex].mX, 0);
     }
 }
 
@@ -75,19 +75,19 @@ void AntennaIndicator::SetupLayout(u32 unk1) {
         screen = 0;
         width  = 0x20;
     } else {
-        screen = data_020a30f8[mLayoutIndex].mScreen;
+        screen = gAntennaLayouts[mLayoutIndex].mScreen;
     }
     SpriteScreen &sprites = SpriteManager::Get().Screen(screen);
-    sprites.LoadCharacters("/Game/2D/antenna/antenna.nce_ncg1D.bin", data_020a30f8[mLayoutIndex].mCharOffset, 0);
-    TextManager::Get().SetColor(screen, 0, data_020a30f8[mLayoutIndex].mPalette);
+    sprites.LoadCharacters("/Game/2D/antenna/antenna.nce_ncg1D.bin", gAntennaLayouts[mLayoutIndex].mCharOffset, 0);
+    TextManager::Get().SetColor(screen, 0, gAntennaLayouts[mLayoutIndex].mPalette);
     delete mFirstAnim;
     delete mSecondAnim;
     mFirstAnim = new CellAnimation("/Game/2D/antenna/antenna_nce.bin", 0, width, 0x80);
-    mFirstAnim->mCharBase = sprites.GetCharBase(data_020a30f8[mLayoutIndex].mCharOffset);
-    mFirstAnim->mPaletteBase   = data_020a30f8[mLayoutIndex].mPalette;
+    mFirstAnim->mCharBase = sprites.GetCharBase(gAntennaLayouts[mLayoutIndex].mCharOffset);
+    mFirstAnim->mPaletteBase   = gAntennaLayouts[mLayoutIndex].mPalette;
     mSecondAnim = new CellAnimation("/Game/2D/antenna/antenna_nce.bin", 1, width, 0x80);
-    mSecondAnim->mCharBase = sprites.GetCharBase(data_020a30f8[mLayoutIndex].mCharOffset);
-    mSecondAnim->mPaletteBase   = data_020a30f8[mLayoutIndex].mPalette;
+    mSecondAnim->mCharBase = sprites.GetCharBase(gAntennaLayouts[mLayoutIndex].mCharOffset);
+    mSecondAnim->mPaletteBase   = gAntennaLayouts[mLayoutIndex].mPalette;
 }
 
 // Packed palette selection of the character icon: 3-bit indices into the palette files.

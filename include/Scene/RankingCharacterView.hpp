@@ -53,7 +53,7 @@ public:
     void Load();
     void CreateCharacterModel(u32 kind);
     void Draw();
-    void func_0207520c();
+    void DrawSprites();
     void PrintName();
     void ClearNameText();
     void ApplyNextCharacter();

@@ -4,7 +4,7 @@
 
 extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
 extern MtxFx33 data_0220e848;
-extern "C" void func_02024764(SoundManager *manager, u32 a, u32 b);
+extern "C" void StopSeqArc(SoundManager *manager, u32 a, u32 b);
 
 GimmickUnk_022308a8::GimmickUnk_022308a8(u8 id)
     : Gimmick(id, 0) {
@@ -77,7 +77,7 @@ void GimmickUnk_022308a8::Update() {
             VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0, &mPullPerFrame,
                           &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0);
         } else if (mSoundStarted) {
-            func_02024764(&SoundManager::Get(), 0x64, 10);
+            StopSeqArc(&SoundManager::Get(), 0x64, 10);
             mSoundStarted = 0;
         }
         break;

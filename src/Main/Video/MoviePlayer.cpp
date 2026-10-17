@@ -257,13 +257,13 @@ void MoviePlayer::Open(void *a, void *b, u8 c, u32 d) {
     u64 tick   = OS_GetTick();
     u64 period = (((((u64) 1000000 << 24) / MobiclipGetFrameRate(mVideo)) * 0x82ea) >> 6) / 1000;
     OS_SetPeriodicAlarm(mAlarm, tick + 5, (u32) period, (void (*)(void *)) SetFrameDue, this);
-    mUnk_10f = MobiclipGetAudioChannelCount(mVideo);
+    mAudioChannelCount = MobiclipGetAudioChannelCount(mVideo);
     int n    = mUseBuffer2 + 1;
-    int q    = mUnk_10f / n;
+    int q    = mAudioChannelCount / n;
     if (*(u8 *) &d >= q) {
         *(u8 *) &d = q - 1;
     }
-    mUnk_110 = *(u8 *) &d * n;
+    mAudioChannelIndex = *(u8 *) &d * n;
 }
 
 void MoviePlayer::Close() {
@@ -315,7 +315,7 @@ BOOL MoviePlayer::Update() {
                     }
                     j = 0;
                     do {
-                        if (j == mUnk_110) {
+                        if (j == mAudioChannelIndex) {
                             func_0203a79c(mVideo, mBuffer + mWriteOffset);
                             if (mUseBuffer2 == 1) {
                                 func_0203a79c(mVideo, mBuffer2 + mWriteOffset);
@@ -336,7 +336,7 @@ BOOL MoviePlayer::Update() {
                             }
                         }
                         j = j + (mUseBuffer2 + 1);
-                    } while (j < mUnk_10f);
+                    } while (j < mAudioChannelCount);
                     i++;
                 }
                 if (!mSoundStarted) {

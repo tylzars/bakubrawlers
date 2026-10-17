@@ -165,7 +165,7 @@ BattleConfrontCard::~BattleConfrontCard() {
     }
     ReleaseWindow();
     SoundManager::Get().StopSeq(1);
-    SoundManager::Get().func_020245a4();
+    SoundManager::Get().RestoreHeapState();
     if (!func_ov007_02263150(data_020d433c.mBattlePlayers)) {
         if (data_020d433c.mUnk_84) {
             SoundManager::Get().LoadAndStartSeq(1);
@@ -174,14 +174,14 @@ BattleConfrontCard::~BattleConfrontCard() {
             func_ov007_022633f8(data_020d433c.mBattlePlayers);
         }
     }
-    SoundManager::Get().func_020246d4(6);
+    SoundManager::Get().LoadSoundGroup(6);
     SpriteManager::Get();
     SpriteManager::sFade[0]       = 1;
     SpriteManager::sBrightness[0] = -16;
     SpriteManager::Get();
     SpriteManager::sFade[1]       = 1;
     SpriteManager::sBrightness[1] = -16;
-    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().ResetSlots();
 }
 
 void BattleConfrontCard::Update() {
@@ -192,9 +192,9 @@ void BattleConfrontCard::Update() {
             break;
         case 1:
             if (func_0203dd0c(&FrameTask::Get(), 0) == 0) {
-                SoundManager::Get().func_020245a4();
+                SoundManager::Get().RestoreHeapState();
                 SoundManager::Get().LoadAndStartSeq(0);
-                SoundManager::Get().func_020246d4(2);
+                SoundManager::Get().LoadSoundGroup(2);
                 mState++;
             }
             break;
@@ -367,7 +367,7 @@ void BattleConfrontCard::LoadGraphics() {
 
 void BattleConfrontCard::LoadCardGraphic(u16 card) {
     char buffer[0x80];
-    u16 id = func_02065c20(card);
+    u16 id = GetCardNumber(card);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/Card/Graphic/Large/");
     sprintf(buffer, "card_l_%03d.nce_ncg1D.bin", id);

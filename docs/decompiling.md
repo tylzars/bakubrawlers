@@ -554,7 +554,7 @@ Other findings from linking:
   `const u8 *mode = &data_020c4258;` used by the three IsWirelessMode calls: the pointer is reloaded from the pool,
   so it leaves no visible code, but it changes the schedule before allocation. A block-local pointer also gets a
   different register from a function-scope one (ParkCharacters GetParkEntry's loop pointer). A local reassigned in
-  place keeps its register (`cx += width;` before the multiply in func_02027cf4), and `u16 *` indexing keeps an index
+  place keeps its register (`cx += width;` before the multiply in ApplySpriteTransform), and `u16 *` indexing keeps an index
   update in place where byte-pointer arithmetic lets it sink past calls (LoadEditedIconPalette).
 - **Search tool.** tools/permuter.py runs a simulated-annealing search over many source transformations (statement
   order, scopes, enum-typed copies, temporaries, an inline identity, casts, compound forms) with a graded distance and
@@ -860,7 +860,7 @@ Other findings from linking:
 - **Equivalent arithmetic, different schedules.** Inside a long sum, `y % 8 << 3` and `y % 8 * 8` (or
   `(y/64) * 8 * 512` and `(y/64) * 4096`) produce different instruction orders, and so different registers, even
   though each term alone compiles the same. Term order doesn't matter; the compiler re-sorts the sum
-  (SpriteScreen::func_02028054).
+  (SpriteScreen::DownsampleCharacters).
 - **Single-assignment locals are substituted.** `T x = expr;` is copied into every use and then hoisted out of every
   enclosing loop where it's invariant; passed straight as a call argument it's recomputed instead. A local assigned
   twice (`s32 left = c; left += b;`) is not substituted and is computed where written, e.g. in an inner loop's

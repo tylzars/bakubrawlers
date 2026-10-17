@@ -157,15 +157,15 @@ void MapScene::Update() {
                 mState = 0xb;
                 break;
             }
-            if (mEvent->func_02067938()) {
+            if (mEvent->IsGraphicsLoaded()) {
                 GXS_SetVisiblePlane(0x10);
-                mEvent->func_02067944();
+                mEvent->ClearGraphicsLoaded();
             }
-            if (mEvent->func_02067954()) {
+            if (mEvent->GetSaveRequest()) {
                 SpriteManager::Get().StartSubFade(3);
                 mState = 4;
             }
-            if (mEvent->func_0206797c()) {
+            if (mEvent->GetUnlockPopupHandle()) {
                 SpriteManager::Get().StartSubFade(3);
                 mState = 8;
             }
@@ -195,7 +195,7 @@ void MapScene::Update() {
                 break;
             }
             ReloadMap();
-            mEvent->func_0206796c();
+            mEvent->ClearSaveRequest();
             mTimer = 8;
             mState++;
             break;
@@ -217,7 +217,7 @@ void MapScene::Update() {
             if (SpriteManager::sFade[1] > 1) {
                 break;
             }
-            new UnlockPopup(mEvent->func_0206797c() - 1);
+            new UnlockPopup(mEvent->GetUnlockPopupHandle() - 1);
             mContext->mRequest = 0;
             mState++;
             break;
@@ -226,7 +226,7 @@ void MapScene::Update() {
                 break;
             }
             ReloadMap();
-            mEvent->func_02067988();
+            mEvent->ClearUnlockPopupHandle();
             mState++;
             break;
         case 10:

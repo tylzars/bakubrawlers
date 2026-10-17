@@ -183,11 +183,11 @@ BattlePlayer::BattlePlayer(u32 index)
     if (mCharacterId == 0x15) {
         u8 k = 0;
         do {
-            mRecords[k].mAttribute = func_020230a8(save, 0, k);
+            mRecords[k].mAttribute = GetSlotBakuganAttribute(save, 0, k);
             mRecords[k].mBakuganId = GetSlotBakuganId(save, 0, k);
             mRecords[k].mUnk_04 = func_020231f4(save, 0, mRecords[k].mBakuganId, mRecords[k].mAttribute);
             mRecords[k].mUnk_0b = mRecords[k].mUnk_04 / 10;
-            mRecords[k].mHead = *(BattleRecordHead *) func_02023248(save, mRecords[k].mBakuganId, mRecords[k].mAttribute);
+            mRecords[k].mHead = *(BattleRecordHead *) GetBakuganEntry(save, mRecords[k].mBakuganId, mRecords[k].mAttribute);
             k++;
         } while (k < 3);
     }
@@ -529,14 +529,14 @@ void SetupTutorialPlayer(BattlePlayer *player) {
         player->mSlots54Remaining = 0;
     } else if (player->mIndex == 0) {
         player->mRecords[0].mBakuganId = 0x24;
-        int v = func_020231f4(gSaveData, 0, 0x24, (u8) gSaveData[0].mUnk_1a_8);
+        int v = func_020231f4(gSaveData, 0, 0x24, (u8) gSaveData[0].mAttribute);
         if (v == 0) {
             v = 300;
         }
         player->mRecords[0].mUnk_04 = v;
         player->mRecords[0].mUnk_0b = v / 10;
-        player->mRecords[0].mAttribute = gSaveData[0].mUnk_1a_8;
-        player->mSlots6c[0].mValue  = gSaveData[0].mUnk_1a_8 + 0x68;
+        player->mRecords[0].mAttribute = gSaveData[0].mAttribute;
+        player->mSlots6c[0].mValue  = gSaveData[0].mAttribute + 0x68;
         player->mSlots6c[1].mValue  = 0x8c;
         player->mSlots6c[2].mValue  = 0xac;
         player->mSlots6c[1].mFlag   = 2;

@@ -593,10 +593,10 @@ void BattleCommandPrompt::Load() {
             do {
                 char name[0x100];
                 u32 size;
-                sprintf(name, "card_l_%03d.nce_ncg1D.bin", func_02065c20(mCardIds[i]));
+                sprintf(name, "card_l_%03d.nce_ncg1D.bin", GetCardNumber(mCardIds[i]));
                 void *data = LoadFile(name, 0, 0, 0, &size, 0);
-                QueueUpload(1, 4, mCharOffset + i * 0x1800, screen.func_02028054((u8 *) data), 0x1000, 1);
-                sprintf(name, "card_l_%03d_ncl.bin", func_02065c20(mCardIds[i]));
+                QueueUpload(1, 4, mCharOffset + i * 0x1800, screen.DownsampleCharacters((u8 *) data), 0x1000, 1);
+                sprintf(name, "card_l_%03d_ncl.bin", GetCardNumber(mCardIds[i]));
                 LoadAndQueueUpload(1, 0, 0x1400 + i * 0x200, name, 0, 0, 0);
                 i++;
             } while (i < mCount);

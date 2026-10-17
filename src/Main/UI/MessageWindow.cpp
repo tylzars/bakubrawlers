@@ -146,7 +146,7 @@ void MessageWindow::SetWidth(u32 unk1) {
 
 extern const u8 gCardAttributeValues[][6];
 extern const u8 gCardInfo[][4];
-extern const u16 data_020a10ac[];
+extern const u16 gCardNumbers[];
 
 u8 GetCardAttributeValue(u32 id, u32 index) {
     return gCardAttributeValues[id][index];
@@ -156,9 +156,9 @@ u8 GetCardInfo(u32 id, u32 kind) {
     return gCardInfo[id][kind];
 }
 
-u16 func_02065c20(u32 id) {
+u16 GetCardNumber(u32 id) {
     if (id < 0xd5) {
-        return data_020a10ac[id];
+        return gCardNumbers[id];
     }
     return 0;
 }

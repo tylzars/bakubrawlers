@@ -9,8 +9,8 @@ SelectWindowCursor::SelectWindowCursor(u32 count, const void *table, u32 unk3) {
     mCount     = count;
     mUnk_05    = -1;
     mSelection = unk3;
-    mUnk_07    = -1;
-    mUnk_08    = 0;
+    mPressedItem    = -1;
+    mPressedOnSelection    = 0;
     mScrollItem    = 0;
     mDragging    = 0;
     mScrollItemY    = 0;
@@ -23,9 +23,9 @@ SelectWindowCursor::SelectWindowCursor(u32 count, const void *table, u32 unk3) {
     mItems     = (WindowItem *) table;
 }
 
-u32 SelectWindowCursor::func_0202f468(u32 unk1) {
+u32 SelectWindowCursor::Update(u32 unk1) {
     s8 previous = mSelection;
-    u32 result  = func_0202f61c(unk1);
+    u32 result  = UpdateInput(unk1);
     if (unk1 != 0) {
         switch (result) {
             case 1:
@@ -54,7 +54,7 @@ u32 SelectWindowCursor::func_0202f468(u32 unk1) {
     return result;
 }
 
-u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
+u32 SelectWindowCursor::UpdateInput(u32 playSound) {
     u32 mode   = 0;
     u32 result = 0;
     if (mDragging != 0) {
@@ -281,8 +281,8 @@ u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
             break;
         }
         case 1: {
-            mUnk_07 = -1;
-            mUnk_08 = 0;
+            mPressedItem = -1;
+            mPressedOnSelection = 0;
             u8 i    = 0;
             do {
                 if (!(mItems[i].mFlags & 0x8000)) {
@@ -315,8 +315,8 @@ u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
                             }
                         }
                         s8 sel  = i;
-                        mUnk_07 = sel;
-                        mUnk_08 = mUnk_07 == mSelection ? 1 : 0;
+                        mPressedItem = sel;
+                        mPressedOnSelection = mPressedItem == mSelection ? 1 : 0;
                         mUnk_05 = sel;
                         if (HasNeighbor(mUnk_05)) {
                             mSelection = mUnk_05;
@@ -338,9 +338,9 @@ u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
                 if (!(mItems[i].mFlags & 0x8000)) {
                     if (TouchManager::Get().IsReleasedIn(mItems[i].mX, mItems[i].mY, mItems[i].mWidth,
                                                           mItems[i].mHeight)
-                        && mUnk_07 == i) {
+                        && mPressedItem == i) {
                         u32 kind = mItems[i].mUnk_18;
-                        if (kind == 1 || (kind == 2 && mUnk_08 != 0)) {
+                        if (kind == 1 || (kind == 2 && mPressedOnSelection != 0)) {
                             mSelection = i;
                             u32 flags  = mItems[mSelection].mFlags;
                             if (flags & 1) {
@@ -358,8 +358,8 @@ u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
                 }
                 i++;
             } while (i < mCount);
-            mUnk_07 = -1;
-            mUnk_08 = 0;
+            mPressedItem = -1;
+            mPressedOnSelection = 0;
             break;
         }
         case 3: {
@@ -400,9 +400,9 @@ u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
                 }
                 i++;
             } while (i < mCount);
-            if (mUnk_05 != mUnk_07) {
-                mUnk_07 = -1;
-                mUnk_08 = 0;
+            if (mUnk_05 != mPressedItem) {
+                mPressedItem = -1;
+                mPressedOnSelection = 0;
             }
             break;
         }

@@ -212,7 +212,7 @@ void OptionScene::Update() {
             mPosY[0] -= 4;
             DrawSettings();
             if (mSlideTimer == 0) {
-                func_02024764(&SoundManager::Get(), 5, 1);
+                StopSeqArc(&SoundManager::Get(), 5, 1);
                 FrameTask::Get().StopChannel(1);
                 mState = 1;
             }
@@ -560,7 +560,7 @@ void OptionScene::UpdateSettings() {
             case 1:
                 gSaveData[0].mUnk_28_10 = mCur[1];
                 ApplyVolumeOptions(gSaveData);
-                SoundManager::Get().func_02024754(1);
+                SoundManager::Get().StopSeqArcPlayerSounds(1);
                 SoundManager::Get().StartSeqArc(5);
                 break;
             case 2:

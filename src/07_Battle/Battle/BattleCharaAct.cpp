@@ -200,7 +200,7 @@ void BattleCharaAct::Init() {
         break;
     case 5:
     case 6:
-        SpriteManager::Get().func_0202740c();
+        SpriteManager::Get().ResetSlots();
         CameraManager::Get().mActive = 0;
         CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
         break;

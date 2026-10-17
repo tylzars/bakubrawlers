@@ -62,7 +62,7 @@ inline const char **PagePaths() {
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-u16 func_02065c20(u32 id);
+u16 GetCardNumber(u32 id);
 u8 GetCardInfo(u32 id, u32 kind);
 extern u16 data_020c1a4c[0x10]; // palette scratch (cleared before each text)
 
@@ -554,7 +554,7 @@ BOOL BattleCommandPage::LoadLargeCard() {
     }
     if (mLoadStep < 2) {
         if (mCardId < 0xd5) {
-            sprintf(file, "/Game/Card/Graphic/Large/card_l_%03d", func_02065c20(mCardId));
+            sprintf(file, "/Game/Card/Graphic/Large/card_l_%03d", GetCardNumber(mCardId));
         } else {
             switch (mCardId - 0xd7) {
                 case 0:

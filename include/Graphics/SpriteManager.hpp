@@ -36,14 +36,14 @@ struct SpriteScreen {
     u32 LoadCharacters(const char *path, u32 offset, u32 unk3);
     u32 LoadPalette(const char *path, u32 offset, u32 unk3);
     void LoadExtPalette(const char *path, u32 unk2, u32 unk3); // palette load variant
-    void *func_02028054(u8 *data); // reorders 0x1000 bytes of character data into a new buffer and frees data
+    void *DownsampleCharacters(u8 *data); // reorders 0x1000 bytes of character data into a new buffer and frees data
     u32 GetCharBase(u32 unk1);
     void SetObjVramMode(s32 unk1);
     void AddOam(void *buffer, u8 count, s16 unk3, s16 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8);
 };
 
 // One of the eight slots at SpriteManager+0x828 (copied by SetSlot, set up by SaveTexSlotRanges).
-struct UnkStruct_SpriteManager_28 {
+struct TexSlotRanges {
     /* 00 */ u32 mUnk_00[10];
     /* 28 */
 };
@@ -55,7 +55,7 @@ public:
     /* 004 */ SpriteScreen mScreens[2];
     /* 814 */ PAD(0x814, 0x824); // initialised by InitOSHeapAllocator
     /* 824 */ u32 mMode;         // VRAM/display layout 1..9 chosen by SetupMode
-    /* 828 */ UnkStruct_SpriteManager_28 mUnk_828[8];
+    /* 828 */ TexSlotRanges mSlots[8];
     /* 968 */ u8 mSlotUsed[8];    // slot in use flags
     /* 970 */
 
@@ -72,18 +72,18 @@ public:
         return mScreens[index];
     }
 
-    void func_0202740c();
+    void ResetSlots();
     void SetupMode(u32 unk1, u32 unk2);
     void EndFrame(); // end of frame: flush the OAM copies, queue the per-frame callback EndFrameCallback
     void Init();
     void func_02026d90();
     void ResetVram(u32 unk1);
-    void func_020273dc(u32 unk1, u32 unk2);
+    void SetupTexAndPltt(u32 unk1, u32 unk2);
     void Init3D();
-    void func_02027504(s32 index);
-    void func_0202753c(s32 index);
+    void SaveSlot(s32 index);
+    void RestoreSlot(s32 index);
     void ClearSlotUsed(s32 index);
-    void SetSlot(s32 index, const UnkStruct_SpriteManager_28 *src);
+    void SetSlot(s32 index, const TexSlotRanges *src);
 
     void StartFade(s8 mode) {
         sFade[0] = mode;

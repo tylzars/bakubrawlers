@@ -125,7 +125,7 @@ void GimmickDashBase::DrawModel() {
     if ((int)data_020d433c.mGimmicks->mState < 2) {
         return;
     }
-    func_020526bc();
+    DrawInstance();
 }
 
 void GimmickDashBase::RotateDir(int reset) {

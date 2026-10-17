@@ -27,12 +27,12 @@ public:
     // (StorytalkWindow.cpp:266-273); equal to mTextPage on the final page
     /* 38 */ u8 mLastTextPage;
     /* 39 */ u8 mUnk_39;
-    /* 3a */ u8 mUnk_3a;
-    /* 3b */ u8 mUnk_3b;
-    /* 3c */ u16 mUnk_3c;
+    /* 3a */ u8 mTextOnlyX;
+    /* 3b */ u8 mTextOnlyY;
+    /* 3c */ u16 mPageTextTimer;
     /* 3e */ u8 mUnk_3e;
-    /* 3f */ u8 mUnk_3f;
-    /* 40 */ u16 mUnk_40;
+    /* 3f */ u8 mCell2Frame;
+    /* 40 */ u16 mCell2X;
     /* 42 */ s16 mCharacterId;
     // set when a message index >= 0 is set (:235), cleared for -1 (:232) and when its last page is done (:121)
     /* 44 */ u8 mHasMessage;
@@ -41,8 +41,8 @@ public:
     /* 47 */ u8 mCloseRequested;
     /* 48 */ u8 mBlink;
     /* 49 */ u8 mBlinkHidden;
-    /* 4a */ u8 mUnk_4a;
-    /* 4b */ u8 mUnk_4b;
+    /* 4a */ u8 mKeepLastPage;
+    /* 4b */ u8 mTextOnly;
     /* 4c */
 
     StorytalkWindow();
@@ -52,11 +52,11 @@ public:
     void Close();
     void LoadMessageFile(const char *path);
     void LoadGraphics();
-    void func_02088a18(u32 unk1, u32 unk2);
+    void SetCell2FrameAndX(u32 unk1, u32 unk2);
     BOOL NextPage(u32 unk1);
     void SetMessage(s32 unk1, s32 unk2, u32 unk3, u32 unk4);
     void SetCell1Visible(u32 unk1);
-    u32 func_02088ef4();
+    u32 GetPageTextTimer();
     BOOL HasMorePages();
     BOOL IsTextShown();
 };

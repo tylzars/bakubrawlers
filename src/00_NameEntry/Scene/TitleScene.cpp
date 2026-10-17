@@ -77,7 +77,7 @@ static const WindowItemRecord sTitleThreeButtonItems[3] = {
 
 s32 GetSlotBakuganId(SaveData *base, u32 unk1, u32 unk2);
 void SetSlotBakugan(SaveData *base, u32 a, u32 b, u32 c, u32 d, u32 e);
-void func_0202321c(SaveData *base, const u16 *src, u32 b, u32 c);
+void SetBakuganEntry(SaveData *base, const u16 *src, u32 b, u32 c);
 void ApplyVolumeOptions(SaveData *base);
 void ResetSaveData();
 void func_02022b0c();
@@ -162,8 +162,8 @@ TitleScene::TitleScene() :
     mCursor = new SelectWindowCursor(1, sTitleFullScreenItems, 0);
     mMenuSelection = data_020d433c.mUnk_7e_4;
     mSubBgIndex = mMenuSelection;
-    SoundManager::Get().func_020245a4();
-    SoundManager::Get().func_020246d4(4);
+    SoundManager::Get().RestoreHeapState();
+    SoundManager::Get().LoadSoundGroup(4);
 }
 
 TitleScene::~TitleScene() {
@@ -259,7 +259,7 @@ void TitleScene::Update() {
                 mState = 7;
                 break;
             }
-            if (mCursor->func_0202f468(1) == 1) {
+            if (mCursor->Update(1) == 1) {
                 mTimer = 0;
                 mState = 9;
             }
@@ -373,7 +373,7 @@ void TitleScene::Update() {
                     }
                     for (i = 0; i < 6; i++) {
                         if (func_020231f4(gSaveData, 0, 0x28, i)) {
-                            int r = func_0202317c(gSaveData, 0, 0x28, i);
+                            int r = GetBakuganEntryIndex(gSaveData, 0, 0x28, i);
                             func_020231c0(gSaveData, r, 0);
                             changed = 1;
                         }
@@ -382,9 +382,9 @@ void TitleScene::Update() {
                     if (changed) {
                         for (i = 0; i < 3; i++) {
                             u8 v = buf[i];
-                            int r = func_0202317c(gSaveData, 0, 0x22, v);
+                            int r = GetBakuganEntryIndex(gSaveData, 0, 0x22, v);
                             func_020231c0(gSaveData, r, 0xc8);
-                            func_0202321c(gSaveData, (const u16 *) &tmp, 0x22, v);
+                            SetBakuganEntry(gSaveData, (const u16 *) &tmp, 0x22, v);
                         }
                     }
                     ApplyVolumeOptions(gSaveData);
@@ -494,7 +494,7 @@ void TitleScene::Update() {
             break;
         case 23:
             if (mContext->mRequest != 0) {
-                gSaveData[0].mUnk_1a_8 = 0;
+                gSaveData[0].mAttribute = 0;
                 mState++;
             }
             break;
@@ -622,7 +622,7 @@ void TitleScene::Update() {
         case 36: {
             u8 changed = 0;
             u8 prev = mMenuSelection;
-            u8 event = mCursor->func_0202f468(1);
+            u8 event = mCursor->Update(1);
             if (prev != (u8) mCursor->mSelection) {
                 mMenuSelection = mCursor->mSelection;
                 RefreshMenuAnimations();

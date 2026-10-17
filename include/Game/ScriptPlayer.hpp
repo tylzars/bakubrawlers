@@ -16,7 +16,7 @@ class UnkStruct_0205401c;
 class BakuganModel;
 class TextureFile;
 
-// func_0206b05c's result: an enum, not BOOL (the final compare's moveq/movne order needs it)
+// GetCommandSlot's result: an enum, not BOOL (the final compare's moveq/movne order needs it)
 enum UnkStruct_02065c40_Kind { UNK_02065C40_KIND_0, UNK_02065C40_KIND_1 };
 
 struct ScriptCommand {
@@ -98,8 +98,8 @@ struct ScriptModel {
     /* 4c */ u8 mScale;
     /* 4d */ u8 mHideAtAnimEnd;
     /* 4e */ u8 mVisible;
-    /* 4f */ u8 mUnk_4f;
-    /* 50 */ u8 mUnk_50;
+    /* 4f */ u8 mStorytalkCell2X;
+    /* 50 */ u8 mStorytalkCell2Frame;
     /* 51 */ u8 mSwapPending;
     /* 52 */ u8 mNextAnimIndex;
     /* 53 */ PAD(0x53, 0x54);
@@ -122,10 +122,10 @@ struct ScriptSphere {
     /* 35 */ s8 mNextTableIndex;
     /* 36 */ u8 mUnk_36;
     /* 37 */ u8 mVisible;
-    /* 38 */ u8 mUnk_38;
+    /* 38 */ u8 mStorytalkCell2X;
     /* 39 */ u8 mUnk_39;
     /* 3a */ u8 mUnk_3a;
-    /* 3b */ u8 mUnk_3b;
+    /* 3b */ u8 mStorytalkCell2Frame;
     /* 3c */ u8 mUnk_3c;
     /* 3d */ u8 mUnk_3d;
     /* 3e */ u8 mUnk_3e;
@@ -155,13 +155,13 @@ struct ScriptCharacter {
     /* 39 */ u8 mUnk_39;
     /* 3a */ u8 mUnk_3a;
     /* 3b */ u8 mUnk_3b;
-    /* 3c */ u8 mUnk_3c;
+    /* 3c */ u8 mExtraAnimEnabled;
     /* 3d */ u8 mShadowScale;
     /* 3e */ u8 mVisible;
-    /* 3f */ u8 mUnk_3f;
+    /* 3f */ u8 mStorytalkCell2X;
     /* 40 */ u8 mUnk_40;
     /* 41 */ u8 mUnk_41;
-    /* 42 */ u8 mUnk_42;
+    /* 42 */ u8 mStorytalkCell2Frame;
     /* 43 */ u8 mSwapPending;
     /* 44 */ PAD(0x44, 0x48);
     /* 48 */
@@ -230,12 +230,12 @@ public:
     /* 14e3 */ PAD(0x14e3, 0x14e4);
     /* 14e4 */ u8 mUnk_14e4;
     /* 14e5 */ u8 mUnk_14e5;
-    /* 14e6 */ u8 mUnk_14e6;
+    /* 14e6 */ u8 mGraphicsLoaded;
     /* 14e7 */ u8 mUnk_14e7;
     /* 14e8 */ u8 mUnk_14e8;
     /* 14e9 */ u8 mUnk_14e9;
-    /* 14ea */ u8 mUnk_14ea;
-    /* 14eb */ u8 mUnk_14eb;
+    /* 14ea */ u8 mSaveRequested;
+    /* 14eb */ u8 mUnlockPopupHandle;
     /* 14ec */ u8 mSkipped;
     /* 14ed */ u8 mUnk_14ed;
     /* 14ee */ u8 mUnk_14ee;
@@ -263,8 +263,8 @@ public:
     void func_020682a0(u32 index, u32 kind);
     void ResetCharacterParams(u32 index);
     s8 func_020687a8(s32 kind, u32 index, u32 column);
-    void func_0206867c(u32 index, u32 value);
-    void func_02068714();
+    void SetCharacterExtraAnimEnabled(u32 index, u32 value);
+    void UpdateCharacterExtraAnims();
     void ApplyCharacterRotation(u32 index);
     BOOL SetMap(s32 value);
     BOOL LoadMap();
@@ -274,7 +274,7 @@ public:
     void ReleaseModel(u32 index);
     BOOL func_02069680(u32 index);
     void CreateNextSphere(u32 index);
-    u8 func_02069780(u32 index);
+    u8 GetSphereVariant(u32 index);
     BOOL LoadModel(u32 index);
     BOOL LoadNextModelFiles(u32 index);
     BOOL LoadSphere(u32 index, u32 flag);
@@ -292,7 +292,7 @@ public:
     void UpdateCharacterAnimation(u32 index);
     void DrawMap();
     void DrawModels();
-    UnkStruct_02065c40_Kind func_0206b05c(u32 id);
+    UnkStruct_02065c40_Kind GetCommandSlot(u32 id);
     void RunCommands();
     void ExecuteCommand(u32 command, s32 value);
     s32 func_02070554(s32 kind, s32 index);
@@ -303,7 +303,7 @@ public:
     void LoadGraphics();
     BOOL ReadScript();
     void UpdateWait();
-    void func_020666d8();
+    void SetupSpriteSlots();
     void ReleaseModels(u32 unk1);
     void ResetCamera();
     void ResetLight();
@@ -315,12 +315,12 @@ public:
     u8 func_02067120(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
     BOOL IsRunning();
     u32 GetResult();
-    BOOL func_02067938();
-    void func_02067944();
-    u32 func_02067954();
-    void func_0206796c();
-    u32 func_0206797c();
-    void func_02067988();
+    BOOL IsGraphicsLoaded();
+    void ClearGraphicsLoaded();
+    u32 GetSaveRequest();
+    void ClearSaveRequest();
+    u32 GetUnlockPopupHandle();
+    void ClearUnlockPopupHandle();
     BOOL StartScript(const char *path);
     void RequestFinish();
     BOOL func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4, s32 unk5);

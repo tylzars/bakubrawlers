@@ -17,12 +17,12 @@ public:
     /* 0c */ SelectWindow *mWindow;
     /* 10 */ MessageFile *mMessages;
     /* 14 */ void *mTextBuffer;
-    /* 18 */ u32 mUnk_18;
-    /* 1c */ u32 mUnk_1c;
-    /* 20 */ u32 mUnk_20;
-    /* 24 */ u32 mUnk_24;
-    /* 28 */ u32 mUnk_28;
-    /* 2c */ u16 mUnk_2c;
+    /* 18 */ u32 mWindowCharOffset;
+    /* 1c */ u32 mWindowPaletteOffset;
+    /* 20 */ u32 mTextCharOffset;
+    /* 24 */ u32 mTextPaletteOffset;
+    /* 28 */ u32 mCellCharOffset;
+    /* 2c */ u16 mCellPaletteOffset;
     /* 2e */ u16 mTextBufferSize;
     /* 30 */ u8 mScreen;
     /* 31 */ u8 mWindowBg;

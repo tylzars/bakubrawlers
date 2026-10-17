@@ -68,7 +68,7 @@ UnkStruct_02071d24::UnkStruct_02071d24(u32 unk1) :
     mTextBufferSize = 0;
     mGlyphCount = 0;
     MI_CpuClear8(mBakuganIds, 6);
-    MI_CpuClear8(mUnk_5e, 6);
+    MI_CpuClear8(mAttributes, 6);
     MI_CpuClear8(mUnk_64, 6);
     for (u8 i = 0; i < 6; i++) {
         mUnk_34[i] = NULL;
@@ -124,7 +124,7 @@ void UnkStruct_02071d24::Update() {
         case 3:
             if (func_02072d20()) {
                 SoundManager::Get().StartSeqArc(0x34);
-                SetFlagBit(data_020d49b0, mUnk_5e[mBakuganIndex]);
+                SetFlagBit(data_020d49b0, mAttributes[mBakuganIndex]);
             }
             mState++;
             if (mUnk_4c != 2) {
@@ -281,11 +281,11 @@ void UnkStruct_02071d24::LoadGraphics() {
     mBakuganSubAnim->mCharBase = screen2.GetCharBase(0x9000);
     mBakuganSubAnim->mPaletteBase   = 0;
     mBakuganSubAnim->SetMode(5);
-    mBakuganSubAnim->mFrameIndex = mUnk_5e[mBakuganIndex];
+    mBakuganSubAnim->mFrameIndex = mAttributes[mBakuganIndex];
     mWindow          = new SelectWindow(7, data_020a2e48, 0);
     mWindow->SetCells(7, data_020a2f0c);
     mWindow->Update(1);
-    mCommandList = new BattleCommandList(mBakuganIds[mBakuganIndex], mUnk_5e[mBakuganIndex], -1, 0);
+    mCommandList = new BattleCommandList(mBakuganIds[mBakuganIndex], mAttributes[mBakuganIndex], -1, 0);
     if (mUnk_34[mBakuganIndex] != NULL) {
         func_02072b14();
     } else {
@@ -294,8 +294,8 @@ void UnkStruct_02071d24::LoadGraphics() {
 }
 
 void UnkStruct_02071d24::func_02072b14() {
-    int value = func_020231f4(gSaveData, 0, mBakuganIds[mBakuganIndex], mUnk_5e[mBakuganIndex]);
-    func_0205afb4(mCommandList, mUnk_5e[mBakuganIndex], value, mUnk_34[mBakuganIndex]);
+    int value = func_020231f4(gSaveData, 0, mBakuganIds[mBakuganIndex], mAttributes[mBakuganIndex]);
+    func_0205afb4(mCommandList, mAttributes[mBakuganIndex], value, mUnk_34[mBakuganIndex]);
 }
 
 void UnkStruct_02071d24::func_02072b60() {
@@ -306,8 +306,8 @@ void UnkStruct_02071d24::func_02072b60() {
         total += data_020a2e3c[pair->mUnk_00_0 - i];
         i++;
     } while (i < mUnk_64[mBakuganIndex]);
-    int current = func_0202317c(gSaveData, 0, mBakuganIds[mBakuganIndex], mUnk_5e[mBakuganIndex]);
-    u16 base    = func_020231f4(gSaveData, 0, mBakuganIds[mBakuganIndex], mUnk_5e[mBakuganIndex]);
+    int current = GetBakuganEntryIndex(gSaveData, 0, mBakuganIds[mBakuganIndex], mAttributes[mBakuganIndex]);
+    u16 base    = func_020231f4(gSaveData, 0, mBakuganIds[mBakuganIndex], mAttributes[mBakuganIndex]);
     if (base + total > 0x3de) {
         total = 0x3de - base;
     }
@@ -512,10 +512,10 @@ void UnkStruct_02071d24::func_020733d4() {
         }
         if (mUnk_64[next] != 0) {
             if (mCommandList != NULL) {
-                SetCommandListBakugan(mCommandList, mBakuganIds[next], mUnk_5e[next], -1);
+                SetCommandListBakugan(mCommandList, mBakuganIds[next], mAttributes[next], -1);
             }
             mUnk_4f = 0;
-            mBakuganSubAnim->mFrameIndex = mUnk_5e[mBakuganIndex];
+            mBakuganSubAnim->mFrameIndex = mAttributes[mBakuganIndex];
             func_02072b14();
             RefreshItems();
             func_02072c40();
@@ -687,8 +687,8 @@ void UnkStruct_02071d24::SetBakugan(u32 index, u32 unk2, u32 unk3, u8 unk4) {
     }
     mBakuganIndex = 0;
     mBakuganIds[index] = unk2;
-    mUnk_5e[index] = unk3;
-    mUnk_34[index] = (BattleCellPair *) func_02023248(gSaveData, unk2, unk3);
+    mAttributes[index] = unk3;
+    mUnk_34[index] = (BattleCellPair *) GetBakuganEntry(gSaveData, unk2, unk3);
     if (unk4 > 9) {
         unk4 = 9;
     }

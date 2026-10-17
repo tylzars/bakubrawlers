@@ -60,7 +60,7 @@ void GimmickVentKaze::Update() {
         break;
     case 1: {
         if (mModel && (int)data_020d433c.mGimmicks->mState >= 1) {
-            func_020526bc();
+            DrawInstance();
         }
         if (!(mCollision && mCollision->mHitCount)) {
             return;

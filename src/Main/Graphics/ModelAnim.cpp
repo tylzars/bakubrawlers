@@ -39,7 +39,7 @@ BOOL ModelAnim::Advance() {
     for (u8 i = 0; i < 5; i++) {
         NNSG3dAnmObj *obj = GetAnimObj(i);
         if (obj != NULL) {
-            func_0202982c(obj);
+            StepAnimObjAndRecordEnd(obj);
         }
     }
     return !((mLoop == 0) & mReachedEnd);
@@ -116,7 +116,7 @@ s32 ModelAnim::GetFrameCountForSet(u32 set) {
     return max;
 }
 
-void ModelAnim::func_0202982c(NNSG3dAnmObj *obj) {
+void ModelAnim::StepAnimObjAndRecordEnd(NNSG3dAnmObj *obj) {
     mReachedEnd = (StepAnimObj(obj) != 0 || mReachedEnd != 0);
 }
 

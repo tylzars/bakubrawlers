@@ -267,7 +267,7 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
             mFieldUnlocked[mLocalSlot][j] = 1;
         } else {
             u8 f = sFieldSelectFieldIds[j];
-            if (TestFlagBit(data_020d4968, f)) {
+            if (TestFlagBit(gUnlockedFieldBits, f)) {
                 mFieldUnlocked[mLocalSlot][j] = 1;
                 if (!TestFlagBit(data_020d4969, f)) {
                     mFieldNew[j] = 1;
@@ -1090,7 +1090,7 @@ BOOL FieldSelectScene::func_ov001_02221aa8(u32 unk1) {
 
 BOOL FieldSelectScene::func_ov001_02221c0c() {
     MI_CpuCopy8(data_020d496a, (u8 *) &data_0220f540 + 4, 9);
-    MI_CpuCopy8(data_020d4968, (u8 *) &data_0220f540 + 0xd, 1);
+    MI_CpuCopy8(gUnlockedFieldBits, (u8 *) &data_0220f540 + 0xd, 1);
     data_0220f540.mUnk_0e = gSaveData[0].mUnk_27;
     data_0220f540.mUnk_0f = gSaveData[0].mUnk_5bf_0;
     if (func_ov001_02221aa8(0x17)) {

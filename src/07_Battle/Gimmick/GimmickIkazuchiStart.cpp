@@ -190,7 +190,7 @@ void GimmickIkazuchiStart::Update() {
 int GimmickIkazuchiStart::func_ov007_022789e0(int count) {
     int result = 0;
     if (mModel && (int)data_020d433c.mGimmicks->mState >= 1) {
-        func_020526bc();
+        DrawInstance();
         if (count && mModelB) {
             MtxFx43 mtx = gIdentityMtx43;
             MTX_SetTranslation43(&mtx, &mPosition);

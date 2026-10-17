@@ -307,7 +307,7 @@ CharacterEditScene::~CharacterEditScene() {
     if (cell != NULL) {
         delete cell;
     }
-    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().ResetSlots();
 }
 
 
@@ -2207,7 +2207,7 @@ void CharacterEditScene::Draw() {
     DrawName();
     if (mNameplateCell != NULL) {
         mNameplateCell->Update();
-        mNameplateCell->DrawFrame(0, gSaveData[0].mUnk_1a_8, 0x80, 0x60, 0);
+        mNameplateCell->DrawFrame(0, gSaveData[0].mAttribute, 0x80, 0x60, 0);
     }
 }
 
@@ -2285,7 +2285,7 @@ void CharacterEditScene::StoreLook(CharacterLook *look) {
     look->mUnk_04_8 = mLists[13].mValues[mLists[13].mIndex];
     look->mUnk_04_14 = mLists[14].mValues[mLists[14].mIndex];
     look->mUnk_04_11 = mLists[15].mValues[mLists[15].mIndex];
-    look->mUnk_06_8 = gSaveData[0].mUnk_1a_8;
+    look->mUnk_06_8 = gSaveData[0].mAttribute;
 }
 
 void CharacterEditScene::func_020637a8() {
@@ -2800,7 +2800,7 @@ void CharacterEditScene::UpdateChoiceInput() {
     if (mWindows[0]->mState != 1) {
         return;
     }
-    u32 result = mCursor->func_0202f468(1);
+    u32 result = mCursor->Update(1);
     s8 sel = mCursor->mSelection;
     if (mCursorItem != sel) {
         mCursorItem = sel;
@@ -2895,7 +2895,7 @@ void CharacterEditScene::ApplyLookToModel() {
         mModel->mCharacter->mUnk_65[i] = mLists[i].mValues[mLists[i].mIndex];
         i++;
     } while (i < 16);
-    mModel->mCharacter->mUnk_75 = gSaveData[0].mUnk_1a_8;
+    mModel->mCharacter->mUnk_75 = gSaveData[0].mAttribute;
 }
 
 void CharacterEditScene::RandomizeLook() {

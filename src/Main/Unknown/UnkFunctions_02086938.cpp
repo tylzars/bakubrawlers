@@ -12,7 +12,7 @@ extern u8 data_020d4976[];
 
 extern u8 data_020d497b[];
 
-extern u8 data_020d499c[];
+extern u8 gUnlockedTipBits[];
 
 extern u8 data_020d49a6[];
 
@@ -40,9 +40,9 @@ static inline BOOL StageReached(u32 greater, u32 equal, u32 sub) {
     {                                                                   \
         u8 i = first;                                                   \
         do {                                                            \
-            u8 byte = data_020d499c[(u32) i >> 3];                      \
+            u8 byte = gUnlockedTipBits[(u32) i >> 3];                      \
             if (!(byte & (1 << (i % 8)))) {                             \
-                data_020d499c[(u32) i >> 3] = byte | (1 << (i % 8));   \
+                gUnlockedTipBits[(u32) i >> 3] = byte | (1 << (i % 8));   \
                 result                      = TRUE;                     \
             }                                                           \
             i++;                                                        \
@@ -80,9 +80,9 @@ struct ProgressEntry {
 
 BOOL UnlockStoreItems();
 BOOL UnlockCharacters();
-BOOL func_02086b74();
+BOOL UnlockFields();
 BOOL func_02086d48();
-BOOL func_02086e08();
+BOOL UnlockTips();
 s32 func_02087100();
 s32 func_02087468();
 BOOL IsProgressEntryUnlocked(u32 index);
@@ -359,44 +359,44 @@ BOOL UnlockCharacters() {
     return result;
 }
 
-BOOL func_02086b74() {
+BOOL UnlockFields() {
     BOOL result = FALSE;
     if (!(gSaveData[0].mUnk_578 & 0x1)) {
         result = TRUE;
-        ((volatile u8 *) data_020d4968)[0] |= 0x1;
+        ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x1;
     }
     if (!(gSaveData[0].mUnk_578 & 0x80)) {
         result = TRUE;
-        ((volatile u8 *) data_020d4968)[0] |= 0x80;
+        ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x80;
     }
     if (gSaveData[0].mUnk_42 >= 4 && !(gSaveData[0].mUnk_578 & 0x4)) {
         result = TRUE;
-        ((volatile u8 *) data_020d4968)[0] |= 0x4;
+        ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x4;
     }
     if (gSaveData[0].mUnk_42 >= 7 && !(gSaveData[0].mUnk_578 & 0x10)) {
         result = TRUE;
-        ((volatile u8 *) data_020d4968)[0] |= 0x10;
+        ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x10;
     }
     if (gSaveData[0].mUnk_42 >= 8 && !(gSaveData[0].mUnk_578 & 0x8)) {
         result = TRUE;
-        ((volatile u8 *) data_020d4968)[0] |= 0x8;
+        ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x8;
     }
     u8 stage = gSaveData[0].mUnk_42;
     if ((stage > 8) | ((stage == 8) & (gSaveData[0].mUnk_43 == 4))) {
         if (!(gSaveData[0].mUnk_578 & 0x2)) {
             result = TRUE;
-            ((volatile u8 *) data_020d4968)[0] |= 0x2;
+            ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x2;
         }
     }
     stage = gSaveData[0].mUnk_42;
     if ((stage > 9) | ((stage == 9) & (gSaveData[0].mUnk_43 == 9))) {
         if (!(gSaveData[0].mUnk_578 & 0x20)) {
             result = TRUE;
-            ((volatile u8 *) data_020d4968)[0] |= 0x20;
+            ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x20;
         }
         if (!(gSaveData[0].mUnk_578 & 0x40)) {
             result = TRUE;
-            ((volatile u8 *) data_020d4968)[0] |= 0x40;
+            ((volatile u8 *) gUnlockedFieldBits)[0] |= 0x40;
         }
     }
     return result;
@@ -444,7 +444,7 @@ BOOL func_02086d48() {
     return result;
 }
 
-BOOL func_02086e08() {
+BOOL UnlockTips() {
     BOOL result = FALSE;
     if (VD.mUnk_42 != 0) {
         SET_FLAG_LOOP(0, 3)
@@ -452,38 +452,38 @@ BOOL func_02086e08() {
         if (VD.mUnk_43 != 0) {
             if (!(VD.mUnk_5ac & 0x10)) {
                 result = TRUE;
-                ((volatile u8 *) data_020d499c)[0] |= 0x10;
+                ((volatile u8 *) gUnlockedTipBits)[0] |= 0x10;
             }
         }
         if (VD.mUnk_43 > 1) {
             if (!(VD.mUnk_5ac & 0x20)) {
                 result = TRUE;
-                ((volatile u8 *) data_020d499c)[0] |= 0x20;
+                ((volatile u8 *) gUnlockedTipBits)[0] |= 0x20;
             }
             if (!(VD.mUnk_5ac & 0x40)) {
                 result = TRUE;
-                ((volatile u8 *) data_020d499c)[0] |= 0x40;
+                ((volatile u8 *) gUnlockedTipBits)[0] |= 0x40;
             }
         }
     }
     if (VD.mUnk_42 > 1) {
         if (!(VD.mUnk_5ac & 0x80)) {
             result = TRUE;
-            ((volatile u8 *) data_020d499c)[0] |= 0x80;
+            ((volatile u8 *) gUnlockedTipBits)[0] |= 0x80;
         }
         if (!(VD.mUnk_5ad & 0x40)) {
             result = TRUE;
-            ((volatile u8 *) data_020d499c)[1] |= 0x40;
+            ((volatile u8 *) gUnlockedTipBits)[1] |= 0x40;
         }
         if (!(VD.mUnk_5ad & 0x80)) {
             result = TRUE;
-            ((volatile u8 *) data_020d499c)[1] |= 0x80;
+            ((volatile u8 *) gUnlockedTipBits)[1] |= 0x80;
         }
     }
     if (VD.mUnk_42 > 2) {
         if (!(VD.mUnk_5ad & 0x1)) {
             result = TRUE;
-            ((volatile u8 *) data_020d499c)[1] |= 0x1;
+            ((volatile u8 *) gUnlockedTipBits)[1] |= 0x1;
         }
     }
     if (VD.mUnk_42 > 3) {
@@ -492,7 +492,7 @@ BOOL func_02086e08() {
     if (VD.mUnk_42 > 5 && VD.mUnk_43 > 2) {
         if (!(VD.mUnk_5ad & 0x2)) {
             result = TRUE;
-            ((volatile u8 *) data_020d499c)[1] |= 0x2;
+            ((volatile u8 *) gUnlockedTipBits)[1] |= 0x2;
         }
     }
     if (VD.mUnk_42 > 6) {

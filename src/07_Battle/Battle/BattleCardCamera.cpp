@@ -164,7 +164,7 @@ void BattleCardCamera::UpdateCameraAndDraw() {
     mBakugans[1]->Update();
     mBakugans[1]->DrawModel();
     if (mMapModelVisible) {
-        mMapModel->func_020526bc();
+        mMapModel->DrawInstance();
     }
     mMapObj->Draw();
 }

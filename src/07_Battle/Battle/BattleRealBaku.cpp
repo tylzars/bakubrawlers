@@ -6,7 +6,7 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-extern const u8 data_020a1074[];
+extern const u8 gBakuganNumbers[];
 
 struct BattleRealBakuTexEntry { // 0xc bytes, table at 022858b8
     /* 00 */ u8 mCount;
@@ -40,7 +40,7 @@ void BattleRealBaku::LoadModel() {
     char buf[0x80];
     char name1[0x40];
     char name2[0x40];
-    u8 charId = data_020a1074[mId];
+    u8 charId = gBakuganNumbers[mId];
     bool flag = 1;
     NitroTexture *tex;
     NitroModel *model;

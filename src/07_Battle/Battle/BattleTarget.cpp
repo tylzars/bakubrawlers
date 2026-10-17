@@ -395,7 +395,7 @@ BattleTarget::~BattleTarget() {
     if (mRoulettePalette) {
         OS_Free(mRoulettePalette);
     }
-    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().ResetSlots();
 }
 
 void BattleTarget::Update() {
@@ -493,7 +493,7 @@ void BattleTarget::Update() {
                     }
                 }
                 if (mUnk_1c6 > data_ov007_0227a5e0.mUnk_a0[mUnk_1d2]) {
-                    SoundManager::Get().func_02024754(0x3c);
+                    SoundManager::Get().StopSeqArcPlayerSounds(0x3c);
                     BattlePlayerList *list = data_020d433c.mBattlePlayers;
                     u8 kind                = list->mPlayers[mPlayer]->mRecords[mRecord].mBakuganId;
                     u8 a                   = list->mUnitA;
@@ -1267,7 +1267,7 @@ void BattleTarget::StopSoundAfterVentKaze() {
     if (mHitGimmickType == GIMMICK_TYPE_VENT_KAZE) {
         return;
     }
-    func_02024764(&SoundManager::Get(), 0xf, 0x3c);
+    StopSeqArc(&SoundManager::Get(), 0xf, 0x3c);
 }
 
 void BattleTarget::func_ov007_02255b0c() {
@@ -2676,7 +2676,7 @@ void BattleTarget::func_ov007_02259494(VecFx32 *target) {
                 mUnk_a0.z = v14.z;
                 mHitGimmickType  = 0;
                 mUnk_1dd  = 0;
-                func_02024764(&SoundManager::Get(), 0xf, 0x14);
+                StopSeqArc(&SoundManager::Get(), 0xf, 0x14);
             }
             break;
     }

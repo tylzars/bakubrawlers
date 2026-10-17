@@ -97,7 +97,7 @@ extern "C" void FS_LoadOverlayInfo(OverlayInfo *info, u32 processor, u32 id);
 extern "C" void FS_LoadOverlay(u32 processor, u32 id);
 extern "C" void FS_RunOverlayDestructorsById(u32 processor, u32 id);
 extern void RecreateGameHeap(void *lo);
-extern void func_02021e10();
+extern void AddGameHeapBlock();
 extern "C" void func_02007230();
 extern void ClearFrameCallbacks();
 extern void RemoveHBlankHook(void (*hook)());
@@ -106,7 +106,7 @@ extern void RewindUploadQueue();
 void SceneRunner::LoadOverlay(u32 overlay) {
     OverlayInfo info;
     FrameTask::Get().CloseHandles();
-    func_02021e10();
+    AddGameHeapBlock();
     if (mOverlayState == 2) {
         FS_RunOverlayDestructorsById(0, mOverlay);
     }
@@ -136,14 +136,14 @@ void SceneRunner::SwitchToScene(s32 scene) {
     TextManager::Get().mUse4bppFont = 0;
     if (!WirelessManager::Get().func_0202f238()) {
         FrameTask::Get().CloseHandles();
-        func_02021e10();
+        AddGameHeapBlock();
         FrameTask::Get().OpenHandles();
     }
     RewindUploadQueue();
     mContext->mRequest = 14;
     ((SceneRunnerContext *) mContext)->mState = scene;
     if (data_020d433c.mUnk_84 == 0) {
-        SoundManager::Get().func_020245a4();
+        SoundManager::Get().RestoreHeapState();
     }
     if (scene == 5) {
         return;

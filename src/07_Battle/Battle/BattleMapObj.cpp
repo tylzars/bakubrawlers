@@ -133,7 +133,7 @@ void BattleMapObj::Draw() {
         if (mCount != 0) {
             u8 i = 0;
             do {
-                mParts[i]->func_020526bc();
+                mParts[i]->DrawInstance();
                 i++;
             } while (i < mCount);
         }

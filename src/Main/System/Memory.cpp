@@ -56,7 +56,7 @@ s32 GetGameHeapHandle() {
     return gGameHeap.mHandle;
 }
 
-void func_02021e10() {
+void AddGameHeapBlock() {
     OS_CheckHeap(0, gGameHeap.mHandle);
     OS_AddToHeap(0, gGameHeap.mHandle, gGameHeap.mStart, gGameHeap.mStart + gGameHeap.mSize);
     OS_CheckHeap(0, gGameHeap.mHandle);

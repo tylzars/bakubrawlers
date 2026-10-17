@@ -2,7 +2,7 @@
 #include "Scene/MyroomTipsScene.hpp"
 #include "Game/ScriptPlayer.hpp"
 #include "Game/SaveData.hpp"
-extern u8 data_020d499c[];
+extern u8 gUnlockedTipBits[];
 extern u8 data_020d49a1[];
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -827,7 +827,7 @@ void MyroomTipsScene::CountTips() {
         u8 start     = sMyroomTipsCategoryFirstBits[i];
         u8 j         = 0;
         do {
-            if (TEST_BIT(data_020d499c, start + j)) {
+            if (TEST_BIT(gUnlockedTipBits, start + j)) {
                 mUnlocked[i]++;
                 if (!TEST_BIT(data_020d49a1, sMyroomTipsCategoryFirstBits[i] + j)) {
                     mNew[i]++;
@@ -842,7 +842,7 @@ u32 MyroomTipsScene::GetUnlockedTip(s16 index) {
     SceneContext *context = mContext;
     u8 i        = 0;
     do {
-        if (TEST_BIT(data_020d499c, sMyroomTipsCategoryFirstBits[(s8) context->mInfo.mMenuResult] + i)) {
+        if (TEST_BIT(gUnlockedTipBits, sMyroomTipsCategoryFirstBits[(s8) context->mInfo.mMenuResult] + i)) {
             index--;
             if (index < 0) {
                 return i;

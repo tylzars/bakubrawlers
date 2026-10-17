@@ -45,7 +45,7 @@ BattleCardSpec::BattleCardSpec(u32 a, u32 b, u32 c, u8 d)
     mCardModelType = a;
     mBakuganId = b;
     mVariant = c;
-    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().ResetSlots();
     switch (a) {
         case 0:
         case 1:
@@ -68,7 +68,7 @@ BattleCardSpec::~BattleCardSpec() {
         b->mOwnFlags = 0xf;
         delete b;
     }
-    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().ResetSlots();
 }
 
 void BattleCardSpec::Update() {

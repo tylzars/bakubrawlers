@@ -760,8 +760,8 @@ void ArenaScene::SetupVariant() {
         mSlots[1].mTargetY = 0x60;
         SelectWindowCursor *p = mCursor;
         p->mUnk_05        = -1;
-        p->mUnk_07        = -1;
-        p->mUnk_08        = 0;
+        p->mPressedItem        = -1;
+        p->mPressedOnSelection        = 0;
         mCursor->mSelection = mSelection;
         RefreshSlotAnimations();
         break;
@@ -798,7 +798,7 @@ void ArenaScene::RefreshSlotAnimations() {
 
 u32 ArenaScene::UpdateSelection() {
     u32 result = 0;
-    u8 key     = mCursor->func_0202f468(0);
+    u8 key     = mCursor->Update(0);
     u8 oldSel  = mSelection;
     u8 newSel  = mCursor->mSelection;
     u8 menu    = UpdateMenu();

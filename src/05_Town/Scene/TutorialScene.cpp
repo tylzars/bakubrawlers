@@ -132,7 +132,7 @@ void TutorialScene::Update() {
                     break;
             }
             if (a) {
-                SoundManager::Get().func_020245a4();
+                SoundManager::Get().RestoreHeapState();
                 SoundManager::Get().LoadAndStartSeq(1);
                 RecordSndHeapState(SoundManager::Get().mHeap);
             }
@@ -470,19 +470,19 @@ void TutorialScene::Update() {
             data_020d433c.mUnk_84 = 0;
             data_020d433c.mTutorialId = 0;
             if (data_020d433c.mUnk_82 != 0) {
-                SoundManager::Get().func_020245a4();
+                SoundManager::Get().RestoreHeapState();
                 switch (prev) {
                     case 1:
                     case 2: {
                         gSaveData[0].mUnk_42 = 0;
                         gSaveData[0].mUnk_43 = 2;
                         data_020d433c.mUnk_7d = 2;
-                        u8 id = gSaveData[0].mUnk_1a_8;
-                        int slot = func_0202317c(gSaveData, 0, 0x24, id);
+                        u8 id = gSaveData[0].mAttribute;
+                        int slot = GetBakuganEntryIndex(gSaveData, 0, 0x24, id);
                         func_020231c0(gSaveData, slot, 0x1b8);
-                        func_02023168(gSaveData, 0, 0, slot);
+                        SetSlotEntryIndex(gSaveData, 0, 0, slot);
                         data_020d4478[slot].mUnk_0 = 2;
-                        UnkStruct_02023248 *entry = func_02023248(gSaveData, 0x24, id);
+                        UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, 0x24, id);
                         entry->mUnk_0 = 2;
                         entry->mUnk_3 = 1;
                         entry->mUnk_6 = 3;
@@ -516,7 +516,7 @@ void TutorialScene::Update() {
             data_020d433c.mUnk_83 = 0;
             data_020d433c.mUnk_84 = 0;
             data_020d433c.mTutorialId = 0;
-            SoundManager::Get().func_020245a4();
+            SoundManager::Get().RestoreHeapState();
             RequestScene(4);
             mFinished = 1;
             break;

@@ -41,7 +41,7 @@ struct SaveData {
     /* 018 */ u16 mUnk_18_14 : 2;
     /* 01a */ u16 mUnk_1a_0 : 3;
     /* 01a */ u16 mUnk_1a_3 : 5;
-    /* 01a */ u16 mUnk_1a_8 : 8;
+    /* 01a */ u16 mAttribute : 8;
     /* 01c */ u32 mMoney;
     /* 020 */ u32 mUnk_20;
     /* 024 */ u8 mUnk_24;
@@ -124,7 +124,7 @@ struct SaveData {
 extern SaveData gSaveData[1];
 
 // Bit-flag arrays inside gSaveData (at +0x578, +0x57d, +0x580) that code addresses directly.
-extern u8 data_020d4968[];
+extern u8 gUnlockedFieldBits[];
 extern u8 data_020d496d[];
 extern u8 data_020d4970[];
 extern u8 data_020d4969[];
@@ -146,11 +146,11 @@ extern UnkStruct_020d4478 data_020d4478[];
 extern u8 data_020d4850[];
 extern u8 data_020d49b0[];
 
-int func_0202317c(SaveData *base, u32 unk1, u32 unk2, u32 unk3);
+int GetBakuganEntryIndex(SaveData *base, u32 unk1, u32 unk2, u32 unk3);
 u16 func_020231f4(SaveData *base, u32 unk1, u8 unk2, u8 unk3);
-void func_02023168(SaveData *base, u32 unk1, u32 unk2, int unk3);
+void SetSlotEntryIndex(SaveData *base, u32 unk1, u32 unk2, int unk3);
 void func_020231c0(SaveData *base, int unk1, u32 unk2);
-UnkStruct_02023248 *func_02023248(SaveData *base, u32 unk1, u32 unk2);
+UnkStruct_02023248 *GetBakuganEntry(SaveData *base, u32 unk1, u32 unk2);
 
 static inline BOOL TestFlagBit(const u8 *flags, int index) {
     return flags[(u32) index >> 3] & (1 << (index % 8));

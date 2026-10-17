@@ -68,7 +68,7 @@ public:
     BOOL UpdateLoad();
     void FinishLoad();
     void func_02054644(u32 unk1, u32 unk2);
-    void func_0205466c(u32 unk1);
+    void SetExtraAnimEnabled(u32 unk1);
     void SetVisible(u8 unk1);
     u8 IsVisible();
     u16 *GetModelRotation();
@@ -147,7 +147,7 @@ public:
     void InitChannel(u32 channel, ModelAnimFile *anim, u8 *table);
     void ResetFrames();
     s32 GetFrameCountForSet(u32 set);
-    void func_0202982c(NNSG3dAnmObj *obj);
+    void StepAnimObjAndRecordEnd(NNSG3dAnmObj *obj);
     BOOL StepAnimObj(NNSG3dAnmObj *obj);
     void FreeAnimObjs();
     void FreeAnimData();
@@ -254,7 +254,7 @@ public:
     void BindTexture(TextureFile *texture);
     BOOL Load(const char *name, TextureFile *texture);
     BOOL LoadData(void *file, TextureFile *texture);
-    BOOL func_02028ac4(const char *name);
+    BOOL LoadAndSetupResFile(const char *name);
     void Release();
 };
 

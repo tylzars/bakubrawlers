@@ -127,7 +127,7 @@ BattleField3D::~BattleField3D() {
     if (map) {
         delete map;
     }
-    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().ResetSlots();
 }
 
 // The caller passes its BattleField3D, which the function doesn't use.

@@ -127,7 +127,7 @@ BattleHud::~BattleHud() {
 
 extern const u32 data_ov007_02279d44;
 extern const s8 data_ov007_02279d40;
-u16 func_02065c20(u32 id);
+u16 GetCardNumber(u32 id);
 u8 GetCardInfo(u32 id, u32 kind);
 
 void BattleHud::Init() {
@@ -312,7 +312,7 @@ void BattleHud::Init() {
             if ((u8) (kind + 0xfc) <= 1) {
                 mUnk_117_1 = 1;
             }
-            card = func_02065c20(e->mCardId);
+            card = GetCardNumber(e->mCardId);
         }
         LoadSmallCard(i, card);
         i++;
@@ -1173,7 +1173,7 @@ void BattleHud::OpenLargeCard(int card) {
     mLargeCardY = 0xb4;
     mLargeCardYPerFrame = 0x14;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    u32 id = func_02065c20(card);
+    u32 id = GetCardNumber(card);
     ChangeDir("/Game/Card/Graphic/Large");
     char path[0x80];
     sprintf(path, "card_l_%03d.nce_ncg1D.bin", id);

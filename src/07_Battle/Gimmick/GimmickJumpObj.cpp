@@ -70,7 +70,7 @@ void GimmickJumpObj::Update() {
     case 1: {
         if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
             if (mTimer == 0) {
-                func_020526bc();
+                DrawInstance();
             } else {
                 data_020d433c.mUnk_14 &= 8;
                 if (data_020d433c.mUnk_14 == 0) {

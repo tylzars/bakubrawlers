@@ -37,7 +37,7 @@ public:
     /* 53 */ u8 mUnk_53;
     /* 54 */ s32 mPendingPlanes;
     /* 58 */ u8 mBakuganIds[6];
-    /* 5e */ u8 mUnk_5e[6];
+    /* 5e */ u8 mAttributes[6];
     // per entry: the gain passed to SetBakugan (UnkStruct_02076058.cpp:230-232), capped at 9; loop bound of the
     // func_02072b60 sum (:303-306) and tested in func_02072d20 (:354); decremented once per confirmed press in
     // func_020733d4 (:571)

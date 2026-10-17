@@ -180,7 +180,7 @@ void GimmickPyrusEruption::DrawModels(int drawB) {
     if ((int)data_020d433c.mGimmicks->mState < 2) {
         return;
     }
-    func_020526bc();
+    DrawInstance();
     if (!drawB) {
         return;
     }

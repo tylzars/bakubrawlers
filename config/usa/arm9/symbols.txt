@@ -818,7 +818,7 @@ _ZN12InputManager6UpdateEi kind:function(arm,size=0x13c) addr:0x02021b24
 _Z12InitGameHeapj kind:function(arm,size=0xd8) addr:0x02021c60
 _Z16RecreateGameHeapPv kind:function(arm,size=0xc8) addr:0x02021d38
 _Z17GetGameHeapHandlev kind:function(arm,size=0x10) addr:0x02021e00
-_Z13func_02021e10v kind:function(arm,size=0x40) addr:0x02021e10
+_Z16AddGameHeapBlockv kind:function(arm,size=0x40) addr:0x02021e10
 _Znwm kind:function(arm,size=0x18) addr:0x02021e50
 _Znam kind:function(arm,size=0x18) addr:0x02021e68
 _ZdlPv kind:function(arm,size=0x1c) addr:0x02021e80
@@ -853,15 +853,15 @@ _Z13func_02022b0cv kind:function(arm,size=0x1c) addr:0x02022b0c
 _Z13ResetSaveDatav kind:function(arm,size=0x220) addr:0x02022b28
 _Z12ResetOptionsP8SaveData kind:function(arm,size=0x6c) addr:0x02022d48
 _Z18ApplyVolumeOptionsP8SaveData kind:function(arm,size=0x2f4) addr:0x02022db4
-_Z13func_020230a8P8SaveDatajj kind:function(arm,size=0x34) addr:0x020230a8
+_Z23GetSlotBakuganAttributeP8SaveDatajj kind:function(arm,size=0x34) addr:0x020230a8
 _Z16GetSlotBakuganIdP8SaveDatajj kind:function(arm,size=0x58) addr:0x020230dc
 _Z14SetSlotBakuganP8SaveDatajjjjj kind:function(arm,size=0x34) addr:0x02023134
-_Z13func_02023168P8SaveDatajji kind:function(arm,size=0x14) addr:0x02023168
-_Z13func_0202317cP8SaveDatajjj kind:function(arm,size=0x44) addr:0x0202317c
+_Z17SetSlotEntryIndexP8SaveDatajji kind:function(arm,size=0x14) addr:0x02023168
+_Z20GetBakuganEntryIndexP8SaveDatajjj kind:function(arm,size=0x44) addr:0x0202317c
 _Z13func_020231c0P8SaveDataij kind:function(arm,size=0x34) addr:0x020231c0
 _Z13func_020231f4P8SaveDatajhh kind:function(arm,size=0x28) addr:0x020231f4
-_Z13func_0202321cP8SaveDataPKtjj kind:function(arm,size=0x2c) addr:0x0202321c
-_Z13func_02023248P8SaveDatajj kind:function(arm,size=0x24) addr:0x02023248
+_Z15SetBakuganEntryP8SaveDataPKtjj kind:function(arm,size=0x2c) addr:0x0202321c
+_Z15GetBakuganEntryP8SaveDatajj kind:function(arm,size=0x24) addr:0x02023248
 _Z13func_0202326cP8SaveData kind:function(arm,size=0xa0) addr:0x0202326c
 _Z13func_0202330cP18UnkStruct_020d433c kind:function(arm,size=0xec) addr:0x0202330c
 _Z13func_020233f8P18UnkStruct_020d433c kind:function(arm,size=0xd0) addr:0x020233f8
@@ -885,18 +885,18 @@ _ZN10SaveReaderD1Ev kind:function(arm,size=0x4) addr:0x020244b4
 _ZN10SaveReaderD0Ev kind:function(arm,size=0x14) addr:0x020244b8
 _ZN12SoundManager4InitEv kind:function(arm,size=0xcc) addr:0x020244cc
 _ZN12SoundManager6UpdateEv kind:function(arm,size=0xc) addr:0x02024598
-_ZN12SoundManager13func_020245a4Ev kind:function(arm,size=0x20) addr:0x020245a4
+_ZN12SoundManager16RestoreHeapStateEv kind:function(arm,size=0x20) addr:0x020245a4
 _ZN12SoundManager13func_020245c4Ej kind:function(arm,size=0x10) addr:0x020245c4
 _ZN12SoundManager15LoadAndStartSeqEj kind:function(arm,size=0x20) addr:0x020245d4
-_ZN12SoundManager13func_020245f4Ej kind:function(arm,size=0x34) addr:0x020245f4
+_ZN12SoundManager12LoadSeqGroupEj kind:function(arm,size=0x34) addr:0x020245f4
 _ZN12SoundManager8StartSeqEj kind:function(arm,size=0x60) addr:0x02024628
 _ZN12SoundManager7StopSeqEj kind:function(arm,size=0x1c) addr:0x02024688
 _ZN12SoundManager12SetSeqVolumeEi kind:function(arm,size=0x30) addr:0x020246a4
-_ZN12SoundManager13func_020246d4Ej kind:function(arm,size=0x24) addr:0x020246d4
+_ZN12SoundManager14LoadSoundGroupEj kind:function(arm,size=0x24) addr:0x020246d4
 _ZN12SoundManager11StartSeqArcEj kind:function(arm,size=0x5c) addr:0x020246f8
-_ZN12SoundManager13func_02024754Ej kind:function(arm,size=0x10) addr:0x02024754
-func_02024764 kind:function(arm,size=0x2c) addr:0x02024764
-func_02024790 kind:function(arm,size=0x3c) addr:0x02024790
+_ZN12SoundManager22StopSeqArcPlayerSoundsEj kind:function(arm,size=0x10) addr:0x02024754
+StopSeqArc kind:function(arm,size=0x2c) addr:0x02024764
+CountSeqArcSounds kind:function(arm,size=0x3c) addr:0x02024790
 _ZN12SoundManager15SetSeqArcVolumeEi kind:function(arm,size=0x30) addr:0x020247cc
 func_020247fc kind:function(arm,size=0x1c) addr:0x020247fc
 _ZN11SceneRunner11LoadOverlayEj kind:function(arm,size=0x118) addr:0x02024818
@@ -944,13 +944,13 @@ _ZN13SpriteManager4InitEv kind:function(arm,size=0x48) addr:0x02026d48
 _ZN13SpriteManager13func_02026d90Ev kind:function(arm,size=0x5c) addr:0x02026d90
 _ZN13SpriteManager9SetupModeEjj kind:function(arm,size=0x568) addr:0x02026dec
 _ZN13SpriteManager9ResetVramEj kind:function(arm,size=0x88) addr:0x02027354
-_ZN13SpriteManager13func_020273dcEjj kind:function(arm,size=0x30) addr:0x020273dc
-_ZN13SpriteManager13func_0202740cEv kind:function(arm,size=0x30) addr:0x0202740c
+_ZN13SpriteManager15SetupTexAndPlttEjj kind:function(arm,size=0x30) addr:0x020273dc
+_ZN13SpriteManager10ResetSlotsEv kind:function(arm,size=0x30) addr:0x0202740c
 _ZN13SpriteManager6Init3DEv kind:function(arm,size=0xc8) addr:0x0202743c
-_ZN13SpriteManager13func_02027504Ei kind:function(arm,size=0x38) addr:0x02027504
-_ZN13SpriteManager13func_0202753cEi kind:function(arm,size=0x2c) addr:0x0202753c
+_ZN13SpriteManager8SaveSlotEi kind:function(arm,size=0x38) addr:0x02027504
+_ZN13SpriteManager11RestoreSlotEi kind:function(arm,size=0x2c) addr:0x0202753c
 _ZN13SpriteManager13ClearSlotUsedEi kind:function(arm,size=0x10) addr:0x02027568
-_ZN13SpriteManager7SetSlotEiPK26UnkStruct_SpriteManager_28 kind:function(arm,size=0x44) addr:0x02027578
+_ZN13SpriteManager7SetSlotEiPK13TexSlotRanges kind:function(arm,size=0x44) addr:0x02027578
 _ZN12SpriteScreenC1Ev kind:function(arm,size=0x2c) addr:0x020275bc
 _ZN12SpriteScreen10SetBgIndexEj kind:function(arm,size=0x8) addr:0x020275e8
 _ZN12SpriteScreen8FlushOamEv kind:function(arm,size=0x34) addr:0x020275f0
@@ -960,12 +960,12 @@ _ZN12SpriteScreen8ResetOamEv kind:function(arm,size=0x28) addr:0x02027750
 _ZN12SpriteScreen6AddOamEPvhssjjjj kind:function(arm,size=0x4a0) addr:0x02027778
 _Z14WriteOamMatrixPvP15SpriteTransform kind:function(arm,size=0x4c) addr:0x02027c18
 _Z22ComputeTransformMatrixP7MtxFx22P15SpriteTransform kind:function(arm,size=0x90) addr:0x02027c64
-_Z13func_02027cf4PiS_iP15SpriteTransform kind:function(arm,size=0x21c) addr:0x02027cf4
+_Z20ApplySpriteTransformPiS_iP15SpriteTransform kind:function(arm,size=0x21c) addr:0x02027cf4
 _ZN15SpriteTransformC1Eiit kind:function(arm,size=0xc) addr:0x02027f10
 _ZN12SpriteScreen14LoadCharactersEPKcjj kind:function(arm,size=0x68) addr:0x02027f1c
 _ZN12SpriteScreen11LoadPaletteEPKcjj kind:function(arm,size=0x68) addr:0x02027f84
 _ZN12SpriteScreen14LoadExtPaletteEPKcjj kind:function(arm,size=0x68) addr:0x02027fec
-_ZN12SpriteScreen13func_02028054EPh kind:function(arm,size=0x22c) addr:0x02028054
+_ZN12SpriteScreen20DownsampleCharactersEPh kind:function(arm,size=0x22c) addr:0x02028054
 _ZN12NitroTexture4LoadEPKc kind:function(arm,size=0x44) addr:0x02028280
 _ZN11TextureFile8LoadDataEPv kind:function(arm,size=0x44) addr:0x020282c4
 _ZN11TextureFileC2Ev kind:function(arm,size=0x24) addr:0x02028308
@@ -982,7 +982,7 @@ _ZN11TextureFile18UploadNamedPaletteEPKcPvj kind:function(arm,size=0xf4) addr:0x
 _ZN9ModelFileC2Ev kind:function(arm,size=0x18) addr:0x020289c8
 _ZN9ModelFile4LoadEPKcP11TextureFile kind:function(arm,size=0x4c) addr:0x020289e0
 _ZN9ModelFile8LoadDataEPvP11TextureFile kind:function(arm,size=0x98) addr:0x02028a2c
-_ZN9ModelFile13func_02028ac4EPKc kind:function(arm,size=0x2c) addr:0x02028ac4
+_ZN9ModelFile19LoadAndSetupResFileEPKc kind:function(arm,size=0x2c) addr:0x02028ac4
 _ZN9ModelFile7ReleaseEv kind:function(arm,size=0x5c) addr:0x02028af0
 _ZN9ModelFile11BindTextureEP11TextureFile kind:function(arm,size=0x2c) addr:0x02028b4c
 _ZN9ModelFile14CreateInstanceEP9ModelAnim kind:function(arm,size=0x3c) addr:0x02028b78
@@ -1022,7 +1022,7 @@ _ZN9ModelAnim7AdvanceEv kind:function(arm,size=0x6c) addr:0x020295e0
 _ZN9ModelAnim11InitChannelEjP13ModelAnimFilePh kind:function(arm,size=0xe8) addr:0x0202964c
 _ZN9ModelAnim11ResetFramesEv kind:function(arm,size=0xa0) addr:0x02029734
 _ZN9ModelAnim19GetFrameCountForSetEj kind:function(arm,size=0x58) addr:0x020297d4
-_ZN9ModelAnim13func_0202982cEP12NNSG3dAnmObj kind:function(arm,size=0x28) addr:0x0202982c
+_ZN9ModelAnim23StepAnimObjAndRecordEndEP12NNSG3dAnmObj kind:function(arm,size=0x28) addr:0x0202982c
 _ZN9ModelAnim11StepAnimObjEP12NNSG3dAnmObj kind:function(arm,size=0x6c) addr:0x02029854
 _ZN9ModelAnim8SetFrameEjj kind:function(arm,size=0x54) addr:0x020298c0
 _ZN9ModelAnim12FreeAnimObjsEv kind:function(arm,size=0xa4) addr:0x02029914
@@ -1126,15 +1126,15 @@ _ZN15WirelessManager13func_0202e4ecEv kind:function(arm,size=0x38) addr:0x0202e4
 _ZN15WirelessManager13func_0202e524Ev kind:function(arm,size=0x20) addr:0x0202e524
 _ZN15WirelessManager13func_0202e544Ev kind:function(arm,size=0x58) addr:0x0202e544
 _ZN15WirelessManager13func_0202e59cEv kind:function(arm,size=0x7c) addr:0x0202e59c
-_ZN15WirelessManager13func_0202e618Ev kind:function(arm,size=0xe0) addr:0x0202e618
-_ZN15WirelessManager13func_0202e6f8Ev kind:function(arm,size=0x20) addr:0x0202e6f8
-_ZN15WirelessManager13func_0202e718Ev kind:function(arm,size=0x54) addr:0x0202e718
-_ZN15WirelessManager13func_0202e76cEv kind:function(arm,size=0x5c) addr:0x0202e76c
-_ZN15WirelessManager13func_0202e7c8Ev kind:function(arm,size=0x34) addr:0x0202e7c8
+_ZN15WirelessManager15TestNextChannelEv kind:function(arm,size=0xe0) addr:0x0202e618
+_ZN15WirelessManager16StartChannelTestEv kind:function(arm,size=0x20) addr:0x0202e6f8
+_ZN15WirelessManager14SetupScanParamEv kind:function(arm,size=0x54) addr:0x0202e718
+_ZN15WirelessManager21SelectNextScanChannelEv kind:function(arm,size=0x5c) addr:0x0202e76c
+_ZN15WirelessManager11RequestScanEv kind:function(arm,size=0x34) addr:0x0202e7c8
 _ZN15WirelessManager4JoinEj kind:function(arm,size=0x68) addr:0x0202e7fc
 _ZN15WirelessManager15StoreScanResultEv kind:function(arm,size=0x17c) addr:0x0202e864
 _ZN15WirelessManager22UpdateScanResultTimersEv kind:function(arm,size=0x38) addr:0x0202e9e0
-_ZN15WirelessManager13func_0202ea18Ev kind:function(arm,size=0x1c) addr:0x0202ea18
+_ZN15WirelessManager15SetRecvCallbackEv kind:function(arm,size=0x1c) addr:0x0202ea18
 _ZN15WirelessManager13func_0202ea34Ev kind:function(arm,size=0x50) addr:0x0202ea34
 _ZN15WirelessManager8SendNextEv kind:function(arm,size=0x84) addr:0x0202ea84
 _ZN15WirelessManager4SendEPvj kind:function(arm,size=0x68) addr:0x0202eb08
@@ -1161,8 +1161,8 @@ _ZN15WirelessManager13func_0202f238Ev kind:function(arm,size=0xc) addr:0x0202f23
 _ZN15WirelessManager6UpdateEv kind:function(arm,size=0x1c8) addr:0x0202f244
 _ZN15WirelessManagerD0Ev kind:function(arm,size=0x14) addr:0x0202f40c weak
 _ZN18SelectWindowCursorC1EjPKvj kind:function(arm,size=0x48) addr:0x0202f420
-_ZN18SelectWindowCursor13func_0202f468Ej kind:function(arm,size=0x1b4) addr:0x0202f468
-_ZN18SelectWindowCursor13func_0202f61cEj kind:function(arm,size=0xe58) addr:0x0202f61c
+_ZN18SelectWindowCursor6UpdateEj kind:function(arm,size=0x1b4) addr:0x0202f468
+_ZN18SelectWindowCursor11UpdateInputEj kind:function(arm,size=0xe58) addr:0x0202f61c
 _ZN18SelectWindowCursor11SetupScrollEjjjj kind:function(arm,size=0x78) addr:0x02030474
 _ZN18SelectWindowCursor9SetScrollEj kind:function(arm,size=0x1c) addr:0x020304ec
 _ZN18SelectWindowCursor18RefreshScrollItemYEv kind:function(arm,size=0x54) addr:0x02030508
@@ -2477,7 +2477,7 @@ _ZN14ModelTransformC2Ev kind:function(arm,size=0x3c) addr:0x02052548
 _ZN14ModelTransformD2Ev kind:function(arm,size=0x3c) addr:0x02052584
 _ZN14ModelTransform9LoadFilesEPKcS1_S1_j kind:function(arm,size=0xe8) addr:0x020525c0
 _ZN14ModelTransform15LoadFilesNoAnimEPKcS1_ kind:function(arm,size=0x14) addr:0x020526a8
-_ZN14ModelTransform13func_020526bcEv kind:function(arm,size=0xac) addr:0x020526bc
+_ZN14ModelTransform12DrawInstanceEv kind:function(arm,size=0xac) addr:0x020526bc
 _ZN14ModelTransform9StartAnimEjj kind:function(arm,size=0x14) addr:0x02052768
 _ZN14ModelTransform11AdvanceAnimEv kind:function(arm,size=0x28) addr:0x0205277c
 _ZN14CharacterModelC1Ev kind:function(arm,size=0x74) addr:0x020527a4
@@ -2511,7 +2511,7 @@ _ZN18UnkStruct_0205401c10FinishLoadEv kind:function(arm,size=0x4c) addr:0x020545
 _ZN18UnkStruct_0205401c4DrawEv kind:function(arm,size=0xb4) addr:0x02054568
 _ZN18UnkStruct_0205401c13func_0205461cEjj kind:function(arm,size=0x28) addr:0x0205461c
 _ZN18UnkStruct_0205401c13func_02054644Ejj kind:function(arm,size=0x28) addr:0x02054644
-_ZN18UnkStruct_0205401c13func_0205466cEj kind:function(arm,size=0x28) addr:0x0205466c
+_ZN18UnkStruct_0205401c19SetExtraAnimEnabledEj kind:function(arm,size=0x28) addr:0x0205466c
 _ZN18UnkStruct_0205401c10SetVisibleEh kind:function(arm,size=0x1c) addr:0x02054694
 _ZN18UnkStruct_0205401c9IsVisibleEv kind:function(arm,size=0x1c) addr:0x020546b0
 _ZN18UnkStruct_0205401c16GetModelRotationEv kind:function(arm,size=0x18) addr:0x020546cc
@@ -2673,11 +2673,11 @@ _ZN13MessageWindow13func_02065bd4Ejjj kind:function(arm,size=0x10) addr:0x02065b
 _ZN13MessageWindow8SetWidthEj kind:function(arm,size=0x10) addr:0x02065be4
 _Z21GetCardAttributeValuejj kind:function(arm,size=0x18) addr:0x02065bf4
 _Z11GetCardInfojj kind:function(arm,size=0x14) addr:0x02065c0c
-_Z13func_02065c20j kind:function(arm,size=0x20) addr:0x02065c20
+_Z13GetCardNumberj kind:function(arm,size=0x20) addr:0x02065c20
 _ZN12ScriptPlayerC1Ejjj kind:function(arm,size=0x538) addr:0x02065c40
 _ZN12ScriptPlayerD1Ev kind:function(arm,size=0x2ac) addr:0x02066178
 _ZN12ScriptPlayerD0Ev kind:function(arm,size=0x2b4) addr:0x02066424
-_ZN12ScriptPlayer13func_020666d8Ev kind:function(arm,size=0x114) addr:0x020666d8
+_ZN12ScriptPlayer16SetupSpriteSlotsEv kind:function(arm,size=0x114) addr:0x020666d8
 _ZN12ScriptPlayer13func_020667ecEv kind:function(arm,size=0x28) addr:0x020667ec
 _ZN12ScriptPlayer13func_02066814Ej kind:function(arm,size=0x468) addr:0x02066814
 _ZN12ScriptPlayer13func_02066c7cEv kind:function(arm,size=0x20) addr:0x02066c7c
@@ -2692,12 +2692,12 @@ _ZN12ScriptPlayer13ReleaseModelsEj kind:function(arm,size=0x1e0) addr:0x02067708
 _ZN12ScriptPlayer9IsRunningEv kind:function(arm,size=0x18) addr:0x020678e8
 _ZN12ScriptPlayer9GetResultEv kind:function(arm,size=0x1c) addr:0x02067900
 _ZN12ScriptPlayer14StopWithResultEj kind:function(arm,size=0x1c) addr:0x0206791c
-_ZN12ScriptPlayer13func_02067938Ev kind:function(arm,size=0xc) addr:0x02067938
-_ZN12ScriptPlayer13func_02067944Ev kind:function(arm,size=0x10) addr:0x02067944
-_ZN12ScriptPlayer13func_02067954Ev kind:function(arm,size=0x18) addr:0x02067954
-_ZN12ScriptPlayer13func_0206796cEv kind:function(arm,size=0x10) addr:0x0206796c
-_ZN12ScriptPlayer13func_0206797cEv kind:function(arm,size=0xc) addr:0x0206797c
-_ZN12ScriptPlayer13func_02067988Ev kind:function(arm,size=0x10) addr:0x02067988
+_ZN12ScriptPlayer16IsGraphicsLoadedEv kind:function(arm,size=0xc) addr:0x02067938
+_ZN12ScriptPlayer19ClearGraphicsLoadedEv kind:function(arm,size=0x10) addr:0x02067944
+_ZN12ScriptPlayer14GetSaveRequestEv kind:function(arm,size=0x18) addr:0x02067954
+_ZN12ScriptPlayer16ClearSaveRequestEv kind:function(arm,size=0x10) addr:0x0206796c
+_ZN12ScriptPlayer20GetUnlockPopupHandleEv kind:function(arm,size=0xc) addr:0x0206797c
+_ZN12ScriptPlayer22ClearUnlockPopupHandleEv kind:function(arm,size=0x10) addr:0x02067988
 _ZN12ScriptPlayer13func_02067998Eh kind:function(arm,size=0x40) addr:0x02067998
 _ZN12ScriptPlayer16UpdateBrightnessEv kind:function(arm,size=0x58) addr:0x020679d8
 _ZN12ScriptPlayer20UpdateBrightnessFadeEv kind:function(arm,size=0xd8) addr:0x02067a30
@@ -2710,8 +2710,8 @@ _ZN12ScriptPlayer13LoadCharacterEjj kind:function(arm,size=0x1a8) addr:0x020680f
 _ZN12ScriptPlayer13func_020682a0Ejj kind:function(arm,size=0x12c) addr:0x020682a0
 _ZN12ScriptPlayer20ResetCharacterParamsEj kind:function(arm,size=0x160) addr:0x020683cc
 _ZN12ScriptPlayer13SwapCharacterEj kind:function(arm,size=0x150) addr:0x0206852c
-_ZN12ScriptPlayer13func_0206867cEjj kind:function(arm,size=0x98) addr:0x0206867c
-_ZN12ScriptPlayer13func_02068714Ev kind:function(arm,size=0x94) addr:0x02068714
+_ZN12ScriptPlayer28SetCharacterExtraAnimEnabledEjj kind:function(arm,size=0x98) addr:0x0206867c
+_ZN12ScriptPlayer25UpdateCharacterExtraAnimsEv kind:function(arm,size=0x94) addr:0x02068714
 _ZN12ScriptPlayer13func_020687a8Eijj kind:function(arm,size=0xdc) addr:0x020687a8
 _ZN12ScriptPlayer22ApplyCharacterRotationEj kind:function(arm,size=0x5c) addr:0x02068884
 _ZN12ScriptPlayer6SetMapEi kind:function(arm,size=0x74) addr:0x020688e0
@@ -2725,7 +2725,7 @@ _ZN12ScriptPlayer9SwapModelEj kind:function(arm,size=0x2a8) addr:0x02069340
 _ZN12ScriptPlayer12ReleaseModelEj kind:function(arm,size=0x98) addr:0x020695e8
 _ZN12ScriptPlayer13func_02069680Ej kind:function(arm,size=0x68) addr:0x02069680
 _ZN12ScriptPlayer16CreateNextSphereEj kind:function(arm,size=0x98) addr:0x020696e8
-_ZN12ScriptPlayer13func_02069780Ej kind:function(arm,size=0x48) addr:0x02069780
+_ZN12ScriptPlayer16GetSphereVariantEj kind:function(arm,size=0x48) addr:0x02069780
 _ZN12ScriptPlayer10LoadSphereEjj kind:function(arm,size=0x1dc) addr:0x020697c8
 _ZN12ScriptPlayer17ResetSphereParamsEj kind:function(arm,size=0x80) addr:0x020699a4
 _ZN12ScriptPlayer10SwapSphereEj kind:function(arm,size=0x15c) addr:0x02069a24
@@ -2743,7 +2743,7 @@ _ZN12ScriptPlayer14DrawCharactersEv kind:function(arm,size=0x1c0) addr:0x0206aa3
 _ZN12ScriptPlayer24UpdateCharacterAnimationEj kind:function(arm,size=0x1b0) addr:0x0206abf4
 _ZN12ScriptPlayer7DrawMapEv kind:function(arm,size=0x128) addr:0x0206ada4
 _ZN12ScriptPlayer10DrawModelsEv kind:function(arm,size=0x190) addr:0x0206aecc
-_ZN12ScriptPlayer13func_0206b05cEj kind:function(arm,size=0x40) addr:0x0206b05c
+_ZN12ScriptPlayer14GetCommandSlotEj kind:function(arm,size=0x40) addr:0x0206b05c
 _ZN12ScriptPlayer11RunCommandsEv kind:function(arm,size=0xb4) addr:0x0206b09c
 _ZN12ScriptPlayer14ExecuteCommandEji kind:function(arm,size=0x2268) addr:0x0206b150
 _ZN12ScriptPlayer10UpdateWaitEv kind:function(arm,size=0x1618) addr:0x0206d3b8
@@ -2799,7 +2799,7 @@ _ZN20RankingCharacterView20CreateCharacterModelEj kind:function(arm,size=0x110) 
 _ZN20RankingCharacterView15ChangeCharacterEhtj kind:function(arm,size=0x2c) addr:0x02074938
 _ZN20RankingCharacterView4LoadEv kind:function(arm,size=0x7fc) addr:0x02074964
 _ZN20RankingCharacterView4DrawEv kind:function(arm,size=0xac) addr:0x02075160
-_ZN20RankingCharacterView13func_0207520cEv kind:function(arm,size=0x2ac) addr:0x0207520c
+_ZN20RankingCharacterView11DrawSpritesEv kind:function(arm,size=0x2ac) addr:0x0207520c
 _ZN20RankingCharacterView9PrintNameEv kind:function(arm,size=0x288) addr:0x020754b8
 _ZN20RankingCharacterView13ClearNameTextEv kind:function(arm,size=0x18) addr:0x02075740
 _ZN20RankingCharacterView18ApplyNextCharacterEv kind:function(arm,size=0x120) addr:0x02075758
@@ -2862,7 +2862,7 @@ _ZN9ListScene13func_0207f32cEv kind:function(arm,size=0x5e0) addr:0x0207f32c
 _ZN9ListScene13func_0207f90cEv kind:function(arm,size=0x648) addr:0x0207f90c
 _ZN9ListScene13func_0207ff54Ev kind:function(arm,size=0x1b0) addr:0x0207ff54
 _ZN9ListScene13func_02080104Ev kind:function(arm,size=0x10c) addr:0x02080104
-_ZN9ListScene13func_02080210Ev kind:function(arm,size=0x17c) addr:0x02080210
+_ZN9ListScene9ReadSlotsEv kind:function(arm,size=0x17c) addr:0x02080210
 _ZN9ListScene13func_0208038cEv kind:function(arm,size=0x440) addr:0x0208038c
 _ZN9ListScene13func_020807ccEv kind:function(arm,size=0xcc) addr:0x020807cc
 _ZN9ListScene13func_02080898Ev kind:function(arm,size=0x2b0) addr:0x02080898
@@ -2871,29 +2871,29 @@ _ZN9ListScene9BuildListEj kind:function(arm,size=0x54c) addr:0x02080bdc
 _ZN9ListScene13func_02081128Ev kind:function(arm,size=0x46c) addr:0x02081128
 _ZN9ListScene13func_02081594Ev kind:function(arm,size=0x158) addr:0x02081594
 _ZN9ListScene13func_020816ecEjj kind:function(arm,size=0x2a8) addr:0x020816ec
-_ZN9ListScene13func_02081994Ejjj kind:function(arm,size=0xb8) addr:0x02081994
+_ZN9ListScene12SetItemFlagsEjjj kind:function(arm,size=0xb8) addr:0x02081994
 _Z23ListSceneScrollCallbackPv kind:function(arm,size=0x28) addr:0x02081a4c
-_ZN9ListScene13func_02081a74Ehjjss kind:function(arm,size=0x1b8) addr:0x02081a74
-_ZN9ListScene13func_02081c2cEjjj kind:function(arm,size=0x130) addr:0x02081c2c
-_ZN9ListScene13func_02081d5cEjjjj kind:function(arm,size=0x508) addr:0x02081d5c
-_ZN9ListScene13func_02082264Ehhjss kind:function(arm,size=0x174) addr:0x02082264
-_ZN9ListScene13func_020823d8Ejjj kind:function(arm,size=0x134) addr:0x020823d8
-_ZN9ListScene13func_0208250cEjj kind:function(arm,size=0x154) addr:0x0208250c
-_ZN9ListScene13func_02082660Ev kind:function(arm,size=0x8c) addr:0x02082660
-_ZN9ListScene13func_020826ecEv kind:function(arm,size=0x614) addr:0x020826ec
-_ZN9ListScene13func_02082d00Ejjj kind:function(arm,size=0x70) addr:0x02082d00
+_ZN9ListScene15DrawBakuganMarkEhjjss kind:function(arm,size=0x1b8) addr:0x02081a74
+_ZN9ListScene15LoadBakuganMarkEjjj kind:function(arm,size=0x130) addr:0x02081c2c
+_ZN9ListScene15PrintBakuganRowEjjjj kind:function(arm,size=0x508) addr:0x02081d5c
+_ZN9ListScene13DrawSmallCardEhhjss kind:function(arm,size=0x174) addr:0x02082264
+_ZN9ListScene13LoadSmallCardEjjj kind:function(arm,size=0x134) addr:0x020823d8
+_ZN9ListScene18PrintCardNameShortEjj kind:function(arm,size=0x154) addr:0x0208250c
+_ZN9ListScene25ReleaseMainScreenGraphicsEv kind:function(arm,size=0x8c) addr:0x02082660
+_ZN9ListScene21InitAndLoadMainScreenEv kind:function(arm,size=0x614) addr:0x020826ec
+_ZN9ListScene9IsInSlotsEjjj kind:function(arm,size=0x70) addr:0x02082d00
 _ZN9ListScene18InitMainScreenTextEv kind:function(arm,size=0x18c) addr:0x02082d70
 _Z28PrintListSceneMainScreenTextP9ListScene kind:function(arm,size=0x2f8) addr:0x02082efc
 _ZN9ListScene18DrawMainScreenTextEv kind:function(arm,size=0xa8) addr:0x020831f4
 _ZN9ListScene19ClearMainScreenTextEv kind:function(arm,size=0x20) addr:0x0208329c
-_ZN9ListScene13func_020832bcEv kind:function(arm,size=0x1e0) addr:0x020832bc
-_ZN9ListScene13func_0208349cEj kind:function(arm,size=0x50) addr:0x0208349c
+_ZN9ListScene13RefreshCountsEv kind:function(arm,size=0x1e0) addr:0x020832bc
+_ZN9ListScene13GetRatioFrameEj kind:function(arm,size=0x50) addr:0x0208349c
 _Z13func_020834ecP9ListScenej kind:function(arm,size=0x4b4) addr:0x020834ec
 _Z27PrintListSceneSubScreenTextP9ListScene kind:function(arm,size=0x69c) addr:0x020839a0
 _ZN9ListScene13func_0208403cEv kind:function(arm,size=0x120) addr:0x0208403c
 _Z13func_0208415cP9ListScene kind:function(arm,size=0x144) addr:0x0208415c
-_ZN9ListScene13func_020842a0Ev kind:function(arm,size=0x48) addr:0x020842a0
-_ZN9ListScene13func_020842e8Ev kind:function(arm,size=0xc4) addr:0x020842e8
+_ZN9ListScene28IsCommandListOrPageSettingUpEv kind:function(arm,size=0x48) addr:0x020842a0
+_ZN9ListScene20StoreSlotsInSaveDataEv kind:function(arm,size=0xc4) addr:0x020842e8
 _Z13func_020843acP9ListScenej kind:function(arm,size=0x51c) addr:0x020843ac
 _Z13func_020848c8P9ListScene kind:function(arm,size=0x148) addr:0x020848c8
 _Z13func_02084a10P9ListScene kind:function(arm,size=0x228) addr:0x02084a10
@@ -2914,7 +2914,7 @@ _Z13func_02085da8P9ListScenejjj kind:function(arm,size=0x244) addr:0x02085da8
 _Z13func_02085fecP9ListScene kind:function(arm,size=0x58) addr:0x02085fec
 _Z13func_02086044P9ListScenej kind:function(arm,size=0x1b0) addr:0x02086044
 _Z21ListSceneHasAttributeP9ListScenej kind:function(arm,size=0x30) addr:0x020861f4
-_ZN9ListScene13func_02086224Ejj kind:function(arm,size=0xac) addr:0x02086224
+_ZN9ListScene13GetEntryPriceEjj kind:function(arm,size=0xac) addr:0x02086224
 _ZN9ListScene13func_020862d0Ev kind:function(arm,size=0x17c) addr:0x020862d0
 _ZN9ListScene13func_0208644cEv kind:function(arm,size=0xa0) addr:0x0208644c
 _ZN9ListScene8GetPriceEjj kind:function(arm,size=0x5c) addr:0x020864ec
@@ -2928,9 +2928,9 @@ _Z13func_020867b8P9ListScene kind:function(arm,size=0xbc) addr:0x020867b8
 _Z13func_02086874P9ListScene kind:function(arm,size=0xc4) addr:0x02086874
 _Z16UnlockStoreItemsv kind:function(arm,size=0x120) addr:0x02086938
 _Z16UnlockCharactersv kind:function(arm,size=0x11c) addr:0x02086a58
-_Z13func_02086b74v kind:function(arm,size=0x1d4) addr:0x02086b74
+_Z12UnlockFieldsv kind:function(arm,size=0x1d4) addr:0x02086b74
 _Z13func_02086d48v kind:function(arm,size=0xc0) addr:0x02086d48
-_Z13func_02086e08v kind:function(arm,size=0x2f8) addr:0x02086e08
+_Z10UnlockTipsv kind:function(arm,size=0x2f8) addr:0x02086e08
 _Z13func_02087100v kind:function(arm,size=0x368) addr:0x02087100
 _Z13func_02087468v kind:function(arm,size=0x144) addr:0x02087468
 _Z23IsProgressEntryUnlockedj kind:function(arm,size=0x144) addr:0x020875ac
@@ -2949,7 +2949,7 @@ _Z25ResetStorytalkMessageTextP15StorytalkWindow kind:function(arm,size=0x48) add
 _Z24SetStorytalkMessageIndexP15StorytalkWindowi kind:function(arm,size=0x188) addr:0x0208813c
 _Z18PrintStorytalkTextP15StorytalkWindow kind:function(arm,size=0x714) addr:0x020882c4
 _Z21SetStorytalkCharacterP15StorytalkWindowi kind:function(arm,size=0x40) addr:0x020889d8
-_ZN15StorytalkWindow13func_02088a18Ejj kind:function(arm,size=0xc) addr:0x02088a18
+_ZN15StorytalkWindow17SetCell2FrameAndXEjj kind:function(arm,size=0xc) addr:0x02088a18
 _Z17DrawStorytalkNameP15StorytalkWindow kind:function(arm,size=0x10c) addr:0x02088a24
 _Z25DrawStorytalkTextAndCell1P15StorytalkWindow kind:function(arm,size=0x1a8) addr:0x02088b30
 _Z23DrawStorytalkCells0And2P15StorytalkWindow kind:function(arm,size=0xd4) addr:0x02088cd8
@@ -2957,7 +2957,7 @@ _ZN15StorytalkWindow8NextPageEj kind:function(arm,size=0xb8) addr:0x02088dac
 _ZN15StorytalkWindow10SetMessageEiijj kind:function(arm,size=0x58) addr:0x02088e64
 _ZN15StorytalkWindow15SetCell1VisibleEj kind:function(arm,size=0x8) addr:0x02088ebc
 _Z21SetNoStorytalkMessageP15StorytalkWindow kind:function(arm,size=0x30) addr:0x02088ec4
-_ZN15StorytalkWindow13func_02088ef4Ev kind:function(arm,size=0x8) addr:0x02088ef4
+_ZN15StorytalkWindow16GetPageTextTimerEv kind:function(arm,size=0x8) addr:0x02088ef4
 _ZN15StorytalkWindow12HasMorePagesEv kind:function(arm,size=0x18) addr:0x02088efc
 _ZN15StorytalkWindow11IsTextShownEv kind:function(arm,size=0x14) addr:0x02088f14
 _Z17SetStorytalkBlinkP15StorytalkWindowh kind:function(arm,size=0x10) addr:0x02088f28
@@ -2997,7 +2997,7 @@ data_0208b502 kind:data(any) addr:0x0208b502
 data_0208b503 kind:data(any) addr:0x0208b503
 __ptmf_null kind:data(any) addr:0x020906e8
 gSeqVolumes kind:data(any) addr:0x020906f0
-data_02090778 kind:data(any) addr:0x02090778
+gSeqArcPlayerIndex kind:data(any) addr:0x02090778
 gSeqTable kind:data(any) addr:0x02090780
 gSeqArcTable kind:data(any) addr:0x02090788
 FX_SinCosTable_ kind:data(any) addr:0x0208b524
@@ -3067,9 +3067,9 @@ data_020a0107 kind:data(any) addr:0x020a0107
 data_020a0202 kind:data(any) addr:0x020a0202
 data_020a0206 kind:data(any) addr:0x020a0206
 data_020a0209 kind:data(any) addr:0x020a0209
-data_020a1074 kind:data(any) addr:0x020a1074
+gBakuganNumbers kind:data(any) addr:0x020a1074
 sMessageWindowOam kind:data(any) addr:0x020a10a0 local
-data_020a10ac kind:data(any) addr:0x020a10ac
+gCardNumbers kind:data(any) addr:0x020a10ac
 gCardInfo kind:data(any) addr:0x020a1258
 gCardAttributeValues kind:data(any) addr:0x020a15ac
 data_020a1ac6 kind:data(any) addr:0x020a1ac6
@@ -3086,7 +3086,7 @@ data_020a1b68 kind:data(any) addr:0x020a1b68
 data_020a1b69 kind:data(any) addr:0x020a1b69
 data_020a1b8a kind:data(any) addr:0x020a1b8a
 data_020a1bae kind:data(any) addr:0x020a1bae
-data_020a1bd6 kind:data(any) addr:0x020a1bd6
+gScriptSphereEntries kind:data(any) addr:0x020a1bd6
 data_020a1bd7 kind:data(any) addr:0x020a1bd7
 data_020a1c04 kind:data(any) addr:0x020a1c04
 data_020a1c06 kind:data(any) addr:0x020a1c06
@@ -3122,7 +3122,7 @@ data_020a22ac kind:data(any) addr:0x020a22ac
 data_020a22b0 kind:data(any) addr:0x020a22b0
 data_020a22b2 kind:data(any) addr:0x020a22b2
 data_020a233c kind:data(any) addr:0x020a233c
-data_020a23cc kind:data(any) addr:0x020a23cc
+gScriptSpriteSlots kind:data(any) addr:0x020a23cc
 data_020a248c kind:data(any) addr:0x020a248c
 data_020a2554 kind:data(any) addr:0x020a2554
 data_020a2558 kind:data(any) addr:0x020a2558
@@ -3146,12 +3146,12 @@ gRankingCharacterModelY kind:data(any) addr:0x020a3044
 data_020a305c kind:data(any) addr:0x020a305c
 data_020a3060 kind:data(any) addr:0x020a3060
 gRankingCharacterIds kind:data(any) addr:0x020a3070
-data_020a308c kind:data(any) addr:0x020a308c local
-data_020a30a4 kind:data(any) addr:0x020a30a4 local
-data_020a30c0 kind:data(any) addr:0x020a30c0 local
-data_020a30dc kind:data(any) addr:0x020a30dc
+sResultCellPositions kind:data(any) addr:0x020a308c local
+sResultCockpitItems kind:data(any) addr:0x020a30a4 local
+sResultCockpitCells kind:data(any) addr:0x020a30c0 local
+gAntennaPositions kind:data(any) addr:0x020a30dc
 data_020a30dd kind:data(any) addr:0x020a30dd
-data_020a30f8 kind:data(any) addr:0x020a30f8
+gAntennaLayouts kind:data(any) addr:0x020a30f8
 data_020a30fc kind:data(any) addr:0x020a30fc
 data_020a30fd kind:data(any) addr:0x020a30fd
 @4084 kind:data(any) addr:0x020a3168 local
@@ -4707,7 +4707,7 @@ data_020d4478 kind:bss addr:0x020d4478
 data_020d4850 kind:bss addr:0x020d4850
 data_020d48f0 kind:bss addr:0x020d48f0
 data_020d4946 kind:bss addr:0x020d4946
-data_020d4968 kind:bss addr:0x020d4968
+gUnlockedFieldBits kind:bss addr:0x020d4968
 data_020d4969 kind:bss addr:0x020d4969
 data_020d496a kind:bss addr:0x020d496a
 data_020d496d kind:bss addr:0x020d496d
@@ -4715,7 +4715,7 @@ data_020d4970 kind:bss addr:0x020d4970
 data_020d4973 kind:bss addr:0x020d4973
 data_020d4976 kind:bss addr:0x020d4976
 data_020d497b kind:bss addr:0x020d497b
-data_020d499c kind:bss addr:0x020d499c
+gUnlockedTipBits kind:bss addr:0x020d499c
 data_020d49a1 kind:bss addr:0x020d49a1
 data_020d49a6 kind:bss addr:0x020d49a6
 data_020d49ae kind:bss addr:0x020d49ae

@@ -185,7 +185,7 @@ void GimmickAbilityField::Update() {
         break;
     case 1: {
         if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
-            func_020526bc();
+            DrawInstance();
             func_ov007_022303f4();
         }
         if (!(mCollision && mCollision->mHitCount)) {

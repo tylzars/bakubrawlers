@@ -143,11 +143,11 @@ void ParkScene::Update() {
             mState++;
             break;
         case 2:
-            if (mEvent->GetResult() | mEvent->func_02067954()) {
+            if (mEvent->GetResult() | mEvent->GetSaveRequest()) {
                 SpriteManager::Get().StartSubFade(3);
                 mState = 4;
             }
-            if (mEvent->func_0206797c()) {
+            if (mEvent->GetUnlockPopupHandle()) {
                 SpriteManager::Get().StartSubFade(3);
                 mState = 7;
             }
@@ -214,7 +214,7 @@ void ParkScene::Update() {
             if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
-            new UnlockPopup(mEvent->func_0206797c() - 1);
+            new UnlockPopup(mEvent->GetUnlockPopupHandle() - 1);
             mContext->mRequest = 0;
             mState++;
             break;
@@ -223,7 +223,7 @@ void ParkScene::Update() {
                 break;
             }
             ReloadBackground();
-            mEvent->func_02067988();
+            mEvent->ClearUnlockPopupHandle();
             mState++;
             break;
         case 9:
@@ -316,9 +316,9 @@ void ParkScene::Update() {
                 mState = 0xf;
                 break;
             }
-            if (mEvent->func_02067938()) {
+            if (mEvent->IsGraphicsLoaded()) {
                 ReloadBackground();
-                mEvent->func_02067944();
+                mEvent->ClearGraphicsLoaded();
             }
             break;
         case 15:
@@ -499,9 +499,9 @@ void ParkScene::Update() {
                         mState++;
                         break;
                 }
-            } else if (mEvent->func_02067938()) {
+            } else if (mEvent->IsGraphicsLoaded()) {
                 ReloadBackground();
-                mEvent->func_02067944();
+                mEvent->ClearGraphicsLoaded();
             }
             break;
         case 26:
@@ -834,7 +834,7 @@ u8 ParkScene::func_ov004_0221b8c4(int index) {
 }
 
 int ParkScene::GetUnlockedFieldId(int index) {
-    if (!TestFlagBit(data_020d4968, index)) {
+    if (!TestFlagBit(gUnlockedFieldBits, index)) {
         index = 2;
         if (!(gSaveData[0].mUnk_578 & 4)) {
             index = 0;
@@ -966,7 +966,7 @@ BOOL ParkRules::func_ov004_0221bf5c() {
 u8 ParkRules::CountSlotsWith(u32 value) {
     u8 count = 0;
     for (u8 i = 0; i < 3; i++) {
-        if (value == func_020230a8(&gSaveData[0], 0, i)) {
+        if (value == GetSlotBakuganAttribute(&gSaveData[0], 0, i)) {
             count++;
         }
     }

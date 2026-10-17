@@ -74,7 +74,7 @@ BOOL ConfrontBg01::func_ov007_0221bfa4() {
     }
     if (mSoundTimer != 0) {
         mSoundTimer = 0;
-        func_02024764(&SoundManager::Get(), 0x27, 1);
+        StopSeqArc(&SoundManager::Get(), 0x27, 1);
     }
     mBlend->LowerLevel();
     return FALSE;
@@ -96,7 +96,7 @@ u8 ConfrontBg01::UpdateTouch(int a) {
         if (mDistanceSum >= limit) {
             mDistanceSum = 0;
             func_ov007_0221bb3c();
-            if (!func_02024790(&SoundManager::Get(), 0x27)) {
+            if (!CountSeqArcSounds(&SoundManager::Get(), 0x27)) {
                 SoundManager::Get().StartSeqArc(0x27);
             }
             mSoundTimer = 10;
@@ -111,7 +111,7 @@ u8 ConfrontBg01::UpdateTouch(int a) {
         if (mSoundTimer != 0) {
             mSoundTimer--;
             if (mSoundTimer == 0) {
-                func_02024764(&SoundManager::Get(), 0x27, 1);
+                StopSeqArc(&SoundManager::Get(), 0x27, 1);
                 mUnk_6a = 0;
             }
         }

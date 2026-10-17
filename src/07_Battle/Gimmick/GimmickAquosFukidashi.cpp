@@ -4,7 +4,7 @@
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 
-extern "C" void func_02024764(SoundManager *manager, u32 a, u32 b);
+extern "C" void StopSeqArc(SoundManager *manager, u32 a, u32 b);
 
 static const VecFx32 data_ov007_02285bd0 = {0, 0x3000, 0};
 
@@ -124,12 +124,12 @@ void GimmickAquosFukidashi::Update() {
         } else if (mTargetNear && !near) {
             sCount--;
             if (!sCount) {
-                func_02024764(&SoundManager::Get(), 0x63, 0x1e);
+                StopSeqArc(&SoundManager::Get(), 0x63, 0x1e);
             }
         }
         mTargetNear = near;
         if (CountDownToState(0x3c, (u8)(mState + 1))) {
-            func_02024764(&SoundManager::Get(), 0x63, 0x1e);
+            StopSeqArc(&SoundManager::Get(), 0x63, 0x1e);
             if (mTargetNear) {
                 sCount--;
             }
@@ -204,7 +204,7 @@ void GimmickAquosFukidashi::DrawModels(int drawB) {
     if ((int)data_020d433c.mGimmicks->mState < 2) {
         return;
     }
-    func_020526bc();
+    DrawInstance();
     if (!drawB) {
         return;
     }

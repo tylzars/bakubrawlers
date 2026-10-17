@@ -320,7 +320,7 @@ BattleCommand::~BattleCommand() {
     if (mPromptWindow) {
         delete mPromptWindow;
     }
-    SpriteManager::Get().func_0202740c();
+    SpriteManager::Get().ResetSlots();
     if (mMessage) {
         delete mMessage;
     }

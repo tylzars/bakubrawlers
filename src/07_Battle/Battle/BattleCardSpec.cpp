@@ -39,7 +39,7 @@ BattleCardSpec::BattleCardSpec(u32 a, u32 b, u32 c, u8 d)
     mRealbaseModel = 0;
     mRealnormalModel = 0;
     mState  = 0;
-    mUnk_19 = 0;
+    mCloseEnabled = 0;
     mUnk_1e = 0;
     mUseRealb20 = d;
     mCardModelType = a;
@@ -51,7 +51,7 @@ BattleCardSpec::BattleCardSpec(u32 a, u32 b, u32 c, u8 d)
         case 1:
         case 2:
         case 4:
-            mUnk_19 = 1;
+            mCloseEnabled = 1;
             mUnk_1e = 1;
             break;
     }
@@ -90,7 +90,7 @@ void BattleCardSpec::Update() {
         case 2:
             if (mContext->mRequest != 0) {
                 mState = 5;
-            } else if (mUnk_19) {
+            } else if (mCloseEnabled) {
                 if (func_ov007_022632d0(data_020d433c.mBattlePlayers, 0)) {
                     mState = 4;
                 } else if (InputManager::Get().IsDown(8)) {

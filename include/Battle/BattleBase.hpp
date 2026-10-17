@@ -565,7 +565,7 @@ public:
     /* 40 */ virtual u8 UpdateTouch(int low) = 0;
     /* 44 */ virtual void vfunc_44(int index, u16 count) = 0;
 
-    BOOL RaiseBlendAlpha(); // sub engine: G2S_SetBlendAlpha(4, 0x1b, 0, ++mUnk_51); TRUE at 0x1f
+    BOOL RaiseBlendAlpha(); // sub engine: G2S_SetBlendAlpha(4, 0x1b, 0, ++mBlendAlpha); TRUE at 0x1f
     void SetPenPosition(s16 a, s16 b); // mHud->mPenX / Y; a negative x hides the pen
     void SetTouched();
     void func_ov007_0221bb68();

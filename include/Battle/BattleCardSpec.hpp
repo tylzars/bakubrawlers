@@ -19,7 +19,7 @@ public:
     /* 10 */ ModelInstance *mRealbaseModel;
     /* 14 */ ModelInstance *mRealnormalModel;
     /* 18 */ u8 mState;
-    /* 19 */ u8 mUnk_19;
+    /* 19 */ u8 mCloseEnabled;
     /* 1a */ u8 mCardModelType;
     /* 1b */ u8 mBakuganId;
     /* 1c */ u8 mVariant;

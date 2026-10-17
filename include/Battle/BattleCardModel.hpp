@@ -27,7 +27,7 @@ struct BattleCardModelPart {
     union {
         /* 17 */ u8 mUnk_17;
         struct {
-            /* 17 */ u8 mUnk_17_0 : 1;
+            /* 17 */ u8 mUseUnionGroup : 1;
             /* 17 */ u8 mKind : 7; // CARD_MODEL_PART_KIND_*
         };
     };
@@ -36,7 +36,7 @@ struct BattleCardModelPart {
     /* 28 */
 };
 
-// Card entry of the tables at 0228acc0 (0x10 bytes).
+// Card entry of the gCardModelEntryTables tables (0x10 bytes).
 struct BattleCardModelEntry {
     /* 00 */ u8 mRestartFrame;
     /* 01 */ u8 mCount; // number of parts
@@ -90,7 +90,7 @@ public:
     void StartEffectsAtFrame(); // nothing once mAnimRestarted is set
     void UpdateEffects();
     void MoveEffectToBone(u32 index);
-    void func_ov007_02273be8();
+    void StartSeqArcOrChannel();
     void LoadNameText();
     void DrawName();
 

@@ -497,12 +497,12 @@ _ZN18BattleConfrontCard12ResetDisplayEv kind:function(arm,size=0x230) addr:0x022
 _ZN18BattleConfrontCard12LoadGraphicsEv kind:function(arm,size=0x3e8) addr:0x0223f398
 _ZN18BattleConfrontCard15LoadCardGraphicEt kind:function(arm,size=0x18c) addr:0x0223f780
 _ZN18BattleConfrontCard19func_ov007_0223f90cEt kind:function(arm,size=0xc) addr:0x0223f90c
-_ZN18BattleConfrontCard19func_ov007_0223f918Ev kind:function(arm,size=0x2c04) addr:0x0223f918
-_ZN18BattleConfrontCard19func_ov007_0224251cEv kind:function(arm,size=0x3b8) addr:0x0224251c
+_ZN18BattleConfrontCard19UpdateConfrontationEv kind:function(arm,size=0x2c04) addr:0x0223f918
+_ZN18BattleConfrontCard14UpdateCardPickEv kind:function(arm,size=0x3b8) addr:0x0224251c
 _ZN18BattleConfrontCard19func_ov007_022428d4Et kind:function(arm,size=0x7e8) addr:0x022428d4
 _ZN18BattleConfrontCard21SetSubBlendBrightnessEi kind:function(arm,size=0x1c) addr:0x022430bc
 _ZN18BattleConfrontCard16SetSubBlendAlphaEi kind:function(arm,size=0x28) addr:0x022430d8
-_ZN18BattleConfrontCard19func_ov007_02243100Ev kind:function(arm,size=0x1dc) addr:0x02243100
+_ZN18BattleConfrontCard18DrawEntriesAndCardEv kind:function(arm,size=0x1dc) addr:0x02243100
 _ZN18BattleConfrontCard16DrawEntryNumbersEhjj kind:function(arm,size=0xd0) addr:0x022432dc
 _ZN18BattleConfrontCard19GetMarkerBattleModeEv kind:function(arm,size=0x1c) addr:0x022433ac
 _ZN18BattleConfrontCard19func_ov007_022433c8Eht kind:function(arm,size=0x75c) addr:0x022433c8
@@ -886,7 +886,7 @@ _ZN15BattleCardModel12LoadGraphicsEv kind:function(arm,size=0x240) addr:0x022734
 _ZN15BattleCardModel19StartEffectsAtFrameEv kind:function(arm,size=0xc8) addr:0x02273718
 _ZN15BattleCardModel13UpdateEffectsEv kind:function(arm,size=0x26c) addr:0x022737e0
 _ZN15BattleCardModel16MoveEffectToBoneEj kind:function(arm,size=0x19c) addr:0x02273a4c
-_ZN15BattleCardModel19func_ov007_02273be8Ev kind:function(arm,size=0x254) addr:0x02273be8
+_ZN15BattleCardModel20StartSeqArcOrChannelEv kind:function(arm,size=0x254) addr:0x02273be8
 _Z14CloseCardModelP15BattleCardModel kind:function(arm,size=0x84) addr:0x02273e3c
 _ZN15BattleCardModel12LoadNameTextEv kind:function(arm,size=0x378) addr:0x02273ec0
 _ZN15BattleCardModel8DrawNameEv kind:function(arm,size=0xd4) addr:0x02274238
@@ -1101,7 +1101,7 @@ sWindowItems kind:data(any) addr:0x02279d48 local
 sWindowCells kind:data(any) addr:0x02279d9c local
 sAttributeRates kind:data(any) addr:0x02279df0 local
 data_ov007_02279e80 kind:data(any) addr:0x02279e80
-data_ov007_02279e88 kind:data(any) addr:0x02279e88
+gCardCameraLights kind:data(any) addr:0x02279e88
 data_ov007_02279eb0 kind:data(any) addr:0x02279eb0 local
 @1991 kind:data(any) addr:0x02279eba local
 data_ov007_02279ec4 kind:data(any) addr:0x02279ec4 local
@@ -1285,10 +1285,10 @@ data_ov007_0227c3a0 kind:data(any) addr:0x0227c3a0
 data_ov007_0227c3b4 kind:data(any) addr:0x0227c3b4
 data_ov007_0227c3c8 kind:data(any) addr:0x0227c3c8
 data_ov007_0227c3dc kind:data(any) addr:0x0227c3dc
-data_ov007_0227c3f0 kind:data(any) addr:0x0227c3f0
-data_ov007_0227c418 kind:data(any) addr:0x0227c418
-data_ov007_0227c428 kind:data(any) addr:0x0227c428
-data_ov007_0227c438 kind:data(any) addr:0x0227c438
+gCardModelLights kind:data(any) addr:0x0227c3f0
+gCardModelAnimDataIndices kind:data(any) addr:0x0227c418
+gCardModelAnimLoops kind:data(any) addr:0x0227c428
+gCardModelCamNumbers kind:data(any) addr:0x0227c438
 data_ov007_0227c448 kind:data(any) addr:0x0227c448
 data_ov007_0227c590 kind:data(any) addr:0x0227c590
 data_ov007_0227c718 kind:data(any) addr:0x0227c718
@@ -2630,8 +2630,8 @@ data_ov007_0228ac7c kind:data(any) addr:0x0228ac7c
 data_ov007_0228ac8c kind:data(any) addr:0x0228ac8c
 data_ov007_0228ac9c kind:data(any) addr:0x0228ac9c
 _ZTV15BattleCardModel kind:data(any) addr:0x0228acac
-data_ov007_0228acc0 kind:data(any) addr:0x0228acc0
-data_ov007_0228acf4 kind:data(any) addr:0x0228acf4
+gCardModelEntryTables kind:data(any) addr:0x0228acc0
+gCardModelFrameTaskIds kind:data(any) addr:0x0228acf4
 @2038 kind:data(any) addr:0x0228adfc local
 @2039 kind:data(any) addr:0x0228ae08 local
 @2040 kind:data(any) addr:0x0228ae10 local

@@ -48,21 +48,21 @@ public:
 };
 
 // Confrontation card screen (vtable 02288378): shows the cards of both sides before a battle (battle data,
-// card graphics, power values, mes_confrontation text). Created with the id of a card layout (-1: from data).
+// card graphics, power values, mes_confrontation text). Created with a BATTLE_MODE_ value (-1: from the marker card).
 class BattleConfrontCard : public SceneBase {
 public:
     /* 00 SceneBase */
     /* 0c */ u8 mState;
     /* 0d */ u8 mStep;
-    /* 0e */ u8 mUnk_0e;
-    /* 0f */ u8 mUnk_0f;
+    /* 0e */ u8 mShakeSide;
+    /* 0f */ u8 mShakeBaseX;
     /* 10 */ u16 mUnk_10;
     /* 12 */ u16 mUnk_12;
     /* 14 */ s16 mDrawX[3];
     /* 1a */ s16 mDrawY[3];
     /* 20 */ u8 mBattleMode; // BATTLE_MODE_* (BattleBase.hpp)
     /* 21 */ s8 mUnk_21;
-    /* 22 */ u8 mUnk_22;
+    /* 22 */ u8 mHidden;
     /* 23 */ u8 mUnk_23;
     /* 24 */ CellAnimation *mCellAnims[5];
     /* 38 */ BattleData *mData;
@@ -71,21 +71,21 @@ public:
     /* 44 */ BattleCardSpec *mCardSpec;
     /* 48 */ void *mConfront;
     /* 4c */ void *mUnionAbility;
-    /* 50 */ u8 mUnk_50;
-    /* 51 */ u8 mUnk_51;
-    /* 52 */ u8 mUnk_52;
+    /* 50 */ u8 mMarkerCardKind;
+    /* 51 */ u8 mCardPickStep;
+    /* 52 */ u8 mLocalSide;
     /* 53 */ u8 mSlot6cIndex;
     /* 54 */ u16 mCardId;
     /* 56 */ u16 mUnk_56;
     /* 58 */ PAD(0x58, 0x5c);
     /* 5c */ u8 mUnk_5c;
     /* 5d */ u8 mUnk_5d;
-    /* 5e */ u8 mUnk_5e;
-    /* 5f */ u8 mUnk_5f;
+    /* 5e */ u8 mPromptCardPicked;
+    /* 5f */ u8 mAttributeValuesVisible;
     /* 60 */ u8 mDisabledBits;
     /* 61 */ u8 mUnk_61;
-    /* 62 */ u8 mUnk_62;
-    /* 63 */ u8 mUnk_63;
+    /* 62 */ u8 mSide0CardDone;
+    /* 63 */ u8 mSide1CardDone;
     /* 64 */ u8 mUnk_64;
     /* 65 */ u8 mUnk_65;
     /* 66 */ u16 mUnk_66;
@@ -104,7 +104,7 @@ public:
     BattleConfrontCard(u32 unk);
     virtual ~BattleConfrontCard();
     /* 08 */ virtual void Update();
-    int func_ov007_0224251c();
+    int UpdateCardPick();
     u8 func_ov007_022428d4(u16 card);
     u8 func_ov007_02244440();
     BOOL func_ov007_022433c8(u8 side, u16 id);
@@ -116,10 +116,10 @@ public:
     void LoadGraphics();
     void LoadCardGraphic(u16 card);
     void func_ov007_0223f90c(u16 value);
-    BOOL func_ov007_0223f918();
+    BOOL UpdateConfrontation();
     void SetSubBlendBrightness(int brightness);
     void SetSubBlendAlpha(int blend);
-    void func_ov007_02243100();
+    void DrawEntriesAndCard();
     void DrawEntryNumbers(u8 kind, u32 mode, u32 flag);
     u8 GetMarkerBattleMode();
     u16 func_ov007_02243b24(u8 side, u32 id);

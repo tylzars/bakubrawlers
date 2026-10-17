@@ -32,7 +32,7 @@ public:
 #include <nitro/os.h>
 #include <stdio.h>
 
-extern const u8 data_ov007_0227c428[];
+extern const u8 gCardModelAnimLoops[];
 
 // Copies the active camera into the 3D engine state and the camera manager's snapshot of it.
 static inline void SnapshotCamera() {
@@ -78,7 +78,7 @@ extern BattleCardModelEntry data_ov007_02284838[];
 extern BattleCardModelEntry data_ov007_02284c58[];
 extern BattleCardModelEntry data_ov007_02285078[];
 extern BattleCardModelEntry data_ov007_02285498[];
-BattleCardModelEntry *data_ov007_0228acc0[13] = {
+BattleCardModelEntry *gCardModelEntryTables[13] = {
     data_ov007_02282318,
     data_ov007_02282738,
     data_ov007_02282b58,
@@ -95,9 +95,9 @@ BattleCardModelEntry *data_ov007_0228acc0[13] = {
 };
 extern const VecFx32 gCardModelScale;
 extern MtxFx43 gIdentityMtx43;
-extern const u8 data_ov007_0227c418[];
-extern const u8 data_ov007_0227c438[];
-extern const u8 data_ov007_0227c3f0[];
+extern const u8 gCardModelAnimDataIndices[];
+extern const u8 gCardModelCamNumbers[];
+extern const u8 gCardModelLights[];
 extern u32 data_ov007_0227c0d0[];
 extern u32 data_ov007_0227c0e4[];
 extern u32 data_ov007_0227c0f8[];
@@ -138,7 +138,7 @@ extern u32 data_ov007_0227c3a0[];
 extern u32 data_ov007_0227c3b4[];
 extern u32 data_ov007_0227c3c8[];
 extern u32 data_ov007_0227c3dc[];
-u32 *data_ov007_0228acf4[66] = {
+u32 *gCardModelFrameTaskIds[66] = {
     data_ov007_0227c0d0,
     data_ov007_0227c0f8,
     0,
@@ -254,7 +254,7 @@ void BattleCardModel::Init(u32 type, u32 id, u32 c) {
     mVariant   = c;
     mType     = type;
     mId       = charId;
-    BattleCardModelEntry *entry = data_ov007_0228acc0[mType] + charId;
+    BattleCardModelEntry *entry = gCardModelEntryTables[mType] + charId;
     mEntry                      = entry;
     mCurrentCamKey                     = entry->mCamKeys;
     mParts                      = mEntry->mParts;
@@ -331,13 +331,13 @@ BOOL BattleCardModel::UpdateState() {
             mState++;
             break;
         case 1:
-            func_ov007_02273be8();
+            StartSeqArcOrChannel();
             SpriteManager::Get();
             SpriteManager::sFade[0] = FADE_MODE_TO_ZERO;
             mState++;
             break;
         case 2:
-            if (data_ov007_0227c428[mType] != 0) {
+            if (gCardModelAnimLoops[mType] != 0) {
                 if (!mBaku->mModel->AdvanceAnim()) {
                     mBaku->mModel->StartAnim(0, 0);
                     mBaku->mModel->SetAnimFrame((s32) FramesToFloat(mEntry->mRestartFrame));
@@ -437,11 +437,11 @@ void BattleCardModel::LoadGraphics() {
     LoadEffectGroup(mEffects, 0, name);
     LoadEffectGroup(mEffects, 1, "union");
     ChangeDir("/Game/Realbaku/Mdl");
-    sprintf(name, "realb%02d_M_%02d.cam", mId, data_ov007_0227c438[mType]);
+    sprintf(name, "realb%02d_M_%02d.cam", mId, gCardModelCamNumbers[mType]);
     mCamFile = LoadFile(name, 0, 0, 0, 0, 0);
     mCamera->SetPath(mCamFile, 0);
     ChangeDir("/");
-    mBaku      = new BattleRealBaku(mBakuganId, data_ov007_0227c418[mType], mVariant, 0, 0, 1, mUseRealb20);
+    mBaku      = new BattleRealBaku(mBakuganId, gCardModelAnimDataIndices[mType], mVariant, 0, 0, 1, mUseRealb20);
     mLastFrame = mBaku->mAnim->GetFrameCountForSet(0) - 0x10000;
     mCamera->ApplyPath();
     if (mCount) {
@@ -460,7 +460,7 @@ void BattleCardModel::LoadGraphics() {
             i++;
         } while (i < mCount);
     }
-    mLights = new ModelLightGroup(data_ov007_0227c3f0);
+    mLights = new ModelLightGroup(gCardModelLights);
 }
 
 void BattleCardModel::StartEffectsAtFrame() {
@@ -477,7 +477,7 @@ void BattleCardModel::StartEffectsAtFrame() {
                         FreeEffect(mEffects, mHandles[i]);
                     }
                     u32 group = 1;
-                    if (!Part(i)->mUnk_17_0) {
+                    if (!Part(i)->mUseUnionGroup) {
                         group = 0;
                     }
                     mHandles[i] = StartEffect(mEffects, group, Part(i)->mScript, 0, 0);
@@ -555,7 +555,7 @@ void BattleCardModel::MoveEffectToBone(u32 index) {
     SetEffectPosition(mEffects, mHandles[index], &mPos[index]);
 }
 
-void BattleCardModel::func_ov007_02273be8() {
+void BattleCardModel::StartSeqArcOrChannel() {
     if (mId > 0x41) {
         return;
     }
@@ -582,9 +582,9 @@ void BattleCardModel::func_ov007_02273be8() {
     if (mType > 4) {
         return;
     }
-    u32 *sounds = data_ov007_0228acf4[mId];
+    u32 *sounds = gCardModelFrameTaskIds[mId];
     if (sounds && sounds[mType] != 0x1ee) {
-        FrameTask::Get().StartChannel(2, (u16) data_ov007_0228acf4[mId][mType]);
+        FrameTask::Get().StartChannel(2, (u16) gCardModelFrameTaskIds[mId][mType]);
     }
 }
 

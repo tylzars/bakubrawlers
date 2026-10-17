@@ -84,7 +84,7 @@ void BattleCardCamera::Update() {
 }
 
 
-extern const u8 data_ov007_02279e88[];
+extern const u8 gCardCameraLights[];
 // The battle camera through an inline: the original keeps it as a compiler temporary (r5, above the path strings).
 static inline Camera *BattleCamera() { return data_020d433c.mBattlePlayers->mCamera; }
 
@@ -135,7 +135,7 @@ void BattleCardCamera::Init() {
     }
     CameraManager::Get().mCameraIndex = 0;
     CameraManager::Get().SetCamerasAndRequestMode(1, camera, 0);
-    mLights = new ModelLightGroup(data_ov007_02279e88);
+    mLights = new ModelLightGroup(gCardCameraLights);
 }
 
 // Copies the active camera into the 3D engine state and the camera manager's snapshot of it.

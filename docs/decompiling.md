@@ -154,7 +154,7 @@ that matches should replace it.
   stack-slot order), BattlePlayerList::Update's two volatile reads in case 4's second record (keep the player
   reload and the slot read apart so they number as the original's registers need), BattleSub48's enum-typed entry index, BattleAbility::func_ov007_02265af8's two
   volatile index reads, BattleOrderSelect's `volatile ry`, BattleCardModel's narrow stack
-  read, the casts through `sAreaCursorAndBakuganOrder.mOrder` in ListScene.cpp, BattleConfrontCard::func_ov007_0223f918's
+  read, the casts through `sAreaCursorAndBakuganOrder.mOrder` in ListScene.cpp, BattleConfrontCard::UpdateConfrontation's
   two-arm player index in case 29 (both arms read the same byte), cri_wave_ch func_02048940's repeated
   `r6 > 0 || r6 > 0` test (a join below the get24 call, so its result stays in r6's local).
 - Expression stand-ins: nns_snd_wavstrm UpdateWavStrms's `- -v`, msl_strtod's `mp = (unsigned char *)&mant`,
@@ -183,7 +183,7 @@ that matches should replace it.
   first. An enum-typed copy (`UnitIndex e = (UnitIndex) unit->mUnk_0e;`) or one index local reassigned for
   successive records gives the original's order. Only BattleAbility::func_ov007_02265af8 still needs two
   `*(volatile u8 *)` placeholders: there the enum copy gets the right registers but is scheduled before the list load.
-  BattleConfrontCard::func_ov007_0223f918 (case 29's loop head) is the same family: the original numbers the list
+  BattleConfrontCard::UpdateConfrontation (case 29's loop head) is the same family: the original numbers the list
   pointer, the player index, `j*4` and the slot pointer in that order. It matches with a placeholder two-arm index
   (see Placeholders): `idx = count ? list->mUnk_2a9 : data_020d433c.mBattlePlayers->mUnk_2a9` keeps the index a
   statement of its own until after the last expression propagation, and the merged arms leave no code.

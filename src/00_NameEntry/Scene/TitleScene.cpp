@@ -37,21 +37,21 @@ static const WindowCellRecord sTitleThreeButtonCells[3] = {
 };
 static const WindowItemRecord sTitleObj01Items[2][2] = {
     {
-        {0, 0x1, 24, 84, 208, 24, 0, {0, 0, 0, 0}, 0, 1},
+        {0, 0x1, 24, 84, 208, 24, 0, {0, 0, 0, 0}, 0, WINDOW_TOUCH_RELEASE},
         {0, 0x0, 0, 0, 0, 0, 0, {0, 0, 0, 0}, 0, 0},
     },
     {
-        {0, 0x1, 24, 104, 208, 24, 0, {1, 1, 0, 0}, 0, 2},
-        {1, 0x1, 24, 64, 208, 24, 0, {0, 0, 1, 1}, 0, 2},
+        {0, 0x1, 24, 104, 208, 24, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+        {1, 0x1, 24, 64, 208, 24, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     },
 };
 static const WindowItemRecord sTitleFullScreenItems[1] = {
-    {0, 0x1, 0, 0, 255, 255, 0, {0, 0, 0, 0}, 0, 1},
+    {0, 0x1, 0, 0, 255, 255, 0, {0, 0, 0, 0}, 0, WINDOW_TOUCH_RELEASE},
 };
-// Record 1 (flag 0x8000) is skipped by the cursor and by touch: one item is selectable.
+// Record 1 (WINDOW_ITEM_CURSOR_SKIP) is skipped by the cursor and by touch: one item is selectable.
 static const WindowItemRecord sTitleTwoButtonItems[2] = {
-    {0, 0x1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, 1},
-    {1, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+    {0, 0x1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
 static const WindowCellRecord sTitleObj01Cells[2][2] = {
     {
@@ -64,17 +64,17 @@ static const WindowCellRecord sTitleObj01Cells[2][2] = {
     },
 };
 static const WindowItemRecord sTitleMenuItems[5] = {
-    {0, 0x1, 2, 35, 148, 25, 0, {4, 1, 0, 0}, 0, 2},
-    {1, 0x1, 14, 63, 121, 25, 0, {0, 2, 1, 1}, 0, 2},
-    {2, 0x1, 4, 90, 127, 25, 0, {1, 3, 2, 2}, 0, 2},
-    {3, 0x1, 14, 118, 127, 25, 0, {2, 4, 3, 3}, 0, 2},
-    {4, 0x1, 23, 147, 145, 25, 0, {3, 0, 4, 4}, 0, 2},
+    {0, 0x1, 2, 35, 148, 25, 0, {4, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 0x1, 14, 63, 121, 25, 0, {0, 2, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, 0x1, 4, 90, 127, 25, 0, {1, 3, 2, 2}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {3, 0x1, 14, 118, 127, 25, 0, {2, 4, 3, 3}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {4, 0x1, 23, 147, 145, 25, 0, {3, 0, 4, 4}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
 };
-// Record 2 (flag 0x8000) is skipped by the cursor and by touch: two items are selectable.
+// Record 2 (WINDOW_ITEM_CURSOR_SKIP) is skipped by the cursor and by touch: two items are selectable.
 static const WindowItemRecord sTitleThreeButtonItems[3] = {
-    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
-    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
-    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
 
 

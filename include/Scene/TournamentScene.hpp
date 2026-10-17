@@ -61,7 +61,8 @@ public:
     /* c2 */ u8 mCharacterIds[9];
     /* cb */ u8 mUnk_cb;
     /* cc */ u8 mFirstItemState;
-    /* cd */ u8 mOtherItemState; // next mState when mWindow closes on an item other than 0 (item 1; item 2 is 0x8000)
+    // next mState when mWindow closes on an item other than 0 (item 1; item 2 is WINDOW_ITEM_CURSOR_SKIP)
+    /* cd */ u8 mOtherItemState;
     /* ce */ u8 mUnk_ce;
     /* cf */ u8 mMoveFrames;
     /* d0 */ u8 mUnk_d0;

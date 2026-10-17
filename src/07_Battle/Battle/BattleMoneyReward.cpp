@@ -33,7 +33,7 @@ static const WindowCellRecord sCells[1] = {
 };
 
 static const WindowItemRecord sItems[1] = {
-    {0, 5, 201, 170, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, 5, 201, 170, 52, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 static const u32 sRewards[6][2] = {

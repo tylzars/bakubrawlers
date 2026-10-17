@@ -48,14 +48,14 @@ extern const s16 data_ov008_02228734[2][3] = {{182, 8, -665}, {96, -4, -715}};
 extern const s16 data_ov008_0222874c[2][3] = {{60, 8, -606}, {-26, -4, -656}};
 static const u8 sMyroomMenu0StatusTextIndices[5] = {0x32, 0x35, 0x31, 0x38, 0x33};
 static const WindowItemRecord sMyroomMenu0Items[8] = {
-    {0, 0x8000, 88, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8000, 186, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8000, 284, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x8000, 382, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {4, 0x8000, 480, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {5, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {6, 0x8, 0, 72, 80, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {7, 0x8, 176, 72, 80, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {0, WINDOW_ITEM_CURSOR_SKIP, 88, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_CURSOR_SKIP, 186, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 284, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {3, WINDOW_ITEM_CURSOR_SKIP, 382, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {4, WINDOW_ITEM_CURSOR_SKIP, 480, 56, 80, 80, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {5, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {6, WINDOW_ITEM_NO_SLIDE_OUT, 0, 72, 80, 48, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {7, WINDOW_ITEM_NO_SLIDE_OUT, 176, 72, 80, 48, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 static const u8 sMyroomMenu1StatusTextIndices[3] = {0x34, 0x36, 0x37};
 extern const s16 data_ov008_02228728[2][3] = {{118, -52, -619}, {31, -64, -669}};
@@ -77,11 +77,11 @@ static const WindowCellRecord sMyroomMenu0Cells[8] = {
 };
 #pragma section npdata begin
 WindowItemRecord sMyroomMenu1Items[5] = {
-    {0, 0x8000, sMyroomMenuEntryPos[0].x, sMyroomMenuEntryPos[0].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8000, sMyroomMenuEntryPos[1].x, sMyroomMenuEntryPos[1].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8000, sMyroomMenuEntryPos[2].x, sMyroomMenuEntryPos[2].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {4, 0x8000, 128, 96, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 2},
+    {0, WINDOW_ITEM_CURSOR_SKIP, sMyroomMenuEntryPos[0].x, sMyroomMenuEntryPos[0].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_CURSOR_SKIP, sMyroomMenuEntryPos[1].x, sMyroomMenuEntryPos[1].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {2, WINDOW_ITEM_CURSOR_SKIP, sMyroomMenuEntryPos[2].x, sMyroomMenuEntryPos[2].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {3, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {4, WINDOW_ITEM_CURSOR_SKIP, 128, 96, 80, 80, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
 };
 #pragma section npdata end
 static const WindowCellRecord sMyroomMenu1Cells[5] = {
@@ -93,11 +93,11 @@ static const WindowCellRecord sMyroomMenu1Cells[5] = {
 };
 #pragma section npdata begin
 WindowItemRecord sMyroomMenu2Items[5] = {
-    {0, 0x8000, sMyroomMenuEntryPos[0].x, sMyroomMenuEntryPos[0].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8000, sMyroomMenuEntryPos[1].x, sMyroomMenuEntryPos[1].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8000, sMyroomMenuEntryPos[2].x, sMyroomMenuEntryPos[2].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {4, 0x8000, 128, 96, 80, 80, 0x0, {-1, -1, -1, -1}, 0, 2},
+    {0, WINDOW_ITEM_CURSOR_SKIP, sMyroomMenuEntryPos[0].x, sMyroomMenuEntryPos[0].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_CURSOR_SKIP, sMyroomMenuEntryPos[1].x, sMyroomMenuEntryPos[1].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {2, WINDOW_ITEM_CURSOR_SKIP, sMyroomMenuEntryPos[2].x, sMyroomMenuEntryPos[2].y, 56, 48, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {3, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {4, WINDOW_ITEM_CURSOR_SKIP, 128, 96, 80, 80, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
 };
 #pragma section npdata end
 static const WindowCellRecord sMyroomMenu2Cells[5] = {
@@ -673,15 +673,15 @@ void MyroomScene::StartScroll() {
         } else if ((s8) ctx->mInfo.mUnk_06 == i) {
             window->mCellAnims[i]->SetMode(CELL_ANIM_MODE_BACKWARD_ONCE);
         }
-        items[i].mFlags = 0x8000;
+        items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
     }
     if (ctx->mInfo.mUnk_0a == 0) {
         window->mButtons[6].mEnabled = 0;
-        items[6].mFlags              = 0x8000;
+        items[6].mFlags              = WINDOW_ITEM_CURSOR_SKIP;
     }
     if (ctx->mInfo.mUnk_0a == 4) {
         window->mButtons[7].mEnabled = 0;
-        items[7].mFlags              = 0x8000;
+        items[7].mFlags              = WINDOW_ITEM_CURSOR_SKIP;
     }
     if (ctx->mInfo.mMenuResult != 0) {
         return;
@@ -845,8 +845,8 @@ BOOL MyroomScene::UpdateScroll() {
     }
     if (ctx->mInfo.mScrollDir == 0) {
         window->mCellAnims[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(sMyroomMenu0AnimIndices[(s8) ctx->mInfo.mUnk_06]);
-        items[ctx->mInfo.mUnk_0a].mFlags     = 8;
-        items[(s8) ctx->mInfo.mUnk_06].mFlags     = 0x8000;
+        items[ctx->mInfo.mUnk_0a].mFlags     = WINDOW_ITEM_NO_SLIDE_OUT;
+        items[(s8) ctx->mInfo.mUnk_06].mFlags     = WINDOW_ITEM_CURSOR_SKIP;
         window->mCursor->mSelection          = ctx->mInfo.mUnk_0a;
         ctx->mInfo.mUnk_06                   = ctx->mInfo.mUnk_0a;
         mEvent->func_0206f564(data_ov008_02228764[ctx->mInfo.mMenuResult][(s8) ctx->mInfo.mUnk_06], 0xa, -1);
@@ -855,11 +855,11 @@ BOOL MyroomScene::UpdateScroll() {
         }
         if ((s8) ctx->mInfo.mUnk_06 != 0) {
             window->mButtons[6].mEnabled = 1;
-            items[6].mFlags              = 8;
+            items[6].mFlags              = WINDOW_ITEM_NO_SLIDE_OUT;
         }
         if ((s8) ctx->mInfo.mUnk_06 != 4) {
             window->mButtons[7].mEnabled = 1;
-            items[7].mFlags              = 8;
+            items[7].mFlags              = WINDOW_ITEM_NO_SLIDE_OUT;
         }
         window->mCellAnims[6]->Rewind();
         window->mCellAnims[7]->Rewind();
@@ -890,26 +890,26 @@ void MyroomScene::RefreshCellLayout() {
         items[i].mX = pos.x;
         if ((s8) ctx->mInfo.mUnk_06 == i) {
             window->mCellAnims[i]->SetAnimation(sMyroomMenu0SelectedAnimIndices[i]);
-            items[i].mFlags = 8;
+            items[i].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
         } else {
             window->mCellAnims[i]->SetAnimation(sMyroomMenu0AnimIndices[i]);
-            items[i].mFlags = 0x8000;
+            items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         }
         window->mCellAnims[i]->ResetAnimation();
     }
     if ((s8) ctx->mInfo.mUnk_06 != 0) {
         window->mButtons[6].mEnabled = 1;
-        items[6].mFlags              = 8;
+        items[6].mFlags              = WINDOW_ITEM_NO_SLIDE_OUT;
     } else {
         window->mButtons[6].mEnabled = 0;
-        items[6].mFlags              = 0x8000;
+        items[6].mFlags              = WINDOW_ITEM_CURSOR_SKIP;
     }
     if ((s8) ctx->mInfo.mUnk_06 == 4) {
         window->mButtons[7].mEnabled = 0;
-        items[7].mFlags              = 0x8000;
+        items[7].mFlags              = WINDOW_ITEM_CURSOR_SKIP;
     } else {
         window->mButtons[7].mEnabled = 1;
-        items[7].mFlags              = 8;
+        items[7].mFlags              = WINDOW_ITEM_NO_SLIDE_OUT;
     }
     if (ctx->mInfo.mMenuResult == 0) {
         if ((s32) ctx->mInfo.mUnk_0a >= 3) {

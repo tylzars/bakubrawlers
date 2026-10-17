@@ -166,7 +166,8 @@ public:
     void ApplyTargetPage();
     BOOL ShouldApplyTargetPage();
     BOOL IsCommandListOrPageSettingUp();
-    void SetItemFlags(u32 unk1, u32 unk2, u32 unk3); // windows 0 / 1 / 3 also: mButtons[unk2].mEnabled = unk3 != 0x8000
+    // windows 0 / 1 / 3 also: mButtons[unk2].mEnabled = unk3 != WINDOW_ITEM_CURSOR_SKIP
+    void SetItemFlags(u32 unk1, u32 unk2, u32 unk3);
     void LoadSlotGraphics(); // modes 3 / 5: the nine slot images with area 1; SetupMainScreenForPage loads area 0
     BOOL func_02080b48(u32 unk1, u32 unk2);
     void ReleaseMainScreenGraphics();

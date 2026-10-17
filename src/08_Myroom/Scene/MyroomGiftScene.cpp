@@ -53,20 +53,20 @@ const GiftLayout sMyroomGiftLayout = {
 };
 
 const WindowItemRecord sMyroomGiftWindowItems[14] = {
-    {0, 0x8, 46, 80, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8, 90, 36, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8, 90, 80, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x8, 134, 80, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {4, 0x8, 134, 36, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {5, 0x8, 178, 36, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {6, 0x8, 46, 36, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {7, 0x8, 178, 80, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {8, 0x8, 46, 124, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {9, 0x8, 90, 124, 32, 32, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {10, 0x8000, 46, 36, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
-    {11, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {12, 0x208, 192, 20, 32, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {13, 0x408, 224, 20, 32, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {0, WINDOW_ITEM_NO_SLIDE_OUT, 46, 80, 32, 32, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_NO_SLIDE_OUT, 90, 36, 32, 32, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {2, WINDOW_ITEM_NO_SLIDE_OUT, 90, 80, 32, 32, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {3, WINDOW_ITEM_NO_SLIDE_OUT, 134, 80, 32, 32, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {4, WINDOW_ITEM_NO_SLIDE_OUT, 134, 36, 32, 32, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {5, WINDOW_ITEM_NO_SLIDE_OUT, 178, 36, 32, 32, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {6, WINDOW_ITEM_NO_SLIDE_OUT, 46, 36, 32, 32, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {7, WINDOW_ITEM_NO_SLIDE_OUT, 178, 80, 32, 32, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {8, WINDOW_ITEM_NO_SLIDE_OUT, 46, 124, 32, 32, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {9, WINDOW_ITEM_NO_SLIDE_OUT, 90, 124, 32, 32, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {10, WINDOW_ITEM_CURSOR_SKIP, 46, 36, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
+    {11, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {12, 0x208, 192, 20, 32, 16, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {13, 0x408, 224, 20, 32, 16, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 #include "Scene/MyroomGiftScene.hpp"
@@ -513,7 +513,7 @@ void MyroomGiftScene::func_ov008_0221f194() {
     } else {
         if (mWindow->mCellAnims[12]->mAnimIndex != 2) {
             mWindow->mCellAnims[12]->SetAnimation(2);
-            items[12].mFlags = 0x8000;
+            items[12].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         }
     }
     if (mTextEndY > 0x80) {
@@ -524,7 +524,7 @@ void MyroomGiftScene::func_ov008_0221f194() {
     } else {
         if (mWindow->mCellAnims[13]->mAnimIndex != 5) {
             mWindow->mCellAnims[13]->SetAnimation(5);
-            items[13].mFlags = 0x8000;
+            items[13].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         }
     }
     Vec2s pos = {sMyroomGiftLayout.pos[mRow][mCol].x, sMyroomGiftLayout.pos[mRow][mCol].y};

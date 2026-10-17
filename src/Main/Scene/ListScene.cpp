@@ -38,13 +38,13 @@ struct BakuganPriceEntry {
 // WirelessManager and TouchManager headers before the tables and the other singleton headers after them, gives the
 // original layout of all three sections.
 static const WindowItemRecord sListWindowItems[7] = {
-    {0, 0x8, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8, 3, 33, 18, 30, 0, {-1, -1, -1, -1}, 0, 3},
-    {2, 0x8, 235, 33, 18, 30, 0, {-1, -1, -1, -1}, 0, 3},
-    {3, 0x8, 3, 88, 18, 56, 0, {-1, -1, -1, -1}, 0, 1},
-    {4, 0x8, 235, 88, 18, 56, 0, {-1, -1, -1, -1}, 0, 1},
-    {5, 0x8, 3, 66, 18, 20, 0, {-1, -1, -1, -1}, 0, 3},
-    {6, 0x8, 3, 146, 18, 20, 0, {-1, -1, -1, -1}, 0, 3},
+    {0, WINDOW_ITEM_NO_SLIDE_OUT, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_NO_SLIDE_OUT, 3, 33, 18, 30, 0, {-1, -1, -1, -1}, 0, 3},
+    {2, WINDOW_ITEM_NO_SLIDE_OUT, 235, 33, 18, 30, 0, {-1, -1, -1, -1}, 0, 3},
+    {3, WINDOW_ITEM_NO_SLIDE_OUT, 3, 88, 18, 56, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {4, WINDOW_ITEM_NO_SLIDE_OUT, 235, 88, 18, 56, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {5, WINDOW_ITEM_NO_SLIDE_OUT, 3, 66, 18, 20, 0, {-1, -1, -1, -1}, 0, 3},
+    {6, WINDOW_ITEM_NO_SLIDE_OUT, 3, 146, 18, 20, 0, {-1, -1, -1, -1}, 0, 3},
 };
 
 static const WindowCellRecord sListWindowCells[7] = {
@@ -123,8 +123,8 @@ static const WindowCellRecord sPromptWindowCells[5] = {
 
 static const AreaCursorAndBakuganOrder sAreaCursorAndBakuganOrder = {
     {
-        {0, 0x8, 0, 33, 256, 30, 0, {-1, -1, -1, -1}, 0, 1},
-        {1, 0x8, 0, 69, 256, 90, 0, {-1, -1, -1, -1}, 0, 1},
+        {0, WINDOW_ITEM_NO_SLIDE_OUT, 0, 33, 256, 30, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+        {1, WINDOW_ITEM_NO_SLIDE_OUT, 0, 69, 256, 90, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
     },
     {
         0x17, 0x1d, 0x1a, 0x20, 0x18, 0x1e, 0x1e, 0x19, 0x1f, 0x1c, 0x22, 0x1b, 0x21, 0x11, 0x14, 0x13,
@@ -178,27 +178,27 @@ static const BakuganPriceEntry sBakuganPriceEntries[41] = {
 };
 
 static const WindowItemRecord sPageAndRowCursorItems[8] = {
-    {0, 0x8, 25, 33, 30, 30, 0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8, 69, 33, 30, 30, 0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8, 113, 33, 30, 30, 0, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x8, 157, 33, 30, 30, 0, {-1, -1, -1, -1}, 0, 1},
-    {4, 0x8, 201, 33, 30, 30, 0, {-1, -1, -1, -1}, 0, 1},
-    {5, 0x8, 25, 69, 206, 30, 0, {-1, -1, -1, -1}, 0, 1},
-    {6, 0x8, 25, 101, 206, 30, 0, {-1, -1, -1, -1}, 0, 1},
-    {7, 0x8, 25, 133, 206, 30, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, WINDOW_ITEM_NO_SLIDE_OUT, 25, 33, 30, 30, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_NO_SLIDE_OUT, 69, 33, 30, 30, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {2, WINDOW_ITEM_NO_SLIDE_OUT, 113, 33, 30, 30, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {3, WINDOW_ITEM_NO_SLIDE_OUT, 157, 33, 30, 30, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {4, WINDOW_ITEM_NO_SLIDE_OUT, 201, 33, 30, 30, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {5, WINDOW_ITEM_NO_SLIDE_OUT, 25, 69, 206, 30, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {6, WINDOW_ITEM_NO_SLIDE_OUT, 25, 101, 206, 30, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {7, WINDOW_ITEM_NO_SLIDE_OUT, 25, 133, 206, 30, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 static const WindowItemRecord sPromptWindowItems[5] = {
-    {0, 0x8000, 120, 18, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
-    {1, 0x8000, 45, 152, 78, 20, 0, {1, 1, 2, 2}, 0, 2},
-    {2, 0x8000, 133, 152, 78, 20, 0, {2, 2, 1, 1}, 0, 2},
-    {3, 0x8000, 89, 152, 78, 20, 0, {3, 3, 3, 3}, 0, 2},
-    {4, 0x8000, 128, 96, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+    {0, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+    {1, WINDOW_ITEM_CURSOR_SKIP, 45, 152, 78, 20, 0, {1, 1, 2, 2}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 133, 152, 78, 20, 0, {2, 2, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {3, WINDOW_ITEM_CURSOR_SKIP, 89, 152, 78, 20, 0, {3, 3, 3, 3}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {4, WINDOW_ITEM_CURSOR_SKIP, 128, 96, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
 };
 
 static const WindowItemRecord sDeckWindowItems[2] = {
-    {0, 0x8, 48, 68, 160, 24, 0, {1, 1, 0, 0}, 0, 2},
-    {1, 0x8, 48, 100, 160, 24, 0, {0, 0, 1, 1}, 0, 2},
+    {0, WINDOW_ITEM_NO_SLIDE_OUT, 48, 68, 160, 24, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, WINDOW_ITEM_NO_SLIDE_OUT, 48, 100, 160, 24, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
 };
 
 static const u8 sBakuganAttributeFlags[0x29][6] = {
@@ -1452,15 +1452,15 @@ void ListScene::LoadSubScreenGraphics() {
         mDeckWindow = new SelectWindow(2, sDeckWindowItems, 0);
         mDeckWindow->SetCells(2, sDeckWindowCells);
         mDeckWindow->mCellAnims[0]->SetAnimation(1);
-        this->SetItemFlags(3, 0, 8);
-        this->SetItemFlags(3, 1, 8);
-        this->SetItemFlags(0, 0, 0x8000);
-        this->SetItemFlags(0, 1, 0x8000);
-        this->SetItemFlags(0, 2, 0x8000);
-        this->SetItemFlags(0, 3, 0x8000);
-        this->SetItemFlags(0, 4, 0x8000);
-        this->SetItemFlags(0, 5, 0x8000);
-        this->SetItemFlags(0, 6, 0x8000);
+        this->SetItemFlags(3, 0, WINDOW_ITEM_NO_SLIDE_OUT);
+        this->SetItemFlags(3, 1, WINDOW_ITEM_NO_SLIDE_OUT);
+        this->SetItemFlags(0, 0, WINDOW_ITEM_CURSOR_SKIP);
+        this->SetItemFlags(0, 1, WINDOW_ITEM_CURSOR_SKIP);
+        this->SetItemFlags(0, 2, WINDOW_ITEM_CURSOR_SKIP);
+        this->SetItemFlags(0, 3, WINDOW_ITEM_CURSOR_SKIP);
+        this->SetItemFlags(0, 4, WINDOW_ITEM_CURSOR_SKIP);
+        this->SetItemFlags(0, 5, WINDOW_ITEM_CURSOR_SKIP);
+        this->SetItemFlags(0, 6, WINDOW_ITEM_CURSOR_SKIP);
     }
     ChangeDir("/Game/Bakugan/mark");
     LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_EXT_PLTT, 0x200, "bakugan_s_000_ncl.bin", 0, 0, 0);
@@ -1991,39 +1991,39 @@ void ListScene::UpdateListWindow() {
     if (mDirtyFlags[0] != 0) {
         mDirtyFlags[0] = 0;
         if (mCursorPage > mFirstPage && mSelectingPage != 0) {
-            SetItemFlags(0, 1, 8);
+            SetItemFlags(0, 1, WINDOW_ITEM_NO_SLIDE_OUT);
             mListWindow->mCellAnims[1]->Rewind();
         } else {
-            SetItemFlags(0, 1, 0x8000);
+            SetItemFlags(0, 1, WINDOW_ITEM_CURSOR_SKIP);
         }
         if (mCursorPage < mPageCount - 1 && mSelectingPage != 0) {
-            SetItemFlags(0, 2, 8);
+            SetItemFlags(0, 2, WINDOW_ITEM_NO_SLIDE_OUT);
             mListWindow->mCellAnims[2]->Rewind();
         } else {
-            SetItemFlags(0, 2, 0x8000);
+            SetItemFlags(0, 2, WINDOW_ITEM_CURSOR_SKIP);
         }
         for (u8 i = 0; i <= 4; i++) {
             if (mCursorPage + i >= mPageCount || mSelectingPage == 0) {
-                SetItemFlags(2, i, 0x8000);
+                SetItemFlags(2, i, WINDOW_ITEM_CURSOR_SKIP);
             } else {
-                SetItemFlags(2, i, 8);
+                SetItemFlags(2, i, WINDOW_ITEM_NO_SLIDE_OUT);
             }
         }
         for (u8 i = 5; i <= 7; i++) {
             if (i - 5 >= mItemCount || mSelectingPage != 0) {
-                SetItemFlags(2, i, 0x8000);
+                SetItemFlags(2, i, WINDOW_ITEM_CURSOR_SKIP);
             } else {
-                SetItemFlags(2, i, 8);
+                SetItemFlags(2, i, WINDOW_ITEM_NO_SLIDE_OUT);
             }
         }
-        SetItemFlags(0, 0, 8);
+        SetItemFlags(0, 0, WINDOW_ITEM_NO_SLIDE_OUT);
         if (mItemCount < 2 || mSelectingPage != 0) {
-            SetItemFlags(0, 5, 0x8000);
-            SetItemFlags(0, 6, 0x8000);
+            SetItemFlags(0, 5, WINDOW_ITEM_CURSOR_SKIP);
+            SetItemFlags(0, 6, WINDOW_ITEM_CURSOR_SKIP);
         } else {
-            SetItemFlags(0, 5, 8);
+            SetItemFlags(0, 5, WINDOW_ITEM_NO_SLIDE_OUT);
             mListWindow->mCellAnims[5]->Rewind();
-            SetItemFlags(0, 6, 8);
+            SetItemFlags(0, 6, WINDOW_ITEM_NO_SLIDE_OUT);
             mListWindow->mCellAnims[6]->Rewind();
         }
         switch (mMode) {
@@ -2031,19 +2031,19 @@ void ListScene::UpdateListWindow() {
             case 1:
             case 2:
             case 4:
-                SetItemFlags(0, 3, 0x8000);
-                SetItemFlags(0, 4, 0x8000);
+                SetItemFlags(0, 3, WINDOW_ITEM_CURSOR_SKIP);
+                SetItemFlags(0, 4, WINDOW_ITEM_CURSOR_SKIP);
                 break;
             case 3:
             case 5:
                 if (mPage != 0 && mPage < 4 && mSelectingPage == 0) {
-                    SetItemFlags(0, 3, 8);
-                    SetItemFlags(0, 4, 8);
+                    SetItemFlags(0, 3, WINDOW_ITEM_NO_SLIDE_OUT);
+                    SetItemFlags(0, 4, WINDOW_ITEM_NO_SLIDE_OUT);
                     mSubScreenCellAnims[7]->SetAnimation((mListFilter + 5) % 6 * 2 + 0x10);
                     mSubScreenCellAnims[8]->SetAnimation((mListFilter + 1) % 6 * 2 + 0x10);
                 } else {
-                    SetItemFlags(0, 3, 0x8000);
-                    SetItemFlags(0, 4, 0x8000);
+                    SetItemFlags(0, 3, WINDOW_ITEM_CURSOR_SKIP);
+                    SetItemFlags(0, 4, WINDOW_ITEM_CURSOR_SKIP);
                 }
                 break;
         }
@@ -3171,18 +3171,18 @@ void ListScene::SetItemFlags(u32 unk1, u32 unk2, u32 unk3) {
     switch (unk1) {
         case 0:
             items = mListWindow->mCursor->mItems;
-            mListWindow->mButtons[unk2].mEnabled = unk3 != 0x8000 ? 1 : 0;
+            mListWindow->mButtons[unk2].mEnabled = unk3 != WINDOW_ITEM_CURSOR_SKIP ? 1 : 0;
             break;
         case 1:
             items = mPromptWindow->mCursor->mItems;
-            mPromptWindow->mButtons[unk2].mEnabled = unk3 != 0x8000 ? 1 : 0;
+            mPromptWindow->mButtons[unk2].mEnabled = unk3 != WINDOW_ITEM_CURSOR_SKIP ? 1 : 0;
             break;
         case 2:
             items = mPageAndRowCursor->mItems;
             break;
         case 3:
             items = mDeckWindow->mCursor->mItems;
-            mDeckWindow->mButtons[unk2].mEnabled = unk3 != 0x8000 ? 1 : 0;
+            mDeckWindow->mButtons[unk2].mEnabled = unk3 != WINDOW_ITEM_CURSOR_SKIP ? 1 : 0;
             break;
         default:
             return;
@@ -3585,7 +3585,7 @@ void SetupListTextKind(ListScene *self, u32 mode) {
     u8 flag  = 1;
     u8 state = 0;
     for (i = 0; i < 5; i++) {
-        self->SetItemFlags(1, i, 0x8000);
+        self->SetItemFlags(1, i, WINDOW_ITEM_CURSOR_SKIP);
     }
     state = 0;
     switch (mode) {
@@ -3870,15 +3870,15 @@ void func_020843ac(ListScene *self, u32 unk1) {
         GXS_SetVisiblePlane(0x11);
         self->mDeckWindow->mCursor->mSelection = 1;
         self->mDeckWindow->mCellAnims[1]->SetAnimation(4);
-        self->SetItemFlags(3, 0, 8);
-        self->SetItemFlags(3, 1, 8);
-        self->SetItemFlags(0, 0, 0x8000);
-        self->SetItemFlags(0, 1, 0x8000);
-        self->SetItemFlags(0, 2, 0x8000);
-        self->SetItemFlags(0, 3, 0x8000);
-        self->SetItemFlags(0, 4, 0x8000);
-        self->SetItemFlags(0, 5, 0x8000);
-        self->SetItemFlags(0, 6, 0x8000);
+        self->SetItemFlags(3, 0, WINDOW_ITEM_NO_SLIDE_OUT);
+        self->SetItemFlags(3, 1, WINDOW_ITEM_NO_SLIDE_OUT);
+        self->SetItemFlags(0, 0, WINDOW_ITEM_CURSOR_SKIP);
+        self->SetItemFlags(0, 1, WINDOW_ITEM_CURSOR_SKIP);
+        self->SetItemFlags(0, 2, WINDOW_ITEM_CURSOR_SKIP);
+        self->SetItemFlags(0, 3, WINDOW_ITEM_CURSOR_SKIP);
+        self->SetItemFlags(0, 4, WINDOW_ITEM_CURSOR_SKIP);
+        self->SetItemFlags(0, 5, WINDOW_ITEM_CURSOR_SKIP);
+        self->SetItemFlags(0, 6, WINDOW_ITEM_CURSOR_SKIP);
         if (self->mPage != 0) {
             if (self->mMainScreenState == 0) {
                 self->mMainScreenState = 1;
@@ -3914,8 +3914,8 @@ void func_020843ac(ListScene *self, u32 unk1) {
         screen.LoadCharacters("union_b_obj_page.nce_ncg1D.bin", 0x1d000, 0);
         screen.LoadPalette("union_b_obj_page_ncl.bin", 0, 0);
         GXS_SetVisiblePlane(0x1d);
-        self->SetItemFlags(3, 0, 0x8000);
-        self->SetItemFlags(3, 1, 0x8000);
+        self->SetItemFlags(3, 0, WINDOW_ITEM_CURSOR_SKIP);
+        self->SetItemFlags(3, 1, WINDOW_ITEM_CURSOR_SKIP);
         self->mDirtyFlags[0] = 1;
         self->mDirtyFlags[1] = 1;
         self->mDirtyFlags[2] = 1;
@@ -4122,7 +4122,7 @@ void SetupDeckTextKind(ListScene *self, u32 mode) {
     u8 flag  = 1;
     u8 state = 0;
     for (i = 0; i < 5; i++) {
-        self->SetItemFlags(1, i, 0x8000);
+        self->SetItemFlags(1, i, WINDOW_ITEM_CURSOR_SKIP);
     }
     state = 0;
     switch (mode) {
@@ -4131,8 +4131,8 @@ void SetupDeckTextKind(ListScene *self, u32 mode) {
             self->mDeckWindow->mEnabled             = 1;
             self->mDeckWindow->mCursor->mSelection = state;
             self->mDeckWindow->mCellAnims[0]->SetAnimation(1);
-            self->SetItemFlags(3, state, 8);
-            self->SetItemFlags(3, 1, 8);
+            self->SetItemFlags(3, state, WINDOW_ITEM_NO_SLIDE_OUT);
+            self->SetItemFlags(3, 1, WINDOW_ITEM_NO_SLIDE_OUT);
             self->mPromptWindow->mEnabled = state;
             self->mTextKind          = mode;
             self->mState           = 9;
@@ -4146,8 +4146,8 @@ void SetupDeckTextKind(ListScene *self, u32 mode) {
     }
     GXS_SetVisiblePlane(0x13);
     self->mDeckWindow->mEnabled = 0;
-    self->SetItemFlags(3, 0, 0x8000);
-    self->SetItemFlags(3, 1, 0x8000);
+    self->SetItemFlags(3, 0, WINDOW_ITEM_CURSOR_SKIP);
+    self->SetItemFlags(3, 1, WINDOW_ITEM_CURSOR_SKIP);
     self->mPromptWindow->Reset(-1);
     self->mPromptWindow->mEnabled             = 1;
     self->mPromptWindow->mButtons[0].mEnabled = 1;

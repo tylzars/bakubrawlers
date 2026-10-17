@@ -3,10 +3,10 @@
 // item table of the page window (positions are patched by CreateCommandPageWindow)
 inline WindowItemRecord *PageItems() {
     static WindowItemRecord sItems[4] = {
-        { 0, 0x208, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 1 },
-        { 1, 0x408, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 1 },
-        { 2, 0x8000, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
-        { 3, 0x8000, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
+        { 0, 0x208, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+        { 1, 0x408, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+        { 2, WINDOW_ITEM_CURSOR_SKIP, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
+        { 3, WINDOW_ITEM_CURSOR_SKIP, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
     };
     return sItems;
 }
@@ -304,12 +304,12 @@ void CreateCommandPageWindow(BattleCommandPage *page, u32 a, u32 b, s16 c, s16 d
         delete page->mWindow;
     }
     PageItems()[0].mUnk_04 = 0x208;
-    PageItems()[0].mUnk_18 = 1;
+    PageItems()[0].mUnk_18 = WINDOW_TOUCH_RELEASE;
     PageItems()[1].mUnk_04 = 0x408;
-    PageItems()[1].mUnk_18 = 1;
-    PageItems()[2].mUnk_04 = 0x8000;
+    PageItems()[1].mUnk_18 = WINDOW_TOUCH_RELEASE;
+    PageItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
     PageItems()[2].mUnk_18 = 0;
-    PageItems()[3].mUnk_04 = 0x8000;
+    PageItems()[3].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
     PageItems()[3].mUnk_18 = 0;
     PageItems()[0].mX      = c;
     PageItems()[0].mY      = d;
@@ -377,7 +377,7 @@ void BattleCommandPage::UpdatePageItems() {
     } else {
         if (IsPageItemEnabled(1) != 0) {
             mWindow->mCellAnims[1]->SetAnimation(5);
-            items[1].mFlags = 0x8000;
+            items[1].mFlags = WINDOW_ITEM_CURSOR_SKIP;
             if (mFourItems != 0) {
                 mWindow->mCellAnims[3]->SetAnimation(5);
             }
@@ -398,7 +398,7 @@ void BattleCommandPage::UpdatePageItems() {
             return;
         }
         mWindow->mCellAnims[0]->SetAnimation(2);
-        items[0].mFlags = 0x8000;
+        items[0].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         if (mFourItems == 0) {
             return;
         }

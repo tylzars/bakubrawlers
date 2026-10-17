@@ -3,13 +3,13 @@
 
 static const WindowItemRecord sResultItems[2][3] = {
     {
-        {0, 0x1, 48, 52, 160, 24, 0, {2, 1, 0, 0}, 0, 2},
-        {1, 0x1, 48, 84, 160, 24, 0, {0, 2, 1, 1}, 0, 2},
-        {2, 0x1, 48, 116, 160, 24, 0, {1, 0, 2, 2}, 0, 2},
+        {0, 0x1, 48, 52, 160, 24, 0, {2, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+        {1, 0x1, 48, 84, 160, 24, 0, {0, 2, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+        {2, 0x1, 48, 116, 160, 24, 0, {1, 0, 2, 2}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     },
     {
-        {0, 0x1, 48, 52, 160, 24, 0, {1, 1, 0, 0}, 0, 2},
-        {1, 0x1, 48, 84, 160, 24, 0, {0, 0, 1, 1}, 0, 2},
+        {0, 0x1, 48, 52, 160, 24, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+        {1, 0x1, 48, 84, 160, 24, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     },
 };
 
@@ -26,9 +26,9 @@ static const WindowCellRecord sResultCells[2][3] = {
 };
 
 static const WindowItemRecord sRetryItems[3] = {
-    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
-    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
-    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
 
 static const WindowCellRecord sRetryCells[3] = {

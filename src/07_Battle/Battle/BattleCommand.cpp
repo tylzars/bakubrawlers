@@ -30,8 +30,8 @@ struct BattleScrollBounds {
 };
 
 static const WindowItemRecord sCockpitItems[2] = {
-    {0, 0x5, 169, 170, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, 0x5, 169, 170, 52, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 #include "System/SoundManager.hpp"
@@ -43,16 +43,16 @@ static const BattleCommandPoint sCornerScreenPoints[4] = {{0xc2, 0x86}, {0x1e, 0
 #include "System/InputManager.hpp"
 inline WindowItemRecord *CommandItems() {
     static WindowItemRecord sItems[10] = {
-        {0, 0x8000, 128, 96, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
-        {1, 0x1, 222, 34, 32, 32, 1027, {-1, -1, -1, -1}, 0, 1},
-        {2, 0x1, 222, 66, 32, 32, 1027, {-1, -1, -1, -1}, 0, 1},
-        {3, 0x8, 222, 98, 32, 32, 1027, {-1, -1, -1, -1}, 0, 1},
-        {4, 0x1, 222, 34, 32, 32, 1027, {-1, -1, -1, -1}, 0, 1},
-        {5, 0x800, 222, 66, 32, 32, 1027, {-1, -1, -1, -1}, 0, 1},
-        {6, 0x8, 0, 0, 28, 28, 0, {-1, -1, -1, -1}, 0, 1},
-        {7, 0x8, 0, 0, 28, 28, 0, {-1, -1, -1, -1}, 0, 1},
-        {8, 0x8, 0, 0, 28, 28, 0, {-1, -1, -1, -1}, 0, 1},
-        {9, 0x8, 0, 0, 28, 28, 0, {-1, -1, -1, -1}, 0, 1},
+        {0, WINDOW_ITEM_CURSOR_SKIP, 128, 96, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+        {1, 0x1, 222, 34, 32, 32, 1027, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+        {2, 0x1, 222, 66, 32, 32, 1027, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+        {3, WINDOW_ITEM_NO_SLIDE_OUT, 222, 98, 32, 32, 1027, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+        {4, 0x1, 222, 34, 32, 32, 1027, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+        {5, WINDOW_ITEM_NO_RESULT, 222, 66, 32, 32, 1027, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+        {6, WINDOW_ITEM_NO_SLIDE_OUT, 0, 0, 28, 28, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+        {7, WINDOW_ITEM_NO_SLIDE_OUT, 0, 0, 28, 28, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+        {8, WINDOW_ITEM_NO_SLIDE_OUT, 0, 0, 28, 28, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+        {9, WINDOW_ITEM_NO_SLIDE_OUT, 0, 0, 28, 28, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
     };
     return sItems;
 }
@@ -84,9 +84,9 @@ static const WindowCellRecord sCommandCells[10] = {
 };
 
 static const WindowItemRecord sPromptItems[3] = {
-    {0, 0x8, 32, 4, 32, 32, 0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8, 64, 4, 32, 32, 0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8, 96, 4, 32, 32, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, WINDOW_ITEM_NO_SLIDE_OUT, 32, 4, 32, 32, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_NO_SLIDE_OUT, 64, 4, 32, 32, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {2, WINDOW_ITEM_NO_SLIDE_OUT, 96, 4, 32, 32, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 static const u16 sMarkerOam[6] = {0xa000, 0x8000, 0, 0, 0, 0};
@@ -196,32 +196,32 @@ BattleCommand::BattleCommand(u32 unk)
         i++;
     } while (i < data_020d433c.mPlayerCount);
     if (data_020d433c.mBattlePlayers->mTurnPlayer != data_020d433c.mBattlePlayers->mUnk_2a9) {
-        CommandItems()[1].mUnk_04 = 0x8000;
-        CommandItems()[4].mUnk_04 = 0x8000;
-        CommandItems()[2].mUnk_04 = 0x8000;
-        CommandItems()[5].mUnk_04 = 0x8000;
+        CommandItems()[1].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
+        CommandItems()[4].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
+        CommandItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
+        CommandItems()[5].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
     } else {
         if (data_020d433c.mBattlePlayers->mUnk_292 == 1) {
             CommandItems()[1].mY      = 0xc0;
-            CommandItems()[1].mUnk_04 = 0x8000;
+            CommandItems()[1].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
             CommandItems()[4].mY      = 0x22;
             CommandItems()[4].mUnk_04 = 1;
         } else {
             CommandItems()[1].mY      = 0x22;
             CommandItems()[1].mUnk_04 = 1;
             CommandItems()[4].mY      = 0xc0;
-            CommandItems()[4].mUnk_04 = 0x8000;
+            CommandItems()[4].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
         }
         if (data_020d433c.mBattlePlayers->mAddMarkerEnabled != 0) {
             CommandItems()[2].mUnk_04 = 1;
         } else {
-            CommandItems()[2].mUnk_04 = 0x8000;
-            CommandItems()[5].mUnk_04 = 0x800;
+            CommandItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
+            CommandItems()[5].mUnk_04 = WINDOW_ITEM_NO_RESULT;
         }
     }
     if (data_020d433c.mUnk_9a_3) {
-        CommandItems()[2].mUnk_04 = 0x8000;
-        CommandItems()[5].mUnk_04 = 0x8000;
+        CommandItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
+        CommandItems()[5].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
     }
     u8 x = sCommandItemX[gSaveData[0].mUnk_28_5];
     i = 1;
@@ -1084,12 +1084,12 @@ void BattleCommand::Update() {
             SpriteManager::Get().sFade[0] = FADE_MODE_DOWN;
             data_020d433c.mBattlePlayers->mAddMarkerEnabled = 0;
             WindowItem *items = mCommandWindow->mCursor->mItems;
-            items[2].mFlags   = 0x8000;
+            items[2].mFlags   = WINDOW_ITEM_CURSOR_SKIP;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
             if (list->mTurnPlayer != list->mUnk_2a9) {
-                items[5].mFlags = 0x8000;
+                items[5].mFlags = WINDOW_ITEM_CURSOR_SKIP;
             } else {
-                items[5].mFlags = 0x800;
+                items[5].mFlags = WINDOW_ITEM_NO_RESULT;
             }
             return;
         }

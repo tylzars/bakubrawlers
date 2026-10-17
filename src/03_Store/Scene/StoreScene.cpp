@@ -36,12 +36,12 @@ static const u8 sSelectedFrames[3]  = {4, 1, 7};
 static const u8 sSelectEventIds[3]  = {1, 2, 3};
 
 static const WindowItemRecord sMenuItems[6] = {
-    {0, 0x8000, 88, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8000, 186, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8000, 284, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
-    {4, 0x8, 0, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, 1},
-    {5, 0x8, 176, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, WINDOW_ITEM_CURSOR_SKIP, 88, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_CURSOR_SKIP, 186, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 284, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {3, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {4, WINDOW_ITEM_NO_SLIDE_OUT, 0, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {5, WINDOW_ITEM_NO_SLIDE_OUT, 176, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 static const WindowCellRecord sMenuCells[6] = {
@@ -478,7 +478,7 @@ void StoreScene::StartScroll() {
         } else if (info->mSelection == i) {
             mWindow->mCellAnims[i]->SetMode(CELL_ANIM_MODE_BACKWARD_ONCE);
         }
-        items[i].mFlags = 0x8000;
+        items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
     }
     if (info->mPage >= 2) {
         mWindow->mButtons[0].mEnabled = 0;
@@ -488,11 +488,11 @@ void StoreScene::StartScroll() {
     mWindow->mButtons[2].mEnabled = info->mPage >= 1 ? 1 : 0;
     if (info->mPage == 0) {
         mWindow->mButtons[4].mEnabled = 0;
-        items[4].mFlags             = 0x8000;
+        items[4].mFlags             = WINDOW_ITEM_CURSOR_SKIP;
     }
     if (info->mPage == 2) {
         mWindow->mButtons[5].mEnabled = 0;
-        items[5].mFlags             = 0x8000;
+        items[5].mFlags             = WINDOW_ITEM_CURSOR_SKIP;
     }
 }
 
@@ -552,19 +552,19 @@ BOOL StoreScene::ScrollStep() {
         CellAnimation *sel = mWindow->mCellAnims[(u8) info->mSelection];
         sel->mAnimIndex       = sIdleFrames[info->mSelection];
         sel->ResetAnimation();
-        items[info->mPage].mFlags      = 8;
-        items[info->mSelection].mFlags = 0x8000;
+        items[info->mPage].mFlags      = WINDOW_ITEM_NO_SLIDE_OUT;
+        items[info->mSelection].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         mWindow->mCursor->mSelection     = info->mPage;
         info->mSelection               = info->mPage;
         mEvent->SetMapExtraAnim(sSelectScriptIds[info->mSelection]);
         mEvent->func_0206f564(sSelectEventIds[info->mSelection], 10, -1);
         if (info->mSelection != 0) {
             mWindow->mButtons[4].mEnabled = 1;
-            items[4].mFlags             = 8;
+            items[4].mFlags             = WINDOW_ITEM_NO_SLIDE_OUT;
         }
         if (info->mSelection != 2) {
             mWindow->mButtons[5].mEnabled = 1;
-            items[5].mFlags             = 8;
+            items[5].mFlags             = WINDOW_ITEM_NO_SLIDE_OUT;
         }
         mWindow->mCellAnims[4]->Rewind();
         mWindow->mCellAnims[5]->Rewind();
@@ -596,30 +596,30 @@ void StoreScene::UpdateSlotLayout() {
             CellAnimation *cell = mWindow->mCellAnims[i];
             cell->mAnimIndex       = sSelectedFrames[i];
             cell->ResetAnimation();
-            items[i].mFlags = 8;
+            items[i].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
         } else {
             CellAnimation *cell = mWindow->mCellAnims[i];
             cell->mAnimIndex       = sIdleFrames[i];
             cell->ResetAnimation();
-            items[i].mFlags = 0x8000;
+            items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         }
         mWindow->mCellAnims[i]->ResetAnimation();
     }
     u32 flags;
     if (info->mSelection != 0) {
         mWindow->mButtons[4].mEnabled = 1;
-        flags                       = 8;
+        flags                       = WINDOW_ITEM_NO_SLIDE_OUT;
     } else {
         mWindow->mButtons[4].mEnabled = 0;
-        flags                       = 0x8000;
+        flags                       = WINDOW_ITEM_CURSOR_SKIP;
     }
     items[4].mFlags = flags;
     if (info->mSelection == 2) {
         mWindow->mButtons[5].mEnabled = 0;
-        flags                       = 0x8000;
+        flags                       = WINDOW_ITEM_CURSOR_SKIP;
     } else {
         mWindow->mButtons[5].mEnabled = 1;
-        flags                       = 8;
+        flags                       = WINDOW_ITEM_NO_SLIDE_OUT;
     }
     items[5].mFlags = flags;
     if (info->mPage >= 2) {

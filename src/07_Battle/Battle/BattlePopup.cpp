@@ -17,8 +17,8 @@ extern MtxFx22 gIdentityMtx22;
 extern "C" void MTX_ScaleRot22(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
 
 static const WindowItemRecord sTwoButtonItems[2] = {
-    {0, 0x1, 89, 136, 78, 20, 0, {-1, -1, -1, -1}, 0, 2},
-    {1, 0x8000, 120, 35, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+    {0, 0x1, 89, 136, 78, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, WINDOW_ITEM_CURSOR_SKIP, 120, 35, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
 
 static const WindowCellRecord sThreeButtonCells[3] = {
@@ -44,9 +44,9 @@ static const Vec2s sThreeButtonPos[3] = {
 };
 
 static const WindowItemRecord sThreeButtonItems[3] = {
-    {0, 0x1, 45, 136, 78, 20, 0, {-1, -1, 1, 1}, 0, 2},
-    {1, 0x1, 133, 136, 78, 20, 0, {-1, -1, 0, 0}, 0, 2},
-    {2, 0x8000, 120, 35, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+    {0, 0x1, 45, 136, 78, 20, 0, {-1, -1, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 0x1, 133, 136, 78, 20, 0, {-1, -1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 120, 35, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
 
 BattlePopup::BattlePopup(u8 planes)

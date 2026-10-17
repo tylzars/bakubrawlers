@@ -57,15 +57,15 @@ const TipsEntry sMyroomTipsEntries[6][10] = {
 };
 
 const WindowItemRecord sMyroomTipsWindowBItems[5] = {
-    {0, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x10, 228, 48, 32, 12, 0x0, {-1, -1, -1, -1}, 0, 0},
-    {2, 0x20, 228, 28, 32, 20, 0x0, {-1, -1, -1, -1}, 0, 3},
-    {3, 0x40, 228, 144, 32, 20, 0x0, {-1, -1, -1, -1}, 0, 3},
-    {4, 0x8000, 238, 36, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
+    {0, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_SCROLL_DRAG, 228, 48, 32, 12, 0x0, {-1, -1, -1, -1}, 0, 0},
+    {2, WINDOW_ITEM_SCROLL_PREV, 228, 28, 32, 20, 0x0, {-1, -1, -1, -1}, 0, 3},
+    {3, WINDOW_ITEM_SCROLL_NEXT, 228, 144, 32, 20, 0x0, {-1, -1, -1, -1}, 0, 3},
+    {4, WINDOW_ITEM_CURSOR_SKIP, 238, 36, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
 };
 
 const WindowItemRecord sMyroomTipsWindowAItems[1] = {
-    {0, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {0, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 const u8 sMyroomTipsCategoryFirstBits[6] = {0x00, 0x10, 0x15, 0x1b, 0x0a, 0x21};

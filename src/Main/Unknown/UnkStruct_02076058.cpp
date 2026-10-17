@@ -7,7 +7,7 @@ static const u8 sResultCellPositions[12][2] = {
     {0x78, 0x33}, {0x78, 0x5b}, {0x78, 0x83}, {0x74, 0x35}, {0x74, 0x5d}, {0x74, 0x85},
 };
 static const WindowItemRecord sResultCockpitItems[1] = {
-    {0, 0x5, 201, 170, 52, 20, 1, {-1, -1, -1, -1}, 0, 1},
+    {0, 0x5, 201, 170, 52, 20, 1, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 static const WindowCellRecord sResultCockpitCells[1] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xa000, 2, 0, 0, {0, 1, 1, 0}},

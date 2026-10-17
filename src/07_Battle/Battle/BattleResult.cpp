@@ -33,9 +33,9 @@ static const WindowCellRecord sResultCells[3] = {
     {"/Game/Battle/Obj/retry_b_obj_00_nce.bin", 6, 0, 0, 0, 1, {6, 8, 7, 0}},
 };
 static const WindowItemRecord sRetryItems[3] = {
-    {0, 1, 45, 152, 78, 20, {0}, {0, 0, 1, 1}, 0, 2},
-    {1, 1, 133, 152, 78, 20, {0}, {1, 1, 0, 0}, 0, 2},
-    {2, 0x8000, 120, 18, 78, 20, {0}, {-1, -1, -1, -1}, 0, 0},
+    {0, 1, 45, 152, 78, 20, {0}, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 1, 133, 152, 78, 20, {0}, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, {0}, {-1, -1, -1, -1}, 0, 0},
 };
 static const u8 sRewardRates[3][3] = {{10, 5, 2}, {30, 15, 6}, {10, 5, 2}};
 static const WindowCellRecord sRetryCells[3] = {
@@ -45,9 +45,9 @@ static const WindowCellRecord sRetryCells[3] = {
 };
 static const u8 sAnimPos[17][2] = {{170, 74}, {170, 90}, {110, 26}, {110, 42}, {110, 58}, {170, 26}, {170, 42}, {170, 58}, {0, 8}, {0, 24}, {0, 72}, {0, 104}, {0, 120}, {0, 136}, {0, 166}, {8, 40}, {16, 56}};
 static const WindowItemRecord sResultItems[3] = {
-    {0, 1, 48, 58, 160, 20, {0}, {2, 1, -1, -1}, 0, 2},
-    {1, 1, 48, 86, 160, 20, {0}, {0, 2, -1, -1}, 0, 2},
-    {2, 1, 48, 114, 160, 20, {0}, {1, 0, -1, -1}, 0, 2},
+    {0, 1, 48, 58, 160, 20, {0}, {2, 1, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 1, 48, 86, 160, 20, {0}, {0, 2, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, 1, 48, 114, 160, 20, {0}, {1, 0, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
 };
 static const u16 sPrizeTable[2][6][9] = {
     {

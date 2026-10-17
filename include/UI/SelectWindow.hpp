@@ -27,6 +27,40 @@ struct WindowCellRecord {
     /* 1c */
 };
 
+// Bits of WindowItem::mFlags (WindowItemRecord::mUnk_04 in the tables), named from the SelectWindowCursor and
+// SelectWindow code that tests them. When an item is chosen (key mask 1, the key-mask searches below, or a touch
+// release), UpdateInput gives event 1 for bit 1, else 2 for bit 2, else 6 for WINDOW_ITEM_NO_RESULT, else 3.
+// Left as literals: bits 1 and 2 (events 1 / 2 differ only in the sound, seq 0 / 1, and in mResult 1 / 2, whose
+// meaning is each caller's); bit 4, the item key mask 1 chooses wherever the cursor is; bit 2 and then 0x100, the
+// items key mask 2 chooses; 0x200 and 0x400, the items key masks 0x200 and 0x100 choose (those key masks are literals
+// too); and the composites holding them (5, 0x208, 0x408, 0x804).
+// After its result animation SelectWindow::Update goes to state 5 (mSelection = mSavedSelection, which the event-3
+// choose records as the selection before it; then state 1) instead of state 3 (UpdateSlideOut). Only SelectWindow
+// tests it: on a SelectWindowCursor used without a SelectWindow (in ListScene and CharacterEditScene) nothing reads it.
+#define WINDOW_ITEM_NO_SLIDE_OUT 0x8
+// SetupScroll makes the first such item mScrollItem; with mScrollMax != 0 a touch press inside its x range over the
+// scroll area sets mDragging, and until the release the touch y sets mScroll.
+#define WINDOW_ITEM_SCROLL_DRAG 0x10
+#define WINDOW_ITEM_SCROLL_PREV 0x20 // a touch on it (with mScrollMax != 0) does mScroll-- while mScroll != 0
+#define WINDOW_ITEM_SCROLL_NEXT 0x40 // a touch on it (with mScrollMax != 0) does mScroll++ while mScroll < mScrollMax
+// Choosing it gives event 6 (SelectWindowCursor::Update with a non-zero argument also plays seq 2 and sets
+// mSelection = -1), for which SelectWindow::Update sets no result; a touch on it gives event 7 instead of 4 / 5.
+#define WINDOW_ITEM_NO_RESULT 0x800
+// Key moves step past it to its neighbour in the same direction (or stay put); touch press, release and hold
+// ignore it.
+#define WINDOW_ITEM_CURSOR_SKIP 0x8000
+
+// Values of WindowItem::mUnk_18 (the tables' last column). Any non-zero value lets the keys choose the item
+// (UpdateInput tests mUnk_18 != 0 first). Left as literals: 0 (neither the keys nor a touch release choose it; only
+// key mask 2's search for bit 2 skips the test) and 3 (a touch release never chooses it; SelectWindow::Update's
+// event-5 case sets its mUnk_0a animation when a held touch moves onto it). CreateCommandListWindow and
+// CreateCommandPageWindow rewrite the column at run time.
+// A touch released inside the item it was pressed on chooses it (a held touch that leaves the item clears
+// mPressedItem, so the release then chooses nothing).
+#define WINDOW_TOUCH_RELEASE 1
+// The same, but only when the item was mSelection as the press began (mPressedOnSelection).
+#define WINDOW_TOUCH_RELEASE_IF_SELECTED 2
+
 // Placement of a selectable element and its neighbors for cursor movement (-1: none).
 struct WindowItemRecord {
     /* 00 */ u32 mId;
@@ -117,7 +151,7 @@ public:
     /* 062 */ u8 mSlideStep; // step of UpdateSlideIn (state 0) and of UpdateSlideOut (state 3)
     /* 063 */ s8 mSavedSelection;
     /* 064 */ u8 mEnabled; // Update does nothing while 0; Draw does not test it
-    /* 065 */ u8 mInputLocked; // set by results 1 and 2, cleared in state 4; an item with flag 8 returns to state 1 through state 5 with it still set
+    /* 065 */ u8 mInputLocked; // set by results 1 and 2, cleared in state 4; an item with WINDOW_ITEM_NO_SLIDE_OUT returns to state 1 through state 5 with it still set
     /* 066 */ u8 mSlideInRequested; // set by SetItems / Reset; cleared when the slide-out ends (state 3, and by BattleCommand); state 4 waits for it
     /* 067 */ PAD(0x067, 0x068);
     /* 068 */ u8 mSlideToTarget[22]; // per cell id: 1 = moves to (mSlideTargetX, mSlideTargetY) (SlideCellTo)

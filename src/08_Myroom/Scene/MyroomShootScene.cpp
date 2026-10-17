@@ -48,16 +48,16 @@ static WindowCellRecord sMyroomShootShooterCells[6] = {
 };
 static const u8 sMyroomShootTextDimensions[2][2] = {{0x10, 0x12}, {0x40, 0x02}};
 static const WindowItemRecord sMyroomShootWindowItems[10] = {
-    {0, 0x8, 40, 40, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8, 104, 40, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8, 168, 40, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x8, 40, 104, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
-    {4, 0x8, 104, 104, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
-    {5, 0x8, 168, 104, 48, 48, 0, {-1, -1, -1, -1}, 0, 1},
-    {6, 0x8000, 40, 40, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
-    {7, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
-    {8, 0x208, 192, 20, 32, 16, 0, {-1, -1, -1, -1}, 0, 1},
-    {9, 0x408, 224, 20, 32, 16, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, WINDOW_ITEM_NO_SLIDE_OUT, 40, 40, 48, 48, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_NO_SLIDE_OUT, 104, 40, 48, 48, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {2, WINDOW_ITEM_NO_SLIDE_OUT, 168, 40, 48, 48, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {3, WINDOW_ITEM_NO_SLIDE_OUT, 40, 104, 48, 48, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {4, WINDOW_ITEM_NO_SLIDE_OUT, 104, 104, 48, 48, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {5, WINDOW_ITEM_NO_SLIDE_OUT, 168, 104, 48, 48, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {6, WINDOW_ITEM_CURSOR_SKIP, 40, 40, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+    {7, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {8, 0x208, 192, 20, 32, 16, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {9, 0x408, 224, 20, 32, 16, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 #include "System/InputManager.hpp"
@@ -581,7 +581,7 @@ void MyroomShootScene::func_ov008_02223264() {
     } else {
         if (mWindow->mCellAnims[8]->mAnimIndex != 2) {
             mWindow->mCellAnims[8]->SetAnimation(2);
-            items[8].mFlags = 0x8000;
+            items[8].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         }
     }
     if (mTextEndY > 0x80) {
@@ -592,7 +592,7 @@ void MyroomShootScene::func_ov008_02223264() {
     } else {
         if (mWindow->mCellAnims[9]->mAnimIndex != 5) {
             mWindow->mCellAnims[9]->SetAnimation(5);
-            items[9].mFlags = 0x8000;
+            items[9].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         }
     }
     Vec2s pos = {sMyroomShootGridPos[mRow][mCol].x, sMyroomShootGridPos[mRow][mCol].y};

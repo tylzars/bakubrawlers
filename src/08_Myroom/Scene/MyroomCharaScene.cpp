@@ -56,13 +56,13 @@ const WindowCellRecord sMyroomCharaPageCells[2] = {
 
 // Room for 22 items; the window uses the first 7.
 const WindowItemRecord sMyroomCharaWindowItems[22] = {
-    {0, 0x8, 40, 44, 176, 20, 0x0, {3, 1, 0, 0}, 0, 0},
-    {1, 0x8, 40, 72, 176, 20, 0x0, {0, 2, 1, 1}, 0, 0},
-    {2, 0x8, 40, 100, 176, 20, 0x0, {1, 3, 2, 2}, 0, 0},
-    {3, 0x8, 40, 128, 176, 20, 0x0, {2, 0, 3, 3}, 0, 0},
-    {4, 0x208, 192, 26, 32, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {5, 0x408, 224, 26, 32, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {6, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
+    {0, WINDOW_ITEM_NO_SLIDE_OUT, 40, 44, 176, 20, 0x0, {3, 1, 0, 0}, 0, 0},
+    {1, WINDOW_ITEM_NO_SLIDE_OUT, 40, 72, 176, 20, 0x0, {0, 2, 1, 1}, 0, 0},
+    {2, WINDOW_ITEM_NO_SLIDE_OUT, 40, 100, 176, 20, 0x0, {1, 3, 2, 2}, 0, 0},
+    {3, WINDOW_ITEM_NO_SLIDE_OUT, 40, 128, 176, 20, 0x0, {2, 0, 3, 3}, 0, 0},
+    {4, 0x208, 192, 26, 32, 16, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {5, 0x408, 224, 26, 32, 16, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {6, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 // Included after the tables: where TextManager::Get() is first parsed decides the order of the file's data.
@@ -715,8 +715,8 @@ void MyroomCharaScene::RefreshPageButtons() {
             mWindow->mCellAnims[5]->SetAnimation(5);
             mWindow->mButtons[4].mEnabled = 0;
             mWindow->mButtons[5].mEnabled = 0;
-            items[4].mFlags               = 0x8000;
-            items[5].mFlags               = 0x8000;
+            items[4].mFlags               = WINDOW_ITEM_CURSOR_SKIP;
+            items[5].mFlags               = WINDOW_ITEM_CURSOR_SKIP;
             return;
         }
         if (mPage != 0) {
@@ -726,7 +726,7 @@ void MyroomCharaScene::RefreshPageButtons() {
         } else {
             mWindow->mCellAnims[4]->SetAnimation(2);
             mWindow->mButtons[4].mEnabled = 0;
-            items[4].mFlags               = 0x8000;
+            items[4].mFlags               = WINDOW_ITEM_CURSOR_SKIP;
         }
         if (mPage < mPageCount - 1) {
             mWindow->mCellAnims[5]->SetAnimation(3);
@@ -735,14 +735,14 @@ void MyroomCharaScene::RefreshPageButtons() {
         } else {
             mWindow->mCellAnims[5]->SetAnimation(5);
             mWindow->mButtons[5].mEnabled = 0;
-            items[5].mFlags               = 0x8000;
+            items[5].mFlags               = WINDOW_ITEM_CURSOR_SKIP;
         }
     } else {
         mWindow->mCellAnims[4]->SetAnimation(2);
         mWindow->mCellAnims[5]->SetAnimation(5);
         mWindow->mButtons[4].mEnabled = 0;
         mWindow->mButtons[5].mEnabled = 0;
-        items[4].mFlags               = 0x8000;
-        items[5].mFlags               = 0x8000;
+        items[4].mFlags               = WINDOW_ITEM_CURSOR_SKIP;
+        items[5].mFlags               = WINDOW_ITEM_CURSOR_SKIP;
     }
 }

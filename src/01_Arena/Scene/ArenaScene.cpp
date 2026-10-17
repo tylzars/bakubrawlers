@@ -44,18 +44,18 @@ extern UnkStruct_020c4230 data_020c4230;
 
 static const WindowItemRecord sArenaMenuItems[2][2] = {
     {
-        {0, 5, 169, 170, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
-        {1, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+        {0, 5, 169, 170, 52, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+        {1, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
     },
     {
-        {0, 5, 169, 200, 0, 0, 0, {-1, -1, -1, -1}, 0, 1},
-        {1, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+        {0, 5, 169, 200, 0, 0, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+        {1, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
     },
 };
-// Record 1 (flag 0x8000) is skipped by the cursor and by touch: one item is selectable.
+// Record 1 (WINDOW_ITEM_CURSOR_SKIP) is skipped by the cursor and by touch: one item is selectable.
 static const WindowItemRecord sArenaTwoButtonItems[2] = {
-    {0, 1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, 1},
-    {1, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+    {0, 1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
 static const WindowCellRecord sArenaThreeButtonCells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0xc000, 7, 0, 1, {3, 5, 4, 0}},
@@ -66,19 +66,19 @@ static const WindowCellRecord sArenaMenuCells[2] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xb000, 6, 2, 1, {0, 1, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 6, 2, 1, {2, 3, 3, 0}},
 };
-// Record 2 (flag 0x8000) is skipped by the cursor and by touch: two items are selectable.
+// Record 2 (WINDOW_ITEM_CURSOR_SKIP) is skipped by the cursor and by touch: two items are selectable.
 static const WindowItemRecord sArenaThreeButtonItems[3] = {
-    {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
-    {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
-    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+    {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
 static const WindowCellRecord sArenaTwoButtonCells[2] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0xc000, 7, 0, 1, {0, 2, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0xc000, 7, 0, 1, {9, 9, 9, 0}},
 };
 static const WindowItemRecord sArenaSlotItems[2] = {
-    {0, 1, 32, 48, 192, 40, 0, {1, 1, 0, 0}, 0, 2},
-    {1, 1, 32, 96, 192, 40, 0, {0, 0, 1, 1}, 0, 2},
+    {0, 1, 32, 48, 192, 40, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 1, 32, 96, 192, 40, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
 };
 
 ArenaScene::ArenaScene() : SceneBase(1000, 0) {

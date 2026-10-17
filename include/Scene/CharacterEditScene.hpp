@@ -93,9 +93,9 @@ public:
     /* 1ac */ s8 mFixedItem; // item index that does not slide in (SetupSlideIn), -1 = none
     /* 1ad */ PAD(0x1ad, 0x1b0);
     /* 1b0 */ u32 mStoreLookPromptRequested;
-    // Ctor argument: 1 from MyroomScene, 0 from TitleScene. 1 sets flags 0x8000 on item 4 of the five-item menus
-    // (mState 1 / 3) and moves the root entries' states and texts up by one, keeps lists 0-2 in RandomizeLook, skips
-    // StoreLook on the direct exit and asks first when mChoiceApplied is set.
+    // Ctor argument: 1 from MyroomScene, 0 from TitleScene. 1 sets WINDOW_ITEM_CURSOR_SKIP on item 4 of the five-item
+    // menus (mState 1 / 3) and moves the root entries' states and texts up by one, keeps lists 0-2 in RandomizeLook,
+    // skips StoreLook on the direct exit and asks first when mChoiceApplied is set.
     /* 1b4 */ u8 mFromMyroom;
     /* 1b5 */ PAD(0x1b5, 0x1b8);
     /* 1b8 */ u32 mChoiceApplied;

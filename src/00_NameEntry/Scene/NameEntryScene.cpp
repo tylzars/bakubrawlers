@@ -10,13 +10,13 @@ static const u8 sSpecialNameCodes[6][12] = {
     {0x48, 0x47, 0x48, 0x42, 0x48, 0x49, 0x48, 0x41, 0x42, 0x41, 0x41, 0x40},
 };
 static const WindowItemRecord sNameEntryKeyboardItems[7] = {
-    {0, 16, 230, 76, 28, 12, 0, {-1, -1, -1, -1}, 0, 0},
-    {1, 32, 230, 56, 32, 16, 0, {-1, -1, -1, -1}, 0, 3},
-    {2, 64, 230, 132, 32, 16, 0, {-1, -1, -1, -1}, 0, 3},
-    {3, 32768, 239, 72, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
-    {4, 8, 32, 160, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
-    {5, 8, 80, 160, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
-    {6, 8, 176, 160, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, WINDOW_ITEM_SCROLL_DRAG, 230, 76, 28, 12, 0, {-1, -1, -1, -1}, 0, 0},
+    {1, WINDOW_ITEM_SCROLL_PREV, 230, 56, 32, 16, 0, {-1, -1, -1, -1}, 0, 3},
+    {2, WINDOW_ITEM_SCROLL_NEXT, 230, 132, 32, 16, 0, {-1, -1, -1, -1}, 0, 3},
+    {3, WINDOW_ITEM_CURSOR_SKIP, 239, 72, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+    {4, WINDOW_ITEM_NO_SLIDE_OUT, 32, 160, 52, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {5, WINDOW_ITEM_NO_SLIDE_OUT, 80, 160, 52, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {6, WINDOW_ITEM_NO_SLIDE_OUT, 176, 160, 52, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 static const WindowCellRecord sNameEntryKeyboardCells[7] = {
     {"/Game/2D/union_b/union_b_obj_scroll_nce.bin", 4, 0x2000, 13, 2, 1, {4, 4, 4, 0}},
@@ -28,8 +28,8 @@ static const WindowCellRecord sNameEntryKeyboardCells[7] = {
     {"/Game/NameEntry/keyboard_b_obj_00_nce.bin", 4, 0x0, 10, 2, 1, {4, 5, 4, 0}},
 };
 static const WindowItemRecord sNameEntryConfirmItems[2] = {
-    {0, 32768, 120, 35, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
-    {1, 8, 89, 136, 78, 20, 0, {1, 1, 1, 1}, 0, 2},
+    {0, WINDOW_ITEM_CURSOR_SKIP, 120, 35, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+    {1, WINDOW_ITEM_NO_SLIDE_OUT, 89, 136, 78, 20, 0, {1, 1, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
 };
 static const WindowCellRecord sNameEntryConfirmCells[2] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0x10000, 0, 0, 1, {9, 9, 9, 0}},
@@ -215,7 +215,7 @@ void NameEntryScene::LoadGraphics() {
     mKeyboard->mCursor->SetupScroll(0x4c, 0x84, 4, 0xc);
     if (mMode != 0) {
         mKeyboard->mButtons[6].mEnabled = 0;
-        mKeyboard->mCursor->mItems[6].mFlags = 0x8000;
+        mKeyboard->mCursor->mItems[6].mFlags = WINDOW_ITEM_CURSOR_SKIP;
     }
     SpriteScreen &screen3 = SpriteManager::Get().Screen(1);
     screen3.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x10000, 0);
@@ -487,7 +487,7 @@ void NameEntryScene::Update() {
                 mKeyboard->mEnabled = 1;
                 mConfirm->mEnabled = 0;
                 mKeyboard->mButtons[6].mEnabled = 0;
-                mKeyboard->mCursor->mItems[6].mFlags = 0x8000;
+                mKeyboard->mCursor->mItems[6].mFlags = WINDOW_ITEM_CURSOR_SKIP;
                 if (mCursorArea == 3) {
                     mCursorArea = 2;
                 }
@@ -599,7 +599,7 @@ void NameEntryScene::Backspace() {
     RenderName();
     if (mLength == 0) {
         mKeyboard->mButtons[6].mEnabled = 0;
-        mKeyboard->mCursor->mItems[6].mFlags = 0x8000;
+        mKeyboard->mCursor->mItems[6].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         if (mCursorArea == 3) {
             mCursorArea = 2;
         }
@@ -636,7 +636,7 @@ void NameEntryScene::AddChar(s32 index) {
     RenderName();
     SoundManager::Get().StartSeqArc(0);
     mKeyboard->mButtons[6].mEnabled = 1;
-    mKeyboard->mCursor->mItems[6].mFlags = 8;
+    mKeyboard->mCursor->mItems[6].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
     mCellAnims[0]->Rewind();
     if (mLength >= mMaxLength) {
         mCellAnims[2]->SetAnimation(9);
@@ -674,7 +674,7 @@ void NameEntryScene::Load() {
         } else {
             mLength = 0;
             mKeyboard->mButtons[6].mEnabled = 0;
-            mKeyboard->mCursor->mItems[6].mFlags = 0x8000;
+            mKeyboard->mCursor->mItems[6].mFlags = WINDOW_ITEM_CURSOR_SKIP;
             if (mCursorArea == 3) {
                 mCursorArea = 2;
             }

@@ -15,7 +15,7 @@
 static const u8 sEmblemFiles[12] = {3, 3, 3, 4, 3, 3, 3, 0, 1, 2, 5, 0};
 
 static const WindowItemRecord sOkItems[1] = {
-    {0, 5, 201, 170, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, 5, 201, 170, 52, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 static const WindowCellRecord sOkCells[1] = {

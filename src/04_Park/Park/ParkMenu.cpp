@@ -16,13 +16,13 @@
 static const u32 sTextVramOffsets[2] = {0xc000, 0x12000};
 
 static const WindowItemRecord sItems[7] = {
-    {0, 0x8000, 88, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8000, 186, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8000, 284, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x8000, 382, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
-    {4, 0x8000, 0, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, 1},
-    {5, 0x8000, 176, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, 1},
-    {6, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, WINDOW_ITEM_CURSOR_SKIP, 88, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_CURSOR_SKIP, 186, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 284, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {3, WINDOW_ITEM_CURSOR_SKIP, 382, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {4, WINDOW_ITEM_CURSOR_SKIP, 0, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {5, WINDOW_ITEM_CURSOR_SKIP, 176, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {6, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 struct ParkDigits {
@@ -200,16 +200,16 @@ u32 ParkMenu::UpdateSelection(u32 mode) {
                 mCellAnims[k]->mFrameIndex = mCellAnims[k]->mFrames[mCellAnims[k]->mAnimIndex].mFrameCount;
                 mCellAnims[k]->SetMode(CELL_ANIM_MODE_BACKWARD_ONCE);
             }
-            items[k].mFlags = 0x8000;
+            items[k].mFlags = WINDOW_ITEM_CURSOR_SKIP;
             k++;
         } while (k <= mCount);
         if (mTarget == 0) {
             mWindow->mButtons[4].mEnabled = 0;
-            items[4].mFlags               = 0x8000;
+            items[4].mFlags               = WINDOW_ITEM_CURSOR_SKIP;
         }
         if (mTarget == mCount - 1) {
             mWindow->mButtons[5].mEnabled = 0;
-            items[5].mFlags               = 0x8000;
+            items[5].mFlags               = WINDOW_ITEM_CURSOR_SKIP;
         }
         mTimer = 0x62;
     }
@@ -257,7 +257,7 @@ void ParkMenu::Setup() {
         } else {
             CellAnimation *c = mWindow->mCellAnims[i];
             c->SetAnimation(0);
-            items[i].mFlags = 0x8000;
+            items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
             c               = mCellAnims[i];
             c->SetAnimation(0);
         }
@@ -268,17 +268,17 @@ void ParkMenu::Setup() {
     } while (i < mCount);
     if (mCurrent == 0) {
         mWindow->mButtons[4].mEnabled = 0;
-        items[4].mFlags               = 0x8000;
+        items[4].mFlags               = WINDOW_ITEM_CURSOR_SKIP;
     } else {
         mWindow->mButtons[4].mEnabled = 1;
-        items[4].mFlags               = 8;
+        items[4].mFlags               = WINDOW_ITEM_NO_SLIDE_OUT;
     }
     if (mCurrent == mCount - 1) {
         mWindow->mButtons[5].mEnabled = 0;
-        items[5].mFlags               = 0x8000;
+        items[5].mFlags               = WINDOW_ITEM_CURSOR_SKIP;
     } else {
         mWindow->mButtons[5].mEnabled = 1;
-        items[5].mFlags               = 8;
+        items[5].mFlags               = WINDOW_ITEM_NO_SLIDE_OUT;
     }
     mWindow->mCursor->mSelection = mCurrent;
     DrawText();
@@ -311,23 +311,23 @@ BOOL ParkMenu::Slide() {
         CellAnimation *cell = mWindow->mCellAnims[mCurrent];
         cell->SetAnimation(0);
         items[mTarget].mFlags  = 5;
-        items[mCurrent].mFlags = 0x8000;
+        items[mCurrent].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         mWindow->mCursor->mSelection = mTarget;
         mCurrent = mTarget;
         GetParkEntry(mCurrent, mUnk_0c);
         if (mCurrent == 0) {
             mWindow->mButtons[4].mEnabled = 0;
-            items[4].mFlags               = 0x8000;
+            items[4].mFlags               = WINDOW_ITEM_CURSOR_SKIP;
         } else {
             mWindow->mButtons[4].mEnabled = 1;
-            items[4].mFlags               = 8;
+            items[4].mFlags               = WINDOW_ITEM_NO_SLIDE_OUT;
         }
         if (mTarget == mCount - 1) {
             mWindow->mButtons[5].mEnabled = 0;
-            items[5].mFlags               = 0x8000;
+            items[5].mFlags               = WINDOW_ITEM_CURSOR_SKIP;
         } else {
             mWindow->mButtons[5].mEnabled = 1;
-            items[5].mFlags               = 8;
+            items[5].mFlags               = WINDOW_ITEM_NO_SLIDE_OUT;
         }
         mWindow->mCellAnims[5]->Rewind();
         mWindow->mCellAnims[4]->Rewind();

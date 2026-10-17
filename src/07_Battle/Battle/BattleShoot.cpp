@@ -683,7 +683,7 @@ static const WindowCellRecord sShootCells[1] = {
 };
 
 static const WindowItemRecord sShootItems[22] = { // only the first entry is used
-    {0, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 void BattleShoot::Setup() {

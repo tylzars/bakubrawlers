@@ -85,8 +85,8 @@ public:
     BOOL IsSettingUp();
     void SetWindowVisible(u32 enable); // the gate also stops UpdateWindow; enabling does nothing while mWindow is NULL
     void UpdateWindow(); // a chosen item steps the page (CyclePage)
-    // Item 1 steps forward (enabled while mPage <= mLastTextPage), item 0 back; a disabled item gets flag 0x8000,
-    // which the cursor skips.
+    // Item 1 steps forward (enabled while mPage <= mLastTextPage), item 0 back; a disabled item gets
+    // WINDOW_ITEM_CURSOR_SKIP.
     void UpdateListItems();
     BOOL IsListItemEnabled(u32 right);
     void InitDisplayAndCamera();

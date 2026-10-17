@@ -22,19 +22,19 @@ const WindowCellRecord sMyroomRankingScrollCells[4] = {
 };
 
 const WindowItemRecord sMyroomRankingWindowItems[13] = {
-    {0, 0x8000, 120, 30, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
-    {1, 0x8, 16, 46, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8, 16, 66, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x8, 16, 86, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {4, 0x8, 16, 106, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {5, 0x8, 16, 126, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {6, 0x8, 16, 146, 208, 16, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {7, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, 1},
-    {8, 0x8000, 16, 36, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
-    {9, 0x10, 228, 63, 32, 12, 0x0, {-1, -1, -1, -1}, 0, 0},
-    {10, 0x20, 228, 44, 32, 20, 0x0, {-1, -1, -1, -1}, 0, 3},
-    {11, 0x40, 228, 144, 32, 20, 0x0, {-1, -1, -1, -1}, 0, 3},
-    {12, 0x8000, 238, 64, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
+    {0, WINDOW_ITEM_CURSOR_SKIP, 120, 30, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
+    {1, WINDOW_ITEM_NO_SLIDE_OUT, 16, 46, 208, 16, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {2, WINDOW_ITEM_NO_SLIDE_OUT, 16, 66, 208, 16, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {3, WINDOW_ITEM_NO_SLIDE_OUT, 16, 86, 208, 16, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {4, WINDOW_ITEM_NO_SLIDE_OUT, 16, 106, 208, 16, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {5, WINDOW_ITEM_NO_SLIDE_OUT, 16, 126, 208, 16, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {6, WINDOW_ITEM_NO_SLIDE_OUT, 16, 146, 208, 16, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {7, 0x2, 225, 170, 30, 20, 0x0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {8, WINDOW_ITEM_CURSOR_SKIP, 16, 36, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
+    {9, WINDOW_ITEM_SCROLL_DRAG, 228, 63, 32, 12, 0x0, {-1, -1, -1, -1}, 0, 0},
+    {10, WINDOW_ITEM_SCROLL_PREV, 228, 44, 32, 20, 0x0, {-1, -1, -1, -1}, 0, 3},
+    {11, WINDOW_ITEM_SCROLL_NEXT, 228, 144, 32, 20, 0x0, {-1, -1, -1, -1}, 0, 3},
+    {12, WINDOW_ITEM_CURSOR_SKIP, 238, 64, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
 };
 
 // Position (x, y) of each digit cell, per ranking row, as passed to DrawFrame.

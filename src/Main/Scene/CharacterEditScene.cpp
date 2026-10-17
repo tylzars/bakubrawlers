@@ -12,17 +12,17 @@
 #include <nitro/math.h>
 
 static const WindowItemRecord sEditMenuItems[22] = {
-    { 2, 0x1, 135, 26, 114, 24, {0x403}, {-1, -1, -1, -1}, 0, 1 },
-    { 9, 0x8, 8, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
-    { 10, 0x8, 100, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
-    { 11, 0x8, 40, 170, 56, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
-    { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
-    { 13, 0x8000, 128, 96, 0, 0, {0}, {-1, -1, -1, -1}, 0, 0 },
+    { 2, 0x1, 135, 26, 114, 24, {0x403}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 9, WINDOW_ITEM_NO_SLIDE_OUT, 8, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 10, WINDOW_ITEM_NO_SLIDE_OUT, 100, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 11, WINDOW_ITEM_NO_SLIDE_OUT, 40, 170, 56, 20, {0x201}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 13, WINDOW_ITEM_CURSOR_SKIP, 128, 96, 0, 0, {0}, {-1, -1, -1, -1}, 0, 0 },
 };
 
 static const WindowItemRecord sStoreLookPromptItems[22] = {
-    { 0, 0x1, 68, 56, 112, 32, {0x403}, {1, 1, 0, 0}, 0, 2 },
-    { 1, 0x1, 68, 104, 112, 32, {0x304}, {0, 0, 1, 1}, 0, 2 },
+    { 0, 0x1, 68, 56, 112, 32, {0x403}, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 1, 0x1, 68, 104, 112, 32, {0x304}, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
 };
 
 // Camera position and target (in whole units) of the four views.
@@ -36,14 +36,14 @@ static const s16 sCameraPositionTargets[4][6] = {
 static const u16 sCharacterEditLights[20] = {1, 0x7fff, 0xf666, 0xf5ec, 0xf829};
 
 static const WindowItemRecord sBottomShoesMenuItems[22] = {
-    { 2, 0x1, 135, 26, 114, 24, {0x403}, {2, 1, 0, 0}, 0, 2 },
-    { 3, 0x1, 140, 54, 114, 24, {0x403}, {0, 2, 1, 1}, 0, 2 },
-    { 4, 0x1, 140, 82, 114, 24, {0x403}, {1, 0, 2, 2}, 0, 2 },
-    { 9, 0x8, 8, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
-    { 10, 0x8, 100, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
-    { 11, 0x8, 40, 170, 56, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
-    { 8, 0x1, 134, 170, 88, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
-    { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+    { 2, 0x1, 135, 26, 114, 24, {0x403}, {2, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 3, 0x1, 140, 54, 114, 24, {0x403}, {0, 2, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 4, 0x1, 140, 82, 114, 24, {0x403}, {1, 0, 2, 2}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 9, WINDOW_ITEM_NO_SLIDE_OUT, 8, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 10, WINDOW_ITEM_NO_SLIDE_OUT, 100, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 11, WINDOW_ITEM_NO_SLIDE_OUT, 40, 170, 56, 20, {0x201}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 8, 0x1, 134, 170, 88, 20, {0x201}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
 };
 
 static const WindowCellRecord sWindow0Cells[13] = {
@@ -89,13 +89,13 @@ static const WindowCellRecord sWindow2Cells[3] = {
 };
 
 static const WindowItemRecord sGroupButtonItems[22] = {
-    { 0, 0x8000, 128, 96, 0, 0, {0}, {-1, -1, -1, -1}, 0, 0 },
-    { 1, 0x8, 56, 34, 24, 24, {0}, {-1, -1, -1, -1}, 0, 1 },
-    { 2, 0x8, 34, 63, 21, 47, {0}, {-1, -1, -1, -1}, 0, 1 },
-    { 3, 0x8, 81, 63, 21, 47, {0}, {-1, -1, -1, -1}, 0, 1 },
-    { 4, 0x8, 60, 63, 16, 38, {0}, {-1, -1, -1, -1}, 0, 1 },
-    { 5, 0x8, 49, 102, 17, 60, {0}, {-1, -1, -1, -1}, 0, 1 },
-    { 6, 0x8, 70, 102, 17, 60, {0}, {-1, -1, -1, -1}, 0, 1 },
+    { 0, WINDOW_ITEM_CURSOR_SKIP, 128, 96, 0, 0, {0}, {-1, -1, -1, -1}, 0, 0 },
+    { 1, WINDOW_ITEM_NO_SLIDE_OUT, 56, 34, 24, 24, {0}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 2, WINDOW_ITEM_NO_SLIDE_OUT, 34, 63, 21, 47, {0}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 3, WINDOW_ITEM_NO_SLIDE_OUT, 81, 63, 21, 47, {0}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 4, WINDOW_ITEM_NO_SLIDE_OUT, 60, 63, 16, 38, {0}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 5, WINDOW_ITEM_NO_SLIDE_OUT, 49, 102, 17, 60, {0}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 6, WINDOW_ITEM_NO_SLIDE_OUT, 70, 102, 17, 60, {0}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
 };
 
 static const Vec2s sCharacterEditCellPositions[16] = {
@@ -103,60 +103,60 @@ static const Vec2s sCharacterEditCellPositions[16] = {
 };
 
 static const WindowItemRecord sCharacterEditCursorItems[22] = {
-    { 0, 0x8, 145, 52, 30, 30, {0}, {14, 3, 2, 1}, 0, 1 },
-    { 1, 0x8, 177, 52, 30, 30, {0}, {16, 4, 0, 2}, 0, 1 },
-    { 2, 0x8, 209, 52, 30, 30, {0}, {18, 5, 1, 0}, 0, 1 },
-    { 3, 0x8, 145, 84, 30, 30, {0}, {0, 6, 5, 4}, 0, 1 },
-    { 4, 0x8, 177, 84, 30, 30, {0}, {1, 7, 3, 5}, 0, 1 },
-    { 5, 0x8, 209, 84, 30, 30, {0}, {2, 12, 4, 3}, 0, 1 },
-    { 6, 0x8, 145, 116, 30, 30, {0}, {3, 8, 7, 7}, 0, 1 },
-    { 7, 0x8, 177, 116, 30, 30, {0}, {4, 10, 6, 6}, 0, 1 },
-    { 8, 0x8, 146, 136, 12, 11, {0}, {6, 14, 13, 9}, 0, 1 },
-    { 9, 0x8, 161, 136, 12, 11, {0}, {6, 15, 8, 10}, 0, 1 },
-    { 10, 0x8, 176, 136, 12, 11, {0}, {7, 16, 9, 11}, 0, 1 },
-    { 11, 0x8, 191, 136, 12, 11, {0}, {7, 17, 10, 12}, 0, 1 },
-    { 12, 0x8, 206, 136, 12, 11, {0}, {5, 18, 11, 13}, 0, 1 },
-    { 13, 0x8, 221, 136, 12, 11, {0}, {5, 19, 12, 8}, 0, 1 },
-    { 14, 0x8, 146, 152, 12, 11, {0}, {8, 0, 19, 15}, 0, 1 },
-    { 15, 0x8, 161, 152, 12, 11, {0}, {9, 0, 14, 16}, 0, 1 },
-    { 16, 0x8, 176, 152, 12, 11, {0}, {10, 1, 15, 17}, 0, 1 },
-    { 17, 0x8, 191, 152, 12, 11, {0}, {11, 1, 16, 18}, 0, 1 },
-    { 18, 0x8, 206, 152, 12, 11, {0}, {12, 2, 17, 19}, 0, 1 },
-    { 19, 0x8, 221, 152, 12, 11, {0}, {13, 2, 18, 14}, 0, 1 },
+    { 0, WINDOW_ITEM_NO_SLIDE_OUT, 145, 52, 30, 30, {0}, {14, 3, 2, 1}, 0, WINDOW_TOUCH_RELEASE },
+    { 1, WINDOW_ITEM_NO_SLIDE_OUT, 177, 52, 30, 30, {0}, {16, 4, 0, 2}, 0, WINDOW_TOUCH_RELEASE },
+    { 2, WINDOW_ITEM_NO_SLIDE_OUT, 209, 52, 30, 30, {0}, {18, 5, 1, 0}, 0, WINDOW_TOUCH_RELEASE },
+    { 3, WINDOW_ITEM_NO_SLIDE_OUT, 145, 84, 30, 30, {0}, {0, 6, 5, 4}, 0, WINDOW_TOUCH_RELEASE },
+    { 4, WINDOW_ITEM_NO_SLIDE_OUT, 177, 84, 30, 30, {0}, {1, 7, 3, 5}, 0, WINDOW_TOUCH_RELEASE },
+    { 5, WINDOW_ITEM_NO_SLIDE_OUT, 209, 84, 30, 30, {0}, {2, 12, 4, 3}, 0, WINDOW_TOUCH_RELEASE },
+    { 6, WINDOW_ITEM_NO_SLIDE_OUT, 145, 116, 30, 30, {0}, {3, 8, 7, 7}, 0, WINDOW_TOUCH_RELEASE },
+    { 7, WINDOW_ITEM_NO_SLIDE_OUT, 177, 116, 30, 30, {0}, {4, 10, 6, 6}, 0, WINDOW_TOUCH_RELEASE },
+    { 8, WINDOW_ITEM_NO_SLIDE_OUT, 146, 136, 12, 11, {0}, {6, 14, 13, 9}, 0, WINDOW_TOUCH_RELEASE },
+    { 9, WINDOW_ITEM_NO_SLIDE_OUT, 161, 136, 12, 11, {0}, {6, 15, 8, 10}, 0, WINDOW_TOUCH_RELEASE },
+    { 10, WINDOW_ITEM_NO_SLIDE_OUT, 176, 136, 12, 11, {0}, {7, 16, 9, 11}, 0, WINDOW_TOUCH_RELEASE },
+    { 11, WINDOW_ITEM_NO_SLIDE_OUT, 191, 136, 12, 11, {0}, {7, 17, 10, 12}, 0, WINDOW_TOUCH_RELEASE },
+    { 12, WINDOW_ITEM_NO_SLIDE_OUT, 206, 136, 12, 11, {0}, {5, 18, 11, 13}, 0, WINDOW_TOUCH_RELEASE },
+    { 13, WINDOW_ITEM_NO_SLIDE_OUT, 221, 136, 12, 11, {0}, {5, 19, 12, 8}, 0, WINDOW_TOUCH_RELEASE },
+    { 14, WINDOW_ITEM_NO_SLIDE_OUT, 146, 152, 12, 11, {0}, {8, 0, 19, 15}, 0, WINDOW_TOUCH_RELEASE },
+    { 15, WINDOW_ITEM_NO_SLIDE_OUT, 161, 152, 12, 11, {0}, {9, 0, 14, 16}, 0, WINDOW_TOUCH_RELEASE },
+    { 16, WINDOW_ITEM_NO_SLIDE_OUT, 176, 152, 12, 11, {0}, {10, 1, 15, 17}, 0, WINDOW_TOUCH_RELEASE },
+    { 17, WINDOW_ITEM_NO_SLIDE_OUT, 191, 152, 12, 11, {0}, {11, 1, 16, 18}, 0, WINDOW_TOUCH_RELEASE },
+    { 18, WINDOW_ITEM_NO_SLIDE_OUT, 206, 152, 12, 11, {0}, {12, 2, 17, 19}, 0, WINDOW_TOUCH_RELEASE },
+    { 19, WINDOW_ITEM_NO_SLIDE_OUT, 221, 152, 12, 11, {0}, {13, 2, 18, 14}, 0, WINDOW_TOUCH_RELEASE },
 };
 
 static const WindowItemRecord sWindow2Items[22] = {
-    { 0, 0x1, 45, 152, 78, 20, {0}, {0, 0, 1, 1}, 0, 2 },
-    { 1, 0x2, 133, 152, 78, 20, {0}, {1, 1, 0, 0}, 0, 2 },
-    { 2, 0x8000, 120, 18, 0, 0, {0}, {-1, -1, -1, -1}, 0, 0 },
+    { 0, 0x1, 45, 152, 78, 20, {0}, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 1, 0x2, 133, 152, 78, 20, {0}, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 2, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 0, 0, {0}, {-1, -1, -1, -1}, 0, 0 },
 };
 
 static const WindowItemRecord sRootMenuItems[22] = {
-    { 7, 0x8, 135, 26, 114, 24, {0x403}, {4, 1, 0, 0}, 0, 2 },
-    { 3, 0x1, 135, 54, 114, 24, {0x403}, {0, 2, 1, 1}, 0, 2 },
-    { 4, 0x1, 135, 82, 114, 24, {0x403}, {1, 3, 2, 2}, 0, 2 },
-    { 5, 0x1, 135, 110, 114, 24, {0x403}, {2, 4, 3, 3}, 0, 2 },
-    { 6, 0x1, 135, 138, 114, 24, {0x403}, {3, 0, 4, 4}, 0, 2 },
-    { 9, 0x8, 8, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
-    { 10, 0x8, 100, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
-    { 11, 0x8, 40, 170, 56, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
-    { 8, 0x1, 134, 170, 88, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
-    { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+    { 7, WINDOW_ITEM_NO_SLIDE_OUT, 135, 26, 114, 24, {0x403}, {4, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 3, 0x1, 135, 54, 114, 24, {0x403}, {0, 2, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 4, 0x1, 135, 82, 114, 24, {0x403}, {1, 3, 2, 2}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 5, 0x1, 135, 110, 114, 24, {0x403}, {2, 4, 3, 3}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 6, 0x1, 135, 138, 114, 24, {0x403}, {3, 0, 4, 4}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 9, WINDOW_ITEM_NO_SLIDE_OUT, 8, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 10, WINDOW_ITEM_NO_SLIDE_OUT, 100, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 11, WINDOW_ITEM_NO_SLIDE_OUT, 40, 170, 56, 20, {0x201}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 8, 0x1, 134, 170, 88, 20, {0x201}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
 };
 
 static const u32 sCharacterEditTextVramOffsets[6] = {0, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000};
 
 static const WindowItemRecord sFaceHairCapGlassesMenuItems[22] = {
-    { 2, 0x1, 135, 26, 114, 24, {0x403}, {4, 1, 0, 0}, 0, 2 },
-    { 3, 0x1, 140, 54, 114, 24, {0x403}, {0, 2, 1, 1}, 0, 2 },
-    { 4, 0x1, 140, 82, 114, 24, {0x403}, {1, 3, 2, 2}, 0, 2 },
-    { 5, 0x1, 140, 110, 114, 24, {0x403}, {2, 4, 3, 3}, 0, 2 },
-    { 6, 0x1, 140, 138, 114, 24, {0x403}, {3, 0, 4, 4}, 0, 2 },
-    { 9, 0x8, 8, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
-    { 10, 0x8, 100, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
-    { 11, 0x8, 40, 170, 56, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
-    { 8, 0x1, 134, 170, 88, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
-    { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
+    { 2, 0x1, 135, 26, 114, 24, {0x403}, {4, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 3, 0x1, 140, 54, 114, 24, {0x403}, {0, 2, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 4, 0x1, 140, 82, 114, 24, {0x403}, {1, 3, 2, 2}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 5, 0x1, 140, 110, 114, 24, {0x403}, {2, 4, 3, 3}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 6, 0x1, 140, 138, 114, 24, {0x403}, {3, 0, 4, 4}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED },
+    { 9, WINDOW_ITEM_NO_SLIDE_OUT, 8, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 10, WINDOW_ITEM_NO_SLIDE_OUT, 100, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
+    { 11, WINDOW_ITEM_NO_SLIDE_OUT, 40, 170, 56, 20, {0x201}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 8, 0x1, 134, 170, 88, 20, {0x201}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+    { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
 };
 
 #include "Graphics/SpriteManager.hpp"
@@ -2446,7 +2446,7 @@ void CharacterEditScene::SetupMenuRows(u32 arg) {
                 SetItemSlide(i, 3, 4);
                 break;
             case 1:
-                SetItemFlags(i, 0x8000);
+                SetItemFlags(i, WINDOW_ITEM_CURSOR_SKIP);
                 SetItemSlide(i, 0, 0);
                 break;
             }
@@ -2709,23 +2709,23 @@ void CharacterEditScene::SetupChoices() {
     u8 i = 0;
     do {
         if (i < mStyleCount) {
-            items[i].mFlags = 8;
+            items[i].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
         } else {
-            items[i].mFlags = 0x8000;
+            items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         }
         i++;
     } while (i < 8);
     i = 0;
     do {
         if (i < mColorCount) {
-            items[i + 8].mFlags = 8;
+            items[i + 8].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
         } else {
-            items[i + 8].mFlags = 0x8000;
+            items[i + 8].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         }
         if (i < mColor2Count) {
-            items[i + 14].mFlags = 8;
+            items[i + 14].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
         } else {
-            items[i + 14].mFlags = 0x8000;
+            items[i + 14].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         }
         i++;
     } while (i < 6);

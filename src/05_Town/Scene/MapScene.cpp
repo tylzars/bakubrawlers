@@ -36,17 +36,17 @@ static const MapPagePos sMapPagePos[4] = {
     {471, 159, 471, MAP_TAB_MYROOM},
 };
 static const WindowItemRecord sMapPanelWindowItems[4] = {
-    {0, 1, 45, 136, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
-    {1, 1, 133, 136, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
-    {2, 32768, 120, 35, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
-    {3, 32768, 128, 96, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+    {0, 1, 45, 136, 78, 20, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 1, 133, 136, 78, 20, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 120, 35, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+    {3, WINDOW_ITEM_CURSOR_SKIP, 128, 96, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
 };
 static const WindowItemRecord sMapMenuItems[5] = {
-    {0, 1, 4, 160, 48, 32, 0, {0, 0, 0, 1}, 0, 2},
-    {1, 1, 52, 160, 48, 32, 0, {1, 1, 0, 2}, 0, 2},
-    {2, 1, 100, 160, 48, 32, 0, {2, 2, 1, 3}, 0, 2},
-    {3, 1, 148, 160, 48, 32, 0, {3, 3, 2, 3}, 0, 2},
-    {4, 2, 200, 170, 54, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, 1, 4, 160, 48, 32, 0, {0, 0, 0, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 1, 52, 160, 48, 32, 0, {1, 1, 0, 2}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, 1, 100, 160, 48, 32, 0, {2, 2, 1, 3}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {3, 1, 148, 160, 48, 32, 0, {3, 3, 2, 3}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {4, 2, 200, 170, 54, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 static const WindowCellRecord sMapMenuCells[5] = {
     {"story/map_b_obj_00_nce.bin", 0, 0x0, 0, 2, 1, {0, 10, 5, 0}},

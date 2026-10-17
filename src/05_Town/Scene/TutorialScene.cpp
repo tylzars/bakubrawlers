@@ -14,12 +14,12 @@
 static const u8 sTutorialFirstIds[8] = {0, 1, 7, 12, 14, 16, 18, 0};
 static const s8 data_ov005_022200d8[8][2] = {{0, 0}, {13, 3}, {13, 3}, {0, 4}, {0, 3}, {13, 3}, {13, 3}, {0, 0}};
 static const WindowItemRecord sTutorialListItems[6] = {
-    {0, 5, 169, 200, 0, 0, 0, {-1, -1, -1, -1}, 0, 1},
-    {1, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
-    {2, 16, 228, 48, 32, 12, 0, {-1, -1, -1, -1}, 0, 0},
-    {3, 32, 228, 28, 32, 20, 0, {-1, -1, -1, -1}, 0, 3},
-    {4, 64, 228, 144, 32, 20, 0, {-1, -1, -1, -1}, 0, 3},
-    {5, 32768, 238, 36, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+    {0, 5, 169, 200, 0, 0, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {2, WINDOW_ITEM_SCROLL_DRAG, 228, 48, 32, 12, 0, {-1, -1, -1, -1}, 0, 0},
+    {3, WINDOW_ITEM_SCROLL_PREV, 228, 28, 32, 20, 0, {-1, -1, -1, -1}, 0, 3},
+    {4, WINDOW_ITEM_SCROLL_NEXT, 228, 144, 32, 20, 0, {-1, -1, -1, -1}, 0, 3},
+    {5, WINDOW_ITEM_CURSOR_SKIP, 238, 36, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
 };
 static const WindowCellRecord sTutorialListCells[6] = {
     {"union_b_obj_cockpit_nce.bin", 0, 24576, 3, 2, 1, {0, 1, 1, 0}},
@@ -29,11 +29,11 @@ static const WindowCellRecord sTutorialListCells[6] = {
     {"union_b_obj_scroll_nce.bin", 2, 20480, 3, 2, 1, {2, 3, 3, 0}},
     {"union_b_obj_scroll_nce.bin", 5, 20480, 3, 2, 1, {5, 5, 5, 0}},
 };
-// Record 2 (flag 0x8000) is skipped by the cursor and by touch: two items are selectable.
+// Record 2 (WINDOW_ITEM_CURSOR_SKIP) is skipped by the cursor and by touch: two items are selectable.
 static const WindowItemRecord sTutorialThreeButtonItems[3] = {
-    {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
-    {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
-    {2, 32768, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+    {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
 static const WindowCellRecord sTutorialThreeButtonCells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0, 0, 0, 1, {3, 5, 4, 0}},

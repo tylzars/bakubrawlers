@@ -12,9 +12,9 @@
 #include <nitro/gx.h>
 
 static const WindowItemRecord sOptionMenu3Items[3] = {
-    {0, 0x1, 45, 136, 78, 20, 0x0, {-1, -1, 1, 1}, 0, 2},
-    {1, 0x1, 133, 136, 78, 20, 0x0, {-1, -1, 0, 0}, 0, 2},
-    {2, 0x8000, 120, 35, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
+    {0, 0x1, 45, 136, 78, 20, 0x0, {-1, -1, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 0x1, 133, 136, 78, 20, 0x0, {-1, -1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 120, 35, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
 };
 static const WindowCellRecord sOptionMainMenuCells[6] = {
     {"option_b_obj_00_nce.bin", 3, 0x0, 0, 0, 1, {3, 5, 4, 0}},
@@ -33,8 +33,8 @@ static const Vec2s sOptionMenu3SlidePerFrame[4] = {
 };
 static const u8 sOptionSettingsRowY[4] = {0x34, 0x54, 0x74, 0x0};
 static const WindowItemRecord sOptionSettingsItems[2] = {
-    {0, 0x5, 169, 170, 52, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
+    {0, 0x5, 169, 170, 52, 20, 0x201, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 static const WindowCellRecord sOptionSettingsCells[2] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xb000, 9, 0, 1, {0, 1, 1, 0}},
@@ -56,10 +56,10 @@ static const Vec2s sOptionSettingsStartPos[5] = {
 // [0..4] the five cells; [5..7] the animation of row mRow while selected (BuildSettings sets [5]'s 0x13 directly).
 static const u8 sOptionSettingsAnimIndices[8] = {0x0, 0x24, 0x12, 0x14, 0x16, 0x13, 0x15, 0x17};
 static const WindowItemRecord sOptionMenu4Items[4] = {
-    {0, 0x1, 48, 64, 160, 24, 0x303, {1, 1, -1, -1}, 0, 2},
-    {1, 0x1, 48, 96, 160, 24, 0x303, {0, 0, -1, -1}, 0, 2},
-    {2, 0x1, 169, 170, 52, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
+    {0, 0x1, 48, 64, 160, 24, 0x303, {1, 1, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 0x1, 48, 96, 160, 24, 0x303, {0, 0, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, 0x1, 169, 170, 52, 20, 0x201, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {3, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 static const WindowCellRecord sOptionMenu3Cells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0xd000, 10, 0, 1, {3, 5, 4, 0}},
@@ -67,12 +67,12 @@ static const WindowCellRecord sOptionMenu3Cells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0xd000, 10, 0, 1, {10, 10, 10, 0}},
 };
 static const WindowItemRecord sOptionMainMenuItems[6] = {
-    {0, 0x1, 48, 38, 160, 24, 0x303, {4, 1, -1, -1}, 0, 2},
-    {1, 0x1, 48, 62, 160, 24, 0x303, {0, 2, -1, -1}, 0, 2},
-    {2, 0x1, 48, 86, 160, 24, 0x303, {1, 3, -1, -1}, 0, 2},
-    {3, 0x1, 48, 110, 160, 24, 0x303, {2, 4, -1, -1}, 0, 2},
-    {4, 0x1, 48, 134, 160, 24, 0x303, {3, 0, -1, -1}, 0, 2},
-    {5, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
+    {0, 0x1, 48, 38, 160, 24, 0x303, {4, 1, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 0x1, 48, 62, 160, 24, 0x303, {0, 2, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, 0x1, 48, 86, 160, 24, 0x303, {1, 3, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {3, 0x1, 48, 110, 160, 24, 0x303, {2, 4, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {4, 0x1, 48, 134, 160, 24, 0x303, {3, 0, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {5, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 static const WindowCellRecord sOptionMenu4Cells[4] = {
     {"option_b_obj_00_nce.bin", 30, 0x0, 0, 0, 1, {30, 32, 31, 0}},
@@ -81,10 +81,10 @@ static const WindowCellRecord sOptionMenu4Cells[4] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 9, 0, 1, {2, 3, 3, 0}},
 };
 static const WindowItemRecord sOptionMenu2Items[4] = {
-    {0, 0x1, 48, 64, 160, 24, 0x303, {1, 1, -1, -1}, 0, 2},
-    {1, 0x1, 48, 96, 160, 24, 0x303, {0, 0, -1, -1}, 0, 2},
-    {2, 0x1, 169, 170, 52, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, 1},
+    {0, 0x1, 48, 64, 160, 24, 0x303, {1, 1, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 0x1, 48, 96, 160, 24, 0x303, {0, 0, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, 0x1, 169, 170, 52, 20, 0x201, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {3, 0x2, 225, 170, 30, 20, 0x201, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 #include "System/TouchManager.hpp"
 #include "Text/TextManager.hpp"

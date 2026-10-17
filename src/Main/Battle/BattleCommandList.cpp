@@ -118,10 +118,10 @@ inline const CommandMessageTable &CommandMessages() {
 // item table of the list window (positions are patched by CreateCommandListWindow)
 inline WindowItemRecord *ListItems() {
     static WindowItemRecord sItems[4] = {
-        { 0, 0x208, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 1 },
-        { 1, 0x408, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 1 },
-        { 2, 0x8000, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
-        { 3, 0x8000, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
+        { 0, 0x208, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+        { 1, 0x408, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE },
+        { 2, WINDOW_ITEM_CURSOR_SKIP, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
+        { 3, WINDOW_ITEM_CURSOR_SKIP, 0, 0, 0x20, 0x10, {0}, {-1, -1, -1, -1}, 0, 0 },
     };
     return sItems;
 }
@@ -486,12 +486,12 @@ void CreateCommandListWindow(BattleCommandList *list, u32 a, u32 b, s16 c, s16 d
         delete list->mWindow;
     }
     ListItems()[0].mUnk_04 = 0x208;
-    ListItems()[0].mUnk_18 = 1;
+    ListItems()[0].mUnk_18 = WINDOW_TOUCH_RELEASE;
     ListItems()[1].mUnk_04 = 0x408;
-    ListItems()[1].mUnk_18 = 1;
-    ListItems()[2].mUnk_04 = 0x8000;
+    ListItems()[1].mUnk_18 = WINDOW_TOUCH_RELEASE;
+    ListItems()[2].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
     ListItems()[2].mUnk_18 = 0;
-    ListItems()[3].mUnk_04 = 0x8000;
+    ListItems()[3].mUnk_04 = WINDOW_ITEM_CURSOR_SKIP;
     ListItems()[3].mUnk_18 = 0;
     ListItems()[0].mX      = c;
     ListItems()[0].mY      = d;
@@ -559,7 +559,7 @@ void BattleCommandList::UpdateListItems() {
     } else {
         if (IsListItemEnabled(1) != 0) {
             mWindow->mCellAnims[1]->SetAnimation(5);
-            items[1].mFlags = 0x8000;
+            items[1].mFlags = WINDOW_ITEM_CURSOR_SKIP;
             if (mFourItems != 0) {
                 mWindow->mCellAnims[3]->SetAnimation(5);
             }
@@ -590,7 +590,7 @@ void BattleCommandList::UpdateListItems() {
             return;
         }
         mWindow->mCellAnims[0]->SetAnimation(2);
-        items[0].mFlags = 0x8000;
+        items[0].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         if (mFourItems == 0) {
             return;
         }

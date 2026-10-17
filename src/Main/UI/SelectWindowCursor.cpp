@@ -135,7 +135,7 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
                             result = 1;
                         } else if (flags & 2) {
                             result = 2;
-                        } else if (flags & 0x800) {
+                        } else if (flags & WINDOW_ITEM_NO_RESULT) {
                             result = 6;
                         } else {
                             result = 3;
@@ -178,7 +178,7 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
                             result = 1;
                         } else if (flags & 2) {
                             result = 2;
-                        } else if (flags & 0x800) {
+                        } else if (flags & WINDOW_ITEM_NO_RESULT) {
                             result = 6;
                         } else {
                             result = 3;
@@ -206,7 +206,7 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
                             result = 1;
                         } else if (flags & 2) {
                             result = 2;
-                        } else if (flags & 0x800) {
+                        } else if (flags & WINDOW_ITEM_NO_RESULT) {
                             result = 6;
                         } else {
                             result = 3;
@@ -234,7 +234,7 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
                             result = 1;
                         } else if (flags & 2) {
                             result = 2;
-                        } else if (flags & 0x800) {
+                        } else if (flags & WINDOW_ITEM_NO_RESULT) {
                             result = 6;
                         } else {
                             result = 3;
@@ -261,7 +261,7 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
                 }
             }
             if (cand != mSelection) {
-                if (mItems[cand].mFlags & 0x8000) {
+                if (mItems[cand].mFlags & WINDOW_ITEM_CURSOR_SKIP) {
                     do {
                         u8 next = mItems[cand].mNeighbors[dir];
                         if (next == -1) {
@@ -273,7 +273,7 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
                             break;
                         }
                         cand = (s8) next;
-                    } while ((mItems[cand].mFlags & 0x8000) && cand != mSelection);
+                    } while ((mItems[cand].mFlags & WINDOW_ITEM_CURSOR_SKIP) && cand != mSelection);
                 }
                 mSelection = cand;
                 mUnk_05    = cand;
@@ -285,8 +285,8 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
             mPressedOnSelection = 0;
             u8 i    = 0;
             do {
-                if (!(mItems[i].mFlags & 0x8000)) {
-                    if (mItems[i].mFlags & 0x10) {
+                if (!(mItems[i].mFlags & WINDOW_ITEM_CURSOR_SKIP)) {
+                    if (mItems[i].mFlags & WINDOW_ITEM_SCROLL_DRAG) {
                         if (mScrollMax != 0) {
                             if (TouchManager::Get().IsPressedIn(mItems[i].mX, mScrollAreaY, mItems[i].mWidth, mScrollAreaHeight)) {
                                 mDragging = 1;
@@ -296,7 +296,7 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
                     } else if (TouchManager::Get().IsPressedIn(mItems[i].mX, mItems[i].mY, mItems[i].mWidth,
                                                                  mItems[i].mHeight)) {
                         if (mScrollMax != 0) {
-                            if (mItems[i].mFlags & 0x20) {
+                            if (mItems[i].mFlags & WINDOW_ITEM_SCROLL_PREV) {
                                 if (mScroll != 0) {
                                     mScroll--;
                                     RefreshScrollItemY();
@@ -304,7 +304,7 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
                                         SoundManager::Get().StartSeqArc(5);
                                     }
                                 }
-                            } else if (mItems[i].mFlags & 0x40) {
+                            } else if (mItems[i].mFlags & WINDOW_ITEM_SCROLL_NEXT) {
                                 if (mScroll < mScrollMax) {
                                     mScroll++;
                                     RefreshScrollItemY();
@@ -322,7 +322,7 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
                             mSelection = mUnk_05;
                         }
                         result = 4;
-                        if (mItems[i].mFlags & 0x800) {
+                        if (mItems[i].mFlags & WINDOW_ITEM_NO_RESULT) {
                             result = 7;
                         }
                         break;
@@ -335,19 +335,20 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
         case 2: {
             u8 i = 0;
             do {
-                if (!(mItems[i].mFlags & 0x8000)) {
+                if (!(mItems[i].mFlags & WINDOW_ITEM_CURSOR_SKIP)) {
                     if (TouchManager::Get().IsReleasedIn(mItems[i].mX, mItems[i].mY, mItems[i].mWidth,
                                                           mItems[i].mHeight)
                         && mPressedItem == i) {
                         u32 kind = mItems[i].mUnk_18;
-                        if (kind == 1 || (kind == 2 && mPressedOnSelection != 0)) {
+                        if (kind == WINDOW_TOUCH_RELEASE
+                            || (kind == WINDOW_TOUCH_RELEASE_IF_SELECTED && mPressedOnSelection != 0)) {
                             mSelection = i;
                             u32 flags  = mItems[mSelection].mFlags;
                             if (flags & 1) {
                                 result = 1;
                             } else if (flags & 2) {
                                 result = 2;
-                            } else if (flags & 0x800) {
+                            } else if (flags & WINDOW_ITEM_NO_RESULT) {
                                 result = 6;
                             } else {
                                 result = 3;
@@ -365,13 +366,13 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
         case 3: {
             u8 i = 0;
             do {
-                if (!(mItems[i].mFlags & 0x8000)) {
+                if (!(mItems[i].mFlags & WINDOW_ITEM_CURSOR_SKIP)) {
                     if (TouchManager::Get().IsDownIn(mItems[i].mX, mItems[i].mY, mItems[i].mWidth,
                                                           mItems[i].mHeight)) {
                         if (mScrollMax != 0) {
                             if (TouchManager::Get().IsTriggerIn(mItems[i].mX, mItems[i].mY, mItems[i].mWidth,
                                                                   mItems[i].mHeight)) {
-                                if (mItems[i].mFlags & 0x20) {
+                                if (mItems[i].mFlags & WINDOW_ITEM_SCROLL_PREV) {
                                     if (mScroll != 0) {
                                         mScroll--;
                                         RefreshScrollItemY();
@@ -379,7 +380,7 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
                                             SoundManager::Get().StartSeqArc(5);
                                         }
                                     }
-                                } else if (mItems[i].mFlags & 0x40) {
+                                } else if (mItems[i].mFlags & WINDOW_ITEM_SCROLL_NEXT) {
                                     if (mScroll < mScrollMax) {
                                         mScroll++;
                                         RefreshScrollItemY();
@@ -392,7 +393,7 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
                         }
                         mUnk_05 = i;
                         result  = 5;
-                        if (mItems[i].mFlags & 0x800) {
+                        if (mItems[i].mFlags & WINDOW_ITEM_NO_RESULT) {
                             result = 7;
                         }
                         break;
@@ -430,7 +431,7 @@ void SelectWindowCursor::SetupScroll(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
     mScroll = 0;
     u8 i = 0;
     do {
-        if (mItems[i].mFlags & 0x10) {
+        if (mItems[i].mFlags & WINDOW_ITEM_SCROLL_DRAG) {
             mScrollItem = i;
             break;
         }

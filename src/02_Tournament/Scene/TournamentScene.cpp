@@ -47,12 +47,12 @@ static const TourPoint sTournamentCharacterPos[6][9] = {
 static const u8 sTotals[6] = {3, 8, 9, 5, 4, 7};
 static const u8 sCounts[6] = {1, 2, 3, 1, 1, 1};
 static const WindowItemRecord sTournamentMenuItems[6] = {
-    {0, 0x8000, 88, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8000, 186, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
-    {2, 0x8000, 284, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, 1},
-    {3, 0x8, 0, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, 1},
-    {4, 0x8, 176, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, 1},
-    {5, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, WINDOW_ITEM_CURSOR_SKIP, 88, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_CURSOR_SKIP, 186, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 284, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {3, WINDOW_ITEM_NO_SLIDE_OUT, 0, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {4, WINDOW_ITEM_NO_SLIDE_OUT, 176, 72, 80, 48, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {5, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 static const TourPoint sTournamentMoveTargets[7] = {{0x72, 0x51}, {0x62, 0x51}, {0x63, 0x51}, {0x72, 0x51}, {0x72, 0x51}, {0x72, 0x51}, {0, 0}};
 static const u8 data_ov002_02220a6c[22][3] = {
@@ -81,13 +81,13 @@ static const WindowCellRecord sTournamentMenuCells[6] = {
 };
 static const u8 sModeTables[3][8] = {{0x12, 0x13, 0x14, 0x15, 0x16, 0x17}, {1, 3, 6, 7, 8, 9}, {6, 1, 2, 5, 0, 3}};
 static const WindowItemRecord sTournamentModeMenuItems[7] = {
-    {0, 0x1, 16, 24, 64, 42, 0, {3, 3, 2, 1}, 0, 2},
-    {1, 0x1, 96, 24, 64, 42, 0, {4, 4, 0, 2}, 0, 2},
-    {2, 0x1, 176, 24, 64, 42, 0, {5, 5, 1, 0}, 0, 2},
-    {3, 0x1, 16, 80, 64, 42, 0, {0, 0, 5, 4}, 0, 2},
-    {4, 0x1, 96, 80, 64, 42, 0, {1, 1, 3, 5}, 0, 2},
-    {5, 0x1, 176, 80, 64, 42, 0, {2, 2, 4, 3}, 0, 2},
-    {6, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, 0x1, 16, 24, 64, 42, 0, {3, 3, 2, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 0x1, 96, 24, 64, 42, 0, {4, 4, 0, 2}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, 0x1, 176, 24, 64, 42, 0, {5, 5, 1, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {3, 0x1, 16, 80, 64, 42, 0, {0, 0, 5, 4}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {4, 0x1, 96, 80, 64, 42, 0, {1, 1, 3, 5}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {5, 0x1, 176, 80, 64, 42, 0, {2, 2, 4, 3}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {6, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 static const WindowCellRecord sWindowCells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0x10000, 13, 0, 1, {3, 5, 4, 0}},
@@ -95,9 +95,9 @@ static const WindowCellRecord sWindowCells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x10000, 13, 0, 1, {10, 10, 10, 0}},
 };
 static const WindowItemRecord sWindowItems[3] = {
-    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
-    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
-    {2, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
+    {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
 
 extern const u8 data_020d441a[];
@@ -1236,16 +1236,16 @@ u8 TournamentScene::UpdateScrollInput(u8 input) {
             } else if (mSelection == i) {
                 mMenuWindow->mCellAnims[i]->SetMode(CELL_ANIM_MODE_BACKWARD_ONCE);
             }
-            items[i].mFlags = 0x8000;
+            items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
             i++;
         } while (i <= mLastIndex + 1);
         if (mNewSelection == 0) {
             mMenuWindow->mButtons[3].mEnabled = 0;
-            items[3].mFlags             = 0x8000;
+            items[3].mFlags             = WINDOW_ITEM_CURSOR_SKIP;
         }
         if (mNewSelection == mLastIndex + 1) {
             mMenuWindow->mButtons[4].mEnabled = 0;
-            items[4].mFlags             = 0x8000;
+            items[4].mFlags             = WINDOW_ITEM_CURSOR_SKIP;
         }
         mScrollLeft = 0x62;
     }
@@ -1314,22 +1314,22 @@ BOOL TournamentScene::UpdateScroll() {
     if (mScrollLeft == 0) {
         mMenuWindow->mCellAnims[mSelection]->SetAnimation(sTournamentMenuAnimIndices[mSelection]);
         items[mNewSelection].mFlags = 5;
-        items[mSelection].mFlags    = 0x8000;
+        items[mSelection].mFlags    = WINDOW_ITEM_CURSOR_SKIP;
         mMenuWindow->mCursor->mSelection  = mNewSelection;
         mSelection                  = mNewSelection;
         if (mSelection == 0) {
             mMenuWindow->mButtons[3].mEnabled = 0;
-            items[3].mFlags             = 0x8000;
+            items[3].mFlags             = WINDOW_ITEM_CURSOR_SKIP;
         } else {
             mMenuWindow->mButtons[3].mEnabled = 1;
-            items[3].mFlags             = 8;
+            items[3].mFlags             = WINDOW_ITEM_NO_SLIDE_OUT;
         }
         if (mSelection == mLastIndex + 1) {
             mMenuWindow->mButtons[4].mEnabled = 0;
-            items[4].mFlags             = 0x8000;
+            items[4].mFlags             = WINDOW_ITEM_CURSOR_SKIP;
         } else {
             mMenuWindow->mButtons[4].mEnabled = 1;
-            items[4].mFlags             = 8;
+            items[4].mFlags             = WINDOW_ITEM_NO_SLIDE_OUT;
         }
         mMenuWindow->mCellAnims[4]->Rewind();
         mMenuWindow->mCellAnims[3]->Rewind();
@@ -1360,7 +1360,7 @@ void TournamentScene::RefreshCellLayout() {
             items[i].mFlags = 5;
         } else {
             mMenuWindow->mCellAnims[i]->SetAnimation(sTournamentMenuAnimIndices[i]);
-            items[i].mFlags = 0x8000;
+            items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         }
         mMenuWindow->mCellAnims[i]->ResetAnimation();
         i++;
@@ -1368,18 +1368,18 @@ void TournamentScene::RefreshCellLayout() {
     u32 flags;
     if (mSelection == 0) {
         mMenuWindow->mButtons[3].mEnabled = 0;
-        flags                       = 0x8000;
+        flags                       = WINDOW_ITEM_CURSOR_SKIP;
     } else {
         mMenuWindow->mButtons[3].mEnabled = 1;
-        flags                       = 8;
+        flags                       = WINDOW_ITEM_NO_SLIDE_OUT;
     }
     items[3].mFlags = flags;
     if (mSelection == mLastIndex + 1) {
         mMenuWindow->mButtons[4].mEnabled = 0;
-        flags                       = 0x8000;
+        flags                       = WINDOW_ITEM_CURSOR_SKIP;
     } else {
         mMenuWindow->mButtons[4].mEnabled = 1;
-        flags                       = 8;
+        flags                       = WINDOW_ITEM_NO_SLIDE_OUT;
     }
     items[4].mFlags            = flags;
     mMenuWindow->mCursor->mSelection = mSelection;

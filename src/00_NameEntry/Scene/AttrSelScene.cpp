@@ -12,7 +12,7 @@ static const u32 sAttrSelTextUnitSizes[2] = {0x21, 0x44};
 static const u8 sAttrSelTextWidths[2] = {0x10, 0x1c};
 static const u8 sSavedToAttrib[6] = {0, 4, 1, 2, 3, 5};
 static const WindowItemRecord sAttrSelCockpitItems[1] = {
-    {0, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 static const WindowCellRecord sAttrSelCockpitCells[1] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xd000, 12, 0, 1, {2, 3, 3, 0}},

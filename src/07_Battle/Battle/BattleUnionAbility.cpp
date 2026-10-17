@@ -12,7 +12,7 @@ static const WindowCellRecord sUnionOneButtonCells[1] = {
 };
 
 static const WindowItemRecord sUnionOneButtonItems[1] = {
-    {0, 0x1, 56, 120, 144, 20, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, 0x1, 56, 120, 144, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 static const WindowCellRecord sUnionTwoButtonCells[2] = {
@@ -21,8 +21,8 @@ static const WindowCellRecord sUnionTwoButtonCells[2] = {
 };
 
 static const WindowItemRecord sUnionTwoButtonItems[2] = {
-    {0, 0x1, 56, 88, 144, 20, 0, {1, 1, 0, 0}, 0, 1},
-    {1, 0x1, 56, 120, 144, 20, 0, {0, 0, 1, 1}, 0, 1},
+    {0, 0x1, 56, 88, 144, 20, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE},
+    {1, 0x1, 56, 120, 144, 20, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE},
 };
 
 static const u8 sTwoButtonAnimPositions[2][2] = {{0x38, 0x58}, {0x38, 0x78}};

@@ -27,8 +27,8 @@ struct PromptRect {
 };
 // Items and cells of BattleCommandPrompt::mWindow; the cells repeat BattleCommand.cpp's sCockpitCells.
 static const WindowItemRecord sPromptWindowItems[2] = {
-    {0, 5, 0xa1, 0x85, 0x36, 0x14, 0, {-1, -1, -1, -1}, 0, 1},
-    {1, 2, 0xd9, 0x85, 0x1e, 0x14, 0, {-1, -1, -1, -1}, 0, 1},
+    {0, 5, 0xa1, 0x85, 0x36, 0x14, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, 2, 0xd9, 0x85, 0x1e, 0x14, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
 };
 static const WindowCellRecord sPromptWindowCells[2] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0x1c800, 14, 0, 1, {0, 1, 1, 0}},
@@ -194,7 +194,7 @@ void BattleCommandPrompt::Update() {
             WindowItem *items = win->mCursor->mItems;
             if (mMode == 0 || data_020d433c.mTutorialNumber == 4) {
                 win->mButtons[1].mEnabled = 0;
-                items[1].mFlags           = 0x8000;
+                items[1].mFlags           = WINDOW_ITEM_CURSOR_SKIP;
             } else {
                 win->mButtons[1].mEnabled = 1;
                 items[1].mFlags           = 2;
@@ -263,7 +263,7 @@ void BattleCommandPrompt::Update() {
                     u8 bits = mDisabledBits[idx / 8];
                     if ((bits & (1 << (idx % 8))) || mMode >= 5) {
                         win->mButtons[0].mEnabled = 0;
-                        items[0].mFlags           = 0x8000;
+                        items[0].mFlags           = WINDOW_ITEM_CURSOR_SKIP;
                     } else {
                         win->mButtons[0].mEnabled = 1;
                         items[0].mFlags           = 5;

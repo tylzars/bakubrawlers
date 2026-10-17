@@ -22,13 +22,13 @@
 static const u8 data_020a2e3c[12] = {0, 10, 10, 20, 20, 30, 30, 40, 40, 50, 0, 0};
 
 static const WindowItemRecord sResultWindowItems[7] = {
-    {0, 8, 76, 48, 160, 20, 0, {4, 1, -1, -1}, 0, 2},
-    {1, 8, 76, 72, 160, 20, 0, {0, 2, -1, -1}, 0, 2},
-    {2, 8, 76, 96, 160, 20, 0, {1, 3, -1, -1}, 0, 2},
-    {3, 8, 76, 120, 160, 20, 0, {2, 4, -1, -1}, 0, 2},
-    {4, 8, 76, 144, 160, 20, 0, {3, 0, -1, -1}, 0, 2},
-    {5, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 1},
-    {6, 8, 89, 152, 78, 20, 0, {-1, -1, -1, -1}, 0, 2},
+    {0, WINDOW_ITEM_NO_SLIDE_OUT, 76, 48, 160, 20, 0, {4, 1, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {1, WINDOW_ITEM_NO_SLIDE_OUT, 76, 72, 160, 20, 0, {0, 2, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {2, WINDOW_ITEM_NO_SLIDE_OUT, 76, 96, 160, 20, 0, {1, 3, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {3, WINDOW_ITEM_NO_SLIDE_OUT, 76, 120, 160, 20, 0, {2, 4, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {4, WINDOW_ITEM_NO_SLIDE_OUT, 76, 144, 160, 20, 0, {3, 0, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
+    {5, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {6, WINDOW_ITEM_NO_SLIDE_OUT, 89, 152, 78, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
 };
 
 static const WindowCellRecord sResultWindowCells[7] = {
@@ -152,14 +152,14 @@ void UnkStruct_02071d24::Update() {
                             mWindow->mButtons[2].mEnabled = 1;
                             mWindow->mButtons[3].mEnabled = 1;
                             mWindow->mButtons[4].mEnabled = 1;
-                            items[0].mFlags = 8;
-                            items[1].mFlags = 8;
-                            items[2].mFlags = 8;
-                            items[3].mFlags = 8;
-                            items[4].mFlags = 8;
+                            items[0].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
+                            items[1].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
+                            items[2].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
+                            items[3].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
+                            items[4].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
                             mWindow->mButtons[5].mEnabled = 0;
                             mWindow->mButtons[6].mEnabled = 0;
-                            items[6].mFlags = 0x8000;
+                            items[6].mFlags = WINDOW_ITEM_CURSOR_SKIP;
                             items[6].mY     = 0xc0;
                             items[4].mY     = 0x90;
                             mWindow->Update(1);
@@ -329,14 +329,14 @@ void UnkStruct_02071d24::func_02072c40() {
     mWindow->mButtons[2].mEnabled = 0;
     mWindow->mButtons[3].mEnabled = 0;
     mWindow->mButtons[4].mEnabled = 0;
-    items[0].mFlags = 0x8000;
-    items[1].mFlags = 0x8000;
-    items[2].mFlags = 0x8000;
-    items[3].mFlags = 0x8000;
-    items[4].mFlags = 0x8000;
+    items[0].mFlags = WINDOW_ITEM_CURSOR_SKIP;
+    items[1].mFlags = WINDOW_ITEM_CURSOR_SKIP;
+    items[2].mFlags = WINDOW_ITEM_CURSOR_SKIP;
+    items[3].mFlags = WINDOW_ITEM_CURSOR_SKIP;
+    items[4].mFlags = WINDOW_ITEM_CURSOR_SKIP;
     mWindow->mButtons[5].mEnabled = 1;
     mWindow->mButtons[6].mEnabled = 1;
-    items[6].mFlags = 8;
+    items[6].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
     items[4].mY     = 0xc0;
     items[6].mY     = 0x98;
     mWindow->Update(1);
@@ -441,46 +441,46 @@ void UnkStruct_02071d24::RefreshItems() {
         switch (i) {
             case 0:
                 if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_0 < 4) {
-                    items[i].mFlags = 8;
+                    items[i].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
                     mWindow->mCellAnims[i]->SetAnimation(sResultWindowCells[i].mAnimIndices[0]);
                 } else {
-                    items[i].mFlags = 0x8000;
+                    items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
                     mWindow->mCellAnims[i]->SetAnimation(0xf);
                 }
                 break;
             case 1:
                 if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_12 < 4) {
-                    items[i].mFlags = 8;
+                    items[i].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
                     mWindow->mCellAnims[i]->SetAnimation(sResultWindowCells[i].mAnimIndices[0]);
                 } else {
-                    items[i].mFlags = 0x8000;
+                    items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
                     mWindow->mCellAnims[i]->SetAnimation(0x10);
                 }
                 break;
             case 2:
                 if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_3 < 4) {
-                    items[i].mFlags = 8;
+                    items[i].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
                     mWindow->mCellAnims[i]->SetAnimation(sResultWindowCells[i].mAnimIndices[0]);
                 } else {
-                    items[i].mFlags = 0x8000;
+                    items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
                     mWindow->mCellAnims[i]->SetAnimation(0x11);
                 }
                 break;
             case 3:
                 if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_6 < 4) {
-                    items[i].mFlags = 8;
+                    items[i].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
                     mWindow->mCellAnims[i]->SetAnimation(sResultWindowCells[i].mAnimIndices[0]);
                 } else {
-                    items[i].mFlags = 0x8000;
+                    items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
                     mWindow->mCellAnims[i]->SetAnimation(0x12);
                 }
                 break;
             case 4:
                 if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_9 < 4) {
-                    items[i].mFlags = 8;
+                    items[i].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
                     mWindow->mCellAnims[i]->SetAnimation(sResultWindowCells[i].mAnimIndices[0]);
                 } else {
-                    items[i].mFlags = 0x8000;
+                    items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
                     mWindow->mCellAnims[i]->SetAnimation(0x13);
                 }
                 break;
@@ -491,7 +491,7 @@ void UnkStruct_02071d24::RefreshItems() {
     for (j = 0; j < 5; j++) {
         u8 index = j + mSelectedId;
         index %= 5;
-        if (selectItems[index].mFlags == 8) {
+        if (selectItems[index].mFlags == WINDOW_ITEM_NO_SLIDE_OUT) {
             mMessageWindow->StartMessage((s16) (index + 0x10), 0, 1);
             mWindow->mCursor->mSelection = index;
             mWindow->mSavedSelection            = index;

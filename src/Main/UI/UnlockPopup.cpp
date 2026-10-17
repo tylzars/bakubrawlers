@@ -16,8 +16,8 @@ static const WindowCellRecord sMenuCells[2] = {
 };
 
 static const WindowItemRecord sMenuItems[2] = {
-    {0, 5, 89, 136, 78, 20, 0, {-1, -1, -1, -1}, 0, 1},
-    {1, 0x8000, 120, 35, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
+    {0, 5, 89, 136, 78, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
+    {1, WINDOW_ITEM_CURSOR_SKIP, 120, 35, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
 };
 
 static const u8 sMessageIds[4] = {0, 1, 4, 0}; // mIndex 0 / 1 / 2 -> entries 0 / 1 / 4 of mMessages

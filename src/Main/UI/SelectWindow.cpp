@@ -201,7 +201,7 @@ BOOL SelectWindow::Update(BOOL input) {
         }
         if (flag) {
             mUnk_0e0 = 0;
-            if (mCursor->mItems[mCursor->mSelection].mFlags & 8) {
+            if (mCursor->mItems[mCursor->mSelection].mFlags & WINDOW_ITEM_NO_SLIDE_OUT) {
                 mState = 5;
                 result   = mResult;
             } else {

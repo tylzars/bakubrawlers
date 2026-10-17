@@ -29,13 +29,13 @@ struct BattleScrollBounds {
     s16 mMax;
 };
 
-static const WindowItemRecord data_ov007_02279b0c[2] = {
+static const WindowItemRecord sCockpitItems[2] = {
     {0, 0x5, 169, 170, 52, 20, 0, {-1, -1, -1, -1}, 0, 1},
     {1, 0x2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
 };
 
 #include "System/SoundManager.hpp"
-static const BattleScrollBounds data_ov007_02279acc[8] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 40}, {0, 0}, {0, 10}, {0, 0}};
+static const BattleScrollBounds sScrollXBounds[8] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 40}, {0, 0}, {0, 10}, {0, 0}};
 
 static const BattleCommandPoint data_ov007_02279ab0[4] = {{0xc2, 0x86}, {0x1e, 0x86}, {0x1e, 0x22}, {0xc2, 0x22}};
 
@@ -60,15 +60,15 @@ inline WindowItemRecord *CommandItems() {
 #include "System/WirelessManager.hpp"
 static const u8 data_ov007_02279aa8[2]                 = {0x04, 0xde};
 
-static const BattleCommandPoint data_ov007_02279ab8[4] = {{6, 4}, {7, 4}, {7, 5}, {6, 5}};
+static const BattleCommandPoint sStartCursorPoints[4] = {{6, 4}, {7, 4}, {7, 5}, {6, 5}};
 
-static const WindowCellRecord data_ov007_02279bd0[3] = {
+static const WindowCellRecord sPromptCells[3] = {
     {"battle_b_obj_00_nce.bin", 8, 0xa000, 0, 0, 1, {8, 11, 10, 0}},
     {"battle_b_obj_00_nce.bin", 0, 0xa000, 0, 0, 1, {0, 3, 2, 0}},
     {"battle_b_obj_00_nce.bin", 12, 0xa000, 0, 0, 1, {12, 15, 14, 0}},
 };
 
-static const WindowCellRecord data_ov007_02279c24[10] = {
+static const WindowCellRecord sCommandCells[10] = {
     {"battle_b_obj_00_nce.bin", 20, 0xa000, 0, 0, 1, {20, 20, 20, 0}},
     {"battle_b_obj_00_nce.bin", 0, 0xa000, 0, 0, 1, {0, 3, 2, 0}},
     {"battle_b_obj_00_nce.bin", 8, 0xa000, 0, 0, 1, {8, 11, 10, 0}},
@@ -81,7 +81,7 @@ static const WindowCellRecord data_ov007_02279c24[10] = {
     {"battle_b_obj_00_nce.bin", 31, 0xa000, 0, 0, 1, {31, 39, 35, 0}},
 };
 
-static const WindowItemRecord data_ov007_02279b7c[3] = {
+static const WindowItemRecord sPromptItems[3] = {
     {0, 0x8, 32, 4, 32, 32, 0, {-1, -1, -1, -1}, 0, 1},
     {1, 0x8, 64, 4, 32, 32, 0, {-1, -1, -1, -1}, 0, 1},
     {2, 0x8, 96, 4, 32, 32, 0, {-1, -1, -1, -1}, 0, 1},
@@ -89,45 +89,45 @@ static const WindowItemRecord data_ov007_02279b7c[3] = {
 
 static const u16 data_ov007_02279ac0[6] = {0xa000, 0x8000, 0, 0, 0, 0};
 
-static const WindowCellRecord data_ov007_02279b44[2] = {
+static const WindowCellRecord sCockpitCells[2] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0x1c800, 14, 0, 1, {0, 1, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x1c800, 14, 0, 1, {2, 3, 3, 0}},
 };
 
-static const BattleScrollBounds data_ov007_02279aec[8] = {{0, 0}, {0, 0}, {-20, 20}, {0, 0}, {-40, 40}, {-20, 20}, {-40, 40}, {0, 0}};
+static const BattleScrollBounds sScrollYBounds[8] = {{0, 0}, {0, 0}, {-20, 20}, {0, 0}, {-40, 40}, {-20, 20}, {-40, 40}, {0, 0}};
 
 #include "Graphics/SpriteManager.hpp"
-static const s16 data_ov007_02279aac[2] = {0x82, 0x9e};
+static const s16 sSubBg0Offset[2] = {0x82, 0x9e};
 
 #include "System/TouchManager.hpp"
 
-void func_ov007_02245888(BattleCommandMap *map);
+void CloseCommandMap(BattleCommandMap *map);
 
 void CloseCommandMapNow(BattleCommandMap *map);
 
-void func_ov007_0223a5a4(BattleCommand *command, u32 mode);
+void InitCommandMainScreen(BattleCommand *command, u32 mode);
 
-void func_ov007_0223a690(int x, int y);
+void InitCommandSubScreen(int x, int y);
 
-u32 func_ov007_022696a0(u32 a, u32 b);
+u32 GetTexVariant(u32 a, u32 b);
 
-void func_ov007_022626b8(BattlePlayerList *list, u8 index);
+void RemoveMarker(BattlePlayerList *list, u8 index);
 
 extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
 
 void func_ov007_02246a84(BattleCommandMap *map, u32 a);
 
-BOOL func_ov007_02262574(BattlePlayerList *list, u8 row, u8 col);
+BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 row, u8 col);
 
 extern "C" void func_ov007_022314bc(BattleCpu *cpu);
 
-void func_ov007_0223cf8c(void *arg);
+void ApplyScrollOffset(void *arg);
 
 extern "C" void func_ov007_02247a7c(BattleCommandMap *map);
 
-void func_ov007_02262638(BattlePlayerList *list, u8 row, u8 col, u8 player, u8 slot);
+void AddMarker(BattlePlayerList *list, u8 row, u8 col, u8 player, u8 slot);
 
-BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
+BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 
 class BattleUnk0227532c {
 public:
@@ -137,20 +137,20 @@ public:
 
 void func_ov007_022470e4(BattleCommandMap *map, u8 a, u8 b);
 
-u16 *func_ov007_02262510(BattlePlayerList *list, u8 index);
+u16 *GetMarkerSlotValue(BattlePlayerList *list, u8 index);
 
 struct BattleCellInfo {
     /* 00 */ u16 mUnk_00;
     /* 02 */ u16 mUnk_02;
     /* 04 */ u16 mUnk_04;
     /* 06 */ u16 mUnk_06;
-    /* 08 */ u8 mUnk_08;
-    /* 09 */ u8 mUnk_09;
+    /* 08 */ u8 mBakuganId;
+    /* 09 */ u8 mAttribute;
 };
 
-BattleCellInfo *func_ov007_02262530(BattlePlayerList *list, u8 row, u8 col);
+BattleCellInfo *GetUnitRecordAt(BattlePlayerList *list, u8 row, u8 col);
 
-extern "C" void func_ov007_022471c8(BattleCommandMap *map, u32 direction);
+extern "C" void RotateCameraYaw(BattleCommandMap *map, u32 direction);
 
 BattleCommand::BattleCommand(u32 unk)
     : SceneBase(0x3e8, 0) {
@@ -231,8 +231,8 @@ BattleCommand::BattleCommand(u32 unk)
         i++;
     } while (i <= 5);
     mCommandWindow = new SelectWindow(10, CommandItems(), -1);
-    mCockpitWindow = new SelectWindow(2, data_ov007_02279b0c, -1);
-    mPromptWindow = new SelectWindow(3, data_ov007_02279b7c, -1);
+    mCockpitWindow = new SelectWindow(2, sCockpitItems, -1);
+    mPromptWindow = new SelectWindow(3, sPromptItems, -1);
     mCamera = unk;
     mUnk_14 = 0;
     mUnk_10 = 0;
@@ -256,8 +256,8 @@ BattleCommand::BattleCommand(u32 unk)
     mUnk_126 = 0;
     mUnk_133 = data_020d433c.mBattlePlayers->mTurnPlayer;
     mState = 0;
-    mCursorX = data_ov007_02279ab8[side].mX;
-    mCursorY = data_ov007_02279ab8[side].mY;
+    mCursorX = sStartCursorPoints[side].mX;
+    mCursorY = sStartCursorPoints[side].mY;
     data_020d433c.mBattlePlayers->SetCursor(mCursorX, mCursorY);
 
     InitGridMask();
@@ -336,8 +336,8 @@ void BattleCommand::Update() {
                     data_020d433c.mGimmicks->CountTurnAll();
                 }
             } else {
-                func_ov007_0223a5a4(this, 1);
-                func_ov007_0223a690((s16) (mScrollX - mOffsetX), mScrollY);
+                InitCommandMainScreen(this, 1);
+                InitCommandSubScreen((s16) (mScrollX - mOffsetX), mScrollY);
             }
             func_ov007_0223a734();
             func_ov007_0223ad70(mFlipped);
@@ -401,8 +401,8 @@ void BattleCommand::Update() {
                         p->mUnk_ee++;
                         p->mRecords[slot].mStatus = 0;
                         BattleRecord *rec = &p->mRecords[slot];
-                        unk4 = func_ov007_022696a0(rec->mBakuganId, rec->mAttribute);
-                        func_ov007_022626b8(data_020d433c.mBattlePlayers, marker);
+                        unk4 = GetTexVariant(rec->mBakuganId, rec->mAttribute);
+                        RemoveMarker(data_020d433c.mBattlePlayers, marker);
                         break;
                     }
                     i++;
@@ -442,7 +442,7 @@ void BattleCommand::Update() {
             }
             mNextMode = 2;
             OpenNextMode(0);
-            func_ov007_0223a690((s16) (mScrollX - mOffsetX), mScrollY);
+            InitCommandSubScreen((s16) (mScrollX - mOffsetX), mScrollY);
             func_ov007_0223ad70(mFlipped);
             LoadTurnGraphics();
             func_ov007_02247a3c(mCommandMap);
@@ -554,7 +554,7 @@ void BattleCommand::Update() {
             do {
                 u8 y = 0;
                 do {
-                    if (func_ov007_02262574(data_020d433c.mBattlePlayers, x, y)) {
+                    if (IsMarkerPlaceable(data_020d433c.mBattlePlayers, x, y)) {
                         mCursorX = x;
                         mCursorY = y;
                         break;
@@ -856,7 +856,7 @@ void BattleCommand::Update() {
             func_ov007_022314bc(p->mCpu);
             BattleRecord *rec = &p->mRecords[sel];
             p->mRecord = sel;
-            u32 act    = func_ov007_022696a0(rec->mBakuganId, rec->mAttribute);
+            u32 act    = GetTexVariant(rec->mBakuganId, rec->mAttribute);
             u8 kind    = 3;
             if (p->mCpu->mUnk_7e != 0) {
                 kind = 0xf;
@@ -933,7 +933,7 @@ void BattleCommand::Update() {
             }
             WindowItem *item = mCockpitWindow->mCursor->mItems;
             u8 flag          = 0;
-            if (func_ov007_02262574(data_020d433c.mBattlePlayers, mCursorX, mCursorY)) {
+            if (IsMarkerPlaceable(data_020d433c.mBattlePlayers, mCursorX, mCursorY)) {
                 item->mFlags = 5;
                 if (mReleasedOnCursorCell != 0) {
                     flag = 1;
@@ -970,7 +970,7 @@ void BattleCommand::Update() {
             Draw();
             func_ov007_0223b874();
             mCockpitWindow->Draw();
-            QueueFrameCallback(func_ov007_0223cf8c, this);
+            QueueFrameCallback(ApplyScrollOffset, this);
             return;
         }
 
@@ -994,7 +994,7 @@ void BattleCommand::Update() {
             Draw();
             func_ov007_0223b874();
             mCockpitWindow->Draw();
-            QueueFrameCallback(func_ov007_0223cf8c, this);
+            QueueFrameCallback(ApplyScrollOffset, this);
             return;
         case 28:
             mCockpitWindow->Update(1);
@@ -1043,7 +1043,7 @@ void BattleCommand::Update() {
             }
             mNextMode = 2;
             OpenNextMode(0);
-            func_ov007_0223a690((s16) (mScrollX - mOffsetX), mScrollY);
+            InitCommandSubScreen((s16) (mScrollX - mOffsetX), mScrollY);
             func_ov007_0223ad70(mFlipped);
             LoadTurnGraphics();
             u8 b                   = mCursorY;
@@ -1076,7 +1076,7 @@ void BattleCommand::Update() {
             mUnk_12f = 0;
             mUnk_11e = 0;
             mState++;
-            func_ov007_02262638(data_020d433c.mBattlePlayers, mCursorX, mCursorY, mUnk_133, mUnk_132);
+            AddMarker(data_020d433c.mBattlePlayers, mCursorX, mCursorY, mUnk_133, mUnk_132);
             mUnk_130 = 1;
             SpriteManager::Get().sFade[0] = 3;
             data_020d433c.mBattlePlayers->mUnk_28f = 0;
@@ -1273,7 +1273,7 @@ void BattleCommand::Update() {
                 y++;
             } while (y < 14);
             mCockpitWindow->Draw();
-            QueueFrameCallback(func_ov007_0223cf8c, this);
+            QueueFrameCallback(ApplyScrollOffset, this);
             return;
         }
         case 43:
@@ -1328,7 +1328,7 @@ void BattleCommand::Update() {
             if (mMode != 0) {
                 return;
             }
-            if (!func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+            if (!SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 return;
             }
             mNextMode = 2;
@@ -1474,7 +1474,7 @@ BOOL BattleCommand::UpdateCommandWindowAndCursor(BOOL input) {
     if (mMode == 2) {
         func_ov007_022470e4(mCommandMap, mCursorX, mCursorY);
     }
-    QueueFrameCallback(func_ov007_0223cf8c, this);
+    QueueFrameCallback(ApplyScrollOffset, this);
     return result;
 }
 
@@ -1496,7 +1496,7 @@ BOOL BattleCommand::SwitchMode() {
                     u8 who    = list->mMarkers[(u8) (cell - 1)].mPlayer;
                     u16 value = 0;
                     if (owner == who || who == list->mPlayers[owner]->mPartner) {
-                        value = *func_ov007_02262510(list, (u8) (cell - 1));
+                        value = *GetMarkerSlotValue(list, (u8) (cell - 1));
                     }
                     SetCommandPageCard(mCommandPage, value, (s8) who);
                 } else {
@@ -1505,10 +1505,10 @@ BOOL BattleCommand::SwitchMode() {
                 break;
             }
             case 4: {
-                BattleCellInfo *a = func_ov007_02262530(data_020d433c.mBattlePlayers, mCursorX, mCursorY);
-                u16 sum           = a->mUnk_04 + func_ov007_02262530(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mUnk_06;
-                u8 c              = func_ov007_02262530(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mUnk_09;
-                u8 d              = func_ov007_02262530(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mUnk_08;
+                BattleCellInfo *a = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY);
+                u16 sum           = a->mUnk_04 + GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mUnk_06;
+                u8 c              = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mAttribute;
+                u8 d              = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mBakuganId;
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
                 u8 slot                = list->mUnitHandles[mCursorX][mCursorY] - 1;
                 BattleUnit *unit       = &list->Units()[slot];
@@ -1628,7 +1628,7 @@ BOOL BattleCommand::UpdatePrompt() {
     return FALSE;
 }
 
-void func_ov007_0223a5a4(BattleCommand *command, u32 mode) {
+void InitCommandMainScreen(BattleCommand *command, u32 mode) {
     SpriteManager::Get().SetupMode(mode, 7);
     G2_SetBG0Offset(0, 0);
     G2_BlendNone();
@@ -1640,10 +1640,10 @@ void func_ov007_0223a5a4(BattleCommand *command, u32 mode) {
     GX_SetVisibleWnd(0);
 }
 
-void func_ov007_0223a690(int x, int y) {
+void InitCommandSubScreen(int x, int y) {
     G2S_SetBG0Control(3, 1, 0, 1, 1);
     G2S_SetBG3Control(1, 0, 4, 5, 0);
-    G2S_SetBG0Offset(x + data_ov007_02279aac[0], y + data_ov007_02279aac[1]);
+    G2S_SetBG0Offset(x + sSubBg0Offset[0], y + sSubBg0Offset[1]);
     G2S_SetBG2Offset(0, 0);
     G2S_SetBG3Offset(0, 0);
     G2S_BlendNone();
@@ -1665,12 +1665,12 @@ void BattleCommand::func_ov007_0223a734() {
     u8 i;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
-    mCommandWindow->SetCells(10, data_ov007_02279c24);
+    mCommandWindow->SetCells(10, sCommandCells);
     for (i = data_020d433c.mPlayerCount; i < 4; i++) {
         mCommandWindow->mButtons[i + 6].mEnabled = 0;
     }
-    mCockpitWindow->SetCells(2, data_ov007_02279b44);
-    mPromptWindow->SetCells(3, data_ov007_02279bd0);
+    mCockpitWindow->SetCells(2, sCockpitCells);
+    mPromptWindow->SetCells(3, sPromptCells);
     for (i = 0; i < 12; i++) {
         mUnitCellAnims[i] = new CellAnimation("battle_b_obj_00_nce.bin", 0x44, 1, 1);
         mUnitCellAnims[i]->mCharBase = screen.GetCharBase(0xa000);
@@ -1823,7 +1823,7 @@ void BattleCommand::Draw() {
             BOOL show;
             s8 cell = data_020d433c.mBattlePlayers->mUnitHandles[i][j];
             if (cell > 0) {
-                func_ov007_02262530(data_020d433c.mBattlePlayers, i, j);
+                GetUnitRecordAt(data_020d433c.mBattlePlayers, i, j);
                 mUnitCellAnims[k]->DrawFrame(1, data_020d433c.mBattlePlayers->Units()[(u8) (cell - 1)].mPlayer, (s16) (x * 16 + 14 - mScrollX + mOffsetX), (s16) (y * 24 - 22 - mScrollY), 1);
                 k++;
             }
@@ -1874,7 +1874,7 @@ void BattleCommand::Draw() {
     DrawTurnCount();
 }
 
-// Record of a battle cell returned by func_ov007_02262530.
+// Record of a battle cell returned by GetUnitRecordAt.
 
 void func_ov007_02247a3c(BattleCommandMap *map);
 
@@ -1900,7 +1900,7 @@ void BattleCommand::func_ov007_0223b874() {
             do {
                 u8 col = 0;
                 do {
-                    if (func_ov007_02262574(data_020d433c.mBattlePlayers, row, col) && mGridMask[row][col] != 0) {
+                    if (IsMarkerPlaceable(data_020d433c.mBattlePlayers, row, col) && mGridMask[row][col] != 0) {
                         mUnk_10->Draw(1, (s16) (mOffsetX + ((row * 16 + 14) - mScrollX)), (s16) ((col * 24 - 22) - mScrollY), 1);
                     }
                     col++;
@@ -1912,7 +1912,7 @@ void BattleCommand::func_ov007_0223b874() {
             do {
                 u8 col = 0;
                 do {
-                    if (func_ov007_02262574(data_020d433c.mBattlePlayers, row, col) && mGridMask[row][col] != 0) {
+                    if (IsMarkerPlaceable(data_020d433c.mBattlePlayers, row, col) && mGridMask[row][col] != 0) {
                         u8 r = 13 - row;
                         u8 c = 9 - col;
                         mUnk_10->Draw(1, (s16) (mOffsetX + ((r * 16 + 14) - mScrollX)), (s16) ((c * 24 - 22) - mScrollY), 1);
@@ -2047,15 +2047,15 @@ void BattleCommand::UpdateCursorScrollAndCamera(u32 flag) {
             mScrollX = mUnk_124 - tx;
             mScrollY = mUnk_126 - ty;
         }
-        if (mScrollX > data_ov007_02279acc[field].mMax) {
-            mScrollX = data_ov007_02279acc[field].mMax;
-        } else if (mScrollX < data_ov007_02279acc[field].mMin - off) {
-            mScrollX = data_ov007_02279acc[field].mMin - off;
+        if (mScrollX > sScrollXBounds[field].mMax) {
+            mScrollX = sScrollXBounds[field].mMax;
+        } else if (mScrollX < sScrollXBounds[field].mMin - off) {
+            mScrollX = sScrollXBounds[field].mMin - off;
         }
-        if (mScrollY > data_ov007_02279aec[field].mMax) {
-            mScrollY = data_ov007_02279aec[field].mMax;
-        } else if (mScrollY < data_ov007_02279aec[field].mMin) {
-            mScrollY = data_ov007_02279aec[field].mMin;
+        if (mScrollY > sScrollYBounds[field].mMax) {
+            mScrollY = sScrollYBounds[field].mMax;
+        } else if (mScrollY < sScrollYBounds[field].mMin) {
+            mScrollY = sScrollYBounds[field].mMin;
         }
         if (TouchManager::Get().mPressed != 0) {
             mUnk_129 = 1;
@@ -2097,14 +2097,14 @@ void BattleCommand::UpdateCursorScrollAndCamera(u32 flag) {
                 func_ov007_02246a84(mCommandMap, 2);
                 return;
             }
-            func_ov007_022471c8(mCommandMap, 0);
+            RotateCameraYaw(mCommandMap, 0);
         }
         if (InputManager::Get().IsDown(0x100)) {
             if (InputManager::Get().IsHeld(0x200)) {
                 func_ov007_02246a84(mCommandMap, 2);
                 return;
             }
-            func_ov007_022471c8(mCommandMap, 1);
+            RotateCameraYaw(mCommandMap, 1);
         }
     }
     if (moved == 1) {
@@ -2115,7 +2115,7 @@ void BattleCommand::UpdateCursorScrollAndCamera(u32 flag) {
     }
 }
 
-BOOL func_ov007_02262574(BattlePlayerList *list, u8 row, u8 col);
+BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 row, u8 col);
 
 void BattleCommand::RefreshCommandPageOrList() {
     switch (mMode) {
@@ -2129,7 +2129,7 @@ void BattleCommand::RefreshCommandPageOrList() {
                 u8 who    = list->mMarkers[(u8) (cell - 1)].mPlayer;
                 u16 value;
                 if (owner == who || who == list->mPlayers[owner]->mPartner) {
-                    value = *func_ov007_02262510(list, (u8) (cell - 1));
+                    value = *GetMarkerSlotValue(list, (u8) (cell - 1));
                 } else {
                     value = 0;
                 }
@@ -2149,11 +2149,11 @@ void BattleCommand::RefreshCommandPageOrList() {
             b    = mCursorY;
             cell = list->CellAt(a, b);
             if (cell > 0) {
-                BattleCellInfo *info = func_ov007_02262530(list, a, b);
-                u16 sum              = info->mUnk_04 + func_ov007_02262530(list, a, b)->mUnk_06;
-                u8 c                 = func_ov007_02262530(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mUnk_09;
-                u32 d                = func_ov007_02262530(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mUnk_08;
-                BattleCellInfo *e    = func_ov007_02262530(data_020d433c.mBattlePlayers, mCursorX, mCursorY);
+                BattleCellInfo *info = GetUnitRecordAt(list, a, b);
+                u16 sum              = info->mUnk_04 + GetUnitRecordAt(list, a, b)->mUnk_06;
+                u8 c                 = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mAttribute;
+                u32 d                = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mBakuganId;
+                BattleCellInfo *e    = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY);
                 BattleCellPair pair = *(BattleCellPair *) e;
                 if (mCommandList) {
                     SetCommandListBakugan(mCommandList, d, c, (s8) data_020d433c.mBattlePlayers->Units()[(u8) (cell - 1)].mPlayer);
@@ -2171,7 +2171,7 @@ void BattleCommand::CloseMode(BOOL flag) {
     switch (mMode) {
         case 2:
             if (flag) {
-                func_ov007_02245888(mCommandMap);
+                CloseCommandMap(mCommandMap);
             } else {
                 CloseCommandMapNow(mCommandMap);
             }
@@ -2216,7 +2216,7 @@ void BattleCommand::OpenNextMode(u32 flag) {
     if (mMode != 0) {
         return;
     }
-    func_ov007_0223a5a4(this, 0);
+    InitCommandMainScreen(this, 0);
     switch (mNextMode) {
         case 2:
             mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
@@ -2371,8 +2371,8 @@ void BattleCommand::DrawTurnCount() {
     mTurnAnim->Draw(1, 0x80, 0x60, 0);
 }
 
-void func_ov007_0223cf8c(void *arg) {
+void ApplyScrollOffset(void *arg) {
     BattleCommand *command = (BattleCommand *) arg;
     int adjust             = gSaveData[0].mUnk_28_5 ? 0 : 4;
-    G2S_SetBG0Offset(command->mScrollX + data_ov007_02279aac[0] - adjust, command->mScrollY + data_ov007_02279aac[1]);
+    G2S_SetBG0Offset(command->mScrollX + sSubBg0Offset[0] - adjust, command->mScrollY + sSubBg0Offset[1]);
 }

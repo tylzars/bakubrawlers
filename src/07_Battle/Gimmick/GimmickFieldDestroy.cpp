@@ -10,7 +10,7 @@ void RemoveCollisionSet(GimmickCollision *data, GimmickSetData *set);
 void LoadCollisionFile(void *buf, u8 id);
 GimmickSetData *AddCollisionSet(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
 
-static const u8 data_ov007_022793cc[4]  = {3, 4, 5, 0};
+static const u8 sDestroyTurnLimits[4]  = {3, 4, 5, 0};
 static const u16 data_ov007_022793d4[3] = {30, 50, 50};
 static const u8 data_ov007_022793d0[4]  = {1, 3, 5, 0};
 static const u16 data_ov007_022793da[3] = {0, 0x1555, 0};
@@ -160,7 +160,7 @@ void GimmickFieldDestroy::Update() {
         if (data_020d433c.mHasPartners) {
             limit = 3;
         } else {
-            limit = data_ov007_022793cc[players - 2];
+            limit = sDestroyTurnLimits[players - 2];
         }
         if (mTurnCount < limit) {
             break;

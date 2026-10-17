@@ -97,19 +97,19 @@ static const fx32 sClipPlanes[8][2] = {
 };
 
 extern "C" void GetCornerPosition(BattleCommandMap *map, VecFx32 *out);
-extern "C" void func_ov007_022476e0(BattleCommandMap *map);
+extern "C" void CreateStatusPanels(BattleCommandMap *map);
 extern "C" void func_ov007_02247898(BattleCommandMap *map);
-extern "C" void func_ov007_0224796c(BattleCommandMap *map);
+extern "C" void CreateMapObj(BattleCommandMap *map);
 extern "C" void func_ov007_022479d4(BattleCommandMap *map, u32 a);
 extern "C" void func_ov007_02247a1c(BattleCommandMap *map, u32 a);
-extern "C" void func_ov007_02246a6c(BattleCommandMap *map);
+extern "C" void DrawMapObj(BattleCommandMap *map);
 extern "C" void func_ov007_02246804(BattleCommandMap *map);
 extern "C" void func_ov007_02246758(BattleCommandMap *map);
 extern "C" void func_ov007_0224677c(BattleCommandMap *map);
-extern "C" void func_ov007_02246730(BattleCommandMap *map);
+extern "C" void DrawBakuganModel(BattleCommandMap *map);
 extern "C" void func_ov007_02246578(BattleCommandMap *map);
-extern "C" void func_ov007_02246558(BattleCommandMap *map);
-void func_ov007_02233078(VecFx32 *a, VecFx32 *b, int c, VecFx32 *d);
+extern "C" void DrawStatusPanels(BattleCommandMap *map);
+void PredictPosition(VecFx32 *a, VecFx32 *b, int c, VecFx32 *d);
 
 
 struct Rot16 {
@@ -310,7 +310,7 @@ void CloseCommandMapNow(BattleCommandMap *map) {
     map->mState = 3;
 }
 
-void func_ov007_02245888(BattleCommandMap *map) {
+void CloseCommandMap(BattleCommandMap *map) {
     map->mState = 1;
 }
 
@@ -325,9 +325,9 @@ void BattleCommandMap::Init() {
 }
 
 void BattleCommandMap::func_ov007_022458cc() {
-    func_ov007_022476e0(this);
+    CreateStatusPanels(this);
     func_ov007_02247898(this);
-    func_ov007_0224796c(this);
+    CreateMapObj(this);
     mUnk_74->Update();
 }
 
@@ -377,7 +377,7 @@ void BattleCommandMap::func_ov007_02245e58() {
     float step = (float) mUnk_12c / 8.0f;
     u8 i       = 0;
     do {
-        func_ov007_02233078((VecFx32 *) mUnk_120, (VecFx32 *) mUnk_114, (u32) (mUnk_134 + (float) i * step), (VecFx32 *) &mUnk_78[i * 0xc]);
+        PredictPosition((VecFx32 *) mUnk_120, (VecFx32 *) mUnk_114, (u32) (mUnk_134 + (float) i * step), (VecFx32 *) &mUnk_78[i * 0xc]);
         i++;
     } while (i < 8);
     float limit = (float) mUnk_12c / 8.0f;
@@ -514,13 +514,13 @@ static inline void ApplyRot(BakuganModel *obj, Rot16 *rot, u16 base) {
 }
 
 void BattleCommandMap::func_ov007_02246450() {
-    func_ov007_02246a6c(this);
+    DrawMapObj(this);
     func_ov007_02246804(this);
     func_ov007_02246758(this);
     if (mUnk_14f != 0) {
         func_ov007_0224677c(this);
     }
-    func_ov007_02246730(this);
+    DrawBakuganModel(this);
     data_020d433c.mEffects->UpdateTagged(1);
     BOOL show = TRUE;
     if (CameraManager::Get().mMode == 2) {
@@ -530,13 +530,13 @@ void BattleCommandMap::func_ov007_02246450() {
     }
     if (show) {
         func_ov007_02246578(this);
-        func_ov007_02246558(this);
+        DrawStatusPanels(this);
     }
 }
 
 void GetCellPosition(VecFx32 *out, u8 a, u8 b);
 
-extern "C" void func_ov007_02246558(BattleCommandMap *map) {
+extern "C" void DrawStatusPanels(BattleCommandMap *map) {
     if (map->mUnk_151 != 0 && map->mStatusPanels) {
         map->mStatusPanels->DrawPanels();
     }
@@ -573,7 +573,7 @@ extern "C" void func_ov007_02246578(BattleCommandMap *map) {
     }
 }
 
-extern "C" void func_ov007_02246730(BattleCommandMap *map) {
+extern "C" void DrawBakuganModel(BattleCommandMap *map) {
     if (map->mUnk_150 != 0 && map->mUnk_154 != 0 && map->mUnk_14) {
         map->mUnk_14->DrawModel();
     }
@@ -669,12 +669,12 @@ extern "C" void func_ov007_02246d88(BattleCommandMap *map);
 extern "C" void func_ov007_02246ddc(BattleCommandMap *map);
 extern "C" void func_ov007_02246efc(BattleCommandMap *map);
 extern "C" void func_ov007_0224701c(BattleCommandMap *map, VecFx32 *v);
-extern "C" void func_ov007_022470f4(BattleCommandMap *map, u8 a, u8 b, u32 frames);
-extern "C" void func_ov007_02247544(BattleCommandMap *map, VecFx32 *target, VecFx32 *pos, u32 frames);
+extern "C" void SetCursorCellAndMoveCamera(BattleCommandMap *map, u8 a, u8 b, u32 frames);
+extern "C" void StartCameraMove(BattleCommandMap *map, VecFx32 *target, VecFx32 *pos, u32 frames);
 extern "C" void func_ov007_02247618(BattleCommandMap *map);
-extern "C" void func_ov007_0224768c(BattleCommandMap *map);
+extern "C" void CopyCameraYaw(BattleCommandMap *map);
 
-extern "C" void func_ov007_02246a6c(BattleCommandMap *map) {
+extern "C" void DrawMapObj(BattleCommandMap *map) {
     if (map->mMapObj) {
         map->mMapObj->Draw();
     }
@@ -703,7 +703,7 @@ void func_ov007_02246a84(BattleCommandMap *map, u32 mode) {
     CameraManager::Get().SetCamerasAndRequestMode(1, camera, 0);
     SnapshotCamera();
     func_ov007_02247618(map);
-    func_ov007_0224768c(map);
+    CopyCameraYaw(map);
 }
 
 extern "C" void func_ov007_02246d88(BattleCommandMap *map) {
@@ -749,7 +749,7 @@ extern "C" void func_ov007_02246efc(BattleCommandMap *map) {
         camera->mTarget.y = 0;
         camera->mTarget.z = 0;
     }
-    func_ov007_022470f4(map, data_020d433c.mBattlePlayers->mUnk_28b, data_020d433c.mBattlePlayers->mUnk_28c, 0);
+    SetCursorCellAndMoveCamera(map, data_020d433c.mBattlePlayers->mUnk_28b, data_020d433c.mBattlePlayers->mUnk_28c, 0);
 }
 
 extern "C" u32 func_ov007_02246fc0() {
@@ -808,12 +808,12 @@ extern "C" void func_ov007_0224701c(BattleCommandMap *map, VecFx32 *v) {
 }
 
 void func_ov007_022470e4(BattleCommandMap *map, u8 a, u8 b) {
-    func_ov007_022470f4(map, a, b, 0x1e);
+    SetCursorCellAndMoveCamera(map, a, b, 0x1e);
 }
 
-extern "C" void func_ov007_0224724c(BattleCommandMap *map);
+extern "C" void ApplyCameraYaw(BattleCommandMap *map);
 
-extern "C" void func_ov007_022470f4(BattleCommandMap *map, u8 a, u8 b, u32 frames) {
+extern "C" void SetCursorCellAndMoveCamera(BattleCommandMap *map, u8 a, u8 b, u32 frames) {
     if (a == map->mCursorX && b == map->mCursorY && frames == 0x1e) {
         return;
     }
@@ -839,10 +839,10 @@ extern "C" void func_ov007_022470f4(BattleCommandMap *map, u8 a, u8 b, u32 frame
     VEC_Add(&w, &d, &e);
     w.y = target.y;
     e.y = pos.y;
-    func_ov007_02247544(map, &w, &e, frames);
+    StartCameraMove(map, &w, &e, frames);
 }
 
-extern "C" void func_ov007_022471c8(BattleCommandMap *map, u32 direction) {
+extern "C" void RotateCameraYaw(BattleCommandMap *map, u32 direction) {
     if (map->mCamMoveTimer != 0) {
         return;
     }
@@ -858,11 +858,11 @@ extern "C" void func_ov007_022471c8(BattleCommandMap *map, u32 direction) {
     map->mUnk_146 = old + (delta + 360);
     map->mUnk_146 = map->mUnk_146 % 360;
     if (old != map->mUnk_146) {
-        func_ov007_0224724c(map);
+        ApplyCameraYaw(map);
     }
 }
 
-extern "C" void func_ov007_0224724c(BattleCommandMap *map) {
+extern "C" void ApplyCameraYaw(BattleCommandMap *map) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera == 0) {
         return;
@@ -890,7 +890,7 @@ extern "C" void func_ov007_0224724c(BattleCommandMap *map) {
 extern "C" s32 func_01ff9208(VecFx32 *a, VecFx32 *b);
 extern "C" void func_ov007_02247794(BattleCommandMap *map);
 
-extern "C" void func_ov007_02247544(BattleCommandMap *map, VecFx32 *target, VecFx32 *pos, u32 frames) {
+extern "C" void StartCameraMove(BattleCommandMap *map, VecFx32 *target, VecFx32 *pos, u32 frames) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera == 0) {
         return;
@@ -927,7 +927,7 @@ extern "C" void func_ov007_02247618(BattleCommandMap *map) {
     map->mUnk_130 = func_01ff9208(&target, &pos);
 }
 
-extern "C" void func_ov007_0224768c(BattleCommandMap *map) {
+extern "C" void CopyCameraYaw(BattleCommandMap *map) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera == 0) {
         return;
@@ -936,7 +936,7 @@ extern "C" void func_ov007_0224768c(BattleCommandMap *map) {
     map->mUnk_146 = (u16) ((float) (camera->mYaw * 360) / 65536.0f);
 }
 
-extern "C" void func_ov007_022476e0(BattleCommandMap *map) {
+extern "C" void CreateStatusPanels(BattleCommandMap *map) {
     if (map->mUnk_151 == 0) {
         return;
     }
@@ -1005,7 +1005,7 @@ extern "C" void func_ov007_02247898(BattleCommandMap *map) {
     }
 }
 
-extern "C" void func_ov007_0224796c(BattleCommandMap *map) {
+extern "C" void CreateMapObj(BattleCommandMap *map) {
     if (map->mMapObj != 0) {
         return;
     }
@@ -1202,7 +1202,7 @@ extern "C" void GetCornerPosition(BattleCommandMap *map, VecFx32 *out) {
     *out = sCornerPositions[map->mKind][data_020d433c.mBattlePlayers->Current()->mUnk_f1];
 }
 
-extern "C" void func_ov007_0224882c(BattleCommandMap *map);
+extern "C" void PredictLandingAndSetCameraTarget(BattleCommandMap *map);
 
 extern "C" void func_ov007_022487a8(BattleCommandMap *map) {
     VecFx32 v;
@@ -1217,7 +1217,7 @@ extern "C" void func_ov007_022487a8(BattleCommandMap *map) {
     RotateDirScaled(rot, map->mUnk_140, &v, (VecFx32 *) map->mUnk_114);
 }
 
-extern "C" void func_ov007_0224882c(BattleCommandMap *map) {
+extern "C" void PredictLandingAndSetCameraTarget(BattleCommandMap *map) {
     VecFx32 tmp;
     PredictLanding((VecFx32 *) map->mUnk_120, (VecFx32 *) map->mUnk_114, (VecFx32 *) map->mUnk_d8);
     map->mUnk_d8[1] = 0x24cd;
@@ -1247,7 +1247,7 @@ extern "C" void func_ov007_022488ac(BattleCommandMap *map, u32 a, u32 b, u32 c) 
         return;
     }
     func_ov007_022487a8(map);
-    func_ov007_0224882c(map);
+    PredictLandingAndSetCameraTarget(map);
 }
 
 extern "C" void func_ov007_02248910(BattleCommandMap *map) {

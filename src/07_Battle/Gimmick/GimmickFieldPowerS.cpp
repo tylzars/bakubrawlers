@@ -6,8 +6,8 @@
 
 static ModelResource *sResources[2];
 
-static const u8 data_ov007_0227942c[4]  = {5, 3, 0, 0};
-static const u8 data_ov007_02279430[2][3] = {{5, 7, 9}, {5, 7, 9}};
+static const u8 sPowerSPartnerTurnLimits[4]  = {5, 3, 0, 0};
+static const u8 sPowerSTurnLimits[2][3] = {{5, 7, 9}, {5, 7, 9}};
 static const VecFx32 data_ov007_02279438      = {0, 0, 0x1e000};
 static const VecFx32 data_ov007_02279444      = {0x800, 0x800, 0x800};
 
@@ -145,9 +145,9 @@ void GimmickFieldPowerS::Update() {
         }
         u32 limit;
         if (data_020d433c.mHasPartners) {
-            limit = data_ov007_0227942c[mVariant];
+            limit = sPowerSPartnerTurnLimits[mVariant];
         } else {
-            limit = data_ov007_02279430[mVariant][players - 2];
+            limit = sPowerSTurnLimits[mVariant][players - 2];
         }
         if (mTurnCount < limit) {
             break;

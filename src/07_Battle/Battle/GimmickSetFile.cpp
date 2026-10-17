@@ -70,7 +70,7 @@ struct GimmickSetDataHead {
     /* 0a */ u16 mModeMask;
 };
 
-void func_ov007_02271b24(GimmickSetDataHead *data, int mode) {
+void SetCollisionMode(GimmickSetDataHead *data, int mode) {
     data->mMode = mode;
     switch (mode) {
         case 1:

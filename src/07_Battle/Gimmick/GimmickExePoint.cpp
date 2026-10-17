@@ -4,7 +4,7 @@
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 
-static const u8 data_ov007_02279410[4] = {3, 4, 5, 0};
+static const u8 sExePointTurnLimits[4] = {3, 4, 5, 0};
 
 static ModelResource *sResource;
 
@@ -102,7 +102,7 @@ void GimmickExePoint::Update() {
         if (data_020d433c.mHasPartners) {
             limit = 2;
         } else {
-            limit = data_ov007_02279410[players - 2];
+            limit = sExePointTurnLimits[players - 2];
         }
         if (mTurnCount < limit) {
             break;

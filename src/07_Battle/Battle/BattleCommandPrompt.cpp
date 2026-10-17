@@ -25,11 +25,11 @@ struct PromptRect {
     u8 w;
     u8 h;
 };
-static const WindowItemRecord data_ov007_0227a7b4[2] = {
+static const WindowItemRecord sPromptWindowItems[2] = {
     {0, 5, 0xa1, 0x85, 0x36, 0x14, 0, {-1, -1, -1, -1}, 0, 1},
     {1, 2, 0xd9, 0x85, 0x1e, 0x14, 0, {-1, -1, -1, -1}, 0, 1},
 };
-static const WindowCellRecord data_ov007_0227a77c[2] = {
+static const WindowCellRecord sPromptWindowCells[2] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0x1c800, 14, 0, 1, {0, 1, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x1c800, 14, 0, 1, {2, 3, 3, 0}},
 };
@@ -121,7 +121,7 @@ BattleCommandPrompt::BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 
             CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot6c(0));
             break;
     }
-    mWindow = new SelectWindow(2, data_ov007_0227a7b4, -1);
+    mWindow = new SelectWindow(2, sPromptWindowItems, -1);
     MtxFx22 mtx;
     func_01ffcef4(&mtx, 0x1000, 0x1000, 0);
     G2x_SetBGyAffine_((vu16 *) 0x4001030, &mtx, 0, 0, -mSlideX, 0);
@@ -181,13 +181,13 @@ BattleCommandPrompt::~BattleCommandPrompt() {
     G2S_SetBlendBrightness(0x1f, 0);
 }
 
-void func_ov007_0225f080(s16 *x);
-void func_ov007_0225e698(BattleCommandPrompt *prompt);
+void ApplySlideX(s16 *x);
+void InitPromptSubScreen(BattleCommandPrompt *prompt);
 
 void BattleCommandPrompt::Update() {
     switch (mState) {
         case 0: {
-            func_ov007_0225e698(this);
+            InitPromptSubScreen(this);
             Load();
             SelectWindow *win = mWindow;
             WindowItem *items = win->mCursor->mItems;
@@ -253,7 +253,7 @@ void BattleCommandPrompt::Update() {
                         mStep = 1;
                         mWindow->mEnabled = 1;
                     }
-                    QueueFrameCallback((FrameCallback) func_ov007_0225f080, &mSlideX);
+                    QueueFrameCallback((FrameCallback) ApplySlideX, &mSlideX);
                     break;
                 case 1: {
                     int idx            = mCursorPos + mScroll;
@@ -396,7 +396,7 @@ void BattleCommandPrompt::Update() {
                     if (mSlideX <= -0x100) {
                         mState = 6;
                     }
-                    QueueFrameCallback((FrameCallback) func_ov007_0225f080, &mSlideX);
+                    QueueFrameCallback((FrameCallback) ApplySlideX, &mSlideX);
                     break;
                 case 3:
                     mSlideOutDelayFrames++;
@@ -546,7 +546,7 @@ void CloseCommandPrompt(BattleCommandPrompt *prompt, u32 flag) {
     prompt->mState = 7;
 }
 
-void func_ov007_0225e698(BattleCommandPrompt *prompt) {
+void InitPromptSubScreen(BattleCommandPrompt *prompt) {
     G2S_SetBG0Priority(3);
     G2S_SetBG3Priority(0);
     GXS_SetVisiblePlane(0x11);
@@ -561,7 +561,7 @@ void BattleCommandPrompt::Load() {
     ChangeDir("/Game/2D/union_b");
     LoadAndQueueUpload(1, 4, 0x1c800, "union_b_obj_cockpit.nce_ncg1D.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 5, 0x1c0, "union_b_obj_cockpit_ncl.bin", 0, 0, 0);
-    mWindow->SetCells(2, data_ov007_0227a77c);
+    mWindow->SetCells(2, sPromptWindowCells);
     LoadAndQueueUpload(1, 4, 0x1b800, "union_b_obj_cursor.nce_ncg1D.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 5, 0x1a0, "union_b_obj_cursor_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 4, 0x1a000, "union_b_obj_gp.nce_ncg1D.bin", 0, 0, 0);
@@ -666,7 +666,7 @@ void BattleCommandPrompt::Load() {
     ChangeDir("/");
 }
 
-void func_ov007_0225f080(s16 *x) {
+void ApplySlideX(s16 *x) {
     G2x_SetBGyAffine_((vu16 *) 0x4001030, &gIdentityMtx22, 0, 0, -*x, 0);
 }
 

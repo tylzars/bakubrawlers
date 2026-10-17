@@ -20,7 +20,7 @@ struct BattlePlayer;
 struct BattleHitBox {
     /* 00 */ VecFx32 mPos;
     union {
-        /* 0c */ VecFx32 mAxes[3]; // the frame's axes, refreshed from the rotation by func_ov007_0227238c
+        /* 0c */ VecFx32 mAxes[3]; // the frame's axes, refreshed from the rotation by GetNearestPointOnBox
         /* 0c */ PAD(0x0c, 0x30);
     };
     /* 30 */ fx32 mHalfX;
@@ -59,7 +59,7 @@ struct BattlePlane {
 };
 
 // The shoot minigame object (shoot, battle_shoot_b_*): the camera, the fired bakugan (a posed 3D object), its status
-// panels and the sprites. Vtable 02289810 (0x1f0 bytes, created by func_ov007_0226bd3c).
+// panels and the sprites. Vtable 02289810 (0x1f0 bytes, created by Setup).
 class BattleTarget : public SceneBase {
 public:
     /* 00 SceneBase */

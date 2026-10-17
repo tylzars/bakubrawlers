@@ -451,11 +451,11 @@ void BattleHud::Update() {
     Draw();
 }
 
-void func_ov007_02226a34(void *obj) {
+void CloseHud(void *obj) {
     ((BattleHud *) obj)->mUnk_23 |= 2;
 }
 
-void func_ov007_02226a44(BattleHud *obj, u32 state) {
+void SetHudState(BattleHud *obj, u32 state) {
     switch (state) {
         case 0:
             obj->mState = 0;
@@ -728,7 +728,7 @@ BOOL BattleHud::SlideSidesOut() {
     return 0;
 }
 
-void func_ov007_02227434(BattleHud *obj) {
+void MovePlayerAnimX(BattleHud *obj) {
     obj->mSide0PlayerAnimX = obj->mSide0PlayerAnimX + obj->mPlayerAnimXPerFrame;
     obj->mSide1PlayerAnimX = obj->mSide1PlayerAnimX - obj->mPlayerAnimXPerFrame;
 }

@@ -128,7 +128,7 @@ Diff the traces of two variants to find the first stage where they part. Facts r
   difference under 2.0/sp2p2 (true for e_pow and cri_wave_ch).
 - The IR keeps an assignment to a local that lives across blocks as its own statement only when the same local is
   assigned again later in that block; otherwise the value is folded into its use. Reusing one variable for two
-  arguments (BattleResult::func_ov007_0224f9a0's `y`) is a natural way to pin the first one's evaluation point.
+  arguments (BattleResult::DrawRetryScreen's `y`) is a natural way to pin the first one's evaluation point.
 - A call result kept in a local loses its name in the backend's first local CSE: inside the call's extended block
   (the call's block and every following block with a single predecessor) each use of the local is replaced by the
   call's result temporary, the copy into the local becomes dead, and the temporary, numbered after all locals, is
@@ -381,7 +381,7 @@ Other findings from linking:
 - **Seeing the order before scheduling.** Compiling the same file with `-proc generic` instead of `-proc arm946e`
   (other flags unchanged) skips the ARM9 instruction scheduler, which runs before register allocation. Comparing
   the two shows whether a register difference comes from scheduling (an instruction moved past a definition) or
-  from allocation itself. BattleResult::func_ov007_0224f9a0's last 5 words were a scheduling difference: the
+  from allocation itself. BattleResult::DrawRetryScreen's last 5 words were a scheduling difference: the
   original finishes the third Draw's y before loading `this`. Reusing one `y` variable for the third and fourth Draw
   calls reproduces it.
 
@@ -480,7 +480,7 @@ Other findings from linking:
   hoisted after it. `(u8 *) g[0].member` gets the direct order and keeps aliasing with `g`, which an extern alias for
   the same bytes doesn't (UnlockStoreItems, UnlockProgressEntry).
 
-- **Recompute differences instead of naming them.** BattleShoot::func_ov007_0226f698 matched once `x0 - x1` and
+- **Recompute differences instead of naming them.** BattleShoot::PlotLine matched once `x0 - x1` and
   `y0 - y1` were written out at each use (with an `ABS` macro) instead of held in `dx`/`dy` locals.
 - **Where a shift sits matters.** `fx32 distance = f(...) << 12;` then `FX_Mul(distance, k)` matched
   func_ov007_0226dfb8; shifting inside the `FX_Mul` argument did not.
@@ -604,7 +604,7 @@ Other findings from linking:
     shifts registers.
   - `switch` instead of an if-chain stops mwcc predicating the arms.
 - **An `&` chain no single expression reproduces.** `BOOL lo = (a >= 0) & (b >= 0); if (lo & (a < 0x100) & ...)`
-  gave the original's evaluation order where none of the 120 one-expression forms did (BattleShoot::func_ov007_0226f76c).
+  gave the original's evaluation order where none of the 120 one-expression forms did (BattleShoot::PlotDot).
   Reading `tbl[idx]` into a local before an `f++` puts the table load ahead of the store, and `if (field)` right after
   `field = var;` compiles to `tst #255`.
 - **Arguments with side effects are evaluated before the stack-argument stores.** A volatile read or `x++` in an
@@ -796,7 +796,7 @@ Other findings from linking:
   both operand orders (`BattleTarget::func_ov007_0225aa80`).
 - **One-word diffs in the literal pool** can be a wrong constant, e.g. dividing by the wrong number
   (`BattleTarget::func_ov007_0225c360` divides by 182, not 240).
-- **A stack argument read twice:** a `volatile` parameter reproduces it (`BattleOrderSelect::func_ov007_0224cb20`);
+- **A stack argument read twice:** a `volatile` parameter reproduces it (`BattleOrderSelect::IsInRect`);
   like `*(u8 *) &param`, treat it as a placeholder for the real source form.
 - **Float compared with an int:** keep the float expression in a helper that returns float and cast at the
   compare (`(s32) FramesToFloat(n) < x`); mwcc evaluates the float, then the left side, then `_ffix`.

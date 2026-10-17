@@ -15,7 +15,7 @@ extern const VecFx32 data_ov007_022791ac;
 extern const VecFx32 data_ov007_022791b8;
 extern const VecFx32 data_ov007_022791a0;
 extern "C" void func_01ffd0e0(MtxFx43 *mtx, u16 angle);
-void func_ov007_02229998(BattleField3D *obj);
+void FreeAuras(BattleField3D *obj);
 
 // Effect (particle) system functions: effects are loaded by name into numbered slots, spawned as emitters addressed by
 // a 16-bit handle, and moved by handle.
@@ -109,7 +109,7 @@ BattleField3D::BattleField3D(BattleData *data, int unk2) {
 }
 
 BattleField3D::~BattleField3D() {
-    func_ov007_02229998(this);
+    FreeAuras(this);
     FreeEffectGroup(mEffects, 1);
     FreeEffectGroup(mEffects, 0);
     if (mSide1RealBaku) {
@@ -131,7 +131,7 @@ BattleField3D::~BattleField3D() {
 }
 
 // The caller passes its BattleField3D, which the function doesn't use.
-BOOL func_ov007_02229524(BattleField3D *field) {
+BOOL UpdateCameraPath(BattleField3D *field) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     camera->AdvanceFrame(0);
     camera->ApplyPath();
@@ -139,7 +139,7 @@ BOOL func_ov007_02229524(BattleField3D *field) {
     return camera->mFrameIndex + 1 >= camera->mFrameCount;
 }
 
-void func_ov007_02229758(BattleField3D *obj) {
+void ShowModels(BattleField3D *obj) {
     obj->mUnk_04_1 = 0;
     obj->mUnk_04_2 = 0;
 }
@@ -205,7 +205,7 @@ void BattleField3D::CreateAuras() {
     SetEffectPosition(mEffects, mAura[1], &pos);
 }
 
-void func_ov007_02229998(BattleField3D *obj) {
+void FreeAuras(BattleField3D *obj) {
     if (obj->mAura[0] != -1) {
         FreeEffect(obj->mEffects, obj->mAura[0]);
         obj->mAura[0] = -1;

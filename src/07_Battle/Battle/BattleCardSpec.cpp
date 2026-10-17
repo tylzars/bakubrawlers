@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag);
-BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
+BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 extern const VecFx32 data_ov007_0227aa1c;
 
 
@@ -120,7 +120,7 @@ void BattleCardSpec::Update() {
             break;
         case 6:
             if (mUnk_1e) {
-                if (!func_ov007_022631bc(data_020d433c.mBattlePlayers, 0x11)) {
+                if (!SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0x11)) {
                     return;
                 }
                 RequestScene(1);

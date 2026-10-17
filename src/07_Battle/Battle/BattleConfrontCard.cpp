@@ -38,7 +38,7 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-void func_ov007_0226a448(BattlePlayer *player, u8 a, int b);
+void SetSlot6cFlag(BattlePlayer *player, u8 a, int b);
 extern "C" u32 func_ov007_022234f0(int player, u8 mode, u8 ch);
 static const WindowItemRecord sWindowItems[3] = {
     {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
@@ -60,14 +60,14 @@ static const s32 sAttributeRates[6][6] = {
     {0x1000, 0x1000, 0x1000, 0xccd, 0x1333, 0x1000},
 };
 
-void func_ov007_0226a448(BattlePlayer *player, u8 index, int flag);
+void SetSlot6cFlag(BattlePlayer *player, u8 index, int flag);
 
 extern const s8 data_ov007_02279d3c[];
 u8 GetCardAttributeValue(u32 id, u32 index);
 
 extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
 extern "C" void func_ov007_022633f8(BattlePlayerList *list);
-BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
+BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 extern "C" void func_020383f8(u32 heap);
 extern "C" void GX_SetGraphicsMode(u32 unk1, u32 unk2, u32 unk3);
 extern "C" void GXS_SetGraphicsMode(u32 unk1);
@@ -83,8 +83,8 @@ public:
     virtual u8 UpdateTouch(int a);
     virtual void vfunc_44(int index, u16 count);
 };
-u32 func_ov007_022696a0(u32 a, u32 b);
-void func_ov007_022626b8(BattlePlayerList *list, u8 index);
+u32 GetTexVariant(u32 a, u32 b);
+void RemoveMarker(BattlePlayerList *list, u8 index);
 u8 func_ov007_0226a700(BattlePlayer *player, u8 mask, s16 x, s16 y);
 
 
@@ -228,7 +228,7 @@ void BattleConfrontCard::Update() {
             }
             break;
         case 7:
-            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 mState++;
             }
             break;
@@ -595,7 +595,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             if (data_020d433c.mUnk_10) {
                 data_020d433c.mUnk_10->SetupLayout(10);
             }
-            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 mUnk_0d++;
             }
             break;
@@ -907,7 +907,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             mUnk_0d = 0x20;
             break;
         case 32:
-            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 mUnk_0d++;
                 if (mUnk_4c) {
                     ((BattleUnionAbility *) mUnk_4c)->Close(0);
@@ -961,7 +961,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             break;
         }
         case 34:
-            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 mUnk_0d++;
             }
             break;
@@ -1052,7 +1052,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             mUnk_0d++;
             break;
         case 38: {
-            if (!func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+            if (!SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 break;
             }
             u8 i = 0;
@@ -1162,7 +1162,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             mUnk_0d++;
             break;
         case 43:
-            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 mUnk_0d++;
             }
             break;
@@ -1269,7 +1269,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             if (mContext->mRequest == 0) {
                 break;
             }
-            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 mUnk_21 = func_ov007_02244440();
                 mUnk_0d++;
             }
@@ -1289,7 +1289,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 } while (i < 2);
                 if (found == 1) {
                     if (idx == mUnk_21) {
-                        u32 v = func_ov007_022696a0(e[mUnk_21].mUnk_0c, e[mUnk_21].mUnk_0d_0);
+                        u32 v = GetTexVariant(e[mUnk_21].mUnk_0c, e[mUnk_21].mUnk_0d_0);
                         new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[mUnk_21].mUnk_0d_4, 10, v, 0);
                         if (data_020d433c.mUnk_7a) {
                             s16 d = (s16) (e[(mUnk_21 + 1) % 2].mUnk_04 - e[mUnk_21].mUnk_04);
@@ -1325,7 +1325,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                         data_020d433c.mBattlePlayers->mUnk_2b0 = 1;
                     }
                 } else {
-                    u32 v = func_ov007_022696a0(e[mUnk_21].mUnk_0c, e[mUnk_21].mUnk_0d_0);
+                    u32 v = GetTexVariant(e[mUnk_21].mUnk_0c, e[mUnk_21].mUnk_0d_0);
                     new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[mUnk_21].mUnk_0d_4, e[mUnk_21].mUnk_0d_4 + 0x10, v, 0);
                 }
                 mContext->mRequest = 0;
@@ -1349,7 +1349,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 }
                 data_020d433c.mBattlePlayers->mPlayers[e[mUnk_21].mUnk_0d_4]->PushHistory(e[other].mUnk_04, e[other].mUnk_0d_0);
             }
-            func_ov007_022626b8(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnits[data_020d433c.mBattlePlayers->mUnitA].mMarker);
+            RemoveMarker(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnits[data_020d433c.mBattlePlayers->mUnitA].mMarker);
             func_ov007_02262828(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnitA, 2);
             func_ov007_02262828(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnitB, 2);
             mUnk_0d = 0x35;
@@ -1555,7 +1555,7 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
             case 0x4d: {
                 j = 0;
                 do {
-                    func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
+                    SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
                     j++;
                 } while (j < data_020d433c.mUnk_99);
                 (&mUnk_5c)[i] = 1;
@@ -1565,7 +1565,7 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
                 if (selfLevel < oppLevel) {
                     j = 0;
                     do {
-                        func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
+                        SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
                         j++;
                     } while (j < data_020d433c.mUnk_99);
                     (&mUnk_5c)[side] = 1;
@@ -1578,7 +1578,7 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
                     j = 0;
                     do {
                         if (j == (u8) (card - 0x4f)) {
-                            func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
+                            SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
                         }
                         j++;
                     } while (j < data_020d433c.mUnk_99);
@@ -1592,7 +1592,7 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
                     j = 0;
                     do {
                         if (j == (u8) (card - 0x52)) {
-                            func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
+                            SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[side].mUnk_0d_4], j, 0);
                         }
                         j++;
                     } while (j < data_020d433c.mUnk_99);
@@ -2304,7 +2304,7 @@ u8 BattleConfrontCard::func_ov007_02244440() {
             if (mUnk_53 == 0xff) {
                 mUnk_56 = 0;
             } else {
-                func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4], mUnk_53, 2);
+                SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4], mUnk_53, 2);
             }
         }
         i++;

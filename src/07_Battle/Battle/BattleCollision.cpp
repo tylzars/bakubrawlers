@@ -5,14 +5,14 @@
 
 extern "C" void func_01ffcf80(MtxFx33 *m, u16 angle);
 extern "C" void func_01ffd030(MtxFx33 *m, u16 angle);
-void func_ov007_0227238c(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out);
-fx32 func_ov007_02272358(BattleSphere *sphere, BattleHitBox *box);
-BOOL func_ov007_0227226c(BattleObstacle *a, BattleObstacle *b);
-BOOL func_ov007_0227212c(BattleObstacle *a, BattleObstacle *b);
+void GetNearestPointOnBox(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out);
+fx32 GetBoxDistance(BattleSphere *sphere, BattleHitBox *box);
+BOOL TestBoxSphere(BattleObstacle *a, BattleObstacle *b);
+BOOL TestPosInRadiusXZ(BattleObstacle *a, BattleObstacle *b);
 
-BOOL func_ov007_022720ac(BattleObstacle *a, BattleObstacle *b) {
+BOOL TestCylinder(BattleObstacle *a, BattleObstacle *b) {
     BattleObstacle tmp = *a;
-    if (func_ov007_0227212c(&tmp, b)) {
+    if (TestPosInRadiusXZ(&tmp, b)) {
         if (b->mPos.y + b->mHalfY >= tmp.mPos.y - tmp.mHalfX && b->mPos.y - b->mHalfY <= tmp.mPos.y + tmp.mHalfX) {
             return 1;
         }
@@ -20,7 +20,7 @@ BOOL func_ov007_022720ac(BattleObstacle *a, BattleObstacle *b) {
     return 0;
 }
 
-BOOL func_ov007_0227212c(BattleObstacle *a, BattleObstacle *b) {
+BOOL TestPosInRadiusXZ(BattleObstacle *a, BattleObstacle *b) {
     VecFx32 d;
     VEC_Subtract(&a->mPos, &b->mPos, &d);
     d.y = 0;
@@ -31,7 +31,7 @@ BOOL func_ov007_0227212c(BattleObstacle *a, BattleObstacle *b) {
     return VEC_Mag(&d) < r;
 }
 
-BOOL func_ov007_02272170(BattleObstacle *a, BattleObstacle *b) {
+BOOL TestPosInBoxXZ(BattleObstacle *a, BattleObstacle *b) {
     VecFx32 d;
     MtxFx33 mtx;
     VEC_Subtract(&a->mPos, &b->mPos, &d);
@@ -55,7 +55,7 @@ BOOL func_ov007_02272170(BattleObstacle *a, BattleObstacle *b) {
     return 1;
 }
 
-BOOL func_ov007_0227226c(BattleObstacle *a, BattleObstacle *b) {
+BOOL TestBoxSphere(BattleObstacle *a, BattleObstacle *b) {
     BattleHitBox box;
     box.mPos.x = a->mPos.x;
     box.mPos.y = a->mPos.y;
@@ -67,7 +67,7 @@ BOOL func_ov007_0227226c(BattleObstacle *a, BattleObstacle *b) {
     box.mRotX  = a->mRotX;
     box.mRotY  = a->mRotY;
     box.mRotZ  = a->mRotZ;
-    fx32 d = func_ov007_02272358((BattleSphere *) b, &box);
+    fx32 d = GetBoxDistance((BattleSphere *) b, &box);
     fx32 r = b->mHalfX;
     if (r < 0) {
         r = -r;
@@ -78,7 +78,7 @@ BOOL func_ov007_0227226c(BattleObstacle *a, BattleObstacle *b) {
     return d <= r;
 }
 
-BOOL func_ov007_02272308(BattleObstacle *a, BattleObstacle *b) {
+BOOL TestSphereSphere(BattleObstacle *a, BattleObstacle *b) {
     VecFx32 d;
     VEC_Subtract(&a->mPos, &b->mPos, &d);
     fx32 mag = VEC_Mag(&d);
@@ -93,14 +93,14 @@ BOOL func_ov007_02272308(BattleObstacle *a, BattleObstacle *b) {
     return mag < ra + rb;
 }
 
-fx32 func_ov007_02272358(BattleSphere *sphere, BattleHitBox *box) {
+fx32 GetBoxDistance(BattleSphere *sphere, BattleHitBox *box) {
     VecFx32 p;
-    func_ov007_0227238c(sphere, box, &p);
+    GetNearestPointOnBox(sphere, box, &p);
     VEC_Subtract(&p, &sphere->mPos, &p);
     return VEC_Mag(&p);
 }
 
-void func_ov007_0227238c(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out) {
+void GetNearestPointOnBox(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out) {
     VecFx32 d;
     fx32 half[3];
     MtxFx33 mtx;

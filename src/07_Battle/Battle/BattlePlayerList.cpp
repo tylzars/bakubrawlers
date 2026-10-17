@@ -101,18 +101,18 @@ public:
 
 extern "C" void func_ov007_022633f8(BattlePlayerList *list);
 extern "C" void func_02038444(u32 heap, u32 a);
-void func_ov007_0226a48c(BattlePlayer *player);
-void func_ov007_0226a404(BattlePlayer *player, u32 index, u32 flag);
+void SetupTutorialPlayer(BattlePlayer *player);
+void SetSlot54Flag(BattlePlayer *player, u32 index, u32 flag);
 BOOL func_0202326c(SaveData *d);
 
-void func_ov007_02262328(BattlePlayerList *list);
-BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
-void func_ov007_02262acc(BattlePlayerList *list);
+void CreateObjects(BattlePlayerList *list);
+BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
+void SetupTutorial(BattlePlayerList *list);
 void func_ov007_022621dc();
-void func_ov007_022626b8(BattlePlayerList *list, u8 index);
+void RemoveMarker(BattlePlayerList *list, u8 index);
 extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
 void func_ov007_02269ee4(BattlePlayer *player, u32 reset);
-u32 func_ov007_022696a0(u32 a, u32 b);
+u32 GetTexVariant(u32 a, u32 b);
 extern u8 data_020d4444[];
 extern "C" void func_020383f8(u32 heap);
 
@@ -215,11 +215,11 @@ void BattlePlayerList::Update() {
     }
     switch (mState) {
         case 0:
-            func_ov007_02262328(this);
+            CreateObjects(this);
             mState++;
             break;
         case 1:
-            if (func_ov007_022631bc(this, 0xf)) {
+            if (SetMessageTypeAndCheckAll(this, 0xf)) {
                 data_020d433c.mGimmicks->LoadSetData(data_020d433c.mFieldId, (u8) data_020d433c.mUnk_96);
                 if (data_020d433c.mTutorialId != 0) {
                     mState = 2;
@@ -229,7 +229,7 @@ void BattlePlayerList::Update() {
             }
             break;
         case 2:
-            func_ov007_02262acc(this);
+            SetupTutorial(this);
             break;
         case 4:
             new ListScene(5, mUnk_2a9);
@@ -262,7 +262,7 @@ void BattlePlayerList::Update() {
             break;
         case 7:
             data_0220f540.mUnk_04 = MATH_Rand32(&gRandom, 0);
-            if (func_ov007_022631bc(this, 2)) {
+            if (SetMessageTypeAndCheckAll(this, 2)) {
                 SeedRandom(*(u32 *) ((u8 *) mPlayers[0] + 0x104));
                 mState = 8;
             }
@@ -468,9 +468,9 @@ void BattlePlayerList::Update() {
                     BattlePlayer *p = mPlayers[owner];
                     p->mUnk_fe = 1;
                     p->mUnk_ee++;
-                    func_ov007_022626b8(this, mUnits[mUnitA].mMarker);
+                    RemoveMarker(this, mUnits[mUnitA].mMarker);
                     BattleRecord *used = &mPlayers[owner]->mRecords[slot];
-                    mUnk_2aa           = func_ov007_022696a0(used->mBakuganId, used->mAttribute);
+                    mUnk_2aa           = GetTexVariant(used->mBakuganId, used->mAttribute);
                     func_ov007_02262828(this, mUnitA, 2);
                     if (result == 3) {
                         func_ov007_02262828(this, mUnitB, 2);
@@ -555,11 +555,11 @@ void BattlePlayerList::Update() {
                         // Each record index goes through the reused `slot`: a reassigned local keeps its own late register.
                         slot = mUnits[mUnitA].mRecord;
                         BattleRecord *recs = mPlayers[ownerA]->mRecords;
-                        mUnk_2aa           = func_ov007_022696a0(recs[slot].mBakuganId, recs[slot].mAttribute);
+                        mUnk_2aa           = GetTexVariant(recs[slot].mBakuganId, recs[slot].mAttribute);
                         recs    = mPlayers[ownerA]->mRecords;
                         slot = mUnits[mUnitB].mRecord;
-                        mUnk_2ab = func_ov007_022696a0(recs[slot].mBakuganId, recs[slot].mAttribute);
-                        func_ov007_022626b8(this, mUnits[mUnitA].mMarker);
+                        mUnk_2ab = GetTexVariant(recs[slot].mBakuganId, recs[slot].mAttribute);
+                        RemoveMarker(this, mUnits[mUnitA].mMarker);
                         func_ov007_02262828(this, mUnitA, 2);
                         func_ov007_02262828(this, mUnitB, 2);
                         if (data_020d433c.mUnk_83 != 0) {
@@ -601,14 +601,14 @@ void BattlePlayerList::Update() {
                     p->mUnk_fe = 1;
                     p->mUnk_ee++;
                     mState = 0x16;
-                    func_ov007_022626b8(this, mUnits[mUnitA].mMarker);
+                    RemoveMarker(this, mUnits[mUnitA].mMarker);
                     slot = mUnits[mUnitA].mRecord;
                     BattleRecord *source = &mPlayers[sp]->mRecords[slot];
                     mPlayers[tp]->PushHistory(source->mUnk_04, source->mAttribute);
                     BattlePlayer *holder = *(BattlePlayer *volatile *) &mPlayers[tp];
                     slot                 = *(volatile u8 *) &mUnits[mUnitB].mRecord;
                     BattleRecord *target = &holder->mRecords[slot];
-                    mUnk_2aa             = func_ov007_022696a0(target->mBakuganId, target->mAttribute);
+                    mUnk_2aa             = GetTexVariant(target->mBakuganId, target->mAttribute);
                     func_ov007_02262828(this, mUnitA, 2);
                     func_ov007_02262828(this, mUnitB, 2);
                     if (data_020d433c.mUnk_83 != 0) {
@@ -679,7 +679,7 @@ void BattlePlayerList::Update() {
             mContext->mRequest = 1;
             break;
         case 24:
-            if (func_ov007_022631bc(this, 0xf)) {
+            if (SetMessageTypeAndCheckAll(this, 0xf)) {
                 new BattleConfrontCard(-1);
                 mContext->mRequest = 0;
                 mState++;
@@ -783,7 +783,7 @@ void BattlePlayerList::Update() {
             if (mContext->mRequest == 0) {
                 return;
             }
-            if (!func_ov007_022631bc(this, 0x10)) {
+            if (!SetMessageTypeAndCheckAll(this, 0x10)) {
                 return;
             }
             mState = 0x1f;
@@ -913,7 +913,7 @@ void func_ov007_022621dc() {
     G2S_SetBG1Priority(1);
 }
 
-void func_ov007_02262328(BattlePlayerList *list) {
+void CreateObjects(BattlePlayerList *list) {
     list->mCamera = new Camera();
     list->mCamera->SetUp(0, 0x1000, 0);
     list->mCamera->SetTarget(0, 0, 0);
@@ -935,18 +935,18 @@ void func_ov007_02262328(BattlePlayerList *list) {
     WirelessManager::Get();
     list->mUnk_2a9 = IsWirelessMode(&data_020c4030.mUnk_228) ? data_020d433c.mUnk_ae : 0;
 }
-u16 *func_ov007_02262510(BattlePlayerList *list, u8 index) {
+u16 *GetMarkerSlotValue(BattlePlayerList *list, u8 index) {
     return &list->mPlayers[list->mMarkers[index].mPlayer]->Slot54(list->mMarkers[index].mSlot);
 }
 
-BattleRecord *func_ov007_02262530(BattlePlayerList *list, u8 row, u8 col) {
+BattleRecord *GetUnitRecordAt(BattlePlayerList *list, u8 row, u8 col) {
     u8 index = (u8) (list->mUnitHandles[row][col] - 1);
     return &list->mPlayers[list->mUnits[index].mPlayer]->mRecords[list->mUnits[index].mRecord];
 }
 
 static const s8 sNeighbors[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
-BOOL func_ov007_02262574(BattlePlayerList *list, u8 row, u8 col) {
+BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 row, u8 col) {
     if (list->mMarkerCount == 0 && row >= 3 && row <= 4 && col >= 2 && col <= 3) {
         return TRUE;
     }
@@ -964,7 +964,7 @@ BOOL func_ov007_02262574(BattlePlayerList *list, u8 row, u8 col) {
 }
 
 
-void func_ov007_02262638(BattlePlayerList *list, u8 row, u8 col, u8 player, u8 slot) {
+void AddMarker(BattlePlayerList *list, u8 row, u8 col, u8 player, u8 slot) {
     for (u8 i = 0; i < 12; i++) {
         if (list->mMarkers[i].mStatus == 0) {
             list->mMarkers[i].mStatus = 1;
@@ -973,28 +973,28 @@ void func_ov007_02262638(BattlePlayerList *list, u8 row, u8 col, u8 player, u8 s
             list->mMarkers[i].mPlayer = player;
             list->mMarkers[i].mSlot = slot;
             list->mMarkerHandles[row][col] = i + 1;
-            func_ov007_0226a404(list->mPlayers[player], slot, 1);
+            SetSlot54Flag(list->mPlayers[player], slot, 1);
             list->mMarkerCount++;
             return;
         }
     }
 }
 
-void func_ov007_022626b8(BattlePlayerList *list, u8 index) {
-    func_ov007_0226a404(list->mPlayers[list->mMarkers[index].mPlayer], list->mMarkers[index].mSlot, 2);
+void RemoveMarker(BattlePlayerList *list, u8 index) {
+    SetSlot54Flag(list->mPlayers[list->mMarkers[index].mPlayer], list->mMarkers[index].mSlot, 2);
     list->mMarkers[index].mStatus                                      = 0;
     list->mMarkerHandles[list->mMarkers[index].mCellX][list->mMarkers[index].mCellY] = 0;
     list->mMarkerCount--;
 }
 
-void func_ov007_02262714(BattlePlayerList *list, u8 index, u8 player, u8 slot) {
-    func_ov007_0226a404(list->mPlayers[list->mMarkers[index].mPlayer], list->mMarkers[index].mSlot, 0);
+void SetMarkerPlayerSlot(BattlePlayerList *list, u8 index, u8 player, u8 slot) {
+    SetSlot54Flag(list->mPlayers[list->mMarkers[index].mPlayer], list->mMarkers[index].mSlot, 0);
     list->mMarkers[index].mPlayer = player;
     list->mMarkers[index].mSlot = slot;
-    func_ov007_0226a404(list->mPlayers[player], slot, 1);
+    SetSlot54Flag(list->mPlayers[player], slot, 1);
 }
 
-u8 func_ov007_02262768(BattlePlayerList *list, const VecFx32 *pos, u16 value, u8 player, u8 record, u8 marker, u8 flag) {
+u8 AddUnit(BattlePlayerList *list, const VecFx32 *pos, u16 value, u8 player, u8 record, u8 marker, u8 flag) {
     for (u8 i = 0; i < 12; i++) {
         if (list->mUnits[i].mStatus == 0) {
             list->mUnits[i].mStatus = flag;
@@ -1063,7 +1063,7 @@ void func_ov007_022628e0(BattlePlayerList *list, u8 index, const VecFx32 *pos, u
     list->mUnitHandles[list->mMarkers[marker].mCellX][list->mMarkers[marker].mCellY] = saved;
 }
 
-void func_ov007_022629cc(BattlePlayerList *list, u8 index, u8 value) {
+void ReplaceUnitRecord(BattlePlayerList *list, u8 index, u8 value) {
     u8 player         = list->mUnits[index].mPlayer;
     u8 record         = list->mUnits[index].mRecord;
     BattlePlayer *p   = list->mPlayers[player];
@@ -1080,7 +1080,7 @@ void func_ov007_022629cc(BattlePlayerList *list, u8 index, u8 value) {
     list->mPlayers[player]->mRecords[value].mStatus = 1;
 }
 
-void func_ov007_02262a64(BattlePlayerList *list, u8 a, u8 b) {
+void SetUnitAB(BattlePlayerList *list, u8 a, u8 b) {
     list->mUnitA = a;
     list->mUnitB = b;
 }
@@ -1101,7 +1101,7 @@ void func_ov007_02262a70(BattlePlayerList *list, u8 slot, u8 player) {
     }
 }
 
-void func_ov007_02262acc(BattlePlayerList *list) {
+void SetupTutorial(BattlePlayerList *list) {
     list->mUnk_2a4 = new StorytalkWindow();
     MIi_CpuCopyFast(gCharacterLook, (u8 *) list->mPlayers[0] + 0xa8, 8);
     switch (data_020d433c.mTutorialId) {
@@ -1112,8 +1112,8 @@ void func_ov007_02262acc(BattlePlayerList *list) {
                 list->mUnk_2a4->LoadMessageFile("font/mes_T001_ba_Ali.mes");
             }
             list->mUnk_2af = 0;
-            func_ov007_0226a404(list->mPlayers[0], 1, 2);
-            func_ov007_0226a404(list->mPlayers[0], 2, 2);
+            SetSlot54Flag(list->mPlayers[0], 1, 2);
+            SetSlot54Flag(list->mPlayers[0], 2, 2);
             list->mState = 10;
             break;
         case 2:
@@ -1121,8 +1121,8 @@ void func_ov007_02262acc(BattlePlayerList *list) {
             list->mTurnCount = 2;
             list->mTurnPlayer = 1;
             list->mState = 12;
-            func_ov007_02262638(list, 6, 4, 0, 0);
-            func_ov007_02262638(list, 7, 5, 1, 0);
+            AddMarker(list, 6, 4, 0, 0);
+            AddMarker(list, 7, 5, 1, 0);
             break;
         case 3:
         case 4:
@@ -1133,8 +1133,8 @@ void func_ov007_02262acc(BattlePlayerList *list) {
             }
             list->mUnk_2af = 2;
             list->mTurnCount = 3;
-            func_ov007_02262638(list, 6, 4, 0, 0);
-            func_ov007_02262638(list, 7, 5, 1, 0);
+            AddMarker(list, 6, 4, 0, 0);
+            AddMarker(list, 7, 5, 1, 0);
             list->mTurnPlayer = 0;
             list->mState = 12;
             if (data_020d433c.mTutorialId == 4) {
@@ -1155,9 +1155,9 @@ void func_ov007_02262acc(BattlePlayerList *list) {
             list->mTurnCount = 10;
             list->mTurnPlayer = 1;
             list->mState = 12;
-            func_ov007_02262638(list, 6, 4, 1, 0);
-            func_ov007_0226a48c(list->mPlayers[0]);
-            func_ov007_0226a48c(list->mPlayers[1]);
+            AddMarker(list, 6, 4, 1, 0);
+            SetupTutorialPlayer(list->mPlayers[0]);
+            SetupTutorialPlayer(list->mPlayers[1]);
             u8 i = 0;
             do {
                 BattlePlayer *a = list->mPlayers[0];
@@ -1182,10 +1182,10 @@ void func_ov007_02262acc(BattlePlayerList *list) {
             list->mTurnPlayer = 0;
             list->mState = 12;
             VecFx32 pos    = {-0x11800, 0x899a, -0x17800};
-            func_ov007_02262638(list, 6, 4, 1, 0);
-            func_ov007_02262768(list, &pos, 0, 1, 0, 0, 1);
-            func_ov007_0226a48c(list->mPlayers[0]);
-            func_ov007_0226a48c(list->mPlayers[1]);
+            AddMarker(list, 6, 4, 1, 0);
+            AddUnit(list, &pos, 0, 1, 0, 0, 1);
+            SetupTutorialPlayer(list->mPlayers[0]);
+            SetupTutorialPlayer(list->mPlayers[1]);
             u8 i = 0;
             do {
                 BattlePlayer *a = list->mPlayers[0];
@@ -1210,13 +1210,13 @@ void func_ov007_02262acc(BattlePlayerList *list) {
             list->mTurnPlayer = 0;
             list->mState = 24;
             VecFx32 pos    = {-0x11800, 0x899a, -0x17800};
-            func_ov007_02262638(list, 6, 4, 1, 0);
-            func_ov007_02262768(list, &pos, 0, 1, 0, 0, 1);
-            func_ov007_02262768(list, &pos, 0, 0, 0, 0, 1);
+            AddMarker(list, 6, 4, 1, 0);
+            AddUnit(list, &pos, 0, 1, 0, 0, 1);
+            AddUnit(list, &pos, 0, 0, 0, 0, 1);
             list->mUnitA = 0;
             list->mUnitB = 1;
-            func_ov007_0226a48c(list->mPlayers[0]);
-            func_ov007_0226a48c(list->mPlayers[1]);
+            SetupTutorialPlayer(list->mPlayers[0]);
+            SetupTutorialPlayer(list->mPlayers[1]);
             u8 i = 0;
             do {
                 BattlePlayer *a = list->mPlayers[0];
@@ -1239,7 +1239,7 @@ void func_ov007_02262acc(BattlePlayerList *list) {
             list->mState = 14;
             list->mTurnPlayer = 0;
             list->mTurnCount = 1;
-            func_ov007_02262638(list, 4, 5, 0, 0);
+            AddMarker(list, 4, 5, 0, 0);
             break;
         case 14: {
             if (data_020d433c.mUnk_82) {
@@ -1252,13 +1252,13 @@ void func_ov007_02262acc(BattlePlayerList *list) {
             list->mTurnPlayer = 0;
             list->mTurnCount = 1;
             VecFx32 pos    = {-0x11800, 0x899a, -0x17800};
-            func_ov007_02262638(list, 6, 4, 1, 0);
-            func_ov007_02262768(list, &pos, 0, 1, 0, 0, 1);
-            func_ov007_02262768(list, &pos, 0, 0, 0, 0, 1);
+            AddMarker(list, 6, 4, 1, 0);
+            AddUnit(list, &pos, 0, 1, 0, 0, 1);
+            AddUnit(list, &pos, 0, 0, 0, 0, 1);
             list->mUnitA = 0;
             list->mUnitB = 1;
-            func_ov007_0226a48c(list->mPlayers[0]);
-            func_ov007_0226a48c(list->mPlayers[1]);
+            SetupTutorialPlayer(list->mPlayers[0]);
+            SetupTutorialPlayer(list->mPlayers[1]);
             u8 i = 0;
             do {
                 BattlePlayer *a = list->mPlayers[0];
@@ -1295,7 +1295,7 @@ extern "C" BOOL func_ov007_02263150(BattlePlayerList *list) {
     return result;
 }
 
-BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id) {
+BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id) {
     WirelessManager::Get();
     if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
         return TRUE;

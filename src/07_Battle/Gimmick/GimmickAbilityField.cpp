@@ -3,7 +3,7 @@
 #include "System/FileSystem.hpp"
 #include "Graphics/Camera.hpp"
 #include "System/SoundManager.hpp"
-static const u8 data_ov007_02279514[3] = {5, 7, 9};
+static const u8 sAbilityTurnLimits[3] = {5, 7, 9};
 static const u8 data_ov007_02279554[4] = {0x24, 0x25, 0x26, 0x27};
 static ModelResource *sResources[2];
 static const u8 sAbilityWeights01[1] = {255};
@@ -220,7 +220,7 @@ void GimmickAbilityField::Update() {
         if (data_020d433c.mHasPartners) {
             limit = 3;
         } else {
-            limit = data_ov007_02279514[players - 2];
+            limit = sAbilityTurnLimits[players - 2];
         }
         if (mTurnCount < limit) {
             break;

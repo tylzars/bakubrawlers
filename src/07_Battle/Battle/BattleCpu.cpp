@@ -6,7 +6,7 @@
 
 u8 GetCardAttributeValue(u32 id, u32 index);
 
-BOOL func_ov007_02262574(BattlePlayerList *list, u8 row, u8 col);
+BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 row, u8 col);
 
 // Row and column pairs of the six target regions. One-dimensional u8 tables get a .rodata section each, which is
 // what puts each table of this file on a 4-byte boundary in the original; a struct or 2-D array would share one
@@ -302,7 +302,7 @@ u8 BattleCpu::func_ov007_02231300() {
     do {
         col = data_ov007_022796d8[t * 2 + 1];
         do {
-            if (func_ov007_02262574(data_020d433c.mBattlePlayers, row, col)) {
+            if (IsMarkerPlaceable(data_020d433c.mBattlePlayers, row, col)) {
                 cells[n] = col | (row << 4);
                 n++;
             }
@@ -317,7 +317,7 @@ u8 BattleCpu::func_ov007_02231300() {
     do {
         u8 c = 0;
         do {
-            if (func_ov007_02262574(data_020d433c.mBattlePlayers, r, c)) {
+            if (IsMarkerPlaceable(data_020d433c.mBattlePlayers, r, c)) {
                 return c | (r << 4);
             }
             c++;
@@ -972,9 +972,9 @@ extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
 
 extern "C" void func_01ffd030(MtxFx33 *m, u16 angle);
 
-BOOL func_ov007_02232f24(VecFx32 *pos, VecFx32 *vel);
+BOOL SimulateStep(VecFx32 *pos, VecFx32 *vel);
 
-BOOL func_ov007_02232f24(VecFx32 *pos, VecFx32 *vel) {
+BOOL SimulateStep(VecFx32 *pos, VecFx32 *vel) {
     VecFx32 p = *pos;
     VecFx32 v = *vel;
     BOOL r    = TRUE;
@@ -1002,7 +1002,7 @@ BOOL func_ov007_02232f24(VecFx32 *pos, VecFx32 *vel) {
     return r;
 }
 
-void func_ov007_02233078(VecFx32 *pos, VecFx32 *vel, int steps, VecFx32 *out) {
+void PredictPosition(VecFx32 *pos, VecFx32 *vel, int steps, VecFx32 *out) {
     VecFx32 v = *vel;
     v.x       = FX_Mul(v.x, 0xb800);
     v.y       = FX_Mul(v.y, 0xb800);
@@ -1010,7 +1010,7 @@ void func_ov007_02233078(VecFx32 *pos, VecFx32 *vel, int steps, VecFx32 *out) {
     VecFx32 p = *pos;
     if (steps != 0) {
         do {
-            if (!func_ov007_02232f24(&p, &v)) {
+            if (!SimulateStep(&p, &v)) {
                 break;
             }
             steps--;
@@ -1030,7 +1030,7 @@ int PredictLanding(VecFx32 *pos, VecFx32 *vel, VecFx32 *out) {
         return 0;
     }
     do {
-        func_ov007_02232f24(&p, &v);
+        SimulateStep(&p, &v);
     } while (n++ == 0 || p.y >= 0x899a);
     *out = p;
     return n;
@@ -1094,7 +1094,7 @@ void RotateDirScaled(u16 *rot, u32 s, VecFx32 *dir, VecFx32 *out) {
     out->z = FX_Mul(out->z, FX32_CONST((float) s / 150.0f));
 }
 
-void func_ov007_02233730(VecFx32 *a, VecFx32 *b, VecFx32 *speed, VecFx32 *out) {
+void GetVelocityTowardXZ(VecFx32 *a, VecFx32 *b, VecFx32 *speed, VecFx32 *out) {
     fx32 dx = b->x - a->x;
     fx32 dz = b->z - a->z;
     VecFx32 d;
@@ -1204,7 +1204,7 @@ static inline fx32 Abs(fx32 v) {
     return v < 0 ? -v : v;
 }
 
-void func_ov007_02233f38(const VecFx32 *a, const VecFx32 *b, int unused, VecFx32 *out) {
+void NormalizeDiff(const VecFx32 *a, const VecFx32 *b, int unused, VecFx32 *out) {
     VEC_Subtract(a, b, out);
     VEC_Normalize(out, out);
 }

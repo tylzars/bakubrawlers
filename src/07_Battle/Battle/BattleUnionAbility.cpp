@@ -7,20 +7,20 @@
 #include "Graphics/AntennaIndicator.hpp"
 #include <nitro/gx.h>
 
-static const WindowCellRecord data_ov007_02279a1c[1] = {
+static const WindowCellRecord sUnionOneButtonCells[1] = {
     {"/Game/Battle/Obj/battle_b_obj_union_ability_nce.bin", 6, 0x1a000, 0xc, 0, 1, {6, 8, 7, 0}},
 };
 
-static const WindowItemRecord data_ov007_02279a00[1] = {
+static const WindowItemRecord sUnionOneButtonItems[1] = {
     {0, 0x1, 56, 120, 144, 20, 0, {-1, -1, -1, -1}, 0, 1},
 };
 
-static const WindowCellRecord data_ov007_02279a70[2] = {
+static const WindowCellRecord sUnionTwoButtonCells[2] = {
     {"/Game/Battle/Obj/battle_b_obj_union_ability_nce.bin", 0, 0x1a000, 0xc, 0, 1, {0, 2, 1, 0}},
     {"/Game/Battle/Obj/battle_b_obj_union_ability_nce.bin", 3, 0x1a000, 0xc, 0, 1, {3, 5, 4, 0}},
 };
 
-static const WindowItemRecord data_ov007_02279a38[2] = {
+static const WindowItemRecord sUnionTwoButtonItems[2] = {
     {0, 0x1, 56, 88, 144, 20, 0, {1, 1, 0, 0}, 0, 1},
     {1, 0x1, 56, 120, 144, 20, 0, {0, 0, 1, 1}, 0, 1},
 };
@@ -40,9 +40,9 @@ BattleUnionAbility::BattleUnionAbility(u8 type, u32 charOffset, u16 palette)
     mCharOffset = charOffset;
     mPalette    = palette;
     if (type != 5) {
-        mWindow = new SelectWindow(2, data_ov007_02279a38, 0);
+        mWindow = new SelectWindow(2, sUnionTwoButtonItems, 0);
     } else {
-        mWindow = new SelectWindow(1, data_ov007_02279a00, 0);
+        mWindow = new SelectWindow(1, sUnionOneButtonItems, 0);
     }
     u8 i = 0;
     do {
@@ -172,7 +172,7 @@ void BattleUnionAbility::func_ov007_022344a4() {
     screen.SetObjVramMode(3);
     ChangeDir("/Game/Battle/Obj");
     if (mType == 0 || mType == 1 || mType == 3) {
-        mWindow->SetCells(2, data_ov007_02279a70);
+        mWindow->SetCells(2, sUnionTwoButtonCells);
         mWindow->mCells[0]->SetAnimation(1);
         LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
         u8 i = 0;
@@ -183,7 +183,7 @@ void BattleUnionAbility::func_ov007_022344a4() {
             i++;
         } while (i < 2);
     } else if (mType == 5) {
-        mWindow->SetCells(1, data_ov007_02279a1c);
+        mWindow->SetCells(1, sUnionOneButtonCells);
         mWindow->mCells[0]->SetAnimation(7);
         LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
         mAnims[0]            = new CellAnimation("battle_b_obj_union_ability_nce.bin", 9, 1, 1);

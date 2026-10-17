@@ -12,7 +12,7 @@
 // One 0x14-byte motion record of the table at 0x02279080.
 extern BattleObj01Motion data_ov007_02279080[];
 
-void func_ov007_02225354(float x, float y, float *out);
+void NormalizeXY(float x, float y, float *out);
 int PointDistance(int x1, int y1, int x2, int y2);
 
 
@@ -65,12 +65,12 @@ BOOL BattleObj01::Start(u8 fast, int x, int y, s16 targetX, s16 targetY, u16 ang
     mScreenY = y;
     mTargetX = targetX;
     mTargetY = targetY;
-    func_ov007_02225354(mTargetX - mX, mTargetY - mY, &mDirX);
+    NormalizeXY(mTargetX - mX, mTargetY - mY, &mDirX);
     int step = angle >> 4;
     float p[2];
     p[0] = mX + (float) FX_SinCosTable_[step * 2 + 1] / 4096.0f;
     p[1] = mY + (float) FX_SinCosTable_[step * 2] / 4096.0f;
-    func_ov007_02225354(p[0] - mX, p[1] - mY, &mSideX);
+    NormalizeXY(p[0] - mX, p[1] - mY, &mSideX);
     mSideSpeed = mMotion->mSideSpeed;
     return 1;
 }
@@ -89,7 +89,7 @@ BOOL BattleObj01::Update() {
         mX = mX + mSideSpeed * mSideX;
         mY = mY + mSideSpeed * mSideY;
         mSideSpeed = mSideSpeed - mMotion->mSideDecel;
-        func_ov007_02225354(mTargetX - mX, mTargetY - mY, &mDirX);
+        NormalizeXY(mTargetX - mX, mTargetY - mY, &mDirX);
     }
     mAnims[1]->Update();
     mAnims[1]->Draw(1, mScreenX, mScreenY, 1);

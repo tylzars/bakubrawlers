@@ -85,7 +85,7 @@ struct Player {
     u32 mUnk_98;         // 98
     u32 mUnk_9c;         // 9c
     u32 mUnk_a0;         // a0
-    u32 mUnk_a4;         // a4
+    u32 mMoneyRemaining;         // a4
     u32 mNumPlanes;      // a8
     u32 mUnk_ac[6];      // ac
     u32 mUnk_c4;         // c4

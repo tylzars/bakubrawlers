@@ -159,7 +159,7 @@ inline const LightSetup *LightSetups() {
     };
     return sLights;
 }
-BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
+BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag);
 
 
@@ -380,7 +380,7 @@ void BattleCharaAct::Update() {
     switch (mState) {
         case 0:
             run = 0;
-            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0x1a)) {
+            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0x1a)) {
                 mState++;
             }
             break;
@@ -478,7 +478,7 @@ const u8 *t = data_ov007_0228a33c[mCharacterId];
             break;
         case 11:
             run = 0;
-            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 RequestScene(mNextScene);
                 mFinished = 1;
             }
@@ -610,7 +610,7 @@ void BattleCharaAct::DrawFieldopModel() {
     mFieldopModel->Draw(&mtx, &pos);
 }
 
-u32 func_ov007_022696a0(u32 a, u32 b) {
+u32 GetTexVariant(u32 a, u32 b) {
     if (a == 0x22 && b == 0) {
         b = 2;
     }

@@ -16,7 +16,7 @@
 #include <nitro/math.h>
 #include <nitro/mi.h>
 
-u32 func_ov007_022631bc(BattlePlayerList *list, u32 index);
+u32 SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 index);
 
 struct OrderItem {
     /* 00 */ CellAnimation *mAnim;
@@ -37,10 +37,10 @@ public:
     /* 4c */ OrderItem mC[8];
     /* ac */ CharacterIcons *mIcons;
     /* b0 */ MessageWindow *mMessage;
-    /* b4 */ s8 mUnk_b4[4];
-    /* b8 */ u8 mUnk_b8[4];
-    /* bc */ u8 mUnk_bc[4];
-    /* c0 */ s8 mUnk_c0[4];
+    /* b4 */ s8 mCharacterIds[4];
+    /* b8 */ u8 mItemTaken[4];
+    /* bc */ u8 mItemOrder[4];
+    /* c0 */ s8 mPlayerItemIndex[4];
     /* c4 */ u8 mUnk_c4[4];
     /* c8 */ u8 mUnk_c8[4];
     /* cc */ u8 mState;
@@ -52,17 +52,17 @@ public:
     BattleOrderSelect();
     virtual ~BattleOrderSelect();
     virtual void Update();
-    BOOL func_ov007_0224b710(u32 index);
-    void func_ov007_0224b7bc();
-    void func_ov007_0224b914();
-    void func_ov007_0224b95c();
-    void func_ov007_0224ba0c();
-    void func_ov007_0224bbf8();
-    void func_ov007_0224c368(u8 timer);
-    BOOL func_ov007_0224c3d4();
-    BOOL func_ov007_0224c720();
-    void func_ov007_0224c810();
-    BOOL func_ov007_0224cb20(int x, int y, int rx, s16 ry, u8 w, u8 h);
+    BOOL SetAndCheckMessageType(u32 index);
+    void WriteTouchMessage();
+    void ApplyTurnOrder();
+    void ShuffleOrder();
+    void InitDisplay();
+    void LoadGraphics();
+    void SetBgSlide(u8 timer);
+    BOOL UpdateTouchSelection();
+    BOOL AssignUntakenItem();
+    void Draw();
+    BOOL IsInRect(int x, int y, int rx, s16 ry, u8 w, u8 h);
 };
 
 BattleOrderSelect::BattleOrderSelect()
@@ -80,12 +80,12 @@ BattleOrderSelect::BattleOrderSelect()
     mCount = n;
     u8 i   = 0;
     do {
-        mUnk_b4[i] = data_020d433c.mBattlePlayers->mPlayers[i]->mCharacterId;
+        mCharacterIds[i] = data_020d433c.mBattlePlayers->mPlayers[i]->mCharacterId;
         i++;
     } while (i < mCount);
     if (mCount < 4) {
         do {
-            mUnk_b4[i] = -1;
+            mCharacterIds[i] = -1;
             i++;
         } while (i < 4);
     }
@@ -94,9 +94,9 @@ BattleOrderSelect::BattleOrderSelect()
     MI_CpuClear32(mC, sizeof(mC));
     i = 0;
     do {
-        mUnk_b8[i] = 0;
-        mUnk_bc[i] = 0;
-        mUnk_c0[i] = -1;
+        mItemTaken[i] = 0;
+        mItemOrder[i] = 0;
+        mPlayerItemIndex[i] = -1;
         mUnk_c4[i] = 0;
         mUnk_c8[i] = 8;
         i++;
@@ -144,12 +144,12 @@ BattleOrderSelect::~BattleOrderSelect() {
 }
 
 void BattleOrderSelect::Update() {
-    func_ov007_0224b7bc();
+    WriteTouchMessage();
     switch (mState) {
         case 0:
-            func_ov007_0224ba0c();
-            func_ov007_0224bbf8();
-            func_ov007_0224b95c();
+            InitDisplay();
+            LoadGraphics();
+            ShuffleOrder();
             SpriteManager::Get().StartFade(2);
             mState++;
             break;
@@ -160,7 +160,7 @@ void BattleOrderSelect::Update() {
             }
             break;
         case 2:
-            if (func_ov007_0224b710(0xf)) {
+            if (SetAndCheckMessageType(0xf)) {
                 mState++;
             }
             break;
@@ -170,10 +170,10 @@ void BattleOrderSelect::Update() {
                 mMessage->StartMessage(0x1d, 0, 1);
                 mState++;
             }
-            func_ov007_0224c368(mTimer);
+            SetBgSlide(mTimer);
             break;
         case 4:
-            if (func_ov007_0224c3d4()) {
+            if (UpdateTouchSelection()) {
                 if (mCount - mNeeded != 0) {
                     mTimer = 0x1e;
                     mState = 5;
@@ -186,7 +186,7 @@ void BattleOrderSelect::Update() {
         case 5:
             mTimer--;
             if (mTimer == 0) {
-                if (func_ov007_0224c720()) {
+                if (AssignUntakenItem()) {
                     mTimer = 0x5a;
                     mState++;
                 } else {
@@ -197,7 +197,7 @@ void BattleOrderSelect::Update() {
         case 6:
             mTimer--;
             if (mTimer == 0) {
-                func_ov007_0224b914();
+                ApplyTurnOrder();
                 mState++;
             }
             break;
@@ -211,7 +211,7 @@ void BattleOrderSelect::Update() {
             }
             break;
         case 9:
-            if (func_ov007_0224b710(0x10)) {
+            if (SetAndCheckMessageType(0x10)) {
                 mState++;
             }
             break;
@@ -220,18 +220,18 @@ void BattleOrderSelect::Update() {
             mFinished = 1;
             return;
     }
-    func_ov007_0224c810();
+    Draw();
 }
 
-BOOL BattleOrderSelect::func_ov007_0224b710(u32 index) {
+BOOL BattleOrderSelect::SetAndCheckMessageType(u32 index) {
     WirelessManager::Get();
     if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-        return func_ov007_022631bc(data_020d433c.mBattlePlayers, index) != 0;
+        return SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, index) != 0;
     }
     return 1;
 }
 
-void BattleOrderSelect::func_ov007_0224b7bc() {
+void BattleOrderSelect::WriteTouchMessage() {
     WirelessManager::Get();
     if (IsWirelessMode(&data_020c4030.mUnk_228)) {
         data_0220f540.mUnk_00 = 10;
@@ -241,24 +241,24 @@ void BattleOrderSelect::func_ov007_0224b7bc() {
     }
 }
 
-void BattleOrderSelect::func_ov007_0224b914() {
+void BattleOrderSelect::ApplyTurnOrder() {
     u8 i = 0;
     do {
-        func_ov007_02262a70(data_020d433c.mBattlePlayers, mUnk_bc[mUnk_c0[i]], i);
+        func_ov007_02262a70(data_020d433c.mBattlePlayers, mItemOrder[mPlayerItemIndex[i]], i);
         i++;
     } while (i < mCount);
 }
 
-void BattleOrderSelect::func_ov007_0224b95c() {
+void BattleOrderSelect::ShuffleOrder() {
     u8 i = 0;
     do {
-        mUnk_bc[i] = MATH_Rand32(&gRandom, mCount);
+        mItemOrder[i] = MATH_Rand32(&gRandom, mCount);
         if (i != 0) {
             u8 same = 0;
             u8 j    = 0;
-            u8 v    = mUnk_bc[i];
+            u8 v    = mItemOrder[i];
             do {
-                if (v == mUnk_bc[j]) {
+                if (v == mItemOrder[j]) {
                     same = 1;
                 }
                 j++;
@@ -271,7 +271,7 @@ void BattleOrderSelect::func_ov007_0224b95c() {
     } while (i < mCount);
 }
 
-void BattleOrderSelect::func_ov007_0224ba0c() {
+void BattleOrderSelect::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
@@ -300,7 +300,7 @@ void BattleOrderSelect::func_ov007_0224ba0c() {
     G2S_BlendNone();
 }
 
-void BattleOrderSelect::func_ov007_0224bbf8() {
+void BattleOrderSelect::LoadGraphics() {
     ChangeDir("/Game/Battle/Bg/");
     LoadAndQueueUpload(0, 1, 0, "select_order_u_bg_00_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(0, 11, 0, "select_order_u_bg_00_ncg.bin", 0, 0, 0);
@@ -336,7 +336,7 @@ void BattleOrderSelect::func_ov007_0224bbf8() {
     screen0.LoadPalette("select_order_b_obj_00_ncl.bin", 0, 0);
     screen1.LoadCharacters("select_order_b_obj_00.nce_ncg1D.bin", 0, 0);
     screen1.LoadPalette("select_order_b_obj_00_ncl.bin", 0, 0);
-    func_ov007_0224b95c();
+    ShuffleOrder();
     i = 0;
     do {
         u32 a                  = i & 0xff;
@@ -354,7 +354,7 @@ void BattleOrderSelect::func_ov007_0224bbf8() {
         mC[b].mX               = 0x84 - mCount * 0x20 + i * 0x40;
         mC[b].mY               = 0x40;
         mC[b].mUnk_08          = 2;
-        mC[b].mAnim->SetAnimation(mUnk_bc[i]);
+        mC[b].mAnim->SetAnimation(mItemOrder[i]);
         i++;
     } while (i < mCount);
     ChangeDir("/Game/2D/union_b/");
@@ -377,7 +377,7 @@ void BattleOrderSelect::func_ov007_0224bbf8() {
     mIcons = new CharacterIcons(0xa000, 6, 0);
     i      = 0;
     do {
-        mIcons->SetCharacter(i, mUnk_b4[i], data_020d433c.mBattlePlayers->mPlayers[i]->NameInfo(), 0);
+        mIcons->SetCharacter(i, mCharacterIds[i], data_020d433c.mBattlePlayers->mPlayers[i]->NameInfo(), 0);
         mIcons->SetVisible(i, 0);
         i++;
     } while (i < mCount);
@@ -390,7 +390,7 @@ void BattleOrderSelect::func_ov007_0224bbf8() {
     }
 }
 
-void BattleOrderSelect::func_ov007_0224c368(u8 timer) {
+void BattleOrderSelect::SetBgSlide(u8 timer) {
     int v = (timer * timer * 0xa0) / 900;
     if (v > 0xa0) {
         v = 0xa0;
@@ -402,12 +402,12 @@ void BattleOrderSelect::func_ov007_0224c368(u8 timer) {
     G2S_SetBG1Offset(-h, 0);
 }
 
-BOOL BattleOrderSelect::func_ov007_0224c3d4() {
+BOOL BattleOrderSelect::UpdateTouchSelection() {
     u8 done = 0;
     int hit = 0;
     u8 i = 0;
     do {
-        if (mUnk_c0[i] >= 0) {
+        if (mPlayerItemIndex[i] >= 0) {
             done++;
         } else {
             u8 down;
@@ -427,13 +427,13 @@ BOOL BattleOrderSelect::func_ov007_0224c3d4() {
             if (down) {
                 u8 j = 0;
                 do {
-                    if (func_ov007_0224cb20(x, y, mC[(u8) (j + 4)].mX, mC[(u8) (j + 4)].mY, 0x38, 0x48)) {
-                        if (mUnk_b8[j] != 0) {
+                    if (IsInRect(x, y, mC[(u8) (j + 4)].mX, mC[(u8) (j + 4)].mY, 0x38, 0x48)) {
+                        if (mItemTaken[j] != 0) {
                             SoundManager::Get().StartSeqArc(2);
                         } else {
-                            mUnk_b8[j] = 1;
-                            mUnk_c0[i] = j;
-                            mC[(u8) (j + 4)].mAnim->SetAnimation(mUnk_bc[mUnk_c0[i]] + 8);
+                            mItemTaken[j] = 1;
+                            mPlayerItemIndex[i] = j;
+                            mC[(u8) (j + 4)].mAnim->SetAnimation(mItemOrder[mPlayerItemIndex[i]] + 8);
                             if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
                                 hit = 1;
                             }
@@ -457,16 +457,16 @@ BOOL BattleOrderSelect::func_ov007_0224c3d4() {
     return 0;
 }
 
-BOOL BattleOrderSelect::func_ov007_0224c720() {
+BOOL BattleOrderSelect::AssignUntakenItem() {
     u8 i = 0;
     do {
-        if (mUnk_c0[i] < 0) {
+        if (mPlayerItemIndex[i] < 0) {
             u8 j = 0;
             do {
-                if (mUnk_b8[j] == 0) {
-                    mUnk_b8[j] = 1;
-                    mUnk_c0[i] = j;
-                    mC[(u8) (j + 4)].mAnim->SetAnimation(mUnk_bc[mUnk_c0[i]] + 8);
+                if (mItemTaken[j] == 0) {
+                    mItemTaken[j] = 1;
+                    mPlayerItemIndex[i] = j;
+                    mC[(u8) (j + 4)].mAnim->SetAnimation(mItemOrder[mPlayerItemIndex[i]] + 8);
                     SoundManager::Get().StartSeqArc(0);
                     return 0;
                 }
@@ -478,15 +478,15 @@ BOOL BattleOrderSelect::func_ov007_0224c720() {
     return 1;
 }
 
-void BattleOrderSelect::func_ov007_0224c810() {
+void BattleOrderSelect::Draw() {
     u8 i = 0;
     do {
         mC[(u8) (i + 4)].mAnim->Update();
         mC[(u8) (i + 4)].mAnim->Draw(1, mC[(u8) (i + 4)].mX, mC[(u8) (i + 4)].mY, mC[(u8) (i + 4)].mUnk_08);
         mC[i & 0xff].mAnim->Update();
         mC[i & 0xff].mAnim->Draw(0, mC[i & 0xff].mX, (s16) (mC[i & 0xff].mY + mUnk_c4[i]), mC[i & 0xff].mUnk_08);
-        if (mUnk_c0[i] >= 0) {
-            u32 slot = mUnk_bc[mUnk_c0[i]];
+        if (mPlayerItemIndex[i] >= 0) {
+            u32 slot = mItemOrder[mPlayerItemIndex[i]];
             if (mUnk_c8[i] != 0) {
                 mUnk_c8[i]--;
             } else {
@@ -524,7 +524,7 @@ void BattleOrderSelect::func_ov007_0224c810() {
 }
 
 // ry is volatile as a placeholder: the original reads the stack argument twice (see docs/decompiling.md).
-BOOL BattleOrderSelect::func_ov007_0224cb20(int x, int y, int rx, volatile s16 ry, u8 w, u8 h) {
+BOOL BattleOrderSelect::IsInRect(int x, int y, int rx, volatile s16 ry, u8 w, u8 h) {
     if ((x >= rx) & (y >= ry)) {
         if ((x < rx + w) & (y < ry + h)) {
             return 1;

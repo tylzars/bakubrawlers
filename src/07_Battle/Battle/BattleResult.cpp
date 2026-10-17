@@ -73,7 +73,7 @@ static const u16 sPrizeTable[2][6][9] = {
 #include "Text/TextManager.hpp"
 
 u32 func_020779ec(void *unk);
-BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
+BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 BOOL func_0202326c(SaveData *d);
 s32 func_02087100();
 s32 func_02087468();
@@ -98,79 +98,79 @@ extern UnkStruct_020c4230 data_020c4230;
 // Result screen of the battle (result_u_*, retry_*, select_arena_*): shows the outcome and the rewards per player.
 class BattleResult : public SceneBase {
 public:
-    /* 0c */ SelectWindow *mUnk_0c;
+    /* 0c */ SelectWindow *mWindow;
     /* 10 */ MessageWindow *mMessage;
-    /* 14 */ MessageFile *mUnk_14;
+    /* 14 */ MessageFile *mResultMessages;
     /* 18 */ CellAnimation *mAnims[8];
-    /* 38 */ void *mUnk_38[3];
-    /* 44 */ void *mUnk_44[3];
-    /* 50 */ u32 mUnk_50[3];
-    /* 5c */ u32 mUnk_5c[3];
+    /* 38 */ void *mTextBuffers[3];
+    /* 44 */ void *mGlyphBuffers[3];
+    /* 50 */ u32 mTextBufferSizes[3];
+    /* 5c */ u32 mGlyphCounts[3];
     /* 68 */ void *mUnk_68;
     /* 6c */ CharacterIcons *mIcons;
     /* 70 */ CellAnimation *mAnimsB[5];
     /* 84 */ u32 mUnk_84[6];
     /* 9c */ s32 mUnk_9c;
     /* a0 */ s32 mUnk_a0;
-    /* a4 */ s32 mUnk_a4;
-    /* a8 */ s32 mUnk_a8;
+    /* a4 */ s32 mMoneyRemaining;
+    /* a8 */ s32 mMoneyTotal;
     /* ac */ u8 mUnk_ac;
     /* ad */ u8 mUnk_ad;
     /* ae */ u8 mUnk_ae;
-    /* af */ u8 mUnk_af;
-    /* b0 */ u8 mUnk_b0;
-    /* b1 */ u8 mUnk_b1;
-    /* b2 */ u8 mUnk_b2;
+    /* af */ u8 mDelayTimer;
+    /* b0 */ u8 mSoundTimer;
+    /* b1 */ u8 mState;
+    /* b2 */ u8 mMoneyStep;
     /* b3 */ u8 mUnk_b3;
-    /* b4 */ u8 mUnk_b4;
+    /* b4 */ u8 mSelectedId;
     /* b5 */
 
     BattleResult();
     virtual ~BattleResult();
     virtual void Update();
-    void func_ov007_0224e3ec();
-    void func_ov007_0224e5f8();
-    void func_ov007_0224e6f4();
-    void func_ov007_0224e9f4();
-    void func_ov007_0224f8f4();
-    void func_ov007_0224f9a0();
-    void func_ov007_0224fb70();
-    void func_ov007_0224fcdc();
+    void InitDisplay();
+    void InitMainScreen();
+    void LoadResultGraphics();
+    void SetupRetryScreen();
+    void DrawRetryText();
+    void DrawRetryScreen();
+    void DrawResultScreen();
+    void LoadResultTextAndAmounts();
     void func_ov007_02250010();
-    void func_ov007_0225047c();
-    void func_ov007_02251724();
-    void func_ov007_02251ae4();
-    void func_ov007_022525c4();
-    void func_ov007_022526f0();
+    void PrintResultText();
+    void PrintMoney();
+    void UpdateMoneyCount();
+    void DrawResultText();
+    void ClearTextBuffers();
 };
 
 BattleResult::BattleResult()
     : SceneBase(0x3e8, 0) {
-    mUnk_0c = 0;
+    mWindow = 0;
     mMessage = 0;
     mUnk_68 = 0;
     mUnk_9c = 0;
     mUnk_a0 = 0;
-    mUnk_a4 = 0;
-    mUnk_a8 = 0;
+    mMoneyRemaining = 0;
+    mMoneyTotal = 0;
     mUnk_ac = 0;
     mUnk_ad = 0;
     mUnk_ae = 0;
-    mUnk_af = 0;
-    mUnk_b0 = 0;
-    mUnk_b1 = 0;
-    mUnk_b2 = 0;
+    mDelayTimer = 0;
+    mSoundTimer = 0;
+    mState = 0;
+    mMoneyStep = 0;
     mUnk_b3 = 0;
     SpriteManager::Get();
     SpriteManager::sFade[0] = 1;
     SpriteManager::sBrightness[0] = -16;
     MI_CpuClear32(mAnims, sizeof(mAnims));
     MI_CpuClear32(mUnk_84, sizeof(mUnk_84));
-    mUnk_14 = 0;
-    MI_CpuClear32(mUnk_38, sizeof(mUnk_38));
-    MI_CpuClear32(mUnk_44, sizeof(mUnk_44));
-    MI_CpuClear32(mUnk_50, sizeof(mUnk_50));
-    MI_CpuClear32(mUnk_5c, sizeof(mUnk_5c));
+    mResultMessages = 0;
+    MI_CpuClear32(mTextBuffers, sizeof(mTextBuffers));
+    MI_CpuClear32(mGlyphBuffers, sizeof(mGlyphBuffers));
+    MI_CpuClear32(mTextBufferSizes, sizeof(mTextBufferSizes));
+    MI_CpuClear32(mGlyphCounts, sizeof(mGlyphCounts));
     mIcons = 0;
     mAnimsB[0] = 0;
     mAnimsB[1] = 0;
@@ -183,7 +183,7 @@ BattleResult::~BattleResult() {
     SpriteManager::Get();
     SpriteManager::sFade[0] = 1;
     SpriteManager::sBrightness[0] = -16;
-    delete mUnk_0c;
+    delete mWindow;
     delete mMessage;
     FrameTask::Get().StopAllChannels();
     u8 i = 0;
@@ -197,19 +197,19 @@ BattleResult::~BattleResult() {
     delete mAnimsB[2];
     delete mAnimsB[3];
     delete mAnimsB[4];
-    if (mUnk_14) {
-        OS_Free(mUnk_14);
-        mUnk_14 = 0;
+    if (mResultMessages) {
+        OS_Free(mResultMessages);
+        mResultMessages = 0;
     }
     i = 0;
     do {
-        if (mUnk_38[i]) {
-            func_ov007_022526f0();
-            OS_Free(mUnk_38[i]);
+        if (mTextBuffers[i]) {
+            ClearTextBuffers();
+            OS_Free(mTextBuffers[i]);
         }
-        if (mUnk_44[i]) {
-            OS_Free(mUnk_44[i]);
-            mUnk_44[i] = 0;
+        if (mGlyphBuffers[i]) {
+            OS_Free(mGlyphBuffers[i]);
+            mGlyphBuffers[i] = 0;
         }
         i++;
     } while (i < 3);
@@ -222,10 +222,10 @@ void BattleResult::Update() {
             mFinished = 1;
         }
     }
-    switch (mUnk_b1) {
+    switch (mState) {
         case 0:
-            func_ov007_0224e3ec();
-            mUnk_b1++;
+            InitDisplay();
+            mState++;
             break;
         case 1: {
             u8 best = 0;
@@ -282,7 +282,7 @@ void BattleResult::Update() {
                     data_020d43e5[other] = data_020d43e5[other] + 1;
                 }
             }
-            mUnk_b1++;
+            mState++;
             break;
         }
         case 2:
@@ -292,7 +292,7 @@ void BattleResult::Update() {
                     mContext->mRequest = 1;
                 }
                 if (!func_0203dd0c(&FrameTask::Get(), 0)) {
-                    mUnk_b1++;
+                    mState++;
                 }
             }
             break;
@@ -302,12 +302,12 @@ void BattleResult::Update() {
                     if (gSaveData[0].mUnk_4a < 9999) {
                         gSaveData[0].mUnk_4a++;
                     }
-                    mUnk_b1 = 8;
+                    mState = 8;
                 } else {
-                    mUnk_b1++;
+                    mState++;
                 }
             } else {
-                mUnk_b1 = 8;
+                mState = 8;
             }
             break;
         case 4: {
@@ -374,45 +374,45 @@ void BattleResult::Update() {
                     gSaveData[0].mUnk_4a++;
                 }
             }
-            func_ov007_0224e5f8();
-            func_ov007_0224e6f4();
-            func_ov007_0224fcdc();
+            InitMainScreen();
+            LoadResultGraphics();
+            LoadResultTextAndAmounts();
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             FrameTask::Get().StartChannel(0, 0x11);
             mUnk_68 = new UnkStruct_02076058(0);
             mContext->mRequest = 0;
-            mUnk_b1++;
+            mState++;
             break;
         }
         case 5:
             SpriteManager::Get();
             if (SpriteManager::sFade[0] <= 1) {
-                mUnk_b1++;
+                mState++;
             }
-            func_ov007_0224fb70();
+            DrawResultScreen();
             break;
         case 6:
-            func_ov007_02251ae4();
-            func_ov007_0224fb70();
+            UpdateMoneyCount();
+            DrawResultScreen();
             break;
         case 7:
             if (mContext->mRequest != 0) {
                 if (func_020779ec(mUnk_68) != 0) {
-                    mUnk_b1++;
+                    mState++;
                 } else {
-                    mUnk_b1 = 10;
+                    mState = 10;
                 }
             }
-            func_ov007_0224fb70();
+            DrawResultScreen();
             break;
         case 8:
             SpriteManager::Get().StartFade(3);
-            mUnk_b1++;
+            mState++;
             break;
         case 9:
             if (!SpriteManager::Get().IsFading()) {
-                mUnk_b1++;
+                mState++;
             }
             break;
         case 10:
@@ -425,11 +425,11 @@ void BattleResult::Update() {
                     }
                 }
             }
-            mUnk_b1++;
+            mState++;
             break;
         case 11:
             if (mContext->mRequest != 0) {
-                mUnk_b1++;
+                mState++;
             }
             break;
         case 12:
@@ -439,7 +439,7 @@ void BattleResult::Update() {
                 data_020d48f0.mRank = p->mPlayerRank;
                 delete p;
             }
-            mUnk_b1++;
+            mState++;
             break;
         case 13: {
             s32 id = -1;
@@ -453,20 +453,20 @@ void BattleResult::Update() {
             if (id >= 0) {
                 new GiftUnlockScene(id);
                 mContext->mRequest = 0;
-                mUnk_b1++;
+                mState++;
             } else {
-                mUnk_b1 += 2;
+                mState += 2;
             }
             break;
         }
         case 14:
             if (mContext->mRequest != 0) {
-                mUnk_b1--;
+                mState--;
             }
             break;
         case 15:
             if (data_020d433c.mNextScene == 8) {
-                mUnk_b1++;
+                mState++;
                 break;
             }
             func_02086d48();
@@ -474,106 +474,106 @@ void BattleResult::Update() {
             mFinished = 1;
             break;
         case 16:
-            func_ov007_0224e9f4();
+            SetupRetryScreen();
             FrameTask::Get().StartChannel(0, 0x11);
-            mUnk_b1++;
+            mState++;
             break;
         case 17: {
-            func_ov007_0224f9a0();
+            DrawRetryScreen();
             WirelessManager::Get();
             bool solo = data_020d433c.mWireless == 0;
             bool none = data_020c4230.mUnk_20 == 0;
             if (solo | none) {
-                if (mUnk_0c) {
-                    delete mUnk_0c;
+                if (mWindow) {
+                    delete mWindow;
                 }
-                mUnk_0c = new SelectWindow(3, sResultItems, 0);
-                mUnk_0c->SetCells(3, sResultCells);
+                mWindow = new SelectWindow(3, sResultItems, 0);
+                mWindow->SetCells(3, sResultCells);
             }
             GXS_SetVisiblePlane(0x12);
             SpriteManager::Get().StartFade(2);
-            mUnk_b1++;
+            mState++;
             break;
         }
         case 18:
-            func_ov007_0224f9a0();
+            DrawRetryScreen();
             if (!SpriteManager::Get().IsFading()) {
                 if (data_020d433c.mWireless != 0) {
                     WirelessManager::Get();
                     if (data_020c4230.mUnk_20 != 0) {
-                        mUnk_b1 = 22;
+                        mState = 22;
                     } else {
-                        mUnk_b1++;
+                        mState++;
                     }
                 } else {
-                    mUnk_b1++;
+                    mState++;
                 }
             }
             break;
         case 19:
-            func_ov007_0224f9a0();
-            if (mUnk_0c->Update(1) == 1) {
-                SelectWindowCursor *cursor = mUnk_0c->mCursor;
+            DrawRetryScreen();
+            if (mWindow->Update(1) == 1) {
+                SelectWindowCursor *cursor = mWindow->mCursor;
                 s32 sel = -1;
                 if (cursor->mSelection != -1) {
                     sel = cursor->mItems[cursor->mSelection].mId;
                 }
-                *((u8 *) &data_0220f540 + 4) = mUnk_b4 = sel;
-                if (mUnk_b4 == 2) {
+                *((u8 *) &data_0220f540 + 4) = mSelectedId = sel;
+                if (mSelectedId == 2) {
                     if (data_020d433c.mWireless == 0) {
-                        mUnk_b1 = 22;
+                        mState = 22;
                     } else {
-                        mUnk_b1++;
+                        mState++;
                     }
                 } else {
-                    mUnk_b1 = 22;
+                    mState = 22;
                 }
             }
             break;
         case 20:
-            func_ov007_0224f9a0();
-            if (mUnk_0c) {
-                delete mUnk_0c;
+            DrawRetryScreen();
+            if (mWindow) {
+                delete mWindow;
             }
-            mUnk_0c = new SelectWindow(3, sRetryItems, 0);
-            mUnk_0c->SetCells(3, sRetryCells);
-            mUnk_0c->mCursor->mSelection = 1;
+            mWindow = new SelectWindow(3, sRetryItems, 0);
+            mWindow->SetCells(3, sRetryCells);
+            mWindow->mCursor->mSelection = 1;
             GXS_SetVisiblePlane(0x13);
-            mUnk_b1++;
+            mState++;
             break;
         case 21:
-            func_ov007_0224f8f4();
-            func_ov007_0224f9a0();
-            if (mUnk_0c->Update(1) == 1) {
-                SelectWindowCursor *cursor = mUnk_0c->mCursor;
+            DrawRetryText();
+            DrawRetryScreen();
+            if (mWindow->Update(1) == 1) {
+                SelectWindowCursor *cursor = mWindow->mCursor;
                 s8 sel = -1;
                 if (cursor->mSelection != -1) {
                     sel = cursor->mItems[cursor->mSelection].mId;
                 }
                 if (sel != 0) {
-                    mUnk_b1 = 17;
+                    mState = 17;
                 } else {
-                    mUnk_b1++;
+                    mState++;
                 }
             }
             break;
         case 22:
-            func_ov007_0224f9a0();
-            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0x13)) {
+            DrawRetryScreen();
+            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0x13)) {
                 FrameTask::Get().StopAllChannels();
                 SpriteManager::Get().StartFade(3);
-                mUnk_b1++;
+                mState++;
             }
             break;
         case 23:
-            func_ov007_0224f9a0();
+            DrawRetryScreen();
             if (!func_0203dd0c(&FrameTask::Get(), 0)) {
                 if (!SpriteManager::Get().IsFading()) {
                     u8 result;
                     if (data_020d433c.mWireless != 0) {
                         result = data_020d433c.mBattlePlayers->mPlayers[0]->mMsg.mTouchDown;
                     } else {
-                        result = mUnk_b4;
+                        result = mSelectedId;
                     }
                     switch (result) {
                         case 0:
@@ -593,12 +593,12 @@ void BattleResult::Update() {
             }
             break;
     }
-    if (mUnk_0c) {
-        mUnk_0c->Draw();
+    if (mWindow) {
+        mWindow->Draw();
     }
 }
 
-void BattleResult::func_ov007_0224e3ec() {
+void BattleResult::InitDisplay() {
     SpriteManager::Get().SetupMode(1, 7);
     G2_SetBG0Offset(0, 0);
     G2_BlendNone();
@@ -633,7 +633,7 @@ void BattleResult::func_ov007_0224e3ec() {
     G2S_BlendNone();
 }
 
-void BattleResult::func_ov007_0224e5f8() {
+void BattleResult::InitMainScreen() {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
@@ -646,7 +646,7 @@ void BattleResult::func_ov007_0224e5f8() {
     G2_BlendNone();
 }
 
-void BattleResult::func_ov007_0224e6f4() {
+void BattleResult::LoadResultGraphics() {
     ChangeDir("/Game/Battle/Bg/");
     LoadAndQueueUpload(0, 1, 0, "result_u_bg_00_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(0, 11, 0, "result_u_bg_00_ncg.bin", 0, 0, 0);
@@ -685,7 +685,7 @@ void BattleResult::func_ov007_0224e6f4() {
     ChangeDir("/");
 }
 
-void BattleResult::func_ov007_0224e9f4() {
+void BattleResult::SetupRetryScreen() {
     SpriteManager::Get().SetupMode(1, 1);
     GX_SetDispSelect(1);
     GX_SetGraphicsMode(1, 0, 0);
@@ -782,19 +782,19 @@ void BattleResult::func_ov007_0224e9f4() {
     } while (j < data_020d433c.mPlayerCount);
     TextManager::Get().mUse4bppFont = 0;
     QueueUpload(0, 12, 0, buffer, 0x6000, 1);
-    mUnk_50[2] = TextManager::Get().BufferSize(0x18, 4);
-    mUnk_38[2] = OS_Alloc(mUnk_50[2]);
-    MI_CpuClear16(mUnk_38[2], mUnk_50[2]);
-    mUnk_5c[2] = TextManager::Get().GlyphCount(0x18);
-    mUnk_44[2] = OS_Alloc((s16) mUnk_5c[2] * (s16) 0xc);
-    TextManager::Get().Init(mUnk_44[2], 1, 0, 0x18, 4, 0x11);
+    mTextBufferSizes[2] = TextManager::Get().BufferSize(0x18, 4);
+    mTextBuffers[2] = OS_Alloc(mTextBufferSizes[2]);
+    MI_CpuClear16(mTextBuffers[2], mTextBufferSizes[2]);
+    mGlyphCounts[2] = TextManager::Get().GlyphCount(0x18);
+    mGlyphBuffers[2] = OS_Alloc((s16) mGlyphCounts[2] * (s16) 0xc);
+    TextManager::Get().Init(mGlyphBuffers[2], 1, 0, 0x18, 4, 0x11);
     TextManager &text = TextManager::Get();
     s16 height;
     s16 width;
     width  = 0;
     height = 0;
-    text.Print(file->GetText(13), file->GetLength(13), mUnk_38[2], 0x18, 4, &height, &width, 0, 0, 2, 0x11, 0xe, 0, 0, 1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x7000, mUnk_38[2], mUnk_50[2], 0);
+    text.Print(file->GetText(13), file->GetLength(13), mTextBuffers[2], 0x18, 4, &height, &width, 0, 0, 2, 0x11, 0xe, 0, 0, 1, 1, 1);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x7000, mTextBuffers[2], mTextBufferSizes[2], 0);
     OS_Free(file);
     ChangeDir("/Game/2D/union_b/");
     LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
@@ -816,14 +816,14 @@ void BattleResult::func_ov007_0224e9f4() {
     }
 }
 
-void BattleResult::func_ov007_0224f8f4() {
-    SpriteManager::Get().Screen(1).AddOam(mUnk_44[2], mUnk_5c[2], 0x20, 0x38, 0, 0xe0, 0xf, 0);
+void BattleResult::DrawRetryText() {
+    SpriteManager::Get().Screen(1).AddOam(mGlyphBuffers[2], mGlyphCounts[2], 0x20, 0x38, 0, 0xe0, 0xf, 0);
 }
 
 // The third and fourth Draws take y through the reused `y`. Because `y` is assigned again before the fourth call, its
 // assignment for the third stays a statement of its own, so the y computation is emitted before that call's arguments
 // and the scheduler keeps it after the stack store and ahead of the register arguments (as the original does).
-void BattleResult::func_ov007_0224f9a0() {
+void BattleResult::DrawRetryScreen() {
     mMessage->Update();
     mAnimsB[3]->Draw(0, 0x80, 0x60, 0);
     u8 i = 0;
@@ -866,7 +866,7 @@ void BattleResult::func_ov007_0224f9a0() {
     mIcons->DrawIcons();
 }
 
-void BattleResult::func_ov007_0224fb70() {
+void BattleResult::DrawResultScreen() {
     if (func_020779ec(mUnk_68)) {
         return;
     }
@@ -876,12 +876,12 @@ void BattleResult::func_ov007_0224fb70() {
             mAnims[i]->Update();
             switch (i) {
                 case 0:
-                    if (mUnk_b2 >= 9) {
+                    if (mMoneyStep >= 9) {
                         mAnims[i]->DrawFrame(0, 0, ((const u8 *) sAnimPos)[i * 2], ((const u8 *) sAnimPos)[i * 2 + 1], 1);
                     }
                     break;
                 case 1:
-                    if (mUnk_b2 >= 11) {
+                    if (mMoneyStep >= 11) {
                         mAnims[i]->Draw(0, ((const u8 *) sAnimPos)[i * 2], ((const u8 *) sAnimPos)[i * 2 + 1], 1);
                     }
                     break;
@@ -891,7 +891,7 @@ void BattleResult::func_ov007_0224fb70() {
                 case 5:
                 case 6:
                 case 7:
-                    if (mUnk_b2 >= (u8) (i - 2) + 3) {
+                    if (mMoneyStep >= (u8) (i - 2) + 3) {
                         if (mUnk_84[3] != 0) {
                             mAnims[i]->Draw(0, ((const u8 *) sAnimPos)[i * 2], ((const u8 *) sAnimPos)[i * 2 + 1], 1);
                         } else {
@@ -903,30 +903,30 @@ void BattleResult::func_ov007_0224fb70() {
         }
         i++;
     } while (i < 8);
-    func_ov007_022525c4();
+    DrawResultText();
 }
 
-void BattleResult::func_ov007_0224fcdc() {
+void BattleResult::LoadResultTextAndAmounts() {
     SpriteManager::Get().Screen(0).SetObjVramMode(3);
     ChangeDir("/font/");
-    mUnk_14 = (MessageFile *) LoadFile("mes_result.mes", 0, 0, 0, 0, 0);
-    mUnk_50[0] = TextManager::Get().BufferSize(0x20, 0x16);
-    mUnk_38[0] = OS_Alloc(mUnk_50[0]);
-    MI_CpuClear16(mUnk_38[0], mUnk_50[0]);
-    mUnk_5c[0] = TextManager::Get().GlyphCount(0x58);
-    mUnk_44[0] = OS_Alloc((s16) mUnk_5c[0] * (s16) 0xc);
-    TextManager::Get().Init(mUnk_44[0], 0, 0, 0x20, 0x16, 0x21);
-    mUnk_50[1] = TextManager::Get().BufferSize(0x10, 6);
-    mUnk_38[1] = OS_Alloc(mUnk_50[1]);
-    MI_CpuClear16(mUnk_38[1], mUnk_50[1]);
-    mUnk_5c[1] = TextManager::Get().GlyphCount(0xc);
-    mUnk_44[1] = OS_Alloc((s16) mUnk_5c[1] * (s16) 0xc);
-    TextManager::Get().Init(mUnk_44[1], 0, 0, 0x10, 6, 0x21);
+    mResultMessages = (MessageFile *) LoadFile("mes_result.mes", 0, 0, 0, 0, 0);
+    mTextBufferSizes[0] = TextManager::Get().BufferSize(0x20, 0x16);
+    mTextBuffers[0] = OS_Alloc(mTextBufferSizes[0]);
+    MI_CpuClear16(mTextBuffers[0], mTextBufferSizes[0]);
+    mGlyphCounts[0] = TextManager::Get().GlyphCount(0x58);
+    mGlyphBuffers[0] = OS_Alloc((s16) mGlyphCounts[0] * (s16) 0xc);
+    TextManager::Get().Init(mGlyphBuffers[0], 0, 0, 0x20, 0x16, 0x21);
+    mTextBufferSizes[1] = TextManager::Get().BufferSize(0x10, 6);
+    mTextBuffers[1] = OS_Alloc(mTextBufferSizes[1]);
+    MI_CpuClear16(mTextBuffers[1], mTextBufferSizes[1]);
+    mGlyphCounts[1] = TextManager::Get().GlyphCount(0xc);
+    mGlyphBuffers[1] = OS_Alloc((s16) mGlyphCounts[1] * (s16) 0xc);
+    TextManager::Get().Init(mGlyphBuffers[1], 0, 0, 0x10, 6, 0x21);
     TextManager::Get().SetColor(0, 0, 0xe);
     func_ov007_02250010();
-    func_ov007_022526f0();
-    func_ov007_0225047c();
-    func_ov007_02251724();
+    ClearTextBuffers();
+    PrintResultText();
+    PrintMoney();
 }
 
 void BattleResult::func_ov007_02250010() {
@@ -1026,9 +1026,9 @@ void BattleResult::func_ov007_02250010() {
     } while (m < count2);
 }
 
-void BattleResult::func_ov007_0225047c() {
-    if (mUnk_38[0]) {
-        MI_CpuClear16(mUnk_38[0], mUnk_50[0]);
+void BattleResult::PrintResultText() {
+    if (mTextBuffers[0]) {
+        MI_CpuClear16(mTextBuffers[0], mTextBufferSizes[0]);
     }
     s16 x = 0;
     s16 y = 0;
@@ -1036,14 +1036,14 @@ void BattleResult::func_ov007_0225047c() {
     TextManager::Get().mUse4bppFont = 1;
     x = 0x94;
     y = 0;
-    TextManager::Get().PrintNumber(mUnk_9c, 7, 0, mUnk_38[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+    TextManager::Get().PrintNumber(mUnk_9c, 7, 0, mTextBuffers[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
     {
         TextManager &t2 = TextManager::Get();
         s16 x2;
         s16 y2;
         y2 = y;
         x2 = x;
-        t2.Print(mUnk_14->GetText(2), mUnk_14->GetLength(2), mUnk_38[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+        t2.Print(mResultMessages->GetText(2), mResultMessages->GetLength(2), mTextBuffers[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
     }
     {
         TextManager &t3 = TextManager::Get();
@@ -1051,10 +1051,10 @@ void BattleResult::func_ov007_0225047c() {
         s16 y3;
         y3 = y;
         x3 = 0;
-        t3.Print(mUnk_14->GetText(7), mUnk_14->GetLength(7), mUnk_38[0], 0x20, 0x16, &x3, &y3, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+        t3.Print(mResultMessages->GetText(7), mResultMessages->GetLength(7), mTextBuffers[0], 0x20, 0x16, &x3, &y3, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
     }
-    if (mUnk_b2 >= 2) {
-        u8 n = mUnk_b2 - 2;
+    if (mMoneyStep >= 2) {
+        u8 n = mMoneyStep - 2;
         if (n > data_020d433c.mUnk_99) {
             n = data_020d433c.mUnk_99;
         }
@@ -1068,13 +1068,13 @@ void BattleResult::func_ov007_0225047c() {
                 x -= 0x3c;
             }
             ly = (i % 3) * 16 + 16;
-            TextManager::Get().PrintNumber(mUnk_84[i], 7, 0, mUnk_38[0], 0x20, 0x16, &x, &ly, 0, 2, 0x21, 0, 1, 1, 1);
+            TextManager::Get().PrintNumber(mUnk_84[i], 7, 0, mTextBuffers[0], 0x20, 0x16, &x, &ly, 0, 2, 0x21, 0, 1, 1, 1);
             TextManager &t4 = TextManager::Get();
             s16 x2;
             s16 y2;
             y2 = ly;
             x2 = x;
-            t4.Print(mUnk_14->GetText(2), mUnk_14->GetLength(2), mUnk_38[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+            t4.Print(mResultMessages->GetText(2), mResultMessages->GetLength(2), mTextBuffers[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
             i++;
         } while (i < n);
         {
@@ -1083,7 +1083,7 @@ void BattleResult::func_ov007_0225047c() {
             s16 b;
             b = 0x10;
             a = 0;
-            t5.Print(mUnk_14->GetText(8), mUnk_14->GetLength(8), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0xe, 0, 0, 1, 1, 1);
+            t5.Print(mResultMessages->GetText(8), mResultMessages->GetLength(8), mTextBuffers[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0xe, 0, 0, 1, 1, 1);
         }
         {
             TextManager &t6 = TextManager::Get();
@@ -1091,7 +1091,7 @@ void BattleResult::func_ov007_0225047c() {
             s16 b;
             b = 0x20;
             a = 8;
-            t6.Print(mUnk_14->GetText(9), mUnk_14->GetLength(9), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0xe, 0, 0, 1, 1, 1);
+            t6.Print(mResultMessages->GetText(9), mResultMessages->GetLength(9), mTextBuffers[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0xe, 0, 0, 1, 1, 1);
         }
         {
             TextManager &t7 = TextManager::Get();
@@ -1099,58 +1099,58 @@ void BattleResult::func_ov007_0225047c() {
             s16 b;
             b = 0x30;
             a = 0x10;
-            t7.Print(mUnk_14->GetText(10), mUnk_14->GetLength(10), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0xe, 0, 0, 1, 1, 1);
+            t7.Print(mResultMessages->GetText(10), mResultMessages->GetLength(10), mTextBuffers[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0xe, 0, 0, 1, 1, 1);
         }
     }
-    if (mUnk_b2 >= 9) {
+    if (mMoneyStep >= 9) {
         x = 0x94;
         y = 0x40;
-        TextManager::Get().PrintNumber(100, 7, 0, mUnk_38[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+        TextManager::Get().PrintNumber(100, 7, 0, mTextBuffers[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
         {
             TextManager &t8 = TextManager::Get();
             s16 x2;
             s16 y2;
             y2 = y;
             x2 = x;
-            t8.Print(mUnk_14->GetText(3), mUnk_14->GetLength(3), mUnk_38[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+            t8.Print(mResultMessages->GetText(3), mResultMessages->GetLength(3), mTextBuffers[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
         }
         x += 0x10;
-        TextManager::Get().PrintNumber(mUnk_ad, 0, 0, mUnk_38[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+        TextManager::Get().PrintNumber(mUnk_ad, 0, 0, mTextBuffers[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
         {
             TextManager &t9 = TextManager::Get();
             s16 x3;
             s16 y3;
             y3 = y;
             x3 = 0;
-            t9.Print(mUnk_14->GetText(11), mUnk_14->GetLength(11), mUnk_38[0], 0x20, 0x16, &x3, &y3, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+            t9.Print(mResultMessages->GetText(11), mResultMessages->GetLength(11), mTextBuffers[0], 0x20, 0x16, &x3, &y3, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
         }
     }
-    if (mUnk_b2 >= 0xb) {
+    if (mMoneyStep >= 0xb) {
         x = 0x94;
         y = 0x50;
-        TextManager::Get().PrintNumber(100, 7, 0, mUnk_38[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+        TextManager::Get().PrintNumber(100, 7, 0, mTextBuffers[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
         {
             TextManager &t10 = TextManager::Get();
             s16 x2;
             s16 y2;
             y2 = y;
             x2 = x;
-            t10.Print(mUnk_14->GetText(3), mUnk_14->GetLength(3), mUnk_38[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+            t10.Print(mResultMessages->GetText(3), mResultMessages->GetLength(3), mTextBuffers[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
         }
         x += 0x10;
-        TextManager::Get().PrintNumber(mUnk_ae, 0, 0, mUnk_38[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+        TextManager::Get().PrintNumber(mUnk_ae, 0, 0, mTextBuffers[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
     }
-    if (mUnk_b2 >= 0xc) {
+    if (mMoneyStep >= 0xc) {
         x = 0x94;
         y = 0x60;
-        TextManager::Get().PrintNumber(mUnk_a0, 7, 0, mUnk_38[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+        TextManager::Get().PrintNumber(mUnk_a0, 7, 0, mTextBuffers[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
         {
             TextManager &t11 = TextManager::Get();
             s16 x2;
             s16 y2;
             y2 = y;
             x2 = x;
-            t11.Print(mUnk_14->GetText(2), mUnk_14->GetLength(2), mUnk_38[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+            t11.Print(mResultMessages->GetText(2), mResultMessages->GetLength(2), mTextBuffers[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
         }
         x = 0x94;
         y = 0x60;
@@ -1160,10 +1160,10 @@ void BattleResult::func_ov007_0225047c() {
             s16 y3;
             y3 = y;
             x3 = 0;
-            t12.Print(mUnk_14->GetText(12), mUnk_14->GetLength(12), mUnk_38[0], 0x20, 0x16, &x3, &y3, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+            t12.Print(mResultMessages->GetText(12), mResultMessages->GetLength(12), mTextBuffers[0], 0x20, 0x16, &x3, &y3, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
         }
     }
-    if (mUnk_b2 >= 0xe) {
+    if (mMoneyStep >= 0xe) {
         if (mUnk_ac) {
             x = 0xc4;
             y = 0x70;
@@ -1172,7 +1172,7 @@ void BattleResult::func_ov007_0225047c() {
             s16 y2;
             y2 = y;
             x2 = x;
-            t13.Print(mUnk_14->GetText(4), mUnk_14->GetLength(4), mUnk_38[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+            t13.Print(mResultMessages->GetText(4), mResultMessages->GetLength(4), mTextBuffers[0], 0x20, 0x16, &x2, &y2, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
         }
         x = 0xa2;
         y = 0x70;
@@ -1181,7 +1181,7 @@ void BattleResult::func_ov007_0225047c() {
         s16 y3;
         y3 = y;
         x3 = 0;
-        t14.Print(mUnk_14->GetText(13), mUnk_14->GetLength(13), mUnk_38[0], 0x20, 0x16, &x3, &y3, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+        t14.Print(mResultMessages->GetText(13), mResultMessages->GetLength(13), mTextBuffers[0], 0x20, 0x16, &x3, &y3, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
     }
     {
         TextManager &t15 = TextManager::Get();
@@ -1189,7 +1189,7 @@ void BattleResult::func_ov007_0225047c() {
         s16 b;
         b = 0x80;
         a = 0xcc;
-        t15.Print(mUnk_14->GetText(2), mUnk_14->GetLength(2), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+        t15.Print(mResultMessages->GetText(2), mResultMessages->GetLength(2), mTextBuffers[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
     }
     {
         TextManager &t16 = TextManager::Get();
@@ -1197,7 +1197,7 @@ void BattleResult::func_ov007_0225047c() {
         s16 b;
         b = 0x80;
         a = 0;
-        t16.Print(mUnk_14->GetText(14), mUnk_14->GetLength(14), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+        t16.Print(mResultMessages->GetText(14), mResultMessages->GetLength(14), mTextBuffers[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
     }
     {
         TextManager &t17 = TextManager::Get();
@@ -1205,7 +1205,7 @@ void BattleResult::func_ov007_0225047c() {
         s16 b;
         b = 0x9e;
         a = 0xcc;
-        t17.Print(mUnk_14->GetText(2), mUnk_14->GetLength(2), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+        t17.Print(mResultMessages->GetText(2), mResultMessages->GetLength(2), mTextBuffers[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
     }
     {
         TextManager &t18 = TextManager::Get();
@@ -1213,84 +1213,84 @@ void BattleResult::func_ov007_0225047c() {
         s16 b;
         b = 0x9e;
         a = 0;
-        t18.Print(mUnk_14->GetText(15), mUnk_14->GetLength(15), mUnk_38[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
+        t18.Print(mResultMessages->GetText(15), mResultMessages->GetLength(15), mTextBuffers[0], 0x20, 0x16, &a, &b, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
     }
     TextManager::Get().mUse4bppFont = 0;
-    DC_FlushRange(mUnk_38[0], mUnk_50[0]);
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x8000, mUnk_38[0], mUnk_50[0], 0);
+    DC_FlushRange(mTextBuffers[0], mTextBufferSizes[0]);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x8000, mTextBuffers[0], mTextBufferSizes[0], 0);
 }
 
-void BattleResult::func_ov007_02251724() {
+void BattleResult::PrintMoney() {
     s16 outH = 0;
     s16 outW = 0;
     TextManager::Get().mUse4bppFont = 1;
-    if (mUnk_b2 >= 0x11) {
-        TextManager::Get().PrintNumber(mUnk_a4, 7, 0, mUnk_38[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
+    if (mMoneyStep >= 0x11) {
+        TextManager::Get().PrintNumber(mMoneyRemaining, 7, 0, mTextBuffers[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
     } else {
-        TextManager::Get().PrintNumber(mUnk_a8, 7, 0, mUnk_38[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
+        TextManager::Get().PrintNumber(mMoneyTotal, 7, 0, mTextBuffers[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
     }
     outH = 0;
     outW = 0x1e;
-    if (mUnk_b2 >= 0x11) {
-        TextManager::Get().PrintNumber(gSaveData[0].mMoney - mUnk_a4, 7, 0, mUnk_38[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
+    if (mMoneyStep >= 0x11) {
+        TextManager::Get().PrintNumber(gSaveData[0].mMoney - mMoneyRemaining, 7, 0, mTextBuffers[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
     } else {
-        TextManager::Get().PrintNumber(gSaveData[0].mMoney, 7, 0, mUnk_38[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
+        TextManager::Get().PrintNumber(gSaveData[0].mMoney, 7, 0, mTextBuffers[1], 0x10, 6, &outH, &outW, 0, 2, 0x21, 0, 1, 1, 1);
     }
     TextManager::Get().mUse4bppFont = 0;
-    DC_FlushRange(mUnk_38[1], mUnk_50[1]);
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0xf000, mUnk_38[1], mUnk_50[1], 0);
+    DC_FlushRange(mTextBuffers[1], mTextBufferSizes[1]);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0xf000, mTextBuffers[1], mTextBufferSizes[1], 0);
 }
 
 #define COUNT_STEP(CLEAR_ONLY)                                                         \
-    if ((u32) mUnk_a4 < 10 || (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed)) { \
+    if ((u32) mMoneyRemaining < 10 || (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed)) { \
         if (!(CLEAR_ONLY)) {                                                           \
-            mUnk_a8 += mUnk_a4;                                                        \
+            mMoneyTotal += mMoneyRemaining;                                                        \
         }                                                                              \
-        mUnk_a4 = 0;                                                                   \
+        mMoneyRemaining = 0;                                                                   \
     } else {                                                                           \
-        mUnk_a4 -= 10;                                                                 \
+        mMoneyRemaining -= 10;                                                                 \
         if (!(CLEAR_ONLY)) {                                                           \
-            mUnk_a8 += 10;                                                             \
+            mMoneyTotal += 10;                                                             \
         }                                                                              \
     }                                                                                  \
-    if (mUnk_b0 != 0) {                                                                \
-        mUnk_b0--;                                                                     \
+    if (mSoundTimer != 0) {                                                                \
+        mSoundTimer--;                                                                     \
     } else {                                                                           \
         SoundManager::Get().StartSeqArc(8);                                          \
-        mUnk_b0 = 4;                                                                   \
+        mSoundTimer = 4;                                                                   \
     }
 
-void BattleResult::func_ov007_02251ae4() {
+void BattleResult::UpdateMoneyCount() {
     if (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed) {
-        mUnk_af = 0;
+        mDelayTimer = 0;
     }
-    if (mUnk_af != 0) {
-        mUnk_af--;
+    if (mDelayTimer != 0) {
+        mDelayTimer--;
         return;
     }
-    if (mUnk_38[1]) {
-        MI_CpuClear16(mUnk_38[1], mUnk_50[1]);
+    if (mTextBuffers[1]) {
+        MI_CpuClear16(mTextBuffers[1], mTextBufferSizes[1]);
     }
-    switch (mUnk_b2) {
+    switch (mMoneyStep) {
         case 0:
-            mUnk_a4 += mUnk_9c;
-            mUnk_af = 30;
-            mUnk_b2++;
-            func_ov007_0225047c();
+            mMoneyRemaining += mUnk_9c;
+            mDelayTimer = 30;
+            mMoneyStep++;
+            PrintResultText();
             break;
         case 1:
-            if (mUnk_a4 != 0) {
+            if (mMoneyRemaining != 0) {
                 COUNT_STEP(0)
             } else {
-                mUnk_b2++;
-                mUnk_b0 = 0;
+                mMoneyStep++;
+                mSoundTimer = 0;
             }
             break;
         case 2:
-            mUnk_a4 = mUnk_84[0];
-            mUnk_af = 30;
-            mUnk_b2++;
-            func_ov007_0225047c();
+            mMoneyRemaining = mUnk_84[0];
+            mDelayTimer = 30;
+            mMoneyStep++;
+            PrintResultText();
             break;
         case 3:
         case 4:
@@ -1298,80 +1298,80 @@ void BattleResult::func_ov007_02251ae4() {
         case 6:
         case 7:
         case 8:
-            if (mUnk_a4 != 0) {
+            if (mMoneyRemaining != 0) {
                 COUNT_STEP(0)
             } else {
-                mUnk_b2++;
-                mUnk_b0 = 0;
-                mUnk_af = 30;
-                mUnk_a4 = mUnk_84[mUnk_b2 - 3];
-                if (mUnk_a4 == 0) {
-                    mUnk_b2 = 9;
+                mMoneyStep++;
+                mSoundTimer = 0;
+                mDelayTimer = 30;
+                mMoneyRemaining = mUnk_84[mMoneyStep - 3];
+                if (mMoneyRemaining == 0) {
+                    mMoneyStep = 9;
                 }
-                func_ov007_0225047c();
+                PrintResultText();
             }
             break;
         case 9:
-            mUnk_a4 = mUnk_ad * 100;
-            mUnk_af = 30;
-            mUnk_b2++;
-            func_ov007_0225047c();
+            mMoneyRemaining = mUnk_ad * 100;
+            mDelayTimer = 30;
+            mMoneyStep++;
+            PrintResultText();
             break;
         case 10:
-            if (mUnk_a4 != 0) {
+            if (mMoneyRemaining != 0) {
                 COUNT_STEP(0)
             } else {
-                mUnk_a4 = mUnk_ae * 100;
-                mUnk_af = 30;
-                mUnk_b2++;
-                mUnk_b0 = 0;
-                func_ov007_0225047c();
+                mMoneyRemaining = mUnk_ae * 100;
+                mDelayTimer = 30;
+                mMoneyStep++;
+                mSoundTimer = 0;
+                PrintResultText();
             }
             break;
         case 11:
-            if (mUnk_a4 != 0) {
+            if (mMoneyRemaining != 0) {
                 COUNT_STEP(0)
             } else {
-                mUnk_af = 30;
-                mUnk_b2++;
-                mUnk_b0 = 0;
-                func_ov007_0225047c();
+                mDelayTimer = 30;
+                mMoneyStep++;
+                mSoundTimer = 0;
+                PrintResultText();
             }
             break;
         case 12:
-            mUnk_b2++;
-            mUnk_a4 = mUnk_a0;
-            mUnk_af = 30;
-            func_ov007_0225047c();
+            mMoneyStep++;
+            mMoneyRemaining = mUnk_a0;
+            mDelayTimer = 30;
+            PrintResultText();
             break;
         case 13:
-            if (mUnk_a4 != 0) {
+            if (mMoneyRemaining != 0) {
                 COUNT_STEP(0)
             } else {
-                mUnk_b2++;
-                mUnk_b0 = 0;
-                mUnk_af = 30;
+                mMoneyStep++;
+                mSoundTimer = 0;
+                mDelayTimer = 30;
             }
             break;
         case 14:
-            mUnk_b2++;
-            mUnk_af = 30;
-            func_ov007_0225047c();
+            mMoneyStep++;
+            mDelayTimer = 30;
+            PrintResultText();
             break;
         case 15:
             data_020d433c.mUnk_8c_0 = 0;
             if (mUnk_ac != 0) {
-                mUnk_a8 *= 2;
+                mMoneyTotal *= 2;
                 if (data_020d433c.mNextScene == 12) {
                     data_020d433c.mUnk_8c_0 = 1;
                 }
                 SoundManager::Get().StartSeqArc(8);
             }
-            mUnk_af = 30;
-            mUnk_b2++;
+            mDelayTimer = 30;
+            mMoneyStep++;
             break;
         case 16: {
-            u32 add = mUnk_a8;
+            u32 add = mMoneyTotal;
             if (add > 9999990) {
                 add = 9999990;
             }
@@ -1379,7 +1379,7 @@ void BattleResult::func_ov007_02251ae4() {
             if (gSaveData[0].mMoney > 9999990) {
                 gSaveData[0].mMoney = 9999990;
             }
-            add = mUnk_a8;
+            add = mMoneyTotal;
             if (add > 9999990) {
                 add = 9999990;
             }
@@ -1387,34 +1387,34 @@ void BattleResult::func_ov007_02251ae4() {
             if (gSaveData[0].mUnk_20 > 9999990) {
                 gSaveData[0].mUnk_20 = 9999990;
             }
-            mUnk_a4 = mUnk_a8;
-            mUnk_af = 30;
-            mUnk_b2++;
+            mMoneyRemaining = mMoneyTotal;
+            mDelayTimer = 30;
+            mMoneyStep++;
             break;
         }
         case 17:
-            if (mUnk_a4 != 0) {
+            if (mMoneyRemaining != 0) {
                 COUNT_STEP(1)
             } else {
-                mUnk_b1++;
-                mUnk_b0 = 0;
+                mState++;
+                mSoundTimer = 0;
                 *((u8 *) mUnk_68 + 0x78) = 1;
             }
             break;
     }
-    func_ov007_02251724();
+    PrintMoney();
 }
 
-void BattleResult::func_ov007_022525c4() {
-    SpriteManager::Get().Screen(0).AddOam(mUnk_44[0], mUnk_5c[0], 10, 12, 0, 0x100, 14, 0);
-    SpriteManager::Get().Screen(0).AddOam(mUnk_44[1], mUnk_5c[1], 0x9e, 0x8c, 0, 0x1e0, 14, 0);
+void BattleResult::DrawResultText() {
+    SpriteManager::Get().Screen(0).AddOam(mGlyphBuffers[0], mGlyphCounts[0], 10, 12, 0, 0x100, 14, 0);
+    SpriteManager::Get().Screen(0).AddOam(mGlyphBuffers[1], mGlyphCounts[1], 0x9e, 0x8c, 0, 0x1e0, 14, 0);
 }
 
-void BattleResult::func_ov007_022526f0() {
+void BattleResult::ClearTextBuffers() {
     u8 i = 0;
     do {
-        if (mUnk_38[i]) {
-            MI_CpuClear16(mUnk_38[i], mUnk_50[i]);
+        if (mTextBuffers[i]) {
+            MI_CpuClear16(mTextBuffers[i], mTextBufferSizes[i]);
         }
         i++;
     } while (i < 3);

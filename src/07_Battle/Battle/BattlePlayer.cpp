@@ -24,24 +24,24 @@ extern "C" void MIi_CpuCopy16(const void *src, void *dst, u32 size);
 extern u8 data_020d441a[];
 extern u8 data_020d4352[];
 
-void func_ov007_0226a1d8(BattlePlayer *player);
+void InitPlayerName(BattlePlayer *player);
 
 struct BattlePlayerTemplate {
     /* 00 */ u16 mUnk_00;
     /* 02 */ u16 mUnk_02;
     /* 04 */ u16 mUnk_04;
     /* 06 */ PAD(0x06, 0x08);
-    /* 08 */ u8 mUnk_08;
-    /* 09 */ u8 mUnk_09;
+    /* 08 */ u8 mBakuganId;
+    /* 09 */ u8 mAttribute;
     /* 0a */ PAD(0x0a, 0x0c);
 };
 struct BattlePlayerTemplateSet {
-    /* 00 */ BattlePlayerTemplate mUnk_00[3];
-    /* 24 */ u16 mUnk_24[3][2];
-    /* 30 */ u16 mUnk_30[3][2];
+    /* 00 */ BattlePlayerTemplate mRecords[3];
+    /* 24 */ u16 mSlots54Values[3][2];
+    /* 30 */ u16 mSlots6cValues[3][2];
     /* 3c */
 };
-const BattlePlayerTemplateSet data_ov007_0227b0a8[17][3] = {
+const BattlePlayerTemplateSet sPlayerTemplates[17][3] = {
     {
         {{{0x0, 0x2243, 0x25, {0}, 0x0, 0x0, {0}}, {0x0, 0x8, 0x14, {0}, 0x15, 0x0, {0}}, {0x0, 0x1002, 0x15, {0}, 0x17, 0x0, {0}}}, {{21, 0}, {52, 0}, {72, 0}}, {{126, 0}, {141, 0}, {169, 0}}},
         {{{0x5, 0x224b, 0x37, {0}, 0x0, 0x0, {0}}, {0x3, 0x248, 0x28, {0}, 0x1f, 0x0, {0}}, {0x3, 0x1440, 0x28, {0}, 0x1d, 0x0, {0}}}, {{1, 0}, {40, 0}, {73, 0}}, {{112, 0}, {146, 0}, {181, 0}}},
@@ -207,13 +207,13 @@ BattlePlayer::BattlePlayer(u32 index)
             } else if (gSaveData[0].mUnk_5bf_0) {
                 extra = 0x64;
             }
-            mRecords[k].mUnk_04 = data_ov007_0227b0a8[mCharacterId][mUnk_f7].mUnk_00[k].mUnk_04 * 10 + extra;
+            mRecords[k].mUnk_04 = sPlayerTemplates[mCharacterId][mUnk_f7].mRecords[k].mUnk_04 * 10 + extra;
             mRecords[k].mUnk_0b = mRecords[k].mUnk_04 / 10;
-            mRecords[k].mAttribute = data_ov007_0227b0a8[mCharacterId][mUnk_f7].mUnk_00[k].mUnk_09;
-            mRecords[k].mBakuganId = data_ov007_0227b0a8[mCharacterId][mUnk_f7].mUnk_00[k].mUnk_08;
-            mRecords[k].mHead = *(BattleRecordHead *) &data_ov007_0227b0a8[mCharacterId][mUnk_f7].mUnk_00[k];
-            mSlots54[k].mValue = data_ov007_0227b0a8[mCharacterId][mUnk_f7].mUnk_24[k][0];
-            mSlots6c[k].mValue = data_ov007_0227b0a8[mCharacterId][mUnk_f7].mUnk_30[k][0];
+            mRecords[k].mAttribute = sPlayerTemplates[mCharacterId][mUnk_f7].mRecords[k].mAttribute;
+            mRecords[k].mBakuganId = sPlayerTemplates[mCharacterId][mUnk_f7].mRecords[k].mBakuganId;
+            mRecords[k].mHead = *(BattleRecordHead *) &sPlayerTemplates[mCharacterId][mUnk_f7].mRecords[k];
+            mSlots54[k].mValue = sPlayerTemplates[mCharacterId][mUnk_f7].mSlots54Values[k][0];
+            mSlots6c[k].mValue = sPlayerTemplates[mCharacterId][mUnk_f7].mSlots6cValues[k][0];
             k++;
         } while (k < 3);
     }
@@ -246,7 +246,7 @@ BattlePlayer::BattlePlayer(u32 index)
     mSlots6cRemaining = data_020d433c.mUnk_99;
     MI_CpuClear32((u8 *) this + 0x100, 0x20);
     MI_CpuClear32((u8 *) this + 0x120, 0x20);
-    func_ov007_0226a1d8(this);
+    InitPlayerName(this);
     if (data_020d433c.mUnk_8a_0 != 0) {
         mRecords[1].mStatus = 2;
         mRecords[2].mStatus = 2;
@@ -416,7 +416,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
     }
 }
 
-void func_ov007_0226a1d8(BattlePlayer *player) {
+void InitPlayerName(BattlePlayer *player) {
     if (player->mCharacterId == 0x15) {
         WirelessManager::Get();
         const u16 *name;
@@ -473,7 +473,7 @@ void func_ov007_0226a380(BattlePlayer *player, u8 record, int amount) {
     }
 }
 
-void func_ov007_0226a404(BattlePlayer *player, u32 index, u32 flag) {
+void SetSlot54Flag(BattlePlayer *player, u32 index, u32 flag) {
     if (player->mSlots54[index].mFlag == 0) {
         if (flag != 0 && player->mSlots54Remaining != 0) {
             player->mSlots54Remaining--;
@@ -486,7 +486,7 @@ void func_ov007_0226a404(BattlePlayer *player, u32 index, u32 flag) {
     player->mSlots54[index].mFlag = flag;
 }
 
-void func_ov007_0226a448(BattlePlayer *player, u8 index, int flag) {
+void SetSlot6cFlag(BattlePlayer *player, u8 index, int flag) {
     if (player->mSlots6c[index].mFlag == 0) {
         if (flag != 0 && player->mSlots6cRemaining != 0) {
             player->mSlots6cRemaining--;
@@ -500,7 +500,7 @@ void func_ov007_0226a448(BattlePlayer *player, u8 index, int flag) {
 }
 
 
-void func_ov007_0226a48c(BattlePlayer *player) {
+void SetupTutorialPlayer(BattlePlayer *player) {
     if (data_020d433c.mTutorialId != 0xe) {
         u8 two = 2;
         player->mSlots6c[0].mFlag = two;
@@ -549,7 +549,7 @@ void func_ov007_0226a48c(BattlePlayer *player) {
     }
 }
 
-u8 func_ov007_0226a5e8(BattlePlayer *player) {
+u8 PickUnflaggedSlot54(BattlePlayer *player) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 first               = 0xff;
     u8 i                   = 0;

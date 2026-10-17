@@ -6,7 +6,7 @@
 void *operator new[](size_t size);
 void operator delete[](void *p);
 struct GimmickSetDataHead;
-void func_ov007_02271b24(GimmickSetDataHead *data, int mode);
+void SetCollisionMode(GimmickSetDataHead *data, int mode);
 
 struct ObstacleRaw {
     u32 w[8];
@@ -47,7 +47,7 @@ GimmickSetData *AddCollisionSet(GimmickCollision *data, int count, void *buf, Ve
     if (set->mNext) {
         set->mNext->mPrev = set;
     }
-    func_ov007_02271b24((GimmickSetDataHead *) set, count);
+    SetCollisionMode((GimmickSetDataHead *) set, count);
     *(GimmickSetHead *) &set->mUnk_0c = *(GimmickSetHead *) buf;
     set->mObstacles = *(GimmickSetBlock *) ((u8 *) buf + 4);
     set->mPosition = *pos;
@@ -95,16 +95,16 @@ void GimmickCollision::Update() {
     } while (a);
 }
 
-BOOL func_ov007_0227226c(BattleObstacle *a, BattleObstacle *b);
-BOOL func_ov007_02272308(BattleObstacle *a, BattleObstacle *b);
-BOOL func_ov007_02272170(BattleObstacle *a, BattleObstacle *b);
-BOOL func_ov007_0227212c(BattleObstacle *a, BattleObstacle *b);
-BOOL func_ov007_022720ac(BattleObstacle *a, BattleObstacle *b);
+BOOL TestBoxSphere(BattleObstacle *a, BattleObstacle *b);
+BOOL TestSphereSphere(BattleObstacle *a, BattleObstacle *b);
+BOOL TestPosInBoxXZ(BattleObstacle *a, BattleObstacle *b);
+BOOL TestPosInRadiusXZ(BattleObstacle *a, BattleObstacle *b);
+BOOL TestCylinder(BattleObstacle *a, BattleObstacle *b);
 
 // Tests indexed by the type of the second object minus one (the first one is a ball). Four entries: the vtable follows
 // the table in .data (its size puts it before the vtable in the layout).
 static BOOL (*sTests[4])(BattleObstacle *, BattleObstacle *) = {
-    func_ov007_02272308, func_ov007_02272170, func_ov007_0227212c, func_ov007_022720ac,
+    TestSphereSphere, TestPosInBoxXZ, TestPosInRadiusXZ, TestCylinder,
 };
 
 void GimmickCollision::TestSets(GimmickSetData *a, GimmickSetData *b) {
@@ -165,12 +165,12 @@ BOOL GimmickCollision::TestObstacles(BattleObstacle *a, BattleObstacle *b) {
     u8 type     = a->mType;
     if (type == 0) {
         if (b->mType == 0) {
-            result = func_ov007_0227226c(a, b);
+            result = TestBoxSphere(a, b);
         }
     } else if (type == 1) {
         type = b->mType;
         if (type == 0) {
-            result = func_ov007_0227226c(b, a);
+            result = TestBoxSphere(b, a);
         } else {
             result = sTests[type - 1](a, b);
         }

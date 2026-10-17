@@ -14,7 +14,7 @@ extern const s32 data_ov007_022790c8[][6];
 extern const u8 data_ov007_022790c0[];
 
 int PointDistance(int x1, int y1, int x2, int y2);
-void func_ov007_02225354(float x, float y, float *out);
+void NormalizeXY(float x, float y, float *out);
 
 // Placeholder: an enum-typed copy of the entry index (mwcc does not propagate enum locals) gives the original
 // register pair for the first entries[] access; the real source form is not known.
@@ -465,13 +465,13 @@ void BattleSub48::DrawAbilitiesAndSides() {
     DrawSides();
 }
 
-void func_ov007_022252a8(BattleSub48 *obj) {
+void StartAbilitiesSlide(BattleSub48 *obj) {
     obj->mAbilitiesY = 0xc0;
     obj->mAbilitiesYPerFrame = 10;
     obj->mState = 2;
 }
 
-void func_ov007_022252c4(BattleSub48 *obj) {
+void ClearSub48State(BattleSub48 *obj) {
     obj->mState = 0;
 }
 
@@ -482,7 +482,7 @@ int PointDistance(int x1, int y1, int x2, int y2) {
     return (int) ((float) FX_Sqrt(FX32_CONST((float) sq)) / 4096.0f);
 }
 
-void func_ov007_02225354(float x, float y, float *out) {
+void NormalizeXY(float x, float y, float *out) {
     float len = (float) FX_Sqrt(FX32_CONST(x * x + y * y)) / 4096.0f;
     if (len == 0.0f) {
         return;

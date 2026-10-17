@@ -451,7 +451,7 @@ struct BattleListMessage {
     /* 1c */ u8 mUnk_1c;
 };
 
-BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
+BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 
 #define MESSAGE ((BattleListMessage *) &data_0220f540)
 
@@ -3960,7 +3960,7 @@ BOOL func_02084a10(ListScene *self) {
     }
     BattlePlayerList *players = data_020d433c.mBattlePlayers;
     MESSAGE->mUnk_1c          = 3;
-    if (func_ov007_022631bc(players, 3)) {
+    if (SetMessageTypeAndCheckAll(players, 3)) {
     u32 count = WirelessManager::Get().func_0202f134();
     u8 j = 0;
     do {
@@ -4005,7 +4005,7 @@ BOOL func_02084c38(ListScene *self) {
     }
     SLOT_MESSAGE->mUnk_1c = 3;
     SLOT_MESSAGE->mUnk_1d = 3;
-    if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 4)) {
+    if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 4)) {
         u32 count = WirelessManager::Get().func_0202f134();
         u8 j      = 0;
         do {
@@ -4042,7 +4042,7 @@ BOOL func_02084c38(ListScene *self) {
 
 BOOL func_02084e64(ListScene *self) {
     data_0220f540.mUnk_04 = MATH_Rand32(&gRandom, 0);
-    if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 2)) {
+    if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 2)) {
         u8 *info = WirelessManager::Get().func_0202f0cc(0);
         if (info != NULL) {
             SeedRandom(*(u32 *) (info + 4));
@@ -4054,7 +4054,7 @@ BOOL func_02084e64(ListScene *self) {
 
 BOOL func_02084f40(ListScene *self) {
     MIi_CpuCopyFast(gCharacterLook, (u8 *) &data_0220f540 + 4, 8);
-    if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 6)) {
+    if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 6)) {
         u32 count = WirelessManager::Get().func_0202f134();
         u8 j      = 0;
         do {
@@ -4087,7 +4087,7 @@ BOOL func_0208501c(ListScene *self) {
             }
         }
     }
-    if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 5)) {
+    if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 5)) {
         u32 count = WirelessManager::Get().func_0202f134();
         u8 j      = 0;
         do {

@@ -57,7 +57,7 @@ ConfrontEmblem06::~ConfrontEmblem06() {
     }
 }
 
-void func_ov007_02225354(float dx, float dy, float *out);
+void NormalizeXY(float dx, float dy, float *out);
 
 extern "C" void func_02024764(SoundManager *manager, u32 a, u32 b);
 
@@ -155,7 +155,7 @@ void ConfrontEmblem06::PickDir() {
     float dy = FX_SinCosTable_[i];
     dy /= 4096.0f;
     p[1] = mY + dy;
-    func_ov007_02225354(p[0] - mX, p[1] - mY, &mDirX);
+    NormalizeXY(p[0] - mX, p[1] - mY, &mDirX);
 }
 
 void ConfrontEmblem06::Bounce() {

@@ -26,22 +26,22 @@ extern const s16 data_ov007_02279174;
 extern const u8 data_ov007_02279178[];
 extern const s16 data_ov007_0227917c;
 
-BOOL func_ov007_02229524(BattleField3D *field);
+BOOL UpdateCameraPath(BattleField3D *field);
 
 // Functions of other battle files.
-void func_ov007_02229998(BattleField3D *obj);
-void func_ov007_022252c4(BattleSub48 *obj);
-void func_ov007_0226a448(BattlePlayer *player, u8 a, int b);
+void FreeAuras(BattleField3D *obj);
+void ClearSub48State(BattleSub48 *obj);
+void SetSlot6cFlag(BattlePlayer *player, u8 a, int b);
 void func_ov007_0222844c(BattleHud *obj, u8 a, u8 b);
 BOOL func_ov007_02226aa0(BattleHud *obj);
-BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
-void func_ov007_022252a8(BattleSub48 *obj);
-void func_ov007_02229758(BattleField3D *obj);
+BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
+void StartAbilitiesSlide(BattleSub48 *obj);
+void ShowModels(BattleField3D *obj);
 BOOL func_ov007_02229770(BattleField3D *obj);
 BOOL func_ov007_022297f0(BattleField3D *obj);
-void func_ov007_02226a44(BattleHud *obj, u32 a);
+void SetHudState(BattleHud *obj, u32 a);
 void func_ov007_0222847c(BattleHud *obj);
-void func_ov007_02227434(BattleHud *obj);
+void MovePlayerAnimX(BattleHud *obj);
 extern const u8 data_ov007_0227915c;
 extern const u8 data_ov007_02279170;
 struct BattleRow {
@@ -52,7 +52,7 @@ extern const s32 data_ov007_02278b74;
 void func_ov007_02229d08(BattleBase *scene);
 void func_ov007_02229c88(BattleBase *scene, u16 *a, u16 *b, u16 *c, u8 flag);
 
-void func_ov007_02226a34(void *);
+void CloseHud(void *);
 extern const s8 data_ov007_02279158[];
 extern const s8 data_ov007_02279d3c[];
 extern const s16 data_ov007_02278b1c[];
@@ -114,7 +114,7 @@ BattleBase::BattleBase()
 BattleBase::~BattleBase() {
     if (mField3D) delete mField3D;
     mSub48->mState = 4;
-    func_ov007_02226a34(mHud);
+    CloseHud(mHud);
     if (mSlots[3]) delete mSlots[3];
     if (mSlots[2]) delete mSlots[2];
     if (mSlots[1]) delete mSlots[1];
@@ -202,7 +202,7 @@ void BattleBase::Update() {
             SpriteManager::Get().StartFade(2);
             mState++;
         case 1:
-            if (func_ov007_02229524(mField3D)) {
+            if (UpdateCameraPath(mField3D)) {
                 mState++;
             }
             break;
@@ -230,7 +230,7 @@ void BattleBase::Update() {
                 mUnk_54_0 = 1;
                 mReturnState   = 5;
                 mState   = 8;
-                func_ov007_02226a44(mHud, 0);
+                SetHudState(mHud, 0);
             } else {
                 mState++;
             }
@@ -254,9 +254,9 @@ void BattleBase::Update() {
                 mUnk_54_0 = 1;
                 mReturnState   = 5;
                 mState   = 8;
-                func_ov007_02226a44(mHud, 0);
+                SetHudState(mHud, 0);
             } else {
-                func_ov007_02226a44(mHud, 1);
+                SetHudState(mHud, 1);
                 mState++;
             }
             break;
@@ -276,9 +276,9 @@ void BattleBase::Update() {
             if (found) {
                 mUnk_54 |= 0x20;
                 mState = 8;
-                func_ov007_02226a44(mHud, 0);
+                SetHudState(mHud, 0);
             } else {
-                func_ov007_02226a44(mHud, 1);
+                SetHudState(mHud, 1);
                 mState++;
             }
             break;
@@ -326,12 +326,12 @@ void BattleBase::Update() {
                             SoundManager::Get().StartSeqArc(0x2f);
                             func_020247fc(&SoundManager::Get(), 0x400);
                             if (mHud->mPushPercent == 0x32) {
-                                func_ov007_02226a44(mHud, 4);
+                                SetHudState(mHud, 4);
                                 mCardKind = 4;
                             } else {
-                                func_ov007_02226a44(mHud, 2);
+                                SetHudState(mHud, 2);
                             }
-                            func_ov007_022252a8(mSub48);
+                            StartAbilitiesSlide(mSub48);
                             break;
                         case 1:
                             if ((mCardSide == 0 && mUnk_12 == 1) || (mCardSide == 1 && mUnk_12 == 0)) {
@@ -347,19 +347,19 @@ void BattleBase::Update() {
                                 } while (j < data_020d433c.mPlayerCount);
                             }
                             func_ov007_0223e214(mBattleData, mCardSide, 1);
-                            func_ov007_02226a44(mHud, 4);
-                            func_ov007_022252a8(mSub48);
+                            SetHudState(mHud, 4);
+                            StartAbilitiesSlide(mSub48);
                             break;
                         case 3:
                             mUnk_52[mCardSide] = 1;
                             mHud->func_ov007_02227bbc(mCardSide);
-                            func_ov007_02226a44(mHud, 4);
-                            func_ov007_022252a8(mSub48);
+                            SetHudState(mHud, 4);
+                            StartAbilitiesSlide(mSub48);
                             break;
                         case 4:
                             if (!mUnk_54_0) {
-                                func_ov007_02226a44(mHud, 4);
-                                func_ov007_022252a8(mSub48);
+                                SetHudState(mHud, 4);
+                                StartAbilitiesSlide(mSub48);
                             }
                             break;
                     }
@@ -368,7 +368,7 @@ void BattleBase::Update() {
             }
             break;
         case 10:
-            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 SpriteManager::Get().StartFade(2);
                 mState++;
             }
@@ -379,7 +379,7 @@ void BattleBase::Update() {
             }
             break;
         case 12:
-            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 SoundManager::Get().StartSeqArc(0x32);
                 SpriteManager::Get().StartFade(4);
                 mState++;
@@ -442,14 +442,14 @@ void BattleBase::SetupCardSequence() {
     mCardId = entries[mCardSide].mUnk_12;
     mCardKind = GetCardInfo(entries[mCardSide].mUnk_12, 3);
     mUnk_2a = 0;
-    func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[entries[mCardSide].mUnk_0d_4], entries[mCardSide].mUnk_11, 2);
+    SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[entries[mCardSide].mUnk_0d_4], entries[mCardSide].mUnk_11, 2);
     BattleBase::InitSubScreen();
     mUnk_54_3 = 1;
     if (!mUnk_54_0) {
         mHud->mUnk_22 &= ~0x10;
     }
     func_ov007_0222844c(mHud, mCardSide, mCardKind);
-    func_ov007_022252c4(mSub48);
+    ClearSub48State(mSub48);
     mUnk_1d = -1;
     mUnk_1c = mUnk_1d;
     mUnk_1f = -1;
@@ -485,7 +485,7 @@ BOOL BattleBase::UpdateCardSequence() {
             mCardStep++;
             break;
         case 2:
-            if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+            if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 InitMainScreen();
                 new BattleCharaAct(GetCam(), entries[mCardSide].mUnk_0d_4, 6, (func_02065c20(mCardId) - 0x190) / 100, 0);
                 mCardStep++;
@@ -641,7 +641,7 @@ BOOL BattleBase::UpdateCardSequence() {
                 mCardId   = entries[other & 0xff].mUnk_12;
                 mPrevCardKind   = mCardKind;
                 mCardKind   = GetCardInfo(entries[mCardSide].mUnk_12, 3);
-                func_ov007_0226a448(data_020d433c.mBattlePlayers->mPlayers[entries[mCardSide].mUnk_0d_4], entries[mCardSide].mUnk_11, 2);
+                SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[entries[mCardSide].mUnk_0d_4], entries[mCardSide].mUnk_11, 2);
                 mHud->mUnk_118[mCardSide] = 0;
                 mCardStep                    = 2;
             }
@@ -943,7 +943,7 @@ BOOL BattleBase::CheckBattleEnd() {
         mUnk_18_0 = 1;
         func_02024764(&SoundManager::Get(), 0x24, 1);
     } else if (!mUnk_18_0) {
-        func_ov007_02227434(mHud);
+        MovePlayerAnimX(mHud);
     }
     return done;
 }
@@ -952,8 +952,8 @@ BOOL BattleBase::func_ov007_0221bd84() {
     BOOL done = 0;
     switch (mUnk_11) {
     case 0:
-        if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
-            func_ov007_022252a8(mSub48);
+        if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
+            StartAbilitiesSlide(mSub48);
             SpriteManager::Get().StartFade(2);
             mUnk_11++;
         }
@@ -967,7 +967,7 @@ BOOL BattleBase::func_ov007_0221bd84() {
         break;
     case 2:
         if (!func_ov007_02226aa0(mHud)) {
-            func_ov007_02229758(mField3D);
+            ShowModels(mField3D);
             mUnk_11++;
         }
         break;
@@ -982,7 +982,7 @@ BOOL BattleBase::func_ov007_0221bd84() {
         }
         break;
     case 4:
-        if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0x10)) {
+        if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0x10)) {
             mUnk_11 = 0;
             done = 1;
         }
@@ -995,7 +995,7 @@ BOOL BattleBase::func_ov007_0221bfa4() {
     BOOL done = 0;
     switch (mUnk_11) {
     case 0:
-        func_ov007_02226a44(mHud, 3);
+        SetHudState(mHud, 3);
         mUnk_18_2 = 1;
         mUnk_11++;
         break;
@@ -1021,7 +1021,7 @@ BOOL BattleBase::func_ov007_0221bfa4() {
         }
         break;
     case 4:
-        if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
+        if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
             done = 1;
         }
         break;
@@ -1438,9 +1438,9 @@ BOOL BattleBase::UpdateFlash() {
         mFlashBrightness += 3;
         if (mFlashBrightness >= 15) {
             if (mUnk_18_0) {
-                func_ov007_02229998(mField3D);
+                FreeAuras(mField3D);
                 SoundManager::Get().StartSeqArc(0x25);
-                func_ov007_022252c4(mSub48);
+                ClearSub48State(mSub48);
             }
             mFlashFalling++;
         }

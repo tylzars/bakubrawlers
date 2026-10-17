@@ -250,7 +250,7 @@ void BattleResult::Update() {
             } while (i < 4);
             if (data_020d433c.mWireless == 0) {
                 u32 v = best == 0 ? 2 : 3;
-                if (data_020d433c.mNextScene == 12) {
+                if (data_020d433c.mNextScene == SCENE_PARK) {
                     data_020d433c.mUnk_7c = v;
                 } else {
                     data_020d433c.mUnk_7d = v;
@@ -298,7 +298,7 @@ void BattleResult::Update() {
             break;
         case 3:
             if (data_020d433c.mUnk_7a != 0) {
-                if (data_020d433c.mNextScene == 13 && data_020d433c.mUnk_7d == 3) {
+                if (data_020d433c.mNextScene == SCENE_TOURNAMENT && data_020d433c.mUnk_7d == 3) {
                     if (gSaveData[0].mUnk_4a < 9999) {
                         gSaveData[0].mUnk_4a++;
                     }
@@ -417,7 +417,7 @@ void BattleResult::Update() {
             break;
         case 10:
             mContext->mRequest = 1;
-            if (data_020d433c.mNextScene != 8 && data_020d433c.mNextScene != 12) {
+            if (data_020d433c.mNextScene != SCENE_ARENA_WINDOW && data_020d433c.mNextScene != SCENE_PARK) {
                 if (data_020d433c.mUnk_7d == 2) {
                     if (func_0202326c(&gSaveData[0])) {
                         new BattleMoneyReward();
@@ -433,7 +433,7 @@ void BattleResult::Update() {
             }
             break;
         case 12:
-            if (data_020d433c.mNextScene != 8) {
+            if (data_020d433c.mNextScene != SCENE_ARENA_WINDOW) {
                 data_020d48f0.mPrevRank = data_020d48f0.mRank;
                 Ranking *p = new Ranking();
                 data_020d48f0.mRank = p->mPlayerRank;
@@ -443,11 +443,11 @@ void BattleResult::Update() {
             break;
         case 13: {
             s32 id = -1;
-            u8 mode = data_020d433c.mNextScene;
+            u8 scene = data_020d433c.mNextScene;
             u8 sub = data_020d433c.mUnk_7d;
-            if ((mode == 13) & (sub == 2)) {
+            if ((scene == SCENE_TOURNAMENT) & (sub == 2)) {
                 id = func_02087100();
-            } else if (mode == 12) {
+            } else if (scene == SCENE_PARK) {
                 id = func_02087468();
             }
             if (id >= 0) {
@@ -465,7 +465,7 @@ void BattleResult::Update() {
             }
             break;
         case 15:
-            if (data_020d433c.mNextScene == 8) {
+            if (data_020d433c.mNextScene == SCENE_ARENA_WINDOW) {
                 mState++;
                 break;
             }
@@ -931,7 +931,7 @@ void BattleResult::LoadResultTextAndAmounts() {
 
 void BattleResult::ComputeAmounts() {
     if (mUnk_b3 != 0) {
-        if (data_020d433c.mNextScene == 0xd) {
+        if (data_020d433c.mNextScene == SCENE_TOURNAMENT) {
             switch (gSaveData[0].mUnk_42) {
                 case 1:
                     mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][0][gSaveData[0].mUnk_43] * 100;
@@ -1362,7 +1362,7 @@ void BattleResult::UpdateMoneyCount() {
             data_020d433c.mUnk_8c_0 = 0;
             if (mUnk_ac != 0) {
                 mMoneyTotal *= 2;
-                if (data_020d433c.mNextScene == 12) {
+                if (data_020d433c.mNextScene == SCENE_PARK) {
                     data_020d433c.mUnk_8c_0 = 1;
                 }
                 SoundManager::Get().StartSeqArc(8);

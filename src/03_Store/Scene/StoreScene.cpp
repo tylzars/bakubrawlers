@@ -60,7 +60,7 @@ StoreScene::StoreScene() :
     mGlyphBuffer    = NULL;
     mTextBufferSize = 0;
     mGlyphCount     = 0;
-    mNextScene         = 9;
+    mNextScene         = SCENE_MAP;
     MI_CpuClear8(&mContext->mInfo, sizeof(SceneInfo));
     mWindow    = NULL;
     mMessageWindow = NULL;

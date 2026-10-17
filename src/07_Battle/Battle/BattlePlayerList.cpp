@@ -208,7 +208,7 @@ void BattlePlayerList::Update() {
         WirelessManager::Get();
         if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
             SpriteManager::Get().SetFade(1, -16);
-            RequestScene(8);
+            RequestScene(SCENE_ARENA_WINDOW);
             data_020d433c.mUnk_10 = 0;
             return;
         }
@@ -245,7 +245,7 @@ void BattlePlayerList::Update() {
                 return;
             }
             if (result == 2) {
-                RequestScene(4);
+                RequestScene(SCENE_TITLE);
                 mFinished = 1;
             } else {
                 mState++;
@@ -306,7 +306,7 @@ void BattlePlayerList::Update() {
                 case 0:
                     return;
                 case 2:
-                    RequestScene(4);
+                    RequestScene(SCENE_TITLE);
                     mFinished = 1;
                     break;
                 default:
@@ -800,12 +800,12 @@ void BattlePlayerList::Update() {
             data_020d433c.mUnk_88_0 = 0;
             if (mUnk_2ae != 0) {
                 data_020d433c.mUnk_83 = mUnk_2ae;
-                RequestScene(10);
+                RequestScene(SCENE_TUTORIAL);
                 mFinished = 1;
                 return;
             }
             WirelessManager::Get();
-            if (IsWirelessMode(&data_020c4030.mUnk_228) || data_020d433c.mNextScene == 8) {
+            if (IsWirelessMode(&data_020c4030.mUnk_228) || data_020d433c.mNextScene == SCENE_ARENA_WINDOW) {
                 if (mContext->mRequest == 1) {
                     data_020d433c.mUnk_88_4 = 1;
                 }
@@ -813,8 +813,8 @@ void BattlePlayerList::Update() {
             } else {
                 u8 next = data_020d433c.mNextScene;
                 if (next != 0) {
-                    if (data_020d433c.mUnk_7a != 0 && next == 0xd && data_020d433c.mUnk_7d == 3) {
-                        RequestScene(0xb);
+                    if (data_020d433c.mUnk_7a != 0 && next == SCENE_TOURNAMENT && data_020d433c.mUnk_7d == 3) {
+                        RequestScene(SCENE_GAME_OVER);
                         mFinished = 1;
                         return;
                     }
@@ -822,7 +822,7 @@ void BattlePlayerList::Update() {
                     RequestScene(next);
                     mFinished = 1;
                 } else {
-                    RequestScene(4);
+                    RequestScene(SCENE_TITLE);
                     mFinished = 1;
                 }
             }
@@ -837,17 +837,17 @@ void BattlePlayerList::Update() {
                         mState++;
                     } else {
                         data_020d433c.mUnk_89 = 0;
-                        RequestScene(8);
+                        RequestScene(SCENE_ARENA_WINDOW);
                         mFinished = 1;
                     }
                     break;
                 case 2:
-                    RequestScene(5);
+                    RequestScene(SCENE_BATTLE_PLAYER_LIST);
                     mFinished = 1;
                     break;
                 case 3:
                     data_020d433c.mUnk_89 = 1;
-                    RequestScene(8);
+                    RequestScene(SCENE_ARENA_WINDOW);
                     mFinished = 1;
                     break;
             }
@@ -860,7 +860,7 @@ void BattlePlayerList::Update() {
             }
             data_020d433c.mWireless = 0;
             data_020d433c.mUnk_89 = 0;
-            RequestScene(8);
+            RequestScene(SCENE_ARENA_WINDOW);
             mFinished = 1;
             break;
         case 34:
@@ -869,7 +869,7 @@ void BattlePlayerList::Update() {
             break;
         case 35:
             if (!SpriteManager::Get().IsFading()) {
-                RequestScene(10);
+                RequestScene(SCENE_TUTORIAL);
                 mFinished = 1;
             }
             break;
@@ -877,14 +877,14 @@ void BattlePlayerList::Update() {
             SpriteManager::Get().SetFade(1, -16);
             SoundManager::Get().StopSeq(1);
             WirelessManager::Get();
-            if (IsWirelessMode(&data_020c4030.mUnk_228) || data_020d433c.mNextScene == 8) {
+            if (IsWirelessMode(&data_020c4030.mUnk_228) || data_020d433c.mNextScene == SCENE_ARENA_WINDOW) {
                 mContext->mRequest       = 1;
                 data_020d433c.mUnk_88_4 = 0;
                 data_020d433c.mUnk_88_0 = 1;
                 data_020d433c.mUnk_87   = 1;
                 mState                = 0x20;
             } else {
-                RequestScene(9);
+                RequestScene(SCENE_MAP);
                 mFinished = 1;
             }
             break;
@@ -1343,7 +1343,7 @@ extern "C" void func_ov007_022633f8(BattlePlayerList *list) {
     if (data_020d433c.mUnk_84) {
         return;
     }
-    if (data_020d433c.mNextScene != 0xd) {
+    if (data_020d433c.mNextScene != SCENE_TOURNAMENT) {
         FrameTask::Get().StartChannel(0, sFrameTaskIds[data_020d433c.mFieldId]);
         return;
     }

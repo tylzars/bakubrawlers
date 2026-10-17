@@ -123,7 +123,7 @@ void LogoScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            RequestScene(4);
+            RequestScene(SCENE_TITLE);
             mFinished = 1;
             break;
     }

@@ -455,13 +455,13 @@ void TutorialScene::Update() {
                 id = 10;
             }
             data_020d433c.mTutorialId = id;
-            RequestScene(5);
+            RequestScene(SCENE_BATTLE_PLAYER_LIST);
             mFinished = 1;
             break;
         }
         case 27:
             SetupFourPlayerBattle();
-            RequestScene(5);
+            RequestScene(SCENE_BATTLE_PLAYER_LIST);
             mFinished = 1;
             break;
         case 28: {
@@ -498,7 +498,7 @@ void TutorialScene::Update() {
                         data_020d433c.mUnk_7c = 2;
                         break;
                 }
-                RequestScene(prev <= 2 ? 9 : 0xc);
+                RequestScene(prev <= 2 ? SCENE_MAP : SCENE_PARK);
                 mFinished = 1;
                 if (prev == 3 && prev == 4) {
                     FillParkSlots();
@@ -517,7 +517,7 @@ void TutorialScene::Update() {
             data_020d433c.mUnk_84 = 0;
             data_020d433c.mTutorialId = 0;
             SoundManager::Get().RestoreHeapState();
-            RequestScene(4);
+            RequestScene(SCENE_TITLE);
             mFinished = 1;
             break;
     }
@@ -842,7 +842,7 @@ void SetupFourPlayerBattle() {
         data_020d433c.mUnk_a3[i] = 0;
         data_020d433c.mPartners[i] = i;
     }
-    data_020d433c.mNextScene = 10;
+    data_020d433c.mNextScene = SCENE_TUTORIAL;
     switch (data_020d433c.mUnk_83) {
         case 5:
             data_020d433c.mHasPartners = 1;

@@ -18,7 +18,8 @@ struct OverlayInfo {
 struct SceneRunnerContext {
     /* 00 */ PAD(0x00, 0x12);
     /* 12 */ s16 mRequest;
-    /* 14 */ u8 mState;
+    /* 14 */ u8 mState; // a SCENE_* id to start (SwitchToScene), or a step: 0-1 start-up, 3 an empty case nothing
+                        // requests, 14 waits for a request, 15 switches
 };
 
 // Microphone singleton (instance 0x020c189c).
@@ -145,7 +146,7 @@ void SceneRunner::SwitchToScene(s32 scene) {
     if (data_020d433c.mUnk_84 == 0) {
         SoundManager::Get().RestoreHeapState();
     }
-    if (scene == 5) {
+    if (scene == SCENE_BATTLE_PLAYER_LIST) {
         return;
     }
     MicManager::Get().StopSampling();
@@ -166,60 +167,60 @@ void SceneRunner::Update() {
         case 1:
             context->mState++;
             break;
-        case 2:
+        case SCENE_LOGO:
             SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV000_ID);
             new LogoScene();
             context->mState = 14;
             break;
         case 3:
             break;
-        case 4:
+        case SCENE_TITLE:
             SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV000_ID);
             new TitleScene();
             context->mState = 14;
             break;
-        case 5: {
+        case SCENE_BATTLE_PLAYER_LIST: {
             SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV007_ID);
             data_020d433c.mBattlePlayers = new BattlePlayerList();
             context->mState = 14;
             break;
         }
-        case 6:
+        case SCENE_STORE:
             SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV003_ID);
             new StoreScene();
             context->mState = 14;
             break;
-        case 7:
+        case SCENE_MYROOM:
             SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV008_ID);
             new MyroomScene();
             context->mState = 14;
             break;
-        case 8:
+        case SCENE_ARENA_WINDOW:
             SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV001_ID);
             new ArenaWindowScene();
             context->mState = 14;
             break;
-        case 9:
+        case SCENE_MAP:
             SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV005_ID);
             new MapScene();
             context->mState = 14;
             break;
-        case 10:
+        case SCENE_TUTORIAL:
             SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV005_ID);
             new TutorialScene();
             context->mState = 14;
             break;
-        case 11:
+        case SCENE_GAME_OVER:
             SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV006_ID);
             new GameOverScene();
             context->mState = 14;
             break;
-        case 12:
+        case SCENE_PARK:
             SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV004_ID);
             new ParkScene();
             context->mState = 14;
             break;
-        case 13:
+        case SCENE_TOURNAMENT:
             SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV002_ID);
             new TournamentScene();
             context->mState = 14;

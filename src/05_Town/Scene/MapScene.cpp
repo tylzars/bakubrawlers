@@ -74,7 +74,7 @@ MapScene::MapScene() :
     mText[1].mGlyphCount = 0;
     mState      = 0;
     mTimer      = 0;
-    mNextScene   = 9;
+    mNextScene   = SCENE_MAP;
     mUnk_68      = 0;
     mUnk_69      = 0;
     mScrollPos   = 0;
@@ -302,7 +302,7 @@ void MapScene::Update() {
                 mState = 0xc;
             } else {
                 mUnk_7d = 1;
-                mNextScene = 4;
+                mNextScene = SCENE_TITLE;
                 mState++;
             }
             break;
@@ -325,7 +325,7 @@ void MapScene::Update() {
             }
             mSkipDraw = 1;
             mState++;
-            if (mNextScene == 7 && gSaveData[0].mUnk_42 == 5) {
+            if (mNextScene == SCENE_MYROOM && gSaveData[0].mUnk_42 == 5) {
                 mEvent = new ScriptPlayer(7, 0, 1);
                 mState = 0x18;
             }
@@ -582,34 +582,34 @@ BOOL MapScene::SetNextSceneFromEvent() {
     if (result != 0) {
         switch (result) {
             case 1:
-                mNextScene            = 7;
-                data_020d433c.mUnk_7f = 9;
+                mNextScene            = SCENE_MYROOM;
+                data_020d433c.mUnk_7f = SCENE_MAP;
                 break;
             case 2:
-                mNextScene = 6;
+                mNextScene = SCENE_STORE;
                 break;
             case 3:
-                mNextScene = 12;
+                mNextScene = SCENE_PARK;
                 break;
             case 4:
-                mNextScene = 13;
+                mNextScene = SCENE_TOURNAMENT;
                 break;
             case 5:
                 data_020d433c.mUnk_9a   = 0x11;
                 data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
-                mNextScene              = 5;
+                mNextScene              = SCENE_BATTLE_PLAYER_LIST;
                 break;
             case 6:
-                mNextScene = 9;
+                mNextScene = SCENE_MAP;
                 break;
             case 7:
                 data_020d433c.mUnk_83 = 1;
                 data_020d433c.mUnk_84 = 0;
                 data_020d433c.mUnk_82 = 1;
-                mNextScene            = 10;
+                mNextScene            = SCENE_TUTORIAL;
                 break;
             default:
-                mNextScene = 4;
+                mNextScene = SCENE_TITLE;
                 break;
         }
         return TRUE;
@@ -723,20 +723,20 @@ void MapScrollCallback(MapScene *scene) {
 BOOL MapScene::SetNextSceneFromTab() {
     switch (mTab) {
         case 0:
-            mNextScene            = 7;
-            data_020d433c.mUnk_7f = 9;
+            mNextScene            = SCENE_MYROOM;
+            data_020d433c.mUnk_7f = SCENE_MAP;
             break;
         case 1:
-            mNextScene = 6;
+            mNextScene = SCENE_STORE;
             break;
         case 2:
-            mNextScene = 12;
+            mNextScene = SCENE_PARK;
             break;
         case 3:
-            mNextScene = 13;
+            mNextScene = SCENE_TOURNAMENT;
             break;
         default:
-            mNextScene = 4;
+            mNextScene = SCENE_TITLE;
             break;
     }
     return TRUE;

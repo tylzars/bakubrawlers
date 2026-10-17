@@ -740,7 +740,7 @@ void TournamentScene::Update() {
             break;
         case 41:
             if (mUnk_be != 0) {
-                data_020d433c.mNextScene   = 0xd;
+                data_020d433c.mNextScene   = SCENE_TOURNAMENT;
                 data_020d433c.mUnk_9a   = 0x11;
                 data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
                 if (data_020d433c.mUnk_8a_0 != 0) {
@@ -770,17 +770,17 @@ void TournamentScene::Update() {
                     entry->mUnk_12             = 2;
                     data_020d4850[GetBakuganEntryIndex(gSaveData, 0, 0x24, (u8) gSaveData[0].mAttribute)] = 0;
                 }
-                RequestScene(5);
+                RequestScene(SCENE_BATTLE_PLAYER_LIST);
                 mFinished = TRUE;
                 return;
             }
             if (mUnk_d0 != 0) {
                 data_020d433c.mUnk_ad = 1;
-                RequestScene(4);
+                RequestScene(SCENE_TITLE);
                 mFinished = TRUE;
                 return;
             }
-            RequestScene(9);
+            RequestScene(SCENE_MAP);
             mFinished = TRUE;
             return;
     }

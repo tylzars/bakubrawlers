@@ -5,6 +5,25 @@
 
 class SceneBase;
 
+// Scene ids: the values SceneRunner::Update copies from the runner's mRequest, passes to SwitchToScene and then
+// switches on (SceneRunner.cpp), each named after the class Update creates for it. RequestScene carries one only
+// when the caller was created by SceneRunner::Update (its mParent is the runner's node); a scene created by another
+// scene uses RequestScene to hand its parent a result instead (most of them 1), which is not one of these.
+// Left as literals: 1 (SwitchToScene's replacement for an id < 1 or >= 14; Update's case 1 steps on to 2), 3 (an
+// empty case nothing requests), 14 (the runner's "no request" value and the Update step that waits for one), 15 (the
+// step that switches), 0 (data_020d433c.mNextScene cleared).
+#define SCENE_LOGO 2
+#define SCENE_TITLE 4
+#define SCENE_BATTLE_PLAYER_LIST 5
+#define SCENE_STORE 6
+#define SCENE_MYROOM 7
+#define SCENE_ARENA_WINDOW 8
+#define SCENE_MAP 9
+#define SCENE_TUTORIAL 10
+#define SCENE_GAME_OVER 11
+#define SCENE_PARK 12
+#define SCENE_TOURNAMENT 13
+
 // Old view of the parent link (mList), kept so existing code keeps compiling.
 struct UnkStruct_SceneRequest {
     /* 00 */ PAD(0x00, 0x12);
@@ -76,6 +95,8 @@ public:
         return (mFinished == 1) & 1;
     }
 
+    // Writes `scene` into the parent's mRequest: a SCENE_* id when the parent is SceneRunner, otherwise a value
+    // that parent reads back.
     void RequestScene(int scene) {
         SceneContext *context = mContext;
         context->mParent->mScene->mContext->mRequest = scene;

@@ -171,12 +171,12 @@ void ParkScene::Update() {
                     }
                     data_020d433c.mUnk_84 = 0;
                     data_020d433c.mUnk_82 = 1;
-                    RequestScene(10);
+                    RequestScene(SCENE_TUTORIAL);
                     mFinished = TRUE;
                     return;
                 }
             }
-            RequestScene(5);
+            RequestScene(SCENE_BATTLE_PLAYER_LIST);
             mFinished = TRUE;
             return;
         case 4:
@@ -203,10 +203,10 @@ void ParkScene::Update() {
                 break;
             }
             if (mRequestParkScene == 0) {
-                RequestScene(9);
+                RequestScene(SCENE_MAP);
                 mFinished = TRUE;
             } else {
-                RequestScene(12);
+                RequestScene(SCENE_PARK);
                 mFinished = TRUE;
             }
             return;
@@ -705,18 +705,18 @@ void ParkScene::Update() {
             break;
         case 41:
             if (mUnk_0f != 0) {
-                data_020d433c.mNextScene = 0xc;
+                data_020d433c.mNextScene = SCENE_PARK;
                 data_020d433c.mUnk_7c = 1;
                 if (mUnk_0f == 0xff) {
-                    RequestScene(10);
+                    RequestScene(SCENE_TUTORIAL);
                     mFinished = TRUE;
                     return;
                 }
-                RequestScene(5);
+                RequestScene(SCENE_BATTLE_PLAYER_LIST);
                 mFinished = TRUE;
                 return;
             }
-            RequestScene(9);
+            RequestScene(SCENE_MAP);
             mFinished = TRUE;
             return;
     }

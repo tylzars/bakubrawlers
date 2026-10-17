@@ -228,12 +228,12 @@ void ArenaWindowScene::Update() {
             if (func_0203dd0c(&FrameTask::Get(), 0) != 0) {
                 return;
             }
-            data_020d433c.mNextScene = 8;
-            RequestScene(5);
+            data_020d433c.mNextScene = SCENE_ARENA_WINDOW;
+            RequestScene(SCENE_BATTLE_PLAYER_LIST);
             mFinished = 1;
             break;
         case 16:
-            RequestScene(4);
+            RequestScene(SCENE_TITLE);
             mFinished = 1;
             break;
     }

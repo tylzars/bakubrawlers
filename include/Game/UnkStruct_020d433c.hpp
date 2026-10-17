@@ -335,14 +335,16 @@ struct UnkStruct_020d433c {
     /* 78 */ PAD(0x78, 0x79);
     /* 79 */ u8 mLanguage;
     /* 7a */ u8 mUnk_7a;
-    /* 7b */ u8 mNextScene; // requested and cleared when the battle ends (0 requests 4; 0xd becomes 0xb with mUnk_7a and
-                            // mUnk_7d == 3); 8 takes the wireless-mode path instead; BattleResult and BattleUnk0227532c
-                            // also test it
+    /* 7b */ u8 mNextScene; // SCENE_* id BattlePlayerList requests when the battle ends, clearing it first (0
+                            // requests SCENE_TITLE; SCENE_TOURNAMENT becomes SCENE_GAME_OVER, not cleared, with
+                            // mUnk_7a and mUnk_7d == 3); SCENE_ARENA_WINDOW takes the wireless-mode path instead;
+                            // BattleResult, BattleUnk0227532c and func_ov007_022633f8 also test it
     /* 7c */ u8 mUnk_7c;
     /* 7d */ u8 mUnk_7d;
     /* 7e */ u8 mUnk_7e_0 : 4;
     /* 7e */ u8 mUnk_7e_4 : 4;
-    /* 7f */ u8 mUnk_7f;
+    /* 7f */ u8 mUnk_7f; // SCENE_* id MyroomScene requests when it ends (TitleScene stores SCENE_TITLE, MapScene
+                         // SCENE_MAP); with SCENE_TITLE and mUnk_14 & 2 it opens a SaveWindow first
     /* 80 */ u8 mUnk_80;
     /* 81 */ u8 mUnk_81;
     /* 82 */ u8 mUnk_82;

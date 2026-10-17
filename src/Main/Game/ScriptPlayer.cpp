@@ -403,13 +403,13 @@ void ScriptPlayer::SetupBattle(u32 unk1, u32 unk2) {
     }
     switch (mUnk_14e2) {
         case 3:
-            data_020d433c.mNextScene = 8;
+            data_020d433c.mNextScene = SCENE_ARENA_WINDOW;
             break;
         case 2:
-            data_020d433c.mNextScene = 0xc;
+            data_020d433c.mNextScene = SCENE_PARK;
             break;
         default:
-            data_020d433c.mNextScene = 9;
+            data_020d433c.mNextScene = SCENE_MAP;
             break;
     }
     data_020d433c.mUnk_9a   = 0x11;

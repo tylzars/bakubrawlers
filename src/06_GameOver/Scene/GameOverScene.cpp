@@ -152,19 +152,19 @@ void GameOverScene::Update() {
             if (mResultWindowKind == 0) {
                 switch (mSelection) {
                     case 0:
-                        next = 5;
+                        next = SCENE_BATTLE_PLAYER_LIST;
                         break;
                     case 1:
-                        next = 9;
+                        next = SCENE_MAP;
                         break;
                     default:
-                        next = 4;
+                        next = SCENE_TITLE;
                         break;
                 }
             } else {
-                next = mSelection == 0 ? 5 : 4;
+                next = mSelection == 0 ? SCENE_BATTLE_PLAYER_LIST : SCENE_TITLE;
             }
-            if (next == 4) {
+            if (next == SCENE_TITLE) {
                 data_020d433c.mUnk_76 = 0;
             }
             RequestScene(next);

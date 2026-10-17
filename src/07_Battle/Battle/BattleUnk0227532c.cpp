@@ -86,7 +86,7 @@ void BattleUnk0227532c::Update() {
                 s8 id = mWindow->GetSelectedId();
                 switch (id) {
                     case 0:
-                        if (data_020d433c.mNextScene == 8) {
+                        if (data_020d433c.mNextScene == SCENE_ARENA_WINDOW) {
                             mNextScene = 2;
                         } else if (data_020d433c.mUnk_8a_4 != 0) {
                             mNextScene = 1;
@@ -167,7 +167,7 @@ void BattleUnk0227532c::LoadWindow() {
     void *buffer      = OS_Alloc(TextManager::Get().BufferSize(0x18, 8));
     MI_CpuClearFast(buffer, 0x1800);
     int index;
-    if (data_020d433c.mNextScene == 8) {
+    if (data_020d433c.mNextScene == SCENE_ARENA_WINDOW) {
         index = 0x3c;
     } else if (data_020d433c.mUnk_8a_4 != 0) {
         index = 0x3d;

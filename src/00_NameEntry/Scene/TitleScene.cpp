@@ -149,7 +149,7 @@ TitleScene::TitleScene() :
     mUnk_d6 = 0;
     mLogoVisible = 0;
     mLogoY = 0x60;
-    data_020d433c.mNextScene = 4;
+    data_020d433c.mNextScene = SCENE_TITLE;
     data_020d433c.mUnk_7d = 0;
     data_020d433c.mUnk_87 = 0;
     data_020d433c.mUnk_88_4 = 0;
@@ -664,24 +664,24 @@ void TitleScene::Update() {
             u32 scene;
             switch (mMenuSelection) {
                 case 0:
-                    scene = 9;
+                    scene = SCENE_MAP;
                     if (gSaveData[0].mUnk_5bf_0) {
                         FillParkSlots();
                     }
                     break;
                 case 1:
                     data_020d433c.mUnk_89 = 0;
-                    scene = 8;
+                    scene = SCENE_ARENA_WINDOW;
                     break;
                 case 2:
                     data_020d433c.mUnk_83 = 0;
                     data_020d433c.mUnk_84 = 0;
                     data_020d433c.mUnk_82 = 0;
-                    scene = 10;
+                    scene = SCENE_TUTORIAL;
                     break;
                 case 3:
-                    data_020d433c.mUnk_7f = 4;
-                    scene = 7;
+                    data_020d433c.mUnk_7f = SCENE_TITLE;
+                    scene = SCENE_MYROOM;
                     break;
                 case 4:
                     mContext->mRequest = 0;
@@ -695,7 +695,7 @@ void TitleScene::Update() {
         }
         case 41:
             if (mContext->mRequest != 0) {
-                RequestScene(4);
+                RequestScene(SCENE_TITLE);
                 mFinished = 1;
                 return;
             }
@@ -737,7 +737,7 @@ void TitleScene::Update() {
             break;
         case 47:
             data_020d433c.mUnk_ad = 0;
-            RequestScene(2);
+            RequestScene(SCENE_LOGO);
             mFinished = 1;
             return;
     }

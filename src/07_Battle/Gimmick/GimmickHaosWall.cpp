@@ -10,10 +10,10 @@ static ModelResource *sResource;
 
 GimmickHaosWall::GimmickHaosWall(u8 id, u8 param)
     : Gimmick(id, 0) {
-    mUnk_45 = 0;
+    mTimer = 0;
     mUnk_46 = param;
     mState  = 0;
-    mUnk_3a = 0x47;
+    mType = GIMMICK_TYPE_HAOS_WALL;
 }
 
 GimmickHaosWall::~GimmickHaosWall() {
@@ -50,22 +50,22 @@ void GimmickHaosWall::Finish() {
     mState = 3;
 }
 
-void GimmickHaosWall::func_ov007_02274fac(u8 cooldown) {
+void GimmickHaosWall::StartTimer(u8 cooldown) {
     mState  = 2;
-    mUnk_45 = cooldown;
+    mTimer = cooldown;
 }
 
 void GimmickHaosWall::Update() {
     switch (mState) {
     case 0:
-        func_ov007_0222ea28(0x47, 0x20);
+        LoadCollision(0x47, 0x20);
         mState++;
         break;
     case 1: {
         if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
             func_020526bc();
         }
-        if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
+        if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -76,14 +76,14 @@ void GimmickHaosWall::Update() {
         VecFx32 b;
         VecFx32 d;
         MtxFx33 m = data_0220e848;
-        BakuganModel *h = list->mBattleTarget->mUnk_1a4;
+        BakuganModel *h = list->mBattleTarget->mBakugan;
         VEC_Subtract(&mPosition, &h->mPosition, &a);
         if (mRotY) {
             func_01ffcfd8(&m, -mRotY);
         }
         func_01ff84d0(&a, &m, &b);
         GimmickNode *node = &data_020d433c.mGimmicks->mNodes[(u8)(mUnk_46 + 1)];
-        ((GimmickHaosWall *)node->mGimmick)->func_ov007_02274fac(0x1e);
+        ((GimmickHaosWall *)node->mGimmick)->StartTimer(0x1e);
         VecFx32 c = node->mGimmick->mPosition;
         m = data_0220e848;
         func_01ffcfd8(&m, node->mGimmick->mRotY + 0x8000);
@@ -101,7 +101,7 @@ void GimmickHaosWall::Update() {
         h->mPosition.x = c.x;
         h->mPosition.y = c.y;
         h->mPosition.z = c.z;
-        mUnk_45 = 0x1e;
+        mTimer = 0x1e;
         func_ov007_0225ca18(data_020d433c.mBattlePlayers->mBattleTarget, 7, 0);
         SoundManager::Get().StartSeqArc(0x5b);
         mState++;
@@ -111,14 +111,14 @@ void GimmickHaosWall::Update() {
         if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
             func_020526bc();
         }
-        if (!mUnk_3c) {
+        if (!mCollision) {
             return;
         }
-        if (mUnk_3c->mUnk_823) {
+        if (mCollision->mHitCount) {
             return;
         }
-        mUnk_45--;
-        if (mUnk_45 == 0) {
+        mTimer--;
+        if (mTimer == 0) {
             mState = 1;
         }
         break;

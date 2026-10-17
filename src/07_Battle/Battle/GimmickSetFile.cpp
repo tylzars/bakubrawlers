@@ -8,7 +8,7 @@ extern const char *data_ov007_0228abc0; // "/Game/Collision/atari_%02d.bin"
 
 int func_ov007_02271a00(GimmickSetFile *file, const char *path);
 
-void func_ov007_022719c8(void *buf, u8 id) {
+void LoadCollisionFile(void *buf, u8 id) {
     char path[0x40];
     sprintf(path, data_ov007_0228abc0, id);
     func_ov007_02271a00((GimmickSetFile *) buf, path);
@@ -63,33 +63,33 @@ int func_ov007_02271a00(GimmickSetFile *file, const char *path) {
     return 1;
 }
 
-// Header fields of the per-object data created by func_ov007_02271ca8 (GimmickSetData, +08 / +0a).
+// Header fields of the per-object data created by AddCollisionSet (GimmickSetData, +08 / +0a).
 struct GimmickSetDataHead {
     /* 00 */ PAD(0x00, 0x08);
     /* 08 */ u16 mMode;
-    /* 0a */ u16 mUnk_0a;
+    /* 0a */ u16 mModeMask;
 };
 
 void func_ov007_02271b24(GimmickSetDataHead *data, int mode) {
     data->mMode = mode;
     switch (mode) {
         case 1:
-            data->mUnk_0a = 0xfffe;
+            data->mModeMask = 0xfffe;
             break;
         case 2:
-            data->mUnk_0a = 1;
+            data->mModeMask = 1;
             break;
         case 4:
-            data->mUnk_0a = 1;
+            data->mModeMask = 1;
             break;
         case 8:
-            data->mUnk_0a = 1;
+            data->mModeMask = 1;
             break;
         case 0x10:
-            data->mUnk_0a = 0x24;
+            data->mModeMask = 0x24;
             break;
         case 0x20:
-            data->mUnk_0a = 0x11;
+            data->mModeMask = 0x11;
             break;
     }
 }

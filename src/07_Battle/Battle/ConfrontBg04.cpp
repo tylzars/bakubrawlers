@@ -12,7 +12,7 @@
 
 ConfrontBg04::ConfrontBg04()
     : BattleBase() {
-    mUnk_68 = 0;
+    mSpeedSum = 0;
     mAngle  = 0;
     mSpeed  = 0;
     mData   = 0;
@@ -75,7 +75,7 @@ BOOL ConfrontBg04::func_ov007_0221bfa4() {
     if (spectator) {
         return FALSE;
     }
-    func_ov007_02220718();
+    SlowDown();
     mBlend->LowerLevel();
     return FALSE;
 }
@@ -83,7 +83,7 @@ BOOL ConfrontBg04::func_ov007_0221bfa4() {
 void ConfrontBg04::vfunc_3c() {
     mBlend->UpdateWobble();
     if (mSpeed != 0) {
-        QueueFrameCallback((FrameCallback) func_ov007_02220688, this);
+        QueueFrameCallback((FrameCallback) ConfrontBg04Rotate, this);
     }
 }
 
@@ -94,7 +94,7 @@ u8 ConfrontBg04::UpdateTouch(int a) {
     if (TouchManager::Get().mDown == 0) {
         touching = 0;
     } else {
-        value = func_ov007_0222a118(0x80, 0x88, 0xf4);
+        value = TouchTurnAngle(0x80, 0x88, 0xf4);
         s32 limit;
         if (a) {
             limit = 0x1000;
@@ -108,7 +108,7 @@ u8 ConfrontBg04::UpdateTouch(int a) {
         }
     }
     if (!touching) {
-        func_ov007_02220718();
+        SlowDown();
         mBlend->LowerLevel();
         return 0;
     }
@@ -117,16 +117,16 @@ u8 ConfrontBg04::UpdateTouch(int a) {
         if (mSpeed > 10000) {
             mSpeed = 10000;
         }
-        mUnk_68 += mSpeed;
+        mSpeedSum += mSpeed;
     } else {
         mSpeed -= 0x80;
         if (mSpeed < -10000) {
             mSpeed = -10000;
         }
     }
-    mUnk_68 += mSpeed;
-    if (mUnk_68 >= 0xffff || mUnk_68 <= -0xffff) {
-        mUnk_68 = 0;
+    mSpeedSum += mSpeed;
+    if (mSpeedSum >= 0xffff || mSpeedSum <= -0xffff) {
+        mSpeedSum = 0;
         SoundManager::Get().StartSeqArc(0x2a);
     }
     s32 speed = 0;
@@ -148,7 +148,7 @@ u8 ConfrontBg04::UpdateTouch(int a) {
 void ConfrontBg04::vfunc_44(int index, u16 count) {
 }
 
-void func_ov007_02220688(ConfrontBg04 *scene) {
+void ConfrontBg04Rotate(ConfrontBg04 *scene) {
     MtxFx22 mtx;
     u16 speed = scene->mSpeed;
     scene->mAngle += speed;
@@ -163,7 +163,7 @@ void func_ov007_02220688(ConfrontBg04 *scene) {
     G2x_SetBGyAffine_((vu16 *) 0x4001030, &mtx, 0x80, 0x88, 0, 0);
 }
 
-void ConfrontBg04::func_ov007_02220718() {
+void ConfrontBg04::SlowDown() {
     if (mSpeed == 0) {
         return;
     }

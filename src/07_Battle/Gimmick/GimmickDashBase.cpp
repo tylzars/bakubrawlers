@@ -2,7 +2,7 @@
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 
-void func_ov007_0225c960(BattleTarget *target, VecFx32 *dir, int unk);
+void SetTargetVelocity(BattleTarget *target, VecFx32 *dir, int unk);
 extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
 extern "C" void func_01ffcf80(MtxFx33 *m, u16 angle);
 extern "C" void func_01ffd030(MtxFx33 *m, u16 angle);
@@ -12,9 +12,9 @@ static ModelResource *sResource;
 GimmickDashBase::GimmickDashBase(u8 a)
     : Gimmick(a, 0) {
     mUnk_54 = 0;
-    mUnk_55 = 0;
+    mMarkerNear = 0;
     mState  = 0;
-    mUnk_3a = 5;
+    mType = GIMMICK_TYPE_DASH_BASE;
     mDir.x  = 0;
     mDir.y  = 0;
     mDir.z  = -0xa000;
@@ -24,16 +24,16 @@ GimmickDashBase::~GimmickDashBase() {
     Unload();
 }
 
-void GimmickDashBase::func_ov007_0222c48c() {
+void GimmickDashBase::Init() {
     char buf[0x804];
-    func_ov007_022719c8(buf, 0x5e);
-    mUnk_3c = func_ov007_02271ca8(data_020d433c.mGimmickCollision, 0x20, buf, &mPosition, &mRotX, mUnk_3a);
-    func_ov007_0222c824(0);
+    LoadCollisionFile(buf, 0x5e);
+    mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, 0x20, buf, &mPosition, &mRotX, mType);
+    RotateDir(0);
 }
 
 void GimmickDashBase::Load() {
-    mUnk_55 = func_ov007_0222ea84(0xa000);
-    if (mUnk_55) {
+    mMarkerNear = IsNearMarker(0xa000);
+    if (mMarkerNear) {
         return;
     }
     if (!sResource) {
@@ -68,14 +68,14 @@ void GimmickDashBase::Finish() {
 void GimmickDashBase::Update() {
     switch (mState) {
     case 0:
-        func_ov007_0222c48c();
+        Init();
         mState++;
         break;
     case 1: {
-        if (mUnk_55) {
+        if (mMarkerNear) {
             return;
         }
-        func_ov007_0222c7f0();
+        DrawModel();
         BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
         if (!target) {
             return;
@@ -88,27 +88,27 @@ void GimmickDashBase::Update() {
         if (target->mUnk_44 > 0x5dc) {
             return;
         }
-        if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
+        if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
         if (target->mUnk_38 > 3) {
             return;
         }
-        func_ov007_0225c960(target, &mDir, 0);
+        SetTargetVelocity(target, &mDir, 0);
         SoundManager::Get().StartSeqArc(0x38);
         mUnk_54 = 3;
         mState++;
         break;
     }
     case 2:
-        if (mUnk_55) {
+        if (mMarkerNear) {
             return;
         }
-        func_ov007_0222c7f0();
-        if (!mUnk_3c) {
+        DrawModel();
+        if (!mCollision) {
             return;
         }
-        if (mUnk_3c->mUnk_823 == 0) {
+        if (mCollision->mHitCount == 0) {
             mState = 1;
         }
         break;
@@ -118,7 +118,7 @@ void GimmickDashBase::Update() {
     }
 }
 
-void GimmickDashBase::func_ov007_0222c7f0() {
+void GimmickDashBase::DrawModel() {
     if (!mModel) {
         return;
     }
@@ -128,7 +128,7 @@ void GimmickDashBase::func_ov007_0222c7f0() {
     func_020526bc();
 }
 
-void GimmickDashBase::func_ov007_0222c824(int reset) {
+void GimmickDashBase::RotateDir(int reset) {
     MtxFx33 m = data_0220e848;
     if (mRotY) {
         func_01ffcfd8(&m, mRotY);

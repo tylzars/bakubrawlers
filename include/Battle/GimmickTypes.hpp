@@ -8,12 +8,12 @@
 #include <nitro/fx.h>
 
 // Functions of other battle files / ITCM used by the gimmicks.
-void func_ov007_022719c8(void *buf, u8 id);
-GimmickSetData *func_ov007_02271ca8(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
-void func_ov007_02271d78(GimmickCollision *data, GimmickSetData *set);
+void LoadCollisionFile(void *buf, u8 id);
+GimmickSetData *AddCollisionSet(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
+void RemoveCollisionSet(GimmickCollision *data, GimmickSetData *set);
 extern MtxFx43 data_020c1cf4;
 extern "C" fx32 FX_Div(fx32 num, fx32 den); // fixed point num / den (hardware divider)
-void func_ov007_02233ed8(VecFx32 *in, u16 angle, VecFx32 *out); // rotates `in` about Y
+void RotateVecY(VecFx32 *in, u16 angle, VecFx32 *out); // rotates `in` about Y
 
 // Bakugan statue shown for the attribute in data_020d433c.mUnk_95 (pyrus_dorg00, angelo/diablo, Ventus_skyr_0,
 // subterra_majin, haos_tig, hydra). Vtable 02286c84.
@@ -67,8 +67,8 @@ public:
     /* 14 */ virtual void Finish();
 
     void func_ov007_0222accc();
-    u8 func_ov007_0222b328();
-    void func_ov007_0222b410();
+    u8 PickKind();
+    void UpdateKindSequence();
     void func_ov007_0222b8b4();
     int func_ov007_0222bc24();
 };
@@ -78,7 +78,7 @@ class GimmickSuteWall : public Gimmick {
 public:
     /* 45 */ PAD(0x45, 0x48);
     /* 48 */ ModelInstance *mModelB;
-    /* 4c */ u8 mUnk_4c;
+    /* 4c */ u8 mMarkerNear;
     /* 4d */ PAD(0x4d, 0x50);
     /* 50 */
 
@@ -98,7 +98,7 @@ public:
     /* 45 */ PAD(0x45, 0x48);
     /* 48 */ VecFx32 mDir;
     /* 54 */ u8 mUnk_54;
-    /* 55 */ u8 mUnk_55;
+    /* 55 */ u8 mMarkerNear;
     /* 56 */ PAD(0x56, 0x58);
     /* 58 */
 
@@ -109,9 +109,9 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
-    void func_ov007_0222c48c();
-    void func_ov007_0222c7f0();
-    void func_ov007_0222c824(int reset);
+    void Init();
+    void DrawModel();
+    void RotateDir(int reset);
 };
 
 // Helpers of the effect manager (data_020d433c.mEffects).
@@ -152,8 +152,8 @@ public:
     /* 14 */ virtual void Finish();
 };
 
-void func_ov007_0225c960(BattleTarget *target, VecFx32 *dir, int unk);
-void func_ov007_0225c9c0(BattleTarget *target, int a, int b, int c, int d);
+void SetTargetVelocity(BattleTarget *target, VecFx32 *dir, int unk);
+void SetTargetVelocityXyz(BattleTarget *target, int a, int b, int c, int d);
 
 // Haos ball (Haosball), vtable 02287184. Pulls the camera towards itself for mTimer frames.
 class GimmickHaosBall : public Gimmick {
@@ -169,7 +169,7 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
-    void func_ov007_0222db58();
+    void DrawModel();
 };
 
 void func_ov007_0225ca18(BattleTarget *target, int a, int b);
@@ -193,8 +193,8 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
-    void func_ov007_0222dc3c();
-    void func_ov007_0222e08c(int reset);
+    void Init();
+    void RotateDir(int reset);
 };
 
 // One slot of the manager's doubly linked list (node 0 is the list head).
@@ -239,15 +239,15 @@ public:
     ~GimmickManager();
     void LoadAll();   // Load() of every object
     void UnloadAll(); // Unload() of every object
-    void func_ov007_0222e25c();
-    void func_ov007_0222e290(GimmickSetFile *file);
-    void func_ov007_0222e75c(int a, int b);
-    int func_ov007_0222e7f4(Gimmick *gimmick);
-    void func_ov007_0222e860(int id);
+    void CountTurnAll();
+    void CreateFromFile(GimmickSetFile *file);
+    void LoadSetData(int a, int b);
+    int Add(Gimmick *gimmick);
+    void Remove(int id);
 };
 
 // Gimmick classes of later rows of the overlay, declared with the right size and constructor so that
-// GimmickManager::func_ov007_0222e290 can create them.
+// GimmickManager::CreateFromFile can create them.
 class GimmickFieldPowerS : public Gimmick { // 0222eb1c, vtable 022872c0, model fieldpower_s_<mVariant>
 public:
     /* 45 */ u8 mVariant;
@@ -261,7 +261,7 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
-    void func_ov007_0222f1ac();
+    void LoadVariantCollision();
 };
 class GimmickTornado : public Gimmick { // 0222f1e8, vtable 02287358, model vne_tornado
 public:
@@ -293,8 +293,8 @@ public:
     /* 45 */ PAD(0x45, 0x48);
     /* 48 */ ModelInstance *mModelB;
     /* 4c */ u16 mCounter;
-    /* 4e */ u8 mUnk_4e;
-    /* 4f */ u8 mUnk_4f;
+    /* 4e */ u8 mPushed;
+    /* 4f */ u8 mMarkerNear;
     /* 50 */
 
     GimmickPyrusEruption(u8 id);
@@ -304,9 +304,9 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
-    void func_ov007_0222ffb0();
-    void func_ov007_02230040(int drawB);
-    int func_ov007_0223008c(int frames, int state);
+    void DrawModelB();
+    void DrawModels(int drawB);
+    int CountDownToState(int frames, int state);
 };
 // One row of the ability pick table at 02279568: `mCount` entries, picked by weight, mapped through `mIds`.
 struct GimmickAbilityRow {
@@ -316,14 +316,14 @@ struct GimmickAbilityRow {
     /* 08 */ const u8 *mWeights;
     /* 0c */
 };
-extern const GimmickAbilityRow data_ov007_02279568[];
+extern const GimmickAbilityRow gAbilityRows[];
 extern "C" void func_020331a4(void *nsbmd, u32 value, u32 mask); // sets the bits of `mask` of every material's polygon attribute
 
 class GimmickAbilityField : public Gimmick { // 022300dc, vtable 0228750c, models ability_filed0 / ability_filed1
 public:
     /* 45 */ PAD(0x45, 0x48);
     /* 48 */ ModelInstance *mModelB;
-    /* 4c */ u8 mUnk_4c;
+    /* 4c */ u8 mAbilityRowIndex;
     /* 4d */ u8 mUnk_4d;
     /* 4e */ PAD(0x4e, 0x50);
     /* 50 */
@@ -341,8 +341,8 @@ public:
 class GimmickUnk_022308a8 : public Gimmick { // vtable 022875bc
 public:
     /* 45 */ PAD(0x45, 0x48);
-    /* 48 */ VecFx32 mUnk_48;
-    /* 54 */ u8 mUnk_54;
+    /* 48 */ VecFx32 mPullPerFrame;
+    /* 54 */ u8 mSoundStarted;
     /* 55 */ PAD(0x55, 0x58);
     /* 58 */
 
@@ -353,7 +353,7 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 };
-// Model-less trigger (id 0x3d): hands the target's velocity vector to func_ov007_0225c960.
+// Model-less trigger (id 0x3d): hands the target's velocity vector to SetTargetVelocity.
 class GimmickUnk_02230cec : public Gimmick { // vtable 022875e0
 public:
     /* 45 */ PAD(0x45, 0x48);
@@ -370,7 +370,7 @@ public:
 class GimmickUnk_02274830 : public Gimmick { // vtable 0228af78
 public:
     /* 45 */ PAD(0x45, 0x46);
-    /* 46 */ u16 mUnk_46;
+    /* 46 */ u16 mTimer;
     /* 48 */
 
     GimmickUnk_02274830(u8 id);
@@ -381,10 +381,10 @@ public:
     /* 14 */ virtual void Finish();
 };
 // Wall pair of the Haos field (haos_wall): mUnk_46 is the manager id of the partner wall (node mUnk_46 + 1), the
-// target is pulled from the partner's side and the partner gets a mUnk_45 frame cooldown. Vtable 0228af9c.
+// target is pulled from the partner's side and the partner gets a mTimer frame cooldown. Vtable 0228af9c.
 class GimmickHaosWall : public Gimmick { // 02274d78
 public:
-    /* 45 */ u8 mUnk_45;
+    /* 45 */ u8 mTimer;
     /* 46 */ u8 mUnk_46;
     /* 47 */ PAD(0x47, 0x48);
     /* 48 */
@@ -396,7 +396,7 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
-    void func_ov007_02274fac(u8 cooldown); // starts the cooldown (state 2)
+    void StartTimer(u8 cooldown); // starts the cooldown (state 2)
 };
 // Speech bubble of the Aquos field (aqousfukidasi_n / _b): pushes the target up while it is near and counts the
 // near bubbles in a static counter for the looping sound 0x63. Vtable 0228b16c.
@@ -405,10 +405,10 @@ public:
     /* 45 */ PAD(0x45, 0x48);
     /* 48 */ ModelInstance *mModelB;
     /* 4c */ u16 mCounter;
-    /* 4e */ u16 mUnk_4e;
-    /* 50 */ u8 mUnk_50;
-    /* 51 */ u8 mUnk_51;
-    /* 52 */ u8 mUnk_52;
+    /* 4e */ u16 mPushTimer;
+    /* 50 */ u8 mTargetNear;
+    /* 51 */ u8 mMarkerNear;
+    /* 52 */ u8 mPushed;
     /* 53 */ PAD(0x53, 0x54);
     /* 54 */
 
@@ -419,10 +419,10 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
-    void func_ov007_02276634();
-    void func_ov007_022766c4(int drawB);
-    int func_ov007_02276710(int frames, int state);
-    int func_ov007_02276760(); // TRUE when the target is within 0x96000 of the bubble
+    void DrawModelB();
+    void DrawModels(int drawB);
+    int CountDownToState(int frames, int state);
+    int IsTargetNear(); // TRUE when the target is within 0x96000 of the bubble
 };
 // Lightning strikes (ikazuchistart / ikaz00): at most two strike at a time (static counter), each waits one of
 // the random mDelays between strikes and hits the target when it is in range. Vtable 0228b528.
@@ -432,8 +432,8 @@ public:
     /* 48 */ ModelInstance *mModelB;
     /* 4c */ u16 mCounter;
     /* 4e */ u16 mDelays[8];
-    /* 5e */ u8 mUnk_5e;
-    /* 5f */ u8 mUnk_5f;
+    /* 5e */ u8 mDelayIndex;
+    /* 5f */ u8 mMarkerNear;
     /* 60 */
 
     GimmickIkazuchiStart(u8 id);

@@ -71,12 +71,12 @@ BattleUnk0227532c::~BattleUnk0227532c() {
 void BattleUnk0227532c::Update() {
     switch (mState) {
         case 0:
-            func_ov007_02275900();
+            LoadWindow();
             QueueFrameCallback((FrameCallback) func_ov007_022758a4, this);
             mState++;
             break;
         case 1:
-            if (func_ov007_022756f0(0)) {
+            if (SlideTo(0)) {
                 mState++;
             }
             break;
@@ -106,7 +106,7 @@ void BattleUnk0227532c::Update() {
             }
             break;
         case 3:
-            if (func_ov007_022756f0(0x100)) {
+            if (SlideTo(0x100)) {
                 mState++;
             }
             break;
@@ -121,7 +121,7 @@ void BattleUnk0227532c::Update() {
     }
 }
 
-BOOL BattleUnk0227532c::func_ov007_022756f0(int target) {
+BOOL BattleUnk0227532c::SlideTo(int target) {
     BOOL done = FALSE;
     mOffset += 0x18;
     u8 i = 0;
@@ -152,7 +152,7 @@ void func_ov007_022758a4(BattleUnk0227532c *popup) {
     GXS_SetVisiblePlane(popup->mPlanes | 0x18);
 }
 
-void BattleUnk0227532c::func_ov007_02275900() {
+void BattleUnk0227532c::LoadWindow() {
     G2S_SetBG0Priority(3);
     G2S_SetBG3Priority(0);
     ChangeDir("/Game/2D/union_b/");

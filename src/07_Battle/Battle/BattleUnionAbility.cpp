@@ -83,7 +83,7 @@ void BattleUnionAbility::Update() {
     switch (mState) {
         case 0:
             func_ov007_02234428();
-            func_ov007_0223471c();
+            LoadGraphics();
             mState++;
             break;
         case 1:
@@ -142,10 +142,10 @@ void BattleUnionAbility::Update() {
             }
             break;
     }
-    func_ov007_02234b5c();
+    Draw();
 }
 
-void BattleUnionAbility::func_ov007_02234418(u8 choice) {
+void BattleUnionAbility::Close(u8 choice) {
     mCancel = 1;
     mChoice = choice;
 }
@@ -195,7 +195,7 @@ void BattleUnionAbility::func_ov007_022344a4() {
     mCharOffset += 0xa00;
 }
 
-void BattleUnionAbility::func_ov007_0223471c() {
+void BattleUnionAbility::LoadGraphics() {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
     func_ov007_022344a4();
@@ -239,7 +239,7 @@ void BattleUnionAbility::func_ov007_0223471c() {
     mAnimB->mPaletteBase   = mPalette;
 }
 
-void BattleUnionAbility::func_ov007_02234b5c() {
+void BattleUnionAbility::Draw() {
     mAnimA->Update();
     mAnimA->Draw(1, (s16) (mSlide + 0x80), 0x60, 0);
     mAnimB->Update();

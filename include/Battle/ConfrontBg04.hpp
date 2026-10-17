@@ -6,7 +6,7 @@
 // Confrontation screen with background set vs_b_bg_04 (rotating background).
 class ConfrontBg04 : public BattleBase {
 public:
-    /* 68 */ s32 mUnk_68;
+    /* 68 */ s32 mSpeedSum;
     /* 6c */ PAD(0x6c, 0x6e);
     /* 6e */ u16 mAngle;
     /* 70 */ s32 mSpeed;
@@ -26,7 +26,7 @@ public:
     /* 40 */ virtual u8 UpdateTouch(int a);
     /* 44 */ virtual void vfunc_44(int index, u16 count);
 
-    void func_ov007_02220718();
+    void SlowDown();
 };
 
-void func_ov007_02220688(ConfrontBg04 *scene); // frame callback: BG3 rotation
+void ConfrontBg04Rotate(ConfrontBg04 *scene); // frame callback: BG3 rotation

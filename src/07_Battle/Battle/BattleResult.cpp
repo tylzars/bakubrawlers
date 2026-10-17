@@ -7,7 +7,7 @@
 #include "Graphics/SpriteManager.hpp"
 #include "System/InputManager.hpp"
 #include "Battle/BattleBase.hpp"
-#include "Battle/BattleUnk022767c8.hpp"
+#include "Battle/BattleMoneyReward.hpp"
 #include "Battle/BattleCharaAct.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/SaveData.hpp"
@@ -420,7 +420,7 @@ void BattleResult::Update() {
             if (data_020d433c.mNextScene != 8 && data_020d433c.mNextScene != 12) {
                 if (data_020d433c.mUnk_7d == 2) {
                     if (func_0202326c(&gSaveData[0])) {
-                        new BattleUnk022767c8();
+                        new BattleMoneyReward();
                         mContext->mUnk_12 = 0;
                     }
                 }

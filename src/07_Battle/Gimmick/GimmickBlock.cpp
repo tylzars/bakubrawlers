@@ -7,7 +7,7 @@ static ModelResource *sResource;
 GimmickBlock::GimmickBlock(u8 a)
     : Gimmick(a, 0) {
     mState  = 0;
-    mUnk_3a = 6;
+    mType = GIMMICK_TYPE_BLOCK;
 }
 
 GimmickBlock::~GimmickBlock() {
@@ -56,7 +56,7 @@ void GimmickBlock::Finish() {
 void GimmickBlock::Update() {
     switch (mState) {
     case 0:
-        func_ov007_0222ea28(0x5a, 0x20);
+        LoadCollision(0x5a, 0x20);
         mState++;
         break;
     case 1:

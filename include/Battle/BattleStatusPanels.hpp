@@ -9,15 +9,15 @@ class CharacterIcons;
 // One player's panel on the upper screen (battle_u): sprites, the name text buffers and a few state bytes. 0x38 bytes.
 struct BattlePanel {
     /* 00 */ CellAnimation *mAnims[7];
-    /* 1c */ s16 mUnk_1c[4];
-    /* 24 */ s8 mUnk_24; // character shown in the icon (-1: none)
-    /* 25 */ u8 mUnk_25;
-    /* 26 */ u8 mUnk_26;
-    /* 27 */ u8 mUnk_27;
+    /* 1c */ s16 mOffset[4];
+    /* 24 */ s8 mCharacterId; // character shown in the icon (-1: none)
+    /* 25 */ u8 mMirrored;
+    /* 26 */ u8 mCol;
+    /* 27 */ u8 mRow;
     /* 28 */ u8 mUnk_28;
     /* 29 */ u8 mUnk_29;
     /* 2a */ PAD(0x2a, 0x2b);
-    /* 2b */ u8 mUnk_2b;
+    /* 2b */ u8 mPrevLevel;
     /* 2c */ void *mBuffer;  // glyph buffer of the name text
     /* 30 */ void *mBuffer2; // text manager buffer
     /* 34 */ u16 mUnk_34;
@@ -49,11 +49,11 @@ public:
 
     BattleStatusPanels(u32 charBase, u8 palette, u8 mode, u8 flag);
     ~BattleStatusPanels();
-    void func_ov007_02234efc();
-    void func_ov007_02235280(u32 index, s32 character, u32 team, u8 side);
-    void func_ov007_02235480();
-    void func_ov007_02235fe4();
-    void func_ov007_0223619c(u32 index);
-    void func_ov007_022361c4(u32 index);
-    u8 func_ov007_02236458(u32 index);
+    void LoadGraphics();
+    void SetupPanel(u32 index, s32 character, u32 team, u8 side);
+    void DrawPanels();
+    void InitNameText();
+    void ClearNameText(u32 index);
+    void PrintName(u32 index);
+    u8 GetLevel(u32 index);
 };

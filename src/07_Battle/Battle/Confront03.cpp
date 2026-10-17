@@ -14,15 +14,15 @@
 
 ConfrontEmblem03::ConfrontEmblem03(u8 index) {
     char path[0x80];
-    mUnk_04 = 2;
-    mUnk_05 = index;
+    mState = 2;
+    mEmblem = index;
     mUnk_07_0 = 0;
     mUnk_07_1 = 0;
     mUnk_07_2 = 0;
-    mUnk_08 = 0;
-    mUnk_09 = 0;
-    mUnk_0a = 0;
-    mUnk_0b = -1;
+    mHoldFrames = 0;
+    mHoldFrameCount = 0;
+    mStep = 0;
+    mSlot = -1;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
@@ -38,45 +38,45 @@ ConfrontEmblem03::~ConfrontEmblem03() {
     delete mAnim;
 }
 
-void ConfrontEmblem03::func_ov007_0221f1b8(u8 slot, int flag) {
-    mUnk_14 = (float) ((slot % 4) * 64 + 0x10 + BattleRand32(0x20));
-    mUnk_18 = (float) ((slot / 4) * 32 + 0x68 + BattleRand32(2));
-    mUnk_04 = 0;
-    mUnk_0a = 0;
+void ConfrontEmblem03::Start(u8 slot, int flag) {
+    mX = (float) ((slot % 4) * 64 + 0x10 + BattleRand32(0x20));
+    mY = (float) ((slot / 4) * 32 + 0x68 + BattleRand32(2));
+    mState = 0;
+    mStep = 0;
     mUnk_07_1 = 0;
-    mUnk_0b = slot;
-    mUnk_08 = 0;
+    mSlot = slot;
+    mHoldFrames = 0;
     if (flag == 0) {
-        mUnk_09 = 0x14;
+        mHoldFrameCount = 0x14;
     } else {
-        mUnk_09 = 0x50;
+        mHoldFrameCount = 0x50;
     }
-    mUnk_1c = 0.1f;
+    mScale = 0.1f;
     mAnim->ResetAnimation();
     mAnim->SetAnimation(0);
 }
 
-void ConfrontEmblem03::func_ov007_0221f268() {
-    switch (mUnk_04) {
+void ConfrontEmblem03::Update() {
+    switch (mState) {
         case 0:
-            switch (mUnk_0a) {
+            switch (mStep) {
                 case 0:
-                    mUnk_1c += 0.05f;
-                    if (mUnk_1c >= 1.0f) {
-                        mUnk_1c = 1.0f;
-                        mUnk_0a++;
+                    mScale += 0.05f;
+                    if (mScale >= 1.0f) {
+                        mScale = 1.0f;
+                        mStep++;
                     }
                     break;
                 case 1:
-                    mUnk_08++;
-                    if (mUnk_08 > mUnk_09) {
-                        mUnk_0a++;
+                    mHoldFrames++;
+                    if (mHoldFrames > mHoldFrameCount) {
+                        mStep++;
                     }
                     break;
                 case 2:
-                    mUnk_1c = mUnk_1c - 0.05f;
-                    if (mUnk_1c <= 0.1f) {
-                        mUnk_04 = 2;
+                    mScale = mScale - 0.05f;
+                    if (mScale <= 0.1f) {
+                        mState = 2;
                     }
                     break;
             }
@@ -86,7 +86,7 @@ void ConfrontEmblem03::func_ov007_0221f268() {
                 mAnim->Update();
             } else {
                 mUnk_07_0 = 0;
-                mUnk_04 = 2;
+                mState = 2;
             }
             break;
         case 2:
@@ -94,50 +94,50 @@ void ConfrontEmblem03::func_ov007_0221f268() {
     }
 }
 
-void ConfrontEmblem03::func_ov007_0221f368() {
+void ConfrontEmblem03::StartShrink() {
     if (mUnk_07_2) {
         return;
     }
-    if (mUnk_04 == 0) {
-        if (mUnk_0a != 2) {
-            mUnk_0a = 2;
+    if (mState == 0) {
+        if (mStep != 2) {
+            mStep = 2;
         }
     }
     mUnk_07_2 = 1;
 }
 
-void ConfrontEmblem03::func_ov007_0221f3a4() {
-    switch (mUnk_04) {
+void ConfrontEmblem03::Draw() {
+    switch (mState) {
         case 0: {
             float a;
-            if (mUnk_1c > 0.0f) {
-                a = 0.5f + 4096.0f * mUnk_1c;
+            if (mScale > 0.0f) {
+                a = 0.5f + 4096.0f * mScale;
             } else {
-                a = 4096.0f * mUnk_1c - 0.5f;
+                a = 4096.0f * mScale - 0.5f;
             }
             float b;
-            if (mUnk_1c > 0.0f) {
-                b = 0.5f + 4096.0f * mUnk_1c;
+            if (mScale > 0.0f) {
+                b = 0.5f + 4096.0f * mScale;
             } else {
-                b = 4096.0f * mUnk_1c - 0.5f;
+                b = 4096.0f * mScale - 0.5f;
             }
-            mAnim->DrawTransformed(1, (s32) mUnk_14, (s32) mUnk_18, 2, (s32) b, (s32) a, 0);
+            mAnim->DrawTransformed(1, (s32) mX, (s32) mY, 2, (s32) b, (s32) a, 0);
             break;
         }
         case 1: {
             float a;
-            if (mUnk_1c > 0.0f) {
-                a = 0.5f + 4096.0f * mUnk_1c;
+            if (mScale > 0.0f) {
+                a = 0.5f + 4096.0f * mScale;
             } else {
-                a = 4096.0f * mUnk_1c - 0.5f;
+                a = 4096.0f * mScale - 0.5f;
             }
             float b;
-            if (mUnk_1c > 0.0f) {
-                b = 0.5f + 4096.0f * mUnk_1c;
+            if (mScale > 0.0f) {
+                b = 0.5f + 4096.0f * mScale;
             } else {
-                b = 4096.0f * mUnk_1c - 0.5f;
+                b = 4096.0f * mScale - 0.5f;
             }
-            mAnim->DrawTransformed(1, (s32) mUnk_14, (s32) mUnk_18, 2, (s32) b, (s32) a, 0);
+            mAnim->DrawTransformed(1, (s32) mX, (s32) mY, 2, (s32) b, (s32) a, 0);
             break;
         }
         case 2:
@@ -145,39 +145,39 @@ void ConfrontEmblem03::func_ov007_0221f3a4() {
     }
 }
 
-u8 ConfrontEmblem03::func_ov007_0221f57c() {
-    return mUnk_04 == 2 ? 1 : 0;
+u8 ConfrontEmblem03::IsIdle() {
+    return mState == 2 ? 1 : 0;
 }
 
 int ConfrontEmblem03::func_ov007_0221f594() {
-    if (mUnk_04 != 0 || mUnk_07_0 == 1) {
+    if (mState != 0 || mUnk_07_0 == 1) {
         return -1;
     }
-    if (func_ov007_022252d0((s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY, (s32) mUnk_14, (s32) mUnk_18) > 0x18) {
+    if (PointDistance((s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY, (s32) mX, (s32) mY) > 0x18) {
         return -1;
     }
     u8 anim;
     s16 result;
-    if (mUnk_0a <= 1) {
+    if (mStep <= 1) {
         anim = 1;
         result = 100;
     } else {
         anim = 2;
-        result = (s16) (s32) (100.0f * mUnk_1c) / 2;
+        result = (s16) (s32) (100.0f * mScale) / 2;
         mUnk_07_1 = 1;
     }
     if (result != -1) {
         mUnk_07_0 = 1;
-        mUnk_04 = 1;
+        mState = 1;
         mAnim->ResetAnimation();
         mAnim->SetAnimation(anim);
     }
     return result;
 }
 
-int ConfrontEmblem03::func_ov007_0221f70c() {
-    if (mUnk_04 == 2) {
-        s8 v = mUnk_0b;
+int ConfrontEmblem03::GetSlotIfIdle() {
+    if (mState == 2) {
+        s8 v = mSlot;
         if (v != -1) {
             return v;
         }
@@ -191,11 +191,11 @@ Confront03::Confront03()
     : BattleBase() {
     mUnk_68 = 0;
     mUnk_6c = 0;
-    mUnk_6d = 0;
-    mUnk_6e = 1;
-    mUnk_74 = 0;
+    mLongHold = 0;
+    mUsedSlotMask = 1;
+    mDelay = 0;
     mData   = 0;
-    mUnk_70 = data_ov007_02278c0c;
+    mConfrontRow = data_ov007_02278c0c;
     for (u8 i = 0; i < 4; i++) {
         mEmblems[i] = 0;
     }
@@ -254,13 +254,13 @@ void Confront03::LoadGraphics() {
 }
 
 void Confront03::vfunc_34() {
-    if (func_ov007_0221fe4c()) {
-        u8 count = BattleRand32(mUnk_70->mUnk_04);
+    if (CountDownDelay()) {
+        u8 count = BattleRand32(mConfrontRow->mUnk_04);
         u8 i = 0;
         do {
             BOOL spectator = IsSpectator();
             if (!(u8) spectator) {
-                func_ov007_0221feb8();
+                StartIdleEmblem();
             } else {
                 BattleRand32(0xffff);
                 BattleRand32(0xffff);
@@ -275,7 +275,7 @@ void Confront03::vfunc_34() {
     }
     u8 j = 0;
     do {
-        mEmblems[j]->func_ov007_0221f268();
+        mEmblems[j]->Update();
         j++;
     } while (j < 4);
 }
@@ -287,8 +287,8 @@ BOOL Confront03::func_ov007_0221bfa4() {
     }
     u8 i = 0;
     do {
-        mEmblems[i]->func_ov007_0221f368();
-        mEmblems[i]->func_ov007_0221f268();
+        mEmblems[i]->StartShrink();
+        mEmblems[i]->Update();
         i++;
     } while (i < 4);
     return FALSE;
@@ -302,14 +302,14 @@ void Confront03::vfunc_3c() {
     u8 i = 0;
     do {
         if (!mEmblems[i]->mUnk_07_1) {
-            mEmblems[i]->func_ov007_0221f3a4();
+            mEmblems[i]->Draw();
         }
         i++;
     } while (i < 4);
     i = 0;
     do {
         if (mEmblems[i]->mUnk_07_1) {
-            mEmblems[i]->func_ov007_0221f3a4();
+            mEmblems[i]->Draw();
         }
         i++;
     } while (i < 4);
@@ -317,7 +317,7 @@ void Confront03::vfunc_3c() {
 
 u8 Confront03::UpdateTouch(int a) {
     ConfrontEmblem03 *emblem = mEmblems[mUnk_6c];
-    if (emblem->mUnk_04 == 0 && emblem->mUnk_0a == 1) {
+    if (emblem->mState == 0 && emblem->mStep == 1) {
         mUnk_68++;
         if (mUnk_68 >= 0x14) {
             mUnk_68 = 0;
@@ -328,12 +328,12 @@ u8 Confront03::UpdateTouch(int a) {
             }
         } else {
             ConfrontEmblem03 *cur = mEmblems[mUnk_6c];
-            s16 y = (s16) cur->mUnk_18;
-            s16 x = (s16) cur->mUnk_14;
+            s16 y = (s16) cur->mY;
+            s16 x = (s16) cur->mX;
             SetPenPosition(x, y);
         }
     }
-    mUnk_6d = a;
+    mLongHold = a;
     if (TouchManager::Get().mPressed == 0) {
         return 0;
     }
@@ -361,34 +361,34 @@ u8 Confront03::UpdateTouch(int a) {
 void Confront03::vfunc_44(int index, u16 count) {
 }
 
-BOOL Confront03::func_ov007_0221fe4c() {
+BOOL Confront03::CountDownDelay() {
     BOOL result = FALSE;
     if (mParam->mBattleFrameCount - mElapsedFrames >= 0x28) {
-        if (mUnk_74 != 0) {
-            mUnk_74--;
+        if (mDelay != 0) {
+            mDelay--;
         } else {
-            mUnk_74 = BattleRand32(mUnk_70->mUnk_03 - mUnk_70->mUnk_02);
-            mUnk_74 += mUnk_70->mUnk_02;
+            mDelay = BattleRand32(mConfrontRow->mMaxDelay - mConfrontRow->mMinDelay);
+            mDelay += mConfrontRow->mMinDelay;
             result = TRUE;
         }
     }
     return result;
 }
 
-void Confront03::func_ov007_0221feb8() {
+void Confront03::StartIdleEmblem() {
     u8 found = 0;
     u8 i = 0;
     do {
-        int v = mEmblems[i]->func_ov007_0221f70c();
+        int v = mEmblems[i]->GetSlotIfIdle();
         if (v != -1) {
-            mUnk_6e = mUnk_6e & ~(u16) (1 << (u16) v);
+            mUsedSlotMask = mUsedSlotMask & ~(u16) (1 << (u16) v);
         }
         i++;
     } while (i < 4);
     u8 free[12];
     u8 n = 0;
     u16 bit = 1;
-    u16 mask = mUnk_6e;
+    u16 mask = mUsedSlotMask;
     for (u8 k = 0; k < 12; k++) {
         if (!(mask & bit)) {
             free[n] = k;
@@ -399,14 +399,14 @@ void Confront03::func_ov007_0221feb8() {
     if (n != 0) {
         u8 j = 0;
         do {
-            if (mEmblems[j]->func_ov007_0221f57c()) {
+            if (mEmblems[j]->IsIdle()) {
                 int pick = free[BattleRand32(n) & 0xff];
                 if (!mUnk_18_1 && (u16) (pick + 0xffff) <= 1) {
                     BattleRand32(0xffff);
                     BattleRand32(0xffff);
                 } else {
-                    mEmblems[j]->func_ov007_0221f1b8(pick, mUnk_6d);
-                    mUnk_6e = mUnk_6e | (u16) (1 << pick);
+                    mEmblems[j]->Start(pick, mLongHold);
+                    mUsedSlotMask = mUsedSlotMask | (u16) (1 << pick);
                 }
                 found = 1;
                 break;

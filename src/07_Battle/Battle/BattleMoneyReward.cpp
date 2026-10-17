@@ -1,4 +1,4 @@
-#include "Battle/BattleUnk022767c8.hpp"
+#include "Battle/BattleMoneyReward.hpp"
 
 // Include order is load-bearing: it sets where each singleton joins the size sort, and so the order of the
 // destructor-chain nodes in .bss (TextManager, TouchManager, InputManager, FrameTask, SoundManager).
@@ -63,7 +63,7 @@ static const s8 sSparkleSteps[15][4] = {
     {0, -1, 0, 4},
 };
 
-BattleUnk022767c8::BattleUnk022767c8()
+BattleMoneyReward::BattleMoneyReward()
     : SceneBase(0x3e8, 0) {
     mWindow     = 0;
     mTextSize   = 0;
@@ -73,7 +73,7 @@ BattleUnk022767c8::BattleUnk022767c8()
     mSlideB     = 0;
     mScroll     = 0;
     mHold       = 0x78;
-    mUnk_a4     = 0;
+    mAmountVisible     = 0;
     mState      = 0;
     mUnk_a7     = 0;
     mFade       = 0x40;
@@ -141,7 +141,7 @@ BattleUnk022767c8::BattleUnk022767c8()
     }
 }
 
-BattleUnk022767c8::~BattleUnk022767c8() {
+BattleMoneyReward::~BattleMoneyReward() {
     u8 i;
     CellAnimation *a;
     CellAnimation *b;
@@ -163,7 +163,7 @@ BattleUnk022767c8::~BattleUnk022767c8() {
         }
         j++;
     } while (j < 15);
-    func_ov007_02278250();
+    ClearText();
     if (mMessages) {
         OS_Free(mMessages);
     }
@@ -176,12 +176,12 @@ BattleUnk022767c8::~BattleUnk022767c8() {
     FrameTask::Get().StopAllChannels();
 }
 
-void BattleUnk022767c8::Update() {
+void BattleMoneyReward::Update() {
     u8 draw = 1;
     switch (mState) {
         case 0:
-            func_ov007_02277368();
-            func_ov007_02277514();
+            InitDisplay();
+            Init();
             mSlideA = 0x108;
             mSlideB = 0x108;
             SpriteManager::Get().StartFade(2);
@@ -193,7 +193,7 @@ void BattleUnk022767c8::Update() {
             SpriteManager::Get();
             if (SpriteManager::sFade[0] <= 1) {
                 FrameTask::Get().StartChannel(0, 0x18);
-                mUnk_a4 = 1;
+                mAmountVisible = 1;
                 mState++;
             }
             break;
@@ -255,7 +255,7 @@ void BattleUnk022767c8::Update() {
                 }
                 mState = 7;
             }
-            func_ov007_02277f3c();
+            PrintTotal();
             break;
         case 6:
             if (mHold == 0) {
@@ -334,11 +334,11 @@ void BattleUnk022767c8::Update() {
         }
     }
     if (draw) {
-        func_ov007_02277c44();
+        Draw();
     }
 }
 
-void BattleUnk022767c8::func_ov007_02277368() {
+void BattleMoneyReward::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
@@ -361,7 +361,7 @@ void BattleUnk022767c8::func_ov007_02277368() {
     G2S_SetBlendBrightness(0x1f, -16);
 }
 
-void BattleUnk022767c8::func_ov007_02277514() {
+void BattleMoneyReward::Init() {
     ChangeDir("/game/Tournament/Bg/");
     LoadAndQueueUpload(0, 1, 0, "tournament_u_bg_result_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(0, 11, 0, "tournament_u_bg_result_ncg.bin", 0, 0, 0);
@@ -419,7 +419,7 @@ void BattleUnk022767c8::func_ov007_02277514() {
     mGlyphBuffer = OS_Alloc(mGlyphCount * 0xc);
     TextManager::Get().Init(mGlyphBuffer, 0, 0, 0x20, 0x20, 0x21);
     TextManager::Get().SetColor(0, 0, 15);
-    func_ov007_02277f3c();
+    PrintTotal();
     delete mWindow;
     mWindow = new SelectWindow(1, sItems, -1);
     mWindow->SetCells(1, sCells);
@@ -427,10 +427,10 @@ void BattleUnk022767c8::func_ov007_02277514() {
     mWindow->mEnabled            = 0;
 }
 
-void BattleUnk022767c8::func_ov007_02277c44() {
+void BattleMoneyReward::Draw() {
     mAnims[0]->Update();
     mAnims[0]->Draw(0, 0x80, 0x60, 2);
-    if (mUnk_a4) {
+    if (mAmountVisible) {
         mAnims[1]->Update();
         mAnims[1]->Draw(0, 0x80, 0x60, 2);
         mAnims[2]->Update();
@@ -465,8 +465,8 @@ void BattleUnk022767c8::func_ov007_02277c44() {
     }
 }
 
-void BattleUnk022767c8::func_ov007_02277f3c() {
-    func_ov007_02278250();
+void BattleMoneyReward::PrintTotal() {
+    ClearText();
     s16 y;
     s16 x;
     s16 y2;
@@ -489,7 +489,7 @@ void BattleUnk022767c8::func_ov007_02277f3c() {
     QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0xa000, mTextBuffer, mTextSize, 0);
 }
 
-void BattleUnk022767c8::func_ov007_02278250() {
+void BattleMoneyReward::ClearText() {
     if (mTextBuffer) {
         MI_CpuClear16(mTextBuffer, mTextSize);
     }

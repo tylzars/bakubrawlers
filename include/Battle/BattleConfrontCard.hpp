@@ -22,14 +22,14 @@ class ModelLightGroup;
 class BattleCardCamera : public SceneBase {
 public:
     /* 00 SceneBase */
-    /* 0c */ BattleMapObj *mUnk_0c;
-    /* 10 */ BakuganModel *mUnk_10[2];
-    /* 18 */ BattleMapModel *mUnk_18;
+    /* 0c */ BattleMapObj *mMapObj;
+    /* 10 */ BakuganModel *mBakugans[2];
+    /* 18 */ BattleMapModel *mMapModel;
     /* 1c */ ModelLightGroup *mUnk_1c;
-    /* 20 */ void *mUnk_20;
+    /* 20 */ void *mCamFile;
     /* 24 */ u16 mUnk_24;
     /* 26 */ u8 mState;
-    /* 27 */ u8 mUnk_27;
+    /* 27 */ u8 mMapModelVisible;
     /* 28 */ PAD(0x28, 0x29);
     /* 29 */ u8 mUnk_29;
     /* 2a */ u8 mUnk_2a;
@@ -43,7 +43,7 @@ public:
     BattleCardCamera(u16 a, u16 b);
     virtual ~BattleCardCamera();
     /* 08 */ virtual void Update();
-    void func_ov007_02244bb4();
+    void Init();
     void func_ov007_02244e98();
 };
 
@@ -64,11 +64,11 @@ public:
     /* 21 */ s8 mUnk_21;
     /* 22 */ u8 mUnk_22;
     /* 23 */ u8 mUnk_23;
-    /* 24 */ CellAnimation *mUnk_24[5];
+    /* 24 */ CellAnimation *mCellAnims[5];
     /* 38 */ BattleData *mData;
-    /* 3c */ BattleCardCamera *mUnk_3c;
-    /* 40 */ BattleCommandPage *mUnk_40;
-    /* 44 */ BattleCardSpec *mUnk_44;
+    /* 3c */ BattleCardCamera *mCardCamera;
+    /* 40 */ BattleCommandPage *mCommandPage;
+    /* 44 */ BattleCardSpec *mCardSpec;
     /* 48 */ void *mUnk_48;
     /* 4c */ void *mUnk_4c;
     /* 50 */ u8 mUnk_50;
@@ -90,15 +90,15 @@ public:
     /* 65 */ u8 mUnk_65;
     /* 66 */ u16 mUnk_66;
     /* 68 */ u8 mUnk_68;
-    /* 69 */ u8 mUnk_69;
+    /* 69 */ u8 mWindowOpen;
     /* 6a */ PAD(0x6a, 0x6c);
-    /* 6c */ u32 mUnk_6c;
-    /* 70 */ u32 mUnk_70;
+    /* 6c */ u32 mTextBufferSize;
+    /* 70 */ u32 mGlyphCount;
     /* 74 */ void *mUnk_74;
-    /* 78 */ void *mUnk_78;
-    /* 7c */ void *mUnk_7c;
-    /* 80 */ SelectWindow *mUnk_80;
-    /* 84 */ struct MessageFile *mUnk_84;
+    /* 78 */ void *mTextBuffer;
+    /* 7c */ void *mGlyphBuffer;
+    /* 80 */ SelectWindow *mWindow;
+    /* 84 */ struct MessageFile *mMessages;
     /* 88 */
 
     BattleConfrontCard(u32 unk);
@@ -108,22 +108,22 @@ public:
     u8 func_ov007_022428d4(u16 card);
     u8 func_ov007_02244440();
     BOOL func_ov007_022433c8(u8 side, u16 id);
-    void func_ov007_02243f04(const char *path, u32 mode);
-    void func_ov007_022442d4(u32 index);
-    void func_ov007_0223f044();
-    void func_ov007_0223f0c0();
-    void func_ov007_0223f168();
-    void func_ov007_0223f398();
-    void func_ov007_0223f780(u16 card);
+    void LoadWindow(const char *path, u32 mode);
+    void PrintMessage(u32 index);
+    void Init();
+    void InitDisplay();
+    void ResetDisplay();
+    void LoadGraphics();
+    void LoadCardGraphic(u16 card);
     void func_ov007_0223f90c(u16 value);
     BOOL func_ov007_0223f918();
-    void func_ov007_022430bc(int brightness);
-    void func_ov007_022430d8(int blend);
+    void SetSubBlendBrightness(int brightness);
+    void SetSubBlendAlpha(int blend);
     void func_ov007_02243100();
     void func_ov007_022432dc(u8 kind, u32 mode, u32 flag);
     u8 func_ov007_022433ac();
     u16 func_ov007_02243b24(u8 side, u32 id);
-    void func_ov007_02243d40();
-    void func_ov007_02243dec();
-    void func_ov007_02243e7c();
+    void OpenWindow();
+    void CloseWindow();
+    void ReleaseWindow();
 };

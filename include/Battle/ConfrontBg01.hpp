@@ -5,10 +5,10 @@
 
 class ConfrontBg01 : public BattleBase {
 public:
-    /* 68 */ u8 mUnk_68;
+    /* 68 */ u8 mSoundTimer;
     /* 69 */ u8 mUnk_69;
     /* 6a */ u16 mUnk_6a;
-    /* 6c */ u32 mUnk_6c;
+    /* 6c */ u32 mDistanceSum;
     /* 70 */ BattleData *mData;
     /* 74 */ BattleBlend *mBlend;
     /* 78 */

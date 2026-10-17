@@ -9,7 +9,7 @@ GimmickBakugan::GimmickBakugan(u8 a, u8 variant)
     mAnimFrames = 0;
     mAnimTimer  = 0;
     mState      = 0;
-    mUnk_3a     = 8;
+    mType     = GIMMICK_TYPE_BAKUGAN;
     mVariant    = variant;
 }
 

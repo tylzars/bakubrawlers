@@ -26,7 +26,7 @@ u8 func_ov007_02229ee4(s32 x, s32 y, s32 width, s32 height, u16 unk5, u8 *flag) 
     s32 touchX = (s16) TouchManager::Get().mX;
     s32 touchY = (s16) TouchManager::Get().mY;
     s32 downX = TouchManager::Get().mUnk_08;
-    if (func_ov007_022252d0(downX, TouchManager::Get().mUnk_0a, touchX, touchY) < unk5) {
+    if (PointDistance(downX, TouchManager::Get().mUnk_0a, touchX, touchY) < unk5) {
         if (*flag != 0) {
             (*flag)--;
             hit = 1;
@@ -46,7 +46,7 @@ u8 func_ov007_02229ee4(s32 x, s32 y, s32 width, s32 height, u16 unk5, u8 *flag) 
 
 static u32 sTouchTicks;
 
-s32 func_ov007_0222a118(s32 x, s32 y, s32 radius) {
+s32 TouchTurnAngle(s32 x, s32 y, s32 radius) {
     s32 angle = 0;
     if (TouchManager::Get().mDown != 0) {
         sTouchTicks++;

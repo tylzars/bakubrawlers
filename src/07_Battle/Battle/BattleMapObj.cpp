@@ -17,7 +17,7 @@ BattleMapObjPart::~BattleMapObjPart() {
     }
 }
 
-void BattleMapObjPart::func_ov007_022490ac(TextureFile *texture, const char *nsbmd, const char *data, u32 unk0) {
+void BattleMapObjPart::LoadModel(TextureFile *texture, const char *nsbmd, const char *data, u32 unk0) {
     NitroModel *model = new NitroModel(nsbmd, texture);
     if (data != 0) {
         ModelAnimData *animData = new ModelAnimData(data);
@@ -62,7 +62,7 @@ void BattleMapObj::AddPart(const char *nsbtx, const char *nsbmd, const char *dat
 
 void BattleMapObj::AddPartWithTexture(TextureFile *texture, const char *nsbmd, const char *data, u32 flag) {
     mParts[mCount] = new BattleMapObjPart();
-    mParts[mCount]->func_ov007_022490ac(texture, nsbmd, data, 1);
+    mParts[mCount]->LoadModel(texture, nsbmd, data, 1);
     mParts[mCount]->mModel->mUseBoxTest = flag;
     mCount++;
 }

@@ -7,7 +7,7 @@
 // Confrontation screen with background vs_b_bg_05_NN and one emblem (vs_emblem_NN).
 class ConfrontBg05 : public BattleBase {
 public:
-    /* 68 */ u8 mUnk_68;
+    /* 68 */ u8 mSoundTimer;
     /* 69 */ PAD(0x69, 0x6a);
     /* 6a */ u16 mUnk_6a;
     /* 6c */ BattleData *mData;

@@ -20,8 +20,8 @@ public:
 
     ConfrontEmblem05(u8 emblem);
     virtual ~ConfrontEmblem05();
-    void func_ov007_02220a00();
-    void func_ov007_02220b48();
+    void Update();
+    void Draw();
     int func_ov007_02220b9c(int fast);
-    void func_ov007_02220cb0();
+    void SlowDown();
 };

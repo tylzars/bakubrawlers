@@ -2,19 +2,19 @@
 #include <nitro/fx.h>
 #include "Game/UnkStruct_020d433c.hpp"
 
-void func_ov007_022719c8(void *buf, u8 id);
-GimmickSetData *func_ov007_02271ca8(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
+void LoadCollisionFile(void *buf, u8 id);
+GimmickSetData *AddCollisionSet(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
 void GetCellPosition(VecFx32 *out, u8 a, u8 b);
 
 Gimmick::Gimmick(u8 a, u8 b)
     : SceneBase(0x2710, 0) {
     mState = 0;
-    mUnk_3a = 0;
-    mUnk_39 = a;
-    mUnk_3c = 0;
+    mType = 0;
+    mId = a;
+    mCollision = 0;
     mUnk_3b = b;
-    mUnk_44 = 0;
-    mUnk_40 = 0;
+    mTurnCount = 0;
+    mCountingTurns = 0;
 }
 
 Gimmick::~Gimmick() {
@@ -26,13 +26,13 @@ Gimmick::~Gimmick() {
     }
 }
 
-void Gimmick::func_ov007_0222ea28(int id, int count) {
+void Gimmick::LoadCollision(int id, int count) {
     char buf[0x804];
-    func_ov007_022719c8(buf, id);
-    mUnk_3c = func_ov007_02271ca8(data_020d433c.mGimmickCollision, count, buf, &mPosition, &mRotX, mUnk_3a);
+    LoadCollisionFile(buf, id);
+    mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, count, buf, &mPosition, &mRotX, mType);
 }
 
-BOOL Gimmick::func_ov007_0222ea84(int radius) {
+BOOL Gimmick::IsNearMarker(int radius) {
     VecFx32 tmp;
     VecFx32 diff;
     for (u8 i = 0; i < 12; i++) {

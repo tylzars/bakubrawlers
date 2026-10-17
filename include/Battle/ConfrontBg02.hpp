@@ -12,7 +12,7 @@ struct ConfrontEmblemStep {
     /* 03 */ u8 mMaxDelay;
     /* 04 */
 };
-extern ConfrontEmblemStep data_ov007_02278bf8[];
+extern ConfrontEmblemStep gConfrontEmblemSteps[];
 
 // Confrontation screen for field 02 (vs_b_bg_02_*, vs_emblem_NN_nce.bin, vs_b_obj_02_line / vs_b_obj_02_marker).
 class ConfrontBg02 : public BattleBase {
@@ -38,7 +38,7 @@ public:
     /* 40 */ virtual u8 UpdateTouch(int a);
     /* 44 */ virtual void vfunc_44(int index, u16 count);
 
-    void func_ov007_0221ee70();
-    BOOL func_ov007_0221eec8();
-    void func_ov007_0221ef34();
+    void UpdateEmblemStep();
+    BOOL CountDownDelay();
+    void StartIdleEmblem();
 };

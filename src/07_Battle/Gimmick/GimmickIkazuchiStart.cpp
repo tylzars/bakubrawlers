@@ -11,13 +11,13 @@ GimmickIkazuchiStart::GimmickIkazuchiStart(u8 id)
     : Gimmick(id, 0) {
     mModelB  = 0;
     mCounter = 0;
-    mUnk_5e  = 0;
-    mUnk_5f  = 0;
+    mDelayIndex  = 0;
+    mMarkerNear  = 0;
     for (u8 i = 0; i < 8; i++) {
         mDelays[i] = MATH_Rand32(&gRandom, 0x3c) + 0x3c;
     }
     mState  = 0;
-    mUnk_3a = 0x52;
+    mType = GIMMICK_TYPE_IKAZUCHI_START;
 }
 
 GimmickIkazuchiStart::~GimmickIkazuchiStart() {
@@ -25,8 +25,8 @@ GimmickIkazuchiStart::~GimmickIkazuchiStart() {
 }
 
 void GimmickIkazuchiStart::Load() {
-    mUnk_5f = func_ov007_0222ea84(0xa000);
-    if (mUnk_5f) {
+    mMarkerNear = IsNearMarker(0xa000);
+    if (mMarkerNear) {
         return;
     }
     if (!sResources[1]) {
@@ -75,19 +75,19 @@ void GimmickIkazuchiStart::Finish() {
 void GimmickIkazuchiStart::Update() {
     switch (mState) {
     case 0:
-        func_ov007_0222ea28(0x52, 8);
+        LoadCollision(0x52, 8);
         mState++;
         break;
     case 1:
-        if (mUnk_5f) {
+        if (mMarkerNear) {
             return;
         }
-        mUnk_5e  = (mUnk_5e + 1) % 8;
-        mCounter = mDelays[mUnk_5e];
+        mDelayIndex  = (mDelayIndex + 1) % 8;
+        mCounter = mDelays[mDelayIndex];
         mState++;
         break;
     case 2:
-        if (mUnk_5f) {
+        if (mMarkerNear) {
             return;
         }
         data_020d433c.mUnk_14 &= 8;
@@ -107,7 +107,7 @@ void GimmickIkazuchiStart::Update() {
         mState++;
         break;
     case 3:
-        if (mUnk_5f) {
+        if (mMarkerNear) {
             mState = 6;
             return;
         }
@@ -127,14 +127,14 @@ void GimmickIkazuchiStart::Update() {
         mState++;
         break;
     case 4: {
-        if (mUnk_5f) {
+        if (mMarkerNear) {
             mState = 6;
             return;
         }
         if (func_ov007_022789e0(1)) {
             return;
         }
-        if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
+        if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -142,7 +142,7 @@ void GimmickIkazuchiStart::Update() {
         if (!t) {
             return;
         }
-        if (t->mUnk_1bc) {
+        if (t->mIkazuchiTimer) {
             return;
         }
         BattlePlayer *p = list->Current();
@@ -151,17 +151,17 @@ void GimmickIkazuchiStart::Update() {
         }
         VecFx32 v = {0, 0, 0};
         t         = list->mBattleTarget;
-        v.x       = t->mUnk_64.x;
-        v.y       = t->mUnk_64.y;
-        v.z       = t->mUnk_64.z;
+        v.x       = t->mVelocity.x;
+        v.y       = t->mVelocity.y;
+        v.z       = t->mVelocity.z;
         v.y       = 0x2000;
-        func_ov007_0225c960(list->mBattleTarget, &v, 0);
+        SetTargetVelocity(list->mBattleTarget, &v, 0);
         func_ov007_0225ca18(data_020d433c.mBattlePlayers->mBattleTarget, 8, 0x1e);
         mState++;
         break;
     }
     case 5:
-        if (mUnk_5f) {
+        if (mMarkerNear) {
             mState = 6;
             return;
         }
@@ -172,7 +172,7 @@ void GimmickIkazuchiStart::Update() {
         mState++;
         break;
     case 7:
-        if (mUnk_5f) {
+        if (mMarkerNear) {
             return;
         }
         mState = 1;

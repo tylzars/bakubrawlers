@@ -12,7 +12,7 @@ static ModelResource *sResource;
 GimmickVentKaze::GimmickVentKaze(u8 id)
     : Gimmick(id, 0) {
     mState  = 0;
-    mUnk_3a = 0x33;
+    mType = GIMMICK_TYPE_VENT_KAZE;
 }
 
 GimmickVentKaze::~GimmickVentKaze() {
@@ -55,14 +55,14 @@ void GimmickVentKaze::Update() {
     MtxFx33 m = data_0220e848;
     switch (mState) {
     case 0:
-        func_ov007_0222ea28(0x34, 8);
+        LoadCollision(0x34, 8);
         mState++;
         break;
     case 1: {
         if (mModel && (int)data_020d433c.mGimmicks->mState >= 1) {
             func_020526bc();
         }
-        if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
+        if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
         if (!data_020d433c.mBattlePlayers->mBattleTarget) {
@@ -77,7 +77,7 @@ void GimmickVentKaze::Update() {
         if (r->mAttribute == 5) {
             return;
         }
-        BakuganModel *h = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4;
+        BakuganModel *h = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan;
         VecFx32 a           = data_ov007_02279450;
         m                   = data_0220e848;
         if (mRotY) {

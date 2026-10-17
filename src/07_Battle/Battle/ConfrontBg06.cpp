@@ -18,15 +18,15 @@
 
 ConfrontEmblem06::ConfrontEmblem06(u8 index) {
     char path[0x80];
-    mUnk_04   = 0;
+    mState   = 0;
     mUnk_05_0 = 0;
     mUnk_05_1 = 0;
     mUnk_05_2 = 0;
     mUnk_05_3 = 0;
     mUnk_05_4 = 0;
-    mUnk_06   = 0;
-    mUnk_08   = 1.0f;
-    mUnk_0c   = 12.0f;
+    mShakeFrames   = 0;
+    mScale   = 1.0f;
+    mSpeed   = 12.0f;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
@@ -46,9 +46,9 @@ ConfrontEmblem06::ConfrontEmblem06(u8 index) {
     mAnims[1]->mPaletteBase   = 12;
     mAnims[1]->SetAnimation(0);
     ChangeDir("/");
-    mUnk_10 = 128.0f;
-    mUnk_14 = 140.0f;
-    func_ov007_02221c68();
+    mX = 128.0f;
+    mY = 140.0f;
+    PickDir();
 }
 
 ConfrontEmblem06::~ConfrontEmblem06() {
@@ -63,87 +63,87 @@ extern "C" void func_02024764(SoundManager *manager, u32 a, u32 b);
 
 extern "C" int func_02024790(SoundManager *manager, u32 a);
 
-void ConfrontEmblem06::func_ov007_02221884() {
-    switch (mUnk_04) {
+void ConfrontEmblem06::Update() {
+    switch (mState) {
         case 0:
             return;
         case 1:
-            if (mUnk_0c) {
-                func_ov007_02221d44();
-                mUnk_10 = mUnk_10 + mUnk_18 * mUnk_0c;
-                mUnk_14 = mUnk_14 + mUnk_1c * mUnk_0c;
+            if (mSpeed) {
+                Bounce();
+                mX = mX + mDirX * mSpeed;
+                mY = mY + mDirY * mSpeed;
                 if (mUnk_05_0) {
                     return;
                 }
-                mUnk_08 = mUnk_08 - 0.1f;
-                if (mUnk_08 < 1.0f) {
-                    mUnk_08 = 1.0f;
+                mScale = mScale - 0.1f;
+                if (mScale < 1.0f) {
+                    mScale = 1.0f;
                 }
             } else {
-                mUnk_08 += 0.015f;
-                if (mUnk_08 >= 2.0f) {
+                mScale += 0.015f;
+                if (mScale >= 2.0f) {
                     if (!mUnk_05_4) {
                         SoundManager::Get().StartSeqArc(0x2e);
                     }
                     mAnims[1]->ResetAnimation();
                     mUnk_05_2 = 1;
-                    mUnk_04++;
+                    mState++;
                 }
             }
             return;
         case 2:
             if (mAnims[1]->mFinished == 0) {
                 mAnims[1]->Update();
-                mAnims[1]->Draw(1, mUnk_10, mUnk_14, 0);
+                mAnims[1]->Draw(1, mX, mY, 0);
                 return;
             }
             WirelessManager::Get();
             if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
-                func_ov007_02221c68();
+                PickDir();
             }
             mUnk_05_0 = 0;
-            mUnk_08   = 1.0f;
-            mUnk_0c   = 12.0f;
-            mUnk_04   = 1;
+            mScale   = 1.0f;
+            mSpeed   = 12.0f;
+            mState   = 1;
             mUnk_05_3 = 0;
             return;
     }
 }
 
-void ConfrontEmblem06::func_ov007_02221ad0() {
-    s16 x = (s32) mUnk_10;
-    s16 y = (s32) mUnk_14;
+void ConfrontEmblem06::Draw() {
+    s16 x = (s32) mX;
+    s16 y = (s32) mY;
     if (mUnk_05_0) {
-        if (0.0f == mUnk_0c) {
-            float q = 1.3f * mUnk_08;
+        if (0.0f == mSpeed) {
+            float q = 1.3f * mScale;
             if (mUnk_05_1) {
                 x = (s32) ((float) x + q);
             } else {
                 x = (s32) ((float) x - q);
             }
-            mUnk_06++;
-            if (mUnk_06 >= 2) {
-                mUnk_06   = 0;
+            mShakeFrames++;
+            if (mShakeFrames >= 2) {
+                mShakeFrames   = 0;
                 mUnk_05_1 ^= 1;
             }
         }
     }
     float a;
-    if (mUnk_08 > 0.0f) {
-        a = 0.5f + 4096.0f * mUnk_08;
+    if (mScale > 0.0f) {
+        a = 0.5f + 4096.0f * mScale;
     } else {
-        a = 4096.0f * mUnk_08 - 0.5f;
+        a = 4096.0f * mScale - 0.5f;
     }
     float b;
-    if (mUnk_08 > 0.0f) {
-        b = 0.5f + 4096.0f * mUnk_08;
+    if (mScale > 0.0f) {
+        b = 0.5f + 4096.0f * mScale;
     } else {
-        b = 4096.0f * mUnk_08 - 0.5f;
+        b = 4096.0f * mScale - 0.5f;
     }
     mAnims[0]->DrawTransformed(1, x, y, 1, (s32) b, (s32) a, 0);
 }
 
-void ConfrontEmblem06::func_ov007_02221c68() {
+void ConfrontEmblem06::PickDir() {
     u8 quadrant = BattleRand32(4);
     u16 r       = BattleRand32(0x1555);
     u16 angle   = ((quadrant & 3) << 14) + 0x1555 + r;
@@ -151,30 +151,30 @@ void ConfrontEmblem06::func_ov007_02221c68() {
     float p[2];
     float dx = FX_SinCosTable_[i + 1];
     dx /= 4096.0f;
-    p[0]     = mUnk_10 + dx;
+    p[0]     = mX + dx;
     float dy = FX_SinCosTable_[i];
     dy /= 4096.0f;
-    p[1] = mUnk_14 + dy;
-    func_ov007_02225354(p[0] - mUnk_10, p[1] - mUnk_14, &mUnk_18);
+    p[1] = mY + dy;
+    func_ov007_02225354(p[0] - mX, p[1] - mY, &mDirX);
 }
 
-void ConfrontEmblem06::func_ov007_02221d44() {
+void ConfrontEmblem06::Bounce() {
     u8 bounced = 0;
     float p[2];
-    p[0] = mUnk_10 + mUnk_18 * mUnk_0c;
-    p[1] = mUnk_14 + mUnk_1c * mUnk_0c;
+    p[0] = mX + mDirX * mSpeed;
+    p[1] = mY + mDirY * mSpeed;
     if (p[1] <= 112.0f) {
-        mUnk_1c *= -1.0f;
+        mDirY *= -1.0f;
         bounced = 1;
     } else if (p[1] >= 176.0f) {
-        mUnk_1c *= -1.0f;
+        mDirY *= -1.0f;
         bounced = 1;
     }
     if (p[0] <= 16.0f) {
-        mUnk_18 *= -1.0f;
+        mDirX *= -1.0f;
         bounced = 1;
     } else if (p[0] >= 240.0f) {
-        mUnk_18 *= -1.0f;
+        mDirX *= -1.0f;
         bounced = 1;
     }
     if (!bounced) {
@@ -190,10 +190,10 @@ void ConfrontEmblem06::func_ov007_02221d44() {
 }
 
 int ConfrontEmblem06::func_ov007_02221f2c(int a) {
-    if (!TouchManager::Get().mDown || mUnk_04 != 1) {
+    if (!TouchManager::Get().mDown || mState != 1) {
         return -1;
     }
-    if (func_ov007_022252d0((s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY, (s32) mUnk_10, (s32) mUnk_14) > 28) {
+    if (PointDistance((s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY, (s32) mX, (s32) mY) > 28) {
         return -1;
     }
     mUnk_05_0 = 1;
@@ -203,16 +203,16 @@ int ConfrontEmblem06::func_ov007_02221f2c(int a) {
     } else {
         limit = 1.0f;
     }
-    if (mUnk_0c < limit) {
+    if (mSpeed < limit) {
         if (!mUnk_05_3) {
             mUnk_05_3 = 1;
             if (!mUnk_05_4) {
                 SoundManager::Get().StartSeqArc(0x2d);
             }
         }
-        mUnk_0c = 0.0f;
+        mSpeed = 0.0f;
     } else {
-        mUnk_0c = mUnk_0c - limit;
+        mSpeed = mSpeed - limit;
     }
     return 10;
 }
@@ -221,11 +221,11 @@ int ConfrontEmblem06::func_ov007_0222210c() {
     int result = -1;
     if (mUnk_05_0) {
         mUnk_05_0 = 0;
-        if (0.0f == mUnk_0c) {
-            result  = (s16) (s32) (10.0f * mUnk_08);
-            float t = 12.0f * mUnk_08;
+        if (0.0f == mSpeed) {
+            result  = (s16) (s32) (10.0f * mScale);
+            float t = 12.0f * mScale;
             t /= 2.0f;
-            mUnk_0c = t;
+            mSpeed = t;
             if (!mUnk_05_4) {
                 if (func_02024790(&SoundManager::Get(), 0x2d)) {
                     func_02024764(&SoundManager::Get(), 0x2d, 1);
@@ -237,28 +237,28 @@ int ConfrontEmblem06::func_ov007_0222210c() {
     return result;
 }
 
-void ConfrontEmblem06::func_ov007_02222230() {
+void ConfrontEmblem06::EaseSpeed() {
     if (mUnk_05_0) {
         return;
     }
-    if (mUnk_0c > 2.0f) {
-        mUnk_0c = mUnk_0c - 0.02f;
-        if (mUnk_0c < 2.0f) {
-            mUnk_0c = 2.0f;
+    if (mSpeed > 2.0f) {
+        mSpeed = mSpeed - 0.02f;
+        if (mSpeed < 2.0f) {
+            mSpeed = 2.0f;
         }
-    } else if (mUnk_0c < 2.0f) {
-        mUnk_0c += 0.02f;
-        if (mUnk_0c > 2.0f) {
-            mUnk_0c = 2.0f;
+    } else if (mSpeed < 2.0f) {
+        mSpeed += 0.02f;
+        if (mSpeed > 2.0f) {
+            mSpeed = 2.0f;
         }
     }
 }
 
-u8 ConfrontEmblem06::func_ov007_022222b0() {
-    return mUnk_04 == 2 ? 1 : 0;
+u8 ConfrontEmblem06::IsBursting() {
+    return mState == 2 ? 1 : 0;
 }
 
-u8 ConfrontEmblem06::func_ov007_022222c8() {
+u8 ConfrontEmblem06::TakeBurstStarted() {
     if (mUnk_05_2) {
         mUnk_05_2 = 0;
         return 1;
@@ -311,7 +311,7 @@ void ConfrontBg06::InitSubScreen() {
 BOOL ConfrontBg06::func_ov007_0221bd84() {
     BOOL spectator = mUnk_12 >= 2;
     if (!(u8) spectator) {
-        mEmblem->mUnk_04 = 1;
+        mEmblem->mState = 1;
     }
     return FALSE;
 }
@@ -322,8 +322,8 @@ BOOL ConfrontBg06::func_ov007_0221bfa4() {
         return FALSE;
     }
     mEmblem->mUnk_05_4 = 1;
-    mEmblem->func_ov007_02222230();
-    mEmblem->func_ov007_02221884();
+    mEmblem->EaseSpeed();
+    mEmblem->Update();
     return FALSE;
 }
 
@@ -332,7 +332,7 @@ void ConfrontBg06::vfunc_34() {
     if ((u8) spectator) {
         return;
     }
-    mEmblem->func_ov007_02221884();
+    mEmblem->Update();
 }
 
 void ConfrontBg06::vfunc_3c() {
@@ -340,17 +340,17 @@ void ConfrontBg06::vfunc_3c() {
     if ((u8) spectator) {
         return;
     }
-    mEmblem->func_ov007_02221ad0();
+    mEmblem->Draw();
 }
 
 u8 ConfrontBg06::UpdateTouch(int a) {
     ConfrontEmblem06 *emblem = mEmblem;
     s32 hit                  = -1;
-    s16 y                    = (s32) emblem->mUnk_14;
-    s16 x                    = (s32) emblem->mUnk_10;
+    s16 y                    = (s32) emblem->mY;
+    s16 x                    = (s32) emblem->mX;
     SetPenPosition(x, y);
-    if (mEmblem->func_ov007_022222b0()) {
-        if (mEmblem->func_ov007_022222c8()) {
+    if (mEmblem->IsBursting()) {
+        if (mEmblem->TakeBurstStarted()) {
             hit = 100;
             func_ov007_0221bb68();
         }
@@ -368,7 +368,7 @@ u8 ConfrontBg06::UpdateTouch(int a) {
         }
     }
     if (hit == -1) {
-        mEmblem->func_ov007_02222230();
+        mEmblem->EaseSpeed();
     }
     if (hit == -1) {
         return 0;
@@ -385,7 +385,7 @@ void ConfrontBg06::vfunc_44(int index, u16 count) {
         return;
     }
     if (current == entries[index].mUnk_0d_4) {
-        mEmblem->func_ov007_02221c68();
+        mEmblem->PickDir();
     } else {
         BattleRand32(0xffff);
         BattleRand32(0xffff);

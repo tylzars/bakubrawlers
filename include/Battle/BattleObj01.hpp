@@ -8,11 +8,11 @@
 class CellAnimation;
 
 struct BattleObj01Motion {
-    /* 00 */ float mUnk_00;
+    /* 00 */ float mStartSpeed;
     /* 04 */ float mLimit;
     /* 08 */ float mDecel;
-    /* 0c */ float mUnk_0c;
-    /* 10 */ float mUnk_10;
+    /* 0c */ float mSideSpeed;
+    /* 10 */ float mSideDecel;
 };
 
 // A sprite pair (vs_b_obj_01) that flies from a start point towards a target.
@@ -22,7 +22,7 @@ public:
     /* 05 */ u8 mUnk_05;
     /* 06 */ PAD(0x06, 0x08);
     /* 08 */ float mSpeed;
-    /* 0c */ float mUnk_0c;
+    /* 0c */ float mSideSpeed;
     /* 10 */ float mX;
     /* 14 */ float mY;
     /* 18 */ s16 mScreenX;

@@ -8,32 +8,32 @@
 // Floating emblem sprite of the confrontation screen 06 (vs_emblem_NN plus vs_b_obj_06_burst). 0x28 bytes, vtable 0228642c.
 class ConfrontEmblem06 {
 public:
-    /* 04 */ u8 mUnk_04;
+    /* 04 */ u8 mState;
     /* 05 */ u8 mUnk_05_0 : 1;
     /* 05 */ u8 mUnk_05_1 : 1;
     /* 05 */ u8 mUnk_05_2 : 1;
     /* 05 */ u8 mUnk_05_3 : 1;
     /* 05 */ u8 mUnk_05_4 : 1;
-    /* 06 */ u8 mUnk_06;
+    /* 06 */ u8 mShakeFrames;
     /* 07 */ PAD(0x07, 0x08);
-    /* 08 */ float mUnk_08;
-    /* 0c */ float mUnk_0c;
-    /* 10 */ float mUnk_10;
-    /* 14 */ float mUnk_14;
-    /* 18 */ float mUnk_18;
-    /* 1c */ float mUnk_1c;
+    /* 08 */ float mScale;
+    /* 0c */ float mSpeed;
+    /* 10 */ float mX;
+    /* 14 */ float mY;
+    /* 18 */ float mDirX;
+    /* 1c */ float mDirY;
     /* 20 */ CellAnimation *mAnims[2];
     /* 28 */
 
     ConfrontEmblem06(u8 index);
     virtual ~ConfrontEmblem06();
-    void func_ov007_02221884();
-    void func_ov007_02221ad0();
-    void func_ov007_02221c68();
-    void func_ov007_02221d44();
+    void Update();
+    void Draw();
+    void PickDir();
+    void Bounce();
     int func_ov007_02221f2c(int a);
     int func_ov007_0222210c();
-    void func_ov007_02222230();
-    u8 func_ov007_022222b0();
-    u8 func_ov007_022222c8();
+    void EaseSpeed();
+    u8 IsBursting();
+    u8 TakeBurstStarted();
 };

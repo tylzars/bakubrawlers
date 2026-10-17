@@ -10,7 +10,7 @@ GimmickHaosBall::GimmickHaosBall(u8 a)
     : Gimmick(a, 0) {
     mTimer  = 0;
     mState  = 0;
-    mUnk_3a = 0x46;
+    mType = GIMMICK_TYPE_HAOS_BALL;
 }
 
 GimmickHaosBall::~GimmickHaosBall() {
@@ -52,12 +52,12 @@ void GimmickHaosBall::Update() {
     VecFx32 d;
     switch (mState) {
     case 0:
-        func_ov007_0222ea28(0x46, 8);
+        LoadCollision(0x46, 8);
         mState++;
         break;
     case 1: {
-        func_ov007_0222db58();
-        if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
+        DrawModel();
+        if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
         BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
@@ -72,12 +72,12 @@ void GimmickHaosBall::Update() {
         break;
     }
     case 2: {
-        func_ov007_0222db58();
+        DrawModel();
         BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
         if (!target) {
             return;
         }
-        BakuganModel *h = target->mUnk_1a4;
+        BakuganModel *h = target->mBakugan;
         VEC_Subtract(&mPosition, &h->mPosition, &d);
         d.x = FX_Mul(d.x, 0x400);
         d.y = FX_Mul(d.y, 0x400);
@@ -87,7 +87,7 @@ void GimmickHaosBall::Update() {
         sum.y = d.y + h->mPosition.y;
         sum.x = d.x + h->mPosition.x;
         h->mPosition = sum;
-        func_ov007_0225c9c0(data_020d433c.mBattlePlayers->mBattleTarget, 0, 0x333, 0, 0);
+        SetTargetVelocityXyz(data_020d433c.mBattlePlayers->mBattleTarget, 0, 0x333, 0, 0);
         data_020d433c.mUnk_14 &= 8;
         if (data_020d433c.mUnk_14) {
             return;
@@ -103,7 +103,7 @@ void GimmickHaosBall::Update() {
         break;
     }
     case 3: {
-        func_ov007_0222db58();
+        DrawModel();
         u32 x = MATH_Rand32(&gRandom, 0x2000);
         u32 y = MATH_Rand32(&gRandom, 0x1000);
         u32 z = MATH_Rand32(&gRandom, 0x2000);
@@ -113,18 +113,18 @@ void GimmickHaosBall::Update() {
         rnd.y = FX_Mul(rnd.y, 0x6000);
         rnd.z = FX_Mul(rnd.z, 0x6000);
         if (data_020d433c.mBattlePlayers->mBattleTarget) {
-            func_ov007_0225c960(data_020d433c.mBattlePlayers->mBattleTarget, &rnd, 0);
+            SetTargetVelocity(data_020d433c.mBattlePlayers->mBattleTarget, &rnd, 0);
         }
         SoundManager::Get().StartSeqArc(0x3a);
         mState++;
         break;
     }
     case 4:
-        func_ov007_0222db58();
-        if (!mUnk_3c) {
+        DrawModel();
+        if (!mCollision) {
             return;
         }
-        if (mUnk_3c->mUnk_823) {
+        if (mCollision->mHitCount) {
             return;
         }
         mState = 1;
@@ -138,7 +138,7 @@ void GimmickHaosBall::Update() {
     }
 }
 
-void GimmickHaosBall::func_ov007_0222db58() {
+void GimmickHaosBall::DrawModel() {
     if (!mModel) {
         return;
     }

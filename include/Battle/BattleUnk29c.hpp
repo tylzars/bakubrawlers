@@ -8,7 +8,7 @@
 #include "Battle/BattleMapTypes.hpp"
 #include "Graphics/BakuganModel.hpp"
 
-// Motion record of a pose (0x14 bytes, allocated by func_ov007_02270120).
+// Motion record of a pose (0x14 bytes, allocated by CreateBakugan).
 struct BattleMoveState {
     /* 00 */ VecFx32 mVelocity;
     /* 0c */ u16 mRot[3];
@@ -18,10 +18,10 @@ struct BattleMoveState {
 
 // Poses, name plates and cursors of the battle command map (0xa4 bytes, ctor 0226fb74, dtor 0226fc18).
 struct BattleUnk29c {
-    /* 00 */ BakuganModel *mUnk_00[12];
-    /* 30 */ BattleMoveState *mUnk_30[12];
-    /* 60 */ BattleMapPiece *mUnk_60;
-    /* 64 */ BattleFontObj *mUnk_64[9];
+    /* 00 */ BakuganModel *mBakugans[12];
+    /* 30 */ BattleMoveState *mMoveStates[12];
+    /* 60 */ BattleMapPiece *mShadow;
+    /* 64 */ BattleFontObj *mFontObjs[9];
     /* 88 */ VecFx32 mUnk_88;
     /* 94 */ u8 mUnk_94;
     /* 95 */ u8 mUnk_95;
@@ -37,20 +37,20 @@ struct BattleUnk29c {
 
     BattleUnk29c();  // 0226fb74
     ~BattleUnk29c(); // 0226fc18
-    BakuganModel *func_ov007_0226fc4c(u8 index);
+    BakuganModel *GetBakugan(u8 index);
     void func_ov007_0226fc5c(u32 index);
-    void func_ov007_0226fca8();
-    void func_ov007_0226fd78();
-    void func_ov007_0226fe4c();
+    void CreateFontObjs();
+    void Release();
+    void Update();
     void func_ov007_0226ff08(u32 flag);
-    void func_ov007_02270120(u32 index, VecFx32 *pos, u16 *rot, u8 a, u8 b);
-    void func_ov007_02270248();
+    void CreateBakugan(u32 index, VecFx32 *pos, u16 *rot, u8 a, u8 b);
+    void Draw();
     void func_ov007_02270350();
     void func_ov007_0227044c();
     void func_ov007_0227068c();
     void func_ov007_02270784(u8 index);
     void func_ov007_02270a7c(u8 index, u32 type);
-    void func_ov007_02270ae0(u8 index, BattleMoveState *state);
+    void StartMove(u8 index, BattleMoveState *state);
     void func_ov007_02270dbc(u32 index);
     void func_ov007_02270f1c(u32 index);
     void func_ov007_02271054(u32 index);

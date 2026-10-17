@@ -13,7 +13,7 @@
 extern const s32 data_ov007_022790c8[][6];
 extern const u8 data_ov007_022790c0[];
 
-int func_ov007_022252d0(int x1, int y1, int x2, int y2);
+int PointDistance(int x1, int y1, int x2, int y2);
 void func_ov007_02225354(float x, float y, float *out);
 
 // Placeholder: an enum-typed copy of the entry index (mwcc does not propagate enum locals) gives the original
@@ -475,7 +475,7 @@ void func_ov007_022252c4(BattleSub48 *obj) {
     obj->mState = 0;
 }
 
-int func_ov007_022252d0(int x1, int y1, int x2, int y2) {
+int PointDistance(int x1, int y1, int x2, int y2) {
     s16 dy = y2 - y1;
     s16 dx = x2 - x1;
     int sq = dx * dx + dy * dy;

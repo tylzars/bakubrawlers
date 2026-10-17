@@ -11,7 +11,7 @@ struct MessageFile;
 
 // Reward screen shown after a battle (0xe8 bytes, vtable 0228b23c, created by BattleResult): counts the amount
 // earned into gSaveData.mMoney with coin animations and a printed number.
-class BattleUnk022767c8 : public SceneBase {
+class BattleMoneyReward : public SceneBase {
 public:
     /* 00 SceneBase */
     /* 0c */ CellAnimation *mAnims[9];
@@ -30,7 +30,7 @@ public:
     /* 94 */ u16 mScroll;
     /* 96 */ s16 mHold;
     /* 98 */ u16 mFrames[6];
-    /* a4 */ u8 mUnk_a4;
+    /* a4 */ u8 mAmountVisible;
     /* a5 */ u8 mState;
     /* a6 */ u8 mKind;
     /* a7 */ s8 mUnk_a7;
@@ -42,12 +42,12 @@ public:
     /* ca */ s8 mTimers[15][2];
     /* e8 */
 
-    BattleUnk022767c8();
-    virtual ~BattleUnk022767c8();
+    BattleMoneyReward();
+    virtual ~BattleMoneyReward();
     /* 08 */ virtual void Update();
-    void func_ov007_02277368();
-    void func_ov007_02277514();
-    void func_ov007_02277c44();
-    void func_ov007_02277f3c();
-    void func_ov007_02278250();
+    void InitDisplay();
+    void Init();
+    void Draw();
+    void PrintTotal();
+    void ClearText();
 };

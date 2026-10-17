@@ -10,7 +10,7 @@
 #include "Battle/BattleStatusPanels.hpp"
 #include "Battle/BattleTarget.hpp"
 #include "Battle/BattleCommand.hpp"
-#include "Battle/BattleUnk022637ac.hpp"
+#include "Battle/BattleAbility.hpp"
 #include "Game/Random.hpp"
 #include "System/TouchManager.hpp"
 #include "System/WirelessManager.hpp"
@@ -151,11 +151,11 @@ static inline BOOL EffectAlive(EffectManager *manager, u16 handle) {
 
 // Drops the status panels and starts the effect of a result (kind).
 static inline void StartResult(BattleTarget *t, u32 kind) {
-    BattleStatusPanels *panels = t->mUnk_28;
+    BattleStatusPanels *panels = t->mStatusPanels;
     if (panels) {
         delete panels;
     }
-    t->mUnk_28                      = 0;
+    t->mStatusPanels                      = 0;
     data_020d433c.mGimmicks->mState = 0;
     new BattleCardEffect(0x1000, 0, kind, 0);
 }
@@ -219,10 +219,10 @@ static inline void AddRotAtOnceFields(BattleObstacle *o, GimmickSetData *s) {
 
 BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     : SceneBase(0x3e8, 0) {
-    mUnk_28 = 0;
+    mStatusPanels = 0;
     mUnk_88 = 0;
     mUnk_1c6 = 0;
-    mUnk_1c8 = 0;
+    mTimer = 0;
     mUnk_1cd = 1;
     mUnk_1ce = 0;
     mUnk_1cf = 0;
@@ -230,14 +230,14 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mUnk_1d1 = 0;
     mUnk_1d2 = 0;
     mUnk_1d6 = 0xe;
-    mUnk_1e2 = 0;
+    mState = 0;
     mUnk_1e7_0 = 1;
     mUnk_1e7_1 = 0;
     mUnk_1eb = 0;
     mUnk_1ec = 0;
-    mUnk_174 = camera;
+    mCamera = camera;
     CameraManager::Get().mActive = 0;
-    CameraManager::Get().SetCamerasAndRequestMode(1, mUnk_174, 0);
+    CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
     mUnk_118 = 0;
     mUnk_114 = 0;
     mUnk_d4.x = 0;
@@ -246,15 +246,15 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mUnk_1b2 = 0;
     mUnk_1b4 = 0;
     mUnk_1b6 = 0;
-    mUnk_58.x = 0;
-    mUnk_58.y = 0;
-    mUnk_58.z = 0;
-    mUnk_64.x = 0;
-    mUnk_64.y = 0;
-    mUnk_64.z = 0;
-    mUnk_70.x = 0;
-    mUnk_70.y = 0;
-    mUnk_70.z = 0;
+    mPrevPosition.x = 0;
+    mPrevPosition.y = 0;
+    mPrevPosition.z = 0;
+    mVelocity.x = 0;
+    mVelocity.y = 0;
+    mVelocity.z = 0;
+    mPrevVelocity.x = 0;
+    mPrevVelocity.y = 0;
+    mPrevVelocity.z = 0;
     mUnk_7c.x = 0;
     mUnk_7c.y = 0;
     mUnk_7c.z = 0;
@@ -273,23 +273,23 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mUnk_c8.x = 0;
     mUnk_c8.y = 0;
     mUnk_c8.z = 0;
-    mUnk_c4 = 0x1c3;
+    mGravityPerFrame = 0x1c3;
     mUnk_8c = 0x32000;
     mUnk_40 = mUnk_3c = mUnk_38 = 1;
     mUnk_1ca = 0;
-    mUnk_48 = 0;
+    mRestFrames = 0;
     mUnk_34 = 0;
-    mUnk_4c = 0;
+    mMoveFrames = 0;
     mUnk_50 = 1;
     mUnk_54 = 1;
     mUnk_1ea = 0;
     mUnk_44 = 0;
-    mUnk_90 = 0;
-    mUnk_1d4 = unk2;
-    mUnk_1d3 = unk3;
+    mBounceFactor = 0;
+    mPlayer = unk2;
+    mRecord = unk3;
     mUnk_1cb = 0;
     mUnk_1d7 = 0;
-    mUnk_1d5 = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mPartner;
+    mUnk_1d5 = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mPartner;
     mUnk_1b8 = 0;
     mUnk_1ba = 0;
     mUnk_184 = 0;
@@ -308,13 +308,13 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mUnk_15c.x = 0;
     mUnk_15c.y = 0;
     mUnk_15c.z = 0;
-    mUnk_2c = 0;
-    mUnk_30 = 0;
+    mRoulettePalette = 0;
+    mRoulettePaletteSize = 0;
     mUnk_1db = 0;
     mUnk_1dc = 0;
     mUnk_140 = 0;
-    mUnk_1bc = 0;
-    mUnk_1d8 = 0;
+    mIkazuchiTimer = 0;
+    mHitGimmickType = 0;
     mUnk_1dd = 0;
     mUnk_144 = 0;
     mUnk_148 = 0x899a;
@@ -336,12 +336,12 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mUnk_1df = 0;
     mUnk_1e0 = 0;
     mUnk_1be = 0;
-    mUnk_1a8 = 0;
+    mCollision = 0;
     mUnk_1e3 = 0;
-    mUnk_e0 = 0;
+    mUnitCollisionBuffer = 0;
     u8 i = 0;
     do {
-        mUnk_e4[i] = 0;
+        mUnitCollisions[i] = 0;
         i++;
     } while (i < 12);
     u8 j = 0;
@@ -350,8 +350,8 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
         j++;
     } while (j < 7);
     mUnk_1a0 = 0;
-    mUnk_1e8 = 0;
-    mUnk_1a4 = 0;
+    mUnitHandle = 0;
+    mBakugan = 0;
     if (data_020d433c.mBattlePlayers->mUnk_29c) {
         data_020d433c.mBattlePlayers->mUnk_29c->mUnk_a0 = 1;
         data_020d433c.mBattlePlayers->mUnk_29c->mUnk_9e = 1;
@@ -368,9 +368,9 @@ BattleTarget::~BattleTarget() {
     data_020d433c.mGimmickCollision->mEnabled = 0;
     data_020d433c.mEffects->FreeAllEffects();
     FreeEffectGroup(data_020d433c.mEffects, 1);
-    delete mUnk_1a4;
-    if (mUnk_e0) {
-        delete mUnk_e0;
+    delete mBakugan;
+    if (mUnitCollisionBuffer) {
+        delete mUnitCollisionBuffer;
     }
     u8 i = 0;
     do {
@@ -379,21 +379,21 @@ BattleTarget::~BattleTarget() {
     } while (i < 7);
     u8 j = 0;
     do {
-        if (mUnk_e4[j]) {
-            func_ov007_02271d78(data_020d433c.mGimmickCollision, mUnk_e4[j]);
-            mUnk_e4[j] = 0;
+        if (mUnitCollisions[j]) {
+            RemoveCollisionSet(data_020d433c.mGimmickCollision, mUnitCollisions[j]);
+            mUnitCollisions[j] = 0;
         }
         j++;
     } while (j < 12);
-    if (mUnk_1a8) {
-        func_ov007_02271d78(data_020d433c.mGimmickCollision, mUnk_1a8);
+    if (mCollision) {
+        RemoveCollisionSet(data_020d433c.mGimmickCollision, mCollision);
     }
-    if (mUnk_1ac) {
-        func_ov007_02271d78(data_020d433c.mGimmickCollision, mUnk_1ac);
+    if (mMapCollision) {
+        RemoveCollisionSet(data_020d433c.mGimmickCollision, mMapCollision);
     }
-    delete mUnk_28;
-    if (mUnk_2c) {
-        OS_Free(mUnk_2c);
+    delete mStatusPanels;
+    if (mRoulettePalette) {
+        OS_Free(mRoulettePalette);
     }
     SpriteManager::Get().func_0202740c();
 }
@@ -401,12 +401,12 @@ BattleTarget::~BattleTarget() {
 void BattleTarget::Update() {
     data_020d433c.mUnk_14 &= 8;
     if (data_020d433c.mUnk_14 == 0) {
-        switch (mUnk_1e2) {
+        switch (mState) {
             case 0:
-                func_ov007_02254020();
+                Init();
                 SpriteManager::Get();
                 SpriteManager::sFade[0] = 2;
-                mUnk_1e2++;
+                mState++;
                 break;
             case 1:
                 mUnk_1eb = 1;
@@ -416,14 +416,14 @@ void BattleTarget::Update() {
                     case 4:
                     case 5:
                     case 6:
-                        func_ov007_022488ac(mUnk_178, (u16) (0x6000 - mUnk_1b8), (u16) (mUnk_1ba + 0x31c + 0x400), 0x50);
+                        func_ov007_022488ac(mCommandMap, (u16) (0x6000 - mUnk_1b8), (u16) (mUnk_1ba + 0x31c + 0x400), 0x50);
                         break;
                     case 1:
-                        func_ov007_022488ac(mUnk_178, (u16) (0x6000 - mUnk_1b8), (u16) (mUnk_1ba + 0x8e + 0x300), 0x78);
+                        func_ov007_022488ac(mCommandMap, (u16) (0x6000 - mUnk_1b8), (u16) (mUnk_1ba + 0x8e + 0x300), 0x78);
                         break;
                     case 3: {
                         u32 idx = data_020d433c.mFieldId;
-                        func_ov007_022488ac(mUnk_178, (u16) (0x6000 - mUnk_1b8), data_ov007_0227a5e0.mUnk_90[idx], (u16) (data_ov007_0227a5e0.mUnk_80[idx] + 0x50));
+                        func_ov007_022488ac(mCommandMap, (u16) (0x6000 - mUnk_1b8), data_ov007_0227a5e0.mUnk_90[idx], (u16) (data_ov007_0227a5e0.mUnk_80[idx] + 0x50));
                         break;
                     }
                 }
@@ -435,24 +435,24 @@ void BattleTarget::Update() {
                 } else {
                     mUnk_50                                         = 0;
                     data_020d433c.mBattlePlayers->mUnk_29c->mUnk_9e = 0;
-                    mUnk_1e2++;
+                    mState++;
                     mUnk_1eb = 0;
                     if (mUnk_1d2 >= 2) {
                         BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                        u8 unit                = list->Units()[(u8) (mUnk_1e8 - 1)].mMarker;
+                        u8 unit                = list->Units()[(u8) (mUnitHandle - 1)].mMarker;
                         BattleMarker *marker   = &list->Entries()[unit];
                         func_ov007_0225b69c(marker->mCellX, marker->mCellY);
                     }
                 }
                 {
-                    GimmickSetData *set = mUnk_1a8;
+                    GimmickSetData *set = mCollision;
                     if (set) {
-                        BakuganModel *pose = mUnk_1a4;
-                        set->mUnk_810.x          = pose->mPosition.x;
-                        set->mUnk_810.y          = pose->mPosition.y;
-                        set->mUnk_810.z          = pose->mPosition.z;
-                        BakuganModel *src = mUnk_1a4;
-                        GimmickSetData *dst = mUnk_1a8;
+                        BakuganModel *pose = mBakugan;
+                        set->mPosition.x          = pose->mPosition.x;
+                        set->mPosition.y          = pose->mPosition.y;
+                        set->mPosition.z          = pose->mPosition.z;
+                        BakuganModel *src = mBakugan;
+                        GimmickSetData *dst = mCollision;
                         u16 *rot = &dst->mRotX;
                         rot[0] = src->mRotX;
                         rot[1] = src->mRotY;
@@ -464,14 +464,14 @@ void BattleTarget::Update() {
                 if (mUnk_1c6 != 0) {
                     if (mUnk_1cd == 0) {
                         func_ov007_02255640();
-                        GimmickSetData *set = mUnk_1a8;
+                        GimmickSetData *set = mCollision;
                         if (set) {
-                            BakuganModel *pose = mUnk_1a4;
-                            set->mUnk_810.x          = pose->mPosition.x;
-                            set->mUnk_810.y          = pose->mPosition.y;
-                            set->mUnk_810.z          = pose->mPosition.z;
-                            BakuganModel *src = mUnk_1a4;
-                            GimmickSetData *dst = mUnk_1a8;
+                            BakuganModel *pose = mBakugan;
+                            set->mPosition.x          = pose->mPosition.x;
+                            set->mPosition.y          = pose->mPosition.y;
+                            set->mPosition.z          = pose->mPosition.z;
+                            BakuganModel *src = mBakugan;
+                            GimmickSetData *dst = mCollision;
                             u16 *rot = &dst->mRotX;
                             rot[0] = src->mRotX;
                             rot[1] = src->mRotY;
@@ -482,35 +482,35 @@ void BattleTarget::Update() {
                 }
                 mUnk_1cb = 1;
                 mUnk_1d7 = 1;
-                if (mUnk_1d2 == 2 && mUnk_1e8 != 0 && mUnk_1c6 == 0x32) {
+                if (mUnk_1d2 == 2 && mUnitHandle != 0 && mUnk_1c6 == 0x32) {
                     switch (mUnk_1df) {
                         case 6:
-                            data_020d433c.mBattlePlayers->mUnk_29c->func_ov007_02270a7c(mUnk_1e8 - 1, 0);
+                            data_020d433c.mBattlePlayers->mUnk_29c->func_ov007_02270a7c(mUnitHandle - 1, 0);
                             break;
                         case 5:
-                            data_020d433c.mBattlePlayers->mUnk_29c->func_ov007_02270a7c(mUnk_1e8 - 1, 1);
+                            data_020d433c.mBattlePlayers->mUnk_29c->func_ov007_02270a7c(mUnitHandle - 1, 1);
                             break;
                     }
                 }
                 if (mUnk_1c6 > data_ov007_0227a5e0.mUnk_a0[mUnk_1d2]) {
                     SoundManager::Get().func_02024754(0x3c);
                     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                    u8 kind                = list->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3].mBakuganId;
+                    u8 kind                = list->mPlayers[mPlayer]->mRecords[mRecord].mBakuganId;
                     u8 a                   = list->mUnitA;
                     u8 b                   = list->mUnitB;
                     if (kind == 4 && (mUnk_1d2 == 2 || (mUnk_1d2 == 3 && list->Units()[a].mPlayer != list->Units()[b].mPlayer))) {
-                        mUnk_1e2++;
+                        mState++;
                     } else {
-                        mUnk_1e2 = 0xb;
+                        mState = 0xb;
                     }
                     mUnk_1eb = 0;
                 }
                 break;
             case 4:
-                QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 5, 0, mUnk_2c, mUnk_30, 0);
-                func_ov007_0225cd6c();
+                QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 5, 0, mRoulettePalette, mRoulettePaletteSize, 0);
+                DrawRoulette();
                 mUnk_34 = 0;
-                mUnk_1e2++;
+                mState++;
                 break;
             case 5: {
                 u32 n   = mUnk_34 + 1;
@@ -520,19 +520,19 @@ void BattleTarget::Update() {
                 }
                 WirelessManager::Get();
                 if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-                    if (mUnk_1d4 == data_020d433c.mBattlePlayers->mUnk_2a9) {
+                    if (mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
                         if (TouchManager::Get().mPressed) {
-                            mUnk_1e2++;
+                            mState++;
                         }
                     } else {
-                        mUnk_1e2++;
+                        mState++;
                     }
                 } else {
-                    if ((mUnk_1d4 == data_020d433c.mBattlePlayers->mUnk_2a9 && TouchManager::Get().mPressed) || data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->IsActive()) {
-                        mUnk_1e2++;
+                    if ((mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9 && TouchManager::Get().mPressed) || data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsActive()) {
+                        mState++;
                     }
                 }
-                func_ov007_0225cd6c();
+                DrawRoulette();
                 break;
             }
             case 6: {
@@ -543,28 +543,28 @@ void BattleTarget::Update() {
                     SoundManager::Get().StartSeqArc(0x59);
                 }
                 if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0x15)) {
-                    BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
+                    BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
                     u8 values[3]         = {1, 2, 4};
                     pick                 = MATH_Rand32(&gRandom, 3);
                     mAnims[4]->SetAnimation(pick + 3);
                     mAnims[5]->SetAnimation(1);
                     record->mAttribute = values[pick];
                     mUnk_34         = 0;
-                    mUnk_1e2++;
+                    mState++;
                 }
-                func_ov007_0225cd6c();
+                DrawRoulette();
                 break;
             }
             case 7: {
                 if (mAnims[4]->mFinished != 0) {
-                    if (data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3].mAttribute == 1) {
-                        mUnk_1e2 = 0xb;
+                    if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord].mAttribute == 1) {
+                        mState = 0xb;
                     } else {
-                        mUnk_1c8 = 0x78;
-                        mUnk_1e2++;
+                        mTimer = 0x78;
+                        mState++;
                     }
                 }
-                func_ov007_0225cd6c();
+                DrawRoulette();
                 u8 frame = mAnims[4]->mFrameIndex;
                 if (mUnk_34 != frame) {
                     u8 t = data_ov007_0227a74c[mAnims[4]->mAnimIndex - 3];
@@ -580,35 +580,35 @@ void BattleTarget::Update() {
                 break;
             }
             case 8:
-                mUnk_1c8 = mUnk_1c8 - 1;
-                if (mUnk_1c8 == 0) {
+                mTimer = mTimer - 1;
+                if (mTimer == 0) {
                     SpriteManager::Get();
                     SpriteManager::sFade[0] = 4;
                     SoundManager::Get().StartSeqArc(6);
-                    mUnk_1e2++;
+                    mState++;
                 }
-                func_ov007_0225cd6c();
+                DrawRoulette();
                 break;
             case 9: {
                 if (SpriteManager::Get().IsFading()) {
                     break;
                 }
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                BattleRecord *record   = &list->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
-                mUnk_1a4->Setup(record->mBakuganId, record->mAttribute, 3);
+                BattleRecord *record   = &list->mPlayers[mPlayer]->mRecords[mRecord];
+                mBakugan->Setup(record->mBakuganId, record->mAttribute, 3);
                 SpriteManager::Get();
                 SpriteManager::sFade[0] = 2;
-                mUnk_1c8                   = 0x78;
-                mUnk_1e2++;
+                mTimer                   = 0x78;
+                mState++;
                 break;
             }
             case 10:
                 if (SpriteManager::Get().IsFading()) {
                     break;
                 }
-                mUnk_1c8 = mUnk_1c8 - 1;
-                if (mUnk_1c8 == 0) {
-                    mUnk_1e2++;
+                mTimer = mTimer - 1;
+                if (mTimer == 0) {
+                    mState++;
                 }
                 break;
             case 11: {
@@ -622,11 +622,11 @@ void BattleTarget::Update() {
                 if (list->mPlayers[cur]->mUnk_fa != 0 && (mUnk_1d2 == 2 || (mUnk_1d2 == 3 && list->Units()[a].mPlayer != list->Units()[b].mPlayer))) {
                     SpriteManager::Get();
                     SpriteManager::sFade[0] = 3;
-                    mUnk_1e2++;
+                    mState++;
                     break;
                 }
                 SpriteManager::Get().StartFade(3);
-                mUnk_1e2 = 0xf;
+                mState = 0xf;
                 break;
             }
             case 12:
@@ -634,10 +634,10 @@ void BattleTarget::Update() {
                     break;
                 }
                 mContext->mUnk_12 = 0;
-                CloseCommandMapNow(mUnk_178);
-                FreeBakuganModelInstance(mUnk_1a4);
+                CloseCommandMapNow(mCommandMap);
+                FreeBakuganModelInstance(mBakugan);
                 mUnk_1e7_0 = 0;
-                mUnk_1e2++;
+                mState++;
                 break;
             case 13: {
                 UnkStruct_SceneContext *context = mContext;
@@ -645,8 +645,8 @@ void BattleTarget::Update() {
                     break;
                 }
                 context->mUnk_12 = 0;
-                new BattleUnk022637ac();
-                mUnk_1e2++;
+                new BattleAbility();
+                mState++;
                 break;
             }
             case 14: {
@@ -654,13 +654,13 @@ void BattleTarget::Update() {
                 switch (context->mUnk_12) {
                     case 1:
                         context->mUnk_12 = 0;
-                        CloseCommandMapNow(mUnk_178);
+                        CloseCommandMapNow(mCommandMap);
                         mUnk_1e7_0 = 0;
-                        mUnk_1e2   = 0x10;
+                        mState   = 0x10;
                         break;
                     case 2:
                         context->mUnk_12 = 1;
-                        mUnk_1e2         = 0x10;
+                        mState         = 0x10;
                         break;
                     default:
                         if (mUnk_1e7_1) {
@@ -676,9 +676,9 @@ void BattleTarget::Update() {
                     break;
                 }
                 mContext->mUnk_12 = 0;
-                CloseCommandMapNow(mUnk_178);
+                CloseCommandMapNow(mCommandMap);
                 mUnk_1e7_0 = 0;
-                mUnk_1e2++;
+                mState++;
                 break;
             case 16: {
                 mUnk_1eb = 0;
@@ -686,9 +686,9 @@ void BattleTarget::Update() {
                     break;
                 }
                 mUnk_1c6                                                  = 0;
-                data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mUnk_fa = 0;
+                data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_fa = 0;
                 if (mUnk_1df != 0) {
-                    data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mUnk_f3 = 0;
+                    data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f3 = 0;
                 }
                 switch (mUnk_1d2) {
                     case 0:
@@ -730,15 +730,15 @@ void BattleTarget::Update() {
     if (!mUnk_1e7_0) {
         return;
     }
-    if (mUnk_1a4) {
-        mUnk_1a4->Update();
+    if (mBakugan) {
+        mBakugan->Update();
     }
-    BakuganModel *pose = mUnk_1a4;
-    if (pose && pose->mVisible && (mUnk_1cd || mUnk_1e9) && mUnk_178) {
+    BakuganModel *pose = mBakugan;
+    if (pose && pose->mVisible && (mUnk_1cd || mUnk_1e9) && mCommandMap) {
         if (mUnk_1cb == 0) {
-            func_ov007_02248688(mUnk_178, &mUnk_58);
+            func_ov007_02248688(mCommandMap, &mPrevPosition);
         } else {
-            func_ov007_02248688(mUnk_178, &pose->mPosition);
+            func_ov007_02248688(mCommandMap, &pose->mPosition);
         }
     }
     func_ov007_0225c4dc();
@@ -746,55 +746,55 @@ void BattleTarget::Update() {
 }
 
 void BattleTarget::func_ov007_02253fbc() {
-    if (mUnk_1e2 == 0x11) {
+    if (mState == 0x11) {
         return;
     }
-    mUnk_1e2 = 0x11;
+    mState = 0x11;
     mContext->mUnk_12 = 0;
-    CloseCommandMapNow(mUnk_178);
-    mUnk_1a4->mVisible = 0;
+    CloseCommandMapNow(mCommandMap);
+    mBakugan->mVisible = 0;
     data_020d433c.mUnk_14 &= 8;
     if (data_020d433c.mUnk_14) {
         mUnk_1ec = 1;
     }
 }
 
-void BattleTarget::func_ov007_02254020() {
+void BattleTarget::Init() {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    BattleRecord *record   = &list->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
+    BattleRecord *record   = &list->mPlayers[mPlayer]->mRecords[mRecord];
     LoadEffectGroup(data_020d433c.mEffects, 1, "shoot");
-    mUnk_178 = new BattleCommandMap(data_020d433c.mFieldId);
-    mUnk_178->mUnk_151 = 0;
-    mUnk_178->Init();
-    func_ov007_02248620(mUnk_178, 1);
-    func_ov007_022547e4();
-    func_ov007_02254898();
+    mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
+    mCommandMap->mUnk_151 = 0;
+    mCommandMap->Init();
+    func_ov007_02248620(mCommandMap, 1);
+    LoadUnitCollisions();
+    LoadMapCollision();
     mUnk_94.x = 0;
     mUnk_94.y = 0;
     mUnk_94.z = -0x1000;
-    mUnk_1a4 = new BakuganModel();
+    mBakugan = new BakuganModel();
     if ((u8) (record->mBakuganId + 0xfb) <= 1) {
         record->mBakuganId = list->mUnk_2b1 % 2 + 5;
     }
-    mUnk_1a4->Setup(record->mBakuganId, record->mAttribute, 5);
-    mUnk_1a4->mVisible = 0;
-    func_ov007_02254790();
-    mUnk_28 = new BattleStatusPanels(0x1000, 0, 1, 1);
+    mBakugan->Setup(record->mBakuganId, record->mAttribute, 5);
+    mBakugan->mVisible = 0;
+    PlaceBakugan();
+    mStatusPanels = new BattleStatusPanels(0x1000, 0, 1, 1);
     u8 i = 0;
     do {
         u8 slot = data_020d433c.mBattlePlayers->mTurnOrder[i];
-        if (slot == mUnk_1d4) {
-            mUnk_28->func_ov007_02235280(slot, (s8) data_020d433c.mBattlePlayers->mPlayers[slot]->mCharacterId, data_ov007_0227a750[i], 2);
+        if (slot == mPlayer) {
+            mStatusPanels->SetupPanel(slot, (s8) data_020d433c.mBattlePlayers->mPlayers[slot]->mCharacterId, data_ov007_0227a750[i], 2);
         }
         i++;
     } while (i < data_020d433c.mPlayerCount);
-    mUnk_174->SetUp(0, 0x1000, 0);
-    mUnk_174->SetClip(0x1000, 0x1388000);
-    mUnk_174->SetFov(0x2aaa);
+    mCamera->SetUp(0, 0x1000, 0);
+    mCamera->SetClip(0x1000, 0x1388000);
+    mCamera->SetFov(0x2aaa);
     CameraManager::Get().mActive = 0;
-    CameraManager::Get().SetCamerasAndRequestMode(1, mUnk_174, 0);
+    CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
     SnapshotCamera();
-    Camera *camera = mUnk_174;
+    Camera *camera = mCamera;
     mUnk_194.x     = camera->mPosition.x;
     mUnk_194.y     = camera->mPosition.y;
     mUnk_194.z     = camera->mPosition.z;
@@ -815,7 +815,7 @@ void BattleTarget::func_ov007_02254020() {
     mAnims[3]->SetAnimation(3);
     SpriteScreen &screen1 = SpriteManager::Get().Screen(1);
     screen1.LoadCharacters("battle_b_obj_roulette.nce_ncg1D.bin", 0xa000, 0);
-    mUnk_2c = LoadFile("battle_b_obj_roulette_ncl.bin", 0, 0, 0, &mUnk_30, 0);
+    mRoulettePalette = LoadFile("battle_b_obj_roulette_ncl.bin", 0, 0, 0, &mRoulettePaletteSize, 0);
     mAnims[4] = new CellAnimation("battle_b_obj_roulette_nce.bin", 2, 1, 1);
     mAnims[4]->mCharBase = screen1.GetCharBase(0xa000);
     mAnims[4]->mPaletteBase   = 0;
@@ -828,39 +828,39 @@ void BattleTarget::func_ov007_02254020() {
     ChangeDir("/");
 }
 
-void BattleTarget::func_ov007_02254790() {
+void BattleTarget::PlaceBakugan() {
     VecFx32 pos;
-    GetCornerPosition(mUnk_178, &pos);
-    VecFx32 *dst = &mUnk_1a4->mPosition;
+    GetCornerPosition(mCommandMap, &pos);
+    VecFx32 *dst = &mBakugan->mPosition;
     dst->x = pos.x;
     dst->y = pos.y;
     dst->z = pos.z;
-    mUnk_58.x = pos.x;
-    mUnk_58.y = pos.y;
-    mUnk_58.z = pos.z;
+    mPrevPosition.x = pos.x;
+    mPrevPosition.y = pos.y;
+    mPrevPosition.z = pos.z;
 }
 
-void BattleTarget::func_ov007_022547e4() {
+void BattleTarget::LoadUnitCollisions() {
     u16 rot[3];
     BattleUnit *units = data_020d433c.mBattlePlayers->mUnits;
     u8 i              = 0;
     do {
         BattleUnit *unit = &units[i];
         if (unit->mStatus != 0) {
-            if (!mUnk_e0) {
-                mUnk_e0 = (u8 *) new GimmickBuffer;
-                func_ov007_022719c8(mUnk_e0, 0xb);
+            if (!mUnitCollisionBuffer) {
+                mUnitCollisionBuffer = (u8 *) new GimmickBuffer;
+                LoadCollisionFile(mUnitCollisionBuffer, 0xb);
             }
             rot[1] = unit->mUnk_0c;
             rot[0] = 0;
             rot[2] = 0;
-            mUnk_e4[i] = func_ov007_02271ca8(data_020d433c.mGimmickCollision, 2, mUnk_e0, &unit->mPos, rot, i + 1);
+            mUnitCollisions[i] = AddCollisionSet(data_020d433c.mGimmickCollision, 2, mUnitCollisionBuffer, &unit->mPos, rot, i + 1);
         }
         i++;
     } while (i < 12);
 }
 
-void BattleTarget::func_ov007_02254898() {
+void BattleTarget::LoadMapCollision() {
     char buf[0x804];
     VecFx32 pos;
     u16 rot[3];
@@ -873,15 +873,15 @@ void BattleTarget::func_ov007_02254898() {
     UnkStruct_020d433c *data = &data_020d433c;
     u8 id                    = data->mFieldId;
     if (data->mUnk_9a_4) {
-        func_ov007_022719c8(buf, id);
+        LoadCollisionFile(buf, id);
     } else {
-        func_ov007_022719c8(buf, id + 0x64);
+        LoadCollisionFile(buf, id + 0x64);
     }
-    mUnk_1ac = func_ov007_02271ca8(data_020d433c.mGimmickCollision, 4, buf, &pos, rot, 0);
+    mMapCollision = AddCollisionSet(data_020d433c.mGimmickCollision, 4, buf, &pos, rot, 0);
 }
 
 void BattleTarget::func_ov007_02254928(u32 unk) {
-    func_ov007_02248620(mUnk_178, unk);
+    func_ov007_02248620(mCommandMap, unk);
 }
 
 BOOL BattleTarget::func_ov007_02254938(VecFx32 *a, VecFx32 *b, VecFx32 *vel, u8 index) {
@@ -917,16 +917,16 @@ void BattleTarget::func_ov007_02254a14(GimmickSetData *set) {
     state.mRot[1]     = 0;
     state.mRot[2]     = 0;
     state.mMode       = 3;
-    if (!set || !set->mUnk_834) {
+    if (!set || !set->mTag) {
         return;
     }
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    ReleaseSlot(list, set->mUnk_834 - 1);
-    BakuganModel *other = list->mUnk_29c->func_ov007_0226fc4c(set->mUnk_834 - 1);
-    func_ov007_02233730(&mUnk_1a4->mPosition, &other->mPosition, &mUnk_64, &state.mVelocity);
-    list->mUnk_29c->func_ov007_02270ae0(set->mUnk_834 - 1, &state);
-    func_ov007_02271d78(data_020d433c.mGimmickCollision, set);
-    mUnk_e4[set->mUnk_834 - 1] = 0;
+    ReleaseSlot(list, set->mTag - 1);
+    BakuganModel *other = list->mUnk_29c->GetBakugan(set->mTag - 1);
+    func_ov007_02233730(&mBakugan->mPosition, &other->mPosition, &mVelocity, &state.mVelocity);
+    list->mUnk_29c->StartMove(set->mTag - 1, &state);
+    RemoveCollisionSet(data_020d433c.mGimmickCollision, set);
+    mUnitCollisions[set->mTag - 1] = 0;
 }
 
 
@@ -949,38 +949,38 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
     u8 i;
     marker     = 0;
     hit        = 0;
-    mUnk_1d8   = 0;
+    mHitGimmickType   = 0;
     moved      = 0;
     ceilingHit = 0;
     wallFree   = 1;
-    if (mUnk_4c != 0) {
+    if (mMoveFrames != 0) {
         mUnk_1cd = 0;
     }
-    record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
-    if (mUnk_1a8->mUnk_823 != 0) {
+    record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
+    if (mCollision->mHitCount != 0) {
         i = 0;
         do {
-            GimmickSetData *set = &data_020d433c.mGimmickCollision->mSets[mUnk_1a8->mUnk_824[i]];
+            GimmickSetData *set = &data_020d433c.mGimmickCollision->mSets[mCollision->mHitSlots[i]];
             if (!set) {
                 continue;
             }
-            self = *(ObstacleBuf *) ((u8 *) mUnk_1a8 + 0x10);
-            obs = *(ObstacleBuf *) OBST(set, mUnk_1a8->mUnk_82c[i]);
-            switch (set->mUnk_08) {
+            self = *(ObstacleBuf *) ((u8 *) mCollision + 0x10);
+            obs = *(ObstacleBuf *) OBST(set, mCollision->mHitObstacleIndices[i]);
+            switch (set->mMode) {
                 case 2: {
-                    if (!set->mUnk_834) {
+                    if (!set->mTag) {
                         continue;
                     }
-                    BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) (set->mUnk_834 - 1)];
+                    BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) (set->mTag - 1)];
                     if (unit->mStatus == 2 || mUnk_1df == 5) {
                         continue;
                     }
-                    if (mUnk_1df == 6 && unit->mPlayer != mUnk_1d4 && unit->mPlayer != mUnk_1d5 && unit->mStatus != 3) {
+                    if (mUnk_1df == 6 && unit->mPlayer != mPlayer && unit->mPlayer != mUnk_1d5 && unit->mStatus != 3) {
                         SoundManager::Get().StartSeqArc(0x10);
                         func_ov007_02254a14(set);
                         continue;
                     }
-                    if (mUnk_1df == 4 && unit->mPlayer != mUnk_1d4 && unit->mPlayer != mUnk_1d5 && unit->mStatus != 3) {
+                    if (mUnk_1df == 4 && unit->mPlayer != mPlayer && unit->mPlayer != mUnk_1d5 && unit->mStatus != 3) {
                         mUnk_1dd = 3;
                         marker   = none;
                         continue;
@@ -988,10 +988,10 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                     if (mUnk_1e0 == 3 && unit->mStatus != 3) {
                         VecFx32 v           = unit->mPos;
                         v.y                 = 0x8999;
-                        mUnk_1a4->mPosition = v;
-                        mUnk_64.x           = 0;
-                        mUnk_64.y           = 0;
-                        mUnk_64.z           = 0;
+                        mBakugan->mPosition = v;
+                        mVelocity.x           = 0;
+                        mVelocity.y           = 0;
+                        mVelocity.z           = 0;
                         mUnk_a0.x           = 0;
                         mUnk_a0.y           = 0;
                         mUnk_a0.z           = 0;
@@ -1005,18 +1005,18 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                     }
                     *c = 0x666;
                     *d = 0x4cd;
-                    VEC_Add(&self.o.mPos, &mUnk_1a8->mUnk_810, &self.o.mPos);
-                    AddRotAtOnce(&self.o, mUnk_1a8);
-                    VEC_Add(&obs.o.mPos, &set->mUnk_810, &obs.o.mPos);
+                    VEC_Add(&self.o.mPos, &mCollision->mPosition, &self.o.mPos);
+                    AddRotAtOnce(&self.o, mCollision);
+                    VEC_Add(&obs.o.mPos, &set->mPosition, &obs.o.mPos);
                     AddRotAtOnceFields(&obs.o, set);
                     marker = 0;
-                    if (data_020d433c.mTutorialId == 0 && unit->mPlayer != mUnk_1d4 && unit->mPlayer != mUnk_1d5 && unit->mStatus != 3 &&
+                    if (data_020d433c.mTutorialId == 0 && unit->mPlayer != mPlayer && unit->mPlayer != mUnk_1d5 && unit->mStatus != 3 &&
                         (mUnk_1e1 != 0 || func_ov007_02254938(&self.o.mPos, &obs.o.mPos, a, ((RecordBits *) ((u8 *) record + 2))->mIndex))) {
                         mUnk_1dd = 6;
                         mUnk_1db = 0;
-                        mUnk_15c = mUnk_1a4->mPosition;
+                        mUnk_15c = mBakugan->mPosition;
                         mUnk_168 = obs.o.mPos;
-                        mUnk_1de = set->mUnk_834;
+                        mUnk_1de = set->mTag;
                         mUnk_134 = *a;
                         mUnk_1cb = 1;
                     } else {
@@ -1031,7 +1031,7 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                     break;
                 }
                 case 4: {
-                    u8 kind = OBST(set, mUnk_1a8->mUnk_82c[i])->mUnk_1f;
+                    u8 kind = OBST(set, mCollision->mHitObstacleIndices[i])->mUnk_1f;
                     switch (kind) {
                         case 0:
                         case 2: {
@@ -1042,7 +1042,7 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                                 continue;
                             }
                             if (kind == 2) {
-                                if (VEC_Mag(&mUnk_64) >= 0x2000) {
+                                if (VEC_Mag(&mVelocity) >= 0x2000) {
                                     *c = 0xccd;
                                 } else {
                                     *c = 0x1333;
@@ -1051,15 +1051,15 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                                 *c = 0x800;
                             }
                             *d = 0x4cd;
-                            VEC_Add(&self.o.mPos, &mUnk_1a8->mUnk_810, &self.o.mPos);
-                            AddRotAtOnce(&self.o, mUnk_1a8);
-                            VEC_Add(&obs.o.mPos, &set->mUnk_810, &obs.o.mPos);
+                            VEC_Add(&self.o.mPos, &mCollision->mPosition, &self.o.mPos);
+                            AddRotAtOnce(&self.o, mCollision);
+                            VEC_Add(&obs.o.mPos, &set->mPosition, &obs.o.mPos);
                             AddRotAtOnceFields(&obs.o, set);
                             vel.x = a->x;
                             vel.y = a->y;
                             vel.z = a->z;
                             vel.y = vel.y * (none - 0x10000);
-                            if (OBST(set, mUnk_1a8->mUnk_82c[i])->mUnk_1f == 2) {
+                            if (OBST(set, mCollision->mHitObstacleIndices[i])->mUnk_1f == 2) {
                                 func_ov007_02257c80((BattleSphere *) &self.o, &vel, &obs.o, &move, 1, &hit);
                             } else {
                                 func_ov007_02257c80((BattleSphere *) &self.o, &vel, &obs.o, &move, 0, &hit);
@@ -1068,17 +1068,17 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                                 SoundManager::Get().StartSeqArc(4);
                             }
                             marker = 0;
-                            if (move.y != 0 && OBST(set, mUnk_1a8->mUnk_82c[i])->mUnk_1f == 0) {
-                                mUnk_58.y = set->mUnk_810.y + obs.o.mPos.y + obs.o.mHalfY + self.o.mHalfY;
+                            if (move.y != 0 && OBST(set, mCollision->mHitObstacleIndices[i])->mUnk_1f == 0) {
+                                mPrevPosition.y = set->mPosition.y + obs.o.mPos.y + obs.o.mHalfY + self.o.mHalfY;
                             }
-                            if (OBST(set, mUnk_1a8->mUnk_82c[i])->mUnk_1f == 2) {
+                            if (OBST(set, mCollision->mHitObstacleIndices[i])->mUnk_1f == 2) {
                                 ceilingHit = 1;
                                 if (move.x != 0 || move.z != 0) {
                                     handle = StartEffect(data_020d433c.mEffects, 1, 0xd, 0, 1);
                                     if (handle != 0) {
                                         CameraManager::Get();
                                         MtxFx43 mtx = data_020c1cf4;
-                                        VecFx32 pos = mUnk_1a4->mPosition;
+                                        VecFx32 pos = mBakugan->mPosition;
                                         func_01ffcf64(&mtx, &pos);
                                         SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
                                     }
@@ -1099,11 +1099,11 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                     vel.x = a->x;
                     vel.y = a->y;
                     vel.z = a->z;
-                    func_ov007_02257f3c(set, mUnk_1a8->mUnk_82c[i], &vel, &move);
+                    func_ov007_02257f3c(set, mCollision->mHitObstacleIndices[i], &vel, &move);
                     marker = 0;
                     break;
             }
-        } while (++i < mUnk_1a8->mUnk_823);
+        } while (++i < mCollision->mHitCount);
     }
     if (wallFree != 0) {
         if (mUnk_1ce == 0) {
@@ -1119,19 +1119,19 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
         move.y = 0;
     }
     if (!(move.x == 0 && move.y == 0 && move.z == 0)) {
-        VecFx32 pos = mUnk_1a4->mPosition;
+        VecFx32 pos = mBakugan->mPosition;
         mUnk_1e3    = 1;
         if (move.x != 0) {
-            pos.x = mUnk_58.x;
+            pos.x = mPrevPosition.x;
         }
         s32 movedNow = moved;
         if (move.y != 0) {
-            pos.y = mUnk_58.y;
+            pos.y = mPrevPosition.y;
         }
         if (move.z != 0) {
-            pos.z = mUnk_58.z;
+            pos.z = mPrevPosition.z;
         }
-        func_ov007_022337ec(&mUnk_64, &mUnk_a0, &mUnk_ac, &mUnk_b8, &move, *c, *d, movedNow);
+        func_ov007_022337ec(&mVelocity, &mUnk_a0, &mUnk_ac, &mUnk_b8, &move, *c, *d, movedNow);
         fx32 mag = VEC_Mag(&mUnk_a0);
         if (moved != 0 && mag <= 0x1000 && move.y != 0) {
             if (ABS(move.x) <= 0x800) {
@@ -1157,10 +1157,10 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
         if (move.y != 0 && marker != none) {
             mUnk_38 = none - 0x10000;
         }
-        mUnk_1a4->mPosition = pos;
+        mBakugan->mPosition = pos;
     }
     if (move.y != 0) {
-        mUnk_148 = mUnk_58.y;
+        mUnk_148 = mPrevPosition.y;
     }
     if (mUnk_1cd == 0) {
         mUnk_1d2 = 0;
@@ -1175,20 +1175,20 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
 void BattleTarget::func_ov007_02255640() {
     u32 outA = 0;
     u32 outB = 0;
-    mUnk_90 = 0x533;
+    mBounceFactor = 0x533;
     if (func_ov007_022583b8()) {
         if (!func_ov007_02259af0()) {
             if (func_ov007_0225a278()) {
                 return;
             }
-            func_ov007_02254ae8(&mUnk_64, &mUnk_7c, &outA, &outB);
+            func_ov007_02254ae8(&mVelocity, &mUnk_7c, &outA, &outB);
         }
-        func_ov007_02255a9c();
+        StopSoundAfterVentKaze();
         mUnk_1ca = 0;
         if (data_020d433c.mTutorialId == 0 && mUnk_1dd != 4) {
             if ((mUnk_38 == 0 && mUnk_40 != -1) || mUnk_38 == -1) {
                 if (mUnk_50 != 0) {
-                    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4];
+                    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
                     if (player->mUnk_dc != 0) {
                         u8 n = player->mUnk_e0;
                         if (n < 3) {
@@ -1197,13 +1197,13 @@ void BattleTarget::func_ov007_02255640() {
                             n        = n + 1;
                             mUnk_1ca = 1;
                         }
-                        data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mUnk_e0 = n;
+                        data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_e0 = n;
                         VEC_Add(&mUnk_a0, &mUnk_ac, &mUnk_a0);
                         mUnk_ac.x = 0;
                         mUnk_ac.y = 0;
                         mUnk_ac.z = 0;
                     }
-                    player = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4];
+                    player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
                     if (player->mUnk_e4 != 0) {
                         u8 n = player->mUnk_e8;
                         if (n < 3) {
@@ -1212,7 +1212,7 @@ void BattleTarget::func_ov007_02255640() {
                             n        = n + 1;
                             mUnk_1ca = 1;
                         }
-                        data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mUnk_e8 = n;
+                        data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_e8 = n;
                         VEC_Add(&mUnk_a0, &mUnk_ac, &mUnk_a0);
                         mUnk_ac.x = 0;
                         mUnk_ac.y = 0;
@@ -1221,34 +1221,34 @@ void BattleTarget::func_ov007_02255640() {
                 }
             }
         }
-        BakuganModel *pose = mUnk_1a4;
-        mUnk_58.x                = pose->mPosition.x;
-        mUnk_58.y                = pose->mPosition.y;
-        mUnk_58.z                = pose->mPosition.z;
-        mUnk_70.x                = mUnk_64.x;
-        mUnk_70.y                = mUnk_64.y;
-        mUnk_70.z                = mUnk_64.z;
+        BakuganModel *pose = mBakugan;
+        mPrevPosition.x                = pose->mPosition.x;
+        mPrevPosition.y                = pose->mPosition.y;
+        mPrevPosition.z                = pose->mPosition.z;
+        mPrevVelocity.x                = mVelocity.x;
+        mPrevVelocity.y                = mVelocity.y;
+        mPrevVelocity.z                = mVelocity.z;
         mUnk_1d1                 = mUnk_1d0;
-        mUnk_1d9                 = mUnk_1d8;
+        mPrevHitGimmickType                 = mHitGimmickType;
         mUnk_40                  = mUnk_38;
         if (mUnk_1dd != 6) {
-            pose = mUnk_1a4;
-            func_ov007_0225745c(&pose->mPosition, &pose->mRotX, &mUnk_64, &mUnk_a0, &mUnk_ac, &mUnk_38, mUnk_1ca, 0);
+            pose = mBakugan;
+            func_ov007_0225745c(&pose->mPosition, &pose->mRotX, &mVelocity, &mUnk_a0, &mUnk_ac, &mUnk_38, mUnk_1ca, 0);
         }
     } else {
-        BakuganModel *pose = mUnk_1a4;
-        mUnk_58.x                = pose->mPosition.x;
-        mUnk_58.y                = pose->mPosition.y;
-        mUnk_58.z                = pose->mPosition.z;
+        BakuganModel *pose = mBakugan;
+        mPrevPosition.x                = pose->mPosition.x;
+        mPrevPosition.y                = pose->mPosition.y;
+        mPrevPosition.z                = pose->mPosition.z;
     }
     func_ov007_02258448();
     func_ov007_022599fc();
     func_ov007_02255b0c();
     mUnk_3c = mUnk_38;
-    mUnk_4c++;
+    mMoveFrames++;
     if (mUnk_50 != 0) {
-        if (mUnk_1d0 != 0 && mUnk_4c % 30 == 0 && mUnk_1df != 2) {
-            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
+        if (mUnk_1d0 != 0 && mMoveFrames % 30 == 0 && mUnk_1df != 2) {
+            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
             mUnk_8c              = FX_Mul(mUnk_8c, data_ov007_0227a5e0.mUnk_c8[record->mUnk_02_6]);
         }
         if (mUnk_1df != 2) {
@@ -1260,11 +1260,11 @@ void BattleTarget::func_ov007_02255640() {
     }
 }
 
-void BattleTarget::func_ov007_02255a9c() {
-    if (mUnk_1d9 != 0x33) {
+void BattleTarget::StopSoundAfterVentKaze() {
+    if (mPrevHitGimmickType != GIMMICK_TYPE_VENT_KAZE) {
         return;
     }
-    if (mUnk_1d8 == 0x33) {
+    if (mHitGimmickType == GIMMICK_TYPE_VENT_KAZE) {
         return;
     }
     func_02024764(&SoundManager::Get(), 0xf, 0x3c);
@@ -1301,7 +1301,7 @@ void BattleTarget::func_ov007_02255c04(VecFx32 *vec, s32 *out) {
     VecFx32 diff;
     VecFx32 rotated;
     MtxFx33 mtx = data_0220e848;
-    Camera *camera = mUnk_174;
+    Camera *camera = mCamera;
     target.x = camera->mTarget.x;
     target.y = camera->mTarget.y;
     target.z = camera->mTarget.z;
@@ -1326,8 +1326,8 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
     m0    = data_0220e848;
     rot   = m0;
     ident = m0;
-    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4];
-    u8 step = mUnk_1e2;
+    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+    u8 step = mState;
     if (step >= 0xb) {
         return;
     }
@@ -1357,9 +1357,9 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                     pos.x = FX_Mul(pos.x, ident._[4]);
                     pos.z = FX_Mul(pos.z, ident._[8]);
                     if (target == 0) {
-                        SetVec(&cam, pos.x + mUnk_1a4->mPosition.x, pos.y + mUnk_1a4->mPosition.y + 0x4000, pos.z + mUnk_1a4->mPosition.z);
+                        SetVec(&cam, pos.x + mBakugan->mPosition.x, pos.y + mBakugan->mPosition.y + 0x4000, pos.z + mBakugan->mPosition.z);
                     } else {
-                        SetVec(&cam, target->x + pos.x, pos.y + mUnk_1a4->mPosition.y + 0x4000, target->z + pos.z);
+                        SetVec(&cam, target->x + pos.x, pos.y + mBakugan->mPosition.y + 0x4000, target->z + pos.z);
                     }
                     curr = mUnk_194;
                     VEC_Subtract(&curr, &cam, &diff);
@@ -1372,7 +1372,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                     t.z = mUnk_188.z + (cam.z + diff.z);
                     t.y = mUnk_188.y + (cam.y + diff.y);
                     t.x = mUnk_188.x + (cam.x + diff.x);
-                    mUnk_174->mPosition = t;
+                    mCamera->mPosition = t;
                     return;
                 }
                 case 2:
@@ -1380,14 +1380,14 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                     pos.x = 0x46000;
                     pos.y = 0x32000;
                     pos.z = 0x46000;
-                    func_01ffcfd8(&rot, mUnk_1a4->mRotY);
+                    func_01ffcfd8(&rot, mBakugan->mRotY);
                     func_01ff84d0(&pos, &rot, &pos);
                     if (target == 0) {
-                        SetVec(&mUnk_174->mPosition, pos.x + mUnk_1a4->mPosition.x, pos.y, pos.z + mUnk_1a4->mPosition.z);
+                        SetVec(&mCamera->mPosition, pos.x + mBakugan->mPosition.x, pos.y, pos.z + mBakugan->mPosition.z);
                     } else {
-                        SetVec(&mUnk_174->mPosition, target->x + pos.x, pos.y, target->z + pos.z);
+                        SetVec(&mCamera->mPosition, target->x + pos.x, pos.y, target->z + pos.z);
                     }
-                    Camera *c = mUnk_174;
+                    Camera *c = mCamera;
                     mUnk_194.x = c->mPosition.x;
                     mUnk_194.y = c->mPosition.y;
                     mUnk_194.z = c->mPosition.z;
@@ -1407,14 +1407,14 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                         pos.y = data_ov007_0227a5e0.mUnk_148[slot - 1].y;
                         pos.z = data_ov007_0227a5e0.mUnk_148[slot - 1].z;
                     }
-                    func_01ffcfd8(&rot, mUnk_1a4->mRotY);
+                    func_01ffcfd8(&rot, mBakugan->mRotY);
                     func_01ff84d0(&pos, &rot, &pos);
                     if (target == 0) {
-                        SetVec(&mUnk_174->mPosition, pos.x + mUnk_1a4->mPosition.x, pos.y, pos.z + mUnk_1a4->mPosition.z);
+                        SetVec(&mCamera->mPosition, pos.x + mBakugan->mPosition.x, pos.y, pos.z + mBakugan->mPosition.z);
                     } else {
-                        SetVec(&mUnk_174->mPosition, target->x + pos.x, pos.y, target->z + pos.z);
+                        SetVec(&mCamera->mPosition, target->x + pos.x, pos.y, target->z + pos.z);
                     }
-                    Camera *c = mUnk_174;
+                    Camera *c = mCamera;
                     mUnk_194.x = c->mPosition.x;
                     mUnk_194.y = c->mPosition.y;
                     mUnk_194.z = c->mPosition.z;
@@ -1435,11 +1435,11 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             pos.x = FX_Mul(pos.x, ident._[4]);
             pos.z = FX_Mul(pos.z, ident._[8]);
             VecFx32 t;
-            t.z = pos.z + mUnk_1a4->mPosition.z;
-            t.y = pos.y + mUnk_1a4->mPosition.y + 0x4000;
-            t.x = pos.x + mUnk_1a4->mPosition.x;
+            t.z = pos.z + mBakugan->mPosition.z;
+            t.y = pos.y + mBakugan->mPosition.y + 0x4000;
+            t.x = pos.x + mBakugan->mPosition.x;
             cam = t;
-            SetVec(&v, mUnk_1a4->mPosition.x, data_ov007_0227a5e0.mUnk_104[data_020d433c.mFieldId], mUnk_1a4->mPosition.z);
+            SetVec(&v, mBakugan->mPosition.x, data_ov007_0227a5e0.mUnk_104[data_020d433c.mFieldId], mBakugan->mPosition.z);
             if (v.x < 0) {
                 v.x = v.x - 0x14000;
             } else {
@@ -1450,7 +1450,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             } else {
                 v.z = v.z + 0x14000;
             }
-            func_ov007_02233ed8(&v, mUnk_1b0, &v);
+            RotateVecY(&v, mUnk_1b0, &v);
             VEC_Subtract(&v, &cam, &diff);
             fx32 dz = FX_Div(diff.z, 0x14000);
             fx32 dy = FX_Div(diff.y, 0x14000);
@@ -1463,7 +1463,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             u.y       = FX_Mul(u.y, scale);
             u.z       = FX_Mul(u.z, scale);
             VEC_Add(&cam, &u, &cam);
-            Camera *c      = mUnk_174;
+            Camera *c      = mCamera;
             c->mPosition.x = cam.x;
             c->mPosition.y = cam.y;
             c->mPosition.z = cam.z;
@@ -1473,61 +1473,61 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             pos.x = -0x32000;
             pos.y = 0x5000;
             pos.z = 0x32000;
-            func_01ffcfd8(&rot, mUnk_1a4->mRotY);
+            func_01ffcfd8(&rot, mBakugan->mRotY);
             func_01ff84d0(&pos, &rot, &pos);
             VecFx32 t;
-            t.z = pos.z + mUnk_1a4->mPosition.z;
+            t.z = pos.z + mBakugan->mPosition.z;
             t.y = pos.y;
-            t.x = pos.x + mUnk_1a4->mPosition.x;
-            mUnk_174->mPosition = t;
+            t.x = pos.x + mBakugan->mPosition.x;
+            mCamera->mPosition = t;
             return;
         }
         case 3: {
-            if (mUnk_64.x == 0 && mUnk_64.z == 0) {
+            if (mVelocity.x == 0 && mVelocity.z == 0) {
                 return;
             }
             pos.x = 0x37000;
             pos.y = 0xf000;
             pos.z = 0x37000;
-            func_01ffcfd8(&rot, (u16) (FX_Atan2Idx(mUnk_64.x, mUnk_64.z) - 0xa000));
+            func_01ffcfd8(&rot, (u16) (FX_Atan2Idx(mVelocity.x, mVelocity.z) - 0xa000));
             func_01ff84d0(&pos, &rot, &pos);
-            Camera *c = mUnk_174;
+            Camera *c = mCamera;
             cam.x     = c->mPosition.x;
             cam.y     = c->mPosition.y;
             cam.z     = c->mPosition.z;
-            VEC_Add(&pos, &mUnk_1a4->mPosition, &pos);
+            VEC_Add(&pos, &mBakugan->mPosition, &pos);
             VEC_Subtract(&cam, &pos, &u);
             s32 scale = mUnk_184;
             u.x       = FX_Mul(u.x, scale);
             u.y       = FX_Mul(u.y, scale);
             u.z       = FX_Mul(u.z, scale);
-            SetVec(&mUnk_174->mPosition, cam.x - u.x, cam.y - u.y, cam.z - u.z);
+            SetVec(&mCamera->mPosition, cam.x - u.x, cam.y - u.y, cam.z - u.z);
             return;
         }
         case 4: {
-            if (mUnk_70.x == 0 && mUnk_70.y == 0 && mUnk_70.z == 0) {
+            if (mPrevVelocity.x == 0 && mPrevVelocity.y == 0 && mPrevVelocity.z == 0) {
                 return;
             }
             pos.x = 0x14000;
             pos.y = 0x14000;
             pos.z = 0x14000;
-            func_01ffcfd8(&rot, (u16) (FX_Atan2Idx(mUnk_70.x, mUnk_70.z) - 0xa000));
-            s32 a = FX_Atan2Idx(mUnk_70.y, 0x1000);
+            func_01ffcfd8(&rot, (u16) (FX_Atan2Idx(mPrevVelocity.x, mPrevVelocity.z) - 0xa000));
+            s32 a = FX_Atan2Idx(mPrevVelocity.y, 0x1000);
             func_01ff84d0(&pos, &rot, &pos);
             func_01ff84d0(&mUnk_188, &rot, &mUnk_188);
             pos.y = FX_Mul(pos.y, -FX_SinCosTable_[(a >> 4) * 2]) + 0x5a000;
             cam.x = mUnk_194.x;
             cam.y = mUnk_194.y;
             cam.z = mUnk_194.z;
-            VEC_Add(&pos, &mUnk_1a4->mPosition, &pos);
+            VEC_Add(&pos, &mBakugan->mPosition, &pos);
             VEC_Subtract(&cam, &pos, &u);
             s32 scale = mUnk_184;
             u.x       = FX_Mul(u.x, scale);
             u.y       = FX_Mul(u.y, scale);
             u.z       = FX_Mul(u.z, scale);
-            SetVec(&mUnk_194, cam.x - u.x, mUnk_1a4->mPosition.y + 0x5a000, cam.z - u.z);
+            SetVec(&mUnk_194, cam.x - u.x, mBakugan->mPosition.y + 0x5a000, cam.z - u.z);
             VEC_Add(&cam, &mUnk_188, &cam);
-            SetVec(&mUnk_174->mPosition, cam.x - u.x, mUnk_1a4->mPosition.y + 0x5a000, cam.z - u.z);
+            SetVec(&mCamera->mPosition, cam.x - u.x, mBakugan->mPosition.y + 0x5a000, cam.z - u.z);
             return;
         }
         case 5:
@@ -1551,9 +1551,9 @@ void BattleTarget::func_ov007_022567ac() {
             a.y     = mUnk_194.y;
             a.z     = mUnk_194.z;
             VecFx32 t;
-            t.z = -mUnk_64.z;
-            t.y = -mUnk_64.y;
-            t.x = -mUnk_64.x;
+            t.z = -mVelocity.z;
+            t.y = -mVelocity.y;
+            t.x = -mVelocity.x;
             dir = t;
             if (VEC_Mag(&dir) == 0) {
                 dir.x = -1;
@@ -1561,7 +1561,7 @@ void BattleTarget::func_ov007_022567ac() {
                 dir.z = -1;
             }
             VEC_Normalize(&dir, &dir);
-            b = mUnk_1a4->mPosition;
+            b = mBakugan->mPosition;
             b.x += FX_Mul(dir.x, 0x28000);
             b.y += FX_Mul(dir.y, 0x28000);
             b.z += FX_Mul(dir.z, 0x28000);
@@ -1575,7 +1575,7 @@ void BattleTarget::func_ov007_022567ac() {
             t1.z = a.z - b.z;
             t1.y = a.y - b.y;
             t1.x = a.x - b.x;
-            mUnk_174->mPosition = t1;
+            mCamera->mPosition = t1;
             VecFx32 t2;
             t2.z = a.z - b.z;
             t2.y = a.y - b.y;
@@ -1592,7 +1592,7 @@ void BattleTarget::func_ov007_022567ac() {
             a.x = mUnk_194.x;
             a.y = mUnk_194.y;
             a.z = mUnk_194.z;
-            VEC_Subtract(&mUnk_1a4->mPosition, &a, &b);
+            VEC_Subtract(&mBakugan->mPosition, &a, &b);
             if (VEC_Mag(&b) >= 0x5f000) {
                 mUnk_1e6++;
                 mUnk_1e5 = 1;
@@ -1604,16 +1604,16 @@ void BattleTarget::func_ov007_022567ac() {
             a.x = mUnk_194.x;
             a.y = mUnk_194.y;
             a.z = mUnk_194.z;
-            VEC_Subtract(&mUnk_1a4->mPosition, &a, &b);
+            VEC_Subtract(&mBakugan->mPosition, &a, &b);
             c.x = 0x2f800;
             c.y = 0x2f800;
             c.z = 0x2f800;
-            func_01ffcfd8(&mtx, FX_Atan2Idx(mUnk_64.x, mUnk_64.z) - 0xa000);
+            func_01ffcfd8(&mtx, FX_Atan2Idx(mVelocity.x, mVelocity.z) - 0xa000);
             func_01ff84d0(&c, &mtx, &c);
             func_01ff84d0(&mUnk_188, &mtx, &mUnk_188);
-            u16 pitch = FX_Atan2Idx(mUnk_64.y, 0x1000);
+            u16 pitch = FX_Atan2Idx(mVelocity.y, 0x1000);
             c.y       = FX_Mul(c.y, -FX_SinCosTable_[(pitch >> 4) * 2]);
-            VEC_Add(&c, &mUnk_1a4->mPosition, &c);
+            VEC_Add(&c, &mBakugan->mPosition, &c);
             VEC_Add(&c, &data_ov007_0227a5e0.mUnk_44, &c);
             VEC_Subtract(&a, &c, &b);
             fx32 k = mUnk_184;
@@ -1626,7 +1626,7 @@ void BattleTarget::func_ov007_022567ac() {
             t.z = a.z - b.z;
             t.y = a.y - b.y;
             t.x = a.x - b.x;
-            mUnk_174->mPosition = t;
+            mCamera->mPosition = t;
             break;
         }
         case 3:
@@ -1642,15 +1642,15 @@ void BattleTarget::func_ov007_02256c4c(VecFx32 *target) {
     VecFx32 diff;
     VecFx32 move;
     MtxFx33 mtx;
-    if (mUnk_1e2 >= 0xb) {
+    if (mState >= 0xb) {
         return;
     }
     switch (mUnk_1e4) {
         case 0:
             if (target == 0) {
-                target = &mUnk_1a4->mPosition;
+                target = &mBakugan->mPosition;
             }
-            if (mUnk_1e2 > 1) {
+            if (mState > 1) {
                 mtx    = data_0220e848;
                 move.x = 0;
                 move.y = 0;
@@ -1658,11 +1658,11 @@ void BattleTarget::func_ov007_02256c4c(VecFx32 *target) {
                 diff.x = 0;
                 diff.y = 0;
                 diff.z = 0;
-                Camera *camera = mUnk_174;
+                Camera *camera = mCamera;
                 cam.x          = camera->mPosition.x;
                 cam.y          = camera->mPosition.y;
                 cam.z          = camera->mPosition.z;
-                VEC_Subtract(&cam, &mUnk_1a4->mPosition, &diff);
+                VEC_Subtract(&cam, &mBakugan->mPosition, &diff);
                 int angle = -(FX_Atan2Idx(diff.z, diff.x) + 0x4000);
                 func_01ffcfd8(&mtx, angle);
                 func_01ff84d0(&move, &mtx, &move);
@@ -1675,22 +1675,22 @@ void BattleTarget::func_ov007_02256c4c(VecFx32 *target) {
                 mUnk_128.x += move.x;
                 mUnk_128.z += move.z;
                 mUnk_128.y += move.y;
-                Camera *cameraOut = mUnk_174;
+                Camera *cameraOut = mCamera;
                 cameraOut->mTarget.x = mUnk_128.x;
                 cameraOut->mTarget.y = mUnk_128.y;
                 cameraOut->mTarget.z = mUnk_128.z;
                 return;
             }
-            if (mUnk_1e2 != 1) {
+            if (mState != 1) {
                 return;
             }
             VecFx32 off0 = {0, 0, 0};
-            off0.x = -mUnk_1a4->mPosition.x;
-            off0.z = -mUnk_1a4->mPosition.z;
-            func_ov007_02233ed8(&off0, -mUnk_1b8, &mUnk_128);
-            VEC_Add(&mUnk_1a4->mPosition, &mUnk_128, &mUnk_128);
+            off0.x = -mBakugan->mPosition.x;
+            off0.z = -mBakugan->mPosition.z;
+            RotateVecY(&off0, -mUnk_1b8, &mUnk_128);
+            VEC_Add(&mBakugan->mPosition, &mUnk_128, &mUnk_128);
             mUnk_128.y = FX_Mul(FX_Div(INT_TO_FX(mUnk_1ba), 0xb6000), 0x2000);
-            Camera *c = mUnk_174;
+            Camera *c = mCamera;
             c->mTarget.x = mUnk_128.x;
             c->mTarget.y = mUnk_128.y;
             c->mTarget.z = mUnk_128.z;
@@ -1698,10 +1698,10 @@ void BattleTarget::func_ov007_02256c4c(VecFx32 *target) {
         case 1: {
             VecFx32 off1 = {0, 0, 0};
             VecFx32 v;
-            off1.x = -mUnk_1a4->mPosition.x;
-            off1.z = -mUnk_1a4->mPosition.z;
-            func_ov007_02233ed8(&off1, -mUnk_1b8, &mUnk_128);
-            VEC_Add(&mUnk_1a4->mPosition, &mUnk_128, &mUnk_128);
+            off1.x = -mBakugan->mPosition.x;
+            off1.z = -mBakugan->mPosition.z;
+            RotateVecY(&off1, -mUnk_1b8, &mUnk_128);
+            VEC_Add(&mBakugan->mPosition, &mUnk_128, &mUnk_128);
             mUnk_128.y = FX_Mul(FX_Div(INT_TO_FX(mUnk_1ba), 0xb6000), 0x2000);
             v.x = mUnk_128.x;
             v.y = mUnk_128.y;
@@ -1717,32 +1717,32 @@ void BattleTarget::func_ov007_02256c4c(VecFx32 *target) {
             v.y       = FX_Mul(v.y, scale);
             v.z       = FX_Mul(v.z, scale);
             VEC_Subtract(&mUnk_128, &v, &mUnk_128);
-            Camera *c = mUnk_174;
+            Camera *c = mCamera;
             c->mTarget.x = mUnk_128.x;
             c->mTarget.y = mUnk_128.y;
             c->mTarget.z = mUnk_128.z;
             return;
         }
         case 2: {
-            BakuganModel *pose = mUnk_1a4;
-            SetVec(&mUnk_174->mTarget, pose->mPosition.x, mUnk_180 + pose->mPosition.y, pose->mPosition.z);
+            BakuganModel *pose = mBakugan;
+            SetVec(&mCamera->mTarget, pose->mPosition.x, mUnk_180 + pose->mPosition.y, pose->mPosition.z);
             mUnk_180                 = FX_Mul(mUnk_180, -0xf33);
             return;
         }
         case 3: {
-            BakuganModel *pose = mUnk_1a4;
-            SetVec(&mUnk_174->mTarget, pose->mPosition.x, pose->mPosition.y, pose->mPosition.z);
+            BakuganModel *pose = mBakugan;
+            SetVec(&mCamera->mTarget, pose->mPosition.x, pose->mPosition.y, pose->mPosition.z);
             return;
         }
         case 4: {
-            BakuganModel *pose = mUnk_1a4;
-            SetVec(&mUnk_174->mTarget, pose->mPosition.x, pose->mPosition.y + 0x64cd, pose->mPosition.z);
+            BakuganModel *pose = mBakugan;
+            SetVec(&mCamera->mTarget, pose->mPosition.x, pose->mPosition.y + 0x64cd, pose->mPosition.z);
             return;
         }
         case 5: {
-            BakuganModel *pose = mUnk_1a4;
-            SetVec(&mUnk_174->mTarget, pose->mPosition.x, pose->mPosition.y + 0x64cd, pose->mPosition.z);
-            mUnk_128 = mUnk_174->mTarget;
+            BakuganModel *pose = mBakugan;
+            SetVec(&mCamera->mTarget, pose->mPosition.x, pose->mPosition.y + 0x64cd, pose->mPosition.z);
+            mUnk_128 = mCamera->mTarget;
             return;
         }
         case 6:
@@ -1750,7 +1750,7 @@ void BattleTarget::func_ov007_02256c4c(VecFx32 *target) {
     }
 }
 
-void BattleTarget::func_ov007_022571d4() {
+void BattleTarget::UpdateCamera() {
     func_ov007_02255cb4(0);
     func_ov007_02256c4c(0);
     SnapshotCamera();
@@ -1759,17 +1759,17 @@ void BattleTarget::func_ov007_022571d4() {
 void BattleTarget::func_ov007_022573e4() {
     data_020d433c.mUnk_14 &= 8;
     if (data_020d433c.mUnk_14 == 0) {
-        func_ov007_022571d4();
+        UpdateCamera();
     }
-    if (mUnk_28) {
-        mUnk_28->func_ov007_02235480();
+    if (mStatusPanels) {
+        mStatusPanels->DrawPanels();
         func_ov007_0225cb7c();
     }
-    if (mUnk_1e2 != 0xd && mUnk_1e2 != 0xe) {
+    if (mState != 0xd && mState != 0xe) {
         func_ov007_0225ca48(0xff, 0xff);
     }
-    if (mUnk_1a4) {
-        mUnk_1a4->DrawModel();
+    if (mBakugan) {
+        mBakugan->DrawModel();
     }
 }
 
@@ -1806,7 +1806,7 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
         if (mUnk_1cd != 0 || mUnk_1e9 != 0) {
             b->y = 0;
             if (a->y < 0) {
-                a->y = FX_Mul(a->y, -mUnk_90);
+                a->y = FX_Mul(a->y, -mBounceFactor);
             }
             if (ABS(a->y) <= 0x19a) {
                 a->y = 0;
@@ -1821,7 +1821,7 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
             } else {
                 a->z = FX_Mul(a->z, 0xf85);
             }
-            if (mUnk_4c % 5 == 0) {
+            if (mMoveFrames % 5 == 0) {
                 if (ABS(b->x) <= 0xcd) {
                     b->x = 0;
                 } else {
@@ -1854,7 +1854,7 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
             }
             *counter = 0;
         } else {
-            a->y = a->y - mUnk_c4;
+            a->y = a->y - mGravityPerFrame;
         }
         if (a->y > 0x29) {
             VecFx32 vt;
@@ -1872,7 +1872,7 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
         mUnk_1d0 = 1;
     } else {
     airborne:
-        a->y = a->y - mUnk_c4;
+        a->y = a->y - mGravityPerFrame;
         switch (mUnk_1cc) {
             case 0:
                 { VecFx32 vt; vt.z = a->z; vt.y = a->y; vt.x = a->x; *vel = vt; }
@@ -1894,14 +1894,14 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
             rot[0] = rot[0] + (fx32) ((float) q / 4096.0f);
             rot[1] = (u32) (angle * 65535.0f / 360.0f);
         }
-        if (a->y != -mUnk_c4) {
-            mUnk_48 = 0;
+        if (a->y != -mGravityPerFrame) {
+            mRestFrames = 0;
         } else {
-            mUnk_48++;
+            mRestFrames++;
         }
     } else {
-        mUnk_48++;
-        if (mUnk_48 >= 0x28) {
+        mRestFrames++;
+        if (mRestFrames >= 0x28) {
             vel->x = 0;
             vel->y = 0;
             vel->z = 0;
@@ -1915,10 +1915,10 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
                 mUnk_1d2 = 1;
             }
             mUnk_1c6 = 1;
-            mUnk_48  = 0;
+            mRestFrames  = 0;
         }
     }
-    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4];
+    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
     BOOL charged         = FALSE;
     if (player->mUnk_dc != 0) {
         if ((u8) player->mUnk_e0 < 3) {
@@ -1931,7 +1931,7 @@ void BattleTarget::func_ov007_0225745c(VecFx32 *pos, u16 *rot, VecFx32 *vel, Vec
         }
     }
     if (mUnk_1dd != 4 && data_020d433c.mTutorialId == 0 && charged) {
-        s32 sum = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mUnk_dc + data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mUnk_e4;
+        s32 sum = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_dc + data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_e4;
         if (sum != 0) {
             tmp.x = vel->x;
             tmp.z = vel->z;
@@ -1986,8 +1986,8 @@ BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, Battl
                 center.x = sphere->mPos.x;
                 center.y = sphere->mPos.y;
                 center.z = sphere->mPos.z;
-                center.x -= (tries + 1) * ((center.x - mUnk_58.x) * 2 / 10);
-                center.z -= (tries + 1) * ((center.z - mUnk_58.z) * 2 / 10);
+                center.x -= (tries + 1) * ((center.x - mPrevPosition.x) * 2 / 10);
+                center.z -= (tries + 1) * ((center.z - mPrevPosition.z) * 2 / 10);
                 tries++;
                 sphere->mPos.x = center.x;
                 sphere->mPos.y = center.y;
@@ -2023,23 +2023,23 @@ BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, Battl
 
 void BattleTarget::func_ov007_02257f3c(GimmickSetData *set, u32 index, VecFx32 *vel, VecFx32 *out) {
     fx32 mag = VEC_Mag(vel);
-    BattleObstacle self = *(BattleObstacle *) ((u8 *) mUnk_1a8 + 0x10);
+    BattleObstacle self = *(BattleObstacle *) ((u8 *) mCollision + 0x10);
     BattleObstacle *selfp = &self;
     BattleObstacle other = *(BattleObstacle *) ((u8 *) set + 0x10 + index * 0x20);
-    BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
-    mUnk_1d8 = set->mUnk_834;
-    switch (set->mUnk_834) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 5:
-        case 7:
+    BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
+    mHitGimmickType = set->mTag;
+    switch (set->mTag) {
+        case 0: // the Gimmick constructor's default; every subclass constructor overwrites it
+        case GIMMICK_TYPE_EXE_POINT:
+        case GIMMICK_TYPE_FIELD_POWER_G:
+        case GIMMICK_TYPE_FIELD_POWER_S:
+        case GIMMICK_TYPE_DASH_BASE:
+        case GIMMICK_TYPE_FIELD_DESTROY:
             break;
-        case 6:
-            VEC_Add(&selfp->mPos, &mUnk_1a8->mUnk_810, &selfp->mPos);
-            AddRotAtOnce(&self, mUnk_1a8);
-            VEC_Add(&other.mPos, &set->mUnk_810, &other.mPos);
+        case GIMMICK_TYPE_BLOCK:
+            VEC_Add(&selfp->mPos, &mCollision->mPosition, &selfp->mPos);
+            AddRotAtOnce(&self, mCollision);
+            VEC_Add(&other.mPos, &set->mPosition, &other.mPos);
             AddRotAtOnceFields(&other, set);
             func_ov007_02257c80((BattleSphere *) &self, vel, &other, out, 0, 0);
             if (out->x != 0 || out->z != 0) {
@@ -2049,15 +2049,15 @@ void BattleTarget::func_ov007_02257f3c(GimmickSetData *set, u32 index, VecFx32 *
                 if (mUnk_38 > 10) {
                     SoundManager::Get().StartSeqArc(4);
                 }
-                mUnk_58.y = other.mPos.y + other.mHalfY + self.mHalfY;
+                mPrevPosition.y = other.mPos.y + other.mHalfY + self.mHalfY;
             }
             break;
-        case 4:
+        case GIMMICK_TYPE_JUMP_OBJ:
             if (mUnk_1e0 == 3) {
                 mUnk_1e0 = 0;
             }
             break;
-        case 0x46:
+        case GIMMICK_TYPE_HAOS_BALL:
             if (record->mAttribute == 3) {
                 return;
             }
@@ -2069,36 +2069,36 @@ void BattleTarget::func_ov007_02257f3c(GimmickSetData *set, u32 index, VecFx32 *
             }
             mUnk_140 = 0x19;
             mUnk_1db = 2;
-            mUnk_c4  = 0x1dc - 0x19;
+            mGravityPerFrame  = 0x1dc - 0x19;
             break;
-        case 0x32:
+        case GIMMICK_TYPE_TORNADO:
             if (record->mAttribute != 5) {
-                mUnk_144 = &set->mUnk_810;
+                mUnk_144 = &set->mPosition;
                 mUnk_1dd = 1;
             }
             if (mUnk_1e0 == 3) {
                 mUnk_1e0 = 0;
             }
             break;
-        case 0x33:
-            if (mUnk_1d9 == 0x33) {
+        case GIMMICK_TYPE_VENT_KAZE:
+            if (mPrevHitGimmickType == GIMMICK_TYPE_VENT_KAZE) {
                 return;
             }
-            if (mUnk_1d8 != 0x33) {
+            if (mHitGimmickType != GIMMICK_TYPE_VENT_KAZE) {
                 return;
             }
             SoundManager::Get().StartSeqArc(0xf);
             break;
-        case 0x3c:
-            VEC_Add(&selfp->mPos, &mUnk_1a8->mUnk_810, &selfp->mPos);
-            AddRotAtOnce(&self, mUnk_1a8);
-            VEC_Add(&other.mPos, &set->mUnk_810, &other.mPos);
+        case GIMMICK_TYPE_SUTE_WALL:
+            VEC_Add(&selfp->mPos, &mCollision->mPosition, &selfp->mPos);
+            AddRotAtOnce(&self, mCollision);
+            VEC_Add(&other.mPos, &set->mPosition, &other.mPos);
             AddRotAtOnceFields(&other, set);
             if (mag < 0x6800) {
                 func_ov007_02257c80((BattleSphere *) &self, vel, &other, out, 0, 0);
             }
             break;
-        case 0x47:
+        case GIMMICK_TYPE_HAOS_WALL:
             mUnk_1cd = 1;
             break;
     }
@@ -2130,8 +2130,8 @@ BOOL BattleTarget::func_ov007_022583b8() {
 }
 
 void BattleTarget::func_ov007_02258448() {
-    if (mUnk_1bc != 0) {
-        mUnk_1bc--;
+    if (mIkazuchiTimer != 0) {
+        mIkazuchiTimer--;
     }
     switch (mUnk_1dd) {
         case 0:
@@ -2140,7 +2140,7 @@ void BattleTarget::func_ov007_02258448() {
             }
             mUnk_1e4 = 0;
             mUnk_1cc = 0;
-            mUnk_c4  = 0x1c3;
+            mGravityPerFrame  = 0x1c3;
             mUnk_184 = 0;
             mUnk_1db = 0;
             break;
@@ -2158,13 +2158,13 @@ void BattleTarget::func_ov007_02258448() {
             func_ov007_022593b4();
             break;
         case 5: {
-            VecFx32 pos = mUnk_1a4->mPosition;
+            VecFx32 pos = mBakugan->mPosition;
             mUnk_1cd    = 0;
-            mUnk_c4     = 0x29;
+            mGravityPerFrame     = 0x29;
             mUnk_1e4    = 6;
-            mUnk_64.y -= mUnk_c4;
-            pos.y += mUnk_64.y;
-            BakuganModel *pose = mUnk_1a4;
+            mVelocity.y -= mGravityPerFrame;
+            pos.y += mVelocity.y;
+            BakuganModel *pose = mBakugan;
             pose->mPosition.x        = pos.x;
             pose->mPosition.y        = pos.y;
             pose->mPosition.z        = pos.z;
@@ -2220,9 +2220,9 @@ void BattleTarget::func_ov007_02258660() {
             } else {
                 mUnk_140 = data_ov007_0227a5e0.mUnk_04[mUnk_1dc];
             }
-            mUnk_64.x = 0;
-            mUnk_64.y = 0;
-            mUnk_64.z = 0;
+            mVelocity.x = 0;
+            mVelocity.y = 0;
+            mVelocity.z = 0;
             mUnk_a0.x = 0;
             mUnk_a0.y = 0;
             mUnk_a0.z = 0;
@@ -2239,7 +2239,7 @@ void BattleTarget::func_ov007_02258660() {
                 mtx._[11]   = 0;
                 mtx._[10]   = 0;
                 mtx._[9]    = 0;
-                func_01ffcf64(&mtx, &mUnk_1a4->mPosition);
+                func_01ffcf64(&mtx, &mBakugan->mPosition);
                 SetEffectMatrix(data_020d433c.mEffects, mUnk_1c2, &mtx);
             }
             mUnk_1dc++;
@@ -2254,7 +2254,7 @@ void BattleTarget::func_ov007_02258660() {
             mUnk_1cf               = 1;
             mUnk_1c6               = 1;
             FindMarkerCellAt(&mUnk_168, &a, &b);
-            mUnk_1e8 = func_ov007_02262768(list, &mUnk_1a4->mPosition, mUnk_1a4->mRotY, mUnk_1d4, mUnk_1d3,
+            mUnitHandle = func_ov007_02262768(list, &mBakugan->mPosition, mBakugan->mRotY, mPlayer, mRecord,
                                            list->mMarkerHandles[a][b] - 1, 1);
             func_ov007_02262a64(list, mUnk_1de - 1, *(u8 *) &list->mUnitHandles[a][b] - 1);
             new BattleCardEffect(0x1000, 0, 1, 0);
@@ -2264,7 +2264,7 @@ void BattleTarget::func_ov007_02258660() {
             mUnk_140--;
             if (mUnk_140 == 0) {
                 mUnk_1db = 0;
-                mUnk_1a4->mModel->StartAnimWithIncrement(0, 0, 0x1000);
+                mBakugan->mModel->StartAnimWithIncrement(0, 0, 0x1000);
             }
             break;
         case 2:
@@ -2275,7 +2275,7 @@ void BattleTarget::func_ov007_02258660() {
 void BattleTarget::func_ov007_0225897c() {
     switch (mUnk_1db) {
         case 0:
-            mUnk_1a4->mVisible = 0;
+            mBakugan->mVisible = 0;
             mUnk_140          = 0x1e;
             mUnk_1db++;
             break;
@@ -2286,15 +2286,15 @@ void BattleTarget::func_ov007_0225897c() {
             }
             break;
         case 2:
-            mUnk_1a4->mVisible = 1;
+            mBakugan->mVisible = 1;
             mUnk_1db          = 0;
             mUnk_1dd          = 0;
             if (mUnk_1e0 == 3) {
                 mUnk_1dd = 2;
             }
-            BattleCpu *fighter = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mCpu;
+            BattleCpu *fighter = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCpu;
             if (fighter) {
-                fighter->mUnk_74 = 0x3c;
+                fighter->mTimer = 0x3c;
             }
             break;
     }
@@ -2313,7 +2313,7 @@ void BattleTarget::func_ov007_02258a34() {
                 return;
             }
             MtxFx43 mtx = CameraManager::Get().mMtxC[0];
-            VecFx32 a   = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
+            VecFx32 a   = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
             VecFx32 b   = data_ov007_0227a5e0.mUnk_2c;
             mtx._[11]   = 0;
             mtx._[10]   = 0;
@@ -2329,7 +2329,7 @@ void BattleTarget::func_ov007_02258a34() {
             if (mUnk_140 == 0) {
                 mUnk_1db++;
             }
-            BakuganModel *pose = mUnk_1a4;
+            BakuganModel *pose = mBakugan;
             VecFx32 pos              = pose->mPosition;
             if ((mUnk_140 & 1) == 0) {
                 pos.y += 0x800;
@@ -2342,9 +2342,9 @@ void BattleTarget::func_ov007_02258a34() {
         case 2: {
             mUnk_1db = 0;
             mUnk_1dd = 0;
-            mUnk_1bc = 0x3c;
+            mIkazuchiTimer = 0x3c;
             SoundManager::Get().StartSeqArc(0x60);
-            BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4];
+            BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
             u8 record            = player->mRecord;
             int v = player->mRecords[record].mUnk_04;
             if (v > 0x32) {
@@ -2371,31 +2371,31 @@ BOOL BattleTarget::func_ov007_02258cec(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d)
     state.mRot[2]     = 0;
     state.mMode       = 2;
     BattlePlayerList *list   = data_020d433c.mBattlePlayers;
-    BakuganModel *pose = mUnk_1a4;
+    BakuganModel *pose = mBakugan;
     u16 rotY                 = pose->mRotY;
     u16 rotZ                 = pose->mRotZ;
     FindMarkerCellAt(b, &y, &x);
-    BakuganModel *other = list->mUnk_29c->func_ov007_0226fc4c(d - 1);
+    BakuganModel *other = list->mUnk_29c->GetBakugan(d - 1);
     if (other) {
         VecFx32 tmp = {0, 0, 0};
         func_ov007_02233730(a, b, c, &tmp);
-        pose              = mUnk_1a4;
+        pose              = mBakugan;
         pose->mPosition.x = b->x;
         pose->mPosition.y = b->y;
         pose->mPosition.z = b->z;
-        mUnk_58.x         = b->x;
-        mUnk_58.y         = b->y;
-        mUnk_58.z         = b->z;
-        pose              = mUnk_1a4;
+        mPrevPosition.x         = b->x;
+        mPrevPosition.y         = b->y;
+        mPrevPosition.z         = b->z;
+        pose              = mBakugan;
         pose->mRotX       = 0;
         pose->mRotY       = rotY;
         pose->mRotZ       = rotZ;
-        mUnk_1a4->mAnimUpdateEnabled = 1;
+        mBakugan->mAnimUpdateEnabled = 1;
         mUnk_1d2          = 4;
         other->mPosition.x = b->x;
         other->mPosition.y = b->y;
         other->mPosition.z = b->z;
-        pose              = mUnk_1a4;
+        pose              = mBakugan;
         u16 r0            = pose->mRotX;
         u16 r1            = pose->mRotY;
         u16 r2            = pose->mRotZ;
@@ -2403,18 +2403,18 @@ BOOL BattleTarget::func_ov007_02258cec(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d)
         other->mRotX      = r0 + 0x4000;
         other->mRotY      = r1;
         other->mRotZ      = r2;
-        list->mUnk_29c->func_ov007_02270ae0(d - 1, &state);
-        func_ov007_02256c4c(&mUnk_1a4->mPosition);
-        func_ov007_02255cb4(&mUnk_1a4->mPosition);
+        list->mUnk_29c->StartMove(d - 1, &state);
+        func_ov007_02256c4c(&mBakugan->mPosition);
+        func_ov007_02255cb4(&mBakugan->mPosition);
         if (mUnk_1c0 != 0) {
             FreeEffect(data_020d433c.mEffects, mUnk_1c0);
             mUnk_1c0 = 0;
         }
-        BattleStatusPanels *panels = mUnk_28;
+        BattleStatusPanels *panels = mStatusPanels;
         if (panels) {
             delete panels;
         }
-        mUnk_28  = 0;
+        mStatusPanels  = 0;
         mUnk_1cf = 1;
         return 1;
     }
@@ -2424,13 +2424,13 @@ BOOL BattleTarget::func_ov007_02258cec(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d)
 void BattleTarget::func_ov007_02258edc() {
     VecFx32 v3c;
     VecFx32 v30;
-    VecFx32 pos = mUnk_1a4->mPosition;
+    VecFx32 pos = mBakugan->mPosition;
     BattleMoveState state;
     u16 rot[3];
     u16 rot2[3];
     u8 i                     = 0;
     fx32 best                = -1;
-    *(Rot3 *) rot = *(Rot3 *) &mUnk_1a4->mRotX;
+    *(Rot3 *) rot = *(Rot3 *) &mBakugan->mRotX;
     state.mVelocity.x        = 0;
     state.mVelocity.y        = 0;
     state.mVelocity.z        = 0;
@@ -2443,25 +2443,25 @@ void BattleTarget::func_ov007_02258edc() {
         case 0: {
             mUnk_140 = i;
             do {
-                GimmickSetData *set = mUnk_e4[i];
-                if (set && set->mUnk_834) {
-                    BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) (set->mUnk_834 - 1)];
-                    if (unit->mPlayer != mUnk_1d4 && unit->mPlayer != mUnk_1d5 && unit->mStatus != 2 &&
+                GimmickSetData *set = mUnitCollisions[i];
+                if (set && set->mTag) {
+                    BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) (set->mTag - 1)];
+                    if (unit->mPlayer != mPlayer && unit->mPlayer != mUnk_1d5 && unit->mStatus != 2 &&
                         unit->mStatus != 3) {
-                        VEC_Subtract(&mUnk_1a4->mPosition, &set->mUnk_810, &v30);
+                        VEC_Subtract(&mBakugan->mPosition, &set->mPosition, &v30);
                         fx32 dist = VEC_Mag(&v30);
                         if (best == -1 || best > dist) {
                             best  = dist;
-                            set   = mUnk_e4[i];
-                            v3c.x = set->mUnk_810.x;
-                            v3c.y = set->mUnk_810.y;
-                            v3c.z = set->mUnk_810.z;
+                            set   = mUnitCollisions[i];
+                            v3c.x = set->mPosition.x;
+                            v3c.y = set->mPosition.y;
+                            v3c.z = set->mPosition.z;
                         }
-                        set = mUnk_e4[i];
-                        if (set->mUnk_823 != 0) {
-                            func_ov007_02271d78(data_020d433c.mGimmickCollision, set);
-                            func_ov007_02262828(data_020d433c.mBattlePlayers, mUnk_e4[i]->mUnk_834 - 1, 0);
-                            mUnk_e4[i] = 0;
+                        set = mUnitCollisions[i];
+                        if (set->mHitCount != 0) {
+                            RemoveCollisionSet(data_020d433c.mGimmickCollision, set);
+                            func_ov007_02262828(data_020d433c.mBattlePlayers, mUnitCollisions[i]->mTag - 1, 0);
+                            mUnitCollisions[i] = 0;
                             mUnk_1db   = 1;
                             mUnk_140   = i;
                             break;
@@ -2474,41 +2474,41 @@ void BattleTarget::func_ov007_02258edc() {
                 mUnk_1db = 2;
                 break;
             }
-            VEC_Subtract(&v3c, &mUnk_1a4->mPosition, &v30);
+            VEC_Subtract(&v3c, &mBakugan->mPosition, &v30);
             v30.x = FX_Mul(v30.x, 0x19a);
             v30.y = FX_Mul(v30.y, 0x19a);
             v30.z = FX_Mul(v30.z, 0x19a);
             mUnk_a0.x = v30.x;
             mUnk_a0.y = v30.y;
             mUnk_a0.z = v30.z;
-            mUnk_64.x = mUnk_a0.x;
-            mUnk_64.y = mUnk_a0.y;
-            mUnk_64.z = mUnk_a0.z;
+            mVelocity.x = mUnk_a0.x;
+            mVelocity.y = mUnk_a0.y;
+            mVelocity.z = mUnk_a0.z;
             VEC_Add(&pos, &v30, &pos);
             break;
         }
         case 1: {
-            VEC_Subtract(&mUnk_1a4->mPosition, &v3c, &v30);
+            VEC_Subtract(&mBakugan->mPosition, &v3c, &v30);
             VEC_Normalize(&v30, &v30);
             state.mVelocity.x = v30.x;
             state.mVelocity.y = v30.y;
             state.mVelocity.z = v30.z;
-            data_020d433c.mBattlePlayers->mUnk_29c->func_ov007_02270ae0(mUnk_140, &state);
+            data_020d433c.mBattlePlayers->mUnk_29c->StartMove(mUnk_140, &state);
             mUnk_1db = i;
             u8 handle = StartEffect(data_020d433c.mEffects, 1, 10, 0, i);
-            u16 yaw   = FX_Atan2Idx(mUnk_64.x, mUnk_64.z);
+            u16 yaw   = FX_Atan2Idx(mVelocity.x, mVelocity.z);
             SoundManager::Get().StartSeqArc(0x10);
             rot2[0] = 0;
             rot2[1] = yaw + 0x4000;
             rot2[2] = 0;
             SetEffectRotation(data_020d433c.mEffects, handle, rot2);
-            SetEffectPosition(data_020d433c.mEffects, handle, &mUnk_1a4->mPosition);
+            SetEffectPosition(data_020d433c.mEffects, handle, &mBakugan->mPosition);
             break;
         }
         case 2: {
-            mUnk_64.x = i;
-            mUnk_64.y = i;
-            mUnk_64.z = i;
+            mVelocity.x = i;
+            mVelocity.y = i;
+            mVelocity.z = i;
             mUnk_94.x = i;
             mUnk_94.y = i;
             mUnk_94.z = i;
@@ -2522,9 +2522,9 @@ void BattleTarget::func_ov007_02258edc() {
             mUnk_a0.x = FX_Mul(mUnk_a0.x, 0x3000);
             mUnk_a0.y = FX_Mul(mUnk_a0.y, 0x3000);
             mUnk_a0.z = FX_Mul(mUnk_a0.z, 0x3000);
-            mUnk_64.x = mUnk_a0.x;
-            mUnk_64.y = mUnk_a0.y;
-            mUnk_64.z = mUnk_a0.z;
+            mVelocity.x = mUnk_a0.x;
+            mVelocity.y = mUnk_a0.y;
+            mVelocity.z = mUnk_a0.z;
             if (mUnk_1c0 != 0) {
                 FreeEffect(data_020d433c.mEffects, mUnk_1c0);
             }
@@ -2535,8 +2535,8 @@ void BattleTarget::func_ov007_02258edc() {
             break;
         }
     }
-    mUnk_1a4->SetPosition(&pos);
-    mUnk_1a4->SetRotation(rot);
+    mBakugan->SetPosition(&pos);
+    mBakugan->SetRotation(rot);
 }
 
 void BattleTarget::func_ov007_022593b4() {
@@ -2546,7 +2546,7 @@ void BattleTarget::func_ov007_022593b4() {
             mUnk_1e4 = 5;
             mUnk_1e6 = 0;
             mUnk_17c = 10;
-            mUnk_c4  = 0xa4;
+            mGravityPerFrame  = 0xa4;
             mUnk_1db++;
             break;
         case 1:
@@ -2579,36 +2579,36 @@ void BattleTarget::func_ov007_022593b4() {
 }
 
 void BattleTarget::func_ov007_02259494(VecFx32 *target) {
-    VecFx32 pos     = mUnk_1a4->mPosition;
+    VecFx32 pos     = mBakugan->mPosition;
     VecFx32 tgt     = *target;
     VecFx32 d;
     VecFx32 v20;
     VecFx32 v14;
     VecFx32 oldPos;
     u16 rot[3];
-    *(Rot3 *) rot = *(Rot3 *) &mUnk_1a4->mRotX;
+    *(Rot3 *) rot = *(Rot3 *) &mBakugan->mRotX;
     fx32 mag = 0;
     mUnk_1e4 = mag;
     switch (mUnk_1db) {
         case 0:
             target->y = 0x899a;
-            VEC_Subtract(target, &mUnk_1a4->mPosition, &d);
+            VEC_Subtract(target, &mBakugan->mPosition, &d);
             VEC_Normalize(&d, &d);
             d.y = 0;
             d.x = FX_Mul(d.x, 0x666);
             d.y = FX_Mul(d.y, 0x666);
             d.z = FX_Mul(d.z, 0x666);
             VEC_Add(&mUnk_a0, &d, &mUnk_a0);
-            if (!(mUnk_64.x == 0 && mUnk_64.y == 0 && mUnk_64.z == 0)) {
-                SetVec(&v20, mUnk_64.x, 0, mUnk_64.z);
+            if (!(mVelocity.x == 0 && mVelocity.y == 0 && mVelocity.z == 0)) {
+                SetVec(&v20, mVelocity.x, 0, mVelocity.z);
                 mag   = VEC_Mag(&v20);
             }
             if (mag <= 0x4800) {
                 mUnk_1db++;
                 SoundManager::Get().StartSeqArc(0xf);
             }
-            if (mUnk_1d8 != 0x32) {
-                mUnk_1d8 = 0;
+            if (mHitGimmickType != GIMMICK_TYPE_TORNADO) {
+                mHitGimmickType = 0;
                 mUnk_1dd = 0;
                 mUnk_140 = 0;
                 mUnk_1db = 0;
@@ -2640,7 +2640,7 @@ void BattleTarget::func_ov007_02259494(VecFx32 *target) {
             d.x = FX_Mul(d.x, 0x105a);
             d.y = FX_Mul(d.y, 0x105a);
             d.z = FX_Mul(d.z, 0x105a);
-            func_ov007_02233ed8(&d, 0x18e3, &d);
+            RotateVecY(&d, 0x18e3, &d);
             pos.x  = tgt.x + d.x;
             pos.y  = tgt.y + d.y + 0x4cd;
             pos.z  = tgt.z + d.z;
@@ -2652,11 +2652,11 @@ void BattleTarget::func_ov007_02259494(VecFx32 *target) {
             if (mag >= 0x32000) {
                 mUnk_140 = 0;
                 mUnk_1db = 0;
-                mUnk_1d8 = 0;
+                mHitGimmickType = 0;
                 VEC_Subtract(&pos, &oldPos, &v14);
-                mUnk_64.x = 0;
-                mUnk_64.y = 1;
-                mUnk_64.z = 0;
+                mVelocity.x = 0;
+                mVelocity.y = 1;
+                mVelocity.z = 0;
                 mUnk_94.x = 0;
                 mUnk_94.y = 0;
                 mUnk_94.z = 0;
@@ -2674,20 +2674,20 @@ void BattleTarget::func_ov007_02259494(VecFx32 *target) {
                 mUnk_a0.x = v14.x;
                 mUnk_a0.y = v14.y;
                 mUnk_a0.z = v14.z;
-                mUnk_1d8  = 0;
+                mHitGimmickType  = 0;
                 mUnk_1dd  = 0;
                 func_02024764(&SoundManager::Get(), 0xf, 0x14);
             }
             break;
     }
-    mUnk_1a4->SetPosition(&pos);
-    mUnk_1a4->SetRotation(rot);
+    mBakugan->SetPosition(&pos);
+    mBakugan->SetRotation(rot);
 }
 
 void BattleTarget::func_ov007_022599fc() {
     u8 a = 0;
     u8 b = 0;
-    if (FindMarkerCellAt(&mUnk_1a4->mPosition, &a, &b)) {
+    if (FindMarkerCellAt(&mBakugan->mPosition, &a, &b)) {
         mUnk_1da = 1;
     } else {
         mUnk_1da = 0;
@@ -2733,10 +2733,10 @@ BOOL BattleTarget::func_ov007_02259af0() {
         mUnk_1e0 = 0;
         return 0;
     }
-    if (mUnk_38 == 0 && mUnk_4c != 0) {
+    if (mUnk_38 == 0 && mMoveFrames != 0) {
         mUnk_1e0 = 0;
         mUnk_1d6 = 0;
-        if (mUnk_148 != 0x899a || !FindMarkerCellAt(&mUnk_1a4->mPosition, &a, &b)) {
+        if (mUnk_148 != 0x899a || !FindMarkerCellAt(&mBakugan->mPosition, &a, &b)) {
             if (mUnk_1dd == 2) {
                 mUnk_1db = 2;
             }
@@ -2748,8 +2748,8 @@ BOOL BattleTarget::func_ov007_02259af0() {
         u8 cell  = list->mMarkerHandles[a][b];
         mUnk_1e4 = 2;
         mUnk_1dd = 2;
-        SetVec(&mUnk_1a4->mPosition, mUnk_1a4->mPosition.x, 0x8999, mUnk_1a4->mPosition.z);
-        BakuganModel *pose = mUnk_1a4;
+        SetVec(&mBakugan->mPosition, mBakugan->mPosition.x, 0x8999, mBakugan->mPosition.z);
+        BakuganModel *pose = mBakugan;
         {
             u16 r1 = pose->mRotY;
             u16 r2 = pose->mRotZ;
@@ -2757,12 +2757,12 @@ BOOL BattleTarget::func_ov007_02259af0() {
             pose->mRotY = r1;
             pose->mRotZ = r2;
         }
-        mUnk_1a4->mAnimUpdateEnabled = 1;
+        mBakugan->mAnimUpdateEnabled = 1;
         if (owner != 0) {
             int idx          = owner - 1;
             BattleUnit *unit = &list->mUnits[(u8) idx];
             if (data_020d433c.mTutorialId != 0 || (u8) (unit->mStatus + 0xfe) <= 1) {
-                if (unit->mPlayer == mUnk_1d4) {
+                if (unit->mPlayer == mPlayer) {
                     mUnk_1d2 = 3;
                     StartResult(this, 2);
                 } else if (unit->mPlayer == mUnk_1d5) {
@@ -2773,43 +2773,43 @@ BOOL BattleTarget::func_ov007_02259af0() {
                     mUnk_1d2 = 3;
                     StartResult(this, 0xa);
                 }
-            } else if (unit->mPlayer == mUnk_1d4 || unit->mPlayer == mUnk_1d5) {
+            } else if (unit->mPlayer == mPlayer || unit->mPlayer == mUnk_1d5) {
                 mUnk_1d2 = 2;
                 func_ov007_02262828(data_020d433c.mBattlePlayers, idx, 2);
                 StartResult(this, 0xa);
-                VEC_Subtract(&list->mUnk_29c->func_ov007_0226fc4c(idx)->mPosition, &mUnk_1a4->mPosition, &d);
+                VEC_Subtract(&list->mUnk_29c->GetBakugan(idx)->mPosition, &mBakugan->mPosition, &d);
                 if (d.x == 0 && d.z == 0) {
                     state.mVelocity.z = 0x1000;
                     state.mVelocity.x = 0x1000;
                 } else {
                     state.mVelocity = d;
                 }
-                list->mUnk_29c->func_ov007_02270ae0(idx, &state);
+                list->mUnk_29c->StartMove(idx, &state);
             } else {
                 mUnk_1d2 = 4;
                 StartResult(this, 1);
-                VEC_Subtract(&list->mUnk_29c->func_ov007_0226fc4c(idx)->mPosition, &mUnk_1a4->mPosition, &d);
+                VEC_Subtract(&list->mUnk_29c->GetBakugan(idx)->mPosition, &mBakugan->mPosition, &d);
                 if (d.x == 0 && d.z == 0) {
                     state.mVelocity.z = 0x1000;
                     state.mVelocity.x = 0x1000;
                 } else {
                     state.mVelocity = d;
                 }
-                list->mUnk_29c->func_ov007_02270ae0(idx, &state);
+                list->mUnk_29c->StartMove(idx, &state);
             }
             if (mUnk_1d2 != 1) {
-                pose     = mUnk_1a4;
-                mUnk_1e8 = func_ov007_02262768(list, &pose->mPosition, pose->mRotY, mUnk_1d4, mUnk_1d3, cell - 1, 1);
+                pose     = mBakugan;
+                mUnitHandle = func_ov007_02262768(list, &pose->mPosition, pose->mRotY, mPlayer, mRecord, cell - 1, 1);
                 if (mUnk_1d2 != 2) {
                     func_ov007_02262a64(list, idx, (u8) list->mUnitHandles[a][b] - 1);
                 }
             }
         } else {
             mUnk_1d2 = 2;
-            pose     = mUnk_1a4;
-            mUnk_1e8 = func_ov007_02262768(list, &pose->mPosition, pose->mRotY, mUnk_1d4, mUnk_1d3, cell - 1, 1);
+            pose     = mBakugan;
+            mUnitHandle = func_ov007_02262768(list, &pose->mPosition, pose->mRotY, mPlayer, mRecord, cell - 1, 1);
             StartResult(this, 0xa);
-            func_ov007_02262a64(list, mUnk_1e8 - 1, mUnk_1e8 - 1);
+            func_ov007_02262a64(list, mUnitHandle - 1, mUnitHandle - 1);
         }
         i = 0;
         do {
@@ -2823,11 +2823,11 @@ BOOL BattleTarget::func_ov007_02259af0() {
                         u8 kind = list->mUnits[(u8) (other - 1)].mStatus;
                         if (kind != 2 && kind != 3) {
                             func_ov007_02262828(data_020d433c.mBattlePlayers, other - 1, 2);
-                            VEC_Subtract(&list->mUnk_29c->func_ov007_0226fc4c(other - 1)->mPosition, &mUnk_1a4->mPosition, &d);
+                            VEC_Subtract(&list->mUnk_29c->GetBakugan(other - 1)->mPosition, &mBakugan->mPosition, &d);
                             state.mVelocity.x = d.x;
                             state.mVelocity.y = d.y;
                             state.mVelocity.z = d.z;
-                            list->mUnk_29c->func_ov007_02270ae0(other - 1, &state);
+                            list->mUnk_29c->StartMove(other - 1, &state);
                         }
                     }
                 }
@@ -2837,9 +2837,9 @@ BOOL BattleTarget::func_ov007_02259af0() {
         } while (i < 3);
         mUnk_180  = 0x3000;
         mUnk_1c6  = 1;
-        mUnk_64.x = 0;
-        mUnk_64.y = 0;
-        mUnk_64.z = 0;
+        mVelocity.x = 0;
+        mVelocity.y = 0;
+        mVelocity.z = 0;
         mUnk_a0.x = 0;
         mUnk_a0.y = 0;
         mUnk_a0.z = 0;
@@ -2859,22 +2859,22 @@ BOOL BattleTarget::func_ov007_0225a278() {
     u8 b = 0;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     if (mUnk_1cf == 0) {
-        BakuganModel *pose = mUnk_1a4;
+        BakuganModel *pose = mBakugan;
         if (pose->mPosition.y <= 0x899a) {
-            if (func_ov007_0225b4a0(&pose->mPosition, &pose->mRotX, &mUnk_64, &a, &b)) {
+            if (func_ov007_0225b4a0(&pose->mPosition, &pose->mRotX, &mVelocity, &a, &b)) {
                 u8 cell = list->mMarkerHandles[a][b];
                 if (cell != 0) {
-                    pose        = mUnk_1a4;
+                    pose        = mBakugan;
                     Rot3 rot    = *(Rot3 *) &pose->mRotX;
                     VecFx32 pos = pose->mPosition;
                     SoundManager::Get().StartSeqArc(3);
-                    mUnk_64.z = 0;
-                    mUnk_64.y = 0;
-                    mUnk_64.x = 0;
+                    mVelocity.z = 0;
+                    mVelocity.y = 0;
+                    mVelocity.x = 0;
                     rot.r[0] = 0;
-                    mUnk_1a4->SetRotation(rot.r);
+                    mBakugan->SetRotation(rot.r);
                     pos.y             = 0x899a;
-                    pose              = mUnk_1a4;
+                    pose              = mBakugan;
                     pose->mPosition.x = pos.x;
                     pose->mPosition.y = pos.y;
                     pose->mPosition.z = pos.z;
@@ -2885,20 +2885,20 @@ BOOL BattleTarget::func_ov007_0225a278() {
                         FreeEffect(data_020d433c.mEffects, mUnk_1c0);
                         mUnk_1c0 = 0;
                     }
-                    mUnk_1a4->mAnimUpdateEnabled = 1;
+                    mBakugan->mAnimUpdateEnabled = 1;
                     u8 owner = list->mUnitHandles[a][b];
                     if (owner != 0) {
                         BattleUnit *unit = &list->mUnits[(u8) (owner - 1)];
-                        VecFx32 pos2     = mUnk_1a4->mPosition;
+                        VecFx32 pos2     = mBakugan->mPosition;
                         VecFx32 ref      = unit->mPos;
                         func_ov007_02259a40(a, b, &pos2, &ref);
-                        pose              = mUnk_1a4;
+                        pose              = mBakugan;
                         pose->mPosition.x = pos2.x;
                         pose->mPosition.y = pos2.y;
                         pose->mPosition.z = pos2.z;
                         mUnk_1d2          = 3;
                         func_ov007_02255cb4(0);
-                        if (unit->mPlayer == mUnk_1d4) {
+                        if (unit->mPlayer == mPlayer) {
                             StartResult(this, 2);
                         } else if (unit->mPlayer == mUnk_1d5) {
                             StartResult(this, 0x10);
@@ -2908,18 +2908,18 @@ BOOL BattleTarget::func_ov007_0225a278() {
                         } else {
                             StartResult(this, 0xa);
                         }
-                        pose     = mUnk_1a4;
-                        mUnk_1e8 = func_ov007_02262768(list, &pose->mPosition, pose->mRotY, mUnk_1d4, mUnk_1d3, cell - 1, 1);
+                        pose     = mBakugan;
+                        mUnitHandle = func_ov007_02262768(list, &pose->mPosition, pose->mRotY, mPlayer, mRecord, cell - 1, 1);
                         func_ov007_02262a64(list, owner - 1, (u8) list->mUnitHandles[a][b] - 1);
                     } else {
-                        VecFx32 p3 = mUnk_1a4->mPosition;
+                        VecFx32 p3 = mBakugan->mPosition;
                         p3.y -= 0x64cd;
                         mUnk_1d2 = 2;
                         func_ov007_02255cb4(0);
                         switch (mUnk_1df) {
                             case 5: {
-                                pose     = mUnk_1a4;
-                                mUnk_1e8 = func_ov007_02262768(list, &pose->mPosition, pose->mRotY, mUnk_1d4, mUnk_1d3, cell - 1, 2);
+                                pose     = mBakugan;
+                                mUnitHandle = func_ov007_02262768(list, &pose->mPosition, pose->mRotY, mPlayer, mRecord, cell - 1, 2);
                                 s16 h    = StartEffect(data_020d433c.mEffects, 1, 0x13, 0, 1);
                                 if (h > 0) {
                                     SetEffectPosition(data_020d433c.mEffects, h, &p3);
@@ -2928,8 +2928,8 @@ BOOL BattleTarget::func_ov007_0225a278() {
                                 break;
                             }
                             case 6: {
-                                pose     = mUnk_1a4;
-                                mUnk_1e8 = func_ov007_02262768(list, &pose->mPosition, pose->mRotY, mUnk_1d4, mUnk_1d3, cell - 1, 3);
+                                pose     = mBakugan;
+                                mUnitHandle = func_ov007_02262768(list, &pose->mPosition, pose->mRotY, mPlayer, mRecord, cell - 1, 3);
                                 s16 h    = StartEffect(data_020d433c.mEffects, 1, 0x14, 0, 1);
                                 if (h > 0) {
                                     SetEffectPosition(data_020d433c.mEffects, h, &p3);
@@ -2938,12 +2938,12 @@ BOOL BattleTarget::func_ov007_0225a278() {
                                 break;
                             }
                             default:
-                                pose     = mUnk_1a4;
-                                mUnk_1e8 = func_ov007_02262768(list, &pose->mPosition, pose->mRotY, mUnk_1d4, mUnk_1d3, cell - 1, 1);
+                                pose     = mBakugan;
+                                mUnitHandle = func_ov007_02262768(list, &pose->mPosition, pose->mRotY, mPlayer, mRecord, cell - 1, 1);
                                 break;
                         }
                         StartResult(this, 0xa);
-                        func_ov007_02262a64(list, mUnk_1e8 - 1, mUnk_1e8 - 1);
+                        func_ov007_02262a64(list, mUnitHandle - 1, mUnitHandle - 1);
                     }
                     return 1;
                 }
@@ -3051,14 +3051,14 @@ BOOL BattleTarget::func_ov007_0225ac28(BattleHitBox *box, BattleSphere *sphere, 
     SetVec(&c[5], -box->mHalfX, -box->mHalfY, box->mHalfZ);
     SetVec(&c[6], -box->mHalfX, -box->mHalfY, -box->mHalfZ);
     SetVec(&c[7], box->mHalfX, -box->mHalfY, -box->mHalfZ);
-    func_ov007_02233ed8(&c[0], box->mRotY, &c[0]);
-    func_ov007_02233ed8(&c[1], box->mRotY, &c[1]);
-    func_ov007_02233ed8(&c[2], box->mRotY, &c[2]);
-    func_ov007_02233ed8(&c[3], box->mRotY, &c[3]);
-    func_ov007_02233ed8(&c[4], box->mRotY, &c[4]);
-    func_ov007_02233ed8(&c[5], box->mRotY, &c[5]);
-    func_ov007_02233ed8(&c[6], box->mRotY, &c[6]);
-    func_ov007_02233ed8(&c[7], box->mRotY, &c[7]);
+    RotateVecY(&c[0], box->mRotY, &c[0]);
+    RotateVecY(&c[1], box->mRotY, &c[1]);
+    RotateVecY(&c[2], box->mRotY, &c[2]);
+    RotateVecY(&c[3], box->mRotY, &c[3]);
+    RotateVecY(&c[4], box->mRotY, &c[4]);
+    RotateVecY(&c[5], box->mRotY, &c[5]);
+    RotateVecY(&c[6], box->mRotY, &c[6]);
+    RotateVecY(&c[7], box->mRotY, &c[7]);
     u8 i = 0;
     do {
         VEC_Add(&c[i], &box->mPos, &c[i]);
@@ -3217,7 +3217,7 @@ BOOL BattleTarget::func_ov007_0225b4a0(VecFx32 *pos, u16 *angle, VecFx32 *vel, u
         z = -z;
     }
     speed = z + x;
-    record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4]->mRecords[mUnk_1d3];
+    record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
     if (mUnk_1d1 != 0 && pos->y <= 0x899a) {
         u32 k = record->mUnk_02_9;
         if (speed < data_ov007_0227a5e0.mUnk_f0[k]) {
@@ -3225,7 +3225,7 @@ BOOL BattleTarget::func_ov007_0225b4a0(VecFx32 *pos, u16 *angle, VecFx32 *vel, u
             if (!(*angle > lim && *angle < (u16) -lim)) {
                 if (FindMarkerCellAt(pos, &a, &b)) {
                     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                    BattlePlayer *p0 = list->mPlayers[mUnk_1d4];
+                    BattlePlayer *p0 = list->mPlayers[mPlayer];
                     BattlePlayer *p1 = list->mPlayers[mUnk_1d5];
                     u8 cell = *(u8 *) &list->mMarkerHandles[a][b];
                     if (cell != 0) {
@@ -3255,9 +3255,9 @@ BOOL BattleTarget::func_ov007_0225b4a0(VecFx32 *pos, u16 *angle, VecFx32 *vel, u
 }
 
 void BattleTarget::func_ov007_0225b69c(u8 a, u8 b) {
-    func_ov007_022479f4(mUnk_178, 1);
-    func_ov007_02247a3c(mUnk_178);
-    BattleCommandMap *map = mUnk_178;
+    func_ov007_022479f4(mCommandMap, 1);
+    func_ov007_02247a3c(mCommandMap);
+    BattleCommandMap *map = mCommandMap;
     map->mCursorX         = a;
     map->mCursorY         = b;
 }
@@ -3269,15 +3269,15 @@ void BattleTarget::func_ov007_0225b6d0() {
     u16 rot[3];
     u16 rot2[3];
     u16 r3[3];
-    if (mUnk_1e2 != 1) {
+    if (mState != 1) {
         return;
     }
     vel.x                = 0;
     vel.y                = 0;
     vel.z                = 0;
     int power;
-    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4];
-    BattleRecord *record = &player->mRecords[mUnk_1d3];
+    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
+    BattleRecord *record = &player->mRecords[mRecord];
     dir.x                = 0x1000;
     dir.y                = 0;
     dir.z                = 0;
@@ -3293,32 +3293,32 @@ void BattleTarget::func_ov007_0225b6d0() {
     rot[2] = rot[2] + mUnk_1ba;
     switch (mUnk_1df) {
         case 0:
-            func_ov007_022334f4(rot, power, &dir, &vel);
+            RotateDirScaled(rot, power, &dir, &vel);
             break;
         case 1:
             rot[2] = mUnk_1ba + 0x38e;
-            func_ov007_022334f4(rot, 0x78, &dir, &vel);
+            RotateDirScaled(rot, 0x78, &dir, &vel);
             mUnk_1c0 = StartEffect(data_020d433c.mEffects, 1, 0, 0, 1);
             SoundManager::Get().StartSeqArc(0x3d);
             mUnk_1e1 = 1;
             break;
         case 2:
-            func_ov007_022334f4(rot, power, &dir, &vel);
+            RotateDirScaled(rot, power, &dir, &vel);
             mUnk_1c0 = StartEffect(data_020d433c.mEffects, 1, 2, 0, 1);
             SoundManager::Get().StartSeqArc(0x3e);
             break;
         case 5:
-            func_ov007_022334f4(rot, power, &dir, &vel);
+            RotateDirScaled(rot, power, &dir, &vel);
             mUnk_1c0 = StartEffect(data_020d433c.mEffects, 1, 7, 0, 1);
             SoundManager::Get().StartSeqArc(0x41);
             break;
         case 6:
-            func_ov007_022334f4(rot, power, &dir, &vel);
+            RotateDirScaled(rot, power, &dir, &vel);
             mUnk_1c0 = StartEffect(data_020d433c.mEffects, 1, 8, 0, 1);
             SoundManager::Get().StartSeqArc(0x3f);
             break;
         case 4: {
-            func_ov007_022334f4(rot, power, &dir, &vel);
+            RotateDirScaled(rot, power, &dir, &vel);
             mUnk_1c0  = StartEffect(data_020d433c.mEffects, 1, 9, 0, 1);
             u8 handle = StartEffect(data_020d433c.mEffects, 1, 10, 0, 0);
             u16 t = FX_Atan2Idx(vel.x, vel.z);
@@ -3326,7 +3326,7 @@ void BattleTarget::func_ov007_0225b6d0() {
             rot2[1]   = t + 0x4000;
             rot2[2]   = 0;
             SetEffectRotation(data_020d433c.mEffects, handle, rot2);
-            SetEffectPosition(data_020d433c.mEffects, handle, &mUnk_1a4->mPosition);
+            SetEffectPosition(data_020d433c.mEffects, handle, &mBakugan->mPosition);
             SoundManager::Get().StartSeqArc(0x42);
             break;
         }
@@ -3336,7 +3336,7 @@ void BattleTarget::func_ov007_0225b6d0() {
             u16 a    = data_ov007_0227a5e0.mUnk_80[k];
             u16 b    = data_ov007_0227a5e0.mUnk_90[k];
             rot[2]   = b;
-            func_ov007_022334f4(rot, (u16) (a + 0x50), &dir, &vel);
+            RotateDirScaled(rot, (u16) (a + 0x50), &dir, &vel);
             mUnk_1c0  = StartEffect(data_020d433c.mEffects, 1, 0xb, 0, 0);
             mUnk_11c.x = 0;
             mUnk_11c.y = 0;
@@ -3347,10 +3347,10 @@ void BattleTarget::func_ov007_0225b6d0() {
     }
     mUnk_1e0  = mUnk_1df;
     mUnk_1be  = rot[1];
-    SetVec(&mUnk_64, vel.x, vel.y, vel.z);
-    mUnk_a0.x = mUnk_64.x;
-    mUnk_a0.y = mUnk_64.y;
-    mUnk_a0.z = mUnk_64.z;
+    SetVec(&mVelocity, vel.x, vel.y, vel.z);
+    mUnk_a0.x = mVelocity.x;
+    mUnk_a0.y = mVelocity.y;
+    mUnk_a0.z = mVelocity.z;
     mUnk_a0.x = FX_Mul(mUnk_a0.x, 0xb800);
     mUnk_a0.y = FX_Mul(mUnk_a0.y, 0xb800);
     mUnk_a0.z = FX_Mul(mUnk_a0.z, 0xb800);
@@ -3363,14 +3363,14 @@ void BattleTarget::func_ov007_0225b6d0() {
     mUnk_ac.x = mUnk_94.x;
     mUnk_ac.y = mUnk_94.y;
     mUnk_ac.z = mUnk_94.z;
-    func_ov007_022719c8(buf, 0xa);
+    LoadCollisionFile(buf, 0xa);
     if (mUnk_1df != 5) {
-        mUnk_1a8 = func_ov007_02271ca8(data_020d433c.mGimmickCollision, 1, buf, &mUnk_1a4->mPosition, &mUnk_1a4->mRotX, 0);
+        mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, 1, buf, &mBakugan->mPosition, &mBakugan->mRotX, 0);
     } else {
-        mUnk_1a8 = func_ov007_02271ca8(data_020d433c.mGimmickCollision, 0x10, buf, &mUnk_1a4->mPosition, &mUnk_1a4->mRotX, 0);
+        mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, 0x10, buf, &mBakugan->mPosition, &mBakugan->mRotX, 0);
     }
-    func_ov007_02248620(mUnk_178, 0);
-    mUnk_1a4->mVisible = 1;
+    func_ov007_02248620(mCommandMap, 0);
+    mBakugan->mVisible = 1;
     if (mUnk_1df == 0) {
         if (power > 0x59) {
             mUnk_1c0 = StartEffect(data_020d433c.mEffects, 1, 0x11, 0, 0);
@@ -3383,22 +3383,22 @@ void BattleTarget::func_ov007_0225b6d0() {
             SoundManager::Get().StartSeqArc(0x3b);
         }
         if (mUnk_1c0 != 0) {
-            r3[1] = FX_Atan2Idx(mUnk_64.x, mUnk_64.z) + 0x4000;
+            r3[1] = FX_Atan2Idx(mVelocity.x, mVelocity.z) + 0x4000;
             r3[0] = 0;
             r3[2] = 0;
             SetEffectRotation(data_020d433c.mEffects, mUnk_1c0, r3);
-            SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mUnk_1a4->mPosition);
+            SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mBakugan->mPosition);
         }
     }
     player->mUnk_dc = 0;
     player->mUnk_e0 = 0;
     player->mUnk_e4 = 0;
     player->mUnk_e8 = 0;
-    mUnk_1e2++;
+    mState++;
 }
 
 void BattleTarget::func_ov007_0225bf38() {
-    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mUnk_1d4];
+    BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
     mUnk_118             = player->mUnk_d8;
     mUnk_114             = player->mUnk_d4;
     func_ov007_0225c098(&mUnk_114);
@@ -3428,12 +3428,12 @@ void BattleTarget::func_ov007_0225c098(s32 *pair) {
     VecFx32 cam;
     mUnk_118 = pair[1];
     mUnk_114 = -pair[0];
-    if (mUnk_1d4 != data_020d433c.mBattlePlayers->mUnk_2a9 && data_020d433c.mTutorialId != 0) {
+    if (mPlayer != data_020d433c.mBattlePlayers->mUnk_2a9 && data_020d433c.mTutorialId != 0) {
         return;
     }
     if (mUnk_38 > 3) {
         func_ov007_0225b298((s32 *) &mUnk_114, mUnk_1cc, &mUnk_94);
-        Camera *camera = mUnk_174;
+        Camera *camera = mCamera;
         target.x       = camera->mTarget.x;
         target.y       = camera->mTarget.y;
         target.z       = camera->mTarget.z;
@@ -3452,7 +3452,7 @@ void BattleTarget::func_ov007_0225c098(s32 *pair) {
             return;
         }
         func_ov007_0225b298((s32 *) &mUnk_114, mUnk_1cc, &mUnk_94);
-        Camera *camera = mUnk_174;
+        Camera *camera = mCamera;
         target.x       = camera->mTarget.x;
         target.y       = camera->mTarget.y;
         target.z       = camera->mTarget.z;
@@ -3500,11 +3500,11 @@ void BattleTarget::func_ov007_0225c4dc() {
             }
             if (EffectAlive(data_020d433c.mEffects, mUnk_1c0)) {
                 u16 rot[3];
-                rot[1] = FX_Atan2Idx(mUnk_64.x, mUnk_64.z) + 0x4000;
+                rot[1] = FX_Atan2Idx(mVelocity.x, mVelocity.z) + 0x4000;
                 rot[0] = 0;
                 rot[2] = 0;
                 SetEffectRotation(data_020d433c.mEffects, mUnk_1c0, rot);
-                SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mUnk_1a4->mPosition);
+                SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mBakugan->mPosition);
             } else {
                 mUnk_1c0 = 0;
             }
@@ -3514,17 +3514,17 @@ void BattleTarget::func_ov007_0225c4dc() {
             if (mUnk_1c0 == 0) {
                 break;
             }
-            if (VEC_Mag(&mUnk_64) <= 0x1000) {
+            if (VEC_Mag(&mVelocity) <= 0x1000) {
                 FreeEffect(data_020d433c.mEffects, mUnk_1c0);
                 mUnk_1e1 = 0;
                 mUnk_1c0 = 0;
             } else {
                 u16 rot[3];
-                rot[1] = FX_Atan2Idx(mUnk_64.x, mUnk_64.z) + 0x4000;
+                rot[1] = FX_Atan2Idx(mVelocity.x, mVelocity.z) + 0x4000;
                 rot[0] = 0;
                 rot[2] = 0;
                 SetEffectRotation(data_020d433c.mEffects, mUnk_1c0, rot);
-                SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mUnk_1a4->mPosition);
+                SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mBakugan->mPosition);
             }
             break;
         }
@@ -3533,11 +3533,11 @@ void BattleTarget::func_ov007_0225c4dc() {
                 break;
             }
             u16 rot[3];
-            rot[1] = FX_Atan2Idx(mUnk_64.x, mUnk_64.z) + 0x4000;
+            rot[1] = FX_Atan2Idx(mVelocity.x, mVelocity.z) + 0x4000;
             rot[0] = 0;
             rot[2] = 0;
             SetEffectRotation(data_020d433c.mEffects, mUnk_1c0, rot);
-            SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mUnk_1a4->mPosition);
+            SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mBakugan->mPosition);
             break;
         }
         case 5:
@@ -3545,14 +3545,14 @@ void BattleTarget::func_ov007_0225c4dc() {
             if (mUnk_1c0 == 0) {
                 break;
             }
-            VEC_Mag(&mUnk_64);
-            SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mUnk_1a4->mPosition);
+            VEC_Mag(&mVelocity);
+            SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mBakugan->mPosition);
             break;
         case 3:
             if (mUnk_1c0 == 0) {
                 break;
             }
-            SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mUnk_1a4->mPosition);
+            SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mBakugan->mPosition);
             if (mUnk_1e0 != 3) {
                 FreeEffect(data_020d433c.mEffects, mUnk_1c0);
                 mUnk_1c0 = 0;
@@ -3562,14 +3562,14 @@ void BattleTarget::func_ov007_0225c4dc() {
             if (mUnk_1c0 == 0) {
                 break;
             }
-            fx32 mag = VEC_Mag(&mUnk_64);
-            SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mUnk_1a4->mPosition);
+            fx32 mag = VEC_Mag(&mVelocity);
+            SetEffectPosition(data_020d433c.mEffects, mUnk_1c0, &mBakugan->mPosition);
             if ((float) mag <= 0.0f) {
                 FreeEffect(data_020d433c.mEffects, mUnk_1c0);
                 mUnk_1c0 = 0;
             } else {
                 MtxFx43 mtx = CameraManager::Get().mMtxC[0];
-                VecFx32 pos = mUnk_1a4->mPosition;
+                VecFx32 pos = mBakugan->mPosition;
                 func_01ffcf64(&mtx, &pos);
                 SetEffectMatrix(data_020d433c.mEffects, mUnk_1c0, &mtx);
             }
@@ -3580,7 +3580,7 @@ void BattleTarget::func_ov007_0225c4dc() {
         return;
     }
     MtxFx43 mtx = CameraManager::Get().mMtxC[0];
-    VecFx32 pos = mUnk_1a4->mPosition;
+    VecFx32 pos = mBakugan->mPosition;
     VecFx32 off = data_ov007_0227a5e0.mUnk_68;
     mtx._[11]   = 0;
     mtx._[10]   = 0;
@@ -3591,13 +3591,13 @@ void BattleTarget::func_ov007_0225c4dc() {
     SetEffectMatrix(data_020d433c.mEffects, mUnk_1c2, &mtx);
 }
 
-void func_ov007_0225c960(BattleTarget *target, VecFx32 *dir, int unk) {
+void SetTargetVelocity(BattleTarget *target, VecFx32 *dir, int unk) {
     target->mUnk_a0.x = dir->x;
     target->mUnk_a0.y = dir->y;
     target->mUnk_a0.z = dir->z;
-    target->mUnk_64.x = target->mUnk_a0.x;
-    target->mUnk_64.y = target->mUnk_a0.y;
-    target->mUnk_64.z = target->mUnk_a0.z;
+    target->mVelocity.x = target->mUnk_a0.x;
+    target->mVelocity.y = target->mUnk_a0.y;
+    target->mVelocity.z = target->mUnk_a0.z;
     target->mUnk_b8.x = 0;
     target->mUnk_b8.y = 0;
     target->mUnk_b8.z = 0;
@@ -3611,13 +3611,13 @@ void func_ov007_0225c960(BattleTarget *target, VecFx32 *dir, int unk) {
     }
 }
 
-void func_ov007_0225c9c0(BattleTarget *target, int a, int b, int c, int d) {
-    target->mUnk_64.x = a;
-    target->mUnk_64.y = b;
-    target->mUnk_64.z = c;
-    target->mUnk_a0.x = target->mUnk_64.x;
-    target->mUnk_a0.y = target->mUnk_64.y;
-    target->mUnk_a0.z = target->mUnk_64.z;
+void SetTargetVelocityXyz(BattleTarget *target, int a, int b, int c, int d) {
+    target->mVelocity.x = a;
+    target->mVelocity.y = b;
+    target->mVelocity.z = c;
+    target->mUnk_a0.x = target->mVelocity.x;
+    target->mUnk_a0.y = target->mVelocity.y;
+    target->mUnk_a0.z = target->mVelocity.z;
     target->mUnk_b8.x = 0;
     target->mUnk_b8.y = 0;
     target->mUnk_b8.z = 0;
@@ -3704,10 +3704,10 @@ void BattleTarget::func_ov007_0225cb7c() {
     SpriteManager::Get().Screen(0).AddOam((void *) data_ov007_0227a5e0.mUnk_50, 1, 0xce, 0xba, 1, 0x70, 0xb, 0);
 }
 
-void BattleTarget::func_ov007_0225cd6c() {
+void BattleTarget::DrawRoulette() {
     mAnims[4]->Update();
     mAnims[4]->Draw(1, 0x80, 0x62, 0);
-    if (mUnk_1d4 == data_020d433c.mBattlePlayers->mUnk_2a9) {
+    if (mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
         mAnims[5]->Update();
         mAnims[5]->Draw(1, 0x80, 0x62, 0);
     }
@@ -3732,13 +3732,13 @@ void BattleTarget::func_ov007_0225ce08() {
     screen.LoadCharacters("battle_shoot_b_gp.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("battle_shoot_b_gp_ncl.bin", 0x140, 0);
     ChangeDir("/");
-    mUnk_178 = new BattleCommandMap(data_020d433c.mFieldId);
-    mUnk_178->mUnk_151 = 0;
-    mUnk_178->Init();
+    mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
+    mCommandMap->mUnk_151 = 0;
+    mCommandMap->Init();
     data_020d433c.mGimmicks->mState = 0;
-    mUnk_1a4->SetupMode(3);
-    if (mUnk_1e8 != 0) {
-        BakuganModel *pose = data_020d433c.mBattlePlayers->mUnk_29c->func_ov007_0226fc4c(mUnk_1e8 - 1);
+    mBakugan->SetupMode(3);
+    if (mUnitHandle != 0) {
+        BakuganModel *pose = data_020d433c.mBattlePlayers->mUnk_29c->GetBakugan(mUnitHandle - 1);
         pose->mVisible            = 0;
     }
     func_ov007_02255cb4(0);
@@ -3747,5 +3747,5 @@ void BattleTarget::func_ov007_0225ce08() {
 }
 
 BOOL BattleTarget::func_ov007_0225d078() {
-    return mUnk_1e2 == 0xc;
+    return mState == 0xc;
 }

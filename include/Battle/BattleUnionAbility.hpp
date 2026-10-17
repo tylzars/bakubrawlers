@@ -31,9 +31,9 @@ public:
     BattleUnionAbility(u8 type, u32 charOffset, u16 palette);
     virtual ~BattleUnionAbility();
     /* 08 */ virtual void Update();
-    void func_ov007_02234418(u8 choice);
+    void Close(u8 choice);
     void func_ov007_02234428();
     void func_ov007_022344a4();
-    void func_ov007_0223471c();
-    void func_ov007_02234b5c();
+    void LoadGraphics();
+    void Draw();
 };

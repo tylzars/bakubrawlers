@@ -333,7 +333,7 @@ void BattleCommand::Update() {
             if (list->mTurnCount == 0) {
                 list->mTurnCount++;
                 if (data_020d433c.mGimmicks) {
-                    data_020d433c.mGimmicks->func_ov007_0222e25c();
+                    data_020d433c.mGimmicks->CountTurnAll();
                 }
             } else {
                 func_ov007_0223a5a4(this, 1);
@@ -852,7 +852,7 @@ void BattleCommand::Update() {
             }
             u8 cur          = data_020d433c.mBattlePlayers->mTurnPlayer;
             BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[cur];
-            u8 sel          = p->mCpu->func_ov007_02231dd0();
+            u8 sel          = p->mCpu->PickRecord();
             func_ov007_022314bc(p->mCpu);
             BattleRecord *rec = &p->mRecords[sel];
             p->mRecord = sel;

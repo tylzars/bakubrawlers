@@ -12,25 +12,51 @@ struct GimmickSetBlock {
     u32 mData[0x200];
 };
 
-// Loaded data of the SetData_%02d_%02d.bin files (0x824+ bytes), created by func_ov007_02271ca8.
+// Loaded data of the SetData_%02d_%02d.bin files (0x824+ bytes), created by AddCollisionSet.
 struct GimmickSetData {
     /* 000 */ GimmickSetData *mPrev; // list node: previous
     /* 004 */ GimmickSetData *mNext;
-    /* 008 */ u16 mUnk_08; // collision groups this set belongs to
-    /* 00a */ u16 mUnk_0a; // collision groups it reacts to
+    /* 008 */ u16 mMode; // collision groups this set belongs to
+    /* 00a */ u16 mModeMask; // collision groups it reacts to
     /* 00c */ u16 mUnk_0c; // first 4 bytes of the file (count at +e)
     /* 00e */ u16 mUnk_0e;
-    /* 010 */ GimmickSetBlock mUnk_10; // object records
-    /* 810 */ VecFx32 mUnk_810;
+    /* 010 */ GimmickSetBlock mObstacles; // object records
+    /* 810 */ VecFx32 mPosition;
     /* 81c */ u16 mRotX;
     /* 81e */ u16 mRotY;
     /* 820 */ u16 mRotZ;
-    /* 822 */ u8 mUnk_822; // own slot index
-    /* 823 */ u8 mUnk_823;
-    /* 824 */ u8 mUnk_824[8];
-    /* 82c */ u8 mUnk_82c[8];
-    /* 834 */ u8 mUnk_834; // slot in the owner's table + 1 (0: unused)
+    /* 822 */ u8 mSlot; // own slot index
+    /* 823 */ u8 mHitCount;
+    /* 824 */ u8 mHitSlots[8];
+    /* 82c */ u8 mHitObstacleIndices[8];
+    /* 834 */ u8 mTag; // slot in the owner's table + 1 (0: unused)
     /* 835 */ PAD(0x835, 0x838);
+};
+
+// Object types of the SetData files (GimmickSetEntry::mType). GimmickManager::CreateFromFile creates one
+// subclass per type and each subclass constructor stores its type in Gimmick::mUnk_3a, which
+// LoadCollision passes on as the collision set's tag (BattleTarget switches on it). Type 1 creates a
+// GimmickExePoint when data_020d433c.mUnk_7a is set, otherwise a GimmickFieldPowerS with variant 1, which stores
+// GIMMICK_TYPE_FIELD_POWER_S. Types 0x1f, 0x28 and 0x3d (GimmickUnk_02274830, GimmickUnk_022308a8,
+// GimmickUnk_02230cec) are not named.
+enum {
+    GIMMICK_TYPE_EXE_POINT       = 1,
+    GIMMICK_TYPE_FIELD_POWER_G   = 2,
+    GIMMICK_TYPE_FIELD_POWER_S   = 3,
+    GIMMICK_TYPE_JUMP_OBJ        = 4,
+    GIMMICK_TYPE_DASH_BASE       = 5,
+    GIMMICK_TYPE_BLOCK           = 6,
+    GIMMICK_TYPE_FIELD_DESTROY   = 7,
+    GIMMICK_TYPE_BAKUGAN         = 8,
+    GIMMICK_TYPE_ABILITY_FIELD   = 9,
+    GIMMICK_TYPE_PYRUS_ERUPTION  = 0x1e,
+    GIMMICK_TYPE_AQUOS_FUKIDASHI = 0x29,
+    GIMMICK_TYPE_TORNADO         = 0x32,
+    GIMMICK_TYPE_VENT_KAZE       = 0x33,
+    GIMMICK_TYPE_SUTE_WALL       = 0x3c,
+    GIMMICK_TYPE_HAOS_BALL       = 0x46,
+    GIMMICK_TYPE_HAOS_WALL       = 0x47,
+    GIMMICK_TYPE_IKAZUCHI_START  = 0x52,
 };
 
 // Base of the field gimmick objects of the battle overlay (vtable 0228729c, 0x46 bytes in the derived classes).
@@ -40,25 +66,25 @@ public:
     /* 00 SceneBase */
     /* 0c ModelTransform */
     /* 38 */ u8 mState;
-    /* 39 */ u8 mUnk_39;
-    /* 3a */ u8 mUnk_3a;
+    /* 39 */ u8 mId;
+    /* 3a */ u8 mType;
     /* 3b */ u8 mUnk_3b;
-    /* 3c */ GimmickSetData *mUnk_3c;
-    /* 40 */ s32 mUnk_40;
-    /* 44 */ u8 mUnk_44;
+    /* 3c */ GimmickSetData *mCollision;
+    /* 40 */ s32 mCountingTurns;
+    /* 44 */ u8 mTurnCount;
     /* 45 */
 
     Gimmick(u8 a, u8 b);
-    void func_ov007_0222ea28(int id, int count); // loads the SetData file `id` into mUnk_3c
-    BOOL func_ov007_0222ea84(int radius);       // TRUE when mPosition is within radius of a marked player entry
+    void LoadCollision(int id, int count); // loads the SetData file `id` into mUnk_3c
+    BOOL IsNearMarker(int radius);       // TRUE when mPosition is within radius of a marked player entry
     virtual ~Gimmick();
     /* 08 */ virtual void Update() = 0;
     /* 0c */ virtual void Load() = 0;
     /* 10 */ virtual void Unload() = 0;
     /* 14 */ virtual void Finish() = 0;
-    /* 18 */ virtual void vfunc_18() {
-        if (mUnk_40) {
-            mUnk_44++;
+    /* 18 */ virtual void CountTurn() {
+        if (mCountingTurns) {
+            mTurnCount++;
         }
     }
 };

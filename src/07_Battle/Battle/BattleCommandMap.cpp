@@ -188,7 +188,7 @@ BattleCommandMap::BattleCommandMap(u8 unk)
     }
     mUnk_74 = data_020d433c.mBattlePlayers->mUnk_29c;
     if (mUnk_74) {
-        mUnk_74->func_ov007_0226fca8();
+        mUnk_74->CreateFontObjs();
     }
     mLights = new ModelLightGroup(data_ov007_02279efc);
     GetCornerPosition(this, (VecFx32 *) mUnk_120);
@@ -230,7 +230,7 @@ BattleCommandMap::~BattleCommandMap() {
         data_020d433c.mGimmicks->UnloadAll();
     }
     if (mUnk_74) {
-        mUnk_74->func_ov007_0226fd78();
+        mUnk_74->Release();
     }
     if (mLights) {
         delete mLights;
@@ -261,7 +261,7 @@ void BattleCommandMap::func_ov007_0224560c(u32 index) {
     if (model == 0) {
         return;
     }
-    if (model->mUnk_2c != 3) {
+    if (model->mKind != 3) {
         return;
     }
     if (model) {
@@ -328,7 +328,7 @@ void BattleCommandMap::func_ov007_022458cc() {
     func_ov007_022476e0(this);
     func_ov007_02247898(this);
     func_ov007_0224796c(this);
-    mUnk_74->func_ov007_0226fe4c();
+    mUnk_74->Update();
 }
 
 void BattleCommandMap::func_ov007_022458f4() {
@@ -538,7 +538,7 @@ void GetCellPosition(VecFx32 *out, u8 a, u8 b);
 
 extern "C" void func_ov007_02246558(BattleCommandMap *map) {
     if (map->mUnk_151 != 0 && map->mStatusPanels) {
-        map->mStatusPanels->func_ov007_02235480();
+        map->mStatusPanels->DrawPanels();
     }
 }
 
@@ -581,7 +581,7 @@ extern "C" void func_ov007_02246730(BattleCommandMap *map) {
 
 extern "C" void func_ov007_02246758(BattleCommandMap *map) {
     if (map->mUnk_14c != 0 && map->mUnk_152 != 0) {
-        map->mUnk_74->func_ov007_02270248();
+        map->mUnk_74->Draw();
     }
 }
 
@@ -630,7 +630,7 @@ extern "C" void func_ov007_02246804(BattleCommandMap *map) {
                 map->mUnk_48->mPosition = b;
                 s32 frame = map->mUnk_48->mModel->GetAnimFrame();
                 if (marker->mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
-                    map->mUnk_48->func_ov007_02248eb8();
+                    map->mUnk_48->DrawPulsing();
                 } else {
                     map->mUnk_48->mModel->GetAnimFrame();
                     map->mUnk_48->mModel->SetAnimFrame(0);
@@ -948,7 +948,7 @@ extern "C" void func_ov007_022476e0(BattleCommandMap *map) {
     do {
         u8 index             = data_020d433c.mBattlePlayers->mTurnOrder[i];
         BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[index];
-        map->mStatusPanels->func_ov007_02235280(index, (s8) player->mCharacterId, data_ov007_02279eb0[i], 2);
+        map->mStatusPanels->SetupPanel(index, (s8) player->mCharacterId, data_ov007_02279eb0[i], 2);
         i++;
     } while (i < data_020d433c.mPlayerCount);
 }
@@ -968,7 +968,7 @@ extern "C" void func_ov007_02247794(BattleCommandMap *map) {
             Rot16 rot = {0, 0, 0};
             rot.y = unit->mUnk_0c;
             BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[unit->mPlayer]->mRecords[unit->mRecord];
-            map->mUnk_74->func_ov007_02270120(i, &pos, &rot.x, record->mBakuganId, record->mAttribute);
+            map->mUnk_74->CreateBakugan(i, &pos, &rot.x, record->mBakuganId, record->mAttribute);
         }
         i++;
     } while (i < 12);
@@ -1214,14 +1214,14 @@ extern "C" void func_ov007_022487a8(BattleCommandMap *map) {
     rot[0] = 0;
     rot[1] = map->mUnk_13c + (u16) (65536.0f * (float) degrees / 360.0f);
     rot[2] = map->mUnk_13e;
-    func_ov007_022334f4(rot, map->mUnk_140, &v, (VecFx32 *) map->mUnk_114);
+    RotateDirScaled(rot, map->mUnk_140, &v, (VecFx32 *) map->mUnk_114);
 }
 
 extern "C" void func_ov007_0224882c(BattleCommandMap *map) {
     VecFx32 tmp;
-    func_ov007_02233158((VecFx32 *) map->mUnk_120, (VecFx32 *) map->mUnk_114, (VecFx32 *) map->mUnk_d8);
+    PredictLanding((VecFx32 *) map->mUnk_120, (VecFx32 *) map->mUnk_114, (VecFx32 *) map->mUnk_d8);
     map->mUnk_d8[1] = 0x24cd;
-    map->mUnk_12c   = func_ov007_02233270((VecFx32 *) map->mUnk_120, (VecFx32 *) map->mUnk_114, &tmp, 0, 0);
+    map->mUnk_12c   = PredictStop((VecFx32 *) map->mUnk_120, (VecFx32 *) map->mUnk_114, &tmp, 0, 0);
     Camera *camera  = data_020d433c.mBattlePlayers->mCamera;
     if (camera == 0) {
         return;

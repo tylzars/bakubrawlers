@@ -6,9 +6,9 @@
 #include "Graphics/Camera.hpp"
 #include "System/FileSystem.hpp"
 
-void func_ov007_02271d78(GimmickCollision *data, GimmickSetData *set);
-void func_ov007_022719c8(void *buf, u8 id);
-GimmickSetData *func_ov007_02271ca8(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
+void RemoveCollisionSet(GimmickCollision *data, GimmickSetData *set);
+void LoadCollisionFile(void *buf, u8 id);
+GimmickSetData *AddCollisionSet(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
 
 static const u8 data_ov007_022793cc[4]  = {3, 4, 5, 0};
 static const u16 data_ov007_022793d4[3] = {30, 50, 50};
@@ -27,7 +27,7 @@ GimmickFieldDestroy::GimmickFieldDestroy(u8 a)
     mModelB = 0;
     mModelE = 0;
     mState  = 0;
-    mUnk_3a = 7;
+    mType = GIMMICK_TYPE_FIELD_DESTROY;
     mModelB = 0;
     mModelE = 0;
     mKind   = 0;
@@ -41,8 +41,8 @@ GimmickFieldDestroy::~GimmickFieldDestroy() {
 
 void GimmickFieldDestroy::func_ov007_0222accc() {
     char buf[0x804];
-    func_ov007_022719c8(buf, 0x32);
-    mUnk_3c = func_ov007_02271ca8(data_020d433c.mGimmickCollision, 0x20, buf, &mPosition, &mRotX, mUnk_3a);
+    LoadCollisionFile(buf, 0x32);
+    mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, 0x20, buf, &mPosition, &mRotX, mType);
     VecFx32 v = {0x1000, 0x1000, 0x1000};
     mScale    = v;
 }
@@ -131,10 +131,10 @@ void GimmickFieldDestroy::Update() {
         if ((int)data_020d433c.mGimmicks->mState >= 2) {
             func_020526bc();
         }
-        GimmickSetData *set = mUnk_3c;
-        if (set && set->mUnk_823) {
-            func_ov007_02271d78(data_020d433c.mGimmickCollision, set);
-            mUnk_3c = 0;
+        GimmickSetData *set = mCollision;
+        if (set && set->mHitCount) {
+            RemoveCollisionSet(data_020d433c.mGimmickCollision, set);
+            mCollision = 0;
             func_ov007_0222b8b4();
             mTimer++;
             SoundManager::Get().StartSeqArc(4);
@@ -148,7 +148,7 @@ void GimmickFieldDestroy::Update() {
         }
         break;
     case 3:
-        mUnk_40 = 1;
+        mCountingTurns = 1;
         mState++;
         break;
     case 4: {
@@ -162,23 +162,23 @@ void GimmickFieldDestroy::Update() {
         } else {
             limit = data_ov007_022793cc[players - 2];
         }
-        if (mUnk_44 < limit) {
+        if (mTurnCount < limit) {
             break;
         }
         func_ov007_0222accc();
-        mUnk_40 = 0;
+        mCountingTurns = 0;
         mState  = 1;
-        mUnk_44 = 0;
+        mTurnCount = 0;
         break;
     }
     case 5:
         mFinished = 1;
         break;
     }
-    func_ov007_0222b410();
+    UpdateKindSequence();
 }
 
-u8 GimmickFieldDestroy::func_ov007_0222b328() {
+u8 GimmickFieldDestroy::PickKind() {
     u8 flag   = data_020d433c.mUnk_7a;
     u32 total = 0;
     u8 i;
@@ -210,7 +210,7 @@ found:
     return i;
 }
 
-void GimmickFieldDestroy::func_ov007_0222b410() {
+void GimmickFieldDestroy::UpdateKindSequence() {
     if (mTimer) {
         BattlePlayer *p;
         u8 kind = mKind;
@@ -226,7 +226,7 @@ void GimmickFieldDestroy::func_ov007_0222b410() {
                 func_ov007_0226a380(p, p->mRecord, 0x1e);
                 CameraManager::Get();
                 MtxFx43 mtx    = data_020c1cf4;
-                VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
+                VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
                 VecFx32 v      = {0, 0xf000, -0xa000};
                 u8 handle      = StartEffect(data_020d433c.mEffects, 1, 3, 0, 0);
                 if (handle) {
@@ -249,11 +249,11 @@ void GimmickFieldDestroy::func_ov007_0222b410() {
                 }
                 if (handle) {
                     VecFx32 d;
-                    VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
+                    VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
                     CameraManager::Get();
                     MtxFx43 mtx = data_020c1cf4;
                     func_01ffcf64(&mtx, &mPosition);
-                    Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_174;
+                    Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mCamera;
                     d.x                 = h->mPosition.x;
                     d.y                 = h->mPosition.y;
                     d.z                 = h->mPosition.z;
@@ -262,7 +262,7 @@ void GimmickFieldDestroy::func_ov007_0222b410() {
                     d.x = FX_Mul(d.x, 0x1e000);
                     d.y = FX_Mul(d.y, 0x1e000);
                     d.z = FX_Mul(d.z, 0x1e000);
-                    VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition, &d);
+                    VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
                     func_01ffcf64(&mtx, &d);
                     SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
                 }
@@ -285,7 +285,7 @@ void GimmickFieldDestroy::func_ov007_0222b410() {
 void GimmickFieldDestroy::func_ov007_0222b8b4() {
     BattlePlayerList *plist = data_020d433c.mBattlePlayers;
     BattlePlayer *p         = plist->mPlayers[plist->mTurnPlayer];
-    mKind                   = func_ov007_0222b328();
+    mKind                   = PickKind();
     switch (mKind) {
     case 0: {
         int v = p->mUnk_f3 + 0xbe;
@@ -301,7 +301,7 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         MtxFx43 mtx2           = data_020c1cf4;
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
         MtxFx43 mtx            = gIdentityMtx43;
-        VecFx32 camPos         = list->mBattleTarget->mUnk_1a4->mPosition;
+        VecFx32 camPos         = list->mBattleTarget->mBakugan->mPosition;
         VecFx32 v2             = {0, 0, 0x1e000};
         mtx2._[11]             = 0;
         mtx2._[10]             = 0;
@@ -320,11 +320,11 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
             return;
         }
         VecFx32 d;
-        VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
+        VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
         CameraManager::Get();
         MtxFx43 mtx = data_020c1cf4;
         func_01ffcf64(&mtx, &mPosition);
-        Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_174;
+        Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mCamera;
         d.x                 = h->mPosition.x;
         d.y                 = h->mPosition.y;
         d.z                 = h->mPosition.z;
@@ -333,7 +333,7 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         d.x = FX_Mul(d.x, 0x1e000);
         d.y = FX_Mul(d.y, 0x1e000);
         d.z = FX_Mul(d.z, 0x1e000);
-        VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition, &d);
+        VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
         func_01ffcf64(&mtx, &d);
         SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         break;

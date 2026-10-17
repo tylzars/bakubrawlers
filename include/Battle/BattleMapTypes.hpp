@@ -10,14 +10,14 @@
 
 class BattleMapModel : public ModelTransform { // 0x30 bytes, ctor 02248c84 (1 argument), dtor 02248cb0
 public:
-    /* 2c */ u8 mUnk_2c; // model type (0..7)
-    /* 2d */ u8 mUnk_2d; // brightness of the model (0xf..0x1f)
+    /* 2c */ u8 mKind; // model type (0..7)
+    /* 2d */ u8 mColorLevel; // brightness of the model (0xf..0x1f)
     /* 2e */ PAD(0x2e, 0x30);
 
     BattleMapModel(u32 unk1);
     ~BattleMapModel();
-    void func_ov007_02248cf4(); // loads the model of type mUnk_2c from /Game/Battle/3d/MapObj
-    void func_ov007_02248eb8(); // updates the brightness and draws
+    void LoadModel(); // loads the model of type mUnk_2c from /Game/Battle/3d/MapObj
+    void DrawPulsing(); // updates the brightness and draws
 };
 
 // Piece of the battle map (ctor 02263xxx, destructor 022636b0), deleted by pointer.
@@ -25,7 +25,7 @@ class BattleMapPiece : public ModelTransform {
 public:
     BattleMapPiece(int unk); // 0226368c
     ~BattleMapPiece();
-    void func_ov007_022636f4(u32 type);
+    void LoadModel(u32 type);
 };
 
 // Model of the player name plates, status icons and character markers (/Game/Battle/3d/FontObj), 0x2c bytes.
@@ -34,7 +34,7 @@ class BattleFontObj : public ModelTransform {
 public:
     BattleFontObj(u32 type);
     ~BattleFontObj();
-    void func_ov007_02248ac4(u32 type); // loads the texture and the model of the type
+    void LoadModel(u32 type); // loads the texture and the model of the type
 };
 
 class TextureFile;
@@ -43,7 +43,7 @@ class TextureFile;
 class BattleMapObjPart : public ModelTransform {
 public:
     ~BattleMapObjPart();
-    void func_ov007_022490ac(TextureFile *texture, const char *nsbmd, const char *data, u32 unk0);
+    void LoadModel(TextureFile *texture, const char *nsbmd, const char *data, u32 unk0);
 };
 
 // A model file entry of the tables of BattleMapObj (8 bytes).

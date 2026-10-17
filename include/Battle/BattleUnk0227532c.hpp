@@ -25,8 +25,8 @@ public:
     BattleUnk0227532c(u8 planes);
     virtual ~BattleUnk0227532c();
     /* 08 */ virtual void Update();
-    void func_ov007_02275900();
-    BOOL func_ov007_022756f0(int target);
+    void LoadWindow();
+    BOOL SlideTo(int target);
 };
 
 void func_ov007_022758a4(BattleUnk0227532c *popup); // frame callback: slide offset and visible planes

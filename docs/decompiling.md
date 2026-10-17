@@ -144,7 +144,7 @@ that matches should replace it.
 
 - Layout stand-ins: FieldSelectScene's, BattlePlayer's and BattlePlayerList's (16 bytes) `DataLayoutSlot()` statics (one unidentified small object
   in the data size sort; in BattlePlayer it puts the TextManager, InputManager, WirelessManager destructor nodes in
-  the original order), BattleUnk022637ac's thirteen named `{0, 0x4800, 0}` statics (the order of identical initialisers),
+  the original order), BattleAbility's thirteen named `{0, 0x4800, 0}` statics (the order of identical initialisers),
   TournamentSubScene's `sMessageIds[1][24]` shape (keeps a byte table in the shared .rodata), GameMain.cpp (main's slot).
 - Index/register stand-ins: ctrdg func_02011e7c's `reg` pointer local for the 0x04000300 read (keeps the address
   numbered among the variables), nns_snd_wavstrm func_02039a50's mix of the ADPCM_STEP macro (high nibbles) and an
@@ -152,7 +152,7 @@ that matches should replace it.
   following range checks unable to fail, though the compiler still emits them), gfd_vram func_02035f54's `data_020a5898` (a second name for the +8 range of the slot
   table at 0x020a5890, so the loop base stays a hoisted temporary), cri_adx_dec's unread zero initialisers in func_0203f714 and func_0203fcd8 (register and
   stack-slot order), BattlePlayerList::Update's two volatile reads in case 4's second record (keep the player
-  reload and the slot read apart so they number as the original's registers need), BattleSub48's enum-typed entry index, BattleUnk022637ac::func_ov007_02265af8's two
+  reload and the slot read apart so they number as the original's registers need), BattleSub48's enum-typed entry index, BattleAbility::func_ov007_02265af8's two
   volatile index reads, BattleOrderSelect's `volatile ry`, BattleCardModel's narrow stack
   read, the casts through `data_020a3210.mOrder` in ListScene.cpp, BattleConfrontCard::func_ov007_0223f918's
   two-arm player index in case 29 (both arms read the same byte), cri_wave_ch func_02048940's repeated
@@ -177,11 +177,11 @@ that matches should replace it.
   forms tried (temporaries, inline helpers, `||`, negations, pointer locals), and `-proc generic` shows our compare
   directly after its load in all of them. Solved with enum-typed copies of the two modes, which are not
   constant-propagated, so both loads stay ahead of the compares.
-- **A u8 index coloured after its base.** In BattleTarget::func_ov007_0225ca48, BattleUnk022637ac (func_ov007_022677cc,
+- **A u8 index coloured after its base.** In BattleTarget::func_ov007_0225ca48, BattleAbility (func_ov007_022677cc,
   02264a5c, 02265af8, 0226547c) and BattlePlayerList (Update, 022628e0) the original colours a u8 index load
   (`unit->mUnk_0e`, a record or row index) after the base or player pointer it indexes; every plain form colours it
   first. An enum-typed copy (`UnitIndex e = (UnitIndex) unit->mUnk_0e;`) or one index local reassigned for
-  successive records gives the original's order. Only BattleUnk022637ac::func_ov007_02265af8 still needs two
+  successive records gives the original's order. Only BattleAbility::func_ov007_02265af8 still needs two
   `*(volatile u8 *)` placeholders: there the enum copy gets the right registers but is scheduled before the list load.
   BattleConfrontCard::func_ov007_0223f918 (case 29's loop head) is the same family: the original numbers the list
   pointer, the player index, `j*4` and the slot pointer in that order. It matches with a placeholder two-arm index
@@ -437,7 +437,7 @@ Other findings from linking:
 - **An enum-typed zero stays in its register.** cri_adx_player's func_0203e110 keeps one zero in r2 through a loop of
   byte stores: `enum { ZERO } z = ZERO;` and `p[k] = (unsigned char) z;` (the cast avoids a sign extension), since
   mwcc does not propagate enum values. Plain `int`/`long` zero locals fold back to constants.
-- **A shared exit label.** GimmickFieldDestroy::func_ov007_0222b328's two early `return i;` became `goto found;` to one
+- **A shared exit label.** GimmickFieldDestroy::PickKind's two early `return i;` became `goto found;` to one
   `found: return i;` after `return 0;`, which gives the original branch shape and table load order.
 
 - **Two u8 zeros share a register, and that steers the scheduler.** In BattleCpu::func_ov007_022310f0 the zeros of
@@ -494,7 +494,7 @@ Other findings from linking:
   in func_020843ac (ListScene.cpp), not only register choices.
 
 - **`x[n] = v; n++;` vs `x[n++] = v;`** schedule differently; BattleCpu::func_ov007_02231300 needs the split form. A
-  counter also passed to `MATH_Rand32` matched as `u32 n` with `n = (u8) (n + 1)` (func_ov007_022329cc).
+  counter also passed to `MATH_Rand32` matched as `u32 n` with `n = (u8) (n + 1)` (StartJumpObjTargets).
 - **Re-read instead of caching.** Where the original reloads a table element or a global chain in a loop, read it at
   each use rather than through a local pointer (func_ov007_02231300, func_ov007_022314bc).
 
@@ -525,7 +525,7 @@ Other findings from linking:
   lab of 20 identical `LoadAndQueueUpload` calls the argument-setup pattern repeats every 7 calls; the period depends on
   the stack arguments (10, 8, 7, 6, 6 calls for 1-5 of them). Code before the run shifts it: a global store, or a
   call that returns a value (a `void` call shifts it less). The open cases (TournamentSubScene::func_ov002_0221fb24,
-  BattleUnk022767c8::func_ov007_02277514, and the enum-zero placeholders in MyroomGiftScene and UnkStruct_02071d24)
+  BattleMoneyReward::Init, and the enum-zero placeholders in MyroomGiftScene and UnkStruct_02071d24)
   were all one cause: `func_0200acac` (called by the `ChangeDir` inline) returns BOOL but was declared void.
   Declaring it BOOL matched them; CharacterModel::LoadPartPalette then needed to be void to keep LoadPartTextures matching
   (its body is a tail call and every caller ignores the result, so either type fits the binary).
@@ -538,7 +538,7 @@ Other findings from linking:
   container in a local and indexing inside each arm (`list->mPlayers[p]->mUnk_f1`) stops it
   (BattleCommand::func_ov007_0223a734). A `(u8 *)` cast store recolours differently from a real `u8` field store.
 - **An enum-typed result stops the return being folded.** `UnitCompare result` kept a `return result` that a `u32`
-  version folded into `mov r0, #0` (BattleUnk022637ac's func_ov007_02267884). Reading components into named locals
+  version folded into `mov r0, #0` (BattleAbility's func_ov007_02267884). Reading components into named locals
   in the original's order (`z = p->z; y = p->y; x = p->x;`) fixes the load order before a call.
 - **An enum-typed copy of a field read is a real load.** `CameraMode mode = (CameraMode) cam.mMode;` loads where it
   is declared and is not substituted into the compare, so two such copies keep both loads ahead of the tests: this
@@ -620,7 +620,7 @@ Other findings from linking:
   depends on where they sit in the block; dummy calls before a block flip such ties (func_020843ac, func_02085220).
 - **A negative constant stored with `strh` means a signed 16-bit destination.** `mov r0, #0xe000; sub r1, r0, #0x12000`
   (0xffffc000) stored to a halfword can't come from a `u16` field: every form folds to 0xc000. Only a signed 16-bit
-  lvalue gives it (`*(s16 *) &p->mRotY = -0x4000;` as a placeholder, BattleCardCamera::func_ov007_02244bb4).
+  lvalue gives it (`*(s16 *) &p->mRotY = -0x4000;` as a placeholder, BattleCardCamera::Init).
 - **A wrong constant can look like a scheduling difference.** When the original builds a value from a neighbouring
   constant (`mov r7, #34; sub r7, r7, #47`), that shows the true value (-13 where the source had 3,
   ScriptPlayer::func_0206fa20). Likewise a literal-pool word that differs is often a wrong divisor or constant
@@ -699,7 +699,7 @@ Other findings from linking:
   the same block, mwcc replaces the reload with a `mov` (or drops it). So `mov rX, rY` next to a spill store, where
   the original has `ldr rX, [sp, #n]` (or the reverse), means the defining register was or wasn't reused before that
   use. How the variable is built moves this: `s16 x = base; x += off;` versus `s16 x = off + base;`, and statement
-  order (BattleStatusPanels::func_ov007_02235480).
+  order (BattleStatusPanels::DrawPanels).
 - **Narrowing shared between uses.** `(s16) (y - 8)` passed to two calls narrows once and keeps the narrowed value;
   the original kept `y - 8` and narrowed at each call. `(s16) (int) (y - 8)` stops the sharing (a placeholder form).
 - **`Screen(n)` versus `mScreens[n]`.** `SpriteScreen &screen = SpriteManager::Get().Screen(1);` goes through an inline,
@@ -941,7 +941,7 @@ Other findings from linking:
   gets its own pool word. Don't change the shared SetFlagBit/TestFlagBit helpers: existing matches depend on them.
 - **Narrowing changes scheduling, not just instructions.** `-(u8) (mFade / 4)` (or a `u8 level` local) and
   `-((u32) mFade >> 2)` emit the same `and`/`lsr`/`rsb`, but the `u8` form schedules the `rsb` before the next
-  literal-pool load (BattleUnk022767c8::Update).
+  literal-pool load (BattleMoneyReward::Update).
 - **More from the 90%-band passes.**
   - A register-form `and` with a pool-loaded mask comes from division plus u16 truncation:
     `u16 v = (x & 0x1fff) / 0x200;` (a shift pair would fold).

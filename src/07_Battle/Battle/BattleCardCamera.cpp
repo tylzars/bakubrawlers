@@ -14,7 +14,7 @@ BattleCardCamera::BattleCardCamera(u16 a, u16 b)
     mUnk_1c = 0;
     mUnk_24 = 0;
     mState  = 0;
-    mUnk_27 = 1;
+    mMapModelVisible = 1;
     mUnk_29 = 0;
     mUnk_2a = 0;
     mUnk_2b = a;
@@ -23,40 +23,40 @@ BattleCardCamera::BattleCardCamera(u16 a, u16 b)
     mUnk_2e = b >> 8;
     u8 i    = 0;
     do {
-        mUnk_10[i] = 0;
+        mBakugans[i] = 0;
         i++;
     } while (i < 2);
-    mUnk_18 = 0;
-    mUnk_0c = 0;
+    mMapModel = 0;
+    mMapObj = 0;
 }
 
 BattleCardCamera::~BattleCardCamera() {
-    if (mUnk_0c) {
-        delete mUnk_0c;
+    if (mMapObj) {
+        delete mMapObj;
     }
     u8 i = 0;
     do {
-        BakuganModel *p = mUnk_10[i];
+        BakuganModel *p = mBakugans[i];
         if (p) {
             delete p;
         }
         i++;
     } while (i < 2);
-    if (mUnk_18) {
-        delete mUnk_18;
+    if (mMapModel) {
+        delete mMapModel;
     }
     if (mUnk_1c) {
         delete mUnk_1c;
     }
-    if (mUnk_20) {
-        OS_Free(mUnk_20);
+    if (mCamFile) {
+        OS_Free(mCamFile);
     }
 }
 
 void BattleCardCamera::Update() {
     switch (mState) {
         case 0:
-            func_ov007_02244bb4();
+            Init();
             mUnk_24 = 0;
             mState++;
             SpriteManager::Get();
@@ -88,39 +88,39 @@ extern const u8 data_ov007_02279e88[];
 // The battle camera through an inline: the original keeps it as a compiler temporary (r5, above the path strings).
 static inline Camera *BattleCamera() { return data_020d433c.mBattlePlayers->mCamera; }
 
-void BattleCardCamera::func_ov007_02244bb4() {
-    mUnk_10[0] = new BakuganModel();
-    mUnk_10[0]->Setup(mUnk_2b, mUnk_2d, 3);
-    mUnk_10[0]->mAnimUpdateEnabled = 1;
-    mUnk_10[1] = new BakuganModel();
-    mUnk_10[1]->Setup(mUnk_2c, mUnk_2e, 3);
-    mUnk_10[1]->mAnimUpdateEnabled = 1;
-    BakuganModel *p0 = mUnk_10[0];
+void BattleCardCamera::Init() {
+    mBakugans[0] = new BakuganModel();
+    mBakugans[0]->Setup(mUnk_2b, mUnk_2d, 3);
+    mBakugans[0]->mAnimUpdateEnabled = 1;
+    mBakugans[1] = new BakuganModel();
+    mBakugans[1]->Setup(mUnk_2c, mUnk_2e, 3);
+    mBakugans[1]->mAnimUpdateEnabled = 1;
+    BakuganModel *p0 = mBakugans[0];
     fx32 height            = 0x6000;
     p0->mPosition.x = -0xe000;
     p0->mPosition.y = height;
     p0->mPosition.z = 0;
-    p0 = mUnk_10[0];
+    p0 = mBakugans[0];
     p0->mRotX = 0;
     p0->mRotY = 0x4000;
     p0->mRotZ = 0;
-    BakuganModel *p1 = mUnk_10[1];
+    BakuganModel *p1 = mBakugans[1];
     p1->mPosition.x = 0xe000;
     p1->mPosition.y = height;
     p1->mPosition.z = 0;
-    p1 = mUnk_10[1];
+    p1 = mBakugans[1];
     p1->mRotX = 0;
     // Placeholder: the original stores -0x4000 as a signed 16-bit value (built as 0xe000 - 0x12000).
     *(s16 *) &p1->mRotY = -0x4000;
     p1->mRotZ = 0;
-    mUnk_18 = new BattleMapModel(2);
-    mUnk_18->StartAnim(0, 0);
-    BattleMapModel *model = mUnk_18;
+    mMapModel = new BattleMapModel(2);
+    mMapModel->StartAnim(0, 0);
+    BattleMapModel *model = mMapModel;
     model->mRotX = 0;
     model->mRotY = 0x4000;
     model->mRotZ = 0;
-    mUnk_0c = new BattleMapObj(0xc);
-    mUnk_0c->Load();
+    mMapObj = new BattleMapObj(0xc);
+    mMapObj->Load();
     Camera *camera = BattleCamera();
     camera->SetUp(0, 0x1000, 0);
     camera->SetClip(0x1000, 0x1388000);
@@ -128,10 +128,10 @@ void BattleCardCamera::func_ov007_02244bb4() {
     camera->SetPosition(0x14cd, 0x1ddec, 0x6b852);
     camera->SetTarget(0, 0x7000, 0);
     ChangeDir("/Game/Battle/3d/MapCam");
-    mUnk_20 = LoadFile("card_cam_00.cam", 0, 0, 0, 0, 0);
+    mCamFile = LoadFile("card_cam_00.cam", 0, 0, 0, 0, 0);
     ChangeDir("/");
-    if (mUnk_20) {
-        camera->SetPath(mUnk_20, 0);
+    if (mCamFile) {
+        camera->SetPath(mCamFile, 0);
     }
     CameraManager::Get().mActive = 0;
     CameraManager::Get().SetCamerasAndRequestMode(1, camera, 0);
@@ -159,12 +159,12 @@ void BattleCardCamera::func_ov007_02244e98() {
     camera->AdvanceFrame(0);
     camera->ApplyPath();
     SnapshotCamera();
-    mUnk_10[0]->Update();
-    mUnk_10[0]->DrawModel();
-    mUnk_10[1]->Update();
-    mUnk_10[1]->DrawModel();
-    if (mUnk_27) {
-        mUnk_18->func_020526bc();
+    mBakugans[0]->Update();
+    mBakugans[0]->DrawModel();
+    mBakugans[1]->Update();
+    mBakugans[1]->DrawModel();
+    if (mMapModelVisible) {
+        mMapModel->func_020526bc();
     }
-    mUnk_0c->Draw();
+    mMapObj->Draw();
 }

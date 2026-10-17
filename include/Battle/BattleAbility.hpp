@@ -29,31 +29,31 @@ struct BattleUnk022637acUnit {
 
 // Battle class with vtable 0228a08c (ctor 022637ac, dtor 02263944/022639a8, Update 02263a14, 0x74 bytes). Runs a
 // state machine through the handler table at 0228a098 (state = mUnk_0c, entries of 8 bytes: function, zero).
-class BattleUnk022637ac : public SceneBase {
+class BattleAbility : public SceneBase {
 public:
     /* 0c */ u8 mState;
     /* 0d */ u8 mUnk_0d;
     /* 0e */ u8 mUnk_0e;
     /* 0f */ u8 mUnk_0f;
-    /* 10 */ u8 mUnk_10;
-    /* 11 */ u8 mUnk_11;
+    /* 10 */ u8 mRecord;
+    /* 11 */ u8 mAbilityIndex;
     /* 12 */ PAD(0x12, 0x14);
     /* 14 */ u8 mUnk_14;
-    /* 15 */ u8 mUnk_15;
-    /* 16 */ u8 mUnk_16;
-    /* 17 */ u8 mUnk_17;
-    /* 18 */ u16 mUnk_18;
+    /* 15 */ u8 mPlayer;
+    /* 16 */ u8 mUnit;
+    /* 17 */ u8 mNextScene;
+    /* 18 */ u16 mAbilityId;
     /* 1a */ u16 mUnk_1a;
-    /* 1c */ BattleTarget *mUnk_1c;
-    /* 20 */ BattleUnionAbility *mUnk_20;
-    /* 24 */ BattleCommandPage *mUnk_24;
+    /* 1c */ BattleTarget *mTarget;
+    /* 20 */ BattleUnionAbility *mUnionAbility;
+    /* 24 */ BattleCommandPage *mCommandPage;
     /* 28 */ u8 mUnk_28;
     /* 29 */ u8 mUnk_29;
     /* 2a */ u8 mUnk_2a;
     /* 2b */ u8 mUnk_2b;
     /* 2c */ EffectManager *mEffects;
-    /* 30 */ Camera *mUnk_30;
-    /* 34 */ BattleCommandList *mUnk_34;
+    /* 30 */ Camera *mCamera;
+    /* 34 */ BattleCommandList *mCommandList;
     /* 38 */ u8 mUnk_38;
     /* 39 */ PAD(0x39, 0x3a);
     /* 3a */ u16 mUnk_3a;
@@ -73,14 +73,14 @@ public:
     /* 70 */ u8 mUnk_70;
     /* 71 */ u8 mUnk_71[12];
     /* 7d */ PAD(0x7d, 0x80);
-    /* 80 */ CellAnimation *mUnk_80[2];
+    /* 80 */ CellAnimation *mNumberCellAnims[2];
     /* 88 */
 
-    BattleUnk022637ac();
-    virtual ~BattleUnk022637ac();
+    BattleAbility();
+    virtual ~BattleAbility();
     /* 08 */ virtual void Update();
-    void func_ov007_02264788();
-    void func_ov007_02264990();
+    void LoadGraphics();
+    void OpenUnionAbility();
     BOOL func_ov007_02264a5c();
     u8 func_ov007_02265118();
     u8 func_ov007_022652c8();

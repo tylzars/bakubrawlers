@@ -13,7 +13,7 @@ GimmickJumpObj::GimmickJumpObj(u8 a)
     : Gimmick(a, 0) {
     mTimer  = 0;
     mState  = 0;
-    mUnk_3a = 4;
+    mType = GIMMICK_TYPE_JUMP_OBJ;
     mDir.x  = 0;
     mDir.y  = 0x3000;
     mDir.z  = 0;
@@ -23,11 +23,11 @@ GimmickJumpObj::~GimmickJumpObj() {
     Unload();
 }
 
-void GimmickJumpObj::func_ov007_0222dc3c() {
+void GimmickJumpObj::Init() {
     char buf[0x804];
-    func_ov007_022719c8(buf, 0x5d);
-    mUnk_3c = func_ov007_02271ca8(data_020d433c.mGimmickCollision, 0x20, buf, &mPosition, &mRotX, mUnk_3a);
-    func_ov007_0222e08c(0);
+    LoadCollisionFile(buf, 0x5d);
+    mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, 0x20, buf, &mPosition, &mRotX, mType);
+    RotateDir(0);
 }
 
 void GimmickJumpObj::Load() {
@@ -64,7 +64,7 @@ void GimmickJumpObj::Update() {
     MtxFx33 m = data_0220e848;
     switch (mState) {
     case 0:
-        func_ov007_0222dc3c();
+        Init();
         mState++;
         break;
     case 1: {
@@ -78,7 +78,7 @@ void GimmickJumpObj::Update() {
                 }
             }
         }
-        if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
+        if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
         BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
@@ -88,11 +88,11 @@ void GimmickJumpObj::Update() {
         if (target->mUnk_1c6) {
             return;
         }
-        func_ov007_0222e08c(1);
+        RotateDir(1);
         u32 r = MATH_Rand32(&gRandom, 0x444);
         func_01ffcfd8(&m, r - 0x222);
         func_01ff84d0(&mDir, &m, &mDir);
-        func_ov007_0225c960(data_020d433c.mBattlePlayers->mBattleTarget, &mDir, 1);
+        SetTargetVelocity(data_020d433c.mBattlePlayers->mBattleTarget, &mDir, 1);
         func_ov007_0225ca18(data_020d433c.mBattlePlayers->mBattleTarget, 4, 0xb4);
         mTimer = 0x3c;
         SoundManager::Get().StartSeqArc(0x37);
@@ -101,10 +101,10 @@ void GimmickJumpObj::Update() {
     }
     case 2:
         mTimer = 0x3c;
-        if (!mUnk_3c) {
+        if (!mCollision) {
             return;
         }
-        if (mUnk_3c->mUnk_823 == 0) {
+        if (mCollision->mHitCount == 0) {
             mState = 1;
         }
         break;
@@ -114,7 +114,7 @@ void GimmickJumpObj::Update() {
     }
 }
 
-void GimmickJumpObj::func_ov007_0222e08c(int reset) {
+void GimmickJumpObj::RotateDir(int reset) {
     MtxFx33 m = data_0220e848;
     if (mRotY) {
         func_01ffcfd8(&m, mRotY);

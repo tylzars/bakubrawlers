@@ -10,10 +10,10 @@ GimmickPyrusEruption::GimmickPyrusEruption(u8 id)
     : Gimmick(id, 0) {
     mModelB  = 0;
     mCounter = 0;
-    mUnk_4e  = 0;
-    mUnk_4f  = 0;
+    mPushed  = 0;
+    mMarkerNear  = 0;
     mState   = 0;
-    mUnk_3a  = 0x1e;
+    mType  = GIMMICK_TYPE_PYRUS_ERUPTION;
 }
 
 GimmickPyrusEruption::~GimmickPyrusEruption() {
@@ -21,8 +21,8 @@ GimmickPyrusEruption::~GimmickPyrusEruption() {
 }
 
 void GimmickPyrusEruption::Load() {
-    mUnk_4f = func_ov007_0222ea84(0xa000);
-    if (mUnk_4f) {
+    mMarkerNear = IsNearMarker(0xa000);
+    if (mMarkerNear) {
         return;
     }
     if (!sResources[0]) {
@@ -72,49 +72,49 @@ void GimmickPyrusEruption::Update() {
     VecFx32 d;
     switch (mState) {
     case 0:
-        func_ov007_0222ea28(0x1e, 8);
+        LoadCollision(0x1e, 8);
         mState++;
         break;
     case 1:
-        if (mUnk_4f) {
+        if (mMarkerNear) {
             return;
         }
-        func_ov007_02230040(0);
-        if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
+        DrawModels(0);
+        if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
         mCounter = 0xf;
         mState++;
         break;
     case 2:
-        if (mUnk_4f) {
+        if (mMarkerNear) {
             return;
         }
-        func_ov007_02230040(0);
-        if (!func_ov007_0223008c(0x1e, (u8)(mState + 1))) {
+        DrawModels(0);
+        if (!CountDownToState(0x1e, (u8)(mState + 1))) {
             return;
         }
         SoundManager::Get().StartSeqArc(0x62);
         break;
     case 3: {
-        if (mUnk_4f) {
+        if (mMarkerNear) {
             return;
         }
-        func_ov007_02230040(1);
-        if (func_ov007_0223008c(0x14, (u8)(mState + 1))) {
+        DrawModels(1);
+        if (CountDownToState(0x14, (u8)(mState + 1))) {
             return;
         }
-        if (!mUnk_3c) {
+        if (!mCollision) {
             return;
         }
-        if (mUnk_3c->mUnk_823 != 2) {
+        if (mCollision->mHitCount != 2) {
             return;
         }
         BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
         if (!target) {
             return;
         }
-        if (mUnk_4e) {
+        if (mPushed) {
             return;
         }
         if (target->mUnk_44 > 0x5dc) {
@@ -124,7 +124,7 @@ void GimmickPyrusEruption::Update() {
         if (p->mRecords[p->mRecord].mAttribute == 0) {
             return;
         }
-        VEC_Subtract(&mPosition, &target->mUnk_1a4->mPosition, &d);
+        VEC_Subtract(&mPosition, &target->mBakugan->mPosition, &d);
         fx32 len = VEC_Mag(&d);
         VEC_Normalize(&d, &d);
         d.x      = FX_Mul(d.x, 0x1e000);
@@ -137,18 +137,18 @@ void GimmickPyrusEruption::Update() {
         d.z      = z;
         VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0, &d, &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0);
         mState++;
-        mUnk_4e = 1;
+        mPushed = 1;
         break;
     }
     case 4:
-        if (mUnk_4f) {
+        if (mMarkerNear) {
             return;
         }
-        func_ov007_02230040(1);
-        if (!func_ov007_0223008c(0, 1)) {
+        DrawModels(1);
+        if (!CountDownToState(0, 1)) {
             return;
         }
-        mUnk_4e = 0;
+        mPushed = 0;
         if (!mModelB) {
             return;
         }
@@ -160,7 +160,7 @@ void GimmickPyrusEruption::Update() {
     }
 }
 
-void GimmickPyrusEruption::func_ov007_0222ffb0() {
+void GimmickPyrusEruption::DrawModelB() {
     if (!mModelB) {
         return;
     }
@@ -173,7 +173,7 @@ void GimmickPyrusEruption::func_ov007_0222ffb0() {
     mModelB->Draw(&mtx, &mScale);
 }
 
-void GimmickPyrusEruption::func_ov007_02230040(int drawB) {
+void GimmickPyrusEruption::DrawModels(int drawB) {
     if (!mModel) {
         return;
     }
@@ -184,10 +184,10 @@ void GimmickPyrusEruption::func_ov007_02230040(int drawB) {
     if (!drawB) {
         return;
     }
-    func_ov007_0222ffb0();
+    DrawModelB();
 }
 
-int GimmickPyrusEruption::func_ov007_0223008c(int frames, int state) {
+int GimmickPyrusEruption::CountDownToState(int frames, int state) {
     data_020d433c.mUnk_14 &= 8;
     if (!data_020d433c.mUnk_14) {
         mCounter--;

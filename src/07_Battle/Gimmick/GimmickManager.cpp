@@ -40,13 +40,13 @@ void GimmickManager::UnloadAll() {
     }
 }
 
-void GimmickManager::func_ov007_0222e25c() {
+void GimmickManager::CountTurnAll() {
     for (GimmickNode *n = mNodes->mNext; n; n = n->mNext) {
-        n->mGimmick->vfunc_18();
+        n->mGimmick->CountTurn();
     }
 }
 
-void GimmickManager::func_ov007_0222e290(GimmickSetFile *file) {
+void GimmickManager::CreateFromFile(GimmickSetFile *file) {
     u8 i = 0;
     if (file->mCount == 0) {
         return;
@@ -54,72 +54,72 @@ void GimmickManager::func_ov007_0222e290(GimmickSetFile *file) {
     do {
         Gimmick *g = 0;
         switch (file->mEntries[i].mType) {
-        case 3:
+        case GIMMICK_TYPE_FIELD_POWER_S:
             g = new GimmickFieldPowerS(mIds[mTop], 0);
             break;
-        case 2:
+        case GIMMICK_TYPE_FIELD_POWER_G:
             g = new GimmickFieldPowerG(mIds[mTop]);
             break;
-        case 7:
+        case GIMMICK_TYPE_FIELD_DESTROY:
             g = new GimmickFieldDestroy(mIds[mTop]);
             break;
-        case 6:
+        case GIMMICK_TYPE_BLOCK:
             g = new GimmickBlock(mIds[mTop]);
             break;
-        case 0x32:
+        case GIMMICK_TYPE_TORNADO:
             g = new GimmickTornado(mIds[mTop], 1);
             break;
-        case 8:
+        case GIMMICK_TYPE_BAKUGAN:
             g = new GimmickBakugan(mIds[mTop], file->mEntries[i].mParam);
             break;
-        case 5:
+        case GIMMICK_TYPE_DASH_BASE:
             g = new GimmickDashBase(mIds[mTop]);
             break;
-        case 4:
+        case GIMMICK_TYPE_JUMP_OBJ:
             g = new GimmickJumpObj(mIds[mTop]);
             break;
-        case 0x3c:
+        case GIMMICK_TYPE_SUTE_WALL:
             g = new GimmickSuteWall(mIds[mTop]);
             break;
-        case 0x52:
+        case GIMMICK_TYPE_IKAZUCHI_START:
             g = new GimmickIkazuchiStart(mIds[mTop]);
             break;
-        case 0x46:
+        case GIMMICK_TYPE_HAOS_BALL:
             g = new GimmickHaosBall(mIds[mTop]);
             break;
-        case 0x47:
+        case GIMMICK_TYPE_HAOS_WALL:
             g = new GimmickHaosWall(mIds[mTop], file->mEntries[i].mParam);
             break;
-        case 0x33:
+        case GIMMICK_TYPE_VENT_KAZE:
             g = new GimmickVentKaze(mIds[mTop]);
             break;
-        case 1:
+        case GIMMICK_TYPE_EXE_POINT:
             if (data_020d433c.mUnk_7a) {
                 g = new GimmickExePoint(mIds[mTop]);
             } else {
                 g = new GimmickFieldPowerS(mIds[mTop], 1);
             }
             break;
-        case 0x1e:
+        case GIMMICK_TYPE_PYRUS_ERUPTION:
             g = new GimmickPyrusEruption(mIds[mTop]);
             break;
         case 0x1f:
             g = new GimmickUnk_02274830(mIds[mTop]);
             break;
-        case 9:
+        case GIMMICK_TYPE_ABILITY_FIELD:
             g = new GimmickAbilityField(mIds[mTop], file->mEntries[i].mParam);
             break;
         case 0x28:
             g = new GimmickUnk_022308a8(mIds[mTop]);
             break;
-        case 0x29:
+        case GIMMICK_TYPE_AQUOS_FUKIDASHI:
             g = new GimmickAquosFukidashi(mIds[mTop]);
             break;
         case 0x3d:
             g = new GimmickUnk_02230cec(mIds[mTop]);
             break;
         }
-        func_ov007_0222e7f4(g);
+        Add(g);
         g->mPosition = file->mEntries[i].mPosition;
         g->mRotX = file->mEntries[i].mRotX;
         g->mRotY = file->mEntries[i].mRotY;
@@ -128,18 +128,18 @@ void GimmickManager::func_ov007_0222e290(GimmickSetFile *file) {
     } while (i < file->mCount);
 }
 
-void GimmickManager::func_ov007_0222e75c(int a, int b) {
+void GimmickManager::LoadSetData(int a, int b) {
     char buf[0x804];
     char path[0x40];
     sprintf(path, sSetDataFormat, a, b);
     ChangeDir("/Game/Gimmick/SetData");
     if (func_ov007_02271a00((GimmickSetFile *)buf, path)) {
-        func_ov007_0222e290((GimmickSetFile *)buf);
+        CreateFromFile((GimmickSetFile *)buf);
     }
     ChangeDir("/");
 }
 
-int GimmickManager::func_ov007_0222e7f4(Gimmick *gimmick) {
+int GimmickManager::Add(Gimmick *gimmick) {
     u8 top   = mTop;
     u8 id    = mIds[top];
     GimmickNode *node = &mNodes[id];
@@ -157,7 +157,7 @@ int GimmickManager::func_ov007_0222e7f4(Gimmick *gimmick) {
     return id;
 }
 
-void GimmickManager::func_ov007_0222e860(int id) {
+void GimmickManager::Remove(int id) {
     mNodes[id].mGimmick = 0;
     mNodes[id].mPrev->mNext = mNodes[id].mNext;
     if (mNodes[id].mNext) {

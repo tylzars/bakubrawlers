@@ -6,8 +6,8 @@
 // Timing row used by Confront03 (table at 02278c0c).
 struct ConfrontRow {
     /* 00 */ u16 mUnk_00;
-    /* 02 */ u8 mUnk_02;
-    /* 03 */ u8 mUnk_03;
+    /* 02 */ u8 mMinDelay;
+    /* 03 */ u8 mMaxDelay;
     /* 04 */ u8 mUnk_04;
 };
 
@@ -16,10 +16,10 @@ class Confront03 : public BattleBase {
 public:
     /* 68 */ u32 mUnk_68;
     /* 6c */ u8 mUnk_6c;
-    /* 6d */ u8 mUnk_6d;
-    /* 6e */ u16 mUnk_6e;
-    /* 70 */ ConfrontRow *mUnk_70;
-    /* 74 */ u16 mUnk_74;
+    /* 6d */ u8 mLongHold;
+    /* 6e */ u16 mUsedSlotMask;
+    /* 70 */ ConfrontRow *mConfrontRow;
+    /* 74 */ u16 mDelay;
     /* 78 */ BattleData *mData;
     /* 7c */ ConfrontEmblem03 *mEmblems[4];
     /* 8c */
@@ -36,6 +36,6 @@ public:
     /* 40 */ virtual u8 UpdateTouch(int a);
     /* 44 */ virtual void vfunc_44(int index, u16 count);
 
-    BOOL func_ov007_0221fe4c();
-    void func_ov007_0221feb8();
+    BOOL CountDownDelay();
+    void StartIdleEmblem();
 };

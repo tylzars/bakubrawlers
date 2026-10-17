@@ -15,17 +15,17 @@ struct ObstacleRaw {
 GimmickCollision::GimmickCollision()
     : SceneBase(0x3e8, 0) {
     mSets = (GimmickSetData *) new u8[0x41c00];
-    mSets->mUnk_822 = 0;
+    mSets->mSlot = 0;
     mSetRing[0]        = 0;
     for (u32 i = 0; i < 0x80; i++) {
-        mSets[i].mUnk_822 = i;
+        mSets[i].mSlot = i;
         mSetRing[i]          = &mSets[i];
     }
     mRingWriteIndex       = 0;
     mRingReadIndex       = 1;
     mSets->mPrev = 0;
     mSets->mNext = 0;
-    mSets->mUnk_08 = 0;
+    mSets->mMode = 0;
     mEnabled       = 0;
 }
 
@@ -38,7 +38,7 @@ struct GimmickSetHead {
     u16 mData[2];
 };
 
-GimmickSetData *func_ov007_02271ca8(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk) {
+GimmickSetData *AddCollisionSet(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk) {
     GimmickSetData *set = data->mSetRing[data->mRingReadIndex];
     data->mRingReadIndex      = (data->mRingReadIndex + 1) & 0x7f;
     set->mNext          = data->mSets->mNext;
@@ -49,17 +49,17 @@ GimmickSetData *func_ov007_02271ca8(GimmickCollision *data, int count, void *buf
     }
     func_ov007_02271b24((GimmickSetDataHead *) set, count);
     *(GimmickSetHead *) &set->mUnk_0c = *(GimmickSetHead *) buf;
-    set->mUnk_10 = *(GimmickSetBlock *) ((u8 *) buf + 4);
-    set->mUnk_810 = *pos;
+    set->mObstacles = *(GimmickSetBlock *) ((u8 *) buf + 4);
+    set->mPosition = *pos;
     set->mRotX    = rot[0];
     set->mRotY    = rot[1];
     set->mRotZ    = rot[2];
-    set->mUnk_823 = 0;
-    set->mUnk_834 = unk;
+    set->mHitCount = 0;
+    set->mTag = unk;
     return set;
 }
 
-void func_ov007_02271d78(GimmickCollision *data, GimmickSetData *set) {
+void RemoveCollisionSet(GimmickCollision *data, GimmickSetData *set) {
     set->mPrev->mNext = set->mNext;
     if (set->mNext) {
         set->mNext->mPrev = set->mPrev;
@@ -75,7 +75,7 @@ void GimmickCollision::Update() {
     }
     GimmickSetData *n = mSets;
     do {
-        n->mUnk_823 = 0;
+        n->mHitCount = 0;
         n = n->mNext;
     } while (n);
     if (!mEnabled) {
@@ -84,9 +84,9 @@ void GimmickCollision::Update() {
     GimmickSetData *b;
     GimmickSetData *a = mSets;
     do {
-        if (a->mUnk_08 != 0) {
+        if (a->mMode != 0) {
             for (b = a->mNext; b; b = b->mNext) {
-                if (b->mUnk_08 != 0) {
+                if (b->mMode != 0) {
                     TestSets(a, b);
                 }
             }
@@ -110,8 +110,8 @@ static BOOL (*sTests[4])(BattleObstacle *, BattleObstacle *) = {
 void GimmickCollision::TestSets(GimmickSetData *a, GimmickSetData *b) {
     BattleObstacle shapeA;
     BattleObstacle shapeB;
-    u16 ab = a->mUnk_0a & b->mUnk_08;
-    u16 ba = b->mUnk_0a & a->mUnk_08;
+    u16 ab = a->mModeMask & b->mMode;
+    u16 ba = b->mModeMask & a->mMode;
     if (!(ab | ba)) {
         return;
     }
@@ -127,14 +127,14 @@ void GimmickCollision::TestSets(GimmickSetData *a, GimmickSetData *b) {
                 if (fileB->mCount != 0) {
                     *(ObstacleRaw *) &shapeA = *(ObstacleRaw *) (eA + 4);
                     *(ObstacleRaw *) &shapeB = *(ObstacleRaw *) ((u8 *) fileB + j * 0x20 + 4);
-                    VEC_Add(&shapeA.mPos, &a->mUnk_810, &shapeA.mPos);
+                    VEC_Add(&shapeA.mPos, &a->mPosition, &shapeA.mPos);
                     u16 rxA = shapeA.mRotX + a->mRotX;
                     u16 ryA = shapeA.mRotY + a->mRotY;
                     u16 rzA = shapeA.mRotZ + a->mRotZ;
                     shapeA.mRotX = rxA;
                     shapeA.mRotY = ryA;
                     shapeA.mRotZ = rzA;
-                    VEC_Add(&shapeB.mPos, &b->mUnk_810, &shapeB.mPos);
+                    VEC_Add(&shapeB.mPos, &b->mPosition, &shapeB.mPos);
                     u16 rxB = shapeB.mRotX + b->mRotX;
                     u16 ryB = shapeB.mRotY + b->mRotY;
                     u16 rzB = shapeB.mRotZ + b->mRotZ;
@@ -144,15 +144,15 @@ void GimmickCollision::TestSets(GimmickSetData *a, GimmickSetData *b) {
                     if (!TestObstacles(&shapeA, &shapeB)) {
                         continue;
                     }
-                    if (a->mUnk_823 < 8) {
-                        a->mUnk_824[a->mUnk_823] = b->mUnk_822;
-                        a->mUnk_82c[a->mUnk_823] = j;
-                        a->mUnk_823++;
+                    if (a->mHitCount < 8) {
+                        a->mHitSlots[a->mHitCount] = b->mSlot;
+                        a->mHitObstacleIndices[a->mHitCount] = j;
+                        a->mHitCount++;
                     }
-                    if (b->mUnk_823 < 8) {
-                        b->mUnk_824[b->mUnk_823] = a->mUnk_822;
-                        b->mUnk_82c[b->mUnk_823] = j;
-                        b->mUnk_823++;
+                    if (b->mHitCount < 8) {
+                        b->mHitSlots[b->mHitCount] = a->mSlot;
+                        b->mHitObstacleIndices[b->mHitCount] = j;
+                        b->mHitCount++;
                     }
                 }
             } while (++j < fileB->mCount);

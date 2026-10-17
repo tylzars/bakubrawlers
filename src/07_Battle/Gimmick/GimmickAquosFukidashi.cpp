@@ -15,12 +15,12 @@ GimmickAquosFukidashi::GimmickAquosFukidashi(u8 id)
     : Gimmick(id, 0) {
     mModelB  = 0;
     mCounter = 0;
-    mUnk_4e  = 0;
-    mUnk_50  = 0;
-    mUnk_51  = 0;
-    mUnk_52  = 0;
+    mPushTimer  = 0;
+    mTargetNear  = 0;
+    mMarkerNear  = 0;
+    mPushed  = 0;
     mState   = 0;
-    mUnk_3a  = 0x29;
+    mType  = GIMMICK_TYPE_AQUOS_FUKIDASHI;
 }
 
 GimmickAquosFukidashi::~GimmickAquosFukidashi() {
@@ -28,8 +28,8 @@ GimmickAquosFukidashi::~GimmickAquosFukidashi() {
 }
 
 void GimmickAquosFukidashi::Load() {
-    mUnk_51 = func_ov007_0222ea84(0xa000);
-    if (mUnk_51) {
+    mMarkerNear = IsNearMarker(0xa000);
+    if (mMarkerNear) {
         return;
     }
     if (!sResources[1]) {
@@ -94,54 +94,54 @@ void GimmickAquosFukidashi::Finish() {
 void GimmickAquosFukidashi::Update() {
     switch (mState) {
     case 0:
-        func_ov007_0222ea28(0x3c, 8);
+        LoadCollision(0x3c, 8);
         mState++;
         mCounter = 0x78;
         break;
     case 1:
-        if (mUnk_51) {
+        if (mMarkerNear) {
             return;
         }
-        if (mUnk_4e) {
-            mUnk_4e--;
+        if (mPushTimer) {
+            mPushTimer--;
         }
-        func_ov007_022766c4(0);
-        func_ov007_02276710(0x104, (u8)(mState + 1));
-        mUnk_52 = 0;
+        DrawModels(0);
+        CountDownToState(0x104, (u8)(mState + 1));
+        mPushed = 0;
         break;
     case 2: {
-        if (mUnk_51) {
+        if (mMarkerNear) {
             return;
         }
-        int near = func_ov007_02276760();
-        if (mUnk_4e) {
-            mUnk_4e--;
+        int near = IsTargetNear();
+        if (mPushTimer) {
+            mPushTimer--;
         }
-        func_ov007_022766c4(1);
-        if (!mUnk_50 && near) {
+        DrawModels(1);
+        if (!mTargetNear && near) {
             SoundManager::Get().StartSeqArc(0x63);
             sCount++;
-        } else if (mUnk_50 && !near) {
+        } else if (mTargetNear && !near) {
             sCount--;
             if (!sCount) {
                 func_02024764(&SoundManager::Get(), 0x63, 0x1e);
             }
         }
-        mUnk_50 = near;
-        if (func_ov007_02276710(0x3c, (u8)(mState + 1))) {
+        mTargetNear = near;
+        if (CountDownToState(0x3c, (u8)(mState + 1))) {
             func_02024764(&SoundManager::Get(), 0x63, 0x1e);
-            if (mUnk_50) {
+            if (mTargetNear) {
                 sCount--;
             }
-            mUnk_50 = 0;
+            mTargetNear = 0;
         }
-        if ((u32)(0x104 - mCounter) >= 10 && mUnk_3c && mUnk_3c->mUnk_823 && !mUnk_4e) {
+        if ((u32)(0x104 - mCounter) >= 10 && mCollision && mCollision->mHitCount && !mPushTimer) {
             if (data_020d433c.mBattlePlayers->mBattleTarget) {
                 BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
                 if (p->mRecords[p->mRecord].mAttribute != 1) {
                     VecFx32 a = data_ov007_02285bd0;
-                    VecFx32 b = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_64;
-                    int dy = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition.y - mPosition.y + -0x54cd;
+                    VecFx32 b = data_020d433c.mBattlePlayers->mBattleTarget->mVelocity;
+                    int dy = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition.y - mPosition.y + -0x54cd;
                     if (dy <= 0x1000) {
                         dy = 0x1000;
                     }
@@ -149,30 +149,30 @@ void GimmickAquosFukidashi::Update() {
                     VEC_Add(&b, &a, &b);
                     b.x = FX_Mul(b.x, 0xc00);
                     b.z = FX_Mul(b.z, 0xc00);
-                    func_ov007_0225c960(data_020d433c.mBattlePlayers->mBattleTarget, &b, 0);
-                    mUnk_52 = 1;
+                    SetTargetVelocity(data_020d433c.mBattlePlayers->mBattleTarget, &b, 0);
+                    mPushed = 1;
                 }
             }
         }
-        if (mUnk_3c && mUnk_52) {
-            if (!mUnk_4e && !mUnk_3c->mUnk_823) {
-                mUnk_4e = 0x8c;
+        if (mCollision && mPushed) {
+            if (!mPushTimer && !mCollision->mHitCount) {
+                mPushTimer = 0x8c;
             }
         }
         break;
     }
     case 3:
-        if (mUnk_51) {
+        if (mMarkerNear) {
             return;
         }
-        if (mUnk_4e) {
-            mUnk_4e--;
+        if (mPushTimer) {
+            mPushTimer--;
         }
-        func_ov007_022766c4(1);
-        if (!func_ov007_02276710(0x78, 1)) {
+        DrawModels(1);
+        if (!CountDownToState(0x78, 1)) {
             return;
         }
-        mUnk_52 = 0;
+        mPushed = 0;
         if (!mModelB) {
             return;
         }
@@ -184,7 +184,7 @@ void GimmickAquosFukidashi::Update() {
     }
 }
 
-void GimmickAquosFukidashi::func_ov007_02276634() {
+void GimmickAquosFukidashi::DrawModelB() {
     if (!mModelB) {
         return;
     }
@@ -197,7 +197,7 @@ void GimmickAquosFukidashi::func_ov007_02276634() {
     mModelB->Draw(&mtx, &mScale);
 }
 
-void GimmickAquosFukidashi::func_ov007_022766c4(int drawB) {
+void GimmickAquosFukidashi::DrawModels(int drawB) {
     if (!mModel) {
         return;
     }
@@ -208,10 +208,10 @@ void GimmickAquosFukidashi::func_ov007_022766c4(int drawB) {
     if (!drawB) {
         return;
     }
-    func_ov007_02276634();
+    DrawModelB();
 }
 
-int GimmickAquosFukidashi::func_ov007_02276710(int frames, int state) {
+int GimmickAquosFukidashi::CountDownToState(int frames, int state) {
     data_020d433c.mUnk_14 &= 8;
     if (!data_020d433c.mUnk_14) {
         mCounter--;
@@ -224,11 +224,11 @@ int GimmickAquosFukidashi::func_ov007_02276710(int frames, int state) {
     return 0;
 }
 
-int GimmickAquosFukidashi::func_ov007_02276760() {
+int GimmickAquosFukidashi::IsTargetNear() {
     VecFx32 d;
     BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
-    if (target && target->mUnk_1a4 && target->mUnk_1a4->mVisible) {
-        VEC_Subtract(&target->mUnk_1a4->mPosition, &mPosition, &d);
+    if (target && target->mBakugan && target->mBakugan->mVisible) {
+        VEC_Subtract(&target->mBakugan->mPosition, &mPosition, &d);
         if (VEC_Mag(&d) <= 0x96000) {
             return 1;
         }

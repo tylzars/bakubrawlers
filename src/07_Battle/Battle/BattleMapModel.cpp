@@ -10,9 +10,9 @@ extern "C" void func_02032370(u16 a, u16 b, BOOL c);
 extern "C" void func_02032394(u16 a, u16 b, BOOL c);
 
 BattleMapModel::BattleMapModel(u32 unk1) {
-    mUnk_2c = unk1;
-    func_ov007_02248cf4();
-    mUnk_2d = 0x1f;
+    mKind = unk1;
+    LoadModel();
+    mColorLevel = 0x1f;
 }
 
 BattleMapModel::~BattleMapModel() {
@@ -24,9 +24,9 @@ BattleMapModel::~BattleMapModel() {
     }
 }
 
-void BattleMapModel::func_ov007_02248cf4() {
+void BattleMapModel::LoadModel() {
     ChangeDir("/Game/Battle/3d/MapObj");
-    switch (mUnk_2c) {
+    switch (mKind) {
         case 0:
             LoadFiles("card_00_00.nsbtx", "card_00_00.nsbmd", "card_00_00_data.bin", 0);
             break;
@@ -55,7 +55,7 @@ void BattleMapModel::func_ov007_02248cf4() {
     ChangeDir("/");
 }
 
-void BattleMapModel::func_ov007_02248eb8() {
+void BattleMapModel::DrawPulsing() {
     if (mModel == 0) {
         return;
     }
@@ -64,12 +64,12 @@ void BattleMapModel::func_ov007_02248eb8() {
     func_01ffcf64(&mtx, &mPosition);
     mModel->DetachAllAnims();
     if (GameSystem::Get().mFrame & 0x20) {
-        if (mUnk_2d > 0xf) {
-            mUnk_2d--;
+        if (mColorLevel > 0xf) {
+            mColorLevel--;
         }
     } else {
-        if (mUnk_2d < 0x1f) {
-            mUnk_2d++;
+        if (mColorLevel < 0x1f) {
+            mColorLevel++;
         }
     }
     void *data = mModel->mModelFile->mResModel;
@@ -77,7 +77,7 @@ void BattleMapModel::func_ov007_02248eb8() {
     func_020330fc(data, 0, 0x40);
     func_020330fc(data, 0, 0x400);
     func_020330fc(data, 0, 0x200);
-    color = mUnk_2d | (mUnk_2d << 5) | (mUnk_2d << 10);
+    color = mColorLevel | (mColorLevel << 5) | (mColorLevel << 10);
     func_02032370(color, color, 1);
     func_02032394(color, color, 1);
     mModel->Draw(&mtx, &mScale);

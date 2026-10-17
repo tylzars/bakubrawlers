@@ -35,7 +35,7 @@ ConfrontEmblem05::~ConfrontEmblem05() {
     delete mAnim;
 }
 
-void ConfrontEmblem05::func_ov007_02220a00() {
+void ConfrontEmblem05::Update() {
     if (!mUnk_04_0) {
         mX = 78.0f + 50.0f * ((float) FX_SinCosTable_[(mAngle >> 4) * 2 + 1] / 4096.0f);
     } else {
@@ -48,14 +48,14 @@ void ConfrontEmblem05::func_ov007_02220a00() {
     mAngle += mSpeed;
 }
 
-void ConfrontEmblem05::func_ov007_02220b48() {
+void ConfrontEmblem05::Draw() {
     s32 x = (s32) mX;
     s32 y = (s32) mY;
     mAnim->DrawTransformed(1, x, y, 0, 0x1000, 0x1000, 0);
 }
 
 int ConfrontEmblem05::func_ov007_02220b9c(int fast) {
-    s32 dist = func_ov007_022252d0((s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY, (s32) mX, (s32) mY);
+    s32 dist = PointDistance((s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY, (s32) mX, (s32) mY);
     if (dist > 0x20) {
         return -1;
     }
@@ -71,7 +71,7 @@ int ConfrontEmblem05::func_ov007_02220b9c(int fast) {
     return scaled;
 }
 
-void ConfrontEmblem05::func_ov007_02220cb0() {
+void ConfrontEmblem05::SlowDown() {
     s32 speed = mSpeed - 0x10;
     if (speed < 0x50) {
         speed = 0x50;
@@ -81,7 +81,7 @@ void ConfrontEmblem05::func_ov007_02220cb0() {
 
 ConfrontBg05::ConfrontBg05()
     : BattleBase() {
-    mUnk_68 = 0;
+    mSoundTimer = 0;
     mUnk_6a = 0;
     mData   = 0;
     mEmblem = 0;
@@ -166,7 +166,7 @@ void ConfrontBg05::vfunc_34() {
     if (spectator) {
         return;
     }
-    mEmblem->func_ov007_02220a00();
+    mEmblem->Update();
 }
 
 BOOL ConfrontBg05::func_ov007_0221bfa4() {
@@ -174,12 +174,12 @@ BOOL ConfrontBg05::func_ov007_0221bfa4() {
     if (spectator) {
         return FALSE;
     }
-    if (mUnk_68 != 0) {
-        mUnk_68 = 0;
+    if (mSoundTimer != 0) {
+        mSoundTimer = 0;
         func_02024764(&SoundManager::Get(), 0x2b, 1);
     }
-    mEmblem->func_ov007_02220a00();
-    mEmblem->func_ov007_02220cb0();
+    mEmblem->Update();
+    mEmblem->SlowDown();
     mBlend->LowerLevel();
     return FALSE;
 }
@@ -190,7 +190,7 @@ void ConfrontBg05::vfunc_3c() {
         return;
     }
     mBlend->UpdateWobble();
-    mEmblem->func_ov007_02220b48();
+    mEmblem->Draw();
 }
 
 u8 ConfrontBg05::UpdateTouch(int a) {
@@ -205,18 +205,18 @@ u8 ConfrontBg05::UpdateTouch(int a) {
             if (!func_02024790(&SoundManager::Get(), 0x2b)) {
                 SoundManager::Get().StartSeqArc(0x2b);
             }
-            mUnk_68 = 10;
+            mSoundTimer = 10;
         }
     }
     if (hit == -1) {
-        if (mUnk_68 != 0) {
-            mUnk_68--;
-            if (mUnk_68 == 0) {
+        if (mSoundTimer != 0) {
+            mSoundTimer--;
+            if (mSoundTimer == 0) {
                 func_02024764(&SoundManager::Get(), 0x2b, 1);
             }
         }
         mBlend->LowerLevel();
-        mEmblem->func_ov007_02220cb0();
+        mEmblem->SlowDown();
         mUnk_6a = 0;
         return 0;
     }

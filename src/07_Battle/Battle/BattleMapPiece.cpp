@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 BattleMapPiece::BattleMapPiece(int type) {
-    func_ov007_022636f4(type);
+    LoadModel(type);
 }
 
 BattleMapPiece::~BattleMapPiece() {
@@ -15,7 +15,7 @@ BattleMapPiece::~BattleMapPiece() {
     }
 }
 
-void BattleMapPiece::func_ov007_022636f4(u32 type) {
+void BattleMapPiece::LoadModel(u32 type) {
     ChangeDir("/Game/Battle/3d/MapObj");
     switch (type) {
         case 0:

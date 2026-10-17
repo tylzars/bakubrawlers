@@ -16,7 +16,7 @@ GimmickFieldPowerS::GimmickFieldPowerS(u8 id, u8 variant)
     : Gimmick(id, 0) {
     mVariant = variant;
     mState   = 0;
-    mUnk_3a  = 3;
+    mType  = GIMMICK_TYPE_FIELD_POWER_S;
 }
 
 GimmickFieldPowerS::~GimmickFieldPowerS() {
@@ -70,21 +70,21 @@ void GimmickFieldPowerS::Finish() {
 void GimmickFieldPowerS::Update() {
     switch (mState) {
     case 0:
-        func_ov007_0222f1ac();
+        LoadVariantCollision();
         mState++;
         break;
     case 1: {
         if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
             func_020526bc();
         }
-        if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
+        if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
         if (!data_020d433c.mBattlePlayers->mBattleTarget) {
             return;
         }
         mState++;
-        func_ov007_02271d78(data_020d433c.mGimmickCollision, mUnk_3c);
+        RemoveCollisionSet(data_020d433c.mGimmickCollision, mCollision);
         switch (mVariant) {
         case 0: {
             BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
@@ -118,7 +118,7 @@ void GimmickFieldPowerS::Update() {
             CameraManager::Get();
             MtxFx43 mtx    = data_020c1cf4;
             MtxFx43 rot    = gIdentityMtx43;
-            VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
+            VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
             VecFx32 v      = data_ov007_02279438;
             VecFx32 w      = data_ov007_02279444;
             mtx._[11]      = 0;
@@ -134,8 +134,8 @@ void GimmickFieldPowerS::Update() {
                 SetEffectScale(data_020d433c.mEffects, handle, &w);
             }
         }
-        mUnk_40 = 1;
-        mUnk_3c = 0;
+        mCountingTurns = 1;
+        mCollision = 0;
         break;
     }
     case 2: {
@@ -149,13 +149,13 @@ void GimmickFieldPowerS::Update() {
         } else {
             limit = data_ov007_02279430[mVariant][players - 2];
         }
-        if (mUnk_44 < limit) {
+        if (mTurnCount < limit) {
             break;
         }
-        func_ov007_0222f1ac();
-        mUnk_40 = 0;
+        LoadVariantCollision();
+        mCountingTurns = 0;
         mState  = 1;
-        mUnk_44 = 0;
+        mTurnCount = 0;
         break;
     }
     case 3:
@@ -164,13 +164,13 @@ void GimmickFieldPowerS::Update() {
     }
 }
 
-void GimmickFieldPowerS::func_ov007_0222f1ac() {
+void GimmickFieldPowerS::LoadVariantCollision() {
     switch (mVariant) {
     case 0:
-        func_ov007_0222ea28(0x5b, 0x20);
+        LoadCollision(0x5b, 0x20);
         break;
     case 1:
-        func_ov007_0222ea28(0x61, 0x20);
+        LoadCollision(0x61, 0x20);
         break;
     }
 }

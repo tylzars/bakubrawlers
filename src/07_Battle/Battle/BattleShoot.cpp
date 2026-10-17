@@ -496,7 +496,7 @@ void BattleShoot::Update() {
                     *(u16 *) ((u8 *) mUnk_6130 + 0x1b8) = mUnk_6168;
                     *(u16 *) ((u8 *) mUnk_6130 + 0x1ba) = mUnk_616a;
                 } else if (kind == 2) {
-                    cpu->func_ov007_022329cc(0x14000);
+                    cpu->StartJumpObjTargets(0x14000);
                 }
             }
             u8 idx = data_020d433c.mBattlePlayers->mTurnPlayer;
@@ -540,7 +540,7 @@ void BattleShoot::Update() {
                 do {
                     BattlePlayerList *l3 = data_020d433c.mBattlePlayers;
                     if (l3->mPlayers[i]->mCpu != 0 && i != l3->mTurnPlayer) {
-                        l3->mPlayers[i]->mCpu->func_ov007_02232c88();
+                        l3->mPlayers[i]->mCpu->RandomizeOffsets();
                     }
                     i++;
                 } while (i < data_020d433c.mPlayerCount);
@@ -1330,7 +1330,7 @@ u16 BattleShoot::func_ov007_0226e390() {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 index               = list->mTurnPlayer;
     VecFx32 cpuPos         = list->mPlayers[index]->mCpu->mPos;
-    VecFx32 *pos = &mUnk_6130->mUnk_1a4->mPosition;
+    VecFx32 *pos = &mUnk_6130->mBakugan->mPosition;
     VecFx32 delta;
     VecFx32 offset = {0, 0, 0};
     VEC_Subtract(&offset, pos, &offset);
@@ -1351,31 +1351,31 @@ void BattleShoot::func_ov007_0226e430() {
         return;
     }
     if (cpu->mUnk_58 != 0) {
-        if (cpu->mUnk_58 <= mUnk_6130->mUnk_4c) {
+        if (cpu->mUnk_58 <= mUnk_6130->mMoveFrames) {
             return;
         }
     }
-    if (cpu->mUnk_74 != 0) {
-        cpu->mUnk_74--;
+    if (cpu->mTimer != 0) {
+        cpu->mTimer--;
         return;
     }
-    if (cpu->mUnk_76 == 1) {
+    if (cpu->mUsingTargets == 1) {
         BattleTarget *bt = mUnk_6130;
         if (bt->mUnk_1dd == 4 && bt->mUnk_38 == 0 && bt->mUnk_40 == 0) {
-            cpu->func_ov007_02232bfc();
+            cpu->NextTarget();
         }
-        if (mUnk_6130->mUnk_4c == cpu->mUnk_54) {
-            cpu->func_ov007_02232c5c();
+        if (mUnk_6130->mMoveFrames == cpu->mUnk_54) {
+            cpu->StopJumpObjTargets();
         }
     }
     BattleTarget *target = mUnk_6130;
     if (target->mUnk_1d0 == 0 || target->mUnk_1dd == 4) {
         return;
     }
-    if (target->mUnk_4c % mUnk_619e != 0) {
+    if (target->mMoveFrames % mUnk_619e != 0) {
         return;
     }
-    BakuganModel *pose = target->mUnk_1a4;
+    BakuganModel *pose = target->mBakugan;
     VecFx32 pos2             = cpu->mPos;
     VEC_Subtract(&pos2, &pose->mPosition, &v);
     VEC_Normalize(&v, &v);
@@ -1398,12 +1398,12 @@ void BattleShoot::func_ov007_0226e430() {
         v.z = FX_Mul(v.z, 0xa000);
         mUnk_6130->mUnk_1e3 = 0;
     }
-    if (mUnk_6130->mUnk_1d8 == 6) {
-        if (VEC_Mag(&mUnk_6130->mUnk_64) > 0) {
+    if (mUnk_6130->mHitGimmickType == GIMMICK_TYPE_BLOCK) {
+        if (VEC_Mag(&mUnk_6130->mVelocity) > 0) {
             BattleTarget *t = mUnk_6130;
-            v.x             = t->mUnk_64.x;
-            v.y             = t->mUnk_64.y;
-            v.z             = t->mUnk_64.z;
+            v.x             = t->mVelocity.x;
+            v.y             = t->mVelocity.y;
+            v.z             = t->mVelocity.z;
             VEC_Normalize(&v, &v);
             s32 k = data_ov007_0227bcc4[cpu->mUnk_77];
             v.x   = FX_Mul(v.x, k);
@@ -1515,18 +1515,18 @@ void BattleShoot::func_ov007_0226e884() {
         if (cpu != 0 && self != i && self != p->mPartner) {
             s32 outX = 0;
             s32 outZ = 0;
-            if (mUnk_6130->mUnk_4c <= cpu->mUnk_5c) {
-                cpu->func_ov007_02232eb8(&outX, &outZ);
+            if (mUnk_6130->mMoveFrames <= cpu->mUnk_5c) {
+                cpu->GetOffset(&outX, &outZ);
                 mMsgs[i].mUnk_00        = 9;
                 mMsgs[i].mUnk_04        = outX;
                 mMsgs[i].mUnk_08        = outZ;
                 mMsgs[i].mUnk_0c        = 0;
-                u16 limit = cpu->mUnk_60[cpu->mUnk_8d];
-                cpu->mUnk_70++;
-                if (cpu->mUnk_70 >= limit) {
-                    cpu->mUnk_70 = 0;
-                    cpu->mUnk_8d = (cpu->mUnk_8d + 1) % 8;
-                    cpu->func_ov007_02232d8c();
+                u16 limit = cpu->mOffsetFrameCounts[cpu->mOffsetEntryIndex];
+                cpu->mOffsetFrames++;
+                if (cpu->mOffsetFrames >= limit) {
+                    cpu->mOffsetFrames = 0;
+                    cpu->mOffsetEntryIndex = (cpu->mOffsetEntryIndex + 1) % 8;
+                    cpu->SetOffset();
                 }
             }
         }
@@ -1640,7 +1640,7 @@ void BattleShoot::func_ov007_0226f0e8(u8 kind, s32 x, s32 z) {
         return;
     }
     SoundManager::Get().StartSeqArc(0x43);
-    VecFx32 pos = mUnk_6130->mUnk_1a4->mPosition;
+    VecFx32 pos = mUnk_6130->mBakugan->mPosition;
     VecFx32 off;
     VecFx32 dir = {0, 0, 0};
     VecFx32 ref = data_ov007_0227bcac;

@@ -11,7 +11,7 @@ static ModelResource *sResource;
 GimmickExePoint::GimmickExePoint(u8 a)
     : Gimmick(a, 0) {
     mState  = 0;
-    mUnk_3a = 1;
+    mType = GIMMICK_TYPE_EXE_POINT;
 }
 
 GimmickExePoint::~GimmickExePoint() {
@@ -49,21 +49,21 @@ void GimmickExePoint::Finish() {
 void GimmickExePoint::Update() {
     switch (mState) {
     case 0:
-        func_ov007_0222ea28(0x5f, 0x20);
+        LoadCollision(0x5f, 0x20);
         mState++;
         break;
     case 1: {
         if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
             func_020526bc();
         }
-        if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
+        if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
         if (!data_020d433c.mBattlePlayers->mBattleTarget) {
             return;
         }
         mState++;
-        func_ov007_02271d78(data_020d433c.mGimmickCollision, mUnk_3c);
+        RemoveCollisionSet(data_020d433c.mGimmickCollision, mCollision);
         BattleRecord *rec = &data_020d433c.mBattlePlayers->Current()->mRecords[data_020d433c.mBattlePlayers->Current()->mRecord];
         if ((int)rec->mGauge < 0xfd7) {
             rec->mGauge += 0x28;
@@ -72,11 +72,11 @@ void GimmickExePoint::Update() {
         u8 handle = StartEffect(data_020d433c.mEffects, 1, 0xe, 0, 1);
         if (handle) {
             VecFx32 d;
-            VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
+            VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
             CameraManager::Get();
             MtxFx43 mtx = data_020c1cf4;
             func_01ffcf64(&mtx, &mPosition);
-            Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_174;
+            Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mCamera;
             d.x                 = h->mPosition.x;
             d.y                 = h->mPosition.y;
             d.z                 = h->mPosition.z;
@@ -85,12 +85,12 @@ void GimmickExePoint::Update() {
             d.x = FX_Mul(d.x, 0x1e000);
             d.y = FX_Mul(d.y, 0x1e000);
             d.z = FX_Mul(d.z, 0x1e000);
-            VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition, &d);
+            VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
             func_01ffcf64(&mtx, &d);
             SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         }
-        mUnk_40 = 1;
-        mUnk_3c = 0;
+        mCountingTurns = 1;
+        mCollision = 0;
         break;
     }
     case 2: {
@@ -104,13 +104,13 @@ void GimmickExePoint::Update() {
         } else {
             limit = data_ov007_02279410[players - 2];
         }
-        if (mUnk_44 < limit) {
+        if (mTurnCount < limit) {
             break;
         }
-        func_ov007_0222ea28(0x5f, 0x20);
-        mUnk_40 = 0;
+        LoadCollision(0x5f, 0x20);
+        mCountingTurns = 0;
         mState  = 1;
-        mUnk_44 = 0;
+        mTurnCount = 0;
         break;
     }
     case 3:

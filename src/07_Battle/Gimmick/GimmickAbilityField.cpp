@@ -66,7 +66,7 @@ static const u8 sAbilityIds06[1] = {0xc9};
 static const u8 sAbilityWeights13[3] = {60, 36, 4};
 static const u8 sAbilityIds10[3] = {0xce, 0xd2, 0xcd};
 static const u8 sAbilityIds24[2] = {0xd4, 0xcf};
-const GimmickAbilityRow data_ov007_02279568[] = {
+const GimmickAbilityRow gAbilityRows[] = {
     {1, {}, sAbilityIds00, sAbilityWeights00},
     {1, {}, sAbilityIds01, sAbilityWeights01},
     {2, {}, sAbilityIds02, sAbilityWeights02},
@@ -103,8 +103,8 @@ GimmickAbilityField::GimmickAbilityField(u8 id, u8 param)
     : Gimmick(id, 0) {
     mModelB = 0;
     mState  = 0;
-    mUnk_4c = param;
-    mUnk_3a = 9;
+    mAbilityRowIndex = param;
+    mType = GIMMICK_TYPE_ABILITY_FIELD;
 }
 
 GimmickAbilityField::~GimmickAbilityField() {
@@ -180,7 +180,7 @@ void GimmickAbilityField::func_ov007_022303f4() {
 void GimmickAbilityField::Update() {
     switch (mState) {
     case 0:
-        func_ov007_0222ea28(0x60, 0x20);
+        LoadCollision(0x60, 0x20);
         mState++;
         break;
     case 1: {
@@ -188,27 +188,27 @@ void GimmickAbilityField::Update() {
             func_020526bc();
             func_ov007_022303f4();
         }
-        if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
+        if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
         mState++;
-        func_ov007_02271d78(data_020d433c.mGimmickCollision, mUnk_3c);
+        RemoveCollisionSet(data_020d433c.mGimmickCollision, mCollision);
         SoundManager::Get().StartSeqArc(0x35);
-        s8 pick = PickWeighted(data_ov007_02279568[mUnk_4c].mCount, data_ov007_02279568[mUnk_4c].mWeights);
-        data_020d433c.mBattlePlayers->Current()->mUnk_fa = data_ov007_02279568[mUnk_4c].mIds[pick];
+        s8 pick = PickWeighted(gAbilityRows[mAbilityRowIndex].mCount, gAbilityRows[mAbilityRowIndex].mWeights);
+        data_020d433c.mBattlePlayers->Current()->mUnk_fa = gAbilityRows[mAbilityRowIndex].mIds[pick];
         u8 handle = StartEffect(data_020d433c.mEffects, 1, 0x12, 0, 1);
         if (handle) {
             CameraManager::Get();
             MtxFx43 mtx    = data_020c1cf4;
-            VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
+            VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
             mtx._[11]      = 0;
             mtx._[10]      = 0;
             mtx._[9]       = 0;
             func_01ffcf64(&mtx, &camPos);
             SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         }
-        mUnk_40 = 1;
-        mUnk_3c = 0;
+        mCountingTurns = 1;
+        mCollision = 0;
         break;
     }
     case 2: {
@@ -222,13 +222,13 @@ void GimmickAbilityField::Update() {
         } else {
             limit = data_ov007_02279514[players - 2];
         }
-        if (mUnk_44 < limit) {
+        if (mTurnCount < limit) {
             break;
         }
-        func_ov007_0222ea28(0x60, 0x20);
-        mUnk_40 = 0;
+        LoadCollision(0x60, 0x20);
+        mCountingTurns = 0;
         mState  = 1;
-        mUnk_44 = 0;
+        mTurnCount = 0;
         break;
     }
     case 3:

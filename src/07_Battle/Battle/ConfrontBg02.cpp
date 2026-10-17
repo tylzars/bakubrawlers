@@ -42,7 +42,7 @@ ConfrontEmblem02::~ConfrontEmblem02() {
     delete mAnim;
 }
 
-void ConfrontEmblem02::func_ov007_0221de78(u8 side) {
+void ConfrontEmblem02::Start(u8 side) {
     mSide = BattleRand32(2);
     mState = 0;
     mUnk_07_1 = 0;
@@ -58,7 +58,7 @@ void ConfrontEmblem02::func_ov007_0221de78(u8 side) {
     mAnim->SetAnimation(0);
 }
 
-void ConfrontEmblem02::func_ov007_0221df04() {
+void ConfrontEmblem02::Update() {
     switch (mState) {
         case 0:
             switch (mPhase) {
@@ -102,7 +102,7 @@ void ConfrontEmblem02::func_ov007_0221df04() {
     }
 }
 
-void ConfrontEmblem02::func_ov007_0221e054() {
+void ConfrontEmblem02::StartShrink() {
     if (mUnk_07_3) {
         return;
     }
@@ -114,7 +114,7 @@ void ConfrontEmblem02::func_ov007_0221e054() {
     mUnk_07_3 = 1;
 }
 
-void ConfrontEmblem02::func_ov007_0221e090() {
+void ConfrontEmblem02::Draw() {
     switch (mState) {
         case 0:
             {
@@ -141,7 +141,7 @@ void ConfrontEmblem02::func_ov007_0221e090() {
     }
 }
 
-u8 ConfrontEmblem02::func_ov007_0221e250() {
+u8 ConfrontEmblem02::IsIdle() {
     return (mState == 2) ? 1 : 0;
 }
 
@@ -196,7 +196,7 @@ ConfrontBg02::ConfrontBg02()
     mDelay = 0;
     mSide  = 0;
     mData  = 0;
-    mStep  = data_ov007_02278bf8;
+    mStep  = gConfrontEmblemSteps;
     for (u8 i = 0; i < 3; i++) {
         mAnims[i] = 0;
     }
@@ -294,11 +294,11 @@ void ConfrontBg02::LoadGraphics() {
 }
 
 void ConfrontBg02::vfunc_34() {
-    func_ov007_0221ee70();
-    if (func_ov007_0221eec8()) {
+    UpdateEmblemStep();
+    if (CountDownDelay()) {
         u8 spectator = IsSpectator();
         if (!spectator) {
-            func_ov007_0221ef34();
+            StartIdleEmblem();
         } else {
             BattleRand32(0xffff);
         }
@@ -308,7 +308,7 @@ void ConfrontBg02::vfunc_34() {
         return;
     }
     for (u8 i = 0; i < 4; i++) {
-        mEmblems[i]->func_ov007_0221df04();
+        mEmblems[i]->Update();
     }
 }
 
@@ -318,8 +318,8 @@ BOOL ConfrontBg02::func_ov007_0221bfa4() {
         return FALSE;
     }
     for (u8 i = 0; i < 4; i++) {
-        mEmblems[i]->func_ov007_0221e054();
-        mEmblems[i]->func_ov007_0221df04();
+        mEmblems[i]->StartShrink();
+        mEmblems[i]->Update();
     }
     return FALSE;
 }
@@ -331,7 +331,7 @@ void ConfrontBg02::vfunc_3c() {
     }
     for (u8 i = 0; i < 4; i++) {
         if (!mEmblems[i]->mUnk_07_1) {
-            mEmblems[i]->func_ov007_0221e090();
+            mEmblems[i]->Draw();
         }
     }
     if (mAnims[1]->mAnimIndex == 1) {
@@ -345,7 +345,7 @@ void ConfrontBg02::vfunc_3c() {
     mAnims[1]->Draw(1, 0x69, 0x64, 2);
     for (u8 i = 0; i < 4; i++) {
         if (mEmblems[i]->mUnk_07_1) {
-            mEmblems[i]->func_ov007_0221e090();
+            mEmblems[i]->Draw();
         }
     }
     mAnims[0]->Draw(1, 0x80, 0x7b, 2);
@@ -368,7 +368,7 @@ u8 ConfrontBg02::UpdateTouch(int a) {
     if (TouchManager::Get().mPressed == 0) {
         return 0;
     }
-    if (func_ov007_022252d0((s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY, 0x80, 0x7b) < 0x10) {
+    if (PointDistance((s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY, 0x80, 0x7b) < 0x10) {
         func_ov007_0221bb3c();
         for (u8 i = 0; i < 4; i++) {
             result = mEmblems[i]->func_ov007_0221e268(0);
@@ -398,10 +398,10 @@ u8 ConfrontBg02::UpdateTouch(int a) {
 void ConfrontBg02::vfunc_44(int index, u16 count) {
 }
 
-void ConfrontBg02::func_ov007_0221ee70() {
+void ConfrontBg02::UpdateEmblemStep() {
     u8 i = 0;
     u16 total = 0;
-    ConfrontEmblemStep *step = data_ov007_02278bf8;
+    ConfrontEmblemStep *step = gConfrontEmblemSteps;
     for (; i < 5; i++) {
         total += step->mUntil;
         if (mElapsedFrames < total) {
@@ -414,7 +414,7 @@ void ConfrontBg02::func_ov007_0221ee70() {
     }
 }
 
-BOOL ConfrontBg02::func_ov007_0221eec8() {
+BOOL ConfrontBg02::CountDownDelay() {
     BOOL result = FALSE;
     if (mParam->mBattleFrameCount - mElapsedFrames >= 10) {
         if (mDelay != 0) {
@@ -428,11 +428,11 @@ BOOL ConfrontBg02::func_ov007_0221eec8() {
     return result;
 }
 
-void ConfrontBg02::func_ov007_0221ef34() {
+void ConfrontBg02::StartIdleEmblem() {
     BOOL found = FALSE;
     for (u8 i = 0; i < 4; i++) {
-        if (mEmblems[i]->func_ov007_0221e250()) {
-            mEmblems[i]->func_ov007_0221de78(mSide);
+        if (mEmblems[i]->IsIdle()) {
+            mEmblems[i]->Start(mSide);
             found = TRUE;
             break;
         }

@@ -143,10 +143,10 @@ static inline fx32 Abs(fx32 v);
 
 BattleCpu::BattleCpu(u32 player) {
     mUnk_78 = 0;
-    mUnk_7a = 0xff;
-    mUnk_79 = player;
+    mRecord = 0xff;
+    mPlayer = player;
     mUnk_54 = 0;
-    mUnk_76 = 0;
+    mUsingTargets = 0;
     mPos.x  = 0;
     mPos.y  = 0;
     mPos.z  = 0;
@@ -159,19 +159,19 @@ BattleCpu::BattleCpu(u32 player) {
         mTargets[i].z = 0;
     }
     for (u8 i = 0; i < 8; i++) {
-        mUnk_85[i] = 0;
-        mUnk_60[i] = 0;
+        mOffsetEntries[i] = 0;
+        mOffsetFrameCounts[i] = 0;
     }
-    mUnk_8d = 0;
-    mUnk_70 = 0;
-    mUnk_83 = 0;
-    mUnk_84 = 0;
+    mOffsetEntryIndex = 0;
+    mOffsetFrames = 0;
+    mTargetIndex = 0;
+    mJumpObjCount = 0;
     mUnk_58 = 0;
     mUnk_5c = 3000;
-    mUnk_74 = 0;
+    mTimer = 0;
     mUnk_4c = 0;
     mUnk_50 = 0;
-    mUnk_72 = 20;
+    mOffsetInterval = 20;
 }
 
 BattleCpu::~BattleCpu() {
@@ -188,7 +188,7 @@ void BattleCpu::func_ov007_02231038() {
     do {
         mUnk_7d += data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_ee;
         if (data_020d433c.mUnk_99 - 1 == data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_ee) {
-            if (i == mUnk_79) {
+            if (i == mPlayer) {
                 mUnk_7b = 0;
             } else {
                 n++;
@@ -215,7 +215,7 @@ u8 BattleCpu::func_ov007_022310f0() {
     if (data_020d433c.mHasPartners) {
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
         u8 a                   = list->Unk294();
-        u8 b                   = list->mPlayers[mUnk_79]->Partner();
+        u8 b                   = list->mPlayers[mPlayer]->Partner();
         u8 i                   = 0;
         BattleUnit *u;
         u8 n                   = 0;
@@ -243,7 +243,7 @@ u8 BattleCpu::func_ov007_022310f0() {
         BattlePlayer *pl;
         i     = 0;
         count = data_020d433c.mUnk_99;
-        pl    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79];
+        pl    = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
         free  = 0;
         do {
             if (pl->Flag56(i) == 0) {
@@ -262,7 +262,7 @@ u8 BattleCpu::func_ov007_022310f0() {
         if (free != 0) {
             u8 pick          = MATH_Rand32(&gRandom, free);
             u8 k             = 0;
-            BattlePlayer *p2 = data_020d433c.mBattlePlayers->mPlayers[mUnk_79];
+            BattlePlayer *p2 = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
             u8 j             = 0;
             do {
                 if (p2->Flag56(j) == 0) {
@@ -281,7 +281,7 @@ u8 BattleCpu::func_ov007_022310f0() {
 
 u8 BattleCpu::func_ov007_02231300() {
     u8 roll = MATH_Rand32(&gRandom, 100);
-    u8 t    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f1;
+    u8 t    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f1;
     if (roll < 50) {
         t = 4;
     } else if (roll < 75) {
@@ -344,12 +344,12 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     u8 cntB     = 0;
     u8 type;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    u8 kind                = list->mPlayers[cpu->mUnk_79]->mCharacterId;
+    u8 kind                = list->mPlayers[cpu->mPlayer]->mCharacterId;
     u8 i                   = 0;
     do {
         BattleMarker *m = &list->Entries()[i];
         if (m->mStatus != 0) {
-            if (cpu->mUnk_79 == m->mPlayer) {
+            if (cpu->mPlayer == m->mPlayer) {
                 own[nOwn] = i;
                 nOwn++;
             } else {
@@ -360,7 +360,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                 cntA++;
             } else {
                 u8 owner = list->Units()[(u8) (m->mUnitHandle - 1)].mPlayer;
-                if (owner != cpu->mUnk_79 && owner != list->mPlayers[cpu->mUnk_79]->Partner()) {
+                if (owner != cpu->mPlayer && owner != list->mPlayers[cpu->mPlayer]->Partner()) {
                     cntB++;
                 }
             }
@@ -370,11 +370,11 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     if (nOwn + nOther == 0) {
         return;
     }
-    type = list->mPlayers[cpu->mUnk_79]->mRecords[cpu->mUnk_7a].mAttribute;
+    type = list->mPlayers[cpu->mPlayer]->mRecords[cpu->mRecord].mAttribute;
     cpu->mUnk_7e = 0;
     BattlePlayerList *list2 = data_020d433c.mBattlePlayers;
-    BattlePlayer *pl        = list2->mPlayers[cpu->mUnk_79];
-    if ((s32) pl->mRecords[cpu->mUnk_7a].mUnk_00_0 >= 2 && pl->mUnk_f3 == 0xbe) {
+    BattlePlayer *pl        = list2->mPlayers[cpu->mPlayer];
+    if ((s32) pl->mRecords[cpu->mRecord].mUnk_00_0 >= 2 && pl->mUnk_f3 == 0xbe) {
         u8 roll = MATH_Rand32(&gRandom, 100);
         if (cpu->mUnk_7b == 0) {
             roll = 99;
@@ -386,7 +386,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
         } else if (cpu->mUnk_7b == 5) {
             roll = 0;
         }
-        if (list2->mPlayers[cpu->mUnk_79]->mUnk_f7 == 2) {
+        if (list2->mPlayers[cpu->mPlayer]->mUnk_f7 == 2) {
             roll = 0;
         }
         if (roll < data_ov007_022796e4[kind]) {
@@ -456,7 +456,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                 l = data_020d433c.mBattlePlayers;
                 do {
                     BattleUnit *u = &l->Units()[idx];
-                    if (u->mStatus != 0 && cpu->mUnk_79 == u->mPlayer) {
+                    if (u->mStatus != 0 && cpu->mPlayer == u->mPlayer) {
                         found++;
                         break;
                     }
@@ -480,7 +480,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                     do {
                         BattleMarker *m = &l->Entries()[j];
                         if (m->mStatus != 0 && m->mUnitHandle == 0) {
-                            if (cpu->mUnk_79 == m->mPlayer) {
+                            if (cpu->mPlayer == m->mPlayer) {
                                 pick = j;
                                 break;
                             }
@@ -502,7 +502,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                         BattleMarker *m = &l->Entries()[j];
                         if (m->mStatus != 0 && m->mUnitHandle != 0) {
                             u8 owner = l->Units()[(u8) (m->mUnitHandle - 1)].mPlayer;
-                            if (owner != cpu->mUnk_79 && owner != l->mPlayers[cpu->mUnk_79]->Partner()) {
+                            if (owner != cpu->mPlayer && owner != l->mPlayers[cpu->mPlayer]->Partner()) {
                                 if (state == 2) {
                                     if (!l->mPlayers[owner]->IsActive()) {
                                         pick = j;
@@ -528,8 +528,8 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                 }
                 break;
             case 4: {
-                RecordIndex index = (RecordIndex) cpu->mUnk_7a;
-                BattleRecord *rec = &data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->mRecords[index];
+                RecordIndex index = (RecordIndex) cpu->mRecord;
+                BattleRecord *rec = &data_020d433c.mBattlePlayers->mPlayers[cpu->mPlayer]->mRecords[index];
                 u32 recKind       = rec->mBakuganId;
                 u16 recValue      = rec->mUnk_04;
                 j                 = 0;
@@ -540,7 +540,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                         bool ok  = false;
                         u8 owner = m->mPlayer;
                         u16 val  = l->mPlayers[owner]->Slot54(m->mSlot);
-                        if (cpu->mUnk_79 == owner || owner == l->mPlayers[cpu->mUnk_79]->Partner()) {
+                        if (cpu->mPlayer == owner || owner == l->mPlayers[cpu->mPlayer]->Partner()) {
                             ok = cpu->func_ov007_02232e04(val, recValue, recKind);
                         }
                         if (ok == 1) {
@@ -560,7 +560,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                         BattlePlayerList *l = data_020d433c.mBattlePlayers;
                         BattleMarker *m     = &l->Entries()[j];
                         if (m->mStatus != 0) {
-                            u8 me = cpu->mUnk_79;
+                            u8 me = cpu->mPlayer;
                             if (me == m->mPlayer || m->mPlayer == l->mPlayers[me]->Partner()) {
                                 u32 v = func_02065bf4(m->mSlot, recKind);
                                 if (v > best) {
@@ -604,13 +604,13 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
         BattleMarker *m     = &data_020d433c.mBattlePlayers->Entries()[pick];
         if (m->mUnitHandle != 0) {
             u8 owner = data_020d433c.mBattlePlayers->Units()[(u8) (m->mUnitHandle - 1)].mPlayer;
-            if (owner == data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->Partner()) {
+            if (owner == data_020d433c.mBattlePlayers->mPlayers[cpu->mPlayer]->Partner()) {
                 j = 0;
                 do {
                     BattleMarker *m2 = &data_020d433c.mBattlePlayers->mMarkers[j];
                     if (m2->mStatus != 0) {
                         if (m2->mUnitHandle != 0) {
-                            if (data_020d433c.mBattlePlayers->Units()[(u8) (m2->mUnitHandle - 1)].mPlayer != data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->Partner()) {
+                            if (data_020d433c.mBattlePlayers->Units()[(u8) (m2->mUnitHandle - 1)].mPlayer != data_020d433c.mBattlePlayers->mPlayers[cpu->mPlayer]->Partner()) {
                                 pick = j;
                                 break;
                             }
@@ -633,10 +633,10 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     cpu->func_ov007_022328dc();
 }
 
-u8 BattleCpu::func_ov007_02231dd0() {
+u8 BattleCpu::PickRecord() {
     u8 found         = 0;
     u8 i             = 0;
-    BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[mUnk_79];
+    BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
     u8 count         = data_020d433c.mUnk_99;
     do {
         if (pl->mRecords[i].mStatus == 0) {
@@ -645,12 +645,12 @@ u8 BattleCpu::func_ov007_02231dd0() {
         }
         i++;
     } while (i < count);
-    mUnk_7a = found;
+    mRecord = found;
     return found;
 }
 
 void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC) {
-    u8 a    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mCharacterId;
+    u8 a    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCharacterId;
     u8 idx2 = 0;
     u8 spin;
     u8 idx1 = 6;
@@ -728,7 +728,7 @@ void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 
     }
     roll = MATH_Rand32(&gRandom, 100);
     if (roll < data_ov007_0227970c[a]) {
-        u8 f1  = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f1;
+        u8 f1  = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f1;
         u8 sel = data_020d433c.mUnk_96;
         switch (sel) {
         case 0:
@@ -800,13 +800,13 @@ void BattleCpu::func_ov007_022328dc() {
     u8 roll;
     u8 b;
     u8 a;
-    a    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mCharacterId;
+    a    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCharacterId;
     roll = MATH_Rand32(&gRandom, 100);
-    b    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f7;
+    b    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f7;
     if (b >= 2) {
         b = 1;
     }
-    if (data_020d433c.mUnk_7a != 0 && mUnk_79 == data_020d433c.mBattlePlayers->mPlayers[0]->mPartner) {
+    if (data_020d433c.mUnk_7a != 0 && mPlayer == data_020d433c.mBattlePlayers->mPlayers[0]->mPartner) {
         if (a != 0xd && a != 0xe) {
             b = 1;
         }
@@ -823,7 +823,7 @@ void BattleCpu::func_ov007_022328dc() {
     }
 }
 
-void BattleCpu::func_ov007_022329cc(int limit) {
+void BattleCpu::StartJumpObjTargets(int limit) {
     u8 cand[0x40];
     u8 i = 0;
     u32 n = 0;
@@ -832,7 +832,7 @@ void BattleCpu::func_ov007_022329cc(int limit) {
         GimmickNode *node = &data_020d433c.mGimmicks->mNodes[i];
         if (node && node->mGimmick) {
             Gimmick *g = node->mGimmick;
-            if (g->mUnk_3a == 4 && (limit == 0 || g->mPosition.y < limit)) {
+            if (g->mType == GIMMICK_TYPE_JUMP_OBJ && (limit == 0 || g->mPosition.y < limit)) {
                 cand[n] = i;
                 n = (u8) (n + 1);
             }
@@ -842,17 +842,17 @@ void BattleCpu::func_ov007_022329cc(int limit) {
     if (n == 0) {
         return;
     }
-    mUnk_84 = n;
+    mJumpObjCount = n;
     k = 0;
     do {
         if (n == k) {
             break;
         }
-        mUnk_7f[k] = cand[MATH_Rand32(&gRandom, n)];
+        mTargetNodeIndices[k] = cand[MATH_Rand32(&gRandom, n)];
         if (k != 0) {
             u8 j = 0;
             do {
-                if (mUnk_7f[j] == mUnk_7f[k]) {
+                if (mTargetNodeIndices[j] == mTargetNodeIndices[k]) {
                     j = k + 1;
                     break;
                 }
@@ -864,7 +864,7 @@ void BattleCpu::func_ov007_022329cc(int limit) {
             }
         }
         {
-            GimmickNode *node = &data_020d433c.mGimmicks->mNodes[mUnk_7f[k]];
+            GimmickNode *node = &data_020d433c.mGimmicks->mNodes[mTargetNodeIndices[k]];
             if (node && node->mGimmick) {
                 mTargets[k] = node->mGimmick->mPosition;
             }
@@ -872,55 +872,55 @@ void BattleCpu::func_ov007_022329cc(int limit) {
     next:
         k = (u8) (k + 1);
     } while (k < 4);
-    mUnk_76    = 1;
+    mUsingTargets    = 1;
     mSavedPos  = mPos;
-    mPos       = mTargets[mUnk_83];
+    mPos       = mTargets[mTargetIndex];
     mUnk_54    = MATH_Rand32(&gRandom, 301) + 0x47e;
     mUnk_58    = 0xe10;
 }
 
-void BattleCpu::func_ov007_02232bfc() {
-    if (mUnk_76 != 1) {
+void BattleCpu::NextTarget() {
+    if (mUsingTargets != 1) {
         return;
     }
-    if (mUnk_84 == 0) {
+    if (mJumpObjCount == 0) {
         return;
     }
-    mUnk_83 = (mUnk_83 + 1) % mUnk_84;
-    mPos    = mTargets[mUnk_83];
+    mTargetIndex = (mTargetIndex + 1) % mJumpObjCount;
+    mPos    = mTargets[mTargetIndex];
 }
 
-void BattleCpu::func_ov007_02232c5c() {
-    mUnk_76   = 0;
+void BattleCpu::StopJumpObjTargets() {
+    mUsingTargets   = 0;
     mPos      = mSavedPos;
     mUnk_54   = 0;
-    mUnk_84   = 0;
+    mJumpObjCount   = 0;
 }
 
-void BattleCpu::func_ov007_02232c88() {
-    mUnk_70 = 0;
+void BattleCpu::RandomizeOffsets() {
+    mOffsetFrames = 0;
     u8 i    = 0;
     do {
-        mUnk_85[i] = MATH_Rand32(&gRandom, 10);
-        if (mUnk_85[i] == 0) {
-            mUnk_60[i] = MATH_Rand32(&gRandom, 60) + 90;
+        mOffsetEntries[i] = MATH_Rand32(&gRandom, 10);
+        if (mOffsetEntries[i] == 0) {
+            mOffsetFrameCounts[i] = MATH_Rand32(&gRandom, 60) + 90;
         } else {
-            mUnk_60[i] = MATH_Rand32(&gRandom, 60) + 60;
+            mOffsetFrameCounts[i] = MATH_Rand32(&gRandom, 60) + 60;
         }
         i++;
     } while (i < 8);
-    func_ov007_02232d8c();
+    SetOffset();
 }
 
-void BattleCpu::func_ov007_02232d8c() {
-    if (mUnk_85[mUnk_8d] >= 9) {
+void BattleCpu::SetOffset() {
+    if (mOffsetEntries[mOffsetEntryIndex] >= 9) {
         return;
     }
     s32 offsets[9][2] = {
         {0, 0}, {0, 0x59a}, {0x333, 0x2cd}, {0x666, 0}, {0x333, -0x2cd}, {0, -0x59a}, {-0x333, -0x2cd}, {-0x666, 0}, {-0x333, 0x2cd},
     };
-    mUnk_4c = offsets[mUnk_85[mUnk_8d]][0];
-    mUnk_50 = offsets[mUnk_85[mUnk_8d]][1];
+    mUnk_4c = offsets[mOffsetEntries[mOffsetEntryIndex]][0];
+    mUnk_50 = offsets[mOffsetEntries[mOffsetEntryIndex]][1];
 }
 
 bool BattleCpu::func_ov007_02232e04(u32 a, u32 b, u32 c) {
@@ -956,8 +956,8 @@ bool BattleCpu::func_ov007_02232e04(u32 a, u32 b, u32 c) {
     return result;
 }
 
-void BattleCpu::func_ov007_02232eb8(s32 *x, s32 *y) {
-    if (data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f7 != 0 && mUnk_70 % mUnk_72 == 0) {
+void BattleCpu::GetOffset(s32 *x, s32 *y) {
+    if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f7 != 0 && mOffsetFrames % mOffsetInterval == 0) {
         *x = mUnk_4c;
         *y = mUnk_50;
         return;
@@ -1019,7 +1019,7 @@ void func_ov007_02233078(VecFx32 *pos, VecFx32 *vel, int steps, VecFx32 *out) {
     *out = p;
 }
 
-int func_ov007_02233158(VecFx32 *pos, VecFx32 *vel, VecFx32 *out) {
+int PredictLanding(VecFx32 *pos, VecFx32 *vel, VecFx32 *out) {
     VecFx32 p = *pos;
     VecFx32 v = *vel;
     v.x       = FX_Mul(v.x, 0xb800);
@@ -1036,7 +1036,7 @@ int func_ov007_02233158(VecFx32 *pos, VecFx32 *vel, VecFx32 *out) {
     return n;
 }
 
-int func_ov007_02233270(VecFx32 *pos, VecFx32 *vel, VecFx32 *out, u32 unk4, u32 unk5) {
+int PredictStop(VecFx32 *pos, VecFx32 *vel, VecFx32 *out, u32 unk4, u32 unk5) {
     VecFx32 p = *pos;
     VecFx32 v = *vel;
     v.x       = FX_Mul(v.x, 0xb800);
@@ -1076,7 +1076,7 @@ int func_ov007_02233270(VecFx32 *pos, VecFx32 *vel, VecFx32 *out, u32 unk4, u32 
     }
 }
 
-void func_ov007_022334f4(u16 *rot, u32 s, VecFx32 *dir, VecFx32 *out) {
+void RotateDirScaled(u16 *rot, u32 s, VecFx32 *dir, VecFx32 *out) {
     VEC_Normalize(dir, out);
     MtxFx33 m = data_0220e848;
     if (rot[1]) {
@@ -1193,7 +1193,7 @@ void func_ov007_022337ec(VecFx32 *A, VecFx32 *B, VecFx32 *C, VecFx32 *D, VecFx32
     D->z = 0;
 }
 
-void func_ov007_02233ed8(VecFx32 *in, u16 angle, VecFx32 *out) {
+void RotateVecY(VecFx32 *in, u16 angle, VecFx32 *out) {
     MtxFx33 m = data_0220e848;
     func_01ffcfd8(&m, angle);
     func_01ff84d0(in, &m, out);

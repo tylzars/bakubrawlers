@@ -8,30 +8,30 @@
 // Emblem sprite shown by Confront03 (vs_emblem_%02d_nce.bin). Vtable 02286068.
 class ConfrontEmblem03 {
 public:
-    /* 04 */ u8 mUnk_04;
-    /* 05 */ u8 mUnk_05;
+    /* 04 */ u8 mState;
+    /* 05 */ u8 mEmblem;
     /* 06 */ PAD(0x06, 0x07);
     /* 07 */ u8 mUnk_07_0 : 1;
     /* 07 */ u8 mUnk_07_1 : 1;
     /* 07 */ u8 mUnk_07_2 : 1;
-    /* 08 */ u8 mUnk_08;
-    /* 09 */ u8 mUnk_09;
-    /* 0a */ u8 mUnk_0a;
-    /* 0b */ s8 mUnk_0b;
+    /* 08 */ u8 mHoldFrames;
+    /* 09 */ u8 mHoldFrameCount;
+    /* 0a */ u8 mStep;
+    /* 0b */ s8 mSlot;
     /* 0c */ PAD(0x0c, 0x14);
-    /* 14 */ float mUnk_14;
-    /* 18 */ float mUnk_18;
-    /* 1c */ float mUnk_1c;
+    /* 14 */ float mX;
+    /* 18 */ float mY;
+    /* 1c */ float mScale;
     /* 20 */ CellAnimation *mAnim;
     /* 24 */
 
     ConfrontEmblem03(u8 index);
     virtual ~ConfrontEmblem03();
-    void func_ov007_0221f1b8(u8 slot, int flag);
-    void func_ov007_0221f268();
-    void func_ov007_0221f368();
-    void func_ov007_0221f3a4();
-    u8 func_ov007_0221f57c();
+    void Start(u8 slot, int flag);
+    void Update();
+    void StartShrink();
+    void Draw();
+    u8 IsIdle();
     int func_ov007_0221f594();
-    int func_ov007_0221f70c();
+    int GetSlotIfIdle();
 };

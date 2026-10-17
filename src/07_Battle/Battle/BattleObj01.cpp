@@ -13,7 +13,7 @@
 extern BattleObj01Motion data_ov007_02279080[];
 
 void func_ov007_02225354(float x, float y, float *out);
-int func_ov007_022252d0(int x1, int y1, int x2, int y2);
+int PointDistance(int x1, int y1, int x2, int y2);
 
 
 BattleObj01::BattleObj01(u8 layer, u32 charBase) {
@@ -58,7 +58,7 @@ BOOL BattleObj01::Start(u8 fast, int x, int y, s16 targetX, s16 targetY, u16 ang
     mAnims[1]->SetAnimation(anim + 1);
     mActive = 1;
     mUnk_05 = fast;
-    mSpeed = mMotion->mUnk_00;
+    mSpeed = mMotion->mStartSpeed;
     mX = x;
     mY = y;
     mScreenX = x;
@@ -71,7 +71,7 @@ BOOL BattleObj01::Start(u8 fast, int x, int y, s16 targetX, s16 targetY, u16 ang
     p[0] = mX + (float) FX_SinCosTable_[step * 2 + 1] / 4096.0f;
     p[1] = mY + (float) FX_SinCosTable_[step * 2] / 4096.0f;
     func_ov007_02225354(p[0] - mX, p[1] - mY, &mSideX);
-    mUnk_0c = mMotion->mUnk_0c;
+    mSideSpeed = mMotion->mSideSpeed;
     return 1;
 }
 
@@ -85,10 +85,10 @@ BOOL BattleObj01::Update() {
     }
     mX = mX + mSpeed * mDirX;
     mY = mY + mSpeed * mDirY;
-    if (mUnk_0c > 0.0f) {
-        mX = mX + mUnk_0c * mSideX;
-        mY = mY + mUnk_0c * mSideY;
-        mUnk_0c = mUnk_0c - mMotion->mUnk_10;
+    if (mSideSpeed > 0.0f) {
+        mX = mX + mSideSpeed * mSideX;
+        mY = mY + mSideSpeed * mSideY;
+        mSideSpeed = mSideSpeed - mMotion->mSideDecel;
         func_ov007_02225354(mTargetX - mX, mTargetY - mY, &mDirX);
     }
     mAnims[1]->Update();
@@ -97,7 +97,7 @@ BOOL BattleObj01::Update() {
     mAnims[0]->Draw(1, mX, mY, 1);
     mScreenX = (s32) mX;
     mScreenY = (s32) mY;
-    if (func_ov007_022252d0((s32) mTargetX, (s32) mTargetY, (s32) mX, (s32) mY) > 2) {
+    if (PointDistance((s32) mTargetX, (s32) mTargetY, (s32) mX, (s32) mY) > 2) {
         return 0;
     }
     mActive = 0;

@@ -28,10 +28,10 @@ public:
 
     ConfrontEmblem02(u8 emblem);
     virtual ~ConfrontEmblem02();
-    void func_ov007_0221de78(u8 side);
-    void func_ov007_0221df04();
-    void func_ov007_0221e054();
-    void func_ov007_0221e090();
-    u8 func_ov007_0221e250();
+    void Start(u8 side);
+    void Update();
+    void StartShrink();
+    void Draw();
+    u8 IsIdle();
     int func_ov007_0221e268(u8 flag);
 };

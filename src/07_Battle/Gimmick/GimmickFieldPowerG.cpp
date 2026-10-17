@@ -12,7 +12,7 @@ static ModelResource *sResource;
 GimmickFieldPowerG::GimmickFieldPowerG(u8 a)
     : Gimmick(a, 0) {
     mState  = 0;
-    mUnk_3a = 2;
+    mType = GIMMICK_TYPE_FIELD_POWER_G;
 }
 
 GimmickFieldPowerG::~GimmickFieldPowerG() {
@@ -50,14 +50,14 @@ void GimmickFieldPowerG::Finish() {
 void GimmickFieldPowerG::Update() {
     switch (mState) {
     case 0:
-        func_ov007_0222ea28(0x5c, 0x20);
+        LoadCollision(0x5c, 0x20);
         mState++;
         break;
     case 1: {
         if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
             func_020526bc();
         }
-        if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
+        if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
         if (!data_020d433c.mBattlePlayers->mBattleTarget) {
@@ -67,7 +67,7 @@ void GimmickFieldPowerG::Update() {
         if (data_020d433c.mTutorialId == 0xc) {
             data_020d433c.mBattlePlayers->mUnk_2b0 = 1;
         }
-        func_ov007_02271d78(data_020d433c.mGimmickCollision, mUnk_3c);
+        RemoveCollisionSet(data_020d433c.mGimmickCollision, mCollision);
         BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
         func_ov007_0226a380(p, p->mRecord, 0x1e);
         p->mUnk_fd++;
@@ -77,7 +77,7 @@ void GimmickFieldPowerG::Update() {
         SoundManager::Get().StartSeqArc(0x35);
         CameraManager::Get();
         MtxFx43 mtx = data_020c1cf4;
-        VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
+        VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
         VecFx32 v      = data_ov007_02279420;
         u16 handle     = StartEffect(data_020d433c.mEffects, 1, 3, 0, 0);
         if (handle) {
@@ -92,11 +92,11 @@ void GimmickFieldPowerG::Update() {
         handle = StartEffect(data_020d433c.mEffects, 1, 0xd, 0, 1);
         if (handle) {
             VecFx32 d;
-            VecFx32 camPos2 = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
+            VecFx32 camPos2 = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
             CameraManager::Get();
             MtxFx43 mtx2 = data_020c1cf4;
             func_01ffcf64(&mtx2, &mPosition);
-            Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_174;
+            Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mCamera;
             d.x                 = h->mPosition.x;
             d.y                 = h->mPosition.y;
             d.z                 = h->mPosition.z;
@@ -105,12 +105,12 @@ void GimmickFieldPowerG::Update() {
             d.x = FX_Mul(d.x, 0x1e000);
             d.y = FX_Mul(d.y, 0x1e000);
             d.z = FX_Mul(d.z, 0x1e000);
-            VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition, &d);
+            VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
             func_01ffcf64(&mtx2, &d);
             SetEffectMatrix(data_020d433c.mEffects, handle, &mtx2);
         }
-        mUnk_40 = 1;
-        mUnk_3c = 0;
+        mCountingTurns = 1;
+        mCollision = 0;
         break;
     }
     case 2: {
@@ -124,13 +124,13 @@ void GimmickFieldPowerG::Update() {
         } else {
             limit = data_ov007_02279414[players - 2];
         }
-        if (mUnk_44 < limit) {
+        if (mTurnCount < limit) {
             break;
         }
-        func_ov007_0222ea28(0x5c, 0x20);
-        mUnk_40 = 0;
+        LoadCollision(0x5c, 0x20);
+        mCountingTurns = 0;
         mState  = 1;
-        mUnk_44 = 0;
+        mTurnCount = 0;
         break;
     }
     case 3:

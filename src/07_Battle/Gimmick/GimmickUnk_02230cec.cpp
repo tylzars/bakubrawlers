@@ -3,7 +3,7 @@
 GimmickUnk_02230cec::GimmickUnk_02230cec(u8 id)
     : Gimmick(id, 0) {
     mState  = 0;
-    mUnk_3a = 0x3d;
+    mType = 0x3d;
 }
 
 GimmickUnk_02230cec::~GimmickUnk_02230cec() {
@@ -23,18 +23,18 @@ void GimmickUnk_02230cec::Finish() {
 void GimmickUnk_02230cec::Update() {
     switch (mState) {
     case 0:
-        func_ov007_0222ea28(0x3d, 8);
+        LoadCollision(0x3d, 8);
         mState++;
         break;
     case 1: {
-        if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
+        if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
         BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
         if (target->mUnk_1dd == 4 || !target) {
             return;
         }
-        if (target->mUnk_1a4->mPosition.y > 0x899a) {
+        if (target->mBakugan->mPosition.y > 0x899a) {
             return;
         }
         if (target->mUnk_1da) {
@@ -43,15 +43,15 @@ void GimmickUnk_02230cec::Update() {
         if (target->mUnk_38 > 3) {
             return;
         }
-        if (target->mUnk_4c < 5) {
+        if (target->mMoveFrames < 5) {
             return;
         }
         BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
         BattleRecord *r = &p->mRecords[p->mRecord];
         VecFx32 v;
-        v.x = target->mUnk_64.x;
-        v.y = target->mUnk_64.y;
-        v.z = target->mUnk_64.z;
+        v.x = target->mVelocity.x;
+        v.y = target->mVelocity.y;
+        v.z = target->mVelocity.z;
         data_020d433c.mUnk_14 &= 8;
         if (!data_020d433c.mUnk_14 && r->mAttribute != 2) {
             v.x = FX_Mul(v.x, 0x1000);
@@ -59,7 +59,7 @@ void GimmickUnk_02230cec::Update() {
             v.z = FX_Mul(v.z, 0x1000);
         }
         v.y = 0;
-        func_ov007_0225c960(data_020d433c.mBattlePlayers->mBattleTarget, &v, 0);
+        SetTargetVelocity(data_020d433c.mBattlePlayers->mBattleTarget, &v, 0);
         break;
     }
     case 2:

@@ -10,10 +10,10 @@
 
 ConfrontBg01::ConfrontBg01()
     : BattleBase() {
-    mUnk_68 = 0;
+    mSoundTimer = 0;
     mUnk_69 = 0;
     mUnk_6a = 0;
-    mUnk_6c = 0;
+    mDistanceSum = 0;
     mData   = 0;
     mBlend  = 0;
     mBlend  = new BattleBlend(1, 5, 0x28);
@@ -72,8 +72,8 @@ BOOL ConfrontBg01::func_ov007_0221bfa4() {
     if (spectator) {
         return FALSE;
     }
-    if (mUnk_68 != 0) {
-        mUnk_68 = 0;
+    if (mSoundTimer != 0) {
+        mSoundTimer = 0;
         func_02024764(&SoundManager::Get(), 0x27, 1);
     }
     mBlend->LowerLevel();
@@ -91,15 +91,15 @@ u8 ConfrontBg01::UpdateTouch(int a) {
         if (a) {
             limit = 0x14;
         }
-        mUnk_6c += func_ov007_022252d0(TouchManager::Get().mUnk_08, TouchManager::Get().mUnk_0a,
+        mDistanceSum += PointDistance(TouchManager::Get().mUnk_08, TouchManager::Get().mUnk_0a,
                                        (s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY);
-        if (mUnk_6c >= limit) {
-            mUnk_6c = 0;
+        if (mDistanceSum >= limit) {
+            mDistanceSum = 0;
             func_ov007_0221bb3c();
             if (!func_02024790(&SoundManager::Get(), 0x27)) {
                 SoundManager::Get().StartSeqArc(0x27);
             }
-            mUnk_68 = 10;
+            mSoundTimer = 10;
             if (mUnk_6a < 0x200) {
                 mUnk_6a += 2;
                 func_020247fc(&SoundManager::Get(), mUnk_6a);
@@ -108,15 +108,15 @@ u8 ConfrontBg01::UpdateTouch(int a) {
             hit = mBlend->mLevel * 100 / 40;
         }
     } else {
-        if (mUnk_68 != 0) {
-            mUnk_68--;
-            if (mUnk_68 == 0) {
+        if (mSoundTimer != 0) {
+            mSoundTimer--;
+            if (mSoundTimer == 0) {
                 func_02024764(&SoundManager::Get(), 0x27, 1);
                 mUnk_6a = 0;
             }
         }
         if (mBlend->LowerLevel()) {
-            mUnk_6c = 0;
+            mDistanceSum = 0;
         }
     }
     return hit;

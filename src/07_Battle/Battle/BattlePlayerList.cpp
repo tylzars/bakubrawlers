@@ -220,7 +220,7 @@ void BattlePlayerList::Update() {
             break;
         case 1:
             if (func_ov007_022631bc(this, 0xf)) {
-                data_020d433c.mGimmicks->func_ov007_0222e75c(data_020d433c.mFieldId, (u8) data_020d433c.mUnk_96);
+                data_020d433c.mGimmicks->LoadSetData(data_020d433c.mFieldId, (u8) data_020d433c.mUnk_96);
                 if (data_020d433c.mTutorialId != 0) {
                     mState = 2;
                 } else {
@@ -719,7 +719,7 @@ void BattlePlayerList::Update() {
             } else {
                 mTurnCount++;
                 if (data_020d433c.mGimmicks) {
-                    data_020d433c.mGimmicks->func_ov007_0222e25c();
+                    data_020d433c.mGimmicks->CountTurnAll();
                 }
             }
             u8 idx = (mTurnCount - 1) % data_020d433c.mPlayerCount;

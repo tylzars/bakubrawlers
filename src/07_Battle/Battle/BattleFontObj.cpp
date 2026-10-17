@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 BattleFontObj::BattleFontObj(u32 type) {
-    func_ov007_02248ac4(type);
+    LoadModel(type);
 }
 
 BattleFontObj::~BattleFontObj() {
@@ -16,7 +16,7 @@ BattleFontObj::~BattleFontObj() {
     }
 }
 
-void BattleFontObj::func_ov007_02248ac4(u32 type) {
+void BattleFontObj::LoadModel(u32 type) {
     char model[0x40];
     char texture[0x40];
     u32 index;

@@ -316,7 +316,7 @@ void BattleObj00::Update() {
             }
             SpriteManager::Get().StartFade(3);
             if (mUnion) {
-                mUnion->func_ov007_02234418(0);
+                mUnion->Close(0);
             }
             mUnk_32++;
             return;

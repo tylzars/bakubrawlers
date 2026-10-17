@@ -34,8 +34,8 @@ typedef struct B5 { char c[5]; } B5;
 extern const B5 data_020a52a8, data_020a52b0, data_020a52c0, data_020a52c8;
 extern const B4 data_020a52b8, data_020a52bc, data_020a52d0, data_020a52d4;
 extern void func_0201cf1c(DecForm *, double, DecDigits *);
-extern void func_02013568(DecDigits *, int);
-extern const char *func_020125b4(const char *, char **, FmtSpec *);
+extern void RoundDecimalDigits(DecDigits *, int);
+extern const char *ParsePrintfSpec(const char *, char **, FmtSpec *);
 
 
 char *func_0201368c(double x, char *end, FmtSpec spec)
@@ -98,7 +98,7 @@ char *func_0201368c(double x, char *end, FmtSpec spec)
     switch (conv) {
     case 'g':
     case 'G':
-        if (d.len > prec) func_02013568(&d, prec);
+        if (d.len > prec) RoundDecimalDigits(&d, prec);
         if (d.exp < -4 || d.exp >= prec) {
             if (alt) prec--;
             else prec = d.len - 1;
@@ -116,7 +116,7 @@ char *func_0201368c(double x, char *end, FmtSpec spec)
     case 'e':
     case 'E':
     do_e:
-        if (d.len > prec + 1) func_02013568(&d, prec + 1);
+        if (d.len > prec + 1) RoundDecimalDigits(&d, prec + 1);
         ex = d.exp;
         esign = '+';
         n = 0;
@@ -149,7 +149,7 @@ char *func_0201368c(double x, char *end, FmtSpec spec)
         frac = d.len - d.exp - 1;
         if (frac < 0) frac = 0;
         if (frac > prec) {
-            func_02013568(&d, d.len - (frac - prec));
+            RoundDecimalDigits(&d, d.len - (frac - prec));
             frac = d.len - d.exp - 1;
             if (frac < 0) frac = 0;
         }
@@ -181,10 +181,10 @@ extern char *func_02015c38(const char *, int);
 extern size_t_ func_02015a50(const char *);
 extern void *func_02012498(const void *, int, size_t_);
 extern int func_020123ec(char *, const void *, size_t_);
-extern char *func_02012b44(int, char *, FmtSpec);
-extern char *func_02012d90(long long, char *, FmtSpec);
+extern char *WriteIntDigits(int, char *, FmtSpec);
+extern char *WriteLongLongDigits(long long, char *, FmtSpec);
 extern char *func_0201368c(double, char *, FmtSpec);
-extern char *func_0201308c(double, char *, FmtSpec);
+extern char *WriteHexFloatDigits(double, char *, FmtSpec);
 extern const char data_020a52d8[], data_020a52dc[];
 
 size_t_ func_02013df0(int (*cb)(void *, const char *, size_t_), void *arg, const char *fmt, char *ap)
@@ -213,7 +213,7 @@ size_t_ func_02013df0(int (*cb)(void *, const char *, size_t_), void *arg, const
         if (n) {
             if (!cb(arg, fmt, n)) return -1;
         }
-        fmt = func_020125b4(pct, &ap, &spec);
+        fmt = ParsePrintfSpec(pct, &ap, &spec);
         switch (spec.conv) {
         case 'd':
         case 'i':
@@ -233,10 +233,10 @@ size_t_ func_02013df0(int (*cb)(void *, const char *, size_t_), void *arg, const
             if (spec.len == 2) v = (short)v;
             if (spec.len == 1) v = (signed char)v;
             if (spec.len == 4 || spec.len == 6) {
-                s = func_02012d90(ll, buf + 512, spec);
+                s = WriteLongLongDigits(ll, buf + 512, spec);
                 if (s == 0) goto bad;
             } else {
-                s = func_02012b44(v, buf + 512, spec);
+                s = WriteIntDigits(v, buf + 512, spec);
                 if (s == 0) goto bad;
             }
             len = (buf + 511) - s;
@@ -261,10 +261,10 @@ size_t_ func_02013df0(int (*cb)(void *, const char *, size_t_), void *arg, const
             if (spec.len == 2) v = (unsigned short)v;
             if (spec.len == 1) v = (unsigned char)v;
             if (spec.len == 4 || spec.len == 6) {
-                s = func_02012d90(ll, buf + 512, spec);
+                s = WriteLongLongDigits(ll, buf + 512, spec);
                 if (s == 0) goto bad;
             } else {
-                s = func_02012b44(v, buf + 512, spec);
+                s = WriteIntDigits(v, buf + 512, spec);
                 if (s == 0) goto bad;
             }
             len = (buf + 511) - s;
@@ -295,7 +295,7 @@ size_t_ func_02013df0(int (*cb)(void *, const char *, size_t_), void *arg, const
                 ap += 8;
                 d = *(double *)(ap - 8);
             }
-            s = func_0201308c(d, buf + 512, spec);
+            s = WriteHexFloatDigits(d, buf + 512, spec);
             if (s == 0) goto bad;
             len = (buf + 511) - s;
             break;

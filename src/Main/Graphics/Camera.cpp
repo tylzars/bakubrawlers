@@ -62,7 +62,7 @@ extern "C" void GX_ResetBankForTex();
 extern "C" void GX_ResetBankForTexPltt();
 extern "C" void GX_ResetBankForSubBG();
 extern "C" void GX_ResetBankForSubOBJ();
-extern "C" void func_02002dd8();
+extern "C" void GX_ResetBankForLCDC();
 extern "C" void func_02002dec();
 extern "C" void func_02002e00();
 extern "C" void GX_ResetBankForSubBGExtPltt();

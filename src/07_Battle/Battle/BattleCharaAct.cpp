@@ -501,7 +501,7 @@ const u8 *t = data_ov007_0228a33c[mCharacterId];
     data_02211374.mCameraPosition  = camera->mPosition;
     data_02211374.mCameraUp        = camera->mUp;
     data_02211374.mCameraTarget    = camera->mTarget;
-    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
     manager.mProjection[manager.mActive] = data_02211374.mProjection;
     manager.mView[manager.mActive]       = data_02211374.mView;
@@ -565,7 +565,7 @@ void BattleCharaAct::Draw() {
     MtxFx43 mtx  = gIdentityMtx43;
     VecFx32 pos  = data_ov007_0227ac20;
     VecFx32 zero = {0, 0, 0};
-    func_01ffcf64(&mtx, &zero);
+    MTX_SetTranslation43(&mtx, &zero);
     if ((mKind == 10) | ((mKind == 7) | ((mKind == 8) | (mKind == 9)))) {
         mActDrawFrames++;
         if (mActDrawFrames >= 0x16) {
@@ -605,7 +605,7 @@ void BattleCharaAct::DrawFieldopModel() {
     }
     MtxFx43 mtx = gIdentityMtx43;
     VecFx32 pos = data_ov007_0227ac2c;
-    func_01ffd088(&mtx, 0x4000);
+    MTX_ApplyRotX43(&mtx, 0x4000);
     mFieldopModel->AdvanceAnim();
     mFieldopModel->Draw(&mtx, &pos);
 }

@@ -2,10 +2,10 @@
 typedef struct { u8 pad[0x24]; u32 o24, o28, o2c; } FSFile;
 extern "C" {
 void MIi_CpuCopyFast(const void *src, void *dst, u32 n);
-void func_0200ab18(FSFile *);
-int func_0200ac40(FSFile *, u32, u32);
-int func_0200ac30(FSFile *, void *, u32);
-int func_0200ac20(FSFile *, void *, u32);
+void FS_WaitFile(FSFile *);
+int FS_SeekFile(FSFile *, u32, u32);
+int FS_ReadFile(FSFile *, void *, u32);
+int FS_ReadFileAsync(FSFile *, void *, u32);
 void *OS_AllocFromHeap(int, int, u32);
 void OS_FreeToHeap(int, int, void *);
 struct F { u32 o0; u32 o4; u32 o8; FSFile *file; u8 flag; };
@@ -18,20 +18,20 @@ int ReaderInit(F *f, FSFile *file) {
 }
 int ReaderSeek(F *f, u32 pos) {
     if (f->flag == 1) {
-        func_0200ab18(f->file);
+        FS_WaitFile(f->file);
         f->flag = 0;
     }
-    if (func_0200ac40(f->file, pos, 0) == 0) return 0;
+    if (FS_SeekFile(f->file, pos, 0) == 0) return 0;
     f->o8 = pos;
     return 1;
 }
 int ReaderRead(F *f, void *buf, u32 n) {
     if (f->flag == 1) {
-        func_0200ab18(f->file);
-        func_0200ac40(f->file, f->o8, 0);
+        FS_WaitFile(f->file);
+        FS_SeekFile(f->file, f->o8, 0);
         f->flag = 0;
     }
-    if (func_0200ac30(f->file, buf, n) == -1) return 0;
+    if (FS_ReadFile(f->file, buf, n) == -1) return 0;
     f->o8 += n;
     return 1;
 }
@@ -40,14 +40,14 @@ int ReaderStartAlignedRead(F *f, void *buf, u32 n) {
     u32 off = f->o8 - aligned;
     u32 len = n + off;
     if (len & 0x1ff) len = (len & -0x200) + 0x200;
-    func_0200ac40(f->file, aligned, 0);
-    if (func_0200ac20(f->file, buf, len) == -1) return 0;
+    FS_SeekFile(f->file, aligned, 0);
+    if (FS_ReadFileAsync(f->file, buf, len) == -1) return 0;
     f->o8 += n;
     f->flag = 1;
     return off;
 }
 void func_0203b7c8(F *f) {
-    if (f->flag == 1) func_0200ab18(f->file);
+    if (f->flag == 1) FS_WaitFile(f->file);
     f->flag = 0;
 }
 void ReaderClose(Src *s) { s->adv(); }

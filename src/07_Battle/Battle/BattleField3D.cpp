@@ -14,7 +14,7 @@ extern const u8 data_ov007_022791c4[];
 extern const VecFx32 data_ov007_022791ac;
 extern const VecFx32 data_ov007_022791b8;
 extern const VecFx32 data_ov007_022791a0;
-extern "C" void func_01ffd0e0(MtxFx43 *mtx, u16 angle);
+extern "C" void MTX_ApplyRotY43(MtxFx43 *mtx, u16 angle);
 void FreeAuras(BattleField3D *obj);
 
 // Effect (particle) system functions: effects are loaded by name into numbered slots, spawned as emitters addressed by
@@ -32,7 +32,7 @@ static inline void SnapshotCamera() {
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
-    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
     manager.mProjection[manager.mActive] = data_02211374.mProjection;
     manager.mView[manager.mActive]       = data_02211374.mView;
@@ -254,15 +254,15 @@ void BattleField3D::Draw(u32 frame) {
         FollowPushPercent(frame);
     }
     if (!mUnk_04_1) {
-        func_01ffcf64(&mtx, &mPos[0]);
-        func_01ffd0e0(&mtx, 0x3fff);
+        MTX_SetTranslation43(&mtx, &mPos[0]);
+        MTX_ApplyRotY43(&mtx, 0x3fff);
         mSide0RealBaku->mModel->AdvanceAnim();
         mSide0RealBaku->mModel->Draw(&mtx, &scale);
     }
     if (!mUnk_04_2) {
         mtx = gIdentityMtx43;
-        func_01ffcf64(&mtx, &mPos[1]);
-        func_01ffd0e0(&mtx, 0xc001);
+        MTX_SetTranslation43(&mtx, &mPos[1]);
+        MTX_ApplyRotY43(&mtx, 0xc001);
         mSide1RealBaku->mModel->AdvanceAnim();
         mSide1RealBaku->mModel->Draw(&mtx, &scale);
     }

@@ -284,10 +284,10 @@ void CharacterModel::DrawParts() {
     if (mVisible == 0) {
         return;
     }
-    func_01ffcf64(&mtx, &mPosition);
-    func_01ffd088(&mtx, mRotX);
-    func_01ffd0e0(&mtx, mRotY);
-    func_01ffd138(&mtx, mRotZ);
+    MTX_SetTranslation43(&mtx, &mPosition);
+    MTX_ApplyRotX43(&mtx, mRotX);
+    MTX_ApplyRotY43(&mtx, mRotY);
+    MTX_ApplyRotZ43(&mtx, mRotZ);
     if (mParts[0] != NULL) {
         func_02031838((u8 *) mParts[0] + 4, InstallHeadNodeMtxCallback);
         *(u32 *) ((u8 *) mParts[0] + 4) |= 1;
@@ -302,8 +302,8 @@ void CharacterModel::DrawParts() {
     if (mParts[2] != NULL) {
         mParts[2]->Draw(&mtx, &mScale);
     }
-    func_01ffd0e0(&gHeadNodeMtx, 0x8000);
-    func_01ffd138(&gHeadNodeMtx, 0x4000);
+    MTX_ApplyRotY43(&gHeadNodeMtx, 0x8000);
+    MTX_ApplyRotZ43(&gHeadNodeMtx, 0x4000);
     if (mParts[5] != NULL) {
         mParts[5]->Draw(&gHeadNodeMtx, &mScale);
     } else if (mParts[3] != NULL) {

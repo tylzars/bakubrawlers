@@ -12,7 +12,7 @@ extern void *func_02012464(void *, const void *, size_t_);
 extern size_t_ func_02013df0(int (*)(void *, const char *, size_t_), void *, const char *, char *);
 
 /* 0x02014614: formatter output callback, appends to a bounded buffer */
-int func_02014614(void *arg, const char *src, size_t_ n)
+int WriteToStrBuffer(void *arg, const char *src, size_t_ n)
 {
     StrWriteCtx *c = arg;
     size_t_ pos = c->pos;
@@ -31,7 +31,7 @@ size_t_ func_02014658(char *buf, size_t_ size, const char *fmt, char *ap)
     c.buf = buf;
     c.size = size;
     c.pos = 0;
-    n = func_02013df0(func_02014614, &c, fmt, ap);
+    n = func_02013df0(WriteToStrBuffer, &c, fmt, ap);
     if (buf == 0) return n;
     if (n < size) {
         buf[n] = 0;

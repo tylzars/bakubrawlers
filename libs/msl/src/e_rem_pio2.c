@@ -13,7 +13,7 @@
 #define __LO(x) *(int*)&x
 extern const int data_02090510[];   /* npio2_hw */
 extern const int data_02090590[];   /* two_over_pi */
-extern double func_0201bb40(double);
+extern double fabs(double);
 extern int func_0201ab70(double *, double *, int, int, int, const int *);
 static const double zero = 0.0;
 static const double half = 5.00000000000000000000e-01;
@@ -65,7 +65,7 @@ int func_0201a188(double x, double *y)
         }
     }
     if (ix <= 0x413921fb) {
-        t = func_0201bb40(x);
+        t = fabs(x);
         n = (int)(t * invpio2 + half);
         fn = (double)n;
         r = t - fn * pio2_1;

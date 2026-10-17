@@ -140,7 +140,7 @@ void MyroomStatusScene::Setup3D() {
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
-    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
     manager.mProjection[manager.mActive] = data_02211374.mProjection;
     manager.mView[manager.mActive]       = data_02211374.mView;
@@ -172,7 +172,7 @@ void MyroomStatusScene::Draw3D() {
     MtxFx43 mtx   = gIdentityMtx43;
     VecFx32 b      = gMyroomStatusBgScale;
     VecFx32 a      = gMyroomStatusBgOffset;
-    func_01ffcf64(&mtx, &a);
+    MTX_SetTranslation43(&mtx, &a);
     func_01ff89c0(&mtx, view, &mtx);
     mMyroombgModel->AdvanceAnim();
     mMyroombgModel->Draw(&mtx, &b);

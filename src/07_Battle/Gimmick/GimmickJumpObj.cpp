@@ -3,9 +3,9 @@
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 
-extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
-extern "C" void func_01ffcf80(MtxFx33 *m, u16 angle);
-extern "C" void func_01ffd030(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotX33(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotZ33(MtxFx33 *m, u16 angle);
 
 static ModelResource *sResource;
 
@@ -90,7 +90,7 @@ void GimmickJumpObj::Update() {
         }
         RotateDir(1);
         u32 r = MATH_Rand32(&gRandom, 0x444);
-        func_01ffcfd8(&m, r - 0x222);
+        MTX_ApplyRotY33(&m, r - 0x222);
         func_01ff84d0(&mDir, &m, &mDir);
         SetTargetVelocity(data_020d433c.mBattlePlayers->mBattleTarget, &mDir, 1);
         func_ov007_0225ca18(data_020d433c.mBattlePlayers->mBattleTarget, 4, 0xb4);
@@ -117,13 +117,13 @@ void GimmickJumpObj::Update() {
 void GimmickJumpObj::RotateDir(int reset) {
     MtxFx33 m = data_0220e848;
     if (mRotY) {
-        func_01ffcfd8(&m, mRotY);
+        MTX_ApplyRotY33(&m, mRotY);
     }
     if (mRotX) {
-        func_01ffcf80(&m, mRotX);
+        MTX_ApplyRotX33(&m, mRotX);
     }
     if (mRotZ) {
-        func_01ffd030(&m, mRotZ);
+        MTX_ApplyRotZ33(&m, mRotZ);
     }
     if (reset) {
         mDir.x = 0;

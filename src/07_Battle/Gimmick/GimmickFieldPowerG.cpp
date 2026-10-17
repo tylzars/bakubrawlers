@@ -86,7 +86,7 @@ void GimmickFieldPowerG::Update() {
             mtx._[9]  = 0;
             MTX_MultVec43(&v, &mtx, &v);
             VEC_Add(&camPos, &v, &camPos);
-            func_01ffcf64(&mtx, &camPos);
+            MTX_SetTranslation43(&mtx, &camPos);
             SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         }
         handle = StartEffect(data_020d433c.mEffects, 1, 0xd, 0, 1);
@@ -95,7 +95,7 @@ void GimmickFieldPowerG::Update() {
             VecFx32 camPos2 = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
             CameraManager::Get();
             MtxFx43 mtx2 = data_020c1cf4;
-            func_01ffcf64(&mtx2, &mPosition);
+            MTX_SetTranslation43(&mtx2, &mPosition);
             Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mCamera;
             d.x                 = h->mPosition.x;
             d.y                 = h->mPosition.y;
@@ -106,7 +106,7 @@ void GimmickFieldPowerG::Update() {
             d.y = FX_Mul(d.y, 0x1e000);
             d.z = FX_Mul(d.z, 0x1e000);
             VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
-            func_01ffcf64(&mtx2, &d);
+            MTX_SetTranslation43(&mtx2, &d);
             SetEffectMatrix(data_020d433c.mEffects, handle, &mtx2);
         }
         mCountingTurns = 1;

@@ -1,7 +1,7 @@
 #include <nitro/private/os_types.h>
 
 extern void WaitByLoop(u32 count);
-extern void func_02004828(int a, int b);
+extern void SleepUntilIrq(int a, int b);
 extern void PXI_Init(void);                                           // 0x02009050
 extern void PXI_SetFifoRecvCallback(int fifoTag, void (*callback)(int tag, u32 data, BOOL err));   // 0x0200915c
 extern BOOL PXI_IsCallbackReady(int fifoTag, int proc);               // 0x020091a8
@@ -24,7 +24,7 @@ struct {
 
 void func_02007230(void) {
     WaitByLoop(1);
-    func_02004828(1, 1);
+    SleepUntilIrq(1, 1);
 }
 
 void OS_InitReset(void) {

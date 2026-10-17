@@ -21,7 +21,7 @@ extern void func_02015b34(char *, const char *, size_t_);
 extern void func_02012504(void *, int, size_t_);
 
 /* 0x020122b0: population count */
-unsigned func_020122b0(unsigned x)
+unsigned CountSetBits(unsigned x)
 {
     x = x - ((x >> 1) & 0x55555555);
     x = (x & 0x33333333) + ((x >> 2) & 0x33333333);

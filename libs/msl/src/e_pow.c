@@ -13,7 +13,7 @@
 #define __LO(x) *(int*)&x
 extern float data_020a5078;
 extern int data_020c1790;
-extern double func_0201bb40(double);
+extern double fabs(double);
 extern double sqrt(double);
 extern double func_0201d700(double, int);
 static const double zero = 0.0, one = 1.0, two = 2.0, two53 = 9007199254740992.0;
@@ -101,7 +101,7 @@ double func_02019000(double x, double y)
         }
     }
 
-    ax = func_0201bb40(x);
+    ax = fabs(x);
     if (lx == 0) {
         if (ix == 0x7ff00000 || ix == 0 || ix == 0x3ff00000) {
             z = ax;

@@ -308,7 +308,7 @@ void GX_SetBankForSubOBJExtPltt(int obj) {
     func_02001fb8(data_020bdc08[0]);
 }
 
-u16 func_02002af4(u16 *banks) {
+u16 DisableBankFor(u16 *banks) {
     u16 v = *banks;
     *banks = 0;
     data_020bdc08[0] |= v;
@@ -317,41 +317,41 @@ u16 func_02002af4(u16 *banks) {
 }
 
 void GX_DisableBankForBG(void) {
-    func_02002af4(&data_020bdc08[1]);
+    DisableBankFor(&data_020bdc08[1]);
 }
 void GX_DisableBankForOBJ(void) {
-    func_02002af4(&data_020bdc08[2]);
+    DisableBankFor(&data_020bdc08[2]);
 }
 void GX_DisableBankForBGExtPltt(void) {
     reg_GX_DISPCNT_ &= ~0x40000000;
-    func_02002af4(&data_020bdc08[7]);
+    DisableBankFor(&data_020bdc08[7]);
 }
 void GX_DisableBankForOBJExtPltt(void) {
     reg_GX_DISPCNT_ &= ~0x80000000;
-    func_02002af4(&data_020bdc08[8]);
+    DisableBankFor(&data_020bdc08[8]);
 }
 void GX_DisableBankForTex(void) {
-    func_02002af4(&data_020bdc08[4]);
+    DisableBankFor(&data_020bdc08[4]);
 }
 void GX_DisableBankForTexPltt(void) {
-    func_02002af4(&data_020bdc08[5]);
+    DisableBankFor(&data_020bdc08[5]);
 }
 void GX_DisableBankForSubBG(void) {
-    func_02002af4(&data_020bdc08[9]);
+    DisableBankFor(&data_020bdc08[9]);
 }
 void GX_DisableBankForSubOBJ(void) {
-    func_02002af4(&data_020bdc08[10]);
+    DisableBankFor(&data_020bdc08[10]);
 }
 void GX_DisableBankForSubBGExtPltt(void) {
     reg_GXS_DISPCNT &= ~0x40000000;
-    func_02002af4(&data_020bdc08[11]);
+    DisableBankFor(&data_020bdc08[11]);
 }
 void GX_DisableBankForSubOBJExtPltt(void) {
     reg_GXS_DISPCNT &= ~0x80000000;
-    func_02002af4(&data_020bdc08[12]);
+    DisableBankFor(&data_020bdc08[12]);
 }
 
-u32 func_02002c38(u16 *banks) {
+u32 ResetBankFor(u16 *banks) {
     u32 v = *banks;
     *banks = 0;
     if (v & 1) {
@@ -381,57 +381,57 @@ u32 func_02002c38(u16 *banks) {
     if (v & 0x100) {
         reg_GX_VRAMCNT_I = 0;
     }
-    func_02007498(v, data_020bdc06[0]);
+    ClearMatchingOwnerEntries(v, data_020bdc06[0]);
     return v;
 }
 
 void GX_ResetBankForBG(void) {
-    func_02002c38(&data_020bdc08[1]);
+    ResetBankFor(&data_020bdc08[1]);
 }
 void GX_ResetBankForOBJ(void) {
-    func_02002c38(&data_020bdc08[2]);
+    ResetBankFor(&data_020bdc08[2]);
 }
 void GX_ResetBankForBGExtPltt(void) {
     reg_GX_DISPCNT_ &= ~0x40000000;
-    func_02002c38(&data_020bdc08[7]);
+    ResetBankFor(&data_020bdc08[7]);
 }
 void GX_ResetBankForOBJExtPltt(void) {
     reg_GX_DISPCNT_ &= ~0x80000000;
-    func_02002c38(&data_020bdc08[8]);
+    ResetBankFor(&data_020bdc08[8]);
 }
 void GX_ResetBankForTex(void) {
-    func_02002c38(&data_020bdc08[4]);
+    ResetBankFor(&data_020bdc08[4]);
 }
 void GX_ResetBankForTexPltt(void) {
-    func_02002c38(&data_020bdc08[5]);
+    ResetBankFor(&data_020bdc08[5]);
 }
 // These two reset bank fields 6 and 3, which no function in this file assigns; the resets of the sub-screen BG
 // and OBJ fields (9 and 10) are func_02002dec and func_02002e00 below, so the two names may belong to those.
 void GX_ResetBankForSubBG(void) {
-    func_02002c38(&data_020bdc08[6]);
+    ResetBankFor(&data_020bdc08[6]);
 }
 void GX_ResetBankForSubOBJ(void) {
-    func_02002c38(&data_020bdc08[3]);
+    ResetBankFor(&data_020bdc08[3]);
 }
-void func_02002dd8(void) {
-    func_02002c38(&data_020bdc08[0]);
+void GX_ResetBankForLCDC(void) {
+    ResetBankFor(&data_020bdc08[0]);
 }
 void func_02002dec(void) {
-    func_02002c38(&data_020bdc08[9]);
+    ResetBankFor(&data_020bdc08[9]);
 }
 
 
 
 void func_02002e00(void) {
-    func_02002c38(&data_020bdc08[10]);
+    ResetBankFor(&data_020bdc08[10]);
 }
 
 void GX_ResetBankForSubBGExtPltt(void) {
     reg_GXS_DISPCNT &= ~0x40000000;
-    func_02002c38(&data_020bdc08[11]);
+    ResetBankFor(&data_020bdc08[11]);
 }
 
 void GX_ResetBankForSubOBJExtPltt(void) {
     reg_GXS_DISPCNT &= ~0x80000000;
-    func_02002c38(&data_020bdc08[12]);
+    ResetBankFor(&data_020bdc08[12]);
 }

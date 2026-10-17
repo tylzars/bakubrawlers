@@ -24,7 +24,7 @@ extern u16 data_020bdc06[];
 extern s32 data_020a4f24; // GX DMA channel, -1 when unused
 void func_02001fb8(int banks);
 void GX_InitGXState(void);
-void func_02007498(u16 banks, u16 prev);
+void ClearMatchingOwnerEntries(u16 banks, u16 prev);
 
 #define HW_BG_VRAM 0x06000000
 #define HW_DB_BG_VRAM 0x06200000
@@ -36,8 +36,8 @@ void MIi_CpuClear32(u32 data, void *dest, u32 size);
 void MI_DmaFill32(u32 dmaNo, void *dest, u32 data, u32 size);
 #define reg_G3X_GXFIFO (*(vu32 *) 0x04000400)
 #define reg_G3X_GXSTAT (*(vu32 *) 0x04000600)
-void func_020047d8(const void *src, volatile void *dst); // MI_Copy48B
-void func_020047fc(const void *src, volatile void *dst); // MI_Copy128B
+void MI_Send48B(const void *src, volatile void *dst); // MI_Copy48B
+void MI_Send128B(const void *src, volatile void *dst); // MI_Copy128B
 void MI_Copy36B(const void *src, volatile void *dst);
 #define reg_G3X_END_VTXS (*(vu32 *) 0x04000504)
 #define reg_G3X_CLEAR_COLOR (*(vu32 *) 0x04000350)

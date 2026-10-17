@@ -26,7 +26,7 @@ void MI_InitUncompContextLZ(MIUncompContextLZ *context, u8 *dest, const MICompre
 // referenced bytes are copied one at a time.
 // All output bytes are written with an atomic byte swap. Runs until the output count reaches zero
 // or the input runs out; the state is stored back and the remaining output count is returned in r0.
-asm int func_02007d94(void *state, const unsigned char *in, unsigned avail) {
+asm int MI_UncompLZChunk(void *state, const unsigned char *in, unsigned avail) {
     stmfd sp!, {r4, r5, r6, r7, r8, r9, r10, r11}
     ldr r3, [r0, #0]                    // output pointer
     ldr r4, [r0, #4]                    // output bytes left

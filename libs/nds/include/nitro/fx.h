@@ -52,7 +52,7 @@ void MTX_MultVec43(const VecFx32 *vec, const MtxFx43 *m, VecFx32 *dst); // 0x01f
 void VEC_CrossProduct(const VecFx32 *a, const VecFx32 *b, VecFx32 *axb); // 0x01ff8ee0 (itcm)
 void VEC_Normalize(const VecFx32 *src, VecFx32 *dst);                // 0x01ff8fc4 (itcm)
 fx32 FX_Sqrt(fx32 x); // 0x01ff8068 (itcm, hardware square root)
-void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle); // itcm: rotation and scale
+void MTX_ScaleRot22(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle); // itcm: rotation and scale
 #ifdef __cplusplus
 }
 #endif

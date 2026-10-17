@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 extern MtxFx22 gIdentityMtx22;
-extern "C" void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
+extern "C" void MTX_ScaleRot22(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
 
 static const WindowItemRecord sTwoButtonItems[2] = {
     {0, 0x1, 89, 136, 78, 20, 0, {-1, -1, -1, -1}, 0, 2},
@@ -57,7 +57,7 @@ BattleUnk0227532c::BattleUnk0227532c(u8 planes)
     mPlanes = planes;
     mOffset = -0x100;
     MtxFx22 mtx;
-    func_01ffcef4(&mtx, 0x1000, 0x1000, 0);
+    MTX_ScaleRot22(&mtx, 0x1000, 0x1000, 0);
     G2x_SetBGyAffine_((vu16 *) 0x4001030, &mtx, 0, 0, -mOffset, 0);
 }
 

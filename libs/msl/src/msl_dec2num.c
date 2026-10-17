@@ -11,10 +11,10 @@ typedef struct Dec {
 extern float data_020a5074;
 extern char data_020a53f4[];
 extern double data_020a52e0[];
-extern double func_0201b9a8(double, double);
+extern double copysign(double, double);
 extern double func_0201c1c0(double, double);
-extern double func_0201bddc(double, int);
-extern int func_0201d690(double);
+extern double scalbn(double, int);
+extern int ClassifyDouble(double);
 extern void func_0201c518(Dec *, const char *, short);
 extern void func_0201cd9c(Dec *, double);
 extern int func_0201c938(const Dec *, const Dec *);
@@ -33,13 +33,13 @@ double func_0201cfc4(Dec *d)
     double t, s;
 
     if (d->len == 0) {
-        return func_0201b9a8(0.0, d->sign == 0 ? 1.0 : -1.0);
+        return copysign(0.0, d->sign == 0 ? 1.0 : -1.0);
     }
     switch (d->text[0]) {
     case '0':
-        return func_0201b9a8(0.0, d->sign == 0 ? 1.0 : -1.0);
+        return copysign(0.0, d->sign == 0 ? 1.0 : -1.0);
     case 'I':
-        return func_0201b9a8((double)data_020a5074, d->sign == 0 ? 1.0 : -1.0);
+        return copysign((double)data_020a5074, d->sign == 0 ? 1.0 : -1.0);
     case 'N': {
         unsigned long long *q = (unsigned long long *)&r;
         *q = 0x7ff0000000000000ULL;
@@ -59,7 +59,7 @@ double func_0201cfc4(Dec *d)
     e = dd.exp;
     func_0201c518(&lim, data_020a53f4, 0x134);
     if (func_0201ca18(&lim, &dd)) {
-        return func_0201b9a8((double)data_020a5074, d->sign == 0 ? 1.0 : -1.0);
+        return copysign((double)data_020a5074, d->sign == 0 ? 1.0 : -1.0);
     }
     q = dd.text;
     p = q + 1;
@@ -85,8 +85,8 @@ double func_0201cfc4(Dec *d)
         s = func_0201c1c0(5.0, (double)e);
         acc = acc * s;
     }
-    acc = func_0201bddc(acc, e);
-    if (func_0201d690(acc) == 2) {
+    acc = scalbn(acc, e);
+    if (ClassifyDouble(acc) == 2) {
         *(unsigned long long *)&acc = 0x7fefffffffffffffULL;
     }
     pb = (unsigned long long *)&bits;
@@ -99,7 +99,7 @@ double func_0201cfc4(Dec *d)
         for (;;) {
             if (!down) {
                 (*pb)++;
-                if (func_0201d690(bits) == 2) goto done;
+                if (ClassifyDouble(bits) == 2) goto done;
             } else {
                 (*pb)--;
             }

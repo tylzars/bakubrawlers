@@ -2,7 +2,7 @@
 #include <nitro/fx.h>
 #include "System/FileSystem.hpp"
 
-extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
 extern MtxFx33 data_0220e848;
 
 static const VecFx32 data_ov007_02279450 = {0, 0, -0x14000};
@@ -81,7 +81,7 @@ void GimmickVentKaze::Update() {
         VecFx32 a           = data_ov007_02279450;
         m                   = data_0220e848;
         if (mRotY) {
-            func_01ffcfd8(&m, mRotY);
+            MTX_ApplyRotY33(&m, mRotY);
         }
         func_01ff84d0(&a, &m, &a);
         VEC_Add(&a, &mPosition, &a);
@@ -94,7 +94,7 @@ void GimmickVentKaze::Update() {
         c.z    = z;
         m   = data_0220e848;
         if (mRotY) {
-            func_01ffcfd8(&m, mRotY);
+            MTX_ApplyRotY33(&m, mRotY);
         }
         func_01ff84d0(&c, &m, &c);
         VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0, &c, &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0);

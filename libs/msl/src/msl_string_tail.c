@@ -7,12 +7,12 @@ typedef struct StrReadCtx {
     int eof;
 } StrReadCtx;
 
-extern int func_02014bfc(int (*)(void *, int, int), void *, const char *, char *, int);
-extern int func_02015950(void *, int, int);
+extern int ScanFormatted(int (*)(void *, int, int), void *, const char *, char *, int);
+extern int StringReader(void *, int, int);
 extern int func_020159d4(const char *, const char *, char *);
 
 /* 0x02015950: scanf string reader callback (get / unget / test eof) */
-int func_02015950(void *arg, int ch, int op)
+int StringReader(void *arg, int ch, int op)
 {
     StrReadCtx *c = arg;
     switch (op) {
@@ -45,7 +45,7 @@ int func_020159d4(const char *s, const char *fmt, char *ap)
     c.p = s;
     if (s == 0 || *s == 0) return -1;
     c.eof = 0;
-    return func_02014bfc(func_02015950, &c, fmt, ap, 0);
+    return ScanFormatted(StringReader, &c, fmt, ap, 0);
 }
 
 /* 0x02015a28: sscanf */

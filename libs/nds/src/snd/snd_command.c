@@ -38,7 +38,7 @@ void SND_CommandInit(void) {
     cmdReplyCount = 1;
     cmdProcCount = 0;
     SNDi_SharedWork = sharedWork;
-    func_02008b70(sharedWork);
+    InitSharedWork(sharedWork);
     cmd = SND_AllocCommand(1);
     if (cmd == NULL) {
         return;
@@ -96,7 +96,7 @@ SNDCommand *SND_AllocCommand(u32 flags) {
     if (!func_02008a18()) {
         return NULL;
     }
-    cmd = func_020089d0();
+    cmd = PopFreeCommand();
     if (cmd != NULL) {
         return cmd;
     }
@@ -106,7 +106,7 @@ SNDCommand *SND_AllocCommand(u32 flags) {
     if ((int) func_02008908() > 0) {
         while (SND_RecvCommandReply(0) != NULL) {
         }
-        cmd = func_020089d0();
+        cmd = PopFreeCommand();
         if (cmd != NULL) {
             return cmd;
         }
@@ -116,7 +116,7 @@ SNDCommand *SND_AllocCommand(u32 flags) {
     func_020089a8();
     do {
         SND_RecvCommandReply(1);
-        cmd = func_020089d0();
+        cmd = PopFreeCommand();
     } while (cmd == NULL);
     return cmd;
 }
@@ -258,14 +258,14 @@ u32 func_02008908(void) {
     return 256 - a - SND_CountWaitingCommand();
 }
 
-void func_02008924(int tag, u32 data, BOOL err) {
+void SndFifoReceive(int tag, u32 data, BOOL err) {
     OSIntrMode e = OS_DisableInterrupts();
-    func_02008ad8(data);
+    CallAlarmCallback(data);
     OS_RestoreInterrupts(e);
 }
 
 void func_02008948(void) {
-    PXI_SetFifoRecvCallback(7, func_02008924);
+    PXI_SetFifoRecvCallback(7, SndFifoReceive);
     if (!func_02008a18()) {
         return;
     }
@@ -282,7 +282,7 @@ void func_020089a8(void) {
     }
 }
 
-SNDCommand *func_020089d0(void) {
+SNDCommand *PopFreeCommand(void) {
     OSIntrMode e = OS_DisableInterrupts();
     SNDCommand *cmd = cmdFreeList;   // 0x020be0c0
     if (cmd == NULL) {

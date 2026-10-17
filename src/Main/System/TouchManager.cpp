@@ -8,7 +8,7 @@ extern "C" void TP_Init();
 extern "C" int OS_GetCpsrIrqBits();
 extern "C" void OS_EnableInterrupts();
 extern "C" void func_0200c338();
-extern "C" int func_0200c3cc(void *raw);
+extern "C" int TP_GetRaw(void *raw);
 extern "C" void TP_GetCalibratedPoint(TouchSample *out, void *raw);
 extern "C" BOOL TP_GetUserInfo(void *panel);
 extern "C" void TP_SetCalibrateParam(void *panel);
@@ -64,7 +64,7 @@ void TouchManager::Update(BOOL enabled) {
     }
     do {
         func_0200c338();
-    } while (func_0200c3cc(raw) != 0);
+    } while (TP_GetRaw(raw) != 0);
     TP_GetCalibratedPoint(&sample, raw);
     if (enabled == 0) {
         sample.touch = 0;

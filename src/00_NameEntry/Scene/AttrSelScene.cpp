@@ -333,7 +333,7 @@ void AttrSelScene::TransitionStep() {
 void AttrSelTransitionCallback(void *scene) {
     AttrSelScene *self = (AttrSelScene *) scene;
     MtxFx22 mtx;
-    func_01ffcef4(&mtx, 0x1000, 0x1000, 0);
+    MTX_ScaleRot22(&mtx, 0x1000, 0x1000, 0);
     reg_G2_BLDALPHA = self->mBlendAlphaLowByte | (self->mBlendAlphaHighByte << 8);
     G2x_SetBGyAffine_((vu16 *) 0x4000030, &mtx, 0, 0, -self->mFade, 0);
 }

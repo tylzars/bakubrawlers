@@ -3,8 +3,8 @@
 #include <nitro/fx.h>
 #include <nitro/mi.h>
 
-extern "C" void func_01ffcf80(MtxFx33 *m, u16 angle);
-extern "C" void func_01ffd030(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotX33(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotZ33(MtxFx33 *m, u16 angle);
 void GetNearestPointOnBox(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out);
 fx32 GetBoxDistance(BattleSphere *sphere, BattleHitBox *box);
 BOOL TestBoxSphere(BattleObstacle *a, BattleObstacle *b);
@@ -37,13 +37,13 @@ BOOL TestPosInBoxXZ(BattleObstacle *a, BattleObstacle *b) {
     VEC_Subtract(&a->mPos, &b->mPos, &d);
     mtx = data_0220e848;
     if (b->mRotY) {
-        func_01ffcfd8(&mtx, -b->mRotY);
+        MTX_ApplyRotY33(&mtx, -b->mRotY);
     }
     if (b->mRotX) {
-        func_01ffcf80(&mtx, -b->mRotX);
+        MTX_ApplyRotX33(&mtx, -b->mRotX);
     }
     if (b->mRotZ) {
-        func_01ffd030(&mtx, -b->mRotZ);
+        MTX_ApplyRotZ33(&mtx, -b->mRotZ);
     }
     func_01ff84d0(&d, &mtx, &d);
     fx32 hz = b->mHalfZ;
@@ -122,9 +122,9 @@ void GetNearestPointOnBox(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out)
     axes[2].y = 0;
     axes[2].z = 0x1000;
     mtx       = data_0220e848;
-    func_01ffcfd8(&mtx, box->mRotY);
-    func_01ffcf80(&mtx, box->mRotX);
-    func_01ffd030(&mtx, box->mRotZ);
+    MTX_ApplyRotY33(&mtx, box->mRotY);
+    MTX_ApplyRotX33(&mtx, box->mRotX);
+    MTX_ApplyRotZ33(&mtx, box->mRotZ);
     func_01ff84d0(&axes[0], &mtx, &box->mAxes[0]);
     func_01ff84d0(&axes[1], &mtx, &box->mAxes[1]);
     func_01ff84d0(&axes[2], &mtx, &box->mAxes[2]);

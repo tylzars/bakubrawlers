@@ -13,7 +13,7 @@ extern u32 LoadBankFile(u32 id, void *heap, int flag);
 extern u32 LoadSplitWaveArcHeaderAndTable(u32 id, void *heap, int flag);
 extern u32 LoadWaveArcFile(u32 id, void *heap, int flag);
 extern int LoadBankWaveArcEntries(u32 wave, u32 bank, int idx, u32 file, void *heap);
-extern void func_02008c5c(u32 bank, int idx, u32 wave);
+extern void LinkBankToWaveArc(u32 bank, int idx, u32 wave);
 int LoadSeqAndBank(int id, u32 flags, void *heap, int flag, u32 *out);
 int func_02038758(int id, u32 flags, void *heap, int flag, u32 *out);
 int LoadBankAndWaveArcs(int id, u32 flags, void *heap, int flag, u32 *out);
@@ -108,7 +108,7 @@ int LoadBankAndWaveArcs(int id, u32 flags, void *heap, int flag, u32 *out) {   /
         if (((wave->split & 1)) != 0 && loadWave != 0) {
             if (LoadBankWaveArcEntries(tmp, file, i, wave->file, heap) == 0) return 9;
         }
-        if (file != 0 && tmp != 0) func_02008c5c(file, i, tmp);
+        if (file != 0 && tmp != 0) LinkBankToWaveArc(file, i, tmp);
     }
     if (out != 0) *out = file;
     return 0;

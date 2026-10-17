@@ -4,7 +4,7 @@
 #define P32(p, o) (*(s32 *)((u8 *)(p) + (o)))
 #define PS16(p, o) (*(s16 *)((u8 *)(p) + (o)))
 #define PU16(p, o) (*(u16 *)((u8 *)(p) + (o)))
-extern void func_01ff93d8(u32 cmd, const void *params, u32 count);   // geometry command
+extern void SendFifoCommand(u32 cmd, const void *params, u32 count);   // geometry command
 extern s32 FX_DivAsync(s32 a, s32 b);
 extern s32 FX_GetDivResult();
 extern void MIi_CpuCopy32(const void *src, void *dst, u32 size);
@@ -94,7 +94,7 @@ void func_02034f78(u32 *mm) {   // load the texture matrix (translation form)
         t.m[4] = FxMul(mm[13], t.m[4]);
         t.m[10] = FxMul(mm[13], t.m[10]);
     }
-    { u32 *b = (u32 *)&t; func_01ff93d8(t.cmd, b + 1, 14); }
+    { u32 *b = (u32 *)&t; SendFifoCommand(t.cmd, b + 1, 14); }
 }
 
 #define W16 PU16(p, 0x2c)
@@ -244,7 +244,7 @@ void func_02035640(u32 *mm) {   // load the texture matrix built from a texture 
         t.m[5] = FxMul(mm[13], t.m[5]);
         t.m[13] = FxMul(mm[13], t.m[13]);
     }
-    { u32 *b = (u32 *)&t; func_01ff93d8(t.cmd, b + 1, 0x12); }
+    { u32 *b = (u32 *)&t; SendFifoCommand(t.cmd, b + 1, 0x12); }
 }
 void func_02035788(s32 *out, u8 *p) {
     s32 w = W16 << 12;

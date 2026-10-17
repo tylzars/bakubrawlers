@@ -9,7 +9,7 @@
 // it is set, if a save is running (SaveManager::mBusy) or WirelessManager::mState is non-zero it calls
 // func_0200d1e0(2, 0) once and clears mInputEnabled, otherwise it calls func_0200d3e0(0xc, 0, 0); when the bit is
 // clear and mInputEnabled is 0 it passes mUnk_00 / mUnk_04 back to func_0200d1e0(0 / 1, ...) and sets
-// mInputEnabled; then it calls func_0200f7ac if func_0200f79c (card_pullout.c) returns non-zero.
+// mInputEnabled; then it calls func_0200f7ac if IsCardPulledOut (card_pullout.c) returns non-zero.
 class GameSystem {
 public:
     /* 00 */ s32 mUnk_00; // (st & 8) != 0 of the status func_0200d354 reads in Init (stored through this); func_02021700 passes it back as func_0200d1e0(0, mUnk_00)

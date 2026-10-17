@@ -75,7 +75,7 @@ void GimmickExePoint::Update() {
             VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
             CameraManager::Get();
             MtxFx43 mtx = data_020c1cf4;
-            func_01ffcf64(&mtx, &mPosition);
+            MTX_SetTranslation43(&mtx, &mPosition);
             Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mCamera;
             d.x                 = h->mPosition.x;
             d.y                 = h->mPosition.y;
@@ -86,7 +86,7 @@ void GimmickExePoint::Update() {
             d.y = FX_Mul(d.y, 0x1e000);
             d.z = FX_Mul(d.z, 0x1e000);
             VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
-            func_01ffcf64(&mtx, &d);
+            MTX_SetTranslation43(&mtx, &d);
             SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         }
         mCountingTurns = 1;

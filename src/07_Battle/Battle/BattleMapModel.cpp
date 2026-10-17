@@ -61,7 +61,7 @@ void BattleMapModel::DrawPulsing() {
     }
     u16 color;
     MtxFx43 mtx = gIdentityMtx43;
-    func_01ffcf64(&mtx, &mPosition);
+    MTX_SetTranslation43(&mtx, &mPosition);
     mModel->DetachAllAnims();
     if (GameSystem::Get().mFrame & 0x20) {
         if (mColorLevel > 0xf) {

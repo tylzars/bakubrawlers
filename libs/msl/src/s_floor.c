@@ -11,8 +11,8 @@
 
 #define __HI(x) *(1+(int*)&x)
 #define __LO(x) *(int*)&x
-extern double func_0201b9a8(double, double);
-extern int func_0201d690(double);
+extern double copysign(double, double);
+extern int ClassifyDouble(double);
 static const double huge = 1.0e300;
 
 double func_0201bb60(double x) {

@@ -125,7 +125,7 @@ static inline void SnapshotCamera() {
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
-    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
     manager.mProjection[manager.mActive] = data_02211374.mProjection;
     manager.mView[manager.mActive]       = data_02211374.mView;
@@ -887,7 +887,7 @@ extern "C" void ApplyCameraYaw(BattleCommandMap *map) {
     SnapshotCamera();
 }
 
-extern "C" s32 func_01ff9208(VecFx32 *a, VecFx32 *b);
+extern "C" s32 VEC_Distance(VecFx32 *a, VecFx32 *b);
 extern "C" void func_ov007_02247794(BattleCommandMap *map);
 
 extern "C" void StartCameraMove(BattleCommandMap *map, VecFx32 *target, VecFx32 *pos, u32 frames) {
@@ -924,7 +924,7 @@ extern "C" void func_ov007_02247618(BattleCommandMap *map) {
     target.y = camera->mTarget.y;
     target.z = camera->mTarget.z;
     target.y = pos.y;
-    map->mUnk_130 = func_01ff9208(&target, &pos);
+    map->mUnk_130 = VEC_Distance(&target, &pos);
 }
 
 extern "C" void CopyCameraYaw(BattleCommandMap *map) {

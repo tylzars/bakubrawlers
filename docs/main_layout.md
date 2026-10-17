@@ -106,7 +106,7 @@ These routines are not compiler output. Where they are matched, it is as comment
   an assembly file can place global function labels anywhere inside one section.
 - Written as asm bodies: start-up code (`init/crt0.c`), the soft-float and division runtime
   (`rt_soft_float.c`), the SHA-1 block transform (`math/math_sha1.c`), the divider/sqrt register save and restore
-  (`cp/cp_context.c`), the LZ streaming step `func_02007d94` (`mi/mi_uncompress.c`), CRI's MPEG synthesis dot
+  (`cp/cp_context.c`), the LZ streaming step `MI_UncompLZChunk` (`mi/mi_uncompress.c`), CRI's MPEG synthesis dot
   products `func_0204c088` (`cri_mpa_dec.c`), the cache, protection-unit, interrupt-mask and context routines
   (`os/os_cache.c`, `os/os_protection.c`, `os/os_system.c`, `os/os_thread.c`, `os/os_exception.c`), and in ITCM
   the identity fills, the `MIi_Cpu*` clear/copy routines and the IRQ dispatcher with the thread-switch return

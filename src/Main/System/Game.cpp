@@ -61,8 +61,8 @@ void OS_ResetSystem(u32 unk1);
 void OS_InitThread(void);
 void GX_Init(void);
 void func_02001b34(void);
-void func_0200a78c(s32 unk1);
-void func_0200f4c8(void);
+void FS_InitOnce(s32 unk1);
+void InitCard(void);
 void OS_InitTick(void);
 void OS_InitAlarm(void);
 extern "C" void RTC_Init(void);
@@ -72,10 +72,10 @@ void OS_EnableIrqMask(u32 mask);
 void GX_VBlankIntr(BOOL enable);
 void GX_HBlankIntr(BOOL enable);
 int func_0200d354(void *a, void *b);
-u32 func_0200af3c(u32 a, u32 b);
+u32 FS_LoadRomTables(u32 a, u32 b);
 u64 OS_GetTick(void);
 u64 _ll_udiv(u64 a, u64 b);
-int func_0200f79c(void);
+int IsCardPulledOut(void);
 void func_0200f7ac(void);
 int func_0200d1e0(u32 a, u32 b);
 void func_0200d3e0(u32 a, u32 b, u32 c);
@@ -123,8 +123,8 @@ void GameSystem::Init() {
     data_020a4f24 = 3;
     GX_Init();
     func_02001b34();
-    func_0200a78c(-1);
-    func_0200f4c8();
+    FS_InitOnce(-1);
+    InitCard();
     OS_InitTick();
     OS_InitAlarm();
     RTC_Init();
@@ -144,8 +144,8 @@ void GameSystem::Init() {
     *(vu16 *) 0x4000208 = 1;
     while (func_0200d354(this, &mUnk_04) == 1) {
     }
-    heap = func_0200af3c(0, 0);
-    func_0200af3c(InitGameHeap(heap), heap);
+    heap = FS_LoadRomTables(0, 0);
+    FS_LoadRomTables(InitGameHeap(heap), heap);
     FrameTask::Get().Init();
     InitFileSystem();
     SpriteManager::Get().Init();
@@ -326,7 +326,7 @@ void GameSystem::func_02021700() {
         MicManager::Get().ResetTimeAndEvents();
         mInputEnabled = 1;
     }
-    if (func_0200f79c() != 0) {
+    if (IsCardPulledOut() != 0) {
         func_0200f7ac();
     }
     if (mInputEnabled == 0) {

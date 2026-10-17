@@ -52,7 +52,7 @@ void ConfrontBg01::LoadGraphics() {
     const char *dir = "/Game/Confrontation/Bg/";
     BattleEntry *entries = mData->mEntries;
     sprintf(gCurrentDir, dir);
-    func_0200acac(dir);
+    FS_ChangeDir(dir);
     u8 n = entries[mUnk_12].mUnk_0d_0;
     sprintf(path, "vs_b_bg_01_%02d_ncl.bin", n);
     LoadAndQueueUpload(1, 1, 0x2000, path, 0, 0, 0);

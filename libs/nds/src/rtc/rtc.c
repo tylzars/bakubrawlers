@@ -37,7 +37,7 @@ BOOL func_0200e20c(void);
 BOOL func_0200e21c(void);
 void func_0200e1e4(u32 result, void *arg);
 void func_0200e1f4(void);
-void func_0200dc24(u32 tag, u32 data, u32 err);
+void RtcFifoReceive(u32 tag, u32 data, u32 err);
 extern int func_0200d1e0(int a, int b);
 extern int func_0200d924(void);
 extern int func_0200d904(int a);
@@ -65,7 +65,7 @@ void RTC_Init(void)
     data_020bfd98.p2 = 0;
     PXI_Init();
     while (!PXI_IsCallbackReady(5, 1)) {}
-    PXI_SetFifoRecvCallback(5, func_0200dc24);
+    PXI_SetFifoRecvCallback(5, RtcFifoReceive);
 }
 
 int RTC_GetDateAsync(RTCDate *date, RTCCallback cb, void *arg)
@@ -93,7 +93,7 @@ u32 RTC_GetDate(RTCDate *date)
     return data_020bfd98.result;
 }
 
-void func_0200dc24(u32 tag, u32 data, u32 err)
+void RtcFifoReceive(u32 tag, u32 data, u32 err)
 {
     u32 res;
     u8 cmd;

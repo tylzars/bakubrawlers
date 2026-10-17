@@ -25,7 +25,7 @@ u32 func_02008b48(void) {
     return SNDi_SharedWork->flags;
 }
 
-void func_02008b70(void *work) {
+void InitSharedWork(void *work) {
     SNDSharedWork *w = (SNDSharedWork *) work;
     int i;
     int j;

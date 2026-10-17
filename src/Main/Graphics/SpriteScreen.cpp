@@ -35,7 +35,7 @@ extern "C" fx32 FX_Div(fx32 num, fx32 den);
 
 void ComputeTransformMatrix(MtxFx22 *out, SpriteTransform *transform);
 
-extern "C" void func_02000ccc(MtxFx22 *mtx, fx32 x, fx32 y);
+extern "C" void MTX_Scale22(MtxFx22 *mtx, fx32 x, fx32 y);
 
 extern "C" void MTX_Concat22(const MtxFx22 *a, const MtxFx22 *b, MtxFx22 *out);
 
@@ -259,7 +259,7 @@ void ComputeTransformMatrix(MtxFx22 *out, SpriteTransform *transform) {
     MtxFx22 rotation;
     fx32 y = FX_Div(0x1000, transform->mScaleY);
     fx32 x = FX_Div(0x1000, transform->mScaleX);
-    func_02000ccc(&scale, x, y);
+    MTX_Scale22(&scale, x, y);
     s32 index = transform->mRotation >> 4;
     fx32 sin = FX_SinCosTable_[index * 2];
     fx32 cos = FX_SinCosTable_[index * 2 + 1];

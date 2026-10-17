@@ -1,7 +1,7 @@
 #include <nitro/private/sdk_tp.h>
 
-extern void func_0200ce18(u32 tag, u32 data, int err);
-extern int func_0200cc38(void);
+extern void PmFifoReceive(u32 tag, u32 data, int err);
+extern int PmTryLock(void);
 extern void func_0200ceac(u32 *cmd, int n);
 extern int func_0200cff8(u32 cmd, u32 data, u16 *res, void (*cb)(u32, u32 *), u32 *arg);
 extern int func_0200d07c(u32 cmd, u32 data, u16 *res);
@@ -36,7 +36,7 @@ extern void func_0200da80(void);
 #define REG_IME (*(vu16 *)0x04000208)
 #define REG_POWCNT (*(vu16 *)0x04000304)
 
-int func_0200cc38(void)
+int PmTryLock(void)
 {
     if (pmWork.lock != 0) return 0;
     pmWork.lock = 1;
@@ -75,7 +75,7 @@ void func_0200cd44(u32 v, u32 *p)
     if (p != NULL) *p = v;
 }
 
-void func_0200cd50(u32 result)
+void PmUnlockAndCallCallback(u32 result)
 {
     void (*cb)(u32, void *) = pmWork.cb;
     void *arg = pmWork.cbArg;
@@ -85,7 +85,7 @@ void func_0200cd50(u32 result)
     cb(result, arg);
 }
 
-void func_0200cd80(void)
+void PmInit(void)
 {
     if (pmWork.init) return;
     pmWork.init = 1;
@@ -98,11 +98,11 @@ void func_0200cd80(void)
             if (PXI_IsCallbackReady(8, 1)) break;
         }
     }
-    PXI_SetFifoRecvCallback(8, func_0200ce18);
+    PXI_SetFifoRecvCallback(8, PmFifoReceive);
     pmWork.vcount4 = pmWork.vcount8 = *(vu32 *)0x027ffc3c;
 }
 
-void func_0200ce18(u32 tag, u32 data, int err)
+void PmFifoReceive(u32 tag, u32 data, int err)
 {
     u16 cmd = (data & 0x7f00) >> 8;
     u16 arg = data & 0xff;
@@ -116,7 +116,7 @@ void func_0200ce18(u32 tag, u32 data, int err)
             arg = 2;
             break;
         }
-        func_0200cd50(arg);
+        PmUnlockAndCallCallback(arg);
         return;
     }
     switch (cmd) {
@@ -133,7 +133,7 @@ void func_0200ce18(u32 tag, u32 data, int err)
         pmWork.flag = 1;
         break;
     }
-    func_0200cd50(arg);
+    PmUnlockAndCallCallback(arg);
 }
 
 void func_0200ceac(u32 *cmd, int n)
@@ -143,7 +143,7 @@ void func_0200ceac(u32 *cmd, int n)
     u32 e;
     while (1) {
         e = OS_DisableInterrupts();
-        if (!func_0200cc38()) {
+        if (!PmTryLock()) {
             OS_RestoreInterrupts(e);
             continue;
         }
@@ -173,7 +173,7 @@ int func_0200cf6c(u32 a, u32 b)
 int func_0200cff8(u32 cmd, u32 data, u16 *res, void (*cb)(u32, u32 *), u32 *arg)
 {
     u32 e = OS_DisableInterrupts();
-    if (!func_0200cc38()) {
+    if (!PmTryLock()) {
         OS_RestoreInterrupts(e);
         return 1;
     }

@@ -11,11 +11,11 @@
 
 #define __HI(x) *(1+(int*)&x)
 #define __LO(x) *(int*)&x
-extern double func_0201b9a8(double, double);
-extern int func_0201d690(double);
+extern double copysign(double, double);
+extern int ClassifyDouble(double);
 static const double two54 = 1.80143985094819840000e+16;
 
-double func_0201bd20(double x, int *eptr) {
+double frexp(double x, int *eptr) {
     int hx, ix, lx;
     hx = __HI(x);
     ix = 0x7fffffff & hx;

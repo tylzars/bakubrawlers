@@ -4,7 +4,7 @@ extern int func_0200cae4(u32 buf, u32 size, u32 rate, u32 type);
 extern int func_0200cbe8(void);
 extern void func_0200cc10(u32 res, void *arg);
 extern void func_0200cc20(void);
-extern void func_0200c9bc(u32 tag, u32 data, int err);
+extern void MicFifoReceive(u32 tag, u32 data, int err);
 
 void MIC_Init(void)
 {
@@ -15,7 +15,7 @@ void MIC_Init(void)
     PXI_Init();
     while (!PXI_IsCallbackReady(9, 1)) {}
     *(vu32 *)0x027fff90 = 0;
-    PXI_SetFifoRecvCallback(9, func_0200c9bc);
+    PXI_SetFifoRecvCallback(9, MicFifoReceive);
 }
 
 u32 MIC_StartAutoSamplingAsync(MICAutoParam *p, void (*cb)(u32, void *), void *arg)
@@ -84,7 +84,7 @@ u32 func_0200c9ac(void)
     return *(vu32 *)0x027fff90;
 }
 
-void func_0200c9bc(u32 tag, u32 data, int err)
+void MicFifoReceive(u32 tag, u32 data, int err)
 {
     u32 res;
     u16 cmd, r;

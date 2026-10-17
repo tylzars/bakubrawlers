@@ -88,7 +88,7 @@ void GimmickUnk_02274830::Update() {
             mtx._[9]  = 0;
             MTX_MultVec43(&w, &mtx, &w);
             VEC_Add(&camPos, &w, &camPos);
-            func_01ffcf64(&mtx, &camPos);
+            MTX_SetTranslation43(&mtx, &camPos);
             SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         }
         handle = StartEffect(data_020d433c.mEffects, 1, 0xd, 0, 1);
@@ -99,7 +99,7 @@ void GimmickUnk_02274830::Update() {
             mtx2._[11]      = 0;
             mtx2._[10]      = 0;
             mtx2._[9]       = 0;
-            func_01ffcf64(&mtx2, &camPos2);
+            MTX_SetTranslation43(&mtx2, &camPos2);
             SetEffectMatrix(data_020d433c.mEffects, handle, &mtx2);
         }
         mTimer = 0x78;

@@ -2,7 +2,7 @@
 #include <nitro/fx.h>
 #include "System/SoundManager.hpp"
 
-extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
 extern MtxFx33 data_0220e848;
 extern "C" void func_02024764(SoundManager *manager, u32 a, u32 b);
 
@@ -67,7 +67,7 @@ void GimmickUnk_022308a8::Update() {
             e.y = FX_Mul(e.y, 0x8000);
             e.z = FX_Mul(e.z, 0x8000);
             VEC_Subtract(&d, &e, &e);
-            func_01ffcfd8(&m, 0x71c);
+            MTX_ApplyRotY33(&m, 0x71c);
             func_01ff84d0(&e, &m, &e);
             VEC_Subtract(&e, &d, &mPullPerFrame);
             VEC_Normalize(&mPullPerFrame, &mPullPerFrame);

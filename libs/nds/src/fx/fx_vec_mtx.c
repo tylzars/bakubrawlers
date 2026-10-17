@@ -29,7 +29,7 @@ extern void func_01ff95e0(const void *src, void *dst);   // 48-byte copy
 
 #define MUL33(a, b) ((fx32) (((fx64) (a) * (b)) >> 12))
 
-void func_01ff81a0(const MtxFx33 *src, MtxFx33 *dst, fx32 x, fx32 y, fx32 z) {
+void MTX_ApplyScale33(const MtxFx33 *src, MtxFx33 *dst, fx32 x, fx32 y, fx32 z) {
     dst->_[0] = MUL33(x, src->_[0]);
     dst->_[1] = MUL33(x, src->_[1]);
     dst->_[2] = MUL33(x, src->_[2]);
@@ -71,7 +71,7 @@ asm void func_01ff827c(MtxFx33 *m, fx32 sin, fx32 cos) {
     bx lr
 }
 
-asm void func_01ff8298(MtxFx33 *m, fx32 sin, fx32 cos) {
+asm void MTX_RotZ33_(MtxFx33 *m, fx32 sin, fx32 cos) {
     stmia r0!, {r2}
     mov r3, #0
     stmia r0!, {r1, r3}
@@ -148,7 +148,7 @@ asm void func_01ff854c(MtxFx43 *m) {
     bx lr
 }
 
-asm void func_01ff8574(const MtxFx43 *src, void *dst) {
+asm void MTX_Copy43To44(const MtxFx43 *src, void *dst) {
     stmfd sp!, {r4}
     mov ip, #0
     ldmia r0!, {r2, r3, r4}
@@ -164,15 +164,15 @@ asm void func_01ff8574(const MtxFx43 *src, void *dst) {
     bx lr
 }
 
-void func_01ff85a8(const MtxFx43 *src, MtxFx43 *dst, fx32 x, fx32 y, fx32 z) {
-    func_01ff81a0((const MtxFx33 *) src, (MtxFx33 *) dst, x, y, z);
+void MTX_ApplyScale43(const MtxFx43 *src, MtxFx43 *dst, fx32 x, fx32 y, fx32 z) {
+    MTX_ApplyScale33((const MtxFx33 *) src, (MtxFx33 *) dst, x, y, z);
     dst->_[9] = src->_[9];
     dst->_[10] = src->_[10];
     dst->_[11] = src->_[11];
 }
 
 #pragma thumb on
-asm void func_01ff85dc(MtxFx43 *m, fx32 sin, fx32 cos) {
+asm void MTX_RotX43_(MtxFx43 *m, fx32 sin, fx32 cos) {
     str r1, [r0, #0x14]
     neg r1, r1
     str r1, [r0, #0x1c]
@@ -189,7 +189,7 @@ asm void func_01ff85dc(MtxFx43 *m, fx32 sin, fx32 cos) {
     stmia r0!, {r1, r3}
     bx lr
 }
-asm void func_01ff85fc(MtxFx43 *m, fx32 sin, fx32 cos) {
+asm void MTX_RotY43_(MtxFx43 *m, fx32 sin, fx32 cos) {
     str r1, [r0, #0x18]
     mov r3, #0
     stmia r0!, {r2, r3}
@@ -204,7 +204,7 @@ asm void func_01ff85fc(MtxFx43 *m, fx32 sin, fx32 cos) {
     stmia r0!, {r1, r3}
     bx lr
 }
-asm void func_01ff8618(MtxFx43 *m, fx32 sin, fx32 cos) {
+asm void MTX_RotZ43_(MtxFx43 *m, fx32 sin, fx32 cos) {
     stmia r0!, {r2}
     mov r3, #0
     stmia r0!, {r1, r3}
@@ -359,7 +359,7 @@ void MTX_MultVec43(const VecFx32 *vec, const MtxFx43 *m, VecFx32 *dst) {
     dst->z = r + m->_[11];
 }
 
-void func_01ff8d34(const VecFx32 *pos, const VecFx32 *up, const VecFx32 *target, MtxFx43 *mtx) {
+void MTX_LookAt(const VecFx32 *pos, const VecFx32 *up, const VecFx32 *target, MtxFx43 *mtx) {
     VecFx32 vz, vx, vy;
     vz.x = pos->x - target->x;
     vz.y = pos->y - target->y;
@@ -440,7 +440,7 @@ void VEC_Normalize(const VecFx32 *src, VecFx32 *dst) {
     dst->z = (fx32) ((t * src->z + (0x1000LL << 32)) >> 45);
 }
 
-void func_01ff90dc(const s16 *src, s16 *dst) {
+void VEC_NormalizeS16(const s16 *src, s16 *dst) {
     fx64 sum = (fx64) (src[0] * src[0]);
     fx64 t;
     s32 s;
@@ -462,7 +462,7 @@ void func_01ff90dc(const s16 *src, s16 *dst) {
     dst[2] = (s16) ((t * src[2] + (0x1000LL << 32)) >> 45);
 }
 
-fx32 func_01ff9208(const VecFx32 *a, const VecFx32 *b) {
+fx32 VEC_Distance(const VecFx32 *a, const VecFx32 *b) {
     fx32 dx = a->x - b->x;
     fx32 dy = a->y - b->y;
     fx32 dz = a->z - b->z;

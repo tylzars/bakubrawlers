@@ -3,7 +3,7 @@
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 
-extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
 extern MtxFx33 data_0220e848;
 
 static ModelResource *sResource;
@@ -79,14 +79,14 @@ void GimmickHaosWall::Update() {
         BakuganModel *h = list->mBattleTarget->mBakugan;
         VEC_Subtract(&mPosition, &h->mPosition, &a);
         if (mRotY) {
-            func_01ffcfd8(&m, -mRotY);
+            MTX_ApplyRotY33(&m, -mRotY);
         }
         func_01ff84d0(&a, &m, &b);
         GimmickNode *node = &data_020d433c.mGimmicks->mNodes[(u8)(mUnk_46 + 1)];
         ((GimmickHaosWall *)node->mGimmick)->StartTimer(0x1e);
         VecFx32 c = node->mGimmick->mPosition;
         m = data_0220e848;
-        func_01ffcfd8(&m, node->mGimmick->mRotY + 0x8000);
+        MTX_ApplyRotY33(&m, node->mGimmick->mRotY + 0x8000);
         func_01ff84d0(&b, &m, &b);
         VEC_Add(&c, &b, &c);
         c.y = h->mPosition.y;

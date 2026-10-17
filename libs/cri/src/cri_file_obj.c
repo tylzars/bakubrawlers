@@ -26,11 +26,11 @@ extern char data_020adfb8[], data_020adfd0[], data_020adfe8[], data_020ae000[], 
 extern void FObjCallCallback(int, const char *);
 extern void FObjBuildPath(char *, int);
 extern int func_02047d00(int, int *, int *, int *);
-extern void func_0200a7b4(void *);
-extern int func_0200aa94(void *, char *);
-extern void func_0200aadc(void *);
-extern void func_0200ac40(int *, int, int);
-extern void func_0200abd8(int *);
+extern void FS_InitFile(void *);
+extern int FS_OpenFile(void *, char *);
+extern void FS_CloseFile(void *);
+extern void FS_SeekFile(int *, int, int);
+extern void FS_CancelFile(int *);
 extern void func_02012484(void *, int, int);
 extern void CriLockEnter1(void);
 extern void CriLockLeave1(void);
@@ -65,9 +65,9 @@ FObj *FObjAlloc(int name, int unused, int flag)
         o->base = b;
         size = c;
     } else {
-        func_0200a7b4(o->h4);
+        FS_InitFile(o->h4);
         o->hp = o->h4;
-        if (func_0200aa94(o->h4, buf) == 0) {
+        if (FS_OpenFile(o->h4, buf) == 0) {
             FObjCallCallback(0, data_020aded8);
             return 0;
         }
@@ -90,7 +90,7 @@ FObj *FObjAlloc(int name, int unused, int flag)
 void FObjDealloc(FObj *o)
 {
     if (o == 0) return;
-    if (o->hp == o->h4) func_0200aadc(o->hp);
+    if (o->hp == o->h4) FS_CloseFile(o->hp);
     o->used = 0;
     func_02012484(o, 0, 0x84);
 }
@@ -114,7 +114,7 @@ int FObjSetPos(FObj *o, int off, int whence)
     if (r <= 0) r = 0;
     o->pos = r;
     CriLockLeave1();
-    func_0200ac40(o->hp, o->pos * o->secsize + o->base, 0);
+    FS_SeekFile(o->hp, o->pos * o->secsize + o->base, 0);
     return o->pos;
 }
 
@@ -170,7 +170,7 @@ void FObjStopRead(FObj *o)
     o->state = 0;
     o->mode = 0;
     CriLockLeave1();
-    if (st == 2) func_0200abd8(o->hp);
+    if (st == 2) FS_CancelFile(o->hp);
 }
 
 int FObjGetState(FObj *o)
@@ -217,10 +217,10 @@ int func_02048274(int name)
     if (func_02047d00(name, &a, &b, &c) == 1) {
         len = c;
     } else {
-        func_0200a7b4(tmp);
-        if (func_0200aa94(tmp, (char *)name) == 0) return 0;
+        FS_InitFile(tmp);
+        if (FS_OpenFile(tmp, (char *)name) == 0) return 0;
         len = tmp[10] - tmp[9];
-        func_0200aadc(tmp);
+        FS_CloseFile(tmp);
     }
     return len;
 }

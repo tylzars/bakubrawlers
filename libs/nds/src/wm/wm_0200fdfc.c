@@ -2,7 +2,7 @@
 #include <nitro/private/wm_dev.h>
 #define H(b, i) (((u16 *)((b) + 0x800))[i])
 typedef struct { u16 aidBitmap; u8 pad[0x1fe]; } WMDataSet;  /* 0x200 bytes, one of 4 at the start of WMDataSharingInfo */
-void func_0200fdfc(u32 tag, u16 *m, int err)
+void WmFifoReceive(u32 tag, u16 *m, int err)
 {
     WMWork *w = data_020c06e0.work;
     u16 id;
@@ -682,7 +682,7 @@ int func_02010e6c(u8 *buf, u16 n, u16 mask, u16 m, int flag)
     H(buf, 0xb) = n;
     H(buf, 7) = 0;
     H(buf, 0xc) = flag != 0 ? 1 : 0;
-    {u16 t = mask | (1 << aid); H(buf, 7) = t; cnt = func_020122b0(t);}
+    {u16 t = mask | (1 << aid); H(buf, 7) = t; cnt = CountSetBits(t);}
     H(buf, 9) = cnt;
     H(buf, 10) = m * cnt;
     if (H(buf, 10) > 0x1fc) {
@@ -1051,7 +1051,7 @@ u8 *func_02011968(u8 *buf, u16 *p, u32 n)
 
 u8 *func_020119bc(u8 *buf, u32 mask, u8 *base, u32 n)
 {
-    u32 cnt = func_020122b0(mask & ((1 << n) - 1));
+    u32 cnt = CountSetBits(mask & ((1 << n) - 1));
     return base + H(buf, 8) * cnt;
 }
 

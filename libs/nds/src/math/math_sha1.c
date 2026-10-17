@@ -24,9 +24,9 @@ extern const u32 data_020902d4[7];                              // HMAC descript
 
 void MIi_CpuClear32(u32 d, void *p, u32 n);
 #define MI_CpuClear32(p, n) MIi_CpuClear32(0, p, n)
-void func_0200b9bc(u8 *out, const u8 *data, u32 len, const u8 *key, int keylen, HashDesc *d);
+void MATH_Hmac(u8 *out, const u8 *data, u32 len, const u8 *key, int keylen, HashDesc *d);
 
-void func_0200b588(SHA1Ctx *c)
+void MATH_SHA1Init(SHA1Ctx *c)
 {
     c->h[0] = 0x67452301;
     c->h[1] = 0xefcdab89;
@@ -38,7 +38,7 @@ void func_0200b588(SHA1Ctx *c)
     c->fill = 0;
 }
 
-void func_0200b5d8(SHA1Ctx *c, const u8 *data, u32 len)
+void MATH_SHA1Update(SHA1Ctx *c, const u8 *data, u32 len)
 {
     u8 *buf = c->buf;
     u32 n, sum;
@@ -81,7 +81,7 @@ void func_0200b5d8(SHA1Ctx *c, const u8 *data, u32 len)
     MI_CpuCopy8(data, buf, len);
 }
 
-void func_0200b72c(SHA1Ctx *c, u8 *out)
+void MATH_SHA1Final(SHA1Ctx *c, u8 *out)
 {
     u32 *w = (u32 *) c->buf;
     int i;
@@ -157,20 +157,20 @@ void func_0200b72c(SHA1Ctx *c, u8 *out)
     MI_CpuClear32(&c, 4);
 }
 
-void func_0200b928(u8 *out, const u8 *data, u32 len, const u8 *key, int keylen)
+void MATH_HmacSHA1(u8 *out, const u8 *data, u32 len, const u8 *key, int keylen)
 {
     SHA1Ctx ctx;
     u8 dig[20];
     HashDesc d = { 20, 64, NULL, NULL, NULL, NULL, NULL };
     d.ctx = &ctx;
     d.dig = dig;
-    d.init = (void (*)(void *)) func_0200b588;
-    d.update = (void (*)(void *, const void *, u32)) func_0200b5d8;
-    d.final = (void (*)(void *, void *)) func_0200b72c;
-    func_0200b9bc(out, data, len, key, keylen, &d);
+    d.init = (void (*)(void *)) MATH_SHA1Init;
+    d.update = (void (*)(void *, const void *, u32)) MATH_SHA1Update;
+    d.final = (void (*)(void *, void *)) MATH_SHA1Final;
+    MATH_Hmac(out, data, len, key, keylen, &d);
 }
 
-void func_0200b9bc(u8 *out, const u8 *data, u32 len, const u8 *key, int keylen, HashDesc *d)
+void MATH_Hmac(u8 *out, const u8 *data, u32 len, const u8 *key, int keylen, HashDesc *d)
 {
     u8 kh[0x40];
     u8 ipad[0x40];

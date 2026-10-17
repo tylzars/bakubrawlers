@@ -2,19 +2,19 @@
 extern u8 data_020bfe60[];
 extern CardRomReq data_020c04a0 __attribute__((aligned(32)));   // ROM page request; its 32-byte alignment keeps its address in a register across calls (func_0200ef3c)
 
-int func_0200e5a4(void);
-int func_0200e5f0(void);
+int WaitCardNotBusy(void);
+int IsCardNotBusy(void);
 u32 func_0200e56c(void);
 void func_0200e57c(void);
-void func_0200e34c(u32 id, u32 type);
-void func_0200e3d0(u32 id, u32 type);
-void func_0200e310(void *task);
+void LockCardCommon(u32 id, u32 type);
+void UnlockCardCommon(u32 id, u32 type);
+void StartCardTask(void *task);
 void func_0200e690(s32 id);
 void func_0200ea14(CardCommon *c);
 u32 func_0200ecec(void);
 int func_0200ee44(void);
 int func_0200ee38(void);
-int func_0200ee50(CardRomReq *r);
+int CopyFromPageCache(CardRomReq *r);
 void func_0200eedc(u32 a, u32 b);
 void func_0200ef3c(void);
 void func_0200ef90(void);
@@ -24,15 +24,15 @@ u32 func_0200f2dc(void);
 void func_0200f338(CardCommon *c);
 int func_0200f52c(void);
 void *func_0200f538(void);
-void func_0200f544(u32 tag, u32 data, int err);
-void func_0200f578(void);
-int func_0200f5c8(CardCommon *c, u32 cmd, int tries);
-void func_0200f71c(void);
+void CardFifoReceive(u32 tag, u32 data, int err);
+void CardTaskThread(void);
+int SendCardCommand(CardCommon *c, u32 cmd, int tries);
+void InitCardPullout(void);
 void func_0200f838(u32 id);
-void func_0200e45c(void);
+void InitCardCommon(void);
 void func_0200e594(u32);
 
-void func_0200e310(void *task)
+void StartCardTask(void *task)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
     OS_SetThreadPriority(&c->thread, c->priority);
@@ -44,7 +44,7 @@ void func_0200e310(void *task)
 
 #pragma optimize_for_size on
 #pragma dont_inline on
-void func_0200e34c(u32 id, u32 type)
+void LockCardCommon(u32 id, u32 type)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
     u32 e = OS_DisableInterrupts();
@@ -66,7 +66,7 @@ void func_0200e34c(u32 id, u32 type)
 #pragma dont_inline reset
 #pragma optimize_for_size reset
 
-void func_0200e3d0(u32 id, u32 type)
+void UnlockCardCommon(u32 id, u32 type)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
     u32 e = OS_DisableInterrupts();
@@ -94,7 +94,7 @@ static inline BOOL IsNitro(void)
     return *(vu16 *)0x27ffc40 == 2;
 }
 
-void func_0200e45c(void)
+void InitCardCommon(void)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
     c->owner = -3;
@@ -113,9 +113,9 @@ void func_0200e45c(void)
     c->lockQueue.a = 0;
     c->queue.b = 0;
     c->queue.a = 0;
-    OS_CreateThread(&c->thread, func_0200f578, 0, &data_020c0480, 0x400, c->priority);
+    OS_CreateThread(&c->thread, CardTaskThread, 0, &data_020c0480, 0x400, c->priority);
     OS_WakeupThreadDirect(&c->thread);
-    PXI_SetFifoRecvCallback(0xb, func_0200f544);
+    PXI_SetFifoRecvCallback(0xb, CardFifoReceive);
     if (IsNitro()) {
         return;
     }
@@ -141,7 +141,7 @@ void func_0200e594(u32 v)
 
 #pragma optimize_for_size on
 #pragma dont_inline on
-int func_0200e5a4(void)
+int WaitCardNotBusy(void)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
     u32 e = OS_DisableInterrupts();
@@ -154,31 +154,31 @@ int func_0200e5a4(void)
 #pragma dont_inline reset
 #pragma optimize_for_size reset
 
-int func_0200e5f0(void)
+int IsCardNotBusy(void)
 {
     return (((CardCommon *)data_020bfe60)->f114 & CF_BUSY) == 0;
 }
 
-u32 func_0200e60c(void)
+u32 GetCardResult(void)
 {
     return ((CardCommon *)data_020bfe60)->arg->result;
 }
 
 void func_0200e620(u32 id)
 {
-    func_0200e34c(id, 1);
+    LockCardCommon(id, 1);
     OS_LockCard(id);
 }
 
 void func_0200e63c(u32 id)
 {
     OS_UnlockCard(id);
-    func_0200e3d0(id, 1);
+    UnlockCardCommon(id, 1);
 }
 
 void func_0200e658(u32 id)
 {
-    func_0200e34c(id, 2);
+    LockCardCommon(id, 2);
 }
 
 void func_0200e668(u32 id)
@@ -186,7 +186,7 @@ void func_0200e668(u32 id)
     if (!func_0200ee44()) {
         func_0200ee38();
     }
-    func_0200e3d0(id, 2);
+    UnlockCardCommon(id, 2);
 }
 
 // The 4 MB and 8 MB cases set their flag bits with two ORs, like the other cases. The two immediates fold into one
@@ -373,11 +373,11 @@ void func_0200ea14(CardCommon *c)
             c->arg->f10 = c->dst;
             break;
         }
-        if (!func_0200f5c8(c, cmd, retry)) {
+        if (!SendCardCommand(c, cmd, retry)) {
             break;
         }
         if (mode == 2) {
-            if (!func_0200f5c8(c, 9, 1)) {
+            if (!SendCardCommand(c, 9, 1)) {
                 break;
             }
         } else if (mode == 0) {
@@ -421,7 +421,7 @@ int func_0200ec04(u32 src, void *dst, u32 len, void (*cb)(void *), void *cbarg, 
     c->retry = retry;
     c->mode = mode;
     if (async) {
-        func_0200e310(func_0200ea14);
+        StartCardTask(func_0200ea14);
         return 1;
     }
     ((CardCommon *)data_020bfe60)->curThread = OSi_ThreadInfo.curThread;
@@ -456,11 +456,11 @@ int func_0200ed00(u32 id)
     OS_RestoreInterrupts(e);
     func_0200e690(id);
     ((CardCommon *)data_020bfe60)->curThread = OSi_ThreadInfo.curThread;
-    func_0200f5c8(c, 2, 1);
+    SendCardCommand(c, 2, 1);
     c->arg->f0c = 0;
     c->arg->f10 = (u32)c->buf;
     c->arg->f14 = 1;
-    func_0200f5c8(c, 6, 1);
+    SendCardCommand(c, 6, 1);
     fn = c->callback;
     arg = c->cbArg;
     e2 = OS_DisableInterrupts();
@@ -478,15 +478,15 @@ int func_0200ed00(u32 id)
 
 int func_0200ee38(void)
 {
-    return func_0200e5a4();
+    return WaitCardNotBusy();
 }
 
 int func_0200ee44(void)
 {
-    return func_0200e5f0();
+    return IsCardNotBusy();
 }
 
-int func_0200ee50(CardRomReq *r)
+int CopyFromPageCache(CardRomReq *r)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
     u32 page = *(vu32 *)&c->src & ~0x1ff;
@@ -672,7 +672,7 @@ void func_0200f1ec(CardRomReq *r)
                 break;
             }
         } else {
-            if (!func_0200ee50(r)) {
+            if (!CopyFromPageCache(r)) {
                 return;
             }
         }
@@ -697,7 +697,7 @@ void func_0200f338(CardCommon *unused)
     void (*fn)(void *);
     void *arg;
     u32 e;
-    if (func_0200ee50(r)) {
+    if (CopyFromPageCache(r)) {
         r->func(r);
     }
     c = (CardCommon *)data_020bfe60;
@@ -718,7 +718,7 @@ void func_0200f338(CardCommon *unused)
 }
 
 #pragma optimize_for_size on
-void func_0200f3d0(u32 dma, u32 src, void *dst, u32 len, void (*cb)(void *), void *cbarg, int async)
+void ReadCardRom(u32 dma, u32 src, void *dst, u32 len, void (*cb)(void *), void *cbarg, int async)
 {
     CardRomReq *r = &data_020c04a0;
     CardCommon *c = (CardCommon *)data_020bfe60;
@@ -747,7 +747,7 @@ void func_0200f3d0(u32 dma, u32 src, void *dst, u32 len, void (*cb)(void *), voi
         return;
     }
     if (async) {
-        func_0200e310(func_0200f338);
+        StartCardTask(func_0200f338);
         return;
     }
     c->curThread = OSi_ThreadInfo.curThread;
@@ -756,7 +756,7 @@ void func_0200f3d0(u32 dma, u32 src, void *dst, u32 len, void (*cb)(void *), voi
 
 #pragma optimize_for_size reset
 
-void func_0200f4c8(void)
+void InitCard(void)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
     if (c->f114 != 0) {
@@ -770,14 +770,14 @@ void func_0200f4c8(void)
     c->callback = NULL;
     c->cbArg = NULL;
     data_020c0480.base = 0;
-    func_0200e45c();
+    InitCardCommon();
     data_020c0480.romfn = func_0200f538();
-    func_0200f71c();
+    InitCardPullout();
 }
 
 int func_0200f52c(void)
 {
-    return func_0200e5a4();
+    return WaitCardNotBusy();
 }
 
 void *func_0200f538(void)
@@ -785,7 +785,7 @@ void *func_0200f538(void)
     return func_0200f1ec;
 }
 
-void func_0200f544(u32 tag, u32 data, int err)
+void CardFifoReceive(u32 tag, u32 data, int err)
 {
     CardCommon *c;
     if (tag != 0xb) {
@@ -799,7 +799,7 @@ void func_0200f544(u32 tag, u32 data, int err)
     OS_WakeupThreadDirect(c->curThread);
 }
 
-void func_0200f578(void)
+void CardTaskThread(void)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
     for (;;) {
@@ -812,7 +812,7 @@ void func_0200f578(void)
     }
 }
 
-int func_0200f5c8(CardCommon *c, u32 cmd, int tries)
+int SendCardCommand(CardCommon *c, u32 cmd, int tries)
 {
     u32 e;
     if (!(c->f114 & CF_PXI)) {
@@ -822,7 +822,7 @@ int func_0200f5c8(CardCommon *c, u32 cmd, int tries)
                 OS_SpinWait(100);
             } while (!PXI_IsCallbackReady(0xb, 1));
         }
-        func_0200f5c8(c, 0, 1);
+        SendCardCommand(c, 0, 1);
     }
     DC_FlushRange(c->arg, 0x60);
     DC_WaitWriteBufferEmpty();

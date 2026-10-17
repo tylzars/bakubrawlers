@@ -3,7 +3,7 @@
 // Saves to the buffer at r0 (0x1c bytes): the four words at 0x04000290..0x0400029c, then the two
 // words at 0x040002b8/0x040002bc, then two halfwords: the 16-bit value at 0x04000280 masked to
 // 2 bits and the one at 0x040002b0 masked to 1 bit.
-asm void func_0200be08(unsigned *dst) {
+asm void SaveDivSqrtRegisters(unsigned *dst) {
     ldr r1, =0x4000290
     stmfd sp!, {r4}
     ldmia r1, {r2, r3, r4, ip}
@@ -24,7 +24,7 @@ asm void func_0200be08(unsigned *dst) {
 // The inverse of the previous routine: writes the saved words and halfwords from the buffer at r0
 // back to the same registers (four words at 0x04000290, halfwords at 0x04000280 and 0x040002b0,
 // two words at 0x040002b8).
-asm void func_0200be48(unsigned *src) {
+asm void RestoreDivSqrtRegisters(unsigned *src) {
     stmfd sp!, {r4}
     ldr r1, =0x4000290
     ldmia r0, {r2, r3, r4, ip}

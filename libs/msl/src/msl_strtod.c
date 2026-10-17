@@ -31,7 +31,7 @@ static inline int TOUPPERF(int x)
 extern double func_02012350(const char *);
 extern double func_0201cfc4(Dec *);
 
-double func_02015c74(int maxw, int (*rd)(void *, int, int), void *ctx, int *nread, int *ovf)
+double ScanDouble(int maxw, int (*rd)(void *, int, int), void *ctx, int *nread, int *ovf)
 {
     int hexst, idx;
     int ws, neg, expneg, expv, adj, signcnt;

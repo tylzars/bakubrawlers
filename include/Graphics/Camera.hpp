@@ -128,8 +128,8 @@ extern "C" MtxFx44 *func_02032710();
 extern "C" MtxFx44 *func_02032604();
 extern "C" MtxFx43 *func_020323b8();
 
-// Matrix routines in ITCM (not identified as SDK functions; by shape func_01ff8d34 is a look-at builder,
-// func_01ffcf64 applies a translation and func_01ff89c0 concatenates two matrices).
-extern "C" void func_01ff8d34(VecFx32 *pos, VecFx32 *up, VecFx32 *target, MtxFx43 *out);
-extern "C" void func_01ffcf64(MtxFx43 *m, VecFx32 *v);
+// Matrix routines in ITCM (not identified as SDK functions; by shape MTX_LookAt is a look-at builder,
+// MTX_SetTranslation43 applies a translation and func_01ff89c0 concatenates two matrices).
+extern "C" void MTX_LookAt(VecFx32 *pos, VecFx32 *up, VecFx32 *target, MtxFx43 *out);
+extern "C" void MTX_SetTranslation43(MtxFx43 *m, VecFx32 *v);
 extern "C" void func_01ff89c0(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);

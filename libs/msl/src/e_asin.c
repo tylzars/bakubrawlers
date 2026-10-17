@@ -15,7 +15,7 @@ extern float data_020a5078;
 extern double sqrt(double);
 static const double huge = 1.000e+300;
 static const double pio4_hi = 7.85398163397448278999e-01;
-extern double func_0201bb40(double);
+extern double fabs(double);
 static const double one = 1.00000000000000000000e+00;
 static const double pi = 3.14159265358979311600e+00;
 static const double pio2_hi = 1.57079632679489655800e+00;
@@ -51,7 +51,7 @@ double func_02017fa4(double x)
         w = p / q;
         return x + x * w;
     }
-    w = one - func_0201bb40(x);
+    w = one - fabs(x);
     t = w * 0.5;
     p = t * (pS0 + t * (pS1 + t * (pS2 + t * (pS3 + t * (pS4 + t * pS5)))));
     q = one + t * (qS1 + t * (qS2 + t * (qS3 + t * qS4)));

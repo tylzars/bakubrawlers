@@ -13,7 +13,7 @@ extern void *func_02033714(u8 *res, u32 idx, u32 frame);
 extern u8 *func_020336bc(u8 *res, u32 idx);
 extern u8 *func_020336e8(u8 *res, u32 idx);
 extern void *data_020a5788;
-extern void func_01ff93d8(u32 cmd, const void *params, u32 count);   // geometry command
+extern void SendFifoCommand(u32 cmd, const void *params, u32 count);   // geometry command
 extern void FX_DivAsync(s32 a, s32 b);
 extern s32 FX_GetDivResult(void);
 static inline s32 FxMul(s32 a, s32 b) { return (s32)(((long long)a * b) >> 12); }
@@ -409,12 +409,12 @@ void func_02034344(u32 *out, u8 *obj, u32 idx) {   // node visibility bit at the
 }
 void func_0203437c(u32 *m) {   // send the pending matrix commands (mode without scale)
     if (!(m[0] & 4)) {
-        if (!(m[0] & 2)) func_01ff93d8(0x19, &m[10], 12);
-        else func_01ff93d8(0x1c, &m[19], 3);
+        if (!(m[0] & 2)) SendFifoCommand(0x19, &m[10], 12);
+        else SendFifoCommand(0x1c, &m[19], 3);
     } else {
-        if (!(m[0] & 2)) func_01ff93d8(0x1a, &m[10], 9);
+        if (!(m[0] & 2)) SendFifoCommand(0x1a, &m[10], 9);
     }
-    if (!(m[0] & 1)) func_01ff93d8(0x1b, &m[1], 3);
+    if (!(m[0] & 1)) SendFifoCommand(0x1b, &m[1], 3);
 }
 void func_020343f8(u32 *m, u32 *v, u32 unused, u32 flags) {   // set the translation of a node transform
     if (flags & 4) {
@@ -431,18 +431,18 @@ void func_02034438(u32 *m) {   // send the pending matrix commands (with deferre
     if (!(m[0] & 4)) scale = 1;
     if ((m[0] & 0x20) && !(m[0] & 8)) {
         if (scale) {
-            func_01ff93d8(0x1c, &m[19], 3);
+            SendFifoCommand(0x1c, &m[19], 3);
             scale = 0;
         }
-        func_01ff93d8(0x1b, &m[4], 3);
+        SendFifoCommand(0x1b, &m[4], 3);
     }
     if (!(m[0] & 2)) {
-        if (scale) func_01ff93d8(0x19, &m[10], 12);
-        else func_01ff93d8(0x1a, &m[10], 9);
+        if (scale) SendFifoCommand(0x19, &m[10], 12);
+        else SendFifoCommand(0x1a, &m[10], 9);
     } else {
-        if (scale) func_01ff93d8(0x1c, &m[19], 3);
+        if (scale) SendFifoCommand(0x1c, &m[19], 3);
     }
-    if (!(m[0] & 1)) func_01ff93d8(0x1b, &m[1], 3);
+    if (!(m[0] & 1)) SendFifoCommand(0x1b, &m[1], 3);
 }
 typedef struct { u32 pad[0x31]; u32 bits[1]; } NodeCache;
 extern NodeCache *data_020baf00;
@@ -619,13 +619,13 @@ void func_02034ae8(u32 *m) {   // load the texture matrix built from a texture S
         t.mtx[5] = FxMul(m[13], t.mtx[5]);
         t.mtx[13] = FxMul(m[13], t.mtx[13]);
     }
-    func_01ff93d8(t.cmd, (u32 *)&t + 1, 0x12);
+    SendFifoCommand(t.cmd, (u32 *)&t + 1, 0x12);
 }
 void func_02034c30(u32 *m) {   // send the pending matrix commands (rotation / scale in one go)
     BOOL scale = 0;
     u32 deferred = m[0] & 0x18;
     s32 v[3];
-    if (deferred == 0) func_01ff93d8(0x1b, &m[7], 3);
+    if (deferred == 0) SendFifoCommand(0x1b, &m[7], 3);
     if (!(m[0] & 4)) {
         if (deferred != 0) {
             scale = 1;
@@ -633,15 +633,15 @@ void func_02034c30(u32 *m) {   // send the pending matrix commands (rotation / s
             v[0] = FxMul(m[19], m[4]);
             v[1] = FxMul(m[20], m[5]);
             v[2] = FxMul(m[21], m[6]);
-            func_01ff93d8(0x1c, v, 3);
+            SendFifoCommand(0x1c, v, 3);
         }
     }
     if (!(m[0] & 2)) {
-        if (scale) func_01ff93d8(0x19, &m[10], 12);
-        else func_01ff93d8(0x1a, &m[10], 9);
+        if (scale) SendFifoCommand(0x19, &m[10], 12);
+        else SendFifoCommand(0x1a, &m[10], 9);
     } else {
-        if (scale) func_01ff93d8(0x1c, &m[19], 3);
+        if (scale) SendFifoCommand(0x1c, &m[19], 3);
     }
-    if (deferred == 0) func_01ff93d8(0x1b, &m[4], 3);
-    if (!(m[0] & 1)) func_01ff93d8(0x1b, &m[1], 3);
+    if (deferred == 0) SendFifoCommand(0x1b, &m[4], 3);
+    if (!(m[0] & 1)) SendFifoCommand(0x1b, &m[1], 3);
 }

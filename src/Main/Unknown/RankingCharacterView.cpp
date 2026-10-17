@@ -204,7 +204,7 @@ void RankingCharacterView::Load() {
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
-    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
     manager.mProjection[manager.mActive] = data_02211374.mProjection;
     manager.mView[manager.mActive]       = data_02211374.mView;
@@ -272,7 +272,7 @@ void RankingCharacterView::Draw() {
     MtxFx43 mtx     = gIdentityMtx43;
     VecFx32 pos     = data_020a2fd8;
     VecFx32 offset  = data_020a2fe4;
-    func_01ffcf64(&mtx, &offset);
+    MTX_SetTranslation43(&mtx, &offset);
     func_01ff89c0(&mtx, camera, &mtx);
     mMyroomBgModel->AdvanceAnim();
     mMyroomBgModel->Draw(&mtx, &pos);

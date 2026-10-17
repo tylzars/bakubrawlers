@@ -111,7 +111,7 @@ extern int func_0200f8e8(int a, int b);
 extern void func_0200fb68(int cmd, WMCb cb);
 extern int func_0200fbd8(int cmd, int n, ...);
 extern int func_0200fc84(void *p, u32 n);
-extern u32 func_020122b0(u32 a);
+extern u32 CountSetBits(u32 a);
 extern int RTC_Init(void);
 extern int RTC_GetDate(u32 *p);
 extern void func_02011c34(void *p);

@@ -3,7 +3,7 @@ extern WMState data_020c06e0;
 extern u8 data_020c06e8[];
 extern u8 data_020c0708[];
 extern u8 data_020c0780[];
-void func_0200fdfc(void);
+void WmFifoReceive(void);
 int func_0200f914(void *buf, u32 dma, u32 size);
 int func_0200fd04(void);
 int func_0200fd68(int n, ...);
@@ -68,7 +68,7 @@ int func_0200f914(void *buf, u32 dma, u32 size)
         DC_StoreRange(&((WMMsgSlot *)data_020c0780)[i], 2);
         OS_SendMessage(data_020c06e8, &((WMMsgSlot *)data_020c0780)[i], 1);
     }
-    PXI_SetFifoRecvCallback(0xa, func_0200fdfc);
+    PXI_SetFifoRecvCallback(0xa, WmFifoReceive);
     data_020c06e0.init = 1;
     OS_RestoreInterrupts(e);
     return 0;

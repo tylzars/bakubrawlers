@@ -58,7 +58,7 @@ extern "C" void GX_ResetBankForTex();
 extern "C" void GX_ResetBankForTexPltt();
 extern "C" void GX_ResetBankForSubBG();
 extern "C" void GX_ResetBankForSubOBJ();
-extern "C" void func_02002dd8();
+extern "C" void GX_ResetBankForLCDC();
 extern "C" void func_02002dec();
 extern "C" void func_02002e00();
 extern "C" void GX_ResetBankForSubBGExtPltt();
@@ -301,7 +301,7 @@ void SpriteManager::ResetVram(u32 unk1) {
     MI_DmaFill32(3, (void *) 0x6800000, 0, 0xa4000);
     MIi_CpuClear16(0xc0, (void *) 0x7000000, 0x800);
     MI_DmaFill32(3, (void *) 0x5000000, 0, 0x800);
-    func_02002dd8();
+    GX_ResetBankForLCDC();
 }
 
 void SpriteManager::func_020273dc(u32 unk1, u32 unk2) {

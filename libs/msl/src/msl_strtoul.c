@@ -7,11 +7,11 @@ extern int data_020c1790;
 #define ISALPHA(c) (((c) < 0 || (c) >= 128) ? 0 : (data_020903a8[c] & 1))
 #define TOUPPER(c) (((c) < 0 || (c) >= 128) ? (c) : data_02090328[c])
 
-extern int func_02015950(void *, int, int);
+extern int StringReader(void *, int, int);
 
 typedef struct StrRead { const char *p; int eof; } StrRead;
 
-unsigned long func_02016ec0(int base, int maxw, int (*rd)(void *, int, int), void *ctx,
+unsigned long ScanULong(int base, int maxw, int (*rd)(void *, int, int), void *ctx,
                             int *nread, int *neg, int *ovf)
 {
     int state = 1;
@@ -108,7 +108,7 @@ unsigned long func_02016ec0(int base, int maxw, int (*rd)(void *, int, int), voi
 }
 
 
-unsigned long long func_020172a8(int base, int maxw, int (*rd)(void *, int, int), void *ctx,
+unsigned long long ScanULongLong(int base, int maxw, int (*rd)(void *, int, int), void *ctx,
                             int *nread, int *neg, int *ovf)
 {
     int state = 1;
@@ -212,7 +212,7 @@ unsigned long func_02017714(const char *str, char **end, int base)
     unsigned long v;
     s.p = str;
     s.eof = 0;
-    v = func_02016ec0(base, 0x7fffffff, func_02015950, &s, &scanned, &neg, &ovf);
+    v = ScanULong(base, 0x7fffffff, StringReader, &s, &scanned, &neg, &ovf);
     if (end) *end = (char *)str + scanned;
     if (ovf) {
         v = -1;

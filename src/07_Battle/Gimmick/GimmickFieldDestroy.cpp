@@ -235,7 +235,7 @@ void GimmickFieldDestroy::UpdateKindSequence() {
                     mtx._[9]  = 0;
                     MTX_MultVec43(&v, &mtx, &v);
                     VEC_Add(&camPos, &v, &camPos);
-                    func_01ffcf64(&mtx, &camPos);
+                    MTX_SetTranslation43(&mtx, &camPos);
                     SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
                 }
                 break;
@@ -252,7 +252,7 @@ void GimmickFieldDestroy::UpdateKindSequence() {
                     VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
                     CameraManager::Get();
                     MtxFx43 mtx = data_020c1cf4;
-                    func_01ffcf64(&mtx, &mPosition);
+                    MTX_SetTranslation43(&mtx, &mPosition);
                     Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mCamera;
                     d.x                 = h->mPosition.x;
                     d.y                 = h->mPosition.y;
@@ -263,7 +263,7 @@ void GimmickFieldDestroy::UpdateKindSequence() {
                     d.y = FX_Mul(d.y, 0x1e000);
                     d.z = FX_Mul(d.z, 0x1e000);
                     VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
-                    func_01ffcf64(&mtx, &d);
+                    MTX_SetTranslation43(&mtx, &d);
                     SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
                 }
                 break;
@@ -308,9 +308,9 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         mtx2._[9]              = 0;
         MTX_MultVec43(&v2, &mtx2, &v2);
         VEC_Add(&camPos, &v2, &camPos);
-        func_01ffd088(&mtx, data_ov007_022793da[1]);
+        MTX_ApplyRotX43(&mtx, data_ov007_022793da[1]);
         func_01ff89c0(&mtx, &mtx2, &mtx2);
-        func_01ffcf64(&mtx2, &camPos);
+        MTX_SetTranslation43(&mtx2, &camPos);
         SetEffectMatrix(data_020d433c.mEffects, handle, &mtx2);
         break;
     }
@@ -323,7 +323,7 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
         CameraManager::Get();
         MtxFx43 mtx = data_020c1cf4;
-        func_01ffcf64(&mtx, &mPosition);
+        MTX_SetTranslation43(&mtx, &mPosition);
         Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mCamera;
         d.x                 = h->mPosition.x;
         d.y                 = h->mPosition.y;
@@ -334,7 +334,7 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         d.y = FX_Mul(d.y, 0x1e000);
         d.z = FX_Mul(d.z, 0x1e000);
         VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &d);
-        func_01ffcf64(&mtx, &d);
+        MTX_SetTranslation43(&mtx, &d);
         SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         break;
     }
@@ -352,7 +352,7 @@ int GimmickFieldDestroy::func_ov007_0222bc24() {
     }
     CameraManager::Get();
     MtxFx43 mtx = data_020c1cf4;
-    func_01ffcf64(&mtx, &mPosition);
+    MTX_SetTranslation43(&mtx, &mPosition);
     mModelB->Draw(&mtx, &mScale);
     VecFx32 dir;
     VecFx32 cp;
@@ -365,7 +365,7 @@ int GimmickFieldDestroy::func_ov007_0222bc24() {
     dir.y = 0;
     dir.z = 0;
     VEC_Add(&dir, &mPosition, &dir);
-    func_01ffcf64(&mtx, &dir);
+    MTX_SetTranslation43(&mtx, &dir);
     mModelE->AdvanceAnim();
     mModelE->Draw(&mtx, &mScale);
 }

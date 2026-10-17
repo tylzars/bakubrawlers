@@ -3,11 +3,11 @@
 extern char SDK_AUTOLOAD_DTCM_START[];
 extern char data_027e0060[];
 extern char OSi_ThreadInfo[];
-extern void func_0200be08(void);
-extern void func_0200be48(void);
+extern void SaveDivSqrtRegisters(void);
+extern void RestoreDivSqrtRegisters(void);
 extern void func_01ffc9a4(void);
 
-// func_01ffc93c: top-level interrupt dispatcher. Reads the interrupt master
+// DispatchIrq: top-level interrupt dispatcher. Reads the interrupt master
 // enable (register at +0x208 from 0x04000000); returns at once if it is zero.
 // Otherwise ANDs the enable and request words (+0x210, +0x214); returns if no
 // enabled request is pending. It then picks the lowest-numbered pending bit
@@ -18,7 +18,7 @@ extern void func_01ffc9a4(void);
 // func_01ffc9a4, so the handler returns into the thread-switch code; the lr
 // pushed on entry is popped there. The routine ends with two literal words
 // (table base, return address).
-asm void func_01ffc93c(void) {
+asm void DispatchIrq(void) {
     stmfd sp!, {lr}
     mov ip, #0x4000000
     add ip, ip, #0x210
@@ -55,7 +55,7 @@ Lfind:
 // stores 1 at +0x64, zeroes +0x78/+0x7c/+0x80 (reading the old +0x80 as the
 // next link), then zeroes both words at data_027e0060 and sets the halfword
 // flag at OSi_ThreadInfo to 1. If that flag is zero it returns (popping the
-// lr pushed by func_01ffc93c). Otherwise it clears the flag, enters IRQ mode
+// lr pushed by DispatchIrq). Otherwise it clears the flag, enters IRQ mode
 // with IRQ/FIQ masked (0xd2) and scans the thread list (head word at
 // OSi_ThreadInfo + 8, linked through +0x68) for the first thread whose
 // halfword at +0x64 is 1. With none found, or when that thread equals the
@@ -65,8 +65,8 @@ Lfind:
 // thread, and saves into the old thread's context record: SPSR (+0), the
 // interrupted r0-r3/ip from the IRQ stack frame, r4-r11 and user-bank sp/lr
 // (+4..+0x3c), the IRQ lr (+0x40), the supervisor sp (+0x44) and, through
-// func_0200be08, the divider/square-root registers (+0x48). It then restores
-// the new thread's divider/square-root registers (func_0200be48), supervisor
+// SaveDivSqrtRegisters, the divider/square-root registers (+0x48). It then restores
+// the new thread's divider/square-root registers (RestoreDivSqrtRegisters), supervisor
 // sp, SPSR and user-bank registers from its record, writes r0-r3, ip and the
 // resume address (+0x40) over the IRQ stack frame, and returns through the
 // word popped from the stack. Four literal words follow the routine.
@@ -149,7 +149,7 @@ Lnohook:
     stmfd sp!, {r0, r1}
     add r0, r0, #0
     add r0, r0, #0x48
-    ldr r1, =func_0200be08
+    ldr r1, =SaveDivSqrtRegisters
     blx r1
     ldmfd sp!, {r0, r1}
     ldmib sp!, {r2, r3}
@@ -163,7 +163,7 @@ Lnohook:
     stmfd sp!, {r1}
     add r0, r1, #0
     add r0, r0, #0x48
-    ldr r1, =func_0200be48
+    ldr r1, =RestoreDivSqrtRegisters
     blx r1
     ldmfd sp!, {r1}
     ldr sp, [r1, #0x44]

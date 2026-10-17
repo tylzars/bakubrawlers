@@ -37,7 +37,7 @@ static const PromptRect data_ov007_0227a764[3] = {{0x28, 0x3f, 0x30, 0x40}, {0x6
 static const PromptRect data_ov007_0227a75c[2] = {{0xa1, 0x85, 0x36, 0x14}, {0xd9, 0x85, 0x1e, 0x14}};
 static const u16 data_ov007_0227a770[6] = {0x2000, 0xc000, 0, 0, 0, 0};
 extern MtxFx22 gIdentityMtx22;
-extern "C" void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
+extern "C" void MTX_ScaleRot22(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
 
 
 
@@ -123,7 +123,7 @@ BattleCommandPrompt::BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 
     }
     mWindow = new SelectWindow(2, sPromptWindowItems, -1);
     MtxFx22 mtx;
-    func_01ffcef4(&mtx, 0x1000, 0x1000, 0);
+    MTX_ScaleRot22(&mtx, 0x1000, 0x1000, 0);
     G2x_SetBGyAffine_((vu16 *) 0x4001030, &mtx, 0, 0, -mSlideX, 0);
 }
 
@@ -174,7 +174,7 @@ BattleCommandPrompt::~BattleCommandPrompt() {
         k++;
     } while (k < 3);
     MtxFx22 mtx;
-    func_01ffcef4(&mtx, 0x1000, 0x1000, 0);
+    MTX_ScaleRot22(&mtx, 0x1000, 0x1000, 0);
     G2x_SetBGyAffine_((vu16 *) 0x4001030, &mtx, 0, 0, 0, 0);
     G2S_SetBG3Priority(3);
     GXS_SetVisibleWnd(0);

@@ -45,8 +45,8 @@ extern void func_02049024(void), func_02049088(void), func_02049118(void), func_
 extern void func_02049138(void), func_02049150(void);
 extern char *func_02015a6c(char *, const char *);
 extern char *func_02015b84(char *, const char *);
-extern int func_0200ac30(int, int, int);
-extern int func_0200ac20(int, int, int);
+extern int FS_ReadFile(int, int, int);
+extern int FS_ReadFileAsync(int, int, int);
 extern void CriLockEnter1(void), CriLockLeave1(void);
 extern int func_02048274(char *);
 extern int func_02048264(int), func_0204826c(int);
@@ -153,9 +153,9 @@ int func_02047ae8(CriFile *o)
     int r = 0;
     if (data_02217d14.f734 == 0) {
         if (data_02217d14.f730 != 0) {
-            r = func_0200ac30((int)o->p4c, o->p54, o->p74);
+            r = FS_ReadFile((int)o->p4c, o->p54, o->p74);
         } else {
-            r = func_0200ac20((int)o->p4c, o->p54, o->p74);
+            r = FS_ReadFileAsync((int)o->p4c, o->p54, o->p74);
         }
         if (o->p74 < 0 || r < 0) {
             r = 0;

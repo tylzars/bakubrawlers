@@ -127,7 +127,7 @@ int G3X_GetBoxTestResult(u32 *result) {
     return 0;
 }
 
-void func_020037e8(u32 value) {
+void WriteBG0Offset(u32 value) {
     reg_G2_BG0OFS = value;
 }
 

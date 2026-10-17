@@ -499,10 +499,10 @@ store:
     bx lr
 }
 
-extern void func_0200be08(void);
-extern void func_0200be48(void);
+extern void SaveDivSqrtRegisters(void);
+extern void RestoreDivSqrtRegisters(void);
 
-// OS_SaveContext: r0 points at a context record. First calls func_0200be08 with
+// OS_SaveContext: r0 points at a context record. First calls SaveDivSqrtRegisters with
 // r0+0x48 (saves the divider and square-root registers into the tail of the record),
 // then stores CPSR at +0, the supervisor-mode stack pointer at +0x44, and
 // r0..lr at +4..+0x3c (the r0 slot holds 1, the r1 slot ctx+4 and the r2 slot
@@ -512,7 +512,7 @@ extern void func_0200be48(void);
 asm u32 OS_SaveContext(OSContext *ctx) {
     stmfd sp!, {r0, lr}
     add r0, r0, #0x48
-    ldr r1, =func_0200be08
+    ldr r1, =SaveDivSqrtRegisters
     blx r1                      // save extra state into ctx+0x48
     ldmfd sp!, {r0, lr}
     add r1, r0, #0
@@ -531,7 +531,7 @@ asm u32 OS_SaveContext(OSContext *ctx) {
 }
 
 // OS_LoadContext: r0 points at a context record produced by OS_SaveContext.
-// Calls func_0200be48 with r0+0x48 (restoring those registers), enters
+// Calls RestoreDivSqrtRegisters with r0+0x48 (restoring those registers), enters
 // supervisor mode with IRQ/FIQ masked, loads SPSR from the saved CPSR (+0),
 // supervisor sp from +0x44 and lr from +0x40, then loads r0-r12 and the
 // user/system-bank sp and lr from +4..+0x3c, and returns to lr - 4 with CPSR
@@ -539,7 +539,7 @@ asm u32 OS_SaveContext(OSContext *ctx) {
 asm void OS_LoadContext(OSContext *ctx) {
     stmfd sp!, {r0, lr}
     add r0, r0, #0x48
-    ldr r1, =func_0200be48
+    ldr r1, =RestoreDivSqrtRegisters
     blx r1                      // restore extra state from ctx+0x48
     ldmfd sp!, {r0, lr}
     mrs r1, cpsr

@@ -3,8 +3,8 @@
    through ap. flag != 0 selects the "secure"/length-checked mode (%c/%s/%[ take a buffer size).
    Returns the number of stored conversions, or -1 if input ended before any conversion.
    Main 0x02014bfc, 0xd54 bytes. Types: ScanSpec from msl_scan_spec.c (spec parser is
-   func_02014704). func_020172a8 / func_02016ec0 are the 64-bit / 32-bit integer readers
-   (base, width, rd, ctx, &consumed, &neg, &overflow); func_02015c74 is the float reader. */
+   ParseScanfSpec). ScanULongLong / ScanULong are the 64-bit / 32-bit integer readers
+   (base, width, rd, ctx, &consumed, &neg, &overflow); ScanDouble is the float reader. */
 typedef struct ScanSpec {
     unsigned char suppress;
     unsigned char width_set;
@@ -24,13 +24,13 @@ static inline int ISSPACE(int c)
     return (c < 0 || c >= 128) ? 0 : (data_020903a8[c] & 0x100);
 }
 
-extern const char *func_02014704(const char *, ScanSpec *);
-extern long long func_020172a8(int, int, ReadFn, void *, int *, int *, int *);
-extern int func_02016ec0(int, int, ReadFn, void *, int *, int *, int *);
-extern double func_02015c74(int, ReadFn, void *, int *, int *);
+extern const char *ParseScanfSpec(const char *, ScanSpec *);
+extern long long ScanULongLong(int, int, ReadFn, void *, int *, int *, int *);
+extern int ScanULong(int, int, ReadFn, void *, int *, int *, int *);
+extern double ScanDouble(int, ReadFn, void *, int *, int *);
 extern int func_02012368(char *, const char *, int);
 
-int func_02014bfc(ReadFn rd, void *ctx, const char *fmt, char *ap, int flag)
+int ScanFormatted(ReadFn rd, void *ctx, const char *fmt, char *ap, int flag)
 {
     ScanSpec spec;
     int consumed, neg, ovf;
@@ -85,7 +85,7 @@ int func_02014bfc(ReadFn rd, void *ctx, const char *fmt, char *ap, int flag)
             fmt++;
             goto next;
         }
-        fmt = func_02014704(fmt, &spec);
+        fmt = ParseScanfSpec(fmt, &spec);
         if (spec.suppress == 0 && spec.conv != '%') {
             dst = *(void **)((ap += 4) - 4);
         } else {
@@ -109,9 +109,9 @@ int func_02014bfc(ReadFn rd, void *ctx, const char *fmt, char *ap, int flag)
                 sv64 = 0;
             } else {
                 if (spec.len == 7 || spec.len == 4) {
-                    tmp64 = func_020172a8(base, spec.width, rd, ctx, &consumed, &neg, &ovf);
+                    tmp64 = ScanULongLong(base, spec.width, rd, ctx, &consumed, &neg, &ovf);
                 } else {
-                    tmp32 = func_02016ec0(base, spec.width, rd, ctx, &consumed, &neg, &ovf);
+                    tmp32 = ScanULong(base, spec.width, rd, ctx, &consumed, &neg, &ovf);
                 }
                 if (consumed == 0) {
                     if (flag == 0) goto done;
@@ -165,9 +165,9 @@ int func_02014bfc(ReadFn rd, void *ctx, const char *fmt, char *ap, int flag)
                 tmp64 = 0;
             } else {
                 if (spec.len == 7 || spec.len == 4) {
-                    tmp64 = func_020172a8(base, spec.width, rd, ctx, &consumed, &neg, &ovf);
+                    tmp64 = ScanULongLong(base, spec.width, rd, ctx, &consumed, &neg, &ovf);
                 } else {
-                    tmp32 = func_02016ec0(base, spec.width, rd, ctx, &consumed, &neg, &ovf);
+                    tmp32 = ScanULong(base, spec.width, rd, ctx, &consumed, &neg, &ovf);
                 }
                 if (consumed == 0) {
                     if (flag == 0) goto done;
@@ -205,7 +205,7 @@ int func_02014bfc(ReadFn rd, void *ctx, const char *fmt, char *ap, int flag)
             if (stop) {
                 x = (double)data_020a5078;
             } else {
-                x = func_02015c74(spec.width, rd, ctx, &consumed, &ovf);
+                x = ScanDouble(spec.width, rd, ctx, &consumed, &ovf);
                 if (consumed == 0) {
                     if (flag == 0) goto done;
                     stop = 1;

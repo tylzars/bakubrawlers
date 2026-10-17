@@ -28,7 +28,7 @@ void ConfrontBg04::Init(BattleData *data, u32 mode) {
     InitSubScreen();
     LoadGraphics();
     MtxFx22 mtx;
-    func_01ffcef4(&mtx, 0x1000, 0x1000, 0);
+    MTX_ScaleRot22(&mtx, 0x1000, 0x1000, 0);
     G2x_SetBGyAffine_((vu16 *) 0x4001030, &mtx, 0, 0, 0, 0);
 }
 
@@ -51,7 +51,7 @@ void ConfrontBg04::LoadGraphics() {
     const char *dir = "/Game/Confrontation/Bg/";
     BattleEntry *entries = mData->mEntries;
     sprintf(gCurrentDir, dir);
-    func_0200acac(dir);
+    FS_ChangeDir(dir);
     u8 side = mUnk_12;
     BOOL spectator = side >= 2;
     if (!(u8) spectator) {

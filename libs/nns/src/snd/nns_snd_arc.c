@@ -4,10 +4,10 @@
 extern SndArc *data_022149b0;   // current archive
 
 extern int FS_ConvertPathToFileID(void *fileId, const char *path);
-extern void func_0200a7b4(void *file);
-extern int func_0200aa24(void *file, SndFileId id);
-extern int func_0200ac40(void *file, u32 pos, u32 whence);
-extern int func_0200ac30(void *file, void *dst, u32 len);
+extern void FS_InitFile(void *file);
+extern int FS_OpenFileById(void *file, SndFileId id);
+extern int FS_SeekFile(void *file, u32 pos, u32 whence);
+extern int FS_ReadFile(void *file, void *dst, u32 len);
 extern void *AllocSndHeapBlock(void *heap, u32 size, void *cb, void *arg, u32 flags);
 extern void ArcInfoFreeCallback(void);
 extern void ArcFatFreeCallback(void);
@@ -20,8 +20,8 @@ void OpenSndArc(SndArc *arc, const char *path, void *heap, u32 flag) {   // open
     arc->symb = 0;
     arc->chunk = 0;
     if (FS_ConvertPathToFileID(&arc->fileId, path) == 0) return;
-    func_0200a7b4(arc->file);
-    if (func_0200aa24(arc->file, arc->fileId) == 0) return;
+    FS_InitFile(arc->file);
+    if (FS_OpenFileById(arc->file, arc->fileId) == 0) return;
     arc->opened = 1;
     if (LoadSndArcBlocks(arc, heap, flag) != 0) {
         data_022149b0 = arc;
@@ -31,24 +31,24 @@ void OpenSndArc(SndArc *arc, const char *path, void *heap, u32 flag) {   // open
 // load the archive's blocks
 int LoadSndArcBlocks(SndArc *arc, void *heap, u32 flag) {
     int n;
-    if (func_0200ac40(arc->file, 0, 0) == 0) return 0;
-    if (func_0200ac30(arc->file, arc, 0x30) != 0x30) return 0;
+    if (FS_SeekFile(arc->file, 0, 0) == 0) return 0;
+    if (FS_ReadFile(arc->file, arc, 0x30) != 0x30) return 0;
     if (heap != 0) {
         arc->info = AllocSndHeapBlock(heap, arc->infoSize, ArcInfoFreeCallback, arc, 0);
         if (arc->info == 0) return 0;
-        if (func_0200ac40(arc->file, arc->infoOff, 0) == 0) return 0;
-        n = func_0200ac30(arc->file, arc->info, arc->infoSize);
+        if (FS_SeekFile(arc->file, arc->infoOff, 0) == 0) return 0;
+        n = FS_ReadFile(arc->file, arc->info, arc->infoSize);
         if (n == arc->infoSize) {} else return 0;
         arc->fat = AllocSndHeapBlock(heap, arc->fatSize, ArcFatFreeCallback, arc, 0);
         if (arc->fat == 0) return 0;
-        if (func_0200ac40(arc->file, arc->fatOff, 0) == 0) return 0;
-        n = func_0200ac30(arc->file, arc->fat, arc->fatSize);
+        if (FS_SeekFile(arc->file, arc->fatOff, 0) == 0) return 0;
+        n = FS_ReadFile(arc->file, arc->fat, arc->fatSize);
         if (n == arc->fatSize) {} else return 0;
         if (flag != 0 && arc->symbSize != 0) {
             arc->symb = AllocSndHeapBlock(heap, arc->symbSize, ArcSymbFreeCallback, arc, 0);
             if (arc->symb == 0) return 0;
-            if (func_0200ac40(arc->file, arc->symbOff, 0) == 0) return 0;
-            n = func_0200ac30(arc->file, arc->symb, arc->symbSize);
+            if (FS_SeekFile(arc->file, arc->symbOff, 0) == 0) return 0;
+            n = FS_ReadFile(arc->file, arc->symb, arc->symbSize);
             if (n == arc->symbSize) {} else return 0;
         }
     }
@@ -140,8 +140,8 @@ int ReadFatEntryData(u32 idx, void *dst, int len, u32 off) {
         if (n > chunk) n = chunk;
         if ((u32)n > ent->size - off) n = ent->size - off;
         if (n == 0) break;
-        if (func_0200ac40(arc->file, ent->offset + off, 0) == 0) return -1;
-        r = func_0200ac30(arc->file, dst, n);
+        if (FS_SeekFile(arc->file, ent->offset + off, 0) == 0) return -1;
+        r = FS_ReadFile(arc->file, dst, n);
         if (r < 0) return r;
         total += r;
         off += r;

@@ -21,12 +21,12 @@ extern void *GetWavStrmChannelInfo(int idx);
 extern u32 *GetWavStrmFileInfo(u32 id);
 extern u32 GetFatEntryOffset(u32 idx);
 extern SndFileId GetCurrentArcFileId(void);
-extern void func_0200a7b4(void *file);
-extern int func_0200aa24(void *file, SndFileId id);
-extern int func_0200aadc(void *file);
-extern int func_0200abd8(void *file);
-extern int func_0200ac40(void *file, u32 pos, u32 whence);
-extern int func_0200ac30(void *file, void *dst, u32 len);
+extern void FS_InitFile(void *file);
+extern int FS_OpenFileById(void *file, SndFileId id);
+extern int FS_CloseFile(void *file);
+extern int FS_CancelFile(void *file);
+extern int FS_SeekFile(void *file, u32 pos, u32 whence);
+extern int FS_ReadFile(void *file, void *dst, u32 len);
 extern u32 OS_DisableInterrupts(void);
 extern void OS_RestoreInterrupts(u32 irq);
 extern void OS_InitMutex(void *mutex);
@@ -126,7 +126,7 @@ void InitWavStrms(u32 a, void *heap) {   // initialise the stream player
     for (j = 0; j < 4; j++) {
         s = &data_0221508c[j];
         s->active = 0;
-        func_0200a7b4(s->file);
+        FS_InitFile(s->file);
         InitSndStrm(s);
         s->slot = j;
         s->chCount = 0;
@@ -576,22 +576,22 @@ int OpenWavStrmFromFile(WavStrm *s, u32 id) {   // open from file
     SndFileId fid;
     if (ReadFatEntryData(id, s->hdrPad, 0x40, 0) != 0x40) return 0;
     fid = GetCurrentArcFileId();
-    if (func_0200aa24(s->file, fid) == 0) return 0;
+    if (FS_OpenFileById(s->file, fid) == 0) return 0;
     s->dataBase = GetFatEntryOffset(id);
     return 1;
 }
 
 int CloseWavStrmFile(WavStrm *s) {
-    return func_0200aadc(s->file);
+    return FS_CloseFile(s->file);
 }
 
 int ReadWavStrmFile(WavStrm *s, void *dst, u32 len, u32 off) {
-    func_0200ac40(s->file, s->dataBase + off, 0);
-    return func_0200ac30(s->file, dst, len);
+    FS_SeekFile(s->file, s->dataBase + off, 0);
+    return FS_ReadFile(s->file, dst, len);
 }
 
 int func_0203a3b4(WavStrm *s) {
-    return func_0200abd8(s->file);
+    return FS_CancelFile(s->file);
 }
 
 int OpenWavStrmFromMemory(WavStrm *s, u32 id) {   // open from memory

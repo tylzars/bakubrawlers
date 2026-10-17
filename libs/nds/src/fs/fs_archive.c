@@ -1,26 +1,26 @@
 #include <nitro/private/fs_dev.h>
 
 static inline BOOL FS_IsBusy(FSArchive *a) { return FS_ArcTest(a, 0x200) ? TRUE : FALSE; }
-int func_020093c8(FSFile *f, int cmd);
-void func_0200936c(FSFile *f, int result);
+int RunFileCommand(FSFile *f, int cmd);
+void FinishFileCommand(FSFile *f, int result);
 
 
-u32 func_02009ef8(const u8 *s, int len);
-void func_0200a7b4(FSFile *f);
-BOOL func_0200a9dc(FSFile *f, FSArchive *arc, u32 start, u32 end, int id);
-BOOL func_0200aadc(FSFile *f);
-int func_0200ac30(FSFile *f, void *buf, int len);
+u32 PackArchiveName(const u8 *s, int len);
+void FS_InitFile(FSFile *f);
+BOOL FS_OpenFileRange(FSFile *f, FSArchive *arc, u32 start, u32 end, int id);
+BOOL FS_CloseFile(FSFile *f);
+int FS_ReadFile(FSFile *f, void *buf, int len);
 FSFile *func_02009fa4(FSArchive *arc);
-void func_0200a1b8(FSFile *f);
+void RunFileQueue(FSFile *f);
 BOOL func_0200a24c(FSFile *f);
-BOOL func_0200a290(FSFile *f, u32 cmd);
-FSDirPos data_020bfc8c;      // data_020bfc8c
+BOOL RequestFileCommand(FSFile *f, u32 cmd);
+FSDirPos gCurrentDirPos;      // gCurrentDirPos
 extern char data_020a4f3c[];
 FSArchive *data_arc_list;   // data_020bfc88
-int func_02009f8c(FSArchive *arc, void *dst, u32 pos, u32 len);
-int func_02009f50(FSArchive *arc, void *dst, u32 pos, u32 len);
-int func_02009f6c(FSArchive *arc, void *src, u32 pos, u32 len);
-int func_02009558(const u8 *a, const u8 *b, u32 n)
+int ReadFromAbsoluteAddress(FSArchive *arc, void *dst, u32 pos, u32 len);
+int ReadFromArchiveBase(FSArchive *arc, void *dst, u32 pos, u32 len);
+int WriteToArchiveBase(FSArchive *arc, void *src, u32 pos, u32 len);
+int CompareIgnoringCase(const u8 *a, const u8 *b, u32 n)
 {
     u32 i;
     for (i = 0; i < n; i++) {
@@ -33,7 +33,7 @@ int func_02009558(const u8 *a, const u8 *b, u32 n)
     return 0;
 }
 
-int func_020095a8(FSTablePos *p, void *dst, u32 len)
+int ReadTable(FSTablePos *p, void *dst, u32 len)
 {
     FSArchive *arc = p->arc;
     int r;
@@ -58,17 +58,17 @@ int func_020095a8(FSTablePos *p, void *dst, u32 len)
     return r;
 }
 
-int func_02009668(FSFile *f, u32 id)
+int SeekDir(FSFile *f, u32 id)
 {
     f->stat |= 4;
     f->f30 = (u32) f->arc;
     f->f38 = 0;
     FH(f, 0x36) = 0;
     FH(f, 0x34) = id;
-    return func_020093c8(f, 2);
+    return RunFileCommand(f, 2);
 }
 
-int func_0200969c(FSFile *f)
+int ReadCommand(FSFile *f)
 {
     u32 pos = f->f2c;
     u32 len = f->f38;
@@ -78,7 +78,7 @@ int func_0200969c(FSFile *f)
     return a->read_func(a, buf, pos, len);
 }
 
-int func_020096c8(FSFile *f)
+int WriteCommand(FSFile *f)
 {
     u32 pos = f->f2c;
     u32 len = f->f38;
@@ -88,7 +88,7 @@ int func_020096c8(FSFile *f)
     return a->write_func(a, buf, pos, len);
 }
 
-int func_020096f4(FSFile *f)
+int SeekDirCommand(FSFile *f)
 {
     FSArchive *arc = f->arc;
     struct { u32 a; u16 b; u16 c; } e;
@@ -97,7 +97,7 @@ int func_020096f4(FSFile *f)
     int r;
     tp.arc = arc;
     tp.pos = arc->fnt + p->idx * 8;
-    r = func_020095a8(&tp, &e, 8);
+    r = ReadTable(&tp, &e, 8);
     if (r == 0) {
         *(FSDirPos *) &f->f20 = *p;
         if (p->sub == 0 && p->pos == 0) {
@@ -109,7 +109,7 @@ int func_020096f4(FSFile *f)
     return r;
 }
 
-int func_0200978c(FSFile *f)
+int ReadDirEntryCommand(FSFile *f)
 {
     FSDirEntry *ent = (FSDirEntry *) f->f30;
     u8 b;
@@ -119,20 +119,20 @@ int func_0200978c(FSFile *f)
     int r;
     tp.arc = f->arc;
     tp.pos = f->f28;
-    r = func_020095a8(&tp, &b, 1);
+    r = ReadTable(&tp, &b, 1);
     if (r != 0) return r;
     ent->name_len = b & 0x7f;
     ent->is_dir = (b >> 7) & 1;
     if (ent->name_len == 0) return 1;
     if (f->f34 == 0) {
-        r = func_020095a8(&tp, ent->name, ent->name_len);
+        r = ReadTable(&tp, ent->name, ent->name_len);
         if (r != 0) return r;
         ent->name[ent->name_len] = 0;
     } else {
         tp.pos += ent->name_len;
     }
     if (ent->is_dir != 0) {
-        r = func_020095a8(&tp, &id, 2);
+        r = ReadTable(&tp, &id, 2);
         if (r != 0) return r;
         ent->arc = f->arc;
         FH(ent, 4) = id & 0xfff;
@@ -154,12 +154,12 @@ static inline BOOL IsPathNameChar(u32 c)
     return r;
 }
 
-int func_020098b8(FSFile *f)
+int FindPathCommand(FSFile *f)
 {
     FSDirEntry ent;
     const u8 *path = (const u8 *) f->f3c;
     u32 wantdir = f->f40;
-    func_020093c8(f, 2);
+    RunFileCommand(f, 2);
     while (*path != 0) {
         int len = 0;
         u32 term;
@@ -174,7 +174,7 @@ int func_020098b8(FSFile *f)
                 goto next;
             }
             if ((len == 2) & (path[1] == '.')) {
-                if (FH(f, 0x24) != 0) func_02009668(f, f->f2c);
+                if (FH(f, 0x24) != 0) SeekDir(f, f->f2c);
                 path += 2;
                 goto next;
             }
@@ -183,12 +183,12 @@ int func_020098b8(FSFile *f)
         *(FSDirEntry **) &f->f30 = &ent;
         f->f34 = 0;
         do {
-            if (func_020093c8(f, 3) != 0) return 1;
-        } while (term != ent.is_dir || len != ent.name_len || func_02009558(path, (u8 *) ent.name, len) != 0);
+            if (RunFileCommand(f, 3) != 0) return 1;
+        } while (term != ent.is_dir || len != ent.name_len || CompareIgnoringCase(path, (u8 *) ent.name, len) != 0);
         if (term != 0) {
             *(FSDirPos *) &f->f30 = *(FSDirPos *) &ent;
             path += len;
-            func_020093c8(f, 2);
+            RunFileCommand(f, 2);
         } else {
             if (wantdir != 0) return 1;
             *(FSFileID *) f->f44 = *(FSFileID *) &ent;
@@ -202,7 +202,7 @@ int func_020098b8(FSFile *f)
     return 0;
 }
 
-int func_02009a9c(FSFile *f)
+int GetPathCommand(FSFile *f)
 {
     FSArchive *arc = f->arc;
     FSDirEntry ent;
@@ -216,7 +216,7 @@ int func_02009a9c(FSFile *f)
     u32 j;
     int len;
     u32 dir;
-    func_0200a7b4(&tmp);
+    FS_InitFile(&tmp);
     tmp.arc = f->arc;
     if (FS_FileTest(f, 0x20)) {
         dir = FH(f, 0x24);
@@ -230,17 +230,17 @@ int func_02009a9c(FSFile *f)
             ndirs = 0;
             dir = 0x10000;
             do {
-                func_02009668(&tmp, i);
+                SeekDir(&tmp, i);
                 if (i == 0) ndirs = tmp.f2c;
                 *(FSDirEntry **) &tmp.f30 = &ent;
                 tmp.f34 = 1;
-                if (func_020093c8(&tmp, 3) == 0) {
+                if (RunFileCommand(&tmp, 3) == 0) {
                     do {
                         if (ent.is_dir == 0 && ent.id == target) {
                             dir = FH(&tmp, 0x24);
                             break;
                         }
-                    } while (func_020093c8(&tmp, 3) == 0);
+                    } while (RunFileCommand(&tmp, 3) == 0);
                 }
                 if (dir != 0x10000) break;
                 i++;
@@ -262,18 +262,18 @@ int func_02009a9c(FSFile *f)
         if (target != 0x10000) len += ent.name_len;
         j = dir;
         if (j != 0) {
-            func_02009668(&tmp, dir);
+            SeekDir(&tmp, dir);
             do {
-                func_02009668(&tmp, tmp.f2c);
+                SeekDir(&tmp, tmp.f2c);
                 *(FSDirEntry **) &tmp.f30 = &ent;
                 tmp.f34 = 1;
-                if (func_020093c8(&tmp, 3) == 0) {
+                if (RunFileCommand(&tmp, 3) == 0) {
                     do {
                         if (ent.is_dir != 0 && FH(&ent, 4) == j) {
                             len += ent.name_len + 1;
                             break;
                         }
-                    } while (func_020093c8(&tmp, 3) == 0);
+                    } while (RunFileCommand(&tmp, 3) == 0);
                 }
                 j = FH(&tmp, 0x24);
             } while (j != 0);
@@ -295,14 +295,14 @@ int func_02009a9c(FSFile *f)
         off += len;
         MI_CpuCopy8(data_020a4f3c, buf + off, 2);
     }
-    func_02009668(&tmp, dir);
+    SeekDir(&tmp, dir);
     if (target != 0x10000) {
         *(FSDirEntry **) &tmp.f30 = &ent;
         tmp.f34 = 0;
-        if (func_020093c8(&tmp, 3) == 0) {
+        if (RunFileCommand(&tmp, 3) == 0) {
             do {
                 if (ent.is_dir == 0 && ent.id == target) break;
-            } while (func_020093c8(&tmp, 3) == 0);
+            } while (RunFileCommand(&tmp, 3) == 0);
         }
         r = ent.name_len + 1;
         MI_CpuCopy8(ent.name, buf + pos - r, r);
@@ -312,12 +312,12 @@ int func_02009a9c(FSFile *f)
         pos -= 1;
     }
     while (dir != 0) {
-        func_02009668(&tmp, tmp.f2c);
+        SeekDir(&tmp, tmp.f2c);
         *(FSDirEntry **) &tmp.f30 = &ent;
         tmp.f34 = 0;
         *(buf + pos - 1) = '/';
         pos--;
-        if (func_020093c8(&tmp, 3) == 0) {
+        if (RunFileCommand(&tmp, 3) == 0) {
             do {
                 if (ent.is_dir != 0 && FH(&ent, 4) == dir) {
                     dir = ent.name_len;
@@ -325,14 +325,14 @@ int func_02009a9c(FSFile *f)
                     pos -= dir;
                     break;
                 }
-            } while (func_020093c8(&tmp, 3) == 0);
+            } while (RunFileCommand(&tmp, 3) == 0);
         }
         dir = FH(&tmp, 0x24);
     }
     return 0;
 }
 
-int func_02009e48(FSFile *f)
+int OpenFileByIdCommand(FSFile *f)
 {
     FSArchive *arc = f->arc;
     u32 idx = f->f34;
@@ -343,15 +343,15 @@ int func_02009e48(FSFile *f)
     if (pos >= arc->fat_size) return 1;
     tp.arc = arc;
     tp.pos = arc->fat + pos;
-    r = func_020095a8(&tp, ent, 8);
+    r = ReadTable(&tp, ent, 8);
     if (r != 0) return r;
     f->f30 = ent[0];
     f->f34 = ent[1];
     f->f38 = idx;
-    return func_020093c8(f, 7);
+    return RunFileCommand(f, 7);
 }
 
-int func_02009ec8(FSFile *f)
+int OpenFileRangeCommand(FSFile *f)
 {
     f->f24 = f->f30;
     f->f2c = f->f30;
@@ -360,12 +360,12 @@ int func_02009ec8(FSFile *f)
     return 0;
 }
 
-int func_02009ef0(void)
+int CloseFileCommand(void)
 {
     return 0;
 }
 
-u32 func_02009ef8(const u8 *s, int len)
+u32 PackArchiveName(const u8 *s, int len)
 {
     u32 v = 0;
     int i, sh;
@@ -388,19 +388,19 @@ u32 func_02009ef8(const u8 *s, int len)
     return v;
 }
 
-int func_02009f50(FSArchive *arc, void *dst, u32 pos, u32 len)
+int ReadFromArchiveBase(FSArchive *arc, void *dst, u32 pos, u32 len)
 {
     MI_CpuCopy8((u8 *) arc->base + pos, dst, len);
     return 0;
 }
 
-int func_02009f6c(FSArchive *arc, void *src, u32 pos, u32 len)
+int WriteToArchiveBase(FSArchive *arc, void *src, u32 pos, u32 len)
 {
     MI_CpuCopy8(src, (u8 *) arc->base + pos, len);
     return 0;
 }
 
-int func_02009f8c(FSArchive *arc, void *dst, u32 pos, u32 len)
+int ReadFromAbsoluteAddress(FSArchive *arc, void *dst, u32 pos, u32 len)
 {
     MI_CpuCopy8((void *) pos, dst, len);
     return 0;
@@ -418,7 +418,7 @@ FSFile *func_02009fa4(FSArchive *arc)
                 next = p->next;
                 if (FS_FileTest(p, 2)) {
                     if (arc->list == p) arc->list = next;
-                    func_0200936c(p, 3);
+                    FinishFileCommand(p, 3);
                     if (next == NULL) next = arc->list;
                 }
                 p = next;
@@ -446,7 +446,7 @@ FSFile *func_02009fa4(FSArchive *arc)
         arc->flags &= ~0x10;
         if (arc->proc_mask & 0x400) {
             FSFile tmp;
-            func_0200a7b4(&tmp);
+            FS_InitFile(&tmp);
             tmp.arc = arc;
             arc->proc(&tmp, 10);
         }
@@ -459,7 +459,7 @@ FSFile *func_02009fa4(FSArchive *arc)
     return NULL;
 }
 
-void func_0200a1b8(FSFile *f)
+void RunFileQueue(FSFile *f)
 {
     FSArchive *arc = f->arc;
     u32 e;
@@ -474,7 +474,7 @@ void func_0200a1b8(FSFile *f)
         }
         f->stat |= 8;
         OS_RestoreInterrupts(e);
-        if (func_020093c8(f, f->command) == 6) return;
+        if (RunFileCommand(f, f->command) == 6) return;
         f = func_02009fa4(arc);
     } while (f != NULL);
 }
@@ -482,13 +482,13 @@ void func_0200a1b8(FSFile *f)
 BOOL func_0200a24c(FSFile *f)
 {
     FSFile *n;
-    func_0200936c(f, func_020093c8(f, f->command));
+    FinishFileCommand(f, RunFileCommand(f, f->command));
     n = func_02009fa4(f->arc);
-    if (n != NULL) func_0200a1b8(n);
+    if (n != NULL) RunFileQueue(n);
     return f->error == 0;
 }
 
-BOOL func_0200a290(FSFile *f, u32 cmd)
+BOOL RequestFileCommand(FSFile *f, u32 cmd)
 {
     FSArchive *arc = f->arc;
     u32 bit = 1 << cmd;
@@ -501,7 +501,7 @@ BOOL func_0200a290(FSFile *f, u32 cmd)
     f->stat |= 1;
     e = OS_DisableInterrupts();
     if (arc->flags & 0x80) {
-        func_0200936c(f, 3);
+        FinishFileCommand(f, 3);
         OS_RestoreInterrupts(e);
         return FALSE;
     }
@@ -525,7 +525,7 @@ BOOL func_0200a290(FSFile *f, u32 cmd)
         f->stat |= 0x40;
         if (!FS_FileTest(f, 4)) {
             OS_RestoreInterrupts(e);
-            func_0200a1b8(f);
+            RunFileQueue(f);
             return TRUE;
         }
         OS_RestoreInterrupts(e);
@@ -542,16 +542,16 @@ BOOL func_0200a290(FSFile *f, u32 cmd)
     return func_0200a24c(f);
 }
 
-void func_0200a434(FSArchive *arc)
+void FS_InitArchive(FSArchive *arc)
 {
     MI_CpuFill8(arc, 0, 0x5c);
     arc->q0.head = arc->q0.tail = NULL;
     arc->q1.head = arc->q1.tail = NULL;
 }
 
-FSArchive *func_0200a460(const char *name, int len)
+FSArchive *FS_FindArchive(const char *name, int len)
 {
-    u32 n = func_02009ef8((const u8 *) name, len);
+    u32 n = PackArchiveName((const u8 *) name, len);
     u32 e = OS_DisableInterrupts();
     FSArchive *p = data_arc_list;
     while (p != NULL && p->name != n) {
@@ -561,24 +561,24 @@ FSArchive *func_0200a460(const char *name, int len)
     return p;
 }
 
-BOOL func_0200a4a0(FSArchive *arc, const char *name, int len)
+BOOL FS_RegisterArchiveName(FSArchive *arc, const char *name, int len)
 {
     BOOL ok = FALSE;
     u32 e = OS_DisableInterrupts();
-    if (func_0200a460(name, len) == NULL) {
+    if (FS_FindArchive(name, len) == NULL) {
         if (data_arc_list == NULL) {
             data_arc_list = arc;
-            data_020bfc8c.arc = arc;
-            data_020bfc8c.pos = 0;
-            data_020bfc8c.sub = 0;
-            data_020bfc8c.idx = 0;
+            gCurrentDirPos.arc = arc;
+            gCurrentDirPos.pos = 0;
+            gCurrentDirPos.sub = 0;
+            gCurrentDirPos.idx = 0;
         } else {
             FSArchive *t = data_arc_list;
             while (t->next != NULL) t = t->next;
             t->next = arc;
             arc->prev = t;
         }
-        arc->name = func_02009ef8((const u8 *) name, len);
+        arc->name = PackArchiveName((const u8 *) name, len);
         arc->flags |= 1;
         ok = TRUE;
     }
@@ -586,52 +586,52 @@ BOOL func_0200a4a0(FSArchive *arc, const char *name, int len)
     return ok;
 }
 
-BOOL func_0200a554(FSArchive *arc, u32 base, u32 fat, u32 fat_size, u32 fnt, u32 fnt_size, FSReadFunc rd, FSReadFunc wr)
+BOOL FS_SetupArchive(FSArchive *arc, u32 base, u32 fat, u32 fat_size, u32 fnt, u32 fnt_size, FSReadFunc rd, FSReadFunc wr)
 {
     arc->base = base;
     arc->fat_size = fat_size;
     arc->fat = arc->fat_bak = fat;
     arc->fnt_size = fnt_size;
     arc->fnt = arc->fnt_bak = fnt;
-    arc->read_func = rd != NULL ? rd : func_02009f50;
-    arc->write_func = wr != NULL ? wr : func_02009f6c;
+    arc->read_func = rd != NULL ? rd : ReadFromArchiveBase;
+    arc->write_func = wr != NULL ? wr : WriteToArchiveBase;
     arc->read_cur = arc->read_func;
     arc->load_mem = 0;
     arc->flags |= 2;
     return TRUE;
 }
 
-u32 func_0200a5c4(FSArchive *arc, void *mem, u32 size)
+u32 FS_LoadArchiveTables(FSArchive *arc, void *mem, u32 size)
 {
     FSFile tmp;
     u32 need = (arc->fat_size + arc->fnt_size + 0x3f) & ~0x1f;
     u32 base;
     if (need <= size) {
         base = ((u32) mem + 0x1f) & ~0x1f;
-        func_0200a7b4(&tmp);
-        if (func_0200a9dc(&tmp, arc, arc->fat, arc->fat + arc->fat_size, -1)) {
-            if (func_0200ac30(&tmp, (void *) base, arc->fat_size) < 0) {
+        FS_InitFile(&tmp);
+        if (FS_OpenFileRange(&tmp, arc, arc->fat, arc->fat + arc->fat_size, -1)) {
+            if (FS_ReadFile(&tmp, (void *) base, arc->fat_size) < 0) {
                 MI_CpuFill8((void *) base, 0, arc->fat_size);
             }
-            func_0200aadc(&tmp);
+            FS_CloseFile(&tmp);
         }
         arc->fat = base;
         base += arc->fat_size;
-        if (func_0200a9dc(&tmp, arc, arc->fnt, arc->fnt + arc->fnt_size, -1)) {
-            if (func_0200ac30(&tmp, (void *) base, arc->fnt_size) < 0) {
+        if (FS_OpenFileRange(&tmp, arc, arc->fnt, arc->fnt + arc->fnt_size, -1)) {
+            if (FS_ReadFile(&tmp, (void *) base, arc->fnt_size) < 0) {
                 MI_CpuFill8((void *) base, 0, arc->fnt_size);
             }
-            func_0200aadc(&tmp);
+            FS_CloseFile(&tmp);
         }
         arc->fnt = base;
         arc->load_mem = (u32) mem;
-        arc->read_cur = func_02009f8c;
+        arc->read_cur = ReadFromAbsoluteAddress;
         arc->flags |= 4;
     }
     return need;
 }
 
-void func_0200a6e8(FSArchive *arc, void (*proc)(void *, int), u32 mask)
+void FS_SetArchiveProc(FSArchive *arc, void (*proc)(void *, int), u32 mask)
 {
     if (mask == 0) {
         proc = NULL;
@@ -642,16 +642,16 @@ void func_0200a6e8(FSArchive *arc, void (*proc)(void *, int), u32 mask)
     arc->proc_mask = mask;
 }
 
-void func_0200a708(FSArchive *arc, int result)
+void FS_FinishArchiveCommand(FSArchive *arc, int result)
 {
     FSFile *p, *n;
     u32 e;
     if (FS_ArcTest(arc, 0x100)) {
         FSFile *l = arc->list;
         arc->flags &= ~0x100;
-        func_0200936c(l, result);
+        FinishFileCommand(l, result);
         n = func_02009fa4(arc);
-        if (n != NULL) func_0200a1b8(n);
+        if (n != NULL) RunFileQueue(n);
     } else {
         p = arc->list;
         e = OS_DisableInterrupts();

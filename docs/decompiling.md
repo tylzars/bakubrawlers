@@ -526,7 +526,7 @@ Other findings from linking:
   the stack arguments (10, 8, 7, 6, 6 calls for 1-5 of them). Code before the run shifts it: a global store, or a
   call that returns a value (a `void` call shifts it less). The open cases (TournamentSubScene::Init,
   BattleMoneyReward::Init, and the enum-zero placeholders in MyroomGiftScene and UnkStruct_02071d24)
-  were all one cause: `func_0200acac` (called by the `ChangeDir` inline) returns BOOL but was declared void.
+  were all one cause: `FS_ChangeDir` (called by the `ChangeDir` inline) returns BOOL but was declared void.
   Declaring it BOOL matched them; CharacterModel::LoadPartPalette then needed to be void to keep LoadPartTextures matching
   (its body is a tail call and every caller ignores the result, so either type fits the binary).
 - **A stack parameter the callee reads as `*(s16 *)&param` is really `s16`.** Declaring it so makes callers narrow at
@@ -731,7 +731,7 @@ Other findings from linking:
   non-const data may not: `extern const int data_0209e424[]` (AHX bit reader) and `extern const u16
   data_0208f73c[][3]` (GX_BeginLoadTex) each turned a near-miss into a match. Read-only tables should be declared const.
 - **Volatile fields and parameters.** A field or by-value parameter that is loaded again where mwcc would reuse or
-  hoist it is volatile in the original (`OS_GetTick`'s counter, the FS file flags, `func_0200aa24`'s FSFileID).
+  hoist it is volatile in the original (`OS_GetTick`'s counter, the FS file flags, `FS_OpenFileById`'s FSFileID).
 - **A constant stored to a member and read back** stays a run-time computation (`mUnk_38 = 0x20;
   mUnk_38 = (0x6c - mUnk_38) / 2 + 0x1e;` in MapScene::ShowNumbers); from a local it folds.
 - **Loops whose entry test sits inside the body** (the back edge jumps to a `count != 0` guard) are do-while loops with

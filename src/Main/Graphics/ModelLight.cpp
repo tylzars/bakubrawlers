@@ -9,7 +9,7 @@ ModelLight::ModelLight(u32 index, u32 enabled, u16 color, const s16 *direction) 
     mDirection[1] = direction[1];
     mDirection[2] = direction[2];
     if ((mDirection[0] | mDirection[1] | mDirection[2]) != 0) {
-        func_01ff90dc(mDirection, mDirection);
+        VEC_NormalizeS16(mDirection, mDirection);
         if (mDirection[0] >= 0x1000) {
             mDirection[0] = 0xfff;
         }
@@ -36,7 +36,7 @@ void ModelLight::SetDirection(const s16 *direction) {
     mDirection[0] = direction[0];
     mDirection[1] = direction[1];
     mDirection[2] = direction[2];
-    func_01ff90dc(mDirection, mDirection);
+    VEC_NormalizeS16(mDirection, mDirection);
     if (mDirection[0] >= 0x1000) {
         mDirection[0] = 0xfff;
     }

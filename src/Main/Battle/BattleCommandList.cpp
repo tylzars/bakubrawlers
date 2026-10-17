@@ -617,7 +617,7 @@ void BattleCommandList::InitDisplayAndCamera() {
     GX_SetGraphicsMode(1, 0, 1);
     GX_SetVisiblePlane(0x11);
     G2_SetBG0Priority(2);
-    func_020037e8(0);
+    WriteBG0Offset(0);
     G2_SetBlendBrightness(1, -8);
     GX_SetVisibleWnd(1);
     G2_SetWndOutsidePlane(0x11, FALSE);
@@ -769,7 +769,7 @@ BOOL BattleCommandList::LoadGraphics() {
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
-    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
     manager.mProjection[manager.mActive] = data_02211374.mProjection;
     manager.mView[manager.mActive]       = data_02211374.mView;

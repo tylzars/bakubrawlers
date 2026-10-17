@@ -1,39 +1,39 @@
 #include <nitro/private/fs_dev.h>
 
-int func_020093c8(FSFile *f, int cmd);
-void func_0200936c(FSFile *f, int result);
-int func_02009668(FSFile *f, u32 id);
-u32 func_02009ef8(const u8 *s, int len);
-int func_02009f50(FSArchive *arc, void *dst, u32 pos, u32 len);
-int func_02009f6c(FSArchive *arc, void *src, u32 pos, u32 len);
-int func_02009f8c(FSArchive *arc, void *dst, u32 pos, u32 len);
-void func_0200a7b4(FSFile *f);
-int func_0200a9dc(FSFile *f, FSArchive *arc, u32 a, u32 b, int c);
+int RunFileCommand(FSFile *f, int cmd);
+void FinishFileCommand(FSFile *f, int result);
+int SeekDir(FSFile *f, u32 id);
+u32 PackArchiveName(const u8 *s, int len);
+int ReadFromArchiveBase(FSArchive *arc, void *dst, u32 pos, u32 len);
+int WriteToArchiveBase(FSArchive *arc, void *src, u32 pos, u32 len);
+int ReadFromAbsoluteAddress(FSArchive *arc, void *dst, u32 pos, u32 len);
+void FS_InitFile(FSFile *f);
+int FS_OpenFileRange(FSFile *f, FSArchive *arc, u32 a, u32 b, int c);
 
 
-extern FSDirPos data_020bfc8c;      // data_020bfc8c
+extern FSDirPos gCurrentDirPos;      // gCurrentDirPos
 extern FSArchive *data_arc_list;   // data_020bfc88
 static int fs_initialized;   // data_020bfc98
-FSArchive *func_0200a460(const char *name, int len);
-BOOL func_0200a290(FSFile *f, u32 cmd);
+FSArchive *FS_FindArchive(const char *name, int len);
+BOOL RequestFileCommand(FSFile *f, u32 cmd);
 BOOL func_0200a24c(FSFile *f);
 FSFile *func_02009fa4(FSArchive *arc);
-void func_0200a1b8(FSFile *f);
+void RunFileQueue(FSFile *f);
 void FS_Init(u32 a);
-int func_02009f8c(FSArchive *arc, void *dst, u32 pos, u32 len);
-BOOL func_0200ab18(FSFile *f);
-BOOL func_0200aadc(FSFile *f);
-int func_0200ac30(FSFile *f, void *buf, int len);
-BOOL func_0200a9dc(FSFile *f, FSArchive *arc, u32 start, u32 end, int id);
-void func_0200a7b4(FSFile *f);
-void func_0200a78c(u32 a)
+int ReadFromAbsoluteAddress(FSArchive *arc, void *dst, u32 pos, u32 len);
+BOOL FS_WaitFile(FSFile *f);
+BOOL FS_CloseFile(FSFile *f);
+int FS_ReadFile(FSFile *f, void *buf, int len);
+BOOL FS_OpenFileRange(FSFile *f, FSArchive *arc, u32 start, u32 end, int id);
+void FS_InitFile(FSFile *f);
+void FS_InitOnce(u32 a)
 {
     if (fs_initialized) return;
     fs_initialized = 1;
     FS_Init(a);
 }
 
-void func_0200a7b4(FSFile *f)
+void FS_InitFile(FSFile *f)
 {
     f->prev = NULL;
     f->next = NULL;
@@ -43,23 +43,23 @@ void func_0200a7b4(FSFile *f)
     f->stat = 0;
 }
 
-BOOL func_0200a7dc(FSFile *f, const u8 *path, u32 *idout, u32 *dirout)
+BOOL FS_FindPath(FSFile *f, const u8 *path, u32 *idout, u32 *dirout)
 {
     FSDirPos pos;
     int i;
     if (path[0] == '/' || path[0] == '\\') {
         pos.idx = 0;
-        pos.arc = data_020bfc8c.arc;
+        pos.arc = gCurrentDirPos.arc;
         pos.pos = 0;
         pos.sub = 0;
         path++;
     } else {
-        pos = data_020bfc8c;
+        pos = gCurrentDirPos;
         for (i = 0; i <= 3; i++) {
             u32 c = path[i];
             if (c == 0 || c == '/' || c == '\\') break;
             if (c == ':') {
-                FSArchive *a = func_0200a460((const char *) path, i);
+                FSArchive *a = FS_FindArchive((const char *) path, i);
                 if (a == NULL) return FALSE;
                 if (!FS_ArcTest(a, 2)) return FALSE;
                 pos.arc = a;
@@ -82,10 +82,10 @@ BOOL func_0200a7dc(FSFile *f, const u8 *path, u32 *idout, u32 *dirout)
         f->f40 = 0;
         f->f44 = (u32) idout;
     }
-    return func_0200a290(f, 4);
+    return RequestFileCommand(f, 4);
 }
 
-int func_0200a920(FSFile *f, void *buf, int len, BOOL async)
+int ReadFileCore(FSFile *f, void *buf, int len, BOOL async)
 {
     u32 pos = f->f2c;
     int remain = f->f28 - pos;
@@ -96,9 +96,9 @@ int func_0200a920(FSFile *f, void *buf, int len, BOOL async)
     f->f34 = org;
     f->f38 = len;
     if (!async) f->stat |= 4;
-    func_0200a290(f, 0);
+    RequestFileCommand(f, 0);
     if (!async) {
-        if (func_0200ab18(f)) { len = f->f2c - pos; } else { len = -1; }
+        if (FS_WaitFile(f)) { len = f->f2c - pos; } else { len = -1; }
     }
     return len;
 }
@@ -106,50 +106,50 @@ int func_0200a920(FSFile *f, void *buf, int len, BOOL async)
 BOOL FS_ConvertPathToFileID(FSFileID *id, const char *path)
 {
     FSFile f;
-    func_0200a7b4(&f);
-    return func_0200a7dc(&f, (const u8 *) path, (u32 *) id, NULL) ? TRUE : FALSE;
+    FS_InitFile(&f);
+    return FS_FindPath(&f, (const u8 *) path, (u32 *) id, NULL) ? TRUE : FALSE;
 }
 
-BOOL func_0200a9dc(FSFile *f, FSArchive *arc, u32 start, u32 end, int id)
+BOOL FS_OpenFileRange(FSFile *f, FSArchive *arc, u32 start, u32 end, int id)
 {
     f->arc = arc;
     f->f38 = id;
     f->f30 = start;
     f->f34 = end;
-    if (!func_0200a290(f, 7)) return FALSE;
+    if (!RequestFileCommand(f, 7)) return FALSE;
     f->stat = (f->stat | 0x10) & ~0x20;
     return TRUE;
 }
 
-BOOL func_0200aa24(FSFile *f, volatile FSFileID id)
+BOOL FS_OpenFileById(FSFile *f, volatile FSFileID id)
 {
     FSArchive *arc = id.arc;
     if (arc == NULL) return FALSE;
     f->arc = arc;
     f->f30 = (u32) arc;
     f->f34 = id.file_id;
-    if (!func_0200a290(f, 6)) return FALSE;
+    if (!RequestFileCommand(f, 6)) return FALSE;
     f->stat = (f->stat | 0x10) & ~0x20;
     return TRUE;
 }
 
-BOOL func_0200aa94(FSFile *f, const char *path)
+BOOL FS_OpenFile(FSFile *f, const char *path)
 {
     FSFileID id;
-    if (FS_ConvertPathToFileID(&id, path) && func_0200aa24(f, id)) return TRUE;
+    if (FS_ConvertPathToFileID(&id, path) && FS_OpenFileById(f, id)) return TRUE;
     return FALSE;
 }
 
-BOOL func_0200aadc(FSFile *f)
+BOOL FS_CloseFile(FSFile *f)
 {
-    if (!func_0200a290(f, 8)) return FALSE;
+    if (!RequestFileCommand(f, 8)) return FALSE;
     f->arc = NULL;
     f->command = 0xe;
     f->stat &= ~0x30;
     return TRUE;
 }
 
-BOOL func_0200ab18(FSFile *f)
+BOOL FS_WaitFile(FSFile *f)
 {
     BOOL sync = FALSE;
     u32 e = OS_DisableInterrupts();
@@ -171,7 +171,7 @@ BOOL func_0200ab18(FSFile *f)
     return f->error == 0;
 }
 
-void func_0200abd8(FSFile *f)
+void FS_CancelFile(FSFile *f)
 {
     u32 e = OS_DisableInterrupts();
     if (FS_FileTest(f, 1)) {
@@ -181,23 +181,23 @@ void func_0200abd8(FSFile *f)
     OS_RestoreInterrupts(e);
 }
 
-int func_0200ac30(FSFile *f, void *buf, int len);
-BOOL func_0200aadc(FSFile *f);
-BOOL func_0200ab18(FSFile *f);
-void func_0200a7b4(FSFile *f);
-void func_0200a7b4(FSFile *f);
+int FS_ReadFile(FSFile *f, void *buf, int len);
+BOOL FS_CloseFile(FSFile *f);
+BOOL FS_WaitFile(FSFile *f);
+void FS_InitFile(FSFile *f);
+void FS_InitFile(FSFile *f);
 
-int func_0200ac20(FSFile *f, void *buf, int len)
+int FS_ReadFileAsync(FSFile *f, void *buf, int len)
 {
-    return func_0200a920(f, buf, len, 1);
+    return ReadFileCore(f, buf, len, 1);
 }
 
-int func_0200ac30(FSFile *f, void *buf, int len)
+int FS_ReadFile(FSFile *f, void *buf, int len)
 {
-    return func_0200a920(f, buf, len, 0);
+    return ReadFileCore(f, buf, len, 0);
 }
 
-BOOL func_0200ac40(FSFile *f, int offset, int origin)
+BOOL FS_SeekFile(FSFile *f, int offset, int origin)
 {
     switch (origin) {
     case 0: offset += f->f24; break;
@@ -211,12 +211,12 @@ BOOL func_0200ac40(FSFile *f, int offset, int origin)
     return TRUE;
 }
 
-BOOL func_0200acac(const char *path)
+BOOL FS_ChangeDir(const char *path)
 {
     FSFile tmp;
     FSDirPos pos;
-    func_0200a7b4(&tmp);
-    if (!func_0200a7dc(&tmp, (const u8 *) path, NULL, (u32 *) &pos)) return FALSE;
-    data_020bfc8c = pos;
+    FS_InitFile(&tmp);
+    if (!FS_FindPath(&tmp, (const u8 *) path, NULL, (u32 *) &pos)) return FALSE;
+    gCurrentDirPos = pos;
     return TRUE;
 }

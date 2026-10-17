@@ -46,16 +46,16 @@ extern u32 gAsyncLoadHeader;
 extern u8 gAsyncUncompContext[];
 extern FSFileLike gFsFile;
 
-extern "C" int func_0200ac40(void *file, s32 offset, u32 origin);
-extern "C" int func_0200ac30(void *file, void *dst, u32 len);
-extern "C" int func_0200ac20(void *file, void *dst, u32 len);
-extern "C" int func_0200aadc(void *file);
-extern "C" void func_0200ab18(void *file);
-extern "C" void func_0200abd8(void *file);
-extern "C" int func_0200aa94(void *file, const char *path);
-extern "C" void func_0200a7b4(void *file);
+extern "C" int FS_SeekFile(void *file, s32 offset, u32 origin);
+extern "C" int FS_ReadFile(void *file, void *dst, u32 len);
+extern "C" int FS_ReadFileAsync(void *file, void *dst, u32 len);
+extern "C" int FS_CloseFile(void *file);
+extern "C" void FS_WaitFile(void *file);
+extern "C" void FS_CancelFile(void *file);
+extern "C" int FS_OpenFile(void *file, const char *path);
+extern "C" void FS_InitFile(void *file);
 extern "C" void MI_InitUncompContextLZ(void *ctx, void *dst, const void *header);
-extern "C" int func_02007d94(void *ctx, void *src, u32 len);
+extern "C" int MI_UncompLZChunk(void *ctx, void *src, u32 len);
 extern "C" void DC_FlushRange(void *buf, u32 size);
 
 static inline void NextChunk() {
@@ -68,14 +68,14 @@ static inline void NextChunk() {
 
 static inline void ReadChunk() {
     gFileLoad.mRemaining -= gFileLoad.mChunk;
-    func_0200ac20(&gFsFile, gFileLoad.mTemp, gFileLoad.mChunk);
+    FS_ReadFileAsync(&gFsFile, gFileLoad.mTemp, gFileLoad.mChunk);
 }
 
 BOOL OpenFileWithLanguageSuffix(const char *path);
 
 void InitFileSystem() {
     sprintf(gCurrentDir, "/");
-    func_0200a7b4(&gFsFile);
+    FS_InitFile(&gFsFile);
     MI_CpuFill8(&gAsyncLoadHeader, 0, 0x38);
 }
 
@@ -100,8 +100,8 @@ void *LoadFile(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32
         if (buffer == NULL) {
             p = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, size);
         }
-        func_0200ac40(&gFsFile, offset, 0);
-        if (func_0200ac30(&gFsFile, p, size) < 0) {
+        FS_SeekFile(&gFsFile, offset, 0);
+        if (FS_ReadFile(&gFsFile, p, size) < 0) {
             if (buffer == NULL) {
                 OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, p);
                 p = NULL;
@@ -110,15 +110,15 @@ void *LoadFile(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32
                 *outSize = 0;
             }
         }
-        func_0200aadc(&gFsFile);
+        FS_CloseFile(&gFsFile);
         buffer = p;
     } else {
         OpenFileWithLanguageSuffix(path);
         if (size == 0) {
             size = gFsFile.mEnd - gFsFile.mStart - offset;
         }
-        func_0200ac40(&gFsFile, offset, 0);
-        func_0200ac30(&gFsFile, &gFileLoad, 4);
+        FS_SeekFile(&gFsFile, offset, 0);
+        FS_ReadFile(&gFsFile, &gFileLoad, 4);
         u32 unpacked = data_020d53e4_h >> 8;
         if (buffer == NULL) {
             buffer = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, unpacked);
@@ -128,10 +128,10 @@ void *LoadFile(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32
         u32 chunk;
         do {
             chunk = size > 0x2000 ? 0x2000 : size;
-            func_0200ac30(&gFsFile, p, chunk);
+            FS_ReadFile(&gFsFile, p, chunk);
             size -= chunk;
-        } while (func_02007d94(gLoadFileUncompContext, p, chunk) != 0);
-        func_0200aadc(&gFsFile);
+        } while (MI_UncompLZChunk(gLoadFileUncompContext, p, chunk) != 0);
+        FS_CloseFile(&gFsFile);
         OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, p);
         size = unpacked;
         if (outSize) {
@@ -180,15 +180,15 @@ void *LoadFileAsync(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
         } else {
             gFileLoad.mOwnsBuffer = 0;
         }
-        func_0200ac40(&gFsFile, offset, 0);
-        func_0200ac20(&gFsFile, buffer, size);
+        FS_SeekFile(&gFsFile, offset, 0);
+        FS_ReadFileAsync(&gFsFile, buffer, size);
     } else {
         OpenFileWithLanguageSuffix(path);
         if (size == 0) {
             size = gFsFile.mEnd - gFsFile.mStart - offset;
         }
-        func_0200ac40(&gFsFile, offset, 0);
-        func_0200ac20(&gFsFile, &gAsyncLoadHeader, 4);
+        FS_SeekFile(&gFsFile, offset, 0);
+        FS_ReadFileAsync(&gFsFile, &gAsyncLoadHeader, 4);
         gFileLoad.mOwnsBuffer = 0;
     }
     gFileLoad.mMode      = compressed;
@@ -216,7 +216,7 @@ void UpdateAsyncLoad() {
         return;
     }
     if (gFileLoad.mMode == 0) {
-        func_0200aadc(&gFsFile);
+        FS_CloseFile(&gFsFile);
         gFileLoad.mActive = 0;
         DC_FlushRange(gFileLoad.mBuffer, gFileLoad.mSize);
         return;
@@ -243,12 +243,12 @@ void UpdateAsyncLoad() {
         gFileLoad.mMode = 2;
         return;
     }
-    if (func_02007d94(gAsyncUncompContext, gFileLoad.mTemp, gFileLoad.mChunk) != 0) {
+    if (MI_UncompLZChunk(gAsyncUncompContext, gFileLoad.mTemp, gFileLoad.mChunk) != 0) {
         NextChunk();
         ReadChunk();
         return;
     }
-    func_0200aadc(&gFsFile);
+    FS_CloseFile(&gFsFile);
     gFileLoad.mActive = 0;
     OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, gFileLoad.mTemp);
     DC_FlushRange(gFileLoad.mBuffer, gFileLoad.mSize);
@@ -258,9 +258,9 @@ void StopAsyncLoad() {
     if (!gFileLoad.mActive) {
         return;
     }
-    func_0200abd8(&gFsFile);
-    func_0200ab18(&gFsFile);
-    func_0200aadc(&gFsFile);
+    FS_CancelFile(&gFsFile);
+    FS_WaitFile(&gFsFile);
+    FS_CloseFile(&gFsFile);
     if (gFileLoad.mOwnsBuffer) {
         OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, gFileLoad.mBuffer);
     }
@@ -278,10 +278,10 @@ BOOL OpenFileWithLanguageSuffix(const char *path) {
     const char *suffix = GameSystem::Get().GetLanguageSuffix();
     if (suffix) {
         sprintf(buf, "%s_%s", path, suffix);
-        ok = func_0200aa94(&gFsFile, buf);
+        ok = FS_OpenFile(&gFsFile, buf);
     }
     if (!ok) {
-        ok = func_0200aa94(&gFsFile, path);
+        ok = FS_OpenFile(&gFsFile, path);
     }
     return ok;
 }

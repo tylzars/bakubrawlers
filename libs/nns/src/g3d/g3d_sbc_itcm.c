@@ -19,14 +19,14 @@ extern void (*data_020a4e90[])(Rs *, u32, u16 *, u32);   // node-description han
 
 extern s32 VEC_Mag(const s32 *v);        // VEC_Mag
 extern void VEC_Normalize(const s32 *src, s32 *dst);    // VEC_Normalize
-extern void func_01ff8574(const void *src, void *dst);  // 4x3 to 4x4
+extern void MTX_Copy43To44(const void *src, void *dst);  // 4x3 to 4x4
 extern void func_02000de8(const s32 *a, const s32 *b, s32 *ab);   // MTX_Concat44
 extern int G3X_GetClipMtx(s32 *m);   // G3X_GetClipMtx
 extern void *func_020326a0(void);
 extern void *func_020326d8(void);
 extern void *func_020323b8(void);
 extern void func_01ff92a4(void);
-extern void func_01ff9528(const void *src, void *dst, u32 size);
+extern void MI_CpuSend32(const void *src, void *dst, u32 size);
 #define GXFIFO (*(vu32 *) 0x04000400)
 
 // Two geometry-command blocks kept in ITCM in front of the renderer: MTX_POP(1), MTX_MODE(2), MTX_LOAD_4x3, MTX_SCALE.
@@ -195,7 +195,7 @@ void func_01ffb26c(Rs *rs, u32 op) {
     if (!(rs->flag & 0x200) && (rs->flag & 1)) {
         arg = rs->cmd[1];
         if (!(rs->flag & 0x100)) {
-            func_01ff93d8(0x14, &arg, 1);
+            SendFifoCommand(0x14, &arg, 1);
         }
     }
     rs->cmd += 2;
@@ -310,7 +310,7 @@ done:
         cmd[4] = 0x2b2a;
         cmd[5] = cur->texParam;
         cmd[6] = cur->plttBase;
-        func_01ff93d8(cmd[0], &cmd[1], 6);
+        SendFifoCommand(cmd[0], &cmd[1], 6);
         if (cur->flag & 0x18) {
             ((void (*)(MatSt *)) rs->cbF0)(cur);
         }
@@ -343,7 +343,7 @@ void func_01ffb684(Rs *rs, u32 op) {
 
 void func_01ffb734(Rs *rs, u32 op, u32 *data) {
     if (!(rs->flag & 0x100)) {
-        func_01ff9328((u8 *) data + data[2], data[3]);
+        SendFifoCommandBlock((u8 *) data + data[2], data[3]);
     }
 }
 
@@ -396,7 +396,7 @@ void func_01ffb7f8(Rs *rs, u32 op) {
             len++;
             if (!(rs->flag & 0x100)) {
                 arg = rs->cmd[4];
-                func_01ff93d8(0x14, &arg, 1);
+                SendFifoCommand(0x14, &arg, 1);
             }
         }
         rs->cmd += len;
@@ -410,7 +410,7 @@ void func_01ffb7f8(Rs *rs, u32 op) {
         }
         len++;
         if (!(rs->flag & 0x100)) {
-            func_01ff93d8(0x14, &arg2, 1);
+            SendFifoCommand(0x14, &arg2, 1);
         }
     }
     s = (ShpSt *) rs->shpStore;
@@ -446,7 +446,7 @@ void func_01ffb7f8(Rs *rs, u32 op) {
             u32 k = (n->flag & 0xf0) >> 4;
             s32 a = ((s16 *) p)[1];
             s32 b = ((s16 *) p)[0];
-            func_01ff97f4(s->mtx);
+            MI_Zero36B(s->mtx);
             s->mtx[k] = (n->flag & 0x100) ? -0x1000 : 0x1000;
             s->mtx[data_0208b500[k * 4]] = b;
             s->mtx[data_0208b501[k * 4]] = a;
@@ -488,7 +488,7 @@ emit:
         len++;
         if (skip == 0 && !(rs->flag & 0x100)) {
             arg3 = rs->cmd[4];
-            func_01ff93d8(0x13, &arg3, 1);
+            SendFifoCommand(0x13, &arg3, 1);
         }
     }
     rs->cmd += len;
@@ -522,7 +522,7 @@ void func_01ffbbac(Rs *rs, u32 op) {
             } else {
                 arg2 = rs->cmd[3];
             }
-            func_01ff93d8(0x14, &arg2, 1);
+            SendFifoCommand(0x14, &arg2, 1);
         }
     }
     if (!(rs->flag & 0x100)) {
@@ -534,10 +534,10 @@ void func_01ffbbac(Rs *rs, u32 op) {
         }
         g = data_02211374[0xfc / 4];
         if (g & 1) {
-            func_01ff8574(func_020326a0(), t1);
+            MTX_Copy43To44(func_020326a0(), t1);
             func_02000de8(clip, t1, clip);
         } else if (g & 2) {
-            func_01ff8574(data_022113c0, t2);
+            MTX_Copy43To44(data_022113c0, t2);
             func_02000de8(clip, t2, clip);
         }
         v0[0] = clip[12];
@@ -549,25 +549,25 @@ void func_01ffbbac(Rs *rs, u32 op) {
         g = data_02211374[0xfc / 4];
         if (g & 1) {
             GXFIFO = 0x171012;
-            func_01ff9528(&data_01ffae10[0].pop, (void *) 0x04000400, 8);
-            func_01ff9528(func_020326d8(), (void *) 0x04000400, 0x30);
+            MI_CpuSend32(&data_01ffae10[0].pop, (void *) 0x04000400, 8);
+            MI_CpuSend32(func_020326d8(), (void *) 0x04000400, 0x30);
             GXFIFO = 0x1b19;
-            func_01ff9528(data_01ffae10[0].mtx, (void *) 0x04000400, 0x3c);
+            MI_CpuSend32(data_01ffae10[0].mtx, (void *) 0x04000400, 0x3c);
         } else if (g & 2) {
             GXFIFO = 0x171012;
-            func_01ff9528(&data_01ffae10[0].pop, (void *) 0x04000400, 8);
-            func_01ff9528(func_020323b8(), (void *) 0x04000400, 0x30);
+            MI_CpuSend32(&data_01ffae10[0].pop, (void *) 0x04000400, 8);
+            MI_CpuSend32(func_020323b8(), (void *) 0x04000400, 0x30);
             GXFIFO = 0x1b19;
-            func_01ff9528(data_01ffae10[0].mtx, (void *) 0x04000400, 0x3c);
+            MI_CpuSend32(data_01ffae10[0].mtx, (void *) 0x04000400, 0x3c);
         } else {
-            func_01ff9528(&data_01ffae10[0], (void *) 0x04000400, 0x48);
+            MI_CpuSend32(&data_01ffae10[0], (void *) 0x04000400, 0x48);
         }
     }
     if (op == 0x20 || op == 0x60) {
         len++;
         if (!(rs->flag & 0x100)) {
             arg3 = rs->cmd[2];
-            func_01ff93d8(0x13, &arg3, 1);
+            SendFifoCommand(0x13, &arg3, 1);
         }
     }
     rs->cmd += len;
@@ -602,7 +602,7 @@ void func_01ffbe2c(Rs *rs, u32 op) {
             } else {
                 arg2 = rs->cmd[3];
             }
-            func_01ff93d8(0x14, &arg2, 1);
+            SendFifoCommand(0x14, &arg2, 1);
         }
     }
     if (!(rs->flag & 0x100)) {
@@ -614,10 +614,10 @@ void func_01ffbe2c(Rs *rs, u32 op) {
         }
         g = data_02211374[0xfc / 4];
         if (g & 1) {
-            func_01ff8574(func_020326a0(), t1);
+            MTX_Copy43To44(func_020326a0(), t1);
             func_02000de8(clip, t1, clip);
         } else if (g & 2) {
-            func_01ff8574(data_022113c0, t2);
+            MTX_Copy43To44(data_022113c0, t2);
             func_02000de8(clip, t2, clip);
         }
         v0[0] = clip[12];
@@ -638,25 +638,25 @@ void func_01ffbe2c(Rs *rs, u32 op) {
         g = data_02211374[0xfc / 4];
         if (g & 1) {
             GXFIFO = 0x171012;
-            func_01ff9528(&data_01ffae10[1].pop, (void *) 0x04000400, 8);
-            func_01ff9528(func_020326d8(), (void *) 0x04000400, 0x30);
+            MI_CpuSend32(&data_01ffae10[1].pop, (void *) 0x04000400, 8);
+            MI_CpuSend32(func_020326d8(), (void *) 0x04000400, 0x30);
             GXFIFO = 0x1b19;
-            func_01ff9528(data_01ffae10[1].mtx, (void *) 0x04000400, 0x3c);
+            MI_CpuSend32(data_01ffae10[1].mtx, (void *) 0x04000400, 0x3c);
         } else if (g & 2) {
             GXFIFO = 0x171012;
-            func_01ff9528(&data_01ffae10[1].pop, (void *) 0x04000400, 8);
-            func_01ff9528(func_020323b8(), (void *) 0x04000400, 0x30);
+            MI_CpuSend32(&data_01ffae10[1].pop, (void *) 0x04000400, 8);
+            MI_CpuSend32(func_020323b8(), (void *) 0x04000400, 0x30);
             GXFIFO = 0x1b19;
-            func_01ff9528(data_01ffae10[1].mtx, (void *) 0x04000400, 0x3c);
+            MI_CpuSend32(data_01ffae10[1].mtx, (void *) 0x04000400, 0x3c);
         } else {
-            func_01ff9528(&data_01ffae10[1], (void *) 0x04000400, 0x48);
+            MI_CpuSend32(&data_01ffae10[1], (void *) 0x04000400, 0x48);
         }
     }
     if (op == 0x20 || op == 0x60) {
         len++;
         if (!(rs->flag & 0x100)) {
             arg3 = rs->cmd[2];
-            func_01ff93d8(0x13, &arg3, 1);
+            SendFifoCommand(0x13, &arg3, 1);
         }
     }
     rs->cmd += len;
@@ -742,7 +742,7 @@ void func_01ffc864(Rs *rs, u32 op) {
         u8 *c = rs->cmd;
         u32 ofs = c[1] | (c[2] << 8) | (c[3] << 16) | (c[4] << 24);
         u32 size = c[5] | (c[6] << 8) | (c[7] << 16) | (c[8] << 24);
-        func_01ff9328(c + ofs, size);
+        SendFifoCommandBlock(c + ofs, size);
     }
     rs->cmd += 9;
 }
@@ -755,7 +755,7 @@ void func_01ffc8cc(Rs *rs, u32 op) {
         } else {
             v[0] = v[1] = v[2] = rs->mdlScaleInv;
         }
-        func_01ff93d8(0x1b, v, 3);
+        SendFifoCommand(0x1b, v, 3);
     }
     rs->cmd += 1;
 }

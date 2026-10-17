@@ -165,7 +165,7 @@ void GimmickPyrusEruption::DrawModelB() {
         return;
     }
     MtxFx43 mtx = gIdentityMtx43;
-    func_01ffcf64(&mtx, &mPosition);
+    MTX_SetTranslation43(&mtx, &mPosition);
     data_020d433c.mUnk_14 &= 8;
     if (!data_020d433c.mUnk_14) {
         mModelB->AdvanceAnim();

@@ -3,14 +3,14 @@
 static BOOL sndInitialized;     // 0x020be088
 static OSMutex sndMutex;        // 0x020be08c
 
-void func_020082e8(void) {
+void SND_Init(void) {
     if (sndInitialized != 0) {
         return;
     }
     sndInitialized = TRUE;
     OS_InitMutex(&sndMutex);
     SND_CommandInit();
-    func_02008a58();
+    ClearAlarmTable();
 }
 
 void SND_LockMutex(void) {

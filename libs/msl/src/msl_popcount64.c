@@ -1,4 +1,4 @@
-int func_0201d5e8(unsigned long long x)
+int CountSetBits64(unsigned long long x)
 {
     x = x - ((x >> 1) & 0x5555555555555555ULL);
     x = (x & 0x3333333333333333ULL) + ((x >> 2) & 0x3333333333333333ULL);

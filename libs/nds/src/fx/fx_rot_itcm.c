@@ -4,15 +4,15 @@
 extern const s16 FX_SinCosTable_[];   // sin/cos pairs indexed by angle >> 4
 void func_01ff8260(MtxFx33 *m, fx32 sin, fx32 cos);
 void func_01ff827c(MtxFx33 *m, fx32 sin, fx32 cos);
-void func_01ff8298(MtxFx33 *m, fx32 sin, fx32 cos);
-void func_01ff85dc(MtxFx43 *m, fx32 sin, fx32 cos);
-void func_01ff85fc(MtxFx43 *m, fx32 sin, fx32 cos);
-void func_01ff8618(MtxFx43 *m, fx32 sin, fx32 cos);
+void MTX_RotZ33_(MtxFx33 *m, fx32 sin, fx32 cos);
+void MTX_RotX43_(MtxFx43 *m, fx32 sin, fx32 cos);
+void MTX_RotY43_(MtxFx43 *m, fx32 sin, fx32 cos);
+void MTX_RotZ43_(MtxFx43 *m, fx32 sin, fx32 cos);
 void func_01ff82b0(const MtxFx33 *a, const MtxFx33 *b, MtxFx33 *ab);
 void func_01ff89c0(const MtxFx43 *a, const MtxFx43 *b, MtxFx43 *ab);
 void MTX_Concat22(const fx32 *a, const fx32 *b, fx32 *ab);
 
-void func_01ffcef4(MtxFx22 *out, fx32 sx, fx32 sy, u16 angle) {
+void MTX_ScaleRot22(MtxFx22 *out, fx32 sx, fx32 sy, u16 angle) {
     fx32 scale[4];
     fx32 rot[4];
     int idx = angle >> 4;
@@ -24,7 +24,7 @@ void func_01ffcef4(MtxFx22 *out, fx32 sx, fx32 sy, u16 angle) {
     MTX_Concat22(scale, rot, (fx32 *) out);
 }
 
-void func_01ffcf64(MtxFx43 *m, VecFx32 *v) {
+void MTX_SetTranslation43(MtxFx43 *m, VecFx32 *v) {
     m->_[9] = v->x;
     m->_[10] = v->y;
     m->_[11] = v->z;
@@ -44,9 +44,9 @@ void NAME(MtxFx43 *m, int angle) { \
     FN(&tmp, FX_SinCosTable_[idx * 2], FX_SinCosTable_[idx * 2 + 1]); \
     func_01ff89c0(&tmp, m, m); \
 }
-ROT33(func_01ffcf80, func_01ff8260)
-ROT33(func_01ffcfd8, func_01ff827c)
-ROT33(func_01ffd030, func_01ff8298)
-ROT43(func_01ffd088, func_01ff85dc)
-ROT43(func_01ffd0e0, func_01ff85fc)
-ROT43(func_01ffd138, func_01ff8618)
+ROT33(MTX_ApplyRotX33, func_01ff8260)
+ROT33(MTX_ApplyRotY33, func_01ff827c)
+ROT33(MTX_ApplyRotZ33, MTX_RotZ33_)
+ROT43(MTX_ApplyRotX43, MTX_RotX43_)
+ROT43(MTX_ApplyRotY43, MTX_RotY43_)
+ROT43(MTX_ApplyRotZ43, MTX_RotZ43_)

@@ -13,7 +13,7 @@ extern "C" void func_0200e668(u32 id);
 extern "C" BOOL func_0200ec04(u32 src, void *dst, u32 len, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f);
 extern "C" BOOL func_0200ed00(u32 cmd);
 extern "C" BOOL func_0200ee44();
-extern "C" int func_0200e60c();
+extern "C" int GetCardResult();
 extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 void SaveManager::Init() {
@@ -157,7 +157,7 @@ void SaveWriter::Update() {
             if (!func_0200ee44()) {
                 return;
             }
-            task->mResult = func_0200e60c();
+            task->mResult = GetCardResult();
             if (task->mResult == 0) {
                 if (++task->mTry >= 2) {
                     task->mState++;
@@ -218,7 +218,7 @@ void SaveReader::Update() {
             if (!func_0200ee44()) {
                 return;
             }
-            task->mResult = func_0200e60c();
+            task->mResult = GetCardResult();
             func_0200e668(task->mLock);
             func_02004fbc(task->mLock);
             UnkStruct_SaveBlock *block;

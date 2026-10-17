@@ -193,7 +193,7 @@ int GimmickIkazuchiStart::func_ov007_022789e0(int count) {
         func_020526bc();
         if (count && mModelB) {
             MtxFx43 mtx = gIdentityMtx43;
-            func_01ffcf64(&mtx, &mPosition);
+            MTX_SetTranslation43(&mtx, &mPosition);
             data_020d433c.mUnk_14 &= 8;
             if (!data_020d433c.mUnk_14) {
                 mModelB->AdvanceAnim();

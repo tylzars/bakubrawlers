@@ -54,15 +54,15 @@ BOOL ModelTransform::func_020526bc() {
     AdvanceAnim();
     MtxFx43 mtx = gIdentityMtx43;
     if (mRotY != 0) {
-        func_01ffd0e0(&mtx, mRotY);
+        MTX_ApplyRotY43(&mtx, mRotY);
     }
     if (mRotX != 0) {
-        func_01ffd088(&mtx, mRotX);
+        MTX_ApplyRotX43(&mtx, mRotX);
     }
     if (mRotZ != 0) {
-        func_01ffd138(&mtx, mRotZ);
+        MTX_ApplyRotZ43(&mtx, mRotZ);
     }
-    func_01ffcf64(&mtx, &mPosition);
+    MTX_SetTranslation43(&mtx, &mPosition);
     return mModel->Draw(&mtx, &mScale);
 }
 

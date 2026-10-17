@@ -164,7 +164,7 @@ void GimmickAbilityField::func_ov007_022303f4() {
     VecFx32 pos = mPosition;
     CameraManager::Get();
     MtxFx43 mtx = data_020c1cf4;
-    func_01ffcf64(&mtx, &mPosition);
+    MTX_SetTranslation43(&mtx, &mPosition);
     v = cam->mPosition;
     VEC_Subtract(&v, &pos, &v);
     VEC_Normalize(&v, &v);
@@ -172,7 +172,7 @@ void GimmickAbilityField::func_ov007_022303f4() {
     v.y = FX_Mul(v.y, 0xa000);
     v.z = FX_Mul(v.z, 0xa000);
     VEC_Add(&v, &mPosition, &v);
-    func_01ffcf64(&mtx, &v);
+    MTX_SetTranslation43(&mtx, &v);
     data_02211374.mUnk_9c = 0x1f00c0 | (data_ov007_02279554[mUnk_4d] << 24);
     mModelB->Draw(&mtx, &mScale);
 }
@@ -204,7 +204,7 @@ void GimmickAbilityField::Update() {
             mtx._[11]      = 0;
             mtx._[10]      = 0;
             mtx._[9]       = 0;
-            func_01ffcf64(&mtx, &camPos);
+            MTX_SetTranslation43(&mtx, &camPos);
             SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         }
         mCountingTurns = 1;

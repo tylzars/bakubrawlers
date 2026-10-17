@@ -4,17 +4,17 @@ typedef s32 OSArenaId;
 
 extern void PXI_Init(void);   // PXI_Init
 extern void OS_InitLock(void);     // 0x02004c50
-extern void func_020049a8(void);
-extern void func_02004c1c(void);
+extern void ClearIrqWaitQueue(void);
+extern void WriteIrqStackMarkers(void);
 extern void OS_InitException(void);  // 0x02006884
-extern void func_02007f18(void);
+extern void MI_Init(void);
 extern void OS_InitVAlarm(void);   // 0x020070b0
-extern void func_02007464(void);
+extern void ClearOwnerTable(void);
 extern void OS_InitThread(void);   // 0x020052bc
 extern void OS_InitReset(void);   // OS_InitReset
 extern void func_02011dc8(void);
-extern void func_0200f4c8(void);
-extern void func_0200cd80(void);
+extern void InitCard(void);
+extern void PmInit(void);
 extern void OSi_WaitVCount0(void);
 extern void OS_InitArena(void);
 extern void OS_InitArenaEx(void);
@@ -53,17 +53,17 @@ void OS_Init(void) {
     PXI_Init();
     OS_InitLock();
     OS_InitArenaEx();
-    func_020049a8();
-    func_02004c1c();
+    ClearIrqWaitQueue();
+    WriteIrqStackMarkers();
     OS_InitException();
-    func_02007f18();
+    MI_Init();
     OS_InitVAlarm();
-    func_02007464();
+    ClearOwnerTable();
     OS_InitThread();
     OS_InitReset();
     func_02011dc8();
-    func_0200f4c8();
-    func_0200cd80();
+    InitCard();
+    PmInit();
     OSi_WaitVCount0();
 }
 

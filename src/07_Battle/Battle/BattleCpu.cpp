@@ -966,11 +966,11 @@ void BattleCpu::GetOffset(s32 *x, s32 *y) {
     *y = 0;
 }
 
-extern "C" void func_01ffcf80(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotX33(MtxFx33 *m, u16 angle);
 
-extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
 
-extern "C" void func_01ffd030(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotZ33(MtxFx33 *m, u16 angle);
 
 BOOL SimulateStep(VecFx32 *pos, VecFx32 *vel);
 
@@ -1080,13 +1080,13 @@ void RotateDirScaled(u16 *rot, u32 s, VecFx32 *dir, VecFx32 *out) {
     VEC_Normalize(dir, out);
     MtxFx33 m = data_0220e848;
     if (rot[1]) {
-        func_01ffcfd8(&m, rot[1]);
+        MTX_ApplyRotY33(&m, rot[1]);
     }
     if (rot[0]) {
-        func_01ffcf80(&m, rot[0]);
+        MTX_ApplyRotX33(&m, rot[0]);
     }
     if (rot[2]) {
-        func_01ffd030(&m, rot[2]);
+        MTX_ApplyRotZ33(&m, rot[2]);
     }
     func_01ff84d0(out, &m, out);
     out->x = FX_Mul(out->x, FX32_CONST((float) s / 150.0f));
@@ -1195,7 +1195,7 @@ void func_ov007_022337ec(VecFx32 *A, VecFx32 *B, VecFx32 *C, VecFx32 *D, VecFx32
 
 void RotateVecY(VecFx32 *in, u16 angle, VecFx32 *out) {
     MtxFx33 m = data_0220e848;
-    func_01ffcfd8(&m, angle);
+    MTX_ApplyRotY33(&m, angle);
     func_01ff84d0(in, &m, out);
 }
 

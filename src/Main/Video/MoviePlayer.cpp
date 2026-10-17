@@ -59,11 +59,11 @@ extern "C" void GX_SetBankForLCDC(u32 a);
 extern "C" void GX_SetBankForSubBG(u32 a);
 extern "C" void GX_SetBankForSubOBJ(u32 a);
 extern "C" void GX_SetBankForSubBGExtPltt(u32 a);
-extern "C" void func_02002dd8();
+extern "C" void GX_ResetBankForLCDC();
 extern "C" void GXS_LoadOAM(const void *data, u32 offset, u32 size);
-extern "C" void func_0200a7b4(void *decoder);
-extern "C" void func_0200aa94(void *decoder, const char *path);
-extern "C" void func_0200aadc(void *decoder);
+extern "C" void FS_InitFile(void *decoder);
+extern "C" void FS_OpenFile(void *decoder, const char *path);
+extern "C" void FS_CloseFile(void *decoder);
 extern "C" int OS_GetArenaLo(int a);
 extern "C" int OS_GetArenaHi(int a);
 void QueueFrameCallback(void (*callback)(void *), void *arg);
@@ -191,7 +191,7 @@ void MoviePlayer::Open(void *a, void *b, u8 c, u32 d) {
     MIi_CpuClearFast(0, (void *) 0x5000400, 0x200);
     GX_SetBankForLCDC(0x1ff);
     MIi_CpuClearFast(0, (void *) 0x6800000, 0xa4000);
-    func_02002dd8();
+    GX_ResetBankForLCDC();
     GX_SetBankForLCDC(3);
     GX_SetGraphicsMode(2, 0, 0);
     if (mUseVideo2) {
@@ -226,15 +226,15 @@ void MoviePlayer::Open(void *a, void *b, u8 c, u32 d) {
     }
     func_0203bddc(OS_GetArenaLo(3), sizeA);
     func_0203bdfc(OS_GetArenaLo(4), sizeB);
-    func_0200a7b4(mDecoder);
-    func_0200aa94(mDecoder, (const char *) a);
+    FS_InitFile(mDecoder);
+    FS_OpenFile(mDecoder, (const char *) a);
     mUnk_d4 = 6;
     mVideo  = (Player *) MobiclipCreate((Reader *) mDecoder, mUnk_d4);
     mFrameCount = MobiclipGetFrameCount(mVideo);
     mUnk_fc = func_0203a6dc(mVideo);
     if (mUseVideo2) {
-        func_0200a7b4(mDecoder2);
-        func_0200aa94(mDecoder2, (const char *) b);
+        FS_InitFile(mDecoder2);
+        FS_OpenFile(mDecoder2, (const char *) b);
         mVideo2 = (Player *) MobiclipCreate((Reader *) mDecoder2, mUnk_d4);
     }
     mUseBuffer2 = c;
@@ -278,12 +278,12 @@ void MoviePlayer::Close() {
     }
     OS_Free(mBuffer);
     MobiclipDelete(mVideo);
-    func_0200aadc(mDecoder);
+    FS_CloseFile(mDecoder);
     if (!mUseVideo2) {
         return;
     }
     MobiclipDelete(mVideo2);
-    func_0200aadc(mDecoder2);
+    FS_CloseFile(mDecoder2);
 }
 
 void MoviePlayer::SeekToEnd() {

@@ -94,9 +94,9 @@ static const s8 data_ov007_0227a754[5] = {-10, -5, 0, 5, 10};
 u8 AddUnit(BattlePlayerList *list, const VecFx32 *pos, u16 rot, u8 player, u8 record, u8 cell, u8 flag);
 void SetUnitAB(BattlePlayerList *list, u8 a, u8 b);
 void GetNearestPointOnBox(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out);
-extern "C" void func_01ffcf80(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotX33(MtxFx33 *m, u16 angle);
 extern "C" void DC_FlushRange(void *buf, u32 size);
-extern "C" void func_01ffd030(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotZ33(MtxFx33 *m, u16 angle);
 // Two callers leave r2 as it is (the original passes a value already in r2); call through a two-argument type.
 static inline void ReleaseSlot(BattlePlayerList *list, u8 index) {
     ((void (*)(BattlePlayerList *, u8)) func_ov007_02262828)(list, index);
@@ -167,7 +167,7 @@ static inline void SnapshotCamera() {
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
-    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
     manager.mProjection[manager.mActive] = data_02211374.mProjection;
     manager.mView[manager.mActive]       = data_02211374.mView;
@@ -1079,7 +1079,7 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                                         CameraManager::Get();
                                         MtxFx43 mtx = data_020c1cf4;
                                         VecFx32 pos = mBakugan->mPosition;
-                                        func_01ffcf64(&mtx, &pos);
+                                        MTX_SetTranslation43(&mtx, &pos);
                                         SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
                                     }
                                 }
@@ -1289,7 +1289,7 @@ void BattleTarget::func_ov007_02255b78(VecFx32 *b, VecFx32 *c, VecFx32 *in, VecF
     VEC_Subtract(c, b, &diff);
     int angle = -(FX_Atan2Idx(diff.z, diff.x) + 0x4000);
     mtx       = data_0220e848;
-    func_01ffcfd8(&mtx, angle);
+    MTX_ApplyRotY33(&mtx, angle);
     func_01ff84d0(in, &mtx, out);
 }
 
@@ -1307,7 +1307,7 @@ void BattleTarget::func_ov007_02255c04(VecFx32 *vec, s32 *out) {
     target.z = camera->mTarget.z;
     VEC_Subtract(&mUnk_194, &target, &diff);
     int angle = -(FX_Atan2Idx(diff.x, diff.z) + 0x4000);
-    func_01ffcfd8(&mtx, angle);
+    MTX_ApplyRotY33(&mtx, angle);
     func_01ff84d0(vec, &mtx, &rotated);
     out[1] = rotated.x;
     out[0] = rotated.z;
@@ -1351,7 +1351,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                     tp.y = u.y + (mUnk_11c.y + 0x19000);
                     tp.x = mUnk_11c.x + 0x37000 + (k << 13);
                     pos = tp;
-                    func_01ffcfd8(&rot, (u16) (data_ov007_0227a5e0.mUnk_0e[player->mUnk_f1] - mUnk_1b8));
+                    MTX_ApplyRotY33(&rot, (u16) (data_ov007_0227a5e0.mUnk_0e[player->mUnk_f1] - mUnk_1b8));
                     func_01ff84d0(&pos, &rot, &pos);
                     func_01ff84d0(&mUnk_188, &rot, &mUnk_188);
                     pos.x = FX_Mul(pos.x, ident._[4]);
@@ -1380,7 +1380,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                     pos.x = 0x46000;
                     pos.y = 0x32000;
                     pos.z = 0x46000;
-                    func_01ffcfd8(&rot, mBakugan->mRotY);
+                    MTX_ApplyRotY33(&rot, mBakugan->mRotY);
                     func_01ff84d0(&pos, &rot, &pos);
                     if (target == 0) {
                         SetVec(&mCamera->mPosition, pos.x + mBakugan->mPosition.x, pos.y, pos.z + mBakugan->mPosition.z);
@@ -1407,7 +1407,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                         pos.y = data_ov007_0227a5e0.mUnk_148[slot - 1].y;
                         pos.z = data_ov007_0227a5e0.mUnk_148[slot - 1].z;
                     }
-                    func_01ffcfd8(&rot, mBakugan->mRotY);
+                    MTX_ApplyRotY33(&rot, mBakugan->mRotY);
                     func_01ff84d0(&pos, &rot, &pos);
                     if (target == 0) {
                         SetVec(&mCamera->mPosition, pos.x + mBakugan->mPosition.x, pos.y, pos.z + mBakugan->mPosition.z);
@@ -1430,7 +1430,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             tp.y = mUnk_11c.y + 0x19000;
             tp.x = mUnk_11c.x + 0x37000;
             pos = tp;
-            func_01ffcfd8(&rot, (u16) (data_ov007_0227a5e0.mUnk_0e[player->mUnk_f1] - mUnk_1b8));
+            MTX_ApplyRotY33(&rot, (u16) (data_ov007_0227a5e0.mUnk_0e[player->mUnk_f1] - mUnk_1b8));
             func_01ff84d0(&pos, &rot, &pos);
             pos.x = FX_Mul(pos.x, ident._[4]);
             pos.z = FX_Mul(pos.z, ident._[8]);
@@ -1473,7 +1473,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             pos.x = -0x32000;
             pos.y = 0x5000;
             pos.z = 0x32000;
-            func_01ffcfd8(&rot, mBakugan->mRotY);
+            MTX_ApplyRotY33(&rot, mBakugan->mRotY);
             func_01ff84d0(&pos, &rot, &pos);
             VecFx32 t;
             t.z = pos.z + mBakugan->mPosition.z;
@@ -1489,7 +1489,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             pos.x = 0x37000;
             pos.y = 0xf000;
             pos.z = 0x37000;
-            func_01ffcfd8(&rot, (u16) (FX_Atan2Idx(mVelocity.x, mVelocity.z) - 0xa000));
+            MTX_ApplyRotY33(&rot, (u16) (FX_Atan2Idx(mVelocity.x, mVelocity.z) - 0xa000));
             func_01ff84d0(&pos, &rot, &pos);
             Camera *c = mCamera;
             cam.x     = c->mPosition.x;
@@ -1511,7 +1511,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             pos.x = 0x14000;
             pos.y = 0x14000;
             pos.z = 0x14000;
-            func_01ffcfd8(&rot, (u16) (FX_Atan2Idx(mPrevVelocity.x, mPrevVelocity.z) - 0xa000));
+            MTX_ApplyRotY33(&rot, (u16) (FX_Atan2Idx(mPrevVelocity.x, mPrevVelocity.z) - 0xa000));
             s32 a = FX_Atan2Idx(mPrevVelocity.y, 0x1000);
             func_01ff84d0(&pos, &rot, &pos);
             func_01ff84d0(&mUnk_188, &rot, &mUnk_188);
@@ -1608,7 +1608,7 @@ void BattleTarget::func_ov007_022567ac() {
             c.x = 0x2f800;
             c.y = 0x2f800;
             c.z = 0x2f800;
-            func_01ffcfd8(&mtx, FX_Atan2Idx(mVelocity.x, mVelocity.z) - 0xa000);
+            MTX_ApplyRotY33(&mtx, FX_Atan2Idx(mVelocity.x, mVelocity.z) - 0xa000);
             func_01ff84d0(&c, &mtx, &c);
             func_01ff84d0(&mUnk_188, &mtx, &mUnk_188);
             u16 pitch = FX_Atan2Idx(mVelocity.y, 0x1000);
@@ -1664,7 +1664,7 @@ void BattleTarget::func_ov007_02256c4c(VecFx32 *target) {
                 cam.z          = camera->mPosition.z;
                 VEC_Subtract(&cam, &mBakugan->mPosition, &diff);
                 int angle = -(FX_Atan2Idx(diff.z, diff.x) + 0x4000);
-                func_01ffcfd8(&mtx, angle);
+                MTX_ApplyRotY33(&mtx, angle);
                 func_01ff84d0(&move, &mtx, &move);
                 if (mUnk_1d6 != 0) {
                     mUnk_1d6--;
@@ -2239,7 +2239,7 @@ void BattleTarget::func_ov007_02258660() {
                 mtx._[11]   = 0;
                 mtx._[10]   = 0;
                 mtx._[9]    = 0;
-                func_01ffcf64(&mtx, &mBakugan->mPosition);
+                MTX_SetTranslation43(&mtx, &mBakugan->mPosition);
                 SetEffectMatrix(data_020d433c.mEffects, mUnk_1c2, &mtx);
             }
             mUnk_1dc++;
@@ -2320,7 +2320,7 @@ void BattleTarget::func_ov007_02258a34() {
             mtx._[9]    = 0;
             MTX_MultVec43(&b, &mtx, &b);
             VEC_Add(&a, &b, &a);
-            func_01ffcf64(&mtx, &a);
+            MTX_SetTranslation43(&mtx, &a);
             SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
             break;
         }
@@ -2996,13 +2996,13 @@ BOOL BattleTarget::func_ov007_0225aa80(BattleHitBox *box, VecFx32 *point) {
     VEC_Subtract(point, &box->mPos, &d);
     mtx = data_0220e848;
     if (box->mRotY) {
-        func_01ffcfd8(&mtx, -box->mRotY);
+        MTX_ApplyRotY33(&mtx, -box->mRotY);
     }
     if (box->mRotX) {
-        func_01ffcf80(&mtx, -box->mRotX);
+        MTX_ApplyRotX33(&mtx, -box->mRotX);
     }
     if (box->mRotZ) {
-        func_01ffd030(&mtx, -box->mRotZ);
+        MTX_ApplyRotZ33(&mtx, -box->mRotZ);
     }
     func_01ff84d0(&d, &mtx, &d);
     VEC_Add(&d, &box->mPos, &d);
@@ -3570,7 +3570,7 @@ void BattleTarget::func_ov007_0225c4dc() {
             } else {
                 MtxFx43 mtx = CameraManager::Get().mMtxC[0];
                 VecFx32 pos = mBakugan->mPosition;
-                func_01ffcf64(&mtx, &pos);
+                MTX_SetTranslation43(&mtx, &pos);
                 SetEffectMatrix(data_020d433c.mEffects, mUnk_1c0, &mtx);
             }
             break;
@@ -3587,7 +3587,7 @@ void BattleTarget::func_ov007_0225c4dc() {
     mtx._[9]    = 0;
     MTX_MultVec43(&off, &mtx, &off);
     VEC_Add(&pos, &off, &pos);
-    func_01ffcf64(&mtx, &pos);
+    MTX_SetTranslation43(&mtx, &pos);
     SetEffectMatrix(data_020d433c.mEffects, mUnk_1c2, &mtx);
 }
 

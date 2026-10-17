@@ -556,7 +556,7 @@ void ScriptPlayer::Update() {
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
-    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
     manager.mProjection[manager.mActive] = data_02211374.mProjection;
     manager.mView[manager.mActive]       = data_02211374.mView;
@@ -1567,7 +1567,7 @@ void ScriptPlayer::ResetCamera() {
     ApplyFov();
 }
 
-extern "C" void func_01ffcf64(MtxFx43 *mtx, VecFx32 *pos);
+extern "C" void MTX_SetTranslation43(MtxFx43 *mtx, VecFx32 *pos);
 
 void ScriptPlayer::ResetLight() {
     MI_CpuClear16(&mLightDir, 0x14);
@@ -1905,7 +1905,7 @@ void ScriptPlayer::DrawSpheres() {
                 if (scale > 0) {
                     pos.y = (mSpheres[i].mShadowY << 12) - 0x64000;
                     MtxFx43 mtx = gIdentityMtx43;
-                    func_01ffcf64(&mtx, &pos);
+                    MTX_SetTranslation43(&mtx, &pos);
                     VecFx32 size;
                     size.x = scale;
                     size.y = scale;
@@ -1954,7 +1954,7 @@ void ScriptPlayer::DrawCharacters() {
                     size.y = scale;
                     size.z = scale;
                     pos.y += 0x1000;
-                    func_01ffcf64(&mtx, &pos);
+                    MTX_SetTranslation43(&mtx, &pos);
                     mShadowModel->Draw(&mtx, &size);
                 }
             }
@@ -2027,15 +2027,15 @@ void ScriptPlayer::DrawMap() {
     pos.y = y;
     pos.z = z;
     if (mMaps[0].mRot[0] != 0) {
-        func_01ffd088(&mtx, (u16) mMaps[0].mRot[0]);
+        MTX_ApplyRotX43(&mtx, (u16) mMaps[0].mRot[0]);
     }
     if (mMaps[0].mRot[1] != 0) {
-        func_01ffd0e0(&mtx, (u16) mMaps[0].mRot[1]);
+        MTX_ApplyRotY43(&mtx, (u16) mMaps[0].mRot[1]);
     }
     if (mMaps[0].mRot[2] != 0) {
-        func_01ffd138(&mtx, (u16) mMaps[0].mRot[2]);
+        MTX_ApplyRotZ43(&mtx, (u16) mMaps[0].mRot[2]);
     }
-    func_01ffcf64(&mtx, &pos);
+    MTX_SetTranslation43(&mtx, &pos);
     if (mMaps[0].mUnk_32 != 0) {
         mMaps[0].mModel->mExtraAnim->mFrame = 0;
     } else {
@@ -2058,15 +2058,15 @@ void ScriptPlayer::DrawModels() {
             pos.x = mModels[i].mX;
             pos.y = mModels[i].mY;
             pos.z = mModels[i].mZ;
-            func_01ffcf64(&mtx, &pos);
+            MTX_SetTranslation43(&mtx, &pos);
             if (mModels[i].mRot[0] != 0) {
-                func_01ffd088(&mtx, (u16) mModels[i].mRot[0]);
+                MTX_ApplyRotX43(&mtx, (u16) mModels[i].mRot[0]);
             }
             if (mModels[i].mRot[1] != 0) {
-                func_01ffd0e0(&mtx, (u16) mModels[i].mRot[1]);
+                MTX_ApplyRotY43(&mtx, (u16) mModels[i].mRot[1]);
             }
             if (mModels[i].mRot[2] != 0) {
-                func_01ffd138(&mtx, (u16) mModels[i].mRot[2]);
+                MTX_ApplyRotZ43(&mtx, (u16) mModels[i].mRot[2]);
             }
             mModels[i].mModel->AdvanceAnim();
             mModels[i].mModel->Draw(&mtx, &size);
@@ -3275,7 +3275,7 @@ void ScriptPlayer::SetBg0Wave(u32 flag) {
         AddHBlankHook(Bg0WaveCallback);
     } else {
         RemoveHBlankHook(Bg0WaveCallback);
-        func_020037e8(0);
+        WriteBG0Offset(0);
     }
 }
 
@@ -3300,7 +3300,7 @@ extern "C" void Bg0WaveCallback() {
         }
     }
     s32 offset = span * (SinIdx(angle) << 5) / third;
-    func_020037e8((offset << 4) >> 16);
+    WriteBG0Offset((offset << 4) >> 16);
 }
 
 

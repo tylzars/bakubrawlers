@@ -1,9 +1,9 @@
 // MI_CpuFill8 and MI_CpuCopy8 (ITCM) are asm bodies as well: their byte loops don't come out of C.
 // ITCM memory routines 0x01ff94c8-0x01ff9802 (compiler 2.0/sp1p5, -O4,p -ipa file).
 // Hand-written asm (not reproducible from C: conditional-execution loops, single-register ldm/stm, 8-register stm runs):
-//   MIi_CpuClear16 0x01ff94c8, MIi_CpuCopy16 0x01ff94e0, MIi_CpuClear32 0x01ff94fc, MIi_CpuCopy32, func_01ff9528,
+//   MIi_CpuClear16 0x01ff94c8, MIi_CpuCopy16 0x01ff94e0, MIi_CpuClear32 0x01ff94fc, MIi_CpuCopy32, MI_CpuSend32,
 //   MIi_CpuClearFast 0x01ff9540, MIi_CpuCopyFast(fast, ldm/stm x8) 0x01ff958c, MI_Copy36B, func_01ff95e0, func_01ff9604,
-//   func_01ff97f4 (thumb, stm x3).
+//   MI_Zero36B (thumb, stm x3).
 // MI_CpuFill8 and MI_CpuCopy8 (byte fill/copy) follow near the end.
 #include <nitro/internal.h>
 
@@ -52,10 +52,10 @@ L1:
     bx lr
 }
 
-// func_01ff9528(src, dst, size): reads size bytes of words from src (advancing)
+// MI_CpuSend32(src, dst, size): reads size bytes of words from src (advancing)
 // and stores each to the same single word at dst (dst never advances). Ends
 // when the source pointer reaches src+size.
-asm void func_01ff9528(const void *src, volatile void *dst, unsigned int size) {
+asm void MI_CpuSend32(const void *src, volatile void *dst, unsigned int size) {
     add ip, r0, r2
 L1:
     cmp r0, ip
@@ -303,11 +303,11 @@ L_last_byte:
     bx lr
 }
 
-// func_01ff97f4 (Thumb): zeroes nine words at r0 (three stores of three zeros).
+// MI_Zero36B (Thumb): zeroes nine words at r0 (three stores of three zeros).
 
 
 #pragma thumb on
-asm void func_01ff97f4(void *dst) {
+asm void MI_Zero36B(void *dst) {
     mov r1, #0
     mov r2, #0
     mov r3, #0

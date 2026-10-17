@@ -1,18 +1,18 @@
 #include <nitro/private/card_dev.h>
 extern u8 data_020c06c0[];
-void func_0200f748(u32 tag, u32 data, int err);
+void CardPulloutFifoReceive(u32 tag, u32 data, int err);
 void func_0200f7ac(void);
 void func_0200f898(u32 a, u32 b);
 
-void func_0200f71c(void)
+void InitCardPullout(void)
 {
     PXI_Init();
-    PXI_SetFifoRecvCallback(0xe, func_0200f748);
+    PXI_SetFifoRecvCallback(0xe, CardPulloutFifoReceive);
     ((CardPullout *)data_020c06c0)->callback = NULL;
 }
 
 #define PO ((CardPullout *)data_020c06c0)
-void func_0200f748(u32 tag, u32 data, int err)
+void CardPulloutFifoReceive(u32 tag, u32 data, int err)
 {
     if ((data & 0x3f) == 0x11) {
         BOOL r;
@@ -33,7 +33,7 @@ void func_0200f748(u32 tag, u32 data, int err)
     }
 }
 
-BOOL func_0200f79c(void)
+BOOL IsCardPulledOut(void)
 {
     return ((CardPullout *)data_020c06c0)->pulledOut;
 }
@@ -78,7 +78,7 @@ void func_0200f838(u32 id)
         return;
     }
     e = OS_DisableInterrupts();
-    func_0200f748(0xe, 0x11, 0);
+    CardPulloutFifoReceive(0xe, 0x11, 0);
     OS_RestoreInterrupts(e);
 }
 

@@ -11,11 +11,11 @@ asm void MTX_Identity22_(MtxFx22 *m) {
     bx lr
 }
 
-// func_02000ccc (Thumb): fills a four-word block at r0 with { a, 0, 0, b }.
+// MTX_Scale22 (Thumb): fills a four-word block at r0 with { a, 0, 0, b }.
 // The pointer is advanced by one word after the first store, so the final
 // offset store of b lands on the fourth word.
 #pragma thumb on
-asm void func_02000ccc(int *m, int a, int b) {
+asm void MTX_Scale22(int *m, int a, int b) {
     stmia r0!, {r1}         // word 0 = a
     mov r1, #0
     str r2, [r0, #8]        // word 3 = b (r0 already advanced by one word)
@@ -59,10 +59,10 @@ asm void func_02000d88(void *m) {
     bx lr
 }
 
-// func_02000db4: copies twelve words from r0 to r1 as four groups of three,
+// MTX_Copy44To43: copies twelve words from r0 to r1 as four groups of three,
 // skipping one source word after each group (a 4-wide source row layout becomes
 // a 3-wide destination row layout). Returns nothing; r0/r1 are scratch.
-asm void func_02000db4(const int *src, int *dst) {
+asm void MTX_Copy44To43(const int *src, int *dst) {
     ldmia r0!, {r2, r3, ip}     // copy 3 words
     add r0, r0, #4              // skip the fourth source word
     stmia r1!, {r2, r3, ip}

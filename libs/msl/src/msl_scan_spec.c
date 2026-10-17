@@ -14,7 +14,7 @@ extern const unsigned short data_020903a8[];   /* character class table */
 extern const ScanSpec data_020904a8;           /* default spec */
 
 /* 0x02014704: parse one conversion spec after '%'; returns the char after it */
-const char *func_02014704(const char *fmt, ScanSpec *out)
+const char *ParseScanfSpec(const char *fmt, ScanSpec *out)
 {
     ScanSpec s = data_020904a8;
     const char *p = fmt + 1;

@@ -24,9 +24,9 @@ struct FSFileLike {
 };
 
 extern int (*const fsCommandTable[])(FSFileLike *);   // 0x02090270
-extern void func_0200936c(FSFileLike *file, int result);
+extern void FinishFileCommand(FSFileLike *file, int result);
 
-void func_0200936c(FSFileLike *file, int result) {
+void FinishFileCommand(FSFileLike *file, int result) {
     OSIntrMode e = OS_DisableInterrupts();
     FSFileLike *next = file->next;
     FSFileLike *prev = file->prev;
@@ -44,7 +44,7 @@ void func_0200936c(FSFileLike *file, int result) {
     OS_RestoreInterrupts(e);
 }
 
-int func_020093c8(FSFileLike *file, int cmd) {
+int RunFileCommand(FSFileLike *file, int cmd) {
     int result;
     FSArchiveLike *ar = file->archive;
     u32 bit = 1 << cmd;
@@ -88,7 +88,7 @@ int func_020093c8(FSFileLike *file, int cmd) {
     } else {
         if (((file->flag & 4) ? TRUE : FALSE) == 0) {
             ar->flag &= ~0x100;
-            func_0200936c(file, result);
+            FinishFileCommand(file, result);
         } else {
             ar->flag &= ~0x200;
             file->result = result;

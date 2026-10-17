@@ -17,7 +17,7 @@ void func_020202bc(void) {
 
 // Walks the table of constructor pointers starting at ARM9_CTOR_START and calls each
 // entry in turn, stopping at the first null entry.
-void func_020202c0(void) {
+void CallStaticConstructors(void) {
     void (**p)(void) = &ARM9_CTOR_START;
     while (p != 0 && *p != 0) {
         (*p)();

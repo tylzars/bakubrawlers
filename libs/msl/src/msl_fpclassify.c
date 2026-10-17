@@ -1,11 +1,11 @@
 #define __HI(x) *(1+(int*)&x)
 #define __LO(x) *(int*)&x
-extern double func_0201bd20(double, int *);
-extern double func_0201bddc(double, int);
-int func_0201d67c(double x) {
+extern double frexp(double, int *);
+extern double scalbn(double, int);
+int GetSignBit(double x) {
     return __HI(x) & 0x80000000;
 }
-int func_0201d690(double x) {
+int ClassifyDouble(double x) {
     int hx = __HI(x);
     int e = hx & 0x7ff00000;
     switch (e) {
@@ -18,7 +18,7 @@ int func_0201d690(double x) {
 }
 double func_0201d700(double x, int n) {
     int e;
-    x = func_0201bd20(x, &e);
+    x = frexp(x, &e);
     e += n;
-    return func_0201bddc(x, e);
+    return scalbn(x, e);
 }

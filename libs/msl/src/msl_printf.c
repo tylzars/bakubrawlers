@@ -28,7 +28,7 @@ extern const unsigned short data_020903a8[];   /* character class table */
 #define ISDIGIT(c) (((c) < 0 || (c) >= 128) ? 0 : (data_020903a8[c] & 8))
 
 /* 0x020125b4: parse one conversion spec after '%'; returns the char after it */
-const char *func_020125b4(const char *fmt, char **ap, FmtSpec *out)
+const char *ParsePrintfSpec(const char *fmt, char **ap, FmtSpec *out)
 {
     FmtSpec s;
     const char *p = fmt + 1;
@@ -159,7 +159,7 @@ const char *func_020125b4(const char *fmt, char **ap, FmtSpec *out)
 
 
 /* 0x02012b44: integer to digits, written backwards from end; returns start (0 if too long) */
-char *func_02012b44(int val, char *end, FmtSpec spec)
+char *WriteIntDigits(int val, char *end, FmtSpec spec)
 {
     unsigned u, base;
     char *p;
@@ -221,7 +221,7 @@ char *func_02012b44(int val, char *end, FmtSpec spec)
 }
 
 /* 0x02012d90: the same for 64-bit values */
-char *func_02012d90(long long val, char *end, FmtSpec spec)
+char *WriteLongLongDigits(long long val, char *end, FmtSpec spec)
 {
     unsigned long long u, base;
     char *p;
@@ -291,11 +291,11 @@ extern const B6 data_020a52a0;
 extern const B5 data_020a52a8, data_020a52b0, data_020a52c0, data_020a52c8;
 extern const B4 data_020a52b8, data_020a52bc, data_020a52d0, data_020a52d4;
 extern void func_0201cf1c(DecForm *, double, DecDigits *);
-extern double func_0201bb40(double);
+extern double fabs(double);
 
 /* 0x0201308c: double to "0x1.xxxp+e" (hex float), inf and nan; digits written backwards from end */
 #define XB ((unsigned char *)&x)
-char *func_0201308c(double x, char *end, FmtSpec spec)
+char *WriteHexFloatDigits(double x, char *end, FmtSpec spec)
 {
     char *p = end;
     DecForm f;
@@ -311,7 +311,7 @@ char *func_0201308c(double x, char *end, FmtSpec spec)
     f.mode = 0;
     f.ndigits = 32;
     func_0201cf1c(&f, ld, &d);
-    if (0.0 == func_0201bb40(x)) {
+    if (0.0 == fabs(x)) {
         p = end - 6;
         __memcpy(p, &data_020a52a0, 6);
         return p;
@@ -358,7 +358,7 @@ char *func_0201308c(double x, char *end, FmtSpec spec)
     snum |= XB[1] << 17;
     snum = (snum >> 21) & 0x7ff;
     ex = snum - 1023;
-    p = func_02012b44(ex, p, e);
+    p = WriteIntDigits(ex, p, e);
     if (spec.conv == 'a') *--p = 'p';
     else *--p = 'P';
     xb = (unsigned char *)&x;
@@ -392,7 +392,7 @@ char *func_0201308c(double x, char *end, FmtSpec spec)
 }
 
 /* 0x02013568: round a decimal digit string to n digits (half to even) */
-void func_02013568(DecDigits *d, int n)
+void RoundDecimalDigits(DecDigits *d, int n)
 {
     char *t;
     int len;

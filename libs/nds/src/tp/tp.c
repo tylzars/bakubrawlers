@@ -4,12 +4,12 @@
 #define NVRAM_TP ((vu16 *)0x027ffc80)
 
 extern int TP_CalcCalibrateParam(TPCalibrateParam *p, u16 x1, u16 y1, u16 px1, u16 py1, u16 x2, u16 y2, u16 px2, u16 py2);
-extern void func_0200c72c(u32 mask);
+extern void TP_WaitNotBusy(u32 mask);
 
 typedef union { TPRawBits b; u16 h[2]; } TPRawUnion;
 
 // PXI receive callback for the touch panel (tag 6)
-void func_0200be84(u32 tag, u32 data, int err)
+void TpFifoReceive(u32 tag, u32 data, int err)
 {
     u16 cmd = ((u16)data & 0x7f00) >> 8;
     if (err) {
@@ -87,7 +87,7 @@ void TP_Init(void)
     tpWork.busy = 0;
     tpWork.err = 0;
     while (!PXI_IsCallbackReady(6, 1)) {}
-    PXI_SetFifoRecvCallback(6, func_0200be84);
+    PXI_SetFifoRecvCallback(6, TpFifoReceive);
 }
 
 typedef struct { u8 pad[0x58]; u16 x1, y1; u8 px1, py1; u16 x2, y2; u8 px2, py2; } TPNvCal;
@@ -168,9 +168,9 @@ void func_0200c338(void)
     OS_RestoreInterrupts(e);
 }
 
-int func_0200c3cc(TPData *out)
+int TP_GetRaw(TPData *out)
 {
-    func_0200c72c(1);
+    TP_WaitNotBusy(1);
     if (tpWork.err & 1) return 1;
     *out = tpWork.raw;
     return 0;
@@ -256,7 +256,7 @@ void TP_GetCalibratedPoint(TPData *out, const TPData *raw)
     else if (v > 0xbf) out->y = 0xbf;
 }
 
-void func_0200c72c(u32 mask)
+void TP_WaitNotBusy(u32 mask)
 {
     while ((*(vu16 *)&tpWork.busy & mask) != 0) {}
 }

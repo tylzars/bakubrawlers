@@ -84,7 +84,7 @@ extern void func_0204ec44(void *);
 extern int func_0204eccc(void *);
 extern void *func_0204ec94(void *, int);
 extern void func_020491c4(void *, int);
-extern void func_0200a7b4(void *);
+extern void FS_InitFile(void *);
 extern void func_0204ec6c(void *);
 extern void ReleaseGlobalPoolObj(void *);
 extern int func_0204eaf4(void *);
@@ -92,7 +92,7 @@ extern void func_0204ea6c(void *, const char *);
 extern void func_0204ea9c(void *);
 extern void func_0204eac4(void *, int);
 extern void func_0204eb24(void *, int);
-extern void func_0200aadc(void *);
+extern void FS_CloseFile(void *);
 extern double func_0201c1b4(double);
 CriElem *func_02052248(CriHdl *hdl);
 void func_020522a0(CriElem *e);
@@ -271,7 +271,7 @@ void *func_02051ae4(CriOpen *p)
     for (i = 0; i < func_0204eccc(e->h); i++) {
         func_020491c4(func_0204ec94(e->h, i), 1);
     }
-    func_0200a7b4(e->os);
+    FS_InitFile(e->os);
     data_02218fd0.count++;
     return &e->hdl;
 }
@@ -457,7 +457,7 @@ void func_020522a0(CriElem *e)
         r = 0;
     }
     if (r != 0) {
-        func_0200aadc(e->os);
+        FS_CloseFile(e->os);
     }
 }
 

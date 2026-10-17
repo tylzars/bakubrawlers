@@ -24,7 +24,7 @@ typedef struct {
 } SndRes;
 extern SndRes data_02213a00;
 
-extern void func_020082e8(void);
+extern void SND_Init(void);
 extern void func_0200da20(void *);
 extern void func_0200da38(void *);
 extern void InitSndCapture(void);
@@ -49,7 +49,7 @@ void ClearSndRes(void);
 void InitSnd(void) {
     if (data_02211600.initialised) return;
     data_02211600.initialised = 1;
-    func_020082e8();
+    SND_Init();
     data_02211600.cb0 = func_020367bc;
     data_02211600.cb0Arg = 0;
     data_02211600.cb1 = func_020367f4;

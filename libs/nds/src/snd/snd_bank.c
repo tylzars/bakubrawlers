@@ -25,7 +25,7 @@ typedef struct {
     u32 sub;
 } SNDInstPos;
 
-void func_02008c5c(SNDBank *bank, int idx, SNDWaveArc *arc) {
+void LinkBankToWaveArc(SNDBank *bank, int idx, SNDWaveArc *arc) {
     SNDWaveArc *cur;
     SNDLink *self;
     SNDLink *p;
@@ -69,7 +69,7 @@ void func_02008c5c(SNDBank *bank, int idx, SNDWaveArc *arc) {
     DC_StoreRange(arc, 0x3c);
 }
 
-void func_02008d28(SNDBank *bank) {
+void UnlinkBankFromWaveArcs(SNDBank *bank) {
     int i;
     SNDWaveArc *cur;
     SNDLink *self;
@@ -105,7 +105,7 @@ void func_02008d28(SNDBank *bank) {
     SND_UnlockMutex();
 }
 
-void func_02008dc0(SNDWaveArc *arc) {
+void ClearWaveArcLinks(SNDWaveArc *arc) {
     SNDLink *l;
     SNDLink *next;
     SND_LockMutex();
@@ -122,7 +122,7 @@ void func_02008dc0(SNDWaveArc *arc) {
     SND_UnlockMutex();
 }
 
-void func_02008e08(u32 *p) {
+void ClearInstPos(u32 *p) {
     volatile u32 zero[2];
     p[0] = 0;
     zero[0] = 0;
@@ -133,7 +133,7 @@ void func_02008e08(u32 *p) {
 typedef struct { u16 v[5]; } SndU16x5;
 typedef struct { u16 v[6]; } SndU16x6;
 
-BOOL func_02008e28(SNDBank *bank, u16 *out, SNDInstPos *pos) {
+BOOL GetNextInstData(SNDBank *bank, u16 *out, SNDInstPos *pos) {
     u32 sub = 0;
     if (pos->index < bank->count) {
         do {

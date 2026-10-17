@@ -93,9 +93,9 @@ extern char SDK_OVERLAY_OV006_ID[];
 extern char SDK_OVERLAY_OV007_ID[];
 extern char SDK_OVERLAY_OV008_ID[];
 
-extern "C" void func_0200b0d4(OverlayInfo *info, u32 processor, u32 id);
-extern "C" void func_0200b4e8(u32 processor, u32 id);
-extern "C" void func_0200b53c(u32 processor, u32 id);
+extern "C" void FS_LoadOverlayInfo(OverlayInfo *info, u32 processor, u32 id);
+extern "C" void FS_LoadOverlay(u32 processor, u32 id);
+extern "C" void FS_RunOverlayDestructorsById(u32 processor, u32 id);
 extern void RecreateGameHeap(void *lo);
 extern void func_02021e10();
 extern "C" void func_02007230();
@@ -108,11 +108,11 @@ void SceneRunner::LoadOverlay(u32 overlay) {
     FrameTask::Get().CloseHandles();
     func_02021e10();
     if (mOverlayState == 2) {
-        func_0200b53c(0, mOverlay);
+        FS_RunOverlayDestructorsById(0, mOverlay);
     }
     mOverlay = overlay;
-    func_0200b0d4(&info, 0, overlay);
-    func_0200b4e8(0, mOverlay);
+    FS_LoadOverlayInfo(&info, 0, overlay);
+    FS_LoadOverlay(0, mOverlay);
     mOverlayState = 2;
     RecreateGameHeap((void *) (info.mRamAddress + (info.mRamSize + info.mBssSize)));
     FrameTask::Get().OpenHandles();

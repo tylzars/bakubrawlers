@@ -41,7 +41,7 @@ static inline void SnapshotCamera() {
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
-    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
     manager.mProjection[manager.mActive] = data_02211374.mProjection;
     manager.mView[manager.mActive]       = data_02211374.mView;
@@ -208,10 +208,10 @@ u32 *data_ov007_0228acf4[66] = {
 };
 
 extern "C" s32 FindDictIndexByName(void *dict, const char *name);
-extern "C" void func_01ffd088(MtxFx43 *m, u16 angle);
-extern "C" void func_01ffd0e0(MtxFx43 *m, u16 angle);
-extern "C" void func_01ffd138(MtxFx43 *m, u16 angle);
-extern "C" void func_01ffcf64(MtxFx43 *m, VecFx32 *v);
+extern "C" void MTX_ApplyRotX43(MtxFx43 *m, u16 angle);
+extern "C" void MTX_ApplyRotY43(MtxFx43 *m, u16 angle);
+extern "C" void MTX_ApplyRotZ43(MtxFx43 *m, u16 angle);
+extern "C" void MTX_SetTranslation43(MtxFx43 *m, VecFx32 *v);
 extern "C" void func_01ff89c0(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);
 extern "C" void func_01ff8634(MtxFx43 *src, MtxFx43 *dst);
 extern "C" void func_01ff84d0(VecFx32 *vec, MtxFx33 *m, VecFx32 *out);
@@ -509,10 +509,10 @@ void BattleCardModel::UpdateEffects() {
                         break;
                     case 2:
                         rot = gIdentityMtx43;
-                        func_01ffd088(&rot, mParts[i].mRot[0]);
-                        func_01ffd0e0(&rot, mParts[i].mRot[1]);
-                        func_01ffd138(&rot, mParts[i].mRot[2]);
-                        func_01ffcf64(&rot, &mParts[i].mPos);
+                        MTX_ApplyRotX43(&rot, mParts[i].mRot[0]);
+                        MTX_ApplyRotY43(&rot, mParts[i].mRot[1]);
+                        MTX_ApplyRotZ43(&rot, mParts[i].mRot[2]);
+                        MTX_SetTranslation43(&rot, &mParts[i].mPos);
                         func_01ff89c0(&rot, &CameraManager::Get().mMtxC[0], &rot);
                         SetEffectMatrix(mEffects, mHandles[i], &rot);
                         break;
@@ -539,9 +539,9 @@ void BattleCardModel::MoveEffectToBone(u32 index) {
     MtxFx43 *bone = mBaku->mModel->GetCallbackMtx(mBones[index]);
     func_01ff89c0(bone, &CameraManager::Get().mMtxC[0], &world);
     rot = gIdentityMtx43;
-    func_01ffd088(&rot, mParts[index].mRot[0]);
-    func_01ffd0e0(&rot, mParts[index].mRot[1]);
-    func_01ffd138(&rot, mParts[index].mRot[2]);
+    MTX_ApplyRotX43(&rot, mParts[index].mRot[0]);
+    MTX_ApplyRotY43(&rot, mParts[index].mRot[1]);
+    MTX_ApplyRotZ43(&rot, mParts[index].mRot[2]);
     func_01ff8634(&rot, &rot);
     func_01ff89c0(&rot, &world, &world);
     BattleCardModelPart *part = &mParts[index];

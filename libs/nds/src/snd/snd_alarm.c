@@ -9,7 +9,7 @@ typedef struct {
 // 0x020bfba0
 static AlarmEntry alarmTable[8];
 
-void func_02008a58(void) {
+void ClearAlarmTable(void) {
     int i;
     for (i = 0; i < 8; i++) {
         alarmTable[i].callback = NULL;
@@ -18,12 +18,12 @@ void func_02008a58(void) {
     }
 }
 
-void func_02008a88(int idx) {
+void IncrementAlarmCount(int idx) {
     AlarmEntry *e = &alarmTable[idx];
     e->count++;
 }
 
-u32 func_02008aa8(int idx, void (*cb)(void *), void *arg) {
+u32 SetAlarmCallback(int idx, void (*cb)(void *), void *arg) {
     AlarmEntry *e = &alarmTable[idx];
     e->callback = cb;
     e->arg = arg;
@@ -31,7 +31,7 @@ u32 func_02008aa8(int idx, void (*cb)(void *), void *arg) {
     return e->count;
 }
 
-void func_02008ad8(u32 data) {
+void CallAlarmCallback(u32 data) {
     AlarmEntry *e = &alarmTable[data & 0xff];
     if (((int) data >> 8 & 0xff) != e->count) {
         return;

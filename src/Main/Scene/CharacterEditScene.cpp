@@ -437,7 +437,7 @@ void CharacterEditScene::UpdateRootMenu() {
             data_02211374.mCameraPosition = camera->mPosition;
             data_02211374.mCameraUp = camera->mUp;
             data_02211374.mCameraTarget = camera->mTarget;
-            func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+            MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
             data_02211374.mFlags &= ~0xe8;
             manager.mProjection[manager.mActive] = data_02211374.mProjection;
             manager.mView[manager.mActive] = data_02211374.mView;
@@ -845,7 +845,7 @@ void CharacterEditScene::func_0205e958() {
         data_02211374.mCameraPosition = camera->mPosition;
         data_02211374.mCameraUp = camera->mUp;
         data_02211374.mCameraTarget = camera->mTarget;
-        func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+        MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
         data_02211374.mFlags &= ~0xe8;
         manager.mProjection[manager.mActive] = data_02211374.mProjection;
         manager.mView[manager.mActive] = data_02211374.mView;
@@ -1379,7 +1379,7 @@ void CharacterEditScene::UpdateTopEdit() {
         data_02211374.mCameraPosition = camera->mPosition;
         data_02211374.mCameraUp = camera->mUp;
         data_02211374.mCameraTarget = camera->mTarget;
-        func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+        MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
         data_02211374.mFlags &= ~0xe8;
         manager.mProjection[manager.mActive] = data_02211374.mProjection;
         manager.mView[manager.mActive] = data_02211374.mView;
@@ -1477,7 +1477,7 @@ void CharacterEditScene::func_020604e8() {
         data_02211374.mCameraPosition = camera->mPosition;
         data_02211374.mCameraUp = camera->mUp;
         data_02211374.mCameraTarget = camera->mTarget;
-        func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+        MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
         data_02211374.mFlags &= ~0xe8;
         manager.mProjection[manager.mActive] = data_02211374.mProjection;
         manager.mView[manager.mActive] = data_02211374.mView;
@@ -1774,7 +1774,7 @@ void CharacterEditScene::func_020612cc() {
         data_02211374.mCameraPosition = camera->mPosition;
         data_02211374.mCameraUp = camera->mUp;
         data_02211374.mCameraTarget = camera->mTarget;
-        func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+        MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
         data_02211374.mFlags &= ~0xe8;
         manager.mProjection[manager.mActive] = data_02211374.mProjection;
         manager.mView[manager.mActive] = data_02211374.mView;
@@ -2001,7 +2001,7 @@ void CharacterEditScene::func_02061c3c() {
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp = camera->mUp;
     data_02211374.mCameraTarget = camera->mTarget;
-    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
     manager.mProjection[manager.mActive] = data_02211374.mProjection;
     manager.mView[manager.mActive] = data_02211374.mView;
@@ -2197,7 +2197,7 @@ void CharacterEditScene::Draw() {
         a.x = 0;
         a.y = -0x6000;
         a.z = 0;
-        func_01ffcf64(&mtx, &a);
+        MTX_SetTranslation43(&mtx, &a);
         mCutRoomModel->AdvanceAnim();
         mCutRoomModel->Draw(&mtx, &b);
     }

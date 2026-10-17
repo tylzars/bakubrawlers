@@ -140,6 +140,6 @@ int GimmickSuteWall::func_ov007_0222c2f0() {
     }
     CameraManager::Get();
     MtxFx43 mtx = data_020c1cf4;
-    func_01ffcf64(&mtx, &mPosition);
+    MTX_SetTranslation43(&mtx, &mPosition);
     mModelB->Draw(&mtx, &mScale);
 }

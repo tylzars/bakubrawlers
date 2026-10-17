@@ -6,10 +6,10 @@ extern u32 *data_01ffd1a0; // current command buffer: [0] = word count, then the
 extern volatile s32 data_01ffd1a4; // nonzero while a DMA to the GX FIFO is running
 extern s32 data_01ffd1a8; // 0: use the first DMA helper, nonzero: the second
 
-void func_01ff9304(void);
+void WaitFifoBlockSend(void);
 void func_01ff931c(void *arg);
-void func_01ff9528(const void *src, volatile void *dest, u32 size);
-void func_01ff93d8(u32 cmd, const void *params, u32 count);
+void MI_CpuSend32(const void *src, volatile void *dest, u32 size);
+void SendFifoCommand(u32 cmd, const void *params, u32 count);
 void MI_SendGXCommandAsyncFast(s32 ch, const void *src, u32 size, void (*cb)(void *), void *arg);
 void MI_SendGXCommandAsync(s32 ch, const void *src, u32 size, void (*cb)(void *), void *arg);
 
@@ -23,16 +23,16 @@ void func_01ff9284(u32 *buf) {
 void func_01ff92a4(void) {
     u32 n;
     if (data_01ffd1a4 != 0) {
-        func_01ff9304();
+        WaitFifoBlockSend();
     }
     if (data_01ffd1a0 == 0 || (n = *data_01ffd1a0) == 0) {
         return;
     }
-    func_01ff9528(data_01ffd1a0 + 1, REG_GXFIFO, n << 2);
+    MI_CpuSend32(data_01ffd1a0 + 1, REG_GXFIFO, n << 2);
     *data_01ffd1a0 = 0;
 }
 
-void func_01ff9304(void) {
+void WaitFifoBlockSend(void) {
     while (data_01ffd1a4 != 0) {
     }
 }
@@ -41,9 +41,9 @@ void func_01ff931c(void *arg) {
     *(s32 *) arg = 0;
 }
 
-void func_01ff9328(const u32 *src, u32 size) {
+void SendFifoCommandBlock(const u32 *src, u32 size) {
     if (size < 0x100 || data_020a4f24 == -1) {
-        func_01ff93d8(src[0], src + 1, (size >> 2) - 1);
+        SendFifoCommand(src[0], src + 1, (size >> 2) - 1);
         return;
     }
     func_01ff92a4();
@@ -55,7 +55,7 @@ void func_01ff9328(const u32 *src, u32 size) {
     }
 }
 
-void func_01ff93d8(u32 cmd, const void *params, u32 count) {
+void SendFifoCommand(u32 cmd, const void *params, u32 count) {
     u32 *buf = data_01ffd1a0;
     if (buf != 0) {
         if (data_01ffd1a4 != 0) {
@@ -74,11 +74,11 @@ void func_01ff93d8(u32 cmd, const void *params, u32 count) {
         if (buf[0] != 0) {
             func_01ff92a4();
         } else if (data_01ffd1a4 != 0) {
-            func_01ff9304();
+            WaitFifoBlockSend();
         }
     } else if (data_01ffd1a4 != 0) {
-        func_01ff9304();
+        WaitFifoBlockSend();
     }
     *REG_GXFIFO = cmd;
-    func_01ff9528(params, REG_GXFIFO, count << 2);
+    MI_CpuSend32(params, REG_GXFIFO, count << 2);
 }

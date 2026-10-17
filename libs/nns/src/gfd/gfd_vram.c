@@ -1,7 +1,7 @@
 // NitroSystem G3d / Gfd: last texture SRT builder, default VRAM key hooks, frame texture VRAM manager. 0x02035c68-0x020360c4
 #include <nnsys/private/nns_g3d.h>
 #define P32(p, o) (*(s32 *)((u8 *)(p) + (o)))
-extern void func_01ff93d8(u32 cmd, const void *params, u32 count);
+extern void SendFifoCommand(u32 cmd, const void *params, u32 count);
 static inline s32 FxMul(s32 a, s32 b) { return (s32)(((long long)a * b) >> 12); }
 
 extern void (*data_020a5860[8])(s32 *out, u32 *m);
@@ -45,7 +45,7 @@ void func_02035c68(u32 *m) {   // load the texture matrix, forcing identity part
         c.out[5] = FxMul(m[13], c.out[5]);
         c.out[13] = FxMul(m[13], c.out[13]);
     }
-    func_01ff93d8(c.cmd, (u32 *)&c + 1, 0x12);
+    SendFifoCommand(c.cmd, (u32 *)&c + 1, 0x12);
 }
 u32 func_02035df0(void) { return 0; }    // default texture VRAM allocator (fails)
 s32 func_02035df8(void) { return -1; }   // default texture VRAM free

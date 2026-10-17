@@ -234,7 +234,7 @@ void MyroomShootScene::Init() {
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
-    func_01ff8d34(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
+    MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
     manager.mProjection[manager.mActive] = data_02211374.mProjection;
     manager.mView[manager.mActive]       = data_02211374.mView;
@@ -377,7 +377,7 @@ void MyroomShootScene::DrawSprites() {
     MtxFx43 view  = gIdentityMtx43;
     VecFx32 scale = sMyroomShootRoomScale;
     VecFx32 offset = sMyroomShootRoomOffset;
-    func_01ffcf64(&view, &offset);
+    MTX_SetTranslation43(&view, &offset);
     func_01ff89c0(&view, base, &view);
     mRoom->AdvanceAnim();
     mRoom->Draw(&view, &scale);

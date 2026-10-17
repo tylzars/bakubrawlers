@@ -4,17 +4,17 @@
 #define U32(p, o) (*(u32 *)((u8 *)(p) + (o)))
 #define U8(p, o) (*((u8 *)(p) + (o)))
 #define P32(p, o) (*(s32 *)((u8 *)(p) + (o)))
-extern void func_01ff93d8(u32 cmd, const void *params, u32 count);
+extern void SendFifoCommand(u32 cmd, const void *params, u32 count);
 extern void MIi_CpuCopy32(const void *src, void *dst, u32 size);
 extern void func_01ff854c(void *m43);      // MTX_Identity43
 extern void func_02000d88(void *m44);      // MTX_Identity44
 extern void func_01ff817c(void *m33);      // MTX_Identity33
 extern void func_01ff8634(void *src, void *dst);   // MTX_Inverse43
 extern void func_01ff9604(const void *src, void *dst);   // copy 4x4
-extern void func_01ff8574(const void *src, void *dst);   // 4x3 to 4x4
+extern void MTX_Copy43To44(const void *src, void *dst);   // 4x3 to 4x4
 extern void func_02000de8(const void *a, const void *b, void *dst);   // MTX_Concat44
 extern void func_01ff89c0(void *a, void *b, void *dst);   // MTX_Concat43
-extern void func_01ff85a8(void *src, void *dst, s32 x, s32 y, s32 z);   // scale
+extern void MTX_ApplyScale43(void *src, void *dst, s32 x, s32 y, s32 z);   // scale
 extern long long FX_InvFx64c(s32 x);   // FX_Inv (64 bit)
 extern s32 FX_Div(s32 a, s32 b);
 extern void MIi_CpuClearFast(u32 data, void *dst, u32 size);
@@ -74,7 +74,7 @@ void InitG3dGlb(void) {
     g[0x260 / 4] = -0x1000;
 }
 void func_02032284(void) {
-    func_01ff93d8(GU[0], (u32 *)&data_02211374_b + 1, 0x3e);
+    SendFifoCommand(GU[0], (u32 *)&data_02211374_b + 1, 0x3e);
     GU[0xfc / 4] &= ~1;
     GU[0xfc / 4] &= ~2;
 }
@@ -158,7 +158,7 @@ void *func_02032604(void) {   // inverse of the projection matrix (cached)
 }
 void func_02032648(void) {   // base matrix = position * base scale, and its inverse
     func_01ff89c0(data_02211430, data_022113c0, data_022114a4);
-    func_01ff85a8(data_022114a4, data_022114a4, GU[0xec / 4], GU[0xf0 / 4], GU[0xf4 / 4]);
+    MTX_ApplyScale43(data_022114a4, data_022114a4, GU[0xec / 4], GU[0xf0 / 4], GU[0xf4 / 4]);
     func_01ff8634(data_022114a4, data_022114d4);
 }
 void *func_020326a0(void) {
@@ -180,7 +180,7 @@ void *func_02032710(void) {   // combined position and projection matrix (cached
     if (!(GU[0xfc / 4] & 0x40)) {
         void *a = func_020323b8();
         void *b = func_02032604();
-        func_01ff8574(a, tmp);
+        MTX_Copy43To44(a, tmp);
         func_02000de8(b, tmp, data_02211574);
         GU[0xfc / 4] |= 0x40;
     }
@@ -315,7 +315,7 @@ BOOL func_02032c40(u32 *out, AnmObj *o, u32 idx) {   // OR together the flags of
     return r;
 }
 extern s32 G3X_GetClipMtx(void *p);
-extern void func_02000db4(void *a, void *b);
+extern void MTX_Copy44To43(void *a, void *b);
 extern s32 G3X_GetVectorMtx(void *p);
 extern void func_01ff92a4(void);
 void func_02032cc8(void *a, void *b) {   // reset the geometry engine state
@@ -326,7 +326,7 @@ void func_02032cc8(void *a, void *b) {   // reset the geometry engine state
     *(volatile u32 *)0x4000454 = 0;
     if (a != 0) {
         while (G3X_GetClipMtx(buf) != 0) {}
-        func_02000db4(buf, a);
+        MTX_Copy44To43(buf, a);
     }
     if (b != 0) {
         while (G3X_GetVectorMtx(b) != 0) {}

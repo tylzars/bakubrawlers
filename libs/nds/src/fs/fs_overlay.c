@@ -24,27 +24,27 @@ extern FSArchive data_020bfcb4;
 extern u32 data_020baef8[];   // digest table start
 extern u32 data_020baef8_end[];
 
-void func_0200a7b4(FSFile *f);
-BOOL func_0200a9dc(FSFile *f, FSArchive *arc, u32 start, u32 end, int id);
-BOOL func_0200aa24(FSFile *f, FSFileID id);
-BOOL func_0200aadc(FSFile *f);
-int func_0200ac30(FSFile *f, void *buf, int len);
-u32 func_0200af5c(FSOverlayInfo *ov);
-void func_0200af78(FSOverlayInfo *ov);
-FSFileID func_0200afb4(FSOverlayInfo *ov);
-BOOL func_0200afdc(FSOverlayInfo *out, int target, int id, FSArchive *arc, u32 off9, u32 size9, u32 off7, u32 size7);
-BOOL func_0200b0d4(FSOverlayInfo *out, int target, int id);
-BOOL func_0200b1d0(FSOverlayInfo *ov);
-void func_0200b928(u8 *digest, const void *data, u32 len, const void *key, u32 keylen);
-BOOL func_0200b260(const u8 *expected, const void *data, u32 len);
+void FS_InitFile(FSFile *f);
+BOOL FS_OpenFileRange(FSFile *f, FSArchive *arc, u32 start, u32 end, int id);
+BOOL FS_OpenFileById(FSFile *f, FSFileID id);
+BOOL FS_CloseFile(FSFile *f);
+int FS_ReadFile(FSFile *f, void *buf, int len);
+u32 GetOverlayReadSize(FSOverlayInfo *ov);
+void FS_InvalidateOverlayAndClearBss(FSOverlayInfo *ov);
+FSFileID FS_GetOverlayFileID(FSOverlayInfo *ov);
+BOOL ReadOverlayInfoEntry(FSOverlayInfo *out, int target, int id, FSArchive *arc, u32 off9, u32 size9, u32 off7, u32 size7);
+BOOL FS_LoadOverlayInfo(FSOverlayInfo *out, int target, int id);
+BOOL FS_ReadOverlayFile(FSOverlayInfo *ov);
+void MATH_HmacSHA1(u8 *digest, const void *data, u32 len, const void *key, u32 keylen);
+BOOL CompareDigest(const u8 *expected, const void *data, u32 len);
 void func_0200b2f4(FSOverlayInfo *ov);
-void func_0200b3e8(FSOverlayInfo *ov);
+void RunOverlayDestructors(FSOverlayInfo *ov);
 BOOL func_0200b4d8(FSOverlayInfo *ov);
 void OS_Terminate(void);
-void func_02000970(void *p);
+void UnpackBackwards(void *p);
 void DC_FlushRange(void *p, u32 n);
 
-BOOL func_0200afdc(FSOverlayInfo *out, int target, int id, FSArchive *arc, u32 off9, u32 size9, u32 off7, u32 size7)
+BOOL ReadOverlayInfoEntry(FSOverlayInfo *out, int target, int id, FSArchive *arc, u32 off9, u32 size9, u32 off7, u32 size7)
 {
     FSOvtLoc pr;
     FSFile tmp;
@@ -59,23 +59,23 @@ BOOL func_0200afdc(FSOverlayInfo *out, int target, int id, FSArchive *arc, u32 o
     }
     pos = (u32) id * 0x20;
     if (pos >= pr.size) return FALSE;
-    func_0200a7b4(&tmp);
-    if (!func_0200a9dc(&tmp, arc, pr.ptr + pos, pr.ptr + pr.size, -1)) return FALSE;
-    if (func_0200ac30(&tmp, out, 0x20) != 0x20) {
-        func_0200aadc(&tmp);
+    FS_InitFile(&tmp);
+    if (!FS_OpenFileRange(&tmp, arc, pr.ptr + pos, pr.ptr + pr.size, -1)) return FALSE;
+    if (FS_ReadFile(&tmp, out, 0x20) != 0x20) {
+        FS_CloseFile(&tmp);
         return FALSE;
     }
-    func_0200aadc(&tmp);
+    FS_CloseFile(&tmp);
     out->target = target;
-    fid = func_0200afb4(out);
-    if (!func_0200aa24(&tmp, fid)) return FALSE;
+    fid = FS_GetOverlayFileID(out);
+    if (!FS_OpenFileById(&tmp, fid)) return FALSE;
     out->start = tmp.f24;
     out->length = tmp.f28 - tmp.f24;
-    func_0200aadc(&tmp);
+    FS_CloseFile(&tmp);
     return TRUE;
 }
 
-BOOL func_0200b0d4(FSOverlayInfo *out, int target, int id)
+BOOL FS_LoadOverlayInfo(FSOverlayInfo *out, int target, int id)
 {
     FSOvtLoc *loc = target == 0 ? &data_020bfca4 : &data_020bfcac;
     FSFile tmp;
@@ -85,33 +85,33 @@ BOOL func_0200b0d4(FSOverlayInfo *out, int target, int id)
         if (pos >= loc->size) return FALSE;
         MI_CpuCopy8((void *) (loc->ptr + pos), out, 0x20);
         out->target = target;
-        func_0200a7b4(&tmp);
-        fid = func_0200afb4(out);
-        if (!func_0200aa24(&tmp, fid)) return FALSE;
+        FS_InitFile(&tmp);
+        fid = FS_GetOverlayFileID(out);
+        if (!FS_OpenFileById(&tmp, fid)) return FALSE;
         out->start = tmp.f24;
         out->length = tmp.f28 - tmp.f24;
-        func_0200aadc(&tmp);
+        FS_CloseFile(&tmp);
         return TRUE;
     }
-    return func_0200afdc(out, target, id, &data_020bfcb4, ((FSOvtHdr *) 0x27ffe50)->off9, ((FSOvtHdr *) 0x27ffe50)->size9, ((FSOvtHdr *) 0x27ffe50)->off7, ((FSOvtHdr *) 0x27ffe50)->size7);
+    return ReadOverlayInfoEntry(out, target, id, &data_020bfcb4, ((FSOvtHdr *) 0x27ffe50)->off9, ((FSOvtHdr *) 0x27ffe50)->size9, ((FSOvtHdr *) 0x27ffe50)->off7, ((FSOvtHdr *) 0x27ffe50)->size7);
 }
 
-BOOL func_0200b1d0(FSOverlayInfo *ov)
+BOOL FS_ReadOverlayFile(FSOverlayInfo *ov)
 {
     FSFile tmp;
     FSFileID fid;
     u32 size, n;
-    func_0200a7b4(&tmp);
-    fid = func_0200afb4(ov);
-    if (!func_0200aa24(&tmp, fid)) return FALSE;
-    size = func_0200af5c(ov);
-    func_0200af78(ov);
-    n = func_0200ac30(&tmp, (void *) ov->ram_addr, size);
+    FS_InitFile(&tmp);
+    fid = FS_GetOverlayFileID(ov);
+    if (!FS_OpenFileById(&tmp, fid)) return FALSE;
+    size = GetOverlayReadSize(ov);
+    FS_InvalidateOverlayAndClearBss(ov);
+    n = FS_ReadFile(&tmp, (void *) ov->ram_addr, size);
     if (size != n) {
-        func_0200aadc(&tmp);
+        FS_CloseFile(&tmp);
         return FALSE;
     }
-    func_0200aadc(&tmp);
+    FS_CloseFile(&tmp);
     return TRUE;
 }
 
@@ -120,14 +120,14 @@ extern FSHmacKey data_020a4f44;
 
 void MI_CpuCopy8(const void *src, void *dst, u32 n);
 
-BOOL func_0200b260(const u8 *expected, const void *data, u32 len)
+BOOL CompareDigest(const u8 *expected, const void *data, u32 len)
 {
     int i;
     u8 digest[20];
     u8 key[0x40];
     MI_CpuFill8(digest, 0, sizeof(digest));
     MI_CpuCopy8(data_020a4f44.key, key, data_020a4f44.keylen);
-    func_0200b928(digest, data, len, key, data_020a4f44.keylen);
+    MATH_HmacSHA1(digest, data, len, key, data_020a4f44.keylen);
     for (i = 0; i < sizeof(digest); i += sizeof(u32)) {
         if (*(const u32 *) (digest + i) != *(const u32 *) (expected + i)) break;
     }
@@ -136,7 +136,7 @@ BOOL func_0200b260(const u8 *expected, const void *data, u32 len)
 
 void func_0200b2f4(FSOverlayInfo *ov)
 {
-    u32 size = func_0200af5c(ov);
+    u32 size = GetOverlayReadSize(ov);
     void (**p)(void);
     void (**end)(void);
     if (*(u16 *) 0x027ffc40 == 2) {
@@ -144,7 +144,7 @@ void func_0200b2f4(FSOverlayInfo *ov)
         if ((ov->flags & 2) != 0) {
             int n = ((int) data_020baef8_end - (int) data_020baef8) / 0x14;
             if (ov->id < n) {
-                ok = func_0200b260(((const u8 *) data_020baef8 + ov->id * 0x14), (void *) ov->ram_addr, size);
+                ok = CompareDigest(((const u8 *) data_020baef8 + ov->id * 0x14), (void *) ov->ram_addr, size);
             }
         }
         if (!ok) {
@@ -154,7 +154,7 @@ void func_0200b2f4(FSOverlayInfo *ov)
         }
     }
     if ((ov->flags & 1) != 0) {
-        func_02000970((void *) (ov->ram_addr + size));
+        UnpackBackwards((void *) (ov->ram_addr + size));
     }
     DC_FlushRange((void *) ov->ram_addr, ov->ram_size);
     p = (void (**)(void)) ov->sinit_start;
@@ -167,7 +167,7 @@ void func_0200b2f4(FSOverlayInfo *ov)
 typedef struct DtorNode { struct DtorNode *next; void (*func)(void *); void *arg; } DtorNode;
 extern DtorNode *data_020c17a4;
 
-void func_0200b3e8(FSOverlayInfo *ov)
+void RunOverlayDestructors(FSOverlayInfo *ov)
 {
     while (1) {
         DtorNode *removed = NULL;
@@ -218,21 +218,21 @@ void func_0200b3e8(FSOverlayInfo *ov)
 
 BOOL func_0200b4d8(FSOverlayInfo *ov)
 {
-    func_0200b3e8(ov);
+    RunOverlayDestructors(ov);
     return TRUE;
 }
 
-BOOL func_0200b4e8(int target, int id)
+BOOL FS_LoadOverlay(int target, int id)
 {
     FSOverlayInfo ov;
-    if (!func_0200b0d4(&ov, target, id) || !func_0200b1d0(&ov)) return FALSE;
+    if (!FS_LoadOverlayInfo(&ov, target, id) || !FS_ReadOverlayFile(&ov)) return FALSE;
     func_0200b2f4(&ov);
     return TRUE;
 }
 
-BOOL func_0200b53c(int target, int id)
+BOOL FS_RunOverlayDestructorsById(int target, int id)
 {
     FSOverlayInfo ov;
-    if (!func_0200b0d4(&ov, target, id) || !func_0200b4d8(&ov)) return FALSE;
+    if (!FS_LoadOverlayInfo(&ov, target, id) || !func_0200b4d8(&ov)) return FALSE;
     return TRUE;
 }

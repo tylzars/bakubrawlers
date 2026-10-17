@@ -46,7 +46,7 @@ u32 OS_ResetRequestIrqMask(u32 mask) {
 
 extern char SDK_IRQ_STACKSIZE[];
 
-void func_02004c1c(void) {
+void WriteIrqStackMarkers(void) {
     u32 top = HW_DTCM + 0x3f80;
     *(u32 *) (HW_DTCM + 0x3f7c) = 0xfddb597d;
     *(u32 *) (top - (u32) SDK_IRQ_STACKSIZE) = 0x7bf9dd5b;

@@ -7,13 +7,13 @@ extern void OS_RestoreInterrupts(u32 state);                // OS_RestoreInterru
 extern void func_020081ac(void *start, void *end);
 extern void func_020081cc(void *start, void *end);
 extern void func_020081ec(void *start, void *end);
-extern void func_02008d28(void *p);
-extern void func_02008dc0(void *p);
+extern void UnlinkBankFromWaveArcs(void *p);
+extern void ClearWaveArcLinks(void *p);
 extern u32 func_02009014(u32 wave, int idx);
 extern void func_02008fe0(u32 wave, int idx, u32 data);
 extern u32 func_02008fd8(u32 wave);
-extern void func_02008e08(void *iter);
-extern int func_02008e28(u32 bank, void *entry, void *iter);
+extern void ClearInstPos(void *iter);
+extern int GetNextInstData(u32 bank, void *entry, void *iter);
 extern void MI_CpuCopy8(void *dst, void *src, u32 n);
 extern void MI_CpuFill8(void *dst, u32 data, u32 size);
 typedef struct { u8 pad[0x38]; u32 count; } SndWaveHdr;   // 0x3c bytes of wave archive header
@@ -125,18 +125,18 @@ void func_02038d34(void *p, u32 size, u32 x, u32 id) {
 void BankFileFreeCallback(void *p, u32 size, u32 x, u32 id) {
     ClearMatchingFatEntryCache(p, x, id);
     func_020081cc(p, (u8 *)p + size);
-    func_02008d28(p);
+    UnlinkBankFromWaveArcs(p);
 }
 
 void WaveArcFileFreeCallback(void *p, u32 size, u32 x, u32 id) {
     ClearMatchingFatEntryCache(p, x, id);
     func_020081ec(p, (u8 *)p + size);
-    func_02008dc0(p);
+    ClearWaveArcLinks(p);
 }
 
 void SplitWaveArcFreeCallback(void *p, u32 size, u32 x, u32 id) {
     ClearMatchingFatEntryCache(p, x, id);
-    func_02008dc0(p);
+    ClearWaveArcLinks(p);
 }
 
 void WaveArcEntryFreeCallback(void *p, u32 size, u32 wave, u32 idx) {   // free callback for a single wave
@@ -171,10 +171,10 @@ int LoadBankWaveArcEntries(u32 wave, u32 bank, int idx, u32 file, SndHeap *heap)
     SndWaveEnt ent;
     SndIter it1;
     SndIter it0;
-    func_02008e08(&it0);
+    ClearInstPos(&it0);
     it1 = it0;
     if (bank == 0) return 0;
-    while (func_02008e28(bank, &ent, &it1) != 0) {
+    while (GetNextInstData(bank, &ent, &it1) != 0) {
         if (ent.type == 1 && idx == ent.b) {
             if (LoadWaveArcEntry(wave, ent.a, file, heap) == 0) return 0;
         }

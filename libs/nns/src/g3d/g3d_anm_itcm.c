@@ -94,7 +94,7 @@ extern const u8 data_0208b4bc[][4]; // 4-byte stride tables: output slot for eac
 extern const u8 data_0208b4bd[][4];
 extern const u8 data_0208b4be[];
 extern const u8 data_0208b4bf[];
-void func_01ff97f4(void *mtx);
+void MI_Zero36B(void *mtx);
 
 typedef struct PivotOut {
     u32 mFlags;      // 0x0: bit 1 = rotation unavailable
@@ -126,7 +126,7 @@ void func_01ff99e4(PivotOut *out) {
             k = (p[0] & 0xf0) >> 4;
             a = v[0];
             b = v[1];
-            func_01ff97f4(out->mMtx);
+            MI_Zero36B(out->mMtx);
             out->mMtx[k] = (p[0] & 0x100) ? -0x1000 : 0x1000;
             out->mMtx[data_0208b4bc[k][0]] = a;
             out->mMtx[data_0208b4bd[k][0]] = b;

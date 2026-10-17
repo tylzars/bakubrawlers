@@ -6,7 +6,7 @@ extern u32 OS_CountLeadingZeros(u32 x);   // 0x0200745c (asm)
 static u32 irqOwnerMask;
 static u16 irqOwnerTable[9];
 
-void func_02007464(void) {
+void ClearOwnerTable(void) {
     int i;
     irqOwnerMask = 0;
     for (i = 0; i < 9; i++) {
@@ -14,7 +14,7 @@ void func_02007464(void) {
     }
 }
 
-void func_02007498(u32 mask, u16 tag) {
+void ClearMatchingOwnerEntries(u32 mask, u16 tag) {
     u32 bits;
     int i;
     OSIntrMode e = OS_DisableInterrupts();

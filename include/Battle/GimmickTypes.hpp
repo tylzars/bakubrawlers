@@ -134,7 +134,7 @@ public:
 };
 
 void func_ov007_0226a380(BattlePlayer *player, u8 record, int unk);
-extern "C" void func_01ffd088(MtxFx43 *m, u16 angle);                       // rotate about X
+extern "C" void MTX_ApplyRotX43(MtxFx43 *m, u16 angle);                       // rotate about X
 extern "C" void func_01ff89c0(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);        // a * b
 extern MtxFx43 gIdentityMtx43;
 
@@ -174,7 +174,7 @@ public:
 
 void func_ov007_0225ca18(BattleTarget *target, int a, int b);
 extern "C" void func_01ff84d0(VecFx32 *vec, MtxFx33 *m, VecFx32 *out);
-extern "C" void func_01ffcfd8(MtxFx33 *m, u16 angle);
+extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y); // atan2 (16-bit angle)
 extern MtxFx33 data_0220e848;
 

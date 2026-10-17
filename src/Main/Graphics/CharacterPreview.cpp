@@ -6,7 +6,7 @@
 
 extern u8 gCharacterLook[];
 extern MtxFx43 gIdentityMtx43;
-extern "C" void func_01ffcf64(MtxFx43 *mtx, VecFx32 *pos);
+extern "C" void MTX_SetTranslation43(MtxFx43 *mtx, VecFx32 *pos);
 
 // 0x1bc bytes, built from /Game/Character/Character/charaNN files.
 // Custom character appearance as stored in the save data (8 bytes, gCharacterLook).
@@ -208,7 +208,7 @@ void UnkStruct_0205401c::Draw() {
     pos.x       = 0;
     pos.y       = -0x800;
     pos.z       = 0;
-    func_01ffcf64(&mtx, &pos);
+    MTX_SetTranslation43(&mtx, &pos);
     mShadow->AdvanceAnim();
     mShadow->Draw(&mtx, &scale);
 }

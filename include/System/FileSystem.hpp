@@ -8,11 +8,11 @@
 // Path prefix applied to relative file names.
 extern char gCurrentDir[];
 
-extern "C" BOOL func_0200acac(const char *dir);
+extern "C" BOOL FS_ChangeDir(const char *dir);
 
 static inline void ChangeDir(const char *dir) {
     sprintf(gCurrentDir, dir);
-    func_0200acac(dir);
+    FS_ChangeDir(dir);
 }
 
 void *LoadFile(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32 unk6);

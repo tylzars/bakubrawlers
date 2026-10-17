@@ -125,7 +125,7 @@ void BattleMapObj::Draw() {
         VecFx32 scale   = data_ov007_0227a13c;
         VecFx32 offset  = data_ov007_0227a148;
         mtx             = gIdentityMtx43;
-        func_01ffcf64(&mtx, &offset);
+        MTX_SetTranslation43(&mtx, &offset);
         func_01ff89c0(&mtx, camera, &mtx);
         mParts[0]->mModel->AdvanceAnim();
         mParts[0]->mModel->Draw(&mtx, &scale);

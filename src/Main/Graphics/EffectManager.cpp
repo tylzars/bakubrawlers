@@ -110,15 +110,15 @@ BOOL Effect::Update() {
                 }
                 mLocal[slot] = gIdentityMtx43;
                 if (mModelRot[1] != 0) {
-                    func_01ffd0e0(&mLocal[slot], mModelRot[1]);
+                    MTX_ApplyRotY43(&mLocal[slot], mModelRot[1]);
                 }
                 if (mModelRot[0] != 0) {
-                    func_01ffd088(&mLocal[slot], mModelRot[0]);
+                    MTX_ApplyRotX43(&mLocal[slot], mModelRot[0]);
                 }
                 if (mModelRot[2] != 0) {
-                    func_01ffd138(&mLocal[slot], mModelRot[2]);
+                    MTX_ApplyRotZ43(&mLocal[slot], mModelRot[2]);
                 }
-                func_01ffcf64(&mLocal[slot], &mModelPos);
+                MTX_SetTranslation43(&mLocal[slot], &mModelPos);
                 mLocalScale[slot]  = mModelScale;
                 mWorldDone[slot]   = 0;
                 mScaleDone[slot]   = 0;
@@ -211,15 +211,15 @@ BOOL Effect::Update() {
     if (mMtxSet == 0) {
         mMtx = gIdentityMtx43;
         if (mRot[1] != 0) {
-            func_01ffd0e0(&mMtx, mRot[1]);
+            MTX_ApplyRotY43(&mMtx, mRot[1]);
         }
         if (mRot[0] != 0) {
-            func_01ffd088(&mMtx, mRot[0]);
+            MTX_ApplyRotX43(&mMtx, mRot[0]);
         }
         if (mRot[2] != 0) {
-            func_01ffd138(&mMtx, mRot[2]);
+            MTX_ApplyRotZ43(&mMtx, mRot[2]);
         }
-        func_01ffcf64(&mMtx, &mPos);
+        MTX_SetTranslation43(&mMtx, &mPos);
     }
     mRunning = 0;
     for (u8 i = 0; i < 10; i++) {

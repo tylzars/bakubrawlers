@@ -10,12 +10,12 @@ typedef struct DecForm {
     short ndigits;
 } DecForm;
 
-extern int func_0201d67c(double);
-extern int func_0201d690(double);
-extern double func_0201bd20(double, int *);
-extern double func_0201bddc(double, int);
+extern int GetSignBit(double);
+extern int ClassifyDouble(double);
+extern double frexp(double, int *);
+extern double scalbn(double, int);
 extern unsigned long long func_0201dbec(double);
-extern int func_0201d5e8(unsigned long long);
+extern int CountSetBits64(unsigned long long);
 extern void func_0201c5b4(Dec *, int);
 extern void func_0201c2c8(Dec *, unsigned long long);
 extern void func_0201c394(Dec *, const Dec *, const Dec *);
@@ -23,7 +23,7 @@ extern void func_0201c288(Dec *, int);
 
 void func_0201cd9c(Dec *d, double x)
 {
-    char sign = func_0201d67c(x) != 0;
+    char sign = GetSignBit(x) != 0;
     Dec iv, p2;
     int e, n;
     double f, t;
@@ -36,20 +36,20 @@ void func_0201cd9c(Dec *d, double x)
         d->text[0] = 0;
         return;
     }
-    if (func_0201d690(x) <= 2) {
+    if (ClassifyDouble(x) <= 2) {
         d->sign = sign;
         d->exp = 0;
         d->len = 1;
-        d->text[0] = (func_0201d690(x) == 1) ? 'N' : 'I';
+        d->text[0] = (ClassifyDouble(x) == 1) ? 'N' : 'I';
         return;
     }
     if (sign) x = -x;
-    f = func_0201bd20(x, &e);
+    f = frexp(x, &e);
     t = f;
     bits = *(unsigned long long *)&t | 0x0010000000000000ULL;
-    n = 53 - func_0201d5e8((bits & -bits) - 1);
+    n = 53 - CountSetBits64((bits & -bits) - 1);
     func_0201c5b4(&p2, e - n);
-    func_0201c2c8(&iv, func_0201dbec(func_0201bddc(f, n)));
+    func_0201c2c8(&iv, func_0201dbec(scalbn(f, n)));
     func_0201c394(d, &iv, &p2);
     d->sign = sign;
 }

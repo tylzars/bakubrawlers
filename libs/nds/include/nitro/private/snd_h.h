@@ -17,7 +17,7 @@ extern BOOL PXI_IsCallbackReady(int fifoTag, int proc);               // 0x02009
 extern int PXI_SendWordByFifo(int fifoTag, u32 data, BOOL err);       // 0x020091cc
 
 // snd_cmdwrap / snd_command
-extern void func_020082a4(u32 id, u32 a, u32 b, u32 c, u32 d);
+extern void PushNewCommand(u32 id, u32 a, u32 b, u32 c, u32 d);
 extern void func_02008254(u32 a, u32 b, u32 c, u32 d);
 extern void func_0200827c(u32 a, u32 b, u32 c, u32 d, u32 e);
 extern SNDCommand *SND_AllocCommand(u32 flags);
@@ -34,17 +34,17 @@ extern void SND_LockMutex(void);
 extern void SND_UnlockMutex(void);
 extern void func_02008948(void);
 extern void func_020089a8(void);
-extern SNDCommand *func_020089d0(void);
+extern SNDCommand *PopFreeCommand(void);
 extern BOOL func_02008a18(void);
-extern void func_02008a58(void);
-extern void func_02008a88(int idx);
-extern u32 func_02008aa8(int idx, void (*cb)(void *), void *arg);
-extern void func_02008ad8(u32 data);
+extern void ClearAlarmTable(void);
+extern void IncrementAlarmCount(int idx);
+extern u32 SetAlarmCallback(int idx, void (*cb)(void *), void *arg);
+extern void CallAlarmCallback(u32 data);
 extern u32 func_02008b1c(void);
 extern u32 func_02008b48(void);
-extern void func_02008b70(void *work);
+extern void InitSharedWork(void *work);
 extern u32 func_02005a60(void);
 extern void OS_InitMutex(OSMutex *mutex);
 extern void OS_LockMutex(OSMutex *mutex);
 extern void OS_UnlockMutex(OSMutex *mutex);
-extern void func_02008924(int tag, u32 data, BOOL err);
+extern void SndFifoReceive(int tag, u32 data, BOOL err);

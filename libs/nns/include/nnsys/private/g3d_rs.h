@@ -55,8 +55,8 @@ struct Rs {
 extern Rs *data_020baf00;
 extern void MIi_CpuClearFast(u32 data, void *dst, u32 size);
 extern void MIi_CpuClear32(u32 data, void *dst, u32 size);
-extern void func_01ff93d8(u32 cmd, const void *params, u32 count);
-extern void func_01ff9328(const void *data, u32 size);
+extern void SendFifoCommand(u32 cmd, const void *params, u32 count);
+extern void SendFifoCommandBlock(const void *data, u32 size);
 
 // Material data in the model resource (parts used by the SBC renderer).
 typedef struct MatRes {
@@ -101,4 +101,4 @@ typedef struct NodeRes {
     s16 hw02;          // 0x02
     s32 data[1];       // 0x04...
 } NodeRes;
-extern void func_01ff97f4(void *mtx33);   // MTX_Identity33 (thumb)
+extern void MI_Zero36B(void *mtx33);   // MTX_Identity33 (thumb)

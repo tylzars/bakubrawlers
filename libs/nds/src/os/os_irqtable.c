@@ -20,9 +20,9 @@ extern OSThreadQueue data_027e0060q;
 
 #define IRQ_CHECK (*(vu32 *) (HW_DTCM + 0x3ff8))
 
-// func_020047d8: copies 12 words from src, three at a time, to the same
+// MI_Send48B: copies 12 words from src, three at a time, to the same
 // destination address dst (nothing advances dst).
-asm void func_020047d8(const u32 *src, vu32 *dst) {
+asm void MI_Send48B(const u32 *src, vu32 *dst) {
     ldmia r0!, {r2, r3, ip}
     stmia r1, {r2, r3, ip}
     ldmia r0!, {r2, r3, ip}
@@ -34,9 +34,9 @@ asm void func_020047d8(const u32 *src, vu32 *dst) {
     bx lr
 }
 
-// func_020047fc: copies 32 words from src, eight at a time, to the single
+// MI_Send128B: copies 32 words from src, eight at a time, to the single
 // destination address dst (nothing advances dst).
-asm void func_020047fc(const u32 *src, vu32 *dst) {
+asm void MI_Send128B(const u32 *src, vu32 *dst) {
     stmfd sp!, {r4, r5, r6, r7, r8}
     ldmia r0!, {r2, r3, r4, r5, r6, r7, r8, ip}
     stmia r1, {r2, r3, r4, r5, r6, r7, r8, ip}
@@ -50,9 +50,9 @@ asm void func_020047fc(const u32 *src, vu32 *dst) {
     bx lr
 }
 
-// func_02004828(clear, mask): optionally clears 'mask' in the interrupt-check
+// SleepUntilIrq(clear, mask): optionally clears 'mask' in the interrupt-check
 // word, then sleeps on a thread queue until any bit of mask is set there.
-void func_02004828(BOOL clear, u32 mask) {
+void SleepUntilIrq(BOOL clear, u32 mask) {
     OSIntrMode e = OS_DisableInterrupts();
     if (clear) {
         IRQ_CHECK &= ~mask;
@@ -67,11 +67,11 @@ void func_02004828(BOOL clear, u32 mask) {
 void func_0200489c(void) {
 }
 
-// func_020048a0(n): common interrupt trampoline for slot n. Takes the slot's
+// RunIrqSlot(n): common interrupt trampoline for slot n. Takes the slot's
 // callback and clears it, marks the slot's interrupt bit in the check word,
 // calls the callback with its argument, and masks the interrupt again unless
 // the slot is flagged to stay enabled.
-void func_020048a0(int n) {
+void RunIrqSlot(int n) {
     u32 bit = 1 << data_020a4f28[n];
     void (*fn)(void *) = data_020bdc60[n].fn;
     data_020bdc60[n].fn = 0;
@@ -84,17 +84,17 @@ void func_020048a0(int n) {
     }
 }
 
-void func_02004928(void) { func_020048a0(0); }
-void func_02004938(void) { func_020048a0(1); }
-void func_02004948(void) { func_020048a0(2); }
-void func_02004958(void) { func_020048a0(3); }
-void func_02004968(void) { func_020048a0(4); }
-void func_02004978(void) { func_020048a0(5); }
-void func_02004988(void) { func_020048a0(6); }
-void func_02004998(void) { func_020048a0(7); }
+void RunIrqSlot0(void) { RunIrqSlot(0); }
+void RunIrqSlot1(void) { RunIrqSlot(1); }
+void RunIrqSlot2(void) { RunIrqSlot(2); }
+void RunIrqSlot3(void) { RunIrqSlot(3); }
+void RunIrqSlot4(void) { RunIrqSlot(4); }
+void RunIrqSlot5(void) { RunIrqSlot(5); }
+void RunIrqSlot6(void) { RunIrqSlot(6); }
+void RunIrqSlot7(void) { RunIrqSlot(7); }
 
-// func_020049a8: zeroes two words of the block at data_027e0060.
-void func_020049a8(void) {
+// ClearIrqWaitQueue: zeroes two words of the block at data_027e0060.
+void ClearIrqWaitQueue(void) {
     data_027e0060.b = 0;
     data_027e0060.a = 0;
 }

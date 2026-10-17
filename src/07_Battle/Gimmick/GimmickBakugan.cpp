@@ -6,8 +6,8 @@ static ModelResource *sResources[2];
 
 GimmickBakugan::GimmickBakugan(u8 a, u8 variant)
     : Gimmick(a, 0) {
-    mAnimFrames = 0;
-    mAnimTimer  = 0;
+    mPauseFrameCount = 0;
+    mPauseTimer  = 0;
     mState      = 0;
     mType     = GIMMICK_TYPE_BAKUGAN;
     mVariant    = variant;
@@ -52,14 +52,14 @@ void GimmickBakugan::Load() {
             sResources[0] = new ModelResource("subterra_majin.nsbmd", "subterra_majin_data.bin", "subterra_majin.nsbtx", 1);
         }
         mVariant    = 0;
-        mAnimFrames = 0x2bc;
+        mPauseFrameCount = 0x2bc;
         break;
     case 5:
         if (!sResources[0]) {
             sResources[0] = new ModelResource("haos_tig.nsbmd", "haos_tig_data.bin", "haos_tig.nsbtx", 1);
         }
         mVariant    = 0;
-        mAnimFrames = 0x2bc;
+        mPauseFrameCount = 0x2bc;
         break;
     case 6:
         if (!sResources[0]) {
@@ -122,11 +122,11 @@ void GimmickBakugan::Update() {
         }
         DrawInstance();
         ModelAnim *anim;
-        if (mAnimFrames && (anim = mModel->mAnim) && anim->mReachedEnd) {
+        if (mPauseFrameCount && (anim = mModel->mAnim) && anim->mReachedEnd) {
             mState++;
             anim->SetFrame(0, 5);
             anim->mPaused = 1;
-            mAnimTimer    = mAnimFrames;
+            mPauseTimer    = mPauseFrameCount;
         }
         break;
     }
@@ -135,7 +135,7 @@ void GimmickBakugan::Update() {
             return;
         }
         DrawInstance();
-        if (--mAnimTimer != 0) {
+        if (--mPauseTimer != 0) {
             return;
         }
         mState = 1;

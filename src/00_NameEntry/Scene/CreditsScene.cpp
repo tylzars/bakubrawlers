@@ -26,8 +26,8 @@ CreditsScene::CreditsScene() :
         mRow[i] = 0;
         mBuffers[i] = NULL;
     }
-    mTimer[0] = 0;
-    mTimer[1] = 12;
+    mRowCount[0] = 0;
+    mRowCount[1] = 12;
     FrameTask::Get().StartChannel(0, 0xf);
 }
 
@@ -140,8 +140,8 @@ BOOL CreditsScene::UpdateText() {
         for (unsigned long i = 0; i < 2; i++) {
             switch (mColState[i]) {
                 case 0:
-                    mTimer[i]++;
-                    if (mTimer[i] > 0xc) {
+                    mRowCount[i]++;
+                    if (mRowCount[i] > 0xc) {
                         mScroll[i] = 0;
                         mMessageIndex[i] = 0;
                         mRow[i] = 0xc;
@@ -156,7 +156,7 @@ BOOL CreditsScene::UpdateText() {
                     PrintLine(mMessageIndex[i], mRow[i], i, 1);
                     mMessageIndex[i]++;
                     if (mMessageIndex[i] > *(u16 *) mMessages - 1) {
-                        mTimer[i] = 0;
+                        mRowCount[i] = 0;
                         mColState[i]++;
                     }
                     break;
@@ -166,8 +166,8 @@ BOOL CreditsScene::UpdateText() {
                         mRow[i] = 0;
                     }
                     PrintLine(mMessageIndex[i], mRow[i], i, 0);
-                    mTimer[i]++;
-                    if (mTimer[i] > 0x10) {
+                    mRowCount[i]++;
+                    if (mRowCount[i] > 0x10) {
                         mColState[i]++;
                     }
                     break;

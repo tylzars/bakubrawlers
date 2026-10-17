@@ -9,7 +9,7 @@
 class LogoScene : public SceneBase {
 public:
     /* 00 (base) */
-    /* 0c */ u16 mFrames;
+    /* 0c */ u16 mWaitFrames;
     /* 0e */ u8 mState;
     /* 0f */
 

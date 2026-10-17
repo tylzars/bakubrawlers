@@ -93,7 +93,7 @@ BattleMoneyReward::BattleMoneyReward()
     mMessages    = 0;
     mTextBuffer  = 0;
     mGlyphBuffer = 0;
-    MI_CpuClear16(mFrames, 0xc);
+    MI_CpuClear16(mSparkleFrames, 0xc);
     switch (gSaveData[0].mUnk_42) {
         case 1:
             mKind = 0;
@@ -284,13 +284,13 @@ void BattleMoneyReward::Update() {
                 hit = mSparkleSoundTimer > 0;
                 do {
                     u32 length = mAnimsB[n]->GetDuration();
-                    mFrames[k]++;
-                    if (mFrames[k] >= length) {
-                        mFrames[k] = 0;
+                    mSparkleFrames[k]++;
+                    if (mSparkleFrames[k] >= length) {
+                        mSparkleFrames[k] = 0;
                     }
                     if (!hit) {
                         u8 m;
-                        u16 frame = mFrames[k];
+                        u16 frame = mSparkleFrames[k];
                         for (m = 0; m < 2; m++) {
                             if (frame == sSparkleFrames[k][m]) {
                                 SoundManager::Get().StartSeqArc(0x70);
@@ -409,7 +409,7 @@ void BattleMoneyReward::Init() {
     }
     for (u8 i = 3; i < 9; i++) {
         mAnimsB[i]->GetDuration();
-        mFrames[i - 3] = 0;
+        mSparkleFrames[i - 3] = 0;
     }
     ChangeDir("/");
     mMessages = (MessageFile *) LoadFile("/font/mes_result.mes", 0, 0, 0, 0, 0);

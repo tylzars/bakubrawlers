@@ -66,7 +66,7 @@ void LogoScene::Update() {
             LoadActivisionLogo();
             LoadNelvanaLogo();
             SpriteManager::Get().StartFade(2);
-            mFrames = 0;
+            mWaitFrames = 0;
             mState++;
             break;
         case 5:
@@ -86,7 +86,7 @@ void LogoScene::Update() {
             LoadNowLogo();
             LoadCriLogo();
             SpriteManager::Get().StartFade(2);
-            mFrames = 0;
+            mWaitFrames = 0;
             mState++;
             break;
         case 7:
@@ -106,7 +106,7 @@ void LogoScene::Update() {
             LoadLegaltextLogo();
             LoadMobiclipLogo();
             SpriteManager::Get().StartFade(2);
-            mFrames = 0;
+            mWaitFrames = 0;
             mState++;
             break;
         case 9:
@@ -149,13 +149,13 @@ void LogoScene::InitDisplay() {
 
 BOOL LogoScene::WaitFrames(u32 maxFrames, u32 minFrames) {
     BOOL done = FALSE;
-    mFrames++;
-    if (mFrames >= minFrames) {
+    mWaitFrames++;
+    if (mWaitFrames >= minFrames) {
         if (TouchManager::Get().mPressed | (InputManager::Get().IsHeld(1) | InputManager::Get().IsHeld(8))) {
             done = TRUE;
         }
     }
-    if (mFrames >= maxFrames) {
+    if (mWaitFrames >= maxFrames) {
         done = TRUE;
     }
     return done;

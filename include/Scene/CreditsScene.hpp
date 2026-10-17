@@ -17,7 +17,7 @@ public:
     /* 20 */ u32 mScroll[2];
     /* 28 */ s16 mMessageIndex[2];
     /* 2c */ u8 mColState[2];
-    /* 2e */ u8 mTimer[2];
+    /* 2e */ u8 mRowCount[2];
     /* 30 */ u8 mRow[2];
     /* 32 */
 

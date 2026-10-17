@@ -32,7 +32,7 @@ BattleUnionAbility::BattleUnionAbility(u8 type, u32 charOffset, u16 palette)
     mAnimA = 0;
     mAnimB = 0;
     mSlide = 0x104;
-    mTimer = 0;
+    mStateFrames = 0;
     mState = 0;
     mType  = type;
     mChoice = 0;
@@ -77,7 +77,7 @@ BattleUnionAbility::~BattleUnionAbility() {
 
 void BattleUnionAbility::Update() {
     if (mCancel != 0 && mState >= 1) {
-        mTimer = 0;
+        mStateFrames = 0;
         mState = 7;
     }
     switch (mState) {
@@ -87,9 +87,9 @@ void BattleUnionAbility::Update() {
             mState++;
             break;
         case 1:
-            mTimer++;
-            if ((int) mTimer > 5) {
-                mTimer = 0;
+            mStateFrames++;
+            if ((int) mStateFrames > 5) {
+                mStateFrames = 0;
                 mState++;
                 G2S_SetBlendBrightness(0x11, -5);
             }
@@ -117,13 +117,13 @@ void BattleUnionAbility::Update() {
                     mChoice = 1;
                 }
                 mState++;
-                mTimer = 0;
+                mStateFrames = 0;
             }
             break;
         case 4:
-            mTimer++;
-            if ((int) mTimer > 20) {
-                mTimer = 0;
+            mStateFrames++;
+            if ((int) mStateFrames > 20) {
+                mStateFrames = 0;
                 mState++;
             }
             break;

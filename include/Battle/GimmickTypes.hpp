@@ -21,8 +21,8 @@ class GimmickBakugan : public Gimmick {
 public:
     /* 45 */ u8 mVariant;
     /* 46 */ PAD(0x46, 0x48);
-    /* 48 */ s32 mAnimFrames;
-    /* 4c */ s32 mAnimTimer;
+    /* 48 */ s32 mPauseFrameCount;
+    /* 4c */ s32 mPauseTimer;
     /* 50 */
 
     GimmickBakugan(u8 a, u8 variant);
@@ -56,7 +56,7 @@ public:
     /* 50 */ u8 mKind;
     /* 51 */ u8 mStep;
     /* 52 */ PAD(0x52, 0x54);
-    /* 54 */ u32 mTimer;
+    /* 54 */ u32 mSequenceFrames;
     /* 58 */
 
     GimmickFieldDestroy(u8 a);

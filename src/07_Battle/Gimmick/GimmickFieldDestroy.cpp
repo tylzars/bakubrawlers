@@ -32,7 +32,7 @@ GimmickFieldDestroy::GimmickFieldDestroy(u8 a)
     mModelE = 0;
     mKind   = 0;
     mStep   = 0;
-    mTimer  = 0;
+    mSequenceFrames  = 0;
 }
 
 GimmickFieldDestroy::~GimmickFieldDestroy() {
@@ -136,7 +136,7 @@ void GimmickFieldDestroy::Update() {
             RemoveCollisionSet(data_020d433c.mGimmickCollision, set);
             mCollision = 0;
             func_ov007_0222b8b4();
-            mTimer++;
+            mSequenceFrames++;
             SoundManager::Get().StartSeqArc(4);
             mState++;
         }
@@ -211,10 +211,10 @@ found:
 }
 
 void GimmickFieldDestroy::UpdateKindSequence() {
-    if (mTimer) {
+    if (mSequenceFrames) {
         BattlePlayer *p;
         u8 kind = mKind;
-        if ((mTimer - 1) % sKindStepIntervals[kind] == 0) {
+        if ((mSequenceFrames - 1) % sKindStepIntervals[kind] == 0) {
             BattlePlayerList *plist = data_020d433c.mBattlePlayers;
             p                       = plist->mPlayers[plist->mTurnPlayer];
             switch (kind) {
@@ -272,13 +272,13 @@ void GimmickFieldDestroy::UpdateKindSequence() {
             mStep++;
             if (mStep >= sKindStepCounts[mKind]) {
                 mStep  = 0;
-                mTimer = 0;
+                mSequenceFrames = 0;
                 return;
             }
         }
     }
-    if (mTimer) {
-        mTimer++;
+    if (mSequenceFrames) {
+        mSequenceFrames++;
     }
 }
 

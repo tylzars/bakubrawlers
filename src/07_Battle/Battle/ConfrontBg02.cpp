@@ -22,8 +22,8 @@ ConfrontEmblem02::ConfrontEmblem02(u8 emblem) {
     mUnk_07_1 = 0;
     mUnk_07_2 = 0;
     mShrinkStarted = 0;
-    mTimer = 0;
-    mPhase = 0;
+    mStepFrames = 0;
+    mStep = 0;
     mPos = 0;
     mSpeed = 0;
     mAccel = 0;
@@ -46,8 +46,8 @@ void ConfrontEmblem02::Start(u8 side) {
     mSide = BattleRand32(2);
     mState = 0;
     mUnk_07_1 = 0;
-    mPhase = 0;
-    mTimer = 0;
+    mStep = 0;
+    mStepFrames = 0;
     mAngle = mSide == 0 ? -32.0f : 288.0f;
     mPos = 0;
     mSpeed = 0x148;
@@ -61,7 +61,7 @@ void ConfrontEmblem02::Start(u8 side) {
 void ConfrontEmblem02::Update() {
     switch (mState) {
         case 0:
-            switch (mPhase) {
+            switch (mStep) {
                 case 0:
                     if (mSide == 0) {
                         mAngle = mAngle + (float) mSpeed / 4096.0f;
@@ -72,13 +72,13 @@ void ConfrontEmblem02::Update() {
                     mPos += mSpeed;
                     if (mPos >= 0xa0000) {
                         mAngle = 128.0f;
-                        mPhase++;
+                        mStep++;
                     }
                     break;
                 case 1:
-                    mTimer++;
-                    if (mTimer > 5) {
-                        mPhase++;
+                    mStepFrames++;
+                    if (mStepFrames > 5) {
+                        mStep++;
                     }
                     break;
                 case 2:
@@ -107,8 +107,8 @@ void ConfrontEmblem02::StartShrink() {
         return;
     }
     if (mState == 0) {
-        if (mPhase != 2) {
-            mPhase = 2;
+        if (mStep != 2) {
+            mStep = 2;
         }
     }
     mShrinkStarted = 1;

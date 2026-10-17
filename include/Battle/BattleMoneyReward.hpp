@@ -29,7 +29,7 @@ public:
     /* 92 */ s16 mSlideB;
     /* 94 */ u16 mScroll;
     /* 96 */ s16 mHold;
-    /* 98 */ u16 mFrames[6];
+    /* 98 */ u16 mSparkleFrames[6];
     /* a4 */ u8 mAmountVisible;
     /* a5 */ u8 mState;
     /* a6 */ u8 mKind;

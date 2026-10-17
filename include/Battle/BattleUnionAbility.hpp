@@ -18,7 +18,7 @@ public:
     /* 14 */ CellAnimation *mAnims[2];
     /* 1c */ SelectWindow *mWindow;
     /* 20 */ s16 mSlide;
-    /* 22 */ u16 mTimer;
+    /* 22 */ u16 mStateFrames;
     /* 24 */ u8 mState;
     /* 25 */ u8 mType;
     /* 26 */ u8 mChoice;

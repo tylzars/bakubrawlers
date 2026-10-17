@@ -208,7 +208,7 @@ void BattleCpu::func_ov007_02231038() {
 
 u8 BattleCpu::func_ov007_022310f0() {
     u8 result = 0xff;
-    if (data_020d433c.mTutorialId != 0 || data_020d433c.mUnk_8a_0 != 0) {
+    if (data_020d433c.mTutorialId != 0 || data_020d433c.mLastBattle != 0) {
         return 0xff;
     }
     BOOL c = FALSE;
@@ -281,7 +281,7 @@ u8 BattleCpu::func_ov007_022310f0() {
 
 u8 BattleCpu::PickMarkerCell() {
     u8 roll = MATH_Rand32(&gRandom, 100);
-    u8 t    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f1;
+    u8 t    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCorner;
     if (roll < 50) {
         t = 4;
     } else if (roll < 75) {
@@ -728,7 +728,7 @@ void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 
     }
     roll = MATH_Rand32(&gRandom, 100);
     if (roll < data_ov007_0227970c[a]) {
-        u8 f1  = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f1;
+        u8 f1  = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCorner;
         u8 sel = data_020d433c.mUnk_96;
         switch (sel) {
         case 0:

@@ -21,9 +21,9 @@ struct ParkSlot {
 };
 
 struct SaveData {
-    /* 000 */ u16 mUnk_00[3];
-    /* 006 */ u16 mUnk_06[3];
-    /* 00c */ u16 mUnk_0c[3];
+    /* 000 */ u16 mSlotEntryIndices[3];
+    /* 006 */ u16 mSlots54Values[3];
+    /* 00c */ u16 mSlots6cValues[3];
     /* 012 */ PAD(0x012, 0x014);
     /* 014 */ u16 mUnk_14_0 : 1;
     /* 014 */ u16 mUnk_14_1 : 3;
@@ -48,7 +48,7 @@ struct SaveData {
     /* 025 */ u8 mUnk_25;
     /* 026 */ u8 mLanguage; // written by SaveWindow; nothing in this build reads it back
     union {
-        /* 027 */ u8 mUnk_27;
+        /* 027 */ u8 mRules;
         struct {
             /* 027 */ u8 mUnk_27_0 : 1;
             /* 027 */ u8 mUnk_27_1 : 1;
@@ -59,10 +59,10 @@ struct SaveData {
     };
     /* 028 */ u16 mUnk_28_0 : 5;
     /* 028 */ u16 mUnk_28_5 : 1;
-    /* 028 */ u16 mUnk_28_6 : 1;
-    /* 028 */ u16 mUnk_28_7 : 3;
-    /* 028 */ u16 mUnk_28_10 : 3;
-    /* 028 */ u16 mUnk_28_13 : 3;
+    /* 028 */ u16 mMicEnabled : 1;
+    /* 028 */ u16 mVolume0Index : 3;
+    /* 028 */ u16 mVolume1Index : 3;
+    /* 028 */ u16 mVolume2Index : 3;
     /* 02a */ u16 mName[12]; // player name, UTF-16
     /* 042 */ u8 mUnk_42; // indexes data_020b4324 (ScriptPlayer::func_02066814) and the unlock tables; 10 = past the last
     /* 043 */ u8 mUnk_43; // entry position inside data_020b4324[mUnk_42], reset with each mUnk_42 step
@@ -85,7 +85,7 @@ struct SaveData {
     /* 082 */ u16 mUnk_82; // +1 with mUnk_b3 set and partners (data_020d433c.mHasPartners)
     /* 084 */ u16 mUnk_84; // +1 with mUnk_b3 set, no partners, 4 players
     /* 086 */ PAD(0x086, 0x088);
-    /* 088 */ u16 mUnk_88[0xf6][2];
+    /* 088 */ u16 mBakuganEntries[0xf6][2];
     /* 460 */ u8 mUnk_460[0xf6];
     /* 556 */ u8 mUnk_556[0x22];
     /* 578 */ volatile u8 mUnk_578;
@@ -119,7 +119,7 @@ struct SaveData {
     /* 5c0 */ PAD(0x5c0, 0x5c1);
     /* 5c1 */ u8 mParkSlotCount;
     /* 5c2 */ ParkSlot mParkSlots[8];
-    /* 5d2 */ u8 mUnk_5d2;
+    /* 5d2 */ u8 mSpecialNameCode0Used;
     /* 5d3 */ PAD(0x5d3, 0xff4);
 };
 

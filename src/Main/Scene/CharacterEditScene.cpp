@@ -1808,7 +1808,7 @@ void CharacterEditScene::func_020612cc() {
         if (mWindows[0]->GetSelectedId() == 0) {
             StoreLook(NULL);
             mModel->func_0205461c(0x17, 0);
-            data_020d433c.mUnk_14_1 = 1;
+            data_020d433c.mSaveDirty = 1;
             mStep = 0x59;
             mStepFrames = 0;
             return;

@@ -613,7 +613,7 @@ ListScene::ListScene(u32 unk1, u32 unk2) :
     mTextKind = 0;
     mPrice = 0;
     MI_CpuClear16(&mAlphabetChar, 2);
-    mFirstSlotOnly = data_020d433c.mUnk_8a_0;
+    mFirstSlotOnly = data_020d433c.mLastBattle;
 }
 
 ListScene::~ListScene() {
@@ -790,7 +790,7 @@ void ListScene::Update() {
             mDirtyFlags[1]          = one;
             mDirtyFlags[2]          = one;
             RefreshCommandList();
-            data_020d433c.mUnk_14 |= 2;
+            data_020d433c.mFlags |= 2;
         } else {
             mSlotValues[mPage - 1] = mItemIds[mCursorItem];
             mSelectingPage              = one;
@@ -800,7 +800,7 @@ void ListScene::Update() {
             mDirtyFlags[1]          = one;
             mDirtyFlags[2]          = one;
             RefreshCommandPage();
-            data_020d433c.mUnk_14 |= 2;
+            data_020d433c.mFlags |= 2;
         }
     }
     if (mMoveY > 0) {
@@ -898,7 +898,7 @@ void ListScene::Update() {
                         break;
                     case 9:
                         PickSlots(this);
-                        data_020d433c.mUnk_14 |= 2;
+                        data_020d433c.mFlags |= 2;
                         SetupListTextKind(this, 0);
                         SoundManager::Get().StartSeqArc(0x67);
                         break;
@@ -2630,10 +2630,10 @@ void ListScene::ReadSlots() {
             mSlotValues[9 + i] = GetSlotBakuganAttribute(gSaveData, 0, i);
         }
         for (u8 i = 0; i < 3; i++) {
-            mSlotValues[3 + i] = gSaveData[0].mUnk_06[i];
+            mSlotValues[3 + i] = gSaveData[0].mSlots54Values[i];
         }
         for (u8 i = 0; i < 3; i++) {
-            mSlotValues[6 + i] = gSaveData[0].mUnk_0c[i];
+            mSlotValues[6 + i] = gSaveData[0].mSlots6cValues[i];
         }
     }
 }
@@ -2801,7 +2801,7 @@ BOOL ListScene::func_02080b48(u32 unk1, u32 unk2) {
     BOOL result = FALSE;
     if (unk1 == 0x22) {
         if (unk2 == 0) {
-            if (gSaveData[0].mUnk_5d2 != 0) {
+            if (gSaveData[0].mSpecialNameCode0Used != 0) {
                 result = TRUE;
             }
         } else {
@@ -2834,7 +2834,7 @@ void ListScene::BuildList(u32 unk1) {
                         mItemCount++;
                     }
                 }
-                if (!(gSaveData[0].mUnk_586[4] & 4) && mListFilter == 0 && gSaveData[0].mUnk_5d2 != 0) {
+                if (!(gSaveData[0].mUnk_586[4] & 4) && mListFilter == 0 && gSaveData[0].mSpecialNameCode0Used != 0) {
                     mItemIds[mItemCount] = 0x22;
                     mItemCount++;
                 }
@@ -3532,7 +3532,7 @@ void ListScene::RefreshCounts() {
     mGalleryCounts[6].mTotal = 0x67;
     mGalleryCounts[gSaveData[0].mAttribute].mTotal += 2;
     mGalleryCounts[6].mTotal += 2;
-    if (gSaveData[0].mUnk_5d2 != 0) {
+    if (gSaveData[0].mSpecialNameCode0Used != 0) {
         mGalleryCounts[0].mTotal += 1;
         mGalleryCounts[6].mTotal += 1;
     }
@@ -3846,10 +3846,10 @@ void ListScene::StoreSlotsInSaveData() {
         SetSlotBakugan(gSaveData, 0, i, 0, (u8) mSlotValues[i], (u8) mSlotValues[9 + i]);
     }
     for (u8 i = 0; i < 3; i++) {
-        gSaveData[0].mUnk_06[i] = mSlotValues[3 + i];
+        gSaveData[0].mSlots54Values[i] = mSlotValues[3 + i];
     }
     for (u8 i = 0; i < 3; i++) {
-        gSaveData[0].mUnk_0c[i] = mSlotValues[6 + i];
+        gSaveData[0].mSlots6cValues[i] = mSlotValues[6 + i];
     }
 }
 

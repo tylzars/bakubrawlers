@@ -165,11 +165,11 @@ void ParkScene::Update() {
                 u8 v = gSaveData[0].mUnk_42;
                 if ((v == 2) | (v == 4)) {
                     if (v == 2) {
-                        data_020d433c.mUnk_83 = 5;
+                        data_020d433c.mTutorialNumber = 5;
                     } else {
-                        data_020d433c.mUnk_83 = 6;
+                        data_020d433c.mTutorialNumber = 6;
                     }
-                    data_020d433c.mUnk_84 = 0;
+                    data_020d433c.mTutorialPart = 0;
                     data_020d433c.mUnk_82 = 1;
                     RequestScene(SCENE_TUTORIAL);
                     mFinished = TRUE;
@@ -186,7 +186,7 @@ void ParkScene::Update() {
             LoadWindowGraphics();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
-            data_020d433c.mUnk_14_1 = 0;
+            data_020d433c.mSaveDirty = 0;
             SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
@@ -248,7 +248,7 @@ void ParkScene::Update() {
                 break;
             }
             ParkEntry entry;
-            GetParkEntry(data_020d433c.mUnk_8b_0, &entry);
+            GetParkEntry(data_020d433c.mParkEntryIndex, &entry);
             if (entry.mType == PARK_ENTRY_TYPE_TUTORIAL) {
                 SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                 mState++;
@@ -259,7 +259,7 @@ void ParkScene::Update() {
                 if (data_020d433c.mUnk_7c == 2) {
                     rules = reinterpret_cast<ParkRules *>(this)->func_ov004_0221bf5c();
                 }
-                func_02089a9c(data_020d433c.mUnk_8b_0);
+                func_02089a9c(data_020d433c.mParkEntryIndex);
                 data_020d433c.mUnk_7c = 1;
                 if (rules == 0) {
                     Init();
@@ -281,14 +281,14 @@ void ParkScene::Update() {
                 break;
             }
             data_020d433c.mUnk_7c = 1;
-            func_02089a9c(data_020d433c.mUnk_8b_0);
+            func_02089a9c(data_020d433c.mParkEntryIndex);
             mRequestParkScene = 1;
             mState = 4;
             break;
         case 13: {
             ParkEntry entry;
-            GetParkEntry(data_020d433c.mUnk_8b_0, &entry);
-            u32 idx = GetParkGroupId(data_020d433c.mUnk_8b_0);
+            GetParkEntry(data_020d433c.mParkEntryIndex, &entry);
+            u32 idx = GetParkGroupId(data_020d433c.mParkEntryIndex);
             u8 pick = MATH_Rand32(&gRandom, 3);
             u8 nib  = data_020d433c.mUnk_8c_4;
             if (nib == 0) {
@@ -337,7 +337,7 @@ void ParkScene::Update() {
             if (data_020d433c.mUnk_8c_4 == 0) {
                 rules = reinterpret_cast<ParkRules *>(this)->func_ov004_0221bf5c();
             }
-            func_02089a9c(data_020d433c.mUnk_8b_0);
+            func_02089a9c(data_020d433c.mParkEntryIndex);
             if (rules == 0) {
                 Init();
                 mState = 0x11;
@@ -608,14 +608,14 @@ void ParkScene::Update() {
                         data_020d433c.mUnk_a3[3]      = func_ov004_0221b8c4(entry.mUnk_0b);
                         break;
                 }
-                data_020d433c.mUnk_9a = 0x11;
-                data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
+                data_020d433c.mRules = 0x11;
+                data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
                 if (gSaveData[0].mUnk_5bf_0) {
                     if (entry.mProgressEntryIndex == 0x19 && idx == 7) {
                         data_020d433c.mUnk_a3[1] = 2;
                     }
                 }
-                data_020d433c.mUnk_8b_0 = mEntryIndex;
+                data_020d433c.mParkEntryIndex = mEntryIndex;
                 data_020d433c.mUnk_8b_4 = gSaveData[0].mUnk_5b8;
                 mState++;
             } else {
@@ -665,16 +665,16 @@ void ParkScene::Update() {
                 GetParkEntry(mEntryIndex, &entry);
                 if (entry.mUnk_0a_h == 0) {
                     if (gSaveData[0].mUnk_5be & 8) {
-                        data_020d433c.mUnk_83 = 4;
+                        data_020d433c.mTutorialNumber = 4;
                     } else {
-                        data_020d433c.mUnk_83 = 3;
+                        data_020d433c.mTutorialNumber = 3;
                     }
                 } else {
-                    data_020d433c.mUnk_83 = 4;
+                    data_020d433c.mTutorialNumber = 4;
                 }
-                data_020d433c.mUnk_84   = 0;
+                data_020d433c.mTutorialPart   = 0;
                 data_020d433c.mUnk_82   = 1;
-                data_020d433c.mUnk_8b_0 = mEntryIndex;
+                data_020d433c.mParkEntryIndex = mEntryIndex;
                 mUnk_0f                 = 0xff;
                 mState++;
             } else {
@@ -926,7 +926,7 @@ struct ParkRulesBuf {
 };
 
 BOOL ParkRules::func_ov004_0221bf5c() {
-    u8 lo = data_020d433c.mUnk_8b_0;
+    u8 lo = data_020d433c.mParkEntryIndex;
     u8 hi = data_020d433c.mUnk_8b_4;
     u8 saved = gSaveData[0].mUnk_5b8;
     ParkRulesBuf buf;

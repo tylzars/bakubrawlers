@@ -593,7 +593,7 @@ s32 func_02087468() {
             } while (j < 6);
             i++;
         } while (i < 0x29);
-        if (count >= (u16) (gSaveData[0].mUnk_5d2 + 0x24)) {
+        if (count >= (u16) (gSaveData[0].mSpecialNameCode0Used + 0x24)) {
             result = 8;
             ((u8 *) data_020d49a6)[1] |= 0x1;
         }

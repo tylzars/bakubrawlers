@@ -91,8 +91,8 @@ MapScene::MapScene() :
     mUnk_7d      = 0;
     mUnk_7e      = 0;
     MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
-    mTab = data_020d433c.mUnk_7e_0;
-    data_020d433c.mUnk_8a_0 = 0;
+    mTab = data_020d433c.mMapTab;
+    data_020d433c.mLastBattle = 0;
     data_020d433c.mUnk_8a_4 = 0;
 }
 
@@ -126,7 +126,7 @@ MapScene::~MapScene() {
     if (mPanelWindow != NULL) {
         delete mPanelWindow;
     }
-    data_020d433c.mUnk_7e_0 = mTab;
+    data_020d433c.mMapTab = mTab;
     OS_Free(mGlyphBuffer);
 }
 
@@ -178,7 +178,7 @@ void MapScene::Update() {
             LoadWindowGraphics();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
-            data_020d433c.mUnk_14_1 = 0;
+            data_020d433c.mSaveDirty = 0;
             SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
@@ -347,7 +347,7 @@ void MapScene::Update() {
             }
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
-            data_020d433c.mUnk_14_1 = 0;
+            data_020d433c.mSaveDirty = 0;
             mState++;
             break;
         case 21:
@@ -595,16 +595,16 @@ BOOL MapScene::SetNextSceneFromEvent() {
                 mNextScene = SCENE_TOURNAMENT;
                 break;
             case SCRIPT_RESULT_BATTLE:
-                data_020d433c.mUnk_9a   = 0x11;
-                data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
+                data_020d433c.mRules   = 0x11;
+                data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
                 mNextScene              = SCENE_BATTLE_PLAYER_LIST;
                 break;
             case SCRIPT_RESULT_MAP:
                 mNextScene = SCENE_MAP;
                 break;
             case SCRIPT_RESULT_TUTORIAL:
-                data_020d433c.mUnk_83 = 1;
-                data_020d433c.mUnk_84 = 0;
+                data_020d433c.mTutorialNumber = 1;
+                data_020d433c.mTutorialPart = 0;
                 data_020d433c.mUnk_82 = 1;
                 mNextScene            = SCENE_TUTORIAL;
                 break;

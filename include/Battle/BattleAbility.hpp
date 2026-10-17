@@ -27,14 +27,14 @@ struct BattleUnk022637acUnit {
     /* 14 */
 };
 
-// Ability ids (BattleAbility::mAbilityId, copied from BattlePlayer::mUnk_fa, which GimmickAbilityField sets from
+// Ability ids (BattleAbility::mAbilityId, copied from BattlePlayer::mAbilityId, which GimmickAbilityField sets from
 // gAbilityRows). The handler for an id is sAbilityHandlers[id - 0xc9] (BattleAbility.cpp).
 // The caster is mPlayer (the turn player); its unit is mUnit (BattleTarget::mUnitHandle - 1).
-// 0xc9: plays "shuto_return" and sets BattlePlayerList::mUnk_2ac = 1; the list then sets mUnk_2ad, and its state 26
+// 0xc9: plays "shuto_return" and sets BattlePlayerList::mUnk_2ac = 1; the list then sets mRepeatTurn, and its state 26
 // skips mTurnCount++ for it, so mTurnPlayer stays the same.
 #define ABILITY_ID_REPEAT_TURN     0xc9
 // 0xca: plays "shuto_return" and sets mUnk_2ac = 2: the list removes mUnitA (or mUnitB and puts mUnitA back on its
-// cell) and goes straight back to BattleShoot for the same turn player (BattleCommand, mUnk_28f cleared, when that
+// cell) and goes straight back to BattleShoot for the same turn player (BattleCommand, mAddMarkerEnabled cleared, when that
 // player is not BattlePlayerList::mUnk_2a9).
 #define ABILITY_ID_SHOOT_AGAIN     0xca
 // 0xcb: picks one of the caster's mSlots54 entries (in a BattleCommandPage prompt when the caster is

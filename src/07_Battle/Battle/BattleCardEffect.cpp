@@ -28,7 +28,7 @@ BattleCardEffect::BattleCardEffect(u32 a, u32 b, u32 c, u32 d)
         }
     }
     SetFirstAnimation();
-    data_020d433c.mUnk_14 &= ~4;
+    data_020d433c.mFlags &= ~4;
 }
 
 BattleCardEffect::~BattleCardEffect() {
@@ -38,8 +38,8 @@ BattleCardEffect::~BattleCardEffect() {
 }
 
 void BattleCardEffect::Update() {
-    data_020d433c.mUnk_14 &= 4;
-    if (data_020d433c.mUnk_14) {
+    data_020d433c.mFlags &= 4;
+    if (data_020d433c.mFlags) {
         mFinished = 1;
         return;
     }

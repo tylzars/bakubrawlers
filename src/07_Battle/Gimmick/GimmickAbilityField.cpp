@@ -197,7 +197,7 @@ void GimmickAbilityField::Update() {
         RemoveCollisionSet(data_020d433c.mGimmickCollision, mCollision);
         SoundManager::Get().StartSeqArc(0x35);
         s8 pick = PickWeighted(gAbilityRows[mAbilityRowIndex].mCount, gAbilityRows[mAbilityRowIndex].mWeights);
-        data_020d433c.mBattlePlayers->Current()->mUnk_fa = gAbilityRows[mAbilityRowIndex].mIds[pick];
+        data_020d433c.mBattlePlayers->Current()->mAbilityId = gAbilityRows[mAbilityRowIndex].mIds[pick];
         u8 handle = StartEffect(data_020d433c.mEffects, 1, 0x12, 0, 1);
         if (handle) {
             CameraManager::Get();

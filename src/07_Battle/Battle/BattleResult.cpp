@@ -678,7 +678,7 @@ void BattleResult::LoadResultGraphics() {
         }
         i++;
     } while (i < data_020d433c.mUnk_99);
-    AntennaIndicator *unk = data_020d433c.mUnk_10;
+    AntennaIndicator *unk = data_020d433c.mAntenna;
     if (unk) {
         unk->SetupLayout(12);
     }
@@ -710,7 +710,7 @@ void BattleResult::SetupRetryScreen() {
     LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
     LoadAndQueueUpload(1, UPLOAD_KIND_BG1_SCR, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
-    AntennaIndicator *unk = data_020d433c.mUnk_10;
+    AntennaIndicator *unk = data_020d433c.mAntenna;
     if (unk) {
         unk->SetupLayout(12);
     }

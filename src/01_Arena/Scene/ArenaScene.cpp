@@ -101,7 +101,7 @@ ArenaScene::ArenaScene() : SceneBase(1000, 0) {
     mWirelessStopping = 0;
     mUnk_b4 = 0;
     mRequest = 0;
-    data_020d433c.mUnk_10 = 0;
+    data_020d433c.mAntenna = 0;
     MI_CpuClear32(&mMain, sizeof(mMain));
     MI_CpuClear32(mSlots, sizeof(mSlots));
     MI_CpuClear32(mBuffers, sizeof(mBuffers));
@@ -144,9 +144,9 @@ ArenaScene::~ArenaScene() {
     if (mSubMenuWindow != NULL) {
         delete mSubMenuWindow;
     }
-    if (data_020d433c.mUnk_10 != NULL) {
-        data_020d433c.mUnk_10->mFinished = 1;
-        data_020d433c.mUnk_10 = NULL;
+    if (data_020d433c.mAntenna != NULL) {
+        data_020d433c.mAntenna->mFinished = 1;
+        data_020d433c.mAntenna = NULL;
     }
 }
 
@@ -162,9 +162,9 @@ void ArenaScene::StopWirelessAndReset() {
     mState = 2;
     mVariant = 0;
     SetupVariant();
-    if (data_020d433c.mUnk_10 != NULL) {
-        data_020d433c.mUnk_10->mFinished = 1;
-        data_020d433c.mUnk_10 = NULL;
+    if (data_020d433c.mAntenna != NULL) {
+        data_020d433c.mAntenna->mFinished = 1;
+        data_020d433c.mAntenna = NULL;
     }
     if (mSubMenuMode != 0) {
         SetSubMenuMode(0);
@@ -330,7 +330,7 @@ void ArenaScene::Update() {
                                 mVariant = 3;
                                 mState    = 8;
                             }
-                            data_020d433c.mUnk_10 = new AntennaIndicator(1);
+                            data_020d433c.mAntenna = new AntennaIndicator(1);
                             MI_CpuClearFast((void *) 0x6600000, 0x2000);
                             ClearNameText();
                             mPlayerCount = 0;
@@ -620,8 +620,8 @@ void ArenaScene::InitDisplay() {
 }
 
 void ArenaScene::LoadGraphics() {
-    if (data_020d433c.mUnk_10 != NULL) {
-        data_020d433c.mUnk_10->SetupLayout(1);
+    if (data_020d433c.mAntenna != NULL) {
+        data_020d433c.mAntenna->SetupLayout(1);
     }
     ChangeDir("/Game/Battle/bg/");
     LoadAndQueueUpload(0, UPLOAD_KIND_BG_EXT_PLTT, 0, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);

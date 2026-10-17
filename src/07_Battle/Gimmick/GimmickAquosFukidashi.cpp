@@ -190,8 +190,8 @@ void GimmickAquosFukidashi::DrawModelB() {
     }
     MtxFx43 mtx = gIdentityMtx43;
     MTX_SetTranslation43(&mtx, &mPosition);
-    data_020d433c.mUnk_14 &= 8;
-    if (!data_020d433c.mUnk_14) {
+    data_020d433c.mFlags &= 8;
+    if (!data_020d433c.mFlags) {
         mModelB->AdvanceAnim();
     }
     mModelB->Draw(&mtx, &mScale);
@@ -212,8 +212,8 @@ void GimmickAquosFukidashi::DrawModels(int drawB) {
 }
 
 int GimmickAquosFukidashi::CountDownToState(int frames, int state) {
-    data_020d433c.mUnk_14 &= 8;
-    if (!data_020d433c.mUnk_14) {
+    data_020d433c.mFlags &= 8;
+    if (!data_020d433c.mFlags) {
         mCounter--;
         if (mCounter == 0) {
             mCounter = frames;

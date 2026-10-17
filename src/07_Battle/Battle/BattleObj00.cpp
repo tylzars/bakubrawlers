@@ -99,7 +99,7 @@ BattleObj00::BattleObj00(u8 flag)
     } else {
         mState = 11;
     }
-    u32 v = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mUnk_f1;
+    u32 v = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mCorner;
     if (v <= 1) {
         mFlipped = 0;
     } else {
@@ -165,8 +165,8 @@ void BattleObj00::Update() {
             mState++;
             return;
         case 4:
-            if (data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->SetupLayout(0xd);
+            if (data_020d433c.mAntenna) {
+                data_020d433c.mAntenna->SetupLayout(0xd);
             }
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
@@ -257,7 +257,7 @@ void BattleObj00::Update() {
             mState = 0xc;
             return;
         case 12:
-            if (data_020d433c.mUnk_8a_0 != 0) {
+            if (data_020d433c.mLastBattle != 0) {
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
                 if ((u8) (list->mPlayers[0]->mUnk_ee + list->mPlayers[1]->mUnk_ee) % 2 == 0) {
                     mPage = new BattleCommandPage(0, -1);
@@ -334,7 +334,7 @@ void BattleObj00::Update() {
             }
             if (mUnk_3e != 0) {
                 u8 idx = 0;
-                if (data_020d433c.mUnk_8a_0 != 0) {
+                if (data_020d433c.mLastBattle != 0) {
                     idx = 1;
                 } else {
                     u8 i = 0;
@@ -405,7 +405,7 @@ void BattleObj00::Update() {
             mUnk_36 = 0;
             G2S_SetBlendBrightness(0x11, 0);
             GXS_SetVisibleWnd(0);
-            if (data_020d433c.mUnk_8a_0 != 0) {
+            if (data_020d433c.mLastBattle != 0) {
                 if (mUnk_3e != 0) {
                     AddMarker(data_020d433c.mBattlePlayers, 6, 4, 1, PickUnflaggedSlot54(data_020d433c.mBattlePlayers->mPlayers[1]));
                 } else {
@@ -417,7 +417,7 @@ void BattleObj00::Update() {
                 u8 kind; 
                 do {
                     p = data_020d433c.mBattlePlayers->mPlayers[i];
-                    kind         = p->mUnk_f1;
+                    kind         = p->mCorner;
                     if (p->mSlots54Remaining != 0) {
                         if (p->IsCpu() || data_020d433c.mUnk_9a_3) {
                             AddMarker(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mCellX, data_ov007_0227a33c[kind].mCellY, i, PickUnflaggedSlot54(p));

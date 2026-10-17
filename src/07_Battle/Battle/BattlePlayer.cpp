@@ -152,7 +152,7 @@ BattlePlayer::BattlePlayer(u32 index)
     mUnk_f3 = 0;
     mHistoryCount = 0;
     mRecord = 0;
-    mUnk_fa = 0;
+    mAbilityId = 0;
     mUnk_fc = 0;
     mUnk_fd = 0;
     mUnk_fe = 0;
@@ -174,12 +174,12 @@ BattlePlayer::BattlePlayer(u32 index)
     mUnk_f7 = data_020d43df[index];
     mCharacterId = data_020d43db[index];
     SaveData *save = gSaveData;
-    mSlots54[0].mValue = save->mUnk_06[0];
-    mSlots54[1].mValue = save->mUnk_06[1];
-    mSlots54[2].mValue = save->mUnk_06[2];
-    mSlots6c[0].mValue = save->mUnk_0c[0];
-    mSlots6c[1].mValue = save->mUnk_0c[1];
-    mSlots6c[2].mValue = save->mUnk_0c[2];
+    mSlots54[0].mValue = save->mSlots54Values[0];
+    mSlots54[1].mValue = save->mSlots54Values[1];
+    mSlots54[2].mValue = save->mSlots54Values[2];
+    mSlots6c[0].mValue = save->mSlots6cValues[0];
+    mSlots6c[1].mValue = save->mSlots6cValues[1];
+    mSlots6c[2].mValue = save->mSlots6cValues[2];
     if (mCharacterId == 0x15) {
         u8 k = 0;
         do {
@@ -220,25 +220,25 @@ BattlePlayer::BattlePlayer(u32 index)
     if (data_020d433c.mPlayerCount == 2) {
         switch (index) {
             case 0:
-                mUnk_f1 = 0;
+                mCorner = 0;
                 break;
             case 1:
-                mUnk_f1 = 2;
+                mCorner = 2;
                 break;
         }
     } else {
         switch (index) {
             case 0:
-                mUnk_f1 = 0;
+                mCorner = 0;
                 break;
             case 1:
-                mUnk_f1 = 1;
+                mCorner = 1;
                 break;
             case 2:
-                mUnk_f1 = 2;
+                mCorner = 2;
                 break;
             case 3:
-                mUnk_f1 = 3;
+                mCorner = 3;
                 break;
         }
     }
@@ -247,7 +247,7 @@ BattlePlayer::BattlePlayer(u32 index)
     MI_CpuClear32((u8 *) this + 0x100, 0x20);
     MI_CpuClear32((u8 *) this + 0x120, 0x20);
     InitPlayerName(this);
-    if (data_020d433c.mUnk_8a_0 != 0) {
+    if (data_020d433c.mLastBattle != 0) {
         mRecords[1].mStatus = 2;
         mRecords[2].mStatus = 2;
     }
@@ -260,7 +260,7 @@ BattlePlayer::~BattlePlayer() {
 }
 
 void BattlePlayer::Update() {
-    if (data_020d433c.mUnk_14 & 1) {
+    if (data_020d433c.mFlags & 1) {
         mFinished = 1;
         return;
     }
@@ -319,7 +319,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
     } while (i < n);
     data_020d433c.mBattlePlayers->mUnk_292 = 0;
     if (!hasZero) {
-        if (data_020d433c.mUnk_8a_0 != 0) {
+        if (data_020d433c.mLastBattle != 0) {
             if (ones == 1) {
                 data_020d433c.mBattlePlayers->mUnk_292 = 1;
             } else {
@@ -346,12 +346,12 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
         }
     }
     if (player->mSlots54Remaining == 0) {
-        data_020d433c.mBattlePlayers->mUnk_28f = 0;
+        data_020d433c.mBattlePlayers->mAddMarkerEnabled = 0;
     }
     if (player->mCpu) {
         player->mCpu->func_ov007_02231038();
     }
-    player->mUnk_fa = 0;
+    player->mAbilityId = 0;
     if (reset == 0) {
         u32 flagA = 0;
         u8 best  = 0;
@@ -402,7 +402,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
             player->mUnk_f3 = 0xbe;
         }
     }
-    if (data_020d433c.mUnk_8a_0 != 0) {
+    if (data_020d433c.mLastBattle != 0) {
         player->mRecords[1].mStatus = 2;
         player->mRecords[2].mStatus = 2;
         if (player->mIndex != 0) {
@@ -412,7 +412,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
                 player->mUnk_f3 = 0xbe;
             }
         }
-        data_020d433c.mBattlePlayers->mUnk_28f = 0;
+        data_020d433c.mBattlePlayers->mAddMarkerEnabled = 0;
     }
 }
 

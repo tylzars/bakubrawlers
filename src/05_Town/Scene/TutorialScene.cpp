@@ -83,8 +83,8 @@ TutorialScene::TutorialScene() :
             mFlags[i] = 0;
         }
     }
-    data_020d433c.mUnk_9a   = 0x11;
-    data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
+    data_020d433c.mRules   = 0x11;
+    data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
 }
 
 TutorialScene::~TutorialScene() {
@@ -123,7 +123,7 @@ void TutorialScene::Update() {
         case 0: {
             BOOL a = FALSE;
             BOOL b = FALSE;
-            switch (data_020d433c.mUnk_84) {
+            switch (data_020d433c.mTutorialPart) {
                 case 0:
                     a = TRUE;
                     if (data_020d433c.mUnk_82 == 0) {
@@ -143,7 +143,7 @@ void TutorialScene::Update() {
             u8 c = data_020d433c.mUnk_86;
             BOOL d = c == 0;
             if (d | (func_ov005_0221fd64(this) == 0)) {
-                data_020d433c.mUnk_84++;
+                data_020d433c.mTutorialPart++;
                 data_020d433c.mUnk_86 = 0;
             } else if (c >= 2) {
                 data_020d433c.mUnk_86 = 1;
@@ -172,8 +172,8 @@ void TutorialScene::Update() {
             if (r != 0) {
                 if (r == 1) {
                     SoundManager::Get().StartSeqArc(0);
-                    data_020d433c.mUnk_83 = mSelection + 1;
-                    data_020d433c.mUnk_84 = 1;
+                    data_020d433c.mTutorialNumber = mSelection + 1;
+                    data_020d433c.mTutorialPart = 1;
                     mState++;
                 } else {
                     SoundManager::Get().StartSeqArc(1);
@@ -233,9 +233,9 @@ void TutorialScene::Update() {
             char second[0x7f];
             char first[0x7f];
             if (x != 0) {
-                sprintf(first, "T%03d_%d_f", data_020d433c.mUnk_83, data_020d433c.mUnk_84);
+                sprintf(first, "T%03d_%d_f", data_020d433c.mTutorialNumber, data_020d433c.mTutorialPart);
             } else {
-                sprintf(first, "T%03d_%d", data_020d433c.mUnk_83, data_020d433c.mUnk_84);
+                sprintf(first, "T%03d_%d", data_020d433c.mTutorialNumber, data_020d433c.mTutorialPart);
             }
             if (data_020d433c.mUnk_82 == 0) {
                 sprintf(second, "cmd_%s_Ali.bin", first);
@@ -306,40 +306,40 @@ void TutorialScene::Update() {
                 mState = 0x10;
                 return;
             }
-            data_020d433c.mUnk_84++;
+            data_020d433c.mTutorialPart++;
             data_020d433c.mUnk_86 = 0;
             mState = 6;
             break;
         case 16:
             mUnk_4d = 1;
             mState = 0x15;
-            switch (data_020d433c.mUnk_83) {
+            switch (data_020d433c.mTutorialNumber) {
                 case 1:
-                    if (data_020d433c.mUnk_84 >= 5) {
+                    if (data_020d433c.mTutorialPart >= 5) {
                         return;
                     }
-                    if (data_020d433c.mUnk_84 < 4) {
+                    if (data_020d433c.mTutorialPart < 4) {
                         mState = 0x1a;
                         return;
                     }
-                    data_020d433c.mUnk_84++;
+                    data_020d433c.mTutorialPart++;
                     data_020d433c.mUnk_86 = 0;
                     mState = 6;
                     break;
                 case 2:
-                    if (data_020d433c.mUnk_84 < 3) {
+                    if (data_020d433c.mTutorialPart < 3) {
                         mState = 0x1a;
                     }
                     break;
                 case 3:
                 case 4:
-                    if (data_020d433c.mUnk_84 < 2) {
+                    if (data_020d433c.mTutorialPart < 2) {
                         mState = 0x1a;
                     }
                     break;
                 case 5:
                 case 6:
-                    if (data_020d433c.mUnk_84 < 2) {
+                    if (data_020d433c.mTutorialPart < 2) {
                         mState = 0x11;
                     }
                     break;
@@ -360,7 +360,7 @@ void TutorialScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            if (data_020d433c.mUnk_83 == 5) {
+            if (data_020d433c.mTutorialNumber == 5) {
                 ShowText(3);
             } else {
                 ShowText(4);
@@ -388,7 +388,7 @@ void TutorialScene::Update() {
             mState = 0x15;
             break;
         case 21:
-            mFlags[data_020d433c.mUnk_83] = 1;
+            mFlags[data_020d433c.mTutorialNumber] = 1;
             if (mUnk_4d == 0) {
                 mState = 0x19;
                 return;
@@ -419,7 +419,7 @@ void TutorialScene::Update() {
                 return;
             }
             if ((u8) mWindow->mCursor->mSelection == 0) {
-                data_020d433c.mUnk_84 = 1;
+                data_020d433c.mTutorialPart = 1;
                 mState = 6;
                 return;
             }
@@ -427,14 +427,14 @@ void TutorialScene::Update() {
             break;
         case 25:
             mState = 0x1c;
-            if (data_020d433c.mUnk_83 != 1) {
+            if (data_020d433c.mTutorialNumber != 1) {
                 return;
             }
             if (data_020d433c.mUnk_82 == 0) {
                 return;
             }
-            data_020d433c.mUnk_83 = 2;
-            data_020d433c.mUnk_84 = 1;
+            data_020d433c.mTutorialNumber = 2;
+            data_020d433c.mTutorialPart = 1;
             data_020d433c.mUnk_86 = 0;
             mState = 6;
             break;
@@ -443,7 +443,7 @@ void TutorialScene::Update() {
             data_020d433c.mPlayerCount = 2;
             data_020d433c.mHasPartners = 0;
             data_020d433c.mCharacterIds[0] = 0x15;
-            u8 idx = data_020d433c.mUnk_83;
+            u8 idx = data_020d433c.mTutorialNumber;
             data_020d433c.mCharacterIds[1] = data_ov005_022200d8[idx][0];
             data_020d433c.mUnk_a3[1] = 0;
             data_020d433c.mPartners[0] = 0;
@@ -465,9 +465,9 @@ void TutorialScene::Update() {
             mFinished = 1;
             break;
         case 28: {
-            u8 prev = data_020d433c.mUnk_83;
-            data_020d433c.mUnk_83 = 0;
-            data_020d433c.mUnk_84 = 0;
+            u8 prev = data_020d433c.mTutorialNumber;
+            data_020d433c.mTutorialNumber = 0;
+            data_020d433c.mTutorialPart = 0;
             data_020d433c.mTutorialId = 0;
             if (data_020d433c.mUnk_82 != 0) {
                 SoundManager::Get().RestoreHeapState();
@@ -513,8 +513,8 @@ void TutorialScene::Update() {
             break;
         }
         case 29:
-            data_020d433c.mUnk_83 = 0;
-            data_020d433c.mUnk_84 = 0;
+            data_020d433c.mTutorialNumber = 0;
+            data_020d433c.mTutorialPart = 0;
             data_020d433c.mTutorialId = 0;
             SoundManager::Get().RestoreHeapState();
             RequestScene(SCENE_TITLE);
@@ -618,8 +618,8 @@ void TutorialScene::LoadGraphics() {
     mWindow->mCursor->mSelection = 0;
     mWindow->mCursor->SetupScroll(0x30, 0x90, 4, 6);
     mWindow->mEnabled = 0;
-    if (data_020d433c.mUnk_83 != 0) {
-        mSelection = data_020d433c.mUnk_83 - 1;
+    if (data_020d433c.mTutorialNumber != 0) {
+        mSelection = data_020d433c.mTutorialNumber - 1;
     } else {
         mSelection = 0;
         for (u8 i = 1; i < 7; i++) {
@@ -807,8 +807,8 @@ void TutorialScene::DrawList() {
 }
 
 u8 GetTutorialId(TutorialScene *scene) {
-    s8 a = data_020d433c.mUnk_84 - 1;
-    u8 b = data_020d433c.mUnk_83;
+    s8 a = data_020d433c.mTutorialPart - 1;
+    u8 b = data_020d433c.mTutorialNumber;
     if (b == 2) {
         a = a * 2;
         if (data_020d433c.mUnk_86 != 0) {
@@ -843,7 +843,7 @@ void SetupFourPlayerBattle() {
         data_020d433c.mPartners[i] = i;
     }
     data_020d433c.mNextScene = SCENE_TUTORIAL;
-    switch (data_020d433c.mUnk_83) {
+    switch (data_020d433c.mTutorialNumber) {
         case 5:
             data_020d433c.mHasPartners = 1;
             data_020d433c.mPartners[0] = 1;

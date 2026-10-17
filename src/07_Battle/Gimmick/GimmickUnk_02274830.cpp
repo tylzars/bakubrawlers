@@ -33,8 +33,8 @@ void GimmickUnk_02274830::Update() {
         mState++;
         break;
     case 1: {
-        data_020d433c.mUnk_14 &= 8;
-        if (data_020d433c.mUnk_14) {
+        data_020d433c.mFlags &= 8;
+        if (data_020d433c.mFlags) {
             return;
         }
         BattlePlayerList *list;
@@ -107,8 +107,8 @@ void GimmickUnk_02274830::Update() {
         break;
     }
     case 2:
-        data_020d433c.mUnk_14 &= 8;
-        if (data_020d433c.mUnk_14) {
+        data_020d433c.mFlags &= 8;
+        if (data_020d433c.mFlags) {
             return;
         }
         mTimer--;

@@ -190,8 +190,8 @@ void BattleBase::Init(BattleData *data, u32 mode) {
     mHud = new BattleHud(data, mParam, mUnk_12, (s8 *) &mUnk_1c);
     mSub48 = new BattleSub48(data, mUnk_12);
     mField3D = new BattleField3D(data, 0);
-    if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->SetupLayout(0xb);
+    if (data_020d433c.mAntenna) {
+        data_020d433c.mAntenna->SetupLayout(0xb);
     }
 }
 

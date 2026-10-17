@@ -70,8 +70,8 @@ void GimmickVentKaze::Update() {
         }
         BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
         BattleRecord *r = &p->mRecords[p->mRecord];
-        data_020d433c.mUnk_14 &= 8;
-        if (data_020d433c.mUnk_14) {
+        data_020d433c.mFlags &= 8;
+        if (data_020d433c.mFlags) {
             return;
         }
         if (r->mAttribute == 5) {

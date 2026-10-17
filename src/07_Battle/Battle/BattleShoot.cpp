@@ -376,9 +376,9 @@ void BattleShoot::Update() {
                 data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
             }
             u8 limit;
-            if (data_020d433c.mUnk_83 == 3) {
+            if (data_020d433c.mTutorialNumber == 3) {
                 limit = 2;
-            } else if (data_020d433c.mUnk_83 == 2) {
+            } else if (data_020d433c.mTutorialNumber == 2) {
                 limit = 2;
             } else {
                 limit = 4;
@@ -433,7 +433,7 @@ void BattleShoot::Update() {
                     mMicVisible = 1;
                     mPenStrokesRemaining = 3;
                     mShootTextVisible = 0;
-                    if (data_020d433c.mUnk_83 != 0 || mUnk_61a2 != 0) {
+                    if (data_020d433c.mTutorialNumber != 0 || mUnk_61a2 != 0) {
                         mShootTextVisible = 1;
                     }
                     mState = 11;
@@ -521,7 +521,7 @@ void BattleShoot::Update() {
             mPlotEnabled = 0;
             mPenStrokesRemaining = 3;
             mShootTextVisible = 0;
-            if (data_020d433c.mUnk_83 != 0) {
+            if (data_020d433c.mTutorialNumber != 0) {
                 mPenStrokesRemaining = 0;
             } else if (mUnk_61a2 != 0) {
                 mShootTextVisible = 1;
@@ -599,7 +599,7 @@ void BattleShoot::Update() {
                         SetSubPlanes(0x11);
                     }
                     ClearBitmap();
-                    data_020d433c.mUnk_14 &= ~8;
+                    data_020d433c.mFlags &= ~8;
                     mContext->mRequest = 0;
                     break;
                 case 2:
@@ -625,7 +625,7 @@ void BattleShoot::Update() {
             if (!SpriteManager::Get().IsFading()) {
                 mBattleTarget->func_ov007_02253fbc();
                 mState = 15;
-                data_020d433c.mUnk_14 &= ~8;
+                data_020d433c.mFlags &= ~8;
             }
             break;
     }
@@ -743,7 +743,7 @@ void BattleShoot::LoadGraphics() {
     mCells[4].mX               = 0x80;
     mCells[4].mY               = 0x30;
     mCells[4].mUnk_08          = 2;
-    if (data_020d433c.mUnk_9a_0 && data_020d433c.mUnk_83 == 0) {
+    if (data_020d433c.mMicEnabled && data_020d433c.mTutorialNumber == 0) {
         mCells[4].mCellAnim->SetAnimation(0);
     }
     mMicTargetY = 0x60;
@@ -812,8 +812,8 @@ void BattleShoot::LoadGraphics() {
     mMessageWindow->func_02065bd4(0x20, 0xa2, 2);
     mMessageWindow->SetWidth(0xe0);
     mMessageWindow->StartMessage(0, 0, 1);
-    if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->SetupLayout(9);
+    if (data_020d433c.mAntenna) {
+        data_020d433c.mAntenna->SetupLayout(9);
     }
 }
 
@@ -1441,7 +1441,7 @@ void BattleShoot::UpdatePushMessages() {
     *(s32 *) &data_0220f540.mUnk_08 = 0;
     data_0220f540.mUnk_0c  = 0;
     if (MicManager::Get().mEvents != 0) {
-        if (data_020d433c.mUnk_9a_0) {
+        if (data_020d433c.mMicEnabled) {
             data_0220f540.mUnk_0c = 1;
         }
     } else {
@@ -1617,7 +1617,7 @@ void BattleShoot::UpdatePushMessages() {
         pl->mUnk_d8 = sumZ;
         mBattleTarget->AddPlayerPush();
     }
-    if (data_020d433c.mUnk_9a_0 && data_020d433c.mUnk_83 == 0) {
+    if (data_020d433c.mMicEnabled && data_020d433c.mTutorialNumber == 0) {
         if (mUnk_61a5 != animState) {
             mUnk_61a5 = animState;
             if (mUnk_61a5) {
@@ -1679,7 +1679,7 @@ void BattleShoot::StartPushEffect(u8 kind, s32 x, s32 z) {
 
 void BattleShoot::UpdateMessageAndBall() {
     if (mMessageWindow) {
-        u16 id = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mTurnPlayer]->mUnk_fa;
+        u16 id = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mTurnPlayer]->mAbilityId;
         if (mMessageId != id) {
             if (mMessageY == 0x80) {
                 mMessageId = id;
@@ -1818,7 +1818,7 @@ void BattleShoot::DrawPenAndIcons() {
 BOOL BattleShoot::TryStartPopup() {
     u8 ok = 1;
     WirelessManager::Get();
-    if (IsWirelessMode(&data_020c4030.mUnk_228) || data_020d433c.mUnk_83 != 0) {
+    if (IsWirelessMode(&data_020c4030.mUnk_228) || data_020d433c.mTutorialNumber != 0) {
         ok = 0;
     }
     if (mBattleTarget->mPopupEnabled == 0) {
@@ -1828,7 +1828,7 @@ BOOL BattleShoot::TryStartPopup() {
         if (InputManager::Get().IsPressed(8)) {
             mReturnState = mState;
             mState = 0xd;
-            data_020d433c.mUnk_14 |= 8;
+            data_020d433c.mFlags |= 8;
             mPlotEnabled = 0;
             return 1;
         }

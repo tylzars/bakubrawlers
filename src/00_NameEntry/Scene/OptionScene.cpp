@@ -193,9 +193,9 @@ void OptionScene::Update() {
                     break;
                 case 2: {
                     SaveData *d = gSaveData;
-                    d->mUnk_28_7 = mOld[0];
-                    d->mUnk_28_10 = mOld[1];
-                    d->mUnk_28_13 = mOld[2];
+                    d->mVolume0Index = mOld[0];
+                    d->mVolume1Index = mOld[1];
+                    d->mVolume2Index = mOld[2];
                     ApplyVolumeOptions(d);
                     mState++;
                     break;
@@ -229,8 +229,8 @@ void OptionScene::Update() {
             DrawMenu2();
             switch (result) {
                 case 1:
-                    gSaveData[0].mUnk_28_6 = mFlagSelectedId == 0 ? 1 : 0;
-                    gSaveData[0].mUnk_27_0 = gSaveData[0].mUnk_28_6;
+                    gSaveData[0].mMicEnabled = mFlagSelectedId == 0 ? 1 : 0;
+                    gSaveData[0].mUnk_27_0 = gSaveData[0].mMicEnabled;
                     mState++;
                     break;
                 case 2:
@@ -460,12 +460,12 @@ void OptionScene::BuildSettings() {
     mRow = 0;
     mCellAnims[2]->SetAnimation(0x13);
     mSlideTimer = 8;
-    mOld[0] = data->mUnk_28_7;
-    mOld[1] = data->mUnk_28_10;
-    mOld[2] = data->mUnk_28_13;
-    mCur[0] = data->mUnk_28_7;
-    mCur[1] = data->mUnk_28_10;
-    mCur[2] = data->mUnk_28_13;
+    mOld[0] = data->mVolume0Index;
+    mOld[1] = data->mVolume1Index;
+    mOld[2] = data->mVolume2Index;
+    mCur[0] = data->mVolume0Index;
+    mCur[1] = data->mVolume1Index;
+    mCur[2] = data->mVolume2Index;
     mTouchRow = -1;
     delete mWindow;
     mWindow = new SelectWindow(2, sOptionSettingsItems, -1);
@@ -554,17 +554,17 @@ void OptionScene::UpdateSettings() {
     if (changed) {
         switch (mRow) {
             case 0:
-                gSaveData[0].mUnk_28_7 = mCur[0];
+                gSaveData[0].mVolume0Index = mCur[0];
                 ApplyVolumeOptions(gSaveData);
                 break;
             case 1:
-                gSaveData[0].mUnk_28_10 = mCur[1];
+                gSaveData[0].mVolume1Index = mCur[1];
                 ApplyVolumeOptions(gSaveData);
                 SoundManager::Get().StopSeqArcPlayerSounds(1);
                 SoundManager::Get().StartSeqArc(5);
                 break;
             case 2:
-                gSaveData[0].mUnk_28_13 = mCur[2];
+                gSaveData[0].mVolume2Index = mCur[2];
                 ApplyVolumeOptions(gSaveData);
                 FrameTask::Get().StopChannel(1);
                 FrameTask::Get().StartChannel(1, 0x183);
@@ -584,10 +584,10 @@ void OptionScene::BuildMenu2() {
     mPosY[0] = 0x50;
     mSlideTimer = 8;
     delete mWindow;
-    mWindow = new SelectWindow(4, sOptionMenu2Items, (s8) (gSaveData[0].mUnk_28_6 == 0 ? 1 : 0));
+    mWindow = new SelectWindow(4, sOptionMenu2Items, (s8) (gSaveData[0].mMicEnabled == 0 ? 1 : 0));
     mWindow->SetCells(4, sOptionMenu2Cells);
     mWindow->Update(1);
-    int sel = gSaveData[0].mUnk_28_6 == 0 ? 1 : 0;
+    int sel = gSaveData[0].mMicEnabled == 0 ? 1 : 0;
     mWindow->mCellAnims[(u8) sel]->SetAnimation(sOptionMenu2Cells[sel].mAnimIndices[2]);
 }
 

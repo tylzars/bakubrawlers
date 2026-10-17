@@ -150,13 +150,13 @@ TitleScene::TitleScene() :
     data_020d433c.mUnk_87 = 0;
     data_020d433c.mUnk_88_4 = 0;
     data_020d433c.mUnk_88_0 = 0;
-    data_020d433c.mUnk_7e_0 = 0;
-    data_020d433c.mUnk_8a_0 = 0;
+    data_020d433c.mMapTab = 0;
+    data_020d433c.mLastBattle = 0;
     MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
     MI_CpuClear32(mBuffers, sizeof(mBuffers));
     MI_CpuClear32(mBufferSizes, sizeof(mBufferSizes));
     mCursor = new SelectWindowCursor(1, sTitleFullScreenItems, 0);
-    mMenuSelection = data_020d433c.mUnk_7e_4;
+    mMenuSelection = data_020d433c.mTitleMenuSelection;
     mSubBgIndex = mMenuSelection;
     SoundManager::Get().RestoreHeapState();
     SoundManager::Get().LoadSoundGroup(4);
@@ -195,7 +195,7 @@ TitleScene::~TitleScene() {
 void TitleScene::Update() {
     switch (mState) {
         case 0:
-            if (data_020d433c.mUnk_ad) {
+            if (data_020d433c.mCreditsPending) {
                 mPlaneBlendEnabled = 0;
                 mState = 0x2a;
                 break;
@@ -279,17 +279,17 @@ void TitleScene::Update() {
             ResetSaveData();
             u8 a = data_020d433c.mUnk_81;
             u8 b = data_020d433c.mLanguage;
-            u8 c = data_020d433c.mUnk_77;
+            u8 c = data_020d433c.mSaveSlotContent;
             func_02022b0c();
             data_020d433c.mUnk_81 = a;
             data_020d433c.mLanguage = b;
-            data_020d433c.mUnk_77 = c;
+            data_020d433c.mSaveSlotContent = c;
             GXS_SetVisiblePlane(0x11);
             u32 idx = 1;
             u8 count = 2;
-            switch (data_020d433c.mUnk_77) {
+            switch (data_020d433c.mSaveSlotContent) {
                 case 0:
-                    data_020d433c.mUnk_77 = idx;
+                    data_020d433c.mSaveSlotContent = idx;
                     if (SaveManager::Get().WriteSlotMarker(0) == SAVE_STATUS_ERROR) {
                         new MessageScreen(MESSAGE_SCREEN_SYSTEM_4_HALT);
                     }
@@ -320,7 +320,7 @@ void TitleScene::Update() {
             u8 sel = mWindow30->mCursor->mSelection;
             if (result == 1) {
                 if (sel == 0) {
-                    switch (data_020d433c.mUnk_77) {
+                    switch (data_020d433c.mSaveSlotContent) {
                         case 0:
                         case 1:
                             mState = 0x13;
@@ -428,7 +428,7 @@ void TitleScene::Update() {
         case 16:
             if ((u8) mWindow30->Update(1) == 1) {
                 if ((u8) mWindow30->mCursor->mSelection == 0) {
-                    data_020d433c.mUnk_77 = 1;
+                    data_020d433c.mSaveSlotContent = 1;
                     if (SaveManager::Get().WriteSlotMarker(0) == SAVE_STATUS_ERROR) {
                         new MessageScreen(MESSAGE_SCREEN_SYSTEM_4_HALT);
                     }
@@ -534,7 +534,7 @@ void TitleScene::Update() {
             InitSaveWindowDisplay();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
-            data_020d433c.mUnk_14_1 = 0;
+            data_020d433c.mSaveDirty = 0;
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
@@ -656,7 +656,7 @@ void TitleScene::Update() {
             mState = 0x28;
             break;
         case 40: {
-            data_020d433c.mUnk_7e_4 = mMenuSelection;
+            data_020d433c.mTitleMenuSelection = mMenuSelection;
             u32 scene;
             switch (mMenuSelection) {
                 case TITLE_MENU_MAP:
@@ -670,8 +670,8 @@ void TitleScene::Update() {
                     scene = SCENE_ARENA_WINDOW;
                     break;
                 case TITLE_MENU_TUTORIAL:
-                    data_020d433c.mUnk_83 = 0;
-                    data_020d433c.mUnk_84 = 0;
+                    data_020d433c.mTutorialNumber = 0;
+                    data_020d433c.mTutorialPart = 0;
                     data_020d433c.mUnk_82 = 0;
                     scene = SCENE_TUTORIAL;
                     break;
@@ -732,7 +732,7 @@ void TitleScene::Update() {
             }
             break;
         case 47:
-            data_020d433c.mUnk_ad = 0;
+            data_020d433c.mCreditsPending = 0;
             RequestScene(SCENE_LOGO);
             mFinished = 1;
             return;

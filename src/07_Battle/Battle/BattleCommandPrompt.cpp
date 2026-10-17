@@ -191,7 +191,7 @@ void BattleCommandPrompt::Update() {
             Load();
             SelectWindow *win = mWindow;
             WindowItem *items = win->mCursor->mItems;
-            if (mMode == 0 || data_020d433c.mUnk_83 == 4) {
+            if (mMode == 0 || data_020d433c.mTutorialNumber == 4) {
                 win->mButtons[1].mEnabled = 0;
                 items[1].mFlags           = 0x8000;
             } else {

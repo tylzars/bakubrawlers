@@ -493,7 +493,7 @@ void NameEntryScene::Update() {
                 }
                 RenderName();
                 if (mSpecialNameHandle == 1) {
-                    gSaveData[0].mUnk_5d2 = 1;
+                    gSaveData[0].mSpecialNameCode0Used = 1;
                 } else {
                     u32 amount = sSpecialNameMoney[mSpecialNameHandle - 1] * 100;
                     if (amount > 9999990) {
@@ -739,7 +739,7 @@ void NameEntryScene::CheckSpecialName() {
     for (u8 i = 0; i < 6; i++) {
         switch (i) {
             case 0:
-                if (gSaveData[0].mUnk_5d2 != 0) {
+                if (gSaveData[0].mSpecialNameCode0Used != 0) {
                     continue;
                 }
                 break;

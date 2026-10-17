@@ -123,11 +123,11 @@ BattlePlayerList::BattlePlayerList()
     mUnk_2a4 = 0;
     mState = 0;
     mUnk_2ac = 0;
-    mUnk_2ad = 0;
+    mRepeatTurn = 0;
     mUnk_2ae = 0;
     mUnk_2af = 0;
     mUnk_2b0 = 0;
-    if (data_020d433c.mUnk_84) {
+    if (data_020d433c.mTutorialPart) {
         RestoreSndHeapState(SoundManager::Get().mHeap, 2);
     } else {
         SoundManager::Get().RestoreHeapState();
@@ -136,7 +136,7 @@ BattlePlayerList::BattlePlayerList()
     data_020d433c.mGimmicks = 0;
     data_020d433c.mEffects  = 0;
     data_020d433c.mGimmickCollision   = 0;
-    data_020d433c.mUnk_10   = 0;
+    data_020d433c.mAntenna   = 0;
     mUnk_2aa                = 0;
     mUnk_2ab                = 0;
     MI_CpuClearFast(&mPlayers[0], 0x28c);
@@ -152,11 +152,11 @@ BattlePlayerList::BattlePlayerList()
     if (data_020d433c.mUnk_99 != 6) {
         data_020d433c.mUnk_99 = 3;
     }
-    switch (data_020d433c.mUnk_83) {
+    switch (data_020d433c.mTutorialNumber) {
         case 5:
         case 6:
-            mUnk_2ae              = data_020d433c.mUnk_83;
-            data_020d433c.mUnk_83 = 0;
+            mUnk_2ae              = data_020d433c.mTutorialNumber;
+            data_020d433c.mTutorialNumber = 0;
             data_020d433c.mTutorialId = 0;
     }
     func_ov007_022633f8(this);
@@ -175,8 +175,8 @@ BattlePlayerList::~BattlePlayerList() {
     if (data_020d433c.mEffects) {
         ((SceneBase *) data_020d433c.mEffects)->mFinished = 1;
     }
-    if (data_020d433c.mUnk_10) {
-        ((SceneBase *) data_020d433c.mUnk_10)->mFinished = 1;
+    if (data_020d433c.mAntenna) {
+        ((SceneBase *) data_020d433c.mAntenna)->mFinished = 1;
     }
     BattleUnk29c *p = mUnk_29c;
     if (p) {
@@ -209,7 +209,7 @@ void BattlePlayerList::Update() {
         if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
             SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
             RequestScene(SCENE_ARENA_WINDOW);
-            data_020d433c.mUnk_10 = 0;
+            data_020d433c.mAntenna = 0;
             return;
         }
     }
@@ -238,8 +238,8 @@ void BattlePlayerList::Update() {
             break;
         case 5: {
             u8 result = mContext->mRequest;
-            if (result != 0 && data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->SetupLayout(0);
+            if (result != 0 && data_020d433c.mAntenna) {
+                data_020d433c.mAntenna->SetupLayout(0);
             }
             if (result == 0) {
                 return;
@@ -336,9 +336,9 @@ void BattlePlayerList::Update() {
                 return;
             }
             mState++;
-            mUnk_28f = 1;
+            mAddMarkerEnabled = 1;
             mUnk_291 = 1;
-            if (data_020d433c.mUnk_8a_0 != 0) {
+            if (data_020d433c.mLastBattle != 0) {
                 func_ov007_02269ee4(mPlayers[mTurnPlayer], 1);
             }
             break;
@@ -427,7 +427,7 @@ void BattlePlayerList::Update() {
                         return;
                     } else if (mUnk_2a9 == mTurnPlayer) {
                         data_020d433c.mUnk_86 = 0;
-                        data_020d433c.mUnk_84++;
+                        data_020d433c.mTutorialPart++;
                     }
                 } else {
                     mUnk_2af = 0;
@@ -435,7 +435,7 @@ void BattlePlayerList::Update() {
             }
             switch (mUnk_2ac) {
                 case 1:
-                    mUnk_2ad = 1;
+                    mRepeatTurn = 1;
                     mUnk_2ac = 0;
                     break;
                 case 2:
@@ -443,7 +443,7 @@ void BattlePlayerList::Update() {
                         mState = 0xe;
                     } else {
                         mState = 0xc;
-                        mUnk_28f = 0;
+                        mAddMarkerEnabled = 0;
                     }
                     mUnk_2ac = 0;
                     if (result == 3) {
@@ -497,7 +497,7 @@ void BattlePlayerList::Update() {
             }
             switch (result) {
                 case 1:
-                    if (data_020d433c.mUnk_83 == 0 && data_020d433c.mUnk_7a != 0 && mUnk_2a9 == mTurnPlayer) {
+                    if (data_020d433c.mTutorialNumber == 0 && data_020d433c.mUnk_7a != 0 && mUnk_2a9 == mTurnPlayer) {
                         id = mPlayers[mUnk_2a9]->mRecords[rec].mAttribute;
                         if (gSaveData[0].mUnk_4e < 0xffff) {
                             gSaveData[0].mUnk_4e++;
@@ -515,7 +515,7 @@ void BattlePlayerList::Update() {
                     break;
                 case 2:
                     mState = 0x1a;
-                    if (data_020d433c.mUnk_83 != 0) {
+                    if (data_020d433c.mTutorialNumber != 0) {
                         return;
                     }
                     if (data_020d433c.mUnk_7a == 0) {
@@ -538,7 +538,7 @@ void BattlePlayerList::Update() {
                 case 3: {
                     u8 ownerA = mUnits[mUnitA].mPlayer;
                     u8 ownerB = mUnits[mUnitB].mPlayer;
-                    if (data_020d433c.mUnk_83 == 0 && data_020d433c.mUnk_7a != 0 && mUnk_2a9 == mTurnPlayer) {
+                    if (data_020d433c.mTutorialNumber == 0 && data_020d433c.mUnk_7a != 0 && mUnk_2a9 == mTurnPlayer) {
                         id = mPlayers[mUnk_2a9]->mRecords[rec].mAttribute;
                         if (gSaveData[0].mUnk_4e < 0xffff) {
                             gSaveData[0].mUnk_4e++;
@@ -562,7 +562,7 @@ void BattlePlayerList::Update() {
                         RemoveMarker(this, mUnits[mUnitA].mMarker);
                         RemoveUnit(this, mUnitA, 2);
                         RemoveUnit(this, mUnitB, 2);
-                        if (data_020d433c.mUnk_83 != 0) {
+                        if (data_020d433c.mTutorialNumber != 0) {
                             return;
                         }
                         if (data_020d433c.mUnk_7a == 0) {
@@ -579,7 +579,7 @@ void BattlePlayerList::Update() {
                         }
                     } else {
                         mState = 0x18;
-                        if (data_020d433c.mUnk_83 != 0) {
+                        if (data_020d433c.mTutorialNumber != 0) {
                             return;
                         }
                         if (data_020d433c.mUnk_7a == 0) {
@@ -611,7 +611,7 @@ void BattlePlayerList::Update() {
                     mUnk_2aa             = GetTexVariant(target->mBakuganId, target->mAttribute);
                     RemoveUnit(this, mUnitA, 2);
                     RemoveUnit(this, mUnitB, 2);
-                    if (data_020d433c.mUnk_83 != 0) {
+                    if (data_020d433c.mTutorialNumber != 0) {
                         return;
                     }
                     if (data_020d433c.mUnk_7a == 0) {
@@ -690,7 +690,7 @@ void BattlePlayerList::Update() {
                 return;
             }
             mUnk_2b1 = MATH_Rand32(&gRandom, 100);
-            if (data_020d433c.mUnk_83 == 2 || data_020d433c.mUnk_83 == 4) {
+            if (data_020d433c.mTutorialNumber == 2 || data_020d433c.mTutorialNumber == 4) {
                 SoundManager::Get().RestoreHeapState();
                 SoundManager::Get().LoadAndStartSeq(1);
                 RecordSndHeapState(SoundManager::Get().mHeap);
@@ -709,12 +709,12 @@ void BattlePlayerList::Update() {
             }
             break;
         case 26: {
-            mUnk_28f = 1;
+            mAddMarkerEnabled = 1;
             mUnk_291 = 1;
             mUnk_293 = 0;
             u8 flag  = 0;
-            if (mUnk_2ad != 0) {
-                mUnk_2ad = 0;
+            if (mRepeatTurn != 0) {
+                mRepeatTurn = 0;
                 flag     = 1;
             } else {
                 mTurnCount++;
@@ -768,7 +768,7 @@ void BattlePlayerList::Update() {
             }
             mState = 0xc;
             if (data_020d433c.mBattlePlayers->mPlayers[mTurnPlayer]->mSlots54Remaining == 0) {
-                data_020d433c.mBattlePlayers->mUnk_28f = 0;
+                data_020d433c.mBattlePlayers->mAddMarkerEnabled = 0;
             }
             break;
         case 29:
@@ -799,7 +799,7 @@ void BattlePlayerList::Update() {
             data_020d433c.mUnk_88_4 = 0;
             data_020d433c.mUnk_88_0 = 0;
             if (mUnk_2ae != 0) {
-                data_020d433c.mUnk_83 = mUnk_2ae;
+                data_020d433c.mTutorialNumber = mUnk_2ae;
                 RequestScene(SCENE_TUTORIAL);
                 mFinished = 1;
                 return;
@@ -925,7 +925,7 @@ void CreateObjects(BattlePlayerList *list) {
     data_020d433c.mGimmicks = new GimmickManager();
     list->mUnk_29c = new BattleUnk29c();
     if (data_020d433c.mWireless) {
-        data_020d433c.mUnk_10 = new AntennaIndicator(0);
+        data_020d433c.mAntenna = new AntennaIndicator(0);
     }
     u8 i = 0;
     do {
@@ -1092,12 +1092,12 @@ void SetTurnOrder(BattlePlayerList *list, u8 slot, u8 player) {
     list->mTurnOrder[slot] = player;
     if (data_020d433c.mPlayerCount == 2) {
         if (slot == 0) {
-            list->mPlayers[player]->mUnk_f1 = 0;
+            list->mPlayers[player]->mCorner = 0;
         } else {
-            list->mPlayers[player]->mUnk_f1 = 2;
+            list->mPlayers[player]->mCorner = 2;
         }
     } else {
-        list->mPlayers[player]->mUnk_f1 = slot;
+        list->mPlayers[player]->mCorner = slot;
     }
 }
 
@@ -1117,7 +1117,7 @@ void SetupTutorial(BattlePlayerList *list) {
             list->mState = 10;
             break;
         case 2:
-            list->mUnk_28f = 0;
+            list->mAddMarkerEnabled = 0;
             list->mTurnCount = 2;
             list->mTurnPlayer = 1;
             list->mState = 12;
@@ -1145,7 +1145,7 @@ void SetupTutorial(BattlePlayerList *list) {
             list->mPlayers[0]->mRecords[2].mStatus = 2;
             break;
         case 7: {
-            list->mUnk_28f = 0;
+            list->mAddMarkerEnabled = 0;
             if (data_020d433c.mUnk_82) {
                 list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba.mes");
             } else {
@@ -1171,7 +1171,7 @@ void SetupTutorial(BattlePlayerList *list) {
             break;
         }
         case 8: {
-            list->mUnk_28f = 0;
+            list->mAddMarkerEnabled = 0;
             if (data_020d433c.mUnk_82) {
                 list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba.mes");
             } else {
@@ -1199,7 +1199,7 @@ void SetupTutorial(BattlePlayerList *list) {
             break;
         }
         case 10: {
-            list->mUnk_28f = 0;
+            list->mAddMarkerEnabled = 0;
             if (data_020d433c.mUnk_82) {
                 list->mUnk_2a4->LoadMessageFile("font/mes_T002_ba.mes");
             } else {
@@ -1340,14 +1340,14 @@ BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag) {
 
 extern "C" void func_ov007_022633f8(BattlePlayerList *list) {
     (void) DataLayoutSlot();
-    if (data_020d433c.mUnk_84) {
+    if (data_020d433c.mTutorialPart) {
         return;
     }
     if (data_020d433c.mNextScene != SCENE_TOURNAMENT) {
         FrameTask::Get().StartChannel(0, sFrameTaskIds[data_020d433c.mFieldId]);
         return;
     }
-    if (data_020d433c.mUnk_8a_0) {
+    if (data_020d433c.mLastBattle) {
         FrameTask::Get().StartChannel(0, 3);
         return;
     }

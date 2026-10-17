@@ -30,7 +30,7 @@ class BattleCommandPrompt;
 // SHOOT_FROM_MSG: the turn player's mMsg (type 8) gave the record; the list opens BattleShoot with the shot in mMsg.
 // CPU_SHOOT: the turn player's BattleCpu picked the record; the list opens BattleShoot with the shot it computes.
 #define COMMAND_RESULT_SHOOT          1
-// NEXT_TURN: the list goes to its state 26 (turn set-up: mTurnCount++ unless mUnk_2ad is set, then mTurnPlayer).
+// NEXT_TURN: the list goes to its state 26 (turn set-up: mTurnCount++ unless mRepeatTurn is set, then mTurnPlayer).
 #define COMMAND_RESULT_NEXT_TURN      2
 #define COMMAND_RESULT_SHOOT_FROM_MSG 3
 #define COMMAND_RESULT_CPU_SHOOT      4

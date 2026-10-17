@@ -167,7 +167,7 @@ BattleConfrontCard::~BattleConfrontCard() {
     SoundManager::Get().StopSeq(1);
     SoundManager::Get().RestoreHeapState();
     if (!func_ov007_02263150(data_020d433c.mBattlePlayers)) {
-        if (data_020d433c.mUnk_84) {
+        if (data_020d433c.mTutorialPart) {
             SoundManager::Get().LoadAndStartSeq(1);
             RecordSndHeapState(SoundManager::Get().mHeap);
         } else {
@@ -300,8 +300,8 @@ void BattleConfrontCard::ResetDisplay() {
     G2_SetWndOBJInsidePlane(0x1f, FALSE);
     G2_SetWnd0Position(0, 0, 0, 0);
     G2_SetWnd1Position(0, 0, 0, 0);
-    if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->mSecondVisible = 0;
+    if (data_020d433c.mAntenna) {
+        data_020d433c.mAntenna->mSecondVisible = 0;
     }
     GXS_SetVisibleWnd(0);
     G2S_SetWndOutsidePlane(0x1f, FALSE);
@@ -360,8 +360,8 @@ void BattleConfrontCard::LoadGraphics() {
     } else {
         LoadCardGraphic(mData->mMarkerCardId);
     }
-    if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->SetupLayout(10);
+    if (data_020d433c.mAntenna) {
+        data_020d433c.mAntenna->SetupLayout(10);
     }
 }
 
@@ -402,8 +402,8 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
     BattleEntry *e = mData->mEntries;
     switch (mStep) {
         case 0:
-            if (data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->mSecondVisible = 1;
+            if (data_020d433c.mAntenna) {
+                data_020d433c.mAntenna->mSecondVisible = 1;
             }
             GXS_SetVisibleWnd(5);
             G2S_SetWndOutsidePlane(0x1f, FALSE);
@@ -521,7 +521,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 BattleCardCamera *cam = mCardCamera;
                 SpriteManager::Get();
                 SpriteManager::sFade[0] = FADE_MODE_DOWN;
-                data_020d433c.mUnk_14 |= 4;
+                data_020d433c.mFlags |= 4;
                 cam->mState = 3;
                 mStep++;
             }
@@ -592,8 +592,8 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             if (mContext->mRequest == 0) {
                 break;
             }
-            if (data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->SetupLayout(10);
+            if (data_020d433c.mAntenna) {
+                data_020d433c.mAntenna->SetupLayout(10);
             }
             if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 mStep++;
@@ -789,15 +789,15 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 break;
             }
             mCardId = 0;
-            if (data_020d433c.mUnk_83 == 2 || data_020d433c.mUnk_83 == 4) {
+            if (data_020d433c.mTutorialNumber == 2 || data_020d433c.mTutorialNumber == 4) {
                 mStep = 0x1a;
             } else {
                 mStep = 0x1c;
             }
             break;
         case 26:
-            if (data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->mSecondVisible = 0;
+            if (data_020d433c.mAntenna) {
+                data_020d433c.mAntenna->mSecondVisible = 0;
             }
             GXS_SetVisibleWnd(0);
             data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
@@ -1153,8 +1153,8 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             } else {
                 mUnk_21 = 1;
             }
-            if (data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->mSecondVisible = 1;
+            if (data_020d433c.mAntenna) {
+                data_020d433c.mAntenna->mSecondVisible = 1;
             }
             GXS_SetVisibleWnd(5);
             G2S_SetWndOutsidePlane(0x1f, FALSE);
@@ -1259,7 +1259,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             BattleCardCamera *cam = mCardCamera;
             SpriteManager::Get();
             SpriteManager::sFade[0] = FADE_MODE_DOWN;
-            data_020d433c.mUnk_14 |= 4;
+            data_020d433c.mFlags |= 4;
             cam->mState = 3;
             mContext->mRequest = 0;
             mStep++;
@@ -1300,7 +1300,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                             if (e[mUnk_21].mUnk_0f_6) {
                                 add = (u16) (add << 1);
                             }
-                            if (data_020d433c.mUnk_83 == 0) {
+                            if (data_020d433c.mTutorialNumber == 0) {
                                 u8 sel = data_020d433c.mBattlePlayers->mUnitA;
                                 if (mUnk_21 == 1) {
                                     sel = data_020d433c.mBattlePlayers->mUnitB;
@@ -1315,13 +1315,13 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                                 }
                             }
                         }
-                        if (data_020d433c.mUnk_83 == 2) {
+                        if (data_020d433c.mTutorialNumber == 2) {
                             data_020d433c.mBattlePlayers->mUnk_2b0 = 1;
                         }
                     } else {
                         new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[idx].mUnk_0d_4, 0xb, 0, 0);
                     }
-                    if (data_020d433c.mUnk_83 == 4 && e[idx].mUnk_0f_1) {
+                    if (data_020d433c.mTutorialNumber == 4 && e[idx].mUnk_0f_1) {
                         data_020d433c.mBattlePlayers->mUnk_2b0 = 1;
                     }
                 } else {
@@ -1366,7 +1366,7 @@ int BattleConfrontCard::func_ov007_0224251c() {
     BattleEntry *e  = mData->mEntries;
     switch (mUnk_51) {
         case 0:
-            if (data_020d433c.mUnk_83 == 4) {
+            if (data_020d433c.mTutorialNumber == 4) {
                 mContext->mRequest = 0;
                 mUnk_51           = 2;
                 BattleCardSpec *spec = mCardSpec;
@@ -2169,8 +2169,8 @@ void BattleConfrontCard::OpenWindow() {
         mWindow->mEnabled = 1;
     }
     mWindowOpen = 1;
-    if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->mSecondVisible = 1;
+    if (data_020d433c.mAntenna) {
+        data_020d433c.mAntenna->mSecondVisible = 1;
     }
     G2S_SetWnd0Position(0x10, 0x10, 0xf0, 0xb0);
     GXS_SetVisibleWnd(5);
@@ -2186,8 +2186,8 @@ void BattleConfrontCard::CloseWindow() {
     }
     mWindowOpen = 0;
     G2S_SetBlendBrightness(0x11, 0);
-    if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->mSecondVisible = 0;
+    if (data_020d433c.mAntenna) {
+        data_020d433c.mAntenna->mSecondVisible = 0;
     }
     GXS_SetVisibleWnd(0);
     G2S_SetWnd0InsidePlane(0x1f, FALSE);

@@ -176,7 +176,7 @@ BattleCommand::BattleCommand(u32 unk)
     } else {
         mOffsetX = 4;
     }
-    u8 side = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mUnk_f1;
+    u8 side = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mCorner;
     if (side <= 1) {
         mFlipped = 0;
     } else {
@@ -184,7 +184,7 @@ BattleCommand::BattleCommand(u32 unk)
     }
     u8 i = 0;
     do {
-        u8 f = data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_f1;
+        u8 f = data_020d433c.mBattlePlayers->mPlayers[i]->mCorner;
         if (mFlipped) {
             f = (f + 2) % 4;
         }
@@ -209,7 +209,7 @@ BattleCommand::BattleCommand(u32 unk)
             CommandItems()[4].mY      = 0xc0;
             CommandItems()[4].mUnk_04 = 0x8000;
         }
-        if (data_020d433c.mBattlePlayers->mUnk_28f != 0) {
+        if (data_020d433c.mBattlePlayers->mAddMarkerEnabled != 0) {
             CommandItems()[2].mUnk_04 = 1;
         } else {
             CommandItems()[2].mUnk_04 = 0x8000;
@@ -487,7 +487,7 @@ void BattleCommand::Update() {
                         i++;
                     } while (i < 12);
                     if (count == need) {
-                        if (list->mUnk_28f == 0) {
+                        if (list->mAddMarkerEnabled == 0) {
                             mState = 10;
                         } else {
                             mState = 9;
@@ -584,7 +584,7 @@ void BattleCommand::Update() {
                     ok = FALSE;
                 }
             }
-            if (data_020d433c.mUnk_83 != 0) {
+            if (data_020d433c.mTutorialNumber != 0) {
                 ok = FALSE;
             }
             if (ok) {
@@ -635,7 +635,7 @@ void BattleCommand::Update() {
                         break;
                     case 2: {
                         BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                        if (list->mUnk_28f != 0) {
+                        if (list->mAddMarkerEnabled != 0) {
                             u8 cur   = list->mUnk_2a9;
                             u8 i     = 0;
                             u8 count = data_020d433c.mUnk_99;
@@ -784,7 +784,7 @@ void BattleCommand::Update() {
             mCommandWindow->mButtons[4].mEnabled = 0;
             mUnk_11c                      = 0;
             u8 r = data_020d433c.mBattlePlayers->Current()->mCpu->func_ov007_022310f0();
-            if (r == 0xff || data_020d433c.mBattlePlayers->mUnk_28f == 0) {
+            if (r == 0xff || data_020d433c.mBattlePlayers->mAddMarkerEnabled == 0) {
                 mState = 0x12;
                 return;
             }
@@ -1079,7 +1079,7 @@ void BattleCommand::Update() {
             AddMarker(data_020d433c.mBattlePlayers, mCursorX, mCursorY, mUnk_133, mUnk_132);
             mUnk_130 = 1;
             SpriteManager::Get().sFade[0] = FADE_MODE_DOWN;
-            data_020d433c.mBattlePlayers->mUnk_28f = 0;
+            data_020d433c.mBattlePlayers->mAddMarkerEnabled = 0;
             WindowItem *items = mCommandWindow->mCursor->mItems;
             items[2].mFlags   = 0x8000;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -1432,7 +1432,7 @@ BOOL BattleCommand::UpdateCommandWindowAndCursor(BOOL input) {
         sel = mCommandWindow->Update(1);
     }
     mUnk_13a = mCommandWindow->mUnk_0e0;
-    if (data_020d433c.mBattlePlayers->mUnk_28f == 0) {
+    if (data_020d433c.mBattlePlayers->mAddMarkerEnabled == 0) {
         mCommandWindow->mButtons[2].mEnabled = 0;
     }
     if (data_020d433c.mUnk_9a_3) {
@@ -1710,10 +1710,10 @@ void BattleCommand::func_ov007_0223a734() {
     do {
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
         if (mFlipped == 0) {
-            u8 frame   = list->mPlayers[p]->mUnk_f1 + (p * 4 + 0x28);
+            u8 frame   = list->mPlayers[p]->mCorner + (p * 4 + 0x28);
             mPlayerCellAnims[p] = new CellAnimation("battle_b_obj_00_nce.bin", frame, 1, 1);
         } else {
-            u8 frame   = (list->mPlayers[p]->mUnk_f1 + 2) % 4 + (p * 4 + 0x28);
+            u8 frame   = (list->mPlayers[p]->mCorner + 2) % 4 + (p * 4 + 0x28);
             mPlayerCellAnims[p] = new CellAnimation("battle_b_obj_00_nce.bin", frame, 1, 1);
         }
         mPlayerCellAnims[p]->mCharBase = screen.GetCharBase(0xa000);
@@ -1734,7 +1734,7 @@ void func_ov007_0223ad70(u32 variant) {
     MI_CpuClearFast((void *) 0x6609000, 0x1000);
     reg_GX_POWCNT |= 0x8000;
     ChangeDir("/Game/Battle/Bg");
-    if (data_020d433c.mUnk_8a_0 != 0) {
+    if (data_020d433c.mLastBattle != 0) {
         sprintf(path, "battle_b_bg_last_ncl.bin", data_020d433c.mFieldId);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x4000, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_last_ncg.bin", data_020d433c.mFieldId);
@@ -1781,8 +1781,8 @@ void func_ov007_0223ad70(u32 variant) {
     LoadAndQueueUpload(1, UPLOAD_KIND_OBJ_EXT_PLTT, 0, "card_s_000_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/2D/union_b");
     LoadAndQueueUpload(1, UPLOAD_KIND_OBJ, 0x18000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
-    if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->SetupLayout(8);
+    if (data_020d433c.mAntenna) {
+        data_020d433c.mAntenna->SetupLayout(8);
     }
     ChangeDir("/");
 }
@@ -1846,7 +1846,7 @@ void BattleCommand::Draw() {
     } while (i < 14);
     u8 p = 0;
     do {
-        u8 side = data_020d433c.mBattlePlayers->mPlayers[p]->mUnk_f1;
+        u8 side = data_020d433c.mBattlePlayers->mPlayers[p]->mCorner;
         if (mFlipped) {
             side = (side + 2) % 4;
         }
@@ -1854,7 +1854,7 @@ void BattleCommand::Draw() {
             mUnk_18->Update();
             mUnk_18->Draw(1, (s16) (mOffsetX + data_ov007_02279ab0[side].mX), data_ov007_02279ab0[side].mY, 0);
             if (data_020d433c.mHasPartners) {
-                u8 partner = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[p]->mPartner]->mUnk_f1;
+                u8 partner = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[p]->mPartner]->mCorner;
                 if (mFlipped) {
                     partner = (partner + 2) % 4;
                 }
@@ -2021,7 +2021,7 @@ void BattleCommand::UpdateCursorScrollAndCamera(u32 flag) {
     s32 ty = TouchManager::Get().mY;
     if (mUnk_13a == 0) {
         u8 field = data_020d433c.mFieldId;
-        if (data_020d433c.mUnk_8a_0 != 0) {
+        if (data_020d433c.mLastBattle != 0) {
             field = 0;
         }
         s32 off = 0;
@@ -2239,7 +2239,7 @@ void BattleCommand::OpenNextMode(u32 flag) {
 
 // Marks the cells of the battle grid that exist on the current field (data_020d433c.mUnk_95 is the field type).
 void BattleCommand::InitGridMask() {
-    if (data_020d433c.mUnk_8a_0 != 0) {
+    if (data_020d433c.mLastBattle != 0) {
         MI_CpuFill8(mGridMask, 0, 0x8c);
         mGridMask[6][4] = 1;
         return;

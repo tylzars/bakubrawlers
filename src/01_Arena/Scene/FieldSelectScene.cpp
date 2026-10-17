@@ -209,7 +209,7 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     mSavedFieldItem = 0;
     mPendingSubPlanes = -1;
     mMessageEnabled = 1;
-    data_020d433c.mUnk_10 = NULL;
+    data_020d433c.mAntenna = NULL;
     MI_CpuFill8(mUnk_10c, 0, sizeof(mUnk_10c));
     MI_CpuClearFast(mCharacterLooks, sizeof(mCharacterLooks));
     MI_CpuFill8(&mMain, 0, sizeof(mMain));
@@ -307,12 +307,12 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     }
     data_020d433c.mUnk_99 = 3;
     data_020d433c.mUnk_a7 = 0;
-    data_020d433c.mUnk_9a = gSaveData[0].mUnk_27;
+    data_020d433c.mRules = gSaveData[0].mRules;
     mUnk_25c[0]           = gSaveData[0].mUnk_27_5;
     mUnk_25c[2] = data_020d433c.mUnk_9a_3 == 0;
     mUnk_25c[4] = data_020d433c.mUnk_9a_2 == 0;
     mUnk_25c[6] = data_020d433c.mUnk_9a_4 == 0;
-    mUnk_25c[8] = data_020d433c.mUnk_9a_0 == 0;
+    mUnk_25c[8] = data_020d433c.mMicEnabled == 0;
     data_020d433c.mUnk_96 = mUnk_25c[0];
 }
 
@@ -386,7 +386,7 @@ FieldSelectScene::~FieldSelectScene() {
         }
     }
     if (data_020d433c.mWireless != 0) {
-        data_020d433c.mUnk_10->mFinished = 1;
+        data_020d433c.mAntenna->mFinished = 1;
     }
 }
 
@@ -582,10 +582,10 @@ void FieldSelectScene::LoadGraphics() {
     if (data_020d433c.mWireless == 0) {
         return;
     }
-    if (data_020d433c.mUnk_10 != NULL) {
-        data_020d433c.mUnk_10->SetupLayout(2);
+    if (data_020d433c.mAntenna != NULL) {
+        data_020d433c.mAntenna->SetupLayout(2);
     } else {
-        data_020d433c.mUnk_10 = new AntennaIndicator(2);
+        data_020d433c.mAntenna = new AntennaIndicator(2);
     }
 }
 
@@ -1091,7 +1091,7 @@ BOOL FieldSelectScene::func_ov001_02221aa8(u32 unk1) {
 BOOL FieldSelectScene::func_ov001_02221c0c() {
     MI_CpuCopy8(data_020d496a, (u8 *) &data_0220f540 + 4, 9);
     MI_CpuCopy8(gUnlockedFieldBits, (u8 *) &data_0220f540 + 0xd, 1);
-    data_0220f540.mUnk_0e = gSaveData[0].mUnk_27;
+    data_0220f540.mUnk_0e = gSaveData[0].mRules;
     data_0220f540.mUnk_0f = gSaveData[0].mUnk_5bf_0;
     if (func_ov001_02221aa8(0x17)) {
         u32 count = WirelessManager::Get().func_0202f134();
@@ -1146,12 +1146,12 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
                 }
                 if (i == 0) {
                     u8 b                  = p[0xe];
-                    data_020d433c.mUnk_9a = b;
+                    data_020d433c.mRules = b;
                     mUnk_25c[0]           = ((u32) b << 25) >> 30;
                     mUnk_25c[2]           = data_020d433c.mUnk_9a_3 == 0;
                     mUnk_25c[4]           = data_020d433c.mUnk_9a_2 == 0;
                     mUnk_25c[6]           = data_020d433c.mUnk_9a_4 == 0;
-                    mUnk_25c[8]           = data_020d433c.mUnk_9a_0 == 0;
+                    mUnk_25c[8]           = data_020d433c.mMicEnabled == 0;
                     data_020d433c.mUnk_96 = mUnk_25c[0];
                 }
                 if (p[0xf] != 0) {
@@ -1932,11 +1932,11 @@ u32 FieldSelectScene::UpdateRulePage() {
         data_020d433c.mUnk_9a_3 = (u8) ((mUnk_25c[2] == 0) ? 1 : 0);
         data_020d433c.mUnk_9a_2 = (u8) ((mUnk_25c[4] == 0) ? 1 : 0);
         data_020d433c.mUnk_9a_4 = (u8) ((mUnk_25c[6] == 0) ? 1 : 0);
-        data_020d433c.mUnk_9a_0 = (u8) ((mUnk_25c[8] == 0) ? 1 : 0);
+        data_020d433c.mMicEnabled = (u8) ((mUnk_25c[8] == 0) ? 1 : 0);
         data_020d433c.mUnk_96   = mUnk_25c[0];
         if (mLocalIsFirstSlot != 0) {
-            gSaveData[0].mUnk_27   = data_020d433c.mUnk_9a;
-            gSaveData[0].mUnk_28_6 = data_020d433c.mUnk_9a_0;
+            gSaveData[0].mRules   = data_020d433c.mRules;
+            gSaveData[0].mMicEnabled = data_020d433c.mMicEnabled;
         }
         result = 2;
     } else {

@@ -465,7 +465,7 @@ const u8 *t = sActFrameTaskFrameCounts[mCharacterId];
         case 9:
             if (!SpriteManager::Get().IsFading()) {
                 CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
-                data_020d433c.mUnk_14 |= 4;
+                data_020d433c.mFlags |= 4;
                 mState++;
             }
             break;
@@ -548,8 +548,8 @@ void BattleCharaAct::func_ov007_02269380() {
     }
     mMapObj = new BattleMapObj(type);
     mMapObj->Load();
-    if (mKind != 5 && mKind != 6 && data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->SetupLayout(0xd);
+    if (mKind != 5 && mKind != 6 && data_020d433c.mAntenna) {
+        data_020d433c.mAntenna->SetupLayout(0xd);
     }
 }
 

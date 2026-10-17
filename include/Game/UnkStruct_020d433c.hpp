@@ -111,7 +111,7 @@ struct BattlePlayer : public SceneBase {
                          // it (plus the partner's) >= 3, BattleResult against data_020d433c.mUnk_99
     /* ef */ u8 mState; // Update's case 3 never runs: nothing writes 3
     /* f0 */ u8 mIndex;
-    /* f1 */ u8 mUnk_f1;
+    /* f1 */ u8 mCorner;
     /* f2 */ u8 mPartner; // equals mIndex while data_020d433c.mHasPartners is 0
     /* f3 */ u8 mUnk_f3;
     /* f4 */ u8 mHistoryCount;
@@ -120,7 +120,7 @@ struct BattlePlayer : public SceneBase {
     /* f7 */ u8 mUnk_f7; // 0..2, copied from data_020d433c.mUnk_a3; see there
     /* f8 */ u8 mSlots54Remaining; // mSlots54 entries (of the first data_020d433c.mUnk_99) with mFlag 0; also read raw at +0xf8 (BattleAbility)
     /* f9 */ u8 mSlots6cRemaining; // the same for mSlots6c
-    /* fa */ u16 mUnk_fa;
+    /* fa */ u16 mAbilityId;
     /* fc */ u8 mUnk_fc;
     /* fd */ u8 mUnk_fd;
     /* fe */ u8 mUnk_fe;
@@ -218,13 +218,13 @@ struct BattlePlayerList : public SceneBase {
     /* 16c */ s8 mMarkerHandles[14][10]; // index + 1 into mMarkers, 0 = none; [cell x][cell y]
     /* 1f8 */ s8 mUnitHandles[14][10]; // index + 1 into mUnits, 0 = none; [cell x][cell y]
     /* 284 */ u8 mTurnOrder[4]; // read at (mTurnCount - 1) % mPlayerCount, positions 1 and 2 swapped while mHasPartners is set
-    /* 288 */ u16 mTurnCount; // +1 per new turn player (not for an extra turn, mUnk_2ad); BattleCommand draws (mTurnCount - 1) / mPlayerCount + 1
+    /* 288 */ u16 mTurnCount; // +1 per new turn player (not for an extra turn, mRepeatTurn); BattleCommand draws (mTurnCount - 1) / mPlayerCount + 1
     /* 28a */ u8 mTurnPlayer;
     /* 28b */ u8 mUnk_28b;
     /* 28c */ u8 mUnk_28c;
     /* 28d */ u8 mUnitA; // SetUnitAB's first unit, read as BattleData's entry 0 (set by BattleTarget, BattleAbility)
     /* 28e */ u8 mUnitB; // SetUnitAB's second unit, read as BattleData's entry 1; sometimes the same unit as mUnitA
-    /* 28f */ u8 mUnk_28f;
+    /* 28f */ u8 mAddMarkerEnabled;
     /* 290 */ PAD(0x290, 0x291);
     /* 291 */ u8 mUnk_291;
     /* 292 */ u8 mUnk_292;
@@ -241,7 +241,7 @@ struct BattlePlayerList : public SceneBase {
     /* 2aa */ u8 mUnk_2aa;
     /* 2ab */ u8 mUnk_2ab;
     /* 2ac */ u8 mUnk_2ac;
-    /* 2ad */ u8 mUnk_2ad;
+    /* 2ad */ u8 mRepeatTurn;
     /* 2ae */ u8 mUnk_2ae;
     /* 2af */ u8 mUnk_2af;
     /* 2b0 */ u8 mUnk_2b0;
@@ -320,18 +320,18 @@ struct UnkStruct_020d433c {
     /* 04 */ EffectManager *mEffects;
     /* 08 */ GimmickManager *mGimmicks;
     /* 0c */ GimmickCollision *mGimmickCollision;
-    /* 10 */ AntennaIndicator *mUnk_10;
+    /* 10 */ AntennaIndicator *mAntenna;
     union {
-        /* 14 */ u16 mUnk_14;
+        /* 14 */ u16 mFlags;
         struct {
             /* 14 */ u16 mUnk_14_0 : 1;
-            /* 14 */ u16 mUnk_14_1 : 1;
+            /* 14 */ u16 mSaveDirty : 1;
             /* 14 */ u16 mUnk_14_2 : 14;
         };
     };
     /* 16 */ u16 mNames[4][12]; // UTF-16 player names
     /* 76 */ u8 mUnk_76;
-    /* 77 */ u8 mUnk_77;
+    /* 77 */ u8 mSaveSlotContent;
     /* 78 */ PAD(0x78, 0x79);
     /* 79 */ u8 mLanguage;
     /* 7a */ u8 mUnk_7a;
@@ -341,24 +341,24 @@ struct UnkStruct_020d433c {
                             // BattleResult, BattleUnk0227532c and func_ov007_022633f8 also test it
     /* 7c */ u8 mUnk_7c;
     /* 7d */ u8 mUnk_7d;
-    /* 7e */ u8 mUnk_7e_0 : 4;
-    /* 7e */ u8 mUnk_7e_4 : 4;
+    /* 7e */ u8 mMapTab : 4;
+    /* 7e */ u8 mTitleMenuSelection : 4;
     /* 7f */ u8 mUnk_7f; // SCENE_* id MyroomScene requests when it ends (TitleScene stores SCENE_TITLE, MapScene
                          // SCENE_MAP); with SCENE_TITLE and mUnk_14 & 2 it opens a SaveWindow first
     /* 80 */ u8 mUnk_80;
     /* 81 */ u8 mUnk_81;
     /* 82 */ u8 mUnk_82;
-    /* 83 */ u8 mUnk_83;
-    /* 84 */ u8 mUnk_84;
+    /* 83 */ u8 mTutorialNumber;
+    /* 84 */ u8 mTutorialPart;
     /* 85 */ u8 mTutorialId;
     /* 86 */ u8 mUnk_86;
     /* 87 */ u8 mUnk_87;
     /* 88 */ u8 mUnk_88_0 : 4;
     /* 88 */ u8 mUnk_88_4 : 4;
     /* 89 */ u8 mUnk_89;
-    /* 8a */ u8 mUnk_8a_0 : 4;
+    /* 8a */ u8 mLastBattle : 4;
     /* 8a */ u8 mUnk_8a_4 : 4;
-    /* 8b */ u8 mUnk_8b_0 : 4;
+    /* 8b */ u8 mParkEntryIndex : 4;
     /* 8b */ u8 mUnk_8b_4 : 4;
     /* 8c */ u8 mUnk_8c_0 : 4;
     /* 8c */ u8 mUnk_8c_4 : 4;
@@ -369,9 +369,9 @@ struct UnkStruct_020d433c {
     /* 98 */ u8 mHasPartners;
     /* 99 */ u8 mUnk_99;
     union {
-        /* 9a */ u8 mUnk_9a;
+        /* 9a */ u8 mRules;
         struct {
-            /* 9a */ u8 mUnk_9a_0 : 1;
+            /* 9a */ u8 mMicEnabled : 1;
             /* 9a */ u8 mUnk_9a_1 : 1;
             /* 9a */ u8 mUnk_9a_2 : 1;
             /* 9a */ u8 mUnk_9a_3 : 1;
@@ -388,7 +388,7 @@ struct UnkStruct_020d433c {
     /* a7 */ u8 mUnk_a7;
     /* a8 */ u8 mWireless; // set by ArenaScene when it starts the wireless session; cleared by ArenaScene, ArenaWindowScene, BattlePlayerList
     /* a9 */ u8 mUnk_a9[4];
-    /* ad */ u8 mUnk_ad;
+    /* ad */ u8 mCreditsPending;
     /* ae */ u8 mUnk_ae;
     /* af */ u8 mUnk_af[4];
     /* af */

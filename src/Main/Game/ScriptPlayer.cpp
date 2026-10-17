@@ -178,10 +178,10 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
         FrameTask::Get().StopChannel(0);
     }
     FrameTask::Get().StopChannel(1);
-    data_020d433c.mUnk_9a = 0x11;
-    data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
+    data_020d433c.mRules = 0x11;
+    data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
     data_020d433c.mUnk_7a = 1;
-    if (data_020d433c.mUnk_84 != 0) {
+    if (data_020d433c.mTutorialPart != 0) {
         RestoreSndHeapState(SoundManager::Get().mHeap, 2);
     } else {
         SoundManager::Get().RestoreHeapState();
@@ -219,7 +219,7 @@ ScriptPlayer::~ScriptPlayer() {
     }
     FrameTask::Get().StopChannel(1);
     SoundManager::Get().StopSeqArcPlayerSounds(1);
-    if (data_020d433c.mUnk_84 == 0) {
+    if (data_020d433c.mTutorialPart == 0) {
         SoundManager::Get().StopSeq(1);
     }
 }
@@ -440,8 +440,8 @@ void ScriptPlayer::SetupBattle(u32 unk1, u32 unk2) {
             data_020d433c.mNextScene = SCENE_MAP;
             break;
     }
-    data_020d433c.mUnk_9a   = 0x11;
-    data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
+    data_020d433c.mRules   = 0x11;
+    data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
     for (u8 j = 0; j < 3; j++) {
         data_020d433c.mCharacterIds[j + 1] = func_02067120(unk1, unk2, (u8) (j + 1), 0);
         data_020d433c.mUnk_a3[j + 1] = func_02067120(unk1, unk2, (j + 1) & 0xff, 1);
@@ -475,9 +475,9 @@ void ScriptPlayer::SetupBattle(u32 unk1, u32 unk2) {
     data_020d433c.mCharacterIds[0] = 0x15;
     u8 type = gSaveData[0].mUnk_42;
     if ((type == 9) & (gSaveData[0].mUnk_43 == 8)) {
-        data_020d433c.mUnk_8a_0 = 1;
+        data_020d433c.mLastBattle = 1;
     } else {
-        data_020d433c.mUnk_8a_0 = 0;
+        data_020d433c.mLastBattle = 0;
     }
     BOOL reached = unk2 >= func_02067240(unk1);
     BOOL known   = func_020670b4(type) != 0;
@@ -3550,7 +3550,7 @@ BOOL ScriptPlayer::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4,
     mUnk_12c2 = n;
     if (mUnk_14e2 == 0) {
         mCommands[n].mCommand = 0xa9;
-        mCommands[n].mValue = data_020d433c.mUnk_7e_0 + 0x20;
+        mCommands[n].mValue = data_020d433c.mMapTab + 0x20;
         n++;
         mCommands[n].mCommand = 0xae;
         mCommands[n].mValue = -0x13b;

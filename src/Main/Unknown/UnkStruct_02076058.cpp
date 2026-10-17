@@ -128,7 +128,7 @@ UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
             mUnk_70[slot] = mSaveEntries[slot]->mUnk_00_0;
         }
         slot++;
-    } while (slot < 3 && data_020d433c.mUnk_8a_0 == 0);
+    } while (slot < 3 && data_020d433c.mLastBattle == 0);
 }
 
 UnkStruct_02076058::~UnkStruct_02076058() {

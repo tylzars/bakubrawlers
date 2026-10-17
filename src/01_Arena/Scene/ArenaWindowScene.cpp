@@ -199,7 +199,7 @@ void ArenaWindowScene::Update() {
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest     = 0;
             data_020d433c.mUnk_87 = 0;
-            data_020d433c.mUnk_14_1 = 0;
+            data_020d433c.mSaveDirty = 0;
             mState++;
             break;
         case 12:

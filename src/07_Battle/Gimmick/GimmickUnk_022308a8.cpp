@@ -49,8 +49,8 @@ void GimmickUnk_022308a8::Update() {
                 SoundManager::Get().StartSeqArc(0x64);
                 mSoundStarted = 1;
             }
-            data_020d433c.mUnk_14 &= 8;
-            if (data_020d433c.mUnk_14) {
+            data_020d433c.mFlags &= 8;
+            if (data_020d433c.mFlags) {
                 return;
             }
             if (r->mAttribute == 1) {

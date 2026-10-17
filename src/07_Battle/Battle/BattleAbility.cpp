@@ -80,7 +80,7 @@ BattleAbility::BattleAbility()
     }
     mTarget = data_020d433c.mBattlePlayers->mBattleTarget;
     mUnit = mTarget->mUnitHandle - 1;
-    mAbilityId = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_fa;
+    mAbilityId = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mAbilityId;
     mAbilityIndex = mAbilityId - 0xc9; // 0xc9 (ABILITY_ID_REPEAT_TURN) is the lowest id: the sAbilityHandlers row
     mCamera = data_020d433c.mBattlePlayers->mCamera;
     u8 i = 0;

@@ -90,8 +90,8 @@ void GimmickIkazuchiStart::Update() {
         if (mMarkerNear) {
             return;
         }
-        data_020d433c.mUnk_14 &= 8;
-        if (data_020d433c.mUnk_14) {
+        data_020d433c.mFlags &= 8;
+        if (data_020d433c.mFlags) {
             return;
         }
         mCounter--;
@@ -112,8 +112,8 @@ void GimmickIkazuchiStart::Update() {
             return;
         }
         func_ov007_022789e0(0);
-        data_020d433c.mUnk_14 &= 8;
-        if (data_020d433c.mUnk_14) {
+        data_020d433c.mFlags &= 8;
+        if (data_020d433c.mFlags) {
             return;
         }
         mCounter--;
@@ -194,16 +194,16 @@ int GimmickIkazuchiStart::func_ov007_022789e0(int count) {
         if (count && mModelB) {
             MtxFx43 mtx = gIdentityMtx43;
             MTX_SetTranslation43(&mtx, &mPosition);
-            data_020d433c.mUnk_14 &= 8;
-            if (!data_020d433c.mUnk_14) {
+            data_020d433c.mFlags &= 8;
+            if (!data_020d433c.mFlags) {
                 mModelB->AdvanceAnim();
             }
             mModelB->Draw(&mtx, &mScale);
         }
     }
     if (count) {
-        data_020d433c.mUnk_14 &= 8;
-        if (!data_020d433c.mUnk_14) {
+        data_020d433c.mFlags &= 8;
+        if (!data_020d433c.mFlags) {
             mCounter--;
             if (mCounter == 0) {
                 mState = 1;

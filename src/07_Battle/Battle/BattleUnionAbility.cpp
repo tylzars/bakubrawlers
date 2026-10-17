@@ -70,8 +70,8 @@ BattleUnionAbility::~BattleUnionAbility() {
     } while (i < 2);
     GXS_SetVisibleWnd(0);
     G2S_SetBlendBrightness(0x11, 0);
-    if (data_020d433c.mUnk_10) {
-        data_020d433c.mUnk_10->mSecondVisible = 0;
+    if (data_020d433c.mAntenna) {
+        data_020d433c.mAntenna->mSecondVisible = 0;
     }
 }
 
@@ -157,8 +157,8 @@ void BattleUnionAbility::SetupSubWndAndAntenna() {
         case 3:
         case 4:
         case 5:
-            if (data_020d433c.mUnk_10) {
-                data_020d433c.mUnk_10->mSecondVisible = 1;
+            if (data_020d433c.mAntenna) {
+                data_020d433c.mAntenna->mSecondVisible = 1;
             }
             GXS_SetVisibleWnd(4);
             G2S_SetWndOBJInsidePlane(0x10, FALSE);

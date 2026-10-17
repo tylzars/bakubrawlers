@@ -143,7 +143,7 @@ void SceneRunner::SwitchToScene(s32 scene) {
     RewindUploadQueue();
     mContext->mRequest = 14;
     ((SceneRunnerContext *) mContext)->mState = scene;
-    if (data_020d433c.mUnk_84 == 0) {
+    if (data_020d433c.mTutorialPart == 0) {
         SoundManager::Get().RestoreHeapState();
     }
     if (scene == SCENE_BATTLE_PLAYER_LIST) {

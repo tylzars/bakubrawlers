@@ -69,7 +69,7 @@ void RemoveCollisionSet(GimmickCollision *data, GimmickSetData *set) {
 }
 
 void GimmickCollision::Update() {
-    if (data_020d433c.mUnk_14 & 1) {
+    if (data_020d433c.mFlags & 1) {
         mFinished = 1;
         return;
     }

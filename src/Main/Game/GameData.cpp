@@ -60,8 +60,8 @@ void ResetSaveData() {
     gSaveData[0].mUnk_18_14 = 0;
     gSaveData[0].mUnk_18_11 = 1;
     gSaveData[0].mUnk_27_5 = 0;
-    gSaveData[0].mUnk_27 |= 0x1c;
-    data_020d433c.mUnk_9a = gSaveData[0].mUnk_27;
+    gSaveData[0].mRules |= 0x1c;
+    data_020d433c.mRules = gSaveData[0].mRules;
     do {
         SetSlotEntryIndex(gSaveData, 0, i, 0xffff);
         i++;
@@ -75,9 +75,9 @@ void ResetSaveData() {
         SetSlotEntryIndex(base, 0, n, idx);
         func_020231c0(base, idx, rec[3]);
         func_0205b1c4(rec[1] & 0xff, rec[2] & 0xff);
-        base->mUnk_06[n] = rec[4];
+        base->mSlots54Values[n] = rec[4];
         SetFlagBit((u8 *) gSaveData[0].mUnk_556, rec[4]);
-        base->mUnk_0c[n] = rec[5];
+        base->mSlots6cValues[n] = rec[5];
         SetFlagBit((u8 *) gSaveData[0].mUnk_556, rec[5]);
         n++;
     } while (n < 3);
@@ -86,20 +86,20 @@ void ResetSaveData() {
 void ResetOptions(SaveData *d) {
     SaveData *p = gSaveData;
     p->mUnk_28_5 = 1;
-    p->mUnk_28_6 = 1;
-    p->mUnk_28_7 = 5;
-    p->mUnk_28_10 = 5;
-    p->mUnk_28_13 = 5;
-    p->mUnk_27_0 = p->mUnk_28_6;
+    p->mMicEnabled = 1;
+    p->mVolume0Index = 5;
+    p->mVolume1Index = 5;
+    p->mVolume2Index = 5;
+    p->mUnk_27_0 = p->mMicEnabled;
     ApplyVolumeOptions(d);
 }
 
 void ApplyVolumeOptions(SaveData *d) {
-    SoundManager::Get().mSeqVolume = gSeqVolumes[d->mUnk_28_7];
-    SoundManager::Get().mSeqArcVolume = gSeqArcVolumes[d->mUnk_28_10];
-    FrameTask::Get().mVolume0 = gFrameTaskVolumes0[d->mUnk_28_7];
-    FrameTask::Get().mVolume1 = gFrameTaskVolumes1[d->mUnk_28_10];
-    FrameTask::Get().mVolume2 = gFrameTaskVolumes2[d->mUnk_28_13];
+    SoundManager::Get().mSeqVolume = gSeqVolumes[d->mVolume0Index];
+    SoundManager::Get().mSeqArcVolume = gSeqArcVolumes[d->mVolume1Index];
+    FrameTask::Get().mVolume0 = gFrameTaskVolumes0[d->mVolume0Index];
+    FrameTask::Get().mVolume1 = gFrameTaskVolumes1[d->mVolume1Index];
+    FrameTask::Get().mVolume2 = gFrameTaskVolumes2[d->mVolume2Index];
     SoundManager::Get().SetSeqVolume(0x7f);
     SoundManager::Get().SetSeqArcVolume(0x7f);
     FrameTask::Get().SetChannelVolume(0, 4);
@@ -158,13 +158,13 @@ u16 func_020231f4(SaveData *d, u32 a, u8 b, u8 c) {
 
 void SetBakuganEntry(SaveData *d, const u16 *src, u32 b, u32 c) {
     int idx = GetBakuganEntryIndex(d, 0, b, c);
-    d->mUnk_88[idx][0] = src[0];
-    d->mUnk_88[idx][1] = src[1];
+    d->mBakuganEntries[idx][0] = src[0];
+    d->mBakuganEntries[idx][1] = src[1];
 }
 
 UnkStruct_02023248 *GetBakuganEntry(SaveData *d, u32 a, u32 b) {
     int idx = GetBakuganEntryIndex(d, 0, a, b);
-    return (UnkStruct_02023248 *) &d->mUnk_88[idx];
+    return (UnkStruct_02023248 *) &d->mBakuganEntries[idx];
 }
 
 BOOL func_0202326c(SaveData *d) {

@@ -303,7 +303,7 @@ void TournamentScene::Update() {
             LoadWindowGraphics();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest       = 0;
-            data_020d433c.mUnk_14_1 = 0;
+            data_020d433c.mSaveDirty = 0;
             SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             mState++;
             break;
@@ -741,22 +741,22 @@ void TournamentScene::Update() {
         case 41:
             if (mUnk_be != 0) {
                 data_020d433c.mNextScene   = SCENE_TOURNAMENT;
-                data_020d433c.mUnk_9a   = 0x11;
-                data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
-                if (data_020d433c.mUnk_8a_0 != 0) {
+                data_020d433c.mRules   = 0x11;
+                data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
+                if (data_020d433c.mLastBattle != 0) {
                     int idx; u8 i; u32 id = (u8) gSaveData[0].mAttribute; int slot; s8 pos;
                     slot = GetBakuganEntryIndex(gSaveData, 0, 0x25, id);
                     func_020231c0(gSaveData, slot, 0x29e);
                     idx = GetBakuganEntryIndex(gSaveData, 0, 0x24, id);
                     for (i = 0, pos = -1; i < 3; i++) {
-                        if (idx == gSaveData[0].mUnk_00[i]) {
+                        if (idx == gSaveData[0].mSlotEntryIndices[i]) {
                             pos = i;
                             break;
                         }
                     }
                     if (pos > 0) {
                         do {
-                            SetSlotEntryIndex(gSaveData, 0, (u8) pos, gSaveData[0].mUnk_00[pos - 1]);
+                            SetSlotEntryIndex(gSaveData, 0, (u8) pos, gSaveData[0].mSlotEntryIndices[pos - 1]);
                             pos--;
                         } while (pos >= 1);
                     }
@@ -775,7 +775,7 @@ void TournamentScene::Update() {
                 return;
             }
             if (mUnk_d0 != 0) {
-                data_020d433c.mUnk_ad = 1;
+                data_020d433c.mCreditsPending = 1;
                 RequestScene(SCENE_TITLE);
                 mFinished = TRUE;
                 return;

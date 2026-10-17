@@ -399,8 +399,8 @@ BattleTarget::~BattleTarget() {
 }
 
 void BattleTarget::Update() {
-    data_020d433c.mUnk_14 &= 8;
-    if (data_020d433c.mUnk_14 == 0) {
+    data_020d433c.mFlags &= 8;
+    if (data_020d433c.mFlags == 0) {
         switch (mState) {
             case 0:
                 Init();
@@ -619,7 +619,7 @@ void BattleTarget::Update() {
                 u8 cur                 = list->mTurnPlayer;
                 u8 a                   = list->mUnitA;
                 u8 b                   = list->mUnitB;
-                if (list->mPlayers[cur]->mUnk_fa != 0 && (mResult == 2 || (mResult == 3 && list->Units()[a].mPlayer != list->Units()[b].mPlayer))) {
+                if (list->mPlayers[cur]->mAbilityId != 0 && (mResult == 2 || (mResult == 3 && list->Units()[a].mPlayer != list->Units()[b].mPlayer))) {
                     SpriteManager::Get();
                     SpriteManager::sFade[0] = FADE_MODE_DOWN;
                     mState++;
@@ -686,7 +686,7 @@ void BattleTarget::Update() {
                     break;
                 }
                 mUnk_1c6                                                  = 0;
-                data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_fa = 0;
+                data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mAbilityId = 0;
                 if (mSpKind != 0) {
                     data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f3 = 0;
                 }
@@ -753,8 +753,8 @@ void BattleTarget::func_ov007_02253fbc() {
     mContext->mRequest = 0;
     CloseCommandMapNow(mCommandMap);
     mBakugan->mVisible = 0;
-    data_020d433c.mUnk_14 &= 8;
-    if (data_020d433c.mUnk_14) {
+    data_020d433c.mFlags &= 8;
+    if (data_020d433c.mFlags) {
         mUnk_1ec = 1;
     }
 }
@@ -1351,7 +1351,7 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
                     tp.y = u.y + (mUnk_11c.y + 0x19000);
                     tp.x = mUnk_11c.x + 0x37000 + (k << 13);
                     pos = tp;
-                    MTX_ApplyRotY33(&rot, (u16) (sTables.mBaseRotY[player->mUnk_f1] - mRotYAdjust));
+                    MTX_ApplyRotY33(&rot, (u16) (sTables.mBaseRotY[player->mCorner] - mRotYAdjust));
                     MTX_MultVec33(&pos, &rot, &pos);
                     MTX_MultVec33(&mCameraOffset, &rot, &mCameraOffset);
                     pos.x = FX_Mul(pos.x, ident._[4]);
@@ -1430,7 +1430,7 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
             tp.y = mUnk_11c.y + 0x19000;
             tp.x = mUnk_11c.x + 0x37000;
             pos = tp;
-            MTX_ApplyRotY33(&rot, (u16) (sTables.mBaseRotY[player->mUnk_f1] - mRotYAdjust));
+            MTX_ApplyRotY33(&rot, (u16) (sTables.mBaseRotY[player->mCorner] - mRotYAdjust));
             MTX_MultVec33(&pos, &rot, &pos);
             pos.x = FX_Mul(pos.x, ident._[4]);
             pos.z = FX_Mul(pos.z, ident._[8]);
@@ -1757,8 +1757,8 @@ void BattleTarget::UpdateCamera() {
 }
 
 void BattleTarget::UpdateCameraAndDraw() {
-    data_020d433c.mUnk_14 &= 8;
-    if (data_020d433c.mUnk_14 == 0) {
+    data_020d433c.mFlags &= 8;
+    if (data_020d433c.mFlags == 0) {
         UpdateCamera();
     }
     if (mStatusPanels) {
@@ -3282,7 +3282,7 @@ void BattleTarget::StartShot() {
     dir.y                = 0;
     dir.z                = 0;
     *(Rot3 *) rot = *(Rot3 *) player->mUnk_cc;
-    rot[1]               = rot[1] + sTables.mBaseRotY[player->mUnk_f1];
+    rot[1]               = rot[1] + sTables.mBaseRotY[player->mCorner];
     power             = (u8) (sShotSpeedAdjusts[record->mUnk_02_0] + player->mUnk_ec);
     mUnk_50 = mUnk_54 = sTables.mUnk_dc[record->mUnk_02_6];
     if (player->mUnk_ec == 0) {
@@ -3667,7 +3667,7 @@ void BattleTarget::DrawRecordTotal(u32 player, u32 record) {
         i++;
         total = total / 10;
     } while (i < 4);
-    if (data_020d433c.mBattlePlayers->mPlayers[player]->mUnk_fa == 0) {
+    if (data_020d433c.mBattlePlayers->mPlayers[player]->mAbilityId == 0) {
         return;
     }
     mCellAnims[0]->Draw(0, 0xf2, 0xab, 1);

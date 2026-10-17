@@ -52,8 +52,8 @@ void GimmickUnk_02230cec::Update() {
         v.x = target->mVelocity.x;
         v.y = target->mVelocity.y;
         v.z = target->mVelocity.z;
-        data_020d433c.mUnk_14 &= 8;
-        if (!data_020d433c.mUnk_14 && r->mAttribute != 2) {
+        data_020d433c.mFlags &= 8;
+        if (!data_020d433c.mFlags && r->mAttribute != 2) {
             v.x = FX_Mul(v.x, 0x1000);
             v.y = FX_Mul(v.y, 0x1000);
             v.z = FX_Mul(v.z, 0x1000);

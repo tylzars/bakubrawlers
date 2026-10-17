@@ -45,15 +45,15 @@ void LogoScene::Update() {
                     new MessageScreen(MESSAGE_SCREEN_SYSTEM_5_HALT);
                     break;
                 case SAVE_STATUS_NO_MAGIC:
-                    data_020d433c.mUnk_77 = 0;
+                    data_020d433c.mSaveSlotContent = 0;
                     mState++;
                     break;
                 case SAVE_STATUS_MARKER:
-                    data_020d433c.mUnk_77 = 1;
+                    data_020d433c.mSaveSlotContent = 1;
                     mState++;
                     break;
                 case SAVE_STATUS_OK:
-                    data_020d433c.mUnk_77 = 2;
+                    data_020d433c.mSaveSlotContent = 2;
                     mState++;
                     break;
             }

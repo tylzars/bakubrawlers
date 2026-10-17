@@ -88,8 +88,8 @@ void GimmickHaosBall::Update() {
         sum.x = d.x + h->mPosition.x;
         h->mPosition = sum;
         SetTargetVelocityXyz(data_020d433c.mBattlePlayers->mBattleTarget, 0, 0x333, 0, 0);
-        data_020d433c.mUnk_14 &= 8;
-        if (data_020d433c.mUnk_14) {
+        data_020d433c.mFlags &= 8;
+        if (data_020d433c.mFlags) {
             return;
         }
         mTimer--;

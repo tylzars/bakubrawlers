@@ -404,7 +404,7 @@ void BattleHud::Update() {
             if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
                 data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
             }
-            u32 limit = data_020d433c.mUnk_83 == 4 ? 0 : 5;
+            u32 limit = data_020d433c.mTutorialNumber == 4 ? 0 : 5;
             if (!data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
                 data_020d433c.mBattlePlayers->mUnk_2af++;
                 u8 n = data_020d433c.mBattlePlayers->mUnk_2af;

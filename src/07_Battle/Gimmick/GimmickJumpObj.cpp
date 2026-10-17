@@ -72,8 +72,8 @@ void GimmickJumpObj::Update() {
             if (mTimer == 0) {
                 DrawInstance();
             } else {
-                data_020d433c.mUnk_14 &= 8;
-                if (data_020d433c.mUnk_14 == 0) {
+                data_020d433c.mFlags &= 8;
+                if (data_020d433c.mFlags == 0) {
                     mTimer--;
                 }
             }

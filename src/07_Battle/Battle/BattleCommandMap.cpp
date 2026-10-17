@@ -742,7 +742,7 @@ extern "C" void func_ov007_02246efc(BattleCommandMap *map) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera) {
         camera->SetFov(sCommandCamAngles[1]);
-        VecFx32 v = sCornerCameraPositions[data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mUnk_f1];
+        VecFx32 v = sCornerCameraPositions[data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mCorner];
         v.y       = sCameraHeights[map->mKind];
         camera->mPosition = v;
         camera->mTarget.x = 0;
@@ -754,7 +754,7 @@ extern "C" void func_ov007_02246efc(BattleCommandMap *map) {
 
 extern "C" u32 GetCornerRotYDegrees() {
     s32 result = 0;
-    switch (data_020d433c.mBattlePlayers->Current()->mUnk_f1) {
+    switch (data_020d433c.mBattlePlayers->Current()->mCorner) {
         case 0:
             return result;
         case 1:
@@ -771,7 +771,7 @@ extern "C" u32 GetCornerRotYDegrees() {
 }
 
 extern "C" void FlipToCornerQuadrant(BattleCommandMap *map, VecFx32 *v) {
-    switch (data_020d433c.mBattlePlayers->Current()->mUnk_f1) {
+    switch (data_020d433c.mBattlePlayers->Current()->mCorner) {
         case 0:
             if (v->x < 0) {
                 v->x = -v->x;
@@ -1085,7 +1085,7 @@ extern "C" void func_ov007_02247e00(BattleCommandMap *map) {
     map->func_ov007_022455c0();
     u8 count    = data_020d433c.mPlayerCount;
     u8 coords[4][2] = {{6, 4}, {7, 5}, {7, 4}, {6, 5}};
-    if (data_020d433c.mUnk_8a_0 != 0) {
+    if (data_020d433c.mLastBattle != 0) {
         if (map->mUnk_50[0] == 0) {
             BattleMapModel *model = new BattleMapModel(MAP_MODEL_KIND_F00GAT_000);
             map->mUnk_50[0]       = model;
@@ -1113,7 +1113,7 @@ extern "C" void func_ov007_02247e00(BattleCommandMap *map) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera) {
         camera->SetFov(0x2aaa);
-        if (data_020d433c.mUnk_8a_0 != 0) {
+        if (data_020d433c.mLastBattle != 0) {
             camera->mTarget.x   = -0x11800;
             camera->mTarget.y   = 0;
             camera->mTarget.z   = -0x17800;
@@ -1199,7 +1199,7 @@ extern "C" void GetCornerPosition(BattleCommandMap *map, VecFx32 *out) {
     if (map->mKind >= 8) {
         return;
     }
-    *out = sCornerPositions[map->mKind][data_020d433c.mBattlePlayers->Current()->mUnk_f1];
+    *out = sCornerPositions[map->mKind][data_020d433c.mBattlePlayers->Current()->mCorner];
 }
 
 extern "C" void PredictLandingAndSetCameraTarget(BattleCommandMap *map);

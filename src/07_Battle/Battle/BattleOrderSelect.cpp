@@ -384,7 +384,7 @@ void BattleOrderSelect::LoadGraphics() {
     mMessageWindow = new MessageWindow("mes_Command", 1, 0x10000);
     mMessageWindow->func_02065bd4(0x14, 4, 1);
     mMessageWindow->SetWidth(0xd8);
-    AntennaIndicator *unk = data_020d433c.mUnk_10;
+    AntennaIndicator *unk = data_020d433c.mAntenna;
     if (unk) {
         unk->SetupLayout(6);
     }

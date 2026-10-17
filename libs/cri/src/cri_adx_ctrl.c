@@ -75,14 +75,14 @@ extern int func_02041790(int);
 extern int func_020417a0(int);
 extern int func_02041850(int);
 extern int func_02041860(int);
-extern int func_02041d50(int);
+extern int StmGetState(int);
 extern int func_02041d7c(int, int);
 extern int func_02041f50(int, int);
 extern int func_020479a4(int);
 extern void func_020479b0(int, int);
 extern int func_02051514(int, int, int, int *, int *, int *);
-extern void func_02051558(int, int, int);
-extern int func_020457cc(int, int);
+extern void CriCopyString(int, int, int);
+extern int CriBufAlloc(int, int);
 extern void StopAdx(Pl *);
 extern void StartAdx(Pl *, int);
 extern void func_0204303c(Pl *, int, int);
@@ -291,7 +291,7 @@ void func_020436e8(Pl *o, int a, int b, int c)
         return;
     }
     StopAdx(o);
-    func_02051558(o->iac, 0x100, a);
+    CriCopyString(o->iac, 0x100, a);
     o->ib0 = o->iac;
     o->ib4 = 0;
     o->ib8 = b;
@@ -327,7 +327,7 @@ void func_020437c4(Pl *o, int a, int b)
     }
     StopAdx(o);
     func_0203eda4();
-    r = func_020457cc(a, b);
+    r = CriBufAlloc(a, b);
     if (r == 0) {
         func_0203edb0();
         SendErr(data_020acf0c);
@@ -361,7 +361,7 @@ void func_02043874(Pl *o, Hdr *h, int idx)
     if (idx < 0) return;
     func_0203eda4();
     off = h->e[idx].a;
-    r = func_020457cc((int)h + BSWAP(off), 0x40000000);
+    r = CriBufAlloc((int)h + BSWAP(off), 0x40000000);
     if (r == 0) {
         func_0203edb0();
         SendErr(data_020acf64);

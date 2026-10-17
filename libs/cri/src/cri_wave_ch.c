@@ -35,18 +35,18 @@ extern void func_020491d0(void);
 extern void func_02049a58(void);
 extern void func_02049aac(void);
 extern void func_02049200(void);
-extern void func_02049240(const char *);
+extern void CriMsgSendText(const char *);
 extern void func_02012464(void *, void *, int);
 extern PlObj *func_02049b20(int, int, int);
 extern void func_02049c04(PlObj *);
-extern void func_02049c34(PlObj *);
-extern void func_02049f48(PlObj *);
+extern void SndOutSetup(PlObj *);
+extern void SndOutStop(PlObj *);
 extern void func_02049f30(PlObj *);
 extern int func_02049b18(PlObj *);
 extern short func_02049e08(PlObj *, int);
-extern void func_0204a9b4(PlObj *);
-extern int func_0204aa58(PlObj *);
-extern int func_0204aa6c(PlObj *);
+extern void SndOutClearSpace(PlObj *);
+extern int SndOutGetFilledSamples(PlObj *);
+extern int SndOutGetSpaceSamples(PlObj *);
 extern void func_0204aa80(PlObj *, int);
 extern void func_0204aab0(PlObj *, int);
 
@@ -56,8 +56,8 @@ typedef struct SrcVt { int v[6]; void (*get18)(void *, int, int, SpanV *); void 
 typedef struct SrcObj { SrcVt *vt; } SrcObj;
 extern unsigned short func_0204a05c(PlObj *, unsigned, unsigned short *);
 extern unsigned func_0204a244(PlObj *, short *, unsigned);
-extern void func_020515dc(short *, int, short *, int);
-extern void func_0204604c(SpanV *, int, SpanV *, SpanV *);
+extern void CriCrossFadeResizeSamples(short *, int, short *, int);
+extern void CriSplitSpan(SpanV *, int, SpanV *, SpanV *);
 extern void func_020482e0(void);
 extern void func_020482ec(void);
 extern void func_02048f2c(Ch *, int);
@@ -144,7 +144,7 @@ Ch *func_02048430(int **srcs, int n, int a2)
         if (data_02218450.ch[i].used == 0) break;
     }
     if (i == 4) {
-        func_02049240(data_020ae04c);
+        CriMsgSendText(data_020ae04c);
         return 0;
     }
     c = &data_02218450.ch[i];
@@ -224,9 +224,9 @@ void func_0204871c(Ch *c, int m)
         func_020482e0();
         n = nplay(c);
         for (i = 0; i < n; i++) {
-            func_02049f48(c->pl[i]);
+            SndOutStop(c->pl[i]);
             c->pl[i]->i14 = 0;
-            func_02049c34(c->pl[i]);
+            SndOutSetup(c->pl[i]);
         }
         c->b6 = 2;
         c->flags |= 1;
@@ -258,7 +258,7 @@ void func_02048808(Ch *c, int m)
         for (i = 0; i < n; i++) func_02049f30(c->pl[i]);
         c->flags = (c->flags | 2) & ~4;
     } else if (m == 0) {
-        for (i = 0; i < n; i++) func_02049f48(c->pl[i]);
+        for (i = 0; i < n; i++) SndOutStop(c->pl[i]);
         c->flags ^= 2;
     }
 }
@@ -274,13 +274,13 @@ int func_020488d8(Ch *c)
 int func_020488f8(Ch *c)
 {
     if (c == 0) return -1;
-    return func_0204aa58(c->pl[0]);
+    return SndOutGetFilledSamples(c->pl[0]);
 }
 
 int func_02048914(Ch *c)
 {
     if (c == 0) return -1;
-    return func_0204aa6c(c->pl[0]);
+    return SndOutGetSpaceSamples(c->pl[0]);
 }
 
 int func_02048930(Ch *c)
@@ -347,7 +347,7 @@ void func_02048940(Ch *c)
                     if (r4 != 0) {
                         r6 = (r8 * c->b5 / 100) & ~3;
                         r4 = r6 * 2;
-                        func_020515dc(r5, r8, c->buf + c->s30, r6);
+                        CriCrossFadeResizeSamples(r5, r8, c->buf + c->s30, r6);
                         c->s30 += r6;
                         r5 = c->buf + c->s2e;
                         c->s2c += (unsigned short)r4;
@@ -416,7 +416,7 @@ void func_02048940(Ch *c)
         } else if (r7 == 0) {
             ((SrcObj *)c->src[k])->vt->put1c(c->src[k], 1, &sp[k]);
         } else {
-            func_0204604c(&sp[k], r7, &sp[k], &tm[k]);
+            CriSplitSpan(&sp[k], r7, &sp[k], &tm[k]);
             ((SrcObj *)c->src[k])->vt->put20(c->src[k], zero, &sp[k]);
             ((SrcObj *)c->src[k])->vt->put1c(c->src[k], 1, &tm[k]);
         }
@@ -427,7 +427,7 @@ void func_02048e30(Ch *c)
 {
     int n, i;
     n = nplay(c);
-    for (i = 0; i < n; i++) func_0204a9b4(c->pl[i]);
+    for (i = 0; i < n; i++) SndOutClearSpace(c->pl[i]);
 }
 
 static inline int nplay(Ch *c)
@@ -445,7 +445,7 @@ void func_02048e88(Ch *c)
     }
     if (func_020488d8(c) != 1) return;
     if (c->s2c != 0) func_02048940(c); else func_02048e30(c);
-    if (func_0204aa58(c->pl[0]) != 0) return;
+    if (SndOutGetFilledSamples(c->pl[0]) != 0) return;
     c->b6 = 0;
     func_02048808(c, 0);
 }
@@ -478,7 +478,7 @@ void func_02048f38(Ch *c, int rate)
         c->b7 = 9;
     } else {
         c->b7 = 0;
-        func_02049240(data_020ae070);
+        CriMsgSendText(data_020ae070);
     }
     for (i = 0; i < c->nch; i++) c->s0c = func_02049e08(c->pl[i], rate);
 }

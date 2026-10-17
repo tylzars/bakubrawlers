@@ -85,62 +85,62 @@ extern double func_0201c1c0(double, double); /* pow */
 int func_0204fc00(CriFadeGrp *g, int i);
 void func_0204fc64(CriFadeGrp *g, int v);
 void func_0204fc7c(CriFadeGrp *g);
-void func_0204fc8c(CriFadeGrp *g);
-void func_0204fd2c(CriFadeGrp *g);
+void CriFadeGrpAdvance(CriFadeGrp *g);
+void CriFadeGrpReset(CriFadeGrp *g);
 void func_0204fe20(CriFadeGrp *g, int *arg);
 void func_0204ffc8(CriFadeGrp *g, int *c);
 void func_02050080(CriFadeGrp *g, CriSlot *s, int a, int b);
 void func_0205012c(CriFadeGrp *g, CriSlot *s, int a, int b);
 void func_02050268(CriFadeGrp *g, CriSlot *s, int a, int b, int t);
-void func_020502e8(CriFadeGrp *g, int v);
+void CriFadeGrpSetState(CriFadeGrp *g, int v);
 void func_020502f0(CriFadeGrp *g, CriSlot *s);
 void func_02050390(CriFadeGrp *g);
 void func_02050414(CriFadeGrp *g);
 void func_020504c4(CriFadeGrp *g);
-void func_0205058c(CriFadeGrp *g, CriSlot *s);
-int func_02050624(CriFadeGrp *g);
-void func_0205067c(CriFadeGrp *g, int ev);
+void CriFadeGrpSendValue(CriFadeGrp *g, CriSlot *s);
+int CriFadeGrpNoFaderRunning(CriFadeGrp *g);
+void CriFadeGrpCallCallback(CriFadeGrp *g, int ev);
 CriFader *func_02050698(CriFader *f, unsigned size);
 void func_020506e0(CriFader *f);
-int func_020506f4(CriFader *f);
-int func_020506fc(CriFader *f);
-void func_02050704(CriFader *f, int v);
-void func_0205071c(CriFader *f, int a, int b, int c, int d);
-void func_02050794(CriFader *f);
-void func_020507b8(CriFader *f);
-void func_020508cc(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b);
-void func_020508dc(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b);
-void func_020508ec(CriFader *f);
-int func_02050984(CriFader *f, int a, int b, int c);
-int func_02050e08(CriFader *f);
-int func_02050e34(CriFader *f);
-int func_020509cc(CriFader *f, int x);
-int func_02050bfc(CriFader *f, int x);
+int CriFaderGetState(CriFader *f);
+int CriFaderGetValue(CriFader *f);
+void CriFaderSetValue(CriFader *f, int v);
+void CriFaderStart(CriFader *f, int a, int b, int c, int d);
+void CriFaderSkipToEnd(CriFader *f);
+void CriFaderAdvance(CriFader *f);
+void CriFaderSetRampStartCallback(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b);
+void CriFaderSetEndCallback(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b);
+void CriFaderReset(CriFader *f);
+int CriFaderComputeIncrement(CriFader *f, int a, int b, int c);
+int CriFaderCallRampStartCallback(CriFader *f);
+int CriFaderCallEndCallback(CriFader *f);
+int CriFaderLinearToValue(CriFader *f, int x);
+int CriFaderValueToLinear(CriFader *f, int x);
 
 void func_0204ffc8(CriFadeGrp *g, int *c);
 void func_02050080(CriFadeGrp *g, CriSlot *s, int a, int b);
 void func_0205012c(CriFadeGrp *g, CriSlot *s, int a, int b);
 void func_02050268(CriFadeGrp *g, CriSlot *s, int a, int b, int t);
-void func_020502e8(CriFadeGrp *g, int v);
+void CriFadeGrpSetState(CriFadeGrp *g, int v);
 void func_020502f0(CriFadeGrp *g, CriSlot *s);
 void func_02050390(CriFadeGrp *g);
 void func_02050414(CriFadeGrp *g);
 void func_020504c4(CriFadeGrp *g);
-void func_0205058c(CriFadeGrp *g, CriSlot *s);
-int func_02050624(CriFadeGrp *g);
-void func_0205067c(CriFadeGrp *g, int ev);
+void CriFadeGrpSendValue(CriFadeGrp *g, CriSlot *s);
+int CriFadeGrpNoFaderRunning(CriFadeGrp *g);
+void CriFadeGrpCallCallback(CriFadeGrp *g, int ev);
 CriFader *func_02050698(CriFader *f, unsigned size);
 void func_020506e0(CriFader *f);
-int func_020506f4(CriFader *f);
-int func_020506fc(CriFader *f);
-void func_02050704(CriFader *f, int v);
-void func_0205071c(CriFader *f, int a, int b, int c, int d);
-void func_02050794(CriFader *f);
-void func_020507b8(CriFader *f);
-void func_020508cc(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b);
-void func_020508dc(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b);
-void func_020508ec(CriFader *f);
-int func_02050984(CriFader *f, int a, int b, int c);
+int CriFaderGetState(CriFader *f);
+int CriFaderGetValue(CriFader *f);
+void CriFaderSetValue(CriFader *f, int v);
+void CriFaderStart(CriFader *f, int a, int b, int c, int d);
+void CriFaderSkipToEnd(CriFader *f);
+void CriFaderAdvance(CriFader *f);
+void CriFaderSetRampStartCallback(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b);
+void CriFaderSetEndCallback(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b);
+void CriFaderReset(CriFader *f);
+int CriFaderComputeIncrement(CriFader *f, int a, int b, int c);
 
 int func_0204fc00(CriFadeGrp *g, int i)
 {
@@ -169,7 +169,7 @@ void func_0204fc7c(CriFadeGrp *g)
     g->d0 = 0;
 }
 
-void func_0204fc8c(CriFadeGrp *g)
+void CriFadeGrpAdvance(CriFadeGrp *g)
 {
     int i;
     if (g->w58 == 0) {
@@ -182,14 +182,14 @@ void func_0204fc8c(CriFadeGrp *g)
     }
     for (i = 0; i < g->n; i++) {
         if (g->d0 == 1 || g->slot[i].st != 0) {
-            func_0205058c(g, &g->slot[i]);
+            CriFadeGrpSendValue(g, &g->slot[i]);
         }
     }
     func_020504c4(g);
     func_0204ed38();
 }
 
-void func_0204fd2c(CriFadeGrp *g)
+void CriFadeGrpReset(CriFadeGrp *g)
 {
     int i;
     unsigned char *p;
@@ -286,7 +286,7 @@ void func_0204fe20(CriFadeGrp *g, int *arg)
     if (done != 1) {
         return;
     }
-    func_0205058c(g, &g->slot[g->i10]);
+    CriFadeGrpSendValue(g, &g->slot[g->i10]);
     func_0204ffc8(g, arg);
 }
 
@@ -314,13 +314,13 @@ void func_0204ffc8(CriFadeGrp *g, int *c)
 void func_02050080(CriFadeGrp *g, CriSlot *s, int a, int b)
 {
     CriFader *f = s->f;
-    func_020502e8(g, 1);
+    CriFadeGrpSetState(g, 1);
     g->cur->vt->m20(g->cur, 1);
     g->w6c = 1;
-    func_02050704(f, -960);
-    func_0205071c(f, g->c4, g->b4, a, g->c0);
-    func_020508cc(f, func_0205067c, g, 1);
-    func_020508dc(f, func_0205067c, g, 4);
+    CriFaderSetValue(f, -960);
+    CriFaderStart(f, g->c4, g->b4, a, g->c0);
+    CriFaderSetRampStartCallback(f, CriFadeGrpCallCallback, g, 1);
+    CriFaderSetEndCallback(f, CriFadeGrpCallCallback, g, 4);
     s->st = 2;
     s->mode = b;
 }
@@ -328,7 +328,7 @@ void func_02050080(CriFadeGrp *g, CriSlot *s, int a, int b)
 void func_0205012c(CriFadeGrp *g, CriSlot *s, int a, int b)
 {
     CriFader *f = s->f;
-    func_020502e8(g, 1);
+    CriFadeGrpSetState(g, 1);
     if (s->obj == g->cur) {
         if (g->w68 == 0 && g->w6c == 1) {
             g->cur->vt->m20(g->cur, 0);
@@ -336,14 +336,14 @@ void func_0205012c(CriFadeGrp *g, CriSlot *s, int a, int b)
         g->w6c = 0;
     }
     if (s->obj->vt->m28(s->obj) == 2 && g->w68 == 0) {
-        func_0205071c(f, -960, g->b0, a, g->c0);
-        func_020508cc(f, func_0205067c, g, 0);
-        func_020508dc(f, func_0205067c, g, 3);
+        CriFaderStart(f, -960, g->b0, a, g->c0);
+        CriFaderSetRampStartCallback(f, CriFadeGrpCallCallback, g, 0);
+        CriFaderSetEndCallback(f, CriFadeGrpCallCallback, g, 3);
     } else {
-        func_0205071c(f, -960, 0, 0, 0);
-        func_020508cc(f, func_0205067c, g, 0);
-        func_020508dc(f, func_0205067c, g, 3);
-        func_02050794(f);
+        CriFaderStart(f, -960, 0, 0, 0);
+        CriFaderSetRampStartCallback(f, CriFadeGrpCallCallback, g, 0);
+        CriFaderSetEndCallback(f, CriFadeGrpCallCallback, g, 3);
+        CriFaderSkipToEnd(f);
         s->obj->vt->m1c(s->obj);
     }
     s->st = 1;
@@ -353,15 +353,15 @@ void func_0205012c(CriFadeGrp *g, CriSlot *s, int a, int b)
 void func_02050268(CriFadeGrp *g, CriSlot *s, int a, int b, int t)
 {
     CriFader *f = s->f;
-    func_020502e8(g, 1);
-    func_0205071c(f, t, g->b8, a, g->c0);
-    func_020508cc(f, func_0205067c, g, 2);
-    func_020508dc(f, func_0205067c, g, 5);
+    CriFadeGrpSetState(g, 1);
+    CriFaderStart(f, t, g->b8, a, g->c0);
+    CriFaderSetRampStartCallback(f, CriFadeGrpCallCallback, g, 2);
+    CriFaderSetEndCallback(f, CriFadeGrpCallCallback, g, 5);
     s->st = 3;
     s->mode = b;
 }
 
-void func_020502e8(CriFadeGrp *g, int v)
+void CriFadeGrpSetState(CriFadeGrp *g, int v)
 {
     g->state = v;
 }
@@ -375,7 +375,7 @@ void func_020502f0(CriFadeGrp *g, CriSlot *s)
         func_0204ed2c();
         func_02050080(g, s, g->bc > g->b0 ? g->bc - g->b0 : 0, 0);
         func_0204ed38();
-        func_0205058c(g, s);
+        CriFadeGrpSendValue(g, s);
         func_0204ffc8(g, g->w30);
         break;
     case 2:
@@ -410,7 +410,7 @@ void func_02050414(CriFadeGrp *g)
         return;
     }
     if (g->w6c == 1) {
-        if (func_020506f4(g->slot[g->i10].f) != 1) {
+        if (CriFaderGetState(g->slot[g->i10].f) != 1) {
             if (g->cur->vt->m28(g->cur) != 2) {
                 return;
             }
@@ -420,7 +420,7 @@ void func_02050414(CriFadeGrp *g)
     }
     for (i = 0; i < g->n; i++) {
         if (g->slot[i].st != 0) {
-            func_020507b8(g->slot[i].f);
+            CriFaderAdvance(g->slot[i].f);
         }
     }
 }
@@ -437,41 +437,41 @@ void func_020504c4(CriFadeGrp *g)
         s = &g->slot[i];
         f = s->f;
         if (g->objs[i]->vt->m28(g->objs[i]) == 3) {
-            func_02050794(f);
+            CriFaderSkipToEnd(f);
         }
-        if (func_020506f4(f) == 0 && s->st != 0) {
+        if (CriFaderGetState(f) == 0 && s->st != 0) {
             s->st = 0;
             func_020502f0(g, s);
         }
     }
-    if (func_02050624(g) == 1) {
+    if (CriFadeGrpNoFaderRunning(g) == 1) {
         if (g->dc != 0) {
             g->dc(g, 6);
         }
-        func_020502e8(g, 0);
+        CriFadeGrpSetState(g, 0);
     }
 }
 
-void func_0205058c(CriFadeGrp *g, CriSlot *s)
+void CriFadeGrpSendValue(CriFadeGrp *g, CriSlot *s)
 {
     int i;
     CriFader *f = s->f;
     if (g->w9c == 1) {
         for (i = 0; i < g->ch_n; i++) {
-int v = g->cc + (func_020506fc(f) + g->pc8[i]); s->obj->vt->m34(s->obj, i, v);
+int v = g->cc + (CriFaderGetValue(f) + g->pc8[i]); s->obj->vt->m34(s->obj, i, v);
         }
     } else {
-        int v = func_020506fc(f);
+        int v = CriFaderGetValue(f);
         s->obj->vt->m2c(s->obj, g->cc + v);
     }
 }
 
-int func_02050624(CriFadeGrp *g)
+int CriFadeGrpNoFaderRunning(CriFadeGrp *g)
 {
     int i;
     int r = 0;
     for (i = 0; i < g->n; i++) {
-        if (func_020506f4(g->slot[i].f) != 0) {
+        if (CriFaderGetState(g->slot[i].f) != 0) {
             break;
         }
     }
@@ -481,7 +481,7 @@ int func_02050624(CriFadeGrp *g)
     return r;
 }
 
-void func_0205067c(CriFadeGrp *g, int ev)
+void CriFadeGrpCallCallback(CriFadeGrp *g, int ev)
 {
     if (g != 0 && g->dc != 0) {
         g->dc(g, ev);
@@ -498,7 +498,7 @@ CriFader *func_02050698(CriFader *f, unsigned size)
         SendErrWrapper(data_020b0044);
         return 0;
     }
-    func_020508ec(f);
+    CriFaderReset(f);
     return f;
 }
 
@@ -507,30 +507,30 @@ void func_020506e0(CriFader *f)
     if (f == 0) {
         return;
     }
-    func_020508ec(f);
+    CriFaderReset(f);
 }
 
-int func_020506f4(CriFader *f)
+int CriFaderGetState(CriFader *f)
 {
     return f->st;
 }
 
-int func_020506fc(CriFader *f)
+int CriFaderGetValue(CriFader *f)
 {
     return f->i1c;
 }
 
-void func_02050704(CriFader *f, int v)
+void CriFaderSetValue(CriFader *f, int v)
 {
     f->i1c = v;
-    f->i20 = func_02050bfc(f, v);
+    f->i20 = CriFaderValueToLinear(f, v);
 }
 
-void func_0205071c(CriFader *f, int a, int b, int c, int d)
+void CriFaderStart(CriFader *f, int a, int b, int c, int d)
 {
     f->i28 = f->i24;
     f->i24 = a;
-    f->i4 = func_02050984(f, f->i1c, a, b);
+    f->i4 = CriFaderComputeIncrement(f, f->i1c, a, b);
     f->i10 = c;
     f->i14 = d;
     f->i8 = 0;
@@ -540,19 +540,19 @@ void func_0205071c(CriFader *f, int a, int b, int c, int d)
         return;
     }
     f->st = 2;
-    func_02050704(f, a);
+    CriFaderSetValue(f, a);
 }
 
-void func_02050794(CriFader *f)
+void CriFaderSkipToEnd(CriFader *f)
 {
-    func_02050704(f, f->i24);
+    CriFaderSetValue(f, f->i24);
     f->st = 0;
-    func_02050e34(f);
+    CriFaderCallEndCallback(f);
 }
 
-void func_020507b8(CriFader *f)
+void CriFaderAdvance(CriFader *f)
 {
-    int st = func_020506f4(f);
+    int st = CriFaderGetState(f);
     if (st == 0) {
         return;
     }
@@ -563,7 +563,7 @@ void func_020507b8(CriFader *f)
     if (st == 1) {
         st = 2;
         f->st = 2;
-        func_02050e08(f);
+        CriFaderCallRampStartCallback(f);
     }
     if (st == 2) {
         int v = f->i20 + f->i4;
@@ -576,9 +576,9 @@ void func_020507b8(CriFader *f)
             v = 0x316938;
         }
         f->i20 = v;
-        f->i1c = func_020509cc(f, v);
+        f->i1c = CriFaderLinearToValue(f, v);
         if ((f->i4 > 0 && f->i1c >= f->i24) || (f->i4 < 0 && f->i1c <= f->i24) || f->i4 == 0) {
-            func_02050704(f, f->i24);
+            CriFaderSetValue(f, f->i24);
             f->ic = f->i8;
             st = 3;
             f->st = 3;
@@ -587,26 +587,26 @@ void func_020507b8(CriFader *f)
     if (st == 3) {
         if (f->i8 - f->ic >= f->i14) {
             f->st = 0;
-            func_02050e34(f);
+            CriFaderCallEndCallback(f);
         }
     }
 }
 
-void func_020508cc(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b)
+void CriFaderSetRampStartCallback(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b)
 {
     f->cb1 = cb;
     f->a1 = a;
     f->b1 = b;
 }
 
-void func_020508dc(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b)
+void CriFaderSetEndCallback(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b)
 {
     f->cb2 = cb;
     f->a2 = a;
     f->b2 = b;
 }
 
-void func_020508ec(CriFader *f)
+void CriFaderReset(CriFader *f)
 {
     unsigned char *p;
     f->st = 0;
@@ -647,15 +647,15 @@ void func_020508ec(CriFader *f)
     p[23] = 0;
 }
 
-int func_02050984(CriFader *f, int a, int b, int c)
+int CriFaderComputeIncrement(CriFader *f, int a, int b, int c)
 {
     if (c <= 0) {
         return 0x316938;
     }
-    return (func_02050bfc(f, b) - func_02050bfc(f, a)) / c;
+    return (CriFaderValueToLinear(f, b) - CriFaderValueToLinear(f, a)) / c;
 }
 
-int func_020509cc(CriFader *f, int x)
+int CriFaderLinearToValue(CriFader *f, int x)
 {
     float t;
     float s;
@@ -696,7 +696,7 @@ int func_020509cc(CriFader *f, int x)
     return (int) t;
 }
 
-int func_02050bfc(CriFader *f, int x)
+int CriFaderValueToLinear(CriFader *f, int x)
 {
     float t;
     float q;
@@ -739,7 +739,7 @@ int func_02050bfc(CriFader *f, int x)
     return (int) t;
 }
 
-int func_02050e08(CriFader *f)
+int CriFaderCallRampStartCallback(CriFader *f)
 {
     if (f->cb1 == 0) {
         return 0;
@@ -748,7 +748,7 @@ int func_02050e08(CriFader *f)
     return 1;
 }
 
-int func_02050e34(CriFader *f)
+int CriFaderCallEndCallback(CriFader *f)
 {
     if (f->cb2 == 0) {
         return 0;

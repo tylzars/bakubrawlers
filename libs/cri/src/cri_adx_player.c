@@ -47,10 +47,10 @@ extern short data_0209dae4[];                   /* 0x0209dae4 */
 extern short data_0209dce4, data_0209dee4, data_0209e0e4;     /* 0x0209dce4 / dee4 / e0e4 */
 extern char str_a[], str_b[], str_c[], str_d[], str_e[], str_f[];
 
-extern void func_020446b0(void);
+extern void CriSlotClearAll(void);
 extern void *func_02012484(void *, int, int);
-extern int func_020446e8(void);
-extern void func_02044820(int);
+extern int CriSlotAlloc(void);
+extern void CriSlotDealloc(int);
 extern void SendErrConcat(const char *, const char *);
 extern void SendErr(const char *);
 extern int func_0203ef70(int, int, short *, signed char *, signed char *, signed char *, signed char *, int *, int *, int *);
@@ -66,7 +66,7 @@ extern void func_020447f4(int, int, int, int);
 extern void func_02044804(int, short *, short *, short *);
 extern void func_020448d0(int);
 extern void func_020448fc(int);
-extern void func_020515a0(void *, int, const char *);
+extern void CriFormatString(void *, int, const char *);
 
 int func_0203dee8(void) { g_cri.init++; return 0; }
 
@@ -93,7 +93,7 @@ int func_0203e06c(void) { return g_cri.mode; }
 
 void func_0203e07c(void)
 {
-    func_020446b0();
+    CriSlotClearAll();
     func_0203dee8();
     __clear(g_criObjs, sizeof(g_criObjs));
     func_0203e05c(0);
@@ -150,7 +150,7 @@ CriObj *CreateCriObj(int a, int b, int c, int d)
     o = &g_criObjs[i];
     func_02012484(o, 0, 0xec);
     g_criObjs[i].used = 1;
-    o->h = func_020446e8();
+    o->h = CriSlotAlloc();
     if (o->h == 0) { ReleaseCriObj(o); return 0; }
     o->i38 = a; o->i3c = b; o->i40 = c; o->i44 = d;
     o->i78 = (int)func_0203e0c4;
@@ -167,7 +167,7 @@ void ReleaseCriObj(CriObj *o)
     if (o == 0) return;
     h = o->h;
     o->h = 0;
-    func_02044820(h);
+    CriSlotDealloc(h);
     func_02012484(o, 0, 0xec);
     o->used = 0;
 }
@@ -295,7 +295,7 @@ int func_0203e790(CriObj *o, unsigned a, unsigned b, int c, short *p0, short *p1
     if (a < 4) {
         *p0 = 0; *p1 = 0; *p2 = 0;
     } else if (b >= 16) {
-        func_020515a0(buf, 16, str_f);
+        CriFormatString(buf, 16, str_f);
         func_0203df04((signed char *)buf, 8, p0, p1, p2);
     } else if (b >= 8) {
         if (o->sa0 == 0 && o->sa2 == 0 && o->sa4 == 0) {

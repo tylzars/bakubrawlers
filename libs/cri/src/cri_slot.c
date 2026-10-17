@@ -60,12 +60,12 @@ void func_02044630(CriSlot *p)
     func_0204454c(p);
 }
 
-void func_020446b0(void)
+void CriSlotClearAll(void)
 {
     __clear(g_slots, sizeof(g_slots));
 }
 
-CriSlot *func_020446e8(void)
+CriSlot *CriSlotAlloc(void)
 {
     int i;
     CriSlot *p;
@@ -120,14 +120,14 @@ void func_02044804(CriSlot *p, short *a, short *b, short *c)
     *c = p->s38;
 }
 
-void func_02044820(CriSlot *p)
+void CriSlotDealloc(CriSlot *p)
 {
     if (p == 0) return;
     p->used = 0;
     func_02012484(p, 0, 0x3c);
 }
 
-int func_02044840(CriSlot *p)
+int CriSlotGetState(CriSlot *p)
 {
     return p->state;
 }
@@ -154,7 +154,7 @@ int func_0204487c(CriSlot *p, int a, int b, int c, int d)
     return 1;
 }
 
-void func_020448b0(CriSlot *p)
+void CriSlotStart(CriSlot *p)
 {
     if (p->state != 0) return;
     p->result = 0;
@@ -173,7 +173,7 @@ void func_020448fc(CriSlot *p)
     if (p->state == 3) p->state = 0;
 }
 
-int func_02044910(CriSlot *p)
+int CriSlotGetResult(CriSlot *p)
 {
     return p->result;
 }

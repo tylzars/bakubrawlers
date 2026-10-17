@@ -11,9 +11,9 @@ typedef struct CriFlagObj {
     struct { int pad[1]; unsigned char b4; } *ic;
 } CriFlagObj;
 
-/* error callback pair registered through func_02049230 */
+/* error callback pair registered through CriMsgSetCallback */
 typedef struct CriMsgCb { void (*fn)(int, char *); int arg; } CriMsgCb;
-/* error handler registered through func_0204949c */
+/* error handler registered through CriFilSetErrorCallback */
 typedef struct CriErrCb { int arg; void (*fn)(int, int, int); } CriErrCb;
 
 typedef struct CriNameEnt { char name[12]; int val; } CriNameEnt;
@@ -57,16 +57,16 @@ extern void func_02015b34(char *, const char *, int);
 extern int func_02015c04(const char *, const char *, int);
 extern unsigned func_02015a50(const char *);
 extern unsigned func_02017714(char *, char **, int);
-extern void func_02046154(void);
-extern void func_02046164(void);
+extern void CriLockEnter1(void);
+extern void CriLockLeave1(void);
 extern void func_0203eda4(void);
 extern void func_0203edb0(void);
 extern void func_02048808(void *, int);
-extern void func_02051558(char *, int, char *);
+extern void CriCopyString(char *, int, char *);
 extern void func_02037264(void *);
 extern int func_020372dc(void *, int, void *);
 extern void func_0203733c(void *);
-extern void func_02049f48(void *);
+extern void SndOutStop(void *);
 extern void func_02012464(void *, int, int);
 
 extern char data_02218544[0x100];
@@ -82,22 +82,22 @@ extern char data_020ae0cc[];
 extern char data_020ae134[], data_020ae158[], data_020ae17c[], data_020ae1ac[], data_020ae1c8[], data_020ae1e4[];
 extern char data_020ae200[], data_020ae220[], data_020ae244[], data_020ae25c[], data_020ae274[], data_020ae28c[], data_020ae2a4[];
 
-extern void func_0204935c(int, void *);
-extern unsigned func_020493ec(char *, unsigned *);
-extern int func_020494b0(char *);
-extern CriFil *func_020494c4(void);
-extern void func_02049504(CriFil *);
-extern void func_02049518(CriFil *);
-extern void func_0204984c(CriFil *);
-extern int func_02049938(CriFil *);
+extern void CriFilCallErrorCallback(int, void *);
+extern unsigned CriParseHexPair(char *, unsigned *);
+extern int CriParseHexPairSecond(char *);
+extern CriFil *CriFilFindFree(void);
+extern void CriFilClear(CriFil *);
+extern void CriFilInit(CriFil *);
+extern void CriFilResetState(CriFil *);
+extern int CriFilGetLastReadSize(CriFil *);
 extern void func_02049ad4(CriPool *, short);
 extern void func_02049ab0(short);
 extern unsigned func_02049384(char *, char **, int);
-extern unsigned func_02049390(char *, char **, int);
+extern unsigned CriParseUnsigned(char *, char **, int);
 extern void func_02049460(CriFil *);
-extern CriNameEnt *func_0204927c(char *);
-extern void func_0204932c(void);
-extern void func_02049338(void);
+extern CriNameEnt *CriNameTableFind(char *);
+extern void CriFilLockEnter(void);
+extern void CriFilLockLeave(void);
 
 void func_02049150(CriFlagObj *p, int v)
 {
@@ -135,13 +135,13 @@ void func_02049200(void)
     data_0221853c.arg = 0;
 }
 
-void func_02049230(void (*fn)(int, char *), int arg)
+void CriMsgSetCallback(void (*fn)(int, char *), int arg)
 {
     data_0221853c.fn = fn;
     data_0221853c.arg = arg;
 }
 
-void func_02049240(char *msg)
+void CriMsgSendText(char *msg)
 {
     func_02015b34(data_02218544, msg, 0xff);
     if (data_0221853c.fn) {
@@ -149,7 +149,7 @@ void func_02049240(char *msg)
     }
 }
 
-CriNameEnt *func_0204927c(char *name)
+CriNameEnt *CriNameTableFind(char *name)
 {
     int i;
     CriNameEnt *e;
@@ -164,24 +164,24 @@ CriNameEnt *func_0204927c(char *name)
     return 0;
 }
 
-int func_020492f0(char *name, int *out)
+int CriNameTableGetValue(char *name, int *out)
 {
     CriNameEnt *e;
     if (data_02218648 == 0) return -1;
-    e = func_0204927c(name);
+    e = CriNameTableFind(name);
     if (e == 0) return -3;
     *out = e->val;
     return 0;
 }
 
-void func_0204932c(void)
+void CriFilLockEnter(void)
 {
-    func_02046154();
+    CriLockEnter1();
 }
 
-void func_02049338(void)
+void CriFilLockLeave(void)
 {
-    func_02046164();
+    CriLockLeave1();
 }
 
 char *func_02049344(void)
@@ -190,7 +190,7 @@ char *func_02049344(void)
     return data_020ae0cc;
 }
 
-void func_0204935c(int a, void *msg)
+void CriFilCallErrorCallback(int a, void *msg)
 {
     if (data_0221864c.fn) {
         data_0221864c.fn(data_0221864c.arg, (int)msg, a);
@@ -202,7 +202,7 @@ unsigned func_02049384(char *s, char **e, int b)
     return func_02017714(s, e, b);
 }
 
-unsigned func_02049390(char *s, char **end, int base)
+unsigned CriParseUnsigned(char *s, char **end, int base)
 {
     unsigned v = 0;
     int c;
@@ -224,15 +224,15 @@ unsigned func_02049390(char *s, char **end, int base)
     return v;
 }
 
-unsigned func_020493ec(char *s, unsigned *out)
+unsigned CriParseHexPair(char *s, unsigned *out)
 {
     char *p;
     unsigned r;
     if (func_02015a50(s) >= 0x12) {
-        func_0204935c(0, 0);
+        CriFilCallErrorCallback(0, 0);
     }
     p = s;
-    r = func_02049390(s, &p, 16);
+    r = CriParseUnsigned(s, &p, 16);
     if (*p != 0) p++;
     if (out != 0) {
         *out = func_02049384(p, &p, 16);
@@ -254,20 +254,20 @@ void func_02049464(void)
     }
 }
 
-void func_0204949c(void (*fn)(int, int, int), int arg)
+void CriFilSetErrorCallback(void (*fn)(int, int, int), int arg)
 {
     data_0221864c.fn = fn;
     data_0221864c.arg = arg;
 }
 
-int func_020494b0(char *s)
+int CriParseHexPairSecond(char *s)
 {
     unsigned v;
-    func_020493ec(s, &v);
+    CriParseHexPair(s, &v);
     return v;
 }
 
-CriFil *func_020494c4(void)
+CriFil *CriFilFindFree(void)
 {
     CriFil *r = 0;
     int i;
@@ -280,15 +280,15 @@ CriFil *func_020494c4(void)
     return r;
 }
 
-void func_02049504(CriFil *f)
+void CriFilClear(CriFil *f)
 {
     func_02012484(f, 0, 0x38);
 }
 
-void func_02049518(CriFil *f)
+void CriFilInit(CriFil *f)
 {
     f->ssize = 0x800;
-    f->i8 = func_020494b0(f->name);
+    f->i8 = CriParseHexPairSecond(f->name);
     f->nsec = (f->i8 + (f->ssize - 1)) / f->ssize;
     f->pos = 0;
     f->cnt = 0;
@@ -297,46 +297,46 @@ void func_02049518(CriFil *f)
     f->used = 1;
 }
 
-CriFil *func_02049568(char *name, int a1, int a2)
+CriFil *CriFilAlloc(char *name, int a1, int a2)
 {
     CriFil *f;
     if (name == 0) {
-        func_0204935c(0, data_020ae134);
+        CriFilCallErrorCallback(0, data_020ae134);
         return 0;
     }
     if (a2 != 0) {
-        func_0204935c(0, data_020ae158);
+        CriFilCallErrorCallback(0, data_020ae158);
         return 0;
     }
-    f = func_020494c4();
+    f = CriFilFindFree();
     if (f == 0) {
-        func_0204935c(0, data_020ae17c);
+        CriFilCallErrorCallback(0, data_020ae17c);
         return 0;
     }
-    func_02051558(f->name, 0x12, name);
-    func_02049518(f);
+    CriCopyString(f->name, 0x12, name);
+    CriFilInit(f);
     return f;
 }
 
-void func_020495f0(CriFil *f)
+void CriFilDealloc(CriFil *f)
 {
     if (f == 0) return;
-    func_0204984c(f);
+    CriFilResetState(f);
     if (f->used == 1) {
         f->used = 0;
-        func_02049504(f);
+        CriFilClear(f);
     }
 }
 
-int func_02049620(CriFil *f, int off, int whence)
+int CriFilSetPos(CriFil *f, int off, int whence)
 {
     int p;
     int n;
     if (f == 0) {
-        func_0204935c(0, data_020ae1ac);
+        CriFilCallErrorCallback(0, data_020ae1ac);
         return 0;
     }
-    func_0204932c();
+    CriFilLockEnter();
     if (whence == 0) {
         f->pos = off;
     } else if (whence == 2) {
@@ -350,18 +350,18 @@ int func_02049620(CriFil *f, int off, int whence)
     f->pos = p;
     if (p <= 0) p = 0;
     f->pos = p;
-    func_02049338();
+    CriFilLockLeave();
     return f->pos;
 }
 
-int func_020496b0(CriFil *f)
+int CriFilGetPos(CriFil *f)
 {
     if (f != 0) return f->pos;
-    func_0204935c(0, data_020ae1c8);
+    CriFilCallErrorCallback(0, data_020ae1c8);
     return 0;
 }
 
-int func_020496d8(CriFil *f, int n, char *buf)
+int CriFilRead(CriFil *f, int n, char *buf)
 {
     int a;
     int b;
@@ -369,15 +369,15 @@ int func_020496d8(CriFil *f, int n, char *buf)
     unsigned sz;
     unsigned base;
     if (f == 0) {
-        func_0204935c(0, data_020ae1e4);
+        CriFilCallErrorCallback(0, data_020ae1e4);
         return 0;
     }
     if (n < 0) {
-        func_0204935c((int)f, data_020ae200);
+        CriFilCallErrorCallback((int)f, data_020ae200);
         return 0;
     }
     if (buf == 0) {
-        func_0204935c((int)f, data_020ae220);
+        CriFilCallErrorCallback((int)f, data_020ae220);
         return 0;
     }
     if (n == 0) {
@@ -385,7 +385,7 @@ int func_020496d8(CriFil *f, int n, char *buf)
         return 0;
     }
     if (f->state == 2) return 0;
-    func_0204932c();
+    CriFilLockEnter();
     f->i14 = 0;
     rem = f->nsec - f->pos;
     if (n >= rem) n = rem;
@@ -394,56 +394,56 @@ int func_020496d8(CriFil *f, int n, char *buf)
     b = f->cnt * f->ssize;
     if (b == 0) {
         f->state = 1;
-        func_02049338();
+        CriFilLockLeave();
         return 0;
     }
     f->off = a;
     f->len = b;
     f->state = 2;
-    base = func_020493ec(f->name, &sz);
+    base = CriParseHexPair(f->name, &sz);
     rem = sz - f->off;
     if (f->len <= rem) rem = f->len;
-    func_02049338();
+    CriFilLockLeave();
     func_02012464(buf, base + f->off, f->len);
     func_02012484(buf + rem, 0, f->len - rem);
-    func_0204932c();
+    CriFilLockEnter();
     f->i14 = f->cnt * f->ssize;
     f->pos = f->pos + f->cnt;
     f->state = 1;
-    func_02049338();
+    CriFilLockLeave();
     return f->cnt;
 }
 
-void func_0204984c(CriFil *f)
+void CriFilResetState(CriFil *f)
 {
     if (f == 0) {
-        func_0204935c(0, data_020ae244);
+        CriFilCallErrorCallback(0, data_020ae244);
         return;
     }
-    func_0204932c();
+    CriFilLockEnter();
     f->state = 0;
-    func_02049338();
+    CriFilLockLeave();
 }
 
-int func_02049880(CriFil *f)
+int CriFilGetState(CriFil *f)
 {
     if (f != 0) return f->state;
-    func_0204935c(0, data_020ae25c);
+    CriFilCallErrorCallback(0, data_020ae25c);
     return 0;
 }
 
-int func_020498a8(CriFil *f)
+int CriFilGetBlockSize(CriFil *f)
 {
     if (f != 0) return f->ssize;
-    func_0204935c(0, data_020ae274);
+    CriFilCallErrorCallback(0, data_020ae274);
     return 0;
 }
 
-void func_020498d0(CriFil *f, int ss)
+void CriFilSetBlockSize(CriFil *f, int ss)
 {
     int t;
     if (f == 0) {
-        func_0204935c(0, data_020ae28c);
+        CriFilCallErrorCallback(0, data_020ae28c);
         return;
     }
     t = f->pos * f->ssize;
@@ -453,10 +453,10 @@ void func_020498d0(CriFil *f, int ss)
     f->i14 = f->cnt * ss;
 }
 
-int func_02049938(CriFil *f)
+int CriFilGetLastReadSize(CriFil *f)
 {
     if (f != 0) return f->i14;
-    func_0204935c(0, data_020ae2a4);
+    CriFilCallErrorCallback(0, data_020ae2a4);
     return 0;
 }
 
@@ -468,11 +468,11 @@ int func_02049960(CriFil *f, int id)
     case 301: return 0;
     case 302: return f->i8;
     case 200: return 0;
-    case 201: return func_02049938(f);
+    case 201: return CriFilGetLastReadSize(f);
     case 202: return 0;
-    case 203: return func_020494b0((char *)f);
+    case 203: return CriParseHexPairSecond((char *)f);
     case 204: return 0;
-    case 205: return func_020494b0((char *)f);
+    case 205: return CriParseHexPairSecond((char *)f);
     case 299: return 0;
     case 600: return 1;
     case 400: return 0;
@@ -543,7 +543,7 @@ CriPool *func_02049b20(int a, int b, unsigned char c, ...)
 void func_02049c04(CriPool *p)
 {
     if (p == 0 || p->used == 0) return;
-    func_02049f48(p);
+    SndOutStop(p);
     func_0203733c(p->h34);
     p->i30 = 0;
     p->used = 0;

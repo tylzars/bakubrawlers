@@ -25,24 +25,24 @@ int *func_02051540(void)
     return data_020b01f8 = &data_0209e4f0;
 }
 
-int func_02051558(void *a, int b, int c) { return func_02015a6c(a, c); }
-int func_02051568(void *a, int b, int c, int d) { return func_02015b34(a, c, d); }
-int func_0205157c(void *a, int b, int c) { return func_02015b84(a, c); }
-int func_0205158c(void *a, int b, int c, int d) { return func_02015bb4(a, c, d); }
+int CriCopyString(void *a, int b, int c) { return func_02015a6c(a, c); }
+int CriCopyStringN(void *a, int b, int c, int d) { return func_02015b34(a, c, d); }
+int CriAppendString(void *a, int b, int c) { return func_02015b84(a, c); }
+int CriAppendStringN(void *a, int b, int c, int d) { return func_02015bb4(a, c, d); }
 
-int func_020515a0(char *buf, int unused, const char *fmt, ...)
+int CriFormatString(char *buf, int unused, const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
     return func_020146c0(buf, fmt, ap);
 }
 
-int func_020515c8(char *buf, int unused, const char *fmt, va_list ap)
+int CriFormatStringV(char *buf, int unused, const char *fmt, va_list ap)
 {
     return func_020146c0(buf, fmt, ap);
 }
 
-void func_020515dc(short *src, int n1, short *dst, int n2)
+void CriCrossFadeResizeSamples(short *src, int n1, short *dst, int n2)
 {
     int i;
     if (n1 < n2) {

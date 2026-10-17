@@ -17,9 +17,9 @@ extern void SendErrWrapper(void *);
 extern int IsPoolObjInit(int), func_0204f98c(int), func_0204f924(int), func_0204f8ec(int);
 extern int func_02050698(void *, int);
 extern void func_020506e0(int);
-extern int func_020506f4(int), func_020506fc(int);
-extern void func_0205071c(int, int, int, int, int);
-extern void func_020507b8(int);
+extern int CriFaderGetState(int), CriFaderGetValue(int);
+extern void CriFaderStart(int, int, int, int, int);
+extern void CriFaderAdvance(int);
 extern void func_02012484(void *, int, int);
 extern int func_020124c4(void *, void *, int);
 void func_02051414(CriX *o, int m);
@@ -109,7 +109,7 @@ int func_02051124(CriX *o)
         SendErrWrapper(&data_020b01b8);
         return 0;
     }
-    func_0205071c(o->h, 0, 0, 0, 0);
+    CriFaderStart(o->h, 0, 0, 0, 0);
     return 1;
 }
 
@@ -123,7 +123,7 @@ void func_020511a4(CriX *o)
 void func_020511c8(CriX *o) { o->f4c = 0; }
 int func_020511d4(CriX *o) { return o->f4c; }
 int func_020511dc(CriX *o) { return o->mode; }
-int func_020511e4(CriX *o) { return func_020506fc(o->h); }
+int func_020511e4(CriX *o) { return CriFaderGetValue(o->h); }
 void func_020511f4(int *o, int v) { *o = v; }
 
 void func_020511fc(CriX *o)
@@ -145,34 +145,34 @@ void func_020511fc(CriX *o)
     switch (o->mode) {
     case 0:
         if (busy == 1) {
-            func_0205071c(o->h, -o->t5c, o->t54, 0, 0);
+            CriFaderStart(o->h, -o->t5c, o->t54, 0, 0);
             func_02051414(o, 1);
         }
         break;
     case 1:
         if (busy == 0) {
-            func_0205071c(o->h, 0, func_0205141c(o), 0, 0);
+            CriFaderStart(o->h, 0, func_0205141c(o), 0, 0);
             func_02051414(o, 3);
-        } else if (func_020506f4(o->h) == 0) {
+        } else if (CriFaderGetState(o->h) == 0) {
             func_02051414(o, 2);
         }
         break;
     case 2:
         if (busy == 0) {
-            func_0205071c(o->h, 0, o->t58, 0, 0);
+            CriFaderStart(o->h, 0, o->t58, 0, 0);
             func_02051414(o, 3);
         }
         break;
     case 3:
         if (busy == 1) {
-            func_0205071c(o->h, -o->t5c, func_02051448(o), 0, 0);
+            CriFaderStart(o->h, -o->t5c, func_02051448(o), 0, 0);
             func_02051414(o, 1);
-        } else if (func_020506f4(o->h) == 0) {
+        } else if (CriFaderGetState(o->h) == 0) {
             func_02051414(o, 0);
         }
         break;
     }
-    func_020507b8(o->h);
+    CriFaderAdvance(o->h);
 }
 
 void ResetCriX(CriX *o)
@@ -192,13 +192,13 @@ void func_02051414(CriX *o, int m) { o->mode = m; }
 int func_0205141c(CriX *o)
 {
     int a = o->t54;
-    unsigned r = func_020506fc(o->h);
+    unsigned r = CriFaderGetValue(o->h);
     return a - a * (int)r / -o->t5c;
 }
 
 int func_02051448(CriX *o)
 {
-    unsigned r = func_020506fc(o->h);
+    unsigned r = CriFaderGetValue(o->h);
     return o->t54 - o->t58 * (int)r / -o->t5c;
 }
 

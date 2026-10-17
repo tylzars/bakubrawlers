@@ -2,7 +2,7 @@ extern int data_020afa58;
 extern int data_020afa5c;
 extern int data_0209e4a8;
 extern int func_02047680(void);
-extern void func_0204657c(void), func_0204658c(void), func_0204659c(void), func_020465ac(void), func_020465bc(void), func_020465cc(void), func_020465dc(void), func_020465ec(void);
+extern void CriFuncTableRun0(void), CriFuncTableRun1(void), CriFuncTableRun2(void), CriFuncTableRun3(void), CriFuncTableRun4(void), CriFuncTableRun5(void), CriFuncTableRun6(void), CriFuncTableRun7(void);
 extern void func_0204ed44(void), func_0204ed48(void);
 extern int func_0204ecf0(int);
 extern int AddPoolRef(int, int);
@@ -72,8 +72,8 @@ int func_0204e854(void)
     switch (func_0204e934(data_020afa58)) {
     case -1: break;
     case 1: func_0204e908(); break;
-    case 2: func_020465cc(); break;
-    case 3: func_020465dc(); func_020465ec(); break;
+    case 2: CriFuncTableRun5(); break;
+    case 3: CriFuncTableRun6(); CriFuncTableRun7(); break;
     }
     return 0;
 }
@@ -82,16 +82,16 @@ int func_0204e8ac(void)
 {
     switch (func_0204e934(data_020afa58)) {
     case -1: case 0: case 1: break;
-    case 2: func_0204657c(); break;
-    case 3: func_0204657c(); func_0204658c(); func_0204659c(); func_020465ac(); func_020465cc(); break;
+    case 2: CriFuncTableRun0(); break;
+    case 3: CriFuncTableRun0(); CriFuncTableRun1(); CriFuncTableRun2(); CriFuncTableRun3(); CriFuncTableRun5(); break;
     }
     return 0;
 }
 
 int func_0204e908(void)
 {
-    func_0204657c(); func_0204658c(); func_0204659c(); func_020465ac();
-    func_020465bc(); func_020465cc(); func_020465dc(); func_020465ec();
+    CriFuncTableRun0(); CriFuncTableRun1(); CriFuncTableRun2(); CriFuncTableRun3();
+    CriFuncTableRun4(); CriFuncTableRun5(); CriFuncTableRun6(); CriFuncTableRun7();
     return 0;
 }
 

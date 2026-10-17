@@ -1,10 +1,10 @@
 #include "cri_obj_b.h"
 
 extern void func_02044848(int, int, int, short *, int);
-extern void func_020448b0(int);
+extern void CriSlotStart(int);
 extern void func_0204487c(int, int, int, short *, short *);
-extern int func_02044910(int);
-extern int func_02044840(int);
+extern int CriSlotGetResult(int);
+extern int CriSlotGetState(int);
 extern void func_0204492c(int);
 extern void func_020448fc(int);
 extern void func_0203deac(CriObj *);
@@ -17,7 +17,7 @@ void func_0203e954(CriObj *o, int n)
     short *p = o->i5c;
     p += o->i68;
     func_02044848(h, o->i48, n, p, 0);
-    func_020448b0(h);
+    CriSlotStart(h);
 }
 
 void func_0203e994(CriObj *o, int n)
@@ -25,7 +25,7 @@ void func_0203e994(CriObj *o, int n)
     short *p = o->i5c + o->i68;
     int h = o->h;
     func_0204487c(h, o->i48, n * 2, p, p + o->i64);
-    func_020448b0(h);
+    CriSlotStart(h);
 }
 
 void func_0203e9dc(CriObj *o)
@@ -88,7 +88,7 @@ int gap = o->i44;
 int v, f, q, r, n, d;
 int t = o->i70 + b - 1;
 int rem = b - 1 - (t % b);
-v = func_02044910(o->h);
+v = CriSlotGetResult(o->h);
 f = o->i50;
 q = (v * b) / f;
 r = t / b;
@@ -104,14 +104,14 @@ else func_0203eb38(buf, lim, gap, d);
 
 void func_0203ec2c(CriObj *o)
 {
-    if (o->state == 1 && func_02044840(o->h) == 0) {
+    if (o->state == 1 && CriSlotGetState(o->h) == 0) {
         o->cb78(o->i7c, &o->i68, &o->i6c, &o->i70);
         func_0203e9dc(o);
         o->state = 2;
     }
     if (o->state != 2) return;
     func_0204492c(o->h);
-    if (func_02044840(o->h) != 3) return;
+    if (CriSlotGetState(o->h) != 3) return;
     func_0203eb4c(o);
     func_020448fc(o->h);
     o->cb80(o->i84, o->i94, o->i90);
@@ -152,12 +152,12 @@ void func_0203ed7c(void)
     if (data_02215c6c.cnt == 0) data_02215c6c.f4 = 0;
 }
 
-extern void func_02046154(void);
-extern void func_02046164(void);
+extern void CriLockEnter1(void);
+extern void CriLockLeave1(void);
 
-void func_0203eda4(void) { func_02046154(); }
+void func_0203eda4(void) { CriLockEnter1(); }
 
-void func_0203edb0(void) { func_02046164(); }
+void func_0203edb0(void) { CriLockLeave1(); }
 
 void func_0203edbc(void) {}
 

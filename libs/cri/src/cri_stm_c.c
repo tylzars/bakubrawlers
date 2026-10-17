@@ -49,10 +49,10 @@ extern char str_cri_a[], str_cri_b[];
 extern void *func_02012484(void *, int, int);
 extern void *func_02012464(void *, void *, int);
 extern void SendErrConcat(const char *, const char *);
-extern int func_02045524(void *);
-extern int func_0204559c(void *);
-extern int func_02045614(void *);
-extern void func_0204604c(CriPair *, int, CriPair *, CriPair *);
+extern int CriRingGetBuf(void *);
+extern int CriRingGetSize(void *);
+extern int CriRingGetExtra(void *);
+extern void CriSplitSpan(CriPair *, int, CriPair *, CriPair *);
 extern void func_0203eda4(void);
 extern void func_0203edb0(void);
 extern int func_0203e06c(void);
@@ -111,7 +111,7 @@ void func_020407bc(CriStm *s)
     s->iac = 0;
 }
 
-CriStm *func_020407f8(int owner, int nch, CriVObj **srcs)
+CriStm *CriStmAlloc(int owner, int nch, CriVObj **srcs)
 {
     CriStm *s;
     int i, a, b, c;
@@ -123,9 +123,9 @@ CriStm *func_020407f8(int owner, int nch, CriVObj **srcs)
     }
     if (i == 4) return 0;
     s = &g_criStm[i];
-    a = func_02045524(first);
-    b = func_0204559c(first) / 2;
-    c = b + func_02045614(first) / 2;
+    a = CriRingGetBuf(first);
+    b = CriRingGetSize(first) / 2;
+    c = b + CriRingGetExtra(first) / 2;
     s->obj = CreateCriObj(nch, a, b, c);
     if (s->obj == 0) return 0;
     func_0203e67c(s->obj, (void *)func_02040c40, s);
@@ -142,7 +142,7 @@ CriStm *func_020407f8(int owner, int nch, CriVObj **srcs)
     return s;
 }
 
-void func_02040908(CriStm *s)
+void CriStmDealloc(CriStm *s)
 {
     if (s == 0) return;
     if (s->obj != 0) {
@@ -155,7 +155,7 @@ void func_02040908(CriStm *s)
     func_0203edb0();
 }
 
-int func_02040948(CriStm *s) { return s->state; }
+int CriStmGetState(CriStm *s) { return s->state; }
 
 void func_02040950(CriStm *s, int v) { s->src = (CriVObj *)v; func_0203de40(s->obj, v); }
 
@@ -193,7 +193,7 @@ void func_020409bc(CriStm *s)
             q++;
         } while (i < a.n);
     }
-    func_0204604c(&a, i, &b, &a);
+    CriSplitSpan(&a, i, &b, &a);
     src->vt->commit(src, 0, &b);
     if (0x10 > a.n) {
         src->vt->put(src, 1, &a);
@@ -233,7 +233,7 @@ void func_020409bc(CriStm *s)
     if (st == 10 || st == 11 || st == 12 || st == 20 || st == 15) {
         src->vt->put(src, 1, &a);
     } else {
-        func_0204604c(&a, n, &a, &b);
+        CriSplitSpan(&a, n, &a, &b);
         src->vt->commit(src, 0, &a);
         src->vt->put(src, 1, &b);
     }
@@ -253,7 +253,7 @@ int func_02040c40(CriStm *s, int *o0, int *o1, int *o2)
             q++;
         } while (i < func_0203e6a0(s->obj));
     }
-    *o0 = ((int)s->chb[0].p - func_02045524(first)) / 2;
+    *o0 = ((int)s->chb[0].p - CriRingGetBuf(first)) / 2;
     h = s->chb[0].n / 2;
     if (s->i38 <= h) h = s->i38;
     *o1 = h;
@@ -294,7 +294,7 @@ void func_02040d10(CriStm *s)
                     src->vt->put(src, 1, &s->in);
                     return;
                 }
-                func_0204604c(&s->in, hdr, &s->in, &t);
+                CriSplitSpan(&s->in, hdr, &s->in, &t);
                 src->vt->commit(src, 0, &s->in);
                 src->vt->put(src, 1, &t);
             }
@@ -312,7 +312,7 @@ void func_02040d10(CriStm *s)
                         q++;
                     } while (i < n);
                 }
-                func_0204604c(&s->in, i, &s->in, &t);
+                CriSplitSpan(&s->in, i, &s->in, &t);
                 src->vt->commit(src, 0, &s->in);
                 src->vt->put(src, 1, &t);
             } while (i >= n);
@@ -345,7 +345,7 @@ void func_02040d10(CriStm *s)
             int base = s->i34;
             int half = (int)(s->in.n / (nch)) / 2;
             if (base + half > pos) {
-                func_0204604c(&s->in, nch * (pos - base) * 2, &s->in, &u);
+                CriSplitSpan(&s->in, nch * (pos - base) * 2, &s->in, &u);
                 src->vt->put(src, 1, &u);
             }
         } else {
@@ -371,14 +371,14 @@ void func_02041110(CriStm *s)
         int t = a - s->i34;
         c = c < t ? c : t;
     }
-    func_0204604c(&s->in, b, &x, &y);
+    CriSplitSpan(&s->in, b, &x, &y);
     src->vt->commit(src, 0, &x);
     src->vt->put(src, 1, &y);
     i = 0;
     if (func_0203e6a0(s->obj) > 0) {
         CriPair *q = s->chb;
         do {
-            func_0204604c(q, c * 2, &x, &y);
+            CriSplitSpan(q, c * 2, &x, &y);
             if (s->cb58 != 0) s->cb58(s->arg5c, i, x.p, x.n);
             s->ch[i]->vt->commit(s->ch[i], 1, &x);
             s->ch[i]->vt->put(s->ch[i], 0, &y);

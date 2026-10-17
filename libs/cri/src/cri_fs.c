@@ -47,7 +47,7 @@ extern char *func_02015a6c(char *, const char *);
 extern char *func_02015b84(char *, const char *);
 extern int func_0200ac30(int, int, int);
 extern int func_0200ac20(int, int, int);
-extern void func_02046154(void), func_02046164(void);
+extern void CriLockEnter1(void), CriLockLeave1(void);
 extern int func_02048274(char *);
 extern int func_02048264(int), func_0204826c(int);
 extern int func_02047cf8(CriFile *);
@@ -56,15 +56,15 @@ extern int func_02015a28(const char *, const char *, ...);
 
 extern void func_020478a8(void);
 
-int func_020477d8(void) { return data_02217a9c.flag; }
-void func_020477e8(void) { data_02217a9c.flag = 1; }
-void func_020477fc(void) { data_02217a9c.flag = 0; }
+int CriGetThread0Done(void) { return data_02217a9c.flag; }
+void CriSetThread0Done(void) { data_02217a9c.flag = 1; }
+void CriClearThread0Done(void) { data_02217a9c.flag = 0; }
 
 int func_02047810(void)
 {
     if (func_02047798() == 0) return 0;
     if ((unsigned)data_02217a9c.mode <= 1) return 0;
-    if (func_020477d8() != 0) return 0;
+    if (CriGetThread0Done() != 0) return 0;
     if (data_02217a5c.p10 == 0) {
         data_02217a5c.p10 = 1;
         func_020478a8();
@@ -115,7 +115,7 @@ void func_020479b0(void) { func_02049150(); }
 void func_020479bc(void) { }
 int func_020479c0(void) { return 0; }
 
-void func_020479c8(int code, const char *msg)
+void FObjCallCallback(int code, const char *msg)
 {
     if (data_02217d14.cb == 0) return;
     data_02217d14.cb(data_02217d14.cbarg, msg, code);
@@ -129,7 +129,7 @@ void func_020479fc(void)
     __clear(&data_02217d14, 0x738);
 }
 
-void func_02047a4c(char *dst, char *src)
+void FObjBuildPath(char *dst, char *src)
 {
     if (src == 0) {
         func_02015a6c(dst, data_0221823c);
@@ -173,13 +173,13 @@ void func_02047b60(CriFile *o)
 {
     int t = criIsFlag(o->p4c);
     if (t != 0) return;
-    func_02046154();
+    CriLockEnter1();
     o->st = 0;
     o->b1 = 1;
     o->p64 = o->p64 + o->p74 / o->sz;
     o->p68 = o->p74;
     o->p6c = 0;
-    func_02046164();
+    CriLockLeave1();
 }
 
 void func_02047bc8(CriFile *o)
@@ -198,7 +198,7 @@ void func_02047bf8(void)
     }
 }
 
-void func_02047c30(void (*cb)(void *, const char *, int), void *arg)
+void FObjSetCallback(void (*cb)(void *, const char *, int), void *arg)
 {
     data_02217d14.cb = cb;
     data_02217d14.cbarg = arg;
@@ -209,10 +209,10 @@ int func_02047c44(char *path)
     char buf[0x200];
     int r;
     if (path == 0) {
-        func_020479c8(0, data_020ade08);
+        FObjCallCallback(0, data_020ade08);
         return 0;
     }
-    func_02047a4c(buf, path);
+    FObjBuildPath(buf, path);
     r = func_02048274(buf);
     if (r < 0) return 0x7ffff800;
     return r;

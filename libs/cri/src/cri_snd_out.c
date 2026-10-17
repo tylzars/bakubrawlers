@@ -47,21 +47,21 @@ extern void MI_CpuFill8(void *, int, int);
 extern void (*data_02218884)(SndOut *, void *);
 extern char data_020ae2bc[];
 
-extern void func_02049f48(SndOut *);
-extern void func_0204a018(SndOut *);
+extern void SndOutStop(SndOut *);
+extern void SndOutResetCounters(SndOut *);
 extern void func_02049cec(int, int, int, u32, int, SndOut *);
-extern void func_02049fac(SndOut *, u16 *, u16 *);
-extern void func_02049fe0(SndOut *, int);
-extern u16 func_0204a2c8(SndOut *, u16 *, u16 *);
+extern void SndOutGetSpaceAndFilled(SndOut *, u16 *, u16 *);
+extern void SndOutMoveSpaceToFilled(SndOut *, int);
+extern u16 SndOutSplitSpace(SndOut *, u16 *, u16 *);
 extern s16 *func_0204a320(SndOut *, s16 *, u32);
-extern int func_02049c34(SndOut *);
+extern int SndOutSetup(SndOut *);
 
-int func_02049c34(SndOut *o)
+int SndOutSetup(SndOut *o)
 {
     int r;
     if (o->flags & 8) return 0;
     MIi_CpuClearFast(0, o->buf, o->size);
-    func_0204a018(o);
+    SndOutResetCounters(o);
     r = func_02037364(o->timer, 1, o->buf, o->size, o->i08, o->s2c, func_02049cec, o);
     func_02037634(o->timer, 0, o->u20);
     func_02037574(o->timer, o->pan);
@@ -133,30 +133,30 @@ int func_02049e08(SndOut *o, int rate)
     }
     o->i08 = (int)(0.5f + 523655.0f / (float)rate);
     if (o->flags & 8) {
-        func_02049f48(o);
-        func_02049c34(o);
+        SndOutStop(o);
+        SndOutSetup(o);
     }
     return rate;
 }
 
 void func_02049f30(SndOut *o)
 {
-    func_02049c34(o);
+    SndOutSetup(o);
     func_02037504(o->timer);
 }
 
-void func_02049f48(SndOut *o)
+void SndOutStop(SndOut *o)
 {
     u16 a, b;
     if (!(o->flags & 8)) return;
     func_02037558(o->timer);
     o->flags &= ~8;
-    func_02049fac(o, &a, &b);
+    SndOutGetSpaceAndFilled(o, &a, &b);
     if (b != 0) o->i14 += (u32)b >> 1;
     o->level = 0;
 }
 
-void func_02049fac(SndOut *o, u16 *sp, u16 *fp)
+void SndOutGetSpaceAndFilled(SndOut *o, u16 *sp, u16 *fp)
 {
     u16 old = REG_IME;
     REG_IME = 0;
@@ -166,7 +166,7 @@ void func_02049fac(SndOut *o, u16 *sp, u16 *fp)
     REG_IME = old;
 }
 
-void func_02049fe0(SndOut *o, int n)
+void SndOutMoveSpaceToFilled(SndOut *o, int n)
 {
     u16 old = REG_IME;
     REG_IME = 0;
@@ -176,7 +176,7 @@ void func_02049fe0(SndOut *o, int n)
     REG_IME = old;
 }
 
-void func_0204a018(SndOut *o)
+void SndOutResetCounters(SndOut *o)
 {
     u16 old = REG_IME;
     REG_IME = 0;
@@ -201,7 +201,7 @@ u16 func_0204a05c(SndOut *o, u32 n, u16 *out)
         *out = 0;
         return 0;
     }
-    func_0204a2c8(o, &a, &b);
+    SndOutSplitSpace(o, &a, &b);
     first = a;
     if (first == 0) {
         *out = 0;
@@ -251,7 +251,7 @@ u16 func_0204a05c(SndOut *o, u32 n, u16 *out)
 
 u32 func_0204a244(SndOut *o, s16 *src, u32 n)
 {
-    func_02049fe0(o, n);
+    SndOutMoveSpaceToFilled(o, n);
     src = func_0204a320(o, src, n);
     if ((o->flags & 4) && n >= 2) {
         u32 sum = 0;
@@ -266,11 +266,11 @@ u32 func_0204a244(SndOut *o, s16 *src, u32 n)
     return n;
 }
 
-u16 func_0204a2c8(SndOut *o, u16 *first, u16 *second)
+u16 SndOutSplitSpace(SndOut *o, u16 *first, u16 *second)
 {
     u16 a, b;
     int end;
-    func_02049fac(o, &a, &b);
+    SndOutGetSpaceAndFilled(o, &a, &b);
     end = o->wpos + a;
     if (end > 0x1800) {
         *first = 0x1800 - o->wpos;
@@ -428,13 +428,13 @@ s16 *func_0204a320(SndOut *o, s16 *src, u32 n)
     return src;
 }
 
-u32 func_0204a9b4(SndOut *o)
+u32 SndOutClearSpace(SndOut *o)
 {
     u16 a, b;
     u16 n, tail, head;
     int wp;
     if (o == 0) return 0;
-    func_02049fac(o, &a, &b);
+    SndOutGetSpaceAndFilled(o, &a, &b);
     n = a;
     if (n == 0) return 0;
     wp = o->wpos;
@@ -451,13 +451,13 @@ u32 func_0204a9b4(SndOut *o)
     return n;
 }
 
-u32 func_0204aa58(SndOut *o)
+u32 SndOutGetFilledSamples(SndOut *o)
 {
     if (o == 0) return 0;
     return (u32)o->filled >> 1;
 }
 
-u32 func_0204aa6c(SndOut *o)
+u32 SndOutGetSpaceSamples(SndOut *o)
 {
     if (o == 0) return 0;
     return (u32)o->space >> 1;

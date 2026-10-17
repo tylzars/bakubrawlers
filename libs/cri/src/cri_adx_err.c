@@ -8,9 +8,9 @@ extern char data_020aca2c[], data_020aca34[], data_020aca3c[];
 
 extern void *func_02012484(void *, int, int);
 extern int func_02015a50(const char *);
-extern void func_02046194(const char *);
-extern void func_02051568(char *, int, const char *, int);
-extern void func_0205158c(char *, int, const char *, int);
+extern void CriSendFormattedText(const char *);
+extern void CriCopyStringN(char *, int, const char *, int);
+extern void CriAppendStringN(char *, int, const char *, int);
 extern void func_0203edbc(void);
 extern void func_0203edc0(void);
 extern void func_0203eda4(void);
@@ -41,24 +41,24 @@ void func_02040140(void)
 void SendErr(const char *msg)
 {
     if (msg == 0) {
-        func_02046194(data_020aca2c);
+        CriSendFormattedText(data_020aca2c);
         return;
     }
-    func_02051568(data_02215ca4, 0x100, msg, 0xff);
+    CriCopyStringN(data_02215ca4, 0x100, msg, 0xff);
     if (data_02215c7c.fn != 0) data_02215c7c.fn(data_02215c7c.arg, data_02215ca4);
-    func_02046194(data_02215ca4);
+    CriSendFormattedText(data_02215ca4);
 }
 
 void SendErrConcat(const char *a, const char *b)
 {
     if (a == 0 || b == 0) {
-        func_02046194(data_020aca34);
+        CriSendFormattedText(data_020aca34);
         return;
     }
-    func_02051568(data_02215ca4, 0x100, a, 0xff);
-    func_0205158c(data_02215ca4, 0x100, b, 0xff);
+    CriCopyStringN(data_02215ca4, 0x100, a, 0xff);
+    CriAppendStringN(data_02215ca4, 0x100, b, 0xff);
     if (data_02215c7c.fn != 0) data_02215c7c.fn(data_02215c7c.arg, data_02215ca4);
-    func_02046194(data_02215ca4);
+    CriSendFormattedText(data_02215ca4);
 }
 
 void func_02040244(int val, char *buf, int size)
@@ -90,7 +90,7 @@ void func_020402f0(int a, int b, char *buf, int size)
 {
     int n;
     func_02040244(a, buf, size);
-    func_0205158c(buf, size, data_020aca3c, size - func_02015a50(buf) - 1);
+    CriAppendStringN(buf, size, data_020aca3c, size - func_02015a50(buf) - 1);
     n = func_02015a50(buf);
     func_02040244(b, buf + n, 4 - func_02015a50(buf));
 }

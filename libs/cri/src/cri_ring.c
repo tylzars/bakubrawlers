@@ -31,33 +31,33 @@ extern char data_020ad1b8[], data_020ad1c4[], data_020ad1e0[], data_020ad1ec[];
 extern char data_020ad20c[], data_020ad218[], data_020ad234[], data_020ad240[], data_020ad260[], data_020ad26c[];
 
 extern void func_0204568c(const char *);
-extern void func_02051558(char *, int, const char *);
-extern void func_0205157c(char *, int, const char *);
+extern void CriCopyString(char *, int, const char *);
+extern void CriAppendString(char *, int, const char *);
 extern void func_02045f10(void);
 extern void func_02045f60(void);
 extern void func_02045f6c(void);
 extern void func_02045f38(void);
-extern void func_020450a4(void);
-extern void func_02044a88(void);
-extern void func_02044af8(void);
-extern CriRing *func_02044b78(int, int, int);
-extern void func_02044c34(CriRing *);
+extern void CriRingCommitSpan(void);
+extern void CriRingPoolAddRef(void);
+extern void CriRingPoolReleaseRef(void);
+extern CriRing *CriRingAllocNoLock(int, int, int);
+extern void CriRingDeallocNoLock(CriRing *);
 extern int func_02044cb8(CriRing *);
-extern void func_02044d38(CriRing *, void (*)(void *, int), void *);
-extern void func_02044da4(CriRing *);
-extern int func_02044e44(CriRing *, int);
-extern void func_02044f00(CriRing *, int, int, CriSpan *);
+extern void CriRingSetCallbackNoLock(CriRing *, void (*)(void *, int), void *);
+extern void CriRingResetNoLock(CriRing *);
+extern int CriRingGetSideBytesNoLock(CriRing *, int);
+extern void CriRingGetSpanNoLock(CriRing *, int, int, CriSpan *);
 
-void func_02044a20(void)
+void CriRingDefaultCallback(void)
 {
     func_0204568c(data_020ad05c);
 }
 
-void func_02044a34(const char *a, const char *b)
+void CriRingSendJoinedText(const char *a, const char *b)
 {
     char buf[64];
-    func_02051558(buf, 64, a);
-    func_0205157c(buf, 64, b);
+    CriCopyString(buf, 64, a);
+    CriAppendString(buf, 64, b);
     func_0204568c(buf);
 }
 
@@ -65,11 +65,11 @@ void func_02044a70(void)
 {
     func_02045f10();
     func_02045f60();
-    func_02044a88();
+    CriRingPoolAddRef();
     func_02045f6c();
 }
 
-void func_02044a88(void)
+void CriRingPoolAddRef(void)
 {
     if (g_ringCount == 0) {
         __clear(g_rings, sizeof(g_rings));
@@ -80,28 +80,28 @@ void func_02044a88(void)
 void func_02044ae0(void)
 {
     func_02045f60();
-    func_02044af8();
+    CriRingPoolReleaseRef();
     func_02045f6c();
     func_02045f38();
 }
 
-void func_02044af8(void)
+void CriRingPoolReleaseRef(void)
 {
     if (--g_ringCount == 0) {
         __clear(g_rings, sizeof(g_rings));
     }
 }
 
-CriRing *func_02044b44(int a, int b, int c)
+CriRing *CriRingAlloc(int a, int b, int c)
 {
     CriRing *r;
     func_02045f60();
-    r = func_02044b78(a, b, c);
+    r = CriRingAllocNoLock(a, b, c);
     func_02045f6c();
     return r;
 }
 
-CriRing *func_02044b78(int a, int b, int c)
+CriRing *CriRingAllocNoLock(int a, int b, int c)
 {
     int i;
     CriRing *r;
@@ -118,30 +118,30 @@ CriRing *func_02044b78(int a, int b, int c)
         r->size = b;
         r->extra = c;
         r->p8 = data_0209e368;
-        r->cb = (void (*)(void *, int))func_02044a20;
+        r->cb = (void (*)(void *, int))CriRingDefaultCallback;
         r->cbarg = r;
         r->i40 = 0;
         r->i44 = 0;
-        func_02044da4(r);
+        CriRingResetNoLock(r);
     }
     return r;
 }
 
-void func_02044c18(CriRing *r)
+void CriRingDealloc(CriRing *r)
 {
     func_02045f60();
-    func_02044c34(r);
+    CriRingDeallocNoLock(r);
     func_02045f6c();
 }
 
-void func_02044c34(CriRing *r)
+void CriRingDeallocNoLock(CriRing *r)
 {
     if (r == 0) {
-        func_02044a34(data_020ad068, data_020ad074);
+        CriRingSendJoinedText(data_020ad068, data_020ad074);
         return;
     }
     if (r->used == 0) {
-        func_02044a34(data_020ad090, data_020ad09c);
+        CriRingSendJoinedText(data_020ad090, data_020ad09c);
         return;
     }
     func_02012484(r, 0, 0x48);
@@ -160,25 +160,25 @@ int func_02044c94(CriRing *r)
 int func_02044cb8(CriRing *r)
 {
     if (r == 0) {
-        func_02044a34(data_020ad0bc, data_020ad0c8);
+        CriRingSendJoinedText(data_020ad0bc, data_020ad0c8);
         return 0;
     }
     if (r->used != 0) return (int)r->p8;
-    func_02044a34(data_020ad0e4, data_020ad0f0);
+    CriRingSendJoinedText(data_020ad0e4, data_020ad0f0);
     return 0;
 }
 
-void func_02044d0c(CriRing *r, void (*cb)(void *, int), void *arg)
+void CriRingSetCallback(CriRing *r, void (*cb)(void *, int), void *arg)
 {
     func_02045f60();
-    func_02044d38(r, cb, arg);
+    CriRingSetCallbackNoLock(r, cb, arg);
     func_02045f6c();
 }
 
-void func_02044d38(CriRing *r, void (*cb)(void *, int), void *arg)
+void CriRingSetCallbackNoLock(CriRing *r, void (*cb)(void *, int), void *arg)
 {
     if (r == 0) {
-        func_02044a34(data_020ad110, data_020ad11c);
+        CriRingSendJoinedText(data_020ad110, data_020ad11c);
         return;
     }
     if (r->used != 0) {
@@ -186,24 +186,24 @@ void func_02044d38(CriRing *r, void (*cb)(void *, int), void *arg)
         r->cbarg = arg;
         return;
     }
-    func_02044a34(data_020ad138, data_020ad144);
+    CriRingSendJoinedText(data_020ad138, data_020ad144);
 }
 
-void func_02044d88(CriRing *r)
+void CriRingReset(CriRing *r)
 {
     func_02045f60();
-    func_02044da4(r);
+    CriRingResetNoLock(r);
     func_02045f6c();
 }
 
-void func_02044da4(CriRing *r)
+void CriRingResetNoLock(CriRing *r)
 {
     if (r == 0) {
-        func_02044a34(data_020ad164, data_020ad170);
+        CriRingSendJoinedText(data_020ad164, data_020ad170);
         return;
     }
     if (r->used == 0) {
-        func_02044a34(data_020ad18c, data_020ad198);
+        CriRingSendJoinedText(data_020ad18c, data_020ad198);
         return;
     }
     r->c = 0;
@@ -216,23 +216,23 @@ void func_02044da4(CriRing *r)
     r->tot34 = 0;
 }
 
-int func_02044e18(CriRing *r, int w)
+int CriRingGetSideBytes(CriRing *r, int w)
 {
     int v;
     func_02045f60();
-    v = func_02044e44(r, w);
+    v = CriRingGetSideBytesNoLock(r, w);
     func_02045f6c();
     return v;
 }
 
-int func_02044e44(CriRing *r, int w)
+int CriRingGetSideBytesNoLock(CriRing *r, int w)
 {
     if (r == 0) {
-        func_02044a34(data_020ad1b8, data_020ad1c4);
+        CriRingSendJoinedText(data_020ad1b8, data_020ad1c4);
         return 0;
     }
     if (r->used == 0) {
-        func_02044a34(data_020ad1e0, data_020ad1ec);
+        CriRingSendJoinedText(data_020ad1e0, data_020ad1ec);
         return 0;
     }
     if (w == 1) return r->c;
@@ -241,25 +241,25 @@ int func_02044e44(CriRing *r, int w)
     return 0;
 }
 
-void func_02044ecc(CriRing *r, int a, int b, CriSpan *s)
+void CriRingGetSpan(CriRing *r, int a, int b, CriSpan *s)
 {
     func_02045f60();
-    func_02044f00(r, a, b, s);
+    CriRingGetSpanNoLock(r, a, b, s);
     func_02045f6c();
 }
 
-void func_02044f00(CriRing *r, int mode, int max, CriSpan *s)
+void CriRingGetSpanNoLock(CriRing *r, int mode, int max, CriSpan *s)
 {
     if (r == 0) {
-        func_02044a34(data_020ad20c, data_020ad218);
+        CriRingSendJoinedText(data_020ad20c, data_020ad218);
         return;
     }
     if (r->used == 0) {
-        func_02044a34(data_020ad234, data_020ad240);
+        CriRingSendJoinedText(data_020ad234, data_020ad240);
         return;
     }
     if (r->size == 0) {
-        func_02044a34(data_020ad260, data_020ad26c);
+        CriRingSendJoinedText(data_020ad260, data_020ad26c);
         return;
     }
     if (mode == 0) {
@@ -293,5 +293,5 @@ void func_02044f00(CriRing *r, int mode, int max, CriSpan *s)
 
 void func_02045098(void)
 {
-    func_020450a4();
+    CriRingCommitSpan();
 }

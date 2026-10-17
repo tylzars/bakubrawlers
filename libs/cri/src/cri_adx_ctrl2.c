@@ -59,15 +59,15 @@ extern void func_0203edb0(void);
 extern int FindHalfword0x80(int, int, short *);
 extern int func_0203f69c(int, int, short *);
 extern int FindFourBytes(int, int, short *);
-extern void func_0204604c(Out *, int, Out *, Out *);
-extern int func_020409a0(int), func_02040988(int), func_0204138c(int), func_02040948(int);
+extern void CriSplitSpan(Out *, int, Out *, Out *);
+extern int func_020409a0(int), func_02040988(int), func_0204138c(int), CriStmGetState(int);
 extern int func_02040964(int, int), func_02040978(int);
 extern int func_020416b0(int), func_020416b8(int), func_020416f4(int);
 extern int func_02041704(int), func_02041714(int), func_02041724(int), func_02041734(int), func_02041744(int);
 extern int func_02041754(int), func_02041848(int), func_020417a0(int);
 extern int func_020416c0(int, int), func_020416d0(int, void *, void *), func_020416dc(int, int);
 extern int func_020416e4(int, int), func_020416ec(int, int);
-extern int func_02041d50(int), func_02041f50(int, int), func_02041f18(int, void *, void *);
+extern int StmGetState(int), func_02041f50(int, int), func_02041f18(int, void *, void *);
 extern void func_02042dd8(Pl *, int, int, int, int);
 extern void StopAdx(Pl *);
 extern int GetAdxState(Pl *), func_02042fdc(Pl *);
@@ -131,13 +131,13 @@ void func_02043c14(Pl *o)
     if (r8 == 0) {
         io->vt->f1c(io, 1, &B);
         r9 += r5;
-        func_0204604c(&A, r9, &A, &C);
+        CriSplitSpan(&A, r9, &A, &C);
         io->vt->f20(io, 0, &A);
         io->vt->f1c(io, 1, &C);
     } else {
         io->vt->f20(io, 0, &A);
         r11 += r4;
-        func_0204604c(&B, r11, &B, &D);
+        CriSplitSpan(&B, r11, &B, &D);
         io->vt->f20(io, 0, &B);
         io->vt->f1c(io, 1, &D);
     }
@@ -146,7 +146,7 @@ void func_02043c14(Pl *o)
     func_020409a0(h);
     func_02040988(h);
     func_0204138c(h);
-    if (func_02040948(h) != 2) {
+    if (CriStmGetState(h) != 2) {
         func_0204355c(o, 0);
         return;
     }
@@ -165,12 +165,12 @@ void func_02043f28(Pl *o)
     a = 0;
     b = 0;
     if ((unsigned char)o->s2 <= 1 && o->ba8 == 1) {
-        if (func_02041d50(o->i8) == 2) return;
+        if (StmGetState(o->i8) == 2) return;
         if (o->io10 != 0) o->io10->vt->f14(o->io10);
         func_02042dd8(o, o->ib0, o->ib4, o->ib8, o->ibc);
         o->ba8 = 0;
     }
-    st = func_02040948(h);
+    st = CriStmGetState(h);
     if (st == 2) {
         n = func_02041714(h);
         if (n > o->s3) {
@@ -247,7 +247,7 @@ void func_020442ec(Pl *o)
     r6 = func_02047938(ic);
     lim = o->i48;
     if (lim >= 0x800) lim = 0x800;
-    if (r5 >= lim || r6 <= func_02041734(h) || func_02040948(o->h) == 3) {
+    if (r5 >= lim || r6 <= func_02041734(h) || CriStmGetState(o->h) == 3) {
         if (o->b70 == 0) {
             if (o->b72 == 0) {
                 func_02047920(ic, 1);
@@ -258,7 +258,7 @@ void func_020442ec(Pl *o)
         }
         o->b71 = 1;
     }
-    if (func_02040948(o->h) != 3) return;
+    if (CriStmGetState(o->h) != 3) return;
     n = func_02042fdc(o);
     sz = o->i48 * n * 2;
     for (i = 0; i < n; i++) {
@@ -275,7 +275,7 @@ void func_02044440(Pl *o)
     if (o->b6c == 0 && o->ic0 != 0) {
         if (func_020416b0(o->h) >= o->ic0) func_020416dc(o->h, -1);
     }
-    if (func_02040948(o->h) != 3) return;
+    if (CriStmGetState(o->h) != 3) return;
     n = func_02041714(o->h);
     data_02216848 = n;
     func_02047998(o->ic);
@@ -299,7 +299,7 @@ void func_02044548(void) { }
 
 void func_0204454c(Pl *o)
 {
-    if (o->i8 != 0 && func_02041d50(o->i8) == 4) {
+    if (o->i8 != 0 && StmGetState(o->i8) == 4) {
         *(short *)((char *)o + 0x60) = -1;
         o->state = 6;
     }
@@ -316,7 +316,7 @@ void func_020445a8(Pl *o)
     switch (o->s2) {
     case 0:
     case 1:
-        if (func_02041d50(o->i8) == 3) func_02040978(o->h);
+        if (StmGetState(o->i8) == 3) func_02040978(o->h);
         break;
     case 2:
         func_02040978(o->h);

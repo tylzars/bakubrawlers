@@ -38,18 +38,18 @@ extern char data_020acbf8[], data_020acc20[], data_020acc4c[], data_020acc7c[], 
 extern void *func_02012484(void *, int, int);
 extern void SendErr(const char *);
 extern void func_0203eda4(void), func_0203edb0(void), func_0203edbc(void), func_0203edc0(void);
-extern void *func_02044b44(int, int, int);
-extern void *func_02041b34(void *, int);
-extern void *func_020407f8(void *, int, void *);
+extern void *CriRingAlloc(int, int, int);
+extern void *StmAlloc(void *, int);
+extern void *CriStmAlloc(void *, int, void *);
 extern void *func_020478f0(void *, int, int);
 extern void *func_02051524(void *);
 extern void func_02051534(void *, void *);
 extern void func_02043580(Adx *);
 extern void func_02043244(Adx *, int);
 extern void func_020478fc(void *);
-extern void func_02040908(void *);
+extern void CriStmDealloc(void *);
 extern void func_02041f18(void *, int, int);
-extern void func_02041b90(void *);
+extern void StmDealloc(void *);
 extern void func_02051528(void *);
 extern void func_02051504(void *);
 extern void func_02040950(void *, int);
@@ -59,10 +59,10 @@ extern void func_020514f8(void *);
 extern void func_020426e0(void *, int, int);
 extern void func_02041f50(void *, int);
 extern void func_02041d7c(void *, int);
-extern void func_02041e4c(void *);
+extern void StmStop(void *);
 extern void func_02041c94(void *);
 extern void func_02041bdc(void *, int, int, int, long long);
-extern void func_02041dfc(void *);
+extern void StmStart(void *);
 extern void func_02047914(void *, int), func_02047920(void *, int);
 extern void func_020409a0(void *);
 extern void func_020514fc(void *);
@@ -129,12 +129,12 @@ Adx *CreateAdxInner(int nch, int buf, int size)
     o->i30 = 0x800;
     o->i34 = 0x860;
     o->p14 = 0;
-    o->p10 = func_02044b44(o->i20, o->i24, o->i28);
+    o->p10 = CriRingAlloc(o->i20, o->i24, o->i28);
     if (o->p10 == 0) {
         ReleaseAdxInner(o);
         return 0;
     }
-    o->stm = func_02041b34(o->p10, 0);
+    o->stm = StmAlloc(o->p10, 0);
     if (o->stm == 0) {
         ReleaseAdxInner(o);
         return 0;
@@ -142,7 +142,7 @@ Adx *CreateAdxInner(int nch, int buf, int size)
     i = 0;
     if (nch > 0) {
         do {
-            o->p18[i] = func_02044b44(o->i2c + o->i34 * i * 2, o->i30 * 2, (o->i34 - o->i30) * 2);
+            o->p18[i] = CriRingAlloc(o->i2c + o->i34 * i * 2, o->i30 * 2, (o->i34 - o->i30) * 2);
             if (o->p18[i] == 0) {
                 ReleaseAdxInner(o);
                 return 0;
@@ -150,7 +150,7 @@ Adx *CreateAdxInner(int nch, int buf, int size)
             i++;
         } while (i < nch);
     }
-    o->p4 = func_020407f8(o->p10, nch, o->p18);
+    o->p4 = CriStmAlloc(o->p10, nch, o->p18);
     if (o->p4 == 0) {
         ReleaseAdxInner(o);
         return 0;
@@ -238,13 +238,13 @@ void ReleaseAdxInner(Adx *o)
     if (o->p4) {
         q = o->p4;
         o->p4 = 0;
-        func_02040908(q);
+        CriStmDealloc(q);
     }
     q = o->stm;
     if (q) {
         o->stm = 0;
         func_02041f18(q, 0, 0);
-        func_02041b90(q);
+        StmDealloc(q);
     }
     if (o->p94) {
         q = o->p94;
@@ -326,10 +326,10 @@ void func_02042dd8(Adx *o, int a, int b, int c, int d)
     func_02041f50(o->stm, data_020acbf0);
     func_02041f18(o->stm, 0, 0);
     func_02041d7c(o->stm, 0);
-    func_02041e4c(o->stm);
+    StmStop(o->stm);
     func_02041c94(o->stm);
     func_02041bdc(o->stm, a, b, c, (long long)d << 11);
-    func_02041dfc(o->stm);
+    StmStart(o->stm);
     StartAdx(o, (int)o->p10);
 }
 

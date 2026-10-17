@@ -70,11 +70,11 @@ extern char data_020afd3c[], data_020afd70[], data_020afd9c[], data_020afdc8[], 
 extern char data_020afe5c[], data_020afe8c[], data_020afebc[], data_020afeec[], data_020aff1c[], data_020aff4c[];
 
 extern void SendErr(const char *);
-extern void func_0204048c(void);
-extern void func_020405d4(void);
-extern void func_020463d8(int, int, void *, void *, void *);
-extern void func_02046328(int, int);
-extern void func_02046174(void), func_02046184(void);
+extern void CriInit(void);
+extern void CriExit(void);
+extern void CriFuncTableSet(int, int, void *, void *, void *);
+extern void CriFuncTableRemove(int, int);
+extern void CriLockEnter3(void), CriLockLeave3(void);
 extern void *CreateCriX(void *, int);
 extern int func_02051124(void);
 extern void func_02051110(int);
@@ -88,10 +88,10 @@ extern VObj *func_02050e60(void *, int);
 extern void func_02050ea8(void *);
 extern void *func_02050698(void *, int);
 extern void func_020506e0(void *);
-extern int func_020506f4(void *);
-extern void func_0204fc7c(Obj *), func_0204fc8c(Obj *), func_0204fc64(Obj *, int);
-extern void func_0204fd2c();
-extern void func_02051568(void *, int, int, int);
+extern int CriFaderGetState(void *);
+extern void func_0204fc7c(Obj *), CriFadeGrpAdvance(Obj *), func_0204fc64(Obj *, int);
+extern void CriFadeGrpReset();
+extern void CriCopyStringN(void *, int, int, int);
 extern void func_0204fe20(Obj *, void *);
 extern void func_0205012c(Obj *, Ent *, int, int);
 extern void func_02050268(Obj *, Ent *, int, int, int);
@@ -132,7 +132,7 @@ int InitPoolObj(Obj *o, Cfg *cfg, char *buf, int size)
         SendErrWrapper(data_020afc1c);
         return 0;
     }
-    func_0204fd2c(o);
+    CriFadeGrpReset(o);
     o->i5c = 1;
     o->cfg = *cfg;
     __clear(&par, sizeof(Par));
@@ -230,7 +230,7 @@ void func_0204f7c0(Obj *o, int a)
         return;
     }
     o->i30 = 0;
-    func_02051568(o->p34, 0x100, a, 0x100);
+    CriCopyStringN(o->p34, 0x100, a, 0x100);
     func_0204fe20(o, &o->i30);
 }
 
@@ -279,7 +279,7 @@ int func_0204f924(Obj *o)
     }
     r = o->cur->vt->f28(o->cur);
     if (r == 3) {
-        if (func_020506f4(o->ent[o->idx].buf) != 0) r = 2;
+        if (CriFaderGetState(o->ent[o->idx].buf) != 0) r = 2;
     }
     return r;
 }

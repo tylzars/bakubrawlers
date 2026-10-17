@@ -58,7 +58,7 @@ extern void MI_CpuFill8(void *, int, unsigned);
 extern int sprintf(char *, const char *, ...);
 extern void func_0204713c(void);
 extern void func_02047414(int, void *);
-extern void func_0204048c(void);
+extern void CriInit(void);
 extern void AddGlobalPoolRef(void);
 extern void func_0204ecfc(void);
 extern void func_02047408(void (*)(int, const char *), int);
@@ -68,8 +68,8 @@ extern void func_020522c8(int, const char *);
 extern void func_020522e8(const char *, const char *);
 extern void func_02052208(void);
 extern void ReleaseGlobalPoolRef(void);
-extern void func_020405d4(void);
-extern void func_02047698(void);
+extern void CriExit(void);
+extern void CriStopThreads(void);
 extern void func_02047224(void);
 extern void func_02047810(int);
 extern void func_020471d0(void);
@@ -138,7 +138,7 @@ void func_02051818(CriMemCfg *cfg, int a, const void *b, void (*c)(const char *)
         func_02047414(2, &s);
         data_02218fd0.sflag = 1;
     }
-    func_0204048c();
+    CriInit();
     AddGlobalPoolRef();
     func_0204ecfc();
     func_02047408(func_020522c8, 0);
@@ -155,8 +155,8 @@ void func_020519bc(void)
     if (data_02218fd0.init == 1) {
         func_02052208();
         ReleaseGlobalPoolRef();
-        func_020405d4();
-        func_02047698();
+        CriExit();
+        CriStopThreads();
         if (data_02218fd0.sflag != 0) {
             data_02218fd0.mem.free(data_02218fd0.f1bc);
             data_02218fd0.mem.free(data_02218fd0.f1b8);

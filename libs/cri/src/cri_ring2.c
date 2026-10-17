@@ -54,50 +54,50 @@ extern char data_020ad6d4[], data_020ad6e0[], data_020ad6fc[], data_020ad708[];
 extern char data_020ad728[], data_020ad734[], data_020ad750[], data_020ad75c[];
 extern char data_020ad77c[], data_020ad788[], data_020ad7a4[], data_020ad7b0[];
 
-extern void func_02044a34(const char *, const char *);
+extern void CriRingSendJoinedText(const char *, const char *);
 extern void *func_02012464(void *, void *, int);
 extern void *func_02012484(void *, int, int);
-extern void func_02046200(const char *);
-extern void func_02051558(char *, int, const char *);
-extern void func_0205157c(char *, int, const char *);
+extern void CriSendText(const char *);
+extern void CriCopyString(char *, int, const char *);
+extern void CriAppendString(char *, int, const char *);
 extern void func_02045f10(void);
 extern void func_02045f38(void);
 extern void func_02045f60(void);
 extern void func_02045f6c(void);
-extern void func_02046154(void);
-extern void func_02046164(void);
+extern void CriLockEnter1(void);
+extern void CriLockLeave1(void);
 
-extern void func_020450a4(CriRing *, int, CriSpan *);
-extern void func_02045250(CriRing *, int, CriSpan *);
-extern int func_02045434(CriRing *, int, int, int *);
-extern void *func_02045548(CriRing *);
-extern int func_020455c0(CriRing *);
-extern int func_02045638(CriRing *);
+extern void CriRingCommitSpan(CriRing *, int, CriSpan *);
+extern void CriRingPutBackSpanNoLock(CriRing *, int, CriSpan *);
+extern int CriRingCanGetNoLock(CriRing *, int, int, int *);
+extern void *CriRingGetBufNoLock(CriRing *);
+extern int CriRingGetSizeNoLock(CriRing *);
+extern int CriRingGetExtraNoLock(CriRing *);
 extern void func_0204568c(const char *);
-extern void func_02045698(void);
-extern void func_020456ac(const char *, const char *);
-extern void func_02045700(void);
-extern void func_02045778(void);
-extern CriBuf *func_020457f8(char *, int);
-extern void func_020458a4(CriBuf *);
+extern void CriBufDefaultCallback(void);
+extern void CriBufSendJoinedText(const char *, const char *);
+extern void CriBufPoolAddRef(void);
+extern void CriBufPoolReleaseRef(void);
+extern CriBuf *CriBufAllocNoLock(char *, int);
+extern void CriBufDeallocNoLock(CriBuf *);
 extern void *func_02045928(CriBuf *);
-extern void func_020459a8(CriBuf *, void (*)(void *, int), void *);
-extern void func_02045a14(CriBuf *);
-extern int func_02045a9c(CriBuf *, int);
-extern void func_02045b58(CriBuf *, int, int, CriSpan *);
+extern void CriBufSetCallbackNoLock(CriBuf *, void (*)(void *, int), void *);
+extern void CriBufResetNoLock(CriBuf *);
+extern int CriBufGetSideBytesNoLock(CriBuf *, int);
+extern void CriBufGetSpanNoLock(CriBuf *, int, int, CriSpan *);
 extern void func_02045c58(CriBuf *, int, CriSpan *);
-extern void func_02045d18(CriBuf *, int, CriSpan *);
-extern int func_02045e64(CriBuf *, int, int, int *);
+extern void CriBufPutBackSpanNoLock(CriBuf *, int, CriSpan *);
+extern int CriBufCanGetNoLock(CriBuf *, int, int, int *);
 extern void func_02045f90(void);
 
-void func_020450a4(CriRing *r, int mode, CriSpan *s)
+void CriRingCommitSpan(CriRing *r, int mode, CriSpan *s)
 {
     if (r == 0) {
-        func_02044a34(data_020ad284, data_020ad290);
+        CriRingSendJoinedText(data_020ad284, data_020ad290);
         return;
     }
     if (r->used == 0) {
-        func_02044a34(data_020ad2ac, data_020ad2b8);
+        CriRingSendJoinedText(data_020ad2ac, data_020ad2b8);
         return;
     }
     if (s->len <= 0) return;
@@ -137,28 +137,28 @@ void func_020450a4(CriRing *r, int mode, CriSpan *s)
     }
 }
 
-void func_02045224(CriRing *r, int mode, CriSpan *s)
+void CriRingPutBackSpan(CriRing *r, int mode, CriSpan *s)
 {
     func_02045f60();
-    func_02045250(r, mode, s);
+    CriRingPutBackSpanNoLock(r, mode, s);
     func_02045f6c();
 }
 
-void func_02045250(CriRing *r, int mode, CriSpan *s)
+void CriRingPutBackSpanNoLock(CriRing *r, int mode, CriSpan *s)
 {
     char *ptr;
     int size;
     if (r == 0) {
-        func_02044a34(data_020ad2d8, data_020ad2e4);
+        CriRingSendJoinedText(data_020ad2d8, data_020ad2e4);
         return;
     }
     if (r->used == 0) {
-        func_02044a34(data_020ad300, data_020ad30c);
+        CriRingSendJoinedText(data_020ad300, data_020ad30c);
         return;
     }
     size = r->size;
     if (size == 0) {
-        func_02044a34(data_020ad32c, data_020ad338);
+        CriRingSendJoinedText(data_020ad32c, data_020ad338);
         return;
     }
     if (s->len <= 0) return;
@@ -191,24 +191,24 @@ void func_02045250(CriRing *r, int mode, CriSpan *s)
     }
 }
 
-int func_020453f8(CriRing *r, int mode, int max, int *out)
+int CriRingCanGet(CriRing *r, int mode, int max, int *out)
 {
     int v;
     func_02045f60();
-    v = func_02045434(r, mode, max, out);
+    v = CriRingCanGetNoLock(r, mode, max, out);
     func_02045f6c();
     return v;
 }
 
-int func_02045434(CriRing *r, int mode, int max, int *out)
+int CriRingCanGetNoLock(CriRing *r, int mode, int max, int *out)
 {
     int n;
     if (r == 0) {
-        func_02044a34(data_020ad350, data_020ad35c);
+        CriRingSendJoinedText(data_020ad350, data_020ad35c);
         return 0;
     }
     if (r->used == 0) {
-        func_02044a34(data_020ad378, data_020ad384);
+        CriRingSendJoinedText(data_020ad378, data_020ad384);
         return 0;
     }
     if (mode == 0) {
@@ -227,81 +227,81 @@ int func_02045434(CriRing *r, int mode, int max, int *out)
     return n == max;
 }
 
-void *func_02045524(CriRing *r)
+void *CriRingGetBuf(CriRing *r)
 {
     void *v;
     func_02045f60();
-    v = func_02045548(r);
+    v = CriRingGetBufNoLock(r);
     func_02045f6c();
     return v;
 }
 
-void *func_02045548(CriRing *r)
+void *CriRingGetBufNoLock(CriRing *r)
 {
     if (r == 0) {
-        func_02044a34(data_020ad3a4, data_020ad3b0);
+        CriRingSendJoinedText(data_020ad3a4, data_020ad3b0);
         return 0;
     }
     if (r->used != 0) return r->buf;
-    func_02044a34(data_020ad3cc, data_020ad3d8);
+    CriRingSendJoinedText(data_020ad3cc, data_020ad3d8);
     return 0;
 }
 
-int func_0204559c(CriRing *r)
+int CriRingGetSize(CriRing *r)
 {
     int v;
     func_02045f60();
-    v = func_020455c0(r);
+    v = CriRingGetSizeNoLock(r);
     func_02045f6c();
     return v;
 }
 
-int func_020455c0(CriRing *r)
+int CriRingGetSizeNoLock(CriRing *r)
 {
     if (r == 0) {
-        func_02044a34(data_020ad3f8, data_020ad404);
+        CriRingSendJoinedText(data_020ad3f8, data_020ad404);
         return 0;
     }
     if (r->used != 0) return r->size;
-    func_02044a34(data_020ad420, data_020ad42c);
+    CriRingSendJoinedText(data_020ad420, data_020ad42c);
     return 0;
 }
 
-int func_02045614(CriRing *r)
+int CriRingGetExtra(CriRing *r)
 {
     int v;
     func_02045f60();
-    v = func_02045638(r);
+    v = CriRingGetExtraNoLock(r);
     func_02045f6c();
     return v;
 }
 
-int func_02045638(CriRing *r)
+int CriRingGetExtraNoLock(CriRing *r)
 {
     if (r == 0) {
-        func_02044a34(data_020ad44c, data_020ad458);
+        CriRingSendJoinedText(data_020ad44c, data_020ad458);
         return 0;
     }
     if (r->used != 0) return r->extra;
-    func_02044a34(data_020ad474, data_020ad480);
+    CriRingSendJoinedText(data_020ad474, data_020ad480);
     return 0;
 }
 
 void func_0204568c(const char *s)
 {
-    func_02046200(s);
+    CriSendText(s);
 }
 
-void func_02045698(void)
+void CriBufDefaultCallback(void)
 {
     func_0204568c(data_020ad4d0);
 }
 
-void func_020456ac(const char *a, const char *b)
+void CriBufSendJoinedText(const char *a, const char *b)
 {
     char buf[64];
-    func_02051558(buf, 64, a);
-    func_0205157c(buf, 64, b);
+    CriCopyString(buf, 64, a);
+    CriAppendString(buf, 64, b);
     func_0204568c(buf);
 }
 
@@ -309,11 +309,11 @@ void func_020456e8(void)
 {
     func_02045f10();
     func_02045f60();
-    func_02045700();
+    CriBufPoolAddRef();
     func_02045f6c();
 }
 
-void func_02045700(void)
+void CriBufPoolAddRef(void)
 {
     if (g_bufCount == 0) {
         __clear(g_bufs, sizeof(g_bufs));
@@ -324,28 +324,28 @@ void func_02045700(void)
 void func_02045760(void)
 {
     func_02045f60();
-    func_02045778();
+    CriBufPoolReleaseRef();
     func_02045f6c();
     func_02045f38();
 }
 
-void func_02045778(void)
+void CriBufPoolReleaseRef(void)
 {
     if (--g_bufCount == 0) {
         __clear(g_bufs, sizeof(g_bufs));
     }
 }
 
-CriBuf *func_020457cc(char *buf, int size)
+CriBuf *CriBufAlloc(char *buf, int size)
 {
     CriBuf *b;
     func_02045f60();
-    b = func_020457f8(buf, size);
+    b = CriBufAllocNoLock(buf, size);
     func_02045f6c();
     return b;
 }
 
-CriBuf *func_020457f8(char *buf, int size)
+CriBuf *CriBufAllocNoLock(char *buf, int size)
 {
     int i;
     CriBuf *b;
@@ -359,27 +359,27 @@ CriBuf *func_020457f8(char *buf, int size)
     b->buf = buf;
     b->size = size;
     b->p8 = data_0209e378;
-    b->cb = (void (*)(void *, int))func_02045698;
+    b->cb = (void (*)(void *, int))CriBufDefaultCallback;
     b->cbarg = b;
-    func_02045a14(b);
+    CriBufResetNoLock(b);
     return b;
 }
 
-void func_02045888(CriBuf *b)
+void CriBufDealloc(CriBuf *b)
 {
     func_02045f60();
-    func_020458a4(b);
+    CriBufDeallocNoLock(b);
     func_02045f6c();
 }
 
-void func_020458a4(CriBuf *b)
+void CriBufDeallocNoLock(CriBuf *b)
 {
     if (b == 0) {
-        func_020456ac(data_020ad4dc, data_020ad4e8);
+        CriBufSendJoinedText(data_020ad4dc, data_020ad4e8);
         return;
     }
     if (b->used == 0) {
-        func_020456ac(data_020ad504, data_020ad510);
+        CriBufSendJoinedText(data_020ad504, data_020ad510);
         return;
     }
     func_02012484(b, 0, 0x24);
@@ -398,25 +398,25 @@ void *func_02045904(CriBuf *b)
 void *func_02045928(CriBuf *b)
 {
     if (b == 0) {
-        func_020456ac(data_020ad530, data_020ad53c);
+        CriBufSendJoinedText(data_020ad530, data_020ad53c);
         return 0;
     }
     if (b->used != 0) return b->p8;
-    func_020456ac(data_020ad558, data_020ad564);
+    CriBufSendJoinedText(data_020ad558, data_020ad564);
     return 0;
 }
 
-void func_0204597c(CriBuf *b, void (*cb)(void *, int), void *arg)
+void CriBufSetCallback(CriBuf *b, void (*cb)(void *, int), void *arg)
 {
     func_02045f60();
-    func_020459a8(b, cb, arg);
+    CriBufSetCallbackNoLock(b, cb, arg);
     func_02045f6c();
 }
 
-void func_020459a8(CriBuf *b, void (*cb)(void *, int), void *arg)
+void CriBufSetCallbackNoLock(CriBuf *b, void (*cb)(void *, int), void *arg)
 {
     if (b == 0) {
-        func_020456ac(data_020ad584, data_020ad590);
+        CriBufSendJoinedText(data_020ad584, data_020ad590);
         return;
     }
     if (b->used != 0) {
@@ -424,47 +424,47 @@ void func_020459a8(CriBuf *b, void (*cb)(void *, int), void *arg)
         b->cbarg = arg;
         return;
     }
-    func_020456ac(data_020ad5ac, data_020ad5b8);
+    CriBufSendJoinedText(data_020ad5ac, data_020ad5b8);
 }
 
-void func_020459f8(CriBuf *b)
+void CriBufReset(CriBuf *b)
 {
     func_02045f60();
-    func_02045a14(b);
+    CriBufResetNoLock(b);
     func_02045f6c();
 }
 
-void func_02045a14(CriBuf *b)
+void CriBufResetNoLock(CriBuf *b)
 {
     if (b == 0) {
-        func_020456ac(data_020ad5d8, data_020ad5e4);
+        CriBufSendJoinedText(data_020ad5d8, data_020ad5e4);
         return;
     }
     if (b->used == 0) {
-        func_020456ac(data_020ad600, data_020ad60c);
+        CriBufSendJoinedText(data_020ad600, data_020ad60c);
         return;
     }
     b->c = b->size;
     b->d10 = 0;
 }
 
-int func_02045a70(CriBuf *b, int w)
+int CriBufGetSideBytes(CriBuf *b, int w)
 {
     int v;
     func_02045f60();
-    v = func_02045a9c(b, w);
+    v = CriBufGetSideBytesNoLock(b, w);
     func_02045f6c();
     return v;
 }
 
-int func_02045a9c(CriBuf *b, int w)
+int CriBufGetSideBytesNoLock(CriBuf *b, int w)
 {
     if (b == 0) {
-        func_020456ac(data_020ad62c, data_020ad638);
+        CriBufSendJoinedText(data_020ad62c, data_020ad638);
         return 0;
     }
     if (b->used == 0) {
-        func_020456ac(data_020ad654, data_020ad660);
+        CriBufSendJoinedText(data_020ad654, data_020ad660);
         return 0;
     }
     if (w == 1) return b->c;
@@ -473,21 +473,21 @@ int func_02045a9c(CriBuf *b, int w)
     return 0;
 }
 
-void func_02045b24(CriBuf *b, int mode, int max, CriSpan *s)
+void CriBufGetSpan(CriBuf *b, int mode, int max, CriSpan *s)
 {
     func_02045f60();
-    func_02045b58(b, mode, max, s);
+    CriBufGetSpanNoLock(b, mode, max, s);
     func_02045f6c();
 }
 
-void func_02045b58(CriBuf *b, int mode, int max, CriSpan *s)
+void CriBufGetSpanNoLock(CriBuf *b, int mode, int max, CriSpan *s)
 {
     if (b == 0) {
-        func_020456ac(data_020ad680, data_020ad68c);
+        CriBufSendJoinedText(data_020ad680, data_020ad68c);
         return;
     }
     if (b->used == 0) {
-        func_020456ac(data_020ad6a8, data_020ad6b4);
+        CriBufSendJoinedText(data_020ad6a8, data_020ad6b4);
         return;
     }
     if (mode == 0) {
@@ -519,11 +519,11 @@ void func_02045c2c(CriBuf *b, int mode, CriSpan *s)
 void func_02045c58(CriBuf *b, int mode, CriSpan *s)
 {
     if (b == 0) {
-        func_020456ac(data_020ad6d4, data_020ad6e0);
+        CriBufSendJoinedText(data_020ad6d4, data_020ad6e0);
         return;
     }
     if (b->used == 0) {
-        func_020456ac(data_020ad6fc, data_020ad708);
+        CriBufSendJoinedText(data_020ad6fc, data_020ad708);
         return;
     }
     if (s->len <= 0) return;
@@ -534,22 +534,22 @@ void func_02045c58(CriBuf *b, int mode, CriSpan *s)
     if (b->cb != 0) b->cb(b->cbarg, -3);
 }
 
-void func_02045cec(CriBuf *b, int mode, CriSpan *s)
+void CriBufPutBackSpan(CriBuf *b, int mode, CriSpan *s)
 {
     func_02045f60();
-    func_02045d18(b, mode, s);
+    CriBufPutBackSpanNoLock(b, mode, s);
     func_02045f6c();
 }
 
-void func_02045d18(CriBuf *b, int mode, CriSpan *s)
+void CriBufPutBackSpanNoLock(CriBuf *b, int mode, CriSpan *s)
 {
     int d;
     if (b == 0) {
-        func_020456ac(data_020ad728, data_020ad734);
+        CriBufSendJoinedText(data_020ad728, data_020ad734);
         return;
     }
     if (b->used == 0) {
-        func_020456ac(data_020ad750, data_020ad75c);
+        CriBufSendJoinedText(data_020ad750, data_020ad75c);
         return;
     }
     if (s->len <= 0) return;
@@ -571,24 +571,24 @@ void func_02045d18(CriBuf *b, int mode, CriSpan *s)
     if (b->cb != 0) b->cb(b->cbarg, -3);
 }
 
-int func_02045e28(CriBuf *b, int mode, int max, int *out)
+int CriBufCanGet(CriBuf *b, int mode, int max, int *out)
 {
     int v;
     func_02045f60();
-    v = func_02045e64(b, mode, max, out);
+    v = CriBufCanGetNoLock(b, mode, max, out);
     func_02045f6c();
     return v;
 }
 
-int func_02045e64(CriBuf *b, int mode, int max, int *out)
+int CriBufCanGetNoLock(CriBuf *b, int mode, int max, int *out)
 {
     int n;
     if (b == 0) {
-        func_020456ac(data_020ad77c, data_020ad788);
+        CriBufSendJoinedText(data_020ad77c, data_020ad788);
         return 0;
     }
     if (b->used == 0) {
-        func_020456ac(data_020ad7a4, data_020ad7b0);
+        CriBufSendJoinedText(data_020ad7a4, data_020ad7b0);
         return 0;
     }
     if (mode == 0) {
@@ -616,9 +616,9 @@ void func_02045f38(void)
     if (g_lock.cnt == 0) g_lock.f4 = 0;
 }
 
-void func_02045f60(void) { func_02046154(); }
+void func_02045f60(void) { CriLockEnter1(); }
 
-void func_02045f6c(void) { func_02046164(); }
+void func_02045f6c(void) { CriLockLeave1(); }
 
 void func_02045f78(void)
 {

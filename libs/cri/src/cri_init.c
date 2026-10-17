@@ -42,7 +42,7 @@ extern void func_02045f78(void);
 extern void func_02044a70(void);
 extern void func_020456e8(void);
 extern void func_02040110(void);
-extern void func_02041878(void);
+extern void StmPoolAddRef(void);
 extern void func_02040704(void);
 extern void func_02051508(void);
 extern void func_020478cc(void);
@@ -55,16 +55,16 @@ extern void func_0204044c(void);
 extern void func_0204045c(void);
 extern int func_0204046c(void);
 extern int func_0204047c(void);
-extern int func_020463d8(int, int, void *, int, void *);
-extern int func_0204625c(int, void *, int, void *);
+extern int CriFuncTableSet(int, int, void *, int, void *);
+extern int CriFuncTableAdd(int, void *, int, void *);
 extern void func_0204324c(int);
-extern void func_02046200(void *);
+extern void CriSendText(void *);
 extern void ReleaseAllAdx(void);
 extern void func_020478d8(void);
 extern void func_0205150c(void);
-extern void func_020418d0(void);
+extern void StmPoolReleaseRef(void);
 extern void func_02051520(void);
-extern void func_02046328(int, int);
+extern void CriFuncTableRemove(int, int);
 extern void func_020466bc(void);
 extern void func_02040764(void);
 extern void func_02040140(void);
@@ -80,7 +80,7 @@ int func_0204046c(void) { func_0204327c(); return 0; }
 
 int func_0204047c(void) { func_0204035c(); return 0; }
 
-void func_0204048c(void)
+void CriInit(void)
 {
     data_020aca44 = data_0209e324;
     func_02051540();
@@ -91,7 +91,7 @@ void func_0204048c(void)
         func_02044a70();
         func_020456e8();
         func_02040110();
-        func_02041878();
+        StmPoolAddRef();
         func_02040704();
         func_02051508();
         func_020478cc();
@@ -100,9 +100,9 @@ void func_0204048c(void)
         func_020478e4((void *)func_0204043c, 0);
         func_0205152c((void *)func_0204044c, 0);
         __clear(g_criDrv, sizeof(g_criDrv));
-        func_020463d8(2, 1, (void *)func_0204046c, 0, data_020aca48);
-        g_criSys.h14 = func_0204625c(4, (void *)func_0204047c, 0, data_020aca58);
-        g_criSys.h8 = func_0204625c(5, (void *)func_0204045c, 0, data_020aca68);
+        CriFuncTableSet(2, 1, (void *)func_0204046c, 0, data_020aca48);
+        g_criSys.h14 = CriFuncTableAdd(4, (void *)func_0204047c, 0, data_020aca58);
+        g_criSys.h8 = CriFuncTableAdd(5, (void *)func_0204045c, 0, data_020aca68);
         g_criSys.f4 = 0;
         g_criSys.f0 = 0;
         func_0204324c(0x3c);
@@ -111,24 +111,24 @@ void func_0204048c(void)
     g_criSys.refcnt++;
 }
 
-void func_020405d4(void)
+void CriExit(void)
 {
     int i;
     CriDrvObj *p;
     if (g_criSys.refcnt <= 0) {
-        func_02046200(data_020aca7c);
+        CriSendText(data_020aca7c);
         return;
     }
     if (--g_criSys.refcnt != 0) return;
     ReleaseAllAdx();
     func_020478d8();
     func_0205150c();
-    func_020418d0();
+    StmPoolReleaseRef();
     func_02051520();
     func_0203eda4();
-    func_02046328(2, 1);
-    func_02046328(4, g_criSys.h14);
-    func_02046328(5, g_criSys.h8);
+    CriFuncTableRemove(2, 1);
+    CriFuncTableRemove(4, g_criSys.h14);
+    CriFuncTableRemove(5, g_criSys.h8);
     func_020466bc();
     func_02040764();
     func_02040140();
@@ -140,7 +140,7 @@ void func_020405d4(void)
     p = g_criDrv;
     for (i = 0; i < 4; i++) {
         if (p->used != 0) {
-            func_02046200(data_020acac8);
+            CriSendText(data_020acac8);
             ReleaseAdx(p);
         }
         p++;

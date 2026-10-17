@@ -1,6 +1,6 @@
 /* CRI middleware, driver thread control, 0x0204713c-0x020477d8 */
 
-/* init configuration passed to func_02047414/func_02047484 (0x24 bytes) */
+/* init configuration passed to func_02047414/CriStartThreads (0x24 bytes) */
 typedef struct CriCfg {
     int prio0, prio1, prio2;    /* 0x00, 0x04, 0x08 */
     void *stk0;                 /* 0x0c */
@@ -39,48 +39,48 @@ extern char data_02217ac0[], data_02217b80[], data_02217c40[];
 
 extern void SendErr(const char *, ...);
 extern void func_020479fc(void);
-extern void func_0204701c(int, int);
+extern void CriDevSetCallback(int, int);
 extern void func_0204712c(int, int);
-extern void func_0204678c(int *, void *, int);
+extern void CriDevTableAddAndSetCallback(int *, void *, int);
 extern void func_02049344(void);
 extern void func_020479f0(void);
-extern void func_02046924(int *);
+extern void CriDevSetDefaultName(int *);
 extern void func_02007230(void);
 extern void func_02047884(void);
 extern void OS_WakeupThreadDirect(void *);
 extern void OS_SleepThread(int);
 extern void func_0204e854(void);
-extern void func_02046154(void);
-extern void func_02046164(void);
+extern void CriLockEnter1(void);
+extern void CriLockLeave1(void);
 extern void OS_DisableIrqMask(int);
 extern void OS_EnableIrqMask(int);
-extern void func_0204658c(void);
-extern void func_0204659c(void);
-extern void func_020477e8(void);
-extern void func_020465bc(void);
-extern int func_020465dc(void);
+extern void CriFuncTableRun1(void);
+extern void CriFuncTableRun2(void);
+extern void CriSetThread0Done(void);
+extern void CriFuncTableRun4(void);
+extern int CriFuncTableRun6(void);
 extern void func_020478a8(void);
-extern void func_020464b8(void);
+extern void CriSetTextCallback(void);
 extern void func_0204e844(int);
-extern void func_02046194(char *);
+extern void CriSendFormattedText(char *);
 extern void func_020477a8(void);
 extern int func_02047798(void);
 extern void func_0204668c(void);
-extern void func_020464e0(void *, int);
-extern void func_020464f0(void *, int);
-extern int func_020492f0(int *, int *);
-extern void func_020477fc(void);
+extern void CriSetLockEnterHook(void *, int);
+extern void CriSetLockLeaveHook(void *, int);
+extern int CriNameTableGetValue(int *, int *);
+extern void CriClearThread0Done(void);
 extern void OS_CreateThread(void *, void *, int, int, int, int);
-extern void func_02047248(void);
-extern void func_02047294(void);
-extern void func_020472bc(void);
-extern void func_02047330(void);
-extern void func_02047388(void);
-extern void func_02047484(CriCfg *);
+extern void CriDisableIrqMaskNested(void);
+extern void CriEnableIrqMaskNested(void);
+extern void CriThread0Func(void);
+extern void CriThread1Func(void);
+extern void CriThread2Func(void);
+extern void CriStartThreads(CriCfg *);
 extern int func_02047680(void);
 extern void func_020477c0(void);
 extern void OS_SetThreadPriority(void *, unsigned);
-extern int func_020477d8(void);
+extern int CriGetThread0Done(void);
 extern void func_020466bc(void);
 
 void func_0204713c(void)
@@ -92,10 +92,10 @@ void func_0204713c(void)
         return;
     }
     func_020479fc();
-    func_0204701c((int)func_0204712c, 0);
-    func_0204678c(&data_020add08, (void *)func_02049344, 0);
-    func_0204678c(&data_020add0c, (void *)func_020479f0, 0);
-    func_02046924(&data_020add14);
+    CriDevSetCallback((int)func_0204712c, 0);
+    CriDevTableAddAndSetCallback(&data_020add08, (void *)func_02049344, 0);
+    CriDevTableAddAndSetCallback(&data_020add0c, (void *)func_020479f0, 0);
+    CriDevSetDefaultName(&data_020add14);
     data_02217a3c = 1;
 }
 
@@ -114,10 +114,10 @@ void func_020471d0(void)
 }
 
 void func_02047224(void) { func_0204e854(); }
-void func_02047230(void) { func_02046154(); }
-void func_0204723c(void) { func_02046164(); }
+void func_02047230(void) { CriLockEnter1(); }
+void func_0204723c(void) { CriLockLeave1(); }
 
-void func_02047248(void)
+void CriDisableIrqMaskNested(void)
 {
     if (data_02217a40.cnt == 0) {
         int ie = *(volatile int *)0x4000210;
@@ -127,7 +127,7 @@ void func_02047248(void)
     data_02217a40.cnt++;
 }
 
-void func_02047294(void)
+void CriEnableIrqMaskNested(void)
 {
     int c = data_02217a40.cnt;
     c--;
@@ -136,7 +136,7 @@ void func_02047294(void)
     OS_EnableIrqMask(1);
 }
 
-void func_020472bc(void)
+void CriThread0Func(void)
 {
     if (data_02217a9c.run0 == 1) {
         do {
@@ -145,21 +145,21 @@ void func_020472bc(void)
             } else {
                 OS_WakeupThreadDirect(data_02217b80);
             }
-            func_0204658c();
-            func_0204659c();
+            CriFuncTableRun1();
+            CriFuncTableRun2();
             data_02217a9c.cnt0++;
             OS_SleepThread(0);
         } while (data_02217a9c.run0 == 1);
     }
-    func_020477e8();
+    CriSetThread0Done();
 }
 
-void func_02047330(void)
+void CriThread1Func(void)
 {
     if (data_02217a9c.run1 == 1) {
         do {
             OS_WakeupThreadDirect((void *)data_02217a9c.arg);
-            func_020465bc();
+            CriFuncTableRun4();
             data_02217a9c.cnt1++;
             OS_SleepThread(0);
         } while (data_02217a9c.run1 == 1);
@@ -167,17 +167,17 @@ void func_02047330(void)
     data_02217a9c.done1 = 1;
 }
 
-void func_02047388(void)
+void CriThread2Func(void)
 {
     if (data_02217a9c.run2 == 1) {
         do {
-            if (func_020465dc() == 0) {
-                func_02046154();
+            if (CriFuncTableRun6() == 0) {
+                CriLockEnter1();
                 if (data_02217a5c[4] == 0) {
                     data_02217a5c[4] = 1;
                     func_020478a8();
                 }
-                func_02046164();
+                CriLockLeave1();
                 OS_SleepThread(0);
             }
             data_02217a9c.cnt2++;
@@ -186,7 +186,7 @@ void func_02047388(void)
     data_02217a9c.done2 = 1;
 }
 
-void func_02047408(void) { func_020464b8(); }
+void func_02047408(void) { CriSetTextCallback(); }
 
 int func_02047414(unsigned mode, CriCfg *cfg)
 {
@@ -197,16 +197,16 @@ int func_02047414(unsigned mode, CriCfg *cfg)
         return 1;
     }
     if (data_02217a9c.mode == 2) func_0204e844(2);
-    func_02047484(cfg);
+    CriStartThreads(cfg);
     return 1;
 }
 
-void func_02047484(CriCfg *cfg)
+void CriStartThreads(CriCfg *cfg)
 {
     int tmp;
     (void)*(volatile int *)&data_0209e38c;
     if (cfg == 0) {
-        func_02046194((char *)data_020add50);
+        CriSendFormattedText((char *)data_020add50);
         return;
     }
     func_020477a8();
@@ -214,9 +214,9 @@ void func_02047484(CriCfg *cfg)
     data_02217a9c.arg = OSi_ThreadInfo[1];
     if (data_02217a9c.mode != 2) data_02217a9c.mode = 2;
     func_0204668c();
-    func_020464e0((void *)func_02047248, 0);
-    func_020464f0((void *)func_02047294, 0);
-    if (func_020492f0(&data_020add90, &tmp) == 0) {
+    CriSetLockEnterHook((void *)CriDisableIrqMaskNested, 0);
+    CriSetLockLeaveHook((void *)CriEnableIrqMaskNested, 0);
+    if (CriNameTableGetValue(&data_020add90, &tmp) == 0) {
         data_020add1c = tmp;
     } else {
         data_020add1c = 15;
@@ -225,21 +225,21 @@ void func_02047484(CriCfg *cfg)
     data_02217a9c.f18 = 0;
     data_02217a9c.f1c = 0;
     data_02217a9c.run0 = 1;
-    func_020477fc();
+    CriClearThread0Done();
     {
         int stk = (int)cfg->stk0;
         int sz = cfg->size0;
         stk = (stk + 3) & ~3;
-        OS_CreateThread(data_02217ac0, (void *)func_020472bc, 0, stk + sz, sz, data_02217a78.prio0);
+        OS_CreateThread(data_02217ac0, (void *)CriThread0Func, 0, stk + sz, sz, data_02217a78.prio0);
     }
     data_02217a9c.run1 = 1;
     data_02217a9c.done1 = 0;
-    OS_CreateThread(data_02217b80, (void *)func_02047330, 0,
+    OS_CreateThread(data_02217b80, (void *)CriThread1Func, 0,
                   (((int)cfg->stk1 + 3) & ~3) + cfg->size1, cfg->size1, data_02217a78.prio1);
     if (data_02217a9c.mode == 2) {
         data_02217a9c.run2 = 1;
         data_02217a9c.done2 = 0;
-        OS_CreateThread(data_02217c40, (void *)func_02047388, 0,
+        OS_CreateThread(data_02217c40, (void *)CriThread2Func, 0,
                       (((int)cfg->stk2 + 3) & ~3) + cfg->size2, cfg->size2, data_02217a78.prio2);
     } else {
         data_02217a9c.run2 = 0;
@@ -258,7 +258,7 @@ int func_02047680(void)
     return r;
 }
 
-int func_02047698(void)
+int CriStopThreads(void)
 {
     if (func_02047680() == 0) return 0;
     func_020477c0();
@@ -271,10 +271,10 @@ int func_02047698(void)
         while (data_02217a9c.done1 == 0) OS_WakeupThreadDirect(data_02217b80);
         data_02217a9c.run0 = 0;
         OS_SetThreadPriority(data_02217ac0, 0);
-        if (func_020477d8() == 0) {
+        if (CriGetThread0Done() == 0) {
             do {
                 OS_WakeupThreadDirect(data_02217ac0);
-            } while (func_020477d8() == 0);
+            } while (CriGetThread0Done() == 0);
         }
         func_020466bc();
         data_02217a9c.mode = 1;

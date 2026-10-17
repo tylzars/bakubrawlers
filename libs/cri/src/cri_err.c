@@ -31,29 +31,29 @@ extern void func_02012464(void *, const void *, int);
 extern void func_02012484(void *, int, int);
 extern int func_02015a50(const char *);
 extern int func_02015c04(const char *, const char *, int);
-extern void func_020515c8(char *, int, const char *, char *);
-extern void func_02051568(char *, int, const char *, int);
+extern void CriFormatStringV(char *, int, const char *, char *);
+extern void CriCopyStringN(char *, int, const char *, int);
 extern void func_02045f38(void);
 extern void func_02045f60(void);
 extern void func_02045f6c(void);
-extern void func_02046154(void);
+extern void CriLockEnter1(void);
 extern void func_02046000(void);
-extern void func_02046090(void *);
-extern void func_020460dc(void *);
+extern void CriLockEnter(void *);
+extern void CriLockLeave(void *);
 extern void func_020465fc(void);
-extern void func_02046164(void);
+extern void CriLockLeave1(void);
 
-void func_02046194(const char *fmt, ...);
-void func_02046200(const char *msg);
-int func_02046298(int a, void *b, void *c, void *d);
-void func_0204634c(int a, int b);
-void func_02046414(int a, int b, void *c, void *d, void *e);
-int func_020467fc(const char *s, void *(*f)(void));
-void *func_02046890(const char *s);
-void func_020468e4(char *s);
-void func_02046770(char *a);
-void func_02046090(void *);
-void func_020460dc(void *);
+void CriSendFormattedText(const char *fmt, ...);
+void CriSendText(const char *msg);
+int CriFuncTableAddNoLock(int a, void *b, void *c, void *d);
+void CriFuncTableRemoveNoLock(int a, int b);
+void CriFuncTableSetNoLock(int a, int b, void *c, void *d, void *e);
+int CriDevTableAdd(const char *s, void *(*f)(void));
+void *CriDevTableFind(const char *s);
+void CriStrToUpper(char *s);
+void CriDevSendText(char *a);
+void CriLockEnter(void *);
+void CriLockLeave(void *);
 void func_020465fc(void);
 
 void func_02045f90(void)
@@ -79,7 +79,7 @@ void func_02046000(void)
     }
 }
 
-void func_0204604c(CriSpan *in, int limit, CriSpan *a, CriSpan *b)
+void CriSplitSpan(CriSpan *in, int limit, CriSpan *a, CriSpan *b)
 {
     int len = in->len;
     char *p = in->ptr;
@@ -97,7 +97,7 @@ void func_0204604c(CriSpan *in, int limit, CriSpan *a, CriSpan *b)
     }
 }
 
-void func_02046090(void *x)
+void CriLockEnter(void *x)
 {
     if (data_02217620.fn == 0) return;
     data_02217620.fn(data_02217620.arg);
@@ -107,61 +107,61 @@ void func_02046090(void *x)
     g_lockSt.nest++;
 }
 
-void func_020460dc(void *x)
+void CriLockLeave(void *x)
 {
     if (data_02217618.fn == 0) return;
     g_lockSt.nest--;
     if (g_lockSt.nest == 0) {
         if (g_lockSt.owner != x) {
-            func_02046194(data_020ad7d0, g_lockSt.owner, x);
+            CriSendFormattedText(data_020ad7d0, g_lockSt.owner, x);
         }
         g_lockSt.owner = 0;
     }
     data_02217618.fn(data_02217618.arg);
 }
 
-void func_02046154(void) { func_02046090((void *)1); }
-void func_02046164(void) { func_020460dc((void *)1); }
-void func_02046174(void) { func_02046090((void *)3); }
-void func_02046184(void) { func_020460dc((void *)3); }
+void CriLockEnter1(void) { CriLockEnter((void *)1); }
+void CriLockLeave1(void) { CriLockLeave((void *)1); }
+void CriLockEnter3(void) { CriLockEnter((void *)3); }
+void CriLockLeave3(void) { CriLockLeave((void *)3); }
 
-void func_02046194(const char *fmt, ...)
+void CriSendFormattedText(const char *fmt, ...)
 {
     char *ap = (char *)(((unsigned)&fmt & ~3u) + 4);
     func_02012484(data_02217628, 0, 0x80);
-    func_020515c8(data_02217628, 0x80, fmt, ap);
+    CriFormatStringV(data_02217628, 0x80, fmt, ap);
     if (data_02217350.fn) {
         data_02217350.fn(data_02217350.arg, data_02217628);
     }
 }
 
-void func_02046200(const char *msg)
+void CriSendText(const char *msg)
 {
     if (msg == 0) {
         data_02217350.fn(data_02217350.arg, 0);
         return;
     }
-    func_02051568(data_02217628, 0x80, msg, 0x7f);
+    CriCopyStringN(data_02217628, 0x80, msg, 0x7f);
     if (data_02217350.fn) {
         data_02217350.fn(data_02217350.arg, data_02217628);
     }
 }
 
-int func_0204625c(int a, void *b, void *c, void *d)
+int CriFuncTableAdd(int a, void *b, void *c, void *d)
 {
     int r;
-    func_02046154();
-    r = func_02046298(a, b, c, d);
-    func_02046164();
+    CriLockEnter1();
+    r = CriFuncTableAddNoLock(a, b, c, d);
+    CriLockLeave1();
     return r;
 }
 
-int func_02046298(int a, void *b, void *c, void *d)
+int CriFuncTableAddNoLock(int a, void *b, void *c, void *d)
 {
     CriErrEnt *e;
     int i;
     if (a < 0 || a >= 8) {
-        func_02046200(data_020ad818);
+        CriSendText(data_020ad818);
         return -1;
     }
     e = data_02217398[a].e;
@@ -181,27 +181,27 @@ int func_02046298(int a, void *b, void *c, void *d)
         e++;
     } while (i < 6);
     if (i == 6) {
-        func_02046200(data_020ad848);
+        CriSendText(data_020ad848);
         return -1;
     }
     return i;
 }
 
-void func_02046328(int a, int b)
+void CriFuncTableRemove(int a, int b)
 {
-    func_02046154();
-    func_0204634c(a, b);
-    func_02046164();
+    CriLockEnter1();
+    CriFuncTableRemoveNoLock(a, b);
+    CriLockLeave1();
 }
 
-void func_0204634c(int a, int b)
+void CriFuncTableRemoveNoLock(int a, int b)
 {
     if (b < 0 || b >= 6) {
-        func_02046200(data_020ad878);
+        CriSendText(data_020ad878);
         return;
     }
     if (a < 0 || a >= 8) {
-        func_02046200(data_020ad898);
+        CriSendText(data_020ad898);
         return;
     }
     data_02217398[a].e[b].fn = 0;
@@ -209,27 +209,27 @@ void func_0204634c(int a, int b)
     data_02217398[a].e[b].name = 0;
 }
 
-void func_020463d8(int a, int b, void *c, void *d, void *e)
+void CriFuncTableSet(int a, int b, void *c, void *d, void *e)
 {
-    func_02046154();
-    func_02046414(a, b, c, d, e);
-    func_02046164();
+    CriLockEnter1();
+    CriFuncTableSetNoLock(a, b, c, d, e);
+    CriLockLeave1();
 }
 
-void func_02046414(int a, int b, void *c, void *d, void *e)
+void CriFuncTableSetNoLock(int a, int b, void *c, void *d, void *e)
 {
     CriErrEnt *p;
     if (b < 0 || b >= 6) {
-        func_02046200(data_020ad8c0);
+        CriSendText(data_020ad8c0);
         return;
     }
     if (a < 0 || a >= 8) {
-        func_02046200(data_020ad8e4);
+        CriSendText(data_020ad8e4);
         return;
     }
     p = &data_02217398[a].e[b];
     if (p->fn != 0) {
-        func_02046200(data_020ad90c);
+        CriSendText(data_020ad90c);
     }
     p->fn = c;
     p->arg = d;
@@ -240,27 +240,27 @@ void func_02046414(int a, int b, void *c, void *d, void *e)
     }
 }
 
-void func_020464b8(CriCb2 f, void *arg)
+void CriSetTextCallback(CriCb2 f, void *arg)
 {
-    func_02046154();
+    CriLockEnter1();
     data_02217350.fn = f;
     data_02217350.arg = arg;
-    func_02046164();
+    CriLockLeave1();
 }
 
-void func_020464e0(CriCb f, void *arg)
+void CriSetLockEnterHook(CriCb f, void *arg)
 {
     data_02217620.fn = f;
     data_02217620.arg = arg;
 }
 
-void func_020464f0(CriCb f, void *arg)
+void CriSetLockLeaveHook(CriCb f, void *arg)
 {
     data_02217618.fn = f;
     data_02217618.arg = arg;
 }
 
-int func_02046500(int n)
+int CriFuncTableRun(int n)
 {
     int i;
     int r = 0;
@@ -278,14 +278,14 @@ int func_02046500(int n)
     return r;
 }
 
-int func_0204657c(void) { return func_02046500(0); }
-int func_0204658c(void) { return func_02046500(1); }
-int func_0204659c(void) { return func_02046500(2); }
-int func_020465ac(void) { return func_02046500(3); }
-int func_020465bc(void) { return func_02046500(4); }
-int func_020465cc(void) { return func_02046500(5); }
-int func_020465dc(void) { return func_02046500(6); }
-int func_020465ec(void) { return func_02046500(7); }
+int CriFuncTableRun0(void) { return CriFuncTableRun(0); }
+int CriFuncTableRun1(void) { return CriFuncTableRun(1); }
+int CriFuncTableRun2(void) { return CriFuncTableRun(2); }
+int CriFuncTableRun3(void) { return CriFuncTableRun(3); }
+int CriFuncTableRun4(void) { return CriFuncTableRun(4); }
+int CriFuncTableRun5(void) { return CriFuncTableRun(5); }
+int CriFuncTableRun6(void) { return CriFuncTableRun(6); }
+int CriFuncTableRun7(void) { return CriFuncTableRun(7); }
 
 void func_020465fc(void)
 {
@@ -317,62 +317,62 @@ void func_020466bc(void)
     __clear(&data_02217350, sizeof(data_02217350));
 }
 
-int func_020466fc(int *p)
+int CriTrySetFlag(int *p)
 {
     int r;
     if (data_0221734c != 0) {
         r = data_0221734c(p);
     } else {
-        func_02046154();
+        CriLockEnter1();
         if (*p != 1) {
             r = 1;
         } else {
             r = 0;
         }
         *p = 1;
-        func_02046164();
+        CriLockLeave1();
     }
     return r;
 }
 
-void func_0204674c(void *a, void *b, int c)
+void CriDevCallCallback(void *a, void *b, int c)
 {
     if (data_022176a8.cb == 0) return;
     data_022176a8.cb(data_022176a8.arg, b, c);
 }
 
-void func_02046770(char *a)
+void CriDevSendText(char *a)
 {
-    func_0204674c(data_022176b0, a, 0);
+    CriDevCallCallback(data_022176b0, a, 0);
 }
 
-void func_0204678c(const char *a, void *(*f)(void))
+void CriDevTableAddAndSetCallback(const char *a, void *(*f)(void))
 {
     void **r;
     if (a == 0) {
-        func_02046770(data_020ad94c);
+        CriDevSendText(data_020ad94c);
         return;
     }
     if (f == 0) {
-        func_02046770(data_020ad970);
+        CriDevSendText(data_020ad970);
         return;
     }
-    r = (void **)func_020467fc(a, f);
+    r = (void **)CriDevTableAdd(a, f);
     if (r == 0) {
-        func_02046770(data_020ad994);
+        CriDevSendText(data_020ad994);
         return;
     }
     if (r[1] == 0) return;
-    ((void (*)(void *, void *))r[1])(func_0204674c, 0);
+    ((void (*)(void *, void *))r[1])(CriDevCallCallback, 0);
 }
 
-int func_020467fc(const char *s, void *(*f)(void))
+int CriDevTableAdd(const char *s, void *(*f)(void))
 {
     int i;
     void *v;
-    func_020468e4((char *)s);
+    CriStrToUpper((char *)s);
     v = f();
-    if (func_02046890(s) != 0) {
+    if (CriDevTableFind(s) != 0) {
         return (int)v;
     }
     for (i = 0; i < 32; i++) {
@@ -384,7 +384,7 @@ int func_020467fc(const char *s, void *(*f)(void))
     return (int)v;
 }
 
-void *func_02046890(const char *s)
+void *CriDevTableFind(const char *s)
 {
     unsigned i;
     CriNameEnt *p;
@@ -398,7 +398,7 @@ void *func_02046890(const char *s)
     return 0;
 }
 
-void func_020468e4(char *s)
+void CriStrToUpper(char *s)
 {
     unsigned n = func_02015a50(s) + 1;
     unsigned i = 0;

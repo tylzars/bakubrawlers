@@ -31,13 +31,13 @@ extern Stm data_022163f0[10];
 extern char data_020acb98[], data_020acbc4[];
 
 extern void func_0203eda4(void), func_0203edb0(void), func_0203edbc(void), func_0203edc0(void);
-extern int func_020466fc(void *);
+extern int CriTrySetFlag(void *);
 extern void func_02046e7c(void);
 extern int func_02046eb4(void *);
 extern int func_020470e0(void *);
-extern void func_0204604c(void *, int, void *, void *);
-extern void func_02046d24(void *);
-extern void *func_02046a7c(int, int, int);
+extern void CriSplitSpan(void *, int, void *, void *);
+extern void CriDevDeallocHandle(void *);
+extern void *CriDevAllocHandle(int, int, int);
 extern int func_02046fc8(void *);
 extern int func_02046f0c(int);
 extern int func_02046dcc(void *, int, int);
@@ -48,7 +48,7 @@ extern void func_02041d7c(Stm *, int);
 extern void func_02041f84(void);
 extern void func_02042394(Stm *);
 extern void func_02041f9c(Stm *);
-extern void func_02042724(void), func_02042730(void), func_02042748(void), func_02042754(void);
+extern void StmLockEnter(void), StmLockLeave(void), func_02042748(void), func_02042754(void);
 extern int func_0204273c(void *);
 extern int func_02042714(Stm *, int, int);
 extern void func_02042660(void);
@@ -89,7 +89,7 @@ void func_02041f9c(Stm *s)
     void *h = s->h8;
     StmIO *io = s->io;
     int st = func_02046eb4(h);
-    func_02042724();
+    StmLockEnter();
     if (s->s2 == 1) {
         if (st == 1) {
             int n;
@@ -98,9 +98,9 @@ void func_02041f9c(Stm *s)
             Span c;
             Span b;
             s->s2 = 0;
-            func_02042730();
+            StmLockLeave();
             n = s->i24;
-            func_0204604c(&s->span, n << 11, &c, &b);
+            CriSplitSpan(&s->span, n << 11, &c, &b);
             io->vt->put20(io, 1, &c);
             io->vt->put1c(io, 0, &b);
             s->i5c += s->i24;
@@ -117,25 +117,25 @@ void func_02041f9c(Stm *s)
             s->i50 = 0;
         } else if (st == 3) {
             s->s2 = 0;
-            func_02042730();
+            StmLockLeave();
             io->vt->put1c(io, 0, &s->span);
             s->span.p = 0;
             s->span.n = 0;
             if (func_020470e0(s->h8) == 0) s->state = 4;
             else tail(s);
         } else {
-            func_02042730();
+            StmLockLeave();
         }
     } else {
-        func_02042730();
+        StmLockLeave();
     }
     if (s->state == 4) return;
-    func_02042724();
+    StmLockEnter();
     if (s->s2 == 0) {
     s->s2 = 1;
     s->span.p = 0;
     s->span.n = 0;
-    func_02042730();
+    StmLockLeave();
     if (s->b48 == 1 || s->b4c == 1) {
         s->s2 = 0;
         return;
@@ -185,7 +185,7 @@ void func_02041f9c(Stm *s)
         tail(s);
     }
     } else {
-        func_02042730();
+        StmLockLeave();
     }
 }
 
@@ -200,25 +200,25 @@ void func_02042394(Stm *s)
             if (s->h8) {
                 void *h = s->h8;
                 s->h8 = 0;
-                func_02046d24(h);
+                CriDevDeallocHandle(h);
             }
-            func_02042724();
+            StmLockEnter();
             s->b4a = 0;
             s->b4d = 0;
-            func_02042730();
+            StmLockLeave();
         }
         {
         int fl;
-        func_02042724();
+        StmLockEnter();
         fl = 0;
         if (s->b49 == 1) {
             if (s->b49 == 1 && s->b4a == 1) return;
             if (s->b4d == 0) {
                 s->b4d = 1;
-                func_02042730();
+                StmLockLeave();
                 fl = 1;
                 if (s->h8 == 0) {
-                    s->h8 = func_02046a7c(s->i54, s->i58, 0);
+                    s->h8 = CriDevAllocHandle(s->i54, s->i58, 0);
                     if (s->h8 == 0) {
                         SendErrConcat(data_020acb98, s->i54);
                         s->state = 4;
@@ -231,7 +231,7 @@ void func_02042394(Stm *s)
             if (s->b4d == 1) {
                 long long x;
                 int nsec;
-                if (fl == 0) func_02042730();
+                if (fl == 0) StmLockLeave();
                 if (s->b49 == 1 && s->b4a == 1) return;
                 if (s->i58 == 0) {
                     x = func_02046fc8(s->h8);
@@ -260,7 +260,7 @@ void func_02042394(Stm *s)
                     if (s->h8) {
                         void *h = s->h8;
                         s->h8 = 0;
-                        func_02046d24(h);
+                        CriDevDeallocHandle(h);
                     }
                     s->state = 4;
                     s->b4d = 0;
@@ -269,7 +269,7 @@ void func_02042394(Stm *s)
                 }
             }
         } else {
-            func_02042730();
+            StmLockLeave();
         }
         }
         if (s->b4b == 1) s->b4b = 0;
@@ -322,8 +322,8 @@ int func_02042714(Stm *s, int a, int b)
     return 1;
 }
 
-void func_02042724(void) { func_0203eda4(); }
-void func_02042730(void) { func_0203edb0(); }
-int func_0204273c(void *p) { return func_020466fc(p); }
+void StmLockEnter(void) { func_0203eda4(); }
+void StmLockLeave(void) { func_0203edb0(); }
+int func_0204273c(void *p) { return CriTrySetFlag(p); }
 void func_02042748(void) { func_0203edbc(); }
 void func_02042754(void) { func_0203edc0(); }

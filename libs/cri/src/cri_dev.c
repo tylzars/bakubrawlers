@@ -36,31 +36,31 @@ extern char data_020adaf8[], data_020adb14[], data_020adb2c[], data_020adb48[], 
 extern char data_020adb7c[], data_020adb94[], data_020adbb0[], data_020adbcc[], data_020adbf4[];
 extern char data_020adc1c[], data_020adc40[], data_020adc60[], data_020adc90[], data_020adc98[];
 
-extern void func_02046770(const char *);
+extern void CriDevSendText(const char *);
 extern int func_02015a50(const char *);
 extern void *func_02012464(void *, const void *, int);
 extern int func_02015c04(const char *, const char *, int);
-extern void func_020468e4(char *);
-extern CriDev *func_02046890(char *);
-extern void func_02051558(char *, int, const char *);
-extern void func_020515a0(char *, int, const char *, char *, char *);
+extern void CriStrToUpper(char *);
+extern CriDev *CriDevTableFind(char *);
+extern void CriCopyString(char *, int, const char *);
+extern void CriFormatString(char *, int, const char *, char *, char *);
 extern void SendErr(const char *, ...);
 
-extern int func_020469a0(char *, int);
-extern char *func_020469ec(void);
+extern int CriDevTableHasName(char *, int);
+extern char *CriDevGetDefaultName(void);
 extern CriDev *func_020469f8(char *, char *, char *);
-extern CriDevHandle *func_02046bbc(void);
-extern void func_02046bf8(CriDevHandle *);
-extern void func_02046c08(char *, char *, char *);
-extern void func_02046ce4(char *);
+extern CriDevHandle *CriDevFindFreeHandle(void);
+extern void CriDevClearHandle(CriDevHandle *);
+extern void CriDevSplitPath(char *, char *, char *);
+extern void CriDevCopyDefaultName(char *);
 extern int func_02047044(char *);
 extern void func_0204707c(char *, char *);
 
-void func_02046924(char *path)
+void CriDevSetDefaultName(char *path)
 {
     int len;
     if (path == 0) {
-        func_02046770(data_020ad9b8);
+        CriDevSendText(data_020ad9b8);
         return;
     }
     len = func_02015a50(path);
@@ -68,15 +68,15 @@ void func_02046924(char *path)
         data_02217a30[0] = 0;
         return;
     }
-    func_020468e4(path);
-    if (func_020469a0(path, len) == 1) {
+    CriStrToUpper(path);
+    if (CriDevTableHasName(path, len) == 1) {
         func_02012464(data_02217a30, path, len + 1);
         return;
     }
-    func_02046770(data_020ad9e0);
+    CriDevSendText(data_020ad9e0);
 }
 
-int func_020469a0(char *path, int len)
+int CriDevTableHasName(char *path, int len)
 {
     int i;
     CriDevEntry *e = data_022176b4;
@@ -86,7 +86,7 @@ int func_020469a0(char *path, int len)
     return 0;
 }
 
-char *func_020469ec(void)
+char *CriDevGetDefaultName(void)
 {
     return data_02217a30;
 }
@@ -95,61 +95,61 @@ CriDev *func_020469f8(char *a, char *b, char *c)
 {
     CriDev *d;
     if (a[0] == 0) {
-        func_02046ce4(a);
+        CriDevCopyDefaultName(a);
         if (a[0] == 0) return 0;
     }
     func_0204707c(a, b);
-    d = func_02046890(a);
+    d = CriDevTableFind(a);
     if (d == 0) {
-        func_02046ce4(a);
-        d = func_02046890(a);
+        CriDevCopyDefaultName(a);
+        d = CriDevTableFind(a);
         if (d == 0) return 0;
-        func_02051558(b, 0x129, c);
+        CriCopyString(b, 0x129, c);
     }
     return d;
 }
 
-CriDevHandle *func_02046a7c(char *path, int arg1, int arg2)
+CriDevHandle *CriDevAllocHandle(char *path, int arg1, int arg2)
 {
     char tmp[0x12a];
     char name[0x12a];
     CriDevHandle *h;
     if (path == 0) {
-        func_02046770(data_020ada08);
+        CriDevSendText(data_020ada08);
         return 0;
     }
-    func_02046c08(tmp, name, path);
+    CriDevSplitPath(tmp, name, path);
     if (name[0] == 0) {
-        func_02046770(data_020ada28);
+        CriDevSendText(data_020ada28);
         return 0;
     }
-    h = func_02046bbc();
+    h = CriDevFindFreeHandle();
     if (h == 0) {
-        func_02046770(data_020ada48);
+        CriDevSendText(data_020ada48);
         return 0;
     }
     h->dev = func_020469f8(tmp, name, path);
     if (h->dev == 0) {
-        func_02046bf8(h);
-        func_02046770(data_020ada6c);
+        CriDevClearHandle(h);
+        CriDevSendText(data_020ada6c);
         return 0;
     }
     if (h->dev->f10 != 0) {
         h->obj = (void *)h->dev->f10(name, arg1, arg2);
     } else {
-        func_02046bf8(h);
-        func_02046770(data_020ada8c);
+        CriDevClearHandle(h);
+        CriDevSendText(data_020ada8c);
         return 0;
     }
     if (h->obj == 0) {
-        func_02046bf8(h);
-        func_02046770(data_020adaa4);
+        CriDevClearHandle(h);
+        CriDevSendText(data_020adaa4);
         return 0;
     }
     return h;
 }
 
-CriDevHandle *func_02046bbc(void)
+CriDevHandle *CriDevFindFreeHandle(void)
 {
     int i;
     for (i = 0; i < 10; i++) {
@@ -159,13 +159,13 @@ CriDevHandle *func_02046bbc(void)
     return &data_022178b4[i];
 }
 
-void func_02046bf8(CriDevHandle *h)
+void CriDevClearHandle(CriDevHandle *h)
 {
     h->obj = 0;
     h->dev = 0;
 }
 
-void func_02046c08(char *out, char *rest, char *src)
+void CriDevSplitPath(char *out, char *rest, char *src)
 {
     int i, j, k;
     if (src == 0) return;
@@ -193,10 +193,10 @@ void func_02046c08(char *out, char *rest, char *src)
         rest[k - i] = c;
     }
     rest[k - i] = 0;
-    func_020468e4(out);
+    CriStrToUpper(out);
 }
 
-void func_02046ce4(char *dst)
+void CriDevCopyDefaultName(char *dst)
 {
     int len = func_02015a50(data_02217a30);
     if (data_02217a30[0] == 0) {
@@ -206,17 +206,17 @@ void func_02046ce4(char *dst)
     func_02012464(dst, data_02217a30, len + 1);
 }
 
-void func_02046d24(CriDevHandle *h)
+void CriDevDeallocHandle(CriDevHandle *h)
 {
     if (h == 0) {
-        func_02046770(data_020adac4);
+        CriDevSendText(data_020adac4);
         return;
     }
     if (h->dev->f14 != 0) {
         h->dev->f14(h->obj);
-        func_02046bf8(h);
+        CriDevClearHandle(h);
     } else {
-        func_02046770(data_020adae0);
+        CriDevSendText(data_020adae0);
     }
 }
 
@@ -224,14 +224,14 @@ int func_02046d74(CriDevHandle *h)
 {
     int r;
     if (h == 0) {
-        func_02046770(data_020adaf8);
+        CriDevSendText(data_020adaf8);
         return 0;
     }
     if (h->dev->f1c != 0) {
         r = h->dev->f1c(h->obj);
     } else {
         r = 0;
-        func_02046770(data_020adb14);
+        CriDevSendText(data_020adb14);
     }
     return r;
 }
@@ -240,14 +240,14 @@ int func_02046dcc(CriDevHandle *h, int a, int b)
 {
     int r;
     if (h == 0) {
-        func_02046770(data_020adb2c);
+        CriDevSendText(data_020adb2c);
         return 0;
     }
     if (h->dev->f18 != 0) {
         r = h->dev->f18(h->obj, a, b);
     } else {
         r = 0;
-        func_02046770(data_020adb48);
+        CriDevSendText(data_020adb48);
     }
     return r;
 }
@@ -256,14 +256,14 @@ int func_02046e24(CriDevHandle *h, int a, int b)
 {
     int r;
     if (h == 0) {
-        func_02046770(data_020adb60);
+        CriDevSendText(data_020adb60);
         return 0;
     }
     if (h->dev->f20 != 0) {
         r = h->dev->f20(h->obj, a, b);
     } else {
         r = 0;
-        func_02046770(data_020adb7c);
+        CriDevSendText(data_020adb7c);
     }
     return r;
 }
@@ -281,13 +281,13 @@ int func_02046eb4(CriDevHandle *h)
 {
     int r = 3;
     if (h == 0) {
-        func_02046770(data_020adb94);
+        CriDevSendText(data_020adb94);
         return r;
     }
     if (h->dev->f2c != 0) {
         r = h->dev->f2c(h->obj);
     } else {
-        func_02046770(data_020adbb0);
+        CriDevSendText(data_020adbb0);
     }
     return r;
 }
@@ -298,18 +298,18 @@ int func_02046f0c(char *path)
     char name[0x129];
     CriDev *d;
     if (path == 0) {
-        func_02046770(data_020adbcc);
+        CriDevSendText(data_020adbcc);
         return 0;
     }
-    func_02046c08(tmp, name, path);
+    CriDevSplitPath(tmp, name, path);
     if (name[0] == 0) {
-        func_02046770(data_020adbf4);
+        CriDevSendText(data_020adbf4);
         return 0;
     }
     d = func_020469f8(tmp, name, path);
-    if (d == 0) func_02046770(data_020adc1c);
+    if (d == 0) CriDevSendText(data_020adc1c);
     if (d->f8 != 0) return d->f8(name);
-    func_02046770(data_020adc40);
+    CriDevSendText(data_020adc40);
     return 0;
 }
 
@@ -317,7 +317,7 @@ int func_02046fc8(CriDevHandle *h)
 {
     int r;
     if (h == 0) {
-        func_02046770(data_020adc60);
+        CriDevSendText(data_020adc60);
         return -1;
     }
     r = 0x7fffffff;
@@ -327,7 +327,7 @@ int func_02046fc8(CriDevHandle *h)
     return r;
 }
 
-void func_0204701c(int a, int b)
+void CriDevSetCallback(int a, int b)
 {
     if (a != 0) {
         data_022176a8[1] = a;
@@ -340,7 +340,7 @@ void func_0204701c(int a, int b)
 
 int func_02047044(char *path)
 {
-    CriDev *d = func_02046890(path);
+    CriDev *d = CriDevTableFind(path);
     if (d == 0) return 0;
     if (d->f60 == 0) return 0;
     return d->f60(0, 0x64, 0, 0);
@@ -348,17 +348,17 @@ int func_02047044(char *path)
 
 void func_0204707c(char *path, char *b)
 {
-    if (path == 0) path = func_020469ec();
+    if (path == 0) path = CriDevGetDefaultName();
     if (func_02047044(path) == 1) {
-        func_02051558(data_02217904, 0x129, b);
-        func_020515a0(b, 0x129, data_020adc90, path, data_02217904);
+        CriCopyString(data_02217904, 0x129, b);
+        CriFormatString(b, 0x129, data_020adc90, path, data_02217904);
     }
 }
 
 int func_020470e0(CriDevHandle *h)
 {
     if (h == 0) {
-        func_02046770(data_020adc98);
+        CriDevSendText(data_020adc98);
         return 0;
     }
     if (h->dev->f60 == 0) return 1;

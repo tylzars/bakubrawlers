@@ -9,9 +9,9 @@ class SelectWindow;
 class Ranking;
 struct MessageFile;
 
-// Slide directions: the values UpdateSelection and HandleInput return and UpdateSelection stores in mMode (0: none).
-// PREV moves mTarget one panel back (mTarget--), NEXT one forward (mTarget++); Slide adds its step to the panels' x
-// for PREV and subtracts it for NEXT.
+// Slide directions: the values UpdateSelection and HandleInput return and UpdateSelection stores in mSlideDir
+// (0: none). PREV moves mTarget one panel back (mTarget--), NEXT one forward (mTarget++); Slide adds its step to the
+// panels' x for PREV and subtracts it for NEXT.
 #define PARK_MENU_SLIDE_PREV 1
 #define PARK_MENU_SLIDE_NEXT 2
 
@@ -21,8 +21,8 @@ public:
     /* 00 (vtable) */
     /* 04 */ u8 mCurrent;
     /* 05 */ u8 mTarget;
-    /* 06 */ u8 mMode; // PARK_MENU_SLIDE_* stored by UpdateSelection, 0 when that call started no slide
-    /* 07 */ u8 mTimer;
+    /* 06 */ u8 mSlideDir; // PARK_MENU_SLIDE_* stored by UpdateSelection, 0 when that call started no slide
+    /* 07 */ u8 mSlideRemaining; // pixels left of the 0x62 slide; Slide takes up to 0xe per call
     /* 08 */ u8 mCount;
     /* 09 */ PAD(0x09, 0x0c);
     /* 0c */ u8 mUnk_0c[6]; // 0x0c-0x17 hold one 12-byte ParkEntry from GetParkEntry (+0x12 is its byte 6)

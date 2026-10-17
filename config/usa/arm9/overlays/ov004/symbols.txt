@@ -30,10 +30,10 @@ _ZN8ParkMenu12ClearBuffersEv kind:function(arm,size=0x40) addr:0x0221d460
 _ZN8ParkMenu4DrawEv kind:function(arm,size=0x234) addr:0x0221d4a0
 _ZN8ParkMenu10DrawNumberEv kind:function(arm,size=0x120) addr:0x0221d6d4
 OV004_RODATA_START kind:data(any) addr:0x0221d7f4
-sTwoButtonItems kind:data(any) addr:0x0221d7f8 local
-sTwoButtonCells kind:data(any) addr:0x0221d830 local
-sThreeButtonCells kind:data(any) addr:0x0221d868 local
-sThreeButtonItems kind:data(any) addr:0x0221d8bc local
+sTwoItems kind:data(any) addr:0x0221d7f8 local
+sTwoItemCells kind:data(any) addr:0x0221d830 local
+sThreeItemCells kind:data(any) addr:0x0221d868 local
+sThreeItems kind:data(any) addr:0x0221d8bc local
 sParkWinLoseMessages kind:data(any) addr:0x0221d910 local
 sTextY kind:data(any) addr:0x0221daa8 local
 sEmptyDigits kind:data(any) addr:0x0221daac local

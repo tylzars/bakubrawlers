@@ -63,7 +63,7 @@ public:
     void Backspace(); // 0221b438
     void AddChar(s32 index); // 0221b4a8
     void Load(); // 0221b6b4
-    void RenderName(); // 0221b9e8
+    void PrintName(); // 0221b9e8
     void func_ov000_0221bc98();
     void ClearTextBuffer(); // 0221bd54
     void CheckSpecialName(); // 0221bd88

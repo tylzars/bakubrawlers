@@ -7,7 +7,7 @@ class CellAnimation;
 class SelectWindow;
 struct MessageFile;
 
-// Main menu entries: the values of mSelection (the main window's GetSelectedId) that Update state 2 switches on.
+// Main menu entries: the values of mSelectedId (the main window's GetSelectedId) that Update state 2 switches on.
 // VOLUME goes to BuildSettings: three rows of six levels stored in gSaveData mVolume0Index / mVolume1Index / mVolume2Index,
 // which ApplyVolumeOptions turns into FrameTask::mVolume0 / mVolume1 / mVolume2 and the SoundManager volumes. RESET
 // goes to BuildMenu3, whose first button calls ResetOptions, and CREDITS to a CreditsScene. Left as literals: 1 (BuildMenu2, sets gSaveData mMicEnabled and
@@ -30,9 +30,11 @@ public:
     /* 44 */ u8 mCur[3];
     /* 47 */ u8 mOld[3];
     /* 4a */ u8 mState;
-    /* 4b */ u8 mSlideTimer; // set to 8; counted down inside DrawSettings / DrawMenu2 / DrawMenu3 / SlideStep
+    /* 4b */ u8 mSlideTimer; // set to 8; counted down inside DrawSettings / DrawMenu2 / DrawMenu4 / SlideStep
     /* 4c */ s8 mTouchRow;
-    /* 4d */ s8 mSelection;
+    // the main window's GetSelectedId; also passed back as the main window's starting selection and cell index
+    // (BuildMainMenu), which works because the ids are 0-5 in item order
+    /* 4d */ s8 mSelectedId;
     /* 4e */ u8 mRow;
     /* 4f */ u8 mFlagSelectedId; // id < 2 of the BuildMenu2 / BuildMenu4 windows; 0 stores 1 in mMicEnabled / mUnk_28_5
     /* 50 */
@@ -49,11 +51,13 @@ public:
     void DrawSettings();   // 022209c8
     void UpdateSettings(); // 02220adc
     void BuildMenu2();     // 022210f8
-    void DrawMenu2();      // 0222128c, 02221814 (identical)
-    void DrawMenu3();
+    void DrawMenu2();      // 0222128c; identical body to DrawMenu4
+    void DrawMenu4();      // 02221814; identical body to DrawMenu2
     void SlideStep();      // 02221534
     void ResetDisplay(); // 0222163c
     void BuildMenu3();     // 022212d4
     void BuildMenu4();     // 02221680
-    void ClearText(u32 index); // 0222185c
+    // Clears mBuf0c, prints mFile message index into it, uploads it as BG1 characters and centres it with
+    // G2_SetBG1Offset.
+    void PrintMessage(u32 index); // 0222185c
 };

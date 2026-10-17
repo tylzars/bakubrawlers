@@ -37,7 +37,7 @@ public:
     /* ca */ PAD(0xca, 0xcb);
     /* cb */ u8 mState;
     /* cc */ u8 mTimer; // also the slide curve: mScrollY from (mTimer - 3) squared while it counts down from 0x13
-    /* cd */ u8 mMenuVisible;
+    /* cd */ u8 mMenuCellsVisible;
     /* ce */ u8 mMenuSelection;
     /* cf */ u8 mMessageIndex; // last index SetMessage started; 0xff (ctor) = none yet
     /* d0 */ u8 mUnk_d0;

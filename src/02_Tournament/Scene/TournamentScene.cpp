@@ -124,7 +124,7 @@ TournamentScene::TournamentScene() :
     mState = 0;
     mMode = 0;
     mSelection = 0;
-    mMenuVisible = 0;
+    mLoadMenuVisible = 0;
     mMainScreenVisible = 0;
     mCellsBVisible = 0;
     mWindowOpen = 0;
@@ -215,7 +215,7 @@ void TournamentScene::Update() {
             InitScriptDisplay();
             LoadMenu();
             mEvent = new ScriptPlayer(SCRIPT_KIND_TOURNAMENT, 0, 0);
-            mMenuVisible = 0;
+            mLoadMenuVisible = 0;
             mTimer  = 0x10;
             mState++;
             break;
@@ -437,7 +437,7 @@ void TournamentScene::Update() {
             mMenuWindow->Reset((s8) mSelection);
             PrintSubScreenText(sTournamentMenuSubTextIndices[mSelection]);
             SetupMainScreenText(sTournamentMenuMainTextIndices[mSelection]);
-            mMenuVisible = 1;
+            mLoadMenuVisible = 1;
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState = 0x15;
             break;
@@ -514,7 +514,7 @@ void TournamentScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mMenuVisible = 0;
+            mLoadMenuVisible = 0;
             mUnk_b9 = 0;
             mMainScreenVisible = 0;
             mCellsBVisible = 0;
@@ -693,7 +693,7 @@ void TournamentScene::Update() {
             gSaveData[0].mUnk_43 = 0;
             gSaveData[0].mUnk_25 = MATH_Rand32(&gRandom, 5);
             mSelection = 0;
-            mMenuVisible    = 0;
+            mLoadMenuVisible    = 0;
             mUnk_b9    = 0;
             mMainScreenVisible    = 0;
             mCellsBVisible    = 0;
@@ -731,7 +731,7 @@ void TournamentScene::Update() {
             }
             gSaveData[0].mUnk_42 = 10;
             gSaveData[0].mUnk_43 = 0;
-            mMenuVisible                  = 0;
+            mLoadMenuVisible                  = 0;
             mMainScreenVisible                  = 0;
             mCellsBVisible                  = 0;
             mWindowOpen                  = 0;
@@ -775,7 +775,7 @@ void TournamentScene::Update() {
                 return;
             }
             if (mUnk_d0 != 0) {
-                data_020d433c.mCreditsPending = 1;
+                data_020d433c.mCreditsRequested = 1;
                 RequestScene(SCENE_TITLE);
                 mFinished = TRUE;
                 return;
@@ -950,7 +950,7 @@ void TournamentScene::LoadWindowGraphics() {
     sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
     ChangeDir("/");
-    mMenuVisible = 0;
+    mLoadMenuVisible = 0;
 }
 
 void TournamentScene::ReloadMenu() {
@@ -1078,7 +1078,7 @@ void TournamentScene::LoadSubScreenText(const char *mes, u8 rows) {
 }
 
 void TournamentScene::Draw() {
-    if (mMenuVisible != 0) {
+    if (mLoadMenuVisible != 0) {
         mMenuWindow->Draw();
         if (mWindowOpen == 0) {
             mMessageWindow->Update();
@@ -1091,7 +1091,7 @@ void TournamentScene::Draw() {
         mCell20->Update();
         mCell20->Draw(1, sTournamentModeMenuItems[mMode].mX, sTournamentModeMenuItems[mMode].mY, 2);
     }
-    if (mMenuVisible | mUnk_b9) {
+    if (mLoadMenuVisible | mUnk_b9) {
         s16 a = 0x90;
         u8 b  = 8;
         if (mTextRows > 2) {

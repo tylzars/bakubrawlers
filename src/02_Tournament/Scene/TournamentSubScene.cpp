@@ -80,7 +80,7 @@ TournamentSubScene::TournamentSubScene() :
     mResult         = 0;
     mTextLineCount         = 0;
     mScroll         = -1;
-    mSelected       = 0;
+    mEntryIndex       = 0;
     mState          = 0;
     mCounter        = 0;
     mUnk_58         = 0;
@@ -152,10 +152,10 @@ void TournamentSubScene::Update() {
                 mState           = 4;
             } else {
                 if (UpdateEntrySelection() != -1) {
-                    u8 id = mEntries[mSelected].mId;
+                    u8 id = mEntries[mEntryIndex].mId;
                     if (id != mCharacterView->mCharacterId) {
-                        mCharacterView->ChangeCharacter(id, mEntries[mSelected].mRank,
-                                               mEntries[mSelected].mScore);
+                        mCharacterView->ChangeCharacter(id, mEntries[mEntryIndex].mRank,
+                                               mEntries[mEntryIndex].mScore);
                         mState = 3;
                     }
                 }
@@ -235,8 +235,8 @@ void TournamentSubScene::Init() {
         }
         i++;
     } while (i < mCount);
-    mCharacterView = new RankingCharacterView(mEntries[mSelected].mId, mEntries[mSelected].mRank,
-                                     mEntries[mSelected].mScore, 1);
+    mCharacterView = new RankingCharacterView(mEntries[mEntryIndex].mId, mEntries[mEntryIndex].mRank,
+                                     mEntries[mEntryIndex].mScore, 1);
     ChangeDir("/Game/Myroom/");
     LoadAndQueueUpload(1, UPLOAD_KIND_BG0_SCR, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
     LoadAndQueueUpload(1, UPLOAD_KIND_BG0_CHAR, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
@@ -331,9 +331,9 @@ s32 TournamentSubScene::UpdateEntrySelection() {
     } while (i < mCount);
     if (result == -1) {
         result = UpdateEntryKeySelection();
-    } else if (mSelected != result) {
+    } else if (mEntryIndex != result) {
         SoundManager::Get().StartSeqArc(5);
-        mSelected = result;
+        mEntryIndex = result;
     }
     return result;
 }
@@ -343,16 +343,16 @@ s32 TournamentSubScene::UpdateEntrySelection() {
 s32 TournamentSubScene::UpdateEntryKeySelection() {
     s8 next = -1;
     if (InputManager::Get().IsTrigger(KEY_UP)) {
-        if (mSelected <= 0) {
+        if (mEntryIndex <= 0) {
             next = mCount - 1;
         } else {
-            next = mSelected - 1;
+            next = mEntryIndex - 1;
         }
     } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
-        if (mSelected >= mCount - 1) {
+        if (mEntryIndex >= mCount - 1) {
             next = 0;
         } else {
-            next = mSelected + 1;
+            next = mEntryIndex + 1;
         }
     }
     if (next != -1) {
@@ -363,15 +363,15 @@ s32 TournamentSubScene::UpdateEntryKeySelection() {
                 SoundManager::Get().StartSeqArc(2);
             }
         }
-        mSelected = next;
+        mEntryIndex = next;
     }
     return next;
 }
 
 
 void TournamentSubScene::func_ov002_02220618() {
-    u8 x = sCellPos[mCount - 1][mSelected].x;
-    u8 y = sCellPos[mCount - 1][mSelected].y;
+    u8 x = sCellPos[mCount - 1][mEntryIndex].x;
+    u8 y = sCellPos[mCount - 1][mEntryIndex].y;
     SelectWindow *window = mWindow;
     window->mCellPos[1].x = x;
     window->mCellPos[1].y = y;
@@ -391,7 +391,7 @@ void TournamentSubScene::PrintProfile() {
     s16 width;
     width  = mScroll * -14;
     height = 0;
-    u8 index          = sMessageIds[0][mEntries[mSelected].mId];
+    u8 index          = sMessageIds[0][mEntries[mEntryIndex].mId];
     MessageFile *file = mMessages;
     u16 length        = file->GetLength(index);
     const u8 *message = file->GetText(index);
@@ -413,7 +413,7 @@ void TournamentSubScene::SetupProfile() {
     TextManager &text = TextManager::Get();
     width  = 0;
     height = 0;
-    u8 index          = sMessageIds[0][mEntries[mSelected].mId];
+    u8 index          = sMessageIds[0][mEntries[mEntryIndex].mId];
     MessageFile *file;
     void *buffer = mTextBuffer;
     file         = mMessages;

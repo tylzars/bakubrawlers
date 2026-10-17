@@ -39,7 +39,7 @@ void StartAbilitiesSlide(BattleSub48 *obj);
 void ShowModels(BattleField3D *obj);
 BOOL MoveToEndThenCreateAuras(BattleField3D *obj);
 BOOL MoveModelsThenHideOne(BattleField3D *obj);
-void SetHudState(BattleHud *obj, u32 a);
+void SetHudSequence(BattleHud *obj, u32 sequence);
 void func_ov007_0222847c(BattleHud *obj);
 void MovePlayerAnimX(BattleHud *obj);
 extern const u8 data_ov007_0227915c;
@@ -230,7 +230,7 @@ void BattleBase::Update() {
                 mUnk_54_0 = 1;
                 mReturnState   = 5;
                 mState   = 8;
-                SetHudState(mHud, HUD_SEQUENCE_NONE);
+                SetHudSequence(mHud, HUD_SEQUENCE_NONE);
             } else {
                 mState++;
             }
@@ -254,9 +254,9 @@ void BattleBase::Update() {
                 mUnk_54_0 = 1;
                 mReturnState   = 5;
                 mState   = 8;
-                SetHudState(mHud, HUD_SEQUENCE_NONE);
+                SetHudSequence(mHud, HUD_SEQUENCE_NONE);
             } else {
-                SetHudState(mHud, HUD_SEQUENCE_BAR_FILL_COUNTDOWN);
+                SetHudSequence(mHud, HUD_SEQUENCE_BAR_FILL_COUNTDOWN);
                 mState++;
             }
             break;
@@ -276,9 +276,9 @@ void BattleBase::Update() {
             if (found) {
                 mUnk_54 |= 0x20;
                 mState = 8;
-                SetHudState(mHud, HUD_SEQUENCE_NONE);
+                SetHudSequence(mHud, HUD_SEQUENCE_NONE);
             } else {
-                SetHudState(mHud, HUD_SEQUENCE_BAR_FILL_COUNTDOWN);
+                SetHudSequence(mHud, HUD_SEQUENCE_BAR_FILL_COUNTDOWN);
                 mState++;
             }
             break;
@@ -326,10 +326,10 @@ void BattleBase::Update() {
                             SoundManager::Get().StartSeqArc(0x2f);
                             func_020247fc(&SoundManager::Get(), 0x400);
                             if (mHud->mPushPercent == 0x32) {
-                                SetHudState(mHud, HUD_SEQUENCE_COUNTDOWN);
+                                SetHudSequence(mHud, HUD_SEQUENCE_COUNTDOWN);
                                 mCardKind = 4;
                             } else {
-                                SetHudState(mHud, HUD_SEQUENCE_SWAP);
+                                SetHudSequence(mHud, HUD_SEQUENCE_SWAP);
                             }
                             StartAbilitiesSlide(mSub48);
                             break;
@@ -347,18 +347,18 @@ void BattleBase::Update() {
                                 } while (j < data_020d433c.mPlayerCount);
                             }
                             func_ov007_0223e214(mBattleData, mCardSide, 1);
-                            SetHudState(mHud, HUD_SEQUENCE_COUNTDOWN);
+                            SetHudSequence(mHud, HUD_SEQUENCE_COUNTDOWN);
                             StartAbilitiesSlide(mSub48);
                             break;
                         case 3:
                             mUnk_52[mCardSide] = 1;
                             mHud->func_ov007_02227bbc(mCardSide);
-                            SetHudState(mHud, HUD_SEQUENCE_COUNTDOWN);
+                            SetHudSequence(mHud, HUD_SEQUENCE_COUNTDOWN);
                             StartAbilitiesSlide(mSub48);
                             break;
                         case 4:
                             if (!mUnk_54_0) {
-                                SetHudState(mHud, HUD_SEQUENCE_COUNTDOWN);
+                                SetHudSequence(mHud, HUD_SEQUENCE_COUNTDOWN);
                                 StartAbilitiesSlide(mSub48);
                             }
                             break;
@@ -993,7 +993,7 @@ BOOL BattleBase::func_ov007_0221bfa4() {
     BOOL done = 0;
     switch (mStep) {
     case 0:
-        SetHudState(mHud, HUD_SEQUENCE_BAR_SLIDE);
+        SetHudSequence(mHud, HUD_SEQUENCE_BAR_SLIDE);
         mFlashEnabled = 1;
         mStep++;
         break;

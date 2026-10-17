@@ -159,11 +159,11 @@ BattleCpu::BattleCpu(u32 player) {
         mTargets[i].z = 0;
     }
     for (u8 i = 0; i < 8; i++) {
-        mOffsetEntries[i] = 0;
-        mOffsetFrameCounts[i] = 0;
+        mPushOffsetEntries[i] = 0;
+        mPushOffsetFrameCounts[i] = 0;
     }
-    mOffsetEntryIndex = 0;
-    mOffsetFrames = 0;
+    mPushOffsetEntryIndex = 0;
+    mPushOffsetFrames = 0;
     mTargetIndex = 0;
     mJumpObjCount = 0;
     mUnk_58 = 0;
@@ -171,7 +171,7 @@ BattleCpu::BattleCpu(u32 player) {
     mTimer = 0;
     mUnk_4c = 0;
     mUnk_50 = 0;
-    mOffsetInterval = 20;
+    mPushOffsetInterval = 20;
 }
 
 BattleCpu::~BattleCpu() {
@@ -897,30 +897,30 @@ void BattleCpu::StopJumpObjTargets() {
     mJumpObjCount   = 0;
 }
 
-void BattleCpu::RandomizeOffsets() {
-    mOffsetFrames = 0;
+void BattleCpu::RandomizePushOffsets() {
+    mPushOffsetFrames = 0;
     u8 i    = 0;
     do {
-        mOffsetEntries[i] = MATH_Rand32(&gRandom, 10);
-        if (mOffsetEntries[i] == 0) {
-            mOffsetFrameCounts[i] = MATH_Rand32(&gRandom, 60) + 90;
+        mPushOffsetEntries[i] = MATH_Rand32(&gRandom, 10);
+        if (mPushOffsetEntries[i] == 0) {
+            mPushOffsetFrameCounts[i] = MATH_Rand32(&gRandom, 60) + 90;
         } else {
-            mOffsetFrameCounts[i] = MATH_Rand32(&gRandom, 60) + 60;
+            mPushOffsetFrameCounts[i] = MATH_Rand32(&gRandom, 60) + 60;
         }
         i++;
     } while (i < 8);
-    SetOffset();
+    SetPushOffset();
 }
 
-void BattleCpu::SetOffset() {
-    if (mOffsetEntries[mOffsetEntryIndex] >= 9) {
+void BattleCpu::SetPushOffset() {
+    if (mPushOffsetEntries[mPushOffsetEntryIndex] >= 9) {
         return;
     }
     s32 offsets[9][2] = {
         {0, 0}, {0, 0x59a}, {0x333, 0x2cd}, {0x666, 0}, {0x333, -0x2cd}, {0, -0x59a}, {-0x333, -0x2cd}, {-0x666, 0}, {-0x333, 0x2cd},
     };
-    mUnk_4c = offsets[mOffsetEntries[mOffsetEntryIndex]][0];
-    mUnk_50 = offsets[mOffsetEntries[mOffsetEntryIndex]][1];
+    mUnk_4c = offsets[mPushOffsetEntries[mPushOffsetEntryIndex]][0];
+    mUnk_50 = offsets[mPushOffsetEntries[mPushOffsetEntryIndex]][1];
 }
 
 bool BattleCpu::func_ov007_02232e04(u32 a, u32 b, u32 c) {
@@ -956,14 +956,14 @@ bool BattleCpu::func_ov007_02232e04(u32 a, u32 b, u32 c) {
     return result;
 }
 
-void BattleCpu::GetOffset(s32 *x, s32 *y) {
-    if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f7 != 0 && mOffsetFrames % mOffsetInterval == 0) {
+void BattleCpu::GetPushOffset(s32 *x, s32 *z) {
+    if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f7 != 0 && mPushOffsetFrames % mPushOffsetInterval == 0) {
         *x = mUnk_4c;
-        *y = mUnk_50;
+        *z = mUnk_50;
         return;
     }
     *x = 0;
-    *y = 0;
+    *z = 0;
 }
 
 extern "C" void MTX_ApplyRotX33(MtxFx33 *m, u16 angle);

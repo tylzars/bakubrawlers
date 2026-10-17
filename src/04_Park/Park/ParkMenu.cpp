@@ -50,8 +50,8 @@ static const u8 sTextY[2] = {40, 144};
 ParkMenu::ParkMenu(u8 current) {
     mCurrent = current;
     mTarget = 0;
-    mMode = 0;
-    mTimer = 0;
+    mSlideDir = 0;
+    mSlideRemaining = 0;
     mWindow = NULL;
     mMessageWindow = NULL;
     for (u8 i = 0; i < 8; i++) {
@@ -211,9 +211,9 @@ u32 ParkMenu::UpdateSelection(u32 mode) {
             mWindow->mButtons[5].mEnabled = 0;
             items[5].mFlags               = WINDOW_ITEM_CURSOR_SKIP;
         }
-        mTimer = 0x62;
+        mSlideRemaining = 0x62;
     }
-    mMode = result;
+    mSlideDir = result;
     return result;
 }
 
@@ -288,11 +288,11 @@ void ParkMenu::Setup() {
 BOOL ParkMenu::Slide() {
     BOOL result = FALSE;
     s16 step    = 0xe;
-    if (mTimer < 0xe) {
-        step = mTimer;
+    if (mSlideRemaining < 0xe) {
+        step = mSlideRemaining;
     }
-    mTimer -= step;
-    if (mMode == PARK_MENU_SLIDE_NEXT) {
+    mSlideRemaining -= step;
+    if (mSlideDir == PARK_MENU_SLIDE_NEXT) {
         step = -step;
     }
     WindowItem *items = mWindow->mCursor->mItems;
@@ -307,7 +307,7 @@ BOOL ParkMenu::Slide() {
         items[i].mX = step + items[i].mX;
         i++;
     } while (i < mCount);
-    if (mTimer == 0) {
+    if (mSlideRemaining == 0) {
         CellAnimation *cell = mWindow->mCellAnims[mCurrent];
         cell->SetAnimation(0);
         items[mTarget].mFlags  = 5;
@@ -331,7 +331,7 @@ BOOL ParkMenu::Slide() {
         }
         mWindow->mCellAnims[5]->Rewind();
         mWindow->mCellAnims[4]->Rewind();
-        if (mMode == PARK_MENU_SLIDE_PREV) {
+        if (mSlideDir == PARK_MENU_SLIDE_PREV) {
             CellAnimation *c = mWindow->mCellAnims[4];
             c->SetAnimation(0);
         } else {

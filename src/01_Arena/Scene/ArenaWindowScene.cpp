@@ -9,12 +9,12 @@ extern void SeedRandomFromTick();
 #include "System/FileSystem.hpp"
 #include "UI/SelectWindow.hpp"
 
-static const WindowCellRecord sArenaWindowTwoButtonCells[2] = {
+static const WindowCellRecord sArenaWindowTwoItemCells[2] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 8192, 0, 0, 1, {0, 2, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 8192, 0, 0, 1, {9, 9, 9, 0}},
 };
 // Record 1 (WINDOW_ITEM_CURSOR_SKIP) is skipped by the cursor and by touch: one item is selectable.
-static const WindowItemRecord sArenaWindowTwoButtonItems[2] = {
+static const WindowItemRecord sArenaWindowTwoItems[2] = {
     {0, 1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, WINDOW_TOUCH_RELEASE},
     {1, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
@@ -286,8 +286,8 @@ void ArenaWindowScene::SetupWindow() {
     if (mWindow != NULL) {
         delete mWindow;
     }
-    mWindow = new SelectWindow(2, sArenaWindowTwoButtonItems, -1);
-    mWindow->SetCells(2, sArenaWindowTwoButtonCells);
+    mWindow = new SelectWindow(2, sArenaWindowTwoItems, -1);
+    mWindow->SetCells(2, sArenaWindowTwoItemCells);
     mWindow->mCursor->mSelection = -1;
     mWindow->mEnabled            = 0;
     mWindow->mCursor->mSelection = 0;

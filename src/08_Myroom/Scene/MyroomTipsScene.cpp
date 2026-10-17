@@ -20,6 +20,29 @@ extern u8 data_020d49a1[];
 #include <nitro/os.h>
 #include <stdio.h>
 
+// The scene context's SceneInfo bytes as this scene uses them (SceneInfo's own names follow StoreScene).
+struct MyroomTipsSceneInfo {
+    union {
+        /* 00 */ u16 mUnk_00;
+        /* 00 */ u8 mState; // the state Update switches on
+    };
+    // Cleared with bytes 0-4 by the ctor (MI_CpuFill8(&mContext->mInfo, 0, 5)) and never written by this scene, so the
+    // mUnk_02 == 0 test in func_ov008_022274f8 is always true in this build.
+    /* 02 */ u8 mUnk_02;
+    /* 03 */ u8 mCategory;
+    /* 04 */ s8 mMenuResult;
+    /* 05 */ s8 mSelection;
+    /* 06 */ u8 mUnk_06;
+    /* 07 */ u8 mScrollRemaining;
+    /* 08 */ u8 mScrollDir;
+    /* 09 */ u8 mPage;
+    /* 0a */ u8 mUnk_0a;
+    /* 0b */ u8 mUnk_0b;
+    /* 0c */
+};
+
+#define TIPS_INFO(ctx) (*(MyroomTipsSceneInfo *) &(ctx)->mInfo)
+
 #define TEST_BIT(flags, index) ((flags)[(index) / 8] & (1 << ((index) % 8)))
 #define SET_BIT(flags, index) ((flags)[(index) / 8] |= 1 << ((index) % 8))
 
@@ -164,7 +187,7 @@ MyroomTipsScene::~MyroomTipsScene() {
 
 void MyroomTipsScene::Update() {
     SceneContext *context = mContext;
-    u8 state                        = context->mInfo.mStep;
+    u8 state                        = TIPS_INFO(context).mState;
     switch (state) {
         case 0:
             InitDisplay();
@@ -173,18 +196,18 @@ void MyroomTipsScene::Update() {
             mEvent = new ScriptPlayer(SCRIPT_KIND_MYROOM_TIPS, 0, 1);
             GXS_SetVisiblePlane(0x13);
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
-            context->mInfo.mStep++;
+            TIPS_INFO(context).mState++;
             return;
         case 1:
             if (!SpriteManager::Get().IsFading()) {
-                context->mInfo.mStep = 4;
+                TIPS_INFO(context).mState = 4;
             }
             Draw();
             return;
         case 2:
             if (SpriteManager::Get().sFade[0] <= FADE_MODE_HOLD) {
                 mEvent->RequestFinish();
-                context->mInfo.mStep++;
+                TIPS_INFO(context).mState++;
             }
             Draw();
             return;
@@ -192,7 +215,7 @@ void MyroomTipsScene::Update() {
             mEvent = new ScriptPlayer(SCRIPT_KIND_MYROOM_TIPS, 0, 1);
             SetMessage(0x2d);
             SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
-            context->mInfo.mStep++;
+            TIPS_INFO(context).mState++;
             Draw();
             return;
         case 4:
@@ -204,7 +227,7 @@ void MyroomTipsScene::Update() {
                     }
                     StartMessageScript(mEvent, "mes_tips_Dan", id, 10, 0x15);
                     SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
-                    context->mInfo.mStep             = 5;
+                    TIPS_INFO(context).mState             = 5;
                 }
             }
             Draw();
@@ -214,14 +237,14 @@ void MyroomTipsScene::Update() {
                 mWindowA->mState = 4;
                 mWindowA->Reset(-1);
                 mFlags = MYROOM_TIPS_WINDOW_A;
-                context->mInfo.mStep++;
+                TIPS_INFO(context).mState++;
             }
             Draw();
             return;
         case 6:
             GXS_SetVisiblePlane(0x13);
             Draw();
-            context->mInfo.mStep++;
+            TIPS_INFO(context).mState++;
             return;
         case 7:
             func_ov008_022274f8();
@@ -237,7 +260,7 @@ void MyroomTipsScene::Update() {
                 MI_CpuFill8(mTimers, 0x3c, 4);
                 SetMessage(0x2f);
                 mFlags = MYROOM_TIPS_WINDOW_B;
-                context->mInfo.mStep++;
+                TIPS_INFO(context).mState++;
             }
             Draw();
             return;
@@ -257,7 +280,7 @@ void MyroomTipsScene::Update() {
             window->mCellPos[1].x = 0xe4;
             window->mCellPos[1].y = y;
             mUnk_85               = 0;
-            context->mInfo.mStep++;
+            TIPS_INFO(context).mState++;
             Draw();
             return;
         }
@@ -268,12 +291,12 @@ void MyroomTipsScene::Update() {
             return;
         case 11:
             if (mEvent->mUnk_14f1 == 0) {
-                context->mInfo.mStep = state + 1;
+                TIPS_INFO(context).mState = state + 1;
                 Draw();
             }
         case 12:
             if (!mEvent->IsRunning()) {
-                context->mInfo.mStep = 10;
+                TIPS_INFO(context).mState = 10;
                 MI_CpuClear16(mTextWidth, 8);
                 MI_CpuClear16(mTextX, 8);
                 MI_CpuFill8(mTimers, 0x3c, 4);
@@ -283,7 +306,7 @@ void MyroomTipsScene::Update() {
             Draw();
             return;
         case 13:
-            context->mInfo.mStep = state + 1;
+            TIPS_INFO(context).mState = state + 1;
             SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             GXS_SetVisiblePlane(0x11);
             return;
@@ -291,12 +314,12 @@ void MyroomTipsScene::Update() {
             if (!SpriteManager::Get().IsFading()) {
                 mEvent->RequestFinish();
                 mContext->mRequest = 0;
-                context->mInfo.mStep++;
+                TIPS_INFO(context).mState++;
             }
             return;
         case 15:
             if (context->mRequest != 0) {
-                context->mInfo.mStep = state + 1;
+                TIPS_INFO(context).mState = state + 1;
             }
             return;
         case 16:
@@ -434,7 +457,7 @@ void MyroomTipsScene::Draw() {
     do {
         SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mRowGlyphCount, 0x26, (s16) (j * 32 + 0x29), 1,
                                                      (u16) ((j * 3 * 0x400 + 0x8000) >> 7), 0xf, 0);
-        if (!TEST_BIT(data_020d49a1, sMyroomTipsCategoryFirstBits[(s8) context->mInfo.mMenuResult] + mIndices[j])) {
+        if (!TEST_BIT(data_020d49a1, sMyroomTipsCategoryFirstBits[(s8) TIPS_INFO(context).mCategory] + mIndices[j])) {
             mNewCells[1]->Draw(1, 0x20, (s16) (j * 32 + 0x20), 1);
         }
         j++;
@@ -465,7 +488,7 @@ void MyroomTipsScene::func_ov008_022271f8() {
         } while (i < 6);
         if (mWindowA != NULL) {
             if (!(InputManager::Get().IsDown(1))) {
-                context->mInfo.mPrevSelection = mWindowA->Update(TRUE);
+                TIPS_INFO(context).mMenuResult = mWindowA->Update(TRUE);
             }
             mWindowA->Draw();
         }
@@ -475,7 +498,7 @@ void MyroomTipsScene::func_ov008_022271f8() {
     }
     if (mUnk_85 == 0) {
         if (!(InputManager::Get().IsDown(1))) {
-            context->mInfo.mPrevSelection = mWindowB->Update(TRUE);
+            TIPS_INFO(context).mMenuResult = mWindowB->Update(TRUE);
         }
     }
     mWindowB->Draw();
@@ -484,7 +507,7 @@ void MyroomTipsScene::func_ov008_022271f8() {
 void MyroomTipsScene::func_ov008_022273f0() {
     SceneContext *context = mContext;
     if (mFlags & MYROOM_TIPS_WINDOW_A) {
-        DrawCategoryCursor(sMyroomTipsCategoryPos[0], context->mInfo.mMenuResult);
+        DrawCategoryCursor(sMyroomTipsCategoryPos[0], TIPS_INFO(context).mCategory);
     }
     if (!(mFlags & MYROOM_TIPS_WINDOW_B)) {
         return;
@@ -519,20 +542,20 @@ void MyroomTipsScene::func_ov008_022274f8() {
         mWindowA->mEnabled = 1;
         mWindowB->mEnabled = 0;
         if (mWindowA != NULL) {
-            switch (*(u8 *) &context->mInfo.mPrevSelection) {
+            switch (*(u8 *) &TIPS_INFO(context).mMenuResult) {
                 case 2:
-                    context->mInfo.mStep = 0xd;
+                    TIPS_INFO(context).mState = 0xd;
                     break;
                 case 3:
                     break;
             }
         }
-        if (context->mInfo.mState == 0) {
+        if (TIPS_INFO(context).mUnk_02 == 0) { // always true in this build (see MyroomTipsSceneInfo::mUnk_02)
             s32 selection = UpdateCategorySelection(sMyroomTipsCategoryPos[0], 6);
             if (selection >= 0) {
-                s8 category = context->mInfo.mMenuResult;
+                s8 category = TIPS_INFO(context).mCategory;
                 if (category != selection) {
-                    context->mInfo.mMenuResult = selection;
+                    TIPS_INFO(context).mCategory = selection;
                     SoundManager::Get().StartSeqArc(5);
                 } else if (mUnlocked[category] != 0) {
                     BOOL available = TRUE;
@@ -543,16 +566,16 @@ void MyroomTipsScene::func_ov008_022274f8() {
                     }
                     if (available) {
                         SoundManager::Get().StartSeqArc(0);
-                        s8 current = context->mInfo.mMenuResult;
+                        s8 current = TIPS_INFO(context).mCategory;
                         func_0206f88c(mEvent, (u8) current, data_ov008_02229658[current], 10);
-                        mCount = mUnlocked[(s8) context->mInfo.mMenuResult];
+                        mCount = mUnlocked[(s8) TIPS_INFO(context).mCategory];
                         mWindowB->mCursor->SetupScroll(0x30, 0x90, 4, mCount);
                         if (mCount <= 4) {
                             mWindowB->mButtons[1].mEnabled = 0;
                         } else {
                             mWindowB->mButtons[1].mEnabled = 1;
                         }
-                        context->mInfo.mStep = 8;
+                        TIPS_INFO(context).mState = 8;
                     }
                 }
             }
@@ -566,7 +589,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
         mWindowA->mEnabled = 0;
         mWindowB->mEnabled = 1;
         BOOL changed       = FALSE;
-        switch (*(u8 *) &context->mInfo.mPrevSelection) {
+        switch (*(u8 *) &TIPS_INFO(context).mMenuResult) {
             case 1:
                 mWindowB->mState = 4;
                 changed            = TRUE;
@@ -574,7 +597,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
                 break;
             case 2:
                 SpriteManager::Get().sFade[0] = FADE_MODE_DOWN;
-                context->mInfo.mStep             = 2;
+                TIPS_INFO(context).mState             = 2;
                 break;
             case 0:
                 if (UpdateRowSelection() == 1) {
@@ -606,7 +629,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
         }
         cell->SetAnimation(2);
         mUnk_85 = 0;
-        s32 category = (s8) context->mInfo.mMenuResult;
+        s32 category = (s8) TIPS_INFO(context).mCategory;
         u8 entry     = mIndices[mRow];
         u16 message  = sMyroomTipsEntries[category][entry].mMessage;
         if (category == 4 && sMyroomTipsEntries[category][entry].mText == 0x20) {
@@ -631,18 +654,18 @@ void MyroomTipsScene::func_ov008_022274f8() {
         }
         InvalidateStorytalkMessageIndex(mEvent);
         mEvent->func_0206f564(message, 11, -1);
-        context->mInfo.mStep = 0xb;
-        int flag             = sMyroomTipsCategoryFirstBits[(s8) context->mInfo.mMenuResult] + mIndices[mRow];
+        TIPS_INFO(context).mState = 0xb;
+        int flag             = sMyroomTipsCategoryFirstBits[(s8) TIPS_INFO(context).mCategory] + mIndices[mRow];
         if (!TEST_BIT(data_020d49a1, flag)) {
             SET_BIT(data_020d49a1, flag);
-            mNew[(s8) context->mInfo.mMenuResult]--;
+            mNew[(s8) TIPS_INFO(context).mCategory]--;
         }
     }
 }
 
 s8 MyroomTipsScene::UpdateCategorySelection(const u8 *pos, u8 count) {
     SceneContext *context = mContext;
-    u8 saved                        = context->mInfo.mMenuResult;
+    u8 saved                        = TIPS_INFO(context).mCategory;
     if (TouchManager::Get().mPressed != 0) {
         u8 i = 0;
         do {
@@ -653,36 +676,36 @@ s8 MyroomTipsScene::UpdateCategorySelection(const u8 *pos, u8 count) {
         } while (i < count);
     }
     if (InputManager::Get().IsTrigger(KEY_LEFT)) {
-        s8 current = context->mInfo.mMenuResult;
+        s8 current = TIPS_INFO(context).mCategory;
         if (current < 3) {
-            context->mInfo.mMenuResult = current + (count - 1);
-            context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult % 3;
+            TIPS_INFO(context).mCategory = current + (count - 1);
+            TIPS_INFO(context).mCategory = (s8) TIPS_INFO(context).mCategory % 3;
         } else {
-            context->mInfo.mMenuResult = current + (count - 1);
-            context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult % 3 + 3;
+            TIPS_INFO(context).mCategory = current + (count - 1);
+            TIPS_INFO(context).mCategory = (s8) TIPS_INFO(context).mCategory % 3 + 3;
         }
     } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
-        s8 current = context->mInfo.mMenuResult;
+        s8 current = TIPS_INFO(context).mCategory;
         if (current < 3) {
-            context->mInfo.mMenuResult = current + 1;
-            context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult % 3;
+            TIPS_INFO(context).mCategory = current + 1;
+            TIPS_INFO(context).mCategory = (s8) TIPS_INFO(context).mCategory % 3;
         } else {
-            context->mInfo.mMenuResult = current + 1;
-            context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult % 3 + 3;
+            TIPS_INFO(context).mCategory = current + 1;
+            TIPS_INFO(context).mCategory = (s8) TIPS_INFO(context).mCategory % 3 + 3;
         }
     }
     if (InputManager::Get().IsTrigger(KEY_DOWN)) {
-        context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult + 3;
-        context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult % count;
+        TIPS_INFO(context).mCategory = (s8) TIPS_INFO(context).mCategory + 3;
+        TIPS_INFO(context).mCategory = (s8) TIPS_INFO(context).mCategory % count;
     } else if (InputManager::Get().IsTrigger(KEY_UP)) {
-        context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult + (count - 3);
-        context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult % count;
+        TIPS_INFO(context).mCategory = (s8) TIPS_INFO(context).mCategory + (count - 3);
+        TIPS_INFO(context).mCategory = (s8) TIPS_INFO(context).mCategory % count;
     }
-    if ((s8) context->mInfo.mMenuResult != saved) {
+    if ((s8) TIPS_INFO(context).mCategory != saved) {
         SoundManager::Get().StartSeqArc(5);
     }
     if (InputManager::Get().IsPressed(1)) {
-        return context->mInfo.mMenuResult;
+        return TIPS_INFO(context).mCategory;
     }
     return -1;
 }
@@ -785,7 +808,7 @@ void MyroomTipsScene::PrintRows(s32 row) {
         s16 height;
         height = 0;
         width = mTextX[i];
-        s8 menu = context->mInfo.mMenuResult;
+        s8 menu = TIPS_INFO(context).mCategory;
         u16 index = sMyroomTipsEntries[menu][mIndices[i]].mText;
         MessageFile *file = mMessages;
         text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[i], 0x30, 2, &width, &height, pixelWidth, 0, 2,
@@ -842,14 +865,14 @@ u32 MyroomTipsScene::GetUnlockedTip(s16 index) {
     SceneContext *context = mContext;
     u8 i        = 0;
     do {
-        if (TEST_BIT(gUnlockedTipBits, sMyroomTipsCategoryFirstBits[(s8) context->mInfo.mMenuResult] + i)) {
+        if (TEST_BIT(gUnlockedTipBits, sMyroomTipsCategoryFirstBits[(s8) TIPS_INFO(context).mCategory] + i)) {
             index--;
             if (index < 0) {
                 return i;
             }
         }
         i++;
-    } while (i < sMyroomTipsCategoryCounts[(s8) context->mInfo.mMenuResult]);
+    } while (i < sMyroomTipsCategoryCounts[(s8) TIPS_INFO(context).mCategory]);
     return 0;
 }
 

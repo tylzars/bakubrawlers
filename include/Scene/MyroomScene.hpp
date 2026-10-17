@@ -39,13 +39,14 @@ public:
     // Reads input (window Update, LEFT / RIGHT, touch, page scroll) only in mInfo state 4; in the other states it only
     // draws the window (and mCellAnim on pages 1 / 2).
     void UpdateMenu();
-    // mInfo state 5 with 0x62 left to scroll, counted in mInfo.mScrollDir (the direction is in mInfo.mPage); on page 0
+    // mInfo state 5 with 0x62 left to scroll, counted in mScrollRemaining (the direction is in mScrollDir); on page 0
     // also sets the item cells and flags and buttons 0 / 4 / 6 / 7 for the target position mInfo.mUnk_0a.
     void StartScroll();
-    // mInfo.mPrevSelection 2: page 0 -> state 0xf, pages 1 / 2 -> back to page 0; 1 or 3: by the selection, a page
-    // switch, state 0xc / 0xf, or a MYROOM_MENU_* value (or the literal 6 / 7) in mInfo.mScroll with state 6.
+    // mMenuResult 2: page 0 -> state 0xf, pages 1 / 2 -> back to page 0; 1 or 3: by the selection, a page switch,
+    // state 0xc / 0xf, or a MYROOM_MENU_* value (or the literal 6 / 7) in mMenuEntry with state 6. (mPage, mMenuResult,
+    // mMenuEntry, mScrollRemaining, mScrollDir: the mInfo bytes as the .cpp's MyroomSceneInfo names them.)
     void HandleWindowResult();
-    // Page 0 only (else FALSE): moves the five item cells by up to 0xe per call out of mInfo.mScrollDir; when that
+    // Page 0 only (else FALSE): moves the five item cells by up to 0xe per call out of mScrollRemaining; when that
     // reaches 0, moves the selection to mInfo.mUnk_0a, re-enables arrows 6 / 7, PrintStatus and TRUE.
     BOOL UpdateScroll();
     void RefreshCellLayout();

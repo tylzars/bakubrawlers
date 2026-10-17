@@ -10,7 +10,7 @@ static ModelResource *sResources[2];
 GimmickIkazuchiStart::GimmickIkazuchiStart(u8 id)
     : Gimmick(id, 0) {
     mModelB  = 0;
-    mCounter = 0;
+    mTimer = 0;
     mDelayIndex  = 0;
     mMarkerNear  = 0;
     for (u8 i = 0; i < 8; i++) {
@@ -83,7 +83,7 @@ void GimmickIkazuchiStart::Update() {
             return;
         }
         mDelayIndex  = (mDelayIndex + 1) % 8;
-        mCounter = mDelays[mDelayIndex];
+        mTimer = mDelays[mDelayIndex];
         mState++;
         break;
     case 2:
@@ -94,11 +94,11 @@ void GimmickIkazuchiStart::Update() {
         if (data_020d433c.mFlags) {
             return;
         }
-        mCounter--;
-        if (mCounter) {
+        mTimer--;
+        if (mTimer) {
             return;
         }
-        mCounter = 0x1e;
+        mTimer = 0x1e;
         if (sCount >= 2) {
             mState = 1;
             return;
@@ -116,14 +116,14 @@ void GimmickIkazuchiStart::Update() {
         if (data_020d433c.mFlags) {
             return;
         }
-        mCounter--;
-        if (mCounter) {
+        mTimer--;
+        if (mTimer) {
             return;
         }
         if (mModel && (int)data_020d433c.mGimmicks->mState >= 1) {
             SoundManager::Get().StartSeqArc(0x61);
         }
-        mCounter = 0x46;
+        mTimer = 0x46;
         mState++;
         break;
     case 4: {
@@ -204,8 +204,8 @@ int GimmickIkazuchiStart::func_ov007_022789e0(int count) {
     if (count) {
         data_020d433c.mFlags &= 8;
         if (!data_020d433c.mFlags) {
-            mCounter--;
-            if (mCounter == 0) {
+            mTimer--;
+            if (mTimer == 0) {
                 mState = 1;
                 sCount--;
                 if (mModelB) {

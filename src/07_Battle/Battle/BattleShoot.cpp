@@ -548,7 +548,7 @@ void BattleShoot::Update() {
                 do {
                     BattlePlayerList *l3 = data_020d433c.mBattlePlayers;
                     if (l3->mPlayers[i]->mCpu != 0 && i != l3->mTurnPlayer) {
-                        l3->mPlayers[i]->mCpu->RandomizeOffsets();
+                        l3->mPlayers[i]->mCpu->RandomizePushOffsets();
                     }
                     i++;
                 } while (i < data_020d433c.mPlayerCount);
@@ -1524,17 +1524,17 @@ void BattleShoot::UpdatePushMessages() {
             s32 outX = 0;
             s32 outZ = 0;
             if (mBattleTarget->mMoveFrames <= cpu->mUnk_5c) {
-                cpu->GetOffset(&outX, &outZ);
+                cpu->GetPushOffset(&outX, &outZ);
                 mMsgs[i].mType        = 9;
                 mMsgs[i].mPushX        = outX;
                 mMsgs[i].mPushZ        = outZ;
                 mMsgs[i].mMicEvent        = 0;
-                u16 limit = cpu->mOffsetFrameCounts[cpu->mOffsetEntryIndex];
-                cpu->mOffsetFrames++;
-                if (cpu->mOffsetFrames >= limit) {
-                    cpu->mOffsetFrames = 0;
-                    cpu->mOffsetEntryIndex = (cpu->mOffsetEntryIndex + 1) % 8;
-                    cpu->SetOffset();
+                u16 limit = cpu->mPushOffsetFrameCounts[cpu->mPushOffsetEntryIndex];
+                cpu->mPushOffsetFrames++;
+                if (cpu->mPushOffsetFrames >= limit) {
+                    cpu->mPushOffsetFrames = 0;
+                    cpu->mPushOffsetEntryIndex = (cpu->mPushOffsetEntryIndex + 1) % 8;
+                    cpu->SetPushOffset();
                 }
             }
         }

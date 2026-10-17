@@ -44,7 +44,7 @@ public:
     /* 0c */
 
     void LoadGraphics();      // 0221eb64
-    void LoadListWindow();    // 0221f118; builds mWindow from sTutorialThreeButtonItems (two choices), not a list
+    void LoadListWindow();    // 0221f118; builds mWindow from sTutorialThreeItems (two choices), not a list
     void ShowText(int index); // 0221f474
     void LoadListText();      // 0221f5c4
     u8 UpdateList();          // 0221f860

@@ -19,14 +19,35 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-// Scroll directions: the values UpdateMenu stores in mInfo.mPage when an arrow of the first page starts a scroll
-// (mInfo.mScrollDir counts the distance down here). PREV goes with mUnk_0a - 1 (arrow item 6 or KEY_LEFT), NEXT with
+// The scene context's SceneInfo bytes as this scene uses them (SceneInfo's own names follow StoreScene). Only the
+// bytes this scene reads differently go through MYROOM_INFO; mUnk_00, mState, mSelection, mUnk_06 and mUnk_0a keep
+// SceneInfo's names and are read as ctx->mInfo.<field> outside PrintStatus (reading mState through the cast changes
+// Update's code).
+struct MyroomSceneInfo {
+    /* 00 */ u16 mUnk_00;
+    /* 02 */ u8 mState;
+    /* 03 */ u8 mPage;
+    /* 04 */ s8 mMenuResult;
+    /* 05 */ s8 mSelection;
+    /* 06 */ u8 mUnk_06;
+    /* 07 */ u8 mMenuEntry;
+    /* 08 */ u8 mScrollRemaining;
+    /* 09 */ u8 mScrollDir;
+    /* 0a */ u8 mUnk_0a;
+    /* 0b */ u8 mUnk_0b;
+    /* 0c */
+};
+
+#define MYROOM_INFO(ctx) (*(MyroomSceneInfo *) &(ctx)->mInfo)
+
+// Scroll directions: the values UpdateMenu stores in mScrollDir when an arrow of the first page starts a scroll
+// (mScrollRemaining counts the distance down here). PREV goes with mUnk_0a - 1 (arrow item 6 or KEY_LEFT), NEXT with
 // mUnk_0a + 1 (arrow item 7 or KEY_RIGHT); UpdateScroll negates its x step for NEXT and, when the scroll ends, sets
 // arrow cell 6 for PREV and arrow cell 7 otherwise.
 #define MYROOM_SCROLL_PREV 1
 #define MYROOM_SCROLL_NEXT 2
 
-// Menu entries: the values HandleWindowResult stores in mInfo.mScroll for the chosen icon (not the cursor position),
+// Menu entries: the values HandleWindowResult stores in mMenuEntry for the chosen icon (not the cursor position),
 // which Update switches on to move the event camera (state 6) and to create the screen (state 10), each named after
 // the class created for it (LIST_EDIT / LIST_GALLERY: ListScene with LIST_MODE_EDIT / LIST_MODE_GALLERY).
 #define MYROOM_MENU_GIFT 0
@@ -195,7 +216,7 @@ void MyroomScene::Update() {
             if (mEvent->IsRunning()) {
                 return;
             }
-            switch (ctx->mInfo.mMenuResult) {
+            switch (MYROOM_INFO(ctx).mPage) {
                 case 0:
                     mEvent->SetMapExtraAnim(data_ov008_0222870c[(s8) ctx->mInfo.mUnk_06]);
                     break;
@@ -210,7 +231,7 @@ void MyroomScene::Update() {
             ctx->mInfo.mState++;
             break;
         case 3:
-            switch (ctx->mInfo.mMenuResult) {
+            switch (MYROOM_INFO(ctx).mPage) {
                 case 0:
                     mWindows[0]->Draw();
                     break;
@@ -242,7 +263,7 @@ void MyroomScene::Update() {
             UpdateMenu();
             DrawText();
             SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
-            switch (ctx->mInfo.mScroll) {
+            switch (MYROOM_INFO(ctx).mMenuEntry) {
                 case MYROOM_MENU_RANKING:
                 case MYROOM_MENU_CHARA:
                 case MYROOM_MENU_TIPS:
@@ -292,7 +313,7 @@ void MyroomScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            switch (ctx->mInfo.mScroll) {
+            switch (MYROOM_INFO(ctx).mMenuEntry) {
                 case MYROOM_MENU_GIFT:
                     new MyroomGiftScene();
                     break;
@@ -326,7 +347,7 @@ void MyroomScene::Update() {
             if (ctx->mRequest == 0) {
                 return;
             }
-            ctx->mInfo.mPrevSelection = 0;
+            MYROOM_INFO(ctx).mMenuResult = 0;
             ctx->mInfo.mState         = 0;
             break;
         case 12:
@@ -352,7 +373,7 @@ void MyroomScene::Update() {
             }
             GXS_SetVisiblePlane(0x11);
             ctx->mInfo.mState         = 1;
-            ctx->mInfo.mPrevSelection = 0;
+            MYROOM_INFO(ctx).mMenuResult = 0;
             FrameTask::Get().StartChannel(0, 0x13);
             break;
         case 15:
@@ -454,7 +475,7 @@ void MyroomScene::LoadGraphics() {
     ChangeDir("/");
     SceneContext *ctx = mContext;
     s32 selection1              = 0;
-    if (ctx->mInfo.mMenuResult == 1) {
+    if (MYROOM_INFO(ctx).mPage == 1) {
         selection1 = (s8) ctx->mInfo.mUnk_06;
     }
     mWindows[1] = new SelectWindow(5, sMyroomMenu1Items, selection1);
@@ -462,20 +483,20 @@ void MyroomScene::LoadGraphics() {
     mWindows[1]->mCursor->mSelection = -1;
     mWindows[1]->mCursor->mSelection = selection1;
     s32 selection2                 = 0;
-    if (ctx->mInfo.mMenuResult == 2) {
+    if (MYROOM_INFO(ctx).mPage == 2) {
         selection2 = (s8) ctx->mInfo.mUnk_06;
     }
     mWindows[2] = new SelectWindow(5, sMyroomMenu2Items, selection2);
     mWindows[2]->SetCells(5, sMyroomMenu2Cells);
     mWindows[2]->mCursor->mSelection = -1;
     mWindows[2]->mCursor->mSelection = selection2;
-    SwitchPage(mContext->mInfo.mMenuResult);
+    SwitchPage(MYROOM_INFO(mContext).mPage);
 }
 
 void MyroomScene::SwitchPage(u8 page) {
     SceneContext *ctx = mContext;
-    if (ctx->mInfo.mMenuResult != page) {
-        switch (ctx->mInfo.mMenuResult) {
+    if (MYROOM_INFO(ctx).mPage != page) {
+        switch (MYROOM_INFO(ctx).mPage) {
             case 1:
                 ctx->mInfo.mUnk_06 = 0;
                 ctx->mInfo.mUnk_0a = 0;
@@ -485,16 +506,16 @@ void MyroomScene::SwitchPage(u8 page) {
                 ctx->mInfo.mUnk_0a = 4;
                 break;
         }
-        ctx->mInfo.mMenuResult = page;
+        MYROOM_INFO(ctx).mPage = page;
         func_ov008_0221d2c0();
     }
-    switch (ctx->mInfo.mMenuResult) {
+    switch (MYROOM_INFO(ctx).mPage) {
         case 0:
             delete mWindows[0];
             mWindows[0] = new SelectWindow(8, sMyroomMenu0Items, (s8) ctx->mInfo.mUnk_06);
             mWindows[0]->SetCells(8, sMyroomMenu0Cells);
             mWindows[0]->mCursor->mSelection = -1;
-            ctx->mInfo.mPrevSelection      = 0;
+            MYROOM_INFO(ctx).mMenuResult      = 0;
             break;
         case 1:
             delete mWindows[1];
@@ -521,7 +542,7 @@ void MyroomScene::UpdateMenu() {
     u8 count                    = 0;
     SelectWindow *window        = NULL;
     ctx->mInfo.mSelection       = *(s8 *) &ctx->mInfo.mUnk_06;
-    switch (ctx->mInfo.mMenuResult) {
+    switch (MYROOM_INFO(ctx).mPage) {
         case 0:
             first  = 6;
             window = mWindows[0];
@@ -544,13 +565,13 @@ void MyroomScene::UpdateMenu() {
     }
     if (ctx->mInfo.mState == 4) {
         u8 hit    = window->Update(TRUE);
-        if ((u8) ctx->mInfo.mPrevSelection != 2) {
-            ctx->mInfo.mPrevSelection = hit;
+        if ((u8) MYROOM_INFO(ctx).mMenuResult != 2) {
+            MYROOM_INFO(ctx).mMenuResult = hit;
         }
         s32 delta = 0;
-        switch (ctx->mInfo.mMenuResult) {
+        switch (MYROOM_INFO(ctx).mPage) {
             case 0:
-                switch ((u8) ctx->mInfo.mPrevSelection) {
+                switch ((u8) MYROOM_INFO(ctx).mMenuResult) {
                     case 1:
                     case 2:
                         break;
@@ -580,15 +601,15 @@ void MyroomScene::UpdateMenu() {
                         break;
                 }
                 if (delta != 0) {
-                    ctx->mInfo.mPage = delta > 0 ? MYROOM_SCROLL_NEXT : MYROOM_SCROLL_PREV;
+                    MYROOM_INFO(ctx).mScrollDir = delta > 0 ? MYROOM_SCROLL_NEXT : MYROOM_SCROLL_PREV;
                     ctx->mInfo.mUnk_0a += delta;
                     StartScroll();
-                    ctx->mInfo.mPrevSelection = 0;
+                    MYROOM_INFO(ctx).mMenuResult = 0;
                 }
                 break;
             case 1:
             case 2:
-                switch ((u8) ctx->mInfo.mPrevSelection) {
+                switch ((u8) MYROOM_INFO(ctx).mMenuResult) {
                     case 1:
                     case 2:
                         break;
@@ -640,14 +661,14 @@ void MyroomScene::UpdateMenu() {
                     ctx->mInfo.mUnk_06 = (s8) ctx->mInfo.mUnk_06 + delta;
                     window->mCursor->mSelection = (s8) ctx->mInfo.mUnk_06 + first;
                     PrintStatus();
-                    ctx->mInfo.mPrevSelection = 0;
+                    MYROOM_INFO(ctx).mMenuResult = 0;
                     SoundManager::Get().StartSeqArc(0);
                 }
                 break;
         }
     }
     window->Draw();
-    switch (ctx->mInfo.mMenuResult) {
+    switch (MYROOM_INFO(ctx).mPage) {
         case 1:
         case 2:
             mCellAnim->Update();
@@ -660,8 +681,8 @@ void MyroomScene::UpdateMenu() {
 void MyroomScene::StartScroll() {
     SceneContext *ctx = mContext;
     ctx->mInfo.mState           = 5;
-    ctx->mInfo.mScrollDir       = 0x62;
-    if (ctx->mInfo.mMenuResult != 0) {
+    MYROOM_INFO(ctx).mScrollRemaining       = 0x62;
+    if (MYROOM_INFO(ctx).mPage != 0) {
         return;
     }
     SelectWindow *window = mWindows[0];
@@ -684,7 +705,7 @@ void MyroomScene::StartScroll() {
         window->mButtons[7].mEnabled = 0;
         items[7].mFlags              = WINDOW_ITEM_CURSOR_SKIP;
     }
-    if (ctx->mInfo.mMenuResult != 0) {
+    if (MYROOM_INFO(ctx).mPage != 0) {
         return;
     }
     if ((s32) ctx->mInfo.mUnk_0a >= 3) {
@@ -701,9 +722,9 @@ void MyroomScene::StartScroll() {
 
 void MyroomScene::HandleWindowResult() {
     SceneContext *ctx = mContext;
-    switch ((u8) ctx->mInfo.mPrevSelection) {
+    switch ((u8) MYROOM_INFO(ctx).mMenuResult) {
         case 2:
-            switch (ctx->mInfo.mMenuResult) {
+            switch (MYROOM_INFO(ctx).mPage) {
                 case 0:
                     ctx->mInfo.mState = 0xf;
                     break;
@@ -729,7 +750,7 @@ void MyroomScene::HandleWindowResult() {
             if (selection != 0 && ctx->mInfo.mSelection != selection) {
                 return;
             }
-            switch (ctx->mInfo.mMenuResult) {
+            switch (MYROOM_INFO(ctx).mPage) {
                 case 0:
                     switch (selection) {
                         case 0:
@@ -742,11 +763,11 @@ void MyroomScene::HandleWindowResult() {
                             ctx->mInfo.mState = 0xc;
                             break;
                         case 2:
-                            ctx->mInfo.mScroll = MYROOM_MENU_LIST_EDIT;
+                            MYROOM_INFO(ctx).mMenuEntry = MYROOM_MENU_LIST_EDIT;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 3:
-                            ctx->mInfo.mScroll = MYROOM_MENU_CHARACTER_EDIT;
+                            MYROOM_INFO(ctx).mMenuEntry = MYROOM_MENU_CHARACTER_EDIT;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 4:
@@ -763,15 +784,15 @@ void MyroomScene::HandleWindowResult() {
                 case 1:
                     switch (selection) {
                         case 0:
-                            ctx->mInfo.mScroll = MYROOM_MENU_TIPS;
+                            MYROOM_INFO(ctx).mMenuEntry = MYROOM_MENU_TIPS;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 1:
-                            ctx->mInfo.mScroll = MYROOM_MENU_RANKING;
+                            MYROOM_INFO(ctx).mMenuEntry = MYROOM_MENU_RANKING;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 2:
-                            ctx->mInfo.mScroll = MYROOM_MENU_CHARA;
+                            MYROOM_INFO(ctx).mMenuEntry = MYROOM_MENU_CHARA;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 3:
@@ -786,15 +807,15 @@ void MyroomScene::HandleWindowResult() {
                 case 2:
                     switch (selection) {
                         case 0:
-                            ctx->mInfo.mScroll = MYROOM_MENU_LIST_GALLERY;
+                            MYROOM_INFO(ctx).mMenuEntry = MYROOM_MENU_LIST_GALLERY;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 1:
-                            ctx->mInfo.mScroll = MYROOM_MENU_SHOOT;
+                            MYROOM_INFO(ctx).mMenuEntry = MYROOM_MENU_SHOOT;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 2:
-                            ctx->mInfo.mScroll = MYROOM_MENU_GIFT;
+                            MYROOM_INFO(ctx).mMenuEntry = MYROOM_MENU_GIFT;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 3:
@@ -820,14 +841,14 @@ BOOL MyroomScene::UpdateScroll() {
     s32 step;
     step = 0xe;
     done = FALSE;
-    if (ctx->mInfo.mScrollDir < 0xe) {
-        step = ctx->mInfo.mScrollDir;
+    if (MYROOM_INFO(ctx).mScrollRemaining < 0xe) {
+        step = MYROOM_INFO(ctx).mScrollRemaining;
     }
-    ctx->mInfo.mScrollDir -= step;
-    if (ctx->mInfo.mPage == MYROOM_SCROLL_NEXT) {
+    MYROOM_INFO(ctx).mScrollRemaining -= step;
+    if (MYROOM_INFO(ctx).mScrollDir == MYROOM_SCROLL_NEXT) {
         step = (s16) -step;
     }
-    switch (ctx->mInfo.mMenuResult) {
+    switch (MYROOM_INFO(ctx).mPage) {
         case 0:
             window = mWindows[0];
             break;
@@ -844,14 +865,14 @@ BOOL MyroomScene::UpdateScroll() {
         window->SetCellPos(i, pos);
         items[i].mX = step + items[i].mX;
     }
-    if (ctx->mInfo.mScrollDir == 0) {
+    if (MYROOM_INFO(ctx).mScrollRemaining == 0) {
         window->mCellAnims[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(sMyroomMenu0AnimIndices[(s8) ctx->mInfo.mUnk_06]);
         items[ctx->mInfo.mUnk_0a].mFlags     = WINDOW_ITEM_NO_SLIDE_OUT;
         items[(s8) ctx->mInfo.mUnk_06].mFlags     = WINDOW_ITEM_CURSOR_SKIP;
         window->mCursor->mSelection          = ctx->mInfo.mUnk_0a;
         ctx->mInfo.mUnk_06                   = ctx->mInfo.mUnk_0a;
-        mEvent->func_0206f564(data_ov008_02228764[ctx->mInfo.mMenuResult][(s8) ctx->mInfo.mUnk_06], 0xa, -1);
-        if (ctx->mInfo.mMenuResult == 0) {
+        mEvent->func_0206f564(data_ov008_02228764[MYROOM_INFO(ctx).mPage][(s8) ctx->mInfo.mUnk_06], 0xa, -1);
+        if (MYROOM_INFO(ctx).mPage == 0) {
             mEvent->SetMapExtraAnim(data_ov008_0222870c[(s8) ctx->mInfo.mUnk_06]);
         }
         if ((s8) ctx->mInfo.mUnk_06 != 0) {
@@ -864,7 +885,7 @@ BOOL MyroomScene::UpdateScroll() {
         }
         window->mCellAnims[6]->Rewind();
         window->mCellAnims[7]->Rewind();
-        if (ctx->mInfo.mPage == MYROOM_SCROLL_PREV) {
+        if (MYROOM_INFO(ctx).mScrollDir == MYROOM_SCROLL_PREV) {
             window->mCellAnims[6]->SetAnimation(0);
         } else {
             window->mCellAnims[7]->SetAnimation(1);
@@ -879,7 +900,7 @@ BOOL MyroomScene::UpdateScroll() {
 void MyroomScene::RefreshCellLayout() {
     SceneContext *ctx = mContext;
     s16 offset                  = (s8) ctx->mInfo.mUnk_06 * 0x62;
-    if (ctx->mInfo.mMenuResult != 0) {
+    if (MYROOM_INFO(ctx).mPage != 0) {
         return;
     }
     SelectWindow *window  = mWindows[0];
@@ -912,7 +933,7 @@ void MyroomScene::RefreshCellLayout() {
         window->mButtons[7].mEnabled = 1;
         items[7].mFlags              = WINDOW_ITEM_NO_SLIDE_OUT;
     }
-    if (ctx->mInfo.mMenuResult == 0) {
+    if (MYROOM_INFO(ctx).mPage == 0) {
         if ((s32) ctx->mInfo.mUnk_0a >= 3) {
             window->mButtons[0].mEnabled = 0;
         } else {
@@ -948,7 +969,7 @@ void MyroomScene::SetupText() {
     mMessageWindow = new MessageWindow("mes_myroom", 1, 0x1800);
     mMessageWindow->func_02065bd4(0x14, 4, 0);
     mMessageWindow->SetWidth(0xd8);
-    switch (mContext->mInfo.mMenuResult) {
+    switch (MYROOM_INFO(mContext).mPage) {
         case 0:
             mMessageWindow->StartMessage(0x24, 0, 1);
             break;
@@ -964,7 +985,7 @@ void MyroomScene::SetupText() {
 void MyroomScene::func_ov008_0221d2c0() {
     ClearMessageBuffer();
     SceneContext *ctx = mContext;
-    switch (ctx->mInfo.mMenuResult) {
+    switch (MYROOM_INFO(ctx).mPage) {
         case 0:
             mMessageWindow->StartMessage(0x24, 0, 1);
             break;
@@ -980,7 +1001,7 @@ void MyroomScene::func_ov008_0221d2c0() {
     if (selection < 0) {
         return;
     }
-    mEvent->func_0206f564(data_ov008_02228764[ctx->mInfo.mMenuResult][selection], 0xa, -1);
+    mEvent->func_0206f564(data_ov008_02228764[MYROOM_INFO(ctx).mPage][selection], 0xa, -1);
 }
 
 void MyroomScene::DrawText() {
@@ -1003,8 +1024,8 @@ void MyroomScene::ClearMessageBuffer() {
 
 void MyroomScene::PrintStatus() {
     u8 index = 0;
-    SceneInfo *info = &mContext->mInfo;
-    switch (info->mMenuResult) {
+    MyroomSceneInfo *info = &MYROOM_INFO(mContext);
+    switch (info->mPage) {
         case 0:
             index = sMyroomMenu0StatusTextIndices[(s8) info->mUnk_06];
             break;

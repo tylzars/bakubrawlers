@@ -86,7 +86,7 @@ void MyroomStatusScene::Update() {
         case 1:
             draw = FALSE;
             for (u8 i = 0; i < 5; i++) {
-                RenderLine(i);
+                PrintLine(i);
             }
             mState++;
             break;
@@ -210,7 +210,7 @@ void MyroomStatusScene::ClearTextBuffers() {
     }
 }
 
-void MyroomStatusScene::RenderLine(u8 line) {
+void MyroomStatusScene::PrintLine(u8 line) {
     Ranking *info = mRanking;
     s16 x;
     s16 y;
@@ -319,6 +319,6 @@ void MyroomStatusScene::UpdateTime() {
         if (mTextBuffers[MYROOM_STATUS_LINE_PLAY_TIME] != NULL) {
             MI_CpuClear16(mTextBuffers[MYROOM_STATUS_LINE_PLAY_TIME], mTextBufferSize);
         }
-        RenderLine(MYROOM_STATUS_LINE_PLAY_TIME);
+        PrintLine(MYROOM_STATUS_LINE_PLAY_TIME);
     }
 }

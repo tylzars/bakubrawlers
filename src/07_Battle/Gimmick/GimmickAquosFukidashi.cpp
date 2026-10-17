@@ -14,7 +14,7 @@ static ModelResource *sResources[2];
 GimmickAquosFukidashi::GimmickAquosFukidashi(u8 id)
     : Gimmick(id, 0) {
     mModelB  = 0;
-    mCounter = 0;
+    mTimer = 0;
     mPushTimer  = 0;
     mTargetNear  = 0;
     mMarkerNear  = 0;
@@ -47,14 +47,14 @@ void GimmickAquosFukidashi::Load() {
     ChangeDir("/");
     switch (mState) {
     case 2: {
-        u32 n   = 0x104 - mCounter;
+        u32 n   = 0x104 - mTimer;
         u32 v   = n << 12;
         float f = n > 0 ? 0.5f + v : v - 0.5f;
         mModelB->SetAnimFrame((int)f);
         break;
     }
     case 3: {
-        u32 n   = 0x140 - mCounter;
+        u32 n   = 0x140 - mTimer;
         u32 v   = n << 12;
         float f = n > 0 ? 0.5f + v : v - 0.5f;
         mModelB->SetAnimFrame((int)f);
@@ -96,7 +96,7 @@ void GimmickAquosFukidashi::Update() {
     case 0:
         LoadCollision(0x3c, COLLISION_GROUP_GIMMICK);
         mState++;
-        mCounter = 0x78;
+        mTimer = 0x78;
         break;
     case 1:
         if (mMarkerNear) {
@@ -135,7 +135,7 @@ void GimmickAquosFukidashi::Update() {
             }
             mTargetNear = 0;
         }
-        if ((u32)(0x104 - mCounter) >= 10 && mCollision && mCollision->mHitCount && !mPushTimer) {
+        if ((u32)(0x104 - mTimer) >= 10 && mCollision && mCollision->mHitCount && !mPushTimer) {
             if (data_020d433c.mBattlePlayers->mBattleTarget) {
                 BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
                 if (p->mRecords[p->mRecord].mAttribute != 1) {
@@ -214,9 +214,9 @@ void GimmickAquosFukidashi::DrawModels(int drawB) {
 int GimmickAquosFukidashi::CountDownToState(int frames, int state) {
     data_020d433c.mFlags &= 8;
     if (!data_020d433c.mFlags) {
-        mCounter--;
-        if (mCounter == 0) {
-            mCounter = frames;
+        mTimer--;
+        if (mTimer == 0) {
+            mTimer = frames;
             mState   = state;
             return 1;
         }

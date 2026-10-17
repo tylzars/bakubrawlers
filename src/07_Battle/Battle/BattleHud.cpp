@@ -29,7 +29,7 @@ extern const u8 gSmallCardX[];
 extern const u32 gSmallCardCharBases[];
 extern const s32 gPushPercentScales[];
 
-BattleHud::BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *choice)
+BattleHud::BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *sidePlayers)
     : SceneBase(2, 0) {
     mLocalSide = mode;
     mUnk_10 = 0;
@@ -49,7 +49,7 @@ BattleHud::BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *choice)
     mClosed = 0;
     mTouched = 0;
     mPenToggleFrames = 0;
-    mChoice = (s8 (*)[2]) choice;
+    mSidePlayers = (s8 (*)[2]) sidePlayers;
     mCountdownFrames = 0;
     mCountdownFrameCount = 0;
     mStartPushPercent = 0;
@@ -455,8 +455,8 @@ void CloseHud(void *obj) {
     ((BattleHud *) obj)->mUnk_23 |= 2;
 }
 
-void SetHudState(BattleHud *obj, u32 state) {
-    switch (state) {
+void SetHudSequence(BattleHud *obj, u32 sequence) {
+    switch (sequence) {
         case HUD_SEQUENCE_NONE:
             obj->mState = 0;
             break;
@@ -834,7 +834,7 @@ void BattleHud::Draw() {
         pos[1] = mSide1X;
         i = 0;
         do {
-                        if (selected == mChoice[i][0] || selected == mChoice[i][1]) {
+                        if (selected == mSidePlayers[i][0] || selected == mSidePlayers[i][1]) {
                 if (mShakeSign != 0) {
                     pos[i] += 4;
                 } else {
@@ -867,11 +867,11 @@ void BattleHud::Draw() {
             } else {
                 x = 0xe7;
             }
-            s8 first = mChoice[i][0];
+            s8 first = mSidePlayers[i][0];
             if (first != -1) {
                 mCellAnims[j]->SetAnimation(first + 7);
                 mCellAnims[j++]->Draw(1, x, 0x3d, 0);
-                s8 second = mChoice[i][1];
+                s8 second = mSidePlayers[i][1];
                 if (second != -1) {
                     mCellAnims[j]->SetAnimation(second + 7);
                     mCellAnims[j]->Draw(1, x, 0x4b, 0);

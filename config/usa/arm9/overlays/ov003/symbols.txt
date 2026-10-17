@@ -18,7 +18,7 @@ _ZN10StoreScene15ClearTextBufferEv kind:function(arm,size=0x20) addr:0x0221b588
 _ZN10StoreScene9DrawMoneyEv kind:function(arm,size=0x124) addr:0x0221b5a8
 OV003_RODATA_START kind:data(any) addr:0x0221b6cc
 sSelectEventIds kind:data(any) addr:0x0221b6d0 local
-sSelectedFrames kind:data(any) addr:0x0221b6d4 local
+sSelectedAnimIndices kind:data(any) addr:0x0221b6d4 local
 sSelectScriptIds kind:data(any) addr:0x0221b6d8 local
 sMessageIndices kind:data(any) addr:0x0221b6dc local
 @1665 kind:data(any) addr:0x0221b6e0 local

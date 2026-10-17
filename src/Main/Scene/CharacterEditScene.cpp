@@ -216,7 +216,7 @@ CharacterEditScene::CharacterEditScene(u32 unk) :
         mCellAnims[i] = NULL;
     }
     mRebuildModel = 0;
-    mStoreLookPromptRequested = 0;
+    mStoreLookPromptPending = 0;
     mChoiceApplied = 0;
     mWindowTextVisible = 0;
     mWindowTextBuffer = NULL;
@@ -563,7 +563,7 @@ void CharacterEditScene::UpdateRootMenu() {
             SetupMenuRows(1);
             return;
         } else if (InputManager::Get().IsPressed(8) && mWindows[0]->mState == 1) {
-            mStoreLookPromptRequested = 1;
+            mStoreLookPromptPending = 1;
             SetupMenuRows(1);
             mWindows[0]->mState = 3;
             mStep = 10;
@@ -614,7 +614,7 @@ void CharacterEditScene::UpdateRootMenu() {
         if (SwitchToSelectedGroup()) {
             return;
         }
-        if (mStoreLookPromptRequested != 0) {
+        if (mStoreLookPromptPending != 0) {
             mState = 0xc;
             mStep = 0x53;
             return;
@@ -963,7 +963,7 @@ void CharacterEditScene::UpdateFaceHairCapGlassesMenu() {
             SlideToParent();
             return;
         } else if (InputManager::Get().IsPressed(8) && mWindows[0]->mState == 1) {
-            mStoreLookPromptRequested = 1;
+            mStoreLookPromptPending = 1;
             SetupMenuRows(1);
             mWindows[0]->mState = 3;
             mStep = 0x1b;
@@ -986,7 +986,7 @@ void CharacterEditScene::UpdateFaceHairCapGlassesMenu() {
         if (SwitchToSelectedGroup()) {
             return;
         }
-        if (mStoreLookPromptRequested != 0) {
+        if (mStoreLookPromptPending != 0) {
             mState = 0xc;
             mStep = 0x53;
             return;
@@ -1547,7 +1547,7 @@ void CharacterEditScene::UpdateBottomShoesMenu() {
             SlideToParent();
             return;
         } else if (InputManager::Get().IsPressed(8) && mWindows[0]->mState == 1) {
-            mStoreLookPromptRequested = 1;
+            mStoreLookPromptPending = 1;
             SetupMenuRows(1);
             mWindows[0]->mState = 3;
             mStep = 0x44;
@@ -1570,7 +1570,7 @@ void CharacterEditScene::UpdateBottomShoesMenu() {
         if (SwitchToSelectedGroup()) {
             return;
         }
-        if (mStoreLookPromptRequested != 0) {
+        if (mStoreLookPromptPending != 0) {
             mState = 0xc;
             mStep = 0x53;
             return;
@@ -1784,7 +1784,7 @@ void CharacterEditScene::UpdateStoreLookPrompt() {
         ResetTexts();
         SetText(0, 3, 0);
         mStep = 0x54;
-        mStoreLookPromptRequested = 0;
+        mStoreLookPromptPending = 0;
         mRotateState = 3;
         break;
     }

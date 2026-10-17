@@ -723,8 +723,8 @@ void BattleCommand::Update() {
                             mCommandPrompt = 0;
                         }
                     }
-                    mCursorX  = p->mMsg.mTouchDown;
-                    mCursorY  = p->mMsg.mTouchX;
+                    mCursorX  = p->mMsg.mCursorX;
+                    mCursorY  = p->mMsg.mCursorY;
                     mNextMode = COMMAND_MODE_NONE;
                     mState  = 0x2d;
                     return;
@@ -1240,8 +1240,8 @@ void BattleCommand::Update() {
                 mCockpitWindow->mEnabled = 0;
                 mState          = 0x2d;
                 data_0220f540.mUnk_00 = 0x12;
-                data_0220f540.mTouchDown = mCursorX;
-                data_0220f540.mTouchX    = mCursorY;
+                data_0220f540.mCursorX = mCursorX;
+                data_0220f540.mCursorY = mCursorY;
                 mDragScrolling              = 0;
             } else if (sel == 2) {
                 mState++;
@@ -1338,7 +1338,7 @@ void BattleCommand::Update() {
             OpenNextMode(0);
             CreateCursorModel(mCommandMap);
             SetupMapCamera(mCommandMap, 2);
-            mCommandMap->mStatusPanelsEnabled = 0;
+            mCommandMap->mUseStatusPanels = 0;
             SpriteManager::Get().StartSubFade(FADE_MODE_TO_ZERO);
             data_020d433c.mGimmicks->mState = 0;
             new BattleCardEffect(0, 0xb, 0xe, 1);

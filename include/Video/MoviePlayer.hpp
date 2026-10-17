@@ -11,7 +11,8 @@ struct Player;
 class MoviePlayer {
 public:
     /* 00 */ volatile s64 mTickCount; // CountTick calls since Open or the last reset
-    /* 08 */ s64 mFrames; // blocks (mBlockLength elements each) written to mBuffer; Update's reset subtracts mTickCount
+    /* 08 */ s64 mWrittenBlockCount; // blocks (mBlockLength elements each) written to mBuffer; Update's reset
+                                     // subtracts mTickCount
     /* 10 */ Player *mVideo;
     /* 14 */ Player *mVideo2; // second stream; never opened in this build (the only Open call passes b = 0)
     /* 18 */ u8 mFile[0x48];

@@ -81,14 +81,14 @@ _ZN16FieldSelectScene19func_ov001_02226d18Ej kind:function(arm,size=0x30) addr:0
 _ZN16FieldSelectScene13FindCharaItemEj kind:function(arm,size=0x2c) addr:0x02226d48
 _ZN16FieldSelectScene19func_ov001_02226d74Ev kind:function(arm,size=0xe0) addr:0x02226d74
 sArenaMenuCells kind:data(any) addr:0x02226e54 local
-sArenaTwoButtonItems kind:data(any) addr:0x02226e8c local
-sArenaTwoButtonCells kind:data(any) addr:0x02226ec4 local
+sArenaTwoItems kind:data(any) addr:0x02226e8c local
+sArenaTwoItemCells kind:data(any) addr:0x02226ec4 local
 sArenaSlotItems kind:data(any) addr:0x02226efc local
-sArenaThreeButtonItems kind:data(any) addr:0x02226f34 local
-sArenaThreeButtonCells kind:data(any) addr:0x02226f88 local
+sArenaThreeItems kind:data(any) addr:0x02226f34 local
+sArenaThreeItemCells kind:data(any) addr:0x02226f88 local
 sArenaMenuItems kind:data(any) addr:0x02226fdc local
-sArenaWindowTwoButtonCells kind:data(any) addr:0x0222704c local
-sArenaWindowTwoButtonItems kind:data(any) addr:0x02227084 local
+sArenaWindowTwoItemCells kind:data(any) addr:0x0222704c local
+sArenaWindowTwoItems kind:data(any) addr:0x02227084 local
 sFieldSelectFirstRowColumnX kind:data(any) addr:0x022270bc local
 sFieldSelectPairColumnX kind:data(any) addr:0x022270c0 local
 sFieldSelectFieldIds kind:data(any) addr:0x022270c4 local

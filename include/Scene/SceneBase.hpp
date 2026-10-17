@@ -41,7 +41,9 @@ struct UnkStruct_SceneList {
 
 struct SceneContext;
 
-// Per-scene state kept in the scene context, cleared by the scene constructors.
+// Per-scene state kept in the scene context, cleared by the scene constructors. The field names follow StoreScene;
+// MyroomTipsScene.cpp reads these bytes through MyroomTipsSceneInfo, and MyroomScene.cpp the ones it names
+// differently through MyroomSceneInfo.
 struct SceneInfo {
     union {
         /* 00 */ u16 mUnk_00;
@@ -52,7 +54,7 @@ struct SceneInfo {
     /* 04 */ s8 mPrevSelection;
     /* 05 */ s8 mSelection;
     /* 06 */ u8 mUnk_06;
-    /* 07 */ u8 mScroll;
+    /* 07 */ u8 mScrollRemaining;
     /* 08 */ u8 mScrollDir;
     /* 09 */ u8 mPage;
     /* 0a */ u8 mUnk_0a;

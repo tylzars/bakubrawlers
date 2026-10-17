@@ -26,11 +26,11 @@
 
 void operator delete(void *ptr);
 
-static const WindowCellRecord sTitleTwoButtonCells[2] = {
+static const WindowCellRecord sTitleTwoItemCells[2] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0x1b000, 0, 0, 1, {0, 2, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0x1b000, 0, 0, 1, {9, 9, 9, 0}},
 };
-static const WindowCellRecord sTitleThreeButtonCells[3] = {
+static const WindowCellRecord sTitleThreeItemCells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0x1b000, 0, 0, 1, {3, 5, 4, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0x1b000, 0, 0, 1, {6, 8, 7, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x1b000, 0, 0, 1, {10, 10, 10, 0}},
@@ -49,7 +49,7 @@ static const WindowItemRecord sTitleFullScreenItems[1] = {
     {0, 0x1, 0, 0, 255, 255, 0, {0, 0, 0, 0}, 0, WINDOW_TOUCH_RELEASE},
 };
 // Record 1 (WINDOW_ITEM_CURSOR_SKIP) is skipped by the cursor and by touch: one item is selectable.
-static const WindowItemRecord sTitleTwoButtonItems[2] = {
+static const WindowItemRecord sTitleTwoItems[2] = {
     {0, 0x1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, WINDOW_TOUCH_RELEASE},
     {1, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
@@ -71,7 +71,7 @@ static const WindowItemRecord sTitleMenuItems[5] = {
     {4, 0x1, 23, 147, 145, 25, 0, {3, 0, 4, 4}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
 };
 // Record 2 (WINDOW_ITEM_CURSOR_SKIP) is skipped by the cursor and by touch: two items are selectable.
-static const WindowItemRecord sTitleThreeButtonItems[3] = {
+static const WindowItemRecord sTitleThreeItems[3] = {
     {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     {2, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
@@ -139,7 +139,7 @@ TitleScene::TitleScene() :
     mUnk_c8 = 0;
     mState = 0;
     mTimer = 0;
-    mMenuVisible = 0;
+    mMenuCellsVisible = 0;
     mMessageIndex = 0xff;
     mUnk_d0 = 0;
     mBlendAmplitude = 0x10;
@@ -197,7 +197,7 @@ TitleScene::~TitleScene() {
 void TitleScene::Update() {
     switch (mState) {
         case 0:
-            if (data_020d433c.mCreditsPending) {
+            if (data_020d433c.mCreditsRequested) {
                 mPlaneBlendEnabled = 0;
                 mState = 0x2a;
                 break;
@@ -397,8 +397,8 @@ void TitleScene::Update() {
             break;
         case 13:
             delete mWindow30;
-            mWindow30 = new SelectWindow(3, sTitleThreeButtonItems, -1);
-            mWindow30->SetCells(3, sTitleThreeButtonCells);
+            mWindow30 = new SelectWindow(3, sTitleThreeItems, -1);
+            mWindow30->SetCells(3, sTitleThreeItemCells);
             mWindow30->mCursor->mSelection = -1;
             mWindow30->mCursor->mSelection = 1;
             PrintText((MessageFile *) mBuf38, 8);
@@ -419,8 +419,8 @@ void TitleScene::Update() {
             break;
         case 15:
             delete mWindow30;
-            mWindow30 = new SelectWindow(3, sTitleThreeButtonItems, -1);
-            mWindow30->SetCells(3, sTitleThreeButtonCells);
+            mWindow30 = new SelectWindow(3, sTitleThreeItems, -1);
+            mWindow30->SetCells(3, sTitleThreeItemCells);
             mWindow30->mCursor->mSelection = -1;
             mWindow30->mCursor->mSelection = 1;
             PrintText((MessageFile *) mBuf38, 7);
@@ -444,8 +444,8 @@ void TitleScene::Update() {
             break;
         case 17:
             delete mWindow30;
-            mWindow30 = new SelectWindow(2, sTitleTwoButtonItems, -1);
-            mWindow30->SetCells(2, sTitleTwoButtonCells);
+            mWindow30 = new SelectWindow(2, sTitleTwoItems, -1);
+            mWindow30->SetCells(2, sTitleTwoItemCells);
             mWindow30->mCursor->mSelection = -1;
             mWindow30->mCursor->mSelection = 0;
             PrintText((MessageFile *) mBuf38, 3);
@@ -588,15 +588,15 @@ void TitleScene::Update() {
             }
             QueueFrameCallback(TitleScene::ApplyScroll, this);
             mScrollY = 0;
-            mMenuVisible = 1;
+            mMenuCellsVisible = 1;
             RefreshMenuAnimations();
             SetMessage((u8) (mMenuSelection + 2));
             mTimer = 0;
             if (mUnk_d6) {
                 mUnk_d6 = 0;
                 delete mWindow30;
-                mWindow30 = new SelectWindow(2, sTitleTwoButtonItems, -1);
-                mWindow30->SetCells(2, sTitleTwoButtonCells);
+                mWindow30 = new SelectWindow(2, sTitleTwoItems, -1);
+                mWindow30->SetCells(2, sTitleTwoItemCells);
                 mWindow30->mCursor->mSelection = -1;
                 mWindow30->mCursor->mSelection = 0;
                 PrintText((MessageFile *) mBuf3c, 7);
@@ -653,7 +653,7 @@ void TitleScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mMenuVisible = 0;
+            mMenuCellsVisible = 0;
             mLogoVisible = 0;
             mState = 0x28;
             break;
@@ -734,13 +734,13 @@ void TitleScene::Update() {
             }
             break;
         case 47:
-            data_020d433c.mCreditsPending = 0;
+            data_020d433c.mCreditsRequested = 0;
             RequestScene(SCENE_LOGO);
             mFinished = 1;
             return;
     }
     UpdateFade();
-    if (mMenuVisible) {
+    if (mMenuCellsVisible) {
         DrawMenuCells();
     }
     DrawLogo();

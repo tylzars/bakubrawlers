@@ -218,7 +218,8 @@ public:
     /* 28 */ float mVel[2][2];
     /* 38 */ s16 mAbilitiesY;
     /* 3a */ s16 mAbilitiesYPerFrame; // starts at 10, shrinks by 2 per state-2 frame down to 2
-    /* 3c */ int mSide; // BattleBase::mLocalSide (the ctor's mode): 0 / 1 entry side, 2..4 neither entry
+    // 0 / 1: this console plays entry 0 / 1; 2..4 neither entry (copy of BattleBase::mLocalSide, the ctor mode)
+    /* 3c */ int mLocalSide;
     /* 40 */ BattleData *mData;
     /* 44 */ CellAnimation *mCellAnims[15];
     /* 80 */
@@ -344,7 +345,7 @@ public:
     void Draw(u32 percent); // FollowPushPercent first when mFollowEnabled, then the two models and mMapObj
 };
 
-// Arguments of SetHudState (BattleHud.cpp): each starts a run of BattleHud::mState steps that ends back at mState 0
+// Arguments of SetHudSequence (BattleHud.cpp): each starts a run of BattleHud::mState steps that ends back at mState 0
 // (IsHudSequenceRunning reads mState != 0). The argument is not the mState value it sets (0, 1, 4, 6, 8).
 #define HUD_SEQUENCE_NONE               0 // mState 0: Update runs no step, only Draw
 #define HUD_SEQUENCE_BAR_FILL_COUNTDOWN 1 // mState 1: tutorial pages in some tutorials, then SetupCountdown, and each
@@ -396,7 +397,9 @@ public:
     /* 30 */ CellAnimation *mCellAnims[23];
     /* 8c */ BattleData *mData;
     /* 90 */ BattleParam *mParam;
-    /* 94 */ s8 (*mChoice)[2]; // per side: the two chosen entries (-1: none)
+    // per side: up to two player indices (BattlePlayerList::mPlayers) other than the two entries' players, filled by
+    // BattleBase::func_ov007_0221cfac; -1 = none. Points at BattleBase::mUnk_1c..mUnk_1f
+    /* 94 */ s8 (*mSidePlayers)[2];
     /* 98 */ u32 mCountdownFrames; // also counts UpdateSwap's 20 push frames
     /* 9c */ u16 mCountdownFrameCount;
     /* 9e */ PAD(0x9e, 0x9f);
@@ -444,7 +447,7 @@ public:
     /* 12e */ s16 mPenY;
     /* 130 */
 
-    BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *choice);
+    BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *sidePlayers);
     virtual ~BattleHud();
     virtual void Update();
     void Init();

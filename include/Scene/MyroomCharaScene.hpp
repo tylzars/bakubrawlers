@@ -61,13 +61,13 @@ public:
     u8 func_ov008_02224a4c();
     void LoadText();
     void ClearTextBuffers(); // 0x02224c60
-    // Prints into mTextBuffers[line] only (RenderLine uploads). Message 7 replaces the number when tab 1's
+    // Prints into mTextBuffers[line] only (PrintLine uploads). Message 7 replaces the number when tab 1's
     // gSaveData[0].mUnk_48 + mUnk_4a or tab 2's value is 0; message `suffix` follows unless it is -1.
     void PrintValue(u32 line, u32 value, u8 digits, s16 x, s16 suffix);
-    void RenderLine(u32 line, u32 kind);
+    void PrintLine(u32 line, u32 kind); // also sets mLinesVisible[line]
     void DrawText();         // 0x02225544
     void FreeText();         // 0x0222563c
-    void RenderLines();
+    void PrintLines();
     // mList = ids i < 0x11, i != 5, with gSaveData[0].mUnk_5e[i] != 0, largest value first; mPageCount pages of 7.
     // With mListCount 0 the do-while still writes mList[0].
     void BuildList();

@@ -169,12 +169,12 @@ public:
     /* 149 */ u8 mCursorY;
     /* 14a */ u8 mState;
     /* 14b */ u8 mKind;
-    /* 14c */ u8 mUnitBakugansEnabled;
-    /* 14d */ u8 mMapModelsEnabled;
+    /* 14c */ u8 mUseUnitBakugans;
+    /* 14d */ u8 mUseMapModels;
     /* 14e */ PAD(0x14e, 0x14f);
     /* 14f */ u8 mPredictVisible;
     /* 150 */ u8 mUnk_150;
-    /* 151 */ u8 mStatusPanelsEnabled;
+    /* 151 */ u8 mUseStatusPanels;
     /* 152 */ u8 mUnitBakugansVisible;
     /* 153 */ u8 mCursorAndMarkerModelsVisible;
     /* 154 */ u8 mUnk_154;
@@ -201,7 +201,7 @@ public:
 
 // Helpers of the map object implemented in BattleCommandMap.cpp (linkage as defined there).
 void CloseCommandMapNow(BattleCommandMap *map);
-extern "C" void SetMapModelsEnabled(BattleCommandMap *map, u32 a);
+extern "C" void SetUseMapModels(BattleCommandMap *map, u32 a);
 void CreateCursorModel(BattleCommandMap *map);
 extern "C" void SetPredictVisible(BattleCommandMap *map, u32 flag);
 extern "C" void GetCornerPosition(BattleCommandMap *map, VecFx32 *out); // *out unchanged for mKind >= 8

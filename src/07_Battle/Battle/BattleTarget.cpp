@@ -765,7 +765,7 @@ void BattleTarget::Init() {
     BattleRecord *record   = &list->mPlayers[mPlayer]->mRecords[mRecord];
     LoadEffectGroup(data_020d433c.mEffects, 1, "shoot");
     mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
-    mCommandMap->mStatusPanelsEnabled = 0;
+    mCommandMap->mUseStatusPanels = 0;
     mCommandMap->Init();
     SetPredictVisible(mCommandMap, 1);
     LoadUnitCollisions();
@@ -3256,7 +3256,7 @@ BOOL BattleTarget::CanRestOnCell(VecFx32 *pos, u16 *angle, VecFx32 *vel, u8 *out
 }
 
 void BattleTarget::func_ov007_0225b69c(u8 a, u8 b) {
-    SetMapModelsEnabled(mCommandMap, 1);
+    SetUseMapModels(mCommandMap, 1);
     CreateCursorModel(mCommandMap);
     BattleCommandMap *map = mCommandMap;
     map->mCursorX         = a;
@@ -3734,7 +3734,7 @@ void BattleTarget::func_ov007_0225ce08() {
     screen.LoadPalette("battle_shoot_b_gp_ncl.bin", 0x140, 0);
     ChangeDir("/");
     mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
-    mCommandMap->mStatusPanelsEnabled = 0;
+    mCommandMap->mUseStatusPanels = 0;
     mCommandMap->Init();
     data_020d433c.mGimmicks->mState = 0;
     mBakugan->SetupMode(BAKUGAN_MODEL_MODE_H_HOLD_FRAME);

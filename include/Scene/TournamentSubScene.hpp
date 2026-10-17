@@ -38,7 +38,7 @@ public:
     /* 50 */ u8 mTextLineCount; // Print's y after the message / 14 (line advances); read as the line count
     /* 51 */ s8 mScroll;
     /* 52 */ u8 mCount;
-    /* 53 */ s8 mSelected;
+    /* 53 */ s8 mEntryIndex;
     /* 54 */ u8 mUnk_54;
     /* 55 */ u8 mState;
     /* 56 */ s8 mCounter;

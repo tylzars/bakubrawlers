@@ -65,23 +65,23 @@ static const ParkRandEntry sParkWinLoseMessages[17][6] = {
     {{48, 1, 0}, {49, 1, 0}, {50, 1, 0}, {48, 3, 0}, {49, 3, 0}, {50, 3, 0}},
 };
 
-static const WindowItemRecord sTwoButtonItems[2] = {
+static const WindowItemRecord sTwoItems[2] = {
     {0, 0x1, 89, 152, 78, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
     {1, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
 
-static const WindowCellRecord sThreeButtonCells[3] = {
+static const WindowCellRecord sThreeItemCells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0x10000, 0, 0, 1, {3, 5, 4, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0x10000, 0, 0, 1, {6, 8, 7, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0x10000, 0, 0, 1, {10, 10, 10, 0}},
 };
 
-static const WindowCellRecord sTwoButtonCells[2] = {
+static const WindowCellRecord sTwoItemCells[2] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0x10000, 0, 0, 1, {0, 2, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0x10000, 0, 0, 1, {9, 9, 9, 0}},
 };
 
-static const WindowItemRecord sThreeButtonItems[3] = {
+static const WindowItemRecord sThreeItems[3] = {
     {0, 0x1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     {1, 0x1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     {2, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
@@ -893,12 +893,12 @@ void ParkPopup::Open(const char *mesPath, u32 index, u32 mode) {
     delete mWindow;
     switch (mode) {
         case PARK_POPUP_THREE_ITEMS:
-            mWindow = new SelectWindow(3, sThreeButtonItems, 1);
-            mWindow->SetCells(3, sThreeButtonCells);
+            mWindow = new SelectWindow(3, sThreeItems, 1);
+            mWindow->SetCells(3, sThreeItemCells);
             break;
         case PARK_POPUP_TWO_ITEMS:
-            mWindow = new SelectWindow(2, sTwoButtonItems, 0);
-            mWindow->SetCells(2, sTwoButtonCells);
+            mWindow = new SelectWindow(2, sTwoItems, 0);
+            mWindow->SetCells(2, sTwoItemCells);
             break;
     }
     mWindow->mCursor->mSelection = -1;

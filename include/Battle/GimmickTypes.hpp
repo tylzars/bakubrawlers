@@ -295,7 +295,7 @@ class GimmickPyrusEruption : public Gimmick { // 0222f8fc, vtable 0228743c, mode
 public:
     /* 45 */ PAD(0x45, 0x48);
     /* 48 */ ModelInstance *mModelB;
-    /* 4c */ u16 mCounter;
+    /* 4c */ u16 mTimer;
     /* 4e */ u8 mPushed; // set as state 3 is left, cleared before state 4 returns to 1: the state-3 test never sees it
     /* 4f */ u8 mMarkerNear;
     /* 50 */
@@ -311,7 +311,7 @@ public:
     // bits (as in CountDownToState).
     void DrawModelB();
     void DrawModels(int drawB);
-    // Steps mCounter only while bit 3 of data_020d433c.mFlags is clear; its `&= 8` first clears the other bits.
+    // Steps mTimer only while bit 3 of data_020d433c.mFlags is clear; its `&= 8` first clears the other bits.
     int CountDownToState(int frames, int state);
 };
 // One row of the ability pick table at 02279568: `mCount` entries, picked by weight, mapped through `mIds`.
@@ -411,7 +411,7 @@ class GimmickAquosFukidashi : public Gimmick { // 02275de8
 public:
     /* 45 */ PAD(0x45, 0x48);
     /* 48 */ ModelInstance *mModelB;
-    /* 4c */ u16 mCounter;
+    /* 4c */ u16 mTimer; // counts down; Load reads 0x104 / 0x140 - mTimer and Update 0x104 - mTimer as elapsed frames
     /* 4e */ u16 mPushTimer;
     /* 50 */ u8 mTargetNear; // last IsTargetNear result, compared with the new one to start / stop the sound
     /* 51 */ u8 mMarkerNear;
@@ -430,7 +430,7 @@ public:
     // bits (as in CountDownToState).
     void DrawModelB();
     void DrawModels(int drawB);
-    // Steps mCounter only while bit 3 of data_020d433c.mFlags is clear; its `&= 8` first clears the other bits.
+    // Steps mTimer only while bit 3 of data_020d433c.mFlags is clear; its `&= 8` first clears the other bits.
     int CountDownToState(int frames, int state);
     int IsTargetNear(); // TRUE when the target's bakugan is visible and within 0x96000 of the bubble
 };
@@ -440,7 +440,7 @@ class GimmickIkazuchiStart : public Gimmick { // 02278270
 public:
     /* 45 */ PAD(0x45, 0x48);
     /* 48 */ ModelInstance *mModelB;
-    /* 4c */ u16 mCounter;
+    /* 4c */ u16 mTimer;
     /* 4e */ u16 mDelays[8];
     /* 5e */ u8 mDelayIndex;
     /* 5f */ u8 mMarkerNear;
@@ -453,5 +453,5 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
-    int func_ov007_022789e0(int count); // draws; with `count` also counts mCounter down, TRUE when it hits 0
+    int func_ov007_022789e0(int count); // draws; with `count` also counts mTimer down, TRUE when it hits 0
 };

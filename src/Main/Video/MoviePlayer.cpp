@@ -250,7 +250,7 @@ void MoviePlayer::Open(void *a, void *b, u8 c, u32 d) {
     }
     mTickCount = 0;
     mWriteOffset = 0;
-    mFrames = 0;
+    mWrittenBlockCount = 0;
     mVramPage = 0;
     mFlipDone = 1;
     OS_CreateAlarm(mAlarm);
@@ -310,7 +310,7 @@ BOOL MoviePlayer::Update() {
                 j = 0;
                 while (i < count) {
                     if (mSoundStarted) {
-                        while ((u64) mBufferBlockCount - (u64) (mFrames - mTickCount) == 0) {
+                        while ((u64) mBufferBlockCount - (u64) (mWrittenBlockCount - mTickCount) == 0) {
                         }
                     }
                     j = 0;
@@ -328,7 +328,7 @@ BOOL MoviePlayer::Update() {
                             if (mWriteOffset == mBufferBlockCount * mBlockLength) {
                                 mWriteOffset = 0;
                             }
-                            mFrames += 1;
+                            mWrittenBlockCount += 1;
                         } else {
                             MobiclipSkipAudioBlock(mVideo);
                             if (mUseBuffer2 == 1) {
@@ -348,7 +348,8 @@ BOOL MoviePlayer::Update() {
             }
         }
         if (mDecodedFrames >= mPlaneCount || func_0203a67c(mVideo) == 0) {
-            if ((s32) (mFrames - mTickCount) <= (s32) (mUnk_d8 * 3) && !mLastFrameSkipped && func_0203a67c(mVideo) != 0) {
+            if ((s32) (mWrittenBlockCount - mTickCount) <= (s32) (mUnk_d8 * 3) && !mLastFrameSkipped &&
+                func_0203a67c(mVideo) != 0) {
                 MobiclipSkipFrame(mVideo);
                 if (mUseVideo2) {
                     MobiclipSkipFrame(mVideo2);
@@ -379,9 +380,9 @@ BOOL MoviePlayer::Update() {
                 if (mUseBuffer2 == 1) {
                     MIi_CpuClearFast(0, mBuffer2, mBufferBlockCount * mBlockLength * 2);
                 }
-                mFrames -= mTickCount;
+                mWrittenBlockCount -= mTickCount;
                 mTickCount = 0;
-                mWriteOffset = (u32) mFrames * mBlockLength;
+                mWriteOffset = (u32) mWrittenBlockCount * mBlockLength;
                 if (mWriteOffset == mBufferBlockCount * mBlockLength) {
                     mWriteOffset = 0;
                 }

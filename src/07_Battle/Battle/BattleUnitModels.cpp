@@ -114,16 +114,16 @@ void BattleUnitModels::Update() {
         if (mBakugans[i]) {
             switch (mMoveStates[i]->mMode) {
                 case MOVE_MODE_DAMPED:
-                    UpdateMoveMode2(i);
+                    UpdateDampedMove(i);
                     break;
                 case MOVE_MODE_LAUNCH_SPIN_Y:
-                    UpdateMoveMode3(i);
+                    UpdateLaunchSpinYMove(i);
                     break;
                 case MOVE_MODE_SLOW_LAUNCH_SPIN_X:
-                    UpdateMoveMode4(i);
+                    UpdateSlowLaunchSpinXMove(i);
                     break;
                 case MOVE_MODE_LAUNCH_SPIN_X:
-                    UpdateMoveMode5(i);
+                    UpdateLaunchSpinXMove(i);
                     break;
             }
         }
@@ -485,7 +485,7 @@ static inline void AddRot(BakuganModel *p, const u16 *r) {
     p->mRotY = ry;
     p->mRotZ = rz;
 }
-void BattleUnitModels::UpdateMoveMode2(u32 index) {
+void BattleUnitModels::UpdateDampedMove(u32 index) {
     BattleMoveState *m = mMoveStates[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
         BakuganModel *q = mBakugans[index];
@@ -506,7 +506,7 @@ void BattleUnitModels::UpdateMoveMode2(u32 index) {
     }
 }
 
-void BattleUnitModels::UpdateMoveMode3(u32 index) {
+void BattleUnitModels::UpdateLaunchSpinYMove(u32 index) {
     BattleMoveState *m = mMoveStates[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
         BakuganModel *q = mBakugans[index];
@@ -535,7 +535,7 @@ void BattleUnitModels::UpdateMoveMode3(u32 index) {
     }
 }
 
-void BattleUnitModels::UpdateMoveMode4(u32 index) {
+void BattleUnitModels::UpdateSlowLaunchSpinXMove(u32 index) {
     BattleMoveState *m = mMoveStates[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
         BakuganModel *q = mBakugans[index];
@@ -564,7 +564,7 @@ void BattleUnitModels::UpdateMoveMode4(u32 index) {
     }
 }
 
-void BattleUnitModels::UpdateMoveMode5(u32 index) {
+void BattleUnitModels::UpdateLaunchSpinXMove(u32 index) {
     BattleMoveState *m = mMoveStates[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
         BakuganModel *q = mBakugans[index];

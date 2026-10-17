@@ -574,6 +574,7 @@ void BattleResult::Update() {
                 if (!SpriteManager::Get().IsFading()) {
                     u8 result;
                     if (data_020d433c.mWireless != 0) {
+                        // byte 4: the sender's mSelectedId (the raw `*((u8 *) &data_0220f540 + 4) =` store)
                         result = data_020d433c.mBattlePlayers->mPlayers[0]->mMsg.mTouchDown;
                     } else {
                         result = mSelectedId;

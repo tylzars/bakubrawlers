@@ -96,7 +96,7 @@ static const WindowItemRecord sOptionMenu2Items[4] = {
 OptionScene::OptionScene() :
     SceneBase(2, 0) {
     mWindow = NULL;
-    mSelection = 0;
+    mSelectedId = 0;
     mFile = NULL;
     mBuf0c = NULL;
     MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
@@ -153,8 +153,8 @@ void OptionScene::Update() {
             BOOL result = mWindow->Update(1);
             switch (result) {
                 case 1:
-                    mSelection = mWindow->GetSelectedId();
-                    switch ((u8) mSelection) {
+                    mSelectedId = mWindow->GetSelectedId();
+                    switch ((u8) mSelectedId) {
                         case OPTION_MENU_VOLUME:
                             mState = 3;
                             break;
@@ -298,7 +298,7 @@ void OptionScene::Update() {
             break;
         case 18: {
             BOOL result = mWindow->Update(1);
-            DrawMenu3();
+            DrawMenu4();
             switch (result) {
                 case 1:
                     gSaveData[0].mUnk_28_5 = mFlagSelectedId == 0 ? 1 : 0;
@@ -316,13 +316,13 @@ void OptionScene::Update() {
             break;
         }
         case 19:
-            DrawMenu3();
+            DrawMenu4();
             mSlideTimer = 8;
             mState++;
             break;
         case 20:
             mPosY[0] -= 4;
-            DrawMenu3();
+            DrawMenu4();
             if (mSlideTimer == 0) {
                 mState = 1;
             }
@@ -435,17 +435,17 @@ void OptionScene::Init() {
 }
 
 void OptionScene::BuildMainMenu() {
-    ClearText(0);
+    PrintMessage(0);
     delete mWindow;
-    mWindow = new SelectWindow(6, sOptionMainMenuItems, mSelection);
+    mWindow = new SelectWindow(6, sOptionMainMenuItems, mSelectedId);
     mWindow->SetCells(6, sOptionMainMenuCells);
     mWindow->Update(1);
-    u8 sel = mSelection;
+    u8 sel = mSelectedId;
     mWindow->mCellAnims[sel]->SetAnimation(sOptionMainMenuCells[sel].mAnimIndices[2]);
 }
 
 void OptionScene::BuildSettings() {
-    ClearText(1);
+    PrintMessage(1);
     SpriteManager::Get();
     u8 i;
     CellAnimation *cell;
@@ -576,7 +576,7 @@ void OptionScene::UpdateSettings() {
 }
 
 void OptionScene::BuildMenu2() {
-    ClearText(2);
+    PrintMessage(2);
     SpriteManager::Get();
     if (mCellAnims[0] != NULL) {
         delete mCellAnims[0];
@@ -670,7 +670,7 @@ void OptionScene::ResetDisplay() {
 
 
 void OptionScene::BuildMenu4() {
-    ClearText(4);
+    PrintMessage(4);
     SpriteManager::Get();
     if (mCellAnims[0] != NULL) {
         delete mCellAnims[0];
@@ -691,7 +691,7 @@ void OptionScene::BuildMenu4() {
 
 
 
-void OptionScene::DrawMenu3() {
+void OptionScene::DrawMenu4() {
     if (mSlideTimer != 0) {
         mPosY[0] += 2;
         mSlideTimer--;
@@ -699,7 +699,7 @@ void OptionScene::DrawMenu3() {
     mCellAnims[0]->Draw(1, mPosX[0], mPosY[0], 0);
 }
 
-void OptionScene::ClearText(u32 index) {
+void OptionScene::PrintMessage(u32 index) {
     MI_CpuClearFast(mBuf0c, mBufSize);
     TextManager &text = TextManager::Get();
     u16 pixelWidth;

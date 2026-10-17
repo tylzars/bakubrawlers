@@ -16,34 +16,34 @@
 extern MtxFx22 gIdentityMtx22;
 extern "C" void MTX_ScaleRot22(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
 
-static const WindowItemRecord sTwoButtonItems[2] = {
+static const WindowItemRecord sTwoItems[2] = {
     {0, 0x1, 89, 136, 78, 20, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     {1, WINDOW_ITEM_CURSOR_SKIP, 120, 35, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
 
-static const WindowCellRecord sThreeButtonCells[3] = {
+static const WindowCellRecord sThreeItemCells[3] = {
     {"union_b_obj_window_nce.bin", 3, 0x10000, 12, 0, 1, {3, 5, 4, 0}},
     {"union_b_obj_window_nce.bin", 7, 0x10000, 12, 0, 1, {6, 8, 7, 0}},
     {"union_b_obj_window_nce.bin", 10, 0x10000, 12, 0, 1, {10, 10, 10, 0}},
 };
 
-static const WindowCellRecord sTwoButtonCells[2] = {
+static const WindowCellRecord sTwoItemCells[2] = {
     {"union_b_obj_window_nce.bin", 1, 0x10000, 12, 0, 1, {0, 2, 1, 0}},
     {"union_b_obj_window_nce.bin", 10, 0x10000, 12, 0, 1, {10, 10, 10, 0}},
 };
 
-static const Vec2s sTwoButtonPos[2] = {
+static const Vec2s sTwoItemPos[2] = {
     {0x159, 0x88},
     {0x178, 0x23},
 };
 
-static const Vec2s sThreeButtonPos[3] = {
+static const Vec2s sThreeItemPos[3] = {
     {0x12d, 0x88},
     {0x185, 0x88},
     {0x178, 0x23},
 };
 
-static const WindowItemRecord sThreeButtonItems[3] = {
+static const WindowItemRecord sThreeItems[3] = {
     {0, 0x1, 45, 136, 78, 20, 0, {-1, -1, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     {1, 0x1, 133, 136, 78, 20, 0, {-1, -1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     {2, WINDOW_ITEM_CURSOR_SKIP, 120, 35, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
@@ -186,20 +186,20 @@ void BattlePopup::LoadWindow() {
     mGlyphBuffer = OS_Alloc((s16) mGlyphCount * (s16) 0xc);
     TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x18, 8, 0x44);
     if (index == 0x3d) {
-        mWindow = new SelectWindow(2, sTwoButtonItems, 0);
-        mWindow->SetCells(2, sTwoButtonCells);
+        mWindow = new SelectWindow(2, sTwoItems, 0);
+        mWindow->SetCells(2, sTwoItemCells);
         for (u8 i = 0; i < 2; i++) {
             SelectWindow *w = mWindow;
-            w->mCellPos[i].x = sTwoButtonPos[i].x;
-            w->mCellPos[i].y = sTwoButtonPos[i].y;
+            w->mCellPos[i].x = sTwoItemPos[i].x;
+            w->mCellPos[i].y = sTwoItemPos[i].y;
         }
     } else {
-        mWindow = new SelectWindow(3, sThreeButtonItems, 1);
-        mWindow->SetCells(3, sThreeButtonCells);
+        mWindow = new SelectWindow(3, sThreeItems, 1);
+        mWindow->SetCells(3, sThreeItemCells);
         for (u8 i = 0; i < 3; i++) {
             SelectWindow *w = mWindow;
-            w->mCellPos[i].x = sThreeButtonPos[i].x;
-            w->mCellPos[i].y = sThreeButtonPos[i].y;
+            w->mCellPos[i].x = sThreeItemPos[i].x;
+            w->mCellPos[i].y = sThreeItemPos[i].y;
         }
     }
     ChangeDir("/");

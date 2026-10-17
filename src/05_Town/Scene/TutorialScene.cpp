@@ -30,12 +30,12 @@ static const WindowCellRecord sTutorialListCells[6] = {
     {"union_b_obj_scroll_nce.bin", 5, 20480, 3, 2, 1, {5, 5, 5, 0}},
 };
 // Record 2 (WINDOW_ITEM_CURSOR_SKIP) is skipped by the cursor and by touch: two items are selectable.
-static const WindowItemRecord sTutorialThreeButtonItems[3] = {
+static const WindowItemRecord sTutorialThreeItems[3] = {
     {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     {2, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
-static const WindowCellRecord sTutorialThreeButtonCells[3] = {
+static const WindowCellRecord sTutorialThreeItemCells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0, 0, 0, 1, {3, 5, 4, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0, 0, 0, 1, {6, 8, 7, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0, 0, 0, 1, {10, 10, 10, 0}},
@@ -671,8 +671,8 @@ void TutorialScene::LoadListWindow() {
     TextManager::Get().Init(mGlyphs[1].mBuffer, 1, 0, 0x18, 4, 0x21);
     TextManager::Get().SetColor(1, 0, 0xf);
     delete mWindow;
-    mWindow = new SelectWindow(3, sTutorialThreeButtonItems, -1);
-    mWindow->SetCells(3, sTutorialThreeButtonCells);
+    mWindow = new SelectWindow(3, sTutorialThreeItems, -1);
+    mWindow->SetCells(3, sTutorialThreeItemCells);
     mWindow->mCursor->mSelection = -1;
     mWindow->mEnabled             = 0;
     mWindow->mCursor->mSelection = 1;

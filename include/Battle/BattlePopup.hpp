@@ -7,7 +7,7 @@
 
 class SelectWindow;
 
-// Popup scene with a message from mes_command and two or three buttons (vtable 0228b008, 0x1c bytes). The window
+// Popup scene with a message from mes_command and one or two buttons (vtable 0228b008, 0x1c bytes). The window
 // slides in over the BG, waits for a button (or IsPressed(8)) and requests the scene stored in mNextScene.
 class BattlePopup : public SceneBase {
 public:

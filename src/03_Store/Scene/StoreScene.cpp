@@ -36,11 +36,11 @@ s32 UnlockEmblem8Or9();
 void func_02086d48();
 
 // only ever SetMapExtraAnim's argument (GetAnimObjForSet(1, n))
-static const u8 sSelectScriptIds[3] = {2, 1, 3};
-static const u8 sMessageIndices[3]  = {0x12, 0x13, 0x14};
-static const u8 sIdleFrames[3]      = {3, 0, 6};
-static const u8 sSelectedFrames[3]  = {4, 1, 7};
-static const u8 sSelectEventIds[3]  = {1, 2, 3};
+static const u8 sSelectScriptIds[3]     = {2, 1, 3};
+static const u8 sMessageIndices[3]      = {0x12, 0x13, 0x14};
+static const u8 sIdleAnimIndices[3]     = {3, 0, 6};
+static const u8 sSelectedAnimIndices[3] = {4, 1, 7};
+static const u8 sSelectEventIds[3]      = {1, 2, 3};
 
 static const WindowItemRecord sMenuItems[6] = {
     {0, WINDOW_ITEM_CURSOR_SKIP, 88, 56, 80, 80, 0, {-1, -1, -1, -1}, 0, WINDOW_TOUCH_RELEASE},
@@ -471,16 +471,16 @@ void StoreScene::UpdateMenu() {
 }
 
 void StoreScene::StartScroll() {
-    SceneInfo *info = &mContext->mInfo;
-    info->mState    = 11;
-    info->mScroll   = 0x62;
+    SceneInfo *info        = &mContext->mInfo;
+    info->mState           = 11;
+    info->mScrollRemaining = 0x62;
     u8 i;
     WindowItem *items = mWindow->mCursor->mItems;
     for (i = 0; i < 3; i++) {
         if (info->mPage == i) {
             mWindow->mCellAnims[i]->ResetAnimation();
             CellAnimation *cell = mWindow->mCellAnims[i];
-            cell->mAnimIndex       = sSelectedFrames[i];
+            cell->mAnimIndex       = sSelectedAnimIndices[i];
             cell->ResetAnimation();
         } else if (info->mSelection == i) {
             mWindow->mCellAnims[i]->SetMode(CELL_ANIM_MODE_BACKWARD_ONCE);
@@ -541,10 +541,10 @@ BOOL StoreScene::ScrollStep() {
     SceneInfo *info = &mContext->mInfo;
     s16 step        = 14;
     BOOL done       = FALSE;
-    if (info->mScroll < 14) {
-        step = info->mScroll;
+    if (info->mScrollRemaining < 14) {
+        step = info->mScrollRemaining;
     }
-    info->mScroll -= step;
+    info->mScrollRemaining -= step;
     if (info->mScrollDir == STORE_SCROLL_NEXT) {
         step = -step;
     }
@@ -555,9 +555,9 @@ BOOL StoreScene::ScrollStep() {
         mWindow->SetCellPos(i, pos);
         items[i].mX = step + items[i].mX;
     }
-    if (info->mScroll == 0) {
+    if (info->mScrollRemaining == 0) {
         CellAnimation *sel = mWindow->mCellAnims[(u8) info->mSelection];
-        sel->mAnimIndex       = sIdleFrames[info->mSelection];
+        sel->mAnimIndex       = sIdleAnimIndices[info->mSelection];
         sel->ResetAnimation();
         items[info->mPage].mFlags      = WINDOW_ITEM_NO_SLIDE_OUT;
         items[info->mSelection].mFlags = WINDOW_ITEM_CURSOR_SKIP;
@@ -601,12 +601,12 @@ void StoreScene::UpdateSlotLayout() {
         items[i].mX = pos.x;
         if (info->mSelection == i) {
             CellAnimation *cell = mWindow->mCellAnims[i];
-            cell->mAnimIndex       = sSelectedFrames[i];
+            cell->mAnimIndex       = sSelectedAnimIndices[i];
             cell->ResetAnimation();
             items[i].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
         } else {
             CellAnimation *cell = mWindow->mCellAnims[i];
-            cell->mAnimIndex       = sIdleFrames[i];
+            cell->mAnimIndex       = sIdleAnimIndices[i];
             cell->ResetAnimation();
             items[i].mFlags = WINDOW_ITEM_CURSOR_SKIP;
         }

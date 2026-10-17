@@ -6,7 +6,7 @@
 #include <nitro/fx.h>
 
 // Computer player helper of the battle (vtable 02287604: empty destructor + deleting destructor).
-// mPlayer is the player index it plays for.
+// mPlayer is the player index it plays for. mUnk_4c / mUnk_50 hold the current push offset x / z (SetPushOffset).
 class BattleCpu {
 public:
     /* 00 */ // vtable
@@ -18,9 +18,9 @@ public:
     /* 54 */ s32 mUnk_54;
     /* 58 */ s32 mUnk_58;
     /* 5c */ s32 mUnk_5c;
-    /* 60 */ u16 mOffsetFrameCounts[8];
-    /* 70 */ u16 mOffsetFrames;
-    /* 72 */ u16 mOffsetInterval;
+    /* 60 */ u16 mPushOffsetFrameCounts[8];
+    /* 70 */ u16 mPushOffsetFrames;
+    /* 72 */ u16 mPushOffsetInterval;
     /* 74 */ u16 mTimer;
     /* 76 */ u8 mUsingTargets;
     /* 77 */ u8 mPushIndex;
@@ -34,8 +34,8 @@ public:
     /* 7f */ u8 mTargetNodeIndices[4];
     /* 83 */ u8 mTargetIndex; // (+ 1) % mJumpObjCount per target; set to 0 only by the ctor
     /* 84 */ u8 mJumpObjCount;
-    /* 85 */ u8 mOffsetEntries[8];
-    /* 8d */ u8 mOffsetEntryIndex;
+    /* 85 */ u8 mPushOffsetEntries[8];
+    /* 8d */ u8 mPushOffsetEntryIndex;
     /* 8e */
 
     BattleCpu(u32 player);
@@ -51,10 +51,11 @@ public:
     void StartJumpObjTargets(int a);
     void NextTarget();
     void StopJumpObjTargets();
-    void RandomizeOffsets();
-    void SetOffset();
+    void RandomizePushOffsets();
+    void SetPushOffset();
     bool func_ov007_02232e04(u32 a, u32 b, u32 c);
-    void GetOffset(s32 *x, s32 *y); // (0, 0) unless the player's mUnk_f7 != 0 and mOffsetFrames % mOffsetInterval == 0
+    // (0, 0) unless the player's mUnk_f7 != 0 and mPushOffsetFrames % mPushOffsetInterval == 0
+    void GetPushOffset(s32 *x, s32 *z);
 };
 
 // Ballistics helpers (free functions in BattleCpu.cpp).

@@ -81,7 +81,7 @@ BattleAbility::BattleAbility()
     mTarget = data_020d433c.mBattlePlayers->mBattleTarget;
     mUnit = mTarget->mUnitHandle - 1;
     mAbilityId = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mAbilityId;
-    mAbilityIndex = mAbilityId - 0xc9; // 0xc9 (ABILITY_ID_REPEAT_TURN) is the lowest id: the sAbilityHandlers row
+    mAbilityIndex = mAbilityId - ABILITY_ID_REPEAT_TURN; // lowest id: the sAbilityHandlers row
     mCamera = data_020d433c.mBattlePlayers->mCamera;
     u8 i = 0;
     do {
@@ -276,6 +276,7 @@ void BattleAbility::Update() {
                 mState  = 0x10;
                 break;
             }
+            // bytes 4 / 5 as the sender's raw stores write them: mUnk_0f, mPickIndex
             mUnk_0f = player->mMsg.mTouchDown;
             mPickIndex = player->mMsg.mTouchX;
             CloseCommandPage(mCommandPage, 1);
@@ -414,7 +415,7 @@ enum UnitIndex { UNIT_INDEX_0 };
 
 BOOL BattleAbility::func_ov007_02264a5c() {
     BOOL result = 1;
-    switch (mAbilityId - 0xc9) { // sAbilityHandlers row (0xc9 = ABILITY_ID_REPEAT_TURN)
+    switch (mAbilityId - ABILITY_ID_REPEAT_TURN) { // sAbilityHandlers row
         case 0:
             result = 0;
             break;

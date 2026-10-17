@@ -473,7 +473,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                     WirelessManager::Get();
                     if (IsWirelessMode(mode)) {
                         data_0220f540.mUnk_00     = 0x16;
-                        data_0220f540.mTouchDown = 1;
+                        data_0220f540.mTouchDown = 1; // byte 4 of message 0x16: 1 = window selection 0 chosen
                     } else {
                         CloseWindow();
                         ReleaseWindow();
@@ -503,7 +503,7 @@ BOOL BattleConfrontCard::UpdateConfrontation() {
                     CloseWindow();
                     ReleaseWindow();
                     mUnk_68 = 0;
-                    if (p->mMsg.mTouchDown) {
+                    if (p->mMsg.mTouchDown) { // byte 4 of message 0x16: 1 = window selection 0 chosen
                         SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                         mStep = 0x31;
                     } else {

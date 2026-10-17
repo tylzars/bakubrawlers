@@ -92,7 +92,7 @@ public:
     /* 1a8 */ u32 mRebuildModel;
     /* 1ac */ s8 mFixedItem; // item index that does not slide in (SetupSlideIn), -1 = none
     /* 1ad */ PAD(0x1ad, 0x1b0);
-    /* 1b0 */ u32 mStoreLookPromptRequested;
+    /* 1b0 */ u32 mStoreLookPromptPending;
     // Ctor argument: 1 from MyroomScene, 0 from TitleScene. 1 sets WINDOW_ITEM_CURSOR_SKIP on item 4 of the five-item
     // menus (mState 1 / 3) and moves the root entries' states and texts up by one, keeps lists 0-2 in RandomizeLook,
     // skips StoreLook on the direct exit and asks first when mChoiceApplied is set.

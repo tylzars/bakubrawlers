@@ -491,7 +491,7 @@ void NameEntryScene::Update() {
                 if (mCursorArea == 3) {
                     mCursorArea = 2;
                 }
-                RenderName();
+                PrintName();
                 if (mSpecialNameHandle == 1) {
                     gSaveData[0].mSpecialNameCode0Used = 1;
                 } else {
@@ -596,7 +596,7 @@ void NameEntryScene::Backspace() {
     }
     mLength--;
     mName[mLength] = 0;
-    RenderName();
+    PrintName();
     if (mLength == 0) {
         mKeyboard->mButtons[6].mEnabled = 0;
         mKeyboard->mCursor->mItems[6].mFlags = WINDOW_ITEM_CURSOR_SKIP;
@@ -633,7 +633,7 @@ void NameEntryScene::AddChar(s32 index) {
     chars += c;
     mName[mLength] = *chars;
     mLength++;
-    RenderName();
+    PrintName();
     SoundManager::Get().StartSeqArc(0);
     mKeyboard->mButtons[6].mEnabled = 1;
     mKeyboard->mCursor->mItems[6].mFlags = WINDOW_ITEM_NO_SLIDE_OUT;
@@ -685,11 +685,11 @@ void NameEntryScene::Load() {
     TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x18, 8, 0x44);
     TextManager::Get().SetColor(1, 0, 0xe);
     if (mMode == 0) {
-        RenderName();
+        PrintName();
     }
 }
 
-void NameEntryScene::RenderName() {
+void NameEntryScene::PrintName() {
     ClearTextBuffer();
     TextManager::Get().mUse4bppFont = 1;
     u8 i = 0;

@@ -23,6 +23,11 @@ struct BattlePlayerMessage {
             /* 05 */ u8 mTouchX;
             /* 06 */ u8 mTouchY;
         };
+        // battle command cursor message (BattleCommand)
+        struct {
+            /* 04 */ u8 mCursorX;
+            /* 05 */ u8 mCursorY;
+        };
     };
     /* 08 */ u8 mUnk_08;
     /* 09 */ u8 mUnk_09;
@@ -398,7 +403,7 @@ struct UnkStruct_020d433c {
     /* a9 */ u8 mUnk_a9[4];
     // TitleScene state 0 then runs the credits, sets gSaveData[0].mUnk_5bf_0, GiftUnlockScene and a SaveWindow, and
     // clears it before SCENE_LOGO
-    /* ad */ u8 mCreditsPending;
+    /* ad */ u8 mCreditsRequested;
     /* ae */ u8 mUnk_ae;
     /* af */ u8 mUnk_af[4];
     /* af */

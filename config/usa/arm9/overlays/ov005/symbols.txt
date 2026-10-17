@@ -58,8 +58,8 @@ sMapMenuItems kind:data(any) addr:0x0221ffb8 local
 sMapMenuCells kind:data(any) addr:0x02220044 local
 sTutorialFirstIds kind:data(any) addr:0x022200d0 local
 data_ov005_022200d8 kind:data(any) addr:0x022200d8 local
-sTutorialThreeButtonItems kind:data(any) addr:0x022200e8 local
-sTutorialThreeButtonCells kind:data(any) addr:0x0222013c local
+sTutorialThreeItems kind:data(any) addr:0x022200e8 local
+sTutorialThreeItemCells kind:data(any) addr:0x0222013c local
 sTutorialListItems kind:data(any) addr:0x02220190 local
 sTutorialListCells kind:data(any) addr:0x02220238 local
 OV005_DATA_START kind:data(any) addr:0x02220300

@@ -33,7 +33,7 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
     mStepFrames = 0;
     mAbilitiesY = 0xc0;
     mAbilitiesYPerFrame = 10;
-    mSide = mode;
+    mLocalSide = mode;
     mData = data;
     BattleEntry *entries = mData->mEntries;
     u8 i = 0;
@@ -142,10 +142,10 @@ void BattleSub48::LoadGraphics() {
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
     screen.SetObjVramMode(1);
     ChangeDir("/Game/Confrontation/Obj/");
-    if (mSide < 2) {
-        if (entries[mSide].mCardId != 0) {
-            kind = GetCardInfo(entries[(u8) mSide].mCardId, 3);
-            other = func_ov007_02222764((u8) mSide, entries);
+    if (mLocalSide < 2) {
+        if (entries[mLocalSide].mCardId != 0) {
+            kind = GetCardInfo(entries[(u8) mLocalSide].mCardId, 3);
+            other = func_ov007_02222764((u8) mLocalSide, entries);
             if (kind != 5 && other != 5) {
                 i = 0;
                 do {
@@ -406,7 +406,7 @@ void BattleSub48::DrawAbilitiesAndSides() {
             if (mCellAnims[3] == 0) {
                 break;
             }
-            if ((i == 0 && mSide == 0) || (i == 1 && mSide == 1)) {
+            if ((i == 0 && mLocalSide == 0) || (i == 1 && mLocalSide == 1)) {
                 u8 other = i ^ 1;
                 if (!entries[other].mUnk_0f_3) {
                     if (!mUnk_0e_0) {

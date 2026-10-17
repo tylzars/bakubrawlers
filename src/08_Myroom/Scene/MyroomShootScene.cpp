@@ -89,7 +89,7 @@ MyroomShootScene::MyroomShootScene() :
     mTextX      = 0x100;
     mTextEndY      = 0;
     mShooterTimer      = 0;
-    mSelected    = -1;
+    mShooterIndex    = -1;
     mCol      = 0;
     mRow      = 0;
     mTextPage      = 0;
@@ -316,8 +316,8 @@ void MyroomShootScene::Init() {
 }
 
 void MyroomShootScene::SelectShooter(s8 index) {
-    if (mSelected != index) {
-        mSelected                   = index;
+    if (mShooterIndex != index) {
+        mShooterIndex                   = index;
         BakuganModel *shooter = mShooter;
         if (shooter != NULL) {
             delete shooter;
@@ -327,13 +327,13 @@ void MyroomShootScene::SelectShooter(s8 index) {
             FreeEffect(data_020d433c.mEffects, mEffect);
             mEffect = 0;
         }
-        if (mUnlocked[mSelected] != 0) {
+        if (mUnlocked[mShooterIndex] != 0) {
             u16 modelRot[3];
             u16 effectRot[3];
             VecFx32 pos;
             mShooter = new BakuganModel();
-            mShooter->Setup(sMyroomShootBakuganKinds[mSelected], (u8) mSelected, BAKUGAN_MODEL_MODE_H);
-            pos = sMyroomShootShooterPos[mSelected];
+            mShooter->Setup(sMyroomShootBakuganKinds[mShooterIndex], (u8) mShooterIndex, BAKUGAN_MODEL_MODE_H);
+            pos = sMyroomShootShooterPos[mShooterIndex];
             mShooter->func_0203db70(&pos);
             mRot[0]  = 0;
             mRot[1]  = 0x154;
@@ -342,11 +342,11 @@ void MyroomShootScene::SelectShooter(s8 index) {
             modelRot[1] = (u16) (65536.0f * (float) mRot[1] / 360.0f);
             modelRot[2] = (u16) (65536.0f * (float) mRot[2] / 360.0f);
             mShooter->func_0203db94(modelRot);
-            mEffect = StartEffect(data_020d433c.mEffects, 0, (u8) sMyroomShootEffectScriptIndices[mSelected], 0, 0);
+            mEffect = StartEffect(data_020d433c.mEffects, 0, (u8) sMyroomShootEffectScriptIndices[mShooterIndex], 0, 0);
             SetEffectPosition(data_020d433c.mEffects, mEffect, &pos);
-            effectRot[0] = (u16) (65536.0f * (float) sMyroomShootEffectRotDegrees[mSelected][0] / 360.0f);
-            effectRot[1] = (u16) (65536.0f * (float) sMyroomShootEffectRotDegrees[mSelected][1] / 360.0f);
-            effectRot[2] = (u16) (65536.0f * (float) sMyroomShootEffectRotDegrees[mSelected][2] / 360.0f);
+            effectRot[0] = (u16) (65536.0f * (float) sMyroomShootEffectRotDegrees[mShooterIndex][0] / 360.0f);
+            effectRot[1] = (u16) (65536.0f * (float) sMyroomShootEffectRotDegrees[mShooterIndex][1] / 360.0f);
+            effectRot[2] = (u16) (65536.0f * (float) sMyroomShootEffectRotDegrees[mShooterIndex][2] / 360.0f);
             SetEffectRotation(data_020d433c.mEffects, mEffect, effectRot);
         }
         mTextPage = 0;
@@ -390,7 +390,7 @@ void MyroomShootScene::DrawSprites() {
             mShooter->DrawModel();
         }
     }
-    if (mUnlocked[mSelected] == 0) {
+    if (mUnlocked[mShooterIndex] == 0) {
         return;
     }
     SpriteManager::Get().Screen(0).AddOam(mGlyphBuffers[0], 4, 0x70, 0x1e, 0, 0, 0xf, 0);
@@ -437,7 +437,7 @@ void MyroomShootScene::PrintShooterText() {
     s16 height;
     height            = 2 - mTextPage * 0x7e;
     width             = 0x10;
-    u16 index         = mSelected + 0x16;
+    u16 index         = mShooterIndex + 0x16;
     MessageFile *file = mMessages;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[0], 0x10, 0x12, &width, &height, 0, 0, 2, 0x44,
                0xe, 0, 0, 0, 1, 1);
@@ -452,13 +452,13 @@ void MyroomShootScene::PrintShooterText() {
     s16 width2;
     width2     = 0;
     height2    = 0;
-    u16 index2 = mSelected + 0x1c;
+    u16 index2 = mShooterIndex + 0x1c;
     file       = mMessages;
     text2.Print(file->GetText(index2), file->GetLength(index2), mTextBuffers[1], 0x40, 2, &height2, &width2, &mTextWidth, 0, 2,
                 0x21, 0xe, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
     QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0x3000, mTextBuffers[1], mTextBufferSize[1], 0);
-    if (mUnlocked[mSelected] == 0) {
+    if (mUnlocked[mShooterIndex] == 0) {
         mTextEndY = 0;
     }
 }
@@ -478,7 +478,7 @@ s32 MyroomShootScene::UpdateInput() {
                 result  = (s8) id;
                 mCol = result % 3;
                 mRow = result / 3;
-                if (mSelected != (s8) id) {
+                if (mShooterIndex != (s8) id) {
                     SoundManager::Get().StartSeqArc(0);
                 }
                 break;

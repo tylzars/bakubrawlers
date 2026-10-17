@@ -65,10 +65,12 @@ struct BattleUnitModels {
     // type 0: mFontObjs[5], 1: [6]; drawn above the unit's position at the call until Release
     void SetStIconUnit(u8 index, u32 type);
     void StartMove(u8 index, BattleMoveState *state);
-    void UpdateMoveMode2(u32 index);
-    void UpdateMoveMode3(u32 index);
-    void UpdateMoveMode4(u32 index);
-    void UpdateMoveMode5(u32 index);
+    void UpdateDampedMove(u32 index);
+    // The three LAUNCH bodies are identical (gravity 0x800, hide below y 0x899a, AddRot); speed and spin axis come
+    // from StartMove. LAUNCH_SPIN_X is never stored, so UpdateLaunchSpinXMove does not run in this build.
+    void UpdateLaunchSpinYMove(u32 index);
+    void UpdateSlowLaunchSpinXMove(u32 index);
+    void UpdateLaunchSpinXMove(u32 index);
     void DrawFontObj(u8 index, VecFx32 *pos);
     void DrawPyFontObj(VecFx32 *pos);
     void DrawPtFontObj(VecFx32 *pos);

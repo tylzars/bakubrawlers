@@ -45,7 +45,7 @@ public:
     /* b2 */ u8 mMode;
     /* b3 */ u8 mSelection;
     /* b4 */ PAD(0xb4, 0xb5);
-    /* b5 */ u8 mMenuVisible; // draws mMenuWindow for the LoadMenu page; mUnk_b9 does so for the LoadModeMenu page
+    /* b5 */ u8 mLoadMenuVisible; // draws mMenuWindow for the LoadMenu page; mUnk_b9 does so for the LoadModeMenu page
     /* b6 */ u8 mMainScreenVisible;
     /* b7 */ u8 mCellsBVisible; // mCellAnimsB are drawn only while this and mMainScreenVisible are both set
     /* b8 */ u8 mWindowOpen;
@@ -89,7 +89,7 @@ public:
     // Screen 0 set. First resets both engines' display registers (func_ov002_0221b5b0) and clears 0x20000 bytes at
     // 0x06200000 and 0x06600000; sets mMainScreenVisible.
     void LoadMainGraphics(BOOL unk1, BOOL unk2);
-    void LoadWindowGraphics(); // also clears mMenuVisible
+    void LoadWindowGraphics(); // also clears mLoadMenuVisible
     void ReloadMenu();
     // Also LoadSubScreenText, a new mMessageWindow (mes_tornament), LoadMainScreenText and RefreshCellLayout.
     void LoadMenu();

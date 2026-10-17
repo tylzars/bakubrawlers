@@ -17,7 +17,7 @@ struct MessageFile;
 #define MYROOM_TIPS_WINDOW_B 2
 
 // Overlay 8: the tips list screen (mes_TIPS_sys.mes): four tip titles that scroll sideways, a window to pick one and
-// a scroll bar. The state is kept in the scene context (mInfo.mStep).
+// a scroll bar. The state is kept in the scene context (mInfo, read as MyroomTipsSceneInfo::mState in the .cpp).
 class MyroomTipsScene : public SceneBase {
 public:
     /* 00 (base) */
@@ -64,14 +64,15 @@ public:
     // WINDOW_A: DrawCategoryCursor; WINDOW_B: mRowCells[1] on row mRow and mRowCells[0] on the other three rows.
     void func_ov008_022273f0();
     void DrawCategoryCursor(const u8 *pos, u32 index);
-    // Nothing while mEvent runs (both windows disabled). WINDOW_A: category input in mInfo state 0; picking the current
-    // unlocked category (category 0 not while !mUnk_5bf_0 and mUnk_42 == 6) calls func_0206f88c on mEvent and sets up
-    // the row list (mStep 8). WINDOW_B: row input while mUnk_85 is 0 (a pick starts mRowCells[1] animation 3 and sets
-    // mUnk_85); then, once that animation ends, starts the tip's message (mStep 0xb) and sets its data_020d49a1 bit
-    // (mNew - 1 when newly set).
+    // Nothing while mEvent runs (both windows disabled). WINDOW_A: category input while mInfo byte 0x02 (mUnk_02 of the
+    // .cpp's MyroomTipsSceneInfo) is 0, which is always in this build; picking the current unlocked category (category
+    // 0 not while !mUnk_5bf_0 and mUnk_42 == 6) calls func_0206f88c on mEvent and sets up the row list (mInfo state 8).
+    // WINDOW_B: row input while mUnk_85 is 0 (a pick starts mRowCells[1] animation 3 and sets mUnk_85); then, once that
+    // animation ends, starts the tip's message (mInfo state 0xb) and sets its data_020d49a1 bit (mNew - 1 when newly
+    // set).
     void func_ov008_022274f8();
-    // A new touch on an entry returns its index at once (mInfo.mMenuResult unchanged); otherwise the keys move
-    // mInfo.mMenuResult (rows of 3), returned only with IsPressed(1), else -1.
+    // A new touch on an entry returns its index at once (the mInfo category unchanged); otherwise the keys move the
+    // mInfo category (rows of 3), returned only with IsPressed(1), else -1.
     s8 UpdateCategorySelection(const u8 *pos, u8 count);
     BOOL UpdateRowSelection();
     void PrintRows(s32 row);

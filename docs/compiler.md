@@ -66,7 +66,7 @@ each 2.0 build. 68 and 19 functions differ after linking, splitting the builds i
 is known to be zero emits `umull` plus two `mla` against a zeroed register. sp2p2 and
 later drop them.
 - Two whole functions reproduce exactly only on sp2p2/sp2p3/sp2p4:
-  `RandomizeOffsets` (random slot init via `MATH_Rand32`; 2.0 base…sp2 are 0x1C bytes
+  `RandomizePushOffsets` (random slot init via `MATH_Rand32`; 2.0 base…sp2 are 0x1C bytes
   larger, and 1.2 and DSi also miss) and `Push` (`FX_Mul` gauge update;
   2.0 base…sp2 are 8 bytes larger).
 - `MATH_Rand32(ctx, 3)` in ov004 (`func_ov004_02219580`) is the short form. Compiling the
@@ -75,7 +75,7 @@ later drop them.
 - `tools/longmul_scan.py` validates on known code (ph + SDK at sp2: 9 long forms; at
   sp2p2: 1 single-`mla` residual). Across Bakugan's game code (~1,000 `umull`/`smull`
   instructions, 73 of them 64-bit multiplies by an immediate), there is no sp2-style
-  double-zero form and one sp2p2-style residual (`RandomizeOffsets`, same shape as
+  double-zero form and one sp2p2-style residual (`RandomizePushOffsets`, same shape as
   ph's sp2p2 residual).
 
 **sp2p2, sp2p3 and sp2p4 are equivalent here.** Their only observed difference (4 of
@@ -93,7 +93,7 @@ sp2p2 is the lower bound; any of the three is correct for matching.
 
 | Flag | Evidence |
 |---|---|
-| `-O4,p` | `-O3,p` misallocates registers in `func_ov000_0221f474` and `UpdateSlots`; `-O4,s`/`-O2` keep the singleton accessor out of line and change `func_020253a0` and `RandomizeOffsets` size |
+| `-O4,p` | `-O3,p` misallocates registers in `func_ov000_0221f474` and `UpdateSlots`; `-O4,s`/`-O2` keep the singleton accessor out of line and change `func_020253a0` and `RandomizePushOffsets` size |
 | `-ipa file` | Inline-function local statics (e.g. guard `data_020c17cc`) are referenced from main and every overlay, so they are shared standalone sections. Without `-ipa file`, mwcc puts them in each file's `.bss` (checked on the frame-update probe). The SDK also loses 23/99 matches without it. |
 | `-inline on,noauto` | `auto` inlines same-file calls (`CreateObj`, `Draw`) that ov006 keeps as `bl` |
 | `-enum int` | Game: `LoadFileAsync` (file loader) inlines NitroSDK `FS_GetLength` on an `FSFile`, whose `prop.file.top/bottom` sit after two enum members; under `-enum min` the 4 field loads miss. SDK: `-enum min` loses 9/99 matches |

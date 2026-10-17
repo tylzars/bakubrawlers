@@ -10,7 +10,7 @@ _ZN14NameEntryScene14AddTouchedCharEv kind:function(arm,size=0x198) addr:0x0221b
 _ZN14NameEntryScene9BackspaceEv kind:function(arm,size=0x70) addr:0x0221b438
 _ZN14NameEntryScene7AddCharEi kind:function(arm,size=0x20c) addr:0x0221b4a8
 _ZN14NameEntryScene4LoadEv kind:function(arm,size=0x334) addr:0x0221b6b4
-_ZN14NameEntryScene10RenderNameEv kind:function(arm,size=0x2b0) addr:0x0221b9e8
+_ZN14NameEntryScene9PrintNameEv kind:function(arm,size=0x2b0) addr:0x0221b9e8
 _ZN14NameEntryScene19func_ov000_0221bc98Ev kind:function(arm,size=0xbc) addr:0x0221bc98
 _ZN14NameEntryScene15ClearTextBufferEv kind:function(arm,size=0x34) addr:0x0221bd54
 _ZN14NameEntryScene16CheckSpecialNameEv kind:function(arm,size=0x29c) addr:0x0221bd88
@@ -64,8 +64,8 @@ _ZN11OptionScene10BuildMenu3Ev kind:function(arm,size=0x260) addr:0x022212d4
 _ZN11OptionScene9SlideStepEv kind:function(arm,size=0x108) addr:0x02221534
 _ZN11OptionScene12ResetDisplayEv kind:function(arm,size=0x44) addr:0x0222163c
 _ZN11OptionScene10BuildMenu4Ev kind:function(arm,size=0x194) addr:0x02221680
-_ZN11OptionScene9DrawMenu3Ev kind:function(arm,size=0x48) addr:0x02221814
-_ZN11OptionScene9ClearTextEj kind:function(arm,size=0x130) addr:0x0222185c
+_ZN11OptionScene9DrawMenu4Ev kind:function(arm,size=0x48) addr:0x02221814
+_ZN11OptionScene12PrintMessageEj kind:function(arm,size=0x130) addr:0x0222185c
 _ZN10TitleSceneC1Ev kind:function(arm,size=0x1c0) addr:0x0222198c
 _ZN10TitleSceneD1Ev kind:function(arm,size=0x140) addr:0x02221b4c
 _ZN10TitleSceneD0Ev kind:function(arm,size=0x148) addr:0x02221c8c
@@ -131,10 +131,10 @@ sOptionMainMenuItems kind:data(any) addr:0x022265a8 local
 sOptionMainMenuCells kind:data(any) addr:0x02226650 local
 @1385 kind:data(any) addr:0x022266f8 local
 sTitleFullScreenItems kind:data(any) addr:0x022266fc local
-sTitleTwoButtonItems kind:data(any) addr:0x02226718 local
-sTitleTwoButtonCells kind:data(any) addr:0x02226750 local
-sTitleThreeButtonItems kind:data(any) addr:0x02226788 local
-sTitleThreeButtonCells kind:data(any) addr:0x022267dc local
+sTitleTwoItems kind:data(any) addr:0x02226718 local
+sTitleTwoItemCells kind:data(any) addr:0x02226750 local
+sTitleThreeItems kind:data(any) addr:0x02226788 local
+sTitleThreeItemCells kind:data(any) addr:0x022267dc local
 sTitleObj01Items kind:data(any) addr:0x02226830 local
 sTitleObj01Cells kind:data(any) addr:0x022268a0 local
 sTitleMenuItems kind:data(any) addr:0x02226910 local

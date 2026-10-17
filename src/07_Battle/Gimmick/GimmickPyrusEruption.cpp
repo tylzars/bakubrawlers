@@ -9,7 +9,7 @@ static ModelResource *sResources[2];
 GimmickPyrusEruption::GimmickPyrusEruption(u8 id)
     : Gimmick(id, 0) {
     mModelB  = 0;
-    mCounter = 0;
+    mTimer = 0;
     mPushed  = 0;
     mMarkerNear  = 0;
     mState   = 0;
@@ -83,7 +83,7 @@ void GimmickPyrusEruption::Update() {
         if (!(mCollision && mCollision->mHitCount)) {
             return;
         }
-        mCounter = 0xf;
+        mTimer = 0xf;
         mState++;
         break;
     case 2:
@@ -190,9 +190,9 @@ void GimmickPyrusEruption::DrawModels(int drawB) {
 int GimmickPyrusEruption::CountDownToState(int frames, int state) {
     data_020d433c.mFlags &= 8;
     if (!data_020d433c.mFlags) {
-        mCounter--;
-        if (mCounter == 0) {
-            mCounter = frames;
+        mTimer--;
+        if (mTimer == 0) {
+            mTimer = frames;
             mState   = state;
             return 1;
         }

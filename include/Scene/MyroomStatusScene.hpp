@@ -13,7 +13,7 @@ class Ranking;
 class UnkStruct_0205401c;
 struct MessageFile;
 
-// Status lines: the values RenderLine switches on, each its own text buffer (mTextBuffers[line]). NAME prints
+// Status lines: the values PrintLine switches on, each its own text buffer (mTextBuffers[line]). NAME prints
 // gSaveData[0].mName, RANK Ranking::mPlayerRank, MONEY gSaveData[0].mMoney, SCORE Ranking::mPlayerScore and PLAY_TIME
 // mHours / mMinutes / mSeconds (from gSaveData[0].mPlayFrames); UpdateTime prints PLAY_TIME again when the seconds
 // change.
@@ -60,7 +60,7 @@ public:
     void DrawCell();         // 0x02219f3c
     void LoadText();         // 0x02219f7c
     void ClearTextBuffers(); // 0x0221a15c
-    void RenderLine(u8 line); // 0x0221a19c
+    void PrintLine(u8 line); // 0x0221a19c
     void DrawLines();        // 0x0221aa40
     void FreeText();         // 0x0221ab1c
     void UpdateTime();       // 0x0221abb0

@@ -141,11 +141,11 @@ BattleCommandMap::BattleCommandMap(u8 unk)
     mKind = unk;
     mCursorX = 0;
     mCursorY = 0;
-    mUnitBakugansEnabled = 0;
-    mMapModelsEnabled = 0;
+    mUseUnitBakugans = 0;
+    mUseMapModels = 0;
     mPredictVisible = 0;
     mUnk_150 = 0;
-    mStatusPanelsEnabled = 1;
+    mUseStatusPanels = 1;
     mUnitBakugansVisible = 0;
     mCursorAndMarkerModelsVisible = 0;
     mUnk_154 = 0;
@@ -538,7 +538,7 @@ void BattleCommandMap::func_ov007_02246450() {
 void GetCellPosition(VecFx32 *out, u8 a, u8 b);
 
 extern "C" void DrawStatusPanels(BattleCommandMap *map) {
-    if (map->mStatusPanelsEnabled != 0 && map->mStatusPanels) {
+    if (map->mUseStatusPanels != 0 && map->mStatusPanels) {
         map->mStatusPanels->DrawPanels();
     }
 }
@@ -581,7 +581,7 @@ extern "C" void DrawBakuganModel(BattleCommandMap *map) {
 }
 
 extern "C" void DrawUnitBakugans(BattleCommandMap *map) {
-    if (map->mUnitBakugansEnabled != 0 && map->mUnitBakugansVisible != 0) {
+    if (map->mUseUnitBakugans != 0 && map->mUnitBakugansVisible != 0) {
         map->mUnk_74->Draw();
     }
 }
@@ -600,7 +600,7 @@ extern "C" void DrawPredictPieces(BattleCommandMap *map) {
 
 
 extern "C" void UpdateAndDrawMapModels(BattleCommandMap *map) {
-    if (map->mMapModelsEnabled == 0) {
+    if (map->mUseMapModels == 0) {
         return;
     }
     u8 i = 0;
@@ -941,7 +941,7 @@ extern "C" void CopyCameraYaw(BattleCommandMap *map) {
 }
 
 extern "C" void CreateStatusPanels(BattleCommandMap *map) {
-    if (map->mStatusPanelsEnabled == 0) {
+    if (map->mUseStatusPanels == 0) {
         return;
     }
     if (map->mStatusPanels != 0) {
@@ -958,7 +958,7 @@ extern "C" void CreateStatusPanels(BattleCommandMap *map) {
 }
 
 extern "C" void CreateUnitBakugansAndShadow(BattleCommandMap *map) {
-    if (map->mUnitBakugansEnabled == 0) {
+    if (map->mUseUnitBakugans == 0) {
         return;
     }
     VecFx32 pos; 
@@ -982,7 +982,7 @@ extern "C" void CreateUnitBakugansAndShadow(BattleCommandMap *map) {
 }
 
 extern "C" void UpdateMarkerAndF00gatModels(BattleCommandMap *map) {
-    if (map->mMapModelsEnabled == 0) {
+    if (map->mUseMapModels == 0) {
         return;
     }
     u8 i = 0;
@@ -1017,8 +1017,8 @@ extern "C" void CreateMapObj(BattleCommandMap *map) {
     map->mMapObj->Load();
 }
 
-extern "C" void SetUnitBakugansEnabled(BattleCommandMap *map, u32 a) {
-    map->mUnitBakugansEnabled = a != 0;
+extern "C" void SetUseUnitBakugans(BattleCommandMap *map, u32 a) {
+    map->mUseUnitBakugans = a != 0;
     CreateUnitBakugansAndShadow(map);
 }
 
@@ -1027,12 +1027,12 @@ extern "C" void SetUnitBakugansVisible(BattleCommandMap *map, u32 a) {
 }
 
 extern "C" void func_ov007_022479d4(BattleCommandMap *map, u32 a) {
-    SetUnitBakugansEnabled(map, a);
+    SetUseUnitBakugans(map, a);
     SetUnitBakugansVisible(map, a);
 }
 
-extern "C" void SetMapModelsEnabled(BattleCommandMap *map, u32 a) {
-    map->mMapModelsEnabled = a != 0;
+extern "C" void SetUseMapModels(BattleCommandMap *map, u32 a) {
+    map->mUseMapModels = a != 0;
 }
 
 extern "C" void SetCursorAndMarkerModelsVisible(BattleCommandMap *map, u32 a) {
@@ -1040,12 +1040,12 @@ extern "C" void SetCursorAndMarkerModelsVisible(BattleCommandMap *map, u32 a) {
 }
 
 extern "C" void func_ov007_02247a1c(BattleCommandMap *map, u32 a) {
-    SetMapModelsEnabled(map, a);
+    SetUseMapModels(map, a);
     SetCursorAndMarkerModelsVisible(map, a);
 }
 
 void CreateCursorModel(BattleCommandMap *map) {
-    if (map->mMapModelsEnabled == 0) {
+    if (map->mUseMapModels == 0) {
         return;
     }
     if (map->mCursorModel != 0) {
@@ -1055,7 +1055,7 @@ void CreateCursorModel(BattleCommandMap *map) {
 }
 
 extern "C" void SetupTimedF00gatModelAndCamera(BattleCommandMap *map) {
-    if (map->mMapModelsEnabled == 0) {
+    if (map->mUseMapModels == 0) {
         return;
     }
     map->FreeF00gatModels();
@@ -1083,7 +1083,7 @@ extern "C" void SetupTimedF00gatModelAndCamera(BattleCommandMap *map) {
 }
 
 extern "C" void SetupF00gatModelsAndCamera(BattleCommandMap *map) {
-    if (map->mMapModelsEnabled == 0) {
+    if (map->mUseMapModels == 0) {
         return;
     }
     map->FreeF00gatModels();
@@ -1143,7 +1143,7 @@ extern "C" void DrawShadowPiece(BattleCommandMap *map, VecFx32 *v, u32 mode);
 
 extern "C" void StartStartCamPath(BattleCommandMap *map) {
     ChangeDir("/Game/Battle/3d/MapCam");
-    map->mStatusPanelsEnabled  = 0;
+    map->mUseStatusPanels  = 0;
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera) {
         map->FreeStartCamFile();

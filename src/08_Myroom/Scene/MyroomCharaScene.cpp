@@ -166,11 +166,11 @@ void MyroomCharaScene::Update() {
             if (mResult == 3) {
                 if (tab == 4) {
                     mPage = (mPage + mPageCount - 1) % mPageCount;
-                    RenderLines();
+                    PrintLines();
                     RefreshPageButtons();
                 } else if (tab == 5) {
                     mPage = (mPage + 1) % mPageCount;
-                    RenderLines();
+                    PrintLines();
                     RefreshPageButtons();
                 }
             } else if (mResult == 2) {
@@ -198,7 +198,7 @@ void MyroomCharaScene::Update() {
                     mPage = 0;
                     RefreshPageButtons();
                     LoadText();
-                    RenderLines();
+                    PrintLines();
                     SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
                     mState                     = 7;
                     mShownTab                    = mTab;
@@ -214,7 +214,7 @@ void MyroomCharaScene::Update() {
                     SetupTabCells();
                     mPage = 0;
                     RefreshPageButtons();
-                    RenderLines();
+                    PrintLines();
                 }
                 mState++;
                 mShownTab = mTab;
@@ -524,7 +524,7 @@ void MyroomCharaScene::PrintValue(u32 line, u32 value, u8 digits, s16 x, s16 suf
                 0, 0, 0, 1, 1);
 }
 
-void MyroomCharaScene::RenderLine(u32 line, u32 kind) {
+void MyroomCharaScene::PrintLine(u32 line, u32 kind) {
     s32 value;
     s16 x     = 0;
     s32 ratio = 0;
@@ -639,24 +639,24 @@ void MyroomCharaScene::FreeText() {
     }
 }
 
-void MyroomCharaScene::RenderLines() {
+void MyroomCharaScene::PrintLines() {
     ClearTextBuffers();
     switch (mTab) {
         case 0:
             break;
         case 1:
-            RenderLine(0, 0);
-            RenderLine(1, 1);
-            RenderLine(2, 2);
-            RenderLine(3, 3);
-            RenderLine(4, 4);
-            RenderLine(5, 5);
-            RenderLine(6, 6);
+            PrintLine(0, 0);
+            PrintLine(1, 1);
+            PrintLine(2, 2);
+            PrintLine(3, 3);
+            PrintLine(4, 4);
+            PrintLine(5, 5);
+            PrintLine(6, 6);
             break;
         case 2:
-            RenderLine(0, 7);
-            RenderLine(1, 8);
-            RenderLine(2, 9);
+            PrintLine(0, 7);
+            PrintLine(1, 8);
+            PrintLine(2, 9);
             break;
         case 3: {
             if (mListCount == 0) {
@@ -664,7 +664,7 @@ void MyroomCharaScene::RenderLines() {
             }
             u8 i = 0;
             do {
-                RenderLine(i, 10);
+                PrintLine(i, 10);
                 i++;
             } while (i < 7 && i + mPage * 7 < mListCount);
             break;

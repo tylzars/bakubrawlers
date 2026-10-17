@@ -175,6 +175,11 @@ struct UnkStruct_0220f540 {
             /* 05 */ u8 mTouchX;
             /* 06 */ u8 mTouchY;
         };
+        // battle command cursor message (BattleCommand)
+        struct {
+            /* 04 */ u8 mCursorX;
+            /* 05 */ u8 mCursorY;
+        };
         struct {
             /* 04 */ u16 mKeys;
             /* 06 */ u8 mUnk_06;

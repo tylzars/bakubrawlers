@@ -44,7 +44,7 @@ public:
     /* 1c */ Camera *mCamera;
     /* 20 */ BattleCommandMap *mMap;
     /* 24 */ BattleUnionAbility *mUnion;
-    /* 28 */ u16 mStateFrames;
+    /* 28 */ u16 mAddMarkerFrames;
     /* 2a */ s16 mScrollX;
     /* 2c */ s16 mScrollY;
     /* 2e */ u16 mUnk_2e;
@@ -54,7 +54,7 @@ public:
     /* 34 */ u8 mCornerCellX;
     /* 35 */ u8 mCornerCellY;
     /* 36 */ u8 mUnk_36;
-    /* 37 */ u8 mBrightness; // sub-screen G2S_SetBlendBrightness level, 0 up to 0x10 (+1 every 4th frame)
+    /* 37 */ u8 mBlendBrightness; // sub-screen G2S_SetBlendBrightness level, 0 up to 0x10 (+1 every 4th frame)
     /* 38 */ PAD(0x38, 0x39);
     // low byte of the state-13 request (1 where this class set mRequest = 1); AddMarker's slot; data_0220f540.mUnk_04
     /* 39 */ u8 mSlot;
@@ -75,7 +75,7 @@ public:
 
 BattleObj00::BattleObj00(u8 flag)
     : SceneBase(0x3e8, 0) {
-    mStateFrames = 0;
+    mAddMarkerFrames = 0;
     mScrollX = 0;
     mScrollY = 0;
     mUnk_33 = 0;
@@ -147,7 +147,7 @@ void BattleObj00::Update() {
             return;
         }
         case 1:
-            mStateFrames = 0;
+            mAddMarkerFrames = 0;
             mState++;
             return;
         case 2:
@@ -376,13 +376,13 @@ void BattleObj00::Update() {
         case 18:
             InitCommandSubScreen((s16) (mScrollX - mOffsetX), mScrollY);
             LoadCommandGraphics(mFlipped);
-            mBrightness = 0;
-            mStateFrames = 0;
+            mBlendBrightness = 0;
+            mAddMarkerFrames = 0;
             GXS_SetVisibleWnd(4);
             G2S_SetWndOBJInsidePlane(0x21, FALSE);
             G2S_SetWndOutsidePlane(0x11, FALSE);
             mMap = new BattleCommandMap(data_020d433c.mFieldId);
-            mMap->mStatusPanelsEnabled = 0;
+            mMap->mUseStatusPanels = 0;
             mMap->Init();
             SetupF00gatModelsAndCamera(mMap);
             data_020d433c.mGimmicks->mState = 0;
@@ -393,15 +393,15 @@ void BattleObj00::Update() {
             if (SpriteManager::Get().sFade[0] > FADE_MODE_HOLD) {
                 return;
             }
-            mStateFrames = mStateFrames + 1;
-            if (mStateFrames % 4 == 0 && mBrightness < 0x10) {
-                mBrightness = mBrightness + 1;
-                G2S_SetBlendBrightness(0x11, mBrightness);
+            mAddMarkerFrames = mAddMarkerFrames + 1;
+            if (mAddMarkerFrames % 4 == 0 && mBlendBrightness < 0x10) {
+                mBlendBrightness = mBlendBrightness + 1;
+                G2S_SetBlendBrightness(0x11, mBlendBrightness);
             }
-            if (mStateFrames == 1) {
+            if (mAddMarkerFrames == 1) {
                 SoundManager::Get().StartSeqArc(6);
             }
-            if ((s32) mStateFrames <= 150) {
+            if ((s32) mAddMarkerFrames <= 150) {
                 return;
             }
             mUnk_36 = 0;

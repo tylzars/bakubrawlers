@@ -42,7 +42,7 @@ public:
     /* 5c */ u16 mTextEndY;
     /* 5e */ s8 mPendingSelection;
     /* 5f */ s8 mShooterTimer; // 3 on a selection; -1 per DrawSprites call, which skips the mShooter calls until 0
-    /* 60 */ s8 mSelected;
+    /* 60 */ s8 mShooterIndex;
     /* 61 */ u8 mCol;
     /* 62 */ u8 mRow;
     /* 63 */ s8 mTextPage;

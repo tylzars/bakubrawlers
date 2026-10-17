@@ -214,7 +214,7 @@ _ZN9BattleHud13LoadSmallCardEhi kind:function(arm,size=0x1c8) addr:0x0222644c
 _ZN9BattleHud13LoadCountdownEv kind:function(arm,size=0x164) addr:0x02226614
 _ZN9BattleHud6UpdateEv kind:function(arm,size=0x2bc) addr:0x02226778
 _Z8CloseHudPv kind:function(arm,size=0x10) addr:0x02226a34
-_Z11SetHudStateP9BattleHudj kind:function(arm,size=0x5c) addr:0x02226a44
+_Z14SetHudSequenceP9BattleHudj kind:function(arm,size=0x5c) addr:0x02226a44
 _Z20IsHudSequenceRunningP9BattleHud kind:function(arm,size=0x18) addr:0x02226aa0
 _ZN9BattleHud14SetupCountdownEv kind:function(arm,size=0x1b8) addr:0x02226ab8
 _ZN9BattleHud22UpdateBarFillCountdownEv kind:function(arm,size=0x20c) addr:0x02226c70
@@ -420,10 +420,10 @@ _ZN9BattleCpu13PickPushIndexEv kind:function(arm,size=0xf0) addr:0x022328dc
 _ZN9BattleCpu19StartJumpObjTargetsEi kind:function(arm,size=0x230) addr:0x022329cc
 _ZN9BattleCpu10NextTargetEv kind:function(arm,size=0x60) addr:0x02232bfc
 _ZN9BattleCpu18StopJumpObjTargetsEv kind:function(arm,size=0x2c) addr:0x02232c5c
-_ZN9BattleCpu16RandomizeOffsetsEv kind:function(arm,size=0x104) addr:0x02232c88
-_ZN9BattleCpu9SetOffsetEv kind:function(arm,size=0x78) addr:0x02232d8c
+_ZN9BattleCpu20RandomizePushOffsetsEv kind:function(arm,size=0x104) addr:0x02232c88
+_ZN9BattleCpu13SetPushOffsetEv kind:function(arm,size=0x78) addr:0x02232d8c
 _ZN9BattleCpu19func_ov007_02232e04Ejjj kind:function(arm,size=0xb4) addr:0x02232e04
-_ZN9BattleCpu9GetOffsetEPiS0_ kind:function(arm,size=0x6c) addr:0x02232eb8
+_ZN9BattleCpu13GetPushOffsetEPiS0_ kind:function(arm,size=0x6c) addr:0x02232eb8
 _Z12SimulateStepP7VecFx32S0_ kind:function(arm,size=0x154) addr:0x02232f24
 _Z15PredictPositionP7VecFx32S0_iS0_ kind:function(arm,size=0xe0) addr:0x02233078
 _Z14PredictLandingP7VecFx32S0_S0_ kind:function(arm,size=0x118) addr:0x02233158
@@ -561,10 +561,10 @@ CreateStatusPanels kind:function(arm,size=0xb4) addr:0x022476e0
 CreateUnitBakugansAndShadow kind:function(arm,size=0x104) addr:0x02247794
 UpdateMarkerAndF00gatModels kind:function(arm,size=0xd4) addr:0x02247898
 CreateMapObj kind:function(arm,size=0x38) addr:0x0224796c
-SetUnitBakugansEnabled kind:function(arm,size=0x1c) addr:0x022479a4
+SetUseUnitBakugans kind:function(arm,size=0x1c) addr:0x022479a4
 SetUnitBakugansVisible kind:function(arm,size=0x14) addr:0x022479c0
 func_ov007_022479d4 kind:function(arm,size=0x20) addr:0x022479d4
-SetMapModelsEnabled kind:function(arm,size=0x14) addr:0x022479f4
+SetUseMapModels kind:function(arm,size=0x14) addr:0x022479f4
 SetCursorAndMarkerModelsVisible kind:function(arm,size=0x14) addr:0x02247a08
 func_ov007_02247a1c kind:function(arm,size=0x20) addr:0x02247a1c
 _Z17CreateCursorModelP16BattleCommandMap kind:function(arm,size=0x40) addr:0x02247a3c
@@ -842,10 +842,10 @@ _ZN16BattleUnitModels11DrawStIconsEv kind:function(arm,size=0xf8) addr:0x0227068
 _ZN16BattleUnitModels15DrawUnitStIconsEh kind:function(arm,size=0x2f8) addr:0x02270784
 _ZN16BattleUnitModels13SetStIconUnitEhj kind:function(arm,size=0x64) addr:0x02270a7c
 _ZN16BattleUnitModels9StartMoveEhP15BattleMoveState kind:function(arm,size=0x2dc) addr:0x02270ae0
-_ZN16BattleUnitModels15UpdateMoveMode2Ej kind:function(arm,size=0x160) addr:0x02270dbc
-_ZN16BattleUnitModels15UpdateMoveMode3Ej kind:function(arm,size=0x138) addr:0x02270f1c
-_ZN16BattleUnitModels15UpdateMoveMode4Ej kind:function(arm,size=0x138) addr:0x02271054
-_ZN16BattleUnitModels15UpdateMoveMode5Ej kind:function(arm,size=0x138) addr:0x0227118c
+_ZN16BattleUnitModels16UpdateDampedMoveEj kind:function(arm,size=0x160) addr:0x02270dbc
+_ZN16BattleUnitModels21UpdateLaunchSpinYMoveEj kind:function(arm,size=0x138) addr:0x02270f1c
+_ZN16BattleUnitModels25UpdateSlowLaunchSpinXMoveEj kind:function(arm,size=0x138) addr:0x02271054
+_ZN16BattleUnitModels21UpdateLaunchSpinXMoveEj kind:function(arm,size=0x138) addr:0x0227118c
 _ZN16BattleUnitModels11DrawFontObjEhP7VecFx32 kind:function(arm,size=0x74) addr:0x022712c4
 _ZN16BattleUnitModels13DrawPyFontObjEP7VecFx32 kind:function(arm,size=0x6c) addr:0x02271338
 _ZN16BattleUnitModels13DrawPtFontObjEP7VecFx32 kind:function(arm,size=0x6c) addr:0x022713a4
@@ -1732,12 +1732,12 @@ data_ov007_02285078 kind:data(any) addr:0x02285078
 data_ov007_02285498 kind:data(any) addr:0x02285498
 gRealBakuTexEntries kind:data(any) addr:0x022858b8
 sEffectOffset kind:data(any) addr:0x02285a98 local
-sTwoButtonPos kind:data(any) addr:0x02285aa4 local
-sThreeButtonPos kind:data(any) addr:0x02285aac local
-sTwoButtonItems kind:data(any) addr:0x02285ab8 local
-sTwoButtonCells kind:data(any) addr:0x02285af0 local
-sThreeButtonCells kind:data(any) addr:0x02285b28 local
-sThreeButtonItems kind:data(any) addr:0x02285b7c local
+sTwoItemPos kind:data(any) addr:0x02285aa4 local
+sThreeItemPos kind:data(any) addr:0x02285aac local
+sTwoItems kind:data(any) addr:0x02285ab8 local
+sTwoItemCells kind:data(any) addr:0x02285af0 local
+sThreeItemCells kind:data(any) addr:0x02285b28 local
+sThreeItems kind:data(any) addr:0x02285b7c local
 sPushVelocity kind:data(any) addr:0x02285bd0 local
 sSparkleFrames kind:data(any) addr:0x02285bdc local
 sCells kind:data(any) addr:0x02285bf4 local

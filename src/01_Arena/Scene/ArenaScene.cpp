@@ -53,11 +53,11 @@ static const WindowItemRecord sArenaMenuItems[2][2] = {
     },
 };
 // Record 1 (WINDOW_ITEM_CURSOR_SKIP) is skipped by the cursor and by touch: one item is selectable.
-static const WindowItemRecord sArenaTwoButtonItems[2] = {
+static const WindowItemRecord sArenaTwoItems[2] = {
     {0, 1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, WINDOW_TOUCH_RELEASE},
     {1, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
-static const WindowCellRecord sArenaThreeButtonCells[3] = {
+static const WindowCellRecord sArenaThreeItemCells[3] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 3, 0xc000, 7, 0, 1, {3, 5, 4, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 7, 0xc000, 7, 0, 1, {6, 8, 7, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 10, 0xc000, 7, 0, 1, {10, 10, 10, 0}},
@@ -67,12 +67,12 @@ static const WindowCellRecord sArenaMenuCells[2] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 6, 2, 1, {2, 3, 3, 0}},
 };
 // Record 2 (WINDOW_ITEM_CURSOR_SKIP) is skipped by the cursor and by touch: two items are selectable.
-static const WindowItemRecord sArenaThreeButtonItems[3] = {
+static const WindowItemRecord sArenaThreeItems[3] = {
     {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, WINDOW_TOUCH_RELEASE_IF_SELECTED},
     {2, WINDOW_ITEM_CURSOR_SKIP, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
-static const WindowCellRecord sArenaTwoButtonCells[2] = {
+static const WindowCellRecord sArenaTwoItemCells[2] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 0xc000, 7, 0, 1, {0, 2, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 0xc000, 7, 0, 1, {9, 9, 9, 0}},
 };
@@ -187,8 +187,8 @@ void ArenaScene::SetSubMenuMode(u32 mode) {
             if (mSubMenuWindow != NULL) {
                 delete mSubMenuWindow;
             }
-            mSubMenuWindow = new SelectWindow(3, sArenaThreeButtonItems, -1);
-            mSubMenuWindow->SetCells(3, sArenaThreeButtonCells);
+            mSubMenuWindow = new SelectWindow(3, sArenaThreeItems, -1);
+            mSubMenuWindow->SetCells(3, sArenaThreeItemCells);
             mSubMenuWindow->mCursor->mSelection = -1;
             mSubMenuWindow->mCursor->mSelection = 1;
             PrintMessage(12);
@@ -199,8 +199,8 @@ void ArenaScene::SetSubMenuMode(u32 mode) {
             if (mSubMenuWindow != NULL) {
                 delete mSubMenuWindow;
             }
-            mSubMenuWindow = new SelectWindow(2, sArenaTwoButtonItems, -1);
-            mSubMenuWindow->SetCells(2, sArenaTwoButtonCells);
+            mSubMenuWindow = new SelectWindow(2, sArenaTwoItems, -1);
+            mSubMenuWindow->SetCells(2, sArenaTwoItemCells);
             mSubMenuWindow->mCursor->mSelection = -1;
             mSubMenuWindow->mCursor->mSelection = 0;
             PrintMessage(11);

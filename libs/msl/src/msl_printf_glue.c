@@ -8,7 +8,7 @@ typedef struct StrWriteCtx {
     size_t_ pos;
 } StrWriteCtx;
 
-extern void *func_02012464(void *, const void *, size_t_);
+extern void *CopyBytes(void *, const void *, size_t_);
 extern size_t_ func_02013df0(int (*)(void *, const char *, size_t_), void *, const char *, char *);
 
 /* 0x02014614: formatter output callback, appends to a bounded buffer */
@@ -18,7 +18,7 @@ int WriteToStrBuffer(void *arg, const char *src, size_t_ n)
     size_t_ pos = c->pos;
     size_t_ size = c->size;
     if (pos + n > size) n = size - pos;
-    func_02012464(c->buf + pos, src, n);
+    CopyBytes(c->buf + pos, src, n);
     c->pos += n;
     return 1;
 }

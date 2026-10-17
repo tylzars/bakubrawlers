@@ -38,7 +38,7 @@ extern char data_020adc1c[], data_020adc40[], data_020adc60[], data_020adc90[], 
 
 extern void CriDevSendText(const char *);
 extern int func_02015a50(const char *);
-extern void *func_02012464(void *, const void *, int);
+extern void *CopyBytes(void *, const void *, int);
 extern int strncmp(const char *, const char *, int);
 extern void CriStrToUpper(char *);
 extern CriDev *CriDevTableFind(char *);
@@ -70,7 +70,7 @@ void CriDevSetDefaultName(char *path)
     }
     CriStrToUpper(path);
     if (CriDevTableHasName(path, len) == 1) {
-        func_02012464(data_02217a30, path, len + 1);
+        CopyBytes(data_02217a30, path, len + 1);
         return;
     }
     CriDevSendText(data_020ad9e0);
@@ -176,7 +176,7 @@ void CriDevSplitPath(char *out, char *rest, char *src)
     }
     if (src[i] == 0) {
         out[i] = 0;
-        func_02012464(rest, out, func_02015a50(out) + 1);
+        CopyBytes(rest, out, func_02015a50(out) + 1);
         out[0] = 0;
         return;
     }
@@ -203,7 +203,7 @@ void CriDevCopyDefaultName(char *dst)
         dst[0] = 0;
         return;
     }
-    func_02012464(dst, data_02217a30, len + 1);
+    CopyBytes(dst, data_02217a30, len + 1);
 }
 
 void CriDevDeallocHandle(CriDevHandle *h)

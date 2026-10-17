@@ -29,7 +29,7 @@ static inline int TOUPPERF(int x)
 #define TOUPPER(c) (((c) < 0 || (c) >= 128) ? (c) : data_02090328[c])
 
 extern double func_02012350(const char *);
-extern double func_0201cfc4(Dec *);
+extern double DecToDouble(Dec *);
 
 double ScanDouble(int maxw, int (*rd)(void *, int, int), void *ctx, int *nread, int *ovf)
 {
@@ -350,7 +350,7 @@ double ScanDouble(int maxw, int (*rd)(void *, int, int), void *ctx, int *nread, 
             return 0.0 - data_020a507c;
         }
         d.exp = expv;
-        x = func_0201cfc4(&d);
+        x = DecToDouble(&d);
         if (x != 0.0 && x < 2.2250738585072014e-308) {
             *ovf = 1;
         } else if (x > 1.7976931348623157e308) {

@@ -55,7 +55,7 @@ extern char data_020ad728[], data_020ad734[], data_020ad750[], data_020ad75c[];
 extern char data_020ad77c[], data_020ad788[], data_020ad7a4[], data_020ad7b0[];
 
 extern void CriRingSendJoinedText(const char *, const char *);
-extern void *func_02012464(void *, void *, int);
+extern void *CopyBytes(void *, void *, int);
 extern void *memset(void *, int, int);
 extern void CriSendText(const char *);
 extern void CriCopyString(char *, int, const char *);
@@ -110,14 +110,14 @@ void CriRingCommitSpan(CriRing *r, int mode, CriSpan *s)
         if (off < lim) {
             int n = s->len;
             if (n >= lim - off) n = lim - off;
-            func_02012464(r->buf + (r->size + off), s->ptr, n);
+            CopyBytes(r->buf + (r->size + off), s->ptr, n);
         }
         off = (int)s->ptr - (int)r->buf + s->len;
         if (off > (int)r->size) {
             int n = s->len;
             int ex = off - (int)r->size;
             if (n >= ex) n = ex;
-            func_02012464(r->buf, r->buf + (off - n), n);
+            CopyBytes(r->buf, r->buf + (off - n), n);
         }
         func_02045f60();
         r->c = r->c + s->len;

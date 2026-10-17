@@ -86,7 +86,7 @@ extern void func_020511c8(void);
 extern void *memset(void *, int, int);
 extern VObj *func_02050e60(void *, int);
 extern void func_02050ea8(void *);
-extern void *func_02050698(void *, int);
+extern void *CriFaderCreate(void *, int);
 extern void func_020506e0(void *);
 extern int CriFaderGetState(void *);
 extern void func_0204fc7c(Obj *), CriFadeGrpAdvance(Obj *), func_0204fc64(Obj *, int);
@@ -107,19 +107,19 @@ extern int func_0204f338(Pool *);
 extern int PoolObjInit(Obj *, Cfg *, char *, int);
 extern void PoolObjReleaseParts(Obj *);
 extern void PoolDeallocObj(Pool *, Obj *);
-extern Obj *func_0204f36c(char *, unsigned);
+extern Obj *PoolObjCreate(char *, unsigned);
 extern void func_0204f3b4(Obj *);
-extern void func_0204f264(Pool *, Obj *);
+extern void PoolAdvanceObj(Pool *, Obj *);
 extern int PoolObjIsInit(Obj *);
 extern int func_0204f98c(Obj *);
-extern void func_0204f1e8(Pool *);
+extern void PoolAdvance(Pool *);
 extern void func_0204ed44(void), func_0204ed48(void), func_0204ed10(void);
 extern void func_0204ed2c(void), func_0204ed38(void);
 extern int func_0204f2e4(Pool *);
-extern void *func_0204fb64(Obj *, int);
-extern int func_0204fbc8(Obj *);
+extern void *PoolObjGetAdx(Obj *, int);
+extern int PoolObjGetAdxCount(Obj *);
 
-int func_0204ecf0(Obj *a) { return func_0204fbc8(a); }
+int func_0204ecf0(Obj *a) { return PoolObjGetAdxCount(a); }
 
 void func_0204ecfc(void)
 {
@@ -196,7 +196,7 @@ Obj *PoolAllocObj(Pool *p, Cfg *cfg, char *buf, int size)
     }
     for (i = 0; i < 4; i++) {
         if (p->slot[i] == 0) {
-            o = p->slot[i] = func_0204f36c(buf, size);
+            o = p->slot[i] = PoolObjCreate(buf, size);
             buf += 0xe0;
             size -= 0xe0;
             break;
@@ -229,7 +229,7 @@ void PoolDeallocObj(Pool *p, Obj *o)
     }
 }
 
-int func_0204efd8(int unused, Cfg *c)
+int PoolComputeWorkSize(int unused, Cfg *c)
 {
     int base = 0;
     int r0 = 0;
@@ -259,7 +259,7 @@ int func_0204efd8(int unused, Cfg *c)
     return r0;
 }
 
-void func_0204f1e8(Pool *p)
+void PoolAdvance(Pool *p)
 {
     int i;
     if (PoolHasRef(p) == 0) return;
@@ -271,7 +271,7 @@ void func_0204f1e8(Pool *p)
     }
     for (i = 0; i < 4; i++) {
         if (p->slot[i] != 0) {
-            func_0204f264(p, p->slot[i]);
+            PoolAdvanceObj(p, p->slot[i]);
         }
     }
     if (p->cb88 != 0) {
@@ -279,7 +279,7 @@ void func_0204f1e8(Pool *p)
     }
 }
 
-void func_0204f264(Pool *p, Obj *o)
+void PoolAdvanceObj(Pool *p, Obj *o)
 {
     if (PoolHasRef(p) == 0) return;
     if (PoolObjIsInit(o) == 0) return;
@@ -317,14 +317,14 @@ int func_0204f338(Pool *p)
 {
     if (p == 0) return 0;
     func_0204ed44();
-    func_0204f1e8(p);
+    PoolAdvance(p);
     func_0204ed48();
     return 0;
 }
 
 void SendErrWrapper(const char *s) { SendErr(s); }
 
-Obj *func_0204f36c(char *buf, unsigned size)
+Obj *PoolObjCreate(char *buf, unsigned size)
 {
     Obj *o = (Obj *) buf;
     if (o == 0) {

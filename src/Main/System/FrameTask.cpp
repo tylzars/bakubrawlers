@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 extern "C" void func_0205253c();
-extern "C" int func_02051e40(void *handle);
+extern "C" int CriHdlGetState(void *handle);
 
 struct UnkStruct_020d433c {
     PAD(0x00, 0x79);
@@ -72,11 +72,11 @@ void FrameTask::StartChannel(u32 unk1, u32 unk2) {
 
 BOOL func_0203dd0c(FrameTask *task, u32 channel) {
     if (channel == 0) {
-        if (func_02051e40(task->mHandle0) == 2) {
+        if (CriHdlGetState(task->mHandle0) == 2) {
             return TRUE;
         }
     } else {
-        if (func_02051e40(task->mHandle1) == 2) {
+        if (CriHdlGetState(task->mHandle1) == 2) {
             return TRUE;
         }
     }

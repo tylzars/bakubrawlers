@@ -11,7 +11,7 @@ extern int strncpy(void *, int, int);
 extern int strcat(void *, int);
 extern int strncat(void *, int, int);
 extern int vsprintf(char *, const char *, va_list);
-extern void func_02012464(void *, const void *, int);
+extern void CopyBytes(void *, const void *, int);
 
 void func_02051528(void) {}
 void func_0205152c(void) {}
@@ -66,7 +66,7 @@ void CriCrossFadeResizeSamples(short *src, int n1, short *dst, int n2)
             dst[n1 + i] = src[m + i];
         }
     } else if (n1 == n2) {
-        func_02012464(dst, src, n2 * 2);
+        CopyBytes(dst, src, n2 * 2);
     } else if (n1 > n2) {
         int off = n1 - n2;
         for (i = 0; i < n2; i++) {

@@ -17,11 +17,11 @@ extern double scalbn(double, int);
 extern unsigned long long func_0201dbec(double);
 extern int CountSetBits64(unsigned long long);
 extern void func_0201c5b4(Dec *, int);
-extern void func_0201c2c8(Dec *, unsigned long long);
-extern void func_0201c394(Dec *, const Dec *, const Dec *);
-extern void func_0201c288(Dec *, int);
+extern void U64ToDec(Dec *, unsigned long long);
+extern void MultiplyDec(Dec *, const Dec *, const Dec *);
+extern void RoundDec(Dec *, int);
 
-void func_0201cd9c(Dec *d, double x)
+void DoubleToDec(Dec *d, double x)
 {
     char sign = GetSignBit(x) != 0;
     Dec iv, p2;
@@ -49,8 +49,8 @@ void func_0201cd9c(Dec *d, double x)
     bits = *(unsigned long long *)&t | 0x0010000000000000ULL;
     n = 53 - CountSetBits64((bits & -bits) - 1);
     func_0201c5b4(&p2, e - n);
-    func_0201c2c8(&iv, func_0201dbec(scalbn(f, n)));
-    func_0201c394(d, &iv, &p2);
+    U64ToDec(&iv, func_0201dbec(scalbn(f, n)));
+    MultiplyDec(d, &iv, &p2);
     d->sign = sign;
 }
 
@@ -58,10 +58,10 @@ void func_0201cf1c(const DecForm *form, double x, Dec *d)
 {
     int digits = form->ndigits;
     int i;
-    func_0201cd9c(d, x);
+    DoubleToDec(d, x);
     if (d->text[0] > 9) return;
     if (digits > 32) digits = 32;
-    func_0201c288(d, digits);
+    RoundDec(d, digits);
     while (d->len < digits) {
         d->text[d->len++] = 0;
     }

@@ -100,7 +100,7 @@ void func_020504c4(CriFadeGrp *g);
 void CriFadeGrpSendValue(CriFadeGrp *g, CriSlot *s);
 int CriFadeGrpNoFaderRunning(CriFadeGrp *g);
 void CriFadeGrpCallCallback(CriFadeGrp *g, int ev);
-CriFader *func_02050698(CriFader *f, unsigned size);
+CriFader *CriFaderCreate(CriFader *f, unsigned size);
 void func_020506e0(CriFader *f);
 int CriFaderGetState(CriFader *f);
 int CriFaderGetValue(CriFader *f);
@@ -129,7 +129,7 @@ void func_020504c4(CriFadeGrp *g);
 void CriFadeGrpSendValue(CriFadeGrp *g, CriSlot *s);
 int CriFadeGrpNoFaderRunning(CriFadeGrp *g);
 void CriFadeGrpCallCallback(CriFadeGrp *g, int ev);
-CriFader *func_02050698(CriFader *f, unsigned size);
+CriFader *CriFaderCreate(CriFader *f, unsigned size);
 void func_020506e0(CriFader *f);
 int CriFaderGetState(CriFader *f);
 int CriFaderGetValue(CriFader *f);
@@ -488,7 +488,7 @@ void CriFadeGrpCallCallback(CriFadeGrp *g, int ev)
     }
 }
 
-CriFader *func_02050698(CriFader *f, unsigned size)
+CriFader *CriFaderCreate(CriFader *f, unsigned size)
 {
     if (f == 0) {
         SendErrWrapper(data_020b0010);

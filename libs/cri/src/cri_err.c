@@ -27,7 +27,7 @@ extern char data_020ad7d0[], data_020ad818[], data_020ad840[], data_020ad848[];
 extern char data_020ad878[], data_020ad898[], data_020ad8c0[], data_020ad8e4[];
 extern char data_020ad90c[], data_020ad944[], data_020ad94c[], data_020ad970[], data_020ad994[];
 
-extern void func_02012464(void *, const void *, int);
+extern void CopyBytes(void *, const void *, int);
 extern void memset(void *, int, int);
 extern int func_02015a50(const char *);
 extern int strncmp(const char *, const char *, int);
@@ -380,7 +380,7 @@ int CriDevTableAdd(const char *s, void *(*f)(void))
     }
     if (i == 32) return 0;
     data_022176b4[i].val = v;
-    func_02012464(data_022176b4[i].name, s, func_02015a50(s) + 1);
+    CopyBytes(data_022176b4[i].name, s, func_02015a50(s) + 1);
     return (int)v;
 }
 

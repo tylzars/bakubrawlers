@@ -86,7 +86,7 @@ extern void func_020511c8(void);
 extern void *memset(void *, int, int);
 extern VObj *func_02050e60(void *, int);
 extern void func_02050ea8(void *);
-extern void *func_02050698(void *, int);
+extern void *CriFaderCreate(void *, int);
 extern void func_020506e0(void *);
 extern int CriFaderGetState(void *);
 extern void func_0204fc7c(Obj *), CriFadeGrpAdvance(Obj *), func_0204fc64(Obj *, int);
@@ -107,17 +107,17 @@ extern int func_0204f338(Pool *);
 extern int PoolObjInit(Obj *, Cfg *, char *, int);
 extern void PoolObjReleaseParts(Obj *);
 extern void PoolDeallocObj(Pool *, Obj *);
-extern Obj *func_0204f36c(char *, unsigned);
+extern Obj *PoolObjCreate(char *, unsigned);
 extern void func_0204f3b4(Obj *);
-extern void func_0204f264(Pool *, Obj *);
+extern void PoolAdvanceObj(Pool *, Obj *);
 extern int PoolObjIsInit(Obj *);
 extern int func_0204f98c(Obj *);
-extern void func_0204f1e8(Pool *);
+extern void PoolAdvance(Pool *);
 extern void func_0204ed44(void), func_0204ed48(void), func_0204ed10(void);
 extern void func_0204ed2c(void), func_0204ed38(void);
 extern int func_0204f2e4(Pool *);
-extern void *func_0204fb64(Obj *, int);
-extern int func_0204fbc8(Obj *);
+extern void *PoolObjGetAdx(Obj *, int);
+extern int PoolObjGetAdxCount(Obj *);
 
 typedef struct Par { int a, b, c; } Par;
 
@@ -173,7 +173,7 @@ int PoolObjInit(Obj *o, Cfg *cfg, char *buf, int size)
             off += n;
             o->ent[i].o = o->slot[i];
         }
-        o->ent[i].buf = func_02050698(buf + off, 0x44);
+        o->ent[i].buf = CriFaderCreate(buf + off, 0x44);
         if (o->ent[i].buf == 0) {
             SendErrWrapper(data_020afcbc);
             PoolObjReleaseParts(o);
@@ -223,7 +223,7 @@ void PoolObjReleaseParts(Obj *o)
 
 int PoolObjIsInit(Obj *o) { return o->i58; }
 
-void func_0204f7c0(Obj *o, int a)
+void PoolObjStart(Obj *o, int a)
 {
     if (o->i58 == 0) {
         SendErrWrapper(data_020afd3c);
@@ -234,7 +234,7 @@ void func_0204f7c0(Obj *o, int a)
     func_0204fe20(o, &o->i30);
 }
 
-void func_0204f810(Obj *o)
+void PoolObjStop(Obj *o)
 {
     if (o->i58 == 0) {
         SendErrWrapper(data_020afd70);
@@ -270,7 +270,7 @@ int func_0204f8ec(Obj *o)
     return o->cur->vt->f24(o->cur);
 }
 
-int func_0204f924(Obj *o)
+int PoolObjGetState(Obj *o)
 {
     int r;
     if (o->i58 == 0) {
@@ -286,7 +286,7 @@ int func_0204f924(Obj *o)
 
 int func_0204f98c(Obj *o) { return o->cfg.b14; }
 
-void func_0204f994(Obj *o, int v)
+void PoolObjSetVolume(Obj *o, int v)
 {
     Ent *base;
     Ent *e;
@@ -329,7 +329,7 @@ void func_0204fa2c(Obj *o)
         if (o->cfg.i1c == 1) {
             func_0204fc00(o, i);
         } else {
-            x = func_0204fb64(o, i);
+            x = PoolObjGetAdx(o, i);
         }
         func_0204bdfc(x, o->p74 + off, 0x1800);
     }
@@ -353,13 +353,13 @@ void func_0204fad4(Obj *o)
         if (o->cfg.i1c == 1) {
             func_0204fc00(o, i);
         } else {
-            x = func_0204fb64(o, i);
+            x = PoolObjGetAdx(o, i);
         }
         func_0204bf1c(x);
     }
 }
 
-void *func_0204fb64(Obj *o, int i)
+void *PoolObjGetAdx(Obj *o, int i)
 {
     if (o->i58 == 0) {
         SendErrWrapper(data_020aff1c);
@@ -370,7 +370,7 @@ void *func_0204fb64(Obj *o, int i)
     return o->slot[i]->vt->f40(o->slot[i]);
 }
 
-int func_0204fbc8(Obj *o)
+int PoolObjGetAdxCount(Obj *o)
 {
     if (o->i58 == 0) {
         SendErrWrapper(data_020aff4c);

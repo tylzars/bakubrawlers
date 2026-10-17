@@ -47,7 +47,7 @@ extern CriStm gCriStm[4];     /* 0x02216108 */
 extern char str_cri_a[], str_cri_b[];
 
 extern void *memset(void *, int, int);
-extern void *func_02012464(void *, void *, int);
+extern void *CopyBytes(void *, void *, int);
 extern void SendErrConcat(const char *, const char *);
 extern int CriRingGetBuf(void *);
 extern int CriRingGetSize(void *);
@@ -227,7 +227,7 @@ void func_020409bc(CriStm *s)
     if (func_0203e690(obj) == 2) {
         int l = a.n;
         if (l >= 0x40) l = 0x40;
-        func_02012464(s->buf60, a.p, l);
+        CopyBytes(s->buf60, a.p, l);
     }
     st = func_0203e690(obj);
     if (st == 10 || st == 11 || st == 12 || st == 20 || st == 15) {

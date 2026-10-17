@@ -64,8 +64,8 @@ extern void func_0204ecfc(void);
 extern void func_02047408(void (*)(int, const char *), int);
 extern void func_020483f0(const void *, int);
 extern void func_020522e4(void);
-extern void func_020522c8(int, const char *);
-extern void func_020522e8(const char *, const char *);
+extern void CriGlobTextCallback(int, const char *);
+extern void CriGlobSendErr(const char *, const char *);
 extern void func_02052208(void);
 extern void GlobalPoolReleaseRef(void);
 extern void CriExit(void);
@@ -73,7 +73,7 @@ extern void CriStopThreads(void);
 extern void func_02047224(void);
 extern void func_02047810(int);
 extern void func_020471d0(void);
-extern int func_0204ea2c(void *);
+extern int GlobalPoolComputeWorkSize(void *);
 extern void *GlobalPoolAllocObj(void *, void *, int);
 extern void func_0204eb54(void *, int);
 extern void func_0204eb84(void *, int);
@@ -97,14 +97,14 @@ extern double log10(double);
 CriElem *func_02052248(CriHdl *hdl);
 void func_020522a0(CriElem *e);
 void *func_02051ae4(CriOpen *p);
-void func_02051818(CriMemCfg *cfg, int a, const void *b, void (*c)(const char *), int flag);
+void CriGlobInit(CriMemCfg *cfg, int a, const void *b, void (*c)(const char *), int flag);
 
-void func_02051804(CriMemCfg *cfg, int a, const void *b, void (*c)(const char *))
+void CriGlobInitWithThreads(CriMemCfg *cfg, int a, const void *b, void (*c)(const char *))
 {
-    func_02051818(cfg, a, b, c, 1);
+    CriGlobInit(cfg, a, b, c, 1);
 }
 
-void func_02051818(CriMemCfg *cfg, int a, const void *b, void (*c)(const char *), int flag)
+void CriGlobInit(CriMemCfg *cfg, int a, const void *b, void (*c)(const char *), int flag)
 {
     if (data_02218fd0.init != 0) {
         data_02218fd0.init++;
@@ -113,7 +113,7 @@ void func_02051818(CriMemCfg *cfg, int a, const void *b, void (*c)(const char *)
     MI_CpuFill8(data_02218fd4, 0, 0x200);
     if (c == 0) { data_02218fd0.err = (void (*)(const char *))func_020522e4; } else { data_02218fd0.err = c; }
     if (cfg == 0) {
-        func_020522e8(data_020b2440, data_020b230c[3]);
+        CriGlobSendErr(data_020b2440, data_020b230c[3]);
         return;
     }
     func_0204713c();
@@ -141,13 +141,13 @@ void func_02051818(CriMemCfg *cfg, int a, const void *b, void (*c)(const char *)
     CriInit();
     GlobalPoolAddRef();
     func_0204ecfc();
-    func_02047408(func_020522c8, 0);
+    func_02047408(CriGlobTextCallback, 0);
     func_020483f0(b, a);
     data_02218fd0.ch = 2;
     data_02218fd0.init = 1;
 }
 
-void func_020519bc(void)
+void CriGlobExit(void)
 {
     if (data_02218fd0.init == 0) {
         return;
@@ -166,7 +166,7 @@ void func_020519bc(void)
     data_02218fd0.init--;
 }
 
-void func_02051a3c(void)
+void CriGlobUpdate(void)
 {
     if (data_02218fd0.init != 0) {
         func_02047224();
@@ -187,7 +187,7 @@ void func_02051a88(void)
     }
 }
 
-void *func_02051ab0(CriMemCfg *cfg, int a, int b)
+void *CriHdlAlloc(CriMemCfg *cfg, int a, int b)
 {
     CriOpen o;
     o.mem = cfg;
@@ -211,19 +211,19 @@ void *func_02051ae4(CriOpen *p)
     int i;
 
     if (data_02218fd0.init == 0) {
-        func_020522e8(data_020b230c[8], data_020b230c[1]);
+        CriGlobSendErr(data_020b230c[8], data_020b230c[1]);
         return 0;
     }
     if (p->mem == 0 && p->buf == 0) {
-        func_020522e8(data_020b230c[8], data_020b230c[3]);
+        CriGlobSendErr(data_020b230c[8], data_020b230c[3]);
         return 0;
     }
     if (p->mem != 0 && (p->mem->alloc == 0 || p->mem->free == 0)) {
-        func_020522e8(data_020b230c[8], data_020b230c[3]);
+        CriGlobSendErr(data_020b230c[8], data_020b230c[3]);
         return 0;
     }
     if (p->mode == 0 || (unsigned)p->mode > 2) {
-        func_020522e8(data_020b230c[8], data_020b2454);
+        CriGlobSendErr(data_020b230c[8], data_020b2454);
         return 0;
     }
     e = func_02052248(0);
@@ -241,7 +241,7 @@ void *func_02051ae4(CriOpen *p)
     s.g = p->f0c;
     s.i = p->f10;
     s.h = 0;
-    size = func_0204ea2c(&s);
+    size = GlobalPoolComputeWorkSize(&s);
     if (p->mem == 0) {
         e->work = p->buf;
     } else {
@@ -249,7 +249,7 @@ void *func_02051ae4(CriOpen *p)
     }
     e->h = GlobalPoolAllocObj(&s, e->work, size);
     if (e->h == 0) {
-        func_020522e8(data_020b230c[8], data_020b2474);
+        CriGlobSendErr(data_020b230c[8], data_020b2474);
         return 0;
     }
     func_0204eb54(e->h, 0x10);
@@ -276,20 +276,20 @@ void *func_02051ae4(CriOpen *p)
     return &e->hdl;
 }
 
-void func_02051d7c(CriHdl *hdl)
+void CriHdlDealloc(CriHdl *hdl)
 {
     CriElem *e;
     if (data_02218fd0.init == 0) {
-        func_020522e8(data_020b230c[9], data_020b230c[1]);
+        CriGlobSendErr(data_020b230c[9], data_020b230c[1]);
         return;
     }
     if (hdl == 0) {
-        func_020522e8(data_020b230c[9], data_020b230c[5]);
+        CriGlobSendErr(data_020b230c[9], data_020b230c[5]);
         return;
     }
     e = func_02052248(hdl);
     if (e == 0) {
-        func_020522e8(data_020b230c[9], data_020b2490);
+        CriGlobSendErr(data_020b230c[9], data_020b2490);
         return;
     }
     if (e->f18 != 0) {
@@ -304,14 +304,14 @@ void func_02051d7c(CriHdl *hdl)
     data_02218fd0.count--;
 }
 
-int func_02051e40(CriHdl *hdl)
+int CriHdlGetState(CriHdl *hdl)
 {
     if (data_02218fd0.init == 0) {
-        func_020522e8(data_020b230c[11], data_020b230c[1]);
+        CriGlobSendErr(data_020b230c[11], data_020b230c[1]);
         return 0;
     }
     if (hdl == 0) {
-        func_020522e8(data_020b230c[11], data_020b230c[5]);
+        CriGlobSendErr(data_020b230c[11], data_020b230c[5]);
         return 0;
     }
     {
@@ -324,19 +324,19 @@ int func_02051e40(CriHdl *hdl)
     }
 }
 
-void func_02051ed4(CriHdl *hdl, const char *path)
+void CriHdlStart(CriHdl *hdl, const char *path)
 {
     CriElem *e;
     if (data_02218fd0.init == 0) {
-        func_020522e8(data_020b230c[10], data_020b230c[1]);
+        CriGlobSendErr(data_020b230c[10], data_020b230c[1]);
         return;
     }
     if (hdl == 0) {
-        func_020522e8(data_020b230c[10], data_020b230c[5]);
+        CriGlobSendErr(data_020b230c[10], data_020b230c[5]);
         return;
     }
     if (path == 0) {
-        func_020522e8(data_020b230c[10], data_020b230c[4]);
+        CriGlobSendErr(data_020b230c[10], data_020b230c[4]);
         return;
     }
     e = func_02052248(hdl);
@@ -344,14 +344,14 @@ void func_02051ed4(CriHdl *hdl, const char *path)
     func_0204ea6c(e->h, path);
 }
 
-void func_02051f5c(CriHdl *hdl)
+void CriHdlStop(CriHdl *hdl)
 {
     if (data_02218fd0.init == 0) {
-        func_020522e8(data_020b230c[2], data_020b230c[1]);
+        CriGlobSendErr(data_020b230c[2], data_020b230c[1]);
         return;
     }
     if (hdl == 0) {
-        func_020522e8(data_020b230c[2], data_020b230c[5]);
+        CriGlobSendErr(data_020b230c[2], data_020b230c[5]);
         return;
     }
     func_0204ea9c(func_02052248(hdl)->h);
@@ -360,26 +360,26 @@ void func_02051f5c(CriHdl *hdl)
 void func_02051fb8(CriHdl *hdl, int a)
 {
     if (data_02218fd0.init == 0) {
-        func_020522e8(data_020b230c[6], data_020b230c[1]);
+        CriGlobSendErr(data_020b230c[6], data_020b230c[1]);
         return;
     }
     if (hdl == 0) {
-        func_020522e8(data_020b230c[6], data_020b230c[5]);
+        CriGlobSendErr(data_020b230c[6], data_020b230c[5]);
         return;
     }
     func_0204eac4(func_02052248(hdl)->h, a);
 }
 
-void func_0205201c(CriHdl *hdl, float v)
+void CriHdlSetVolumeFloat(CriHdl *hdl, float v)
 {
     CriElem *e;
     int r;
     if (data_02218fd0.init == 0) {
-        func_020522e8(data_020b230c[7], data_020b230c[1]);
+        CriGlobSendErr(data_020b230c[7], data_020b230c[1]);
         return;
     }
     if (hdl == 0) {
-        func_020522e8(data_020b230c[7], data_020b230c[5]);
+        CriGlobSendErr(data_020b230c[7], data_020b230c[5]);
         return;
     }
     e = func_02052248(hdl);
@@ -393,14 +393,14 @@ void func_0205201c(CriHdl *hdl, float v)
     func_0204eb24(e->h, r);
 }
 
-void func_020520e8(CriHdl *hdl, int a)
+void CriHdlSetVolume(CriHdl *hdl, int a)
 {
     if (data_02218fd0.init == 0) {
-        func_020522e8(data_020b230c[7], data_020b230c[1]);
+        CriGlobSendErr(data_020b230c[7], data_020b230c[1]);
         return;
     }
     if (hdl == 0) {
-        func_020522e8(data_020b230c[7], data_020b230c[5]);
+        CriGlobSendErr(data_020b230c[7], data_020b230c[5]);
         return;
     }
     func_0204eb24(func_02052248(hdl)->h, a);
@@ -410,11 +410,11 @@ void func_0205214c(CriHdl *hdl, unsigned a, unsigned b)
 {
     CriElem *e;
     if (data_02218fd0.init == 0) {
-        func_020522e8(data_020b230c[0], data_020b230c[1]);
+        CriGlobSendErr(data_020b230c[0], data_020b230c[1]);
         return;
     }
     if (hdl == 0) {
-        func_020522e8(data_020b230c[0], data_020b230c[5]);
+        CriGlobSendErr(data_020b230c[0], data_020b230c[5]);
         return;
     }
     e = func_02052248(hdl);
@@ -461,14 +461,14 @@ void func_020522a0(CriElem *e)
     }
 }
 
-void func_020522c8(int unused, const char *msg)
+void CriGlobTextCallback(int unused, const char *msg)
 {
     data_02218fd0.err(msg);
 }
 
 void func_020522e4(void) {}
 
-void func_020522e8(const char *a, const char *b)
+void CriGlobSendErr(const char *a, const char *b)
 {
     sprintf(data_02219190, data_020b24a0, a, b);
     data_02218fd0.err(data_02219190);

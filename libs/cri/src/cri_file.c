@@ -67,7 +67,7 @@ extern void InitSndStrm(void *);
 extern int ReserveSndStrmChannels(void *, int, void *);
 extern void UnreserveSndStrmChannels(void *);
 extern void SndOutStop(void *);
-extern void func_02012464(void *, int, int);
+extern void CopyBytes(void *, int, int);
 
 extern char data_02218544[0x100];
 extern CriMsgCb data_0221853c;
@@ -404,7 +404,7 @@ int CriFilRead(CriFil *f, int n, char *buf)
     rem = sz - f->off;
     if (f->len <= rem) rem = f->len;
     CriFilLockLeave();
-    func_02012464(buf, base + f->off, f->len);
+    CopyBytes(buf, base + f->off, f->len);
     memset(buf + rem, 0, f->len - rem);
     CriFilLockEnter();
     f->i14 = f->cnt * f->ssize;

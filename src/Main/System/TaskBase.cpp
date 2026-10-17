@@ -6,18 +6,18 @@ struct CriMemConfig {
     void (*mFree)(void *);
 };
 
-extern "C" void func_02051804(CriMemConfig *config, int a, const void *b, void (*c)(void *));
-extern "C" void *func_02051ab0(CriMemConfig *config, int a, int b);
+extern "C" void CriGlobInitWithThreads(CriMemConfig *config, int a, const void *b, void (*c)(void *));
+extern "C" void *CriHdlAlloc(CriMemConfig *config, int a, int b);
 extern "C" void func_0205214c(void *handle, int a, int b);
-extern "C" void func_020520e8(void *handle, int a);
-extern "C" void func_02051d7c(void *handle);
-extern "C" void func_020519bc();
-extern "C" int func_02051e40(void *handle);
-extern "C" void func_02051a3c();
-extern "C" void func_02051ed4(void *handle, const char *path);
+extern "C" void CriHdlSetVolume(void *handle, int a);
+extern "C" void CriHdlDealloc(void *handle);
+extern "C" void CriGlobExit();
+extern "C" int CriHdlGetState(void *handle);
+extern "C" void CriGlobUpdate();
+extern "C" void CriHdlStart(void *handle, const char *path);
 extern "C" void func_02051fb8(void *handle, int a);
-extern "C" void func_02051f5c(void *handle);
-extern "C" void func_0205201c(void *handle, float volume);
+extern "C" void CriHdlStop(void *handle);
+extern "C" void CriHdlSetVolumeFloat(void *handle, float volume);
 extern "C" void func_02051a88();
 extern "C" void SleepUntilVBlank();
 extern "C" void func_02051a5c();
@@ -45,12 +45,12 @@ void TaskBase::Init() {
     }
     config.mAlloc = CriAlloc;
     config.mFree  = CriFree;
-    func_02051804(&config, 3, data_0209e538, func_02052518);
-    mHandle0 = func_02051ab0(&config, 2, 0);
-    mHandle1 = func_02051ab0(&config, 1, 0);
+    CriGlobInitWithThreads(&config, 3, data_0209e538, func_02052518);
+    mHandle0 = CriHdlAlloc(&config, 2, 0);
+    mHandle1 = CriHdlAlloc(&config, 1, 0);
     func_0205214c(mHandle1, 0, 0);
-    func_020520e8(mHandle0, 0);
-    func_020520e8(mHandle1, 0);
+    CriHdlSetVolume(mHandle0, 0);
+    CriHdlSetVolume(mHandle1, 0);
     mInitialized = 1;
 }
 
@@ -58,26 +58,26 @@ void TaskBase::Release() {
     if (mInitialized == 0) {
         return;
     }
-    func_02051d7c(mHandle0);
-    func_02051d7c(mHandle1);
-    func_020519bc();
+    CriHdlDealloc(mHandle0);
+    CriHdlDealloc(mHandle1);
+    CriGlobExit();
     mInitialized = 0;
 }
 
 void TaskBase::UpdateHandles() {
     if (mInitialized != 0) {
-        mStatus0 = func_02051e40(mHandle0);
-        mStatus1 = func_02051e40(mHandle1);
+        mStatus0 = CriHdlGetState(mHandle0);
+        mStatus1 = CriHdlGetState(mHandle1);
     }
-    func_02051a3c();
+    CriGlobUpdate();
 }
 
 void TaskBase::Start0(const char *path) {
-    func_02051ed4(mHandle0, path);
+    CriHdlStart(mHandle0, path);
 }
 
 void TaskBase::Start1(const char *path) {
-    func_02051ed4(mHandle1, path);
+    CriHdlStart(mHandle1, path);
 }
 
 void TaskBase::func_02052480() {
@@ -89,19 +89,19 @@ void TaskBase::func_02052494() {
 }
 
 void TaskBase::Stop0() {
-    func_02051f5c(mHandle0);
+    CriHdlStop(mHandle0);
 }
 
 void TaskBase::Stop1() {
-    func_02051f5c(mHandle1);
+    CriHdlStop(mHandle1);
 }
 
 void TaskBase::SetVolume0(float volume) {
-    func_0205201c(mHandle0, volume);
+    CriHdlSetVolumeFloat(mHandle0, volume);
 }
 
 void TaskBase::SetVolume1(float volume) {
-    func_0205201c(mHandle1, volume);
+    CriHdlSetVolumeFloat(mHandle1, volume);
 }
 
 static void *CriAlloc(u32 size) {

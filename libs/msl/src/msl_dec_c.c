@@ -6,7 +6,7 @@ typedef struct Dec {
     unsigned char text[33];
 } Dec;
 
-int func_0201ca18(const Dec *a, const Dec *b)
+int IsDecLess(const Dec *a, const Dec *b)
 {
     int i, m;
     if (a->text[0] == 0) return b->text[0] != 0;

@@ -14,8 +14,8 @@ extern int func_02043188(int, int);
 extern int func_020431fc(int);
 extern int func_02043378(int);
 extern void SendErrWrapper(void *);
-extern int PoolObjIsInit(int), func_0204f98c(int), func_0204f924(int), func_0204f8ec(int);
-extern int func_02050698(void *, int);
+extern int PoolObjIsInit(int), func_0204f98c(int), PoolObjGetState(int), func_0204f8ec(int);
+extern int CriFaderCreate(void *, int);
 extern void func_020506e0(int);
 extern int CriFaderGetState(int), CriFaderGetValue(int);
 extern void CriFaderStart(int, int, int, int, int);
@@ -104,7 +104,7 @@ int func_02051124(CriX *o)
         SendErrWrapper(&data_020b0188);
         return 0;
     }
-    o->h = func_02050698(o->sub, 0x44);
+    o->h = CriFaderCreate(o->sub, 0x44);
     if (o->h == 0) {
         SendErrWrapper(&data_020b01b8);
         return 0;
@@ -133,7 +133,7 @@ void func_020511fc(CriX *o)
     for (i = 0; i < 4; i++) {
         int s = ((int *)o->vt)[i];
         if (s != 0 && PoolObjIsInit(s) != 0 && func_0204f98c(s) == 2) {
-            switch (func_0204f924(s)) {
+            switch (PoolObjGetState(s)) {
             case 0: case 3: case 4: break;
             case 1:
             case 2:

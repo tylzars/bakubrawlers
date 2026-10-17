@@ -10,7 +10,7 @@ public:
     /* 00 (vtable) */
     /* 04 */ void *mHandle0;
     /* 08 */ void *mHandle1;
-    /* 0c */ u8 mStatus0; // func_02051e40(mHandle0), stored by UpdateHandles; nothing reads it in this build
+    /* 0c */ u8 mStatus0; // CriHdlGetState(mHandle0), stored by UpdateHandles; nothing reads it in this build
     /* 0d */ u8 mStatus1; // the same for mHandle1
     /* 0e */ PAD(0x0e, 0x10);
     /* 10 */ s32 mInitialized;
@@ -25,7 +25,7 @@ public:
 
     void UpdateHandles();
     void Wait();
-    // Nothing unless mInitialized; func_02051d7c on both handles, func_020519bc, clears mInitialized; mHandle0 /
+    // Nothing unless mInitialized; CriHdlDealloc on both handles, CriGlobExit, clears mInitialized; mHandle0 /
     // mHandle1 keep their values.
     void Release();
     void Start0(const char *path);

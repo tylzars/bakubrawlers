@@ -18,7 +18,7 @@ extern float data_020a5078;
 extern Locale data_020a50d8;
 
 extern void strncpy(char *, const char *, size_t_);
-extern void func_02012504(void *, int, size_t_);
+extern void FillBytes(void *, int, size_t_);
 
 /* 0x020122b0: population count */
 unsigned CountSetBits(unsigned x)
@@ -103,7 +103,7 @@ size_t_ func_020123ec(char *dst, const wchar_t_ *src, size_t_ n)
 }
 
 /* 0x02012464: forward byte copy */
-void *func_02012464(void *dst, const char *src, size_t_ n)
+void *CopyBytes(void *dst, const char *src, size_t_ n)
 {
     char *d = dst;
     if (n) {
@@ -115,7 +115,7 @@ void *func_02012464(void *dst, const char *src, size_t_ n)
 /* 0x02012484: memset */
 void *memset(void *dst, int c, size_t_ n)
 {
-    func_02012504(dst, c, n);
+    FillBytes(dst, c, n);
     return dst;
 }
 
@@ -145,7 +145,7 @@ int memcmp(const void *a, const void *b, size_t_ n)
 }
 
 /* 0x02012504: fill memory with a byte */
-void func_02012504(void *dst, int val, size_t_ n)
+void FillBytes(void *dst, int val, size_t_ n)
 {
     unsigned char *p = dst;
     unsigned v = (unsigned char)val;

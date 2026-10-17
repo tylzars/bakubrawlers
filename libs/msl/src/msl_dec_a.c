@@ -42,7 +42,7 @@ void func_0201c238(Dec *d, int n)
 }
 
 
-void func_0201c288(Dec *d, int n)
+void RoundDec(Dec *d, int n)
 {
     if (n <= 0) return;
     if (n >= d->len) return;
@@ -54,7 +54,7 @@ void func_0201c288(Dec *d, int n)
     }
 }
 
-void func_0201c2c8(Dec *d, unsigned long long v)
+void U64ToDec(Dec *d, unsigned long long v)
 {
     int i, j;
     d->sign = 0;
@@ -79,7 +79,7 @@ void func_0201c2c8(Dec *d, unsigned long long v)
     d->exp = d->len - 1;
 }
 
-void func_0201c394(Dec *res, const Dec *a, const Dec *b)
+void MultiplyDec(Dec *res, const Dec *a, const Dec *b)
 {
     unsigned char buf[64];
     unsigned int sum = 0;
@@ -135,7 +135,7 @@ up:
     func_0201c238(res, res->len);
 }
 
-void func_0201c518(Dec *d, const char *s, short exp)
+void StringToDec(Dec *d, const char *s, short exp)
 {
     int i;
     d->exp = exp;

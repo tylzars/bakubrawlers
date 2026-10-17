@@ -36,7 +36,7 @@ extern void func_02049a58(void);
 extern void func_02049aac(void);
 extern void func_02049200(void);
 extern void CriMsgSendText(const char *);
-extern void func_02012464(void *, void *, int);
+extern void CopyBytes(void *, void *, int);
 extern PlObj *func_02049b20(int, int, int);
 extern void func_02049c04(PlObj *);
 extern void SndOutSetup(PlObj *);
@@ -126,7 +126,7 @@ void func_020483f0(void *p, int n)
     data_02218450.n = n;
     if (n <= 0) return;
     if (p == 0) return;
-    func_02012464(data_02218450.ids, p, n);
+    CopyBytes(data_02218450.ids, p, n);
 }
 
 Ch *func_02048430(int **srcs, int n, int a2)
@@ -328,11 +328,11 @@ void func_02048940(Ch *c)
                         if (r4 >= c->s32 * 2) {
                             r7 = (unsigned short)(c->s32 * 2);
                         } else {
-                            func_02012464(data_02218450.tmp, r5, r4);
+                            CopyBytes(data_02218450.tmp, r5, r4);
                             ((SrcObj *)c->src[0])->vt->put20(c->src[0], 0, &sp[0]);
                             r7 = (unsigned short)(r8 * 2 - r4);
                             ((SrcObj *)c->src[0])->vt->get18(c->src[0], 1, r7, &sp[0]);
-                            func_02012464(data_02218450.tmp + r4 / 2, sp[0].p, sp[0].n);
+                            CopyBytes(data_02218450.tmp + r4 / 2, sp[0].p, sp[0].n);
                             r4 = sp[0].n;
                             r5 = data_02218450.tmp;
                         }
@@ -382,7 +382,7 @@ void func_02048940(Ch *c)
                 c->s2e += (unsigned)r6 >> 1;
                 c->s2c -= r6;
                 if (c->s2c < 6) {
-                    if (c->s2c != 0) func_02012464(c->buf, c->buf + c->s2e, c->s2c);
+                    if (c->s2c != 0) CopyBytes(c->buf, c->buf + c->s2e, c->s2c);
                     c->s30 = (unsigned)c->s2c >> 1;
                     c->s2e = 0;
                 }

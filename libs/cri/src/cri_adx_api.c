@@ -9,12 +9,12 @@ extern int PoolAddRef(int, int);
 extern int PoolReleaseRef(int);
 extern int PoolAllocObj(int, int, int, int);
 extern int PoolDeallocObj(int, int);
-extern int func_0204efd8(int, int);
-extern void func_0204f7c0(int, int);
-extern void func_0204f810(int);
+extern int PoolComputeWorkSize(int, int);
+extern void PoolObjStart(int, int);
+extern void PoolObjStop(int);
 extern void func_0204f878(int, int);
-extern int func_0204f924(int);
-extern void func_0204f994(int, int);
+extern int PoolObjGetState(int);
+extern void PoolObjSetVolume(int, int);
 extern void func_0204fa04(int, int);
 extern void func_0204fa0c(int, int);
 extern void func_0204fa14(int, int);
@@ -22,12 +22,12 @@ extern void func_0204fa1c(int, int);
 extern void func_0204fa24(int, int);
 extern void func_0204fa2c(int);
 extern void func_0204fad4(int);
-extern int func_0204fb64(int, int);
+extern int PoolObjGetAdx(int, int);
 
 void func_0204e844(int v);
 int func_0204e854(void);
 int func_0204e8ac(void);
-int func_0204e908(void);
+int CriFuncTableRunAll(void);
 int func_0204e934(int x);
 int GlobalPoolAddRef(void);
 int GlobalPoolReleaseRef(void);
@@ -35,8 +35,8 @@ int GlobalPoolAllocObj(int a, int b, int c);
 int GlobalPoolAllocObjInner(int a, int b, int c);
 void GlobalPoolDeallocObj(int a);
 int GlobalPoolDeallocObjInner(int a);
-int func_0204ea2c(int a);
-int func_0204ea50(int a);
+int GlobalPoolComputeWorkSize(int a);
+int GlobalPoolComputeWorkSizeInner(int a);
 void func_0204ea6c(int a, int b);
 void func_0204ea90(int a, int b);
 void func_0204ea9c(int a);
@@ -71,7 +71,7 @@ int func_0204e854(void)
 {
     switch (func_0204e934(data_020afa58)) {
     case -1: break;
-    case 1: func_0204e908(); break;
+    case 1: CriFuncTableRunAll(); break;
     case 2: CriFuncTableRun5(); break;
     case 3: CriFuncTableRun6(); CriFuncTableRun7(); break;
     }
@@ -88,7 +88,7 @@ int func_0204e8ac(void)
     return 0;
 }
 
-int func_0204e908(void)
+int CriFuncTableRunAll(void)
 {
     CriFuncTableRun0(); CriFuncTableRun1(); CriFuncTableRun2(); CriFuncTableRun3();
     CriFuncTableRun4(); CriFuncTableRun5(); CriFuncTableRun6(); CriFuncTableRun7();
@@ -115,29 +115,29 @@ int GlobalPoolAllocObj(int a, int b, int c)
 int GlobalPoolAllocObjInner(int a, int b, int c) { return PoolAllocObj(data_020afa5c, a, b, c); }
 void GlobalPoolDeallocObj(int a) { func_0204ed44(); GlobalPoolDeallocObjInner(a); func_0204ed48(); }
 int GlobalPoolDeallocObjInner(int a) { return PoolDeallocObj(data_020afa5c, a); }
-int func_0204ea2c(int a)
+int GlobalPoolComputeWorkSize(int a)
 {
     int r;
     func_0204ed44();
-    r = func_0204ea50(a);
+    r = GlobalPoolComputeWorkSizeInner(a);
     func_0204ed48();
     return r;
 }
-int func_0204ea50(int a) { return func_0204efd8(data_020afa5c, a); }
+int GlobalPoolComputeWorkSizeInner(int a) { return PoolComputeWorkSize(data_020afa5c, a); }
 void func_0204ea6c(int a, int b)
 {
     func_0204ed44();
     func_0204ea90(a, b);
     func_0204ed48();
 }
-void func_0204ea90(int a, int b) { func_0204f7c0(a, b); }
+void func_0204ea90(int a, int b) { PoolObjStart(a, b); }
 void func_0204ea9c(int a)
 {
     func_0204ed44();
     func_0204eab8(a);
     func_0204ed48();
 }
-void func_0204eab8(int a) { func_0204f810(a); }
+void func_0204eab8(int a) { PoolObjStop(a); }
 void func_0204eac4(int a, int b)
 {
     func_0204ed44();
@@ -153,14 +153,14 @@ int func_0204eaf4(int a)
     func_0204ed48();
     return r;
 }
-int func_0204eb18(int a) { return func_0204f924(a); }
+int func_0204eb18(int a) { return PoolObjGetState(a); }
 void func_0204eb24(int a, int b)
 {
     func_0204ed44();
     func_0204eb48(a, b);
     func_0204ed48();
 }
-void func_0204eb48(int a, int b) { func_0204f994(a, b); }
+void func_0204eb48(int a, int b) { PoolObjSetVolume(a, b); }
 void func_0204eb54(int a, int b)
 {
     func_0204ed44();
@@ -218,7 +218,7 @@ int func_0204ec94(int a, int b)
     func_0204ed48();
     return r;
 }
-int func_0204ecc0(int a, int b) { return func_0204fb64(a, b); }
+int func_0204ecc0(int a, int b) { return PoolObjGetAdx(a, b); }
 int func_0204eccc(int a)
 {
     int r;

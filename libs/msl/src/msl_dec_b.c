@@ -6,8 +6,8 @@ typedef struct Dec {
     unsigned char text[33];
 } Dec;
 
-extern void func_0201c518(Dec *, const char *, short);
-extern void func_0201c394(Dec *, const Dec *, const Dec *);
+extern void StringToDec(Dec *, const char *, short);
+extern void MultiplyDec(Dec *, const Dec *, const Dec *);
 extern char data_020a5320[], data_020a5350[], data_020a5378[], data_020a5390[], data_020a53a0[], data_020a53a8[],
     data_020a53b0[], data_020a53b8[], data_020a53c0[], data_020a53c4[], data_020a53c8[], data_020a53cc[],
     data_020a53d0[], data_020a53d4[], data_020a53d8[], data_020a53dc[], data_020a53e0[], data_020a53e4[],
@@ -17,42 +17,42 @@ void func_0201c5b4(Dec *d, int n)
 {
     Dec b, a;
     switch (n) {
-    case -64: func_0201c518(d, data_020a5320, -20); return;
-    case -53: func_0201c518(d, data_020a5350, -16); return;
-    case -32: func_0201c518(d, data_020a5378, -10); return;
-    case -16: func_0201c518(d, data_020a5390, -5); return;
-    case -8: func_0201c518(d, data_020a53a0, -3); return;
-    case -7: func_0201c518(d, data_020a53a8, -3); return;
-    case -6: func_0201c518(d, data_020a53b0, -2); return;
-    case -5: func_0201c518(d, data_020a53b8, -2); return;
-    case -4: func_0201c518(d, data_020a53c0, -2); return;
-    case -3: func_0201c518(d, data_020a53c4, -1); return;
-    case -2: func_0201c518(d, data_020a53c8, -1); return;
-    case -1: func_0201c518(d, data_020a53cc, -1); return;
-    case 0: func_0201c518(d, data_020a53d0, 0); return;
-    case 1: func_0201c518(d, data_020a53d4, 0); return;
-    case 2: func_0201c518(d, data_020a53d8, 0); return;
-    case 3: func_0201c518(d, data_020a53dc, 0); return;
-    case 4: func_0201c518(d, data_020a53e0, 1); return;
-    case 5: func_0201c518(d, data_020a53e4, 1); return;
-    case 6: func_0201c518(d, data_020a53e8, 1); return;
-    case 7: func_0201c518(d, data_020a53ec, 2); return;
-    case 8: func_0201c518(d, data_020a53f0, 2); return;
+    case -64: StringToDec(d, data_020a5320, -20); return;
+    case -53: StringToDec(d, data_020a5350, -16); return;
+    case -32: StringToDec(d, data_020a5378, -10); return;
+    case -16: StringToDec(d, data_020a5390, -5); return;
+    case -8: StringToDec(d, data_020a53a0, -3); return;
+    case -7: StringToDec(d, data_020a53a8, -3); return;
+    case -6: StringToDec(d, data_020a53b0, -2); return;
+    case -5: StringToDec(d, data_020a53b8, -2); return;
+    case -4: StringToDec(d, data_020a53c0, -2); return;
+    case -3: StringToDec(d, data_020a53c4, -1); return;
+    case -2: StringToDec(d, data_020a53c8, -1); return;
+    case -1: StringToDec(d, data_020a53cc, -1); return;
+    case 0: StringToDec(d, data_020a53d0, 0); return;
+    case 1: StringToDec(d, data_020a53d4, 0); return;
+    case 2: StringToDec(d, data_020a53d8, 0); return;
+    case 3: StringToDec(d, data_020a53dc, 0); return;
+    case 4: StringToDec(d, data_020a53e0, 1); return;
+    case 5: StringToDec(d, data_020a53e4, 1); return;
+    case 6: StringToDec(d, data_020a53e8, 1); return;
+    case 7: StringToDec(d, data_020a53ec, 2); return;
+    case 8: StringToDec(d, data_020a53f0, 2); return;
     }
     func_0201c5b4(&b, (n + (int)((n & 0x80000000) >> 31)) >> 1);
-    func_0201c394(d, &b, &b);
+    MultiplyDec(d, &b, &b);
     if (n & 1) {
         a = *d;
         if (n > 0) {
-            func_0201c518(&b, data_020a53d4, 0);
+            StringToDec(&b, data_020a53d4, 0);
         } else {
-            func_0201c518(&b, data_020a53cc, -1);
+            StringToDec(&b, data_020a53cc, -1);
         }
-        func_0201c394(d, &a, &b);
+        MultiplyDec(d, &a, &b);
     }
 }
 
-int func_0201c938(const Dec *a, const Dec *b)
+int IsDecEqual(const Dec *a, const Dec *b)
 {
     int i, m;
     int la;

@@ -15,13 +15,13 @@ extern double copysign(double, double);
 extern double pow(double, double);
 extern double scalbn(double, int);
 extern int ClassifyDouble(double);
-extern void func_0201c518(Dec *, const char *, short);
-extern void func_0201cd9c(Dec *, double);
-extern int func_0201c938(const Dec *, const Dec *);
-extern int func_0201ca18(const Dec *, const Dec *);
+extern void StringToDec(Dec *, const char *, short);
+extern void DoubleToDec(Dec *, double);
+extern int IsDecEqual(const Dec *, const Dec *);
+extern int IsDecLess(const Dec *, const Dec *);
 extern void func_0201caf8(Dec *, const Dec *, const Dec *);
 
-double func_0201cfc4(Dec *d)
+double DecToDouble(Dec *d)
 {
     Dec dd, lim, cur, cur2, d1, d2;
     double r;
@@ -57,8 +57,8 @@ double func_0201cfc4(Dec *d)
     }
     dd.exp += dd.len - 1;
     e = dd.exp;
-    func_0201c518(&lim, data_020a53f4, 0x134);
-    if (func_0201ca18(&lim, &dd)) {
+    StringToDec(&lim, data_020a53f4, 0x134);
+    if (IsDecLess(&lim, &dd)) {
         return copysign((double)data_020a5074, d->sign == 0 ? 1.0 : -1.0);
     }
     q = dd.text;
@@ -91,9 +91,9 @@ double func_0201cfc4(Dec *d)
     }
     pb = (unsigned long long *)&bits;
     closer = 0;
-    func_0201cd9c(&cur, acc);
-    if (func_0201c938(&cur, &dd) == 0) {
-        if (func_0201ca18(&cur, &dd)) closer = 1;
+    DoubleToDec(&cur, acc);
+    if (IsDecEqual(&cur, &dd) == 0) {
+        if (IsDecLess(&cur, &dd)) closer = 1;
         bits = acc;
         down = closer == 0;
         for (;;) {
@@ -103,11 +103,11 @@ double func_0201cfc4(Dec *d)
             } else {
                 (*pb)--;
             }
-            func_0201cd9c(&cur2, bits);
+            DoubleToDec(&cur2, bits);
             if (closer) {
-                if (func_0201ca18(&cur2, &dd) == 0) goto bracket;
+                if (IsDecLess(&cur2, &dd) == 0) goto bracket;
             }
-            if (!closer && func_0201ca18(&dd, &cur2) == 0) {
+            if (!closer && IsDecLess(&dd, &cur2) == 0) {
                 Dec *tmp = &d1;
                 double tb;
                 *tmp = cur;
@@ -124,11 +124,11 @@ double func_0201cfc4(Dec *d)
     bracket:
         func_0201caf8(&d1, &dd, &cur);
         func_0201caf8(&d2, &cur2, &dd);
-        if (func_0201c938(&d1, &d2)) {
+        if (IsDecEqual(&d1, &d2)) {
             if ((*(unsigned long long *)&acc & 1) != 0) {
                 acc = bits;
             }
-        } else if (func_0201ca18(&d1, &d2) == 0) {
+        } else if (IsDecLess(&d1, &d2) == 0) {
             acc = bits;
         }
     }

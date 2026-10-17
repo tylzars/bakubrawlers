@@ -75,7 +75,7 @@ void GimmickIkazuchiStart::Finish() {
 void GimmickIkazuchiStart::Update() {
     switch (mState) {
     case 0:
-        LoadCollision(0x52, 8);
+        LoadCollision(0x52, COLLISION_GROUP_GIMMICK);
         mState++;
         break;
     case 1:

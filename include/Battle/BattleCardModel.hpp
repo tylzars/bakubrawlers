@@ -12,6 +12,12 @@ class Camera;
 class BattleRealBaku;
 class ModelLightGroup;
 
+// How BattleCardModel::UpdateEffects places a part's effect (BattleCardModelPart::mKind).
+#define CARD_MODEL_PART_KIND_POS         0 // at mPos
+#define CARD_MODEL_PART_KIND_BONE        1 // mPos taken through the matrix of the bone mName (mBones)
+#define CARD_MODEL_PART_KIND_ROT         2 // matrix from mRot and mPos
+#define CARD_MODEL_PART_KIND_BONE_TARGET 3 // as BONE, then rotated toward mTarget
+
 // One effect or bone attachment of a card model (0x28 bytes, tables at 0227f050 and following).
 struct BattleCardModelPart {
     /* 00 */ s32 mFrame; // animation frame that starts the effect (0 = frame 0x1000)
@@ -22,7 +28,7 @@ struct BattleCardModelPart {
         /* 17 */ u8 mUnk_17;
         struct {
             /* 17 */ u8 mUnk_17_0 : 1;
-            /* 17 */ u8 mKind : 7; // 0 = fixed position, 1 = follows a bone, 2 = rotated, 3 = bone and aimed
+            /* 17 */ u8 mKind : 7; // CARD_MODEL_PART_KIND_*
         };
     };
     /* 18 */ const char *mName; // bone name

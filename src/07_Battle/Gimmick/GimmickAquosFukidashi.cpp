@@ -94,7 +94,7 @@ void GimmickAquosFukidashi::Finish() {
 void GimmickAquosFukidashi::Update() {
     switch (mState) {
     case 0:
-        LoadCollision(0x3c, 8);
+        LoadCollision(0x3c, COLLISION_GROUP_GIMMICK);
         mState++;
         mCounter = 0x78;
         break;

@@ -29,7 +29,7 @@ void GimmickUnk_02274830::Finish() {
 void GimmickUnk_02274830::Update() {
     switch (mState) {
     case 0:
-        LoadCollision(0x1f, 8);
+        LoadCollision(0x1f, COLLISION_GROUP_GIMMICK);
         mState++;
         break;
     case 1: {

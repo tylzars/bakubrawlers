@@ -119,7 +119,7 @@ void BattleCardCamera::Init() {
     model->mRotX = 0;
     model->mRotY = 0x4000;
     model->mRotZ = 0;
-    mMapObj = new BattleMapObj(0xc);
+    mMapObj = new BattleMapObj(MAP_OBJ_KIND_REALPOP);
     mMapObj->Load();
     Camera *camera = BattleCamera();
     camera->SetUp(0, 0x1000, 0);

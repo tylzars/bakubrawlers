@@ -449,7 +449,7 @@ void BattleCardModel::LoadGraphics() {
         do {
             // Placeholder: the (u32) conversion keeps this index product apart from the first read's (the original computes
             // mParts + i * 0x28 separately for all three reads).
-            if ((mParts[i].mKind == 1) | (PartAt(mParts, (u32) i)->mKind == 3)) {
+            if ((mParts[i].mKind == CARD_MODEL_PART_KIND_BONE) | (PartAt(mParts, (u32) i)->mKind == CARD_MODEL_PART_KIND_BONE_TARGET)) {
                 MI_CpuFill8(bone, 0, 0x11);
                 func_020122f4(bone, PartAt(mParts, i)->mName);
                 u8 *model  = *(u8 **) &mBaku->mModel->mRenderObj[4];
@@ -498,16 +498,16 @@ void BattleCardModel::UpdateEffects() {
             if (mHandles[i] != 0) {
                 BattleCardModelPart *part = &mParts[i];
                 switch (part->mKind) {
-                    case 0:
+                    case CARD_MODEL_PART_KIND_POS:
                         mPos[i].x = part->mPos.x;
                         mPos[i].y = part->mPos.y;
                         mPos[i].z = part->mPos.z;
                         SetEffectPosition(mEffects, mHandles[i], &mPos[i]);
                         break;
-                    case 1:
+                    case CARD_MODEL_PART_KIND_BONE:
                         MoveEffectToBone(i);
                         break;
-                    case 2:
+                    case CARD_MODEL_PART_KIND_ROT:
                         rot = gIdentityMtx43;
                         MTX_ApplyRotX43(&rot, mParts[i].mRot[0]);
                         MTX_ApplyRotY43(&rot, mParts[i].mRot[1]);
@@ -516,7 +516,7 @@ void BattleCardModel::UpdateEffects() {
                         MTX_Concat43(&rot, &CameraManager::Get().mMtxC[0], &rot);
                         SetEffectMatrix(mEffects, mHandles[i], &rot);
                         break;
-                    case 3:
+                    case CARD_MODEL_PART_KIND_BONE_TARGET:
                         MoveEffectToBone(i);
                         MTX_MultVec43(&mParts[i].mTarget, &CameraManager::Get().mMtxC[0], &dir);
                         VEC_Subtract(&mPos[i], &dir, &dir);

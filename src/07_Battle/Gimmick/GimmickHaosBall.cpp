@@ -52,7 +52,7 @@ void GimmickHaosBall::Update() {
     VecFx32 d;
     switch (mState) {
     case 0:
-        LoadCollision(0x46, 8);
+        LoadCollision(0x46, COLLISION_GROUP_GIMMICK);
         mState++;
         break;
     case 1: {

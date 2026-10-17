@@ -39,7 +39,7 @@ void GimmickSuteWall::Load() {
     }
     if (!mCollision) {
         LoadCollisionFile(buf, 0x3c);
-        mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, 8, buf, &mPosition, &mRotX, mType);
+        mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_GIMMICK, buf, &mPosition, &mRotX, mType);
     }
     if (!sResources[1]) {
         sResources[1] = new ModelResource("sutewall_n.nsbmd", "sutewall_n_data.bin", "sutewall_n.nsbtx", 1);
@@ -88,7 +88,7 @@ void GimmickSuteWall::Finish() {
 void GimmickSuteWall::Update() {
     switch (mState) {
     case 0:
-        LoadCollision(0x3c, 8);
+        LoadCollision(0x3c, COLLISION_GROUP_GIMMICK);
         mState++;
         break;
     case 1: {

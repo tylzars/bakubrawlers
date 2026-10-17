@@ -457,19 +457,19 @@ void CloseHud(void *obj) {
 
 void SetHudState(BattleHud *obj, u32 state) {
     switch (state) {
-        case 0:
+        case HUD_SEQUENCE_NONE:
             obj->mState = 0;
             break;
-        case 1:
+        case HUD_SEQUENCE_BAR_FILL_COUNTDOWN:
             obj->mState = 1;
             break;
-        case 2:
+        case HUD_SEQUENCE_SWAP:
             obj->mState = 4;
             break;
-        case 3:
+        case HUD_SEQUENCE_BAR_SLIDE:
             obj->mState = 6;
             break;
-        case 4:
+        case HUD_SEQUENCE_COUNTDOWN:
             obj->mState = 8;
             break;
     }

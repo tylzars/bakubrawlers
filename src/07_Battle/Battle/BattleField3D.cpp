@@ -58,7 +58,7 @@ BattleField3D::BattleField3D(BattleData *data, int unk2) {
     mEffects = data_020d433c.mEffects;
     mData = data;
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
-    mMapObj = new BattleMapObj(0xd);
+    mMapObj = new BattleMapObj(MAP_OBJ_KIND_COMMANDFILED0);
     mMapObj->Load();
     camera->SetFov(0x1555);
     CameraManager::Get().SetCamerasAndRequestMode(1, camera, 0);

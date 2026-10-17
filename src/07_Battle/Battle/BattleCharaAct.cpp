@@ -538,13 +538,13 @@ const u8 *t = sActFrameTaskFrameCounts[mCharacterId];
 }
 
 void BattleCharaAct::func_ov007_02269380() {
-    u8 type = 0xa;
+    u8 type = MAP_OBJ_KIND_FIELD_TABLE;
     if (mKind != 0) {
         if (mKind == 0xf) {
-            type = 0xb;
+            type = MAP_OBJ_KIND_THROWFIELD01;
         }
     } else {
-        type = 9;
+        type = MAP_OBJ_KIND_THROWFIELD00;
     }
     mMapObj = new BattleMapObj(type);
     mMapObj->Load();

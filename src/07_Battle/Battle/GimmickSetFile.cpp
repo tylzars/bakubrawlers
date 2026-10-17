@@ -73,23 +73,23 @@ struct GimmickSetDataHead {
 void SetCollisionMode(GimmickSetDataHead *data, int mode) {
     data->mMode = mode;
     switch (mode) {
-        case 1:
-            data->mModeMask = 0xfffe;
+        case COLLISION_GROUP_BAKUGAN:
+            data->mModeMask = 0xfffe; // every group but COLLISION_GROUP_BAKUGAN
             break;
-        case 2:
-            data->mModeMask = 1;
+        case COLLISION_GROUP_UNIT:
+            data->mModeMask = COLLISION_GROUP_BAKUGAN;
             break;
-        case 4:
-            data->mModeMask = 1;
+        case COLLISION_GROUP_FIELD:
+            data->mModeMask = COLLISION_GROUP_BAKUGAN;
             break;
-        case 8:
-            data->mModeMask = 1;
+        case COLLISION_GROUP_GIMMICK:
+            data->mModeMask = COLLISION_GROUP_BAKUGAN;
             break;
-        case 0x10:
-            data->mModeMask = 0x24;
+        case COLLISION_GROUP_BAKUGAN_SP5:
+            data->mModeMask = (COLLISION_GROUP_FIELD | COLLISION_GROUP_GIMMICK_HIT_BY_SP5);
             break;
-        case 0x20:
-            data->mModeMask = 0x11;
+        case COLLISION_GROUP_GIMMICK_HIT_BY_SP5:
+            data->mModeMask = (COLLISION_GROUP_BAKUGAN | COLLISION_GROUP_BAKUGAN_SP5);
             break;
     }
 }

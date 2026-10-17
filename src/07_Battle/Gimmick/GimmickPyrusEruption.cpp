@@ -72,7 +72,7 @@ void GimmickPyrusEruption::Update() {
     VecFx32 d;
     switch (mState) {
     case 0:
-        LoadCollision(0x1e, 8);
+        LoadCollision(0x1e, COLLISION_GROUP_GIMMICK);
         mState++;
         break;
     case 1:

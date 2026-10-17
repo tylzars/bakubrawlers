@@ -42,7 +42,7 @@ GimmickFieldDestroy::~GimmickFieldDestroy() {
 void GimmickFieldDestroy::func_ov007_0222accc() {
     char buf[0x804];
     LoadCollisionFile(buf, 0x32);
-    mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, 0x20, buf, &mPosition, &mRotX, mType);
+    mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_GIMMICK_HIT_BY_SP5, buf, &mPosition, &mRotX, mType);
     VecFx32 v = {0x1000, 0x1000, 0x1000};
     mScale    = v;
 }

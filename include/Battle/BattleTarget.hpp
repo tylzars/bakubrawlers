@@ -33,6 +33,14 @@ struct BattleHitBox {
     /* 44 */
 };
 
+// Shapes of a BattleObstacle (mType), switched on by GimmickCollision::TestObstacles and
+// BattleTarget::func_ov007_02257c80. Types 2 and 3 have no literal site: TestObstacles reaches them only through
+// sTests[type - 1] (2: the first object's position inside the second's rotated x/z box; 3: inside its x/z radius).
+// When both objects are type 0, TestObstacles still tests the second one as a sphere (TestBoxSphere(a, b)).
+#define OBSTACLE_TYPE_BOX      0 // centre, half sizes and rotation, tested as a BattleHitBox
+#define OBSTACLE_TYPE_SPHERE   1 // centre and radius mHalfX, tested as a BattleSphere
+#define OBSTACLE_TYPE_CYLINDER 4 // x/z radius mHalfX around the centre, y within +-mHalfY
+
 // One 0x20-byte obstacle record of a gimmick set file (at set + 0x10 + 0x20 * i): box centre, half sizes, rotation, shape.
 struct BattleObstacle {
     /* 00 */ VecFx32 mPos;
@@ -42,7 +50,7 @@ struct BattleObstacle {
     /* 18 */ u16 mRotX;
     /* 1a */ u16 mRotY;
     /* 1c */ u16 mRotZ;
-    /* 1e */ u8 mType; // 0: box, 1: ball, 4: wall, ...
+    /* 1e */ u8 mType; // OBSTACLE_TYPE_*
     /* 1f */ u8 mUnk_1f;
 };
 

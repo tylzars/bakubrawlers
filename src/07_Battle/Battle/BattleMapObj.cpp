@@ -96,19 +96,19 @@ extern const VecFx32 gThrowfield00Offset;
 void BattleMapObj::Load() {
     ChangeDir("/Game/Battle/3d/Map");
     switch (mKind) {
-        case 9:
+        case MAP_OBJ_KIND_THROWFIELD00:
             AddPart("throwfield00.nsbtx", "throwfield00.nsbmd", "throwfield00_data.bin", 1);
             break;
-        case 11:
+        case MAP_OBJ_KIND_THROWFIELD01:
             AddPart("throwfield01.nsbtx", "throwfield01.nsbmd", "throwfield01_data.bin", 0);
             break;
-        case 12:
+        case MAP_OBJ_KIND_REALPOP:
             AddPart("realpop.nsbtx", "realpop.nsbmd", 0, 0);
             break;
-        case 13:
+        case MAP_OBJ_KIND_COMMANDFILED0:
             AddPart("commandfiled0.nsbtx", "commandfiled0.nsbmd", "commandfiled0_data.bin", 0);
             break;
-        case 10:
+        case MAP_OBJ_KIND_FIELD_TABLE:
             AddTableParts(&gMapObjFieldTables[data_020d433c.mFieldId]);
             break;
         default:
@@ -119,7 +119,7 @@ void BattleMapObj::Load() {
 }
 
 void BattleMapObj::Draw() {
-    if (mKind == 9) {
+    if (mKind == MAP_OBJ_KIND_THROWFIELD00) {
         MtxFx43 *camera = func_020323b8();
         MtxFx43 mtx     = gIdentityMtx43;
         VecFx32 scale   = gThrowfield00Scale;

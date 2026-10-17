@@ -40,7 +40,7 @@ void GimmickTornado::Update() {
     VecFx32 out;
     switch (mState) {
     case 0:
-        LoadCollision(0x33, 8);
+        LoadCollision(0x33, COLLISION_GROUP_GIMMICK);
         mState++;
         break;
     case 1:

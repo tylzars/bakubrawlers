@@ -27,7 +27,7 @@ GimmickDashBase::~GimmickDashBase() {
 void GimmickDashBase::Init() {
     char buf[0x804];
     LoadCollisionFile(buf, 0x5e);
-    mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, 0x20, buf, &mPosition, &mRotX, mType);
+    mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_GIMMICK_HIT_BY_SP5, buf, &mPosition, &mRotX, mType);
     RotateDir(0);
 }
 

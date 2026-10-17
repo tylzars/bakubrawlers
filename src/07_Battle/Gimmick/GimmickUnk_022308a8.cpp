@@ -36,7 +36,7 @@ void GimmickUnk_022308a8::Update() {
     MtxFx33 m;
     switch (mState) {
     case 0:
-        LoadCollision(0x28, 8);
+        LoadCollision(0x28, COLLISION_GROUP_GIMMICK);
         mState++;
         break;
     case 1: {

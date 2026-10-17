@@ -55,7 +55,7 @@ void GimmickVentKaze::Update() {
     MtxFx33 m = data_0220e848;
     switch (mState) {
     case 0:
-        LoadCollision(0x34, 8);
+        LoadCollision(0x34, COLLISION_GROUP_GIMMICK);
         mState++;
         break;
     case 1: {

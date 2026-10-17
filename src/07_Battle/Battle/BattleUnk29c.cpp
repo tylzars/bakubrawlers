@@ -113,16 +113,16 @@ void BattleUnk29c::Update() {
     do {
         if (mBakugans[i]) {
             switch (mMoveStates[i]->mMode) {
-                case 2:
+                case MOVE_MODE_DAMPED:
                     UpdateMoveMode2(i);
                     break;
-                case 3:
+                case MOVE_MODE_LAUNCH_SPIN_Y:
                     UpdateMoveMode3(i);
                     break;
-                case 4:
+                case MOVE_MODE_SLOW_LAUNCH_SPIN_X:
                     UpdateMoveMode4(i);
                     break;
-                case 5:
+                case MOVE_MODE_LAUNCH_SPIN_X:
                     UpdateMoveMode5(i);
                     break;
             }
@@ -157,7 +157,7 @@ void BattleUnk29c::func_ov007_0226ff08(u32 flag) {
     BakuganModel *tp = target->mBakugan;
     u8 n = 0;
     do {
-        if (tp && mBakugans[n] && mMoveStates[n] && mMoveStates[n]->mMode == 1) {
+        if (tp && mBakugans[n] && mMoveStates[n] && mMoveStates[n]->mMode == MOVE_MODE_IDLE) {
             BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[n];
             VEC_Subtract(&mBakugans[n]->mPosition, &tp->mPosition, &diff);
             s32 dist = VEC_Mag(&diff);
@@ -215,7 +215,7 @@ void BattleUnk29c::CreateBakugan(u32 index, VecFx32 *pos, u16 *rot, u8 a, u8 b) 
         r->mRot[0]         = 0;
         r->mRot[1]         = 0;
         r->mRot[2]         = 0;
-        mMoveStates[index]->mMode = 1;
+        mMoveStates[index]->mMode = MOVE_MODE_IDLE;
     }
     if (mShadow == 0) {
         mShadow = new BattleMapPiece(2);
@@ -438,12 +438,12 @@ void BattleUnk29c::StartMove(u8 index, BattleMoveState *state) {
         *m = *state;
         m  = mMoveStates[index];
         switch (m->mMode) {
-            case 2:
+            case MOVE_MODE_DAMPED:
                 m->mVelocity.x = FX_Mul(m->mVelocity.x, 0xccd);
                 m->mVelocity.y = FX_Mul(m->mVelocity.y, 0xccd);
                 m->mVelocity.z = FX_Mul(m->mVelocity.z, 0xccd);
                 break;
-            case 3:
+            case MOVE_MODE_LAUNCH_SPIN_Y:
                 VEC_Normalize(&m->mVelocity, &m->mVelocity);
                 m = mMoveStates[index];
                 m->mVelocity.x = FX_Mul(m->mVelocity.x, 0xa000);
@@ -452,7 +452,7 @@ void BattleUnk29c::StartMove(u8 index, BattleMoveState *state) {
                 mMoveStates[index]->mVelocity.y = 0x8000;
                 mMoveStates[index]->mRot[1]     = 0x1c71;
                 break;
-            case 4:
+            case MOVE_MODE_SLOW_LAUNCH_SPIN_X:
                 VEC_Normalize(&m->mVelocity, &m->mVelocity);
                 m = mMoveStates[index];
                 m->mVelocity.x = FX_Mul(m->mVelocity.x, 0x5000);
@@ -461,7 +461,7 @@ void BattleUnk29c::StartMove(u8 index, BattleMoveState *state) {
                 mMoveStates[index]->mVelocity.y = 0x5800;
                 mMoveStates[index]->mRot[0]     = 0x1c71;
                 break;
-            case 5:
+            case MOVE_MODE_LAUNCH_SPIN_X:
                 VEC_Normalize(&m->mVelocity, &m->mVelocity);
                 m = mMoveStates[index];
                 m->mVelocity.x = FX_Mul(m->mVelocity.x, 0xa000);

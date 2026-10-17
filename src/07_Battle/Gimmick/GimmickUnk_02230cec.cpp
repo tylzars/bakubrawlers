@@ -23,7 +23,7 @@ void GimmickUnk_02230cec::Finish() {
 void GimmickUnk_02230cec::Update() {
     switch (mState) {
     case 0:
-        LoadCollision(0x3d, 8);
+        LoadCollision(0x3d, COLLISION_GROUP_GIMMICK);
         mState++;
         break;
     case 1: {

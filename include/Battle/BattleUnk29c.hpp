@@ -8,11 +8,21 @@
 #include "Battle/BattleMapTypes.hpp"
 #include "Graphics/BakuganModel.hpp"
 
+// Motions of a BattleMoveState (mMode), set by CreateBakugan (IDLE) and BattleTarget through StartMove. StartMove
+// scales the given velocity; each frame BattleUnk29c::Update adds it to the pose's position (all but IDLE). The
+// LAUNCH modes normalise it, scale it to the speed below, set an upward y velocity and a spin, then subtract 0x800
+// from the y velocity each frame and hide the pose below y 0x899a. No code stores LAUNCH_SPIN_X in this build.
+#define MOVE_MODE_IDLE               1 // no motion step; the only mode func_ov007_0226ff08 measures distances for
+#define MOVE_MODE_DAMPED             2 // velocity * 0xccd at the start, * 0xf0a each frame, no gravity
+#define MOVE_MODE_LAUNCH_SPIN_Y      3 // speed 0xa000, up 0x8000, spins about y
+#define MOVE_MODE_SLOW_LAUNCH_SPIN_X 4 // speed 0x5000, up 0x5800, spins about x
+#define MOVE_MODE_LAUNCH_SPIN_X      5 // speed 0xa000, up 0x8000, spins about x
+
 // Motion record of a pose (0x14 bytes, allocated by CreateBakugan).
 struct BattleMoveState {
     /* 00 */ VecFx32 mVelocity;
     /* 0c */ u16 mRot[3];
-    /* 12 */ u8 mMode; // 1 = idle, 2..5 = launched
+    /* 12 */ u8 mMode; // MOVE_MODE_*
     /* 13 */ u8 mUnk_13;
 };
 

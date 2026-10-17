@@ -180,7 +180,7 @@ void GimmickAbilityField::DrawModelB() {
 void GimmickAbilityField::Update() {
     switch (mState) {
     case 0:
-        LoadCollision(0x60, 0x20);
+        LoadCollision(0x60, COLLISION_GROUP_GIMMICK_HIT_BY_SP5);
         mState++;
         break;
     case 1: {
@@ -225,7 +225,7 @@ void GimmickAbilityField::Update() {
         if (mTurnCount < limit) {
             break;
         }
-        LoadCollision(0x60, 0x20);
+        LoadCollision(0x60, COLLISION_GROUP_GIMMICK_HIT_BY_SP5);
         mCountingTurns = 0;
         mState  = 1;
         mTurnCount = 0;

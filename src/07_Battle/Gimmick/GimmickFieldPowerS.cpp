@@ -167,10 +167,10 @@ void GimmickFieldPowerS::Update() {
 void GimmickFieldPowerS::LoadVariantCollision() {
     switch (mVariant) {
     case 0:
-        LoadCollision(0x5b, 0x20);
+        LoadCollision(0x5b, COLLISION_GROUP_GIMMICK_HIT_BY_SP5);
         break;
     case 1:
-        LoadCollision(0x61, 0x20);
+        LoadCollision(0x61, COLLISION_GROUP_GIMMICK_HIT_BY_SP5);
         break;
     }
 }

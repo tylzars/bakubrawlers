@@ -56,7 +56,7 @@ void GimmickBlock::Finish() {
 void GimmickBlock::Update() {
     switch (mState) {
     case 0:
-        LoadCollision(0x5a, 0x20);
+        LoadCollision(0x5a, COLLISION_GROUP_GIMMICK_HIT_BY_SP5);
         mState++;
         break;
     case 1:

@@ -163,13 +163,13 @@ void GimmickCollision::TestSets(GimmickSetData *a, GimmickSetData *b) {
 BOOL GimmickCollision::TestObstacles(BattleObstacle *a, BattleObstacle *b) {
     BOOL result = 0;
     u8 type     = a->mType;
-    if (type == 0) {
-        if (b->mType == 0) {
+    if (type == OBSTACLE_TYPE_BOX) {
+        if (b->mType == OBSTACLE_TYPE_BOX) {
             result = TestBoxSphere(a, b);
         }
-    } else if (type == 1) {
+    } else if (type == OBSTACLE_TYPE_SPHERE) {
         type = b->mType;
-        if (type == 0) {
+        if (type == OBSTACLE_TYPE_BOX) {
             result = TestBoxSphere(b, a);
         } else {
             result = sTests[type - 1](a, b);

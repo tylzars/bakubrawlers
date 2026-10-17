@@ -50,7 +50,7 @@ void GimmickFieldPowerG::Finish() {
 void GimmickFieldPowerG::Update() {
     switch (mState) {
     case 0:
-        LoadCollision(0x5c, 0x20);
+        LoadCollision(0x5c, COLLISION_GROUP_GIMMICK_HIT_BY_SP5);
         mState++;
         break;
     case 1: {
@@ -127,7 +127,7 @@ void GimmickFieldPowerG::Update() {
         if (mTurnCount < limit) {
             break;
         }
-        LoadCollision(0x5c, 0x20);
+        LoadCollision(0x5c, COLLISION_GROUP_GIMMICK_HIT_BY_SP5);
         mCountingTurns = 0;
         mState  = 1;
         mTurnCount = 0;

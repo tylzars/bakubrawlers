@@ -854,7 +854,7 @@ void BattleTarget::LoadUnitCollisions() {
             rot[1] = unit->mUnk_0c;
             rot[0] = 0;
             rot[2] = 0;
-            mUnitCollisions[i] = AddCollisionSet(data_020d433c.mGimmickCollision, 2, mUnitCollisionBuffer, &unit->mPos, rot, i + 1);
+            mUnitCollisions[i] = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_UNIT, mUnitCollisionBuffer, &unit->mPos, rot, i + 1);
         }
         i++;
     } while (i < 12);
@@ -877,7 +877,7 @@ void BattleTarget::LoadMapCollision() {
     } else {
         LoadCollisionFile(buf, id + 0x64);
     }
-    mMapCollision = AddCollisionSet(data_020d433c.mGimmickCollision, 4, buf, &pos, rot, 0);
+    mMapCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_FIELD, buf, &pos, rot, 0);
 }
 
 void BattleTarget::func_ov007_02254928(u32 unk) {
@@ -916,7 +916,7 @@ void BattleTarget::func_ov007_02254a14(GimmickSetData *set) {
     state.mRot[0]     = 0;
     state.mRot[1]     = 0;
     state.mRot[2]     = 0;
-    state.mMode       = 3;
+    state.mMode       = MOVE_MODE_LAUNCH_SPIN_Y;
     if (!set || !set->mTag) {
         return;
     }
@@ -967,7 +967,7 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
             self = *(ObstacleBuf *) ((u8 *) mCollision + 0x10);
             obs = *(ObstacleBuf *) OBST(set, mCollision->mHitObstacleIndices[i]);
             switch (set->mMode) {
-                case 2: {
+                case COLLISION_GROUP_UNIT: {
                     if (!set->mTag) {
                         continue;
                     }
@@ -1030,7 +1030,7 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                     moved = 1;
                     break;
                 }
-                case 4: {
+                case COLLISION_GROUP_FIELD: {
                     u8 kind = OBST(set, mCollision->mHitObstacleIndices[i])->mUnk_1f;
                     switch (kind) {
                         case 0:
@@ -1092,8 +1092,8 @@ void BattleTarget::func_ov007_02254ae8(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d) {
                     }
                     break;
                 }
-                case 8:
-                case 0x20:
+                case COLLISION_GROUP_GIMMICK:
+                case COLLISION_GROUP_GIMMICK_HIT_BY_SP5:
                     *c = 0x4cd;
                     *d = 0x29;
                     vel.x = a->x;
@@ -1964,7 +1964,7 @@ BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, Battl
     BattleSphere ball;
     u8 tries = 0;
     switch (obj->mType) {
-        case 0:
+        case OBSTACLE_TYPE_BOX:
             do {
                 box.mPos.x = obj->mPos.x;
                 box.mPos.y = obj->mPos.y;
@@ -1994,7 +1994,7 @@ BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, Battl
                 sphere->mPos.z = center.z;
             } while (tries < 10);
             return 0;
-        case 1: {
+        case OBSTACLE_TYPE_SPHERE: {
             BattleSphere a;
             BattleSphere b;
             SetSphere(&a, &obj->mPos, obj->mHalfX);
@@ -2002,7 +2002,7 @@ BOOL BattleTarget::func_ov007_02257c80(BattleSphere *sphere, VecFx32 *dir, Battl
             NormalizeDiff(&b.mPos, &a.mPos, (int) dir, out);
             return 1;
         }
-        case 4: {
+        case OBSTACLE_TYPE_CYLINDER: {
             BattleSphere a;
             BattleSphere b;
             SetSphere(&a, &obj->mPos, obj->mHalfX);
@@ -2369,7 +2369,7 @@ BOOL BattleTarget::func_ov007_02258cec(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d)
     state.mRot[0]     = 0;
     state.mRot[1]     = 0;
     state.mRot[2]     = 0;
-    state.mMode       = 2;
+    state.mMode       = MOVE_MODE_DAMPED;
     BattlePlayerList *list   = data_020d433c.mBattlePlayers;
     BakuganModel *pose = mBakugan;
     u16 rotY                 = pose->mRotY;
@@ -2437,7 +2437,7 @@ void BattleTarget::func_ov007_02258edc() {
     state.mRot[0]            = 0;
     state.mRot[1]            = 0;
     state.mRot[2]            = 0;
-    state.mMode              = 3;
+    state.mMode              = MOVE_MODE_LAUNCH_SPIN_Y;
     mCameraMode                 = 3;
     switch (mUnk_1db) {
         case 0: {
@@ -2723,7 +2723,7 @@ BOOL BattleTarget::func_ov007_02259af0() {
     state.mRot[0]     = 0;
     state.mRot[1]     = 0;
     state.mRot[2]     = 0;
-    state.mMode       = 4;
+    state.mMode       = MOVE_MODE_SLOW_LAUNCH_SPIN_X;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     if (mUnk_1e0 != 3) {
         return 0;
@@ -3365,9 +3365,9 @@ void BattleTarget::StartShot() {
     mUnk_ac.z = mUnk_94.z;
     LoadCollisionFile(buf, 0xa);
     if (mSpKind != 5) {
-        mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, 1, buf, &mBakugan->mPosition, &mBakugan->mRotX, 0);
+        mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_BAKUGAN, buf, &mBakugan->mPosition, &mBakugan->mRotX, 0);
     } else {
-        mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, 0x10, buf, &mBakugan->mPosition, &mBakugan->mRotX, 0);
+        mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, COLLISION_GROUP_BAKUGAN_SP5, buf, &mBakugan->mPosition, &mBakugan->mRotX, 0);
     }
     SetPredictVisible(mCommandMap, 0);
     mBakugan->mVisible = 1;

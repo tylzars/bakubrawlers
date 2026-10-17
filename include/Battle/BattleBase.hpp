@@ -224,9 +224,17 @@ class BattleMapObjPart;
 class TextureFile;
 struct BattleMapObjTable;
 
+// Kinds of a BattleMapObj with their own branch in Load (mKind). Other kinds load the row mKind of gMapObjKindTables
+// (BattleCommandMap passes its mKind, which its constructors set to data_020d433c.mFieldId).
+#define MAP_OBJ_KIND_THROWFIELD00    9  // "throwfield00" model; Draw places it with gThrowfield00Scale / Offset
+#define MAP_OBJ_KIND_FIELD_TABLE     10 // the row data_020d433c.mFieldId of gMapObjFieldTables
+#define MAP_OBJ_KIND_THROWFIELD01    11 // "throwfield01" model
+#define MAP_OBJ_KIND_REALPOP         12 // "realpop" model
+#define MAP_OBJ_KIND_COMMANDFILED0   13 // "commandfiled0" model
+
 // Helper of the battle map scene (0x24 bytes): ctor 0x0224916c, destructor 0x02249198 (non-virtual).
-// Loads the 3D model parts of the map field of the given kind (9..13: throw fields, real pop, command field; other
-// kinds use the tables at 0227a2bc / 0227a2fc).
+// Loads the 3D model parts of the map field of the given kind (MAP_OBJ_KIND_*; other
+// kinds use the table gMapObjKindTables).
 class BattleMapObj {
 public:
     /* 00 */ BattleMapObjPart *mParts[8];
@@ -313,6 +321,16 @@ public:
     void FollowPushPercent(u32 percent);
     void Draw(u32 percent);
 };
+
+// Arguments of SetHudState (BattleHud.cpp): each starts a run of BattleHud::mState steps that ends back at mState 0
+// (IsHudSequenceRunning reads mState != 0). The argument is not the mState value it sets (0, 1, 4, 6, 8).
+#define HUD_SEQUENCE_NONE               0 // mState 0: Update runs no step, only Draw
+#define HUD_SEQUENCE_BAR_FILL_COUNTDOWN 1 // mState 1: tutorial pages in some tutorials, then SetupCountdown, and each
+                                          // frame mBarFillPerFrame added to mBarFill with the countdown animation
+                                          // (func_ov007_02226c70)
+#define HUD_SEQUENCE_SWAP               2 // mState 4: StartSwap / UpdateSwap
+#define HUD_SEQUENCE_BAR_SLIDE          3 // mState 6: StartBarSlide / UpdateBarSlide
+#define HUD_SEQUENCE_COUNTDOWN          4 // mState 8: StartCountdown / UpdateCountdown, the countdown animation only
 
 // Battle HUD scene on the sub screen (0x130 bytes, formerly BattleHud): the power gauge that tugs between the two
 // players, the countdown, the small card images and the cut-in animations.

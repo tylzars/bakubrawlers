@@ -12,13 +12,27 @@ struct GimmickSetBlock {
     u32 mData[0x200];
 };
 
+// Collision groups of a GimmickSetData (mMode, one bit per set; the `mode` argument of AddCollisionSet and
+// Gimmick::LoadCollision). SetCollisionMode gives each group the groups it reacts to (mModeMask) and
+// GimmickCollision::TestSets tests two sets only when one's mask has the other's group. BattleTarget makes the
+// BAKUGAN / BAKUGAN_SP5 set at mBakugan (BAKUGAN_SP5 only while mSpKind == 5; every other mSpKind uses BAKUGAN),
+// one UNIT set per BattleUnit with mStatus != 0 (tag = unit index + 1) and the FIELD set from the field's collision
+// file; gimmicks make GIMMICK or GIMMICK_HIT_BY_SP5 sets. mMode 0 (the list head) is skipped by Update. SP5 in a
+// name is BattleTarget::mSpKind == 5 (mSpKind values are not named).
+#define COLLISION_GROUP_BAKUGAN            1    // reacts to every other group (mask 0xfffe)
+#define COLLISION_GROUP_UNIT               2    // reacts to BAKUGAN
+#define COLLISION_GROUP_FIELD              4    // reacts to BAKUGAN
+#define COLLISION_GROUP_GIMMICK            8    // reacts to BAKUGAN
+#define COLLISION_GROUP_BAKUGAN_SP5        0x10 // reacts to FIELD and GIMMICK_HIT_BY_SP5 only
+#define COLLISION_GROUP_GIMMICK_HIT_BY_SP5 0x20 // reacts to BAKUGAN and BAKUGAN_SP5
+
 // A collision set (0x838 bytes) that AddCollisionSet builds from a buffer LoadCollisionFile fills from
 // "/Game/Collision/atari_%02d.bin"; GimmickCollision tests the sets against each other.
 struct GimmickSetData {
     /* 000 */ GimmickSetData *mPrev; // list node: previous
     /* 004 */ GimmickSetData *mNext;
-    /* 008 */ u16 mMode; // collision groups this set belongs to
-    /* 00a */ u16 mModeMask; // collision groups it reacts to
+    /* 008 */ u16 mMode; // COLLISION_GROUP_* of this set
+    /* 00a */ u16 mModeMask; // COLLISION_GROUP_* bits it reacts to
     /* 00c */ u16 mUnk_0c; // first 4 bytes of the file (count at +e)
     /* 00e */ u16 mUnk_0e;
     /* 010 */ GimmickSetBlock mObstacles; // object records

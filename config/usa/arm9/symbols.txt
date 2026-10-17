@@ -2931,8 +2931,8 @@ _Z16UnlockCharactersv kind:function(arm,size=0x11c) addr:0x02086a58
 _Z12UnlockFieldsv kind:function(arm,size=0x1d4) addr:0x02086b74
 _Z13func_02086d48v kind:function(arm,size=0xc0) addr:0x02086d48
 _Z10UnlockTipsv kind:function(arm,size=0x2f8) addr:0x02086e08
-_Z13func_02087100v kind:function(arm,size=0x368) addr:0x02087100
-_Z13func_02087468v kind:function(arm,size=0x144) addr:0x02087468
+_Z12UnlockEmblemv kind:function(arm,size=0x368) addr:0x02087100
+_Z16UnlockEmblem8Or9v kind:function(arm,size=0x144) addr:0x02087468
 _Z23IsProgressEntryUnlockedj kind:function(arm,size=0x144) addr:0x020875ac
 _Z19UnlockProgressEntryj kind:function(arm,size=0x1a8) addr:0x020876f0
 _ZN15StorytalkWindowC1Ev kind:function(arm,size=0xbc) addr:0x02087898
@@ -2962,7 +2962,7 @@ _ZN15StorytalkWindow12HasMorePagesEv kind:function(arm,size=0x18) addr:0x02088ef
 _ZN15StorytalkWindow11IsTextShownEv kind:function(arm,size=0x14) addr:0x02088f14
 _Z17SetStorytalkBlinkP15StorytalkWindowh kind:function(arm,size=0x10) addr:0x02088f28
 _Z20GetStageParkCategoryv kind:function(arm,size=0x2d0) addr:0x02088f38
-_Z13func_02089208v kind:function(arm,size=0x70) addr:0x02089208
+_Z32RefreshParkSlotProgressEntryFlagv kind:function(arm,size=0x70) addr:0x02089208
 _Z13FillParkSlotsv kind:function(arm,size=0x6ac) addr:0x02089278
 _Z12GetParkEntryjPv kind:function(arm,size=0x140) addr:0x02089924
 _Z14GetParkGroupIdj kind:function(arm,size=0x38) addr:0x02089a64
@@ -3172,81 +3172,81 @@ sBakuganAttributeFlags kind:data(any) addr:0x020a3768 local
 _ZZ14Table_020a3860vE13data_020a3860 kind:data(any) addr:0x020a3860 weak
 _ZZ14Table_020a39fcvE11sItemPrices kind:data(any) addr:0x020a39fc weak
 _ZZ14Table_020a3ba8vE10sCardOrder kind:data(any) addr:0x020a3ba8 weak
-data_020a3d54 kind:data(any) addr:0x020a3d54 local
-data_020a3d58 kind:data(any) addr:0x020a3d58 local
-data_020a3d5c kind:data(any) addr:0x020a3d5c local
-data_020a3d60 kind:data(any) addr:0x020a3d60 local
-data_020a3d64 kind:data(any) addr:0x020a3d64 local
-data_020a3d68 kind:data(any) addr:0x020a3d68 local
-data_020a3d6c kind:data(any) addr:0x020a3d6c local
-data_020a3d70 kind:data(any) addr:0x020a3d70 local
-data_020a3d74 kind:data(any) addr:0x020a3d74 local
-data_020a3d78 kind:data(any) addr:0x020a3d78 local
-data_020a3d7c kind:data(any) addr:0x020a3d7c local
-data_020a3d80 kind:data(any) addr:0x020a3d80 local
-data_020a3d84 kind:data(any) addr:0x020a3d84 local
-data_020a3d88 kind:data(any) addr:0x020a3d88 local
-data_020a3d8c kind:data(any) addr:0x020a3d8c local
-data_020a3d90 kind:data(any) addr:0x020a3d90 local
-data_020a3d94 kind:data(any) addr:0x020a3d94 local
-data_020a3d98 kind:data(any) addr:0x020a3d98 local
-data_020a3d9c kind:data(any) addr:0x020a3d9c local
-data_020a3da0 kind:data(any) addr:0x020a3da0 local
-data_020a3da4 kind:data(any) addr:0x020a3da4 local
-data_020a3da8 kind:data(any) addr:0x020a3da8 local
-data_020a3dac kind:data(any) addr:0x020a3dac local
-data_020a3dae kind:data(any) addr:0x020a3dae local
-data_020a3db0 kind:data(any) addr:0x020a3db0 local
-data_020a3db2 kind:data(any) addr:0x020a3db2 local
-data_020a3db4 kind:data(any) addr:0x020a3db4 local
-data_020a3db6 kind:data(any) addr:0x020a3db6 local
-data_020a3db8 kind:data(any) addr:0x020a3db8 local
-data_020a3dba kind:data(any) addr:0x020a3dba local
-data_020a3dbc kind:data(any) addr:0x020a3dbc local
-data_020a3dbe kind:data(any) addr:0x020a3dbe local
-data_020a3dc0 kind:data(any) addr:0x020a3dc0 local
-data_020a3dc4 kind:data(any) addr:0x020a3dc4 local
-data_020a3dc8 kind:data(any) addr:0x020a3dc8 local
-data_020a3dcc kind:data(any) addr:0x020a3dcc local
-data_020a3dd0 kind:data(any) addr:0x020a3dd0 local
-data_020a3dd4 kind:data(any) addr:0x020a3dd4 local
-data_020a3dd8 kind:data(any) addr:0x020a3dd8 local
-data_020a3ddc kind:data(any) addr:0x020a3ddc local
-data_020a3de0 kind:data(any) addr:0x020a3de0 local
-data_020a3de4 kind:data(any) addr:0x020a3de4 local
-data_020a3dea kind:data(any) addr:0x020a3dea local
-data_020a3df0 kind:data(any) addr:0x020a3df0 local
-data_020a3df6 kind:data(any) addr:0x020a3df6 local
-data_020a3dfc kind:data(any) addr:0x020a3dfc local
-data_020a3e02 kind:data(any) addr:0x020a3e02 local
-data_020a3e08 kind:data(any) addr:0x020a3e08 local
-data_020a3e0e kind:data(any) addr:0x020a3e0e local
-data_020a3e16 kind:data(any) addr:0x020a3e16 local
-data_020a3e1e kind:data(any) addr:0x020a3e1e local
-data_020a3e26 kind:data(any) addr:0x020a3e26 local
-data_020a3e30 kind:data(any) addr:0x020a3e30 local
-data_020a3e3e kind:data(any) addr:0x020a3e3e local
-data_020a3e4e kind:data(any) addr:0x020a3e4e local
-data_020a3e62 kind:data(any) addr:0x020a3e62 local
-data_020a3e76 kind:data(any) addr:0x020a3e76 local
-data_020a3e8c kind:data(any) addr:0x020a3e8c local
-data_020a3ea2 kind:data(any) addr:0x020a3ea2 local
-data_020a3eb8 kind:data(any) addr:0x020a3eb8 local
-data_020a3ed4 kind:data(any) addr:0x020a3ed4 local
-data_020a3ef2 kind:data(any) addr:0x020a3ef2 local
-data_020a3f16 kind:data(any) addr:0x020a3f16 local
-data_020a3f3c kind:data(any) addr:0x020a3f3c local
-data_020a3f66 kind:data(any) addr:0x020a3f66 local
-data_020a3f90 kind:data(any) addr:0x020a3f90 local
-data_020a3fd0 kind:data(any) addr:0x020a3fd0 local
-data_020a3fd4 kind:data(any) addr:0x020a3fd4 local
-data_020a3fd8 kind:data(any) addr:0x020a3fd8 local
-data_020a3fdc kind:data(any) addr:0x020a3fdc local
-data_020a3fe0 kind:data(any) addr:0x020a3fe0 local
-_ZZ14Table_020a3fe8vE17sStoreItemLists16 kind:data(any) addr:0x020a3fe8 weak
-_ZZ14Table_020a4040vE16sStoreItemLists8 kind:data(any) addr:0x020a4040 weak
-_ZZ14Table_020a4098vE22sCharacterUnlockTables kind:data(any) addr:0x020a4098 weak
-_ZZ14Table_020a40f0vE16sProgressEntries kind:data(any) addr:0x020a40f0 weak
+sProgressEntryList_19 kind:data(any) addr:0x020a3d54 local
+sProgressEntryList_09 kind:data(any) addr:0x020a3d58 local
+sProgressEntryList_25 kind:data(any) addr:0x020a3d5c local
+sProgressEntryList_14 kind:data(any) addr:0x020a3d60 local
+sProgressEntryList_07 kind:data(any) addr:0x020a3d64 local
+sProgressEntryList_12 kind:data(any) addr:0x020a3d68 local
+sStoreItemList8_09 kind:data(any) addr:0x020a3d6c local
+sProgressEntryList_15 kind:data(any) addr:0x020a3d70 local
+sProgressEntryList_11 kind:data(any) addr:0x020a3d74 local
+sProgressEntryList_22 kind:data(any) addr:0x020a3d78 local
+sProgressEntryList_18 kind:data(any) addr:0x020a3d7c local
+sProgressEntryList_10 kind:data(any) addr:0x020a3d80 local
+sProgressEntryList_06 kind:data(any) addr:0x020a3d84 local
+sProgressEntryList_24 kind:data(any) addr:0x020a3d88 local
+sProgressEntryList_16 kind:data(any) addr:0x020a3d8c local
+sProgressEntryList_23 kind:data(any) addr:0x020a3d90 local
+sProgressEntryList_13 kind:data(any) addr:0x020a3d94 local
+sProgressEntryList_08 kind:data(any) addr:0x020a3d98 local
+sStoreItemList8_08 kind:data(any) addr:0x020a3d9c local
+sProgressEntryList_17 kind:data(any) addr:0x020a3da0 local
+sProgressEntryList_20 kind:data(any) addr:0x020a3da4 local
+sProgressEntryList_21 kind:data(any) addr:0x020a3da8 local
+sProgressEntryList_26 kind:data(any) addr:0x020a3dac local
+sCharacterUnlockList_07_4 kind:data(any) addr:0x020a3dae local
+sCharacterUnlockList_07_5 kind:data(any) addr:0x020a3db0 local
+sCharacterUnlockList_09_6 kind:data(any) addr:0x020a3db2 local
+sCharacterUnlockList_09_7 kind:data(any) addr:0x020a3db4 local
+sCharacterUnlockList_01_2 kind:data(any) addr:0x020a3db6 local
+sCharacterUnlockList_01_1 kind:data(any) addr:0x020a3db8 local
+sCharacterUnlockList_07_3 kind:data(any) addr:0x020a3dba local
+sCharacterUnlockList_04_0 kind:data(any) addr:0x020a3dbc local
+sCharacterUnlockList_06_3 kind:data(any) addr:0x020a3dbe local
+sCharacterUnlockList_07_2 kind:data(any) addr:0x020a3dc0 local
+sCharacterUnlockList_07_1 kind:data(any) addr:0x020a3dc4 local
+sCharacterUnlockList_08_1 kind:data(any) addr:0x020a3dc8 local
+sCharacterUnlockList_08_2 kind:data(any) addr:0x020a3dcc local
+sCharacterUnlockList_08_3 kind:data(any) addr:0x020a3dd0 local
+sCharacterUnlockList_09_0 kind:data(any) addr:0x020a3dd4 local
+sCharacterUnlockList_09_1 kind:data(any) addr:0x020a3dd8 local
+sCharacterUnlockList_09_5 kind:data(any) addr:0x020a3ddc local
+sCharacterUnlockList_02_0 kind:data(any) addr:0x020a3de0 local
+sCharacterUnlockList_09_2 kind:data(any) addr:0x020a3de4 local
+sCharacterUnlockList_09_3 kind:data(any) addr:0x020a3dea local
+sCharacterUnlockList_09_4 kind:data(any) addr:0x020a3df0 local
+sCharacterUnlockList_10_0 kind:data(any) addr:0x020a3df6 local
+sCharacterUnlockList_03_1 kind:data(any) addr:0x020a3dfc local
+sCharacterUnlockList_03_2 kind:data(any) addr:0x020a3e02 local
+sCharacterUnlockList_03_3 kind:data(any) addr:0x020a3e08 local
+sCharacterUnlockList_06_1 kind:data(any) addr:0x020a3e0e local
+sCharacterUnlockList_06_2 kind:data(any) addr:0x020a3e16 local
+sCharacterUnlockList_07_0 kind:data(any) addr:0x020a3e1e local
+sCharacterUnlockList_00_0 kind:data(any) addr:0x020a3e26 local
+sCharacterUnlockList_08_0 kind:data(any) addr:0x020a3e30 local
+sProgressEntryList_03 kind:data(any) addr:0x020a3e3e local
+sProgressEntryList_04 kind:data(any) addr:0x020a3e4e local
+sProgressEntryList_05 kind:data(any) addr:0x020a3e62 local
+sStoreItemList16_10 kind:data(any) addr:0x020a3e76 local
+sProgressEntryList_02 kind:data(any) addr:0x020a3e8c local
+sProgressEntryList_01 kind:data(any) addr:0x020a3ea2 local
+sStoreItemList16_08 kind:data(any) addr:0x020a3eb8 local
+sStoreItemList16_09 kind:data(any) addr:0x020a3ed4 local
+sStoreItemList16_04 kind:data(any) addr:0x020a3ef2 local
+sProgressEntryList_00 kind:data(any) addr:0x020a3f16 local
+sStoreItemList16_02 kind:data(any) addr:0x020a3f3c local
+sStoreItemList16_07 kind:data(any) addr:0x020a3f66 local
+sStoreItemList16_00 kind:data(any) addr:0x020a3f90 local
+sStoreItemList8_04 kind:data(any) addr:0x020a3fd0 local
+sStoreItemList8_07 kind:data(any) addr:0x020a3fd4 local
+sStoreItemList8_10 kind:data(any) addr:0x020a3fd8 local
+sStoreItemList8_02 kind:data(any) addr:0x020a3fdc local
+sStoreItemList8_00 kind:data(any) addr:0x020a3fe0 local
+_ZZ16StoreItemLists16vE17sStoreItemLists16 kind:data(any) addr:0x020a3fe8 weak
+_ZZ15StoreItemLists8vE16sStoreItemLists8 kind:data(any) addr:0x020a4040 weak
+_ZZ21CharacterUnlockTablesvE22sCharacterUnlockTables kind:data(any) addr:0x020a4098 weak
+_ZZ15ProgressEntriesvE16sProgressEntries kind:data(any) addr:0x020a40f0 weak
 data_020a41c8 kind:data(any) addr:0x020a41c8
 gStorytalkTextOam kind:data(any) addr:0x020a41cc
 @664 kind:data(any) addr:0x020a41d8 local
@@ -4443,16 +4443,16 @@ _ZTV9ListScene kind:data(any) addr:0x020b9a04
 @11629 kind:data(any) addr:0x020ba96c local
 @11630 kind:data(any) addr:0x020ba988 local
 @11631 kind:data(any) addr:0x020ba9a8 local
-data_020ba9c4 kind:data(any) addr:0x020ba9c4 local
-data_020ba9c8 kind:data(any) addr:0x020ba9c8 local
-data_020ba9cc kind:data(any) addr:0x020ba9cc local
-data_020ba9d0 kind:data(any) addr:0x020ba9d0 local
-data_020ba9d4 kind:data(any) addr:0x020ba9d4 local
-data_020ba9e0 kind:data(any) addr:0x020ba9e0 local
-data_020ba9f0 kind:data(any) addr:0x020ba9f0 local
-data_020baa00 kind:data(any) addr:0x020baa00 local
-data_020baa10 kind:data(any) addr:0x020baa10 local
-data_020baa28 kind:data(any) addr:0x020baa28 local
+sCharacterUnlockLists_10 kind:data(any) addr:0x020ba9c4 local
+sCharacterUnlockLists_02 kind:data(any) addr:0x020ba9c8 local
+sCharacterUnlockLists_00 kind:data(any) addr:0x020ba9cc local
+sCharacterUnlockLists_04 kind:data(any) addr:0x020ba9d0 local
+sCharacterUnlockLists_01 kind:data(any) addr:0x020ba9d4 local
+sCharacterUnlockLists_06 kind:data(any) addr:0x020ba9e0 local
+sCharacterUnlockLists_08 kind:data(any) addr:0x020ba9f0 local
+sCharacterUnlockLists_03 kind:data(any) addr:0x020baa00 local
+sCharacterUnlockLists_07 kind:data(any) addr:0x020baa10 local
+sCharacterUnlockLists_09 kind:data(any) addr:0x020baa28 local
 _ZTV15StorytalkWindow kind:data(any) addr:0x020baa50
 @1659 kind:data(any) addr:0x020baa64 local
 @1679 kind:data(any) addr:0x020baa68 local

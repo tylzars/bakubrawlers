@@ -75,8 +75,8 @@ static const u16 sPrizeTable[2][6][9] = {
 u32 func_020779ec(void *unk);
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 BOOL func_0202326c(SaveData *d);
-s32 func_02087100();
-s32 func_02087468();
+s32 UnlockEmblem();
+s32 UnlockEmblem8Or9();
 void func_02086d48();
 extern u8 data_020d43e5[];
 extern UnkStruct_0220f540 data_0220f540;
@@ -448,9 +448,9 @@ void BattleResult::Update() {
             u8 scene = data_020d433c.mNextScene;
             u8 sub = data_020d433c.mUnk_7d;
             if ((scene == SCENE_TOURNAMENT) & (sub == 2)) {
-                id = func_02087100();
+                id = UnlockEmblem();
             } else if (scene == SCENE_PARK) {
-                id = func_02087468();
+                id = UnlockEmblem8Or9();
             }
             if (id >= 0) {
                 new GiftUnlockScene(id);

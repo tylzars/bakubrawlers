@@ -22,7 +22,7 @@ extern u8 data_020d496d[];
 
 extern u8 data_020d4970[];
 
-s32 func_02087468();
+s32 UnlockEmblem8Or9();
 
 BOOL IsProgressEntryUnlocked(u32 index);
 
@@ -83,207 +83,207 @@ BOOL UnlockCharacters();
 BOOL UnlockFields();
 BOOL func_02086d48();
 BOOL UnlockTips();
-s32 func_02087100();
-s32 func_02087468();
+s32 UnlockEmblem();
+s32 UnlockEmblem8Or9();
 BOOL IsProgressEntryUnlocked(u32 index);
 BOOL UnlockProgressEntry(u32 index);
 
 // mwcc emits a file's objects sorted by size, byte arrays and the inline accessors' tables as sections of their own;
 // the order of equal sizes follows from the whole declaration sequence. This definition order gives the original
 // layout of .rodata and .data.
-static const UnlockPair data_020a3db2[1] = {{0xff, 0xff}};
-static const u8 data_020a3d88[1] = {38};
-static const UnlockPair data_020a3dac[1] = {{7, 2}};
-static const UnlockPair data_020a3df6[3] = {{7, 1}, {6, 2}, {0xff, 0xff}};
+static const UnlockPair sCharacterUnlockList_09_6[1] = {{0xff, 0xff}};
+static const u8 sProgressEntryList_24[1] = {38};
+static const UnlockPair sProgressEntryList_26[1] = {{7, 2}};
+static const UnlockPair sCharacterUnlockList_10_0[3] = {{7, 1}, {6, 2}, {0xff, 0xff}};
 
-static const u16 data_020a3f66[21] = {
+static const u16 sStoreItemList16_07[21] = {
     33, 35, 46, 50, 63, 68, 71, 60, 99, 95, 86, 109, 117, 133, 123, 141,
     176, 184, 197, 191, 25,
 };
 
-static const UnlockPair data_020a3db4[1] = {{0xff, 0xff}};
-static const UnlockPair data_020a3e02[3] = {{8, 0}, {12, 0}, {0xff, 0xff}};
-static const u16 data_020a3e3e[8] = {3, 4, 17, 81, 148, 149, 160, 187};
-static const UnlockPair data_020a3db6[1] = {{0xff, 0xff}};
-static const u8 data_020a3d78[1] = {10};
-static const UnlockPair data_020a3e08[3] = {{10, 0}, {11, 0}, {0xff, 0xff}};
-static const u8 data_020a3d9c[1] = {30};
-static const UnlockPair data_020a3db8[1] = {{0xff, 0xff}};
-static const UnlockPair data_020a3e0e[4] = {{14, 1}, {13, 1}, {8, 1}, {0xff, 0xff}};
-static const UnlockPair data_020a3e30[7] = {{9, 1}, {3, 1}, {14, 2}, {13, 2}, {15, 2}, {16, 2}, {0xff, 0xff}};
-static const u8 data_020a3d68[1] = {4};
-static const UnlockPair data_020a3dae[1] = {{0xff, 0xff}};
-static const u8 data_020a3fd8[2] = {13, 37};
-static const u8 data_020a3d74[1] = {0};
-static const u16 data_020a3ed4[15] = {26, 36, 51, 54, 89, 96, 87, 107, 115, 131, 125, 162, 177, 194, 195};
-static const UnlockPair data_020a3dbc[1] = {{0xff, 0xff}};
-static const u16 data_020a3eb8[14] = {30, 55, 57, 65, 94, 88, 104, 112, 128, 124, 190, 193, 181, 198};
-static const UnlockPair data_020a3dbe[1] = {{0xff, 0xff}};
-static const u8 data_020a3fd4[2] = {35, 25};
+static const UnlockPair sCharacterUnlockList_09_7[1] = {{0xff, 0xff}};
+static const UnlockPair sCharacterUnlockList_03_2[3] = {{8, 0}, {12, 0}, {0xff, 0xff}};
+static const u16 sProgressEntryList_03[8] = {3, 4, 17, 81, 148, 149, 160, 187};
+static const UnlockPair sCharacterUnlockList_01_2[1] = {{0xff, 0xff}};
+static const u8 sProgressEntryList_22[1] = {10};
+static const UnlockPair sCharacterUnlockList_03_3[3] = {{10, 0}, {11, 0}, {0xff, 0xff}};
+static const u8 sStoreItemList8_08[1] = {30};
+static const UnlockPair sCharacterUnlockList_01_1[1] = {{0xff, 0xff}};
+static const UnlockPair sCharacterUnlockList_06_1[4] = {{14, 1}, {13, 1}, {8, 1}, {0xff, 0xff}};
+static const UnlockPair sCharacterUnlockList_08_0[7] = {{9, 1}, {3, 1}, {14, 2}, {13, 2}, {15, 2}, {16, 2}, {0xff, 0xff}};
+static const u8 sProgressEntryList_12[1] = {4};
+static const UnlockPair sCharacterUnlockList_07_4[1] = {{0xff, 0xff}};
+static const u8 sStoreItemList8_10[2] = {13, 37};
+static const u8 sProgressEntryList_11[1] = {0};
+static const u16 sStoreItemList16_09[15] = {26, 36, 51, 54, 89, 96, 87, 107, 115, 131, 125, 162, 177, 194, 195};
+static const UnlockPair sCharacterUnlockList_04_0[1] = {{0xff, 0xff}};
+static const u16 sStoreItemList16_08[14] = {30, 55, 57, 65, 94, 88, 104, 112, 128, 124, 190, 193, 181, 198};
+static const UnlockPair sCharacterUnlockList_06_3[1] = {{0xff, 0xff}};
+static const u8 sStoreItemList8_07[2] = {35, 25};
 
-static const u16 data_020a3f90[31] = {
+static const u16 sStoreItemList16_00[31] = {
     19, 20, 21, 22, 23, 40, 41, 42, 43, 44, 45, 85, 93, 102, 72, 77,
     98, 110, 134, 118, 126, 120, 143, 144, 145, 140, 168, 169, 170, 171, 34,
 };
 
-static const u8 data_020a3d6c[1] = {26};
-static const u8 data_020a3d84[1] = {16};
-static const UnlockPair data_020a3dba[1] = {{0xff, 0xff}};
-static const u8 data_020a3d5c[1] = {39};
-static const UnlockPair data_020a3e26[5] = {{14, 0}, {13, 0}, {0, 0}, {1, 0}, {0xff, 0xff}};
-static const UnlockPair *data_020ba9d0[1] = {data_020a3dbc};
-static const UnlockPair data_020a3de4[3] = {{8, 2}, {4, 2}, {0xff, 0xff}};
-static const UnlockPair data_020a3dc4[2] = {{15, 1}, {0xff, 0xff}};
-static const UnlockPair data_020a3dc8[2] = {{12, 1}, {0xff, 0xff}};
-static const UnlockPair data_020a3dcc[2] = {{10, 2}, {0xff, 0xff}};
-static const UnlockPair data_020a3dd0[2] = {{9, 2}, {0xff, 0xff}};
-static const UnlockPair *data_020ba9cc[1] = {data_020a3e26};
-static const u8 data_020a3da8[1] = {12};
-static const UnlockPair data_020a3db0[1] = {{0xff, 0xff}};
-static const UnlockPair *data_020ba9f0[4] = {data_020a3e30, data_020a3dc8, data_020a3dcc, data_020a3dd0};
-static const UnlockPair data_020a3ddc[2] = {{0, 2}, {0xff, 0xff}};
-static const UnlockPair data_020a3de0[2] = {{2, 0}, {0xff, 0xff}};
-static const UnlockPair data_020a3dea[3] = {{11, 2}, {1, 2}, {0xff, 0xff}};
-static const UnlockPair data_020a3df0[3] = {{12, 2}, {3, 2}, {0xff, 0xff}};
-static const u16 data_020a3ea2[11] = {1, 2, 16, 73, 74, 84, 146, 147, 159, 186, 183};
-static const UnlockPair data_020a3dfc[3] = {{15, 0}, {16, 0}, {0xff, 0xff}};
-static const UnlockPair *data_020baa00[4] = {NULL, data_020a3dfc, data_020a3e02, data_020a3e08};
-static const u8 data_020a3d94[1] = {7};
-static const u8 data_020a3d7c[1] = {3};
-static const UnlockPair data_020a3e16[4] = {{9, 0}, {11, 1}, {10, 1}, {0xff, 0xff}};
-static const UnlockPair data_020a3e1e[4] = {{2, 1}, {1, 1}, {4, 1}, {0xff, 0xff}};
-static const UnlockPair *data_020ba9d4[3] = {NULL, data_020a3db8, data_020a3db6};
-static const u8 data_020a3d70[1] = {11};
-static const u8 data_020a3d98[1] = {14};
-static const u16 data_020a3e76[11] = {37, 38, 39, 78, 111, 119, 127, 135, 163, 164, 165};
-static const u16 data_020a3e4e[10] = {9, 10, 18, 83, 79, 153, 154, 189, 182, 161};
-static const UnlockPair data_020a3dc0[2] = {{16, 1}, {0xff, 0xff}};
-static const u8 data_020a3fd0[2] = {28, 29};
-static const UnlockPair *data_020ba9c8[1] = {data_020a3de0};
-static const u16 data_020a3e8c[11] = {7, 8, 14, 66, 80, 151, 152, 157, 185, 172, 178};
-static const u8 data_020a3d8c[1] = {9};
-static const u8 data_020a3da0[1] = {1};
-static const UnlockPair data_020a3dd4[2] = {{0, 1}, {0xff, 0xff}};
+static const u8 sStoreItemList8_09[1] = {26};
+static const u8 sProgressEntryList_06[1] = {16};
+static const UnlockPair sCharacterUnlockList_07_3[1] = {{0xff, 0xff}};
+static const u8 sProgressEntryList_25[1] = {39};
+static const UnlockPair sCharacterUnlockList_00_0[5] = {{14, 0}, {13, 0}, {0, 0}, {1, 0}, {0xff, 0xff}};
+static const UnlockPair *sCharacterUnlockLists_04[1] = {sCharacterUnlockList_04_0};
+static const UnlockPair sCharacterUnlockList_09_2[3] = {{8, 2}, {4, 2}, {0xff, 0xff}};
+static const UnlockPair sCharacterUnlockList_07_1[2] = {{15, 1}, {0xff, 0xff}};
+static const UnlockPair sCharacterUnlockList_08_1[2] = {{12, 1}, {0xff, 0xff}};
+static const UnlockPair sCharacterUnlockList_08_2[2] = {{10, 2}, {0xff, 0xff}};
+static const UnlockPair sCharacterUnlockList_08_3[2] = {{9, 2}, {0xff, 0xff}};
+static const UnlockPair *sCharacterUnlockLists_00[1] = {sCharacterUnlockList_00_0};
+static const u8 sProgressEntryList_21[1] = {12};
+static const UnlockPair sCharacterUnlockList_07_5[1] = {{0xff, 0xff}};
+static const UnlockPair *sCharacterUnlockLists_08[4] = {sCharacterUnlockList_08_0, sCharacterUnlockList_08_1, sCharacterUnlockList_08_2, sCharacterUnlockList_08_3};
+static const UnlockPair sCharacterUnlockList_09_5[2] = {{0, 2}, {0xff, 0xff}};
+static const UnlockPair sCharacterUnlockList_02_0[2] = {{2, 0}, {0xff, 0xff}};
+static const UnlockPair sCharacterUnlockList_09_3[3] = {{11, 2}, {1, 2}, {0xff, 0xff}};
+static const UnlockPair sCharacterUnlockList_09_4[3] = {{12, 2}, {3, 2}, {0xff, 0xff}};
+static const u16 sProgressEntryList_01[11] = {1, 2, 16, 73, 74, 84, 146, 147, 159, 186, 183};
+static const UnlockPair sCharacterUnlockList_03_1[3] = {{15, 0}, {16, 0}, {0xff, 0xff}};
+static const UnlockPair *sCharacterUnlockLists_03[4] = {NULL, sCharacterUnlockList_03_1, sCharacterUnlockList_03_2, sCharacterUnlockList_03_3};
+static const u8 sProgressEntryList_13[1] = {7};
+static const u8 sProgressEntryList_18[1] = {3};
+static const UnlockPair sCharacterUnlockList_06_2[4] = {{9, 0}, {11, 1}, {10, 1}, {0xff, 0xff}};
+static const UnlockPair sCharacterUnlockList_07_0[4] = {{2, 1}, {1, 1}, {4, 1}, {0xff, 0xff}};
+static const UnlockPair *sCharacterUnlockLists_01[3] = {NULL, sCharacterUnlockList_01_1, sCharacterUnlockList_01_2};
+static const u8 sProgressEntryList_15[1] = {11};
+static const u8 sProgressEntryList_08[1] = {14};
+static const u16 sStoreItemList16_10[11] = {37, 38, 39, 78, 111, 119, 127, 135, 163, 164, 165};
+static const u16 sProgressEntryList_04[10] = {9, 10, 18, 83, 79, 153, 154, 189, 182, 161};
+static const UnlockPair sCharacterUnlockList_07_2[2] = {{16, 1}, {0xff, 0xff}};
+static const u8 sStoreItemList8_04[2] = {28, 29};
+static const UnlockPair *sCharacterUnlockLists_02[1] = {sCharacterUnlockList_02_0};
+static const u16 sProgressEntryList_02[11] = {7, 8, 14, 66, 80, 151, 152, 157, 185, 172, 178};
+static const u8 sProgressEntryList_16[1] = {9};
+static const u8 sProgressEntryList_17[1] = {1};
+static const UnlockPair sCharacterUnlockList_09_0[2] = {{0, 1}, {0xff, 0xff}};
 
-static const u16 data_020a3f3c[21] = {
+static const u16 sStoreItemList16_02[21] = {
     27, 31, 47, 56, 58, 49, 90, 92, 101, 105, 113, 129, 121, 137, 138, 139,
     136, 196, 192, 199, 24,
 };
 
-static const u8 data_020a3d60[1] = {2};
-static const UnlockPair data_020a3dd8[2] = {{2, 2}, {0xff, 0xff}};
-static const u8 data_020a3d80[1] = {18};
-static const u8 data_020a3d54[1] = {5};
-static const u8 data_020a3d90[1] = {36};
-static const u8 data_020a3fdc[3] = {24, 27, 31};
-static const UnlockPair *data_020ba9e0[4] = {NULL, data_020a3e0e, data_020a3e16, data_020a3dbe};
-static const u16 data_020a3e62[10] = {5, 6, 15, 64, 82, 75, 150, 158, 174, 166};
-static const u8 data_020a3da4[1] = {8};
+static const u8 sProgressEntryList_14[1] = {2};
+static const UnlockPair sCharacterUnlockList_09_1[2] = {{2, 2}, {0xff, 0xff}};
+static const u8 sProgressEntryList_10[1] = {18};
+static const u8 sProgressEntryList_19[1] = {5};
+static const u8 sProgressEntryList_23[1] = {36};
+static const u8 sStoreItemList8_02[3] = {24, 27, 31};
+static const UnlockPair *sCharacterUnlockLists_06[4] = {NULL, sCharacterUnlockList_06_1, sCharacterUnlockList_06_2, sCharacterUnlockList_06_3};
+static const u16 sProgressEntryList_05[10] = {5, 6, 15, 64, 82, 75, 150, 158, 174, 166};
+static const u8 sProgressEntryList_20[1] = {8};
 
-static const UnlockPair *data_020baa10[6] = {
-    data_020a3e1e, data_020a3dc4, data_020a3dc0, data_020a3dba, data_020a3dae,
-    data_020a3db0,
+static const UnlockPair *sCharacterUnlockLists_07[6] = {
+    sCharacterUnlockList_07_0, sCharacterUnlockList_07_1, sCharacterUnlockList_07_2, sCharacterUnlockList_07_3, sCharacterUnlockList_07_4,
+    sCharacterUnlockList_07_5,
 };
 
-static const UnlockPair *data_020baa28[10] = {
-    data_020a3dd4, data_020a3dd8, data_020a3de4, data_020a3dea, data_020a3df0,
-    data_020a3ddc, data_020a3db2, data_020a3db4, NULL, NULL,
+static const UnlockPair *sCharacterUnlockLists_09[10] = {
+    sCharacterUnlockList_09_0, sCharacterUnlockList_09_1, sCharacterUnlockList_09_2, sCharacterUnlockList_09_3, sCharacterUnlockList_09_4,
+    sCharacterUnlockList_09_5, sCharacterUnlockList_09_6, sCharacterUnlockList_09_7, NULL, NULL,
 };
 
-static const u8 data_020a3d58[1] = {17};
-static const u8 data_020a3d64[1] = {15};
-static const u8 data_020a3fe0[8] = {19, 20, 21, 22, 23, 33, 32, 34};
-static const UnlockPair *data_020ba9c4[1] = {data_020a3df6};
+static const u8 sProgressEntryList_09[1] = {17};
+static const u8 sProgressEntryList_07[1] = {15};
+static const u8 sStoreItemList8_00[8] = {19, 20, 21, 22, 23, 33, 32, 34};
+static const UnlockPair *sCharacterUnlockLists_10[1] = {sCharacterUnlockList_10_0};
 
-static const u16 data_020a3f16[19] = {
+static const u16 sProgressEntryList_00[19] = {
     11, 12, 13, 53, 61, 62, 69, 70, 100, 103, 108, 116, 132, 155, 156, 188,
     173, 180, 167,
 };
 
-static const u16 data_020a3ef2[18] = {28, 32, 29, 48, 52, 59, 67, 97, 91, 76, 106, 114, 130, 122, 142, 175, 179, 200};
+static const u16 sStoreItemList16_04[18] = {28, 32, 29, 48, 52, 59, 67, 97, 91, 76, 106, 114, 130, 122, 142, 175, 179, 200};
 
 // The four tables come after the byte lists in the original, so they are sections of their own: function-local
 // statics of inline accessors.
-inline const FlagList8 *Table_020a4040() {
+inline const FlagList8 *StoreItemLists8() {
     static const FlagList8 sStoreItemLists8[11] = {
-        {8, data_020a3fe0},
+        {8, sStoreItemList8_00},
         {0, NULL},
-        {3, data_020a3fdc},
+        {3, sStoreItemList8_02},
         {0, NULL},
-        {2, data_020a3fd0},
+        {2, sStoreItemList8_04},
         {0, NULL},
         {0, NULL},
-        {2, data_020a3fd4},
-        {1, data_020a3d9c},
-        {1, data_020a3d6c},
-        {2, data_020a3fd8},
+        {2, sStoreItemList8_07},
+        {1, sStoreItemList8_08},
+        {1, sStoreItemList8_09},
+        {2, sStoreItemList8_10},
     };
     return sStoreItemLists8;
 }
 
-inline const FlagList16 *Table_020a3fe8() {
+inline const FlagList16 *StoreItemLists16() {
     static const FlagList16 sStoreItemLists16[11] = {
-        {31, data_020a3f90},
+        {31, sStoreItemList16_00},
         {0, NULL},
-        {21, data_020a3f3c},
+        {21, sStoreItemList16_02},
         {0, NULL},
-        {18, data_020a3ef2},
+        {18, sStoreItemList16_04},
         {0, NULL},
         {0, NULL},
-        {21, data_020a3f66},
-        {14, data_020a3eb8},
-        {15, data_020a3ed4},
-        {11, data_020a3e76},
+        {21, sStoreItemList16_07},
+        {14, sStoreItemList16_08},
+        {15, sStoreItemList16_09},
+        {11, sStoreItemList16_10},
     };
     return sStoreItemLists16;
 }
 
-inline const UnlockTable *Table_020a4098() {
+inline const UnlockTable *CharacterUnlockTables() {
     static const UnlockTable sCharacterUnlockTables[11] = {
-        {1, data_020ba9cc},
-        {3, data_020ba9d4},
-        {1, data_020ba9c8},
-        {4, data_020baa00},
-        {1, data_020ba9d0},
+        {1, sCharacterUnlockLists_00},
+        {3, sCharacterUnlockLists_01},
+        {1, sCharacterUnlockLists_02},
+        {4, sCharacterUnlockLists_03},
+        {1, sCharacterUnlockLists_04},
         {0, NULL},
-        {4, data_020ba9e0},
-        {6, data_020baa10},
-        {4, data_020ba9f0},
-        {10, data_020baa28},
-        {1, data_020ba9c4},
+        {4, sCharacterUnlockLists_06},
+        {6, sCharacterUnlockLists_07},
+        {4, sCharacterUnlockLists_08},
+        {10, sCharacterUnlockLists_09},
+        {1, sCharacterUnlockLists_10},
     };
     return sCharacterUnlockTables;
 }
 
-inline const ProgressEntry *Table_020a40f0() {
+inline const ProgressEntry *ProgressEntries() {
     static const ProgressEntry sProgressEntries[27] = {
-        {data_020a3f16, 0, 19},
-        {data_020a3ea2, 0, 11},
-        {data_020a3e8c, 0, 11},
-        {data_020a3e3e, 0, 8},
-        {data_020a3e4e, 0, 10},
-        {data_020a3e62, 0, 10},
-        {data_020a3d84, 1, 1},
-        {data_020a3d64, 1, 1},
-        {data_020a3d98, 1, 1},
-        {data_020a3d58, 1, 1},
-        {data_020a3d80, 1, 1},
-        {data_020a3d74, 1, 1},
-        {data_020a3d68, 1, 1},
-        {data_020a3d94, 1, 1},
-        {data_020a3d60, 1, 1},
-        {data_020a3d70, 1, 1},
-        {data_020a3d8c, 1, 1},
-        {data_020a3da0, 1, 1},
-        {data_020a3d7c, 1, 1},
-        {data_020a3d54, 1, 1},
-        {data_020a3da4, 1, 1},
-        {data_020a3da8, 1, 1},
-        {data_020a3d78, 1, 1},
-        {data_020a3d90, 1, 1},
-        {data_020a3d88, 1, 1},
-        {data_020a3d5c, 1, 1},
-        {data_020a3dac, 2, 2},
+        {sProgressEntryList_00, 0, 19},
+        {sProgressEntryList_01, 0, 11},
+        {sProgressEntryList_02, 0, 11},
+        {sProgressEntryList_03, 0, 8},
+        {sProgressEntryList_04, 0, 10},
+        {sProgressEntryList_05, 0, 10},
+        {sProgressEntryList_06, 1, 1},
+        {sProgressEntryList_07, 1, 1},
+        {sProgressEntryList_08, 1, 1},
+        {sProgressEntryList_09, 1, 1},
+        {sProgressEntryList_10, 1, 1},
+        {sProgressEntryList_11, 1, 1},
+        {sProgressEntryList_12, 1, 1},
+        {sProgressEntryList_13, 1, 1},
+        {sProgressEntryList_14, 1, 1},
+        {sProgressEntryList_15, 1, 1},
+        {sProgressEntryList_16, 1, 1},
+        {sProgressEntryList_17, 1, 1},
+        {sProgressEntryList_18, 1, 1},
+        {sProgressEntryList_19, 1, 1},
+        {sProgressEntryList_20, 1, 1},
+        {sProgressEntryList_21, 1, 1},
+        {sProgressEntryList_22, 1, 1},
+        {sProgressEntryList_23, 1, 1},
+        {sProgressEntryList_24, 1, 1},
+        {sProgressEntryList_25, 1, 1},
+        {sProgressEntryList_26, 2, 2},
     };
     return sProgressEntries;
 }
@@ -302,7 +302,7 @@ BOOL UnlockStoreItems() {
     const u8 *list;
     result = FALSE;
     kind   = gSaveData[0].mUnk_42;
-    list   = Table_020a4040()[kind].mList;
+    list   = StoreItemLists8()[kind].mList;
     if (list != NULL) {
         i = 0;
         do {
@@ -312,9 +312,9 @@ BOOL UnlockStoreItems() {
                 result                      = TRUE;
             }
             i++;
-        } while (i < Table_020a4040()[kind = gSaveData[0].mUnk_42].mCount);
+        } while (i < StoreItemLists8()[kind = gSaveData[0].mUnk_42].mCount);
     }
-    list2 = Table_020a3fe8()[kind].mList;
+    list2 = StoreItemLists16()[kind].mList;
     if (list2 != NULL) {
         i = 0;
         do {
@@ -324,14 +324,14 @@ BOOL UnlockStoreItems() {
                 result                      = TRUE;
             }
             i++;
-        } while (i < Table_020a3fe8()[kind = gSaveData[0].mUnk_42].mCount);
+        } while (i < StoreItemLists16()[kind = gSaveData[0].mUnk_42].mCount);
     }
     return result;
 }
 
 BOOL UnlockCharacters() {
     BOOL result = FALSE;
-    const UnlockTable *table = &Table_020a4098()[gSaveData[0].mUnk_42];
+    const UnlockTable *table = &CharacterUnlockTables()[gSaveData[0].mUnk_42];
     u8 sub      = gSaveData[0].mUnk_43;
     if (table->mCount <= sub) {
         return result;
@@ -504,7 +504,7 @@ BOOL UnlockTips() {
     return result;
 }
 
-s32 func_02087100() {
+s32 UnlockEmblem() {
     s32 result = -1;
     if (StageReached(1, 1, 2)) {
         if (!(VD.mUnk_5b6 & 0x40)) {
@@ -572,12 +572,12 @@ s32 func_02087100() {
         }
     }
     if (result < 0) {
-        result = func_02087468();
+        result = UnlockEmblem8Or9();
     }
     return result;
 }
 
-s32 func_02087468() {
+s32 UnlockEmblem8Or9() {
     s32 result = -1;
     if (!(gSaveData[0].mUnk_5b7 & 0x1)) {
         u16 count = 0;
@@ -620,21 +620,21 @@ s32 func_02087468() {
 BOOL IsProgressEntryUnlocked(u32 index) {
     BOOL result = TRUE;
     u8 i;
-    switch (Table_020a40f0()[index].mType) {
+    switch (ProgressEntries()[index].mType) {
         case 0: {
             i               = 0;
-            const u16 *list = (const u16 *) Table_020a40f0()[index].mList;
+            const u16 *list = (const u16 *) ProgressEntries()[index].mList;
             do {
                 if (!TEST_BIT(data_020d497b, list[i])) {
                     result = FALSE;
                     break;
                 }
                 i++;
-            } while (i < Table_020a40f0()[index].mCount);
+            } while (i < ProgressEntries()[index].mCount);
             break;
         }
         case 1: {
-            const u8 *list = (const u8 *) Table_020a40f0()[index].mList;
+            const u8 *list = (const u8 *) ProgressEntries()[index].mList;
             i              = 0;
             do {
                 if (!TEST_BIT(data_020d4976, list[i])) {
@@ -642,18 +642,18 @@ BOOL IsProgressEntryUnlocked(u32 index) {
                     break;
                 }
                 i++;
-            } while (i < Table_020a40f0()[index].mCount);
+            } while (i < ProgressEntries()[index].mCount);
             break;
         }
         case 2: {
-            const u8 *list = (const u8 *) Table_020a40f0()[index].mList;
+            const u8 *list = (const u8 *) ProgressEntries()[index].mList;
             i              = 0;
             do {
                 if (!TEST_BIT(data_020d496a + list[1] * 3, list[0])) {
                     result = FALSE;
                 }
                 i++;
-            } while (i < Table_020a40f0()[index].mCount);
+            } while (i < ProgressEntries()[index].mCount);
             break;
         }
     }
@@ -662,10 +662,10 @@ BOOL IsProgressEntryUnlocked(u32 index) {
 
 BOOL UnlockProgressEntry(u32 index) {
     BOOL result = TRUE;
-    switch (Table_020a40f0()[index].mType) {
+    switch (ProgressEntries()[index].mType) {
         case 0: {
             u8 i            = 0;
-            const u16 *list = (const u16 *) Table_020a40f0()[index].mList;
+            const u16 *list = (const u16 *) ProgressEntries()[index].mList;
             do {
                 if (!TEST_BIT((u8 *) gSaveData[0].mUnk_58b, list[i])) {
                     SET_BIT((u8 *) gSaveData[0].mUnk_58b, list[i]);
@@ -673,16 +673,16 @@ BOOL UnlockProgressEntry(u32 index) {
                     result                       = TRUE;
                 }
                 i++;
-            } while (i < Table_020a40f0()[index].mCount);
+            } while (i < ProgressEntries()[index].mCount);
             break;
         }
         case 1: {
             const u8 *list;
             u8 count;
             u8 i;
-            const ProgressEntry *e = &Table_020a40f0()[index];
+            const ProgressEntry *e = &ProgressEntries()[index];
             count = e->mCount;
-            list  = (const u8 *) Table_020a40f0()[index].mList;
+            list  = (const u8 *) ProgressEntries()[index].mList;
             i     = 0;
             do {
                 if (!TEST_BIT((u8 *) gSaveData[0].mUnk_586, list[i])) {
@@ -698,9 +698,9 @@ BOOL UnlockProgressEntry(u32 index) {
             const u8 *list;
             u8 count;
             u8 i;
-            const ProgressEntry *e = &Table_020a40f0()[index];
+            const ProgressEntry *e = &ProgressEntries()[index];
             count = e->mCount;
-            list  = (const u8 *) Table_020a40f0()[index].mList;
+            list  = (const u8 *) ProgressEntries()[index].mList;
             i     = 0;
             do {
                 u8 id = list[0];

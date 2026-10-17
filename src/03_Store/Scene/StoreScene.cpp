@@ -25,7 +25,7 @@
 #define STORE_SCROLL_PREV 1
 #define STORE_SCROLL_NEXT 2
 
-s32 func_02087468();
+s32 UnlockEmblem8Or9();
 void func_02086d48();
 
 static const u8 sSelectScriptIds[3] = {2, 1, 3};
@@ -302,7 +302,7 @@ void StoreScene::Update() {
             }
             break;
         case 22: {
-            s32 result = func_02087468();
+            s32 result = UnlockEmblem8Or9();
             if (result >= 0) {
                 new GiftUnlockScene(result);
                 mContext->mRequest = 0;

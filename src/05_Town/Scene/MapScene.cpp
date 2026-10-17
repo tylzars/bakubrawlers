@@ -873,7 +873,7 @@ void MapScene::ShowTabInfo(u32 index) {
             mUnk_7e |= 2;
             break;
         case MAP_TAB_PARK:
-            func_02089208();
+            RefreshParkSlotProgressEntryFlag();
             if (gSaveData[0].mUnk_5b9_1 == 0) {
                 return;
             }

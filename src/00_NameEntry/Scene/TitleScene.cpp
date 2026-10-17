@@ -84,7 +84,7 @@ void SetBakuganEntry(SaveData *base, const u16 *src, u32 b, u32 c);
 void ApplyVolumeOptions(SaveData *base);
 void ResetSaveData();
 void func_02022b0c();
-s32 func_02087100();
+s32 UnlockEmblem();
 void func_02086d48();
 void FillParkSlots();
 
@@ -710,7 +710,7 @@ void TitleScene::Update() {
             break;
         case 44: {
             gSaveData[0].mUnk_5bf_0 = 1;
-            s32 id = func_02087100();
+            s32 id = UnlockEmblem();
             if (id >= 0) {
                 new GiftUnlockScene(id);
                 mContext->mRequest = 0;

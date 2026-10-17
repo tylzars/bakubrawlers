@@ -122,7 +122,7 @@ u8 GetStageParkCategory() {
     return 27;
 }
 
-void func_02089208() {
+void RefreshParkSlotProgressEntryFlag() {
     u8 i = 0;
     u8 buf[12];
     gSaveData[0].mUnk_5b9_1 = 0;
@@ -364,7 +364,7 @@ void FillParkSlots() {
         } while (g < category->mCount);
         gSaveData[0].mParkSlotCount = count;
     }
-    func_02089208();
+    RefreshParkSlotProgressEntryFlag();
 }
 
 void GetParkEntry(u32 index, void *out) {
@@ -455,7 +455,7 @@ void func_02089a9c(u32 index) {
             }
             break;
         }
-        case 6: {
+        case PARK_ENTRY_TYPE_TUTORIAL: {
             if (entry.mUnk_0a == 0 && !(gSaveData[0].mUnk_5be & 0x10)) {
                 return;
             }

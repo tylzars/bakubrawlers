@@ -15,7 +15,7 @@ BOOL UnlockStoreItems();
 // (data_020d496a, 496d, 4970); TRUE when an id had no bit in any of them before.
 BOOL UnlockCharacters();
 BOOL UnlockFields();
-void func_02089208();
+void RefreshParkSlotProgressEntryFlag();
 // Park entry types: the values of ParkEntry::mType in the 12-byte park table records GetParkEntry copies out (read
 // through the ParkEntry copies in ParkScene.cpp and ParkCharacters.cpp). ParkScene's Update state 24 opens
 // /font/mes_pm_<stem>.mes for each (mes_pm_battle, mes_pm_Teambattle, mes_pm_BattleRoyale, mes_pm_mes_only_1..3,

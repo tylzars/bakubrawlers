@@ -103,7 +103,7 @@ public:
     void DrawMoney();                 // 0221bc28
     void DrawPage();
     // Clears mUnk_7e; when the tab's condition holds, prints its info and sets the mUnk_7e bit DrawPopup tests. MYROOM
-    // only when data_020d48f0.mRank differs from mPrevRank (then copies it); PARK calls func_02089208 first.
+    // only when data_020d48f0.mRank differs from mPrevRank (then copies it); PARK calls RefreshParkSlotProgressEntryFlag first.
     void ShowTabInfo(u32 index);
     void ShowNumbers();               // 0221bf60
     void ShowText(u16 index, s32 unk2); // 0221c390

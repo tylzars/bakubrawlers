@@ -169,7 +169,7 @@ void StoreScene::Update() {
             if (mEvent->IsRunning()) {
                 break;
             }
-            mEvent->func_02067998(sSelectScriptIds[ctx->mInfo.mSelection]);
+            mEvent->SetMapExtraAnim(sSelectScriptIds[ctx->mInfo.mSelection]);
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             ctx->mInfo.mState++;
             break;
@@ -555,7 +555,7 @@ BOOL StoreScene::ScrollStep() {
         items[info->mSelection].mFlags = 0x8000;
         mWindow->mCursor->mSelection     = info->mPage;
         info->mSelection               = info->mPage;
-        mEvent->func_02067998(sSelectScriptIds[info->mSelection]);
+        mEvent->SetMapExtraAnim(sSelectScriptIds[info->mSelection]);
         mEvent->func_0206f564(sSelectEventIds[info->mSelection], 10, -1);
         if (info->mSelection != 0) {
             mWindow->mButtons[4].mEnabled = 1;

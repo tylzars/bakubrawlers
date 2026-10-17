@@ -68,7 +68,7 @@ struct ScriptCameraAngles {
     /* 00 */ u16 mPitch;
     union {
         /* 02 */ u16 mYaw;
-        /* 02 */ s16 mUnk_02s; // s16 view of mYaw
+        /* 02 */ s16 mYawSigned; // s16 view of mYaw
     };
     /* 04 */ PAD(0x04, 0x08);
     /* 08 */ s16 mYawFrom;
@@ -90,12 +90,12 @@ struct ScriptMap {
     /* 2a */ PAD(0x2a, 0x2c);
     /* 2c */ ModelInstance *mModel;
     /* 30 */ s16 mMapId;
-    /* 32 */ u8 mUnk_32;
+    /* 32 */ u8 mHoldAnims;
     /* 33 */ PAD(0x33, 0x34);
     /* 34 */
 };
 
-// A model slot (data_020a2554 entries). In ScriptPlayer, the Model methods (LoadModel, SwapModel, ReleaseModel,
+// A model slot (gScriptModelEntries entries). In ScriptPlayer, the Model methods (LoadModel, SwapModel, ReleaseModel,
 // DrawModels, mModels) mean this slot kind; ReleaseModels frees the models of every kind.
 struct ScriptModel {
     /* 00 */ fx32 mX;
@@ -141,12 +141,12 @@ struct ScriptSphere {
     /* 36 */ u8 mUnk_36;
     /* 37 */ u8 mVisible;
     /* 38 */ u8 mStorytalkCell2X;
-    /* 39 */ u8 mUnk_39;
-    /* 3a */ u8 mUnk_3a;
+    /* 39 */ u8 mStorytalkCell2XTo;
+    /* 3a */ u8 mStorytalkCell2XFrom;
     /* 3b */ u8 mStorytalkCell2Frame;
-    /* 3c */ u8 mUnk_3c; // while non-zero DrawSpheres steps mUnk_3e up to 1, else down to 0
-    /* 3d */ u8 mUnk_3d; // 0..0x7f position of the sine DrawSpheres adds to y
-    /* 3e */ u8 mUnk_3e; // 0 or 1: multiplier of that sine offset
+    /* 3c */ u8 mSineYEnabled; // while non-zero DrawSpheres steps mUnk_3e up to 1, else down to 0
+    /* 3d */ u8 mSineYAngle; // 0..0x7f position of the sine DrawSpheres adds to y
+    /* 3e */ u8 mSineYScale; // 0 or 1: multiplier of that sine offset
     /* 3f */ u8 mShadowScale;
     /* 40 */ s16 mShadowY; // whole units; drawn at (mShadowY << 12) - 0x64000
     /* 42 */ u8 mSwapPending;
@@ -171,18 +171,18 @@ struct ScriptCharacter {
     /* 34 */ s16 mOffsetY;
     /* 36 */ s8 mCharacterId; // -1 = none
     /* 37 */ s8 mNextCharacterId;
-    // +38..+3a are rows of func_020687a8's per-id tables: +39 the row playing, +3a the row asked for
+    // +38..+3a are rows of GetAnimTableValue's per-id tables: +39 the row playing, +3a the row asked for
     // (func_02067f30), +38 the row for the next character (SwapCharacter copies it into both).
-    /* 38 */ u8 mUnk_38;
-    /* 39 */ u8 mUnk_39;
-    /* 3a */ u8 mUnk_3a;
-    /* 3b */ u8 mUnk_3b;
+    /* 38 */ u8 mNextAnimTableIndex;
+    /* 39 */ u8 mAnimTableIndex;
+    /* 3a */ u8 mTargetAnimTableIndex;
+    /* 3b */ u8 mAnimChangePending;
     /* 3c */ u8 mExtraAnimEnabled;
     /* 3d */ u8 mShadowScale;
     /* 3e */ u8 mVisible; // draw gate; DrawCharacters still writes the position while 0
     /* 3f */ u8 mStorytalkCell2X;
-    /* 40 */ u8 mUnk_40;
-    /* 41 */ u8 mUnk_41;
+    /* 40 */ u8 mStorytalkCell2XTo;
+    /* 41 */ u8 mStorytalkCell2XFrom;
     /* 42 */ u8 mStorytalkCell2Frame;
     /* 43 */ u8 mSwapPending;
     /* 44 */ PAD(0x44, 0x48);
@@ -219,12 +219,12 @@ public:
     /* 12b4 */ u32 mFileSize;
     /* 12b8 */ u8 mModelLoadStep;
     /* 12b9 */ u8 mState;
-    /* 12ba */ u8 mUnk_12ba;
+    /* 12ba */ u8 mMessageMode;
     /* 12bb */ PAD(0x12bb, 0x12bc);
     /* 12bc */ u16 mCommandIndex;
     /* 12be */ u16 mCommandCount;
-    /* 12c0 */ u16 mUnk_12c0;
-    /* 12c2 */ u16 mUnk_12c2;
+    /* 12c0 */ u16 mChannel1CommandIndex;
+    /* 12c2 */ u16 mModelCommandIndex;
     /* 12c4 */ u8 mWaitTimer; // command 13 sets it for SCRIPT_WAIT_KIND_TIMER; every SCRIPT_WAIT_KIND_LOAD wait starts it at 0, so that countdown never runs
     /* 12c5 */ u8 mWaitKind;
     /* 12c6 */ u8 mCurrentCommand;
@@ -234,10 +234,10 @@ public:
     /* 12cb */ u8 mInputTimer; // frames between an accepted input and the page step
     /* 12cc */ u16 mMessagePos;
     /* 12ce */ u16 mMessageCount; // texts queued by command 1; wraps to 0 at 0x80 while mMessagePos does not
-    /* 12d0 */ u16 mUnk_12d0;
+    /* 12d0 */ u16 mNextPageTimer;
     /* 12d2 */ s16 mMessageIndices[0x80];
-    /* 13d2 */ s16 mUnk_13d2[0x80]; // value command 8 gives the next queued text; StorytalkWindow::SetMessage's second argument
-    /* 14d2 */ s8 mUnk_14d2;
+    /* 13d2 */ s16 mMessageCharacterIds[0x80]; // value command 8 gives the next queued text; StorytalkWindow::SetMessage's second argument
+    /* 14d2 */ s8 mChannel0FrameTaskId;
     /* 14d3 */ u8 mFadeKind;
     /* 14d4 */ s8 mUnk_14d4;
     /* 14d5 */ s8 mBrightness;
@@ -257,14 +257,14 @@ public:
     /* 14e6 */ u8 mGraphicsLoaded;
     /* 14e7 */ u8 mUnk_14e7;
     /* 14e8 */ u8 mUnk_14e8;
-    /* 14e9 */ u8 mUnk_14e9;
+    /* 14e9 */ u8 mBattlePending;
     /* 14ea */ u8 mSaveRequested;
     /* 14eb */ u8 mUnlockPopupHandle;
     /* 14ec */ u8 mSkipped;
-    /* 14ed */ u8 mUnk_14ed;
-    /* 14ee */ u8 mUnk_14ee;
-    /* 14ef */ u8 mUnk_14ef;
-    /* 14f0 */ u8 mUnk_14f0;
+    /* 14ed */ u8 mSkipDisabled;
+    /* 14ee */ u8 mTextOnly;
+    /* 14ef */ u8 mTouchLatched;
+    /* 14f0 */ u8 mStopChannel0;
     /* 14f1 */ u8 mUnk_14f1;
     /* 14f2 */ u8 mCutsceneAnimIndex;
     /* 14f3 */ u8 mBg0Wave;
@@ -286,11 +286,11 @@ public:
     void SwapSphere(u32 index);
     void SwapModel(u32 index);
     // flag 0 creates the current character; flag 1 only waits for the next one's load (CreateNextCharacter).
-    // TRUE at once for an id < 0; both first call func_020682a0.
+    // TRUE at once for an id < 0; both first call RestoreCharacterSpriteSlot.
     BOOL LoadCharacter(u32 index, u32 flag);
-    void func_020682a0(u32 index, u32 characterId);
+    void RestoreCharacterSpriteSlot(u32 index, u32 characterId);
     void ResetCharacterParams(u32 index);
-    s8 func_020687a8(s32 kind, u32 index, u32 column);
+    s8 GetAnimTableValue(s32 kind, u32 index, u32 column);
     void SetCharacterExtraAnimEnabled(u32 index, u32 value);
     void UpdateCharacterExtraAnims();
     void ApplyCharacterRotation(u32 index);
@@ -315,7 +315,7 @@ public:
     void ApplyFov(); // only mFov[0]
     void UpdateCameraAndLight(); // nothing when the eye equals the target
     void SetCameraMode(u32 mode);
-    void func_0206a01c();
+    void UpdateCutsceneAndStorytalkCell2();
     void SetCutsceneAnimation(u32 value, u32 force);
     void SkipScript();
     void UpdateMessages(); // starts with the skip check (key 8 in states 3-4 outside SCRIPT_WAIT_KIND_LOAD calls SkipScript)
@@ -327,15 +327,15 @@ public:
     UnkStruct_02065c40_Kind GetCommandSlot(u32 id);
     void RunCommands(); // at the end of the list: func_02066814(1), state 5, ReleaseModels(0)
     void ExecuteCommand(u32 command, s32 value);
-    s32 func_02070554(s32 kind, s32 index);
+    s32 LookupChannel1CommandValue(s32 kind, s32 index);
     void SetBg0Wave(u32 flag);
     BOOL ReadMessages();
     BOOL func_02067f30(u32 index, s32 value);
     // 0 for mUnk_14e2 == 6; with a script number from func_02066814(0) starts "cmd_ST_mev_..." and returns 1;
-    // otherwise func_02066814(1) (and StopWithResult(SCRIPT_RESULT_BATTLE) when mUnk_14e9 is set) and 0.
+    // otherwise func_02066814(1) (and StopWithResult(SCRIPT_RESULT_BATTLE) when mBattlePending is set) and 0.
     u32 func_02066f60();
     // Also writes display registers; makes the cutscene cells when mUnk_14e4 == 0 and (mUnk_14f1 or
-    // func_02066c7c()), and then with mUnk_14e2 == 5 clears mUnk_14f1 and sets mUnk_14ed.
+    // func_02066c7c()), and then with mUnk_14e2 == 5 clears mUnk_14f1 and sets mSkipDisabled.
     void LoadGraphics();
     BOOL ReadScript(); // also starts the read of the script's .mes file
     void UpdateWait(); // kind 4 runs the interpolation of every slot, the camera, light and FOV; kind 9 calls LoadGraphics
@@ -361,7 +361,7 @@ public:
     BOOL StartScript(const char *path);
     void RequestFinish();
     BOOL func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4, s32 unk5);
-    void func_02067998(u8 unk1);
+    void SetMapExtraAnim(u8 unk1);
     void func_0206f564(s32 unk1, u32 unk2, s32 unk3);
     u32 func_0206f9b4(const char *name, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7);
     u8 func_0206fa20(const char *name, const u16 *unk2, const u8 *unk3, u32 unk4, u32 unk5, u32 unk6, u32 unk7,

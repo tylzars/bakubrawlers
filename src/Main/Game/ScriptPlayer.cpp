@@ -98,18 +98,18 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
     mLightColor = 0;
     mModelLoadStep = 0;
     mState = 0;
-    mUnk_12ba = 0;
+    mMessageMode = 0;
     mCommandIndex = 0;
     mCommandCount = 0;
-    mUnk_12c0 = 0;
-    mUnk_12c2 = 0;
+    mChannel1CommandIndex = 0;
+    mModelCommandIndex = 0;
     mWaitKind = SCRIPT_WAIT_KIND_NONE;
     mMessageState = 0;
     mInputTimer = 0;
     mMessagePos = 0;
     mMessageCount = 0;
-    mUnk_12d0 = 0;
-    mUnk_14d2 = -1;
+    mNextPageTimer = 0;
+    mChannel0FrameTaskId = -1;
     mFadeKind = SCRIPT_FADE_KIND_BLEND;
     mUnk_14d4 = 0;
     mBrightness = -16;
@@ -126,14 +126,14 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
     mGraphicsLoaded = 0;
     mUnk_14e7 = 0;
     mUnk_14e8 = 0;
-    mUnk_14e9 = 0;
+    mBattlePending = 0;
     mSaveRequested = 0;
     mUnlockPopupHandle = 0;
     mSkipped = 0;
-    mUnk_14ed = 0;
-    mUnk_14ee = 0;
-    mUnk_14ef = 0;
-    mUnk_14f0 = unk2;
+    mSkipDisabled = 0;
+    mTextOnly = 0;
+    mTouchLatched = 0;
+    mStopChannel0 = unk2;
     mUnk_14f1 = unk3;
     mCutsceneAnimIndex = 0;
     mBg0Wave = 0;
@@ -153,13 +153,13 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
         mModels[i].mStorytalkCell2X = 0x80;
         mCharacters[i].mShadowScale = 0x28;
         mCharacters[i].mStorytalkCell2X = 0x80;
-        mCharacters[i].mUnk_40 = 0x80;
-        mCharacters[i].mUnk_41 = 0x80;
+        mCharacters[i].mStorytalkCell2XTo = 0x80;
+        mCharacters[i].mStorytalkCell2XFrom = 0x80;
         mSpheres[i].mTableIndex = -1;
         mSpheres[i].mNextTableIndex = -1;
         mSpheres[i].mStorytalkCell2X = 0x80;
-        mSpheres[i].mUnk_39 = 0x80;
-        mSpheres[i].mUnk_3a = 0x80;
+        mSpheres[i].mStorytalkCell2XTo = 0x80;
+        mSpheres[i].mStorytalkCell2XFrom = 0x80;
         mSpheres[i].mShadowY = 0;
         mSpheres[i].mShadowScale = 10;
     }
@@ -174,7 +174,7 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
     ResetLight();
     mStorytalkWindow = new StorytalkWindow();
     G2_SetBlendBrightness(1, -16);
-    if (mUnk_14f0 != 0) {
+    if (mStopChannel0 != 0) {
         FrameTask::Get().StopChannel(0);
     }
     FrameTask::Get().StopChannel(1);
@@ -214,7 +214,7 @@ ScriptPlayer::~ScriptPlayer() {
         delete lights;
     }
     CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
-    if (mUnk_14f0 != 0) {
+    if (mStopChannel0 != 0) {
         FrameTask::Get().StopChannel(0);
     }
     FrameTask::Get().StopChannel(1);
@@ -306,7 +306,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                         if (next < 10) {
                             SetupBattle(type, (u8) next);
                             if (data_020b4324[type]->mEntries[index].mUnk_0a != 0 && data_020b4324[type]->mEntries[next].mUnk_06 != 1) {
-                                mUnk_14e9 = 1;
+                                mBattlePending = 1;
                             }
                         }
                     }
@@ -325,20 +325,20 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                             SetupBattle(type, (u8) next);
                             if (unk1 != 0) {
                                 if (data_020b4324[type]->mEntries[index].mUnk_0a != 0 && data_020b4324[type]->mEntries[next].mUnk_06 != 1) {
-                                    mUnk_14e9 = 1;
+                                    mBattlePending = 1;
                                 }
                             }
                         }
                     } else {
                         SetupBattle(type, index);
-                        if (mUnk_14e2 == 0 || mUnk_14e9 == 1) {
+                        if (mUnk_14e2 == 0 || mBattlePending == 1) {
                             StopWithResult(SCRIPT_RESULT_BATTLE);
                         }
                     }
                     break;
             }
             if (gSaveData[0].mUnk_5bf_0) {
-                mUnk_14e9 = 0;
+                mBattlePending = 0;
             }
             if (seen) {
                 u8 value = data_020b4324[type]->mEntries[index].mUnk_09;
@@ -523,7 +523,7 @@ u32 ScriptPlayer::func_02066f60() {
         return 1;
     }
     func_02066814(1);
-    if (mUnk_14e9 != 0) {
+    if (mBattlePending != 0) {
         StopWithResult(SCRIPT_RESULT_BATTLE);
     }
     return 0;
@@ -593,7 +593,7 @@ void ScriptPlayer::Update() {
     manager.mMtxC[manager.mCameraIndex]       = *func_020323b8();
     UpdateBrightness();
     UpdateMessages();
-    func_0206a01c();
+    UpdateCutsceneAndStorytalkCell2();
     DrawMap();
     UpdateCharacterExtraAnims();
     DrawCharacters();
@@ -788,7 +788,7 @@ extern const s8 data_020a1ae4[][5];
 extern const s8 data_020a1af3[][5];
 extern const s8 data_020a1b02[][5];
 
-void ScriptPlayer::func_02067998(u8 unk1) {
+void ScriptPlayer::SetMapExtraAnim(u8 unk1) {
     if (unk1) {
         NNSG3dAnmObj *obj = mMaps[0].mModel->mAnim->GetAnimObjForSet(1, unk1);
         mMaps[0].mModel->AttachExtraAnim(obj);
@@ -873,7 +873,7 @@ void ScriptPlayer::LoadGraphics() {
         mCutsceneCellAnim->mPaletteBase   = 0;
         if (mUnk_14e2 == 5) {
             mUnk_14f1 = 0;
-            mUnk_14ed = 1;
+            mSkipDisabled = 1;
         }
     }
     ChangeDir("/");
@@ -898,7 +898,7 @@ void ScriptPlayer::SetCharacterVisible(u32 index, u8 unk2) {
         return;
     }
     model->SetVisible(unk2);
-    mCharacters[index].mUnk_3b = 0;
+    mCharacters[index].mAnimChangePending = 0;
     mCharacters[index].mVisible = unk2;
 }
 
@@ -930,11 +930,11 @@ BOOL ScriptPlayer::func_02067f30(u32 index, s32 value) {
         mCharacters[index].mCharacter = NULL;
         return FALSE;
     }
-    mCharacters[index].mUnk_3a = value;
+    mCharacters[index].mTargetAnimTableIndex = value;
     if (mCharacters[index].mCharacter != NULL) {
-        if (mCharacters[index].mUnk_3a != mCharacters[index].mUnk_39) {
+        if (mCharacters[index].mTargetAnimTableIndex != mCharacters[index].mAnimTableIndex) {
             if (mCharacters[index].mCharacter->IsVisible()) {
-                mCharacters[index].mUnk_3b = 1;
+                mCharacters[index].mAnimChangePending = 1;
             }
             if (mCharacters[index].mCharacterId == 0x15) {
                 ((CharacterModel *) mCharacters[index].mCharacter->mCharacter)->mParts[0]->mAnim->mReachedEnd = 1;
@@ -973,22 +973,22 @@ void ScriptPlayer::CreateNextCharacter(u32 index) {
 }
 
 BOOL ScriptPlayer::LoadCharacter(u32 index, u32 flag) {
-    u8 variant;
+    u8 tableIndex;
     s8 characterId;
     UnkStruct_0205401c **slot;
     if (flag) {
-        variant = mCharacters[index].mUnk_38;
+        tableIndex = mCharacters[index].mNextAnimTableIndex;
         characterId = mCharacters[index].mNextCharacterId;
         slot    = &mCharacters[index].mNextCharacter;
     } else {
-        variant = mCharacters[index].mUnk_3a;
+        tableIndex = mCharacters[index].mTargetAnimTableIndex;
         characterId = mCharacters[index].mCharacterId;
         slot    = &mCharacters[index].mCharacter;
     }
     if (characterId < 0) {
         return TRUE;
     }
-    func_020682a0(index, characterId);
+    RestoreCharacterSpriteSlot(index, characterId);
     if (flag) {
         if (!(*slot)->UpdateLoad()) {
             return FALSE;
@@ -997,15 +997,15 @@ BOOL ScriptPlayer::LoadCharacter(u32 index, u32 flag) {
         *slot = new UnkStruct_0205401c();
         u8 id = characterId;
         (*slot)->Create(id, 0, 0, 0);
-        u8 a = func_020687a8(id, variant, 0);
-        u8 b = func_020687a8(id, variant, 3);
+        u8 a = GetAnimTableValue(id, tableIndex, 0);
+        u8 b = GetAnimTableValue(id, tableIndex, 3);
         (*slot)->func_02054644(b, a);
         if (characterId == 0x15) {
             ((CharacterModel *) (*slot)->mCharacter)->mParts[0]->mAnim->mLoop = 1;
         } else {
             ((ModelTransform *) (*slot)->mStoryCharacter)->mModel->mAnim->mLoop = 1;
         }
-        mCharacters[index].mUnk_39 = variant;
+        mCharacters[index].mAnimTableIndex = tableIndex;
         (*slot)->SetVisible(0);
         mCharacters[index].mVisible = 0;
         MI_CpuClear16(&mCharacters[index], 0x18);
@@ -1015,7 +1015,7 @@ BOOL ScriptPlayer::LoadCharacter(u32 index, u32 flag) {
     return TRUE;
 }
 
-void ScriptPlayer::func_020682a0(u32 index, u32 characterId) {
+void ScriptPlayer::RestoreCharacterSpriteSlot(u32 index, u32 characterId) {
     if (characterId == 0x15) {
         SpriteManager::Get().RestoreSlot(3);
     } else if (index == 0) {
@@ -1025,13 +1025,13 @@ void ScriptPlayer::func_020682a0(u32 index, u32 characterId) {
     }
 }
 
-struct UnkStruct_020a22ac {
+struct ScriptMapEntry {
     /* 0 */ const char *mName;
     /* 4 */ s16 mY;
     /* 6 */ s16 mZ;
     /* 8 */
 };
-extern const UnkStruct_020a22ac data_020a22ac[18];
+extern const ScriptMapEntry gScriptMapEntries[18];
 
 static inline fx32 FxRound(s32 v) {
     s32 t = v;
@@ -1041,16 +1041,16 @@ static inline fx32 FxRound(s32 v) {
 #define FX_FROM_INT_ROUND(x) ((fx32) (((x) > 0) ? (((x) << 12) + 0.5f) : (((x) << 12) - 0.5f)))
 
 
-struct UnkStruct_020a2554 {
+struct ScriptModelEntry {
     /* 0 */ const char *mName;
     /* 4 */ u8 mDir;
-    /* 5 */ u8 mUnk_05;
+    /* 5 */ u8 mScale;
     /* 6 */ u8 mData;
     /* 7 */ PAD(0x07, 0x08);
     /* 8 */
 };
-extern const UnkStruct_020a2554 data_020a2554[42];
-extern const char *data_020b431c[];
+extern const ScriptModelEntry gScriptModelEntries[42];
+extern const char *gScriptModelDirs[];
 
 struct ScriptSphereEntry {
     /* 0 */ u8 mBakuganId;
@@ -1096,8 +1096,8 @@ void ScriptPlayer::ResetCharacterParams(u32 index) {
             break;
     }
     mCharacters[index].mStorytalkCell2X = 0x80;
-    mCharacters[index].mUnk_40 = 0x80;
-    mCharacters[index].mUnk_41 = 0x80;
+    mCharacters[index].mStorytalkCell2XTo = 0x80;
+    mCharacters[index].mStorytalkCell2XFrom = 0x80;
     mCharacters[index].mStorytalkCell2Frame = 0;
     mCharacters[index].mExtraAnimEnabled = 0;
 }
@@ -1114,17 +1114,17 @@ void ScriptPlayer::SwapCharacter(u32 index) {
     mCharacters[index].mCharacter = mCharacters[index].mNextCharacter;
     mCharacters[index].mNextCharacter = NULL;
     mCharacters[index].mCharacterId = mCharacters[index].mNextCharacterId;
-    mCharacters[index].mUnk_39 = mCharacters[index].mUnk_38;
-    mCharacters[index].mUnk_3a = mCharacters[index].mUnk_38;
+    mCharacters[index].mAnimTableIndex = mCharacters[index].mNextAnimTableIndex;
+    mCharacters[index].mTargetAnimTableIndex = mCharacters[index].mNextAnimTableIndex;
     ResetCharacterParams(index);
     s8 characterId = mCharacters[index].mCharacterId;
-    s8 variant = mCharacters[index].mUnk_3a;
-    func_020682a0(index, characterId);
+    s8 tableIndex = mCharacters[index].mTargetAnimTableIndex;
+    RestoreCharacterSpriteSlot(index, characterId);
     mCharacters[index].mCharacter->FinishLoad();
-    u8 variantId = variant;
+    u8 tableIndexU8 = tableIndex;
     u8 id        = characterId;
-    u8 a         = func_020687a8(id, variantId, 0);
-    u8 b         = func_020687a8(id, variantId, 3);
+    u8 a         = GetAnimTableValue(id, tableIndexU8, 0);
+    u8 b         = GetAnimTableValue(id, tableIndexU8, 3);
     mCharacters[index].mCharacter->func_02054644(b, a);
     if (characterId == 0x15) {
         ((CharacterModel *) mCharacters[index].mCharacter->mCharacter)->mParts[0]->mAnim->mLoop = 1;
@@ -1142,7 +1142,7 @@ void ScriptPlayer::SetCharacterExtraAnimEnabled(u32 index, u32 value) {
         return;
     }
     mCharacters[index].mCharacter->SetExtraAnimEnabled(mCharacters[index].mExtraAnimEnabled);
-    if (mCharacters[index].mUnk_3b == 0) {
+    if (mCharacters[index].mAnimChangePending == 0) {
         return;
     }
     if (mCharacters[index].mCharacterId == 0x15) {
@@ -1170,7 +1170,7 @@ void ScriptPlayer::UpdateCharacterExtraAnims() {
     }
 }
 
-s8 ScriptPlayer::func_020687a8(s32 kind, u32 index, u32 column) {
+s8 ScriptPlayer::GetAnimTableValue(s32 kind, u32 index, u32 column) {
     if (index < 6) {
         return data_020a1b2a[index][column];
     }
@@ -1230,14 +1230,14 @@ BOOL ScriptPlayer::LoadMap() {
     }
     u8 id = index;
     ChangeDir("/Story/Map/");
-    sprintf(path, "%s.nsbtx", data_020a22ac[id].mName);
+    sprintf(path, "%s.nsbtx", gScriptMapEntries[id].mName);
     NitroTexture *texture = new NitroTexture(path);
-    sprintf(path, "%s.nsbmd", data_020a22ac[id].mName);
+    sprintf(path, "%s.nsbmd", gScriptMapEntries[id].mName);
     NitroModel *model = new NitroModel;
     model->Load(path, texture);
     texture->FreeFile();
     if ((id != 8) & (id != 9)) {
-        sprintf(path, "%s_data.bin", data_020a22ac[id].mName);
+        sprintf(path, "%s_data.bin", gScriptMapEntries[id].mName);
         ModelAnimData *animData = new ModelAnimData(path);
         ModelAnim *anim         = new ModelAnim(animData, model);
         mMaps[0].mModel    = model->CreateInstance(anim);
@@ -1251,15 +1251,15 @@ BOOL ScriptPlayer::LoadMap() {
     MI_CpuClear16(mMaps[0].mRot, 0x14);
     MI_CpuClear16(&mMaps[0], 0x18);
     mMaps[0].mX = 0;
-    mMaps[0].mY = FX_FROM_INT_ROUND(data_020a22ac[id].mY);
-    mMaps[0].mZ = FX_FROM_INT_ROUND(data_020a22ac[id].mZ);
+    mMaps[0].mY = FX_FROM_INT_ROUND(gScriptMapEntries[id].mY);
+    mMaps[0].mZ = FX_FROM_INT_ROUND(gScriptMapEntries[id].mZ);
     mMaps[0].mPosFrom[0] = 0;
-    mMaps[0].mPosFrom[1] = data_020a22ac[id].mY;
-    mMaps[0].mPosFrom[2] = data_020a22ac[id].mZ;
+    mMaps[0].mPosFrom[1] = gScriptMapEntries[id].mY;
+    mMaps[0].mPosFrom[2] = gScriptMapEntries[id].mZ;
     mMaps[0].mPosTo[0] = mMaps[0].mPosFrom[0];
     mMaps[0].mPosTo[1] = mMaps[0].mPosFrom[1];
     mMaps[0].mPosTo[2] = mMaps[0].mPosFrom[2];
-    mMaps[0].mUnk_32 = 0;
+    mMaps[0].mHoldAnims = 0;
     return TRUE;
 }
 
@@ -1298,7 +1298,7 @@ void ScriptPlayer::LoadRealbakuPalettes(TextureFile *texture, u32 id) {
         char file[0x40];
         ChangeDir("/Game/Realbaku/Tex");
         u8 i;
-        const char *prefix = data_020a2554[id].mName;
+        const char *prefix = gScriptModelEntries[id].mName;
         u8 variant         = gSaveData[0].mAttribute;
         for (i = 0; i < 11; i++) {
             sprintf(name, "%s_%02d", prefix, i);
@@ -1327,20 +1327,20 @@ BOOL ScriptPlayer::LoadModel(u32 index) {
     NitroTexture *texture;
     NitroModel *model;
     id  = value;
-    dir = data_020a2554[id].mDir;
-    ChangeDir(data_020b431c[dir]);
-    sprintf(path, "%s.nsbtx", data_020a2554[id].mName);
+    dir = gScriptModelEntries[id].mDir;
+    ChangeDir(gScriptModelDirs[dir]);
+    sprintf(path, "%s.nsbtx", gScriptModelEntries[id].mName);
     texture = new NitroTexture(path);
     LoadRealbakuPalettes(texture, id);
-    ChangeDir(data_020b431c[dir]);
-    sprintf(path, "%s.nsbmd", data_020a2554[id].mName);
+    ChangeDir(gScriptModelDirs[dir]);
+    sprintf(path, "%s.nsbmd", gScriptModelEntries[id].mName);
     model = new NitroModel;
     model->Load(path, texture);
     if (dir != 1) {
         texture->FreeFile();
     }
-    if (data_020a2554[id].mData != 0) {
-        sprintf(path, "%s_data.bin", data_020a2554[id].mName);
+    if (gScriptModelEntries[id].mData != 0) {
+        sprintf(path, "%s_data.bin", gScriptModelEntries[id].mName);
         ModelAnimData *animData = new ModelAnimData(path);
         ModelAnim *anim         = new ModelAnim(animData, model);
         mModels[index].mModel = model->CreateInstance(anim);
@@ -1353,7 +1353,7 @@ BOOL ScriptPlayer::LoadModel(u32 index) {
     MI_CpuClear16(mModels[index].mRot, 0x14);
     mModels[index].mHideAtAnimEnd = 0;
     mModels[index].mVisible = 0;
-    mModels[index].mScale = data_020a2554[id].mUnk_05;
+    mModels[index].mScale = gScriptModelEntries[id].mScale;
     mModels[index].mStorytalkCell2X = 0x80;
     mModels[index].mStorytalkCell2Frame = 0;
     return TRUE;
@@ -1379,7 +1379,7 @@ BOOL ScriptPlayer::LoadNextModelFiles(u32 index) {
             return FALSE;
         }
         mModels[index].mNextFiles[mModelLoadStep - 1] = GetAsyncLoadBuffer();
-        if (mModelLoadStep == 2 && data_020a2554[id].mData == 0) {
+        if (mModelLoadStep == 2 && gScriptModelEntries[id].mData == 0) {
             mModelLoadStep = 3;
         }
     }
@@ -1387,13 +1387,13 @@ BOOL ScriptPlayer::LoadNextModelFiles(u32 index) {
         ChangeDir("/");
         switch (mModelLoadStep) {
             case 0:
-                sprintf(path, "%s%s.nsbtx", data_020b431c[data_020a2554[id].mDir], data_020a2554[id].mName);
+                sprintf(path, "%s%s.nsbtx", gScriptModelDirs[gScriptModelEntries[id].mDir], gScriptModelEntries[id].mName);
                 break;
             case 1:
-                sprintf(path, "%s%s.nsbmd", data_020b431c[data_020a2554[id].mDir], data_020a2554[id].mName);
+                sprintf(path, "%s%s.nsbmd", gScriptModelDirs[gScriptModelEntries[id].mDir], gScriptModelEntries[id].mName);
                 break;
             case 2:
-                sprintf(path, "%s%s_data.bin", data_020b431c[data_020a2554[id].mDir], data_020a2554[id].mName);
+                sprintf(path, "%s%s_data.bin", gScriptModelDirs[gScriptModelEntries[id].mDir], gScriptModelEntries[id].mName);
                 break;
         }
         LoadFileAsync(path, 0, 0, 0, 0, 0);
@@ -1415,10 +1415,10 @@ void ScriptPlayer::SwapModel(u32 index) {
     LoadRealbakuPalettes(texture, id);
     NitroModel *model = new NitroModel;
     model->LoadData(mModels[index].mNextFiles[1], texture);
-    if (data_020a2554[id].mDir != 1) {
+    if (gScriptModelEntries[id].mDir != 1) {
         texture->FreeFile();
     }
-    if (data_020a2554[id].mData != 0) {
+    if (gScriptModelEntries[id].mData != 0) {
         ModelAnimData *animData = new ModelAnimData(mModels[index].mNextFiles[2]);
         ModelAnim *anim         = new ModelAnim(animData, model);
         mModels[index].mModel = model->CreateInstance(anim);
@@ -1434,7 +1434,7 @@ void ScriptPlayer::SwapModel(u32 index) {
     mModels[index].mModelId = mModels[index].mNextModelId;
     mModels[index].mNextModelId = -1;
     mModels[index].mHideAtAnimEnd = 0;
-    mModels[index].mScale = data_020a2554[id].mUnk_05;
+    mModels[index].mScale = gScriptModelEntries[id].mScale;
 }
 
 void ScriptPlayer::ReleaseModel(u32 index) {
@@ -1535,12 +1535,12 @@ BOOL ScriptPlayer::LoadSphere(u32 index, u32 flag) {
 
 void ScriptPlayer::ResetSphereParams(u32 index) {
     mSpheres[index].mStorytalkCell2X = 0x80;
-    mSpheres[index].mUnk_39 = 0x80;
-    mSpheres[index].mUnk_3a = 0x80;
+    mSpheres[index].mStorytalkCell2XTo = 0x80;
+    mSpheres[index].mStorytalkCell2XFrom = 0x80;
     mSpheres[index].mStorytalkCell2Frame = 0;
-    mSpheres[index].mUnk_3c = 0;
-    mSpheres[index].mUnk_3d = 0;
-    mSpheres[index].mUnk_3e = 0;
+    mSpheres[index].mSineYEnabled = 0;
+    mSpheres[index].mSineYAngle = 0;
+    mSpheres[index].mSineYScale = 0;
     mSpheres[index].mShadowY = 0;
     mSpheres[index].mShadowScale = 10;
     if (mSpheres[index].mUnk_36 == 0) {
@@ -1668,12 +1668,12 @@ void ScriptPlayer::SetCameraMode(u32 mode) {
         delta.x = mCameraPoints[1].mX - mCameraPoints[0].mX;
         delta.z = mCameraPoints[1].mZ - mCameraPoints[0].mZ;
         mCameraAngles.mPitch = FX_Atan2Idx(mCameraPoints[1].mY - mCameraPoints[0].mY, VEC_Mag(&delta));
-        mCameraAngles.mYawFrom = mCameraAngles.mUnk_02s;
+        mCameraAngles.mYawFrom = mCameraAngles.mYawSigned;
     }
     mCameraMode = mode;
 }
 
-void ScriptPlayer::func_0206a01c() {
+void ScriptPlayer::UpdateCutsceneAndStorytalkCell2() {
     if ((mUnk_14e4 == 0) & (mUnk_14e8 | mUnk_14f1) && mCutsceneCellAnim != NULL) {
         mCutsceneCellAnim->Update();
         mCutsceneCellAnim->Draw(1, 0x80, 0x60, 0);
@@ -1742,7 +1742,7 @@ void ScriptPlayer::SetCutsceneAnimation(u32 value, u32 force) {
 }
 
 void ScriptPlayer::UpdateMessages() {
-    if ((mUnk_14ed == 0) & ((mUnk_12ba == 0) & (mSkipped == 0))) {
+    if ((mSkipDisabled == 0) & ((mMessageMode == 0) & (mSkipped == 0))) {
         u8 state = mState;
         if (((state >= 3) & (state <= 4)) && mWaitKind != SCRIPT_WAIT_KIND_LOAD) {
             if (InputManager::Get().IsPressed(8)) {
@@ -1761,16 +1761,16 @@ void ScriptPlayer::UpdateMessages() {
             if (mUnk_14e2 == 5) {
                 flag = 1;
             }
-            mStorytalkWindow->SetMessage(mMessageIndices[mMessagePos], mUnk_13d2[mMessagePos], flag, mUnk_14ee);
+            mStorytalkWindow->SetMessage(mMessageIndices[mMessagePos], mMessageCharacterIds[mMessagePos], flag, mTextOnly);
             mMessageState = 1;
             break;
         case 1:
             if (!mStorytalkWindow->IsTextShown()) {
                 return;
             }
-            if (mUnk_12ba == 0) {
+            if (mMessageMode == 0) {
                 mMessageState = 3;
-            } else if (mUnk_12ba == 3) {
+            } else if (mMessageMode == 3) {
                 mStorytalkWindow->mKeepLastPage = 1;
                 u8 r      = mStorytalkWindow->HasMorePages();
                 mUnk_14f1 = r;
@@ -1789,7 +1789,7 @@ void ScriptPlayer::UpdateMessages() {
             SetCutsceneAnimation(2, 0);
             break;
         case 2:
-            if (mUnk_12ba == 3) {
+            if (mMessageMode == 3) {
                 if (mStorytalkWindow->HasMorePages()) {
                     SetCutsceneAnimation(2, 0);
                     mUnk_14f1 = 1;
@@ -1808,36 +1808,36 @@ void ScriptPlayer::UpdateMessages() {
                 return;
             }
             mMessageState = 7;
-            mUnk_12d0 = 200;
+            mNextPageTimer = 200;
             mStorytalkWindow->SetCell1Visible(0);
             break;
         case 7:
-            if (mUnk_12d0 != 0) {
-                mUnk_12d0--;
+            if (mNextPageTimer != 0) {
+                mNextPageTimer--;
                 return;
             }
             if (!mStorytalkWindow->NextPage(1)) {
                 mStorytalkWindow->mMessageIndex = -1;
-                mStorytalkWindow->SetMessage(mMessageIndices[0], mUnk_13d2[0], 0, 0);
-                mUnk_12d0 = 200;
+                mStorytalkWindow->SetMessage(mMessageIndices[0], mMessageCharacterIds[0], 0, 0);
+                mNextPageTimer = 200;
             } else {
                 if (mStorytalkWindow->HasMorePages()) {
-                    mUnk_12d0 = 200;
+                    mNextPageTimer = 200;
                 } else {
-                    mUnk_12d0 = 300;
+                    mNextPageTimer = 300;
                 }
             }
             break;
         case 3:
         case 4: {
-            if (mUnk_14ee == 2) {
+            if (mTextOnly == 2) {
                 return;
             }
             BOOL touched = FALSE;
             if (TouchManager::Get().mPressed != 0) {
-                mUnk_14ef = 1;
+                mTouchLatched = 1;
             }
-            if (mUnk_14ef != 0) {
+            if (mTouchLatched != 0) {
                 if (TouchManager::Get().mDown == 0) {
                     touched = TRUE;
                 } else {
@@ -1847,7 +1847,7 @@ void ScriptPlayer::UpdateMessages() {
             if (!InputManager::Get().IsPressed(1) && !touched) {
                 return;
             }
-            mUnk_14ef = 0;
+            mTouchLatched = 0;
             if (mUnk_14e8 | mUnk_14f1) {
                 SetCutsceneAnimation(InputManager::Get().IsPressed(1) ? 3 : 1, 0);
             }
@@ -1857,7 +1857,7 @@ void ScriptPlayer::UpdateMessages() {
             } else {
                 mMessageState = 8;
             }
-            if (mUnk_14ee != 0) {
+            if (mTextOnly != 0) {
                 return;
             }
             SoundManager::Get().StartSeqArc(0x6b);
@@ -1910,18 +1910,18 @@ void ScriptPlayer::DrawSpheres() {
             pos.z = z / 2 - 0x72000;
             pos.y = y / 2;
             pos.x = x / 2;
-            if (mSpheres[i].mUnk_3c != 0) {
-                if (mSpheres[i].mUnk_3e < 1) {
-                    mSpheres[i].mUnk_3e++;
+            if (mSpheres[i].mSineYEnabled != 0) {
+                if (mSpheres[i].mSineYScale < 1) {
+                    mSpheres[i].mSineYScale++;
                 }
             } else {
-                if (mSpheres[i].mUnk_3e != 0) {
-                    mSpheres[i].mUnk_3e--;
+                if (mSpheres[i].mSineYScale != 0) {
+                    mSpheres[i].mSineYScale--;
                 }
             }
-            if (mSpheres[i].mUnk_3e != 0) {
-                mSpheres[i].mUnk_3d = (mSpheres[i].mUnk_3d + 1) % 0x80;
-                pos.y += mSpheres[i].mUnk_3e * SinIdx((u16) (mSpheres[i].mUnk_3d * 0x10000 / 0x80));
+            if (mSpheres[i].mSineYScale != 0) {
+                mSpheres[i].mSineYAngle = (mSpheres[i].mSineYAngle + 1) % 0x80;
+                pos.y += mSpheres[i].mSineYScale * SinIdx((u16) (mSpheres[i].mSineYAngle * 0x10000 / 0x80));
             }
             mSpheres[i].mSphere->func_0203db70(&pos);
             ApplySphereRotation(i);
@@ -1991,7 +1991,7 @@ void ScriptPlayer::DrawCharacters() {
 }
 
 void ScriptPlayer::UpdateCharacterAnimation(u32 index) {
-    if (mCharacters[index].mUnk_3b == 0) {
+    if (mCharacters[index].mAnimChangePending == 0) {
         return;
     }
     s32 characterId = mCharacters[index].mCharacterId;
@@ -2004,35 +2004,35 @@ void ScriptPlayer::UpdateCharacterAnimation(u32 index) {
     if (anim->mReachedEnd == 0) {
         return;
     }
-    u8 cur = mCharacters[index].mUnk_39;
-    u8 target = mCharacters[index].mUnk_3a;
+    u8 cur = mCharacters[index].mAnimTableIndex;
+    u8 target = mCharacters[index].mTargetAnimTableIndex;
     s32 value;
     BOOL loop;
     if (cur != target) {
         loop = FALSE;
         if (cur == 0) {
-            value = func_020687a8((u8) characterId, target, 1);
-            mCharacters[index].mUnk_39 = target;
+            value = GetAnimTableValue((u8) characterId, target, 1);
+            mCharacters[index].mAnimTableIndex = target;
         } else {
-            value = func_020687a8((u8) characterId, cur, 2);
-            mCharacters[index].mUnk_39 = 0;
+            value = GetAnimTableValue((u8) characterId, cur, 2);
+            mCharacters[index].mAnimTableIndex = 0;
         }
         if (value < 0) {
-            value = func_020687a8((u8) mCharacters[index].mCharacterId, target, 0);
-            mCharacters[index].mUnk_39 = target;
-            mCharacters[index].mUnk_3b = 0;
-            if (func_020687a8((u8) mCharacters[index].mCharacterId, target, 4) != 0) {
+            value = GetAnimTableValue((u8) mCharacters[index].mCharacterId, target, 0);
+            mCharacters[index].mAnimTableIndex = target;
+            mCharacters[index].mAnimChangePending = 0;
+            if (GetAnimTableValue((u8) mCharacters[index].mCharacterId, target, 4) != 0) {
                 loop = FALSE;
             } else {
                 loop = TRUE;
             }
         }
     } else {
-        value = func_020687a8((u8) characterId, cur, 0);
-        mCharacters[index].mUnk_3b = 0;
+        value = GetAnimTableValue((u8) characterId, cur, 0);
+        mCharacters[index].mAnimChangePending = 0;
         loop = TRUE;
     }
-    s8 other = func_020687a8((u8) mCharacters[index].mCharacterId, target, 3);
+    s8 other = GetAnimTableValue((u8) mCharacters[index].mCharacterId, target, 3);
     mCharacters[index].mCharacter->func_02054644((u8) other, (u8) value);
     mCharacters[index].mExtraAnimEnabled = 0;
     anim->mLoop = loop;
@@ -2064,7 +2064,7 @@ void ScriptPlayer::DrawMap() {
         MTX_ApplyRotZ43(&mtx, (u16) mMaps[0].mRot[2]);
     }
     MTX_SetTranslation43(&mtx, &pos);
-    if (mMaps[0].mUnk_32 != 0) {
+    if (mMaps[0].mHoldAnims != 0) {
         mMaps[0].mModel->mExtraAnim->mFrame = 0;
     } else {
         mMaps[0].mModel->AdvanceAnim();
@@ -2108,25 +2108,25 @@ void ScriptPlayer::DrawModels() {
 }
 
 struct UnkStruct_020a2198 {
-    /* 00 */ s16 mUnk_00;
-    /* 02 */ s16 mUnk_02;
-    /* 04 */ s16 mUnk_04;
-    /* 06 */ s16 mUnk_06;
-    /* 08 */ s16 mUnk_08;
-    /* 0a */ s16 mUnk_0a;
-    /* 0c */ s16 mUnk_0c;
-    /* 0e */ s16 mUnk_0e;
-    /* 10 */ s16 mUnk_10;
-    /* 12 */ s16 mUnk_12;
-    /* 14 */ u8 mUnk_14;
+    /* 00 */ s16 mCameraPositionX;
+    /* 02 */ s16 mCameraPositionY;
+    /* 04 */ s16 mCameraPositionZ;
+    /* 06 */ s16 mCameraTargetX;
+    /* 08 */ s16 mCameraTargetY;
+    /* 0a */ s16 mCameraTargetZ;
+    /* 0c */ s16 mCharacterX;
+    /* 0e */ s16 mCharacterY;
+    /* 10 */ s16 mCharacterZ;
+    /* 12 */ s16 mCharacterRotY;
+    /* 14 */ u8 mCharacterStorytalkCell2X;
     /* 15 */ PAD(0x15, 0x16);
     /* 16 */
 };
 struct UnkStruct_020a1c04 {
-    /* 0 */ s16 mUnk_0;
-    /* 2 */ s16 mUnk_2;
-    /* 4 */ s16 mUnk_4;
-    /* 6 */ u16 mUnk_6;
+    /* 0 */ s16 mLightDirX;
+    /* 2 */ s16 mLightDirY;
+    /* 4 */ s16 mLightDirZ;
+    /* 6 */ u16 mLightColor;
     /* 8 */
 };
 extern const UnkStruct_020a2198 data_020a2198[];
@@ -2200,7 +2200,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             mWaitKind = SCRIPT_WAIT_KIND_TIMER;
             break;
         case 8:
-            mUnk_13d2[mMessageCount] = mCurrentValue;
+            mMessageCharacterIds[mMessageCount] = mCurrentValue;
             break;
         case 2:
             mWaitKind = SCRIPT_WAIT_KIND_MESSAGES;
@@ -2211,11 +2211,11 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
                 if (limit > 3) {
                     limit = 3;
                 }
-                mUnk_12ba = limit;
+                mMessageMode = limit;
                 break;
             }
         case 10:
-            mUnk_14ee = mCurrentValue;
+            mTextOnly = mCurrentValue;
             break;
         case 11:
             mStorytalkWindow->mTextOnlyX = mCurrentValue;
@@ -2656,7 +2656,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
         case 76:
         case 99:
             CreateNextCharacter(idx);
-            mCharacters[idx].mUnk_38 = mCurrentValue;
+            mCharacters[idx].mNextAnimTableIndex = mCurrentValue;
             mWaitTimer = 0;
             mWaitKind = SCRIPT_WAIT_KIND_LOAD;
             break;
@@ -2692,11 +2692,11 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
         case 92:
         case 115:
             mCharacters[idx].mStorytalkCell2X = mCurrentValue;
-            mCharacters[idx].mUnk_40 = mCurrentValue;
-            mCharacters[idx].mUnk_41 = mCurrentValue;
+            mCharacters[idx].mStorytalkCell2XTo = mCurrentValue;
+            mCharacters[idx].mStorytalkCell2XFrom = mCurrentValue;
             break;
         case 93:
-            mCharacters[idx].mUnk_40 = mCurrentValue;
+            mCharacters[idx].mStorytalkCell2XTo = mCurrentValue;
             break;
         case 94:
         case 117:
@@ -2832,15 +2832,15 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             break;
         case 137:
             mSpheres[0].mStorytalkCell2X = mCurrentValue;
-            mSpheres[0].mUnk_3a = mCurrentValue;
+            mSpheres[0].mStorytalkCell2XFrom = mCurrentValue;
         case 138:
-            mSpheres[0].mUnk_39 = mCurrentValue;
+            mSpheres[0].mStorytalkCell2XTo = mCurrentValue;
             break;
         case 162:
             mSpheres[1].mStorytalkCell2X = mCurrentValue;
-            mSpheres[1].mUnk_3a = mCurrentValue;
+            mSpheres[1].mStorytalkCell2XFrom = mCurrentValue;
         case 163:
-            mSpheres[1].mUnk_39 = mCurrentValue;
+            mSpheres[1].mStorytalkCell2XTo = mCurrentValue;
             break;
         case 139:
         case 164:
@@ -2848,7 +2848,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             break;
         case 140:
         case 165:
-            mSpheres[idx].mUnk_3c = mCurrentValue;
+            mSpheres[idx].mSineYEnabled = mCurrentValue;
             break;
         case 141:
         case 166:
@@ -2881,12 +2881,12 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             mSpheres[idx].mShadowY = mCurrentValue;
             break;
         case 213:
-            if (mUnk_14d2 == mCurrentValue) {
+            if (mChannel0FrameTaskId == mCurrentValue) {
                 break;
             }
-            mUnk_14d2 = mCurrentValue;
-            if (mUnk_14d2 > -1) {
-                FrameTask::Get().StartChannel(0, mUnk_14d2);
+            mChannel0FrameTaskId = mCurrentValue;
+            if (mChannel0FrameTaskId > -1) {
+                FrameTask::Get().StartChannel(0, mChannel0FrameTaskId);
             } else {
                 FrameTask::Get().StopChannel(0);
             }
@@ -3047,7 +3047,7 @@ void ScriptPlayer::UpdateWait() {
             u32 idx = GetCommandSlot(mCurrentCommand);
             s32 value = mCurrentValue;
             if (value == -2) {
-                value = mCharacters[idx].mUnk_3a;
+                value = mCharacters[idx].mTargetAnimTableIndex;
                 SetCharacterVisible(idx, 0);
                 UnkStruct_0205401c *model = mCharacters[idx].mCharacter;
                 if (model != NULL) {
@@ -3124,8 +3124,8 @@ void ScriptPlayer::UpdateWait() {
                 LERP_FX(mModels[i].mX, mModels[i].mPosFrom[0], mModels[i].mPosTo[0]);
                 LERP_FX(mModels[i].mY, mModels[i].mPosFrom[1], mModels[i].mPosTo[1]);
                 LERP_FX(mModels[i].mZ, mModels[i].mPosFrom[2], mModels[i].mPosTo[2]);
-                LERP_N(mCharacters[i].mStorytalkCell2X, mCharacters[i].mUnk_41, mCharacters[i].mUnk_40);
-                LERP_N(mSpheres[i].mStorytalkCell2X, mSpheres[i].mUnk_3a, mSpheres[i].mUnk_39);
+                LERP_N(mCharacters[i].mStorytalkCell2X, mCharacters[i].mStorytalkCell2XFrom, mCharacters[i].mStorytalkCell2XTo);
+                LERP_N(mSpheres[i].mStorytalkCell2X, mSpheres[i].mStorytalkCell2XFrom, mSpheres[i].mStorytalkCell2XTo);
                 LERP_S(mCharacters[i].mRot[0], mCharacters[i].mRotFrom[0], mCharacters[i].mRotTo[0]);
                 LERP_S(mCharacters[i].mRot[1], mCharacters[i].mRotFrom[1], mCharacters[i].mRotTo[1]);
                 LERP_S(mCharacters[i].mRot[2], mCharacters[i].mRotFrom[2], mCharacters[i].mRotTo[2]);
@@ -3347,19 +3347,19 @@ BOOL ScriptPlayer::StartScript(const char *path) {
     mMessagePos = 0;
     mMessageCount = 0;
     SetNoStorytalkMessage(mStorytalkWindow);
-    mUnk_12ba = 0;
+    mMessageMode = 0;
     mSkipped = 0;
     SetCharacterVisible(0, 0);
     SetCharacterVisible(1, 0);
     ReleaseModels(0);
     for (u8 i = 0; i < 2; i++) {
         mCharacters[i].mExtraAnimEnabled = 0;
-        mCharacters[i].mUnk_3b = 0;
+        mCharacters[i].mAnimChangePending = 0;
         mCharacters[i].mOffsetY = 0;
         mCharacters[i].mShadowScale = 0x28;
         mCharacters[i].mStorytalkCell2X = 0x80;
-        mCharacters[i].mUnk_40 = 0x80;
-        mCharacters[i].mUnk_41 = 0x80;
+        mCharacters[i].mStorytalkCell2XTo = 0x80;
+        mCharacters[i].mStorytalkCell2XFrom = 0x80;
         mCharacters[i].mStorytalkCell2Frame = 0;
         MI_CpuClear16(&mCharacters[i], 0x18);
         MI_CpuClear16(mCharacters[i].mRot, 0x14);
@@ -3369,13 +3369,13 @@ BOOL ScriptPlayer::StartScript(const char *path) {
         mModels[i].mStorytalkCell2X = 0x80;
         mSpheres[i].mVisible = 0;
         mSpheres[i].mStorytalkCell2X = 0x80;
-        mSpheres[i].mUnk_39 = 0x80;
-        mSpheres[i].mUnk_3a = 0x80;
+        mSpheres[i].mStorytalkCell2XTo = 0x80;
+        mSpheres[i].mStorytalkCell2XFrom = 0x80;
         mSpheres[i].mStorytalkCell2Frame = 0;
         mSpheres[i].mUnk_36 = 0;
-        mSpheres[i].mUnk_3c = 0;
-        mSpheres[i].mUnk_3d = 0;
-        mSpheres[i].mUnk_3e = 0;
+        mSpheres[i].mSineYEnabled = 0;
+        mSpheres[i].mSineYAngle = 0;
+        mSpheres[i].mSineYScale = 0;
         mSpheres[i].mShadowY = 0;
         mSpheres[i].mShadowScale = 10;
         MI_CpuClear16(&mSpheres[i], 0x18);
@@ -3445,7 +3445,7 @@ BOOL ScriptPlayer::ReadMessages() {
 
 
 BOOL ScriptPlayer::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4, s32 unk5) {
-    BOOL isTwo = mUnk_12ba == 2;
+    BOOL isTwo = mMessageMode == 2;
     BOOL isNine = mState == 9;
     BOOL done = mCommandIndex == mCommandCount;
     if (isTwo | (isNine & done)) {
@@ -3480,53 +3480,53 @@ BOOL ScriptPlayer::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4,
         mCommands[n].mValue = 0;
         n++;
         mCommands[n].mCommand = 0x50;
-        mCommands[n].mValue = data_020a2198[mode].mUnk_0c;
+        mCommands[n].mValue = data_020a2198[mode].mCharacterX;
         n++;
         mCommands[n].mCommand = 0x51;
-        mCommands[n].mValue = data_020a2198[mode].mUnk_0e;
+        mCommands[n].mValue = data_020a2198[mode].mCharacterY;
         n++;
         mCommands[n].mCommand = 0x52;
-        mCommands[n].mValue = data_020a2198[mode].mUnk_10;
+        mCommands[n].mValue = data_020a2198[mode].mCharacterZ;
         n++;
         mCommands[n].mCommand = 0x57;
-        mCommands[n].mValue = data_020a2198[mode].mUnk_12;
+        mCommands[n].mValue = data_020a2198[mode].mCharacterRotY;
         n++;
         mCommands[n].mCommand = 0x5c;
-        mCommands[n].mValue = data_020a2198[mode].mUnk_14;
+        mCommands[n].mValue = data_020a2198[mode].mCharacterStorytalkCell2X;
         n++;
         mCommands[n].mCommand = 0x4e;
         mCommands[n].mValue = 0;
         n++;
     }
     mCommands[n].mCommand = 0x31;
-    mCommands[n].mValue = data_020a1c04[mode].mUnk_0;
+    mCommands[n].mValue = data_020a1c04[mode].mLightDirX;
     n++;
     mCommands[n].mCommand = 0x33;
-    mCommands[n].mValue = data_020a1c04[mode].mUnk_2;
+    mCommands[n].mValue = data_020a1c04[mode].mLightDirY;
     n++;
     mCommands[n].mCommand = 0x35;
-    mCommands[n].mValue = data_020a1c04[mode].mUnk_4;
+    mCommands[n].mValue = data_020a1c04[mode].mLightDirZ;
     n++;
     mCommands[n].mCommand = 0x3a;
-    mLightColor = data_020a1c04[mode].mUnk_6;
+    mLightColor = data_020a1c04[mode].mLightColor;
     n++;
     mCommands[n].mCommand = 0x1c;
-    mCommands[n].mValue = data_020a2198[mode].mUnk_00;
+    mCommands[n].mValue = data_020a2198[mode].mCameraPositionX;
     n++;
     mCommands[n].mCommand = 0x1d;
-    mCommands[n].mValue = data_020a2198[mode].mUnk_02;
+    mCommands[n].mValue = data_020a2198[mode].mCameraPositionY;
     n++;
     mCommands[n].mCommand = 0x1e;
-    mCommands[n].mValue = data_020a2198[mode].mUnk_04;
+    mCommands[n].mValue = data_020a2198[mode].mCameraPositionZ;
     n++;
     mCommands[n].mCommand = 0x22;
-    mCommands[n].mValue = data_020a2198[mode].mUnk_06;
+    mCommands[n].mValue = data_020a2198[mode].mCameraTargetX;
     n++;
     mCommands[n].mCommand = 0x23;
-    mCommands[n].mValue = data_020a2198[mode].mUnk_08;
+    mCommands[n].mValue = data_020a2198[mode].mCameraTargetY;
     n++;
     mCommands[n].mCommand = 0x24;
-    mCommands[n].mValue = data_020a2198[mode].mUnk_0a;
+    mCommands[n].mValue = data_020a2198[mode].mCameraTargetZ;
     n++;
     mCommands[n].mCommand = 8;
     mCommands[n].mValue = unk5;
@@ -3540,14 +3540,14 @@ BOOL ScriptPlayer::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4,
     mCommands[n].mCommand = 0x19;
     mCommands[n].mValue = 0;
     n++;
-    mUnk_12c0 = n;
+    mChannel1CommandIndex = n;
     mCommands[n].mCommand = 0xd7;
-    mCommands[n].mValue = func_02070554((s8) unk5, unk3);
+    mCommands[n].mValue = LookupChannel1CommandValue((s8) unk5, unk3);
     n++;
     mCommands[n].mCommand = 1;
     mCommands[n].mValue = unk2;
     n++;
-    mUnk_12c2 = n;
+    mModelCommandIndex = n;
     if (mUnk_14e2 == 0) {
         mCommands[n].mCommand = 0xa9;
         mCommands[n].mValue = data_020d433c.mMapTab + 0x20;
@@ -3556,7 +3556,7 @@ BOOL ScriptPlayer::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4,
         mCommands[n].mValue = -0x13b;
         n++;
         mCommands[n].mCommand = 0xaf;
-        mCommands[n].mValue = data_020a2198[mode].mUnk_0e;
+        mCommands[n].mValue = data_020a2198[mode].mCharacterY;
         n++;
         mCommands[n].mCommand = 0xb0;
         mCommands[n].mValue = -0x834;
@@ -3565,7 +3565,7 @@ BOOL ScriptPlayer::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4,
         mCommands[n].mValue = 0x140;
         n++;
         mCommands[n].mCommand = 0xb2;
-        mCommands[n].mValue = data_020a2198[mode].mUnk_02;
+        mCommands[n].mValue = data_020a2198[mode].mCameraPositionY;
         n++;
         mCommands[n].mCommand = 0xac;
         n++;
@@ -3573,7 +3573,7 @@ BOOL ScriptPlayer::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4,
         mCommands[n].mValue = 0;
         n++;
     }
-    mMaps[0].mUnk_32 = 0;
+    mMaps[0].mHoldAnims = 0;
     mCommandIndex = 0;
     mCommandCount = n;
     ChangeDir("/");
@@ -3597,8 +3597,8 @@ extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 void SetNoStorytalkMessage(StorytalkWindow *object);
 
 void ScriptPlayer::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
-    BOOL isTwo   = mUnk_12ba == 2;
-    BOOL isThree = mUnk_12ba == 3;
+    BOOL isTwo   = mMessageMode == 2;
+    BOOL isThree = mMessageMode == 3;
     if (!(isTwo | isThree)) {
         return;
     }
@@ -3612,12 +3612,12 @@ void ScriptPlayer::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
         mMessageState = 0;
         SetNoStorytalkMessage(mStorytalkWindow);
         mMessageIndices[0] = unk1;
-        mCommandIndex    = mUnk_12c0;
-        mCommands[mUnk_12c0].mValue = func_02070554(mCharacters[0].mCharacterId, unk2);
+        mCommandIndex    = mChannel1CommandIndex;
+        mCommands[mChannel1CommandIndex].mValue = LookupChannel1CommandValue(mCharacters[0].mCharacterId, unk2);
         mState = 3;
         return;
     }
-    mStorytalkWindow->SetMessage((s16) unk1, mUnk_13d2[0], 0, 0);
+    mStorytalkWindow->SetMessage((s16) unk1, mMessageCharacterIds[0], 0, 0);
     mMessageState = 2;
     if (mUnk_14e2 != 0) {
         return;
@@ -3626,12 +3626,12 @@ void ScriptPlayer::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
         return;
     }
     u8 value = unk3 + 0x20;
-    if (value == mCommands[mUnk_12c2].mValue) {
+    if (value == mCommands[mModelCommandIndex].mValue) {
         return;
     }
-    mCommands[mUnk_12c2].mValue = value;
-    mCommandIndex                 = mUnk_12c2;
-    mCommands[mUnk_12c0].mValue = -1;
+    mCommands[mModelCommandIndex].mValue = value;
+    mCommandIndex                 = mModelCommandIndex;
+    mCommands[mChannel1CommandIndex].mValue = -1;
     mState                 = 3;
 }
 
@@ -3668,7 +3668,7 @@ extern "C" BOOL StartMessageScript(ScriptPlayer *event, const char *name, u32 id
             sScriptGuard |= 1;
         }
         MIi_CpuCopy32(gMessageScriptCommands, event->mCommands, 0x44);
-        event->mCommands[14].mValue = event->func_02070554((s8) *(s16 *) &unk4, unk3);
+        event->mCommands[14].mValue = event->LookupChannel1CommandValue((s8) *(s16 *) &unk4, unk3);
         event->mCommands[15].mValue = *(s16 *) &unk4;
         event->mCommands[16].mValue = id;
         event->mCommandIndex = 0;
@@ -3690,7 +3690,7 @@ extern "C" BOOL StartMessageScript(ScriptPlayer *event, const char *name, u32 id
 
 extern "C" void func_0206f88c(ScriptPlayer *event, u32 category, s32 value, u32 unk4) {
     BOOL idle    = event->mCommandIndex >= event->mCommandCount;
-    BOOL waiting = event->mUnk_12ba == 3;
+    BOOL waiting = event->mMessageMode == 3;
     BOOL changed = value != event->mStorytalkWindow->mMessageIndex;
     if (!(idle & (waiting & changed))) {
         return;
@@ -3706,10 +3706,10 @@ extern "C" void func_0206f88c(ScriptPlayer *event, u32 category, s32 value, u32 
     s16 extra                = data_020a1b12[category].mUnk_0;
     event->mCommands[10].mValue = kind;
     event->mCommands[13].mValue = extra;
-    event->mCommands[29].mValue = event->func_02070554((s8) kind, unk4);
+    event->mCommands[29].mValue = event->LookupChannel1CommandValue((s8) kind, unk4);
     event->mCommands[30].mValue = kind;
     event->mCommands[31].mValue = value;
-    event->mUnk_12c0 = 0x1d;
+    event->mChannel1CommandIndex = 0x1d;
     event->mCommandIndex = 0;
     event->mCommandCount = 0x20;
     event->mMessageState = 0;
@@ -3720,14 +3720,14 @@ extern "C" void func_0206f88c(ScriptPlayer *event, u32 category, s32 value, u32 
 }
 
 struct UnkStruct_s8x2 {
-    /* 0 */ s8 mUnk_0;
-    /* 1 */ s8 mUnk_1;
+    /* 0 */ s8 mY;
+    /* 1 */ s8 mZ;
 };
 struct UnkStruct_s16x4 {
-    /* 0 */ s16 mUnk_0;
-    /* 2 */ s16 mUnk_2;
-    /* 4 */ s16 mUnk_4;
-    /* 6 */ s16 mUnk_6;
+    /* 0 */ s16 mX;
+    /* 2 */ s16 mY;
+    /* 4 */ s16 mZ;
+    /* 6 */ s16 mRotY;
 };
 extern const UnkStruct_s8x2 data_020a1b68[];
 extern const UnkStruct_s16x4 data_020a22a4;
@@ -3781,10 +3781,10 @@ u8 ScriptPlayer::func_0206fa20(const char *name, const u16 *unk2, const u8 *unk3
             }
         }
         mCommands[n].mCommand = 81;
-        mCommands[n].mValue = data_020a1b68[unk2[0]].mUnk_0;
+        mCommands[n].mValue = data_020a1b68[unk2[0]].mY;
         n++;
         mCommands[n].mCommand = 82;
-        mCommands[n].mValue = data_020a1b68[unk2[0]].mUnk_1;
+        mCommands[n].mValue = data_020a1b68[unk2[0]].mZ;
         n++;
         mCommands[n].mCommand = 28;
         mCommands[n].mValue = 0;
@@ -3873,13 +3873,13 @@ u8 ScriptPlayer::func_0206fa20(const char *name, const u16 *unk2, const u8 *unk3
             }
         } else if (*(u8 *) &unk4 == 2) {
             mCommands[n].mCommand = 80;
-            mCommands[n].mValue = data_020a22a4.mUnk_0;
+            mCommands[n].mValue = data_020a22a4.mX;
             n++;
             mCommands[n].mCommand = 82;
-            mCommands[n].mValue = data_020a22a4.mUnk_4;
+            mCommands[n].mValue = data_020a22a4.mZ;
             n++;
             mCommands[n].mCommand = 87;
-            mCommands[n].mValue = data_020a22a4.mUnk_6;
+            mCommands[n].mValue = data_020a22a4.mRotY;
             n++;
             const UnkStruct_s16x4 *e = data_020a221c;
             u16 id = unk2[1];
@@ -3892,17 +3892,17 @@ u8 ScriptPlayer::func_0206fa20(const char *name, const u16 *unk2, const u8 *unk3
             mCommands[n].mCommand = 101;
             n++;
             mCommands[n].mCommand = 103;
-            mCommands[n].mValue = e[id].mUnk_0;
+            mCommands[n].mValue = e[id].mX;
             e += id;
             n++;
             mCommands[n].mCommand = 104;
-            mCommands[n].mValue = e->mUnk_2;
+            mCommands[n].mValue = e->mY;
             n++;
             mCommands[n].mCommand = 105;
-            mCommands[n].mValue = e->mUnk_4;
+            mCommands[n].mValue = e->mZ;
             n++;
             mCommands[n].mCommand = 110;
-            mCommands[n].mValue = e->mUnk_6;
+            mCommands[n].mValue = e->mRotY;
             n++;
             mCommands[n].mCommand = 117;
             mCommands[n].mValue = 1;
@@ -3954,14 +3954,14 @@ u8 ScriptPlayer::func_0206fa20(const char *name, const u16 *unk2, const u8 *unk3
     mCommands[n].mValue = *(u16 *) &unk5;
     n++;
     mCommands[n].mCommand = 0xd7;
-    mCommands[n].mValue = func_02070554((s8) value, unk6);
+    mCommands[n].mValue = LookupChannel1CommandValue((s8) value, unk6);
     n++;
     mCommands[n].mCommand = 2;
     n++;
     if (unk8 != 0) {
         mCommands[n].mCommand = 234;
         n++;
-        mUnk_14ed = 1;
+        mSkipDisabled = 1;
     }
     mCommands[n].mCommand = 15;
     mCommands[n].mValue = -16;
@@ -3999,7 +3999,7 @@ BOOL ScriptPlayer::func_020702e0(s32 unk1, s32 unk2, s32 unk3, s32 unk4, s32 unk
     mMessagePos  = 0;
     mMessageIndices[0] = count - 10;   // -1 derived from the count, as the original computes it
     SetNoStorytalkMessage(mStorytalkWindow);
-    mMaps[0].mUnk_32 = 1;
+    mMaps[0].mHoldAnims = 1;
     mState            = 3;
     return TRUE;
 }
@@ -4047,7 +4047,7 @@ void ScriptPlayer::SkipScript() {
     mCommandIndex = 0;
     mCommandCount = 8;
     mMessageState = 0;
-    mUnk_14ee = 0;
+    mTextOnly = 0;
     mMessageCount = mMessagePos;
     SetNoStorytalkMessage(mStorytalkWindow);
     mState = 3;
@@ -4058,7 +4058,7 @@ void ScriptPlayer::SkipScript() {
     }
 }
 
-s32 ScriptPlayer::func_02070554(s32 kind, s32 index) {
+s32 ScriptPlayer::LookupChannel1CommandValue(s32 kind, s32 index) {
     if ((kind < 0) | (kind > 0x10)) {
         return -1;
     }

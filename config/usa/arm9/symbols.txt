@@ -2698,7 +2698,7 @@ _ZN12ScriptPlayer14GetSaveRequestEv kind:function(arm,size=0x18) addr:0x02067954
 _ZN12ScriptPlayer16ClearSaveRequestEv kind:function(arm,size=0x10) addr:0x0206796c
 _ZN12ScriptPlayer20GetUnlockPopupHandleEv kind:function(arm,size=0xc) addr:0x0206797c
 _ZN12ScriptPlayer22ClearUnlockPopupHandleEv kind:function(arm,size=0x10) addr:0x02067988
-_ZN12ScriptPlayer13func_02067998Eh kind:function(arm,size=0x40) addr:0x02067998
+_ZN12ScriptPlayer15SetMapExtraAnimEh kind:function(arm,size=0x40) addr:0x02067998
 _ZN12ScriptPlayer16UpdateBrightnessEv kind:function(arm,size=0x58) addr:0x020679d8
 _ZN12ScriptPlayer20UpdateBrightnessFadeEv kind:function(arm,size=0xd8) addr:0x02067a30
 _ZN12ScriptPlayer12LoadGraphicsEv kind:function(arm,size=0x324) addr:0x02067b08
@@ -2707,12 +2707,12 @@ _ZN12ScriptPlayer17ApplyPendingSwapsEv kind:function(arm,size=0xbc) addr:0x02067
 _ZN12ScriptPlayer13func_02067f30Eji kind:function(arm,size=0x144) addr:0x02067f30
 _ZN12ScriptPlayer19CreateNextCharacterEj kind:function(arm,size=0x84) addr:0x02068074
 _ZN12ScriptPlayer13LoadCharacterEjj kind:function(arm,size=0x1a8) addr:0x020680f8
-_ZN12ScriptPlayer13func_020682a0Ejj kind:function(arm,size=0x12c) addr:0x020682a0
+_ZN12ScriptPlayer26RestoreCharacterSpriteSlotEjj kind:function(arm,size=0x12c) addr:0x020682a0
 _ZN12ScriptPlayer20ResetCharacterParamsEj kind:function(arm,size=0x160) addr:0x020683cc
 _ZN12ScriptPlayer13SwapCharacterEj kind:function(arm,size=0x150) addr:0x0206852c
 _ZN12ScriptPlayer28SetCharacterExtraAnimEnabledEjj kind:function(arm,size=0x98) addr:0x0206867c
 _ZN12ScriptPlayer25UpdateCharacterExtraAnimsEv kind:function(arm,size=0x94) addr:0x02068714
-_ZN12ScriptPlayer13func_020687a8Eijj kind:function(arm,size=0xdc) addr:0x020687a8
+_ZN12ScriptPlayer17GetAnimTableValueEijj kind:function(arm,size=0xdc) addr:0x020687a8
 _ZN12ScriptPlayer22ApplyCharacterRotationEj kind:function(arm,size=0x5c) addr:0x02068884
 _ZN12ScriptPlayer6SetMapEi kind:function(arm,size=0x74) addr:0x020688e0
 _ZN12ScriptPlayer7LoadMapEv kind:function(arm,size=0x300) addr:0x02068954
@@ -2735,7 +2735,7 @@ _ZN12ScriptPlayer10ResetLightEv kind:function(arm,size=0xa0) addr:0x02069c6c
 _ZN12ScriptPlayer8ApplyFovEv kind:function(arm,size=0x48) addr:0x02069d0c
 _ZN12ScriptPlayer20UpdateCameraAndLightEv kind:function(arm,size=0x164) addr:0x02069d54
 _ZN12ScriptPlayer13SetCameraModeEj kind:function(arm,size=0x164) addr:0x02069eb8
-_ZN12ScriptPlayer13func_0206a01cEv kind:function(arm,size=0x1ac) addr:0x0206a01c
+_ZN12ScriptPlayer31UpdateCutsceneAndStorytalkCell2Ev kind:function(arm,size=0x1ac) addr:0x0206a01c
 _ZN12ScriptPlayer20SetCutsceneAnimationEjj kind:function(arm,size=0x40) addr:0x0206a1c8
 _ZN12ScriptPlayer14UpdateMessagesEv kind:function(arm,size=0x648) addr:0x0206a208
 _ZN12ScriptPlayer11DrawSpheresEv kind:function(arm,size=0x1e4) addr:0x0206a850
@@ -2760,7 +2760,7 @@ _ZN12ScriptPlayer13func_0206f9b4EPKcjjjjjj kind:function(arm,size=0x6c) addr:0x0
 _ZN12ScriptPlayer13func_0206fa20EPKcPKtPKhjjjjjj kind:function(arm,size=0x8c0) addr:0x0206fa20
 _ZN12ScriptPlayer13func_020702e0Eiiiiii kind:function(arm,size=0xb0) addr:0x020702e0
 _ZN12ScriptPlayer10SkipScriptEv kind:function(arm,size=0x1c4) addr:0x02070390
-_ZN12ScriptPlayer13func_02070554Eii kind:function(arm,size=0x9c) addr:0x02070554
+_ZN12ScriptPlayer26LookupChannel1CommandValueEii kind:function(arm,size=0x9c) addr:0x02070554
 InvalidateStorytalkMessageIndex kind:function(arm,size=0x18) addr:0x020705f0
 _ZN10SaveWindowC1Ejjjjjjjjj kind:function(arm,size=0xe0) addr:0x02070608
 _ZN10SaveWindowD1Ev kind:function(arm,size=0xd0) addr:0x020706e8
@@ -3118,13 +3118,13 @@ data_020a21aa kind:data(any) addr:0x020a21aa
 data_020a21ac kind:data(any) addr:0x020a21ac
 data_020a221c kind:data(any) addr:0x020a221c
 data_020a22a4 kind:data(any) addr:0x020a22a4
-data_020a22ac kind:data(any) addr:0x020a22ac
+gScriptMapEntries kind:data(any) addr:0x020a22ac
 data_020a22b0 kind:data(any) addr:0x020a22b0
 data_020a22b2 kind:data(any) addr:0x020a22b2
 data_020a233c kind:data(any) addr:0x020a233c
 gScriptSpriteSlots kind:data(any) addr:0x020a23cc
 data_020a248c kind:data(any) addr:0x020a248c
-data_020a2554 kind:data(any) addr:0x020a2554
+gScriptModelEntries kind:data(any) addr:0x020a2554
 data_020a2558 kind:data(any) addr:0x020a2558
 data_020a2559 kind:data(any) addr:0x020a2559
 data_020a255a kind:data(any) addr:0x020a255a
@@ -4077,7 +4077,7 @@ _ZZ18CellTable_020b3a44vE17sGroupButtonCells kind:data(any) addr:0x020b3a44 weak
 _ZTV13MessageWindow kind:data(any) addr:0x020b42f4
 @599 kind:data(any) addr:0x020b4304 local
 data_020b4314 kind:data(any) addr:0x020b4314
-data_020b431c kind:data(any) addr:0x020b431c
+gScriptModelDirs kind:data(any) addr:0x020b431c
 data_020b4324 kind:data(any) addr:0x020b4324
 data_020b4350 kind:data(any) addr:0x020b4350
 data_020b4358 kind:data(any) addr:0x020b4358

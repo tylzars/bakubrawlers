@@ -195,13 +195,13 @@ void MyroomScene::Update() {
             }
             switch (ctx->mInfo.mMenuResult) {
                 case 0:
-                    mEvent->func_02067998(data_ov008_0222870c[(s8) ctx->mInfo.mUnk_06]);
+                    mEvent->SetMapExtraAnim(data_ov008_0222870c[(s8) ctx->mInfo.mUnk_06]);
                     break;
                 case 1:
-                    mEvent->func_02067998(4);
+                    mEvent->SetMapExtraAnim(4);
                     break;
                 case 2:
-                    mEvent->func_02067998(3);
+                    mEvent->SetMapExtraAnim(3);
                     break;
             }
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
@@ -850,7 +850,7 @@ BOOL MyroomScene::UpdateScroll() {
         ctx->mInfo.mUnk_06                   = ctx->mInfo.mUnk_0a;
         mEvent->func_0206f564(data_ov008_02228764[ctx->mInfo.mMenuResult][(s8) ctx->mInfo.mUnk_06], 0xa, -1);
         if (ctx->mInfo.mMenuResult == 0) {
-            mEvent->func_02067998(data_ov008_0222870c[(s8) ctx->mInfo.mUnk_06]);
+            mEvent->SetMapExtraAnim(data_ov008_0222870c[(s8) ctx->mInfo.mUnk_06]);
         }
         if ((s8) ctx->mInfo.mUnk_06 != 0) {
             window->mButtons[6].mEnabled = 1;

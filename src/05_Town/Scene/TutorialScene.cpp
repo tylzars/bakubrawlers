@@ -1,7 +1,7 @@
 #include "Scene/TutorialScene.hpp"
-#include "Game/UnkStruct_02065c40.hpp"
+#include "Game/ScriptPlayer.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FileSystem.hpp"
@@ -84,7 +84,7 @@ TutorialScene::TutorialScene() :
         }
     }
     data_020d433c.mUnk_9a   = 0x11;
-    data_020d433c.mUnk_9a_0 = data_020d43f0[0].mUnk_28_6;
+    data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
 }
 
 TutorialScene::~TutorialScene() {
@@ -218,12 +218,12 @@ void TutorialScene::Update() {
                 return;
             }
             func_ov005_0221e858(this);
-            mEvent = new UnkStruct_02065c40(6, 0, 1);
+            mEvent = new ScriptPlayer(6, 0, 1);
             mUnk_47++;
             break;
         }
         case 7: {
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 return;
             }
             u8 x = 0;
@@ -242,13 +242,13 @@ void TutorialScene::Update() {
             } else {
                 sprintf(second, "cmd_%s.bin", first);
             }
-            mEvent->func_0206eb10(second);
+            mEvent->StartScript(second);
             SpriteManager::Get().StartFade(2);
             mUnk_47++;
             break;
         }
         case 8:
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 return;
             }
             mUnk_47++;
@@ -261,7 +261,7 @@ void TutorialScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            mEvent->func_020676f8();
+            mEvent->RequestFinish();
             mContext->mUnk_12 = 0;
             mUnk_47++;
             break;
@@ -441,20 +441,20 @@ void TutorialScene::Update() {
         case 26: {
             data_020d433c.mUnk_99 = 3;
             data_020d433c.mPlayerCount = 2;
-            data_020d433c.mUnk_98 = 0;
-            data_020d433c.mUnk_9f[0] = 0x15;
+            data_020d433c.mHasPartners = 0;
+            data_020d433c.mCharacterIds[0] = 0x15;
             u8 idx = data_020d433c.mUnk_83;
-            data_020d433c.mUnk_9f[1] = data_ov005_022200d8[idx][0];
+            data_020d433c.mCharacterIds[1] = data_ov005_022200d8[idx][0];
             data_020d433c.mUnk_a3[1] = 0;
-            data_020d433c.mUnk_9b[0] = 0;
-            data_020d433c.mUnk_9b[1] = 1;
-            data_020d433c.mUnk_95 = 0;
+            data_020d433c.mPartners[0] = 0;
+            data_020d433c.mPartners[1] = 1;
+            data_020d433c.mFieldId = 0;
             data_020d433c.mUnk_96 = data_ov005_022200d8[idx][1];
             u8 id = func_ov005_0221fd0c(this);
             if (id == 9) {
                 id = 10;
             }
-            data_020d433c.mUnk_85 = id;
+            data_020d433c.mTutorialId = id;
             RequestScene(5);
             mFinished = 1;
             break;
@@ -468,21 +468,21 @@ void TutorialScene::Update() {
             u8 prev = data_020d433c.mUnk_83;
             data_020d433c.mUnk_83 = 0;
             data_020d433c.mUnk_84 = 0;
-            data_020d433c.mUnk_85 = 0;
+            data_020d433c.mTutorialId = 0;
             if (data_020d433c.mUnk_82 != 0) {
                 SoundManager::Get().func_020245a4();
                 switch (prev) {
                     case 1:
                     case 2: {
-                        data_020d43f0[0].mUnk_42 = 0;
-                        data_020d43f0[0].mUnk_43 = 2;
+                        gSaveData[0].mUnk_42 = 0;
+                        gSaveData[0].mUnk_43 = 2;
                         data_020d433c.mUnk_7d = 2;
-                        u8 id = data_020d43f0[0].mUnk_1a_8;
-                        int slot = func_0202317c(data_020d43f0, 0, 0x24, id);
-                        func_020231c0(data_020d43f0, slot, 0x1b8);
-                        func_02023168(data_020d43f0, 0, 0, slot);
+                        u8 id = gSaveData[0].mUnk_1a_8;
+                        int slot = func_0202317c(gSaveData, 0, 0x24, id);
+                        func_020231c0(gSaveData, slot, 0x1b8);
+                        func_02023168(gSaveData, 0, 0, slot);
                         data_020d4478[slot].mUnk_0 = 2;
-                        UnkStruct_02023248 *entry = func_02023248(data_020d43f0, 0x24, id);
+                        UnkStruct_02023248 *entry = func_02023248(gSaveData, 0x24, id);
                         entry->mUnk_0 = 2;
                         entry->mUnk_3 = 1;
                         entry->mUnk_6 = 3;
@@ -515,7 +515,7 @@ void TutorialScene::Update() {
         case 29:
             data_020d433c.mUnk_83 = 0;
             data_020d433c.mUnk_84 = 0;
-            data_020d433c.mUnk_85 = 0;
+            data_020d433c.mTutorialId = 0;
             SoundManager::Get().func_020245a4();
             RequestScene(4);
             mFinished = 1;
@@ -838,29 +838,29 @@ void func_ov005_0221fdc4() {
     data_020d433c.mPlayerCount = 4;
     u8 i;
     for (i = 0; i < 4; i++) {
-        data_020d433c.mUnk_9f[i] = i;
+        data_020d433c.mCharacterIds[i] = i;
         data_020d433c.mUnk_a3[i] = 0;
-        data_020d433c.mUnk_9b[i] = i;
+        data_020d433c.mPartners[i] = i;
     }
-    data_020d433c.mUnk_7b = 10;
+    data_020d433c.mNextScene = 10;
     switch (data_020d433c.mUnk_83) {
         case 5:
-            data_020d433c.mUnk_98 = 1;
-            data_020d433c.mUnk_9b[0] = 1;
-            data_020d433c.mUnk_9b[1] = 0;
-            data_020d433c.mUnk_9b[2] = 3;
-            data_020d433c.mUnk_9b[3] = 2;
-            data_020d433c.mUnk_9f[0] = 0x15;
-            data_020d433c.mUnk_9f[1] = 0;
-            data_020d433c.mUnk_9f[2] = 0xe;
-            data_020d433c.mUnk_9f[3] = 0xd;
+            data_020d433c.mHasPartners = 1;
+            data_020d433c.mPartners[0] = 1;
+            data_020d433c.mPartners[1] = 0;
+            data_020d433c.mPartners[2] = 3;
+            data_020d433c.mPartners[3] = 2;
+            data_020d433c.mCharacterIds[0] = 0x15;
+            data_020d433c.mCharacterIds[1] = 0;
+            data_020d433c.mCharacterIds[2] = 0xe;
+            data_020d433c.mCharacterIds[3] = 0xd;
             break;
         case 6:
-            data_020d433c.mUnk_98 = 0;
-            data_020d433c.mUnk_9f[0] = 0x15;
-            data_020d433c.mUnk_9f[1] = 0xd;
-            data_020d433c.mUnk_9f[2] = 0xf;
-            data_020d433c.mUnk_9f[3] = 0x10;
+            data_020d433c.mHasPartners = 0;
+            data_020d433c.mCharacterIds[0] = 0x15;
+            data_020d433c.mCharacterIds[1] = 0xd;
+            data_020d433c.mCharacterIds[2] = 0xf;
+            data_020d433c.mCharacterIds[3] = 0x10;
             break;
     }
 }

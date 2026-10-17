@@ -17,20 +17,20 @@ BattleData::BattleData() {
     mUnk_0b = 0;
     mUnk_6c = 0;
     mUnk_70 = 0;
-    u8 index0         = data_020d433c.mBattlePlayers->mUnk_28d;
-    u8 index1         = data_020d433c.mBattlePlayers->mUnk_28e;
+    u8 index0         = data_020d433c.mBattlePlayers->mUnitA;
+    u8 index1         = data_020d433c.mBattlePlayers->mUnitB;
     BattleUnit *unit0 = &data_020d433c.mBattlePlayers->mUnits[index0];
     BattleUnit *unit1 = &data_020d433c.mBattlePlayers->mUnits[index1];
-    mEntries[0].mUnk_0d_4 = unit0->mUnk_0f;
-    mEntries[1].mUnk_0d_4 = unit1->mUnk_0f;
+    mEntries[0].mUnk_0d_4 = unit0->mPlayer;
+    mEntries[1].mUnk_0d_4 = unit1->mPlayer;
     BattlePlayer *player0 = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mUnk_0d_4];
     BattlePlayer *player1 = data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mUnk_0d_4];
-    BattleRecord *rec0    = &player0->mRecords[unit0->mUnk_0e];
-    BattleRecord *rec1    = &player1->mRecords[unit1->mUnk_0e];
-    mEntries[0].mUnk_0c   = rec0->mUnk_08;
-    mEntries[1].mUnk_0c   = rec1->mUnk_08;
-    mEntries[0].mUnk_0d_0 = rec0->mUnk_09;
-    mEntries[1].mUnk_0d_0 = rec1->mUnk_09;
+    BattleRecord *rec0    = &player0->mRecords[unit0->mRecord];
+    BattleRecord *rec1    = &player1->mRecords[unit1->mRecord];
+    mEntries[0].mUnk_0c   = rec0->mBakuganId;
+    mEntries[1].mUnk_0c   = rec1->mBakuganId;
+    mEntries[0].mUnk_0d_0 = rec0->mAttribute;
+    mEntries[1].mUnk_0d_0 = rec1->mAttribute;
     mEntries[0].mUnk_00   = rec0->mUnk_04 + rec0->mUnk_06;
     mEntries[1].mUnk_00   = rec1->mUnk_04 + rec1->mUnk_06;
     mEntries[0].mUnk_04   = mEntries[0].mUnk_00;
@@ -39,17 +39,17 @@ BattleData::BattleData() {
     mEntries[1].mUnk_06   = 0;
     mEntries[0].mUnk_0a   = 0;
     mEntries[1].mUnk_0a   = 0;
-    mEntries[0].mUnk_0e   = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mUnk_0d_4]->mUnk_f6;
-    mEntries[1].mUnk_0e   = data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mUnk_0d_4]->mUnk_f6;
+    mEntries[0].mUnk_0e   = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mUnk_0d_4]->mCharacterId;
+    mEntries[1].mUnk_0e   = data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mUnk_0d_4]->mCharacterId;
     mEntries[0].mUnk_10   = 0;
     mEntries[1].mUnk_10   = 0;
     mEntries[0].mUnk_11   = 0;
     mEntries[1].mUnk_11   = 0;
     mEntries[0].mUnk_12   = 0;
     mEntries[1].mUnk_12   = 0;
-    BattleMarker *marker = &data_020d433c.mBattlePlayers->mUnk_1c[data_020d433c.mBattlePlayers->mUnits[index1].mUnk_11];
-    u8 slot  = marker->mUnk_0;
-    u8 owner = marker->mUnk_1;
+    BattleMarker *marker = &data_020d433c.mBattlePlayers->mMarkers[data_020d433c.mBattlePlayers->mUnits[index1].mMarker];
+    u8 slot  = marker->mSlot;
+    u8 owner = marker->mPlayer;
     mUnk_06  = owner;
     mUnk_04  = data_020d433c.mBattlePlayers->mPlayers[owner]->Slot54(slot);
     u8 i = 0;
@@ -90,12 +90,12 @@ BattleData::BattleData() {
     } while (j < 2);
     mUnk_08[0] = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mUnk_0d_4]->mUnk_ee;
     mUnk_08[1] = data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mUnk_0d_4]->mUnk_ee;
-    if (data_020d433c.mUnk_98 == 0) {
+    if (data_020d433c.mHasPartners == 0) {
         mUnk_0a = 3;
     } else {
         mUnk_0a = 3;
-        mUnk_08[0] += data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mUnk_0d_4]->mUnk_f2]->mUnk_ee;
-        mUnk_08[1] += data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mUnk_0d_4]->mUnk_f2]->mUnk_ee;
+        mUnk_08[0] += data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mUnk_0d_4]->mPartner]->mUnk_ee;
+        mUnk_08[1] += data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mUnk_0d_4]->mPartner]->mUnk_ee;
     }
     MI_CpuClearFast(mUnk_34, 0x38);
 }
@@ -216,7 +216,7 @@ void BattleData::func_ov007_0223db20(u8 side, s16 x, s16 y) {
     if (current == owner) {
         int shift = side == 0 ? 0x20 : 0;
         mUnk_34[11]->Draw(1, (s16) (x + shift), y, 3);
-    } else if (data_020d433c.mUnk_98 && current == list->mPlayers[owner]->mUnk_f2) {
+    } else if (data_020d433c.mHasPartners && current == list->mPlayers[owner]->mPartner) {
         int shift = side == 0 ? 0x20 : 0;
         mUnk_34[13]->DrawFrame(1, owner, x + shift, y, 3);
     }

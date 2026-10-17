@@ -136,12 +136,12 @@ void GimmickAquosFukidashi::Update() {
             mUnk_50 = 0;
         }
         if ((u32)(0x104 - mCounter) >= 10 && mUnk_3c && mUnk_3c->mUnk_823 && !mUnk_4e) {
-            if (data_020d433c.mBattlePlayers->mUnk_298) {
+            if (data_020d433c.mBattlePlayers->mBattleTarget) {
                 BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
-                if (p->mRecords[p->mRecord].mUnk_09 != 1) {
+                if (p->mRecords[p->mRecord].mAttribute != 1) {
                     VecFx32 a = data_ov007_02285bd0;
-                    VecFx32 b = data_020d433c.mBattlePlayers->mUnk_298->mUnk_64;
-                    int dy = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition.y - mPosition.y + -0x54cd;
+                    VecFx32 b = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_64;
+                    int dy = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition.y - mPosition.y + -0x54cd;
                     if (dy <= 0x1000) {
                         dy = 0x1000;
                     }
@@ -149,7 +149,7 @@ void GimmickAquosFukidashi::Update() {
                     VEC_Add(&b, &a, &b);
                     b.x = FX_Mul(b.x, 0xc00);
                     b.z = FX_Mul(b.z, 0xc00);
-                    func_ov007_0225c960(data_020d433c.mBattlePlayers->mUnk_298, &b, 0);
+                    func_ov007_0225c960(data_020d433c.mBattlePlayers->mBattleTarget, &b, 0);
                     mUnk_52 = 1;
                 }
             }
@@ -226,7 +226,7 @@ int GimmickAquosFukidashi::func_ov007_02276710(int frames, int state) {
 
 int GimmickAquosFukidashi::func_ov007_02276760() {
     VecFx32 d;
-    BattleTarget *target = data_020d433c.mBattlePlayers->mUnk_298;
+    BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
     if (target && target->mUnk_1a4 && target->mUnk_1a4->mVisible) {
         VEC_Subtract(&target->mUnk_1a4->mPosition, &mPosition, &d);
         if (VEC_Mag(&d) <= 0x96000) {

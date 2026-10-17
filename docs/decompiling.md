@@ -245,10 +245,10 @@ that matches should replace it.
   unit could own it. With `.rodata` starting at 0x0208b4bc math_sha1 links and the progress numbers stop counting
   those tables as code. A few hand-written routines inside that block (func_02090b24, func_02091768, ...) are now in
   `.rodata`; they still disassemble and link.
-- **Big globals with their own section (GameData).** data_020d433c and data_020d43f0 are defined in GameData.cpp
+- **Big globals with their own section (GameData).** data_020d433c and gSaveData are defined in GameData.cpp
   inside `#pragma section npdata begin`/`end`: in the shared `.bss` the code would address them from the section
-  base and stop matching. Other units still name fields inside them by address (data_020d4404 ...);
-  `inner data_020d43f0 0xff4` in config/usa/arm9/lcf_edits.txt defines every such symbols.txt name as base + offset.
+  base and stop matching. Other units still name fields inside them by address (gCharacterLook ...);
+  `inner gSaveData 0xff4` in config/usa/arm9/lcf_edits.txt defines every such symbols.txt name as base + offset.
   Linker-script aliases go after the sections, where the base symbols have addresses (before them they resolve to 0
   without an error).
 - **False relocations in data blobs.** dsd reads any word that looks like an address as a pointer: a font bitmap
@@ -419,11 +419,11 @@ Other findings from linking:
   scheduled where `data->mEntries` is not (BattleSub48's constructor).
 
 - **A named local loaded from a const table can take a register ahead of an earlier local;** reading the table at
-  each use (the reads are merged, even across calls) gives the original order (UnkStruct_02065c40::func_02068954).
+  each use (the reads are merged, even across calls) gives the original order (ScriptPlayer::LoadMap).
 
 - **A spilled s16 keeps its reload at an early return.** A spilled `s32` whose register still holds the value at a
   predicated early return has the reload dropped; as `s16` (still stored and loaded as a word) it keeps
-  `ldrcs r0, [sp]` (UnkStruct_02065c40::func_02066814).
+  `ldrcs r0, [sp]` (ScriptPlayer::func_02066814).
 
 - **`unsigned long` vs `unsigned int`.** NitroSDK's `u32` is `unsigned long`; this repo's is `unsigned int`.
   CreditsScene::UpdateText's `for (unsigned long i ...)` matched where `u32 i` made a second copy of `this + i`; it
@@ -504,10 +504,10 @@ Other findings from linking:
   chain first changes which value is spilled, independently of either order alone (same function).
 
 - **Zeros from one declaration share a register.** `s32 done = 0, advance = 0, pending = 0;` as one declaration lets
-  the three zeros share one register, where separate declarations (or `= done`) don't (UnkStruct_02065c40::func_02066814).
+  the three zeros share one register, where separate declarations (or `= done`) don't (ScriptPlayer::func_02066814).
 - **`u8 now = ++field;`** gives `add; and; strb` with no reload of the field; `field++; now = field;` reloads it.
-- **A chained assignment as an argument:** `SetAnimation(mUnk_14f2 = value)` schedules the store differently from two
-  statements (func_0206a1c8).
+- **A chained assignment as an argument:** `SetAnimation(mCutsceneAnimIndex = value)` schedules the store differently from two
+  statements (SetCutsceneAnimation).
 
 - **Parameter width shows in the caller.** Passing a `u8` to a `u32` parameter makes a conversion temporary that
   shifts the caller's registers; FieldSelectScene's `func_ov001_022267d0(u8)` fixed two callers' loops.
@@ -623,7 +623,7 @@ Other findings from linking:
   lvalue gives it (`*(s16 *) &p->mRotY = -0x4000;` as a placeholder, BattleCardCamera::func_ov007_02244bb4).
 - **A wrong constant can look like a scheduling difference.** When the original builds a value from a neighbouring
   constant (`mov r7, #34; sub r7, r7, #47`), that shows the true value (-13 where the source had 3,
-  UnkStruct_02065c40::func_0206fa20). Likewise a literal-pool word that differs is often a wrong divisor or constant
+  ScriptPlayer::func_0206fa20). Likewise a literal-pool word that differs is often a wrong divisor or constant
   (BattleCommand's `/ 24`).
 - **A table pointer created before the index load** (`e = tbl; id = ...; ... e[id]; e += id;`) colours differently
   from `e = &tbl[id]`.
@@ -712,7 +712,7 @@ Other findings from linking:
   not (BattleObj00::Update).
 - **Enum-typed locals are not constant-propagated.** A known constant the original keeps in a register and computes
   with (`mov r2, #0; mov r1, #52; smulbb r4, r2, r1` for `array[0]`, then `this + r4` re-added at every access) comes
-  from an enum local: `UnkStruct_02065c40_Kind j = UNK_02065C40_KIND_0;` matched func_0206d3b8 where `s16`/`int`
+  from an enum local: `UnkStruct_02065c40_Kind j = UNK_02065C40_KIND_0;` matched UpdateWait where `s16`/`int`
   locals, casts, loops and inline parameters all fold.
 - **How mwcc picks callee-saved registers (lab results, `int`-sized values live across calls).**
   - Named locals loaded from memory (or assigned later) are coloured in declaration order: the first declared gets
@@ -754,7 +754,7 @@ Other findings from linking:
 - **Flag from a condition.** `if (c) { x = 0; } else { x = 1; }` as statements can give the original's
   `moveq`/`movne` order where `x = c ? 0 : 1` gives the reverse (`LoadFileAsync`).
 - **Narrow read-modify-write toggles.** `f++; f &= 1;` as two statements on a `u8` field matches where a temporary
-  (`u8 t = f + 1; f = t & 1;`) keeps the add in its own register (`UnkStruct_02065c40::Update`).
+  (`u8 t = f + 1; f = t & 1;`) keeps the add in its own register (`ScriptPlayer::Update`).
 - **Arguments a callee ignores.** If callers load a register before a call (e.g. `this` into r0) that the callee
   never reads, the callee still takes that parameter: `func_02084e64(ListScene *self)` is passed `self`
   although its body ignores it, and declaring it without the parameter makes the caller 8 bytes short.
@@ -848,7 +848,7 @@ Other findings from linking:
   - Mixing signed and unsigned stops constants combining: `t + 0x24 + 0x28c0u` keeps two adds.
 - **Globals: declare the size.** A store through any pointer makes mwcc re-read a global declared with a complete
   type (`extern T g;`, `extern T g[1];`) but not one declared `extern T g[];`, which it keeps in a register or hoists.
-  So save-data style globals need their real size: `data_020d43f0` is `UnkStruct_020d43f0[1]`, padded to 0xff4.
+  So save-data style globals need their real size: `gSaveData` is `SaveData[1]`, padded to 0xff4.
   The half-size store-scheduling rule (a later load may move above a store only if the store offset is below half
   the object's size) applies to globals too. Loads through a pointer local die at any global store; loads written
   as `g[i].f` don't.
@@ -937,7 +937,7 @@ Other findings from linking:
 - **A cast on the address swaps address and value registers.** In a read-modify-write of a global, a direct access
   (`g.x |= 1`, `fl[1] &= ~0x20`) colours the address first (lower register); going through a pointer cast, even a
   no-op one (`*(u8 *)&g |= 1`, `((u8 *)fl)[1] &= ...`, or a helper taking `void *` and casting back), gives the value
-  the lower register. The cast also stops reuse of an already loaded base: `*(u8 *)&data_020d43f0[0].mUnk_24 |= 1`
+  the lower register. The cast also stops reuse of an already loaded base: `*(u8 *)&gSaveData[0].mUnk_24 |= 1`
   gets its own pool word. Don't change the shared SetFlagBit/TestFlagBit helpers: existing matches depend on them.
 - **Narrowing changes scheduling, not just instructions.** `-(u8) (mFade / 4)` (or a `u8 level` local) and
   `-((u32) mFade >> 2)` emit the same `and`/`lsr`/`rsb`, but the `u8` form schedules the `rsb` before the next

@@ -7,7 +7,7 @@ extern "C" int func_02051e40(void *handle);
 
 struct UnkStruct_020d433c {
     PAD(0x00, 0x79);
-    u8 mUnk_79;
+    u8 mLanguage;
 };
 extern UnkStruct_020d433c data_020d433c;
 
@@ -53,7 +53,7 @@ void FrameTask::StartChannel(u32 unk1, u32 unk2) {
     }
     u8 variant = 0;
     if (unk1 == 1) {
-        variant = data_020d433c.mUnk_79;
+        variant = data_020d433c.mLanguage;
     }
     sprintf(path, data_020ac960, data_020ac934[unk1], unk2 - data_020ac92c[unk1], variant, data_020ac940[unk1]);
     switch (unk1) {

@@ -8,7 +8,7 @@
 class CellAnimation;
 class MessageWindow;
 class SelectWindow;
-class UnkStruct_02065c40;
+class ScriptPlayer;
 struct MessageFile;
 
 // Overlay 8: the player's room menu (three pages of icons, each with a description line).
@@ -22,7 +22,7 @@ public:
     /* 1c */ u32 mTextBufferSize;
     /* 20 */ u32 mGlyphCount;
     /* 24 */ SelectWindow *mMenus[3];
-    /* 30 */ UnkStruct_02065c40 *mEvent;
+    /* 30 */ ScriptPlayer *mEvent;
     /* 34 */ CellAnimation *mCellAnim;
     /* 38 */
 

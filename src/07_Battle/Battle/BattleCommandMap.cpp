@@ -543,20 +543,20 @@ extern "C" void func_ov007_02246558(BattleCommandMap *map) {
 }
 
 extern "C" void func_ov007_02246578(BattleCommandMap *map) {
-    s8 index               = data_020d433c.mBattlePlayers->mUnk_1f8[map->mUnk_148][map->mUnk_149];
+    s8 index               = data_020d433c.mBattlePlayers->mUnitHandles[map->mUnk_148][map->mUnk_149];
     u8 current             = data_020d433c.mBattlePlayers->mUnk_2a9;
     if (index <= 0) {
         return;
     }
     BattleUnit *unit = &data_020d433c.mBattlePlayers->Units()[(u8) (s8) (index - 1)];
-    if (unit->mUnk_10 == 0) {
+    if (unit->mStatus == 0) {
         return;
     }
     VecFx32 pos;
     pos.x = unit->mPos.x;
     pos.y = unit->mPos.y + 0x2299a;
     pos.z = unit->mPos.z;
-    map->mUnk_74->func_ov007_022712c4(unit->mUnk_0f, &pos);
+    map->mUnk_74->func_ov007_022712c4(unit->mPlayer, &pos);
     pos.y += 0xa000;
     CameraManager::Get();
     MtxFx43 mtx = data_020c1cf4;
@@ -566,9 +566,9 @@ extern "C" void func_ov007_02246578(BattleCommandMap *map) {
     mtx._[9]    = 0;
     MTX_MultVec43(&v, &mtx, &v);
     VEC_Add(&pos, &v, &pos);
-    if (unit->mUnk_0f == current) {
+    if (unit->mPlayer == current) {
         map->mUnk_74->func_ov007_02271338(&pos);
-    } else if (unit->mUnk_0f == data_020d433c.mBattlePlayers->mPlayers[current]->mUnk_f2) {
+    } else if (unit->mPlayer == data_020d433c.mBattlePlayers->mPlayers[current]->mPartner) {
         map->mUnk_74->func_ov007_022713a4(&pos);
     }
 }
@@ -623,13 +623,13 @@ extern "C" void func_ov007_02246804(BattleCommandMap *map) {
     u8 j    = 0;
     do {
         BattleMarker *marker = &data_020d433c.mBattlePlayers->Entries()[j];
-        if (marker->mUnk_2 == 1) {
+        if (marker->mStatus == 1) {
             if (map->mUnk_48) {
                 VecFx32 b;
-                func_ov007_02248944(&b, marker->mUnk_3, marker->mUnk_4);
+                func_ov007_02248944(&b, marker->mCellX, marker->mCellY);
                 map->mUnk_48->mPosition = b;
                 s32 frame = map->mUnk_48->mModel->GetAnimFrame();
-                if (marker->mUnk_1 == data_020d433c.mBattlePlayers->mUnk_2a9) {
+                if (marker->mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
                     map->mUnk_48->func_ov007_02248eb8();
                 } else {
                     map->mUnk_48->mModel->GetAnimFrame();
@@ -638,10 +638,10 @@ extern "C" void func_ov007_02246804(BattleCommandMap *map) {
                 }
                 map->mUnk_48->mModel->SetAnimFrame(frame);
             }
-        } else if (marker->mUnk_2 == 3) {
+        } else if (marker->mStatus == 3) {
             if (map->mUnk_48) {
                 VecFx32 c;
-                func_ov007_02248944(&c, marker->mUnk_3, marker->mUnk_4);
+                func_ov007_02248944(&c, marker->mCellX, marker->mCellY);
                 if (map->mUnk_155 == 1) {
                     map->mUnk_138 = map->mUnk_138 - 0x3000;
                     if (!map->mUnk_48->mModel->AdvanceAnim()) {
@@ -653,7 +653,7 @@ extern "C" void func_ov007_02246804(BattleCommandMap *map) {
                     map->mUnk_138 = map->mUnk_138 - 0x3000;
                     map->mUnk_48->mModel->AdvanceAnim();
                     if (map->mUnk_48->mModel->GetAnimFrame() <= 0x6000) {
-                        data_020d433c.mBattlePlayers->Entries()[j].mUnk_2 = 1;
+                        data_020d433c.mBattlePlayers->Entries()[j].mStatus = 1;
                     }
                 }
                 c.x += map->mUnk_138;
@@ -946,9 +946,9 @@ extern "C" void func_ov007_022476e0(BattleCommandMap *map) {
     map->mUnk_70 = new BattleStatusPanels(0, 0, 0, 1);
     u8 i         = 0;
     do {
-        u8 index             = data_020d433c.mBattlePlayers->mUnk_284[i];
+        u8 index             = data_020d433c.mBattlePlayers->mTurnOrder[i];
         BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[index];
-        map->mUnk_70->func_ov007_02235280(index, (s8) player->mUnk_f6, data_ov007_02279eb0[i], 2);
+        map->mUnk_70->func_ov007_02235280(index, (s8) player->mCharacterId, data_ov007_02279eb0[i], 2);
         i++;
     } while (i < data_020d433c.mPlayerCount);
 }
@@ -961,14 +961,14 @@ extern "C" void func_ov007_02247794(BattleCommandMap *map) {
     u8 i = 0;    
     do {
         BattleUnit *unit = &data_020d433c.mBattlePlayers->Units()[i];
-        if (unit->mUnk_10 != 0) {
+        if (unit->mStatus != 0) {
             pos.x = unit->mPos.x;
             pos.y = unit->mPos.y;
             pos.z = unit->mPos.z;
             Rot16 rot = {0, 0, 0};
             rot.y = unit->mUnk_0c;
-            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[unit->mUnk_0f]->mRecords[unit->mUnk_0e];
-            map->mUnk_74->func_ov007_02270120(i, &pos, &rot.x, record->mUnk_08, record->mUnk_09);
+            BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[unit->mPlayer]->mRecords[unit->mRecord];
+            map->mUnk_74->func_ov007_02270120(i, &pos, &rot.x, record->mBakuganId, record->mAttribute);
         }
         i++;
     } while (i < 12);
@@ -983,7 +983,7 @@ extern "C" void func_ov007_02247898(BattleCommandMap *map) {
     }
     u8 i = 0;
     do {
-        if (data_020d433c.mBattlePlayers->Entries()[i].mUnk_2 == 1 && map->mUnk_48 == 0) {
+        if (data_020d433c.mBattlePlayers->Entries()[i].mStatus == 1 && map->mUnk_48 == 0) {
             map->mUnk_48 = new BattleMapModel(0);
         }
         i++;
@@ -1098,7 +1098,7 @@ extern "C" void func_ov007_02247e00(BattleCommandMap *map) {
     } else {
         u8 i = 0;
         do {
-            if (data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_f8 != 0 && map->mUnk_50[i] == 0) {
+            if (data_020d433c.mBattlePlayers->mPlayers[i]->mSlots54Remaining != 0 && map->mUnk_50[i] == 0) {
                 BattleMapModel *model = new BattleMapModel((u8) (i + 4));
                 map->mUnk_50[i]       = model;
                 model->mAnimEnabled        = 1;
@@ -1271,16 +1271,16 @@ extern "C" u32 func_ov007_02248998(VecFx32 *v, u8 *outA, u8 *outB) {
     u8 i = 0;
     do {
         BattleMarker *marker = &data_020d433c.mBattlePlayers->Entries()[i];
-        if (marker->mUnk_2 != 0) {
+        if (marker->mStatus != 0) {
             VecFx32 p;
-            func_ov007_02248944(&p, marker->mUnk_3, marker->mUnk_4);
+            func_ov007_02248944(&p, marker->mCellX, marker->mCellY);
             s32 x0 = p.x - 0x11800;
             s32 x1 = p.x + 0x11800;
             s32 z0 = p.z - 0x17800;
             s32 z1 = p.z + 0x17800;
             if (v->x >= x0 && v->x <= x1 && v->z >= z0 && v->z <= z1) {
-                *outA = marker->mUnk_3;
-                *outB = marker->mUnk_4;
+                *outA = marker->mCellX;
+                *outB = marker->mCellY;
                 return 1;
             }
         }

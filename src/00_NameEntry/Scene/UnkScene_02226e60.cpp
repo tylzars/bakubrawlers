@@ -189,7 +189,7 @@ void UnkScene_02226e60::func_ov000_0221d2e8() {
 
 void UnkScene_02226e60::func_ov000_0221d3b4() {
     ChangeDir("/logo");
-    if (data_020d433c.mUnk_79 == 0) {
+    if (data_020d433c.mLanguage == 0) {
         LoadAndQueueUpload(1, 1, 0x2000, "logo_legaltext_english_ncl.bin", 0, 0, 0);
         LoadAndQueueUpload(1, 12, 0, "logo_legaltext_english_ncg.bin", 0, 0, 0);
         LoadAndQueueUpload(1, 8, 0, "logo_legaltext_english_nsc.bin", 0, 0, 0);

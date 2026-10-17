@@ -8,7 +8,7 @@
 class CellAnimation;
 class MessageWindow;
 class SelectWindow;
-class UnkStruct_02065c40;
+class ScriptPlayer;
 struct MessageFile;
 
 // Overlay 8: the tips list screen (mes_TIPS_sys.mes): four tip titles that scroll sideways, a window to pick one and
@@ -22,7 +22,7 @@ public:
     /* 24 */ MessageWindow *mMessage;
     /* 28 */ SelectWindow *mWindowA;
     /* 2c */ SelectWindow *mWindowB;
-    /* 30 */ UnkStruct_02065c40 *mEvent;
+    /* 30 */ ScriptPlayer *mEvent;
     /* 34 */ CellAnimation *mCells[6];
     /* 4c */ CellAnimation *mCellA;
     /* 50 */ CellAnimation *mCellB;

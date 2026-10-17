@@ -20,7 +20,7 @@ struct ParkSlot {
     /* 1 */ u8 mGroup;
 };
 
-struct UnkStruct_020d43f0 {
+struct SaveData {
     /* 000 */ u16 mUnk_00[3];
     /* 006 */ u16 mUnk_06[3];
     /* 00c */ u16 mUnk_0c[3];
@@ -46,7 +46,7 @@ struct UnkStruct_020d43f0 {
     /* 020 */ u32 mUnk_20;
     /* 024 */ u8 mUnk_24;
     /* 025 */ u8 mUnk_25;
-    /* 026 */ u8 mUnk_26;
+    /* 026 */ u8 mLanguage;
     union {
         /* 027 */ u8 mUnk_27;
         struct {
@@ -74,8 +74,8 @@ struct UnkStruct_020d43f0 {
     /* 050 */ u16 mUnk_50;
     /* 052 */ u16 mUnk_52;
     /* 054 */ PAD(0x054, 0x05a);
-    /* 05a */ u8 mUnk_5a;
-    /* 05b */ u8 mUnk_5b;
+    /* 05a */ u8 mFewestRounds;
+    /* 05b */ u8 mMostRounds;
     /* 05c */ u16 mUnk_5c;
     /* 05e */ u16 mUnk_5e[17];
     /* 080 */ u16 mUnk_80;
@@ -89,8 +89,8 @@ struct UnkStruct_020d43f0 {
     /* 579 */ PAD(0x579, 0x580);
     /* 580 */ u8 mUnk_580;
     /* 581 */ PAD(0x581, 0x586);
-    // Flag arrays read and written as `(u8 *) data_020d43f0[0].mUnk_586` (UnlockStoreItems, UnlockProgressEntry): the
-    // cast gives them their own pool word, hoisted after the loop's other tables, while still aliasing data_020d43f0 so
+    // Flag arrays read and written as `(u8 *) gSaveData[0].mUnk_586` (UnlockStoreItems, UnlockProgressEntry): the
+    // cast gives them their own pool word, hoisted after the loop's other tables, while still aliasing gSaveData so
     // the following mUnk_5b9 load stays after the store. Some callers address the same bytes through the
     // data_020d4976/data_020d497b externs and match that way.
     /* 586 */ u8 mUnk_586[5];
@@ -114,16 +114,16 @@ struct UnkStruct_020d43f0 {
         };
     };
     /* 5c0 */ PAD(0x5c0, 0x5c1);
-    /* 5c1 */ u8 mUnk_5c1;
-    /* 5c2 */ ParkSlot mUnk_5c2[8];
+    /* 5c1 */ u8 mParkSlotCount;
+    /* 5c2 */ ParkSlot mParkSlots[8];
     /* 5d2 */ u8 mUnk_5d2;
     /* 5d3 */ PAD(0x5d3, 0xff4);
 };
 
-// Declared as an array: code that stores through it only matches when indexed (`data_020d43f0[0]`).
-extern UnkStruct_020d43f0 data_020d43f0[1];
+// Declared as an array: code that stores through it only matches when indexed (`gSaveData[0]`).
+extern SaveData gSaveData[1];
 
-// Bit-flag arrays inside data_020d43f0 (at +0x578, +0x57d, +0x580) that code addresses directly.
+// Bit-flag arrays inside gSaveData (at +0x578, +0x57d, +0x580) that code addresses directly.
 extern u8 data_020d4968[];
 extern u8 data_020d496d[];
 extern u8 data_020d4970[];
@@ -131,9 +131,9 @@ extern u8 data_020d4969[];
 extern u8 data_020d496a[];
 extern u8 data_020d4973[];
 extern u8 data_020d49ae[];
-extern u8 data_020d4404[];
+extern u8 gCharacterLook[];
 
-// Records reached through data_020d43f0 by the helpers below.
+// Records reached through gSaveData by the helpers below.
 struct UnkStruct_020d4478 {
     /* 0 */ u16 mUnk_0 : 4;
     /* 0 */ u16 mUnk_4 : 12;
@@ -146,11 +146,11 @@ extern UnkStruct_020d4478 data_020d4478[];
 extern u8 data_020d4850[];
 extern u8 data_020d49b0[];
 
-int func_0202317c(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2, u32 unk3);
-u16 func_020231f4(UnkStruct_020d43f0 *base, u32 unk1, u8 unk2, u8 unk3);
-void func_02023168(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2, int unk3);
-void func_020231c0(UnkStruct_020d43f0 *base, int unk1, u32 unk2);
-UnkStruct_02023248 *func_02023248(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2);
+int func_0202317c(SaveData *base, u32 unk1, u32 unk2, u32 unk3);
+u16 func_020231f4(SaveData *base, u32 unk1, u8 unk2, u8 unk3);
+void func_02023168(SaveData *base, u32 unk1, u32 unk2, int unk3);
+void func_020231c0(SaveData *base, int unk1, u32 unk2);
+UnkStruct_02023248 *func_02023248(SaveData *base, u32 unk1, u32 unk2);
 
 static inline BOOL TestFlagBit(const u8 *flags, int index) {
     return flags[(u32) index >> 3] & (1 << (index % 8));

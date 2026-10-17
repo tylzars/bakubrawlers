@@ -31,9 +31,9 @@ BattleStatusPanels::BattleStatusPanels(u32 charBase, u8 palette, u8 mode, u8 fla
         if (data_020d433c.mBattlePlayers->mPlayers[i]) {
             mPanels[i].mUnk_28 = data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_ee;
         }
-        if (data_020d433c.mUnk_98) {
+        if (data_020d433c.mHasPartners) {
             if (data_020d433c.mBattlePlayers->mPlayers[i]) {
-                mPanels[i].mUnk_28 += data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mUnk_9b[i]]->mUnk_ee;
+                mPanels[i].mUnk_28 += data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mPartners[i]]->mUnk_ee;
             }
             mPanels[i].mUnk_29 = 3;
         } else {
@@ -85,7 +85,7 @@ void BattleStatusPanels::func_ov007_02234efc() {
     screen.SetObjVramMode(1);
     screen.LoadCharacters("battle_u.nce_ncg1D.bin", mCharBase, 0);
     screen.LoadPalette("battle_u_ncl.bin", mPalette << 5, 0);
-    if (data_020d433c.mUnk_98) {
+    if (data_020d433c.mHasPartners) {
         screen.LoadCharacters("battle_u_team.nce_ncg1D.bin", mCharBase + 0x4000, 0);
     }
     i = 0;
@@ -105,7 +105,7 @@ void BattleStatusPanels::func_ov007_02234efc() {
         mPanels[i].mAnims[4]->SetAnimation(i + 0x12);
         mPanels[i].mAnims[5]->SetAnimation(3);
         mPanels[i].mAnims[5]->mFrameIndex = i;
-        if (data_020d433c.mUnk_98) {
+        if (data_020d433c.mHasPartners) {
             mPanels[i].mAnims[6]            = new CellAnimation("battle_u_team_nce.bin", 0, 1, 1);
             mPanels[i].mAnims[6]->mCharBase = screen.GetCharBase(mCharBase + 0x4000);
             mPanels[i].mAnims[6]->mPaletteBase   = mPalette;
@@ -113,7 +113,7 @@ void BattleStatusPanels::func_ov007_02234efc() {
         }
         i++;
     } while (i < 4);
-    if (data_020d433c.mUnk_98) {
+    if (data_020d433c.mHasPartners) {
         mAnimC            = new CellAnimation("battle_u_team_nce.bin", 0, 1, 1);
         mAnimC->mCharBase = screen.GetCharBase(mCharBase + 0x4000);
         mAnimC->mPaletteBase   = mPalette;
@@ -152,7 +152,7 @@ void BattleStatusPanels::func_ov007_02235280(u32 index, s32 character, u32 team,
     if (mUnk_f1 == 1) {
         c = TRUE;
     }
-    if (c & (index == data_020d433c.mBattlePlayers->mUnk_28a)) {
+    if (c & (index == data_020d433c.mBattlePlayers->mTurnPlayer)) {
         mPanels[index].mAnims[0]->SetAnimation(index * 2 + 10 + mPanels[index].mUnk_25);
     } else {
         mPanels[index].mAnims[0]->SetAnimation(mPanels[index].mUnk_25 + 6);
@@ -160,7 +160,7 @@ void BattleStatusPanels::func_ov007_02235280(u32 index, s32 character, u32 team,
     mPanels[index].mAnims[2]->SetAnimation(mPanels[index].mUnk_25 + 4);
     u8 level = func_ov007_02236458(index);
     if (level >= 0x13) {
-        u8 cur  = data_020d433c.mBattlePlayers->mUnk_28a;
+        u8 cur  = data_020d433c.mBattlePlayers->mTurnPlayer;
         u8 cur2 = data_020d433c.mBattlePlayers->mUnk_2a9;
         if ((index == cur) & (cur == cur2)) {
             mPanels[index].mAnims[2]->SetAnimation(mPanels[index].mUnk_25 + 0x16);
@@ -207,14 +207,14 @@ void BattleStatusPanels::func_ov007_02235480() {
             s16 q     = x + 0xe;
             if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
                 mPanels[i].mAnims[4]->Draw(0, (s16) (dir * (mPanels[i].mUnk_25 * 0x24 - 0x10) + q), (s16) (y + 0x22), mUnk_f2);
-            } else if (data_020d433c.mUnk_98 &&
-                       i == data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mUnk_f2) {
+            } else if (data_020d433c.mHasPartners &&
+                       i == data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mPartner) {
                 mPanels[i].mAnims[6]->Draw(0, (s16) (dir * (mPanels[i].mUnk_25 * 0x24 - 0x10) + q), (s16) (y + 0x22), mUnk_f2);
             }
-            if (data_020d433c.mUnk_98 && mMode == 0) {
-                if (i == 0 || i == data_020d433c.mBattlePlayers->mPlayers[0]->mUnk_f2) {
+            if (data_020d433c.mHasPartners && mMode == 0) {
+                if (i == 0 || i == data_020d433c.mBattlePlayers->mPlayers[0]->mPartner) {
                     BOOL c = TRUE;
-                    if (mPanels[data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_f2].mUnk_36 != 0) {
+                    if (mPanels[data_020d433c.mBattlePlayers->mPlayers[i]->mPartner].mUnk_36 != 0) {
                         c = FALSE;
                     }
                     if (!shown1 && c) {
@@ -250,7 +250,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                     }
                 } else {
                     BOOL c = TRUE;
-                    if (mPanels[data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_f2].mUnk_36 != 0) {
+                    if (mPanels[data_020d433c.mBattlePlayers->mPlayers[i]->mPartner].mUnk_36 != 0) {
                         c = FALSE;
                     }
                     if (!shown2 && c) {
@@ -322,7 +322,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                 } else {
                     mPanels[i].mAnims[2]->DrawFrame(0, level - 1, x - 2, y - 2, mUnk_f2);
                     if (level >= 0x13) {
-                        u8 cur  = data_020d433c.mBattlePlayers->mUnk_28a;
+                        u8 cur  = data_020d433c.mBattlePlayers->mTurnPlayer;
                         u8 cur2 = data_020d433c.mBattlePlayers->mUnk_2a9;
                         if ((i == cur) & (cur == cur2)) {
                             mPanels[i].mAnims[2]->SetAnimation(mPanels[i].mUnk_25 + 0x18);
@@ -378,7 +378,7 @@ void BattleStatusPanels::func_ov007_02235480() {
         }
         j++;
     } while (j < 4);
-    if (!data_020d433c.mUnk_98) {
+    if (!data_020d433c.mHasPartners) {
         return;
     }
     if (mMode != 0) {
@@ -420,7 +420,7 @@ void BattleStatusPanels::func_ov007_022361c4(u32 index) {
     func_ov007_0223619c(index);
     TextManager::Get().mUse4bppFont = 1;
     TextManager::Get().Print(data_020d433c.mBattlePlayers->mPlayers[index]->NameText(),
-                             data_020d433c.mBattlePlayers->mPlayers[index]->mUnk_ed, mPanels[index].mBuffer, 0x10, 2,
+                             data_020d433c.mBattlePlayers->mPlayers[index]->mNameLength, mPanels[index].mBuffer, 0x10, 2,
                              &height, &width, &mPanels[index].mUnk_34, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
     switch (mMode) {

@@ -192,15 +192,15 @@ void GimmickAbilityField::Update() {
             return;
         }
         mState++;
-        func_ov007_02271d78(data_020d433c.mUnk_0c, mUnk_3c);
+        func_ov007_02271d78(data_020d433c.mGimmickCollision, mUnk_3c);
         SoundManager::Get().StartSeqArc(0x35);
-        s8 pick = func_02021a30(data_ov007_02279568[mUnk_4c].mCount, data_ov007_02279568[mUnk_4c].mWeights);
+        s8 pick = PickWeighted(data_ov007_02279568[mUnk_4c].mCount, data_ov007_02279568[mUnk_4c].mWeights);
         data_020d433c.mBattlePlayers->Current()->mUnk_fa = data_ov007_02279568[mUnk_4c].mIds[pick];
         u8 handle = StartEffect(data_020d433c.mEffects, 1, 0x12, 0, 1);
         if (handle) {
             CameraManager::Get();
             MtxFx43 mtx    = data_020c1cf4;
-            VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
+            VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
             mtx._[11]      = 0;
             mtx._[10]      = 0;
             mtx._[9]       = 0;
@@ -217,7 +217,7 @@ void GimmickAbilityField::Update() {
             break;
         }
         u32 limit;
-        if (data_020d433c.mUnk_98) {
+        if (data_020d433c.mHasPartners) {
             limit = 3;
         } else {
             limit = data_ov007_02279514[players - 2];

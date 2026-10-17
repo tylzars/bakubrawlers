@@ -100,8 +100,8 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
     a = (u8) (a + base);
     u32 b = (u8) (data_ov007_02278d7c[row] + base);
     if (data_020d433c.mUnk_7a) {
-        if (data_020d433c.mUnk_98) {
-            if (player->mUnk_f2 == 0 && player->mUnk_f6 != 13 && player->mUnk_f6 != 14) {
+        if (data_020d433c.mHasPartners) {
+            if (player->mPartner == 0 && player->mCharacterId != 13 && player->mCharacterId != 14) {
                 a = (u8) (a + 1);
                 b = (u8) (b + 1);
             }
@@ -141,8 +141,8 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
         mRole = 2;
     } else if (index == unk6) {
         mRole = 3;
-    } else if (data_020d433c.mUnk_98) {
-        if (unk5 == list->mPlayers[index]->mUnk_f2) {
+    } else if (data_020d433c.mHasPartners) {
+        if (unk5 == list->mPlayers[index]->mPartner) {
             mRole = 0;
         } else {
             mRole = 1;

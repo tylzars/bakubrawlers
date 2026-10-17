@@ -1,7 +1,7 @@
 #include "System/InputManager.hpp"
 #include "Scene/MyroomTipsScene.hpp"
-#include "Game/UnkStruct_02065c40.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/ScriptPlayer.hpp"
+#include "Game/SaveData.hpp"
 extern u8 data_020d499c[];
 extern u8 data_020d49a1[];
 #include "Graphics/CellAnimation.hpp"
@@ -29,9 +29,9 @@ struct TipsEntry {
     s8 mMessage;
 };
 
-extern "C" void func_020705f0(UnkStruct_02065c40 *event);
-extern "C" void func_0206f88c(UnkStruct_02065c40 *event, u32 category, s32 value, u32 unk4);
-extern "C" void func_0206f6f0(UnkStruct_02065c40 *event, const char *name, u32 id, u32 unk3, u32 unk4);
+extern "C" void func_020705f0(ScriptPlayer *event);
+extern "C" void func_0206f88c(ScriptPlayer *event, u32 category, s32 value, u32 unk4);
+extern "C" void func_0206f6f0(ScriptPlayer *event, const char *name, u32 id, u32 unk3, u32 unk4);
 
 const s8 data_ov008_02229658[6] = {0, 11, 17, 24, 31, 44};
 
@@ -170,7 +170,7 @@ void MyroomTipsScene::Update() {
             InitDisplay();
             func_ov008_022267f4();
             func_ov008_022283a8();
-            mEvent = new UnkStruct_02065c40(5, 0, 1);
+            mEvent = new ScriptPlayer(5, 0, 1);
             GXS_SetVisiblePlane(0x13);
             SpriteManager::Get().StartFade(2);
             context->mInfo.mStep++;
@@ -183,13 +183,13 @@ void MyroomTipsScene::Update() {
             return;
         case 2:
             if (SpriteManager::Get().sFade[0] <= 1) {
-                mEvent->func_020676f8();
+                mEvent->RequestFinish();
                 context->mInfo.mStep++;
             }
             Draw();
             return;
         case 3:
-            mEvent = new UnkStruct_02065c40(5, 0, 1);
+            mEvent = new ScriptPlayer(5, 0, 1);
             func_ov008_0222840c(0x2d);
             SpriteManager::Get().sFade[0] = 2;
             context->mInfo.mStep++;
@@ -197,7 +197,7 @@ void MyroomTipsScene::Update() {
             return;
         case 4:
             if (SpriteManager::Get().sFade[0] <= 1) {
-                if (!mEvent->func_020678e8()) {
+                if (!mEvent->IsRunning()) {
                     u32 id = 0x33;
                     if (mUnlocked[0] == 0) {
                         id = 0x34;
@@ -228,7 +228,7 @@ void MyroomTipsScene::Update() {
             Draw();
             return;
         case 8:
-            if (!mEvent->func_020678e8()) {
+            if (!mEvent->IsRunning()) {
                 mWindowB->mState = 4;
                 mWindowB->Reset(-1);
                 mWindowB->mCells[0]->SetAnimation(2);
@@ -272,7 +272,7 @@ void MyroomTipsScene::Update() {
                 Draw();
             }
         case 12:
-            if (!mEvent->func_020678e8()) {
+            if (!mEvent->IsRunning()) {
                 context->mInfo.mStep = 10;
                 MI_CpuClear16(mUnk_78, 8);
                 MI_CpuClear16(mUnk_70, 8);
@@ -289,7 +289,7 @@ void MyroomTipsScene::Update() {
             return;
         case 14:
             if (!SpriteManager::Get().IsFading()) {
-                mEvent->func_020676f8();
+                mEvent->RequestFinish();
                 mContext->mUnk_12 = 0;
                 context->mInfo.mStep++;
             }
@@ -412,7 +412,7 @@ void MyroomTipsScene::Draw() {
     if (mFlags & 1) {
         mNewCells[0]->Update();
         BOOL show = TRUE;
-        if (!data_020d43f0[0].mUnk_5bf_0 && data_020d43f0[0].mUnk_42 == 6) {
+        if (!gSaveData[0].mUnk_5bf_0 && gSaveData[0].mUnk_42 == 6) {
             show = FALSE;
         }
         BOOL first = (show == FALSE);
@@ -446,7 +446,7 @@ void MyroomTipsScene::func_ov008_022271f8() {
     if (mFlags & 1) {
         BOOL drawn = FALSE;
         mCellA->Update();
-        if (!data_020d43f0[0].mUnk_5bf_0 && data_020d43f0[0].mUnk_42 == 6 && mUnlocked[0] != 0) {
+        if (!gSaveData[0].mUnk_5bf_0 && gSaveData[0].mUnk_42 == 6 && mUnlocked[0] != 0) {
             mCellA->Draw(1, 0x14, 0x22, 2);
             drawn = TRUE;
         }
@@ -509,7 +509,7 @@ void MyroomTipsScene::func_ov008_022274a4(const u8 *pos, u32 index) {
 }
 
 void MyroomTipsScene::func_ov008_022274f8() {
-    if (mEvent->func_020678e8()) {
+    if (mEvent->IsRunning()) {
         mWindowA->mEnabled = 0;
         mWindowB->mEnabled = 0;
         return;
@@ -537,7 +537,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
                 } else if (mUnlocked[category] != 0) {
                     BOOL available = TRUE;
                     if (category == 0) {
-                        if (!data_020d43f0[0].mUnk_5bf_0 && data_020d43f0[0].mUnk_42 == 6) {
+                        if (!gSaveData[0].mUnk_5bf_0 && gSaveData[0].mUnk_42 == 6) {
                             available = FALSE;
                         }
                     }
@@ -610,10 +610,10 @@ void MyroomTipsScene::func_ov008_022274f8() {
         u8 entry     = mIndices[mRow];
         u16 message  = data_ov008_022296ac[category][entry].mMessage;
         if (category == 4 && data_ov008_022296ac[category][entry].mText == 0x20) {
-            if (data_020d43f0[0].mUnk_5bf_0) {
+            if (gSaveData[0].mUnk_5bf_0) {
                 message = 0x2b;
             } else {
-                u8 level = data_020d43f0[0].mUnk_42;
+                u8 level = gSaveData[0].mUnk_42;
                 if (level <= 1) {
                     message = 0x25;
                 } else if (level <= 3) {

@@ -20,7 +20,7 @@
 #include "UI/SaveWindow.hpp"
 #include "Scene/NameEntryScene.hpp"
 #include "UI/MessageScreen.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 
 
 void operator delete(void *ptr);
@@ -75,10 +75,10 @@ static const WindowItemRecord data_ov000_02226788[3] = {
 };
 
 
-s32 func_020230dc(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2);
-void func_02023134(UnkStruct_020d43f0 *base, u32 a, u32 b, u32 c, u32 d, u32 e);
-void func_0202321c(UnkStruct_020d43f0 *base, const u16 *src, u32 b, u32 c);
-void func_02022db4(UnkStruct_020d43f0 *base);
+s32 func_020230dc(SaveData *base, u32 unk1, u32 unk2);
+void func_02023134(SaveData *base, u32 a, u32 b, u32 c, u32 d, u32 e);
+void func_0202321c(SaveData *base, const u16 *src, u32 b, u32 c);
+void func_02022db4(SaveData *base);
 void func_02022b28();
 void func_02022b0c();
 s32 func_02087100();
@@ -149,7 +149,7 @@ TitleScene::TitleScene() :
     mUnk_d6 = 0;
     mUnk_d7 = 0;
     mUnk_d8 = 0x60;
-    data_020d433c.mUnk_7b = 4;
+    data_020d433c.mNextScene = 4;
     data_020d433c.mUnk_7d = 0;
     data_020d433c.mUnk_87 = 0;
     data_020d433c.mUnk_88_4 = 0;
@@ -212,7 +212,7 @@ void TitleScene::Update() {
             mUnk_cb++;
             break;
         case 1:
-            new MovieScene((void *) "/movie/bknd_op.mods", data_020d433c.mUnk_79);
+            new MovieScene((void *) "/movie/bknd_op.mods", data_020d433c.mLanguage);
             mUnk_cb++;
             break;
         case 2:
@@ -282,11 +282,11 @@ void TitleScene::Update() {
         case 9: {
             func_02022b28();
             u8 a = data_020d433c.mUnk_81;
-            u8 b = data_020d433c.mUnk_79;
+            u8 b = data_020d433c.mLanguage;
             u8 c = data_020d433c.mUnk_77;
             func_02022b0c();
             data_020d433c.mUnk_81 = a;
-            data_020d433c.mUnk_79 = b;
+            data_020d433c.mLanguage = b;
             data_020d433c.mUnk_77 = c;
             GXS_SetVisiblePlane(0x11);
             u32 idx = 1;
@@ -365,16 +365,16 @@ void TitleScene::Update() {
                     u8 changed = 0;
                     u8 i;
                     for (i = 0; i < 3; i++) {
-                        if (func_020230dc(data_020d43f0, 0, i) == 0x28) {
+                        if (func_020230dc(gSaveData, 0, i) == 0x28) {
                             u8 v = buf[i];
-                            func_02023134(data_020d43f0, 0, i, 0, 0x22, v);
+                            func_02023134(gSaveData, 0, i, 0, 0x22, v);
                             changed = 1;
                         }
                     }
                     for (i = 0; i < 6; i++) {
-                        if (func_020231f4(data_020d43f0, 0, 0x28, i)) {
-                            int r = func_0202317c(data_020d43f0, 0, 0x28, i);
-                            func_020231c0(data_020d43f0, r, 0);
+                        if (func_020231f4(gSaveData, 0, 0x28, i)) {
+                            int r = func_0202317c(gSaveData, 0, 0x28, i);
+                            func_020231c0(gSaveData, r, 0);
                             changed = 1;
                         }
                     }
@@ -382,12 +382,12 @@ void TitleScene::Update() {
                     if (changed) {
                         for (i = 0; i < 3; i++) {
                             u8 v = buf[i];
-                            int r = func_0202317c(data_020d43f0, 0, 0x22, v);
-                            func_020231c0(data_020d43f0, r, 0xc8);
-                            func_0202321c(data_020d43f0, (const u16 *) &tmp, 0x22, v);
+                            int r = func_0202317c(gSaveData, 0, 0x22, v);
+                            func_020231c0(gSaveData, r, 0xc8);
+                            func_0202321c(gSaveData, (const u16 *) &tmp, 0x22, v);
                         }
                     }
-                    func_02022db4(data_020d43f0);
+                    func_02022db4(gSaveData);
                     FrameTask::Get().StartChannel(0, 0x10);
                     data_020d433c.mUnk_76 = 1;
                     mUnk_d7 = 1;
@@ -474,7 +474,7 @@ void TitleScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            new MovieScene((void *) "/movie/bknd_op2.mods", data_020d433c.mUnk_79);
+            new MovieScene((void *) "/movie/bknd_op2.mods", data_020d433c.mLanguage);
             mUnk_cb++;
             break;
         case 21:
@@ -494,7 +494,7 @@ void TitleScene::Update() {
             break;
         case 23:
             if (mContext->mUnk_12 != 0) {
-                data_020d43f0[0].mUnk_1a_8 = 0;
+                gSaveData[0].mUnk_1a_8 = 0;
                 mUnk_cb++;
             }
             break;
@@ -665,7 +665,7 @@ void TitleScene::Update() {
             switch (mUnk_ce) {
                 case 0:
                     scene = 9;
-                    if (data_020d43f0[0].mUnk_5bf_0) {
+                    if (gSaveData[0].mUnk_5bf_0) {
                         func_02089278();
                     }
                     break;
@@ -711,7 +711,7 @@ void TitleScene::Update() {
             }
             break;
         case 44: {
-            data_020d43f0[0].mUnk_5bf_0 = 1;
+            gSaveData[0].mUnk_5bf_0 = 1;
             s32 id = func_02087100();
             if (id >= 0) {
                 new GiftUnlockScene(id);

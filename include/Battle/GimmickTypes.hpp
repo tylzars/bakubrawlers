@@ -9,8 +9,8 @@
 
 // Functions of other battle files / ITCM used by the gimmicks.
 void func_ov007_022719c8(void *buf, u8 id);
-GimmickSetData *func_ov007_02271ca8(UnkStruct_020d433c_0c *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
-void func_ov007_02271d78(UnkStruct_020d433c_0c *data, GimmickSetData *set);
+GimmickSetData *func_ov007_02271ca8(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
+void func_ov007_02271d78(GimmickCollision *data, GimmickSetData *set);
 extern MtxFx43 data_020c1cf4;
 extern "C" fx32 FX_Div(fx32 num, fx32 den); // fixed point num / den (hardware divider)
 void func_ov007_02233ed8(VecFx32 *in, u16 angle, VecFx32 *out); // rotates `in` about Y

@@ -109,7 +109,7 @@ void BattleMapObj::func_ov007_022493fc() {
             func_ov007_02249200("commandfiled0.nsbtx", "commandfiled0.nsbmd", "commandfiled0_data.bin", 0);
             break;
         case 10:
-            func_ov007_022492f8(&data_ov007_0227a2bc[data_020d433c.mUnk_95]);
+            func_ov007_022492f8(&data_ov007_0227a2bc[data_020d433c.mFieldId]);
             break;
         default:
             func_ov007_022492f8(&data_ov007_0227a2fc[mUnk_20]);

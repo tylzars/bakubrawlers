@@ -41,7 +41,7 @@ static const WindowCellRecord data_ov000_0222600c[2] = {
 #include "System/InputManager.hpp"
 #include "Scene/NameEntryScene.hpp"
 
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -493,15 +493,15 @@ void NameEntryScene::Update() {
                 }
                 RenderName();
                 if (mUnk_74 == 1) {
-                    data_020d43f0[0].mUnk_5d2 = 1;
+                    gSaveData[0].mUnk_5d2 = 1;
                 } else {
                     u32 amount = data_ov000_02225fc8[mUnk_74 - 1] * 100;
                     if (amount > 9999990) {
                         amount = 9999990;
                     }
-                    data_020d43f0[0].mMoney += amount;
-                    if (data_020d43f0[0].mMoney > 9999990) {
-                        data_020d43f0[0].mMoney = 9999990;
+                    gSaveData[0].mMoney += amount;
+                    if (gSaveData[0].mMoney > 9999990) {
+                        gSaveData[0].mMoney = 9999990;
                     }
                 }
                 mUnk_74 = 0;
@@ -515,7 +515,7 @@ void NameEntryScene::Update() {
                 case 0: {
                     u8 i = 0;
                     do {
-                        data_020d43f0[0].mName[i] = mName[i];
+                        gSaveData[0].mName[i] = mName[i];
                         i++;
                     } while (i < mMaxLength);
                     break;
@@ -660,10 +660,10 @@ void NameEntryScene::Load() {
     mTextBuffer = OS_Alloc(mTextBufferSize);
     MI_CpuClear16(mTextBuffer, mTextBufferSize);
     if (mMode == 0) {
-        if (data_020d43f0[0].mName[0] != 0) {
+        if (gSaveData[0].mName[0] != 0) {
             u8 i = 0;
             do {
-                u16 c = data_020d43f0[0].mName[i];
+                u16 c = gSaveData[0].mName[i];
                 if (c == 0) {
                     break;
                 }
@@ -732,14 +732,14 @@ void NameEntryScene::ClearTextBuffer() {
 void NameEntryScene::CheckSpecialName() {
     BOOL match;
     mUnk_74 = 0;
-    u32 value = data_020d43f0[0].mMoney - 3000;
+    u32 value = gSaveData[0].mMoney - 3000;
     u32 digit1k = (value / 1000) % 10;
     u32 digit10k = (value / 10000) % 10;
     u32 digit100k = (value / 100000) % 10;
     for (u8 i = 0; i < 6; i++) {
         switch (i) {
             case 0:
-                if (data_020d43f0[0].mUnk_5d2 != 0) {
+                if (gSaveData[0].mUnk_5d2 != 0) {
                     continue;
                 }
                 break;

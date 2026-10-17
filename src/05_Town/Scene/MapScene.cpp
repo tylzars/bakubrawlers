@@ -1,7 +1,7 @@
 #include "Scene/MapScene.hpp"
-#include "Game/UnkStruct_02065c40.hpp"
+#include "Game/ScriptPlayer.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Game/UnkStruct_020d48f0.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -153,7 +153,7 @@ void MapScene::Update() {
             mUnk_64++;
             break;
         case 3:
-            if (!mEvent->func_020678e8()) {
+            if (!mEvent->IsRunning()) {
                 mUnk_64 = 0xb;
                 break;
             }
@@ -204,7 +204,7 @@ void MapScene::Update() {
             if (mUnk_65 != 0) {
                 break;
             }
-            if (!mEvent->func_020678e8()) {
+            if (!mEvent->IsRunning()) {
                 mUnk_75 = 0;
                 mUnk_64 = 0xb;
                 break;
@@ -233,7 +233,7 @@ void MapScene::Update() {
             mUnk_64 = 3;
             break;
         case 11:
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 break;
             }
             FrameTask::Get().StartChannel(0, 0x12);
@@ -260,7 +260,7 @@ void MapScene::Update() {
             mMenu->Update(TRUE);
             if (mMenu->mState == 4) {
                 if (mTab == 3) {
-                    switch (data_020d43f0[0].mUnk_42) {
+                    switch (gSaveData[0].mUnk_42) {
                         case 1:
                         case 3:
                         case 6:
@@ -315,7 +315,7 @@ void MapScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mEvent->func_020676f8();
+            mEvent->RequestFinish();
             mContext->mUnk_12 = 0;
             mUnk_64++;
             break;
@@ -325,8 +325,8 @@ void MapScene::Update() {
             }
             mUnk_75 = 1;
             mUnk_64++;
-            if (mNextState == 7 && data_020d43f0[0].mUnk_42 == 5) {
-                mEvent = new UnkStruct_02065c40(7, 0, 1);
+            if (mNextState == 7 && gSaveData[0].mUnk_42 == 5) {
+                mEvent = new ScriptPlayer(7, 0, 1);
                 mUnk_64 = 0x18;
             }
             break;
@@ -369,19 +369,19 @@ void MapScene::Update() {
             mFinished = 1;
             break;
         case 24:
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 break;
             }
-            mEvent->func_0206eb10("cmd_ST_mev_011.bin");
+            mEvent->StartScript("cmd_ST_mev_011.bin");
             SpriteManager::Get().StartFade(2);
             mUnk_64++;
             break;
         case 25:
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 break;
             }
-            data_020d43f0[0].mUnk_42 = 6;
-            data_020d43f0[0].mUnk_43 = 0;
+            gSaveData[0].mUnk_42 = 6;
+            gSaveData[0].mUnk_43 = 0;
             mUnk_64 = 0x10;
             break;
     }
@@ -405,7 +405,7 @@ void MapScene::Init() {
     LoadMapBackground();
     func_ov005_0221abf4();
     LoadPanelText();
-    mEvent = new UnkStruct_02065c40(0, 0, 0);
+    mEvent = new ScriptPlayer(0, 0, 0);
     func_ov005_0221a598();
     mGlyphCount  = TextManager::Get().GlyphCount(8);
     mGlyphBuffer = OS_Alloc((s16) mGlyphCount * (s16) 0xc);
@@ -414,7 +414,7 @@ void MapScene::Init() {
 void MapScene::func_ov005_0221a598() {
     switch (mEvent->func_020667ec()) {
         case 3:
-            if (data_020d43f0[0].mUnk_24 & 1) {
+            if (gSaveData[0].mUnk_24 & 1) {
                 mUnk_74 = 3;
             } else {
                 mUnk_74 = 1;
@@ -425,7 +425,7 @@ void MapScene::func_ov005_0221a598() {
             mUnk_74 = 2;
             break;
         default:
-            if (data_020d43f0[0].mUnk_42 == 5) {
+            if (gSaveData[0].mUnk_42 == 5) {
                 mUnk_74 = 0;
             }
             break;
@@ -578,7 +578,7 @@ void MapScene::func_ov005_0221abf4() {
 }
 
 BOOL MapScene::func_ov005_0221b1a0() {
-    u32 result = mEvent->func_02067900();
+    u32 result = mEvent->GetResult();
     if (result != 0) {
         switch (result) {
             case 1:
@@ -596,7 +596,7 @@ BOOL MapScene::func_ov005_0221b1a0() {
                 break;
             case 5:
                 data_020d433c.mUnk_9a   = 0x11;
-                data_020d433c.mUnk_9a_0 = data_020d43f0[0].mUnk_28_6;
+                data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
                 mNextState              = 5;
                 break;
             case 6:
@@ -823,7 +823,7 @@ void MapScene::DrawPopup() {
 
 void MapScene::DrawMoney() {
     u8 i         = 0;
-    u32 value    = data_020d43f0[0].mMoney;
+    u32 value    = gSaveData[0].mMoney;
     s8 digits[7] = {-1, -1, -1, -1, -1, -1, -1};
     s8 pos       = 6;
     do {
@@ -856,17 +856,17 @@ void MapScene::func_ov005_0221bde8(u32 index) {
     mUnk_7e = 0;
     switch (index) {
         case 0:
-            if (data_020d48f0.mUnk_ba == data_020d48f0.mUnk_bc) {
+            if (data_020d48f0.mRank == data_020d48f0.mPrevRank) {
                 return;
             }
             TextManager::Get().mUse4bppFont = 1;
             ShowNumbers();
-            data_020d48f0.mUnk_bc = data_020d48f0.mUnk_ba;
+            data_020d48f0.mPrevRank = data_020d48f0.mRank;
             TextManager::Get().mUse4bppFont = 0;
             mUnk_7e_0 = 1;
             break;
         case 1:
-            if (data_020d43f0[0].mUnk_5b9_0 == 0) {
+            if (gSaveData[0].mUnk_5b9_0 == 0) {
                 return;
             }
             ShowText(2, 0x20);
@@ -874,7 +874,7 @@ void MapScene::func_ov005_0221bde8(u32 index) {
             break;
         case 2:
             func_02089208();
-            if (data_020d43f0[0].mUnk_5b9_1 == 0) {
+            if (gSaveData[0].mUnk_5b9_1 == 0) {
                 return;
             }
             ShowText(0x11, 0x20);
@@ -914,22 +914,22 @@ void MapScene::ShowNumbers() {
     mUnk_38 = 0x20;
     mUnk_38 = (0x6c - mUnk_38) / 2 + 0x1e;
     y       = 0x20;
-    if (data_020d48f0.mUnk_bc >= 100) {
+    if (data_020d48f0.mPrevRank >= 100) {
         x = 0x58 - mUnk_36;
-    } else if (data_020d48f0.mUnk_bc >= 10) {
+    } else if (data_020d48f0.mPrevRank >= 10) {
         x = 0x5c - mUnk_36;
     } else {
         x = 0x60 - mUnk_36;
     }
-    TextManager::Get().PrintNumber(data_020d48f0.mUnk_bc, 0, 0, buffer, 0x18, 0x10, &x, &y, 0, 2, 0x44, 0x10, 0, 1, 1);
-    if (data_020d48f0.mUnk_ba >= 100) {
+    TextManager::Get().PrintNumber(data_020d48f0.mPrevRank, 0, 0, buffer, 0x18, 0x10, &x, &y, 0, 2, 0x44, 0x10, 0, 1, 1);
+    if (data_020d48f0.mRank >= 100) {
         x2 = 0x90 - mUnk_36;
-    } else if (data_020d48f0.mUnk_ba >= 10) {
+    } else if (data_020d48f0.mRank >= 10) {
         x2 = 0x94 - mUnk_36;
     } else {
         x2 = 0x98 - mUnk_36;
     }
-    TextManager::Get().PrintNumber(data_020d48f0.mUnk_ba, 0, 0, buffer, 0x18, 0x10, &x2, &y, 0, 2, 0x44, 0x10, 0, 1, 1);
+    TextManager::Get().PrintNumber(data_020d48f0.mRank, 0, 0, buffer, 0x18, 0x10, &x2, &y, 0, 2, 0x44, 0x10, 0, 1, 1);
     QueueUpload(1, 4, 0x5000, buffer, size, 1);
     OS_Free(file);
     TextManager::Get().SetColor(1, 0, 0xf);
@@ -967,8 +967,8 @@ void MapScene::ShowText(u16 index, s32 unk2) {
 }
 
 BOOL MapScene::ShowCurrent() {
-    u8 type = data_020d43f0[0].mUnk_42;
-    u8 flag = data_020d43f0[0].mUnk_43;
+    u8 type = gSaveData[0].mUnk_42;
+    u8 flag = gSaveData[0].mUnk_43;
     if (type == 10) {
         ShowText(3, 0x20);
         return TRUE;

@@ -18,7 +18,7 @@ void GimmickBlock::Load() {
     if (!sResource) {
         char nsbmd[0x40];
         char nsbtx[0x40];
-        u8 n = data_020d433c.mUnk_95;
+        u8 n = data_020d433c.mFieldId;
         sprintf(nsbmd, "block_%02d.nsbmd", n);
         sprintf(nsbtx, "block_%02d.nsbtx", n);
         sResource = new ModelResource(nsbmd, 0, nsbtx, 1);

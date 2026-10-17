@@ -779,13 +779,13 @@ void BattleCommandPage::func_020571a8() {
             mCells[8]->DrawFrame(0, mUnk_fa, 0x24, 0x18, 0);
         } else {
             has = 0;
-            if (data_020d433c.mBattlePlayers->mPlayers[(u8)mUnk_fa]->mUnk_c8 != NULL) {
+            if (data_020d433c.mBattlePlayers->mPlayers[(u8)mUnk_fa]->mCpu != NULL) {
                 has = 1;
             }
             if (has == 1) {
                 mCells[9]->DrawFrame(0, mUnk_fa, 0x15, 0x12, 0);
             }
-            if ((data_020d433c.mUnk_98 == 1) & (mUnk_fa == data_020d43d7[cur])) {
+            if ((data_020d433c.mHasPartners == 1) & (mUnk_fa == data_020d43d7[cur])) {
                 mCells[10]->DrawFrame(0, mUnk_fa, 0x24, 0x18, 0);
             }
         }

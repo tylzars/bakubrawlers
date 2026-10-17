@@ -1,7 +1,7 @@
 #include "Text/TextManager.hpp"
 #include "UI/StorytalkWindow.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
@@ -188,7 +188,7 @@ void func_02087d68(StorytalkWindow *self) {
     func_020880f4(self);
 }
 
-// Re-entrant: deletes and recreates the cells; also called by the scenes that reload it (UnkStruct_02065c40.cpp,
+// Re-entrant: deletes and recreates the cells; also called by the scenes that reload it (ScriptPlayer.cpp,
 // BattleConfrontCard, BattleCommand, BattleObj00, BattleHud, BattleShoot).
 void StorytalkWindow::LoadGraphics() {
     char path[0x80];

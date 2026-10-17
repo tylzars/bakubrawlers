@@ -296,7 +296,7 @@ void BattleHud::func_ov007_022257e0() {
     ChangeDir("/");
     i = 0;
     do {
-        if (data_020d433c.mBattlePlayers->mPlayers[entries[i].mUnk_0d_4]->mUnk_f9 == 0) {
+        if (data_020d433c.mBattlePlayers->mPlayers[entries[i].mUnk_0d_4]->mSlots6cRemaining == 0) {
             mUnk_118[i] = 0xff;
         }
         BattleEntry *e = entries;
@@ -390,7 +390,7 @@ void BattleHud::Update() {
     }
     switch (mUnk_12b) {
         case 1:
-            if (data_020d433c.mUnk_85 == 0xe || (data_020d433c.mUnk_85 >= 7 && data_020d433c.mUnk_85 <= 10)) {
+            if (data_020d433c.mTutorialId == 0xe || (data_020d433c.mTutorialId >= 7 && data_020d433c.mTutorialId <= 10)) {
                 mUnk_12b = 2;
                 data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
                 data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);

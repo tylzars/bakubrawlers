@@ -30,13 +30,13 @@ void UnkScene_02226e4c::Update() {
             UnkStruct_020073d8 info;
             OS_GetOwnerInfo(&info);
             if (info.mKind == 1) {
-                data_020d433c.mUnk_79 = 0;
+                data_020d433c.mLanguage = 0;
                 mState = 8;
             } else if (info.mKind == 2) {
-                data_020d433c.mUnk_79 = 1;
+                data_020d433c.mLanguage = 1;
                 mState = 8;
             } else {
-                data_020d433c.mUnk_79 = 0;
+                data_020d433c.mLanguage = 0;
                 mObj0c = new MessageScreen(MESSAGE_SCREEN_TITLE_8);
                 mState = 3;
             }

@@ -1,7 +1,7 @@
 #include "global.h"
 #include "types.h"
 #include "Park/ParkMenu.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "System/FileSystem.hpp"
 #include "UI/MessageWindow.hpp"
@@ -67,7 +67,7 @@ ParkMenu::ParkMenu(u8 current) {
     mWindow->mCursor->mSelection = sel;
     mUnk_5c = new Ranking();
     mUnk_5c->Build();
-    mCount = data_020d43f0[0].mUnk_5c1;
+    mCount = gSaveData[0].mParkSlotCount;
     if (mCount >= 4) {
         mCount = 4;
     }
@@ -419,7 +419,7 @@ void ParkMenu::Draw() {
 }
 
 void ParkMenu::DrawNumber() {
-    u32 value = data_020d43f0[0].mMoney;
+    u32 value = gSaveData[0].mMoney;
     u8 i = 0;
     ParkDigits digits = sEmptyDigits;
     s8 pos = 6;

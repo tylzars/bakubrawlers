@@ -69,14 +69,14 @@ void GimmickHaosWall::Update() {
             return;
         }
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
-        if (!list->mUnk_298) {
+        if (!list->mBattleTarget) {
             return;
         }
         VecFx32 a;
         VecFx32 b;
         VecFx32 d;
         MtxFx33 m = data_0220e848;
-        BakuganModel *h = list->mUnk_298->mUnk_1a4;
+        BakuganModel *h = list->mBattleTarget->mUnk_1a4;
         VEC_Subtract(&mPosition, &h->mPosition, &a);
         if (mRotY) {
             func_01ffcfd8(&m, -mRotY);
@@ -102,7 +102,7 @@ void GimmickHaosWall::Update() {
         h->mPosition.y = c.y;
         h->mPosition.z = c.z;
         mUnk_45 = 0x1e;
-        func_ov007_0225ca18(data_020d433c.mBattlePlayers->mUnk_298, 7, 0);
+        func_ov007_0225ca18(data_020d433c.mBattlePlayers->mBattleTarget, 7, 0);
         SoundManager::Get().StartSeqArc(0x5b);
         mState++;
         break;

@@ -71,7 +71,7 @@ void BattleUnk29c::func_ov007_0226fca8() {
     if (mUnk_64[7] == 0) {
         mUnk_64[7] = new BattleFontObj((u8) (type + 7));
     }
-    type = data_020d433c.mBattlePlayers->mPlayers[type]->mUnk_f2;
+    type = data_020d433c.mBattlePlayers->mPlayers[type]->mPartner;
     if (mUnk_64[8] == 0) {
         mUnk_64[8] = new BattleFontObj((u8) (type + 11));
     }
@@ -143,7 +143,7 @@ void BattleUnk29c::func_ov007_0226ff08(u32 flag) {
     s32 far[3]  = {0, 0, 0};
     s32 near[3] = {-1, -1, -1};
     VecFx32 diff;
-    if (data_020d433c.mBattlePlayers->mUnk_298 == 0) {
+    if (data_020d433c.mBattlePlayers->mBattleTarget == 0) {
         return;
     }
     u8 i;
@@ -153,7 +153,7 @@ void BattleUnk29c::func_ov007_0226ff08(u32 flag) {
     for (i = 0; i < 3; i++) {
         mUnk_98[i] = 0;
     }
-    BattleTarget *target = data_020d433c.mBattlePlayers->mUnk_298;
+    BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
     BakuganModel *tp = target->mUnk_1a4;
     u8 n = 0;
     do {
@@ -161,7 +161,7 @@ void BattleUnk29c::func_ov007_0226ff08(u32 flag) {
             BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[n];
             VEC_Subtract(&mUnk_00[n]->mPosition, &tp->mPosition, &diff);
             s32 dist = VEC_Mag(&diff);
-            if (unit->mUnk_10 == 2 || unit->mUnk_10 == 3 || unit->mUnk_12 != 0) {
+            if (unit->mStatus == 2 || unit->mStatus == 3 || unit->mUnk_12 != 0) {
                 u8 j = 0;
                 do {
                     if (near[j] == -1 || far[j] > dist) {
@@ -199,7 +199,7 @@ void BattleUnk29c::func_ov007_0226ff08(u32 flag) {
 void BattleUnk29c::func_ov007_02270120(u32 index, VecFx32 *pos, u16 *rot, u8 a, u8 b) {
     if (mUnk_00[index] == 0 && mUnk_30[index] == 0) {
         mUnk_00[index] = new BakuganModel();
-        if (data_020d433c.mBattlePlayers->mUnk_295 < 8) {
+        if (data_020d433c.mBattlePlayers->mUnitCount < 8) {
             mUnk_00[index]->Setup(a, b, 1);
         } else {
             mUnk_00[index]->Setup(a, b, 2);
@@ -261,7 +261,7 @@ void BattleUnk29c::func_ov007_02270350() {
         if (k && mUnk_00[k - 1]) {
             VecFx32 pos = mUnk_00[k - 1]->mPosition;
             VecFx32 sc  = {0x4cd, 0x4cd, 0x4cd};
-            u8 sel      = data_020d433c.mBattlePlayers->mUnits[(u8) (k - 1)].mUnk_0f;
+            u8 sel      = data_020d433c.mBattlePlayers->mUnits[(u8) (k - 1)].mPlayer;
             pos.y += 0x14000;
             if (mUnk_64[sel]) {
                 mUnk_64[sel]->mPosition = pos;
@@ -293,7 +293,7 @@ void BattleUnk29c::func_ov007_0227044c() {
             VecFx32 pos = mUnk_00[mUnk_9b[i] - 1]->mPosition;
             VecFx32 sc  = sMarkerScale;
             u8 idx = mUnk_9b[i] - 1;
-            u8 sel = data_020d433c.mBattlePlayers->mUnits[idx].mUnk_0f;
+            u8 sel = data_020d433c.mBattlePlayers->mUnits[idx].mPlayer;
             u8 cur = data_020d433c.mBattlePlayers->mUnk_2a9;
             VecFx32 off = sMarkerOffset;
             MtxFx43 mtx = CameraManager::Get().mMtxC[0];
@@ -309,7 +309,7 @@ void BattleUnk29c::func_ov007_0227044c() {
                     mUnk_64[7]->mScale    = sc;
                     mUnk_64[7]->func_020526bc();
                 }
-            } else if (sel == data_020d433c.mBattlePlayers->mPlayers[cur]->mUnk_f2) {
+            } else if (sel == data_020d433c.mBattlePlayers->mPlayers[cur]->mPartner) {
                 if (mUnk_64[8]) {
                     mUnk_64[8]->mPosition = pos;
                     mUnk_64[8]->mScale    = sc;
@@ -352,7 +352,7 @@ void BattleUnk29c::func_ov007_02270784(u8 index) {
     s32 scale;
     u32 i = index - 1;
     BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) i];
-    if (unit->mUnk_10 == 0 || mUnk_00[i] == 0) {
+    if (unit->mStatus == 0 || mUnk_00[i] == 0) {
         return;
     }
     VecFx32 pos = mUnk_00[i]->mPosition;
@@ -366,7 +366,7 @@ void BattleUnk29c::func_ov007_02270784(u8 index) {
     }
     if (unit->mUnk_12 != 0) {
         if (mUnk_64[4]) {
-            if (unit->mUnk_10 != 1) {
+            if (unit->mStatus != 1) {
                 VecFx32 off = {-0x5000, 0, 0};
                 MtxFx43 mtx = CameraManager::Get().mMtxC[0];
                 mtx._[9]    = 0;
@@ -386,7 +386,7 @@ void BattleUnk29c::func_ov007_02270784(u8 index) {
         }
         slot = 0xff;
     }
-    switch (unit->mUnk_10) {
+    switch (unit->mStatus) {
         case 2:
             slot = 6;
             break;

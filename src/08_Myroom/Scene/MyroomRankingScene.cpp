@@ -54,7 +54,7 @@ const u8 data_ov008_02228cbc[6][2] = {{0x37, 0x31}, {0x37, 0x45}, {0x37, 0x59}, 
 
 #include "Text/TextManager.hpp"
 #include "Scene/MyroomRankingScene.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -541,7 +541,7 @@ void MyroomRankingScene::func_ov008_02220d14() {
             s16 height;
             width  = 0;
             height = 0;
-            TextManager::Get().Print(data_020d43f0[0].mName, 0x18, mTextBuffers[i], 0x10, 4, &width, &height, 0, 0, 2, 0x42, 0,
+            TextManager::Get().Print(gSaveData[0].mName, 0x18, mTextBuffers[i], 0x10, 4, &width, &height, 0, 0, 2, 0x42, 0,
                                      0, 0, 0, 1, 1);
         } else {
             TextManager &text = TextManager::Get();

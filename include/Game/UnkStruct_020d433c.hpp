@@ -75,9 +75,9 @@ struct BattleRecord {
     };
     /* 04 */ u16 mUnk_04;
     /* 06 */ u16 mUnk_06;
-    /* 08 */ u8 mUnk_08;
-    /* 09 */ u8 mUnk_09;
-    /* 0a */ u8 mUnk_0a;
+    /* 08 */ u8 mBakuganId;
+    /* 09 */ u8 mAttribute;
+    /* 0a */ u8 mStatus;
     /* 0b */ u8 mUnk_0b;
 };
 
@@ -95,7 +95,7 @@ struct BattlePlayer : public SceneBase {
         };
     };
     /* c0 */ PAD(0xc0, 0xc8);
-    /* c8 */ BattleCpu *mUnk_c8;
+    /* c8 */ BattleCpu *mCpu;
     /* cc */ u16 mUnk_cc[3];
     /* d2 */ PAD(0xd2, 0xd4);
     /* d4 */ s32 mUnk_d4;
@@ -105,19 +105,19 @@ struct BattlePlayer : public SceneBase {
     /* e4 */ u32 mUnk_e4;
     /* e8 */ u32 mUnk_e8;
     /* ec */ u8 mUnk_ec;
-    /* ed */ u8 mUnk_ed; // length of the name at +b0
+    /* ed */ u8 mNameLength; // length of the name at +b0
     /* ee */ u8 mUnk_ee;
-    /* ef */ u8 mUnk_ef;
-    /* f0 */ u8 mUnk_f0;
+    /* ef */ u8 mState;
+    /* f0 */ u8 mIndex;
     /* f1 */ u8 mUnk_f1;
-    /* f2 */ u8 mUnk_f2;
+    /* f2 */ u8 mPartner;
     /* f3 */ u8 mUnk_f3;
-    /* f4 */ u8 mUnk_f4;
+    /* f4 */ u8 mHistoryCount;
     /* f5 */ u8 mRecord;
-    /* f6 */ u8 mUnk_f6;
+    /* f6 */ u8 mCharacterId;
     /* f7 */ u8 mUnk_f7;
-    /* f8 */ u8 mUnk_f8;
-    /* f9 */ u8 mUnk_f9;
+    /* f8 */ u8 mSlots54Remaining;
+    /* f9 */ u8 mSlots6cRemaining;
     /* fa */ u16 mUnk_fa;
     /* fc */ u8 mUnk_fc;
     /* fd */ u8 mUnk_fd;
@@ -156,9 +156,9 @@ struct BattlePlayer : public SceneBase {
 
     // Appends (id, kind) to the 6-byte history entries at +84; mUnk_f4 counts them.
     void PushHistory(u16 id, u8 kind) {
-        *(u16 *) ((u8 *) this + mUnk_f4 * 6 + 0x84) = id;
-        *((u8 *) this + mUnk_f4 * 6 + 0x86)          = kind;
-        mUnk_f4++;
+        *(u16 *) ((u8 *) this + mHistoryCount * 6 + 0x84) = id;
+        *((u8 *) this + mHistoryCount * 6 + 0x86)          = kind;
+        mHistoryCount++;
     }
 
     u8 RecordIndex() {
@@ -170,7 +170,7 @@ struct BattlePlayer : public SceneBase {
 
     bool IsActive() const {
         bool active = false;
-        if (mUnk_c8) {
+        if (mCpu) {
             active = true;
         }
         return active;
@@ -178,7 +178,7 @@ struct BattlePlayer : public SceneBase {
 
     // Index of the allied player (own side = this player or its partner).
     u8 Partner() {
-        return mUnk_f2;
+        return mPartner;
     }
 };
 
@@ -186,10 +186,10 @@ struct BattlePlayer : public SceneBase {
 struct BattleUnit {
     /* 00 */ VecFx32 mPos;
     /* 0c */ u16 mUnk_0c;
-    /* 0e */ u8 mUnk_0e;
-    /* 0f */ u8 mUnk_0f;
-    /* 10 */ u8 mUnk_10;
-    /* 11 */ u8 mUnk_11;
+    /* 0e */ u8 mRecord;
+    /* 0f */ u8 mPlayer;
+    /* 10 */ u8 mStatus;
+    /* 11 */ u8 mMarker;
     /* 12 */ u8 mUnk_12;
     /* 13 */ PAD(0x13, 0x14);
 };
@@ -197,12 +197,12 @@ struct BattleUnit {
 #include "Battle/BattleUnk29c.hpp"
 
 struct BattleMarker {
-    /* 0 */ u8 mUnk_0;
-    /* 1 */ u8 mUnk_1;
-    /* 2 */ u8 mUnk_2;
-    /* 3 */ u8 mUnk_3;
-    /* 4 */ u8 mUnk_4;
-    /* 5 */ u8 mUnk_5;
+    /* 0 */ u8 mSlot;
+    /* 1 */ u8 mPlayer;
+    /* 2 */ u8 mStatus;
+    /* 3 */ u8 mCellX;
+    /* 4 */ u8 mCellY;
+    /* 5 */ u8 mUnitHandle;
     /* 6 */ PAD(6, 8);
 };
 
@@ -210,30 +210,30 @@ struct BattleMarker {
 struct BattlePlayerList : public SceneBase {
     /* 000 SceneBase */
     /* 00c */ BattlePlayer *mPlayers[4];
-    /* 01c */ BattleMarker mUnk_1c[12];
+    /* 01c */ BattleMarker mMarkers[12];
     /* 07c */ BattleUnit mUnits[12];
-    /* 16c */ s8 mUnk_16c[14][10];
-    /* 1f8 */ s8 mUnk_1f8[14][10];
-    /* 284 */ u8 mUnk_284[4];
-    /* 288 */ u16 mUnk_288;
-    /* 28a */ u8 mUnk_28a;
+    /* 16c */ s8 mMarkerHandles[14][10];
+    /* 1f8 */ s8 mUnitHandles[14][10];
+    /* 284 */ u8 mTurnOrder[4];
+    /* 288 */ u16 mTurnCount;
+    /* 28a */ u8 mTurnPlayer;
     /* 28b */ u8 mUnk_28b;
     /* 28c */ u8 mUnk_28c;
-    /* 28d */ u8 mUnk_28d;
-    /* 28e */ u8 mUnk_28e;
+    /* 28d */ u8 mUnitA;
+    /* 28e */ u8 mUnitB;
     /* 28f */ u8 mUnk_28f;
     /* 290 */ PAD(0x290, 0x291);
     /* 291 */ u8 mUnk_291;
     /* 292 */ u8 mUnk_292;
     /* 293 */ u8 mUnk_293;
-    /* 294 */ u8 mUnk_294;
-    /* 295 */ u8 mUnk_295;
+    /* 294 */ u8 mMarkerCount;
+    /* 295 */ u8 mUnitCount;
     /* 296 */ PAD(0x296, 0x298);
-    /* 298 */ BattleTarget *mUnk_298;
+    /* 298 */ BattleTarget *mBattleTarget;
     /* 29c */ BattleUnk29c *mUnk_29c;
     /* 2a0 */ Camera *mCamera;
     /* 2a4 */ StorytalkWindow *mUnk_2a4;
-    /* 2a8 */ u8 mUnk_2a8;
+    /* 2a8 */ u8 mState;
     /* 2a9 */ u8 mUnk_2a9;
     /* 2aa */ u8 mUnk_2aa;
     /* 2ab */ u8 mUnk_2ab;
@@ -250,7 +250,7 @@ struct BattlePlayerList : public SceneBase {
     /* 08 */ virtual void Update(); // 0226026c
 
     BattlePlayer *Current() {
-        return mPlayers[mUnk_28a];
+        return mPlayers[mTurnPlayer];
     }
 
     // Index of the player whose units are being commanded (compared with BattleUnit::mUnk_0f).
@@ -259,18 +259,18 @@ struct BattlePlayerList : public SceneBase {
     }
 
     u8 Unk294() {
-        return mUnk_294;
+        return mMarkerCount;
     }
     BattleUnit *Units() {
         return mUnits;
     }
 
     BattleMarker *Entries() {
-        return mUnk_1c;
+        return mMarkers;
     }
 
     s8 CellAt(u8 row, u8 col) {
-        return mUnk_1f8[row][col];
+        return mUnitHandles[row][col];
     }
 
     void SetCursor(u8 x, u8 y) {
@@ -292,28 +292,28 @@ struct BattleObstacle;
 
 // Collision manager of the gimmick set files (0x214 bytes, vtable 0228abfc, ctor 02271bb4): a list of up to 0x7f loaded
 // sets (slot 0 is the list head) handed out through a ring of slot pointers; Update tests the sets against each other.
-struct UnkStruct_020d433c_0c : public SceneBase {
+struct GimmickCollision : public SceneBase {
     /* 00 SceneBase */
-    /* 0c */ GimmickSetData *mUnk_0c; // 0x80 slots of 0x838 bytes
-    /* 10 */ GimmickSetData *mUnk_10[0x80]; // slot ring
-    /* 210 */ u8 mUnk_210; // ring position where a released slot is put back
-    /* 211 */ u8 mUnk_211; // ring position of the next slot to hand out
-    /* 212 */ u8 mUnk_212; // set while the shoot screen is shown
+    /* 0c */ GimmickSetData *mSets; // 0x80 slots of 0x838 bytes
+    /* 10 */ GimmickSetData *mSetRing[0x80]; // slot ring
+    /* 210 */ u8 mRingWriteIndex; // ring position where a released slot is put back
+    /* 211 */ u8 mRingReadIndex; // ring position of the next slot to hand out
+    /* 212 */ u8 mEnabled; // set while the shoot screen is shown
     /* 213 */ PAD(0x213, 0x214);
 
-    UnkStruct_020d433c_0c(); // 02271bb4
-    virtual ~UnkStruct_020d433c_0c();
+    GimmickCollision(); // 02271bb4
+    virtual ~GimmickCollision();
     /* 08 */ virtual void Update(); // 02271db0
 
-    void func_ov007_02271e48(GimmickSetData *a, GimmickSetData *b);
-    BOOL func_ov007_0227203c(BattleObstacle *a, BattleObstacle *b);
+    void TestSets(GimmickSetData *a, GimmickSetData *b);
+    BOOL TestObstacles(BattleObstacle *a, BattleObstacle *b);
 };
 
 struct UnkStruct_020d433c {
     /* 00 */ BattlePlayerList *mBattlePlayers;
     /* 04 */ EffectManager *mEffects;
     /* 08 */ GimmickManager *mGimmicks;
-    /* 0c */ UnkStruct_020d433c_0c *mUnk_0c;
+    /* 0c */ GimmickCollision *mGimmickCollision;
     /* 10 */ AntennaIndicator *mUnk_10;
     union {
         /* 14 */ u16 mUnk_14;
@@ -327,9 +327,9 @@ struct UnkStruct_020d433c {
     /* 76 */ u8 mUnk_76;
     /* 77 */ u8 mUnk_77;
     /* 78 */ PAD(0x78, 0x79);
-    /* 79 */ u8 mUnk_79;
+    /* 79 */ u8 mLanguage;
     /* 7a */ u8 mUnk_7a;
-    /* 7b */ u8 mUnk_7b;
+    /* 7b */ u8 mNextScene;
     /* 7c */ u8 mUnk_7c;
     /* 7d */ u8 mUnk_7d;
     /* 7e */ u8 mUnk_7e_0 : 4;
@@ -340,7 +340,7 @@ struct UnkStruct_020d433c {
     /* 82 */ u8 mUnk_82;
     /* 83 */ u8 mUnk_83;
     /* 84 */ u8 mUnk_84;
-    /* 85 */ u8 mUnk_85;
+    /* 85 */ u8 mTutorialId;
     /* 86 */ u8 mUnk_86;
     /* 87 */ u8 mUnk_87;
     /* 88 */ u8 mUnk_88_0 : 4;
@@ -353,10 +353,10 @@ struct UnkStruct_020d433c {
     /* 8c */ u8 mUnk_8c_0 : 4;
     /* 8c */ u8 mUnk_8c_4 : 4;
     /* 8d */ u8 mUnk_8d[8];
-    /* 95 */ u8 mUnk_95;
+    /* 95 */ u8 mFieldId;
     /* 96 */ s8 mUnk_96;
     /* 97 */ u8 mPlayerCount;
-    /* 98 */ u8 mUnk_98;
+    /* 98 */ u8 mHasPartners;
     /* 99 */ u8 mUnk_99;
     union {
         /* 9a */ u8 mUnk_9a;
@@ -370,11 +370,11 @@ struct UnkStruct_020d433c {
             /* 9a */ u8 mUnk_9a_7 : 1;
         };
     };
-    /* 9b */ u8 mUnk_9b[4];
-    /* 9f */ u8 mUnk_9f[4];
+    /* 9b */ u8 mPartners[4];
+    /* 9f */ u8 mCharacterIds[4];
     /* a3 */ u8 mUnk_a3[4];
     /* a7 */ u8 mUnk_a7;
-    /* a8 */ u8 mUnk_a8;
+    /* a8 */ u8 mWireless;
     /* a9 */ u8 mUnk_a9[4];
     /* ad */ u8 mUnk_ad;
     /* ae */ u8 mUnk_ae;

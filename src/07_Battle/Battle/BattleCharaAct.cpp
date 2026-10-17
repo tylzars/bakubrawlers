@@ -8,7 +8,7 @@
 #include "Graphics/Model.hpp"
 #include "Graphics/ModelInternal.hpp"
 #include "System/FileSystem.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/AntennaIndicator.hpp"
 #include "System/InputManager.hpp"
 #include "System/WirelessManager.hpp"
@@ -184,7 +184,7 @@ BattleCharaAct::BattleCharaAct(Camera *camera, u8 player, u32 kind, u8 unk4, u8 
 void BattleCharaAct::func_ov007_02267a8c() {
     mUnk_32 = 0;
     mUnk_3d = 0;
-    mUnk_38 = data_020d433c.mBattlePlayers->mPlayers[mUnk_39]->mUnk_f6;
+    mUnk_38 = data_020d433c.mBattlePlayers->mPlayers[mUnk_39]->mCharacterId;
     if (mUnk_36 >= 0x10) {
         mUnk_36 = 10;
     }
@@ -225,7 +225,7 @@ void BattleCharaAct::func_ov007_02267a8c() {
     mUnk_14 = LoadFile(buffer, 0, 0, 0, 0, 0);
     mUnk_0c->SetPath(mUnk_14, 0);
     ChangeDir("/");
-    mUnk_20 = new ModelLightGroup(LightSetups()[data_020d433c.mUnk_95]);
+    mUnk_20 = new ModelLightGroup(LightSetups()[data_020d433c.mFieldId]);
 }
 
 BattleCharaAct::~BattleCharaAct() {
@@ -395,7 +395,7 @@ void BattleCharaAct::Update() {
             if (data_ov007_0228a2e4[mUnk_38] != NULL) {
                 mUnk_30 = data_ov007_0228a2e4[mUnk_38][mUnk_36];
                 if (mUnk_30 != 0x1ee) {
-                    if (mUnk_30 == 0x1dc && data_020d43f0[0].mUnk_42 == 0) {
+                    if (mUnk_30 == 0x1dc && gSaveData[0].mUnk_42 == 0) {
                         mUnk_30 = 0x1ee - 0x11;
                     }
 const u8 *t = data_ov007_0228a33c[mUnk_38];

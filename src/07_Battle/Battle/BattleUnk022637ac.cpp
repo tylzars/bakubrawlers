@@ -68,7 +68,7 @@ BattleUnk022637ac::BattleUnk022637ac()
     mUnk_6c = 0;
     mUnk_6e = 0;
     mUnk_70 = 0;
-    mUnk_15 = data_020d433c.mBattlePlayers->mUnk_28a;
+    mUnk_15 = data_020d433c.mBattlePlayers->mTurnPlayer;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 own = list->mUnk_2a9;
     mUnk_10 = list->mPlayers[mUnk_15]->mRecord;
@@ -78,7 +78,7 @@ BattleUnk022637ac::BattleUnk022637ac()
             mUnk_0e = 1;
         }
     }
-    mUnk_1c = data_020d433c.mBattlePlayers->mUnk_298;
+    mUnk_1c = data_020d433c.mBattlePlayers->mBattleTarget;
     mUnk_16 = mUnk_1c->mUnk_1e8 - 1;
     mUnk_18 = data_020d433c.mBattlePlayers->mPlayers[mUnk_15]->mUnk_fa;
     mUnk_11 = mUnk_18 - 0xc9;
@@ -438,7 +438,7 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
                     }
                     i++;
                 } while (i < count);
-                mUnk_2b = slots[MATH_Rand32(&data_020d42e8, n)];
+                mUnk_2b = slots[MATH_Rand32(&gRandom, n)];
             }
             break;
         case 3: {
@@ -446,7 +446,7 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
             BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[mUnk_15];
             u8 count         = data_020d433c.mUnk_99;
             do {
-                if (pl->mRecords[i].mUnk_0a == 0) {
+                if (pl->mRecords[i].mStatus == 0) {
                     result = 0;
                     break;
                 }
@@ -462,13 +462,13 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
                 list = data_020d433c.mBattlePlayers;
                 n        = 0;
                 do {
-                    if (list->mPlayers[mUnk_15]->mRecords[j].mUnk_0a == 0) {
+                    if (list->mPlayers[mUnk_15]->mRecords[j].mStatus == 0) {
                         slots[n] = j;
                         n++;
                     }
                     j++;
                 } while (j < count2);
-                mUnk_2b = slots[MATH_Rand32(&data_020d42e8, n)];
+                mUnk_2b = slots[MATH_Rand32(&gRandom, n)];
             }
             break;
         }
@@ -485,14 +485,14 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
                 do {
                     y = 0;
                     do {
-                        u8 v = data_020d433c.mBattlePlayers->mUnk_1f8[y][x];
+                        u8 v = data_020d433c.mBattlePlayers->mUnitHandles[y][x];
                         if (v != 0) {
                             u8 unit = v - 1;
                             u8 me = mUnk_15;
-                            u8 owner = data_020d433c.mBattlePlayers->mUnits[unit].mUnk_0f;
+                            u8 owner = data_020d433c.mBattlePlayers->mUnits[unit].mPlayer;
                             if (owner != me) {
-                                if (data_020d433c.mUnk_98 != 0) {
-                                    if (owner != data_020d433c.mBattlePlayers->mPlayers[me]->mUnk_f2) {
+                                if (data_020d433c.mHasPartners != 0) {
+                                    if (owner != data_020d433c.mBattlePlayers->mPlayers[me]->mPartner) {
                                         found[n] = unit;
                                         n++;
                                     }
@@ -507,7 +507,7 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
                     x++;
                 } while (x < 10);
                 if (n != 0) {
-                    u8 pick = MATH_Rand32(&data_020d42e8, n);
+                    u8 pick = MATH_Rand32(&gRandom, n);
                     mUnk_29 = found[pick];
                     result  = 0;
                 }
@@ -523,19 +523,19 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
             do {
                 y = 0;
                 do {
-                    u8 v = data_020d433c.mBattlePlayers->mUnk_16c[y][x];
+                    u8 v = data_020d433c.mBattlePlayers->mMarkerHandles[y][x];
                     if (v != 0) {
                         pairs[n][0] = v - 1;
                         pairs[n][1] = 0xff;
-                        u8 w        = data_020d433c.mBattlePlayers->mUnk_1f8[y][x];
+                        u8 w        = data_020d433c.mBattlePlayers->mUnitHandles[y][x];
                         if (w == 0) {
                             n++;
                         } else {
                             u8 unit  = w - 1;
-                            u8 owner = data_020d433c.mBattlePlayers->mUnits[unit].mUnk_0f;
+                            u8 owner = data_020d433c.mBattlePlayers->mUnits[unit].mPlayer;
                             if (owner != mUnk_15) {
-                                if (data_020d433c.mUnk_98 != 0) {
-                                    if (owner != data_020d433c.mBattlePlayers->mPlayers[mUnk_15]->mUnk_f2) {
+                                if (data_020d433c.mHasPartners != 0) {
+                                    if (owner != data_020d433c.mBattlePlayers->mPlayers[mUnk_15]->mPartner) {
                                         pairs[n][1] = unit;
                                         n++;
                                     }
@@ -551,7 +551,7 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
                 x++;
             } while (x < 10);
             if (n != 0) {
-                u8 pick = MATH_Rand32(&data_020d42e8, n);
+                u8 pick = MATH_Rand32(&gRandom, n);
                 mUnk_2a = pairs[pick][0];
                 result  = 0;
                 mUnk_29 = pairs[pick][1];
@@ -565,8 +565,8 @@ BOOL BattleUnk022637ac::func_ov007_02264a5c() {
             break;
         case 8: {
             BattleUnit *unit      = &data_020d433c.mBattlePlayers->mUnits[mUnk_16];
-            UnitIndex rec         = (UnitIndex) unit->mUnk_0e;
-            BattleRecord *record  = &data_020d433c.mBattlePlayers->mPlayers[unit->mUnk_0f]->mRecords[rec];
+            UnitIndex rec         = (UnitIndex) unit->mRecord;
+            BattleRecord *record  = &data_020d433c.mBattlePlayers->mPlayers[unit->mPlayer]->mRecords[rec];
             u16 b                 = record->mUnk_06;
             if (record->mUnk_04 + b >= 0x3de || b == 0) {
                 result = 1;
@@ -703,11 +703,11 @@ u8 BattleUnk022637ac::func_ov007_0226547c() {
                 break;
             }
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            UnitIndex marker       = (UnitIndex) list->mUnits[mUnk_16].mUnk_11;
+            UnitIndex marker       = (UnitIndex) list->mUnits[mUnk_16].mMarker;
             BattleMarker *entries  = list->Entries();
-            list->mUnk_1c[marker].mUnk_2 = 3;
+            list->mMarkers[marker].mStatus = 3;
             VecFx32 pos;
-            func_ov007_02248944(&pos, entries[marker].mUnk_3, entries[marker].mUnk_4);
+            func_ov007_02248944(&pos, entries[marker].mCellX, entries[marker].mCellY);
             Camera *cam = mUnk_30;
             u16 angle   = 0x2000;
             int idx     = angle >> 4;
@@ -728,14 +728,14 @@ u8 BattleUnk022637ac::func_ov007_0226547c() {
             break;
         }
         case 2:
-            if (data_020d433c.mBattlePlayers->mUnk_1c[data_020d433c.mBattlePlayers->mUnits[mUnk_16].mUnk_11].mUnk_2 != 3) {
+            if (data_020d433c.mBattlePlayers->mMarkers[data_020d433c.mBattlePlayers->mUnits[mUnk_16].mMarker].mStatus != 3) {
                 mUnk_28++;
             }
             break;
         case 3:
             mUnk_1a++;
             if (mUnk_1a > 0x78) {
-                func_ov007_02262714(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnits[mUnk_16].mUnk_11, mUnk_15, mUnk_2b);
+                func_ov007_02262714(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnits[mUnk_16].mMarker, mUnk_15, mUnk_2b);
                 mUnk_1a = 0;
                 done    = 1;
             }
@@ -778,7 +778,7 @@ u8 BattleUnk022637ac::func_ov007_02265718() {
             func_ov007_022629cc(data_020d433c.mBattlePlayers, mUnk_16, mUnk_2b);
             {
                 BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_15]->mRecords[mUnk_2b];
-                ((BakuganModel *) mUnk_1c->mUnk_1a4)->Setup(record->mUnk_08, record->mUnk_09, 3);
+                ((BakuganModel *) mUnk_1c->mUnk_1a4)->Setup(record->mBakuganId, record->mAttribute, 3);
             }
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
@@ -849,12 +849,12 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
                 list      = data_020d433c.mBattlePlayers;
                 units     = list->mUnits;
                 unit      = UnitAt(units, mUnk_29, sz);
-                marker    = &list->Entries()[unit->mUnk_11];
-                func_ov007_02248944(&mUnk_54, marker->mUnk_3, marker->mUnk_4);
+                marker    = &list->Entries()[unit->mMarker];
+                func_ov007_02248944(&mUnk_54, marker->mCellX, marker->mCellY);
                 SetTransformPosition(mUnk_1c->mUnk_1a4, mUnk_54.x, 0x899a, mUnk_54.z);
                 VecFx32 a = mUnk_1c->mUnk_1a4->mPosition;
                 VecFx32 b = *(VecFx32 *) unit;
-                mUnk_1c->func_ov007_02259a40(marker->mUnk_3, marker->mUnk_4, &a, &b);
+                mUnk_1c->func_ov007_02259a40(marker->mCellX, marker->mCellY, &a, &b);
                 mUnk_1c->mUnk_1a4->mPosition = a;
                 mUnk_1c->mUnk_1d2       = 3;
                 mUnk_1c->mUnk_1a4->mVisible = 0;
@@ -865,13 +865,13 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
                 BattleRecord *record = &pl->mRecords[ri];
                 u16 r4               = record->mUnk_04;
                 u16 r6               = record->mUnk_06;
-                u8 r9                = record->mUnk_09;
+                u8 r9                = record->mAttribute;
                 BattleUnk022637acUnit tmp;
                 MI_CpuCopy8((u8 *) units + caster * sz, &tmp, sizeof(tmp));
                 tmp.mPos.x = mUnk_1c->mUnk_1a4->mPosition.x;
                 tmp.mPos.z = mUnk_1c->mUnk_1a4->mPosition.z;
                 func_ov007_02262828(data_020d433c.mBattlePlayers, mUnk_16, 2);
-                func_ov007_02262768(data_020d433c.mBattlePlayers, &tmp.mPos, tmp.mUnk_0c, tmp.mUnk_0f, tmp.mUnk_0e, unit->mUnk_11, 1);
+                func_ov007_02262768(data_020d433c.mBattlePlayers, &tmp.mPos, tmp.mUnk_0c, tmp.mUnk_0f, tmp.mUnk_0e, unit->mMarker, 1);
                 u8 *rec2 = (u8 *) data_020d433c.mBattlePlayers->mPlayers[mUnk_15] + mUnk_10 * 12;
                 *(u16 *) (rec2 + 0x10) = r4;
                 *(u16 *) (rec2 + 0x12) = r6;
@@ -933,7 +933,7 @@ u8 BattleUnk022637ac::func_ov007_02265fac() {
             if (mUnk_1a >= 0x50 && !mUnk_62_1) {
                 mUnk_62_1            = 1;
                 BattleMarker *marker = &data_020d433c.mBattlePlayers->Entries()[mUnk_2a];
-                func_ov007_02248944(&mUnk_54, marker->mUnk_3, marker->mUnk_4);
+                func_ov007_02248944(&mUnk_54, marker->mCellX, marker->mCellY);
                 SetTransformPosition(mUnk_1c->mUnk_1a4, mUnk_54.x, 0x899a, mUnk_54.z);
                 u8 idx = mUnk_29;
                 if (idx == 0xff) {
@@ -941,7 +941,7 @@ u8 BattleUnk022637ac::func_ov007_02265fac() {
                 } else {
                     VecFx32 a = mUnk_1c->mUnk_1a4->mPosition;
                     VecFx32 b = *(VecFx32 *) &data_020d433c.mBattlePlayers->mUnits[idx];
-                    mUnk_1c->func_ov007_02259a40(marker->mUnk_3, marker->mUnk_4, &a, &b);
+                    mUnk_1c->func_ov007_02259a40(marker->mCellX, marker->mCellY, &a, &b);
                     mUnk_1c->mUnk_1a4->mPosition = a;
                     func_ov007_02262a64(data_020d433c.mBattlePlayers, mUnk_29, mUnk_16);
                     mUnk_1c->mUnk_1d2 = 3;
@@ -1011,7 +1011,7 @@ u8 BattleUnk022637ac::func_ov007_022663f0() {
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
-                data_020d433c.mBattlePlayers->mUnits[mUnk_16].mUnk_10 = 3;
+                data_020d433c.mBattlePlayers->mUnits[mUnk_16].mStatus = 3;
                 done                                                   = 1;
             }
             break;
@@ -1164,7 +1164,7 @@ u8 BattleUnk022637ac::func_ov007_02266a28() {
         case 4:
             if (func_ov007_02267100(this)) {
                 mUnk_1a = 0;
-                const BattleUnk022637acEffect *entry = &data_ov007_0227ab00[data_020d433c.mUnk_95];
+                const BattleUnk022637acEffect *entry = &data_ov007_0227ab00[data_020d433c.mFieldId];
                 VecFx32 pos                          = sEffectPos_02266a28_1;
                 pos.x                                = entry->mPos.x;
                 pos.z                                = entry->mPos.z;
@@ -1183,8 +1183,8 @@ u8 BattleUnk022637ac::func_ov007_02266a28() {
                 u8 i    = 0;
                 do {
                     BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[i];
-                    if (unit->mUnk_10 != 0) {
-                        if (!(unit->mUnk_0f == mUnk_15 && unit->mUnk_0e == mUnk_10)) {
+                    if (unit->mStatus != 0) {
+                        if (!(unit->mPlayer == mUnk_15 && unit->mRecord == mUnk_10)) {
                             mUnk_71[mUnk_70++] = i;
                         }
                     }
@@ -1220,18 +1220,18 @@ u8 BattleUnk022637ac::func_ov007_02266a28() {
         }
         case 7: {
             BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[mUnk_71[mUnk_70]];
-            mUnk_1c->func_ov007_0225ca48(unit->mUnk_0f, unit->mUnk_0e);
+            mUnk_1c->func_ov007_0225ca48(unit->mPlayer, unit->mRecord);
             func_ov007_02267098(this);
-            if (func_ov007_0226745c(this, unit->mUnk_0f, unit->mUnk_0e)) {
+            if (func_ov007_0226745c(this, unit->mPlayer, unit->mRecord)) {
                 mUnk_28++;
             }
             break;
         }
         case 8: {
             BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[mUnk_71[mUnk_70]];
-            mUnk_1c->func_ov007_0225ca48(unit->mUnk_0f, unit->mUnk_0e);
+            mUnk_1c->func_ov007_0225ca48(unit->mPlayer, unit->mRecord);
             func_ov007_02267098(this);
-            func_ov007_0226745c(this, unit->mUnk_0f, unit->mUnk_0e);
+            func_ov007_0226745c(this, unit->mPlayer, unit->mRecord);
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
@@ -1266,7 +1266,7 @@ BOOL func_ov007_02267100(BattleUnk022637ac *self) {
     VecFx32 d1;
     VecFx32 d2;
     Camera *cam;
-    const BattleUnk022637acEffect *entry = &data_ov007_0227ab00[data_020d433c.mUnk_95];
+    const BattleUnk022637acEffect *entry = &data_ov007_0227ab00[data_020d433c.mFieldId];
     switch (self->mUnk_38) {
         case 0:
             cam   = self->mUnk_30;
@@ -1465,9 +1465,9 @@ BOOL func_ov007_022677cc(BattleUnk022637ac *self) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     do {
         BattleUnit *unit = &list->mUnits[i];
-        if (unit->mUnk_10) {
-            UnitIndex e       = (UnitIndex) unit->mUnk_0e;
-            BattleRecord *rec = &list->mPlayers[unit->mUnk_0f]->mRecords[e];
+        if (unit->mStatus) {
+            UnitIndex e       = (UnitIndex) unit->mRecord;
+            BattleRecord *rec = &list->mPlayers[unit->mPlayer]->mRecords[e];
             c += 0x3de;
             a += rec->mUnk_04;
             b += rec->mUnk_06;
@@ -1493,9 +1493,9 @@ u32 func_ov007_02267884(BattleUnk022637ac *self) {
     do {
         if (self->mUnk_16 != i) {
             BattleUnit *unit = &units[i];
-            if (selfUnit->mUnk_11 == unit->mUnk_11) {
-                u16 a = data_020d433c.mBattlePlayers->mPlayers[selfUnit->mUnk_0f]->mRecords[selfUnit->mUnk_0e].mUnk_06;
-                u16 b = data_020d433c.mBattlePlayers->mPlayers[unit->mUnk_0f]->mRecords[unit->mUnk_0e].mUnk_06;
+            if (selfUnit->mMarker == unit->mMarker) {
+                u16 a = data_020d433c.mBattlePlayers->mPlayers[selfUnit->mPlayer]->mRecords[selfUnit->mRecord].mUnk_06;
+                u16 b = data_020d433c.mBattlePlayers->mPlayers[unit->mPlayer]->mRecords[unit->mRecord].mUnk_06;
                 if (a > b) {
                     result = UNIT_COMPARE_2;
                 } else if (a < b) {
@@ -1514,12 +1514,12 @@ BOOL func_ov007_02267944(BattleUnk022637ac *self, u16 *out) {
     do {
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
         BattleUnit *unit       = &list->mUnits[i];
-        if (unit->mUnk_10) {
-            u8 pidx = unit->mUnk_0f;
-            u16 v   = list->mPlayers[pidx]->mRecords[unit->mUnk_0e].mUnk_06;
+        if (unit->mStatus) {
+            u8 pidx = unit->mPlayer;
+            u16 v   = list->mPlayers[pidx]->mRecords[unit->mRecord].mUnk_06;
             if (pidx == self->mUnk_15) {
                 out[0] += v;
-            } else if (data_020d433c.mUnk_98 && pidx == list->mPlayers[self->mUnk_15]->mUnk_f2) {
+            } else if (data_020d433c.mHasPartners && pidx == list->mPlayers[self->mUnk_15]->mPartner) {
                 out[0] += v;
             } else {
                 out[1] += v;

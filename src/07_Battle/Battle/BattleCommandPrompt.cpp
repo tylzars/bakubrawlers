@@ -74,7 +74,7 @@ BattleCommandPrompt::BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
         if (mUnk_8c == list->mUnk_2a9) {
             mUnk_93 = 1;
-        } else if (mUnk_8c == list->mPlayers[list->mUnk_2a9]->mUnk_f2) {
+        } else if (mUnk_8c == list->mPlayers[list->mUnk_2a9]->mPartner) {
             mUnk_93 = 1;
         } else {
             mUnk_93 = 2;
@@ -304,9 +304,9 @@ void BattleCommandPrompt::Update() {
                                     case 2:
                                     case 6: {
                                         BattleRecord *rec = mUnk_70[sel];
-                                        func_02058260(mUnk_34, rec->mUnk_08, rec->mUnk_09, (s8) mUnk_8d);
+                                        func_02058260(mUnk_34, rec->mBakuganId, rec->mAttribute, (s8) mUnk_8d);
                                         rec = mUnk_70[sel];
-                                        func_0205afb4(mUnk_34, rec->mUnk_09, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
+                                        func_0205afb4(mUnk_34, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
                                         break;
                                     }
                                 }
@@ -341,9 +341,9 @@ void BattleCommandPrompt::Update() {
                                     case 2:
                                     case 6: {
                                         BattleRecord *rec = mUnk_70[sel];
-                                        func_02058260(mUnk_34, rec->mUnk_08, rec->mUnk_09, (s8) mUnk_8d);
+                                        func_02058260(mUnk_34, rec->mBakuganId, rec->mAttribute, (s8) mUnk_8d);
                                         rec = mUnk_70[sel];
-                                        func_0205afb4(mUnk_34, rec->mUnk_09, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
+                                        func_0205afb4(mUnk_34, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
                                         break;
                                     }
                                 }
@@ -377,9 +377,9 @@ void BattleCommandPrompt::Update() {
                                                 break;
                                             case 2:
                                             case 6: {
-                                                func_02058260(mUnk_34, mUnk_70[mUnk_8f + mUnk_90]->mUnk_08, mUnk_70[mUnk_8f + mUnk_90]->mUnk_09, (s8) mUnk_8d);
+                                                func_02058260(mUnk_34, mUnk_70[mUnk_8f + mUnk_90]->mBakuganId, mUnk_70[mUnk_8f + mUnk_90]->mAttribute, (s8) mUnk_8d);
                                                 BattleRecord *rec = mUnk_70[mUnk_8f + mUnk_90];
-                                                func_0205afb4(mUnk_34, rec->mUnk_09, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
+                                                func_0205afb4(mUnk_34, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
                                                 break;
                                             }
                                         }
@@ -519,7 +519,7 @@ void BattleCommandPrompt::Update() {
                             j++;
                         } while (j < 3);
                         mUnk_0c[i + mUnk_90]->Update();
-                        mUnk_0c[i + mUnk_90]->DrawFrame(1, mUnk_70[i + mUnk_90]->mUnk_09, (s16) (mUnk_50 + data_ov007_0227a764[i].x),
+                        mUnk_0c[i + mUnk_90]->DrawFrame(1, mUnk_70[i + mUnk_90]->mAttribute, (s16) (mUnk_50 + data_ov007_0227a764[i].x),
                                                             data_ov007_0227a764[i].y, 0);
                         i++;
                     } while (i < n);
@@ -659,7 +659,7 @@ void BattleCommandPrompt::func_ov007_0225e6d4() {
         ChangeDir("/");
         mUnk_3c = new CharacterIcons(0x16000, 0xb, 1);
         BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mUnk_8c];
-        mUnk_3c->SetCharacter(0, (s8) player->mUnk_f6, player->NameInfo(), 0);
+        mUnk_3c->SetCharacter(0, (s8) player->mCharacterId, player->NameInfo(), 0);
         mUnk_3c->SetDrawArgs(0, 0x88, 5, 0);
     }
     }
@@ -720,24 +720,24 @@ void BattleCommandPrompt::func_ov007_0225f200() {
         rec = &data_020d433c.mBattlePlayers->mPlayers[mUnk_8c]->mRecords[i];
         ok  = 1;
         if (mUnk_93 == 0) {
-            if (rec->mUnk_0a != 0) {
+            if (rec->mStatus != 0) {
                 ok = 0;
             }
         }
         if (ok) {
             mUnk_70[mUnk_92] = rec;
-            mUnk_6a[mUnk_92] = rec->mUnk_0a;
+            mUnk_6a[mUnk_92] = rec->mStatus;
             mUnk_5e[mUnk_92] = i | 0x200 | (mUnk_8c << 10);
             mUnk_92++;
         }
-        if ((u8) (rec->mUnk_08 + 0xfb) <= 1) {
-            if (rec->mUnk_0a == 1) {
+        if ((u8) (rec->mBakuganId + 0xfb) <= 1) {
+            if (rec->mStatus == 1) {
                 mUnk_34->mUnk_161 = 1;
             }
         }
         i++;
     } while (i < data_020d433c.mUnk_99);
-    func_02058260(mUnk_34, mUnk_70[mUnk_8f + mUnk_90]->mUnk_08, mUnk_70[mUnk_8f + mUnk_90]->mUnk_09, (s8) mUnk_8d);
+    func_02058260(mUnk_34, mUnk_70[mUnk_8f + mUnk_90]->mBakuganId, mUnk_70[mUnk_8f + mUnk_90]->mAttribute, (s8) mUnk_8d);
     BattleRecord *r = mUnk_70[mUnk_8f + mUnk_90];
-    func_0205afb4(mUnk_34, r->mUnk_09, (u16) (r->mUnk_04 + r->mUnk_06), (BattleCellPair *) r);
+    func_0205afb4(mUnk_34, r->mAttribute, (u16) (r->mUnk_04 + r->mUnk_06), (BattleCellPair *) r);
 }

@@ -106,8 +106,8 @@ BattleBase::BattleBase()
     mUnk_1e = mUnk_1f = -1;
     mUnk_52[0] = mUnk_52[1] = 0;
     mHelpers[0] = mHelpers[1] = 0;
-    if (data_020d433c.mUnk_95 != 0 && data_020d433c.mUnk_95 != 7) {
-        mUnk_14 = data_020d433c.mUnk_95 - 1;
+    if (data_020d433c.mFieldId != 0 && data_020d433c.mFieldId != 7) {
+        mUnk_14 = data_020d433c.mFieldId - 1;
     }
 }
 
@@ -136,8 +136,8 @@ void BattleBase::func_ov007_02219888(BattleData *data, u32 mode) {
     } else if (sel == entries[1].mUnk_0d_4) {
         mUnk_12 = 1;
     } else {
-        if (data_020d433c.mUnk_98 != 0) {
-            if (sel == list->mPlayers[first]->mUnk_f2) {
+        if (data_020d433c.mHasPartners != 0) {
+            if (sel == list->mPlayers[first]->mPartner) {
                 mUnk_12 = 3;
                 if (data_020d433c.mUnk_7a != 0) {
                     mUnk_29 = 0;
@@ -163,7 +163,7 @@ void BattleBase::func_ov007_02219888(BattleData *data, u32 mode) {
     u8 i = 0;
     do {
         if (data_020d433c.mBattlePlayers->mPlayers[i]->IsActive()) {
-            BattleSlot *slot = new BattleSlot(data, i, mode, data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_f6,
+            BattleSlot *slot = new BattleSlot(data, i, mode, data_020d433c.mBattlePlayers->mPlayers[i]->mCharacterId,
                                               entries[0].mUnk_0d_4, entries[1].mUnk_0d_4, mUnk_20, mUnk_13);
             mSlots[i] = slot;
             if (slot->mRole == 2 || slot->mRole == 3) {
@@ -177,7 +177,7 @@ void BattleBase::func_ov007_02219888(BattleData *data, u32 mode) {
         do {
             u8 nib = entries[j].mUnk_0d_4;
             if (!data_020d433c.mBattlePlayers->mPlayers[nib]->IsActive()) {
-                mHelpers[j] = new BattleSideHelper(j, data_020d433c.mBattlePlayers->mPlayers[nib]->mUnk_f6, entries);
+                mHelpers[j] = new BattleSideHelper(j, data_020d433c.mBattlePlayers->mPlayers[nib]->mCharacterId, entries);
             }
             j++;
         } while (j < 2);
@@ -538,7 +538,7 @@ BOOL BattleBase::func_ov007_0221a7d0() {
                 if (mUnk_4f == 4) {
                     if (mUnk_54_5) {
                         if (entries[0].mUnk_00 == entries[1].mUnk_00) {
-                            u8 idx = MATH_Rand32(&data_020d42e8, 2);
+                            u8 idx = MATH_Rand32(&gRandom, 2);
                             BattleData *d = mUnk_2c;
                             d->mEntries[idx].mUnk_10   = 1;
                             d->mEntries[idx].mUnk_0f_6 = 0;
@@ -911,7 +911,7 @@ BOOL BattleBase::func_ov007_0221bb84() {
     mUnk_16++;
     if (mUnk_16 >= mUnk_20->mUnk_02) {
         if (n == data_ov007_0227915c) {
-            u8 idx = MATH_Rand32(&data_020d42e8, 2);
+            u8 idx = MATH_Rand32(&gRandom, 2);
             BattleData *d = mUnk_2c;
             d->mEntries[idx].mUnk_10 = 1;
             d->mEntries[idx].mUnk_0f_6 = 0;
@@ -1429,7 +1429,7 @@ void BattleBase::func_ov007_0221d088(u8 a, u16 *counts) {
 extern "C" void func_02024764(SoundManager *manager, u32 a, u32 b);
 
 u32 func_ov007_0221d348(u32 max) {
-    return MATH_Rand32(&data_020d42e8, max);
+    return MATH_Rand32(&gRandom, max);
 }
 
 BOOL BattleBase::func_ov007_0221d398() {

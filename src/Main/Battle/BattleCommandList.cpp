@@ -5,7 +5,7 @@
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/Model.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
@@ -1065,13 +1065,13 @@ void BattleCommandList::func_0205a804() {
             mCells58[4]->DrawFrame(0, mUnk_152, 0x24, 0x18, 0);
         } else {
             has = 0;
-            if (data_020d433c.mBattlePlayers->mPlayers[(u8) mUnk_152]->mUnk_c8 != NULL) {
+            if (data_020d433c.mBattlePlayers->mPlayers[(u8) mUnk_152]->mCpu != NULL) {
                 has = 1;
             }
             if (has == 1) {
                 mCells58[5]->DrawFrame(0, mUnk_152, 0x15, 0x12, 0);
             }
-            if ((data_020d433c.mUnk_98 == 1) & (mUnk_152 == data_020d43d7[cur])) {
+            if ((data_020d433c.mHasPartners == 1) & (mUnk_152 == data_020d43d7[cur])) {
                 mCells58[6]->DrawFrame(0, mUnk_152, 0x24, 0x18, 0);
             }
         }
@@ -1181,7 +1181,7 @@ void BattleCommandList::func_0205b0dc(const BattleCellPair *pair) {
    // 0x20 bytes cleared before the first text of a page
 
 void func_0205b1c4(u32 index, u32 unk2) {
-    UnkStruct_02023248 *entry = func_02023248(data_020d43f0, index, unk2);
+    UnkStruct_02023248 *entry = func_02023248(gSaveData, index, unk2);
     entry->mUnk_0  = data_0209e5bc[index][0];
     entry->mUnk_3  = data_0209e5bc[index][2];
     entry->mUnk_6  = data_0209e5bc[index][3];

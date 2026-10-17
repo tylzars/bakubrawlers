@@ -180,7 +180,7 @@ BattleCpu::~BattleCpu() {
 void BattleCpu::func_ov007_02231038() {
     mUnk_7b = 3;
     mUnk_7d = 0;
-    if (data_020d433c.mUnk_98) {
+    if (data_020d433c.mHasPartners) {
         return;
     }
     u8 i = 0;
@@ -208,11 +208,11 @@ void BattleCpu::func_ov007_02231038() {
 
 u8 BattleCpu::func_ov007_022310f0() {
     u8 result = 0xff;
-    if (data_020d433c.mUnk_85 != 0 || data_020d433c.mUnk_8a_0 != 0) {
+    if (data_020d433c.mTutorialId != 0 || data_020d433c.mUnk_8a_0 != 0) {
         return 0xff;
     }
     BOOL c = FALSE;
-    if (data_020d433c.mUnk_98) {
+    if (data_020d433c.mHasPartners) {
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
         u8 a                   = list->Unk294();
         u8 b                   = list->mPlayers[mUnk_79]->Partner();
@@ -221,7 +221,7 @@ u8 BattleCpu::func_ov007_022310f0() {
         u8 n                   = 0;
         do {
             u = &list->Units()[i];
-            if (u->mUnk_10 != 0 && b == u->mUnk_0f) {
+            if (u->mStatus != 0 && b == u->mPlayer) {
                 n++;
             }
             i++;
@@ -231,7 +231,7 @@ u8 BattleCpu::func_ov007_022310f0() {
         }
     }
     if (!data_020d433c.mUnk_9a_3) {
-        if (MATH_Rand32(&data_020d42e8, 100) < 20) {
+        if (MATH_Rand32(&gRandom, 100) < 20) {
             c = TRUE;
         }
     }
@@ -260,7 +260,7 @@ u8 BattleCpu::func_ov007_022310f0() {
             m++;
         } while (m < count);
         if (free != 0) {
-            u8 pick          = MATH_Rand32(&data_020d42e8, free);
+            u8 pick          = MATH_Rand32(&gRandom, free);
             u8 k             = 0;
             BattlePlayer *p2 = data_020d433c.mBattlePlayers->mPlayers[mUnk_79];
             u8 j             = 0;
@@ -280,7 +280,7 @@ u8 BattleCpu::func_ov007_022310f0() {
 }
 
 u8 BattleCpu::func_ov007_02231300() {
-    u8 roll = MATH_Rand32(&data_020d42e8, 100);
+    u8 roll = MATH_Rand32(&gRandom, 100);
     u8 t    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f1;
     if (roll < 50) {
         t = 4;
@@ -311,7 +311,7 @@ u8 BattleCpu::func_ov007_02231300() {
         row++;
     } while (row < row0 + 4);
     if (n != 0) {
-        return cells[MATH_Rand32(&data_020d42e8, n) & 0xff];
+        return cells[MATH_Rand32(&gRandom, n) & 0xff];
     }
     u8 r = 0;
     do {
@@ -344,22 +344,22 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     u8 cntB     = 0;
     u8 type;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    u8 kind                = list->mPlayers[cpu->mUnk_79]->mUnk_f6;
+    u8 kind                = list->mPlayers[cpu->mUnk_79]->mCharacterId;
     u8 i                   = 0;
     do {
         BattleMarker *m = &list->Entries()[i];
-        if (m->mUnk_2 != 0) {
-            if (cpu->mUnk_79 == m->mUnk_1) {
+        if (m->mStatus != 0) {
+            if (cpu->mUnk_79 == m->mPlayer) {
                 own[nOwn] = i;
                 nOwn++;
             } else {
                 other[nOther] = i;
                 nOther++;
             }
-            if (m->mUnk_5 == 0) {
+            if (m->mUnitHandle == 0) {
                 cntA++;
             } else {
-                u8 owner = list->Units()[(u8) (m->mUnk_5 - 1)].mUnk_0f;
+                u8 owner = list->Units()[(u8) (m->mUnitHandle - 1)].mPlayer;
                 if (owner != cpu->mUnk_79 && owner != list->mPlayers[cpu->mUnk_79]->Partner()) {
                     cntB++;
                 }
@@ -370,12 +370,12 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     if (nOwn + nOther == 0) {
         return;
     }
-    type = list->mPlayers[cpu->mUnk_79]->mRecords[cpu->mUnk_7a].mUnk_09;
+    type = list->mPlayers[cpu->mUnk_79]->mRecords[cpu->mUnk_7a].mAttribute;
     cpu->mUnk_7e = 0;
     BattlePlayerList *list2 = data_020d433c.mBattlePlayers;
     BattlePlayer *pl        = list2->mPlayers[cpu->mUnk_79];
     if ((s32) pl->mRecords[cpu->mUnk_7a].mUnk_00_0 >= 2 && pl->mUnk_f3 == 0xbe) {
-        u8 roll = MATH_Rand32(&data_020d42e8, 100);
+        u8 roll = MATH_Rand32(&gRandom, 100);
         if (cpu->mUnk_7b == 0) {
             roll = 99;
         } else if (cpu->mUnk_7b == 1) {
@@ -449,14 +449,14 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     do {
         switch (state) {
             case 0: {
-                u8 idx   = MATH_Rand32(&data_020d42e8, 12);
+                u8 idx   = MATH_Rand32(&gRandom, 12);
                 u8 found = 0;
                 BattlePlayerList *l;
                 u8 n     = 0;
                 l = data_020d433c.mBattlePlayers;
                 do {
                     BattleUnit *u = &l->Units()[idx];
-                    if (u->mUnk_10 != 0 && cpu->mUnk_79 == u->mUnk_0f) {
+                    if (u->mStatus != 0 && cpu->mUnk_79 == u->mPlayer) {
                         found++;
                         break;
                     }
@@ -469,7 +469,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                 if (found == 0) {
                     state = 4;
                 } else {
-                    pick = l->Units()[idx].mUnk_11;
+                    pick = l->Units()[idx].mMarker;
                 }
                 break;
             }
@@ -479,8 +479,8 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                     BattlePlayerList *l = data_020d433c.mBattlePlayers;
                     do {
                         BattleMarker *m = &l->Entries()[j];
-                        if (m->mUnk_2 != 0 && m->mUnk_5 == 0) {
-                            if (cpu->mUnk_79 == m->mUnk_1) {
+                        if (m->mStatus != 0 && m->mUnitHandle == 0) {
+                            if (cpu->mUnk_79 == m->mPlayer) {
                                 pick = j;
                                 break;
                             }
@@ -500,8 +500,8 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                     l = data_020d433c.mBattlePlayers;
                     do {
                         BattleMarker *m = &l->Entries()[j];
-                        if (m->mUnk_2 != 0 && m->mUnk_5 != 0) {
-                            u8 owner = l->Units()[(u8) (m->mUnk_5 - 1)].mUnk_0f;
+                        if (m->mStatus != 0 && m->mUnitHandle != 0) {
+                            u8 owner = l->Units()[(u8) (m->mUnitHandle - 1)].mPlayer;
                             if (owner != cpu->mUnk_79 && owner != l->mPlayers[cpu->mUnk_79]->Partner()) {
                                 if (state == 2) {
                                     if (!l->mPlayers[owner]->IsActive()) {
@@ -530,16 +530,16 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
             case 4: {
                 RecordIndex index = (RecordIndex) cpu->mUnk_7a;
                 BattleRecord *rec = &data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->mRecords[index];
-                u32 recKind       = rec->mUnk_08;
+                u32 recKind       = rec->mBakuganId;
                 u16 recValue      = rec->mUnk_04;
                 j                 = 0;
                 do {
                     BattlePlayerList *l = data_020d433c.mBattlePlayers;
                     BattleMarker *m     = &l->Entries()[j];
-                    if (m->mUnk_2 != 0) {
+                    if (m->mStatus != 0) {
                         bool ok  = false;
-                        u8 owner = m->mUnk_1;
-                        u16 val  = l->mPlayers[owner]->Slot54(m->mUnk_0);
+                        u8 owner = m->mPlayer;
+                        u16 val  = l->mPlayers[owner]->Slot54(m->mSlot);
                         if (cpu->mUnk_79 == owner || owner == l->mPlayers[cpu->mUnk_79]->Partner()) {
                             ok = cpu->func_ov007_02232e04(val, recValue, recKind);
                         }
@@ -559,10 +559,10 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                     do {
                         BattlePlayerList *l = data_020d433c.mBattlePlayers;
                         BattleMarker *m     = &l->Entries()[j];
-                        if (m->mUnk_2 != 0) {
+                        if (m->mStatus != 0) {
                             u8 me = cpu->mUnk_79;
-                            if (me == m->mUnk_1 || m->mUnk_1 == l->mPlayers[me]->Partner()) {
-                                u32 v = func_02065bf4(m->mUnk_0, recKind);
+                            if (me == m->mPlayer || m->mPlayer == l->mPlayers[me]->Partner()) {
+                                u32 v = func_02065bf4(m->mSlot, recKind);
                                 if (v > best) {
                                     best    = v;
                                     bestIdx = j;
@@ -580,7 +580,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                 break;
             }
             case 5: {
-                u32 roll2 = MATH_Rand32(&data_020d42e8, 100);
+                u32 roll2 = MATH_Rand32(&gRandom, 100);
                 BOOL pickOwn = FALSE;
                 if (roll2 < 75) {
                     if (nOwn != 0) {
@@ -592,25 +592,25 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                     }
                 }
                 if (pickOwn) {
-                    pick = own[MATH_Rand32(&data_020d42e8, nOwn) & 0xff];
+                    pick = own[MATH_Rand32(&gRandom, nOwn) & 0xff];
                 } else {
-                    pick = other[MATH_Rand32(&data_020d42e8, nOther) & 0xff];
+                    pick = other[MATH_Rand32(&gRandom, nOther) & 0xff];
                 }
                 break;
             }
         }
     } while (pick >= 12);
-    if (data_020d433c.mUnk_98 != 0) {
+    if (data_020d433c.mHasPartners != 0) {
         BattleMarker *m     = &data_020d433c.mBattlePlayers->Entries()[pick];
-        if (m->mUnk_5 != 0) {
-            u8 owner = data_020d433c.mBattlePlayers->Units()[(u8) (m->mUnk_5 - 1)].mUnk_0f;
+        if (m->mUnitHandle != 0) {
+            u8 owner = data_020d433c.mBattlePlayers->Units()[(u8) (m->mUnitHandle - 1)].mPlayer;
             if (owner == data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->Partner()) {
                 j = 0;
                 do {
-                    BattleMarker *m2 = &data_020d433c.mBattlePlayers->mUnk_1c[j];
-                    if (m2->mUnk_2 != 0) {
-                        if (m2->mUnk_5 != 0) {
-                            if (data_020d433c.mBattlePlayers->Units()[(u8) (m2->mUnk_5 - 1)].mUnk_0f != data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->Partner()) {
+                    BattleMarker *m2 = &data_020d433c.mBattlePlayers->mMarkers[j];
+                    if (m2->mStatus != 0) {
+                        if (m2->mUnitHandle != 0) {
+                            if (data_020d433c.mBattlePlayers->Units()[(u8) (m2->mUnitHandle - 1)].mPlayer != data_020d433c.mBattlePlayers->mPlayers[cpu->mUnk_79]->Partner()) {
                                 pick = j;
                                 break;
                             }
@@ -627,9 +627,9 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     if (pick >= 12) {
         pick = 0;
     }
-    cpu->mPos.x = data_020d433c.mBattlePlayers->Entries()[pick].mUnk_3 * 0x23000 - 0xe3800;
+    cpu->mPos.x = data_020d433c.mBattlePlayers->Entries()[pick].mCellX * 0x23000 - 0xe3800;
     cpu->mPos.y = 0;
-    cpu->mPos.z = data_020d433c.mBattlePlayers->Entries()[pick].mUnk_4 * 0x2f000 - 0xd3800;
+    cpu->mPos.z = data_020d433c.mBattlePlayers->Entries()[pick].mCellY * 0x2f000 - 0xd3800;
     cpu->func_ov007_022328dc();
 }
 
@@ -639,7 +639,7 @@ u8 BattleCpu::func_ov007_02231dd0() {
     BattlePlayer *pl = data_020d433c.mBattlePlayers->mPlayers[mUnk_79];
     u8 count         = data_020d433c.mUnk_99;
     do {
-        if (pl->mRecords[i].mUnk_0a == 0) {
+        if (pl->mRecords[i].mStatus == 0) {
             found = i;
             break;
         }
@@ -650,14 +650,14 @@ u8 BattleCpu::func_ov007_02231dd0() {
 }
 
 void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC) {
-    u8 a    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f6;
+    u8 a    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mCharacterId;
     u8 idx2 = 0;
     u8 spin;
     u8 idx1 = 6;
     u8 power;
     u8 i    = 0;
     s8 tilt;
-    u8 roll = MATH_Rand32(&data_020d42e8, 100);
+    u8 roll = MATH_Rand32(&gRandom, 100);
     u8 sum  = 0;
     do {
         sum += RollWeights()[a][i];
@@ -667,7 +667,7 @@ void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 
         }
         i++;
     } while (i < 7);
-    roll = MATH_Rand32(&data_020d42e8, 100);
+    roll = MATH_Rand32(&gRandom, 100);
     i   = 0;
     sum = 0;
     do {
@@ -679,54 +679,54 @@ void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 
         i++;
     } while (i < 5);
     BattleCpuRot r = {0, 0, 0};
-    r.y = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 125) * 65536.0f / 360.0f);
-    r.z = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 10) * 65536.0f / 360.0f);
-    power = MATH_Rand32(&data_020d42e8, 30) + 50;
+    r.y = (u16) ((float) (MATH_Rand32(&gRandom, 20) + 125) * 65536.0f / 360.0f);
+    r.z = (u16) ((float) (MATH_Rand32(&gRandom, 20) + 10) * 65536.0f / 360.0f);
+    power = MATH_Rand32(&gRandom, 30) + 50;
     spin  = 30; // never read (idx1 is always 0..6), but the original keeps 30 in spin's register
     tilt  = 0;
     switch (idx1) {
     case 0:
-        power = MATH_Rand32(&data_020d42e8, 20) + 60;
-        spin  = MATH_Rand32(&data_020d42e8, 30) + 30;
-        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 20) * 65536.0f / 360.0f);
+        power = MATH_Rand32(&gRandom, 20) + 60;
+        spin  = MATH_Rand32(&gRandom, 30) + 30;
+        r.z  = (u16) ((float) (MATH_Rand32(&gRandom, 20) + 20) * 65536.0f / 360.0f);
         break;
     case 1:
-        power = MATH_Rand32(&data_020d42e8, 20) + 60;
-        spin  = MATH_Rand32(&data_020d42e8, 30);
-        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 5) * 65536.0f / 360.0f);
+        power = MATH_Rand32(&gRandom, 20) + 60;
+        spin  = MATH_Rand32(&gRandom, 30);
+        r.z  = (u16) ((float) (MATH_Rand32(&gRandom, 20) + 5) * 65536.0f / 360.0f);
         break;
     case 2:
-        power = MATH_Rand32(&data_020d42e8, 20) + 60;
+        power = MATH_Rand32(&gRandom, 20) + 60;
         spin  = 0;
-        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 10) + 5) * 65536.0f / 360.0f);
+        r.z  = (u16) ((float) (MATH_Rand32(&gRandom, 10) + 5) * 65536.0f / 360.0f);
         break;
     case 3:
-        power = MATH_Rand32(&data_020d42e8, 30) + 40;
-        spin  = MATH_Rand32(&data_020d42e8, 30) + 30;
-        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 20) * 65536.0f / 360.0f);
+        power = MATH_Rand32(&gRandom, 30) + 40;
+        spin  = MATH_Rand32(&gRandom, 30) + 30;
+        r.z  = (u16) ((float) (MATH_Rand32(&gRandom, 20) + 20) * 65536.0f / 360.0f);
         break;
     case 4:
-        power = MATH_Rand32(&data_020d42e8, 30) + 40;
-        spin  = MATH_Rand32(&data_020d42e8, 30);
-        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 5) * 65536.0f / 360.0f);
+        power = MATH_Rand32(&gRandom, 30) + 40;
+        spin  = MATH_Rand32(&gRandom, 30);
+        r.z  = (u16) ((float) (MATH_Rand32(&gRandom, 20) + 5) * 65536.0f / 360.0f);
         break;
     case 5:
-        power = MATH_Rand32(&data_020d42e8, 30) + 40;
+        power = MATH_Rand32(&gRandom, 30) + 40;
         spin  = 0;
-        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 10) + 5) * 65536.0f / 360.0f);
+        r.z  = (u16) ((float) (MATH_Rand32(&gRandom, 10) + 5) * 65536.0f / 360.0f);
         break;
     case 6:
-        power = MATH_Rand32(&data_020d42e8, 30) + 10;
-        spin  = MATH_Rand32(&data_020d42e8, 30);
-        r.z  = (u16) ((float) (MATH_Rand32(&data_020d42e8, 20) + 5) * 65536.0f / 360.0f);
+        power = MATH_Rand32(&gRandom, 30) + 10;
+        spin  = MATH_Rand32(&gRandom, 30);
+        r.z  = (u16) ((float) (MATH_Rand32(&gRandom, 20) + 5) * 65536.0f / 360.0f);
         break;
     }
-    if (data_020d433c.mUnk_95 == 3) {
-        r.y = (u16) ((float) (MATH_Rand32(&data_020d42e8, 30) + 120) * 65536.0f / 360.0f);
+    if (data_020d433c.mFieldId == 3) {
+        r.y = (u16) ((float) (MATH_Rand32(&gRandom, 30) + 120) * 65536.0f / 360.0f);
     } else {
-        r.y = (u16) ((float) (data_ov007_022796d0[idx2] + MATH_Rand32(&data_020d42e8, 20)) * 65536.0f / 360.0f);
+        r.y = (u16) ((float) (data_ov007_022796d0[idx2] + MATH_Rand32(&gRandom, 20)) * 65536.0f / 360.0f);
     }
-    roll = MATH_Rand32(&data_020d42e8, 100);
+    roll = MATH_Rand32(&gRandom, 100);
     if (roll < data_ov007_0227970c[a]) {
         u8 f1  = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f1;
         u8 sel = data_020d433c.mUnk_96;
@@ -734,27 +734,27 @@ void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 
         case 0:
         case 1:
         case 2:
-            if (MATH_Rand32(&data_020d42e8, 100) >= 100) {
-                sel = MATH_Rand32(&data_020d42e8, 3);
+            if (MATH_Rand32(&gRandom, 100) >= 100) {
+                sel = MATH_Rand32(&gRandom, 3);
             }
             break;
         default:
-            sel = MATH_Rand32(&data_020d42e8, 3);
+            sel = MATH_Rand32(&gRandom, 3);
             break;
         }
-        power = ShotTable()[data_020d433c.mUnk_95][f1][sel].mPower;
+        power = ShotTable()[data_020d433c.mFieldId][f1][sel].mPower;
         r.y   = 0x6000;
-        r.z   = (u16) ((float) ShotTable()[data_020d433c.mUnk_95][f1][sel].mPitch * 65536.0f / 360.0f);
-        tilt  = ShotTable()[data_020d433c.mUnk_95][f1][sel].mTilt;
+        r.z   = (u16) ((float) ShotTable()[data_020d433c.mFieldId][f1][sel].mPitch * 65536.0f / 360.0f);
+        tilt  = ShotTable()[data_020d433c.mFieldId][f1][sel].mTilt;
         spin  = 0;
     }
-    if (data_020d433c.mUnk_85 == 2) {
+    if (data_020d433c.mTutorialId == 2) {
         r.y  = 0x6000;
         spin  = 0;
         tilt  = 0;
         r.z  = 0x1777;
         power = 0x3e;
-    } else if (data_020d433c.mUnk_85 == 7) {
+    } else if (data_020d433c.mTutorialId == 7) {
         r.y  = 0x6000;
         spin  = 0;
         tilt  = 0;
@@ -800,13 +800,13 @@ void BattleCpu::func_ov007_022328dc() {
     u8 roll;
     u8 b;
     u8 a;
-    a    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f6;
-    roll = MATH_Rand32(&data_020d42e8, 100);
+    a    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mCharacterId;
+    roll = MATH_Rand32(&gRandom, 100);
     b    = data_020d433c.mBattlePlayers->mPlayers[mUnk_79]->mUnk_f7;
     if (b >= 2) {
         b = 1;
     }
-    if (data_020d433c.mUnk_7a != 0 && mUnk_79 == data_020d433c.mBattlePlayers->mPlayers[0]->mUnk_f2) {
+    if (data_020d433c.mUnk_7a != 0 && mUnk_79 == data_020d433c.mBattlePlayers->mPlayers[0]->mPartner) {
         if (a != 0xd && a != 0xe) {
             b = 1;
         }
@@ -848,7 +848,7 @@ void BattleCpu::func_ov007_022329cc(int limit) {
         if (n == k) {
             break;
         }
-        mUnk_7f[k] = cand[MATH_Rand32(&data_020d42e8, n)];
+        mUnk_7f[k] = cand[MATH_Rand32(&gRandom, n)];
         if (k != 0) {
             u8 j = 0;
             do {
@@ -875,7 +875,7 @@ void BattleCpu::func_ov007_022329cc(int limit) {
     mUnk_76    = 1;
     mSavedPos  = mPos;
     mPos       = mTargets[mUnk_83];
-    mUnk_54    = MATH_Rand32(&data_020d42e8, 301) + 0x47e;
+    mUnk_54    = MATH_Rand32(&gRandom, 301) + 0x47e;
     mUnk_58    = 0xe10;
 }
 
@@ -901,11 +901,11 @@ void BattleCpu::func_ov007_02232c88() {
     mUnk_70 = 0;
     u8 i    = 0;
     do {
-        mUnk_85[i] = MATH_Rand32(&data_020d42e8, 10);
+        mUnk_85[i] = MATH_Rand32(&gRandom, 10);
         if (mUnk_85[i] == 0) {
-            mUnk_60[i] = MATH_Rand32(&data_020d42e8, 60) + 90;
+            mUnk_60[i] = MATH_Rand32(&gRandom, 60) + 90;
         } else {
-            mUnk_60[i] = MATH_Rand32(&data_020d42e8, 60) + 60;
+            mUnk_60[i] = MATH_Rand32(&gRandom, 60) + 60;
         }
         i++;
     } while (i < 8);

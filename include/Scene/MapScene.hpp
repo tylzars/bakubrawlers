@@ -7,7 +7,7 @@
 
 class CellAnimation;
 class SelectWindow;
-class UnkStruct_02065c40;
+class ScriptPlayer;
 struct MessageFile;
 
 // A message plus the buffers it is rendered into.
@@ -25,7 +25,7 @@ class MapScene : public SceneBase {
 public:
     /* 00 (base) */
     /* 0c */ CellAnimation *mCellAnims[6];
-    /* 24 */ UnkStruct_02065c40 *mEvent;
+    /* 24 */ ScriptPlayer *mEvent;
     /* 28 */ SelectWindow *mMenu;
     /* 2c */ SelectWindow *mPanelWindow;
     /* 30 */ void *mGlyphBuffer;

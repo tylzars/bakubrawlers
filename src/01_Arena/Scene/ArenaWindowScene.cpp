@@ -60,7 +60,7 @@ void ArenaWindowScene::Update() {
         case 0: {
             func_ov001_0221d6dc();
             BOOL done = FALSE;
-            if (data_020d433c.mUnk_a8 != 0) {
+            if (data_020d433c.mWireless != 0) {
                 WirelessManager::Get();
                 if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
                     mUnk_24 = 5;
@@ -129,7 +129,7 @@ void ArenaWindowScene::Update() {
                     mUnk_24 = 0xe;
                     break;
                 case 2:
-                    if (data_020d433c.mUnk_a8 != 0) {
+                    if (data_020d433c.mWireless != 0) {
                         mUnk_24 = 5;
                     } else if (data_020d433c.mUnk_87 != 0) {
                         mUnk_24 = 0xa;
@@ -157,7 +157,7 @@ void ArenaWindowScene::Update() {
             if (data_020c4030.mUnk_228 != 0) {
                 return;
             }
-            data_020d433c.mUnk_a8 = 0;
+            data_020d433c.mWireless = 0;
             mMenu->mEnabled       = 1;
             mUnk_24++;
             break;
@@ -228,7 +228,7 @@ void ArenaWindowScene::Update() {
             if (func_0203dd0c(&FrameTask::Get(), 0) != 0) {
                 return;
             }
-            data_020d433c.mUnk_7b = 8;
+            data_020d433c.mNextScene = 8;
             RequestScene(5);
             mFinished = 1;
             break;

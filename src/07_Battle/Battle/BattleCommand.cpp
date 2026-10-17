@@ -9,7 +9,7 @@
 #include "Battle/BattleCommandList.hpp"
 #include "Battle/BattleCommandPage.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FileSystem.hpp"
@@ -171,7 +171,7 @@ BattleCommand::BattleCommand(u32 unk)
     mUnk_139 = 0;
     mUnk_13a = 0;
     mUnk_13b = 0;
-    if (data_020d43f0[0].mUnk_28_5) {
+    if (gSaveData[0].mUnk_28_5) {
         mUnk_139 = 0;
     } else {
         mUnk_139 = 4;
@@ -192,7 +192,7 @@ BattleCommand::BattleCommand(u32 unk)
         CommandItems()[i + 6].mY = data_ov007_02279ab0[f].mY;
         i++;
     } while (i < data_020d433c.mPlayerCount);
-    if (data_020d433c.mBattlePlayers->mUnk_28a != data_020d433c.mBattlePlayers->mUnk_2a9) {
+    if (data_020d433c.mBattlePlayers->mTurnPlayer != data_020d433c.mBattlePlayers->mUnk_2a9) {
         CommandItems()[1].mUnk_04 = 0x8000;
         CommandItems()[4].mUnk_04 = 0x8000;
         CommandItems()[2].mUnk_04 = 0x8000;
@@ -220,11 +220,11 @@ BattleCommand::BattleCommand(u32 unk)
         CommandItems()[2].mUnk_04 = 0x8000;
         CommandItems()[5].mUnk_04 = 0x8000;
     }
-    u8 x = data_ov007_02279aa8[data_020d43f0[0].mUnk_28_5];
+    u8 x = data_ov007_02279aa8[gSaveData[0].mUnk_28_5];
     i = 1;
     do {
         CommandItems()[i].mX = x;
-        if (data_020d43f0[0].mUnk_28_5 == 0) {
+        if (gSaveData[0].mUnk_28_5 == 0) {
             CommandItems()[i].mSlideIn  = 4;
             CommandItems()[i].mSlideOut = 3;
         }
@@ -254,7 +254,7 @@ BattleCommand::BattleCommand(u32 unk)
     } while (i < 4);
     mUnk_124 = 0;
     mUnk_126 = 0;
-    mUnk_133 = data_020d433c.mBattlePlayers->mUnk_28a;
+    mUnk_133 = data_020d433c.mBattlePlayers->mTurnPlayer;
     mUnk_128 = 0;
     mUnk_12c = data_ov007_02279ab8[side].mX;
     mUnk_12d = data_ov007_02279ab8[side].mY;
@@ -330,8 +330,8 @@ void BattleCommand::Update() {
     switch (mUnk_128) {
         case 0: {
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            if (list->mUnk_288 == 0) {
-                list->mUnk_288++;
+            if (list->mTurnCount == 0) {
+                list->mTurnCount++;
                 if (data_020d433c.mGimmicks) {
                     data_020d433c.mGimmicks->func_ov007_0222e25c();
                 }
@@ -391,17 +391,17 @@ void BattleCommand::Update() {
                 u8 i = 0;
                 do {
                     BattleUnit *unit = &list->mUnits[i];
-                    if (player == unit->mUnk_0f && unit->mUnk_12 != 0) {
+                    if (player == unit->mPlayer && unit->mUnk_12 != 0) {
                         BattleUnit *u2 = &data_020d433c.mBattlePlayers->mUnits[i];
-                        u8 slot = u2->mUnk_0e;
-                        u8 marker = u2->mUnk_11;
+                        u8 slot = u2->mRecord;
+                        u8 marker = u2->mMarker;
                         func_ov007_02262828(data_020d433c.mBattlePlayers, i, 2);
                         BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[mUnk_133];
                         p->mUnk_fe = 1;
                         p->mUnk_ee++;
-                        p->mRecords[slot].mUnk_0a = 0;
+                        p->mRecords[slot].mStatus = 0;
                         BattleRecord *rec = &p->mRecords[slot];
-                        unk4 = func_ov007_022696a0(rec->mUnk_08, rec->mUnk_09);
+                        unk4 = func_ov007_022696a0(rec->mBakuganId, rec->mAttribute);
                         func_ov007_022626b8(data_020d433c.mBattlePlayers, marker);
                         break;
                     }
@@ -428,7 +428,7 @@ void BattleCommand::Update() {
                 u8 found = 0;
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
                 do {
-                    if (list->mUnk_1c[i].mUnk_2 != 0) {
+                    if (list->mMarkers[i].mStatus != 0) {
                         found = 1;
                         break;
                     }
@@ -464,23 +464,23 @@ void BattleCommand::Update() {
             }
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
             u8 cur                 = list->mUnk_2a9;
-            if (list->mUnk_28a == cur) {
-                if (data_020d433c.mUnk_85 == 3 || data_020d433c.mUnk_85 == 7) {
+            if (list->mTurnPlayer == cur) {
+                if (data_020d433c.mTutorialId == 3 || data_020d433c.mTutorialId == 7) {
                     list->mUnk_2a4->LoadGraphics();
                     data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
                     mUnk_128++;
                     G2S_SetBlendBrightness(0x1f, -10);
                     return;
                 }
-                if (data_020d433c.mUnk_98 != 0 && data_020d433c.mUnk_9a_3) {
+                if (data_020d433c.mHasPartners != 0 && data_020d433c.mUnk_9a_3) {
                     u8 i = 0;
                     u8 count = 0;
-                    u8 need = list->mUnk_294;
-                    u8 partner = list->mPlayers[cur]->mUnk_f2;
+                    u8 need = list->mMarkerCount;
+                    u8 partner = list->mPlayers[cur]->mPartner;
                     do {
                         BattleUnit *unit = &list->mUnits[i];
-                        if (unit->mUnk_10 != 0) {
-                            if (partner == unit->mUnk_0f) {
+                        if (unit->mStatus != 0) {
+                            if (partner == unit->mPlayer) {
                                 count++;
                             }
                         }
@@ -671,7 +671,7 @@ void BattleCommand::Update() {
         }
         case 14: {
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            BattlePlayer *p        = list->mPlayers[list->mUnk_28a];
+            BattlePlayer *p        = list->mPlayers[list->mTurnPlayer];
             switch (p->mMsg.mType) {
                 case 7: {
                     if (mUnk_138 != 0) {
@@ -708,7 +708,7 @@ void BattleCommand::Update() {
                     SpriteManager::Get().SetFade(1, -16);
                     {
                         BattlePlayerList *l = data_020d433c.mBattlePlayers;
-                        l->mPlayers[l->mUnk_28a]->mRecord = p->mMsg.mUnk_0e;
+                        l->mPlayers[l->mTurnPlayer]->mRecord = p->mMsg.mUnk_0e;
                     }
                     mUnk_128 = 0x35;
                     return;
@@ -783,13 +783,13 @@ void BattleCommand::Update() {
             mUnk_6c->mButtons[5].mEnabled = 0;
             mUnk_6c->mButtons[4].mEnabled = 0;
             mUnk_11c                      = 0;
-            u8 r = data_020d433c.mBattlePlayers->Current()->mUnk_c8->func_ov007_022310f0();
+            u8 r = data_020d433c.mBattlePlayers->Current()->mCpu->func_ov007_022310f0();
             if (r == 0xff || data_020d433c.mBattlePlayers->mUnk_28f == 0) {
                 mUnk_128 = 0x12;
                 return;
             }
             mUnk_132 = r;
-            u8 v     = data_020d433c.mBattlePlayers->Current()->mUnk_c8->func_ov007_02231300();
+            u8 v     = data_020d433c.mBattlePlayers->Current()->mCpu->func_ov007_02231300();
             u8 hi    = v >> 4;
             u8 lo    = v & 0xf;
             if (mUnk_90[hi][lo] != 0) {
@@ -850,15 +850,15 @@ void BattleCommand::Update() {
             if (mMode != 0) {
                 return;
             }
-            u8 cur          = data_020d433c.mBattlePlayers->mUnk_28a;
+            u8 cur          = data_020d433c.mBattlePlayers->mTurnPlayer;
             BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[cur];
-            u8 sel          = p->mUnk_c8->func_ov007_02231dd0();
-            func_ov007_022314bc(p->mUnk_c8);
+            u8 sel          = p->mCpu->func_ov007_02231dd0();
+            func_ov007_022314bc(p->mCpu);
             BattleRecord *rec = &p->mRecords[sel];
             p->mRecord = sel;
-            u32 act    = func_ov007_022696a0(rec->mUnk_08, rec->mUnk_09);
+            u32 act    = func_ov007_022696a0(rec->mBakuganId, rec->mAttribute);
             u8 kind    = 3;
-            if (p->mUnk_c8->mUnk_7e != 0) {
+            if (p->mCpu->mUnk_7e != 0) {
                 kind = 0xf;
             }
             new BattleCharaAct((Camera *) mUnk_80, cur, kind, act, 0);
@@ -876,14 +876,14 @@ void BattleCommand::Update() {
         case 21: {
             u8 i                   = 0;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            u32 cur                 = list->mUnk_28a;
+            u32 cur                 = list->mTurnPlayer;
             do {
-                if ((u8) cur == list->mUnits[i].mUnk_0f) {
+                if ((u8) cur == list->mUnits[i].mPlayer) {
                     list->mUnits[i].mUnk_12 = 1;
                     BattlePlayerList *l = data_020d433c.mBattlePlayers;
-                    u8 idx              = l->mUnits[i].mUnk_11;
-                    mUnk_12c            = l->mUnk_1c[idx].mUnk_3;
-                    mUnk_12d            = data_020d433c.mBattlePlayers->mUnk_1c[idx].mUnk_4;
+                    u8 idx              = l->mUnits[i].mMarker;
+                    mUnk_12c            = l->mMarkers[idx].mCellX;
+                    mUnk_12d            = data_020d433c.mBattlePlayers->mMarkers[idx].mCellY;
                     break;
                 }
                 i++;
@@ -1030,7 +1030,7 @@ void BattleCommand::Update() {
             if (mMode != 0) {
                 return;
             }
-            u8 cur = data_020d433c.mBattlePlayers->mUnk_28a;
+            u8 cur = data_020d433c.mBattlePlayers->mTurnPlayer;
             new BattleCharaAct((Camera *) mUnk_80, cur, 1, 0, 0);
             mContext->mUnk_12 = 0;
             GXS_SetVisibleWnd(0);
@@ -1083,7 +1083,7 @@ void BattleCommand::Update() {
             WindowItem *items = mUnk_6c->mCursor->mItems;
             items[2].mFlags   = 0x8000;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            if (list->mUnk_28a != list->mUnk_2a9) {
+            if (list->mTurnPlayer != list->mUnk_2a9) {
                 items[5].mFlags = 0x8000;
             } else {
                 items[5].mFlags = 0x800;
@@ -1123,7 +1123,7 @@ void BattleCommand::Update() {
             func_ov007_0223ce24();
             mUnk_13a = 0;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            u32 cur                 = list->mUnk_28a;
+            u32 cur                 = list->mTurnPlayer;
             if (cur == list->mUnk_2a9) {
                 mUnk_128 = 10;
                 return;
@@ -1209,11 +1209,11 @@ void BattleCommand::Update() {
             WindowItem *item       = mUnk_70->mCursor->mItems;
             u8 idx;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            s8 v                   = list->mUnk_1f8[mUnk_12c][mUnk_12d];
+            s8 v                   = list->mUnitHandles[mUnk_12c][mUnk_12d];
             u8 flag                = 0;
             if (v > 0) {
                 idx = v - 1;
-                if (list->CurrentPlayer() == list->mUnits[idx].mUnk_0f) {
+                if (list->CurrentPlayer() == list->mUnits[idx].mPlayer) {
                     item->mFlags = 5;
                     if (mUnk_13b != 0) {
                         flag = 1;
@@ -1257,10 +1257,10 @@ void BattleCommand::Update() {
             do {
                 u8 x = 0;
                 do {
-                    s8 cell = data_020d433c.mBattlePlayers->mUnk_1f8[y][x];
+                    s8 cell = data_020d433c.mBattlePlayers->mUnitHandles[y][x];
                     if (cell > 0) {
                         BattlePlayerList *l2 = data_020d433c.mBattlePlayers;
-                        if (l2->CurrentPlayer() == l2->mUnits[(u8) (cell - 1)].mUnk_0f) {
+                        if (l2->CurrentPlayer() == l2->mUnits[(u8) (cell - 1)].mPlayer) {
                             if (mUnk_135 == 0) {
                                 mUnk_10->Draw(1, (s16) (mUnk_139 + (y * 16 + 14 - mUnk_120)), (s16) (x * 24 - 22 - mUnk_122), 0);
                             } else {
@@ -1349,7 +1349,7 @@ void BattleCommand::Update() {
             SpriteManager::Get().StartFade(3);
             func_ov007_0223c74c(0);
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            list->mUnits[(u8) (list->mUnk_1f8[mUnk_12c][mUnk_12d] - 1)].mUnk_12 = 1;
+            list->mUnits[(u8) (list->mUnitHandles[mUnk_12c][mUnk_12d] - 1)].mUnk_12 = 1;
             mUnk_128++;
             return;
         }
@@ -1369,7 +1369,7 @@ void BattleCommand::Update() {
                     mUnk_128 = 10;
                     return;
                 case 2:
-                    if (data_020d433c.mUnk_a8 != 0) {
+                    if (data_020d433c.mWireless != 0) {
                         WirelessManager::Get();
                         data_020c4030.mUnk_22a = 6;
                         mUnk_128++;
@@ -1449,7 +1449,7 @@ BOOL BattleCommand::func_ov007_02239e1c(BOOL input) {
                         mNextMode = 3;
                         break;
                     case 3:
-                        if (data_020d433c.mBattlePlayers->mUnk_1f8[mUnk_12c][mUnk_12d] > 0) {
+                        if (data_020d433c.mBattlePlayers->mUnitHandles[mUnk_12c][mUnk_12d] > 0) {
                             mNextMode = 4;
                         } else {
                             mNextMode = 2;
@@ -1490,12 +1490,12 @@ BOOL BattleCommand::func_ov007_02239fd8() {
                 break;
             case 3: {
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                s8 cell                = list->mUnk_16c[mUnk_12c][mUnk_12d];
+                s8 cell                = list->mMarkerHandles[mUnk_12c][mUnk_12d];
                 if (cell > 0) {
                     u8 owner  = list->mUnk_2a9;
-                    u8 who    = list->mUnk_1c[(u8) (cell - 1)].mUnk_1;
+                    u8 who    = list->mMarkers[(u8) (cell - 1)].mPlayer;
                     u16 value = 0;
-                    if (owner == who || who == list->mPlayers[owner]->mUnk_f2) {
+                    if (owner == who || who == list->mPlayers[owner]->mPartner) {
                         value = *func_ov007_02262510(list, (u8) (cell - 1));
                     }
                     func_02055668(mUnk_78, value, (s8) who);
@@ -1510,10 +1510,10 @@ BOOL BattleCommand::func_ov007_02239fd8() {
                 u8 c              = func_ov007_02262530(data_020d433c.mBattlePlayers, mUnk_12c, mUnk_12d)->mUnk_09;
                 u8 d              = func_ov007_02262530(data_020d433c.mBattlePlayers, mUnk_12c, mUnk_12d)->mUnk_08;
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                u8 slot                = list->mUnk_1f8[mUnk_12c][mUnk_12d] - 1;
+                u8 slot                = list->mUnitHandles[mUnk_12c][mUnk_12d] - 1;
                 BattleUnit *unit       = &list->Units()[slot];
-                u8 playerIndex         = unit->mUnk_0f;
-                u8 recordIndex         = unit->mUnk_0e;
+                u8 playerIndex         = unit->mPlayer;
+                u8 recordIndex         = unit->mRecord;
                 func_02058260(mUnk_7c, d, c, (s8) playerIndex);
                 func_0205afb4(mUnk_7c, c, sum, (BattleCellPair *) &data_020d433c.mBattlePlayers->mPlayers[playerIndex]->mRecords[recordIndex]);
                 break;
@@ -1657,7 +1657,7 @@ void BattleCommand::func_ov007_0223a734() {
     ChangeDir("/Game/Battle/Obj");
     LoadAndQueueUpload(0, 4, 0, "battle_u.nce_ncg1D.bin", 0, 0, 0);
     LoadAndQueueUpload(0, 5, 0, "battle_u_ncl.bin", 0, 0, 0);
-    mUnk_84 = new BattleCommandMap(data_020d433c.mUnk_95);
+    mUnk_84 = new BattleCommandMap(data_020d433c.mFieldId);
     mUnk_84->vfunc_0c();
     func_ov007_02247a3c(mUnk_84);
     func_ov007_02246a84(mUnk_84, 2);
@@ -1685,7 +1685,7 @@ void BattleCommand::func_ov007_0223a734() {
     mUnk_14 = new CellAnimation("battle_b_obj_00_nce.bin", 0x1b, 1, 1);
     mUnk_14->mCharBase = screen.GetCharBase(0xa000);
     mUnk_14->mPaletteBase   = 0;
-    if (data_020d433c.mUnk_85) {
+    if (data_020d433c.mTutorialId) {
         mUnk_28 = new CellAnimation("battle_b_obj_00_nce.bin", 0x45, 1, 1);
         mUnk_28->mCharBase = screen.GetCharBase(0xa000);
         mUnk_28->mPaletteBase   = 0;
@@ -1694,8 +1694,8 @@ void BattleCommand::func_ov007_0223a734() {
     mUnk_18 = new CellAnimation("battle_b_obj_00_nce.bin", (u8) (cur + 0x38), 1, 1);
     mUnk_18->mCharBase = screen.GetCharBase(0xa000);
     mUnk_18->mPaletteBase   = 0;
-    if (data_020d433c.mUnk_98) {
-        u8 partner = data_020d433c.mBattlePlayers->mPlayers[cur]->mUnk_f2;
+    if (data_020d433c.mHasPartners) {
+        u8 partner = data_020d433c.mBattlePlayers->mPlayers[cur]->mPartner;
         mUnk_1c = new CellAnimation("battle_b_obj_00_nce.bin", (u8) (partner + 0x40), 1, 1);
         mUnk_1c->mCharBase = screen.GetCharBase(0xa000);
         mUnk_1c->mPaletteBase   = 0;
@@ -1735,20 +1735,20 @@ void func_ov007_0223ad70(u32 variant) {
     reg_GX_POWCNT |= 0x8000;
     ChangeDir("/Game/Battle/Bg");
     if (data_020d433c.mUnk_8a_0 != 0) {
-        sprintf(path, "battle_b_bg_last_ncl.bin", data_020d433c.mUnk_95);
+        sprintf(path, "battle_b_bg_last_ncl.bin", data_020d433c.mFieldId);
         LoadAndQueueUpload(1, 1, 0x4000, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_last_ncg.bin", data_020d433c.mUnk_95);
+        sprintf(path, "battle_b_bg_last_ncg.bin", data_020d433c.mFieldId);
         LoadAndQueueUpload(1, 0xb, 0, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_last_a_nsc.bin", data_020d433c.mUnk_95);
+        sprintf(path, "battle_b_bg_last_a_nsc.bin", data_020d433c.mFieldId);
         LoadAndQueueUpload(1, 7, 0, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_last_b_nsc.bin", data_020d433c.mUnk_95);
+        sprintf(path, "battle_b_bg_last_b_nsc.bin", data_020d433c.mFieldId);
         LoadAndQueueUpload(1, 7, 0x800, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_last_c_nsc.bin", data_020d433c.mUnk_95);
+        sprintf(path, "battle_b_bg_last_c_nsc.bin", data_020d433c.mFieldId);
         LoadAndQueueUpload(1, 7, 0x1000, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_last_d_nsc.bin", data_020d433c.mUnk_95);
+        sprintf(path, "battle_b_bg_last_d_nsc.bin", data_020d433c.mFieldId);
         LoadAndQueueUpload(1, 7, 0x1800, path, 0, 0, 0);
     } else {
-        switch (data_020d433c.mUnk_95) {
+        switch (data_020d433c.mFieldId) {
             case 1:
             case 2:
             case 3:
@@ -1756,17 +1756,17 @@ void func_ov007_0223ad70(u32 variant) {
                 variant = 0;
                 break;
         }
-        sprintf(path, "battle_b_bg_%02d_ncl.bin", data_020d433c.mUnk_95);
+        sprintf(path, "battle_b_bg_%02d_ncl.bin", data_020d433c.mFieldId);
         LoadAndQueueUpload(1, 1, 0x4000, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_%02d_ncg.bin", data_020d433c.mUnk_95);
+        sprintf(path, "battle_b_bg_%02d_ncg.bin", data_020d433c.mFieldId);
         LoadAndQueueUpload(1, 0xb, 0, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_%02d_a_%02d_nsc.bin", data_020d433c.mUnk_95, variant);
+        sprintf(path, "battle_b_bg_%02d_a_%02d_nsc.bin", data_020d433c.mFieldId, variant);
         LoadAndQueueUpload(1, 7, 0, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_%02d_b_%02d_nsc.bin", data_020d433c.mUnk_95, variant);
+        sprintf(path, "battle_b_bg_%02d_b_%02d_nsc.bin", data_020d433c.mFieldId, variant);
         LoadAndQueueUpload(1, 7, 0x800, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_%02d_c_%02d_nsc.bin", data_020d433c.mUnk_95, variant);
+        sprintf(path, "battle_b_bg_%02d_c_%02d_nsc.bin", data_020d433c.mFieldId, variant);
         LoadAndQueueUpload(1, 7, 0x1000, path, 0, 0, 0);
-        sprintf(path, "battle_b_bg_%02d_d_%02d_nsc.bin", data_020d433c.mUnk_95, variant);
+        sprintf(path, "battle_b_bg_%02d_d_%02d_nsc.bin", data_020d433c.mFieldId, variant);
         LoadAndQueueUpload(1, 7, 0x1800, path, 0, 0, 0);
     }
     SpriteManager::Get().Screen(1).SetObjVramMode(3);
@@ -1821,15 +1821,15 @@ void BattleCommand::func_ov007_0223b38c() {
                 x = 13 - i;
             }
             BOOL show;
-            s8 cell = data_020d433c.mBattlePlayers->mUnk_1f8[i][j];
+            s8 cell = data_020d433c.mBattlePlayers->mUnitHandles[i][j];
             if (cell > 0) {
                 func_ov007_02262530(data_020d433c.mBattlePlayers, i, j);
-                mUnk_3c[k]->DrawFrame(1, data_020d433c.mBattlePlayers->Units()[(u8) (cell - 1)].mUnk_0f, (s16) (x * 16 + 14 - mUnk_120 + mUnk_139), (s16) (y * 24 - 22 - mUnk_122), 1);
+                mUnk_3c[k]->DrawFrame(1, data_020d433c.mBattlePlayers->Units()[(u8) (cell - 1)].mPlayer, (s16) (x * 16 + 14 - mUnk_120 + mUnk_139), (s16) (y * 24 - 22 - mUnk_122), 1);
                 k++;
             }
-            s8 mark = data_020d433c.mBattlePlayers->mUnk_16c[i][j];
+            s8 mark = data_020d433c.mBattlePlayers->mMarkerHandles[i][j];
             if (mark > 0) {
-                u8 who    = data_020d433c.mBattlePlayers->mUnk_1c[(u8) (mark - 1)].mUnk_1;
+                u8 who    = data_020d433c.mBattlePlayers->mMarkers[(u8) (mark - 1)].mPlayer;
                 show      = TRUE;
                 if (data_020d433c.mBattlePlayers->mUnk_2a9 == who) {
                     if (!(GameSystem::Get().mFrame & 0x20)) {
@@ -1853,8 +1853,8 @@ void BattleCommand::func_ov007_0223b38c() {
         if (p == data_020d433c.mBattlePlayers->mUnk_2a9) {
             mUnk_18->Update();
             mUnk_18->Draw(1, (s16) (mUnk_139 + data_ov007_02279ab0[side].mX), data_ov007_02279ab0[side].mY, 0);
-            if (data_020d433c.mUnk_98) {
-                u8 partner = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[p]->mUnk_f2]->mUnk_f1;
+            if (data_020d433c.mHasPartners) {
+                u8 partner = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[p]->mPartner]->mUnk_f1;
                 if (mUnk_135) {
                     partner = (partner + 2) % 4;
                 }
@@ -1866,9 +1866,9 @@ void BattleCommand::func_ov007_0223b38c() {
         mUnk_2c[p]->Draw(1, (s16) (mUnk_139 + data_ov007_02279ab0[side].mX), data_ov007_02279ab0[side].mY, 0);
         p++;
     } while (p < data_020d433c.mPlayerCount);
-    if (data_020d433c.mUnk_85 && mUnk_6c->mState == 1) {
+    if (data_020d433c.mTutorialId && mUnk_6c->mState == 1) {
         mUnk_28->Update();
-        mUnk_28->Draw(1, data_ov007_02279aa8[data_020d43f0[0].mUnk_28_5], 0x22, 0);
+        mUnk_28->Draw(1, data_ov007_02279aa8[gSaveData[0].mUnk_28_5], 0x22, 0);
     }
     mUnk_6c->Draw();
     func_ov007_0223ce90();
@@ -2020,7 +2020,7 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
     s32 tx = TouchManager::Get().mX;
     s32 ty = TouchManager::Get().mY;
     if (mUnk_13a == 0) {
-        u8 field = data_020d433c.mUnk_95;
+        u8 field = data_020d433c.mFieldId;
         if (data_020d433c.mUnk_8a_0 != 0) {
             field = 0;
         }
@@ -2033,12 +2033,12 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
             case 5:
                 break;
             case 6:
-                if (data_020d43f0[0].mUnk_28_5 == 0) {
+                if (gSaveData[0].mUnk_28_5 == 0) {
                     off = 0xa;
                 }
                 break;
             case 4:
-                if (data_020d43f0[0].mUnk_28_5 == 0) {
+                if (gSaveData[0].mUnk_28_5 == 0) {
                     off = 0x20;
                 }
                 break;
@@ -2123,12 +2123,12 @@ void BattleCommand::func_ov007_0223c578() {
             return;
         case 3: {
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            s8 cell                = list->mUnk_16c[mUnk_12c][mUnk_12d];
+            s8 cell                = list->mMarkerHandles[mUnk_12c][mUnk_12d];
             u8 owner               = list->mUnk_2a9;
             if (cell > 0) {
-                u8 who    = list->mUnk_1c[(u8) (cell - 1)].mUnk_1;
+                u8 who    = list->mMarkers[(u8) (cell - 1)].mPlayer;
                 u16 value;
-                if (owner == who || who == list->mPlayers[owner]->mUnk_f2) {
+                if (owner == who || who == list->mPlayers[owner]->mPartner) {
                     value = *func_ov007_02262510(list, (u8) (cell - 1));
                 } else {
                     value = 0;
@@ -2156,7 +2156,7 @@ void BattleCommand::func_ov007_0223c578() {
                 BattleCellInfo *e    = func_ov007_02262530(data_020d433c.mBattlePlayers, mUnk_12c, mUnk_12d);
                 BattleCellPair pair = *(BattleCellPair *) e;
                 if (mUnk_7c) {
-                    func_02058260(mUnk_7c, d, c, (s8) data_020d433c.mBattlePlayers->Units()[(u8) (cell - 1)].mUnk_0f);
+                    func_02058260(mUnk_7c, d, c, (s8) data_020d433c.mBattlePlayers->Units()[(u8) (cell - 1)].mPlayer);
                     func_0205afb4(mUnk_7c, c, sum, &pair);
                 }
             } else {
@@ -2219,7 +2219,7 @@ void BattleCommand::func_ov007_0223c8d4(u32 flag) {
     func_ov007_0223a5a4(this, 0);
     switch (mNextMode) {
         case 2:
-            mUnk_84 = new BattleCommandMap(data_020d433c.mUnk_95);
+            mUnk_84 = new BattleCommandMap(data_020d433c.mFieldId);
             mUnk_84->vfunc_0c();
             SpriteManager::Get().sFade[0] = 2;
             break;
@@ -2247,7 +2247,7 @@ void BattleCommand::func_ov007_0223ca80() {
     MI_CpuFill8(mUnk_90, 1, 0x8c);
     u8 row;
     u8 col;
-    switch (data_020d433c.mUnk_95) {
+    switch (data_020d433c.mFieldId) {
         case 2: {
             row = 0;
             do {
@@ -2346,7 +2346,7 @@ void BattleCommand::func_ov007_0223ca80() {
 
 void BattleCommand::func_ov007_0223ce24() {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    if (list->mUnk_28a == list->mUnk_2a9) {
+    if (list->mTurnPlayer == list->mUnk_2a9) {
         if (list->mUnk_292 == 1) {
             mMessage->StartMessage(0x20, 0, 1);
         } else {
@@ -2358,7 +2358,7 @@ void BattleCommand::func_ov007_0223ce24() {
 }
 
 void BattleCommand::func_ov007_0223ce90() {
-    u16 turn = (u16) (data_020d433c.mBattlePlayers->mUnk_288 - 1);
+    u16 turn = (u16) (data_020d433c.mBattlePlayers->mTurnCount - 1);
     u16 count = (u16) (turn / data_020d433c.mPlayerCount + 1);
     if (count > 99) {
         count = 99;
@@ -2373,6 +2373,6 @@ void BattleCommand::func_ov007_0223ce90() {
 
 void func_ov007_0223cf8c(void *arg) {
     BattleCommand *command = (BattleCommand *) arg;
-    int adjust             = data_020d43f0[0].mUnk_28_5 ? 0 : 4;
+    int adjust             = gSaveData[0].mUnk_28_5 ? 0 : 4;
     G2S_SetBG0Offset(command->mUnk_120 + data_ov007_02279aac[0] - adjust, command->mUnk_122 + data_ov007_02279aac[1]);
 }

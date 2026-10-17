@@ -12,25 +12,25 @@ struct ObstacleRaw {
     u32 w[8];
 };
 
-UnkStruct_020d433c_0c::UnkStruct_020d433c_0c()
+GimmickCollision::GimmickCollision()
     : SceneBase(0x3e8, 0) {
-    mUnk_0c = (GimmickSetData *) new u8[0x41c00];
-    mUnk_0c->mUnk_822 = 0;
-    mUnk_10[0]        = 0;
+    mSets = (GimmickSetData *) new u8[0x41c00];
+    mSets->mUnk_822 = 0;
+    mSetRing[0]        = 0;
     for (u32 i = 0; i < 0x80; i++) {
-        mUnk_0c[i].mUnk_822 = i;
-        mUnk_10[i]          = &mUnk_0c[i];
+        mSets[i].mUnk_822 = i;
+        mSetRing[i]          = &mSets[i];
     }
-    mUnk_210       = 0;
-    mUnk_211       = 1;
-    mUnk_0c->mPrev = 0;
-    mUnk_0c->mNext = 0;
-    mUnk_0c->mUnk_08 = 0;
-    mUnk_212       = 0;
+    mRingWriteIndex       = 0;
+    mRingReadIndex       = 1;
+    mSets->mPrev = 0;
+    mSets->mNext = 0;
+    mSets->mUnk_08 = 0;
+    mEnabled       = 0;
 }
 
-UnkStruct_020d433c_0c::~UnkStruct_020d433c_0c() {
-    delete[] mUnk_0c;
+GimmickCollision::~GimmickCollision() {
+    delete[] mSets;
 }
 
 // The first 4 bytes of a set file, copied as one object.
@@ -38,12 +38,12 @@ struct GimmickSetHead {
     u16 mData[2];
 };
 
-GimmickSetData *func_ov007_02271ca8(UnkStruct_020d433c_0c *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk) {
-    GimmickSetData *set = data->mUnk_10[data->mUnk_211];
-    data->mUnk_211      = (data->mUnk_211 + 1) & 0x7f;
-    set->mNext          = data->mUnk_0c->mNext;
-    set->mPrev          = data->mUnk_0c;
-    data->mUnk_0c->mNext = set;
+GimmickSetData *func_ov007_02271ca8(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk) {
+    GimmickSetData *set = data->mSetRing[data->mRingReadIndex];
+    data->mRingReadIndex      = (data->mRingReadIndex + 1) & 0x7f;
+    set->mNext          = data->mSets->mNext;
+    set->mPrev          = data->mSets;
+    data->mSets->mNext = set;
     if (set->mNext) {
         set->mNext->mPrev = set;
     }
@@ -59,35 +59,35 @@ GimmickSetData *func_ov007_02271ca8(UnkStruct_020d433c_0c *data, int count, void
     return set;
 }
 
-void func_ov007_02271d78(UnkStruct_020d433c_0c *data, GimmickSetData *set) {
+void func_ov007_02271d78(GimmickCollision *data, GimmickSetData *set) {
     set->mPrev->mNext = set->mNext;
     if (set->mNext) {
         set->mNext->mPrev = set->mPrev;
     }
-    data->mUnk_10[data->mUnk_210] = set;
-    data->mUnk_210 = (data->mUnk_210 + 1) & 0x7f;
+    data->mSetRing[data->mRingWriteIndex] = set;
+    data->mRingWriteIndex = (data->mRingWriteIndex + 1) & 0x7f;
 }
 
-void UnkStruct_020d433c_0c::Update() {
+void GimmickCollision::Update() {
     if (data_020d433c.mUnk_14 & 1) {
         mFinished = 1;
         return;
     }
-    GimmickSetData *n = mUnk_0c;
+    GimmickSetData *n = mSets;
     do {
         n->mUnk_823 = 0;
         n = n->mNext;
     } while (n);
-    if (!mUnk_212) {
+    if (!mEnabled) {
         return;
     }
     GimmickSetData *b;
-    GimmickSetData *a = mUnk_0c;
+    GimmickSetData *a = mSets;
     do {
         if (a->mUnk_08 != 0) {
             for (b = a->mNext; b; b = b->mNext) {
                 if (b->mUnk_08 != 0) {
-                    func_ov007_02271e48(a, b);
+                    TestSets(a, b);
                 }
             }
         }
@@ -107,7 +107,7 @@ static BOOL (*sTests[4])(BattleObstacle *, BattleObstacle *) = {
     func_ov007_02272308, func_ov007_02272170, func_ov007_0227212c, func_ov007_022720ac,
 };
 
-void UnkStruct_020d433c_0c::func_ov007_02271e48(GimmickSetData *a, GimmickSetData *b) {
+void GimmickCollision::TestSets(GimmickSetData *a, GimmickSetData *b) {
     BattleObstacle shapeA;
     BattleObstacle shapeB;
     u16 ab = a->mUnk_0a & b->mUnk_08;
@@ -141,7 +141,7 @@ void UnkStruct_020d433c_0c::func_ov007_02271e48(GimmickSetData *a, GimmickSetDat
                     shapeB.mRotX = rxB;
                     shapeB.mRotY = ryB;
                     shapeB.mRotZ = rzB;
-                    if (!func_ov007_0227203c(&shapeA, &shapeB)) {
+                    if (!TestObstacles(&shapeA, &shapeB)) {
                         continue;
                     }
                     if (a->mUnk_823 < 8) {
@@ -160,7 +160,7 @@ void UnkStruct_020d433c_0c::func_ov007_02271e48(GimmickSetData *a, GimmickSetDat
     } while (++i < fileA->mCount);
 }
 
-BOOL UnkStruct_020d433c_0c::func_ov007_0227203c(BattleObstacle *a, BattleObstacle *b) {
+BOOL GimmickCollision::TestObstacles(BattleObstacle *a, BattleObstacle *b) {
     BOOL result = 0;
     u8 type     = a->mType;
     if (type == 0) {

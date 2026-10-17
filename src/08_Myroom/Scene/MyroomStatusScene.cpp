@@ -1,5 +1,5 @@
 #include "Scene/MyroomStatusScene.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -37,7 +37,7 @@ MyroomStatusScene::MyroomStatusScene(u32 unk) :
     mGlyphCount = 0;
     mPalette = new ModelLightGroup(data_ov008_02228660);
     mUnk_50 = new Ranking();
-    u32 frames = data_020d43f0[0].mPlayFrames;
+    u32 frames = gSaveData[0].mPlayFrames;
     mHours     = frames / 216000;
     frames -= mHours * 216000;
     mMinutes = frames / 3600;
@@ -225,7 +225,7 @@ void MyroomStatusScene::RenderLine(u8 line) {
     switch (line) {
         case 0:
             TextManager::Get().mUse4bppFont = 1;
-            TextManager::Get().Print(data_020d43f0[0].mName, 0x18, mTextBuffers[line], 0x20, 2, &x, &y, 0, 0, 2, 0x21, 0,
+            TextManager::Get().Print(gSaveData[0].mName, 0x18, mTextBuffers[line], 0x20, 2, &x, &y, 0, 0, 2, 0x21, 0,
                                      0, 0, 0, 1, 1);
             TextManager::Get().mUse4bppFont = 0;
             break;
@@ -233,7 +233,7 @@ void MyroomStatusScene::RenderLine(u8 line) {
             TextManager::Get().PrintNumber(info->mPlayerRank, 3, 0, mTextBuffers[line], 0x20, 2, &x, &y, 0, 2, 0x21, 0, 0, 1, 1);
             break;
         case 2:
-            TextManager::Get().PrintNumber(data_020d43f0[0].mMoney, 7, 0, mTextBuffers[line], 0x20, 2, &x, &y, 0, 2,
+            TextManager::Get().PrintNumber(gSaveData[0].mMoney, 7, 0, mTextBuffers[line], 0x20, 2, &x, &y, 0, 2,
                                            0x21, 0, 0, 1, 1);
             break;
         case 3:
@@ -308,7 +308,7 @@ void MyroomStatusScene::FreeText() {
 }
 
 void MyroomStatusScene::UpdateTime() {
-    u32 frames = data_020d43f0[0].mPlayFrames;
+    u32 frames = gSaveData[0].mPlayFrames;
     mHours = frames / 216000;
     frames -= mHours * 216000;
     mMinutes = frames / 3600;

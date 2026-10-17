@@ -2,9 +2,9 @@
 
 #include "Unknown/UnkFunctions.hpp"
 #include "Game/Random.hpp"
-#include "Game/UnkStruct_02065c40.hpp"
+#include "Game/ScriptPlayer.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Scene/TournamentSubScene.hpp"
 #include "System/FrameTask.hpp"
@@ -157,7 +157,7 @@ TournamentScene::TournamentScene() :
         mTextBuffers[i] = NULL;
         mGlyphBuffers[i] = NULL;
     }
-    if (data_020d43f0[0].mUnk_5bf_0) {
+    if (gSaveData[0].mUnk_5bf_0) {
         mLastIndex = 1;
     } else {
         mLastIndex = 0;
@@ -214,7 +214,7 @@ void TournamentScene::Update() {
         case 0:
             func_ov002_0221b424();
             func_ov002_0221c1b0();
-            mEvent = new UnkStruct_02065c40(3, 0, 0);
+            mEvent = new ScriptPlayer(3, 0, 0);
             mUnk_b5 = 0;
             mTimer  = 0x10;
             mUnk_b0++;
@@ -223,7 +223,7 @@ void TournamentScene::Update() {
             if (--mTimer != 0) {
                 break;
             }
-            mEvent->func_02066c9c(data_020d43f0[0].mUnk_42, data_020d43f0[0].mUnk_43);
+            mEvent->SetupBattle(gSaveData[0].mUnk_42, gSaveData[0].mUnk_43);
             if (mEvent->func_02067954()) {
                 mUnk_b0 = 5;
                 break;
@@ -232,14 +232,14 @@ void TournamentScene::Update() {
                 mUnk_b0 = 9;
                 break;
             }
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 SpriteManager::Get().StartFade(2);
                 mUnk_b0++;
             } else {
                 SpriteManager::Get().StartFade(3);
-                if (data_020d43f0[0].mUnk_42 == 10) {
+                if (gSaveData[0].mUnk_42 == 10) {
                     if (mEvent != NULL) {
-                        mEvent->func_020676f8();
+                        mEvent->RequestFinish();
                         mEvent = NULL;
                     }
                     mUnk_b0 = 0x1d;
@@ -255,12 +255,12 @@ void TournamentScene::Update() {
             mUnk_b0++;
             break;
         case 3:
-            if (!mEvent->func_020678e8()) {
+            if (!mEvent->IsRunning()) {
                 mUnk_d3 = 1;
                 SpriteManager::Get().StartFade(3);
-                if (data_020d43f0[0].mUnk_42 == 10) {
+                if (gSaveData[0].mUnk_42 == 10) {
                     if (mEvent != NULL) {
-                        mEvent->func_020676f8();
+                        mEvent->RequestFinish();
                         mEvent = NULL;
                     }
                     mUnk_b0 = 0x1d;
@@ -327,7 +327,7 @@ void TournamentScene::Update() {
             if (--mTimer != 0) {
                 break;
             }
-            if (!mEvent->func_020678e8()) {
+            if (!mEvent->IsRunning()) {
                 if (func_ov002_0221d7e4()) {
                     mUnk_b0 = 0x19;
                     break;
@@ -389,7 +389,7 @@ void TournamentScene::Update() {
                 mUnk_b0 = 0x12;
             } else {
                 if (mEvent != NULL) {
-                    mEvent->func_020676f8();
+                    mEvent->RequestFinish();
                     mEvent = NULL;
                 }
                 mUnk_b0++;
@@ -401,7 +401,7 @@ void TournamentScene::Update() {
             break;
         case 15:
             func_ov002_0221b424();
-            mEvent = new UnkStruct_02065c40(7, 0, 1);
+            mEvent = new ScriptPlayer(7, 0, 1);
             mUnk_b0++;
             break;
         case 16:
@@ -411,7 +411,7 @@ void TournamentScene::Update() {
             }
             break;
         case 17:
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 break;
             }
             SpriteManager::Get().StartFade(3);
@@ -423,7 +423,7 @@ void TournamentScene::Update() {
             }
             func_ov002_0221e984();
             if (mEvent != NULL) {
-                mEvent->func_020676f8();
+                mEvent->RequestFinish();
                 mEvent = NULL;
             }
             mUnk_b9 = 0;
@@ -520,7 +520,7 @@ void TournamentScene::Update() {
             mUnk_b7 = 0;
             mUnk_b8 = 0;
             if (mEvent != NULL) {
-                mEvent->func_020676f8();
+                mEvent->RequestFinish();
                 mEvent            = NULL;
                 mContext->mUnk_12 = 0;
             } else {
@@ -689,9 +689,9 @@ void TournamentScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            data_020d43f0[0].mUnk_42 = sModeTables[1][mMode];
-            data_020d43f0[0].mUnk_43 = 0;
-            data_020d43f0[0].mUnk_25 = MATH_Rand32(&data_020d42e8, 5);
+            gSaveData[0].mUnk_42 = sModeTables[1][mMode];
+            gSaveData[0].mUnk_43 = 0;
+            gSaveData[0].mUnk_25 = MATH_Rand32(&gRandom, 5);
             mSelection = 0;
             mUnk_b5    = 0;
             mUnk_b9    = 0;
@@ -729,8 +729,8 @@ void TournamentScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            data_020d43f0[0].mUnk_42 = 10;
-            data_020d43f0[0].mUnk_43 = 0;
+            gSaveData[0].mUnk_42 = 10;
+            gSaveData[0].mUnk_43 = 0;
             mUnk_b5                  = 0;
             mUnk_b6                  = 0;
             mUnk_b7                  = 0;
@@ -740,35 +740,35 @@ void TournamentScene::Update() {
             break;
         case 41:
             if (mUnk_be != 0) {
-                data_020d433c.mUnk_7b   = 0xd;
+                data_020d433c.mNextScene   = 0xd;
                 data_020d433c.mUnk_9a   = 0x11;
-                data_020d433c.mUnk_9a_0 = data_020d43f0[0].mUnk_28_6;
+                data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
                 if (data_020d433c.mUnk_8a_0 != 0) {
-                    int idx; u8 i; u32 id = (u8) data_020d43f0[0].mUnk_1a_8; int slot; s8 pos;
-                    slot = func_0202317c(data_020d43f0, 0, 0x25, id);
-                    func_020231c0(data_020d43f0, slot, 0x29e);
-                    idx = func_0202317c(data_020d43f0, 0, 0x24, id);
+                    int idx; u8 i; u32 id = (u8) gSaveData[0].mUnk_1a_8; int slot; s8 pos;
+                    slot = func_0202317c(gSaveData, 0, 0x25, id);
+                    func_020231c0(gSaveData, slot, 0x29e);
+                    idx = func_0202317c(gSaveData, 0, 0x24, id);
                     for (i = 0, pos = -1; i < 3; i++) {
-                        if (idx == data_020d43f0[0].mUnk_00[i]) {
+                        if (idx == gSaveData[0].mUnk_00[i]) {
                             pos = i;
                             break;
                         }
                     }
                     if (pos > 0) {
                         do {
-                            func_02023168(data_020d43f0, 0, (u8) pos, data_020d43f0[0].mUnk_00[pos - 1]);
+                            func_02023168(gSaveData, 0, (u8) pos, gSaveData[0].mUnk_00[pos - 1]);
                             pos--;
                         } while (pos >= 1);
                     }
-                    func_02023168(data_020d43f0, 0, 0, slot);
+                    func_02023168(gSaveData, 0, 0, slot);
                     data_020d4478[slot].mUnk_0 = 2;
-                    UnkStruct_02023248 *entry           = func_02023248(data_020d43f0, 0x25, id);
+                    UnkStruct_02023248 *entry           = func_02023248(gSaveData, 0x25, id);
                     entry->mUnk_0              = 3;
                     entry->mUnk_3              = 2;
                     entry->mUnk_6              = 3;
                     entry->mUnk_9              = 1;
                     entry->mUnk_12             = 2;
-                    data_020d4850[func_0202317c(data_020d43f0, 0, 0x24, (u8) data_020d43f0[0].mUnk_1a_8)] = 0;
+                    data_020d4850[func_0202317c(gSaveData, 0, 0x24, (u8) gSaveData[0].mUnk_1a_8)] = 0;
                 }
                 RequestScene(5);
                 mFinished = TRUE;
@@ -859,7 +859,7 @@ void TournamentScene::func_ov002_0221b78c(BOOL a, BOOL b) {
     }
     u8 idx;
     int count = sCounts[mMode];
-    int x     = data_020d43f0[0].mUnk_43;
+    int x     = gSaveData[0].mUnk_43;
     idx       = x * count;
     if (x >= sTotals[mMode] / count - 1) {
         x = 6;
@@ -1105,7 +1105,7 @@ void TournamentScene::func_ov002_0221cd10() {
     }
     if (mUnk_b6 != 0) {
         s16 off = mUnk_a2;
-        u8 idx  = data_020d43f0[0].mUnk_43 * sCounts[mMode];
+        u8 idx  = gSaveData[0].mUnk_43 * sCounts[mMode];
         for (u8 i = 0; i < 3; i++) {
             if (i == 2) {
                 off = 0;
@@ -1273,7 +1273,7 @@ u8 TournamentScene::func_ov002_0221d69c() {
 }
 
 BOOL TournamentScene::func_ov002_0221d7e4() {
-    int r = mEvent->func_02067900();
+    int r = mEvent->GetResult();
     if (r != 0) {
         switch (r) {
             case 5:
@@ -1494,7 +1494,7 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
             break;
         case 2: {
             u8 mode = mMode;
-            u8 idx  = data_020d43f0[0].mUnk_43 * sCounts[mode];
+            u8 idx  = gSaveData[0].mUnk_43 * sCounts[mode];
             mUnk_a8 = data_ov002_02220a2e[mode].x - (mUnk_a0 + data_ov002_02220b58[mode][idx].x);
             mUnk_aa = data_ov002_02220a2e[mMode].y - data_ov002_02220b58[mMode][idx].y;
             mStep = 0;
@@ -1551,16 +1551,16 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
         case 9:
             func_ov002_0221b424();
             if (mEvent == NULL) {
-                mEvent = new UnkStruct_02065c40(7, 0, 1);
+                mEvent = new ScriptPlayer(7, 0, 1);
             }
             mUnk_c1 = 0;
             mState++;
             break;
         case 10:
-            if (!mEvent->func_020678e8()) {
+            if (!mEvent->IsRunning()) {
                 u8 mode = mMode;
-                u8 idx = data_020d43f0[0].mUnk_43 * sCounts[mode];
-                u32 pick = MATH_Rand32(&data_020d42e8, 3);
+                u8 idx = gSaveData[0].mUnk_43 * sCounts[mode];
+                u32 pick = MATH_Rand32(&gRandom, 3);
                 u8 id   = mUnk_c2[mUnk_c1 + idx];
                 if (mEvent->func_0206f9b4("mes_tm_battle", id, data_ov002_02220a54[0][id], data_ov002_02220a6c[id][pick], 2, 3,
                                   0)) {
@@ -1570,7 +1570,7 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
             }
             break;
         case 11:
-            if (!mEvent->func_020678e8()) {
+            if (!mEvent->IsRunning()) {
                 mUnk_c1++;
                 if (mUnk_c1 < sCounts[mMode]) {
                     mState = 10;
@@ -1608,7 +1608,7 @@ void TournamentScene::func_ov002_0221e8f0() {
 }
 
 void TournamentScene::func_ov002_0221e984() {
-    switch (data_020d43f0[0].mUnk_42) {
+    switch (gSaveData[0].mUnk_42) {
         case 1:
             mMode = 0;
             break;
@@ -1639,11 +1639,11 @@ void TournamentScene::func_ov002_0221e984() {
     u8 c = 1;
     if (mMode == 1) {
         c       = 2;
-        mUnk_cb = mEvent->func_02067120(data_020d43f0[0].mUnk_42, data_020d43f0[0].mUnk_43, 1, 0);
+        mUnk_cb = mEvent->func_02067120(gSaveData[0].mUnk_42, gSaveData[0].mUnk_43, 1, 0);
     }
     u8 i = 0;
     do {
-        mUnk_c2[i] = mEvent->func_02067120(data_020d43f0[0].mUnk_42, a, (u8) (b + c), 0);
+        mUnk_c2[i] = mEvent->func_02067120(gSaveData[0].mUnk_42, a, (u8) (b + c), 0);
         b++;
         if (b >= sCounts[mMode]) {
             a++;

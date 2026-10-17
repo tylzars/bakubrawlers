@@ -10,9 +10,9 @@
 #include "Unknown/UnkFunctions.hpp"
 #include "UI/SaveWindow.hpp"
 #include "UI/UnlockPopup.hpp"
-#include "Game/UnkStruct_02065c40.hpp"
+#include "Game/ScriptPlayer.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FileSystem.hpp"
 #include "UI/SelectWindow.hpp"
@@ -143,7 +143,7 @@ void ParkScene::Update() {
             mUnk_0d++;
             break;
         case 2:
-            if (mEvent->func_02067900() | mEvent->func_02067954()) {
+            if (mEvent->GetResult() | mEvent->func_02067954()) {
                 SpriteManager::Get().StartSubFade(3);
                 mUnk_0d = 4;
             }
@@ -151,7 +151,7 @@ void ParkScene::Update() {
                 SpriteManager::Get().StartSubFade(3);
                 mUnk_0d = 7;
             }
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 break;
             }
             SpriteManager::Get().StartSubFade(3);
@@ -162,7 +162,7 @@ void ParkScene::Update() {
                 break;
             }
             {
-                u8 v = data_020d43f0[0].mUnk_42;
+                u8 v = gSaveData[0].mUnk_42;
                 if ((v == 2) | (v == 4)) {
                     if (v == 2) {
                         data_020d433c.mUnk_83 = 5;
@@ -233,7 +233,7 @@ void ParkScene::Update() {
             switch (data_020d433c.mUnk_7c) {
                 case 2:
                 case 3:
-                    mEvent->func_020676f8();
+                    mEvent->RequestFinish();
                     mContext->mUnk_12 = 0;
                     mUnk_0d           = 11;
                     break;
@@ -254,7 +254,7 @@ void ParkScene::Update() {
                 mUnk_0d++;
                 break;
             }
-            if (data_020d433c.mUnk_98 != 0) {
+            if (data_020d433c.mHasPartners != 0) {
                 BOOL rules = FALSE;
                 if (data_020d433c.mUnk_7c == 2) {
                     rules = reinterpret_cast<ParkRules *>(this)->func_ov004_0221bf5c();
@@ -270,7 +270,7 @@ void ParkScene::Update() {
                     mUnk_0d = 4;
                 }
             } else {
-                mEvent = new UnkStruct_02065c40(7, 0, 1);
+                mEvent = new ScriptPlayer(7, 0, 1);
                 FrameTask::Get().StartChannel(0, 0x14);
                 mUnk_0d = 0xd;
             }
@@ -289,7 +289,7 @@ void ParkScene::Update() {
             ParkEntry entry;
             GetParkEntry(data_020d433c.mUnk_8b_0, &entry);
             u32 idx = GetParkGroupId(data_020d433c.mUnk_8b_0);
-            u8 pick = MATH_Rand32(&data_020d42e8, 3);
+            u8 pick = MATH_Rand32(&gRandom, 3);
             u8 nib  = data_020d433c.mUnk_8c_4;
             if (nib == 0) {
                 pick += 3;
@@ -310,7 +310,7 @@ void ParkScene::Update() {
             break;
         }
         case 14:
-            if (!mEvent->func_020678e8()) {
+            if (!mEvent->IsRunning()) {
                 data_020d433c.mUnk_7c = 1;
                 SpriteManager::Get().StartSubFade(3);
                 mUnk_0d = 0xf;
@@ -325,7 +325,7 @@ void ParkScene::Update() {
             if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
-            mEvent->func_020676f8();
+            mEvent->RequestFinish();
             mContext->mUnk_12 = 0;
             mUnk_0d++;
             break;
@@ -352,7 +352,7 @@ void ParkScene::Update() {
             mUnk_0d++;
             break;
         case 18:
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 break;
             }
             data_020d433c.mUnk_7c = 1;
@@ -403,7 +403,7 @@ void ParkScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mEvent->func_020676f8();
+            mEvent->RequestFinish();
             mContext->mUnk_12 = 0;
             mUnk_0d++;
             break;
@@ -414,7 +414,7 @@ void ParkScene::Update() {
             Cleanup();
             if (mUnk_0f != 0) {
                 mUnk_0d++;
-                mEvent = new UnkStruct_02065c40(7, 0, 1);
+                mEvent = new ScriptPlayer(7, 0, 1);
             } else {
                 mUnk_0d = 0x29;
             }
@@ -458,7 +458,7 @@ void ParkScene::Update() {
                 case 6:
                     sprintf(name, "mes_pm_Tutorial");
                     shown = entry.mUnk_0a_h;
-                    if (shown == 0 && (data_020d43f0[0].mUnk_5be & 8)) {
+                    if (shown == 0 && (gSaveData[0].mUnk_5be & 8)) {
                         shown = 1;
                     }
                     kind = 9;
@@ -508,7 +508,7 @@ void ParkScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mEvent->func_020676f8();
+            mEvent->RequestFinish();
             mContext->mUnk_12 = 0;
             mUnk_0d++;
             break;
@@ -565,58 +565,58 @@ void ParkScene::Update() {
                     case 0:
                         data_020d433c.mPlayerCount = 2;
                         data_020d433c.mUnk_99      = 3;
-                        data_020d433c.mUnk_95      = func_ov004_0221b908(entry.mUnk_08);
+                        data_020d433c.mFieldId      = func_ov004_0221b908(entry.mUnk_08);
                         data_020d433c.mUnk_96      = entry.mUnk_09;
-                        data_020d433c.mUnk_98      = 0;
-                        data_020d433c.mUnk_9f[0]  = 0x15;
+                        data_020d433c.mHasPartners      = 0;
+                        data_020d433c.mCharacterIds[0]  = 0x15;
                         data_020d433c.mUnk_a3[0]      = 0;
-                        data_020d433c.mUnk_9f[1]      = idx;
+                        data_020d433c.mCharacterIds[1]      = idx;
                         data_020d433c.mUnk_a3[1]      = func_ov004_0221b8c4(idx);
                         break;
                     case 1:
                         data_020d433c.mPlayerCount = 4;
                         data_020d433c.mUnk_99      = 3;
-                        data_020d433c.mUnk_95      = func_ov004_0221b908(entry.mUnk_08);
+                        data_020d433c.mFieldId      = func_ov004_0221b908(entry.mUnk_08);
                         data_020d433c.mUnk_96      = entry.mUnk_09;
-                        data_020d433c.mUnk_98      = 1;
-                        data_020d433c.mUnk_9f[0]  = 0x15;
+                        data_020d433c.mHasPartners      = 1;
+                        data_020d433c.mCharacterIds[0]  = 0x15;
                         data_020d433c.mUnk_a3[0]      = 0;
-                        data_020d433c.mUnk_9f[1]      = idx;
+                        data_020d433c.mCharacterIds[1]      = idx;
                         data_020d433c.mUnk_a3[1]      = func_ov004_0221b8c4(idx);
-                        data_020d433c.mUnk_9f[2]      = entry.mUnk_0a;
+                        data_020d433c.mCharacterIds[2]      = entry.mUnk_0a;
                         data_020d433c.mUnk_a3[2]      = func_ov004_0221b8c4(entry.mUnk_0a);
-                        data_020d433c.mUnk_9f[3]      = entry.mUnk_0b;
+                        data_020d433c.mCharacterIds[3]      = entry.mUnk_0b;
                         data_020d433c.mUnk_a3[3]      = func_ov004_0221b8c4(entry.mUnk_0b);
-                        data_020d433c.mUnk_9b[0]      = 1;
-                        data_020d433c.mUnk_9b[1]      = 0;
-                        data_020d433c.mUnk_9b[2]      = 3;
-                        data_020d433c.mUnk_9b[3]      = 2;
+                        data_020d433c.mPartners[0]      = 1;
+                        data_020d433c.mPartners[1]      = 0;
+                        data_020d433c.mPartners[2]      = 3;
+                        data_020d433c.mPartners[3]      = 2;
                         break;
                     case 2:
                         data_020d433c.mPlayerCount = 4;
                         data_020d433c.mUnk_99      = 3;
-                        data_020d433c.mUnk_95      = func_ov004_0221b908(entry.mUnk_08);
+                        data_020d433c.mFieldId      = func_ov004_0221b908(entry.mUnk_08);
                         data_020d433c.mUnk_96      = entry.mUnk_09;
-                        data_020d433c.mUnk_98      = 0;
-                        data_020d433c.mUnk_9f[0]  = 0x15;
+                        data_020d433c.mHasPartners      = 0;
+                        data_020d433c.mCharacterIds[0]  = 0x15;
                         data_020d433c.mUnk_a3[0]      = 0;
-                        data_020d433c.mUnk_9f[1]      = idx;
+                        data_020d433c.mCharacterIds[1]      = idx;
                         data_020d433c.mUnk_a3[1]      = func_ov004_0221b8c4(idx);
-                        data_020d433c.mUnk_9f[2]      = entry.mUnk_0a;
+                        data_020d433c.mCharacterIds[2]      = entry.mUnk_0a;
                         data_020d433c.mUnk_a3[2]      = func_ov004_0221b8c4(entry.mUnk_0a);
-                        data_020d433c.mUnk_9f[3]      = entry.mUnk_0b;
+                        data_020d433c.mCharacterIds[3]      = entry.mUnk_0b;
                         data_020d433c.mUnk_a3[3]      = func_ov004_0221b8c4(entry.mUnk_0b);
                         break;
                 }
                 data_020d433c.mUnk_9a = 0x11;
-                data_020d433c.mUnk_9a_0 = data_020d43f0[0].mUnk_28_6;
-                if (data_020d43f0[0].mUnk_5bf_0) {
+                data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
+                if (gSaveData[0].mUnk_5bf_0) {
                     if (entry.mUnk_06 == 0x19 && idx == 7) {
                         data_020d433c.mUnk_a3[1] = 2;
                     }
                 }
                 data_020d433c.mUnk_8b_0 = mUnk_0c;
-                data_020d433c.mUnk_8b_4 = data_020d43f0[0].mUnk_5b8;
+                data_020d433c.mUnk_8b_4 = gSaveData[0].mUnk_5b8;
                 mUnk_0d++;
             } else {
                 mUnk_0f = 0;
@@ -629,7 +629,7 @@ void ParkScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mEvent->func_020676f8();
+            mEvent->RequestFinish();
             mContext->mUnk_12 = 0;
             mUnk_0d++;
             break;
@@ -664,7 +664,7 @@ void ParkScene::Update() {
                 ParkEntry entry;
                 GetParkEntry(mUnk_0c, &entry);
                 if (entry.mUnk_0a_h == 0) {
-                    if (data_020d43f0[0].mUnk_5be & 8) {
+                    if (gSaveData[0].mUnk_5be & 8) {
                         data_020d433c.mUnk_83 = 4;
                     } else {
                         data_020d433c.mUnk_83 = 3;
@@ -688,7 +688,7 @@ void ParkScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mEvent->func_020676f8();
+            mEvent->RequestFinish();
             mContext->mUnk_12 = 0;
             mUnk_0d++;
             break;
@@ -705,7 +705,7 @@ void ParkScene::Update() {
             break;
         case 41:
             if (mUnk_0f != 0) {
-                data_020d433c.mUnk_7b = 0xc;
+                data_020d433c.mNextScene = 0xc;
                 data_020d433c.mUnk_7c = 1;
                 if (mUnk_0f == 0xff) {
                     RequestScene(10);
@@ -728,7 +728,7 @@ void ParkScene::Update() {
 void ParkScene::Init() {
     InitDisplay();
     LoadBackground();
-    mEvent = new UnkStruct_02065c40(2, 0, 0);
+    mEvent = new ScriptPlayer(2, 0, 0);
 }
 
 void ParkScene::InitDisplay() {
@@ -836,7 +836,7 @@ u8 ParkScene::func_ov004_0221b8c4(int index) {
 int ParkScene::func_ov004_0221b908(int index) {
     if (!TestFlagBit(data_020d4968, index)) {
         index = 2;
-        if (!(data_020d43f0[0].mUnk_578 & 4)) {
+        if (!(gSaveData[0].mUnk_578 & 4)) {
             index = 0;
         }
     }
@@ -928,12 +928,12 @@ struct ParkRulesBuf {
 BOOL ParkRules::func_ov004_0221bf5c() {
     u8 lo = data_020d433c.mUnk_8b_0;
     u8 hi = data_020d433c.mUnk_8b_4;
-    u8 saved = data_020d43f0[0].mUnk_5b8;
+    u8 saved = gSaveData[0].mUnk_5b8;
     ParkRulesBuf buf;
-    data_020d43f0[0].mUnk_5b8 = hi;
+    gSaveData[0].mUnk_5b8 = hi;
     GetParkEntry(lo, &buf);
     u8 id = buf.mId;
-    data_020d43f0[0].mUnk_5b8 = saved;
+    gSaveData[0].mUnk_5b8 = saved;
     BOOL ok = 1;
     if (id == 0xff) {
         return 0;
@@ -966,7 +966,7 @@ BOOL ParkRules::func_ov004_0221bf5c() {
 u8 ParkRules::CountSlotsWith(u32 value) {
     u8 count = 0;
     for (u8 i = 0; i < 3; i++) {
-        if (value == func_020230a8(&data_020d43f0[0], 0, i)) {
+        if (value == func_020230a8(&gSaveData[0], 0, i)) {
             count++;
         }
     }

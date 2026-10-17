@@ -20,7 +20,7 @@ BattleCardEffect::BattleCardEffect(u32 a, u32 b, u32 c, u32 d)
     func_ov007_022716e8();
     if (mKind >= 0x11) {
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
-        u8 x = list->mUnk_28a;
+        u8 x = list->mTurnPlayer;
         if (x == list->mUnk_2a9) {
             mUnk_11 = 0;
         } else {

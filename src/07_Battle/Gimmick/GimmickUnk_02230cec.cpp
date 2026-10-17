@@ -30,7 +30,7 @@ void GimmickUnk_02230cec::Update() {
         if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
             return;
         }
-        BattleTarget *target = data_020d433c.mBattlePlayers->mUnk_298;
+        BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
         if (target->mUnk_1dd == 4 || !target) {
             return;
         }
@@ -53,13 +53,13 @@ void GimmickUnk_02230cec::Update() {
         v.y = target->mUnk_64.y;
         v.z = target->mUnk_64.z;
         data_020d433c.mUnk_14 &= 8;
-        if (!data_020d433c.mUnk_14 && r->mUnk_09 != 2) {
+        if (!data_020d433c.mUnk_14 && r->mAttribute != 2) {
             v.x = FX_Mul(v.x, 0x1000);
             v.y = FX_Mul(v.y, 0x1000);
             v.z = FX_Mul(v.z, 0x1000);
         }
         v.y = 0;
-        func_ov007_0225c960(data_020d433c.mBattlePlayers->mUnk_298, &v, 0);
+        func_ov007_0225c960(data_020d433c.mBattlePlayers->mBattleTarget, &v, 0);
         break;
     }
     case 2:

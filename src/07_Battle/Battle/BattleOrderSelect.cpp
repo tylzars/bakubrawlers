@@ -80,7 +80,7 @@ BattleOrderSelect::BattleOrderSelect()
     mCount = n;
     u8 i   = 0;
     do {
-        mUnk_b4[i] = data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_f6;
+        mUnk_b4[i] = data_020d433c.mBattlePlayers->mPlayers[i]->mCharacterId;
         i++;
     } while (i < mCount);
     if (mCount < 4) {
@@ -252,7 +252,7 @@ void BattleOrderSelect::func_ov007_0224b914() {
 void BattleOrderSelect::func_ov007_0224b95c() {
     u8 i = 0;
     do {
-        mUnk_bc[i] = MATH_Rand32(&data_020d42e8, mCount);
+        mUnk_bc[i] = MATH_Rand32(&gRandom, mCount);
         if (i != 0) {
             u8 same = 0;
             u8 j    = 0;
@@ -500,13 +500,13 @@ void BattleOrderSelect::func_ov007_0224c810() {
                     mB[0].mAnim->Draw(0, (s16) (mC[slot].mX + 0xc), (s16) (mC[slot].mY - 0xe - off), 2);
                 } else {
                     bool flag = false;
-                    if (data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_c8) {
+                    if (data_020d433c.mBattlePlayers->mPlayers[i]->mCpu) {
                         flag = true;
                     }
                     if (flag == 1) {
                         mB[1].mAnim->DrawFrame(0, i, mC[slot].mX + 0x1b, mC[slot].mY - 0x31 - off, 2);
                     }
-                    if ((data_020d433c.mUnk_98 == 1) & (i == data_020d433c.mUnk_9b[p])) {
+                    if ((data_020d433c.mHasPartners == 1) & (i == data_020d433c.mPartners[p])) {
                         mB[2].mAnim->DrawFrame(0, i, mC[slot].mX + 0x10, mC[slot].mY - 0x38 - off, 2);
                     }
                 }

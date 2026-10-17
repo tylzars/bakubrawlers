@@ -8,7 +8,7 @@
 class CellAnimation;
 class MessageWindow;
 class SelectWindow;
-class UnkStruct_02065c40;
+class ScriptPlayer;
 struct MessageFile;
 
 // Overlay 3: the shop.
@@ -22,7 +22,7 @@ public:
     /* 1c */ u32 mTextBufferSize;
     /* 20 */ u32 mGlyphCount;
     /* 24 */ SelectWindow *mMenu;
-    /* 28 */ UnkStruct_02065c40 *mEvent;
+    /* 28 */ ScriptPlayer *mEvent;
     /* 2c */ s16 mUnk_2c;
     /* 2e */ PAD(0x2e, 0x30);
     /* 30 */ CellAnimation *mCellAnims[2];

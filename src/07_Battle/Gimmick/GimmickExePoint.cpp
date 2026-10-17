@@ -59,11 +59,11 @@ void GimmickExePoint::Update() {
         if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
             return;
         }
-        if (!data_020d433c.mBattlePlayers->mUnk_298) {
+        if (!data_020d433c.mBattlePlayers->mBattleTarget) {
             return;
         }
         mState++;
-        func_ov007_02271d78(data_020d433c.mUnk_0c, mUnk_3c);
+        func_ov007_02271d78(data_020d433c.mGimmickCollision, mUnk_3c);
         BattleRecord *rec = &data_020d433c.mBattlePlayers->Current()->mRecords[data_020d433c.mBattlePlayers->Current()->mRecord];
         if ((int)rec->mGauge < 0xfd7) {
             rec->mGauge += 0x28;
@@ -72,11 +72,11 @@ void GimmickExePoint::Update() {
         u8 handle = StartEffect(data_020d433c.mEffects, 1, 0xe, 0, 1);
         if (handle) {
             VecFx32 d;
-            VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
+            VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
             CameraManager::Get();
             MtxFx43 mtx = data_020c1cf4;
             func_01ffcf64(&mtx, &mPosition);
-            Camera *h = data_020d433c.mBattlePlayers->mUnk_298->mUnk_174;
+            Camera *h = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_174;
             d.x                 = h->mPosition.x;
             d.y                 = h->mPosition.y;
             d.z                 = h->mPosition.z;
@@ -85,7 +85,7 @@ void GimmickExePoint::Update() {
             d.x = FX_Mul(d.x, 0x1e000);
             d.y = FX_Mul(d.y, 0x1e000);
             d.z = FX_Mul(d.z, 0x1e000);
-            VEC_Add(&d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition, &d);
+            VEC_Add(&d, &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition, &d);
             func_01ffcf64(&mtx, &d);
             SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         }
@@ -99,7 +99,7 @@ void GimmickExePoint::Update() {
             break;
         }
         u32 limit;
-        if (data_020d433c.mUnk_98) {
+        if (data_020d433c.mHasPartners) {
             limit = 2;
         } else {
             limit = data_ov007_02279410[players - 2];

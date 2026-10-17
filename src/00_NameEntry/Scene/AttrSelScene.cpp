@@ -19,7 +19,7 @@ static const WindowCellRecord data_ov000_02226258[1] = {
 };
 
 #include "Scene/AttrSelScene.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "UI/MessageWindow.hpp"
 #include <nitro/gx.h>
@@ -38,7 +38,7 @@ extern "C" u32 FX_Atan2Idx(s32 x, s32 y);
 AttrSelScene::AttrSelScene() :
     SceneBase(1000, 0) {
     mUnk_0c = 0;
-    mAttrib = data_ov000_0222622c[data_020d43f0[0].mUnk_1a_8];
+    mAttrib = data_ov000_0222622c[gSaveData[0].mUnk_1a_8];
     mUnk_0e = 0;
     mUnk_0f = 0;
     mUnk_10_0 = 0;
@@ -161,7 +161,7 @@ void AttrSelScene::Update() {
         }
         case 3:
             if (mUnk_0e != 2) {
-                data_020d43f0[0].mUnk_1a_8 = data_ov000_0222621c[mAttrib];
+                gSaveData[0].mUnk_1a_8 = data_ov000_0222621c[mAttrib];
                 SpriteManager::Get().StartFade(3);
                 mUnk_15 = 2;
                 mUnk_0c++;
@@ -258,7 +258,7 @@ void AttrSelScene::PrintName(void *buffer, u32 size, u32 vram, u16 width, u16 he
     s16 outHeight = 0;
     s16 pixelWidth = 0;
     TextManager::Get().mUse4bppFont = 1;
-    TextManager::Get().Print(data_020d43f0[0].mName, 0x18, buffer, width, height, &outWidth, &outHeight,
+    TextManager::Get().Print(gSaveData[0].mName, 0x18, buffer, width, height, &outWidth, &outHeight,
                              (u16 *) &pixelWidth, 0, 2, unk, 0x10, 0, 0, 1, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
     QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, vram, buffer, size, 0);

@@ -17,7 +17,7 @@ static const WindowCellRecord data_020a30c0[1] = {
 #include "System/InputManager.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Unknown/UnkStruct_02071d24.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -115,13 +115,13 @@ UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
     do {
         if (mUnk_73 == 0 && data_020d433c.mBattlePlayers != NULL) {
             BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9]->mRecords[slot];
-            mUnk_6a[slot] = record->mUnk_08;
+            mUnk_6a[slot] = record->mBakuganId;
             if (mUnk_6a[slot] == 6) {
                 mUnk_6a[slot] = 5;
             }
-            u8 variant = record->mUnk_09;
+            u8 variant = record->mAttribute;
             mUnk_6d[slot] = variant;
-            UnkStruct_02023248 *entry = func_02023248(data_020d43f0, mUnk_6a[slot], variant);
+            UnkStruct_02023248 *entry = func_02023248(gSaveData, mUnk_6a[slot], variant);
             mUnk_54[slot] = entry;
             u32 base = entry->mPad;
             mUnk_64[slot] = record->mGauge - base;
@@ -559,10 +559,10 @@ void UnkStruct_02076058::func_02077a30(u32 index, u32 unk2, u32 unk3, u8 unk4) {
     }
     mUnk_6a[index] = unk2;
     mUnk_6d[index] = unk3;
-    mUnk_54[index] = func_02023248(data_020d43f0, unk2, unk3);
+    mUnk_54[index] = func_02023248(gSaveData, unk2, unk3);
     mUnk_70[index] = mUnk_54[index]->mUnk_00_0;
     if (unk4 != 0) {
-        func_02023248(data_020d43f0, unk2, unk3);
+        func_02023248(gSaveData, unk2, unk3);
         u16 cost = (mUnk_54[index]->mUnk_00_0 + 1) * 300;
         mUnk_64[index] = cost - mUnk_54[index]->mPad;
     }

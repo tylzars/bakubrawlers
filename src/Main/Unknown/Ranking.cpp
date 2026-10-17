@@ -1,6 +1,6 @@
 #include "Game/Ranking.hpp"
 
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 
 #include <nitro/fx.h>
 
@@ -16,16 +16,16 @@ extern const u32 data_020b95ec[2][12];
 Ranking::Ranking() {
     mPlayerCharacterId = 0x15;
     mPlayerRank = 0x3e7;
-    mPlayerScore = data_020d43f0[0].mUnk_20;
+    mPlayerScore = gSaveData[0].mUnk_20;
     mTableIndex = 0;
     u32 flag = 0;
-    u8 mode = data_020d43f0[0].mUnk_42;
+    u8 mode = gSaveData[0].mUnk_42;
     if (mode == 6) {
-        if (data_020d43f0[0].mUnk_43 > 2) {
+        if (gSaveData[0].mUnk_43 > 2) {
             flag = 1;
         }
     }
-    if (((mode > 6) | flag | data_020d43f0[0].mUnk_5bf_0) != 0) {
+    if (((mode > 6) | flag | gSaveData[0].mUnk_5bf_0) != 0) {
         mTableIndex = 1;
     }
     Build();

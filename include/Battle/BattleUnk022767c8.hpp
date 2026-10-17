@@ -10,7 +10,7 @@ class SelectWindow;
 struct MessageFile;
 
 // Reward screen shown after a battle (0xe8 bytes, vtable 0228b23c, created by BattleResult): counts the amount
-// earned into data_020d43f0.mMoney with coin animations and a printed number.
+// earned into gSaveData.mMoney with coin animations and a printed number.
 class BattleUnk022767c8 : public SceneBase {
 public:
     /* 00 SceneBase */

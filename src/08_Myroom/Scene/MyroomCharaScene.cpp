@@ -1,5 +1,5 @@
 #include "Scene/MyroomCharaScene.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Game/UnkStruct_020d48f0.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -444,7 +444,7 @@ void MyroomCharaScene::DrawCell() {
 }
 
 u8 MyroomCharaScene::func_ov008_02224a4c() {
-    return data_020d43f0[0].mUnk_5b8;
+    return gSaveData[0].mUnk_5b8;
 }
 
 void MyroomCharaScene::func_ov008_02224a5c() {
@@ -480,7 +480,7 @@ void MyroomCharaScene::func_ov008_02224ca4(u32 line, u32 value, u8 digits, s16 x
     unused       = 0;
     switch (mTab) {
         case 1:
-            if (data_020d43f0[0].mUnk_48 + data_020d43f0[0].mUnk_4a == 0) {
+            if (gSaveData[0].mUnk_48 + gSaveData[0].mUnk_4a == 0) {
                 special = TRUE;
             }
             break;
@@ -530,13 +530,13 @@ void MyroomCharaScene::func_ov008_02224f80(u32 line, u32 kind) {
     s32 ratio = 0;
     switch (kind) {
         case 0: {
-            func_ov008_02224ca4(line, data_020d43f0[0].mUnk_48, 4, x, 2);
+            func_ov008_02224ca4(line, gSaveData[0].mUnk_48, 4, x, 2);
             x += 0x30;
-            func_ov008_02224ca4(line, data_020d43f0[0].mUnk_4a, 4, x, 3);
+            func_ov008_02224ca4(line, gSaveData[0].mUnk_4a, 4, x, 3);
             x += 0x2a;
             value = 0;
-            if (data_020d43f0[0].mUnk_48 + data_020d43f0[0].mUnk_4a > 0) {
-                value = data_020d43f0[0].mUnk_48 * 1000 / (data_020d43f0[0].mUnk_48 + data_020d43f0[0].mUnk_4a);
+            if (gSaveData[0].mUnk_48 + gSaveData[0].mUnk_4a > 0) {
+                value = gSaveData[0].mUnk_48 * 1000 / (gSaveData[0].mUnk_48 + gSaveData[0].mUnk_4a);
             }
             s32 rest = value % 10;
             if (rest == 0) {
@@ -549,14 +549,14 @@ void MyroomCharaScene::func_ov008_02224f80(u32 line, u32 kind) {
             break;
         }
         case 1:
-            func_ov008_02224ca4(line, data_020d43f0[0].mUnk_5a, 2, 0, -1);
+            func_ov008_02224ca4(line, gSaveData[0].mFewestRounds, 2, 0, -1);
             break;
         case 2:
-            func_ov008_02224ca4(line, data_020d43f0[0].mUnk_5b, 2, 0, -1);
+            func_ov008_02224ca4(line, gSaveData[0].mMostRounds, 2, 0, -1);
             break;
         case 3: {
-            if (data_020d43f0[0].mUnk_4e != 0) {
-                ratio = data_020d43f0[0].mUnk_50 * 1000 / data_020d43f0[0].mUnk_4e;
+            if (gSaveData[0].mUnk_4e != 0) {
+                ratio = gSaveData[0].mUnk_50 * 1000 / gSaveData[0].mUnk_4e;
             }
             s32 rest = ratio % 10;
             if (rest == 0) {
@@ -571,19 +571,19 @@ void MyroomCharaScene::func_ov008_02224f80(u32 line, u32 kind) {
             func_ov008_02224ca4(line, data_020d48f0.mUnk_d4, 4, 0, -1);
             break;
         case 5:
-            func_ov008_02224ca4(line, data_020d43f0[0].mUnk_5c, 4, 0, -1);
+            func_ov008_02224ca4(line, gSaveData[0].mUnk_5c, 4, 0, -1);
             break;
         case 6:
-            func_ov008_02224ca4(line, data_020d43f0[0].mUnk_52, 4, 0, -1);
+            func_ov008_02224ca4(line, gSaveData[0].mUnk_52, 4, 0, -1);
             break;
         case 7:
-            func_ov008_02224ca4(line, data_020d43f0[0].mUnk_80, 3, 0, 6);
+            func_ov008_02224ca4(line, gSaveData[0].mUnk_80, 3, 0, 6);
             break;
         case 8:
-            func_ov008_02224ca4(line, data_020d43f0[0].mUnk_84, 3, 0, 6);
+            func_ov008_02224ca4(line, gSaveData[0].mUnk_84, 3, 0, 6);
             break;
         case 9:
-            func_ov008_02224ca4(line, data_020d43f0[0].mUnk_82, 3, 0, 6);
+            func_ov008_02224ca4(line, gSaveData[0].mUnk_82, 3, 0, 6);
             break;
         case 10: {
             TextManager::Get().mUse4bppFont = 1;
@@ -682,9 +682,9 @@ void MyroomCharaScene::func_ov008_02225814() {
     s16 max;
     mListCount = 0;
     for (i = 0; i < 0x11; i++) {
-        if (i != 5 && data_020d43f0[0].mUnk_5e[i] != 0) {
+        if (i != 5 && gSaveData[0].mUnk_5e[i] != 0) {
             ids[mListCount]    = i;
-            values[mListCount] = data_020d43f0[0].mUnk_5e[i];
+            values[mListCount] = gSaveData[0].mUnk_5e[i];
             mListCount++;
         }
     }

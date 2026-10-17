@@ -4,12 +4,12 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-extern u8 data_020d4404[];
+extern u8 gCharacterLook[];
 extern MtxFx43 gIdentityMtx43;
 extern "C" void func_01ffcf64(MtxFx43 *mtx, VecFx32 *pos);
 
 // 0x1bc bytes, built from /Game/Character/Character/charaNN files.
-// Custom character appearance as stored in the save data (8 bytes, data_020d4404).
+// Custom character appearance as stored in the save data (8 bytes, gCharacterLook).
 struct CharacterParams {
     u16 mUnk_00_0 : 1;
     u16 mFaceKind : 3;
@@ -101,7 +101,7 @@ UnkStruct_0205401c *UnkStruct_0205401c::Release() {
 
 void UnkStruct_0205401c::Create(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
     if (unk3 == 0) {
-        unk3 = (u32) data_020d4404;
+        unk3 = (u32) gCharacterLook;
     }
     if (unk2 != 0) {
         SpriteManager::Get().func_02027504(0);
@@ -152,7 +152,7 @@ void UnkStruct_0205401c::StartLoad(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
     }
     if (unk1 == 0x15) {
         if (unk3 == 0) {
-            unk3 = (u32) data_020d4404;
+            unk3 = (u32) gCharacterLook;
         }
         mUseCharacter = 1;
         mCharacter = (UnkStruct_0205401c_04 *) new CharacterModel();

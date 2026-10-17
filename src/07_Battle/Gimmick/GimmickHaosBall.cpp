@@ -61,7 +61,7 @@ void GimmickHaosBall::Update() {
             return;
         }
         BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
-        if (p->mRecords[p->mRecord].mUnk_09 == 3) {
+        if (p->mRecords[p->mRecord].mAttribute == 3) {
             return;
         }
         mTimer = 0x1e;
@@ -73,7 +73,7 @@ void GimmickHaosBall::Update() {
     }
     case 2: {
         func_ov007_0222db58();
-        BattleTarget *target = data_020d433c.mBattlePlayers->mUnk_298;
+        BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
         if (!target) {
             return;
         }
@@ -87,7 +87,7 @@ void GimmickHaosBall::Update() {
         sum.y = d.y + h->mPosition.y;
         sum.x = d.x + h->mPosition.x;
         h->mPosition = sum;
-        func_ov007_0225c9c0(data_020d433c.mBattlePlayers->mUnk_298, 0, 0x333, 0, 0);
+        func_ov007_0225c9c0(data_020d433c.mBattlePlayers->mBattleTarget, 0, 0x333, 0, 0);
         data_020d433c.mUnk_14 &= 8;
         if (data_020d433c.mUnk_14) {
             return;
@@ -104,16 +104,16 @@ void GimmickHaosBall::Update() {
     }
     case 3: {
         func_ov007_0222db58();
-        u32 x = MATH_Rand32(&data_020d42e8, 0x2000);
-        u32 y = MATH_Rand32(&data_020d42e8, 0x1000);
-        u32 z = MATH_Rand32(&data_020d42e8, 0x2000);
+        u32 x = MATH_Rand32(&gRandom, 0x2000);
+        u32 y = MATH_Rand32(&gRandom, 0x1000);
+        u32 z = MATH_Rand32(&gRandom, 0x2000);
         rnd.x = x - 0x1000; rnd.y = y; rnd.z = z - 0x1000;
         VEC_Normalize(&rnd, &rnd);
         rnd.x = FX_Mul(rnd.x, 0x6000);
         rnd.y = FX_Mul(rnd.y, 0x6000);
         rnd.z = FX_Mul(rnd.z, 0x6000);
-        if (data_020d433c.mBattlePlayers->mUnk_298) {
-            func_ov007_0225c960(data_020d433c.mBattlePlayers->mUnk_298, &rnd, 0);
+        if (data_020d433c.mBattlePlayers->mBattleTarget) {
+            func_ov007_0225c960(data_020d433c.mBattlePlayers->mBattleTarget, &rnd, 0);
         }
         SoundManager::Get().StartSeqArc(0x3a);
         mState++;

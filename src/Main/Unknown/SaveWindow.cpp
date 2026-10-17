@@ -3,7 +3,7 @@
 #include "Text/TextManager.hpp"
 #include "UI/SaveWindow.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "System/FileSystem.hpp"
 #include "UI/SelectWindow.hpp"
 #include "UI/MessageScreen.hpp"
@@ -122,7 +122,7 @@ void SaveWindow::Update() {
             if (func_0203dd0c(&FrameTask::Get(), 0) != 0) {
                 break;
             }
-            data_020d43f0[0].mUnk_26 = data_020d433c.mUnk_79;
+            gSaveData[0].mLanguage = data_020d433c.mLanguage;
             SaveManager::Get();
             new UnkScene_020a54a8();
             mState++;

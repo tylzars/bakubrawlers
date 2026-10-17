@@ -7,7 +7,7 @@
 #include "Scene/MyroomShootScene.hpp"
 #include "Scene/MyroomTipsScene.hpp"
 #include "UI/SaveWindow.hpp"
-#include "Game/UnkStruct_02065c40.hpp"
+#include "Game/ScriptPlayer.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -154,11 +154,11 @@ void MyroomScene::Update() {
             InitDisplay();
             LoadGraphics();
             SetupText();
-            mEvent = new UnkStruct_02065c40(1, 0, 0);
+            mEvent = new ScriptPlayer(1, 0, 0);
             ctx->mInfo.mState++;
             break;
         case 1:
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 return;
             }
             mEvent->func_0206ef4c("mes_rm_button", 0, 0xa, 0, 0x15);
@@ -172,7 +172,7 @@ void MyroomScene::Update() {
             ctx->mInfo.mState++;
             break;
         case 2:
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 return;
             }
             switch (ctx->mInfo.mMenuResult) {
@@ -245,7 +245,7 @@ void MyroomScene::Update() {
         case 7:
             func_ov008_0221c2a0();
             DrawText();
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 return;
             }
             SpriteManager::Get().StartFade(3);
@@ -257,7 +257,7 @@ void MyroomScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            mEvent->func_020676f8();
+            mEvent->RequestFinish();
             mContext->mUnk_12 = 0;
             ctx->mInfo.mState++;
             break;
@@ -318,7 +318,7 @@ void MyroomScene::Update() {
         case 13:
             func_ov008_0221c2a0();
             DrawText();
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 return;
             }
             new SaveWindow(1, 1, 0, 0x2000, 2, 0, 0, 0x1e000, 0x1a0);
@@ -363,7 +363,7 @@ void MyroomScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            mEvent->func_020676f8();
+            mEvent->RequestFinish();
             mContext->mUnk_12 = 0;
             ctx->mInfo.mState++;
             break;

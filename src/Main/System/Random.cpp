@@ -9,10 +9,10 @@ void func_020219dc() {
 }
 
 void SeedRandom(u32 seed) {
-    MATH_InitRand32(&data_020d42e8, seed);
+    MATH_InitRand32(&gRandom, seed);
 }
 
-s8 func_02021a30(u8 count, const u8 *weights) {
+s8 PickWeighted(u8 count, const u8 *weights) {
     u8 i = 0;
     s16 total = 0;
     do {
@@ -22,7 +22,7 @@ s8 func_02021a30(u8 count, const u8 *weights) {
     if (total == 0) {
         return -1;
     }
-    s16 roll = MATH_Rand32(&data_020d42e8, total);
+    s16 roll = MATH_Rand32(&gRandom, total);
     i = 0;
     do {
         roll -= weights[i];

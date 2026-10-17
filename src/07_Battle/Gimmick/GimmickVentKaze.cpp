@@ -65,7 +65,7 @@ void GimmickVentKaze::Update() {
         if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
             return;
         }
-        if (!data_020d433c.mBattlePlayers->mUnk_298) {
+        if (!data_020d433c.mBattlePlayers->mBattleTarget) {
             return;
         }
         BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
@@ -74,10 +74,10 @@ void GimmickVentKaze::Update() {
         if (data_020d433c.mUnk_14) {
             return;
         }
-        if (r->mUnk_09 == 5) {
+        if (r->mAttribute == 5) {
             return;
         }
-        BakuganModel *h = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4;
+        BakuganModel *h = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4;
         VecFx32 a           = data_ov007_02279450;
         m                   = data_0220e848;
         if (mRotY) {
@@ -97,7 +97,7 @@ void GimmickVentKaze::Update() {
             func_01ffcfd8(&m, mRotY);
         }
         func_01ff84d0(&c, &m, &c);
-        VEC_Add(&data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0, &c, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0);
+        VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0, &c, &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0);
         break;
     }
     case 2:

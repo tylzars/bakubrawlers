@@ -7,7 +7,7 @@
 
 class ParkMenu;
 class SelectWindow;
-class UnkStruct_02065c40;
+class ScriptPlayer;
 
 // Overlay 4: the park (tournament and battle lobby).
 class ParkScene : public SceneBase {
@@ -21,7 +21,7 @@ public:
     /* 11 */ u8 mWindowVisible;
     /* 12 */ u8 mUnk_12;
     /* 14 */ ParkMenu *mMenu;
-    /* 18 */ UnkStruct_02065c40 *mEvent;
+    /* 18 */ ScriptPlayer *mEvent;
     /* 1c */ void *mUnk_1c;
     /* 20 */ void *mGlyphBuffer;
     /* 24 */ u32 mUnk_24[2];

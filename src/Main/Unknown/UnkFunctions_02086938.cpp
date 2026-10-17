@@ -1,4 +1,4 @@
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Game/UnkStruct_020d48f0.hpp"
 
 // Bit tests written as macros (as in MyroomTipsScene): unlike the TestFlagBit/SetFlagBit inlines they let mwcc reuse the
@@ -28,7 +28,7 @@ BOOL func_020875ac(u32 index);
 
 BOOL UnlockProgressEntry(u32 index);
 
-#define VD (((volatile UnkStruct_020d43f0 *) data_020d43f0)[0])
+#define VD (((volatile SaveData *) gSaveData)[0])
 
 static inline BOOL StageReached(u32 greater, u32 equal, u32 sub) {
     u8 stage = VD.mUnk_42;
@@ -292,7 +292,7 @@ inline const ProgressEntry *Table_020a40f0() {
 
 // The (u8 *) casts give each flag array its own literal-pool word, hoisted after the count table as in the original
 // (through a pointer local it is hoisted first and trades registers with the constant 1; a plain member folds into the
-// data_020d43f0 base). Unlike the data_020d4976/data_020d497b externs, the cast form still aliases data_020d43f0, which
+// gSaveData base). Unlike the data_020d4976/data_020d497b externs, the cast form still aliases gSaveData, which
 // keeps the mUnk_5b9 load after the flag store.
 BOOL UnlockStoreItems() {
     BOOL result;
@@ -301,38 +301,38 @@ BOOL UnlockStoreItems() {
     const u16 *list2;
     const u8 *list;
     result = FALSE;
-    kind   = data_020d43f0[0].mUnk_42;
+    kind   = gSaveData[0].mUnk_42;
     list   = Table_020a4040()[kind].mList;
     if (list != NULL) {
         i = 0;
         do {
-            if (!TEST_BIT((u8 *) data_020d43f0[0].mUnk_586, list[i])) {
-                SET_BIT((u8 *) data_020d43f0[0].mUnk_586, list[i]);
-                data_020d43f0[0].mUnk_5b9_0 = 1;
+            if (!TEST_BIT((u8 *) gSaveData[0].mUnk_586, list[i])) {
+                SET_BIT((u8 *) gSaveData[0].mUnk_586, list[i]);
+                gSaveData[0].mUnk_5b9_0 = 1;
                 result                      = TRUE;
             }
             i++;
-        } while (i < Table_020a4040()[kind = data_020d43f0[0].mUnk_42].mCount);
+        } while (i < Table_020a4040()[kind = gSaveData[0].mUnk_42].mCount);
     }
     list2 = Table_020a3fe8()[kind].mList;
     if (list2 != NULL) {
         i = 0;
         do {
-            if (!TEST_BIT((u8 *) data_020d43f0[0].mUnk_58b, list2[i])) {
-                SET_BIT((u8 *) data_020d43f0[0].mUnk_58b, list2[i]);
-                data_020d43f0[0].mUnk_5b9_0 = 1;
+            if (!TEST_BIT((u8 *) gSaveData[0].mUnk_58b, list2[i])) {
+                SET_BIT((u8 *) gSaveData[0].mUnk_58b, list2[i]);
+                gSaveData[0].mUnk_5b9_0 = 1;
                 result                      = TRUE;
             }
             i++;
-        } while (i < Table_020a3fe8()[kind = data_020d43f0[0].mUnk_42].mCount);
+        } while (i < Table_020a3fe8()[kind = gSaveData[0].mUnk_42].mCount);
     }
     return result;
 }
 
 BOOL UnlockCharacters() {
     BOOL result = FALSE;
-    const UnlockTable *table = &Table_020a4098()[data_020d43f0[0].mUnk_42];
-    u8 sub      = data_020d43f0[0].mUnk_43;
+    const UnlockTable *table = &Table_020a4098()[gSaveData[0].mUnk_42];
+    u8 sub      = gSaveData[0].mUnk_43;
     if (table->mCount <= sub) {
         return result;
     }
@@ -361,40 +361,40 @@ BOOL UnlockCharacters() {
 
 BOOL func_02086b74() {
     BOOL result = FALSE;
-    if (!(data_020d43f0[0].mUnk_578 & 0x1)) {
+    if (!(gSaveData[0].mUnk_578 & 0x1)) {
         result = TRUE;
         ((volatile u8 *) data_020d4968)[0] |= 0x1;
     }
-    if (!(data_020d43f0[0].mUnk_578 & 0x80)) {
+    if (!(gSaveData[0].mUnk_578 & 0x80)) {
         result = TRUE;
         ((volatile u8 *) data_020d4968)[0] |= 0x80;
     }
-    if (data_020d43f0[0].mUnk_42 >= 4 && !(data_020d43f0[0].mUnk_578 & 0x4)) {
+    if (gSaveData[0].mUnk_42 >= 4 && !(gSaveData[0].mUnk_578 & 0x4)) {
         result = TRUE;
         ((volatile u8 *) data_020d4968)[0] |= 0x4;
     }
-    if (data_020d43f0[0].mUnk_42 >= 7 && !(data_020d43f0[0].mUnk_578 & 0x10)) {
+    if (gSaveData[0].mUnk_42 >= 7 && !(gSaveData[0].mUnk_578 & 0x10)) {
         result = TRUE;
         ((volatile u8 *) data_020d4968)[0] |= 0x10;
     }
-    if (data_020d43f0[0].mUnk_42 >= 8 && !(data_020d43f0[0].mUnk_578 & 0x8)) {
+    if (gSaveData[0].mUnk_42 >= 8 && !(gSaveData[0].mUnk_578 & 0x8)) {
         result = TRUE;
         ((volatile u8 *) data_020d4968)[0] |= 0x8;
     }
-    u8 stage = data_020d43f0[0].mUnk_42;
-    if ((stage > 8) | ((stage == 8) & (data_020d43f0[0].mUnk_43 == 4))) {
-        if (!(data_020d43f0[0].mUnk_578 & 0x2)) {
+    u8 stage = gSaveData[0].mUnk_42;
+    if ((stage > 8) | ((stage == 8) & (gSaveData[0].mUnk_43 == 4))) {
+        if (!(gSaveData[0].mUnk_578 & 0x2)) {
             result = TRUE;
             ((volatile u8 *) data_020d4968)[0] |= 0x2;
         }
     }
-    stage = data_020d43f0[0].mUnk_42;
-    if ((stage > 9) | ((stage == 9) & (data_020d43f0[0].mUnk_43 == 9))) {
-        if (!(data_020d43f0[0].mUnk_578 & 0x20)) {
+    stage = gSaveData[0].mUnk_42;
+    if ((stage > 9) | ((stage == 9) & (gSaveData[0].mUnk_43 == 9))) {
+        if (!(gSaveData[0].mUnk_578 & 0x20)) {
             result = TRUE;
             ((volatile u8 *) data_020d4968)[0] |= 0x20;
         }
-        if (!(data_020d43f0[0].mUnk_578 & 0x40)) {
+        if (!(gSaveData[0].mUnk_578 & 0x40)) {
             result = TRUE;
             ((volatile u8 *) data_020d4968)[0] |= 0x40;
         }
@@ -405,7 +405,7 @@ BOOL func_02086b74() {
 BOOL func_02086d48() {
     BOOL result = FALSE;
     u32 level   = 0;
-    u16 points  = data_020d48f0.mUnk_ba;
+    u16 points  = data_020d48f0.mRank;
     if (points <= 500) {
         level = 1;
     }
@@ -422,7 +422,7 @@ BOOL func_02086d48() {
         level = 5;
     }
     if (points <= 1) {
-        if (data_020d43f0[0].mUnk_5bf_0 != 0) {
+        if (gSaveData[0].mUnk_5bf_0 != 0) {
             level = 6;
         }
     }
@@ -437,8 +437,8 @@ BOOL func_02086d48() {
     if (count == 10) {
         level = 8;
     }
-    if (data_020d43f0[0].mUnk_5b8 < level) {
-        data_020d43f0[0].mUnk_5b8 = level;
+    if (gSaveData[0].mUnk_5b8 < level) {
+        gSaveData[0].mUnk_5b8 = level;
         result                    = TRUE;
     }
     return result;
@@ -555,7 +555,7 @@ s32 func_02087100() {
     if (result < 0) {
         u8 stage = VD.mUnk_42;
         if ((stage > 6) | ((stage == 6) & (VD.mUnk_43 == 2)) | VD.mUnk_5bf_0) {
-            if (data_020d48f0.mUnk_ba <= 1) {
+            if (data_020d48f0.mRank <= 1) {
                 if (!(VD.mUnk_5b6 & 0x80)) {
                     result = 7;
                     ((volatile u8 *) data_020d49a6)[0] |= 0x80;
@@ -579,13 +579,13 @@ s32 func_02087100() {
 
 s32 func_02087468() {
     s32 result = -1;
-    if (!(data_020d43f0[0].mUnk_5b7 & 0x1)) {
+    if (!(gSaveData[0].mUnk_5b7 & 0x1)) {
         u16 count = 0;
         u16 i     = 0;
         do {
             u16 j = 0;
             do {
-                if (func_020231f4(data_020d43f0, 0, i, j) != 0) {
+                if (func_020231f4(gSaveData, 0, i, j) != 0) {
                     count++;
                     break;
                 }
@@ -593,13 +593,13 @@ s32 func_02087468() {
             } while (j < 6);
             i++;
         } while (i < 0x29);
-        if (count >= (u16) (data_020d43f0[0].mUnk_5d2 + 0x24)) {
+        if (count >= (u16) (gSaveData[0].mUnk_5d2 + 0x24)) {
             result = 8;
             ((u8 *) data_020d49a6)[1] |= 0x1;
         }
     }
     if (result < 0) {
-        if (!(data_020d43f0[0].mUnk_5b7 & 0x2)) {
+        if (!(gSaveData[0].mUnk_5b7 & 0x2)) {
             u16 count = 0;
             u16 i     = 0;
             do {
@@ -667,9 +667,9 @@ BOOL UnlockProgressEntry(u32 index) {
             u8 i            = 0;
             const u16 *list = (const u16 *) Table_020a40f0()[index].mList;
             do {
-                if (!TEST_BIT((u8 *) data_020d43f0[0].mUnk_58b, list[i])) {
-                    SET_BIT((u8 *) data_020d43f0[0].mUnk_58b, list[i]);
-                    data_020d43f0[0].mUnk_5b9_0 = 1;
+                if (!TEST_BIT((u8 *) gSaveData[0].mUnk_58b, list[i])) {
+                    SET_BIT((u8 *) gSaveData[0].mUnk_58b, list[i]);
+                    gSaveData[0].mUnk_5b9_0 = 1;
                     result                       = TRUE;
                 }
                 i++;
@@ -685,9 +685,9 @@ BOOL UnlockProgressEntry(u32 index) {
             list  = (const u8 *) Table_020a40f0()[index].mList;
             i     = 0;
             do {
-                if (!TEST_BIT((u8 *) data_020d43f0[0].mUnk_586, list[i])) {
-                    SET_BIT((u8 *) data_020d43f0[0].mUnk_586, list[i]);
-                    data_020d43f0[0].mUnk_5b9_0 = 1;
+                if (!TEST_BIT((u8 *) gSaveData[0].mUnk_586, list[i])) {
+                    SET_BIT((u8 *) gSaveData[0].mUnk_586, list[i]);
+                    gSaveData[0].mUnk_5b9_0 = 1;
                     result                       = TRUE;
                 }
                 i++;

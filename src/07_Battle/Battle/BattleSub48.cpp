@@ -41,8 +41,8 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
         mAnims[i] = 0;
         i++;
     } while (i < 15);
-    if (data_020d433c.mUnk_95 != 0 && data_020d433c.mUnk_95 != 7) {
-        mUnk_0f = data_020d433c.mUnk_95 - 1;
+    if (data_020d433c.mFieldId != 0 && data_020d433c.mFieldId != 7) {
+        mUnk_0f = data_020d433c.mFieldId - 1;
         u8 k = 0;
         do {
             EntryIndex kk = (EntryIndex) k;
@@ -102,7 +102,7 @@ void BattleSub48::func_ov007_02224270() {
     screen.LoadCharacters("vs_u_obj_updown_32k.nce_ncg1D.bin", 0x3400, 0);
     screen.LoadPalette("vs_u_obj_updown_32k_ncl.bin", 0x60, 0);
     int emblem = -1;
-    switch (data_020d433c.mUnk_95) {
+    switch (data_020d433c.mFieldId) {
         case 1:
             emblem = 0;
             break;

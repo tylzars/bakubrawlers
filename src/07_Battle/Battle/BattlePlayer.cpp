@@ -5,7 +5,7 @@
 #include "types.h"
 #include "Battle/BattleCpu.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Game/Random.hpp"
 #include "Unknown/UnkFunctions.hpp"
 #include <nitro/mi.h>
@@ -139,7 +139,7 @@ extern u8 data_020d43df[];
 extern u8 data_020d43db[];
 extern u8 data_020d43d7[];
 extern u8 data_020d43e3[];
-s32 func_020230dc(UnkStruct_020d43f0 *base, u32 unk1, u32 unk2);
+s32 func_020230dc(SaveData *base, u32 unk1, u32 unk2);
 
 BattlePlayer::BattlePlayer(u32 index)
     : SceneBase(2, 0) {
@@ -148,9 +148,9 @@ BattlePlayer::BattlePlayer(u32 index)
     mUnk_d8 = 0;
     mUnk_dc = 0;
     mUnk_ee = 0;
-    mUnk_ef = 0;
+    mState = 0;
     mUnk_f3 = 0;
-    mUnk_f4 = 0;
+    mHistoryCount = 0;
     mRecord = 0;
     mUnk_fa = 0;
     mUnk_fc = 0;
@@ -159,41 +159,41 @@ BattlePlayer::BattlePlayer(u32 index)
     MI_CpuFill8((u8 *) this + 0xc, 0, 0x78);
     MI_CpuFill8((u8 *) this + 0x84, 0, 0x24);
     MI_CpuFill8((u8 *) this + 0xa8, 0, 8);
-    mUnk_f0 = index;
-    mUnk_f2 = data_020d433c.mUnk_98 != 0 ? data_020d43d7[mUnk_f0] : mUnk_f0;
-    mUnk_c8 = 0;
+    mIndex = index;
+    mPartner = data_020d433c.mHasPartners != 0 ? data_020d43d7[mIndex] : mIndex;
+    mCpu = 0;
     u32 limit = 1;
     WirelessManager::Get();
     if (IsWirelessMode(&data_020c4258)) {
         limit = WirelessManager::Get().func_0202f134();
     }
     if (limit <= index) {
-        mUnk_c8 = new BattleCpu(index);
-        mUnk_ef = 2;
+        mCpu = new BattleCpu(index);
+        mState = 2;
     }
     mUnk_f7 = data_020d43df[index];
-    mUnk_f6 = data_020d43db[index];
-    UnkStruct_020d43f0 *save = data_020d43f0;
+    mCharacterId = data_020d43db[index];
+    SaveData *save = gSaveData;
     mSlots54[0].mValue = save->mUnk_06[0];
     mSlots54[1].mValue = save->mUnk_06[1];
     mSlots54[2].mValue = save->mUnk_06[2];
     mSlots6c[0].mValue = save->mUnk_0c[0];
     mSlots6c[1].mValue = save->mUnk_0c[1];
     mSlots6c[2].mValue = save->mUnk_0c[2];
-    if (mUnk_f6 == 0x15) {
+    if (mCharacterId == 0x15) {
         u8 k = 0;
         do {
-            mRecords[k].mUnk_09 = func_020230a8(save, 0, k);
-            mRecords[k].mUnk_08 = func_020230dc(save, 0, k);
-            mRecords[k].mUnk_04 = func_020231f4(save, 0, mRecords[k].mUnk_08, mRecords[k].mUnk_09);
+            mRecords[k].mAttribute = func_020230a8(save, 0, k);
+            mRecords[k].mBakuganId = func_020230dc(save, 0, k);
+            mRecords[k].mUnk_04 = func_020231f4(save, 0, mRecords[k].mBakuganId, mRecords[k].mAttribute);
             mRecords[k].mUnk_0b = mRecords[k].mUnk_04 / 10;
-            mRecords[k].mHead = *(BattleRecordHead *) func_02023248(save, mRecords[k].mUnk_08, mRecords[k].mUnk_09);
+            mRecords[k].mHead = *(BattleRecordHead *) func_02023248(save, mRecords[k].mBakuganId, mRecords[k].mAttribute);
             k++;
         } while (k < 3);
     }
-    if (mUnk_f6 <= 0x10) {
-        if (mUnk_f6 > 0x10) {
-            mUnk_f6 = 0;
+    if (mCharacterId <= 0x10) {
+        if (mCharacterId > 0x10) {
+            mCharacterId = 0;
         }
         u8 k = 0;
         do {
@@ -204,16 +204,16 @@ BattlePlayer::BattlePlayer(u32 index)
                 if (data_020d43e3[(u32) n >> 3] & (1 << (n % 8))) {
                     extra = 0x64;
                 }
-            } else if (data_020d43f0[0].mUnk_5bf_0) {
+            } else if (gSaveData[0].mUnk_5bf_0) {
                 extra = 0x64;
             }
-            mRecords[k].mUnk_04 = data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_00[k].mUnk_04 * 10 + extra;
+            mRecords[k].mUnk_04 = data_ov007_0227b0a8[mCharacterId][mUnk_f7].mUnk_00[k].mUnk_04 * 10 + extra;
             mRecords[k].mUnk_0b = mRecords[k].mUnk_04 / 10;
-            mRecords[k].mUnk_09 = data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_00[k].mUnk_09;
-            mRecords[k].mUnk_08 = data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_00[k].mUnk_08;
-            mRecords[k].mHead = *(BattleRecordHead *) &data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_00[k];
-            mSlots54[k].mValue = data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_24[k][0];
-            mSlots6c[k].mValue = data_ov007_0227b0a8[mUnk_f6][mUnk_f7].mUnk_30[k][0];
+            mRecords[k].mAttribute = data_ov007_0227b0a8[mCharacterId][mUnk_f7].mUnk_00[k].mUnk_09;
+            mRecords[k].mBakuganId = data_ov007_0227b0a8[mCharacterId][mUnk_f7].mUnk_00[k].mUnk_08;
+            mRecords[k].mHead = *(BattleRecordHead *) &data_ov007_0227b0a8[mCharacterId][mUnk_f7].mUnk_00[k];
+            mSlots54[k].mValue = data_ov007_0227b0a8[mCharacterId][mUnk_f7].mUnk_24[k][0];
+            mSlots6c[k].mValue = data_ov007_0227b0a8[mCharacterId][mUnk_f7].mUnk_30[k][0];
             k++;
         } while (k < 3);
     }
@@ -242,20 +242,20 @@ BattlePlayer::BattlePlayer(u32 index)
                 break;
         }
     }
-    mUnk_f8 = data_020d433c.mUnk_99;
-    mUnk_f9 = data_020d433c.mUnk_99;
+    mSlots54Remaining = data_020d433c.mUnk_99;
+    mSlots6cRemaining = data_020d433c.mUnk_99;
     MI_CpuClear32((u8 *) this + 0x100, 0x20);
     MI_CpuClear32((u8 *) this + 0x120, 0x20);
     func_ov007_0226a1d8(this);
     if (data_020d433c.mUnk_8a_0 != 0) {
-        mRecords[1].mUnk_0a = 2;
-        mRecords[2].mUnk_0a = 2;
+        mRecords[1].mStatus = 2;
+        mRecords[2].mStatus = 2;
     }
 }
 
 BattlePlayer::~BattlePlayer() {
-    if (mUnk_c8) {
-        delete mUnk_c8;
+    if (mCpu) {
+        delete mCpu;
     }
 }
 
@@ -264,19 +264,19 @@ void BattlePlayer::Update() {
         mFinished = 1;
         return;
     }
-    switch (mUnk_ef) {
+    switch (mState) {
         case 0:
-            mUnk_ef = 1;
+            mState = 1;
             break;
         case 1:
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4030.mUnk_228)) {
                 WirelessManager::Get();
-                if (data_020c4230.mUnk_20 == data_020d43eb[mUnk_f0]) {
+                if (data_020c4230.mUnk_20 == data_020d43eb[mIndex]) {
                     WirelessManager::Get().func_0202f078(&data_0220f540);
                     data_0220f540.mUnk_00 = 0;
                 }
-                u8 *received = WirelessManager::Get().func_0202f0cc(data_020d43eb[mUnk_f0]);
+                u8 *received = WirelessManager::Get().func_0202f0cc(data_020d43eb[mIndex]);
                 if (!received) {
                     mMsg.mType = 0;
                 } else {
@@ -307,7 +307,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
     hasZero = 0;
     ones    = 0;
     do {
-        u8 state = player->mRecords[i].mUnk_0a;
+        u8 state = player->mRecords[i].mStatus;
         if (state == 0) {
             hasZero = 1;
             break;
@@ -325,8 +325,8 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
             } else {
                 i = 0;
                 do {
-                    if (player->mRecords[i].mUnk_0a == 2) {
-                        player->mRecords[i].mUnk_0a = 0;
+                    if (player->mRecords[i].mStatus == 2) {
+                        player->mRecords[i].mStatus = 0;
                     }
                     i++;
                 } while (i < data_020d433c.mUnk_99);
@@ -337,33 +337,33 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
             } else {
                 i = 0;
                 do {
-                    if (player->mRecords[i].mUnk_0a == 2) {
-                        player->mRecords[i].mUnk_0a = 0;
+                    if (player->mRecords[i].mStatus == 2) {
+                        player->mRecords[i].mStatus = 0;
                     }
                     i++;
                 } while (i < data_020d433c.mUnk_99);
             }
         }
     }
-    if (player->mUnk_f8 == 0) {
+    if (player->mSlots54Remaining == 0) {
         data_020d433c.mBattlePlayers->mUnk_28f = 0;
     }
-    if (player->mUnk_c8) {
-        player->mUnk_c8->func_ov007_02231038();
+    if (player->mCpu) {
+        player->mCpu->func_ov007_02231038();
     }
     player->mUnk_fa = 0;
     if (reset == 0) {
         u32 flagA = 0;
         u8 best  = 0;
-        if (data_020d433c.mUnk_98) {
+        if (data_020d433c.mHasPartners) {
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
             u8 mine                = player->mUnk_ee;
-            u8 total               = mine + list->mPlayers[player->mUnk_f2]->mUnk_ee;
+            u8 total               = mine + list->mPlayers[player->mPartner]->mUnk_ee;
             u8 sum                 = 0;
             i                      = 0;
             do {
-                u8 partner = list->mPlayers[i]->mUnk_f2;
-                if (i != player->mUnk_f0 && partner != player->mUnk_f0) {
+                u8 partner = list->mPlayers[i]->mPartner;
+                if (i != player->mIndex && partner != player->mIndex) {
                     sum = data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_ee + data_020d433c.mBattlePlayers->mPlayers[partner]->mUnk_ee;
                     break;
                 }
@@ -384,7 +384,7 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
             do {
                 u8 level = list->mPlayers[i]->mUnk_ee;
                 if (top == level) {
-                    if (i != player->mUnk_f0) {
+                    if (i != player->mIndex) {
                         flagA = 1;
                     }
                 }
@@ -403,9 +403,9 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
         }
     }
     if (data_020d433c.mUnk_8a_0 != 0) {
-        player->mRecords[1].mUnk_0a = 2;
-        player->mRecords[2].mUnk_0a = 2;
-        if (player->mUnk_f0 != 0) {
+        player->mRecords[1].mStatus = 2;
+        player->mRecords[2].mStatus = 2;
+        if (player->mIndex != 0) {
             if (player->mUnk_f3 + 0xbe < 0xbe) {
                 player->mUnk_f3 += 0xbe;
             } else {
@@ -417,13 +417,13 @@ void func_ov007_02269ee4(BattlePlayer *player, u32 reset) {
 }
 
 void func_ov007_0226a1d8(BattlePlayer *player) {
-    if (player->mUnk_f6 == 0x15) {
+    if (player->mCharacterId == 0x15) {
         WirelessManager::Get();
         const u16 *name;
         if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
             name = (const u16 *) data_020d441a;
         } else {
-            name = (const u16 *) (data_020d4352 + data_020d43eb[player->mUnk_f0] * 0x18);
+            name = (const u16 *) (data_020d4352 + data_020d43eb[player->mIndex] * 0x18);
         }
         u8 length = 0;
         do {
@@ -436,12 +436,12 @@ void func_ov007_0226a1d8(BattlePlayer *player) {
             length = 1;
         }
         MIi_CpuCopy16(name, (u8 *) player + 0xb0, length * sizeof(u16));
-        player->mUnk_ed = length * 2;
+        player->mNameLength = length * 2;
     } else {
         MessageFile *file = (MessageFile *) LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
-        player->mUnk_ed   = file->GetLength(player->mUnk_f6);
+        player->mNameLength   = file->GetLength(player->mCharacterId);
         TextManager::Get();
-        MIi_CpuCopy16(file->GetText(player->mUnk_f6), (u8 *) player + 0xb0, player->mUnk_ed);
+        MIi_CpuCopy16(file->GetText(player->mCharacterId), (u8 *) player + 0xb0, player->mNameLength);
         OS_Free(file);
     }
 }
@@ -475,12 +475,12 @@ void func_ov007_0226a380(BattlePlayer *player, u8 record, int amount) {
 
 void func_ov007_0226a404(BattlePlayer *player, u32 index, u32 flag) {
     if (player->mSlots54[index].mFlag == 0) {
-        if (flag != 0 && player->mUnk_f8 != 0) {
-            player->mUnk_f8--;
+        if (flag != 0 && player->mSlots54Remaining != 0) {
+            player->mSlots54Remaining--;
         }
     } else {
         if (flag == 0) {
-            player->mUnk_f8++;
+            player->mSlots54Remaining++;
         }
     }
     player->mSlots54[index].mFlag = flag;
@@ -488,12 +488,12 @@ void func_ov007_0226a404(BattlePlayer *player, u32 index, u32 flag) {
 
 void func_ov007_0226a448(BattlePlayer *player, u8 index, int flag) {
     if (player->mSlots6c[index].mFlag == 0) {
-        if (flag != 0 && player->mUnk_f9 != 0) {
-            player->mUnk_f9--;
+        if (flag != 0 && player->mSlots6cRemaining != 0) {
+            player->mSlots6cRemaining--;
         }
     } else {
         if (flag == 0) {
-            player->mUnk_f9++;
+            player->mSlots6cRemaining++;
         }
     }
     player->mSlots6c[index].mFlag = flag;
@@ -501,12 +501,12 @@ void func_ov007_0226a448(BattlePlayer *player, u8 index, int flag) {
 
 
 void func_ov007_0226a48c(BattlePlayer *player) {
-    if (data_020d433c.mUnk_85 != 0xe) {
+    if (data_020d433c.mTutorialId != 0xe) {
         u8 two = 2;
         player->mSlots6c[0].mFlag = two;
         player->mSlots6c[1].mFlag = two;
         player->mSlots6c[2].mFlag = two;
-        if (data_020d433c.mUnk_85 == 1) {
+        if (data_020d433c.mTutorialId == 1) {
             player->mSlots54[0].mFlag = 0;
             player->mSlots54[1].mFlag = two;
             player->mSlots54[2].mFlag = two;
@@ -515,28 +515,28 @@ void func_ov007_0226a48c(BattlePlayer *player) {
             player->mSlots54[1].mFlag = two;
             player->mSlots54[2].mFlag = two;
         }
-        if (player->mUnk_f0 != 0) {
+        if (player->mIndex != 0) {
             player->mRecords[0].mUnk_04 = 0xe6;
             player->mRecords[0].mUnk_0b = 0x17;
         } else {
-            player->mRecords[0].mUnk_08 = 0x16;
+            player->mRecords[0].mBakuganId = 0x16;
             player->mRecords[0].mUnk_04 = 0xbe;
             player->mRecords[0].mUnk_0b = 0x13;
-            player->mRecords[0].mUnk_09 = 0;
+            player->mRecords[0].mAttribute = 0;
         }
-        player->mRecords[1].mUnk_0a = 2;
-        player->mRecords[2].mUnk_0a = 2;
-        player->mUnk_f8 = 0;
-    } else if (player->mUnk_f0 == 0) {
-        player->mRecords[0].mUnk_08 = 0x24;
-        int v = func_020231f4(data_020d43f0, 0, 0x24, (u8) data_020d43f0[0].mUnk_1a_8);
+        player->mRecords[1].mStatus = 2;
+        player->mRecords[2].mStatus = 2;
+        player->mSlots54Remaining = 0;
+    } else if (player->mIndex == 0) {
+        player->mRecords[0].mBakuganId = 0x24;
+        int v = func_020231f4(gSaveData, 0, 0x24, (u8) gSaveData[0].mUnk_1a_8);
         if (v == 0) {
             v = 300;
         }
         player->mRecords[0].mUnk_04 = v;
         player->mRecords[0].mUnk_0b = v / 10;
-        player->mRecords[0].mUnk_09 = data_020d43f0[0].mUnk_1a_8;
-        player->mSlots6c[0].mValue  = data_020d43f0[0].mUnk_1a_8 + 0x68;
+        player->mRecords[0].mAttribute = gSaveData[0].mUnk_1a_8;
+        player->mSlots6c[0].mValue  = gSaveData[0].mUnk_1a_8 + 0x68;
         player->mSlots6c[1].mValue  = 0x8c;
         player->mSlots6c[2].mValue  = 0xac;
         player->mSlots6c[1].mFlag   = 2;
@@ -555,7 +555,7 @@ u8 func_ov007_0226a5e8(BattlePlayer *player) {
     u8 i                   = 0;
     u8 count               = 0;
     u8 j;
-    BattlePlayer *owner    = list->mPlayers[player->mUnk_f0];
+    BattlePlayer *owner    = list->mPlayers[player->mIndex];
     u8 n                   = data_020d433c.mUnk_99;
     do {
         if (owner->mSlots54[i].mFlag == 0) {
@@ -572,9 +572,9 @@ u8 func_ov007_0226a5e8(BattlePlayer *player) {
         j++;
     } while (j < n);
     if (count != 0) {
-        u8 pick              = MATH_Rand32(&data_020d42e8, count);
+        u8 pick              = MATH_Rand32(&gRandom, count);
         u8 k                 = 0;
-        BattlePlayer *owner2 = list->mPlayers[player->mUnk_f0];
+        BattlePlayer *owner2 = list->mPlayers[player->mIndex];
         i                    = 0;
         do {
             if (owner2->mSlots54[i].mFlag == 0) {
@@ -594,7 +594,7 @@ u8 func_ov007_0226a700(BattlePlayer *player, u8 mask, s16 x, s16 y) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 i = 0;
     u8 count = 0;
-    BattlePlayer *owner = list->mPlayers[player->mUnk_f0];
+    BattlePlayer *owner = list->mPlayers[player->mIndex];
     u8 n = data_020d433c.mUnk_99;
     u8 result = 0xff;
     do {
@@ -610,7 +610,7 @@ u8 func_ov007_0226a700(BattlePlayer *player, u8 mask, s16 x, s16 y) {
         if (value >= 0x92 && value <= 0xa7) {
             u8 ret = 1;
             if (!((mask & 1) || owner->mSlots6c[0].mFlag != 0)) {
-                if (MATH_Rand32(&data_020d42e8, 2) != 0) {
+                if (MATH_Rand32(&gRandom, 2) != 0) {
                     ret = 0;
                 }
             }
@@ -618,8 +618,8 @@ u8 func_ov007_0226a700(BattlePlayer *player, u8 mask, s16 x, s16 y) {
         }
     }
     if (count != 0) {
-        u8 pick = MATH_Rand32(&data_020d42e8, count);
-        owner = list->mPlayers[player->mUnk_f0];
+        u8 pick = MATH_Rand32(&gRandom, count);
+        owner = list->mPlayers[player->mIndex];
         u8 k = 0;
         i = 0;
         do {

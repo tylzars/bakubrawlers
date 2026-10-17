@@ -257,7 +257,7 @@ void BattleShoot::func_ov007_0226aa14(Camera *unk1) {
     mUnk_6160 = 0;
     mUnk_6194 = 0;
     mUnk_6168 = 0;
-    mUnk_616a = data_ov007_0227bcd0[data_020d433c.mUnk_95];
+    mUnk_616a = data_ov007_0227bcd0[data_020d433c.mFieldId];
     mUnk_6195 = 1;
     mUnk_6196 = 0;
     mUnk_6197 = 0;
@@ -291,7 +291,7 @@ void BattleShoot::func_ov007_0226aa14(Camera *unk1) {
     mUnk_619d = 0;
     mUnk_619f = 0;
     mUnk_61a2 = 0;
-    if (data_020d433c.mBattlePlayers->mUnk_28a == data_020d433c.mBattlePlayers->mUnk_2a9) {
+    if (data_020d433c.mBattlePlayers->mTurnPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
         mUnk_6197 = 1;
     }
     MI_CpuClear32(mCells, 0x54);
@@ -322,7 +322,7 @@ BattleShoot::~BattleShoot() {
     }
     data_020d433c.mEffects->FreeAllEffects();
     FreeEffectGroup(data_020d433c.mEffects, 0);
-    data_020d433c.mBattlePlayers->mUnk_298 = 0;
+    data_020d433c.mBattlePlayers->mBattleTarget = 0;
     if (mUnk_6134) {
         delete mUnk_6134;
     }
@@ -352,13 +352,13 @@ void BattleShoot::Update() {
         case 1:
             mUnk_6187--;
             if (mUnk_6187 == 0) {
-                if (data_020d433c.mUnk_85 == 3) {
+                if (data_020d433c.mTutorialId == 3) {
                     mUnk_6134->mEnabled = 0;
                 } else {
                     mUnk_6134->mEnabled = 1;
                 }
                 SpriteManager::Get().StartFade(2);
-                u8 mode = data_020d433c.mUnk_85;
+                u8 mode = data_020d433c.mTutorialId;
                 if (mode >= 3 && mode <= 12) {
                     data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
                     data_020d433c.mBattlePlayers->mUnk_2a4->SetMessage(data_020d433c.mBattlePlayers->mUnk_2af, 0x64, 0, 0);
@@ -403,7 +403,7 @@ void BattleShoot::Update() {
                 mUnk_61a0 = 0;
                 break;
             }
-            if (data_020d433c.mUnk_85 != 3) {
+            if (data_020d433c.mTutorialId != 3) {
                 mUnk_6134->Draw();
             }
             if (func_ov007_0226d23c()) {
@@ -449,7 +449,7 @@ void BattleShoot::Update() {
             ((ShootPacket *) &data_0220f540)->mUnk_0c     = mUnk_616a;
             ((ShootPacket *) &data_0220f540)->mUnk_0f     = mUnk_6193;
             ((ShootPacket *) &data_0220f540)->mUnk_10     = mUnk_6198;
-            ((ShootPacket *) &data_0220f540)->mUnk_0e           = list->mPlayers[list->mUnk_28a]->mRecord;
+            ((ShootPacket *) &data_0220f540)->mUnk_0e           = list->mPlayers[list->mTurnPlayer]->mRecord;
             if (func_ov007_022631bc(list, 8)) {
                 mUnk_6186 = 10;
             }
@@ -485,7 +485,7 @@ void BattleShoot::Update() {
         }
         case 10: {
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
-            BattleCpu *cpu = list->mPlayers[list->mUnk_28a]->mUnk_c8;
+            BattleCpu *cpu = list->mPlayers[list->mTurnPlayer]->mCpu;
             if (CpuActive(cpu)) {
                 u8 kind = mUnk_6198;
                 if (kind == 1 || kind == 3 || kind == 4) {
@@ -499,7 +499,7 @@ void BattleShoot::Update() {
                     cpu->func_ov007_022329cc(0x14000);
                 }
             }
-            u8 idx = data_020d433c.mBattlePlayers->mUnk_28a;
+            u8 idx = data_020d433c.mBattlePlayers->mTurnPlayer;
             data_020d433c.mBattlePlayers->mPlayers[idx]->mUnk_ec = mUnk_6193;
             BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[idx];
             p->mUnk_d4 = 0;
@@ -515,7 +515,7 @@ void BattleShoot::Update() {
             }
             mUnk_619e = 0x14;
             mUnk_61a4 = 1;
-            if (data_020d433c.mUnk_85 != 0 && data_020d433c.mBattlePlayers->mUnk_28a != 0) {
+            if (data_020d433c.mTutorialId != 0 && data_020d433c.mBattlePlayers->mTurnPlayer != 0) {
                 mUnk_61a4 = 0;
             }
             mUnk_61a1 = 0;
@@ -535,12 +535,12 @@ void BattleShoot::Update() {
         }
         case 11: {
             BattlePlayerList *l = data_020d433c.mBattlePlayers;
-            if (l->mPlayers[l->mUnk_28a]->mUnk_c8 == 0) {
+            if (l->mPlayers[l->mTurnPlayer]->mCpu == 0) {
                 u8 i = 0;
                 do {
                     BattlePlayerList *l3 = data_020d433c.mBattlePlayers;
-                    if (l3->mPlayers[i]->mUnk_c8 != 0 && i != l3->mUnk_28a) {
-                        l3->mPlayers[i]->mUnk_c8->func_ov007_02232c88();
+                    if (l3->mPlayers[i]->mCpu != 0 && i != l3->mTurnPlayer) {
+                        l3->mPlayers[i]->mCpu->func_ov007_02232c88();
                     }
                     i++;
                 } while (i < data_020d433c.mPlayerCount);
@@ -572,7 +572,7 @@ void BattleShoot::Update() {
                     }
                     if (mUnk_6130->mUnk_1cb == 0) {
                         BattlePlayerList *l = data_020d433c.mBattlePlayers;
-                        if (l->mPlayers[l->mUnk_28a]->IsActive()) {
+                        if (l->mPlayers[l->mTurnPlayer]->IsActive()) {
                             func_ov007_0226e430();
                         }
                         func_ov007_0226e234();
@@ -603,7 +603,7 @@ void BattleShoot::Update() {
                     mContext->mUnk_12 = 0;
                     break;
                 case 2:
-                    if (data_020d433c.mUnk_a8 != 0) {
+                    if (data_020d433c.mWireless != 0) {
                         WirelessManager::Get();
                         data_020c4030.mUnk_22a = 6;
                         mUnk_6186++;
@@ -682,11 +682,11 @@ void BattleShoot::func_ov007_0226bd3c() {
     func_ov007_0226bb2c();
     func_ov007_0226bdfc();
     func_ov007_0226c798();
-    u8 player = data_020d433c.mBattlePlayers->mUnk_28a;
+    u8 player = data_020d433c.mBattlePlayers->mTurnPlayer;
     u8 record = data_020d433c.mBattlePlayers->mPlayers[player]->mRecord;
     delete mUnk_6130;
     mUnk_6130                              = new BattleTarget(mUnk_6144, player, record);
-    data_020d433c.mBattlePlayers->mUnk_298 = mUnk_6130;
+    data_020d433c.mBattlePlayers->mBattleTarget = mUnk_6130;
     mContext->mUnk_12                      = 0;
     mUnk_6130->mUnk_1b8                    = mUnk_6168;
     mUnk_6130->mUnk_1ba                    = mUnk_616a;
@@ -697,7 +697,7 @@ void BattleShoot::func_ov007_0226bdfc() {
     u8 player;
     u8 record;
     LoadEffectGroup(data_020d433c.mEffects, 0, "jammer");
-    player = data_020d433c.mBattlePlayers->mUnk_28a;
+    player = data_020d433c.mBattlePlayers->mTurnPlayer;
     record = data_020d433c.mBattlePlayers->mPlayers[player]->RecordIndex();
     ChangeDir("/Game/Battle/Bg/");
     LoadAndQueueUpload(1, 1, 0, "battle_shoot_b_bg_00_ncl.bin", 0, 0, 0);
@@ -708,7 +708,7 @@ void BattleShoot::func_ov007_0226bdfc() {
     LoadAndQueueUpload(1, 6, 0, "pentest_pen_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 9, 0, "pentest_pen_nsc.bin", 0, 0, 0);
     func_ov007_0226f604();
-    u8 id = data_020d433c.mBattlePlayers->mPlayers[player]->mRecords[record].mUnk_09;
+    u8 id = data_020d433c.mBattlePlayers->mPlayers[player]->mRecords[record].mAttribute;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
     ChangeDir("/Game/Battle/Obj/");
@@ -777,7 +777,7 @@ void BattleShoot::func_ov007_0226bdfc() {
     mCells[2].mUnk_08          = 1;
     bool flag = false;
     if (data_020d433c.mBattlePlayers->Current()->mUnk_f3 >= 0xbe) {
-        u8 kind = data_020d433c.mBattlePlayers->Current()->CurrentRecord()->mUnk_08;
+        u8 kind = data_020d433c.mBattlePlayers->Current()->CurrentRecord()->mBakuganId;
         if ((kind == 0x24) | (kind == 0x25)) {
             flag = true;
         } else if ((u8) data_020d433c.mBattlePlayers->Current()->CurrentRecord()->mUnk_00_0 >= 2) {
@@ -978,7 +978,7 @@ BOOL BattleShoot::func_ov007_0226d23c() {
         } else {
           if (mUnk_6199 != 0) {
             if (((mUnk_618f > 0xc8) & (mUnk_6190 < 0x30)) && mUnk_6196 != 0) {
-                u8 record = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_28a]->mRecords[data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_28a]->mRecord].mUnk_09;
+                u8 record = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mTurnPlayer]->mRecords[data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mTurnPlayer]->mRecord].mAttribute;
                 if (mUnk_6198 == 0) {
                     mCells[2].mAnim->SetAnimation(0);
                     mCells[0].mAnim->SetAnimation(2);
@@ -1239,7 +1239,7 @@ void BattleShoot::func_ov007_0226dfb8() {
         angle = (s16) value;
     }
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    u8 curve = list->mPlayers[list->mUnk_28a]->mRecords[list->mPlayers[list->mUnk_28a]->mRecord].mUnk_02_3;
+    u8 curve = list->mPlayers[list->mTurnPlayer]->mRecords[list->mPlayers[list->mTurnPlayer]->mRecord].mUnk_02_3;
     mUnk_6156 = angle * data_ov007_0227bca0[curve].mUnk_00 / data_ov007_0227bca0[curve].mUnk_01 + 0x6000;
     mUnk_6158 = 0x38e;
     u8 power = mUnk_618a;
@@ -1262,7 +1262,7 @@ void BattleShoot::func_ov007_0226dfb8() {
     if (IsWirelessMode(&data_020c4030.mUnk_228)) {
         return;
     }
-    u8 index = data_020d433c.mBattlePlayers->mUnk_28a;
+    u8 index = data_020d433c.mBattlePlayers->mTurnPlayer;
     data_020d433c.mBattlePlayers->mPlayers[index]->mUnk_ec = mUnk_6193;
     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[index];
     player->mUnk_d4 = 0;
@@ -1328,8 +1328,8 @@ void BattleShoot::func_ov007_0226e234() {
 
 u16 BattleShoot::func_ov007_0226e390() {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    u8 index               = list->mUnk_28a;
-    VecFx32 cpuPos         = list->mPlayers[index]->mUnk_c8->mPos;
+    u8 index               = list->mTurnPlayer;
+    VecFx32 cpuPos         = list->mPlayers[index]->mCpu->mPos;
     VecFx32 *pos = &mUnk_6130->mUnk_1a4->mPosition;
     VecFx32 delta;
     VecFx32 offset = {0, 0, 0};
@@ -1343,7 +1343,7 @@ u16 BattleShoot::func_ov007_0226e390() {
 void BattleShoot::func_ov007_0226e430() {
     VecFx32 v;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    BattleCpu *cpu         = list->mPlayers[list->mUnk_28a]->mUnk_c8;
+    BattleCpu *cpu         = list->mPlayers[list->mTurnPlayer]->mCpu;
     if (cpu == 0) {
         return;
     }
@@ -1379,7 +1379,7 @@ void BattleShoot::func_ov007_0226e430() {
     VecFx32 pos2             = cpu->mPos;
     VEC_Subtract(&pos2, &pose->mPosition, &v);
     VEC_Normalize(&v, &v);
-    if (data_020d433c.mUnk_85 != 0) {
+    if (data_020d433c.mTutorialId != 0) {
         v.x = 0;
         v.y = 0;
         v.z = 0;
@@ -1415,9 +1415,9 @@ void BattleShoot::func_ov007_0226e430() {
     if (mUnk_6164 % 5 == 0) {
         s32 out[2];
         mUnk_6130->func_ov007_02255c04(&v, out);
-        func_ov007_0226f0e8(data_020d433c.mBattlePlayers->mUnk_28a, out[0], out[1]);
+        func_ov007_0226f0e8(data_020d433c.mBattlePlayers->mTurnPlayer, out[0], out[1]);
     }
-    u8 roll = MATH_Rand32(&data_020d42e8, (u8) (data_ov007_0227bcf8[cpu->mUnk_77].mHigh - data_ov007_0227bcf8[cpu->mUnk_77].mLow));
+    u8 roll = MATH_Rand32(&gRandom, (u8) (data_ov007_0227bcf8[cpu->mUnk_77].mHigh - data_ov007_0227bcf8[cpu->mUnk_77].mLow));
     mUnk_619e = roll + data_ov007_0227bcf8[cpu->mUnk_77].mLow;
     mUnk_6164++;
 }
@@ -1435,7 +1435,7 @@ void BattleShoot::func_ov007_0226e884() {
     u8 charged;
     u8 sent;
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    u8 self                = list->mUnk_28a;
+    u8 self                = list->mTurnPlayer;
     data_0220f540.mUnk_00  = 9;
     data_0220f540.mUnk_04  = 0;
     *(s32 *) &data_0220f540.mUnk_08 = 0;
@@ -1511,8 +1511,8 @@ void BattleShoot::func_ov007_0226e884() {
     i = 0;
     do {
         BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[i];
-        BattleCpu *cpu  = p->mUnk_c8;
-        if (cpu != 0 && self != i && self != p->mUnk_f2) {
+        BattleCpu *cpu  = p->mCpu;
+        if (cpu != 0 && self != i && self != p->mPartner) {
             s32 outX = 0;
             s32 outZ = 0;
             if (mUnk_6130->mUnk_4c <= cpu->mUnk_5c) {
@@ -1533,10 +1533,10 @@ void BattleShoot::func_ov007_0226e884() {
         i++;
     } while (i < data_020d433c.mPlayerCount);
     BattlePlayer *me = data_020d433c.mBattlePlayers->mPlayers[self];
-    if (me->mUnk_c8 != 0) {
+    if (me->mCpu != 0) {
         i = 0;
         do {
-            if (data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_c8 == 0) {
+            if (data_020d433c.mBattlePlayers->mPlayers[i]->mCpu == 0) {
                 if (mMsgs[i].mUnk_04 != 0) {
                     mMsgs[i].mUnk_04 = FX_Mul(mMsgs[i].mUnk_04, data_ov007_0227bcb8[me->mUnk_f7]);
                 }
@@ -1679,7 +1679,7 @@ void BattleShoot::func_ov007_0226f0e8(u8 kind, s32 x, s32 z) {
 
 void BattleShoot::func_ov007_0226f378() {
     if (mUnk_6138) {
-        u16 id = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_28a]->mUnk_fa;
+        u16 id = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mTurnPlayer]->mUnk_fa;
         if (mUnk_6184 != id) {
             if (mUnk_619a == 0x80) {
                 mUnk_6184 = id;
@@ -1724,7 +1724,7 @@ void BattleShoot::func_ov007_0226f59c() {
 }
 
 void BattleShoot::func_ov007_0226f604() {
-    if (data_020d433c.mBattlePlayers->mUnk_28a == data_020d433c.mBattlePlayers->mUnk_2a9) {
+    if (data_020d433c.mBattlePlayers->mTurnPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
         MI_CpuClearFast(mBitmap, 0x6000);
         func_ov007_0226f644();
     }
@@ -1745,7 +1745,7 @@ void BattleShoot::func_ov007_0226f698(u8 x0, u8 y0, u8 x1, u8 y1) {
     if (mUnk_61a1 == 0) {
         return;
     }
-    if (data_020d433c.mBattlePlayers->mUnk_28a != data_020d433c.mBattlePlayers->mUnk_2a9) {
+    if (data_020d433c.mBattlePlayers->mTurnPlayer != data_020d433c.mBattlePlayers->mUnk_2a9) {
         return;
     }
     steps = ABS(x0 - x1) >= ABS(y0 - y1) ? ABS(x0 - x1) : ABS(y0 - y1);

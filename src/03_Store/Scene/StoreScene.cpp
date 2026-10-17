@@ -2,9 +2,9 @@
 #include "System/FrameTask.hpp"
 #include "Scene/StoreScene.hpp"
 #include "Scene/ListScene.hpp"
-#include "Game/UnkStruct_02065c40.hpp"
+#include "Game/ScriptPlayer.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Game/UnkStruct_020d4414.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
@@ -67,7 +67,7 @@ StoreScene::StoreScene() :
     for (u8 i = 0; i < 2; i++) {
         mCellAnims[i] = NULL;
     }
-    data_020d43f0[0].mUnk_5b9_0 = 0;
+    gSaveData[0].mUnk_5b9_0 = 0;
     FrameTask::Get().StartChannel(0, 0x16);
 }
 
@@ -104,28 +104,28 @@ void StoreScene::Update() {
     UnkStruct_SceneContext *ctx = mContext;
     switch (ctx->mInfo.mState) {
         case 0:
-            if (data_020d43f0[0].mUnk_24 & 1) {
+            if (gSaveData[0].mUnk_24 & 1) {
                 ctx->mInfo.mState = 6;
                 break;
             }
-            *(u8 *) &data_020d43f0[0].mUnk_24 |= 1;
+            *(u8 *) &gSaveData[0].mUnk_24 |= 1;
             ctx->mInfo.mState++;
             break;
         case 1:
             InitDisplay();
-            mEvent = new UnkStruct_02065c40(4, 0, 1);
+            mEvent = new ScriptPlayer(4, 0, 1);
             ctx->mInfo.mState++;
             break;
         case 2:
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 break;
             }
-            mEvent->func_0206eb10("cmd_ST_sev_Ali.bin");
+            mEvent->StartScript("cmd_ST_sev_Ali.bin");
             SpriteManager::Get().StartFade(2);
             ctx->mInfo.mState++;
             break;
         case 3:
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 break;
             }
             SpriteManager::Get().StartFade(3);
@@ -135,7 +135,7 @@ void StoreScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mEvent->func_020676f8();
+            mEvent->RequestFinish();
             mContext->mUnk_12 = 0;
             ctx->mInfo.mState++;
             break;
@@ -148,11 +148,11 @@ void StoreScene::Update() {
             InitDisplay();
             LoadGraphics();
             SetupText();
-            mEvent = new UnkStruct_02065c40(4, 0, 0);
+            mEvent = new ScriptPlayer(4, 0, 0);
             ctx->mInfo.mState++;
             break;
         case 7:
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 break;
             }
             mEvent->func_0206ef4c("mes_sm_button_a", 0, 0, 1, 5);
@@ -160,7 +160,7 @@ void StoreScene::Update() {
             ctx->mInfo.mState++;
             break;
         case 8:
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 break;
             }
             mEvent->func_02067998(sSelectScriptIds[ctx->mInfo.mSelection]);
@@ -219,7 +219,7 @@ void StoreScene::Update() {
                 mMenu->Draw();
             }
             DrawText();
-            if (mEvent->func_020678e8()) {
+            if (mEvent->IsRunning()) {
                 break;
             }
             SpriteManager::Get().StartFade(3);
@@ -233,7 +233,7 @@ void StoreScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mEvent->func_020676f8();
+            mEvent->RequestFinish();
             mContext->mUnk_12 = 0;
             ctx->mInfo.mState++;
             break;
@@ -286,7 +286,7 @@ void StoreScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mEvent->func_020676f8();
+            mEvent->RequestFinish();
             mContext->mUnk_12 = 0;
             ctx->mInfo.mState++;
             break;
@@ -685,7 +685,7 @@ void StoreScene::ClearTextBuffer() {
 
 void StoreScene::DrawMoney() {
     u8 j      = 0;
-    u32 money = data_020d43f0[0].mMoney;
+    u32 money = gSaveData[0].mMoney;
     s8 digits[7] = {-1, -1, -1, -1, -1, -1, -1};
     s8 i      = 6;
     do {

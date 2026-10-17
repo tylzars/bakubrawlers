@@ -2,7 +2,7 @@
 
 // Include order is load-bearing: it sets where each singleton joins the size sort, and so the order of the
 // destructor-chain nodes in .bss (TextManager, TouchManager, InputManager, FrameTask, SoundManager).
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FrameTask.hpp"
@@ -94,7 +94,7 @@ BattleUnk022767c8::BattleUnk022767c8()
     mTextBuffer  = 0;
     mGlyphBuffer = 0;
     MI_CpuClear16(mFrames, 0xc);
-    switch (data_020d43f0[0].mUnk_42) {
+    switch (gSaveData[0].mUnk_42) {
         case 1:
             mKind = 0;
             break;
@@ -117,27 +117,27 @@ BattleUnk022767c8::BattleUnk022767c8()
             mKind = 0;
             break;
     }
-    if (data_020d43f0[0].mUnk_5bf_0) {
+    if (gSaveData[0].mUnk_5bf_0) {
         mAmount = sRewards[mKind][1];
     } else {
         mAmount = sRewards[mKind][0];
     }
-    mTotal  = data_020d43f0[0].mMoney;
+    mTotal  = gSaveData[0].mMoney;
     u32 add = mAmount;
     if (add > 9999990) {
         add = 9999990;
     }
-    data_020d43f0[0].mMoney += add;
-    if (data_020d43f0[0].mMoney > 9999990) {
-        data_020d43f0[0].mMoney = 9999990;
+    gSaveData[0].mMoney += add;
+    if (gSaveData[0].mMoney > 9999990) {
+        gSaveData[0].mMoney = 9999990;
     }
     add = mAmount;
     if (add > 9999990) {
         add = 9999990;
     }
-    data_020d43f0[0].mUnk_20 += add;
-    if (data_020d43f0[0].mUnk_20 > 9999990) {
-        data_020d43f0[0].mUnk_20 = 9999990;
+    gSaveData[0].mUnk_20 += add;
+    if (gSaveData[0].mUnk_20 > 9999990) {
+        gSaveData[0].mUnk_20 = 9999990;
     }
 }
 
@@ -311,7 +311,7 @@ void BattleUnk022767c8::Update() {
             }
             G2S_SetBlendBrightness(0x1f, 0);
             draw = 0;
-            if (!data_020d43f0[0].mUnk_5bf_0) {
+            if (!gSaveData[0].mUnk_5bf_0) {
                 ClearBit(data_020d49a1, 13);
             }
             RequestScene(1);

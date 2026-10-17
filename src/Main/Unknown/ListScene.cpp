@@ -5,7 +5,7 @@
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "UI/SelectWindow.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include <nitro/gx.h>
 #include <nitro/mi.h>
 #include <nitro/os.h>
@@ -360,7 +360,7 @@ inline const UnkStruct_020a3860 *Table_020a3860() {
 extern u8 data_020d43db[];
 void operator delete(void *ptr);
 extern u8 data_020d4946[];
-extern u8 data_020d4404[];
+extern u8 gCharacterLook[];
 
 class UnkStruct_02076058 {
 public:
@@ -379,7 +379,7 @@ void func_02081a4c(void *arg);
 enum ScreenId { SCREEN_MAIN, SCREEN_SUB };
 
 
-u8 func_020230dc(UnkStruct_020d43f0 *d, u32 a, u32 b);
+u8 func_020230dc(SaveData *d, u32 a, u32 b);
 
 
 
@@ -396,7 +396,7 @@ extern u8 data_020d4976[];
 
 extern u8 data_020d497b[];
 
-void func_02023134(UnkStruct_020d43f0 *d, u32 a, u32 b, u32 c, u32 e, u32 f);
+void func_02023134(SaveData *d, u32 a, u32 b, u32 c, u32 e, u32 f);
 
 void func_02086668(ListScene *self, u32 unk1);
 
@@ -468,7 +468,7 @@ struct BattleSlotMessage {
 
 #define SLOT_MESSAGE ((BattleSlotMessage *) &data_0220f540)
 
-u8 func_020230dc(UnkStruct_020d43f0 *d, u32 a, u32 b);
+u8 func_020230dc(SaveData *d, u32 a, u32 b);
 
 void func_0208671c(ListScene *self, u32 unk1);
 
@@ -672,7 +672,7 @@ ListScene::~ListScene() {
         }
     }
     SpriteManager::Get().SetFade(1, -16);
-    if (data_020d433c.mUnk_a8 != 0) {
+    if (data_020d433c.mWireless != 0) {
         mAntenna->mUnk_04 = 1;
     }
     delete mMessageWindow;
@@ -736,7 +736,7 @@ void ListScene::Release(u32 releaseCommands) {
             mGlyphBuffers[i] = NULL;
         }
     }
-    if (data_020d433c.mUnk_a8 != 0) {
+    if (data_020d433c.mWireless != 0) {
         mAntenna->mUnk_04 = 1;
     }
     delete mMessageWindow;
@@ -866,17 +866,17 @@ void ListScene::Update() {
                     case 2:
                         switch (mMode) {
                             case 0:
-                                data_020d43f0[0].mMoney -= mPrice;
+                                gSaveData[0].mMoney -= mPrice;
                                 func_020834ec(this, 4);
                                 break;
                             case 1:
-                                data_020d43f0[0].mMoney -= mPrice;
+                                gSaveData[0].mMoney -= mPrice;
                                 func_020834ec(this, 0);
                                 mUnk_186[mUnk_e6] = mCursorItem;
                                 mState           = 0x21;
                                 break;
                             case 2:
-                                data_020d43f0[0].mMoney -= mPrice;
+                                gSaveData[0].mMoney -= mPrice;
                                 func_020834ec(this, 6);
                                 break;
                         }
@@ -1073,7 +1073,7 @@ void ListScene::Update() {
             if (mCharacterId == 0x15) {
                 func_020848c8(this);
             }
-            MIi_CpuCopyFast(data_020d4404, (u8 *) ((u32 *) data_020d433c.mBattlePlayers)[3] + 0xa8, 8);
+            MIi_CpuCopyFast(gCharacterLook, (u8 *) ((u32 *) data_020d433c.mBattlePlayers)[3] + 0xa8, 8);
             SpriteManager::Get().StartFade(3);
             mState++;
             func_020851d0();
@@ -1148,8 +1148,8 @@ void ListScene::Update() {
             break;
         case 35:
             if (func_02078270(mUnk_1e0)) {
-                UnkStruct_02023248 *pair = func_02023248(&data_020d43f0[0], mItemIds[mCursorItem] & 0xff, mUnk_104);
-                u16 val = func_020231f4(&data_020d43f0[0], 0, mItemIds[mCursorItem] & 0xff, mUnk_104);
+                UnkStruct_02023248 *pair = func_02023248(&gSaveData[0], mItemIds[mCursorItem] & 0xff, mUnk_104);
+                u16 val = func_020231f4(&gSaveData[0], 0, mItemIds[mCursorItem] & 0xff, mUnk_104);
                 func_0205afb4(mCommandList, mUnk_104, val, (BattleCellPair *) pair);
             }
             if (func_020779ec(mUnk_1e0) == 0) {
@@ -1480,7 +1480,7 @@ void ListScene::LoadSubScreenGraphics() {
     mSubScreenCellAnims[14]->SetAnimation(0);
     ChangeDir("/Game/Card/Graphic/Small");
     LoadAndQueueUpload(1, 0, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
-    if (data_020d433c.mUnk_a8 == 0) {
+    if (data_020d433c.mWireless == 0) {
         return;
     }
     if (mAntenna != NULL) {
@@ -1562,8 +1562,8 @@ void ListScene::PrintRows() {
                 if (mScroll + i >= mItemCount) {
                     break;
                 }
-                UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mItemIds[mScroll + i], mUnk_104);
-                u32 v = func_020231f4(data_020d43f0, 0, (u8) mItemIds[mScroll + i], mUnk_104);
+                UnkStruct_02023248 *entry = func_02023248(gSaveData, (u8) mItemIds[mScroll + i], mUnk_104);
+                u32 v = func_020231f4(gSaveData, 0, (u8) mItemIds[mScroll + i], mUnk_104);
                 func_02081d5c((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
             }
             break;
@@ -1585,8 +1585,8 @@ void ListScene::PrintRows() {
                     if (mScroll + i >= mItemCount) {
                         break;
                     }
-                    UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mItemIds[mScroll + i], mUnk_104);
-                    u32 v = func_020231f4(data_020d43f0, 0, (u8) mItemIds[mScroll + i], mUnk_104);
+                    UnkStruct_02023248 *entry = func_02023248(gSaveData, (u8) mItemIds[mScroll + i], mUnk_104);
+                    u32 v = func_020231f4(gSaveData, 0, (u8) mItemIds[mScroll + i], mUnk_104);
                     func_02081d5c((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
                 }
             } else {
@@ -1607,8 +1607,8 @@ void ListScene::PrintRows() {
                     if (mScroll + i >= mItemCount) {
                         break;
                     }
-                    UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mItemIds[mScroll + i], mUnk_104);
-                    u32 v = func_020231f4(data_020d43f0, 0, (u8) mItemIds[mScroll + i], mUnk_104);
+                    UnkStruct_02023248 *entry = func_02023248(gSaveData, (u8) mItemIds[mScroll + i], mUnk_104);
+                    u32 v = func_020231f4(gSaveData, 0, (u8) mItemIds[mScroll + i], mUnk_104);
                     func_02081d5c((u8) mItemIds[mScroll + i], i, v, (u8) entry->mUnk_00_0);
                 }
             } else {
@@ -1833,9 +1833,9 @@ void ListScene::func_0207cfa4() {
                 switch (mMode) {
                     case 0:
                         mPrice = GetPrice((u8) mItemIds[mCursorItem], mUnk_104);
-                        if (data_020d43f0[0].mMoney < mPrice) {
+                        if (gSaveData[0].mMoney < mPrice) {
                             func_020834ec(this, 1);
-                        } else if (func_020231f4(data_020d43f0, 0, (u8) mItemIds[mCursorItem], mUnk_104) != 0) {
+                        } else if (func_020231f4(gSaveData, 0, (u8) mItemIds[mCursorItem], mUnk_104) != 0) {
                             func_020834ec(this, 3);
                         } else {
                             func_020834ec(this, 2);
@@ -1843,11 +1843,11 @@ void ListScene::func_0207cfa4() {
                         SoundManager::Get().StartSeqArc(0);
                         return;
                     case 1: {
-                        UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mItemIds[mCursorItem], mUnk_104);
+                        UnkStruct_02023248 *entry = func_02023248(gSaveData, (u8) mItemIds[mCursorItem], mUnk_104);
                         mPrice                  = func_02086224((u8) mItemIds[mCursorItem], mUnk_104);
                         if ((s32) entry->mUnk_00_0 >= 9) {
                             func_020834ec(this, 7);
-                        } else if (data_020d43f0[0].mMoney < mPrice) {
+                        } else if (gSaveData[0].mMoney < mPrice) {
                             func_020834ec(this, 1);
                         } else {
                             func_020834ec(this, 2);
@@ -1857,7 +1857,7 @@ void ListScene::func_0207cfa4() {
                     }
                     case 2:
                         mPrice = Table_020a39fc()[mItemIds[mCursorItem]];
-                        if (data_020d43f0[0].mMoney < mPrice) {
+                        if (gSaveData[0].mMoney < mPrice) {
                             func_020834ec(this, 1);
                         } else {
                             func_020834ec(this, 2);
@@ -2510,7 +2510,7 @@ void ListScene::func_0207f90c() {
         } else {
             switch (mMode) {
                 case 0:
-                    if (func_020231f4(data_020d43f0, 0, (u8) mItemIds[mScroll + i], mUnk_104) == 0) {
+                    if (func_020231f4(gSaveData, 0, (u8) mItemIds[mScroll + i], mUnk_104) == 0) {
                         mSubScreenCellAnims[15]->Draw(1, 0x19, (s16) (mUnk_f8 + 0x5b + i * 32), 2);
                     }
                     func_02081a74(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
@@ -2597,7 +2597,7 @@ void ListScene::func_02080104() {
         case 0:
         case 1:
         case 2:
-            func_020816ec(data_020d43f0[0].mMoney, 4);
+            func_020816ec(gSaveData[0].mMoney, 4);
             break;
         case 3:
         case 5:
@@ -2634,14 +2634,14 @@ void ListScene::func_02080210() {
         }
     } else {
         for (u8 i = 0; i < 3; i++) {
-            mUnk_c8[i]     = func_020230dc(data_020d43f0, 0, i);
-            mUnk_c8[9 + i] = func_020230a8(data_020d43f0, 0, i);
+            mUnk_c8[i]     = func_020230dc(gSaveData, 0, i);
+            mUnk_c8[9 + i] = func_020230a8(gSaveData, 0, i);
         }
         for (u8 i = 0; i < 3; i++) {
-            mUnk_c8[3 + i] = data_020d43f0[0].mUnk_06[i];
+            mUnk_c8[3 + i] = gSaveData[0].mUnk_06[i];
         }
         for (u8 i = 0; i < 3; i++) {
-            mUnk_c8[6 + i] = data_020d43f0[0].mUnk_0c[i];
+            mUnk_c8[6 + i] = gSaveData[0].mUnk_0c[i];
         }
     }
 }
@@ -2809,7 +2809,7 @@ BOOL ListScene::func_02080b48(u32 unk1, u32 unk2) {
     BOOL result = FALSE;
     if (unk1 == 0x22) {
         if (unk2 == 0) {
-            if (data_020d43f0[0].mUnk_5d2 != 0) {
+            if (gSaveData[0].mUnk_5d2 != 0) {
                 result = TRUE;
             }
         } else {
@@ -2817,7 +2817,7 @@ BOOL ListScene::func_02080b48(u32 unk1, u32 unk2) {
         }
     } else if ((unk1 != 0x20) & (unk1 != 0x21)) {
         if ((unk1 == 0x24) | (unk1 == 0x25)) {
-            if (unk2 == data_020d43f0[0].mUnk_1a_8) {
+            if (unk2 == gSaveData[0].mUnk_1a_8) {
                 result = TRUE;
             }
         } else {
@@ -2842,13 +2842,13 @@ void ListScene::BuildList(u32 unk1) {
                         mItemCount++;
                     }
                 }
-                if (!(data_020d43f0[0].mUnk_586[4] & 4) && mUnk_104 == 0 && data_020d43f0[0].mUnk_5d2 != 0) {
+                if (!(gSaveData[0].mUnk_586[4] & 4) && mUnk_104 == 0 && gSaveData[0].mUnk_5d2 != 0) {
                     mItemIds[mItemCount] = 0x22;
                     mItemCount++;
                 }
             } else if (mMode == 1) {
                 for (; i < 0x29; i++) {
-                    if (func_020231f4(data_020d43f0, 0, i, mUnk_104) != 0) {
+                    if (func_020231f4(gSaveData, 0, i, mUnk_104) != 0) {
                         mItemIds[mItemCount] = i;
                         mItemCount++;
                     }
@@ -2878,7 +2878,7 @@ void ListScene::BuildList(u32 unk1) {
                     mItemCount = 0;
                 } else {
                     for (; i < 0x29; i++) {
-                        if (func_020231f4(data_020d43f0, 0, i, mUnk_104) != 0) {
+                        if (func_020231f4(gSaveData, 0, i, mUnk_104) != 0) {
                             mItemIds[mItemCount] = i;
                             mItemCount++;
                         }
@@ -2913,7 +2913,7 @@ void ListScene::BuildList(u32 unk1) {
             if (mUnk_e6 != 0) {
                 if (mUnk_e6 < 7) {
                     for (; i < 0x29; i++) {
-                        if (func_020231f4(data_020d43f0, 0, i, mUnk_104) != 0) {
+                        if (func_020231f4(gSaveData, 0, i, mUnk_104) != 0) {
                             mItemIds[mItemCount] = i;
                             mItemCount++;
                         }
@@ -2989,9 +2989,9 @@ void ListScene::func_02081128() {
                 return;
             }
             func_02058228(mCommandList, 0);
-            pair = (BattleCellPair *) func_02023248(data_020d43f0, (u8) mItemIds[mCursorItem], mUnk_104);
+            pair = (BattleCellPair *) func_02023248(gSaveData, (u8) mItemIds[mCursorItem], mUnk_104);
             func_02058260(mCommandList, (u8) mItemIds[mCursorItem], mUnk_104, -1);
-            func_0205afb4(mCommandList, mUnk_104, func_020231f4(data_020d43f0, 0, (u8) mItemIds[mCursorItem], mUnk_104), pair);
+            func_0205afb4(mCommandList, mUnk_104, func_020231f4(gSaveData, 0, (u8) mItemIds[mCursorItem], mUnk_104), pair);
             return;
         }
         case 3:
@@ -3016,8 +3016,8 @@ void ListScene::func_02081128() {
                 } else {
                     id    = mUnk_c8[mUnk_e6 - 1];
                     kind  = mUnk_c8[mUnk_e6 + 8];
-                    pair  = (BattleCellPair *) func_02023248(data_020d43f0, id, kind);
-                    value = func_020231f4(data_020d43f0, 0, id, kind);
+                    pair  = (BattleCellPair *) func_02023248(gSaveData, id, kind);
+                    value = func_020231f4(gSaveData, 0, id, kind);
                 }
             } else {
                 if (mItemCount == 0) {
@@ -3026,8 +3026,8 @@ void ListScene::func_02081128() {
                 }
                 kind  = mUnk_104;
                 id    = mItemIds[mCursorItem];
-                pair  = (BattleCellPair *) func_02023248(data_020d43f0, id, kind);
-                value = func_020231f4(data_020d43f0, 0, id, kind);
+                pair  = (BattleCellPair *) func_02023248(gSaveData, id, kind);
+                value = func_020231f4(gSaveData, 0, id, kind);
             }
             func_02058228(mCommandList, 0);
             func_02058260(mCommandList, id, kind, -1);
@@ -3050,9 +3050,9 @@ void ListScene::func_02081128() {
                 return;
             }
             func_02058228(mCommandList, 0);
-            BattleCellPair *pair = (BattleCellPair *) func_02023248(data_020d43f0, (u8) mItemIds[mCursorItem], mUnk_104);
+            BattleCellPair *pair = (BattleCellPair *) func_02023248(gSaveData, (u8) mItemIds[mCursorItem], mUnk_104);
             func_02058260(mCommandList, (u8) mItemIds[mCursorItem], mUnk_104, -1);
-            u32 value = func_020231f4(data_020d43f0, 0, (u8) mItemIds[mCursorItem], mUnk_104);
+            u32 value = func_020231f4(gSaveData, 0, (u8) mItemIds[mCursorItem], mUnk_104);
             func_0205afb4(mCommandList, mUnk_104, value, pair);
             break;
         }
@@ -3125,7 +3125,7 @@ void ListScene::func_020816ec(u32 unk1, u32 unk2) {
         scale = 2;
         x     = 0xb0;
     }
-    over = data_020d43f0[0].mMoney < unk1 ? 1 : 0;
+    over = gSaveData[0].mMoney < unk1 ? 1 : 0;
     if (unk2 != 4) {
         if (unk1 >= 10000000) {
             over = 0;
@@ -3538,9 +3538,9 @@ void ListScene::func_020832bc() {
     mUnk_1a2[4].mUnk_b = 0x12;
     mUnk_1a2[5].mUnk_b = 0x11;
     mUnk_1a2[6].mUnk_b = 0x67;
-    mUnk_1a2[data_020d43f0[0].mUnk_1a_8].mUnk_b += 2;
+    mUnk_1a2[gSaveData[0].mUnk_1a_8].mUnk_b += 2;
     mUnk_1a2[6].mUnk_b += 2;
-    if (data_020d43f0[0].mUnk_5d2 != 0) {
+    if (gSaveData[0].mUnk_5d2 != 0) {
         mUnk_1a2[0].mUnk_b += 1;
         mUnk_1a2[6].mUnk_b += 1;
     }
@@ -3549,7 +3549,7 @@ void ListScene::func_020832bc() {
     for (i = 0; i < 0x29; i++) {
         for (j = 0; j < 6; j++) {
             if (data_020a3768[i][j] != 0) {
-                if (func_020231f4(data_020d43f0, 0, i, j) != 0) {
+                if (func_020231f4(gSaveData, 0, i, j) != 0) {
                     mUnk_1a2[j].mUnk_a += 1;
                     mUnk_1a2[6].mUnk_a += 1;
                 }
@@ -3643,9 +3643,9 @@ void func_020834ec(ListScene *self, u32 mode) {
             state = 2;
             break;
         case 3: {
-            BattleCellPair *pair = (BattleCellPair *) func_02023248(data_020d43f0, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104);
+            BattleCellPair *pair = (BattleCellPair *) func_02023248(gSaveData, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104);
             func_02058260(self->mCommandList, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104, -1);
-            u32 value = func_020231f4(data_020d43f0, state, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104);
+            u32 value = func_020231f4(gSaveData, state, (u8) self->mItemIds[self->mCursorItem], self->mUnk_104);
             func_0205afb4(self->mCommandList, self->mUnk_104, value, pair);
             self->mCommandList->func_02058240(1);
             state = 1;
@@ -3738,7 +3738,7 @@ void func_020839a0(ListScene *self) {
                     case 0:
                         x     = 10;
                         msg   = 6;
-                        value = data_020d43f0[0].mMoney;
+                        value = gSaveData[0].mMoney;
                         break;
                     case 1:
                         value = self->mPrice;
@@ -3747,7 +3747,7 @@ void func_020839a0(ListScene *self) {
                         break;
                     case 2:
                         msg   = y;
-                        value = data_020d43f0[0].mMoney - self->mPrice;
+                        value = gSaveData[0].mMoney - self->mPrice;
                         x     = 0x50;
                         break;
                 }
@@ -3823,9 +3823,9 @@ void ListScene::func_0208403c() {
 
 void func_0208415c(ListScene *self) {
     u8 id     = self->mItemIds[self->mCursorItem];
-    int value = func_0202317c(data_020d43f0, 0, id, self->mUnk_104);
-    func_020231c0(data_020d43f0, value, self->func_02086548(id, self->mUnk_104));
-    UnkStruct_02023248 *entry = func_02023248(data_020d43f0, id, self->mUnk_104);
+    int value = func_0202317c(gSaveData, 0, id, self->mUnk_104);
+    func_020231c0(gSaveData, value, self->func_02086548(id, self->mUnk_104));
+    UnkStruct_02023248 *entry = func_02023248(gSaveData, id, self->mUnk_104);
     u32 index                 = func_02086654(self, id, self->mUnk_104);
     entry->mUnk_00_0          = 0;
     entry->mPad               = 0;
@@ -3851,13 +3851,13 @@ void ListScene::func_020842e8() {
         return;
     }
     for (u8 i = 0; i < 3; i++) {
-        func_02023134(data_020d43f0, 0, i, 0, (u8) mUnk_c8[i], (u8) mUnk_c8[9 + i]);
+        func_02023134(gSaveData, 0, i, 0, (u8) mUnk_c8[i], (u8) mUnk_c8[9 + i]);
     }
     for (u8 i = 0; i < 3; i++) {
-        data_020d43f0[0].mUnk_06[i] = mUnk_c8[3 + i];
+        gSaveData[0].mUnk_06[i] = mUnk_c8[3 + i];
     }
     for (u8 i = 0; i < 3; i++) {
-        data_020d43f0[0].mUnk_0c[i] = mUnk_c8[6 + i];
+        gSaveData[0].mUnk_0c[i] = mUnk_c8[6 + i];
     }
 }
 
@@ -3934,12 +3934,12 @@ void func_020843ac(ListScene *self, u32 unk1) {
 void func_020848c8(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
         BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[0]->mRecords[i];
-        record->mUnk_08      = self->mUnk_c8[i];
-        record->mUnk_04      = func_020231f4(data_020d43f0, 0, (u8) self->mUnk_c8[i], (u8) self->mUnk_c8[i + 9]);
-        record->mUnk_09      = self->mUnk_c8[i + 9];
-        record->mUnk_0a      = 0;
+        record->mBakuganId      = self->mUnk_c8[i];
+        record->mUnk_04      = func_020231f4(gSaveData, 0, (u8) self->mUnk_c8[i], (u8) self->mUnk_c8[i + 9]);
+        record->mAttribute      = self->mUnk_c8[i + 9];
+        record->mStatus      = 0;
         record->mUnk_0b      = record->mUnk_04 / 10;
-        MI_CpuCopy16(func_02023248(data_020d43f0, record->mUnk_08, record->mUnk_09), &data_020d433c.mBattlePlayers->mPlayers[0]->mRecords[i], 4);
+        MI_CpuCopy16(func_02023248(gSaveData, record->mBakuganId, record->mAttribute), &data_020d433c.mBattlePlayers->mPlayers[0]->mRecords[i], 4);
     }
     for (u8 i = 0; i < 3; i++) {
         BattlePlayerSlot *slot = &data_020d433c.mBattlePlayers->mPlayers[0]->mSlots54[i];
@@ -3957,12 +3957,12 @@ BOOL func_02084a10(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
         if (self->mCharacterId != 0x15) {
             BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mRecords[i];
-            MESSAGE->mUnk_10[i]     = record->mUnk_08;
+            MESSAGE->mUnk_10[i]     = record->mBakuganId;
             MESSAGE->mUnk_04[i]     = record->mUnk_04;
-            MESSAGE->mUnk_16[i]     = record->mUnk_09;
+            MESSAGE->mUnk_16[i]     = record->mAttribute;
         } else {
             MESSAGE->mUnk_10[i] = self->mUnk_c8[i];
-            MESSAGE->mUnk_04[i] = func_020231f4(data_020d43f0, 0, (u8) self->mUnk_c8[i], (u8) self->mUnk_c8[i + 9]);
+            MESSAGE->mUnk_04[i] = func_020231f4(gSaveData, 0, (u8) self->mUnk_c8[i], (u8) self->mUnk_c8[i + 9]);
             MESSAGE->mUnk_16[i] = self->mUnk_c8[i + 9];
         }
     }
@@ -3976,16 +3976,16 @@ BOOL func_02084a10(ListScene *self) {
         for (u8 k = 0; k < 6; k++) {
             BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[j]->mRecords[k];
             if (k < length) {
-                record->mUnk_08 = ((BattleListMessage *) &data_020d433c.mBattlePlayers->mPlayers[j]->mMsg)->mUnk_10[k];
+                record->mBakuganId = ((BattleListMessage *) &data_020d433c.mBattlePlayers->mPlayers[j]->mMsg)->mUnk_10[k];
                 record->mUnk_04 = ((BattleListMessage *) &data_020d433c.mBattlePlayers->mPlayers[j]->mMsg)->mUnk_04[k];
-                record->mUnk_09 = ((BattleListMessage *) &data_020d433c.mBattlePlayers->mPlayers[j]->mMsg)->mUnk_16[k];
-                record->mUnk_0a = 0;
+                record->mAttribute = ((BattleListMessage *) &data_020d433c.mBattlePlayers->mPlayers[j]->mMsg)->mUnk_16[k];
+                record->mStatus = 0;
                 record->mUnk_0b = record->mUnk_04 / 10;
             } else {
-                record->mUnk_08 = 0;
+                record->mBakuganId = 0;
                 record->mUnk_04 = 0;
-                record->mUnk_09 = 0;
-                record->mUnk_0a = 3;
+                record->mAttribute = 0;
+                record->mStatus = 3;
                 record->mUnk_0b = 0;
             }
         }
@@ -4049,7 +4049,7 @@ BOOL func_02084c38(ListScene *self) {
 }
 
 BOOL func_02084e64(ListScene *self) {
-    data_0220f540.mUnk_04 = MATH_Rand32(&data_020d42e8, 0);
+    data_0220f540.mUnk_04 = MATH_Rand32(&gRandom, 0);
     if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 2)) {
         u8 *info = WirelessManager::Get().func_0202f0cc(0);
         if (info != NULL) {
@@ -4061,7 +4061,7 @@ BOOL func_02084e64(ListScene *self) {
 }
 
 BOOL func_02084f40(ListScene *self) {
-    MIi_CpuCopyFast(data_020d4404, (u8 *) &data_0220f540 + 4, 8);
+    MIi_CpuCopyFast(gCharacterLook, (u8 *) &data_0220f540 + 4, 8);
     if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 6)) {
         u32 count = WirelessManager::Get().func_0202f134();
         u8 j      = 0;
@@ -4083,15 +4083,15 @@ BOOL func_0208501c(ListScene *self) {
             u8 id;
             u32 kind;
             u32 invalid = 0;
-            id   = func_020230dc(data_020d43f0, 0, i);
-            kind = func_020230a8(data_020d43f0, 0, i);
+            id   = func_020230dc(gSaveData, 0, i);
+            kind = func_020230a8(gSaveData, 0, i);
             if (id >= 0x29) {
                 invalid = 1;
             }
             if (invalid != 0) {
                 MI_CpuClear16((u8 *) &data_0220f540 + 4 + i * 4, 4);
             } else {
-                MIi_CpuCopy16(func_02023248(data_020d43f0, id, kind), (u8 *) &data_0220f540 + 4 + i * 4, 4);
+                MIi_CpuCopy16(func_02023248(gSaveData, id, kind), (u8 *) &data_0220f540 + 4 + i * 4, 4);
             }
         }
     }
@@ -4216,9 +4216,9 @@ void func_0208550c(ListScene *self) {
     self->mUnk_3f2 = 0;
     for (i = 0; i < 0x29; i++) {
         for (j = 0; j < 6; j++) {
-            if (func_020231f4(data_020d43f0, 0, i, j) != 0) {
+            if (func_020231f4(gSaveData, 0, i, j) != 0) {
                 if ((u8) (i + 0xdc) <= 1) {
-                    if (j == data_020d43f0[0].mUnk_1a_8) {
+                    if (j == gSaveData[0].mUnk_1a_8) {
                         self->mUnk_c8[0] = i;
                         found            = 1;
                         self->mUnk_c8[9] = j;
@@ -4237,8 +4237,8 @@ void func_0208550c(ListScene *self) {
         for (t = s + 1; t < self->mUnk_3f2; t++) {
             u16 a = self->mUnk_1f2[s];
             u16 b = self->mUnk_1f2[t];
-            u32 va = func_020231f4(data_020d43f0, 0, (u8) (a / 6), (u8) (a % 6));
-            u32 vb = func_020231f4(data_020d43f0, 0, (u8) (b / 6), (u8) (b % 6));
+            u32 va = func_020231f4(gSaveData, 0, (u8) (a / 6), (u8) (a % 6));
+            u32 vb = func_020231f4(gSaveData, 0, (u8) (b / 6), (u8) (b % 6));
             if (va < vb) {
                 u16 tmp           = self->mUnk_1f2[s];
                 self->mUnk_1f2[s] = self->mUnk_1f2[t];
@@ -4266,7 +4266,7 @@ void func_0208550c(ListScene *self) {
     self->mUnk_c8[4] = self->mUnk_1f2[0];
     func_0208671c(self, 2);
     func_02086874(self);
-    if (self->mUnk_1f2[0] == 0x50 && MATH_Rand32(&data_020d42e8, 100) > 0x32) {
+    if (self->mUnk_1f2[0] == 0x50 && MATH_Rand32(&gRandom, 100) > 0x32) {
         self->mUnk_c8[5] = self->mUnk_1f2[1];
     } else {
         self->mUnk_c8[5] = self->mUnk_1f2[0];
@@ -4659,7 +4659,7 @@ BOOL func_020861f4(ListScene *self, u32 unk1) {
 }
 
 u32 ListScene::func_02086224(u32 unk1, u32 unk2) {
-    UnkStruct_02023248 *pair = func_02023248(data_020d43f0, unk1, unk2);
+    UnkStruct_02023248 *pair = func_02023248(gSaveData, unk1, unk2);
     if ((s32) pair->mUnk_00_0 >= 9) {
         return 10000000;
     }
@@ -4716,7 +4716,7 @@ s32 ListScene::func_0208644c() {
         if (mCharacterId != 0x15) {
             total += data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[i].mUnk_04;
         } else {
-            total += func_020231f4(data_020d43f0, 0, (u8) mUnk_c8[i], (u8) mUnk_c8[9 + i]);
+            total += func_020231f4(gSaveData, 0, (u8) mUnk_c8[i], (u8) mUnk_c8[9 + i]);
         }
         i++;
     } while (i < 3 && mUnk_3f4 == 0);
@@ -4725,7 +4725,7 @@ s32 ListScene::func_0208644c() {
 
 u32 ListScene::GetPrice(u32 unk1, u32 unk2) {
     u32 index = func_02086654(this, unk1, unk2);
-    if (data_020d43f0[0].mUnk_5bf_0 == 0 && index == 0x24) {
+    if (gSaveData[0].mUnk_5bf_0 == 0 && index == 0x24) {
         return Table_020a3860()[index].mUnk_00 * 10;
     }
     return data_020a338c[index].mUnk_00 * 10;
@@ -4808,7 +4808,7 @@ void func_020867b8(ListScene *self) {
     u8 i;
     for (i = 0; i < self->mUnk_3f2 - 1; i++) {
         u16 value = self->mUnk_1f2[i];
-        u16 j     = i + MATH_Rand32(&data_020d42e8, self->mUnk_3f2 - i);
+        u16 j     = i + MATH_Rand32(&gRandom, self->mUnk_3f2 - i);
         self->mUnk_1f2[i] = self->mUnk_1f2[j];
         self->mUnk_1f2[j] = value;
     }
@@ -4819,8 +4819,8 @@ void func_02086874(ListScene *self) {
     u8 t;
     for (s = 0; s < self->mUnk_3f2 - 1; s++) {
         for (t = s + 1; t < self->mUnk_3f2; t++) {
-            u32 va = func_02065bf4(self->mUnk_1f2[s], (u8) data_020d43f0[0].mUnk_1a_8);
-            u32 vb = func_02065bf4(self->mUnk_1f2[t], (u8) data_020d43f0[0].mUnk_1a_8);
+            u32 va = func_02065bf4(self->mUnk_1f2[s], (u8) gSaveData[0].mUnk_1a_8);
+            u32 vb = func_02065bf4(self->mUnk_1f2[t], (u8) gSaveData[0].mUnk_1a_8);
             if (va < vb) {
                 u16 tmp           = self->mUnk_1f2[s];
                 self->mUnk_1f2[s] = self->mUnk_1f2[t];

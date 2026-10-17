@@ -1,7 +1,7 @@
 #include "Unknown/UnkStruct_02071d24.hpp"
 
 #include "Battle/BattleCommandList.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FileSystem.hpp"
@@ -294,7 +294,7 @@ void UnkStruct_02071d24::LoadGraphics() {
 }
 
 void UnkStruct_02071d24::func_02072b14() {
-    int value = func_020231f4(data_020d43f0, 0, mBakuganIds[mBakuganIndex], mUnk_5e[mBakuganIndex]);
+    int value = func_020231f4(gSaveData, 0, mBakuganIds[mBakuganIndex], mUnk_5e[mBakuganIndex]);
     func_0205afb4(mCommandList, mUnk_5e[mBakuganIndex], value, mUnk_34[mBakuganIndex]);
 }
 
@@ -306,14 +306,14 @@ void UnkStruct_02071d24::func_02072b60() {
         total += data_020a2e3c[pair->mUnk_00_0 - i];
         i++;
     } while (i < mUnk_64[mBakuganIndex]);
-    int current = func_0202317c(data_020d43f0, 0, mBakuganIds[mBakuganIndex], mUnk_5e[mBakuganIndex]);
-    u16 base    = func_020231f4(data_020d43f0, 0, mBakuganIds[mBakuganIndex], mUnk_5e[mBakuganIndex]);
+    int current = func_0202317c(gSaveData, 0, mBakuganIds[mBakuganIndex], mUnk_5e[mBakuganIndex]);
+    u16 base    = func_020231f4(gSaveData, 0, mBakuganIds[mBakuganIndex], mUnk_5e[mBakuganIndex]);
     if (base + total > 0x3de) {
         total = 0x3de - base;
     }
     base += total;
     mCommandList->func_0205b048(total);
-    func_020231c0(data_020d43f0, current, base);
+    func_020231c0(gSaveData, current, base);
 }
 
 void UnkStruct_02071d24::func_02072c40() {
@@ -688,7 +688,7 @@ void UnkStruct_02071d24::SetBakugan(u32 index, u32 unk2, u32 unk3, u8 unk4) {
     mBakuganIndex = 0;
     mBakuganIds[index] = unk2;
     mUnk_5e[index] = unk3;
-    mUnk_34[index] = (BattleCellPair *) func_02023248(data_020d43f0, unk2, unk3);
+    mUnk_34[index] = (BattleCellPair *) func_02023248(gSaveData, unk2, unk3);
     if (unk4 > 9) {
         unk4 = 9;
     }

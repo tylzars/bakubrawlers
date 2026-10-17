@@ -124,7 +124,7 @@ static const u8 data_ov001_022270c4[9] = {0x0, 0x1, 0x2, 0x4, 0x5, 0x6, 0x3, 0x7
 #include "Scene/FieldSelectScene.hpp"
 #include "Game/Random.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -307,8 +307,8 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     }
     data_020d433c.mUnk_99 = 3;
     data_020d433c.mUnk_a7 = 0;
-    data_020d433c.mUnk_9a = data_020d43f0[0].mUnk_27;
-    mUnk_25c[0]           = data_020d43f0[0].mUnk_27_5;
+    data_020d433c.mUnk_9a = gSaveData[0].mUnk_27;
+    mUnk_25c[0]           = gSaveData[0].mUnk_27_5;
     mUnk_25c[2] = data_020d433c.mUnk_9a_3 == 0;
     mUnk_25c[4] = data_020d433c.mUnk_9a_2 == 0;
     mUnk_25c[6] = data_020d433c.mUnk_9a_4 == 0;
@@ -385,7 +385,7 @@ FieldSelectScene::~FieldSelectScene() {
             }
         }
     }
-    if (data_020d433c.mUnk_a8 != 0) {
+    if (data_020d433c.mWireless != 0) {
         data_020d433c.mUnk_10->mFinished = 1;
     }
 }
@@ -409,7 +409,7 @@ void FieldSelectScene::Update() {
             if (IsWirelessMode(&data_020c4030.mUnk_228)) {
                 mState++;
             } else {
-                MIi_CpuCopyFast(data_020d4404, mUnk_14c, 8);
+                MIi_CpuCopyFast(gCharacterLook, mUnk_14c, 8);
                 mState = 4;
             }
             break;
@@ -424,7 +424,7 @@ void FieldSelectScene::Update() {
             }
             break;
         case 4:
-            MATHRandContext32 *ctx = &data_020d42e8;
+            MATHRandContext32 *ctx = &gRandom;
             ctx->x                 = ctx->mul * ctx->x + ctx->add;
             data_0220f540.mUnk_04  = (u32) (ctx->x >> 32);
             if (func_ov001_02221aa8(2)) {
@@ -579,7 +579,7 @@ void FieldSelectScene::func_ov001_0221f4e8() {
     }
     mPanel[0] = new CharacterIcons(0x12000, 0xb, 0);
     mPanel[1] = new CharacterIcons(0x1f000, 0xb, 1);
-    if (data_020d433c.mUnk_a8 == 0) {
+    if (data_020d433c.mWireless == 0) {
         return;
     }
     if (data_020d433c.mUnk_10 != NULL) {
@@ -1091,8 +1091,8 @@ BOOL FieldSelectScene::func_ov001_02221aa8(u32 unk1) {
 BOOL FieldSelectScene::func_ov001_02221c0c() {
     MI_CpuCopy8(data_020d496a, (u8 *) &data_0220f540 + 4, 9);
     MI_CpuCopy8(data_020d4968, (u8 *) &data_0220f540 + 0xd, 1);
-    data_0220f540.mUnk_0e = data_020d43f0[0].mUnk_27;
-    data_0220f540.mUnk_0f = data_020d43f0[0].mUnk_5bf_0;
+    data_0220f540.mUnk_0e = gSaveData[0].mUnk_27;
+    data_0220f540.mUnk_0f = gSaveData[0].mUnk_5bf_0;
     if (func_ov001_02221aa8(0x17)) {
         u32 count = WirelessManager::Get().func_0202f134();
         u8 i      = 0;
@@ -1166,7 +1166,7 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
 }
 
 BOOL FieldSelectScene::func_ov001_02221f1c() {
-    MIi_CpuCopyFast(data_020d4404, (u8 *) &data_0220f540 + 4, 8);
+    MIi_CpuCopyFast(gCharacterLook, (u8 *) &data_0220f540 + 4, 8);
     if (func_ov001_02221aa8(6)) {
         u32 count = WirelessManager::Get().func_0202f134();
         u8 i      = 0;
@@ -1183,7 +1183,7 @@ BOOL FieldSelectScene::func_ov001_02221f1c() {
 }
 
 void FieldSelectScene::func_ov001_02222040() {
-    if (data_020d433c.mUnk_a8 != 0) {
+    if (data_020d433c.mWireless != 0) {
         WirelessManager::Get();
         if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
             if (!((mState != 0) & (mState < 6))) {
@@ -1193,12 +1193,12 @@ void FieldSelectScene::func_ov001_02222040() {
             data_020d433c.mUnk_99 = 3;
             data_020d433c.mPlayerCount = 2;
             u8 i                  = 0;
-            data_020d433c.mUnk_98 = 0;
-            data_020d433c.mUnk_95 = 0;
+            data_020d433c.mHasPartners = 0;
+            data_020d433c.mFieldId = 0;
             data_020d433c.mUnk_96 = 0;
             do {
-                data_020d433c.mUnk_9f[i] = i;
-                data_020d433c.mUnk_9b[i] = i;
+                data_020d433c.mCharacterIds[i] = i;
+                data_020d433c.mPartners[i] = i;
                 i++;
             } while (i < mUnk_32a);
             mUnk_332 = 3;
@@ -1558,7 +1558,7 @@ u32 FieldSelectScene::func_ov001_02222e44() {
                         u8 i = 0;
                         do {
                             mInput[i].mUnk_06 = 1;
-                            mInput[i].mUnk_02 = func_ov001_02226d48(data_020d433c.mUnk_9f[i]);
+                            mInput[i].mUnk_02 = func_ov001_02226d48(data_020d433c.mCharacterIds[i]);
                             i++;
                         } while (i < mUnk_32a);
                     }
@@ -1635,7 +1635,7 @@ BOOL FieldSelectScene::func_ov001_02223430(u8 slot) {
             if (mInput[slot].mUnk_02 == 0x11) {
                 do {
                     do {
-                        mInput[slot].mUnk_02 = MATH_Rand32(&data_020d42e8, 0x12);
+                        mInput[slot].mUnk_02 = MATH_Rand32(&gRandom, 0x12);
                     } while (mInput[slot].mUnk_02 == 0x11);
                 } while (func_ov001_022237d0(slot) != 0);
                 mCells2[slot].mX = func_ov001_02225628(mInput[slot].mUnk_02);
@@ -1673,7 +1673,7 @@ BOOL FieldSelectScene::func_ov001_02223430(u8 slot) {
             if (mInput[0].mUnk_02 == 8) {
                 u8 r;
                 do {
-                    r = MATH_Rand32(&data_020d42e8, 8);
+                    r = MATH_Rand32(&gRandom, 8);
                 } while (mUnk_2ae[0][r] == 0);
                 func_ov001_022231ec(0, r, 0);
             }
@@ -1935,8 +1935,8 @@ u32 FieldSelectScene::func_ov001_02224178() {
         data_020d433c.mUnk_9a_0 = (u8) ((mUnk_25c[8] == 0) ? 1 : 0);
         data_020d433c.mUnk_96   = mUnk_25c[0];
         if (mUnk_333 != 0) {
-            data_020d43f0[0].mUnk_27   = data_020d433c.mUnk_9a;
-            data_020d43f0[0].mUnk_28_6 = data_020d433c.mUnk_9a_0;
+            gSaveData[0].mUnk_27   = data_020d433c.mUnk_9a;
+            gSaveData[0].mUnk_28_6 = data_020d433c.mUnk_9a_0;
         }
         result = 2;
     } else {
@@ -2167,11 +2167,11 @@ u32 FieldSelectScene::func_ov001_02224538() {
             data_020d433c.mPlayerCount = numDone;
             if (numDone < 4) {
                 mUnk_32c              = 0;
-                data_020d433c.mUnk_98 = 0;
+                data_020d433c.mHasPartners = 0;
             }
             u8 j = 0;
             do {
-                if ((data_020d433c.mUnk_9f[j] = sIdItems.ids[mInput[j].mUnk_02]) == 0x15) {
+                if ((data_020d433c.mCharacterIds[j] = sIdItems.ids[mInput[j].mUnk_02]) == 0x15) {
                     data_020d433c.mUnk_a3[j] = 0;
                 } else {
                     data_020d433c.mUnk_a3[j] = mInput[j].mUnk_0c;
@@ -2243,14 +2243,14 @@ u32 FieldSelectScene::func_ov001_02224be0() {
             } else {
                 mUnk_32c                 = 1;
                 u8 a                     = data_ov001_022270dc[idx][1];
-                data_020d433c.mUnk_9b[0] = a;
+                data_020d433c.mPartners[0] = a;
                 data_020d43d7[a]         = 0;
                 u8 b = data_ov001_022270dc[idx][2];
                 u8 c = data_ov001_022270dc[idx][3];
                 data_020d43d7[b]         = c;
                 data_020d43d7[c]         = b;
             }
-            data_020d433c.mUnk_98 = mUnk_32c;
+            data_020d433c.mHasPartners = mUnk_32c;
             mUnk_341              = 0;
             result                = 1;
         }
@@ -2328,7 +2328,7 @@ u32 FieldSelectScene::func_ov001_02224df0() {
             }
         }
         if ((mInput[0].mUnk_06 == 1) & (mInput[0].mUnk_0a == 0)) {
-            data_020d433c.mUnk_95 = data_ov001_022270c4[mInput[0].mUnk_02];
+            data_020d433c.mFieldId = data_ov001_022270c4[mInput[0].mUnk_02];
             result                = 1;
             mUnk_32d              = 0;
         }
@@ -2578,7 +2578,7 @@ void FieldSelectScene::func_ov001_022256e4() {
                 }
             } else if (kind != 0) {
                 if (i < data_020d433c.mPlayerCount) {
-                    if (data_020d433c.mUnk_9f[i] != 0x15) {
+                    if (data_020d433c.mCharacterIds[i] != 0x15) {
                         sel = (s8) data_020d433c.mUnk_a3[i];
                     }
                 }
@@ -2871,10 +2871,10 @@ void FieldSelectScene::func_ov001_02226c38(SelectWindow *window) {
 void FieldSelectScene::func_ov001_02226cb0() {
     u8 i = 0;
     do {
-        func_ov001_02226d18(data_020d433c.mUnk_9f[i]);
+        func_ov001_02226d18(data_020d433c.mCharacterIds[i]);
         i++;
     } while (i < mUnk_32a);
-    SetFlagBit(data_020d4969, data_020d433c.mUnk_95);
+    SetFlagBit(data_020d4969, data_020d433c.mFieldId);
 }
 
 void FieldSelectScene::func_ov001_02226d18(u32 index) {

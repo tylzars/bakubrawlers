@@ -6,7 +6,7 @@
 #include "Text/TextManager.hpp"
 #include "Scene/ArenaScene.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FileSystem.hpp"
@@ -155,7 +155,7 @@ void ArenaScene::func_ov001_022197ec() {
         return;
     }
     WirelessManager::Get().Stop();
-    data_020d433c.mUnk_a8 = 0;
+    data_020d433c.mWireless = 0;
     mUnk_b3 = 1;
     func_ov001_0221c5b0();
     func_ov001_0221c1a0();
@@ -320,7 +320,7 @@ void ArenaScene::Update() {
                         case 1:
                             if (mode == 0) {
                                 WirelessManager::Get().Start();
-                                data_020d433c.mUnk_a8 = 1;
+                                data_020d433c.mWireless = 1;
                             }
                             data_0220f540.mUnk_00 = 0xb;
                             if (mSelection == 0) {
@@ -355,7 +355,7 @@ void ArenaScene::Update() {
                 u16 name[13];
                 name[12] = 0xfffc;
                 for (u8 i = 0; i < 12; i++) {
-                    name[i] = data_020d43f0[0].mName[i];
+                    name[i] = gSaveData[0].mName[i];
                 }
                 WirelessManager::Get().StartParent(3, name, 0x1a, 0);
                 mMode++;
@@ -482,7 +482,7 @@ void ArenaScene::Update() {
                         u16 name[13];
                         name[12] = 0xfffc;
                         for (u8 i = 0; i < 12; i++) {
-                            name[i] = data_020d43f0[0].mName[i];
+                            name[i] = gSaveData[0].mName[i];
                         }
                         WirelessManager::Get().StartJoin(mSelection, name, 0x1a);
                         mPlayerCount = 0;
@@ -931,7 +931,7 @@ void ArenaScene::func_ov001_0221c484() {
 void ArenaScene::func_ov001_0221c5b0() {
     for (u8 i = 0; i < 4; i++) {
         for (u8 j = 0; j < 12; j++) {
-            data_020d433c.mNames[i][j] = data_020d43f0[0].mName[j];
+            data_020d433c.mNames[i][j] = gSaveData[0].mName[j];
         }
     }
     mPlayerCount = 0;

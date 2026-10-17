@@ -10,7 +10,7 @@
 #include "Battle/BattleUnionAbility.hpp"
 #include "Battle/GimmickTypes.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Scene/SceneBase.hpp"
 #include "System/FileSystem.hpp"
@@ -81,7 +81,7 @@ BattleObj00::BattleObj00(u8 flag)
     mUnk_35 = 0;
     mUnk_36 = 0;
     mUnk_3e = 0;
-    if (data_020d43f0[0].mUnk_28_5 != 0) {
+    if (gSaveData[0].mUnk_28_5 != 0) {
         mUnk_3f = 0;
     } else {
         mUnk_3f = 4;
@@ -93,7 +93,7 @@ BattleObj00::BattleObj00(u8 flag)
     mUnion = 0;
     mUnk_2e = 0;
     mUnk_30 = 0;
-    mUnk_3a = data_020d433c.mBattlePlayers->mUnk_28a;
+    mUnk_3a = data_020d433c.mBattlePlayers->mTurnPlayer;
     if (flag == 0) {
         mUnk_32 = 0;
     } else {
@@ -158,7 +158,7 @@ void BattleObj00::Update() {
                 return;
             }
             SpriteManager::Get().SetupMode(1, 7);
-            mMap = new BattleCommandMap(data_020d433c.mUnk_95);
+            mMap = new BattleCommandMap(data_020d433c.mFieldId);
             mMap->vfunc_0c();
             data_020d433c.mGimmicks->mState = 1;
             func_ov007_022482a8(mMap);
@@ -232,7 +232,7 @@ void BattleObj00::Update() {
                 mContext->mUnk_12 = 1;
                 mUnk_32           = 0x10;
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                if (list->mPlayers[list->mUnk_2a9]->mUnk_f8 == 0) {
+                if (list->mPlayers[list->mUnk_2a9]->mSlots54Remaining == 0) {
                     mUnk_3e = 1;
                 }
                 return;
@@ -248,7 +248,7 @@ void BattleObj00::Update() {
                 mContext->mUnk_12 = 1;
                 mUnk_32           = 0x10;
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                if (list->mPlayers[list->mUnk_2a9]->mUnk_f8 == 0) {
+                if (list->mPlayers[list->mUnk_2a9]->mSlots54Remaining == 0) {
                     mUnk_3e = 1;
                 }
                 return;
@@ -276,7 +276,7 @@ void BattleObj00::Update() {
                 return;
             } else {
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
-                if (list->mPlayers[list->mUnk_2a9]->mUnk_f8 == 0) {
+                if (list->mPlayers[list->mUnk_2a9]->mSlots54Remaining == 0) {
                     mPage = new BattleCommandPage(0, -1);
                     func_0205562c(mPage, 1);
                     func_02055738(mPage, 0x18000, 0xe, 0);
@@ -339,7 +339,7 @@ void BattleObj00::Update() {
                 } else {
                     u8 i = 0;
                     do {
-                        if (data_020d433c.mBattlePlayers->mPlayers[i]->mUnk_f8 != 0) {
+                        if (data_020d433c.mBattlePlayers->mPlayers[i]->mSlots54Remaining != 0) {
                             idx = i;
                             break;
                         }
@@ -379,7 +379,7 @@ void BattleObj00::Update() {
             GXS_SetVisibleWnd(4);
             G2S_SetWndOBJInsidePlane(0x21, FALSE);
             G2S_SetWndOutsidePlane(0x11, FALSE);
-            mMap = new BattleCommandMap(data_020d433c.mUnk_95);
+            mMap = new BattleCommandMap(data_020d433c.mFieldId);
             mMap->mUnk_151 = 0;
             mMap->vfunc_0c();
             func_ov007_02247e00(mMap);
@@ -418,7 +418,7 @@ void BattleObj00::Update() {
                 do {
                     p = data_020d433c.mBattlePlayers->mPlayers[i];
                     kind         = p->mUnk_f1;
-                    if (p->mUnk_f8 != 0) {
+                    if (p->mSlots54Remaining != 0) {
                         if (p->IsActive() || data_020d433c.mUnk_9a_3) {
                             func_ov007_02262638(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mRow, data_ov007_0227a33c[kind].mCol, i, func_ov007_0226a5e8(p));
                         } else {
@@ -432,7 +432,7 @@ void BattleObj00::Update() {
                     i++;
                 } while (i < data_020d433c.mPlayerCount);
             }
-            if (data_020d433c.mUnk_85 != 0) {
+            if (data_020d433c.mTutorialId != 0) {
                 mUnk_32 = 0x14;
                 data_020d433c.mBattlePlayers->mUnk_2a4->LoadGraphics();
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;

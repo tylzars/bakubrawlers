@@ -42,12 +42,12 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 
 | Range | File | Notes |
 |---|---|---|
-| 0x020219dc-0x02021af8 | System/Random.cpp | seeding and weighted picks on `data_020d42e8` |
+| 0x020219dc-0x02021af8 | System/Random.cpp | seeding and weighted picks on `gRandom` |
 | 0x02021af8-0x02021c60 | System/InputManager.cpp | key state with auto-repeat |
 | 0x02021c60-0x02021eb8 | System/Memory.cpp | game heap, `operator new`/`delete` |
 | 0x02021eb8-0x020224f8 | Scene/SceneBase.cpp | `SceneManager` (scene list with layers) and the `SceneBase` constructor |
 | 0x020224f8-0x02022b0c | System/TouchManager.cpp | touch sampling, hit tests |
-| 0x02022b0c-0x020234c8 | Game/GameData.cpp | helpers over data_020d433c/data_020d43f0 (the save data) |
+| 0x02022b0c-0x020234c8 | Game/GameData.cpp | helpers over data_020d433c/gSaveData (the save data) |
 | 0x020234c8-0x02023b80 | System/FileSystem.cpp | file loading (`LoadFile`), compressed files, path buffer |
 | 0x02023b80-0x020244cc | System/FileLoader.cpp | backup (save) read/write scenes and CRC |
 | 0x020244cc-0x02024818 | System/SoundManager.cpp | sound archive, BGM and SE |

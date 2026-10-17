@@ -7,7 +7,7 @@
 #include <nitro/os.h>
 #include <nitro/mi.h>
 #include "System/FileSystem.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Game/Random.hpp"
 #include <nitro/math.h>
 
@@ -163,8 +163,8 @@ static const WindowItemRecord data_0209eec4[22] = {
 #include "System/InputManager.hpp"
 #include "System/SoundManager.hpp"
 #include "Text/TextManager.hpp"
-// The look fields of the save data (+0x14..+0x1c of data_020d43f0) as CharacterLook.
-#define SAVE_LOOK ((CharacterLook *) ((u8 *) data_020d43f0 + 0x14))
+// The look fields of the save data (+0x14..+0x1c of gSaveData) as CharacterLook.
+#define SAVE_LOOK ((CharacterLook *) ((u8 *) gSaveData + 0x14))
 
 // Rounds an integer through float, the way the camera set-up code does (the temporary keeps it from being folded).
 static inline fx32 FxRound(s32 v) {
@@ -2207,7 +2207,7 @@ void CharacterEditScene::func_02063218() {
     func_02064ed8();
     if (mUnk_1e4 != NULL) {
         mUnk_1e4->Update();
-        mUnk_1e4->DrawFrame(0, data_020d43f0[0].mUnk_1a_8, 0x80, 0x60, 0);
+        mUnk_1e4->DrawFrame(0, gSaveData[0].mUnk_1a_8, 0x80, 0x60, 0);
     }
 }
 
@@ -2267,7 +2267,7 @@ BOOL CharacterEditScene::func_0206332c() {
 
 void CharacterEditScene::func_02063570(CharacterLook *look) {
     if (look == NULL) {
-        look = (CharacterLook *) data_020d4404;
+        look = (CharacterLook *) gCharacterLook;
     }
     look->mUnk_06_0 = mLists[0].mValues[mLists[0].mIndex];
     look->mUnk_00_1 = mLists[1].mValues[mLists[1].mIndex];
@@ -2285,7 +2285,7 @@ void CharacterEditScene::func_02063570(CharacterLook *look) {
     look->mUnk_04_8 = mLists[13].mValues[mLists[13].mIndex];
     look->mUnk_04_14 = mLists[14].mValues[mLists[14].mIndex];
     look->mUnk_04_11 = mLists[15].mValues[mLists[15].mIndex];
-    look->mUnk_06_8 = data_020d43f0[0].mUnk_1a_8;
+    look->mUnk_06_8 = gSaveData[0].mUnk_1a_8;
 }
 
 void CharacterEditScene::func_020637a8() {
@@ -2895,7 +2895,7 @@ void CharacterEditScene::func_02064b58() {
         mModel->mCharacter->mUnk_65[i] = mLists[i].mValues[mLists[i].mIndex];
         i++;
     } while (i < 16);
-    mModel->mCharacter->mUnk_75 = data_020d43f0[0].mUnk_1a_8;
+    mModel->mCharacter->mUnk_75 = gSaveData[0].mUnk_1a_8;
 }
 
 void CharacterEditScene::func_02064bb8() {
@@ -2904,13 +2904,13 @@ void CharacterEditScene::func_02064bb8() {
         i = 3;
     }
     do {
-        mLists[i].mIndex = MATH_Rand32(&data_020d42e8, mLists[i].mCount);
+        mLists[i].mIndex = MATH_Rand32(&gRandom, mLists[i].mCount);
         i++;
     } while (i < 16);
-    if (MATH_Rand32(&data_020d42e8, 2) != 0) {
+    if (MATH_Rand32(&gRandom, 2) != 0) {
         mLists[7].mIndex = 0;
     }
-    if (MATH_Rand32(&data_020d42e8, 2) != 0) {
+    if (MATH_Rand32(&gRandom, 2) != 0) {
         mLists[5].mIndex = 0;
     }
 }
@@ -2958,7 +2958,7 @@ void CharacterEditScene::func_02064f98() {
     s16 b = 0;
     TextManager &text = TextManager::Get();
     text.mUse4bppFont = 1;
-    TextManager::Get().Print(data_020d43f0[0].mName, 0x18, mUnk_1d4, 0x20, 2, &a, &b, NULL, 0, 2, 0x21, 0, 0, 0, 0, 1,
+    TextManager::Get().Print(gSaveData[0].mName, 0x18, mUnk_1d4, 0x20, 2, &a, &b, NULL, 0, 2, 0x21, 0, 0, 0, 0, 1,
                              1);
     TextManager::Get().mUse4bppFont = 0;
     QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x2000, mUnk_1d4, mUnk_1dc, 0);

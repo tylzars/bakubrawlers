@@ -316,11 +316,11 @@ s32 Effect::ReadRandom() {
     float step = *(float *) &rawStep;
     float zero = 0.0f;
     if (step != zero) {
-        u32 r     = MATH_Rand32(&data_020d42e8, (u32) ((max - min) / step) + 1);
+        u32 r     = MATH_Rand32(&gRandom, (u32) ((max - min) / step) + 1);
         float rnd = r;
         return FX32_CONST(min + rnd * step);
     }
-    float t = (float) MATH_Rand32(&data_020d42e8, 100001) / 100000.0f;
+    float t = (float) MATH_Rand32(&gRandom, 100001) / 100000.0f;
     return FX32_CONST(min + t * (max - min));
 }
 

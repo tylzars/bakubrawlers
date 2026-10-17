@@ -39,7 +39,7 @@ void GimmickUnk_02274830::Update() {
         }
         BattlePlayerList *list;
         BattleTarget *target;
-        if (!(mUnk_3c && mUnk_3c->mUnk_823 && (target = (list = data_020d433c.mBattlePlayers)->mUnk_298))) {
+        if (!(mUnk_3c && mUnk_3c->mUnk_823 && (target = (list = data_020d433c.mBattlePlayers)->mBattleTarget))) {
             return;
         }
         if (target->mUnk_1a4->mPosition.y > 0x899a) {
@@ -51,10 +51,10 @@ void GimmickUnk_02274830::Update() {
         if (target->mUnk_38 > 3) {
             return;
         }
-        u8 idx          = list->mUnk_28a;
+        u8 idx          = list->mTurnPlayer;
         BattlePlayer *p = list->mPlayers[idx];
         u8 rec          = p->mRecord;
-        if (p->mRecords[rec].mUnk_09 == 0) {
+        if (p->mRecords[rec].mAttribute == 0) {
             return;
         }
         VecFx32 v = {0, 0, 0};
@@ -69,17 +69,17 @@ void GimmickUnk_02274830::Update() {
             func_ov007_0226a380(p, rec, (s16)-d);
         }
         SoundManager::Get().StartSeqArc(0x60);
-        v = data_020d433c.mBattlePlayers->mUnk_298->mUnk_64;
+        v = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_64;
         v.y = 0;
         VEC_Normalize(&v, &v);
         v.x = FX_Mul(v.x, 0x2000);
         v.y = FX_Mul(v.y, 0x2000);
         v.z = FX_Mul(v.z, 0x2000);
         v.y = 0x2000;
-        func_ov007_0225c960(data_020d433c.mBattlePlayers->mUnk_298, &v, 0);
+        func_ov007_0225c960(data_020d433c.mBattlePlayers->mBattleTarget, &v, 0);
         CameraManager::Get();
         MtxFx43 mtx    = data_020c1cf4;
-        VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
+        VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
         VecFx32 w      = data_ov007_02285a98;
         u16 handle     = StartEffect(data_020d433c.mEffects, 1, 4, 0, 0);
         if (handle) {
@@ -95,7 +95,7 @@ void GimmickUnk_02274830::Update() {
         if (handle) {
             CameraManager::Get();
             MtxFx43 mtx2    = data_020c1cf4;
-            VecFx32 camPos2 = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
+            VecFx32 camPos2 = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
             mtx2._[11]      = 0;
             mtx2._[10]      = 0;
             mtx2._[9]       = 0;

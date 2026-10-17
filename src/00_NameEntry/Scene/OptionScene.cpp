@@ -1,6 +1,6 @@
 #include "Graphics/SpriteManager.hpp"
 #include "Scene/OptionScene.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Scene/CreditsScene.hpp"
 #include "UI/SaveWindow.hpp"
@@ -99,15 +99,15 @@ OptionScene::OptionScene() :
     mBuf0c = NULL;
     MI_CpuClear32(mCells, sizeof(mCells));
     mState = 0;
-    mSaved = *(u16 *) ((u8 *) data_020d43f0 + 0x28);
+    mSaved = *(u16 *) ((u8 *) gSaveData + 0x28);
 }
 
 OptionScene::~OptionScene() {
     Release();
 }
 
-void func_02022d48(UnkStruct_020d43f0 *d);
-void func_02022db4(UnkStruct_020d43f0 *d);
+void func_02022d48(SaveData *d);
+void func_02022db4(SaveData *d);
 
 void OptionScene::Release() {
     if (mFile != NULL) {
@@ -192,7 +192,7 @@ void OptionScene::Update() {
                     mState++;
                     break;
                 case 2: {
-                    UnkStruct_020d43f0 *d = data_020d43f0;
+                    SaveData *d = gSaveData;
                     d->mUnk_28_7 = mOld[0];
                     d->mUnk_28_10 = mOld[1];
                     d->mUnk_28_13 = mOld[2];
@@ -229,8 +229,8 @@ void OptionScene::Update() {
             DrawMenu2();
             switch (result) {
                 case 1:
-                    data_020d43f0[0].mUnk_28_6 = mUnk_4f == 0 ? 1 : 0;
-                    data_020d43f0[0].mUnk_27_0 = data_020d43f0[0].mUnk_28_6;
+                    gSaveData[0].mUnk_28_6 = mUnk_4f == 0 ? 1 : 0;
+                    gSaveData[0].mUnk_27_0 = gSaveData[0].mUnk_28_6;
                     mState++;
                     break;
                 case 2:
@@ -270,7 +270,7 @@ void OptionScene::Update() {
                 s8 id = mWindow->GetSelectedId();
                 switch (id) {
                     case 0:
-                        func_02022d48(data_020d43f0);
+                        func_02022d48(gSaveData);
                         break;
                     case 1:
                         break;
@@ -299,7 +299,7 @@ void OptionScene::Update() {
             DrawMenu3();
             switch (result) {
                 case 1:
-                    data_020d43f0[0].mUnk_28_5 = mUnk_4f == 0 ? 1 : 0;
+                    gSaveData[0].mUnk_28_5 = mUnk_4f == 0 ? 1 : 0;
                     mState++;
                     break;
                 case 2:
@@ -348,7 +348,7 @@ void OptionScene::Update() {
         case 21:
             mWindow->Update(1);
             if (mWindow->mState == 4) {
-                if (mSaved == *(u16 *) ((u8 *) data_020d43f0 + 0x28)) {
+                if (mSaved == *(u16 *) ((u8 *) gSaveData + 0x28)) {
                     SpriteManager::Get().StartFade(3);
                     mState = 0x17;
                 } else {
@@ -456,7 +456,7 @@ void OptionScene::BuildSettings() {
         mPosX[i] = data_ov000_022262a8[i].x;
         mPosY[i] = data_ov000_022262a8[i].y;
     }
-    UnkStruct_020d43f0 *data = data_020d43f0;
+    SaveData *data = gSaveData;
     mUnk_4e = 0;
     mCells[2]->SetAnimation(0x13);
     mUnk_4b = 8;
@@ -490,7 +490,7 @@ void OptionScene::DrawSettings() {
     }
 }
 
-void func_02022db4(UnkStruct_020d43f0 *d);
+void func_02022db4(SaveData *d);
 
 
 void OptionScene::UpdateSettings() {
@@ -554,18 +554,18 @@ void OptionScene::UpdateSettings() {
     if (changed) {
         switch (mUnk_4e) {
             case 0:
-                data_020d43f0[0].mUnk_28_7 = mCur[0];
-                func_02022db4(data_020d43f0);
+                gSaveData[0].mUnk_28_7 = mCur[0];
+                func_02022db4(gSaveData);
                 break;
             case 1:
-                data_020d43f0[0].mUnk_28_10 = mCur[1];
-                func_02022db4(data_020d43f0);
+                gSaveData[0].mUnk_28_10 = mCur[1];
+                func_02022db4(gSaveData);
                 SoundManager::Get().func_02024754(1);
                 SoundManager::Get().StartSeqArc(5);
                 break;
             case 2:
-                data_020d43f0[0].mUnk_28_13 = mCur[2];
-                func_02022db4(data_020d43f0);
+                gSaveData[0].mUnk_28_13 = mCur[2];
+                func_02022db4(gSaveData);
                 FrameTask::Get().StopChannel(1);
                 FrameTask::Get().StartChannel(1, 0x183);
                 break;
@@ -584,10 +584,10 @@ void OptionScene::BuildMenu2() {
     mPosY[0] = 0x50;
     mUnk_4b = 8;
     delete mWindow;
-    mWindow = new SelectWindow(4, data_ov000_022264c8, (s8) (data_020d43f0[0].mUnk_28_6 == 0 ? 1 : 0));
+    mWindow = new SelectWindow(4, data_ov000_022264c8, (s8) (gSaveData[0].mUnk_28_6 == 0 ? 1 : 0));
     mWindow->SetCells(4, data_ov000_02226538);
     mWindow->Update(1);
-    int sel = data_020d43f0[0].mUnk_28_6 == 0 ? 1 : 0;
+    int sel = gSaveData[0].mUnk_28_6 == 0 ? 1 : 0;
     mWindow->mCells[(u8) sel]->SetAnimation(data_ov000_02226538[sel].mAnimIndices[2]);
 }
 
@@ -678,10 +678,10 @@ void OptionScene::BuildMenu4() {
     mPosY[0] = 0x50;
     mUnk_4b = 8;
     delete mWindow;
-    mWindow = new SelectWindow(4, data_ov000_022263e8, (s8) (data_020d43f0[0].mUnk_28_5 == 0 ? 1 : 0));
+    mWindow = new SelectWindow(4, data_ov000_022263e8, (s8) (gSaveData[0].mUnk_28_5 == 0 ? 1 : 0));
     mWindow->SetCells(4, data_ov000_02226458);
     mWindow->Update(1);
-    int sel = data_020d43f0[0].mUnk_28_5 == 0 ? 1 : 0;
+    int sel = gSaveData[0].mUnk_28_5 == 0 ? 1 : 0;
     mWindow->mCells[(u8) sel]->SetAnimation(data_ov000_02226458[sel].mAnimIndices[2]);
 }
 

@@ -27,7 +27,7 @@ GimmickDashBase::~GimmickDashBase() {
 void GimmickDashBase::func_ov007_0222c48c() {
     char buf[0x804];
     func_ov007_022719c8(buf, 0x5e);
-    mUnk_3c = func_ov007_02271ca8(data_020d433c.mUnk_0c, 0x20, buf, &mPosition, &mRotX, mUnk_3a);
+    mUnk_3c = func_ov007_02271ca8(data_020d433c.mGimmickCollision, 0x20, buf, &mPosition, &mRotX, mUnk_3a);
     func_ov007_0222c824(0);
 }
 
@@ -76,7 +76,7 @@ void GimmickDashBase::Update() {
             return;
         }
         func_ov007_0222c7f0();
-        BattleTarget *target = data_020d433c.mBattlePlayers->mUnk_298;
+        BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
         if (!target) {
             return;
         }
@@ -84,7 +84,7 @@ void GimmickDashBase::Update() {
         if (data_020d433c.mUnk_14) {
             return;
         }
-        target = data_020d433c.mBattlePlayers->mUnk_298;
+        target = data_020d433c.mBattlePlayers->mBattleTarget;
         if (target->mUnk_44 > 0x5dc) {
             return;
         }

@@ -8,7 +8,7 @@ class CellAnimation;
 
 // Window that shows one message of a .mes file at a time (0x4c bytes, ctor 02087898, vtable 020baa50): loaded with
 // LoadMessageFile, given a message with SetMessage (-1 clears it) and polled with func_02087cac. The battle scene
-// keeps one at BattlePlayerList::mUnk_2a4, the script player one at UnkStruct_02065c40::mUnk_1018.
+// keeps one at BattlePlayerList::mUnk_2a4, the script player one at ScriptPlayer::mStorytalkWindow.
 class StorytalkWindow : public SceneBase {
 public:
     /* 0c */ CellAnimation *mCellAnims[3];

@@ -14,7 +14,7 @@ GimmickIkazuchiStart::GimmickIkazuchiStart(u8 id)
     mUnk_5e  = 0;
     mUnk_5f  = 0;
     for (u8 i = 0; i < 8; i++) {
-        mDelays[i] = MATH_Rand32(&data_020d42e8, 0x3c) + 0x3c;
+        mDelays[i] = MATH_Rand32(&gRandom, 0x3c) + 0x3c;
     }
     mState  = 0;
     mUnk_3a = 0x52;
@@ -138,7 +138,7 @@ void GimmickIkazuchiStart::Update() {
             return;
         }
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
-        BattleTarget *t        = list->mUnk_298;
+        BattleTarget *t        = list->mBattleTarget;
         if (!t) {
             return;
         }
@@ -146,17 +146,17 @@ void GimmickIkazuchiStart::Update() {
             return;
         }
         BattlePlayer *p = list->Current();
-        if (p->mRecords[p->mRecord].mUnk_09 == 4) {
+        if (p->mRecords[p->mRecord].mAttribute == 4) {
             return;
         }
         VecFx32 v = {0, 0, 0};
-        t         = list->mUnk_298;
+        t         = list->mBattleTarget;
         v.x       = t->mUnk_64.x;
         v.y       = t->mUnk_64.y;
         v.z       = t->mUnk_64.z;
         v.y       = 0x2000;
-        func_ov007_0225c960(list->mUnk_298, &v, 0);
-        func_ov007_0225ca18(data_020d433c.mBattlePlayers->mUnk_298, 8, 0x1e);
+        func_ov007_0225c960(list->mBattleTarget, &v, 0);
+        func_ov007_0225ca18(data_020d433c.mBattlePlayers->mBattleTarget, 8, 0x1e);
         mState++;
         break;
     }

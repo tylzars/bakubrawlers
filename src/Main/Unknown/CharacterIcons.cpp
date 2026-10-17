@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 
-extern u8 data_020d4404[];
+extern u8 gCharacterLook[];
 void func_0207889c(u8 screen, u32 offset, u32 palette, const void *colors, u32 unk5);
 
 CharacterIcons::CharacterIcons(u32 unk1, u32 unk2, s32 unk3) {
@@ -60,7 +60,7 @@ void CharacterIcons::SetCharacter(u32 slot, s32 character, u32 unk3, u32 unk4) {
         if (unk3 != 0) {
             func_0207889c(mScreen, offset, palette, (const void *) unk3, unk4);
         } else {
-            func_0207889c(mScreen, offset, palette, data_020d4404, unk4);
+            func_0207889c(mScreen, offset, palette, gCharacterLook, unk4);
         }
         ChangeDir("/Game/Character/Icon/");
     }

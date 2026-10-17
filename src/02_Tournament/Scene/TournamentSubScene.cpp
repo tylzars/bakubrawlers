@@ -52,7 +52,7 @@ inline WindowItemRecord *TouchItems() {
 static const u8 sMessageIds[1][24] = {{0, 1, 2, 3, 4, 5, 6, 7, 0x0a, 8, 9, 0x0b, 0x0c, 0x0d, 0x10, 0x0e, 0x0f}};
 
 #include "Game/UnkStruct_020d433c.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/Display.hpp"
 #include "Graphics/SpriteManager.hpp"
 #include "System/FileSystem.hpp"
@@ -84,16 +84,16 @@ TournamentSubScene::TournamentSubScene() :
     mState          = 0;
     mCounter        = 0;
     mUnk_58         = 0;
-    mUnk_54 = data_020d43f0[0].mUnk_42 > 6;
+    mUnk_54 = gSaveData[0].mUnk_42 > 6;
     mCount = data_020d433c.mPlayerCount - 1;
     u32 skip = 0;
-    if (data_020d433c.mUnk_98 != 0) {
+    if (data_020d433c.mHasPartners != 0) {
         mCount--;
         skip = 1;
     }
     u8 i = 0;
     do {
-        mEntries[i].mId     = data_020d433c.mUnk_9f[1 + skip + i];
+        mEntries[i].mId     = data_020d433c.mCharacterIds[1 + skip + i];
         mEntries[i].mUnk_02 = 0;
         mEntries[i].mUnk_04 = 0;
         i++;

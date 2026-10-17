@@ -69,7 +69,7 @@ const WindowItemRecord data_ov008_02228b28[14] = {
 };
 
 #include "Scene/MyroomGiftScene.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"
 #include "System/FileSystem.hpp"

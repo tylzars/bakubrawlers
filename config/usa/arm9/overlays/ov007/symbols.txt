@@ -861,14 +861,14 @@ _ZN16BattleCardEffect19func_ov007_02271888Ev kind:function(arm,size=0x140) addr:
 _Z19func_ov007_022719c8Pvh kind:function(arm,size=0x38) addr:0x022719c8
 _Z19func_ov007_02271a00P14GimmickSetFilePKc kind:function(arm,size=0x124) addr:0x02271a00
 _Z19func_ov007_02271b24P18GimmickSetDataHeadi kind:function(arm,size=0x90) addr:0x02271b24
-_ZN21UnkStruct_020d433c_0cC1Ev kind:function(arm,size=0xa4) addr:0x02271bb4
-_ZN21UnkStruct_020d433c_0cD1Ev kind:function(arm,size=0x24) addr:0x02271c58
-_ZN21UnkStruct_020d433c_0cD0Ev kind:function(arm,size=0x2c) addr:0x02271c7c
-_Z19func_ov007_02271ca8P21UnkStruct_020d433c_0ciPvP7VecFx32Pth kind:function(arm,size=0xd0) addr:0x02271ca8
-_Z19func_ov007_02271d78P21UnkStruct_020d433c_0cP14GimmickSetData kind:function(arm,size=0x38) addr:0x02271d78
-_ZN21UnkStruct_020d433c_0c6UpdateEv kind:function(arm,size=0x98) addr:0x02271db0
-_ZN21UnkStruct_020d433c_0c19func_ov007_02271e48EP14GimmickSetDataS1_ kind:function(arm,size=0x1f4) addr:0x02271e48
-_ZN21UnkStruct_020d433c_0c19func_ov007_0227203cEP14BattleObstacleS1_ kind:function(arm,size=0x70) addr:0x0227203c
+_ZN16GimmickCollisionC1Ev kind:function(arm,size=0xa4) addr:0x02271bb4
+_ZN16GimmickCollisionD1Ev kind:function(arm,size=0x24) addr:0x02271c58
+_ZN16GimmickCollisionD0Ev kind:function(arm,size=0x2c) addr:0x02271c7c
+_Z19func_ov007_02271ca8P16GimmickCollisioniPvP7VecFx32Pth kind:function(arm,size=0xd0) addr:0x02271ca8
+_Z19func_ov007_02271d78P16GimmickCollisionP14GimmickSetData kind:function(arm,size=0x38) addr:0x02271d78
+_ZN16GimmickCollision6UpdateEv kind:function(arm,size=0x98) addr:0x02271db0
+_ZN16GimmickCollision8TestSetsEP14GimmickSetDataS1_ kind:function(arm,size=0x1f4) addr:0x02271e48
+_ZN16GimmickCollision13TestObstaclesEP14BattleObstacleS1_ kind:function(arm,size=0x70) addr:0x0227203c
 _Z19func_ov007_022720acP14BattleObstacleS0_ kind:function(arm,size=0x80) addr:0x022720ac
 _Z19func_ov007_0227212cP14BattleObstacleS0_ kind:function(arm,size=0x44) addr:0x0227212c
 _Z19func_ov007_02272170P14BattleObstacleS0_ kind:function(arm,size=0xfc) addr:0x02272170
@@ -2616,7 +2616,7 @@ _ZTV16BattleCardEffect kind:data(any) addr:0x0228ab68
 data_ov007_0228abc0 kind:data(any) addr:0x0228abc0
 data_ov007_0228abc4 kind:data(any) addr:0x0228abc4
 sTests kind:data(any) addr:0x0228abe4 local
-_ZTV21UnkStruct_020d433c_0c kind:data(any) addr:0x0228abf4
+_ZTV16GimmickCollision kind:data(any) addr:0x0228abf4
 data_ov007_0228ac08 kind:data(any) addr:0x0228ac08
 data_ov007_0228ac14 kind:data(any) addr:0x0228ac14
 data_ov007_0228ac20 kind:data(any) addr:0x0228ac20

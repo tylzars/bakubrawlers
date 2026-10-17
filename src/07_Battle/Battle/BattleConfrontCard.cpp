@@ -1238,8 +1238,8 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             }
             mUnk_10++;
             if ((mUnk_10 > 4) & (mUnk_10 < 0x40)) {
-                mUnk_14[mUnk_0e] = mUnk_0f + MATH_Rand32(&data_020d42e8, 0x20) - 0x10;
-                mUnk_1a[mUnk_0e] = MATH_Rand32(&data_020d42e8, 0x18) + 0x30;
+                mUnk_14[mUnk_0e] = mUnk_0f + MATH_Rand32(&gRandom, 0x20) - 0x10;
+                mUnk_1a[mUnk_0e] = MATH_Rand32(&gRandom, 0x18) + 0x30;
             } else {
                 mUnk_14[mUnk_0e] = mUnk_0f;
                 mUnk_1a[mUnk_0e] = 0x3c;
@@ -1301,12 +1301,12 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                                 add = (u16) (add << 1);
                             }
                             if (data_020d433c.mUnk_83 == 0) {
-                                u8 sel = data_020d433c.mBattlePlayers->mUnk_28d;
+                                u8 sel = data_020d433c.mBattlePlayers->mUnitA;
                                 if (mUnk_21 == 1) {
-                                    sel = data_020d433c.mBattlePlayers->mUnk_28e;
+                                    sel = data_020d433c.mBattlePlayers->mUnitB;
                                 }
                                 BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[e[mUnk_21].mUnk_0d_4];
-                                BattleRecord *rec = &p->mRecords[data_020d433c.mBattlePlayers->mUnits[sel].mUnk_0e];
+                                BattleRecord *rec = &p->mRecords[data_020d433c.mBattlePlayers->mUnits[sel].mRecord];
                                 if ((int) rec->mGauge < 0xfff - add) {
                                     rec->mGauge += add;
                                 }
@@ -1349,9 +1349,9 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 }
                 data_020d433c.mBattlePlayers->mPlayers[e[mUnk_21].mUnk_0d_4]->PushHistory(e[other].mUnk_04, e[other].mUnk_0d_0);
             }
-            func_ov007_022626b8(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnits[data_020d433c.mBattlePlayers->mUnk_28d].mUnk_11);
-            func_ov007_02262828(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnk_28d, 2);
-            func_ov007_02262828(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnk_28e, 2);
+            func_ov007_022626b8(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnits[data_020d433c.mBattlePlayers->mUnitA].mMarker);
+            func_ov007_02262828(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnitA, 2);
+            func_ov007_02262828(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnitB, 2);
             mUnk_0d = 0x35;
             break;
         }
@@ -1664,7 +1664,7 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
                 u8 j = 0;
                 u8 n            = 0;
                 do {
-                    if (data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4]->mRecords[j].mUnk_0a == 1) {
+                    if (data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4]->mRecords[j].mStatus == 1) {
                         n++;
                     }
                     j++;
@@ -1938,10 +1938,10 @@ BOOL BattleConfrontCard::func_ov007_022433c8(u8 side, u16 id) {
             if (owner == self->mUnk_0d_4) {
                 break;
             }
-            if (data_020d433c.mUnk_98 == 0) {
+            if (data_020d433c.mHasPartners == 0) {
                 goto abilityCard;
             }
-            if (owner == data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4]->mUnk_f2) {
+            if (owner == data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4]->mPartner) {
                 break;
             }
             goto abilityCard;
@@ -2028,7 +2028,7 @@ BOOL BattleConfrontCard::func_ov007_022433c8(u8 side, u16 id) {
             BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4];
             u8 playerCount       = data_020d433c.mUnk_99;
             do {
-                u8 kind = player->mRecords[i].mUnk_09;
+                u8 kind = player->mRecords[i].mAttribute;
                 u8 j    = 0;
                 do {
                     if (kind == pattern[j]) {
@@ -2057,7 +2057,7 @@ BOOL BattleConfrontCard::func_ov007_022433c8(u8 side, u16 id) {
             BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[self->mUnk_0d_4];
             u8 playerCount       = data_020d433c.mUnk_99;
             do {
-                u8 kind = player->mRecords[i].mUnk_09;
+                u8 kind = player->mRecords[i].mAttribute;
                 u8 j    = 0;
                 do {
                     if (kind == pattern[j]) {
@@ -2319,7 +2319,7 @@ u8 BattleConfrontCard::func_ov007_02244440() {
         power[n] = power[n] * func_ov007_022234f0(e[n].mUnk_0d_4, mUnk_20, e[n].mUnk_0e);
         n++;
     } while (n < 2);
-    u8 mode = data_020d433c.mUnk_95;
+    u8 mode = data_020d433c.mFieldId;
     if (mode != 0 && mode != 7) {
         const s32 *row = sAttributeRates[(u8) (mode - 1)];
         u8 m           = 0;
@@ -2330,6 +2330,6 @@ u8 BattleConfrontCard::func_ov007_02244440() {
         } while (m < 2);
     }
     u16 chance = (u16) (100.0f * ((float) power[0] / (float) (power[0] + power[1])));
-    BOOL r = MATH_Rand32(&data_020d42e8, 100) >= chance;
+    BOOL r = MATH_Rand32(&gRandom, 100) >= chance;
     return r;
 }

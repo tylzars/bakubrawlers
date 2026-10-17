@@ -1,5 +1,5 @@
 #include "Scene/SceneBase.hpp"
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "System/FileSystem.hpp"
 #include "System/SaveManager.hpp"
 
@@ -139,7 +139,7 @@ void UnkScene_020a54a8::Update() {
         }
         case 5: {
             task->mBuffer = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, 0x1000);
-            MI_CpuCopy8(data_020d43f0, (u8 *) task->mBuffer + 0xc, 0xff4);
+            MI_CpuCopy8(gSaveData, (u8 *) task->mBuffer + 0xc, 0xff4);
             u16 crc = SaveManager::Get().ComputeCrc((u8 *) task->mBuffer + 0xc, 0xff4);
             ((UnkStruct_SaveBlock *) task->mBuffer)->mCrc    = crc;
             ((UnkStruct_SaveBlock *) task->mBuffer)->mMagic0 = 0x20071019;
@@ -224,7 +224,7 @@ void UnkScene_020a5494::Update() {
             UnkStruct_SaveBlock *block;
             u16 crc = SaveManager::Get().ComputeCrc((block = (UnkStruct_SaveBlock *) task->mBuffer)->mData, 0xff4);
             if (block->mCrc == crc && block->mMagic1 == 0x19721021 && block->mMagic0 == 0x20071019) {
-                MI_CpuCopy8(block->mData, data_020d43f0, 0xff4);
+                MI_CpuCopy8(block->mData, gSaveData, 0xff4);
                 RequestScene(SAVE_STATUS_OK);
                 task->mState++;
             } else if (++task->mTry < 2) {

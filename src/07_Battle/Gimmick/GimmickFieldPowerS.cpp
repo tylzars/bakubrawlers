@@ -80,11 +80,11 @@ void GimmickFieldPowerS::Update() {
         if (!(mUnk_3c && mUnk_3c->mUnk_823)) {
             return;
         }
-        if (!data_020d433c.mBattlePlayers->mUnk_298) {
+        if (!data_020d433c.mBattlePlayers->mBattleTarget) {
             return;
         }
         mState++;
-        func_ov007_02271d78(data_020d433c.mUnk_0c, mUnk_3c);
+        func_ov007_02271d78(data_020d433c.mGimmickCollision, mUnk_3c);
         switch (mVariant) {
         case 0: {
             BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
@@ -118,7 +118,7 @@ void GimmickFieldPowerS::Update() {
             CameraManager::Get();
             MtxFx43 mtx    = data_020c1cf4;
             MtxFx43 rot    = gIdentityMtx43;
-            VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
+            VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mUnk_1a4->mPosition;
             VecFx32 v      = data_ov007_02279438;
             VecFx32 w      = data_ov007_02279444;
             mtx._[11]      = 0;
@@ -144,7 +144,7 @@ void GimmickFieldPowerS::Update() {
             break;
         }
         u32 limit;
-        if (data_020d433c.mUnk_98) {
+        if (data_020d433c.mHasPartners) {
             limit = data_ov007_0227942c[mVariant];
         } else {
             limit = data_ov007_02279430[mVariant][players - 2];

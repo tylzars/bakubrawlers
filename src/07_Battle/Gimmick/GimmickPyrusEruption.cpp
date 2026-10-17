@@ -110,7 +110,7 @@ void GimmickPyrusEruption::Update() {
         if (mUnk_3c->mUnk_823 != 2) {
             return;
         }
-        BattleTarget *target = data_020d433c.mBattlePlayers->mUnk_298;
+        BattleTarget *target = data_020d433c.mBattlePlayers->mBattleTarget;
         if (!target) {
             return;
         }
@@ -121,7 +121,7 @@ void GimmickPyrusEruption::Update() {
             return;
         }
         BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
-        if (p->mRecords[p->mRecord].mUnk_09 == 0) {
+        if (p->mRecords[p->mRecord].mAttribute == 0) {
             return;
         }
         VEC_Subtract(&mPosition, &target->mUnk_1a4->mPosition, &d);
@@ -135,7 +135,7 @@ void GimmickPyrusEruption::Update() {
         d.x      = -FX_Div(d.x, len);
         d.y      = y;
         d.z      = z;
-        VEC_Add(&data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0, &d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_a0);
+        VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0, &d, &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0);
         mState++;
         mUnk_4e = 1;
         break;

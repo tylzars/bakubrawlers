@@ -1,4 +1,4 @@
-#include "Game/UnkStruct_020d43f0.hpp"
+#include "Game/SaveData.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/Random.hpp"
 #include <nitro/mi.h>
@@ -36,86 +36,86 @@ BOOL func_02089f2c();
 
 // Moved here from StorytalkWindow.cpp, where it currently sits past the end of that unit (0x02088f38).
 u8 func_02088f38() {
-    u8 stage = data_020d43f0[0].mUnk_42;
-    if (stage == 0 || (stage == 1 && data_020d43f0[0].mUnk_43 == 0)) {
+    u8 stage = gSaveData[0].mUnk_42;
+    if (stage == 0 || (stage == 1 && gSaveData[0].mUnk_43 == 0)) {
         return 0;
     }
-    if (stage == 1 && data_020d43f0[0].mUnk_43 == 1) {
+    if (stage == 1 && gSaveData[0].mUnk_43 == 1) {
         return 1;
     }
-    if (stage == 1 && data_020d43f0[0].mUnk_43 == 2) {
+    if (stage == 1 && gSaveData[0].mUnk_43 == 2) {
         return 2;
     }
     if (stage == 2) {
         return 3;
     }
-    if (stage == 3 && data_020d43f0[0].mUnk_43 == 0) {
+    if (stage == 3 && gSaveData[0].mUnk_43 == 0) {
         return 4;
     }
-    if (stage == 3 && data_020d43f0[0].mUnk_43 == 1) {
+    if (stage == 3 && gSaveData[0].mUnk_43 == 1) {
         return 5;
     }
-    if (stage == 3 && data_020d43f0[0].mUnk_43 == 2) {
+    if (stage == 3 && gSaveData[0].mUnk_43 == 2) {
         return 6;
     }
-    if (stage == 3 && data_020d43f0[0].mUnk_43 == 3) {
+    if (stage == 3 && gSaveData[0].mUnk_43 == 3) {
         return 7;
     }
-    if (stage == 4 && data_020d43f0[0].mUnk_43 == 0) {
+    if (stage == 4 && gSaveData[0].mUnk_43 == 0) {
         return 8;
     }
-    if (stage == 5 || (stage == 6 && data_020d43f0[0].mUnk_43 == 0)) {
+    if (stage == 5 || (stage == 6 && gSaveData[0].mUnk_43 == 0)) {
         return 9;
     }
-    if (stage == 6 && data_020d43f0[0].mUnk_43 == 1) {
+    if (stage == 6 && gSaveData[0].mUnk_43 == 1) {
         return 10;
     }
-    if (stage == 6 && data_020d43f0[0].mUnk_43 == 2) {
+    if (stage == 6 && gSaveData[0].mUnk_43 == 2) {
         return 11;
     }
-    if (stage == 7 && data_020d43f0[0].mUnk_43 == 0) {
+    if (stage == 7 && gSaveData[0].mUnk_43 == 0) {
         return 12;
     }
-    if (stage == 7 && data_020d43f0[0].mUnk_43 == 1) {
+    if (stage == 7 && gSaveData[0].mUnk_43 == 1) {
         return 13;
     }
-    if (stage == 7 && data_020d43f0[0].mUnk_43 == 2) {
+    if (stage == 7 && gSaveData[0].mUnk_43 == 2) {
         return 14;
     }
-    if (stage == 7 && data_020d43f0[0].mUnk_43 == 3) {
+    if (stage == 7 && gSaveData[0].mUnk_43 == 3) {
         return 15;
     }
-    if (stage == 7 && data_020d43f0[0].mUnk_43 == 4) {
+    if (stage == 7 && gSaveData[0].mUnk_43 == 4) {
         return 16;
     }
-    if ((stage == 7 && data_020d43f0[0].mUnk_43 == 5) || (stage == 8 && data_020d43f0[0].mUnk_43 == 0)) {
+    if ((stage == 7 && gSaveData[0].mUnk_43 == 5) || (stage == 8 && gSaveData[0].mUnk_43 == 0)) {
         return 17;
     }
-    if (stage == 8 && data_020d43f0[0].mUnk_43 == 1) {
+    if (stage == 8 && gSaveData[0].mUnk_43 == 1) {
         return 18;
     }
-    if (stage == 8 && data_020d43f0[0].mUnk_43 == 2) {
+    if (stage == 8 && gSaveData[0].mUnk_43 == 2) {
         return 19;
     }
-    if (stage == 8 && data_020d43f0[0].mUnk_43 == 3) {
+    if (stage == 8 && gSaveData[0].mUnk_43 == 3) {
         return 20;
     }
-    if ((stage == 8 && data_020d43f0[0].mUnk_43 == 4) || (stage == 9 && data_020d43f0[0].mUnk_43 == 0)) {
+    if ((stage == 8 && gSaveData[0].mUnk_43 == 4) || (stage == 9 && gSaveData[0].mUnk_43 == 0)) {
         return 21;
     }
-    if (stage == 9 && data_020d43f0[0].mUnk_43 == 1) {
+    if (stage == 9 && gSaveData[0].mUnk_43 == 1) {
         return 22;
     }
-    if (stage == 9 && data_020d43f0[0].mUnk_43 == 2) {
+    if (stage == 9 && gSaveData[0].mUnk_43 == 2) {
         return 23;
     }
-    if (stage == 9 && data_020d43f0[0].mUnk_43 == 3) {
+    if (stage == 9 && gSaveData[0].mUnk_43 == 3) {
         return 24;
     }
-    if (stage == 9 && data_020d43f0[0].mUnk_43 == 4) {
+    if (stage == 9 && gSaveData[0].mUnk_43 == 4) {
         return 25;
     }
-    if (stage == 9 && data_020d43f0[0].mUnk_43 == 5) {
+    if (stage == 9 && gSaveData[0].mUnk_43 == 5) {
         return 26;
     }
     return 27;
@@ -124,15 +124,15 @@ u8 func_02088f38() {
 void func_02089208() {
     u8 i = 0;
     u8 buf[12];
-    data_020d43f0[0].mUnk_5b9_1 = 0;
+    gSaveData[0].mUnk_5b9_1 = 0;
     do {
         GetParkEntry(i, buf);
         if (buf[6] != 0xff) {
-            data_020d43f0[0].mUnk_5b9_1 = 1;
+            gSaveData[0].mUnk_5b9_1 = 1;
             return;
         }
         i++;
-    } while (i < data_020d43f0[0].mUnk_5c1);
+    } while (i < gSaveData[0].mParkSlotCount);
 }
 
 // One chosen character group while the park list is built (4 bytes).
@@ -160,7 +160,7 @@ void func_02089278() {
     s32 last;
     u8 i;
     u8 j = 0;
-    if (data_020d43f0[0].mUnk_5bf_0) {
+    if (gSaveData[0].mUnk_5bf_0) {
         ParkPick picks[26] = {0};
         count = 0;
         cat   = 0;
@@ -227,8 +227,8 @@ void func_02089278() {
             count = 8;
         }
         for (i = 0; i < count; i++) {
-            data_020d43f0[0].mUnk_5c2[i].mCategory = picks[i].mCategory;
-            data_020d43f0[0].mUnk_5c2[i].mGroup    = picks[i].mGroup;
+            gSaveData[0].mParkSlots[i].mCategory = picks[i].mCategory;
+            gSaveData[0].mParkSlots[i].mGroup    = picks[i].mGroup;
         }
         if (count < 8) {
             u8 pool[16]   = {0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
@@ -250,7 +250,7 @@ void func_02089278() {
             } while (i < 16);
             i = 0;
             do {
-                u8 r = MATH_Rand32(&data_020d42e8, used);
+                u8 r = MATH_Rand32(&gRandom, used);
                 u8 t = chosen[i];
                 chosen[i] = chosen[r];
                 chosen[r] = t;
@@ -269,8 +269,8 @@ void func_02089278() {
                             n     = 0;
                             do {
                                 if (entry->mType <= 2) {
-                                    data_020d43f0[0].mUnk_5c2[count].mCategory = cat;
-                                    data_020d43f0[0].mUnk_5c2[count].mGroup    = g;
+                                    gSaveData[0].mParkSlots[count].mCategory = cat;
+                                    gSaveData[0].mParkSlots[count].mGroup    = g;
                                     count++;
                                     g   = category->mCount;
                                     cat = 0x1c;
@@ -291,28 +291,28 @@ void func_02089278() {
                 j++;
             } while (j < used);
         }
-        data_020d43f0[0].mUnk_5c1 = 8;
+        gSaveData[0].mParkSlotCount = 8;
         i = 0;
         do {
-            u8 r = MATH_Rand32(&data_020d42e8, 8);
-            u8 t0 = data_020d43f0[0].mUnk_5c2[i].mCategory;
-            u8 t1 = data_020d43f0[0].mUnk_5c2[i].mGroup;
-            data_020d43f0[0].mUnk_5c2[i].mCategory = data_020d43f0[0].mUnk_5c2[r].mCategory;
-            data_020d43f0[0].mUnk_5c2[i].mGroup    = data_020d43f0[0].mUnk_5c2[r].mGroup;
-            data_020d43f0[0].mUnk_5c2[r].mCategory = t0;
-            data_020d43f0[0].mUnk_5c2[r].mGroup    = t1;
+            u8 r = MATH_Rand32(&gRandom, 8);
+            u8 t0 = gSaveData[0].mParkSlots[i].mCategory;
+            u8 t1 = gSaveData[0].mParkSlots[i].mGroup;
+            gSaveData[0].mParkSlots[i].mCategory = gSaveData[0].mParkSlots[r].mCategory;
+            gSaveData[0].mParkSlots[i].mGroup    = gSaveData[0].mParkSlots[r].mGroup;
+            gSaveData[0].mParkSlots[r].mCategory = t0;
+            gSaveData[0].mParkSlots[r].mGroup    = t1;
             i++;
-        } while (i < data_020d43f0[0].mUnk_5c1);
+        } while (i < gSaveData[0].mParkSlotCount);
         u8 perm[4] = {0, 0, 1, 2};
         g = 0;
         do {
             u8 grp;
-            cat   = data_020d43f0[0].mUnk_5c2[g].mCategory;
-            grp   = data_020d43f0[0].mUnk_5c2[g].mGroup;
+            cat   = gSaveData[0].mParkSlots[g].mCategory;
+            grp   = gSaveData[0].mParkSlots[g].mGroup;
             entry = data_020a4ccc[cat].mGroups[grp].mEntries;
             j = 0;
             do {
-                u8 r = MATH_Rand32(&data_020d42e8, 4);
+                u8 r = MATH_Rand32(&gRandom, 4);
                 u8 t = perm[j];
                 perm[j] = perm[r];
                 perm[r] = t;
@@ -328,7 +328,7 @@ void func_02089278() {
                 entry++;
             } while (e < data_020a4ccc[cat].mGroups[grp].mCount);
             g++;
-        } while (g < data_020d43f0[0].mUnk_5c1);
+        } while (g < gSaveData[0].mParkSlotCount);
     } else {
         ParkGroup *stageGroup;
         ParkEntry *stageEntry;
@@ -343,22 +343,22 @@ void func_02089278() {
             flag       = FALSE;
             if (stageEntry->mType == 6) {
                 if (stageEntry->mUnk_0a == 0) {
-                    if ((data_020d43f0[0].mUnk_5be & 8) && (data_020d43f0[0].mUnk_5be & 0x10)) {
+                    if ((gSaveData[0].mUnk_5be & 8) && (gSaveData[0].mUnk_5be & 0x10)) {
                         flag = TRUE;
                     }
-                } else if (data_020d43f0[0].mUnk_5be & 0x10) {
+                } else if (gSaveData[0].mUnk_5be & 0x10) {
                     flag = TRUE;
                 }
             }
             if (!flag) {
-                data_020d43f0[0].mUnk_5c2[count].mCategory = stage;
-                data_020d43f0[0].mUnk_5c2[count].mGroup    = g;
+                gSaveData[0].mParkSlots[count].mCategory = stage;
+                gSaveData[0].mParkSlots[count].mGroup    = g;
                 count++;
             }
             g++;
             stageGroup++;
         } while (g < category->mCount);
-        data_020d43f0[0].mUnk_5c1 = count;
+        gSaveData[0].mParkSlotCount = count;
     }
     func_02089208();
 }
@@ -369,16 +369,16 @@ void GetParkEntry(u32 index, void *out) {
     BOOL found;
     u8 i;
     u8 category;
-    category          = data_020d43f0[0].mUnk_5c2[index].mCategory;
+    category          = gSaveData[0].mParkSlots[index].mCategory;
     ParkCategory *cat = &data_020a4ccc[category];
-    group             = data_020d43f0[0].mUnk_5c2[index].mGroup;
+    group             = gSaveData[0].mParkSlots[index].mGroup;
     groups            = cat->mGroups;
     found             = FALSE;
     u32 type          = groups[group].mEntries[groups[group].mDefault].mType;
-    if ((type != 3 && type != 4 && type != 5) || data_020d43f0[0].mUnk_5bf_0) {
+    if ((type != 3 && type != 4 && type != 5) || gSaveData[0].mUnk_5bf_0) {
         ParkEntry *entries = groups[group].mEntries;
         i                  = 0;
-        if (data_020d43f0[0].mUnk_5bf_0) {
+        if (gSaveData[0].mUnk_5bf_0) {
             category = 0xff;
         }
         do {
@@ -395,7 +395,7 @@ void GetParkEntry(u32 index, void *out) {
         return;
     }
     ParkEntry *list = groups[group].mEntries;
-    if (data_020d43f0[0].mUnk_5bf_0) {
+    if (gSaveData[0].mUnk_5bf_0) {
         MIi_CpuCopyFast(&list[data_020d433c.mUnk_8d[index]], out, 12);
     } else {
         MIi_CpuCopyFast(&list[groups[group].mDefault], out, 12);
@@ -403,14 +403,14 @@ void GetParkEntry(u32 index, void *out) {
 }
 
 u8 GetParkGroupId(u32 index) {
-    ParkCategory *category = &data_020a4ccc[data_020d43f0[0].mUnk_5c2[index].mCategory];
-    return (u8) category->mGroups[data_020d43f0[0].mUnk_5c2[index].mGroup].mId;
+    ParkCategory *category = &data_020a4ccc[gSaveData[0].mParkSlots[index].mCategory];
+    return (u8) category->mGroups[gSaveData[0].mParkSlots[index].mGroup].mId;
 }
 
 void func_02089a9c(u32 index) {
     ParkEntry entry;
     GetParkEntry(index, &entry);
-    u32 flag = data_020d43f0[0].mUnk_5bf_0;
+    u32 flag = gSaveData[0].mUnk_5bf_0;
     if (flag && entry.mType != 0 && entry.mType != 1 && entry.mType != 2) {
         entry.mType = 0;
     }
@@ -418,47 +418,47 @@ void func_02089a9c(u32 index) {
         case 0:
         case 1:
         case 2: {
-            if (data_020d43f0[0].mUnk_5c1 <= 4) {
+            if (gSaveData[0].mParkSlotCount <= 4) {
                 return;
             }
             u8 i;
-            u8 slotCat = data_020d43f0[0].mUnk_5c2[index].mCategory;
-            u8 slotGroup = data_020d43f0[0].mUnk_5c2[index].mGroup;
+            u8 slotCat = gSaveData[0].mParkSlots[index].mCategory;
+            u8 slotGroup = gSaveData[0].mParkSlots[index].mGroup;
             u8 charSlot;
             if (flag) {
                 charSlot = data_020d433c.mUnk_8d[index];
             }
-            data_020d43f0[0].mUnk_5c2[index].mCategory = data_020d43f0[0].mUnk_5c2[4].mCategory;
-            data_020d43f0[0].mUnk_5c2[index].mGroup = data_020d43f0[0].mUnk_5c2[4].mGroup;
-            if (data_020d43f0[0].mUnk_5bf_0) {
+            gSaveData[0].mParkSlots[index].mCategory = gSaveData[0].mParkSlots[4].mCategory;
+            gSaveData[0].mParkSlots[index].mGroup = gSaveData[0].mParkSlots[4].mGroup;
+            if (gSaveData[0].mUnk_5bf_0) {
                 data_020d433c.mUnk_8d[index] = data_020d433c.mUnk_8d[4];
             }
             i = 4;
             do {
-                data_020d43f0[0].mUnk_5c2[i].mCategory = data_020d43f0[0].mUnk_5c2[i + 1].mCategory;
-                data_020d43f0[0].mUnk_5c2[i].mGroup    = data_020d43f0[0].mUnk_5c2[i + 1].mGroup;
-                if (data_020d43f0[0].mUnk_5bf_0) {
+                gSaveData[0].mParkSlots[i].mCategory = gSaveData[0].mParkSlots[i + 1].mCategory;
+                gSaveData[0].mParkSlots[i].mGroup    = gSaveData[0].mParkSlots[i + 1].mGroup;
+                if (gSaveData[0].mUnk_5bf_0) {
                     data_020d433c.mUnk_8d[i] = data_020d433c.mUnk_8d[i + 1];
                 }
                 i++;
-            } while (i < data_020d43f0[0].mUnk_5c1 - 1);
-            data_020d43f0[0].mUnk_5c2[data_020d43f0[0].mUnk_5c1 - 1].mCategory = slotCat;
-            data_020d43f0[0].mUnk_5c2[data_020d43f0[0].mUnk_5c1 - 1].mGroup = slotGroup;
-            if (data_020d43f0[0].mUnk_5bf_0) {
-                data_020d433c.mUnk_8d[data_020d43f0[0].mUnk_5c1 - 1] = charSlot;
+            } while (i < gSaveData[0].mParkSlotCount - 1);
+            gSaveData[0].mParkSlots[gSaveData[0].mParkSlotCount - 1].mCategory = slotCat;
+            gSaveData[0].mParkSlots[gSaveData[0].mParkSlotCount - 1].mGroup = slotGroup;
+            if (gSaveData[0].mUnk_5bf_0) {
+                data_020d433c.mUnk_8d[gSaveData[0].mParkSlotCount - 1] = charSlot;
             }
             break;
         }
         case 6: {
-            if (entry.mUnk_0a == 0 && !(data_020d43f0[0].mUnk_5be & 0x10)) {
+            if (entry.mUnk_0a == 0 && !(gSaveData[0].mUnk_5be & 0x10)) {
                 return;
             }
             do {
-                data_020d43f0[0].mUnk_5c2[index].mCategory = data_020d43f0[0].mUnk_5c2[index + 1].mCategory;
-                data_020d43f0[0].mUnk_5c2[index].mGroup    = data_020d43f0[0].mUnk_5c2[index + 1].mGroup;
+                gSaveData[0].mParkSlots[index].mCategory = gSaveData[0].mParkSlots[index + 1].mCategory;
+                gSaveData[0].mParkSlots[index].mGroup    = gSaveData[0].mParkSlots[index + 1].mGroup;
                 index = (index + 1) & 0xff;
-            } while (index < data_020d43f0[0].mUnk_5c1);
-            data_020d43f0[0].mUnk_5c1--;
+            } while (index < gSaveData[0].mParkSlotCount);
+            gSaveData[0].mParkSlotCount--;
             break;
         }
     }
@@ -475,7 +475,7 @@ BOOL func_02089c7c(u32 id) {
         case 8:
         case 9:
         case 10:
-            if (data_020d43f0[0].mUnk_5b8 < 4) {
+            if (gSaveData[0].mUnk_5b8 < 4) {
                 result = FALSE;
             }
             break;
@@ -485,43 +485,43 @@ BOOL func_02089c7c(u32 id) {
         case 14:
         case 15:
         case 16:
-            if (!data_020d43f0[0].mUnk_5bf_0) {
+            if (!gSaveData[0].mUnk_5bf_0) {
                 result = FALSE;
             }
             break;
         case 17:
-            if (!(((u8 *) data_020d43f0)[0x586] & 1) || !func_02089ec8() || data_020d43f0[0].mUnk_5b8 < 5) {
+            if (!(((u8 *) gSaveData)[0x586] & 1) || !func_02089ec8() || gSaveData[0].mUnk_5b8 < 5) {
                 result = FALSE;
             }
             break;
         case 18:
-            if (!(((u8 *) data_020d43f0)[0x586] & 4) || !func_02089ec8() || data_020d43f0[0].mUnk_5b8 < 5) {
+            if (!(((u8 *) gSaveData)[0x586] & 4) || !func_02089ec8() || gSaveData[0].mUnk_5b8 < 5) {
                 result = FALSE;
             }
             break;
         case 19:
-            if (!(((u8 *) data_020d43f0)[0x586] & 0x10) || !func_02089ec8() || data_020d43f0[0].mUnk_5b8 < 5) {
+            if (!(((u8 *) gSaveData)[0x586] & 0x10) || !func_02089ec8() || gSaveData[0].mUnk_5b8 < 5) {
                 result = FALSE;
             }
             break;
         case 20:
-            if (!(((u8 *) data_020d43f0)[0x586] & 0x80) || !func_02089ec8() || data_020d43f0[0].mUnk_5b8 < 5) {
+            if (!(((u8 *) gSaveData)[0x586] & 0x80) || !func_02089ec8() || gSaveData[0].mUnk_5b8 < 5) {
                 result = FALSE;
             }
             break;
         case 21:
-            if (!(((u8 *) data_020d43f0)[0x587] & 0x8) || !func_02089ec8() || data_020d43f0[0].mUnk_5b8 < 5) {
+            if (!(((u8 *) gSaveData)[0x587] & 0x8) || !func_02089ec8() || gSaveData[0].mUnk_5b8 < 5) {
                 result = FALSE;
             }
             break;
         case 22:
-            if (!(((u8 *) data_020d43f0)[0x587] & 0x2) || !func_02089ec8() || data_020d43f0[0].mUnk_5b8 < 5) {
+            if (!(((u8 *) gSaveData)[0x587] & 0x2) || !func_02089ec8() || gSaveData[0].mUnk_5b8 < 5) {
                 result = FALSE;
             }
             break;
         case 23:
         case 24:
-            if (data_020d43f0[0].mUnk_5b8 < 6 || !func_02089f2c()) {
+            if (gSaveData[0].mUnk_5b8 < 6 || !func_02089f2c()) {
                 result = FALSE;
             }
             break;

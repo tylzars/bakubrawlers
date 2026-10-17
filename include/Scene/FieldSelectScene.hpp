@@ -36,10 +36,10 @@ struct FieldInput {
     /* 09 */ PAD(0x09, 0x0a);
     /* 0a */ u8 mWindowOpen; // SetWindowOpen creates mWindows[1] only for mLocalSlot; other slots just record it
     /* 0b */ u8 mWindowSelection;
-    /* 0c */ u8 mUnk_0c;
+    /* 0c */ u8 mTakenWindowSelection;
     /* 0d */ u8 mPressTimer; // 8 after an accepted mUnk_07 or mKeys & 1 / & 2; drops those while non-zero
     /* 0e */ u8 mUnk_0e;
-    /* 0f */ u8 mUnk_0f;
+    /* 0f */ u8 mRulePageRequested;
     /* 10 */
 };
 
@@ -67,7 +67,7 @@ public:
     /* 100 */ MessageWindow *mMessageWindow;
     /* 104 */ CharacterIcons *mPanel[2];
     union {
-        /* 10c */ u8 mUnk_10c[0x40];
+        /* 10c */ u8 mInputBytes[0x40];
         /* 10c */ FieldInput mInput[4];
     };
     /* 14c */ u8 mCharacterLooks[0x20];
@@ -82,7 +82,7 @@ public:
     /* 2ae */ u8 mFieldUnlocked[4][9];
     /* 2d2 */ u8 mCharaNew[0x12];
     /* 2e4 */ u8 mFieldNew[9];
-    /* 2ed */ u8 mPageKinds[7]; // FIELD_SELECT_PAGE_*; set only for ctor argument (mUnk_33a) 0, the only one passed
+    /* 2ed */ u8 mPageKinds[7]; // FIELD_SELECT_PAGE_*; set only for ctor argument (mMode) 0, the only one passed
     /* 2f4 */ MessageFile *mMessages;
     /* 2f8 */ void *mTextBuffer;
     /* 2fc */ void *mGlyphBuffer;
@@ -111,16 +111,16 @@ public:
     // 1 on the CHARA page: Draw then calls mPanel[1]->DrawIcons once; the pair grid and UpdatePage draw mPanel[1]
     // without it
     /* 335 */ u8 mUnk_335;
-    /* 336 */ u8 mUnk_336;
+    /* 336 */ u8 mCharaMarksVisible;
     /* 337 */ u8 mFieldMarksVisible;
     /* 338 */ u8 mPairGridVisible; // set on the PAIR page; picking row 0 of the grid sets mHasPartners 0
     /* 339 */ u8 mNumberMarksVisible; // mCells2[7] frames mInputCount .. row + 1 beside each number row
-    /* 33a */ u8 mUnk_33a;
+    /* 33a */ u8 mMode;
     /* 33b */ u8 mLocalSlot;
     /* 33c */ u8 mUnk_33c;
     /* 33d */ u8 mLocalTaken; // copy of mInput[mLocalSlot].mTaken made only on the CHARA page; SetupPage zeroes it
     /* 33e */ u8 mWindow0ItemCount;
-    /* 33f */ u8 mUnk_33f;
+    /* 33f */ u8 mLocalCursorSlot;
     /* 340 */ u8 mUnk_340;
     /* 341 */ u8 mSavedFieldItem;
     /* 342 */ PAD(0x342, 0x344);
@@ -137,10 +137,10 @@ public:
 
     void func_ov001_02222040();
     BOOL func_ov001_02221c0c();
-    BOOL func_ov001_02221f1c();
-    BOOL func_ov001_02221aa8(u32 unk1);
+    BOOL ExchangeCharacterLooks();
+    BOOL SetMessageTypeAndCheckAll(u32 unk1);
     u32 UpdatePage();
-    void func_ov001_02226cb0();
+    void MarkCharasAndFieldNotNew();
     void func_ov001_02226d74();
     // Runs the window's Draw and Update(0) until its mState is <= 2 or 4, then Reset(-1), no selection, enabled.
     void ResetWindow(SelectWindow *window);
@@ -160,7 +160,7 @@ public:
     BOOL TakeCursorItem(u8 slot);
     BOOL IsCursorItemBlocked(u32 slot);
     BOOL func_ov001_02223914();
-    void func_ov001_02223d70(u32 unk1);
+    void RefreshRuleOptions(u32 unk1);
     void UpdatePairCells();
     // uploads mFiles set sFieldSelectSubFileIndices[idx], or set 9 when neither mLocalSlot nor slot 0 has it unlocked;
     // also sets mCells[4]'s frame index
@@ -177,7 +177,7 @@ public:
     void PrintSlotName(u8 unk1);
     void DrawNames();
     void ClearName(u32 unk1);
-    void func_ov001_02226d18(u32 unk1);
+    void MarkCharaNotNew(u32 unk1);
     void Draw();
     void LoadMessages();
     void LoadNameText();

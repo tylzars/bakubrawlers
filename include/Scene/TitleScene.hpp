@@ -64,7 +64,7 @@ public:
     // 0x11 / 0x13
     void InitSaveWindowDisplay();
     void LoadGraphics();        // 02223e3c
-    void func_ov000_022245e8();
+    void DrawObj03Cell();
     void DrawMenuCells();
     void RefreshMenuAnimations();
     void LoadSystemText();      // 022246c0

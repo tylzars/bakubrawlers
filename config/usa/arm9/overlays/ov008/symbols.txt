@@ -112,7 +112,7 @@ _ZN15MyroomTipsScene12LoadGraphicsEv kind:function(arm,size=0x60c) addr:0x022267
 _ZN15MyroomTipsScene8LoadTextEv kind:function(arm,size=0x1f0) addr:0x02226e00
 _ZN15MyroomTipsScene4DrawEv kind:function(arm,size=0x208) addr:0x02226ff0
 _ZN15MyroomTipsScene19func_ov008_022271f8Ev kind:function(arm,size=0x1f8) addr:0x022271f8
-_ZN15MyroomTipsScene19func_ov008_022273f0Ev kind:function(arm,size=0xb4) addr:0x022273f0
+_ZN15MyroomTipsScene29DrawCategoryCursorAndRowCellsEv kind:function(arm,size=0xb4) addr:0x022273f0
 _ZN15MyroomTipsScene18DrawCategoryCursorEPKhj kind:function(arm,size=0x54) addr:0x022274a4
 _ZN15MyroomTipsScene19func_ov008_022274f8Ev kind:function(arm,size=0x510) addr:0x022274f8
 _ZN15MyroomTipsScene23UpdateCategorySelectionEPKhh kind:function(arm,size=0x3cc) addr:0x02227a08
@@ -134,7 +134,7 @@ sMyroomMenu1StatusTextIndices kind:data(any) addr:0x022286f4 local
 sMyroomMenu2StatusTextIndices kind:data(any) addr:0x022286f8 local
 sMyroomMenu0SelectedAnimIndices kind:data(any) addr:0x022286fc local
 sMyroomMenu0AnimIndices kind:data(any) addr:0x02228704 local
-data_ov008_0222870c kind:data(any) addr:0x0222870c local
+sMyroomMenu0MapExtraAnimIndices kind:data(any) addr:0x0222870c local
 sMyroomMenu0StatusTextIndices kind:data(any) addr:0x02228714 local
 sMyroomMenuEntryPos kind:data(any) addr:0x02228758 local
 data_ov008_02228764 kind:data(any) addr:0x02228764 local
@@ -146,9 +146,9 @@ sMyroomGiftCellAnimPos kind:data(any) addr:0x02228a54 local
 sMyroomGiftTextDimensions kind:data(any) addr:0x02228a56 local
 sMyroomGiftTextUnitSizes kind:data(any) addr:0x02228a5c local
 sMyroomGiftGridUsed kind:data(any) addr:0x02228a64 local
-data_ov008_02228a70 kind:data(any) addr:0x02228a70 local
+sMyroomGiftEmblemOam kind:data(any) addr:0x02228a70 local
 sMyroomGiftLayout kind:data(any) addr:0x02228a7c local
-data_ov008_02228ab8 kind:data(any) addr:0x02228ab8 local
+sMyroomGiftCellsFromItem10 kind:data(any) addr:0x02228ab8 local
 sMyroomGiftWindowItems kind:data(any) addr:0x02228b28 local
 sMyroomRankingRowCellPos kind:data(any) addr:0x02228cb0 local
 sMyroomRankingRowTextPos kind:data(any) addr:0x02228cbc local
@@ -169,7 +169,7 @@ sMyroomShootBakuganKinds kind:data(any) addr:0x02229068 local
 sMyroomShootEffectRotDegrees kind:data(any) addr:0x02229080 local
 sMyroomShootLightData kind:data(any) addr:0x022290a4 local
 sMyroomShootShooterPos kind:data(any) addr:0x022290cc local
-data_ov008_02229114 kind:data(any) addr:0x02229114 local
+sMyroomShootCellsFromItem6 kind:data(any) addr:0x02229114 local
 sMyroomShootWindowItems kind:data(any) addr:0x02229184 local
 sMyroomCharaCockpitCells kind:data(any) addr:0x0222929c local
 sMyroomCharaLineVramOffsets kind:data(any) addr:0x022292b8 local

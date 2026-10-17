@@ -62,7 +62,7 @@ public:
     void Draw();              // 0x02226ff0
     void func_ov008_022271f8();
     // WINDOW_A: DrawCategoryCursor; WINDOW_B: mRowCells[1] on row mRow and mRowCells[0] on the other three rows.
-    void func_ov008_022273f0();
+    void DrawCategoryCursorAndRowCells();
     void DrawCategoryCursor(const u8 *pos, u32 index);
     // Nothing while mEvent runs (both windows disabled). WINDOW_A: category input while mInfo byte 0x02 (mUnk_02 of the
     // .cpp's MyroomTipsSceneInfo) is 0, which is always in this build; picking the current unlocked category (category

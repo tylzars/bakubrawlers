@@ -18,7 +18,7 @@ class TextureFile;
 
 // Results (StopWithResult, GetResult), named for the scene MapScene::SetNextSceneFromEvent requests for each. 0 = no
 // result yet. 8 (command 230, or func_02066814 when gSaveData mUnk_42 reaches 10) stays a literal: MapScene handles
-// it only in its default case, TournamentScene::HandleEventResult sets mUnk_d0 for it.
+// it only in its default case, TournamentScene::HandleEventResult sets mCreditsPending for it.
 #define SCRIPT_RESULT_MYROOM     1 // command 225
 #define SCRIPT_RESULT_STORE      2 // command 226
 #define SCRIPT_RESULT_PARK       3 // command 227

@@ -430,7 +430,7 @@ void MyroomTipsScene::LoadText() {
 void MyroomTipsScene::Draw() {
     SceneContext *context = mContext;
     func_ov008_022271f8();
-    func_ov008_022273f0();
+    DrawCategoryCursorAndRowCells();
     DrawMessage();
     if (mFlags & MYROOM_TIPS_WINDOW_A) {
         mNewCells[0]->Update();
@@ -504,7 +504,7 @@ void MyroomTipsScene::func_ov008_022271f8() {
     mWindowB->Draw();
 }
 
-void MyroomTipsScene::func_ov008_022273f0() {
+void MyroomTipsScene::DrawCategoryCursorAndRowCells() {
     SceneContext *context = mContext;
     if (mFlags & MYROOM_TIPS_WINDOW_A) {
         DrawCategoryCursor(sMyroomTipsCategoryPos[0], TIPS_INFO(context).mCategory);

@@ -18,7 +18,7 @@ struct ShootPoint {
     u8 y;
 };
 
-static const WindowCellRecord data_ov008_02229114[4] = {
+static const WindowCellRecord sMyroomShootCellsFromItem6[4] = {
     {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 0, 0x0, 0, 0, 1, {0, 0, 0, 0}},
     {"Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x5000, 10, 0, 1, {2, 3, 3, 0}},
     {"Game/2D/union_b/union_b_obj_page_nce.bin", 0, 0x8000, 11, 0, 1, {0, 1, 1, 0}},
@@ -283,7 +283,7 @@ void MyroomShootScene::Init() {
         }
     }
     mWindow->SetCells(6, sMyroomShootShooterCells);
-    mWindow->SetCells(4, data_ov008_02229114);
+    mWindow->SetCells(4, sMyroomShootCellsFromItem6);
     ChangeDir("/Game/Myroom/Map/");
     NitroModel *model     = new NitroModel();
     NitroTexture *texture = new NitroTexture("myroom_s.nsbtx");

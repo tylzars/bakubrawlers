@@ -88,8 +88,8 @@ MapScene::MapScene() :
     mPanelVisible      = 0;
     mTextWidth   = 0;
     mUnk_7c      = 0;
-    mUnk_7d      = 0;
-    mUnk_7e      = 0;
+    mSaveWindowPending      = 0;
+    mPopupBits      = 0;
     MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
     mTab = data_020d433c.mMapTab;
     data_020d433c.mLastBattle = 0;
@@ -301,7 +301,7 @@ void MapScene::Update() {
                 CreateMenu();
                 mState = 0xc;
             } else {
-                mUnk_7d = 1;
+                mSaveWindowPending = 1;
                 mNextScene = SCENE_TITLE;
                 mState++;
             }
@@ -331,7 +331,7 @@ void MapScene::Update() {
             }
             break;
         case 19:
-            if (mUnk_7d == 0) {
+            if (mSaveWindowPending == 0) {
                 mState = 0x17;
                 break;
             }
@@ -777,7 +777,7 @@ void MapScene::DrawPopup() {
     mPageVisible = 1;
     switch (mTab) {
         case MAP_TAB_MYROOM:
-            if (mUnk_7e_0) {
+            if (mMyroomPopupVisible) {
                 SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mPopupTextX, (s16) mPopupTextY, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
@@ -786,7 +786,7 @@ void MapScene::DrawPopup() {
             }
             break;
         case MAP_TAB_STORE:
-            if (mUnk_7e_1) {
+            if (mStorePopupVisible) {
                 SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mPopupTextX, (s16) mPopupTextY, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
@@ -794,7 +794,7 @@ void MapScene::DrawPopup() {
             }
             break;
         case MAP_TAB_PARK:
-            if (mUnk_7e_2) {
+            if (mParkPopupVisible) {
                 SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mPopupTextX, (s16) mPopupTextY, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
@@ -802,7 +802,7 @@ void MapScene::DrawPopup() {
             }
             break;
         case MAP_TAB_TOURNAMENT:
-            if (mUnk_7e_3) {
+            if (mTournamentPopupVisible) {
                 SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mPopupTextX, (s16) mPopupTextY, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
@@ -853,7 +853,7 @@ void MapScene::DrawPage() {
 }
 
 void MapScene::ShowTabInfo(u32 index) {
-    mUnk_7e = 0;
+    mPopupBits = 0;
     switch (index) {
         case MAP_TAB_MYROOM:
             if (data_020d48f0.mRank == data_020d48f0.mPrevRank) {
@@ -863,14 +863,14 @@ void MapScene::ShowTabInfo(u32 index) {
             ShowNumbers();
             data_020d48f0.mPrevRank = data_020d48f0.mRank;
             TextManager::Get().mUse4bppFont = 0;
-            mUnk_7e_0 = 1;
+            mMyroomPopupVisible = 1;
             break;
         case MAP_TAB_STORE:
             if (gSaveData[0].mUnk_5b9_0 == 0) {
                 return;
             }
             ShowText(2, 0x20);
-            mUnk_7e |= 2;
+            mPopupBits |= 2;
             break;
         case MAP_TAB_PARK:
             RefreshParkSlotProgressEntryFlag();
@@ -878,11 +878,11 @@ void MapScene::ShowTabInfo(u32 index) {
                 return;
             }
             ShowText(0x11, 0x20);
-            mUnk_7e |= 4;
+            mPopupBits |= 4;
             break;
         case MAP_TAB_TOURNAMENT:
             if (ShowCurrent()) {
-                mUnk_7e |= 8;
+                mPopupBits |= 8;
             }
             break;
     }

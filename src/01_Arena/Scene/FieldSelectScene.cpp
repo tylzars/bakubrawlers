@@ -199,21 +199,21 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     mLocalIsFirstSlot = 0;
     mPlayerRowsVisible = 0;
     mUnk_335 = 0;
-    mUnk_336 = 0;
+    mCharaMarksVisible = 0;
     mFieldMarksVisible = 0;
     mPairGridVisible = 0;
     mNumberMarksVisible = 0;
-    mUnk_33a = unk1;
+    mMode = unk1;
     mLocalSlot = 0;
     mLocalTaken = 0;
     mWindow0ItemCount = 2;
-    mUnk_33f = 0;
+    mLocalCursorSlot = 0;
     mUnk_340 = 0;
     mSavedFieldItem = 0;
     mPendingSubPlanes = -1;
     mMessageEnabled = 1;
     data_020d433c.mAntenna = NULL;
-    MI_CpuFill8(mUnk_10c, 0, sizeof(mUnk_10c));
+    MI_CpuFill8(mInputBytes, 0, sizeof(mInputBytes));
     MI_CpuClearFast(mCharacterLooks, sizeof(mCharacterLooks));
     MI_CpuFill8(&mMain, 0, sizeof(mMain));
     MI_CpuFill8(mCells, 0, sizeof(mCells));
@@ -288,7 +288,7 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     }
     mUnk_25c[1] = 3;
     u8 n = 0;
-    if (mUnk_33a == 0) {
+    if (mMode == 0) {
         WirelessManager::Get();
         if (IsWirelessMode(mode)) {
             n++;
@@ -422,7 +422,7 @@ void FieldSelectScene::Update() {
             }
             break;
         case 3:
-            if (func_ov001_02221f1c()) {
+            if (ExchangeCharacterLooks()) {
                 mState++;
             }
             break;
@@ -430,7 +430,7 @@ void FieldSelectScene::Update() {
             MATHRandContext32 *ctx = &gRandom;
             ctx->x                 = ctx->mul * ctx->x + ctx->add;
             data_0220f540.mUnk_04  = (u32) (ctx->x >> 32);
-            if (func_ov001_02221aa8(2)) {
+            if (SetMessageTypeAndCheckAll(2)) {
                 u8 *p = WirelessManager::Get().GetRecvBlock(0);
                 if (p != NULL) {
                     SeedRandom(*(u32 *) (p + 4));
@@ -447,7 +447,7 @@ void FieldSelectScene::Update() {
                 mState++;
             } else {
                 if (r == 1) {
-                    func_ov001_02226cb0();
+                    MarkCharasAndFieldNotNew();
                     func_ov001_02226d74();
                 }
                 mState = 8;
@@ -619,7 +619,7 @@ void FieldSelectScene::SetupPage() {
     }
     mPlayerRowsVisible = 0;
     mUnk_335 = 0;
-    mUnk_336 = 0;
+    mCharaMarksVisible = 0;
     mFieldMarksVisible = 0;
     mPairGridVisible = 0;
     mNumberMarksVisible = 0;
@@ -639,7 +639,7 @@ void FieldSelectScene::SetupPage() {
     for (u8 i = 0; i < 4; i++) {
         mInput[i].mWindowOpen = 0;
     }
-    mUnk_33f = mLocalSlot;
+    mLocalCursorSlot = mLocalSlot;
     mUnk_340 = 0;
     mBlendTimer = 0;
     u8 i;
@@ -775,7 +775,7 @@ void FieldSelectScene::SetupPage() {
                 mCells[3].mCellAnim->SetAnimation(3);
                 mCells[4].mCellAnim->SetAnimation(4);
             }
-            func_ov001_02223d70(0);
+            RefreshRuleOptions(0);
             break;
         }
         case FIELD_SELECT_PAGE_CHARA: {
@@ -885,7 +885,7 @@ void FieldSelectScene::SetupPage() {
             mPanel[1]->SetDrawArgs(0, px + 6, py + 3, 1);
             mPlayerRowsVisible = 1;
             mUnk_335 = 1;
-            mUnk_336 = 1;
+            mCharaMarksVisible = 1;
             mBlendTimer = 0x10;
             mWindows[2] = new SelectWindow(1, sFieldSelectWindow2Items, 0);
             mWindows[2]->SetCells(1, sFieldSelectWindow2Cells);
@@ -1072,7 +1072,7 @@ void FieldSelectScene::SetupPage() {
     ChangeDir("/");
 }
 
-BOOL FieldSelectScene::func_ov001_02221aa8(u32 unk1) {
+BOOL FieldSelectScene::SetMessageTypeAndCheckAll(u32 unk1) {
     WirelessManager::Get();
     if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
         return TRUE;
@@ -1096,7 +1096,7 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
     MI_CpuCopy8(gUnlockedFieldBits, (u8 *) &data_0220f540 + 0xd, 1);
     data_0220f540.mUnk_0e = gSaveData[0].mRules;
     data_0220f540.mUnk_0f = gSaveData[0].mUnk_5bf_0;
-    if (func_ov001_02221aa8(0x17)) {
+    if (SetMessageTypeAndCheckAll(0x17)) {
         u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 i      = 0;
         do {
@@ -1168,9 +1168,9 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
     return FALSE;
 }
 
-BOOL FieldSelectScene::func_ov001_02221f1c() {
+BOOL FieldSelectScene::ExchangeCharacterLooks() {
     MIi_CpuCopyFast(gCharacterLook, (u8 *) &data_0220f540 + 4, 8);
-    if (func_ov001_02221aa8(6)) {
+    if (SetMessageTypeAndCheckAll(6)) {
         u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 i      = 0;
         do {
@@ -1231,7 +1231,7 @@ void FieldSelectScene::func_ov001_02222040() {
                     mInput[i].mUnk_07   = p[9];
                     mInput[i].mWindowSelection   = p[0xb];
                     mInput[i].mUnk_0e   = p[0xc];
-                    mInput[i].mUnk_0f   = p[0xd];
+                    mInput[i].mRulePageRequested   = p[0xd];
                 } else {
                     mInput[i].mReleased = 0;
                     mInput[i].mTouchX   = 0;
@@ -1240,7 +1240,7 @@ void FieldSelectScene::func_ov001_02222040() {
                     mInput[i].mUnk_07   = 0;
                     mInput[i].mWindowSelection   = 0;
                     mInput[i].mUnk_0e   = 0;
-                    mInput[i].mUnk_0f   = 0;
+                    mInput[i].mRulePageRequested   = 0;
                 }
             }
             i++;
@@ -1260,7 +1260,7 @@ void FieldSelectScene::func_ov001_02222040() {
         mInput[0].mKeys     = InputManager::Get().IsTrigger(KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT) | InputManager::Get().IsPressed(3);
         mInput[0].mUnk_07   = 0;
         mInput[0].mUnk_0e   = 0;
-        mInput[0].mUnk_0f   = 0;
+        mInput[0].mRulePageRequested   = 0;
     }
     if ((mState == 5) & (mBlendStep == 0)) {
         if (mLocalTaken != 0 && mInput[mLocalSlot].mWindowOpen == 0) {
@@ -1373,7 +1373,7 @@ void FieldSelectScene::func_ov001_02222040() {
                                 if (IsWirelessMode(mode)) {
                                     NET_BYTE(13) = 1;
                                 } else {
-                                    mInput[0].mUnk_0f = 1;
+                                    mInput[0].mRulePageRequested = 1;
                                 }
                             }
                             ResetWindow(mWindows[3]);
@@ -1814,7 +1814,7 @@ BOOL FieldSelectScene::func_ov001_02223914() {
     return FALSE;
 }
 
-void FieldSelectScene::func_ov001_02223d70(u32 unk1) {
+void FieldSelectScene::RefreshRuleOptions(u32 unk1) {
     u8 v    = mInput[0].mCursorItem;
     u8 mode = mUnk_25c[0];
     if (v == 0 && unk1 != 0) {
@@ -2006,7 +2006,7 @@ u32 FieldSelectScene::UpdateRulePage() {
         }
         if (changed) {
             SetCursorItem(0, idx, 1);
-            func_ov001_02223d70(prev || next);
+            RefreshRuleOptions(prev || next);
         }
     }
     return result;
@@ -2020,7 +2020,7 @@ u32 FieldSelectScene::UpdateCharaPage() {
     } else {
         u8 numOpen = 0;
         BOOL flagB   = 0;
-        mUnk_33f   = 4;
+        mLocalCursorSlot   = 4;
         u8 i       = 0;
         do {
             u8 owner;
@@ -2036,7 +2036,7 @@ u32 FieldSelectScene::UpdateCharaPage() {
                         u16 keys = mInput[0].mKeys;
                         if (keys & 1) {
                             event = 1;
-                            mInput[mUnk_33c].mUnk_0c = mInput[0].mWindowSelection;
+                            mInput[mUnk_33c].mTakenWindowSelection = mInput[0].mWindowSelection;
                         } else if (keys & 2) {
                             mInput[mUnk_33c].mTaken = 0;
                             event                    = 1;
@@ -2062,7 +2062,7 @@ u32 FieldSelectScene::UpdateCharaPage() {
                     u8 fired = 0;
                     if (keys & 1) {
                         fired                = 1;
-                        mInput[i].mUnk_0c = mInput[i].mWindowSelection;
+                        mInput[i].mTakenWindowSelection = mInput[i].mWindowSelection;
                     } else if (keys & 2) {
                         mInput[i].mTaken = 0;
                         fired             = 1;
@@ -2129,7 +2129,7 @@ u32 FieldSelectScene::UpdateCharaPage() {
                 flagB = 1;
             }
             if (owner == mLocalSlot) {
-                mUnk_33f = i;
+                mLocalCursorSlot = i;
             }
             if (event != 0) {
                 if (TakeCursorItem(i)) {
@@ -2177,7 +2177,7 @@ u32 FieldSelectScene::UpdateCharaPage() {
                 if ((data_020d433c.mCharacterIds[j] = sIdItems.ids[mInput[j].mCursorItem]) == 0x15) {
                     data_020d433c.mUnk_a3[j] = 0;
                 } else {
-                    data_020d433c.mUnk_a3[j] = mInput[j].mUnk_0c;
+                    data_020d433c.mUnk_a3[j] = mInput[j].mTakenWindowSelection;
                 }
                 j++;
             } while (j < numDone);
@@ -2335,7 +2335,7 @@ u32 FieldSelectScene::UpdateFieldPage() {
             result                = 1;
             mShowRulePage              = 0;
         }
-        if (mInput[0].mUnk_0f != 0) {
+        if (mInput[0].mRulePageRequested != 0) {
             mSavedFieldItem = mInput[0].mCursorItem;
             result   = 1;
             mShowRulePage = 1;
@@ -2557,22 +2557,22 @@ void FieldSelectScene::Draw() {
                 if (mInputCount <= i) {
                     if (mUnk_33c > i) {
                         if (mInput[i].mTaken != 0) {
-                            sel = (s8) mInput[i].mUnk_0c;
+                            sel = (s8) mInput[i].mTakenWindowSelection;
                         }
                     } else if (mUnk_33c == i && mInput[0].mWindowOpen == 0) {
                         if (mInput[i].mTaken != 0) {
-                            sel = (s8) mInput[i].mUnk_0c;
+                            sel = (s8) mInput[i].mTakenWindowSelection;
                         }
                     }
                 } else {
                     if (mInput[i].mWindowOpen == 0) {
                         if (mInput[i].mTaken != 0) {
-                            sel = (s8) mInput[i].mUnk_0c;
+                            sel = (s8) mInput[i].mTakenWindowSelection;
                         }
                     }
                     if (i == 0) {
                         if (mUnk_33c != 0 && mInput[i].mTaken != 0) {
-                            sel = (s8) mInput[i].mUnk_0c;
+                            sel = (s8) mInput[i].mTakenWindowSelection;
                         }
                     }
                 }
@@ -2593,8 +2593,8 @@ void FieldSelectScene::Draw() {
         } while (i < mPlayerCount);
         mPanel[0]->DrawIcons();
     }
-    if (mUnk_336 != 0) {
-        u8 slot = mUnk_33f;
+    if (mCharaMarksVisible != 0) {
+        u8 slot = mLocalCursorSlot;
         if (slot < 4) {
             if (mInputCount <= slot) {
                 mCells2[7].mCellAnim->SetAnimation(0xb);
@@ -2679,8 +2679,8 @@ void FieldSelectScene::Draw() {
         }
         n++;
     } while (n < 9);
-    if (mUnk_336 != 0) {
-        u8 s = mUnk_33f;
+    if (mCharaMarksVisible != 0) {
+        u8 s = mLocalCursorSlot;
         if (s < 4) {
             if (mCells2[s].mVisible != 0) {
                 if (mCells2[s].mUpdateAnim != 0) {
@@ -2712,7 +2712,7 @@ void FieldSelectScene::Draw() {
             k++;
         } while (k < 9);
     }
-    if (mUnk_336 == 0) {
+    if (mCharaMarksVisible == 0) {
         return;
     }
     u8 f = 0;
@@ -2723,8 +2723,8 @@ void FieldSelectScene::Draw() {
             mCells2[4].mCellAnim->Draw(1, x, (s16) (y - 4), mCells2[4].mUnk_09);
         } else if (mCharaNew[f] != 0) {
             u32 show = 1;
-            if (mUnk_33f < 4) {
-                if (f == mInput[mUnk_33f].mCursorItem) {
+            if (mLocalCursorSlot < 4) {
+                if (f == mInput[mLocalCursorSlot].mCursorItem) {
                     show = 0;
                 }
             }
@@ -2871,16 +2871,16 @@ void FieldSelectScene::ResetWindow(SelectWindow *window) {
     window->mEnabled            = 1;
 }
 
-void FieldSelectScene::func_ov001_02226cb0() {
+void FieldSelectScene::MarkCharasAndFieldNotNew() {
     u8 i = 0;
     do {
-        func_ov001_02226d18(data_020d433c.mCharacterIds[i]);
+        MarkCharaNotNew(data_020d433c.mCharacterIds[i]);
         i++;
     } while (i < mPlayerCount);
     SetFlagBit(data_020d4969, data_020d433c.mFieldId);
 }
 
-void FieldSelectScene::func_ov001_02226d18(u32 index) {
+void FieldSelectScene::MarkCharaNotNew(u32 index) {
     if (index < 0x15) {
         SetFlagBit(data_020d4973, index);
     }

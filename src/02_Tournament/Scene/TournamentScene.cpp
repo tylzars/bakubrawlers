@@ -119,7 +119,7 @@ TournamentScene::TournamentScene() :
     mMoveY = 0;
     mMoveDistanceX = 0;
     mMoveDistanceY = 0;
-    mUnk_ac = 0;
+    mMainTextEndY = 0;
     mMainTextTimer = 0;
     mState = 0;
     mMode = 0;
@@ -128,9 +128,9 @@ TournamentScene::TournamentScene() :
     mMainScreenVisible = 0;
     mCellsBVisible = 0;
     mWindowOpen = 0;
-    mUnk_b9 = 0;
+    mLoadModeMenuVisible = 0;
     mLastIndex = 0;
-    mUnk_be = 0;
+    mBattlePending = 0;
     mBattleStep = 0;
     mBrightness = 0;
     mUnk_c1 = 0;
@@ -139,10 +139,10 @@ TournamentScene::TournamentScene() :
     mOtherItemState = 0;
     mUnk_ce = 0;
     mMoveFrames = 0;
-    mUnk_d0 = 0;
+    mCreditsPending = 0;
     mTextRows = 2;
     mUnk_d2 = 0;
-    mUnk_d3 = 1;
+    mChannelStartPending = 1;
     mNextBgLayer = 0;
     mBlend = 0;
     mMainTextPage = 0;
@@ -256,7 +256,7 @@ void TournamentScene::Update() {
             break;
         case 3:
             if (!mEvent->IsRunning()) {
-                mUnk_d3 = 1;
+                mChannelStartPending = 1;
                 SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 if (gSaveData[0].mUnk_42 == 10) {
                     if (mEvent != NULL) {
@@ -285,7 +285,7 @@ void TournamentScene::Update() {
                 break;
             }
             if (HandleEventResult()) {
-                if (mUnk_d0 != 0) {
+                if (mCreditsPending != 0) {
                     SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     mState = 0xc;
                 } else {
@@ -332,7 +332,7 @@ void TournamentScene::Update() {
                     mState = 0x19;
                     break;
                 }
-                mUnk_be = 0;
+                mBattlePending = 0;
                 mState = 0x29;
             } else {
                 SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
@@ -394,8 +394,8 @@ void TournamentScene::Update() {
                 }
                 mState++;
             }
-            if (mUnk_d3 != 0) {
-                mUnk_d3 = 0;
+            if (mChannelStartPending != 0) {
+                mChannelStartPending = 0;
                 FrameTask::Get().StartChannel(0, 0x15);
             }
             break;
@@ -426,7 +426,7 @@ void TournamentScene::Update() {
                 mEvent->RequestFinish();
                 mEvent = NULL;
             }
-            mUnk_b9 = 0;
+            mLoadModeMenuVisible = 0;
             LoadMainGraphics(TRUE, TRUE);
             ReloadMenu();
             LoadWindow("/font/mes_tornament.mes", 0);
@@ -515,7 +515,7 @@ void TournamentScene::Update() {
                 break;
             }
             mLoadMenuVisible = 0;
-            mUnk_b9 = 0;
+            mLoadModeMenuVisible = 0;
             mMainScreenVisible = 0;
             mCellsBVisible = 0;
             mWindowOpen = 0;
@@ -537,13 +537,13 @@ void TournamentScene::Update() {
             switch (mSelection) {
                 case 0:
                     go      = TRUE;
-                    mUnk_be = 1;
+                    mBattlePending = 1;
                     break;
                 case 1:
                     new TournamentSubScene();
                     break;
                 case 5:
-                    mUnk_be = 0;
+                    mBattlePending = 0;
                     go      = TRUE;
                     break;
             }
@@ -575,7 +575,7 @@ void TournamentScene::Update() {
                 break;
             }
             mMode   = 0;
-            mUnk_b9 = 1;
+            mLoadModeMenuVisible = 1;
             LoadMainGraphics(FALSE, FALSE);
             LoadModeMenu();
             LoadWindow("/font/mes_tornament.mes", 2);
@@ -584,8 +584,8 @@ void TournamentScene::Update() {
             PrintSubScreenText(sModeTables[0][mMode]);
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState = 0x1f;
-            if (mUnk_d3 != 0) {
-                mUnk_d3 = 0;
+            if (mChannelStartPending != 0) {
+                mChannelStartPending = 0;
                 FrameTask::Get().StartChannel(0, 0x15);
             }
             break;
@@ -650,7 +650,7 @@ void TournamentScene::Update() {
                 mUnk_a0 = 0x100;
                 u8 sel  = mSelection;
                 mMode   = sel;
-                if (mUnk_b9 != 0) {
+                if (mLoadModeMenuVisible != 0) {
                     if (sel == 1) {
                         sel = 0xd;
                     }
@@ -694,7 +694,7 @@ void TournamentScene::Update() {
             gSaveData[0].mUnk_25 = MATH_Rand32(&gRandom, 5);
             mSelection = 0;
             mLoadMenuVisible    = 0;
-            mUnk_b9    = 0;
+            mLoadModeMenuVisible    = 0;
             mMainScreenVisible    = 0;
             mCellsBVisible    = 0;
             mWindowOpen    = 0;
@@ -735,11 +735,11 @@ void TournamentScene::Update() {
             mMainScreenVisible                  = 0;
             mCellsBVisible                  = 0;
             mWindowOpen                  = 0;
-            mUnk_b9                  = 0;
+            mLoadModeMenuVisible                  = 0;
             mState                  = 0x1d;
             break;
         case 41:
-            if (mUnk_be != 0) {
+            if (mBattlePending != 0) {
                 data_020d433c.mNextScene   = SCENE_TOURNAMENT;
                 data_020d433c.mRules   = 0x11;
                 data_020d433c.mMicEnabled = gSaveData[0].mMicEnabled;
@@ -774,7 +774,7 @@ void TournamentScene::Update() {
                 mFinished = TRUE;
                 return;
             }
-            if (mUnk_d0 != 0) {
+            if (mCreditsPending != 0) {
                 data_020d433c.mCreditsRequested = 1;
                 RequestScene(SCENE_TITLE);
                 mFinished = TRUE;
@@ -874,7 +874,7 @@ void TournamentScene::LoadMainGraphics(BOOL a, BOOL b) {
     mCellAnimsA[0]            = new CellAnimation("tournament_u_obj_01_nce.bin", mMode, 1, 1);
     mCellAnimsA[0]->mCharBase = screen.GetCharBase(0x10000);
     mCellAnimsA[0]->mPaletteBase   = 1;
-    if (mUnk_b9 != 0 && mMode == 1) {
+    if (mLoadModeMenuVisible != 0 && mMode == 1) {
         mCellAnimsA[0]->SetAnimation(0xd);
     }
     delete mCellAnimsA[1];
@@ -1083,7 +1083,7 @@ void TournamentScene::Draw() {
         if (mWindowOpen == 0) {
             mMessageWindow->Update();
         }
-    } else if (mUnk_b9 != 0) {
+    } else if (mLoadModeMenuVisible != 0) {
         mMenuWindow->Draw();
         if (mWindowOpen == 0) {
             mMessageWindow->Update();
@@ -1091,7 +1091,7 @@ void TournamentScene::Draw() {
         mCell20->Update();
         mCell20->Draw(1, sTournamentModeMenuItems[mMode].mX, sTournamentModeMenuItems[mMode].mY, 2);
     }
-    if (mLoadMenuVisible | mUnk_b9) {
+    if (mLoadMenuVisible | mLoadModeMenuVisible) {
         s16 a = 0x90;
         u8 b  = 8;
         if (mTextRows > 2) {
@@ -1126,7 +1126,7 @@ void TournamentScene::Draw() {
             mObj38->DrawIcons();
         }
         u8 k = 0;
-        if (mUnk_b9 != 0) {
+        if (mLoadModeMenuVisible != 0) {
             do {
                 mCellAnimsA[3]->Draw(0, (s16) (mUnk_a0 + sTournamentCharacterPos[mMode][k].x), sTournamentCharacterPos[mMode][k].y, 1);
                 k++;
@@ -1176,7 +1176,7 @@ void TournamentScene::Draw() {
         }
         u8 row;
         int base = 0x93;
-        if (mUnk_ac < 0x23) {
+        if (mMainTextEndY < 0x23) {
             base = 0x96;
         }
         for (row = 0; row < 3; row++) {
@@ -1280,7 +1280,7 @@ BOOL TournamentScene::HandleEventResult() {
                 mSelection = 0;
                 break;
             case 8:
-                mUnk_d0    = 1;
+                mCreditsPending    = 1;
                 mSelection = 5;
                 break;
             default:
@@ -1439,12 +1439,12 @@ void TournamentScene::SetupMainScreenText(u8 index) {
 void TournamentScene::PrintMainScreenText(u32 index) {
     s16 height2;
     s16 width2;
-    s16 height1;
     s16 width1;
+    s16 height1;
     ClearMainScreenText();
     TextManager &text = TextManager::Get();
-    width1            = -(mMainTextPage * 0x30);
-    height1           = 0;
+    height1            = -(mMainTextPage * 0x30);
+    width1           = 0;
     MessageFile *file = mMessages[2];
     u16 length = file->GetLength(index);
     const u8 *message = file->GetText(index);
@@ -1454,10 +1454,10 @@ void TournamentScene::PrintMainScreenText(u32 index) {
         half = length / 2;
     }
     text.mLineStartCount = 0x10;
-    text.Print(message, half * 2, buffer, 0x1c, 6, &height1, &width1, 0, 0, 2, 0x21, 0x10, 0, 0, 0,
+    text.Print(message, half * 2, buffer, 0x1c, 6, &width1, &height1, 0, 0, 2, 0x21, 0x10, 0, 0, 0,
                1, 1);
-    if (&mUnk_ac != NULL) {
-        mUnk_ac = width1;
+    if (&mMainTextEndY != NULL) {
+        mMainTextEndY = height1;
     }
     QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, UPLOAD_KIND_OBJ, 0x1d000, mTextBuffers[2], mTextBufferSizes[2], 0);
     height2 = 0;

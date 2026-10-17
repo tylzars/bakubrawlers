@@ -62,14 +62,14 @@ public:
     /* 79 */ u8 mPanelVisible; // non-zero: Update draws only DrawPanelWindow (no popup, page or money)
     /* 7a */ u16 mTextWidth;
     /* 7c */ u8 mUnk_7c;
-    /* 7d */ u8 mUnk_7d;
+    /* 7d */ u8 mSaveWindowPending;
     union {
-        /* 7e */ u8 mUnk_7e;
+        /* 7e */ u8 mPopupBits;
         struct {
-            /* 7e */ u8 mUnk_7e_0 : 1;
-            /* 7e */ u8 mUnk_7e_1 : 1;
-            /* 7e */ u8 mUnk_7e_2 : 1;
-            /* 7e */ u8 mUnk_7e_3 : 1;
+            /* 7e */ u8 mMyroomPopupVisible : 1;
+            /* 7e */ u8 mStorePopupVisible : 1;
+            /* 7e */ u8 mParkPopupVisible : 1;
+            /* 7e */ u8 mTournamentPopupVisible : 1;
             /* 7e */ u8 mUnk_7e_4 : 4;
         };
     };
@@ -102,7 +102,7 @@ public:
     void DrawPopup();                 // 0221b824
     void DrawMoney();                 // 0221bc28
     void DrawPage();
-    // Clears mUnk_7e; when the tab's condition holds, prints its info and sets the mUnk_7e bit DrawPopup tests. MYROOM
+    // Clears mPopupBits; when the tab's condition holds, prints its info and sets the mPopupBits bit DrawPopup tests. MYROOM
     // only when data_020d48f0.mRank differs from mPrevRank (then copies it); PARK calls RefreshParkSlotProgressEntryFlag first.
     void ShowTabInfo(u32 index);
     void ShowNumbers();               // 0221bf60

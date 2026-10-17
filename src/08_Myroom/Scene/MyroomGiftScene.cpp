@@ -36,9 +36,9 @@ const u32 sMyroomGiftTextUnitSizes[2] = {0x44, 0x21};
 
 const u8 sMyroomGiftGridUsed[3][4] = {{0x01, 0x01, 0x01, 0x01}, {0x01, 0x01, 0x01, 0x01}, {0x01, 0x01, 0x00, 0x00}};
 
-const u8 data_ov008_02228a70[3][4] = {{0, 0x20, 0, 0x80}, {0, 0, 0, 0}, {0, 0, 0, 0}};
+const u8 sMyroomGiftEmblemOam[3][4] = {{0, 0x20, 0, 0x80}, {0, 0, 0, 0}, {0, 0, 0, 0}};
 
-const WindowCellRecord data_ov008_02228ab8[4] = {
+const WindowCellRecord sMyroomGiftCellsFromItem10[4] = {
     {"Game/Myroom/myroom_gift_b_obj_nce.bin", 10, 0, 0, 0, 1, {10, 10, 10, 0}},
     {"Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 16384, 13, 0, 1, {2, 3, 3, 0}},
     {"Game/2D/union_b/union_b_obj_page_nce.bin", 0, 28672, 14, 0, 1, {0, 1, 1, 0}},
@@ -257,7 +257,7 @@ void MyroomGiftScene::LoadGraphics() {
         }
     }
     mWindow->SetCells(10, sMyroomGiftEmblemCells);
-    mWindow->SetCells(4, data_ov008_02228ab8);
+    mWindow->SetCells(4, sMyroomGiftCellsFromItem10);
     ChangeDir("/font/");
     if (mMessages == NULL) {
         mMessages = (MessageFile *) LoadFile("mes_myroom.mes", 0, 0, 0, 0, 0);
@@ -326,7 +326,7 @@ void MyroomGiftScene::DrawMainScreen() {
         int y = i * 32 + 0x24;
         j     = 0;
         do {
-            SpriteManager::Get().Screen(0).AddOam((void *) data_ov008_02228a70, 1, j * 32 + 0xe, y, 0, (u16) (i * 0x18 + j * 8), 0, 0);
+            SpriteManager::Get().Screen(0).AddOam((void *) sMyroomGiftEmblemOam, 1, j * 32 + 0xe, y, 0, (u16) (i * 0x18 + j * 8), 0, 0);
             j++;
         } while (j < 3);
         i++;

@@ -82,7 +82,7 @@ static const WindowItemRecord sMyroomMenu0Items[8] = {
 static const u8 sMyroomMenu1StatusTextIndices[3] = {0x34, 0x36, 0x37};
 extern const s16 data_ov008_02228728[2][3] = {{118, -52, -619}, {31, -64, -669}};
 static const u8 sMyroomMenu0SelectedAnimIndices[5] = {0x2, 0x5, 0x8, 0xb, 0xe};
-static const u8 data_ov008_0222870c[5] = {0x4, 0x5, 0x2, 0x1, 0x3};
+static const u8 sMyroomMenu0MapExtraAnimIndices[5] = {0x4, 0x5, 0x2, 0x1, 0x3};
 static const u8 sMyroomMenu0AnimIndices[5] = {0x1, 0x4, 0x7, 0xa, 0xd};
 static const u8 data_ov008_02228764[3][8] = {
     {3, 6, 8, 10, 4}, {5, 14, 11}, {13, 12, 15},
@@ -218,7 +218,7 @@ void MyroomScene::Update() {
             }
             switch (MYROOM_INFO(ctx).mPage) {
                 case 0:
-                    mEvent->SetMapExtraAnim(data_ov008_0222870c[(s8) ctx->mInfo.mUnk_06]);
+                    mEvent->SetMapExtraAnim(sMyroomMenu0MapExtraAnimIndices[(s8) ctx->mInfo.mUnk_06]);
                     break;
                 case 1:
                     mEvent->SetMapExtraAnim(4);
@@ -873,7 +873,7 @@ BOOL MyroomScene::UpdateScroll() {
         ctx->mInfo.mUnk_06                   = ctx->mInfo.mUnk_0a;
         mEvent->func_0206f564(data_ov008_02228764[MYROOM_INFO(ctx).mPage][(s8) ctx->mInfo.mUnk_06], 0xa, -1);
         if (MYROOM_INFO(ctx).mPage == 0) {
-            mEvent->SetMapExtraAnim(data_ov008_0222870c[(s8) ctx->mInfo.mUnk_06]);
+            mEvent->SetMapExtraAnim(sMyroomMenu0MapExtraAnimIndices[(s8) ctx->mInfo.mUnk_06]);
         }
         if ((s8) ctx->mInfo.mUnk_06 != 0) {
             window->mButtons[6].mEnabled = 1;

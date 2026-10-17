@@ -250,7 +250,7 @@ void TitleScene::Update() {
             }
             break;
         case 6:
-            func_ov000_022245e8();
+            DrawObj03Cell();
             mUnk_c8++;
             if (mUnk_c8 > 0xe10) {
                 mUnk_c8 = 0;
@@ -263,7 +263,7 @@ void TitleScene::Update() {
             }
             break;
         case 7:
-            func_ov000_022245e8();
+            DrawObj03Cell();
             if (IsFadeDone(0)) {
                 SetPlaneBlend(0);
                 SpriteManager::Get().StartFade(FADE_MODE_DOWN);
@@ -884,7 +884,7 @@ void TitleScene::LoadGraphics() {
     mMessageWindow->SetWidth(0xd8);
 }
 
-void TitleScene::func_ov000_022245e8() {
+void TitleScene::DrawObj03Cell() {
     mCellAnims[0]->Update();
     mCellAnims[0]->Draw(1, 0x80, 0x60, 0);
 }

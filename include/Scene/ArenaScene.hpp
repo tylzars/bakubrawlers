@@ -57,9 +57,9 @@ public:
     /* b1 */ u8 mSelection;
     /* b2 */ u8 mSubMenuMode;
     // set by StopWirelessAndReset; while set and the wireless state byte (data_020c4258) is non-zero, Update returns
-    // after its send step, drawing only the message (with mUnk_b4); cleared once that byte is 0
+    // after its send step, drawing only the message (with mStoppingMessageVisible); cleared once that byte is 0
     /* b3 */ u8 mWirelessStopping;
-    /* b4 */ u8 mUnk_b4;
+    /* b4 */ u8 mStoppingMessageVisible;
     /* b5 */ u8 mRequest;
     /* b6 */ u8 mUnk_b6;
     /* b7 */
@@ -97,7 +97,7 @@ public:
     void PrintNames();
     void DrawNames();
     void ResetNames();
-    u32 func_ov001_0221c614(u32 unk1);
+    u32 SetMessageTypeAndCheckAll(u32 unk1);
     void LoadMessages();
     void PrintMessage(u32 unk1);
     void DrawMessage();

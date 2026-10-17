@@ -38,23 +38,23 @@ public:
     /* a6 */ s16 mMoveY;
     /* a8 */ s16 mMoveDistanceX;
     /* aa */ s16 mMoveDistanceY;
-    /* ac */ u16 mUnk_ac;
+    /* ac */ u16 mMainTextEndY;
     /* ae */ s16 mMainTextTimer;
     /* b0 */ u8 mState;
     /* b1 */ u8 mTimer;
     /* b2 */ u8 mMode;
     /* b3 */ u8 mSelection;
     /* b4 */ PAD(0xb4, 0xb5);
-    /* b5 */ u8 mLoadMenuVisible; // draws mMenuWindow for the LoadMenu page; mUnk_b9 does so for the LoadModeMenu page
+    /* b5 */ u8 mLoadMenuVisible; // draws mMenuWindow for the LoadMenu page; mLoadModeMenuVisible does so for the LoadModeMenu page
     /* b6 */ u8 mMainScreenVisible;
     /* b7 */ u8 mCellsBVisible; // mCellAnimsB are drawn only while this and mMainScreenVisible are both set
     /* b8 */ u8 mWindowOpen;
-    /* b9 */ u8 mUnk_b9;
+    /* b9 */ u8 mLoadModeMenuVisible;
     /* ba */ u8 mLastIndex;
     /* bb */ u8 mNewSelection;
     /* bc */ u8 mDirection;
     /* bd */ u8 mScrollLeft;
-    /* be */ u8 mUnk_be;
+    /* be */ u8 mBattlePending;
     /* bf */ u8 mBattleStep;
     /* c0 */ s8 mBrightness;
     /* c1 */ u8 mUnk_c1;
@@ -65,10 +65,10 @@ public:
     /* cd */ u8 mOtherItemState;
     /* ce */ u8 mUnk_ce;
     /* cf */ u8 mMoveFrames;
-    /* d0 */ u8 mUnk_d0;
+    /* d0 */ u8 mCreditsPending;
     /* d1 */ u8 mTextRows;
     /* d2 */ u8 mUnk_d2;
-    /* d3 */ u8 mUnk_d3;
+    /* d3 */ u8 mChannelStartPending;
     /* d4 */ u8 mNextBgLayer; // layer StartBgBlend loads into: 0 BG0 kinds, 1 BG1 kinds (then toggled)
     /* d5 */ u8 mBlend;
     /* d6 */ s8 mMainTextPage;

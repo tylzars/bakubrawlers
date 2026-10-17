@@ -102,7 +102,7 @@ ArenaScene::ArenaScene() : SceneBase(1000, 0) {
     mSelection = 0;
     mSubMenuMode = 0;
     mWirelessStopping = 0;
-    mUnk_b4 = 0;
+    mStoppingMessageVisible = 0;
     mRequest = 0;
     data_020d433c.mAntenna = 0;
     MI_CpuClear32(&mMain, sizeof(mMain));
@@ -227,7 +227,7 @@ void ArenaScene::Update() {
     u8 mode = *modePtr;
     if (mWirelessStopping != 0) {
         if (mode != 0) {
-            if (mUnk_b4 == 0) {
+            if (mStoppingMessageVisible == 0) {
                 return;
             }
             DrawMessage();
@@ -237,7 +237,7 @@ void ArenaScene::Update() {
     }
     if (mode == 9) {
         if (mState == 10) {
-            mUnk_b4 = 1;
+            mStoppingMessageVisible = 1;
         }
         StopWirelessAndReset();
         SetSubMenuMode(2);
@@ -538,13 +538,13 @@ void ArenaScene::Update() {
             break;
         }
         case 11:
-            if (func_ov001_0221c614(0xb) != 0) {
+            if (SetMessageTypeAndCheckAll(0xb) != 0) {
                 mState++;
             }
             data_0220f540.mUnk_1f = 1;
             break;
         case 12:
-            if (func_ov001_0221c614(0xc) != 0) {
+            if (SetMessageTypeAndCheckAll(0xc) != 0) {
                 for (u8 i = 0; i < 4; i++) {
                     u8 *p = WirelessManager::Get().GetRecvBlock(i);
                     if (p != NULL) {
@@ -561,7 +561,7 @@ void ArenaScene::Update() {
             break;
         case 13:
             MI_CpuCopy8(data_020d43eb, (u8 *) &data_0220f540 + 4, 4);
-            if (func_ov001_0221c614(0x18) != 0) {
+            if (SetMessageTypeAndCheckAll(0x18) != 0) {
                 WirelessManager::Get();
                 if (data_020c4230.mUnk_20 != 0) {
                     MI_CpuCopy8(WirelessManager::Get().GetRecvBlock(0) + 4, data_020d43eb, 4);
@@ -940,7 +940,7 @@ void ArenaScene::ResetNames() {
     mPlayerCount = 0;
 }
 
-u32 ArenaScene::func_ov001_0221c614(u32 unk1) {
+u32 ArenaScene::SetMessageTypeAndCheckAll(u32 unk1) {
     data_0220f540.mUnk_00 = unk1;
     u32 needed    = WirelessManager::Get().GetRecvBlockCount();
     u8 count      = 0;

@@ -2,19 +2,19 @@
 #include "Game/Random.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 
-extern u8 data_ov007_02278c44[];
-extern u8 data_ov007_02278c6c[];
-extern u8 data_ov007_02278c94[];
-extern u8 data_ov007_02278cbc[];
-extern u8 data_ov007_02278ce4[];
-extern u8 data_ov007_02278d0c[];
+extern u8 gMode1Rows[];
+extern u8 gMode2Rows[];
+extern u8 gMode5Rows[];
+extern u8 gMode0Rows[];
+extern u8 gMode3Rows[];
+extern u8 gMode4Rows[];
 
 // One 0x28-byte record per battle mode (BattleSlot::mUnk_24). Defined between the includes on purpose
 // (docs/decompiling.md, "Data layout within a section"): here, before the SoundManager and WirelessManager headers, it
 // gives the original's .bss order of their destructor nodes (WirelessManager's first).
-u8 *data_ov007_02286570[6] = {
-    data_ov007_02278cbc, data_ov007_02278c44, data_ov007_02278c6c,
-    data_ov007_02278ce4, data_ov007_02278d0c, data_ov007_02278c94,
+u8 *gModeRowTables[6] = {
+    gMode0Rows, gMode1Rows, gMode2Rows,
+    gMode3Rows, gMode4Rows, gMode5Rows,
 };
 
 #include "System/SoundManager.hpp"
@@ -52,21 +52,21 @@ int func_ov007_02222764(int side, BattleEntry *entry) {
 
 u32 BattleRand32(u32 max);
 
-extern u8 data_ov007_02278c34[];
+extern u8 gIntervalRows[];
 
 extern u8 data_ov007_02278d34[];
 
-extern u8 data_ov007_02278d74[];
+extern u8 gCharacterModeBases[];
 
 extern u8 data_ov007_02278d7a[];
 
 extern u8 data_ov007_02278d7b[];
 
-extern const u8 data_ov007_02278d7c[];
+extern const u8 gCharacterIntervalRowBases[];
 
-extern const u8 data_ov007_02278d7d[];
+extern const u8 gCharacterCardDelayFrameCounts[];
 
-extern const u8 data_ov007_02278d7e[];
+extern const u8 gCharacterCardDelayRandomRanges[];
 
 BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8 unk6, BattleParam *param, u8 unk8) {
     mMode = mode;
@@ -76,9 +76,9 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
     mIntervalFrames = 0;
     mIntervalFrameCount = 0;
     mValue = 0;
-    mUnk_0e = 0;
-    mUnk_10 = 0;
-    mUnk_12 = 0;
+    mValueFrames = 0;
+    mRollFrames = 0;
+    mRollFrameCount = 0;
     mUnk_14_0 = 0;
     mUnk_14_1 = 0;
     mUnk_14_2 = 0;
@@ -91,14 +91,14 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
     mHelper = 0;
     mData = data;
     BattleEntry *entries = mData->mEntries;
-    mModeRow = data_ov007_02286570[mode];
+    mModeRow = gModeRowTables[mode];
     int row = unk4 * 12;
     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[index];
     u8 base = player->mUnk_f7;
-    u8 *rowp = data_ov007_02278d74 + row;
+    u8 *rowp = gCharacterModeBases + row;
     u32 a = rowp[mode];
     a = (u8) (a + base);
-    u32 b = (u8) (data_ov007_02278d7c[row] + base);
+    u32 b = (u8) (gCharacterIntervalRowBases[row] + base);
     if (data_020d433c.mUnk_7a) {
         if (data_020d433c.mHasPartners) {
             if (player->mPartner == 0 && player->mCharacterId != 13 && player->mCharacterId != 14) {
@@ -119,7 +119,7 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
         b = 7;
     }
     mModeRow = p + a * 4;
-    mUnk_28 = data_ov007_02278c34 + b * 2;
+    mIntervalRow = gIntervalRows + b * 2;
     if (mMode == 0 || mMode == 3) {
         u8 c;
         if (mMode == 0) {
@@ -155,8 +155,8 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
         mRole = 4;
     }
     if (mRole != 2 && mRole != 3) {
-        mIntervalFrameCount = mUnk_28[0];
-        mIntervalFrameCount += BattleRand32(mUnk_28[1]);
+        mIntervalFrameCount = mIntervalRow[0];
+        mIntervalFrameCount += BattleRand32(mIntervalRow[1]);
         return;
     }
     switch (mMode) {
@@ -169,8 +169,8 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
             mIntervalFrameCount += BattleRand32(mModeRow[1]);
             break;
         case 5:
-            mUnk_12 = mModeRow[1];
-            mUnk_12 += BattleRand32(mModeRow[2]);
+            mRollFrameCount = mModeRow[1];
+            mRollFrameCount += BattleRand32(mModeRow[2]);
             break;
     }
     u8 side = mRole - 2;
@@ -210,9 +210,9 @@ BOOL BattleSlot::UpdateInterval() {
 int BattleSlot::ComputeValue(u8 n, u16 *a, u16 *b) {
     u32 ret = 0;
     if (mRole == 2 || mRole == 3) {
-        mUnk_0e++;
-        if (mUnk_0e >= mParam->mUnk_08) {
-            mUnk_0e = 0;
+        mValueFrames++;
+        if (mValueFrames >= mParam->mUnk_08) {
+            mValueFrames = 0;
             switch (mMode) {
                 case 0:
                 case 3: {
@@ -280,11 +280,11 @@ int BattleSlot::ComputeValue(u8 n, u16 *a, u16 *b) {
                     break;
                 case 5:
                     mValue = 0;
-                    mUnk_10++;
-                    if (mUnk_10 >= mUnk_12) {
-                        mUnk_10 = 0;
-                        mUnk_12 = mModeRow[1];
-                        mUnk_12 += BattleRand32(mModeRow[2]);
+                    mRollFrames++;
+                    if (mRollFrames >= mRollFrameCount) {
+                        mRollFrames = 0;
+                        mRollFrameCount = mModeRow[1];
+                        mRollFrameCount += BattleRand32(mModeRow[2]);
                         if (mModeRow[0] >= BattleRand32(100)) {
                             mValue = 100;
                             SoundManager::Get().StartSeqArc(0x6c);
@@ -303,8 +303,8 @@ int BattleSlot::ComputeValue(u8 n, u16 *a, u16 *b) {
         mIntervalFrames++;
         if (mIntervalFrames >= mIntervalFrameCount) {
             mIntervalFrames = 0;
-            mIntervalFrameCount = mUnk_28[0];
-            mIntervalFrameCount += BattleRand32(mUnk_28[1]);
+            mIntervalFrameCount = mIntervalRow[0];
+            mIntervalFrameCount += BattleRand32(mIntervalRow[1]);
             ret = mUnk_07;
         }
     }
@@ -412,13 +412,13 @@ int BattleSlot::Update(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 n, u8 *d) {
 
 void BattleSlot::StartCardDelay(int sel) {
     if ((sel == 0 && mRole == 3) || (sel == 1 && mRole == 2)) {
-        mCardDelayTimer = data_ov007_02278d7d[mCharacter * 12];
-        mCardDelayTimer += BattleRand32(data_ov007_02278d7e[mCharacter * 12]);
+        mCardDelayTimer = gCharacterCardDelayFrameCounts[mCharacter * 12];
+        mCardDelayTimer += BattleRand32(gCharacterCardDelayRandomRanges[mCharacter * 12]);
     }
 }
 
 u32 func_ov007_022234f0(int player, u8 mode, u8 ch) {
-    u8 *rowp = data_ov007_02278d74 + ch * 12;
+    u8 *rowp = gCharacterModeBases + ch * 12;
     u32 v = (u8) (data_020d433c.mBattlePlayers->mPlayers[player]->mUnk_f7 + rowp[mode]);
     if (v >= 8) {
         v = 7;

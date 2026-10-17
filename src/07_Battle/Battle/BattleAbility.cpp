@@ -804,7 +804,7 @@ u8 BattleAbility::func_ov007_02265718() {
 
 extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 void SetTransformPosition(void *obj, fx32 x, fx32 y, fx32 z);
-void func_ov007_02262828(BattlePlayerList *list, u8 a, u8 b);
+void RemoveUnit(BattlePlayerList *list, u8 a, u8 b);
 u8 AddUnit(BattlePlayerList *list, const VecFx32 *pos, u16 value, u8 player, u8 record, u8 marker, u8 flag);
 void SetUnitAB(BattlePlayerList *list, u8 a, u8 b);
 BOOL UpdateCameraShiftTo(BattleAbility *self, VecFx32 *out);
@@ -870,7 +870,7 @@ u8 BattleAbility::func_ov007_02265af8() {
                 MI_CpuCopy8((u8 *) units + caster * sz, &tmp, sizeof(tmp));
                 tmp.mPos.x = mTarget->mBakugan->mPosition.x;
                 tmp.mPos.z = mTarget->mBakugan->mPosition.z;
-                func_ov007_02262828(data_020d433c.mBattlePlayers, mUnit, 2);
+                RemoveUnit(data_020d433c.mBattlePlayers, mUnit, 2);
                 AddUnit(data_020d433c.mBattlePlayers, &tmp.mPos, tmp.mUnk_0c, tmp.mUnk_0f, tmp.mUnk_0e, unit->mMarker, 1);
                 u8 *rec2 = (u8 *) data_020d433c.mBattlePlayers->mPlayers[mPlayer] + mRecord * 12;
                 *(u16 *) (rec2 + 0x10) = r4;
@@ -951,7 +951,7 @@ u8 BattleAbility::func_ov007_02265fac() {
                 c.x = mTarget->mBakugan->mPosition.x;
                 c.y = mTarget->mBakugan->mPosition.y;
                 c.z = mTarget->mBakugan->mPosition.z;
-                func_ov007_022628e0(data_020d433c.mBattlePlayers, mUnit, &c, mUnk_2a);
+                MoveUnit(data_020d433c.mBattlePlayers, mUnit, &c, mUnk_2a);
             }
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {
@@ -1006,7 +1006,7 @@ u8 BattleAbility::func_ov007_022663f0() {
             OrbitCamera(this);
             if (!mUnk_62_2 && mUnk_1a > 0x32) {
                 mUnk_62_2 = 1;
-                data_020d433c.mBattlePlayers->mUnk_29c->func_ov007_02270a7c(mUnit, 0);
+                data_020d433c.mBattlePlayers->mUnk_29c->SetStIconUnit(mUnit, 0);
             }
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {

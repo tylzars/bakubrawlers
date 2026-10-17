@@ -20,7 +20,7 @@ struct BattlePanel {
     /* 2b */ u8 mPrevLevel;
     /* 2c */ void *mBuffer;  // glyph buffer of the name text
     /* 30 */ void *mBuffer2; // text manager buffer
-    /* 34 */ u16 mUnk_34;
+    /* 34 */ u16 mNameWidth;
     /* 36 */ u8 mUnk_36;
     /* 37 */ PAD(0x37, 0x38);
     /* 38 */

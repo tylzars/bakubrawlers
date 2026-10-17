@@ -109,9 +109,9 @@ public:
     /* 68 */ void *mUnk_68;
     /* 6c */ CharacterIcons *mIcons;
     /* 70 */ CellAnimation *mAnimsB[5];
-    /* 84 */ u32 mUnk_84[6];
-    /* 9c */ s32 mUnk_9c;
-    /* a0 */ s32 mUnk_a0;
+    /* 84 */ u32 mHistoryValues[6];
+    /* 9c */ s32 mPrizeMoney;
+    /* a0 */ s32 mRewardMoney;
     /* a4 */ s32 mMoneyRemaining;
     /* a8 */ s32 mMoneyTotal;
     /* ac */ u8 mUnk_ac;
@@ -136,7 +136,7 @@ public:
     void DrawRetryScreen();
     void DrawResultScreen();
     void LoadResultTextAndAmounts();
-    void func_ov007_02250010();
+    void ComputeAmounts();
     void PrintResultText();
     void PrintMoney();
     void UpdateMoneyCount();
@@ -149,8 +149,8 @@ BattleResult::BattleResult()
     mWindow = 0;
     mMessage = 0;
     mUnk_68 = 0;
-    mUnk_9c = 0;
-    mUnk_a0 = 0;
+    mPrizeMoney = 0;
+    mRewardMoney = 0;
     mMoneyRemaining = 0;
     mMoneyTotal = 0;
     mUnk_ac = 0;
@@ -165,7 +165,7 @@ BattleResult::BattleResult()
     SpriteManager::sFade[0] = 1;
     SpriteManager::sBrightness[0] = -16;
     MI_CpuClear32(mAnims, sizeof(mAnims));
-    MI_CpuClear32(mUnk_84, sizeof(mUnk_84));
+    MI_CpuClear32(mHistoryValues, sizeof(mHistoryValues));
     mResultMessages = 0;
     MI_CpuClear32(mTextBuffers, sizeof(mTextBuffers));
     MI_CpuClear32(mGlyphBuffers, sizeof(mGlyphBuffers));
@@ -892,7 +892,7 @@ void BattleResult::DrawResultScreen() {
                 case 6:
                 case 7:
                     if (mMoneyStep >= (u8) (i - 2) + 3) {
-                        if (mUnk_84[3] != 0) {
+                        if (mHistoryValues[3] != 0) {
                             mAnims[i]->Draw(0, ((const u8 *) sAnimPos)[i * 2], ((const u8 *) sAnimPos)[i * 2 + 1], 1);
                         } else {
                             mAnims[i]->Draw(0, ((const u8 *) sAnimPos)[i * 2 + 6], ((const u8 *) sAnimPos)[i * 2 + 7], 1);
@@ -923,36 +923,36 @@ void BattleResult::LoadResultTextAndAmounts() {
     mGlyphBuffers[1] = OS_Alloc((s16) mGlyphCounts[1] * (s16) 0xc);
     TextManager::Get().Init(mGlyphBuffers[1], 0, 0, 0x10, 6, 0x21);
     TextManager::Get().SetColor(0, 0, 0xe);
-    func_ov007_02250010();
+    ComputeAmounts();
     ClearTextBuffers();
     PrintResultText();
     PrintMoney();
 }
 
-void BattleResult::func_ov007_02250010() {
+void BattleResult::ComputeAmounts() {
     if (mUnk_b3 != 0) {
         if (data_020d433c.mNextScene == 0xd) {
             switch (gSaveData[0].mUnk_42) {
                 case 1:
-                    mUnk_9c = sPrizeTable[gSaveData[0].mUnk_5bf_0][0][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][0][gSaveData[0].mUnk_43] * 100;
                     break;
                 case 3:
-                    mUnk_9c = sPrizeTable[gSaveData[0].mUnk_5bf_0][1][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][1][gSaveData[0].mUnk_43] * 100;
                     break;
                 case 6:
-                    mUnk_9c = sPrizeTable[gSaveData[0].mUnk_5bf_0][2][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][2][gSaveData[0].mUnk_43] * 100;
                     break;
                 case 7:
-                    mUnk_9c = sPrizeTable[gSaveData[0].mUnk_5bf_0][3][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][3][gSaveData[0].mUnk_43] * 100;
                     break;
                 case 8:
-                    mUnk_9c = sPrizeTable[gSaveData[0].mUnk_5bf_0][4][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][4][gSaveData[0].mUnk_43] * 100;
                     break;
                 case 9:
-                    mUnk_9c = sPrizeTable[gSaveData[0].mUnk_5bf_0][5][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][5][gSaveData[0].mUnk_43] * 100;
                     break;
                 case 10:
-                    mUnk_9c = sPrizeTable[gSaveData[0].mUnk_5bf_0][0][gSaveData[0].mUnk_43] * 100;
+                    mPrizeMoney = sPrizeTable[gSaveData[0].mUnk_5bf_0][0][gSaveData[0].mUnk_43] * 100;
                     break;
             }
         } else {
@@ -967,9 +967,9 @@ void BattleResult::func_ov007_02250010() {
                 u8 a = player->mCharacterId;
                 u8 b = player->mUnk_f7;
                 if (data_020d433c.mHasPartners == 0 || rem != data_020d433c.mBattlePlayers->mPlayers[me]->mPartner) {
-                    mUnk_9c += tbl[a][b % 3] * 100;
+                    mPrizeMoney += tbl[a][b % 3] * 100;
                     if (gSaveData[0].mUnk_5bf_0) {
-                        mUnk_9c += 0x308 + 0x400;
+                        mPrizeMoney += 0x308 + 0x400;
                     }
                 }
                 i++;
@@ -979,7 +979,7 @@ void BattleResult::func_ov007_02250010() {
     u8 j = 0;
     u8 me2 = data_020d433c.mBattlePlayers->mUnk_2a9;
     do {
-        mUnk_84[j] = *(u16 *) ((u8 *) data_020d433c.mBattlePlayers->mPlayers[me2] + 0x84 + j * 6);
+        mHistoryValues[j] = *(u16 *) ((u8 *) data_020d433c.mBattlePlayers->mPlayers[me2] + 0x84 + j * 6);
         j++;
     } while (j < data_020d433c.mUnk_99);
     mUnk_ad = data_020d433c.mBattlePlayers->mPlayers[me2]->mUnk_fd;
@@ -999,11 +999,11 @@ void BattleResult::func_ov007_02250010() {
         }
         if (k < 3) {
             if (data_020d433c.mHasPartners != 0) {
-                mUnk_a0 = sRewardRates[1][k] * 100;
+                mRewardMoney = sRewardRates[1][k] * 100;
             } else if (data_020d433c.mUnk_99 < 6) {
-                mUnk_a0 = sRewardRates[0][k] * 100;
+                mRewardMoney = sRewardRates[0][k] * 100;
             } else {
-                mUnk_a0 = sRewardRates[2][k] * 100;
+                mRewardMoney = sRewardRates[2][k] * 100;
             }
         }
     }
@@ -1036,7 +1036,7 @@ void BattleResult::PrintResultText() {
     TextManager::Get().mUse4bppFont = 1;
     x = 0x94;
     y = 0;
-    TextManager::Get().PrintNumber(mUnk_9c, 7, 0, mTextBuffers[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+    TextManager::Get().PrintNumber(mPrizeMoney, 7, 0, mTextBuffers[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
     {
         TextManager &t2 = TextManager::Get();
         s16 x2;
@@ -1060,15 +1060,15 @@ void BattleResult::PrintResultText() {
         }
         u8 i = 0;
         do {
-            if (i != 0 && mUnk_84[i] == 0) {
+            if (i != 0 && mHistoryValues[i] == 0) {
                 break;
             }
             x = 0x94;
-            if (i < 3 && mUnk_84[3] != 0) {
+            if (i < 3 && mHistoryValues[3] != 0) {
                 x -= 0x3c;
             }
             ly = (i % 3) * 16 + 16;
-            TextManager::Get().PrintNumber(mUnk_84[i], 7, 0, mTextBuffers[0], 0x20, 0x16, &x, &ly, 0, 2, 0x21, 0, 1, 1, 1);
+            TextManager::Get().PrintNumber(mHistoryValues[i], 7, 0, mTextBuffers[0], 0x20, 0x16, &x, &ly, 0, 2, 0x21, 0, 1, 1, 1);
             TextManager &t4 = TextManager::Get();
             s16 x2;
             s16 y2;
@@ -1143,7 +1143,7 @@ void BattleResult::PrintResultText() {
     if (mMoneyStep >= 0xc) {
         x = 0x94;
         y = 0x60;
-        TextManager::Get().PrintNumber(mUnk_a0, 7, 0, mTextBuffers[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
+        TextManager::Get().PrintNumber(mRewardMoney, 7, 0, mTextBuffers[0], 0x20, 0x16, &x, &y, 0, 2, 0x21, 0, 1, 1, 1);
         {
             TextManager &t11 = TextManager::Get();
             s16 x2;
@@ -1273,7 +1273,7 @@ void BattleResult::UpdateMoneyCount() {
     }
     switch (mMoneyStep) {
         case 0:
-            mMoneyRemaining += mUnk_9c;
+            mMoneyRemaining += mPrizeMoney;
             mDelayTimer = 30;
             mMoneyStep++;
             PrintResultText();
@@ -1287,7 +1287,7 @@ void BattleResult::UpdateMoneyCount() {
             }
             break;
         case 2:
-            mMoneyRemaining = mUnk_84[0];
+            mMoneyRemaining = mHistoryValues[0];
             mDelayTimer = 30;
             mMoneyStep++;
             PrintResultText();
@@ -1304,7 +1304,7 @@ void BattleResult::UpdateMoneyCount() {
                 mMoneyStep++;
                 mSoundTimer = 0;
                 mDelayTimer = 30;
-                mMoneyRemaining = mUnk_84[mMoneyStep - 3];
+                mMoneyRemaining = mHistoryValues[mMoneyStep - 3];
                 if (mMoneyRemaining == 0) {
                     mMoneyStep = 9;
                 }
@@ -1340,7 +1340,7 @@ void BattleResult::UpdateMoneyCount() {
             break;
         case 12:
             mMoneyStep++;
-            mMoneyRemaining = mUnk_a0;
+            mMoneyRemaining = mRewardMoney;
             mDelayTimer = 30;
             PrintResultText();
             break;

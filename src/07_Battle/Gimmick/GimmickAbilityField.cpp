@@ -117,9 +117,9 @@ void GimmickAbilityField::Load() {
         sResources[1] = new ModelResource("ability_filed1.nsbmd", 0, "ability_filed1.nsbtx", 1);
     }
     ChangeDir("/Game/Gimmick");
-    mUnk_4d = sResources[0]->AddRef(1);
-    if (mUnk_4d >= 4) {
-        mUnk_4d = 3;
+    mInstanceIndex = sResources[0]->AddRef(1);
+    if (mInstanceIndex >= 4) {
+        mInstanceIndex = 3;
     }
     mModel = sResources[0]->mModel->CreateInstance(new ModelAnim(sResources[0]->mAnimData, sResources[0]->mModel));
     mModel->StartAnimWithIncrement(0, 1, 0x1000);
@@ -158,7 +158,7 @@ void GimmickAbilityField::Finish() {
     mState = 3;
 }
 
-void GimmickAbilityField::func_ov007_022303f4() {
+void GimmickAbilityField::DrawModelB() {
     VecFx32 v;
     Camera *cam = CameraManager::Get().mCameras[0];
     VecFx32 pos = mPosition;
@@ -173,7 +173,7 @@ void GimmickAbilityField::func_ov007_022303f4() {
     v.z = FX_Mul(v.z, 0xa000);
     VEC_Add(&v, &mPosition, &v);
     MTX_SetTranslation43(&mtx, &v);
-    data_02211374.mUnk_9c = 0x1f00c0 | (data_ov007_02279554[mUnk_4d] << 24);
+    data_02211374.mUnk_9c = 0x1f00c0 | (data_ov007_02279554[mInstanceIndex] << 24);
     mModelB->Draw(&mtx, &mScale);
 }
 
@@ -186,7 +186,7 @@ void GimmickAbilityField::Update() {
     case 1: {
         if (mModel && (int)data_020d433c.mGimmicks->mState >= 2) {
             DrawInstance();
-            func_ov007_022303f4();
+            DrawModelB();
         }
         if (!(mCollision && mCollision->mHitCount)) {
             return;

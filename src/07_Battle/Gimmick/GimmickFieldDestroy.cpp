@@ -12,11 +12,11 @@ GimmickSetData *AddCollisionSet(GimmickCollision *data, int count, void *buf, Ve
 
 static const u8 sDestroyTurnLimits[4]  = {3, 4, 5, 0};
 static const u16 data_ov007_022793d4[3] = {30, 50, 50};
-static const u8 data_ov007_022793d0[4]  = {1, 3, 5, 0};
+static const u8 sKindStepCounts[4]  = {1, 3, 5, 0};
 static const u16 data_ov007_022793da[3] = {0, 0x1555, 0};
 static const u16 data_ov007_022793e6[3] = {30, 50, 0};
 static ModelResource *sResources[3];
-static const u16 data_ov007_022793e0[3] = {10, 10, 6};
+static const u16 sKindStepIntervals[3] = {10, 10, 6};
 
 extern MtxFx43 data_020c1cf4;
 extern MtxFx43 gIdentityMtx43;
@@ -214,7 +214,7 @@ void GimmickFieldDestroy::UpdateKindSequence() {
     if (mTimer) {
         BattlePlayer *p;
         u8 kind = mKind;
-        if ((mTimer - 1) % data_ov007_022793e0[kind] == 0) {
+        if ((mTimer - 1) % sKindStepIntervals[kind] == 0) {
             BattlePlayerList *plist = data_020d433c.mBattlePlayers;
             p                       = plist->mPlayers[plist->mTurnPlayer];
             switch (kind) {
@@ -270,7 +270,7 @@ void GimmickFieldDestroy::UpdateKindSequence() {
             }
             }
             mStep++;
-            if (mStep >= data_ov007_022793d0[mKind]) {
+            if (mStep >= sKindStepCounts[mKind]) {
                 mStep  = 0;
                 mTimer = 0;
                 return;

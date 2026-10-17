@@ -18,10 +18,10 @@ ConfrontEmblem02::ConfrontEmblem02(u8 emblem) {
     mState = 2;
     mSide = 0;
     mEmblem = emblem;
-    mUnk_07_0 = 0;
+    mTouched = 0;
     mUnk_07_1 = 0;
     mUnk_07_2 = 0;
-    mUnk_07_3 = 0;
+    mShrinkStarted = 0;
     mTimer = 0;
     mPhase = 0;
     mPos = 0;
@@ -93,7 +93,7 @@ void ConfrontEmblem02::Update() {
             if (mAnim->mFinished == 0) {
                 mAnim->Update();
             } else {
-                mUnk_07_0 = 0;
+                mTouched = 0;
                 mState = 2;
             }
             break;
@@ -103,7 +103,7 @@ void ConfrontEmblem02::Update() {
 }
 
 void ConfrontEmblem02::StartShrink() {
-    if (mUnk_07_3) {
+    if (mShrinkStarted) {
         return;
     }
     if (mState == 0) {
@@ -111,7 +111,7 @@ void ConfrontEmblem02::StartShrink() {
             mPhase = 2;
         }
     }
-    mUnk_07_3 = 1;
+    mShrinkStarted = 1;
 }
 
 void ConfrontEmblem02::Draw() {
@@ -146,7 +146,7 @@ u8 ConfrontEmblem02::IsIdle() {
 }
 
 int ConfrontEmblem02::func_ov007_0221e268(u8 flag) {
-    if (mState != 0 || mUnk_07_0 == 1) {
+    if (mState != 0 || mTouched == 1) {
         return -1;
     }
     int anim = 2;
@@ -177,7 +177,7 @@ int ConfrontEmblem02::func_ov007_0221e268(u8 flag) {
     }
     if (flag == 0) {
         if (result != -1) {
-            mUnk_07_0 = 1;
+            mTouched = 1;
             mState = 1;
             mAnim->ResetAnimation();
             mAnim->SetAnimation(anim);

@@ -244,7 +244,7 @@ void BattleOrderSelect::WriteTouchMessage() {
 void BattleOrderSelect::ApplyTurnOrder() {
     u8 i = 0;
     do {
-        func_ov007_02262a70(data_020d433c.mBattlePlayers, mItemOrder[mPlayerItemIndex[i]], i);
+        SetTurnOrder(data_020d433c.mBattlePlayers, mItemOrder[mPlayerItemIndex[i]], i);
         i++;
     } while (i < mCount);
 }

@@ -395,7 +395,7 @@ void BattleCommand::Update() {
                         BattleUnit *u2 = &data_020d433c.mBattlePlayers->mUnits[i];
                         u8 slot = u2->mRecord;
                         u8 marker = u2->mMarker;
-                        func_ov007_02262828(data_020d433c.mBattlePlayers, i, 2);
+                        RemoveUnit(data_020d433c.mBattlePlayers, i, 2);
                         BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[mUnk_133];
                         p->mUnk_fe = 1;
                         p->mUnk_ee++;

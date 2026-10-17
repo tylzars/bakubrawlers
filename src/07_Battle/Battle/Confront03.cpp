@@ -16,9 +16,9 @@ ConfrontEmblem03::ConfrontEmblem03(u8 index) {
     char path[0x80];
     mState = 2;
     mEmblem = index;
-    mUnk_07_0 = 0;
+    mTouched = 0;
     mUnk_07_1 = 0;
-    mUnk_07_2 = 0;
+    mShrinkStarted = 0;
     mHoldFrames = 0;
     mHoldFrameCount = 0;
     mStep = 0;
@@ -85,7 +85,7 @@ void ConfrontEmblem03::Update() {
             if (mAnim->mFinished == 0) {
                 mAnim->Update();
             } else {
-                mUnk_07_0 = 0;
+                mTouched = 0;
                 mState = 2;
             }
             break;
@@ -95,7 +95,7 @@ void ConfrontEmblem03::Update() {
 }
 
 void ConfrontEmblem03::StartShrink() {
-    if (mUnk_07_2) {
+    if (mShrinkStarted) {
         return;
     }
     if (mState == 0) {
@@ -103,7 +103,7 @@ void ConfrontEmblem03::StartShrink() {
             mStep = 2;
         }
     }
-    mUnk_07_2 = 1;
+    mShrinkStarted = 1;
 }
 
 void ConfrontEmblem03::Draw() {
@@ -150,7 +150,7 @@ u8 ConfrontEmblem03::IsIdle() {
 }
 
 int ConfrontEmblem03::func_ov007_0221f594() {
-    if (mState != 0 || mUnk_07_0 == 1) {
+    if (mState != 0 || mTouched == 1) {
         return -1;
     }
     if (PointDistance((s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY, (s32) mX, (s32) mY) > 0x18) {
@@ -167,7 +167,7 @@ int ConfrontEmblem03::func_ov007_0221f594() {
         mUnk_07_1 = 1;
     }
     if (result != -1) {
-        mUnk_07_0 = 1;
+        mTouched = 1;
         mState = 1;
         mAnim->ResetAnimation();
         mAnim->SetAnimation(anim);
@@ -185,17 +185,17 @@ int ConfrontEmblem03::GetSlotIfIdle() {
     return -1;
 }
 
-extern ConfrontRow data_ov007_02278c0c[];
+extern ConfrontRow gConfrontRows[];
 
 Confront03::Confront03()
     : BattleBase() {
-    mUnk_68 = 0;
-    mUnk_6c = 0;
+    mPenFrames = 0;
+    mPenEmblemIndex = 0;
     mLongHold = 0;
     mUsedSlotMask = 1;
     mDelay = 0;
     mData   = 0;
-    mConfrontRow = data_ov007_02278c0c;
+    mConfrontRow = gConfrontRows;
     for (u8 i = 0; i < 4; i++) {
         mEmblems[i] = 0;
     }
@@ -316,18 +316,18 @@ void Confront03::vfunc_3c() {
 }
 
 u8 Confront03::UpdateTouch(int a) {
-    ConfrontEmblem03 *emblem = mEmblems[mUnk_6c];
+    ConfrontEmblem03 *emblem = mEmblems[mPenEmblemIndex];
     if (emblem->mState == 0 && emblem->mStep == 1) {
-        mUnk_68++;
-        if (mUnk_68 >= 0x14) {
-            mUnk_68 = 0;
+        mPenFrames++;
+        if (mPenFrames >= 0x14) {
+            mPenFrames = 0;
             SetPenPosition(-1, -1);
-            mUnk_6c++;
-            if (mUnk_6c >= 4) {
-                mUnk_6c = 0;
+            mPenEmblemIndex++;
+            if (mPenEmblemIndex >= 4) {
+                mPenEmblemIndex = 0;
             }
         } else {
-            ConfrontEmblem03 *cur = mEmblems[mUnk_6c];
+            ConfrontEmblem03 *cur = mEmblems[mPenEmblemIndex];
             s16 y = (s16) cur->mY;
             s16 x = (s16) cur->mX;
             SetPenPosition(x, y);

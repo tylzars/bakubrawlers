@@ -590,7 +590,7 @@ u8 PickUnflaggedSlot54(BattlePlayer *player) {
     return first;
 }
 
-u8 func_ov007_0226a700(BattlePlayer *player, u8 mask, s16 x, s16 y) {
+u8 PickUnflaggedSlot6c(BattlePlayer *player, u8 mask, s16 x, s16 y) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 i = 0;
     u8 count = 0;

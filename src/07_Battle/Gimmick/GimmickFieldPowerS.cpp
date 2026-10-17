@@ -8,8 +8,8 @@ static ModelResource *sResources[2];
 
 static const u8 sPowerSPartnerTurnLimits[4]  = {5, 3, 0, 0};
 static const u8 sPowerSTurnLimits[2][3] = {{5, 7, 9}, {5, 7, 9}};
-static const VecFx32 data_ov007_02279438      = {0, 0, 0x1e000};
-static const VecFx32 data_ov007_02279444      = {0x800, 0x800, 0x800};
+static const VecFx32 sPowerSEffectOffset      = {0, 0, 0x1e000};
+static const VecFx32 sPowerSEffectScale      = {0x800, 0x800, 0x800};
 
 
 GimmickFieldPowerS::GimmickFieldPowerS(u8 id, u8 variant)
@@ -119,8 +119,8 @@ void GimmickFieldPowerS::Update() {
             MtxFx43 mtx    = data_020c1cf4;
             MtxFx43 rot    = gIdentityMtx43;
             VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
-            VecFx32 v      = data_ov007_02279438;
-            VecFx32 w      = data_ov007_02279444;
+            VecFx32 v      = sPowerSEffectOffset;
+            VecFx32 w      = sPowerSEffectScale;
             mtx._[11]      = 0;
             mtx._[10]      = 0;
             mtx._[9]       = 0;

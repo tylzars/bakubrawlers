@@ -31,9 +31,9 @@ public:
     /* 08 */ u16 mIntervalFrames;
     /* 0a */ u16 mIntervalFrameCount;
     /* 0c */ s16 mValue;
-    /* 0e */ u16 mUnk_0e;
-    /* 10 */ u16 mUnk_10;
-    /* 12 */ u16 mUnk_12;
+    /* 0e */ u16 mValueFrames;
+    /* 10 */ u16 mRollFrames;
+    /* 12 */ u16 mRollFrameCount;
     union {
         /* 14 */ u8 mUnk_14;
         struct {
@@ -50,7 +50,7 @@ public:
     /* 1e */ u8 mSoundTimer;
     /* 20 */ BattleData *mData;
     /* 24 */ u8 *mModeRow;
-    /* 28 */ u8 *mUnk_28;
+    /* 28 */ u8 *mIntervalRow;
     /* 2c */ u8 *mUnk_2c;
     /* 30 */ BattleParam *mParam;
     /* 34 */ BattleSideHelper *mHelper;
@@ -183,13 +183,13 @@ public:
         /* 0e */ u8 mUnk_0e;
         struct {
             /* 0e */ u8 mUnk_0e_0 : 1;
-            /* 0e */ u8 mUnk_0e_1 : 1;
-            /* 0e */ u8 mUnk_0e_2 : 1;
-            /* 0e */ u8 mUnk_0e_3 : 1;
+            /* 0e */ u8 mCircleUpDownVisible : 1;
+            /* 0e */ u8 mSideUpDownVisible : 1;
+            /* 0e */ u8 mNoEmblem : 1;
             /* 0e */ u8 mUnk_0e_4 : 1;
         };
     };
-    /* 0f */ u8 mUnk_0f;
+    /* 0f */ u8 mFieldIndex;
     /* 10 */ PAD(0x10, 0x12);
     /* 12 */ u8 mUnk_12[2];
     /* 14 */ u16 mStepFrames;
@@ -198,7 +198,7 @@ public:
     /* 28 */ float mVel[2][2];
     /* 38 */ s16 mAbilitiesY;
     /* 3a */ s16 mAbilitiesYPerFrame;
-    /* 3c */ int mUnk_3c;
+    /* 3c */ int mSide;
     /* 40 */ BattleData *mData;
     /* 44 */ CellAnimation *mAnims[15];
     /* 80 */
@@ -252,10 +252,10 @@ public:
     union {
         /* 06 */ u8 mUnk_06;
         struct {
-            /* 06 */ u8 mUnk_06_0 : 3; // variant number in the file names
+            /* 06 */ u8 mVariant : 3; // variant number in the file names
             /* 06 */ u8 mUnk_06_3 : 1;
-            /* 06 */ u8 mUnk_06_4 : 1;
-            /* 06 */ u8 mUnk_06_5 : 1;
+            /* 06 */ u8 mUseBoxTest : 1;
+            /* 06 */ u8 mUseCallbackMtx : 1;
             /* 06 */ u8 mUnk_06_6 : 1;
         };
     };

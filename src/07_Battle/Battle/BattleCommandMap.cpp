@@ -197,7 +197,7 @@ BattleCommandMap::BattleCommandMap(u8 unk)
 BattleCommandMap::~BattleCommandMap() {
     u8 i = 0;
     do {
-        mUnk_74->func_ov007_0226fc5c(i);
+        mUnk_74->ReleaseBakugan(i);
         i++;
     } while (i < 12);
     if (mUnk_14) {
@@ -556,7 +556,7 @@ extern "C" void func_ov007_02246578(BattleCommandMap *map) {
     pos.x = unit->mPos.x;
     pos.y = unit->mPos.y + 0x2299a;
     pos.z = unit->mPos.z;
-    map->mUnk_74->func_ov007_022712c4(unit->mPlayer, &pos);
+    map->mUnk_74->DrawFontObj(unit->mPlayer, &pos);
     pos.y += 0xa000;
     CameraManager::Get();
     MtxFx43 mtx = data_020c1cf4;
@@ -567,9 +567,9 @@ extern "C" void func_ov007_02246578(BattleCommandMap *map) {
     MTX_MultVec43(&v, &mtx, &v);
     VEC_Add(&pos, &v, &pos);
     if (unit->mPlayer == current) {
-        map->mUnk_74->func_ov007_02271338(&pos);
+        map->mUnk_74->DrawPyFontObj(&pos);
     } else if (unit->mPlayer == data_020d433c.mBattlePlayers->mPlayers[current]->mPartner) {
-        map->mUnk_74->func_ov007_022713a4(&pos);
+        map->mUnk_74->DrawPtFontObj(&pos);
     }
 }
 

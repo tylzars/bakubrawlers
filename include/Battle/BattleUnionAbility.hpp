@@ -32,7 +32,7 @@ public:
     virtual ~BattleUnionAbility();
     /* 08 */ virtual void Update();
     void Close(u8 choice);
-    void func_ov007_02234428();
+    void SetupSubWndAndAntenna();
     void func_ov007_022344a4();
     void LoadGraphics();
     void Draw();

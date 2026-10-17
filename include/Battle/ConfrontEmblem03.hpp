@@ -11,9 +11,9 @@ public:
     /* 04 */ u8 mState;
     /* 05 */ u8 mEmblem;
     /* 06 */ PAD(0x06, 0x07);
-    /* 07 */ u8 mUnk_07_0 : 1;
+    /* 07 */ u8 mTouched : 1;
     /* 07 */ u8 mUnk_07_1 : 1;
-    /* 07 */ u8 mUnk_07_2 : 1;
+    /* 07 */ u8 mShrinkStarted : 1;
     /* 08 */ u8 mHoldFrames;
     /* 09 */ u8 mHoldFrameCount;
     /* 0a */ u8 mStep;

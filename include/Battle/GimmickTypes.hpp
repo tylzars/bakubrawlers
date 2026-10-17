@@ -324,7 +324,7 @@ public:
     /* 45 */ PAD(0x45, 0x48);
     /* 48 */ ModelInstance *mModelB;
     /* 4c */ u8 mAbilityRowIndex;
-    /* 4d */ u8 mUnk_4d;
+    /* 4d */ u8 mInstanceIndex;
     /* 4e */ PAD(0x4e, 0x50);
     /* 50 */
 
@@ -335,7 +335,7 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
-    void func_ov007_022303f4();
+    void DrawModelB();
 };
 // Model-less push field (no Load/Unload work): while the target is inside, pushes it away from mPosition.
 class GimmickUnk_022308a8 : public Gimmick { // vtable 022875bc

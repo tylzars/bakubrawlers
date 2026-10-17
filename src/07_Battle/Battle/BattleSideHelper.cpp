@@ -11,8 +11,8 @@ u32 BattleRand32(u32 max);
 struct BattleSideRow {
     u8 mUnk_00[0x20];
 };
-extern BattleSideRow data_ov007_02278e40[];
-extern BattleSideRow data_ov007_02279060;
+extern BattleSideRow gCharacterRollRows[];
+extern BattleSideRow gPlayerRollRow;
 
 BattleSideHelper::BattleSideHelper(u8 index, u8 unk2, BattleEntry *entries) {
     mRollEnabled = 0;
@@ -24,9 +24,9 @@ BattleSideHelper::BattleSideHelper(u8 index, u8 unk2, BattleEntry *entries) {
     if (*id != 0) {
         BattleSideRow *row;
         if (unk2 == 0x15) {
-            row = &data_ov007_02279060;
+            row = &gPlayerRollRow;
         } else {
-            row = &data_ov007_02278e40[unk2];
+            row = &gCharacterRollRows[unk2];
         }
         mRollEnabled = 1;
         switch (GetCardInfo(*id, 3)) {

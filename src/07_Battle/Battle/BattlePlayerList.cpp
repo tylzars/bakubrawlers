@@ -108,7 +108,7 @@ BOOL func_0202326c(SaveData *d);
 void CreateObjects(BattlePlayerList *list);
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 void SetupTutorial(BattlePlayerList *list);
-void func_ov007_022621dc();
+void InitPlayerListDisplay();
 void RemoveMarker(BattlePlayerList *list, u8 index);
 extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
 void func_ov007_02269ee4(BattlePlayer *player, u32 reset);
@@ -270,15 +270,15 @@ void BattlePlayerList::Update() {
         case 8:
             mUnk_2b1 = MATH_Rand32(&gRandom, 100);
             if (data_020d433c.mHasPartners) {
-                func_ov007_02262a70(data_020d433c.mBattlePlayers, 0, 0);
+                SetTurnOrder(data_020d433c.mBattlePlayers, 0, 0);
                 u8 i = 1;
                 u8 k = 0;
                 do {
                     BattlePlayerList *list = data_020d433c.mBattlePlayers;
                     if (i == list->mPlayers[0]->mPartner) {
-                        func_ov007_02262a70(list, 1, i);
+                        SetTurnOrder(list, 1, i);
                     } else {
-                        func_ov007_02262a70(list, k + 2, i);
+                        SetTurnOrder(list, k + 2, i);
                         k++;
                     }
                     i++;
@@ -294,7 +294,7 @@ void BattlePlayerList::Update() {
             } else {
                 u8 i = 0;
                 do {
-                    func_ov007_02262a70(data_020d433c.mBattlePlayers, i, i);
+                    SetTurnOrder(data_020d433c.mBattlePlayers, i, i);
                     i++;
                 } while (i < data_020d433c.mPlayerCount);
                 mState = 10;
@@ -354,7 +354,7 @@ void BattlePlayerList::Update() {
                     break;
                 case 1:
                     mState++;
-                    ((void (*)(BattlePlayerList *)) func_ov007_022621dc)(this);
+                    ((void (*)(BattlePlayerList *)) InitPlayerListDisplay)(this);
                     break;
                 case 3: {
                     u8 *msg = (u8 *) mPlayers[mTurnPlayer] + 0x100;
@@ -450,10 +450,10 @@ void BattlePlayerList::Update() {
                         u8 a  = mUnits[mUnitA].mMarker;
                         u8 m3 = mMarkers[a].mCellX;
                         u8 m4 = mMarkers[a].mCellY;
-                        func_ov007_02262828(this, mUnitB, 0);
+                        RemoveUnit(this, mUnitB, 0);
                         mUnitHandles[m3][m4] = mUnitA + 1;
                     } else {
-                        func_ov007_02262828(this, mUnitA, 0);
+                        RemoveUnit(this, mUnitA, 0);
                     }
                     return;
                 case 3: {
@@ -471,9 +471,9 @@ void BattlePlayerList::Update() {
                     RemoveMarker(this, mUnits[mUnitA].mMarker);
                     BattleRecord *used = &mPlayers[owner]->mRecords[slot];
                     mUnk_2aa           = GetTexVariant(used->mBakuganId, used->mAttribute);
-                    func_ov007_02262828(this, mUnitA, 2);
+                    RemoveUnit(this, mUnitA, 2);
                     if (result == 3) {
-                        func_ov007_02262828(this, mUnitB, 2);
+                        RemoveUnit(this, mUnitB, 2);
                     }
                     mState = 0x16;
                     if (data_020d433c.mUnk_7a == 0) {
@@ -560,8 +560,8 @@ void BattlePlayerList::Update() {
                         slot = mUnits[mUnitB].mRecord;
                         mUnk_2ab = GetTexVariant(recs[slot].mBakuganId, recs[slot].mAttribute);
                         RemoveMarker(this, mUnits[mUnitA].mMarker);
-                        func_ov007_02262828(this, mUnitA, 2);
-                        func_ov007_02262828(this, mUnitB, 2);
+                        RemoveUnit(this, mUnitA, 2);
+                        RemoveUnit(this, mUnitB, 2);
                         if (data_020d433c.mUnk_83 != 0) {
                             return;
                         }
@@ -609,8 +609,8 @@ void BattlePlayerList::Update() {
                     slot                 = *(volatile u8 *) &mUnits[mUnitB].mRecord;
                     BattleRecord *target = &holder->mRecords[slot];
                     mUnk_2aa             = GetTexVariant(target->mBakuganId, target->mAttribute);
-                    func_ov007_02262828(this, mUnitA, 2);
-                    func_ov007_02262828(this, mUnitB, 2);
+                    RemoveUnit(this, mUnitA, 2);
+                    RemoveUnit(this, mUnitB, 2);
                     if (data_020d433c.mUnk_83 != 0) {
                         return;
                     }
@@ -892,7 +892,7 @@ void BattlePlayerList::Update() {
 }
 
 // Record of a command cell: u8 table helpers below
-void func_ov007_022621dc() {
+void InitPlayerListDisplay() {
     SpriteManager::Get().SetupMode(1, 7);
     GX_SetDispSelect(1);
     GX_SetGraphicsMode(1, 0, 1);
@@ -1013,7 +1013,7 @@ u8 AddUnit(BattlePlayerList *list, const VecFx32 *pos, u16 value, u8 player, u8 
     return 0;
 }
 
-void func_ov007_02262828(BattlePlayerList *list, u8 index, u8 value) {
+void RemoveUnit(BattlePlayerList *list, u8 index, u8 value) {
     u8 player         = list->mUnits[index].mPlayer;
     u8 record         = list->mUnits[index].mRecord;
     BattlePlayer *p   = list->mPlayers[player];
@@ -1039,7 +1039,7 @@ void func_ov007_02262828(BattlePlayerList *list, u8 index, u8 value) {
 // after the row base.
 enum MarkerRow { MARKER_ROW_0 };
 
-void func_ov007_022628e0(BattlePlayerList *list, u8 index, const VecFx32 *pos, u8 marker) {
+void MoveUnit(BattlePlayerList *list, u8 index, const VecFx32 *pos, u8 marker) {
     u8 old      = list->mUnits[index].mMarker;
     MarkerRow r = (MarkerRow) list->mMarkers[old].mCellX;
     u8 col      = list->mMarkers[old].mCellY;
@@ -1085,7 +1085,7 @@ void SetUnitAB(BattlePlayerList *list, u8 a, u8 b) {
     list->mUnitB = b;
 }
 
-void func_ov007_02262a70(BattlePlayerList *list, u8 slot, u8 player) {
+void SetTurnOrder(BattlePlayerList *list, u8 slot, u8 player) {
     if (slot == 0) {
         list->mTurnPlayer = player;
     }

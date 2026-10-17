@@ -6,7 +6,7 @@
 
 extern "C" void StopSeqArc(SoundManager *manager, u32 a, u32 b);
 
-static const VecFx32 data_ov007_02285bd0 = {0, 0x3000, 0};
+static const VecFx32 sPushVelocity = {0, 0x3000, 0};
 
 static u8 sCount;
 static ModelResource *sResources[2];
@@ -139,7 +139,7 @@ void GimmickAquosFukidashi::Update() {
             if (data_020d433c.mBattlePlayers->mBattleTarget) {
                 BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
                 if (p->mRecords[p->mRecord].mAttribute != 1) {
-                    VecFx32 a = data_ov007_02285bd0;
+                    VecFx32 a = sPushVelocity;
                     VecFx32 b = data_020d433c.mBattlePlayers->mBattleTarget->mVelocity;
                     int dy = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition.y - mPosition.y + -0x54cd;
                     if (dy <= 0x1000) {

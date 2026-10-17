@@ -19,11 +19,11 @@
 ConfrontEmblem06::ConfrontEmblem06(u8 index) {
     char path[0x80];
     mState   = 0;
-    mUnk_05_0 = 0;
-    mUnk_05_1 = 0;
-    mUnk_05_2 = 0;
-    mUnk_05_3 = 0;
-    mUnk_05_4 = 0;
+    mTouchHeld = 0;
+    mShakeRight = 0;
+    mBurstStarted = 0;
+    mStopped = 0;
+    mMuted = 0;
     mShakeFrames   = 0;
     mScale   = 1.0f;
     mSpeed   = 12.0f;
@@ -72,7 +72,7 @@ void ConfrontEmblem06::Update() {
                 Bounce();
                 mX = mX + mDirX * mSpeed;
                 mY = mY + mDirY * mSpeed;
-                if (mUnk_05_0) {
+                if (mTouchHeld) {
                     return;
                 }
                 mScale = mScale - 0.1f;
@@ -82,11 +82,11 @@ void ConfrontEmblem06::Update() {
             } else {
                 mScale += 0.015f;
                 if (mScale >= 2.0f) {
-                    if (!mUnk_05_4) {
+                    if (!mMuted) {
                         SoundManager::Get().StartSeqArc(0x2e);
                     }
                     mAnims[1]->ResetAnimation();
-                    mUnk_05_2 = 1;
+                    mBurstStarted = 1;
                     mState++;
                 }
             }
@@ -101,11 +101,11 @@ void ConfrontEmblem06::Update() {
             if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
                 PickDir();
             }
-            mUnk_05_0 = 0;
+            mTouchHeld = 0;
             mScale   = 1.0f;
             mSpeed   = 12.0f;
             mState   = 1;
-            mUnk_05_3 = 0;
+            mStopped = 0;
             return;
     }
 }
@@ -113,10 +113,10 @@ void ConfrontEmblem06::Update() {
 void ConfrontEmblem06::Draw() {
     s16 x = (s32) mX;
     s16 y = (s32) mY;
-    if (mUnk_05_0) {
+    if (mTouchHeld) {
         if (0.0f == mSpeed) {
             float q = 1.3f * mScale;
-            if (mUnk_05_1) {
+            if (mShakeRight) {
                 x = (s32) ((float) x + q);
             } else {
                 x = (s32) ((float) x - q);
@@ -124,7 +124,7 @@ void ConfrontEmblem06::Draw() {
             mShakeFrames++;
             if (mShakeFrames >= 2) {
                 mShakeFrames   = 0;
-                mUnk_05_1 ^= 1;
+                mShakeRight ^= 1;
             }
         }
     }
@@ -180,7 +180,7 @@ void ConfrontEmblem06::Bounce() {
     if (!bounced) {
         return;
     }
-    if (mUnk_05_4) {
+    if (mMuted) {
         return;
     }
     if (CountSeqArcSounds(&SoundManager::Get(), 0x2c)) {
@@ -196,7 +196,7 @@ int ConfrontEmblem06::func_ov007_02221f2c(int a) {
     if (PointDistance((s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY, (s32) mX, (s32) mY) > 28) {
         return -1;
     }
-    mUnk_05_0 = 1;
+    mTouchHeld = 1;
     float limit;
     if (a == 0) {
         limit = 0.4f;
@@ -204,9 +204,9 @@ int ConfrontEmblem06::func_ov007_02221f2c(int a) {
         limit = 1.0f;
     }
     if (mSpeed < limit) {
-        if (!mUnk_05_3) {
-            mUnk_05_3 = 1;
-            if (!mUnk_05_4) {
+        if (!mStopped) {
+            mStopped = 1;
+            if (!mMuted) {
                 SoundManager::Get().StartSeqArc(0x2d);
             }
         }
@@ -219,26 +219,26 @@ int ConfrontEmblem06::func_ov007_02221f2c(int a) {
 
 int ConfrontEmblem06::func_ov007_0222210c() {
     int result = -1;
-    if (mUnk_05_0) {
-        mUnk_05_0 = 0;
+    if (mTouchHeld) {
+        mTouchHeld = 0;
         if (0.0f == mSpeed) {
             result  = (s16) (s32) (10.0f * mScale);
             float t = 12.0f * mScale;
             t /= 2.0f;
             mSpeed = t;
-            if (!mUnk_05_4) {
+            if (!mMuted) {
                 if (CountSeqArcSounds(&SoundManager::Get(), 0x2d)) {
                     StopSeqArc(&SoundManager::Get(), 0x2d, 1);
                 }
             }
-            mUnk_05_3 = 0;
+            mStopped = 0;
         }
     }
     return result;
 }
 
 void ConfrontEmblem06::EaseSpeed() {
-    if (mUnk_05_0) {
+    if (mTouchHeld) {
         return;
     }
     if (mSpeed > 2.0f) {
@@ -259,8 +259,8 @@ u8 ConfrontEmblem06::IsBursting() {
 }
 
 u8 ConfrontEmblem06::TakeBurstStarted() {
-    if (mUnk_05_2) {
-        mUnk_05_2 = 0;
+    if (mBurstStarted) {
+        mBurstStarted = 0;
         return 1;
     }
     return 0;
@@ -321,7 +321,7 @@ BOOL ConfrontBg06::func_ov007_0221bfa4() {
     if ((u8) spectator) {
         return FALSE;
     }
-    mEmblem->mUnk_05_4 = 1;
+    mEmblem->mMuted = 1;
     mEmblem->EaseSpeed();
     mEmblem->Update();
     return FALSE;

@@ -9,11 +9,11 @@
 class ConfrontEmblem06 {
 public:
     /* 04 */ u8 mState;
-    /* 05 */ u8 mUnk_05_0 : 1;
-    /* 05 */ u8 mUnk_05_1 : 1;
-    /* 05 */ u8 mUnk_05_2 : 1;
-    /* 05 */ u8 mUnk_05_3 : 1;
-    /* 05 */ u8 mUnk_05_4 : 1;
+    /* 05 */ u8 mTouchHeld : 1;
+    /* 05 */ u8 mShakeRight : 1;
+    /* 05 */ u8 mBurstStarted : 1;
+    /* 05 */ u8 mStopped : 1;
+    /* 05 */ u8 mMuted : 1;
     /* 06 */ u8 mShakeFrames;
     /* 07 */ PAD(0x07, 0x08);
     /* 08 */ float mScale;

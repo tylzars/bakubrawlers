@@ -25,7 +25,7 @@ static const WindowItemRecord sUnionTwoButtonItems[2] = {
     {1, 0x1, 56, 120, 144, 20, 0, {0, 0, 1, 1}, 0, 1},
 };
 
-static const u8 data_ov007_022799fc[2][2] = {{0x38, 0x58}, {0x38, 0x78}};
+static const u8 sTwoButtonAnimPositions[2][2] = {{0x38, 0x58}, {0x38, 0x78}};
 
 BattleUnionAbility::BattleUnionAbility(u8 type, u32 charOffset, u16 palette)
     : SceneBase(0x3e8, 0) {
@@ -82,7 +82,7 @@ void BattleUnionAbility::Update() {
     }
     switch (mState) {
         case 0:
-            func_ov007_02234428();
+            SetupSubWndAndAntenna();
             LoadGraphics();
             mState++;
             break;
@@ -150,7 +150,7 @@ void BattleUnionAbility::Close(u8 choice) {
     mChoice = choice;
 }
 
-void BattleUnionAbility::func_ov007_02234428() {
+void BattleUnionAbility::SetupSubWndAndAntenna() {
     switch (mType) {
         case 0:
         case 1:
@@ -257,7 +257,7 @@ void BattleUnionAbility::Draw() {
             u8 i = 0;
             do {
                 mAnims[i]->Update();
-                mAnims[i]->Draw(1, (s16) (mSlide + data_ov007_022799fc[i][0]), data_ov007_022799fc[i][1], 0);
+                mAnims[i]->Draw(1, (s16) (mSlide + sTwoButtonAnimPositions[i][0]), sTwoButtonAnimPositions[i][1], 0);
                 i++;
             } while (i < 2);
             mWindow->Draw();

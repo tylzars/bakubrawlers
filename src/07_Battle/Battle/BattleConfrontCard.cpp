@@ -85,7 +85,7 @@ public:
 };
 u32 GetTexVariant(u32 a, u32 b);
 void RemoveMarker(BattlePlayerList *list, u8 index);
-u8 func_ov007_0226a700(BattlePlayer *player, u8 mask, s16 x, s16 y);
+u8 PickUnflaggedSlot6c(BattlePlayer *player, u8 mask, s16 x, s16 y);
 
 
 BattleConfrontCard::BattleConfrontCard(u32 unk)
@@ -985,7 +985,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                             j++;
                         } while (j < data_020d433c.mUnk_99);
                         u8 other = (i + 1) % 2;
-                        u8 pick  = func_ov007_0226a700(data_020d433c.mBattlePlayers->mPlayers[ent->mUnk_0d_4], mask,
+                        u8 pick  = PickUnflaggedSlot6c(data_020d433c.mBattlePlayers->mPlayers[ent->mUnk_0d_4], mask,
                                                        (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
                         if (pick == 0xff) {
                             mUnk_56 = 0;
@@ -1011,7 +1011,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                             j++;
                         } while (j < data_020d433c.mUnk_99);
                         u8 other = (i + 1) % 2;
-                        u8 pick  = func_ov007_0226a700(data_020d433c.mBattlePlayers->mPlayers[ent->mUnk_0d_4], mask,
+                        u8 pick  = PickUnflaggedSlot6c(data_020d433c.mBattlePlayers->mPlayers[ent->mUnk_0d_4], mask,
                                                        (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
                         if (pick == 0xff) {
                             mCardId = 0;
@@ -1350,8 +1350,8 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 data_020d433c.mBattlePlayers->mPlayers[e[mUnk_21].mUnk_0d_4]->PushHistory(e[other].mUnk_04, e[other].mUnk_0d_0);
             }
             RemoveMarker(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnits[data_020d433c.mBattlePlayers->mUnitA].mMarker);
-            func_ov007_02262828(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnitA, 2);
-            func_ov007_02262828(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnitB, 2);
+            RemoveUnit(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnitA, 2);
+            RemoveUnit(data_020d433c.mBattlePlayers, data_020d433c.mBattlePlayers->mUnitB, 2);
             mStep = 0x35;
             break;
         }
@@ -2299,7 +2299,7 @@ u8 BattleConfrontCard::func_ov007_02244440() {
                 j++;
             } while (j < data_020d433c.mUnk_99);
             u8 other = (i + 1) % 2;
-            mSlot6cIndex = func_ov007_0226a700(data_020d433c.mBattlePlayers->mPlayers[cur->mUnk_0d_4], mask,
+            mSlot6cIndex = PickUnflaggedSlot6c(data_020d433c.mBattlePlayers->mPlayers[cur->mUnk_0d_4], mask,
                                           (s16) (e[other].mUnk_04 - e[i].mUnk_04), (s16) (e[other].mUnk_00 - e[i].mUnk_00));
             if (mSlot6cIndex == 0xff) {
                 mUnk_56 = 0;

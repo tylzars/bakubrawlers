@@ -12,15 +12,15 @@ struct BattleRealBakuTexEntry { // 0xc bytes, table at 022858b8
     /* 00 */ u8 mCount;
     /* 01 */ u8 mIds[11];
 };
-extern BattleRealBakuTexEntry data_ov007_022858b8[];
+extern BattleRealBakuTexEntry gRealBakuTexEntries[];
 
 BattleRealBaku::BattleRealBaku(u8 id, int unk2, u8 unk3, int unk4, int unk5, int unk6, int unk7) {
     mId       = id;
     mAnimDataIndex   = unk2;
-    mUnk_06_0 = unk3;
+    mVariant = unk3;
     mUnk_06_3 = unk4;
-    mUnk_06_4 = unk5;
-    mUnk_06_5 = unk6;
+    mUseBoxTest = unk5;
+    mUseCallbackMtx = unk6;
     mUnk_06_6 = unk7;
     mModel    = 0;
     mAnim     = 0;
@@ -46,11 +46,11 @@ void BattleRealBaku::LoadModel() {
     NitroModel *model;
     ChangeDir("/Game/Realbaku/Mdl");
     if (mId == 0x1d) {
-        sprintf(buf, "realb%02d_%02d.nsbtx", charId, mUnk_06_0);
+        sprintf(buf, "realb%02d_%02d.nsbtx", charId, mVariant);
         tex = new NitroTexture(buf);
-        sprintf(buf, "realb%02d_%02d.nsbmd", charId, mUnk_06_0);
+        sprintf(buf, "realb%02d_%02d.nsbmd", charId, mVariant);
         model = new NitroModel(buf, tex);
-    } else if (mId == 0x22 && mUnk_06_0 == 0) {
+    } else if (mId == 0x22 && mVariant == 0) {
         sprintf(buf, "realb83.nsbtx", charId); // the original passes the (unused) id here too
         tex = new NitroTexture(buf);
         sprintf(buf, "realb83.nsbmd", charId);
@@ -75,19 +75,19 @@ void BattleRealBaku::LoadModel() {
     mAnim               = new ModelAnim(data, model);
     mModel              = model->CreateInstance(mAnim);
     ChangeDir("/");
-    mModel->mUseBoxTest = mUnk_06_4;
+    mModel->mUseBoxTest = mUseBoxTest;
     mModel->StartAnim(0, mUnk_06_3);
-    if (mUnk_06_5) {
+    if (mUseCallbackMtx) {
         mModel->EnableCallbackMtx();
     }
     if (flag) {
-        BattleRealBakuTexEntry *entry = &data_ov007_022858b8[mId];
+        BattleRealBakuTexEntry *entry = &gRealBakuTexEntries[mId];
         if (entry->mCount) {
             ChangeDir("/Game/Realbaku/Tex");
             u8 i = 0;
             do {
                 sprintf(name1, "realb%02d_%02d", charId, entry->mIds[i]);
-                sprintf(name2, "realb%02d_%02d_%02d", charId, entry->mIds[i], mUnk_06_0);
+                sprintf(name2, "realb%02d_%02d_%02d", charId, entry->mIds[i], mVariant);
                 tex->LoadPaletteFile(name1, name2, 0);
                 i++;
             } while (i < entry->mCount);

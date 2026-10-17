@@ -279,9 +279,9 @@ struct BattlePlayerList : public SceneBase {
     }
 };
 
-void func_ov007_022628e0(BattlePlayerList *list, u8 index, const VecFx32 *pos, u8 marker);
-void func_ov007_02262a70(BattlePlayerList *list, u8 slot, u8 player);
-void func_ov007_02262828(BattlePlayerList *list, u8 index, u8 value);
+void MoveUnit(BattlePlayerList *list, u8 index, const VecFx32 *pos, u8 marker);
+void SetTurnOrder(BattlePlayerList *list, u8 slot, u8 player);
+void RemoveUnit(BattlePlayerList *list, u8 index, u8 value);
 
 class EffectManager; // particle effect list (ctor 0202ab24 creates the 0x61c byte effects)
 

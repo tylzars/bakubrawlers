@@ -4,7 +4,7 @@
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 
-static const VecFx32 data_ov007_02279420     = {0, 0xf000, -0xa000};
+static const VecFx32 sPowerGEffectOffset     = {0, 0xf000, -0xa000};
 static const u8 sPowerGTurnLimits[12] = {3, 4, 5, 0, 0, 0, 0x55, 0x15, 0, 0, 0, 0};
 
 static ModelResource *sResource;
@@ -78,7 +78,7 @@ void GimmickFieldPowerG::Update() {
         CameraManager::Get();
         MtxFx43 mtx = data_020c1cf4;
         VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
-        VecFx32 v      = data_ov007_02279420;
+        VecFx32 v      = sPowerGEffectOffset;
         u16 handle     = StartEffect(data_020d433c.mEffects, 1, 3, 0, 0);
         if (handle) {
             mtx._[11] = 0;

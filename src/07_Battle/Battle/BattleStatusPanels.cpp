@@ -337,13 +337,13 @@ void BattleStatusPanels::DrawPanels() {
             if (data_020d433c.mBattlePlayers->mPlayers[i]->IsActive()) {
                 mPanels[i].mAnims[5]->Draw(0, (s16) (dir * (mPanels[i].mMirrored * 0x18 - 2) + q), (s16) (int) (y - 8), mUnk_f2);
             }
-            s16 px = dir * (mPanels[i].mUnk_34 * mPanels[i].mMirrored + 0xe) + q;
+            s16 px = dir * (mPanels[i].mNameWidth * mPanels[i].mMirrored + 0xe) + q;
             if (dir < 0) {
                 if (px < 0x82) {
                     px = 0x82;
                 }
             } else {
-                int e = px + mPanels[i].mUnk_34;
+                int e = px + mPanels[i].mNameWidth;
                 if (e >= 0x7e) {
                     e -= 0x7e;
                     px = px - e;
@@ -416,12 +416,12 @@ void BattleStatusPanels::PrintName(u32 index) {
     s16 width;
     height                 = 0;
     width                  = 0;
-    mPanels[index].mUnk_34 = 0;
+    mPanels[index].mNameWidth = 0;
     ClearNameText(index);
     TextManager::Get().mUse4bppFont = 1;
     TextManager::Get().Print(data_020d433c.mBattlePlayers->mPlayers[index]->NameText(),
                              data_020d433c.mBattlePlayers->mPlayers[index]->mNameLength, mPanels[index].mBuffer, 0x10, 2,
-                             &height, &width, &mPanels[index].mUnk_34, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
+                             &height, &width, &mPanels[index].mNameWidth, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
     switch (mMode) {
         case 0:

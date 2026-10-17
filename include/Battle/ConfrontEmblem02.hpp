@@ -11,10 +11,10 @@ public:
     /* 04 */ u8 mState;
     /* 05 */ u8 mSide;
     /* 06 */ u8 mEmblem;
-    /* 07 */ u8 mUnk_07_0 : 1;
+    /* 07 */ u8 mTouched : 1;
     /* 07 */ u8 mUnk_07_1 : 1;
     /* 07 */ u8 mUnk_07_2 : 1;
-    /* 07 */ u8 mUnk_07_3 : 1;
+    /* 07 */ u8 mShrinkStarted : 1;
     /* 08 */ u8 mTimer;
     /* 09 */ u8 mPhase;
     /* 0a */ PAD(0x0a, 0x0c);

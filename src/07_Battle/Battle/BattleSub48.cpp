@@ -11,7 +11,7 @@
 // Fixed-point conversion of a float value, rounded to nearest.
 
 extern const s32 data_ov007_022790c8[][6];
-extern const u8 data_ov007_022790c0[];
+extern const u8 gCircleSlots[];
 
 int PointDistance(int x1, int y1, int x2, int y2);
 void NormalizeXY(float x, float y, float *out);
@@ -25,15 +25,15 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
     mState = 0;
     mUnk_0d = 0;
     mUnk_0e_0 = 0;
-    mUnk_0e_1 = 0;
-    mUnk_0e_2 = 0;
-    mUnk_0e_3 = 0;
+    mCircleUpDownVisible = 0;
+    mSideUpDownVisible = 0;
+    mNoEmblem = 0;
     mUnk_0e_4 = 0;
-    mUnk_0f = 0;
+    mFieldIndex = 0;
     mStepFrames = 0;
     mAbilitiesY = 0xc0;
     mAbilitiesYPerFrame = 10;
-    mUnk_3c = mode;
+    mSide = mode;
     mData = data;
     BattleEntry *entries = mData->mEntries;
     u8 i = 0;
@@ -42,23 +42,23 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
         i++;
     } while (i < 15);
     if (data_020d433c.mFieldId != 0 && data_020d433c.mFieldId != 7) {
-        mUnk_0f = data_020d433c.mFieldId - 1;
+        mFieldIndex = data_020d433c.mFieldId - 1;
         u8 k = 0;
         do {
             EntryIndex kk = (EntryIndex) k;
             u8 nib = entries[kk].mUnk_0d_0;
-            s32 value = data_ov007_022790c8[mUnk_0f][nib];
+            s32 value = data_ov007_022790c8[mFieldIndex][nib];
             mUnk_12[k] = nib;
             if (entries[k].mBakuganId == 5) {
-                if (value < data_ov007_022790c8[mUnk_0f][3]) {
+                if (value < data_ov007_022790c8[mFieldIndex][3]) {
                     mUnk_12[k] = 3;
                 }
             } else if (entries[k].mBakuganId == 6) {
-                if (value < data_ov007_022790c8[mUnk_0f][0]) {
+                if (value < data_ov007_022790c8[mFieldIndex][0]) {
                     mUnk_12[k] = 0;
                 }
             }
-            u8 c = data_ov007_022790c0[mUnk_12[k]];
+            u8 c = gCircleSlots[mUnk_12[k]];
             mCircleY = 90;
             int step = (u16) (c * 0x2aaa + 0xc000) >> 4;
             mPos[k][0] = 110.0f + 50.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
@@ -142,10 +142,10 @@ void BattleSub48::LoadGraphics() {
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
     screen.SetObjVramMode(1);
     ChangeDir("/Game/Confrontation/Obj/");
-    if (mUnk_3c < 2) {
-        if (entries[mUnk_3c].mCardId != 0) {
-            kind = GetCardInfo(entries[(u8) mUnk_3c].mCardId, 3);
-            other = func_ov007_02222764((u8) mUnk_3c, entries);
+    if (mSide < 2) {
+        if (entries[mSide].mCardId != 0) {
+            kind = GetCardInfo(entries[(u8) mSide].mCardId, 3);
+            other = func_ov007_02222764((u8) mSide, entries);
             if (kind != 5 && other != 5) {
                 i = 0;
                 do {
@@ -220,11 +220,11 @@ void BattleSub48::LoadGraphics() {
         j++;
         i++;
     } while (i < 2);
-    if (!mUnk_0e_3) {
+    if (!mNoEmblem) {
         i = 0;
         j = 7;
         do {
-            s32 value = data_ov007_022790c8[mUnk_0f][i];
+            s32 value = data_ov007_022790c8[mFieldIndex][i];
             mAnims[j] = new CellAnimation("vs_u_obj_updown_32k_nce.bin", 0, 1, 1);
             mAnims[j]->mCharBase = screen.GetCharBase(0x3400);
             mAnims[j]->mPaletteBase = 3;
@@ -276,7 +276,7 @@ void BattleSub48::Update() {
     }
 }
 
-extern const u8 data_ov007_022790bc[];
+extern const u8 gSideTargetX[];
 
 u8 BattleSub48::func_ov007_02224a70() {
     if (mState == 0) {
@@ -288,7 +288,7 @@ u8 BattleSub48::func_ov007_02224a70() {
         case 0: {
             i = 0;
             do {
-                mVel[i][0] = ((float) (u32) data_ov007_022790bc[i] - mPos[i][0]) / 60.0f;
+                mVel[i][0] = ((float) (u32) gSideTargetX[i] - mPos[i][0]) / 60.0f;
                 mVel[i][1] = (5.0f - mPos[i][1]) / 60.0f;
                 i++;
             } while (i < 2);
@@ -321,7 +321,7 @@ u8 BattleSub48::func_ov007_02224a70() {
                 mStepFrames = 0;
                 i = 0;
                 do {
-                    s32 value = data_ov007_022790c8[mUnk_0f][mUnk_12[i]];
+                    s32 value = data_ov007_022790c8[mFieldIndex][mUnk_12[i]];
                     u8 slot = mUnk_12[i] + 7;
                     if (value > 0x1000) {
                         mAnims[slot]->SetAnimation(0);
@@ -347,9 +347,9 @@ void BattleSub48::DrawCircleAndSides() {
     int step;
     u8 i = 0;
     do {
-        u8 c = data_ov007_022790c0[i];
+        u8 c = gCircleSlots[i];
         u16 angle = c * 0x2aaa + 0xc000;
-        if (mUnk_0e_1) {
+        if (mCircleUpDownVisible) {
             u8 slot = i + 7;
             if (mAnims[slot]->mAnimIndex != 2) {
                 step = angle >> 4;
@@ -359,7 +359,7 @@ void BattleSub48::DrawCircleAndSides() {
                 mAnims[slot]->Draw(0, (s16) x, (s16) y, 1);
             }
         }
-        if (data_ov007_022790c0[mUnk_12[0]] != c && data_ov007_022790c0[mUnk_12[1]] != c) {
+        if (gCircleSlots[mUnk_12[0]] != c && gCircleSlots[mUnk_12[1]] != c) {
             step = angle >> 4;
             x = 110.0f + 50.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
             y = (float) (u32) mCircleY + 50.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
@@ -375,7 +375,7 @@ void BattleSub48::DrawSides() {
     do {
         u16 x = mPos[i][0];
         u16 y = mPos[i][1];
-        if (mUnk_0e_2) {
+        if (mSideUpDownVisible) {
             u8 slot = mUnk_12[i] + 7;
             mAnims[slot]->Update();
             mAnims[slot]->Draw(0, (s16) (x + (i == 0 ? 30 : -30)), (s16) y, 1);
@@ -406,7 +406,7 @@ void BattleSub48::DrawAbilitiesAndSides() {
             if (mAnims[3] == 0) {
                 break;
             }
-            if ((i == 0 && mUnk_3c == 0) || (i == 1 && mUnk_3c == 1)) {
+            if ((i == 0 && mSide == 0) || (i == 1 && mSide == 1)) {
                 u8 other = i ^ 1;
                 if (!entries[other].mUnk_0f_3) {
                     if (!mUnk_0e_0) {
@@ -459,7 +459,7 @@ void BattleSub48::DrawAbilitiesAndSides() {
         }
         i++;
     } while (i < 2);
-    if (mUnk_0e_3) {
+    if (mNoEmblem) {
         return;
     }
     DrawSides();

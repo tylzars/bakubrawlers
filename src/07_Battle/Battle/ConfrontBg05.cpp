@@ -13,7 +13,7 @@
 
 ConfrontEmblem05::ConfrontEmblem05(u8 emblem) {
     char path[0x80];
-    mUnk_04_0 = 0;
+    mMirrored = 0;
     mAngle    = 0;
     mSpeed    = 0x50;
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
@@ -36,14 +36,14 @@ ConfrontEmblem05::~ConfrontEmblem05() {
 }
 
 void ConfrontEmblem05::Update() {
-    if (!mUnk_04_0) {
+    if (!mMirrored) {
         mX = 78.0f + 50.0f * ((float) FX_SinCosTable_[(mAngle >> 4) * 2 + 1] / 4096.0f);
     } else {
         mX = 178.0f + 50.0f * (0.0f - (float) FX_SinCosTable_[(mAngle >> 4) * 2 + 1] / 4096.0f);
     }
     mY = 136.0f + 32.0f * ((float) FX_SinCosTable_[(mAngle >> 4) * 2] / 4096.0f);
     if (mAngle + mSpeed >= 0x10000) {
-        mUnk_04_0 ^= 1;
+        mMirrored ^= 1;
     }
     mAngle += mSpeed;
 }

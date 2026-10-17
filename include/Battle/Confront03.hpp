@@ -14,8 +14,8 @@ struct ConfrontRow {
 // Confrontation screen with only emblems (no vs_b_bg file), vtables 02286078 / 022860c8.
 class Confront03 : public BattleBase {
 public:
-    /* 68 */ u32 mUnk_68;
-    /* 6c */ u8 mUnk_6c;
+    /* 68 */ u32 mPenFrames;
+    /* 6c */ u8 mPenEmblemIndex;
     /* 6d */ u8 mLongHold;
     /* 6e */ u16 mUsedSlotMask;
     /* 70 */ ConfrontRow *mConfrontRow;

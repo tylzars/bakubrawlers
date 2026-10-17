@@ -793,7 +793,7 @@ Other findings from linking:
   `if (g & 0xff)` (`CreateCommandListWindow`, `CreateCommandPageWindow`).
 - **Load order through locals:** a pointer copied to a local before a store fixes the order of pool loads
   (`func_02084a10`); fields loaded into named locals before arithmetic fix the order of field loads, then try
-  both operand orders (`BattleTarget::func_ov007_0225aa80`).
+  both operand orders (`BattleTarget::TestPointInHitBoxXZ`).
 - **One-word diffs in the literal pool** can be a wrong constant, e.g. dividing by the wrong number
   (`BattleTarget::func_ov007_0225c360` divides by 182, not 240).
 - **A stack argument read twice:** a `volatile` parameter reproduces it (`BattleOrderSelect::IsInRect`);
@@ -801,7 +801,7 @@ Other findings from linking:
 - **Float compared with an int:** keep the float expression in a helper that returns float and cast at the
   compare (`(s32) FramesToFloat(n) < x`); mwcc evaluates the float, then the left side, then `_ffix`.
 - **Indexing in place vs a pointer local:** `owner->mSlots[i].x` written inline instead of through a `slot`
-  pointer local fixed a register difference (`func_ov007_0226a700`).
+  pointer local fixed a register difference (`PickUnflaggedSlot6c`).
 - **Loop-invariant expressions** are hoisted out of the outer loop only when bound to a local; write them inline
   in the inner loop's condition to keep them in the loop.
 - **Product order:** `a*b + c*d` evaluates the right-hand product first; write the terms in reverse to swap

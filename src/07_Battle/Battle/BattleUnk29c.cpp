@@ -18,7 +18,7 @@ BattleUnk29c::BattleUnk29c() {
         mFontObjs[i] = 0;
     }
     for (i = 0; i < 3; i++) {
-        mUnk_9b[i] = 0;
+        mNearUnitHandles[i] = 0;
     }
     for (i = 0; i < 3; i++) {
         mUnk_98[i] = 0;
@@ -26,11 +26,11 @@ BattleUnk29c::BattleUnk29c() {
     mShadow = 0;
     mUnk_9e = 0;
     mUnk_9f = 0;
-    mUnk_88.x = 0;
-    mUnk_88.y = 0;
-    mUnk_88.z = 0;
-    mUnk_96 = 0;
-    mUnk_94 = 0;
+    mStIconPosition.x = 0;
+    mStIconPosition.y = 0;
+    mStIconPosition.z = 0;
+    mStIconFontObjIndex = 0;
+    mStIconUnitHandle = 0;
     mUnk_95 = 0;
     mUnk_a0 = 0;
 }
@@ -49,7 +49,7 @@ BakuganModel *BattleUnk29c::GetBakugan(u8 index) {
     return mBakugans[index];
 }
 
-void BattleUnk29c::func_ov007_0226fc5c(u32 index) {
+void BattleUnk29c::ReleaseBakugan(u32 index) {
     BakuganModel *pose = mBakugans[index];
     if (pose) {
         delete pose;
@@ -100,12 +100,12 @@ void BattleUnk29c::Release() {
         mFontObjs[i] = 0;
         i++;
     } while (i < 9);
-    mUnk_94 = 0;
+    mStIconUnitHandle = 0;
     mUnk_95 = 0;
-    mUnk_96 = 0;
-    mUnk_88.x = 0;
-    mUnk_88.y = 0;
-    mUnk_88.z = 0;
+    mStIconFontObjIndex = 0;
+    mStIconPosition.x = 0;
+    mStIconPosition.y = 0;
+    mStIconPosition.z = 0;
 }
 
 void BattleUnk29c::Update() {
@@ -114,16 +114,16 @@ void BattleUnk29c::Update() {
         if (mBakugans[i]) {
             switch (mMoveStates[i]->mMode) {
                 case 2:
-                    func_ov007_02270dbc(i);
+                    UpdateMoveMode2(i);
                     break;
                 case 3:
-                    func_ov007_02270f1c(i);
+                    UpdateMoveMode3(i);
                     break;
                 case 4:
-                    func_ov007_02271054(i);
+                    UpdateMoveMode4(i);
                     break;
                 case 5:
-                    func_ov007_0227118c(i);
+                    UpdateMoveMode5(i);
                     break;
             }
         }
@@ -148,7 +148,7 @@ void BattleUnk29c::func_ov007_0226ff08(u32 flag) {
     }
     u8 i;
     for (i = 0; i < 3; i++) {
-        mUnk_9b[i] = 0;
+        mNearUnitHandles[i] = 0;
     }
     for (i = 0; i < 3; i++) {
         mUnk_98[i] = 0;
@@ -182,10 +182,10 @@ void BattleUnk29c::func_ov007_0226ff08(u32 flag) {
                     if (far[j] == 0 || far[j] > dist) {
                         if (j + 1 < 3) {
                             far[j + 1]     = far[j];
-                            mUnk_9b[j + 1] = mUnk_9b[j];
+                            mNearUnitHandles[j + 1] = mNearUnitHandles[j];
                         }
                         far[j]     = dist;
-                        mUnk_9b[j] = n + 1;
+                        mNearUnitHandles[j] = n + 1;
                         break;
                     }
                     j++;
@@ -246,18 +246,18 @@ void BattleUnk29c::Draw() {
         }
         i++;
     } while (i < 12);
-    func_ov007_02270350();
-    func_ov007_0227068c();
-    func_ov007_0227044c();
+    DrawNearPnames();
+    DrawStIcons();
+    DrawNearPyPt();
 }
 
-void BattleUnk29c::func_ov007_02270350() {
+void BattleUnk29c::DrawNearPnames() {
     if (mUnk_9e == 0) {
         return;
     }
     u8 i = 0;
     do {
-        u8 k = mUnk_9b[i];
+        u8 k = mNearUnitHandles[i];
         if (k && mBakugans[k - 1]) {
             VecFx32 pos = mBakugans[k - 1]->mPosition;
             VecFx32 sc  = {0x4cd, 0x4cd, 0x4cd};
@@ -273,14 +273,14 @@ void BattleUnk29c::func_ov007_02270350() {
     } while (i < 3);
 }
 
-// func_ov007_0227044c's scale and offset are file statics defined before the camera header is first parsed: the
+// DrawNearPyPt's scale and offset are file statics defined before the camera header is first parsed: the
 // size sort needs them ahead of CameraManager's guard, node and instance to give the original .rodata order.
 static const VecFx32 sMarkerScale  = {0x4cd, 0x4cd, 0x4cd};
 static const VecFx32 sMarkerOffset = {-0x5000, 0, 0};
 
 #include "Graphics/Camera.hpp"
 
-void BattleUnk29c::func_ov007_0227044c() {
+void BattleUnk29c::DrawNearPyPt() {
     if (mUnk_a0 != 1) {
         return;
     }
@@ -289,10 +289,10 @@ void BattleUnk29c::func_ov007_0227044c() {
     }
     u8 i = 0;
     do {
-        if (mUnk_9b[i] && mBakugans[mUnk_9b[i] - 1]) {
-            VecFx32 pos = mBakugans[mUnk_9b[i] - 1]->mPosition;
+        if (mNearUnitHandles[i] && mBakugans[mNearUnitHandles[i] - 1]) {
+            VecFx32 pos = mBakugans[mNearUnitHandles[i] - 1]->mPosition;
             VecFx32 sc  = sMarkerScale;
-            u8 idx = mUnk_9b[i] - 1;
+            u8 idx = mNearUnitHandles[i] - 1;
             u8 sel = data_020d433c.mBattlePlayers->mUnits[idx].mPlayer;
             u8 cur = data_020d433c.mBattlePlayers->mUnk_2a9;
             VecFx32 off = sMarkerOffset;
@@ -321,34 +321,34 @@ void BattleUnk29c::func_ov007_0227044c() {
     } while (i < 3);
 }
 
-void BattleUnk29c::func_ov007_0227068c() {
+void BattleUnk29c::DrawStIcons() {
     u8 i = 0;
     if (mUnk_a0 == 0) {
         do {
-            func_ov007_02270784(i + 1);
+            DrawUnitStIcons(i + 1);
             i++;
         } while (i < 12);
     } else if (mUnk_9e) {
         do {
             if (mUnk_98[i]) {
-                func_ov007_02270784(mUnk_98[i]);
+                DrawUnitStIcons(mUnk_98[i]);
             }
             i++;
         } while (i < 3);
     }
-    if (mUnk_94) {
-        VecFx32 pos = mUnk_88;
+    if (mStIconUnitHandle) {
+        VecFx32 pos = mStIconPosition;
         pos.y += 0xc000;
-        mFontObjs[mUnk_96]->mPosition  = pos;
-        BattleFontObj *f = mFontObjs[mUnk_96];
+        mFontObjs[mStIconFontObjIndex]->mPosition  = pos;
+        BattleFontObj *f = mFontObjs[mStIconFontObjIndex];
         f->mScale.x      = 0x1000;
         f->mScale.y      = 0x1000;
         f->mScale.z      = 0x1000;
-        mFontObjs[mUnk_96]->DrawInstance();
+        mFontObjs[mStIconFontObjIndex]->DrawInstance();
     }
 }
 
-void BattleUnk29c::func_ov007_02270784(u8 index) {
+void BattleUnk29c::DrawUnitStIcons(u8 index) {
     s32 scale;
     u32 i = index - 1;
     BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) i];
@@ -416,19 +416,19 @@ void BattleUnk29c::func_ov007_02270784(u8 index) {
     mFontObjs[slot]->DrawInstance();
 }
 
-void BattleUnk29c::func_ov007_02270a7c(u8 index, u32 type) {
+void BattleUnk29c::SetStIconUnit(u8 index, u32 type) {
     BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[index];
-    mUnk_94          = index + 1;
+    mStIconUnitHandle          = index + 1;
     mUnk_95          = type;
-    mUnk_88.x        = unit->mPos.x;
-    mUnk_88.y        = unit->mPos.y;
-    mUnk_88.z        = unit->mPos.z;
+    mStIconPosition.x        = unit->mPos.x;
+    mStIconPosition.y        = unit->mPos.y;
+    mStIconPosition.z        = unit->mPos.z;
     if (type != 0) {
         if (type == 1) {
-            mUnk_96 = 6;
+            mStIconFontObjIndex = 6;
         }
     } else {
-        mUnk_96 = 5;
+        mStIconFontObjIndex = 5;
     }
 }
 
@@ -485,7 +485,7 @@ static inline void AddRot(BakuganModel *p, const u16 *r) {
     p->mRotY = ry;
     p->mRotZ = rz;
 }
-void BattleUnk29c::func_ov007_02270dbc(u32 index) {
+void BattleUnk29c::UpdateMoveMode2(u32 index) {
     BattleMoveState *m = mMoveStates[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
         BakuganModel *q = mBakugans[index];
@@ -506,7 +506,7 @@ void BattleUnk29c::func_ov007_02270dbc(u32 index) {
     }
 }
 
-void BattleUnk29c::func_ov007_02270f1c(u32 index) {
+void BattleUnk29c::UpdateMoveMode3(u32 index) {
     BattleMoveState *m = mMoveStates[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
         BakuganModel *q = mBakugans[index];
@@ -535,7 +535,7 @@ void BattleUnk29c::func_ov007_02270f1c(u32 index) {
     }
 }
 
-void BattleUnk29c::func_ov007_02271054(u32 index) {
+void BattleUnk29c::UpdateMoveMode4(u32 index) {
     BattleMoveState *m = mMoveStates[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
         BakuganModel *q = mBakugans[index];
@@ -564,7 +564,7 @@ void BattleUnk29c::func_ov007_02271054(u32 index) {
     }
 }
 
-void BattleUnk29c::func_ov007_0227118c(u32 index) {
+void BattleUnk29c::UpdateMoveMode5(u32 index) {
     BattleMoveState *m = mMoveStates[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
         BakuganModel *q = mBakugans[index];
@@ -593,21 +593,21 @@ void BattleUnk29c::func_ov007_0227118c(u32 index) {
     }
 }
 
-void BattleUnk29c::func_ov007_022712c4(u8 index, VecFx32 *pos) {
+void BattleUnk29c::DrawFontObj(u8 index, VecFx32 *pos) {
     VecFx32 scale = {0x1000, 0x1000, 0x1000};
     mFontObjs[index]->mPosition = *pos;
     mFontObjs[index]->mScale    = scale;
     mFontObjs[index]->DrawInstance();
 }
 
-void BattleUnk29c::func_ov007_02271338(VecFx32 *pos) {
+void BattleUnk29c::DrawPyFontObj(VecFx32 *pos) {
     VecFx32 scale = {0x1000, 0x1000, 0x1000};
     mFontObjs[7]->mPosition = *pos;
     mFontObjs[7]->mScale    = scale;
     mFontObjs[7]->DrawInstance();
 }
 
-void BattleUnk29c::func_ov007_022713a4(VecFx32 *pos) {
+void BattleUnk29c::DrawPtFontObj(VecFx32 *pos) {
     VecFx32 scale = {0x1000, 0x1000, 0x1000};
     mFontObjs[8]->mPosition = *pos;
     mFontObjs[8]->mScale    = scale;

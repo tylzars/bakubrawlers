@@ -119,7 +119,7 @@ int AllocSndResBitIndex(void) {   // take the lowest free slot of 8
     return -1;
 }
 
-void ReleaseSndResBitIndex(int slot) {   // release a slot
+void FreeSndResBitIndex(int slot) {   // free a slot
     data_02213a00.usedBits &= ~(1 << slot);
 }
 

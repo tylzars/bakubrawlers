@@ -24,7 +24,7 @@ extern int OS_ReceiveMessage(void *, u32, u32);
 extern void func_0200822c(u32, u32, u32, u32);
 extern void func_02036878(u32 mask);
 extern void UnreserveChannels(u32 mask);
-extern void ReleaseSndResBitIndex(int slot);
+extern void FreeSndResBitIndex(int slot);
 extern void MIi_CpuClear32(u32 data, void *dest, u32 size);
 extern void DC_FlushRange(void *, u32);
 void StopSndCapture(void);
@@ -66,7 +66,7 @@ void StopSndCapture(void) {   // stop
     }
     if (c->capSlots != 0) func_02036878(c->capSlots);
     if (c->capMask != 0) UnreserveChannels(c->capMask);
-    if (use) ReleaseSndResBitIndex(c->alarm);
+    if (use) FreeSndResBitIndex(c->alarm);
     if (c->mode == 1) func_0200822c(0, 0, 0, 0);
     c->active = 0;
 }

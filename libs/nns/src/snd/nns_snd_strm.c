@@ -15,7 +15,7 @@ extern void NNS_FndRemoveListObject(void *list, void *obj);
 extern int ReserveChannels(u32 mask);
 extern void UnreserveChannels(u32 mask);
 extern int AllocSndResBitIndex(void);
-extern void ReleaseSndResBitIndex(int slot);
+extern void FreeSndResBitIndex(int slot);
 extern void func_02008160(u32 ch, u32 fmt, void *addr, u32 loop, u32 loopStart, u32 loopEnd, u32 vol, u32 shift, u32 timer, u32 pan);
 extern void func_02008098(int slot, u32 start, u32 period, void (*cb)(void *), void *arg);
 extern u32 OS_DisableInterrupts(void);
@@ -170,7 +170,7 @@ void StopSndStrm(SndStrm *s) {   // stop
 }
 
 void DeactivateSndStrm(SndStrm *s) {   // release slot and unlink
-    ReleaseSndResBitIndex(s->slot);
+    FreeSndResBitIndex(s->slot);
     NNS_FndRemoveListObject(&data_022142e8, s);
     s->active = 0;
 }

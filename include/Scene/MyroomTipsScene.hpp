@@ -30,9 +30,9 @@ public:
     /* 5c */ CellAnimation *mRowCells[2];
     /* 64 */ u32 mTextBufferSize;
     /* 68 */ u32 mGlyphCount;
-    /* 6c */ u32 mUnk_6c;
-    /* 70 */ s16 mUnk_70[4];
-    /* 78 */ s16 mUnk_78[4];
+    /* 6c */ u32 mRowGlyphCount;
+    /* 70 */ s16 mTextX[4];
+    /* 78 */ s16 mTextWidth[4];
     /* 80 */ u8 mFlags;
     /* 81 */ u8 mScroll;
     /* 82 */ u8 mRow;
@@ -52,21 +52,21 @@ public:
     /* 0c */
 
     void InitDisplay();       // 0x022266b8
-    void func_ov008_022267f4();
-    void func_ov008_02226e00();
+    void LoadGraphics();
+    void LoadText();
     void Draw();              // 0x02226ff0
     void func_ov008_022271f8();
     void func_ov008_022273f0();
-    void func_ov008_022274a4(const u8 *pos, u32 index);
+    void DrawCategoryCursor(const u8 *pos, u32 index);
     void func_ov008_022274f8();
-    s8 func_ov008_02227a08(const u8 *pos, u8 count);
-    BOOL func_ov008_02227dd4();
-    void func_ov008_02228214(s32 row);
-    void func_ov008_022283a8();
-    void func_ov008_0222840c(u32 message);
+    s8 UpdateCategorySelection(const u8 *pos, u8 count);
+    BOOL UpdateRowSelection();
+    void PrintRows(s32 row);
+    void CreateMessage();
+    void SetMessage(u32 message);
     void DrawMessage();       // 0x02228434
-    void func_ov008_0222844c();
-    void func_ov008_02228464();
-    u32 func_ov008_0222852c(s16 index);
-    void func_ov008_022285ac();
+    void ClearMessageBuffer();
+    void CountTips();
+    u32 GetUnlockedTip(s16 index);
+    void UpdateTextX();
 };

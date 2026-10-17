@@ -25,16 +25,16 @@ public:
     /* 2c */ u32 mResult;
     /* 30 */ u32 mTextBufferSize[2];
     /* 38 */ u32 mGlyphCount[2];
-    /* 40 */ u16 mUnk_40;
-    /* 42 */ s16 mUnk_42;
-    /* 44 */ u16 mUnk_44;
+    /* 40 */ u16 mTextWidth;
+    /* 42 */ s16 mTextX;
+    /* 44 */ u16 mTextEndY;
     /* 46 */ u8 mHasEmblem[10];
     /* 50 */ s8 mEmblem;
-    /* 51 */ u8 mUnk_51;
-    /* 52 */ u8 mUnk_52;
+    /* 51 */ u8 mCol;
+    /* 52 */ u8 mRow;
     /* 53 */ u8 mState;
     /* 54 */ s8 mTimer;
-    /* 55 */ s8 mUnk_55;
+    /* 55 */ s8 mTextPage;
     /* 56 */
 
     MyroomGiftScene(); // 0x0221d6b0
@@ -44,15 +44,15 @@ public:
     /* 0c */
 
     void InitDisplay();              // 0x0221dbe0
-    void func_ov008_0221de34();
+    void LoadGraphics();
     void InitEmblems();              // 0x0221e508
     void LoadEmblem(u8 index);       // 0x0221e560
     void Draw();                     // 0x0221e658
-    void func_ov008_0221e670();
+    void DrawMainScreen();
     void DrawWindows();              // 0x0221e968
     void ClearTextBuffers(u8 index); // 0x0221e984
-    void func_ov008_0221e9a0();
-    s32 func_ov008_0221ece8();
-    s8 func_ov008_0221eec4();
+    void PrintEmblemText();
+    s32 UpdateInput();
+    s8 UpdateKeySelection();
     void func_ov008_0221f194();
 };

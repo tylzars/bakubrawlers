@@ -176,24 +176,24 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     mMessage = NULL;
     mPanel[0] = NULL;
     mPanel[1] = NULL;
-    mUnk_2f4 = NULL;
-    mUnk_2f8 = NULL;
-    mUnk_2fc = NULL;
-    mUnk_300 = 0;
-    mUnk_304 = 0;
-    mUnk_308 = NULL;
-    mUnk_31c = NULL;
-    mUnk_320 = 0;
-    mUnk_324 = 0;
+    mMessages = NULL;
+    mTextBuffer = NULL;
+    mGlyphBuffer = NULL;
+    mTextBufferSize = 0;
+    mGlyphCount = 0;
+    mCharaNames = NULL;
+    mNameGlyphBuffer = NULL;
+    mNameBufferSize = 0;
+    mNameGlyphCount = 0;
     mState = 0;
-    mUnk_329 = 0;
+    mPage = 0;
     mUnk_32c = 0;
     mUnk_32d = 0;
-    mUnk_32e = 0x10;
-    mUnk_32f = 0x10;
-    mUnk_330 = 1;
-    mUnk_332 = 2;
-    mUnk_333 = 0;
+    mBlend = 0x10;
+    mBlendTarget = 0x10;
+    mBlendStep = 1;
+    mNextScene = 2;
+    mLocalIsFirstSlot = 0;
     mUnk_334 = 0;
     mUnk_335 = 0;
     mUnk_336 = 0;
@@ -201,14 +201,14 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     mUnk_338 = 0;
     mUnk_339 = 0;
     mUnk_33a = unk1;
-    mUnk_33b = 0;
+    mLocalSlot = 0;
     mUnk_33d = 0;
     mUnk_33e = 2;
     mUnk_33f = 0;
     mUnk_340 = 0;
     mUnk_341 = 0;
-    mUnk_344 = -1;
-    mUnk_348 = 1;
+    mPendingSubPlanes = -1;
+    mMessageEnabled = 1;
     data_020d433c.mUnk_10 = NULL;
     MI_CpuFill8(mUnk_10c, 0, sizeof(mUnk_10c));
     MI_CpuClearFast(mUnk_14c, sizeof(mUnk_14c));
@@ -217,63 +217,63 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     MI_CpuFill8(mCells2, 0, sizeof(mCells2));
     MI_CpuClear32(mFiles, sizeof(mFiles));
     MI_CpuClear32(mFileSizes, sizeof(mFileSizes));
-    MI_CpuClear32(mUnk_30c, sizeof(mUnk_30c));
-    MI_CpuFill8(mUnk_2d2, 0, sizeof(mUnk_2d2));
-    MI_CpuFill8(mUnk_2e4, 0, sizeof(mUnk_2e4));
+    MI_CpuClear32(mNameBuffers, sizeof(mNameBuffers));
+    MI_CpuFill8(mCharaNew, 0, sizeof(mCharaNew));
+    MI_CpuFill8(mFieldNew, 0, sizeof(mFieldNew));
     u8 j;
     u8 i;
     WirelessManager::Get();
     const u8 *mode = &data_020c4258;
     if (IsWirelessMode(mode)) {
-        mUnk_32a = mUnk_32b = WirelessManager::Get().func_0202f134();
+        mPlayerCount = mInputCount = WirelessManager::Get().func_0202f134();
     } else {
-        mUnk_32b = 1;
-        mUnk_32a = 2;
+        mInputCount = 1;
+        mPlayerCount = 2;
     }
-    mUnk_333 = 1;
+    mLocalIsFirstSlot = 1;
     WirelessManager::Get();
     if (IsWirelessMode(mode)) {
-        mUnk_33b = data_020d433c.mUnk_ae;
-        if (mUnk_33b != 0) {
-            mUnk_333 = 0;
+        mLocalSlot = data_020d433c.mUnk_ae;
+        if (mLocalSlot != 0) {
+            mLocalIsFirstSlot = 0;
         }
     } else {
-        mUnk_33b = 0;
+        mLocalSlot = 0;
     }
     for (i = 0; i < 0x12; i++) {
         if (i == 0 || i == 0x11) {
-            mUnk_266[mUnk_33b][i] = 3;
-            mUnk_2d2[i]           = 0;
+            mCharaUnlocked[mLocalSlot][i] = 3;
+            mCharaNew[i]           = 0;
         } else {
-            mUnk_266[mUnk_33b][i] = 0;
+            mCharaUnlocked[mLocalSlot][i] = 0;
             u8 f                  = sIdItems.ids[i];
             int byte = f / 8;
             for (u8 k = 0; k < 3; k++) {
                 const u8 *flags = data_020d496a;
                 flags += k * 3;
                 if (flags[byte] & (1 << (f % 8))) {
-                    mUnk_266[mUnk_33b][i] = k + 1;
+                    mCharaUnlocked[mLocalSlot][i] = k + 1;
                 }
             }
-            if (mUnk_266[mUnk_33b][i] != 0) {
+            if (mCharaUnlocked[mLocalSlot][i] != 0) {
                 if (!(data_020d4973[byte] & (1 << (f % 8)))) {
-                    mUnk_2d2[i] = 1;
+                    mCharaNew[i] = 1;
                 }
             }
         }
     }
     for (j = 0; j < 9; j++) {
         if (j == 8) {
-            mUnk_2ae[mUnk_33b][j] = 1;
+            mFieldUnlocked[mLocalSlot][j] = 1;
         } else {
             u8 f = data_ov001_022270c4[j];
             if (TestFlagBit(data_020d4968, f)) {
-                mUnk_2ae[mUnk_33b][j] = 1;
+                mFieldUnlocked[mLocalSlot][j] = 1;
                 if (!TestFlagBit(data_020d4969, f)) {
-                    mUnk_2e4[j] = 1;
+                    mFieldNew[j] = 1;
                 }
             } else {
-                mUnk_2ae[mUnk_33b][j] = 0;
+                mFieldUnlocked[mLocalSlot][j] = 0;
             }
         }
     }
@@ -289,21 +289,21 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
         WirelessManager::Get();
         if (IsWirelessMode(mode)) {
             n++;
-            mUnk_2ed[0] = 5;
+            mPageKinds[0] = 5;
         }
-        mUnk_329 = n;
-        if (mUnk_32a < 4) {
-            mUnk_2ed[n++] = 0;
+        mPage = n;
+        if (mPlayerCount < 4) {
+            mPageKinds[n++] = 0;
         }
         u8 n1 = n + 1;
         u8 n2 = n1 + 1;
         u8 n3 = n2 + 1;
         u8 n4 = n3 + 1;
-        mUnk_2ed[n]  = 2;
-        mUnk_2ed[n1] = 3;
-        mUnk_2ed[n2] = 4;
-        mUnk_2ed[n3] = 1;
-        mUnk_2ed[n4] = 6;
+        mPageKinds[n]  = 2;
+        mPageKinds[n1] = 3;
+        mPageKinds[n2] = 4;
+        mPageKinds[n3] = 1;
+        mPageKinds[n4] = 6;
     }
     data_020d433c.mUnk_99 = 3;
     data_020d433c.mUnk_a7 = 0;
@@ -333,24 +333,24 @@ FieldSelectScene::~FieldSelectScene() {
             delete anim;
         }
     }
-    if (mUnk_2f4 != NULL) {
-        OS_Free(mUnk_2f4);
+    if (mMessages != NULL) {
+        OS_Free(mMessages);
     }
-    if (mUnk_2fc != NULL) {
-        OS_Free(mUnk_2fc);
+    if (mGlyphBuffer != NULL) {
+        OS_Free(mGlyphBuffer);
     }
-    if (mUnk_2f8 != NULL) {
-        OS_Free(mUnk_2f8);
+    if (mTextBuffer != NULL) {
+        OS_Free(mTextBuffer);
     }
-    if (mUnk_308 != NULL) {
-        OS_Free(mUnk_308);
+    if (mCharaNames != NULL) {
+        OS_Free(mCharaNames);
     }
-    if (mUnk_31c != NULL) {
-        OS_Free(mUnk_31c);
+    if (mNameGlyphBuffer != NULL) {
+        OS_Free(mNameGlyphBuffer);
     }
     for (u8 i = 0; i < 4; i++) {
-        if (mUnk_30c[i] != NULL) {
-            OS_Free(mUnk_30c[i]);
+        if (mNameBuffers[i] != NULL) {
+            OS_Free(mNameBuffers[i]);
         }
     }
     if (mWindows[0] != NULL) {
@@ -394,10 +394,10 @@ void FieldSelectScene::Update() {
     func_ov001_02222040();
     switch (mState) {
         case 0:
-            func_ov001_0221f23c();
-            func_ov001_0221f4e8();
-            func_ov001_022260b8();
-            func_ov001_0222659c();
+            InitDisplay();
+            LoadGraphics();
+            LoadMessages();
+            LoadNameText();
             SpriteManager::Get().StartFade(2);
             mState++;
             break;
@@ -436,7 +436,7 @@ void FieldSelectScene::Update() {
             }
             break;
         case 5: {
-            u32 r = func_ov001_02222e44();
+            u32 r = UpdatePage();
             if (r == 0) {
                 break;
             }
@@ -462,10 +462,10 @@ void FieldSelectScene::Update() {
             }
             break;
         case 8:
-            if (mUnk_344 != -1) {
+            if (mPendingSubPlanes != -1) {
                 G2S_SetBG1Priority(0);
-                GXS_SetVisiblePlane(mUnk_344);
-                mUnk_344 = -1;
+                GXS_SetVisiblePlane(mPendingSubPlanes);
+                mPendingSubPlanes = -1;
             }
             SpriteManager::Get().StartFade(3);
             mState++;
@@ -476,14 +476,14 @@ void FieldSelectScene::Update() {
             }
             break;
         case 10:
-            RequestScene(mUnk_332);
+            RequestScene(mNextScene);
             mFinished = 1;
             break;
     }
-    func_ov001_022256e4();
+    Draw();
 }
 
-void FieldSelectScene::func_ov001_0221f23c() {
+void FieldSelectScene::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
@@ -527,7 +527,7 @@ void FieldSelectScene::func_ov001_0221f23c() {
     G2S_SetWnd0Position(0, 0, 0xff, 0x12);
 }
 
-void FieldSelectScene::func_ov001_0221f4e8() {
+void FieldSelectScene::LoadGraphics() {
     ChangeDir("/Game/Battle/Bg/");
     LoadAndQueueUpload(0, 1, 0x6000, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(0, 12, 0, "select_arena_u_bg_00_ncg.bin", 0, 0, 0);
@@ -543,7 +543,7 @@ void FieldSelectScene::func_ov001_0221f4e8() {
     SpriteScreen &main = SpriteManager::Get().Screen(0);
     main.LoadCharacters("select_arena_u_obj_00.nce_ncg1D.bin", 0, 0);
     main.LoadPalette("select_arena_u_obj_00_ncl.bin", 0, 0);
-    if (mUnk_2ed[mUnk_329] == 0) {
+    if (mPageKinds[mPage] == 0) {
         mMain.mAnim = new CellAnimation("select_arena_u_obj_00_nce.bin", 6, 1, 1);
     } else {
         mMain.mAnim = new CellAnimation("select_arena_u_obj_00_nce.bin", 3, 1, 1);
@@ -574,7 +574,7 @@ void FieldSelectScene::func_ov001_0221f4e8() {
     mMessage->func_02065bd4(0x14, 4, 0);
     mMessage->SetWidth(0xd8);
     mUnk_33e = 2;
-    if (mUnk_333 == 0) {
+    if (mLocalIsFirstSlot == 0) {
         mUnk_33e--;
     }
     mPanel[0] = new CharacterIcons(0x12000, 0xb, 0);
@@ -589,14 +589,14 @@ void FieldSelectScene::func_ov001_0221f4e8() {
     }
 }
 
-void FieldSelectScene::func_ov001_0221fa94() {
+void FieldSelectScene::SetupPage() {
     MI_CpuClearFast((void *) 0x6004000, 0xc000);
     MI_CpuClearFast((void *) 0x6204000, 0xc000);
     if (mWindows[0] != NULL) {
         delete mWindows[0];
     }
     u32 variant;
-    switch (mUnk_2ed[mUnk_329]) {
+    switch (mPageKinds[mPage]) {
         case 0:
         case 1:
         case 3:
@@ -611,7 +611,7 @@ void FieldSelectScene::func_ov001_0221fa94() {
     mWindows[0]->SetCells(mUnk_33e, data_ov001_0222715c);
     mWindows[0]->mCursor->mSelection = -1;
     mWindows[0]->mEnabled            = 0;
-    if (mUnk_2ed[mUnk_329] == 2) {
+    if (mPageKinds[mPage] == 2) {
         mWindows[0]->mButtons[0].mEnabled = 0;
     }
     mUnk_334 = 0;
@@ -634,11 +634,11 @@ void FieldSelectScene::func_ov001_0221fa94() {
     mWindows[3] = NULL;
     mUnk_33d = 0;
     for (u8 i = 0; i < 4; i++) {
-        mInput[i].mUnk_0a = 0;
+        mInput[i].mWindowOpen = 0;
     }
-    mUnk_33f = mUnk_33b;
+    mUnk_33f = mLocalSlot;
     mUnk_340 = 0;
-    mUnk_331 = 0;
+    mBlendTimer = 0;
     u8 i;
     for (i = 0; i < 9; i++) {
         CellAnimation *anim = mCells[i].mAnim;
@@ -660,16 +660,16 @@ void FieldSelectScene::func_ov001_0221fa94() {
         mCells2[i].mVisible = 0;
         mCells2[i].mUnk_09  = 1;
     }
-    switch (mUnk_2ed[mUnk_329]) {
+    switch (mPageKinds[mPage]) {
         case 0: {
-            if (mUnk_333 != 0) {
+            if (mLocalIsFirstSlot != 0) {
                 mMessage->StartMessage(0x13, 0, 1);
             } else {
                 mMessage->StartMessage(4, 1, 1);
             }
             mMain.mAnim->SetAnimation(6);
-            if (mUnk_32b > 2) {
-                mInput[0].mUnk_02 = 1;
+            if (mInputCount > 2) {
+                mInput[0].mCursorItem = 1;
             }
             SpriteScreen &sub = SpriteManager::Get().Screen(1);
             ChangeDir("/Game/Character/Icon/");
@@ -684,7 +684,7 @@ void FieldSelectScene::func_ov001_0221fa94() {
             sub.LoadPalette("select_number_b_obj_00_ncl.bin", 0x100, 0);
             s16 y = 0x30;
             u8 n  = 0;
-            if (mUnk_32b > 2) {
+            if (mInputCount > 2) {
                 y -= 0x10;
                 n++;
             }
@@ -698,20 +698,20 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 mCells2[n].mVisible         = 1;
                 n++;
             } while (n < 3);
-            mCells2[mInput[0].mUnk_02].mAnim->SetAnimation(mInput[0].mUnk_02 + 3);
+            mCells2[mInput[0].mCursorItem].mAnim->SetAnimation(mInput[0].mCursorItem + 3);
             mUnk_339 = 1;
-            mUnk_331 = 0x10;
+            mBlendTimer = 0x10;
             break;
         }
         case 1: {
-            if (mUnk_333 != 0) {
+            if (mLocalIsFirstSlot != 0) {
                 mMessage->StartMessage(5, 0, 1);
             } else {
                 mMessage->StartMessage(4, 1, 1);
             }
             mMain.mAnim->SetAnimation(2);
             ChangeDir("/Game/Battle/Bg/");
-            if (mUnk_333 != 0) {
+            if (mLocalIsFirstSlot != 0) {
                 LoadAndQueueUpload(1, 1, 0, "select_rule_b_bg_00_ncl.bin", 0, 0, 0);
                 LoadAndQueueUpload(1, 11, 0, "select_rule_b_bg_00_ncg.bin", 0, 0, 0);
                 LoadAndQueueUpload(1, 7, 0, "select_rule_b_bg_00_nsc.bin", 0, 0, 0);
@@ -784,9 +784,9 @@ void FieldSelectScene::func_ov001_0221fa94() {
             LoadAndQueueUpload(1, 7, 0, "select_ch_b_bg_00_nsc.bin", 0, 0, 0);
             u8 j = 0;
             do {
-                mInput[j].mUnk_02 = mInput[j].mUnk_08;
+                mInput[j].mCursorItem = mInput[j].mTakenItem;
                 j++;
-            } while (j < mUnk_32a);
+            } while (j < mPlayerCount);
             ChangeDir("/Game/Battle/Obj/");
             SpriteScreen &sub = SpriteManager::Get().Screen(1);
             sub.LoadCharacters("select_ch_b_obj_00.nce_ncg1D.bin", 0x8000, 0);
@@ -796,12 +796,12 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 mCells2[k].mAnim            = new CellAnimation("select_ch_b_obj_00_nce.bin", k & 0xff, 1, 1);
                 mCells2[k].mAnim->mCharBase = sub.GetCharBase(0x8000);
                 mCells2[k].mAnim->mPaletteBase   = 4;
-                mCells2[k].mX               = func_ov001_02225628(mInput[k].mUnk_02);
-                mCells2[k].mY               = func_ov001_0222565c(mInput[k].mUnk_02);
+                mCells2[k].mX               = GetCharaItemX(mInput[k].mCursorItem);
+                mCells2[k].mY               = GetCharaItemY(mInput[k].mCursorItem);
                 mCells2[k].mUnk_09          = 1;
                 mCells2[k].mVisible         = 1;
                 k++;
-            } while (k < mUnk_32a);
+            } while (k < mPlayerCount);
             u8 m = 4;
             do {
                 mCells2[m].mAnim            = new CellAnimation("select_ch_b_obj_00_nce.bin", m & 0xff, 1, 1);
@@ -835,7 +835,7 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 mCells[idx].mVisible         = 1;
                 mCells[idx].mUnk_0a          = 0;
                 c++;
-            } while (c < mUnk_32a);
+            } while (c < mPlayerCount);
             mCells[4].mAnim            = new CellAnimation("select_ch_u_obj_00_nce.bin", 2, 1, 1);
             mCells[4].mAnim->mCharBase = main.GetCharBase(0x8000);
             mCells[4].mAnim->mPaletteBase   = 4;
@@ -870,28 +870,28 @@ void FieldSelectScene::func_ov001_0221fa94() {
             do {
                 mPanel[0]->SetCharacter(p, -1, 0, 0);
                 mPanel[1]->SetCharacter(p, -1, 0, 0);
-                func_ov001_02226bf8(p);
-                if (IsWirelessMode((const u8 *) &WirelessManager::Get().mState) && p < mUnk_32b) {
-                    func_ov001_022267d0(p);
+                ClearName(p);
+                if (IsWirelessMode((const u8 *) &WirelessManager::Get().mState) && p < mInputCount) {
+                    PrintSlotName(p);
                 }
                 p++;
             } while (p < 4);
-            mPanel[1]->SetCharacter(0, 0x15, (u32) (mUnk_14c + mUnk_33b * 8), 0);
-            s16 px = func_ov001_02225628(0);
-            s16 py = func_ov001_0222565c(0);
+            mPanel[1]->SetCharacter(0, 0x15, (u32) (mUnk_14c + mLocalSlot * 8), 0);
+            s16 px = GetCharaItemX(0);
+            s16 py = GetCharaItemY(0);
             mPanel[1]->SetDrawArgs(0, px + 6, py + 3, 1);
             mUnk_334 = 1;
             mUnk_335 = 1;
             mUnk_336 = 1;
-            mUnk_331 = 0x10;
+            mBlendTimer = 0x10;
             mWindows[2] = new SelectWindow(1, data_ov001_022270ec, 0);
             mWindows[2]->SetCells(1, data_ov001_02227124);
             mWindows[2]->mCursor->mSelection = -1;
             break;
         }
         case 3: {
-            mUnk_32a = data_020d433c.mPlayerCount;
-            if (mUnk_333 != 0) {
+            mPlayerCount = data_020d433c.mPlayerCount;
+            if (mLocalIsFirstSlot != 0) {
                 mMessage->StartMessage(0x11, 0, 1);
             } else {
                 mMessage->StartMessage(4, 1, 1);
@@ -951,7 +951,7 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 mCells[idx].mVisible         = 1;
                 mCells[idx].mUnk_0a          = 0;
                 c++;
-            } while (c < mUnk_32a);
+            } while (c < mPlayerCount);
             mCells[4].mAnim            = new CellAnimation("select_ch_u_obj_00_nce.bin", 2, 1, 1);
             mCells[4].mAnim->mCharBase = main.GetCharBase(0x8000);
             mCells[4].mAnim->mPaletteBase   = 4;
@@ -969,24 +969,24 @@ void FieldSelectScene::func_ov001_0221fa94() {
             mCells[7].mVisible         = 0;
             mUnk_334 = 1;
             mUnk_338 = 1;
-            func_ov001_02223e5c();
+            UpdatePairCells();
             u8 p = 0;
             do {
                 mPanel[0]->SetCharacter(p, -1, 0, 0);
                 mPanel[1]->SetCharacter(p, -1, 0, 0);
-                if (p < mUnk_32a) {
-                    mPanel[0]->SetCharacter(p, (s8) sIdItems.ids[mInput[p].mUnk_08], (u32) (mUnk_14c + p * 8), 0);
-                    mPanel[1]->SetCharacter(p, (s8) sIdItems.ids[mInput[p].mUnk_08], (u32) (mUnk_14c + p * 8), 0);
+                if (p < mPlayerCount) {
+                    mPanel[0]->SetCharacter(p, (s8) sIdItems.ids[mInput[p].mTakenItem], (u32) (mUnk_14c + p * 8), 0);
+                    mPanel[1]->SetCharacter(p, (s8) sIdItems.ids[mInput[p].mTakenItem], (u32) (mUnk_14c + p * 8), 0);
                 }
-                func_ov001_022267d0(p);
+                PrintSlotName(p);
                 p++;
             } while (p < 4);
-            mUnk_331 = 0x10;
+            mBlendTimer = 0x10;
             break;
         }
         case 4: {
-            mUnk_32a = data_020d433c.mPlayerCount;
-            if (mUnk_333 != 0) {
+            mPlayerCount = data_020d433c.mPlayerCount;
+            if (mLocalIsFirstSlot != 0) {
                 mMessage->StartMessage(8, 0, 1);
             } else {
                 mMessage->StartMessage(4, 1, 1);
@@ -1000,12 +1000,12 @@ void FieldSelectScene::func_ov001_0221fa94() {
             SpriteScreen &sub = SpriteManager::Get().Screen(1);
             sub.LoadCharacters("select_field_b_obj_00.nce_ncg1D.bin", 0x8000, 0);
             sub.LoadPalette("select_field_b_obj_00_ncl.bin", 0x100, 0);
-            mInput[0].mUnk_02           = mUnk_341;
+            mInput[0].mCursorItem           = mUnk_341;
             mCells2[0].mAnim            = new CellAnimation("select_field_b_obj_00_nce.bin", 0, 1, 1);
             mCells2[0].mAnim->mCharBase = sub.GetCharBase(0x8000);
             mCells2[0].mAnim->mPaletteBase   = 8;
-            mCells2[0].mX               = func_ov001_02225698(mInput[0].mUnk_02);
-            mCells2[0].mY               = func_ov001_022256c8(mInput[0].mUnk_02);
+            mCells2[0].mX               = GetFieldItemX(mInput[0].mCursorItem);
+            mCells2[0].mY               = GetFieldItemY(mInput[0].mCursorItem);
             mCells2[0].mUnk_09          = 1;
             mCells2[0].mVisible         = 1;
             mCells2[4].mAnim            = new CellAnimation("select_field_b_obj_00_nce.bin", 4, 1, 1);
@@ -1037,21 +1037,21 @@ void FieldSelectScene::func_ov001_0221fa94() {
             sub3.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x1b000, 0);
             sub3.LoadPalette("union_b_obj_window_ncl.bin", 0x40, 0);
             mUnk_337 = 1;
-            func_ov001_02225150(mInput[0].mUnk_02);
-            mUnk_331    = 0x10;
+            UploadFieldFiles(mInput[0].mCursorItem);
+            mBlendTimer    = 0x10;
             mWindows[3] = new SelectWindow(1, data_ov001_02227108, 0);
             mWindows[3]->SetCells(1, data_ov001_02227140);
             mWindows[3]->mCursor->mSelection = -1;
             break;
         }
         case 5: {
-            if (mUnk_333 != 0) {
+            if (mLocalIsFirstSlot != 0) {
                 mMessage->StartMessage(0xc, 0, 1);
             } else {
                 mMessage->StartMessage(4, 1, 1);
             }
             mMain.mAnim->SetAnimation(1);
-            if (mUnk_333 != 0) {
+            if (mLocalIsFirstSlot != 0) {
                 ChangeDir("/Game/2D/union_b/");
                 LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
                 LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
@@ -1059,10 +1059,10 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 SpriteScreen &sub = SpriteManager::Get().Screen(1);
                 sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x8000, 0);
                 sub.LoadPalette("union_b_obj_window_ncl.bin", 0x100, 0);
-                func_ov001_022262d0(0xc);
-                func_ov001_022253f0(0, 1, 0);
+                PrintWindowText(0xc);
+                SetWindowOpen(0, 1, 0);
             }
-            mUnk_331 = 0x10;
+            mBlendTimer = 0x10;
             break;
         }
     }
@@ -1102,7 +1102,7 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
                 u8 j;
                 u8 k;
                 u8 *dst;
-                // Byte offset of player i's row, so that row[j + 0x266] is mUnk_266[i][j]: indexing mUnk_266
+                // Byte offset of player i's row, so that row[j + 0x266] is mCharaUnlocked[i][j]: indexing mCharaUnlocked
                 // directly folds the member offset into the row pointer, which the original doesn't.
                 u8 *row = (u8 *) this + i * 0x12;
                 for (j = 0; j < 0x12; j++) {
@@ -1131,14 +1131,14 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
                 for (u8 j = 0; j < 9; j++) {
                     switch (j) {
                     case 8:
-                        mUnk_2ae[i][j] = 1;
+                        mFieldUnlocked[i][j] = 1;
                         break;
                     default: {
                         u8 f = data_ov001_022270c4[j];
                         if (p[0xd + ((u32) f >> 3)] & (1 << (f % 8))) {
-                            mUnk_2ae[i][j] = 1;
+                            mFieldUnlocked[i][j] = 1;
                         } else {
-                            mUnk_2ae[i][j] = 0;
+                            mFieldUnlocked[i][j] = 0;
                         }
                         break;
                     }
@@ -1200,8 +1200,8 @@ void FieldSelectScene::func_ov001_02222040() {
                 data_020d433c.mCharacterIds[i] = i;
                 data_020d433c.mPartners[i] = i;
                 i++;
-            } while (i < mUnk_32a);
-            mUnk_332 = 3;
+            } while (i < mPlayerCount);
+            mNextScene = 3;
             return;
         }
     }
@@ -1226,7 +1226,7 @@ void FieldSelectScene::func_ov001_02222040() {
                     mInput[i].mTouchY   = p[8];
                     mInput[i].mKeys     = *(u16 *) (p + 4);
                     mInput[i].mUnk_07   = p[9];
-                    mInput[i].mUnk_0b   = p[0xb];
+                    mInput[i].mWindowSelection   = p[0xb];
                     mInput[i].mUnk_0e   = p[0xc];
                     mInput[i].mUnk_0f   = p[0xd];
                 } else {
@@ -1235,7 +1235,7 @@ void FieldSelectScene::func_ov001_02222040() {
                     mInput[i].mTouchY   = 0;
                     mInput[i].mKeys     = 0;
                     mInput[i].mUnk_07   = 0;
-                    mInput[i].mUnk_0b   = 0;
+                    mInput[i].mWindowSelection   = 0;
                     mInput[i].mUnk_0e   = 0;
                     mInput[i].mUnk_0f   = 0;
                 }
@@ -1259,8 +1259,8 @@ void FieldSelectScene::func_ov001_02222040() {
         mInput[0].mUnk_0e   = 0;
         mInput[0].mUnk_0f   = 0;
     }
-    if ((mState == 5) & (mUnk_330 == 0)) {
-        if (mUnk_33d != 0 && mInput[mUnk_33b].mUnk_0a == 0) {
+    if ((mState == 5) & (mBlendStep == 0)) {
+        if (mUnk_33d != 0 && mInput[mLocalSlot].mWindowOpen == 0) {
             u8 r = mWindows[2]->Update(0);
             if (r != 0) {
                 switch (r) {
@@ -1274,11 +1274,11 @@ void FieldSelectScene::func_ov001_02222040() {
                         }
                         break;
                 }
-                func_ov001_02226c38(mWindows[2]);
+                ResetWindow(mWindows[2]);
             }
         }
-        if (mUnk_333 != 0) {
-            if (mInput[0].mUnk_0a != 0) {
+        if (mLocalIsFirstSlot != 0) {
+            if (mInput[0].mWindowOpen != 0) {
                 if (mInput[0].mUnk_0d != 0) {
                     goto tail;
                 }
@@ -1325,7 +1325,7 @@ void FieldSelectScene::func_ov001_02222040() {
                     if (IsWirelessMode(mode)) {
                         NET_BYTE(11) = sel;
                     } else {
-                        mInput[0].mUnk_0b = sel;
+                        mInput[0].mWindowSelection = sel;
                     }
                 }
             } else {
@@ -1360,7 +1360,7 @@ void FieldSelectScene::func_ov001_02222040() {
                                 }
                             }
                         }
-                        func_ov001_02226c38(mWindows[0]);
+                        ResetWindow(mWindows[0]);
                     }
                     if (mWindows[3] != NULL) {
                         u8 r2 = mWindows[3]->Update(0);
@@ -1373,16 +1373,16 @@ void FieldSelectScene::func_ov001_02222040() {
                                     mInput[0].mUnk_0f = 1;
                                 }
                             }
-                            func_ov001_02226c38(mWindows[3]);
+                            ResetWindow(mWindows[3]);
                         }
                     }
                 }
             } else {
-                if (mUnk_2ed[mUnk_329] == 2) {
+                if (mPageKinds[mPage] == 2) {
                     WirelessManager::Get();
                     if (IsWirelessMode(mode)) {
-                                                if (mInput[mUnk_33b].mUnk_0a != 0) {
-                            if (mInput[mUnk_33b].mUnk_0d == 0) {
+                                                if (mInput[mLocalSlot].mWindowOpen != 0) {
+                            if (mInput[mLocalSlot].mUnk_0d == 0) {
                                 BOOL r = mWindows[1]->Update(1);
                                 switch (r) {
                                     case 1:
@@ -1414,7 +1414,7 @@ void FieldSelectScene::func_ov001_02222040() {
                                         NET_KEYS |= 1;
                                         break;
                                 }
-                                func_ov001_02226c38(mWindows[0]);
+                                ResetWindow(mWindows[0]);
                             }
                         }
                     }
@@ -1449,34 +1449,34 @@ tail:
             }
         }
         i++;
-    } while (i < mUnk_32b);
+    } while (i < mInputCount);
 }
 
-void FieldSelectScene::func_ov001_02222e10() {
+void FieldSelectScene::ResetPage() {
     u8 i = 0;
     do {
-        mInput[i].mUnk_02 = 0;
-        mInput[i].mUnk_06 = 0;
+        mInput[i].mCursorItem = 0;
+        mInput[i].mTaken = 0;
         mInput[i].mUnk_07 = 0;
         i++;
     } while (i < 4);
-    func_ov001_0221fa94();
+    SetupPage();
 }
 
-u32 FieldSelectScene::func_ov001_02222e44() {
-    if (func_ov001_02225240()) {
+u32 FieldSelectScene::UpdatePage() {
+    if (UpdatePageBlend()) {
         return 0;
     }
-    if (mUnk_333 != 0) {
-        if (mInput[0].mUnk_0a != 0) {
-            switch (mUnk_2ed[mUnk_329]) {
+    if (mLocalIsFirstSlot != 0) {
+        if (mInput[0].mWindowOpen != 0) {
+            switch (mPageKinds[mPage]) {
                 case 2:
                     mPanel[1]->DrawIcons();
                     mCells2[6].mAnim->Draw(1, 0x70, 0x2d, 0);
                     break;
                 case 4:
                 case 5:
-                    func_ov001_02226430();
+                    DrawWindowText();
                     break;
             }
             mWindows[1]->Draw();
@@ -1490,8 +1490,8 @@ u32 FieldSelectScene::func_ov001_02222e44() {
             }
         }
     } else {
-        if (mUnk_2ed[mUnk_329] == 2) {
-            if (mInput[mUnk_33b].mUnk_0a != 0) {
+        if (mPageKinds[mPage] == 2) {
+            if (mInput[mLocalSlot].mWindowOpen != 0) {
                 mPanel[1]->DrawIcons();
                 mCells2[6].mAnim->Draw(1, 0x70, 0x2d, 0);
                 mWindows[1]->Draw();
@@ -1502,69 +1502,69 @@ u32 FieldSelectScene::func_ov001_02222e44() {
             }
         }
     }
-    if (mUnk_344 != -1) {
+    if (mPendingSubPlanes != -1) {
         G2S_SetBG1Priority(0);
-        GXS_SetVisiblePlane(mUnk_344);
-        mUnk_344 = -1;
+        GXS_SetVisiblePlane(mPendingSubPlanes);
+        mPendingSubPlanes = -1;
     }
     u32 result;
-    switch (mUnk_2ed[mUnk_329]) {
+    switch (mPageKinds[mPage]) {
         case 5:
-            result = func_ov001_02225214();
+            result = UpdateWindowPage();
             break;
         case 1:
-            result = func_ov001_02224178();
+            result = UpdateRulePage();
             break;
         case 2:
-            result = func_ov001_02224538();
+            result = UpdateCharaPage();
             break;
         case 3:
-            result = func_ov001_02224be0();
+            result = UpdatePairPage();
             break;
         case 4:
-            result = func_ov001_02224df0();
+            result = UpdateFieldPage();
             break;
         case 0:
-            result = func_ov001_02223f5c();
+            result = UpdateNumberPage();
             break;
     }
     if (result != 0) {
     switch (result) {
         case 1:
-            mUnk_329++;
-            if ((data_020d433c.mPlayerCount < 4) & (mUnk_2ed[mUnk_329] == 3)) {
-                mUnk_329++;
+            mPage++;
+            if ((data_020d433c.mPlayerCount < 4) & (mPageKinds[mPage] == 3)) {
+                mPage++;
             }
-            if ((mUnk_32d == 0) & (mUnk_2ed[mUnk_329] == 1)) {
-                mUnk_329++;
+            if ((mUnk_32d == 0) & (mPageKinds[mPage] == 1)) {
+                mPage++;
             }
-            if (mUnk_2ed[mUnk_329] >= 6) {
-                mUnk_332 = 1;
+            if (mPageKinds[mPage] >= 6) {
+                mNextScene = 1;
                 return 1;
             }
             break;
         case 2:
-            if (mUnk_2ed[mUnk_329] == 2) {
+            if (mPageKinds[mPage] == 2) {
                 mPanel[1]->SetCharacter(3, -1, 0, 0);
             }
             for (;;) {
-                if (mUnk_329 != 0) {
-                    mUnk_329--;
+                if (mPage != 0) {
+                    mPage--;
                 } else {
                     return 2;
                 }
-                if (mUnk_2ed[mUnk_329] != 3) {
-                    if (mUnk_2ed[mUnk_329] == 2) {
+                if (mPageKinds[mPage] != 3) {
+                    if (mPageKinds[mPage] == 2) {
                         u8 i = 0;
                         do {
-                            mInput[i].mUnk_06 = 1;
-                            mInput[i].mUnk_02 = func_ov001_02226d48(data_020d433c.mCharacterIds[i]);
+                            mInput[i].mTaken = 1;
+                            mInput[i].mCursorItem = FindCharaItem(data_020d433c.mCharacterIds[i]);
                             i++;
-                        } while (i < mUnk_32a);
+                        } while (i < mPlayerCount);
                     }
                     break;
                 }
-                if (mUnk_32a == 4) {
+                if (mPlayerCount == 4) {
                     break;
                 }
             }
@@ -1572,19 +1572,19 @@ u32 FieldSelectScene::func_ov001_02222e44() {
         case 3:
             return 3;
     }
-    mUnk_330 = 1;
+    mBlendStep = 1;
     }
     return 0;
 }
 
-void FieldSelectScene::func_ov001_022231ec(u32 slot, u32 value, u32 playSound) {
-    if (value != mInput[slot].mUnk_02) {
-        mInput[slot].mUnk_02 = value;
-        switch (mUnk_2ed[mUnk_329]) {
+void FieldSelectScene::SetCursorItem(u32 slot, u32 value, u32 playSound) {
+    if (value != mInput[slot].mCursorItem) {
+        mInput[slot].mCursorItem = value;
+        switch (mPageKinds[mPage]) {
             case 2:
-                mCells2[slot].mX = func_ov001_02225628(mInput[slot].mUnk_02);
-                mCells2[slot].mY = func_ov001_0222565c(mInput[slot].mUnk_02);
-                if ((slot == mUnk_33b) | ((slot >= mUnk_32b) && (mUnk_333 != 0))) {
+                mCells2[slot].mX = GetCharaItemX(mInput[slot].mCursorItem);
+                mCells2[slot].mY = GetCharaItemY(mInput[slot].mCursorItem);
+                if ((slot == mLocalSlot) | ((slot >= mInputCount) && (mLocalIsFirstSlot != 0))) {
                     playSound = 1;
                 } else {
                     playSound = 0;
@@ -1596,7 +1596,7 @@ void FieldSelectScene::func_ov001_022231ec(u32 slot, u32 value, u32 playSound) {
                         mCells2[i].mAnim->SetAnimation(i);
                     }
                 }
-                u8 s = mInput[0].mUnk_02;
+                u8 s = mInput[0].mCursorItem;
                 mCells2[s].mAnim->SetAnimation(s + 3);
                 break;
             }
@@ -1608,7 +1608,7 @@ void FieldSelectScene::func_ov001_022231ec(u32 slot, u32 value, u32 playSound) {
                         mCells2[i].mAnim->SetAnimation(7);
                     }
                 }
-                u8 s = mInput[0].mUnk_02;
+                u8 s = mInput[0].mCursorItem;
                 if (s == 0) {
                     mCells2[s].mAnim->SetAnimation(0x1a);
                 } else {
@@ -1618,9 +1618,9 @@ void FieldSelectScene::func_ov001_022231ec(u32 slot, u32 value, u32 playSound) {
                 break;
             }
             case 4:
-                mCells2[slot].mX = func_ov001_02225698(mInput[slot].mUnk_02);
-                mCells2[slot].mY = func_ov001_022256c8(mInput[slot].mUnk_02);
-                func_ov001_02225150(mInput[slot].mUnk_02);
+                mCells2[slot].mX = GetFieldItemX(mInput[slot].mCursorItem);
+                mCells2[slot].mY = GetFieldItemY(mInput[slot].mCursorItem);
+                UploadFieldFiles(mInput[slot].mCursorItem);
                 break;
         }
     }
@@ -1629,36 +1629,36 @@ void FieldSelectScene::func_ov001_022231ec(u32 slot, u32 value, u32 playSound) {
     }
 }
 
-BOOL FieldSelectScene::func_ov001_02223430(u8 slot) {
-    switch (mUnk_2ed[mUnk_329]) {
+BOOL FieldSelectScene::TakeCursorItem(u8 slot) {
+    switch (mPageKinds[mPage]) {
         case 2:
-            if (mInput[slot].mUnk_02 == 0x11) {
+            if (mInput[slot].mCursorItem == 0x11) {
                 do {
                     do {
-                        mInput[slot].mUnk_02 = MATH_Rand32(&gRandom, 0x12);
-                    } while (mInput[slot].mUnk_02 == 0x11);
-                } while (func_ov001_022237d0(slot) != 0);
-                mCells2[slot].mX = func_ov001_02225628(mInput[slot].mUnk_02);
-                mCells2[slot].mY = func_ov001_0222565c(mInput[slot].mUnk_02);
+                        mInput[slot].mCursorItem = MATH_Rand32(&gRandom, 0x12);
+                    } while (mInput[slot].mCursorItem == 0x11);
+                } while (IsCursorItemBlocked(slot) != 0);
+                mCells2[slot].mX = GetCharaItemX(mInput[slot].mCursorItem);
+                mCells2[slot].mY = GetCharaItemY(mInput[slot].mCursorItem);
             } else {
-                if (func_ov001_022237d0(slot) != 0) {
-                    if (slot < mUnk_32b) {
-                        if (slot == mUnk_33b) {
+                if (IsCursorItemBlocked(slot) != 0) {
+                    if (slot < mInputCount) {
+                        if (slot == mLocalSlot) {
                             SoundManager::Get().StartSeqArc(2);
                         }
-                    } else if (mUnk_33b == 0) {
+                    } else if (mLocalSlot == 0) {
                         SoundManager::Get().StartSeqArc(2);
                     }
                     return FALSE;
                 }
             }
-            mInput[slot].mUnk_08  = mInput[slot].mUnk_02;
+            mInput[slot].mTakenItem  = mInput[slot].mCursorItem;
             mCells2[slot].mUnk_09 = 2;
-            mPanel[0]->SetCharacter(slot, ((const s8 *) sIdItems.ids)[mInput[slot].mUnk_02], (u32) (mUnk_14c + slot * 8), 0);
-            func_ov001_022267d0(slot);
+            mPanel[0]->SetCharacter(slot, ((const s8 *) sIdItems.ids)[mInput[slot].mCursorItem], (u32) (mUnk_14c + slot * 8), 0);
+            PrintSlotName(slot);
             break;
         case 3: {
-            u8 s = mInput[0].mUnk_02;
+            u8 s = mInput[0].mCursorItem;
             if (s == 0) {
                 mCells2[s].mAnim->SetAnimation(0x1b);
             } else {
@@ -1667,66 +1667,66 @@ BOOL FieldSelectScene::func_ov001_02223430(u8 slot) {
             break;
         }
         case 0:
-            mCells2[mInput[0].mUnk_02].mAnim->SetAnimation(mInput[0].mUnk_02 + 6);
+            mCells2[mInput[0].mCursorItem].mAnim->SetAnimation(mInput[0].mCursorItem + 6);
             break;
         case 4:
-            if (mInput[0].mUnk_02 == 8) {
+            if (mInput[0].mCursorItem == 8) {
                 u8 r;
                 do {
                     r = MATH_Rand32(&gRandom, 8);
-                } while (mUnk_2ae[0][r] == 0);
-                func_ov001_022231ec(0, r, 0);
+                } while (mFieldUnlocked[0][r] == 0);
+                SetCursorItem(0, r, 0);
             }
-            if (mUnk_2ae[0][mInput[0].mUnk_02] == 0) {
-                if (mUnk_33b == 0) {
+            if (mFieldUnlocked[0][mInput[0].mCursorItem] == 0) {
+                if (mLocalSlot == 0) {
                     SoundManager::Get().StartSeqArc(2);
                 }
                 return FALSE;
             }
             break;
     }
-    mInput[slot].mUnk_06 = 1;
+    mInput[slot].mTaken = 1;
     SoundManager::Get().StartSeqArc(0);
     return TRUE;
 }
 
-BOOL FieldSelectScene::func_ov001_022237d0(u32 slot) {
+BOOL FieldSelectScene::IsCursorItemBlocked(u32 slot) {
     u8 idx;
-    if (slot < mUnk_32b) {
-        idx = mInput[slot].mUnk_02;
-        if (mUnk_266[slot][idx] == 0) {
+    if (slot < mInputCount) {
+        idx = mInput[slot].mCursorItem;
+        if (mCharaUnlocked[slot][idx] == 0) {
             return TRUE;
         }
     } else {
-        idx = mInput[slot].mUnk_02;
-        if (mUnk_266[0][idx] == 0) {
+        idx = mInput[slot].mCursorItem;
+        if (mCharaUnlocked[0][idx] == 0) {
             return TRUE;
         }
     }
     if (idx == 0) {
         WirelessManager::Get();
         if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-            return slot >= mUnk_32b;
+            return slot >= mInputCount;
         }
         return slot != 0;
     }
     BOOL result = FALSE;
     u8 i        = 0;
     do {
-        if (i != slot && mInput[i].mUnk_06 != 0) {
-            u8 v = mInput[i].mUnk_02;
+        if (i != slot && mInput[i].mTaken != 0) {
+            u8 v = mInput[i].mCursorItem;
             if (v == idx) {
                 result = TRUE;
                 break;
             }
         }
         i++;
-    } while (i < mUnk_32a);
+    } while (i < mPlayerCount);
     return result;
 }
 
 BOOL FieldSelectScene::func_ov001_02223914() {
-    if (mUnk_2ed[mUnk_329] == 2) {
+    if (mPageKinds[mPage] == 2) {
         u8 flag        = 0;
         const u8 *mode = &data_020c4258;
         u8 i           = 0;
@@ -1734,70 +1734,70 @@ BOOL FieldSelectScene::func_ov001_02223914() {
             if (mInput[i].mKeys & 2) {
                 u8 slot = i;
                 if (i == 0) {
-                    u8 j = mUnk_32b;
-                    u8 n = mUnk_32a;
+                    u8 j = mInputCount;
+                    u8 n = mPlayerCount;
                     if (n != j) {
                         do {
-                            if (mInput[j].mUnk_06 != 0) {
+                            if (mInput[j].mTaken != 0) {
                                 slot = j;
                             }
                             j++;
                         } while (j < n);
                     }
-                    if (mInput[slot].mUnk_06 != 0) {
+                    if (mInput[slot].mTaken != 0) {
                         mPanel[0]->SetCharacter(slot, -1, 0, 0);
                         WirelessManager::Get();
                         if (IsWirelessMode(mode)) {
-                            if (slot >= mUnk_32b) {
-                                func_ov001_02226bf8(slot);
+                            if (slot >= mInputCount) {
+                                ClearName(slot);
                             }
                         } else {
-                            func_ov001_02226bf8(slot);
+                            ClearName(slot);
                         }
-                        if (slot == mUnk_33b) {
+                        if (slot == mLocalSlot) {
                             mPanel[1]->SetCharacter(3, -1, 0, 0);
                         }
                         mCells2[slot].mUnk_09 = 1;
-                        mInput[slot].mUnk_06  = 0;
-                        if (mInput[mUnk_33b].mUnk_0a == 0) {
+                        mInput[slot].mTaken  = 0;
+                        if (mInput[mLocalSlot].mWindowOpen == 0) {
                             SoundManager::Get().StartSeqArc(1);
                         }
                         flag = 1;
                     }
                 } else {
-                    if (mInput[i].mUnk_06 != 0) {
+                    if (mInput[i].mTaken != 0) {
                         mPanel[0]->SetCharacter(i, -1, 0, 0);
                         WirelessManager::Get();
                         if (IsWirelessMode(mode)) {
-                            if (i >= mUnk_32b) {
-                                func_ov001_02226bf8(i);
+                            if (i >= mInputCount) {
+                                ClearName(i);
                             }
                         } else {
-                            func_ov001_02226bf8(i);
+                            ClearName(i);
                         }
-                        if (i == mUnk_33b) {
+                        if (i == mLocalSlot) {
                             mPanel[1]->SetCharacter(3, -1, 0, 0);
                         }
                         mCells2[i].mUnk_09 = 1;
-                        mInput[i].mUnk_06  = 0;
-                        if (mInput[mUnk_33b].mUnk_0a == 0) {
+                        mInput[i].mTaken  = 0;
+                        if (mInput[mLocalSlot].mWindowOpen == 0) {
                             SoundManager::Get().StartSeqArc(1);
                         }
                     }
                 }
-                if (slot == mUnk_33b) {
+                if (slot == mLocalSlot) {
                     mPanel[1]->SetCharacter(0, -1, 0, 0);
-                    mPanel[1]->SetCharacter(0, 0x15, (u32) (mUnk_14c + mUnk_33b * 8), 0);
+                    mPanel[1]->SetCharacter(0, 0x15, (u32) (mUnk_14c + mLocalSlot * 8), 0);
                     mUnk_340 = 0;
                 }
             }
             i++;
-        } while (i < mUnk_32b);
+        } while (i < mInputCount);
         if (flag != 0) {
             return FALSE;
         }
     }
-    if (mInput[0].mUnk_0a != 0) {
+    if (mInput[0].mWindowOpen != 0) {
         return FALSE;
     }
     if (mInput[0].mUnk_07 != 0) {
@@ -1812,7 +1812,7 @@ BOOL FieldSelectScene::func_ov001_02223914() {
 }
 
 void FieldSelectScene::func_ov001_02223d70(u32 unk1) {
-    u8 v    = mInput[0].mUnk_02;
+    u8 v    = mInput[0].mCursorItem;
     u8 mode = mUnk_25c[0];
     if (v == 0 && unk1 != 0) {
         switch (mode) {
@@ -1833,13 +1833,13 @@ void FieldSelectScene::func_ov001_02223d70(u32 unk1) {
                 break;
         }
     }
-    if (mUnk_333 != 0) {
+    if (mLocalIsFirstSlot != 0) {
         u8 i = 0;
         do {
             mCells2[i].mAnim->mFrameIndex = mUnk_25c[i * 2];
             i++;
         } while (i < 5);
-        mCells2[7].mY = mInput[0].mUnk_02 * 0x18 + 0x26;
+        mCells2[7].mY = mInput[0].mCursorItem * 0x18 + 0x26;
     } else {
         u8 i = 0;
         do {
@@ -1849,8 +1849,8 @@ void FieldSelectScene::func_ov001_02223d70(u32 unk1) {
     }
 }
 
-void FieldSelectScene::func_ov001_02223e5c() {
-    u8 r = mInput[0].mUnk_02 % 4;
+void FieldSelectScene::UpdatePairCells() {
+    u8 r = mInput[0].mCursorItem % 4;
     if (r == 0) {
         mCells[0].mAnim->SetAnimation(0);
         mCells[1].mAnim->SetAnimation(0);
@@ -1871,32 +1871,32 @@ void FieldSelectScene::func_ov001_02223e5c() {
     }
 }
 
-u32 FieldSelectScene::func_ov001_02223f5c() {
+u32 FieldSelectScene::UpdateNumberPage() {
     u32 result = 0;
     if (func_ov001_02223914()) {
         result = 2;
     } else {
     if (mInput[0].mKeys & 1) {
-        func_ov001_02223430(0);
+        TakeCursorItem(0);
     } else if (mInput[0].mTouching != 0) {
-        u8 cur = mInput[0].mUnk_02;
+        u8 cur = mInput[0].mCursorItem;
         int dx = (s16) (mInput[0].mTouchX - 0x20);
         if ((dx >= 0) & (dx < 0xc0)) {
             u8 i = 0;
-            if (mUnk_32b > 2) {
+            if (mInputCount > 2) {
                 i++;
             }
             do {
                 s16 base = 0x30;
-                if (mUnk_32b > 2) {
+                if (mInputCount > 2) {
                     base -= 0x10;
                 }
                 int dy = (s16) (mInput[0].mTouchY - base - i * 0x24);
                 if ((dy >= 0) & (dy < 0x20)) {
                     if (cur == i) {
-                        func_ov001_02223430(0);
+                        TakeCursorItem(0);
                     } else {
-                        func_ov001_022231ec(0, i, 1);
+                        SetCursorItem(0, i, 1);
                     }
                     break;
                 }
@@ -1904,28 +1904,28 @@ u32 FieldSelectScene::func_ov001_02223f5c() {
             } while (i < 3);
         }
     } else if (mInput[0].mKeys != 0) {
-        u8 v   = mInput[0].mUnk_02 % 3;
+        u8 v   = mInput[0].mCursorItem % 3;
         do {
             if (mInput[0].mKeys & KEY_UP) {
                 v = (v + 2) % 3;
             } else if (mInput[0].mKeys & KEY_DOWN) {
                 v = (v + 1) % 3;
             }
-        } while (mUnk_32b > 2 && v == 0);
-        if (v != mInput[0].mUnk_02) {
-            func_ov001_022231ec(0, v, 1);
+        } while (mInputCount > 2 && v == 0);
+        if (v != mInput[0].mCursorItem) {
+            SetCursorItem(0, v, 1);
         }
     }
-    if (mInput[0].mUnk_06 != 0) {
-        u8 m     = mInput[0].mUnk_02 % 3;
-        mUnk_32a = m + 2;
+    if (mInput[0].mTaken != 0) {
+        u8 m     = mInput[0].mCursorItem % 3;
+        mPlayerCount = m + 2;
         result   = 1;
     }
     }
     return result;
 }
 
-u32 FieldSelectScene::func_ov001_02224178() {
+u32 FieldSelectScene::UpdateRulePage() {
     u32 result = 0;
     if (func_ov001_02223914()) {
         data_020d433c.mUnk_9a_5 = mUnk_25c[0];
@@ -1934,7 +1934,7 @@ u32 FieldSelectScene::func_ov001_02224178() {
         data_020d433c.mUnk_9a_4 = (u8) ((mUnk_25c[6] == 0) ? 1 : 0);
         data_020d433c.mUnk_9a_0 = (u8) ((mUnk_25c[8] == 0) ? 1 : 0);
         data_020d433c.mUnk_96   = mUnk_25c[0];
-        if (mUnk_333 != 0) {
+        if (mLocalIsFirstSlot != 0) {
             gSaveData[0].mUnk_27   = data_020d433c.mUnk_9a;
             gSaveData[0].mUnk_28_6 = data_020d433c.mUnk_9a_0;
         }
@@ -1955,8 +1955,8 @@ u32 FieldSelectScene::func_ov001_02224178() {
                         sel = 4;
                     }
                     u8 ns = sel;
-                    if (mInput[0].mUnk_02 != ns) {
-                        mInput[0].mUnk_02 = ns;
+                    if (mInput[0].mCursorItem != ns) {
+                        mInput[0].mCursorItem = ns;
                         changed           = 1;
                     }
                     if (x <= 0x91) {
@@ -1967,7 +1967,7 @@ u32 FieldSelectScene::func_ov001_02224178() {
                     }
                 }
             } else if (keys != 0) {
-                u8 cur = mInput[0].mUnk_02;
+                u8 cur = mInput[0].mCursorItem;
                 u8 v   = cur % 5;
                 if (keys & KEY_UP) {
                     v = (v + 4) % 5;
@@ -1975,7 +1975,7 @@ u32 FieldSelectScene::func_ov001_02224178() {
                     v = (v + 1) % 5;
                 }
                 if (v != cur) {
-                    mInput[0].mUnk_02 = v;
+                    mInput[0].mCursorItem = v;
                     changed           = 1;
                 } else if (keys & KEY_LEFT) {
                     prev = 1;
@@ -1984,10 +1984,10 @@ u32 FieldSelectScene::func_ov001_02224178() {
                 }
             }
         }
-        u8 idx = mInput[0].mUnk_02 % 5;
+        u8 idx = mInput[0].mCursorItem % 5;
         if (prev) {
             mOptions[idx].mValue = (mOptions[idx].mValue + mOptions[idx].mCount - 1) % mOptions[idx].mCount;
-            if (mUnk_333 != 0) {
+            if (mLocalIsFirstSlot != 0) {
                 mCells2[5].mAnim->SetAnimation(1);
                 mCells2[5].mY = idx * 0x18 + 0x26;
             }
@@ -1995,21 +1995,21 @@ u32 FieldSelectScene::func_ov001_02224178() {
         }
         if (next) {
             mOptions[idx].mValue = (mOptions[idx].mValue + 1) % mOptions[idx].mCount;
-            if (mUnk_333 != 0) {
+            if (mLocalIsFirstSlot != 0) {
                 mCells2[6].mAnim->SetAnimation(4);
                 mCells2[6].mY = idx * 0x18 + 0x26;
             }
             changed = 1;
         }
         if (changed) {
-            func_ov001_022231ec(0, idx, 1);
+            SetCursorItem(0, idx, 1);
             func_ov001_02223d70(prev || next);
         }
     }
     return result;
 }
 
-u32 FieldSelectScene::func_ov001_02224538() {
+u32 FieldSelectScene::UpdateCharaPage() {
     u8 result = 0;
     u8 numDone = 0;
     if (func_ov001_02223914()) {
@@ -2022,27 +2022,27 @@ u32 FieldSelectScene::func_ov001_02224538() {
         do {
             u8 owner;
             u8 event = 0;
-            if (i >= mUnk_32b) {
+            if (i >= mInputCount) {
                 if (flagB != 0) {
                     break;
                 }
                 owner = 0;
-                if (mInput[0].mUnk_0a != 0) {
+                if (mInput[0].mWindowOpen != 0) {
                     numOpen++;
                     if (i == mUnk_33c) {
                         u16 keys = mInput[0].mKeys;
                         if (keys & 1) {
                             event = 1;
-                            mInput[mUnk_33c].mUnk_0c = mInput[0].mUnk_0b;
+                            mInput[mUnk_33c].mUnk_0c = mInput[0].mWindowSelection;
                         } else if (keys & 2) {
-                            mInput[mUnk_33c].mUnk_06 = 0;
+                            mInput[mUnk_33c].mTaken = 0;
                             event                    = 1;
                         }
                         if (event) {
-                            if (mUnk_33b == 0) {
+                            if (mLocalSlot == 0) {
                                 mPanel[1]->SetCharacter(3, -1, 0, 0);
                             }
-                            func_ov001_022253f0(0, 0, 0);
+                            SetWindowOpen(0, 0, 0);
                             break;
                         }
                     }
@@ -2050,7 +2050,7 @@ u32 FieldSelectScene::func_ov001_02224538() {
                 }
             } else {
                 owner = i;
-                if (mInput[i].mUnk_0a != 0) {
+                if (mInput[i].mWindowOpen != 0) {
                     numOpen++;
                     if (i == 0 && mUnk_33c != 0) {
                         continue;
@@ -2059,9 +2059,9 @@ u32 FieldSelectScene::func_ov001_02224538() {
                     u8 fired = 0;
                     if (keys & 1) {
                         fired                = 1;
-                        mInput[i].mUnk_0c = mInput[i].mUnk_0b;
+                        mInput[i].mUnk_0c = mInput[i].mWindowSelection;
                     } else if (keys & 2) {
-                        mInput[i].mUnk_06 = 0;
+                        mInput[i].mTaken = 0;
                         fired             = 1;
                     }
                     if (fired == 0) {
@@ -2070,14 +2070,14 @@ u32 FieldSelectScene::func_ov001_02224538() {
                     if (mUnk_33c == 0) {
                         flagB = 1;
                     }
-                    if (i == mUnk_33b) {
+                    if (i == mLocalSlot) {
                         mPanel[1]->SetCharacter(3, -1, 0, 0);
                     }
-                    func_ov001_022253f0(i, 0, 0);
+                    SetWindowOpen(i, 0, 0);
                     continue;
                 }
             }
-            if (mInput[i].mUnk_06 != 0) {
+            if (mInput[i].mTaken != 0) {
                 numDone++;
                 continue;
             }
@@ -2086,24 +2086,24 @@ u32 FieldSelectScene::func_ov001_02224538() {
                 if (keys & 1) {
                     event = 1;
                 } else if (mInput[owner].mTouching != 0) {
-                    u8 cur = mInput[i].mUnk_02;
+                    u8 cur = mInput[i].mCursorItem;
                     u32 k  = 0;
                     do {
-                        int dx = (s16) (mInput[owner].mTouchX - func_ov001_02225628(k));
-                        int dy = (s16) (mInput[owner].mTouchY - func_ov001_0222565c(k));
+                        int dx = (s16) (mInput[owner].mTouchX - GetCharaItemX(k));
+                        int dy = (s16) (mInput[owner].mTouchY - GetCharaItemY(k));
                         BOOL hit = ((dy >= 0) & ((dx >= 0) & (dx <= 0x28)));
                         if (hit & (dy <= 0x20)) {
                             if (cur == k) {
                                 event = 1;
                             } else {
-                                func_ov001_022231ec(i, k, 1);
+                                SetCursorItem(i, k, 1);
                             }
                             break;
                         }
                         k = (u8) (k + 1);
                     } while (k < 0x12);
                 } else if (keys & (KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT)) {
-                    u8 cur = mInput[i].mUnk_02;
+                    u8 cur = mInput[i].mCursorItem;
                     u8 col = cur % 6;
                     u8 row = cur / 6;
                     if (keys & KEY_UP) {
@@ -2119,48 +2119,48 @@ u32 FieldSelectScene::func_ov001_02224538() {
                     if (n > 0x11) {
                         n = 0x11;
                     }
-                    func_ov001_022231ec(i, (u8) n, 1);
+                    SetCursorItem(i, (u8) n, 1);
                 }
             }
             if (owner == 0) {
                 flagB = 1;
             }
-            if (owner == mUnk_33b) {
+            if (owner == mLocalSlot) {
                 mUnk_33f = i;
             }
             if (event != 0) {
-                if (func_ov001_02223430(i)) {
+                if (TakeCursorItem(i)) {
                     u8 show = 0;
-                    if (mInput[i].mUnk_02 != 0) {
+                    if (mInput[i].mCursorItem != 0) {
                         if (owner == 0) {
                             mUnk_33c = i;
                         }
-                        func_ov001_022253f0(owner, 1, mInput[i].mUnk_02);
-                        if (owner == mUnk_33b) {
-                            mPanel[1]->SetCharacter(3, ((const s8 *) sIdItems.ids)[mInput[i].mUnk_02], (u32) (mUnk_14c + i * 8), 0);
+                        SetWindowOpen(owner, 1, mInput[i].mCursorItem);
+                        if (owner == mLocalSlot) {
+                            mPanel[1]->SetCharacter(3, ((const s8 *) sIdItems.ids)[mInput[i].mCursorItem], (u32) (mUnk_14c + i * 8), 0);
                             mPanel[1]->SetDrawArgs(3, 0x72, 0x2f, 0);
                         }
                     }
-                    if (mInput[i].mUnk_02 == 0) {
-                        if (i == mUnk_33b) {
+                    if (mInput[i].mCursorItem == 0) {
+                        if (i == mLocalSlot) {
                             show = 1;
                         }
-                    } else if (mUnk_33b == 0) {
-                        if (mUnk_32a != mUnk_32b) {
-                            if (i == mUnk_33b) {
+                    } else if (mLocalSlot == 0) {
+                        if (mPlayerCount != mInputCount) {
+                            if (i == mLocalSlot) {
                                 show = 1;
                             }
                         }
                     }
                     if (show) {
                         mPanel[1]->SetCharacter(0, -1, 0, 0);
-                        mPanel[1]->SetCharacter(0, 0x15, (u32) (mUnk_14c + mUnk_33b * 8), 1);
+                        mPanel[1]->SetCharacter(0, 0x15, (u32) (mUnk_14c + mLocalSlot * 8), 1);
                         mUnk_340 = 1;
                     }
                 }
             }
-        } while (++i < mUnk_32a);
-        if (((numOpen == 0) & (numDone >= mUnk_32a)) || mInput[0].mUnk_0e != 0) {
+        } while (++i < mPlayerCount);
+        if (((numOpen == 0) & (numDone >= mPlayerCount)) || mInput[0].mUnk_0e != 0) {
             if (mInput[0].mUnk_0e != 0) {
                 SoundManager::Get().StartSeqArc(0);
             }
@@ -2171,7 +2171,7 @@ u32 FieldSelectScene::func_ov001_02224538() {
             }
             u8 j = 0;
             do {
-                if ((data_020d433c.mCharacterIds[j] = sIdItems.ids[mInput[j].mUnk_02]) == 0x15) {
+                if ((data_020d433c.mCharacterIds[j] = sIdItems.ids[mInput[j].mCursorItem]) == 0x15) {
                     data_020d433c.mUnk_a3[j] = 0;
                 } else {
                     data_020d433c.mUnk_a3[j] = mInput[j].mUnk_0c;
@@ -2183,7 +2183,7 @@ u32 FieldSelectScene::func_ov001_02224538() {
         }
     }
     u8 old   = mUnk_33d;
-    mUnk_33d = mInput[mUnk_33b].mUnk_06;
+    mUnk_33d = mInput[mLocalSlot].mTaken;
     if (mUnk_33d == 0) {
         mWindows[0]->mButtons[0].mEnabled = 0;
         if (old != 0) {
@@ -2196,16 +2196,16 @@ u32 FieldSelectScene::func_ov001_02224538() {
     return result;
 }
 
-u32 FieldSelectScene::func_ov001_02224be0() {
+u32 FieldSelectScene::UpdatePairPage() {
     u32 result = 0;
     if (func_ov001_02223914()) {
         result = 2;
     } else {
         u16 keys = mInput[0].mKeys;
         if (keys & 1) {
-            func_ov001_02223430(0);
+            TakeCursorItem(0);
         } else if (mInput[0].mTouching != 0) {
-            u8 cur = mInput[0].mUnk_02;
+            u8 cur = mInput[0].mCursorItem;
             int dx = (s16) (mInput[0].mTouchX - 0x10);
             if ((dx >= 0) & (dx < 0xe0)) {
                 int y = mInput[0].mTouchY - 0x1a;
@@ -2214,9 +2214,9 @@ u32 FieldSelectScene::func_ov001_02224be0() {
                     int d = (s16) (y - k * 0x24);
                     if ((d >= 0) & (d < 0x24)) {
                         if (cur == k) {
-                            func_ov001_02223430(0);
+                            TakeCursorItem(0);
                         } else {
-                            func_ov001_022231ec(0, k, 1);
+                            SetCursorItem(0, k, 1);
                         }
                         break;
                     }
@@ -2224,7 +2224,7 @@ u32 FieldSelectScene::func_ov001_02224be0() {
                 } while (k < 4);
             }
         } else if (keys != 0) {
-            u8 cur = mInput[0].mUnk_02;
+            u8 cur = mInput[0].mCursorItem;
             u8 v   = cur % 4;
             if (keys & KEY_UP) {
                 v = (v + 3) % 4;
@@ -2232,12 +2232,12 @@ u32 FieldSelectScene::func_ov001_02224be0() {
                 v = (v + 1) % 4;
             }
             if (v != cur) {
-                func_ov001_022231ec(0, v, 1);
+                SetCursorItem(0, v, 1);
             }
         }
-        func_ov001_02223e5c();
-        if (mInput[0].mUnk_06 != 0) {
-            u8 idx = mInput[0].mUnk_02 % 4;
+        UpdatePairCells();
+        if (mInput[0].mTaken != 0) {
+            u8 idx = mInput[0].mCursorItem % 4;
             if (idx == 0) {
                 mUnk_32c = 0;
             } else {
@@ -2258,23 +2258,23 @@ u32 FieldSelectScene::func_ov001_02224be0() {
     return result;
 }
 
-u32 FieldSelectScene::func_ov001_02224df0() {
+u32 FieldSelectScene::UpdateFieldPage() {
     u32 result = 0;
     if (func_ov001_02223914()) {
         result = 2;
     } else {
-        if (mInput[0].mUnk_0a != 0) {
+        if (mInput[0].mWindowOpen != 0) {
             u16 keys = mInput[0].mKeys;
             if (keys & 1) {
-                func_ov001_022253f0(0, 0, 0);
-                mUnk_348 = 1;
-                if (mInput[0].mUnk_0b == 1) {
-                    mInput[0].mUnk_06 = 0;
+                SetWindowOpen(0, 0, 0);
+                mMessageEnabled = 1;
+                if (mInput[0].mWindowSelection == 1) {
+                    mInput[0].mTaken = 0;
                 }
             } else if (keys & 2) {
-                func_ov001_022253f0(0, 0, 0);
-                mUnk_348          = 1;
-                mInput[0].mUnk_06 = 0;
+                SetWindowOpen(0, 0, 0);
+                mMessageEnabled          = 1;
+                mInput[0].mTaken = 0;
             }
         } else {
             u16 keys = mInput[0].mKeys;
@@ -2282,25 +2282,25 @@ u32 FieldSelectScene::func_ov001_02224df0() {
             if (keys & 1) {
                 ev = 1;
             } else if (mInput[0].mTouching != 0) {
-                u8 cur = mInput[0].mUnk_02;
+                u8 cur = mInput[0].mCursorItem;
                 u32 k  = 0;
                 do {
-                    int dx = (s16) (mInput[0].mTouchX - func_ov001_02225698(k));
-                    int dy = (s16) (mInput[0].mTouchY - func_ov001_022256c8(k));
+                    int dx = (s16) (mInput[0].mTouchX - GetFieldItemX(k));
+                    int dy = (s16) (mInput[0].mTouchY - GetFieldItemY(k));
                     BOOL hit = ((dy >= 0) & ((dx >= 0) & (dx <= 0x38)));
                     if (hit & (dy <= 0x20)) {
                         if (cur == k) {
                             ev = 1;
                         } else {
-                            func_ov001_022231ec(0, k, 1);
+                            SetCursorItem(0, k, 1);
                         }
                         break;
                     }
                     k = (u8) (k + 1);
                 } while (k < 9);
             } else if (keys != 0) {
-                u8 col = mInput[0].mUnk_02 % 4;
-                u8 row = mInput[0].mUnk_02 / 4;
+                u8 col = mInput[0].mCursorItem % 4;
+                u8 row = mInput[0].mCursorItem / 4;
                 if (keys & KEY_UP) {
                     row = (row + 2) % 3;
                 } else if (keys & KEY_DOWN) {
@@ -2314,26 +2314,26 @@ u32 FieldSelectScene::func_ov001_02224df0() {
                 if (n > 8) {
                     n = 8;
                 }
-                if ((u8) n != mInput[0].mUnk_02) {
-                    func_ov001_022231ec(0, (u8) n, 1);
+                if ((u8) n != mInput[0].mCursorItem) {
+                    SetCursorItem(0, (u8) n, 1);
                 }
             }
             if (ev) {
-                if (func_ov001_02223430(0)) {
-                    func_ov001_022253f0(0, 1, 0);
-                    if (mUnk_333 != 0) {
-                        mUnk_348 = 0;
+                if (TakeCursorItem(0)) {
+                    SetWindowOpen(0, 1, 0);
+                    if (mLocalIsFirstSlot != 0) {
+                        mMessageEnabled = 0;
                     }
                 }
             }
         }
-        if ((mInput[0].mUnk_06 == 1) & (mInput[0].mUnk_0a == 0)) {
-            data_020d433c.mFieldId = data_ov001_022270c4[mInput[0].mUnk_02];
+        if ((mInput[0].mTaken == 1) & (mInput[0].mWindowOpen == 0)) {
+            data_020d433c.mFieldId = data_ov001_022270c4[mInput[0].mCursorItem];
             result                = 1;
             mUnk_32d              = 0;
         }
         if (mInput[0].mUnk_0f != 0) {
-            mUnk_341 = mInput[0].mUnk_02;
+            mUnk_341 = mInput[0].mCursorItem;
             result   = 1;
             mUnk_32d = 1;
             SoundManager::Get().StartSeqArc(0);
@@ -2342,9 +2342,9 @@ u32 FieldSelectScene::func_ov001_02224df0() {
     return result;
 }
 
-void FieldSelectScene::func_ov001_02225150(u32 idx) {
+void FieldSelectScene::UploadFieldFiles(u32 idx) {
     u8 sel;
-    if (mUnk_2ae[mUnk_33b][idx] == 0 && mUnk_2ae[0][idx] == 0) {
+    if (mFieldUnlocked[mLocalSlot][idx] == 0 && mFieldUnlocked[0][idx] == 0) {
         sel = 9;
     } else {
         sel = data_ov001_022270d0[idx];
@@ -2355,10 +2355,10 @@ void FieldSelectScene::func_ov001_02225150(u32 idx) {
     mCells[4].mAnim->mFrameIndex = sel;
 }
 
-u32 FieldSelectScene::func_ov001_02225214() {
+u32 FieldSelectScene::UpdateWindowPage() {
     u32 result = 0;
     if (mInput[0].mKeys & 1) {
-        if (mInput[0].mUnk_0b == 1) {
+        if (mInput[0].mWindowSelection == 1) {
             result = 1;
         } else {
             result = 3;
@@ -2367,80 +2367,80 @@ u32 FieldSelectScene::func_ov001_02225214() {
     return result;
 }
 
-BOOL FieldSelectScene::func_ov001_02225240() {
-    if (mUnk_330 != 0) {
-    if (mUnk_32f == mUnk_32e) {
-        switch (mUnk_330) {
+BOOL FieldSelectScene::UpdatePageBlend() {
+    if (mBlendStep != 0) {
+    if (mBlendTarget == mBlend) {
+        switch (mBlendStep) {
             case 1:
-                mUnk_32f = 0x10;
+                mBlendTarget = 0x10;
                 if (mWindows[0] != NULL) {
                     mWindows[0]->mEnabled = 0;
                 }
-                mUnk_330++;
+                mBlendStep++;
                 break;
             case 2:
-                func_ov001_02222e10();
+                ResetPage();
                 reg_G2_BLDCNT = 0;
                 reg_G2S_DB_BLDCNT = 0;
-                mUnk_330++;
+                mBlendStep++;
                 break;
             case 3:
-                if (mUnk_331 != 0) {
-                    mUnk_331--;
+                if (mBlendTimer != 0) {
+                    mBlendTimer--;
                     return TRUE;
                 }
-                mUnk_32f = 0;
-                mUnk_330++;
+                mBlendTarget = 0;
+                mBlendStep++;
                 break;
             case 4:
                 mWindows[0]->mEnabled = 1;
-                mUnk_330 = 0;
+                mBlendStep = 0;
                 break;
         }
     }
-    func_ov001_02225338();
+    MoveBlendToTarget();
     return TRUE;
     }
     return FALSE;
 }
 
-void FieldSelectScene::func_ov001_02225338() {
-    u8 target = mUnk_32f;
-    u8 cur    = mUnk_32e;
+void FieldSelectScene::MoveBlendToTarget() {
+    u8 target = mBlendTarget;
+    u8 cur    = mBlend;
     if (cur == target) {
         return;
     }
-    if (mUnk_2ed[mUnk_329] == 5) {
-        mUnk_32e = target;
+    if (mPageKinds[mPage] == 5) {
+        mBlend = target;
     } else if (cur < target) {
-        mUnk_32e = cur + 1;
+        mBlend = cur + 1;
     } else {
-        mUnk_32e = cur - 1;
+        mBlend = cur - 1;
     }
     GX_SetVisiblePlane(0x1b);
     GXS_SetVisiblePlane(0x1b);
-    G2_SetBlendAlpha(2, 0x39, mUnk_32e, 0x10 - mUnk_32e);
-    G2S_SetBlendAlpha(2, 0x3d, mUnk_32e, 0x10 - mUnk_32e);
+    G2_SetBlendAlpha(2, 0x39, mBlend, 0x10 - mBlend);
+    G2S_SetBlendAlpha(2, 0x3d, mBlend, 0x10 - mBlend);
 }
 
-void FieldSelectScene::func_ov001_022253f0(u32 slot, u32 value, u32 idx) {
-    if (value == mInput[slot].mUnk_0a) {
+void FieldSelectScene::SetWindowOpen(u32 slot, u32 value, u32 idx) {
+    if (value == mInput[slot].mWindowOpen) {
         return;
     }
-    mInput[slot].mUnk_0a = value;
-    if (slot != mUnk_33b) {
+    mInput[slot].mWindowOpen = value;
+    if (slot != mLocalSlot) {
         return;
     }
-    if (mInput[slot].mUnk_0a != 0) {
+    if (mInput[slot].mWindowOpen != 0) {
         if (mWindows[1] != NULL) {
             delete mWindows[1];
         }
         u32 set;
         u32 count;
         u8 sel;
-        switch (mUnk_2ed[mUnk_329]) {
+        switch (mPageKinds[mPage]) {
             case 4:
-                func_ov001_022262d0(0x12);
+                PrintWindowText(0x12);
                 set   = 3;
                 count = 3;
                 G2S_SetBG1Priority(1);
@@ -2453,7 +2453,7 @@ void FieldSelectScene::func_ov001_022253f0(u32 slot, u32 value, u32 idx) {
                 sel   = 1;
                 break;
             default:
-                if (mUnk_333 != 0 && mUnk_33c != 0) {
+                if (mLocalIsFirstSlot != 0 && mUnk_33c != 0) {
                     mMessage->StartMessage(0xe, 0, 1);
                 } else {
                     mMessage->StartMessage(0xf, 0, 1);
@@ -2462,10 +2462,10 @@ void FieldSelectScene::func_ov001_022253f0(u32 slot, u32 value, u32 idx) {
                 count = 6;
                 sel   = 1;
                 u32 row = slot;
-                if (slot >= mUnk_32b) {
+                if (slot >= mInputCount) {
                     row = 0;
                 }
-                switch (mUnk_266[row][idx]) {
+                switch (mCharaUnlocked[row][idx]) {
                     case 1:
                         set = 0;
                         sel = 0;
@@ -2480,8 +2480,8 @@ void FieldSelectScene::func_ov001_022253f0(u32 slot, u32 value, u32 idx) {
         mWindows[1]->SetCells(count, data_ov001_02227560[set]);
         mWindows[1]->mCursor->mSelection = -1;
         mWindows[1]->mCursor->mSelection = sel;
-        mInput[slot].mUnk_0b             = sel;
-        if (slot == mUnk_33b) {
+        mInput[slot].mWindowSelection             = sel;
+        if (slot == mLocalSlot) {
             NET_BYTE(0xb) = sel;
         }
     } else {
@@ -2489,39 +2489,39 @@ void FieldSelectScene::func_ov001_022253f0(u32 slot, u32 value, u32 idx) {
             delete mWindows[1];
         }
         mWindows[1] = NULL;
-        if (mUnk_2ed[mUnk_329] == 2) {
+        if (mPageKinds[mPage] == 2) {
             mMessage->StartMessage(6, 0, 1);
         }
-        if (mUnk_2ed[mUnk_329] == 4) {
-            func_ov001_0222657c();
-            mUnk_344 = 0x1b;
+        if (mPageKinds[mPage] == 4) {
+            ClearTextBuffer();
+            mPendingSubPlanes = 0x1b;
         }
     }
 }
 
-s16 FieldSelectScene::func_ov001_02225628(u32 idx) {
+s16 FieldSelectScene::GetCharaItemX(u32 idx) {
     int i = idx;
     return (i % 6) * 0x28 + 8;
 }
 
-s16 FieldSelectScene::func_ov001_0222565c(u32 idx) {
+s16 FieldSelectScene::GetCharaItemY(u32 idx) {
     int i = idx;
     return ((i / 6) % 6) * 0x28 + 0x2c;
 }
 
-s16 FieldSelectScene::func_ov001_02225698(u32 idx) {
+s16 FieldSelectScene::GetFieldItemX(u32 idx) {
     if (idx >= 8) {
         return 0x64;
     }
     return ((int) idx % 4) * 0x3c + 10;
 }
 
-s16 FieldSelectScene::func_ov001_022256c8(u32 idx) {
+s16 FieldSelectScene::GetFieldItemY(u32 idx) {
     return (idx >> 2) * 0x26 + 0x2c;
 }
 
-void FieldSelectScene::func_ov001_022256e4() {
-    if (mUnk_348 != 0) {
+void FieldSelectScene::Draw() {
+    if (mMessageEnabled != 0) {
         mMessage->Update();
     }
     if (mMain.mVisible != 0) {
@@ -2532,48 +2532,48 @@ void FieldSelectScene::func_ov001_022256e4() {
         mCells2[8].mAnim->Update();
     }
     if (mUnk_334 != 0) {
-        func_ov001_02226b18();
+        DrawNames();
         u8 i = 0;
         do {
             s16 y = i * 0x24 + 0x27;
             mPanel[0]->SetDrawArgs(i, 0x1b, (s16) (y + 4), 1);
             mCells[6].mAnim->Draw(0, 0x19, (s16) (y + 2), 3);
-            if (mUnk_32b <= i) {
+            if (mInputCount <= i) {
                 mCells[7].mAnim->SetAnimation(0xb);
                 mCells[7].mAnim->DrawFrame(0, i, 0x15, y, 1);
             }
-            if (mUnk_33b == i) {
+            if (mLocalSlot == i) {
                 mCells[7].mAnim->SetAnimation(i + 2);
                 mCells[7].mAnim->Draw(0, 0x19, (s16) (y + 0x16), 1);
             }
             mCells[7].mAnim->SetAnimation(i + 7);
             mCells[7].mAnim->Draw(0, 0x15, y, 1);
             int sel = -1;
-            u8 kind = mUnk_2ed[mUnk_329];
+            u8 kind = mPageKinds[mPage];
             if (kind == 2) {
-                if (mUnk_32b <= i) {
+                if (mInputCount <= i) {
                     if (mUnk_33c > i) {
-                        if (mInput[i].mUnk_06 != 0) {
+                        if (mInput[i].mTaken != 0) {
                             sel = (s8) mInput[i].mUnk_0c;
                         }
-                    } else if (mUnk_33c == i && mInput[0].mUnk_0a == 0) {
-                        if (mInput[i].mUnk_06 != 0) {
+                    } else if (mUnk_33c == i && mInput[0].mWindowOpen == 0) {
+                        if (mInput[i].mTaken != 0) {
                             sel = (s8) mInput[i].mUnk_0c;
                         }
                     }
                 } else {
-                    if (mInput[i].mUnk_0a == 0) {
-                        if (mInput[i].mUnk_06 != 0) {
+                    if (mInput[i].mWindowOpen == 0) {
+                        if (mInput[i].mTaken != 0) {
                             sel = (s8) mInput[i].mUnk_0c;
                         }
                     }
                     if (i == 0) {
-                        if (mUnk_33c != 0 && mInput[i].mUnk_06 != 0) {
+                        if (mUnk_33c != 0 && mInput[i].mTaken != 0) {
                             sel = (s8) mInput[i].mUnk_0c;
                         }
                     }
                 }
-                if (sIdItems.ids[mInput[i].mUnk_02] == 0x15) {
+                if (sIdItems.ids[mInput[i].mCursorItem] == 0x15) {
                     sel = -1;
                 }
             } else if (kind != 0) {
@@ -2587,17 +2587,17 @@ void FieldSelectScene::func_ov001_022256e4() {
                 mCells[4].mAnim->DrawFrame(0, sel, 0x40, (s16) (i * 0x24 + 0x38), 1);
             }
             i++;
-        } while (i < mUnk_32a);
+        } while (i < mPlayerCount);
         mPanel[0]->DrawIcons();
     }
     if (mUnk_336 != 0) {
         u8 slot = mUnk_33f;
         if (slot < 4) {
-            if (mUnk_32b <= slot) {
+            if (mInputCount <= slot) {
                 mCells2[7].mAnim->SetAnimation(0xb);
                 mCells2[7].mAnim->DrawFrame(1, slot, mCells2[slot].mX, mCells2[slot].mY, mCells2[slot].mUnk_09);
             }
-            if (mUnk_33b == slot) {
+            if (mLocalSlot == slot) {
                 mCells2[7].mAnim->SetAnimation(slot + 2);
                 mCells2[7].mAnim->Draw(1, (s16) (mCells2[slot].mX + 4), (s16) (mCells2[slot].mY + 0x16),
                                        mCells2[slot].mUnk_09);
@@ -2622,11 +2622,11 @@ void FieldSelectScene::func_ov001_022256e4() {
                 s16 y = r * 0x24 + 0x18;
                 mPanel[1]->SetDrawArgs(v, x + 6, y + 4, 1);
                 mCells2[5].mAnim->Draw(1, x + 4, y + 2, 2);
-                if (mUnk_32b <= v) {
+                if (mInputCount <= v) {
                     mCells2[7].mAnim->SetAnimation(0xb);
                     mCells2[7].mAnim->DrawFrame(1, v, x, y, 1);
                 }
-                if (mUnk_33b == v) {
+                if (mLocalSlot == v) {
                     mCells2[7].mAnim->SetAnimation(v + 2);
                     mCells2[7].mAnim->Draw(1, x + 4, y + 0x16, 1);
                 }
@@ -2640,11 +2640,11 @@ void FieldSelectScene::func_ov001_022256e4() {
     }
     if (mUnk_339 != 0) {
         u8 j = 0;
-        if (mUnk_32b > 2) {
+        if (mInputCount > 2) {
             j++;
         }
         do {
-            u8 n    = mUnk_32b;
+            u8 n    = mInputCount;
             if (n < j + 2) {
                 do {
                     mCells2[7].mAnim->DrawFrame(1, n, (s16) (mCells2[j].mX + 0x14 + n * 32), mCells2[j].mY,
@@ -2658,9 +2658,9 @@ void FieldSelectScene::func_ov001_022256e4() {
     if (mUnk_337 != 0) {
         u8 k = 0;
         do {
-            if (mUnk_2e4[k] != 0) {
-                s16 x = func_ov001_02225698(k);
-                s16 y = func_ov001_022256c8(k);
+            if (mFieldNew[k] != 0) {
+                s16 x = GetFieldItemX(k);
+                s16 y = GetFieldItemY(k);
                 mCells2[8].mAnim->Draw(1, (s16) (x + 0xb), (s16) (y + 0x1b), mCells2[8].mUnk_09);
             }
             k++;
@@ -2701,9 +2701,9 @@ void FieldSelectScene::func_ov001_022256e4() {
     if (mUnk_337 != 0) {
         u8 k = 0;
         do {
-            if (mUnk_2ae[mUnk_33b][k] == 0) {
-                s16 x = func_ov001_02225698(k);
-                s16 y = func_ov001_022256c8(k);
+            if (mFieldUnlocked[mLocalSlot][k] == 0) {
+                s16 x = GetFieldItemX(k);
+                s16 y = GetFieldItemY(k);
                 mCells2[4].mAnim->Draw(1, x, (s16) (y + 1), mCells2[4].mUnk_09);
             }
             k++;
@@ -2714,34 +2714,34 @@ void FieldSelectScene::func_ov001_022256e4() {
     }
     u8 f = 0;
     do {
-        if (mUnk_266[mUnk_33b][f] == 0) {
-            s16 x = func_ov001_02225628(f);
-            s16 y = func_ov001_0222565c(f);
+        if (mCharaUnlocked[mLocalSlot][f] == 0) {
+            s16 x = GetCharaItemX(f);
+            s16 y = GetCharaItemY(f);
             mCells2[4].mAnim->Draw(1, x, (s16) (y - 4), mCells2[4].mUnk_09);
-        } else if (mUnk_2d2[f] != 0) {
+        } else if (mCharaNew[f] != 0) {
             u32 show = 1;
             if (mUnk_33f < 4) {
-                if (f == mInput[mUnk_33f].mUnk_02) {
+                if (f == mInput[mUnk_33f].mCursorItem) {
                     show = 0;
                 }
             }
             if (show != 0) {
-                s16 x = func_ov001_02225628(f);
-                s16 y = func_ov001_0222565c(f);
+                s16 x = GetCharaItemX(f);
+                s16 y = GetCharaItemY(f);
                 mCells2[8].mAnim->Draw(1, (s16) (x + 3), (s16) (y + 0x1b), mCells2[8].mUnk_09);
             }
         }
         u8 p = 0;
         do {
-            if (mInput[p].mUnk_06 != 0) {
-                u8 q = mInput[p].mUnk_08;
+            if (mInput[p].mTaken != 0) {
+                u8 q = mInput[p].mTakenItem;
                 if ((q != 0) & (f == q)) {
                     mCells2[5].mAnim->DrawFrame(1, f, mCells2[4].mX, mCells2[4].mY, mCells2[4].mUnk_09);
                     break;
                 }
             }
             p++;
-        } while (p < mUnk_32a);
+        } while (p < mPlayerCount);
         f++;
     } while (f < 0x12);
     if (mUnk_340 != 0) {
@@ -2749,71 +2749,71 @@ void FieldSelectScene::func_ov001_022256e4() {
     }
 }
 
-void FieldSelectScene::func_ov001_022260b8() {
+void FieldSelectScene::LoadMessages() {
     SpriteManager::Get().Screen(1).SetObjVramMode(3);
     ChangeDir("/");
-    mUnk_2f4 = (MessageFile *) LoadFile("font/mes_BattleArenaMenu.mes", 0, 0, 0, 0, 0);
-    mUnk_300 = TextManager::Get().BufferSize(0x18, 0x10);
-    mUnk_2f8 = OS_Alloc(mUnk_300);
-    MI_CpuClear16(mUnk_2f8, mUnk_300);
-    mUnk_304 = TextManager::Get().GlyphCount(6);
-    mUnk_2fc = OS_Alloc(mUnk_304 * 12);
-    TextManager::Get().Init(mUnk_2fc, 1, 0, 0x18, 0x10, 0x44);
+    mMessages = (MessageFile *) LoadFile("font/mes_BattleArenaMenu.mes", 0, 0, 0, 0, 0);
+    mTextBufferSize = TextManager::Get().BufferSize(0x18, 0x10);
+    mTextBuffer = OS_Alloc(mTextBufferSize);
+    MI_CpuClear16(mTextBuffer, mTextBufferSize);
+    mGlyphCount = TextManager::Get().GlyphCount(6);
+    mGlyphBuffer = OS_Alloc(mGlyphCount * 12);
+    TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x18, 0x10, 0x44);
     TextManager::Get().SetColor(1, 0, 0xf);
 }
 
-void FieldSelectScene::func_ov001_022262d0(u32 index) {
-    func_ov001_0222657c();
+void FieldSelectScene::PrintWindowText(u32 index) {
+    ClearTextBuffer();
     TextManager &text = TextManager::Get();
     s16 height;
     s16 width;
     width             = 0;
     height            = 0;
-    MessageFile *file = mUnk_2f4;
-    text.Print(file->GetText(index), file->GetLength(index), mUnk_2f8, 0x18, 0x10, &height, &width, 0, 0, 2, 0x44, 0xe, 0, 0,
+    MessageFile *file = mMessages;
+    text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x18, 0x10, &height, &width, 0, 0, 2, 0x44, 0xe, 0, 0,
                1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x15000, mUnk_2f8, mUnk_300, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x15000, mTextBuffer, mTextBufferSize, 0);
 }
 
-void FieldSelectScene::func_ov001_02226430() {
-    if (mUnk_2ed[mUnk_329] == 4) {
-        SpriteManager::Get().Screen(1).AddOam(mUnk_2fc, (u8) mUnk_304, 0x20, 0x28, 0, 0x2a0, 0xf, 0);
+void FieldSelectScene::DrawWindowText() {
+    if (mPageKinds[mPage] == 4) {
+        SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, (u8) mGlyphCount, 0x20, 0x28, 0, 0x2a0, 0xf, 0);
     } else {
-        SpriteManager::Get().Screen(1).AddOam(mUnk_2fc, (u8) mUnk_304, 0x20, 0x38, 0, 0x2a0, 0xf, 0);
+        SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, (u8) mGlyphCount, 0x20, 0x38, 0, 0x2a0, 0xf, 0);
     }
 }
 
-void FieldSelectScene::func_ov001_0222657c() {
-    if (mUnk_2f8 != NULL) {
-        MI_CpuClear16(mUnk_2f8, mUnk_300);
+void FieldSelectScene::ClearTextBuffer() {
+    if (mTextBuffer != NULL) {
+        MI_CpuClear16(mTextBuffer, mTextBufferSize);
     }
 }
 
-void FieldSelectScene::func_ov001_0222659c() {
+void FieldSelectScene::LoadNameText() {
     SpriteManager::Get().Screen(0).SetObjVramMode(3);
     ChangeDir("/");
-    mUnk_308 = (MessageFile *) LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
-    mUnk_320 = TextManager::Get().BufferSize(0x20, 2);
+    mCharaNames = (MessageFile *) LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
+    mNameBufferSize = TextManager::Get().BufferSize(0x20, 2);
     for (u8 i = 0; i < 4; i++) {
-        mUnk_30c[i] = OS_Alloc(mUnk_320);
-        func_ov001_02226bf8(i);
+        mNameBuffers[i] = OS_Alloc(mNameBufferSize);
+        ClearName(i);
     }
-    mUnk_324 = TextManager::Get().GlyphCount(8);
-    mUnk_31c = OS_Alloc(mUnk_324 * 12);
-    TextManager::Get().Init(mUnk_31c, 0, 0, 0x20, 2, 0x21);
+    mNameGlyphCount = TextManager::Get().GlyphCount(8);
+    mNameGlyphBuffer = OS_Alloc(mNameGlyphCount * 12);
+    TextManager::Get().Init(mNameGlyphBuffer, 0, 0, 0x20, 2, 0x21);
     TextManager::Get().SetColor(0, 0, 0xf);
 }
 
-void FieldSelectScene::func_ov001_022267d0(u8 slot) {
-    func_ov001_02226bf8(slot);
+void FieldSelectScene::PrintSlotName(u8 slot) {
+    ClearName(slot);
     u32 useName = 0;
-    u8 id       = sIdItems.ids[mInput[slot].mUnk_08];
+    u8 id       = sIdItems.ids[mInput[slot].mTakenItem];
     if (id == 0x15) {
         useName = 1;
     } else {
         WirelessManager::Get();
         if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-            if (slot < mUnk_32b) {
+            if (slot < mInputCount) {
                 useName = 1;
             }
         }
@@ -2824,7 +2824,7 @@ void FieldSelectScene::func_ov001_022267d0(u8 slot) {
         s16 width;
         height = 0;
         width  = 0;
-        TextManager::Get().Print(&data_020d433c.mNames[data_020d43eb[slot]], 0x18, mUnk_30c[slot], 0x20, 2, &height, &width, 0, 0, 2,
+        TextManager::Get().Print(&data_020d433c.mNames[data_020d43eb[slot]], 0x18, mNameBuffers[slot], 0x20, 2, &height, &width, 0, 0, 2,
                                  0x21, 0x10, 0, 0, 0, 1, 1);
     } else {
         TextManager &text = TextManager::Get();
@@ -2832,31 +2832,31 @@ void FieldSelectScene::func_ov001_022267d0(u8 slot) {
         s16 width;
         width             = 0;
         height            = 0;
-        MessageFile *file = mUnk_308;
-        text.Print(file->GetText(id), file->GetLength(id), mUnk_30c[slot], 0x20, 2, &height, &width, 0, 0, 2, 0x21, 0xe, 0, 0, 0, 1,
+        MessageFile *file = mCharaNames;
+        text.Print(file->GetText(id), file->GetLength(id), mNameBuffers[slot], 0x20, 2, &height, &width, 0, 0, 2, 0x21, 0xe, 0, 0, 0, 1,
                    1);
     }
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, (slot << 12) + 0xc000, mUnk_30c[slot], mUnk_320, 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, (slot << 12) + 0xc000, mNameBuffers[slot], mNameBufferSize, 0);
 }
 
-void FieldSelectScene::func_ov001_02226b18() {
+void FieldSelectScene::DrawNames() {
     u8 i = 0;
     do {
-        SpriteManager::Get().Screen(0).AddOam(mUnk_31c, (u8) mUnk_324, 0x40, (s16) (i * 0x24 + 0x2c), 2,
+        SpriteManager::Get().Screen(0).AddOam(mNameGlyphBuffer, (u8) mNameGlyphCount, 0x40, (s16) (i * 0x24 + 0x2c), 2,
                                                      ((((u32) i << 12) + 0xc000) << 9) >> 16, 0xf, 0);
         i++;
-    } while (i < mUnk_32a);
+    } while (i < mPlayerCount);
 }
 
-void FieldSelectScene::func_ov001_02226bf8(u32 index) {
-    if (mUnk_30c[index] != NULL) {
-        MI_CpuClear16(mUnk_30c[index], mUnk_320);
+void FieldSelectScene::ClearName(u32 index) {
+    if (mNameBuffers[index] != NULL) {
+        MI_CpuClear16(mNameBuffers[index], mNameBufferSize);
         MI_CpuClearFast((void *) (0x6400000 + 0xc000 + (index << 12)), 0x1000);
     }
 }
 
-void FieldSelectScene::func_ov001_02226c38(SelectWindow *window) {
+void FieldSelectScene::ResetWindow(SelectWindow *window) {
     u8 state;
     do {
         window->Draw();
@@ -2873,7 +2873,7 @@ void FieldSelectScene::func_ov001_02226cb0() {
     do {
         func_ov001_02226d18(data_020d433c.mCharacterIds[i]);
         i++;
-    } while (i < mUnk_32a);
+    } while (i < mPlayerCount);
     SetFlagBit(data_020d4969, data_020d433c.mFieldId);
 }
 
@@ -2883,7 +2883,7 @@ void FieldSelectScene::func_ov001_02226d18(u32 index) {
     }
 }
 
-u32 FieldSelectScene::func_ov001_02226d48(u32 id) {
+u32 FieldSelectScene::FindCharaItem(u32 id) {
     u8 i = 0;
     do {
         if (sIdItems.ids[i] == id) {
@@ -2898,15 +2898,15 @@ void FieldSelectScene::func_ov001_02226d74() {
     WirelessManager::Get();
     if (IsWirelessMode(&data_020c4030.mUnk_228)) {
         u8 *flags;
-        u8 i = mUnk_32b;
-        if (mUnk_32a > i) {
+        u8 i = mInputCount;
+        if (mPlayerCount > i) {
             flags = data_020d43e3;
             do {
                 if (data_020d433c.mUnk_a7 & 1) {
                     SetFlagBit(flags, i);
                 }
                 i++;
-            } while (i < mUnk_32a);
+            } while (i < mPlayerCount);
         }
     }
 }

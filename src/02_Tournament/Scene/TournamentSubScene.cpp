@@ -29,7 +29,7 @@ static const CellPosByte sTouchPos[3][3] = {
     {{0x07, 0x26}, {0x07, 0x46}, {0x00, 0x00}},
     {{0x07, 0x26}, {0x07, 0x46}, {0x07, 0x66}},
 };
-// Touch items, patched by func_ov002_0221fb24. In the original they follow the cell paths, after the vtable, so they
+// Touch items, patched by Init. In the original they follow the cell paths, after the vtable, so they
 // are a section of their own: a function-local static of an inline accessor gets one and keeps its place in the size
 // sort.
 inline WindowItemRecord *TouchItems() {
@@ -78,8 +78,8 @@ TournamentSubScene::TournamentSubScene() :
     mMessage         = NULL;
     mUnk_48         = NULL;
     mResult         = 0;
-    mUnk_50         = 0;
-    mUnk_51         = -1;
+    mTextLineCount         = 0;
+    mScroll         = -1;
     mSelected       = 0;
     mState          = 0;
     mCounter        = 0;
@@ -132,8 +132,8 @@ void TournamentSubScene::Update() {
     switch (mState) {
         case 0:
             input = FALSE;
-            func_ov002_0221f930();
-            func_ov002_0221fb24();
+            InitDisplay();
+            Init();
             mCounter = 10;
             mState++;
             break;
@@ -151,7 +151,7 @@ void TournamentSubScene::Update() {
                 mUnk_10->mFinishRequested = 1;
                 mState           = 4;
             } else {
-                if (func_ov002_022202cc() != -1) {
+                if (UpdateEntrySelection() != -1) {
                     u8 id = mEntries[mSelected].mId;
                     if (id != mUnk_10->mCharacterId) {
                         mUnk_10->ChangeCharacter(id, mEntries[mSelected].mUnk_02,
@@ -164,7 +164,7 @@ void TournamentSubScene::Update() {
             break;
         case 3:
             if (mUnk_10->mChanging == 0) {
-                func_ov002_02220830();
+                SetupProfile();
                 mState = 2;
             }
             break;
@@ -191,7 +191,7 @@ void TournamentSubScene::Update() {
 }
 
 
-void TournamentSubScene::func_ov002_0221f930() {
+void TournamentSubScene::InitDisplay() {
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     MI_CpuClearFast((void *) 0x6200000, 0x20000);
     reg_GX_POWCNT |= 0x8000;
@@ -224,7 +224,7 @@ void TournamentSubScene::func_ov002_0221f930() {
 }
 
 // UnkStruct_020758f4_Record::mTextLength must be u32 (loaded with ldr).
-void TournamentSubScene::func_ov002_0221fb24() {
+void TournamentSubScene::Init() {
     mUnk_0c = new Ranking();
     u8 i = 0;
     do {
@@ -283,7 +283,7 @@ void TournamentSubScene::func_ov002_0221fb24() {
     mGlyphBuffer = OS_Alloc(mGlyphCount * 0xc);
     TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x14, 0xe, 0x21);
     TextManager::Get().SetColor(1, 0, 0xf);
-    func_ov002_02220830();
+    SetupProfile();
     mMessage = new MessageWindow("mes_tornament", 1, 0xc000);
     mMessage->func_02065bd4(0x14, 4, 0);
     mMessage->SetWidth(0xd8);
@@ -293,11 +293,11 @@ void TournamentSubScene::func_ov002_0221fb24() {
 
 
 void TournamentSubScene::Draw() {
-    func_ov002_02220184();
+    DrawSubScreen();
 }
 
 
-void TournamentSubScene::func_ov002_02220184() {
+void TournamentSubScene::DrawSubScreen() {
     u8 i = 0;
     do {
         u8 j = 0;
@@ -319,7 +319,7 @@ void TournamentSubScene::func_ov002_02220184() {
 }
 
 
-s32 TournamentSubScene::func_ov002_022202cc() {
+s32 TournamentSubScene::UpdateEntrySelection() {
     s32 result = -1;
     u8 i       = 0;
     do {
@@ -330,7 +330,7 @@ s32 TournamentSubScene::func_ov002_022202cc() {
         i++;
     } while (i < mCount);
     if (result == -1) {
-        result = func_ov002_022203ec();
+        result = UpdateEntryKeySelection();
     } else if (mSelected != result) {
         SoundManager::Get().StartSeqArc(5);
         mSelected = result;
@@ -340,7 +340,7 @@ s32 TournamentSubScene::func_ov002_022202cc() {
 
 
 
-s32 TournamentSubScene::func_ov002_022203ec() {
+s32 TournamentSubScene::UpdateEntryKeySelection() {
     s8 next = -1;
     if (InputManager::Get().IsTrigger(KEY_UP)) {
         if (mSelected <= 0) {
@@ -376,20 +376,20 @@ void TournamentSubScene::func_ov002_02220618() {
     window->mCellPos[1].x = x;
     window->mCellPos[1].y = y;
     u8 cursor = mWindow->mCursor->mScroll;
-    if (mUnk_51 != cursor) {
-        mUnk_51 = cursor;
-        func_ov002_02220680();
+    if (mScroll != cursor) {
+        mScroll = cursor;
+        PrintProfile();
     }
 }
 
 
 
-void TournamentSubScene::func_ov002_02220680() {
+void TournamentSubScene::PrintProfile() {
     MI_CpuClear16(mTextBuffer, mTextBufferSize);
     TextManager &text = TextManager::Get();
     s16 height;
     s16 width;
-    width  = mUnk_51 * -14;
+    width  = mScroll * -14;
     height = 0;
     u8 index          = sMessageIds[0][mEntries[mSelected].mId];
     MessageFile *file = mMessages;
@@ -406,7 +406,7 @@ void TournamentSubScene::func_ov002_02220680() {
 }
 
 
-void TournamentSubScene::func_ov002_02220830() {
+void TournamentSubScene::SetupProfile() {
     u16 pixelWidth;
     s16 height;
     s16 width;
@@ -427,20 +427,20 @@ void TournamentSubScene::func_ov002_02220830() {
             text.mUnk_36[i + 1] = text.mUnk_36[i];
         }
     }
-    mUnk_50 = w / 14;
-    u32 count = mUnk_50;
+    mTextLineCount = w / 14;
+    u32 count = mTextLineCount;
     if (count <= 8) {
         count = 8;
     }
     mWindow->mCursor->SetupScroll(0x30, 0x90, 8, count);
     mWindow->mCursor->SetScroll(0);
-    if (mUnk_50 > 8) {
+    if (mTextLineCount > 8) {
         mWindow->mButtons[2].mEnabled = 1;
     } else {
         mWindow->mButtons[2].mEnabled = 0;
     }
-    mUnk_51 = 0;
-    func_ov002_02220680();
+    mScroll = 0;
+    PrintProfile();
 }
 
 

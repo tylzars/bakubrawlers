@@ -30,13 +30,13 @@ public:
     /* 2c */ SelectWindow *mPanelWindow;
     /* 30 */ void *mGlyphBuffer;
     /* 34 */ u16 mGlyphCount;
-    /* 36 */ u16 mUnk_36;
-    /* 38 */ u16 mUnk_38;
+    /* 36 */ u16 mPopupTextX;
+    /* 38 */ u16 mPopupTextY;
     /* 3a */ PAD(0x3a, 0x3c);
     /* 3c */ TextSlot mText[2];
-    /* 64 */ u8 mUnk_64;
-    /* 65 */ u8 mUnk_65;
-    /* 66 */ s16 mNextState;
+    /* 64 */ u8 mState;
+    /* 65 */ u8 mTimer;
+    /* 66 */ s16 mNextScene;
     /* 68 */ u8 mUnk_68;
     /* 69 */ u8 mUnk_69;
     /* 6a */ u8 mTab;
@@ -47,11 +47,11 @@ public:
     /* 72 */ u8 mDragging;
     /* 73 */ u8 mLastTouchX;
     /* 74 */ s8 mUnk_74;
-    /* 75 */ s8 mUnk_75;
+    /* 75 */ s8 mSkipDraw;
     /* 76 */ u8 mPage;
     /* 77 */ u8 mPageVisible;
     /* 78 */ PAD(0x78, 0x79);
-    /* 79 */ u8 mUnk_79;
+    /* 79 */ u8 mPanelVisible;
     /* 7a */ u16 mTextWidth;
     /* 7c */ u8 mUnk_7c;
     /* 7d */ u8 mUnk_7d;
@@ -74,25 +74,25 @@ public:
     /* 0c */
 
     void Init();                      // 0221a4e0
-    void func_ov005_0221a598();
+    void SetupMap();
     void InitDisplay();               // 0221a63c
     void LoadWindowGraphics();        // 0221a824
-    void func_ov005_0221a9ec();
+    void ReloadMap();
     void LoadMapBackground();         // 0221aaa4
     void func_ov005_0221abf4();
-    BOOL func_ov005_0221b1a0();
+    BOOL SetNextSceneFromEvent();
     BOOL func_ov005_0221b2ac();
     u8 UpdateMenu();                  // 0221b2dc
     void func_ov005_0221b364(u8 index, BOOL changed);
     void CreateMenu();                // 0221b3c0
     void UpdateDrag();                // 0221b4c8
-    BOOL func_ov005_0221b6f0();
+    BOOL SetNextSceneFromTab();
     s16 func_ov005_0221b760(u32 index);
-    void func_ov005_0221b7e0();
+    void DrawPanelWindow();
     void DrawPopup();                 // 0221b824
     void DrawMoney();                 // 0221bc28
-    void func_ov005_0221bd48();
-    void func_ov005_0221bde8(u32 index);
+    void DrawPage();
+    void ShowTabInfo(u32 index);
     void ShowNumbers();               // 0221bf60
     void ShowText(u16 index, s32 unk2); // 0221c390
     BOOL ShowCurrent();               // 0221c650
@@ -104,4 +104,4 @@ public:
     u32 UpdatePanelWindow();          // 0221cec4
 };
 
-void func_ov005_0221b67c(MapScene *scene); // scroll callback for QueueFrameCallback
+void MapScrollCallback(MapScene *scene); // scroll callback for QueueFrameCallback

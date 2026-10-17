@@ -161,7 +161,7 @@ void GameSystem::Init() {
     mWirelessWaitFrames = 0;
     func_020219dc();
     SceneManager &manager = SceneManager::Get();
-    UnkStruct_SceneContext *context = (UnkStruct_SceneContext *) manager.Init(&SceneRunner::Get());
+    SceneContext *context = (SceneContext *) manager.Init(&SceneRunner::Get());
     SceneRunner::Get().mContext = context;
     func_02022b0c();
     func_02022b28();

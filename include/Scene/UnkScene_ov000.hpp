@@ -8,13 +8,13 @@
 class MessageScreen;
 
 // Filled by OS_GetOwnerInfo; the first byte is a kind (1 or 2 skips the scene).
-struct UnkStruct_020073d8 {
+struct OwnerInfo {
     /* 00 */ u8 mKind;
     /* 01 */ PAD(0x01, 0x54);
     /* 54 */
 };
 
-extern "C" void OS_GetOwnerInfo(UnkStruct_020073d8 *info);
+extern "C" void OS_GetOwnerInfo(OwnerInfo *info);
 
 // Overlay 0 scene with vtable 0x02226e4c: shows an object until A or a touch, then requests scene 1.
 class UnkScene_02226e4c : public SceneBase {
@@ -32,27 +32,4 @@ public:
     /* 0c */
 
     void InitDisplay(); // 0221c524
-};
-
-// Overlay 0 scene with vtable 0x02226e60.
-class UnkScene_02226e60 : public SceneBase {
-public:
-    /* 00 (base) */
-    /* 0c */ u16 mFrames;
-    /* 0e */ u8 mState;
-    /* 0f */
-
-    UnkScene_02226e60();
-
-    /* 00 */ virtual ~UnkScene_02226e60() override;
-    /* 08 */ virtual void Update() override; // 0221c71c, not decompiled yet
-    /* 0c */
-
-    void InitDisplay(); // 0221cf30
-    void func_ov000_0221d21c();
-    void func_ov000_0221d2e8();
-    void func_ov000_0221d3b4();
-    void func_ov000_0221d500();
-    void func_ov000_0221d5d4();
-    BOOL WaitFrames(u32 maxFrames, u32 minFrames); // 0221d034
 };

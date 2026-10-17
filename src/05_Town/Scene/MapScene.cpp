@@ -72,9 +72,9 @@ MapScene::MapScene() :
     mText[1].mGlyphBuffer = NULL;
     mText[1].mTextBufferSize = 0;
     mText[1].mGlyphCount = 0;
-    mUnk_64      = 0;
-    mUnk_65      = 0;
-    mNextState   = 9;
+    mState      = 0;
+    mTimer      = 0;
+    mNextScene   = 9;
     mUnk_68      = 0;
     mUnk_69      = 0;
     mScrollPos   = 0;
@@ -83,9 +83,9 @@ MapScene::MapScene() :
     mDragging    = 0;
     mLastTouchX  = 0;
     mUnk_74      = -1;
-    mUnk_75      = 0;
+    mSkipDraw      = 0;
     mPage        = 0;
-    mUnk_79      = 0;
+    mPanelVisible      = 0;
     mTextWidth   = 0;
     mUnk_7c      = 0;
     mUnk_7d      = 0;
@@ -131,30 +131,30 @@ MapScene::~MapScene() {
 }
 
 void MapScene::Update() {
-    if ((mUnk_64 > 1) & (mUnk_64 < 0x10)) {
-        if (func_ov005_0221b1a0()) {
-            mUnk_64 = 0x10;
+    if ((mState > 1) & (mState < 0x10)) {
+        if (SetNextSceneFromEvent()) {
+            mState = 0x10;
         }
     }
-    switch (mUnk_64) {
+    switch (mState) {
         case 0:
             Init();
-            mUnk_64++;
+            mState++;
             break;
         case 1:
             if (!func_ov005_0221b2ac()) {
-                mUnk_64 = 0xb;
+                mState = 0xb;
                 break;
             }
-            mUnk_64++;
+            mState++;
             break;
         case 2:
             SpriteManager::Get().StartFade(2);
-            mUnk_64++;
+            mState++;
             break;
         case 3:
             if (!mEvent->IsRunning()) {
-                mUnk_64 = 0xb;
+                mState = 0xb;
                 break;
             }
             if (mEvent->func_02067938()) {
@@ -163,11 +163,11 @@ void MapScene::Update() {
             }
             if (mEvent->func_02067954()) {
                 SpriteManager::Get().StartSubFade(3);
-                mUnk_64 = 4;
+                mState = 4;
             }
             if (mEvent->func_0206797c()) {
                 SpriteManager::Get().StartSubFade(3);
-                mUnk_64 = 8;
+                mState = 8;
             }
             break;
         case 4:
@@ -177,40 +177,40 @@ void MapScene::Update() {
             }
             LoadWindowGraphics();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             data_020d433c.mUnk_14_1 = 0;
             SpriteManager::Get().StartSubFade(2);
-            mUnk_64++;
+            mState++;
             break;
         case 5:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             SpriteManager::Get().StartSubFade(3);
-            mUnk_64++;
+            mState++;
             break;
         case 6:
             SpriteManager::Get();
             if (SpriteManager::sFade[1] > 1) {
                 break;
             }
-            func_ov005_0221a9ec();
+            ReloadMap();
             mEvent->func_0206796c();
-            mUnk_65 = 8;
-            mUnk_64++;
+            mTimer = 8;
+            mState++;
             break;
         case 7:
-            mUnk_65--;
-            if (mUnk_65 != 0) {
+            mTimer--;
+            if (mTimer != 0) {
                 break;
             }
             if (!mEvent->IsRunning()) {
-                mUnk_75 = 0;
-                mUnk_64 = 0xb;
+                mSkipDraw = 0;
+                mState = 0xb;
                 break;
             }
             SpriteManager::Get().StartSubFade(2);
-            mUnk_64 = 3;
+            mState = 3;
             break;
         case 8:
             SpriteManager::Get();
@@ -218,19 +218,19 @@ void MapScene::Update() {
                 break;
             }
             new UnlockPopup(mEvent->func_0206797c() - 1);
-            mContext->mUnk_12 = 0;
-            mUnk_64++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 9:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
-            func_ov005_0221a9ec();
+            ReloadMap();
             mEvent->func_02067988();
-            mUnk_64++;
+            mState++;
             break;
         case 10:
-            mUnk_64 = 3;
+            mState = 3;
             break;
         case 11:
             if (mEvent->IsRunning()) {
@@ -240,18 +240,18 @@ void MapScene::Update() {
             CreateMenu();
             mEvent->func_0206ef4c("mes_town", data_ov005_0221fe90[mTab], 10, 7, 0x15);
             SpriteManager::Get().StartFade(2);
-            mUnk_64++;
+            mState++;
             break;
         case 12: {
             UpdateDrag();
-            QueueFrameCallback((FrameCallback) func_ov005_0221b67c, this);
+            QueueFrameCallback((FrameCallback) MapScrollCallback, this);
             u8 r = UpdateMenu();
             if (r != 0) {
                 if (r != 1) {
                     CreatePanelWindow();
-                    mUnk_64 = 0xf;
+                    mState = 0xf;
                 } else {
-                    mUnk_64++;
+                    mState++;
                 }
             }
             break;
@@ -269,7 +269,7 @@ void MapScene::Update() {
                         case 9:
                         case 10:
                             if (mUnk_7c == 0) {
-                                mUnk_64++;
+                                mState++;
                                 goto done;
                             }
                             break;
@@ -280,15 +280,15 @@ void MapScene::Update() {
                         cell->mAnimIndex = data_ov005_02220044[mTab].mAnimIndices[2];
                         cell->ResetAnimation();
                     }
-                    mUnk_64--;
+                    mState--;
                 } else {
-                    mUnk_64++;
+                    mState++;
                 }
             }
             break;
         case 14:
-            if (func_ov005_0221b6f0()) {
-                mUnk_64 = 0x10;
+            if (SetNextSceneFromTab()) {
+                mState = 0x10;
             }
             break;
         case 15: {
@@ -296,76 +296,76 @@ void MapScene::Update() {
             if (r == 0) {
                 break;
             }
-            mUnk_79 = 0;
+            mPanelVisible = 0;
             if (r == 2) {
                 CreateMenu();
-                mUnk_64 = 0xc;
+                mState = 0xc;
             } else {
                 mUnk_7d = 1;
-                mNextState = 4;
-                mUnk_64++;
+                mNextScene = 4;
+                mState++;
             }
             break;
         }
         case 16:
             SpriteManager::Get().StartFade(3);
-            mUnk_64++;
+            mState++;
             break;
         case 17:
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
             mEvent->RequestFinish();
-            mContext->mUnk_12 = 0;
-            mUnk_64++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 18:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
-            mUnk_75 = 1;
-            mUnk_64++;
-            if (mNextState == 7 && gSaveData[0].mUnk_42 == 5) {
+            mSkipDraw = 1;
+            mState++;
+            if (mNextScene == 7 && gSaveData[0].mUnk_42 == 5) {
                 mEvent = new ScriptPlayer(7, 0, 1);
-                mUnk_64 = 0x18;
+                mState = 0x18;
             }
             break;
         case 19:
             if (mUnk_7d == 0) {
-                mUnk_64 = 0x17;
+                mState = 0x17;
                 break;
             }
             LoadWindowGraphics();
             GX_SetVisiblePlane(0);
-            mUnk_65 = 8;
-            mUnk_64++;
+            mTimer = 8;
+            mState++;
             break;
         case 20:
-            mUnk_65--;
-            if (mUnk_65 != 0) {
+            mTimer--;
+            if (mTimer != 0) {
                 break;
             }
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             data_020d433c.mUnk_14_1 = 0;
-            mUnk_64++;
+            mState++;
             break;
         case 21:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             SpriteManager::Get().StartSubFade(3);
-            mUnk_64++;
+            mState++;
             break;
         case 22:
             SpriteManager::Get();
             if (SpriteManager::sFade[1] > 1) {
                 break;
             }
-            mUnk_64++;
+            mState++;
             break;
         case 23:
-            RequestScene(mNextState);
+            RequestScene(mNextScene);
             mFinished = 1;
             break;
         case 24:
@@ -374,7 +374,7 @@ void MapScene::Update() {
             }
             mEvent->StartScript("cmd_ST_mev_011.bin");
             SpriteManager::Get().StartFade(2);
-            mUnk_64++;
+            mState++;
             break;
         case 25:
             if (mEvent->IsRunning()) {
@@ -382,20 +382,20 @@ void MapScene::Update() {
             }
             gSaveData[0].mUnk_42 = 6;
             gSaveData[0].mUnk_43 = 0;
-            mUnk_64 = 0x10;
+            mState = 0x10;
             break;
     }
 done:
-    if (mUnk_75 != 0) {
+    if (mSkipDraw != 0) {
         return;
     }
-    if (mUnk_79 != 0) {
-        func_ov005_0221b7e0();
+    if (mPanelVisible != 0) {
+        DrawPanelWindow();
         return;
     }
     DrawPopup();
-    if ((mUnk_64 >= 0xc) & (mUnk_64 < 0x12)) {
-        func_ov005_0221bd48();
+    if ((mState >= 0xc) & (mState < 0x12)) {
+        DrawPage();
     }
     DrawMoney();
 }
@@ -406,12 +406,12 @@ void MapScene::Init() {
     func_ov005_0221abf4();
     LoadPanelText();
     mEvent = new ScriptPlayer(0, 0, 0);
-    func_ov005_0221a598();
+    SetupMap();
     mGlyphCount  = TextManager::Get().GlyphCount(8);
     mGlyphBuffer = OS_Alloc((s16) mGlyphCount * (s16) 0xc);
 }
 
-void MapScene::func_ov005_0221a598() {
+void MapScene::SetupMap() {
     switch (mEvent->func_020667ec()) {
         case 3:
             if (gSaveData[0].mUnk_24 & 1) {
@@ -432,7 +432,7 @@ void MapScene::func_ov005_0221a598() {
     }
     mScrollTarget = func_ov005_0221b760(mTab) << 4;
     mScrollPos    = mScrollTarget;
-    QueueFrameCallback((FrameCallback) func_ov005_0221b67c, this);
+    QueueFrameCallback((FrameCallback) MapScrollCallback, this);
     CreateMenu();
 }
 
@@ -484,7 +484,7 @@ void MapScene::LoadWindowGraphics() {
     ChangeDir("/");
 }
 
-void MapScene::func_ov005_0221a9ec() {
+void MapScene::ReloadMap() {
     G2S_SetBG0Control(1, 1, 0, 4, 1);
     G2S_SetBG1Control(1, 1, 2, 1, 1);
     G2S_SetBG2ControlText(0, 1, 4, 1);
@@ -495,7 +495,7 @@ void MapScene::func_ov005_0221a9ec() {
     LoadMapBackground();
     func_ov005_0221abf4();
     LoadPanelText();
-    func_ov005_0221a598();
+    SetupMap();
 }
 
 void MapScene::LoadMapBackground() {
@@ -577,39 +577,39 @@ void MapScene::func_ov005_0221abf4() {
     TextManager::Get().Init(mText[1].mGlyphBuffer, 1, 0, 0x20, 4, 0x21);
 }
 
-BOOL MapScene::func_ov005_0221b1a0() {
+BOOL MapScene::SetNextSceneFromEvent() {
     u32 result = mEvent->GetResult();
     if (result != 0) {
         switch (result) {
             case 1:
-                mNextState            = 7;
+                mNextScene            = 7;
                 data_020d433c.mUnk_7f = 9;
                 break;
             case 2:
-                mNextState = 6;
+                mNextScene = 6;
                 break;
             case 3:
-                mNextState = 12;
+                mNextScene = 12;
                 break;
             case 4:
-                mNextState = 13;
+                mNextScene = 13;
                 break;
             case 5:
                 data_020d433c.mUnk_9a   = 0x11;
                 data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
-                mNextState              = 5;
+                mNextScene              = 5;
                 break;
             case 6:
-                mNextState = 9;
+                mNextScene = 9;
                 break;
             case 7:
                 data_020d433c.mUnk_83 = 1;
                 data_020d433c.mUnk_84 = 0;
                 data_020d433c.mUnk_82 = 1;
-                mNextState            = 10;
+                mNextScene            = 10;
                 break;
             default:
-                mNextState = 4;
+                mNextScene = 4;
                 break;
         }
         return TRUE;
@@ -621,7 +621,7 @@ BOOL MapScene::func_ov005_0221b2ac() {
     if (!mEvent->func_02066c7c()) {
         return FALSE;
     }
-    mUnk_75 = 1;
+    mSkipDraw = 1;
     mTab    = 2;
     return TRUE;
 }
@@ -661,7 +661,7 @@ void MapScene::func_ov005_0221b364(u8 index, BOOL changed) {
         return;
     }
     mScrollTarget = func_ov005_0221b760(index) << 4;
-    func_ov005_0221bde8(index);
+    ShowTabInfo(index);
 }
 
 void MapScene::CreateMenu() {
@@ -714,29 +714,29 @@ void MapScene::UpdateDrag() {
     mParallax  = (mParallax - 3) % 0x8000;
 }
 
-void func_ov005_0221b67c(MapScene *scene) {
+void MapScrollCallback(MapScene *scene) {
     G2S_SetBG0Offset((scene->mScrollPos * 0x100) / 0x1000, 0);
     G2S_SetBG1Offset(0x40 - (scene->mScrollPos * 0x40) / 0x1000, 0);
     G2S_SetBG2Offset(0x80 - ((scene->mScrollPos * 0x80) / 0x1000 + ((u32) scene->mParallax >> 7)), 0);
 }
 
-BOOL MapScene::func_ov005_0221b6f0() {
+BOOL MapScene::SetNextSceneFromTab() {
     switch (mTab) {
         case 0:
-            mNextState            = 7;
+            mNextScene            = 7;
             data_020d433c.mUnk_7f = 9;
             break;
         case 1:
-            mNextState = 6;
+            mNextScene = 6;
             break;
         case 2:
-            mNextState = 12;
+            mNextScene = 12;
             break;
         case 3:
-            mNextState = 13;
+            mNextScene = 13;
             break;
         default:
-            mNextState = 4;
+            mNextScene = 4;
             break;
     }
     return TRUE;
@@ -763,7 +763,7 @@ s16 MapScene::func_ov005_0221b760(u32 index) {
     return pos;
 }
 
-void MapScene::func_ov005_0221b7e0() {
+void MapScene::DrawPanelWindow() {
     G2S_SetWndOutsidePlane(0x10, TRUE);
     G2S_SetBlendBrightness(7, -8);
     DrawPanelText();
@@ -778,7 +778,7 @@ void MapScene::DrawPopup() {
     switch (mTab) {
         case 0:
             if (mUnk_7e_0) {
-                SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
+                SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mPopupTextX, (s16) mPopupTextY, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
                 mCellAnims[5]->Draw(1, 0x80, 0x64, 0);
@@ -787,7 +787,7 @@ void MapScene::DrawPopup() {
             break;
         case 1:
             if (mUnk_7e_1) {
-                SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
+                SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mPopupTextX, (s16) mPopupTextY, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
                 mPageVisible = 0;
@@ -795,7 +795,7 @@ void MapScene::DrawPopup() {
             break;
         case 2:
             if (mUnk_7e_2) {
-                SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
+                SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mPopupTextX, (s16) mPopupTextY, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
                 mPageVisible = 0;
@@ -803,7 +803,7 @@ void MapScene::DrawPopup() {
             break;
         case 3:
             if (mUnk_7e_3) {
-                SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
+                SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mPopupTextX, (s16) mPopupTextY, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
                 mPageVisible = 0;
@@ -840,7 +840,7 @@ void MapScene::DrawMoney() {
     mCellAnims[2]->Draw(1, 0, 0, 2);
 }
 
-void MapScene::func_ov005_0221bd48() {
+void MapScene::DrawPage() {
     if (mPageVisible == 0) {
         return;
     }
@@ -852,7 +852,7 @@ void MapScene::func_ov005_0221bd48() {
     }
 }
 
-void MapScene::func_ov005_0221bde8(u32 index) {
+void MapScene::ShowTabInfo(u32 index) {
     mUnk_7e = 0;
     switch (index) {
         case 0:
@@ -905,29 +905,29 @@ void MapScene::ShowNumbers() {
     TextManager &text = TextManager::Get();
     width  = 0;
     height = 0;
-    text.Print(file->GetText(15), file->GetLength(15), buffer, 0x18, 0x10, &height, &width, &mUnk_36, 0, 2,
+    text.Print(file->GetText(15), file->GetLength(15), buffer, 0x18, 0x10, &height, &width, &mPopupTextX, 0, 2,
                0x44, 0x10, 0, 0, 0, 1, 1);
-    if (&mUnk_38 != NULL) {
-        mUnk_38 = width;
+    if (&mPopupTextY != NULL) {
+        mPopupTextY = width;
     }
-    mUnk_36 = (256 - mUnk_36) / 2;
-    mUnk_38 = 0x20;
-    mUnk_38 = (0x6c - mUnk_38) / 2 + 0x1e;
+    mPopupTextX = (256 - mPopupTextX) / 2;
+    mPopupTextY = 0x20;
+    mPopupTextY = (0x6c - mPopupTextY) / 2 + 0x1e;
     y       = 0x20;
     if (data_020d48f0.mPrevRank >= 100) {
-        x = 0x58 - mUnk_36;
+        x = 0x58 - mPopupTextX;
     } else if (data_020d48f0.mPrevRank >= 10) {
-        x = 0x5c - mUnk_36;
+        x = 0x5c - mPopupTextX;
     } else {
-        x = 0x60 - mUnk_36;
+        x = 0x60 - mPopupTextX;
     }
     TextManager::Get().PrintNumber(data_020d48f0.mPrevRank, 0, 0, buffer, 0x18, 0x10, &x, &y, 0, 2, 0x44, 0x10, 0, 1, 1);
     if (data_020d48f0.mRank >= 100) {
-        x2 = 0x90 - mUnk_36;
+        x2 = 0x90 - mPopupTextX;
     } else if (data_020d48f0.mRank >= 10) {
-        x2 = 0x94 - mUnk_36;
+        x2 = 0x94 - mPopupTextX;
     } else {
-        x2 = 0x98 - mUnk_36;
+        x2 = 0x98 - mPopupTextX;
     }
     TextManager::Get().PrintNumber(data_020d48f0.mRank, 0, 0, buffer, 0x18, 0x10, &x2, &y, 0, 2, 0x44, 0x10, 0, 1, 1);
     QueueUpload(1, 4, 0x5000, buffer, size, 1);
@@ -954,13 +954,13 @@ void MapScene::ShowText(u16 index, s32 unk2) {
     s16 width;
     width  = 0;
     height = 0;
-    text.Print(file->GetText(index), file->GetLength(index), buffer, cols, 0x10, &height, &width, &mUnk_36, 0, 2,
+    text.Print(file->GetText(index), file->GetLength(index), buffer, cols, 0x10, &height, &width, &mPopupTextX, 0, 2,
                0x44, 0x10, 0, 0, 0, 1, 1);
-    if (&mUnk_38 != NULL) {
-        mUnk_38 = width;
+    if (&mPopupTextY != NULL) {
+        mPopupTextY = width;
     }
-    mUnk_36 = (256 - mUnk_36) / 2;
-    mUnk_38 = (0x6c - mUnk_38) / 2 + 0x1e;
+    mPopupTextX = (256 - mPopupTextX) / 2;
+    mPopupTextY = (0x6c - mPopupTextY) / 2 + 0x1e;
     QueueUpload(1, 4, 0x5000, buffer, size, 1);
     OS_Free(file);
     TextManager::Get().SetColor(1, 0, 0xf);
@@ -1001,7 +1001,7 @@ void MapScene::CreatePanelWindow() {
     mPanelWindow->mCursor->mSelection = -1;
     mPanelWindow->mCursor->mSelection = 1;
     mPanelWindow->mEnabled            = 0;
-    mUnk_79                           = 1;
+    mPanelVisible                           = 1;
 }
 
 void MapScene::LoadPanelText() {

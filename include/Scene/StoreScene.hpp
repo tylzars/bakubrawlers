@@ -23,7 +23,7 @@ public:
     /* 20 */ u32 mGlyphCount;
     /* 24 */ SelectWindow *mMenu;
     /* 28 */ ScriptPlayer *mEvent;
-    /* 2c */ s16 mUnk_2c;
+    /* 2c */ s16 mNextScene;
     /* 2e */ PAD(0x2e, 0x30);
     /* 30 */ CellAnimation *mCellAnims[2];
     /* 38 */
@@ -39,8 +39,8 @@ public:
     void LoadGraphics();
     void CreateMenu();
     void UpdateMenu();
-    void func_ov003_0221ab38();
-    void func_ov003_0221ac5c();
+    void StartScroll();
+    void HandleMenuResult();
     BOOL ScrollStep();
     void UpdateSlotLayout();
     void SetupText();

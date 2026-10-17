@@ -128,10 +128,10 @@ void SaveWindow::Update() {
             mState++;
             break;
         case 4:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
-            if (mContext->mUnk_12 == SAVE_STATUS_ERROR) {
+            if (mContext->mRequest == SAVE_STATUS_ERROR) {
                 new MessageScreen(MESSAGE_SCREEN_SYSTEM_4_HALT);
             } else {
                 mState = 5;

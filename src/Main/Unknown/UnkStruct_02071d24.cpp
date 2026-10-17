@@ -211,7 +211,7 @@ void UnkStruct_02071d24::Update() {
             func_02072dfc();
             if (mCommandList != NULL) {
                 CloseCommandList(mCommandList);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
             }
             mState++;
             SpriteManager::Get().StartFade(3);
@@ -222,7 +222,7 @@ void UnkStruct_02071d24::Update() {
                 break;
             }
             if (mCommandList != NULL) {
-                if (mContext->mUnk_12 != 0) {
+                if (mContext->mRequest != 0) {
                     mCommandList = NULL;
                 } else {
                     return;

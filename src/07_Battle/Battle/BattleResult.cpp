@@ -272,7 +272,7 @@ void BattleResult::Update() {
                 new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, me, 13, 0, 0);
                 FrameTask::Get().StartChannel(0, 0x19);
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             if (data_020d43e5[best] < 99) {
                 data_020d43e5[best] = data_020d43e5[best] + 1;
             }
@@ -286,10 +286,10 @@ void BattleResult::Update() {
             break;
         }
         case 2:
-            if (mContext->mUnk_12 != 0) {
-                if (mContext->mUnk_12 == 2) {
+            if (mContext->mRequest != 0) {
+                if (mContext->mRequest == 2) {
                     FrameTask::Get().StopAllChannels();
-                    mContext->mUnk_12 = 1;
+                    mContext->mRequest = 1;
                 }
                 if (!func_0203dd0c(&FrameTask::Get(), 0)) {
                     mUnk_b1++;
@@ -381,7 +381,7 @@ void BattleResult::Update() {
             SpriteManager::sFade[0] = 2;
             FrameTask::Get().StartChannel(0, 0x11);
             mUnk_68 = new UnkStruct_02076058(0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_b1++;
             break;
         }
@@ -397,7 +397,7 @@ void BattleResult::Update() {
             func_ov007_0224fb70();
             break;
         case 7:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 if (func_020779ec(mUnk_68) != 0) {
                     mUnk_b1++;
                 } else {
@@ -416,19 +416,19 @@ void BattleResult::Update() {
             }
             break;
         case 10:
-            mContext->mUnk_12 = 1;
+            mContext->mRequest = 1;
             if (data_020d433c.mNextScene != 8 && data_020d433c.mNextScene != 12) {
                 if (data_020d433c.mUnk_7d == 2) {
                     if (func_0202326c(&gSaveData[0])) {
                         new BattleMoneyReward();
-                        mContext->mUnk_12 = 0;
+                        mContext->mRequest = 0;
                     }
                 }
             }
             mUnk_b1++;
             break;
         case 11:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mUnk_b1++;
             }
             break;
@@ -452,7 +452,7 @@ void BattleResult::Update() {
             }
             if (id >= 0) {
                 new GiftUnlockScene(id);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mUnk_b1++;
             } else {
                 mUnk_b1 += 2;
@@ -460,7 +460,7 @@ void BattleResult::Update() {
             break;
         }
         case 14:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mUnk_b1--;
             }
             break;

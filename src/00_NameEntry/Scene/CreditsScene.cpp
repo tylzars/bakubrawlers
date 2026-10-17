@@ -133,7 +133,7 @@ BOOL CreditsScene::UpdateText() {
     }
     mScroll[0] += step;
     mScroll[1] += step;
-    QueueFrameCallback(func_ov000_02225f98, this);
+    QueueFrameCallback(CreditsScrollCallback, this);
     while (mSubScroll >= 0x10) {
         mSubScroll -= 0x10;
         // unsigned long, not u32 (unsigned int): the index conversion changes how mwcc shares `this + i`.
@@ -233,7 +233,7 @@ void CreditsScene::LoadText() {
     mMessages = (MessageFile *) LoadFile("/font/mes_Credit.mes", 0, 0, 0, 0, 0);
 }
 
-void func_ov000_02225f98(void *scene) {
+void CreditsScrollCallback(void *scene) {
     CreditsScene *self = (CreditsScene *) scene;
     G2_SetBG1Offset(0, self->mScroll[0]);
     G2S_SetBG1Offset(0, self->mScroll[1]);

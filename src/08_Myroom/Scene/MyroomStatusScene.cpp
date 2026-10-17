@@ -21,7 +21,7 @@ extern const u32 data_ov008_0222864c[5];
 
 MyroomStatusScene::MyroomStatusScene(u32 unk) :
     SceneBase(2, 0) {
-    mUnk_14 = NULL;
+    mMyroombgModel = NULL;
     mCamera = NULL;
     mReady  = 0;
     mState  = 0;
@@ -47,11 +47,11 @@ MyroomStatusScene::MyroomStatusScene(u32 unk) :
 
 MyroomStatusScene::~MyroomStatusScene() {
     CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
-    ModelInstance *p14 = mUnk_14;
+    ModelInstance *p14 = mMyroombgModel;
     if (p14 != NULL) {
         p14->mOwnFlags = 0xf;
         delete p14;
-        mUnk_14 = NULL;
+        mMyroombgModel = NULL;
     }
     UnkStruct_0205401c *model = mModel;
     if (model != NULL) {
@@ -151,7 +151,7 @@ void MyroomStatusScene::Setup3D() {
     NitroTexture *texture = new NitroTexture("myroombg.nsbtx");
     NitroModel *model     = new NitroModel("myroombg.nsbmd", texture);
     texture->FreeFile();
-    mUnk_14 = model->CreateInstance(0);
+    mMyroombgModel = model->CreateInstance(0);
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
     screen.SetObjVramMode(1);
     ChangeDir("/Game/Myroom/");
@@ -174,8 +174,8 @@ void MyroomStatusScene::Draw3D() {
     VecFx32 a      = data_ov008_02228634;
     func_01ffcf64(&mtx, &a);
     func_01ff89c0(&mtx, view, &mtx);
-    mUnk_14->AdvanceAnim();
-    mUnk_14->Draw(&mtx, &b);
+    mMyroombgModel->AdvanceAnim();
+    mMyroombgModel->Draw(&mtx, &b);
     mModel->Draw();
 }
 

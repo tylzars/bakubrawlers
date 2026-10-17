@@ -4,9 +4,9 @@ _ZN14NameEntrySceneD0Ev kind:function(arm,size=0x1ac) addr:0x02219698
 _ZN14NameEntryScene11InitDisplayEv kind:function(arm,size=0x1c4) addr:0x02219844
 _ZN14NameEntryScene12LoadGraphicsEv kind:function(arm,size=0x644) addr:0x02219a08
 _ZN14NameEntryScene6UpdateEv kind:function(arm,size=0x1144) addr:0x0221a04c
-_ZN14NameEntryScene19func_ov000_0221b190Ev kind:function(arm,size=0x9c) addr:0x0221b190
-_ZN14NameEntryScene19func_ov000_0221b22cEv kind:function(arm,size=0x74) addr:0x0221b22c
-_ZN14NameEntryScene19func_ov000_0221b2a0Ev kind:function(arm,size=0x198) addr:0x0221b2a0
+_ZN14NameEntryScene12UploadTabNscEv kind:function(arm,size=0x9c) addr:0x0221b190
+_ZN14NameEntryScene12UploadTabNcgEv kind:function(arm,size=0x74) addr:0x0221b22c
+_ZN14NameEntryScene14AddTouchedCharEv kind:function(arm,size=0x198) addr:0x0221b2a0
 _ZN14NameEntryScene9BackspaceEv kind:function(arm,size=0x70) addr:0x0221b438
 _ZN14NameEntryScene7AddCharEi kind:function(arm,size=0x20c) addr:0x0221b4a8
 _ZN14NameEntryScene4LoadEv kind:function(arm,size=0x334) addr:0x0221b6b4
@@ -15,24 +15,24 @@ _ZN14NameEntryScene19func_ov000_0221bc98Ev kind:function(arm,size=0xbc) addr:0x0
 _ZN14NameEntryScene15ClearTextBufferEv kind:function(arm,size=0x34) addr:0x0221bd54
 _ZN14NameEntryScene16CheckSpecialNameEv kind:function(arm,size=0x29c) addr:0x0221bd88
 _ZN14NameEntryScene12PrintMessageEv kind:function(arm,size=0x1c0) addr:0x0221c024
-_ZN14NameEntryScene19func_ov000_0221c1e4Ev kind:function(arm,size=0xac) addr:0x0221c1e4
+_ZN14NameEntryScene15DrawConfirmTextEv kind:function(arm,size=0xac) addr:0x0221c1e4
 _ZN17UnkScene_02226e4cC1Ev kind:function(arm,size=0x38) addr:0x0221c290
 _ZN17UnkScene_02226e4cD1Ev kind:function(arm,size=0x4c) addr:0x0221c2c8
 _ZN17UnkScene_02226e4cD0Ev kind:function(arm,size=0x54) addr:0x0221c314
 _ZN17UnkScene_02226e4c6UpdateEv kind:function(arm,size=0x1bc) addr:0x0221c368
 _ZN17UnkScene_02226e4c11InitDisplayEv kind:function(arm,size=0x190) addr:0x0221c524
-_ZN17UnkScene_02226e60C1Ev kind:function(arm,size=0x30) addr:0x0221c6b4
-_ZN17UnkScene_02226e60D1Ev kind:function(arm,size=0x14) addr:0x0221c6e4
-_ZN17UnkScene_02226e60D0Ev kind:function(arm,size=0x24) addr:0x0221c6f8
-_ZN17UnkScene_02226e606UpdateEv kind:function(arm,size=0x814) addr:0x0221c71c
-_ZN17UnkScene_02226e6011InitDisplayEv kind:function(arm,size=0x104) addr:0x0221cf30
-_ZN17UnkScene_02226e6010WaitFramesEjj kind:function(arm,size=0x11c) addr:0x0221d034
-_Z19func_ov000_0221d150v kind:function(arm,size=0xcc) addr:0x0221d150
-_ZN17UnkScene_02226e6019func_ov000_0221d21cEv kind:function(arm,size=0xcc) addr:0x0221d21c
-_ZN17UnkScene_02226e6019func_ov000_0221d2e8Ev kind:function(arm,size=0xcc) addr:0x0221d2e8
-_ZN17UnkScene_02226e6019func_ov000_0221d3b4Ev kind:function(arm,size=0x14c) addr:0x0221d3b4
-_ZN17UnkScene_02226e6019func_ov000_0221d500Ev kind:function(arm,size=0xd4) addr:0x0221d500
-_ZN17UnkScene_02226e6019func_ov000_0221d5d4Ev kind:function(arm,size=0xd4) addr:0x0221d5d4
+_ZN9LogoSceneC1Ev kind:function(arm,size=0x30) addr:0x0221c6b4
+_ZN9LogoSceneD1Ev kind:function(arm,size=0x14) addr:0x0221c6e4
+_ZN9LogoSceneD0Ev kind:function(arm,size=0x24) addr:0x0221c6f8
+_ZN9LogoScene6UpdateEv kind:function(arm,size=0x814) addr:0x0221c71c
+_ZN9LogoScene11InitDisplayEv kind:function(arm,size=0x104) addr:0x0221cf30
+_ZN9LogoScene10WaitFramesEjj kind:function(arm,size=0x11c) addr:0x0221d034
+_Z18LoadActivisionLogov kind:function(arm,size=0xcc) addr:0x0221d150
+_ZN9LogoScene11LoadNowLogoEv kind:function(arm,size=0xcc) addr:0x0221d21c
+_ZN9LogoScene16LoadMobiclipLogoEv kind:function(arm,size=0xcc) addr:0x0221d2e8
+_ZN9LogoScene17LoadLegaltextLogoEv kind:function(arm,size=0x14c) addr:0x0221d3b4
+_ZN9LogoScene11LoadCriLogoEv kind:function(arm,size=0xd4) addr:0x0221d500
+_ZN9LogoScene15LoadNelvanaLogoEv kind:function(arm,size=0xd4) addr:0x0221d5d4
 _ZN12AttrSelSceneC1Ev kind:function(arm,size=0xd8) addr:0x0221d6a8
 _ZN12AttrSelSceneD1Ev kind:function(arm,size=0xd4) addr:0x0221d780
 _ZN12AttrSelSceneD0Ev kind:function(arm,size=0xdc) addr:0x0221d854
@@ -43,7 +43,7 @@ _ZN12AttrSelScene9PrintNameEPvjjttj kind:function(arm,size=0x1d4) addr:0x0221eae
 _ZN12AttrSelScene12PrintMessageEP11MessageFiletPvjjttj kind:function(arm,size=0x16c) addr:0x0221ecbc
 _ZN12AttrSelScene9LoadSubBgEv kind:function(arm,size=0x140) addr:0x0221ee28
 _ZN12AttrSelScene14TransitionStepEv kind:function(arm,size=0x118) addr:0x0221ef68
-_Z19func_ov000_0221f080Pv kind:function(arm,size=0x60) addr:0x0221f080
+_Z25AttrSelTransitionCallbackPv kind:function(arm,size=0x60) addr:0x0221f080
 _ZN12AttrSelScene10PulseBlendEv kind:function(arm,size=0x1d8) addr:0x0221f0e0
 _ZN12AttrSelScene8DrawTextEv kind:function(arm,size=0x144) addr:0x0221f2b8
 _ZN12AttrSelScene4DrawEv kind:function(arm,size=0x78) addr:0x0221f3fc
@@ -70,12 +70,12 @@ _ZN10TitleSceneC1Ev kind:function(arm,size=0x1c0) addr:0x0222198c
 _ZN10TitleSceneD1Ev kind:function(arm,size=0x140) addr:0x02221b4c
 _ZN10TitleSceneD0Ev kind:function(arm,size=0x148) addr:0x02221c8c
 _ZN10TitleScene6UpdateEv kind:function(arm,size=0x1cd0) addr:0x02221dd4
-_ZN10TitleScene19func_ov000_02223aa4Ev kind:function(arm,size=0x238) addr:0x02223aa4
+_ZN10TitleScene11InitDisplayEv kind:function(arm,size=0x238) addr:0x02223aa4
 _ZN10TitleScene19func_ov000_02223cdcEv kind:function(arm,size=0x160) addr:0x02223cdc
 _ZN10TitleScene12LoadGraphicsEv kind:function(arm,size=0x7ac) addr:0x02223e3c
 _ZN10TitleScene19func_ov000_022245e8Ev kind:function(arm,size=0x38) addr:0x022245e8
-_ZN10TitleScene19func_ov000_02224620Ev kind:function(arm,size=0x58) addr:0x02224620
-_ZN10TitleScene19func_ov000_02224678Ev kind:function(arm,size=0x48) addr:0x02224678
+_ZN10TitleScene13DrawMenuCellsEv kind:function(arm,size=0x58) addr:0x02224620
+_ZN10TitleScene21RefreshMenuAnimationsEv kind:function(arm,size=0x48) addr:0x02224678
 _ZN10TitleScene14LoadSystemTextEv kind:function(arm,size=0x248) addr:0x022246c0
 _ZN10TitleScene9PrintTextEP11MessageFilej kind:function(arm,size=0x160) addr:0x02224908
 _ZN10TitleScene8DrawTextEv kind:function(arm,size=0xac) addr:0x02224a68
@@ -97,7 +97,7 @@ _ZN12CreditsScene6UpdateEv kind:function(arm,size=0x26c) addr:0x022254c8
 _ZN12CreditsScene10UpdateTextEv kind:function(arm,size=0x284) addr:0x02225734
 _ZN12CreditsScene9PrintLineEjjjj kind:function(arm,size=0x24c) addr:0x022259b8
 _ZN12CreditsScene8LoadTextEv kind:function(arm,size=0x394) addr:0x02225c04
-_Z19func_ov000_02225f98Pv kind:function(arm,size=0x30) addr:0x02225f98
+_Z21CreditsScrollCallbackPv kind:function(arm,size=0x30) addr:0x02225f98
 data_ov000_02225fc8 kind:data(any) addr:0x02225fc8 local
 data_ov000_02225fd4 kind:data(any) addr:0x02225fd4 local
 data_ov000_0222600c kind:data(any) addr:0x0222600c local
@@ -179,7 +179,7 @@ OV000_CTOR_END kind:data(any) addr:0x022269a0
 @2976 kind:data(any) addr:0x02226e20 local
 @2977 kind:data(any) addr:0x02226e34 local
 _ZTV17UnkScene_02226e4c kind:data(any) addr:0x02226e44
-_ZTV17UnkScene_02226e60 kind:data(any) addr:0x02226e58
+_ZTV9LogoScene kind:data(any) addr:0x02226e58
 @1383 kind:data(any) addr:0x02226e6c local
 @1384 kind:data(any) addr:0x02226e74 local
 @1385 kind:data(any) addr:0x02226e8c local

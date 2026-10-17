@@ -633,33 +633,33 @@ void BattleTarget::Update() {
                 if (SpriteManager::Get().IsFading()) {
                     break;
                 }
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 CloseCommandMapNow(mCommandMap);
                 FreeBakuganModelInstance(mBakugan);
                 mUnk_1e7_0 = 0;
                 mState++;
                 break;
             case 13: {
-                UnkStruct_SceneContext *context = mContext;
-                if (context->mUnk_12 == 0) {
+                SceneContext *context = mContext;
+                if (context->mRequest == 0) {
                     break;
                 }
-                context->mUnk_12 = 0;
+                context->mRequest = 0;
                 new BattleAbility();
                 mState++;
                 break;
             }
             case 14: {
-                UnkStruct_SceneContext *context = mContext;
-                switch (context->mUnk_12) {
+                SceneContext *context = mContext;
+                switch (context->mRequest) {
                     case 1:
-                        context->mUnk_12 = 0;
+                        context->mRequest = 0;
                         CloseCommandMapNow(mCommandMap);
                         mUnk_1e7_0 = 0;
                         mState   = 0x10;
                         break;
                     case 2:
-                        context->mUnk_12 = 1;
+                        context->mRequest = 1;
                         mState         = 0x10;
                         break;
                     default:
@@ -675,14 +675,14 @@ void BattleTarget::Update() {
                 if (SpriteManager::Get().IsFading()) {
                     break;
                 }
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 CloseCommandMapNow(mCommandMap);
                 mUnk_1e7_0 = 0;
                 mState++;
                 break;
             case 16: {
                 mUnk_1eb = 0;
-                if (mContext->mUnk_12 == 0) {
+                if (mContext->mRequest == 0) {
                     break;
                 }
                 mUnk_1c6                                                  = 0;
@@ -712,8 +712,8 @@ void BattleTarget::Update() {
                 break;
             }
             case 17: {
-                UnkStruct_SceneContext *context = mContext;
-                if (context->mUnk_12 == 0) {
+                SceneContext *context = mContext;
+                if (context->mRequest == 0) {
                     break;
                 }
                 if (mUnk_1ec != 0) {
@@ -750,7 +750,7 @@ void BattleTarget::func_ov007_02253fbc() {
         return;
     }
     mState = 0x11;
-    mContext->mUnk_12 = 0;
+    mContext->mRequest = 0;
     CloseCommandMapNow(mCommandMap);
     mBakugan->mVisible = 0;
     data_020d433c.mUnk_14 &= 8;

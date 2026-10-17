@@ -31,17 +31,17 @@ public:
     /* 4c */ u8 mMaxLength;
     /* 4d */ u8 mLength;
     /* 4e */ u16 mName[12];
-    /* 66 */ u8 mUnk_66;
-    /* 67 */ u8 mState;
+    /* 66 */ u8 mScroll;
+    /* 67 */ u8 mCursorArea;
     /* 68 */ u8 mCol;
     /* 69 */ u8 mRow;
     /* 6a */ u8 mUnk_6a;
     /* 6b */ u8 mTab;
-    /* 6c */ u8 mUnk_6c;
+    /* 6c */ u8 mState;
     /* 6d */ u8 mMode;
     /* 6e */ PAD(0x6e, 0x70);
-    /* 70 */ s32 mUnk_70;
-    /* 74 */ u8 mUnk_74;
+    /* 70 */ s32 mPendingSubPlanes;
+    /* 74 */ u8 mSpecialNameHandle;
     /* 75 */
 
     NameEntryScene(u8 mode);
@@ -52,9 +52,9 @@ public:
 
     void InitDisplay(); // 02219844
     void LoadGraphics(); // 02219a08
-    void func_ov000_0221b190();
-    void func_ov000_0221b22c();
-    void func_ov000_0221b2a0();
+    void UploadTabNsc();
+    void UploadTabNcg();
+    void AddTouchedChar();
     void Backspace(); // 0221b438
     void AddChar(s32 index); // 0221b4a8
     void Load(); // 0221b6b4
@@ -63,5 +63,5 @@ public:
     void ClearTextBuffer(); // 0221bd54
     void CheckSpecialName(); // 0221bd88
     void PrintMessage(); // 0221c024
-    void func_ov000_0221c1e4();
+    void DrawConfirmText();
 };

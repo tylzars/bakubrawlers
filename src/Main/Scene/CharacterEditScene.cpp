@@ -183,53 +183,53 @@ CharacterEditScene::CharacterEditScene(u32 unk) :
     mModel   = NULL;
     mCamera  = NULL;
     mState   = 0;
-    mUnk_31  = 0;
-    mUnk_32  = 0;
-    mUnk_140 = NULL;
+    mStep  = 0;
+    mStepFrames  = 0;
+    mMessages = NULL;
     mMessage = NULL;
-    mUnk_148 = 0;
+    mRotateState = 0;
     mUnk_14c = 0;
-    mUnk_150 = NULL;
-    mUnk_158 = 0;
-    mUnk_1b4 = unk;
-    mUnk_1d2 = 0x2cec;
+    mCutRoomModel = NULL;
+    mMenuDepthMove = 0;
+    mFromMyroom = unk;
+    mModelAngle = 0x2cec;
     GX_SetVisiblePlane(0);
     GXS_SetVisiblePlane(0);
     for (u8 i = 0; i < 6; i++) {
         mTextBuffers[i]    = NULL;
         mTexts[i].mActive  = 0;
-        mTexts[i].mUnk_00  = -1;
+        mTexts[i].mItemIndex  = -1;
     }
-    mUnk_134 = NULL;
-    mUnk_138 = 0;
-    mUnk_13c = 0;
+    mTextGlyphBuffer = NULL;
+    mTextBufferSize = 0;
+    mTextGlyphCount = 0;
     mUnk_18  = 0;
     mUnk_1c  = 0;
     mUnk_20  = 0;
     mPalette = new ModelLightGroup(data_0209e79c);
-    mUnk_154 = 0;
+    mMenuDepth = 0;
     for (u8 i = 0; i < 3; i++) {
-        mUnk_155[i] = 0;
+        mMenuSelection[i] = 0;
     }
-    func_02064024();
+    InitLookLists();
     for (u8 i = 0; i < 16; i++) {
         mCells[i] = NULL;
     }
-    mUnk_1a8 = 0;
+    mRebuildModel = 0;
     mUnk_1b0 = 0;
-    mUnk_1b8 = 0;
-    mUnk_1cc = 0;
-    mUnk_1bc = NULL;
-    mUnk_1c0 = NULL;
-    mUnk_1c4 = 0;
-    mUnk_1c8 = 0;
-    mUnk_1d0 = 2;
-    mUnk_1ac = -1;
-    mUnk_1d4 = NULL;
-    mUnk_1d8 = NULL;
-    mUnk_1dc = 0;
-    mUnk_1e0 = 0;
-    mUnk_1e4 = NULL;
+    mChoiceApplied = 0;
+    mWindowTextVisible = 0;
+    mWindowTextBuffer = NULL;
+    mWindowGlyphBuffer = NULL;
+    mWindowTextBufferSize = 0;
+    mWindowGlyphCount = 0;
+    mNextScene = 2;
+    mFixedItem = -1;
+    mNameBuffer = NULL;
+    mNameGlyphBuffer = NULL;
+    mNameBufferSize = 0;
+    mNameGlyphCount = 0;
+    mNameplateCell = NULL;
 }
 
 CharacterEditScene::~CharacterEditScene() {
@@ -238,11 +238,11 @@ CharacterEditScene::~CharacterEditScene() {
         model->Release();
         delete model;
     }
-    ModelInstance *instance = mUnk_150;
+    ModelInstance *instance = mCutRoomModel;
     if (instance != NULL) {
         instance->mOwnFlags = 0xf;
         delete instance;
-        mUnk_150 = NULL;
+        mCutRoomModel = NULL;
     }
     CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
     delete mCamera;
@@ -256,7 +256,7 @@ CharacterEditScene::~CharacterEditScene() {
         delete mWindows[2];
     }
     delete mCursor;
-    func_0205d090();
+    ResetTexts();
     if (mMessage != NULL) {
         delete mMessage;
     }
@@ -266,20 +266,20 @@ CharacterEditScene::~CharacterEditScene() {
             mTextBuffers[i] = NULL;
         }
     }
-    if (mUnk_1bc != NULL) {
-        OS_Free(mUnk_1bc);
-        mUnk_1bc = NULL;
+    if (mWindowTextBuffer != NULL) {
+        OS_Free(mWindowTextBuffer);
+        mWindowTextBuffer = NULL;
     }
-    if (mUnk_140 != NULL) {
-        OS_Free(mUnk_140);
+    if (mMessages != NULL) {
+        OS_Free(mMessages);
     }
-    if (mUnk_134 != NULL) {
-        OS_Free(mUnk_134);
-        mUnk_134 = NULL;
+    if (mTextGlyphBuffer != NULL) {
+        OS_Free(mTextGlyphBuffer);
+        mTextGlyphBuffer = NULL;
     }
-    if (mUnk_1c0 != NULL) {
-        OS_Free(mUnk_1c0);
-        mUnk_1c0 = NULL;
+    if (mWindowGlyphBuffer != NULL) {
+        OS_Free(mWindowGlyphBuffer);
+        mWindowGlyphBuffer = NULL;
     }
     ModelLightGroup *palette = mPalette;
     if (palette != NULL) {
@@ -294,16 +294,16 @@ CharacterEditScene::~CharacterEditScene() {
         }
         i++;
     } while (i < 16);
-    func_02064f80();
-    if (mUnk_1d4 != NULL) {
-        OS_Free(mUnk_1d4);
-        mUnk_1d4 = NULL;
+    ClearName();
+    if (mNameBuffer != NULL) {
+        OS_Free(mNameBuffer);
+        mNameBuffer = NULL;
     }
-    if (mUnk_1d8 != NULL) {
-        OS_Free(mUnk_1d8);
-        mUnk_1d8 = NULL;
+    if (mNameGlyphBuffer != NULL) {
+        OS_Free(mNameGlyphBuffer);
+        mNameGlyphBuffer = NULL;
     }
-    cell = mUnk_1e4;
+    cell = mNameplateCell;
     if (cell != NULL) {
         delete cell;
     }
@@ -311,20 +311,20 @@ CharacterEditScene::~CharacterEditScene() {
 }
 
 
-void CharacterEditScene::func_0205d090() {
+void CharacterEditScene::ResetTexts() {
     u8 i = 0;
     do {
         mTexts[i].mActive = 0;
-        mTexts[i].mUnk_00 = -1;
-        MI_CpuClear16(mTextBuffers[i], mUnk_138);
+        mTexts[i].mItemIndex = -1;
+        MI_CpuClear16(mTextBuffers[i], mTextBufferSize);
         i++;
     } while (i < 6);
-    MI_CpuClear16(mUnk_1bc, mUnk_1c4);
-    mUnk_1cc = 0;
+    MI_CpuClear16(mWindowTextBuffer, mWindowTextBufferSize);
+    mWindowTextVisible = 0;
     mMessage->ClearBuffer();
 }
 
-void CharacterEditScene::func_0205d0fc(u32 slot, u32 message, u32 value) {
+void CharacterEditScene::SetText(u32 slot, u32 message, u32 value) {
     if (slot == 0) {
         mMessage->StartMessage(message, 0, 1);
     } else {
@@ -333,20 +333,20 @@ void CharacterEditScene::func_0205d0fc(u32 slot, u32 message, u32 value) {
         s16 b;
         b = 0;
         a = 0;
-        MessageFile *file = (MessageFile *) mUnk_140;
+        MessageFile *file = (MessageFile *) mMessages;
         text.Print(file->GetText(message), file->GetLength(message), mTextBuffers[slot], 0x20, 2, &a, &b,
                    &mTexts[slot].mWidth, 0, 2, 0x21, 0xc, 0, 0, 1, 1, 1);
         if (&mTexts[slot].mHeight != NULL) {
             mTexts[slot].mHeight = b;
         }
         QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, data_0209e784[slot], mTextBuffers[slot],
-                      mUnk_138, 0);
+                      mTextBufferSize, 0);
     }
-    mTexts[slot].mUnk_00 = value;
+    mTexts[slot].mItemIndex = value;
     mTexts[slot].mActive = 1;
 }
 
-void CharacterEditScene::func_0205d2b4() {
+void CharacterEditScene::DrawTexts() {
     if (mState == 0xd) {
         return;
     }
@@ -357,50 +357,50 @@ void CharacterEditScene::func_0205d2b4() {
             if (i == 0) {
                 mMessage->Update();
             } else {
-                Vec2s pos = mWindows[0]->mCellPos[(u8) items[mTexts[i].mUnk_00].mId];
+                Vec2s pos = mWindows[0]->mCellPos[(u8) items[mTexts[i].mItemIndex].mId];
                 s32 y = pos.y;
                 SpriteScreen &screen = SpriteManager::Get().Screen(1);
-                WindowItem *item = &items[mTexts[i].mUnk_00];
-                screen.AddOam(mUnk_134, (u8) mUnk_13c, (s16) (pos.x + item->mWidth / 2 - mTexts[i].mWidth / 2),
+                WindowItem *item = &items[mTexts[i].mItemIndex];
+                screen.AddOam(mTextGlyphBuffer, (u8) mTextGlyphCount, (s16) (pos.x + item->mWidth / 2 - mTexts[i].mWidth / 2),
                                      (s16) (y + item->mHeight / 2 - mTexts[i].mHeight / 2), 0,
                                      (u16) (data_0209e784[i] >> 7), 0xf, 0);
             }
         }
         i++;
     } while (i < 6);
-    if (mUnk_1cc != 0) {
-        SpriteManager::Get().Screen(1).AddOam(mUnk_1c0, (u8) mUnk_1c8, 0x20, 0x28, 0, 0x20, 0xf, 0);
+    if (mWindowTextVisible != 0) {
+        SpriteManager::Get().Screen(1).AddOam(mWindowGlyphBuffer, (u8) mWindowGlyphCount, 0x20, 0x28, 0, 0x20, 0xf, 0);
     }
 }
 
-void CharacterEditScene::func_0205d4cc() {
-    switch (mUnk_31) {
+void CharacterEditScene::UpdateInit() {
+    switch (mStep) {
     case 0:
         func_02061c3c();
-        func_02062194();
+        LoadGraphics();
         mWindows[0]->mEnabled = 0;
         mWindows[1]->mEnabled = 0;
         mWindows[2]->mEnabled = 0;
         mWindows[1]->mButtons[0].mEnabled = 1;
         GX_SetVisiblePlane(0x1f);
         GXS_SetVisiblePlane(0x15);
-        func_02064f98();
-        mUnk_31++;
+        PrintName();
+        mStep++;
         break;
     case 1:
-        mUnk_32++;
-        if (mUnk_32 >= 3) {
+        mStepFrames++;
+        if (mStepFrames >= 3) {
             SpriteManager::Get().StartFade(2);
-            mUnk_32 = 0;
+            mStepFrames = 0;
             mState = 1;
-            mUnk_31 = 2;
+            mStep = 2;
         }
         break;
     }
 }
 
-void CharacterEditScene::func_0205d5fc() {
-    switch (mUnk_31) {
+void CharacterEditScene::UpdateRootMenu() {
+    switch (mStep) {
     case 2:
         SpriteManager::Get();
         if (SpriteManager::sFade[0] > 1 | SpriteManager::sFade[1] > 1) {
@@ -408,20 +408,20 @@ void CharacterEditScene::func_0205d5fc() {
         }
         mWindows[0]->mEnabled = 1;
         mWindows[1]->mEnabled = 1;
-        if (mUnk_158 != 2) {
-            mUnk_155[mUnk_154] = 0;
+        if (mMenuDepthMove != 2) {
+            mMenuSelection[mMenuDepth] = 0;
         }
-        mWindows[0]->SetItems(10, (WindowItem *) data_0209e9f4, (s8) mUnk_155[mUnk_154]);
-        if (mUnk_155[mUnk_154] == 0) {
+        mWindows[0]->SetItems(10, (WindowItem *) data_0209e9f4, (s8) mMenuSelection[mMenuDepth]);
+        if (mMenuSelection[mMenuDepth] == 0) {
             mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(0x19);
         } else {
             mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
         }
         mWindows[1]->Reset(-1);
         func_02063b10(0);
-        func_02063c64();
+        SetupSlideIn();
         func_020637a8();
-        func_020637dc();
+        EnableGroupButtons();
         func_020638a8(0);
         GXS_SetVisiblePlane(0x15);
         {
@@ -445,158 +445,158 @@ void CharacterEditScene::func_0205d5fc() {
             manager.mMtxB[manager.mActive] = *func_02032604();
             manager.mMtxC[manager.mActive] = *func_020323b8();
         }
-        func_0205d090();
-        func_0205d0fc(0, 2, 0);
-        switch (mUnk_1ac) {
+        ResetTexts();
+        SetText(0, 2, 0);
+        switch (mFixedItem) {
         case 0:
-            func_0205d0fc(1, 7, 0);
+            SetText(1, 7, 0);
             break;
         case 1:
-            switch (mUnk_1b4) {
+            switch (mFromMyroom) {
             case 0:
-                func_0205d0fc(2, 0x17, 1);
+                SetText(2, 0x17, 1);
                 break;
             case 1:
-                func_0205d0fc(2, 0xf, 1);
+                SetText(2, 0xf, 1);
                 break;
             }
             break;
         case 2:
-            switch (mUnk_1b4) {
+            switch (mFromMyroom) {
             case 0:
-                func_0205d0fc(3, 0xf, 2);
+                SetText(3, 0xf, 2);
                 break;
             case 1:
-                func_0205d0fc(3, 0x10, 2);
+                SetText(3, 0x10, 2);
                 break;
             }
             break;
         case 3:
-            switch (mUnk_1b4) {
+            switch (mFromMyroom) {
             case 0:
-                func_0205d0fc(4, 0x10, 3);
+                SetText(4, 0x10, 3);
                 break;
             case 1:
-                func_0205d0fc(4, 0x11, 3);
+                SetText(4, 0x11, 3);
                 break;
             }
             break;
         case 4:
-            func_0205d0fc(5, 0x11, 4);
+            SetText(5, 0x11, 4);
             break;
         }
-        mUnk_31 = 3;
+        mStep = 3;
         break;
     case 3:
         if (mWindows[0]->mSlideStep != 1) {
             return;
         }
-        if (mUnk_1ac != 0) {
-            func_0205d0fc(1, 7, 0);
+        if (mFixedItem != 0) {
+            SetText(1, 7, 0);
         }
-        switch (mUnk_1b4) {
+        switch (mFromMyroom) {
         case 0:
-            if (mUnk_1ac != 1) {
-                func_0205d0fc(2, 0x17, 1);
+            if (mFixedItem != 1) {
+                SetText(2, 0x17, 1);
             }
-            if (mUnk_1ac != 2) {
-                func_0205d0fc(3, 0xf, 2);
+            if (mFixedItem != 2) {
+                SetText(3, 0xf, 2);
             }
-            if (mUnk_1ac != 3) {
-                func_0205d0fc(4, 0x10, 3);
+            if (mFixedItem != 3) {
+                SetText(4, 0x10, 3);
             }
-            if (mUnk_1ac != 4) {
-                func_0205d0fc(5, 0x11, 4);
+            if (mFixedItem != 4) {
+                SetText(5, 0x11, 4);
             }
             break;
         case 1:
-            if (mUnk_1ac != 1) {
-                func_0205d0fc(2, 0xf, 1);
+            if (mFixedItem != 1) {
+                SetText(2, 0xf, 1);
             }
-            if (mUnk_1ac != 2) {
-                func_0205d0fc(3, 0x10, 2);
+            if (mFixedItem != 2) {
+                SetText(3, 0x10, 2);
             }
-            if (mUnk_1ac != 3) {
-                func_0205d0fc(4, 0x11, 3);
+            if (mFixedItem != 3) {
+                SetText(4, 0x11, 3);
             }
             break;
         }
-        mUnk_31 = 4;
+        mStep = 4;
         break;
     case 4:
         if (mWindows[0]->mState == 1) {
-            mUnk_31 = 5;
+            mStep = 5;
         }
         break;
     case 5:
         if (mUnk_1c == 3) {
-            if (func_0206332c()) {
+            if (EnableSelectedGroupButtons()) {
                 mWindows[0]->mState = 3;
                 mWindows[1]->mState = 3;
-                mUnk_31 = 10;
+                mStep = 10;
                 return;
             }
         } else if (mUnk_18 == 3) {
             if (mWindows[0]->GetSelectedId() == 7) {
                 SpriteManager::Get();
                 SpriteManager::sFade[0] = 3;
-                mUnk_31 = 6;
+                mStep = 6;
                 mWindows[0]->mEnabled = 0;
                 mWindows[1]->mEnabled = 0;
                 return;
             }
         } else if (mUnk_18 == 1) {
             func_02063b10(1);
-            func_02063dac();
-            mUnk_31 = 10;
+            SlideToFirstRow();
+            mStep = 10;
             return;
         } else if (mUnk_18 == 2) {
-            if (mUnk_1b8 != 0 && mUnk_1b4 == 1) {
-                mUnk_31 = 0xb;
+            if (mChoiceApplied != 0 && mFromMyroom == 1) {
+                mStep = 0xb;
                 func_02064cd4(1);
                 return;
             }
-            if (mUnk_1b4 == 0) {
-                func_02063570(NULL);
+            if (mFromMyroom == 0) {
+                StoreLook(NULL);
             }
-            mUnk_31 = 9;
+            mStep = 9;
             func_02063b10(1);
             return;
         } else if (InputManager::Get().IsHeld(8) && mWindows[0]->mState == 1) {
             mUnk_1b0 = 1;
             func_02063b10(1);
             mWindows[0]->mState = 3;
-            mUnk_31 = 10;
+            mStep = 10;
             SoundManager::Get().StartSeqArc(0);
             return;
         }
-        func_020638b8();
+        UpdateRotateInput();
         break;
     case 6:
         SpriteManager::Get();
         if (SpriteManager::sFade[0] > 1) {
             return;
         }
-        func_02064bb8();
-        func_020649e4();
-        mUnk_32 = 0;
-        mUnk_31 = 7;
+        RandomizeLook();
+        ApplyCursorItem();
+        mStepFrames = 0;
+        mStep = 7;
         break;
     case 7:
-        mUnk_32++;
-        if (mUnk_32 != 4) {
+        mStepFrames++;
+        if (mStepFrames != 4) {
             return;
         }
         SpriteManager::Get();
         SpriteManager::sFade[0] = 2;
-        mUnk_31 = 8;
+        mStep = 8;
         break;
     case 8:
         if (SpriteManager::Get().IsFading()) {
             return;
         }
         mWindows[0]->mCells[7]->SetAnimation(0x19);
-        mUnk_31 = 5;
+        mStep = 5;
         mWindows[0]->mEnabled = 1;
         mWindows[1]->mEnabled = 1;
         break;
@@ -605,63 +605,63 @@ void CharacterEditScene::func_0205d5fc() {
             return;
         }
         mState = 0xd;
-        mUnk_31 = 0x5a;
+        mStep = 0x5a;
         break;
     case 10:
         if (mWindows[0]->mState != 4) {
             return;
         }
-        if (func_02063e20()) {
+        if (SwitchToSelectedGroup()) {
             return;
         }
         if (mUnk_1b0 != 0) {
             mState = 0xc;
-            mUnk_31 = 0x53;
+            mStep = 0x53;
             return;
         }
         if (mWindows[0]->GetSelectedId() == 3) {
             mState = 2;
-            mUnk_31 = 0x10;
-            if (mUnk_1b4 == 1) {
+            mStep = 0x10;
+            if (mFromMyroom == 1) {
                 mState = 3;
-                mUnk_31 = 0x16;
+                mStep = 0x16;
             }
-            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
-            func_02063ad8(1);
+            mMenuSelection[mMenuDepth] = mWindows[0]->mCursor->mSelection;
+            MoveMenuDepth(1);
             return;
         }
         if (mWindows[0]->GetSelectedId() == 4) {
             mState = 3;
-            mUnk_31 = 0x16;
-            if (mUnk_1b4 == 1) {
+            mStep = 0x16;
+            if (mFromMyroom == 1) {
                 mState = 4;
-                mUnk_31 = 0x38;
+                mStep = 0x38;
             }
-            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
-            func_02063ad8(1);
+            mMenuSelection[mMenuDepth] = mWindows[0]->mCursor->mSelection;
+            MoveMenuDepth(1);
             return;
         }
         if (mWindows[0]->GetSelectedId() == 5) {
             mState = 4;
-            mUnk_31 = 0x38;
-            if (mUnk_1b4 == 1) {
+            mStep = 0x38;
+            if (mFromMyroom == 1) {
                 mState = 5;
-                mUnk_31 = 0x3f;
+                mStep = 0x3f;
             }
-            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
-            func_02063ad8(1);
+            mMenuSelection[mMenuDepth] = mWindows[0]->mCursor->mSelection;
+            MoveMenuDepth(1);
             return;
         }
         if (mWindows[0]->GetSelectedId() == 6) {
             mState = 5;
-            mUnk_31 = 0x3f;
-            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
-            func_02063ad8(1);
+            mStep = 0x3f;
+            mMenuSelection[mMenuDepth] = mWindows[0]->mCursor->mSelection;
+            MoveMenuDepth(1);
             return;
         }
         if (mWindows[0]->GetSelectedId() == 8) {
             mState = 0xc;
-            mUnk_31 = 0x53;
+            mStep = 0x53;
         }
         break;
     case 11:
@@ -677,18 +677,18 @@ void CharacterEditScene::func_0205d5fc() {
         mWindows[2]->mButtons[0].mEnabled = 1;
         mWindows[2]->mButtons[1].mEnabled = 1;
         mWindows[2]->mButtons[2].mEnabled = 1;
-        func_0205d090();
-        func_02064d7c();
-        mUnk_31 = 0xc;
-        mUnk_148 = 0;
+        ResetTexts();
+        PrintWindowText();
+        mStep = 0xc;
+        mRotateState = 0;
         mWindows[0]->mCells[9]->SetAnimation(0xc);
         mWindows[0]->mCells[10]->SetAnimation(0xe);
         break;
     case 12:
         if (mUnk_20 == 1) {
-            mUnk_31 = 0xd;
+            mStep = 0xd;
         } else if (mUnk_20 == 2) {
-            mUnk_31 = 0xe;
+            mStep = 0xe;
         }
         break;
     case 13:
@@ -697,7 +697,7 @@ void CharacterEditScene::func_0205d5fc() {
         }
         func_02064cd4(0);
         mState = 0xd;
-        mUnk_31 = 0x5a;
+        mStep = 0x5a;
         break;
     case 14:
         if (mWindows[2]->mState != 4) {
@@ -709,8 +709,8 @@ void CharacterEditScene::func_0205d5fc() {
         mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(0x19);
         mWindows[0]->mEnabled = 1;
         mWindows[1]->mEnabled = 1;
-        func_0205d090();
-        mUnk_31 = 0xf;
+        ResetTexts();
+        mStep = 0xf;
         break;
     case 15:
         if (mWindows[0]->mState != 1) {
@@ -721,118 +721,118 @@ void CharacterEditScene::func_0205d5fc() {
         mWindows[2]->mButtons[0].mEnabled = 0;
         mWindows[2]->mButtons[1].mEnabled = 0;
         mWindows[2]->mButtons[2].mEnabled = 0;
-        func_0205d0fc(0, 2, 0);
-        func_0205d0fc(1, 7, 0);
-        switch (mUnk_1b4) {
+        SetText(0, 2, 0);
+        SetText(1, 7, 0);
+        switch (mFromMyroom) {
         case 0:
-            func_0205d0fc(2, 0x17, 1);
-            func_0205d0fc(3, 0xf, 2);
-            func_0205d0fc(4, 0x10, 3);
-            func_0205d0fc(5, 0x11, 4);
+            SetText(2, 0x17, 1);
+            SetText(3, 0xf, 2);
+            SetText(4, 0x10, 3);
+            SetText(5, 0x11, 4);
             break;
         case 1:
-            func_0205d0fc(2, 0xf, 1);
-            func_0205d0fc(3, 0x10, 2);
-            func_0205d0fc(4, 0x11, 3);
+            SetText(2, 0xf, 1);
+            SetText(3, 0x10, 2);
+            SetText(4, 0x11, 3);
             break;
         }
-        mUnk_31 = 5;
+        mStep = 5;
         break;
     }
 }
 
-void CharacterEditScene::func_0205e6ac() {
-    switch (mUnk_31) {
+void CharacterEditScene::UpdateSkinEdit() {
+    switch (mStep) {
     case 0x10:
         mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
-        func_02063c64();
+        SetupSlideIn();
         func_020637a8();
-        func_020637dc();
+        EnableGroupButtons();
         func_020638a8(1);
-        func_020642ac();
-        func_02062fe4("sub_skin.nce_ncg1D.bin", "sub_skin_ncl.bin", "sub_skin_nce.bin", "color_skin_ncl.bin");
-        func_0205d090();
-        func_0205d0fc(0, 0x17, 0);
-        if (mUnk_1ac == 0) {
-            func_0205d0fc(1, 0x17, 0);
+        SetupChoices();
+        LoadChoiceCells("sub_skin.nce_ncg1D.bin", "sub_skin_ncl.bin", "sub_skin_nce.bin", "color_skin_ncl.bin");
+        ResetTexts();
+        SetText(0, 0x17, 0);
+        if (mFixedItem == 0) {
+            SetText(1, 0x17, 0);
         }
-        mUnk_31 = 0x11;
+        mStep = 0x11;
         break;
     case 0x11:
         if (mWindows[0]->mSlideStep != 1) {
             return;
         }
-        if (mUnk_1ac != 0) {
-            func_0205d0fc(1, 0x17, 0);
+        if (mFixedItem != 0) {
+            SetText(1, 0x17, 0);
         }
-        mUnk_31 = 0x12;
+        mStep = 0x12;
         break;
     case 0x12:
         if (mWindows[0]->mState == 1) {
-            mUnk_31 = 0x13;
+            mStep = 0x13;
         }
         break;
     case 0x13:
-        func_02064964();
+        UpdateChoiceInput();
         if (mUnk_1c == 3) {
-            if (func_0206332c()) {
+            if (EnableSelectedGroupButtons()) {
                 mWindows[0]->mState = 3;
                 mWindows[1]->mState = 3;
-                mUnk_31 = 0x15;
+                mStep = 0x15;
                 return;
             }
         } else if (mUnk_18 == 1) {
-            mUnk_31 = 0x15;
+            mStep = 0x15;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         } else if (mUnk_18 == 2) {
-            mUnk_31 = 0x14;
+            mStep = 0x14;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         }
-        func_020638b8();
+        UpdateRotateInput();
         break;
     case 0x14:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mState = 1;
-        mUnk_31 = 2;
-        func_02063ad8(2);
+        mStep = 2;
+        MoveMenuDepth(2);
         break;
     case 0x15:
         if (mWindows[0]->mState != 4) {
             return;
         }
-        if (func_02063e20()) {
+        if (SwitchToSelectedGroup()) {
             return;
         }
         mState = 1;
-        mUnk_31 = 2;
-        func_02063ad8(2);
+        mStep = 2;
+        MoveMenuDepth(2);
         break;
     }
 }
 
 void CharacterEditScene::func_0205e958() {
-    switch (mUnk_31) {
+    switch (mStep) {
     case 0x16: {
-        if (mUnk_158 != 2) {
-            mUnk_155[mUnk_154] = 1;
+        if (mMenuDepthMove != 2) {
+            mMenuSelection[mMenuDepth] = 1;
         }
-        mWindows[0]->SetItems(10, (WindowItem *) data_0209eec4, (s8) mUnk_155[mUnk_154]);
+        mWindows[0]->SetItems(10, (WindowItem *) data_0209eec4, (s8) mMenuSelection[mMenuDepth]);
         mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
-        func_02063c64();
+        SetupSlideIn();
         func_020637a8();
-        func_020637dc();
+        EnableGroupButtons();
         func_020638a8(0);
         fx32 posZ = FxRound(data_0209e7c4[1][2] * 0x1000);
         fx32 posY = FxRound(data_0209e7c4[1][1] * 0x1000);
@@ -852,525 +852,525 @@ void CharacterEditScene::func_0205e958() {
         manager.mMtxA[manager.mActive] = *func_02032710();
         manager.mMtxB[manager.mActive] = *func_02032604();
         manager.mMtxC[manager.mActive] = *func_020323b8();
-        func_0205d090();
-        func_0205d0fc(0, 0xf, 0);
-        switch (mUnk_1ac) {
+        ResetTexts();
+        SetText(0, 0xf, 0);
+        switch (mFixedItem) {
         case 0:
-            func_0205d0fc(1, 0xf, 0);
+            SetText(1, 0xf, 0);
             break;
         case 1:
-            switch (mUnk_1b4) {
+            switch (mFromMyroom) {
             case 0:
-                func_0205d0fc(2, 0x12, 1);
+                SetText(2, 0x12, 1);
                 break;
             case 1:
-                func_0205d0fc(2, 0x13, 1);
+                SetText(2, 0x13, 1);
                 break;
             }
             break;
         case 2:
-            switch (mUnk_1b4) {
+            switch (mFromMyroom) {
             case 0:
-                func_0205d0fc(3, 0x13, 2);
+                SetText(3, 0x13, 2);
                 break;
             case 1:
-                func_0205d0fc(3, 0x18, 2);
+                SetText(3, 0x18, 2);
                 break;
             }
             break;
         case 3:
-            switch (mUnk_1b4) {
+            switch (mFromMyroom) {
             case 0:
-                func_0205d0fc(4, 0x18, 3);
+                SetText(4, 0x18, 3);
                 break;
             case 1:
-                func_0205d0fc(4, 0x14, 3);
+                SetText(4, 0x14, 3);
                 break;
             }
             break;
         case 4:
-            func_0205d0fc(5, 0x14, 4);
+            SetText(5, 0x14, 4);
             break;
         }
-        mUnk_31 = 0x17;
+        mStep = 0x17;
         break;
     }
     case 0x17:
         if (mWindows[0]->mSlideStep != 1) {
             return;
         }
-        if (mUnk_1ac != 0) {
-            func_0205d0fc(1, 0xf, 0);
+        if (mFixedItem != 0) {
+            SetText(1, 0xf, 0);
         }
-        switch (mUnk_1b4) {
+        switch (mFromMyroom) {
         case 0:
-            if (mUnk_1ac != 1) {
-                func_0205d0fc(2, 0x12, 1);
+            if (mFixedItem != 1) {
+                SetText(2, 0x12, 1);
             }
-            if (mUnk_1ac != 2) {
-                func_0205d0fc(3, 0x13, 2);
+            if (mFixedItem != 2) {
+                SetText(3, 0x13, 2);
             }
-            if (mUnk_1ac != 3) {
-                func_0205d0fc(4, 0x18, 3);
+            if (mFixedItem != 3) {
+                SetText(4, 0x18, 3);
             }
-            if (mUnk_1ac != 4) {
-                func_0205d0fc(5, 0x14, 4);
+            if (mFixedItem != 4) {
+                SetText(5, 0x14, 4);
             }
             break;
         case 1:
-            if (mUnk_1ac != 1) {
-                func_0205d0fc(2, 0x13, 1);
+            if (mFixedItem != 1) {
+                SetText(2, 0x13, 1);
             }
-            if (mUnk_1ac != 2) {
-                func_0205d0fc(3, 0x18, 2);
+            if (mFixedItem != 2) {
+                SetText(3, 0x18, 2);
             }
-            if (mUnk_1ac != 3) {
-                func_0205d0fc(4, 0x14, 3);
+            if (mFixedItem != 3) {
+                SetText(4, 0x14, 3);
             }
             break;
         }
-        mUnk_31 = 0x18;
+        mStep = 0x18;
         break;
     case 0x18:
         if (mWindows[0]->mState == 1) {
-            mUnk_31 = 0x19;
+            mStep = 0x19;
         }
         break;
     case 0x19:
         if (mUnk_1c == 3) {
-            if (func_0206332c()) {
+            if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 1) {
                     mWindows[0]->mState = 3;
                     mWindows[1]->mState = 3;
-                    mUnk_31 = 0x1b;
+                    mStep = 0x1b;
                     return;
                 }
             }
         } else if (mUnk_18 == 1) {
             if (mWindows[0]->GetSelectedId() == 2) {
-                mUnk_31 = 0x1a;
+                mStep = 0x1a;
                 func_02063b10(1);
-                func_02063d10();
+                SlideToParent();
                 return;
             }
-            mUnk_31 = 0x1b;
+            mStep = 0x1b;
             func_02063b10(1);
-            func_02063dac();
+            SlideToFirstRow();
             return;
         } else if (mUnk_18 == 2) {
-            mUnk_31 = 0x1a;
+            mStep = 0x1a;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             return;
         } else if (InputManager::Get().IsHeld(8) && mWindows[0]->mState == 1) {
             mUnk_1b0 = 1;
             func_02063b10(1);
             mWindows[0]->mState = 3;
-            mUnk_31 = 0x1b;
+            mStep = 0x1b;
             return;
         }
-        func_020638b8();
+        UpdateRotateInput();
         break;
     case 0x1a:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mState = 1;
-        mUnk_31 = 2;
-        func_02063ad8(2);
+        mStep = 2;
+        MoveMenuDepth(2);
         break;
     case 0x1b:
         if (mWindows[0]->mState != 4) {
             return;
         }
-        if (func_02063e20()) {
+        if (SwitchToSelectedGroup()) {
             return;
         }
         if (mUnk_1b0 != 0) {
             mState = 0xc;
-            mUnk_31 = 0x53;
+            mStep = 0x53;
             return;
         }
         if (mWindows[0]->GetSelectedId() == 3) {
             mState = 6;
-            mUnk_31 = 0x1c;
-            if (mUnk_1b4 == 1) {
+            mStep = 0x1c;
+            if (mFromMyroom == 1) {
                 mState = 7;
-                mUnk_31 = 0x23;
+                mStep = 0x23;
             }
-            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
-            func_02063ad8(1);
+            mMenuSelection[mMenuDepth] = mWindows[0]->mCursor->mSelection;
+            MoveMenuDepth(1);
             return;
         }
         if (mWindows[0]->GetSelectedId() == 4) {
             mState = 7;
-            mUnk_31 = 0x23;
-            if (mUnk_1b4 == 1) {
+            mStep = 0x23;
+            if (mFromMyroom == 1) {
                 mState = 8;
-                mUnk_31 = 0x2a;
+                mStep = 0x2a;
             }
-            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
-            func_02063ad8(1);
+            mMenuSelection[mMenuDepth] = mWindows[0]->mCursor->mSelection;
+            MoveMenuDepth(1);
             return;
         }
         if (mWindows[0]->GetSelectedId() == 5) {
             mState = 8;
-            mUnk_31 = 0x2a;
-            if (mUnk_1b4 == 1) {
+            mStep = 0x2a;
+            if (mFromMyroom == 1) {
                 mState = 9;
-                mUnk_31 = 0x31;
+                mStep = 0x31;
             }
-            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
-            func_02063ad8(1);
+            mMenuSelection[mMenuDepth] = mWindows[0]->mCursor->mSelection;
+            MoveMenuDepth(1);
             return;
         }
         if (mWindows[0]->GetSelectedId() == 6) {
             mState = 9;
-            mUnk_31 = 0x31;
-            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
-            func_02063ad8(1);
+            mStep = 0x31;
+            mMenuSelection[mMenuDepth] = mWindows[0]->mCursor->mSelection;
+            MoveMenuDepth(1);
             return;
         }
         if (mWindows[0]->GetSelectedId() == 8) {
             mState = 0xc;
-            mUnk_31 = 0x53;
+            mStep = 0x53;
         }
         break;
     }
 }
 
-void CharacterEditScene::func_0205f3c0() {
-    switch (mUnk_31) {
+void CharacterEditScene::UpdateFaceEdit() {
+    switch (mStep) {
     case 0x1c:
         mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
-        func_02063c64();
+        SetupSlideIn();
         func_020637a8();
-        func_020637dc();
+        EnableGroupButtons();
         func_020638a8(1);
-        func_020642ac();
-        func_02062fe4("sub_face_male.nce_ncg1D.bin", "sub_face_male_ncl.bin", "sub_face_male_nce.bin", "color_face_male_ncl.bin");
-        func_0205d090();
-        func_0205d0fc(0, 0x12, 0);
-        if (mUnk_1ac == 0) {
-            func_0205d0fc(1, 0x12, 0);
+        SetupChoices();
+        LoadChoiceCells("sub_face_male.nce_ncg1D.bin", "sub_face_male_ncl.bin", "sub_face_male_nce.bin", "color_face_male_ncl.bin");
+        ResetTexts();
+        SetText(0, 0x12, 0);
+        if (mFixedItem == 0) {
+            SetText(1, 0x12, 0);
         }
-        mUnk_31 = 0x1d;
+        mStep = 0x1d;
         break;
     case 0x1d:
         if (mWindows[0]->mSlideStep != 1) {
             return;
         }
-        if (mUnk_1ac != 0) {
-            func_0205d0fc(1, 0x12, 0);
+        if (mFixedItem != 0) {
+            SetText(1, 0x12, 0);
         }
-        mUnk_31 = 0x1e;
+        mStep = 0x1e;
         break;
     case 0x1e:
         if (mWindows[0]->mState == 1) {
-            mUnk_31 = 0x1f;
+            mStep = 0x1f;
         }
         break;
     case 0x1f:
-        func_02064964();
+        UpdateChoiceInput();
         if (mUnk_1c == 3) {
-            if (func_0206332c()) {
+            if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 1) {
                     mWindows[0]->mState = 3;
                     mWindows[1]->mState = 3;
-                    mUnk_31 = 0x22;
+                    mStep = 0x22;
                     return;
                 }
             }
         } else if (mUnk_18 == 1) {
-            mUnk_31 = 0x21;
+            mStep = 0x21;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         } else if (mUnk_18 == 2) {
-            mUnk_31 = 0x21;
+            mStep = 0x21;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         }
-        func_020638b8();
+        UpdateRotateInput();
         break;
     case 0x20:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mState = 3;
-        mUnk_31 = 0x16;
-        func_02063ad8(2);
+        mStep = 0x16;
+        MoveMenuDepth(2);
         break;
     case 0x21:
-        mUnk_31 = 0x20;
+        mStep = 0x20;
         break;
     case 0x22:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mUnk_14c = 0;
-        func_02063e20();
+        SwitchToSelectedGroup();
         break;
     }
 }
 
-void CharacterEditScene::func_0205f698() {
-    switch (mUnk_31) {
+void CharacterEditScene::UpdateHairEdit() {
+    switch (mStep) {
     case 0x23:
         mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
-        func_02063c64();
+        SetupSlideIn();
         func_020637a8();
-        func_020637dc();
+        EnableGroupButtons();
         func_020638a8(1);
-        func_020642ac();
-        func_02062fe4("sub_hair_male.nce_ncg1D.bin", "sub_hair_male_ncl.bin", "sub_hair_male_nce.bin", "color_hair_male_ncl.bin");
-        func_0205d090();
-        func_0205d0fc(0, 0x13, 0);
-        if (mUnk_1ac == 0) {
-            func_0205d0fc(1, 0x13, 0);
+        SetupChoices();
+        LoadChoiceCells("sub_hair_male.nce_ncg1D.bin", "sub_hair_male_ncl.bin", "sub_hair_male_nce.bin", "color_hair_male_ncl.bin");
+        ResetTexts();
+        SetText(0, 0x13, 0);
+        if (mFixedItem == 0) {
+            SetText(1, 0x13, 0);
         }
-        mUnk_31 = 0x24;
+        mStep = 0x24;
         break;
     case 0x24:
         if (mWindows[0]->mSlideStep != 1) {
             return;
         }
-        if (mUnk_1ac != 0) {
-            func_0205d0fc(1, 0x13, 0);
+        if (mFixedItem != 0) {
+            SetText(1, 0x13, 0);
         }
-        mUnk_31 = 0x25;
+        mStep = 0x25;
         break;
     case 0x25:
         if (mWindows[0]->mState == 1) {
-            mUnk_31 = 0x26;
+            mStep = 0x26;
         }
         break;
     case 0x26:
-        func_02064964();
+        UpdateChoiceInput();
         if (mUnk_1c == 3) {
-            if (func_0206332c()) {
+            if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 1) {
                     mWindows[0]->mState = 3;
                     mWindows[1]->mState = 3;
-                    mUnk_31 = 0x29;
+                    mStep = 0x29;
                     return;
                 }
             }
         } else if (mUnk_18 == 1) {
-            mUnk_31 = 0x28;
+            mStep = 0x28;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         } else if (mUnk_18 == 2) {
-            mUnk_31 = 0x27;
+            mStep = 0x27;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         }
-        func_020638b8();
+        UpdateRotateInput();
         break;
     case 0x27:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mState = 3;
-        mUnk_31 = 0x16;
-        func_02063ad8(2);
+        mStep = 0x16;
+        MoveMenuDepth(2);
         break;
     case 0x28:
-        mUnk_31 = 0x27;
+        mStep = 0x27;
         break;
     case 0x29:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mUnk_14c = 0;
-        func_02063e20();
+        SwitchToSelectedGroup();
         break;
     }
 }
 
-void CharacterEditScene::func_0205f970() {
-    switch (mUnk_31) {
+void CharacterEditScene::UpdateCapEdit() {
+    switch (mStep) {
     case 0x2a:
         mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
-        func_02063c64();
+        SetupSlideIn();
         func_020637a8();
-        func_020637dc();
+        EnableGroupButtons();
         func_020638a8(1);
-        func_020642ac();
-        func_02062fe4("sub_cap_male.nce_ncg1D.bin", "sub_cap_male_ncl.bin", "sub_cap_male_nce.bin", "color_cap_male_ncl.bin");
-        func_0205d090();
-        func_0205d0fc(0, 0x18, 0);
-        if (mUnk_1ac == 0) {
-            func_0205d0fc(1, 0x18, 0);
+        SetupChoices();
+        LoadChoiceCells("sub_cap_male.nce_ncg1D.bin", "sub_cap_male_ncl.bin", "sub_cap_male_nce.bin", "color_cap_male_ncl.bin");
+        ResetTexts();
+        SetText(0, 0x18, 0);
+        if (mFixedItem == 0) {
+            SetText(1, 0x18, 0);
         }
-        mUnk_31 = 0x2b;
+        mStep = 0x2b;
         break;
     case 0x2b:
         if (mWindows[0]->mSlideStep != 1) {
             return;
         }
-        if (mUnk_1ac != 0) {
-            func_0205d0fc(1, 0x18, 0);
+        if (mFixedItem != 0) {
+            SetText(1, 0x18, 0);
         }
-        mUnk_31 = 0x2c;
+        mStep = 0x2c;
         break;
     case 0x2c:
         if (mWindows[0]->mState == 1) {
-            mUnk_31 = 0x2d;
+            mStep = 0x2d;
         }
         break;
     case 0x2d:
-        func_02064964();
+        UpdateChoiceInput();
         if (mUnk_1c == 3) {
-            if (func_0206332c()) {
+            if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 1) {
                     mWindows[0]->mState = 3;
                     mWindows[1]->mState = 3;
-                    mUnk_31 = 0x30;
+                    mStep = 0x30;
                     return;
                 }
             }
         } else if (mUnk_18 == 1) {
-            mUnk_31 = 0x2f;
+            mStep = 0x2f;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         } else if (mUnk_18 == 2) {
-            mUnk_31 = 0x2e;
+            mStep = 0x2e;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         }
-        func_020638b8();
+        UpdateRotateInput();
         break;
     case 0x2e:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mState = 3;
-        mUnk_31 = 0x16;
-        func_02063ad8(2);
+        mStep = 0x16;
+        MoveMenuDepth(2);
         break;
     case 0x2f:
-        mUnk_31 = 0x2e;
+        mStep = 0x2e;
         break;
     case 0x30:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mUnk_14c = 0;
-        func_02063e20();
+        SwitchToSelectedGroup();
         break;
     }
 }
 
-void CharacterEditScene::func_0205fc48() {
-    switch (mUnk_31) {
+void CharacterEditScene::UpdateGlassesEdit() {
+    switch (mStep) {
     case 0x31:
         mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
-        func_02063c64();
+        SetupSlideIn();
         func_020637a8();
-        func_020637dc();
+        EnableGroupButtons();
         func_020638a8(1);
-        func_020642ac();
-        func_02062fe4("sub_glasses.nce_ncg1D.bin", "sub_glasses_ncl.bin", "sub_glasses_nce.bin", "color_glasses_fr_ncl.bin");
-        func_0205d090();
-        func_0205d0fc(0, 0x14, 0);
-        if (mUnk_1ac == 0) {
-            func_0205d0fc(1, 0x14, 0);
+        SetupChoices();
+        LoadChoiceCells("sub_glasses.nce_ncg1D.bin", "sub_glasses_ncl.bin", "sub_glasses_nce.bin", "color_glasses_fr_ncl.bin");
+        ResetTexts();
+        SetText(0, 0x14, 0);
+        if (mFixedItem == 0) {
+            SetText(1, 0x14, 0);
         }
-        mUnk_31 = 0x32;
+        mStep = 0x32;
         break;
     case 0x32:
         if (mWindows[0]->mSlideStep != 1) {
             return;
         }
-        if (mUnk_1ac != 0) {
-            func_0205d0fc(1, 0x14, 0);
+        if (mFixedItem != 0) {
+            SetText(1, 0x14, 0);
         }
-        mUnk_31 = 0x33;
+        mStep = 0x33;
         break;
     case 0x33:
         if (mWindows[0]->mState == 1) {
-            mUnk_31 = 0x34;
+            mStep = 0x34;
         }
         break;
     case 0x34:
-        func_02064964();
+        UpdateChoiceInput();
         if (mUnk_1c == 3) {
-            if (func_0206332c()) {
+            if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 1) {
                     mWindows[0]->mState = 3;
                     mWindows[1]->mState = 3;
-                    mUnk_31 = 0x37;
+                    mStep = 0x37;
                     return;
                 }
             }
         } else if (mUnk_18 == 1) {
-            mUnk_31 = 0x36;
+            mStep = 0x36;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         } else if (mUnk_18 == 2) {
-            mUnk_31 = 0x35;
+            mStep = 0x35;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         }
-        func_020638b8();
+        UpdateRotateInput();
         break;
     case 0x35:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mState = 3;
-        mUnk_31 = 0x16;
-        func_02063ad8(2);
+        mStep = 0x16;
+        MoveMenuDepth(2);
         break;
     case 0x36:
-        mUnk_31 = 0x35;
+        mStep = 0x35;
         break;
     case 0x37:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mUnk_14c = 0;
-        func_02063e20();
+        SwitchToSelectedGroup();
         break;
     }
 }
 
-void CharacterEditScene::func_0205ff20() {
-    switch (mUnk_31) {
+void CharacterEditScene::UpdateTopEdit() {
+    switch (mStep) {
     case 0x38: {
         mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
-        func_02063c64();
+        SetupSlideIn();
         func_020637a8();
-        func_020637dc();
+        EnableGroupButtons();
         func_020638a8(1);
-        func_020642ac();
-        func_02062fe4("sub_top_male.nce_ncg1D.bin", "sub_top_male_ncl.bin", "sub_top_male_nce.bin",
+        SetupChoices();
+        LoadChoiceCells("sub_top_male.nce_ncg1D.bin", "sub_top_male_ncl.bin", "sub_top_male_nce.bin",
                       "color_top_male_ncl.bin");
         mCamera->SetPosition(FxRound(data_0209e7c4[2][0] * 0x1000), FxRound(data_0209e7c4[2][1] * 0x1000), FxRound(data_0209e7c4[2][2] * 0x1000));
         mCamera->SetTarget(FxRound(data_0209e7c4[2][3] * 0x1000), FxRound(data_0209e7c4[2][4] * 0x1000), FxRound(data_0209e7c4[2][5] * 0x1000));
@@ -1386,89 +1386,89 @@ void CharacterEditScene::func_0205ff20() {
         manager.mMtxA[manager.mActive] = *func_02032710();
         manager.mMtxB[manager.mActive] = *func_02032604();
         manager.mMtxC[manager.mActive] = *func_020323b8();
-        func_0205d090();
-        func_0205d0fc(0, 0x10, 0);
-        if (mUnk_1ac == 0) {
-            func_0205d0fc(1, 0x10, 0);
+        ResetTexts();
+        SetText(0, 0x10, 0);
+        if (mFixedItem == 0) {
+            SetText(1, 0x10, 0);
         }
-        mUnk_31 = 0x39;
+        mStep = 0x39;
         break;
     }
     case 0x39:
         if (mWindows[0]->mSlideStep != 1) {
             return;
         }
-        if (mUnk_1ac != 0) {
-            func_0205d0fc(1, 0x10, 0);
+        if (mFixedItem != 0) {
+            SetText(1, 0x10, 0);
         }
-        mUnk_31 = 0x3a;
+        mStep = 0x3a;
         break;
     case 0x3a:
         if (mWindows[0]->mState == 1) {
-            mUnk_31 = 0x3b;
+            mStep = 0x3b;
         }
         break;
     case 0x3b:
-        func_02064964();
+        UpdateChoiceInput();
         if (mUnk_1c == 3) {
-            if (func_0206332c()) {
+            if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 2 && mWindows[1]->GetSelectedId() != 3 &&
                     mWindows[1]->GetSelectedId() != 4) {
                     mWindows[0]->mState = 3;
                     mWindows[1]->mState = 3;
-                    mUnk_31 = 0x3e;
+                    mStep = 0x3e;
                     return;
                 }
             }
         } else if (mUnk_18 == 1) {
-            mUnk_31 = 0x3d;
+            mStep = 0x3d;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         } else if (mUnk_18 == 2) {
-            mUnk_31 = 0x3c;
+            mStep = 0x3c;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         }
-        func_020638b8();
+        UpdateRotateInput();
         break;
     case 0x3c:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mState = 1;
-        mUnk_31 = 2;
-        func_02063ad8(2);
+        mStep = 2;
+        MoveMenuDepth(2);
         break;
     case 0x3d:
-        mUnk_31 = 0x3c;
+        mStep = 0x3c;
         break;
     case 0x3e:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mUnk_14c = 0;
-        func_02063e20();
+        SwitchToSelectedGroup();
         break;
     }
 }
 
 void CharacterEditScene::func_020604e8() {
-    switch (mUnk_31) {
+    switch (mStep) {
     case 0x3f: {
-        if (mUnk_158 != 2) {
-            mUnk_155[mUnk_154] = 1;
+        if (mMenuDepthMove != 2) {
+            mMenuSelection[mMenuDepth] = 1;
         }
-        mWindows[0]->SetItems(8, (WindowItem *) data_0209f394, (s8) mUnk_155[mUnk_154]);
+        mWindows[0]->SetItems(8, (WindowItem *) data_0209f394, (s8) mMenuSelection[mMenuDepth]);
         mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
-        func_02063c64();
+        SetupSlideIn();
         func_020637a8();
-        func_020637dc();
+        EnableGroupButtons();
         func_020638a8(0);
         mCamera->SetPosition(FxRound(data_0209e7c4[3][0] * 0x1000), FxRound(data_0209e7c4[3][1] * 0x1000), FxRound(data_0209e7c4[3][2] * 0x1000));
         mCamera->SetTarget(FxRound(data_0209e7c4[3][3] * 0x1000), FxRound(data_0209e7c4[3][4] * 0x1000), FxRound(data_0209e7c4[3][5] * 0x1000));
@@ -1484,284 +1484,284 @@ void CharacterEditScene::func_020604e8() {
         manager.mMtxA[manager.mActive] = *func_02032710();
         manager.mMtxB[manager.mActive] = *func_02032604();
         manager.mMtxC[manager.mActive] = *func_020323b8();
-        func_0205d090();
-        func_0205d0fc(0, 0x11, 0);
-        switch (mUnk_1ac) {
+        ResetTexts();
+        SetText(0, 0x11, 0);
+        switch (mFixedItem) {
         case 0:
-            func_0205d0fc(1, 0x11, 0);
+            SetText(1, 0x11, 0);
             break;
         case 1:
-            func_0205d0fc(2, 0x15, 1);
+            SetText(2, 0x15, 1);
             break;
         case 2:
-            func_0205d0fc(3, 0x16, 2);
+            SetText(3, 0x16, 2);
             break;
         }
-        mUnk_31 = 0x40;
+        mStep = 0x40;
         break;
     }
     case 0x40:
         if (mWindows[0]->mSlideStep != 1) {
             return;
         }
-        if (mUnk_1ac != 0) {
-            func_0205d0fc(1, 0x11, 0);
+        if (mFixedItem != 0) {
+            SetText(1, 0x11, 0);
         }
-        if (mUnk_1ac != 1) {
-            func_0205d0fc(2, 0x15, 1);
+        if (mFixedItem != 1) {
+            SetText(2, 0x15, 1);
         }
-        if (mUnk_1ac != 2) {
-            func_0205d0fc(3, 0x16, 2);
+        if (mFixedItem != 2) {
+            SetText(3, 0x16, 2);
         }
-        mUnk_31 = 0x41;
+        mStep = 0x41;
         break;
     case 0x41:
         if (mWindows[0]->mState == 1) {
-            mUnk_31 = 0x42;
+            mStep = 0x42;
         }
         break;
     case 0x42:
         if (mUnk_1c == 3) {
-            if (func_0206332c()) {
+            if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 5 && mWindows[1]->GetSelectedId() != 6) {
                     mWindows[0]->mState = 3;
                     mWindows[1]->mState = 3;
-                    mUnk_31 = 0x44;
+                    mStep = 0x44;
                     return;
                 }
             }
         } else if (mUnk_18 == 1) {
             if (mWindows[0]->GetSelectedId() == 2) {
-                mUnk_31 = 0x43;
+                mStep = 0x43;
                 func_02063b10(1);
-                func_02063d10();
+                SlideToParent();
                 return;
             }
-            mUnk_31 = 0x44;
+            mStep = 0x44;
             func_02063b10(1);
-            func_02063dac();
+            SlideToFirstRow();
             return;
         } else if (mUnk_18 == 2) {
-            mUnk_31 = 0x43;
+            mStep = 0x43;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             return;
         } else if (InputManager::Get().IsHeld(8) && mWindows[0]->mState == 1) {
             mUnk_1b0 = 1;
             func_02063b10(1);
             mWindows[0]->mState = 3;
-            mUnk_31 = 0x44;
+            mStep = 0x44;
             return;
         }
-        func_020638b8();
+        UpdateRotateInput();
         break;
     case 0x43:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mState = 1;
-        mUnk_31 = 2;
-        func_02063ad8(2);
+        mStep = 2;
+        MoveMenuDepth(2);
         break;
     case 0x44:
         if (mWindows[0]->mState != 4) {
             return;
         }
-        if (func_02063e20()) {
+        if (SwitchToSelectedGroup()) {
             return;
         }
         if (mUnk_1b0 != 0) {
             mState = 0xc;
-            mUnk_31 = 0x53;
+            mStep = 0x53;
             return;
         }
         if (mWindows[0]->GetSelectedId() == 3) {
             mState = 0xa;
-            mUnk_31 = 0x45;
-            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
-            func_02063ad8(1);
+            mStep = 0x45;
+            mMenuSelection[mMenuDepth] = mWindows[0]->mCursor->mSelection;
+            MoveMenuDepth(1);
             return;
         }
         if (mWindows[0]->GetSelectedId() == 4) {
             mState = 0xb;
-            mUnk_31 = 0x4c;
-            mUnk_155[mUnk_154] = mWindows[0]->mCursor->mSelection;
-            func_02063ad8(1);
+            mStep = 0x4c;
+            mMenuSelection[mMenuDepth] = mWindows[0]->mCursor->mSelection;
+            MoveMenuDepth(1);
             return;
         }
         if (mWindows[0]->GetSelectedId() == 8) {
             mState = 0xc;
-            mUnk_31 = 0x53;
+            mStep = 0x53;
         }
         break;
     }
 }
 
-void CharacterEditScene::func_02060cd4() {
-    switch (mUnk_31) {
+void CharacterEditScene::UpdateBottomEdit() {
+    switch (mStep) {
     case 0x45:
         mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
-        func_02063c64();
+        SetupSlideIn();
         func_020637a8();
-        func_020637dc();
+        EnableGroupButtons();
         func_020638a8(1);
-        func_020642ac();
-        func_02062fe4("sub_bottom_male.nce_ncg1D.bin", "sub_bottom_male_ncl.bin", "sub_bottom_male_nce.bin", "color_bottom_male_ncl.bin");
-        func_0205d090();
-        func_0205d0fc(0, 0x15, 0);
-        if (mUnk_1ac == 0) {
-            func_0205d0fc(1, 0x15, 0);
+        SetupChoices();
+        LoadChoiceCells("sub_bottom_male.nce_ncg1D.bin", "sub_bottom_male_ncl.bin", "sub_bottom_male_nce.bin", "color_bottom_male_ncl.bin");
+        ResetTexts();
+        SetText(0, 0x15, 0);
+        if (mFixedItem == 0) {
+            SetText(1, 0x15, 0);
         }
-        mUnk_31 = 0x46;
+        mStep = 0x46;
         break;
     case 0x46:
         if (mWindows[0]->mSlideStep != 1) {
             return;
         }
-        if (mUnk_1ac != 0) {
-            func_0205d0fc(1, 0x15, 0);
+        if (mFixedItem != 0) {
+            SetText(1, 0x15, 0);
         }
-        mUnk_31 = 0x47;
+        mStep = 0x47;
         break;
     case 0x47:
         if (mWindows[0]->mState == 1) {
-            mUnk_31 = 0x48;
+            mStep = 0x48;
         }
         break;
     case 0x48:
-        func_02064964();
-        if (mUnk_1c == 3 && func_0206332c()) {
+        UpdateChoiceInput();
+        if (mUnk_1c == 3 && EnableSelectedGroupButtons()) {
             if (mWindows[1]->GetSelectedId() != 5 && mWindows[1]->GetSelectedId() != 6) {
                 mWindows[0]->mState = 3;
                 mWindows[1]->mState = 3;
-                mUnk_31 = 0x4b;
+                mStep = 0x4b;
                 return;
             }
         }
         if (mUnk_18 == 1) {
-            mUnk_31 = 0x4a;
+            mStep = 0x4a;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         } else if (mUnk_18 == 2) {
-            mUnk_31 = 0x49;
+            mStep = 0x49;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         }
-        func_020638b8();
+        UpdateRotateInput();
         break;
     case 0x49:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mState = 5;
-        mUnk_31 = 0x3f;
-        func_02063ad8(2);
+        mStep = 0x3f;
+        MoveMenuDepth(2);
         break;
     case 0x4a:
-        mUnk_31 = 0x49;
+        mStep = 0x49;
         break;
     case 0x4b:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mUnk_14c = 0;
-        func_02063e20();
+        SwitchToSelectedGroup();
         break;
     }
 }
 
-void CharacterEditScene::func_02060fd0() {
-    switch (mUnk_31) {
+void CharacterEditScene::UpdateShoesEdit() {
+    switch (mStep) {
     case 0x4c:
         mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
-        func_02063c64();
+        SetupSlideIn();
         func_020637a8();
-        func_020637dc();
+        EnableGroupButtons();
         func_020638a8(1);
-        func_020642ac();
-        func_02062fe4("sub_shoes_male.nce_ncg1D.bin", "sub_shoes_male_ncl.bin", "sub_shoes_male_nce.bin", "color_shoes_male_ncl.bin");
-        func_0205d090();
-        func_0205d0fc(0, 0x16, 0);
-        if (mUnk_1ac == 0) {
-            func_0205d0fc(1, 0x16, 0);
+        SetupChoices();
+        LoadChoiceCells("sub_shoes_male.nce_ncg1D.bin", "sub_shoes_male_ncl.bin", "sub_shoes_male_nce.bin", "color_shoes_male_ncl.bin");
+        ResetTexts();
+        SetText(0, 0x16, 0);
+        if (mFixedItem == 0) {
+            SetText(1, 0x16, 0);
         }
-        mUnk_31 = 0x4d;
+        mStep = 0x4d;
         break;
     case 0x4d:
         if (mWindows[0]->mSlideStep != 1) {
             return;
         }
-        if (mUnk_1ac != 0) {
-            func_0205d0fc(1, 0x16, 0);
+        if (mFixedItem != 0) {
+            SetText(1, 0x16, 0);
         }
-        mUnk_31 = 0x4e;
+        mStep = 0x4e;
         break;
     case 0x4e:
         if (mWindows[0]->mState == 1) {
-            mUnk_31 = 0x4f;
+            mStep = 0x4f;
         }
         break;
     case 0x4f:
-        func_02064964();
-        if (mUnk_1c == 3 && func_0206332c()) {
+        UpdateChoiceInput();
+        if (mUnk_1c == 3 && EnableSelectedGroupButtons()) {
             if (mWindows[1]->GetSelectedId() != 5 && mWindows[1]->GetSelectedId() != 6) {
                 mWindows[0]->mState = 3;
                 mWindows[1]->mState = 3;
-                mUnk_31 = 0x52;
+                mStep = 0x52;
                 return;
             }
         }
         if (mUnk_18 == 1) {
-            mUnk_31 = 0x51;
+            mStep = 0x51;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         } else if (mUnk_18 == 2) {
-            mUnk_31 = 0x50;
+            mStep = 0x50;
             func_02063b10(1);
-            func_02063d10();
+            SlideToParent();
             func_020638a8(0);
             return;
         }
-        func_020638b8();
+        UpdateRotateInput();
         break;
     case 0x50:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mState = 5;
-        mUnk_31 = 0x3f;
-        func_02063ad8(2);
+        mStep = 0x3f;
+        MoveMenuDepth(2);
         break;
     case 0x51:
-        mUnk_31 = 0x50;
+        mStep = 0x50;
         break;
     case 0x52:
         if (mWindows[0]->mState != 4) {
             return;
         }
         mUnk_14c = 0;
-        func_02063e20();
+        SwitchToSelectedGroup();
         break;
     }
 }
 
 void CharacterEditScene::func_020612cc() {
-    switch (mUnk_31) {
+    switch (mStep) {
     case 0x53: {
         mWindows[0]->SetItems(2, (WindowItem *) data_0209f12c, 0);
         mWindows[0]->mCells[0]->SetAnimation(1);
         func_020637a8();
-        func_020637dc();
+        EnableGroupButtons();
         func_020638a8(0);
         GXS_SetVisiblePlane(0x14);
         fx32 posZ = FxRound(data_0209e7c4[0][2] * 0x1000);
@@ -1781,24 +1781,24 @@ void CharacterEditScene::func_020612cc() {
         manager.mMtxA[manager.mActive] = *func_02032710();
         manager.mMtxB[manager.mActive] = *func_02032604();
         manager.mMtxC[manager.mActive] = *func_020323b8();
-        func_0205d090();
-        func_0205d0fc(0, 3, 0);
-        mUnk_31 = 0x54;
+        ResetTexts();
+        SetText(0, 3, 0);
+        mStep = 0x54;
         mUnk_1b0 = 0;
-        mUnk_148 = 3;
+        mRotateState = 3;
         break;
     }
     case 0x54:
         if (mWindows[0]->mSlideStep != 1) {
             return;
         }
-        func_0205d0fc(1, 8, 0);
-        func_0205d0fc(2, 9, 1);
-        mUnk_31 = 0x55;
+        SetText(1, 8, 0);
+        SetText(2, 9, 1);
+        mStep = 0x55;
         break;
     case 0x55:
         if (mWindows[0]->mState == 1) {
-            mUnk_31 = 0x56;
+            mStep = 0x56;
         }
         break;
     case 0x56:
@@ -1806,15 +1806,15 @@ void CharacterEditScene::func_020612cc() {
             return;
         }
         if (mWindows[0]->GetSelectedId() == 0) {
-            func_02063570(NULL);
+            StoreLook(NULL);
             mModel->func_0205461c(0x17, 0);
             data_020d433c.mUnk_14_1 = 1;
-            mUnk_31 = 0x59;
-            mUnk_32 = 0;
+            mStep = 0x59;
+            mStepFrames = 0;
             return;
         }
         if (mWindows[0]->GetSelectedId() == 1) {
-            mUnk_31 = 0x57;
+            mStep = 0x57;
         }
         break;
     case 0x57:
@@ -1822,116 +1822,116 @@ void CharacterEditScene::func_020612cc() {
             return;
         }
         mState = 1;
-        mUnk_31 = 2;
-        mUnk_154 = 0;
-        func_02063ad8(0);
+        mStep = 2;
+        mMenuDepth = 0;
+        MoveMenuDepth(0);
         break;
     case 0x59:
         if (mWindows[0]->mState != 4) {
             return;
         }
-        mUnk_32++;
-        if (mUnk_32 == 100) {
+        mStepFrames++;
+        if (mStepFrames == 100) {
             FrameTask::Get().StartChannel(1, 0x183);
         }
         if (mModel->IsAnimEndReached()) {
-            mUnk_1d0 = 1;
+            mNextScene = 1;
             mState = 0xd;
-            mUnk_31 = 0x5a;
-            mUnk_32 = 0;
+            mStep = 0x5a;
+            mStepFrames = 0;
         }
         break;
     }
 }
 
-void CharacterEditScene::func_0206183c() {
-    switch (mUnk_31) {
+void CharacterEditScene::UpdateFinish() {
+    switch (mStep) {
     case 0x5a:
         SpriteManager::Get().StartFade(3);
-        mUnk_31 = 0x5b;
+        mStep = 0x5b;
         break;
     case 0x5b:
         if (!SpriteManager::Get().IsFading()) {
-            mUnk_31 = 0x5c;
+            mStep = 0x5c;
         }
         break;
     case 0x5c:
-        RequestScene(mUnk_1d0);
+        RequestScene(mNextScene);
         mFinished = TRUE;
         break;
     }
 }
 
 void CharacterEditScene::Update() {
-    if (mUnk_1a8 != 0) {
+    if (mRebuildModel != 0) {
         u32 value = ((CharacterModel *) mModel->mCharacter)->GetHeadFrame();
-        mUnk_1a8 = 0;
+        mRebuildModel = 0;
         UnkStruct_0205401c *model = mModel;
         if (model != NULL) {
             model->Release();
             delete model;
         }
         CharacterLook look;
-        func_02063570(&look);
+        StoreLook(&look);
         mModel = new UnkStruct_0205401c();
         mModel->Create(0x15, 1, (u32) &look, 0);
         mModel->LoadShadow();
-        mModel->mCharacter->mRotY = mUnk_1d2;
+        mModel->mCharacter->mRotY = mModelAngle;
         mModel->func_0205461c(0, 1);
         ((CharacterModel *) mModel->mCharacter)->SetHeadFrame(value);
     }
     switch (mState) {
     case 0:
-        func_0205d4cc();
+        UpdateInit();
         break;
     case 1:
-        func_0205d5fc();
+        UpdateRootMenu();
         break;
     case 2:
-        func_0205e6ac();
+        UpdateSkinEdit();
         break;
     case 3:
         func_0205e958();
         break;
     case 6:
-        func_0205f3c0();
+        UpdateFaceEdit();
         break;
     case 7:
-        func_0205f698();
+        UpdateHairEdit();
         break;
     case 8:
-        func_0205f970();
+        UpdateCapEdit();
         break;
     case 9:
-        func_0205fc48();
+        UpdateGlassesEdit();
         break;
     case 4:
-        func_0205ff20();
+        UpdateTopEdit();
         break;
     case 5:
         func_020604e8();
         break;
     case 10:
-        func_02060cd4();
+        UpdateBottomEdit();
         break;
     case 11:
-        func_02060fd0();
+        UpdateShoesEdit();
         break;
     case 12:
         func_020612cc();
         break;
     case 13:
-        func_0206183c();
+        UpdateFinish();
         break;
     }
     mUnk_18 = mWindows[0]->Update(1);
     mUnk_1c = mWindows[1]->Update(1);
     mUnk_20 = mWindows[2]->Update(1);
-    func_02063218();
+    Draw();
     UnkStruct_0205401c_04 *data = mModel->mCharacter;
     u16 angle = data->mRotY;
     u16 delta = angle - 0x2cec;
-    switch (mUnk_148) {
+    switch (mRotateState) {
     case 1:
         data->mRotY = angle + 0xcd;
         break;
@@ -1943,18 +1943,18 @@ void CharacterEditScene::Update() {
             data->mRotY = angle + 0x1000;
             if (delta > (u16) (data->mRotY - 0x2cec)) {
                 data->mRotY = 0x2cec;
-                mUnk_148 = 0;
+                mRotateState = 0;
             }
         } else {
             data->mRotY = angle - 0x1000;
             if (delta < (u16) (data->mRotY - 0x2cec)) {
                 data->mRotY = 0x2cec;
-                mUnk_148 = 0;
+                mRotateState = 0;
             }
         }
         break;
     }
-    mUnk_1d2 = data->mRotY;
+    mModelAngle = data->mRotY;
 }
 
 void CharacterEditScene::func_02061c3c() {
@@ -2010,7 +2010,7 @@ void CharacterEditScene::func_02061c3c() {
     manager.mMtxC[manager.mActive] = *func_020323b8();
 }
 
-void CharacterEditScene::func_02062194() {
+void CharacterEditScene::LoadGraphics() {
     u32 size;
     mWindows[0] = NULL;
     mWindows[0] = new SelectWindow(10, (WindowItemRecord *) data_0209e9f4, -1);
@@ -2088,29 +2088,29 @@ void CharacterEditScene::func_02062194() {
     mCells[15]->SetAnimation(0x15);
     ChangeDir("/");
     ChangeDir("/font/");
-    mUnk_140 = LoadFile("mes_chara_edit.mes", 0, 0, 0, 0, 0);
-    mUnk_138 = TextManager::Get().BufferSize(0x20, 2);
-    mUnk_1c4 = TextManager::Get().BufferSize(0x18, 8);
+    mMessages = LoadFile("mes_chara_edit.mes", 0, 0, 0, 0, 0);
+    mTextBufferSize = TextManager::Get().BufferSize(0x20, 2);
+    mWindowTextBufferSize = TextManager::Get().BufferSize(0x18, 8);
     u8 j = 0;
     do {
-        mTextBuffers[j] = (u32 *) OS_Alloc(mUnk_138);
-        MI_CpuClear16(mTextBuffers[j], mUnk_138);
+        mTextBuffers[j] = (u32 *) OS_Alloc(mTextBufferSize);
+        MI_CpuClear16(mTextBuffers[j], mTextBufferSize);
         j++;
     } while (j < 6);
-    mUnk_1bc = OS_Alloc(mUnk_1c4);
-    MI_CpuClear16(mUnk_1bc, mUnk_1c4);
-    mUnk_13c = TextManager::Get().GlyphCount(8);
-    mUnk_1c8 = TextManager::Get().GlyphCount(0x18);
-    mUnk_134 = OS_Alloc(mUnk_13c * 0xc);
-    mUnk_1c0 = OS_Alloc(mUnk_1c8 * 0xc);
-    TextManager::Get().Init(mUnk_134, 1, 0, 0x20, 2, 0x21);
-    TextManager::Get().Init(mUnk_1c0, 1, 0, 0x18, 8, 0x21);
+    mWindowTextBuffer = OS_Alloc(mWindowTextBufferSize);
+    MI_CpuClear16(mWindowTextBuffer, mWindowTextBufferSize);
+    mTextGlyphCount = TextManager::Get().GlyphCount(8);
+    mWindowGlyphCount = TextManager::Get().GlyphCount(0x18);
+    mTextGlyphBuffer = OS_Alloc(mTextGlyphCount * 0xc);
+    mWindowGlyphBuffer = OS_Alloc(mWindowGlyphCount * 0xc);
+    TextManager::Get().Init(mTextGlyphBuffer, 1, 0, 0x20, 2, 0x21);
+    TextManager::Get().Init(mWindowGlyphBuffer, 1, 0, 0x18, 8, 0x21);
     TextManager::Get().SetColor(1, 0, 0xf);
     mMessage = new MessageWindow("mes_chara_edit", 1, 0);
     mMessage->func_02065bd4(0x14, 4, 0);
     mMessage->SetWidth(0xd8);
     mMessage->StartMessage(0, 0, 1);
-    func_0205d090();
+    ResetTexts();
     ChangeDir("/Story/Map/");
     NitroTexture *texture = new NitroTexture("cut_room.nsbtx");
     NitroModel *model     = new NitroModel();
@@ -2118,13 +2118,13 @@ void CharacterEditScene::func_02062194() {
     texture->FreeFile();
     ModelAnimData *animData = new ModelAnimData("cut_room_data.bin");
     ModelAnim *anim         = new ModelAnim(animData, model);
-    mUnk_150                = model->CreateInstance(anim);
-    mUnk_150->StartAnimWithIncrement(0, 1, 0x1000);
+    mCutRoomModel                = model->CreateInstance(anim);
+    mCutRoomModel->StartAnimWithIncrement(0, 1, 0x1000);
     ChangeDir("/");
     mModel = new UnkStruct_0205401c();
     mModel->Create(0x15, 1, 0, 0);
     mModel->LoadShadow();
-    mModel->mCharacter->mRotY = mUnk_1d2;
+    mModel->mCharacter->mRotY = mModelAngle;
     mModel->func_0205461c(0, 1);
     ChangeDir("/");
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
@@ -2132,21 +2132,21 @@ void CharacterEditScene::func_02062194() {
     ChangeDir("/Game/2d/CharacterEditor/Obj");
     screen.LoadCharacters("nameplate_u_obj_32k.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("nameplate_u_obj_32k_ncl.bin", 0, 0);
-    mUnk_1e4 = new CellAnimation("nameplate_u_obj_32k_nce.bin", 0, 1, 1);
-    mUnk_1e4->mCharBase = screen.GetCharBase(0);
-    mUnk_1e4->mPaletteBase = 0;
-    mUnk_1e4->SetAnimation(0);
+    mNameplateCell = new CellAnimation("nameplate_u_obj_32k_nce.bin", 0, 1, 1);
+    mNameplateCell->mCharBase = screen.GetCharBase(0);
+    mNameplateCell->mPaletteBase = 0;
+    mNameplateCell->SetAnimation(0);
     ChangeDir("/");
-    mUnk_1dc = TextManager::Get().BufferSize(0x20, 2);
-    mUnk_1d4 = OS_Alloc(mUnk_1dc);
-    func_02064f80();
-    mUnk_1e0 = TextManager::Get().GlyphCount(0x20, 2, 0x21);
-    mUnk_1d8 = OS_Alloc(mUnk_1e0 * 0xc);
-    TextManager::Get().Init(mUnk_1d8, 0, 0, 0x20, 2, 0x21);
+    mNameBufferSize = TextManager::Get().BufferSize(0x20, 2);
+    mNameBuffer = OS_Alloc(mNameBufferSize);
+    ClearName();
+    mNameGlyphCount = TextManager::Get().GlyphCount(0x20, 2, 0x21);
+    mNameGlyphBuffer = OS_Alloc(mNameGlyphCount * 0xc);
+    TextManager::Get().Init(mNameGlyphBuffer, 0, 0, 0x20, 2, 0x21);
     TextManager::Get().SetColor(0, 0, 0xf);
 }
 
-void CharacterEditScene::func_02062fe4(const char *chars, const char *palette, const char *cells, const char *palette2) {
+void CharacterEditScene::LoadChoiceCells(const char *chars, const char *palette, const char *cells, const char *palette2) {
     u8 i = 0;
     do {
         CellAnimation *cell = mCells[i];
@@ -2162,15 +2162,15 @@ void CharacterEditScene::func_02062fe4(const char *chars, const char *palette, c
     screen.LoadPalette(palette, 0x160, 0);
     u8 j = 0;
     do {
-        if (mUnk_160 == NULL) {
+        if (mStyleAnimIndices == NULL) {
             mCells[j] = new CellAnimation(cells, 0, 1, 1);
         } else {
-            mCells[j] = new CellAnimation(cells, mUnk_160[j], 1, 1);
+            mCells[j] = new CellAnimation(cells, mStyleAnimIndices[j], 1, 1);
         }
         mCells[j]->mCharBase = screen.GetCharBase(0x15000);
         mCells[j]->mPaletteBase = 0xb;
         j++;
-    } while (j < mUnk_15d);
+    } while (j < mStyleCount);
     screen.LoadPalette(palette2, 0x120, 0);
     if (mState == 7) {
         screen.LoadPalette("color_hair_male_ncl.bin", 0x140, 0);
@@ -2181,13 +2181,13 @@ void CharacterEditScene::func_02062fe4(const char *chars, const char *palette, c
     mUnk_14c = 1;
 }
 
-void CharacterEditScene::func_02063218() {
-    func_0205d2b4();
+void CharacterEditScene::Draw() {
+    DrawTexts();
     mWindows[0]->Draw();
     mWindows[1]->Draw();
     mWindows[2]->Draw();
-    func_020645fc();
-    if (mUnk_150 != NULL) {
+    DrawChoices();
+    if (mCutRoomModel != NULL) {
         MtxFx43 mtx = gIdentityMtx43;
         VecFx32 b;
         VecFx32 a;
@@ -2198,20 +2198,20 @@ void CharacterEditScene::func_02063218() {
         a.y = -0x6000;
         a.z = 0;
         func_01ffcf64(&mtx, &a);
-        mUnk_150->AdvanceAnim();
-        mUnk_150->Draw(&mtx, &b);
+        mCutRoomModel->AdvanceAnim();
+        mCutRoomModel->Draw(&mtx, &b);
     }
     if (mModel != NULL) {
         mModel->Draw();
     }
-    func_02064ed8();
-    if (mUnk_1e4 != NULL) {
-        mUnk_1e4->Update();
-        mUnk_1e4->DrawFrame(0, gSaveData[0].mUnk_1a_8, 0x80, 0x60, 0);
+    DrawName();
+    if (mNameplateCell != NULL) {
+        mNameplateCell->Update();
+        mNameplateCell->DrawFrame(0, gSaveData[0].mUnk_1a_8, 0x80, 0x60, 0);
     }
 }
 
-BOOL CharacterEditScene::func_0206332c() {
+BOOL CharacterEditScene::EnableSelectedGroupButtons() {
     BOOL result = FALSE;
     if (mWindows[1]->GetSelectedId() == 1) {
         result = TRUE;
@@ -2265,7 +2265,7 @@ BOOL CharacterEditScene::func_0206332c() {
     return result;
 }
 
-void CharacterEditScene::func_02063570(CharacterLook *look) {
+void CharacterEditScene::StoreLook(CharacterLook *look) {
     if (look == NULL) {
         look = (CharacterLook *) gCharacterLook;
     }
@@ -2298,7 +2298,7 @@ void CharacterEditScene::func_020637a8() {
     } while (i < 7);
 }
 
-void CharacterEditScene::func_020637dc() {
+void CharacterEditScene::EnableGroupButtons() {
     mWindows[1]->mButtons[0].mEnabled = 1;
     u8 i = 1;
     do {
@@ -2335,9 +2335,9 @@ void CharacterEditScene::func_020638a8(u32 v) {
     mUnk_14c = v;
 }
 
-void CharacterEditScene::func_020638b8() {
-    if (mUnk_148 != 3) {
-        mUnk_148 = 0;
+void CharacterEditScene::UpdateRotateInput() {
+    if (mRotateState != 3) {
+        mRotateState = 0;
     }
     SelectWindow *w = mWindows[0];
     SelectWindowCursor *cur = w->mCursor;
@@ -2348,10 +2348,10 @@ void CharacterEditScene::func_020638b8() {
     if (id != -1) {
         switch (id) {
         case 9:
-            mUnk_148 = 1;
+            mRotateState = 1;
             break;
         case 10:
-            mUnk_148 = 2;
+            mRotateState = 2;
             break;
         }
         return;
@@ -2359,12 +2359,12 @@ void CharacterEditScene::func_020638b8() {
     w->mCells[9]->SetAnimation(0xc);
     mWindows[0]->mCells[10]->SetAnimation(0xe);
     if (InputManager::Get().IsDown(0x200)) {
-        mUnk_148 = 1;
+        mRotateState = 1;
         mWindows[0]->mCells[9]->SetAnimation(0xd);
         return;
     }
     if (InputManager::Get().IsDown(0x100)) {
-        mUnk_148 = 2;
+        mRotateState = 2;
         mWindows[0]->mCells[10]->SetAnimation(0xf);
         return;
     }
@@ -2375,22 +2375,22 @@ void CharacterEditScene::func_020638b8() {
             id2 = c->mItems[c->mSelection].mId;
         }
         if (id2 == 0xb) {
-            mUnk_148 = 3;
+            mRotateState = 3;
         }
     }
 }
 
-void CharacterEditScene::func_02063a6c(u32 i, u32 v) {
+void CharacterEditScene::SetItemFlags(u32 i, u32 v) {
     mWindows[0]->mCursor->mItems[i].mFlags = v;
 }
 
-void CharacterEditScene::func_02063a88(u32 i, u32 a, u32 b) {
+void CharacterEditScene::SetItemSlide(u32 i, u32 a, u32 b) {
     WindowItem *item = &mWindows[0]->mCursor->mItems[i];
     item->mSlideIn = a;
     item->mSlideOut = b;
 }
 
-void CharacterEditScene::func_02063aa8(u32 i, u32 a, u32 b, u32 c, u32 d) {
+void CharacterEditScene::SetChoiceItemNeighbors(u32 i, u32 a, u32 b, u32 c, u32 d) {
     WindowItem *item = &mCursor->mItems[i];
     item->mNeighbors[0] = a;
     item->mNeighbors[1] = b;
@@ -2398,16 +2398,16 @@ void CharacterEditScene::func_02063aa8(u32 i, u32 a, u32 b, u32 c, u32 d) {
     item->mNeighbors[3] = *(u8 *) &d;
 }
 
-void CharacterEditScene::func_02063ad8(u32 v) {
-    mUnk_158 = v;
+void CharacterEditScene::MoveMenuDepth(u32 v) {
+    mMenuDepthMove = v;
     switch (v) {
     case 0:
         break;
     case 1:
-        mUnk_154++;
+        mMenuDepth++;
         break;
     case 2:
-        mUnk_154--;
+        mMenuDepth--;
         break;
     }
 }
@@ -2440,18 +2440,18 @@ void CharacterEditScene::func_02063b10(u32 arg) {
     u8 i = 0;
     do {
         if (i == 4) {
-            switch (mUnk_1b4) {
+            switch (mFromMyroom) {
             case 0:
-                func_02063a6c(i, 1);
-                func_02063a88(i, 3, 4);
+                SetItemFlags(i, 1);
+                SetItemSlide(i, 3, 4);
                 break;
             case 1:
-                func_02063a6c(i, 0x8000);
-                func_02063a88(i, 0, 0);
+                SetItemFlags(i, 0x8000);
+                SetItemSlide(i, 0, 0);
                 break;
             }
         } else {
-            func_02063a88(i, 3, 4);
+            SetItemSlide(i, 3, 4);
         }
         i++;
     } while (i < count);
@@ -2464,34 +2464,34 @@ void CharacterEditScene::func_02063b10(u32 arg) {
     }
 }
 
-void CharacterEditScene::func_02063c64() {
-    mUnk_1ac = -1;
+void CharacterEditScene::SetupSlideIn() {
+    mFixedItem = -1;
     WindowItem *items = mWindows[0]->mCursor->mItems;
-    if (mUnk_158 == 1) {
+    if (mMenuDepthMove == 1) {
         items[0].mSlideIn = 0;
         mWindows[0]->mButtons[items[0].mId].mEnabled = 1;
-        mUnk_1ac = 0;
-    } else if (mUnk_158 == 2) {
-        items[mUnk_155[mUnk_154]].mSlideIn = 0;
-        mWindows[0]->mButtons[items[mUnk_155[mUnk_154]].mId].mEnabled = 1;
-        mUnk_1ac = mUnk_155[mUnk_154];
+        mFixedItem = 0;
+    } else if (mMenuDepthMove == 2) {
+        items[mMenuSelection[mMenuDepth]].mSlideIn = 0;
+        mWindows[0]->mButtons[items[mMenuSelection[mMenuDepth]].mId].mEnabled = 1;
+        mFixedItem = mMenuSelection[mMenuDepth];
     }
 }
 
-void CharacterEditScene::func_02063d10() {
+void CharacterEditScene::SlideToParent() {
     WindowItem *items = mWindows[0]->mCursor->mItems;
     items[0].mSlideOut = 2;
-    if (mUnk_154 == 2) {
+    if (mMenuDepth == 2) {
         u8 id = items[0].mId;
         SelectWindow *w = mWindows[0];
         w->mCellPos[id].x = 0x8c;
         w->mCellPos[id].y = 0x1a;
     }
-    mWindows[0]->SlideCellTo(items[0].mId, 0x87, mUnk_155[mUnk_154 - 1] * 0x1c + 0x1a);
+    mWindows[0]->SlideCellTo(items[0].mId, 0x87, mMenuSelection[mMenuDepth - 1] * 0x1c + 0x1a);
     mWindows[0]->mCells[(u8) items[0].mId]->SetAnimation(3);
 }
 
-void CharacterEditScene::func_02063dac() {
+void CharacterEditScene::SlideToFirstRow() {
     SelectWindowCursor *cur = mWindows[0]->mCursor;
     s8 sel = cur->mSelection;
     WindowItem *items = cur->mItems;
@@ -2503,48 +2503,48 @@ void CharacterEditScene::func_02063dac() {
     mWindows[0]->mCells[(u8) items[sel].mId]->SetAnimation(3);
 }
 
-BOOL CharacterEditScene::func_02063e20() {
+BOOL CharacterEditScene::SwitchToSelectedGroup() {
     if (mWindows[1]->GetSelectedId() == 1) {
         mState = 3;
-        mUnk_31 = 0x16;
-        mUnk_154 = 0;
-        mUnk_155[mUnk_154] = 2;
-        if (mUnk_1b4 == 1) {
-            mUnk_155[mUnk_154] = 1;
+        mStep = 0x16;
+        mMenuDepth = 0;
+        mMenuSelection[mMenuDepth] = 2;
+        if (mFromMyroom == 1) {
+            mMenuSelection[mMenuDepth] = 1;
         }
-        mUnk_154++;
-        func_02063ad8(0);
+        mMenuDepth++;
+        MoveMenuDepth(0);
         return TRUE;
     }
     if (mWindows[1]->GetSelectedId() == 2 || mWindows[1]->GetSelectedId() == 3 || mWindows[1]->GetSelectedId() == 4) {
         mState = 4;
-        mUnk_31 = 0x38;
-        mUnk_154 = 0;
-        mUnk_155[mUnk_154] = 3;
-        if (mUnk_1b4 == 1) {
-            mUnk_155[mUnk_154] = 2;
+        mStep = 0x38;
+        mMenuDepth = 0;
+        mMenuSelection[mMenuDepth] = 3;
+        if (mFromMyroom == 1) {
+            mMenuSelection[mMenuDepth] = 2;
         }
-        mUnk_154++;
-        func_02063ad8(0);
+        mMenuDepth++;
+        MoveMenuDepth(0);
         return TRUE;
     }
     if (mWindows[1]->GetSelectedId() == 5 || mWindows[1]->GetSelectedId() == 6) {
         mState = 5;
-        mUnk_31 = 0x3f;
-        mUnk_154 = 0;
-        mUnk_155[mUnk_154] = 4;
-        if (mUnk_1b4 == 1) {
-            mUnk_155[mUnk_154] = 3;
+        mStep = 0x3f;
+        mMenuDepth = 0;
+        mMenuSelection[mMenuDepth] = 4;
+        if (mFromMyroom == 1) {
+            mMenuSelection[mMenuDepth] = 3;
         }
-        mUnk_154++;
-        func_02063ad8(0);
+        mMenuDepth++;
+        MoveMenuDepth(0);
         return TRUE;
     }
     return FALSE;
 }
 
 
-void CharacterEditScene::func_02064024() {
+void CharacterEditScene::InitLookLists() {
     u8 count = 0;
     u8 value = 0;
     u8 i = 0;
@@ -2632,83 +2632,83 @@ void CharacterEditScene::func_02064024() {
     } while (i < 16);
 }
 
-void CharacterEditScene::func_020642ac() {
-    mUnk_15e = 0;
-    mUnk_15f = 0;
-    func_02063aa8(10, 7, 0x10, 9, 0xb);
-    func_02063aa8(11, 7, 0x11, 10, 0xc);
-    func_02063aa8(12, 5, 0x12, 11, 0xd);
+void CharacterEditScene::SetupChoices() {
+    mColorCount = 0;
+    mColor2Count = 0;
+    SetChoiceItemNeighbors(10, 7, 0x10, 9, 0xb);
+    SetChoiceItemNeighbors(11, 7, 0x11, 10, 0xc);
+    SetChoiceItemNeighbors(12, 5, 0x12, 11, 0xd);
     switch (mState) {
     case 2:
-        mUnk_15a = 0;
-        mUnk_15d = 1;
-        mUnk_160 = NULL;
-        mUnk_15b = mLists[0].mIndex;
-        mUnk_15e = mLists[0].mCount;
-        func_02063aa8(10, 0, 0, 9, 0xb);
-        func_02063aa8(11, 0, 0, 10, 0xc);
-        func_02063aa8(12, 0, 0, 11, 0xd);
+        mStyleIndex = 0;
+        mStyleCount = 1;
+        mStyleAnimIndices = NULL;
+        mColorIndex = mLists[0].mIndex;
+        mColorCount = mLists[0].mCount;
+        SetChoiceItemNeighbors(10, 0, 0, 9, 0xb);
+        SetChoiceItemNeighbors(11, 0, 0, 10, 0xc);
+        SetChoiceItemNeighbors(12, 0, 0, 11, 0xd);
         break;
     case 6:
-        mUnk_15a = mLists[1].mIndex;
-        mUnk_15d = mLists[1].mCount;
-        mUnk_160 = mLists[1].mValues;
-        mUnk_15b = mLists[2].mIndex;
-        mUnk_15e = mLists[2].mCount;
+        mStyleIndex = mLists[1].mIndex;
+        mStyleCount = mLists[1].mCount;
+        mStyleAnimIndices = mLists[1].mValues;
+        mColorIndex = mLists[2].mIndex;
+        mColorCount = mLists[2].mCount;
         break;
     case 7:
-        mUnk_15a = mLists[3].mIndex;
-        mUnk_15d = mLists[3].mCount;
-        mUnk_160 = mLists[3].mValues;
-        mUnk_15c = mLists[4].mIndex;
-        mUnk_15f = mLists[4].mCount;
+        mStyleIndex = mLists[3].mIndex;
+        mStyleCount = mLists[3].mCount;
+        mStyleAnimIndices = mLists[3].mValues;
+        mColor2Index = mLists[4].mIndex;
+        mColor2Count = mLists[4].mCount;
         break;
     case 8:
-        mUnk_15a = mLists[5].mIndex;
-        mUnk_15d = mLists[5].mCount;
-        mUnk_160 = mLists[5].mValues;
-        mUnk_15b = mLists[6].mIndex;
-        mUnk_15e = mLists[6].mCount;
+        mStyleIndex = mLists[5].mIndex;
+        mStyleCount = mLists[5].mCount;
+        mStyleAnimIndices = mLists[5].mValues;
+        mColorIndex = mLists[6].mIndex;
+        mColorCount = mLists[6].mCount;
         break;
     case 9:
-        mUnk_15a = mLists[7].mIndex;
-        mUnk_15d = mLists[7].mCount;
-        mUnk_160 = mLists[7].mValues;
-        mUnk_15b = mLists[8].mIndex;
-        mUnk_15e = mLists[8].mCount;
-        mUnk_15c = mLists[9].mIndex;
-        mUnk_15f = mLists[9].mCount;
+        mStyleIndex = mLists[7].mIndex;
+        mStyleCount = mLists[7].mCount;
+        mStyleAnimIndices = mLists[7].mValues;
+        mColorIndex = mLists[8].mIndex;
+        mColorCount = mLists[8].mCount;
+        mColor2Index = mLists[9].mIndex;
+        mColor2Count = mLists[9].mCount;
         break;
     case 4:
-        mUnk_15a = mLists[10].mIndex;
-        mUnk_15d = mLists[10].mCount;
-        mUnk_160 = mLists[10].mValues;
-        mUnk_15b = mLists[11].mIndex;
-        mUnk_15e = mLists[11].mCount;
+        mStyleIndex = mLists[10].mIndex;
+        mStyleCount = mLists[10].mCount;
+        mStyleAnimIndices = mLists[10].mValues;
+        mColorIndex = mLists[11].mIndex;
+        mColorCount = mLists[11].mCount;
         break;
     case 10:
-        mUnk_15a = mLists[12].mIndex;
-        mUnk_15d = mLists[12].mCount;
-        mUnk_160 = mLists[12].mValues;
-        mUnk_15b = mLists[13].mIndex;
-        mUnk_15e = mLists[13].mCount;
+        mStyleIndex = mLists[12].mIndex;
+        mStyleCount = mLists[12].mCount;
+        mStyleAnimIndices = mLists[12].mValues;
+        mColorIndex = mLists[13].mIndex;
+        mColorCount = mLists[13].mCount;
         break;
     case 11:
-        mUnk_15a = mLists[14].mIndex;
-        mUnk_15d = mLists[14].mCount;
-        mUnk_160 = mLists[14].mValues;
-        mUnk_15b = mLists[15].mIndex;
-        mUnk_15e = mLists[15].mCount;
+        mStyleIndex = mLists[14].mIndex;
+        mStyleCount = mLists[14].mCount;
+        mStyleAnimIndices = mLists[14].mValues;
+        mColorIndex = mLists[15].mIndex;
+        mColorCount = mLists[15].mCount;
         break;
     }
-    u8 selected = mUnk_15a;
-    mUnk_159 = selected;
+    u8 selected = mStyleIndex;
+    mCursorItem = selected;
     mCursor->mSelection = selected;
     mCells[12]->SetAnimation(0x12);
     WindowItem *items = mCursor->mItems;
     u8 i = 0;
     do {
-        if (i < mUnk_15d) {
+        if (i < mStyleCount) {
             items[i].mFlags = 8;
         } else {
             items[i].mFlags = 0x8000;
@@ -2717,12 +2717,12 @@ void CharacterEditScene::func_020642ac() {
     } while (i < 8);
     i = 0;
     do {
-        if (i < mUnk_15e) {
+        if (i < mColorCount) {
             items[i + 8].mFlags = 8;
         } else {
             items[i + 8].mFlags = 0x8000;
         }
-        if (i < mUnk_15f) {
+        if (i < mColor2Count) {
             items[i + 14].mFlags = 8;
         } else {
             items[i + 14].mFlags = 0x8000;
@@ -2731,7 +2731,7 @@ void CharacterEditScene::func_020642ac() {
     } while (i < 6);
 }
 
-void CharacterEditScene::func_020645fc() {
+void CharacterEditScene::DrawChoices() {
     if (mUnk_14c == 0) {
         return;
     }
@@ -2742,20 +2742,20 @@ void CharacterEditScene::func_020645fc() {
             mCells[i]->Draw(1, data_0209e7f4[i].x, data_0209e7f4[i].y, 1);
         }
         i++;
-    } while (i < mUnk_15d);
+    } while (i < mStyleCount);
     u8 j = 8;
     do {
         if (mCells[j] != NULL) {
             mCells[j]->Update();
             switch (j - 8) {
             case 0:
-                if (mUnk_15e != 0) {
-                    mCells[j]->DrawFrame(1, mUnk_15e - 1, data_0209e7f4[j].x, data_0209e7f4[j].y, 1);
+                if (mColorCount != 0) {
+                    mCells[j]->DrawFrame(1, mColorCount - 1, data_0209e7f4[j].x, data_0209e7f4[j].y, 1);
                 }
                 break;
             case 1:
-                if (mUnk_15f != 0) {
-                    mCells[j]->DrawFrame(1, mUnk_15f - 1, data_0209e7f4[j].x, data_0209e7f4[j].y, 1);
+                if (mColor2Count != 0) {
+                    mCells[j]->DrawFrame(1, mColor2Count - 1, data_0209e7f4[j].x, data_0209e7f4[j].y, 1);
                 }
                 break;
             case 2:
@@ -2765,7 +2765,7 @@ void CharacterEditScene::func_020645fc() {
                 }
                 break;
             case 4: {
-                u8 v = mUnk_159;
+                u8 v = mCursorItem;
                 if (v < 8) {
                     mCells[j]->Draw(1, (s16) (v % 3 * 32 + 0x91), (s16) (v / 3 * 32 + 0x34), 0);
                 } else if (v < 0xe) {
@@ -2776,18 +2776,18 @@ void CharacterEditScene::func_020645fc() {
                 break;
             }
             case 5: {
-                u8 v = mUnk_15a;
+                u8 v = mStyleIndex;
                 mCells[j]->Draw(1, (s16) (data_0209e7f4[j].x + v % 3 * 32), (s16) (data_0209e7f4[j].y + v / 3 * 32), 0);
                 break;
             }
             case 6:
-                if (mUnk_15e != 0) {
-                    mCells[j]->Draw(1, (s16) (data_0209e7f4[j].x + mUnk_15b * 15), data_0209e7f4[j].y, 0);
+                if (mColorCount != 0) {
+                    mCells[j]->Draw(1, (s16) (data_0209e7f4[j].x + mColorIndex * 15), data_0209e7f4[j].y, 0);
                 }
                 break;
             case 7:
-                if (mUnk_15f != 0) {
-                    mCells[j]->Draw(1, (s16) (data_0209e7f4[j].x + mUnk_15c * 15), data_0209e7f4[j].y, 0);
+                if (mColor2Count != 0) {
+                    mCells[j]->Draw(1, (s16) (data_0209e7f4[j].x + mColor2Index * 15), data_0209e7f4[j].y, 0);
                 }
                 break;
             }
@@ -2796,15 +2796,15 @@ void CharacterEditScene::func_020645fc() {
     } while (j < 16);
 }
 
-void CharacterEditScene::func_02064964() {
+void CharacterEditScene::UpdateChoiceInput() {
     if (mWindows[0]->mState != 1) {
         return;
     }
     u32 result = mCursor->func_0202f468(1);
     s8 sel = mCursor->mSelection;
-    if (mUnk_159 != sel) {
-        mUnk_159 = sel;
-        if (mUnk_159 < 8) {
+    if (mCursorItem != sel) {
+        mCursorItem = sel;
+        if (mCursorItem < 8) {
             mCells[12]->SetAnimation(0x12);
         } else {
             mCells[12]->SetAnimation(0x13);
@@ -2812,84 +2812,84 @@ void CharacterEditScene::func_02064964() {
         return;
     }
     if (result == 3) {
-        func_020649e4();
+        ApplyCursorItem();
     }
 }
 
-void CharacterEditScene::func_020649e4() {
-    u8 v = mUnk_159;
+void CharacterEditScene::ApplyCursorItem() {
+    u8 v = mCursorItem;
     if (v < 8) {
-        mUnk_15a = v;
+        mStyleIndex = v;
     } else if (v < 0xe) {
-        mUnk_15b = v - 8;
+        mColorIndex = v - 8;
     } else {
-        mUnk_15c = v - 0xe;
+        mColor2Index = v - 0xe;
     }
     switch (mState) {
     case 2:
-        if (mUnk_159 >= 8) {
-            mLists[0].mIndex = mUnk_15b;
+        if (mCursorItem >= 8) {
+            mLists[0].mIndex = mColorIndex;
         }
         break;
     case 6:
-        if (mUnk_159 < 8) {
-            mLists[1].mIndex = mUnk_15a;
+        if (mCursorItem < 8) {
+            mLists[1].mIndex = mStyleIndex;
         } else {
-            mLists[2].mIndex = mUnk_15b;
+            mLists[2].mIndex = mColorIndex;
         }
         break;
     case 7:
-        if (mUnk_159 >= 8) {
-            mLists[4].mIndex = mUnk_15c;
+        if (mCursorItem >= 8) {
+            mLists[4].mIndex = mColor2Index;
         } else {
-            mLists[3].mIndex = mUnk_15a;
+            mLists[3].mIndex = mStyleIndex;
             mLists[5].mIndex = 0;
         }
         break;
     case 8:
-        if (mUnk_159 < 8) {
-            mLists[5].mIndex = mUnk_15a;
+        if (mCursorItem < 8) {
+            mLists[5].mIndex = mStyleIndex;
         } else {
-            mLists[6].mIndex = mUnk_15b;
+            mLists[6].mIndex = mColorIndex;
         }
         break;
     case 9:
-        if (mUnk_159 < 8) {
-            mLists[7].mIndex = mUnk_15a;
-        } else if (mUnk_159 < 0xe) {
-            mLists[8].mIndex = mUnk_15b;
+        if (mCursorItem < 8) {
+            mLists[7].mIndex = mStyleIndex;
+        } else if (mCursorItem < 0xe) {
+            mLists[8].mIndex = mColorIndex;
         } else {
-            mLists[9].mIndex = mUnk_15c;
+            mLists[9].mIndex = mColor2Index;
         }
         break;
     case 4:
-        if (mUnk_159 < 8) {
-            mLists[10].mIndex = mUnk_15a;
+        if (mCursorItem < 8) {
+            mLists[10].mIndex = mStyleIndex;
         } else {
-            mLists[11].mIndex = mUnk_15b;
+            mLists[11].mIndex = mColorIndex;
         }
         break;
     case 10:
-        if (mUnk_159 < 8) {
-            mLists[12].mIndex = mUnk_15a;
+        if (mCursorItem < 8) {
+            mLists[12].mIndex = mStyleIndex;
         } else {
-            mLists[13].mIndex = mUnk_15b;
+            mLists[13].mIndex = mColorIndex;
         }
         break;
     case 11:
-        if (mUnk_159 < 8) {
-            mLists[14].mIndex = mUnk_15a;
+        if (mCursorItem < 8) {
+            mLists[14].mIndex = mStyleIndex;
         } else {
-            mLists[15].mIndex = mUnk_15b;
+            mLists[15].mIndex = mColorIndex;
         }
         break;
     }
-    func_02064b58();
-    mUnk_1a8 = 1;
-    mUnk_1b8 = 1;
+    ApplyLookToModel();
+    mRebuildModel = 1;
+    mChoiceApplied = 1;
 }
 
-void CharacterEditScene::func_02064b58() {
+void CharacterEditScene::ApplyLookToModel() {
     u8 i = 0;
     do {
         mModel->mCharacter->mUnk_65[i] = mLists[i].mValues[mLists[i].mIndex];
@@ -2898,9 +2898,9 @@ void CharacterEditScene::func_02064b58() {
     mModel->mCharacter->mUnk_75 = gSaveData[0].mUnk_1a_8;
 }
 
-void CharacterEditScene::func_02064bb8() {
+void CharacterEditScene::RandomizeLook() {
     u8 i = 0;
-    if (mUnk_1b4 == 1) {
+    if (mFromMyroom == 1) {
         i = 3;
     }
     do {
@@ -2919,47 +2919,47 @@ void CharacterEditScene::func_02064cd4(u32 flag) {
     u8 i = 0;
     do {
         if (flag != 0) {
-            func_02063a88(i, 0, 0);
+            SetItemSlide(i, 0, 0);
         } else if (i <= 4) {
-            func_02063a88(i, 3, 4);
-            if (mUnk_1b4 == 1 && i == 4) {
-                func_02063a88(i, 0, 0);
+            SetItemSlide(i, 3, 4);
+            if (mFromMyroom == 1 && i == 4) {
+                SetItemSlide(i, 0, 0);
             }
         } else {
-            func_02063a88(i, 1, 2);
+            SetItemSlide(i, 1, 2);
         }
         i++;
     } while (i < 10);
 }
 
-void CharacterEditScene::func_02064d7c() {
+void CharacterEditScene::PrintWindowText() {
     TextManager &text = TextManager::Get();
     s16 a;
     s16 b;
     b = 0;
     a = 0;
-    MessageFile *file = (MessageFile *) mUnk_140;
-    text.Print(file->GetText(0x1c), file->GetLength(0x1c), mUnk_1bc, 0x18, 8, &a, &b, NULL, 0, 2, 0x21, 0x10, 0, 0,
+    MessageFile *file = (MessageFile *) mMessages;
+    text.Print(file->GetText(0x1c), file->GetLength(0x1c), mWindowTextBuffer, 0x18, 8, &a, &b, NULL, 0, 2, 0x21, 0x10, 0, 0,
                1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x1000, mUnk_1bc, mUnk_1c4, 0);
-    mUnk_1cc = 1;
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x1000, mWindowTextBuffer, mWindowTextBufferSize, 0);
+    mWindowTextVisible = 1;
 }
 
-void CharacterEditScene::func_02064ed8() {
-    SpriteManager::Get().Screen(0).AddOam(mUnk_1d8, (u8) mUnk_1e0, 0x16, 0xaa, 0, 0x100, 0xf, 0);
+void CharacterEditScene::DrawName() {
+    SpriteManager::Get().Screen(0).AddOam(mNameGlyphBuffer, (u8) mNameGlyphCount, 0x16, 0xaa, 0, 0x100, 0xf, 0);
 }
 
-void CharacterEditScene::func_02064f80() {
-    MI_CpuClear16(mUnk_1d4, mUnk_1dc);
+void CharacterEditScene::ClearName() {
+    MI_CpuClear16(mNameBuffer, mNameBufferSize);
 }
 
-void CharacterEditScene::func_02064f98() {
+void CharacterEditScene::PrintName() {
     s16 a = 0;
     s16 b = 0;
     TextManager &text = TextManager::Get();
     text.mUse4bppFont = 1;
-    TextManager::Get().Print(gSaveData[0].mName, 0x18, mUnk_1d4, 0x20, 2, &a, &b, NULL, 0, 2, 0x21, 0, 0, 0, 0, 1,
+    TextManager::Get().Print(gSaveData[0].mName, 0x18, mNameBuffer, 0x20, 2, &a, &b, NULL, 0, 2, 0x21, 0, 0, 0, 0, 1,
                              1);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x2000, mUnk_1d4, mUnk_1dc, 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x2000, mNameBuffer, mNameBufferSize, 0);
 }

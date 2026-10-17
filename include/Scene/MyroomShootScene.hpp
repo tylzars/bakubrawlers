@@ -37,15 +37,15 @@ public:
     /* 48 */ u32 mGlyphCount[2];
     /* 50 */ u16 mEffect;
     /* 52 */ u16 mRot[3];
-    /* 58 */ u16 mUnk_58;
-    /* 5a */ s16 mUnk_5a;
-    /* 5c */ u16 mUnk_5c;
-    /* 5e */ s8 mUnk_5e;
-    /* 5f */ s8 mUnk_5f;
+    /* 58 */ u16 mTextWidth;
+    /* 5a */ s16 mTextX;
+    /* 5c */ u16 mTextEndY;
+    /* 5e */ s8 mPendingSelection;
+    /* 5f */ s8 mShooterTimer;
     /* 60 */ s8 mSelected;
-    /* 61 */ u8 mUnk_61;
-    /* 62 */ u8 mUnk_62;
-    /* 63 */ s8 mUnk_63;
+    /* 61 */ u8 mCol;
+    /* 62 */ u8 mRow;
+    /* 63 */ s8 mTextPage;
     /* 64 */ u8 mUnlocked[6];
     /* 6a */ u8 mState;
     /* 6b */ s8 mTimer;
@@ -58,15 +58,15 @@ public:
     /* 0c */
 
     void InitDisplay();            // 0x02221830
-    void func_ov008_02221a14();
-    void func_ov008_02222474(s8 index);
+    void Init();
+    void SelectShooter(s8 index);
     void InitUnlocked();           // 0x02222714
     void Draw();                   // 0x0222276c
     void DrawSprites();            // 0x02222784
     void DrawWindows();            // 0x02222a40
     void ClearTextBuffers(u8 index); // 0x02222a5c
-    void func_ov008_02222a78();
-    s32 func_ov008_02222dbc();
-    s8 func_ov008_02222fa4();
+    void PrintShooterText();
+    s32 UpdateInput();
+    s8 UpdateKeySelection();
     void func_ov008_02223264();
 };

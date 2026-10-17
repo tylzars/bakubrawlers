@@ -17,7 +17,7 @@ src/00_NameEntry/Scene/UnkScene_02226e4c.cpp:
     .data       start:0x02226e44 end:0x02226e58
     .bss        start:0x02227fb0 end:0x02227fc8
 
-src/00_NameEntry/Scene/UnkScene_02226e60.cpp:
+src/00_NameEntry/Scene/LogoScene.cpp:
     complete
     .text       start:0x0221c6b4 end:0x0221d6a8
     .data       start:0x02226e58 end:0x022270c4

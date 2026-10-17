@@ -90,12 +90,12 @@ static const WindowItemRecord sThreeButtonItems[3] = {
 
 ParkScene::ParkScene() :
     SceneBase(1000, 0) {
-    mUnk_0c = 0;
-    mUnk_0d = 0;
-    mUnk_0e = 0;
+    mEntryIndex = 0;
+    mState = 0;
+    mTimer = 0;
     mUnk_0f = 0;
     mWindowVisible = 0;
-    mUnk_12 = 0;
+    mRequestParkScene = 0;
     mMenu = NULL;
     mWindow = NULL;
     mUnk_2c = NULL;
@@ -111,7 +111,7 @@ ParkScene::~ParkScene() {
 }
 
 void ParkScene::Update() {
-    switch (mUnk_0d) {
+    switch (mState) {
         case 0: {
             u8 saved                 = data_020d433c.mUnk_7d;
             data_020d433c.mUnk_7d    = 0;
@@ -126,36 +126,36 @@ void ParkScene::Update() {
                         data_020d433c.mUnk_7d = 0;
                         break;
                 }
-                mUnk_0e = 8;
-                mUnk_0d++;
+                mTimer = 8;
+                mState++;
             } else {
                 data_020d433c.mUnk_7d = saved;
-                mUnk_0d               = 10;
+                mState               = 10;
             }
             break;
         }
         case 1:
-            if (--mUnk_0e != 0) {
+            if (--mTimer != 0) {
                 break;
             }
             data_020d433c.mUnk_7c = 1;
             SpriteManager::Get().StartFade(2);
-            mUnk_0d++;
+            mState++;
             break;
         case 2:
             if (mEvent->GetResult() | mEvent->func_02067954()) {
                 SpriteManager::Get().StartSubFade(3);
-                mUnk_0d = 4;
+                mState = 4;
             }
             if (mEvent->func_0206797c()) {
                 SpriteManager::Get().StartSubFade(3);
-                mUnk_0d = 7;
+                mState = 7;
             }
             if (mEvent->IsRunning()) {
                 break;
             }
             SpriteManager::Get().StartSubFade(3);
-            mUnk_0d++;
+            mState++;
             break;
         case 3:
             if (SpriteManager::Get().sFade[1] > 1) {
@@ -185,24 +185,24 @@ void ParkScene::Update() {
             }
             LoadWindowGraphics();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             data_020d433c.mUnk_14_1 = 0;
             SpriteManager::Get().StartSubFade(2);
-            mUnk_0d++;
+            mState++;
             break;
         case 5:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             SpriteManager::Get().StartSubFade(3);
             FrameTask::Get().StartChannel(0, 0x14);
-            mUnk_0d++;
+            mState++;
             break;
         case 6:
             if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
-            if (mUnk_12 == 0) {
+            if (mRequestParkScene == 0) {
                 RequestScene(9);
                 mFinished = TRUE;
             } else {
@@ -215,43 +215,43 @@ void ParkScene::Update() {
                 break;
             }
             new UnlockPopup(mEvent->func_0206797c() - 1);
-            mContext->mUnk_12 = 0;
-            mUnk_0d++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 8:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
-            func_ov004_0221b5b4();
+            ReloadBackground();
             mEvent->func_02067988();
-            mUnk_0d++;
+            mState++;
             break;
         case 9:
-            mUnk_0d = 2;
+            mState = 2;
             break;
         case 10:
             switch (data_020d433c.mUnk_7c) {
                 case 2:
                 case 3:
                     mEvent->RequestFinish();
-                    mContext->mUnk_12 = 0;
-                    mUnk_0d           = 11;
+                    mContext->mRequest = 0;
+                    mState           = 11;
                     break;
                 default:
                     FrameTask::Get().StartChannel(0, 0x14);
-                    mUnk_0d = 0x11;
+                    mState = 0x11;
                     break;
             }
             break;
         case 11: {
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             ParkEntry entry;
             GetParkEntry(data_020d433c.mUnk_8b_0, &entry);
             if (entry.mType == 6) {
                 SpriteManager::Get().StartSubFade(3);
-                mUnk_0d++;
+                mState++;
                 break;
             }
             if (data_020d433c.mHasPartners != 0) {
@@ -264,26 +264,26 @@ void ParkScene::Update() {
                 if (rules == 0) {
                     Init();
                     FrameTask::Get().StartChannel(0, 0x14);
-                    mUnk_0d = 0x11;
+                    mState = 0x11;
                 } else {
-                    mUnk_12 = 1;
-                    mUnk_0d = 4;
+                    mRequestParkScene = 1;
+                    mState = 4;
                 }
             } else {
                 mEvent = new ScriptPlayer(7, 0, 1);
                 FrameTask::Get().StartChannel(0, 0x14);
-                mUnk_0d = 0xd;
+                mState = 0xd;
             }
             break;
         }
         case 12:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             data_020d433c.mUnk_7c = 1;
             func_02089a9c(data_020d433c.mUnk_8b_0);
-            mUnk_12 = 1;
-            mUnk_0d = 4;
+            mRequestParkScene = 1;
+            mState = 4;
             break;
         case 13: {
             ParkEntry entry;
@@ -306,18 +306,18 @@ void ParkScene::Update() {
                 break;
             }
             SpriteManager::Get().StartFade(2);
-            mUnk_0d++;
+            mState++;
             break;
         }
         case 14:
             if (!mEvent->IsRunning()) {
                 data_020d433c.mUnk_7c = 1;
                 SpriteManager::Get().StartSubFade(3);
-                mUnk_0d = 0xf;
+                mState = 0xf;
                 break;
             }
             if (mEvent->func_02067938()) {
-                func_ov004_0221b5b4();
+                ReloadBackground();
                 mEvent->func_02067944();
             }
             break;
@@ -326,11 +326,11 @@ void ParkScene::Update() {
                 break;
             }
             mEvent->RequestFinish();
-            mContext->mUnk_12 = 0;
-            mUnk_0d++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 16: {
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             BOOL rules = FALSE;
@@ -340,16 +340,16 @@ void ParkScene::Update() {
             func_02089a9c(data_020d433c.mUnk_8b_0);
             if (rules == 0) {
                 Init();
-                mUnk_0d = 0x11;
+                mState = 0x11;
             } else {
-                mUnk_12 = 1;
-                mUnk_0d = 4;
+                mRequestParkScene = 1;
+                mState = 4;
             }
             break;
         }
         case 17:
             SpriteManager::Get().StartFade(2);
-            mUnk_0d++;
+            mState++;
             break;
         case 18:
             if (mEvent->IsRunning()) {
@@ -357,31 +357,31 @@ void ParkScene::Update() {
             }
             data_020d433c.mUnk_7c = 1;
             mEvent->func_0206ef4c("mes_pm_button", 5, 0xa, 2, 0x15);
-            mUnk_0d++;
+            mState++;
             break;
         case 19: {
             u8 result = mMenu->mWindow->Update(TRUE);
             switch (result) {
                 case 1:
                     mUnk_0f = 1;
-                    mUnk_0d = 0x15;
+                    mState = 0x15;
                     break;
                 case 2:
                     mUnk_0f = 0;
-                    mUnk_0d = 0x15;
+                    mState = 0x15;
                     break;
                 default:
                     if (mMenu->UpdateSelection(result)) {
                         u8 target = mMenu->mTarget;
-                        if (mUnk_0c != target) {
-                            mUnk_0c = target;
+                        if (mEntryIndex != target) {
+                            mEntryIndex = target;
                             u32 n   = GetParkGroupId(target);
                             if (n >= 5) {
                                 n = (u8) (n - 1);
                             }
                             mEvent->func_0206f564((u8) (n + 6), 10, -1);
                         }
-                        mUnk_0d = 0x14;
+                        mState = 0x14;
                     }
                     break;
             }
@@ -392,39 +392,39 @@ void ParkScene::Update() {
                 mMenu->mWindow->Update(TRUE);
             }
             if (mMenu->Slide()) {
-                mUnk_0d = 0x13;
+                mState = 0x13;
             }
             break;
         case 21:
             SpriteManager::Get().StartFade(3);
-            mUnk_0d++;
+            mState++;
             break;
         case 22:
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
             mEvent->RequestFinish();
-            mContext->mUnk_12 = 0;
-            mUnk_0d++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 23:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             Cleanup();
             if (mUnk_0f != 0) {
-                mUnk_0d++;
+                mState++;
                 mEvent = new ScriptPlayer(7, 0, 1);
             } else {
-                mUnk_0d = 0x29;
+                mState = 0x29;
             }
             break;
         case 24: {
             u32 shown;
-            u32 idx = GetParkGroupId(mUnk_0c);
+            u32 idx = GetParkGroupId(mEntryIndex);
             shown = idx;
             ParkEntry entry;
-            GetParkEntry(mUnk_0c, &entry);
+            GetParkEntry(mEntryIndex, &entry);
             if (idx >= 5) {
                 shown = (u16) (idx - 1);
             }
@@ -471,36 +471,36 @@ void ParkScene::Update() {
             }
             GXS_SetVisiblePlane(0x11);
             SpriteManager::Get().StartFade(2);
-            mContext->mUnk_12 = 0;
-            mUnk_0d++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         }
         case 25:
             if (mEvent->mUnk_14e7 != 0) {
                 ParkEntry entry;
-                GetParkEntry(mUnk_0c, &entry);
+                GetParkEntry(mEntryIndex, &entry);
                 switch (entry.mType) {
                     case 0:
                     case 1:
                     case 2:
                         mEvent->mUnk_14f1 = 0;
                         if (entry.mUnk_06 != 0xff) {
-                            mUnk_0d = 0x1c;
+                            mState = 0x1c;
                         } else {
-                            mUnk_0d = 0x1f;
+                            mState = 0x1f;
                         }
                         break;
                     case 6:
                         mEvent->mUnk_14f1 = 0;
-                        mUnk_0d           = 0x24;
+                        mState           = 0x24;
                         break;
                     default:
                         SpriteManager::Get().StartFade(3);
-                        mUnk_0d++;
+                        mState++;
                         break;
                 }
             } else if (mEvent->func_02067938()) {
-                func_ov004_0221b5b4();
+                ReloadBackground();
                 mEvent->func_02067944();
             }
             break;
@@ -509,48 +509,48 @@ void ParkScene::Update() {
                 break;
             }
             mEvent->RequestFinish();
-            mContext->mUnk_12 = 0;
-            mUnk_0d++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 27:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
-            func_02089a9c(mUnk_0c);
+            func_02089a9c(mEntryIndex);
             Init();
-            mUnk_0d = 0x11;
+            mState = 0x11;
             break;
         case 28: {
             ParkEntry entry;
-            GetParkEntry(mUnk_0c, &entry);
+            GetParkEntry(mEntryIndex, &entry);
             reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", (u8) (entry.mUnk_06 + 5), 1);
             ShowWindow();
-            mUnk_0d++;
+            mState++;
             break;
         }
         case 29:
             mWindow->mCursor->mSelection = -1;
             mWindow->mState            = 4;
             mWindow->Reset(0);
-            mUnk_0d++;
+            mState++;
             break;
         case 30:
             if ((u8) mWindow->Update(TRUE) != 1) {
                 break;
             }
             HideWindow();
-            mUnk_0d++;
+            mState++;
             break;
         case 31:
             reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", 2, 0);
             ShowWindow();
-            mUnk_0d++;
+            mState++;
             break;
         case 32:
             mWindow->mCursor->mSelection = -1;
             mWindow->mState            = 4;
             mWindow->Reset(1);
-            mUnk_0d++;
+            mState++;
             break;
         case 33: {
             if ((u8) mWindow->Update(TRUE) != 1) {
@@ -558,9 +558,9 @@ void ParkScene::Update() {
             }
             HideWindow();
             if (mWindow->mCursor->mSelection == 0) {
-                u32 idx = GetParkGroupId(mUnk_0c);
+                u32 idx = GetParkGroupId(mEntryIndex);
                 ParkEntry entry;
-                GetParkEntry(mUnk_0c, &entry);
+                GetParkEntry(mEntryIndex, &entry);
                 switch (entry.mType) {
                     case 0:
                         data_020d433c.mPlayerCount = 2;
@@ -615,12 +615,12 @@ void ParkScene::Update() {
                         data_020d433c.mUnk_a3[1] = 2;
                     }
                 }
-                data_020d433c.mUnk_8b_0 = mUnk_0c;
+                data_020d433c.mUnk_8b_0 = mEntryIndex;
                 data_020d433c.mUnk_8b_4 = gSaveData[0].mUnk_5b8;
-                mUnk_0d++;
+                mState++;
             } else {
                 mUnk_0f = 0;
-                mUnk_0d++;
+                mState++;
             }
             SpriteManager::Get().StartFade(3);
             break;
@@ -630,30 +630,30 @@ void ParkScene::Update() {
                 break;
             }
             mEvent->RequestFinish();
-            mContext->mUnk_12 = 0;
-            mUnk_0d++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 35:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             if (mUnk_0f != 0) {
-                mUnk_0d = 0x29;
+                mState = 0x29;
                 break;
             }
             Init();
-            mUnk_0d = 0x11;
+            mState = 0x11;
             break;
         case 36:
             reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", 4, 0);
             ShowWindow();
-            mUnk_0d++;
+            mState++;
             break;
         case 37:
             mWindow->mCursor->mSelection = -1;
             mWindow->mState            = 4;
             mWindow->Reset(1);
-            mUnk_0d++;
+            mState++;
             break;
         case 38: {
             if ((u8) mWindow->Update(TRUE) != 1) {
@@ -662,7 +662,7 @@ void ParkScene::Update() {
             HideWindow();
             if (mWindow->mCursor->mSelection == 0) {
                 ParkEntry entry;
-                GetParkEntry(mUnk_0c, &entry);
+                GetParkEntry(mEntryIndex, &entry);
                 if (entry.mUnk_0a_h == 0) {
                     if (gSaveData[0].mUnk_5be & 8) {
                         data_020d433c.mUnk_83 = 4;
@@ -674,12 +674,12 @@ void ParkScene::Update() {
                 }
                 data_020d433c.mUnk_84   = 0;
                 data_020d433c.mUnk_82   = 1;
-                data_020d433c.mUnk_8b_0 = mUnk_0c;
+                data_020d433c.mUnk_8b_0 = mEntryIndex;
                 mUnk_0f                 = 0xff;
-                mUnk_0d++;
+                mState++;
             } else {
                 mUnk_0f = 0;
-                mUnk_0d++;
+                mState++;
             }
             SpriteManager::Get().StartFade(3);
             break;
@@ -689,19 +689,19 @@ void ParkScene::Update() {
                 break;
             }
             mEvent->RequestFinish();
-            mContext->mUnk_12 = 0;
-            mUnk_0d++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 40:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             if (mUnk_0f != 0) {
-                mUnk_0d = 0x29;
+                mState = 0x29;
                 break;
             }
             Init();
-            mUnk_0d = 0x11;
+            mState = 0x11;
             break;
         case 41:
             if (mUnk_0f != 0) {
@@ -720,7 +720,7 @@ void ParkScene::Update() {
             mFinished = TRUE;
             return;
     }
-    if (mUnk_0d >= 0x13) {
+    if (mState >= 0x13) {
         Draw();
     }
 }
@@ -776,7 +776,7 @@ void ParkScene::LoadWindowGraphics() {
     ChangeDir("/");
 }
 
-void ParkScene::func_ov004_0221b5b4() {
+void ParkScene::ReloadBackground() {
     GXS_SetVisiblePlane(0x11);
     GXS_SetVisibleWnd(0);
     G2S_BlendNone();
@@ -793,7 +793,7 @@ void ParkScene::LoadBackground() {
     LoadAndQueueUpload(1, 9, 0, "park_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     delete mMenu;
-    mMenu = new ParkMenu(mUnk_0c);
+    mMenu = new ParkMenu(mEntryIndex);
 }
 
 void ParkScene::Cleanup() {

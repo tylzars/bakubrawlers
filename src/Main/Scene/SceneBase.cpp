@@ -18,7 +18,7 @@ void SceneManager::Update() {
 }
 
 void SceneManager::UpdateLayer() {
-    UnkStruct_SceneContext *node = &mPool[mLayer * 2];
+    SceneContext *node = &mPool[mLayer * 2];
     do {
         mCurrent = node;
         node->mScene->Update();
@@ -31,11 +31,11 @@ void SceneManager::UpdateLayer() {
     } while (node != 0);
 }
 
-UnkStruct_SceneContext *SceneManager::SetSlot1(SceneBase *scene) {
+SceneContext *SceneManager::SetSlot1(SceneBase *scene) {
     if (scene == 0) {
         scene = &mNull;
     }
-    UnkStruct_SceneContext *slot = &mPool[mLayer * 2 + 1];
+    SceneContext *slot = &mPool[mLayer * 2 + 1];
     SceneBase *old = slot->mScene;
     if ((old != 0) & (old != &mNull)) {
         delete old;
@@ -44,11 +44,11 @@ UnkStruct_SceneContext *SceneManager::SetSlot1(SceneBase *scene) {
     return slot;
 }
 
-UnkStruct_SceneContext *SceneManager::SetSlot0(SceneBase *scene) {
+SceneContext *SceneManager::SetSlot0(SceneBase *scene) {
     if (scene == 0) {
         scene = &mNull;
     }
-    UnkStruct_SceneContext *slot = &mPool[mLayer * 2];
+    SceneContext *slot = &mPool[mLayer * 2];
     SceneBase *old = slot->mScene;
     if ((old != 0) & (old != &mNull)) {
         delete old;
@@ -57,7 +57,7 @@ UnkStruct_SceneContext *SceneManager::SetSlot0(SceneBase *scene) {
     return slot;
 }
 
-void SceneManager::LinkSentinels(UnkStruct_SceneContext *first, UnkStruct_SceneContext *second) {
+void SceneManager::LinkSentinels(SceneContext *first, SceneContext *second) {
     first->mPrev   = 0;
     first->mNext   = second;
     first->mParent = mRootNode;
@@ -69,7 +69,7 @@ void SceneManager::LinkSentinels(UnkStruct_SceneContext *first, UnkStruct_SceneC
 }
 
 void SceneManager::DeleteLayer() {
-    UnkStruct_SceneContext *node = &mPool[mLayer * 2];
+    SceneContext *node = &mPool[mLayer * 2];
     do {
         if (node->mScene != &mNull) {
             mCurrent = node;
@@ -85,7 +85,7 @@ void SceneManager::DeleteLayer() {
 
 void SceneManager::InitLayers() {
     int count = mLayerCount;
-    UnkStruct_SceneContext *node = mPool;
+    SceneContext *node = mPool;
     for (; count != 0; count--) {
         LinkSentinels(node, node + 1);
         node += 2;
@@ -101,7 +101,7 @@ void SceneManager::InitLayers() {
 void SceneManager::Reset() {
     InitLayers();
     s32 count = mLayerCount * 2;
-    UnkStruct_SceneContext *node = mPool;
+    SceneContext *node = mPool;
     if (count == 0) {
         return;
     }
@@ -116,7 +116,7 @@ void SceneManager::Reset() {
     } while (count != 0);
 }
 
-UnkStruct_SceneContext *SceneManager::Add(SceneBase *scene, u32 order) {
+SceneContext *SceneManager::Add(SceneBase *scene, u32 order) {
     do {
         mNextFree++;
         if (mNextFree >= mPoolSize) {
@@ -124,13 +124,13 @@ UnkStruct_SceneContext *SceneManager::Add(SceneBase *scene, u32 order) {
         }
     } while (mPool[mNextFree].mScene != 0);
 
-    UnkStruct_SceneContext *next = &mPool[mLayer * 2];
+    SceneContext *next = &mPool[mLayer * 2];
     do {
         next = next->mNext;
     } while (next->mOrder < order);
 
-    UnkStruct_SceneContext *node = &mPool[mNextFree];
-    UnkStruct_SceneContext *prev = next->mPrev;
+    SceneContext *node = &mPool[mNextFree];
+    SceneContext *prev = next->mPrev;
     next->mPrev = node;
     prev->mNext = node;
     node->mScene  = scene;
@@ -138,7 +138,7 @@ UnkStruct_SceneContext *SceneManager::Add(SceneBase *scene, u32 order) {
     node->mNext   = next;
     node->mParent = mCurrent;
     node->mOrder  = order;
-    node->mUnk_12 = 0;
+    node->mRequest = 0;
     mCount++;
     u32 *words = (u32 *) &node->mInfo;
     words[0]  = 0;

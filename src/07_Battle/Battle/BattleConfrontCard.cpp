@@ -527,13 +527,13 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             }
             break;
         case 4:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mUnk_0d++;
             }
             break;
         case 5:
             new BattleCardSpec(0, e[0].mUnk_0c, e[0].mUnk_0d_0, e[0].mUnk_0e == 0x15 ? 1 : 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             func_ov007_0223f90c(0x40);
             mUnk_0d++;
             break;
@@ -543,13 +543,13 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 mUnk_10--;
                 break;
             }
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mUnk_0d++;
             }
             break;
         case 7:
             new BattleCardSpec(0, e[1].mUnk_0c, e[1].mUnk_0d_0, e[1].mUnk_0e == 0x15 ? 1 : 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             func_ov007_0223f90c(0x40);
             mUnk_0d++;
             break;
@@ -559,13 +559,13 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 mUnk_10--;
                 break;
             }
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mUnk_0d++;
             }
             break;
         case 9:
             new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[0].mUnk_0d_4, 5, 0, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             func_ov007_0223f90c(0x40);
             mUnk_0d++;
             break;
@@ -589,7 +589,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             mUnk_0d++;
             break;
         case 12:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             if (data_020d433c.mUnk_10) {
@@ -608,13 +608,13 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             mUnk_10++;
             if (mUnk_10 > 0xf0) {
                 CloseCommandPage(mCommandPage, 1);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mUnk_0d++;
                 mUnk_10 = 0;
             }
             break;
         case 15: {
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             SpriteManager::Get().SetupMode(0, 7);
@@ -638,7 +638,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                     break;
             }
             mCardSpec = new BattleCardSpec(kind, e[side].mUnk_0c, e[side].mUnk_0d_0, e[side].mUnk_0e == 0x15 ? 1 : 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             func_ov007_0223f90c(0x40);
             mUnk_0d++;
             break;
@@ -657,13 +657,13 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                     BattleCardSpec *spec = mCardSpec;
                     spec->mUnk_1e = 0;
                     CloseCardModel(spec->mCardModel);
-                    mContext->mUnk_12 = 0;
+                    mContext->mRequest = 0;
                     mUnk_0d           = 0x14;
                 } else if (mData->mMarkerCardId == 0x55) {
                     BattleCardSpec *spec = mCardSpec;
                     spec->mUnk_1e = 0;
                     CloseCardModel(spec->mCardModel);
-                    mContext->mUnk_12 = 0;
+                    mContext->mRequest = 0;
                     mUnk_0d           = 0x14;
                 } else {
                     mData->mEntries[0].mUnk_02 = e[0].mUnk_00 + e[0].mUnk_08;
@@ -688,7 +688,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             func_ov007_022432dc(1, 1, 1);
             break;
         case 20: {
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             u8 side;
@@ -756,7 +756,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                     BattleCardSpec *spec = mCardSpec;
                     spec->mUnk_1e = 0;
                     CloseCardModel(spec->mCardModel);
-                    mContext->mUnk_12 = 0;
+                    mContext->mRequest = 0;
                     mUnk_0d           = 0x17;
                 }
             } else {
@@ -764,14 +764,14 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                     BattleCardSpec *spec = mCardSpec;
                     spec->mUnk_1e = 0;
                     CloseCardModel(spec->mCardModel);
-                    mContext->mUnk_12 = 0;
+                    mContext->mRequest = 0;
                     mUnk_0d           = 0x17;
                 }
             }
             break;
         }
         case 23: {
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             u8 side = data_020d433c.mBattlePlayers->CurrentPlayer() == e[1].mUnk_0d_4 ? 1 : 0;
@@ -1038,11 +1038,11 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 spec->mUnk_1e = 0;
                 CloseCardModel(spec->mCardModel);
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_0d           = 0x25;
             break;
         case 37:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             if (mUnk_5e) {
@@ -1073,7 +1073,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             ResetDisplay();
             MI_CpuClearFast((void *) 0x6200000, 0x20000);
             MI_CpuClearFast((void *) 0x6607000, 0x19000);
@@ -1128,7 +1128,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             break;
         }
         case 40:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mUnk_0d++;
             }
             break;
@@ -1182,7 +1182,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 }
             }
             new BattleCardSpec(kind, e[mUnk_21].mUnk_0c, e[mUnk_21].mUnk_0d_0, e[mUnk_21].mUnk_0e == 0x15 ? 1 : 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             u8 x;
             if (mUnk_21 == 0) {
                 x = 8;
@@ -1197,7 +1197,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             break;
         }
         case 45: {
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 SetSubBlendBrightness(0);
                 mUnk_0d++;
                 break;
@@ -1225,13 +1225,13 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 mUnk_0e = 0;
             }
             new BattleCardSpec(2, e[mUnk_0e].mUnk_0c, e[mUnk_0e].mUnk_0d_0, e[mUnk_0e].mUnk_0e == 0x15 ? 1 : 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_0f           = mUnk_21 == 0 ? 0xb7 : 8;
             mUnk_10           = 0;
             mUnk_0d++;
             break;
         case 47:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mUnk_0d++;
                 SpriteManager::Get().StartFade(3);
                 break;
@@ -1261,12 +1261,12 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             SpriteManager::sFade[0] = 3;
             data_020d433c.mUnk_14 |= 4;
             cam->mState = 3;
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_0d++;
             break;
         }
         case 50:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
@@ -1328,15 +1328,15 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                     u32 v = func_ov007_022696a0(e[mUnk_21].mUnk_0c, e[mUnk_21].mUnk_0d_0);
                     new BattleCharaAct(data_020d433c.mBattlePlayers->mCamera, e[mUnk_21].mUnk_0d_4, e[mUnk_21].mUnk_0d_4 + 0x10, v, 0);
                 }
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
             } else {
-                mContext->mUnk_12 = 1;
+                mContext->mRequest = 1;
             }
             mUnk_0d++;
             break;
         }
         case 52: {
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             if (mUnk_21 != -1) {
@@ -1367,23 +1367,23 @@ int BattleConfrontCard::func_ov007_0224251c() {
     switch (mUnk_51) {
         case 0:
             if (data_020d433c.mUnk_83 == 4) {
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mUnk_51           = 2;
                 BattleCardSpec *spec = mCardSpec;
                 spec->mUnk_1e        = 0;
                 CloseCardModel(spec->mCardModel);
             } else {
                 new BattleUnionAbility(0, 0x1a000, 0xc);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mUnk_51++;
             }
             break;
         case 1: {
-            u8 v = mContext->mUnk_12;
+            u8 v = mContext->mRequest;
             if (v == 0) {
                 break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             switch (v) {
                 case 1: {
                     mUnk_51              = 2;
@@ -1399,18 +1399,18 @@ int BattleConfrontCard::func_ov007_0224251c() {
             break;
         }
         case 2:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             mCommandPage = new BattleCommandPage(0, -1);
             func_0205562c(mCommandPage, 1);
             func_02055738(mCommandPage, 0xe000, 7, 0);
             new BattleCommandPrompt(3, mCommandPage, mUnk_60, 0x7000, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_51++;
             break;
         case 3: {
-            u16 v = mContext->mUnk_12;
+            u16 v = mContext->mRequest;
             if (v == 0) {
                 break;
             }
@@ -1421,18 +1421,18 @@ int BattleConfrontCard::func_ov007_0224251c() {
                 mUnk_54 = data_020d433c.mBattlePlayers->mPlayers[e[mUnk_52].mUnk_0d_4]->Slot6c(mUnk_53);
             } else {
                 CloseCommandPage(mCommandPage, 1);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mUnk_51           = 6;
             }
             break;
         }
         case 4:
             new BattleUnionAbility(1, 0x1a000, 0xc);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_51++;
             break;
         case 5: {
-            u8 v = mContext->mUnk_12;
+            u8 v = mContext->mRequest;
             if (v == 0) {
                 break;
             }
@@ -1443,19 +1443,19 @@ int BattleConfrontCard::func_ov007_0224251c() {
                 case 2:
                     mUnk_51 = 6;
                     CloseCommandPage(mCommandPage, 1);
-                    mContext->mUnk_12 = 0;
+                    mContext->mRequest = 0;
                     break;
             }
             break;
         }
         case 6: {
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             SpriteManager::Get().SetupMode(0, 7);
             GX_SetGraphicsMode(1, 0, 1);
             mCardSpec = new BattleCardSpec(3, e[mUnk_52].mUnk_0c, e[mUnk_52].mUnk_0d_0, e[mUnk_52].mUnk_0e == 0x15 ? 1 : 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_51           = 0;
             break;
         }

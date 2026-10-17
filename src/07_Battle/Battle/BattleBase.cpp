@@ -492,8 +492,8 @@ BOOL BattleBase::UpdateCardSequence() {
             }
             break;
         case 3:
-            if (mContext->mUnk_12 != 0) {
-                mContext->mUnk_12 = 0;
+            if (mContext->mRequest != 0) {
+                mContext->mRequest = 0;
                 SpriteManager::Get().func_0202740c();
                 mHud->mUnk_118[mCardSide] = 0xff;
                 mCardStep++;
@@ -533,8 +533,8 @@ BOOL BattleBase::UpdateCardSequence() {
             }
             break;
         case 6:
-            if (mContext->mUnk_12 != 0) {
-                mContext->mUnk_12 = 0;
+            if (mContext->mRequest != 0) {
+                mContext->mRequest = 0;
                 if (mCardKind == 4) {
                     if (mUnk_54_5) {
                         if (entries[0].mUnk_00 == entries[1].mUnk_00) {
@@ -581,23 +581,23 @@ BOOL BattleBase::UpdateCardSequence() {
             }
             break;
         case 7:
-            if (mContext->mUnk_12 != 0) {
-                mContext->mUnk_12 = 0;
+            if (mContext->mRequest != 0) {
+                mContext->mRequest = 0;
                 mCardStep           = 10;
                 mBattleData->func_ov007_0223e1cc(mCardSide, mCardKind);
             }
             break;
         case 8:
-            if (mContext->mUnk_12 != 0) {
-                mContext->mUnk_12 = 0;
+            if (mContext->mRequest != 0) {
+                mContext->mRequest = 0;
                 mUnk_54_1         = 1;
                 mCardStep           = 10;
                 mBattleData->func_ov007_0223e1cc(mCardSide, mCardKind);
             }
             break;
         case 9:
-            if (mContext->mUnk_12 != 0) {
-                mContext->mUnk_12 = 0;
+            if (mContext->mRequest != 0) {
+                mContext->mRequest = 0;
                 mUnk_54_4         = 1;
                 mCardStep           = 10;
                 if (mCardKind == 3) {
@@ -611,7 +611,7 @@ BOOL BattleBase::UpdateCardSequence() {
             u8 side = mCardSide;
             mCardSpec = (u32) new BattleCardSpec(0xb, entries[(u8) (side ^ 1)].mUnk_0c, entries[(u8) (side ^ 1)].mUnk_0d_0,
                                                entries[(u8) (side ^ 1)].mUnk_0e == 0x15 ? 1 : 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_2a           = 0x40;
             mCardStep++;
             break;
@@ -627,8 +627,8 @@ BOOL BattleBase::UpdateCardSequence() {
             }
             break;
         case 13:
-            if (mContext->mUnk_12 != 0) {
-                mContext->mUnk_12 = 0;
+            if (mContext->mRequest != 0) {
+                mContext->mRequest = 0;
                 SpriteManager::Get().func_0202740c();
                 mHud->StartAbilitySlideOut(mCardSide);
                 mCardStep = 0x12;
@@ -698,7 +698,7 @@ BOOL BattleBase::UpdateCardSequence() {
                     break;
                 }
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_2a           = 0x40;
             mCardStep++;
             break;
@@ -753,8 +753,8 @@ BOOL BattleBase::UpdateCardSequence() {
             break;
         }
         case 17:
-            if (mContext->mUnk_12 != 0) {
-                mContext->mUnk_12 = 0;
+            if (mContext->mRequest != 0) {
+                mContext->mRequest = 0;
                 SpriteManager::Get().func_0202740c();
                 SpriteManager::Get().StartFade(3);
                 mCardStep                      = 0x12;

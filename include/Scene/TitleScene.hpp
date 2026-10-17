@@ -20,28 +20,28 @@ public:
     /* 3c */ void *mBuf3c;
     /* 40 */ void *mBuf40;
     /* 44 */ void *mBuf44;
-    /* 48 */ u32 mUnk_48;
-    /* 4c */ u32 mUnk_4c;
+    /* 48 */ u32 mTextBufferSize;
+    /* 4c */ u32 mGlyphCount;
     /* 50 */ void *mBuffers[5][3];
-    /* 8c */ u32 mUnk_8c[5][3];
+    /* 8c */ u32 mBufferSizes[5][3];
     /* c8 */ u16 mUnk_c8;
     /* ca */ PAD(0xca, 0xcb);
-    /* cb */ u8 mUnk_cb;
-    /* cc */ u8 mUnk_cc;
-    /* cd */ u8 mUnk_cd;
-    /* ce */ u8 mUnk_ce;
-    /* cf */ u8 mUnk_cf;
+    /* cb */ u8 mState;
+    /* cc */ u8 mTimer;
+    /* cd */ u8 mMenuVisible;
+    /* ce */ u8 mMenuSelection;
+    /* cf */ u8 mMessageIndex;
     /* d0 */ u8 mUnk_d0;
-    /* d1 */ u8 mUnk_d1;
-    /* d2 */ u8 mUnk_d2;
-    /* d3 */ u8 mUnk_d3;
-    /* d4 */ u8 mUnk_d4;
-    /* d5 */ u8 mUnk_d5;
+    /* d1 */ u8 mBlendAmplitude;
+    /* d2 */ u8 mBlendAngle;
+    /* d3 */ u8 mWindowMode;
+    /* d4 */ u8 mCursorStep;
+    /* d5 */ u8 mSubBgIndex;
     /* d6 */ u8 mUnk_d6;
-    /* d7 */ u8 mUnk_d7;
-    /* d8 */ u8 mUnk_d8;
+    /* d7 */ u8 mLogoVisible;
+    /* d8 */ u8 mLogoY;
     /* d9 */ PAD(0xd9, 0xda);
-    /* da */ s16 mUnk_da;
+    /* da */ s16 mScrollY;
     /* dc */
 
     TitleScene();
@@ -49,12 +49,12 @@ public:
     /* 08 */ virtual void Update() override;
     /* 0c */
 
-    void func_ov000_02223aa4(); // display setup (menu)
+    void InitDisplay(); // display setup (menu)
     void func_ov000_02223cdc(); // display setup (movie)
     void LoadGraphics();        // 02223e3c
     void func_ov000_022245e8();
-    void func_ov000_02224620();
-    void func_ov000_02224678();
+    void DrawMenuCells();
+    void RefreshMenuAnimations();
     void LoadSystemText();      // 022246c0
     void PrintText(MessageFile *file, u32 index); // 02224908
     void DrawText();            // 02224a68

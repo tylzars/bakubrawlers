@@ -136,19 +136,19 @@ TitleScene::TitleScene() :
     mBuf3c = NULL;
     mBuf40 = NULL;
     mBuf44 = NULL;
-    mUnk_48 = 0;
-    mUnk_4c = 0;
+    mTextBufferSize = 0;
+    mGlyphCount = 0;
     mUnk_c8 = 0;
-    mUnk_cb = 0;
-    mUnk_cc = 0;
-    mUnk_cd = 0;
-    mUnk_cf = 0xff;
+    mState = 0;
+    mTimer = 0;
+    mMenuVisible = 0;
+    mMessageIndex = 0xff;
     mUnk_d0 = 0;
-    mUnk_d1 = 0x10;
-    mUnk_d4 = 0;
+    mBlendAmplitude = 0x10;
+    mCursorStep = 0;
     mUnk_d6 = 0;
-    mUnk_d7 = 0;
-    mUnk_d8 = 0x60;
+    mLogoVisible = 0;
+    mLogoY = 0x60;
     data_020d433c.mNextScene = 4;
     data_020d433c.mUnk_7d = 0;
     data_020d433c.mUnk_87 = 0;
@@ -158,10 +158,10 @@ TitleScene::TitleScene() :
     data_020d433c.mUnk_8a_0 = 0;
     MI_CpuClear32(mCells, sizeof(mCells));
     MI_CpuClear32(mBuffers, sizeof(mBuffers));
-    MI_CpuClear32(mUnk_8c, sizeof(mUnk_8c));
+    MI_CpuClear32(mBufferSizes, sizeof(mBufferSizes));
     mCursor = new SelectWindowCursor(1, data_ov000_022266fc, 0);
-    mUnk_ce = data_020d433c.mUnk_7e_4;
-    mUnk_d5 = mUnk_ce;
+    mMenuSelection = data_020d433c.mUnk_7e_4;
+    mSubBgIndex = mMenuSelection;
     SoundManager::Get().func_020245a4();
     SoundManager::Get().func_020246d4(4);
 }
@@ -197,58 +197,58 @@ TitleScene::~TitleScene() {
 }
 
 void TitleScene::Update() {
-    switch (mUnk_cb) {
+    switch (mState) {
         case 0:
             if (data_020d433c.mUnk_ad) {
-                mUnk_d3 = 0;
-                mUnk_cb = 0x2a;
+                mWindowMode = 0;
+                mState = 0x2a;
                 break;
             }
             if (data_020d433c.mUnk_80) {
-                mUnk_cb = 3;
+                mState = 3;
                 break;
             }
             FrameTask::Get().CloseHandles();
-            mUnk_cb++;
+            mState++;
             break;
         case 1:
             new MovieScene((void *) "/movie/bknd_op.mods", data_020d433c.mLanguage);
-            mUnk_cb++;
+            mState++;
             break;
         case 2:
-            if (mContext->mUnk_12 == 1) {
+            if (mContext->mRequest == 1) {
                 FrameTask::Get().OpenHandles();
-                mUnk_cb++;
+                mState++;
             }
             break;
         case 3:
-            func_ov000_02223aa4();
+            InitDisplay();
             LoadGraphics();
             LoadSystemText();
             SpriteManager::Get().StartFade(2);
             if (data_020d433c.mUnk_76) {
                 FrameTask::Get().StartChannel(0, 0x10);
-                mUnk_d7 = 1;
+                mLogoVisible = 1;
             } else {
                 FrameTask::Get().StartChannel(0, 0x17);
             }
-            mUnk_cb++;
+            mState++;
             break;
         case 4:
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
             SetWindowMode(1);
-            mUnk_cb++;
+            mState++;
             break;
         case 5:
             if (IsFadeDone(0)) {
                 mUnk_c8 = 0;
                 if (data_020d433c.mUnk_76) {
-                    mUnk_cb = 0x20;
+                    mState = 0x20;
                     break;
                 }
-                mUnk_cb++;
+                mState++;
             }
             break;
         case 6:
@@ -256,12 +256,12 @@ void TitleScene::Update() {
             mUnk_c8++;
             if (mUnk_c8 > 0xe10) {
                 mUnk_c8 = 0;
-                mUnk_cb = 7;
+                mState = 7;
                 break;
             }
             if (mCursor->func_0202f468(1) == 1) {
-                mUnk_cc = 0;
-                mUnk_cb = 9;
+                mTimer = 0;
+                mState = 9;
             }
             break;
         case 7:
@@ -269,7 +269,7 @@ void TitleScene::Update() {
             if (IsFadeDone(0)) {
                 SetWindowMode(0);
                 SpriteManager::Get().StartFade(3);
-                mUnk_cb++;
+                mState++;
             }
             break;
         case 8:
@@ -277,7 +277,7 @@ void TitleScene::Update() {
                 break;
             }
             FrameTask::Get().CloseHandles();
-            mUnk_cb = 1;
+            mState = 1;
             return;
         case 9: {
             func_02022b28();
@@ -316,7 +316,7 @@ void TitleScene::Update() {
                 mWindow30->mCursor->mSelection = 1;
                 mWindow30->mCells[1]->SetAnimation(4);
             }
-            mUnk_cb++;
+            mState++;
             break;
         }
         case 10: {
@@ -327,15 +327,15 @@ void TitleScene::Update() {
                     switch (data_020d433c.mUnk_77) {
                         case 0:
                         case 1:
-                            mUnk_cb = 0x13;
+                            mState = 0x13;
                             break;
                         default:
-                            mUnk_cb = 0xd;
+                            mState = 0xd;
                             break;
                     }
                 } else {
                     FrameTask::Get().StopAllChannels();
-                    mUnk_cb++;
+                    mState++;
                 }
             }
             mWindow30->Draw();
@@ -345,20 +345,20 @@ void TitleScene::Update() {
             if (func_0203dd0c(&FrameTask::Get(), 0) != 0) {
                 break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             SaveManager::Get();
             new UnkScene_020a5494();
-            mUnk_cb++;
+            mState++;
             break;
         case 12:
-            switch (mContext->mUnk_12) {
+            switch (mContext->mRequest) {
                 case SAVE_STATUS_ERROR:
                 case SAVE_STATUS_NO_MAGIC:
                 case SAVE_STATUS_MARKER:
                     new MessageScreen(MESSAGE_SCREEN_SYSTEM_5_HALT);
                     break;
                 case SAVE_STATUS_CORRUPT:
-                    mUnk_cb = 0xf;
+                    mState = 0xf;
                     break;
                 case SAVE_STATUS_OK: {
                     u8 buf[3] = {0, 1, 4};
@@ -390,9 +390,9 @@ void TitleScene::Update() {
                     func_02022db4(gSaveData);
                     FrameTask::Get().StartChannel(0, 0x10);
                     data_020d433c.mUnk_76 = 1;
-                    mUnk_d7 = 1;
-                    mUnk_d8 = 0x48;
-                    mUnk_cb = 0x20;
+                    mLogoVisible = 1;
+                    mLogoY = 0x48;
+                    mState = 0x20;
                     break;
                 }
             }
@@ -406,14 +406,14 @@ void TitleScene::Update() {
             PrintText((MessageFile *) mBuf38, 8);
             GXS_SetVisiblePlane(0x19);
             mUnk_d0 = 1;
-            mUnk_cb++;
+            mState++;
             break;
         case 14:
             if ((u8) mWindow30->Update(1) == 1) {
                 if ((u8) mWindow30->mCursor->mSelection == 0) {
-                    mUnk_cb = 0x13;
+                    mState = 0x13;
                 } else {
-                    mUnk_cb = 9;
+                    mState = 9;
                 }
             }
             DrawText();
@@ -427,7 +427,7 @@ void TitleScene::Update() {
             mWindow30->mCursor->mSelection = 1;
             PrintText((MessageFile *) mBuf38, 7);
             GXS_SetVisiblePlane(0x19);
-            mUnk_cb++;
+            mState++;
             break;
         case 16:
             if ((u8) mWindow30->Update(1) == 1) {
@@ -436,9 +436,9 @@ void TitleScene::Update() {
                     if (SaveManager::Get().WriteSlotMarker(0) == SAVE_STATUS_ERROR) {
                         new MessageScreen(MESSAGE_SCREEN_SYSTEM_4_HALT);
                     }
-                    mUnk_cb++;
+                    mState++;
                 } else {
-                    mUnk_cb = 9;
+                    mState = 9;
                 }
             }
             DrawText();
@@ -452,11 +452,11 @@ void TitleScene::Update() {
             mWindow30->mCursor->mSelection = 0;
             PrintText((MessageFile *) mBuf38, 3);
             GXS_SetVisiblePlane(0x19);
-            mUnk_cb++;
+            mState++;
             break;
         case 18:
             if ((u8) mWindow30->Update(1) == 1) {
-                mUnk_cb = 9;
+                mState = 9;
             }
             DrawText();
             mWindow30->Draw();
@@ -467,7 +467,7 @@ void TitleScene::Update() {
                 data_020d433c.mUnk_76 = 1;
                 SpriteManager::Get().StartFade(3);
                 FrameTask::Get().CloseHandles();
-                mUnk_cb++;
+                mState++;
             }
             break;
         case 20:
@@ -475,13 +475,13 @@ void TitleScene::Update() {
                 break;
             }
             new MovieScene((void *) "/movie/bknd_op2.mods", data_020d433c.mLanguage);
-            mUnk_cb++;
+            mState++;
             break;
         case 21:
-            if (mContext->mUnk_12 == 1) {
+            if (mContext->mRequest == 1) {
                 FrameTask::Get().OpenHandles();
                 FrameTask::Get().StartChannel(0, 0x17);
-                mUnk_cb++;
+                mState++;
             }
             break;
         case 22:
@@ -489,13 +489,13 @@ void TitleScene::Update() {
                 break;
             }
             new NameEntryScene(0);
-            mContext->mUnk_12 = 0;
-            mUnk_cb++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 23:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 gSaveData[0].mUnk_1a_8 = 0;
-                mUnk_cb++;
+                mState++;
             }
             break;
         case 24:
@@ -503,16 +503,16 @@ void TitleScene::Update() {
                 break;
             }
             new AttrSelScene();
-            mContext->mUnk_12 = 0;
-            mUnk_cb++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 25:
-            switch (mContext->mUnk_12) {
+            switch (mContext->mRequest) {
                 case 1:
-                    mUnk_cb = 0x16;
+                    mState = 0x16;
                     break;
                 case 2:
-                    mUnk_cb++;
+                    mState++;
                     break;
             }
             break;
@@ -521,36 +521,36 @@ void TitleScene::Update() {
                 break;
             }
             new CharacterEditScene(0);
-            mContext->mUnk_12 = 0;
-            mUnk_cb++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 27:
-            switch (mContext->mUnk_12) {
+            switch (mContext->mRequest) {
                 case 1:
-                    mUnk_cb++;
+                    mState++;
                     break;
                 case 2:
-                    mUnk_cb = 0x18;
+                    mState = 0x18;
                     break;
             }
             break;
         case 28:
             func_ov000_02223cdc();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             data_020d433c.mUnk_14_1 = 0;
             SpriteManager::Get().StartFade(2);
-            mUnk_cb++;
+            mState++;
             break;
         case 29:
-            if (mContext->mUnk_12 != 0) {
-                func_ov000_02223aa4();
+            if (mContext->mRequest != 0) {
+                InitDisplay();
                 LoadGraphics();
                 G2_BlendNone();
                 SpriteManager::Get().StartFade(2);
-                mUnk_d7 = 1;
+                mLogoVisible = 1;
                 FrameTask::Get().StartChannel(0, 0x10);
-                mUnk_cb++;
+                mState++;
             }
             break;
         case 30:
@@ -558,12 +558,12 @@ void TitleScene::Update() {
                 break;
             }
             SetWindowMode(1);
-            mUnk_cb++;
+            mState++;
             break;
         case 31:
             if (IsFadeDone(0)) {
                 mUnk_d6 = 1;
-                mUnk_cb++;
+                mState++;
             }
             break;
         case 32:
@@ -571,29 +571,29 @@ void TitleScene::Update() {
             SelectWindowCursor *cursor = mCursor;
             cursor->mItems = (WindowItem *) data_ov000_02226910;
             cursor->mCount = 5;
-            mCursor->mSelection = mUnk_ce;
-            UploadSubBg(mUnk_ce);
+            mCursor->mSelection = mMenuSelection;
+            UploadSubBg(mMenuSelection);
             GXS_SetVisiblePlane(0x17);
             QueueFrameCallback(TitleScene::ApplyScroll, this);
-            mUnk_da = -0xc0;
-            mUnk_cc = 0x13;
-            mUnk_cb++;
+            mScrollY = -0xc0;
+            mTimer = 0x13;
+            mState++;
             break;
         case 33:
-            mUnk_cc--;
-            u8 cc = mUnk_cc;
+            mTimer--;
+            u8 cc = mTimer;
             if (cc != 0) {
                 QueueFrameCallback(TitleScene::ApplyScroll, this);
                 s8 d = cc - 3;
-                mUnk_da = -((s16) ((d * d - 9) * 0xc0 / 0x100));
+                mScrollY = -((s16) ((d * d - 9) * 0xc0 / 0x100));
                 break;
             }
             QueueFrameCallback(TitleScene::ApplyScroll, this);
-            mUnk_da = 0;
-            mUnk_cd = 1;
-            func_ov000_02224678();
-            SetMessage((u8) (mUnk_ce + 2));
-            mUnk_cc = 0;
+            mScrollY = 0;
+            mMenuVisible = 1;
+            RefreshMenuAnimations();
+            SetMessage((u8) (mMenuSelection + 2));
+            mTimer = 0;
             if (mUnk_d6) {
                 mUnk_d6 = 0;
                 delete mWindow30;
@@ -603,37 +603,37 @@ void TitleScene::Update() {
                 mWindow30->mCursor->mSelection = 0;
                 PrintText((MessageFile *) mBuf3c, 7);
                 GXS_SetVisiblePlane(0x1f);
-                mUnk_cb++;
+                mState++;
             } else {
-                mUnk_cb = 0x24;
+                mState = 0x24;
             }
             break;
         case 34:
             if (mWindow30->Update(1)) {
-                mUnk_cb++;
+                mState++;
             }
             DrawText();
             mWindow30->Draw();
             break;
         case 35:
             GXS_SetVisiblePlane(0x17);
-            mUnk_cb++;
+            mState++;
             break;
         case 36: {
             u8 changed = 0;
-            u8 prev = mUnk_ce;
+            u8 prev = mMenuSelection;
             u8 event = mCursor->func_0202f468(1);
             if (prev != (u8) mCursor->mSelection) {
-                mUnk_ce = mCursor->mSelection;
-                func_ov000_02224678();
-                SetMessage((u8) (mUnk_ce + 2));
+                mMenuSelection = mCursor->mSelection;
+                RefreshMenuAnimations();
+                SetMessage((u8) (mMenuSelection + 2));
             }
             if (event == 1 || event == 3) {
                 changed = 1;
             }
             if (changed) {
-                mCells[mUnk_ce + 3]->SetAnimation(mUnk_ce * 3 + 2);
-                mUnk_cb++;
+                mCells[mMenuSelection + 3]->SetAnimation(mMenuSelection * 3 + 2);
+                mState++;
             }
             UpdateCursorCell();
             break;
@@ -643,26 +643,26 @@ void TitleScene::Update() {
             if (IsFadeDone(0)) {
                 SetWindowMode(0);
                 SpriteManager::Get().StartFade(3);
-                mUnk_cb++;
+                mState++;
             }
             break;
         case 38:
             if (UpdateCursorCell()) {
-                mUnk_cb++;
+                mState++;
             }
             break;
         case 39:
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mUnk_cd = 0;
-            mUnk_d7 = 0;
-            mUnk_cb = 0x28;
+            mMenuVisible = 0;
+            mLogoVisible = 0;
+            mState = 0x28;
             break;
         case 40: {
-            data_020d433c.mUnk_7e_4 = mUnk_ce;
+            data_020d433c.mUnk_7e_4 = mMenuSelection;
             u32 scene;
-            switch (mUnk_ce) {
+            switch (mMenuSelection) {
                 case 0:
                     scene = 9;
                     if (gSaveData[0].mUnk_5bf_0) {
@@ -684,9 +684,9 @@ void TitleScene::Update() {
                     scene = 7;
                     break;
                 case 4:
-                    mContext->mUnk_12 = 0;
+                    mContext->mRequest = 0;
                     new OptionScene();
-                    mUnk_cb = 0x29;
+                    mState = 0x29;
                     return;
             }
             RequestScene(scene);
@@ -694,7 +694,7 @@ void TitleScene::Update() {
             break;
         }
         case 41:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 RequestScene(4);
                 mFinished = 1;
                 return;
@@ -702,12 +702,12 @@ void TitleScene::Update() {
             break;
         case 42:
             new CreditsScene();
-            mContext->mUnk_12 = 0;
-            mUnk_cb++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 43:
-            if (mContext->mUnk_12 != 0) {
-                mUnk_cb++;
+            if (mContext->mRequest != 0) {
+                mState++;
             }
             break;
         case 44: {
@@ -715,24 +715,24 @@ void TitleScene::Update() {
             s32 id = func_02087100();
             if (id >= 0) {
                 new GiftUnlockScene(id);
-                mContext->mUnk_12 = 0;
-                mUnk_cb--;
+                mContext->mRequest = 0;
+                mState--;
             } else {
                 func_02086d48();
-                mUnk_cb++;
+                mState++;
             }
             break;
         }
         case 45:
             func_ov000_02223cdc();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             SpriteManager::Get().StartFade(2);
-            mUnk_cb++;
+            mState++;
             break;
         case 46:
-            if (mContext->mUnk_12 != 0) {
-                mUnk_cb++;
+            if (mContext->mRequest != 0) {
+                mState++;
             }
             break;
         case 47:
@@ -742,13 +742,13 @@ void TitleScene::Update() {
             return;
     }
     UpdateFade();
-    if (mUnk_cd) {
-        func_ov000_02224620();
+    if (mMenuVisible) {
+        DrawMenuCells();
     }
     DrawLogo();
 }
 
-void TitleScene::func_ov000_02223aa4() {
+void TitleScene::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
@@ -827,11 +827,11 @@ void TitleScene::LoadGraphics() {
     if (mBuffers[0][1] == NULL) {
         for (u8 i = 0; i < 5; i++) {
             sprintf(path, "title_b_bg_sub_%02d_ncl.bin", i);
-            mBuffers[i][1] = LoadFile(path, 0, 0, 0, &mUnk_8c[i][1], 0);
+            mBuffers[i][1] = LoadFile(path, 0, 0, 0, &mBufferSizes[i][1], 0);
             sprintf(path, "title_b_bg_sub_%02d_ncg.bin", i);
-            mBuffers[i][0] = LoadFile(path, 0, 0, 0, &mUnk_8c[i][0], 0);
+            mBuffers[i][0] = LoadFile(path, 0, 0, 0, &mBufferSizes[i][0], 0);
             sprintf(path, "title_b_bg_sub_%02d_nsc.bin", i);
-            mBuffers[i][2] = LoadFile(path, 0, 0, 0, &mUnk_8c[i][2], 0);
+            mBuffers[i][2] = LoadFile(path, 0, 0, 0, &mBufferSizes[i][2], 0);
         }
     }
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
@@ -891,17 +891,17 @@ void TitleScene::func_ov000_022245e8() {
     mCells[0]->Draw(1, 0x80, 0x60, 0);
 }
 
-void TitleScene::func_ov000_02224620() {
+void TitleScene::DrawMenuCells() {
     for (u8 i = 0; i < 5; i++) {
         mCells[3 + i]->Update();
         mCells[3 + i]->Draw(1, 0x80, 0x60, 3);
     }
 }
 
-void TitleScene::func_ov000_02224678() {
+void TitleScene::RefreshMenuAnimations() {
     for (u8 i = 0; i < 5; i++) {
         u8 anim = i * 3;
-        if (i == mUnk_ce) {
+        if (i == mMenuSelection) {
             anim = anim + 1;
         }
         mCells[3 + i]->SetAnimation(anim);
@@ -914,13 +914,13 @@ void TitleScene::LoadSystemText() {
         ChangeDir("/");
         mBuf38 = LoadFile("font/mes_system.mes", 0, 0, 0, 0, 0);
         mBuf3c = LoadFile("font/mes_title.mes", 0, 0, 0, 0, 0);
-        mUnk_48 = TextManager::Get().BufferSize(0x18, 0xa);
-        mBuf40 = OS_Alloc(mUnk_48);
-        mUnk_4c = TextManager::Get().GlyphCount(0x3c);
-        mBuf44 = OS_Alloc(mUnk_4c * 0xc);
+        mTextBufferSize = TextManager::Get().BufferSize(0x18, 0xa);
+        mBuf40 = OS_Alloc(mTextBufferSize);
+        mGlyphCount = TextManager::Get().GlyphCount(0x3c);
+        mBuf44 = OS_Alloc(mGlyphCount * 0xc);
         TextManager::Get().Init(mBuf44, 1, 0, 0x18, 0xa, 0x11);
     }
-    MI_CpuClear16(mBuf40, mUnk_48);
+    MI_CpuClear16(mBuf40, mTextBufferSize);
     TextManager::Get().SetColor(1, 0, 0xf);
 }
 
@@ -933,68 +933,68 @@ void TitleScene::PrintText(MessageFile *file, u32 index) {
     outWidth = 0;
     text.Print(file->GetText(index), file->GetLength(index), mBuf40, 0x18, 0xa, &outWidth, &outHeight, NULL, 0, 2,
                0x11, 0xe, 0, 0, 1, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x19000, mBuf40, mUnk_48, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x19000, mBuf40, mTextBufferSize, 0);
 }
 
 void TitleScene::DrawText() {
-    SpriteManager::Get().Screen(1).AddOam(mBuf44, (u8) mUnk_4c, 0x20, 0x28, 0, 0x320, 0xf, 0);
+    SpriteManager::Get().Screen(1).AddOam(mBuf44, (u8) mGlyphCount, 0x20, 0x28, 0, 0x320, 0xf, 0);
 }
 
 void TitleScene::ClearText() {
     if (mBuf40 != NULL) {
-        MI_CpuClear16(mBuf40, mUnk_48);
+        MI_CpuClear16(mBuf40, mTextBufferSize);
     }
 }
 
 void TitleScene::SetMessage(u32 index) {
-    if ((index <= 6) & (mUnk_cf != index)) {
-        mUnk_cf = index;
-        mMessageWindow->StartMessage(mUnk_cf, 0, 1);
+    if ((index <= 6) & (mMessageIndex != index)) {
+        mMessageIndex = index;
+        mMessageWindow->StartMessage(mMessageIndex, 0, 1);
     }
 }
 
 void TitleScene::SetWindowMode(u8 mode) {
-    mUnk_d3 = mode;
+    mWindowMode = mode;
     if (mode) {
         GX_SetVisiblePlane(3);
         G2_SetWndOutsidePlane(0x1f, TRUE);
-        mUnk_d2 = 0x2d;
-        mUnk_d1 = 0x10;
+        mBlendAngle = 0x2d;
+        mBlendAmplitude = 0x10;
     } else {
         GX_SetVisiblePlane(1);
         G2_BlendNone();
-        mUnk_d2 = 0;
+        mBlendAngle = 0;
     }
 }
 
 // Same helper as FieldSelectScene.cpp defines locally; belongs in nitro/gx.h next to G2S_SetBlendAlpha.
 void TitleScene::UpdateFade() {
-    if (!mUnk_d3) {
+    if (!mWindowMode) {
         return;
     }
-    u16 angle = (mUnk_d2 << 16) / 180;
+    u16 angle = (mBlendAngle << 16) / 180;
     s16 sin = FX_SinCosTable_[(angle >> 4) * 2];
-    s8 level = (mUnk_d1 * sin) / 4096;
+    s8 level = (mBlendAmplitude * sin) / 4096;
     if (level < 0) {
         level = 0;
     }
     int ev2 = 0x10 - level;
     G2_SetBlendAlpha(2, 1, level, ev2);
-    if (mUnk_d2 != 0) {
-        mUnk_d2--;
+    if (mBlendAngle != 0) {
+        mBlendAngle--;
         return;
     }
-    mUnk_d1 = 6;
-    mUnk_d2 = 0xb4;
+    mBlendAmplitude = 6;
+    mBlendAngle = 0xb4;
 }
 
 BOOL TitleScene::IsFadeDone(BOOL tick) {
-    if (!mUnk_d3) {
+    if (!mWindowMode) {
         return TRUE;
     }
-    if (mUnk_d2 < 0x5a) {
-        if (tick != 0 && mUnk_d2 != 0) {
-            mUnk_d2--;
+    if (mBlendAngle < 0x5a) {
+        if (tick != 0 && mBlendAngle != 0) {
+            mBlendAngle--;
         }
         return FALSE;
     }
@@ -1002,40 +1002,40 @@ BOOL TitleScene::IsFadeDone(BOOL tick) {
 }
 
 void TitleScene::UploadSubBg(u32 index) {
-    QueueUpload(1, 1, 0x4000, mBuffers[index][1], mUnk_8c[index][1], 0);
-    QueueUpload(1, 13, 0, mBuffers[index][0], mUnk_8c[index][0], 0);
-    QueueUpload(1, 9, 0, mBuffers[index][2], mUnk_8c[index][2], 0);
+    QueueUpload(1, 1, 0x4000, mBuffers[index][1], mBufferSizes[index][1], 0);
+    QueueUpload(1, 13, 0, mBuffers[index][0], mBufferSizes[index][0], 0);
+    QueueUpload(1, 9, 0, mBuffers[index][2], mBufferSizes[index][2], 0);
 }
 
 BOOL TitleScene::UpdateCursorCell() {
     mCells[1]->Update();
     mCells[1]->Draw(1, 0x80, 0x58, 2);
-    if (mUnk_d4 == 0) {
-        if (mUnk_d5 == mUnk_ce) {
+    if (mCursorStep == 0) {
+        if (mSubBgIndex == mMenuSelection) {
             return TRUE;
         }
-        mUnk_d4 = 1;
+        mCursorStep = 1;
         mCells[1]->SetAnimation(2);
         SoundManager::Get().StartSeqArc(0xd);
     }
-    switch (mUnk_d4) {
+    switch (mCursorStep) {
         case 1:
             if (mCells[1]->mFinished != 0) {
-                mUnk_d4++;
+                mCursorStep++;
             }
             break;
         case 2: {
-            u8 cur = mUnk_ce;
-            mUnk_d5 = cur;
+            u8 cur = mMenuSelection;
+            mSubBgIndex = cur;
             UploadSubBg(cur);
             mCells[1]->SetAnimation(3);
             SoundManager::Get().StartSeqArc(0xc);
-            mUnk_d4++;
+            mCursorStep++;
             break;
         }
         case 3:
             if (mCells[1]->mFinished != 0) {
-                mUnk_d4 = 0;
+                mCursorStep = 0;
             }
             break;
     }
@@ -1044,18 +1044,18 @@ BOOL TitleScene::UpdateCursorCell() {
 
 void TitleScene::ApplyScroll(void *arg) {
     TitleScene *self = (TitleScene *) arg;
-    G2S_SetBG1Offset(0, self->mUnk_da);
-    G2S_SetBG2Offset(0, self->mUnk_da);
+    G2S_SetBG1Offset(0, self->mScrollY);
+    G2S_SetBG2Offset(0, self->mScrollY);
 }
 
 void TitleScene::DrawLogo() {
-    if (!mUnk_d7) {
+    if (!mLogoVisible) {
         return;
     }
-    if (mUnk_d8 < 0x60) {
-        mUnk_d8++;
+    if (mLogoY < 0x60) {
+        mLogoY++;
     } else {
         mMessageWindow->Update();
     }
-    mCells[2]->Draw(1, 0x80, mUnk_d8, 1);
+    mCells[2]->Draw(1, 0x80, mLogoY, 1);
 }

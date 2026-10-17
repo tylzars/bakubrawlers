@@ -148,7 +148,7 @@ void MyroomScene::Cleanup() {
 }
 
 void MyroomScene::Update() {
-    UnkStruct_SceneContext *ctx = mContext;
+    SceneContext *ctx = mContext;
     switch (ctx->mInfo.mState) {
         case 0:
             InitDisplay();
@@ -208,18 +208,18 @@ void MyroomScene::Update() {
             ctx->mInfo.mState++;
             break;
         case 4:
-            func_ov008_0221c9c8();
-            func_ov008_0221c2a0();
+            HandleWindowResult();
+            UpdateMenu();
             DrawText();
             break;
         case 5:
-            if (func_ov008_0221cc6c()) {
+            if (UpdateScroll()) {
                 ctx->mInfo.mState = 4;
             }
             DrawText();
             break;
         case 6:
-            func_ov008_0221c2a0();
+            UpdateMenu();
             DrawText();
             SpriteManager::Get().StartSubFade(3);
             switch (ctx->mInfo.mScroll) {
@@ -243,7 +243,7 @@ void MyroomScene::Update() {
             ctx->mInfo.mState++;
             break;
         case 7:
-            func_ov008_0221c2a0();
+            UpdateMenu();
             DrawText();
             if (mEvent->IsRunning()) {
                 return;
@@ -252,17 +252,17 @@ void MyroomScene::Update() {
             ctx->mInfo.mState++;
             break;
         case 8:
-            func_ov008_0221c2a0();
+            UpdateMenu();
             DrawText();
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
             mEvent->RequestFinish();
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             ctx->mInfo.mState++;
             break;
         case 9:
-            if (ctx->mUnk_12 == 0) {
+            if (ctx->mRequest == 0) {
                 return;
             }
             SpriteManager::Get().StartFade(3);
@@ -298,36 +298,36 @@ void MyroomScene::Update() {
                     new ListScene(4, 0);
                     break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             Cleanup();
             ctx->mInfo.mState++;
             break;
         case 11:
-            if (ctx->mUnk_12 == 0) {
+            if (ctx->mRequest == 0) {
                 return;
             }
             ctx->mInfo.mPrevSelection = 0;
             ctx->mInfo.mState         = 0;
             break;
         case 12:
-            func_ov008_0221c2a0();
+            UpdateMenu();
             DrawText();
             mEvent->func_020702e0(0x3a, 0x10, -667, -28, 4, -717);
             ctx->mInfo.mState++;
             break;
         case 13:
-            func_ov008_0221c2a0();
+            UpdateMenu();
             DrawText();
             if (mEvent->IsRunning()) {
                 return;
             }
             new SaveWindow(1, 1, 0, 0x2000, 2, 0, 0, 0x1e000, 0x1a0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             data_020d433c.mUnk_14_1 = 0;
             ctx->mInfo.mState++;
             break;
         case 14:
-            if (ctx->mUnk_12 == 0) {
+            if (ctx->mRequest == 0) {
                 return;
             }
             GXS_SetVisiblePlane(0x11);
@@ -338,7 +338,7 @@ void MyroomScene::Update() {
         case 15:
             if ((data_020d433c.mUnk_14 & 2) && data_020d433c.mUnk_7f == 4) {
                 new SaveWindow(1, 1, 0, 0x2000, 2, 0, 0, 0x1e000, 0x1a0);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 ctx->mInfo.mState++;
             } else {
                 ctx->mInfo.mState = 0x11;
@@ -347,7 +347,7 @@ void MyroomScene::Update() {
             }
             break;
         case 16:
-            if (ctx->mUnk_12 != 0) {
+            if (ctx->mRequest != 0) {
                 ctx->mInfo.mState++;
             }
             break;
@@ -364,11 +364,11 @@ void MyroomScene::Update() {
                 return;
             }
             mEvent->RequestFinish();
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             ctx->mInfo.mState++;
             break;
         case 19:
-            if (ctx->mUnk_12 != 0) {
+            if (ctx->mRequest != 0) {
                 ctx->mInfo.mState++;
             }
             break;
@@ -432,7 +432,7 @@ void MyroomScene::LoadGraphics() {
     sub2.LoadCharacters("union_b_obj_arrow.nce_ncg1D.bin", 0x4000, 0);
     sub2.LoadPalette("union_b_obj_arrow_ncl.bin", 0x20, 0);
     ChangeDir("/");
-    UnkStruct_SceneContext *ctx = mContext;
+    SceneContext *ctx = mContext;
     s32 selection1              = 0;
     if (ctx->mInfo.mMenuResult == 1) {
         selection1 = (s8) ctx->mInfo.mUnk_06;
@@ -453,7 +453,7 @@ void MyroomScene::LoadGraphics() {
 }
 
 void MyroomScene::SwitchPage(u8 page) {
-    UnkStruct_SceneContext *ctx = mContext;
+    SceneContext *ctx = mContext;
     if (ctx->mInfo.mMenuResult != page) {
         switch (ctx->mInfo.mMenuResult) {
             case 1:
@@ -491,11 +491,11 @@ void MyroomScene::SwitchPage(u8 page) {
             mMenus[2]->mCursor->mSelection = *(s8 *) &ctx->mInfo.mUnk_06;
             break;
     }
-    func_ov008_0221cea0();
+    RefreshCellLayout();
 }
 
-void MyroomScene::func_ov008_0221c2a0() {
-    UnkStruct_SceneContext *ctx = mContext;
+void MyroomScene::UpdateMenu() {
+    SceneContext *ctx = mContext;
     u8 first                    = 0;
     u8 last                     = 0;
     u8 count                    = 0;
@@ -562,7 +562,7 @@ void MyroomScene::func_ov008_0221c2a0() {
                 if (delta != 0) {
                     ctx->mInfo.mPage = delta > 0 ? 2 : 1;
                     ctx->mInfo.mUnk_0a += delta;
-                    func_ov008_0221c8b0();
+                    StartScroll();
                     ctx->mInfo.mPrevSelection = 0;
                 }
                 break;
@@ -637,8 +637,8 @@ void MyroomScene::func_ov008_0221c2a0() {
     }
 }
 
-void MyroomScene::func_ov008_0221c8b0() {
-    UnkStruct_SceneContext *ctx = mContext;
+void MyroomScene::StartScroll() {
+    SceneContext *ctx = mContext;
     ctx->mInfo.mState           = 5;
     ctx->mInfo.mScrollDir       = 0x62;
     if (ctx->mInfo.mMenuResult != 0) {
@@ -679,8 +679,8 @@ void MyroomScene::func_ov008_0221c8b0() {
     }
 }
 
-void MyroomScene::func_ov008_0221c9c8() {
-    UnkStruct_SceneContext *ctx = mContext;
+void MyroomScene::HandleWindowResult() {
+    SceneContext *ctx = mContext;
     switch ((u8) ctx->mInfo.mPrevSelection) {
         case 2:
             switch (ctx->mInfo.mMenuResult) {
@@ -792,8 +792,8 @@ void MyroomScene::func_ov008_0221c9c8() {
     }
 }
 
-BOOL MyroomScene::func_ov008_0221cc6c() {
-    UnkStruct_SceneContext *ctx = mContext;
+BOOL MyroomScene::UpdateScroll() {
+    SceneContext *ctx = mContext;
     BOOL done;
     SelectWindow *window;
     WindowItem *items;
@@ -856,8 +856,8 @@ BOOL MyroomScene::func_ov008_0221cc6c() {
     return done;
 }
 
-void MyroomScene::func_ov008_0221cea0() {
-    UnkStruct_SceneContext *ctx = mContext;
+void MyroomScene::RefreshCellLayout() {
+    SceneContext *ctx = mContext;
     s16 offset                  = (s8) ctx->mInfo.mUnk_06 * 0x62;
     if (ctx->mInfo.mMenuResult != 0) {
         return;
@@ -942,8 +942,8 @@ void MyroomScene::SetupText() {
 }
 
 void MyroomScene::func_ov008_0221d2c0() {
-    func_ov008_0221d450();
-    UnkStruct_SceneContext *ctx = mContext;
+    ClearMessageBuffer();
+    SceneContext *ctx = mContext;
     switch (ctx->mInfo.mMenuResult) {
         case 0:
             mMessage->StartMessage(0x24, 0, 1);
@@ -964,7 +964,7 @@ void MyroomScene::func_ov008_0221d2c0() {
 }
 
 void MyroomScene::DrawText() {
-    UnkStruct_SceneContext *ctx = mContext;
+    SceneContext *ctx = mContext;
     if (mGlyphBuffer != NULL) {
         SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount,
                                                      (s16) (0x80 - ((u32) ctx->mInfo.mUnk_00 >> 1)), 0x90, 0, 0x60,
@@ -975,7 +975,7 @@ void MyroomScene::DrawText() {
     }
 }
 
-void MyroomScene::func_ov008_0221d450() {
+void MyroomScene::ClearMessageBuffer() {
     if (mMessage != NULL) {
         mMessage->ClearBuffer();
     }

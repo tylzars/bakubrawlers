@@ -22,7 +22,7 @@ public:
     /* 24 */ u32 mTextBufferSize;
     /* 28 */ u32 mGlyphCount;
     /* 2c */ u8 mState;
-    /* 2d */ u8 mUnk_2d;
+    /* 2d */ u8 mResultWindowKind;
     /* 2e */ u8 mSelection;
     /* 30 */
 

@@ -78,16 +78,16 @@ NameEntryScene::NameEntryScene(u8 mode) :
     mBuf48 = NULL;
     mMaxLength = 12;
     mLength = 0;
-    mUnk_66 = 0;
-    mState = 0;
+    mScroll = 0;
+    mCursorArea = 0;
     mCol = 0;
     mRow = 0;
     mUnk_6a = 0;
     mTab = 0;
-    mUnk_6c = 0;
+    mState = 0;
     mMode = mode;
-    mUnk_70 = -1;
-    mUnk_74 = 0;
+    mPendingSubPlanes = -1;
+    mSpecialNameHandle = 0;
     MI_CpuClear16(mName, sizeof(mName));
 }
 
@@ -180,8 +180,8 @@ void NameEntryScene::LoadGraphics() {
     mBuf48 = (u8 *) LoadFile("keyboard_b_bg_font_b_ncg.bin", 0, 0, 0, 0, 0);
     mBuf44 = (u8 *) LoadFile("keyboard_b_bg_font_a_ncg.bin", 0, 0, 0, 0, 0);
     LoadAndQueueUpload(1, 1, 0, "keyboard_b_bg_font_ncl.bin", 0, 0, 0);
-    func_ov000_0221b22c();
-    func_ov000_0221b190();
+    UploadTabNcg();
+    UploadTabNsc();
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
     screen.LoadCharacters("keyboard_b_obj_00.nce_ncg1D.bin", 0, 0);
@@ -229,30 +229,30 @@ void NameEntryScene::LoadGraphics() {
 }
 
 void NameEntryScene::Update() {
-    if (mUnk_70 != -1) {
-        GXS_SetVisiblePlane(mUnk_70);
-        mUnk_70 = -1;
+    if (mPendingSubPlanes != -1) {
+        GXS_SetVisiblePlane(mPendingSubPlanes);
+        mPendingSubPlanes = -1;
     }
-    switch (mUnk_6c) {
+    switch (mState) {
         case 0:
             InitDisplay();
             LoadGraphics();
             Load();
             SpriteManager::Get().StartFade(2);
-            mUnk_6c++;
+            mState++;
             break;
         case 1:
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            mUnk_6c++;
+            mState++;
             break;
         case 2: {
-            u8 prevScroll = mUnk_66;
+            u8 prevScroll = mScroll;
             if (InputManager::Get().IsHeld(1)) {
-                switch (mState) {
+                switch (mCursorArea) {
                     case 0:
-                        AddChar((u8) (mCol + (mRow + mUnk_66) * 8 + mTab * 0x60));
+                        AddChar((u8) (mCol + (mRow + mScroll) * 8 + mTab * 0x60));
                         break;
                     case 1:
                         SoundManager::Get().StartSeqArc(0);
@@ -272,24 +272,24 @@ void NameEntryScene::Update() {
                 SoundManager::Get().StartSeqArc(0);
                 mKeyboard->SetResultItem(5, 3);
             }
-            switch (mState) {
+            switch (mCursorArea) {
                 case 0:
                     if (InputManager::Get().IsTrigger(KEY_UP)) {
                         SoundManager::Get().StartSeqArc(5);
                         if (mRow != 0) {
                             mRow--;
-                        } else if (mUnk_66 != 0) {
-                            mUnk_66--;
+                        } else if (mScroll != 0) {
+                            mScroll--;
                             if (mKeyboard != NULL) {
-                                mKeyboard->mCursor->SetScroll(mUnk_66);
+                                mKeyboard->mCursor->SetScroll(mScroll);
                             }
                         } else {
                             if (mCol < 2) {
-                                mState = 1;
+                                mCursorArea = 1;
                             } else if (mCol < 5 || mKeyboard->mButtons[6].mEnabled == 0) {
-                                mState = 2;
+                                mCursorArea = 2;
                             } else {
-                                mState = 3;
+                                mCursorArea = 3;
                             }
                             mCellAnims[2]->SetAnimation(9);
                         }
@@ -298,20 +298,20 @@ void NameEntryScene::Update() {
                         mRow++;
                         if (mRow >= 4) {
                             mRow = 3;
-                            mUnk_66++;
-                            if (mUnk_66 > 8) {
-                                mUnk_66 = 8;
+                            mScroll++;
+                            if (mScroll > 8) {
+                                mScroll = 8;
                                 if (mCol < 2) {
-                                    mState = 1;
+                                    mCursorArea = 1;
                                 } else if (mCol < 5 || mKeyboard->mButtons[6].mEnabled == 0) {
-                                    mState = 2;
+                                    mCursorArea = 2;
                                 } else {
-                                    mState = 3;
+                                    mCursorArea = 3;
                                 }
                                 mCellAnims[2]->SetAnimation(9);
                             }
                             if (mKeyboard != NULL) {
-                                mKeyboard->mCursor->SetScroll(mUnk_66);
+                                mKeyboard->mCursor->SetScroll(mScroll);
                             }
                         }
                     }
@@ -330,7 +330,7 @@ void NameEntryScene::Update() {
                 case 3:
                     if (InputManager::Get().IsTrigger(KEY_UP)) {
                         SoundManager::Get().StartSeqArc(5);
-                        switch (mState) {
+                        switch (mCursorArea) {
                             case 1:
                                 mCol = 0;
                                 break;
@@ -342,13 +342,13 @@ void NameEntryScene::Update() {
                                 break;
                         }
                         mRow    = 3;
-                        mUnk_66 = 8;
-                        mKeyboard->mCursor->SetScroll(mUnk_66);
+                        mScroll = 8;
+                        mKeyboard->mCursor->SetScroll(mScroll);
                         mCellAnims[2]->SetAnimation(8);
-                        mState = 0;
+                        mCursorArea = 0;
                     } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
                         SoundManager::Get().StartSeqArc(5);
-                        switch (mState) {
+                        switch (mCursorArea) {
                             case 1:
                                 mCol = 0;
                                 break;
@@ -360,50 +360,50 @@ void NameEntryScene::Update() {
                                 break;
                         }
                         mRow    = 0;
-                        mUnk_66 = 0;
+                        mScroll = 0;
                         mKeyboard->mCursor->SetScroll(0);
                         mCellAnims[2]->SetAnimation(8);
-                        mState = 0;
+                        mCursorArea = 0;
                     }
                     if (InputManager::Get().IsTrigger(KEY_LEFT)) {
                         SoundManager::Get().StartSeqArc(5);
-                        mState = (u8) (mState + 3);
-                        mState &= 3;
-                        if (mState == 0) {
+                        mCursorArea = (u8) (mCursorArea + 3);
+                        mCursorArea &= 3;
+                        if (mCursorArea == 0) {
                             if (mKeyboard->mButtons[6].mEnabled != 0) {
-                                mState = 3;
+                                mCursorArea = 3;
                             } else {
-                                mState = 2;
+                                mCursorArea = 2;
                             }
                         }
                     } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
                         SoundManager::Get().StartSeqArc(5);
-                        mState = (u8) (mState + 1);
-                        mState &= 3;
-                        switch (mState) {
+                        mCursorArea = (u8) (mCursorArea + 1);
+                        mCursorArea &= 3;
+                        switch (mCursorArea) {
                             case 0:
-                                mState = 1;
+                                mCursorArea = 1;
                                 break;
                             case 3:
                                 if (mKeyboard->mButtons[6].mEnabled == 0) {
-                                    mState = 1;
+                                    mCursorArea = 1;
                                 }
                                 break;
                         }
                     }
                     break;
             }
-            if (prevScroll != mUnk_66) {
-                func_ov000_0221b190();
+            if (prevScroll != mScroll) {
+                UploadTabNsc();
             }
             if (InputManager::Get().IsHeld(0x400)) {
                 SoundManager::Get().StartSeqArc(0);
                 mKeyboard->SetResultItem(4, 3);
             }
             if (mKeyboard != NULL) {
-                if (mKeyboard->mCursor->mScroll != mUnk_66) {
-                    mUnk_66 = mKeyboard->mCursor->mScroll;
-                    func_ov000_0221b190();
+                if (mKeyboard->mCursor->mScroll != mScroll) {
+                    mScroll = mKeyboard->mCursor->mScroll;
+                    UploadTabNsc();
                 }
                 u8 result = mKeyboard->Update(1);
                 mKeyboard->Draw();
@@ -416,16 +416,16 @@ void NameEntryScene::Update() {
                         case 4:
                             mTab = (u8) (mTab + 1);
                             mTab &= 1;
-                            func_ov000_0221b22c();
-                            func_ov000_0221b190();
+                            UploadTabNcg();
+                            UploadTabNsc();
                             break;
                         case 5:
                             Backspace();
                             break;
                         case 6:
                             CheckSpecialName();
-                            if (mUnk_74 == 0) {
-                                mUnk_6c = 4;
+                            if (mSpecialNameHandle == 0) {
+                                mState = 4;
                             } else {
                                 GXS_SetVisiblePlane(0x17);
                                 mKeyboard->mEnabled = 0;
@@ -433,20 +433,20 @@ void NameEntryScene::Update() {
                                 MI_CpuClear16(mName, sizeof(mName));
                                 mLength = 0;
                                 PrintMessage();
-                                mUnk_6c = 3;
+                                mState = 3;
                             }
                             break;
                     }
                 }
             }
             if (mCellAnims[0] != NULL) {
-                func_ov000_0221b2a0();
+                AddTouchedChar();
                 mCellAnims[0]->Update();
                 mCellAnims[0]->Draw(1, (u8) (mCol * 24 + 0x20), (u8) (mRow * 24 + 0x38), 2);
             }
             if (mCellAnims[2] != NULL) {
                 mCellAnims[2]->Update();
-                switch (mState) {
+                switch (mCursorArea) {
                     case 0:
                         mCellAnims[2]->Draw(1, (u8) (mCol * 24 + 0x20), (u8) (mRow * 24 + 0x38), 1);
                         break;
@@ -469,8 +469,8 @@ void NameEntryScene::Update() {
                 }
                 mCellAnims[1]->Draw(1, (u8) (pos * 13 + 0x30), 0x1c, 2);
             }
-            if (mUnk_6c == 3) {
-                func_ov000_0221c1e4();
+            if (mState == 3) {
+                DrawConfirmText();
             } else {
                 func_ov000_0221bc98();
             }
@@ -481,21 +481,21 @@ void NameEntryScene::Update() {
             break;
         }
         case 3:
-            func_ov000_0221c1e4();
+            DrawConfirmText();
             if (mConfirm->Update(1) == 3) {
-                mUnk_70 = 0x13;
+                mPendingSubPlanes = 0x13;
                 mKeyboard->mEnabled = 1;
                 mConfirm->mEnabled = 0;
                 mKeyboard->mButtons[6].mEnabled = 0;
                 mKeyboard->mCursor->mItems[6].mFlags = 0x8000;
-                if (mState == 3) {
-                    mState = 2;
+                if (mCursorArea == 3) {
+                    mCursorArea = 2;
                 }
                 RenderName();
-                if (mUnk_74 == 1) {
+                if (mSpecialNameHandle == 1) {
                     gSaveData[0].mUnk_5d2 = 1;
                 } else {
-                    u32 amount = data_ov000_02225fc8[mUnk_74 - 1] * 100;
+                    u32 amount = data_ov000_02225fc8[mSpecialNameHandle - 1] * 100;
                     if (amount > 9999990) {
                         amount = 9999990;
                     }
@@ -504,8 +504,8 @@ void NameEntryScene::Update() {
                         gSaveData[0].mMoney = 9999990;
                     }
                 }
-                mUnk_74 = 0;
-                mUnk_6c = 2;
+                mSpecialNameHandle = 0;
+                mState = 2;
             }
             mKeyboard->Draw();
             mConfirm->Draw();
@@ -523,17 +523,17 @@ void NameEntryScene::Update() {
                 case 1:
                     break;
             }
-            mUnk_6c++;
+            mState++;
             break;
         case 5:
             SpriteManager::Get().StartFade(3);
-            mUnk_6c++;
+            mState++;
             break;
         case 6:
             if (!SpriteManager::Get().IsFading()) {
                 return;
             }
-            mUnk_6c++;
+            mState++;
             break;
         case 7:
             RequestScene(1);
@@ -542,18 +542,18 @@ void NameEntryScene::Update() {
     }
 }
 
-void NameEntryScene::func_ov000_0221b190() {
+void NameEntryScene::UploadTabNsc() {
     switch (mTab) {
         case 0:
-            QueueUpload(1, 7, 0x1c0, mBuf3c + 0x1c0 + mUnk_66 * 0xc0, 0x300, 0);
+            QueueUpload(1, 7, 0x1c0, mBuf3c + 0x1c0 + mScroll * 0xc0, 0x300, 0);
             break;
         case 1:
-            QueueUpload(1, 7, 0x1c0, mBuf40 + 0x1c0 + mUnk_66 * 0xc0, 0x300, 0);
+            QueueUpload(1, 7, 0x1c0, mBuf40 + 0x1c0 + mScroll * 0xc0, 0x300, 0);
             break;
     }
 }
 
-void NameEntryScene::func_ov000_0221b22c() {
+void NameEntryScene::UploadTabNcg() {
     switch (mTab) {
         case 0:
             QueueUpload(1, 0xb, 0, mBuf44, 0x5000, 0);
@@ -564,7 +564,7 @@ void NameEntryScene::func_ov000_0221b22c() {
     }
 }
 
-void NameEntryScene::func_ov000_0221b2a0() {
+void NameEntryScene::AddTouchedChar() {
     if (TouchManager::Get().mTouching == 0) {
         return;
     }
@@ -587,7 +587,7 @@ void NameEntryScene::func_ov000_0221b2a0() {
     }
     mCol = col;
     mRow = row;
-    AddChar((u8) (mCol + (mRow + mUnk_66) * 8 + mTab * 0x60));
+    AddChar((u8) (mCol + (mRow + mScroll) * 8 + mTab * 0x60));
 }
 
 void NameEntryScene::Backspace() {
@@ -600,8 +600,8 @@ void NameEntryScene::Backspace() {
     if (mLength == 0) {
         mKeyboard->mButtons[6].mEnabled = 0;
         mKeyboard->mCursor->mItems[6].mFlags = 0x8000;
-        if (mState == 3) {
-            mState = 2;
+        if (mCursorArea == 3) {
+            mCursorArea = 2;
         }
     }
 }
@@ -640,10 +640,10 @@ void NameEntryScene::AddChar(s32 index) {
     mCellAnims[0]->Rewind();
     if (mLength >= mMaxLength) {
         mCellAnims[2]->SetAnimation(9);
-        mState = 3;
+        mCursorArea = 3;
     } else {
         mCellAnims[2]->SetAnimation(8);
-        mState = 0;
+        mCursorArea = 0;
     }
 }
 
@@ -675,8 +675,8 @@ void NameEntryScene::Load() {
             mLength = 0;
             mKeyboard->mButtons[6].mEnabled = 0;
             mKeyboard->mCursor->mItems[6].mFlags = 0x8000;
-            if (mState == 3) {
-                mState = 2;
+            if (mCursorArea == 3) {
+                mCursorArea = 2;
             }
         }
     }
@@ -731,7 +731,7 @@ void NameEntryScene::ClearTextBuffer() {
 
 void NameEntryScene::CheckSpecialName() {
     BOOL match;
-    mUnk_74 = 0;
+    mSpecialNameHandle = 0;
     u32 value = gSaveData[0].mMoney - 3000;
     u32 digit1k = (value / 1000) % 10;
     u32 digit10k = (value / 10000) % 10;
@@ -790,7 +790,7 @@ void NameEntryScene::CheckSpecialName() {
             k++;
         } while (k < 12);
         if (match) {
-            mUnk_74 = i + 1;
+            mSpecialNameHandle = i + 1;
             return;
         }
     }
@@ -800,10 +800,10 @@ void NameEntryScene::CheckSpecialName() {
 void NameEntryScene::PrintMessage() {
     ClearTextBuffer();
     int index;
-    if (mUnk_74 == 1) {
+    if (mSpecialNameHandle == 1) {
         index = 1;
     } else {
-        TextManager::Get().mUnk_10 = data_ov000_02225fc8[mUnk_74 - 1];
+        TextManager::Get().mUnk_10 = data_ov000_02225fc8[mSpecialNameHandle - 1];
         index = 2;
     }
     TextManager &text = TextManager::Get();
@@ -816,6 +816,6 @@ void NameEntryScene::PrintMessage() {
     QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x4000, mTextBuffer, mTextBufferSize, 0);
 }
 
-void NameEntryScene::func_ov000_0221c1e4() {
+void NameEntryScene::DrawConfirmText() {
     SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, 0x20, 0x38, 0, 0x80, 0xe, 0);
 }

@@ -233,11 +233,11 @@ void BattlePlayerList::Update() {
             break;
         case 4:
             new ListScene(5, mUnk_2a9);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             break;
         case 5: {
-            u8 result = mContext->mUnk_12;
+            u8 result = mContext->mRequest;
             if (result != 0 && data_020d433c.mUnk_10) {
                 data_020d433c.mUnk_10->SetupLayout(0);
             }
@@ -289,7 +289,7 @@ void BattlePlayerList::Update() {
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4030.mUnk_228)) {
                 new BattleOrderSelect();
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mState++;
             } else {
                 u8 i = 0;
@@ -301,8 +301,8 @@ void BattlePlayerList::Update() {
             }
             return;
         case 9: {
-            UnkStruct_SceneContext *context = mContext;
-            switch ((u8) context->mUnk_12) {
+            SceneContext *context = mContext;
+            switch ((u8) context->mRequest) {
                 case 0:
                     return;
                 case 2:
@@ -322,12 +322,12 @@ void BattlePlayerList::Update() {
                 flag = 1;
             }
             new BattleObj00(flag);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             break;
         }
         case 11:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             if (data_020d433c.mTutorialId == 1) {
@@ -344,11 +344,11 @@ void BattlePlayerList::Update() {
             break;
         case 12:
             new BattleCommand((u32) mCamera);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             break;
         case 13:
-            switch ((u8) mContext->mUnk_12) {
+            switch ((u8) mContext->mRequest) {
                 case 2:
                     mState = 0x1a;
                     break;
@@ -359,7 +359,7 @@ void BattlePlayerList::Update() {
                 case 3: {
                     u8 *msg = (u8 *) mPlayers[mTurnPlayer] + 0x100;
                     new BattleShoot(mCamera, (u16 *) (msg + 4), *(u16 *) (msg + 0xa), *(u16 *) (msg + 0xc), *(msg + 0xf), *(msg + 0x10), mUnk_2ae);
-                    mContext->mUnk_12 = 0;
+                    mContext->mRequest = 0;
                     mState = 0x11;
                     break;
                 }
@@ -371,7 +371,7 @@ void BattlePlayerList::Update() {
                     mPlayers[mTurnPlayer]->mCpu->func_ov007_02231e2c(&rot, &outA, &outB, &outC);
                     u8 extra = *((u8 *) mPlayers[mTurnPlayer]->mCpu + 0x7e);
                     new BattleShoot(mCamera, &rot.mX, outA, outB, outC, extra, mUnk_2ae);
-                    mContext->mUnk_12 = 0;
+                    mContext->mRequest = 0;
                     mState = 0x11;
                     break;
                 }
@@ -388,12 +388,12 @@ void BattlePlayerList::Update() {
             break;
         case 14:
             new BattleShoot(mCamera, mUnk_2ae);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState = 0x11;
             break;
         case 17: {
             rec = mPlayers[mTurnPlayer]->mRecord;
-            result = mContext->mUnk_12;
+            result = mContext->mRequest;
             if (result == 0) {
                 return;
             }
@@ -646,47 +646,47 @@ void BattlePlayerList::Update() {
         }
         case 18:
             new BattleCharaAct(mCamera, mTurnPlayer, 4, 0, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             break;
         case 19:
-            if ((u8) mContext->mUnk_12) {
+            if ((u8) mContext->mRequest) {
                 mState = 0x1a;
             }
             break;
         case 20:
             new BattleCharaAct(mCamera, mTurnPlayer, 8, mUnk_2aa, mUnk_2ab);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             break;
         case 21:
-            if ((u8) mContext->mUnk_12 == 0) {
+            if ((u8) mContext->mRequest == 0) {
                 return;
             }
             mState = 0x19;
-            mContext->mUnk_12 = 1;
+            mContext->mRequest = 1;
             break;
         case 22:
             new BattleCharaAct(mCamera, mTurnPlayer, 9, mUnk_2aa, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             break;
         case 23:
-            if ((u8) mContext->mUnk_12 == 0) {
+            if ((u8) mContext->mRequest == 0) {
                 return;
             }
             mState = 0x19;
-            mContext->mUnk_12 = 1;
+            mContext->mRequest = 1;
             break;
         case 24:
             if (func_ov007_022631bc(this, 0xf)) {
                 new BattleConfrontCard(-1);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mState++;
             }
             break;
         case 25:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             mUnk_2b1 = MATH_Rand32(&gRandom, 100);
@@ -759,11 +759,11 @@ void BattlePlayerList::Update() {
         }
         case 27:
             new BattleObj00(1);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             break;
         case 28:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             mState = 0xc;
@@ -776,11 +776,11 @@ void BattlePlayerList::Update() {
                 SoundManager::Get().StopSeq(1);
             }
             new BattleResult();
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             break;
         case 30:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             if (!func_ov007_022631bc(this, 0x10)) {
@@ -806,7 +806,7 @@ void BattlePlayerList::Update() {
             }
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4030.mUnk_228) || data_020d433c.mNextScene == 8) {
-                if (mContext->mUnk_12 == 1) {
+                if (mContext->mRequest == 1) {
                     data_020d433c.mUnk_88_4 = 1;
                 }
                 mState++;
@@ -828,8 +828,8 @@ void BattlePlayerList::Update() {
             }
             break;
         case 32: {
-            UnkStruct_SceneContext *context = mContext;
-            switch (context->mUnk_12) {
+            SceneContext *context = mContext;
+            switch (context->mRequest) {
                 case 1:
                     if (data_020d433c.mWireless) {
                         data_020d433c.mUnk_89 = 1;
@@ -878,7 +878,7 @@ void BattlePlayerList::Update() {
             SoundManager::Get().StopSeq(1);
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4030.mUnk_228) || data_020d433c.mNextScene == 8) {
-                mContext->mUnk_12       = 1;
+                mContext->mRequest       = 1;
                 data_020d433c.mUnk_88_4 = 0;
                 data_020d433c.mUnk_88_0 = 1;
                 data_020d433c.mUnk_87   = 1;

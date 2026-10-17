@@ -85,13 +85,13 @@ MyroomShootScene::MyroomShootScene() :
     mRot[0]      = 0;
     mRot[1]      = 0;
     mRot[2]      = 0;
-    mUnk_5a      = 0x100;
-    mUnk_5c      = 0;
-    mUnk_5f      = 0;
+    mTextX      = 0x100;
+    mTextEndY      = 0;
+    mShooterTimer      = 0;
     mSelected    = -1;
-    mUnk_61      = 0;
-    mUnk_62      = 0;
-    mUnk_63      = 0;
+    mCol      = 0;
+    mRow      = 0;
+    mTextPage      = 0;
     mState       = 0;
     mTimer       = 0;
     mCellAnim    = NULL;
@@ -156,7 +156,7 @@ void MyroomShootScene::Update() {
         case 0:
             draw = FALSE;
             InitDisplay();
-            func_ov008_02221a14();
+            Init();
             mTimer = 10;
             mState++;
             break;
@@ -220,7 +220,7 @@ void MyroomShootScene::InitDisplay() {
     G2S_BlendNone();
 }
 
-void MyroomShootScene::func_ov008_02221a14() {
+void MyroomShootScene::Init() {
     mCamera = new Camera();
     mCamera->SetUp(0, 0x1000, 0);
     mCamera->SetTarget(0x28000, 0x6e000, 0);
@@ -292,7 +292,7 @@ void MyroomShootScene::func_ov008_02221a14() {
     data_020d433c.mEffects = new EffectManager();
     LoadEffectGroup(data_020d433c.mEffects, 0, "shoot");
     SpriteManager::Get().func_02027504(0);
-    func_ov008_02222474(0);
+    SelectShooter(0);
     ChangeDir("/font/");
     if (mMessages == NULL) {
         mMessages = (MessageFile *) LoadFile("mes_myroom.mes", 0, 0, 0, 0, 0);
@@ -310,11 +310,11 @@ void MyroomShootScene::func_ov008_02221a14() {
     mMessage->func_02065bd4(0x14, 4, 0);
     mMessage->SetWidth(0xd8);
     mMessage->StartMessage(0x23, 0, 1);
-    func_ov008_02222a78();
+    PrintShooterText();
     ChangeDir("/");
 }
 
-void MyroomShootScene::func_ov008_02222474(s8 index) {
+void MyroomShootScene::SelectShooter(s8 index) {
     if (mSelected != index) {
         mSelected                   = index;
         BakuganModel *shooter = mShooter;
@@ -348,10 +348,10 @@ void MyroomShootScene::func_ov008_02222474(s8 index) {
             effectRot[2] = (u16) (65536.0f * (float) data_ov008_02229080[mSelected][2] / 360.0f);
             SetEffectRotation(data_020d433c.mEffects, mEffect, effectRot);
         }
-        mUnk_63 = 0;
-        mUnk_5a = 0x100;
+        mTextPage = 0;
+        mTextX = 0x100;
     }
-    mUnk_5e = -1;
+    mPendingSelection = -1;
 }
 
 void MyroomShootScene::InitUnlocked() {
@@ -381,9 +381,9 @@ void MyroomShootScene::DrawSprites() {
     func_01ff89c0(&view, base, &view);
     mRoom->AdvanceAnim();
     mRoom->Draw(&view, &scale);
-    mUnk_5f--;
-    if (mUnk_5f <= 0) {
-        mUnk_5f = 0;
+    mShooterTimer--;
+    if (mShooterTimer <= 0) {
+        mShooterTimer = 0;
         if (mShooter != NULL) {
             mShooter->Update();
             mShooter->DrawModel();
@@ -397,12 +397,12 @@ void MyroomShootScene::DrawSprites() {
     u8 k;
     s16 x;
     u8 last;
-    x = 0x80 - ((u32) mUnk_58 >> 1);
-    if ((s32) mUnk_58 > 0xf0) {
-        x       = mUnk_5a;
-        mUnk_5a = x - 1;
-        if (mUnk_5a <= -mUnk_58) {
-            mUnk_5a = 0x100;
+    x = 0x80 - ((u32) mTextWidth >> 1);
+    if ((s32) mTextWidth > 0xf0) {
+        x       = mTextX;
+        mTextX = x - 1;
+        if (mTextX <= -mTextWidth) {
+            mTextX = 0x100;
         }
     }
     first = 0;
@@ -429,19 +429,19 @@ void MyroomShootScene::ClearTextBuffers(u8 index) {
     MI_CpuClear16(mTextBuffers[index], mTextBufferSize[index]);
 }
 
-void MyroomShootScene::func_ov008_02222a78() {
+void MyroomShootScene::PrintShooterText() {
     ClearTextBuffers(0);
     TextManager &text = TextManager::Get();
     s16 width;
     s16 height;
-    height            = 2 - mUnk_63 * 0x7e;
+    height            = 2 - mTextPage * 0x7e;
     width             = 0x10;
     u16 index         = mSelected + 0x16;
     MessageFile *file = mMessages;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[0], 0x10, 0x12, &width, &height, 0, 0, 2, 0x44,
                0xe, 0, 0, 0, 1, 1);
-    if (&mUnk_5c != NULL) {
-        mUnk_5c = height;
+    if (&mTextEndY != NULL) {
+        mTextEndY = height;
     }
     QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0, mTextBuffers[0], mTextBufferSize[0], 0);
     ClearTextBuffers(1);
@@ -453,18 +453,18 @@ void MyroomShootScene::func_ov008_02222a78() {
     height2    = 0;
     u16 index2 = mSelected + 0x1c;
     file       = mMessages;
-    text2.Print(file->GetText(index2), file->GetLength(index2), mTextBuffers[1], 0x40, 2, &height2, &width2, &mUnk_58, 0, 2,
+    text2.Print(file->GetText(index2), file->GetLength(index2), mTextBuffers[1], 0x40, 2, &height2, &width2, &mTextWidth, 0, 2,
                 0x21, 0xe, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
     QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x3000, mTextBuffers[1], mTextBufferSize[1], 0);
     if (mUnlocked[mSelected] == 0) {
-        mUnk_5c = 0;
+        mTextEndY = 0;
     }
 }
 
-s32 MyroomShootScene::func_ov008_02222dbc() {
+s32 MyroomShootScene::UpdateInput() {
     s32 result = -1;
-    s8 previous = mUnk_63;
+    s8 previous = mTextPage;
     if (mResult == 3) {
         s32 id = mWindow->GetSelectedId();
         switch (id) {
@@ -475,77 +475,77 @@ s32 MyroomShootScene::func_ov008_02222dbc() {
             case 4:
             case 5:
                 result  = (s8) id;
-                mUnk_61 = result % 3;
-                mUnk_62 = result / 3;
+                mCol = result % 3;
+                mRow = result / 3;
                 if (mSelected != (s8) id) {
                     SoundManager::Get().StartSeqArc(0);
                 }
                 break;
             case 8:
                 if (previous > 0) {
-                    mUnk_63--;
+                    mTextPage--;
                     SoundManager::Get().StartSeqArc(0);
                 }
                 break;
             case 9:
-                if (mUnk_5c > 0x80) {
-                    mUnk_63++;
+                if (mTextEndY > 0x80) {
+                    mTextPage++;
                     SoundManager::Get().StartSeqArc(0);
                 }
                 break;
         }
     }
-    if (previous != mUnk_63) {
-        func_ov008_02222a78();
+    if (previous != mTextPage) {
+        PrintShooterText();
     } else if (result == -1) {
-        result = func_ov008_02222fa4();
+        result = UpdateKeySelection();
     }
     return result;
 }
 
-s8 MyroomShootScene::func_ov008_02222fa4() {
+s8 MyroomShootScene::UpdateKeySelection() {
     s8 result  = -1;
     BOOL moved = FALSE;
     if (InputManager::Get().IsTrigger(KEY_UP)) {
         moved = TRUE;
-        if (mUnk_62 != 0) {
-            mUnk_62--;
+        if (mRow != 0) {
+            mRow--;
         } else {
-            mUnk_62 = 1;
-            if (data_ov008_0222901e[mUnk_62][mUnk_61] == 0) {
-                mUnk_62--;
+            mRow = 1;
+            if (data_ov008_0222901e[mRow][mCol] == 0) {
+                mRow--;
             }
         }
     } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
         moved = TRUE;
-        mUnk_62++;
-        if (mUnk_62 >= 2) {
-            mUnk_62 = 0;
-        } else if (data_ov008_0222901e[mUnk_62][mUnk_61] == 0) {
-            mUnk_62 = 0;
+        mRow++;
+        if (mRow >= 2) {
+            mRow = 0;
+        } else if (data_ov008_0222901e[mRow][mCol] == 0) {
+            mRow = 0;
         }
     }
     if (InputManager::Get().IsTrigger(KEY_LEFT)) {
         moved = TRUE;
-        if (mUnk_61 != 0) {
-            mUnk_61--;
+        if (mCol != 0) {
+            mCol--;
         } else {
-            mUnk_61 = 2;
-            if (data_ov008_0222901e[mUnk_62][mUnk_61] == 0) {
-                mUnk_61--;
+            mCol = 2;
+            if (data_ov008_0222901e[mRow][mCol] == 0) {
+                mCol--;
             }
         }
     } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
         moved = TRUE;
-        mUnk_61++;
-        if (mUnk_61 >= 3) {
-            mUnk_61 = 0;
-        } else if (data_ov008_0222901e[mUnk_62][mUnk_61] == 0) {
-            mUnk_61 = 0;
+        mCol++;
+        if (mCol >= 3) {
+            mCol = 0;
+        } else if (data_ov008_0222901e[mRow][mCol] == 0) {
+            mCol = 0;
         }
     }
     if (moved) {
-        result = mUnk_61 + mUnk_62 * 3;
+        result = mCol + mRow * 3;
         SoundManager::Get().StartSeqArc(0);
     }
     return result;
@@ -556,23 +556,23 @@ void MyroomShootScene::func_ov008_02223264() {
         SoundManager::Get().StartSeqArc(1);
         SpriteManager::Get().StartFade(3);
         mState = 3;
-    } else if (mUnk_5e != -1) {
+    } else if (mPendingSelection != -1) {
         SpriteManager::Get().func_0202753c(0);
-        func_ov008_02222474(mUnk_5e);
-        func_ov008_02222a78();
+        SelectShooter(mPendingSelection);
+        PrintShooterText();
         if (mWindow->mState != 1) {
             mWindow->mState = 4;
             mWindow->Reset(-1);
         }
     } else {
-        s32 selection = func_ov008_02222dbc();
+        s32 selection = UpdateInput();
         if (selection >= 0) {
-            mUnk_5e = selection;
-            mUnk_5f = 3;
+            mPendingSelection = selection;
+            mShooterTimer = 3;
         }
     }
     WindowItem *items = mWindow->mCursor->mItems;
-    if (mUnk_63 != 0) {
+    if (mTextPage != 0) {
         if (mWindow->mCells[8]->mAnimIndex == 2) {
             mWindow->mCells[8]->SetAnimation(0);
             items[8].mFlags = 0x208;
@@ -583,7 +583,7 @@ void MyroomShootScene::func_ov008_02223264() {
             items[8].mFlags = 0x8000;
         }
     }
-    if (mUnk_5c > 0x80) {
+    if (mTextEndY > 0x80) {
         if (mWindow->mCells[9]->mAnimIndex == 5) {
             mWindow->mCells[9]->SetAnimation(3);
             items[9].mFlags = 0x408;
@@ -594,7 +594,7 @@ void MyroomShootScene::func_ov008_02223264() {
             items[9].mFlags = 0x8000;
         }
     }
-    Vec2s pos = {data_ov008_0222905c[mUnk_62][mUnk_61].x, data_ov008_0222905c[mUnk_62][mUnk_61].y};
+    Vec2s pos = {data_ov008_0222905c[mRow][mCol].x, data_ov008_0222905c[mRow][mCol].y};
     mWindow->mCellPos[6] = pos;
     if (mShooter == NULL) {
         return;

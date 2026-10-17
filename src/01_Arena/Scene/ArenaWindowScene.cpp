@@ -36,7 +36,7 @@ ArenaWindowScene::ArenaWindowScene() : SceneBase(1000, 0) {
     mGlyphBuffer = NULL;
     mTextBufferSize = 0;
     mGlyphCount = 0;
-    mUnk_24 = 0;
+    mState = 0;
     data_020d433c.mUnk_7a = 0;
 }
 
@@ -56,14 +56,14 @@ ArenaWindowScene::~ArenaWindowScene() {
 }
 
 void ArenaWindowScene::Update() {
-    switch (mUnk_24) {
+    switch (mState) {
         case 0: {
-            func_ov001_0221d6dc();
+            InitDisplay();
             BOOL done = FALSE;
             if (data_020d433c.mWireless != 0) {
                 WirelessManager::Get();
                 if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
-                    mUnk_24 = 5;
+                    mState = 5;
                     done    = TRUE;
                 }
             }
@@ -71,26 +71,26 @@ void ArenaWindowScene::Update() {
                 if (data_020d433c.mUnk_88_4 != 0) {
                     done = TRUE;
                     if (data_020d433c.mUnk_87 != 0) {
-                        mUnk_24 = 0xa;
+                        mState = 0xa;
                     } else {
-                        mUnk_24 = 0x10;
+                        mState = 0x10;
                     }
                 }
             }
             if (!done) {
                 if (data_020d433c.mUnk_88_0 != 0 && data_020d433c.mUnk_87 != 0) {
-                    mUnk_24 = 0xa;
+                    mState = 0xa;
                     done    = TRUE;
                 }
             }
             if (!done) {
                 if (data_020d433c.mUnk_89 != 0) {
-                    mUnk_24 = 3;
+                    mState = 3;
                 } else {
-                    mUnk_24++;
+                    mState++;
                 }
             }
-            if (mUnk_24 == 0xa) {
+            if (mState == 0xa) {
                 return;
             }
             FrameTask::Get().StartChannel(0, 0x10);
@@ -98,56 +98,56 @@ void ArenaWindowScene::Update() {
         }
         case 1:
             new ArenaScene();
-            mContext->mUnk_12 = 0;
-            mUnk_24++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 2: {
-            u8 r = (u8) mContext->mUnk_12;
+            u8 r = (u8) mContext->mRequest;
             if (r == 0) {
                 return;
             }
             if (r != 1) {
-                mUnk_24 = 0x10;
+                mState = 0x10;
                 return;
             }
             data_020d433c.mUnk_87 = 0;
-            mUnk_24++;
+            mState++;
             break;
         }
         case 3:
             new FieldSelectScene(0);
-            mContext->mUnk_12 = 0;
-            mUnk_24++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 4: {
-            u8 r = (u8) mContext->mUnk_12;
+            u8 r = (u8) mContext->mRequest;
             if (r == 0) {
                 return;
             }
             switch (r) {
                 case 1:
-                    mUnk_24 = 0xe;
+                    mState = 0xe;
                     break;
                 case 2:
                     if (data_020d433c.mWireless != 0) {
-                        mUnk_24 = 5;
+                        mState = 5;
                     } else if (data_020d433c.mUnk_87 != 0) {
-                        mUnk_24 = 0xa;
+                        mState = 0xa;
                     } else {
-                        mUnk_24 = 1;
+                        mState = 1;
                     }
                     break;
                 case 3:
-                    mUnk_24 = 5;
+                    mState = 5;
                     break;
             }
             break;
         }
         case 5:
-            func_ov001_0221d858();
+            SetupWindow();
             SpriteManager::Get().StartFade(2);
             WirelessManager::Get().Stop();
-            mUnk_24++;
+            mState++;
             break;
         case 6:
             if (SpriteManager::Get().IsFading()) {
@@ -159,70 +159,70 @@ void ArenaWindowScene::Update() {
             }
             data_020d433c.mWireless = 0;
             mMenu->mEnabled       = 1;
-            mUnk_24++;
+            mState++;
             break;
         case 7:
             if (mMenu->Update(1) == 1) {
                 SpriteManager::Get().StartFade(3);
-                mUnk_24++;
+                mState++;
             }
             mMenu->Draw();
-            func_ov001_0221e0b4();
+            DrawMessage();
             break;
         case 8:
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            mUnk_24++;
+            mState++;
             break;
         case 9:
             func_020219dc();
             if (data_020d433c.mUnk_87 != 0) {
-                mUnk_24 = 0xa;
+                mState = 0xa;
                 return;
             }
             if (data_020d433c.mUnk_88_4 != 0) {
-                mUnk_24 = 0x10;
+                mState = 0x10;
             } else {
-                mUnk_24 = 1;
+                mState = 1;
             }
             break;
         case 10:
             SpriteManager::Get().StartFade(3);
-            mUnk_24++;
+            mState++;
             break;
         case 11:
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            func_ov001_0221db10();
+            LoadWindowGraphics();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
-            mContext->mUnk_12     = 0;
+            mContext->mRequest     = 0;
             data_020d433c.mUnk_87 = 0;
             data_020d433c.mUnk_14_1 = 0;
-            mUnk_24++;
+            mState++;
             break;
         case 12:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             FrameTask::Get().StartChannel(0, 0x10);
             SpriteManager::Get().StartFade(3);
-            mUnk_24++;
+            mState++;
             break;
         case 13:
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
             if (data_020d433c.mUnk_88_4 != 0) {
-                mUnk_24 = 0x10;
+                mState = 0x10;
             } else {
-                mUnk_24 = 1;
+                mState = 1;
             }
             break;
         case 14:
             FrameTask::Get().StopAllChannels();
-            mUnk_24++;
+            mState++;
             break;
         case 15:
             if (func_0203dd0c(&FrameTask::Get(), 0) != 0) {
@@ -239,7 +239,7 @@ void ArenaWindowScene::Update() {
     }
 }
 
-void ArenaWindowScene::func_ov001_0221d6dc() {
+void ArenaWindowScene::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 1);
     G2_SetBG0Control(0, 1, 0, 1, 0);
@@ -260,7 +260,7 @@ void ArenaWindowScene::func_ov001_0221d6dc() {
     G2S_BlendNone();
 }
 
-void ArenaWindowScene::func_ov001_0221d858() {
+void ArenaWindowScene::SetupWindow() {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 1);
     GXS_SetGraphicsMode(0);
@@ -280,8 +280,8 @@ void ArenaWindowScene::func_ov001_0221d858() {
     sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x2000, 0);
     sub.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
     ChangeDir("/");
-    func_ov001_0221dd40();
-    func_ov001_0221df64();
+    LoadMessages();
+    PrintMessage();
     if (mMenu != NULL) {
         delete mMenu;
     }
@@ -292,7 +292,7 @@ void ArenaWindowScene::func_ov001_0221d858() {
     mMenu->mCursor->mSelection = 0;
 }
 
-void ArenaWindowScene::func_ov001_0221db10() {
+void ArenaWindowScene::LoadWindowGraphics() {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 1);
     G2S_SetBG0Control(0, 0, 0, 1, 0);
@@ -313,7 +313,7 @@ void ArenaWindowScene::func_ov001_0221db10() {
     ChangeDir("/");
 }
 
-void ArenaWindowScene::func_ov001_0221dd40() {
+void ArenaWindowScene::LoadMessages() {
     SpriteManager::Get().Screen(1).SetObjVramMode(3);
     if (mMessages == NULL) {
         ChangeDir("/");
@@ -328,8 +328,8 @@ void ArenaWindowScene::func_ov001_0221dd40() {
     TextManager::Get().SetColor(1, 0, 0xf);
 }
 
-void ArenaWindowScene::func_ov001_0221df64() {
-    func_ov001_0221e15c();
+void ArenaWindowScene::PrintMessage() {
+    ClearTextBuffer();
     TextManager &text = TextManager::Get();
     s16 height;
     s16 width;
@@ -341,12 +341,12 @@ void ArenaWindowScene::func_ov001_0221df64() {
     QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, mTextBuffer, mTextBufferSize, 0);
 }
 
-void ArenaWindowScene::func_ov001_0221e0b4() {
+void ArenaWindowScene::DrawMessage() {
     SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, (u8) mGlyphCount, 0x20, 0x28, 0, 0, 0xf, 0);
 }
 
 
-void ArenaWindowScene::func_ov001_0221e15c() {
+void ArenaWindowScene::ClearTextBuffer() {
     if (mTextBuffer != NULL) {
         MI_CpuClear16(mTextBuffer, mTextBufferSize);
     }

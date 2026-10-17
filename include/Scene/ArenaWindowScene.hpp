@@ -18,7 +18,7 @@ public:
     /* 18 */ void *mGlyphBuffer;
     /* 1c */ u32 mTextBufferSize;
     /* 20 */ u32 mGlyphCount;
-    /* 24 */ u8 mUnk_24;
+    /* 24 */ u8 mState;
     /* 25 */
 
     ArenaWindowScene();
@@ -27,11 +27,11 @@ public:
     /* 08 */ virtual void Update() override;
     /* 0c */
 
-    void func_ov001_0221d6dc();
-    void func_ov001_0221d858();
-    void func_ov001_0221db10();
-    void func_ov001_0221dd40();
-    void func_ov001_0221df64();
-    void func_ov001_0221e0b4();
-    void func_ov001_0221e15c();
+    void InitDisplay();
+    void SetupWindow();
+    void LoadWindowGraphics();
+    void LoadMessages();
+    void PrintMessage();
+    void DrawMessage();
+    void ClearTextBuffer();
 };

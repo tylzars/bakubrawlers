@@ -220,7 +220,7 @@ that matches should replace it.
   three 12-byte order tables as separate objects no definition order gave the original `.rodata`; as one 60-byte
   struct (`GiftPos pos[3][4]; u8 order[12]; u8 ids[12]; s8 slots[12];`) it does, and the folded `+1` of `.pos[r][c].y`
   reproduces the original's a7d pool word. A two-byte `{x, y}` struct instead of `u8[2]` keeps a54 out of its own
-  section. Pool order in func_ov008_0221de34 came from building the pointer inside the loop
+  section. Pool order in LoadGraphics came from building the pointer inside the loop
   (`const u8 *ids = t.ids; ids += i;`).
 - **Non-const tables after a file's strings (CharacterEditScene).** Two writable cell tables sit after the 24 strings
   of the item tables' initializers, not right behind the vtable; as function-local statics of inline accessors
@@ -510,10 +510,10 @@ Other findings from linking:
   statements (SetCutsceneAnimation).
 
 - **Parameter width shows in the caller.** Passing a `u8` to a `u32` parameter makes a conversion temporary that
-  shifts the caller's registers; FieldSelectScene's `func_ov001_022267d0(u8)` fixed two callers' loops.
+  shifts the caller's registers; FieldSelectScene's `PrintSlotName(u8)` fixed two callers' loops.
 - **A pointer kept only part of the way is a second `Get()`.** When the original holds a SpriteScreen (or other
   singleton part) in a register through some loops and then reloads it from the pool, the later uses come from a fresh
-  `SpriteManager::Get().Screen(n)` (FieldSelectScene::func_ov001_0221fa94: 1082 differing words to 0).
+  `SpriteManager::Get().Screen(n)` (FieldSelectScene::SetupPage: 1082 differing words to 0).
 - **A local array filled from a one-use rodata table is an aggregate initializer.** `u8 buf[3] = {0, 1, 4};` makes
   mwcc emit an anonymous rodata object (often first in the unit's .rodata) and changes which temporary is created
   first; copying `buf[i] = data_xxx[i]` element by element does not match (TitleScene::Update, BattleTarget::Update).
@@ -524,7 +524,7 @@ Other findings from linking:
 - **Repeated calls with constant arguments schedule in a cycle, and an earlier call's return type shifts it.** In a
   lab of 20 identical `LoadAndQueueUpload` calls the argument-setup pattern repeats every 7 calls; the period depends on
   the stack arguments (10, 8, 7, 6, 6 calls for 1-5 of them). Code before the run shifts it: a global store, or a
-  call that returns a value (a `void` call shifts it less). The open cases (TournamentSubScene::func_ov002_0221fb24,
+  call that returns a value (a `void` call shifts it less). The open cases (TournamentSubScene::Init,
   BattleMoneyReward::Init, and the enum-zero placeholders in MyroomGiftScene and UnkStruct_02071d24)
   were all one cause: `func_0200acac` (called by the `ChangeDir` inline) returns BOOL but was declared void.
   Declaring it BOOL matched them; CharacterModel::LoadPartPalette then needed to be void to keep LoadPartTextures matching
@@ -532,7 +532,7 @@ Other findings from linking:
 - **A stack parameter the callee reads as `*(s16 *)&param` is really `s16`.** Declaring it so makes callers narrow at
   the call, which creates the value later and gives it the low register: with
   `SpriteScreen::AddOam(..., s16 unk4, ...)`, `int y = row * 0xc + base;` passed straight through matched
-  TournamentScene::func_ov002_0221cd10. The callee's other narrow reads (`*(u16 *)&unk6` and so on) are untested.
+  TournamentScene::Draw. The callee's other narrow reads (`*(u16 *)&unk6` and so on) are untested.
 - **A pointer local can hoist shared index arithmetic over a branch.** `BattlePlayer *pl = list->mPlayers[p];`
   makes `p * 4` a common subexpression with a later `p * 4 + 0x28`, and mwcc hoists it above the `if`. Keeping the
   container in a local and indexing inside each arm (`list->mPlayers[p]->mUnk_f1`) stops it
@@ -575,11 +575,11 @@ Other findings from linking:
   to its first consumer (or its home-slot copy joins the late r0 chain). It only helps when every consumer has the
   same narrow type: a width mismatch between caller and callee adds a conversion temporary and 8 bytes of frame.
   TextManager::PrintNumber matched with u16 width/height/unk12 on it and on Print (BattleCommandPage needed a u16
-  `height` local to stay identical), MyroomCharaScene::func_ov008_02224ca4 with `s16 suffix`.
+  `height` local to stay identical), MyroomCharaScene::PrintValue with `s16 suffix`.
 - **Implicit narrowing at a short parameter is not shared between calls.** With `CellAnimation::Draw(u8, s16 x,
   s16 y, u8)` the original keeps one `x + 4` (int) and narrows it again at each call, and hoists the narrowed stack
   arguments in source order; an explicit `(s16)` cast passed to an `s32` parameter is shared and hoisted
-  differently. Getting the callee's parameter types right matched FieldSelectScene::func_ov001_022256e4 and let
+  differently. Getting the callee's parameter types right matched FieldSelectScene::Draw and let
   several `(s16)`/`(s32)` casts at other call sites go.
 - **A narrow parameter type changes the caller's spill scheduling.** A word-sized access to a u8/u16/s16 parameter's
   home slot shares the worst-case alias set with pointer accesses, so such stores and loads chain in the
@@ -764,7 +764,7 @@ Other findings from linking:
 - **Runtime helpers.** `bl` to `0x0201f970` is `_s32_div_f`, i.e. a `/` in source: the dividend is in r0 and the
   divisor in r1, which often already holds a value the code uses elsewhere (keep it in a local).
 - **`RequestScene` copies the context pointer to a local.** `SceneBase::RequestScene` is
-  `UnkStruct_SceneContext *context = mContext; context->mList->...->mNextScene = scene;`. Without the local, the
+  `SceneContext *context = mContext; context->mList->...->mNextScene = scene;`. Without the local, the
   context pointer and the request chain share one register at the end of `Update` functions.
 - **Message text pointers (`MessageFile::GetText`).** `MessageEntry::mOffset` is declared `volatile`. The original
   always reads the offset where the text pointer is formed, so the load sits right after the file pointer, and

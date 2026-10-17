@@ -80,7 +80,7 @@ void BattleCardSpec::Update() {
             G2_SetBG0Priority(0);
             LoadModels();
             mCardModel = new BattleCardModel(data_020d433c.mEffects, data_020d433c.mBattlePlayers->mCamera, mCardModelType, mBakuganId, mVariant, mUnk_1d);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             break;
         }
@@ -88,7 +88,7 @@ void BattleCardSpec::Update() {
             mState++;
             break;
         case 2:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mState = 5;
             } else if (mUnk_19) {
                 if (func_ov007_022632d0(data_020d433c.mBattlePlayers, 0)) {

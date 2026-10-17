@@ -104,13 +104,13 @@ MyroomRankingScene::MyroomRankingScene() :
     mResult   = 0;
     mMessages = NULL;
     mMessage  = NULL;
-    mUnk_1b8  = 0;
-    mUnk_1b9  = 0;
-    mUnk_1ba  = 0;
-    mUnk_1bb  = 0;
-    mUnk_1bc  = -1;
-    mUnk_1bd  = 0;
-    mUnk_1bf  = 0;
+    mState  = 0;
+    mScroll  = 0;
+    mRow  = 0;
+    mEntryIndex  = 0;
+    mPrintedScroll  = -1;
+    mEntryCount  = 0;
+    mTimer  = 0;
     mUnk_1c0  = 0;
     for (; i < 6; i++) {
         for (j = 0; j < 10; j++) {
@@ -119,10 +119,10 @@ MyroomRankingScene::MyroomRankingScene() :
     }
     mUnk_42  = mRows[0].mUnk_2a;
     mUnk_44  = mRows[0].mUnk_2c;
-    mUnk_40  = mRows[0].mUnk_28;
+    mPlayerCharacterId  = mRows[0].mCharacterId;
     mUnk_16a = mRows[0].mUnk_2a;
     mUnk_16c = mRows[0].mUnk_2c;
-    mUnk_168 = mRows[0].mUnk_28;
+    mSelectedCharacterId = mRows[0].mCharacterId;
     for (i = 0; i < 6; i++) {
         mTextBuffers[i]  = NULL;
         mGlyphBuffers[i] = NULL;
@@ -163,62 +163,62 @@ MyroomRankingScene::~MyroomRankingScene() {
 
 void MyroomRankingScene::Update() {
     BOOL draw = TRUE;
-    switch (mUnk_1b8) {
+    switch (mState) {
         case 0:
             draw = FALSE;
             InitDisplay();
-            func_ov008_0221fe9c();
-            mUnk_1bf = 10;
-            mUnk_1b8++;
+            Init();
+            mTimer = 10;
+            mState++;
             break;
         case 1:
             draw = FALSE;
-            mUnk_1bf--;
-            if (mUnk_1bf > 0) {
+            mTimer--;
+            if (mTimer > 0) {
                 break;
             }
             SpriteManager::Get().StartFade(2);
-            mUnk_1b8++;
+            mState++;
             break;
         case 2:
             if (mUnk_1c0 != 0) {
                 SpriteManager::Get().StartFade(3);
                 mUnk_10->mFinishRequested = 1;
-                mUnk_1b8         = 4;
+                mState         = 4;
             } else {
-                if (func_ov008_02220848() != -1) {
-                    s32 index = mUnk_1b9 + mUnk_1ba;
+                if (UpdateSelection() != -1) {
+                    s32 index = mScroll + mRow;
                     if (index > 10) {
-                        mUnk_1bb = 10;
+                        mEntryIndex = 10;
                     } else {
-                        mUnk_1bb = index;
+                        mEntryIndex = index;
                     }
                     RankingEntry *entry;
-                    if (mUnk_1bb >= 10) {
+                    if (mEntryIndex >= 10) {
                         entry = (RankingEntry *) ((u8 *) mUnk_0c + 0x8c);
                     } else {
-                        entry = mUnk_0c->GetEntry(mUnk_1bb);
+                        entry = mUnk_0c->GetEntry(mEntryIndex);
                     }
-                    mUnk_168 = entry->mCharacterId;
+                    mSelectedCharacterId = entry->mCharacterId;
                     mUnk_16a = entry->mRank;
                     mUnk_16c = entry->mScore;
-                    if (mUnk_168 != mUnk_10->mCharacterId) {
-                        mUnk_10->ChangeCharacter(mUnk_168, mUnk_16a, mUnk_16c);
-                        mUnk_1b8 = 3;
+                    if (mSelectedCharacterId != mUnk_10->mCharacterId) {
+                        mUnk_10->ChangeCharacter(mSelectedCharacterId, mUnk_16a, mUnk_16c);
+                        mState = 3;
                     }
                 }
             }
-            func_ov008_02220b88();
+            UpdateRows();
             break;
         case 3:
             if (mUnk_10->mChanging == 0) {
-                mUnk_1b8 = 2;
+                mState = 2;
             }
             break;
         case 4:
             if (mWindow->mState == 4) {
                 if (!SpriteManager::Get().IsFading()) {
-                    mUnk_1b8 = 5;
+                    mState = 5;
                 }
             }
             break;
@@ -245,7 +245,7 @@ void MyroomRankingScene::Update() {
             SoundManager::Get().StartSeqArc(1);
             mUnk_1c0 = 1;
         }
-        func_ov008_022205ac();
+        Draw();
     }
 }
 
@@ -281,22 +281,22 @@ void MyroomRankingScene::InitDisplay() {
     G2S_BlendNone();
 }
 
-void MyroomRankingScene::func_ov008_0221fe9c() {
+void MyroomRankingScene::Init() {
     Ranking *list = new Ranking();
     mUnk_0c                  = list;
-    mUnk_40                  = list->mPlayerCharacterId;
+    mPlayerCharacterId                  = list->mPlayerCharacterId;
     mUnk_42                  = list->mPlayerRank;
     mUnk_44                  = list->mPlayerScore;
     for (u8 i = 0; i < 6; i++) {
         RankingEntry *entry = mUnk_0c->GetEntry(i);
-        mRows[i].mUnk_28                = entry->mCharacterId;
+        mRows[i].mCharacterId                = entry->mCharacterId;
         mRows[i].mUnk_2a                = entry->mRank;
         mRows[i].mUnk_2c                = entry->mScore;
     }
-    mUnk_168 = mUnk_40;
+    mSelectedCharacterId = mPlayerCharacterId;
     mUnk_16a = mUnk_42;
     mUnk_16c = mUnk_44;
-    mUnk_10  = new RankingCharacterView(mUnk_168, mUnk_16a, mUnk_16c, 0);
+    mUnk_10  = new RankingCharacterView(mSelectedCharacterId, mUnk_16a, mUnk_16c, 0);
     ChangeDir("/Game/Myroom/");
     LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
@@ -315,11 +315,11 @@ void MyroomRankingScene::func_ov008_0221fe9c() {
     sub.LoadCharacters("union_b_obj_scroll.nce_ncg1D.bin", 0x6000, 0);
     sub.LoadPalette("union_b_obj_scroll_ncl.bin", 0x140, 0);
     mWindow->SetCells(4, data_ov008_02228cc8);
-    mUnk_1bd = 10;
+    mEntryCount = 10;
     if (mUnk_42 > 10) {
-        mUnk_1bd++;
+        mEntryCount++;
     }
-    mWindow->mCursor->SetupScroll(0x40, 0x90, 6, mUnk_1bd);
+    mWindow->mCursor->SetupScroll(0x40, 0x90, 6, mEntryCount);
     sub.LoadCharacters("union_b_obj_number.nce_ncg1D.bin", 0x7000, 0);
     sub.LoadPalette("union_b_obj_number_ncl.bin", 0x160, 0);
     for (u8 i = 0; i < 6; i++) {
@@ -347,34 +347,34 @@ void MyroomRankingScene::func_ov008_0221fe9c() {
     mMessage->SetWidth(0xd8);
     mMessage->StartMessage(0x28, 0, 1);
     if ((s32) mUnk_42 > 10) {
-        mUnk_1b9 = mUnk_1bd - 6;
-        mUnk_1ba = 5;
+        mScroll = mEntryCount - 6;
+        mRow = 5;
     } else if ((s32) mUnk_42 <= 4) {
-        mUnk_1b9 = 0;
-        mUnk_1ba = mUnk_42 - 1;
+        mScroll = 0;
+        mRow = mUnk_42 - 1;
     } else if ((s32) mUnk_42 >= 8) {
-        mUnk_1b9 = mUnk_1bd - 6;
-        mUnk_1ba = mUnk_42 - 5;
+        mScroll = mEntryCount - 6;
+        mRow = mUnk_42 - 5;
     } else {
-        mUnk_1b9 = mUnk_42 - 4;
-        mUnk_1ba = 3;
+        mScroll = mUnk_42 - 4;
+        mRow = 3;
     }
-    Vec2s pos = {data_ov008_02228cb0[mUnk_1ba][0], data_ov008_02228cb0[mUnk_1ba][1]};
+    Vec2s pos = {data_ov008_02228cb0[mRow][0], data_ov008_02228cb0[mRow][1]};
     mWindow->mCellPos[8] = pos;
-    mWindow->mCursor->SetScroll(mUnk_1b9);
+    mWindow->mCursor->SetScroll(mScroll);
     if ((s32) mUnk_42 > 10) {
-        mUnk_1bb = 10;
+        mEntryIndex = 10;
     } else {
-        mUnk_1bb = mUnk_1b9 + mUnk_1ba;
+        mEntryIndex = mScroll + mRow;
     }
     ChangeDir("/");
 }
 
-void MyroomRankingScene::func_ov008_022205ac() {
-    func_ov008_022205b8();
+void MyroomRankingScene::Draw() {
+    DrawSubScreen();
 }
 
-void MyroomRankingScene::func_ov008_022205b8() {
+void MyroomRankingScene::DrawSubScreen() {
     for (u8 i = 0; i < 6; i++) {
         u8 y        = data_ov008_02228cbc[i][1];
         u8 x        = data_ov008_02228cbc[i][0];
@@ -422,7 +422,7 @@ void MyroomRankingScene::func_ov008_022205b8() {
     mMessage->Update();
 }
 
-s32 MyroomRankingScene::func_ov008_02220848() {
+s32 MyroomRankingScene::UpdateSelection() {
     s32 result = -1;
     if (mResult == 3) {
         s8 id = mWindow->GetSelectedId();
@@ -434,11 +434,11 @@ s32 MyroomRankingScene::func_ov008_02220848() {
             case 5:
             case 6: {
                 s32 row = id - 1;
-                if (mUnk_1ba != row) {
+                if (mRow != row) {
                     SoundManager::Get().StartSeqArc(0);
                 }
-                mUnk_1ba = row;
-                result   = (s8) (mUnk_1b9 + mUnk_1ba);
+                mRow = row;
+                result   = (s8) (mScroll + mRow);
                 break;
             }
             case 10:
@@ -448,14 +448,14 @@ s32 MyroomRankingScene::func_ov008_02220848() {
         }
     }
     if (result == -1) {
-        result = func_ov008_022209d4();
+        result = UpdateKeySelection();
         if (result == -1) {
-            s32 current = mUnk_1b9 + mUnk_1ba;
+            s32 current = mScroll + mRow;
             if (current > 10) {
-                if (mUnk_1bb != 10) {
+                if (mEntryIndex != 10) {
                     result = 10;
                 }
-            } else if (mUnk_1bb != current) {
+            } else if (mEntryIndex != current) {
                 result = (s8) current;
             }
         }
@@ -463,7 +463,7 @@ s32 MyroomRankingScene::func_ov008_02220848() {
     return result;
 }
 
-s32 MyroomRankingScene::func_ov008_022209d4() {
+s32 MyroomRankingScene::UpdateKeySelection() {
     s32 result;
     BOOL scrolled;
     BOOL moved;
@@ -473,7 +473,7 @@ s32 MyroomRankingScene::func_ov008_022209d4() {
     scrolled = FALSE;
     moved    = TRUE;
     if (InputManager::Get().IsTrigger(KEY_UP)) {
-        if (mUnk_1ba == 0) {
+        if (mRow == 0) {
             if (scroll == 0) {
                 moved = FALSE;
             } else {
@@ -481,18 +481,18 @@ s32 MyroomRankingScene::func_ov008_022209d4() {
                 scrolled = TRUE;
             }
         } else {
-            mUnk_1ba--;
+            mRow--;
         }
     } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
-        if (mUnk_1ba == 5) {
-            if (scroll >= mUnk_1bd - 6) {
+        if (mRow == 5) {
+            if (scroll >= mEntryCount - 6) {
                 moved = FALSE;
             } else {
                 scroll++;
                 scrolled = TRUE;
             }
         } else {
-            mUnk_1ba++;
+            mRow++;
         }
     } else {
         moved = FALSE;
@@ -501,42 +501,42 @@ s32 MyroomRankingScene::func_ov008_022209d4() {
         mWindow->mCursor->SetScroll(scroll);
     }
     if (moved) {
-        result = (s8) (scroll + mUnk_1ba);
+        result = (s8) (scroll + mRow);
         SoundManager::Get().StartSeqArc(0);
     }
     return result;
 }
 
-void MyroomRankingScene::func_ov008_02220b88() {
-    mUnk_1b9 = mWindow->mCursor->mScroll;
+void MyroomRankingScene::UpdateRows() {
+    mScroll = mWindow->mCursor->mScroll;
     for (u8 i = 0; i < 6; i++) {
         RankingEntry *entry;
-        s32 index = mUnk_1b9 + i;
+        s32 index = mScroll + i;
         if (index >= 10) {
             entry = (RankingEntry *) ((u8 *) mUnk_0c + 0x8c);
         } else {
             entry = mUnk_0c->GetEntry((u8) index);
         }
-        mRows[i].mUnk_28 = entry->mCharacterId;
+        mRows[i].mCharacterId = entry->mCharacterId;
         mRows[i].mUnk_2a = entry->mRank;
         mRows[i].mUnk_2c = entry->mScore;
     }
     UpdateRowAnimations();
-    Vec2s pos = {data_ov008_02228cb0[mUnk_1ba][0], data_ov008_02228cb0[mUnk_1ba][1]};
+    Vec2s pos = {data_ov008_02228cb0[mRow][0], data_ov008_02228cb0[mRow][1]};
     mWindow->mCellPos[8] = pos;
-    func_ov008_02220d14();
+    PrintNames();
 }
 
-void MyroomRankingScene::func_ov008_02220d14() {
+void MyroomRankingScene::PrintNames() {
     u8 i = 0;
-    if (mUnk_1bc == mUnk_1b9) {
+    if (mPrintedScroll == mScroll) {
         return;
     }
-    mUnk_1bc = mUnk_1b9;
+    mPrintedScroll = mScroll;
     do {
         MI_CpuClear16(mTextBuffers[i], mTextBufferSize);
         TextManager::Get().mUse4bppFont = 1;
-        if (mRows[i].mUnk_28 == 0x15) {
+        if (mRows[i].mCharacterId == 0x15) {
             s16 width;
             s16 height;
             width  = 0;
@@ -550,7 +550,7 @@ void MyroomRankingScene::func_ov008_02220d14() {
             width             = 0;
             height            = 0;
             MessageFile *file = mMessages;
-            u8 index          = mRows[i].mUnk_28;
+            u8 index          = mRows[i].mCharacterId;
             text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[i], 0x10, 4, &height, &width, 0, 0, 2, 0x42,
                        0, 0, 0, 0, 1, 1);
         }

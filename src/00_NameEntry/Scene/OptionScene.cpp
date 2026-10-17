@@ -205,13 +205,13 @@ void OptionScene::Update() {
         }
         case 5:
             DrawSettings();
-            mUnk_4b = 8;
+            mSlideTimer = 8;
             mState++;
             break;
         case 6:
             mPosY[0] -= 4;
             DrawSettings();
-            if (mUnk_4b == 0) {
+            if (mSlideTimer == 0) {
                 func_02024764(&SoundManager::Get(), 5, 1);
                 FrameTask::Get().StopChannel(1);
                 mState = 1;
@@ -229,7 +229,7 @@ void OptionScene::Update() {
             DrawMenu2();
             switch (result) {
                 case 1:
-                    gSaveData[0].mUnk_28_6 = mUnk_4f == 0 ? 1 : 0;
+                    gSaveData[0].mUnk_28_6 = mFlagSelectedId == 0 ? 1 : 0;
                     gSaveData[0].mUnk_27_0 = gSaveData[0].mUnk_28_6;
                     mState++;
                     break;
@@ -238,7 +238,7 @@ void OptionScene::Update() {
                     break;
                 default:
                     if (mWindow->GetSelectedId() < 2) {
-                        mUnk_4f = mWindow->GetSelectedId();
+                        mFlagSelectedId = mWindow->GetSelectedId();
                     }
                     break;
             }
@@ -246,13 +246,13 @@ void OptionScene::Update() {
         }
         case 9:
             DrawMenu2();
-            mUnk_4b = 8;
+            mSlideTimer = 8;
             mState++;
             break;
         case 10:
             mPosY[0] -= 4;
             DrawMenu2();
-            if (mUnk_4b == 0) {
+            if (mSlideTimer == 0) {
                 mState = 1;
             }
             break;
@@ -276,13 +276,13 @@ void OptionScene::Update() {
                         break;
                 }
                 mState++;
-                mUnk_4b = 8;
+                mSlideTimer = 8;
             }
             break;
         }
         case 13:
             SlideStep();
-            if (mUnk_4b == 0) {
+            if (mSlideTimer == 0) {
                 ResetDisplay();
                 mState = 1;
             }
@@ -299,7 +299,7 @@ void OptionScene::Update() {
             DrawMenu3();
             switch (result) {
                 case 1:
-                    gSaveData[0].mUnk_28_5 = mUnk_4f == 0 ? 1 : 0;
+                    gSaveData[0].mUnk_28_5 = mFlagSelectedId == 0 ? 1 : 0;
                     mState++;
                     break;
                 case 2:
@@ -307,7 +307,7 @@ void OptionScene::Update() {
                     break;
                 default:
                     if (mWindow->GetSelectedId() < 2) {
-                        mUnk_4f = mWindow->GetSelectedId();
+                        mFlagSelectedId = mWindow->GetSelectedId();
                     }
                     break;
             }
@@ -315,13 +315,13 @@ void OptionScene::Update() {
         }
         case 19:
             DrawMenu3();
-            mUnk_4b = 8;
+            mSlideTimer = 8;
             mState++;
             break;
         case 20:
             mPosY[0] -= 4;
             DrawMenu3();
-            if (mUnk_4b == 0) {
+            if (mSlideTimer == 0) {
                 mState = 1;
             }
             break;
@@ -335,11 +335,11 @@ void OptionScene::Update() {
             }
             Release();
             new CreditsScene();
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             break;
         case 16:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             FrameTask::Get().StartChannel(0, 0x10);
@@ -354,13 +354,13 @@ void OptionScene::Update() {
                 } else {
                     GX_SetVisiblePlane(0x11);
                     new SaveWindow(1, 1, 0, 0x2000, 2, 0, 0, 0xd000, 0x120);
-                    mContext->mUnk_12 = 0;
+                    mContext->mRequest = 0;
                     mState++;
                 }
             }
             break;
         case 22:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mState = 0x17;
             }
             break;
@@ -457,16 +457,16 @@ void OptionScene::BuildSettings() {
         mPosY[i] = data_ov000_022262a8[i].y;
     }
     SaveData *data = gSaveData;
-    mUnk_4e = 0;
+    mRow = 0;
     mCells[2]->SetAnimation(0x13);
-    mUnk_4b = 8;
+    mSlideTimer = 8;
     mOld[0] = data->mUnk_28_7;
     mOld[1] = data->mUnk_28_10;
     mOld[2] = data->mUnk_28_13;
     mCur[0] = data->mUnk_28_7;
     mCur[1] = data->mUnk_28_10;
     mCur[2] = data->mUnk_28_13;
-    mUnk_4c = -1;
+    mTouchRow = -1;
     delete mWindow;
     mWindow = new SelectWindow(2, data_ov000_022262d0, -1);
     mWindow->SetCells(2, data_ov000_02226308);
@@ -474,12 +474,12 @@ void OptionScene::BuildSettings() {
 }
 
 void OptionScene::DrawSettings() {
-    if (mUnk_4b != 0) {
+    if (mSlideTimer != 0) {
         for (u8 i = 0; i < 5; i++) {
             mPosX[i] += data_ov000_022262bc[i].x;
             mPosY[i] += data_ov000_022262bc[i].y;
         }
-        mUnk_4b--;
+        mSlideTimer--;
     }
     for (u8 i = 0; i < 3; i++) {
         mCells[1]->Draw(1, (s16) (mPosX[2 + i] + data_ov000_02226278[mCur[i]]), data_ov000_02226274[i], 0);
@@ -496,63 +496,63 @@ void func_02022db4(SaveData *d);
 void OptionScene::UpdateSettings() {
     BOOL changed;
     u8 prev;
-    prev = mUnk_4e;
+    prev = mRow;
     changed = FALSE;
     if (TouchManager::Get().mDown) {
         if (TouchManager::Get().mPressed) {
-            mUnk_4c = -1;
+            mTouchRow = -1;
             for (u8 i = 0; i < 3; i++) {
                 if (TouchManager::Get().IsDownIn(0, data_ov000_02226274[i], 0x100, 0x18)) {
-                    mUnk_4c = i;
+                    mTouchRow = i;
                     break;
                 }
             }
         }
-        if (mUnk_4c < 0) {
+        if (mTouchRow < 0) {
             return;
         }
         for (u8 i = 0; i < 6; i++) {
-            if (TouchManager::Get().IsDownIn(data_ov000_02226278[i], data_ov000_02226274[mUnk_4c], 0x10, 0x18)) {
-                mCur[mUnk_4c] = i;
+            if (TouchManager::Get().IsDownIn(data_ov000_02226278[i], data_ov000_02226274[mTouchRow], 0x10, 0x18)) {
+                mCur[mTouchRow] = i;
             }
         }
-        mUnk_4e = mUnk_4c;
+        mRow = mTouchRow;
     } else if (TouchManager::Get().mTouching) {
-        if (mUnk_4c < 0) {
+        if (mTouchRow < 0) {
             return;
         }
         changed = TRUE;
     } else if (InputManager::Get().IsTrigger(KEY_UP)) {
-        if (mUnk_4e == 0) {
-            mUnk_4e = 2;
+        if (mRow == 0) {
+            mRow = 2;
         } else {
-            mUnk_4e--;
+            mRow--;
         }
     } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
-        if (mUnk_4e == 2) {
-            mUnk_4e = 0;
+        if (mRow == 2) {
+            mRow = 0;
         } else {
-            mUnk_4e++;
+            mRow++;
         }
     } else if (InputManager::Get().IsTrigger(KEY_LEFT)) {
-        mCur[mUnk_4e]--;
-        if (mCur[mUnk_4e] >= 6) {
-            mCur[mUnk_4e] = 0;
+        mCur[mRow]--;
+        if (mCur[mRow] >= 6) {
+            mCur[mRow] = 0;
         }
         changed = TRUE;
     } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
-        mCur[mUnk_4e]++;
-        if (mCur[mUnk_4e] >= 6) {
-            mCur[mUnk_4e] = 5;
+        mCur[mRow]++;
+        if (mCur[mRow] >= 6) {
+            mCur[mRow] = 5;
         }
         changed = TRUE;
     }
-    if (prev != mUnk_4e) {
+    if (prev != mRow) {
         mCells[prev + 2]->SetAnimation(data_ov000_02226280[prev + 2]);
-        mCells[mUnk_4e + 2]->SetAnimation(data_ov000_02226280[mUnk_4e + 5]);
+        mCells[mRow + 2]->SetAnimation(data_ov000_02226280[mRow + 5]);
     }
     if (changed) {
-        switch (mUnk_4e) {
+        switch (mRow) {
             case 0:
                 gSaveData[0].mUnk_28_7 = mCur[0];
                 func_02022db4(gSaveData);
@@ -582,7 +582,7 @@ void OptionScene::BuildMenu2() {
     mCells[0] = new CellAnimation("option_b_obj_00_nce.bin", 1, 1, 1);
     mPosX[0] = 0x80;
     mPosY[0] = 0x50;
-    mUnk_4b = 8;
+    mSlideTimer = 8;
     delete mWindow;
     mWindow = new SelectWindow(4, data_ov000_022264c8, (s8) (gSaveData[0].mUnk_28_6 == 0 ? 1 : 0));
     mWindow->SetCells(4, data_ov000_02226538);
@@ -592,9 +592,9 @@ void OptionScene::BuildMenu2() {
 }
 
 void OptionScene::DrawMenu2() {
-    if (mUnk_4b != 0) {
+    if (mSlideTimer != 0) {
         mPosY[0] += 2;
-        mUnk_4b--;
+        mSlideTimer--;
     }
     mCells[0]->Draw(1, mPosX[0], mPosY[0], 0);
 }
@@ -622,7 +622,7 @@ void OptionScene::BuildMenu3() {
     G2_SetBlendBrightness(3, -8);
     G2S_SetBlendBrightness(1, -8);
     mWindow->Update(1);
-    mUnk_4b = 8;
+    mSlideTimer = 8;
     MI_CpuClearFast(mBuf0c, mBufSize);
     TextManager &text = TextManager::Get();
     s16 outWidth;
@@ -635,7 +635,7 @@ void OptionScene::BuildMenu3() {
 }
 
 void OptionScene::SlideStep() {
-    if (mUnk_4b == 0) {
+    if (mSlideTimer == 0) {
         return;
     }
     u8 i;
@@ -651,7 +651,7 @@ void OptionScene::SlideStep() {
     mPosY[i] += data_ov000_02226288[i].y;
     G2S_SetBG1Offset(mPosX[i], mPosY[i]);
     G2S_SetBG2Offset(mPosX[i] - 0x20, mPosY[i]);
-    mUnk_4b--;
+    mSlideTimer--;
 }
 
 void OptionScene::ResetDisplay() {
@@ -676,7 +676,7 @@ void OptionScene::BuildMenu4() {
     mCells[0] = new CellAnimation("option_b_obj_00_nce.bin", 2, 1, 1);
     mPosX[0] = 0x80;
     mPosY[0] = 0x50;
-    mUnk_4b = 8;
+    mSlideTimer = 8;
     delete mWindow;
     mWindow = new SelectWindow(4, data_ov000_022263e8, (s8) (gSaveData[0].mUnk_28_5 == 0 ? 1 : 0));
     mWindow->SetCells(4, data_ov000_02226458);
@@ -690,9 +690,9 @@ void OptionScene::BuildMenu4() {
 
 
 void OptionScene::DrawMenu3() {
-    if (mUnk_4b != 0) {
+    if (mSlideTimer != 0) {
         mPosY[0] += 2;
-        mUnk_4b--;
+        mSlideTimer--;
     }
     mCells[0]->Draw(1, mPosX[0], mPosY[0], 0);
 }

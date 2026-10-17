@@ -68,7 +68,7 @@ TutorialScene::TutorialScene() :
     mGlyphs[0].mCount    = 0;
     mGlyphs[1].mBuffer  = NULL;
     mGlyphs[1].mCount   = 0;
-    mUnk_47        = 0;
+    mState        = 0;
     mUnk_48        = 0;
     mSelection     = 0;
     mScroll        = 0;
@@ -119,7 +119,7 @@ TutorialScene::~TutorialScene() {
 }
 
 void TutorialScene::Update() {
-    switch (mUnk_47) {
+    switch (mState) {
         case 0: {
             BOOL a = FALSE;
             BOOL b = FALSE;
@@ -137,7 +137,7 @@ void TutorialScene::Update() {
                 func_020383f8(SoundManager::Get().mHeap);
             }
             if (b) {
-                mUnk_47 = 1;
+                mState = 1;
                 return;
             }
             u8 c = data_020d433c.mUnk_86;
@@ -149,7 +149,7 @@ void TutorialScene::Update() {
                 data_020d433c.mUnk_86 = 1;
                 mUnk_4c = 1;
             }
-            mUnk_47 = 6;
+            mState = 6;
             break;
         }
         case 1:
@@ -157,7 +157,7 @@ void TutorialScene::Update() {
             LoadListText();
             LoadGraphics();
             SpriteManager::Get().StartFade(2);
-            mUnk_47++;
+            mState++;
             break;
         case 2:
             DrawList();
@@ -165,7 +165,7 @@ void TutorialScene::Update() {
                 return;
             }
             mWindow->mEnabled = 1;
-            mUnk_47++;
+            mState++;
             break;
         case 3: {
             u8 r = UpdateList();
@@ -174,11 +174,11 @@ void TutorialScene::Update() {
                     SoundManager::Get().StartSeqArc(0);
                     data_020d433c.mUnk_83 = mSelection + 1;
                     data_020d433c.mUnk_84 = 1;
-                    mUnk_47++;
+                    mState++;
                 } else {
                     SoundManager::Get().StartSeqArc(1);
                     mUnk_4b = 1;
-                    mUnk_47++;
+                    mState++;
                 }
             }
             DrawList();
@@ -187,7 +187,7 @@ void TutorialScene::Update() {
         case 4:
             DrawList();
             SpriteManager::Get().StartFade(3);
-            mUnk_47++;
+            mState++;
             break;
         case 5:
             DrawList();
@@ -195,10 +195,10 @@ void TutorialScene::Update() {
                 return;
             }
             if (mUnk_4b != 0) {
-                mUnk_47 = 0x1c;
+                mState = 0x1c;
                 return;
             }
-            mUnk_47++;
+            mState++;
             break;
         case 6: {
             BOOL x = FALSE;
@@ -214,12 +214,12 @@ void TutorialScene::Update() {
                     break;
             }
             if (x) {
-                mUnk_47 = 0x10;
+                mState = 0x10;
                 return;
             }
             func_ov005_0221e858(this);
             mEvent = new ScriptPlayer(6, 0, 1);
-            mUnk_47++;
+            mState++;
             break;
         }
         case 7: {
@@ -244,43 +244,43 @@ void TutorialScene::Update() {
             }
             mEvent->StartScript(second);
             SpriteManager::Get().StartFade(2);
-            mUnk_47++;
+            mState++;
             break;
         }
         case 8:
             if (mEvent->IsRunning()) {
                 return;
             }
-            mUnk_47++;
+            mState++;
             break;
         case 9:
             SpriteManager::Get().StartFade(3);
-            mUnk_47++;
+            mState++;
             break;
         case 10:
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
             mEvent->RequestFinish();
-            mContext->mUnk_12 = 0;
-            mUnk_47++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 11:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             if (mUnk_4c == 0) {
-                mUnk_47 = 0x10;
+                mState = 0x10;
                 return;
             }
             mUnk_4c = 0;
-            mUnk_47 = 0xc;
+            mState = 0xc;
             break;
         case 12:
             func_ov005_0221e9c8(this);
             LoadListWindow();
             SpriteManager::Get().StartFade(2);
-            mUnk_47++;
+            mState++;
             break;
         case 13:
             if (SpriteManager::Get().IsFading()) {
@@ -288,12 +288,12 @@ void TutorialScene::Update() {
             }
             ShowText(0);
             mWindow->mEnabled = 1;
-            mUnk_47++;
+            mState++;
             break;
         case 14:
             if (mWindow->Update(TRUE)) {
                 SpriteManager::Get().StartFade(3);
-                mUnk_47++;
+                mState++;
             }
             SpriteManager::Get().Screen(1).AddOam(mGlyphs[1].mBuffer, mGlyphs[1].mCount, 0x20, 0x28, 2, 0x20, 0xf, 0);
             mWindow->Draw();
@@ -303,44 +303,44 @@ void TutorialScene::Update() {
                 return;
             }
             if ((u8) mWindow->mCursor->mSelection != 0) {
-                mUnk_47 = 0x10;
+                mState = 0x10;
                 return;
             }
             data_020d433c.mUnk_84++;
             data_020d433c.mUnk_86 = 0;
-            mUnk_47 = 6;
+            mState = 6;
             break;
         case 16:
             mUnk_4d = 1;
-            mUnk_47 = 0x15;
+            mState = 0x15;
             switch (data_020d433c.mUnk_83) {
                 case 1:
                     if (data_020d433c.mUnk_84 >= 5) {
                         return;
                     }
                     if (data_020d433c.mUnk_84 < 4) {
-                        mUnk_47 = 0x1a;
+                        mState = 0x1a;
                         return;
                     }
                     data_020d433c.mUnk_84++;
                     data_020d433c.mUnk_86 = 0;
-                    mUnk_47 = 6;
+                    mState = 6;
                     break;
                 case 2:
                     if (data_020d433c.mUnk_84 < 3) {
-                        mUnk_47 = 0x1a;
+                        mState = 0x1a;
                     }
                     break;
                 case 3:
                 case 4:
                     if (data_020d433c.mUnk_84 < 2) {
-                        mUnk_47 = 0x1a;
+                        mState = 0x1a;
                     }
                     break;
                 case 5:
                 case 6:
                     if (data_020d433c.mUnk_84 < 2) {
-                        mUnk_47 = 0x11;
+                        mState = 0x11;
                     }
                     break;
             }
@@ -348,13 +348,13 @@ void TutorialScene::Update() {
         case 17:
             if (data_020d433c.mUnk_82 == 0) {
                 mUnk_4d = 0;
-                mUnk_47 = 0x15;
+                mState = 0x15;
                 return;
             }
             func_ov005_0221e9c8(this);
             LoadListWindow();
             SpriteManager::Get().StartFade(2);
-            mUnk_47++;
+            mState++;
             break;
         case 18:
             if (SpriteManager::Get().IsFading()) {
@@ -366,12 +366,12 @@ void TutorialScene::Update() {
                 ShowText(4);
             }
             mWindow->mEnabled = 1;
-            mUnk_47++;
+            mState++;
             break;
         case 19:
             if (mWindow->Update(TRUE)) {
                 SpriteManager::Get().StartFade(3);
-                mUnk_47++;
+                mState++;
             }
             SpriteManager::Get().Screen(1).AddOam(mGlyphs[1].mBuffer, mGlyphs[1].mCount, 0x20, 0x28, 2, 0x20, 0xf, 0);
             mWindow->Draw();
@@ -381,22 +381,22 @@ void TutorialScene::Update() {
                 return;
             }
             if ((u8) mWindow->mCursor->mSelection == 0) {
-                mUnk_47 = 0x1b;
+                mState = 0x1b;
                 return;
             }
             mUnk_4d = 0;
-            mUnk_47 = 0x15;
+            mState = 0x15;
             break;
         case 21:
             mFlags[data_020d433c.mUnk_83] = 1;
             if (mUnk_4d == 0) {
-                mUnk_47 = 0x19;
+                mState = 0x19;
                 return;
             }
             func_ov005_0221e9c8(this);
             LoadListWindow();
             SpriteManager::Get().StartFade(2);
-            mUnk_47++;
+            mState++;
             break;
         case 22:
             if (SpriteManager::Get().IsFading()) {
@@ -404,12 +404,12 @@ void TutorialScene::Update() {
             }
             ShowText(1);
             mWindow->mEnabled = 1;
-            mUnk_47++;
+            mState++;
             break;
         case 23:
             if (mWindow->Update(TRUE)) {
                 SpriteManager::Get().StartFade(3);
-                mUnk_47++;
+                mState++;
             }
             SpriteManager::Get().Screen(1).AddOam(mGlyphs[1].mBuffer, mGlyphs[1].mCount, 0x20, 0x28, 2, 0x20, 0xf, 0);
             mWindow->Draw();
@@ -420,13 +420,13 @@ void TutorialScene::Update() {
             }
             if ((u8) mWindow->mCursor->mSelection == 0) {
                 data_020d433c.mUnk_84 = 1;
-                mUnk_47 = 6;
+                mState = 6;
                 return;
             }
-            mUnk_47++;
+            mState++;
             break;
         case 25:
-            mUnk_47 = 0x1c;
+            mState = 0x1c;
             if (data_020d433c.mUnk_83 != 1) {
                 return;
             }
@@ -436,7 +436,7 @@ void TutorialScene::Update() {
             data_020d433c.mUnk_83 = 2;
             data_020d433c.mUnk_84 = 1;
             data_020d433c.mUnk_86 = 0;
-            mUnk_47 = 6;
+            mState = 6;
             break;
         case 26: {
             data_020d433c.mUnk_99 = 3;
@@ -505,9 +505,9 @@ void TutorialScene::Update() {
                 }
             } else {
                 if (mUnk_4b != 0) {
-                    mUnk_47 = 0x1d;
+                    mState = 0x1d;
                 } else {
-                    mUnk_47 = 1;
+                    mState = 1;
                 }
             }
             break;

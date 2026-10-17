@@ -28,7 +28,7 @@ public:
     /* 28 */ MessageFile *mMessages[2];
     /* 30 */ GlyphSlot mGlyphs[2];
     /* 40 */ u8 mFlags[7];
-    /* 47 */ u8 mUnk_47;
+    /* 47 */ u8 mState;
     /* 48 */ u8 mUnk_48;
     /* 49 */ u8 mSelection;
     /* 4a */ u8 mScroll;

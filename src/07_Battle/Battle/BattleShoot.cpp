@@ -550,7 +550,7 @@ void BattleShoot::Update() {
         }
         case 12:
             if (!func_ov007_0226f9e8()) {
-                if (mContext->mUnk_12 != 0) {
+                if (mContext->mRequest != 0) {
                     mUnk_61a0 = 0;
                     mUnk_61a6 = 0x30;
                     mUnk_6182 = 0x122;
@@ -584,11 +584,11 @@ void BattleShoot::Update() {
             break;
         case 13:
             new BattleUnk0227532c(3);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_6186++;
             break;
         case 14:
-            switch (mContext->mUnk_12) {
+            switch (mContext->mRequest) {
                 case 1:
                     mUnk_6186 = mUnk_61a8;
                     if (mUnk_6186 == 4) {
@@ -600,7 +600,7 @@ void BattleShoot::Update() {
                     }
                     func_ov007_0226f604();
                     data_020d433c.mUnk_14 &= ~8;
-                    mContext->mUnk_12 = 0;
+                    mContext->mRequest = 0;
                     break;
                 case 2:
                     if (data_020d433c.mWireless != 0) {
@@ -615,7 +615,7 @@ void BattleShoot::Update() {
             }
             break;
         case 15:
-            u16 scene = mContext->mUnk_12;
+            u16 scene = mContext->mRequest;
             if (scene != 0) {
                 RequestScene(scene);
                 mFinished = 1;
@@ -687,7 +687,7 @@ void BattleShoot::func_ov007_0226bd3c() {
     delete mUnk_6130;
     mUnk_6130                              = new BattleTarget(mUnk_6144, player, record);
     data_020d433c.mBattlePlayers->mBattleTarget = mUnk_6130;
-    mContext->mUnk_12                      = 0;
+    mContext->mRequest                      = 0;
     mUnk_6130->mUnk_1b8                    = mUnk_6168;
     mUnk_6130->mUnk_1ba                    = mUnk_616a;
 }

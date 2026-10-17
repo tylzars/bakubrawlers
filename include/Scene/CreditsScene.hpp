@@ -32,4 +32,4 @@ public:
     void LoadText();      // 02225c04
 };
 
-void func_ov000_02225f98(void *scene); // frame callback: BG1 scroll
+void CreditsScrollCallback(void *scene); // frame callback: BG1 scroll

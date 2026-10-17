@@ -60,9 +60,9 @@ GameOverScene::GameOverScene() :
     mSelection      = 0;
     MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
     if (data_020d433c.mUnk_8a_4 != 0) {
-        mUnk_2d = 1;
+        mResultWindowKind = 1;
     } else {
-        mUnk_2d = 0;
+        mResultWindowKind = 0;
     }
 }
 
@@ -105,7 +105,7 @@ void GameOverScene::Update() {
             if (mResultWindow->Update(TRUE)) {
                 mSelection = mResultWindow->mCursor->mSelection;
                 BOOL retry = FALSE;
-                if (mUnk_2d == 0) {
+                if (mResultWindowKind == 0) {
                     if (mSelection == 2) {
                         retry = TRUE;
                     }
@@ -149,7 +149,7 @@ void GameOverScene::Update() {
             break;
         case 6: {
             int next;
-            if (mUnk_2d == 0) {
+            if (mResultWindowKind == 0) {
                 switch (mSelection) {
                     case 0:
                         next = 5;
@@ -230,10 +230,10 @@ void GameOverScene::LoadGraphics() {
 }
 
 void GameOverScene::CreateResultWindow() {
-    int count = mUnk_2d == 0 ? 3 : 2;
+    int count = mResultWindowKind == 0 ? 3 : 2;
     delete mResultWindow;
-    mResultWindow = new SelectWindow(count, sResultItems[mUnk_2d], -1);
-    mResultWindow->SetCells(count, sResultCells[mUnk_2d]);
+    mResultWindow = new SelectWindow(count, sResultItems[mResultWindowKind], -1);
+    mResultWindow->SetCells(count, sResultCells[mResultWindowKind]);
     mResultWindow->mCursor->mSelection = -1;
     mResultWindow->mEnabled            = 0;
     mResultWindow->mCursor->mSelection = 0;

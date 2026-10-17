@@ -70,7 +70,7 @@ public:
 #include "Scene/StoreScene.hpp"
 #include "Scene/TournamentScene.hpp"
 #include "Scene/TutorialScene.hpp"
-#include "Scene/UnkScene_ov000.hpp"
+#include "Scene/LogoScene.hpp"
 #include "System/SoundManager.hpp"
 #include "System/WirelessManager.hpp"
 #include "System/TouchManager.hpp"
@@ -140,7 +140,7 @@ void SceneRunner::func_02024968(s32 scene) {
         FrameTask::Get().OpenHandles();
     }
     func_02025df8();
-    mContext->mUnk_12 = 14;
+    mContext->mRequest = 14;
     ((UnkStruct_RunnerContext *) mContext)->mState = scene;
     if (data_020d433c.mUnk_84 == 0) {
         SoundManager::Get().func_020245a4();
@@ -161,14 +161,14 @@ void SceneRunner::Update() {
                 TouchManager::Get().ApplyCalibrationAndEnable();
             }
             context->mState++;
-            mContext->mUnk_12 = 14;
+            mContext->mRequest = 14;
             break;
         case 1:
             context->mState++;
             break;
         case 2:
             SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV000_ID);
-            new UnkScene_02226e60();
+            new LogoScene();
             context->mState = 14;
             break;
         case 3:

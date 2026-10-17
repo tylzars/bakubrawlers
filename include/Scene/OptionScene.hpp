@@ -21,11 +21,11 @@ public:
     /* 44 */ u8 mCur[3];
     /* 47 */ u8 mOld[3];
     /* 4a */ u8 mState;
-    /* 4b */ u8 mUnk_4b;
-    /* 4c */ s8 mUnk_4c;
+    /* 4b */ u8 mSlideTimer;
+    /* 4c */ s8 mTouchRow;
     /* 4d */ s8 mSelection;
-    /* 4e */ u8 mUnk_4e;
-    /* 4f */ u8 mUnk_4f;
+    /* 4e */ u8 mRow;
+    /* 4f */ u8 mFlagSelectedId;
     /* 50 */
 
     OptionScene();

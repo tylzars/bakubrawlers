@@ -35,8 +35,8 @@ public:
     /* 44 */ MessageWindow *mMessage;
     /* 48 */ CharacterIcons *mUnk_48;
     /* 4c */ s32 mResult;
-    /* 50 */ u8 mUnk_50;
-    /* 51 */ s8 mUnk_51;
+    /* 50 */ u8 mTextLineCount;
+    /* 51 */ s8 mScroll;
     /* 52 */ u8 mCount;
     /* 53 */ s8 mSelected;
     /* 54 */ u8 mUnk_54;
@@ -52,14 +52,14 @@ public:
     /* 08 */ virtual void Update() override;
     /* 0c */
 
-    void func_ov002_0221f930();
-    void func_ov002_0221fb24();
+    void InitDisplay();
+    void Init();
     void Draw(); // 02220178
-    void func_ov002_02220184();
-    s32 func_ov002_022202cc();
-    s32 func_ov002_022203ec();
+    void DrawSubScreen();
+    s32 UpdateEntrySelection();
+    s32 UpdateEntryKeySelection();
     void func_ov002_02220618();
-    void func_ov002_02220680();
-    void func_ov002_02220830();
+    void PrintProfile();
+    void SetupProfile();
     void ClearTextBuffer(); // 022209e4
 };

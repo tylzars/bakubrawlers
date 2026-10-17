@@ -20,7 +20,7 @@ struct UnkStruct_SceneList {
     /* 00 */ UnkStruct_SceneNode *mHead;
 };
 
-struct UnkStruct_SceneContext;
+struct SceneContext;
 
 // Per-scene state kept in the scene context, cleared by the scene constructors.
 struct SceneInfo {
@@ -42,16 +42,16 @@ struct SceneInfo {
 };
 
 // One entry of the scene manager's list (0x40 bytes, SceneManager::mNodes). Scenes keep a pointer to theirs in mContext.
-struct UnkStruct_SceneContext {
+struct SceneContext {
     /* 00 */ SceneBase *mScene;
-    /* 04 */ UnkStruct_SceneContext *mPrev;
-    /* 08 */ UnkStruct_SceneContext *mNext;
+    /* 04 */ SceneContext *mPrev;
+    /* 08 */ SceneContext *mNext;
     /* 0c */ union {
-        UnkStruct_SceneContext *mParent; // node of the scene that was running when this one was added
+        SceneContext *mParent; // node of the scene that was running when this one was added
         UnkStruct_SceneList *mList;
     };
     /* 10 */ u16 mOrder;
-    /* 12 */ s16 mUnk_12;
+    /* 12 */ s16 mRequest;
     /* 14 */ SceneInfo mInfo;
     /* 20 */ PAD(0x20, 0x40);
     /* 40 */
@@ -62,7 +62,7 @@ class SceneBase {
 public:
     /* 00 (vtable) */
     /* 04 */ u8 mFinished;
-    /* 08 */ UnkStruct_SceneContext *mContext;
+    /* 08 */ SceneContext *mContext;
     /* 0c */
 
     // mode: 0 adds a node ordered by `order`, 1 / 2 take a layer's first / second slot, 3 is unmanaged.
@@ -77,7 +77,7 @@ public:
     }
 
     void RequestScene(int scene) {
-        UnkStruct_SceneContext *context = mContext;
-        context->mParent->mScene->mContext->mUnk_12 = scene;
+        SceneContext *context = mContext;
+        context->mParent->mScene->mContext->mRequest = scene;
     }
 };

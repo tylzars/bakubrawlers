@@ -19,7 +19,7 @@ public:
     /* 00 (base) */
     /* 0c */ CellAnimation *mCellAnim;
     /* 10 */ UnkStruct_0205401c *mModel;
-    /* 14 */ ModelInstance *mUnk_14;
+    /* 14 */ ModelInstance *mMyroombgModel;
     /* 18 */ Camera *mCamera;
     /* 1c */ ModelLightGroup *mPalette;
     /* 20 */ MessageFile *mMessages;

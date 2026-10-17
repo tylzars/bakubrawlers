@@ -154,11 +154,11 @@ void BattleAbility::Update() {
             OpenUnionAbility();
             break;
         case 2: {
-            u8 result = mContext->mUnk_12;
+            u8 result = mContext->mRequest;
             if (result == 0) {
                 break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             switch (result) {
                 case 1:
                     mUnk_0f = 3;
@@ -186,10 +186,10 @@ void BattleAbility::Update() {
             break;
         }
         case 3:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             if (mAbilityId == 0xcb) {
                 mCommandPage = new BattleCommandPage(0, -1);
                 func_0205562c(mCommandPage, 1);
@@ -202,7 +202,7 @@ void BattleAbility::Update() {
             mState++;
             break;
         case 4: {
-            u16 result = mContext->mUnk_12;
+            u16 result = mContext->mRequest;
             if (result == 0) {
                 break;
             }
@@ -223,23 +223,23 @@ void BattleAbility::Update() {
             } else {
                 CloseCommandList(mCommandList);
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             break;
         }
         case 5:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mCommandPage = new BattleCommandPage(mAbilityId, -1);
             OpenUnionAbility();
             mState = 2;
             break;
         case 6:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
-            mContext->mUnk_12 = 1;
+            mContext->mRequest = 1;
             if (mAbilityId == 0xcc) {
                 CameraManager::Get().Reset();
                 CameraManager::Get().mActive = 0;
@@ -249,10 +249,10 @@ void BattleAbility::Update() {
             mState = 10;
             break;
         case 7:
-            if ((u8) mContext->mUnk_12 != 1) {
+            if ((u8) mContext->mRequest != 1) {
                 break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnionAbility->Close(0xff);
             CloseCommandPage(mCommandPage, 3);
             mNextScene = 2;
@@ -268,7 +268,7 @@ void BattleAbility::Update() {
             if (player->mMsg.mType != 0x14) {
                 break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnionAbility->Close(0xff);
             if (mUnk_14 == 1) {
                 CloseCommandPage(mCommandPage, 3);
@@ -290,7 +290,7 @@ void BattleAbility::Update() {
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
                 mUnk_0f = mUnk_14 == 1 ? 2 : 3;
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mUnionAbility->Close(0xff);
                 CloseCommandPage(mCommandPage, 1);
                 mState = 10;
@@ -300,10 +300,10 @@ void BattleAbility::Update() {
             }
             break;
         case 10:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mTarget->mUnk_1e7_1 = 1;
             mState++;
             break;
@@ -341,10 +341,10 @@ void BattleAbility::Update() {
             }
             break;
         case 16:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             break;
         case 17:

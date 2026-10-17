@@ -743,17 +743,17 @@ void ListScene::Release(u32 releaseCommands) {
     mMessageWindow = NULL;
     if (releaseCommands != 0) {
         if (mUnk_400 == 0 && mUnk_401 == 0) {
-            mContext->mUnk_12 = 1;
+            mContext->mRequest = 1;
         }
         if (mCommandList != NULL && mUnk_400 == 0) {
             CloseCommandList(mCommandList);
             mCommandList           = NULL;
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
         }
         if (mCommandPage != NULL && mUnk_401 == 0) {
             CloseCommandPage(mCommandPage, 1);
             mCommandPage           = NULL;
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
         }
     }
     mWndMode = 0;
@@ -1087,7 +1087,7 @@ void ListScene::Update() {
             func_020851d0();
             return;
         case 25:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mState++;
             }
             return;
@@ -1141,7 +1141,7 @@ void ListScene::Update() {
                 Release(0);
                 mUnk_1e0 = new UnkStruct_02076058(1);
                 mUnk_1e0->func_02077a30(1, mItemIds[mCursorItem] & 0xff, mUnk_104, 1);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mState++;
                 return;
             }
@@ -1162,7 +1162,7 @@ void ListScene::Update() {
             return;
         case 36:
             if (mCommandList != NULL) {
-                if (mContext->mUnk_12 == 0) {
+                if (mContext->mRequest == 0) {
                     return;
                 }
                 mUnk_1e0->mUnk_78 = 1;
@@ -1171,10 +1171,10 @@ void ListScene::Update() {
             mState++;
             return;
         case 37:
-            if (mContext->mUnk_12 != 3) {
+            if (mContext->mRequest != 3) {
                 return;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_1e0          = NULL;
             mState           = 0;
             mUnk_f0           = 0;
@@ -1196,19 +1196,19 @@ void ListScene::Update() {
             }
             break;
         case 40:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             mUnk_1e4 = new UnkStruct_02071d24(2);
             mUnk_1e4->SetBakugan(0, mItemIds[mCursorItem] & 0xff, mUnk_104, 1);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             return;
         case 41:
-            if (mContext->mUnk_12 != 2) {
+            if (mContext->mRequest != 2) {
                 return;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_1e4          = NULL;
             mState           = 0;
             mUnk_f0           = 1;
@@ -1235,7 +1235,7 @@ void ListScene::Update() {
             }
             break;
         case 45:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mState++;
             }
             return;
@@ -1957,14 +1957,14 @@ void ListScene::func_0207dea4() {
             mUnk_4c->mEnabled = 0;
             if (mCommandList != NULL) {
                 CloseCommandList(mCommandList);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mUnk_400          = 1;
                 mUnk_1a0          = 3;
             } else if (mCommandPage == NULL) {
                 mUnk_1a0 = 2;
             } else {
                 CloseCommandPage(mCommandPage, 1);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mUnk_401          = 1;
                 mUnk_1a0          = 3;
             }
@@ -1977,7 +1977,7 @@ void ListScene::func_0207dea4() {
             }
             break;
         case 3:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 if (mCommandList != NULL) {
                     mCommandList = NULL;
                 }

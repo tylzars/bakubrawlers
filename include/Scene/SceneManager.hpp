@@ -20,11 +20,11 @@ public:
 // replaces a layer's first (mode 1) or second (mode 2) sentinel slot.
 class SceneManager {
 public:
-    /* 00000 */ UnkStruct_SceneContext mRoot; // node 0 stands for the root scene passed to Init
-    /* 00040 */ UnkStruct_SceneContext mNodes[SCENE_NODE_COUNT];
-    /* 10040 */ UnkStruct_SceneContext *mCurrent; // node whose scene is being updated
-    /* 10044 */ UnkStruct_SceneContext *mRootNode;
-    /* 10048 */ UnkStruct_SceneContext *mPool;
+    /* 00000 */ SceneContext mRoot; // node 0 stands for the root scene passed to Init
+    /* 00040 */ SceneContext mNodes[SCENE_NODE_COUNT];
+    /* 10040 */ SceneContext *mCurrent; // node whose scene is being updated
+    /* 10044 */ SceneContext *mRootNode;
+    /* 10048 */ SceneContext *mPool;
     /* 1004c */ u16 mPoolSize;
     /* 1004e */ u8 mLayerCount;
     /* 1004f */ u8 mLayer; // layer new scenes are added to
@@ -44,12 +44,12 @@ public:
     SceneManager *Init(SceneBase *root);
     void Update();
     void UpdateLayer();
-    UnkStruct_SceneContext *SetSlot0(SceneBase *scene);
-    UnkStruct_SceneContext *SetSlot1(SceneBase *scene);
-    void LinkSentinels(UnkStruct_SceneContext *first, UnkStruct_SceneContext *second);
+    SceneContext *SetSlot0(SceneBase *scene);
+    SceneContext *SetSlot1(SceneBase *scene);
+    void LinkSentinels(SceneContext *first, SceneContext *second);
     void DeleteLayer();
     void InitLayers();
     void Reset();
-    UnkStruct_SceneContext *Add(SceneBase *scene, u32 order);
+    SceneContext *Add(SceneBase *scene, u32 order);
     void Remove();
 };

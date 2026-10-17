@@ -1,5 +1,6 @@
 
-void func_ov000_0221d150();
+void LoadActivisionLogo();
+#include "Scene/LogoScene.hpp"
 #include "Scene/UnkScene_ov000.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/Display.hpp"
@@ -11,30 +12,30 @@ void func_ov000_0221d150();
 #include "System/FileSystem.hpp"
 #include "System/SaveManager.hpp"
 
-UnkScene_02226e60::UnkScene_02226e60() :
+LogoScene::LogoScene() :
     SceneBase(2, 0) {
     mState = 0;
 }
 
-UnkScene_02226e60::~UnkScene_02226e60() {
+LogoScene::~LogoScene() {
     data_020d433c.mUnk_80 = 0;
 }
 
-void UnkScene_02226e60::Update() {
+void LogoScene::Update() {
     switch (mState) {
         case 0:
             SpriteManager::Get().SetFade(1, -16);
             if (data_020d433c.mUnk_81 == 0) {
                 data_020d433c.mUnk_81 = 1;
                 new UnkScene_02226e4c();
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mState++;
             } else {
                 mState = 3;
             }
             break;
         case 1:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mState++;
             }
             break;
@@ -62,8 +63,8 @@ void UnkScene_02226e60::Update() {
             mState++;
             break;
         case 4:
-            func_ov000_0221d150();
-            func_ov000_0221d5d4();
+            LoadActivisionLogo();
+            LoadNelvanaLogo();
             SpriteManager::Get().StartFade(2);
             mFrames = 0;
             mState++;
@@ -82,8 +83,8 @@ void UnkScene_02226e60::Update() {
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            func_ov000_0221d21c();
-            func_ov000_0221d500();
+            LoadNowLogo();
+            LoadCriLogo();
             SpriteManager::Get().StartFade(2);
             mFrames = 0;
             mState++;
@@ -102,8 +103,8 @@ void UnkScene_02226e60::Update() {
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            func_ov000_0221d3b4();
-            func_ov000_0221d2e8();
+            LoadLegaltextLogo();
+            LoadMobiclipLogo();
             SpriteManager::Get().StartFade(2);
             mFrames = 0;
             mState++;
@@ -128,7 +129,7 @@ void UnkScene_02226e60::Update() {
     }
 }
 
-void UnkScene_02226e60::InitDisplay() {
+void LogoScene::InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 5, 0);
@@ -146,7 +147,7 @@ void UnkScene_02226e60::InitDisplay() {
 // Singleton at data_020c17a8 (guard data_020c17d8); the destructor is func_02020a44.
 
 
-BOOL UnkScene_02226e60::WaitFrames(u32 maxFrames, u32 minFrames) {
+BOOL LogoScene::WaitFrames(u32 maxFrames, u32 minFrames) {
     BOOL done = FALSE;
     mFrames++;
     if (mFrames >= minFrames) {
@@ -160,7 +161,7 @@ BOOL UnkScene_02226e60::WaitFrames(u32 maxFrames, u32 minFrames) {
     return done;
 }
 
-void func_ov000_0221d150() {
+void LoadActivisionLogo() {
     ChangeDir("/logo");
     LoadAndQueueUpload(0, 6, 0, "logo_activision_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(0, 11, 0, "logo_activision_ncg.bin", 0, 0, 0);
@@ -169,7 +170,7 @@ void func_ov000_0221d150() {
     GX_SetVisiblePlane(0x11);
 }
 
-void UnkScene_02226e60::func_ov000_0221d21c() {
+void LogoScene::LoadNowLogo() {
     ChangeDir("/logo");
     LoadAndQueueUpload(0, 6, 0, "logo_now_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(0, 11, 0, "logo_now_ncg.bin", 0, 0, 0);
@@ -178,7 +179,7 @@ void UnkScene_02226e60::func_ov000_0221d21c() {
     GX_SetVisiblePlane(0x11);
 }
 
-void UnkScene_02226e60::func_ov000_0221d2e8() {
+void LogoScene::LoadMobiclipLogo() {
     ChangeDir("/logo");
     LoadAndQueueUpload(0, 1, 0x2000, "logo_mobiclip_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(0, 12, 0, "logo_mobiclip_ncg.bin", 0, 0, 0);
@@ -187,7 +188,7 @@ void UnkScene_02226e60::func_ov000_0221d2e8() {
     GX_SetVisiblePlane(0x12);
 }
 
-void UnkScene_02226e60::func_ov000_0221d3b4() {
+void LogoScene::LoadLegaltextLogo() {
     ChangeDir("/logo");
     if (data_020d433c.mLanguage == 0) {
         LoadAndQueueUpload(1, 1, 0x2000, "logo_legaltext_english_ncl.bin", 0, 0, 0);
@@ -202,7 +203,7 @@ void UnkScene_02226e60::func_ov000_0221d3b4() {
     GXS_SetVisiblePlane(0x12);
 }
 
-void UnkScene_02226e60::func_ov000_0221d500() {
+void LogoScene::LoadCriLogo() {
     ChangeDir("/logo");
     LoadAndQueueUpload(1, 1, 0x2000, "logo_cri_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 12, 0, "logo_cri_ncg.bin", 0, 0, 0);
@@ -211,7 +212,7 @@ void UnkScene_02226e60::func_ov000_0221d500() {
     GXS_SetVisiblePlane(0x12);
 }
 
-void UnkScene_02226e60::func_ov000_0221d5d4() {
+void LogoScene::LoadNelvanaLogo() {
     ChangeDir("/logo");
     LoadAndQueueUpload(1, 1, 0x2000, "logo_nelvana_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 12, 0, "logo_nelvana_ncg.bin", 0, 0, 0);

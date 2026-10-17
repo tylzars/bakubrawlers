@@ -357,9 +357,9 @@ void BattleCommand::Update() {
             if (list->mUnk_293 == 0) {
                 list->mUnk_293 = 1;
                 new BattleCardEffect(0, 10, 0x11, 1);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
             } else {
-                mContext->mUnk_12 = 1;
+                mContext->mRequest = 1;
             }
             if (data_020d433c.mBattlePlayers->mUnk_292 == 2) {
                 mState = 3;
@@ -369,7 +369,7 @@ void BattleCommand::Update() {
             return;
         }
         case 3:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             CloseMode(1);
@@ -409,12 +409,12 @@ void BattleCommand::Update() {
                 } while (i < 12);
             }
             new BattleCharaAct((Camera *) mCamera, mUnk_133, 7, unk4, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             return;
         }
         case 5: {
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             if (data_020d433c.mBattlePlayers->mUnk_292 == 2) {
@@ -456,10 +456,10 @@ void BattleCommand::Update() {
                 return;
             }
             mState++;
-            mContext->mUnk_12 = 1;
+            mContext->mRequest = 1;
             return;
         case 7: {
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -862,12 +862,12 @@ void BattleCommand::Update() {
                 kind = 0xf;
             }
             new BattleCharaAct((Camera *) mCamera, cur, kind, act, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             return;
         }
         case 20:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             mUnk_134 = 4;
@@ -902,11 +902,11 @@ void BattleCommand::Update() {
             mNextMode = 3;
             OpenNextMode(0);
             new BattleCommandPrompt(1, mCommandPage, 0, 0, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             return;
         case 24: {
-            u16 v = mContext->mUnk_12;
+            u16 v = mContext->mRequest;
             if (v == 0) {
                 return;
             }
@@ -978,7 +978,7 @@ void BattleCommand::Update() {
             mCockpitWindow->Update(1);
             if (mCockpitWindow->mState == 4) {
                 new BattleCommandPrompt(1, mCommandPage, 0, 0, 0);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mCockpitWindow->Reset(-1);
                 mCockpitWindow->mEnabled = 0;
                 mState          = 0x18;
@@ -1032,13 +1032,13 @@ void BattleCommand::Update() {
             }
             u8 cur = data_020d433c.mBattlePlayers->mTurnPlayer;
             new BattleCharaAct((Camera *) mCamera, cur, 1, 0, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             GXS_SetVisibleWnd(0);
             mState++;
             return;
         }
         case 32: {
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             mNextMode = 2;
@@ -1146,11 +1146,11 @@ void BattleCommand::Update() {
             OpenNextMode(0);
             func_02058228(mCommandList, 1);
             new BattleCommandPrompt(2, mCommandList, 0, 0, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             return;
         case 38: {
-            u16 v = mContext->mUnk_12;
+            u16 v = mContext->mRequest;
             if (v == 0) {
                 return;
             }
@@ -1339,11 +1339,11 @@ void BattleCommand::Update() {
             SpriteManager::Get().StartSubFade(2);
             data_020d433c.mGimmicks->mState = 0;
             new BattleCardEffect(0, 0xb, 0xe, 1);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             return;
         case 47: {
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             SpriteManager::Get().StartFade(3);
@@ -1360,11 +1360,11 @@ void BattleCommand::Update() {
             return;
         case 49:
             new BattleUnk0227532c(1);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mState++;
             return;
         case 50:
-            switch (mContext->mUnk_12) {
+            switch (mContext->mRequest) {
                 case 1:
                     mState = 10;
                     return;
@@ -1542,7 +1542,7 @@ BOOL BattleCommand::UpdatePrompt() {
                 mNextMode = 3;
                 OpenNextMode(0);
                 mCommandPrompt                = new BattleCommandPrompt(5, mCommandPage, 0, 0, (u8) (mSelectedId - 6));
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mPromptStep               = 7;
             }
             break;
@@ -1556,7 +1556,7 @@ BOOL BattleCommand::UpdatePrompt() {
                 mNextMode = 4;
                 OpenNextMode(0);
                 mCommandPrompt                = new BattleCommandPrompt(6, mCommandList, 0, 0, (u8) (mSelectedId - 6));
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mPromptStep               = 7;
             }
             break;
@@ -1570,12 +1570,12 @@ BOOL BattleCommand::UpdatePrompt() {
                 mNextMode = 3;
                 OpenNextMode(0);
                 mCommandPrompt                = new BattleCommandPrompt(7, mCommandPage, 0, 0, (u8) (mSelectedId - 6));
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 mPromptStep               = 7;
             }
             break;
         case 7:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mCommandPrompt = 0;
                 CloseMode(1);
                 mPromptStep++;
@@ -2195,16 +2195,16 @@ void BattleCommand::CloseMode(BOOL flag) {
         SpriteManager::sBrightness[0] = -16;
     }
     mMode                = 1;
-    mContext->mUnk_12 = 0;
+    mContext->mRequest = 0;
 }
 
 void BattleCommand::PollModeClosed() {
     if (mMode != 1) {
         return;
     }
-    UnkStruct_SceneContext *context = mContext;
-    if (context->mUnk_12 != 0) {
-        context->mUnk_12 = 0;
+    SceneContext *context = mContext;
+    if (context->mRequest != 0) {
+        context->mRequest = 0;
         mMode            = 0;
     }
 }

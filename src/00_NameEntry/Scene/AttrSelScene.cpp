@@ -37,17 +37,17 @@ extern "C" u32 FX_Atan2Idx(s32 x, s32 y);
 
 AttrSelScene::AttrSelScene() :
     SceneBase(1000, 0) {
-    mUnk_0c = 0;
+    mState = 0;
     mAttrib = data_ov000_0222622c[gSaveData[0].mUnk_1a_8];
-    mUnk_0e = 0;
-    mUnk_0f = 0;
+    mPulseState = 0;
+    mPulseAlpha = 0;
     mUnk_10_0 = 0;
-    mUnk_11 = 0;
+    mPulseFrames = 0;
     mFade = 0;
-    mState = 4;
-    mUnk_16 = 0;
-    mUnk_17 = 0;
-    mUnk_18 = 0;
+    mTransitionState = 4;
+    mBlendAlphaLowByte = 0;
+    mBlendAlphaHighByte = 0;
+    mPulseCount = 0;
     mMessages = NULL;
     mMessageWindow = NULL;
     mSelectWindow = NULL;
@@ -83,13 +83,13 @@ AttrSelScene::~AttrSelScene() {
 }
 
 void AttrSelScene::Update() {
-    switch (mUnk_0c) {
+    switch (mState) {
         case 0:
             SpriteManager::Get().StartFade(2);
-            mUnk_0c++;
+            mState++;
         case 1:
             if (!SpriteManager::Get().IsFading()) {
-                mUnk_0c++;
+                mState++;
             }
             break;
         case 2: {
@@ -140,36 +140,36 @@ void AttrSelScene::Update() {
             switch (event) {
                 case 1:
                     SpriteManager::Get().StartFade(3);
-                    mUnk_15 = 1;
-                    mUnk_0c = 4;
+                    mRequest = 1;
+                    mState = 4;
                     break;
                 case 2:
-                    if (mState == 3) {
+                    if (mTransitionState == 3) {
                         LoadSubBg();
                     }
-                    mState = 2;
+                    mTransitionState = 2;
                     mCells[6]->mFrameIndex = mAttrib;
-                    mUnk_0e = 0;
-                    mUnk_0f = 0;
+                    mPulseState = 0;
+                    mPulseAlpha = 0;
                     break;
                 case 3:
-                    mUnk_0e = 2;
-                    mUnk_0c++;
+                    mPulseState = 2;
+                    mState++;
                     break;
             }
             break;
         }
         case 3:
-            if (mUnk_0e != 2) {
+            if (mPulseState != 2) {
                 gSaveData[0].mUnk_1a_8 = data_ov000_0222621c[mAttrib];
                 SpriteManager::Get().StartFade(3);
-                mUnk_15 = 2;
-                mUnk_0c++;
+                mRequest = 2;
+                mState++;
             }
             break;
         case 4:
             if (!SpriteManager::Get().IsFading()) {
-                RequestScene(mUnk_15);
+                RequestScene(mRequest);
                 mFinished = 1;
             }
             break;
@@ -290,77 +290,77 @@ void AttrSelScene::LoadSubBg() {
 }
 
 void AttrSelScene::TransitionStep() {
-    switch (mState) {
+    switch (mTransitionState) {
         case 0:
             mFade = 0x1f;
-            mState++;
+            mTransitionState++;
         case 1:
             mFade -= 3;
             if (mFade <= 0) {
                 mFade = 0;
-                mState = 4;
-                mUnk_16 = 0x1f;
-                mUnk_17 = 0;
+                mTransitionState = 4;
+                mBlendAlphaLowByte = 0x1f;
+                mBlendAlphaHighByte = 0;
             } else {
-                mUnk_16 = 0x1f - mFade;
-                mUnk_17 = mFade;
+                mBlendAlphaLowByte = 0x1f - mFade;
+                mBlendAlphaHighByte = mFade;
             }
-            QueueFrameCallback(func_ov000_0221f080, this);
+            QueueFrameCallback(AttrSelTransitionCallback, this);
             break;
         case 2:
             mFade = 0;
-            mState++;
+            mTransitionState++;
         case 3:
             mFade -= 3;
             if (mFade <= -0x1f) {
                 mFade = 0x1f;
-                mState = 0;
+                mTransitionState = 0;
                 LoadSubBg();
-                mUnk_17 = 0x1f;
-                mUnk_16 = 0;
+                mBlendAlphaHighByte = 0x1f;
+                mBlendAlphaLowByte = 0;
             } else {
                 int v = -mFade;
-                mUnk_17 = v;
-                mUnk_16 = 0x1f - (v & 0xff);
+                mBlendAlphaHighByte = v;
+                mBlendAlphaLowByte = 0x1f - (v & 0xff);
             }
-            QueueFrameCallback(func_ov000_0221f080, this);
+            QueueFrameCallback(AttrSelTransitionCallback, this);
             break;
         case 4:
             break;
     }
 }
 
-void func_ov000_0221f080(void *scene) {
+void AttrSelTransitionCallback(void *scene) {
     AttrSelScene *self = (AttrSelScene *) scene;
     MtxFx22 mtx;
     func_01ffcef4(&mtx, 0x1000, 0x1000, 0);
-    reg_G2_BLDALPHA = self->mUnk_16 | (self->mUnk_17 << 8);
+    reg_G2_BLDALPHA = self->mBlendAlphaLowByte | (self->mBlendAlphaHighByte << 8);
     G2x_SetBGyAffine_((vu16 *) 0x4000030, &mtx, 0, 0, -self->mFade, 0);
 }
 
 void AttrSelScene::PulseBlend() {
-    switch (mUnk_0e) {
+    switch (mPulseState) {
         case 0:
-            mUnk_0f += 2;
-            if (mUnk_0f >= 7) {
+            mPulseAlpha += 2;
+            if (mPulseAlpha >= 7) {
                 mUnk_10_0 = 0;
-                mUnk_0e = 1;
+                mPulseState = 1;
             }
             break;
         case 1:
-            mUnk_11++;
-            if (mUnk_11 >= 4) {
-                mUnk_11 = 0;
+            mPulseFrames++;
+            if (mPulseFrames >= 4) {
+                mPulseFrames = 0;
                 if (!mUnk_10_0) {
-                    mUnk_0f += 2;
-                    if (mUnk_0f >= 0x1f) {
-                        mUnk_0f = 0x1f;
+                    mPulseAlpha += 2;
+                    if (mPulseAlpha >= 0x1f) {
+                        mPulseAlpha = 0x1f;
                         mUnk_10_0 ^= 1;
                     }
                 } else {
-                    mUnk_0f -= 2;
-                    if (mUnk_0f <= 7) {
-                        mUnk_0f = 7;
+                    mPulseAlpha -= 2;
+                    if (mPulseAlpha <= 7) {
+                        mPulseAlpha = 7;
                         mUnk_10_0 ^= 1;
                     }
                 }
@@ -368,25 +368,25 @@ void AttrSelScene::PulseBlend() {
             break;
         case 2:
             if (!mUnk_10_0) {
-                mUnk_0f += 6;
-                if (mUnk_0f >= 0x1f) {
-                    mUnk_0f = 0x1f;
+                mPulseAlpha += 6;
+                if (mPulseAlpha >= 0x1f) {
+                    mPulseAlpha = 0x1f;
                     mUnk_10_0 ^= 1;
                 }
             } else {
-                mUnk_0f -= 6;
-                if (mUnk_0f <= 7) {
-                    mUnk_0f = 7;
+                mPulseAlpha -= 6;
+                if (mPulseAlpha <= 7) {
+                    mPulseAlpha = 7;
                     mUnk_10_0 ^= 1;
-                    mUnk_18++;
-                    if (mUnk_18 >= 6) {
-                        mUnk_0e = 1;
+                    mPulseCount++;
+                    if (mPulseCount >= 6) {
+                        mPulseState = 1;
                     }
                 }
             }
             break;
     }
-    reg_G2S_DB_BLDALPHA = mUnk_0f | 0x1f00;
+    reg_G2S_DB_BLDALPHA = mPulseAlpha | 0x1f00;
 }
 
 void AttrSelScene::DrawText() {

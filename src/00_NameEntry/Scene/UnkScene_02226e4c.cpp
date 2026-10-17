@@ -1,5 +1,5 @@
 
-void func_ov000_0221d150();
+void LoadActivisionLogo();
 #include "Scene/UnkScene_ov000.hpp"
 #include "System/SaveManager.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
@@ -27,7 +27,7 @@ void UnkScene_02226e4c::Update() {
     switch (mState) {
         case 0: {
             InitDisplay();
-            UnkStruct_020073d8 info;
+            OwnerInfo info;
             OS_GetOwnerInfo(&info);
             if (info.mKind == 1) {
                 data_020d433c.mLanguage = 0;

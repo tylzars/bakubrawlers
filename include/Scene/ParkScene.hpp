@@ -13,13 +13,13 @@ class ScriptPlayer;
 class ParkScene : public SceneBase {
 public:
     /* 00 (base) */
-    /* 0c */ u8 mUnk_0c;
-    /* 0d */ u8 mUnk_0d;
-    /* 0e */ u8 mUnk_0e;
+    /* 0c */ u8 mEntryIndex;
+    /* 0d */ u8 mState;
+    /* 0e */ u8 mTimer;
     /* 0f */ u8 mUnk_0f;
     /* 10 */ u8 mPlayerCount;
     /* 11 */ u8 mWindowVisible;
-    /* 12 */ u8 mUnk_12;
+    /* 12 */ u8 mRequestParkScene;
     /* 14 */ ParkMenu *mMenu;
     /* 18 */ ScriptPlayer *mEvent;
     /* 1c */ void *mUnk_1c;
@@ -38,7 +38,7 @@ public:
     void Init();                    // 0221b1d4
     void InitDisplay();             // 0221b214
     void LoadWindowGraphics();      // 0221b3f4
-    void func_ov004_0221b5b4();
+    void ReloadBackground();
     void LoadBackground();          // 0221b5ec
     void Cleanup();                 // 0221b74c
     void Draw();                    // 0221b7f4

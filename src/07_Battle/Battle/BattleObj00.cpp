@@ -140,7 +140,7 @@ void BattleObj00::Update() {
             }
             u8 player = data_020d433c.mBattlePlayers->mUnk_2a9;
             new BattleCharaAct(mCamera, player, 0, 0, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_32           = 1;
             return;
         }
@@ -149,7 +149,7 @@ void BattleObj00::Update() {
             mUnk_32++;
             return;
         case 2:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mUnk_32++;
             }
             return;
@@ -204,23 +204,23 @@ void BattleObj00::Update() {
             return;
         case 7:
             func_ov007_02245888(mMap);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_32++;
             return;
         case 8:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mUnk_32++;
             }
             return;
         case 9: {
             u8 player = data_020d433c.mBattlePlayers->mUnk_2a9;
             new BattleCharaAct(mCamera, player, 0xe, 0, 0);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_32++;
             return;
         }
         case 10:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             if (!func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
@@ -229,7 +229,7 @@ void BattleObj00::Update() {
             func_ov007_0223a690((s16) (mUnk_2a - mUnk_3f), mUnk_2c);
             func_ov007_0223ad70(mUnk_3c);
             if (data_020d433c.mUnk_9a_3) {
-                mContext->mUnk_12 = 1;
+                mContext->mRequest = 1;
                 mUnk_32           = 0x10;
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
                 if (list->mPlayers[list->mUnk_2a9]->mSlots54Remaining == 0) {
@@ -245,7 +245,7 @@ void BattleObj00::Update() {
             func_ov007_0223ad70(mUnk_3c);
             func_ov007_0224ad2c();
             if (data_020d433c.mUnk_9a_3) {
-                mContext->mUnk_12 = 1;
+                mContext->mRequest = 1;
                 mUnk_32           = 0x10;
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
                 if (list->mPlayers[list->mUnk_2a9]->mSlots54Remaining == 0) {
@@ -264,13 +264,13 @@ void BattleObj00::Update() {
                     func_0205562c(mPage, 1);
                     func_02055738(mPage, 0x18000, 0xe, 0);
                     new BattleCommandPrompt(0, mPage, 0, 0, 0);
-                    mContext->mUnk_12 = 0;
+                    mContext->mRequest = 0;
                 } else {
                     mPage = new BattleCommandPage(0, -1);
                     func_0205562c(mPage, 1);
                     func_02055738(mPage, 0x18000, 0xe, 0);
                     mUnk_3e           = 1;
-                    mContext->mUnk_12 = 1;
+                    mContext->mRequest = 1;
                 }
                 mUnk_32++;
                 return;
@@ -281,23 +281,23 @@ void BattleObj00::Update() {
                     func_0205562c(mPage, 1);
                     func_02055738(mPage, 0x18000, 0xe, 0);
                     mUnk_3e           = 1;
-                    mContext->mUnk_12 = 1;
+                    mContext->mRequest = 1;
                 } else {
                     mPage = new BattleCommandPage(0, -1);
                     func_0205562c(mPage, 1);
                     func_02055738(mPage, 0x18000, 0xe, 0);
                     if (data_020d433c.mUnk_9a_3) {
-                        mContext->mUnk_12 = 1;
+                        mContext->mRequest = 1;
                     } else {
                         new BattleCommandPrompt(0, mPage, 0, 0, 0);
-                        mContext->mUnk_12 = 0;
+                        mContext->mRequest = 0;
                     }
                 }
             }
             mUnk_32++;
             return;
         case 13: {
-            u32 v = (u16) mContext->mUnk_12;
+            u32 v = (u16) mContext->mRequest;
             if (v == 0) {
                 return;
             }
@@ -325,11 +325,11 @@ void BattleObj00::Update() {
                 return;
             }
             CloseCommandPage(mPage, 1);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_32           = 0x10;
             return;
         case 16: {
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             if (mUnk_3e != 0) {
@@ -347,17 +347,17 @@ void BattleObj00::Update() {
                     } while (i < data_020d433c.mPlayerCount);
                 }
                 new BattleCharaAct(mCamera, idx, 1, 0, 0);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
             } else {
                 u8 player = data_020d433c.mBattlePlayers->mUnk_2a9;
                 new BattleCharaAct(mCamera, player, 1, 0, 0);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
             }
             mUnk_32 = 0x11;
             return;
         }
         case 17:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 return;
             }
             WirelessManager::Get();
@@ -442,7 +442,7 @@ void BattleObj00::Update() {
                 return;
             }
             func_ov007_02245888(mMap);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_32           = 0x16;
             return;
         }
@@ -463,11 +463,11 @@ void BattleObj00::Update() {
             return;
         case 21:
             func_ov007_02245888(mMap);
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mUnk_32           = 0x16;
             return;
         case 22:
-            if (mContext->mUnk_12 != 0) {
+            if (mContext->mRequest != 0) {
                 mUnk_32++;
             }
             return;

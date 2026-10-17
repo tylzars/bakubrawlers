@@ -9,23 +9,23 @@ class SelectWindow;
 struct MessageFile;
 
 // Overlay 0 scene with vtable 0x022270cc (files in /Game/AttrSel): choosing the player's attribute.
-void func_ov000_0221f080(void *scene); // frame callback of AttrSelScene::TransitionStep
+void AttrSelTransitionCallback(void *scene); // frame callback of AttrSelScene::TransitionStep
 
 class AttrSelScene : public SceneBase {
 public:
-    /* 0c */ u8 mUnk_0c;
+    /* 0c */ u8 mState;
     /* 0d */ u8 mAttrib;
-    /* 0e */ u8 mUnk_0e;
-    /* 0f */ u8 mUnk_0f;
+    /* 0e */ u8 mPulseState;
+    /* 0f */ u8 mPulseAlpha;
     /* 10 */ u8 mUnk_10_0 : 1;
     /* 10 */ u8 mUnk_10_1 : 7;
-    /* 11 */ u8 mUnk_11;
+    /* 11 */ u8 mPulseFrames;
     /* 12 */ s16 mFade;
-    /* 14 */ u8 mState;
-    /* 15 */ u8 mUnk_15;
-    /* 16 */ u8 mUnk_16;
-    /* 17 */ u8 mUnk_17;
-    /* 18 */ u8 mUnk_18;
+    /* 14 */ u8 mTransitionState;
+    /* 15 */ u8 mRequest;
+    /* 16 */ u8 mBlendAlphaLowByte;
+    /* 17 */ u8 mBlendAlphaHighByte;
+    /* 18 */ u8 mPulseCount;
     /* 19 */ PAD(0x19, 0x1c);
     /* 1c */ u32 mGlyphCount[2];
     /* 24 */ u32 mBufferSize[2];

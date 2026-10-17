@@ -60,7 +60,7 @@ StoreScene::StoreScene() :
     mGlyphBuffer    = NULL;
     mTextBufferSize = 0;
     mGlyphCount     = 0;
-    mUnk_2c         = 9;
+    mNextScene         = 9;
     MI_CpuClear8(&mContext->mInfo, sizeof(SceneInfo));
     mMenu    = NULL;
     mMessage = NULL;
@@ -101,7 +101,7 @@ void StoreScene::Cleanup() {
 }
 
 void StoreScene::Update() {
-    UnkStruct_SceneContext *ctx = mContext;
+    SceneContext *ctx = mContext;
     switch (ctx->mInfo.mState) {
         case 0:
             if (gSaveData[0].mUnk_24 & 1) {
@@ -136,11 +136,11 @@ void StoreScene::Update() {
                 break;
             }
             mEvent->RequestFinish();
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             ctx->mInfo.mState++;
             break;
         case 5:
-            if (ctx->mUnk_12 != 0) {
+            if (ctx->mRequest != 0) {
                 ctx->mInfo.mState++;
             }
             break;
@@ -176,7 +176,7 @@ void StoreScene::Update() {
             }
             break;
         case 10:
-            func_ov003_0221ac5c();
+            HandleMenuResult();
             UpdateMenu();
             DrawText();
             DrawMoney();
@@ -234,11 +234,11 @@ void StoreScene::Update() {
                 break;
             }
             mEvent->RequestFinish();
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             ctx->mInfo.mState++;
             break;
         case 15:
-            if (ctx->mUnk_12 == 0) {
+            if (ctx->mRequest == 0) {
                 break;
             }
             SpriteManager::Get().StartFade(3);
@@ -259,12 +259,12 @@ void StoreScene::Update() {
                     new ListScene(1, 0);
                     break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             Cleanup();
             ctx->mInfo.mState++;
             break;
         case 17:
-            if (ctx->mUnk_12 == 0) {
+            if (ctx->mRequest == 0) {
                 break;
             }
             ctx->mInfo.mMenuResult = 0;
@@ -287,11 +287,11 @@ void StoreScene::Update() {
                 break;
             }
             mEvent->RequestFinish();
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             ctx->mInfo.mState++;
             break;
         case 21:
-            if (ctx->mUnk_12 != 0) {
+            if (ctx->mRequest != 0) {
                 ctx->mInfo.mState++;
             }
             break;
@@ -299,7 +299,7 @@ void StoreScene::Update() {
             s32 result = func_02087468();
             if (result >= 0) {
                 new GiftUnlockScene(result);
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
                 ctx->mInfo.mState++;
             } else {
                 func_02086d48();
@@ -308,12 +308,12 @@ void StoreScene::Update() {
             break;
         }
         case 23:
-            if (ctx->mUnk_12 != 0) {
+            if (ctx->mRequest != 0) {
                 ctx->mInfo.mState--;
             }
             break;
         case 24:
-            ctx->mList->mHead->mRequest->mNextScene = mUnk_2c;
+            ctx->mList->mHead->mRequest->mNextScene = mNextScene;
             mFinished                               = TRUE;
             break;
     }
@@ -439,7 +439,7 @@ void StoreScene::UpdateMenu() {
         if (delta != 0) {
             info->mScrollDir = delta > 0 ? 2 : 1;
             info->mPage += delta;
-            func_ov003_0221ab38();
+            StartScroll();
             info->mMenuResult = 0;
         }
         mMenu->Draw();
@@ -456,7 +456,7 @@ void StoreScene::UpdateMenu() {
     }
 }
 
-void StoreScene::func_ov003_0221ab38() {
+void StoreScene::StartScroll() {
     SceneInfo *info = &mContext->mInfo;
     info->mState    = 11;
     info->mScroll   = 0x62;
@@ -489,7 +489,7 @@ void StoreScene::func_ov003_0221ab38() {
     }
 }
 
-void StoreScene::func_ov003_0221ac5c() {
+void StoreScene::HandleMenuResult() {
     SceneInfo *info = &mContext->mInfo;
     switch (info->mMenuResult) {
         case 2:
@@ -648,7 +648,7 @@ void StoreScene::SetupText() {
 }
 
 void StoreScene::DrawText() {
-    UnkStruct_SceneContext *ctx = mContext;
+    SceneContext *ctx = mContext;
     if (mGlyphBuffer != NULL) {
         SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount,
                                                      (s16) (0x80 - ((u32) ctx->mInfo.mUnk_00 >> 1)), 0x90, 0, 0x60,

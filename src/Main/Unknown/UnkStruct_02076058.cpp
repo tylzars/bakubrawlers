@@ -224,7 +224,7 @@ void UnkStruct_02076058::Update() {
             }
             mUnk_60 = new UnkStruct_02071d24(mUnk_73);
             u8 count = 0;
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             for (u8 i = 0; i < 3; i++) {
                 if (mUnk_54[i] != NULL) {
                     u8 gain = mUnk_54[i]->mUnk_00_0 - mUnk_70[i];
@@ -238,7 +238,7 @@ void UnkStruct_02076058::Update() {
             break;
         }
         case 6:
-            if (mContext->mUnk_12 == 2) {
+            if (mContext->mRequest == 2) {
                 mUnk_74 = 9;
             }
             break;

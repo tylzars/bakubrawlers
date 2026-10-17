@@ -36,15 +36,15 @@ public:
     void InitDisplay();            // 0x0221bb6c
     void LoadGraphics();           // 0x0221bd84
     void SwitchPage(u8 page);      // 0x0221c0d8
-    void func_ov008_0221c2a0();
-    void func_ov008_0221c8b0();
-    void func_ov008_0221c9c8();
-    BOOL func_ov008_0221cc6c();
-    void func_ov008_0221cea0();
+    void UpdateMenu();
+    void StartScroll();
+    void HandleWindowResult();
+    BOOL UpdateScroll();
+    void RefreshCellLayout();
     void SetupText();              // 0x0221d030
     void func_ov008_0221d2c0();
     void DrawText();               // 0x0221d370
-    void func_ov008_0221d450();
+    void ClearMessageBuffer();
     void PrintStatus();            // 0x0221d468
     void ClearTextBuffer();        // 0x0221d690
 };

@@ -86,15 +86,15 @@ MyroomGiftScene::MyroomGiftScene() :
     mMessage  = NULL;
     mWindow   = NULL;
     mResult   = 0;
-    mUnk_40   = 0;
-    mUnk_42   = 0x100;
-    mUnk_44   = 0;
+    mTextWidth   = 0;
+    mTextX   = 0x100;
+    mTextEndY   = 0;
     mEmblem   = -1;
-    mUnk_51   = 0;
-    mUnk_52   = 0;
+    mCol   = 0;
+    mRow   = 0;
     mState    = 0;
     mTimer    = 0;
-    mUnk_55   = 0;
+    mTextPage   = 0;
     mCellAnim = NULL;
     for (u8 i = 0; i < 2; i++) {
         mTextBuffers[i]    = NULL;
@@ -134,7 +134,7 @@ void MyroomGiftScene::Update() {
         case 0:
             draw = FALSE;
             InitDisplay();
-            func_ov008_0221de34();
+            LoadGraphics();
             mTimer = 10;
             mState++;
             break;
@@ -208,7 +208,7 @@ void MyroomGiftScene::InitDisplay() {
     G2S_BlendNone();
 }
 
-void MyroomGiftScene::func_ov008_0221de34() {
+void MyroomGiftScene::LoadGraphics() {
     ChangeDir("/Game/Card/Graphic/");
     LoadAndQueueUpload(0, 7, 0, "cardspec_u_bg_00_nsc.bin", 0, 0, 0);
     LoadAndQueueUpload(0, 11, 0, "cardspec_u_bg_00_ncg.bin", 0, 0, 0);
@@ -274,7 +274,7 @@ void MyroomGiftScene::func_ov008_0221de34() {
     mMessage->func_02065bd4(0x14, 4, 0);
     mMessage->SetWidth(0xd8);
     mMessage->StartMessage(0x22, 0, 1);
-    func_ov008_0221e9a0();
+    PrintEmblemText();
     ChangeDir("/");
 }
 
@@ -302,16 +302,16 @@ void MyroomGiftScene::LoadEmblem(u8 index) {
     sprintf(name, "myroom_gift_u_obj_emblem_%02d_ncl.bin", index + 1);
     LoadAndQueueUpload(0, 0, 0, name, 0, 0, 0);
     ChangeDir("/");
-    mUnk_55 = 0;
-    mUnk_42 = 0x100;
+    mTextPage = 0;
+    mTextX = 0x100;
 }
 
 void MyroomGiftScene::Draw() {
-    func_ov008_0221e670();
+    DrawMainScreen();
     DrawWindows();
 }
 
-void MyroomGiftScene::func_ov008_0221e670() {
+void MyroomGiftScene::DrawMainScreen() {
     if (mCellAnim != NULL) {
         mCellAnim->Update();
         mCellAnim->Draw(0, data_ov008_02228a54.x, data_ov008_02228a54.y, 0);
@@ -334,12 +334,12 @@ void MyroomGiftScene::func_ov008_0221e670() {
     s16 x;
     u8 first;
     u8 last;
-    x = 0x80 - mUnk_40 / 2;
-    if ((s32) mUnk_40 > 0xf0) {
-        x       = mUnk_42;
-        mUnk_42 = x - 1;
-        if (mUnk_42 <= -mUnk_40) {
-            mUnk_42 = 0x100;
+    x = 0x80 - mTextWidth / 2;
+    if ((s32) mTextWidth > 0xf0) {
+        x       = mTextX;
+        mTextX = x - 1;
+        if (mTextX <= -mTextWidth) {
+            mTextX = 0x100;
         }
     }
     first = 0;
@@ -366,19 +366,19 @@ void MyroomGiftScene::ClearTextBuffers(u8 index) {
     MI_CpuClear16(mTextBuffers[index], mTextBufferSize[index]);
 }
 
-void MyroomGiftScene::func_ov008_0221e9a0() {
+void MyroomGiftScene::PrintEmblemText() {
     ClearTextBuffers(0);
     TextManager &text = TextManager::Get();
     s16 width;
     s16 height;
-    height            = 2 - mUnk_55 * 0x7e;
+    height            = 2 - mTextPage * 0x7e;
     width             = 0x10;
     u16 index         = mEmblem;
     MessageFile *file = mMessages;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[0], 0x10, 0x12, &width, &height, 0, 0, 2, 0x44,
                0xe, 0, 0, 0, 1, 1);
-    if (&mUnk_44 != NULL) {
-        mUnk_44 = height;
+    if (&mTextEndY != NULL) {
+        mTextEndY = height;
     }
     QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x5000, mTextBuffers[0], mTextBufferSize[0], 0);
     ClearTextBuffers(1);
@@ -390,24 +390,24 @@ void MyroomGiftScene::func_ov008_0221e9a0() {
     height2    = 0;
     u16 index2 = mEmblem + 11;
     file       = mMessages;
-    text2.Print(file->GetText(index2), file->GetLength(index2), mTextBuffers[1], 0x40, 2, &height2, &width2, &mUnk_40, 0, 2,
+    text2.Print(file->GetText(index2), file->GetLength(index2), mTextBuffers[1], 0x40, 2, &height2, &width2, &mTextWidth, 0, 2,
                 0x21, 0xe, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
     QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x8000, mTextBuffers[1], mTextBufferSize[1], 0);
     if (mHasEmblem[mEmblem] == 0) {
-        mUnk_44 = 0;
+        mTextEndY = 0;
     }
 }
 
-s32 MyroomGiftScene::func_ov008_0221ece8() {
+s32 MyroomGiftScene::UpdateInput() {
     s32 result = -1;
-    s8 previous = mUnk_55;
+    s8 previous = mTextPage;
     if (mResult == 3) {
         s8 id = mWindow->GetSelectedId();
         if (id >= 0 && id <= 9) {
             result  = data_ov008_02228a7c.slots[id];
-            mUnk_51 = result % 4;
-            mUnk_52 = result / 4;
+            mCol = result % 4;
+            mRow = result / 4;
             u8 emblem = data_ov008_02228a7c.order[result];
             if (emblem != mEmblem) {
                 SoundManager::Get().StartSeqArc(0);
@@ -416,72 +416,72 @@ s32 MyroomGiftScene::func_ov008_0221ece8() {
             switch (id) {
                 case 0xc:
                     if (previous > 0) {
-                        mUnk_55--;
+                        mTextPage--;
                         SoundManager::Get().StartSeqArc(0);
                     }
                     break;
                 case 0xd:
-                    if (mUnk_44 > 0x80) {
-                        mUnk_55++;
+                    if (mTextEndY > 0x80) {
+                        mTextPage++;
                         SoundManager::Get().StartSeqArc(0);
                     }
                     break;
             }
         }
     }
-    if (previous != mUnk_55) {
-        func_ov008_0221e9a0();
+    if (previous != mTextPage) {
+        PrintEmblemText();
     } else if (result == -1) {
-        result = func_ov008_0221eec4();
+        result = UpdateKeySelection();
     }
     return result;
 }
 
-s8 MyroomGiftScene::func_ov008_0221eec4() {
+s8 MyroomGiftScene::UpdateKeySelection() {
     s8 result  = -1;
     BOOL moved = FALSE;
     if (InputManager::Get().IsTrigger(KEY_UP)) {
         moved = TRUE;
-        if (mUnk_52 != 0) {
-            mUnk_52--;
+        if (mRow != 0) {
+            mRow--;
         } else {
-            mUnk_52 = 2;
-            if (data_ov008_02228a64[mUnk_52][mUnk_51] == 0) {
-                mUnk_52--;
+            mRow = 2;
+            if (data_ov008_02228a64[mRow][mCol] == 0) {
+                mRow--;
             }
         }
     } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
         moved = TRUE;
-        mUnk_52++;
-        if (mUnk_52 >= 3) {
-            mUnk_52 = 0;
-        } else if (data_ov008_02228a64[mUnk_52][mUnk_51] == 0) {
-            mUnk_52 = 0;
+        mRow++;
+        if (mRow >= 3) {
+            mRow = 0;
+        } else if (data_ov008_02228a64[mRow][mCol] == 0) {
+            mRow = 0;
         }
     }
     if (InputManager::Get().IsTrigger(KEY_LEFT)) {
         moved = TRUE;
-        if (mUnk_51 != 0) {
-            mUnk_51--;
+        if (mCol != 0) {
+            mCol--;
         } else {
-            mUnk_51 = 3;
-            if (data_ov008_02228a64[mUnk_52][mUnk_51] == 0) {
+            mCol = 3;
+            if (data_ov008_02228a64[mRow][mCol] == 0) {
                 do {
-                    mUnk_51--;
-                } while (mUnk_51 != 0 && data_ov008_02228a64[mUnk_52][mUnk_51] == 0);
+                    mCol--;
+                } while (mCol != 0 && data_ov008_02228a64[mRow][mCol] == 0);
             }
         }
     } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
         moved = TRUE;
-        mUnk_51++;
-        if (mUnk_51 >= 4) {
-            mUnk_51 = 0;
-        } else if (data_ov008_02228a64[mUnk_52][mUnk_51] == 0) {
-            mUnk_51 = 0;
+        mCol++;
+        if (mCol >= 4) {
+            mCol = 0;
+        } else if (data_ov008_02228a64[mRow][mCol] == 0) {
+            mCol = 0;
         }
     }
     if (moved) {
-        result = mUnk_51 + mUnk_52 * 4;
+        result = mCol + mRow * 4;
         SoundManager::Get().StartSeqArc(0);
     }
     return result;
@@ -493,10 +493,10 @@ void MyroomGiftScene::func_ov008_0221f194() {
         SoundManager::Get().StartSeqArc(1);
         mState = 3;
     } else {
-        s32 selection = func_ov008_0221ece8();
+        s32 selection = UpdateInput();
         if (selection >= 0) {
             LoadEmblem(data_ov008_02228a7c.order[selection]);
-            func_ov008_0221e9a0();
+            PrintEmblemText();
             if (mWindow->mState != 1) {
                 mWindow->mState = 4;
                 mWindow->Reset(-1);
@@ -504,7 +504,7 @@ void MyroomGiftScene::func_ov008_0221f194() {
         }
     }
     WindowItem *items = mWindow->mCursor->mItems;
-    if (mUnk_55 != 0) {
+    if (mTextPage != 0) {
         if (mWindow->mCells[12]->mAnimIndex == 2) {
             mWindow->mCells[12]->SetAnimation(0);
             items[12].mFlags = 0x208;
@@ -515,7 +515,7 @@ void MyroomGiftScene::func_ov008_0221f194() {
             items[12].mFlags = 0x8000;
         }
     }
-    if (mUnk_44 > 0x80) {
+    if (mTextEndY > 0x80) {
         if (mWindow->mCells[13]->mAnimIndex == 5) {
             mWindow->mCells[13]->SetAnimation(3);
             items[13].mFlags = 0x408;
@@ -526,6 +526,6 @@ void MyroomGiftScene::func_ov008_0221f194() {
             items[13].mFlags = 0x8000;
         }
     }
-    Vec2s pos = {data_ov008_02228a7c.pos[mUnk_52][mUnk_51].x, data_ov008_02228a7c.pos[mUnk_52][mUnk_51].y};
+    Vec2s pos = {data_ov008_02228a7c.pos[mRow][mCol].x, data_ov008_02228a7c.pos[mRow][mCol].y};
     mWindow->mCellPos[10] = pos;
 }

@@ -115,38 +115,38 @@ TournamentScene::TournamentScene() :
     mTextHeight = 0;
     mUnk_a0 = 0;
     mUnk_a2 = 0;
-    mUnk_a4 = 0;
-    mUnk_a6 = 0;
-    mUnk_a8 = 0;
-    mUnk_aa = 0;
+    mMoveX = 0;
+    mMoveY = 0;
+    mMoveDistanceX = 0;
+    mMoveDistanceY = 0;
     mUnk_ac = 0;
-    mUnk_ae = 0;
-    mUnk_b0 = 0;
+    mMainTextTimer = 0;
+    mState = 0;
     mMode = 0;
     mSelection = 0;
-    mUnk_b5 = 0;
-    mUnk_b6 = 0;
-    mUnk_b7 = 0;
-    mUnk_b8 = 0;
+    mMenuVisible = 0;
+    mMainScreenVisible = 0;
+    mCellsBVisible = 0;
+    mWindowOpen = 0;
     mUnk_b9 = 0;
     mLastIndex = 0;
     mUnk_be = 0;
-    mState = 0;
-    mUnk_c0 = 0;
+    mBattleStep = 0;
+    mBrightness = 0;
     mUnk_c1 = 0;
     mUnk_cb = 0;
-    mUnk_cc = 0;
-    mUnk_cd = 0;
+    mFirstItemState = 0;
+    mOtherItemState = 0;
     mUnk_ce = 0;
-    mStep = 0;
+    mMoveFrames = 0;
     mUnk_d0 = 0;
     mTextRows = 2;
     mUnk_d2 = 0;
     mUnk_d3 = 1;
-    mUnk_d4 = 0;
+    mNextBgLayer = 0;
     mBlend = 0;
-    mUnk_d6 = 0;
-    mUnk_d7 = 0;
+    mMainTextPage = 0;
+    mMainTextLineCount = 0;
     for (u8 i = 0; i < 5; i++) {
         mCellsA[i] = NULL;
         mCellsB[i] = NULL;
@@ -162,7 +162,7 @@ TournamentScene::TournamentScene() :
     } else {
         mLastIndex = 0;
     }
-    MI_CpuClear8(mUnk_c2, 9);
+    MI_CpuClear8(mCharacterIds, 9);
     Cleanup();
 }
 
@@ -185,8 +185,8 @@ void TournamentScene::Cleanup() {
     mMenu = NULL;
     delete mWindow;
     mWindow = NULL;
-    func_ov002_0221ddb8();
-    func_ov002_0221e270();
+    ClearSubScreenText();
+    ClearMainScreenText();
     for (u8 i = 0; i < 4; i++) {
         if (mMessages[i] != NULL) {
             OS_Free(mMessages[i]);
@@ -210,14 +210,14 @@ void TournamentScene::Cleanup() {
 }
 
 void TournamentScene::Update() {
-    switch (mUnk_b0) {
+    switch (mState) {
         case 0:
             func_ov002_0221b424();
-            func_ov002_0221c1b0();
+            LoadMenu();
             mEvent = new ScriptPlayer(3, 0, 0);
-            mUnk_b5 = 0;
+            mMenuVisible = 0;
             mTimer  = 0x10;
-            mUnk_b0++;
+            mState++;
             break;
         case 1:
             if (--mTimer != 0) {
@@ -225,16 +225,16 @@ void TournamentScene::Update() {
             }
             mEvent->SetupBattle(gSaveData[0].mUnk_42, gSaveData[0].mUnk_43);
             if (mEvent->func_02067954()) {
-                mUnk_b0 = 5;
+                mState = 5;
                 break;
             }
             if (mEvent->func_0206797c()) {
-                mUnk_b0 = 9;
+                mState = 9;
                 break;
             }
             if (mEvent->IsRunning()) {
                 SpriteManager::Get().StartFade(2);
-                mUnk_b0++;
+                mState++;
             } else {
                 SpriteManager::Get().StartFade(3);
                 if (gSaveData[0].mUnk_42 == 10) {
@@ -242,9 +242,9 @@ void TournamentScene::Update() {
                         mEvent->RequestFinish();
                         mEvent = NULL;
                     }
-                    mUnk_b0 = 0x1d;
+                    mState = 0x1d;
                 } else {
-                    mUnk_b0 = 0xe;
+                    mState = 0xe;
                 }
             }
             break;
@@ -252,7 +252,7 @@ void TournamentScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mUnk_b0++;
+            mState++;
             break;
         case 3:
             if (!mEvent->IsRunning()) {
@@ -263,33 +263,33 @@ void TournamentScene::Update() {
                         mEvent->RequestFinish();
                         mEvent = NULL;
                     }
-                    mUnk_b0 = 0x1d;
+                    mState = 0x1d;
                 } else {
-                    mUnk_b0 = 0xe;
+                    mState = 0xe;
                 }
                 break;
             }
             if (mEvent->func_02067938()) {
-                func_ov002_0221c154();
+                ReloadMenu();
                 mEvent->func_02067944();
                 break;
             }
             if (mEvent->func_02067954()) {
                 SpriteManager::Get().StartSubFade(3);
-                mUnk_b0 = 4;
+                mState = 4;
                 break;
             }
             if (mEvent->func_0206797c()) {
                 SpriteManager::Get().StartSubFade(3);
-                mUnk_b0 = 9;
+                mState = 9;
                 break;
             }
-            if (func_ov002_0221d7e4()) {
+            if (HandleEventResult()) {
                 if (mUnk_d0 != 0) {
                     SpriteManager::Get().StartFade(3);
-                    mUnk_b0 = 0xc;
+                    mState = 0xc;
                 } else {
-                    mUnk_b0 = 0x18;
+                    mState = 0x18;
                 }
             }
             break;
@@ -297,46 +297,46 @@ void TournamentScene::Update() {
             if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
-            mUnk_b0++;
+            mState++;
             break;
         case 5:
-            func_ov002_0221bf88();
+            LoadWindowGraphics();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
-            mContext->mUnk_12       = 0;
+            mContext->mRequest       = 0;
             data_020d433c.mUnk_14_1 = 0;
             SpriteManager::Get().StartSubFade(2);
-            mUnk_b0++;
+            mState++;
             break;
         case 6:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             SpriteManager::Get().StartSubFade(3);
-            mUnk_b0++;
+            mState++;
             break;
         case 7:
             if (SpriteManager::Get().sFade[1] > 1) {
                 break;
             }
-            func_ov002_0221c154();
+            ReloadMenu();
             mEvent->func_0206796c();
             mTimer = 8;
-            mUnk_b0++;
+            mState++;
             break;
         case 8:
             if (--mTimer != 0) {
                 break;
             }
             if (!mEvent->IsRunning()) {
-                if (func_ov002_0221d7e4()) {
-                    mUnk_b0 = 0x19;
+                if (HandleEventResult()) {
+                    mState = 0x19;
                     break;
                 }
                 mUnk_be = 0;
-                mUnk_b0 = 0x29;
+                mState = 0x29;
             } else {
                 SpriteManager::Get().StartFade(2);
-                mUnk_b0 = 2;
+                mState = 2;
             }
             break;
         case 9:
@@ -344,39 +344,39 @@ void TournamentScene::Update() {
                 break;
             }
             new UnlockPopup(mEvent->func_0206797c() - 1);
-            mContext->mUnk_12 = 0;
-            mUnk_b0++;
+            mContext->mRequest = 0;
+            mState++;
             break;
         case 10:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
-            func_ov002_0221c154();
+            ReloadMenu();
             mEvent->func_02067988();
-            mUnk_b0++;
+            mState++;
             break;
         case 11:
-            mUnk_b0 = 2;
+            mState = 2;
             break;
         case 12:
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             UnlockStoreItems();
             if (UnlockCharacters()) {
                 new UnlockPopup(0);
-                mUnk_b0++;
+                mState++;
             } else if (func_02086b74()) {
                 new UnlockPopup(1);
-                mUnk_b0++;
+                mState++;
             } else {
-                mUnk_b0 = 0x18;
+                mState = 0x18;
             }
             break;
         case 13:
-            if (mContext->mUnk_12 != 0) {
-                mUnk_b0--;
+            if (mContext->mRequest != 0) {
+                mState--;
             }
             break;
         case 14:
@@ -386,13 +386,13 @@ void TournamentScene::Update() {
             if (mUnk_d2 != 0) {
                 mUnk_d2 = 0;
                 SpriteManager::Get().StartFade(3);
-                mUnk_b0 = 0x12;
+                mState = 0x12;
             } else {
                 if (mEvent != NULL) {
                     mEvent->RequestFinish();
                     mEvent = NULL;
                 }
-                mUnk_b0++;
+                mState++;
             }
             if (mUnk_d3 != 0) {
                 mUnk_d3 = 0;
@@ -402,12 +402,12 @@ void TournamentScene::Update() {
         case 15:
             func_ov002_0221b424();
             mEvent = new ScriptPlayer(7, 0, 1);
-            mUnk_b0++;
+            mState++;
             break;
         case 16:
             if (mEvent->func_0206f9b4("mes_Im_button", 0x15, 0, 6, 10, 4, 0)) {
                 SpriteManager::Get().StartFade(2);
-                mUnk_b0++;
+                mState++;
             }
             break;
         case 17:
@@ -415,7 +415,7 @@ void TournamentScene::Update() {
                 break;
             }
             SpriteManager::Get().StartFade(3);
-            mUnk_b0++;
+            mState++;
             break;
         case 18:
             if (SpriteManager::Get().IsFading()) {
@@ -427,25 +427,25 @@ void TournamentScene::Update() {
                 mEvent = NULL;
             }
             mUnk_b9 = 0;
-            func_ov002_0221b78c(TRUE, TRUE);
-            func_ov002_0221c154();
-            func_ov002_0221ebe4("/font/mes_tornament.mes", 0);
+            LoadMainGraphics(TRUE, TRUE);
+            ReloadMenu();
+            LoadWindow("/font/mes_tornament.mes", 0);
             mUnk_a0 = 0x100;
-            mUnk_b0++;
+            mState++;
             break;
         case 19:
             mMenu->Reset((s8) mSelection);
-            func_ov002_0221dbd4(data_ov002_02220a04[mSelection]);
-            func_ov002_0221ddf8(data_ov002_02220a08[mSelection]);
-            mUnk_b5 = 1;
+            PrintSubScreenText(data_ov002_02220a04[mSelection]);
+            SetupMainScreenText(data_ov002_02220a08[mSelection]);
+            mMenuVisible = 1;
             SpriteManager::Get().StartFade(2);
-            mUnk_b0 = 0x15;
+            mState = 0x15;
             break;
         case 20:
             mMenu->mState = 4;
             mMenu->Reset((s8) mSelection);
-            func_ov002_0221da5c();
-            mUnk_b0++;
+            RefreshCellLayout();
+            mState++;
             break;
         case 21: {
             s16 a = mUnk_a0;
@@ -461,20 +461,20 @@ void TournamentScene::Update() {
                 case 1:
                     switch (mSelection) {
                         case 0:
-                            mState = 0;
-                            func_ov002_0221ef34(4);
-                            mUnk_cc = 0x17;
-                            mUnk_cd = 0x14;
-                            mUnk_b0 = 0x24;
+                            mBattleStep = 0;
+                            PrintWindowText(4);
+                            mFirstItemState = 0x17;
+                            mOtherItemState = 0x14;
+                            mState = 0x24;
                             break;
                         case 2:
-                            func_ov002_0221ef34(3);
-                            mUnk_cc = 0x27;
-                            mUnk_cd = 0x14;
-                            mUnk_b0 = 0x24;
+                            PrintWindowText(3);
+                            mFirstItemState = 0x27;
+                            mOtherItemState = 0x14;
+                            mState = 0x24;
                             break;
                         default:
-                            mUnk_b0 = 0x18;
+                            mState = 0x18;
                             break;
                     }
                     break;
@@ -482,12 +482,12 @@ void TournamentScene::Update() {
                     CellAnimation *cell = mMenu->mCells[mSelection];
                     cell->mFrameIndex       = cell->mFrames[cell->mAnimIndex].mFrameCount - 1;
                     mSelection          = mMenu->mCursor->mSelection;
-                    mUnk_b0             = 0x18;
+                    mState             = 0x18;
                     break;
                 }
                 default:
-                    if (func_ov002_0221d4b0(r)) {
-                        mUnk_b0++;
+                    if (UpdateScrollInput(r)) {
+                        mState++;
                     }
                     break;
             }
@@ -497,39 +497,39 @@ void TournamentScene::Update() {
             if (mMenu->mState != 1) {
                 mMenu->Update(TRUE);
             }
-            if (func_ov002_0221d848()) {
-                mUnk_b0 = 0x15;
+            if (UpdateScroll()) {
+                mState = 0x15;
             }
             break;
         case 23:
             if (func_ov002_0221e2b0()) {
-                mUnk_b0 = 0x19;
+                mState = 0x19;
             }
             break;
         case 24:
             SpriteManager::Get().StartFade(3);
-            mUnk_b0++;
+            mState++;
             break;
         case 25:
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mUnk_b5 = 0;
+            mMenuVisible = 0;
             mUnk_b9 = 0;
-            mUnk_b6 = 0;
-            mUnk_b7 = 0;
-            mUnk_b8 = 0;
+            mMainScreenVisible = 0;
+            mCellsBVisible = 0;
+            mWindowOpen = 0;
             if (mEvent != NULL) {
                 mEvent->RequestFinish();
                 mEvent            = NULL;
-                mContext->mUnk_12 = 0;
+                mContext->mRequest = 0;
             } else {
-                mContext->mUnk_12 = 1;
+                mContext->mRequest = 1;
             }
-            mUnk_b0++;
+            mState++;
             break;
         case 26: {
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             Cleanup();
@@ -548,12 +548,12 @@ void TournamentScene::Update() {
                     break;
             }
             if (go) {
-                mUnk_b0 = 0x29;
+                mState = 0x29;
                 break;
             }
-            mContext->mUnk_12 = 0;
+            mContext->mRequest = 0;
             mTimer            = 0x10;
-            mUnk_b0++;
+            mState++;
             break;
         }
         case 27:
@@ -561,14 +561,14 @@ void TournamentScene::Update() {
                 break;
             }
             SpriteManager::Get().StartFade(2);
-            mUnk_b0++;
+            mState++;
             break;
         case 28:
-            if (mContext->mUnk_12 == 0) {
+            if (mContext->mRequest == 0) {
                 break;
             }
             mUnk_d2 = 1;
-            mUnk_b0 = 0;
+            mState = 0;
             break;
         case 29:
             if (SpriteManager::Get().IsFading()) {
@@ -576,14 +576,14 @@ void TournamentScene::Update() {
             }
             mMode   = 0;
             mUnk_b9 = 1;
-            func_ov002_0221b78c(FALSE, FALSE);
-            func_ov002_0221c4a0();
-            func_ov002_0221ebe4("/font/mes_tornament.mes", 2);
-            mUnk_d4 = 1;
-            func_ov002_0221ddf8(data_ov002_02220a18[mMode]);
-            func_ov002_0221dbd4(sModeTables[0][mMode]);
+            LoadMainGraphics(FALSE, FALSE);
+            LoadModeMenu();
+            LoadWindow("/font/mes_tornament.mes", 2);
+            mNextBgLayer = 1;
+            SetupMainScreenText(data_ov002_02220a18[mMode]);
+            PrintSubScreenText(sModeTables[0][mMode]);
             SpriteManager::Get().StartFade(2);
-            mUnk_b0 = 0x1f;
+            mState = 0x1f;
             if (mUnk_d3 != 0) {
                 mUnk_d3 = 0;
                 FrameTask::Get().StartChannel(0, 0x15);
@@ -592,7 +592,7 @@ void TournamentScene::Update() {
         case 30:
             mMenu->mState = 4;
             mMenu->Reset((s8) mMode);
-            mUnk_b0++;
+            mState++;
             break;
         case 31: {
             u8 prev = mMenu->mCursor->mSelection;
@@ -600,45 +600,45 @@ void TournamentScene::Update() {
             switch (r) {
                 case 1:
                     mSelection = mMenu->mCursor->mSelection;
-                    mUnk_cc    = 0x22;
-                    mUnk_cd    = 0x1e;
-                    mUnk_b0    = 0x24;
+                    mFirstItemState    = 0x22;
+                    mOtherItemState    = 0x1e;
+                    mState    = 0x24;
                     break;
                 case 2:
                     mSelection = 5;
-                    mUnk_b0    = 0x18;
+                    mState    = 0x18;
                     break;
                 default: {
                     u32 cur = (u8) mMenu->mCursor->mSelection;
                     if (cur <= 5) {
                         mSelection = cur;
                         if (prev != mSelection) {
-                            func_ov002_0221f098(mSelection);
-                            mUnk_b0++;
+                            StartBgBlend(mSelection);
+                            mState++;
                         }
                     }
                     break;
                 }
             }
-            if (mUnk_d7 > 3) {
-                mUnk_ae--;
-                if (mUnk_ae <= 0) {
-                    mUnk_ae = 200;
-                    if (mUnk_d6 < (mUnk_d7 - 1) / 3) {
-                        mUnk_d6++;
-                        if (mUnk_d6 >= (mUnk_d7 - 1) / 3) {
-                            mUnk_ae = 300;
+            if (mMainTextLineCount > 3) {
+                mMainTextTimer--;
+                if (mMainTextTimer <= 0) {
+                    mMainTextTimer = 200;
+                    if (mMainTextPage < (mMainTextLineCount - 1) / 3) {
+                        mMainTextPage++;
+                        if (mMainTextPage >= (mMainTextLineCount - 1) / 3) {
+                            mMainTextTimer = 300;
                         }
                     } else {
-                        mUnk_d6 = 0;
+                        mMainTextPage = 0;
                     }
-                    func_ov002_0221df48(data_ov002_02220a18[mMode]);
+                    PrintMainScreenText(data_ov002_02220a18[mMode]);
                 }
             }
             break;
         }
         case 32: {
-            func_ov002_0221f250();
+            UpdateBgBlend();
             s16 a = mUnk_a0;
             if (a <= -0x120) {
                 mUnk_a0 = a + 0x20;
@@ -658,14 +658,14 @@ void TournamentScene::Update() {
                 mCellsA[0]->SetAnimation(sel);
                 CellAnimation *cell = mCellsA[0];
                 cell->mFrameIndex       = cell->mFrames[cell->mAnimIndex].mFrameCount - 1;
-                func_ov002_0221ddf8(data_ov002_02220a18[mMode]);
-                func_ov002_0221dbd4(sModeTables[0][mMode]);
-                mUnk_b0++;
+                SetupMainScreenText(data_ov002_02220a18[mMode]);
+                PrintSubScreenText(sModeTables[0][mMode]);
+                mState++;
             }
             break;
         }
         case 33: {
-            BOOL done = func_ov002_0221f250();
+            BOOL done = UpdateBgBlend();
             s16 a     = mUnk_a0;
             if (a <= -0x20) {
                 mUnk_a0 = a + 0x20;
@@ -676,14 +676,14 @@ void TournamentScene::Update() {
             } else {
                 mUnk_a0 = 0;
                 if (done) {
-                    mUnk_b0 = 0x1f;
+                    mState = 0x1f;
                 }
             }
             break;
         }
         case 34:
             SpriteManager::Get().StartFade(3);
-            mUnk_b0++;
+            mState++;
             break;
         case 35:
             if (SpriteManager::Get().IsFading()) {
@@ -693,37 +693,37 @@ void TournamentScene::Update() {
             gSaveData[0].mUnk_43 = 0;
             gSaveData[0].mUnk_25 = MATH_Rand32(&gRandom, 5);
             mSelection = 0;
-            mUnk_b5    = 0;
+            mMenuVisible    = 0;
             mUnk_b9    = 0;
-            mUnk_b6    = 0;
-            mUnk_b7    = 0;
-            mUnk_b8    = 0;
+            mMainScreenVisible    = 0;
+            mCellsBVisible    = 0;
+            mWindowOpen    = 0;
             mUnk_d2    = 1;
-            mUnk_b0    = 0;
+            mState    = 0;
             break;
         case 36:
-            func_ov002_0221ead8();
-            mUnk_b0++;
+            OpenWindow();
+            mState++;
             break;
         case 37:
             mWindow->mState = 4;
             mWindow->Reset(1);
-            mUnk_b0++;
+            mState++;
             break;
         case 38:
             u8 r = mWindow->Update(TRUE);
             if (r == 1) {
-                func_ov002_0221eb78();
+                CloseWindow();
                 if (mWindow->mCursor->mSelection == 0) {
-                    mUnk_b0 = mUnk_cc;
+                    mState = mFirstItemState;
                 } else {
-                    mUnk_b0 = mUnk_cd;
+                    mState = mOtherItemState;
                 }
             }
             break;
         case 39:
             SpriteManager::Get().StartFade(3);
-            mUnk_b0++;
+            mState++;
             break;
         case 40:
             if (SpriteManager::Get().IsFading()) {
@@ -731,12 +731,12 @@ void TournamentScene::Update() {
             }
             gSaveData[0].mUnk_42 = 10;
             gSaveData[0].mUnk_43 = 0;
-            mUnk_b5                  = 0;
-            mUnk_b6                  = 0;
-            mUnk_b7                  = 0;
-            mUnk_b8                  = 0;
+            mMenuVisible                  = 0;
+            mMainScreenVisible                  = 0;
+            mCellsBVisible                  = 0;
+            mWindowOpen                  = 0;
             mUnk_b9                  = 0;
-            mUnk_b0                  = 0x1d;
+            mState                  = 0x1d;
             break;
         case 41:
             if (mUnk_be != 0) {
@@ -784,7 +784,7 @@ void TournamentScene::Update() {
             mFinished = TRUE;
             return;
     }
-    func_ov002_0221cd10();
+    Draw();
 }
 
 void TournamentScene::func_ov002_0221b424() {
@@ -839,7 +839,7 @@ void TournamentScene::func_ov002_0221b5b0() {
     G2S_BlendNone();
 }
 
-void TournamentScene::func_ov002_0221b78c(BOOL a, BOOL b) {
+void TournamentScene::LoadMainGraphics(BOOL a, BOOL b) {
     func_ov002_0221b5b0();
     MI_CpuClearFast((void *) 0x06200000, 0x20000);
     MI_CpuClearFast((void *) 0x06600000, 0x20000);
@@ -911,7 +911,7 @@ void TournamentScene::func_ov002_0221b78c(BOOL a, BOOL b) {
         mObj38 = new CharacterIcons(0x19000, 7, 0);
         u8 i = 0;
         do {
-            mObj38->SetCharacter(i, (s8) mUnk_c2[idx + i], 0, 0);
+            mObj38->SetCharacter(i, (s8) mCharacterIds[idx + i], 0, 0);
             mObj38->SetVisible(i, 1);
             mObj38->SetDrawArgs(i, data_ov002_02220b58[mMode][idx + i].x, data_ov002_02220b58[mMode][idx + i].y,
                                   0);
@@ -931,11 +931,11 @@ void TournamentScene::func_ov002_0221b78c(BOOL a, BOOL b) {
     mCellsA[2]->mCharBase = screen.GetCharBase(0x1a000);
     mCellsA[2]->mPaletteBase   = 0xb;
     mCellsA[2]->SetMode(0);
-    mUnk_b6 = 1;
+    mMainScreenVisible = 1;
     ChangeDir("/");
 }
 
-void TournamentScene::func_ov002_0221bf88() {
+void TournamentScene::LoadWindowGraphics() {
     MI_CpuClearFast((void *) 0x06200000, 0x20000);
     MI_CpuClearFast((void *) 0x06600000, 0x20000);
     G2S_SetBG0Control(0, 0, 0, 1, 0);
@@ -950,19 +950,19 @@ void TournamentScene::func_ov002_0221bf88() {
     sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
     ChangeDir("/");
-    mUnk_b5 = 0;
+    mMenuVisible = 0;
 }
 
-void TournamentScene::func_ov002_0221c154() {
+void TournamentScene::ReloadMenu() {
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     GXS_SetVisiblePlane(0x11);
     G2S_SetBG0Priority(3);
     GXS_SetVisibleWnd(0);
     G2S_BlendNone();
-    func_ov002_0221c1b0();
+    LoadMenu();
 }
 
-void TournamentScene::func_ov002_0221c1b0() {
+void TournamentScene::LoadMenu() {
     ChangeDir("/Game/Tournament/bg/");
     LoadAndQueueUpload(1, 1, 0, "tournament_b_bg_00_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 11, 0, "tournament_b_bg_00_ncg.bin", 0, 0, 0);
@@ -977,23 +977,23 @@ void TournamentScene::func_ov002_0221c1b0() {
     sub.LoadCharacters("union_b_obj_arrow.nce_ncg1D.bin", 0x6000, 0);
     sub.LoadPalette("union_b_obj_arrow_ncl.bin", 0x80, 0);
     ChangeDir("/");
-    func_ov002_0221cabc("/font/mes_tornament.mes", 1);
+    LoadSubScreenText("/font/mes_tornament.mes", 1);
     delete mMessage;
     mMessage = new MessageWindow("mes_tornament", 1, 0x9000);
     mMessage->func_02065bd4(0x14, 4, 0);
     mMessage->SetWidth(0xd8);
     mMessage->StartMessage(5, 0, 1);
-    func_ov002_0221c7a0("/font/mes_Im_button.mes");
-    func_ov002_0221ddb8();
-    func_ov002_0221e270();
+    LoadMainScreenText("/font/mes_Im_button.mes");
+    ClearSubScreenText();
+    ClearMainScreenText();
     delete mMenu;
     mMenu = new SelectWindow(6, data_ov002_02220bc4, 0);
     mMenu->SetCells(6, data_ov002_02220c6c);
     mMenu->mCursor->mSelection = -1;
-    func_ov002_0221da5c();
+    RefreshCellLayout();
 }
 
-void TournamentScene::func_ov002_0221c4a0() {
+void TournamentScene::LoadModeMenu() {
     ChangeDir("/Game/Tournament/bg/");
     LoadAndQueueUpload(1, 1, 0, "tournament_b_bg_00_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 11, 0, "tournament_b_bg_00_ncg.bin", 0, 0, 0);
@@ -1009,20 +1009,20 @@ void TournamentScene::func_ov002_0221c4a0() {
     ChangeDir("/Game/2D/union_b/");
     sub.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0x4000, 0);
     sub.LoadPalette("union_b_obj_cockpit_ncl.bin", 0x60, 0);
-    func_ov002_0221cabc("/font/mes_town_info.mes", 2);
+    LoadSubScreenText("/font/mes_town_info.mes", 2);
     delete mMessage;
     mMessage = new MessageWindow("mes_tornament", 1, 0x9000);
     mMessage->func_02065bd4(0x14, 4, 0);
     mMessage->SetWidth(0xd8);
     mMessage->StartMessage(7, 0, 1);
-    func_ov002_0221c7a0("/font/mes_T_clear.mes");
+    LoadMainScreenText("/font/mes_T_clear.mes");
     ChangeDir("/");
     delete mMenu;
     mMenu = new SelectWindow(7, data_ov002_02220d14, 0);
     mMenu->SetCells(7, data_ov002_02220dd8);
 }
 
-void TournamentScene::func_ov002_0221c7a0(const char *mes) {
+void TournamentScene::LoadMainScreenText(const char *mes) {
     for (u8 i = 2; i < 4; i++) {
         if (mMessages[i] != NULL) {
             OS_Free(mMessages[i]);
@@ -1038,21 +1038,21 @@ void TournamentScene::func_ov002_0221c7a0(const char *mes) {
         }
     }
     mMessages[2]     = (MessageFile *) LoadFile(mes, 0, 0, 0, 0, 0);
-    mTextSizes[2]    = TextManager::Get().BufferSize(0x1c, 6);
+    mTextBufferSizes[2]    = TextManager::Get().BufferSize(0x1c, 6);
     mGlyphCounts[2]  = TextManager::Get().GlyphCount(0x15);
-    mTextBuffers[2]  = OS_Alloc(mTextSizes[2]);
+    mTextBuffers[2]  = OS_Alloc(mTextBufferSizes[2]);
     mGlyphBuffers[2] = OS_Alloc(mGlyphCounts[2] * 0xc);
     TextManager::Get().Init(mGlyphBuffers[2], 0, 0, 0x1c, 6, 0x21);
-    mTextSizes[3]    = TextManager::Get().BufferSize(0x18, 2);
+    mTextBufferSizes[3]    = TextManager::Get().BufferSize(0x18, 2);
     mGlyphCounts[3]  = TextManager::Get().GlyphCount(6);
-    mTextBuffers[3]  = OS_Alloc(mTextSizes[3]);
+    mTextBuffers[3]  = OS_Alloc(mTextBufferSizes[3]);
     mGlyphBuffers[3] = OS_Alloc(mGlyphCounts[3] * 0xc);
     TextManager::Get().Init(mGlyphBuffers[3], 0, 0, 0x18, 2, 0x21);
     TextManager::Get().SetColor(0, 0, 0xf);
 }
 
 
-void TournamentScene::func_ov002_0221cabc(const char *mes, u8 rows) {
+void TournamentScene::LoadSubScreenText(const char *mes, u8 rows) {
     for (u8 i = 0; i < 2; i++) {
         if (mMessages[i] != NULL) {
             OS_Free(mMessages[i]);
@@ -1069,29 +1069,29 @@ void TournamentScene::func_ov002_0221cabc(const char *mes, u8 rows) {
     }
     mTextRows         = rows << 1;
     mMessages[0]    = (MessageFile *) LoadFile(mes, 0, 0, 0, 0, 0);
-    mTextSizes[0]   = (u16) TextManager::Get().BufferSize(0x20, mTextRows);
+    mTextBufferSizes[0]   = (u16) TextManager::Get().BufferSize(0x20, mTextRows);
     mGlyphCounts[0] = (u16) TextManager::Get().GlyphCount((mTextRows * 8 + 15) / 16 * 8);
-    mTextBuffers[0] = OS_Alloc(mTextSizes[0]);
+    mTextBuffers[0] = OS_Alloc(mTextBufferSizes[0]);
     mGlyphBuffers[0] = OS_Alloc(mGlyphCounts[0] * 0xc);
     TextManager::Get().Init(mGlyphBuffers[0], 1, 0, 0x20, mTextRows, 0x21);
     TextManager::Get().SetColor(1, 0, 0xf);
 }
 
-void TournamentScene::func_ov002_0221cd10() {
-    if (mUnk_b5 != 0) {
+void TournamentScene::Draw() {
+    if (mMenuVisible != 0) {
         mMenu->Draw();
-        if (mUnk_b8 == 0) {
+        if (mWindowOpen == 0) {
             mMessage->Update();
         }
     } else if (mUnk_b9 != 0) {
         mMenu->Draw();
-        if (mUnk_b8 == 0) {
+        if (mWindowOpen == 0) {
             mMessage->Update();
         }
         mCell20->Update();
         mCell20->Draw(1, data_ov002_02220d14[mMode].mX, data_ov002_02220d14[mMode].mY, 2);
     }
-    if (mUnk_b5 | mUnk_b9) {
+    if (mMenuVisible | mUnk_b9) {
         s16 a = 0x90;
         u8 b  = 8;
         if (mTextRows > 2) {
@@ -1103,7 +1103,7 @@ void TournamentScene::func_ov002_0221cd10() {
         SpriteManager::Get().Screen(1).AddOam(mGlyphBuffers[0], b, (s16) (0x80 - ((u32) mTextWidth >> 1)), a, 2, 0x100,
                                                      0xf, 0);
     }
-    if (mUnk_b6 != 0) {
+    if (mMainScreenVisible != 0) {
         s16 off = mUnk_a2;
         u8 idx  = gSaveData[0].mUnk_43 * sCounts[mMode];
         for (u8 i = 0; i < 3; i++) {
@@ -1116,8 +1116,8 @@ void TournamentScene::func_ov002_0221cd10() {
         if (mObj38 != NULL) {
             u8 j = 0;
             do {
-                mObj38->SetDrawArgs(j, mUnk_a0 + (mUnk_a4 + data_ov002_02220b58[mMode][idx + j].x),
-                                      mUnk_a6 + data_ov002_02220b58[mMode][idx + j].y, 0);
+                mObj38->SetDrawArgs(j, mUnk_a0 + (mMoveX + data_ov002_02220b58[mMode][idx + j].x),
+                                      mMoveY + data_ov002_02220b58[mMode][idx + j].y, 0);
                 j++;
             } while (j < sCounts[mMode]);
             if (mMode == 1) {
@@ -1138,12 +1138,12 @@ void TournamentScene::func_ov002_0221cd10() {
                 u8 flag = 1;
                 if (k >= idx) {
                     if (k < idx + sTotals[mMode]) {
-                        dx   = mUnk_a4;
-                        dy   = mUnk_a6;
+                        dx   = mMoveX;
+                        dy   = mMoveY;
                         flag = 0;
                     }
                 }
-                mCellsA[3]->DrawFrame(0, mUnk_c2[k], mUnk_a0 + (dx + data_ov002_02220b58[mMode][k].x),
+                mCellsA[3]->DrawFrame(0, mCharacterIds[k], mUnk_a0 + (dx + data_ov002_02220b58[mMode][k].x),
                                           dy + data_ov002_02220b58[mMode][k].y, flag);
                 k++;
             } while (k < sTotals[mMode]);
@@ -1155,7 +1155,7 @@ void TournamentScene::func_ov002_0221cd10() {
                 m++;
             } while (m < idx);
         }
-        if (mUnk_b7 != 0) {
+        if (mCellsBVisible != 0) {
             for (u8 n = 0; n < 3; n++) {
                 if (mCellsB[n] != NULL) {
                     mCellsB[n]->Update();
@@ -1165,8 +1165,8 @@ void TournamentScene::func_ov002_0221cd10() {
             if (mCellsB[3] != NULL) {
                 u8 p = 0;
                 do {
-                    mCellsB[3]->Draw(0, (s16) (mUnk_a0 + (mUnk_a4 + data_ov002_02220b58[mMode][idx + p].x)),
-                                     (s16) (mUnk_a6 + data_ov002_02220b58[mMode][idx + p].y), 0);
+                    mCellsB[3]->Draw(0, (s16) (mUnk_a0 + (mMoveX + data_ov002_02220b58[mMode][idx + p].x)),
+                                     (s16) (mMoveY + data_ov002_02220b58[mMode][idx + p].y), 0);
                     p++;
                 } while (p < sCounts[mMode]);
             }
@@ -1190,13 +1190,13 @@ void TournamentScene::func_ov002_0221cd10() {
         }
         SpriteManager::Get().Screen(0).AddOam(mGlyphBuffers[3], 6, 0x12, 0x82, 0, 0x3e0, 0xf, 0);
     }
-    if (mUnk_b8 != 0) {
+    if (mWindowOpen != 0) {
         mWindow->Draw();
         SpriteManager::Get().Screen(1).AddOam(mGlyphBuffers[1], 9, 0x20, 0x28, 0, 0x360, 0xf, 0);
     }
 }
 
-u8 TournamentScene::func_ov002_0221d4b0(u8 input) {
+u8 TournamentScene::UpdateScrollInput(u8 input) {
     mNewSelection = mSelection;
     u8 result     = 0;
     if (input == 3) {
@@ -1216,7 +1216,7 @@ u8 TournamentScene::func_ov002_0221d4b0(u8 input) {
         }
     }
     if (result == 0 && mMenu->mState == 1) {
-        u8 r = func_ov002_0221d69c();
+        u8 r = UpdateScrollKeys();
         switch (r) {
             case 1:
                 mMenu->SetResultItem(3, 3);
@@ -1253,7 +1253,7 @@ u8 TournamentScene::func_ov002_0221d4b0(u8 input) {
     return result;
 }
 
-u8 TournamentScene::func_ov002_0221d69c() {
+u8 TournamentScene::UpdateScrollKeys() {
     u8 result = 0;
     if (InputManager::Get().IsTrigger(KEY_LEFT)) {
         if (mSelection != 0) {
@@ -1272,7 +1272,7 @@ u8 TournamentScene::func_ov002_0221d69c() {
     return result;
 }
 
-BOOL TournamentScene::func_ov002_0221d7e4() {
+BOOL TournamentScene::HandleEventResult() {
     int r = mEvent->GetResult();
     if (r != 0) {
         switch (r) {
@@ -1292,7 +1292,7 @@ BOOL TournamentScene::func_ov002_0221d7e4() {
     return FALSE;
 }
 
-BOOL TournamentScene::func_ov002_0221d848() {
+BOOL TournamentScene::UpdateScroll() {
     BOOL done = FALSE;
     s16 step  = 0xe;
     if (mScrollLeft < 0xe) {
@@ -1338,15 +1338,15 @@ BOOL TournamentScene::func_ov002_0221d848() {
         } else {
             mMenu->mCells[4]->SetAnimation(1);
         }
-        func_ov002_0221dbd4(data_ov002_02220a04[mSelection]);
-        func_ov002_0221ddf8(data_ov002_02220a08[mSelection]);
+        PrintSubScreenText(data_ov002_02220a04[mSelection]);
+        SetupMainScreenText(data_ov002_02220a08[mSelection]);
         done = TRUE;
     }
     return done;
 }
 
 
-void TournamentScene::func_ov002_0221da5c() {
+void TournamentScene::RefreshCellLayout() {
     WindowItem *items = mMenu->mCursor->mItems;
     s16 base          = mSelection * 0x62;
     u8 i              = 0;
@@ -1385,8 +1385,8 @@ void TournamentScene::func_ov002_0221da5c() {
     mMenu->mCursor->mSelection = mSelection;
 }
 
-void TournamentScene::func_ov002_0221dbd4(u8 index) {
-    func_ov002_0221ddb8();
+void TournamentScene::PrintSubScreenText(u8 index) {
+    ClearSubScreenText();
     TextManager::Get().mUse4bppFont = 1;
     TextManager &tm   = TextManager::Get();
     s16 width;
@@ -1399,21 +1399,21 @@ void TournamentScene::func_ov002_0221dbd4(u8 index) {
         mTextHeight = height;
     }
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x8000, mTextBuffers[0], mTextSizes[0], 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x8000, mTextBuffers[0], mTextBufferSizes[0], 0);
 }
 
-void TournamentScene::func_ov002_0221ddb8() {
+void TournamentScene::ClearSubScreenText() {
     for (u8 i = 0; i < 2; i++) {
         if (mTextBuffers[i] != NULL) {
-            MI_CpuClear16(mTextBuffers[i], mTextSizes[i]);
+            MI_CpuClear16(mTextBuffers[i], mTextBufferSizes[i]);
         }
     }
 }
 
 
-void TournamentScene::func_ov002_0221ddf8(u8 index) {
-    mUnk_ae = 0xc8;
-    mUnk_d6 = 0;
+void TournamentScene::SetupMainScreenText(u8 index) {
+    mMainTextTimer = 0xc8;
+    mMainTextPage = 0;
     TextManager &tm = TextManager::Get();
     u16 pixelWidth;
     s16 width;
@@ -1432,18 +1432,18 @@ void TournamentScene::func_ov002_0221ddf8(u8 index) {
             tm.mLineStarts[i] = tm.mLineStarts[i - 1];
         }
     }
-    mUnk_d7 = h >> 4;
-    func_ov002_0221df48(index);
+    mMainTextLineCount = h >> 4;
+    PrintMainScreenText(index);
 }
 
-void TournamentScene::func_ov002_0221df48(u32 index) {
+void TournamentScene::PrintMainScreenText(u32 index) {
     s16 height2;
     s16 width2;
     s16 height1;
     s16 width1;
-    func_ov002_0221e270();
+    ClearMainScreenText();
     TextManager &text = TextManager::Get();
-    width1            = -(mUnk_d6 * 0x30);
+    width1            = -(mMainTextPage * 0x30);
     height1           = 0;
     MessageFile *file = mMessages[2];
     u16 length = file->GetLength(index);
@@ -1459,69 +1459,69 @@ void TournamentScene::func_ov002_0221df48(u32 index) {
     if (&mUnk_ac != NULL) {
         mUnk_ac = width1;
     }
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x1d000, mTextBuffers[2], mTextSizes[2], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x1d000, mTextBuffers[2], mTextBufferSizes[2], 0);
     height2 = 0;
     width2  = 0;
     TextManager::Get().mUse4bppFont = 1;
     TextManager::Get().Print(data_020d441a, 0x18, mTextBuffers[3], 0x18, 2, &height2, &width2, 0, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x1f000, mTextBuffers[3], mTextSizes[3], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x1f000, mTextBuffers[3], mTextBufferSizes[3], 0);
 }
 
-void TournamentScene::func_ov002_0221e270() {
+void TournamentScene::ClearMainScreenText() {
     for (u8 i = 2; i < 4; i++) {
         if (mTextBuffers[i] != NULL) {
-            MI_CpuClear16(mTextBuffers[i], mTextSizes[i]);
+            MI_CpuClear16(mTextBuffers[i], mTextBufferSizes[i]);
         }
     }
 }
 
 BOOL TournamentScene::func_ov002_0221e2b0() {
     BOOL result = FALSE;
-    switch (mState) {
+    switch (mBattleStep) {
         case 0:
             func_ov002_0221e8f0();
-            mState++;
+            mBattleStep++;
             break;
         case 1:
-            if (mUnk_c0 <= -16) {
-                mState++;
+            if (mBrightness <= -16) {
+                mBattleStep++;
             } else {
-                mUnk_c0--;
-                G2_SetBlendBrightness(0x11, mUnk_c0);
-                G2S_SetBlendBrightness(0x11, mUnk_c0);
+                mBrightness--;
+                G2_SetBlendBrightness(0x11, mBrightness);
+                G2S_SetBlendBrightness(0x11, mBrightness);
             }
             break;
         case 2: {
             u8 mode = mMode;
             u8 idx  = gSaveData[0].mUnk_43 * sCounts[mode];
-            mUnk_a8 = data_ov002_02220a2e[mode].x - (mUnk_a0 + data_ov002_02220b58[mode][idx].x);
-            mUnk_aa = data_ov002_02220a2e[mMode].y - data_ov002_02220b58[mMode][idx].y;
-            mStep = 0;
-            mState++;
+            mMoveDistanceX = data_ov002_02220a2e[mode].x - (mUnk_a0 + data_ov002_02220b58[mode][idx].x);
+            mMoveDistanceY = data_ov002_02220a2e[mMode].y - data_ov002_02220b58[mMode][idx].y;
+            mMoveFrames = 0;
+            mBattleStep++;
             break;
         }
         case 3:
-            mStep++;
-            mUnk_a4 = mUnk_a8 * mStep / 5;
-            mUnk_a6 = mUnk_aa * mStep / 5;
-            if (mStep >= 5) {
+            mMoveFrames++;
+            mMoveX = mMoveDistanceX * mMoveFrames / 5;
+            mMoveY = mMoveDistanceY * mMoveFrames / 5;
+            if (mMoveFrames >= 5) {
                 mCellsA[1]->SetMode(4);
                 mCellsB[1]->SetMode(4);
-                mState++;
+                mBattleStep++;
             }
             break;
         case 4:
             if (mCellsA[1]->mFinished != 0) {
                 mUnk_c1 = 0x3c;
-                mState++;
+                mBattleStep++;
             }
             break;
         case 5:
             if (mUnk_c1 != 0) {
                 mUnk_c1--;
             } else {
-                mState++;
+                mBattleStep++;
             }
             break;
         case 6:
@@ -1531,21 +1531,21 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
                 mUnk_a0 -= 0x20;
             } else {
                 mUnk_a0 = 0x100;
-                mState++;
+                mBattleStep++;
             }
             mUnk_a2 = -mUnk_a0;
             break;
         case 7:
             SpriteManager::Get().StartFade(3);
-            mState++;
+            mBattleStep++;
             break;
         case 8:
             if (!SpriteManager::Get().IsFading()) {
-                mUnk_b6 = 0;
-                mUnk_b7 = 0;
-                G2_SetBlendBrightness(0x11, mUnk_c0);
-                G2S_SetBlendBrightness(0x11, mUnk_c0);
-                mState++;
+                mMainScreenVisible = 0;
+                mCellsBVisible = 0;
+                G2_SetBlendBrightness(0x11, mBrightness);
+                G2S_SetBlendBrightness(0x11, mBrightness);
+                mBattleStep++;
             }
             break;
         case 9:
@@ -1554,18 +1554,18 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
                 mEvent = new ScriptPlayer(7, 0, 1);
             }
             mUnk_c1 = 0;
-            mState++;
+            mBattleStep++;
             break;
         case 10:
             if (!mEvent->IsRunning()) {
                 u8 mode = mMode;
                 u8 idx = gSaveData[0].mUnk_43 * sCounts[mode];
                 u32 pick = MATH_Rand32(&gRandom, 3);
-                u8 id   = mUnk_c2[mUnk_c1 + idx];
+                u8 id   = mCharacterIds[mUnk_c1 + idx];
                 if (mEvent->func_0206f9b4("mes_tm_battle", id, data_ov002_02220a54[0][id], data_ov002_02220a6c[id][pick], 2, 3,
                                   0)) {
                     SpriteManager::Get().StartFade(2);
-                    mState++;
+                    mBattleStep++;
                 }
             }
             break;
@@ -1573,15 +1573,15 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
             if (!mEvent->IsRunning()) {
                 mUnk_c1++;
                 if (mUnk_c1 < sCounts[mMode]) {
-                    mState = 10;
+                    mBattleStep = 10;
                 } else {
-                    mState++;
+                    mBattleStep++;
                 }
             }
             break;
         case 12:
             SpriteManager::Get().StartFade(3);
-            mState++;
+            mBattleStep++;
             break;
         case 13:
             if (!SpriteManager::Get().IsFading()) {
@@ -1596,8 +1596,8 @@ void TournamentScene::func_ov002_0221e8f0() {
     GX_SetVisibleWnd(4);
     G2_SetWndOutsidePlane(0x31, FALSE);
     reg_G2_WINOUT  = (reg_G2_WINOUT & ~0x3f00) | 0x1100;
-    mUnk_c0        = 0;
-    mUnk_b7        = 1;
+    mBrightness        = 0;
+    mCellsBVisible        = 1;
     if (mMode == 1) {
         mCellsB[0]->SetAnimation(12);
         mCellsB[0]->SetMode(0);
@@ -1643,7 +1643,7 @@ void TournamentScene::func_ov002_0221e984() {
     }
     u8 i = 0;
     do {
-        mUnk_c2[i] = mEvent->func_02067120(gSaveData[0].mUnk_42, a, (u8) (b + c), 0);
+        mCharacterIds[i] = mEvent->func_02067120(gSaveData[0].mUnk_42, a, (u8) (b + c), 0);
         b++;
         if (b >= sCounts[mMode]) {
             a++;
@@ -1653,11 +1653,11 @@ void TournamentScene::func_ov002_0221e984() {
     } while (i < sTotals[mMode]);
 }
 
-void TournamentScene::func_ov002_0221ead8() {
+void TournamentScene::OpenWindow() {
     GXS_SetVisiblePlane(0x13);
     mWindow->Reset(1);
     mWindow->mEnabled = 1;
-    mUnk_b8           = 1;
+    mWindowOpen           = 1;
     G2S_SetWnd0Position(0x10, 0x10, 0xf0, 0xb0);
     GXS_SetVisibleWnd(1);
     G2S_SetWnd0InsidePlane(0x13, FALSE);
@@ -1665,17 +1665,17 @@ void TournamentScene::func_ov002_0221ead8() {
     G2S_SetBlendBrightness(0x11, -8);
 }
 
-void TournamentScene::func_ov002_0221eb78() {
+void TournamentScene::CloseWindow() {
     GXS_SetVisiblePlane(0x11);
     mWindow->mEnabled = 0;
-    mUnk_b8           = 0;
+    mWindowOpen           = 0;
     G2S_SetBlendBrightness(0x11, 0);
     GXS_SetVisibleWnd(0);
     G2S_SetWnd0InsidePlane(0x1f, FALSE);
     G2S_SetWndOutsidePlane(0x3f, FALSE);
 }
 
-void TournamentScene::func_ov002_0221ebe4(const char *path, u32 index) {
+void TournamentScene::LoadWindow(const char *path, u32 index) {
     ChangeDir("/Game/2D/union_b/");
     LoadAndQueueUpload(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
@@ -1694,12 +1694,12 @@ void TournamentScene::func_ov002_0221ebe4(const char *path, u32 index) {
         OS_Free(mGlyphBuffers[1]);
     }
     mMessages[1] = (MessageFile *) LoadFile(path, 0, 0, 0, 0, 0);
-    mTextSizes[1] = TextManager::Get().BufferSize(0x18, 0x10);
+    mTextBufferSizes[1] = TextManager::Get().BufferSize(0x18, 0x10);
     mGlyphCounts[1]     = TextManager::Get().GlyphCount(0xc);
-    mTextBuffers[1]     = OS_Alloc(mTextSizes[1]);
+    mTextBuffers[1]     = OS_Alloc(mTextBufferSizes[1]);
     mGlyphBuffers[1]    = OS_Alloc(mGlyphCounts[1] * 0xc);
     TextManager::Get().Init(mGlyphBuffers[1], 1, 0, 0x18, 0x10, 0x42);
-    func_ov002_0221ef34(index);
+    PrintWindowText(index);
     delete mWindow;
     mWindow = new SelectWindow(3, sWindowItems, 1);
     mWindow->SetCells(3, sWindowCells);
@@ -1707,8 +1707,8 @@ void TournamentScene::func_ov002_0221ebe4(const char *path, u32 index) {
     ChangeDir("/");
 }
 
-void TournamentScene::func_ov002_0221ef34(u32 index) {
-    MI_CpuClear16(mTextBuffers[1], mTextSizes[1]);
+void TournamentScene::PrintWindowText(u32 index) {
+    MI_CpuClear16(mTextBuffers[1], mTextBufferSizes[1]);
     TextManager &text = TextManager::Get();
     s16 height;
     s16 width;
@@ -1716,16 +1716,16 @@ void TournamentScene::func_ov002_0221ef34(u32 index) {
     height = 0;
     MessageFile *file = mMessages[1];
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[1], 0x18, 0x10, &height, &width, 0, 0, 2, 0x42, 0x10, 0, 0, 0, 1, 1);
-    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x1b000, mTextBuffers[1], mTextSizes[1], 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x1b000, mTextBuffers[1], mTextBufferSizes[1], 0);
 }
 
-void TournamentScene::func_ov002_0221f098(u32 index) {
+void TournamentScene::StartBgBlend(u32 index) {
     ChangeDir("/game/Tournament/Bg/");
     index      = sModeTables[2][index];
     u32 nsc    = 7;
     u32 ncg    = 0xb;
     u32 offset = 0;
-    if (mUnk_d4 != 0) {
+    if (mNextBgLayer != 0) {
         nsc    = 8;
         ncg    = 0xc;
         offset = 0x2000;
@@ -1738,21 +1738,21 @@ void TournamentScene::func_ov002_0221f098(u32 index) {
     sprintf(path, "tournament_u_bg_0%d_ncl.bin", index);
     LoadAndQueueUpload(0, 1, offset, path, 0, 0, 0);
     mBlend = 0;
-    if (mUnk_d4 == 0) {
+    if (mNextBgLayer == 0) {
         G2_SetBG0Priority(2);
         G2_SetBG1Priority(3);
         G2x_SetBlendAlpha_(&reg_G2_BLDCNT, 1, 2, mBlend, 0x1f - mBlend);
-        mUnk_d4 = 1;
+        mNextBgLayer = 1;
     } else {
         G2_SetBG0Priority(3);
         G2_SetBG1Priority(2);
         G2x_SetBlendAlpha_(&reg_G2_BLDCNT, 2, 1, mBlend, 0x1f - mBlend);
-        mUnk_d4 = 0;
+        mNextBgLayer = 0;
     }
     GX_SetVisiblePlane(0x13);
 }
 
-BOOL TournamentScene::func_ov002_0221f250() {
+BOOL TournamentScene::UpdateBgBlend() {
     BOOL done = TRUE;
     if (mBlend < 0x1f) {
         mBlend++;
@@ -1760,7 +1760,7 @@ BOOL TournamentScene::func_ov002_0221f250() {
         reg_G2_BLDALPHA = level | ((0x1f - level) << 8);
         done = FALSE;
         if (mBlend >= 0x1f) {
-            if (mUnk_d4 == 0) {
+            if (mNextBgLayer == 0) {
                 GX_SetVisiblePlane(0x12);
             } else {
                 GX_SetVisiblePlane(0x11);

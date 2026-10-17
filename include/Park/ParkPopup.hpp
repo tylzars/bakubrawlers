@@ -12,7 +12,7 @@ struct MessageFile;
 #define PARK_POPUP_THREE_ITEMS 0
 #define PARK_POPUP_TWO_ITEMS 1
 
-// A popup with a message from a .mes file and two or three buttons.
+// A popup with a message from a .mes file and one or two buttons (the last window item is not selectable).
 class ParkPopup {
 public:
     /* 00 */ PAD(0x00, 0x1c);

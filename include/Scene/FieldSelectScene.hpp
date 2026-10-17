@@ -18,7 +18,7 @@ struct CellEntry {
     /* 06 */ s16 mY;
     /* 08 */ u8 mVisible;
     /* 09 */ u8 mUnk_09;
-    /* 0a */ u8 mUnk_0a;
+    /* 0a */ u8 mUpdateAnim;
     /* 0b */ PAD(0x0b, 0x0c);
     /* 0c */
 };
@@ -37,7 +37,7 @@ struct FieldInput {
     /* 0a */ u8 mWindowOpen;
     /* 0b */ u8 mWindowSelection;
     /* 0c */ u8 mUnk_0c;
-    /* 0d */ u8 mUnk_0d;
+    /* 0d */ u8 mPressTimer;
     /* 0e */ u8 mUnk_0e;
     /* 0f */ u8 mUnk_0f;
     /* 10 */
@@ -57,7 +57,7 @@ public:
         /* 10c */ u8 mUnk_10c[0x40];
         /* 10c */ FieldInput mInput[4];
     };
-    /* 14c */ u8 mUnk_14c[0x20];
+    /* 14c */ u8 mCharacterLooks[0x20];
     /* 16c */ void *mFiles[10][3];
     /* 1e4 */ u32 mFileSizes[10][3];
     union {
@@ -84,28 +84,28 @@ public:
     /* 329 */ u8 mPage;
     /* 32a */ u8 mPlayerCount;
     /* 32b */ u8 mInputCount;
-    /* 32c */ u8 mUnk_32c;
-    /* 32d */ u8 mUnk_32d;
+    /* 32c */ u8 mHasPartners;
+    /* 32d */ u8 mShowRulePage;
     /* 32e */ u8 mBlend;
     /* 32f */ u8 mBlendTarget;
     /* 330 */ u8 mBlendStep;
     /* 331 */ u8 mBlendTimer;
     /* 332 */ u8 mNextScene;
     /* 333 */ u8 mLocalIsFirstSlot;
-    /* 334 */ u8 mUnk_334;
+    /* 334 */ u8 mPlayerRowsVisible;
     /* 335 */ u8 mUnk_335;
     /* 336 */ u8 mUnk_336;
-    /* 337 */ u8 mUnk_337;
-    /* 338 */ u8 mUnk_338;
-    /* 339 */ u8 mUnk_339;
+    /* 337 */ u8 mFieldMarksVisible;
+    /* 338 */ u8 mPairGridVisible;
+    /* 339 */ u8 mNumberMarksVisible;
     /* 33a */ u8 mUnk_33a;
     /* 33b */ u8 mLocalSlot;
     /* 33c */ u8 mUnk_33c;
-    /* 33d */ u8 mUnk_33d;
-    /* 33e */ u8 mUnk_33e;
+    /* 33d */ u8 mLocalTaken;
+    /* 33e */ u8 mWindow0ItemCount;
     /* 33f */ u8 mUnk_33f;
     /* 340 */ u8 mUnk_340;
-    /* 341 */ u8 mUnk_341;
+    /* 341 */ u8 mSavedFieldItem;
     /* 342 */ PAD(0x342, 0x344);
     /* 344 */ s32 mPendingSubPlanes;
     /* 348 */ u8 mMessageEnabled;

@@ -54,9 +54,9 @@ struct LookChoices {
 class CharacterEditScene : public SceneBase {
 public:
     /* 0c */ SelectWindow *mWindows[3];
-    /* 18 */ u32 mUnk_18;
-    /* 1c */ u32 mUnk_1c;
-    /* 20 */ u32 mUnk_20;
+    /* 18 */ u32 mWindow0Result;
+    /* 1c */ u32 mWindow1Result;
+    /* 20 */ u32 mWindow2Result;
     /* 24 */ UnkStruct_0205401c *mModel;
     /* 28 */ Camera *mCamera;
     /* 2c */ ModelLightGroup *mPalette;
@@ -72,7 +72,7 @@ public:
     /* 140 */ void *mMessages;
     /* 144 */ MessageWindow *mMessage;
     /* 148 */ u8 mRotateState;
-    /* 14c */ u32 mUnk_14c;
+    /* 14c */ u32 mChoicesVisible;
     /* 150 */ ModelInstance *mCutRoomModel;
     /* 154 */ u8 mMenuDepth;
     /* 155 */ u8 mMenuSelection[3];

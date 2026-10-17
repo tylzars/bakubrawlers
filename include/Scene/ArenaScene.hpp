@@ -51,7 +51,7 @@ public:
     /* b0 */ u8 mResult;
     /* b1 */ u8 mSelection;
     /* b2 */ u8 mSubMenuMode;
-    /* b3 */ u8 mUnk_b3;
+    /* b3 */ u8 mWirelessStopping;
     /* b4 */ u8 mUnk_b4;
     /* b5 */ u8 mRequest;
     /* b6 */ u8 mUnk_b6;
@@ -63,7 +63,7 @@ public:
     /* 08 */ virtual void Update() override;
     /* 0c */
 
-    void func_ov001_022197ec();
+    void StopWirelessAndReset();
     void SetSubMenuMode(u32 mode);
     void InitDisplay();
     void LoadGraphics();

@@ -542,7 +542,7 @@ ListScene::ListScene(u32 unk1, u32 unk2) :
     mResultMessages   = NULL;
     mUnk_48   = NULL;
     mUnk_4c   = NULL;
-    mUnk_50   = NULL;
+    mDeckWindow   = NULL;
     mUnk_54   = NULL;
     mUnk_58   = NULL;
     mCommandList   = NULL;
@@ -574,7 +574,7 @@ ListScene::ListScene(u32 unk1, u32 unk2) :
         mGlyphCounts[i] = NULL;
     }
     for (u8 i = 0; i < 6; i++) {
-        mUnk_5c[i] = NULL;
+        mMainScreenCellAnims[i] = NULL;
     }
     for (u8 i = 0; i < 0x13; i++) {
         mSubScreenCellAnims[i] = NULL;
@@ -612,21 +612,21 @@ ListScene::ListScene(u32 unk1, u32 unk2) :
     mUnk_1a0 = 4;
     mUnk_1a1 = 0;
     mPrice = 0;
-    MI_CpuClear16(&mUnk_24, 2);
+    MI_CpuClear16(&mAlphabetChar, 2);
     mUnk_3f4 = data_020d433c.mUnk_8a_0;
 }
 
 ListScene::~ListScene() {
     u8 i;
     for (i = 0; i < 6; i++) {
-        delete mUnk_5c[i];
+        delete mMainScreenCellAnims[i];
     }
     for (i = 0; i < 0x13; i++) {
         delete mSubScreenCellAnims[i];
     }
     delete mUnk_4c;
     delete mUnk_48;
-    delete mUnk_50;
+    delete mDeckWindow;
     operator delete(mUnk_54);
     operator delete(mUnk_58);
     if (mStorecommentMessages != NULL) {
@@ -677,8 +677,8 @@ ListScene::~ListScene() {
 // mCommandPage and writes mContext->mUnk_12 (:741-754).
 void ListScene::Release(u32 releaseCommands) {
     for (u8 i = 0; i < 6; i++) {
-        delete mUnk_5c[i];
-        mUnk_5c[i] = NULL;
+        delete mMainScreenCellAnims[i];
+        mMainScreenCellAnims[i] = NULL;
     }
     for (u8 i = 0; i < 0x13; i++) {
         delete mSubScreenCellAnims[i];
@@ -688,8 +688,8 @@ void ListScene::Release(u32 releaseCommands) {
     mUnk_4c = NULL;
     delete mUnk_48;
     mUnk_48 = NULL;
-    delete mUnk_50;
-    mUnk_50 = NULL;
+    delete mDeckWindow;
+    mDeckWindow = NULL;
     operator delete(mUnk_54);
     mUnk_54 = NULL;
     operator delete(mUnk_58);
@@ -917,14 +917,14 @@ void ListScene::Update() {
         case 7:
             mUnk_48->mEnabled = 0;
             mUnk_4c->mEnabled = 0;
-            mUnk_50->mEnabled = 0;
+            mDeckWindow->mEnabled = 0;
             SpriteManager::Get().StartFade(2);
             mState++;
             func_020851d0();
             return;
         case 8:
             if (!SpriteManager::Get().IsFading()) {
-                mUnk_50->mEnabled = 1;
+                mDeckWindow->mEnabled = 1;
                 mState++;
                 if (mUnk_3f4 != 0) {
                     func_02085220(this, 0xc);
@@ -934,8 +934,8 @@ void ListScene::Update() {
             return;
         case 9:
             if (!func_020842a0()) {
-                if (mUnk_50->Update(1) == 3) {
-                    switch (mUnk_50->mCursor->mSelection) {
+                if (mDeckWindow->Update(1) == 3) {
+                    switch (mDeckWindow->mCursor->mSelection) {
                         case 0:
                             func_020842e8();
                             func_02085220(this, 0xb);
@@ -957,7 +957,7 @@ void ListScene::Update() {
             return;
         case 10:
             SpriteManager::Get().StartFade(3);
-            mUnk_50->mEnabled = 0;
+            mDeckWindow->mEnabled = 0;
             mState++;
             func_020851d0();
             return;
@@ -1013,7 +1013,7 @@ void ListScene::Update() {
             return;
         case 19:
             if (!SpriteManager::Get().IsFading()) {
-                mUnk_50->mEnabled = 1;
+                mDeckWindow->mEnabled = 1;
                 mState           = 9;
             }
             func_020851d0();
@@ -1037,11 +1037,11 @@ void ListScene::Update() {
                     case 0xb:
                         SoundManager::Get().StartSeqArc(0x6a);
                         func_02085220(this, 0);
-                        mUnk_50->mCells[0]->SetAnimation(0);
+                        mDeckWindow->mCells[0]->SetAnimation(0);
                         mState = 0x17;
                         WirelessManager::Get();
                         if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-                            mUnk_50->mEnabled = 0;
+                            mDeckWindow->mEnabled = 0;
                             mState           = 0x1b;
                             UPDATE_TAIL();
                         }
@@ -1061,7 +1061,7 @@ void ListScene::Update() {
             func_020851d0();
             return;
         case 23:
-            mUnk_50->mEnabled = 0;
+            mDeckWindow->mEnabled = 0;
             if (mCharacterId == 0x15) {
                 func_020848c8(this);
             }
@@ -1449,9 +1449,9 @@ void ListScene::LoadSubScreenGraphics() {
         mSubScreenCellAnims[18]->mPaletteBase   = 8;
         mSubScreenCellAnims[18]->SetAnimation(0);
         ChangeDir("/");
-        mUnk_50 = new SelectWindow(2, data_020a31a0, 0);
-        mUnk_50->SetCells(2, data_020a31d8);
-        mUnk_50->mCells[0]->SetAnimation(1);
+        mDeckWindow = new SelectWindow(2, data_020a31a0, 0);
+        mDeckWindow->SetCells(2, data_020a31d8);
+        mDeckWindow->mCells[0]->SetAnimation(1);
         this->func_02081994(3, 0, 8);
         this->func_02081994(3, 1, 8);
         this->func_02081994(0, 0, 0x8000);
@@ -1500,7 +1500,7 @@ void ListScene::LoadMessages() {
     TextManager::Get().SetColor(1, 0, 0xf);
     u8 *alphabet = (u8 *) LoadFile("mes_Alphabet.mes", 0, 0, 0, 0, 0);
     TextManager::Get();
-    mUnk_24 = *(u16 *) (alphabet + *(u16 *) (alphabet + 2) + 0xb4);
+    mAlphabetChar = *(u16 *) (alphabet + *(u16 *) (alphabet + 2) + 0xb4);
     OS_Free(alphabet);
     switch (mMode) {
         case 0:
@@ -2334,11 +2334,11 @@ void ListScene::func_0207eec4() {
     switch (mMode) {
         case 3:
         case 5:
-            if (mUnk_5c[0] != NULL) {
-                mUnk_5c[0]->Draw(0, 0x80, 0x60, 0);
+            if (mMainScreenCellAnims[0] != NULL) {
+                mMainScreenCellAnims[0]->Draw(0, 0x80, 0x60, 0);
             }
-            if (mUnk_5c[3] != NULL) {
-                mUnk_5c[3]->DrawFrame(0, 0, 0x80, 0x60, 0);
+            if (mMainScreenCellAnims[3] != NULL) {
+                mMainScreenCellAnims[3]->DrawFrame(0, 0, 0x80, 0x60, 0);
             }
             for (; i < 9; i++) {
                 if (i < 3) {
@@ -2352,26 +2352,26 @@ void ListScene::func_0207eec4() {
             {
                 s32 n = func_0208644c();
                 if ((u32) n < 1000) {
-                    mUnk_5c[5]->DrawFrame(0, n / 100, 0x6e, 0x94, 0);
-                    mUnk_5c[5]->DrawFrame(0, n / 10 % 10, 0x7a, 0x94, 0);
-                    mUnk_5c[5]->DrawFrame(0, n % 10, 0x86, 0x94, 0);
+                    mMainScreenCellAnims[5]->DrawFrame(0, n / 100, 0x6e, 0x94, 0);
+                    mMainScreenCellAnims[5]->DrawFrame(0, n / 10 % 10, 0x7a, 0x94, 0);
+                    mMainScreenCellAnims[5]->DrawFrame(0, n % 10, 0x86, 0x94, 0);
                 } else {
-                    mUnk_5c[5]->DrawFrame(0, n / 1000, 0x68, 0x94, 0);
-                    mUnk_5c[5]->DrawFrame(0, n / 100 % 10, 0x74, 0x94, 0);
-                    mUnk_5c[5]->DrawFrame(0, n / 10 % 10, 0x80, 0x94, 0);
-                    mUnk_5c[5]->DrawFrame(0, n % 10, 0x8c, 0x94, 0);
+                    mMainScreenCellAnims[5]->DrawFrame(0, n / 1000, 0x68, 0x94, 0);
+                    mMainScreenCellAnims[5]->DrawFrame(0, n / 100 % 10, 0x74, 0x94, 0);
+                    mMainScreenCellAnims[5]->DrawFrame(0, n / 10 % 10, 0x80, 0x94, 0);
+                    mMainScreenCellAnims[5]->DrawFrame(0, n % 10, 0x8c, 0x94, 0);
                 }
             }
             break;
         case 4:
-            if (mUnk_5c[1] != NULL) {
-                mUnk_5c[1]->Draw(i, 0x80, 0x60, i);
+            if (mMainScreenCellAnims[1] != NULL) {
+                mMainScreenCellAnims[1]->Draw(i, 0x80, 0x60, i);
             }
-            if (mUnk_5c[3] != NULL) {
-                mUnk_5c[3]->DrawFrame(0, 1, 0x80, 0x60, 0);
+            if (mMainScreenCellAnims[3] != NULL) {
+                mMainScreenCellAnims[3]->DrawFrame(0, 1, 0x80, 0x60, 0);
             }
             DrawMainScreenText();
-            if (mUnk_5c[2] == NULL) {
+            if (mMainScreenCellAnims[2] == NULL) {
                 return;
             }
             for (; i < 14; i++) {
@@ -2380,7 +2380,7 @@ void ListScene::func_0207eec4() {
                 if (i % 7 == 6) {
                     y += 6;
                 }
-                mUnk_5c[2]->DrawFrame(0, func_0208349c(i), x, y, 0);
+                mMainScreenCellAnims[2]->DrawFrame(0, func_0208349c(i), x, y, 0);
             }
             break;
     }
@@ -2393,8 +2393,8 @@ void ListScene::DrawWindows() {
     if (mUnk_48 != NULL) {
         mUnk_48->Draw();
     }
-    if (mUnk_50 != NULL) {
-        mUnk_50->Draw();
+    if (mDeckWindow != NULL) {
+        mDeckWindow->Draw();
     }
 }
 
@@ -3181,8 +3181,8 @@ void ListScene::func_02081994(u32 unk1, u32 unk2, u32 unk3) {
             items = mUnk_54->mItems;
             break;
         case 3:
-            items = mUnk_50->mCursor->mItems;
-            mUnk_50->mButtons[unk2].mEnabled = unk3 != 0x8000 ? 1 : 0;
+            items = mDeckWindow->mCursor->mItems;
+            mDeckWindow->mButtons[unk2].mEnabled = unk3 != 0x8000 ? 1 : 0;
             break;
         default:
             return;
@@ -3220,10 +3220,10 @@ void ListScene::func_02081a74(u8 unk1, u32 unk2, u32 unk3, s16 unk4, s16 unk5) {
     }
     SpriteManager::Get().Screen(second).AddOam((void *) data_020a3188[1], 1, (s16) (unk4 + 3), (s16) (unk5 + 3), priority, pos, 1, 0);
     if (unk3 == 0) {
-        if (mUnk_5c[4] == NULL) {
+        if (mMainScreenCellAnims[4] == NULL) {
             return;
         }
-        mUnk_5c[4]->DrawFrame(second, unk1, unk4, unk5, priority);
+        mMainScreenCellAnims[4]->DrawFrame(second, unk1, unk4, unk5, priority);
     } else {
         mSubScreenCellAnims[14]->DrawFrame(second, unk1, unk4, unk5, priority);
     }
@@ -3376,8 +3376,8 @@ void ListScene::func_0208250c(u32 unk1, u32 unk2) {
 
 void ListScene::func_02082660() {
     for (u8 i = 0; i < 6; i++) {
-        delete mUnk_5c[i];
-        mUnk_5c[i] = NULL;
+        delete mMainScreenCellAnims[i];
+        mMainScreenCellAnims[i] = NULL;
     }
     if (mTextBuffers[1] != NULL) {
         OS_Free(mTextBuffers[1]);
@@ -3436,29 +3436,29 @@ void ListScene::func_020826ec() {
     screen.LoadCharacters("list_u_obj_00.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("list_u_obj_00_ncl.bin", 0, 0);
     for (u8 i = 0; i <= 3; i++) {
-        mUnk_5c[i]              = new CellAnimation("list_u_obj_00_nce.bin", 0, 1, 1);
-        mUnk_5c[i]->mCharBase   = screen.GetCharBase(0);
-        mUnk_5c[i]->mPaletteBase     = 0;
+        mMainScreenCellAnims[i]              = new CellAnimation("list_u_obj_00_nce.bin", 0, 1, 1);
+        mMainScreenCellAnims[i]->mCharBase   = screen.GetCharBase(0);
+        mMainScreenCellAnims[i]->mPaletteBase     = 0;
     }
-    mUnk_5c[0]->SetAnimation(0);
-    mUnk_5c[1]->SetAnimation(1);
-    mUnk_5c[2]->SetAnimation(2);
-    mUnk_5c[3]->SetAnimation(3);
+    mMainScreenCellAnims[0]->SetAnimation(0);
+    mMainScreenCellAnims[1]->SetAnimation(1);
+    mMainScreenCellAnims[2]->SetAnimation(2);
+    mMainScreenCellAnims[3]->SetAnimation(3);
     ChangeDir("/Game/Bakugan/mark");
     LoadAndQueueUpload(0, 0, 0x200, "bakugan_s_000_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(0, 0, 0, "bakugan_s_base_ncl.bin", 0, 0, 0);
     LoadAndQueueUpload(0, 4, 0x3000, "bakugan_s_base.nce_ncg1D.bin", 0, 0, 0);
-    mUnk_5c[4]            = new CellAnimation("bakugan_s_base_nce.bin", 0, 1, 1);
-    mUnk_5c[4]->mCharBase = screen.GetCharBase(0x3000);
-    mUnk_5c[4]->mPaletteBase   = 0;
-    mUnk_5c[4]->SetAnimation(0);
+    mMainScreenCellAnims[4]            = new CellAnimation("bakugan_s_base_nce.bin", 0, 1, 1);
+    mMainScreenCellAnims[4]->mCharBase = screen.GetCharBase(0x3000);
+    mMainScreenCellAnims[4]->mPaletteBase   = 0;
+    mMainScreenCellAnims[4]->SetAnimation(0);
     ChangeDir("/Game/2d/union_b/");
     screen.LoadCharacters("union_b_obj_gp.nce_ncg1D.bin", 0x2000, 0);
     screen.LoadPalette("union_b_obj_gp_ncl.bin", 0xa0, 0);
-    mUnk_5c[5]            = new CellAnimation("union_b_obj_gp_nce.bin", 0, 1, 1);
-    mUnk_5c[5]->mCharBase = screen.GetCharBase(0x2000);
-    mUnk_5c[5]->mPaletteBase   = 5;
-    mUnk_5c[5]->SetAnimation(2);
+    mMainScreenCellAnims[5]            = new CellAnimation("union_b_obj_gp_nce.bin", 0, 1, 1);
+    mMainScreenCellAnims[5]->mCharBase = screen.GetCharBase(0x2000);
+    mMainScreenCellAnims[5]->mPaletteBase   = 5;
+    mMainScreenCellAnims[5]->SetAnimation(2);
     ChangeDir("/Game/Card/Graphic/Small");
     LoadAndQueueUpload(0, 0, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
     InitMainScreenText();
@@ -3505,7 +3505,7 @@ void PrintListSceneMainScreenText(ListScene *self) {
             a += 6;
         }
         TextManager::Get().PrintNumber(self->mUnk_1a2[i].mUnk_a, 3, 0, self->mTextBuffers[1], 0x18, 0x14, &b, &a, 0, 2, 0x42, 0, 0, 1, 1);
-        TextManager::Get().Print(&self->mUnk_24, 2, self->mTextBuffers[1], 0x18, 0x14, &b, &a, NULL, 0, 2, 0x42, 0, 0, 0, 0, 1, 1);
+        TextManager::Get().Print(&self->mAlphabetChar, 2, self->mTextBuffers[1], 0x18, 0x14, &b, &a, NULL, 0, 2, 0x42, 0, 0, 0, 0, 1, 1);
         TextManager::Get().PrintNumber(self->mUnk_1a2[i].mUnk_b, 3, 0, self->mTextBuffers[1], 0x18, 0x14, &b, &a, 0, 2, 0x42, 0, 0, 1, 1);
     }
     QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x10000, self->mTextBuffers[1], self->mTextBufferSizes[1], 0);
@@ -3867,8 +3867,8 @@ void func_020843ac(ListScene *self, u32 unk1) {
         screen.LoadCharacters("battle_b_obj_wait.nce_ncg1D.bin", 0x1e000, 0);
         screen.LoadPalette("battle_b_obj_ability_ncl.bin", 0x100, 0);
         GXS_SetVisiblePlane(0x11);
-        self->mUnk_50->mCursor->mSelection = 1;
-        self->mUnk_50->mCells[1]->SetAnimation(4);
+        self->mDeckWindow->mCursor->mSelection = 1;
+        self->mDeckWindow->mCells[1]->SetAnimation(4);
         self->func_02081994(3, 0, 8);
         self->func_02081994(3, 1, 8);
         self->func_02081994(0, 0, 0x8000);
@@ -4127,9 +4127,9 @@ void func_02085220(ListScene *self, u32 mode) {
     switch (mode) {
         case 0:
             self->mPendingPlanes                      = 0x11;
-            self->mUnk_50->mEnabled             = 1;
-            self->mUnk_50->mCursor->mSelection = state;
-            self->mUnk_50->mCells[0]->SetAnimation(1);
+            self->mDeckWindow->mEnabled             = 1;
+            self->mDeckWindow->mCursor->mSelection = state;
+            self->mDeckWindow->mCells[0]->SetAnimation(1);
             self->func_02081994(3, state, 8);
             self->func_02081994(3, 1, 8);
             self->mUnk_48->mEnabled = state;
@@ -4144,7 +4144,7 @@ void func_02085220(ListScene *self, u32 mode) {
             break;
     }
     GXS_SetVisiblePlane(0x13);
-    self->mUnk_50->mEnabled = 0;
+    self->mDeckWindow->mEnabled = 0;
     self->func_02081994(3, 0, 0x8000);
     self->func_02081994(3, 1, 0x8000);
     self->mUnk_48->Reset(-1);

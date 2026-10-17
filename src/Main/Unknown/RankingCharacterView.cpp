@@ -39,12 +39,12 @@ RankingCharacterView::RankingCharacterView(u8 unk1, u16 unk2, u32 unk3, u32 unk4
     SceneBase(0x3e8, 0) {
     mMyroomBgModel = NULL;
     mCamera = NULL;
-    mUnk_4c = NULL;
+    mLights = NULL;
     mCharacterModel = NULL;
     mStoryCharaNames = NULL;
     mModelX = 0;
     mState = 0;
-    mUnk_7e = unk4;
+    mKind = unk4;
     mChanging = 0;
     mFinishRequested = 0;
     mCharacterId = unk1;
@@ -75,7 +75,7 @@ RankingCharacterView::~RankingCharacterView() {
         delete model;
     }
     delete mCamera;
-    ModelLightGroup *lights = mUnk_4c;
+    ModelLightGroup *lights = mLights;
     if (lights != NULL) {
         delete lights;
     }
@@ -211,7 +211,7 @@ void RankingCharacterView::Load() {
     manager.mMtxA[manager.mActive]       = *func_02032710();
     manager.mMtxB[manager.mActive]       = *func_02032604();
     manager.mMtxC[manager.mActive]       = *func_020323b8();
-    mUnk_4c = new ModelLightGroup(data_020a3004);
+    mLights = new ModelLightGroup(data_020a3004);
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
     screen.SetObjVramMode(1);
     ChangeDir("/Game/Myroom/");
@@ -222,7 +222,7 @@ void RankingCharacterView::Load() {
         mRankingCellAnims[i]->mCharBase = screen.GetCharBase(0);
         mRankingCellAnims[i]->mPaletteBase   = 0;
     }
-    switch (mUnk_7e) {
+    switch (mKind) {
         case 0:
             mRankingCellAnims[0]->SetAnimation(0);
             break;

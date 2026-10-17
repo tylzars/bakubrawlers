@@ -535,7 +535,7 @@ void TitleScene::Update() {
             }
             break;
         case 28:
-            func_ov000_02223cdc();
+            InitSaveWindowDisplay();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
             data_020d433c.mUnk_14_1 = 0;
@@ -724,7 +724,7 @@ void TitleScene::Update() {
             break;
         }
         case 45:
-            func_ov000_02223cdc();
+            InitSaveWindowDisplay();
             new SaveWindow(1, 1, 0, 0x2000, 0, 0, 0, 0, 0);
             mContext->mRequest = 0;
             SpriteManager::Get().StartFade(2);
@@ -783,7 +783,7 @@ void TitleScene::InitDisplay() {
     G2S_BlendNone();
 }
 
-void TitleScene::func_ov000_02223cdc() {
+void TitleScene::InitSaveWindowDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);

@@ -26,7 +26,7 @@ MyroomStatusScene::MyroomStatusScene(u32 unk) :
     mReady  = 0;
     mState  = 0;
     mUnk_4c = unk;
-    mUnk_50 = NULL;
+    mRanking = NULL;
     mCellAnim = NULL;
     for (u8 i = 0; i < 5; i++) {
         mTextBuffers[i] = NULL;
@@ -36,7 +36,7 @@ MyroomStatusScene::MyroomStatusScene(u32 unk) :
     mTextBufferSize = 0;
     mGlyphCount = 0;
     mPalette = new ModelLightGroup(gMyroomStatusLightData);
-    mUnk_50 = new Ranking();
+    mRanking = new Ranking();
     u32 frames = gSaveData[0].mPlayFrames;
     mHours     = frames / 216000;
     frames -= mHours * 216000;
@@ -67,8 +67,8 @@ MyroomStatusScene::~MyroomStatusScene() {
     if (cell != NULL) {
         delete cell;
     }
-    if (mUnk_50 != NULL) {
-        delete mUnk_50;
+    if (mRanking != NULL) {
+        delete mRanking;
     }
     FreeText();
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
@@ -211,7 +211,7 @@ void MyroomStatusScene::ClearTextBuffers() {
 }
 
 void MyroomStatusScene::RenderLine(u8 line) {
-    Ranking *info = mUnk_50;
+    Ranking *info = mRanking;
     s16 x;
     s16 y;
     s16 zeroMin;

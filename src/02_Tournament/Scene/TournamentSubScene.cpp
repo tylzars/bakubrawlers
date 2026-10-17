@@ -72,11 +72,11 @@ static const u8 sMessageIds[1][24] = {{0, 1, 2, 3, 4, 5, 6, 7, 0x0a, 8, 9, 0x0b,
 
 TournamentSubScene::TournamentSubScene() :
     SceneBase(1000, 0) {
-    mUnk_0c         = NULL;
-    mUnk_10         = NULL;
+    mRanking         = NULL;
+    mCharacterView         = NULL;
     mMessages       = NULL;
     mMessage         = NULL;
-    mUnk_48         = NULL;
+    mCharacterIcons         = NULL;
     mResult         = 0;
     mTextLineCount         = 0;
     mScroll         = -1;
@@ -94,8 +94,8 @@ TournamentSubScene::TournamentSubScene() :
     u8 i = 0;
     do {
         mEntries[i].mId     = data_020d433c.mCharacterIds[1 + skip + i];
-        mEntries[i].mUnk_02 = 0;
-        mEntries[i].mUnk_04 = 0;
+        mEntries[i].mRank = 0;
+        mEntries[i].mScore = 0;
         i++;
     } while (i < mCount);
     mTextBuffer     = NULL;
@@ -107,10 +107,10 @@ TournamentSubScene::TournamentSubScene() :
 
 
 TournamentSubScene::~TournamentSubScene() {
-    delete mUnk_0c;
+    delete mRanking;
     delete mWindow;
-    if (mUnk_48 != NULL) {
-        delete mUnk_48;
+    if (mCharacterIcons != NULL) {
+        delete mCharacterIcons;
     }
     if (mMessages != NULL) {
         OS_Free(mMessages);
@@ -148,14 +148,14 @@ void TournamentSubScene::Update() {
         case 2:
             if (mUnk_58 != 0) {
                 SpriteManager::Get().StartFade(3);
-                mUnk_10->mFinishRequested = 1;
+                mCharacterView->mFinishRequested = 1;
                 mState           = 4;
             } else {
                 if (UpdateEntrySelection() != -1) {
                     u8 id = mEntries[mSelected].mId;
-                    if (id != mUnk_10->mCharacterId) {
-                        mUnk_10->ChangeCharacter(id, mEntries[mSelected].mUnk_02,
-                                               mEntries[mSelected].mUnk_04);
+                    if (id != mCharacterView->mCharacterId) {
+                        mCharacterView->ChangeCharacter(id, mEntries[mSelected].mRank,
+                                               mEntries[mSelected].mScore);
                         mState = 3;
                     }
                 }
@@ -163,7 +163,7 @@ void TournamentSubScene::Update() {
             func_ov002_02220618();
             break;
         case 3:
-            if (mUnk_10->mChanging == 0) {
+            if (mCharacterView->mChanging == 0) {
                 SetupProfile();
                 mState = 2;
             }
@@ -225,18 +225,18 @@ void TournamentSubScene::InitDisplay() {
 
 // UnkStruct_020758f4_Record::mTextLength must be u32 (loaded with ldr).
 void TournamentSubScene::Init() {
-    mUnk_0c = new Ranking();
+    mRanking = new Ranking();
     u8 i = 0;
     do {
-        UnkStruct_020758f4_Record *info = mUnk_0c->FindEntry(mEntries[i].mId);
+        UnkStruct_020758f4_Record *info = mRanking->FindEntry(mEntries[i].mId);
         if (info != NULL) {
-            mEntries[i].mUnk_02 = info->mTextOffset;
-            mEntries[i].mUnk_04 = info->mTextLength;
+            mEntries[i].mRank = info->mTextOffset;
+            mEntries[i].mScore = info->mTextLength;
         }
         i++;
     } while (i < mCount);
-    mUnk_10 = new RankingCharacterView(mEntries[mSelected].mId, mEntries[mSelected].mUnk_02,
-                                     mEntries[mSelected].mUnk_04, 1);
+    mCharacterView = new RankingCharacterView(mEntries[mSelected].mId, mEntries[mSelected].mRank,
+                                     mEntries[mSelected].mScore, 1);
     ChangeDir("/Game/Myroom/");
     LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 0xb, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
@@ -266,12 +266,12 @@ void TournamentSubScene::Init() {
     screen.LoadCharacters("Game/2D/union_b/union_b_obj_scroll.nce_ncg1D.bin", 0x5000, 0);
     screen.LoadPalette("Game/2D/union_b/union_b_obj_scroll_ncl.bin", 0xe0, 0);
     mWindow->SetCells(n, sCells);
-    mUnk_48 = new CharacterIcons(0x4000, 4, 1);
+    mCharacterIcons = new CharacterIcons(0x4000, 4, 1);
     u8 k = 0;
     do {
-        mUnk_48->SetCharacter(k, (s8) mEntries[k].mId, 0, 0);
-        mUnk_48->SetVisible(k, 1);
-        mUnk_48->SetDrawArgs(k, sTouchPos[mCount - 1][k].x + 2, sTouchPos[mCount - 1][k].y + 2, 0);
+        mCharacterIcons->SetCharacter(k, (s8) mEntries[k].mId, 0, 0);
+        mCharacterIcons->SetVisible(k, 1);
+        mCharacterIcons->SetDrawArgs(k, sTouchPos[mCount - 1][k].x + 2, sTouchPos[mCount - 1][k].y + 2, 0);
         k++;
     } while (k < mCount);
     ChangeDir("/font/");
@@ -313,7 +313,7 @@ void TournamentSubScene::DrawSubScreen() {
     u8 y  = window->mCursor->mScrollItemY;
     window->mCellPos[2].x = x;
     window->mCellPos[2].y = y;
-    mUnk_48->DrawIcons();
+    mCharacterIcons->DrawIcons();
     mWindow->Draw();
     mMessage->Update();
 }

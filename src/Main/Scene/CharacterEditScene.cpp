@@ -188,7 +188,7 @@ CharacterEditScene::CharacterEditScene(u32 unk) :
     mMessages = NULL;
     mMessage = NULL;
     mRotateState = 0;
-    mUnk_14c = 0;
+    mChoicesVisible = 0;
     mCutRoomModel = NULL;
     mMenuDepthMove = 0;
     mFromMyroom = unk;
@@ -203,9 +203,9 @@ CharacterEditScene::CharacterEditScene(u32 unk) :
     mTextGlyphBuffer = NULL;
     mTextBufferSize = 0;
     mTextGlyphCount = 0;
-    mUnk_18  = 0;
-    mUnk_1c  = 0;
-    mUnk_20  = 0;
+    mWindow0Result  = 0;
+    mWindow1Result  = 0;
+    mWindow2Result  = 0;
     mPalette = new ModelLightGroup(sCharacterEditLights);
     mMenuDepth = 0;
     for (u8 i = 0; i < 3; i++) {
@@ -529,14 +529,14 @@ void CharacterEditScene::UpdateRootMenu() {
         }
         break;
     case 5:
-        if (mUnk_1c == 3) {
+        if (mWindow1Result == 3) {
             if (EnableSelectedGroupButtons()) {
                 mWindows[0]->mState = 3;
                 mWindows[1]->mState = 3;
                 mStep = 10;
                 return;
             }
-        } else if (mUnk_18 == 3) {
+        } else if (mWindow0Result == 3) {
             if (mWindows[0]->GetSelectedId() == 7) {
                 SpriteManager::Get();
                 SpriteManager::sFade[0] = 3;
@@ -545,12 +545,12 @@ void CharacterEditScene::UpdateRootMenu() {
                 mWindows[1]->mEnabled = 0;
                 return;
             }
-        } else if (mUnk_18 == 1) {
+        } else if (mWindow0Result == 1) {
             func_02063b10(1);
             SlideToFirstRow();
             mStep = 10;
             return;
-        } else if (mUnk_18 == 2) {
+        } else if (mWindow0Result == 2) {
             if (mChoiceApplied != 0 && mFromMyroom == 1) {
                 mStep = 0xb;
                 func_02064cd4(1);
@@ -685,9 +685,9 @@ void CharacterEditScene::UpdateRootMenu() {
         mWindows[0]->mCells[10]->SetAnimation(0xe);
         break;
     case 12:
-        if (mUnk_20 == 1) {
+        if (mWindow2Result == 1) {
             mStep = 0xd;
-        } else if (mUnk_20 == 2) {
+        } else if (mWindow2Result == 2) {
             mStep = 0xe;
         }
         break;
@@ -776,20 +776,20 @@ void CharacterEditScene::UpdateSkinEdit() {
         break;
     case 0x13:
         UpdateChoiceInput();
-        if (mUnk_1c == 3) {
+        if (mWindow1Result == 3) {
             if (EnableSelectedGroupButtons()) {
                 mWindows[0]->mState = 3;
                 mWindows[1]->mState = 3;
                 mStep = 0x15;
                 return;
             }
-        } else if (mUnk_18 == 1) {
+        } else if (mWindow0Result == 1) {
             mStep = 0x15;
             func_02063b10(1);
             SlideToParent();
             func_020638a8(0);
             return;
-        } else if (mUnk_18 == 2) {
+        } else if (mWindow0Result == 2) {
             mStep = 0x14;
             func_02063b10(1);
             SlideToParent();
@@ -937,7 +937,7 @@ void CharacterEditScene::func_0205e958() {
         }
         break;
     case 0x19:
-        if (mUnk_1c == 3) {
+        if (mWindow1Result == 3) {
             if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 1) {
                     mWindows[0]->mState = 3;
@@ -946,7 +946,7 @@ void CharacterEditScene::func_0205e958() {
                     return;
                 }
             }
-        } else if (mUnk_18 == 1) {
+        } else if (mWindow0Result == 1) {
             if (mWindows[0]->GetSelectedId() == 2) {
                 mStep = 0x1a;
                 func_02063b10(1);
@@ -957,7 +957,7 @@ void CharacterEditScene::func_0205e958() {
             func_02063b10(1);
             SlideToFirstRow();
             return;
-        } else if (mUnk_18 == 2) {
+        } else if (mWindow0Result == 2) {
             mStep = 0x1a;
             func_02063b10(1);
             SlideToParent();
@@ -1074,7 +1074,7 @@ void CharacterEditScene::UpdateFaceEdit() {
         break;
     case 0x1f:
         UpdateChoiceInput();
-        if (mUnk_1c == 3) {
+        if (mWindow1Result == 3) {
             if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 1) {
                     mWindows[0]->mState = 3;
@@ -1083,13 +1083,13 @@ void CharacterEditScene::UpdateFaceEdit() {
                     return;
                 }
             }
-        } else if (mUnk_18 == 1) {
+        } else if (mWindow0Result == 1) {
             mStep = 0x21;
             func_02063b10(1);
             SlideToParent();
             func_020638a8(0);
             return;
-        } else if (mUnk_18 == 2) {
+        } else if (mWindow0Result == 2) {
             mStep = 0x21;
             func_02063b10(1);
             SlideToParent();
@@ -1113,7 +1113,7 @@ void CharacterEditScene::UpdateFaceEdit() {
         if (mWindows[0]->mState != 4) {
             return;
         }
-        mUnk_14c = 0;
+        mChoicesVisible = 0;
         SwitchToSelectedGroup();
         break;
     }
@@ -1154,7 +1154,7 @@ void CharacterEditScene::UpdateHairEdit() {
         break;
     case 0x26:
         UpdateChoiceInput();
-        if (mUnk_1c == 3) {
+        if (mWindow1Result == 3) {
             if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 1) {
                     mWindows[0]->mState = 3;
@@ -1163,13 +1163,13 @@ void CharacterEditScene::UpdateHairEdit() {
                     return;
                 }
             }
-        } else if (mUnk_18 == 1) {
+        } else if (mWindow0Result == 1) {
             mStep = 0x28;
             func_02063b10(1);
             SlideToParent();
             func_020638a8(0);
             return;
-        } else if (mUnk_18 == 2) {
+        } else if (mWindow0Result == 2) {
             mStep = 0x27;
             func_02063b10(1);
             SlideToParent();
@@ -1193,7 +1193,7 @@ void CharacterEditScene::UpdateHairEdit() {
         if (mWindows[0]->mState != 4) {
             return;
         }
-        mUnk_14c = 0;
+        mChoicesVisible = 0;
         SwitchToSelectedGroup();
         break;
     }
@@ -1234,7 +1234,7 @@ void CharacterEditScene::UpdateCapEdit() {
         break;
     case 0x2d:
         UpdateChoiceInput();
-        if (mUnk_1c == 3) {
+        if (mWindow1Result == 3) {
             if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 1) {
                     mWindows[0]->mState = 3;
@@ -1243,13 +1243,13 @@ void CharacterEditScene::UpdateCapEdit() {
                     return;
                 }
             }
-        } else if (mUnk_18 == 1) {
+        } else if (mWindow0Result == 1) {
             mStep = 0x2f;
             func_02063b10(1);
             SlideToParent();
             func_020638a8(0);
             return;
-        } else if (mUnk_18 == 2) {
+        } else if (mWindow0Result == 2) {
             mStep = 0x2e;
             func_02063b10(1);
             SlideToParent();
@@ -1273,7 +1273,7 @@ void CharacterEditScene::UpdateCapEdit() {
         if (mWindows[0]->mState != 4) {
             return;
         }
-        mUnk_14c = 0;
+        mChoicesVisible = 0;
         SwitchToSelectedGroup();
         break;
     }
@@ -1314,7 +1314,7 @@ void CharacterEditScene::UpdateGlassesEdit() {
         break;
     case 0x34:
         UpdateChoiceInput();
-        if (mUnk_1c == 3) {
+        if (mWindow1Result == 3) {
             if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 1) {
                     mWindows[0]->mState = 3;
@@ -1323,13 +1323,13 @@ void CharacterEditScene::UpdateGlassesEdit() {
                     return;
                 }
             }
-        } else if (mUnk_18 == 1) {
+        } else if (mWindow0Result == 1) {
             mStep = 0x36;
             func_02063b10(1);
             SlideToParent();
             func_020638a8(0);
             return;
-        } else if (mUnk_18 == 2) {
+        } else if (mWindow0Result == 2) {
             mStep = 0x35;
             func_02063b10(1);
             SlideToParent();
@@ -1353,7 +1353,7 @@ void CharacterEditScene::UpdateGlassesEdit() {
         if (mWindows[0]->mState != 4) {
             return;
         }
-        mUnk_14c = 0;
+        mChoicesVisible = 0;
         SwitchToSelectedGroup();
         break;
     }
@@ -1410,7 +1410,7 @@ void CharacterEditScene::UpdateTopEdit() {
         break;
     case 0x3b:
         UpdateChoiceInput();
-        if (mUnk_1c == 3) {
+        if (mWindow1Result == 3) {
             if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 2 && mWindows[1]->GetSelectedId() != 3 &&
                     mWindows[1]->GetSelectedId() != 4) {
@@ -1420,13 +1420,13 @@ void CharacterEditScene::UpdateTopEdit() {
                     return;
                 }
             }
-        } else if (mUnk_18 == 1) {
+        } else if (mWindow0Result == 1) {
             mStep = 0x3d;
             func_02063b10(1);
             SlideToParent();
             func_020638a8(0);
             return;
-        } else if (mUnk_18 == 2) {
+        } else if (mWindow0Result == 2) {
             mStep = 0x3c;
             func_02063b10(1);
             SlideToParent();
@@ -1450,7 +1450,7 @@ void CharacterEditScene::UpdateTopEdit() {
         if (mWindows[0]->mState != 4) {
             return;
         }
-        mUnk_14c = 0;
+        mChoicesVisible = 0;
         SwitchToSelectedGroup();
         break;
     }
@@ -1521,7 +1521,7 @@ void CharacterEditScene::func_020604e8() {
         }
         break;
     case 0x42:
-        if (mUnk_1c == 3) {
+        if (mWindow1Result == 3) {
             if (EnableSelectedGroupButtons()) {
                 if (mWindows[1]->GetSelectedId() != 5 && mWindows[1]->GetSelectedId() != 6) {
                     mWindows[0]->mState = 3;
@@ -1530,7 +1530,7 @@ void CharacterEditScene::func_020604e8() {
                     return;
                 }
             }
-        } else if (mUnk_18 == 1) {
+        } else if (mWindow0Result == 1) {
             if (mWindows[0]->GetSelectedId() == 2) {
                 mStep = 0x43;
                 func_02063b10(1);
@@ -1541,7 +1541,7 @@ void CharacterEditScene::func_020604e8() {
             func_02063b10(1);
             SlideToFirstRow();
             return;
-        } else if (mUnk_18 == 2) {
+        } else if (mWindow0Result == 2) {
             mStep = 0x43;
             func_02063b10(1);
             SlideToParent();
@@ -1632,7 +1632,7 @@ void CharacterEditScene::UpdateBottomEdit() {
         break;
     case 0x48:
         UpdateChoiceInput();
-        if (mUnk_1c == 3 && EnableSelectedGroupButtons()) {
+        if (mWindow1Result == 3 && EnableSelectedGroupButtons()) {
             if (mWindows[1]->GetSelectedId() != 5 && mWindows[1]->GetSelectedId() != 6) {
                 mWindows[0]->mState = 3;
                 mWindows[1]->mState = 3;
@@ -1640,13 +1640,13 @@ void CharacterEditScene::UpdateBottomEdit() {
                 return;
             }
         }
-        if (mUnk_18 == 1) {
+        if (mWindow0Result == 1) {
             mStep = 0x4a;
             func_02063b10(1);
             SlideToParent();
             func_020638a8(0);
             return;
-        } else if (mUnk_18 == 2) {
+        } else if (mWindow0Result == 2) {
             mStep = 0x49;
             func_02063b10(1);
             SlideToParent();
@@ -1670,7 +1670,7 @@ void CharacterEditScene::UpdateBottomEdit() {
         if (mWindows[0]->mState != 4) {
             return;
         }
-        mUnk_14c = 0;
+        mChoicesVisible = 0;
         SwitchToSelectedGroup();
         break;
     }
@@ -1711,7 +1711,7 @@ void CharacterEditScene::UpdateShoesEdit() {
         break;
     case 0x4f:
         UpdateChoiceInput();
-        if (mUnk_1c == 3 && EnableSelectedGroupButtons()) {
+        if (mWindow1Result == 3 && EnableSelectedGroupButtons()) {
             if (mWindows[1]->GetSelectedId() != 5 && mWindows[1]->GetSelectedId() != 6) {
                 mWindows[0]->mState = 3;
                 mWindows[1]->mState = 3;
@@ -1719,13 +1719,13 @@ void CharacterEditScene::UpdateShoesEdit() {
                 return;
             }
         }
-        if (mUnk_18 == 1) {
+        if (mWindow0Result == 1) {
             mStep = 0x51;
             func_02063b10(1);
             SlideToParent();
             func_020638a8(0);
             return;
-        } else if (mUnk_18 == 2) {
+        } else if (mWindow0Result == 2) {
             mStep = 0x50;
             func_02063b10(1);
             SlideToParent();
@@ -1749,7 +1749,7 @@ void CharacterEditScene::UpdateShoesEdit() {
         if (mWindows[0]->mState != 4) {
             return;
         }
-        mUnk_14c = 0;
+        mChoicesVisible = 0;
         SwitchToSelectedGroup();
         break;
     }
@@ -1802,7 +1802,7 @@ void CharacterEditScene::func_020612cc() {
         }
         break;
     case 0x56:
-        if (mUnk_18 != 1) {
+        if (mWindow0Result != 1) {
             return;
         }
         if (mWindows[0]->GetSelectedId() == 0) {
@@ -1924,9 +1924,9 @@ void CharacterEditScene::Update() {
         UpdateFinish();
         break;
     }
-    mUnk_18 = mWindows[0]->Update(1);
-    mUnk_1c = mWindows[1]->Update(1);
-    mUnk_20 = mWindows[2]->Update(1);
+    mWindow0Result = mWindows[0]->Update(1);
+    mWindow1Result = mWindows[1]->Update(1);
+    mWindow2Result = mWindows[2]->Update(1);
     Draw();
     UnkStruct_0205401c_04 *data = mModel->mCharacter;
     u16 angle = data->mRotY;
@@ -2178,7 +2178,7 @@ void CharacterEditScene::LoadChoiceCells(const char *chars, const char *palette,
         screen.LoadPalette("color_glasses_len_ncl.bin", 0x140, 0);
     }
     ChangeDir("/");
-    mUnk_14c = 1;
+    mChoicesVisible = 1;
 }
 
 void CharacterEditScene::Draw() {
@@ -2332,7 +2332,7 @@ void CharacterEditScene::EnableGroupButtons() {
 
 void CharacterEditScene::func_020638a8(u32 v) {
     mWindows[0]->mButtons[13].mEnabled = v;
-    mUnk_14c = v;
+    mChoicesVisible = v;
 }
 
 void CharacterEditScene::UpdateRotateInput() {
@@ -2368,7 +2368,7 @@ void CharacterEditScene::UpdateRotateInput() {
         mWindows[0]->mCells[10]->SetAnimation(0xf);
         return;
     }
-    if (mUnk_18 == 3) {
+    if (mWindow0Result == 3) {
         SelectWindowCursor *c = mWindows[0]->mCursor;
         s8 id2 = -1;
         if (c->mSelection != -1) {
@@ -2732,7 +2732,7 @@ void CharacterEditScene::SetupChoices() {
 }
 
 void CharacterEditScene::DrawChoices() {
-    if (mUnk_14c == 0) {
+    if (mChoicesVisible == 0) {
         return;
     }
     u8 i = 0;

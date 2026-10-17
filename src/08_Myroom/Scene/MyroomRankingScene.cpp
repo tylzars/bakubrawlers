@@ -74,7 +74,7 @@ const u8 sMyroomRankingRowTextPos[6][2] = {{0x37, 0x31}, {0x37, 0x45}, {0x37, 0x
 // Selects the animation of each visible row's cell from its rank.
 inline void MyroomRankingScene::UpdateRowAnimations() {
     for (u8 i = 0; i < 6; i++) {
-        switch (mRows[i].mUnk_2a) {
+        switch (mRows[i].mRank) {
             case 1:
                 mWindow->mCells[(u8) (i + 1)]->SetAnimation(1);
                 break;
@@ -85,7 +85,7 @@ inline void MyroomRankingScene::UpdateRowAnimations() {
                 mWindow->mCells[(u8) (i + 1)]->SetAnimation(3);
                 break;
             default:
-                if ((s32) mRows[i].mUnk_2a > 10) {
+                if ((s32) mRows[i].mRank > 10) {
                     mWindow->mCells[(u8) (i + 1)]->SetAnimation(0);
                 } else {
                     mWindow->mCells[(u8) (i + 1)]->SetAnimation(4);
@@ -99,8 +99,8 @@ MyroomRankingScene::MyroomRankingScene() :
     SceneBase(1000, 0) {
     u8 j = 0;
     u8 i = 0;
-    mUnk_0c   = NULL;
-    mUnk_10   = NULL;
+    mRanking   = NULL;
+    mCharacterView   = NULL;
     mResult   = 0;
     mMessages = NULL;
     mMessage  = NULL;
@@ -117,11 +117,11 @@ MyroomRankingScene::MyroomRankingScene() :
             mRows[i].mCells[j] = NULL;
         }
     }
-    mUnk_42  = mRows[0].mUnk_2a;
-    mUnk_44  = mRows[0].mUnk_2c;
+    mPlayerRank  = mRows[0].mRank;
+    mPlayerScore  = mRows[0].mScore;
     mPlayerCharacterId  = mRows[0].mCharacterId;
-    mUnk_16a = mRows[0].mUnk_2a;
-    mUnk_16c = mRows[0].mUnk_2c;
+    mSelectedRank = mRows[0].mRank;
+    mSelectedScore = mRows[0].mScore;
     mSelectedCharacterId = mRows[0].mCharacterId;
     for (i = 0; i < 6; i++) {
         mTextBuffers[i]  = NULL;
@@ -135,7 +135,7 @@ MyroomRankingScene::~MyroomRankingScene() {
     u8 j;
     u8 i;
     CellAnimation *cell;
-    delete mUnk_0c;
+    delete mRanking;
     delete mWindow;
     for (i = 0; i < 6; i++) {
         for (j = 0; j < 10; j++) {
@@ -183,7 +183,7 @@ void MyroomRankingScene::Update() {
         case 2:
             if (mUnk_1c0 != 0) {
                 SpriteManager::Get().StartFade(3);
-                mUnk_10->mFinishRequested = 1;
+                mCharacterView->mFinishRequested = 1;
                 mState         = 4;
             } else {
                 if (UpdateSelection() != -1) {
@@ -195,15 +195,15 @@ void MyroomRankingScene::Update() {
                     }
                     RankingEntry *entry;
                     if (mEntryIndex >= 10) {
-                        entry = (RankingEntry *) ((u8 *) mUnk_0c + 0x8c);
+                        entry = (RankingEntry *) ((u8 *) mRanking + 0x8c);
                     } else {
-                        entry = mUnk_0c->GetEntry(mEntryIndex);
+                        entry = mRanking->GetEntry(mEntryIndex);
                     }
                     mSelectedCharacterId = entry->mCharacterId;
-                    mUnk_16a = entry->mRank;
-                    mUnk_16c = entry->mScore;
-                    if (mSelectedCharacterId != mUnk_10->mCharacterId) {
-                        mUnk_10->ChangeCharacter(mSelectedCharacterId, mUnk_16a, mUnk_16c);
+                    mSelectedRank = entry->mRank;
+                    mSelectedScore = entry->mScore;
+                    if (mSelectedCharacterId != mCharacterView->mCharacterId) {
+                        mCharacterView->ChangeCharacter(mSelectedCharacterId, mSelectedRank, mSelectedScore);
                         mState = 3;
                     }
                 }
@@ -211,7 +211,7 @@ void MyroomRankingScene::Update() {
             UpdateRows();
             break;
         case 3:
-            if (mUnk_10->mChanging == 0) {
+            if (mCharacterView->mChanging == 0) {
                 mState = 2;
             }
             break;
@@ -283,20 +283,20 @@ void MyroomRankingScene::InitDisplay() {
 
 void MyroomRankingScene::Init() {
     Ranking *list = new Ranking();
-    mUnk_0c                  = list;
+    mRanking                  = list;
     mPlayerCharacterId                  = list->mPlayerCharacterId;
-    mUnk_42                  = list->mPlayerRank;
-    mUnk_44                  = list->mPlayerScore;
+    mPlayerRank                  = list->mPlayerRank;
+    mPlayerScore                  = list->mPlayerScore;
     for (u8 i = 0; i < 6; i++) {
-        RankingEntry *entry = mUnk_0c->GetEntry(i);
+        RankingEntry *entry = mRanking->GetEntry(i);
         mRows[i].mCharacterId                = entry->mCharacterId;
-        mRows[i].mUnk_2a                = entry->mRank;
-        mRows[i].mUnk_2c                = entry->mScore;
+        mRows[i].mRank                = entry->mRank;
+        mRows[i].mScore                = entry->mScore;
     }
     mSelectedCharacterId = mPlayerCharacterId;
-    mUnk_16a = mUnk_42;
-    mUnk_16c = mUnk_44;
-    mUnk_10  = new RankingCharacterView(mSelectedCharacterId, mUnk_16a, mUnk_16c, 0);
+    mSelectedRank = mPlayerRank;
+    mSelectedScore = mPlayerScore;
+    mCharacterView  = new RankingCharacterView(mSelectedCharacterId, mSelectedRank, mSelectedScore, 0);
     ChangeDir("/Game/Myroom/");
     LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
     LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
@@ -316,7 +316,7 @@ void MyroomRankingScene::Init() {
     sub.LoadPalette("union_b_obj_scroll_ncl.bin", 0x140, 0);
     mWindow->SetCells(4, sMyroomRankingScrollCells);
     mEntryCount = 10;
-    if (mUnk_42 > 10) {
+    if (mPlayerRank > 10) {
         mEntryCount++;
     }
     mWindow->mCursor->SetupScroll(0x40, 0x90, 6, mEntryCount);
@@ -346,23 +346,23 @@ void MyroomRankingScene::Init() {
     mMessage->func_02065bd4(0x14, 4, 0);
     mMessage->SetWidth(0xd8);
     mMessage->StartMessage(0x28, 0, 1);
-    if ((s32) mUnk_42 > 10) {
+    if ((s32) mPlayerRank > 10) {
         mScroll = mEntryCount - 6;
         mRow = 5;
-    } else if ((s32) mUnk_42 <= 4) {
+    } else if ((s32) mPlayerRank <= 4) {
         mScroll = 0;
-        mRow = mUnk_42 - 1;
-    } else if ((s32) mUnk_42 >= 8) {
+        mRow = mPlayerRank - 1;
+    } else if ((s32) mPlayerRank >= 8) {
         mScroll = mEntryCount - 6;
-        mRow = mUnk_42 - 5;
+        mRow = mPlayerRank - 5;
     } else {
-        mScroll = mUnk_42 - 4;
+        mScroll = mPlayerRank - 4;
         mRow = 3;
     }
     Vec2s pos = {sMyroomRankingRowCellPos[mRow][0], sMyroomRankingRowCellPos[mRow][1]};
     mWindow->mCellPos[8] = pos;
     mWindow->mCursor->SetScroll(mScroll);
-    if ((s32) mUnk_42 > 10) {
+    if ((s32) mPlayerRank > 10) {
         mEntryIndex = 10;
     } else {
         mEntryIndex = mScroll + mRow;
@@ -388,8 +388,8 @@ void MyroomRankingScene::DrawSubScreen() {
         u16 a;
         u32 b;
         u8 digit;
-        a             = mRows[i].mUnk_2a;
-        b             = mRows[i].mUnk_2c;
+        a             = mRows[i].mRank;
+        b             = mRows[i].mScore;
         for (u8 j = 0; j < 10; j++) {
             digit = 0;
             if (mRows[i].mCells[j] == NULL) {
@@ -513,13 +513,13 @@ void MyroomRankingScene::UpdateRows() {
         RankingEntry *entry;
         s32 index = mScroll + i;
         if (index >= 10) {
-            entry = (RankingEntry *) ((u8 *) mUnk_0c + 0x8c);
+            entry = (RankingEntry *) ((u8 *) mRanking + 0x8c);
         } else {
-            entry = mUnk_0c->GetEntry((u8) index);
+            entry = mRanking->GetEntry((u8) index);
         }
         mRows[i].mCharacterId = entry->mCharacterId;
-        mRows[i].mUnk_2a = entry->mRank;
-        mRows[i].mUnk_2c = entry->mScore;
+        mRows[i].mRank = entry->mRank;
+        mRows[i].mScore = entry->mScore;
     }
     UpdateRowAnimations();
     Vec2s pos = {sMyroomRankingRowCellPos[mRow][0], sMyroomRankingRowCellPos[mRow][1]};

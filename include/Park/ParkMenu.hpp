@@ -20,7 +20,7 @@ public:
     /* 08 */ u8 mCount;
     /* 09 */ PAD(0x09, 0x0c);
     /* 0c */ u8 mUnk_0c[6]; // filled by GetParkEntry
-    /* 12 */ u8 mUnk_12;    // 0xff: none
+    /* 12 */ u8 mProgressEntryIndex;    // 0xff: none
     /* 13 */ PAD(0x13, 0x18);
     union {
         // The constructor clears this region as pointer slots in one loop.
@@ -36,7 +36,7 @@ public:
         };
     };
     /* 58 */ SelectWindow *mWindow;
-    /* 5c */ Ranking *mUnk_5c;
+    /* 5c */ Ranking *mRanking;
     /* 60 */ MessageWindow *mMessage;
     /* 64 */
 

@@ -212,7 +212,7 @@ void TournamentScene::Cleanup() {
 void TournamentScene::Update() {
     switch (mState) {
         case 0:
-            func_ov002_0221b424();
+            InitScriptDisplay();
             LoadMenu();
             mEvent = new ScriptPlayer(3, 0, 0);
             mMenuVisible = 0;
@@ -400,7 +400,7 @@ void TournamentScene::Update() {
             }
             break;
         case 15:
-            func_ov002_0221b424();
+            InitScriptDisplay();
             mEvent = new ScriptPlayer(7, 0, 1);
             mState++;
             break;
@@ -787,7 +787,7 @@ void TournamentScene::Update() {
     Draw();
 }
 
-void TournamentScene::func_ov002_0221b424() {
+void TournamentScene::InitScriptDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 7);
     GX_SetGraphicsMode(1, 0, 1);
@@ -1549,7 +1549,7 @@ BOOL TournamentScene::func_ov002_0221e2b0() {
             }
             break;
         case 9:
-            func_ov002_0221b424();
+            InitScriptDisplay();
             if (mEvent == NULL) {
                 mEvent = new ScriptPlayer(7, 0, 1);
             }

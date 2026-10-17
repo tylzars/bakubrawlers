@@ -98,7 +98,7 @@ ArenaScene::ArenaScene() : SceneBase(1000, 0) {
     mResult = 0;
     mSelection = 0;
     mSubMenuMode = 0;
-    mUnk_b3 = 0;
+    mWirelessStopping = 0;
     mUnk_b4 = 0;
     mRequest = 0;
     data_020d433c.mUnk_10 = 0;
@@ -150,13 +150,13 @@ ArenaScene::~ArenaScene() {
     }
 }
 
-void ArenaScene::func_ov001_022197ec() {
+void ArenaScene::StopWirelessAndReset() {
     if (mState < 2) {
         return;
     }
     WirelessManager::Get().Stop();
     data_020d433c.mWireless = 0;
-    mUnk_b3 = 1;
+    mWirelessStopping = 1;
     ResetNames();
     ClearNameText();
     mState = 2;
@@ -222,7 +222,7 @@ void ArenaScene::Update() {
     }
     WirelessManager::Get();
     u8 mode = *modePtr;
-    if (mUnk_b3 != 0) {
+    if (mWirelessStopping != 0) {
         if (mode != 0) {
             if (mUnk_b4 == 0) {
                 return;
@@ -230,13 +230,13 @@ void ArenaScene::Update() {
             DrawMessage();
             return;
         }
-        mUnk_b3 = 0;
+        mWirelessStopping = 0;
     }
     if (mode == 9) {
         if (mState == 10) {
             mUnk_b4 = 1;
         }
-        func_ov001_022197ec();
+        StopWirelessAndReset();
         SetSubMenuMode(2);
     } else if (mode > 1) {
         if (mState < 0xc) {
@@ -247,7 +247,7 @@ void ArenaScene::Update() {
     if (mSubMenuMode != 0) {
         if ((u8) mSubMenu->Update(1)) {
             if ((u8) mSubMenu->mCursor->mSelection == 0) {
-                func_ov001_022197ec();
+                StopWirelessAndReset();
             }
             SetSubMenuMode(0);
         }
@@ -344,7 +344,7 @@ void ArenaScene::Update() {
                             mState = 0xf;
                             break;
                         default:
-                            func_ov001_022197ec();
+                            StopWirelessAndReset();
                             break;
                     }
                     break;
@@ -508,7 +508,7 @@ void ArenaScene::Update() {
             u8 menu                     = UpdateMenu();
             if (menu == 2) {
                 ResetMenu();
-                func_ov001_022197ec();
+                StopWirelessAndReset();
                 SetSubMenuMode(2);
                 return;
             }

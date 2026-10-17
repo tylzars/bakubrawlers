@@ -565,7 +565,7 @@ void ParkScene::Update() {
                     case 0:
                         data_020d433c.mPlayerCount = 2;
                         data_020d433c.mUnk_99      = 3;
-                        data_020d433c.mFieldId      = func_ov004_0221b908(entry.mFieldId);
+                        data_020d433c.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
                         data_020d433c.mUnk_96      = entry.mUnk_09;
                         data_020d433c.mHasPartners      = 0;
                         data_020d433c.mCharacterIds[0]  = 0x15;
@@ -576,7 +576,7 @@ void ParkScene::Update() {
                     case 1:
                         data_020d433c.mPlayerCount = 4;
                         data_020d433c.mUnk_99      = 3;
-                        data_020d433c.mFieldId      = func_ov004_0221b908(entry.mFieldId);
+                        data_020d433c.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
                         data_020d433c.mUnk_96      = entry.mUnk_09;
                         data_020d433c.mHasPartners      = 1;
                         data_020d433c.mCharacterIds[0]  = 0x15;
@@ -595,7 +595,7 @@ void ParkScene::Update() {
                     case 2:
                         data_020d433c.mPlayerCount = 4;
                         data_020d433c.mUnk_99      = 3;
-                        data_020d433c.mFieldId      = func_ov004_0221b908(entry.mFieldId);
+                        data_020d433c.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
                         data_020d433c.mUnk_96      = entry.mUnk_09;
                         data_020d433c.mHasPartners      = 0;
                         data_020d433c.mCharacterIds[0]  = 0x15;
@@ -833,7 +833,7 @@ u8 ParkScene::func_ov004_0221b8c4(int index) {
     return TestFlagBit(data_020d496d, index) ? 1 : 0;
 }
 
-int ParkScene::func_ov004_0221b908(int index) {
+int ParkScene::GetUnlockedFieldId(int index) {
     if (!TestFlagBit(data_020d4968, index)) {
         index = 2;
         if (!(gSaveData[0].mUnk_578 & 4)) {

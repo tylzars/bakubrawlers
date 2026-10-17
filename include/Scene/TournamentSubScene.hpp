@@ -14,8 +14,8 @@ struct MessageFile;
 
 struct TournamentEntry {
     /* 0 */ u8 mId;
-    /* 2 */ u16 mUnk_02;
-    /* 4 */ u32 mUnk_04;
+    /* 2 */ u16 mRank;
+    /* 4 */ u32 mScore;
     /* 8 */
 };
 
@@ -23,8 +23,8 @@ struct TournamentEntry {
 class TournamentSubScene : public SceneBase {
 public:
     /* 00 (base) */
-    /* 0c */ Ranking *mUnk_0c;
-    /* 10 */ RankingCharacterView *mUnk_10;
+    /* 0c */ Ranking *mRanking;
+    /* 10 */ RankingCharacterView *mCharacterView;
     /* 14 */ SelectWindow *mWindow;
     /* 18 */ TournamentEntry mEntries[3];
     /* 30 */ MessageFile *mMessages;
@@ -33,7 +33,7 @@ public:
     /* 3c */ u32 mTextBufferSize;
     /* 40 */ u32 mGlyphCount;
     /* 44 */ MessageWindow *mMessage;
-    /* 48 */ CharacterIcons *mUnk_48;
+    /* 48 */ CharacterIcons *mCharacterIcons;
     /* 4c */ s32 mResult;
     /* 50 */ u8 mTextLineCount;
     /* 51 */ s8 mScroll;

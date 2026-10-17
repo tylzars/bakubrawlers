@@ -20,7 +20,7 @@ public:
     /* 1c */ CellAnimation *mDigitCellAnims[10];
     /* 44 */ ModelInstance *mMyroomBgModel;
     /* 48 */ Camera *mCamera;
-    /* 4c */ ModelLightGroup *mUnk_4c;
+    /* 4c */ ModelLightGroup *mLights;
     // UnkStruct_0205401c, not a CharacterModel: holds a CharacterModel for id 0x15, a StoryCharacterModel otherwise
     // (Model.hpp:54-55)
     /* 50 */ UnkStruct_0205401c *mCharacterModel;
@@ -40,7 +40,7 @@ public:
     /* 78 */ s32 mModelX;
     /* 7c */ u8 mState;
     /* 7d */ PAD(0x7d, 0x7e);
-    /* 7e */ u8 mUnk_7e;
+    /* 7e */ u8 mKind;
     /* 7f */ PAD(0x7f, 0x80);
     /* 80 */ u32 mChanging;
     /* 84 */ u32 mFinishRequested;

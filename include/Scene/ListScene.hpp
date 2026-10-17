@@ -32,7 +32,7 @@ public:
     /* 018 */ void *mCardNameShortMessages;
     /* 01c */ void *mDeckSelectMessages;
     /* 020 */ void *mResultMessages;
-    /* 024 */ u16 mUnk_24;
+    /* 024 */ u16 mAlphabetChar;
     /* 026 */ PAD(0x026, 0x028);
     /* 028 */ void *mTextBuffers[2];
     /* 030 */ void *mGlyphBuffers[2];
@@ -40,10 +40,10 @@ public:
     /* 040 */ u32 mGlyphCounts[2]; // glyph counts
     /* 048 */ SelectWindow *mUnk_48;
     /* 04c */ SelectWindow *mUnk_4c;
-    /* 050 */ SelectWindow *mUnk_50;
+    /* 050 */ SelectWindow *mDeckWindow;
     /* 054 */ SelectWindowCursor *mUnk_54;
     /* 058 */ SelectWindowCursor *mUnk_58;
-    /* 05c */ CellAnimation *mUnk_5c[6];
+    /* 05c */ CellAnimation *mMainScreenCellAnims[6];
     /* 074 */ CellAnimation *mSubScreenCellAnims[19];
     /* 0c0 */ BattleCommandList *mCommandList;
     /* 0c4 */ BattleCommandPage *mCommandPage;

@@ -1,7 +1,7 @@
 _ZN10ArenaSceneC1Ev kind:function(arm,size=0xf4) addr:0x02219440
 _ZN10ArenaSceneD1Ev kind:function(arm,size=0x158) addr:0x02219534
 _ZN10ArenaSceneD0Ev kind:function(arm,size=0x160) addr:0x0221968c
-_ZN10ArenaScene19func_ov001_022197ecEv kind:function(arm,size=0x150) addr:0x022197ec
+_ZN10ArenaScene20StopWirelessAndResetEv kind:function(arm,size=0x150) addr:0x022197ec
 _ZN10ArenaScene14SetSubMenuModeEj kind:function(arm,size=0x218) addr:0x0221993c
 _ZN10ArenaScene6UpdateEv kind:function(arm,size=0x1518) addr:0x02219b54
 _ZN10ArenaScene11InitDisplayEv kind:function(arm,size=0x1e0) addr:0x0221b06c

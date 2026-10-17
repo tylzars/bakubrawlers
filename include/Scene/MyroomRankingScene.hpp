@@ -17,8 +17,8 @@ struct MyroomRankingRow {
     /* 00 */ CellAnimation *mCells[10];
     /* 28 */ u8 mCharacterId;
     /* 29 */ PAD(0x29, 0x2a);
-    /* 2a */ u16 mUnk_2a;
-    /* 2c */ u32 mUnk_2c;
+    /* 2a */ u16 mRank;
+    /* 2c */ u32 mScore;
     /* 30 */
 };
 
@@ -26,19 +26,19 @@ struct MyroomRankingRow {
 class MyroomRankingScene : public SceneBase {
 public:
     /* 00 (base) */
-    /* 0c */ Ranking *mUnk_0c;
-    /* 10 */ RankingCharacterView *mUnk_10;
+    /* 0c */ Ranking *mRanking;
+    /* 10 */ RankingCharacterView *mCharacterView;
     /* 14 */ SelectWindow *mWindow;
     /* 18 */ PAD(0x18, 0x40);
     /* 40 */ u8 mPlayerCharacterId;
     /* 41 */ PAD(0x41, 0x42);
-    /* 42 */ u16 mUnk_42;
-    /* 44 */ u32 mUnk_44;
+    /* 42 */ u16 mPlayerRank;
+    /* 44 */ u32 mPlayerScore;
     /* 48 */ MyroomRankingRow mRows[6];
     /* 168 */ u8 mSelectedCharacterId;
     /* 169 */ PAD(0x169, 0x16a);
-    /* 16a */ u16 mUnk_16a;
-    /* 16c */ u32 mUnk_16c;
+    /* 16a */ u16 mSelectedRank;
+    /* 16c */ u32 mSelectedScore;
     /* 170 */ u32 mResult;
     /* 174 */ MessageFile *mMessages;
     /* 178 */ PAD(0x178, 0x17c);

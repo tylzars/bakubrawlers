@@ -65,8 +65,8 @@ ParkMenu::ParkMenu(u8 current) {
     mWindow->mCursor->mSelection = -1;
     mWindow->Reset(sel);
     mWindow->mCursor->mSelection = sel;
-    mUnk_5c = new Ranking();
-    mUnk_5c->Build();
+    mRanking = new Ranking();
+    mRanking->Build();
     mCount = gSaveData[0].mParkSlotCount;
     if (mCount >= 4) {
         mCount = 4;
@@ -88,7 +88,7 @@ ParkMenu::~ParkMenu() {
             delete anim;
         }
     }
-    delete mUnk_5c;
+    delete mRanking;
     delete mWindow;
 }
 
@@ -350,7 +350,7 @@ inline u32 ParkMenu::TextEntry(u8 i) {
     u32 entry;
     if (i == 0) {
         entry = 0;
-        UnkStruct_020758f4_Record *e = mUnk_5c->FindEntry(GetParkGroupId(mCurrent));
+        UnkStruct_020758f4_Record *e = mRanking->FindEntry(GetParkGroupId(mCurrent));
         TextManager::Get().mUnk_10 = e->mTextOffset;
     } else {
         entry = GetParkGroupId(mCurrent);
@@ -391,7 +391,7 @@ void ParkMenu::Draw() {
         mCells[i]->Update();
         u8 state = mCells[i]->mAnimIndex;
         if (state != 0) {
-            if (state == 2 && mUnk_12 != 0xff) {
+            if (state == 2 && mProgressEntryIndex != 0xff) {
                 mCells[5]->Update();
                 mCells[5]->Draw(1, (s16) (pt.x + 0x23), (s16) (pt.y + 0x32), 0);
             }

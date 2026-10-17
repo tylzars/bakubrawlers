@@ -81,7 +81,7 @@ public:
     /* 0c */
 
     void Cleanup(); // 022195e0
-    void func_ov002_0221b424();
+    void InitScriptDisplay();
     void func_ov002_0221b5b0();
     void LoadMainGraphics(BOOL unk1, BOOL unk2);
     void LoadWindowGraphics();

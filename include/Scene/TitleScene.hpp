@@ -50,7 +50,7 @@ public:
     /* 0c */
 
     void InitDisplay(); // display setup (menu)
-    void func_ov000_02223cdc(); // display setup (movie)
+    void InitSaveWindowDisplay(); // display setup
     void LoadGraphics();        // 02223e3c
     void func_ov000_022245e8();
     void DrawMenuCells();

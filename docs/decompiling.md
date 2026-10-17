@@ -297,7 +297,7 @@ that matches should replace it.
   in the caller's own last 8 bytes, so objdiff reads it as a branch inside the caller. Linking is the proof for
   these: once the unit is `complete`, the ROM's SHA-1 covers the call. (BattleCommand::Update, BattleObj00::Update,
   BattleResult::Update, BattleCharaAct::Update, BattleCardSpec::Update, ArenaWindowScene::Update,
-  ArenaScene::func_ov001_022197ec, func_01ff9b64, ListScene::Update.)
+  ArenaScene::StopWirelessAndReset, func_01ff9b64, ListScene::Update.)
 - **Call checks.** `tools/check_calls.py` compares every call in matching functions with the original;
   `tools/check_callees.py` compares, per function (matching or not), the set of callees with the `bl` targets in
   the original's range. Probes and objdiff mask call targets, so both are needed: a near-identical neighbour
@@ -342,7 +342,7 @@ Other findings from linking:
 - **Stripped weak copies in other files.** An inline destructor (e.g. `virtual ~WirelessManager() {}`) is emitted
   as a weak copy in every file that uses the singleton's `Get()`; the original link kept one (Game.cpp's, at
   0x02020a2c) and dropped the rest. Our objects still carry the copy, which shifts objdiff's view of later
-  relocations: ArenaScene::func_ov001_022197ec, ArenaWindowScene::Update, BattleCardSpec::Update and
+  relocations: ArenaScene::StopWirelessAndReset, ArenaWindowScene::Update, BattleCardSpec::Update and
   BattleCharaAct::Update show 99.9x% with identical code. The ROM is unaffected.
 - When no include order works, look for a boundary problem before anything else (IBattle: its first functions use
   a WirelessManager node that lies among the previous file's nodes).

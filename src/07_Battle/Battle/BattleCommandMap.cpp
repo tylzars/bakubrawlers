@@ -261,7 +261,7 @@ void BattleCommandMap::func_ov007_0224560c(u32 index) {
     if (model == 0) {
         return;
     }
-    if (model->mKind != 3) {
+    if (model->mKind != MAP_MODEL_KIND_F00GAT_000_TIMED) {
         return;
     }
     if (model) {
@@ -973,7 +973,7 @@ extern "C" void CreateUnitBakugansAndShadow(BattleCommandMap *map) {
         i++;
     } while (i < 12);
     if (map->mShadowPiece == 0) {
-        map->mShadowPiece = new BattleMapPiece(2);
+        map->mShadowPiece = new BattleMapPiece(MAP_PIECE_KIND_SPHERE_SHADOW);
     }
 }
 
@@ -984,7 +984,7 @@ extern "C" void func_ov007_02247898(BattleCommandMap *map) {
     u8 i = 0;
     do {
         if (data_020d433c.mBattlePlayers->Markers()[i].mStatus == 1 && map->mMarkerModel == 0) {
-            map->mMarkerModel = new BattleMapModel(0);
+            map->mMarkerModel = new BattleMapModel(MAP_MODEL_KIND_CARD_00_00);
         }
         i++;
     } while (i < 12);
@@ -1047,7 +1047,7 @@ void CreateCursorModel(BattleCommandMap *map) {
     if (map->mCursorModel != 0) {
         return;
     }
-    map->mCursorModel = new BattleMapModel(1);
+    map->mCursorModel = new BattleMapModel(MAP_MODEL_KIND_CARD_FUTI);
 }
 
 extern "C" void func_ov007_02247a7c(BattleCommandMap *map) {
@@ -1058,7 +1058,7 @@ extern "C" void func_ov007_02247a7c(BattleCommandMap *map) {
     if (map->mUnk_50[0] != 0) {
         return;
     }
-    BattleMapModel *model = new BattleMapModel(3);
+    BattleMapModel *model = new BattleMapModel(MAP_MODEL_KIND_F00GAT_000_TIMED);
     map->mUnk_50[0]       = model;
     model->mAnimEnabled        = 0;
     map->mUnk_50[0]->StartAnim(0, 0);
@@ -1087,7 +1087,7 @@ extern "C" void func_ov007_02247e00(BattleCommandMap *map) {
     u8 coords[4][2] = {{6, 4}, {7, 5}, {7, 4}, {6, 5}};
     if (data_020d433c.mUnk_8a_0 != 0) {
         if (map->mUnk_50[0] == 0) {
-            BattleMapModel *model = new BattleMapModel(4);
+            BattleMapModel *model = new BattleMapModel(MAP_MODEL_KIND_F00GAT_000);
             map->mUnk_50[0]       = model;
             model->mAnimEnabled        = 1;
             map->mUnk_50[0]->StartAnim(0, 0);
@@ -1099,7 +1099,7 @@ extern "C" void func_ov007_02247e00(BattleCommandMap *map) {
         u8 i = 0;
         do {
             if (data_020d433c.mBattlePlayers->mPlayers[i]->mSlots54Remaining != 0 && map->mUnk_50[i] == 0) {
-                BattleMapModel *model = new BattleMapModel((u8) (i + 4));
+                BattleMapModel *model = new BattleMapModel((u8) (i + MAP_MODEL_KIND_F00GAT_000));
                 map->mUnk_50[i]       = model;
                 model->mAnimEnabled        = 1;
                 map->mUnk_50[i]->StartAnim(0, 0);
@@ -1162,10 +1162,10 @@ extern "C" void SetPredictVisible(BattleCommandMap *map, u32 flag) {
         return;
     }
     if (map->mPredictPiece == 0) {
-        map->mPredictPiece = new BattleMapPiece(0);
+        map->mPredictPiece = new BattleMapPiece(MAP_PIECE_KIND_LPOINT_01_00);
     }
     if (map->mLandingPiece == 0) {
-        map->mLandingPiece = new BattleMapPiece(1);
+        map->mLandingPiece = new BattleMapPiece(MAP_PIECE_KIND_LPOINT_00_00);
     }
 }
 

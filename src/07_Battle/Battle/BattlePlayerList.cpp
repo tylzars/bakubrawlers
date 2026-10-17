@@ -349,21 +349,21 @@ void BattlePlayerList::Update() {
             break;
         case 13:
             switch ((u8) mContext->mRequest) {
-                case 2:
+                case COMMAND_RESULT_NEXT_TURN:
                     mState = 0x1a;
                     break;
-                case 1:
+                case COMMAND_RESULT_SHOOT:
                     mState++;
                     ((void (*)(BattlePlayerList *)) InitPlayerListDisplay)(this);
                     break;
-                case 3: {
+                case COMMAND_RESULT_SHOOT_FROM_MSG: {
                     u8 *msg = (u8 *) mPlayers[mTurnPlayer] + 0x100;
                     new BattleShoot(mCamera, (u16 *) (msg + 4), *(u16 *) (msg + 0xa), *(u16 *) (msg + 0xc), *(msg + 0xf), *(msg + 0x10), mUnk_2ae);
                     mContext->mRequest = 0;
                     mState = 0x11;
                     break;
                 }
-                case 4: {
+                case COMMAND_RESULT_CPU_SHOOT: {
                     BattleCpuRot rot = {0x71c, 0x6000, 0x71c};
                     u16 outA         = 0;
                     u16 outB         = 0;
@@ -375,10 +375,10 @@ void BattlePlayerList::Update() {
                     mState = 0x11;
                     break;
                 }
-                case 5:
+                case COMMAND_RESULT_BATTLE_RESULT:
                     mState = 0x1d;
                     break;
-                case 6:
+                case COMMAND_RESULT_NO_MARKERS:
                     mState = 0x1b;
                     break;
                 case 7:

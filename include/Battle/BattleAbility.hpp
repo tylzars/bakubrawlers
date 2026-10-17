@@ -27,6 +27,37 @@ struct BattleUnk022637acUnit {
     /* 14 */
 };
 
+// Ability ids (BattleAbility::mAbilityId, copied from BattlePlayer::mUnk_fa, which GimmickAbilityField sets from
+// gAbilityRows). The handler for an id is sAbilityHandlers[id - 0xc9] (BattleAbility.cpp).
+// The caster is mPlayer (the turn player); its unit is mUnit (BattleTarget::mUnitHandle - 1).
+// 0xc9: plays "shuto_return" and sets BattlePlayerList::mUnk_2ac = 1; the list then sets mUnk_2ad, and its state 26
+// skips mTurnCount++ for it, so mTurnPlayer stays the same.
+#define ABILITY_ID_REPEAT_TURN     0xc9
+// 0xca: plays "shuto_return" and sets mUnk_2ac = 2: the list removes mUnitA (or mUnitB and puts mUnitA back on its
+// cell) and goes straight back to BattleShoot for the same turn player (BattleCommand, mUnk_28f cleared, when that
+// player is not BattlePlayerList::mUnk_2a9).
+#define ABILITY_ID_SHOOT_AGAIN     0xca
+// 0xcb: picks one of the caster's mSlots54 entries (in a BattleCommandPage prompt when the caster is
+// BattlePlayerList::mUnk_2a9; at random for a CPU caster, func_ov007_02264a5c; from its mMsg for any other caster),
+// then SetMarkerPlayerSlot gives the marker of mUnit to the caster with that slot (the old owner's slot flag is
+// cleared).
+#define ABILITY_ID_REASSIGN_MARKER 0xcb
+// 0xcc: picks one of the caster's records (in a BattleCommandList prompt when the caster is mUnk_2a9; at random
+// among the records with mStatus 0 for a CPU caster; from its mMsg for any other caster), plays "bkn_exchange";
+// ReplaceUnitRecord puts the record in the unit mUnit and the unit's model is set up with its mBakuganId.
+#define ABILITY_ID_REPLACE_RECORD  0xcc
+// 0xce: ("bkn_move") moves mUnit onto the marker of a unit of another player (not the partner),
+// picked at random by func_ov007_02264a5c.
+#define ABILITY_ID_MOVE_TO_UNIT    0xce
+// 0xcf: ("bkn_move") moves mUnit to a marker with no unit or with another player's unit, picked at
+// random by func_ov007_02264a5c.
+#define ABILITY_ID_MOVE_TO_MARKER  0xcf
+// 0xd0: plays "defense_up" and sets mUnit's mStatus to 3; BattleTarget's unit checks skip units with mStatus 3.
+#define ABILITY_ID_DEFENSE_UP      0xd0
+// Not named (no word for what they change): 0xcd (no handler; sets mUnk_2ac = 3 when mUnk_0f is 3); 0xd1 (adds
+// the record's mUnk_06 to itself); 0xd2 (sets BattlePlayer::mUnk_f3 to 0xbe); 0xd3 / 0xd4 ("gp_down" /
+// "gp_pickup2": clear / add to itself the record mUnk_06 of the caster's unit, then of every other placed unit).
+
 // Battle class with vtable 0228a08c (ctor 022637ac, dtor 02263944/022639a8, Update 02263a14, 0x74 bytes). Runs a
 // state machine through the handler table at 0228a098 (state = mUnk_0c, entries of 8 bytes: function, zero).
 class BattleAbility : public SceneBase {
@@ -42,7 +73,7 @@ public:
     /* 15 */ u8 mPlayer;
     /* 16 */ u8 mUnit;
     /* 17 */ u8 mNextScene;
-    /* 18 */ u16 mAbilityId;
+    /* 18 */ u16 mAbilityId; // ABILITY_ID_*
     /* 1a */ u16 mUnk_1a;
     /* 1c */ BattleTarget *mTarget;
     /* 20 */ BattleUnionAbility *mUnionAbility;

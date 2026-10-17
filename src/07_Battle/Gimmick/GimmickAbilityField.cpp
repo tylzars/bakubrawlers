@@ -1,4 +1,5 @@
 #include "Battle/GimmickTypes.hpp"
+#include "Battle/BattleAbility.hpp"
 #include <nitro/fx.h>
 #include "System/FileSystem.hpp"
 #include "Graphics/Camera.hpp"
@@ -12,60 +13,61 @@ static const u8 sAbilityWeights20[3] = {60, 20, 20};
 static const u8 sAbilityWeights02[2] = {80, 20};
 static const u8 sAbilityWeights23[2] = {80, 20};
 static const u8 sAbilityWeights21[3] = {40, 30, 30};
-static const u8 sAbilityIds01[1] = {0xcf};
-static const u8 sAbilityIds28[4] = {0xce, 0xca, 0xcf, 0xcd};
+static const u8 sAbilityIds01[1] = {ABILITY_ID_MOVE_TO_MARKER};
+static const u8 sAbilityIds28[4] = {ABILITY_ID_MOVE_TO_UNIT, ABILITY_ID_SHOOT_AGAIN, ABILITY_ID_MOVE_TO_MARKER, 0xcd};
 static const u8 sAbilityWeights28[4] = {33, 33, 24, 10};
-static const u8 sAbilityIds04[2] = {0xce, 0xd0};
-static const u8 sAbilityIds22[4] = {0xce, 0xcb, 0xd4, 0xc9};
-static const u8 sAbilityIds29[3] = {0xcb, 0xd3, 0xd1};
+static const u8 sAbilityIds04[2] = {ABILITY_ID_MOVE_TO_UNIT, ABILITY_ID_DEFENSE_UP};
+static const u8 sAbilityIds22[4] = {ABILITY_ID_MOVE_TO_UNIT, ABILITY_ID_REASSIGN_MARKER, 0xd4, ABILITY_ID_REPEAT_TURN};
+static const u8 sAbilityIds29[3] = {ABILITY_ID_REASSIGN_MARKER, 0xd3, 0xd1};
 static const u8 sAbilityIds15[1] = {0xd1};
 static const u8 sAbilityWeights22[4] = {25, 25, 25, 25};
 static const u8 sAbilityWeights15[1] = {255};
-static const u8 sAbilityIds25[2] = {0xca, 0xcb};
-static const u8 sAbilityIds07[3] = {0xcb, 0xd1, 0xc9};
-static const u8 sAbilityIds09[3] = {0xca, 0xc9, 0xcd};
+static const u8 sAbilityIds25[2] = {ABILITY_ID_SHOOT_AGAIN, ABILITY_ID_REASSIGN_MARKER};
+static const u8 sAbilityIds07[3] = {ABILITY_ID_REASSIGN_MARKER, 0xd1, ABILITY_ID_REPEAT_TURN};
+static const u8 sAbilityIds09[3] = {ABILITY_ID_SHOOT_AGAIN, ABILITY_ID_REPEAT_TURN, 0xcd};
 static const u8 sAbilityWeights05[2] = {66, 34};
-static const u8 sAbilityIds26[6] = {0xce, 0xcc, 0xd4, 0xd3, 0xd0, 0xc9};
+static const u8 sAbilityIds26[6] = {ABILITY_ID_MOVE_TO_UNIT, ABILITY_ID_REPLACE_RECORD, 0xd4, 0xd3,
+                                    ABILITY_ID_DEFENSE_UP, ABILITY_ID_REPEAT_TURN};
 static const u8 sAbilityWeights12[3] = {80, 16, 4};
 static const u8 sAbilityWeights00[1] = {255};
-static const u8 sAbilityIds13[3] = {0xd4, 0xce, 0xcd};
-static const u8 sAbilityIds18[3] = {0xcc, 0xcb, 0xd1};
-static const u8 sAbilityIds12[3] = {0xd3, 0xcf, 0xcd};
+static const u8 sAbilityIds13[3] = {0xd4, ABILITY_ID_MOVE_TO_UNIT, 0xcd};
+static const u8 sAbilityIds18[3] = {ABILITY_ID_REPLACE_RECORD, ABILITY_ID_REASSIGN_MARKER, 0xd1};
+static const u8 sAbilityIds12[3] = {0xd3, ABILITY_ID_MOVE_TO_MARKER, 0xcd};
 static const u8 sAbilityWeights18[3] = {60, 20, 20};
-static const u8 sAbilityIds11[3] = {0xd0, 0xd2, 0xca};
+static const u8 sAbilityIds11[3] = {ABILITY_ID_DEFENSE_UP, 0xd2, ABILITY_ID_SHOOT_AGAIN};
 static const u8 sAbilityWeights06[1] = {255};
-static const u8 sAbilityIds17[2] = {0xcf, 0xcd};
-static const u8 sAbilityIds19[3] = {0xd0, 0xd4, 0xd2};
+static const u8 sAbilityIds17[2] = {ABILITY_ID_MOVE_TO_MARKER, 0xcd};
+static const u8 sAbilityIds19[3] = {ABILITY_ID_DEFENSE_UP, 0xd4, 0xd2};
 static const u8 sAbilityWeights19[3] = {60, 20, 20};
 static const u8 sAbilityWeights04[2] = {80, 20};
-static const u8 sAbilityIds08[3] = {0xcc, 0xcf, 0xd2};
-static const u8 sAbilityIds21[3] = {0xcc, 0xd0, 0xd4};
+static const u8 sAbilityIds08[3] = {ABILITY_ID_REPLACE_RECORD, ABILITY_ID_MOVE_TO_MARKER, 0xd2};
+static const u8 sAbilityIds21[3] = {ABILITY_ID_REPLACE_RECORD, ABILITY_ID_DEFENSE_UP, 0xd4};
 static const u8 sAbilityWeights07[3] = {60, 32, 8};
-static const u8 sAbilityIds00[1] = {0xcb};
+static const u8 sAbilityIds00[1] = {ABILITY_ID_REASSIGN_MARKER};
 static const u8 sAbilityWeights09[3] = {80, 16, 4};
 static const u8 sAbilityWeights10[3] = {80, 16, 4};
 static const u8 sAbilityWeights11[3] = {60, 16, 24};
 static const u8 sAbilityWeights25[2] = {50, 50};
-static const u8 sAbilityIds14[4] = {0xc9, 0xcd, 0xd1, 0xcf};
+static const u8 sAbilityIds14[4] = {ABILITY_ID_REPEAT_TURN, 0xcd, 0xd1, ABILITY_ID_MOVE_TO_MARKER};
 static const u8 sAbilityWeights17[2] = {50, 50};
 static const u8 sAbilityWeights14[4] = {60, 20, 15, 5};
 static const u8 sAbilityIds16[1] = {0xd3};
-static const u8 sAbilityIds27[4] = {0xd3, 0xd4, 0xd1, 0xcf};
+static const u8 sAbilityIds27[4] = {0xd3, 0xd4, 0xd1, ABILITY_ID_MOVE_TO_MARKER};
 static const u8 sAbilityWeights16[1] = {255};
 static const u8 sAbilityWeights27[4] = {33, 33, 24, 10};
-static const u8 sAbilityIds20[3] = {0xca, 0xd3, 0xc9};
+static const u8 sAbilityIds20[3] = {ABILITY_ID_SHOOT_AGAIN, 0xd3, ABILITY_ID_REPEAT_TURN};
 static const u8 sAbilityWeights08[3] = {60, 16, 24};
 static const u8 sAbilityWeights24[2] = {80, 20};
 static const u8 sAbilityWeights29[3] = {34, 33, 33};
-static const u8 sAbilityIds05[2] = {0xd4, 0xc9};
-static const u8 sAbilityIds02[2] = {0xca, 0xd1};
+static const u8 sAbilityIds05[2] = {0xd4, ABILITY_ID_REPEAT_TURN};
+static const u8 sAbilityIds02[2] = {ABILITY_ID_SHOOT_AGAIN, 0xd1};
 static const u8 sAbilityWeights26[6] = {20, 20, 20, 16, 12, 12};
 static const u8 sAbilityIds03[2] = {0xd3, 0xd2};
-static const u8 sAbilityIds23[2] = {0xd1, 0xc9};
-static const u8 sAbilityIds06[1] = {0xc9};
+static const u8 sAbilityIds23[2] = {0xd1, ABILITY_ID_REPEAT_TURN};
+static const u8 sAbilityIds06[1] = {ABILITY_ID_REPEAT_TURN};
 static const u8 sAbilityWeights13[3] = {60, 36, 4};
-static const u8 sAbilityIds10[3] = {0xce, 0xd2, 0xcd};
-static const u8 sAbilityIds24[2] = {0xd4, 0xcf};
+static const u8 sAbilityIds10[3] = {ABILITY_ID_MOVE_TO_UNIT, 0xd2, 0xcd};
+static const u8 sAbilityIds24[2] = {0xd4, ABILITY_ID_MOVE_TO_MARKER};
 const GimmickAbilityRow gAbilityRows[] = {
     {1, {}, sAbilityIds00, sAbilityWeights00},
     {1, {}, sAbilityIds01, sAbilityWeights01},

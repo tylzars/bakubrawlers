@@ -21,10 +21,23 @@ public:
     virtual ~BattleObject() {}
 };
 
+// Battle modes: BattleConfrontCard::mBattleMode, passed to BattleBase::Init (BattleBase::mMode, the gBattleParams
+// row) and to each BattleSlot (BattleSlot::mMode). BattleConfrontCard creates the battle screen class of the mode.
+#define BATTLE_MODE_CONFRONT_BG01 0 // ConfrontBg01
+#define BATTLE_MODE_CONFRONT_BG02 1 // ConfrontBg02
+#define BATTLE_MODE_CONFRONT_03   2 // Confront03
+#define BATTLE_MODE_CONFRONT_BG04 3 // ConfrontBg04
+#define BATTLE_MODE_CONFRONT_BG05 4 // ConfrontBg05
+#define BATTLE_MODE_CONFRONT_BG06 5 // ConfrontBg06
+// Not a screen: BattleBase::Init stores it in mMode (after choosing mParam) when BattlePlayerList::mUnk_2a9 is
+// neither entry's player (mEntries[0/1].mUnk_0d_4), the case where IsSpectator() holds; only BattleHud::StartObject
+// reads it.
+#define BATTLE_MODE_SPECTATOR     7
+
 // Per-player helper object (0x38 bytes, created by func_ov007_022227e4).
 class BattleSlot : public BattleObject {
 public:
-    /* 04 */ u8 mMode;
+    /* 04 */ u8 mMode; // BATTLE_MODE_* (0..5)
     /* 05 */ u8 mCharacterId;
     /* 06 */ u8 mStartTimer;
     /* 07 */ u8 mUnk_07;
@@ -440,7 +453,7 @@ public:
     void func_ov007_02227460(int side);
     void Push(int mode, s32 value, s32 count, u8 boost, bool useLevel);
     u8 func_ov007_022275a0(u32 value, u8 a, u8 b);
-    BOOL StartObject(u8 side, s16 x, s16 y, u8 flag);
+    BOOL StartObject(u8 side, s16 x, s16 y, u8 flag); // flag: BattleBase::mMode, or 6 from BattleHud itself
     void Draw();
     void func_ov007_02227bbc(u8 index);
     void func_ov007_02227c54();
@@ -463,7 +476,7 @@ public:
     /* 12 */ u8 mUnk_12;
     /* 13 */ u8 mUnk_13;
     /* 14 */ s8 mMultiplierIndex;
-    /* 15 */ u8 mMode;
+    /* 15 */ u8 mMode; // BATTLE_MODE_*
     /* 16 */ u16 mElapsedFrames;
     /* 18 */ u8 mUnk_18_0 : 1;
     /* 18 */ u8 mUnk_18_1 : 1;

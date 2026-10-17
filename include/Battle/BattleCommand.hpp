@@ -15,6 +15,31 @@ class BattleCommandPage;
 class BattleCommandList;
 class BattleCommandPrompt;
 
+// Values of BattleCommand::mMode and mNextMode: which sub object of the command screen is open. OpenNextMode creates
+// the mNextMode object and copies mNextMode into mMode; CloseMode closes the open MAP / PAGE / LIST object, clears
+// mContext->mRequest and sets CLOSING; PollModeClosed sets NONE once mContext->mRequest is non-zero again.
+#define COMMAND_MODE_NONE    0 // no sub object open
+#define COMMAND_MODE_CLOSING 1 // closed by CloseMode, waiting for mContext->mRequest
+#define COMMAND_MODE_MAP     2 // mCommandMap (BattleCommandMap)
+#define COMMAND_MODE_PAGE    3 // mCommandPage (BattleCommandPage)
+#define COMMAND_MODE_LIST    4 // mCommandList (BattleCommandList)
+
+// What BattleCommand hands back when it ends: mUnk_134, passed to RequestScene and so written into the parent
+// BattlePlayerList's mContext->mRequest (not a SCENE_* id), which its state 13 switches on.
+// SHOOT: a record was picked in the BattleCommandList prompt; the list opens BattleShoot.
+// SHOOT_FROM_MSG: the turn player's mMsg (type 8) gave the record; the list opens BattleShoot with the shot in mMsg.
+// CPU_SHOOT: the turn player's BattleCpu picked the record; the list opens BattleShoot with the shot it computes.
+#define COMMAND_RESULT_SHOOT          1
+// NEXT_TURN: the list goes to its state 26 (turn set-up: mTurnCount++ unless mUnk_2ad is set, then mTurnPlayer).
+#define COMMAND_RESULT_NEXT_TURN      2
+#define COMMAND_RESULT_SHOOT_FROM_MSG 3
+#define COMMAND_RESULT_CPU_SHOOT      4
+#define COMMAND_RESULT_BATTLE_RESULT  5 // func_ov007_02263150 held; the list opens BattleResult
+#define COMMAND_RESULT_NO_MARKERS     6 // no marker has a non-zero mStatus; the list opens BattleObj00(1)
+// 7 (state 50: BattleUnk0227532c returned 2 and data_020d433c.mWireless is 0) is left a literal: the list goes to
+// its state 36 (also entered from its state 17), which requests SCENE_MAP or, in wireless mode or when mNextScene is
+// SCENE_ARENA_WINDOW, goes to its state 32.
+
 // Main battle command screen (battle_b_obj_00, mes_Command, union_b cockpit): the command windows, the turn
 // counter and the sub objects of the current mode. Vtable 02287ad0, at least 0x13c bytes.
 class BattleCommand : public SceneBase {
@@ -48,8 +73,8 @@ public:
     /* 126 */ s16 mUnk_126;
     /* 128 */ u8 mState;
     /* 129 */ u8 mUnk_129;
-    /* 12a */ u8 mMode;
-    /* 12b */ u8 mNextMode;
+    /* 12a */ u8 mMode; // COMMAND_MODE_*
+    /* 12b */ u8 mNextMode; // COMMAND_MODE_* that OpenNextMode opens
     /* 12c */ u8 mCursorX;
     /* 12d */ u8 mCursorY;
     /* 12e */ u8 mUnk_12e;
@@ -58,7 +83,7 @@ public:
     /* 131 */ PAD(0x131, 0x132);
     /* 132 */ u8 mUnk_132;
     /* 133 */ u8 mUnk_133;
-    /* 134 */ u8 mUnk_134;
+    /* 134 */ u8 mUnk_134; // COMMAND_RESULT_* (or 7), requested when the screen ends
     /* 135 */ u8 mFlipped;
     /* 136 */ s8 mSelectedId;
     /* 137 */ PAD(0x137, 0x138);

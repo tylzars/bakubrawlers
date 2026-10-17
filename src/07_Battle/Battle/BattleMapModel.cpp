@@ -27,28 +27,28 @@ BattleMapModel::~BattleMapModel() {
 void BattleMapModel::LoadModel() {
     ChangeDir("/Game/Battle/3d/MapObj");
     switch (mKind) {
-        case 0:
+        case MAP_MODEL_KIND_CARD_00_00:
             LoadFiles("card_00_00.nsbtx", "card_00_00.nsbmd", "card_00_00_data.bin", 0);
             break;
-        case 1:
+        case MAP_MODEL_KIND_CARD_FUTI:
             LoadFilesNoAnim("card_futi.nsbtx", "card_futi.nsbmd");
             break;
-        case 2:
+        case MAP_MODEL_KIND_O00BTL_000:
             LoadFiles("o00btl_000.nsbtx", "o00btl_000.nsbmd", "o00btl_000_data.bin", 0);
             break;
-        case 3:
+        case MAP_MODEL_KIND_F00GAT_000_TIMED:
             LoadFiles("f00gat_000.nsbtx", "f00gat_000.nsbmd", "f00gat_000_data.bin", 0);
             break;
-        case 4:
+        case MAP_MODEL_KIND_F00GAT_000:
             LoadFiles("f00gat_000.nsbtx", "f00gat_000.nsbmd", "f00gat_000_data.bin", 0);
             break;
-        case 5:
+        case MAP_MODEL_KIND_F00GAT_001:
             LoadFiles("f00gat_001.nsbtx", "f00gat_001.nsbmd", "f00gat_001_data.bin", 0);
             break;
-        case 6:
+        case MAP_MODEL_KIND_F00GAT_002:
             LoadFiles("f00gat_002.nsbtx", "f00gat_002.nsbmd", "f00gat_002_data.bin", 0);
             break;
-        case 7:
+        case MAP_MODEL_KIND_F00GAT_003:
             LoadFiles("f00gat_003.nsbtx", "f00gat_003.nsbmd", "f00gat_003_data.bin", 0);
             break;
     }

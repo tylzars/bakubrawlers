@@ -18,13 +18,13 @@ BattleMapPiece::~BattleMapPiece() {
 void BattleMapPiece::LoadModel(u32 type) {
     ChangeDir("/Game/Battle/3d/MapObj");
     switch (type) {
-        case 0:
+        case MAP_PIECE_KIND_LPOINT_01_00:
             LoadFilesNoAnim("Lpoint_01_00.nsbtx", "Lpoint_01_00.nsbmd");
             break;
-        case 1:
+        case MAP_PIECE_KIND_LPOINT_00_00:
             LoadFilesNoAnim("Lpoint_00_00.nsbtx", "Lpoint_00_00.nsbmd");
             break;
-        case 2:
+        case MAP_PIECE_KIND_SPHERE_SHADOW:
             LoadFilesNoAnim("sphere_shadow.nsbtx", "sphere_shadow.nsbmd");
             break;
     }

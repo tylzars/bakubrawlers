@@ -81,7 +81,7 @@ BattleAbility::BattleAbility()
     mTarget = data_020d433c.mBattlePlayers->mBattleTarget;
     mUnit = mTarget->mUnitHandle - 1;
     mAbilityId = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_fa;
-    mAbilityIndex = mAbilityId - 0xc9;
+    mAbilityIndex = mAbilityId - 0xc9; // 0xc9 (ABILITY_ID_REPEAT_TURN) is the lowest id: the sAbilityHandlers row
     mCamera = data_020d433c.mBattlePlayers->mCamera;
     u8 i = 0;
     do {
@@ -169,7 +169,7 @@ void BattleAbility::Update() {
                     break;
             }
             CloseCommandPage(mCommandPage, 1);
-            if ((u16) (mAbilityId + 0xff35) <= 1 && result == 1) {
+            if ((u16) (mAbilityId + 0xff35) <= 1 && result == 1) { // id 0xcb or 0xcc (REASSIGN_MARKER, REPLACE_RECORD)
                 mState++;
                 break;
             }
@@ -190,7 +190,7 @@ void BattleAbility::Update() {
                 break;
             }
             mContext->mRequest = 0;
-            if (mAbilityId == 0xcb) {
+            if (mAbilityId == ABILITY_ID_REASSIGN_MARKER) {
                 mCommandPage = new BattleCommandPage(0, -1);
                 func_0205562c(mCommandPage, 1);
                 new BattleCommandPrompt(1, mCommandPage, 0, 0, 0);
@@ -218,7 +218,7 @@ void BattleAbility::Update() {
             } else {
                 mState = 5;
             }
-            if (mAbilityId == 0xcb) {
+            if (mAbilityId == ABILITY_ID_REASSIGN_MARKER) {
                 CloseCommandPage(mCommandPage, 1);
             } else {
                 CloseCommandList(mCommandList);
@@ -240,7 +240,7 @@ void BattleAbility::Update() {
                 break;
             }
             mContext->mRequest = 1;
-            if (mAbilityId == 0xcc) {
+            if (mAbilityId == ABILITY_ID_REPLACE_RECORD) {
                 CameraManager::Get().Reset();
                 CameraManager::Get().mCameraIndex = 0;
                 CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
@@ -414,7 +414,7 @@ enum UnitIndex { UNIT_INDEX_0 };
 
 BOOL BattleAbility::func_ov007_02264a5c() {
     BOOL result = 1;
-    switch (mAbilityId - 0xc9) {
+    switch (mAbilityId - 0xc9) { // sAbilityHandlers row (0xc9 = ABILITY_ID_REPEAT_TURN)
         case 0:
             result = 0;
             break;

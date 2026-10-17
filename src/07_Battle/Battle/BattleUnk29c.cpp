@@ -218,7 +218,7 @@ void BattleUnk29c::CreateBakugan(u32 index, VecFx32 *pos, u16 *rot, u8 a, u8 b) 
         mMoveStates[index]->mMode = MOVE_MODE_IDLE;
     }
     if (mShadow == 0) {
-        mShadow = new BattleMapPiece(2);
+        mShadow = new BattleMapPiece(MAP_PIECE_KIND_SPHERE_SHADOW);
     }
 }
 

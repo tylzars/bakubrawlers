@@ -120,9 +120,9 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
     }
     mModeRow = p + a * 4;
     mIntervalRow = gIntervalRows + b * 2;
-    if (mMode == 0 || mMode == 3) {
+    if (mMode == BATTLE_MODE_CONFRONT_BG01 || mMode == BATTLE_MODE_CONFRONT_BG04) {
         u8 c;
-        if (mMode == 0) {
+        if (mMode == BATTLE_MODE_CONFRONT_BG01) {
             c = data_ov007_02278d7a[row];
         } else {
             c = data_ov007_02278d7b[row];
@@ -160,15 +160,15 @@ BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8
         return;
     }
     switch (mMode) {
-        case 1:
-            if (mMode == 1) {
+        case BATTLE_MODE_CONFRONT_BG02:
+            if (mMode == BATTLE_MODE_CONFRONT_BG02) {
                 mStartTimer = 50;
             }
-        case 2:
+        case BATTLE_MODE_CONFRONT_03:
             mIntervalFrameCount = mModeRow[0];
             mIntervalFrameCount += BattleRand32(mModeRow[1]);
             break;
-        case 5:
+        case BATTLE_MODE_CONFRONT_BG06:
             mRollFrameCount = mModeRow[1];
             mRollFrameCount += BattleRand32(mModeRow[2]);
             break;
@@ -186,8 +186,8 @@ BattleSlot::~BattleSlot() {
 BOOL BattleSlot::UpdateInterval() {
     BOOL ret = 0;
     switch (mMode) {
-        case 1:
-        case 2:
+        case BATTLE_MODE_CONFRONT_BG02:
+        case BATTLE_MODE_CONFRONT_03:
             mIntervalFrames++;
             if (mIntervalFrames < mIntervalFrameCount) {
                 return ret;
@@ -197,10 +197,10 @@ BOOL BattleSlot::UpdateInterval() {
             mIntervalFrameCount += BattleRand32(mModeRow[1]);
             ret = 1;
             break;
-        case 0:
-        case 3:
-        case 4:
-        case 5:
+        case BATTLE_MODE_CONFRONT_BG01:
+        case BATTLE_MODE_CONFRONT_BG04:
+        case BATTLE_MODE_CONFRONT_BG05:
+        case BATTLE_MODE_CONFRONT_BG06:
             ret = 1;
             break;
     }
@@ -214,8 +214,8 @@ int BattleSlot::ComputeValue(u8 n, u16 *a, u16 *b) {
         if (mValueFrames >= mParam->mUnk_08) {
             mValueFrames = 0;
             switch (mMode) {
-                case 0:
-                case 3: {
+                case BATTLE_MODE_CONFRONT_BG01:
+                case BATTLE_MODE_CONFRONT_BG04: {
                     u8 *p = mModeRow;
                     if (p[2] >= BattleRand32(100)) {
                         mValue = mValue - p[3];
@@ -230,7 +230,7 @@ int BattleSlot::ComputeValue(u8 n, u16 *a, u16 *b) {
                     }
                     break;
                 }
-                case 4: {
+                case BATTLE_MODE_CONFRONT_BG05: {
                     if (mSoundTimer != 0) {
                         mSoundTimer--;
                     }
@@ -268,8 +268,8 @@ int BattleSlot::ComputeValue(u8 n, u16 *a, u16 *b) {
                     }
                     break;
                 }
-                case 1:
-                case 2:
+                case BATTLE_MODE_CONFRONT_BG02:
+                case BATTLE_MODE_CONFRONT_03:
                     mValue = mModeRow[2];
                     mValue += BattleRand32(mModeRow[3]);
                     if (mValue >= 50) {
@@ -278,7 +278,7 @@ int BattleSlot::ComputeValue(u8 n, u16 *a, u16 *b) {
                         mSoundTimer = 60;
                     }
                     break;
-                case 5:
+                case BATTLE_MODE_CONFRONT_BG06:
                     mValue = 0;
                     mRollFrames++;
                     if (mRollFrames >= mRollFrameCount) {

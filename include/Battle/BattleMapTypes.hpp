@@ -8,17 +8,34 @@
 #include "Graphics/ModelTransform.hpp"
 #include "Graphics/BakuganModel.hpp"
 
+// BattleMapModel::mKind: the /Game/Battle/3d/MapObj model LoadModel loads.
+#define MAP_MODEL_KIND_CARD_00_00       0 // "card_00_00"
+#define MAP_MODEL_KIND_CARD_FUTI        1 // "card_futi"
+#define MAP_MODEL_KIND_O00BTL_000       2 // "o00btl_000"
+// "f00gat_000" as well; the only kind BattleCommandMap::func_ov007_0224560c deletes, which it does once mUnk_142
+// (0x97 when this model is created) has counted down to 0.
+#define MAP_MODEL_KIND_F00GAT_000_TIMED 3
+#define MAP_MODEL_KIND_F00GAT_000       4 // "f00gat_000"; func_ov007_02247e00 creates this kind + player index
+#define MAP_MODEL_KIND_F00GAT_001       5 // "f00gat_001"
+#define MAP_MODEL_KIND_F00GAT_002       6 // "f00gat_002"
+#define MAP_MODEL_KIND_F00GAT_003       7 // "f00gat_003"
+
 class BattleMapModel : public ModelTransform { // 0x30 bytes, ctor 02248c84 (1 argument), dtor 02248cb0
 public:
-    /* 2c */ u8 mKind; // model type (0..7)
+    /* 2c */ u8 mKind; // MAP_MODEL_KIND_*
     /* 2d */ u8 mColorLevel; // brightness of the model (0xf..0x1f)
     /* 2e */ PAD(0x2e, 0x30);
 
     BattleMapModel(u32 unk1);
     ~BattleMapModel();
-    void LoadModel(); // loads the model of type mUnk_2c from /Game/Battle/3d/MapObj
+    void LoadModel(); // loads the model of kind mKind from /Game/Battle/3d/MapObj
     void DrawPulsing(); // updates the brightness and draws
 };
+
+// Kinds of a BattleMapPiece (constructor / LoadModel argument `type`): the /Game/Battle/3d/MapObj model it loads.
+#define MAP_PIECE_KIND_LPOINT_01_00  0 // "Lpoint_01_00" (BattleCommandMap::mPredictPiece)
+#define MAP_PIECE_KIND_LPOINT_00_00  1 // "Lpoint_00_00" (BattleCommandMap::mLandingPiece)
+#define MAP_PIECE_KIND_SPHERE_SHADOW 2 // "sphere_shadow"
 
 // Piece of the battle map (ctor 02263xxx, destructor 022636b0), deleted by pointer.
 class BattleMapPiece : public ModelTransform {

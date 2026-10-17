@@ -113,7 +113,7 @@ void BattleCardCamera::Init() {
     // Placeholder: the original stores -0x4000 as a signed 16-bit value (built as 0xe000 - 0x12000).
     *(s16 *) &p1->mRotY = -0x4000;
     p1->mRotZ = 0;
-    mMapModel = new BattleMapModel(2);
+    mMapModel = new BattleMapModel(MAP_MODEL_KIND_O00BTL_000);
     mMapModel->StartAnim(0, 0);
     BattleMapModel *model = mMapModel;
     model->mRotX = 0;

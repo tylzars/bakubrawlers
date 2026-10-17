@@ -151,7 +151,7 @@ void BattleBase::Init(BattleData *data, u32 mode) {
         } else {
             mUnk_12 = 2;
         }
-        mMode = 7;
+        mMode = BATTLE_MODE_SPECTATOR;
     }
     if (data_020d433c.mPlayerCount == 3) {
         mUnk_13 = 30;
@@ -182,7 +182,7 @@ void BattleBase::Init(BattleData *data, u32 mode) {
             j++;
         } while (j < 2);
     }
-    if (count == 2 && (mode == 0 || mode == 3)) {
+    if (count == 2 && (mode == BATTLE_MODE_CONFRONT_BG01 || mode == BATTLE_MODE_CONFRONT_BG04)) {
         mSlots[order[0]]->mUnk_14 |= 4;
         mSlots[order[1]]->mUnk_14 |= 4;
     }

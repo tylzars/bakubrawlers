@@ -161,8 +161,8 @@ BattleCommand::BattleCommand(u32 unk)
     mScrollX = 0;
     mScrollY = 0;
     mUnk_129 = 0;
-    mMode    = 2;
-    mNextMode = 0;
+    mMode    = COMMAND_MODE_MAP;
+    mNextMode = COMMAND_MODE_NONE;
     mCursorX = 0;
     mCursorY = 0;
     mUnk_12e = 0;
@@ -381,7 +381,7 @@ void BattleCommand::Update() {
                 return;
             }
             PollModeClosed();
-            if (mMode != 0) {
+            if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
             u32 unk4 = 0;
@@ -440,7 +440,7 @@ void BattleCommand::Update() {
                     return;
                 }
             }
-            mNextMode = 2;
+            mNextMode = COMMAND_MODE_MAP;
             OpenNextMode(0);
             InitCommandSubScreen((s16) (mScrollX - mOffsetX), mScrollY);
             func_ov007_0223ad70(mFlipped);
@@ -574,12 +574,12 @@ void BattleCommand::Update() {
         }
         case 10: {
             BOOL ok = TRUE;
-            if (mMode == 3) {
+            if (mMode == COMMAND_MODE_PAGE) {
                 if (mCommandPage->IsSettingUp()) {
                     ok = FALSE;
                 }
             }
-            if (mMode == 4) {
+            if (mMode == COMMAND_MODE_LIST) {
                 if (mCommandList->IsSettingUp()) {
                     ok = FALSE;
                 }
@@ -631,7 +631,7 @@ void BattleCommand::Update() {
                     case 1:
                         mState = 0x25;
                         CloseMode(1);
-                        mNextMode = 4;
+                        mNextMode = COMMAND_MODE_LIST;
                         break;
                     case 2: {
                         BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -654,7 +654,7 @@ void BattleCommand::Update() {
                     }
                     case 4:
                         CloseMode(1);
-                        mNextMode = 4;
+                        mNextMode = COMMAND_MODE_LIST;
                         mCockpitWindow->mEnabled = 0;
                         mState          = 0x29;
                         break;
@@ -689,7 +689,7 @@ void BattleCommand::Update() {
                     BattlePlayerList *l = data_020d433c.mBattlePlayers;
                     l->mUnk_28b = a;
                     l->mUnk_28c = b;
-                    mNextMode = 0;
+                    mNextMode = COMMAND_MODE_NONE;
                     CloseMode(1);
                     SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     mState = 0xf;
@@ -703,7 +703,7 @@ void BattleCommand::Update() {
                             mCommandPrompt = 0;
                         }
                     }
-                    mNextMode = 0;
+                    mNextMode = COMMAND_MODE_NONE;
                     CloseMode(0);
                     SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
                     {
@@ -722,7 +722,7 @@ void BattleCommand::Update() {
                     }
                     mCursorX  = p->mMsg.mTouchDown;
                     mCursorY  = p->mMsg.mTouchX;
-                    mNextMode = 0;
+                    mNextMode = COMMAND_MODE_NONE;
                     mState  = 0x2d;
                     return;
                 default:
@@ -732,7 +732,7 @@ void BattleCommand::Update() {
                     mCommandWindow->mButtons[4].mEnabled = 0;
                     mCommandWindow->mButtons[3].mEnabled = 1;
                     if (mPromptStep == 0) {
-                        if ((mMode == 0) | (mMode == 1)) {
+                        if ((mMode == COMMAND_MODE_NONE) | (mMode == COMMAND_MODE_CLOSING)) {
                             UpdateCommandWindowAndCursor(0);
                             SwitchMode();
                             return;
@@ -757,7 +757,7 @@ void BattleCommand::Update() {
         }
         case 15:
             PollModeClosed();
-            if (mMode != 0) {
+            if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
             Draw();
@@ -769,7 +769,7 @@ void BattleCommand::Update() {
             mCommandWindow->mButtons[3].mEnabled = 0;
             mCommandWindow->mState = 4;
             mCommandWindow->mSlideInRequested = 0;
-            mMode     = 0;
+            mMode     = COMMAND_MODE_NONE;
             mUnk_11e  = 0;
             mState  = 0x1f;
             return;
@@ -813,7 +813,7 @@ void BattleCommand::Update() {
                 return;
             }
             PollModeClosed();
-            if (mMode != 0) {
+            if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
             Draw();
@@ -822,7 +822,7 @@ void BattleCommand::Update() {
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            mMode    = 0;
+            mMode    = COMMAND_MODE_NONE;
             mUnk_11e = 0;
             mState = 0x1f;
             return;
@@ -847,7 +847,7 @@ void BattleCommand::Update() {
                 return;
             }
             PollModeClosed();
-            if (mMode != 0) {
+            if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
             u8 cur          = data_020d433c.mBattlePlayers->mTurnPlayer;
@@ -870,7 +870,7 @@ void BattleCommand::Update() {
             if (mContext->mRequest == 0) {
                 return;
             }
-            mUnk_134 = 4;
+            mUnk_134 = COMMAND_RESULT_CPU_SHOOT;
             mState = 0x39;
             return;
         case 21: {
@@ -896,10 +896,10 @@ void BattleCommand::Update() {
             return;
         case 23:
             PollModeClosed();
-            if (mMode != 0) {
+            if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
-            mNextMode = 3;
+            mNextMode = COMMAND_MODE_PAGE;
             OpenNextMode(0);
             new BattleCommandPrompt(1, mCommandPage, 0, 0, 0);
             mContext->mRequest = 0;
@@ -1027,7 +1027,7 @@ void BattleCommand::Update() {
             return;
         case 31: {
             PollModeClosed();
-            if (mMode != 0) {
+            if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
             u8 cur = data_020d433c.mBattlePlayers->mTurnPlayer;
@@ -1041,7 +1041,7 @@ void BattleCommand::Update() {
             if (mContext->mRequest == 0) {
                 return;
             }
-            mNextMode = 2;
+            mNextMode = COMMAND_MODE_MAP;
             OpenNextMode(0);
             InitCommandSubScreen((s16) (mScrollX - mOffsetX), mScrollY);
             func_ov007_0223ad70(mFlipped);
@@ -1103,10 +1103,10 @@ void BattleCommand::Update() {
         case 35:
             Draw();
             PollModeClosed();
-            if (mMode != 0) {
+            if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
-            mNextMode = 2;
+            mNextMode = COMMAND_MODE_MAP;
             OpenNextMode(0);
             CreateCursorModel(mCommandMap);
             func_ov007_02246a84(mCommandMap, 2);
@@ -1140,7 +1140,7 @@ void BattleCommand::Update() {
         case 37:
             Draw();
             PollModeClosed();
-            if (mMode != 0) {
+            if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
             OpenNextMode(0);
@@ -1170,10 +1170,10 @@ void BattleCommand::Update() {
         case 39:
             Draw();
             PollModeClosed();
-            if (mMode != 0) {
+            if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
-            mNextMode = 2;
+            mNextMode = COMMAND_MODE_MAP;
             OpenNextMode(0);
             CreateCursorModel(mCommandMap);
             func_ov007_02246a84(mCommandMap, 2);
@@ -1191,7 +1191,7 @@ void BattleCommand::Update() {
         case 41:
             Draw();
             PollModeClosed();
-            if (mMode != 0) {
+            if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
             OpenNextMode(1);
@@ -1280,14 +1280,14 @@ void BattleCommand::Update() {
             mMessageWindow->Update();
             Draw();
             PollModeClosed();
-            if (mMode != 0) {
+            if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
             mCockpitWindow->Update(1);
             if (mCockpitWindow->mState != 4) {
                 return;
             }
-            mNextMode = 2;
+            mNextMode = COMMAND_MODE_MAP;
             OpenNextMode(0);
             CreateCursorModel(mCommandMap);
             mCockpitWindow->Reset(-1);
@@ -1325,13 +1325,13 @@ void BattleCommand::Update() {
         case 46:
             Draw();
             PollModeClosed();
-            if (mMode != 0) {
+            if (mMode != COMMAND_MODE_NONE) {
                 return;
             }
             if (!SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 return;
             }
-            mNextMode = 2;
+            mNextMode = COMMAND_MODE_MAP;
             OpenNextMode(0);
             CreateCursorModel(mCommandMap);
             func_ov007_02246a84(mCommandMap, 2);
@@ -1383,38 +1383,38 @@ void BattleCommand::Update() {
             return;
         case 52:
             PollModeClosed();
-            if (mMode == 0) {
+            if (mMode == COMMAND_MODE_NONE) {
                 SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
                 mState = 0x39;
-                mUnk_134 = 1;
+                mUnk_134 = COMMAND_RESULT_SHOOT;
             }
             Draw();
             return;
         case 53:
             PollModeClosed();
-            if (mMode == 0) {
-                mUnk_134 = 3;
+            if (mMode == COMMAND_MODE_NONE) {
+                mUnk_134 = COMMAND_RESULT_SHOOT_FROM_MSG;
                 mState = 0x39;
             }
             Draw();
             return;
         case 54:
             PollModeClosed();
-            if (mMode == 0) {
+            if (mMode == COMMAND_MODE_NONE) {
                 SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
-                mUnk_134 = 2;
+                mUnk_134 = COMMAND_RESULT_NEXT_TURN;
                 mState = 0x39;
             }
             Draw();
             return;
         case 55:
             SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
-            mUnk_134 = 5;
+            mUnk_134 = COMMAND_RESULT_BATTLE_RESULT;
             mState = 0x39;
             return;
         case 56:
             SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
-            mUnk_134 = 6;
+            mUnk_134 = COMMAND_RESULT_NO_MARKERS;
             mState = 0x39;
             return;
         case 57:
@@ -1445,18 +1445,18 @@ BOOL BattleCommand::UpdateCommandWindowAndCursor(BOOL input) {
             result   = TRUE;
             if (mSelectedId == 3) {
                 switch (mMode) {
-                    case 2:
-                        mNextMode = 3;
+                    case COMMAND_MODE_MAP:
+                        mNextMode = COMMAND_MODE_PAGE;
                         break;
-                    case 3:
+                    case COMMAND_MODE_PAGE:
                         if (data_020d433c.mBattlePlayers->mUnitHandles[mCursorX][mCursorY] > 0) {
-                            mNextMode = 4;
+                            mNextMode = COMMAND_MODE_LIST;
                         } else {
-                            mNextMode = 2;
+                            mNextMode = COMMAND_MODE_MAP;
                         }
                         break;
-                    case 4:
-                        mNextMode = 2;
+                    case COMMAND_MODE_LIST:
+                        mNextMode = COMMAND_MODE_MAP;
                         break;
                 }
                 CloseMode(1);
@@ -1471,7 +1471,7 @@ BOOL BattleCommand::UpdateCommandWindowAndCursor(BOOL input) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     list->mUnk_28b         = a;
     list->mUnk_28c         = b;
-    if (mMode == 2) {
+    if (mMode == COMMAND_MODE_MAP) {
         func_ov007_022470e4(mCommandMap, mCursorX, mCursorY);
     }
     QueueFrameCallback(ApplyScrollOffset, this);
@@ -1481,14 +1481,14 @@ BOOL BattleCommand::UpdateCommandWindowAndCursor(BOOL input) {
 BOOL BattleCommand::SwitchMode() {
     BOOL result = FALSE;
     PollModeClosed();
-    if (mMode == 0) {
+    if (mMode == COMMAND_MODE_NONE) {
         OpenNextMode(1);
         switch (mMode) {
-            case 2:
+            case COMMAND_MODE_MAP:
                 CreateCursorModel(mCommandMap);
                 func_ov007_02246a84(mCommandMap, 2);
                 break;
-            case 3: {
+            case COMMAND_MODE_PAGE: {
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
                 s8 cell                = list->mMarkerHandles[mCursorX][mCursorY];
                 if (cell > 0) {
@@ -1504,7 +1504,7 @@ BOOL BattleCommand::SwitchMode() {
                 }
                 break;
             }
-            case 4: {
+            case COMMAND_MODE_LIST: {
                 BattleCellInfo *a = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY);
                 u16 sum           = a->mUnk_04 + GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mUnk_06;
                 u8 c              = GetUnitRecordAt(data_020d433c.mBattlePlayers, mCursorX, mCursorY)->mAttribute;
@@ -1538,8 +1538,8 @@ BOOL BattleCommand::UpdatePrompt() {
             break;
         case 2:
             PollModeClosed();
-            if (mMode == 0) {
-                mNextMode = 3;
+            if (mMode == COMMAND_MODE_NONE) {
+                mNextMode = COMMAND_MODE_PAGE;
                 OpenNextMode(0);
                 mCommandPrompt                = new BattleCommandPrompt(5, mCommandPage, 0, 0, (u8) (mSelectedId - 6));
                 mContext->mRequest = 0;
@@ -1552,8 +1552,8 @@ BOOL BattleCommand::UpdatePrompt() {
             break;
         case 4:
             PollModeClosed();
-            if (mMode == 0) {
-                mNextMode = 4;
+            if (mMode == COMMAND_MODE_NONE) {
+                mNextMode = COMMAND_MODE_LIST;
                 OpenNextMode(0);
                 mCommandPrompt                = new BattleCommandPrompt(6, mCommandList, 0, 0, (u8) (mSelectedId - 6));
                 mContext->mRequest = 0;
@@ -1566,8 +1566,8 @@ BOOL BattleCommand::UpdatePrompt() {
             break;
         case 6:
             PollModeClosed();
-            if (mMode == 0) {
-                mNextMode = 3;
+            if (mMode == COMMAND_MODE_NONE) {
+                mNextMode = COMMAND_MODE_PAGE;
                 OpenNextMode(0);
                 mCommandPrompt                = new BattleCommandPrompt(7, mCommandPage, 0, 0, (u8) (mSelectedId - 6));
                 mContext->mRequest = 0;
@@ -1605,10 +1605,10 @@ BOOL BattleCommand::UpdatePrompt() {
             break;
         case 8:
             PollModeClosed();
-            if (mMode == 0) {
+            if (mMode == COMMAND_MODE_NONE) {
                 mPromptWindow->mState = 4;
                 mPromptWindow->mSlideInRequested = 0;
-                mNextMode         = 2;
+                mNextMode         = COMMAND_MODE_MAP;
                 OpenNextMode(0);
                 CreateCursorModel(mCommandMap);
                 func_ov007_02246a84(mCommandMap, 2);
@@ -2091,7 +2091,7 @@ void BattleCommand::UpdateCursorScrollAndCamera(u32 flag) {
             mUnk_129 = 0;
         }
     }
-    if (mMode == 2) {
+    if (mMode == COMMAND_MODE_MAP) {
         if (InputManager::Get().IsDown(0x200)) {
             if (InputManager::Get().IsPressed(0x100)) {
                 func_ov007_02246a84(mCommandMap, 2);
@@ -2119,9 +2119,9 @@ BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 x, u8 y);
 
 void BattleCommand::RefreshCommandPageOrList() {
     switch (mMode) {
-        case 2:
+        case COMMAND_MODE_MAP:
             return;
-        case 3: {
+        case COMMAND_MODE_PAGE: {
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
             s8 cell                = list->mMarkerHandles[mCursorX][mCursorY];
             u8 owner               = list->mUnk_2a9;
@@ -2139,7 +2139,7 @@ void BattleCommand::RefreshCommandPageOrList() {
             }
             break;
         }
-        case 4: {
+        case COMMAND_MODE_LIST: {
             BattlePlayerList *list;
             u8 b;
             u8 a;
@@ -2169,18 +2169,18 @@ void BattleCommand::RefreshCommandPageOrList() {
 
 void BattleCommand::CloseMode(BOOL flag) {
     switch (mMode) {
-        case 2:
+        case COMMAND_MODE_MAP:
             if (flag) {
                 CloseCommandMap(mCommandMap);
             } else {
                 CloseCommandMapNow(mCommandMap);
             }
             break;
-        case 3:
+        case COMMAND_MODE_PAGE:
             CloseCommandPage(mCommandPage, 1);
             mCommandPage = 0;
             break;
-        case 4:
+        case COMMAND_MODE_LIST:
             CloseCommandList(mCommandList);
             mCommandList = 0;
             break;
@@ -2194,18 +2194,18 @@ void BattleCommand::CloseMode(BOOL flag) {
         SpriteManager::sFade[0]       = FADE_MODE_HOLD;
         SpriteManager::sBrightness[0] = -16;
     }
-    mMode                = 1;
+    mMode                = COMMAND_MODE_CLOSING;
     mContext->mRequest = 0;
 }
 
 void BattleCommand::PollModeClosed() {
-    if (mMode != 1) {
+    if (mMode != COMMAND_MODE_CLOSING) {
         return;
     }
     SceneContext *context = mContext;
     if (context->mRequest != 0) {
         context->mRequest = 0;
-        mMode            = 0;
+        mMode            = COMMAND_MODE_NONE;
     }
 }
 
@@ -2213,28 +2213,28 @@ void BattleCommand::PollModeClosed() {
 // commands, 6..9 the player markers.
 
 void BattleCommand::OpenNextMode(u32 flag) {
-    if (mMode != 0) {
+    if (mMode != COMMAND_MODE_NONE) {
         return;
     }
     InitCommandMainScreen(this, 0);
     switch (mNextMode) {
-        case 2:
+        case COMMAND_MODE_MAP:
             mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
             mCommandMap->Init();
             SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
             break;
-        case 3:
+        case COMMAND_MODE_PAGE:
             mCommandPage = new BattleCommandPage(0, -1);
             func_0205562c(mCommandPage, 1);
             CreateCommandPageWindow(mCommandPage, 0x18000, 0xe, 0xc0, 0x14, 0xe0, 0x14, 0);
             break;
-        case 4:
+        case COMMAND_MODE_LIST:
             mCommandList = new BattleCommandList(0, 0, 0, flag);
             CreateCommandListWindow(mCommandList, 0x18000, 0xe, 0xc0, 0x14, 0xe0, 0x14, 0);
             break;
     }
     mMode     = mNextMode;
-    mNextMode = 0;
+    mNextMode = COMMAND_MODE_NONE;
 }
 
 // Marks the cells of the battle grid that exist on the current field (data_020d433c.mUnk_95 is the field type).

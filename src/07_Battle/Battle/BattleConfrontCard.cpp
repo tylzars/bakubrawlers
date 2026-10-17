@@ -1081,44 +1081,44 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             mData->func_ov007_0223e1a4(0, 0xff);
             switch (kind) {
                 case 1:
-                    mBattleMode = 0;
+                    mBattleMode = BATTLE_MODE_CONFRONT_BG01;
                     break;
                 case 2:
-                    mBattleMode = 3;
+                    mBattleMode = BATTLE_MODE_CONFRONT_BG04;
                     break;
                 case 3:
-                    mBattleMode = 1;
+                    mBattleMode = BATTLE_MODE_CONFRONT_BG02;
                     break;
                 case 4:
-                    mBattleMode = 2;
+                    mBattleMode = BATTLE_MODE_CONFRONT_03;
                     break;
                 case 5:
-                    mBattleMode = 4;
+                    mBattleMode = BATTLE_MODE_CONFRONT_BG05;
                     break;
                 case 6:
-                    mBattleMode = 5;
+                    mBattleMode = BATTLE_MODE_CONFRONT_BG06;
                     break;
                 case 8:
                     mData->func_ov007_0223e180();
                     break;
             }
             switch (mBattleMode) {
-                case 0:
+                case BATTLE_MODE_CONFRONT_BG01:
                     mConfront = new ConfrontBg01();
                     break;
-                case 1:
+                case BATTLE_MODE_CONFRONT_BG02:
                     mConfront = new ConfrontBg02();
                     break;
-                case 2:
+                case BATTLE_MODE_CONFRONT_03:
                     mConfront = new Confront03();
                     break;
-                case 3:
+                case BATTLE_MODE_CONFRONT_BG04:
                     mConfront = new ConfrontBg04();
                     break;
-                case 4:
+                case BATTLE_MODE_CONFRONT_BG05:
                     mConfront = new ConfrontBg05();
                     break;
-                case 5:
+                case BATTLE_MODE_CONFRONT_BG06:
                     mConfront = new ConfrontBg06();
                     break;
             }

@@ -806,9 +806,9 @@ BOOL BattleHud::StartObject(u8 side, s16 x, s16 y, u8 flag) {
     }
     angle = BattleRand32(0xffff);
     motion = 0;
-    if (flag == 5) {
+    if (flag == BATTLE_MODE_CONFRONT_BG06) {
         motion = 1;
-    } else if (flag == 7) {
+    } else if (flag == BATTLE_MODE_SPECTATOR) {
         motion = 2;
     }
     i = 0;

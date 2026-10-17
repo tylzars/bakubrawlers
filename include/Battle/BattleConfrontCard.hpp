@@ -60,7 +60,7 @@ public:
     /* 12 */ u16 mUnk_12;
     /* 14 */ s16 mDrawX[3];
     /* 1a */ s16 mDrawY[3];
-    /* 20 */ u8 mBattleMode;
+    /* 20 */ u8 mBattleMode; // BATTLE_MODE_* (BattleBase.hpp)
     /* 21 */ s8 mUnk_21;
     /* 22 */ u8 mUnk_22;
     /* 23 */ u8 mUnk_23;

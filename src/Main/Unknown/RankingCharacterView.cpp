@@ -37,11 +37,11 @@ static inline void SetModelPos(UnkStruct_ModelPos *model, fx32 x, fx32 y, fx32 z
 
 RankingCharacterView::RankingCharacterView(u8 unk1, u16 unk2, u32 unk3, u32 unk4) :
     SceneBase(0x3e8, 0) {
-    mMyroomBgModel = NULL;
+    mMyroombgModel = NULL;
     mCamera = NULL;
     mLights = NULL;
     mCharacterModel = NULL;
-    mStoryCharaNames = NULL;
+    mStoryCharaNameMessages = NULL;
     mModelX = 0;
     mState = 0;
     mKind = unk4;
@@ -64,7 +64,7 @@ RankingCharacterView::RankingCharacterView(u8 unk1, u16 unk2, u32 unk3, u32 unk4
 
 RankingCharacterView::~RankingCharacterView() {
     CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
-    ModelInstance *instance = mMyroomBgModel;
+    ModelInstance *instance = mMyroombgModel;
     if (instance != NULL) {
         instance->mOwnFlags = 0xf;
         delete instance;
@@ -97,8 +97,8 @@ RankingCharacterView::~RankingCharacterView() {
         }
         j++;
     } while (j < 10);
-    if (mStoryCharaNames != NULL) {
-        OS_Free(mStoryCharaNames);
+    if (mStoryCharaNameMessages != NULL) {
+        OS_Free(mStoryCharaNameMessages);
     }
     ClearNameText();
     if (mTextBuffer != NULL) {
@@ -197,20 +197,20 @@ void RankingCharacterView::Load() {
     mCamera->SetClip(0x1000, 0x1388000);
     mCamera->SetFov(0x2aaa);
     mCamera->SetPosition(0x14000, 0x5a000, 0x96000);
-    CameraManager::Get().mActive = 0;
+    CameraManager::Get().mCameraIndex = 0;
     CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
     CameraManager &manager = CameraManager::Get();
-    Camera *camera         = manager.mCameras[manager.mActive];
+    Camera *camera         = manager.mCameras[manager.mCameraIndex];
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
     MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
-    manager.mProjection[manager.mActive] = data_02211374.mProjection;
-    manager.mView[manager.mActive]       = data_02211374.mView;
-    manager.mMtxA[manager.mActive]       = *func_02032710();
-    manager.mMtxB[manager.mActive]       = *func_02032604();
-    manager.mMtxC[manager.mActive]       = *func_020323b8();
+    manager.mProjection[manager.mCameraIndex] = data_02211374.mProjection;
+    manager.mView[manager.mCameraIndex]       = data_02211374.mView;
+    manager.mMtxA[manager.mCameraIndex]       = *func_02032710();
+    manager.mMtxB[manager.mCameraIndex]       = *func_02032604();
+    manager.mMtxC[manager.mCameraIndex]       = *func_020323b8();
     mLights = new ModelLightGroup(data_020a3004);
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
     screen.SetObjVramMode(1);
@@ -244,7 +244,7 @@ void RankingCharacterView::Load() {
         mDigitCellAnims[i]->SetAnimation(0);
     }
     ChangeDir("/");
-    mStoryCharaNames = (MessageFile *) LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
+    mStoryCharaNameMessages = (MessageFile *) LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
     TextManager::Get();
     mTextBufferSize = 0x400;
     TextManager::Get();
@@ -260,7 +260,7 @@ void RankingCharacterView::Load() {
     NitroTexture *texture = new NitroTexture("myroombg.nsbtx");
     model->Load("myroombg.nsbmd", texture);
     texture->FreeFile();
-    mMyroomBgModel = model->CreateInstance(NULL);
+    mMyroombgModel = model->CreateInstance(NULL);
     ChangeDir("/");
     CreateCharacterModel(mCharacterId);
     ChangeDir("/");
@@ -274,8 +274,8 @@ void RankingCharacterView::Draw() {
     VecFx32 offset  = data_020a2fe4;
     MTX_SetTranslation43(&mtx, &offset);
     MTX_Concat43(&mtx, camera, &mtx);
-    mMyroomBgModel->AdvanceAnim();
-    mMyroomBgModel->Draw(&mtx, &pos);
+    mMyroombgModel->AdvanceAnim();
+    mMyroombgModel->Draw(&mtx, &pos);
     mCharacterModel->Draw();
 }
 
@@ -346,7 +346,7 @@ void RankingCharacterView::PrintName() {
         width  = 0;
         height = 0;
         u32 kind          = mCharacterId;
-        MessageFile *file = mStoryCharaNames;
+        MessageFile *file = mStoryCharaNameMessages;
         text.Print(file->GetText(kind), file->GetLength(kind), mTextBuffer, 0x10, 2, &height, &width, 0, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
     }
     TextManager::Get().mUse4bppFont = 0;

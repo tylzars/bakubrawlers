@@ -22,10 +22,10 @@ public:
     /* 24 */ CellAnimation *mCellsB[5];
     /* 38 */ CharacterIcons *mObj38;
     /* 3c */ ScriptPlayer *mEvent;
-    /* 40 */ SelectWindow *mMenu;
+    /* 40 */ SelectWindow *mMenuWindow;
     /* 44 */ SelectWindow *mWindow;
     /* 48 */ MessageFile *mMessages[4];
-    /* 58 */ MessageWindow *mMessage;
+    /* 58 */ MessageWindow *mMessageWindow;
     /* 5c */ void *mTextBuffers[4];
     /* 6c */ void *mGlyphBuffers[4];
     /* 7c */ u32 mTextBufferSizes[4];

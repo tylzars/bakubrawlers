@@ -75,7 +75,7 @@ TournamentSubScene::TournamentSubScene() :
     mRanking         = NULL;
     mCharacterView         = NULL;
     mMessages       = NULL;
-    mMessage         = NULL;
+    mMessageWindow         = NULL;
     mCharacterIcons         = NULL;
     mResult         = 0;
     mTextLineCount         = 0;
@@ -120,7 +120,7 @@ TournamentSubScene::~TournamentSubScene() {
     if (mGlyphBuffer != NULL) {
         OS_Free(mGlyphBuffer);
     }
-    delete mMessage;
+    delete mMessageWindow;
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     MI_CpuClearFast((void *) 0x6200000, 0x20000);
     SpriteManager::Get().ResetSlots();
@@ -284,10 +284,10 @@ void TournamentSubScene::Init() {
     TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x14, 0xe, 0x21);
     TextManager::Get().SetColor(1, 0, 0xf);
     SetupProfile();
-    mMessage = new MessageWindow("mes_tornament", 1, 0xc000);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
-    mMessage->StartMessage(6, 0, 1);
+    mMessageWindow = new MessageWindow("mes_tornament", 1, 0xc000);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(6, 0, 1);
     ChangeDir("/");
 }
 
@@ -315,7 +315,7 @@ void TournamentSubScene::DrawSubScreen() {
     window->mCellPos[2].y = y;
     mCharacterIcons->DrawIcons();
     mWindow->Draw();
-    mMessage->Update();
+    mMessageWindow->Update();
 }
 
 

@@ -32,7 +32,7 @@ public:
     /* 38 */ void *mGlyphBuffer;
     /* 3c */ u32 mTextBufferSize;
     /* 40 */ u32 mGlyphCount;
-    /* 44 */ MessageWindow *mMessage;
+    /* 44 */ MessageWindow *mMessageWindow;
     /* 48 */ CharacterIcons *mCharacterIcons;
     /* 4c */ s32 mResult;
     /* 50 */ u8 mTextLineCount;

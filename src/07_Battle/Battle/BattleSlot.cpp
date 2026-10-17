@@ -70,7 +70,7 @@ extern const u8 gCharacterCardDelayRandomRanges[];
 
 BattleSlot::BattleSlot(BattleData *data, u8 index, u8 mode, u8 unk4, u8 unk5, u8 unk6, BattleParam *param, u8 unk8) {
     mMode = mode;
-    mCharacter = unk4;
+    mCharacterId = unk4;
     mStartTimer = 0;
     mUnk_07 = unk8;
     mIntervalFrames = 0;
@@ -412,8 +412,8 @@ int BattleSlot::Update(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 n, u8 *d) {
 
 void BattleSlot::StartCardDelay(int sel) {
     if ((sel == 0 && mRole == 3) || (sel == 1 && mRole == 2)) {
-        mCardDelayTimer = gCharacterCardDelayFrameCounts[mCharacter * 12];
-        mCardDelayTimer += BattleRand32(gCharacterCardDelayRandomRanges[mCharacter * 12]);
+        mCardDelayTimer = gCharacterCardDelayFrameCounts[mCharacterId * 12];
+        mCardDelayTimer += BattleRand32(gCharacterCardDelayRandomRanges[mCharacterId * 12]);
     }
 }
 

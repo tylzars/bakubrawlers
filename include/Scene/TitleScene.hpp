@@ -34,7 +34,7 @@ public:
     /* d0 */ u8 mUnk_d0;
     /* d1 */ u8 mBlendAmplitude;
     /* d2 */ u8 mBlendAngle;
-    /* d3 */ u8 mWindowMode;
+    /* d3 */ u8 mPlaneBlendEnabled;
     /* d4 */ u8 mCursorStep;
     /* d5 */ u8 mSubBgIndex;
     /* d6 */ u8 mUnk_d6;
@@ -60,7 +60,7 @@ public:
     void DrawText();            // 02224a68
     void ClearText();           // 02224b14
     void SetMessage(u32 index); // 02224b34
-    void SetWindowMode(u8 mode); // 02224b78
+    void SetPlaneBlend(u8 enabled); // 02224b78
     void UpdateFade();           // 02224be0
     BOOL IsFadeDone(BOOL tick);  // 02224ca4
     void UploadSubBg(u32 index); // 02224ce0

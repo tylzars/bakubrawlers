@@ -12,7 +12,7 @@ struct MessageFile;
 class ArenaWindowScene : public SceneBase {
 public:
     /* 00 (base) */
-    /* 0c */ SelectWindow *mMenu;
+    /* 0c */ SelectWindow *mWindow;
     /* 10 */ MessageFile *mMessages;
     /* 14 */ void *mTextBuffer;
     /* 18 */ void *mGlyphBuffer;

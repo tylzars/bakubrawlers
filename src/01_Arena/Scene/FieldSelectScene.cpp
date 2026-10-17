@@ -173,7 +173,7 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     mWindows[1] = NULL;
     mWindows[2] = NULL;
     mWindows[3] = NULL;
-    mMessage = NULL;
+    mMessageWindow = NULL;
     mPanel[0] = NULL;
     mPanel[1] = NULL;
     mMessages = NULL;
@@ -181,7 +181,7 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     mGlyphBuffer = NULL;
     mTextBufferSize = 0;
     mGlyphCount = 0;
-    mCharaNames = NULL;
+    mStoryCharaNameMessages = NULL;
     mNameGlyphBuffer = NULL;
     mNameBufferSize = 0;
     mNameGlyphCount = 0;
@@ -342,8 +342,8 @@ FieldSelectScene::~FieldSelectScene() {
     if (mTextBuffer != NULL) {
         OS_Free(mTextBuffer);
     }
-    if (mCharaNames != NULL) {
-        OS_Free(mCharaNames);
+    if (mStoryCharaNameMessages != NULL) {
+        OS_Free(mStoryCharaNameMessages);
     }
     if (mNameGlyphBuffer != NULL) {
         OS_Free(mNameGlyphBuffer);
@@ -365,8 +365,8 @@ FieldSelectScene::~FieldSelectScene() {
     if (mWindows[3] != NULL) {
         delete mWindows[3];
     }
-    if (mMessage != NULL) {
-        delete mMessage;
+    if (mMessageWindow != NULL) {
+        delete mMessageWindow;
     }
     CharacterIcons *panel0 = mPanel[0];
     if (panel0 != NULL) {
@@ -570,9 +570,9 @@ void FieldSelectScene::LoadGraphics() {
         mFiles[i][2] = LoadFile(name, 0, 0, 0, &mFileSizes[i][2], 0);
     }
     ChangeDir("/");
-    mMessage = new MessageWindow("mes_BattleArenaMenu", 1, 0x7000);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
+    mMessageWindow = new MessageWindow("mes_BattleArenaMenu", 1, 0x7000);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
     mWindow0ItemCount = 2;
     if (mLocalIsFirstSlot == 0) {
         mWindow0ItemCount--;
@@ -663,9 +663,9 @@ void FieldSelectScene::SetupPage() {
     switch (mPageKinds[mPage]) {
         case 0: {
             if (mLocalIsFirstSlot != 0) {
-                mMessage->StartMessage(0x13, 0, 1);
+                mMessageWindow->StartMessage(0x13, 0, 1);
             } else {
-                mMessage->StartMessage(4, 1, 1);
+                mMessageWindow->StartMessage(4, 1, 1);
             }
             mMain.mAnim->SetAnimation(6);
             if (mInputCount > 2) {
@@ -705,9 +705,9 @@ void FieldSelectScene::SetupPage() {
         }
         case 1: {
             if (mLocalIsFirstSlot != 0) {
-                mMessage->StartMessage(5, 0, 1);
+                mMessageWindow->StartMessage(5, 0, 1);
             } else {
-                mMessage->StartMessage(4, 1, 1);
+                mMessageWindow->StartMessage(4, 1, 1);
             }
             mMain.mAnim->SetAnimation(2);
             ChangeDir("/Game/Battle/Bg/");
@@ -776,7 +776,7 @@ void FieldSelectScene::SetupPage() {
             break;
         }
         case 2: {
-            mMessage->StartMessage(6, 0, 1);
+            mMessageWindow->StartMessage(6, 0, 1);
             mMain.mAnim->SetAnimation(3);
             ChangeDir("/Game/Battle/Bg/");
             LoadAndQueueUpload(1, 1, 0, "select_ch_b_bg_00_ncl.bin", 0, 0, 0);
@@ -892,9 +892,9 @@ void FieldSelectScene::SetupPage() {
         case 3: {
             mPlayerCount = data_020d433c.mPlayerCount;
             if (mLocalIsFirstSlot != 0) {
-                mMessage->StartMessage(0x11, 0, 1);
+                mMessageWindow->StartMessage(0x11, 0, 1);
             } else {
-                mMessage->StartMessage(4, 1, 1);
+                mMessageWindow->StartMessage(4, 1, 1);
             }
             mMain.mAnim->SetAnimation(4);
             ChangeDir("/Game/Battle/Obj/");
@@ -987,9 +987,9 @@ void FieldSelectScene::SetupPage() {
         case 4: {
             mPlayerCount = data_020d433c.mPlayerCount;
             if (mLocalIsFirstSlot != 0) {
-                mMessage->StartMessage(8, 0, 1);
+                mMessageWindow->StartMessage(8, 0, 1);
             } else {
-                mMessage->StartMessage(4, 1, 1);
+                mMessageWindow->StartMessage(4, 1, 1);
             }
             mMain.mAnim->SetAnimation(5);
             ChangeDir("/Game/Battle/Bg/");
@@ -1046,9 +1046,9 @@ void FieldSelectScene::SetupPage() {
         }
         case 5: {
             if (mLocalIsFirstSlot != 0) {
-                mMessage->StartMessage(0xc, 0, 1);
+                mMessageWindow->StartMessage(0xc, 0, 1);
             } else {
-                mMessage->StartMessage(4, 1, 1);
+                mMessageWindow->StartMessage(4, 1, 1);
             }
             mMain.mAnim->SetAnimation(1);
             if (mLocalIsFirstSlot != 0) {
@@ -2454,9 +2454,9 @@ void FieldSelectScene::SetWindowOpen(u32 slot, u32 value, u32 idx) {
                 break;
             default:
                 if (mLocalIsFirstSlot != 0 && mUnk_33c != 0) {
-                    mMessage->StartMessage(0xe, 0, 1);
+                    mMessageWindow->StartMessage(0xe, 0, 1);
                 } else {
-                    mMessage->StartMessage(0xf, 0, 1);
+                    mMessageWindow->StartMessage(0xf, 0, 1);
                 }
                 set     = 2;
                 count = 6;
@@ -2490,7 +2490,7 @@ void FieldSelectScene::SetWindowOpen(u32 slot, u32 value, u32 idx) {
         }
         mWindows[1] = NULL;
         if (mPageKinds[mPage] == 2) {
-            mMessage->StartMessage(6, 0, 1);
+            mMessageWindow->StartMessage(6, 0, 1);
         }
         if (mPageKinds[mPage] == 4) {
             ClearTextBuffer();
@@ -2522,7 +2522,7 @@ s16 FieldSelectScene::GetFieldItemY(u32 idx) {
 
 void FieldSelectScene::Draw() {
     if (mMessageEnabled != 0) {
-        mMessage->Update();
+        mMessageWindow->Update();
     }
     if (mMain.mVisible != 0) {
         mMain.mAnim->Update();
@@ -2792,7 +2792,7 @@ void FieldSelectScene::ClearTextBuffer() {
 void FieldSelectScene::LoadNameText() {
     SpriteManager::Get().Screen(0).SetObjVramMode(3);
     ChangeDir("/");
-    mCharaNames = (MessageFile *) LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
+    mStoryCharaNameMessages = (MessageFile *) LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
     mNameBufferSize = TextManager::Get().BufferSize(0x20, 2);
     for (u8 i = 0; i < 4; i++) {
         mNameBuffers[i] = OS_Alloc(mNameBufferSize);
@@ -2832,7 +2832,7 @@ void FieldSelectScene::PrintSlotName(u8 slot) {
         s16 width;
         width             = 0;
         height            = 0;
-        MessageFile *file = mCharaNames;
+        MessageFile *file = mStoryCharaNameMessages;
         text.Print(file->GetText(id), file->GetLength(id), mNameBuffers[slot], 0x20, 2, &height, &width, 0, 0, 2, 0x21, 0xe, 0, 0, 0, 1,
                    1);
     }

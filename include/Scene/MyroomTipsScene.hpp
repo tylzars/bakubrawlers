@@ -19,7 +19,7 @@ public:
     /* 0c */ MessageFile *mMessages;
     /* 10 */ void *mTextBuffers[4];
     /* 20 */ void *mGlyphBuffer;
-    /* 24 */ MessageWindow *mMessage;
+    /* 24 */ MessageWindow *mMessageWindow;
     /* 28 */ SelectWindow *mWindowA;
     /* 2c */ SelectWindow *mWindowB;
     /* 30 */ ScriptPlayer *mEvent;

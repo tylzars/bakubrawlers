@@ -105,10 +105,10 @@ MyroomScene::MyroomScene() :
     mGlyphCount     = 0;
     mCellAnim       = NULL;
     MI_CpuClear8(&mContext->mInfo, sizeof(SceneInfo));
-    mMenus[0] = NULL;
-    mMenus[1] = NULL;
-    mMenus[2] = NULL;
-    mMessage  = NULL;
+    mWindows[0] = NULL;
+    mWindows[1] = NULL;
+    mWindows[2] = NULL;
+    mMessageWindow  = NULL;
     data_020d433c.mUnk_14_1 = 0;
     FrameTask::Get().StartChannel(0, 0x13);
 }
@@ -132,14 +132,14 @@ void MyroomScene::Cleanup() {
         OS_Free(mGlyphBuffer);
         mGlyphBuffer = NULL;
     }
-    delete mMenus[0];
-    mMenus[0] = NULL;
-    delete mMenus[1];
-    mMenus[1] = NULL;
-    delete mMenus[2];
-    mMenus[2] = NULL;
-    delete mMessage;
-    mMessage = NULL;
+    delete mWindows[0];
+    mWindows[0] = NULL;
+    delete mWindows[1];
+    mWindows[1] = NULL;
+    delete mWindows[2];
+    mWindows[2] = NULL;
+    delete mMessageWindow;
+    mMessageWindow = NULL;
     CellAnimation *cell = mCellAnim;
     if (cell != NULL) {
         delete cell;
@@ -162,11 +162,11 @@ void MyroomScene::Update() {
                 return;
             }
             mEvent->func_0206ef4c("mes_rm_button", 0, 0xa, 0, 0x15);
-            if (mMenus[0] != NULL) {
-                mMenus[0]->Reset(-1);
-                mMenus[0]->mCursor->mSelection = -1;
-                mMenus[0]->mCursor->mSelection = *(s8 *) &ctx->mInfo.mUnk_06;
-                mMenus[0]->mCells[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(sMyroomMenu0SelectedAnimIndices[(s8) ctx->mInfo.mUnk_06]);
+            if (mWindows[0] != NULL) {
+                mWindows[0]->Reset(-1);
+                mWindows[0]->mCursor->mSelection = -1;
+                mWindows[0]->mCursor->mSelection = *(s8 *) &ctx->mInfo.mUnk_06;
+                mWindows[0]->mCells[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(sMyroomMenu0SelectedAnimIndices[(s8) ctx->mInfo.mUnk_06]);
             }
             PrintStatus();
             ctx->mInfo.mState++;
@@ -192,13 +192,13 @@ void MyroomScene::Update() {
         case 3:
             switch (ctx->mInfo.mMenuResult) {
                 case 0:
-                    mMenus[0]->Draw();
+                    mWindows[0]->Draw();
                     break;
                 case 1:
-                    mMenus[1]->Draw();
+                    mWindows[1]->Draw();
                     break;
                 case 2:
-                    mMenus[2]->Draw();
+                    mWindows[2]->Draw();
                     break;
             }
             DrawText();
@@ -342,7 +342,7 @@ void MyroomScene::Update() {
                 ctx->mInfo.mState++;
             } else {
                 ctx->mInfo.mState = 0x11;
-                mMenus[0]->Draw();
+                mWindows[0]->Draw();
                 DrawText();
             }
             break;
@@ -354,11 +354,11 @@ void MyroomScene::Update() {
         case 17:
             SpriteManager::Get().StartFade(3);
             ctx->mInfo.mState++;
-            mMenus[0]->Draw();
+            mWindows[0]->Draw();
             DrawText();
             break;
         case 18:
-            mMenus[0]->Draw();
+            mWindows[0]->Draw();
             DrawText();
             if (SpriteManager::Get().IsFading()) {
                 return;
@@ -437,18 +437,18 @@ void MyroomScene::LoadGraphics() {
     if (ctx->mInfo.mMenuResult == 1) {
         selection1 = (s8) ctx->mInfo.mUnk_06;
     }
-    mMenus[1] = new SelectWindow(5, sMyroomMenu1Items, selection1);
-    mMenus[1]->SetCells(5, sMyroomMenu1Cells);
-    mMenus[1]->mCursor->mSelection = -1;
-    mMenus[1]->mCursor->mSelection = selection1;
+    mWindows[1] = new SelectWindow(5, sMyroomMenu1Items, selection1);
+    mWindows[1]->SetCells(5, sMyroomMenu1Cells);
+    mWindows[1]->mCursor->mSelection = -1;
+    mWindows[1]->mCursor->mSelection = selection1;
     s32 selection2                 = 0;
     if (ctx->mInfo.mMenuResult == 2) {
         selection2 = (s8) ctx->mInfo.mUnk_06;
     }
-    mMenus[2] = new SelectWindow(5, sMyroomMenu2Items, selection2);
-    mMenus[2]->SetCells(5, sMyroomMenu2Cells);
-    mMenus[2]->mCursor->mSelection = -1;
-    mMenus[2]->mCursor->mSelection = selection2;
+    mWindows[2] = new SelectWindow(5, sMyroomMenu2Items, selection2);
+    mWindows[2]->SetCells(5, sMyroomMenu2Cells);
+    mWindows[2]->mCursor->mSelection = -1;
+    mWindows[2]->mCursor->mSelection = selection2;
     SwitchPage(mContext->mInfo.mMenuResult);
 }
 
@@ -470,25 +470,25 @@ void MyroomScene::SwitchPage(u8 page) {
     }
     switch (ctx->mInfo.mMenuResult) {
         case 0:
-            delete mMenus[0];
-            mMenus[0] = new SelectWindow(8, sMyroomMenu0Items, (s8) ctx->mInfo.mUnk_06);
-            mMenus[0]->SetCells(8, sMyroomMenu0Cells);
-            mMenus[0]->mCursor->mSelection = -1;
+            delete mWindows[0];
+            mWindows[0] = new SelectWindow(8, sMyroomMenu0Items, (s8) ctx->mInfo.mUnk_06);
+            mWindows[0]->SetCells(8, sMyroomMenu0Cells);
+            mWindows[0]->mCursor->mSelection = -1;
             ctx->mInfo.mPrevSelection      = 0;
             break;
         case 1:
-            delete mMenus[1];
-            mMenus[1] = new SelectWindow(5, sMyroomMenu1Items, -1);
-            mMenus[1]->SetCells(5, sMyroomMenu1Cells);
-            mMenus[1]->mCursor->mSelection = -1;
-            mMenus[1]->mCursor->mSelection = *(s8 *) &ctx->mInfo.mUnk_06;
+            delete mWindows[1];
+            mWindows[1] = new SelectWindow(5, sMyroomMenu1Items, -1);
+            mWindows[1]->SetCells(5, sMyroomMenu1Cells);
+            mWindows[1]->mCursor->mSelection = -1;
+            mWindows[1]->mCursor->mSelection = *(s8 *) &ctx->mInfo.mUnk_06;
             break;
         case 2:
-            delete mMenus[2];
-            mMenus[2] = new SelectWindow(5, sMyroomMenu2Items, -1);
-            mMenus[2]->SetCells(5, sMyroomMenu2Cells);
-            mMenus[2]->mCursor->mSelection = -1;
-            mMenus[2]->mCursor->mSelection = *(s8 *) &ctx->mInfo.mUnk_06;
+            delete mWindows[2];
+            mWindows[2] = new SelectWindow(5, sMyroomMenu2Items, -1);
+            mWindows[2]->SetCells(5, sMyroomMenu2Cells);
+            mWindows[2]->mCursor->mSelection = -1;
+            mWindows[2]->mCursor->mSelection = *(s8 *) &ctx->mInfo.mUnk_06;
             break;
     }
     RefreshCellLayout();
@@ -504,18 +504,18 @@ void MyroomScene::UpdateMenu() {
     switch (ctx->mInfo.mMenuResult) {
         case 0:
             first  = 6;
-            window = mMenus[0];
+            window = mWindows[0];
             last   = 7;
             count  = 5;
             break;
         case 1:
             count  = 3;
-            window = mMenus[1];
+            window = mWindows[1];
             last   = 2;
             break;
         case 2:
             count  = 3;
-            window = mMenus[2];
+            window = mWindows[2];
             last   = 2;
             break;
     }
@@ -644,7 +644,7 @@ void MyroomScene::StartScroll() {
     if (ctx->mInfo.mMenuResult != 0) {
         return;
     }
-    SelectWindow *window = mMenus[0];
+    SelectWindow *window = mWindows[0];
     u8 i;
     WindowItem *items = window->mCursor->mItems;
     for (i = 0; i < 5; i++) {
@@ -688,18 +688,18 @@ void MyroomScene::HandleWindowResult() {
                     ctx->mInfo.mState = 0xf;
                     break;
                 case 1:
-                    if (mMenus[1]->mCells[3]->mFinished == 0) {
+                    if (mWindows[1]->mCells[3]->mFinished == 0) {
                         return;
                     }
                     SwitchPage(0);
-                    mMenus[1]->Reset(0);
+                    mWindows[1]->Reset(0);
                     break;
                 case 2:
-                    if (mMenus[2]->mCells[3]->mFinished == 0) {
+                    if (mWindows[2]->mCells[3]->mFinished == 0) {
                         return;
                     }
                     SwitchPage(0);
-                    mMenus[2]->Reset(0);
+                    mWindows[2]->Reset(0);
                     break;
             }
             break;
@@ -716,7 +716,7 @@ void MyroomScene::HandleWindowResult() {
                             ctx->mInfo.mUnk_06 = 0;
                             ctx->mInfo.mUnk_0a = 0;
                             SwitchPage(1);
-                            mMenus[1]->mCells[4]->ResetAnimation();
+                            mWindows[1]->mCells[4]->ResetAnimation();
                             break;
                         case 1:
                             ctx->mInfo.mState = 0xc;
@@ -733,7 +733,7 @@ void MyroomScene::HandleWindowResult() {
                             ctx->mInfo.mUnk_06 = 0;
                             ctx->mInfo.mUnk_0a = 0;
                             SwitchPage(2);
-                            mMenus[2]->mCells[4]->ResetAnimation();
+                            mWindows[2]->mCells[4]->ResetAnimation();
                             break;
                         case 5:
                             ctx->mInfo.mState = 0xf;
@@ -755,11 +755,11 @@ void MyroomScene::HandleWindowResult() {
                             ctx->mInfo.mState  = 6;
                             break;
                         case 3:
-                            if (mMenus[1]->mCells[3]->mFinished == 0) {
+                            if (mWindows[1]->mCells[3]->mFinished == 0) {
                                 return;
                             }
                             SwitchPage(0);
-                            mMenus[1]->Reset(0);
+                            mWindows[1]->Reset(0);
                             break;
                     }
                     break;
@@ -778,11 +778,11 @@ void MyroomScene::HandleWindowResult() {
                             ctx->mInfo.mState  = 6;
                             break;
                         case 3:
-                            if (mMenus[2]->mCells[3]->mFinished == 0) {
+                            if (mWindows[2]->mCells[3]->mFinished == 0) {
                                 return;
                             }
                             SwitchPage(0);
-                            mMenus[2]->Reset(0);
+                            mWindows[2]->Reset(0);
                             break;
                     }
                     break;
@@ -809,7 +809,7 @@ BOOL MyroomScene::UpdateScroll() {
     }
     switch (ctx->mInfo.mMenuResult) {
         case 0:
-            window = mMenus[0];
+            window = mWindows[0];
             break;
         default:
             return FALSE;
@@ -862,7 +862,7 @@ void MyroomScene::RefreshCellLayout() {
     if (ctx->mInfo.mMenuResult != 0) {
         return;
     }
-    SelectWindow *window  = mMenus[0];
+    SelectWindow *window  = mWindows[0];
     WindowItem *items     = window->mCursor->mItems;
     for (u8 i = 0; i < 5; i++) {
         Vec2s pos = window->mCellPos[i];
@@ -925,18 +925,18 @@ void MyroomScene::SetupText() {
     mGlyphBuffer = OS_Alloc(mGlyphCount * 0xc);
     TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x20, 2, 0x21);
     TextManager::Get().SetColor(1, 0, 0xf);
-    mMessage = new MessageWindow("mes_myroom", 1, 0x1800);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
+    mMessageWindow = new MessageWindow("mes_myroom", 1, 0x1800);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
     switch (mContext->mInfo.mMenuResult) {
         case 0:
-            mMessage->StartMessage(0x24, 0, 1);
+            mMessageWindow->StartMessage(0x24, 0, 1);
             break;
         case 1:
-            mMessage->StartMessage(0x25, 0, 1);
+            mMessageWindow->StartMessage(0x25, 0, 1);
             break;
         case 2:
-            mMessage->StartMessage(0x26, 0, 1);
+            mMessageWindow->StartMessage(0x26, 0, 1);
             break;
     }
 }
@@ -946,13 +946,13 @@ void MyroomScene::func_ov008_0221d2c0() {
     SceneContext *ctx = mContext;
     switch (ctx->mInfo.mMenuResult) {
         case 0:
-            mMessage->StartMessage(0x24, 0, 1);
+            mMessageWindow->StartMessage(0x24, 0, 1);
             break;
         case 1:
-            mMessage->StartMessage(0x25, 0, 1);
+            mMessageWindow->StartMessage(0x25, 0, 1);
             break;
         case 2:
-            mMessage->StartMessage(0x26, 0, 1);
+            mMessageWindow->StartMessage(0x26, 0, 1);
             break;
     }
     PrintStatus();
@@ -970,14 +970,14 @@ void MyroomScene::DrawText() {
                                                      (s16) (0x80 - ((u32) ctx->mInfo.mUnk_00 >> 1)), 0x90, 0, 0x60,
                                                      0xf, 0);
     }
-    if (mMessage != NULL) {
-        mMessage->Update();
+    if (mMessageWindow != NULL) {
+        mMessageWindow->Update();
     }
 }
 
 void MyroomScene::ClearMessageBuffer() {
-    if (mMessage != NULL) {
-        mMessage->ClearBuffer();
+    if (mMessageWindow != NULL) {
+        mMessageWindow->ClearBuffer();
     }
 }
 

@@ -15,7 +15,7 @@ CharacterIcons::CharacterIcons(u32 unk1, u32 unk2, s32 unk3) {
     mPalette = unk2;
     mScreen = unk3 % 2;
     for (u8 i = 0; i < 4; i++) {
-        mSlots[i].mCharacter = -1;
+        mSlots[i].mCharacterId = -1;
         mSlots[i].mAnim      = NULL;
         mSlots[i].mX         = 0;
         mSlots[i].mY         = 0;
@@ -38,20 +38,20 @@ void CharacterIcons::SetCharacter(u32 slot, s32 character, u32 unk3, u32 unk4) {
     if (slot >= 4) {
         return;
     }
-    if (character == mSlots[slot].mCharacter) {
+    if (character == mSlots[slot].mCharacterId) {
         return;
     }
-    mSlots[slot].mCharacter = character;
-    if (mSlots[slot].mCharacter < 0) {
+    mSlots[slot].mCharacterId = character;
+    if (mSlots[slot].mCharacterId < 0) {
         mSlots[slot].mVisible = 0;
         return;
     }
-    u8 number = mSlots[slot].mCharacter + 1;
+    u8 number = mSlots[slot].mCharacterId + 1;
     ChangeDir("/Game/Character/Icon/");
     SpriteScreen &screen = SpriteManager::Get().Screen(mScreen);
     u32 offset           = mVram + slot * 0x200;
     u8 palette           = mPalette + slot;
-    if (mSlots[slot].mCharacter != 0x15) {
+    if (mSlots[slot].mCharacterId != 0x15) {
         sprintf(path, "icon_ch_%02d.nce_ncg1D.bin", number);
         screen.LoadCharacters(path, offset, 0);
         sprintf(path, "icon_ch_%02d_ncl.bin", number);

@@ -17,8 +17,8 @@ public:
     /* 04 */ SoundEntry *mSeqArcTable;
     /* 08 */ u8 mArchive[0x94]; // archive state (NNSSndArc)
     /* 9c */ u32 mHeap;
-    /* a0 */ u32 mSeqHandle; // sound handle
-    /* a4 */ u32 mSeqArcHandle; // sound handle
+    /* a0 */ u32 mSeqSndHandle; // sound handle
+    /* a4 */ u32 mSeqArcSndHandle; // sound handle
     /* a8 */ s32 mSeqIndex;
     /* ac */ u8 mSeqArcPlayerIndex;
     /* ad */ u8 mSeqArcVolume;

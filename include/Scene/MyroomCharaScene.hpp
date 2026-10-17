@@ -27,7 +27,7 @@ public:
     /* 24 */ CellAnimation *mCells[2];
     /* 2c */ CellAnimation *mCell;
     /* 30 */ u32 mResult;
-    /* 34 */ MessageFile *mNames;
+    /* 34 */ MessageFile *mStoryCharaNameMessages;
     /* 38 */ MessageFile *mMessages;
     /* 3c */ void *mTextBuffers[7];
     /* 58 */ void *mGlyphBuffer;
@@ -38,7 +38,7 @@ public:
     /* 81 */ u8 mPageCount;
     /* 82 */ u8 mList[17];
     /* 93 */ u8 mListCount;
-    /* 94 */ MessageWindow *mMessage;
+    /* 94 */ MessageWindow *mMessageWindow;
     /* 98 */
 
     MyroomCharaScene(); // 0x02223594

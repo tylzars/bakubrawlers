@@ -18,13 +18,13 @@ class RankingCharacterView : public SceneBase {
 public:
     /* 0c */ CellAnimation *mRankingCellAnims[4];
     /* 1c */ CellAnimation *mDigitCellAnims[10];
-    /* 44 */ ModelInstance *mMyroomBgModel;
+    /* 44 */ ModelInstance *mMyroombgModel;
     /* 48 */ Camera *mCamera;
     /* 4c */ ModelLightGroup *mLights;
     // UnkStruct_0205401c, not a CharacterModel: holds a CharacterModel for id 0x15, a StoryCharacterModel otherwise
     // (Model.hpp:54-55)
     /* 50 */ UnkStruct_0205401c *mCharacterModel;
-    /* 54 */ MessageFile *mStoryCharaNames;
+    /* 54 */ MessageFile *mStoryCharaNameMessages;
     /* 58 */ u8 mCharacterId;
     /* 59 */ u8 mUnk_59;
     /* 5a */ u16 mRank;

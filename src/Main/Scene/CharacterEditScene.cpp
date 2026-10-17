@@ -186,7 +186,7 @@ CharacterEditScene::CharacterEditScene(u32 unk) :
     mStep  = 0;
     mStepFrames  = 0;
     mMessages = NULL;
-    mMessage = NULL;
+    mMessageWindow = NULL;
     mRotateState = 0;
     mChoicesVisible = 0;
     mCutRoomModel = NULL;
@@ -197,7 +197,7 @@ CharacterEditScene::CharacterEditScene(u32 unk) :
     GXS_SetVisiblePlane(0);
     for (u8 i = 0; i < 6; i++) {
         mTextBuffers[i]    = NULL;
-        mTexts[i].mActive  = 0;
+        mTexts[i].mVisible  = 0;
         mTexts[i].mItemIndex  = -1;
     }
     mTextGlyphBuffer = NULL;
@@ -257,8 +257,8 @@ CharacterEditScene::~CharacterEditScene() {
     }
     delete mCursor;
     ResetTexts();
-    if (mMessage != NULL) {
-        delete mMessage;
+    if (mMessageWindow != NULL) {
+        delete mMessageWindow;
     }
     for (u8 i = 0; i < 6; i++) {
         if (mTextBuffers[i] != NULL) {
@@ -314,19 +314,19 @@ CharacterEditScene::~CharacterEditScene() {
 void CharacterEditScene::ResetTexts() {
     u8 i = 0;
     do {
-        mTexts[i].mActive = 0;
+        mTexts[i].mVisible = 0;
         mTexts[i].mItemIndex = -1;
         MI_CpuClear16(mTextBuffers[i], mTextBufferSize);
         i++;
     } while (i < 6);
     MI_CpuClear16(mWindowTextBuffer, mWindowTextBufferSize);
     mWindowTextVisible = 0;
-    mMessage->ClearBuffer();
+    mMessageWindow->ClearBuffer();
 }
 
 void CharacterEditScene::SetText(u32 slot, u32 message, u32 value) {
     if (slot == 0) {
-        mMessage->StartMessage(message, 0, 1);
+        mMessageWindow->StartMessage(message, 0, 1);
     } else {
         TextManager &text = TextManager::Get();
         s16 a;
@@ -343,7 +343,7 @@ void CharacterEditScene::SetText(u32 slot, u32 message, u32 value) {
                       mTextBufferSize, 0);
     }
     mTexts[slot].mItemIndex = value;
-    mTexts[slot].mActive = 1;
+    mTexts[slot].mVisible = 1;
 }
 
 void CharacterEditScene::DrawTexts() {
@@ -353,9 +353,9 @@ void CharacterEditScene::DrawTexts() {
     WindowItem *items = mWindows[0]->mCursor->mItems;
     u8 i = 0;
     do {
-        if (mTexts[i].mActive != 0) {
+        if (mTexts[i].mVisible != 0) {
             if (i == 0) {
-                mMessage->Update();
+                mMessageWindow->Update();
             } else {
                 Vec2s pos = mWindows[0]->mCellPos[(u8) items[mTexts[i].mItemIndex].mId];
                 s32 y = pos.y;
@@ -433,17 +433,17 @@ void CharacterEditScene::UpdateRootMenu() {
         }
         {
             CameraManager &manager = CameraManager::Get();
-            Camera *camera = manager.mCameras[manager.mActive];
+            Camera *camera = manager.mCameras[manager.mCameraIndex];
             data_02211374.mCameraPosition = camera->mPosition;
             data_02211374.mCameraUp = camera->mUp;
             data_02211374.mCameraTarget = camera->mTarget;
             MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
             data_02211374.mFlags &= ~0xe8;
-            manager.mProjection[manager.mActive] = data_02211374.mProjection;
-            manager.mView[manager.mActive] = data_02211374.mView;
-            manager.mMtxA[manager.mActive] = *func_02032710();
-            manager.mMtxB[manager.mActive] = *func_02032604();
-            manager.mMtxC[manager.mActive] = *func_020323b8();
+            manager.mProjection[manager.mCameraIndex] = data_02211374.mProjection;
+            manager.mView[manager.mCameraIndex] = data_02211374.mView;
+            manager.mMtxA[manager.mCameraIndex] = *func_02032710();
+            manager.mMtxB[manager.mCameraIndex] = *func_02032604();
+            manager.mMtxC[manager.mCameraIndex] = *func_020323b8();
         }
         ResetTexts();
         SetText(0, 2, 0);
@@ -841,17 +841,17 @@ void CharacterEditScene::func_0205e958() {
         fx32 tgtY = FxRound(sCameraPositionTargets[1][4] * 0x1000);
         mCamera->SetTarget(FxRound(sCameraPositionTargets[1][3] * 0x1000), tgtY, tgtZ);
         CameraManager &manager = CameraManager::Get();
-        Camera *camera = manager.mCameras[manager.mActive];
+        Camera *camera = manager.mCameras[manager.mCameraIndex];
         data_02211374.mCameraPosition = camera->mPosition;
         data_02211374.mCameraUp = camera->mUp;
         data_02211374.mCameraTarget = camera->mTarget;
         MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
         data_02211374.mFlags &= ~0xe8;
-        manager.mProjection[manager.mActive] = data_02211374.mProjection;
-        manager.mView[manager.mActive] = data_02211374.mView;
-        manager.mMtxA[manager.mActive] = *func_02032710();
-        manager.mMtxB[manager.mActive] = *func_02032604();
-        manager.mMtxC[manager.mActive] = *func_020323b8();
+        manager.mProjection[manager.mCameraIndex] = data_02211374.mProjection;
+        manager.mView[manager.mCameraIndex] = data_02211374.mView;
+        manager.mMtxA[manager.mCameraIndex] = *func_02032710();
+        manager.mMtxB[manager.mCameraIndex] = *func_02032604();
+        manager.mMtxC[manager.mCameraIndex] = *func_020323b8();
         ResetTexts();
         SetText(0, 0xf, 0);
         switch (mFixedItem) {
@@ -1375,17 +1375,17 @@ void CharacterEditScene::UpdateTopEdit() {
         mCamera->SetPosition(FxRound(sCameraPositionTargets[2][0] * 0x1000), FxRound(sCameraPositionTargets[2][1] * 0x1000), FxRound(sCameraPositionTargets[2][2] * 0x1000));
         mCamera->SetTarget(FxRound(sCameraPositionTargets[2][3] * 0x1000), FxRound(sCameraPositionTargets[2][4] * 0x1000), FxRound(sCameraPositionTargets[2][5] * 0x1000));
         CameraManager &manager = CameraManager::Get();
-        Camera *camera = manager.mCameras[manager.mActive];
+        Camera *camera = manager.mCameras[manager.mCameraIndex];
         data_02211374.mCameraPosition = camera->mPosition;
         data_02211374.mCameraUp = camera->mUp;
         data_02211374.mCameraTarget = camera->mTarget;
         MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
         data_02211374.mFlags &= ~0xe8;
-        manager.mProjection[manager.mActive] = data_02211374.mProjection;
-        manager.mView[manager.mActive] = data_02211374.mView;
-        manager.mMtxA[manager.mActive] = *func_02032710();
-        manager.mMtxB[manager.mActive] = *func_02032604();
-        manager.mMtxC[manager.mActive] = *func_020323b8();
+        manager.mProjection[manager.mCameraIndex] = data_02211374.mProjection;
+        manager.mView[manager.mCameraIndex] = data_02211374.mView;
+        manager.mMtxA[manager.mCameraIndex] = *func_02032710();
+        manager.mMtxB[manager.mCameraIndex] = *func_02032604();
+        manager.mMtxC[manager.mCameraIndex] = *func_020323b8();
         ResetTexts();
         SetText(0, 0x10, 0);
         if (mFixedItem == 0) {
@@ -1473,17 +1473,17 @@ void CharacterEditScene::func_020604e8() {
         mCamera->SetPosition(FxRound(sCameraPositionTargets[3][0] * 0x1000), FxRound(sCameraPositionTargets[3][1] * 0x1000), FxRound(sCameraPositionTargets[3][2] * 0x1000));
         mCamera->SetTarget(FxRound(sCameraPositionTargets[3][3] * 0x1000), FxRound(sCameraPositionTargets[3][4] * 0x1000), FxRound(sCameraPositionTargets[3][5] * 0x1000));
         CameraManager &manager = CameraManager::Get();
-        Camera *camera = manager.mCameras[manager.mActive];
+        Camera *camera = manager.mCameras[manager.mCameraIndex];
         data_02211374.mCameraPosition = camera->mPosition;
         data_02211374.mCameraUp = camera->mUp;
         data_02211374.mCameraTarget = camera->mTarget;
         MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
         data_02211374.mFlags &= ~0xe8;
-        manager.mProjection[manager.mActive] = data_02211374.mProjection;
-        manager.mView[manager.mActive] = data_02211374.mView;
-        manager.mMtxA[manager.mActive] = *func_02032710();
-        manager.mMtxB[manager.mActive] = *func_02032604();
-        manager.mMtxC[manager.mActive] = *func_020323b8();
+        manager.mProjection[manager.mCameraIndex] = data_02211374.mProjection;
+        manager.mView[manager.mCameraIndex] = data_02211374.mView;
+        manager.mMtxA[manager.mCameraIndex] = *func_02032710();
+        manager.mMtxB[manager.mCameraIndex] = *func_02032604();
+        manager.mMtxC[manager.mCameraIndex] = *func_020323b8();
         ResetTexts();
         SetText(0, 0x11, 0);
         switch (mFixedItem) {
@@ -1770,17 +1770,17 @@ void CharacterEditScene::func_020612cc() {
         cam->SetPosition(FxRound(sCameraPositionTargets[0][0] * 0x1000), posY, posZ);
         mCamera->SetTarget(FxRound(sCameraPositionTargets[0][3] * 0x1000), FxRound(sCameraPositionTargets[0][4] * 0x1000), FxRound(sCameraPositionTargets[0][5] * 0x1000));
         CameraManager &manager = CameraManager::Get();
-        Camera *camera = manager.mCameras[manager.mActive];
+        Camera *camera = manager.mCameras[manager.mCameraIndex];
         data_02211374.mCameraPosition = camera->mPosition;
         data_02211374.mCameraUp = camera->mUp;
         data_02211374.mCameraTarget = camera->mTarget;
         MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
         data_02211374.mFlags &= ~0xe8;
-        manager.mProjection[manager.mActive] = data_02211374.mProjection;
-        manager.mView[manager.mActive] = data_02211374.mView;
-        manager.mMtxA[manager.mActive] = *func_02032710();
-        manager.mMtxB[manager.mActive] = *func_02032604();
-        manager.mMtxC[manager.mActive] = *func_020323b8();
+        manager.mProjection[manager.mCameraIndex] = data_02211374.mProjection;
+        manager.mView[manager.mCameraIndex] = data_02211374.mView;
+        manager.mMtxA[manager.mCameraIndex] = *func_02032710();
+        manager.mMtxB[manager.mCameraIndex] = *func_02032604();
+        manager.mMtxC[manager.mCameraIndex] = *func_020323b8();
         ResetTexts();
         SetText(0, 3, 0);
         mStep = 0x54;
@@ -1994,20 +1994,20 @@ void CharacterEditScene::func_02061c3c() {
     Camera *cam = mCamera;
     cam->SetPosition(FxRound(sCameraPositionTargets[0][0] * 0x1000), posY, posZ);
     mCamera->SetTarget(FxRound(sCameraPositionTargets[0][3] * 0x1000), FxRound(sCameraPositionTargets[0][4] * 0x1000), FxRound(sCameraPositionTargets[0][5] * 0x1000));
-    CameraManager::Get().mActive = 0;
+    CameraManager::Get().mCameraIndex = 0;
     CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
     CameraManager &manager = CameraManager::Get();
-    Camera *camera = manager.mCameras[manager.mActive];
+    Camera *camera = manager.mCameras[manager.mCameraIndex];
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp = camera->mUp;
     data_02211374.mCameraTarget = camera->mTarget;
     MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
-    manager.mProjection[manager.mActive] = data_02211374.mProjection;
-    manager.mView[manager.mActive] = data_02211374.mView;
-    manager.mMtxA[manager.mActive] = *func_02032710();
-    manager.mMtxB[manager.mActive] = *func_02032604();
-    manager.mMtxC[manager.mActive] = *func_020323b8();
+    manager.mProjection[manager.mCameraIndex] = data_02211374.mProjection;
+    manager.mView[manager.mCameraIndex] = data_02211374.mView;
+    manager.mMtxA[manager.mCameraIndex] = *func_02032710();
+    manager.mMtxB[manager.mCameraIndex] = *func_02032604();
+    manager.mMtxC[manager.mCameraIndex] = *func_020323b8();
 }
 
 void CharacterEditScene::LoadGraphics() {
@@ -2106,10 +2106,10 @@ void CharacterEditScene::LoadGraphics() {
     TextManager::Get().Init(mTextGlyphBuffer, 1, 0, 0x20, 2, 0x21);
     TextManager::Get().Init(mWindowGlyphBuffer, 1, 0, 0x18, 8, 0x21);
     TextManager::Get().SetColor(1, 0, 0xf);
-    mMessage = new MessageWindow("mes_chara_edit", 1, 0);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
-    mMessage->StartMessage(0, 0, 1);
+    mMessageWindow = new MessageWindow("mes_chara_edit", 1, 0);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(0, 0, 1);
     ResetTexts();
     ChangeDir("/Story/Map/");
     NitroTexture *texture = new NitroTexture("cut_room.nsbtx");

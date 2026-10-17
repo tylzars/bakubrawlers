@@ -36,7 +36,7 @@ public:
     /* 28 */ OrderItem mB[3];
     /* 4c */ OrderItem mC[8];
     /* ac */ CharacterIcons *mIcons;
-    /* b0 */ MessageWindow *mMessage;
+    /* b0 */ MessageWindow *mMessageWindow;
     /* b4 */ s8 mCharacterIds[4];
     /* b8 */ u8 mItemTaken[4];
     /* bc */ u8 mItemOrder[4];
@@ -68,7 +68,7 @@ public:
 BattleOrderSelect::BattleOrderSelect()
     : SceneBase(0x3e8, 0) {
     mIcons   = 0;
-    mMessage = 0;
+    mMessageWindow = 0;
     mState   = 0;
     mTimer   = 0;
     u8 n     = data_020d433c.mPlayerCount;
@@ -138,8 +138,8 @@ BattleOrderSelect::~BattleOrderSelect() {
     if (mIcons) {
         delete mIcons;
     }
-    if (mMessage) {
-        delete mMessage;
+    if (mMessageWindow) {
+        delete mMessageWindow;
     }
 }
 
@@ -167,7 +167,7 @@ void BattleOrderSelect::Update() {
         case 3:
             mTimer++;
             if (mTimer >= 0x1e) {
-                mMessage->StartMessage(0x1d, 0, 1);
+                mMessageWindow->StartMessage(0x1d, 0, 1);
                 mState++;
             }
             SetBgSlide(mTimer);
@@ -381,9 +381,9 @@ void BattleOrderSelect::LoadGraphics() {
         mIcons->SetVisible(i, 0);
         i++;
     } while (i < mCount);
-    mMessage = new MessageWindow("mes_Command", 1, 0x10000);
-    mMessage->func_02065bd4(0x14, 4, 1);
-    mMessage->SetWidth(0xd8);
+    mMessageWindow = new MessageWindow("mes_Command", 1, 0x10000);
+    mMessageWindow->func_02065bd4(0x14, 4, 1);
+    mMessageWindow->SetWidth(0xd8);
     AntennaIndicator *unk = data_020d433c.mUnk_10;
     if (unk) {
         unk->SetupLayout(6);
@@ -452,7 +452,7 @@ BOOL BattleOrderSelect::UpdateTouchSelection() {
         return 1;
     }
     if (hit) {
-        mMessage->StartMessage(0x1e, 1, 1);
+        mMessageWindow->StartMessage(0x1e, 1, 1);
     }
     return 0;
 }
@@ -519,7 +519,7 @@ void BattleOrderSelect::Draw() {
         }
         i++;
     } while (i < mCount);
-    mMessage->Update();
+    mMessageWindow->Update();
     mIcons->DrawIcons();
 }
 

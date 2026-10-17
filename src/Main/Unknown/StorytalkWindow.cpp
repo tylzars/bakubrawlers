@@ -10,7 +10,7 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-void InitStorytalkText(StorytalkWindow *self);
+void LoadStorytalkText(StorytalkWindow *self);
 
 void ResetStorytalkMessageText(StorytalkWindow *self);
 
@@ -29,7 +29,7 @@ void DrawStorytalkCells0And2(StorytalkWindow *self);
 StorytalkWindow::StorytalkWindow() :
     SceneBase(0x3e8, 0) {
     mMessages = NULL;
-    mStoryCharaNames = NULL;
+    mStoryCharaNameMessages = NULL;
     mState = 0;
     mUnk_31 = 0;
     mMessageIndex = -1;
@@ -61,8 +61,8 @@ StorytalkWindow::~StorytalkWindow() {
     if (mMessages != NULL) {
         OS_Free(mMessages);
     }
-    if (mStoryCharaNames != NULL) {
-        OS_Free(mStoryCharaNames);
+    if (mStoryCharaNameMessages != NULL) {
+        OS_Free(mStoryCharaNameMessages);
     }
     for (u8 i = 0; i < 2; i++) {
         if (mTextBuffers[i] != NULL) {
@@ -80,7 +80,7 @@ void StorytalkWindow::Update() {
     }
     switch (mState) {
         case 0:
-            InitStorytalkText(this);
+            LoadStorytalkText(this);
             LoadGraphics();
             mState++;
             break;
@@ -141,7 +141,7 @@ extern const s8 data_020a41c8[];
 
 
 void ReplaceStorytalkMessages(StorytalkWindow *self, void *data);
-void InitStorytalkText(StorytalkWindow *self);
+void LoadStorytalkText(StorytalkWindow *self);
 void ResetStorytalkMessageText(StorytalkWindow *self);
 void SetStorytalkMessageIndex(StorytalkWindow *self, s32 unk1);
 void SetStorytalkCharacter(StorytalkWindow *self, s32 unk1);
@@ -175,9 +175,9 @@ void StorytalkWindow::LoadMessageFile(const char *path) {
     mMessages = LoadFile(path, 0, 0, 0, 0, 0);
 }
 
-void InitStorytalkText(StorytalkWindow *self) {
+void LoadStorytalkText(StorytalkWindow *self) {
     ChangeDir("/");
-    self->mStoryCharaNames = LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
+    self->mStoryCharaNameMessages = LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
     SpriteManager::Get().Screen(0).SetObjVramMode(3);
     self->mTextBufferSizes[0] = TextManager::Get().BufferSize(0x18, 8);
     self->mTextBuffers[0] = OS_Alloc(self->mTextBufferSizes[0]);
@@ -339,7 +339,7 @@ void PrintStorytalkText(StorytalkWindow *self) {
         x = 0;
         y = 0;
 
-        MessageFile *file = (MessageFile *) self->mStoryCharaNames;
+        MessageFile *file = (MessageFile *) self->mStoryCharaNameMessages;
         u16 index         = self->mCharacterId;
         text.Print(
 file->GetText(index), file->GetLength(index), self->mTextBuffers[1], 0x20, 2, &y, &x, NULL, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);

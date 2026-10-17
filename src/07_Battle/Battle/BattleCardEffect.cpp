@@ -67,7 +67,7 @@ void BattleCardEffect::Update() {
             if (mSetNextScene == 0) {
                 mFinished = 1;
             } else {
-                mContext->mList->mHead->mRequest->mNextScene = 1;
+                mContext->mList->mHead->mRequest->mRequest = 1;
                 mFinished = 1;
             }
             break;
@@ -121,7 +121,7 @@ int BattleCardEffect::UpdateAnimation() {
     CameraMode modeB = (CameraMode) camB.mMode;
     CameraMode modeA = (CameraMode) camA.mMode;
     if ((modeB == CAMERA_MODE_2) | (modeA == CAMERA_MODE_3)) {
-        if (CameraManager::Get().mActive != 0) {
+        if (CameraManager::Get().mCameraIndex != 0) {
             return 0;
         }
     }

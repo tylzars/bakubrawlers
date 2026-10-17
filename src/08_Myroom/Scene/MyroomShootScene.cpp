@@ -78,7 +78,7 @@ MyroomShootScene::MyroomShootScene() :
     mShooter     = NULL;
     mRoom        = NULL;
     mMessages    = NULL;
-    mMessage     = NULL;
+    mMessageWindow     = NULL;
     mWindow      = NULL;
     mResult      = 0;
     mEffect      = 0;
@@ -139,7 +139,7 @@ MyroomShootScene::~MyroomShootScene() {
             OS_Free(mGlyphBuffers[i]);
         }
     }
-    delete mMessage;
+    delete mMessageWindow;
     if (data_020d433c.mEffects != NULL) {
         data_020d433c.mEffects->mFinished = 1;
         data_020d433c.mEffects            = NULL;
@@ -227,20 +227,20 @@ void MyroomShootScene::Init() {
     mCamera->SetClip(0x1000, 0x1388000);
     mCamera->SetFov(0x2aaa);
     mCamera->SetPosition(0x14000, 0x5a000, 0x96000);
-    CameraManager::Get().mActive = 0;
+    CameraManager::Get().mCameraIndex = 0;
     CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
     CameraManager &manager = CameraManager::Get();
-    Camera *camera    = manager.mCameras[manager.mActive];
+    Camera *camera    = manager.mCameras[manager.mCameraIndex];
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
     MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
-    manager.mProjection[manager.mActive] = data_02211374.mProjection;
-    manager.mView[manager.mActive]       = data_02211374.mView;
-    manager.mMtxA[manager.mActive]       = *func_02032710();
-    manager.mMtxB[manager.mActive]       = *func_02032604();
-    manager.mMtxC[manager.mActive]       = *func_020323b8();
+    manager.mProjection[manager.mCameraIndex] = data_02211374.mProjection;
+    manager.mView[manager.mCameraIndex]       = data_02211374.mView;
+    manager.mMtxA[manager.mCameraIndex]       = *func_02032710();
+    manager.mMtxB[manager.mCameraIndex]       = *func_02032604();
+    manager.mMtxC[manager.mCameraIndex]       = *func_020323b8();
     mLights = new ModelLightGroup(sMyroomShootLightData);
     ChangeDir("/Game/Myroom/");
     LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
@@ -306,10 +306,10 @@ void MyroomShootScene::Init() {
         TextManager::Get().Init(mGlyphBuffers[i], 0, 0, sMyroomShootTextDimensions[i][0], sMyroomShootTextDimensions[i][1], sMyroomShootTextUnitSizes[i]);
     }
     TextManager::Get().SetColor(0, 0, 0xf);
-    mMessage = new MessageWindow("mes_myroom", 1, 0x7000);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
-    mMessage->StartMessage(0x23, 0, 1);
+    mMessageWindow = new MessageWindow("mes_myroom", 1, 0x7000);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(0x23, 0, 1);
     PrintShooterText();
     ChangeDir("/");
 }
@@ -421,7 +421,7 @@ void MyroomShootScene::DrawSprites() {
 }
 
 void MyroomShootScene::DrawWindows() {
-    mMessage->Update();
+    mMessageWindow->Update();
     mWindow->Draw();
 }
 

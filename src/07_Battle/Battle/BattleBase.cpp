@@ -1039,7 +1039,7 @@ int BattleBase::func_ov007_0221c178(u16 *a, u16 *b, u16 *c, u8 *flag) {
             if (TouchManager::Get().IsPressedIn(data_ov007_02279174, data_ov007_0227917c, data_ov007_02279168,
                                                   data_ov007_02279164)) {
                 SoundManager::Get().StartSeqArc(0x31);
-                mHud->mShakeCount = 5;
+                mHud->mShakesRemaining = 5;
                 mUnk_55--;
                 if (mUnk_55 == 0) {
                     u8 other = mUnk_12 ^ 1;

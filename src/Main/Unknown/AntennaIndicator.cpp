@@ -44,11 +44,11 @@ void AntennaIndicator::Update() {
     CameraMode modeA = (CameraMode) camA.mMode;
     if ((modeB == CAMERA_MODE_2) | (modeA == CAMERA_MODE_3)) {
         if (gAntennaLayouts[mLayoutIndex].mScreen == 0) {
-            if (CameraManager::Get().mActive == 1) {
+            if (CameraManager::Get().mCameraIndex == 1) {
                 return;
             }
         } else {
-            if (CameraManager::Get().mActive == 0) {
+            if (CameraManager::Get().mCameraIndex == 0) {
                 return;
             }
         }

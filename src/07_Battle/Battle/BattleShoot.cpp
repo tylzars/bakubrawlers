@@ -109,7 +109,7 @@ public:
     /* 60b0 */ BattleShootMsg mMsgs[4];
     /* 6130 */ BattleTarget *mBattleTarget;
     /* 6134 */ SelectWindow *mWindow;
-    /* 6138 */ MessageWindow *mMessage;
+    /* 6138 */ MessageWindow *mMessageWindow;
     /* 613c */ void *mGlyphBuffer;
     /* 6140 */ u32 mGlyphCount;
     /* 6144 */ Camera *mCamera;
@@ -267,7 +267,7 @@ void BattleShoot::Init(Camera *unk1) {
     mCamera = unk1;
     mWindow = 0;
     mBattleTarget = 0;
-    mMessage = 0;
+    mMessageWindow = 0;
     mRotYAdjustPerFrame = 0x5b;
     mRotZAdjustPerFrame = 0xb6;
     mRotYAdjustFrames = 0;
@@ -326,8 +326,8 @@ BattleShoot::~BattleShoot() {
     if (mWindow) {
         delete mWindow;
     }
-    if (mMessage) {
-        delete mMessage;
+    if (mMessageWindow) {
+        delete mMessageWindow;
     }
     G2_BlendNone();
     G2S_BlendNone();
@@ -808,10 +808,10 @@ void BattleShoot::LoadGraphics() {
     mWindow->SetCells(1, sShootCells);
     mWindow->mCursor->mSelection = -1;
     mWindow->Update(1);
-    mMessage = new MessageWindow("mes_CardName", 1, 0x9000);
-    mMessage->func_02065bd4(0x20, 0xa2, 2);
-    mMessage->SetWidth(0xe0);
-    mMessage->StartMessage(0, 0, 1);
+    mMessageWindow = new MessageWindow("mes_CardName", 1, 0x9000);
+    mMessageWindow->func_02065bd4(0x20, 0xa2, 2);
+    mMessageWindow->SetWidth(0xe0);
+    mMessageWindow->StartMessage(0, 0, 1);
     if (data_020d433c.mUnk_10) {
         data_020d433c.mUnk_10->SetupLayout(9);
     }
@@ -1678,12 +1678,12 @@ void BattleShoot::func_ov007_0226f0e8(u8 kind, s32 x, s32 z) {
 }
 
 void BattleShoot::func_ov007_0226f378() {
-    if (mMessage) {
+    if (mMessageWindow) {
         u16 id = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mTurnPlayer]->mUnk_fa;
         if (mMessageId != id) {
             if (mMessageY == 0x80) {
                 mMessageId = id;
-                mMessage->StartMessage((s16) id, 0, 0);
+                mMessageWindow->StartMessage((s16) id, 0, 0);
                 mMessageTargetY = 0x60;
             } else if (mMessageY == 0x60) {
                 mMessageTargetY = 0x80;
@@ -1698,8 +1698,8 @@ void BattleShoot::func_ov007_0226f378() {
         }
         if (mMessageId != 0) {
             mCells[6].mAnim->Draw(1, 0x80, mMessageY, 2);
-            mMessage->func_02065bd4(0x20, (s16) (mMessageY + 0x42), 0);
-            mMessage->Update();
+            mMessageWindow->func_02065bd4(0x20, (s16) (mMessageY + 0x42), 0);
+            mMessageWindow->Update();
             mCells[5].mAnim->Draw(1, 0x80, mMessageY, 2);
         }
     }

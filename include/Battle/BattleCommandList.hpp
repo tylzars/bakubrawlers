@@ -30,10 +30,10 @@ public:
     /* 2c */ CellAnimFile *mCellFiles[4];
     /* 3c */ CellAnimation *mCells3c[7];
     /* 58 */ CellAnimation *mCells58[8];
-    /* 78 */ void *mBakuganMes;
-    /* 7c */ void *mBakuganDisplayMes;
-    /* 80 */ void *mBakuganNameMes;
-    /* 84 */ void *mResultMes;
+    /* 78 */ void *mBakuganMessages;
+    /* 7c */ void *mBakuganDisplayMessages;
+    /* 80 */ void *mBakuganNameMessages;
+    /* 84 */ void *mResultMessages;
     /* 88 */ ModelLightGroup *mLights;
     /* 8c */ SelectWindow *mWindow;
     /* 90 */ BakuganModel *mBakuganModel;
@@ -66,7 +66,7 @@ public:
     /* 15b */ u8 mUnk_15b;
     /* 15c */ u8 mUnk_15c;
     /* 15d */ u8 mVisible;
-    /* 15e */ u8 mClosing;
+    /* 15e */ u8 mCloseRequested;
     /* 15f */ u8 mUnk_15f;
     /* 160 */ u8 mUnk_160;
     /* 161 */ u8 mUnk_161;

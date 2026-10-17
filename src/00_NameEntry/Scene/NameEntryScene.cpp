@@ -62,7 +62,7 @@ NameEntryScene::NameEntryScene(u8 mode) :
     SceneBase(2, 0) {
     mCharTable = NULL;
     mMessages = NULL;
-    mMessage = NULL;
+    mMessageWindow = NULL;
     mTextBuffer = NULL;
     mGlyphBuffer = NULL;
     mTextBufferSize = 0;
@@ -115,7 +115,7 @@ NameEntryScene::~NameEntryScene() {
     if (mCellAnims[2] != NULL) {
         delete mCellAnims[2];
     }
-    delete mMessage;
+    delete mMessageWindow;
     if (mCharTable != NULL) {
         OS_Free(mCharTable);
         mCharTable = NULL;
@@ -650,10 +650,10 @@ void NameEntryScene::AddChar(s32 index) {
 void NameEntryScene::Load() {
     SpriteManager::Get().Screen(1).SetObjVramMode(3);
     ChangeDir("/font/");
-    mMessage = new MessageWindow("mes_name", 1, 0x3000);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
-    mMessage->StartMessage(0, 0, 1);
+    mMessageWindow = new MessageWindow("mes_name", 1, 0x3000);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(0, 0, 1);
     mCharTable = (MessageFile *) LoadFile("mes_Alphabet.mes", 0, 0, 0, 0, 0);
     mMessages = (MessageFile *) LoadFile("mes_name.mes", 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x18, 8);
@@ -714,15 +714,15 @@ void NameEntryScene::RenderName() {
 }
 
 void NameEntryScene::func_ov000_0221bc98() {
-    if (mMessage != NULL) {
-        mMessage->Update();
+    if (mMessageWindow != NULL) {
+        mMessageWindow->Update();
     }
     SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, 0x33, 0x1e, 0, 0x80, 0xe, 0);
 }
 
 void NameEntryScene::ClearTextBuffer() {
-    if (mMessage != NULL) {
-        mMessage->ClearBuffer();
+    if (mMessageWindow != NULL) {
+        mMessageWindow->ClearBuffer();
     }
     if (mTextBuffer != NULL) {
         MI_CpuClear16(mTextBuffer, mTextBufferSize);

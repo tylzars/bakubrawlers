@@ -17,7 +17,7 @@ struct OverlayInfo {
 // Fields of the scene context that the runner uses (the node's SceneInfo area).
 struct SceneRunnerContext {
     /* 00 */ PAD(0x00, 0x12);
-    /* 12 */ s16 mNextScene;
+    /* 12 */ s16 mRequest;
     /* 14 */ u8 mState;
 };
 
@@ -225,7 +225,7 @@ void SceneRunner::Update() {
             context->mState = 14;
             break;
         case 14:
-            mNextScene = context->mNextScene;
+            mNextScene = context->mRequest;
             if (mNextScene == 14) {
                 return;
             }

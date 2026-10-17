@@ -163,17 +163,17 @@ static inline void StartResult(BattleTarget *t, u32 kind) {
 // Copies the active camera into the 3D engine state and the camera manager's snapshot of it.
 static inline void SnapshotCamera() {
     CameraManager &manager        = CameraManager::Get();
-    Camera *camera                = manager.mCameras[manager.mActive];
+    Camera *camera                = manager.mCameras[manager.mCameraIndex];
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
     MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
-    manager.mProjection[manager.mActive] = data_02211374.mProjection;
-    manager.mView[manager.mActive]       = data_02211374.mView;
-    manager.mMtxA[manager.mActive]       = *func_02032710();
-    manager.mMtxB[manager.mActive]       = *func_02032604();
-    manager.mMtxC[manager.mActive]       = *func_020323b8();
+    manager.mProjection[manager.mCameraIndex] = data_02211374.mProjection;
+    manager.mView[manager.mCameraIndex]       = data_02211374.mView;
+    manager.mMtxA[manager.mCameraIndex]       = *func_02032710();
+    manager.mMtxB[manager.mCameraIndex]       = *func_02032604();
+    manager.mMtxC[manager.mCameraIndex]       = *func_020323b8();
 }
 
 // Bits 12-14 of the halfword at +2 of a record.
@@ -236,7 +236,7 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mPopupEnabled = 0;
     mUnk_1ec = 0;
     mCamera = camera;
-    CameraManager::Get().mActive = 0;
+    CameraManager::Get().mCameraIndex = 0;
     CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
     mUnk_118 = 0;
     mUnk_114 = 0;
@@ -791,7 +791,7 @@ void BattleTarget::Init() {
     mCamera->SetUp(0, 0x1000, 0);
     mCamera->SetClip(0x1000, 0x1388000);
     mCamera->SetFov(0x2aaa);
-    CameraManager::Get().mActive = 0;
+    CameraManager::Get().mCameraIndex = 0;
     CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
     SnapshotCamera();
     Camera *camera = mCamera;

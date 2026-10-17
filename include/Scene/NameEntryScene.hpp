@@ -16,7 +16,7 @@ public:
     /* 00 (base) */
     /* 0c */ MessageFile *mCharTable; // mes_Alphabet.mes
     /* 10 */ MessageFile *mMessages;  // mes_name.mes
-    /* 14 */ MessageWindow *mMessage;
+    /* 14 */ MessageWindow *mMessageWindow;
     /* 18 */ void *mTextBuffer;
     /* 1c */ void *mGlyphBuffer;
     /* 20 */ u32 mTextBufferSize;

@@ -51,7 +51,7 @@ public:
     /* 18 */ CellEntry mCells[9];
     /* 84 */ CellEntry mCells2[9];
     /* f0 */ SelectWindow *mWindows[4];
-    /* 100 */ MessageWindow *mMessage;
+    /* 100 */ MessageWindow *mMessageWindow;
     /* 104 */ CharacterIcons *mPanel[2];
     union {
         /* 10c */ u8 mUnk_10c[0x40];
@@ -75,7 +75,7 @@ public:
     /* 2fc */ void *mGlyphBuffer;
     /* 300 */ u32 mTextBufferSize;
     /* 304 */ u32 mGlyphCount;
-    /* 308 */ MessageFile *mCharaNames;
+    /* 308 */ MessageFile *mStoryCharaNameMessages;
     /* 30c */ void *mNameBuffers[4];
     /* 31c */ void *mNameGlyphBuffer;
     /* 320 */ u32 mNameBufferSize;

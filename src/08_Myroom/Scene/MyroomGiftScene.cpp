@@ -83,7 +83,7 @@ const WindowItemRecord sMyroomGiftWindowItems[14] = {
 MyroomGiftScene::MyroomGiftScene() :
     SceneBase(1000, 0) {
     mMessages = NULL;
-    mMessage  = NULL;
+    mMessageWindow  = NULL;
     mWindow   = NULL;
     mResult   = 0;
     mTextWidth   = 0;
@@ -107,7 +107,7 @@ MyroomGiftScene::MyroomGiftScene() :
 
 MyroomGiftScene::~MyroomGiftScene() {
     delete mWindow;
-    delete mMessage;
+    delete mMessageWindow;
     CellAnimation *cell = mCellAnim;
     if (cell != NULL) {
         delete cell;
@@ -270,10 +270,10 @@ void MyroomGiftScene::LoadGraphics() {
         TextManager::Get().Init(mGlyphBuffers[i], 0, 0, sMyroomGiftTextDimensions[i][0], sMyroomGiftTextDimensions[i][1], sMyroomGiftTextUnitSizes[i]);
     }
     TextManager::Get().SetColor(0, 0, 0xf);
-    mMessage = new MessageWindow("mes_myroom", 1, 0x6000);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
-    mMessage->StartMessage(0x22, 0, 1);
+    mMessageWindow = new MessageWindow("mes_myroom", 1, 0x6000);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(0x22, 0, 1);
     PrintEmblemText();
     ChangeDir("/");
 }
@@ -358,7 +358,7 @@ void MyroomGiftScene::DrawMainScreen() {
 }
 
 void MyroomGiftScene::DrawWindows() {
-    mMessage->Update();
+    mMessageWindow->Update();
     mWindow->Draw();
 }
 

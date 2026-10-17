@@ -121,17 +121,17 @@ static inline void ApplyRot(BakuganModel *obj, Rot16 *rot, u16 base);
 // Copies the active camera into the 3D engine state and the camera manager's snapshot of it.
 static inline void SnapshotCamera() {
     CameraManager &manager        = CameraManager::Get();
-    Camera *camera                = manager.mCameras[manager.mActive];
+    Camera *camera                = manager.mCameras[manager.mCameraIndex];
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
     MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
-    manager.mProjection[manager.mActive] = data_02211374.mProjection;
-    manager.mView[manager.mActive]       = data_02211374.mView;
-    manager.mMtxA[manager.mActive]       = *func_02032710();
-    manager.mMtxB[manager.mActive]       = *func_02032604();
-    manager.mMtxC[manager.mActive]       = *func_020323b8();
+    manager.mProjection[manager.mCameraIndex] = data_02211374.mProjection;
+    manager.mView[manager.mCameraIndex]       = data_02211374.mView;
+    manager.mMtxA[manager.mCameraIndex]       = *func_02032710();
+    manager.mMtxB[manager.mCameraIndex]       = *func_02032604();
+    manager.mMtxC[manager.mCameraIndex]       = *func_020323b8();
 }
 
 BattleCommandMap::BattleCommandMap(u8 unk)
@@ -154,15 +154,15 @@ BattleCommandMap::BattleCommandMap(u8 unk)
     mDirScale = 0;
     mUnk_142 = 0;
     mStopStepCount = 0;
-    mCamMoveTimer = 0;
+    mCameraMoveTimer = 0;
     mCameraDistance = 0;
     mPredictOffset = 0;
     MI_CpuClear32(mVelocity, 0xc);
     MI_CpuClear32(mLandingPosition, 0xc);
     MI_CpuClear32(mUnk_108, 0xc);
-    MI_CpuClear32(mCamEndTarget, 0xc);
-    MI_CpuClear32(mCamEndPosition, 0xc);
-    MI_CpuClear32(mCamMoveOffset, 0xc);
+    MI_CpuClear32(mCameraEndTarget, 0xc);
+    MI_CpuClear32(mCameraEndPosition, 0xc);
+    MI_CpuClear32(mCameraMoveOffset, 0xc);
     MI_CpuClear32(mPredictPositions, 0x60);
     u8 i = 0;
     do {
@@ -349,21 +349,21 @@ void BattleCommandMap::UpdateStartCamPath() {
 }
 
 void BattleCommandMap::UpdateCameraMove() {
-    if (mCamMoveTimer == 0) {
+    if (mCameraMoveTimer == 0) {
         return;
     }
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera) {
-        VecFx32 target = *(VecFx32 *) mCamEndTarget;
-        VecFx32 pos    = *(VecFx32 *) mCamEndPosition;
+        VecFx32 target = *(VecFx32 *) mCameraEndTarget;
+        VecFx32 pos    = *(VecFx32 *) mCameraEndPosition;
         VecFx32 delta;
-        mCamMoveTimer--;
-        if (mCamMoveTimer != 0) {
-            float t = (float) (u32) mCamMoveTimer / 30.0f;
+        mCameraMoveTimer--;
+        if (mCameraMoveTimer != 0) {
+            float t = (float) (u32) mCameraMoveTimer / 30.0f;
             float s = t * t;
-            delta.x = (fx32) (s * (float) (s32) mCamMoveOffset[0]);
-            delta.y = (fx32) (s * (float) (s32) mCamMoveOffset[1]);
-            delta.z = (fx32) (s * (float) (s32) mCamMoveOffset[2]);
+            delta.x = (fx32) (s * (float) (s32) mCameraMoveOffset[0]);
+            delta.y = (fx32) (s * (float) (s32) mCameraMoveOffset[1]);
+            delta.z = (fx32) (s * (float) (s32) mCameraMoveOffset[2]);
             VEC_Subtract(&target, &delta, &target);
             VEC_Subtract(&pos, &delta, &pos);
         }
@@ -524,7 +524,7 @@ void BattleCommandMap::func_ov007_02246450() {
     data_020d433c.mEffects->UpdateTagged(1);
     BOOL show = TRUE;
     if (CameraManager::Get().mMode == 2) {
-        if (CameraManager::Get().mActive != 0) {
+        if (CameraManager::Get().mCameraIndex != 0) {
             show = FALSE;
         }
     }
@@ -699,7 +699,7 @@ void func_ov007_02246a84(BattleCommandMap *map, u32 mode) {
             func_ov007_02246efc(map);
             break;
     }
-    CameraManager::Get().mActive = 0;
+    CameraManager::Get().mCameraIndex = 0;
     CameraManager::Get().SetCamerasAndRequestMode(1, camera, 0);
     SnapshotCamera();
     ComputeCameraDistance(map);
@@ -843,7 +843,7 @@ extern "C" void SetCursorCellAndMoveCamera(BattleCommandMap *map, u8 a, u8 b, u3
 }
 
 extern "C" void RotateCameraYaw(BattleCommandMap *map, u32 direction) {
-    if (map->mCamMoveTimer != 0) {
+    if (map->mCameraMoveTimer != 0) {
         return;
     }
     s32 delta = 0;
@@ -899,15 +899,15 @@ extern "C" void StartCameraMove(BattleCommandMap *map, VecFx32 *target, VecFx32 
     cur.x         = camera->mPosition.x;
     cur.y         = camera->mPosition.y;
     cur.z         = camera->mPosition.z;
-    map->mCamMoveTimer = frames;
-    *(VecFx32 *) map->mCamEndTarget = *target;
-    *(VecFx32 *) map->mCamEndPosition = *pos;
-    VEC_Subtract(pos, &cur, (VecFx32 *) map->mCamMoveOffset);
-    if (map->mCamMoveTimer != 0) {
+    map->mCameraMoveTimer = frames;
+    *(VecFx32 *) map->mCameraEndTarget = *target;
+    *(VecFx32 *) map->mCameraEndPosition = *pos;
+    VEC_Subtract(pos, &cur, (VecFx32 *) map->mCameraMoveOffset);
+    if (map->mCameraMoveTimer != 0) {
         return;
     }
-    camera->mTarget   = *(VecFx32 *) map->mCamEndTarget;
-    camera->mPosition = *(VecFx32 *) map->mCamEndPosition;
+    camera->mTarget   = *(VecFx32 *) map->mCameraEndTarget;
+    camera->mPosition = *(VecFx32 *) map->mCameraEndPosition;
 }
 
 extern "C" void ComputeCameraDistance(BattleCommandMap *map) {
@@ -1073,7 +1073,7 @@ extern "C" void func_ov007_02247a7c(BattleCommandMap *map) {
         a.z += 0x46000;
         camera->mPosition = a;
     }
-    CameraManager::Get().mActive = 0;
+    CameraManager::Get().mCameraIndex = 0;
     CameraManager::Get().SetCamerasAndRequestMode(1, camera, 0);
     SnapshotCamera();
 }
@@ -1129,7 +1129,7 @@ extern "C" void func_ov007_02247e00(BattleCommandMap *map) {
             camera->mPosition.z = 0x64000;
         }
     }
-    CameraManager::Get().mActive = 0;
+    CameraManager::Get().mCameraIndex = 0;
     CameraManager::Get().SetCamerasAndRequestMode(1, camera, 0);
     SnapshotCamera();
 }
@@ -1150,7 +1150,7 @@ extern "C" void func_ov007_022482a8(BattleCommandMap *map) {
         camera->mFar  = sClipPlanes[index][1];
         new BattleCardEffect(0, 0, 3, 0);
     }
-    CameraManager::Get().mActive = 0;
+    CameraManager::Get().mCameraIndex = 0;
     CameraManager::Get().SetCamerasAndRequestMode(2, camera, 0);
     SnapshotCamera();
     ChangeDir("/");

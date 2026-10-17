@@ -41,9 +41,9 @@ public:
     /* 94 */ u32 mMessageTextBufferSize;
     /* 98 */ u32 mMessageGlyphCount;
     /* 9c */ SelectWindowCursor *mCursor;
-    /* a0 */ SelectWindow *mMenu;
-    /* a4 */ SelectWindow *mSubMenu;
-    /* a8 */ MessageWindow *mMessage;
+    /* a0 */ SelectWindow *mMenuWindow;
+    /* a4 */ SelectWindow *mSubMenuWindow;
+    /* a8 */ MessageWindow *mMessageWindow;
     /* ac */ u8 mPlayerCount;
     /* ad */ u8 mState;
     /* ae */ u8 mTimer;

@@ -39,8 +39,8 @@ void SoundManager::Init() {
     InitPlayersFromArc(mHeap);
     LoadGroup(0, mHeap);
     RecordSndHeapState(mHeap);
-    InitSndHandle(&mSeqHandle);
-    InitSndHandle(&mSeqArcHandle);
+    InitSndHandle(&mSeqSndHandle);
+    InitSndHandle(&mSeqArcSndHandle);
     SetPlayerMaxSounds(mSeqArcPlayerIndex, 8);
     mSeqIndex = -1;
     mSeqArcPlayerIndex = gSeqArcPlayerIndex;
@@ -84,19 +84,19 @@ void SoundManager::StartSeq(u32 unk1) {
     if (unk1 == mSeqIndex) {
         return;
     }
-    StopHandleSound(&mSeqHandle, 1);
-    func_02039048(&mSeqHandle, mSeqTable[unk1].mUnk_2);
+    StopHandleSound(&mSeqSndHandle, 1);
+    func_02039048(&mSeqSndHandle, mSeqTable[unk1].mUnk_2);
     SetSeqVolume(0x7f);
     mSeqIndex = unk1;
 }
 
 void SoundManager::StopSeq(u32 fadeFrames) {
-    StopHandleSound(&mSeqHandle, fadeFrames);
+    StopHandleSound(&mSeqSndHandle, fadeFrames);
     mSeqIndex = -1;
 }
 
 void SoundManager::SetSeqVolume(s32 unk1) {
-    SetHandleVolB(&mSeqHandle, mSeqVolume * unk1 / 0x7f);
+    SetHandleVolB(&mSeqSndHandle, mSeqVolume * unk1 / 0x7f);
 }
 
 void SoundManager::LoadSoundGroup(u32 unk1) {
@@ -107,7 +107,7 @@ void SoundManager::LoadSoundGroup(u32 unk1) {
 void SoundManager::StartSeqArc(u32 unk1) {
     SoundEntry *table = mSeqArcTable;
     if (table[unk1].mUnk_2 >= 0 && table[unk1].mUnk_0 >= 0) {
-        func_02039090(&mSeqArcHandle, mSeqArcPlayerIndex, -1, -1, table[unk1].mUnk_0, table[unk1].mUnk_2);
+        func_02039090(&mSeqArcSndHandle, mSeqArcPlayerIndex, -1, -1, table[unk1].mUnk_0, table[unk1].mUnk_2);
         SetSeqArcVolume(0x7f);
     }
 }
@@ -135,9 +135,9 @@ extern "C" int CountSeqArcSounds(SoundManager *manager, u32 unk1) {
 }
 
 void SoundManager::SetSeqArcVolume(s32 unk1) {
-    SetHandleVolB(&mSeqArcHandle, mSeqArcVolume * unk1 / 0x7f);
+    SetHandleVolB(&mSeqArcSndHandle, mSeqArcVolume * unk1 / 0x7f);
 }
 
 extern "C" void func_020247fc(SoundManager *manager, s16 unk1) {
-    func_02036b88(&manager->mSeqArcHandle, 0xffff, unk1);
+    func_02036b88(&manager->mSeqArcSndHandle, 0xffff, unk1);
 }

@@ -11,7 +11,7 @@ struct CharacterIconSlot {
     /* 04 */ s16 mX;
     /* 06 */ s16 mY;
     /* 08 */ u8 mVisible;
-    /* 09 */ s8 mCharacter; // -1: none
+    /* 09 */ s8 mCharacterId; // -1: none
     /* 0a */ u8 mUnk_0a;
     /* 0b */ PAD(0x0b, 0x0c);
     /* 0c */

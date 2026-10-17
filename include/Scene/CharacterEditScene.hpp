@@ -12,7 +12,7 @@
 struct TextSlot {
     /* 00 */ s8 mItemIndex;
     /* 01 */ PAD(0x01, 0x04);
-    /* 04 */ u32 mActive;
+    /* 04 */ u32 mVisible;
     /* 08 */ u16 mWidth;
     /* 0a */ u16 mHeight;
     /* 0c */
@@ -70,7 +70,7 @@ public:
     /* 138 */ u32 mTextBufferSize;
     /* 13c */ u32 mTextGlyphCount;
     /* 140 */ void *mMessages;
-    /* 144 */ MessageWindow *mMessage;
+    /* 144 */ MessageWindow *mMessageWindow;
     /* 148 */ u8 mRotateState;
     /* 14c */ u32 mChoicesVisible;
     /* 150 */ ModelInstance *mCutRoomModel;

@@ -90,7 +90,7 @@ MyroomTipsScene::MyroomTipsScene() :
     mWindowB = NULL;
     mEvent   = NULL;
     mCellB   = NULL;
-    mMessage = NULL;
+    mMessageWindow = NULL;
     mCellA   = NULL;
     u8 i;
     for (i = 0; i < 6; i++) {
@@ -120,7 +120,7 @@ MyroomTipsScene::~MyroomTipsScene() {
     if (cellB != NULL) {
         delete cellB;
     }
-    delete mMessage;
+    delete mMessageWindow;
     CellAnimation *cellA = mCellA;
     if (cellA != NULL) {
         delete cellA;
@@ -796,26 +796,26 @@ void MyroomTipsScene::PrintRows(s32 row) {
 }
 
 void MyroomTipsScene::CreateMessage() {
-    mMessage = new MessageWindow("mes_myroom", 1, 0x3800);
-    mMessage->func_02065bd4(0x14, 4, 1);
-    mMessage->SetWidth(0xd8);
-    mMessage->StartMessage(0x2d, 0, 1);
+    mMessageWindow = new MessageWindow("mes_myroom", 1, 0x3800);
+    mMessageWindow->func_02065bd4(0x14, 4, 1);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(0x2d, 0, 1);
 }
 
 void MyroomTipsScene::SetMessage(u32 message) {
     ClearMessageBuffer();
-    mMessage->StartMessage(message, 0, 1);
+    mMessageWindow->StartMessage(message, 0, 1);
 }
 
 void MyroomTipsScene::DrawMessage() {
-    if (mMessage != NULL) {
-        mMessage->Update();
+    if (mMessageWindow != NULL) {
+        mMessageWindow->Update();
     }
 }
 
 void MyroomTipsScene::ClearMessageBuffer() {
-    if (mMessage != NULL) {
-        mMessage->ClearBuffer();
+    if (mMessageWindow != NULL) {
+        mMessageWindow->ClearBuffer();
     }
 }
 

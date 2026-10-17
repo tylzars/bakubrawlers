@@ -174,10 +174,10 @@ void StopAsyncLoad();
 
 BattleCommandList::BattleCommandList(u8 a, u8 b, s32 c, u8 d) :
     SceneBase(0x3e8, 0) {
-    mBakuganMes  = NULL;
-    mBakuganDisplayMes  = NULL;
-    mBakuganNameMes  = NULL;
-    mResultMes  = NULL;
+    mBakuganMessages  = NULL;
+    mBakuganDisplayMessages  = NULL;
+    mBakuganNameMessages  = NULL;
+    mResultMessages  = NULL;
     mLights  = NULL;
     mWindow  = NULL;
     mBakuganModel  = NULL;
@@ -196,7 +196,7 @@ BattleCommandList::BattleCommandList(u8 a, u8 b, s32 c, u8 d) :
     mUnk_15b = 0;
     mUnk_15c = 0;
     mVisible = 0;
-    mClosing = 0;
+    mCloseRequested = 0;
     mUnk_15f = 0;
     mUnk_160 = 0;
     mUnk_161 = d;
@@ -225,17 +225,17 @@ BattleCommandList::BattleCommandList(u8 a, u8 b, s32 c, u8 d) :
 
 BattleCommandList::~BattleCommandList() {
     StopAsyncLoad();
-    if (mBakuganMes != NULL) {
-        OS_Free(mBakuganMes);
+    if (mBakuganMessages != NULL) {
+        OS_Free(mBakuganMessages);
     }
-    if (mBakuganDisplayMes != NULL) {
-        OS_Free(mBakuganDisplayMes);
+    if (mBakuganDisplayMessages != NULL) {
+        OS_Free(mBakuganDisplayMessages);
     }
-    if (mBakuganNameMes != NULL) {
-        OS_Free(mBakuganNameMes);
+    if (mBakuganNameMessages != NULL) {
+        OS_Free(mBakuganNameMessages);
     }
-    if (mResultMes != NULL) {
-        OS_Free(mResultMes);
+    if (mResultMessages != NULL) {
+        OS_Free(mResultMessages);
     }
     for (u8 i = 0; i < 3; i++) {
         if (mTextBuffers[i] != NULL) {
@@ -336,7 +336,7 @@ void BattleCommandList::Update() {
             if (mUnk_160 == 0) {
                 mUnk_15f = 0;
             }
-            if (mClosing == 0) {
+            if (mCloseRequested == 0) {
                 SpriteManager::Get().sFade[0] = 2;
             }
             mState++;
@@ -360,7 +360,7 @@ void BattleCommandList::Update() {
                 }
                 mState = 3;
             }
-            if (mClosing != 0) {
+            if (mCloseRequested != 0) {
                 mState = 8;
             }
             break;
@@ -405,7 +405,7 @@ void BattleCommandList::Update() {
 }
 
 void CloseCommandList(BattleCommandList *list) {
-    list->mClosing = 1;
+    list->mCloseRequested = 1;
 }
 
 void func_02058228(BattleCommandList *list, u32 a) {
@@ -629,7 +629,7 @@ void BattleCommandList::InitDisplayAndCamera() {
     mCamera->SetClip(0x1000, 0x1388000);
     mCamera->SetFov(0x2aaa);
     mCamera->SetPosition(0, 0, mCamera->mUnk_34);
-    CameraManager::Get().mActive = 0;
+    CameraManager::Get().mCameraIndex = 0;
     CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
 }
 
@@ -765,17 +765,17 @@ BOOL BattleCommandList::LoadGraphics() {
         }
     }
     CameraManager &manager = CameraManager::Get();
-    Camera *camera         = manager.mCameras[manager.mActive];
+    Camera *camera         = manager.mCameras[manager.mCameraIndex];
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
     MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
-    manager.mProjection[manager.mActive] = data_02211374.mProjection;
-    manager.mView[manager.mActive]       = data_02211374.mView;
-    manager.mMtxA[manager.mActive]       = *func_02032710();
-    manager.mMtxB[manager.mActive]       = *func_02032604();
-    manager.mMtxC[manager.mActive]       = *func_020323b8();
+    manager.mProjection[manager.mCameraIndex] = data_02211374.mProjection;
+    manager.mView[manager.mCameraIndex]       = data_02211374.mView;
+    manager.mMtxA[manager.mCameraIndex]       = *func_02032710();
+    manager.mMtxB[manager.mCameraIndex]       = *func_02032604();
+    manager.mMtxC[manager.mCameraIndex]       = *func_020323b8();
     mLights = new ModelLightGroup(sCommandListLights);
     return TRUE;
 }
@@ -799,22 +799,22 @@ BOOL BattleCommandList::CreateBakuganModel() {
 
 void BattleCommandList::LoadText() {
     SpriteManager::Get().mScreens[0].SetObjVramMode(3);
-    mBakuganDisplayMes    = LoadFile("/font/mes_BakuganDisplay.mes", 0, 0, 0, 0, 0);
-    mBakuganMes    = LoadFile("/font/mes_Bakugan.mes", 0, 0, 0, 0, 0);
+    mBakuganDisplayMessages    = LoadFile("/font/mes_BakuganDisplay.mes", 0, 0, 0, 0, 0);
+    mBakuganMessages    = LoadFile("/font/mes_Bakugan.mes", 0, 0, 0, 0, 0);
     mTextBufferSizes[0] = TextManager::Get().BufferSize(0x10, 0x12);
     mTextBuffers[0] = OS_Alloc(mTextBufferSizes[0]);
     MI_CpuClear16(mTextBuffers[0], mTextBufferSizes[0]);
     mGlyphCounts[0] = TextManager::Get().GlyphCount(0x24);
     mGlyphBuffers[0] = OS_Alloc((s16) mGlyphCounts[0] * (s16) 0xc);
     TextManager::Get().Init(mGlyphBuffers[0], 0, 0, 0x10, 0x12, 0x21);
-    mBakuganNameMes    = LoadFile("/font/mes_BakuganName.mes", 0, 0, 0, 0, 0);
+    mBakuganNameMessages    = LoadFile("/font/mes_BakuganName.mes", 0, 0, 0, 0, 0);
     mTextBufferSizes[1] = TextManager::Get().BufferSize(0x10, 8);
     mTextBuffers[1] = OS_Alloc(mTextBufferSizes[1]);
     MI_CpuClear16(mTextBuffers[1], mTextBufferSizes[1]);
     mGlyphCounts[1] = TextManager::Get().GlyphCount(0x10);
     mGlyphBuffers[1] = OS_Alloc((s16) mGlyphCounts[1] * (s16) 0xc);
     TextManager::Get().Init(mGlyphBuffers[1], 0, 0, 0x40, 2, 0x21);
-    mResultMes    = LoadFile("/font/mes_Result.mes", 0, 0, 0, 0, 0);
+    mResultMessages    = LoadFile("/font/mes_Result.mes", 0, 0, 0, 0, 0);
     mTextBufferSizes[2] = TextManager::Get().BufferSize(0x10, 2);
     mTextBuffers[2] = OS_Alloc(mTextBufferSizes[2]);
     MI_CpuClear16(mTextBuffers[2], mTextBufferSizes[2]);
@@ -844,7 +844,7 @@ void BattleCommandList::PrintText(u8 index) {
             MessageFile *file;
             void *buffer;
             buffer = mTextBuffers[0];
-            file   = (MessageFile *) mBakuganMes;
+            file   = (MessageFile *) mBakuganMessages;
             MI_CpuClear16(data_020c1a4c, 0x20);
             text.mLineStartCount      = 1;
             text.Print(file->GetText(sel), file->GetLength(sel), buffer, 0x10, 0x12, &y, (s16 *) &x, 0, 0, 2, 0x21,
@@ -864,7 +864,7 @@ void BattleCommandList::PrintText(u8 index) {
             x = 2 - (mTextPage << 7);
             y = 0x10;
             u8 sel            = mUnk_150;
-            MessageFile *file = (MessageFile *) mBakuganMes;
+            MessageFile *file = (MessageFile *) mBakuganMessages;
             text.Print(file->GetText(sel), file->GetLength(sel), mTextBuffers[0], 0x10, 0x12, &y, (s16 *) &x,
                                      0, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
         }
@@ -876,7 +876,7 @@ void BattleCommandList::PrintText(u8 index) {
             s16 x;
             x = 0;
             y = 0;
-            MessageFile *file = (MessageFile *) mBakuganMes;
+            MessageFile *file = (MessageFile *) mBakuganMessages;
             text.Print(file->GetText((u16) (mUnk_150 + 6)), file->GetLength((u16) (mUnk_150 + 6)), mTextBuffers[1], 0x40, 2, &y, &x,
                                      &mNameWidth, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
         }
@@ -892,7 +892,7 @@ void BattleCommandList::PrintText(u8 index) {
             MessageFile *file;
             void *buffer;
             buffer = mTextBuffers[0];
-            file   = (MessageFile *) mBakuganDisplayMes;
+            file   = (MessageFile *) mBakuganDisplayMessages;
             MI_CpuClear16(data_020c1a4c, 0x20);
             text.mLineStartCount      = 1;
             text.Print(file->GetText(row), file->GetLength(row), buffer, 0x10, 0x12, &y, (s16 *) &x, 0, 0, 2, 0x21,
@@ -912,7 +912,7 @@ void BattleCommandList::PrintText(u8 index) {
             x = 2 - (mTextPage << 7);
             y = 0x10;
             u8 row = CommandMessages().mRows[cmd][mUnk_150];
-            MessageFile *file = (MessageFile *) mBakuganDisplayMes;
+            MessageFile *file = (MessageFile *) mBakuganDisplayMessages;
             text.Print(file->GetText(row), file->GetLength(row), mTextBuffers[0], 0x10, 0x12, &y, (s16 *) &x,
                                      0, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
         }
@@ -929,7 +929,7 @@ void BattleCommandList::PrintText(u8 index) {
             s16 x;
             x = 0;
             y = 0;
-            MessageFile *file = (MessageFile *) mBakuganNameMes;
+            MessageFile *file = (MessageFile *) mBakuganNameMessages;
             text.Print(file->GetText(cmd), file->GetLength(cmd), mTextBuffers[1], 0x40, 2, &y, &x,
                        &mNameWidth, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
         }
@@ -940,7 +940,7 @@ void BattleCommandList::PrintText(u8 index) {
             s16 x;
             x = 0;
             y = 0;
-            MessageFile *file = (MessageFile *) mResultMes;
+            MessageFile *file = (MessageFile *) mResultMessages;
             text.Print(file->GetText(5), file->GetLength(5), mTextBuffers[2], 0x10, 2, &y, &x, &width, 0, 2,
                        0x21, 0xe, 0, 0, 0, 1, 1);
         }
@@ -950,7 +950,7 @@ void BattleCommandList::PrintText(u8 index) {
             s16 x;
             x = 0;
             y = width + 6;
-            MessageFile *file = (MessageFile *) mResultMes;
+            MessageFile *file = (MessageFile *) mResultMessages;
             text.Print(file->GetText(6), file->GetLength(6), mTextBuffers[2], 0x10, 2, &y, &x, 0, 0, 2, 0x21,
                        0xe, 0, 0, 0, 1, 1);
         } else {
@@ -1173,7 +1173,7 @@ void BattleCommandList::func_0205b0dc(const BattleCellPair *pair) {
     for (u8 i = 0; i < 5; i++) {
         mUnk_0c[i].mTarget = mUnk_16[i];
     }
-    if (mBakuganDisplayMes != NULL) {
+    if (mBakuganDisplayMessages != NULL) {
         PrintText(mTextPage);
     }
 }

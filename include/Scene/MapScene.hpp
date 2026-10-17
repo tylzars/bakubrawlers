@@ -26,7 +26,7 @@ public:
     /* 00 (base) */
     /* 0c */ CellAnimation *mCellAnims[6];
     /* 24 */ ScriptPlayer *mEvent;
-    /* 28 */ SelectWindow *mMenu;
+    /* 28 */ SelectWindow *mMenuWindow;
     /* 2c */ SelectWindow *mPanelWindow;
     /* 30 */ void *mGlyphBuffer;
     /* 34 */ u16 mGlyphCount;

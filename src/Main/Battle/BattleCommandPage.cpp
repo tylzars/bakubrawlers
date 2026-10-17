@@ -69,9 +69,9 @@ extern u16 data_020c1a4c[0x10]; // palette scratch (cleared before each text)
 BattleCommandPage::BattleCommandPage(u16 a, s32 b) :
     SceneBase(0x3e8, 0) {
     mWindow = NULL;
-    mCardMes = NULL;
-    mCardTextMes = NULL;
-    mCardNameMes = NULL;
+    mCardMessages = NULL;
+    mCardTextMessages = NULL;
+    mCardNameMessages = NULL;
     mState = 0;
     mUnk_f2 = 0;
     mPlayer = b;
@@ -82,7 +82,7 @@ BattleCommandPage::BattleCommandPage(u16 a, s32 b) :
     mNameWidth = 0;
     mNameX = 0;
     mVisible = 0;
-    mCloseFade = 0;
+    mCloseFadeKind = 0;
     mUnk_106 = 0;
     mUnk_107 = 0;
     mUnk_108 = 0;
@@ -102,14 +102,14 @@ BattleCommandPage::BattleCommandPage(u16 a, s32 b) :
 
 BattleCommandPage::~BattleCommandPage() {
     StopAsyncLoad();
-    if (mCardMes != NULL) {
-        OS_Free(mCardMes);
+    if (mCardMessages != NULL) {
+        OS_Free(mCardMessages);
     }
-    if (mCardTextMes != NULL) {
-        OS_Free(mCardTextMes);
+    if (mCardTextMessages != NULL) {
+        OS_Free(mCardTextMessages);
     }
-    if (mCardNameMes != NULL) {
-        OS_Free(mCardNameMes);
+    if (mCardNameMessages != NULL) {
+        OS_Free(mCardNameMessages);
     }
     for (u8 i = 0; i < 3; i++) {
         if (mTextBuffers[i] != NULL) {
@@ -168,7 +168,7 @@ void BattleCommandPage::Update() {
                 }
                 mDrawnCardId  = mCardId;
                 mUnk_109 = mUnk_10a;
-                if (mCloseFade == 0) {
+                if (mCloseFadeKind == 0) {
                     SpriteManager::Get().sFade[0] = 2;
                 }
                 mState++;
@@ -184,12 +184,12 @@ void BattleCommandPage::Update() {
                 mTextPage  = 0;
                 mState  = 2;
             }
-            if (mCloseFade != 0) {
+            if (mCloseFadeKind != 0) {
                 mState = 5;
             }
             break;
         case 5:
-            switch (mCloseFade) {
+            switch (mCloseFadeKind) {
                 case 1:
                     SpriteManager::Get().sFade[0] = 3;
                     break;
@@ -239,7 +239,7 @@ void BattleCommandPage::Update() {
 }
 
 void CloseCommandPage(BattleCommandPage *page, u32 a) {
-    page->mCloseFade = a;
+    page->mCloseFadeKind = a;
 }
 
 void func_0205562c(BattleCommandPage *page, u32 a) {
@@ -595,8 +595,8 @@ BOOL BattleCommandPage::LoadLargeCard() {
 
 void BattleCommandPage::LoadText() {
     SpriteManager::Get().mScreens[0].SetObjVramMode(3);
-    mCardTextMes = LoadFile("/font/mes_CardText.mes", 0, 0, 0, 0, 0);
-    mCardMes = LoadFile("/font/mes_Card.mes", 0, 0, 0, 0, 0);
+    mCardTextMessages = LoadFile("/font/mes_CardText.mes", 0, 0, 0, 0, 0);
+    mCardMessages = LoadFile("/font/mes_Card.mes", 0, 0, 0, 0, 0);
     mGlyphCounts[0] = TextManager::Get().GlyphCount(0x18);
     mGlyphBuffers[0] = OS_Alloc((s16) mGlyphCounts[0] * (s16) 0xc);
     TextManager::Get().Init(mGlyphBuffers[0], 0, 0, 0x10, 0xc, 0x21);
@@ -606,7 +606,7 @@ void BattleCommandPage::LoadText() {
     mGlyphCounts[1] = TextManager::Get().GlyphCount(0x20);
     mGlyphBuffers[1] = OS_Alloc((s16) mGlyphCounts[1] * (s16) 0xc);
     TextManager::Get().Init(mGlyphBuffers[1], 0, 0, 0x10, 0x10, 0x21);
-    mCardNameMes = LoadFile("/font/mes_CardName.mes", 0, 0, 0, 0, 0);
+    mCardNameMessages = LoadFile("/font/mes_CardName.mes", 0, 0, 0, 0, 0);
     mTextBufferSizes[2] = TextManager::Get().BufferSize(0x10, 8);
     mTextBuffers[2] = OS_Alloc(mTextBufferSizes[2]);
     MI_CpuClear16(mTextBuffers[2], mTextBufferSizes[2]);
@@ -632,8 +632,8 @@ void BattleCommandPage::PrintCardText(u32 index) {
     int total;
     if (id < 0xd5) {
         id2      = id;
-        textFile = (MessageFile **) &mCardTextMes;
-        nameFile = (MessageFile **) &mCardNameMes;
+        textFile = (MessageFile **) &mCardTextMessages;
+        nameFile = (MessageFile **) &mCardNameMessages;
         if (GetCardInfo(id, 0) == 0) {
             mUnk_108 = 0;
             total    = 0x58;
@@ -644,7 +644,7 @@ void BattleCommandPage::PrintCardText(u32 index) {
             height   = 0x10;
         }
     } else {
-        textFile = (MessageFile **) &mCardMes;
+        textFile = (MessageFile **) &mCardMessages;
         s32 t    = id - 0xd7;
         nameFile = textFile;
         u32 clamped;

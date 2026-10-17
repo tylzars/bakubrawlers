@@ -110,17 +110,17 @@ extern UnkStruct_0220f540 data_0220f540;
 // Copies the active camera into the 3D engine state and the camera manager's snapshot of it.
 static inline void SnapshotCamera() {
     CameraManager &manager        = CameraManager::Get();
-    Camera *camera                = manager.mCameras[manager.mActive];
+    Camera *camera                = manager.mCameras[manager.mCameraIndex];
     data_02211374.mCameraPosition = camera->mPosition;
     data_02211374.mCameraUp       = camera->mUp;
     data_02211374.mCameraTarget   = camera->mTarget;
     MTX_LookAt(&camera->mPosition, &camera->mUp, &camera->mTarget, &data_02211374.mView);
     data_02211374.mFlags &= ~0xe8;
-    manager.mProjection[manager.mActive] = data_02211374.mProjection;
-    manager.mView[manager.mActive]       = data_02211374.mView;
-    manager.mMtxA[manager.mActive]       = *func_02032710();
-    manager.mMtxB[manager.mActive]       = *func_02032604();
-    manager.mMtxC[manager.mActive]       = *func_020323b8();
+    manager.mProjection[manager.mCameraIndex] = data_02211374.mProjection;
+    manager.mView[manager.mCameraIndex]       = data_02211374.mView;
+    manager.mMtxA[manager.mCameraIndex]       = *func_02032710();
+    manager.mMtxB[manager.mCameraIndex]       = *func_02032604();
+    manager.mMtxC[manager.mCameraIndex]       = *func_020323b8();
 }
 
 typedef u8 (BattleAbility::*BattleUnk022637acHandler)();
@@ -242,7 +242,7 @@ void BattleAbility::Update() {
             mContext->mRequest = 1;
             if (mAbilityId == 0xcc) {
                 CameraManager::Get().Reset();
-                CameraManager::Get().mActive = 0;
+                CameraManager::Get().mCameraIndex = 0;
                 CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
                 SnapshotCamera();
             }

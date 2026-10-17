@@ -80,7 +80,7 @@ public:
     /* 001 */ u8 mModelsVisible;
     /* 002 */ PAD(0x002, 0x004);
     /* 004 */ s32 mRequestedMode;
-    /* 008 */ s32 mActive;
+    /* 008 */ s32 mCameraIndex;
     /* 00c */ s32 mMode; // 0 = off, 1..4 = 3D layouts
     /* 010 */ Camera *mCameras[2];
     /* 018 */ MtxFx43 mView[2];

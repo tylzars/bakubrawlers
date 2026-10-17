@@ -21,7 +21,7 @@ CreditsScene::CreditsScene() :
     mBufferSize = 0;
     for (u8 i = 0; i < 2; i++) {
         mColState[i] = 0;
-        mMessage[i] = 0;
+        mMessageIndex[i] = 0;
         mScroll[i] = 0;
         mRow[i] = 0;
         mBuffers[i] = NULL;
@@ -143,7 +143,7 @@ BOOL CreditsScene::UpdateText() {
                     mTimer[i]++;
                     if (mTimer[i] > 0xc) {
                         mScroll[i] = 0;
-                        mMessage[i] = 0;
+                        mMessageIndex[i] = 0;
                         mRow[i] = 0xc;
                         mColState[i]++;
                     }
@@ -153,9 +153,9 @@ BOOL CreditsScene::UpdateText() {
                     if (mRow[i] >= 0x10) {
                         mRow[i] = 0;
                     }
-                    PrintLine(mMessage[i], mRow[i], i, 1);
-                    mMessage[i]++;
-                    if (mMessage[i] > *(u16 *) mMessages - 1) {
+                    PrintLine(mMessageIndex[i], mRow[i], i, 1);
+                    mMessageIndex[i]++;
+                    if (mMessageIndex[i] > *(u16 *) mMessages - 1) {
                         mTimer[i] = 0;
                         mColState[i]++;
                     }
@@ -165,7 +165,7 @@ BOOL CreditsScene::UpdateText() {
                     if (mRow[i] >= 0x10) {
                         mRow[i] = 0;
                     }
-                    PrintLine(mMessage[i], mRow[i], i, 0);
+                    PrintLine(mMessageIndex[i], mRow[i], i, 0);
                     mTimer[i]++;
                     if (mTimer[i] > 0x10) {
                         mColState[i]++;

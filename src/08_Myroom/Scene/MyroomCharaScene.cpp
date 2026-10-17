@@ -76,7 +76,7 @@ MyroomCharaScene::MyroomCharaScene() :
     mResult     = 0;
     mPage       = 0;
     mListCount  = 0;
-    mMessage    = NULL;
+    mMessageWindow    = NULL;
     for (u8 i = 0; i < 2; i++) {
         mCells[i]   = NULL;
         mCellsVisible[i]  = 0;
@@ -87,7 +87,7 @@ MyroomCharaScene::MyroomCharaScene() :
         mTextBuffers[i] = NULL;
         mLinesVisible[i]      = 0;
     }
-    mNames       = NULL;
+    mStoryCharaNameMessages       = NULL;
     mMessages    = NULL;
     mGlyphBuffer = NULL;
     mTextBufferSize = 0;
@@ -111,8 +111,8 @@ void MyroomCharaScene::Cleanup() {
     mCell = NULL;
     FreeCells();
     FreeText();
-    delete mMessage;
-    mMessage = NULL;
+    delete mMessageWindow;
+    mMessageWindow = NULL;
 }
 
 void MyroomCharaScene::FreeCells() {
@@ -356,10 +356,10 @@ void MyroomCharaScene::LoadSubGraphics() {
     mCellVisible = 1;
     ChangeDir("/");
     ChangeDir("/font/");
-    mMessage = new MessageWindow("mes_myroom", 1, 0x13000);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
-    mMessage->StartMessage(0x27, 0, 1);
+    mMessageWindow = new MessageWindow("mes_myroom", 1, 0x13000);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(0x27, 0, 1);
     ChangeDir("/");
 }
 
@@ -415,7 +415,7 @@ void MyroomCharaScene::Draw() {
     DrawWindow();
     DrawCells();
     DrawCell();
-    mMessage->Update();
+    mMessageWindow->Update();
     DrawText();
 }
 
@@ -449,7 +449,7 @@ u8 MyroomCharaScene::func_ov008_02224a4c() {
 
 void MyroomCharaScene::LoadText() {
     ChangeDir("/font/");
-    mNames    = (MessageFile *) LoadFile("mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
+    mStoryCharaNameMessages    = (MessageFile *) LoadFile("mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
     mMessages = (MessageFile *) LoadFile("mes_myroom_status.mes", 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x20, 2);
     for (u8 i = 0; i < 7; i++) {
@@ -593,7 +593,7 @@ void MyroomCharaScene::RenderLine(u32 line, u32 kind) {
             height    = 0;
             width     = 0;
             u8 index  = mList[mPage * 7 + line];
-            MessageFile *file = mNames;
+            MessageFile *file = mStoryCharaNameMessages;
             text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[line], 0x20, 2, &width, &height, 0, 0, 2, 0x21, 0, 0,
                        0, 0, 1, 1);
             TextManager::Get().mUse4bppFont = 0;
@@ -625,9 +625,9 @@ void MyroomCharaScene::FreeText() {
             mTextBuffers[i] = NULL;
         }
     }
-    if (mNames != NULL) {
-        OS_Free(mNames);
-        mNames = NULL;
+    if (mStoryCharaNameMessages != NULL) {
+        OS_Free(mStoryCharaNameMessages);
+        mStoryCharaNameMessages = NULL;
     }
     if (mMessages != NULL) {
         OS_Free(mMessages);

@@ -99,7 +99,7 @@ extern UnkStruct_020c4230 data_020c4230;
 class BattleResult : public SceneBase {
 public:
     /* 0c */ SelectWindow *mWindow;
-    /* 10 */ MessageWindow *mMessage;
+    /* 10 */ MessageWindow *mMessageWindow;
     /* 14 */ MessageFile *mResultMessages;
     /* 18 */ CellAnimation *mAnims[8];
     /* 38 */ void *mTextBuffers[3];
@@ -147,7 +147,7 @@ public:
 BattleResult::BattleResult()
     : SceneBase(0x3e8, 0) {
     mWindow = 0;
-    mMessage = 0;
+    mMessageWindow = 0;
     mUnk_68 = 0;
     mPrizeMoney = 0;
     mRewardMoney = 0;
@@ -184,7 +184,7 @@ BattleResult::~BattleResult() {
     SpriteManager::sFade[0] = 1;
     SpriteManager::sBrightness[0] = -16;
     delete mWindow;
-    delete mMessage;
+    delete mMessageWindow;
     FrameTask::Get().StopAllChannels();
     u8 i = 0;
     do {
@@ -804,14 +804,14 @@ void BattleResult::SetupRetryScreen() {
     screen1b.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x5000, 0);
     screen1b.LoadPalette("union_b_obj_window_ncl.bin", 0x40, 0);
     ChangeDir("/");
-    mMessage = new MessageWindow("mes_BattleArenaMenu", 1, 0x4000);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
-    mMessage->StartMessage(9, 0, 1);
+    mMessageWindow = new MessageWindow("mes_BattleArenaMenu", 1, 0x4000);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(9, 0, 1);
     if (data_020d433c.mWireless != 0) {
         WirelessManager::Get();
         if (data_020c4230.mUnk_20 != 0) {
-            mMessage->StartMessage(4, 1, 1);
+            mMessageWindow->StartMessage(4, 1, 1);
         }
     }
 }
@@ -824,7 +824,7 @@ void BattleResult::DrawRetryText() {
 // assignment for the third stays a statement of its own, so the y computation is emitted before that call's arguments
 // and the scheduler keeps it after the stack store and ahead of the register arguments (as the original does).
 void BattleResult::DrawRetryScreen() {
-    mMessage->Update();
+    mMessageWindow->Update();
     mAnimsB[3]->Draw(0, 0x80, 0x60, 0);
     u8 i = 0;
     do {

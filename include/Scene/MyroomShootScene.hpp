@@ -30,7 +30,7 @@ public:
     /* 20 */ MessageFile *mMessages;
     /* 24 */ void *mTextBuffers[2];
     /* 2c */ void *mGlyphBuffers[2];
-    /* 34 */ MessageWindow *mMessage;
+    /* 34 */ MessageWindow *mMessageWindow;
     /* 38 */ SelectWindow *mWindow;
     /* 3c */ u32 mResult;
     /* 40 */ u32 mTextBufferSize[2];

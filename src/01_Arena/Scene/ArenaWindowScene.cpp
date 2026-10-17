@@ -30,7 +30,7 @@ static const WindowItemRecord sArenaWindowTwoButtonItems[2] = {
 #include <nitro/os.h>
 
 ArenaWindowScene::ArenaWindowScene() : SceneBase(1000, 0) {
-    mMenu = NULL;
+    mWindow = NULL;
     mMessages = NULL;
     mTextBuffer = NULL;
     mGlyphBuffer = NULL;
@@ -41,8 +41,8 @@ ArenaWindowScene::ArenaWindowScene() : SceneBase(1000, 0) {
 }
 
 ArenaWindowScene::~ArenaWindowScene() {
-    if (mMenu != NULL) {
-        delete mMenu;
+    if (mWindow != NULL) {
+        delete mWindow;
     }
     if (mMessages != NULL) {
         OS_Free(mMessages);
@@ -158,15 +158,15 @@ void ArenaWindowScene::Update() {
                 return;
             }
             data_020d433c.mWireless = 0;
-            mMenu->mEnabled       = 1;
+            mWindow->mEnabled       = 1;
             mState++;
             break;
         case 7:
-            if (mMenu->Update(1) == 1) {
+            if (mWindow->Update(1) == 1) {
                 SpriteManager::Get().StartFade(3);
                 mState++;
             }
-            mMenu->Draw();
+            mWindow->Draw();
             DrawMessage();
             break;
         case 8:
@@ -282,14 +282,14 @@ void ArenaWindowScene::SetupWindow() {
     ChangeDir("/");
     LoadMessages();
     PrintMessage();
-    if (mMenu != NULL) {
-        delete mMenu;
+    if (mWindow != NULL) {
+        delete mWindow;
     }
-    mMenu = new SelectWindow(2, sArenaWindowTwoButtonItems, -1);
-    mMenu->SetCells(2, sArenaWindowTwoButtonCells);
-    mMenu->mCursor->mSelection = -1;
-    mMenu->mEnabled            = 0;
-    mMenu->mCursor->mSelection = 0;
+    mWindow = new SelectWindow(2, sArenaWindowTwoButtonItems, -1);
+    mWindow->SetCells(2, sArenaWindowTwoButtonCells);
+    mWindow->mCursor->mSelection = -1;
+    mWindow->mEnabled            = 0;
+    mWindow->mCursor->mSelection = 0;
 }
 
 void ArenaWindowScene::LoadWindowGraphics() {

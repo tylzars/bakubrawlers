@@ -25,7 +25,7 @@ public:
 class BattleSlot : public BattleObject {
 public:
     /* 04 */ u8 mMode;
-    /* 05 */ u8 mCharacter;
+    /* 05 */ u8 mCharacterId;
     /* 06 */ u8 mStartTimer;
     /* 07 */ u8 mUnk_07;
     /* 08 */ u16 mIntervalFrames;
@@ -378,7 +378,7 @@ public:
     /* 110 */ float mPlayerAnimXPerFrame;
     /* 114 */ u8 mShakeSign;
     /* 115 */ u8 mShakeFrames;
-    /* 116 */ u8 mShakeCount;
+    /* 116 */ u8 mShakesRemaining;
     union {
         /* 117 */ u8 mUnk_117;
         struct {

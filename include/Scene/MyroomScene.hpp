@@ -16,12 +16,12 @@ class MyroomScene : public SceneBase {
 public:
     /* 00 (base) */
     /* 0c */ MessageFile *mMessages;
-    /* 10 */ MessageWindow *mMessage;
+    /* 10 */ MessageWindow *mMessageWindow;
     /* 14 */ void *mTextBuffer;
     /* 18 */ void *mGlyphBuffer;
     /* 1c */ u32 mTextBufferSize;
     /* 20 */ u32 mGlyphCount;
-    /* 24 */ SelectWindow *mMenus[3];
+    /* 24 */ SelectWindow *mWindows[3];
     /* 30 */ ScriptPlayer *mEvent;
     /* 34 */ CellAnimation *mCellAnim;
     /* 38 */

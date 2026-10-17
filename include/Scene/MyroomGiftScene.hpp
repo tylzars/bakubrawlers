@@ -20,7 +20,7 @@ public:
     /* 10 */ CellAnimation *mCellAnim;
     /* 14 */ void *mTextBuffers[2];
     /* 1c */ void *mGlyphBuffers[2];
-    /* 24 */ MessageWindow *mMessage;
+    /* 24 */ MessageWindow *mMessageWindow;
     /* 28 */ SelectWindow *mWindow;
     /* 2c */ u32 mResult;
     /* 30 */ u32 mTextBufferSize[2];

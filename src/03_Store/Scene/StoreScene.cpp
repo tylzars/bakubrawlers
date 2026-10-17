@@ -62,8 +62,8 @@ StoreScene::StoreScene() :
     mGlyphCount     = 0;
     mNextScene         = 9;
     MI_CpuClear8(&mContext->mInfo, sizeof(SceneInfo));
-    mMenu    = NULL;
-    mMessage = NULL;
+    mWindow    = NULL;
+    mMessageWindow = NULL;
     for (u8 i = 0; i < 2; i++) {
         mCellAnims[i] = NULL;
     }
@@ -90,10 +90,10 @@ void StoreScene::Cleanup() {
         OS_Free(mGlyphBuffer);
         mGlyphBuffer = NULL;
     }
-    delete mMenu;
-    mMenu = NULL;
-    delete mMessage;
-    mMessage = NULL;
+    delete mWindow;
+    mWindow = NULL;
+    delete mMessageWindow;
+    mMessageWindow = NULL;
     for (u8 i = 0; i < 2; i++) {
         delete mCellAnims[i];
         mCellAnims[i] = NULL;
@@ -182,19 +182,19 @@ void StoreScene::Update() {
             DrawMoney();
             break;
         case 11:
-            if (mMenu->mState != 1) {
-                mMenu->Update(TRUE);
+            if (mWindow->mState != 1) {
+                mWindow->Update(TRUE);
             }
             if (ScrollStep()) {
                 ctx->mInfo.mState = 10;
             }
-            mMenu->Draw();
+            mWindow->Draw();
             DrawText();
             DrawMoney();
             break;
         case 12:
-            if (mMenu != NULL) {
-                mMenu->Draw();
+            if (mWindow != NULL) {
+                mWindow->Draw();
             }
             DrawText();
             SpriteManager::Get().StartSubFade(3);
@@ -215,8 +215,8 @@ void StoreScene::Update() {
             ctx->mInfo.mState++;
             break;
         case 13:
-            if (mMenu != NULL) {
-                mMenu->Draw();
+            if (mWindow != NULL) {
+                mWindow->Draw();
             }
             DrawText();
             if (mEvent->IsRunning()) {
@@ -226,8 +226,8 @@ void StoreScene::Update() {
             ctx->mInfo.mState++;
             break;
         case 14:
-            if (mMenu != NULL) {
-                mMenu->Draw();
+            if (mWindow != NULL) {
+                mWindow->Draw();
             }
             DrawText();
             if (SpriteManager::Get().IsFading()) {
@@ -273,14 +273,14 @@ void StoreScene::Update() {
         case 18:
             ctx->mInfo.mUnk_0a = 0;
             ctx->mInfo.mState++;
-            mMenu->Draw();
+            mWindow->Draw();
             break;
         case 19:
             if (++ctx->mInfo.mUnk_0a >= 8) {
                 SpriteManager::Get().StartFade(3);
                 ctx->mInfo.mState++;
             }
-            mMenu->Draw();
+            mWindow->Draw();
             break;
         case 20:
             if (SpriteManager::Get().IsFading()) {
@@ -313,7 +313,7 @@ void StoreScene::Update() {
             }
             break;
         case 24:
-            ctx->mList->mHead->mRequest->mNextScene = mNextScene;
+            ctx->mList->mHead->mRequest->mRequest = mNextScene;
             mFinished                               = TRUE;
             break;
     }
@@ -385,19 +385,19 @@ void StoreScene::LoadGraphics() {
 
 void StoreScene::CreateMenu() {
     SceneInfo *info = &mContext->mInfo;
-    delete mMenu;
-    mMenu = new SelectWindow(6, sMenuItems, info->mSelection);
-    mMenu->SetCells(6, sMenuCells);
-    mMenu->Update(TRUE);
+    delete mWindow;
+    mWindow = new SelectWindow(6, sMenuItems, info->mSelection);
+    mWindow->SetCells(6, sMenuCells);
+    mWindow->Update(TRUE);
     UpdateSlotLayout();
 }
 
 void StoreScene::UpdateMenu() {
     SceneInfo *info      = &mContext->mInfo;
     info->mPrevSelection = info->mSelection;
-    if (mMenu != NULL) {
+    if (mWindow != NULL) {
         if (info->mState == 10) {
-            info->mMenuResult = mMenu->Update(TRUE);
+            info->mMenuResult = mWindow->Update(TRUE);
         }
         s32 delta = 0;
         switch (info->mMenuResult) {
@@ -406,10 +406,10 @@ void StoreScene::UpdateMenu() {
             case 2:
                 info->mSelection = 3;
                 info->mState     = 18;
-                mMenu->Draw();
+                mWindow->Draw();
                 return;
             case 3: {
-                u8 id = mMenu->GetSelectedId();
+                u8 id = mWindow->GetSelectedId();
                 switch (id) {
                     case 4:
                         delta = -1;
@@ -421,15 +421,15 @@ void StoreScene::UpdateMenu() {
                 break;
             }
             default:
-                if (mMenu->mState == 1) {
+                if (mWindow->mState == 1) {
                     if (InputManager::Get().IsTrigger(KEY_LEFT)) {
                         if (info->mSelection != 0) {
-                            mMenu->SetResultItem(4, 3);
+                            mWindow->SetResultItem(4, 3);
                             SoundManager::Get().StartSeqArc(0);
                         }
                     } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
                         if (info->mSelection < 2) {
-                            mMenu->SetResultItem(5, 3);
+                            mWindow->SetResultItem(5, 3);
                             SoundManager::Get().StartSeqArc(0);
                         }
                     }
@@ -442,7 +442,7 @@ void StoreScene::UpdateMenu() {
             StartScroll();
             info->mMenuResult = 0;
         }
-        mMenu->Draw();
+        mWindow->Draw();
     }
     if (info->mPrevSelection != info->mSelection && info->mSelection >= 0) {
         BOOL valid = TRUE;
@@ -461,30 +461,30 @@ void StoreScene::StartScroll() {
     info->mState    = 11;
     info->mScroll   = 0x62;
     u8 i;
-    WindowItem *items = mMenu->mCursor->mItems;
+    WindowItem *items = mWindow->mCursor->mItems;
     for (i = 0; i < 3; i++) {
         if (info->mPage == i) {
-            mMenu->mCells[i]->ResetAnimation();
-            CellAnimation *cell = mMenu->mCells[i];
+            mWindow->mCells[i]->ResetAnimation();
+            CellAnimation *cell = mWindow->mCells[i];
             cell->mAnimIndex       = sSelectedFrames[i];
             cell->ResetAnimation();
         } else if (info->mSelection == i) {
-            mMenu->mCells[i]->SetMode(2);
+            mWindow->mCells[i]->SetMode(2);
         }
         items[i].mFlags = 0x8000;
     }
     if (info->mPage >= 2) {
-        mMenu->mButtons[0].mEnabled = 0;
+        mWindow->mButtons[0].mEnabled = 0;
     } else {
-        mMenu->mButtons[0].mEnabled = 1;
+        mWindow->mButtons[0].mEnabled = 1;
     }
-    mMenu->mButtons[2].mEnabled = info->mPage >= 1 ? 1 : 0;
+    mWindow->mButtons[2].mEnabled = info->mPage >= 1 ? 1 : 0;
     if (info->mPage == 0) {
-        mMenu->mButtons[4].mEnabled = 0;
+        mWindow->mButtons[4].mEnabled = 0;
         items[4].mFlags             = 0x8000;
     }
     if (info->mPage == 2) {
-        mMenu->mButtons[5].mEnabled = 0;
+        mWindow->mButtons[5].mEnabled = 0;
         items[5].mFlags             = 0x8000;
     }
 }
@@ -534,39 +534,39 @@ BOOL StoreScene::ScrollStep() {
     if (info->mScrollDir == 2) {
         step = -step;
     }
-    WindowItem *items = mMenu->mCursor->mItems;
+    WindowItem *items = mWindow->mCursor->mItems;
     for (u8 i = 0; i < 3; i++) {
-        Vec2s pos = mMenu->GetCellPos(i);
+        Vec2s pos = mWindow->GetCellPos(i);
         pos.x += step;
-        mMenu->SetCellPos(i, pos);
+        mWindow->SetCellPos(i, pos);
         items[i].mX = step + items[i].mX;
     }
     if (info->mScroll == 0) {
-        CellAnimation *sel = mMenu->mCells[(u8) info->mSelection];
+        CellAnimation *sel = mWindow->mCells[(u8) info->mSelection];
         sel->mAnimIndex       = sIdleFrames[info->mSelection];
         sel->ResetAnimation();
         items[info->mPage].mFlags      = 8;
         items[info->mSelection].mFlags = 0x8000;
-        mMenu->mCursor->mSelection     = info->mPage;
+        mWindow->mCursor->mSelection     = info->mPage;
         info->mSelection               = info->mPage;
         mEvent->func_02067998(sSelectScriptIds[info->mSelection]);
         mEvent->func_0206f564(sSelectEventIds[info->mSelection], 10, -1);
         if (info->mSelection != 0) {
-            mMenu->mButtons[4].mEnabled = 1;
+            mWindow->mButtons[4].mEnabled = 1;
             items[4].mFlags             = 8;
         }
         if (info->mSelection != 2) {
-            mMenu->mButtons[5].mEnabled = 1;
+            mWindow->mButtons[5].mEnabled = 1;
             items[5].mFlags             = 8;
         }
-        mMenu->mCells[4]->Rewind();
-        mMenu->mCells[5]->Rewind();
+        mWindow->mCells[4]->Rewind();
+        mWindow->mCells[5]->Rewind();
         if (info->mScrollDir == 1) {
-            CellAnimation *cell = mMenu->mCells[4];
+            CellAnimation *cell = mWindow->mCells[4];
             cell->mAnimIndex       = 0;
             cell->ResetAnimation();
         } else {
-            CellAnimation *cell = mMenu->mCells[5];
+            CellAnimation *cell = mWindow->mCells[5];
             cell->mAnimIndex       = 1;
             cell->ResetAnimation();
         }
@@ -578,49 +578,49 @@ BOOL StoreScene::ScrollStep() {
 
 void StoreScene::UpdateSlotLayout() {
     SceneInfo *info   = &mContext->mInfo;
-    WindowItem *items = mMenu->mCursor->mItems;
+    WindowItem *items = mWindow->mCursor->mItems;
     s16 offset        = info->mSelection * 98;
     for (u8 i = 0; i < 3; i++) {
-        Vec2s pos = mMenu->GetCellPos(i);
+        Vec2s pos = mWindow->GetCellPos(i);
         pos.x     = i * 98 + 0x58 - offset;
-        mMenu->SetCellPos(i, pos);
+        mWindow->SetCellPos(i, pos);
         items[i].mX = pos.x;
         if (info->mSelection == i) {
-            CellAnimation *cell = mMenu->mCells[i];
+            CellAnimation *cell = mWindow->mCells[i];
             cell->mAnimIndex       = sSelectedFrames[i];
             cell->ResetAnimation();
             items[i].mFlags = 8;
         } else {
-            CellAnimation *cell = mMenu->mCells[i];
+            CellAnimation *cell = mWindow->mCells[i];
             cell->mAnimIndex       = sIdleFrames[i];
             cell->ResetAnimation();
             items[i].mFlags = 0x8000;
         }
-        mMenu->mCells[i]->ResetAnimation();
+        mWindow->mCells[i]->ResetAnimation();
     }
     u32 flags;
     if (info->mSelection != 0) {
-        mMenu->mButtons[4].mEnabled = 1;
+        mWindow->mButtons[4].mEnabled = 1;
         flags                       = 8;
     } else {
-        mMenu->mButtons[4].mEnabled = 0;
+        mWindow->mButtons[4].mEnabled = 0;
         flags                       = 0x8000;
     }
     items[4].mFlags = flags;
     if (info->mSelection == 2) {
-        mMenu->mButtons[5].mEnabled = 0;
+        mWindow->mButtons[5].mEnabled = 0;
         flags                       = 0x8000;
     } else {
-        mMenu->mButtons[5].mEnabled = 1;
+        mWindow->mButtons[5].mEnabled = 1;
         flags                       = 8;
     }
     items[5].mFlags = flags;
     if (info->mPage >= 2) {
-        mMenu->mButtons[0].mEnabled = 0;
+        mWindow->mButtons[0].mEnabled = 0;
     } else {
-        mMenu->mButtons[0].mEnabled = 1;
+        mWindow->mButtons[0].mEnabled = 1;
     }
-    mMenu->mButtons[2].mEnabled = info->mPage >= 1 ? 1 : 0;
+    mWindow->mButtons[2].mEnabled = info->mPage >= 1 ? 1 : 0;
 }
 
 void StoreScene::SetupText() {
@@ -641,10 +641,10 @@ void StoreScene::SetupText() {
     mGlyphBuffer = OS_Alloc(mGlyphCount * 0xc);
     TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x10, 2, 0x21);
     TextManager::Get().SetColor(1, 0, 0xf);
-    mMessage = new MessageWindow("mes_storecomment", 1, 0x1800);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
-    mMessage->StartMessage(0xa, 0, 1);
+    mMessageWindow = new MessageWindow("mes_storecomment", 1, 0x1800);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(0xa, 0, 1);
 }
 
 void StoreScene::DrawText() {
@@ -654,8 +654,8 @@ void StoreScene::DrawText() {
                                                      (s16) (0x80 - ((u32) ctx->mInfo.mUnk_00 >> 1)), 0x90, 0, 0x60,
                                                      0xf, 0);
     }
-    if (mMessage != NULL) {
-        mMessage->Update();
+    if (mMessageWindow != NULL) {
+        mMessageWindow->Update();
     }
 }
 

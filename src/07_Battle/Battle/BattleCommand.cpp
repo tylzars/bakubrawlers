@@ -154,7 +154,7 @@ extern "C" void RotateCameraYaw(BattleCommandMap *map, u32 direction);
 
 BattleCommand::BattleCommand(u32 unk)
     : SceneBase(0x3e8, 0) {
-    mMessage = 0;
+    mMessageWindow = 0;
     mCommandPrompt  = 0;
     mUnk_11c = 0;
     mUnk_11e = 0;
@@ -321,8 +321,8 @@ BattleCommand::~BattleCommand() {
         delete mPromptWindow;
     }
     SpriteManager::Get().ResetSlots();
-    if (mMessage) {
-        delete mMessage;
+    if (mMessageWindow) {
+        delete mMessageWindow;
     }
 }
 
@@ -508,7 +508,7 @@ void BattleCommand::Update() {
                 }
             }
             SetCommandMessage();
-            mMessage->UploadTextPalette();
+            mMessageWindow->UploadTextPalette();
             mCommandWindow->mEnabled = 1;
             return;
         }
@@ -523,7 +523,7 @@ void BattleCommand::Update() {
             G2S_SetBlendBrightness(0x1f, 0);
             data_020d433c.mBattlePlayers->mUnk_2af++;
             SetCommandMessage();
-            mMessage->UploadTextPalette();
+            mMessageWindow->UploadTextPalette();
             mCommandWindow->mEnabled = 1;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
             if (mUnk_133 == list->mUnk_2a9) {
@@ -666,7 +666,7 @@ void BattleCommand::Update() {
             list->mUnk_28b         = a;
             list->mUnk_28c         = b;
             Draw();
-            mMessage->Update();
+            mMessageWindow->Update();
             return;
         }
         case 14: {
@@ -923,8 +923,8 @@ void BattleCommand::Update() {
         case 25:
             mCommandWindow->Reset(-1);
             mCockpitWindow->mEnabled = 1;
-            mMessage->StartMessage(0x13, 0, 1);
-            mMessage->UploadTextPalette();
+            mMessageWindow->StartMessage(0x13, 0, 1);
+            mMessageWindow->UploadTextPalette();
             mState++;
             return;
         case 26: {
@@ -961,7 +961,7 @@ void BattleCommand::Update() {
                 mState++;
                 mUnk_129 = 0;
             }
-            mMessage->Update();
+            mMessageWindow->Update();
             u8 b                   = mCursorY;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
             u8 a                   = mCursorX;
@@ -983,7 +983,7 @@ void BattleCommand::Update() {
                 mCockpitWindow->mEnabled = 0;
                 mState          = 0x18;
             }
-            mMessage->Update();
+            mMessageWindow->Update();
             {
                 u8 b                   = mCursorY;
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -1119,7 +1119,7 @@ void BattleCommand::Update() {
             }
             mCommandWindow->Reset(-1);
             mCommandWindow->Update(1);
-            mMessage->UploadTextPalette();
+            mMessageWindow->UploadTextPalette();
             SetCommandMessage();
             mUnk_13a = 0;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -1200,7 +1200,7 @@ void BattleCommand::Update() {
             mCockpitWindow->Reset(-1);
             mCockpitWindow->mEnabled = 1;
             RefreshCommandPageOrList();
-            mMessage->StartMessage(0x21, 0, 1);
+            mMessageWindow->StartMessage(0x21, 0, 1);
             return;
         case 42: {
             if (mCockpitWindow->mState == 1) {
@@ -1245,7 +1245,7 @@ void BattleCommand::Update() {
                 CloseMode(1);
                 mUnk_129 = 0;
             }
-            mMessage->Update();
+            mMessageWindow->Update();
             u8 b                = mCursorY;
             u8 a                = mCursorX;
             BattlePlayerList *l = data_020d433c.mBattlePlayers;
@@ -1277,7 +1277,7 @@ void BattleCommand::Update() {
             return;
         }
         case 43:
-            mMessage->Update();
+            mMessageWindow->Update();
             Draw();
             PollModeClosed();
             if (mMode != 0) {
@@ -1296,7 +1296,7 @@ void BattleCommand::Update() {
             mState++;
             return;
         case 44:
-            mMessage->Update();
+            mMessageWindow->Update();
             Draw();
             if (SpriteManager::Get().sFade[0] > 1) {
                 return;
@@ -1464,7 +1464,7 @@ BOOL BattleCommand::UpdateCommandWindowAndCursor(BOOL input) {
         }
         UpdateCursorScrollAndCamera(0);
     }
-    mMessage->Update();
+    mMessageWindow->Update();
     Draw();
     u8 b                   = mCursorY;
     u8 a                   = mCursorX;
@@ -1721,9 +1721,9 @@ void BattleCommand::func_ov007_0223a734() {
         p++;
     } while (p < data_020d433c.mPlayerCount);
     ChangeDir("/");
-    mMessage = new MessageWindow("mes_Command", 1, 0x1f000);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
+    mMessageWindow = new MessageWindow("mes_Command", 1, 0x1f000);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
     SetCommandMessage();
 }
 
@@ -2348,12 +2348,12 @@ void BattleCommand::SetCommandMessage() {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     if (list->mTurnPlayer == list->mUnk_2a9) {
         if (list->mUnk_292 == 1) {
-            mMessage->StartMessage(0x20, 0, 1);
+            mMessageWindow->StartMessage(0x20, 0, 1);
         } else {
-            mMessage->StartMessage(1, 0, 1);
+            mMessageWindow->StartMessage(1, 0, 1);
         }
     } else {
-        mMessage->StartMessage(0x33, 0, 1);
+        mMessageWindow->StartMessage(0x33, 0, 1);
     }
 }
 

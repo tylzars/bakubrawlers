@@ -18,9 +18,9 @@ public:
     /* 18 */ CellAnimFile *mCellFiles[3];
     /* 24 */ CellAnimation *mCells[11];
     /* 50 */ SelectWindow *mWindow;
-    /* 54 */ void *mCardMes;
-    /* 58 */ void *mCardTextMes;
-    /* 5c */ void *mCardNameMes;
+    /* 54 */ void *mCardMessages;
+    /* 58 */ void *mCardTextMessages;
+    /* 5c */ void *mCardNameMessages;
     /* 60 */ void *mTextBuffers[3];
     /* 6c */ void *mGlyphBuffers[3];
     /* 78 */ u32 mTextBufferSizes[3];
@@ -43,7 +43,7 @@ public:
     /* 100 */ u16 mNameWidth;
     /* 102 */ s16 mNameX;
     /* 104 */ u8 mVisible;
-    /* 105 */ u8 mCloseFade;
+    /* 105 */ u8 mCloseFadeKind;
     /* 106 */ u8 mUnk_106;
     /* 107 */ u8 mUnk_107;
     /* 108 */ u8 mUnk_108;

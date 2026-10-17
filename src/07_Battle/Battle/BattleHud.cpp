@@ -57,7 +57,7 @@ BattleHud::BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *choice)
     mUnk_c3 = 0;
     mShakeSign = 0;
     mShakeFrames = 0;
-    mShakeCount = 0;
+    mShakesRemaining = 0;
     mUnk_117_0 = 0;
     mUnk_117_1 = 0;
     mUnk_117_2 = 0;
@@ -1267,13 +1267,13 @@ void BattleHud::DrawAbilitiesAndCards() {
         mLargeCardY -= mLargeCardYPerFrame;
         if (mLargeCardY < 0x5f) {
             mLargeCardY = 0x5f;
-            if (mShakeCount) {
+            if (mShakesRemaining) {
                 if (mShakeSign != 0) { y += 3; } else { y -= 3; }
                 mShakeFrames++;
                 if (mShakeFrames >= 1) {
                     mShakeFrames = 0;
                     mShakeSign ^= 1;
-                    mShakeCount--;
+                    mShakesRemaining--;
                 }
             }
         }

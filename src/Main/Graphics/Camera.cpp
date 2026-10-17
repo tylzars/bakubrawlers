@@ -260,7 +260,7 @@ void CameraManager::Reset() {
     mModelsVisible = 1;
     mCameras[0] = NULL;
     mCameras[1] = NULL;
-    mActive = 0;
+    mCameraIndex = 0;
     mMode = 0;
     mDirty = 0;
 }
@@ -301,13 +301,13 @@ void CameraManager::UpdateProjection() {
     }
     switch (mMode) {
         case 1: {
-            Camera *camera = mCameras[mActive];
+            Camera *camera = mCameras[mCameraIndex];
             MTX_Perspective(camera->mSin, camera->mCos, 0x1555, camera->mNear, camera->mFar, 0x19a, &data_02211374.mProjection);
             data_02211374.mFlags &= ~0x50;
             break;
         }
         case 2:
-            if (mActive == 0) {
+            if (mCameraIndex == 0) {
                 MTX_Frustum(cam0->mNearHeight / 2, -cam0->mNearHeight / 2, -cam0->mNearHalfWidth, cam0->mNearHalfWidth, cam0->mNear, cam0->mFar,
                               0x19a, &data_02211374.mProjection);
                 data_02211374.mFlags &= ~0x50;
@@ -318,13 +318,13 @@ void CameraManager::UpdateProjection() {
             }
             break;
         case 3: {
-            Camera *camera = mCameras[mActive];
+            Camera *camera = mCameras[mCameraIndex];
             MTX_Perspective(camera->mSin, camera->mCos, 0x1555, camera->mNear, camera->mFar, 0x19a, &data_02211374.mProjection);
             data_02211374.mFlags &= ~0x50;
             break;
         }
         case 4:
-            if (mActive == 0) {
+            if (mCameraIndex == 0) {
                 MTX_Perspective(cam0->mSin, cam0->mCos, 0x1555, cam0->mNear, 0x18000, 0x1000, &data_02211374.mProjection);
                 data_02211374.mFlags &= ~0x50;
             } else {
@@ -382,7 +382,7 @@ void CameraManager::UpdateMode() {
         case 0:
             return;
         case 1:
-            if (mActive == 0) {
+            if (mCameraIndex == 0) {
                 reg_GX_POWCNT = reg_GX_POWCNT | 0x8000;
                 return;
             } else {
@@ -391,14 +391,14 @@ void CameraManager::UpdateMode() {
             }
         case 2:
         case 3:
-            if (mActive == 0) {
+            if (mCameraIndex == 0) {
                 reg_GX_POWCNT = reg_GX_POWCNT | 0x8000;
                 func_02002e00();
                 GX_SetBankForLCDC(8);
                 GX_SetBankForSubBG(4);
                 reg_GXS_DB_DISPCNT = (reg_GXS_DB_DISPCNT & ~0x1f00) | 0x400;
                 *(vu32 *) 0x4000064 = 0x80330010;
-                mActive = 1;
+                mCameraIndex = 1;
             } else {
                 reg_GX_POWCNT = reg_GX_POWCNT & ~0x8000;
                 func_02002dec();
@@ -407,7 +407,7 @@ void CameraManager::UpdateMode() {
                 reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xffbfff9f) | 0x20;
                 reg_GXS_DB_DISPCNT = (reg_GXS_DB_DISPCNT & ~0x1f00) | 0x1000;
                 *(vu32 *) 0x4000064 = 0x80320010;
-                mActive = 0;
+                mCameraIndex = 0;
             }
             {
                 UnkStruct_020c2acc *p = (UnkStruct_020c2acc *) &SpriteManager::Get().mScreens[1];
@@ -421,14 +421,14 @@ void CameraManager::UpdateMode() {
             }
             return;
         case 4:
-            if (mActive == 0) {
+            if (mCameraIndex == 0) {
                 GX_ResetBankForBG();
                 GX_SetBankForLCDC(8);
                 GX_SetBankForBG(2);
                 reg_G2_BG0CNT = (reg_G2_BG0CNT & ~3) | 2;
                 reg_G2_BG2CNT = (reg_G2_BG2CNT & ~3) | 3;
                 *(vu32 *) 0x4000064 = 0x81330010;
-                mActive = 1;
+                mCameraIndex = 1;
                 return;
             } else {
                 GX_ResetBankForBG();
@@ -437,7 +437,7 @@ void CameraManager::UpdateMode() {
                 reg_G2_BG2CNT = (reg_G2_BG2CNT & ~3) | 2;
                 reg_G2_BG0CNT = (reg_G2_BG0CNT & ~3) | 3;
                 *(vu32 *) 0x4000064 = 0x81310010;
-                mActive = 0;
+                mCameraIndex = 0;
                 return;
             }
     }

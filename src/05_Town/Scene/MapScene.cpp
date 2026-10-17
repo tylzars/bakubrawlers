@@ -59,7 +59,7 @@ static const WindowCellRecord sMapMenuCells[5] = {
 MapScene::MapScene() :
     SceneBase(1000, 0) {
     mEvent       = NULL;
-    mMenu        = NULL;
+    mMenuWindow        = NULL;
     mPanelWindow = NULL;
     mGlyphBuffer = NULL;
     mText[0].mMessages = NULL;
@@ -120,8 +120,8 @@ MapScene::~MapScene() {
     if (mText[1].mGlyphBuffer != NULL) {
         OS_Free(mText[1].mGlyphBuffer);
     }
-    if (mMenu != NULL) {
-        delete mMenu;
+    if (mMenuWindow != NULL) {
+        delete mMenuWindow;
     }
     if (mPanelWindow != NULL) {
         delete mPanelWindow;
@@ -257,8 +257,8 @@ void MapScene::Update() {
             break;
         }
         case 13:
-            mMenu->Update(TRUE);
-            if (mMenu->mState == 4) {
+            mMenuWindow->Update(TRUE);
+            if (mMenuWindow->mState == 4) {
                 if (mTab == 3) {
                     switch (gSaveData[0].mUnk_42) {
                         case 1:
@@ -274,9 +274,9 @@ void MapScene::Update() {
                             }
                             break;
                     }
-                    mMenu->Reset((s8) mTab);
+                    mMenuWindow->Reset((s8) mTab);
                     {
-                        CellAnimation *cell = mMenu->mCells[mTab];
+                        CellAnimation *cell = mMenuWindow->mCells[mTab];
                         cell->mAnimIndex = sMapMenuCells[mTab].mAnimIndices[2];
                         cell->ResetAnimation();
                     }
@@ -628,10 +628,10 @@ BOOL MapScene::func_ov005_0221b2ac() {
 
 u8 MapScene::UpdateMenu() {
     u8 result       = 0;
-    u8 prev         = mMenu->mCursor->mSelection;
-    mMenu->mEnabled = 1;
-    u8 status       = mMenu->Update(1);
-    u8 sel          = mMenu->mCursor->mSelection;
+    u8 prev         = mMenuWindow->mCursor->mSelection;
+    mMenuWindow->mEnabled = 1;
+    u8 status       = mMenuWindow->Update(1);
+    u8 sel          = mMenuWindow->mCursor->mSelection;
     if (sel < 4) {
         mTab = sel;
     }
@@ -665,17 +665,17 @@ void MapScene::func_ov005_0221b364(u8 index, BOOL changed) {
 }
 
 void MapScene::CreateMenu() {
-    if (mMenu != NULL) {
-        delete mMenu;
+    if (mMenuWindow != NULL) {
+        delete mMenuWindow;
     }
-    mMenu = new SelectWindow(5, sMapMenuItems, -1);
-    mMenu->SetCells(5, sMapMenuCells);
-    mMenu->mCursor->mSelection = -1;
-    mMenu->mEnabled            = 0;
-    mMenu->mCursor->mSelection = mTab;
+    mMenuWindow = new SelectWindow(5, sMapMenuItems, -1);
+    mMenuWindow->SetCells(5, sMapMenuCells);
+    mMenuWindow->mCursor->mSelection = -1;
+    mMenuWindow->mEnabled            = 0;
+    mMenuWindow->mCursor->mSelection = mTab;
     for (u8 i = 0; i < 4; i++) {
         u32 state           = i == mTab ? 2 : 0;
-        CellAnimation *cell = mMenu->mCells[i];
+        CellAnimation *cell = mMenuWindow->mCells[i];
         cell->mAnimIndex       = sMapMenuCells[i].mAnimIndices[state];
         cell->ResetAnimation();
     }
@@ -810,8 +810,8 @@ void MapScene::DrawPopup() {
             }
             break;
     }
-    if (mMenu != NULL) {
-        mMenu->Draw();
+    if (mMenuWindow != NULL) {
+        mMenuWindow->Draw();
     }
     if (mUnk_74 < 0) {
         return;

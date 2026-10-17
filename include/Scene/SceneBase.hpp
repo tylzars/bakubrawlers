@@ -8,7 +8,7 @@ class SceneBase;
 // Old view of the parent link (mList), kept so existing code keeps compiling.
 struct UnkStruct_SceneRequest {
     /* 00 */ PAD(0x00, 0x12);
-    /* 12 */ u16 mNextScene;
+    /* 12 */ u16 mRequest;
 };
 
 struct UnkStruct_SceneNode {

@@ -53,7 +53,7 @@ ParkMenu::ParkMenu(u8 current) {
     mMode = 0;
     mTimer = 0;
     mWindow = NULL;
-    mMessage = NULL;
+    mMessageWindow = NULL;
     for (u8 i = 0; i < 8; i++) {
         mSlots[i]     = NULL;
         mSlots[i + 6] = NULL;
@@ -76,7 +76,7 @@ ParkMenu::ParkMenu(u8 current) {
 }
 
 ParkMenu::~ParkMenu() {
-    delete mMessage;
+    delete mMessageWindow;
     OS_Free(mSlots[2]);
     OS_Free(mSlots[1]);
     OS_Free(mSlots[0]);
@@ -146,10 +146,10 @@ void ParkMenu::LoadGraphics() {
     mGlyphBuffer = OS_Alloc((s16) mGlyphCount * (s16) 0xc);
     TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x18, 2, 0x21);
     TextManager::Get().SetColor(1, 0, 0xf);
-    mMessage = new MessageWindow("mes_park", 1, 0x1f000);
-    mMessage->StartMessage(3, 0, 1);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
+    mMessageWindow = new MessageWindow("mes_park", 1, 0x1f000);
+    mMessageWindow->StartMessage(3, 0, 1);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
 }
 
 u32 ParkMenu::UpdateSelection(u32 mode) {
@@ -415,7 +415,7 @@ void ParkMenu::Draw() {
                                                      sTextY[i], 0, (u16) (sTextVramOffsets[i] >> 7), 0xf, 0);
     }
     DrawNumber();
-    mMessage->Update();
+    mMessageWindow->Update();
 }
 
 void ParkMenu::DrawNumber() {

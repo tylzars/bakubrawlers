@@ -75,7 +75,7 @@ BOOL SelectWindow::Update(BOOL input) {
             if (newId == -1) {
                 return 0;
             }
-            mCells[newId]->SetAnimation(mButtons[newId].mResultAnim);
+            mCells[newId]->SetAnimation(mButtons[newId].mResultAnimIndex);
             if (oldId != -1 && newId != oldId) {
                 mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
             }
@@ -87,7 +87,7 @@ BOOL SelectWindow::Update(BOOL input) {
             if (newId == -1) {
                 return 0;
             }
-            mCells[newId]->SetAnimation(mButtons[newId].mResultAnim);
+            mCells[newId]->SetAnimation(mButtons[newId].mResultAnimIndex);
             if (oldId != -1 && newId != oldId) {
                 CellAnimation *cell = mCells[oldId];
                 u8 anim             = mButtons[oldId].mUnk_08;
@@ -103,7 +103,7 @@ BOOL SelectWindow::Update(BOOL input) {
             if (newId == -1) {
                 return 0;
             }
-            mCells[newId]->SetAnimation(mButtons[newId].mResultAnim);
+            mCells[newId]->SetAnimation(mButtons[newId].mResultAnimIndex);
             if (oldId != -1 && newId != oldId && mCursor->HasNeighbor(newSel)) {
                 mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
             }
@@ -605,7 +605,7 @@ void SelectWindow::SetResultItem(u32 unk1, u32 unk2) {
     s8 oldId = GetSelectedId();
     mCursor->mSelection = unk1;
     s8 sel = mCursor->mSelection;
-    mCells[unk1]->SetAnimation(mButtons[unk1].mResultAnim);
+    mCells[unk1]->SetAnimation(mButtons[unk1].mResultAnimIndex);
     if (oldId != -1 && unk1 != oldId && mCursor->HasNeighbor(sel)) {
         mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
     }

@@ -103,7 +103,7 @@ MyroomRankingScene::MyroomRankingScene() :
     mCharacterView   = NULL;
     mResult   = 0;
     mMessages = NULL;
-    mMessage  = NULL;
+    mMessageWindow  = NULL;
     mState  = 0;
     mScroll  = 0;
     mRow  = 0;
@@ -155,7 +155,7 @@ MyroomRankingScene::~MyroomRankingScene() {
             OS_Free(mGlyphBuffers[i]);
         }
     }
-    delete mMessage;
+    delete mMessageWindow;
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     MI_CpuClearFast((void *) 0x6200000, 0x20000);
     SpriteManager::Get().ResetSlots();
@@ -342,10 +342,10 @@ void MyroomRankingScene::Init() {
         TextManager::Get().Init(mGlyphBuffers[i], 1, 0, 0x10, 4, 0x42);
     }
     TextManager::Get().SetColor(1, 0, 0xf);
-    mMessage = new MessageWindow("mes_myroom", 1, 0xb000);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
-    mMessage->StartMessage(0x28, 0, 1);
+    mMessageWindow = new MessageWindow("mes_myroom", 1, 0xb000);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(0x28, 0, 1);
     if ((s32) mPlayerRank > 10) {
         mScroll = mEntryCount - 6;
         mRow = 5;
@@ -419,7 +419,7 @@ void MyroomRankingScene::DrawSubScreen() {
     window->mCellPos[9].x = 0xe4;
     window->mCellPos[9].y = cy;
     mWindow->Draw();
-    mMessage->Update();
+    mMessageWindow->Update();
 }
 
 s32 MyroomRankingScene::UpdateSelection() {

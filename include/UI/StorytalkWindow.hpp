@@ -13,7 +13,7 @@ class StorytalkWindow : public SceneBase {
 public:
     /* 0c */ CellAnimation *mCellAnims[3];
     /* 18 */ void *mMessages;
-    /* 1c */ void *mStoryCharaNames;
+    /* 1c */ void *mStoryCharaNameMessages;
     /* 20 */ void *mTextBuffers[2];
     /* 28 */ u32 mTextBufferSizes[2];
     /* 30 */ u8 mState; // state

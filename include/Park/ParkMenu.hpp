@@ -37,7 +37,7 @@ public:
     };
     /* 58 */ SelectWindow *mWindow;
     /* 5c */ Ranking *mRanking;
-    /* 60 */ MessageWindow *mMessage;
+    /* 60 */ MessageWindow *mMessageWindow;
     /* 64 */
 
     ParkMenu(u8 current);

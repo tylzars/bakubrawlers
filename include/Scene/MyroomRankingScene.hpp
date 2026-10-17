@@ -42,7 +42,7 @@ public:
     /* 170 */ u32 mResult;
     /* 174 */ MessageFile *mMessages;
     /* 178 */ PAD(0x178, 0x17c);
-    /* 17c */ MessageWindow *mMessage;
+    /* 17c */ MessageWindow *mMessageWindow;
     /* 180 */ void *mTextBuffers[6];
     /* 198 */ void *mGlyphBuffers[6];
     /* 1b0 */ u32 mTextBufferSize;

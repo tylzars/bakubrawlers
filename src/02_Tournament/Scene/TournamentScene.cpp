@@ -108,9 +108,9 @@ TournamentScene::TournamentScene() :
     SceneBase(1000, 0) {
     mObj38  = NULL;
     mEvent  = NULL;
-    mMenu   = NULL;
+    mMenuWindow   = NULL;
     mWindow = NULL;
-    mMessage = NULL;
+    mMessageWindow = NULL;
     mTextWidth = 0;
     mTextHeight = 0;
     mUnk_a0 = 0;
@@ -181,8 +181,8 @@ void TournamentScene::Cleanup() {
     mCell20 = NULL;
     delete mObj38;
     mObj38 = NULL;
-    delete mMenu;
-    mMenu = NULL;
+    delete mMenuWindow;
+    mMenuWindow = NULL;
     delete mWindow;
     mWindow = NULL;
     ClearSubScreenText();
@@ -201,8 +201,8 @@ void TournamentScene::Cleanup() {
             mGlyphBuffers[i] = NULL;
         }
     }
-    delete mMessage;
-    mMessage = NULL;
+    delete mMessageWindow;
+    mMessageWindow = NULL;
     MI_CpuClearFast((void *) 0x06000000, 0x80000);
     MI_CpuClearFast((void *) 0x06200000, 0x20000);
     MI_CpuClearFast((void *) 0x06400000, 0x40000);
@@ -434,7 +434,7 @@ void TournamentScene::Update() {
             mState++;
             break;
         case 19:
-            mMenu->Reset((s8) mSelection);
+            mMenuWindow->Reset((s8) mSelection);
             PrintSubScreenText(sTournamentMenuSubTextIndices[mSelection]);
             SetupMainScreenText(sTournamentMenuMainTextIndices[mSelection]);
             mMenuVisible = 1;
@@ -442,8 +442,8 @@ void TournamentScene::Update() {
             mState = 0x15;
             break;
         case 20:
-            mMenu->mState = 4;
-            mMenu->Reset((s8) mSelection);
+            mMenuWindow->mState = 4;
+            mMenuWindow->Reset((s8) mSelection);
             RefreshCellLayout();
             mState++;
             break;
@@ -456,7 +456,7 @@ void TournamentScene::Update() {
             } else {
                 mUnk_a0 = 0;
             }
-            u8 r = mMenu->Update(TRUE);
+            u8 r = mMenuWindow->Update(TRUE);
             switch (r) {
                 case 1:
                     switch (mSelection) {
@@ -479,9 +479,9 @@ void TournamentScene::Update() {
                     }
                     break;
                 case 2: {
-                    CellAnimation *cell = mMenu->mCells[mSelection];
+                    CellAnimation *cell = mMenuWindow->mCells[mSelection];
                     cell->mFrameIndex       = cell->mFrames[cell->mAnimIndex].mFrameCount - 1;
-                    mSelection          = mMenu->mCursor->mSelection;
+                    mSelection          = mMenuWindow->mCursor->mSelection;
                     mState             = 0x18;
                     break;
                 }
@@ -494,8 +494,8 @@ void TournamentScene::Update() {
             break;
         }
         case 22:
-            if (mMenu->mState != 1) {
-                mMenu->Update(TRUE);
+            if (mMenuWindow->mState != 1) {
+                mMenuWindow->Update(TRUE);
             }
             if (UpdateScroll()) {
                 mState = 0x15;
@@ -590,16 +590,16 @@ void TournamentScene::Update() {
             }
             break;
         case 30:
-            mMenu->mState = 4;
-            mMenu->Reset((s8) mMode);
+            mMenuWindow->mState = 4;
+            mMenuWindow->Reset((s8) mMode);
             mState++;
             break;
         case 31: {
-            u8 prev = mMenu->mCursor->mSelection;
-            u8 r    = mMenu->Update(TRUE);
+            u8 prev = mMenuWindow->mCursor->mSelection;
+            u8 r    = mMenuWindow->Update(TRUE);
             switch (r) {
                 case 1:
-                    mSelection = mMenu->mCursor->mSelection;
+                    mSelection = mMenuWindow->mCursor->mSelection;
                     mFirstItemState    = 0x22;
                     mOtherItemState    = 0x1e;
                     mState    = 0x24;
@@ -609,7 +609,7 @@ void TournamentScene::Update() {
                     mState    = 0x18;
                     break;
                 default: {
-                    u32 cur = (u8) mMenu->mCursor->mSelection;
+                    u32 cur = (u8) mMenuWindow->mCursor->mSelection;
                     if (cur <= 5) {
                         mSelection = cur;
                         if (prev != mSelection) {
@@ -978,18 +978,18 @@ void TournamentScene::LoadMenu() {
     sub.LoadPalette("union_b_obj_arrow_ncl.bin", 0x80, 0);
     ChangeDir("/");
     LoadSubScreenText("/font/mes_tornament.mes", 1);
-    delete mMessage;
-    mMessage = new MessageWindow("mes_tornament", 1, 0x9000);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
-    mMessage->StartMessage(5, 0, 1);
+    delete mMessageWindow;
+    mMessageWindow = new MessageWindow("mes_tornament", 1, 0x9000);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(5, 0, 1);
     LoadMainScreenText("/font/mes_Im_button.mes");
     ClearSubScreenText();
     ClearMainScreenText();
-    delete mMenu;
-    mMenu = new SelectWindow(6, sTournamentMenuItems, 0);
-    mMenu->SetCells(6, sTournamentMenuCells);
-    mMenu->mCursor->mSelection = -1;
+    delete mMenuWindow;
+    mMenuWindow = new SelectWindow(6, sTournamentMenuItems, 0);
+    mMenuWindow->SetCells(6, sTournamentMenuCells);
+    mMenuWindow->mCursor->mSelection = -1;
     RefreshCellLayout();
 }
 
@@ -1010,16 +1010,16 @@ void TournamentScene::LoadModeMenu() {
     sub.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0x4000, 0);
     sub.LoadPalette("union_b_obj_cockpit_ncl.bin", 0x60, 0);
     LoadSubScreenText("/font/mes_town_info.mes", 2);
-    delete mMessage;
-    mMessage = new MessageWindow("mes_tornament", 1, 0x9000);
-    mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->SetWidth(0xd8);
-    mMessage->StartMessage(7, 0, 1);
+    delete mMessageWindow;
+    mMessageWindow = new MessageWindow("mes_tornament", 1, 0x9000);
+    mMessageWindow->func_02065bd4(0x14, 4, 0);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(7, 0, 1);
     LoadMainScreenText("/font/mes_T_clear.mes");
     ChangeDir("/");
-    delete mMenu;
-    mMenu = new SelectWindow(7, sTournamentModeMenuItems, 0);
-    mMenu->SetCells(7, sTournamentModeMenuCells);
+    delete mMenuWindow;
+    mMenuWindow = new SelectWindow(7, sTournamentModeMenuItems, 0);
+    mMenuWindow->SetCells(7, sTournamentModeMenuCells);
 }
 
 void TournamentScene::LoadMainScreenText(const char *mes) {
@@ -1079,14 +1079,14 @@ void TournamentScene::LoadSubScreenText(const char *mes, u8 rows) {
 
 void TournamentScene::Draw() {
     if (mMenuVisible != 0) {
-        mMenu->Draw();
+        mMenuWindow->Draw();
         if (mWindowOpen == 0) {
-            mMessage->Update();
+            mMessageWindow->Update();
         }
     } else if (mUnk_b9 != 0) {
-        mMenu->Draw();
+        mMenuWindow->Draw();
         if (mWindowOpen == 0) {
-            mMessage->Update();
+            mMessageWindow->Update();
         }
         mCell20->Update();
         mCell20->Draw(1, sTournamentModeMenuItems[mMode].mX, sTournamentModeMenuItems[mMode].mY, 2);
@@ -1200,7 +1200,7 @@ u8 TournamentScene::UpdateScrollInput(u8 input) {
     mNewSelection = mSelection;
     u8 result     = 0;
     if (input == 3) {
-        switch (mMenu->GetSelectedId()) {
+        switch (mMenuWindow->GetSelectedId()) {
             case 3:
                 if (mSelection != 0) {
                     result = 1;
@@ -1215,36 +1215,36 @@ u8 TournamentScene::UpdateScrollInput(u8 input) {
                 break;
         }
     }
-    if (result == 0 && mMenu->mState == 1) {
+    if (result == 0 && mMenuWindow->mState == 1) {
         u8 r = UpdateScrollKeys();
         switch (r) {
             case 1:
-                mMenu->SetResultItem(3, 3);
+                mMenuWindow->SetResultItem(3, 3);
                 break;
             case 2:
-                mMenu->SetResultItem(4, 3);
+                mMenuWindow->SetResultItem(4, 3);
                 break;
         }
     }
     if (result != 0) {
         u8 i              = 0;
-        WindowItem *items = mMenu->mCursor->mItems;
+        WindowItem *items = mMenuWindow->mCursor->mItems;
         do {
             if (mNewSelection == i) {
-                mMenu->mCells[i]->ResetAnimation();
-                mMenu->mCells[i]->SetAnimation(sTournamentMenuSelectedAnimIndices[i]);
+                mMenuWindow->mCells[i]->ResetAnimation();
+                mMenuWindow->mCells[i]->SetAnimation(sTournamentMenuSelectedAnimIndices[i]);
             } else if (mSelection == i) {
-                mMenu->mCells[i]->SetMode(2);
+                mMenuWindow->mCells[i]->SetMode(2);
             }
             items[i].mFlags = 0x8000;
             i++;
         } while (i <= mLastIndex + 1);
         if (mNewSelection == 0) {
-            mMenu->mButtons[3].mEnabled = 0;
+            mMenuWindow->mButtons[3].mEnabled = 0;
             items[3].mFlags             = 0x8000;
         }
         if (mNewSelection == mLastIndex + 1) {
-            mMenu->mButtons[4].mEnabled = 0;
+            mMenuWindow->mButtons[4].mEnabled = 0;
             items[4].mFlags             = 0x8000;
         }
         mScrollLeft = 0x62;
@@ -1303,40 +1303,40 @@ BOOL TournamentScene::UpdateScroll() {
         step = -step;
     }
     u8 i              = 0;
-    WindowItem *items = mMenu->mCursor->mItems;
+    WindowItem *items = mMenuWindow->mCursor->mItems;
     do {
-        Vec2s pos = mMenu->GetCellPos(i);
+        Vec2s pos = mMenuWindow->GetCellPos(i);
         pos.x += step;
-        mMenu->SetCellPos(i, pos);
+        mMenuWindow->SetCellPos(i, pos);
         items[i].mX = step + items[i].mX;
         i++;
     } while (i <= mLastIndex + 1);
     if (mScrollLeft == 0) {
-        mMenu->mCells[mSelection]->SetAnimation(sTournamentMenuAnimIndices[mSelection]);
+        mMenuWindow->mCells[mSelection]->SetAnimation(sTournamentMenuAnimIndices[mSelection]);
         items[mNewSelection].mFlags = 5;
         items[mSelection].mFlags    = 0x8000;
-        mMenu->mCursor->mSelection  = mNewSelection;
+        mMenuWindow->mCursor->mSelection  = mNewSelection;
         mSelection                  = mNewSelection;
         if (mSelection == 0) {
-            mMenu->mButtons[3].mEnabled = 0;
+            mMenuWindow->mButtons[3].mEnabled = 0;
             items[3].mFlags             = 0x8000;
         } else {
-            mMenu->mButtons[3].mEnabled = 1;
+            mMenuWindow->mButtons[3].mEnabled = 1;
             items[3].mFlags             = 8;
         }
         if (mSelection == mLastIndex + 1) {
-            mMenu->mButtons[4].mEnabled = 0;
+            mMenuWindow->mButtons[4].mEnabled = 0;
             items[4].mFlags             = 0x8000;
         } else {
-            mMenu->mButtons[4].mEnabled = 1;
+            mMenuWindow->mButtons[4].mEnabled = 1;
             items[4].mFlags             = 8;
         }
-        mMenu->mCells[4]->Rewind();
-        mMenu->mCells[3]->Rewind();
+        mMenuWindow->mCells[4]->Rewind();
+        mMenuWindow->mCells[3]->Rewind();
         if (mDirection == 1) {
-            mMenu->mCells[3]->SetAnimation(0);
+            mMenuWindow->mCells[3]->SetAnimation(0);
         } else {
-            mMenu->mCells[4]->SetAnimation(1);
+            mMenuWindow->mCells[4]->SetAnimation(1);
         }
         PrintSubScreenText(sTournamentMenuSubTextIndices[mSelection]);
         SetupMainScreenText(sTournamentMenuMainTextIndices[mSelection]);
@@ -1347,42 +1347,42 @@ BOOL TournamentScene::UpdateScroll() {
 
 
 void TournamentScene::RefreshCellLayout() {
-    WindowItem *items = mMenu->mCursor->mItems;
+    WindowItem *items = mMenuWindow->mCursor->mItems;
     s16 base          = mSelection * 0x62;
     u8 i              = 0;
     do {
-        Vec2s pos = mMenu->GetCellPos(i);
+        Vec2s pos = mMenuWindow->GetCellPos(i);
         pos.x     = i * 0x62 + 0x58 - base;
-        mMenu->SetCellPos(i, pos);
+        mMenuWindow->SetCellPos(i, pos);
         items[i].mX = pos.x;
         if (i == mSelection) {
-            mMenu->mCells[i]->SetAnimation(sTournamentMenuSelectedAnimIndices[i]);
+            mMenuWindow->mCells[i]->SetAnimation(sTournamentMenuSelectedAnimIndices[i]);
             items[i].mFlags = 5;
         } else {
-            mMenu->mCells[i]->SetAnimation(sTournamentMenuAnimIndices[i]);
+            mMenuWindow->mCells[i]->SetAnimation(sTournamentMenuAnimIndices[i]);
             items[i].mFlags = 0x8000;
         }
-        mMenu->mCells[i]->ResetAnimation();
+        mMenuWindow->mCells[i]->ResetAnimation();
         i++;
     } while (i <= mLastIndex + 1);
     u32 flags;
     if (mSelection == 0) {
-        mMenu->mButtons[3].mEnabled = 0;
+        mMenuWindow->mButtons[3].mEnabled = 0;
         flags                       = 0x8000;
     } else {
-        mMenu->mButtons[3].mEnabled = 1;
+        mMenuWindow->mButtons[3].mEnabled = 1;
         flags                       = 8;
     }
     items[3].mFlags = flags;
     if (mSelection == mLastIndex + 1) {
-        mMenu->mButtons[4].mEnabled = 0;
+        mMenuWindow->mButtons[4].mEnabled = 0;
         flags                       = 0x8000;
     } else {
-        mMenu->mButtons[4].mEnabled = 1;
+        mMenuWindow->mButtons[4].mEnabled = 1;
         flags                       = 8;
     }
     items[4].mFlags            = flags;
-    mMenu->mCursor->mSelection = mSelection;
+    mMenuWindow->mCursor->mSelection = mSelection;
 }
 
 void TournamentScene::PrintSubScreenText(u8 index) {

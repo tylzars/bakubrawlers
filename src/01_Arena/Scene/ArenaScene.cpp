@@ -88,9 +88,9 @@ ArenaScene::ArenaScene() : SceneBase(1000, 0) {
     mMessageTextBufferSize = 0;
     mMessageGlyphCount = 0;
     mCursor = 0;
-    mMenu = 0;
-    mSubMenu = 0;
-    mMessage = 0;
+    mMenuWindow = 0;
+    mSubMenuWindow = 0;
+    mMessageWindow = 0;
     mPlayerCount = 0;
     mState = 0;
     mTimer = 0;
@@ -133,16 +133,16 @@ ArenaScene::~ArenaScene() {
     if (mMessageTextBuffer != NULL) {
         OS_Free(mMessageTextBuffer);
     }
-    if (mMessage != NULL) {
-        delete mMessage;
+    if (mMessageWindow != NULL) {
+        delete mMessageWindow;
     }
     delete (u8 *) mMessages;
     delete mCursor;
-    if (mMenu != NULL) {
-        delete mMenu;
+    if (mMenuWindow != NULL) {
+        delete mMenuWindow;
     }
-    if (mSubMenu != NULL) {
-        delete mSubMenu;
+    if (mSubMenuWindow != NULL) {
+        delete mSubMenuWindow;
     }
     if (data_020d433c.mUnk_10 != NULL) {
         data_020d433c.mUnk_10->mFinished = 1;
@@ -181,30 +181,30 @@ void ArenaScene::SetSubMenuMode(u32 mode) {
         case 1:
             SoundManager::Get().StartSeqArc(1);
             G2S_SetBG2Priority(0);
-            if (mSubMenu != NULL) {
-                delete mSubMenu;
+            if (mSubMenuWindow != NULL) {
+                delete mSubMenuWindow;
             }
-            mSubMenu = new SelectWindow(3, sArenaThreeButtonItems, -1);
-            mSubMenu->SetCells(3, sArenaThreeButtonCells);
-            mSubMenu->mCursor->mSelection = -1;
-            mSubMenu->mCursor->mSelection = 1;
+            mSubMenuWindow = new SelectWindow(3, sArenaThreeButtonItems, -1);
+            mSubMenuWindow->SetCells(3, sArenaThreeButtonCells);
+            mSubMenuWindow->mCursor->mSelection = -1;
+            mSubMenuWindow->mCursor->mSelection = 1;
             PrintMessage(12);
             break;
         case 2:
             SoundManager::Get().StartSeqArc(2);
             G2S_SetBG2Priority(0);
-            if (mSubMenu != NULL) {
-                delete mSubMenu;
+            if (mSubMenuWindow != NULL) {
+                delete mSubMenuWindow;
             }
-            mSubMenu = new SelectWindow(2, sArenaTwoButtonItems, -1);
-            mSubMenu->SetCells(2, sArenaTwoButtonCells);
-            mSubMenu->mCursor->mSelection = -1;
-            mSubMenu->mCursor->mSelection = 0;
+            mSubMenuWindow = new SelectWindow(2, sArenaTwoButtonItems, -1);
+            mSubMenuWindow->SetCells(2, sArenaTwoButtonCells);
+            mSubMenuWindow->mCursor->mSelection = -1;
+            mSubMenuWindow->mCursor->mSelection = 0;
             PrintMessage(11);
             break;
         case 0:
-            delete mSubMenu;
-            mSubMenu = NULL;
+            delete mSubMenuWindow;
+            mSubMenuWindow = NULL;
             G2S_SetBG2Priority(3);
             break;
     }
@@ -245,17 +245,17 @@ void ArenaScene::Update() {
         }
     }
     if (mSubMenuMode != 0) {
-        if ((u8) mSubMenu->Update(1)) {
-            if ((u8) mSubMenu->mCursor->mSelection == 0) {
+        if ((u8) mSubMenuWindow->Update(1)) {
+            if ((u8) mSubMenuWindow->mCursor->mSelection == 0) {
                 StopWirelessAndReset();
             }
             SetSubMenuMode(0);
         }
-        if (mSubMenu == NULL) {
+        if (mSubMenuWindow == NULL) {
             return;
         }
         DrawMessage();
-        mSubMenu->Draw();
+        mSubMenuWindow->Draw();
         return;
     }
     switch (mState) {
@@ -381,14 +381,14 @@ void ArenaScene::Update() {
             mPlayerCount = count;
             PrintNames();
             if (mPlayerCount >= 2) {
-                if (mMenu->mButtons[0].mEnabled == 0) {
-                    mMenu->mButtons[0].mEnabled = 1;
-                    mMessage->StartMessage(2, 0, 1);
+                if (mMenuWindow->mButtons[0].mEnabled == 0) {
+                    mMenuWindow->mButtons[0].mEnabled = 1;
+                    mMessageWindow->StartMessage(2, 0, 1);
                 }
             } else {
-                if (mMenu->mButtons[0].mEnabled != 0) {
-                    mMenu->mButtons[0].mEnabled = 0;
-                    mMessage->StartMessage(0x10, 0, 1);
+                if (mMenuWindow->mButtons[0].mEnabled != 0) {
+                    mMenuWindow->mButtons[0].mEnabled = 0;
+                    mMessageWindow->StartMessage(0x10, 0, 1);
                 }
             }
             if (InputManager::Get().IsHeld(1) || menu == 1) {
@@ -400,8 +400,8 @@ void ArenaScene::Update() {
                 }
             }
             if (menu != 0) {
-                mMenu->Reset(-1);
-                mMenu->mCursor->mSelection = -1;
+                mMenuWindow->Reset(-1);
+                mMenuWindow->mCursor->mSelection = -1;
             }
             if (menu & (mState == 6)) {
                 ResetMenu();
@@ -431,7 +431,7 @@ void ArenaScene::Update() {
             }
             u8 count = WirelessManager::Get().TakeScanSnapshot() <= 4 ? WirelessManager::Get().TakeScanSnapshot() : 4;
             if (count != 0) {
-                mMenu->mButtons[0].mEnabled = 1;
+                mMenuWindow->mButtons[0].mEnabled = 1;
                 u8 i = 0;
                 do {
                     WirelessManager::Get();
@@ -478,7 +478,7 @@ void ArenaScene::Update() {
                     mSlots[2].mTargetY  = mSelection * 0x18 + 0x34;
                     if (touched) {
                         SoundManager::Get().StartSeqArc(0);
-                        mMessage->StartMessage(4, 1, 1);
+                        mMessageWindow->StartMessage(4, 1, 1);
                         u16 name[13];
                         name[12] = 0xfffc;
                         for (u8 i = 0; i < 12; i++) {
@@ -493,7 +493,7 @@ void ArenaScene::Update() {
                     }
                 }
             } else {
-                mMenu->mButtons[0].mEnabled = 0;
+                mMenuWindow->mButtons[0].mEnabled = 0;
                 ResetNames();
                 mSelection = 0;
             }
@@ -504,7 +504,7 @@ void ArenaScene::Update() {
             break;
         }
         case 10: {
-            mMenu->mButtons[0].mEnabled = 0;
+            mMenuWindow->mButtons[0].mEnabled = 0;
             u8 menu                     = UpdateMenu();
             if (menu == 2) {
                 ResetMenu();
@@ -699,12 +699,12 @@ void ArenaScene::LoadGraphics() {
     ChangeDir("/");
     delete mCursor;
     mCursor = new SelectWindowCursor(2, sArenaSlotItems, 0);
-    if (mMessage != NULL) {
-        delete mMessage;
+    if (mMessageWindow != NULL) {
+        delete mMessageWindow;
     }
-    mMessage = new MessageWindow("mes_BattleArenaMenu", 1, 0x2000);
-    mMessage->func_02065bd4(0x14, 4, 1);
-    mMessage->SetWidth(0xd8);
+    mMessageWindow = new MessageWindow("mes_BattleArenaMenu", 1, 0x2000);
+    mMessageWindow->func_02065bd4(0x14, 4, 1);
+    mMessageWindow->SetWidth(0xd8);
 }
 
 void ArenaScene::SetupVariant() {
@@ -724,22 +724,22 @@ void ArenaScene::SetupVariant() {
             G2S_SetBG0Priority(2);
             mSlots[0].mFrame = 0;
             mSlots[1].mFrame = 3;
-            mMessage->StartMessage(0, 0, 1);
+            mMessageWindow->StartMessage(0, 0, 1);
             break;
         case 1:
             G2S_SetBG0Priority(2);
             mSlots[0].mFrame = 6;
             mSlots[1].mFrame = 9;
-            mMessage->StartMessage(1, 0, 1);
+            mMessageWindow->StartMessage(1, 0, 1);
             break;
         case 2:
             G2S_SetBG0Priority(3);
-            mMessage->StartMessage(0x10, 0, 1);
+            mMessageWindow->StartMessage(0x10, 0, 1);
             break;
         case 3:
             G2S_SetBG0Priority(3);
             mSlots[2].mFrame = 12;
-            mMessage->StartMessage(3, 0, 1);
+            mMessageWindow->StartMessage(3, 0, 1);
             break;
     }
     for (u8 i = 0; i < 3; i++) {
@@ -774,14 +774,14 @@ void ArenaScene::SetupVariant() {
         break;
     }
     u8 sel = mVariant != 2 ? 1 : 0;
-    if (mMenu != NULL) {
-        delete mMenu;
+    if (mMenuWindow != NULL) {
+        delete mMenuWindow;
     }
-    mMenu = new SelectWindow(2, sArenaMenuItems[sel], 0);
-    mMenu->SetCells(2, sArenaMenuCells);
-    mMenu->mCursor->mSelection       = -1;
-    mMenu->mEnabled                  = 0;
-    mMenu->mButtons[0].mEnabled      = 0;
+    mMenuWindow = new SelectWindow(2, sArenaMenuItems[sel], 0);
+    mMenuWindow->SetCells(2, sArenaMenuCells);
+    mMenuWindow->mCursor->mSelection       = -1;
+    mMenuWindow->mEnabled                  = 0;
+    mMenuWindow->mButtons[0].mEnabled      = 0;
 }
 
 void ArenaScene::RefreshSlotAnimations() {
@@ -830,31 +830,31 @@ u32 ArenaScene::UpdateSelection() {
 }
 
 u32 ArenaScene::UpdateMenu() {
-    if (mMenu == NULL) {
+    if (mMenuWindow == NULL) {
         return 0;
     }
-    mMenu->mEnabled = 1;
-    return mMenu->Update(0);
+    mMenuWindow->mEnabled = 1;
+    return mMenuWindow->Update(0);
 }
 
 void ArenaScene::ResetMenu() {
     u8 state;
     do {
-        mMenu->Draw();
-        mMenu->Update(0);
-        state = mMenu->mState;
+        mMenuWindow->Draw();
+        mMenuWindow->Update(0);
+        state = mMenuWindow->mState;
     } while (!((state <= 2) | (state == 4)));
-    mMenu->Reset(-1);
-    mMenu->mCursor->mSelection = -1;
-    mMenu->mEnabled            = 0;
+    mMenuWindow->Reset(-1);
+    mMenuWindow->mCursor->mSelection = -1;
+    mMenuWindow->mEnabled            = 0;
     for (u8 i = 0; i < 2; i++) {
-        mMenu->mCells[i]->SetAnimation(sArenaMenuCells[((const WindowItem *) sArenaMenuItems)[i].mId].mAnimIndices[0]);
+        mMenuWindow->mCells[i]->SetAnimation(sArenaMenuCells[((const WindowItem *) sArenaMenuItems)[i].mId].mAnimIndices[0]);
     }
 }
 
 void ArenaScene::func_ov001_0221bee8() {
-    if (mMessage != NULL) {
-        mMessage->Update();
+    if (mMessageWindow != NULL) {
+        mMessageWindow->Update();
     }
     if (mMain.mVisible == 0) {
         return;
@@ -875,7 +875,7 @@ void ArenaScene::func_ov001_0221bf40() {
             mSlots[i].mAnim->Draw(1, mSlots[i].mX, mSlots[i].mY, mSlots[i].mUnk_0c);
         }
     }
-    mMenu->Draw();
+    mMenuWindow->Draw();
 }
 
 void ArenaScene::InitNameText() {

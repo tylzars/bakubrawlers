@@ -100,7 +100,7 @@ struct WindowButton {
     /* 01 */ PAD(0x01, 0x04);
     /* 04 */ u32 mEnabled;
     /* 08 */ u8 mUnk_08; // animation index of the idle cell
-    /* 09 */ u8 mResultAnim; // animation index of the selected cell
+    /* 09 */ u8 mResultAnimIndex; // animation index of the selected cell
     /* 0a */ u8 mUnk_0a;
     /* 0b */ PAD(0x0b, 0x0c);
     /* 0c */

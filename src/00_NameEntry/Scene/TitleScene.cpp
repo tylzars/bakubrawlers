@@ -200,7 +200,7 @@ void TitleScene::Update() {
     switch (mState) {
         case 0:
             if (data_020d433c.mUnk_ad) {
-                mWindowMode = 0;
+                mPlaneBlendEnabled = 0;
                 mState = 0x2a;
                 break;
             }
@@ -238,7 +238,7 @@ void TitleScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            SetWindowMode(1);
+            SetPlaneBlend(1);
             mState++;
             break;
         case 5:
@@ -267,7 +267,7 @@ void TitleScene::Update() {
         case 7:
             func_ov000_022245e8();
             if (IsFadeDone(0)) {
-                SetWindowMode(0);
+                SetPlaneBlend(0);
                 SpriteManager::Get().StartFade(3);
                 mState++;
             }
@@ -463,7 +463,7 @@ void TitleScene::Update() {
             break;
         case 19:
             if (IsFadeDone(1)) {
-                SetWindowMode(0);
+                SetPlaneBlend(0);
                 data_020d433c.mUnk_76 = 1;
                 SpriteManager::Get().StartFade(3);
                 FrameTask::Get().CloseHandles();
@@ -557,7 +557,7 @@ void TitleScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            SetWindowMode(1);
+            SetPlaneBlend(1);
             mState++;
             break;
         case 31:
@@ -641,7 +641,7 @@ void TitleScene::Update() {
         case 37:
             UpdateCursorCell();
             if (IsFadeDone(0)) {
-                SetWindowMode(0);
+                SetPlaneBlend(0);
                 SpriteManager::Get().StartFade(3);
                 mState++;
             }
@@ -953,9 +953,9 @@ void TitleScene::SetMessage(u32 index) {
     }
 }
 
-void TitleScene::SetWindowMode(u8 mode) {
-    mWindowMode = mode;
-    if (mode) {
+void TitleScene::SetPlaneBlend(u8 enabled) {
+    mPlaneBlendEnabled = enabled;
+    if (enabled) {
         GX_SetVisiblePlane(3);
         G2_SetWndOutsidePlane(0x1f, TRUE);
         mBlendAngle = 0x2d;
@@ -969,7 +969,7 @@ void TitleScene::SetWindowMode(u8 mode) {
 
 // Same helper as FieldSelectScene.cpp defines locally; belongs in nitro/gx.h next to G2S_SetBlendAlpha.
 void TitleScene::UpdateFade() {
-    if (!mWindowMode) {
+    if (!mPlaneBlendEnabled) {
         return;
     }
     u16 angle = (mBlendAngle << 16) / 180;
@@ -989,7 +989,7 @@ void TitleScene::UpdateFade() {
 }
 
 BOOL TitleScene::IsFadeDone(BOOL tick) {
-    if (!mWindowMode) {
+    if (!mPlaneBlendEnabled) {
         return TRUE;
     }
     if (mBlendAngle < 0x5a) {

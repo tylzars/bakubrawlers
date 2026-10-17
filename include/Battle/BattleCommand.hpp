@@ -37,7 +37,7 @@ public:
     /* 7c */ BattleCommandList *mCommandList;
     /* 80 */ u32 mCamera;
     /* 84 */ BattleCommandMap *mCommandMap;
-    /* 88 */ MessageWindow *mMessage;
+    /* 88 */ MessageWindow *mMessageWindow;
     /* 8c */ BattleCommandPrompt *mCommandPrompt; // freed with CloseCommandPrompt(obj, flag)
     /* 90 */ u8 mGridMask[14][10];
     /* 11c */ u16 mUnk_11c;
@@ -115,9 +115,9 @@ public:
     /* 74 */ BattleUnk29c *mUnk_74;
     /* 78 */ u8 mPredictPositions[0x60];
     /* d8 */ u32 mLandingPosition[3];
-    /* e4 */ u32 mCamEndTarget[3];
-    /* f0 */ u32 mCamEndPosition[3];
-    /* fc */ u32 mCamMoveOffset[3];
+    /* e4 */ u32 mCameraEndTarget[3];
+    /* f0 */ u32 mCameraEndPosition[3];
+    /* fc */ u32 mCameraMoveOffset[3];
     /* 108 */ u32 mUnk_108[3];
     /* 114 */ u32 mVelocity[3];
     /* 120 */ u32 mCornerPosition[3];
@@ -129,7 +129,7 @@ public:
     /* 13e */ u16 mDirRotZ;
     /* 140 */ u16 mDirScale;
     /* 142 */ u16 mUnk_142;
-    /* 144 */ u16 mCamMoveTimer;
+    /* 144 */ u16 mCameraMoveTimer;
     /* 146 */ u16 mCameraYawDegrees;
     /* 148 */ u8 mCursorX;
     /* 149 */ u8 mCursorY;

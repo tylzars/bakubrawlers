@@ -45,7 +45,7 @@ typedef struct Glob {
 } Glob;
 
 
-extern Pl g_criDrv[4];
+extern Pl gCriDrv[4];
 extern int data_02215dc0, data_02216840, data_02216844, data_02216848;
 extern void (*data_0221683c)(Pl *, int, int, int);
 extern char data_020acfc0[];
@@ -69,8 +69,8 @@ extern int func_020416c0(int, int), func_020416d0(int, void *, void *), func_020
 extern int func_020416e4(int, int), func_020416ec(int, int);
 extern int StmGetState(int), func_02041f50(int, int), func_02041f18(int, void *, void *);
 extern void func_02042dd8(Pl *, int, int, int, int);
-extern void StopAdx(Pl *);
-extern int GetAdxState(Pl *), func_02042fdc(Pl *);
+extern void AdxStop(Pl *);
+extern int AdxGetState(Pl *), func_02042fdc(Pl *);
 extern void func_02043188(Pl *, int);
 extern void func_0204355c(Pl *, int);
 extern void func_020434fc(Pl *, int, int);
@@ -176,7 +176,7 @@ void func_02043f28(Pl *o)
         if (n > o->s3) {
             func_020402f0(n, o->s3, buf, 16);
             SendErrConcat(data_020acfc0, buf);
-            StopAdx(o);
+            AdxStop(o);
             return;
         }
         r6 = func_02041704(h);
@@ -312,7 +312,7 @@ void func_0204454c(Pl *o)
 void func_020445a8(Pl *o)
 {
     if (o->i8 == 0) return;
-    if (GetAdxState(o) == 0) return;
+    if (AdxGetState(o) == 0) return;
     switch (o->s2) {
     case 0:
     case 1:

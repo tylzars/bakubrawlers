@@ -75,7 +75,7 @@ extern void CriExit(void);
 extern void CriFuncTableSet(int, int, void *, void *, void *);
 extern void CriFuncTableRemove(int, int);
 extern void CriLockEnter3(void), CriLockLeave3(void);
-extern void *CreateCriX(void *, int);
+extern void *CriXCreate(void *, int);
 extern int func_02051124(void);
 extern void func_02051110(int);
 extern void func_020511a4(int);
@@ -99,18 +99,18 @@ extern void func_0204bdfc(void *, void *, int);
 extern void func_0204bf1c(void *);
 extern void *func_0204fc00(Obj *, int);
 
-extern int HasPoolRef(Pool *);
-extern void ClearPool(Pool *);
+extern int PoolHasRef(Pool *);
+extern void PoolClear(Pool *);
 extern void SendErrWrapper(const char *);
-extern void ReleasePoolRef(Pool *);
+extern void PoolReleaseRef(Pool *);
 extern int func_0204f338(Pool *);
-extern int InitPoolObj(Obj *, Cfg *, char *, int);
-extern void ReleasePoolObjParts(Obj *);
-extern void ReleasePoolObj(Pool *, Obj *);
+extern int PoolObjInit(Obj *, Cfg *, char *, int);
+extern void PoolObjReleaseParts(Obj *);
+extern void PoolDeallocObj(Pool *, Obj *);
 extern Obj *func_0204f36c(char *, unsigned);
 extern void func_0204f3b4(Obj *);
 extern void func_0204f264(Pool *, Obj *);
-extern int IsPoolObjInit(Obj *);
+extern int PoolObjIsInit(Obj *);
 extern int func_0204f98c(Obj *);
 extern void func_0204f1e8(Pool *);
 extern void func_0204ed44(void), func_0204ed48(void), func_0204ed10(void);
@@ -139,17 +139,17 @@ void func_0204ed38(void) { CriLockLeave3(); }
 void func_0204ed44(void) { }
 void func_0204ed48(void) { }
 
-int AddPoolRef(Pool *p)
+int PoolAddRef(Pool *p)
 {
-    if (HasPoolRef(p) == 0 && p->i78 == 0) {
-        ClearPool(p);
+    if (PoolHasRef(p) == 0 && p->i78 == 0) {
+        PoolClear(p);
         p->i78 = 1;
         CriInit();
         CriFuncTableSet(2, 4, func_0204f338, p, data_020afa94);
-        p->h = (int) CreateCriX(p->buf, 0x60);
+        p->h = (int) CriXCreate(p->buf, 0x60);
         if (func_02051124() == 0) {
             SendErrWrapper(data_020afaa4);
-            ReleasePoolRef(p);
+            PoolReleaseRef(p);
             return 0;
         }
         func_020511f4(p->h, p);
@@ -159,7 +159,7 @@ int AddPoolRef(Pool *p)
     return 1;
 }
 
-void ReleasePoolRef(Pool *p)
+void PoolReleaseRef(Pool *p)
 {
     int i;
     if (p->i78 == 0) {
@@ -173,7 +173,7 @@ void ReleasePoolRef(Pool *p)
         return;
     }
     for (i = 0; i < 4; i++) {
-        ReleasePoolObj(p, p->slot[i]);
+        PoolDeallocObj(p, p->slot[i]);
     }
     if (p->h != 0) {
         func_020511a4(p->h);
@@ -186,11 +186,11 @@ void ReleasePoolRef(Pool *p)
     p->i78 = 0;
 }
 
-Obj *CreatePoolObj(Pool *p, Cfg *cfg, char *buf, int size)
+Obj *PoolAllocObj(Pool *p, Cfg *cfg, char *buf, int size)
 {
     int i;
     Obj *o = 0;
-    if (HasPoolRef(p) == 0) {
+    if (PoolHasRef(p) == 0) {
         SendErrWrapper(data_020afb10);
         return 0;
     }
@@ -204,22 +204,22 @@ Obj *CreatePoolObj(Pool *p, Cfg *cfg, char *buf, int size)
     }
     if (i == 4) {
         SendErrWrapper(data_020afb40);
-        ReleasePoolObj(p, o);
+        PoolDeallocObj(p, o);
         return 0;
     }
-    if (InitPoolObj(o, cfg, buf, size) != 0) {
+    if (PoolObjInit(o, cfg, buf, size) != 0) {
         return o;
     }
     SendErrWrapper(data_020afb7c);
-    ReleasePoolObj(p, o);
+    PoolDeallocObj(p, o);
     return 0;
 }
 
-void ReleasePoolObj(Pool *p, Obj *o)
+void PoolDeallocObj(Pool *p, Obj *o)
 {
     int i;
     if (o == 0) return;
-    ReleasePoolObjParts(o);
+    PoolObjReleaseParts(o);
     for (i = 0; i < 4; i++) {
         if (p->slot[i] == o) {
             func_0204f3b4(p->slot[i]);
@@ -262,7 +262,7 @@ int func_0204efd8(int unused, Cfg *c)
 void func_0204f1e8(Pool *p)
 {
     int i;
-    if (HasPoolRef(p) == 0) return;
+    if (PoolHasRef(p) == 0) return;
     if (p->cb80 != 0) {
         p->cb80(p->a84);
     }
@@ -281,8 +281,8 @@ void func_0204f1e8(Pool *p)
 
 void func_0204f264(Pool *p, Obj *o)
 {
-    if (HasPoolRef(p) == 0) return;
-    if (IsPoolObjInit(o) == 0) return;
+    if (PoolHasRef(p) == 0) return;
+    if (PoolObjIsInit(o) == 0) return;
     func_0204fc7c(o);
     if (func_020511d4(p->h) != 0 && func_020511dc(p->h) != 0 && func_0204f98c(o) == 1) {
         func_0204fc64(o, func_020511e4(p->h));
@@ -292,7 +292,7 @@ void func_0204f264(Pool *p, Obj *o)
 
 int func_0204f2e4(Pool *p) { return p->h; }
 
-void ClearPool(Pool *p)
+void PoolClear(Pool *p)
 {
     int i;
     for (i = 0; i < 4; i++) {
@@ -307,7 +307,7 @@ void ClearPool(Pool *p)
     p->a8c = 0;
 }
 
-int HasPoolRef(Pool *p)
+int PoolHasRef(Pool *p)
 {
     if (p->cnt > 0) return 1;
     return 0;

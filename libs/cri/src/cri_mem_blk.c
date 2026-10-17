@@ -14,9 +14,9 @@ typedef struct CriMemBlk {
 extern char data_020b0078[], data_020b00ac[], data_020b00e4[];
 extern void SendErrWrapper(char *);
 extern void func_020510ac(CriMemBlk *);
-extern void *CreateAdxNch1(int, int);
-extern void *CreateAdx(int, int, int);
-extern void ReleaseAdx(void *);
+extern void *AdxAllocNch1(int, int);
+extern void *AdxAlloc(int, int, int);
+extern void AdxDealloc(void *);
 extern int func_0204375c(void *);
 extern int func_020436b4(void *);
 
@@ -45,9 +45,9 @@ void func_02050ea8(CriMemBlk *m)
 int func_02050ebc(CriMemBlk *m, CriMemSrc *s, int a, int b)
 {
     if (s->c != 0) {
-        m->buf = CreateAdxNch1(a, b - 0xc);
+        m->buf = AdxAllocNch1(a, b - 0xc);
     } else {
-        m->buf = CreateAdx(s->a, a, b - 0xc);
+        m->buf = AdxAlloc(s->a, a, b - 0xc);
     }
     if (m->buf == 0) {
         SendErrWrapper(data_020b00e4);
@@ -62,7 +62,7 @@ void func_02050f24(CriMemBlk *m)
     if (m->buf == 0) {
         return;
     }
-    ReleaseAdx(m->buf);
+    AdxDealloc(m->buf);
     m->buf = 0;
 }
 

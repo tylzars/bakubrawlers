@@ -31,11 +31,11 @@ typedef struct CriBuf {
 
 typedef struct CriLock { int pad0; int f4; volatile int cnt; } CriLock;
 
-extern CriBuf g_bufs[6];        /* 0x02217008 */
-extern int g_bufCount;          /* 0x02217004 */
-extern char g_pool3[0x240];     /* 0x022170f0 */
-extern int g_pool3Count;        /* 0x022170ec */
-extern CriLock g_lock;          /* 0x022170e0 */
+extern CriBuf gBufs[6];        /* 0x02217008 */
+extern int gBufCount;          /* 0x02217004 */
+extern char gPool3[0x240];     /* 0x022170f0 */
+extern int gPool3Count;        /* 0x022170ec */
+extern CriLock gLock;          /* 0x022170e0 */
 extern char data_020ad4a0[], data_0209e378[];
 extern char data_020ad284[], data_020ad290[], data_020ad2ac[], data_020ad2b8[];
 extern char data_020ad2d8[], data_020ad2e4[], data_020ad300[], data_020ad30c[], data_020ad32c[], data_020ad338[];
@@ -315,10 +315,10 @@ void func_020456e8(void)
 
 void CriBufPoolAddRef(void)
 {
-    if (g_bufCount == 0) {
-        __clear(g_bufs, sizeof(g_bufs));
+    if (gBufCount == 0) {
+        __clear(gBufs, sizeof(gBufs));
     }
-    g_bufCount++;
+    gBufCount++;
 }
 
 void func_02045760(void)
@@ -331,8 +331,8 @@ void func_02045760(void)
 
 void CriBufPoolReleaseRef(void)
 {
-    if (--g_bufCount == 0) {
-        __clear(g_bufs, sizeof(g_bufs));
+    if (--gBufCount == 0) {
+        __clear(gBufs, sizeof(gBufs));
     }
 }
 
@@ -350,10 +350,10 @@ CriBuf *CriBufAllocNoLock(char *buf, int size)
     int i;
     CriBuf *b;
     for (i = 0; i < 6; i++) {
-        if (g_bufs[i].used == 0) break;
+        if (gBufs[i].used == 0) break;
     }
     if (i == 6) return 0;
-    b = &g_bufs[i];
+    b = &gBufs[i];
     b->used = 1;
     b->vt = data_020ad4a0;
     b->buf = buf;
@@ -606,14 +606,14 @@ int CriBufCanGetNoLock(CriBuf *b, int mode, int max, int *out)
 
 void func_02045f10(void)
 {
-    g_lock.cnt++;
-    if (g_lock.cnt == 1) g_lock.f4 = 0;
+    gLock.cnt++;
+    if (gLock.cnt == 1) gLock.f4 = 0;
 }
 
 void func_02045f38(void)
 {
-    g_lock.cnt--;
-    if (g_lock.cnt == 0) g_lock.f4 = 0;
+    gLock.cnt--;
+    if (gLock.cnt == 0) gLock.f4 = 0;
 }
 
 void func_02045f60(void) { CriLockEnter1(); }

@@ -19,8 +19,8 @@ typedef struct CriRing {
 
 typedef struct CriSpan { char *ptr; int len; } CriSpan;
 
-extern int g_ringCount;         /* 0x02216940 */
-extern CriRing g_rings[24];     /* 0x02216944 */
+extern int gRingCount;         /* 0x02216940 */
+extern CriRing gRings[24];     /* 0x02216944 */
 extern char data_020ad02c[], data_0209e368[];
 extern char data_020ad05c[];
 extern char data_020ad068[], data_020ad074[], data_020ad090[], data_020ad09c[];
@@ -71,10 +71,10 @@ void func_02044a70(void)
 
 void CriRingPoolAddRef(void)
 {
-    if (g_ringCount == 0) {
-        __clear(g_rings, sizeof(g_rings));
+    if (gRingCount == 0) {
+        __clear(gRings, sizeof(gRings));
     }
-    g_ringCount++;
+    gRingCount++;
 }
 
 void func_02044ae0(void)
@@ -87,8 +87,8 @@ void func_02044ae0(void)
 
 void CriRingPoolReleaseRef(void)
 {
-    if (--g_ringCount == 0) {
-        __clear(g_rings, sizeof(g_rings));
+    if (--gRingCount == 0) {
+        __clear(gRings, sizeof(gRings));
     }
 }
 
@@ -106,12 +106,12 @@ CriRing *CriRingAllocNoLock(int a, int b, int c)
     int i;
     CriRing *r;
     for (i = 0; i < 24; i++) {
-        if (g_rings[i].used == 0) break;
+        if (gRings[i].used == 0) break;
     }
     if (i == 24) {
         r = 0;
     } else {
-        r = &g_rings[i];
+        r = &gRings[i];
         r->used = 1;
         r->vt = data_020ad02c;
         r->buf = (char *)a;

@@ -29,8 +29,8 @@ typedef struct Adx {
 typedef struct AdxGlob { int pad[10]; int i28; int i2c; void (*fn30)(void *); } AdxGlob;
 
 extern AdxGlob data_022167d8;
-extern Adx g_criDrv[4];
-extern int g_criSys, data_02215dc0;
+extern Adx gCriDrv[4];
+extern int gCriSys, data_02215dc0;
 extern int data_020acbf0;
 extern char data_020acbf8[], data_020acc20[], data_020acc4c[], data_020acc7c[], data_020acca4[],
             data_020acccc[], data_020accf4[], data_020acd20[], data_020acd54[], data_020acd80[], data_020acdac[];
@@ -72,30 +72,30 @@ extern int func_020417f8(void *, int);
 extern int func_020417b0(void *);
 extern void func_02047980(void *, int, int);
 extern void func_02047974(void *, int);
-extern Adx *CreateAdxInner(int, int, int);
-extern void ReleaseAdxInner(Adx *);
+extern Adx *AdxAllocInner(int, int, int);
+extern void AdxDeallocInner(Adx *);
 extern void func_02042b04(Adx *);
-extern void StopAdxInner(Adx *);
-extern void ReleaseAllAdxInner(void);
-extern void StartAdx(Adx *, int);
+extern void AdxStopInner(Adx *);
+extern void AdxDeallocAllInner(void);
+extern void AdxStart(Adx *, int);
 extern void func_02042e94(Adx *);
-extern Adx *CreateAdxNch1Inner(int, int);
-extern int GetAdxStateInner(Adx *);
+extern Adx *AdxAllocNch1Inner(int, int);
+extern int AdxGetStateInner(Adx *);
 extern int func_02043000(Adx *);
 extern void func_02043068(Adx *, int, int);
 extern void func_020431ac(Adx *, int);
 extern int func_02043220(Adx *);
 
-Adx *CreateAdx(int a, int b, int c)
+Adx *AdxAlloc(int a, int b, int c)
 {
     Adx *r;
     func_0203edbc();
-    r = CreateAdxInner(a, b, c);
+    r = AdxAllocInner(a, b, c);
     func_0203edc0();
     return r;
 }
 
-Adx *CreateAdxInner(int nch, int buf, int size)
+Adx *AdxAllocInner(int nch, int buf, int size)
 {
     Adx *o;
     int rem, base;
@@ -107,13 +107,13 @@ Adx *CreateAdxInner(int nch, int buf, int size)
         return 0;
     }
     for (i = 0; i < 4; i++) {
-        if (g_criDrv[i].used == 0) break;
+        if (gCriDrv[i].used == 0) break;
     }
     if (i == 4) {
         SendErr(data_020acc20);
         return 0;
     }
-    o = &g_criDrv[i];
+    o = &gCriDrv[i];
     memset(o, 0, 0xc4);
     o->nch = nch;
     k = nch * 0x1460;
@@ -131,12 +131,12 @@ Adx *CreateAdxInner(int nch, int buf, int size)
     o->p14 = 0;
     o->p10 = CriRingAlloc(o->i20, o->i24, o->i28);
     if (o->p10 == 0) {
-        ReleaseAdxInner(o);
+        AdxDeallocInner(o);
         return 0;
     }
     o->stm = StmAlloc(o->p10, 0);
     if (o->stm == 0) {
-        ReleaseAdxInner(o);
+        AdxDeallocInner(o);
         return 0;
     }
     i = 0;
@@ -144,7 +144,7 @@ Adx *CreateAdxInner(int nch, int buf, int size)
         do {
             o->p18[i] = CriRingAlloc(o->i2c + o->i34 * i * 2, o->i30 * 2, (o->i34 - o->i30) * 2);
             if (o->p18[i] == 0) {
-                ReleaseAdxInner(o);
+                AdxDeallocInner(o);
                 return 0;
             }
             i++;
@@ -152,17 +152,17 @@ Adx *CreateAdxInner(int nch, int buf, int size)
     }
     o->p4 = CriStmAlloc(o->p10, nch, o->p18);
     if (o->p4 == 0) {
-        ReleaseAdxInner(o);
+        AdxDeallocInner(o);
         return 0;
     }
     o->p0c = func_020478f0(o->p18, nch, nch * 0x10c0 + base);
     if (o->p0c == 0) {
-        ReleaseAdxInner(o);
+        AdxDeallocInner(o);
         return 0;
     }
     o->p94 = func_02051524(o->p10);
     if (o->p94 == 0) {
-        ReleaseAdxInner(o);
+        AdxDeallocInner(o);
         return 0;
     }
     func_02051534(o->p94, o->stm);
@@ -191,18 +191,18 @@ Adx *CreateAdxInner(int nch, int buf, int size)
     return o;
 }
 
-Adx *CreateAdxNch1(int a, int b)
+Adx *AdxAllocNch1(int a, int b)
 {
     Adx *r;
     func_0203edbc();
-    r = CreateAdxNch1Inner(a, b);
+    r = AdxAllocNch1Inner(a, b);
     func_0203edc0();
     return r;
 }
 
-Adx *CreateAdxNch1Inner(int a, int b)
+Adx *AdxAllocNch1Inner(int a, int b)
 {
-    Adx *r = CreateAdxInner(1, a, b);
+    Adx *r = AdxAllocInner(1, a, b);
     if (r == 0) return 0;
     return r;
 }
@@ -212,14 +212,14 @@ void func_02042b04(Adx *o)
     if (data_022167d8.fn30) data_022167d8.fn30(o);
 }
 
-void ReleaseAdx(Adx *o)
+void AdxDealloc(Adx *o)
 {
     func_0203edbc();
-    ReleaseAdxInner(o);
+    AdxDeallocInner(o);
     func_0203edc0();
 }
 
-void ReleaseAdxInner(Adx *o)
+void AdxDeallocInner(Adx *o)
 {
     Obj *p;
     void *q;
@@ -229,7 +229,7 @@ void ReleaseAdxInner(Adx *o)
         return;
     }
     func_02042b04(o);
-    if (o->used == 1) StopAdxInner(o);
+    if (o->used == 1) AdxStopInner(o);
     if (o->p0c) {
         q = o->p0c;
         o->p0c = 0;
@@ -284,23 +284,23 @@ void ReleaseAdxInner(Adx *o)
     func_0203edb0();
 }
 
-void ReleaseAllAdx(void)
+void AdxDeallocAll(void)
 {
     func_0203edbc();
-    ReleaseAllAdxInner();
+    AdxDeallocAllInner();
     func_0203edc0();
 }
 
-void ReleaseAllAdxInner(void)
+void AdxDeallocAllInner(void)
 {
     int i;
-    Adx *p = g_criDrv;
+    Adx *p = gCriDrv;
     for (i = 0; i < 4; i++, p++) {
-        if (p->used == 1) ReleaseAdxInner(p);
+        if (p->used == 1) AdxDeallocInner(p);
     }
 }
 
-void StartAdx(Adx *o, int v)
+void AdxStart(Adx *o, int v)
 {
     int i;
     for (i = 0; i < o->nch; i++) o->p18[i]->vt->f14(o->p18[i]);
@@ -330,7 +330,7 @@ void func_02042dd8(Adx *o, int a, int b, int c, int d)
     func_02041c94(o->stm);
     func_02041bdc(o->stm, a, b, c, (long long)d << 11);
     StmStart(o->stm);
-    StartAdx(o, (int)o->p10);
+    AdxStart(o, (int)o->p10);
 }
 
 void func_02042e94(Adx *o)
@@ -351,14 +351,14 @@ void func_02042e94(Adx *o)
     func_0203edb0();
 }
 
-void StopAdx(Adx *o)
+void AdxStop(Adx *o)
 {
     func_0203edbc();
-    StopAdxInner(o);
+    AdxStopInner(o);
     func_0203edc0();
 }
 
-void StopAdxInner(Adx *o)
+void AdxStopInner(Adx *o)
 {
     if (o == 0) {
         SendErr(data_020acca4);
@@ -372,16 +372,16 @@ void StopAdxInner(Adx *o)
     func_02042e94(o);
 }
 
-int GetAdxState(Adx *o)
+int AdxGetState(Adx *o)
 {
     int r;
     func_0203edbc();
-    r = GetAdxStateInner(o);
+    r = AdxGetStateInner(o);
     func_0203edc0();
     return r;
 }
 
-int GetAdxStateInner(Adx *o)
+int AdxGetStateInner(Adx *o)
 {
     if (o) return o->state;
     SendErr(data_020acccc);
@@ -435,7 +435,7 @@ void func_02043068(Adx *o, int ch, int vol)
     } else {
         a = 0;
     }
-    if (g_criSys == 0) {
+    if (gCriSys == 0) {
         if (vol == -128) {
             if (func_02041714(o->p4) == 2) r = (ch == 0) ? -15 : 15;
             else r = 0;

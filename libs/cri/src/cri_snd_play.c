@@ -58,7 +58,7 @@ extern void *func_0204d8fc(void *, int);
 extern void func_0204d944(void *);
 extern int func_0204d78c(void *, void *, int, void *);
 extern int func_0204e7a0(int);
-extern int CanReadCriBits(int, int);
+extern int CriBitsCanRead(int, int);
 extern int func_0204b344(int, void *);
 extern void func_0204b44c(void *, void *);
 extern void func_0204b4f8(int, void *, void *);
@@ -80,8 +80,8 @@ typedef struct SndHdr {
 
 extern u8 data_02218d20[];
 extern u8 data_02218d24[];
-extern u8 ReadCriBits(int, int);
-extern int ParseCriHdr(u8 *, int, int *, SndHdr *);
+extern u8 CriBitsRead(int, int);
+extern int CriHdrParse(u8 *, int, int *, SndHdr *);
 
 
 SndPlayer *func_0204ad88(SndPlayer *p, u32 size)
@@ -160,11 +160,11 @@ void func_0204af54(SndPlayer *p)
         int len = 0;
         q = data_02218d20;
         end = data_02218d24;
-        while (q != end) { *q = ReadCriBits(h, 8); q++; }
-        ParseCriHdr(data_02218d20, 4, &len, 0);
+        while (q != end) { *q = CriBitsRead(h, 8); q++; }
+        CriHdrParse(data_02218d20, 4, &len, 0);
         end += len;
-        while (q != end) { *q = ReadCriBits(h, 8); q++; }
-        if (ParseCriHdr(data_02218d20, 0x200, &len, &hdr) < 0) return;
+        while (q != end) { *q = CriBitsRead(h, 8); q++; }
+        if (CriHdrParse(data_02218d20, 0x200, &len, &hdr) < 0) return;
         info->i04 = hdr.b3;
         info->i08 = hdr.i4;
         info->i0c = hdr.i8;
@@ -203,7 +203,7 @@ int func_0204b150(SndPlayer *p)
         if (r == -1) return -1;
         if (r != 1) return 1;
     }
-    if (CanReadCriBits(p->src, 0x14) == 0) return -1;
+    if (CriBitsCanRead(p->src, 0x14) == 0) return -1;
     if (func_0204b344(p->src, p->a1b8) < 0) return -1;
     func_0204b44c(p->a1b8, &p->info);
     func_0204b4f8(p->src, &p->info, p->a224);

@@ -8,13 +8,13 @@ typedef struct CriX {
 } CriX;
 
 extern int data_0209e4ac, data_020b0120, data_020b0154, data_020b0188, data_020b01b8, data_020b01f0;
-extern int func_0204359c(int), func_02043798(int), func_02043848(int), StopAdx(int), func_02043478(int), func_020434ac(int);
-extern int GetAdxState(int);
+extern int func_0204359c(int), func_02043798(int), func_02043848(int), AdxStop(int), func_02043478(int), func_020434ac(int);
+extern int AdxGetState(int);
 extern int func_02043188(int, int);
 extern int func_020431fc(int);
 extern int func_02043378(int);
 extern void SendErrWrapper(void *);
-extern int IsPoolObjInit(int), func_0204f98c(int), func_0204f924(int), func_0204f8ec(int);
+extern int PoolObjIsInit(int), func_0204f98c(int), func_0204f924(int), func_0204f8ec(int);
 extern int func_02050698(void *, int);
 extern void func_020506e0(int);
 extern int CriFaderGetState(int), CriFaderGetValue(int);
@@ -25,18 +25,18 @@ extern int memcmp(void *, void *, int);
 void func_02051414(CriX *o, int m);
 int func_0205141c(CriX *o);
 int func_02051448(CriX *o);
-void ResetCriX(CriX *o);
+void CriXReset(CriX *o);
 
 int func_02050f68(CriX *o) { return func_0204359c(o->h); }
 int func_02050f78(CriX *o) { return func_02043798(o->h); }
 int func_02050f88(CriX *o) { return func_02043848(o->h); }
-int func_02050f98(CriX *o) { return StopAdx(o->h); }
+int func_02050f98(CriX *o) { return AdxStop(o->h); }
 int func_02050fa8(CriX *o) { return func_02043478(o->h); }
 int func_02050fb8(CriX *o) { return func_020434ac(o->h); }
 
 int func_02050fc8(CriX *o)
 {
-    switch (GetAdxState(o->h)) {
+    switch (AdxGetState(o->h)) {
     case 0: return 0;
     case 1:
     case 2: return 1;
@@ -78,7 +78,7 @@ void func_020510ac(CriX *o)
     *(int *)((char *)o + 8) = 0;
 }
 
-CriX *CreateCriX(CriX *o, unsigned size)
+CriX *CriXCreate(CriX *o, unsigned size)
 {
     if (o == 0) {
         SendErrWrapper(&data_020b0120);
@@ -88,14 +88,14 @@ CriX *CreateCriX(CriX *o, unsigned size)
         SendErrWrapper(&data_020b0154);
         return 0;
     }
-    ResetCriX(o);
+    CriXReset(o);
     return o;
 }
 
 void func_02051110(CriX *o)
 {
     if (o == 0) return;
-    ResetCriX(o);
+    CriXReset(o);
 }
 
 int func_02051124(CriX *o)
@@ -132,7 +132,7 @@ void func_020511fc(CriX *o)
     int busy = 0;
     for (i = 0; i < 4; i++) {
         int s = ((int *)o->vt)[i];
-        if (s != 0 && IsPoolObjInit(s) != 0 && func_0204f98c(s) == 2) {
+        if (s != 0 && PoolObjIsInit(s) != 0 && func_0204f98c(s) == 2) {
             switch (func_0204f924(s)) {
             case 0: case 3: case 4: break;
             case 1:
@@ -175,7 +175,7 @@ void func_020511fc(CriX *o)
     CriFaderAdvance(o->h);
 }
 
-void ResetCriX(CriX *o)
+void CriXReset(CriX *o)
 {
     o->vt = 0;
     o->h = 0;

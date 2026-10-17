@@ -41,8 +41,8 @@ typedef struct CriObj {
     int pade8;
 } CriObj;                             /* 0xe8 + */
 
-extern CriGlobals g_cri;              /* 0x022158a0 */
-extern CriObj g_criObjs[4];           /* 0x022158bc */
+extern CriGlobals gCri;              /* 0x022158a0 */
+extern CriObj gCriObjs[4];           /* 0x022158bc */
 extern short data_0209dae4[];                   /* 0x0209dae4 */
 extern short data_0209dce4, data_0209dee4, data_0209e0e4;     /* 0x0209dce4 / dee4 / e0e4 */
 extern char str_a[], str_b[], str_c[], str_d[], str_e[], str_f[];
@@ -68,13 +68,13 @@ extern void func_020448d0(int);
 extern void func_020448fc(int);
 extern void CriFormatString(void *, int, const char *);
 
-int func_0203dee8(void) { g_cri.init++; return 0; }
+int func_0203dee8(void) { gCri.init++; return 0; }
 
 int func_0203df04(signed char *s, int n, short *o0, short *o1, short *o2)
 {
     int i;
     short a, b, c;
-    if (g_cri.init == 0) func_0203dee8();
+    if (gCri.init == 0) func_0203dee8();
     *o0 = 0; *o1 = 0; *o2 = 0;
     if (s == 0 && n <= 0) return 0;
     a = data_0209dce4;
@@ -87,15 +87,15 @@ int func_0203df04(signed char *s, int n, short *o0, short *o1, short *o2)
     return 0;
 }
 
-void func_0203e05c(int v) { g_cri.mode = v; }
+void func_0203e05c(int v) { gCri.mode = v; }
 
-int func_0203e06c(void) { return g_cri.mode; }
+int func_0203e06c(void) { return gCri.mode; }
 
 void func_0203e07c(void)
 {
     CriSlotClearAll();
     func_0203dee8();
-    __clear(g_criObjs, sizeof(g_criObjs));
+    __clear(gCriObjs, sizeof(gCriObjs));
     func_0203e05c(0);
 }
 
@@ -135,11 +135,11 @@ void func_0203e110(CriObj *o)
     } while (--i);
 }
 
-extern void ReleaseCriObj(CriObj *);
+extern void CriObjDealloc(CriObj *);
 
-CriObj *CreateCriObj(int a, int b, int c, int d)
+CriObj *CriObjAlloc(int a, int b, int c, int d)
 {
-    CriObj *p = g_criObjs;
+    CriObj *p = gCriObjs;
     int i;
     CriObj *o;
     for (i = 0; i < 4; i++) {
@@ -147,11 +147,11 @@ CriObj *CreateCriObj(int a, int b, int c, int d)
         p++;
     }
     if (i == 4) return 0;
-    o = &g_criObjs[i];
+    o = &gCriObjs[i];
     memset(o, 0, 0xec);
-    g_criObjs[i].used = 1;
+    gCriObjs[i].used = 1;
     o->h = CriSlotAlloc();
-    if (o->h == 0) { ReleaseCriObj(o); return 0; }
+    if (o->h == 0) { CriObjDealloc(o); return 0; }
     o->i38 = a; o->i3c = b; o->i40 = c; o->i44 = d;
     o->i78 = (int)func_0203e0c4;
     o->i7c = (int)o;
@@ -161,7 +161,7 @@ CriObj *CreateCriObj(int a, int b, int c, int d)
     return o;
 }
 
-void ReleaseCriObj(CriObj *o)
+void CriObjDealloc(CriObj *o)
 {
     int h;
     if (o == 0) return;
@@ -202,7 +202,7 @@ int func_0203e254(CriObj *o, int flag, int len)
         if (func_0203f0f0(flag, len, &c19, &c18) < 0) return 0;
         s22 = 0;
         if (func_0203e790(o, c19, c18, o->i18, &s24, &s26, &s28) < 0) return -1;
-        if (g_cri.cb != 0) g_cri.cb(o->ib4, &s22);
+        if (gCri.cb != 0) gCri.cb(o->ib4, &s22);
     } else {
         if (func_0203f0f0(flag, len, &c19, &c18) < 0) return 0;
         if (func_0203e790(o, c19, c18, o->i18, &s1e, &s1c, &s1a) < 0) return -1;
@@ -277,13 +277,13 @@ int func_0203e714(CriObj *o) { return o->ic0; }
 int func_0203e71c(CriObj *o) { return o->sd4; }
 int func_0203e724(CriObj *o, int i) { return (&o->sd6)[i]; }
 
-void SaveCriSlotValues(CriObj *o)
+void CriObjSaveSlotValues(CriObj *o)
 {
     func_020447d0(o->h, &o->iac, &o->ib0);
     func_02044804(o->h, &o->sa6, &o->sa8, &o->saa);
 }
 
-void RestoreCriSlotValues(CriObj *o)
+void CriObjRestoreSlotValues(CriObj *o)
 {
     func_020447ac(o->h, &o->iac, &o->ib0);
     func_020447f4(o->h, o->sa6, o->sa8, o->saa);
@@ -299,9 +299,9 @@ int func_0203e790(CriObj *o, unsigned a, unsigned b, int c, short *p0, short *p1
         func_0203df04((signed char *)buf, 8, p0, p1, p2);
     } else if (b >= 8) {
         if (o->sa0 == 0 && o->sa2 == 0 && o->sa4 == 0) {
-            o->sa0 = g_cri.dflt[0];
-            o->sa2 = g_cri.dflt[1];
-            o->sa4 = g_cri.dflt[2];
+            o->sa0 = gCri.dflt[0];
+            o->sa2 = gCri.dflt[1];
+            o->sa4 = gCri.dflt[2];
         }
         *p0 = o->sa0; *p1 = o->sa2; *p2 = o->sa4;
     } else {
@@ -310,7 +310,7 @@ int func_0203e790(CriObj *o, unsigned a, unsigned b, int c, short *p0, short *p1
     return 0;
 }
 
-int GetCriObjState(CriObj *o) { return o->state; }
+int CriObjGetState(CriObj *o) { return o->state; }
 
 void func_0203e87c(CriObj *o, int a, int b)
 {

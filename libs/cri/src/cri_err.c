@@ -10,9 +10,9 @@ typedef struct CriErrTab { CriErrEnt e[6]; } CriErrTab;                   /* 0x4
 typedef struct CriNameEnt { void *val; char name[12]; } CriNameEnt;       /* 0x10 */
 typedef struct CriVA { void *fn; void (*cb)(void *, void *, int); void *arg; } CriVA;
 
-extern int g_pool3Count;           /* 0x022170ec */
-extern int g_pool3[0x90];        /* 0x022170f0 */
-extern CriLockSt g_lockSt;         /* 0x02217330 */
+extern int gPool3Count;           /* 0x022170ec */
+extern int gPool3[0x90];        /* 0x022170f0 */
+extern CriLockSt gLockSt;         /* 0x02217330 */
 extern int data_0221733c[2], data_02217344[2];
 extern int (*data_0221734c)(int *);
 extern CriCbPair2 data_02217350;
@@ -58,10 +58,10 @@ void func_020465fc(void);
 
 void func_02045f90(void)
 {
-    if (g_pool3Count == 0) {
-        __clear(g_pool3, sizeof(g_pool3));
+    if (gPool3Count == 0) {
+        __clear(gPool3, sizeof(gPool3));
     }
-    g_pool3Count++;
+    gPool3Count++;
 }
 
 void func_02045fe8(void)
@@ -74,8 +74,8 @@ void func_02045fe8(void)
 
 void func_02046000(void)
 {
-    if (--g_pool3Count == 0) {
-        __clear(g_pool3, sizeof(g_pool3));
+    if (--gPool3Count == 0) {
+        __clear(gPool3, sizeof(gPool3));
     }
 }
 
@@ -101,21 +101,21 @@ void CriLockEnter(void *x)
 {
     if (data_02217620.fn == 0) return;
     data_02217620.fn(data_02217620.arg);
-    if (g_lockSt.nest == 0) {
-        g_lockSt.owner = x;
+    if (gLockSt.nest == 0) {
+        gLockSt.owner = x;
     }
-    g_lockSt.nest++;
+    gLockSt.nest++;
 }
 
 void CriLockLeave(void *x)
 {
     if (data_02217618.fn == 0) return;
-    g_lockSt.nest--;
-    if (g_lockSt.nest == 0) {
-        if (g_lockSt.owner != x) {
-            CriSendFormattedText(data_020ad7d0, g_lockSt.owner, x);
+    gLockSt.nest--;
+    if (gLockSt.nest == 0) {
+        if (gLockSt.owner != x) {
+            CriSendFormattedText(data_020ad7d0, gLockSt.owner, x);
         }
-        g_lockSt.owner = 0;
+        gLockSt.owner = 0;
     }
     data_02217618.fn(data_02217618.arg);
 }
@@ -303,16 +303,16 @@ void func_020465fc(void)
 
 void func_0204668c(void)
 {
-    if (g_lockSt.cnt == 0) {
+    if (gLockSt.cnt == 0) {
         func_020465fc();
     }
-    g_lockSt.cnt++;
+    gLockSt.cnt++;
 }
 
 void func_020466bc(void)
 {
-    g_lockSt.cnt--;
-    if (g_lockSt.cnt != 0) return;
+    gLockSt.cnt--;
+    if (gLockSt.cnt != 0) return;
     func_020465fc();
     __clear(&data_02217350, sizeof(data_02217350));
 }

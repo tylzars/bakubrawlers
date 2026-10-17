@@ -14,8 +14,8 @@ typedef struct CriSlot {
 
 typedef struct CriSlotHdr { char c0; signed char type; } CriSlotHdr;
 
-extern CriSlot g_slots[4];      /* 0x02216850 */
-extern int g_flag;              /* 0x0221684c */
+extern CriSlot gSlots[4];      /* 0x02216850 */
+extern int gFlag;              /* 0x0221684c */
 extern char data_020ad000[];
 
 extern void func_0203edbc(void);
@@ -62,7 +62,7 @@ void func_02044630(CriSlot *p)
 
 void CriSlotClearAll(void)
 {
-    __clear(g_slots, sizeof(g_slots));
+    __clear(gSlots, sizeof(gSlots));
 }
 
 CriSlot *CriSlotAlloc(void)
@@ -70,10 +70,10 @@ CriSlot *CriSlotAlloc(void)
     int i;
     CriSlot *p;
     for (i = 0; i < 4; i++) {
-        if (g_slots[i].used == 0) break;
+        if (gSlots[i].used == 0) break;
     }
     if (i == 4) return 0;
-    p = &g_slots[i];
+    p = &gSlots[i];
     memset(p, 0, 0x3c);
     p->used = 1;
     p->idx = i;
@@ -180,7 +180,7 @@ int CriSlotGetResult(CriSlot *p)
 
 void func_02044918(void)
 {
-    g_flag = 1;
+    gFlag = 1;
 }
 
 void func_0204492c(CriSlot *p)

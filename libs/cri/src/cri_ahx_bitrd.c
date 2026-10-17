@@ -26,13 +26,13 @@ typedef struct CriBits {
 
 extern void *memset(void *, int, int);
 extern const int data_0209e424[];
-extern void RefillCriBits(CriBits *);
+extern void CriBitsRefill(CriBits *);
 extern void func_0204e67c(CriPair *, int, CriPair *, CriPair *);
-extern int ReadCriBits(CriBits *, int);
-extern int GetCriBitsPos(CriBits *);
-extern int IsCriBitsEmpty(CriBits *);
+extern int CriBitsRead(CriBits *, int);
+extern int CriBitsGetPos(CriBits *);
+extern int CriBitsIsEmpty(CriBits *);
 
-CriBits *CreateCriBits(CriVObj *src, char *buf, int size)
+CriBits *CriBitsCreate(CriVObj *src, char *buf, int size)
 {
     CriBits *r;
     int a, b;
@@ -53,13 +53,13 @@ CriBits *CreateCriBits(CriVObj *src, char *buf, int size)
     return r;
 }
 
-void ClearCriBits(CriBits *r)
+void CriBitsClear(CriBits *r)
 {
     if (r == 0) return;
     memset(r, 0, 0x2c);
 }
 
-void ResetCriBits(CriBits *r, CriVObj *src)
+void CriBitsReset(CriBits *r, CriVObj *src)
 {
     int a, b;
     if (r == 0) return;
@@ -77,7 +77,7 @@ void ResetCriBits(CriBits *r, CriVObj *src)
     r->used = 1;
 }
 
-void RefillCriBits(CriBits *r)
+void CriBitsRefill(CriBits *r)
 {
     CriPair pa;
     CriPair pb;
@@ -156,17 +156,17 @@ void func_0204e67c(CriPair *src, int limit, CriPair *a, CriPair *b)
     }
 }
 
-int CanReadCriBits(CriBits *r, int n)
+int CriBitsCanRead(CriBits *r, int n)
 {
-    if (r->bits < n) RefillCriBits(r);
+    if (r->bits < n) CriBitsRefill(r);
     if (n > r->bits) return 0;
     return 1;
 }
 
-int ReadCriBits(CriBits *r, int n)
+int CriBitsRead(CriBits *r, int n)
 {
     int sh, v, a;
-    if (r->bits < n) RefillCriBits(r);
+    if (r->bits < n) CriBitsRefill(r);
     if (n > r->bits) {
         r->pos += r->bits;
         r->bits = 0;
@@ -181,9 +181,9 @@ int ReadCriBits(CriBits *r, int n)
     return v;
 }
 
-int GetCriBitsPos(CriBits *r) { return r->pos; }
+int CriBitsGetPos(CriBits *r) { return r->pos; }
 
-int IsCriBitsEmpty(CriBits *r)
+int CriBitsIsEmpty(CriBits *r)
 {
     if (r->src->vt->size(r->src, 1) == 0 && r->bits == 0 && r->avail == 0) return 1;
     return 0;
@@ -195,15 +195,15 @@ int func_0204e7a0(CriBits *r)
     int v;
     int mask;
     mask = data_0209e424[12];
-    rem = GetCriBitsPos(r) & 7;
-    if (rem) ReadCriBits(r, 8 - rem);
-    v = ReadCriBits(r, 12);
-    if (IsCriBitsEmpty(r) == 0) {
+    rem = CriBitsGetPos(r) & 7;
+    if (rem) CriBitsRead(r, 8 - rem);
+    v = CriBitsRead(r, 12);
+    if (CriBitsIsEmpty(r) == 0) {
         do {
             if ((v & mask) == 0xfff) return 1;
             if (v == 0x8001000c) return 2;
-            v = ReadCriBits(r, 4) | (v << 4);
-        } while (IsCriBitsEmpty(r) == 0);
+            v = CriBitsRead(r, 4) | (v << 4);
+        } while (CriBitsIsEmpty(r) == 0);
     }
     return -1;
 }

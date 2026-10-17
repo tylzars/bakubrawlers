@@ -42,21 +42,21 @@ extern void (*data_02215898)(int);
 extern void (*data_022158ac)(int);
 
 extern void SendErr(const char *);
-extern void StopAdx(void);
+extern void AdxStop(void);
 extern void func_02047230(void);
 extern void func_0204723c(void);
 extern void func_0204d98c(void);
-extern int CreateCriPlay(int, int, void *, void *, int);
+extern int CriPlayCreate(int, int, void *, void *, int);
 extern void func_0204df7c(int, int, int);
-extern void StopCriPlay(int);
-extern void ReleaseCriPlay(int);
+extern void CriPlayStop(int);
+extern void CriPlayRelease(int);
 extern void func_0204da34(void);
-extern int GetCriPlayState(int);
-extern void StartCriPlay(int);
+extern int CriPlayGetState(int);
+extern void CriPlayStart(int);
 extern void func_0204df44(int);
 extern int func_0204df74(int);
 extern int func_0204df6c(int);
-extern void SetCriPlaySrc(int);
+extern void CriPlaySetSrc(int);
 extern void func_0204dfa8(int);
 extern void func_0204dfb8(int);
 extern void func_0204dfc0(int);
@@ -85,14 +85,14 @@ void func_0204bdfc(MpObj *o, void *buf, int size) {
         SendErr(data_020af51c);
         return;
     }
-    StopAdx();
+    AdxStop();
     func_0204bf1c(o);
     func_0204d98c();
     ctx = o->ctx;
     h = o->h10;
     x = ctx->x;
     func_02047230();
-    r = CreateCriPlay(h, 1, o->area, buf, size);
+    r = CriPlayCreate(h, 1, o->area, buf, size);
     if (r == 0) {
         SendErr(data_020af548);
         return;
@@ -102,7 +102,7 @@ void func_0204bdfc(MpObj *o, void *buf, int size) {
     data_0221589c = func_0204bfb0;
     data_02215890 = func_0204bfa4;
     data_02215894 = func_0204bf98;
-    data_02215898 = SetCriPlaySrc;
+    data_02215898 = CriPlaySetSrc;
     data_022158ac = func_0204dfa8;
     func_0204df7c(r, ctx->i5c58[0], ctx->i5c58[1]);
     func_0204723c();
@@ -119,13 +119,13 @@ void func_0204bf3c(MpObj *o) {
         SendErr(data_020af578);
         return;
     }
-    StopAdx();
+    AdxStop();
     x = o->ctx->x;
     h = x->h;
     if (h == 0) return;
     func_02047230();
-    StopCriPlay(h);
-    ReleaseCriPlay(h);
+    CriPlayStop(h);
+    CriPlayRelease(h);
     x->h = 0;
     func_0204723c();
     func_0204da34();
@@ -137,14 +137,14 @@ void func_0204bfa4(int a) { func_0204dfc0(a); }
 void func_0204bfb0(MpX *x) {
     int h = x->h;
     int i;
-    if (GetCriPlayState(h) == 0) {
+    if (CriPlayGetState(h) == 0) {
         x->i90 = 0;
         x->i88 = 0;
-        StopCriPlay(h);
+        CriPlayStop(h);
     }
     if (x->state == 1) {
         x->i88 = 0;
-        StartCriPlay(h);
+        CriPlayStart(h);
         x->state = 2;
         return;
     }
@@ -153,8 +153,8 @@ void func_0204bfb0(MpX *x) {
     x->i90 = func_0204df74(h) - x->i88;
     x->i88 = x->i88 + x->i90;
     x->i94 = func_0204df6c(h);
-    if (GetCriPlayState(h) == 3) {
-        StopCriPlay(h);
+    if (CriPlayGetState(h) == 3) {
+        CriPlayStop(h);
         x->state = 0;
     }
 }

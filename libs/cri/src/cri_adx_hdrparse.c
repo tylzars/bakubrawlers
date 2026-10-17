@@ -21,8 +21,8 @@ typedef struct CriHdr {
 
 extern void func_0204dff4(unsigned char *, CriHdr *);
 extern void func_0204e080(unsigned char *, CriHdr *);
-extern void ReadCriHdrA(unsigned char *, CriHdrA *);
-extern void ReadCriHdrB(unsigned char *, CriHdrB *);
+extern void CriHdrARead(unsigned char *, CriHdrA *);
+extern void CriHdrBRead(unsigned char *, CriHdrB *);
 
 void func_0204dff4(unsigned char *s, CriHdr *d)
 {
@@ -42,7 +42,7 @@ void func_0204e080(unsigned char *s, CriHdr *d)
     d->na = (s[2] << 8) | s[3];
 }
 
-void ReadCriHdrA(unsigned char *s, CriHdrA *d)
+void CriHdrARead(unsigned char *s, CriHdrA *d)
 {
     d->w0 = (s[0] << 8) | s[1];
     d->w2 = (s[2] << 8) | s[3];
@@ -52,7 +52,7 @@ void ReadCriHdrA(unsigned char *s, CriHdrA *d)
     d->i10 = (s[16] << 24) | (s[17] << 16) | (s[18] << 8) | s[19];
 }
 
-void ReadCriHdrB(unsigned char *ss, CriHdrB *d)
+void CriHdrBRead(unsigned char *ss, CriHdrB *d)
 {
     signed char *s = (signed char *)ss;
     d->w0 = (ss[0] << 8) | ss[1];
@@ -67,7 +67,7 @@ void ReadCriHdrB(unsigned char *ss, CriHdrB *d)
     if (d->ba > 0) d->bb = s[11];
 }
 
-int ParseCriHdr(unsigned char *src, int size, int *outsize, CriHdr *dst)
+int CriHdrParse(unsigned char *src, int size, int *outsize, CriHdr *dst)
 {
     long n;
     long i;
@@ -90,11 +90,11 @@ int ParseCriHdr(unsigned char *src, int size, int *outsize, CriHdr *dst)
     func_0204e080(src, dst);
     src += 4;
     if (n < dst->na * 0x14) return 0;
-    for (i = 0; i < dst->na; i++) ReadCriHdrA(src, &dst->a[i]);
+    for (i = 0; i < dst->na; i++) CriHdrARead(src, &dst->a[i]);
     n -= dst->na * 0x14;
     for (i = 0; i < dst->nb; i++) {
         if (n < 0xc) return 0;
-        ReadCriHdrB(src, &dst->b[i]);
+        CriHdrBRead(src, &dst->b[i]);
         src += 0xc;
         n -= 0xc;
     }

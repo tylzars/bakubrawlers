@@ -45,7 +45,7 @@ typedef struct Glob {
 } Glob;
 
 extern Glob data_022167d8;
-extern Pl g_criDrv[4];
+extern Pl gCriDrv[4];
 extern int data_0221683c_unused;
 extern char data_020acdd8[], data_020ace04[], data_020ace30[], data_020ace60[], data_020ace8c[];
 extern char data_020aceb0[], data_020acee0[], data_020acf0c[], data_020acf38[], data_020acf64[];
@@ -83,8 +83,8 @@ extern void func_020479b0(int, int);
 extern int func_02051514(int, int, int, int *, int *, int *);
 extern void CriCopyString(int, int, int);
 extern int CriBufAlloc(int, int);
-extern void StopAdx(Pl *);
-extern void StartAdx(Pl *, int);
+extern void AdxStop(Pl *);
+extern void AdxStart(Pl *, int);
 extern void func_0204303c(Pl *, int, int);
 extern void func_02043554(Pl *, int, int);
 extern void func_02043558(Pl *, int, int);
@@ -143,7 +143,7 @@ void func_02043290(void)
     if (data_022167d8.f18 != 0) data_022167d8.f18(data_022167d8.a14);
     func_02041644();
     data_022167d8.st = 2;
-    p = g_criDrv;
+    p = gCriDrv;
     for (i = 0; i < 4; i++) {
         if (p->used == 1) func_02044614(p);
         p++;
@@ -258,7 +258,7 @@ void func_020435c8(Pl *o, int a, int b)
         SendErr(data_020ace60);
         return;
     }
-    StopAdx(o);
+    AdxStop(o);
     if (func_02051514(a, b, o->iac, &s8, &sc, &s10) != 0) return;
     if (o->i8 == 0) {
         func_020402f0(a, b, buf, 16);
@@ -290,7 +290,7 @@ void func_020436e8(Pl *o, int a, int b, int c)
         SendErr(data_020aceb0);
         return;
     }
-    StopAdx(o);
+    AdxStop(o);
     CriCopyString(o->iac, 0x100, a);
     o->ib0 = o->iac;
     o->ib4 = 0;
@@ -325,7 +325,7 @@ void func_020437c4(Pl *o, int a, int b)
         SendErr(data_020acee0);
         return;
     }
-    StopAdx(o);
+    AdxStop(o);
     func_0203eda4();
     r = CriBufAlloc(a, b);
     if (r == 0) {
@@ -334,7 +334,7 @@ void func_020437c4(Pl *o, int a, int b)
         return;
     }
     o->s2 = 2;
-    StartAdx(o, r);
+    AdxStart(o, r);
     func_0204355c(o, 0);
     func_0203edb0();
 }
@@ -356,7 +356,7 @@ void func_02043874(Pl *o, Hdr *h, int idx)
         SendErr(data_020acf38);
         return;
     }
-    StopAdx(o);
+    AdxStop(o);
     if (idx >= BSWAP(h->w4)) return;
     if (idx < 0) return;
     func_0203eda4();
@@ -368,7 +368,7 @@ void func_02043874(Pl *o, Hdr *h, int idx)
         return;
     }
     o->s2 = 2;
-    StartAdx(o, r);
+    AdxStart(o, r);
     func_0204355c(o, 0);
     func_0203edb0();
 }

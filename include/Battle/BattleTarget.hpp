@@ -13,7 +13,7 @@ struct GimmickSetData;
 class CellAnimation;
 class BattleStatusPanels;
 class BattleCommandMap;
-struct BattleUnk29c;
+struct BattleUnitModels;
 struct BattlePlayer;
 
 // A box on the field floor (centre, half sizes and the rotation of its frame).

@@ -9,7 +9,7 @@
 #include "Graphics/BakuganModel.hpp"
 
 // Motions of a BattleMoveState (mMode), set by CreateBakugan (IDLE) and BattleTarget through StartMove. StartMove
-// scales the given velocity; each frame BattleUnk29c::Update adds it to the model's position (all but IDLE). The
+// scales the given velocity; each frame BattleUnitModels::Update adds it to the model's position (all but IDLE). The
 // LAUNCH modes normalise it, scale it to the speed below, set an upward y velocity and a spin, then subtract 0x800
 // from the y velocity each frame and hide the model below y 0x899a. No code stores LAUNCH_SPIN_X in this build.
 #define MOVE_MODE_IDLE               1 // no motion step; the only mode func_ov007_0226ff08 measures distances for
@@ -26,27 +26,27 @@ struct BattleMoveState {
     /* 13 */ u8 mUnk_13;
 };
 
-// Bakugan models, name plates and cursors of the battle command map (0xa4 bytes, ctor 0226fb74, dtor 0226fc18).
-struct BattleUnk29c {
+// Models drawn at the units: bakugans, shadow, name plates, st icons and py / pt marks (BattleCommand, BattleTarget, BattleAbility) (0xa4 bytes, ctor 0226fb74, dtor 0226fc18).
+struct BattleUnitModels {
     /* 00 */ BakuganModel *mBakugans[12];
     /* 30 */ BattleMoveState *mMoveStates[12];
     /* 60 */ BattleMapPiece *mShadow;
     /* 64 */ BattleFontObj *mFontObjs[9];
     /* 88 */ VecFx32 mStIconPosition;
     /* 94 */ u8 mStIconUnitHandle; // index + 1 into mUnits, 0 = none; only tested for non-zero (DrawStIcons)
-    /* 95 */ u8 mUnk_95;
+    /* 95 */ u8 mStIconKind;
     /* 96 */ u8 mStIconFontObjIndex;
     /* 97 */ PAD(0x97, 0x98);
     /* 98 */ u8 mUnk_98[3];
     /* 9b */ u8 mNearUnitHandles[3];
     /* 9e */ u8 mUnk_9e;
     /* 9f */ u8 mUnk_9f;
-    /* a0 */ u8 mUnk_a0;
+    /* a0 */ u8 mDrawMode;
     /* a1 */ PAD(0xa1, 0xa4);
     /* a4 */
 
-    BattleUnk29c();  // 0226fb74
-    ~BattleUnk29c(); // 0226fc18
+    BattleUnitModels();  // 0226fb74
+    ~BattleUnitModels(); // 0226fc18
     BakuganModel *GetBakugan(u8 index);
     void ReleaseBakugan(u32 index);
     void CreateFontObjs();

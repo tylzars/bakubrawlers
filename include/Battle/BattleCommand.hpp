@@ -36,7 +36,7 @@ class BattleCommandPrompt;
 #define COMMAND_RESULT_CPU_SHOOT      4
 #define COMMAND_RESULT_BATTLE_RESULT  5 // func_ov007_02263150 held; the list opens BattleResult
 #define COMMAND_RESULT_NO_MARKERS     6 // no marker has a non-zero mStatus; the list opens BattleObj00(1)
-// 7 (state 50: BattleUnk0227532c returned 2 and data_020d433c.mWireless is 0) is left a literal: the list goes to
+// 7 (state 50: BattlePopup returned 2 and data_020d433c.mWireless is 0) is left a literal: the list goes to
 // its state 36 (also entered from its state 17), which requests SCENE_MAP or, in wireless mode or when data_020d433c.mNextScene is
 // SCENE_ARENA_WINDOW, goes to its state 32.
 
@@ -127,7 +127,7 @@ class BattleMapModel;
 class BakuganModel;
 class ModelLightGroup;
 class BattleStatusPanels;
-struct BattleUnk29c;
+struct BattleUnitModels;
 class BattleMapPiece;
 
 // Battle map of the command screen (vtable 022887e0, 0x158 bytes): the map object, cameras, models of the field,
@@ -146,7 +146,7 @@ public:
     /* 68 */ BattleMapPiece *mLandingPiece;
     /* 6c */ BattleMapPiece *mShadowPiece;
     /* 70 */ BattleStatusPanels *mStatusPanels;
-    /* 74 */ BattleUnk29c *mUnk_74;
+    /* 74 */ BattleUnitModels *mUnk_74;
     /* 78 */ u8 mPredictPositions[0x60];
     /* d8 */ u32 mLandingPosition[3];
     /* e4 */ u32 mCameraEndTarget[3];

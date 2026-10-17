@@ -8,8 +8,8 @@
 class SelectWindow;
 
 // Popup scene with a message from mes_command and two or three buttons (vtable 0228b008, 0x1c bytes). The window
-// slides in over the BG, waits for a button (or START) and requests the scene stored in mNextScene.
-class BattleUnk0227532c : public SceneBase {
+// slides in over the BG, waits for a button (or IsPressed(8)) and requests the scene stored in mNextScene.
+class BattlePopup : public SceneBase {
 public:
     /* 00 SceneBase */
     /* 0c */ SelectWindow *mWindow;
@@ -22,11 +22,11 @@ public:
     /* 1b */ PAD(0x1b, 0x1c);
     /* 1c */
 
-    BattleUnk0227532c(u8 planes);
-    virtual ~BattleUnk0227532c();
+    BattlePopup(u8 planes);
+    virtual ~BattlePopup();
     /* 08 */ virtual void Update();
     void LoadWindow();
     BOOL SlideTo(int target);
 };
 
-void func_ov007_022758a4(BattleUnk0227532c *popup); // frame callback: slide offset and visible planes
+void ApplyPopupSlideAndPlanes(BattlePopup *popup); // frame callback: slide offset and visible planes

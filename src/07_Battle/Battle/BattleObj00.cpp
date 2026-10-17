@@ -25,7 +25,7 @@ struct BattleObjPair {
 };
 
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
-BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag);
+BOOL SetMessageType0x19AndCheckAny(BattlePlayerList *list, u32 flag);
 void AddMarker(BattlePlayerList *list, u8 x, u8 y, u8 player, u8 slot);
 u8 PickUnflaggedSlot54(BattlePlayer *player);
 void InitCommandSubScreen(int x, int y);
@@ -34,7 +34,7 @@ extern "C" void StartStartCamPath(BattleCommandMap *map);
 extern "C" void SetupF00gatModelsAndCamera(BattleCommandMap *map);
 extern "C" void SetCursorAndMarkerModelsVisible(BattleCommandMap *map, u32 a);
 
-extern const BattleObjPair data_ov007_0227a33c[];
+extern const BattleObjPair gCornerCells[];
 extern const u8 data_ov007_0227a33d[];
 
 class BattleObj00 : public SceneBase {
@@ -44,15 +44,15 @@ public:
     /* 1c */ Camera *mCamera;
     /* 20 */ BattleCommandMap *mMap;
     /* 24 */ BattleUnionAbility *mUnion;
-    /* 28 */ u16 mUnk_28;
-    /* 2a */ s16 mUnk_2a;
-    /* 2c */ s16 mUnk_2c;
+    /* 28 */ u16 mStateFrames;
+    /* 2a */ s16 mScrollX;
+    /* 2c */ s16 mScrollY;
     /* 2e */ u16 mUnk_2e;
     /* 30 */ u16 mUnk_30;
     /* 32 */ u8 mState;
     /* 33 */ u8 mUnk_33;
-    /* 34 */ u8 mUnk_34;
-    /* 35 */ u8 mUnk_35;
+    /* 34 */ u8 mCornerCellX;
+    /* 35 */ u8 mCornerCellY;
     /* 36 */ u8 mUnk_36;
     /* 37 */ u8 mBrightness; // sub-screen G2S_SetBlendBrightness level, 0 up to 0x10 (+1 every 4th frame)
     /* 38 */ PAD(0x38, 0x39);
@@ -75,12 +75,12 @@ public:
 
 BattleObj00::BattleObj00(u8 flag)
     : SceneBase(0x3e8, 0) {
-    mUnk_28 = 0;
-    mUnk_2a = 0;
-    mUnk_2c = 0;
+    mStateFrames = 0;
+    mScrollX = 0;
+    mScrollY = 0;
     mUnk_33 = 0;
-    mUnk_34 = 0;
-    mUnk_35 = 0;
+    mCornerCellX = 0;
+    mCornerCellY = 0;
     mUnk_36 = 0;
     mUnk_3e = 0;
     if (gSaveData[0].mUnk_28_5 != 0) {
@@ -107,11 +107,11 @@ BattleObj00::BattleObj00(u8 flag)
     } else {
         mFlipped = 1;
     }
-    mUnk_34 = data_ov007_0227a33c[v].mCellX;
+    mCornerCellX = gCornerCells[v].mCellX;
     u8 b    = data_ov007_0227a33d[v * 2];
-    mUnk_35 = b;
+    mCornerCellY = b;
     BattlePlayerList *l = data_020d433c.mBattlePlayers;
-    l->mUnk_28b = mUnk_34;
+    l->mUnk_28b = mCornerCellX;
     l->mUnk_28c = b;
 }
 
@@ -147,7 +147,7 @@ void BattleObj00::Update() {
             return;
         }
         case 1:
-            mUnk_28 = 0;
+            mStateFrames = 0;
             mState++;
             return;
         case 2:
@@ -183,7 +183,7 @@ void BattleObj00::Update() {
                 mState = 7;
                 return;
             }
-            if (func_ov007_022632d0(list, 0)) {
+            if (SetMessageType0x19AndCheckAny(list, 0)) {
                 mState = 7;
                 return;
             }
@@ -196,7 +196,7 @@ void BattleObj00::Update() {
         case 6:
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-                if (!func_ov007_022632d0(data_020d433c.mBattlePlayers, 1)) {
+                if (!SetMessageType0x19AndCheckAny(data_020d433c.mBattlePlayers, 1)) {
                     return;
                 }
                 mState++;
@@ -228,7 +228,7 @@ void BattleObj00::Update() {
             if (!SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 0xf)) {
                 return;
             }
-            InitCommandSubScreen((s16) (mUnk_2a - mOffsetX), mUnk_2c);
+            InitCommandSubScreen((s16) (mScrollX - mOffsetX), mScrollY);
             LoadCommandGraphics(mFlipped);
             if (data_020d433c.mUnk_9a_3) {
                 mContext->mRequest = 1;
@@ -243,7 +243,7 @@ void BattleObj00::Update() {
             mState = 0xc;
             return;
         case 11:
-            InitCommandSubScreen((s16) (mUnk_2a - mOffsetX), mUnk_2c);
+            InitCommandSubScreen((s16) (mScrollX - mOffsetX), mScrollY);
             LoadCommandGraphics(mFlipped);
             LoadGraphics();
             if (data_020d433c.mUnk_9a_3) {
@@ -374,10 +374,10 @@ void BattleObj00::Update() {
             }
             return;
         case 18:
-            InitCommandSubScreen((s16) (mUnk_2a - mOffsetX), mUnk_2c);
+            InitCommandSubScreen((s16) (mScrollX - mOffsetX), mScrollY);
             LoadCommandGraphics(mFlipped);
             mBrightness = 0;
-            mUnk_28 = 0;
+            mStateFrames = 0;
             GXS_SetVisibleWnd(4);
             G2S_SetWndOBJInsidePlane(0x21, FALSE);
             G2S_SetWndOutsidePlane(0x11, FALSE);
@@ -393,15 +393,15 @@ void BattleObj00::Update() {
             if (SpriteManager::Get().sFade[0] > FADE_MODE_HOLD) {
                 return;
             }
-            mUnk_28 = mUnk_28 + 1;
-            if (mUnk_28 % 4 == 0 && mBrightness < 0x10) {
+            mStateFrames = mStateFrames + 1;
+            if (mStateFrames % 4 == 0 && mBrightness < 0x10) {
                 mBrightness = mBrightness + 1;
                 G2S_SetBlendBrightness(0x11, mBrightness);
             }
-            if (mUnk_28 == 1) {
+            if (mStateFrames == 1) {
                 SoundManager::Get().StartSeqArc(6);
             }
-            if ((s32) mUnk_28 <= 150) {
+            if ((s32) mStateFrames <= 150) {
                 return;
             }
             mUnk_36 = 0;
@@ -422,12 +422,12 @@ void BattleObj00::Update() {
                     kind         = p->mCorner;
                     if (p->mSlots54Remaining != 0) {
                         if (p->IsCpu() || data_020d433c.mUnk_9a_3) {
-                            AddMarker(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mCellX, data_ov007_0227a33c[kind].mCellY, i, PickUnflaggedSlot54(p));
+                            AddMarker(data_020d433c.mBattlePlayers, gCornerCells[kind].mCellX, gCornerCells[kind].mCellY, i, PickUnflaggedSlot54(p));
                         } else {
                             if (IsWirelessMode((const u8 *) &WirelessManager::Get().mState)) {
-                                AddMarker(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mCellX, data_ov007_0227a33c[kind].mCellY, i, (u8) *(u32 *) ((u8 *) data_020d433c.mBattlePlayers->mPlayers[i] + 0x104));
+                                AddMarker(data_020d433c.mBattlePlayers, gCornerCells[kind].mCellX, gCornerCells[kind].mCellY, i, (u8) *(u32 *) ((u8 *) data_020d433c.mBattlePlayers->mPlayers[i] + 0x104));
                             } else {
-                                AddMarker(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mCellX, data_ov007_0227a33c[kind].mCellY, i, mSlot);
+                                AddMarker(data_020d433c.mBattlePlayers, gCornerCells[kind].mCellX, gCornerCells[kind].mCellY, i, mSlot);
                             }
                         }
                     }

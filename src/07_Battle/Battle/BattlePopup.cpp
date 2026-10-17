@@ -1,4 +1,4 @@
-#include "Battle/BattleUnk0227532c.hpp"
+#include "Battle/BattlePopup.hpp"
 
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/SpriteManager.hpp"
@@ -49,7 +49,7 @@ static const WindowItemRecord sThreeButtonItems[3] = {
     {2, 0x8000, 120, 35, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
 };
 
-BattleUnk0227532c::BattleUnk0227532c(u8 planes)
+BattlePopup::BattlePopup(u8 planes)
     : SceneBase(2, 0) {
     mState  = 0;
     mWindow = 0;
@@ -61,18 +61,18 @@ BattleUnk0227532c::BattleUnk0227532c(u8 planes)
     G2x_SetBGyAffine_((vu16 *) 0x4001030, &mtx, 0, 0, -mOffset, 0);
 }
 
-BattleUnk0227532c::~BattleUnk0227532c() {
+BattlePopup::~BattlePopup() {
     delete mWindow;
     if (mGlyphBuffer) {
         OS_Free(mGlyphBuffer);
     }
 }
 
-void BattleUnk0227532c::Update() {
+void BattlePopup::Update() {
     switch (mState) {
         case 0:
             LoadWindow();
-            QueueFrameCallback((FrameCallback) func_ov007_022758a4, this);
+            QueueFrameCallback((FrameCallback) ApplyPopupSlideAndPlanes, this);
             mState++;
             break;
         case 1:
@@ -121,7 +121,7 @@ void BattleUnk0227532c::Update() {
     }
 }
 
-BOOL BattleUnk0227532c::SlideTo(int target) {
+BOOL BattlePopup::SlideTo(int target) {
     BOOL done = FALSE;
     mOffset += 0x18;
     u8 i = 0;
@@ -143,16 +143,16 @@ BOOL BattleUnk0227532c::SlideTo(int target) {
         done    = TRUE;
     }
     SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, (u8) mGlyphCount, (s16) (0x20 - mOffset), 0x40, 0, 0x220, 0xf, 0);
-    QueueFrameCallback((FrameCallback) func_ov007_022758a4, this);
+    QueueFrameCallback((FrameCallback) ApplyPopupSlideAndPlanes, this);
     return done;
 }
 
-void func_ov007_022758a4(BattleUnk0227532c *popup) {
+void ApplyPopupSlideAndPlanes(BattlePopup *popup) {
     G2x_SetBGyAffine_((vu16 *) 0x4001030, &gIdentityMtx22, 0, 0, popup->mOffset, 0);
     GXS_SetVisiblePlane(popup->mPlanes | 0x18);
 }
 
-void BattleUnk0227532c::LoadWindow() {
+void BattlePopup::LoadWindow() {
     G2S_SetBG0Priority(3);
     G2S_SetBG3Priority(0);
     ChangeDir("/Game/2D/union_b/");

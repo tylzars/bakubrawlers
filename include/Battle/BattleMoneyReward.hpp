@@ -35,7 +35,7 @@ public:
     /* a6 */ u8 mKind;
     /* a7 */ s8 mTransferTimer;
     /* a8 */ u8 mFade;
-    /* a9 */ u8 mUnk_a9;
+    /* a9 */ u8 mFading;
     /* aa */ s8 mSparkleSoundTimer;
     /* ab */ s8 mTransferSoundTimer;
     /* ac */ u8 mPos[15][2];

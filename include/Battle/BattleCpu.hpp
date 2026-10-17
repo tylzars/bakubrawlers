@@ -23,14 +23,14 @@ public:
     /* 72 */ u16 mOffsetInterval;
     /* 74 */ u16 mTimer;
     /* 76 */ u8 mUsingTargets;
-    /* 77 */ u8 mUnk_77;
+    /* 77 */ u8 mPushIndex;
     /* 78 */ u8 mUnk_78;
     /* 79 */ u8 mPlayer;
     /* 7a */ u8 mRecord;
     /* 7b */ u8 mUnk_7b;
     /* 7c */ PAD(0x7c, 0x7d);
     /* 7d */ u8 mUnk_7d;
-    /* 7e */ u8 mUnk_7e;
+    /* 7e */ u8 mSpKind;
     /* 7f */ u8 mTargetNodeIndices[4];
     /* 83 */ u8 mTargetIndex; // (+ 1) % mJumpObjCount per target; set to 0 only by the ctor
     /* 84 */ u8 mJumpObjCount;
@@ -41,11 +41,11 @@ public:
     BattleCpu(u32 player);
     virtual ~BattleCpu();
     void func_ov007_02231038();
-    u8 func_ov007_022310f0();
+    u8 TryPickUnflaggedSlot54();
     u8 PickMarkerCell();
     u8 PickRecord();
-    void func_ov007_02231e2c(struct BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC);
-    void func_ov007_022328dc();
+    void PickShot(struct BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC);
+    void PickPushIndex();
     // also sets mUnk_54 (0x47e + rand 301) and mUnk_58 (0xe10), the BattleTarget::mMoveFrames values
     // BattleShoot::UpdateTurnPlayerCpu waits for
     void StartJumpObjTargets(int a);

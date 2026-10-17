@@ -131,10 +131,10 @@ void AddMarker(BattlePlayerList *list, u8 x, u8 y, u8 player, u8 slot);
 
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 
-class BattleUnk0227532c {
+class BattlePopup {
 public:
     u8 mPad[0x1c];
-    BattleUnk0227532c(u8 planes);
+    BattlePopup(u8 planes);
 };
 
 void func_ov007_022470e4(BattleCommandMap *map, u8 a, u8 b);
@@ -265,7 +265,7 @@ BattleCommand::BattleCommand(u32 unk)
 
     InitGridMask();
     if (data_020d433c.mBattlePlayers->mUnk_29c) {
-        data_020d433c.mBattlePlayers->mUnk_29c->mUnk_a0 = 0;
+        data_020d433c.mBattlePlayers->mUnk_29c->mDrawMode = 0;
     }
 }
 
@@ -786,7 +786,7 @@ void BattleCommand::Update() {
             mCommandWindow->mButtons[5].mEnabled = 0;
             mCommandWindow->mButtons[4].mEnabled = 0;
             mUnk_11c                      = 0;
-            u8 r = data_020d433c.mBattlePlayers->Current()->mCpu->func_ov007_022310f0();
+            u8 r = data_020d433c.mBattlePlayers->Current()->mCpu->TryPickUnflaggedSlot54();
             if (r == 0xff || data_020d433c.mBattlePlayers->mAddMarkerEnabled == 0) {
                 mState = 0x12;
                 return;
@@ -861,7 +861,7 @@ void BattleCommand::Update() {
             p->mRecord = sel;
             u32 act    = GetTexVariant(rec->mBakuganId, rec->mAttribute);
             u8 kind    = 3;
-            if (p->mCpu->mUnk_7e != 0) {
+            if (p->mCpu->mSpKind != 0) {
                 kind = 0xf;
             }
             new BattleCharaAct((Camera *) mCamera, cur, kind, act, 0);
@@ -1362,7 +1362,7 @@ void BattleCommand::Update() {
             }
             return;
         case 49:
-            new BattleUnk0227532c(1);
+            new BattlePopup(1);
             mContext->mRequest = 0;
             mState++;
             return;

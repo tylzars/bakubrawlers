@@ -9,7 +9,7 @@ extern "C" s32 FX_Atan2Idx(s32 y, s32 x);
 
 // Battle message of the communication buffer data_0220f540 (the layout used by the battle).
 struct BattleNetMessage {
-    /* 00 */ u8 mUnk_00;
+    /* 00 */ u8 mType;
     /* 01 */ PAD(0x01, 0x04);
     /* 04 */ u16 mUnk_04[4];
     /* 0c */ u16 mUnk_0c[4];
@@ -23,9 +23,9 @@ IBattle::IBattle() {
 IBattle::~IBattle() {
 }
 
-void func_ov007_02229c88(BattleBase *scene, u16 *a, u16 *b, u16 *c, u8 flag) {
+void WriteNetMessage(BattleBase *scene, u16 *a, u16 *b, u16 *c, u8 flag) {
     BattleNetMessage *msg = (BattleNetMessage *) &data_0220f540;
-    msg->mUnk_00 = 0xe;
+    msg->mType = 0xe;
     msg->mUnk_04[0] = a[0];
     msg->mUnk_04[1] = a[1];
     msg->mUnk_04[2] = a[2];
@@ -41,7 +41,7 @@ void func_ov007_02229c88(BattleBase *scene, u16 *a, u16 *b, u16 *c, u8 flag) {
     msg->mUnk_18 = flag;
 }
 
-void func_ov007_02229d08(BattleBase *scene) {
+void ApplyNetMessages(BattleBase *scene) {
     u8 i = 0;
     u32 count = WirelessManager::Get().GetRecvBlockCount();
     u16 first[4] = {0, 0, 0, 0};

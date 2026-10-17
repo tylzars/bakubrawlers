@@ -8,7 +8,7 @@
 #include "Graphics/BakuganModel.hpp"
 
 
-BattleUnk29c::BattleUnk29c() {
+BattleUnitModels::BattleUnitModels() {
     u8 i;
     for (i = 0; i < 12; i++) {
         mBakugans[i] = 0;
@@ -31,25 +31,25 @@ BattleUnk29c::BattleUnk29c() {
     mStIconPosition.z = 0;
     mStIconFontObjIndex = 0;
     mStIconUnitHandle = 0;
-    mUnk_95 = 0;
-    mUnk_a0 = 0;
+    mStIconKind = 0;
+    mDrawMode = 0;
 }
 
-BattleUnk29c::~BattleUnk29c() {
+BattleUnitModels::~BattleUnitModels() {
     if (mShadow) {
         delete mShadow;
     }
     mShadow = 0;
 }
 
-BakuganModel *BattleUnk29c::GetBakugan(u8 index) {
+BakuganModel *BattleUnitModels::GetBakugan(u8 index) {
     if (mBakugans[index] == 0) {
         return 0;
     }
     return mBakugans[index];
 }
 
-void BattleUnk29c::ReleaseBakugan(u32 index) {
+void BattleUnitModels::ReleaseBakugan(u32 index) {
     BakuganModel *pose = mBakugans[index];
     if (pose) {
         delete pose;
@@ -59,7 +59,7 @@ void BattleUnk29c::ReleaseBakugan(u32 index) {
     mMoveStates[index] = 0;
 }
 
-void BattleUnk29c::CreateFontObjs() {
+void BattleUnitModels::CreateFontObjs() {
     u32 i = 0;
     do {
         if (mFontObjs[i] == 0) {
@@ -77,7 +77,7 @@ void BattleUnk29c::CreateFontObjs() {
     }
 }
 
-void BattleUnk29c::Release() {
+void BattleUnitModels::Release() {
     u8 i = 0;
     do {
         if (mBakugans[i]) {
@@ -101,14 +101,14 @@ void BattleUnk29c::Release() {
         i++;
     } while (i < 9);
     mStIconUnitHandle = 0;
-    mUnk_95 = 0;
+    mStIconKind = 0;
     mStIconFontObjIndex = 0;
     mStIconPosition.x = 0;
     mStIconPosition.y = 0;
     mStIconPosition.z = 0;
 }
 
-void BattleUnk29c::Update() {
+void BattleUnitModels::Update() {
     u8 i = 0;
     do {
         if (mBakugans[i]) {
@@ -129,14 +129,14 @@ void BattleUnk29c::Update() {
         }
         i++;
     } while (i < 12);
-    if (mUnk_a0 == 0) {
+    if (mDrawMode == 0) {
         func_ov007_0226ff08(1);
     } else {
         func_ov007_0226ff08(0);
     }
 }
 
-void BattleUnk29c::func_ov007_0226ff08(u32 flag) {
+void BattleUnitModels::func_ov007_0226ff08(u32 flag) {
     if (flag == 0 && mUnk_9e == 0) {
         return;
     }
@@ -196,7 +196,7 @@ void BattleUnk29c::func_ov007_0226ff08(u32 flag) {
     } while (n < 12);
 }
 
-void BattleUnk29c::CreateBakugan(u32 index, VecFx32 *pos, u16 *rot, u8 a, u8 b) {
+void BattleUnitModels::CreateBakugan(u32 index, VecFx32 *pos, u16 *rot, u8 a, u8 b) {
     if (mBakugans[index] == 0 && mMoveStates[index] == 0) {
         mBakugans[index] = new BakuganModel();
         if (data_020d433c.mBattlePlayers->mUnitCount < 8) {
@@ -228,7 +228,7 @@ static inline void CopyVec(VecFx32 *dst, const VecFx32 *src) {
     dst->z = src->z;
 }
 
-void BattleUnk29c::Draw() {
+void BattleUnitModels::Draw() {
     u8 i = 0;
     do {
         if (mBakugans[i] && mMoveStates[i] && mMoveStates[i]->mMode) {
@@ -251,7 +251,7 @@ void BattleUnk29c::Draw() {
     DrawNearPyPt();
 }
 
-void BattleUnk29c::DrawNearPnames() {
+void BattleUnitModels::DrawNearPnames() {
     if (mUnk_9e == 0) {
         return;
     }
@@ -280,8 +280,8 @@ static const VecFx32 sMarkerOffset = {-0x5000, 0, 0};
 
 #include "Graphics/Camera.hpp"
 
-void BattleUnk29c::DrawNearPyPt() {
-    if (mUnk_a0 != 1) {
+void BattleUnitModels::DrawNearPyPt() {
+    if (mDrawMode != 1) {
         return;
     }
     if (mUnk_9e == 0) {
@@ -321,9 +321,9 @@ void BattleUnk29c::DrawNearPyPt() {
     } while (i < 3);
 }
 
-void BattleUnk29c::DrawStIcons() {
+void BattleUnitModels::DrawStIcons() {
     u8 i = 0;
-    if (mUnk_a0 == 0) {
+    if (mDrawMode == 0) {
         do {
             DrawUnitStIcons(i + 1);
             i++;
@@ -348,7 +348,7 @@ void BattleUnk29c::DrawStIcons() {
     }
 }
 
-void BattleUnk29c::DrawUnitStIcons(u8 index) {
+void BattleUnitModels::DrawUnitStIcons(u8 index) {
     s32 scale;
     u32 i = index - 1;
     BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) i];
@@ -357,7 +357,7 @@ void BattleUnk29c::DrawUnitStIcons(u8 index) {
     }
     VecFx32 pos = mBakugans[i]->mPosition;
     u8 slot     = 0xff;
-    if (mUnk_a0 == 0) {
+    if (mDrawMode == 0) {
         pos.y += 0xc000;
         scale = 0x1666;
     } else {
@@ -416,10 +416,10 @@ void BattleUnk29c::DrawUnitStIcons(u8 index) {
     mFontObjs[slot]->DrawInstance();
 }
 
-void BattleUnk29c::SetStIconUnit(u8 index, u32 type) {
+void BattleUnitModels::SetStIconUnit(u8 index, u32 type) {
     BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[index];
     mStIconUnitHandle          = index + 1;
-    mUnk_95          = type;
+    mStIconKind          = type;
     mStIconPosition.x        = unit->mPos.x;
     mStIconPosition.y        = unit->mPos.y;
     mStIconPosition.z        = unit->mPos.z;
@@ -432,7 +432,7 @@ void BattleUnk29c::SetStIconUnit(u8 index, u32 type) {
     }
 }
 
-void BattleUnk29c::StartMove(u8 index, BattleMoveState *state) {
+void BattleUnitModels::StartMove(u8 index, BattleMoveState *state) {
     BattleMoveState *m;
     if (mBakugans[index] && (m = mMoveStates[index]) && m->mMode) {
         *m = *state;
@@ -485,7 +485,7 @@ static inline void AddRot(BakuganModel *p, const u16 *r) {
     p->mRotY = ry;
     p->mRotZ = rz;
 }
-void BattleUnk29c::UpdateMoveMode2(u32 index) {
+void BattleUnitModels::UpdateMoveMode2(u32 index) {
     BattleMoveState *m = mMoveStates[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
         BakuganModel *q = mBakugans[index];
@@ -506,7 +506,7 @@ void BattleUnk29c::UpdateMoveMode2(u32 index) {
     }
 }
 
-void BattleUnk29c::UpdateMoveMode3(u32 index) {
+void BattleUnitModels::UpdateMoveMode3(u32 index) {
     BattleMoveState *m = mMoveStates[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
         BakuganModel *q = mBakugans[index];
@@ -535,7 +535,7 @@ void BattleUnk29c::UpdateMoveMode3(u32 index) {
     }
 }
 
-void BattleUnk29c::UpdateMoveMode4(u32 index) {
+void BattleUnitModels::UpdateMoveMode4(u32 index) {
     BattleMoveState *m = mMoveStates[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
         BakuganModel *q = mBakugans[index];
@@ -564,7 +564,7 @@ void BattleUnk29c::UpdateMoveMode4(u32 index) {
     }
 }
 
-void BattleUnk29c::UpdateMoveMode5(u32 index) {
+void BattleUnitModels::UpdateMoveMode5(u32 index) {
     BattleMoveState *m = mMoveStates[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
         BakuganModel *q = mBakugans[index];
@@ -593,21 +593,21 @@ void BattleUnk29c::UpdateMoveMode5(u32 index) {
     }
 }
 
-void BattleUnk29c::DrawFontObj(u8 index, VecFx32 *pos) {
+void BattleUnitModels::DrawFontObj(u8 index, VecFx32 *pos) {
     VecFx32 scale = {0x1000, 0x1000, 0x1000};
     mFontObjs[index]->mPosition = *pos;
     mFontObjs[index]->mScale    = scale;
     mFontObjs[index]->DrawInstance();
 }
 
-void BattleUnk29c::DrawPyFontObj(VecFx32 *pos) {
+void BattleUnitModels::DrawPyFontObj(VecFx32 *pos) {
     VecFx32 scale = {0x1000, 0x1000, 0x1000};
     mFontObjs[7]->mPosition = *pos;
     mFontObjs[7]->mScale    = scale;
     mFontObjs[7]->DrawInstance();
 }
 
-void BattleUnk29c::DrawPtFontObj(VecFx32 *pos) {
+void BattleUnitModels::DrawPtFontObj(VecFx32 *pos) {
     VecFx32 scale = {0x1000, 0x1000, 0x1000};
     mFontObjs[8]->mPosition = *pos;
     mFontObjs[8]->mScale    = scale;

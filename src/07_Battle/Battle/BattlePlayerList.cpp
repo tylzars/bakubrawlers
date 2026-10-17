@@ -99,7 +99,7 @@ public:
     virtual void Update();
 };
 
-extern "C" void func_ov007_022633f8(BattlePlayerList *list);
+extern "C" void StartFrameTaskChannel0(BattlePlayerList *list);
 extern "C" void RestoreSndHeapState(u32 heap, u32 a);
 void SetupTutorialPlayer(BattlePlayer *player);
 void SetSlot54Flag(BattlePlayer *player, u32 index, u32 flag);
@@ -159,7 +159,7 @@ BattlePlayerList::BattlePlayerList()
             data_020d433c.mTutorialNumber = 0;
             data_020d433c.mTutorialId = 0;
     }
-    func_ov007_022633f8(this);
+    StartFrameTaskChannel0(this);
     mBattleTarget = 0;
     mUnk_29c = 0;
     MicManager::Get().StartSampling();
@@ -178,7 +178,7 @@ BattlePlayerList::~BattlePlayerList() {
     if (data_020d433c.mAntenna) {
         ((SceneBase *) data_020d433c.mAntenna)->mFinished = 1;
     }
-    BattleUnk29c *p = mUnk_29c;
+    BattleUnitModels *p = mUnk_29c;
     if (p) {
         delete p;
     }
@@ -368,7 +368,7 @@ void BattlePlayerList::Update() {
                     u16 outA         = 0;
                     u16 outB         = 0;
                     u8 outC          = 0;
-                    mPlayers[mTurnPlayer]->mCpu->func_ov007_02231e2c(&rot, &outA, &outB, &outC);
+                    mPlayers[mTurnPlayer]->mCpu->PickShot(&rot, &outA, &outB, &outC);
                     u8 extra = *((u8 *) mPlayers[mTurnPlayer]->mCpu + 0x7e);
                     new BattleShoot(mCamera, &rot.mX, outA, outB, outC, extra, mUnk_2ae);
                     mContext->mRequest = 0;
@@ -923,7 +923,7 @@ void CreateObjects(BattlePlayerList *list) {
     data_020d433c.mEffects = new EffectManager();
     data_020d433c.mGimmickCollision  = new GimmickCollision();
     data_020d433c.mGimmicks = new GimmickManager();
-    list->mUnk_29c = new BattleUnk29c();
+    list->mUnk_29c = new BattleUnitModels();
     if (data_020d433c.mWireless) {
         data_020d433c.mAntenna = new AntennaIndicator(0);
     }
@@ -1323,7 +1323,7 @@ BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id) {
     return result;
 }
 
-BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag) {
+BOOL SetMessageType0x19AndCheckAny(BattlePlayerList *list, u32 flag) {
     WirelessManager::Get();
     if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
         return FALSE;
@@ -1344,7 +1344,7 @@ BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag) {
     return result;
 }
 
-extern "C" void func_ov007_022633f8(BattlePlayerList *list) {
+extern "C" void StartFrameTaskChannel0(BattlePlayerList *list) {
     (void) DataLayoutSlot();
     if (data_020d433c.mTutorialPart) {
         return;

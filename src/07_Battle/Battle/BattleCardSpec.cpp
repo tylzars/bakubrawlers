@@ -12,7 +12,7 @@
 #include <nitro/gx.h>
 #include <stdio.h>
 
-BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag);
+BOOL SetMessageType0x19AndCheckAny(BattlePlayerList *list, u32 flag);
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 extern const VecFx32 gCardSpecModelScale;
 
@@ -91,7 +91,7 @@ void BattleCardSpec::Update() {
             if (mContext->mRequest != 0) {
                 mState = 5;
             } else if (mCloseEnabled) {
-                if (func_ov007_022632d0(data_020d433c.mBattlePlayers, 0)) {
+                if (SetMessageType0x19AndCheckAny(data_020d433c.mBattlePlayers, 0)) {
                     mState = 4;
                 } else if (InputManager::Get().IsDown(8)) {
                     mState++;
@@ -101,7 +101,7 @@ void BattleCardSpec::Update() {
         case 3:
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-                if (func_ov007_022632d0(data_020d433c.mBattlePlayers, 1)) {
+                if (SetMessageType0x19AndCheckAny(data_020d433c.mBattlePlayers, 1)) {
                     mState++;
                 }
             } else {

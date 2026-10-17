@@ -66,7 +66,7 @@ extern const s8 data_ov007_02279d3c[];
 u8 GetCardAttributeValue(u32 id, u32 index);
 
 extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
-extern "C" void func_ov007_022633f8(BattlePlayerList *list);
+extern "C" void StartFrameTaskChannel0(BattlePlayerList *list);
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 extern "C" void RecordSndHeapState(u32 heap);
 extern "C" void GX_SetGraphicsMode(u32 unk1, u32 unk2, u32 unk3);
@@ -171,7 +171,7 @@ BattleConfrontCard::~BattleConfrontCard() {
             SoundManager::Get().LoadAndStartSeq(1);
             RecordSndHeapState(SoundManager::Get().mHeap);
         } else {
-            func_ov007_022633f8(data_020d433c.mBattlePlayers);
+            StartFrameTaskChannel0(data_020d433c.mBattlePlayers);
         }
     }
     SoundManager::Get().LoadSoundGroup(6);

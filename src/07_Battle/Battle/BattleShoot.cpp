@@ -29,7 +29,7 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 #include "UI/StorytalkWindow.hpp"
-#include "Battle/BattleUnk0227532c.hpp"
+#include "Battle/BattlePopup.hpp"
 
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 
@@ -591,7 +591,7 @@ void BattleShoot::Update() {
             }
             break;
         case 13:
-            new BattleUnk0227532c(3);
+            new BattlePopup(3);
             mContext->mRequest = 0;
             mState++;
             break;
@@ -1355,7 +1355,7 @@ void BattleShoot::UpdateTurnPlayerCpu() {
     if (cpu == 0) {
         return;
     }
-    if (!(cpu->mUnk_77 == 0 || cpu->mUnk_77 == 1 || cpu->mUnk_77 == 2)) {
+    if (!(cpu->mPushIndex == 0 || cpu->mPushIndex == 1 || cpu->mPushIndex == 2)) {
         return;
     }
     if (cpu->mUnk_58 != 0) {
@@ -1392,7 +1392,7 @@ void BattleShoot::UpdateTurnPlayerCpu() {
         v.y = 0;
         v.z = 0;
     } else {
-        s32 k = gCpuPushScales[cpu->mUnk_77];
+        s32 k = gCpuPushScales[cpu->mPushIndex];
         v.x   = FX_Mul(v.x, k);
         v.y   = FX_Mul(v.y, k);
         v.z   = FX_Mul(v.z, k);
@@ -1413,7 +1413,7 @@ void BattleShoot::UpdateTurnPlayerCpu() {
             v.y             = t->mVelocity.y;
             v.z             = t->mVelocity.z;
             VEC_Normalize(&v, &v);
-            s32 k = gCpuPushScales[cpu->mUnk_77];
+            s32 k = gCpuPushScales[cpu->mPushIndex];
             v.x   = FX_Mul(v.x, k);
             v.y   = FX_Mul(v.y, k);
             v.z   = FX_Mul(v.z, k);
@@ -1425,8 +1425,8 @@ void BattleShoot::UpdateTurnPlayerCpu() {
         mBattleTarget->func_ov007_02255c04(&v, out);
         StartPushEffect(data_020d433c.mBattlePlayers->mTurnPlayer, out[0], out[1]);
     }
-    u8 roll = MATH_Rand32(&gRandom, (u8) (gCpuPushIntervalRanges[cpu->mUnk_77].mHigh - gCpuPushIntervalRanges[cpu->mUnk_77].mLow));
-    mCpuPushInterval = roll + gCpuPushIntervalRanges[cpu->mUnk_77].mLow;
+    u8 roll = MATH_Rand32(&gRandom, (u8) (gCpuPushIntervalRanges[cpu->mPushIndex].mHigh - gCpuPushIntervalRanges[cpu->mPushIndex].mLow));
+    mCpuPushInterval = roll + gCpuPushIntervalRanges[cpu->mPushIndex].mLow;
     mCpuPushCount++;
 }
 

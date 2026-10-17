@@ -26,15 +26,15 @@ struct BattleCpuShot {
     u8 mUnk_3;
 };
 
-static const u8 data_ov007_022796d0[5] = {95, 110, 125, 140, 155};
+static const u8 sShotRotYDegrees[5] = {95, 110, 125, 140, 155};
 
-static const u8 data_ov007_0227970c[17] = {10, 60, 80, 40, 10, 10, 60, 20, 30, 70, 10, 10, 10, 5, 10, 50, 40};
+static const u8 sShotTableChances[17] = {10, 60, 80, 40, 10, 10, 60, 20, 30, 70, 10, 10, 10, 5, 10, 50, 40};
 
 static const u8 data_ov007_022796f8[17] = {2, 4, 3, 0, 2, 0, 1, 0, 2, 0, 2, 4, 2, 2, 1, 2, 1};
 
-static const u8 data_ov007_022796e4[17] = {90, 60, 70, 75, 50, 30, 60, 100, 80, 40, 80, 90, 60, 30, 20, 90, 60};
+static const u8 sSpKindChances[17] = {90, 60, 70, 75, 50, 30, 60, 100, 80, 40, 80, 90, 60, 30, 20, 90, 60};
 
-static const u8 data_ov007_022797ac[17][5] = {
+static const u8 sShotRotYWeights[17][5] = {
     {5, 10, 70, 10, 5},
     {10, 30, 20, 30, 10},
     {20, 20, 20, 20, 20},
@@ -206,7 +206,7 @@ void BattleCpu::func_ov007_02231038() {
     }
 }
 
-u8 BattleCpu::func_ov007_022310f0() {
+u8 BattleCpu::TryPickUnflaggedSlot54() {
     u8 result = 0xff;
     if (data_020d433c.mTutorialId != 0 || data_020d433c.mLastBattle != 0) {
         return 0xff;
@@ -371,7 +371,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
         return;
     }
     type = list->mPlayers[cpu->mPlayer]->mRecords[cpu->mRecord].mAttribute;
-    cpu->mUnk_7e = 0;
+    cpu->mSpKind = 0;
     BattlePlayerList *list2 = data_020d433c.mBattlePlayers;
     BattlePlayer *pl        = list2->mPlayers[cpu->mPlayer];
     if ((s32) pl->mRecords[cpu->mRecord].mUnk_00_0 >= 2 && pl->mUnk_f3 == 0xbe) {
@@ -389,18 +389,18 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
         if (list2->mPlayers[cpu->mPlayer]->mUnk_f7 == 2) {
             roll = 0;
         }
-        if (roll < data_ov007_022796e4[kind]) {
-            cpu->mUnk_7e = type + 1;
+        if (roll < sSpKindChances[kind]) {
+            cpu->mSpKind = type + 1;
             if (cntB == 0) {
                 switch (type) {
                     case 0:
                     case 2:
                     case 3:
-                        cpu->mUnk_7e = 0;
+                        cpu->mSpKind = 0;
                         break;
                     case 5:
                         if (cntA == 0) {
-                            cpu->mUnk_7e = 0;
+                            cpu->mSpKind = 0;
                         }
                         break;
                 }
@@ -435,7 +435,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
             state = 5;
             break;
     }
-    if (cpu->mUnk_7e != 0 && cntB != 0) {
+    if (cpu->mSpKind != 0 && cntB != 0) {
         switch (type) {
             case 0:
             case 2:
@@ -630,7 +630,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     cpu->mPos.x = data_020d433c.mBattlePlayers->Markers()[pick].mCellX * 0x23000 - 0xe3800;
     cpu->mPos.y = 0;
     cpu->mPos.z = data_020d433c.mBattlePlayers->Markers()[pick].mCellY * 0x2f000 - 0xd3800;
-    cpu->func_ov007_022328dc();
+    cpu->PickPushIndex();
 }
 
 u8 BattleCpu::PickRecord() {
@@ -649,7 +649,7 @@ u8 BattleCpu::PickRecord() {
     return found;
 }
 
-void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC) {
+void BattleCpu::PickShot(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC) {
     u8 a    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCharacterId;
     u8 idx2 = 0;
     u8 spin;
@@ -671,7 +671,7 @@ void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 
     i   = 0;
     sum = 0;
     do {
-        sum += data_ov007_022797ac[a][i];
+        sum += sShotRotYWeights[a][i];
         if (sum > roll) {
             idx2 = i;
             break;
@@ -724,10 +724,10 @@ void BattleCpu::func_ov007_02231e2c(BattleCpuRot *rot, u16 *outA, u16 *outB, u8 
     if (data_020d433c.mFieldId == 3) {
         r.y = (u16) ((float) (MATH_Rand32(&gRandom, 30) + 120) * 65536.0f / 360.0f);
     } else {
-        r.y = (u16) ((float) (data_ov007_022796d0[idx2] + MATH_Rand32(&gRandom, 20)) * 65536.0f / 360.0f);
+        r.y = (u16) ((float) (sShotRotYDegrees[idx2] + MATH_Rand32(&gRandom, 20)) * 65536.0f / 360.0f);
     }
     roll = MATH_Rand32(&gRandom, 100);
-    if (roll < data_ov007_0227970c[a]) {
+    if (roll < sShotTableChances[a]) {
         u8 f1  = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mCorner;
         u8 sel = data_020d433c.mUnk_96;
         switch (sel) {
@@ -776,7 +776,7 @@ struct BattleCpuOdds {
     u8 mSecond[2];
 };
 
-static const BattleCpuOdds data_ov007_02279720[17] = {
+static const BattleCpuOdds sPushIndexOdds[17] = {
     {{5, 50}, {40, 40}},
     {{0, 30}, {0, 50}},
     {{0, 40}, {0, 60}},
@@ -796,7 +796,7 @@ static const BattleCpuOdds data_ov007_02279720[17] = {
     {{1, 20}, {5, 80}},
 };
 
-void BattleCpu::func_ov007_022328dc() {
+void BattleCpu::PickPushIndex() {
     u8 roll;
     u8 b;
     u8 a;
@@ -811,15 +811,15 @@ void BattleCpu::func_ov007_022328dc() {
             b = 1;
         }
     }
-    u8 low = data_ov007_02279720[a].mFirst[b];
+    u8 low = sPushIndexOdds[a].mFirst[b];
     if (roll < low) {
-        mUnk_77 = 0;
+        mPushIndex = 0;
         return;
     }
-    if (roll < low + data_ov007_02279720[a].mSecond[b]) {
-        mUnk_77 = 1;
+    if (roll < low + sPushIndexOdds[a].mSecond[b]) {
+        mPushIndex = 1;
     } else {
-        mUnk_77 = 2;
+        mPushIndex = 2;
     }
 }
 

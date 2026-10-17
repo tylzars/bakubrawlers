@@ -38,7 +38,7 @@ BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 void StartAbilitiesSlide(BattleSub48 *obj);
 void ShowModels(BattleField3D *obj);
 BOOL MoveToEndThenCreateAuras(BattleField3D *obj);
-BOOL func_ov007_022297f0(BattleField3D *obj);
+BOOL MoveModelsThenHideOne(BattleField3D *obj);
 void SetHudState(BattleHud *obj, u32 a);
 void func_ov007_0222847c(BattleHud *obj);
 void MovePlayerAnimX(BattleHud *obj);
@@ -49,8 +49,8 @@ struct BattleRow {
 };
 extern const BattleRow gAttributeRates[];
 extern const s32 data_ov007_02278b74;
-void func_ov007_02229d08(BattleBase *scene);
-void func_ov007_02229c88(BattleBase *scene, u16 *a, u16 *b, u16 *c, u8 flag);
+void ApplyNetMessages(BattleBase *scene);
+void WriteNetMessage(BattleBase *scene, u16 *a, u16 *b, u16 *c, u8 flag);
 
 void CloseHud(void *);
 extern const s8 data_ov007_02279158[];
@@ -999,7 +999,7 @@ BOOL BattleBase::func_ov007_0221bfa4() {
         break;
     case 1:
         if (!IsHudSequenceRunning(mHud)) {
-            if (func_ov007_022297f0(mField3D)) {
+            if (MoveModelsThenHideOne(mField3D)) {
                 mUnk_2a = 0;
                 mStep++;
             }
@@ -1199,7 +1199,7 @@ void BattleBase::func_ov007_0221c938() {
     WirelessManager::Get();
     const u8 *mode = &data_020c4258;
     if (IsWirelessMode(mode)) {
-        func_ov007_02229d08(this);
+        ApplyNetMessages(this);
     }
     int found = func_ov007_0221c178(a, b, c, &flag);
     BOOL doneB = 1;
@@ -1296,7 +1296,7 @@ void BattleBase::func_ov007_0221c938() {
         } while (i < 2);
         TryStartCardSequence(c);
     } else {
-        func_ov007_02229c88(this, a, b, c, flag);
+        WriteNetMessage(this, a, b, c, flag);
     }
 }
 

@@ -17,7 +17,7 @@ static const VecFx32 sEffectPos_02265af8_0 = {0, 0x4800, 0};
 static const VecFx32 sEffectPos_02266a28_2 = {0, 0x4800, 0};
 static const VecFx32 sEffectPos_02265118 = {0, 0x4800, 0};
 
-#include "Battle/BattleUnk29c.hpp"
+#include "Battle/BattleUnitModels.hpp"
 #include "Battle/BattleCommandPage.hpp"
 #include "Battle/BattleCommandList.hpp"
 #include "Battle/BattleCommandPrompt.hpp"

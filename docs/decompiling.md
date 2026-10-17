@@ -164,7 +164,7 @@ that matches should replace it.
 
 ## Hard problems and how they were solved
 
-- The GameOverScene/BattleUnionAbility/BattleUnk0227532c "literal order" problem is resolved: GameOverScene's
+- The GameOverScene/BattleUnionAbility/BattlePopup "literal order" problem is resolved: GameOverScene's
   tables come before most of its includes; the other two were loading the wrong file names (probes mask string
   addresses, so a wrong literal can look like a match).
 
@@ -403,7 +403,7 @@ Other findings from linking:
 
 - **A dead product still shapes the code.** GimmickUnk_02274830::Update copies a vector whole and scales all three
   components (`v.y = FX_Mul(v.y, 0x2000);`) before overwriting y; dropping the dead product changes registers and
-  order (BattleUnk29c and GimmickExePoint do the same).
+  order (BattleUnitModels and GimmickExePoint do the same).
 
 - **A guarded allocation that calls a constructor returning `this` is `new T`** (Mobiclip's Player: operator new,
   operator delete, constructor and destructor are members); the new-expression's result is a temporary, which fixed a
@@ -413,7 +413,7 @@ Other findings from linking:
   (FileSystem's LoadFile).
 
 - **Create the first operand early, add the second late:** `u16 rx = p->mRotX; ...other sums...; rx += r[0];`
-  instead of `u16 rx = p->mRotX + r[0];` (which is substituted into its store and created last) gave BattleUnk29c's
+  instead of `u16 rx = p->mRotX + r[0];` (which is substituted into its store and created last) gave BattleUnitModels's
   four rotation tails the original's reverse-creation register order.
 - **A pointer taken from a member just after storing it** (`mUnk_40 = data; entries = mUnk_40->mEntries;`) is
   scheduled where `data->mEntries` is not (BattleSub48's constructor).
@@ -440,7 +440,7 @@ Other findings from linking:
 - **A shared exit label.** GimmickFieldDestroy::PickKind's two early `return i;` became `goto found;` to one
   `found: return i;` after `return 0;`, which gives the original branch shape and table load order.
 
-- **Two u8 zeros share a register, and that steers the scheduler.** In BattleCpu::func_ov007_022310f0 the zeros of
+- **Two u8 zeros share a register, and that steers the scheduler.** In BattleCpu::TryPickUnflaggedSlot54 the zeros of
   `free` and the counter shared one register, which put `mov r5, #0` ahead of a load; a `u32` counter with a `(u8)`
   wrap stops the sharing and gives the original order.
 - **Store, then scale in place:** `d->x = FX_Mul(s->x, len); d->x = FX_Mul(d->x, k);` colours differently from one
@@ -685,15 +685,15 @@ Other findings from linking:
 - **Spill slots.** Spilled parameters take the lowest stack slots, in parameter order; spilled named locals go above
   them in reverse declaration order (the first declared gets the highest slot); a spilled compiler temporary (such as
   a repeated global read that mwcc merges into one value) sits just above the parameters. A local that won't take its
-  slot by declaration order may need to be a repeated expression instead (BattleCpu::func_ov007_02231e2c: reading
-  `data_020d433c.mUnk_95` at both uses rather than through a local).
+  slot by declaration order may need to be a repeated expression instead (BattleCpu::PickShot: reading
+  `data_020d433c.mStIconKind` at both uses rather than through a local).
 - **Which parameters are copied to the stack first.** mwcc emits every stack-parameter copy at entry, in parameter
   order (`-proc generic` shows it); the arm946e scheduler then moves a copy early only when its loaded value has a
   consumer in the same scheduled region, and leaves the rest late. A local with two definitions (`u32 spacing = unk12;`
   plus a second assignment) is not propagated, shares the parameter's home slot and pulls its copy early
   (TextManager::Print; its remaining early copies came from parameter widths: `u16 unk13` puts that parameter's
   copy at the top of the function).
-- **A dead store can be load-bearing.** In BattleCpu::func_ov007_02231e2c, `spin = 30;` before a switch whose cases
+- **A dead store can be load-bearing.** In BattleCpu::PickShot, `spin = 30;` before a switch whose cases
   all overwrite `spin` keeps 30 in spin's register for later `MATH_Rand32(..., 30)` calls; `spin = 0` breaks it.
 - **A `mov` where a spill reload was expected.** When a spilled value's register is still intact at its next use in
   the same block, mwcc replaces the reload with a `mov` (or drops it). So `mov rX, rY` next to a spill store, where

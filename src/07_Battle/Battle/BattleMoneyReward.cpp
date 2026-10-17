@@ -77,7 +77,7 @@ BattleMoneyReward::BattleMoneyReward()
     mState      = 0;
     mTransferTimer     = 0;
     mFade       = 0x40;
-    mUnk_a9     = 0;
+    mFading     = 0;
     mSparkleSoundTimer     = 0;
     mTransferSoundTimer     = 0;
     for (u8 i = 0; i < 9; i++) {
@@ -250,7 +250,7 @@ void BattleMoneyReward::Update() {
                 mAmount = 0;
                 mWindow->mEnabled = 1;
                 if (mHold > 0) {
-                    mUnk_a9 = 1;
+                    mFading = 1;
                     mHold   = 0;
                 }
                 mState = 7;
@@ -263,13 +263,13 @@ void BattleMoneyReward::Update() {
             }
             break;
         case 7:
-            if (mUnk_a9 == 0) {
+            if (mFading == 0) {
                 if (mWindow->Update(draw) == 1) {
                     SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                     mState++;
                 }
             }
-            if (mFade != 0 && mUnk_a9 != 1) {
+            if (mFade != 0 && mFading != 1) {
                 break;
             }
             if (mTimer > 0) {
@@ -321,12 +321,12 @@ void BattleMoneyReward::Update() {
     if (mHold != 0) {
         mHold--;
         if (mHold == 0) {
-            mUnk_a9 = 1;
+            mFading = 1;
         }
     }
-    if (mUnk_a9 != 0) {
+    if (mFading != 0) {
         if (mFade == 0) {
-            mUnk_a9 = 0;
+            mFading = 0;
         } else {
             mFade--;
             u8 level = mFade / 4;

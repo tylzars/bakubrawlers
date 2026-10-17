@@ -197,7 +197,7 @@ struct BattleUnit {
     /* 13 */ PAD(0x13, 0x14);
 };
 
-#include "Battle/BattleUnk29c.hpp"
+#include "Battle/BattleUnitModels.hpp"
 
 struct BattleMarker {
     /* 0 */ u8 mSlot;
@@ -233,7 +233,7 @@ struct BattlePlayerList : public SceneBase {
     /* 295 */ u8 mUnitCount;
     /* 296 */ PAD(0x296, 0x298);
     /* 298 */ BattleTarget *mBattleTarget;
-    /* 29c */ BattleUnk29c *mUnk_29c;
+    /* 29c */ BattleUnitModels *mUnk_29c;
     /* 2a0 */ Camera *mCamera;
     /* 2a4 */ StorytalkWindow *mUnk_2a4;
     /* 2a8 */ u8 mState;
@@ -343,7 +343,7 @@ struct UnkStruct_020d433c {
     /* 7b */ u8 mNextScene; // SCENE_* id BattlePlayerList requests when the battle ends, clearing it first (0
                             // requests SCENE_TITLE; SCENE_TOURNAMENT becomes SCENE_GAME_OVER, not cleared, with
                             // mUnk_7a and mUnk_7d == 3); SCENE_ARENA_WINDOW takes the wireless-mode path instead;
-                            // BattleResult, BattleUnk0227532c and func_ov007_022633f8 also test it
+                            // BattleResult, BattlePopup and StartFrameTaskChannel0 also test it
     /* 7c */ u8 mUnk_7c;
     /* 7d */ u8 mUnk_7d;
     /* 7e */ u8 mMapTab : 4;

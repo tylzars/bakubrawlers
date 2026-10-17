@@ -1,7 +1,7 @@
 #include "Battle/BattleBase.hpp"
 #include <nitro/fx.h>
 #include "Battle/BattleCardEffect.hpp"
-#include "Battle/BattleUnk29c.hpp"
+#include "Battle/BattleUnitModels.hpp"
 #include "Battle/BattleCpu.hpp"
 #include "Battle/BattleCommand.hpp"
 #include "Battle/BattleMapTypes.hpp"

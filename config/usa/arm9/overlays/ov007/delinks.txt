@@ -357,7 +357,7 @@ src/07_Battle/Battle/BattleShoot.cpp:
     .data       start:0x0228a5a0 end:0x0228aa30
     .bss        start:0x0228bac0 end:0x0228bb14
 
-src/07_Battle/Battle/BattleUnk29c.cpp:
+src/07_Battle/Battle/BattleUnitModels.cpp:
     complete
     .text       start:0x0226fb74 end:0x02271410
     .rodata     start:0x0227bf94 end:0x0227c018
@@ -407,7 +407,7 @@ src/07_Battle/Gimmick/GimmickHaosWall.cpp:
     .data       start:0x0228af94 end:0x0228b000
     .bss        start:0x0228bb80 end:0x0228bb90
 
-src/07_Battle/Battle/BattleUnk0227532c.cpp:
+src/07_Battle/Battle/BattlePopup.cpp:
     complete
     .text       start:0x0227532c end:0x02275de8
     .rodata     start:0x02285aa4 end:0x02285bd0

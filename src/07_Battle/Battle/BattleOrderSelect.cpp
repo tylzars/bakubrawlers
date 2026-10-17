@@ -42,7 +42,7 @@ public:
     /* bc */ u8 mItemOrder[4]; // index = item, value = the turn-order slot SetTurnOrder gets
     /* c0 */ s8 mPlayerItemIndex[4];
     /* c4 */ u8 mUnk_c4[4];
-    /* c8 */ u8 mUnk_c8[4];
+    /* c8 */ u8 mIconTimers[4];
     /* cc */ u8 mState;
     /* cd */ u8 mTimer;
     /* ce */ u8 mCount;
@@ -100,7 +100,7 @@ BattleOrderSelect::BattleOrderSelect()
         mItemOrder[i] = 0;
         mPlayerItemIndex[i] = -1;
         mUnk_c4[i] = 0;
-        mUnk_c8[i] = 8;
+        mIconTimers[i] = 8;
         i++;
     } while (i < mCount);
     WirelessManager::Get();
@@ -489,8 +489,8 @@ void BattleOrderSelect::Draw() {
         mC[i & 0xff].mCellAnim->Draw(0, mC[i & 0xff].mX, (s16) (mC[i & 0xff].mY + mUnk_c4[i]), mC[i & 0xff].mUnk_08);
         if (mPlayerItemIndex[i] >= 0) {
             u32 slot = mItemOrder[mPlayerItemIndex[i]];
-            if (mUnk_c8[i] != 0) {
-                mUnk_c8[i]--;
+            if (mIconTimers[i] != 0) {
+                mIconTimers[i]--;
             } else {
                 if (mUnk_c4[slot] < 0x10) {
                     mUnk_c4[slot]++;

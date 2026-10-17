@@ -9,11 +9,11 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-extern BattleCamRow data_ov007_022791ec[];
-extern const u8 data_ov007_022791c4[];
-extern const VecFx32 data_ov007_022791ac;
-extern const VecFx32 data_ov007_022791b8;
-extern const VecFx32 data_ov007_022791a0;
+extern BattleCamRow gRealBakuPositions[];
+extern const u8 gField3DLights[];
+extern const VecFx32 gAuraCreatePosition;
+extern const VecFx32 gAuraFollowPosition;
+extern const VecFx32 gRealBakuScale;
 extern "C" void MTX_ApplyRotY43(MtxFx43 *mtx, u16 angle);
 void FreeAuras(BattleField3D *obj);
 
@@ -68,18 +68,18 @@ BattleField3D::BattleField3D(BattleData *data, int unk2) {
     camera->SetPath(mCamFile, 0);
     camera->ApplyPath();
     SnapshotCamera();
-    mLights = new ModelLightGroup(data_ov007_022791c4);
+    mLights = new ModelLightGroup(gField3DLights);
     BattleEntry *entries = data->mEntries;
     mSide0RealBaku = new BattleRealBaku(entries[0].mBakuganId, 0xb, entries[0].mAttribute, 1, 0, 0, entries[0].mCharacterId == 0x15);
     mSide1RealBaku = new BattleRealBaku(entries[1].mBakuganId, 0xb, entries[1].mAttribute, 1, 0, 0, entries[1].mCharacterId == 0x15);
-    BattleCamRow *row = &data_ov007_022791ec[entries[0].mBakuganId];
+    BattleCamRow *row = &gRealBakuPositions[entries[0].mBakuganId];
     s32 z0 = row->mZ;
     s32 y0 = row->mY;
     mPos[0].x = -0x1a000;
     mPos[0].y = y0;
     mPos[0].z = z0;
     mSide0EndX = row->mX;
-    row = &data_ov007_022791ec[entries[1].mBakuganId];
+    row = &gRealBakuPositions[entries[1].mBakuganId];
     s32 z1 = row->mZ;
     s32 y1 = row->mY;
     mPos[1].x = 0x1a000;
@@ -167,7 +167,7 @@ BOOL MoveToEndThenCreateAuras(BattleField3D *obj) {
     return 1;
 }
 
-BOOL func_ov007_022297f0(BattleField3D *obj) {
+BOOL MoveModelsThenHideOne(BattleField3D *obj) {
     BattleData *data = obj->mData;
     if (data->mEntries[0].mUnk_10) {
         float a = 0.0f - obj->mMovePerFrame / 3.0f;
@@ -198,7 +198,7 @@ void BattleField3D::MoveModels(float a, float b) {
 void BattleField3D::CreateAuras() {
     mAura[0] = StartEffect(mEffects, 0, 0, 0, 0);
     mAura[1] = StartEffect(mEffects, 1, 1, 0, 0);
-    VecFx32 pos = data_ov007_022791ac;
+    VecFx32 pos = gAuraCreatePosition;
     pos.x = mAuraX;
     SetEffectPosition(mEffects, mAura[0], &pos);
     pos.x = mAuraX + 0xccd;
@@ -235,7 +235,7 @@ void BattleField3D::FollowPushPercent(u32 percent) {
     mPos[0].x += delta;
     mPos[1].x += delta;
     mAuraX += delta / 4;
-    VecFx32 pos = data_ov007_022791b8;
+    VecFx32 pos = gAuraFollowPosition;
     pos.x = mAuraX;
     if (mAura[0] != -1) {
         SetEffectPosition(mEffects, mAura[0], &pos);
@@ -248,7 +248,7 @@ void BattleField3D::FollowPushPercent(u32 percent) {
 }
 
 void BattleField3D::Draw(u32 percent) {
-    VecFx32 scale = data_ov007_022791a0;
+    VecFx32 scale = gRealBakuScale;
     MtxFx43 mtx = gIdentityMtx43;
     if (mFollowEnabled) {
         FollowPushPercent(percent);

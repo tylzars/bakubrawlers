@@ -6,7 +6,7 @@
 #include "Battle/BattleCpu.hpp"
 #include <nitro/fx.h>
 #include "Battle/BattleCardEffect.hpp"
-#include "Battle/BattleUnk29c.hpp"
+#include "Battle/BattleUnitModels.hpp"
 #include "Battle/BattleStatusPanels.hpp"
 #include "Battle/BattleTarget.hpp"
 #include "Battle/BattleCommand.hpp"
@@ -354,7 +354,7 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     mUnitHandle = 0;
     mBakugan = 0;
     if (data_020d433c.mBattlePlayers->mUnk_29c) {
-        data_020d433c.mBattlePlayers->mUnk_29c->mUnk_a0 = 1;
+        data_020d433c.mBattlePlayers->mUnk_29c->mDrawMode = 1;
         data_020d433c.mBattlePlayers->mUnk_29c->mUnk_9e = 1;
     }
     if (data_020d433c.mFieldId == 7) {

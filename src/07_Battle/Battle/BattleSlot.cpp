@@ -384,7 +384,7 @@ int BattleSlot::Update(u16 *a, u16 *b, u16 *c, s8 (*choice)[2], u8 n, u8 *d) {
                 if (UpdateInterval()) {
                     u16 v = ComputeValue(n, a, b);
                     u32 w = func_ov007_022230b4(v, n);
-                    if (mIndex == data->mEntries[0].mUnk_0d_4) {
+                    if (mIndex == data->mEntries[0].mPlayer) {
                         a[mIndex] = w;
                     } else {
                         b[mIndex] = w;

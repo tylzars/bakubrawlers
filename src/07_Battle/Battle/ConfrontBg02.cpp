@@ -220,16 +220,16 @@ void ConfrontBg02::Init(BattleData *data, u32 mode) {
     mData = data;
     InitSubScreen();
     LoadGraphics();
-    u8 side = mUnk_12;
+    u8 side = mLocalSide;
     BOOL spectator = side >= 2;
     if ((u8) spectator) {
         return;
     }
     u8 emblem;
     if (side == 0) {
-        emblem = mData->mEntries[0].mUnk_0d_0;
+        emblem = mData->mEntries[0].mAttribute;
     } else {
-        emblem = mData->mEntries[1].mUnk_0d_0;
+        emblem = mData->mEntries[1].mAttribute;
     }
     for (u8 i = 0; i < 4; i++) {
         mEmblems[i] = new ConfrontEmblem02(emblem);
@@ -265,10 +265,10 @@ void ConfrontBg02::LoadGraphics() {
     screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
     u8 emblem;
-    if (mUnk_12 == 0) {
-        emblem = data->mEntries[0].mUnk_0d_0;
+    if (mLocalSide == 0) {
+        emblem = data->mEntries[0].mAttribute;
     } else {
-        emblem = data->mEntries[1].mUnk_0d_0;
+        emblem = data->mEntries[1].mAttribute;
     }
     sprintf(path, "vs_emblem_%02d.nce_ncg1D.bin", emblem);
     screen.LoadCharacters(path, 0x1c000, 0);
@@ -369,7 +369,7 @@ u8 ConfrontBg02::UpdateTouch(int a) {
         return 0;
     }
     if (PointDistance((s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY, 0x80, 0x7b) < 0x10) {
-        func_ov007_0221bb3c();
+        SetTouched();
         for (u8 i = 0; i < 4; i++) {
             result = mEmblems[i]->func_ov007_0221e268(0);
             if (result != -1) {

@@ -42,9 +42,9 @@ static inline void SnapshotCamera() {
 }
 
 BattleField3D::BattleField3D(BattleData *data, int unk2) {
-    mUnk_04_0 = 0;
-    mUnk_04_1 = 1;
-    mUnk_04_2 = 1;
+    mFollowEnabled = 0;
+    mSide0ModelHidden = 1;
+    mSide1ModelHidden = 1;
     mAura[0] = -1;
     mAura[1] = -1;
     mSide0EndX = 0;
@@ -70,8 +70,8 @@ BattleField3D::BattleField3D(BattleData *data, int unk2) {
     SnapshotCamera();
     mLights = new ModelLightGroup(data_ov007_022791c4);
     BattleEntry *entries = data->mEntries;
-    mSide0RealBaku = new BattleRealBaku(entries[0].mBakuganId, 0xb, entries[0].mUnk_0d_0, 1, 0, 0, entries[0].mCharacterId == 0x15);
-    mSide1RealBaku = new BattleRealBaku(entries[1].mBakuganId, 0xb, entries[1].mUnk_0d_0, 1, 0, 0, entries[1].mCharacterId == 0x15);
+    mSide0RealBaku = new BattleRealBaku(entries[0].mBakuganId, 0xb, entries[0].mAttribute, 1, 0, 0, entries[0].mCharacterId == 0x15);
+    mSide1RealBaku = new BattleRealBaku(entries[1].mBakuganId, 0xb, entries[1].mAttribute, 1, 0, 0, entries[1].mCharacterId == 0x15);
     BattleCamRow *row = &data_ov007_022791ec[entries[0].mBakuganId];
     s32 z0 = row->mZ;
     s32 y0 = row->mY;
@@ -87,19 +87,19 @@ BattleField3D::BattleField3D(BattleData *data, int unk2) {
     mPos[1].z = z1;
     mSide1EndX = -row->mX;
     char name[0x30];
-    sprintf(name, "aura%02d", entries[0].mUnk_0d_0);
+    sprintf(name, "aura%02d", entries[0].mAttribute);
     LoadEffectGroup(mEffects, 0, name);
-    sprintf(name, "aura%02d", entries[1].mUnk_0d_0);
+    sprintf(name, "aura%02d", entries[1].mAttribute);
     LoadEffectGroup(mEffects, 1, name);
     mAuraX = -1556;
     switch (unk2) {
         case 1:
             mPos[0].x = mSide0EndX;
             mPos[1].x = mSide1EndX;
-            mUnk_04_1 = 0;
-            mUnk_04_2 = 0;
+            mSide0ModelHidden = 0;
+            mSide1ModelHidden = 0;
             CreateAuras();
-            mUnk_04_0 = 1;
+            mFollowEnabled = 1;
         case 2:
             camera->SetFrameIndex(camera->mFrameCount);
             camera->ApplyPath();
@@ -140,8 +140,8 @@ BOOL UpdateCameraPath(BattleField3D *field) {
 }
 
 void ShowModels(BattleField3D *obj) {
-    obj->mUnk_04_1 = 0;
-    obj->mUnk_04_2 = 0;
+    obj->mSide0ModelHidden = 0;
+    obj->mSide1ModelHidden = 0;
 }
 
 BOOL MoveToEndThenCreateAuras(BattleField3D *obj) {
@@ -163,7 +163,7 @@ BOOL MoveToEndThenCreateAuras(BattleField3D *obj) {
         return 0;
     }
     obj->CreateAuras();
-    obj->mUnk_04_0 = 1;
+    obj->mFollowEnabled = 1;
     return 1;
 }
 
@@ -181,9 +181,9 @@ BOOL func_ov007_022297f0(BattleField3D *obj) {
     }
     if (obj->mMovePerFrame == 0.0f) {
         if (data->mEntries[0].mUnk_10) {
-            obj->mUnk_04_2 = 1;
+            obj->mSide1ModelHidden = 1;
         } else {
-            obj->mUnk_04_1 = 1;
+            obj->mSide0ModelHidden = 1;
         }
         return 1;
     }
@@ -250,16 +250,16 @@ void BattleField3D::FollowPushPercent(u32 percent) {
 void BattleField3D::Draw(u32 percent) {
     VecFx32 scale = data_ov007_022791a0;
     MtxFx43 mtx = gIdentityMtx43;
-    if (mUnk_04_0) {
+    if (mFollowEnabled) {
         FollowPushPercent(percent);
     }
-    if (!mUnk_04_1) {
+    if (!mSide0ModelHidden) {
         MTX_SetTranslation43(&mtx, &mPos[0]);
         MTX_ApplyRotY43(&mtx, 0x3fff);
         mSide0RealBaku->mModel->AdvanceAnim();
         mSide0RealBaku->mModel->Draw(&mtx, &scale);
     }
-    if (!mUnk_04_2) {
+    if (!mSide1ModelHidden) {
         mtx = gIdentityMtx43;
         MTX_SetTranslation43(&mtx, &mPos[1]);
         MTX_ApplyRotY43(&mtx, 0xc001);

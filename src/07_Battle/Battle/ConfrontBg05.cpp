@@ -97,16 +97,16 @@ void ConfrontBg05::Init(BattleData *data, u32 mode) {
     mData = data;
     InitSubScreen();
     LoadGraphics();
-    u8 side = mUnk_12;
+    u8 side = mLocalSide;
     BOOL spectator = side >= 2;
     if ((u8) spectator) {
         return;
     }
     u8 n;
     if (side == 0) {
-        n = mData->mEntries[0].mUnk_0d_0;
+        n = mData->mEntries[0].mAttribute;
     } else {
-        n = mData->mEntries[1].mUnk_0d_0;
+        n = mData->mEntries[1].mAttribute;
     }
     mEmblem = new ConfrontEmblem05(n);
 }
@@ -133,7 +133,7 @@ void ConfrontBg05::LoadGraphics() {
     }
     char path[0x80];
     ChangeDir("/Game/Confrontation/Bg/");
-    u8 n = entries[mUnk_12].mUnk_0d_0;
+    u8 n = entries[mLocalSide].mAttribute;
     sprintf(path, "vs_b_bg_05_%02d_ncl.bin", n);
     LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, path, 0, 0, 0);
     sprintf(path, "vs_b_bg_05_%02d_ncg.bin", n);
@@ -149,10 +149,10 @@ void ConfrontBg05::LoadGraphics() {
     screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
     u8 emblem;
-    if (mUnk_12 == 0) {
-        emblem = entries[0].mUnk_0d_0;
+    if (mLocalSide == 0) {
+        emblem = entries[0].mAttribute;
     } else {
-        emblem = entries[1].mUnk_0d_0;
+        emblem = entries[1].mAttribute;
     }
     sprintf(path, "vs_emblem_%02d.nce_ncg1D.bin", emblem);
     screen.LoadCharacters(path, 0x1c000, 0);
@@ -201,7 +201,7 @@ u8 ConfrontBg05::UpdateTouch(int a) {
     if (TouchManager::Get().mDown) {
         hit = mEmblem->func_ov007_02220b9c(a);
         if (hit != -1) {
-            func_ov007_0221bb3c();
+            SetTouched();
             if (!CountSeqArcSounds(&SoundManager::Get(), 0x2b)) {
                 SoundManager::Get().StartSeqArc(0x2b);
             }

@@ -52,10 +52,10 @@ void ConfrontBg04::LoadGraphics() {
     BattleEntry *entries = mData->mEntries;
     sprintf(gCurrentDir, dir);
     FS_ChangeDir(dir);
-    u8 side = mUnk_12;
+    u8 side = mLocalSide;
     BOOL spectator = side >= 2;
     if (!(u8) spectator) {
-        u8 n = entries[side].mUnk_0d_0;
+        u8 n = entries[side].mAttribute;
         sprintf(path, "vs_b_bg_04_%02d_ncl.bin", n);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, path, 0, 0, 0);
         LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "vs_b_bg_04_06_ncg.bin", 0, 0, 0);
@@ -140,7 +140,7 @@ u8 ConfrontBg04::UpdateTouch(int a) {
     }
     if (result != 0) {
         mBlend->RaiseLevel();
-        func_ov007_0221bb3c();
+        SetTouched();
     }
     return result;
 }

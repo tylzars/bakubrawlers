@@ -30,7 +30,7 @@ public:
 #define BATTLE_MODE_CONFRONT_BG05 4 // ConfrontBg05
 #define BATTLE_MODE_CONFRONT_BG06 5 // ConfrontBg06
 // Not a screen: BattleBase::Init stores it in mMode (after choosing mParam) when BattlePlayerList::mUnk_2a9 is
-// neither entry's player (mEntries[0/1].mUnk_0d_4), the case where IsSpectator() holds; only BattleHud::StartObject
+// neither entry's player (mEntries[0/1].mPlayer), the case where IsSpectator() holds; only BattleHud::StartObject
 // reads it.
 #define BATTLE_MODE_SPECTATOR     7
 
@@ -126,8 +126,8 @@ struct BattleEntry {
     /* 08 */ u16 mUnk_08;
     /* 0a */ u16 mUnk_0a;
     /* 0c */ u8 mBakuganId;
-    /* 0d */ u8 mUnk_0d_0 : 4; // the record's mAttribute (BattleData ctor)
-    /* 0d */ u8 mUnk_0d_4 : 4; // the unit's mPlayer: index into BattlePlayerList::mPlayers
+    /* 0d */ u8 mAttribute : 4; // the record's mAttribute (BattleData ctor)
+    /* 0d */ u8 mPlayer : 4; // the unit's mPlayer: index into BattlePlayerList::mPlayers
     /* 0e */ u8 mCharacterId;
     /* 0f */ u8 mUnk_0f_0 : 1;
     /* 0f */ u8 mUnk_0f_1 : 1;
@@ -177,7 +177,7 @@ struct BattleData {
 // 12-byte per-mode parameter record (table at 0x02278b20).
 struct BattleParam {
     /* 00 */ u8 mKind;
-    /* 01 */ u8 mCutinDelayFrameCount; // frames after the mUnk_23_2 request before the cut-in cell plays animation 2
+    /* 01 */ u8 mCutinDelayFrameCount; // frames after the mTouched request before the cut-in cell plays animation 2
     /* 02 */ u16 mBattleFrameCount;
     /* 04 */ u32 mPushScale;
     /* 08 */ u8 mUnk_08;
@@ -196,7 +196,7 @@ class BattleSub48 : public SceneBase {
 public:
     /* 00 SceneBase */
     /* 0c */ u8 mState; // 0 nothing drawn, 1 DrawCircleAndSides, 2 the abilities slide up (0xc0 to 0x8c), 3 DrawAbilitiesAndSides, 4 finished
-    /* 0d */ u8 mUnk_0d; // sub-state of the animation started by func_ov007_02224a70
+    /* 0d */ u8 mMoveStep; // step of UpdateCircleAndSidesMove; never reset
     union {
         /* 0e */ u8 mUnk_0e;
         struct {
@@ -209,7 +209,7 @@ public:
     };
     /* 0f */ u8 mFieldIndex;
     /* 10 */ PAD(0x10, 0x12);
-    /* 12 */ u8 mUnk_12[2];
+    /* 12 */ u8 mSideAttributes[2];
     /* 14 */ u16 mStepFrames; // frames in mUnk_0d steps 1 (to 0x78) and 3 (to 0x3c); not counted in step 2
     // 90, set only when data_020d433c.mFieldId is 1-6 (otherwise mState never becomes 1, the state DrawCircleAndSides
     // runs in); step 2 raises it by 3 to 250
@@ -228,7 +228,7 @@ public:
     virtual void Update();
     void LoadCharactersAndPalettes();
     void LoadGraphics();
-    u8 func_ov007_02224a70();
+    u8 UpdateCircleAndSidesMove();
     void DrawCircleAndSides(); // cells on circles (radius 70 / 50) around the emblem (0x6e, mCircleY), then DrawSides
     void DrawSides();
     void DrawAbilitiesAndSides(); // returns at once while mAbilitiesY >= 0xc0; skips DrawSides when mNoEmblem
@@ -281,10 +281,10 @@ public:
         /* 06 */ u8 mUnk_06;
         struct {
             /* 06 */ u8 mVariant : 3; // variant number in the file names
-            /* 06 */ u8 mUnk_06_3 : 1;
+            /* 06 */ u8 mAnimLoop : 1;
             /* 06 */ u8 mUseBoxTest : 1;
             /* 06 */ u8 mUseCallbackMtx : 1;
-            /* 06 */ u8 mUnk_06_6 : 1;
+            /* 06 */ u8 mUseRealb20 : 1;
         };
     };
     /* 07 */ PAD(0x07, 0x08);
@@ -312,9 +312,9 @@ public:
     union {
         /* 04 */ u8 mUnk_04;
         struct {
-            /* 04 */ u8 mUnk_04_0 : 1;
-            /* 04 */ u8 mUnk_04_1 : 1;
-            /* 04 */ u8 mUnk_04_2 : 1;
+            /* 04 */ u8 mFollowEnabled : 1;
+            /* 04 */ u8 mSide0ModelHidden : 1;
+            /* 04 */ u8 mSide1ModelHidden : 1;
         };
     };
     /* 05 */ PAD(0x05, 0x08);
@@ -341,7 +341,7 @@ public:
     void MoveModels(float a, float b); // subtracts a from model 0's x and b from model 1's x
     void CreateAuras();
     void FollowPushPercent(u32 percent); // percent clamped to 0x14..0x50: the models and auras track only that range
-    void Draw(u32 percent); // FollowPushPercent first when mUnk_04_0, then the two models and mMapObj
+    void Draw(u32 percent); // FollowPushPercent first when mFollowEnabled, then the two models and mMapObj
 };
 
 // Arguments of SetHudState (BattleHud.cpp): each starts a run of BattleHud::mState steps that ends back at mState 0
@@ -349,7 +349,7 @@ public:
 #define HUD_SEQUENCE_NONE               0 // mState 0: Update runs no step, only Draw
 #define HUD_SEQUENCE_BAR_FILL_COUNTDOWN 1 // mState 1: tutorial pages in some tutorials, then SetupCountdown, and each
                                           // frame mBarFillPerFrame added to mBarFill with the countdown animation
-                                          // (func_ov007_02226c70)
+                                          // (UpdateBarFillCountdown)
 #define HUD_SEQUENCE_SWAP               2 // mState 4: StartSwap / UpdateSwap
 #define HUD_SEQUENCE_BAR_SLIDE          3 // mState 6: StartBarSlide / UpdateBarSlide
 #define HUD_SEQUENCE_COUNTDOWN          4 // mState 8: StartCountdown / UpdateCountdown, the countdown animation only
@@ -359,37 +359,37 @@ public:
 class BattleHud : public SceneBase {
 public:
     /* 00 SceneBase */
-    /* 0c */ int mUnk_0c; // viewer index: 0/1 players, 2/3 spectators
+    /* 0c */ int mLocalSide; // 0/1: this console plays entry 0/1; 2: spectator with no side; 3/4: partner on side 0/1 (>= 2: spectator)
     /* 10 */ u16 mUnk_10;
     /* 12 */ u8 mUnk_12;
     /* 13 */ u8 mPushPercent; // gauge position in percent
     /* 14 */ s32 mPushPercentFixed; // same, 20.12 fixed point
     /* 18 */ s16 mSide0X;
     /* 1a */ s16 mSide1X;
-    /* 1c */ u16 mUnk_1c[2];
-    /* 20 */ u16 mUnk_20;
+    /* 1c */ u16 mPushAnimTimer[2];
+    /* 20 */ u16 mCutinDelayTimer;
     union {
         /* 22 */ u8 mUnk_22;
         struct {
-            /* 22 */ u8 mUnk_22_0 : 1;
-            /* 22 */ u8 mUnk_22_1 : 1;
-            /* 22 */ u8 mUnk_22_2 : 1;
-            /* 22 */ u8 mUnk_22_3 : 1;
-            /* 22 */ u8 mUnk_22_4 : 1;
-            /* 22 */ u8 mUnk_22_5 : 1;
-            /* 22 */ u8 mUnk_22_6 : 1;
-            /* 22 */ u8 mUnk_22_7 : 1;
+            /* 22 */ u8 mFrame5SoundPlayed : 1;
+            /* 22 */ u8 mFrame15SoundPlayed : 1;
+            /* 22 */ u8 mFrame25SoundPlayed : 1;
+            /* 22 */ u8 mBarFillDone : 1;
+            /* 22 */ u8 mCutinVisible : 1;
+            /* 22 */ u8 mPerfectCutinVisible : 1;
+            /* 22 */ u8 mSidesVisible : 1;
+            /* 22 */ u8 mSlideSidesOutEnabled : 1;
         };
     };
     union {
         /* 23 */ u8 mUnk_23;
         struct {
-            /* 23 */ u8 mUnk_23_0 : 1;
-            /* 23 */ u8 mUnk_23_1 : 1;
-            /* 23 */ u8 mUnk_23_2 : 1;
+            /* 23 */ u8 mSwapSide : 1;
+            /* 23 */ u8 mClosed : 1;
+            /* 23 */ u8 mTouched : 1;
         };
     };
-    /* 24 */ u16 mUnk_24;
+    /* 24 */ u16 mPenToggleFrames;
     /* 26 */ u8 mUnk_26;
     /* 27 */ u8 mUnk_27;
     /* 28 */ s32 mLastPush[2]; // latest Push delta per side (20.12); cleared after the marker animation reads it
@@ -409,9 +409,9 @@ public:
     /* c2 */ PAD(0xc2, 0xc3);
     /* c3 */ u8 mUnk_c3;
     /* c4 */ BattleObj01 *mObjs[15];
-    /* 100 */ u8 mUnk_100[2];
-    /* 102 */ u8 mUnk_102[2];
-    /* 104 */ u8 mUnk_104[2];
+    /* 100 */ u8 mObjectsRemaining[2];
+    /* 102 */ u8 mObjectIntervalFrameCount[2];
+    /* 104 */ u8 mObjectIntervalFrames[2];
     /* 106 */ PAD(0x106, 0x108);
     /* 108 */ float mSide0PlayerAnimX;
     /* 10c */ float mSide1PlayerAnimX;
@@ -453,7 +453,7 @@ public:
     // Computes mStartPushPercent from the two entries' mUnk_00, the per-frame rates over mCountdownFrameCount (the
     // countdown cell's length) and mUnk_20 = mCutinDelayFrameCount; StartCountdown, not this, restarts the cell.
     void SetupCountdown();
-    BOOL func_ov007_02226c70();
+    BOOL UpdateBarFillCountdown();
     void StartSwap(); // swaps the two entries' mUnk_00 at once and calls StartCountdown
     BOOL UpdateSwap(); // pushes for 20 calls; returns UpdateCountdown's done flag
     void StartBarSlide(); // also CloseLargeCard when mLargeCardOpen
@@ -464,7 +464,7 @@ public:
     BOOL SlideSidesOut(); // mUnk_0c 2 moves neither side, 3 only side 1, 4 only side 0; the caller ignores the result
     void func_ov007_02227460(int side);
     void Push(int mode, s32 value, s32 count, u8 boost, bool useLevel);
-    u8 func_ov007_022275a0(u32 value, u8 a, u8 b);
+    u8 ComputeObjectCount(u32 value, u8 a, u8 b);
     BOOL StartObject(u8 side, s16 x, s16 y, u8 flag); // flag: BattleBase::mMode, or 6 from BattleHud itself
     void Draw();
     void func_ov007_02227bbc(u8 index);
@@ -484,18 +484,18 @@ public:
     /* 00 IBattle */
     /* 04 SceneBase */
     /* 10 */ u8 mState;
-    /* 11 */ u8 mUnk_11;
-    /* 12 */ u8 mUnk_12;
+    /* 11 */ u8 mStep;
+    /* 12 */ u8 mLocalSide;
     /* 13 */ u8 mUnk_13;
-    /* 14 */ s8 mMultiplierIndex; // row of data_ov007_02278b68 (mFieldId - 1); -1 (fields 0, 7) = factor 0x1000 (1.0)
+    /* 14 */ s8 mMultiplierIndex; // row of gAttributeRates (mFieldId - 1); -1 (fields 0, 7) = factor 0x1000 (1.0)
     /* 15 */ u8 mMode; // BATTLE_MODE_*
     /* 16 */ u16 mElapsedFrames;
-    /* 18 */ u8 mUnk_18_0 : 1;
-    /* 18 */ u8 mUnk_18_1 : 1;
-    /* 18 */ u8 mUnk_18_2 : 1;
-    /* 19 */ u8 mUnk_19;
+    /* 18 */ u8 mBattleEnded : 1;
+    /* 18 */ u8 mTouched : 1;
+    /* 18 */ u8 mFlashEnabled : 1;
+    /* 19 */ u8 mSpectatorTouchSide;
     /* 1a */ u8 mUnk_1a;
-    /* 1b */ u8 mUnk_1b;
+    /* 1b */ u8 mSpectatorHoldFrames;
     /* 1c */ s8 mUnk_1c;
     /* 1d */ s8 mUnk_1d;
     /* 1e */ s8 mUnk_1e;
@@ -505,7 +505,7 @@ public:
     /* 25 */ u8 mUnk_25;
     /* 26 */ s16 mFlashBrightness;
     /* 28 */ u8 mFlashFalling;
-    /* 29 */ u8 mUnk_29;
+    /* 29 */ u8 mRateFloorSide;
     /* 2a */ u16 mUnk_2a; // counter: up to 0xf0 (card step 5) / 0xa0 (12), down from 0x40 (15); 0x3c, 0x64 in others
     /* 2c */ BattleData *mBattleData;
     /* 30 */ BattleSlot *mSlots[4];
@@ -519,7 +519,7 @@ public:
     // step 9
     /* 4f */ u8 mCardKind;
     /* 50 */ u8 mPrevCardKind;
-    /* 51 */ u8 mUnk_51;
+    /* 51 */ u8 mBlendAlpha;
     /* 52 */ u8 mUnk_52[2];
     union {
         /* 54 */ u8 mUnk_54;
@@ -532,7 +532,7 @@ public:
             /* 54 */ u8 mUnk_54_5 : 1;
         };
     };
-    /* 55 */ u8 mUnk_55;
+    /* 55 */ u8 mLargeCardPressesRemaining;
     /* 56 */ u16 mCardId;
     /* 58 */ u32 mCommandPage; // a BattleCommandPage * held as u32
     /* 5c */ u32 mCardSpec;
@@ -541,7 +541,7 @@ public:
 
     // Players 2 and 3 only watch (no touch input). Kept as BOOL: callers test it as a byte.
     BOOL IsSpectator() const {
-        return mUnk_12 >= 2;
+        return mLocalSide >= 2;
     }
 
     BattleBase();
@@ -567,7 +567,7 @@ public:
 
     BOOL RaiseBlendAlpha(); // sub engine: G2S_SetBlendAlpha(4, 0x1b, 0, ++mUnk_51); TRUE at 0x1f
     void SetPenPosition(s16 a, s16 b); // mHud->mPenX / Y; a negative x hides the pen
-    void func_ov007_0221bb3c();
+    void SetTouched();
     void func_ov007_0221bb68();
     void TryStartCardSequence(u16 *p);
     int UpdateSlots(u16 *a, u16 *b, u16 *c, u8 *d); // CPU players' slots up to the first != -1; returns -1
@@ -575,14 +575,14 @@ public:
     void InitMainScreen();
     void func_ov007_0221c938();
     int func_ov007_0221c178(u16 *a, u16 *b, u16 *c, u8 *flag);
-    // Master brightness of both screens up by 3 to 15, then down to 0; at the peak with mUnk_18_0 also FreeAuras,
+    // Master brightness of both screens up by 3 to 15, then down to 0; at the peak with mBattleEnded also FreeAuras,
     // seq 0x25 and ClearSub48State.
     BOOL UpdateFlash();
     void SetupCardSequence();
     void func_ov007_0221b8e8();
     // Also counts mElapsedFrames; on an end writes the BattleData entries' mUnk_10 / mUnk_0f_6 (and mHud->mUnk_22 |=
-    // 0x20 at either end of the push), then func_ov007_0222847c, mUnk_18_0 = 1 and StopSeqArc 0x24; otherwise
-    // MovePlayerAnimX while mUnk_18_0 is clear.
+    // 0x20 at either end of the push), then func_ov007_0222847c, mBattleEnded = 1 and StopSeqArc 0x24; otherwise
+    // MovePlayerAnimX while mBattleEnded is clear.
     BOOL CheckBattleEnd();
     BOOL UpdateCardSequence();
 };

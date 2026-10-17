@@ -279,14 +279,14 @@ ConfrontBg06::~ConfrontBg06() {
 void ConfrontBg06::Init(BattleData *data, u32 mode) {
     mData = data;
     InitSubScreen();
-    u8 side = mUnk_12;
+    u8 side = mLocalSide;
     BOOL spectator = side >= 2;
     if (!(u8) spectator) {
         u8 n;
         if (side == 0) {
-            n = mData->mEntries[0].mUnk_0d_0;
+            n = mData->mEntries[0].mAttribute;
         } else {
-            n = mData->mEntries[1].mUnk_0d_0;
+            n = mData->mEntries[1].mAttribute;
         }
         mEmblem = new ConfrontEmblem06(n);
     } else {
@@ -309,7 +309,7 @@ void ConfrontBg06::InitSubScreen() {
 }
 
 BOOL ConfrontBg06::func_ov007_0221bd84() {
-    BOOL spectator = mUnk_12 >= 2;
+    BOOL spectator = mLocalSide >= 2;
     if (!(u8) spectator) {
         mEmblem->mState = 1;
     }
@@ -317,7 +317,7 @@ BOOL ConfrontBg06::func_ov007_0221bd84() {
 }
 
 BOOL ConfrontBg06::func_ov007_0221bfa4() {
-    BOOL spectator = mUnk_12 >= 2;
+    BOOL spectator = mLocalSide >= 2;
     if ((u8) spectator) {
         return FALSE;
     }
@@ -328,7 +328,7 @@ BOOL ConfrontBg06::func_ov007_0221bfa4() {
 }
 
 void ConfrontBg06::vfunc_34() {
-    BOOL spectator = mUnk_12 >= 2;
+    BOOL spectator = mLocalSide >= 2;
     if ((u8) spectator) {
         return;
     }
@@ -336,7 +336,7 @@ void ConfrontBg06::vfunc_34() {
 }
 
 void ConfrontBg06::vfunc_3c() {
-    BOOL spectator = mUnk_12 >= 2;
+    BOOL spectator = mLocalSide >= 2;
     if ((u8) spectator) {
         return;
     }
@@ -357,7 +357,7 @@ u8 ConfrontBg06::UpdateTouch(int a) {
     } else {
         hit = mEmblem->func_ov007_02221f2c(a);
         if (hit != -1) {
-            func_ov007_0221bb3c();
+            SetTouched();
         }
         if (hit == -1) {
             hit = mEmblem->func_ov007_0222210c();
@@ -384,7 +384,7 @@ void ConfrontBg06::vfunc_44(int index, u16 count) {
     if ((s32) count < 100) {
         return;
     }
-    if (current == entries[index].mUnk_0d_4) {
+    if (current == entries[index].mPlayer) {
         mEmblem->PickDir();
     } else {
         BattleRand32(0xffff);

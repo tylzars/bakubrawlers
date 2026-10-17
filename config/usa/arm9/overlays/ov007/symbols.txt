@@ -17,7 +17,7 @@ _Z19func_ov007_0221ba0ciiP11BattleEntry kind:function(arm,size=0x2c) addr:0x0221
 _Z19func_ov007_0221ba38ihiP11BattleEntry kind:function(arm,size=0x50) addr:0x0221ba38
 _Z19func_ov007_0221ba88iiP11BattleEntry kind:function(arm,size=0xa0) addr:0x0221ba88
 _ZN10BattleBase14SetPenPositionEss kind:function(arm,size=0x14) addr:0x0221bb28
-_ZN10BattleBase19func_ov007_0221bb3cEv kind:function(arm,size=0x2c) addr:0x0221bb3c
+_ZN10BattleBase10SetTouchedEv kind:function(arm,size=0x2c) addr:0x0221bb3c
 _ZN10BattleBase19func_ov007_0221bb68Ev kind:function(arm,size=0x1c) addr:0x0221bb68
 _ZN10BattleBase14CheckBattleEndEv kind:function(arm,size=0x200) addr:0x0221bb84
 _ZN10BattleBase19func_ov007_0221bd84Ev kind:function(arm,size=0x220) addr:0x0221bd84
@@ -198,7 +198,7 @@ _ZN11BattleSub48D0Ev kind:function(arm,size=0x58) addr:0x02224218
 _ZN11BattleSub4825LoadCharactersAndPalettesEv kind:function(arm,size=0x1d4) addr:0x02224270
 _ZN11BattleSub4812LoadGraphicsEv kind:function(arm,size=0x594) addr:0x02224444
 _ZN11BattleSub486UpdateEv kind:function(arm,size=0x98) addr:0x022249d8
-_ZN11BattleSub4819func_ov007_02224a70Ev kind:function(arm,size=0x220) addr:0x02224a70
+_ZN11BattleSub4824UpdateCircleAndSidesMoveEv kind:function(arm,size=0x220) addr:0x02224a70
 _ZN11BattleSub4818DrawCircleAndSidesEv kind:function(arm,size=0x268) addr:0x02224c90
 _ZN11BattleSub489DrawSidesEv kind:function(arm,size=0xe4) addr:0x02224ef8
 _ZN11BattleSub4821DrawAbilitiesAndSidesEv kind:function(arm,size=0x2cc) addr:0x02224fdc
@@ -217,7 +217,7 @@ _Z8CloseHudPv kind:function(arm,size=0x10) addr:0x02226a34
 _Z11SetHudStateP9BattleHudj kind:function(arm,size=0x5c) addr:0x02226a44
 _Z20IsHudSequenceRunningP9BattleHud kind:function(arm,size=0x18) addr:0x02226aa0
 _ZN9BattleHud14SetupCountdownEv kind:function(arm,size=0x1b8) addr:0x02226ab8
-_ZN9BattleHud19func_ov007_02226c70Ev kind:function(arm,size=0x20c) addr:0x02226c70
+_ZN9BattleHud22UpdateBarFillCountdownEv kind:function(arm,size=0x20c) addr:0x02226c70
 _ZN9BattleHud9StartSwapEv kind:function(arm,size=0xa0) addr:0x02226e7c
 _ZN9BattleHud10UpdateSwapEv kind:function(arm,size=0xac) addr:0x02226f1c
 _ZN9BattleHud13StartBarSlideEv kind:function(arm,size=0xa0) addr:0x02226fc8
@@ -228,7 +228,7 @@ _ZN9BattleHud13SlideSidesOutEv kind:function(arm,size=0x80) addr:0x022273b4
 _Z15MovePlayerAnimXP9BattleHud kind:function(arm,size=0x2c) addr:0x02227434
 _ZN9BattleHud19func_ov007_02227460Ei kind:function(arm,size=0x30) addr:0x02227460
 _ZN9BattleHud4PushEiiihb kind:function(arm,size=0x110) addr:0x02227490
-_ZN9BattleHud19func_ov007_022275a0Ejhh kind:function(arm,size=0x20) addr:0x022275a0
+_ZN9BattleHud18ComputeObjectCountEjhh kind:function(arm,size=0x20) addr:0x022275a0
 _ZN9BattleHud11StartObjectEhssh kind:function(arm,size=0x170) addr:0x022275c0
 _ZN9BattleHud4DrawEv kind:function(arm,size=0x48c) addr:0x02227730
 _ZN9BattleHud19func_ov007_02227bbcEh kind:function(arm,size=0x98) addr:0x02227bbc
@@ -944,9 +944,9 @@ _ZN20GimmickIkazuchiStart6UnloadEv kind:function(arm,size=0xe4) addr:0x02278530
 _ZN20GimmickIkazuchiStart6FinishEv kind:function(arm,size=0xc) addr:0x02278614
 _ZN20GimmickIkazuchiStart6UpdateEv kind:function(arm,size=0x3c0) addr:0x02278620
 _ZN20GimmickIkazuchiStart19func_ov007_022789e0Ei kind:function(arm,size=0x13c) addr:0x022789e0
-data_ov007_02278b1c kind:data(any) addr:0x02278b1c
+gEntryNumberX kind:data(any) addr:0x02278b1c
 gBattleParams kind:data(any) addr:0x02278b20
-data_ov007_02278b68 kind:data(any) addr:0x02278b68
+gAttributeRates kind:data(any) addr:0x02278b68
 data_ov007_02278b74 kind:data(any) addr:0x02278b74
 gConfrontEmblemSteps kind:data(any) addr:0x02278bf8
 gConfrontRows kind:data(any) addr:0x02278c0c
@@ -973,15 +973,15 @@ data_ov007_022790c8 kind:data(any) addr:0x022790c8
 data_ov007_02279158 kind:data(any) addr:0x02279158
 data_ov007_0227915c kind:data(any) addr:0x0227915c
 data_ov007_02279160 kind:data(any) addr:0x02279160
-data_ov007_02279164 kind:data(any) addr:0x02279164
-data_ov007_02279168 kind:data(any) addr:0x02279168
-data_ov007_0227916c kind:data(any) addr:0x0227916c
+gLargeCardTouchHeight kind:data(any) addr:0x02279164
+gLargeCardTouchWidth kind:data(any) addr:0x02279168
+gSmallCardTouchY kind:data(any) addr:0x0227916c
 data_ov007_02279170 kind:data(any) addr:0x02279170
-data_ov007_02279174 kind:data(any) addr:0x02279174
-data_ov007_02279178 kind:data(any) addr:0x02279178
-data_ov007_0227917c kind:data(any) addr:0x0227917c
-data_ov007_02279184 kind:data(any) addr:0x02279184
-data_ov007_0227918c kind:data(any) addr:0x0227918c
+gLargeCardTouchX kind:data(any) addr:0x02279174
+gSmallCardX kind:data(any) addr:0x02279178
+gLargeCardTouchY kind:data(any) addr:0x0227917c
+gSmallCardCharBases kind:data(any) addr:0x02279184
+gPushPercentScales kind:data(any) addr:0x0227918c
 data_ov007_022791a0 kind:data(any) addr:0x022791a0
 data_ov007_022791ac kind:data(any) addr:0x022791ac
 data_ov007_022791b8 kind:data(any) addr:0x022791b8
@@ -1095,8 +1095,8 @@ sPromptItems kind:data(any) addr:0x02279b7c local
 sPromptCells kind:data(any) addr:0x02279bd0 local
 sCommandCells kind:data(any) addr:0x02279c24 local
 data_ov007_02279d3c kind:data(any) addr:0x02279d3c
-data_ov007_02279d40 kind:data(any) addr:0x02279d40
-data_ov007_02279d44 kind:data(any) addr:0x02279d44
+gIconPaletteBase kind:data(any) addr:0x02279d40
+gIconCharBase kind:data(any) addr:0x02279d44
 sWindowItems kind:data(any) addr:0x02279d48 local
 sWindowCells kind:data(any) addr:0x02279d9c local
 sAttributeRates kind:data(any) addr:0x02279df0 local

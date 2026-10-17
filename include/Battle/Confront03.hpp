@@ -37,7 +37,7 @@ public:
     /* 44 */ virtual void vfunc_44(int index, u16 count);
 
     BOOL CountDownDelay();
-    // Frees the bits of idle emblems, then starts the first idle emblem on a random free slot. Without mUnk_18_1 a pick
+    // Frees the bits of idle emblems, then starts the first idle emblem on a random free slot. Without mTouched a pick
     // of slot 1 or 2 only draws two random numbers; with no free slot or idle emblem it draws three.
     void StartIdleEmblem();
 };

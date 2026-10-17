@@ -25,30 +25,30 @@
 // Externals of other battle files.
 u32 BattleRand32(u32 max);
 // BattlePlayerList::mUnk_2a4 is a StorytalkWindow; BattleHud::Update and BattleObj00 drive it with SetMessage / NextPage.
-extern const u8 data_ov007_02279178[];
-extern const u32 data_ov007_02279184[];
-extern const s32 data_ov007_0227918c[];
+extern const u8 gSmallCardX[];
+extern const u32 gSmallCardCharBases[];
+extern const s32 gPushPercentScales[];
 
 BattleHud::BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *choice)
     : SceneBase(2, 0) {
-    mUnk_0c = mode;
+    mLocalSide = mode;
     mUnk_10 = 0;
     mUnk_12 = 0;
     mPushPercent = 0;
     mPushPercentFixed = 0;
-    mUnk_20 = 0;
-    mUnk_22_0 = 0;
-    mUnk_22_1 = 0;
-    mUnk_22_2 = 0;
-    mUnk_22_3 = 0;
-    mUnk_22_4 = 0;
-    mUnk_22_5 = 0;
-    mUnk_22_6 = 1;
-    mUnk_22_7 = 0;
-    mUnk_23_0 = 0;
-    mUnk_23_1 = 0;
-    mUnk_23_2 = 0;
-    mUnk_24 = 0;
+    mCutinDelayTimer = 0;
+    mFrame5SoundPlayed = 0;
+    mFrame15SoundPlayed = 0;
+    mFrame25SoundPlayed = 0;
+    mBarFillDone = 0;
+    mCutinVisible = 0;
+    mPerfectCutinVisible = 0;
+    mSidesVisible = 1;
+    mSlideSidesOutEnabled = 0;
+    mSwapSide = 0;
+    mClosed = 0;
+    mTouched = 0;
+    mPenToggleFrames = 0;
     mChoice = (s8 (*)[2]) choice;
     mCountdownFrames = 0;
     mCountdownFrameCount = 0;
@@ -74,8 +74,8 @@ BattleHud::BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *choice)
     mParam = param;
     mSide0X = 8;
     mSide1X = 0xb8;
-    mUnk_1c[1] = 0;
-    mUnk_1c[0] = mUnk_1c[1];
+    mPushAnimTimer[1] = 0;
+    mPushAnimTimer[0] = mPushAnimTimer[1];
     mLastPush[0] = mLastPush[1] = 0;
     mUnk_26 = mUnk_27 = 0;
     mUnk_122[0] = mUnk_122[1] = 0;
@@ -86,9 +86,9 @@ BattleHud::BattleHud(BattleData *data, BattleParam *param, u8 mode, s8 *choice)
         mCellAnims[i] = 0;
         i++;
     } while (i < 23);
-    mUnk_100[0] = mUnk_100[1] = 0;
-    mUnk_102[0] = mUnk_102[1] = 0;
-    mUnk_104[0] = mUnk_104[1] = 0;
+    mObjectsRemaining[0] = mObjectsRemaining[1] = 0;
+    mObjectIntervalFrameCount[0] = mObjectIntervalFrameCount[1] = 0;
+    mObjectIntervalFrames[0] = mObjectIntervalFrames[1] = 0;
     i = 0;
     do {
         mObjs[i] = new BattleObj01(5, 0x7000);
@@ -125,8 +125,8 @@ BattleHud::~BattleHud() {
     mData->mMessageWindow->mUnk_27 = 0;
 }
 
-extern const u32 data_ov007_02279d44;
-extern const s8 data_ov007_02279d40;
+extern const u32 gIconCharBase;
+extern const s8 gIconPaletteBase;
 u16 GetCardNumber(u32 id);
 u8 GetCardInfo(u32 id, u32 kind);
 
@@ -146,8 +146,8 @@ void BattleHud::Init() {
     ChangeDir("/Game/Confrontation/Obj/");
     screen.LoadCharacters("vs_b_obj_01.nce_ncg1D.bin", 0x7000, 0);
     u8 *pal = (u8 *) LoadFile("vs_b_obj_01_ncl.bin", 0, 0, 0, 0, 0);
-    QueueUpload(screen.mBgIndex, UPLOAD_KIND_OBJ_PLTT, 0xe0, pal + (u8) (entries[0].mUnk_0d_0 + 2) * 0x20, 0x20, 0);
-    QueueUpload(screen.mBgIndex, UPLOAD_KIND_OBJ_PLTT, 0x100, pal + (u8) (entries[1].mUnk_0d_0 + 2) * 0x20, 0x20, 0);
+    QueueUpload(screen.mBgIndex, UPLOAD_KIND_OBJ_PLTT, 0xe0, pal + (u8) (entries[0].mAttribute + 2) * 0x20, 0x20, 0);
+    QueueUpload(screen.mBgIndex, UPLOAD_KIND_OBJ_PLTT, 0x100, pal + (u8) (entries[1].mAttribute + 2) * 0x20, 0x20, 0);
     QueueUpload(screen.mBgIndex, UPLOAD_KIND_OBJ_PLTT, 0xa0, pal, 0x40, 1);
     u8 i = 0;
     do {
@@ -164,11 +164,11 @@ void BattleHud::Init() {
     mUnk_c0 = mCellAnims[3]->GetDuration();
     mCellAnims[4]->SetAnimation(7);
     mCellAnims[5]->SetAnimation(0x12);
-    mCellAnims[6]->SetAnimation(entries[0].mUnk_0d_4 + 0x17);
-    mCellAnims[7]->SetAnimation(entries[1].mUnk_0d_4 + 0x1b);
+    mCellAnims[6]->SetAnimation(entries[0].mPlayer + 0x17);
+    mCellAnims[7]->SetAnimation(entries[1].mPlayer + 0x1b);
     char path[0x80];
     u8 n;
-    if (mUnk_0c >= 2) {
+    if (mLocalSide >= 2) {
         n = 1;
     } else {
         n = mParam->mKind + 1;
@@ -249,7 +249,7 @@ void BattleHud::Init() {
     mCellAnims[21] = new CellAnimation("vs_b_obj_pen_nce.bin", 0, 1, 1);
     mCellAnims[21]->mCharBase = screen.GetCharBase(0x14000);
     mCellAnims[21]->mPaletteBase = 9;
-    if (mUnk_0c < 2) {
+    if (mLocalSide < 2) {
         switch (mParam->mKind) {
             case 0:
                 mPenX = 0x80;
@@ -273,7 +273,7 @@ void BattleHud::Init() {
                 break;
         }
     } else {
-        if (mUnk_0c == 4) {
+        if (mLocalSide == 4) {
             mPenX = 0xd2;
         } else {
             mPenX = 0x26;
@@ -284,9 +284,9 @@ void BattleHud::Init() {
     ChangeDir("/");
     ChangeDir("/Game/Character/Icon");
     mCellAnims[12] = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
-    u32 base = data_ov007_02279d44;
+    u32 base = gIconCharBase;
     mCellAnims[12]->mCharBase = screen.GetCharBase(base);
-    s8 layer = data_ov007_02279d40;
+    s8 layer = gIconPaletteBase;
     mCellAnims[12]->mPaletteBase = layer;
     mCellAnims[13] = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
     mCellAnims[13]->mCharBase = screen.GetCharBase(base);
@@ -296,19 +296,19 @@ void BattleHud::Init() {
     ChangeDir("/");
     i = 0;
     do {
-        if (data_020d433c.mBattlePlayers->mPlayers[entries[i].mUnk_0d_4]->mSlots6cRemaining == 0) {
+        if (data_020d433c.mBattlePlayers->mPlayers[entries[i].mPlayer]->mSlots6cRemaining == 0) {
             mUnk_118[i] = 0xff;
         }
         BattleEntry *e = entries;
         e += i;
         u32 card;
         if (e->mCardId == 0) {
-            if (mUnk_0c == i) {
+            if (mLocalSide == i) {
                 mUnk_117_1 = 1;
             }
             card = 0;
         } else {
-            int kind = GetCardInfo(entries[(u8) mUnk_0c].mCardId, 3);
+            int kind = GetCardInfo(entries[(u8) mLocalSide].mCardId, 3);
             if ((u8) (kind + 0xfc) <= 1) {
                 mUnk_117_1 = 1;
             }
@@ -317,12 +317,12 @@ void BattleHud::Init() {
         LoadSmallCard(i, card);
         i++;
     } while (i < 2);
-    if (mUnk_0c >= 2) {
+    if (mLocalSide >= 2) {
         mUnk_117_1 = 1;
     }
     LoadCountdown();
     mData->mMessageWindow->LoadMessageFile("mes_ControlBattle");
-    if ((u32) mUnk_0c <= 1) {
+    if ((u32) mLocalSide <= 1) {
         mData->mMessageWindow->StartMessage(mParam->mKind, 0, 1);
     } else {
         mData->mMessageWindow->StartMessage(6, 0, 1);
@@ -348,12 +348,12 @@ void BattleHud::LoadSmallCard(u8 side, int card) {
     index = side + 0x11;
     ChangeDir("/Game/Card/Graphic/Small");
     char path[0x80];
-    if (selected == entries[side].mUnk_0d_4) {
+    if (selected == entries[side].mPlayer) {
         sprintf(path, "card_s_%03d_ncg.bin", card);
     } else {
         sprintf(path, "card_s_000_ncg.bin", card);
     }
-    u32 base = data_ov007_02279184[side];
+    u32 base = gSmallCardCharBases[side];
     screen.LoadCharacters(path, base, 0);
     if (side == 0) {
         screen.LoadExtPalette("card_s_000_ncl.bin", 0x600, 0);
@@ -384,7 +384,7 @@ void BattleHud::LoadCountdown() {
 }
 
 void BattleHud::Update() {
-    if (mUnk_23_1) {
+    if (mClosed) {
         mFinished = 1;
         return;
     }
@@ -419,7 +419,7 @@ void BattleHud::Update() {
             break;
         }
         case 3:
-            if (func_ov007_02226c70()) {
+            if (UpdateBarFillCountdown()) {
                 mState = 0;
             }
             break;
@@ -519,21 +519,21 @@ void BattleHud::SetupCountdown() {
     do {
         int v = entries[i].mUnk_00;
         if (v > 20) {
-            mUnk_100[i] = v / 20;
+            mObjectsRemaining[i] = v / 20;
         }
-        mUnk_102[i] = mCountdownFrameCount / mUnk_100[i];
+        mObjectIntervalFrameCount[i] = mCountdownFrameCount / mObjectsRemaining[i];
         i++;
     } while (i < 2);
-    mUnk_104[0] = mUnk_102[0];
-    mUnk_104[1] = mUnk_102[1];
+    mObjectIntervalFrames[0] = mObjectIntervalFrameCount[0];
+    mObjectIntervalFrames[1] = mObjectIntervalFrameCount[1];
     mDrawnValues[0] = entries[0].mUnk_00;
     mDrawnValues[1] = entries[1].mUnk_00;
     mDrawnValuesPerFrame[0] = mDrawnValues[0] / (float) mCountdownFrameCount;
     mDrawnValuesPerFrame[1] = mDrawnValues[1] / (float) mCountdownFrameCount;
-    mUnk_20 = mParam->mCutinDelayFrameCount;
+    mCutinDelayTimer = mParam->mCutinDelayFrameCount;
 }
 
-BOOL BattleHud::func_ov007_02226c70() {
+BOOL BattleHud::UpdateBarFillCountdown() {
     u8 done = 0;
     mBarFill[0] = mBarFill[0] + mBarFillPerFrame[0];
     mBarFill[1] = mBarFill[1] + mBarFillPerFrame[1];
@@ -543,11 +543,11 @@ BOOL BattleHud::func_ov007_02226c70() {
     }
     u8 i = 0;
     do {
-        if (mUnk_100[i] != 0) {
-            mUnk_104[i]++;
-            if (mUnk_104[i] >= mUnk_102[i]) {
-                mUnk_104[i] = 0;
-                mUnk_100[i]--;
+        if (mObjectsRemaining[i] != 0) {
+            mObjectIntervalFrames[i]++;
+            if (mObjectIntervalFrames[i] >= mObjectIntervalFrameCount[i]) {
+                mObjectIntervalFrames[i] = 0;
+                mObjectsRemaining[i]--;
                 if (i == 0) {
                     StartObject(0, 0x28, 0xb4, 6);
                 } else {
@@ -574,14 +574,14 @@ BOOL BattleHud::func_ov007_02226c70() {
             rounded = (float) fixed - 0.5f;
         }
         mPushPercentFixed = (s32) rounded;
-        mUnk_22_3 = 1;
+        mBarFillDone = 1;
     }
     if (mBarFill[0] > 0.5f) {
         func_ov007_02227460(0);
     } else if (mBarFill[1] > 0.5f) {
         func_ov007_02227460(1);
     }
-    if (mUnk_22_3 == 1 && mUnk_c3 == 0) {
+    if (mBarFillDone == 1 && mUnk_c3 == 0) {
         done = 1;
     }
     return done;
@@ -596,12 +596,12 @@ void BattleHud::StartSwap() {
     u16 diff;
     if (pos > other) {
         diff = pos - other;
-        mUnk_23_0 = 1;
+        mSwapSide = 1;
     } else {
         diff = other - pos;
-        mUnk_23_0 = 0;
+        mSwapSide = 0;
     }
-    mBarFillPerFrame[mUnk_23_0] = (float) diff / 20.0f;
+    mBarFillPerFrame[mSwapSide] = (float) diff / 20.0f;
     u16 first = data->mEntries[0].mUnk_00;
     u16 second = data->mEntries[1].mUnk_00;
     mData->mEntries[0].mUnk_00 = second;
@@ -614,7 +614,7 @@ BOOL BattleHud::UpdateSwap() {
     if (mCountdownFrames > 0x14) {
         mCountdownFrames = 0x15;
     } else {
-        u8 idx = mUnk_23_0;
+        u8 idx = mSwapSide;
         float v = mBarFillPerFrame[idx];
         float f;
         if (v > 0.0f) {
@@ -629,7 +629,7 @@ BOOL BattleHud::UpdateSwap() {
 
 void BattleHud::StartBarSlide() {
     BattleData *data = mData;
-    mUnk_22_3 = 0;
+    mBarFillDone = 0;
     mBarFill[0] = (float) mPushPercent / 100.0f;
     mBarFill[1] = 1.0f - mBarFill[0];
     if (data->mEntries[0].mUnk_10) {
@@ -668,31 +668,31 @@ BOOL BattleHud::UpdateBarSlide() {
 }
 
 void BattleHud::StartCountdown() {
-    mUnk_22_2 = 0;
-    mUnk_22_1 = 0;
-    mUnk_22_0 = 0;
+    mFrame25SoundPlayed = 0;
+    mFrame15SoundPlayed = 0;
+    mFrame5SoundPlayed = 0;
     mCellAnims[22]->ResetAnimation();
 }
 
 BOOL BattleHud::UpdateCountdown() {
     switch (mCellAnims[22]->mFrameIndex) {
         case 5:
-            if (!mUnk_22_0) {
-                mUnk_22_0 = 1;
+            if (!mFrame5SoundPlayed) {
+                mFrame5SoundPlayed = 1;
                 SoundManager::Get().StartSeqArc(0x26);
                 func_020247fc(&SoundManager::Get(), 0x400);
             }
             break;
         case 15:
-            if (!mUnk_22_1) {
-                mUnk_22_1 = 1;
+            if (!mFrame15SoundPlayed) {
+                mFrame15SoundPlayed = 1;
                 SoundManager::Get().StartSeqArc(0x26);
                 func_020247fc(&SoundManager::Get(), 0x400);
             }
             break;
         case 25:
-            if (!mUnk_22_2) {
-                mUnk_22_2 = 1;
+            if (!mFrame25SoundPlayed) {
+                mFrame25SoundPlayed = 1;
                 SoundManager::Get().StartSeqArc(0x26);
                 func_020247fc(&SoundManager::Get(), 0x400);
             }
@@ -710,19 +710,19 @@ BOOL BattleHud::UpdateCountdown() {
 }
 
 BOOL BattleHud::SlideSidesOut() {
-    if (mUnk_0c != 2 && mUnk_0c != 3) {
+    if (mLocalSide != 2 && mLocalSide != 3) {
         mSide0X -= 10;
     }
-    if (mUnk_0c != 2 && mUnk_0c != 4) {
+    if (mLocalSide != 2 && mLocalSide != 4) {
         mSide1X += 10;
     }
     mUnk_10 += 10;
     if (mUnk_10 >= 0x48) {
         mUnk_10 = 0;
-        if (mUnk_0c < 2) {
-            mUnk_22_6 = 0;
+        if (mLocalSide < 2) {
+            mSidesVisible = 0;
         }
-        mUnk_22_7 = 0;
+        mSlideSidesOutEnabled = 0;
         return 1;
     }
     return 0;
@@ -734,7 +734,7 @@ void MovePlayerAnimX(BattleHud *obj) {
 }
 
 void BattleHud::func_ov007_02227460(int side) {
-    mCellAnims[5]->SetAnimation(0x13 + mData->mEntries[side].mUnk_0d_4);
+    mCellAnims[5]->SetAnimation(0x13 + mData->mEntries[side].mPlayer);
 }
 
 void BattleHud::Push(int mode, s32 value, s32 count, u8 boost, bool useLevel) {
@@ -753,7 +753,7 @@ void BattleHud::Push(int mode, s32 value, s32 count, u8 boost, bool useLevel) {
         if (idx >= 5) {
             idx = 9 - idx;
         }
-        delta = FX_Mul(delta, data_ov007_0227918c[idx]);
+        delta = FX_Mul(delta, gPushPercentScales[idx]);
     }
     mLastPush[mode] = delta;
     if (mode == 0) {
@@ -775,7 +775,7 @@ void BattleHud::Push(int mode, s32 value, s32 count, u8 boost, bool useLevel) {
     }
 }
 
-u8 BattleHud::func_ov007_022275a0(u32 value, u8 a, u8 b) {
+u8 BattleHud::ComputeObjectCount(u32 value, u8 a, u8 b) {
     u32 scaled = value * b;
     u8 result = scaled / 100;
     if (result == 0) {
@@ -790,7 +790,7 @@ BOOL BattleHud::StartObject(u8 side, s16 x, s16 y, u8 flag) {
     u16 angle;
     int motion;
     u8 i;
-    if (!mUnk_22_3) {
+    if (!mBarFillDone) {
         if (side == 0) {
             ty = (s16) (s32) (32.0f + 192.0f * mBarFill[0]);
         } else {
@@ -828,7 +828,7 @@ void BattleHud::Draw() {
     mData->DrawCharacterIcons(0, 8, 0x1e);
     mData->DrawCharacterIcons(1, 0xb8, 0x1e);
     mData->mCharacterIcons->DrawIcons();
-    if (mUnk_22_6) {
+    if (mSidesVisible) {
         s16 pos[2];
         pos[0] = mSide0X;
         pos[1] = mSide1X;
@@ -850,14 +850,14 @@ void BattleHud::Draw() {
         } while (i < 2);
         mData->DrawBakuganAndNumber(0, pos[0], 0x5a, 2, mDrawnValues[0]);
         mData->DrawBakuganAndNumber(1, pos[1], 0x5a, 2, mDrawnValues[1]);
-        if (mUnk_22_7) {
+        if (mSlideSidesOutEnabled) {
             SlideSidesOut();
         }
     }
     mCellAnims[5]->Draw(1, 0x80, 0x22, 1);
     mCellAnims[6]->Draw(1, mSide0PlayerAnimX, 0x54, 1);
     mCellAnims[7]->Draw(1, mSide1PlayerAnimX, 0x54, 1);
-    if (mUnk_22_3) {
+    if (mBarFillDone) {
         u8 j = 12;
         i = 0;
         do {
@@ -881,25 +881,25 @@ void BattleHud::Draw() {
         } while (i < 2);
     }
     func_ov007_02227c54();
-    if (mUnk_22_4) {
-        if (!mUnk_23_2) {
+    if (mCutinVisible) {
+        if (!mTouched) {
             if (mCellAnims[9]->mAnimIndex == 0 && mCellAnims[9]->mFinished != 0) {
                 mCellAnims[9]->ResetAnimation();
                 mCellAnims[9]->SetAnimation(1);
             }
         } else if (mCellAnims[9]->mAnimIndex != 2) {
-            if (mUnk_20 != 0) {
-                mUnk_20--;
+            if (mCutinDelayTimer != 0) {
+                mCutinDelayTimer--;
             } else {
                 mCellAnims[9]->ResetAnimation();
                 mCellAnims[9]->SetAnimation(2);
             }
         }
         if (mCellAnims[9]->mAnimIndex == 1 && mPenX >= 0) {
-            if (mUnk_0c == 2) {
-                mUnk_24++;
-                if (mUnk_24 >= 0x28) {
-                    mUnk_24 = 0;
+            if (mLocalSide == 2) {
+                mPenToggleFrames++;
+                if (mPenToggleFrames >= 0x28) {
+                    mPenToggleFrames = 0;
                     if (mPenX == 0x26) {
                         mPenX = 0xd2;
                     } else {
@@ -913,17 +913,17 @@ void BattleHud::Draw() {
         mCellAnims[9]->Update();
         mCellAnims[9]->Draw(1, 0x80, 0x6e, 0);
         if (mCellAnims[9]->mAnimIndex == 1) {
-            if (mUnk_0c == 2 || mUnk_0c == 3) {
+            if (mLocalSide == 2 || mLocalSide == 3) {
                 mCellAnims[10]->Update();
                 mCellAnims[10]->Draw(1, 0x48, 0x82, 0);
             }
-            if (mUnk_0c == 2 || mUnk_0c == 4) {
+            if (mLocalSide == 2 || mLocalSide == 4) {
                 mCellAnims[11]->Update();
                 mCellAnims[11]->Draw(1, 0x98, 0x82, 0);
             }
         }
     }
-    if (mUnk_22_5) {
+    if (mPerfectCutinVisible) {
         mCellAnims[8]->Update();
         mCellAnims[8]->Draw(1, 0x80, 0x6e, 0);
     }
@@ -951,7 +951,7 @@ void BattleHud::func_ov007_02227bbc(u8 index) {
 void BattleHud::func_ov007_02227c54() {
     u8 i;
     u8 j;
-    if (!mUnk_22_3) {
+    if (!mBarFillDone) {
         if (mUnk_26 == 0 && mBarFill[0] != 0.0f) {
             s16 x = (s16) (s32) (192.0f * mBarFill[0] + 32.0f + 8.0f);
             mCellAnims[3]->Update();
@@ -1041,7 +1041,7 @@ void BattleHud::func_ov007_02227c54() {
                 }
             } else if (mLastPush[0] == 0 && mLastPush[1] == 0) {
                 if (cur != 6) {
-                    if (mUnk_1c[0] == 0 && mUnk_1c[1] == 0) {
+                    if (mPushAnimTimer[0] == 0 && mPushAnimTimer[1] == 0) {
                         mCellAnims[2]->ResetAnimation();
                         mCellAnims[2]->SetAnimation(6);
                     }
@@ -1051,7 +1051,7 @@ void BattleHud::func_ov007_02227c54() {
                 j = 5;
                 do {
                     if (mLastPush[i] != 0) {
-                        if (mUnk_1c[(u8) (i ^ 1)] != 0) {
+                        if (mPushAnimTimer[(u8) (i ^ 1)] != 0) {
                             mCellAnims[2]->ResetAnimation();
                             mCellAnims[2]->SetAnimation(6);
                         } else {
@@ -1059,7 +1059,7 @@ void BattleHud::func_ov007_02227c54() {
                                 mCellAnims[2]->ResetAnimation();
                                 mCellAnims[2]->SetAnimation(j);
                             }
-                            mUnk_1c[i] = mCellAnims[2]->GetDuration();
+                            mPushAnimTimer[i] = mCellAnims[2]->GetDuration();
                         }
                     }
                     j--;
@@ -1068,8 +1068,8 @@ void BattleHud::func_ov007_02227c54() {
             }
             i = 0;
             do {
-                if (mUnk_1c[i] != 0) {
-                    mUnk_1c[i]--;
+                if (mPushAnimTimer[i] != 0) {
+                    mPushAnimTimer[i]--;
                 }
                 i++;
             } while (i < 2);
@@ -1282,9 +1282,9 @@ void BattleHud::DrawAbilitiesAndCards() {
     do {
         if (!entries[side].mUnk_0f_0) {
             if (mUnk_118[side] != 0xff) {
-                u8 x = data_ov007_02279178[side];
+                u8 x = gSmallCardX[side];
                 mCellAnims[17 + side]->Draw(1, x, 0x20, mUnk_118[side]);
-                if (!data_020d433c.mUnk_9a_2 && mUnk_0c == side) {
+                if (!data_020d433c.mUnk_9a_2 && mLocalSide == side) {
                     if (!mUnk_117_1 && !mUnk_117_2 && mUnk_118[side] == 1) {
                         if (!entries[(u8) (side ^ 1)].mUnk_0f_3) {
                             mCellAnims[16]->Draw(1, x, 0x17, 0);

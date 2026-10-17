@@ -21,16 +21,16 @@ BattleData::BattleData() {
     u8 index1         = data_020d433c.mBattlePlayers->mUnitB;
     BattleUnit *unit0 = &data_020d433c.mBattlePlayers->mUnits[index0];
     BattleUnit *unit1 = &data_020d433c.mBattlePlayers->mUnits[index1];
-    mEntries[0].mUnk_0d_4 = unit0->mPlayer;
-    mEntries[1].mUnk_0d_4 = unit1->mPlayer;
-    BattlePlayer *player0 = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mUnk_0d_4];
-    BattlePlayer *player1 = data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mUnk_0d_4];
+    mEntries[0].mPlayer = unit0->mPlayer;
+    mEntries[1].mPlayer = unit1->mPlayer;
+    BattlePlayer *player0 = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mPlayer];
+    BattlePlayer *player1 = data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mPlayer];
     BattleRecord *rec0    = &player0->mRecords[unit0->mRecord];
     BattleRecord *rec1    = &player1->mRecords[unit1->mRecord];
     mEntries[0].mBakuganId   = rec0->mBakuganId;
     mEntries[1].mBakuganId   = rec1->mBakuganId;
-    mEntries[0].mUnk_0d_0 = rec0->mAttribute;
-    mEntries[1].mUnk_0d_0 = rec1->mAttribute;
+    mEntries[0].mAttribute = rec0->mAttribute;
+    mEntries[1].mAttribute = rec1->mAttribute;
     mEntries[0].mUnk_00   = rec0->mUnk_04 + rec0->mUnk_06;
     mEntries[1].mUnk_00   = rec1->mUnk_04 + rec1->mUnk_06;
     mEntries[0].mUnk_04   = mEntries[0].mUnk_00;
@@ -39,8 +39,8 @@ BattleData::BattleData() {
     mEntries[1].mUnk_06   = 0;
     mEntries[0].mUnk_0a   = 0;
     mEntries[1].mUnk_0a   = 0;
-    mEntries[0].mCharacterId   = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mUnk_0d_4]->mCharacterId;
-    mEntries[1].mCharacterId   = data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mUnk_0d_4]->mCharacterId;
+    mEntries[0].mCharacterId   = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mPlayer]->mCharacterId;
+    mEntries[1].mCharacterId   = data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mPlayer]->mCharacterId;
     mEntries[0].mUnk_10   = 0;
     mEntries[1].mUnk_10   = 0;
     mEntries[0].mSlot6cIndex   = 0;
@@ -71,7 +71,7 @@ BattleData::BattleData() {
                 mEntries[i].mUnk_06 = b * 10;
             }
         } else {
-            mEntries[i].mUnk_06 = GetCardAttributeValue(mMarkerCardId, mEntries[i].mUnk_0d_0) * 10;
+            mEntries[i].mUnk_06 = GetCardAttributeValue(mMarkerCardId, mEntries[i].mAttribute) * 10;
         }
         mEntries[i].mUnk_02 = mEntries[i].mUnk_00 + mEntries[i].mUnk_06;
         i++;
@@ -88,14 +88,14 @@ BattleData::BattleData() {
         mEntries[j].mUnk_0f_6 = 0;
         j++;
     } while (j < 2);
-    mUnk_08[0] = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mUnk_0d_4]->mUnk_ee;
-    mUnk_08[1] = data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mUnk_0d_4]->mUnk_ee;
+    mUnk_08[0] = data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mPlayer]->mUnk_ee;
+    mUnk_08[1] = data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mPlayer]->mUnk_ee;
     if (data_020d433c.mHasPartners == 0) {
         mUnk_0a = 3;
     } else {
         mUnk_0a = 3;
-        mUnk_08[0] += data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mUnk_0d_4]->mPartner]->mUnk_ee;
-        mUnk_08[1] += data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mUnk_0d_4]->mPartner]->mUnk_ee;
+        mUnk_08[0] += data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mPlayer]->mPartner]->mUnk_ee;
+        mUnk_08[1] += data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mPlayer]->mPartner]->mUnk_ee;
     }
     MI_CpuClearFast(mCellAnims, 0x38);
 }
@@ -132,7 +132,7 @@ void BattleData::Load() {
         screen.LoadCharacters(path, i << 13, 0);
         sprintf(path, "bakugan_l_%03d_ncl.bin", id);
         u8 *palette = (u8 *) LoadFile(path, 0, 0, 0, &size, 0);
-        QueueUpload(1, UPLOAD_KIND_OBJ_EXT_PLTT, i << 9, palette + (mEntries[i].mUnk_0d_0 << 9), 0x200, 0);
+        QueueUpload(1, UPLOAD_KIND_OBJ_EXT_PLTT, i << 9, palette + (mEntries[i].mAttribute << 9), 0x200, 0);
         OS_Free(palette);
         sprintf(path, "bakugan_l_%03d_nce.bin", id);
         mCellAnims[i] = new CellAnimation(path, 0, 1, 1);
@@ -142,7 +142,7 @@ void BattleData::Load() {
         mCellAnims[i + 5] = new CellAnimation("bakugan_l_attribute_nce.bin", 0, 1, 1);
         mCellAnims[i + 5]->mCharBase = screen.GetCharBase(0x1800);
         mCellAnims[i + 5]->mPaletteBase   = 0;
-        mCellAnims[i + 5]->mFrameIndex   = mEntries[i].mUnk_0d_0;
+        mCellAnims[i + 5]->mFrameIndex   = mEntries[i].mAttribute;
         i++;
     } while (i < 2);
     screen.LoadCharacters("bakugan_l_attribute.nce_ncg1D.bin", 0x1800, 0);
@@ -169,15 +169,15 @@ void BattleData::Load() {
         mCellAnims[m]->mCharBase = screen.GetCharBase(0x5000);
         mCellAnims[m]->mPaletteBase   = 1;
     }
-    mCellAnims[7]->SetAnimation(mEntries[0].mUnk_0d_4 + 7);
-    mCellAnims[8]->SetAnimation(mEntries[1].mUnk_0d_4 + 7);
+    mCellAnims[7]->SetAnimation(mEntries[0].mPlayer + 7);
+    mCellAnims[8]->SetAnimation(mEntries[1].mPlayer + 7);
     mCellAnims[9]->SetAnimation(0);
     mCellAnims[10]->SetAnimation(1);
     u8 current = data_020d433c.mBattlePlayers->mUnk_2a9;
     u8 n       = 0;
     do {
-        if (current == mEntries[n].mUnk_0d_4) {
-            mCellAnims[11]->SetAnimation(mEntries[n].mUnk_0d_4 + 2);
+        if (current == mEntries[n].mPlayer) {
+            mCellAnims[11]->SetAnimation(mEntries[n].mPlayer + 2);
             break;
         }
         n++;
@@ -185,8 +185,8 @@ void BattleData::Load() {
     mCellAnims[12]->SetAnimation(0xb);
     mCellAnims[13]->SetAnimation(6);
     mCharacterIcons = new CharacterIcons(0x6800, 3, 1);
-    mCharacterIcons->SetCharacter(0, *(s8 *) &mEntries[0].mCharacterId, data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mUnk_0d_4]->NameInfo(), 0);
-    mCharacterIcons->SetCharacter(1, *(s8 *) &mEntries[1].mCharacterId, data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mUnk_0d_4]->NameInfo(), 0);
+    mCharacterIcons->SetCharacter(0, *(s8 *) &mEntries[0].mCharacterId, data_020d433c.mBattlePlayers->mPlayers[mEntries[0].mPlayer]->NameInfo(), 0);
+    mCharacterIcons->SetCharacter(1, *(s8 *) &mEntries[1].mCharacterId, data_020d433c.mBattlePlayers->mPlayers[mEntries[1].mPlayer]->NameInfo(), 0);
     ChangeDir("/");
     mMessageWindow = new MessageWindow("mes_CardName", 1, 0x1f800);
     mMessageWindow->func_02065bd4(0x14, 4, 0);
@@ -205,13 +205,13 @@ void BattleData::DrawCharacterIcons(u8 side, s16 x, s16 y) {
     px     = x + offset;
     top    = y - 4;
     mCellAnims[side + 7]->Draw(1, (s16) (px - 6), (s16) top, 2);
-    if (data_020d433c.mBattlePlayers->mPlayers[mEntries[side].mUnk_0d_4]->IsCpu()) {
-        mCellAnims[12]->DrawFrame(1, mEntries[side].mUnk_0d_4, px - 6, top, 2);
+    if (data_020d433c.mBattlePlayers->mPlayers[mEntries[side].mPlayer]->IsCpu()) {
+        mCellAnims[12]->DrawFrame(1, mEntries[side].mPlayer, px - 6, top, 2);
     }
     mCellAnims[9]->Draw(1, (s16) (px - 2), (s16) (y - 2), 3);
     mCharacterIcons->SetDrawArgs(side, px, y, 2);
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
-    u8 owner               = mEntries[side].mUnk_0d_4;
+    u8 owner               = mEntries[side].mPlayer;
     u8 current             = list->mUnk_2a9;
     if (current == owner) {
         int shift = side == 0 ? 0x20 : 0;

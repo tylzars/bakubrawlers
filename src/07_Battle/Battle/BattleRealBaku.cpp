@@ -18,10 +18,10 @@ BattleRealBaku::BattleRealBaku(u8 id, int unk2, u8 unk3, int unk4, int unk5, int
     mId       = id;
     mAnimDataIndex   = unk2;
     mVariant = unk3;
-    mUnk_06_3 = unk4;
+    mAnimLoop = unk4;
     mUseBoxTest = unk5;
     mUseCallbackMtx = unk6;
-    mUnk_06_6 = unk7;
+    mUseRealb20 = unk7;
     mModel    = 0;
     mAnim     = 0;
     LoadModel();
@@ -57,13 +57,13 @@ void BattleRealBaku::LoadModel() {
         model = new NitroModel(buf, tex);
         flag  = 0;
     } else {
-        if (charId <= 0xe && mUnk_06_6) {
+        if (charId <= 0xe && mUseRealb20) {
             sprintf(buf, "realb%02d_20.nsbtx", charId);
         } else {
             sprintf(buf, "realb%02d.nsbtx", charId);
         }
         tex = new NitroTexture(buf);
-        if (charId <= 0xe && mUnk_06_6) {
+        if (charId <= 0xe && mUseRealb20) {
             sprintf(buf, "realb%02d_20.nsbmd", charId);
         } else {
             sprintf(buf, "realb%02d.nsbmd", charId);
@@ -76,7 +76,7 @@ void BattleRealBaku::LoadModel() {
     mModel              = model->CreateInstance(mAnim);
     ChangeDir("/");
     mModel->mUseBoxTest = mUseBoxTest;
-    mModel->StartAnim(0, mUnk_06_3);
+    mModel->StartAnim(0, mAnimLoop);
     if (mUseCallbackMtx) {
         mModel->EnableCallbackMtx();
     }

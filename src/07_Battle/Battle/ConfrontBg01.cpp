@@ -53,7 +53,7 @@ void ConfrontBg01::LoadGraphics() {
     BattleEntry *entries = mData->mEntries;
     sprintf(gCurrentDir, dir);
     FS_ChangeDir(dir);
-    u8 n = entries[mUnk_12].mUnk_0d_0;
+    u8 n = entries[mLocalSide].mAttribute;
     sprintf(path, "vs_b_bg_01_%02d_ncl.bin", n);
     LoadAndQueueUpload(1, UPLOAD_KIND_BG_EXT_PLTT, 0x2000, path, 0, 0, 0);
     LoadAndQueueUpload(1, UPLOAD_KIND_BG1_CHAR, 0, "vs_b_bg_01_06_ncg.bin", 0, 0, 0);
@@ -95,7 +95,7 @@ u8 ConfrontBg01::UpdateTouch(int a) {
                                        (s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY);
         if (mDistanceSum >= limit) {
             mDistanceSum = 0;
-            func_ov007_0221bb3c();
+            SetTouched();
             if (!CountSeqArcSounds(&SoundManager::Get(), 0x27)) {
                 SoundManager::Get().StartSeqArc(0x27);
             }

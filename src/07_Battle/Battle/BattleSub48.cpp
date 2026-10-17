@@ -23,7 +23,7 @@ enum EntryIndex { ENTRY_INDEX_0 };
 BattleSub48::BattleSub48(BattleData *data, u8 mode)
     : SceneBase(2, 0) {
     mState = 0;
-    mUnk_0d = 0;
+    mMoveStep = 0;
     mUnk_0e_0 = 0;
     mCircleUpDownVisible = 0;
     mSideUpDownVisible = 0;
@@ -46,19 +46,19 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
         u8 k = 0;
         do {
             EntryIndex kk = (EntryIndex) k;
-            u8 nib = entries[kk].mUnk_0d_0;
+            u8 nib = entries[kk].mAttribute;
             s32 value = data_ov007_022790c8[mFieldIndex][nib];
-            mUnk_12[k] = nib;
+            mSideAttributes[k] = nib;
             if (entries[k].mBakuganId == 5) {
                 if (value < data_ov007_022790c8[mFieldIndex][3]) {
-                    mUnk_12[k] = 3;
+                    mSideAttributes[k] = 3;
                 }
             } else if (entries[k].mBakuganId == 6) {
                 if (value < data_ov007_022790c8[mFieldIndex][0]) {
-                    mUnk_12[k] = 0;
+                    mSideAttributes[k] = 0;
                 }
             }
-            u8 c = gCircleSlots[mUnk_12[k]];
+            u8 c = gCircleSlots[mSideAttributes[k]];
             mCircleY = 90;
             int step = (u16) (c * 0x2aaa + 0xc000) >> 4;
             mPos[k][0] = 110.0f + 50.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
@@ -278,13 +278,13 @@ void BattleSub48::Update() {
 
 extern const u8 gSideTargetX[];
 
-u8 BattleSub48::func_ov007_02224a70() {
+u8 BattleSub48::UpdateCircleAndSidesMove() {
     if (mState == 0) {
         return 1;
     }
     u8 i;
     u8 ret = 0;
-    switch (mUnk_0d) {
+    switch (mMoveStep) {
         case 0: {
             i = 0;
             do {
@@ -294,7 +294,7 @@ u8 BattleSub48::func_ov007_02224a70() {
             } while (i < 2);
             mUnk_0e |= 2;
             mStepFrames = 0;
-            mUnk_0d++;
+            mMoveStep++;
             break;
         }
         case 1:
@@ -302,13 +302,13 @@ u8 BattleSub48::func_ov007_02224a70() {
             if (mStepFrames > 0x78) {
                 mStepFrames = 0;
                 mUnk_0e &= ~2;
-                mUnk_0d++;
+                mMoveStep++;
             }
             break;
         case 2:
             mCircleY += 3;
             if (mCircleY >= 250) {
-                mUnk_0d++;
+                mMoveStep++;
             }
             break;
         case 3:
@@ -321,8 +321,8 @@ u8 BattleSub48::func_ov007_02224a70() {
                 mStepFrames = 0;
                 i = 0;
                 do {
-                    s32 value = data_ov007_022790c8[mFieldIndex][mUnk_12[i]];
-                    u8 slot = mUnk_12[i] + 7;
+                    s32 value = data_ov007_022790c8[mFieldIndex][mSideAttributes[i]];
+                    u8 slot = mSideAttributes[i] + 7;
                     if (value > 0x1000) {
                         mCellAnims[slot]->SetAnimation(0);
                     } else if (value < 0x1000) {
@@ -359,7 +359,7 @@ void BattleSub48::DrawCircleAndSides() {
                 mCellAnims[slot]->Draw(0, (s16) x, (s16) y, 1);
             }
         }
-        if (gCircleSlots[mUnk_12[0]] != c && gCircleSlots[mUnk_12[1]] != c) {
+        if (gCircleSlots[mSideAttributes[0]] != c && gCircleSlots[mSideAttributes[1]] != c) {
             step = angle >> 4;
             x = 110.0f + 50.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
             y = (float) (u32) mCircleY + 50.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
@@ -376,11 +376,11 @@ void BattleSub48::DrawSides() {
         u16 x = mPos[i][0];
         u16 y = mPos[i][1];
         if (mSideUpDownVisible) {
-            u8 slot = mUnk_12[i] + 7;
+            u8 slot = mSideAttributes[i] + 7;
             mCellAnims[slot]->Update();
             mCellAnims[slot]->Draw(0, (s16) (x + (i == 0 ? 30 : -30)), (s16) y, 1);
         }
-        mCellAnims[14]->DrawFrame(0, mUnk_12[i], x, y, 1);
+        mCellAnims[14]->DrawFrame(0, mSideAttributes[i], x, y, 1);
         i++;
     } while (i < 2);
 }

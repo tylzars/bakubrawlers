@@ -211,12 +211,12 @@ void Confront03::Init(BattleData *data, u32 mode) {
     mData = data;
     InitSubScreen();
     LoadGraphics();
-    u8 side = mUnk_12;
+    u8 side = mLocalSide;
     BOOL spectator = side >= 2;
     if ((u8) spectator) {
         return;
     }
-    u8 nibble = side == 0 ? mData->mEntries[0].mUnk_0d_0 : mData->mEntries[1].mUnk_0d_0;
+    u8 nibble = side == 0 ? mData->mEntries[0].mAttribute : mData->mEntries[1].mAttribute;
     for (u8 i = 0; i < 4; i++) {
         mEmblems[i] = new ConfrontEmblem03(nibble);
     }
@@ -245,7 +245,7 @@ void Confront03::LoadGraphics() {
     screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
     char path[0x80];
-    u8 nibble = mUnk_12 == 0 ? data->mEntries[0].mUnk_0d_0 : data->mEntries[1].mUnk_0d_0;
+    u8 nibble = mLocalSide == 0 ? data->mEntries[0].mAttribute : data->mEntries[1].mAttribute;
     sprintf(path, "vs_emblem_%02d.nce_ncg1D.bin", nibble);
     screen.LoadCharacters(path, 0x1c000, 0);
     sprintf(path, "vs_emblem_%02d_ncl.bin", nibble);
@@ -343,7 +343,7 @@ u8 Confront03::UpdateTouch(int a) {
     do {
         result = mEmblems[i]->func_ov007_0221f594();
         if (result != -1) {
-            func_ov007_0221bb3c();
+            SetTouched();
             sound = result == 100 ? 0x28 : 0x29;
             break;
         }
@@ -401,7 +401,7 @@ void Confront03::StartIdleEmblem() {
         do {
             if (mEmblems[j]->IsIdle()) {
                 int pick = free[BattleRand32(n) & 0xff];
-                if (!mUnk_18_1 && (u16) (pick + 0xffff) <= 1) {
+                if (!mTouched && (u16) (pick + 0xffff) <= 1) {
                     BattleRand32(0xffff);
                     BattleRand32(0xffff);
                 } else {

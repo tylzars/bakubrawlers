@@ -218,7 +218,7 @@ void ArenaScene::Update() {
         WirelessManager::Get();
         data_0220f540.mUnk_01 = data_020c4230.mUnk_20;
         WirelessManager::Get().QueueSend(&data_0220f540);
-        WirelessManager::Get().func_0202f078(&data_0220f540);
+        WirelessManager::Get().SetSendBlock(&data_0220f540);
     }
     WirelessManager::Get();
     u8 mode = *modePtr;
@@ -370,7 +370,7 @@ void ArenaScene::Update() {
             }
             u8 count = 1;
             for (u8 i = 0; i < 4; i++) {
-                u8 *p = WirelessManager::Get().func_0202f0cc(i);
+                u8 *p = WirelessManager::Get().GetRecvBlock(i);
                 if (p != NULL) {
                     count = i + 1;
                     MIi_CpuCopy16(p + 4, data_020d433c.mNames[i], 0x18);
@@ -515,7 +515,7 @@ void ArenaScene::Update() {
             u8 flag  = 0;
             u8 count = 1;
             for (u8 i = 0; i < 4; i++) {
-                u8 *p = WirelessManager::Get().func_0202f0cc(i);
+                u8 *p = WirelessManager::Get().GetRecvBlock(i);
                 if (p != NULL) {
                     count = i + 1;
                     MIi_CpuCopy16(p + 4, data_020d433c.mNames[i], 0x18);
@@ -543,7 +543,7 @@ void ArenaScene::Update() {
         case 12:
             if (func_ov001_0221c614(0xc) != 0) {
                 for (u8 i = 0; i < 4; i++) {
-                    u8 *p = WirelessManager::Get().func_0202f0cc(i);
+                    u8 *p = WirelessManager::Get().GetRecvBlock(i);
                     if (p != NULL) {
                         MIi_CpuCopy16(p + 4, data_020d433c.mNames[i], 0x18);
                     }
@@ -561,7 +561,7 @@ void ArenaScene::Update() {
             if (func_ov001_0221c614(0x18) != 0) {
                 WirelessManager::Get();
                 if (data_020c4230.mUnk_20 != 0) {
-                    MI_CpuCopy8(WirelessManager::Get().func_0202f0cc(0) + 4, data_020d43eb, 4);
+                    MI_CpuCopy8(WirelessManager::Get().GetRecvBlock(0) + 4, data_020d43eb, 4);
                 }
                 mState++;
             }
@@ -939,10 +939,10 @@ void ArenaScene::ResetNames() {
 
 u32 ArenaScene::func_ov001_0221c614(u32 unk1) {
     data_0220f540.mUnk_00 = unk1;
-    u32 needed    = WirelessManager::Get().func_0202f134();
+    u32 needed    = WirelessManager::Get().GetRecvBlockCount();
     u8 count      = 0;
     for (u8 i = 0; i < 4; i++) {
-        u8 *p = WirelessManager::Get().func_0202f0cc(i);
+        u8 *p = WirelessManager::Get().GetRecvBlock(i);
         if (p != NULL && *p == unk1) {
             count++;
         }

@@ -165,7 +165,7 @@ BattlePlayer::BattlePlayer(u32 index)
     u32 limit = 1;
     WirelessManager::Get();
     if (IsWirelessMode(&data_020c4258)) {
-        limit = WirelessManager::Get().func_0202f134();
+        limit = WirelessManager::Get().GetRecvBlockCount();
     }
     if (limit <= index) {
         mCpu = new BattleCpu(index);
@@ -273,10 +273,10 @@ void BattlePlayer::Update() {
             if (IsWirelessMode(&data_020c4030.mUnk_228)) {
                 WirelessManager::Get();
                 if (data_020c4230.mUnk_20 == data_020d43eb[mIndex]) {
-                    WirelessManager::Get().func_0202f078(&data_0220f540);
+                    WirelessManager::Get().SetSendBlock(&data_0220f540);
                     data_0220f540.mUnk_00 = 0;
                 }
-                u8 *received = WirelessManager::Get().func_0202f0cc(data_020d43eb[mIndex]);
+                u8 *received = WirelessManager::Get().GetRecvBlock(data_020d43eb[mIndex]);
                 if (!received) {
                     mMsg.mType = 0;
                 } else {

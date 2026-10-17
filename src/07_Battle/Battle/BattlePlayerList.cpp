@@ -1300,7 +1300,7 @@ BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id) {
     if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
         return TRUE;
     }
-    u32 n = WirelessManager::Get().func_0202f134();
+    u32 n = WirelessManager::Get().GetRecvBlockCount();
     data_0220f540.mUnk_00 = id;
     u8 count = 0;
     u8 i     = 0;
@@ -1334,7 +1334,7 @@ BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag) {
             result = TRUE;
             break;
         }
-    } while (++i < WirelessManager::Get().func_0202f134());
+    } while (++i < WirelessManager::Get().GetRecvBlockCount());
     return result;
 }
 

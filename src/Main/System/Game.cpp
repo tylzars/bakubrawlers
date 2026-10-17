@@ -153,7 +153,7 @@ void GameSystem::Init() {
     TouchManager::Get().InitPanel();
     TextManager::Get().InitFont();
     SoundManager::Get().Init();
-    WirelessManager::Get().func_0202ed2c();
+    WirelessManager::Get().Init();
     MicManager::Get().Init();
     FrameTask::Get().OpenHandles();
     mInputEnabled = 1;
@@ -277,7 +277,7 @@ void GameSystem::Run() {
         WirelessManager::Get().Update();
         mWirelessWaitFrames = 0;
         if (IsWirelessMode((const u8 *) &WirelessManager::Get().mState)) {
-            while (WirelessManager::Get().mUnk_124e == 0) {
+            while (WirelessManager::Get().mHasNewRecvBlocks == 0) {
                 mWirelessWaitFrames++;
                 FrameTask::Get().WaitFrame();
                 WirelessManager::Get().Update();

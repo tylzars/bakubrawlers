@@ -32,7 +32,7 @@ struct WmCallbackArg {
                                    // func_0202ea34
 #define WM_CALL_PENDING          4 // a call was issued and its callback has not run yet
 #define WM_CALL_STOPPED          5 // StopCallback succeeded (mState 0); Update in mState 9 sets it every frame
-#define WM_CALL_FAILED           6 // a call or its callback failed, or the mUnk_1254 countdown ran out. BattleShoot and
+#define WM_CALL_FAILED           6 // a call or its callback failed, or the mExchangeTimer countdown ran out. BattleShoot and
                                    // BattleCommand write it on purpose (mRequest 2 while data_020d433c.mWireless is
                                    // set) to send Update down this path; nothing has failed there
 
@@ -43,7 +43,7 @@ struct WmEntry {
     /* 0a */ PAD(0x0a, 0x3c);
     /* 3c */ u16 mUnk_3c;
     /* 3e */ PAD(0x3e, 0x44);
-    /* 44 */ u32 mUnk_44;
+    /* 44 */ u32 mGameId;
     /* 48 */ PAD(0x48, 0x4b);
     /* 4b */ u8 mUnk_4b;
     /* 4c */ PAD(0x4c, 0xc0);
@@ -51,18 +51,20 @@ struct WmEntry {
 
 
 // Singleton (instance 0x020c3030, vtable 0x020a5738), constructed on first use. It drives the DS wireless library
-// (local multiplayer: scanning for parents, joining, exchanging 4-byte messages); the library calls at
+// (local multiplayer: scanning for parents, joining; port 0xc carries 4-byte messages and command words (QueueSend /
+// SendNext / Send, RecvCallback); port 0xd carries the per-frame exchange of 0x20-byte blocks (SetSendBlock,
+// UpdateExchange, GetRecvBlock)); the library calls at
 // 0x0200f8e8-0x02011c34 are the wireless (WM) library, not CARD.
 class WirelessManager {
 public:
     /* 0000 */ // vptr
     /* 0004 */ u32 mParentCallback; // set by StartParent, called with (arg->mUnk_10, arg->mUnk_14) on event 7 of the parent
-                                    // callback func_0202dee4; the only StartParent call passes 0, so it never runs in this build
+                                    // callback ParentEventCallback; the only StartParent call passes 0, so it never runs in this build
     /* 0008 */ WmEntry mScanResults[WM_ENTRY_COUNT]; // collected scan results
     /* 0908 */ WmEntry mScanSnapshot[WM_ENTRY_COUNT]; // snapshot handed to the game; ArenaScene reads it as data_020c3938
     /* 1208 */ u16 mScanResultTimers[WM_ENTRY_COUNT]; // per mScanResults slot: 300 when stored, counted down by
                                                       // UpdateScanResultTimers; 0 = slot free
-    /* 1220 */ u16 mUnk_1220;
+    /* 1220 */ u16 mSendBlockIndex;
     /* 1222 */ u16 mTestedChannel; // 1-based channel TestNextChannel last passed to func_020119ec; StartChannelTest resets it to 0
     /* 1224 */ u16 mMinTestResult;
     /* 1226 */ u16 mParentChannel;
@@ -70,25 +72,25 @@ public:
                                    // 6 connected as parent, 7 joined, 8 stopping, 9 failed; also read as
                                    // data_020c4030.mUnk_228 / data_020c4258 (IsWirelessMode tests 6 and 7)
     /* 1229 */ u8 mJoinIndex;
-    /* 122a */ u8 mUnk_122a; // WM_CALL_* status of the last library call; 2 is written with mState 6 by func_0202dee4
+    /* 122a */ u8 mUnk_122a; // WM_CALL_* status of the last library call; 2 is written with mState 6 by ParentEventCallback
                              // and never read. Also written as data_020c4030.mUnk_22a
-    /* 122b */ u8 mUnk_122b;
-    /* 122c */ u8 mUnk_122c;
-    /* 122d */ u8 mUnk_122d;
-    /* 122e */ u8 mUnk_122e;
-    /* 122f */ u8 mUnk_122f;
+    /* 122b */ u8 mSendIdle;
+    /* 122c */ u8 mExchangeStarted;
+    /* 122d */ u8 mMaxJoinedCount;
+    /* 122e */ u8 mJoinedCount;
+    /* 122f */ u8 mPaused;
     /* 1230 */ u8 mUnk_1230;
-    /* 1231 */ u8 mUnk_1231[24];
+    /* 1231 */ u8 mJoinData[24];
     /* 1249 */ u8 mRecvWriteIndex; // the received ring (sWmWorkB.mRecv) is written but never read in this build
     /* 124a */ u8 mUnk_124a;
     /* 124b */ u8 mSendWriteIndex;
     /* 124c */ u8 mSendReadIndex;
     /* 124d */ u8 mUnk_124d;
-    /* 124e */ u8 mUnk_124e;
+    /* 124e */ u8 mHasNewRecvBlocks;
     /* 124f */ u8 mUnk_124f;
     /* 1250 */ u8 mUnk_1250;
     /* 1251 */ PAD(0x1251, 0x1254);
-    /* 1254 */ s32 mUnk_1254;
+    /* 1254 */ s32 mExchangeTimer;
     /* 1258 */
 
     virtual void func_0202ed28();
@@ -99,10 +101,10 @@ public:
         return instance;
     }
 
-    void func_0202e4ec();
-    void func_0202e524();
+    void RequestStart();
+    void RequestStop();
     void func_0202e544();
-    void func_0202e59c();
+    void RequestParent();
     void TestNextChannel();
     void StartChannelTest();
     void SetupScanParam();
@@ -115,12 +117,12 @@ public:
     void func_0202ea34();
     void SendNext();
     u32 Send(void *unk1, u32 unk2);
-    void func_0202eb70();
-    void func_0202ebc4();
+    void StartExchange();
+    void UpdateExchange();
     void func_0202ec74(u32 unk1);
-    void func_0202ec9c(u32 unk1);
+    void SetPaused(u32 unk1);
     void func_0202ed00();
-    void func_0202ed2c();
+    void Init();
     void func_0202f1a4(u32 unk1);
     u32 func_0202f238();
     void Update();
@@ -132,9 +134,9 @@ public:
     u32 TakeScanSnapshot();
     u32 StartScan();
     u32 QueueSend(void *unk1);
-    u32 func_0202f078(void *unk1);
-    u8 *func_0202f0cc(u32 unk1);
-    u32 func_0202f134();
+    u32 SetSendBlock(void *unk1);
+    u8 *GetRecvBlock(u32 unk1);
+    u32 GetRecvBlockCount();
     void func_0202f184();
 };
 

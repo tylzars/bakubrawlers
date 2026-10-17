@@ -1113,8 +1113,8 @@ _Z12RecvCallbackP13WmCallbackArg kind:function(arm,size=0x1d8) addr:0x0202db04
 _Z13StartCallbackP13WmCallbackArg kind:function(arm,size=0x84) addr:0x0202dcdc
 _Z13func_0202dd60P13WmCallbackArg kind:function(arm,size=0x74) addr:0x0202dd60
 _Z12StopCallbackP13WmCallbackArg kind:function(arm,size=0x84) addr:0x0202ddd4
-_Z13func_0202de58P13WmCallbackArg kind:function(arm,size=0x8c) addr:0x0202de58
-_Z13func_0202dee4P13WmCallbackArg kind:function(arm,size=0x188) addr:0x0202dee4
+_Z19ParentParamCallbackP13WmCallbackArg kind:function(arm,size=0x8c) addr:0x0202de58
+_Z19ParentEventCallbackP13WmCallbackArg kind:function(arm,size=0x188) addr:0x0202dee4
 _Z12ScanCallbackP13WmCallbackArg kind:function(arm,size=0x120) addr:0x0202e06c
 _Z19TestChannelCallbackP13WmCallbackArg kind:function(arm,size=0x98) addr:0x0202e18c
 _Z12SendCallbackP13WmCallbackArg kind:function(arm,size=0x64) addr:0x0202e224
@@ -1122,10 +1122,10 @@ _Z13func_0202e288P13WmCallbackArg kind:function(arm,size=0xec) addr:0x0202e288
 _Z12JoinCallbackP13WmCallbackArg kind:function(arm,size=0x104) addr:0x0202e374
 _Z13func_0202e478P13WmCallbackArg kind:function(arm,size=0x70) addr:0x0202e478
 _Z13func_0202e4e8P13WmCallbackArg kind:function(arm,size=0x4) addr:0x0202e4e8
-_ZN15WirelessManager13func_0202e4ecEv kind:function(arm,size=0x38) addr:0x0202e4ec
-_ZN15WirelessManager13func_0202e524Ev kind:function(arm,size=0x20) addr:0x0202e524
+_ZN15WirelessManager12RequestStartEv kind:function(arm,size=0x38) addr:0x0202e4ec
+_ZN15WirelessManager11RequestStopEv kind:function(arm,size=0x20) addr:0x0202e524
 _ZN15WirelessManager13func_0202e544Ev kind:function(arm,size=0x58) addr:0x0202e544
-_ZN15WirelessManager13func_0202e59cEv kind:function(arm,size=0x7c) addr:0x0202e59c
+_ZN15WirelessManager13RequestParentEv kind:function(arm,size=0x7c) addr:0x0202e59c
 _ZN15WirelessManager15TestNextChannelEv kind:function(arm,size=0xe0) addr:0x0202e618
 _ZN15WirelessManager16StartChannelTestEv kind:function(arm,size=0x20) addr:0x0202e6f8
 _ZN15WirelessManager14SetupScanParamEv kind:function(arm,size=0x54) addr:0x0202e718
@@ -1138,13 +1138,13 @@ _ZN15WirelessManager15SetRecvCallbackEv kind:function(arm,size=0x1c) addr:0x0202
 _ZN15WirelessManager13func_0202ea34Ev kind:function(arm,size=0x50) addr:0x0202ea34
 _ZN15WirelessManager8SendNextEv kind:function(arm,size=0x84) addr:0x0202ea84
 _ZN15WirelessManager4SendEPvj kind:function(arm,size=0x68) addr:0x0202eb08
-_ZN15WirelessManager13func_0202eb70Ev kind:function(arm,size=0x54) addr:0x0202eb70
-_ZN15WirelessManager13func_0202ebc4Ev kind:function(arm,size=0xb0) addr:0x0202ebc4
+_ZN15WirelessManager13StartExchangeEv kind:function(arm,size=0x54) addr:0x0202eb70
+_ZN15WirelessManager14UpdateExchangeEv kind:function(arm,size=0xb0) addr:0x0202ebc4
 _ZN15WirelessManager13func_0202ec74Ej kind:function(arm,size=0x28) addr:0x0202ec74
-_ZN15WirelessManager13func_0202ec9cEj kind:function(arm,size=0x64) addr:0x0202ec9c
+_ZN15WirelessManager9SetPausedEj kind:function(arm,size=0x64) addr:0x0202ec9c
 _ZN15WirelessManager13func_0202ed00Ev kind:function(arm,size=0x28) addr:0x0202ed00
 _ZN15WirelessManager13func_0202ed28Ev kind:function(arm,size=0x4) addr:0x0202ed28
-_ZN15WirelessManager13func_0202ed2cEv kind:function(arm,size=0x10) addr:0x0202ed2c
+_ZN15WirelessManager4InitEv kind:function(arm,size=0x10) addr:0x0202ed2c
 _ZN15WirelessManager5StartEv kind:function(arm,size=0x94) addr:0x0202ed3c
 _ZN15WirelessManager4StopEv kind:function(arm,size=0x40) addr:0x0202edd0
 _ZN15WirelessManager11StartParentEjPvjj kind:function(arm,size=0xa0) addr:0x0202ee10
@@ -1152,9 +1152,9 @@ _ZN15WirelessManager9StartScanEv kind:function(arm,size=0x4c) addr:0x0202eeb0
 _ZN15WirelessManager9StartJoinEjPvj kind:function(arm,size=0x84) addr:0x0202eefc
 _ZN15WirelessManager16TakeScanSnapshotEv kind:function(arm,size=0xa4) addr:0x0202ef80
 _ZN15WirelessManager9QueueSendEPv kind:function(arm,size=0x54) addr:0x0202f024
-_ZN15WirelessManager13func_0202f078EPv kind:function(arm,size=0x54) addr:0x0202f078
-_ZN15WirelessManager13func_0202f0ccEj kind:function(arm,size=0x68) addr:0x0202f0cc
-_ZN15WirelessManager13func_0202f134Ev kind:function(arm,size=0x50) addr:0x0202f134
+_ZN15WirelessManager12SetSendBlockEPv kind:function(arm,size=0x54) addr:0x0202f078
+_ZN15WirelessManager12GetRecvBlockEj kind:function(arm,size=0x68) addr:0x0202f0cc
+_ZN15WirelessManager17GetRecvBlockCountEv kind:function(arm,size=0x50) addr:0x0202f134
 _ZN15WirelessManager13func_0202f184Ev kind:function(arm,size=0x20) addr:0x0202f184
 _ZN15WirelessManager13func_0202f1a4Ej kind:function(arm,size=0x94) addr:0x0202f1a4
 _ZN15WirelessManager13func_0202f238Ev kind:function(arm,size=0xc) addr:0x0202f238
@@ -1506,7 +1506,7 @@ StartRamp kind:function(arm,size=0x28) addr:0x0203a4b8
 GetRampValue kind:function(arm,size=0x34) addr:0x0203a4e0
 AdvanceRamp kind:function(arm,size=0x18) addr:0x0203a514
 IsRampDone kind:function(arm,size=0x18) addr:0x0203a52c
-_Z13func_0203a544P6PlayerP6Readerj kind:function(arm,size=0x30) addr:0x0203a544
+_Z12MobiclipInitP6PlayerP6Readerj kind:function(arm,size=0x30) addr:0x0203a544
 _Z14MobiclipCreateP6Readerj kind:function(arm,size=0xd4) addr:0x0203a574
 _Z13func_0203a648P6Reader kind:function(arm,size=0x14) addr:0x0203a648
 _Z14MobiclipDeleteP6Player kind:function(arm,size=0x20) addr:0x0203a65c
@@ -1515,13 +1515,13 @@ _Z28MobiclipGetAudioChannelCountP6Player kind:function(arm,size=0x18) addr:0x020
 _Z20MobiclipGetFrameRateP6Player kind:function(arm,size=0x18) addr:0x0203a6ac
 _Z21MobiclipGetFrameCountP6Player kind:function(arm,size=0x18) addr:0x0203a6c4
 _Z13func_0203a6dcP6Player kind:function(arm,size=0x18) addr:0x0203a6dc
-_Z13func_0203a6f4P6Player kind:function(arm,size=0x24) addr:0x0203a6f4
-_Z13func_0203a718P6Player kind:function(arm,size=0x24) addr:0x0203a718
-_Z13func_0203a73cP6Playerjji kind:function(arm,size=0x24) addr:0x0203a73c
-_Z13func_0203a760P6Player kind:function(arm,size=0x24) addr:0x0203a760
-_Z13func_0203a784P6Player kind:function(arm,size=0x18) addr:0x0203a784
-_Z13func_0203a79cP6PlayerPv kind:function(arm,size=0x24) addr:0x0203a79c
-_Z13func_0203a7c0P6Player kind:function(arm,size=0x24) addr:0x0203a7c0
+_Z17MobiclipNextFrameP6Player kind:function(arm,size=0x24) addr:0x0203a6f4
+_Z19MobiclipDecodeFrameP6Player kind:function(arm,size=0x24) addr:0x0203a718
+_Z20MobiclipConvertFrameP6Playerjji kind:function(arm,size=0x24) addr:0x0203a73c
+_Z17MobiclipSkipFrameP6Player kind:function(arm,size=0x24) addr:0x0203a760
+_Z26MobiclipGetAudioBlockCountP6Player kind:function(arm,size=0x18) addr:0x0203a784
+_Z22MobiclipReadAudioBlockP6PlayerPv kind:function(arm,size=0x24) addr:0x0203a79c
+_Z22MobiclipSkipAudioBlockP6Player kind:function(arm,size=0x24) addr:0x0203a7c0
 _ZN10ReaderBaseD1Ev kind:function(arm,size=0x4) addr:0x0203a7e4
 _ZN10ReaderBaseD0Ev kind:function(arm,size=0x14) addr:0x0203a7e8
 _ZN6PlayernwEm kind:function(arm,size=0xc) addr:0x0203a7fc
@@ -1535,20 +1535,20 @@ _Z26PlayerGetAudioChannelCountP6Player kind:function(arm,size=0x8) addr:0x0203af
 _Z18PlayerGetFrameRateP6Player kind:function(arm,size=0x8) addr:0x0203af7c
 _Z19PlayerGetFrameCountP6Player kind:function(arm,size=0x8) addr:0x0203af84
 _Z13func_0203af8cP6Player kind:function(arm,size=0x24) addr:0x0203af8c
-func_0203afb0 kind:function(arm,size=0x138) addr:0x0203afb0
-func_0203b0e8 kind:function(arm,size=0xe4) addr:0x0203b0e8
-func_0203b1cc kind:function(arm,size=0x184) addr:0x0203b1cc
-func_0203b350 kind:function(arm,size=0x40) addr:0x0203b350
-func_0203b390 kind:function(arm,size=0x10) addr:0x0203b390
-func_0203b3a0 kind:function(arm,size=0x1b0) addr:0x0203b3a0
-func_0203b550 kind:function(arm,size=0xf0) addr:0x0203b550
+PlayerNextFrame kind:function(arm,size=0x138) addr:0x0203afb0
+PlayerDecodeFrame kind:function(arm,size=0xe4) addr:0x0203b0e8
+PlayerConvertFrame kind:function(arm,size=0x184) addr:0x0203b1cc
+PlayerSkipFrame kind:function(arm,size=0x40) addr:0x0203b350
+PlayerGetAudioBlockCount kind:function(arm,size=0x10) addr:0x0203b390
+PlayerReadAudioBlock kind:function(arm,size=0x1b0) addr:0x0203b3a0
+PlayerSkipAudioBlock kind:function(arm,size=0xf0) addr:0x0203b550
 _ZN6ReadernwEm kind:function(arm,size=0xc) addr:0x0203b640
 func_0203b64c kind:function(arm,size=0xc) addr:0x0203b64c
 ReaderInit kind:function(arm,size=0x38) addr:0x0203b658
 ReaderSeek kind:function(arm,size=0x4c) addr:0x0203b690
 ReaderRead kind:function(arm,size=0x70) addr:0x0203b6dc
 ReaderStartAlignedRead kind:function(arm,size=0x7c) addr:0x0203b74c
-func_0203b7c8 kind:function(arm,size=0x28) addr:0x0203b7c8
+ReaderWait kind:function(arm,size=0x28) addr:0x0203b7c8
 ReaderClose kind:function(arm,size=0x14) addr:0x0203b7f0
 func_0203b804 kind:function(arm,size=0x4) addr:0x0203b804
 func_0203b808 kind:function(arm,size=0x5c0) addr:0x0203b808
@@ -4851,15 +4851,15 @@ data_0220f57c kind:bss addr:0x0220f57c local
 sCommandWord kind:bss addr:0x0220f580 local
 @70 kind:bss addr:0x0220f584 local
 sWmWorkB kind:bss addr:0x0220f590 local
-data_0220f620 kind:bss addr:0x0220f620 local
+sSendBlock kind:bss addr:0x0220f620 local
 sParentParam kind:bss addr:0x0220f640 local
 sParentData kind:bss addr:0x0220f680 local
 data_0220f700 kind:bss addr:0x0220f700 local
 sEntryBuffer kind:bss addr:0x0220f7a0 local
 data_0220f860 kind:bss addr:0x0220f860 local
-data_0220fa20 kind:bss addr:0x0220fa20 local
-data_0220fc20 kind:bss addr:0x0220fc20 local
-data_02210440 kind:bss addr:0x02210440 local
+sRecvBlocks kind:bss addr:0x0220fa20 local
+sExchangeBuffer kind:bss addr:0x0220fc20 local
+sWmWork kind:bss addr:0x02210440 local
 data_02210fdc kind:bss addr:0x02210fdc
 @52 kind:bss addr:0x02211340 local
 @14 kind:bss addr:0x0221134c local

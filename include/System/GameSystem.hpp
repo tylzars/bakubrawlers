@@ -23,7 +23,7 @@ public:
     /* 0e */ PAD(0x0e, 0x10);
     /* 10 */ u32 mFrame;
     /* 14 */ u8 mHalted; // set by MessageScreen's constructor (kinds 0 and 1); Run then stops updating scenes and loops on func_02021700, the frame wait and the wireless and sound updates
-    /* 15 */ u8 mWirelessWaitFrames; // frame waits (FrameTask::WaitFrame) Run spent this pass for WirelessManager::mUnk_124e in a wireless mode; BattleCardModel::Update runs this + 1 passes
+    /* 15 */ u8 mWirelessWaitFrames; // frame waits (FrameTask::WaitFrame) Run spent this pass for WirelessManager::mHasNewRecvBlocks in a wireless mode; BattleCardModel::Update runs this + 1 passes
     /* 16 */ PAD(0x16, 0x18);
     /* 18 */
 

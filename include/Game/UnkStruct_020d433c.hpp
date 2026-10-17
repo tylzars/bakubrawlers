@@ -82,7 +82,7 @@ struct BattleRecord {
     /* 0b */ u8 mUnk_0b;
 };
 
-class BattleCpu; // created by BattlePlayer's ctor for an index at or past the limit (1, or func_0202f134() in wireless mode); ctor 02230f58
+class BattleCpu; // created by BattlePlayer's ctor for an index at or past the limit (1, or GetRecvBlockCount() in wireless mode); ctor 02230f58
 
 struct BattlePlayer : public SceneBase {
     /* 00 SceneBase */

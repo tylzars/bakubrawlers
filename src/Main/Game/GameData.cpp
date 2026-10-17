@@ -191,7 +191,7 @@ void func_0202330c(UnkStruct_020d433c *d) {
         if (i == data_020c4250) {
             d->mUnk_ae = n;
         }
-        if (WirelessManager::Get().func_0202f0cc(i)) {
+        if (WirelessManager::Get().GetRecvBlock(i)) {
             d->mUnk_af[n++] = i;
         }
         i++;
@@ -206,7 +206,7 @@ void func_020233f8(UnkStruct_020d433c *d) {
         if (i == data_020c4250) {
             d->mUnk_ae = n;
         }
-        if (WirelessManager::Get().func_0202f0cc(i)) {
+        if (WirelessManager::Get().GetRecvBlock(i)) {
             n++;
         }
         i++;

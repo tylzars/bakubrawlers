@@ -46,13 +46,13 @@ u32 MobiclipGetAudioChannelCount(Player *video);
 u32 MobiclipGetFrameRate(Player *video);
 u32 MobiclipGetFrameCount(Player *video);
 u32 func_0203a6dc(Player *video);
-BOOL func_0203a6f4(Player *video);
-void func_0203a718(Player *video);
-void func_0203a73c(Player *video, u32 a, u32 b, int c);
-void func_0203a760(Player *video);
-u32 func_0203a784(Player *video);
-void func_0203a79c(Player *video, void *buffer);
-void func_0203a7c0(Player *video);
+BOOL MobiclipNextFrame(Player *video);
+void MobiclipDecodeFrame(Player *video);
+void MobiclipConvertFrame(Player *video, u32 a, u32 b, int c);
+void MobiclipSkipFrame(Player *video);
+u32 MobiclipGetAudioBlockCount(Player *video);
+void MobiclipReadAudioBlock(Player *video, void *buffer);
+void MobiclipSkipAudioBlock(Player *video);
 extern "C" u64 OS_GetTick();
 extern "C" BOOL func_0200d924();
 extern "C" void GX_SetBankForLCDC(u32 a);
@@ -69,14 +69,14 @@ extern "C" int OS_GetArenaHi(int a);
 void QueueFrameCallback(void (*callback)(void *), void *arg);
 
 MoviePlayer::MoviePlayer() {
-    mUnk_d4  = 0;
+    mPlaneCount  = 0;
     mUnk_d8  = 0;
     mFrameCount  = 0;
     mFrameIndex  = 0;
-    mUnk_e4  = 0;
+    mDecodedFrames  = 0;
     mUseBuffer2 = 0;
     mSoundStarted = 0;
-    mUnk_10a = 0;
+    mLastFrameSkipped = 0;
     mUnk_10b = 0;
 }
 
@@ -84,23 +84,23 @@ MoviePlayer::~MoviePlayer() {
 }
 
 void CountTick(MoviePlayer *player) {
-    player->mUnk_00 += 1;
+    player->mTickCount += 1;
 }
 
 void MoviePlayer::StartSound(u32 rate) {
     u32 v      = 0xffb0ff / rate;
-    u32 size   = mUnk_f8 * mUnk_fc;
-    u32 total  = (mUnk_fc >> 6) * (v << 1);
+    u32 size   = mBufferBlockCount * mBlockLength;
+    u32 total  = (mBlockLength >> 6) * (v << 1);
     DC_StoreRange(mBuffer, size << 1);
     if (mUseBuffer2 == 1) {
-        DC_StoreRange(mBuffer2, mUnk_f8 * mUnk_fc << 1);
+        DC_StoreRange(mBuffer2, mBufferBlockCount * mBlockLength << 1);
     }
     func_020080d8(3, 0);
     if (mUseBuffer2 == 1) {
-        func_02008160(0, 1, mBuffer, 1, 0, (mUnk_f8 * mUnk_fc) >> 1, 0x7f, 0, v, 0);
-        func_02008160(1, 1, mBuffer2, 1, 0, (mUnk_f8 * mUnk_fc) >> 1, 0x7f, 0, v, 0x7f);
+        func_02008160(0, 1, mBuffer, 1, 0, (mBufferBlockCount * mBlockLength) >> 1, 0x7f, 0, v, 0);
+        func_02008160(1, 1, mBuffer2, 1, 0, (mBufferBlockCount * mBlockLength) >> 1, 0x7f, 0, v, 0x7f);
     } else {
-        func_02008160(0, 1, mBuffer, 1, 0, (mUnk_f8 * mUnk_fc) >> 1, 0x7f, 0, v, 0x40);
+        func_02008160(0, 1, mBuffer, 1, 0, (mBufferBlockCount * mBlockLength) >> 1, 0x7f, 0, v, 0x40);
     }
     func_02008098(0, total, total, (void (*)(void *)) CountTick, this);
     func_0200800c(3, 0, 1, 0);
@@ -135,9 +135,9 @@ void MoviePlayer::DrawFrame() {
     while (mFrameDue != 1) {
     }
     mFrameDue = 0;
-    func_0203a73c(mVideo, GetVideoTarget(), 0x100, 0);
+    MobiclipConvertFrame(mVideo, GetVideoTarget(), 0x100, 0);
     if (mUseVideo2) {
-        func_0203a73c(mVideo2, GetVideo2Target(), 0x100, 0);
+        MobiclipConvertFrame(mVideo2, GetVideo2Target(), 0x100, 0);
     }
     mFlipDone = 0;
 }
@@ -228,27 +228,27 @@ void MoviePlayer::Open(void *a, void *b, u8 c, u32 d) {
     func_0203bdfc(OS_GetArenaLo(4), sizeB);
     FS_InitFile(mFile);
     FS_OpenFile(mFile, (const char *) a);
-    mUnk_d4 = 6;
-    mVideo  = (Player *) MobiclipCreate((Reader *) mFile, mUnk_d4);
+    mPlaneCount = 6;
+    mVideo  = (Player *) MobiclipCreate((Reader *) mFile, mPlaneCount);
     mFrameCount = MobiclipGetFrameCount(mVideo);
-    mUnk_fc = func_0203a6dc(mVideo);
+    mBlockLength = func_0203a6dc(mVideo);
     if (mUseVideo2) {
         FS_InitFile(mFile2);
         FS_OpenFile(mFile2, (const char *) b);
-        mVideo2 = (Player *) MobiclipCreate((Reader *) mFile2, mUnk_d4);
+        mVideo2 = (Player *) MobiclipCreate((Reader *) mFile2, mPlaneCount);
     }
     mUseBuffer2 = c;
     u32 frames = func_0203a67c(mVideo);
     u32 rate   = MobiclipGetFrameRate(mVideo);
-    mUnk_d8    = (u32) (((u64) frames << 24) / ((u64) mUnk_fc * rate)) + 1;
-    mUnk_f8    = mUnk_d8 * (mUnk_d4 + 1);
-    mBuffer    = (u16 *) OS_Alloc(mUnk_f8 * mUnk_fc * 2);
-    MIi_CpuClearFast(0, mBuffer, mUnk_f8 * mUnk_fc * 2);
+    mUnk_d8    = (u32) (((u64) frames << 24) / ((u64) mBlockLength * rate)) + 1;
+    mBufferBlockCount    = mUnk_d8 * (mPlaneCount + 1);
+    mBuffer    = (u16 *) OS_Alloc(mBufferBlockCount * mBlockLength * 2);
+    MIi_CpuClearFast(0, mBuffer, mBufferBlockCount * mBlockLength * 2);
     if (mUseBuffer2 == 1) {
-        mBuffer2 = (u16 *) OS_Alloc(mUnk_f8 * mUnk_fc * 2);
-        MIi_CpuClearFast(0, mBuffer2, mUnk_f8 * mUnk_fc * 2);
+        mBuffer2 = (u16 *) OS_Alloc(mBufferBlockCount * mBlockLength * 2);
+        MIi_CpuClearFast(0, mBuffer2, mBufferBlockCount * mBlockLength * 2);
     }
-    mUnk_00 = 0;
+    mTickCount = 0;
     mWriteOffset = 0;
     mFrames = 0;
     mVramPage = 0;
@@ -296,43 +296,43 @@ BOOL MoviePlayer::Update() {
     u64 count;
     u8 j;
     BOOL result = FALSE;
-    if (func_0203a6f4(mVideo)) {
-        func_0203a718(mVideo);
+    if (MobiclipNextFrame(mVideo)) {
+        MobiclipDecodeFrame(mVideo);
         if (mUseVideo2) {
-            func_0203a6f4(mVideo2);
-            func_0203a718(mVideo2);
+            MobiclipNextFrame(mVideo2);
+            MobiclipDecodeFrame(mVideo2);
         }
-        mUnk_e4++;
+        mDecodedFrames++;
         if ((func_02005a68() & 0x40000000) || (func_02005a68() & 0x80000000)) {
             if (func_0203a67c(mVideo)) {
-                count = func_0203a784(mVideo);
+                count = MobiclipGetAudioBlockCount(mVideo);
                 i = 0;
                 j = 0;
                 while (i < count) {
                     if (mSoundStarted) {
-                        while ((u64) mUnk_f8 - (u64) (mFrames - mUnk_00) == 0) {
+                        while ((u64) mBufferBlockCount - (u64) (mFrames - mTickCount) == 0) {
                         }
                     }
                     j = 0;
                     do {
                         if (j == mAudioChannelIndex) {
-                            func_0203a79c(mVideo, mBuffer + mWriteOffset);
+                            MobiclipReadAudioBlock(mVideo, mBuffer + mWriteOffset);
                             if (mUseBuffer2 == 1) {
-                                func_0203a79c(mVideo, mBuffer2 + mWriteOffset);
+                                MobiclipReadAudioBlock(mVideo, mBuffer2 + mWriteOffset);
                             }
-                            DC_StoreRange(mBuffer + mWriteOffset, mUnk_fc * 2);
+                            DC_StoreRange(mBuffer + mWriteOffset, mBlockLength * 2);
                             if (mUseBuffer2 == 1) {
-                                DC_StoreRange(mBuffer2 + mWriteOffset, mUnk_fc * 2);
+                                DC_StoreRange(mBuffer2 + mWriteOffset, mBlockLength * 2);
                             }
-                            mWriteOffset += mUnk_fc;
-                            if (mWriteOffset == mUnk_f8 * mUnk_fc) {
+                            mWriteOffset += mBlockLength;
+                            if (mWriteOffset == mBufferBlockCount * mBlockLength) {
                                 mWriteOffset = 0;
                             }
                             mFrames += 1;
                         } else {
-                            func_0203a7c0(mVideo);
+                            MobiclipSkipAudioBlock(mVideo);
                             if (mUseBuffer2 == 1) {
-                                func_0203a7c0(mVideo);
+                                MobiclipSkipAudioBlock(mVideo);
                             }
                         }
                         j = j + (mUseBuffer2 + 1);
@@ -340,23 +340,23 @@ BOOL MoviePlayer::Update() {
                     i++;
                 }
                 if (!mSoundStarted) {
-                    if (mUnk_e4 >= mUnk_d4) {
+                    if (mDecodedFrames >= mPlaneCount) {
                         StartSound(func_0203a67c(mVideo));
                         mSoundStarted = 1;
                     }
                 }
             }
         }
-        if (mUnk_e4 >= mUnk_d4 || func_0203a67c(mVideo) == 0) {
-            if ((s32) (mFrames - mUnk_00) <= (s32) (mUnk_d8 * 3) && !mUnk_10a && func_0203a67c(mVideo) != 0) {
-                func_0203a760(mVideo);
+        if (mDecodedFrames >= mPlaneCount || func_0203a67c(mVideo) == 0) {
+            if ((s32) (mFrames - mTickCount) <= (s32) (mUnk_d8 * 3) && !mLastFrameSkipped && func_0203a67c(mVideo) != 0) {
+                MobiclipSkipFrame(mVideo);
                 if (mUseVideo2) {
-                    func_0203a760(mVideo2);
+                    MobiclipSkipFrame(mVideo2);
                 }
-                mUnk_10a = 1;
+                mLastFrameSkipped = 1;
             } else {
                 DrawFrame();
-                mUnk_10a = 0;
+                mLastFrameSkipped = 0;
             }
         }
         if (((*(vu16 *) 0x27fffa8 & 0x8000) >> 15) == 1) {
@@ -375,14 +375,14 @@ BOOL MoviePlayer::Update() {
                 } while (!func_0200d924());
             }
             if (mSoundStarted == 1) {
-                MIi_CpuClearFast(0, mBuffer, mUnk_f8 * mUnk_fc * 2);
+                MIi_CpuClearFast(0, mBuffer, mBufferBlockCount * mBlockLength * 2);
                 if (mUseBuffer2 == 1) {
-                    MIi_CpuClearFast(0, mBuffer2, mUnk_f8 * mUnk_fc * 2);
+                    MIi_CpuClearFast(0, mBuffer2, mBufferBlockCount * mBlockLength * 2);
                 }
-                mFrames -= mUnk_00;
-                mUnk_00 = 0;
-                mWriteOffset = (u32) mFrames * mUnk_fc;
-                if (mWriteOffset == mUnk_f8 * mUnk_fc) {
+                mFrames -= mTickCount;
+                mTickCount = 0;
+                mWriteOffset = (u32) mFrames * mBlockLength;
+                if (mWriteOffset == mBufferBlockCount * mBlockLength) {
                     mWriteOffset = 0;
                 }
                 StartSound(func_0203a67c(mVideo));

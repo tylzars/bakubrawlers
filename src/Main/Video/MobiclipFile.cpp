@@ -46,7 +46,7 @@ int ReaderStartAlignedRead(F *f, void *buf, u32 n) {
     f->flag = 1;
     return off;
 }
-void func_0203b7c8(F *f) {
+void ReaderWait(F *f) {
     if (f->flag == 1) FS_WaitFile(f->file);
     f->flag = 0;
 }

@@ -225,7 +225,7 @@ FieldSelectScene::FieldSelectScene(u8 unk1) : SceneBase(1000, 0) {
     WirelessManager::Get();
     const u8 *mode = &data_020c4258;
     if (IsWirelessMode(mode)) {
-        mPlayerCount = mInputCount = WirelessManager::Get().func_0202f134();
+        mPlayerCount = mInputCount = WirelessManager::Get().GetRecvBlockCount();
     } else {
         mInputCount = 1;
         mPlayerCount = 2;
@@ -428,7 +428,7 @@ void FieldSelectScene::Update() {
             ctx->x                 = ctx->mul * ctx->x + ctx->add;
             data_0220f540.mUnk_04  = (u32) (ctx->x >> 32);
             if (func_ov001_02221aa8(2)) {
-                u8 *p = WirelessManager::Get().func_0202f0cc(0);
+                u8 *p = WirelessManager::Get().GetRecvBlock(0);
                 if (p != NULL) {
                     SeedRandom(*(u32 *) (p + 4));
                 }
@@ -1074,11 +1074,11 @@ BOOL FieldSelectScene::func_ov001_02221aa8(u32 unk1) {
     if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
         return TRUE;
     }
-    u32 count = WirelessManager::Get().func_0202f134();
+    u32 count = WirelessManager::Get().GetRecvBlockCount();
     u8 matches = 0;
     u8 i       = 0;
     do {
-        u8 *p = WirelessManager::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
+        u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mUnk_af[i]);
         if (p != NULL && *p == unk1) {
             matches++;
         }
@@ -1094,10 +1094,10 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
     data_0220f540.mUnk_0e = gSaveData[0].mRules;
     data_0220f540.mUnk_0f = gSaveData[0].mUnk_5bf_0;
     if (func_ov001_02221aa8(0x17)) {
-        u32 count = WirelessManager::Get().func_0202f134();
+        u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 i      = 0;
         do {
-            u8 *p = WirelessManager::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
+            u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mUnk_af[i]);
             if (p != NULL) {
                 u8 j;
                 u8 k;
@@ -1168,10 +1168,10 @@ BOOL FieldSelectScene::func_ov001_02221c0c() {
 BOOL FieldSelectScene::func_ov001_02221f1c() {
     MIi_CpuCopyFast(gCharacterLook, (u8 *) &data_0220f540 + 4, 8);
     if (func_ov001_02221aa8(6)) {
-        u32 count = WirelessManager::Get().func_0202f134();
+        u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 i      = 0;
         do {
-            u8 *p = WirelessManager::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
+            u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mUnk_af[i]);
             if (p != NULL) {
                 MIi_CpuCopyFast(p + 4, mCharacterLooks + i * 8, 8);
             }
@@ -1212,13 +1212,13 @@ void FieldSelectScene::func_ov001_02222040() {
         WirelessManager::Get();
         data_0220f540.mUnk_01 = data_020c4230.mUnk_20;
         WirelessManager::Get().QueueSend(&data_0220f540);
-        WirelessManager::Get().func_0202f078(&data_0220f540);
+        WirelessManager::Get().SetSendBlock(&data_0220f540);
     }
     WirelessManager::Get();
     if (IsWirelessMode(mode)) {
         i = 0;
         do {
-            u8 *p = WirelessManager::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
+            u8 *p = WirelessManager::Get().GetRecvBlock(data_020d433c.mUnk_af[i]);
             if (p != NULL) {
                 if (p[0] == 0xd) {
                     mInput[i].mReleased = p[6];

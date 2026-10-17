@@ -103,7 +103,7 @@ BattleOrderSelect::BattleOrderSelect()
     } while (i < mCount);
     WirelessManager::Get();
     if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-        mNeeded = WirelessManager::Get().func_0202f134();
+        mNeeded = WirelessManager::Get().GetRecvBlockCount();
     } else {
         mNeeded = 1;
     }

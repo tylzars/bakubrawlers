@@ -3961,7 +3961,7 @@ BOOL func_02084a10(ListScene *self) {
     BattlePlayerList *players = data_020d433c.mBattlePlayers;
     MESSAGE->mRecordCount          = 3;
     if (SetMessageTypeAndCheckAll(players, 3)) {
-    u32 count = WirelessManager::Get().func_0202f134();
+    u32 count = WirelessManager::Get().GetRecvBlockCount();
     u8 j = 0;
     do {
         u8 length = ((BattleListMessage *) &data_020d433c.mBattlePlayers->mPlayers[j]->mMsg)->mRecordCount;
@@ -4006,7 +4006,7 @@ BOOL func_02084c38(ListScene *self) {
     SLOT_MESSAGE->mSlots54Count = 3;
     SLOT_MESSAGE->mSlots6cCount = 3;
     if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 4)) {
-        u32 count = WirelessManager::Get().func_0202f134();
+        u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 j      = 0;
         do {
             u8 length = ((BattleSlotMessage *) &data_020d433c.mBattlePlayers->mPlayers[j]->mMsg)->mSlots54Count;
@@ -4043,7 +4043,7 @@ BOOL func_02084c38(ListScene *self) {
 BOOL func_02084e64(ListScene *self) {
     data_0220f540.mUnk_04 = MATH_Rand32(&gRandom, 0);
     if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 2)) {
-        u8 *info = WirelessManager::Get().func_0202f0cc(0);
+        u8 *info = WirelessManager::Get().GetRecvBlock(0);
         if (info != NULL) {
             SeedRandom(*(u32 *) (info + 4));
         }
@@ -4055,7 +4055,7 @@ BOOL func_02084e64(ListScene *self) {
 BOOL func_02084f40(ListScene *self) {
     MIi_CpuCopyFast(gCharacterLook, (u8 *) &data_0220f540 + 4, 8);
     if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 6)) {
-        u32 count = WirelessManager::Get().func_0202f134();
+        u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 j      = 0;
         do {
             BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[j];
@@ -4088,7 +4088,7 @@ BOOL func_0208501c(ListScene *self) {
         }
     }
     if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 5)) {
-        u32 count = WirelessManager::Get().func_0202f134();
+        u32 count = WirelessManager::Get().GetRecvBlockCount();
         u8 j      = 0;
         do {
             u8 k = 0;

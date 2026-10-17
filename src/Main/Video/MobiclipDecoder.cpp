@@ -1,7 +1,7 @@
 #include "Video/MobiclipDecoder.hpp"
 extern "C" {
 typedef void *(*F4)(void *, void *, u32);
-int func_0203afb0(P *p) {
+int PlayerNextFrame(P *p) {
     if (p->o98 == p->frames) return 0;
     p->o98++;
     int old = p->cur;
@@ -36,7 +36,7 @@ extern "C" void func_0203c004(Chan *, u8 *, int, u32);
 extern "C" void MIi_CpuCopy16(void *, u32, u32);
 extern const int data_0209d568[];
 
-int func_0203b0e8(P *p) {
+int PlayerDecodeFrame(P *p) {
     if (p->o9c > p->oa0) return 0;
     int k;
     if (*(u16 *) p->ctx->ptr & 0x8000) {
@@ -63,7 +63,7 @@ int func_0203b0e8(P *p) {
 }
 
 struct Conv { void *y, *u, *dst; u32 w; u32 a, b, c; };
-int func_0203b1cc(P *p, u32 a, u32 b, int c) {
+int PlayerConvertFrame(P *p, u32 a, u32 b, int c) {
     if (p->o9c >= p->oa0) return 0;
     if (c != 0) {
         if (p->o68 == 0) {
@@ -100,7 +100,7 @@ int func_0203b1cc(P *p, u32 a, u32 b, int c) {
     return 1;
 }
 
-int func_0203b350(P *p) {
+int PlayerSkipFrame(P *p) {
     if (p->o9c >= p->oa0) return 0;
     p->o9c++;
     p->oc4++;
@@ -108,10 +108,10 @@ int func_0203b350(P *p) {
     return 1;
 }
 
-u32 func_0203b390(P *p) { return p->o88[p->cur]; }
+u32 PlayerGetAudioBlockCount(P *p) { return p->o88[p->cur]; }
 
 #define CH(p) ((Chan *) ((p)->o58 + (p)->od0 * 0x14f8))
-int func_0203b3a0(P *p, u32 v) {
+int PlayerReadAudioBlock(P *p, u32 v) {
     if (p->occ == p->oc8) return 0;
     u32 t = p->o1c;
     if (t == 0) return 0;
@@ -144,7 +144,7 @@ int func_0203b3a0(P *p, u32 v) {
     return 1;
 }
 
-int func_0203b550(P *p) {
+int PlayerSkipAudioBlock(P *p) {
     if (p->occ == p->oc8) return 0;
     if (p->o20 == 0) return 0;
     u32 t = p->o1c;

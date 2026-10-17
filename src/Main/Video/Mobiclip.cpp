@@ -106,19 +106,19 @@ extern "C" u32 func_0203be24();
 extern "C" u32 func_0203bea0();
 extern "C" u32 func_0203bf10();
 extern "C" u32 func_0203bf80();
-extern "C" int func_0203afb0(Player *p);
-extern "C" int func_0203b0e8(Player *p);
-extern "C" int func_0203b1cc(Player *p, u32 a, u32 b, int c);
-extern "C" int func_0203b350(Player *p);
-extern "C" int func_0203b390(Player *p);
-extern "C" int func_0203b3a0(Player *p, void *buffer);
-extern "C" int func_0203b550(Player *p);
-int func_0203a544(Player *p, Reader *r, u32 a);
+extern "C" int PlayerNextFrame(Player *p);
+extern "C" int PlayerDecodeFrame(Player *p);
+extern "C" int PlayerConvertFrame(Player *p, u32 a, u32 b, int c);
+extern "C" int PlayerSkipFrame(Player *p);
+extern "C" int PlayerGetAudioBlockCount(Player *p);
+extern "C" int PlayerReadAudioBlock(Player *p, void *buffer);
+extern "C" int PlayerSkipAudioBlock(Player *p);
+int MobiclipInit(Player *p, Reader *r, u32 a);
 int PlayerInit(Player *p, Reader *r, u32 a);
 void PlayerRelease(Player *p);
 extern "C" void func_02092890(); // a label in the hand-written decoder block
 
-int func_0203a544(Player *p, Reader *r, u32 a) {
+int MobiclipInit(Player *p, Reader *r, u32 a) {
     func_02000b9c(0x2000bdc);
     return PlayerInit(p, r, a);
 }
@@ -135,7 +135,7 @@ Player *MobiclipCreate(Reader *src, u32 a) {
         return 0;
     }
     p = new Player;
-    if (func_0203a544(p, r, a) == 0) {
+    if (MobiclipInit(p, r, a) == 0) {
         delete p;
         return 0;
     }
@@ -180,33 +180,33 @@ int func_0203a6dc(Player *p) {
     if (p == 0) return 0;
     return func_0203af8c(p);
 }
-int func_0203a6f4(Player *p) {
+int MobiclipNextFrame(Player *p) {
     if (p == 0) return 0;
-    return func_0203afb0(p) == 1;
+    return PlayerNextFrame(p) == 1;
 }
-int func_0203a718(Player *p) {
+int MobiclipDecodeFrame(Player *p) {
     if (p == 0) return 0;
-    return func_0203b0e8(p) == 1;
+    return PlayerDecodeFrame(p) == 1;
 }
-int func_0203a73c(Player *p, u32 a, u32 b, int c) {
+int MobiclipConvertFrame(Player *p, u32 a, u32 b, int c) {
     if (p == 0) return 0;
-    return func_0203b1cc(p, a, b, c) == 1;
+    return PlayerConvertFrame(p, a, b, c) == 1;
 }
-int func_0203a760(Player *p) {
+int MobiclipSkipFrame(Player *p) {
     if (p == 0) return 0;
-    return func_0203b350(p) == 1;
+    return PlayerSkipFrame(p) == 1;
 }
-int func_0203a784(Player *p) {
+int MobiclipGetAudioBlockCount(Player *p) {
     if (p == 0) return 0;
-    return func_0203b390(p);
+    return PlayerGetAudioBlockCount(p);
 }
-int func_0203a79c(Player *p, void *buffer) {
+int MobiclipReadAudioBlock(Player *p, void *buffer) {
     if (p == 0) return 0;
-    return func_0203b3a0(p, buffer) == 1;
+    return PlayerReadAudioBlock(p, buffer) == 1;
 }
-int func_0203a7c0(Player *p) {
+int MobiclipSkipAudioBlock(Player *p) {
     if (p == 0) return 0;
-    return func_0203b550(p) == 1;
+    return PlayerSkipAudioBlock(p) == 1;
 }
 ReaderBase::~ReaderBase() {}
 void *Player::operator new(unsigned long size) { return MobiclipAlloc(size); }

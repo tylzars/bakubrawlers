@@ -19,6 +19,7 @@
 #include "System/SaveManager.hpp"
 #include "UI/SaveWindow.hpp"
 #include "Scene/NameEntryScene.hpp"
+#include "Scene/AttrSelScene.hpp"
 #include "UI/MessageScreen.hpp"
 #include "Game/SaveData.hpp"
 
@@ -89,11 +90,6 @@ class MovieScene {
 public:
     u8 mPad[0x14];
     MovieScene(void *data, u32 value);
-};
-class AttrSelScene {
-public:
-    u8 mPad[0x68];
-    AttrSelScene();
 };
 class CharacterEditScene {
 public:
@@ -508,10 +504,10 @@ void TitleScene::Update() {
             break;
         case 25:
             switch (mContext->mRequest) {
-                case 1:
+                case ATTR_SEL_REQUEST_NAME_ENTRY:
                     mState = 0x16;
                     break;
-                case 2:
+                case ATTR_SEL_REQUEST_CHARACTER_EDIT:
                     mState++;
                     break;
             }

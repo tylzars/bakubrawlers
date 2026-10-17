@@ -1,6 +1,7 @@
 #include "Game/SaveData.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Game/Random.hpp"
+#include "Unknown/UnkFunctions.hpp"
 #include <nitro/mi.h>
 
 // One record of the park character table (12 bytes).
@@ -268,7 +269,7 @@ void FillParkSlots() {
                             entry = group->mEntries;
                             n     = 0;
                             do {
-                                if (entry->mType <= 2) {
+                                if (entry->mType <= PARK_ENTRY_TYPE_BATTLE_ROYALE) { // one of the three battle types
                                     gSaveData[0].mParkSlots[count].mCategory = cat;
                                     gSaveData[0].mParkSlots[count].mGroup    = g;
                                     count++;
@@ -303,7 +304,9 @@ void FillParkSlots() {
             gSaveData[0].mParkSlots[r].mGroup    = t1;
             i++;
         } while (i < gSaveData[0].mParkSlotCount);
-        u8 perm[4] = {0, 0, 1, 2};
+        // Entry types to pick from (BATTLE twice); after the shuffle perm[0] is the type looked for.
+        u8 perm[4] = {PARK_ENTRY_TYPE_BATTLE, PARK_ENTRY_TYPE_BATTLE, PARK_ENTRY_TYPE_TEAMBATTLE,
+                      PARK_ENTRY_TYPE_BATTLE_ROYALE};
         g = 0;
         do {
             u8 grp;
@@ -341,7 +344,7 @@ void FillParkSlots() {
         do {
             stageEntry = &stageGroup->mEntries[stageGroup->mDefault];
             flag       = FALSE;
-            if (stageEntry->mType == 6) {
+            if (stageEntry->mType == PARK_ENTRY_TYPE_TUTORIAL) {
                 if (stageEntry->mUnk_0a == 0) {
                     if ((gSaveData[0].mUnk_5be & 8) && (gSaveData[0].mUnk_5be & 0x10)) {
                         flag = TRUE;
@@ -375,7 +378,8 @@ void GetParkEntry(u32 index, void *out) {
     groups            = cat->mGroups;
     found             = FALSE;
     u32 type          = groups[group].mEntries[groups[group].mDefault].mType;
-    if ((type != 3 && type != 4 && type != 5) || gSaveData[0].mUnk_5bf_0) {
+    if ((type != PARK_ENTRY_TYPE_MES_ONLY_1 && type != PARK_ENTRY_TYPE_MES_ONLY_2 && type != PARK_ENTRY_TYPE_MES_ONLY_3) ||
+        gSaveData[0].mUnk_5bf_0) {
         ParkEntry *entries = groups[group].mEntries;
         i                  = 0;
         if (gSaveData[0].mUnk_5bf_0) {
@@ -411,13 +415,14 @@ void func_02089a9c(u32 index) {
     ParkEntry entry;
     GetParkEntry(index, &entry);
     u32 flag = gSaveData[0].mUnk_5bf_0;
-    if (flag && entry.mType != 0 && entry.mType != 1 && entry.mType != 2) {
-        entry.mType = 0;
+    if (flag && entry.mType != PARK_ENTRY_TYPE_BATTLE && entry.mType != PARK_ENTRY_TYPE_TEAMBATTLE &&
+        entry.mType != PARK_ENTRY_TYPE_BATTLE_ROYALE) {
+        entry.mType = PARK_ENTRY_TYPE_BATTLE; // with the flag set, every other type is handled as a battle
     }
     switch (entry.mType) {
-        case 0:
-        case 1:
-        case 2: {
+        case PARK_ENTRY_TYPE_BATTLE:
+        case PARK_ENTRY_TYPE_TEAMBATTLE:
+        case PARK_ENTRY_TYPE_BATTLE_ROYALE: {
             if (gSaveData[0].mParkSlotCount <= 4) {
                 return;
             }

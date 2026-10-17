@@ -140,7 +140,7 @@ void AttrSelScene::Update() {
             switch (event) {
                 case 1:
                     SpriteManager::Get().StartFade(FADE_MODE_DOWN);
-                    mRequest = 1;
+                    mRequest = ATTR_SEL_REQUEST_NAME_ENTRY;
                     mState = 4;
                     break;
                 case 2:
@@ -163,7 +163,7 @@ void AttrSelScene::Update() {
             if (mPulseState != 2) {
                 gSaveData[0].mAttribute = sAttribToSaved[mAttrib];
                 SpriteManager::Get().StartFade(FADE_MODE_DOWN);
-                mRequest = 2;
+                mRequest = ATTR_SEL_REQUEST_CHARACTER_EDIT;
                 mState++;
             }
             break;

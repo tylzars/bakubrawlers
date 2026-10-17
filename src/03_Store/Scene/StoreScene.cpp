@@ -19,6 +19,12 @@
 #include <nitro/os.h>
 #include "Scene/GiftUnlockScene.hpp"
 
+// Scroll directions: the values UpdateMenu stores in mInfo.mScrollDir when an arrow starts a scroll. PREV goes with
+// mPage - 1 (arrow item 4 or KEY_LEFT), NEXT with mPage + 1 (arrow item 5 or KEY_RIGHT); ScrollStep negates its x step
+// for NEXT and, when the scroll ends, restarts arrow cell 4 for PREV and arrow cell 5 otherwise.
+#define STORE_SCROLL_PREV 1
+#define STORE_SCROLL_NEXT 2
+
 s32 func_02087468();
 void func_02086d48();
 
@@ -437,7 +443,7 @@ void StoreScene::UpdateMenu() {
                 break;
         }
         if (delta != 0) {
-            info->mScrollDir = delta > 0 ? 2 : 1;
+            info->mScrollDir = delta > 0 ? STORE_SCROLL_NEXT : STORE_SCROLL_PREV;
             info->mPage += delta;
             StartScroll();
             info->mMenuResult = 0;
@@ -531,7 +537,7 @@ BOOL StoreScene::ScrollStep() {
         step = info->mScroll;
     }
     info->mScroll -= step;
-    if (info->mScrollDir == 2) {
+    if (info->mScrollDir == STORE_SCROLL_NEXT) {
         step = -step;
     }
     WindowItem *items = mWindow->mCursor->mItems;
@@ -561,7 +567,7 @@ BOOL StoreScene::ScrollStep() {
         }
         mWindow->mCellAnims[4]->Rewind();
         mWindow->mCellAnims[5]->Rewind();
-        if (info->mScrollDir == 1) {
+        if (info->mScrollDir == STORE_SCROLL_PREV) {
             CellAnimation *cell = mWindow->mCellAnims[4];
             cell->mAnimIndex       = 0;
             cell->ResetAnimation();

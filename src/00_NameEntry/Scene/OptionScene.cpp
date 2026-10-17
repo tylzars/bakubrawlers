@@ -153,7 +153,7 @@ void OptionScene::Update() {
                 case 1:
                     mSelection = mWindow->GetSelectedId();
                     switch ((u8) mSelection) {
-                        case 0:
+                        case OPTION_MENU_VOLUME:
                             mState = 3;
                             break;
                         case 1:
@@ -162,10 +162,10 @@ void OptionScene::Update() {
                         case 2:
                             mState = 0x11;
                             break;
-                        case 3:
+                        case OPTION_MENU_RESET:
                             mState = 0xb;
                             break;
-                        case 4:
+                        case OPTION_MENU_CREDITS:
                             mState = 0xe;
                             break;
                     }

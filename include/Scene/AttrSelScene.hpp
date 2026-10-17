@@ -8,6 +8,12 @@ class MessageWindow;
 class SelectWindow;
 struct MessageFile;
 
+// Requests: the values AttrSelScene passes its parent TitleScene through RequestScene (mRequest). NAME_ENTRY is set
+// when the cockpit button ends the scene (window result 2) and the parent creates a NameEntryScene again;
+// CHARACTER_EDIT is set after the attribute is stored in the save data and the parent creates a CharacterEditScene.
+#define ATTR_SEL_REQUEST_NAME_ENTRY 1
+#define ATTR_SEL_REQUEST_CHARACTER_EDIT 2
+
 // Overlay 0 scene with vtable 0x022270cc (files in /Game/AttrSel): choosing the player's attribute.
 void AttrSelTransitionCallback(void *scene); // frame callback of AttrSelScene::TransitionStep
 

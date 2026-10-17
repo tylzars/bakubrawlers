@@ -7,6 +7,15 @@ class CellAnimation;
 class SelectWindow;
 struct MessageFile;
 
+// Main menu entries: the values of mSelection (the main window's GetSelectedId) that Update state 2 switches on.
+// VOLUME goes to BuildSettings: three rows of six levels stored in gSaveData mUnk_28_7 / mUnk_28_10 / mUnk_28_13,
+// which ApplyVolumeOptions turns into FrameTask::mVolume0 / mVolume1 / mVolume2 and the SoundManager volumes. RESET
+// goes to BuildMenu3, whose first button calls ResetOptions, and CREDITS to a CreditsScene. Left as literals: 1 (BuildMenu2, sets gSaveData mUnk_28_6 and
+// mUnk_27_0) and 2 (BuildMenu4, sets mUnk_28_5); nothing in the tree names those flags.
+#define OPTION_MENU_VOLUME 0
+#define OPTION_MENU_RESET 3
+#define OPTION_MENU_CREDITS 4
+
 // Overlay 0 scene with vtable 0x022273dc (title-side option menu).
 class OptionScene : public SceneBase {
 public:

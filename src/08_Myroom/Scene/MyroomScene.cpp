@@ -19,6 +19,24 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
+// Scroll directions: the values UpdateMenu stores in mInfo.mPage when an arrow of the first page starts a scroll
+// (mInfo.mScrollDir counts the distance down here). PREV goes with mUnk_0a - 1 (arrow item 6 or KEY_LEFT), NEXT with
+// mUnk_0a + 1 (arrow item 7 or KEY_RIGHT); UpdateScroll negates its x step for NEXT and, when the scroll ends, sets
+// arrow cell 6 for PREV and arrow cell 7 otherwise.
+#define MYROOM_SCROLL_PREV 1
+#define MYROOM_SCROLL_NEXT 2
+
+// Menu entries: the values HandleWindowResult stores in mInfo.mScroll for the chosen icon (not the cursor position),
+// which Update switches on to move the event camera (state 6) and to create the screen (state 10), each named after
+// the class created for it. Left as literals: 6 and 7 (ListScene(3, 0) and ListScene(4, 0); the ListScene modes are
+// not named).
+#define MYROOM_MENU_GIFT 0
+#define MYROOM_MENU_SHOOT 1
+#define MYROOM_MENU_RANKING 2
+#define MYROOM_MENU_CHARACTER_EDIT 3
+#define MYROOM_MENU_CHARA 4
+#define MYROOM_MENU_TIPS 5
+
 static const Vec2s sMyroomMenuEntryPos[3] = {
     {16, 72}, {96, 72}, {176, 72},
 };
@@ -223,19 +241,19 @@ void MyroomScene::Update() {
             DrawText();
             SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
             switch (ctx->mInfo.mScroll) {
-                case 2:
-                case 4:
-                case 5:
+                case MYROOM_MENU_RANKING:
+                case MYROOM_MENU_CHARA:
+                case MYROOM_MENU_TIPS:
                     mEvent->func_020702e0(0x3c, 8, -606, -26, -4, -656);
                     break;
                 case 6:
                     mEvent->func_020702e0(0x76, -52, -619, 0x1f, -64, -669);
                     break;
-                case 3:
+                case MYROOM_MENU_CHARACTER_EDIT:
                     mEvent->func_020702e0(0xe0, 8, -595, 0x92, -39, -657);
                     break;
-                case 0:
-                case 1:
+                case MYROOM_MENU_GIFT:
+                case MYROOM_MENU_SHOOT:
                 case 7:
                     mEvent->func_020702e0(0xb6, 8, -665, 0x60, -4, -715);
                     break;
@@ -273,22 +291,22 @@ void MyroomScene::Update() {
                 return;
             }
             switch (ctx->mInfo.mScroll) {
-                case 0:
+                case MYROOM_MENU_GIFT:
                     new MyroomGiftScene();
                     break;
-                case 1:
+                case MYROOM_MENU_SHOOT:
                     new MyroomShootScene();
                     break;
-                case 2:
+                case MYROOM_MENU_RANKING:
                     new MyroomRankingScene();
                     break;
-                case 4:
+                case MYROOM_MENU_CHARA:
                     new MyroomCharaScene();
                     break;
-                case 3:
+                case MYROOM_MENU_CHARACTER_EDIT:
                     new CharacterEditScene(1);
                     break;
-                case 5:
+                case MYROOM_MENU_TIPS:
                     new MyroomTipsScene();
                     break;
                 case 6:
@@ -560,7 +578,7 @@ void MyroomScene::UpdateMenu() {
                         break;
                 }
                 if (delta != 0) {
-                    ctx->mInfo.mPage = delta > 0 ? 2 : 1;
+                    ctx->mInfo.mPage = delta > 0 ? MYROOM_SCROLL_NEXT : MYROOM_SCROLL_PREV;
                     ctx->mInfo.mUnk_0a += delta;
                     StartScroll();
                     ctx->mInfo.mPrevSelection = 0;
@@ -726,7 +744,7 @@ void MyroomScene::HandleWindowResult() {
                             ctx->mInfo.mState  = 6;
                             break;
                         case 3:
-                            ctx->mInfo.mScroll = 3;
+                            ctx->mInfo.mScroll = MYROOM_MENU_CHARACTER_EDIT;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 4:
@@ -743,15 +761,15 @@ void MyroomScene::HandleWindowResult() {
                 case 1:
                     switch (selection) {
                         case 0:
-                            ctx->mInfo.mScroll = 5;
+                            ctx->mInfo.mScroll = MYROOM_MENU_TIPS;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 1:
-                            ctx->mInfo.mScroll = 2;
+                            ctx->mInfo.mScroll = MYROOM_MENU_RANKING;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 2:
-                            ctx->mInfo.mScroll = 4;
+                            ctx->mInfo.mScroll = MYROOM_MENU_CHARA;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 3:
@@ -770,11 +788,11 @@ void MyroomScene::HandleWindowResult() {
                             ctx->mInfo.mState  = 6;
                             break;
                         case 1:
-                            ctx->mInfo.mScroll = 1;
+                            ctx->mInfo.mScroll = MYROOM_MENU_SHOOT;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 2:
-                            ctx->mInfo.mScroll = 0;
+                            ctx->mInfo.mScroll = MYROOM_MENU_GIFT;
                             ctx->mInfo.mState  = 6;
                             break;
                         case 3:
@@ -804,7 +822,7 @@ BOOL MyroomScene::UpdateScroll() {
         step = ctx->mInfo.mScrollDir;
     }
     ctx->mInfo.mScrollDir -= step;
-    if (ctx->mInfo.mPage == 2) {
+    if (ctx->mInfo.mPage == MYROOM_SCROLL_NEXT) {
         step = (s16) -step;
     }
     switch (ctx->mInfo.mMenuResult) {
@@ -844,7 +862,7 @@ BOOL MyroomScene::UpdateScroll() {
         }
         window->mCellAnims[6]->Rewind();
         window->mCellAnims[7]->Rewind();
-        if (ctx->mInfo.mPage == 1) {
+        if (ctx->mInfo.mPage == MYROOM_SCROLL_PREV) {
             window->mCellAnims[6]->SetAnimation(0);
         } else {
             window->mCellAnims[7]->SetAnimation(1);

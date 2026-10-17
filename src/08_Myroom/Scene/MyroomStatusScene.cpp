@@ -223,24 +223,24 @@ void MyroomStatusScene::RenderLine(u8 line) {
     x = 0;
     y = 0;
     switch (line) {
-        case 0:
+        case MYROOM_STATUS_LINE_NAME:
             TextManager::Get().mUse4bppFont = 1;
             TextManager::Get().Print(gSaveData[0].mName, 0x18, mTextBuffers[line], 0x20, 2, &x, &y, 0, 0, 2, 0x21, 0,
                                      0, 0, 0, 1, 1);
             TextManager::Get().mUse4bppFont = 0;
             break;
-        case 1:
+        case MYROOM_STATUS_LINE_RANK:
             TextManager::Get().PrintNumber(info->mPlayerRank, 3, 0, mTextBuffers[line], 0x20, 2, &x, &y, 0, 2, 0x21, 0, 0, 1, 1);
             break;
-        case 2:
+        case MYROOM_STATUS_LINE_MONEY:
             TextManager::Get().PrintNumber(gSaveData[0].mMoney, 7, 0, mTextBuffers[line], 0x20, 2, &x, &y, 0, 2,
                                            0x21, 0, 0, 1, 1);
             break;
-        case 3:
+        case MYROOM_STATUS_LINE_SCORE:
             TextManager::Get().PrintNumber(info->mPlayerScore, 7, 0, mTextBuffers[line], 0x20, 2, &x, &y, 0, 2, 0x21, 0, 0,
                                            1, 1);
             break;
-        case 4:
+        case MYROOM_STATUS_LINE_PLAY_TIME:
             if (mHours == 0) {
                 x += 0x18;
             } else {
@@ -316,9 +316,9 @@ void MyroomStatusScene::UpdateTime() {
     u8 seconds = frames / 60;
     if (seconds != mSeconds) {
         mSeconds = seconds;
-        if (mTextBuffers[4] != NULL) {
-            MI_CpuClear16(mTextBuffers[4], mTextBufferSize);
+        if (mTextBuffers[MYROOM_STATUS_LINE_PLAY_TIME] != NULL) {
+            MI_CpuClear16(mTextBuffers[MYROOM_STATUS_LINE_PLAY_TIME], mTextBufferSize);
         }
-        RenderLine(4);
+        RenderLine(MYROOM_STATUS_LINE_PLAY_TIME);
     }
 }

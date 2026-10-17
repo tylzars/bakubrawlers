@@ -13,7 +13,17 @@ class Ranking;
 class UnkStruct_0205401c;
 struct MessageFile;
 
-// Overlay 8: the player status screen (name, level, money, points, play time) over a 3D room.
+// Status lines: the values RenderLine switches on, each its own text buffer (mTextBuffers[line]). NAME prints
+// gSaveData[0].mName, RANK Ranking::mPlayerRank, MONEY gSaveData[0].mMoney, SCORE Ranking::mPlayerScore and PLAY_TIME
+// mHours / mMinutes / mSeconds (from gSaveData[0].mPlayFrames); UpdateTime prints PLAY_TIME again when the seconds
+// change.
+#define MYROOM_STATUS_LINE_NAME 0
+#define MYROOM_STATUS_LINE_RANK 1
+#define MYROOM_STATUS_LINE_MONEY 2
+#define MYROOM_STATUS_LINE_SCORE 3
+#define MYROOM_STATUS_LINE_PLAY_TIME 4
+
+// Overlay 8: the player status screen (name, rank, money, score, play time) over a 3D room.
 class MyroomStatusScene : public SceneBase {
 public:
     /* 00 (base) */

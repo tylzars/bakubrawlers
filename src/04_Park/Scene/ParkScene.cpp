@@ -249,7 +249,7 @@ void ParkScene::Update() {
             }
             ParkEntry entry;
             GetParkEntry(data_020d433c.mUnk_8b_0, &entry);
-            if (entry.mType == 6) {
+            if (entry.mType == PARK_ENTRY_TYPE_TUTORIAL) {
                 SpriteManager::Get().StartSubFade(FADE_MODE_DOWN);
                 mState++;
                 break;
@@ -431,31 +431,31 @@ void ParkScene::Update() {
             u32 kind = 2;
             char name[0x20];
             switch (entry.mType) {
-                case 0:
+                case PARK_ENTRY_TYPE_BATTLE:
                     sprintf(name, "mes_pm_battle");
                     kind = 3;
                     break;
-                case 1:
+                case PARK_ENTRY_TYPE_TEAMBATTLE:
                     sprintf(name, "mes_pm_Teambattle");
                     kind = 4;
                     break;
-                case 2:
+                case PARK_ENTRY_TYPE_BATTLE_ROYALE:
                     sprintf(name, "mes_pm_BattleRoyale");
                     kind = 5;
                     break;
-                case 3:
+                case PARK_ENTRY_TYPE_MES_ONLY_1:
                     sprintf(name, "mes_pm_mes_only_1");
                     kind = 6;
                     break;
-                case 4:
+                case PARK_ENTRY_TYPE_MES_ONLY_2:
                     sprintf(name, "mes_pm_mes_only_2");
                     kind = 7;
                     break;
-                case 5:
+                case PARK_ENTRY_TYPE_MES_ONLY_3:
                     sprintf(name, "mes_pm_mes_only_3");
                     kind = 8;
                     break;
-                case 6:
+                case PARK_ENTRY_TYPE_TUTORIAL:
                     sprintf(name, "mes_pm_Tutorial");
                     shown = entry.mUnk_0a_h;
                     if (shown == 0 && (gSaveData[0].mUnk_5be & 8)) {
@@ -480,9 +480,9 @@ void ParkScene::Update() {
                 ParkEntry entry;
                 GetParkEntry(mEntryIndex, &entry);
                 switch (entry.mType) {
-                    case 0:
-                    case 1:
-                    case 2:
+                    case PARK_ENTRY_TYPE_BATTLE:
+                    case PARK_ENTRY_TYPE_TEAMBATTLE:
+                    case PARK_ENTRY_TYPE_BATTLE_ROYALE:
                         mEvent->mUnk_14f1 = 0;
                         if (entry.mProgressEntryIndex != 0xff) {
                             mState = 0x1c;
@@ -490,7 +490,7 @@ void ParkScene::Update() {
                             mState = 0x1f;
                         }
                         break;
-                    case 6:
+                    case PARK_ENTRY_TYPE_TUTORIAL:
                         mEvent->mUnk_14f1 = 0;
                         mState           = 0x24;
                         break;
@@ -523,7 +523,7 @@ void ParkScene::Update() {
         case 28: {
             ParkEntry entry;
             GetParkEntry(mEntryIndex, &entry);
-            reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", (u8) (entry.mProgressEntryIndex + 5), 1);
+            reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", (u8) (entry.mProgressEntryIndex + 5), PARK_POPUP_TWO_ITEMS);
             ShowWindow();
             mState++;
             break;
@@ -542,7 +542,7 @@ void ParkScene::Update() {
             mState++;
             break;
         case 31:
-            reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", 2, 0);
+            reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", 2, PARK_POPUP_THREE_ITEMS);
             ShowWindow();
             mState++;
             break;
@@ -562,7 +562,7 @@ void ParkScene::Update() {
                 ParkEntry entry;
                 GetParkEntry(mEntryIndex, &entry);
                 switch (entry.mType) {
-                    case 0:
+                    case PARK_ENTRY_TYPE_BATTLE:
                         data_020d433c.mPlayerCount = 2;
                         data_020d433c.mUnk_99      = 3;
                         data_020d433c.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
@@ -573,7 +573,7 @@ void ParkScene::Update() {
                         data_020d433c.mCharacterIds[1]      = idx;
                         data_020d433c.mUnk_a3[1]      = func_ov004_0221b8c4(idx);
                         break;
-                    case 1:
+                    case PARK_ENTRY_TYPE_TEAMBATTLE:
                         data_020d433c.mPlayerCount = 4;
                         data_020d433c.mUnk_99      = 3;
                         data_020d433c.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
@@ -592,7 +592,7 @@ void ParkScene::Update() {
                         data_020d433c.mPartners[2]      = 3;
                         data_020d433c.mPartners[3]      = 2;
                         break;
-                    case 2:
+                    case PARK_ENTRY_TYPE_BATTLE_ROYALE:
                         data_020d433c.mPlayerCount = 4;
                         data_020d433c.mUnk_99      = 3;
                         data_020d433c.mFieldId      = GetUnlockedFieldId(entry.mFieldId);
@@ -645,7 +645,7 @@ void ParkScene::Update() {
             mState = 0x11;
             break;
         case 36:
-            reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", 4, 0);
+            reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", 4, PARK_POPUP_THREE_ITEMS);
             ShowWindow();
             mState++;
             break;
@@ -892,11 +892,11 @@ void ParkPopup::Open(const char *mesPath, u32 index, u32 mode) {
     PrintMessage(index);
     delete mWindow;
     switch (mode) {
-        case 0:
+        case PARK_POPUP_THREE_ITEMS:
             mWindow = new SelectWindow(3, sThreeButtonItems, 1);
             mWindow->SetCells(3, sThreeButtonCells);
             break;
-        case 1:
+        case PARK_POPUP_TWO_ITEMS:
             mWindow = new SelectWindow(2, sTwoButtonItems, 0);
             mWindow->SetCells(2, sTwoButtonCells);
             break;

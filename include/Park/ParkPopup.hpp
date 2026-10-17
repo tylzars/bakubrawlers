@@ -6,6 +6,12 @@
 class SelectWindow;
 struct MessageFile;
 
+// Open modes: THREE_ITEMS builds a three-item window from sThreeButtonItems / sThreeButtonCells, TWO_ITEMS a
+// two-item window from sTwoButtonItems / sTwoButtonCells. In both tables the last item has flag 0x8000, which the
+// cursor and touch code skip, so the windows have two and one selectable buttons.
+#define PARK_POPUP_THREE_ITEMS 0
+#define PARK_POPUP_TWO_ITEMS 1
+
 // A popup with a message from a .mes file and two or three buttons.
 class ParkPopup {
 public:

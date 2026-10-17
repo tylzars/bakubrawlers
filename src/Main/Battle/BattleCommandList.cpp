@@ -12,7 +12,7 @@
 #include "Text/TextManager.hpp"
 
 // per cell values, five columns
-static const u8 data_0209e5bc[41][5] = {
+static const u8 sCommandListInitialEntryFields[41][5] = {
     {3, 1, 1, 0, 2},
     {3, 2, 2, 0, 2},
     {2, 1, 0, 1, 2},
@@ -56,7 +56,7 @@ static const u8 data_0209e5bc[41][5] = {
     {3, 1, 1, 0, 3},
 };
 
-static const u16 data_0209e588[6] = {0x4000, 0x8000, 0, 0, 0, 0};
+static const u16 sTextOam[6] = {0x4000, 0x8000, 0, 0, 0, 0};
 
 // Message index per command (row) and column (0x0209e68c, 0xf8 bytes with two trailing zero bytes). As a
 // function-local static of an inline accessor it gets a .rodata section of its own, after the other tables.
@@ -165,8 +165,8 @@ inline const char **ListPaths() {
 // light table of the list model
 static const u16 sCommandListLights[20] = {1, 0x7fff, 0xf666, 0xf5ec, 0xf829};
 
-// table of func_0205aea4
-static const u16 data_0209e57c[6] = {0x2000, 0xc000, 0, 0, 0, 0};
+// table of DrawCardspecBack
+static const u16 sCardspecBackOam[6] = {0x2000, 0xc000, 0, 0, 0, 0};
 
 extern u16 data_020c1a4c[];
 
@@ -182,10 +182,10 @@ BattleCommandList::BattleCommandList(u8 a, u8 b, s32 c, u8 d) :
     mWindow  = NULL;
     mBakuganModel  = NULL;
     mCamera  = NULL;
-    mUnk_14e = a;
-    mUnk_14f = a;
-    mUnk_150 = b;
-    mUnk_151 = b;
+    mBakuganId = a;
+    mNextBakuganId = a;
+    mAttribute = b;
+    mNextAttribute = b;
     mPlayer = c;
     mNameWidth = 0;
     mTextPage = 0;
@@ -193,12 +193,12 @@ BattleCommandList::BattleCommandList(u8 a, u8 b, s32 c, u8 d) :
     mWindowVisible = 0;
     mState = 0;
     mUnk_15a = 0;
-    mUnk_15b = 0;
-    mUnk_15c = 0;
+    mPage = 0;
+    mNextPage = 0;
     mVisible = 0;
     mCloseRequested = 0;
-    mUnk_15f = 0;
-    mUnk_160 = 0;
+    mBakuganHidden = 0;
+    mHideBakuganRequested = 0;
     mUnk_161 = d;
     mUnk_162 = 0;
     mFourItems = 0;
@@ -328,13 +328,13 @@ void BattleCommandList::Update() {
             break;
         case 6: {
             u8 i;
-            u8 offset = (mUnk_15b == 0) ? 1 : 0;
+            u8 offset = (mPage == 0) ? 1 : 0;
             u8 *dst   = (u8 *) this + offset;
             for (i = 0; i < 5; i++) {
                 dst[0xc + i * 2] = mUnk_16[i];
             }
-            if (mUnk_160 == 0) {
-                mUnk_15f = 0;
+            if (mHideBakuganRequested == 0) {
+                mBakuganHidden = 0;
             }
             if (mCloseRequested == 0) {
                 SpriteManager::Get().sFade[0] = FADE_MODE_TO_ZERO;
@@ -343,20 +343,20 @@ void BattleCommandList::Update() {
             break;
         }
         case 7: {
-            if (mUnk_160 != 0) {
-                mUnk_15f = 1;
+            if (mHideBakuganRequested != 0) {
+                mBakuganHidden = 1;
             }
-            u8 next = mUnk_15c;
-            if (mUnk_15b != next) {
-                mUnk_15b = next;
+            u8 next = mNextPage;
+            if (mPage != next) {
+                mPage = next;
             }
-            if ((mUnk_14f != mUnk_14e) | (mUnk_151 != mUnk_150)) {
-                mUnk_14e = mUnk_14f;
-                mUnk_150 = mUnk_151;
-                mUnk_160 = 0;
-                if (mUnk_15b != 0) {
-                    mUnk_15b = 1;
-                    mUnk_15c = 1;
+            if ((mNextBakuganId != mBakuganId) | (mNextAttribute != mAttribute)) {
+                mBakuganId = mNextBakuganId;
+                mAttribute = mNextAttribute;
+                mHideBakuganRequested = 0;
+                if (mPage != 0) {
+                    mPage = 1;
+                    mNextPage = 1;
                 }
                 mState = 3;
             }
@@ -390,10 +390,10 @@ void BattleCommandList::Update() {
     }
     UpdatePage();
     DrawName();
-    if (mUnk_15f == 0 && mState >= 5) {
+    if (mBakuganHidden == 0 && mState >= 5) {
         DrawBakugan();
     }
-    if (mWindowVisible != 0 && mUnk_15f == 0) {
+    if (mWindowVisible != 0 && mBakuganHidden == 0) {
         if (SpriteManager::Get().sBrightness[1] == 0) {
             if (mState == 7) {
                 UpdateWindow();
@@ -401,18 +401,18 @@ void BattleCommandList::Update() {
             mWindow->Draw();
         }
     }
-    func_0205aea4();
+    DrawCardspecBack();
 }
 
 void CloseCommandList(BattleCommandList *list) {
     list->mCloseRequested = 1;
 }
 
-void func_02058228(BattleCommandList *list, u32 a) {
+void SetCommandListBakuganHidden(BattleCommandList *list, u32 a) {
     u8 value        = a;
-    list->mUnk_160 = value;
+    list->mHideBakuganRequested = value;
     if (list->mState < 3) {
-        list->mUnk_15f = value;
+        list->mBakuganHidden = value;
     }
 }
 
@@ -426,15 +426,15 @@ void func_02058248(BattleCommandList *list, u8 b) {
 
 void SetCommandListBakugan(BattleCommandList *list, u8 a, u8 b, s32 c) {
     if (a >= 0x2b) {
-        if ((list->mUnk_15b == 0) & (list->mUnk_14e < 0x2b)) {
+        if ((list->mPage == 0) & (list->mBakuganId < 0x2b)) {
             MI_CpuClear16((void *) 0x6400000, 0x2000);
         }
-        list->mUnk_15c = 1;
-        list->mUnk_15b = 1;
+        list->mNextPage = 1;
+        list->mPage = 1;
     } else {
-        if (list->mUnk_14e == 0x2b) {
-            list->mUnk_15c = 0;
-            list->mUnk_15b = 0;
+        if (list->mBakuganId == 0x2b) {
+            list->mNextPage = 0;
+            list->mPage = 0;
         }
     }
     if (c < 0) {
@@ -446,35 +446,35 @@ void SetCommandListBakugan(BattleCommandList *list, u8 a, u8 b, s32 c) {
         list->mPlayer = c % 4;
     }
     if (list->mState == 1) {
-        list->mUnk_14e = a;
-        list->mUnk_14f = a;
-        list->mUnk_150 = b;
-        list->mUnk_151 = b;
-        list->mUnk_15f = 0;
-        list->mUnk_160 = 0;
+        list->mBakuganId = a;
+        list->mNextBakuganId = a;
+        list->mAttribute = b;
+        list->mNextAttribute = b;
+        list->mBakuganHidden = 0;
+        list->mHideBakuganRequested = 0;
         return;
     }
-    list->mUnk_14f = a;
-    list->mUnk_151 = b;
+    list->mNextBakuganId = a;
+    list->mNextAttribute = b;
     list->mUnk_162 = 0;
-    if ((list->mUnk_14f == list->mUnk_14e) & (list->mUnk_151 == list->mUnk_150)) {
-        if (list->mUnk_15f != 0) {
-            list->mUnk_15f = 0;
+    if ((list->mNextBakuganId == list->mBakuganId) & (list->mNextAttribute == list->mAttribute)) {
+        if (list->mBakuganHidden != 0) {
+            list->mBakuganHidden = 0;
         }
     }
-    list->mUnk_160 = 0;
+    list->mHideBakuganRequested = 0;
 }
 
 void BattleCommandList::CyclePage(u32 flag) {
     if (flag == 0) {
-        mUnk_15c = (mUnk_15c + 2) % 3;
+        mNextPage = (mNextPage + 2) % 3;
     } else {
-        mUnk_15c = (mUnk_15c + 1) % 3;
+        mNextPage = (mNextPage + 1) % 3;
     }
-    if (mUnk_15c == 0) {
+    if (mNextPage == 0) {
         return;
     }
-    PrintText(mUnk_15c - 1);
+    PrintText(mNextPage - 1);
 }
 
 BOOL BattleCommandList::IsSettingUp() {
@@ -545,7 +545,7 @@ void BattleCommandList::UpdateListItems() {
     if (mWindow == NULL) {
         return;
     }
-    u8 selected       = mUnk_15b;
+    u8 selected       = mPage;
     u8 count          = mLastTextPage;
     WindowItem *items = mWindow->mCursor->mItems;
     if (selected <= count) {
@@ -566,12 +566,12 @@ void BattleCommandList::UpdateListItems() {
         }
     }
     BOOL hasPage = FALSE;
-    if (mUnk_14e == 0x2b) {
+    if (mBakuganId == 0x2b) {
         if (mTextPage != 0) {
             hasPage = TRUE;
         }
     } else {
-        if (mUnk_15b != 0) {
+        if (mPage != 0) {
             hasPage = TRUE;
         }
     }
@@ -781,14 +781,14 @@ BOOL BattleCommandList::LoadGraphics() {
 }
 
 BOOL BattleCommandList::CreateBakuganModel() {
-    mUnk_14e = mUnk_14f;
-    mUnk_150 = mUnk_151;
-    if (mUnk_14e >= 0x2b) {
+    mBakuganId = mNextBakuganId;
+    mAttribute = mNextAttribute;
+    if (mBakuganId >= 0x2b) {
         mBakuganModel = NULL;
         return TRUE;
     }
     mBakuganModel = new BakuganModel();
-    mBakuganModel->Setup(mUnk_14e, mUnk_150, 6);
+    mBakuganModel->Setup(mBakuganId, mAttribute, 6);
     VecFx32 pos;
     pos.x = -0xd000;
     pos.y = pos.x + 0xb000;
@@ -832,7 +832,7 @@ void BattleCommandList::PrintText(u8 index) {
     u16 width;
     s16 numY;
     s16 numX;
-    u8 cmd = mUnk_14e;
+    u8 cmd = mBakuganId;
     if (cmd >= 0x2b) {
         if (mTextPage == 0) {
             TextManager &text = TextManager::Get();
@@ -840,7 +840,7 @@ void BattleCommandList::PrintText(u8 index) {
             u16 x;
             x = 2 - (mTextPage << 7);
             y = 0x10;
-            u8 sel            = mUnk_150;
+            u8 sel            = mAttribute;
             MessageFile *file;
             void *buffer;
             buffer = mTextBuffers[0];
@@ -863,7 +863,7 @@ void BattleCommandList::PrintText(u8 index) {
             u16 x;
             x = 2 - (mTextPage << 7);
             y = 0x10;
-            u8 sel            = mUnk_150;
+            u8 sel            = mAttribute;
             MessageFile *file = (MessageFile *) mBakuganMessages;
             text.Print(file->GetText(sel), file->GetLength(sel), mTextBuffers[0], 0x10, 0x12, &y, (s16 *) &x,
                                      0, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
@@ -877,7 +877,7 @@ void BattleCommandList::PrintText(u8 index) {
             x = 0;
             y = 0;
             MessageFile *file = (MessageFile *) mBakuganMessages;
-            text.Print(file->GetText((u16) (mUnk_150 + 6)), file->GetLength((u16) (mUnk_150 + 6)), mTextBuffers[1], 0x40, 2, &y, &x,
+            text.Print(file->GetText((u16) (mAttribute + 6)), file->GetLength((u16) (mAttribute + 6)), mTextBuffers[1], 0x40, 2, &y, &x,
                                      &mNameWidth, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
         }
         TextManager::Get().mUse4bppFont = 0;
@@ -888,7 +888,7 @@ void BattleCommandList::PrintText(u8 index) {
             u16 x;
             x = 2 - (mTextPage << 7);
             y = 0x10;
-            u8 row = CommandMessages().mRows[cmd][mUnk_150];
+            u8 row = CommandMessages().mRows[cmd][mAttribute];
             MessageFile *file;
             void *buffer;
             buffer = mTextBuffers[0];
@@ -911,7 +911,7 @@ void BattleCommandList::PrintText(u8 index) {
             u16 x;
             x = 2 - (mTextPage << 7);
             y = 0x10;
-            u8 row = CommandMessages().mRows[cmd][mUnk_150];
+            u8 row = CommandMessages().mRows[cmd][mAttribute];
             MessageFile *file = (MessageFile *) mBakuganDisplayMessages;
             text.Print(file->GetText(row), file->GetLength(row), mTextBuffers[0], 0x10, 0x12, &y, (s16 *) &x,
                                      0, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
@@ -966,7 +966,7 @@ void BattleCommandList::PrintText(u8 index) {
 }
 
 void BattleCommandList::DrawName() {
-    if (mUnk_15f != 0) {
+    if (mBakuganHidden != 0) {
         return;
     }
     SpriteManager::Get().mScreens[0].AddOam(mGlyphBuffers[1], mGlyphCounts[1], (s16) (0x80 - ((u32) mNameWidth >> 1)), 8, 0,
@@ -980,19 +980,19 @@ void BattleCommandList::ClearText() {
 }
 
 void BattleCommandList::DrawBakugan() {
-    if (mUnk_14e < 0x2b) {
+    if (mBakuganId < 0x2b) {
         mBakuganModel->Update();
         mBakuganModel->DrawModel();
         return;
     }
-    mCells58[7]->DrawFrame(0, mUnk_150, 0x22, 0x4c, 0);
+    mCells58[7]->DrawFrame(0, mAttribute, 0x22, 0x4c, 0);
 }
 
 extern u8 data_020d43d7[];
 
 void BattleCommandList::UpdatePage() {
-    bool late = mUnk_14e >= 0x2b;
-    if (mUnk_15f != 0) {
+    bool late = mBakuganId >= 0x2b;
+    if (mBakuganHidden != 0) {
         mCells3c[2]->Draw(0, 0x80, 0x60, 1);
         return;
     }
@@ -1078,7 +1078,7 @@ void BattleCommandList::UpdatePage() {
         mCells58[3]->DrawFrame(0, mPlayer, 0, 0x16, 0);
     }
     mCells3c[3]->Draw(0, 0x80, 0x60, 1);
-    if (!late && mUnk_15b == 0) {
+    if (!late && mPage == 0) {
         for (u8 i = 0; i < 5; i++) {
             u8 target = mUnk_0c[i].mTarget;
             u8 cur    = mUnk_0c[i].mCur;
@@ -1095,7 +1095,7 @@ void BattleCommandList::UpdatePage() {
         mCells3c[2]->Draw(0, 0x80, 0x60, 1);
     } else {
         for (u8 i = 0; i < 0x20; i++) {
-            SpriteManager::Get().Screen(0).AddOam((void *) data_0209e588, 1, (s16) ((i % 4) * 0x20 + 0x73),
+            SpriteManager::Get().Screen(0).AddOam((void *) sTextOam, 1, (s16) ((i % 4) * 0x20 + 0x73),
                                                          (s16) ((i / 4) * 0x10 + 0x20), 3, (u16) (i << 1), 0xf, 0);
         }
     }
@@ -1108,9 +1108,9 @@ void BattleCommandList::UpdatePage() {
     }
 }
 
-void BattleCommandList::func_0205aea4() {
+void BattleCommandList::DrawCardspecBack() {
     for (u8 i = 0; i < 12; i++) {
-        SpriteManager::Get().Screen(0).AddOam((void *) data_0209e57c, 1, (s16) ((i % 4) << 6), (s16) ((i / 4) << 6), 3,
+        SpriteManager::Get().Screen(0).AddOam((void *) sCardspecBackOam, 1, (s16) ((i % 4) << 6), (s16) ((i / 4) << 6), 3,
                                                      (u16) (0x280 + i * 0x20), 0, 0);
     }
 }
@@ -1121,11 +1121,11 @@ void BattleCommandList::ClearValues() {
     }
 }
 
-void func_0205afb4(BattleCommandList *list, u32 a, u32 b, BattleCellPair *pair) {
+void SetCommandListValues(BattleCommandList *list, u32 a, u32 b, BattleCellPair *pair) {
     list->ClearValues();
     list->SetValue(a, b);
     if (list->mUnk_161 != 0) {
-        switch (list->mUnk_14f) {
+        switch (list->mNextBakuganId) {
             case 5:
                 list->SetValue(3, b);
                 break;
@@ -1159,7 +1159,7 @@ BOOL BattleCommandList::IsCountingUp() {
 void BattleCommandList::func_0205b0dc(const BattleCellPair *pair) {
     if (pair == NULL) {
         for (u8 i = 0; i < 5; i++) {
-            mUnk_16[i] = data_0209e5bc[mUnk_14f][i];
+            mUnk_16[i] = sCommandListInitialEntryFields[mNextBakuganId][i];
         }
         mUnk_164 = 0;
     } else {
@@ -1180,12 +1180,12 @@ void BattleCommandList::func_0205b0dc(const BattleCellPair *pair) {
 
    // 0x20 bytes cleared before the first text of a page
 
-void func_0205b1c4(u32 index, u32 unk2) {
+void SetInitialEntryFields(u32 index, u32 unk2) {
     UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, index, unk2);
-    entry->mUnk_0  = data_0209e5bc[index][0];
-    entry->mUnk_3  = data_0209e5bc[index][2];
-    entry->mUnk_6  = data_0209e5bc[index][3];
-    entry->mUnk_9  = data_0209e5bc[index][4];
-    entry->mUnk_12 = data_0209e5bc[index][1];
+    entry->mUnk_0  = sCommandListInitialEntryFields[index][0];
+    entry->mUnk_3  = sCommandListInitialEntryFields[index][2];
+    entry->mUnk_6  = sCommandListInitialEntryFields[index][3];
+    entry->mUnk_9  = sCommandListInitialEntryFields[index][4];
+    entry->mUnk_12 = sCommandListInitialEntryFields[index][1];
 }
 

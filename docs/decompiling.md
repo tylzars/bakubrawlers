@@ -152,7 +152,7 @@ that matches should replace it.
   following range checks unable to fail, though the compiler still emits them), gfd_vram AllocTexSlotKey's `data_020a5898` (a second name for the +8 range of the slot
   table at 0x020a5890, so the loop base stays a hoisted temporary), cri_adx_dec's unread zero initialisers in func_0203f714 and func_0203fcd8 (register and
   stack-slot order), BattlePlayerList::Update's two volatile reads in case 4's second record (keep the player
-  reload and the slot read apart so they number as the original's registers need), BattleSub48's enum-typed entry index, BattleAbility::func_ov007_02265af8's two
+  reload and the slot read apart so they number as the original's registers need), BattleSub48's enum-typed entry index, BattleAbility::UpdateMoveToUnit's two
   volatile index reads, BattleOrderSelect's `volatile ry`, BattleCardModel's narrow stack
   read, the casts through `sAreaCursorAndBakuganOrder.mOrder` in ListScene.cpp, BattleConfrontCard::UpdateConfrontation's
   two-arm player index in case 29 (both arms read the same byte), cri_wave_ch func_02048940's repeated
@@ -181,7 +181,7 @@ that matches should replace it.
   02264a5c, 02265af8, 0226547c) and BattlePlayerList (Update, 022628e0) the original colours a u8 index load
   (`unit->mUnk_0e`, a record or row index) after the base or player pointer it indexes; every plain form colours it
   first. An enum-typed copy (`UnitIndex e = (UnitIndex) unit->mUnk_0e;`) or one index local reassigned for
-  successive records gives the original's order. Only BattleAbility::func_ov007_02265af8 still needs two
+  successive records gives the original's order. Only BattleAbility::UpdateMoveToUnit still needs two
   `*(volatile u8 *)` placeholders: there the enum copy gets the right registers but is scheduled before the list load.
   BattleConfrontCard::UpdateConfrontation (case 29's loop head) is the same family: the original numbers the list
   pointer, the player index, `j*4` and the slot pointer in that order. It matches with a placeholder two-arm index

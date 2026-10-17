@@ -12,10 +12,10 @@
 #define MAP_MODEL_KIND_CARD_00_00       0 // "card_00_00"
 #define MAP_MODEL_KIND_CARD_FUTI        1 // "card_futi"
 #define MAP_MODEL_KIND_O00BTL_000       2 // "o00btl_000"
-// "f00gat_000" as well; the only kind BattleCommandMap::func_ov007_0224560c deletes, which it does once mUnk_142
+// "f00gat_000" as well; the only kind BattleCommandMap::FreeTimedF00gatModel deletes, which it does once mF00gatTimer
 // (0x97 when this model is created) has counted down to 0.
 #define MAP_MODEL_KIND_F00GAT_000_TIMED 3
-#define MAP_MODEL_KIND_F00GAT_000       4 // "f00gat_000"; func_ov007_02247e00 creates this kind + player index
+#define MAP_MODEL_KIND_F00GAT_000       4 // "f00gat_000"; SetupF00gatModelsAndCamera creates this kind + player index
 #define MAP_MODEL_KIND_F00GAT_001       5 // "f00gat_001"
 #define MAP_MODEL_KIND_F00GAT_002       6 // "f00gat_002"
 #define MAP_MODEL_KIND_F00GAT_003       7 // "f00gat_003"

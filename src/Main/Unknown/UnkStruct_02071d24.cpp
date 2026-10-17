@@ -289,13 +289,13 @@ void UnkStruct_02071d24::LoadGraphics() {
     if (mUnk_34[mBakuganIndex] != NULL) {
         func_02072b14();
     } else {
-        func_02058228(mCommandList, 1);
+        SetCommandListBakuganHidden(mCommandList, 1);
     }
 }
 
 void UnkStruct_02071d24::func_02072b14() {
     int value = func_020231f4(gSaveData, 0, mBakuganIds[mBakuganIndex], mAttributes[mBakuganIndex]);
-    func_0205afb4(mCommandList, mAttributes[mBakuganIndex], value, mUnk_34[mBakuganIndex]);
+    SetCommandListValues(mCommandList, mAttributes[mBakuganIndex], value, mUnk_34[mBakuganIndex]);
 }
 
 void UnkStruct_02071d24::func_02072b60() {

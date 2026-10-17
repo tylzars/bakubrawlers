@@ -27,7 +27,7 @@ UnkStruct_020d433c data_020d433c;
 SaveData gSaveData[1];
 #pragma section npdata end
 extern u16 data_020c4250;
-int func_0205b1c4(u32 a, u32 b);
+int SetInitialEntryFields(u32 a, u32 b);
 
 void ResetOptions(SaveData *d);
 void ApplyVolumeOptions(SaveData *d);
@@ -75,7 +75,7 @@ void ResetSaveData() {
         int idx = GetBakuganEntryIndex(base, tab[n][0] & 0xff, rec[1] & 0xff, rec[2] & 0xff);
         SetSlotEntryIndex(base, 0, n, idx);
         func_020231c0(base, idx, rec[3]);
-        func_0205b1c4(rec[1] & 0xff, rec[2] & 0xff);
+        SetInitialEntryFields(rec[1] & 0xff, rec[2] & 0xff);
         base->mSlots54Values[n] = rec[4];
         SetFlagBit((u8 *) gSaveData[0].mUnk_556, rec[4]);
         base->mSlots6cValues[n] = rec[5];

@@ -2533,7 +2533,7 @@ _ZN17BattleCommandPageD1Ev kind:function(arm,size=0x164) addr:0x02054f1c
 _ZN17BattleCommandPageD0Ev kind:function(arm,size=0x16c) addr:0x02055080
 _ZN17BattleCommandPage6UpdateEv kind:function(arm,size=0x438) addr:0x020551ec
 _Z16CloseCommandPageP17BattleCommandPagej kind:function(arm,size=0x8) addr:0x02055624
-_Z13func_0205562cP17BattleCommandPagej kind:function(arm,size=0x18) addr:0x0205562c
+_Z24SetCommandPageCardHiddenP17BattleCommandPagej kind:function(arm,size=0x18) addr:0x0205562c
 _ZN17BattleCommandPage13func_02055644Et kind:function(arm,size=0x24) addr:0x02055644
 _Z18SetCommandPageCardP17BattleCommandPageti kind:function(arm,size=0x68) addr:0x02055668
 _ZN17BattleCommandPage13CycleTextPageEj kind:function(arm,size=0x54) addr:0x020556d0
@@ -2552,14 +2552,14 @@ _ZN17BattleCommandPage8LoadTextEv kind:function(arm,size=0x400) addr:0x02056414
 _ZN17BattleCommandPage13PrintCardTextEj kind:function(arm,size=0x524) addr:0x02056814
 _ZN17BattleCommandPage8DrawTextEv kind:function(arm,size=0x200) addr:0x02056d38
 _ZN17BattleCommandPage9ClearTextEv kind:function(arm,size=0x38) addr:0x02056f38
-_ZN17BattleCommandPage13func_02056f70Ev kind:function(arm,size=0x238) addr:0x02056f70
+_ZN17BattleCommandPage13DrawLargeCardEv kind:function(arm,size=0x238) addr:0x02056f70
 _ZN17BattleCommandPage8DrawCardEv kind:function(arm,size=0x438) addr:0x020571a8
 _ZN17BattleCommandListC1Ehhih kind:function(arm,size=0x190) addr:0x020575e0
 _ZN17BattleCommandListD1Ev kind:function(arm,size=0x2cc) addr:0x02057770
 _ZN17BattleCommandListD0Ev kind:function(arm,size=0x2d4) addr:0x02057a3c
 _ZN17BattleCommandList6UpdateEv kind:function(arm,size=0x50c) addr:0x02057d10
 _Z16CloseCommandListP17BattleCommandList kind:function(arm,size=0xc) addr:0x0205821c
-_Z13func_02058228P17BattleCommandListj kind:function(arm,size=0x18) addr:0x02058228
+_Z27SetCommandListBakuganHiddenP17BattleCommandListj kind:function(arm,size=0x18) addr:0x02058228
 _ZN17BattleCommandList13func_02058240Ej kind:function(arm,size=0x8) addr:0x02058240
 _Z13func_02058248P17BattleCommandListh kind:function(arm,size=0x18) addr:0x02058248
 _Z21SetCommandListBakuganP17BattleCommandListhhi kind:function(arm,size=0x13c) addr:0x02058260
@@ -2580,14 +2580,14 @@ _ZN17BattleCommandList8DrawNameEv kind:function(arm,size=0xcc) addr:0x0205a6a8
 _ZN17BattleCommandList9ClearTextEv kind:function(arm,size=0x38) addr:0x0205a774
 _ZN17BattleCommandList11DrawBakuganEv kind:function(arm,size=0x58) addr:0x0205a7ac
 _ZN17BattleCommandList10UpdatePageEv kind:function(arm,size=0x6a0) addr:0x0205a804
-_ZN17BattleCommandList13func_0205aea4Ev kind:function(arm,size=0xe8) addr:0x0205aea4
+_ZN17BattleCommandList16DrawCardspecBackEv kind:function(arm,size=0xe8) addr:0x0205aea4
 _ZN17BattleCommandList11ClearValuesEv kind:function(arm,size=0x28) addr:0x0205af8c
-_Z13func_0205afb4P17BattleCommandListjjP14BattleCellPair kind:function(arm,size=0x80) addr:0x0205afb4
+_Z20SetCommandListValuesP17BattleCommandListjjP14BattleCellPair kind:function(arm,size=0x80) addr:0x0205afb4
 _ZN17BattleCommandList8SetValueEjj kind:function(arm,size=0x14) addr:0x0205b034
 _ZN17BattleCommandList12StartCountUpEj kind:function(arm,size=0x7c) addr:0x0205b048
 _ZN17BattleCommandList12IsCountingUpEv kind:function(arm,size=0x18) addr:0x0205b0c4
 _ZN17BattleCommandList13func_0205b0dcEPK14BattleCellPair kind:function(arm,size=0xe8) addr:0x0205b0dc
-_Z13func_0205b1c4jj kind:function(arm,size=0xc4) addr:0x0205b1c4
+_Z21SetInitialEntryFieldsjj kind:function(arm,size=0xc4) addr:0x0205b1c4
 _ZN12SelectWindowC1EjPK16WindowItemRecordi kind:function(arm,size=0xe4) addr:0x0205b288
 _ZN12SelectWindowD1Ev kind:function(arm,size=0x28) addr:0x0205b36c
 _ZN12SelectWindowD0Ev kind:function(arm,size=0x30) addr:0x0205b394
@@ -3041,10 +3041,10 @@ data_0209e4f0 kind:data(any) addr:0x0209e4f0
 data_0209e538 kind:data(any) addr:0x0209e538
 @550 kind:data(any) addr:0x0209e53c local
 data_0209e558 kind:data(any) addr:0x0209e558 local
-data_0209e57c kind:data(any) addr:0x0209e57c local
-data_0209e588 kind:data(any) addr:0x0209e588 local
+sCardspecBackOam kind:data(any) addr:0x0209e57c local
+sTextOam kind:data(any) addr:0x0209e588 local
 sCommandListLights kind:data(any) addr:0x0209e594 local
-data_0209e5bc kind:data(any) addr:0x0209e5bc local
+sCommandListInitialEntryFields kind:data(any) addr:0x0209e5bc local
 _ZZ15CommandMessagesvE20sCommandMessageTable kind:data(any) addr:0x0209e68c weak
 sCharacterEditTextVramOffsets kind:data(any) addr:0x0209e784 local
 sCharacterEditLights kind:data(any) addr:0x0209e79c local

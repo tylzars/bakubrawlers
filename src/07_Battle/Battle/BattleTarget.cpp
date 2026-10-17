@@ -764,7 +764,7 @@ void BattleTarget::Init() {
     BattleRecord *record   = &list->mPlayers[mPlayer]->mRecords[mRecord];
     LoadEffectGroup(data_020d433c.mEffects, 1, "shoot");
     mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
-    mCommandMap->mUnk_151 = 0;
+    mCommandMap->mStatusPanelsEnabled = 0;
     mCommandMap->Init();
     SetPredictVisible(mCommandMap, 1);
     LoadUnitCollisions();
@@ -3733,7 +3733,7 @@ void BattleTarget::func_ov007_0225ce08() {
     screen.LoadPalette("battle_shoot_b_gp_ncl.bin", 0x140, 0);
     ChangeDir("/");
     mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
-    mCommandMap->mUnk_151 = 0;
+    mCommandMap->mStatusPanelsEnabled = 0;
     mCommandMap->Init();
     data_020d433c.mGimmicks->mState = 0;
     mBakugan->SetupMode(3);

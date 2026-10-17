@@ -44,9 +44,9 @@ public:
     /* 102 */ s16 mNameX;
     /* 104 */ u8 mVisible;
     /* 105 */ u8 mCloseFadeKind;
-    /* 106 */ u8 mUnk_106;
-    /* 107 */ u8 mUnk_107;
-    /* 108 */ u8 mUnk_108;
+    /* 106 */ u8 mCardHidden;
+    /* 107 */ u8 mHideCardRequested;
+    /* 108 */ u8 mGlyphBufferIndex;
     /* 109 */ u8 mUnk_109;
     /* 10a */ u8 mUnk_10a;
     /* 10b */ PAD(0x10b, 0x10c);
@@ -70,12 +70,12 @@ public:
     void PrintCardText(u32 index); // sets mTextPage = index, picks mUnk_108 and prints the card's name and text
     void DrawText();
     void ClearText();
-    void func_02056f70();
-    void DrawCard(); // player cells mCellAnims[7..10] only for mDrawnCardId < 0xd5, mUnk_106 == 0, mPlayer >= 0
+    void DrawLargeCard();
+    void DrawCard(); // player cells mCellAnims[7..10] only for mDrawnCardId < 0xd5, mCardHidden == 0, mPlayer >= 0
 };
 
 void CloseCommandPage(BattleCommandPage *page, u32 a);
-void func_0205562c(BattleCommandPage *page, u32 a);
+void SetCommandPageCardHidden(BattleCommandPage *page, u32 a);
 void SetCommandPageCard(BattleCommandPage *page, u16 a, s32 b); // also sets the page's mPlayer = b
 void func_02055738(BattleCommandPage *page, u32 a, u32 b, u32 c);
 void CreateCommandPageWindow(BattleCommandPage *page, u32 a, u32 b, s16 c, s16 d, s16 e, s16 f, u32 g);

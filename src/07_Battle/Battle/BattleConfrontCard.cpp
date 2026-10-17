@@ -1403,7 +1403,7 @@ int BattleConfrontCard::UpdateCardPick() {
                 break;
             }
             mCommandPage = new BattleCommandPage(0, -1);
-            func_0205562c(mCommandPage, 1);
+            SetCommandPageCardHidden(mCommandPage, 1);
             func_02055738(mCommandPage, 0xe000, 7, 0);
             new BattleCommandPrompt(3, mCommandPage, mDisabledBits, 0x7000, 0);
             mContext->mRequest = 0;

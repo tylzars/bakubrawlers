@@ -83,9 +83,9 @@ BattleCommandPage::BattleCommandPage(u16 a, s32 b) :
     mNameX = 0;
     mVisible = 0;
     mCloseFadeKind = 0;
-    mUnk_106 = 0;
-    mUnk_107 = 0;
-    mUnk_108 = 0;
+    mCardHidden = 0;
+    mHideCardRequested = 0;
+    mGlyphBufferIndex = 0;
     MI_CpuClear32(mTextBuffers, 0xc);
     MI_CpuClear32(mGlyphBuffers, 0xc);
     MI_CpuClear32(mTextBufferSizes, 0xc);
@@ -163,8 +163,8 @@ void BattleCommandPage::Update() {
                     mNameX = 0x100;
                 }
                 UpdatePageItems();
-                if (mUnk_107 == 0) {
-                    mUnk_106 = 0;
+                if (mHideCardRequested == 0) {
+                    mCardHidden = 0;
                 }
                 mDrawnCardId  = mCardId;
                 mUnk_109 = mUnk_10a;
@@ -175,12 +175,12 @@ void BattleCommandPage::Update() {
             }
             break;
         case 4:
-            if (mUnk_107 != 0) {
-                mUnk_106 = 1;
+            if (mHideCardRequested != 0) {
+                mCardHidden = 1;
             }
             if (mNextCardId != mCardId) {
                 mCardId  = mNextCardId;
-                mUnk_107 = 0;
+                mHideCardRequested = 0;
                 mTextPage  = 0;
                 mState  = 2;
             }
@@ -222,7 +222,7 @@ void BattleCommandPage::Update() {
     }
     DrawCard();
     DrawText();
-    func_02056f70();
+    DrawLargeCard();
     if (mWindowVisible == 0) {
         return;
     }
@@ -242,11 +242,11 @@ void CloseCommandPage(BattleCommandPage *page, u32 a) {
     page->mCloseFadeKind = a;
 }
 
-void func_0205562c(BattleCommandPage *page, u32 a) {
+void SetCommandPageCardHidden(BattleCommandPage *page, u32 a) {
     u8 value         = a;
-    page->mUnk_107 = value;
+    page->mHideCardRequested = value;
     if (page->mState < 2) {
-        page->mUnk_106 = value;
+        page->mCardHidden = value;
     }
 }
 
@@ -265,17 +265,17 @@ void SetCommandPageCard(BattleCommandPage *page, u16 a, s32 b) {
         u16 value      = page->func_02055644(a);
         page->mCardId  = value;
         page->mNextCardId  = value;
-        page->mUnk_106 = 0;
-        page->mUnk_107 = 0;
+        page->mCardHidden = 0;
+        page->mHideCardRequested = 0;
         return;
     }
     page->mNextCardId = page->func_02055644(a);
     if (page->mNextCardId == page->mCardId) {
-        if (page->mUnk_106 != 0) {
-            page->mUnk_106 = 0;
+        if (page->mCardHidden != 0) {
+            page->mCardHidden = 0;
         }
     }
-    page->mUnk_107 = 0;
+    page->mHideCardRequested = 0;
 }
 
 void BattleCommandPage::CycleTextPage(u32 flag) {
@@ -635,11 +635,11 @@ void BattleCommandPage::PrintCardText(u32 index) {
         textFile = (MessageFile **) &mCardTextMessages;
         nameFile = (MessageFile **) &mCardNameMessages;
         if (GetCardInfo(id, 0) == 0) {
-            mUnk_108 = 0;
+            mGlyphBufferIndex = 0;
             total    = 0x58;
             height   = 0xc;
         } else {
-            mUnk_108 = 1;
+            mGlyphBufferIndex = 1;
             total    = 0x80;
             height   = 0x10;
         }
@@ -657,7 +657,7 @@ void BattleCommandPage::PrintCardText(u32 index) {
         }
         id       = clamped;
         id2      = t % 6 + 6;
-        mUnk_108 = 1;
+        mGlyphBufferIndex = 1;
         total    = 0x80;
         height   = 0x10;
     }
@@ -713,10 +713,10 @@ void BattleCommandPage::DrawText() {
     if (mCardId == 0) {
         return;
     }
-    if (mUnk_106 != 0) {
+    if (mCardHidden != 0) {
         return;
     }
-    SpriteManager::Get().mScreens[0].AddOam(mGlyphBuffers[mUnk_108], mGlyphCounts[mUnk_108], 0x73, 0x20, 3, 0, 0xf, 0);
+    SpriteManager::Get().mScreens[0].AddOam(mGlyphBuffers[mGlyphBufferIndex], mGlyphCounts[mGlyphBufferIndex], 0x73, 0x20, 3, 0, 0xf, 0);
     if ((s32) mNameWidth > 0xf0) {
         mNameX--;
         if (mNameX < -(s32) mNameWidth) {
@@ -741,8 +741,8 @@ void BattleCommandPage::ClearText() {
     }
 }
 
-void BattleCommandPage::func_02056f70() {
-    if (mUnk_106 != 0) {
+void BattleCommandPage::DrawLargeCard() {
+    if (mCardHidden != 0) {
         return;
     }
     SpriteManager::Get().mScreens[0].AddOam((void *) data_0209e558[1], 1, 0x54, 0x25, 3, 0xa0, 0, 0);
@@ -766,7 +766,7 @@ void BattleCommandPage::DrawCard() {
         big = 1;
     }
     mCellAnims[0]->DrawFrame(0, big, 0x80, 0x60, 0);
-    if (mUnk_106 != 0) {
+    if (mCardHidden != 0) {
         return;
     }
     if (mDrawnCardId >= 0xd5) {

@@ -461,7 +461,7 @@ _ZN13BattleCommand12UpdatePromptEv kind:function(arm,size=0x3dc) addr:0x0223a1c8
 _Z21InitCommandMainScreenP13BattleCommandj kind:function(arm,size=0xec) addr:0x0223a5a4
 _Z20InitCommandSubScreenii kind:function(arm,size=0xa4) addr:0x0223a690
 _ZN13BattleCommand19func_ov007_0223a734Ev kind:function(arm,size=0x63c) addr:0x0223a734
-_Z19func_ov007_0223ad70j kind:function(arm,size=0x580) addr:0x0223ad70
+_Z19LoadCommandGraphicsj kind:function(arm,size=0x580) addr:0x0223ad70
 _ZN13BattleCommand16LoadTurnGraphicsEv kind:function(arm,size=0x9c) addr:0x0223b2f0
 _ZN13BattleCommand4DrawEv kind:function(arm,size=0x4e8) addr:0x0223b38c
 _ZN13BattleCommand19func_ov007_0223b874Ev kind:function(arm,size=0x2bc) addr:0x0223b874
@@ -523,8 +523,8 @@ _ZN16BattleCommandMapC1Eh kind:function(arm,size=0x1b8) addr:0x022450f4
 _ZN16BattleCommandMapD1Ev kind:function(arm,size=0x170) addr:0x022452ac
 _ZN16BattleCommandMapD0Ev kind:function(arm,size=0x178) addr:0x0224541c
 _ZN16BattleCommandMap16FreeStartCamFileEv kind:function(arm,size=0x2c) addr:0x02245594
-_ZN16BattleCommandMap19func_ov007_022455c0Ev kind:function(arm,size=0x4c) addr:0x022455c0
-_ZN16BattleCommandMap19func_ov007_0224560cEj kind:function(arm,size=0x50) addr:0x0224560c
+_ZN16BattleCommandMap16FreeF00gatModelsEv kind:function(arm,size=0x4c) addr:0x022455c0
+_ZN16BattleCommandMap20FreeTimedF00gatModelEj kind:function(arm,size=0x50) addr:0x0224560c
 _ZN16BattleCommandMap6UpdateEv kind:function(arm,size=0x220) addr:0x0224565c
 _Z18CloseCommandMapNowP16BattleCommandMap kind:function(arm,size=0xc) addr:0x0224587c
 _Z15CloseCommandMapP16BattleCommandMap kind:function(arm,size=0xc) addr:0x02245888
@@ -538,16 +538,16 @@ _ZN16BattleCommandMap22UpdatePredictPositionsEv kind:function(arm,size=0xb0) add
 _ZN16BattleCommandMap19func_ov007_02245f08Ev kind:function(arm,size=0x548) addr:0x02245f08
 _ZN16BattleCommandMap19func_ov007_02246450Ev kind:function(arm,size=0x108) addr:0x02246450
 DrawStatusPanels kind:function(arm,size=0x20) addr:0x02246558
-func_ov007_02246578 kind:function(arm,size=0x1b8) addr:0x02246578
+DrawCursorUnitFontObjs kind:function(arm,size=0x1b8) addr:0x02246578
 DrawBakuganModel kind:function(arm,size=0x28) addr:0x02246730
-func_ov007_02246758 kind:function(arm,size=0x24) addr:0x02246758
+DrawUnitBakugans kind:function(arm,size=0x24) addr:0x02246758
 DrawPredictPieces kind:function(arm,size=0x88) addr:0x0224677c
-func_ov007_02246804 kind:function(arm,size=0x268) addr:0x02246804
+UpdateAndDrawMapModels kind:function(arm,size=0x268) addr:0x02246804
 DrawMapObj kind:function(arm,size=0x18) addr:0x02246a6c
-_Z19func_ov007_02246a84P16BattleCommandMapj kind:function(arm,size=0x304) addr:0x02246a84
+_Z14SetupMapCameraP16BattleCommandMapj kind:function(arm,size=0x304) addr:0x02246a84
 func_ov007_02246d88 kind:function(arm,size=0x54) addr:0x02246d88
 func_ov007_02246ddc kind:function(arm,size=0x120) addr:0x02246ddc
-func_ov007_02246efc kind:function(arm,size=0xc4) addr:0x02246efc
+SetCornerCameraOverCursorCell kind:function(arm,size=0xc4) addr:0x02246efc
 GetCornerRotYDegrees kind:function(arm,size=0x5c) addr:0x02246fc0
 FlipToCornerQuadrant kind:function(arm,size=0xc8) addr:0x0224701c
 _Z19func_ov007_022470e4P16BattleCommandMaphh kind:function(arm,size=0x10) addr:0x022470e4
@@ -559,18 +559,18 @@ ComputeCameraDistance kind:function(arm,size=0x74) addr:0x02247618
 CopyCameraYaw kind:function(arm,size=0x54) addr:0x0224768c
 CreateStatusPanels kind:function(arm,size=0xb4) addr:0x022476e0
 CreateUnitBakugansAndShadow kind:function(arm,size=0x104) addr:0x02247794
-func_ov007_02247898 kind:function(arm,size=0xd4) addr:0x02247898
+UpdateMarkerAndF00gatModels kind:function(arm,size=0xd4) addr:0x02247898
 CreateMapObj kind:function(arm,size=0x38) addr:0x0224796c
-func_ov007_022479a4 kind:function(arm,size=0x1c) addr:0x022479a4
-func_ov007_022479c0 kind:function(arm,size=0x14) addr:0x022479c0
+SetUnitBakugansEnabled kind:function(arm,size=0x1c) addr:0x022479a4
+SetUnitBakugansVisible kind:function(arm,size=0x14) addr:0x022479c0
 func_ov007_022479d4 kind:function(arm,size=0x20) addr:0x022479d4
 SetMapModelsEnabled kind:function(arm,size=0x14) addr:0x022479f4
 SetCursorAndMarkerModelsVisible kind:function(arm,size=0x14) addr:0x02247a08
 func_ov007_02247a1c kind:function(arm,size=0x20) addr:0x02247a1c
 _Z17CreateCursorModelP16BattleCommandMap kind:function(arm,size=0x40) addr:0x02247a3c
-func_ov007_02247a7c kind:function(arm,size=0x384) addr:0x02247a7c
-func_ov007_02247e00 kind:function(arm,size=0x4a8) addr:0x02247e00
-func_ov007_022482a8 kind:function(arm,size=0x378) addr:0x022482a8
+SetupTimedF00gatModelAndCamera kind:function(arm,size=0x384) addr:0x02247a7c
+SetupF00gatModelsAndCamera kind:function(arm,size=0x4a8) addr:0x02247e00
+StartStartCamPath kind:function(arm,size=0x378) addr:0x022482a8
 SetPredictVisible kind:function(arm,size=0x68) addr:0x02248620
 DrawShadowPieceXZ kind:function(arm,size=0x3c) addr:0x02248688
 DrawShadowPiece kind:function(arm,size=0x84) addr:0x022486c4
@@ -578,7 +578,7 @@ GetCornerPosition kind:function(arm,size=0x60) addr:0x02248748
 ComputeVelocity kind:function(arm,size=0x84) addr:0x022487a8
 PredictLandingAndSetCameraTarget kind:function(arm,size=0x80) addr:0x0224882c
 SetDirAndPredict kind:function(arm,size=0x64) addr:0x022488ac
-func_ov007_02248910 kind:function(arm,size=0x34) addr:0x02248910
+StartMarkerSlide kind:function(arm,size=0x34) addr:0x02248910
 _Z15GetCellPositionP7VecFx32hh kind:function(arm,size=0x54) addr:0x02248944
 FindMarkerCellAt kind:function(arm,size=0xc4) addr:0x02248998
 _ZN13BattleFontObjC1Ej kind:function(arm,size=0x24) addr:0x02248a5c
@@ -749,18 +749,18 @@ _ZN13BattleAbility16OpenUnionAbilityEv kind:function(arm,size=0xcc) addr:0x02264
 _ZN13BattleAbility19func_ov007_02264a5cEv kind:function(arm,size=0x6bc) addr:0x02264a5c
 _ZN13BattleAbility19func_ov007_02265118Ev kind:function(arm,size=0x1b0) addr:0x02265118
 _ZN13BattleAbility19func_ov007_022652c8Ev kind:function(arm,size=0x1b4) addr:0x022652c8
-_ZN13BattleAbility19func_ov007_0226547cEv kind:function(arm,size=0x29c) addr:0x0226547c
-_ZN13BattleAbility19func_ov007_02265718Ev kind:function(arm,size=0x3e0) addr:0x02265718
-_ZN13BattleAbility19func_ov007_02265af8Ev kind:function(arm,size=0x4b4) addr:0x02265af8
-_ZN13BattleAbility19func_ov007_02265facEv kind:function(arm,size=0x444) addr:0x02265fac
-_ZN13BattleAbility19func_ov007_022663f0Ev kind:function(arm,size=0x1fc) addr:0x022663f0
+_ZN13BattleAbility20UpdateReassignMarkerEv kind:function(arm,size=0x29c) addr:0x0226547c
+_ZN13BattleAbility19UpdateReplaceRecordEv kind:function(arm,size=0x3e0) addr:0x02265718
+_ZN13BattleAbility16UpdateMoveToUnitEv kind:function(arm,size=0x4b4) addr:0x02265af8
+_ZN13BattleAbility18UpdateMoveToMarkerEv kind:function(arm,size=0x444) addr:0x02265fac
+_ZN13BattleAbility15UpdateDefenseUpEv kind:function(arm,size=0x1fc) addr:0x022663f0
 _ZN13BattleAbility19func_ov007_022665ecEv kind:function(arm,size=0x27c) addr:0x022665ec
 _ZN13BattleAbility19func_ov007_02266868Ev kind:function(arm,size=0x1c0) addr:0x02266868
 _ZN13BattleAbility19func_ov007_02266a28Ev kind:function(arm,size=0x670) addr:0x02266a28
 _Z11OrbitCameraP13BattleAbility kind:function(arm,size=0x68) addr:0x02267098
 _Z25UpdateCameraToFieldEffectP13BattleAbility kind:function(arm,size=0x204) addr:0x02267100
 _Z19UpdateCameraShiftToP13BattleAbilityP7VecFx32 kind:function(arm,size=0x158) addr:0x02267304
-_Z19func_ov007_0226745cP13BattleAbilityhh kind:function(arm,size=0x370) addr:0x0226745c
+_Z18UpdateRecordAmountP13BattleAbilityhh kind:function(arm,size=0x370) addr:0x0226745c
 _Z19func_ov007_022677ccP13BattleAbility kind:function(arm,size=0xb8) addr:0x022677cc
 _Z19func_ov007_02267884P13BattleAbility kind:function(arm,size=0xc0) addr:0x02267884
 _Z19func_ov007_02267944P13BattleAbilityPt kind:function(arm,size=0xcc) addr:0x02267944
@@ -1082,11 +1082,11 @@ sUnionOneButtonItems kind:data(any) addr:0x02279a00 local
 sUnionOneButtonCells kind:data(any) addr:0x02279a1c local
 sUnionTwoButtonItems kind:data(any) addr:0x02279a38 local
 sUnionTwoButtonCells kind:data(any) addr:0x02279a70 local
-data_ov007_02279aa8 kind:data(any) addr:0x02279aa8 local
+sCommandItemX kind:data(any) addr:0x02279aa8 local
 sSubBg0Offset kind:data(any) addr:0x02279aac local
-data_ov007_02279ab0 kind:data(any) addr:0x02279ab0 local
+sCornerScreenPoints kind:data(any) addr:0x02279ab0 local
 sStartCursorPoints kind:data(any) addr:0x02279ab8 local
-data_ov007_02279ac0 kind:data(any) addr:0x02279ac0 local
+sMarkerOam kind:data(any) addr:0x02279ac0 local
 sScrollXBounds kind:data(any) addr:0x02279acc local
 sScrollYBounds kind:data(any) addr:0x02279aec local
 sCockpitItems kind:data(any) addr:0x02279b0c local
@@ -1104,10 +1104,10 @@ data_ov007_02279e80 kind:data(any) addr:0x02279e80
 gCardCameraLights kind:data(any) addr:0x02279e88
 data_ov007_02279eb0 kind:data(any) addr:0x02279eb0 local
 @1991 kind:data(any) addr:0x02279eba local
-data_ov007_02279ec4 kind:data(any) addr:0x02279ec4 local
+sPyPtFontObjOffset kind:data(any) addr:0x02279ec4 local
 sShadowPieceScale kind:data(any) addr:0x02279ed0 local
 sCameraHeights kind:data(any) addr:0x02279edc local
-data_ov007_02279efc kind:data(any) addr:0x02279efc local
+sCommandMapLights kind:data(any) addr:0x02279efc local
 sCornerPositions0 kind:data(any) addr:0x02279f24 local
 sCornerPositions1 kind:data(any) addr:0x02279f54 local
 sCornerPositions2 kind:data(any) addr:0x02279f84 local
@@ -1153,9 +1153,9 @@ sTables kind:data(any) addr:0x0227a5e0 local
 data_ov007_0227a74c kind:data(any) addr:0x0227a74c local
 data_ov007_0227a750 kind:data(any) addr:0x0227a750 local
 sShotSpeedAdjusts kind:data(any) addr:0x0227a754 local
-data_ov007_0227a75c kind:data(any) addr:0x0227a75c local
-data_ov007_0227a764 kind:data(any) addr:0x0227a764 local
-data_ov007_0227a770 kind:data(any) addr:0x0227a770 local
+sWindowCellPositions kind:data(any) addr:0x0227a75c local
+sEntryRects kind:data(any) addr:0x0227a764 local
+sCardOam kind:data(any) addr:0x0227a770 local
 sPromptWindowCells kind:data(any) addr:0x0227a77c local
 sPromptWindowItems kind:data(any) addr:0x0227a7b4 local
 data_ov007_0227a7ec kind:data(any) addr:0x0227a7ec

@@ -42,7 +42,7 @@ public:
     /* 8a */ u8 mState;
     /* 8b */ u8 mMode;
     /* 8c */ u8 mPlayer;
-    /* 8d */ u8 mUnk_8d;
+    /* 8d */ u8 mShownPlayer;
     /* 8e */ u8 mStep;
     /* 8f */ u8 mCursorPos;
     /* 90 */ u8 mScroll;

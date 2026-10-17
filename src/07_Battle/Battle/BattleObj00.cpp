@@ -30,8 +30,8 @@ void AddMarker(BattlePlayerList *list, u8 x, u8 y, u8 player, u8 slot);
 u8 PickUnflaggedSlot54(BattlePlayer *player);
 void InitCommandSubScreen(int x, int y);
 void CloseCommandMap(BattleCommandMap *map);
-extern "C" void func_ov007_022482a8(BattleCommandMap *map);
-extern "C" void func_ov007_02247e00(BattleCommandMap *map);
+extern "C" void StartStartCamPath(BattleCommandMap *map);
+extern "C" void SetupF00gatModelsAndCamera(BattleCommandMap *map);
 extern "C" void SetCursorAndMarkerModelsVisible(BattleCommandMap *map, u32 a);
 
 extern const BattleObjPair data_ov007_0227a33c[];
@@ -60,7 +60,7 @@ public:
     /* 39 */ u8 mSlot;
     /* 3a */ u8 mUnk_3a;
     /* 3b */ PAD(0x3b, 0x3c);
-    // mCorner of player BattlePlayerList::mUnk_2a9 > 1; here it only picks the BG variant (func_ov007_0223ad70)
+    // mCorner of player BattlePlayerList::mUnk_2a9 > 1; here it only picks the BG variant (LoadCommandGraphics)
     /* 3c */ u8 mFlipped;
     /* 3d */ PAD(0x3d, 0x3e);
     /* 3e */ u8 mUnk_3e;
@@ -163,7 +163,7 @@ void BattleObj00::Update() {
             mMap = new BattleCommandMap(data_020d433c.mFieldId);
             mMap->Init();
             data_020d433c.mGimmicks->mState = 1;
-            func_ov007_022482a8(mMap);
+            StartStartCamPath(mMap);
             mState++;
             return;
         case 4:
@@ -229,7 +229,7 @@ void BattleObj00::Update() {
                 return;
             }
             InitCommandSubScreen((s16) (mUnk_2a - mOffsetX), mUnk_2c);
-            func_ov007_0223ad70(mFlipped);
+            LoadCommandGraphics(mFlipped);
             if (data_020d433c.mUnk_9a_3) {
                 mContext->mRequest = 1;
                 mState           = 0x10;
@@ -244,7 +244,7 @@ void BattleObj00::Update() {
             return;
         case 11:
             InitCommandSubScreen((s16) (mUnk_2a - mOffsetX), mUnk_2c);
-            func_ov007_0223ad70(mFlipped);
+            LoadCommandGraphics(mFlipped);
             LoadGraphics();
             if (data_020d433c.mUnk_9a_3) {
                 mContext->mRequest = 1;
@@ -263,13 +263,13 @@ void BattleObj00::Update() {
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
                 if ((u8) (list->mPlayers[0]->mUnk_ee + list->mPlayers[1]->mUnk_ee) % 2 == 0) {
                     mPage = new BattleCommandPage(0, -1);
-                    func_0205562c(mPage, 1);
+                    SetCommandPageCardHidden(mPage, 1);
                     func_02055738(mPage, 0x18000, 0xe, 0);
                     new BattleCommandPrompt(0, mPage, 0, 0, 0);
                     mContext->mRequest = 0;
                 } else {
                     mPage = new BattleCommandPage(0, -1);
-                    func_0205562c(mPage, 1);
+                    SetCommandPageCardHidden(mPage, 1);
                     func_02055738(mPage, 0x18000, 0xe, 0);
                     mUnk_3e           = 1;
                     mContext->mRequest = 1;
@@ -280,13 +280,13 @@ void BattleObj00::Update() {
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
                 if (list->mPlayers[list->mUnk_2a9]->mSlots54Remaining == 0) {
                     mPage = new BattleCommandPage(0, -1);
-                    func_0205562c(mPage, 1);
+                    SetCommandPageCardHidden(mPage, 1);
                     func_02055738(mPage, 0x18000, 0xe, 0);
                     mUnk_3e           = 1;
                     mContext->mRequest = 1;
                 } else {
                     mPage = new BattleCommandPage(0, -1);
-                    func_0205562c(mPage, 1);
+                    SetCommandPageCardHidden(mPage, 1);
                     func_02055738(mPage, 0x18000, 0xe, 0);
                     if (data_020d433c.mUnk_9a_3) {
                         mContext->mRequest = 1;
@@ -375,16 +375,16 @@ void BattleObj00::Update() {
             return;
         case 18:
             InitCommandSubScreen((s16) (mUnk_2a - mOffsetX), mUnk_2c);
-            func_ov007_0223ad70(mFlipped);
+            LoadCommandGraphics(mFlipped);
             mBrightness = 0;
             mUnk_28 = 0;
             GXS_SetVisibleWnd(4);
             G2S_SetWndOBJInsidePlane(0x21, FALSE);
             G2S_SetWndOutsidePlane(0x11, FALSE);
             mMap = new BattleCommandMap(data_020d433c.mFieldId);
-            mMap->mUnk_151 = 0;
+            mMap->mStatusPanelsEnabled = 0;
             mMap->Init();
-            func_ov007_02247e00(mMap);
+            SetupF00gatModelsAndCamera(mMap);
             data_020d433c.mGimmicks->mState = 0;
             mState                         = 0x13;
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);

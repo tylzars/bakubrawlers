@@ -34,9 +34,9 @@ static const WindowCellRecord sPromptWindowCells[2] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0x1c800, 14, 0, 1, {0, 1, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0x1c800, 14, 0, 1, {2, 3, 3, 0}},
 };
-static const PromptRect data_ov007_0227a764[3] = {{0x28, 0x3f, 0x30, 0x40}, {0x68, 0x3f, 0x30, 0x40}, {0xa8, 0x3f, 0x30, 0x40}};
-static const PromptRect data_ov007_0227a75c[2] = {{0xa1, 0x85, 0x36, 0x14}, {0xd9, 0x85, 0x1e, 0x14}};
-static const u16 data_ov007_0227a770[6] = {0x2000, 0xc000, 0, 0, 0, 0};
+static const PromptRect sEntryRects[3] = {{0x28, 0x3f, 0x30, 0x40}, {0x68, 0x3f, 0x30, 0x40}, {0xa8, 0x3f, 0x30, 0x40}};
+static const PromptRect sWindowCellPositions[2] = {{0xa1, 0x85, 0x36, 0x14}, {0xd9, 0x85, 0x1e, 0x14}};
+static const u16 sCardOam[6] = {0x2000, 0xc000, 0, 0, 0, 0};
 extern MtxFx22 gIdentityMtx22;
 extern "C" void MTX_ScaleRot22(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
 
@@ -48,7 +48,7 @@ BattleCommandPrompt::BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 
     mSlideX = 0x100;
     mSlideOutDelayFrames = 0;
     mState = 0;
-    mUnk_8d = 0xff;
+    mShownPlayer = 0xff;
     mStep = 0;
     mCursorPos = 0;
     mScroll = 0;
@@ -88,37 +88,37 @@ BattleCommandPrompt::BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 
         case 1:
             mCommandPage = (BattleCommandPage *) target;
             mPlayer = data_020d433c.mBattlePlayers->mUnk_2a9;
-            mUnk_8d = 0xff;
+            mShownPlayer = 0xff;
             CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot54(0));
             break;
         case 3:
             mCommandPage = (BattleCommandPage *) target;
             mPlayer = data_020d433c.mBattlePlayers->mUnk_2a9;
-            mUnk_8d = 0xff;
+            mShownPlayer = 0xff;
             CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot6c(0));
             break;
         case 2:
             mCommandList = (BattleCommandList *) target;
             mPlayer = data_020d433c.mBattlePlayers->mUnk_2a9;
-            mUnk_8d = 0xff;
+            mShownPlayer = 0xff;
             CollectRecords();
             break;
         case 6:
             mCommandList = (BattleCommandList *) target;
             mPlayer = player;
-            mUnk_8d = player;
+            mShownPlayer = player;
             CollectRecords();
             break;
         case 5:
             mCommandPage = (BattleCommandPage *) target;
             mPlayer = player;
-            mUnk_8d = player;
+            mShownPlayer = player;
             CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot54(0));
             break;
         case 7:
             mCommandPage = (BattleCommandPage *) target;
             mPlayer = player;
-            mUnk_8d = player;
+            mShownPlayer = player;
             CollectCards((const BattlePromptSlot *) &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->Slot6c(0));
             break;
     }
@@ -300,14 +300,14 @@ void BattleCommandPrompt::Update() {
                                     case 3:
                                     case 5:
                                     case 7:
-                                        SetCommandPageCard(mCommandPage, mCardIds[sel], (s8) mUnk_8d);
+                                        SetCommandPageCard(mCommandPage, mCardIds[sel], (s8) mShownPlayer);
                                         break;
                                     case 2:
                                     case 6: {
                                         BattleRecord *rec = mRecords[sel];
-                                        SetCommandListBakugan(mCommandList, rec->mBakuganId, rec->mAttribute, (s8) mUnk_8d);
+                                        SetCommandListBakugan(mCommandList, rec->mBakuganId, rec->mAttribute, (s8) mShownPlayer);
                                         rec = mRecords[sel];
-                                        func_0205afb4(mCommandList, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
+                                        SetCommandListValues(mCommandList, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
                                         break;
                                     }
                                 }
@@ -337,14 +337,14 @@ void BattleCommandPrompt::Update() {
                                     case 3:
                                     case 5:
                                     case 7:
-                                        SetCommandPageCard(mCommandPage, mCardIds[sel], (s8) mUnk_8d);
+                                        SetCommandPageCard(mCommandPage, mCardIds[sel], (s8) mShownPlayer);
                                         break;
                                     case 2:
                                     case 6: {
                                         BattleRecord *rec = mRecords[sel];
-                                        SetCommandListBakugan(mCommandList, rec->mBakuganId, rec->mAttribute, (s8) mUnk_8d);
+                                        SetCommandListBakugan(mCommandList, rec->mBakuganId, rec->mAttribute, (s8) mShownPlayer);
                                         rec = mRecords[sel];
-                                        func_0205afb4(mCommandList, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
+                                        SetCommandListValues(mCommandList, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
                                         break;
                                     }
                                 }
@@ -357,7 +357,7 @@ void BattleCommandPrompt::Update() {
                         do {
                             u32 tx = TouchManager::Get().mX;
                             u32 ty = TouchManager::Get().mY;
-                            if (data_ov007_0227a764[i].x < tx && tx < data_ov007_0227a764[i].x + data_ov007_0227a764[i].w && data_ov007_0227a764[i].y < ty && ty < data_ov007_0227a764[i].y + data_ov007_0227a764[i].h) {
+                            if (sEntryRects[i].x < tx && tx < sEntryRects[i].x + sEntryRects[i].w && sEntryRects[i].y < ty && ty < sEntryRects[i].y + sEntryRects[i].h) {
                                 if (TouchManager::Get().mReleased) {
                                     if (i <= mCount - 1) {
                                         if (mCursorPos != i) {
@@ -374,13 +374,13 @@ void BattleCommandPrompt::Update() {
                                             case 3:
                                             case 5:
                                             case 7:
-                                                SetCommandPageCard(mCommandPage, mCardIds[mCursorPos + mScroll], (s8) mUnk_8d);
+                                                SetCommandPageCard(mCommandPage, mCardIds[mCursorPos + mScroll], (s8) mShownPlayer);
                                                 break;
                                             case 2:
                                             case 6: {
-                                                SetCommandListBakugan(mCommandList, mRecords[mCursorPos + mScroll]->mBakuganId, mRecords[mCursorPos + mScroll]->mAttribute, (s8) mUnk_8d);
+                                                SetCommandListBakugan(mCommandList, mRecords[mCursorPos + mScroll]->mBakuganId, mRecords[mCursorPos + mScroll]->mAttribute, (s8) mShownPlayer);
                                                 BattleRecord *rec = mRecords[mCursorPos + mScroll];
-                                                func_0205afb4(mCommandList, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
+                                                SetCommandListValues(mCommandList, rec->mAttribute, (u16) (rec->mUnk_04 + rec->mUnk_06), (BattleCellPair *) rec);
                                                 break;
                                             }
                                         }
@@ -416,7 +416,7 @@ void BattleCommandPrompt::Update() {
                     u8 i = 0;
                     do {
                         if (mDisabledBits[(u32) i >> 3] & (1 << ((int) i % 8))) {
-                            mStateCellAnims[2]->Draw(1, (s16) (mSlideX + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0);
+                            mStateCellAnims[2]->Draw(1, (s16) (mSlideX + sEntryRects[i].x), sEntryRects[i].y, 0);
                         }
                         i++;
                     } while (i < n);
@@ -431,7 +431,7 @@ void BattleCommandPrompt::Update() {
                     u8 i = 0;
                     do {
                         if ((mKinds + mScroll)[i] != 0) {
-                            mStateCellAnims[0]->Draw(1, (s16) (mSlideX + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0);
+                            mStateCellAnims[0]->Draw(1, (s16) (mSlideX + sEntryRects[i].x), sEntryRects[i].y, 0);
                         }
                         i++;
                     } while (i < n);
@@ -446,9 +446,9 @@ void BattleCommandPrompt::Update() {
                     do {
                         u8 v = (mKinds + mScroll)[i];
                         if (v == 2) {
-                            mStateCellAnims[0]->Draw(1, (s16) (mSlideX + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0);
+                            mStateCellAnims[0]->Draw(1, (s16) (mSlideX + sEntryRects[i].x), sEntryRects[i].y, 0);
                         } else if (v == 1) {
-                            mStateCellAnims[1]->Draw(1, (s16) (mSlideX + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0);
+                            mStateCellAnims[1]->Draw(1, (s16) (mSlideX + sEntryRects[i].x), sEntryRects[i].y, 0);
                         }
                         i++;
                     } while (i < n);
@@ -456,15 +456,15 @@ void BattleCommandPrompt::Update() {
                 }
             }
             mCursorAnim->Update();
-            mCursorAnim->Draw(1, (s16) (mSlideX + data_ov007_0227a764[mCursorPos].x), data_ov007_0227a764[mCursorPos].y, 0);
+            mCursorAnim->Draw(1, (s16) (mSlideX + sEntryRects[mCursorPos].x), sEntryRects[mCursorPos].y, 0);
             mMessageWindow->func_02065bd4((s16) (mSlideX + 0x20), 0x28, 0);
             mMessageWindow->Update();
             {
                 u8 i = 0;
                 do {
                     SelectWindow *w = mWindow;
-                    w->mCellPos[i].x = mSlideX + data_ov007_0227a75c[i].x;
-                    w->mCellPos[i].y = data_ov007_0227a75c[i].y;
+                    w->mCellPos[i].x = mSlideX + sWindowCellPositions[i].x;
+                    w->mCellPos[i].y = sWindowCellPositions[i].y;
                     i++;
                 } while (i < 2);
             }
@@ -493,7 +493,7 @@ void BattleCommandPrompt::Update() {
                     }
                     u8 i = 0;
                     do {
-                        screen.AddOam((void *)data_ov007_0227a770, 1, (s16) (mSlideX + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0,
+                        screen.AddOam((void *)sCardOam, 1, (s16) (mSlideX + sEntryRects[i].x), sEntryRects[i].y, 0,
                                              ((mCharOffset + (i + mScroll) * 0x1800) << 9) >> 16, (s8) (mScroll + (i + 10)), 0);
                         i++;
                     } while (i < n);
@@ -515,13 +515,13 @@ void BattleCommandPrompt::Update() {
                         digits[2] = 0;
                         u8 j      = 0;
                         do {
-                            mDigitCellAnim->DrawFrame(1, digits[j], (s16) (mSlideX + data_ov007_0227a764[i].x + 4 + j * 13),
-                                                   (s16) (data_ov007_0227a764[i].y + 0x36), 0);
+                            mDigitCellAnim->DrawFrame(1, digits[j], (s16) (mSlideX + sEntryRects[i].x + 4 + j * 13),
+                                                   (s16) (sEntryRects[i].y + 0x36), 0);
                             j++;
                         } while (j < 3);
                         mBakuganSubCellAnims[i + mScroll]->Update();
-                        mBakuganSubCellAnims[i + mScroll]->DrawFrame(1, mRecords[i + mScroll]->mAttribute, (s16) (mSlideX + data_ov007_0227a764[i].x),
-                                                            data_ov007_0227a764[i].y, 0);
+                        mBakuganSubCellAnims[i + mScroll]->DrawFrame(1, mRecords[i + mScroll]->mAttribute, (s16) (mSlideX + sEntryRects[i].x),
+                                                            sEntryRects[i].y, 0);
                         i++;
                     } while (i < n);
                     return;
@@ -709,7 +709,7 @@ void BattleCommandPrompt::CollectCards(const BattlePromptSlot *slot) {
         i++;
         slot++;
     } while (i < data_020d433c.mUnk_99);
-    SetCommandPageCard(mCommandPage, mCardIds[mCursorPos + mScroll], (s8) mUnk_8d);
+    SetCommandPageCard(mCommandPage, mCardIds[mCursorPos + mScroll], (s8) mShownPlayer);
 }
 
 void BattleCommandPrompt::CollectRecords() {
@@ -738,7 +738,7 @@ void BattleCommandPrompt::CollectRecords() {
         }
         i++;
     } while (i < data_020d433c.mUnk_99);
-    SetCommandListBakugan(mCommandList, mRecords[mCursorPos + mScroll]->mBakuganId, mRecords[mCursorPos + mScroll]->mAttribute, (s8) mUnk_8d);
+    SetCommandListBakugan(mCommandList, mRecords[mCursorPos + mScroll]->mBakuganId, mRecords[mCursorPos + mScroll]->mAttribute, (s8) mShownPlayer);
     BattleRecord *r = mRecords[mCursorPos + mScroll];
-    func_0205afb4(mCommandList, r->mAttribute, (u16) (r->mUnk_04 + r->mUnk_06), (BattleCellPair *) r);
+    SetCommandListValues(mCommandList, r->mAttribute, (u16) (r->mUnk_04 + r->mUnk_06), (BattleCellPair *) r);
 }

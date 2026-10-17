@@ -1142,7 +1142,7 @@ void ListScene::Update() {
             if (func_02078270(mUnk_1e0)) {
                 UnkStruct_02023248 *pair = GetBakuganEntry(&gSaveData[0], mItemIds[mCursorItem] & 0xff, mListFilter);
                 u16 val = func_020231f4(&gSaveData[0], 0, mItemIds[mCursorItem] & 0xff, mListFilter);
-                func_0205afb4(mCommandList, mListFilter, val, (BattleCellPair *) pair);
+                SetCommandListValues(mCommandList, mListFilter, val, (BattleCellPair *) pair);
             }
             if (func_020779ec(mUnk_1e0) == 0) {
                 return;
@@ -2962,13 +2962,13 @@ void ListScene::RefreshCommandList() {
                 return;
             }
             if (mItemCount == 0) {
-                func_02058228(mCommandList, 1);
+                SetCommandListBakuganHidden(mCommandList, 1);
                 return;
             }
-            func_02058228(mCommandList, 0);
+            SetCommandListBakuganHidden(mCommandList, 0);
             FillInitialEntry(this, (u8) mItemIds[mCursorItem], mListFilter, &cell);
             SetCommandListBakugan(mCommandList, (u8) mItemIds[mCursorItem], mListFilter, -1);
-            func_0205afb4(mCommandList, mListFilter, func_02086548((u8) mItemIds[mCursorItem], mListFilter), &cell);
+            SetCommandListValues(mCommandList, mListFilter, func_02086548((u8) mItemIds[mCursorItem], mListFilter), &cell);
             return;
         }
         case 1: {
@@ -2977,13 +2977,13 @@ void ListScene::RefreshCommandList() {
                 return;
             }
             if (mItemCount == 0) {
-                func_02058228(mCommandList, 1);
+                SetCommandListBakuganHidden(mCommandList, 1);
                 return;
             }
-            func_02058228(mCommandList, 0);
+            SetCommandListBakuganHidden(mCommandList, 0);
             pair = (BattleCellPair *) GetBakuganEntry(gSaveData, (u8) mItemIds[mCursorItem], mListFilter);
             SetCommandListBakugan(mCommandList, (u8) mItemIds[mCursorItem], mListFilter, -1);
-            func_0205afb4(mCommandList, mListFilter, func_020231f4(gSaveData, 0, (u8) mItemIds[mCursorItem], mListFilter), pair);
+            SetCommandListValues(mCommandList, mListFilter, func_020231f4(gSaveData, 0, (u8) mItemIds[mCursorItem], mListFilter), pair);
             return;
         }
         case 3:
@@ -2996,7 +2996,7 @@ void ListScene::RefreshCommandList() {
             }
             if (mSelectingPage != 0) {
                 if (mFirstSlotOnly != 0 && mPage != 1) {
-                    func_02058228(mCommandList, 1);
+                    SetCommandListBakuganHidden(mCommandList, 1);
                     return;
                 }
                 if (mCharacterId != 0x15) {
@@ -3013,7 +3013,7 @@ void ListScene::RefreshCommandList() {
                 }
             } else {
                 if (mItemCount == 0) {
-                    func_02058228(mCommandList, 1);
+                    SetCommandListBakuganHidden(mCommandList, 1);
                     return;
                 }
                 kind  = mListFilter;
@@ -3021,9 +3021,9 @@ void ListScene::RefreshCommandList() {
                 pair  = (BattleCellPair *) GetBakuganEntry(gSaveData, id, kind);
                 value = func_020231f4(gSaveData, 0, id, kind);
             }
-            func_02058228(mCommandList, 0);
+            SetCommandListBakuganHidden(mCommandList, 0);
             SetCommandListBakugan(mCommandList, id, kind, -1);
-            func_0205afb4(mCommandList, kind, value, pair);
+            SetCommandListValues(mCommandList, kind, value, pair);
             return;
         }
         case 4: {
@@ -3038,14 +3038,14 @@ void ListScene::RefreshCommandList() {
                 return;
             }
             if (mItemCount == 0) {
-                func_02058228(mCommandList, 1);
+                SetCommandListBakuganHidden(mCommandList, 1);
                 return;
             }
-            func_02058228(mCommandList, 0);
+            SetCommandListBakuganHidden(mCommandList, 0);
             BattleCellPair *pair = (BattleCellPair *) GetBakuganEntry(gSaveData, (u8) mItemIds[mCursorItem], mListFilter);
             SetCommandListBakugan(mCommandList, (u8) mItemIds[mCursorItem], mListFilter, -1);
             u32 value = func_020231f4(gSaveData, 0, (u8) mItemIds[mCursorItem], mListFilter);
-            func_0205afb4(mCommandList, mListFilter, value, pair);
+            SetCommandListValues(mCommandList, mListFilter, value, pair);
             break;
         }
     }
@@ -3638,7 +3638,7 @@ void SetupListTextKind(ListScene *self, u32 mode) {
             BattleCellPair *pair = (BattleCellPair *) GetBakuganEntry(gSaveData, (u8) self->mItemIds[self->mCursorItem], self->mListFilter);
             SetCommandListBakugan(self->mCommandList, (u8) self->mItemIds[self->mCursorItem], self->mListFilter, -1);
             u32 value = func_020231f4(gSaveData, state, (u8) self->mItemIds[self->mCursorItem], self->mListFilter);
-            func_0205afb4(self->mCommandList, self->mListFilter, value, pair);
+            SetCommandListValues(self->mCommandList, self->mListFilter, value, pair);
             self->mCommandList->func_02058240(1);
             state = 1;
             flag  = 0;

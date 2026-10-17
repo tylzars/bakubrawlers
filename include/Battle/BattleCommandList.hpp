@@ -51,10 +51,10 @@ public:
     /* 140 */ u8 mLoadStep;
     /* 141 */ PAD(0x141, 0x142);
     /* 142 */ u16 mValues[6];
-    /* 14e */ u8 mUnk_14e;
-    /* 14f */ u8 mUnk_14f;
-    /* 150 */ u8 mUnk_150;
-    /* 151 */ u8 mUnk_151;
+    /* 14e */ u8 mBakuganId;
+    /* 14f */ u8 mNextBakuganId;
+    /* 150 */ u8 mAttribute;
+    /* 151 */ u8 mNextAttribute;
     /* 152 */ s8 mPlayer;
     /* 153 */ PAD(0x153, 0x154);
     /* 154 */ u16 mNameWidth;
@@ -63,12 +63,12 @@ public:
     /* 158 */ u8 mWindowVisible;
     /* 159 */ u8 mState;
     /* 15a */ u8 mUnk_15a;
-    /* 15b */ u8 mUnk_15b;
-    /* 15c */ u8 mUnk_15c;
+    /* 15b */ u8 mPage;
+    /* 15c */ u8 mNextPage;
     /* 15d */ u8 mVisible; // draw gate; UpdatePage's count-up and the window update are skipped with it
     /* 15e */ u8 mCloseRequested;
-    /* 15f */ u8 mUnk_15f;
-    /* 160 */ u8 mUnk_160;
+    /* 15f */ u8 mBakuganHidden;
+    /* 160 */ u8 mHideBakuganRequested;
     /* 161 */ u8 mUnk_161;
     /* 162 */ u8 mUnk_162;
     /* 163 */ u8 mFourItems; // always 0 in this build: every CreateCommandListWindow call passes g = 0
@@ -85,7 +85,7 @@ public:
     BOOL IsSettingUp();
     void SetWindowVisible(u32 enable); // the gate also stops UpdateWindow; enabling does nothing while mWindow is NULL
     void UpdateWindow(); // a chosen item steps the page (CyclePage)
-    // Item 1 steps forward (enabled while mUnk_15b <= mLastTextPage), item 0 back; a disabled item gets flag 0x8000,
+    // Item 1 steps forward (enabled while mPage <= mLastTextPage), item 0 back; a disabled item gets flag 0x8000,
     // which the cursor skips.
     void UpdateListItems();
     BOOL IsListItemEnabled(u32 right);
@@ -98,8 +98,8 @@ public:
     void DrawName();
     void ClearText();
     void DrawBakugan();
-    void UpdatePage(); // also runs the count-up StartCountUp began; with mUnk_15f set only mCells3c[2] is drawn
-    void func_0205aea4();
+    void UpdatePage(); // also runs the count-up StartCountUp began; with mBakuganHidden set only mCells3c[2] is drawn
+    void DrawCardspecBack();
     void ClearValues();
     void SetValue(u32 index, u32 value);
     void StartCountUp(u32 value); // ignored while a count-up runs; UpdatePage advances it
@@ -129,13 +129,13 @@ struct BattleCellPair {
     };
 };
 
-void func_0205afb4(BattleCommandList *list, u32 a, u32 b, BattleCellPair *pair);
-void func_0205b1c4(u32 index, u32 unk2);
+void SetCommandListValues(BattleCommandList *list, u32 a, u32 b, BattleCellPair *pair);
+void SetInitialEntryFields(u32 index, u32 unk2);
 
 void CloseCommandList(BattleCommandList *list); // asks the list to end (mCloseRequested)
-void func_02058228(BattleCommandList *list, u32 a);
+void SetCommandListBakuganHidden(BattleCommandList *list, u32 a);
 void func_02058248(BattleCommandList *list, u8 b);
-// Also sets mPlayer = c % 4 (-1, with mUnk_16 cleared, when c < 0) and clears mUnk_160 (and mUnk_15f in state 1 or
+// Also sets mPlayer = c % 4 (-1, with mUnk_16 cleared, when c < 0) and clears mHideBakuganRequested (and mBakuganHidden in state 1 or
 // when the ids are unchanged).
 void SetCommandListBakugan(BattleCommandList *list, u8 a, u8 b, s32 c);
 void CreateCommandListWindow(BattleCommandList *list, u32 a, u32 b, s16 c, s16 d, s16 e, s16 f, u32 g);

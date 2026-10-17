@@ -24,7 +24,7 @@ class BattleCommandPrompt;
 #define COMMAND_MODE_PAGE    3 // mCommandPage (BattleCommandPage)
 #define COMMAND_MODE_LIST    4 // mCommandList (BattleCommandList)
 
-// What BattleCommand hands back when it ends: mUnk_134, passed to RequestScene and so written into the parent
+// What BattleCommand hands back when it ends: mNextScene, passed to RequestScene and so written into the parent
 // BattlePlayerList's mContext->mRequest (not a SCENE_* id), which its state 13 switches on.
 // SHOOT: a record was picked in the BattleCommandList prompt; the list opens BattleShoot.
 // SHOOT_FROM_MSG: the turn player's mMsg (type 8) gave the record; the list opens BattleShoot with the shot in mMsg.
@@ -37,7 +37,7 @@ class BattleCommandPrompt;
 #define COMMAND_RESULT_BATTLE_RESULT  5 // func_ov007_02263150 held; the list opens BattleResult
 #define COMMAND_RESULT_NO_MARKERS     6 // no marker has a non-zero mStatus; the list opens BattleObj00(1)
 // 7 (state 50: BattleUnk0227532c returned 2 and data_020d433c.mWireless is 0) is left a literal: the list goes to
-// its state 36 (also entered from its state 17), which requests SCENE_MAP or, in wireless mode or when mNextScene is
+// its state 36 (also entered from its state 17), which requests SCENE_MAP or, in wireless mode or when data_020d433c.mNextScene is
 // SCENE_ARENA_WINDOW, goes to its state 32.
 
 // Main battle command screen (battle_b_obj_00, mes_Command, union_b cockpit): the command windows, the turn
@@ -48,13 +48,13 @@ public:
     /* 0c */ CellAnimation *mCursorAnim;
     /* 10 */ CellAnimation *mUnk_10;
     /* 14 */ CellAnimation *mUnk_14;
-    /* 18 */ CellAnimation *mUnk_18;
-    /* 1c */ CellAnimation *mUnk_1c;
+    /* 18 */ CellAnimation *mLocalPlayerCellAnim;
+    /* 1c */ CellAnimation *mPartnerCellAnim;
     /* 20 */ CellAnimation *mTurnCellAnim;
     /* 24 */ CellAnimation *mTurnDigitsCellAnim;
-    /* 28 */ CellAnimation *mUnk_28;
+    /* 28 */ CellAnimation *mTutorialCellAnim;
     /* 2c */ CellAnimation *mPlayerCellAnims[4];
-    /* 3c */ CellAnimation *mUnitCellAnims[12]; // [k] drawn for the k-th occupied cell each frame, frame = mPlayer
+    /* 3c */ CellAnimation *mUnitCellAnims[12]; // [k] drawn for the k-th occupied cell each frame, frame = the unit's mPlayer
     /* 6c */ SelectWindow *mCommandWindow;
     /* 70 */ SelectWindow *mCockpitWindow;
     /* 74 */ SelectWindow *mPromptWindow;
@@ -66,25 +66,25 @@ public:
     /* 8c */ BattleCommandPrompt *mCommandPrompt; // ended with CloseCommandPrompt(obj, flag)
     /* 90 */ u8 mGridMask[14][10];
     /* 11c */ u16 mUnk_11c;
-    /* 11e */ u16 mUnk_11e;
+    /* 11e */ u16 mAddMarkerFrames;
     /* 120 */ s16 mScrollX;
     /* 122 */ s16 mScrollY;
-    /* 124 */ s16 mUnk_124;
-    /* 126 */ s16 mUnk_126;
+    /* 124 */ s16 mGridTouchX;
+    /* 126 */ s16 mGridTouchY;
     /* 128 */ u8 mState;
-    /* 129 */ u8 mUnk_129;
+    /* 129 */ u8 mDragScrolling;
     /* 12a */ u8 mMode; // COMMAND_MODE_*
     /* 12b */ u8 mNextMode; // COMMAND_MODE_* that OpenNextMode opens
     /* 12c */ u8 mCursorX;
     /* 12d */ u8 mCursorY;
     /* 12e */ u8 mUnk_12e;
-    /* 12f */ u8 mUnk_12f;
+    /* 12f */ u8 mBlendBrightness;
     /* 130 */ u8 mUnk_130;
     /* 131 */ PAD(0x131, 0x132);
-    /* 132 */ u8 mUnk_132;
-    /* 133 */ u8 mUnk_133;
-    /* 134 */ u8 mUnk_134; // COMMAND_RESULT_* (or 7), requested when the screen ends
-    /* 135 */ u8 mFlipped; // both axes (13 - x, 9 - y) and corner sides + 2; also the BG variant of func_ov007_0223ad70
+    /* 132 */ u8 mPickIndex;
+    /* 133 */ u8 mPlayer;
+    /* 134 */ u8 mNextScene; // COMMAND_RESULT_* (or 7), requested when the screen ends
+    /* 135 */ u8 mFlipped; // both axes (13 - x, 9 - y) and corner sides + 2; also the BG variant of LoadCommandGraphics
     /* 136 */ s8 mSelectedId;
     /* 137 */ PAD(0x137, 0x138);
     /* 138 */ u8 mPromptStep;
@@ -117,7 +117,7 @@ public:
     void LoadTurnGraphics();
     BOOL UpdatePrompt();
     // In COMMAND_MODE_MAP also turns the map camera one degree per frame while 0x200 or 0x100 is held, and with the
-    // other pressed too calls func_ov007_02246a84(map, 2) (the camera SwitchMode sets up); that call returns early,
+    // other pressed too calls SetupMapCamera(map, 2) (the camera SwitchMode sets up); that call returns early,
     // without sound 5 and the refresh.
     void UpdateCursorScrollAndCamera(u32 flag);
 };
@@ -140,7 +140,7 @@ public:
     /* 18 */ void *mUnk_18[12];
     /* 48 */ BattleMapModel *mMarkerModel;
     /* 4c */ BattleMapModel *mCursorModel;
-    /* 50 */ BattleMapModel *mUnk_50[4]; // F00GAT models at cells (one or one per player); freed by 022455c0 / 0224560c
+    /* 50 */ BattleMapModel *mF00gatModels[4]; // F00GAT models at cells (one or one per player); freed by 022455c0 / 0224560c
     /* 60 */ ModelLightGroup *mLights; // created and deleted only; never applied by this class
     /* 64 */ BattleMapPiece *mPredictPiece;
     /* 68 */ BattleMapPiece *mLandingPiece;
@@ -158,27 +158,27 @@ public:
     /* 12c */ u32 mStopStepCount;
     /* 130 */ s32 mCameraDistance;
     /* 134 */ float mPredictOffset;
-    /* 138 */ s32 mUnk_138;
+    /* 138 */ s32 mMarkerSlideX;
     /* 13c */ u16 mDirRotY;
     /* 13e */ u16 mDirRotZ;
     /* 140 */ u16 mDirScale;
-    /* 142 */ u16 mUnk_142;
+    /* 142 */ u16 mF00gatTimer;
     /* 144 */ u16 mCameraMoveTimer;
     /* 146 */ u16 mCameraYawDegrees;
     /* 148 */ u8 mCursorX; // with mCursorY: written by SetCursorCellAndMoveCamera and BattleTarget::func_ov007_0225b69c
     /* 149 */ u8 mCursorY;
     /* 14a */ u8 mState;
     /* 14b */ u8 mKind;
-    /* 14c */ u8 mUnk_14c;
+    /* 14c */ u8 mUnitBakugansEnabled;
     /* 14d */ u8 mMapModelsEnabled;
     /* 14e */ PAD(0x14e, 0x14f);
     /* 14f */ u8 mPredictVisible;
     /* 150 */ u8 mUnk_150;
-    /* 151 */ u8 mUnk_151;
-    /* 152 */ u8 mUnk_152;
+    /* 151 */ u8 mStatusPanelsEnabled;
+    /* 152 */ u8 mUnitBakugansVisible;
     /* 153 */ u8 mCursorAndMarkerModelsVisible;
     /* 154 */ u8 mUnk_154;
-    /* 155 */ u8 mUnk_155;
+    /* 155 */ u8 mMarkerSlideStep;
     /* 156 */ PAD(0x156, 0x158);
     /* 158 */
 
@@ -187,8 +187,8 @@ public:
     /* 08 */ virtual void Update();
     /* 0c */ virtual void Init();
     void FreeStartCamFile();
-    void func_ov007_022455c0(); // deletes and clears the four mUnk_50 models
-    void func_ov007_0224560c(u32 index);
+    void FreeF00gatModels(); // deletes and clears the four mUnk_50 models
+    void FreeTimedF00gatModel(u32 index);
     void func_ov007_02245894();
     void func_ov007_022458cc();
     void func_ov007_022458f4();
@@ -210,4 +210,4 @@ extern "C" u32 FindMarkerCellAt(VecFx32 *v, u8 *outA, u8 *outB);
 
 // Loads the battle_b_bg files of data_020d433c.mFieldId (or the "last" set), then battle_b_obj_00, the union_b cockpit
 // and page characters and card_s_000, and sets data_020d433c.mUnk_10's layout 8.
-void func_ov007_0223ad70(u32 variant);
+void LoadCommandGraphics(u32 variant);

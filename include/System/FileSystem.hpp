@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-// Path prefix applied to relative file names.
+// Text copy of the directory last passed to ChangeDir ("/" after InitFileSystem); nothing reads it.
 extern char gCurrentDir[];
 
 extern "C" BOOL FS_ChangeDir(const char *dir);
@@ -21,7 +21,9 @@ void *GetAsyncLoadBuffer(); // data of the finished asynchronous load
 u8 IsAsyncLoadActive();    // nonzero while the asynchronous load is busy
 void StopAsyncLoad();
 
-// Loads a BG resource file (palette, characters or screen) and uploads it. Returns offset + size.
+// Loads a file and hands it to QueueUpload with freeData = 1. Returns offset + size.
 u32 LoadAndQueueUpload(u32 screen, u32 kind, u32 offset, const char *path, u32 unk5, u32 unk6, u32 unk7);
-// Uploads a buffer to BG memory. Returns offset + size.
+// Uploads a buffer to VRAM at once while the screen's master brightness is -16 or 16 (or func_0200d924 returns 0);
+// otherwise queues it, replacing a queued upload of the same screen and kind whose range it covers. Returns offset +
+// size.
 u32 QueueUpload(u32 bg, u32 kind, u32 offset, void *data, u32 size, u32 unk6);

@@ -118,9 +118,9 @@ BattleField3D::~BattleField3D() {
     if (mSide0RealBaku) {
         delete mSide0RealBaku;
     }
-    ModelLightGroup *palette = mLights;
-    if (palette) {
-        delete palette;
+    ModelLightGroup *lights = mLights;
+    if (lights) {
+        delete lights;
     }
     OS_Free(mCamFile);
     BattleMapObj *map = mMapObj;
@@ -216,14 +216,14 @@ void FreeAuras(BattleField3D *obj) {
     }
 }
 
-void BattleField3D::FollowPushPercent(u32 frame) {
-    if (frame < 0x14) {
-        frame = 0x14;
-    } else if (frame > 0x50) {
-        frame = 0x50;
+void BattleField3D::FollowPushPercent(u32 percent) {
+    if (percent < 0x14) {
+        percent = 0x14;
+    } else if (percent > 0x50) {
+        percent = 0x50;
     }
     float k = 4.0f;
-    float t = (float) (u8) (frame - 0x14) * k / 60.0f;
+    float t = (float) (u8) (percent - 0x14) * k / 60.0f;
     float f;
     if (t > 0.0f) {
         f = 0.5f + 4096.0f * t;
@@ -247,11 +247,11 @@ void BattleField3D::FollowPushPercent(u32 frame) {
     mFollowOffset = target;
 }
 
-void BattleField3D::Draw(u32 frame) {
+void BattleField3D::Draw(u32 percent) {
     VecFx32 scale = data_ov007_022791a0;
     MtxFx43 mtx = gIdentityMtx43;
     if (mUnk_04_0) {
-        FollowPushPercent(frame);
+        FollowPushPercent(percent);
     }
     if (!mUnk_04_1) {
         MTX_SetTranslation43(&mtx, &mPos[0]);

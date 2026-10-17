@@ -7,7 +7,7 @@ class ConfrontEmblem02;
 
 // One row of the emblem drop schedule (table at 02278bf8, 5 rows).
 struct ConfrontEmblemStep {
-    /* 00 */ u16 mUntil;   // upper bound of the cumulative phase length (compared with BattleBase::mUnk_16)
+    /* 00 */ u16 mUntil;   // upper bound of the cumulative phase length (compared with BattleBase::mElapsedFrames)
     /* 02 */ u8 mMinDelay;
     /* 03 */ u8 mMaxDelay;
     /* 04 */
@@ -20,7 +20,7 @@ public:
     /* 68 */ u16 mDelay;
     /* 6a */ u8 mSide;
     /* 6b */ PAD(0x6b, 0x6c);
-    /* 6c */ ConfrontEmblemStep *mStep;
+    /* 6c */ ConfrontEmblemStep *mEmblemStep;
     /* 70 */ BattleData *mData;
     /* 74 */ CellAnimation *mCellAnims[3]; // [0] emblem of the local player (0x1c000), [1] marker (0x1e000), [2] line (0x1d000)
     /* 80 */ ConfrontEmblem02 *mEmblems[4];

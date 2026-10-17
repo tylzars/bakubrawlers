@@ -18,7 +18,7 @@ struct BattleObj01Motion {
 // A sprite pair (vs_b_obj_01) that flies from a start point towards a target.
 class BattleObj01 : public BattleObject {
 public:
-    /* 04 */ u8 mActive : 1;
+    /* 04 */ u8 mMoving : 1; // set by Start, cleared on arrival; Update moves and draws only while set
     /* 05 */ u8 mUnk_05;
     /* 06 */ PAD(0x06, 0x08);
     /* 08 */ float mSpeed;

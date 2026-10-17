@@ -622,7 +622,7 @@ extern "C" void func_ov007_02246804(BattleCommandMap *map) {
     s32 neg = -0x6000;
     u8 j    = 0;
     do {
-        BattleMarker *marker = &data_020d433c.mBattlePlayers->Entries()[j];
+        BattleMarker *marker = &data_020d433c.mBattlePlayers->Markers()[j];
         if (marker->mStatus == 1) {
             if (map->mMarkerModel) {
                 VecFx32 b;
@@ -653,7 +653,7 @@ extern "C" void func_ov007_02246804(BattleCommandMap *map) {
                     map->mUnk_138 = map->mUnk_138 - 0x3000;
                     map->mMarkerModel->mModel->AdvanceAnim();
                     if (map->mMarkerModel->mModel->GetAnimFrame() <= 0x6000) {
-                        data_020d433c.mBattlePlayers->Entries()[j].mStatus = 1;
+                        data_020d433c.mBattlePlayers->Markers()[j].mStatus = 1;
                     }
                 }
                 c.x += map->mUnk_138;
@@ -983,7 +983,7 @@ extern "C" void func_ov007_02247898(BattleCommandMap *map) {
     }
     u8 i = 0;
     do {
-        if (data_020d433c.mBattlePlayers->Entries()[i].mStatus == 1 && map->mMarkerModel == 0) {
+        if (data_020d433c.mBattlePlayers->Markers()[i].mStatus == 1 && map->mMarkerModel == 0) {
             map->mMarkerModel = new BattleMapModel(0);
         }
         i++;
@@ -1270,7 +1270,7 @@ void GetCellPosition(VecFx32 *out, u8 a, u8 b) {
 extern "C" u32 FindMarkerCellAt(VecFx32 *v, u8 *outA, u8 *outB) {
     u8 i = 0;
     do {
-        BattleMarker *marker = &data_020d433c.mBattlePlayers->Entries()[i];
+        BattleMarker *marker = &data_020d433c.mBattlePlayers->Markers()[i];
         if (marker->mStatus != 0) {
             VecFx32 p;
             GetCellPosition(&p, marker->mCellX, marker->mCellY);

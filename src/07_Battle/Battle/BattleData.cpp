@@ -205,7 +205,7 @@ void BattleData::DrawCharacterIcons(u8 side, s16 x, s16 y) {
     px     = x + offset;
     top    = y - 4;
     mCellAnims[side + 7]->Draw(1, (s16) (px - 6), (s16) top, 2);
-    if (data_020d433c.mBattlePlayers->mPlayers[mEntries[side].mUnk_0d_4]->IsActive()) {
+    if (data_020d433c.mBattlePlayers->mPlayers[mEntries[side].mUnk_0d_4]->IsCpu()) {
         mCellAnims[12]->DrawFrame(1, mEntries[side].mUnk_0d_4, px - 6, top, 2);
     }
     mCellAnims[9]->Draw(1, (s16) (px - 2), (s16) (y - 2), 3);

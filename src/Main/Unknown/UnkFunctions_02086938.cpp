@@ -405,23 +405,23 @@ BOOL UnlockFields() {
 BOOL func_02086d48() {
     BOOL result = FALSE;
     u32 level   = 0;
-    u16 points  = data_020d48f0.mRank;
-    if (points <= 500) {
+    u16 rank    = data_020d48f0.mRank;
+    if (rank <= 500) {
         level = 1;
     }
-    if (points <= 100) {
+    if (rank <= 100) {
         level = 2;
     }
-    if (points <= 30) {
+    if (rank <= 30) {
         level = 3;
     }
-    if (points <= 10) {
+    if (rank <= 10) {
         level = 4;
     }
-    if (points <= 3) {
+    if (rank <= 3) {
         level = 5;
     }
-    if (points <= 1) {
+    if (rank <= 1) {
         if (gSaveData[0].mUnk_5bf_0 != 0) {
             level = 6;
         }

@@ -5,7 +5,7 @@
 
 struct UnkStruct_02023248 {
     /* 0 */ u16 mUnk_00_0 : 4;
-    /* 0 */ u16 mPad : 12;
+    /* 0 */ u16 mGauge : 12; // BattlePlayer copies the entry into BattleRecord::mHead, whose mGauge this is
     /* 2 */ u16 mUnk_0 : 3;
     /* 2 */ u16 mUnk_3 : 3;
     /* 2 */ u16 mUnk_6 : 3;
@@ -46,7 +46,7 @@ struct SaveData {
     /* 020 */ u32 mUnk_20;
     /* 024 */ u8 mUnk_24;
     /* 025 */ u8 mUnk_25;
-    /* 026 */ u8 mLanguage;
+    /* 026 */ u8 mLanguage; // written by SaveWindow; nothing in this build reads it back
     union {
         /* 027 */ u8 mUnk_27;
         struct {
@@ -64,23 +64,26 @@ struct SaveData {
     /* 028 */ u16 mUnk_28_10 : 3;
     /* 028 */ u16 mUnk_28_13 : 3;
     /* 02a */ u16 mName[12]; // player name, UTF-16
-    /* 042 */ u8 mUnk_42;
-    /* 043 */ u8 mUnk_43;
+    /* 042 */ u8 mUnk_42; // indexes data_020b4324 (ScriptPlayer::func_02066814) and the unlock tables; 10 = past the last
+    /* 043 */ u8 mUnk_43; // entry position inside data_020b4324[mUnk_42], reset with each mUnk_42 step
     /* 044 */ u32 mPlayFrames; // play time in frames (60 per second)
-    /* 048 */ u16 mUnk_48;
-    /* 04a */ u16 mUnk_4a;
+    // Counters BattleResult raises (capped): its mUnk_b3 is set when BattlePlayer::mUnk_ee of player
+    // BattlePlayerList::mUnk_2a9 (plus the partner's) reaches data_020d433c.mUnk_99.
+    /* 048 */ u16 mUnk_48; // +1 when mUnk_b3 is set
+    /* 04a */ u16 mUnk_4a; // +1 when mUnk_b3 is clear
     /* 04c */ PAD(0x04c, 0x04e);
     /* 04e */ u16 mUnk_4e;
     /* 050 */ u16 mUnk_50;
     /* 052 */ u16 mUnk_52;
     /* 054 */ PAD(0x054, 0x05a);
+    // Smallest / largest (mTurnCount - 1) / players + 1 (at most 99) of a battle with mUnk_b3 set; 0 = none yet.
     /* 05a */ u8 mFewestRounds;
     /* 05b */ u8 mMostRounds;
     /* 05c */ u16 mUnk_5c;
-    /* 05e */ u16 mUnk_5e[17];
-    /* 080 */ u16 mUnk_80;
-    /* 082 */ u16 mUnk_82;
-    /* 084 */ u16 mUnk_84;
+    /* 05e */ u16 mUnk_5e[17]; // [character id] +1 for each opponent that is not a partner, with mUnk_b3 set; also data_020d444e
+    /* 080 */ u16 mUnk_80; // +1 with mUnk_b3 set, no partners, fewer than 4 players
+    /* 082 */ u16 mUnk_82; // +1 with mUnk_b3 set and partners (data_020d433c.mHasPartners)
+    /* 084 */ u16 mUnk_84; // +1 with mUnk_b3 set, no partners, 4 players
     /* 086 */ PAD(0x086, 0x088);
     /* 088 */ u16 mUnk_88[0xf6][2];
     /* 460 */ u8 mUnk_460[0xf6];
@@ -104,7 +107,7 @@ struct SaveData {
     /* 5b9 */ u8 mUnk_5b9_0 : 1;
     /* 5b9 */ u8 mUnk_5b9_1 : 1;
     /* 5b9 */ u8 mUnk_5b9_2 : 6;
-    /* 5ba */ PAD(0x5ba, 0x5be);
+    /* 5ba */ PAD(0x5ba, 0x5be); // UnkStruct_020d48f0::mRank / mPrevRank (data_020d48f0 = gSaveData + 0x500)
     /* 5be */ u8 mUnk_5be;
     union {
         /* 5bf */ u8 mUnk_5bf;
@@ -131,7 +134,7 @@ extern u8 data_020d4969[];
 extern u8 data_020d496a[];
 extern u8 data_020d4973[];
 extern u8 data_020d49ae[];
-extern u8 gCharacterLook[];
+extern u8 gCharacterLook[]; // gSaveData + 0x14, read as a CharacterLook (a different bit layout from the fields above)
 
 // Records reached through gSaveData by the helpers below.
 struct UnkStruct_020d4478 {

@@ -73,7 +73,7 @@ public:
     /* 00 */ FontHeader *mFont;
     /* 04 */ GlyphMetrics *mMetrics;
     /* 08 */ FontData *mData;
-    /* 0c */ u16 *mCursor;
+    /* 0c */ u16 *mPalette; // &gTextPalette, the 0x20 bytes SetColor and func_0202ce44 upload
     /* 10 */ u16 mUnk_10; // numbers for control code 0xff81: mUnk_10 and the three u16 after it
     /* 12 */ u16 mUnk_12[3];
     /* 18 */ TextString mStrings[3]; // texts for control code 0xff82
@@ -86,7 +86,7 @@ public:
         };
     };
     /* 58 */ u8 mLineStartCount; // entries recorded in mLineStarts
-    /* 59 */ u8 mUseShadow; // draw a shadow behind each glyph
+    /* 59 */ u8 mUseShadow; // draw a shadow behind each glyph; only Write1bppGlyph reads it
     /* 5a */ u8 mShadowColor; // shadow colour index
     /* 5b */ u8 mUse4bppFont; // 1 = use the 4bpp bitmap font
     /* 5c */ // the instance really extends to 0xe8: u8 widths of the bitmap font glyphs from +0x5c (see Widths());
@@ -124,7 +124,9 @@ public:
         return countX * countY;
     }
 
-    void InitFont(); // sets up the font pointers and measures the bitmap font
+    // Sets up the font pointers and measures the bitmap font; the glyph of the code stored at table 0 + 0x20 then gives
+    // its width to the next nine glyphs.
+    void InitFont();
     u16 GetLineStart(u32 index); // text position where a recorded line starts
     void Init(void *glyphs, u32 unk2, u32 unk3, u16 width, u16 height, s32 flags);
     void SetColor(u32 unk1, u32 unk2, u32 unk3);
@@ -134,10 +136,10 @@ public:
     void PrintNumber(u32 value, u8 minDigits, u32 unk3, void *buffer, u16 width, u16 height, s16 *outWidth,
                      s16 *outHeight, u32 unk9, u32 unk10, u32 unk11, u16 unk12, u32 unk13, u32 unk14,
                      u32 unk15); // 0202cb50
-    void FillScrChars(u32 mode, u16 *map, u32 palette, u32 base, u32 width, u32 height, u32 stride);
+    void FillScrChars(u32 mode, u16 *map, u32 palette, u32 base, u32 width, u32 height, u32 stride); // consecutive character numbers from base
     void func_0202ce44(u32 unk1, u32 unk2, u32 unk3, u8 unk4);
     void Write4bppGlyph(u32 glyph, void *buffer, u32 eightBit, s32 layout, s16 x, s16 y, u16 width, u16 height);
     u8 Get4bppGlyphWidth(u32 glyph);
-    s32 FindGlyphIndex(u32 code);
+    s32 FindGlyphIndex(u32 code); // index of code in mData's code list (the 4bpp glyphs), -1 when absent
     void Write1bppGlyph(u32 glyph, void *buffer, u32 eightBit, u32 color, s32 layout, s16 x, s16 y, u16 width, u16 height);
 };

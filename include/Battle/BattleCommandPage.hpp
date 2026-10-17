@@ -58,7 +58,7 @@ public:
     u16 func_02055644(u16 id);
     void CycleTextPage(u32 flag);
     BOOL IsSettingUp();
-    void SetWindowVisible(u32 enable);
+    void SetWindowVisible(u32 enable); // the gate also stops UpdateWindow; enabling does nothing while mWindow is NULL
     void UpdateWindow();
     void UpdatePageItems();
     BOOL IsPageItemEnabled(u32 right);
@@ -67,15 +67,15 @@ public:
     BOOL LoadGraphics();
     BOOL LoadLargeCard();
     void LoadText();
-    void PrintCardText(u32 index);
+    void PrintCardText(u32 index); // sets mTextPage = index, picks mUnk_108 and prints the card's name and text
     void DrawText();
     void ClearText();
     void func_02056f70();
-    void DrawCard();
+    void DrawCard(); // player cells mCellAnims[7..10] only for mDrawnCardId < 0xd5, mUnk_106 == 0, mPlayer >= 0
 };
 
 void CloseCommandPage(BattleCommandPage *page, u32 a);
 void func_0205562c(BattleCommandPage *page, u32 a);
-void SetCommandPageCard(BattleCommandPage *page, u16 a, s32 b);
+void SetCommandPageCard(BattleCommandPage *page, u16 a, s32 b); // also sets the page's mPlayer = b
 void func_02055738(BattleCommandPage *page, u32 a, u32 b, u32 c);
 void CreateCommandPageWindow(BattleCommandPage *page, u32 a, u32 b, s16 c, s16 d, s16 e, s16 f, u32 g);

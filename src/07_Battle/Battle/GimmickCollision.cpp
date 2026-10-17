@@ -38,7 +38,7 @@ struct GimmickSetHead {
     u16 mData[2];
 };
 
-GimmickSetData *AddCollisionSet(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk) {
+GimmickSetData *AddCollisionSet(GimmickCollision *data, int mode, void *buf, VecFx32 *pos, u16 *rot, u8 unk) {
     GimmickSetData *set = data->mSetRing[data->mRingReadIndex];
     data->mRingReadIndex      = (data->mRingReadIndex + 1) & 0x7f;
     set->mNext          = data->mSets->mNext;
@@ -47,7 +47,7 @@ GimmickSetData *AddCollisionSet(GimmickCollision *data, int count, void *buf, Ve
     if (set->mNext) {
         set->mNext->mPrev = set;
     }
-    SetCollisionMode((GimmickSetDataHead *) set, count);
+    SetCollisionMode((GimmickSetDataHead *) set, mode);
     *(GimmickSetHead *) &set->mUnk_0c = *(GimmickSetHead *) buf;
     set->mObstacles = *(GimmickSetBlock *) ((u8 *) buf + 4);
     set->mPosition = *pos;

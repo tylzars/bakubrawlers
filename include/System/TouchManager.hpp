@@ -28,22 +28,22 @@ public:
     /* 30 */ s32 mX;
     /* 34 */ s32 mY;
     /* 38 */ s32 mMoveDegrees; // degrees, or -1 when the stylus did not move
-    /* 3c */ s32 mMoveAngle; // angle in 1/4096 turns, or -1
+    /* 3c */ s32 mMoveAngle; // angle in 1/4096 turns, or -1; not wrapped (UpdateMotion's wrap test checks the degrees)
     /* 40 */ s32 mDistance; // distance moved since the previous sample, whole pixels
     /* 44 */ PAD(0x44, 0x50);
     /* 50 */ s16 mUnk_50;
-    /* 52 */ s16 mRepeatDelay;
-    /* 54 */ s16 mRepeatTimer;
+    /* 52 */ s16 mDoubleTapFrameCount; // length of the double-tap window (30)
+    /* 54 */ s16 mDoubleTapTimer; // set to mDoubleTapFrameCount by the first press, counted down by UpdateDoubleTap
     /* 56 */ u8 mDown; // touching
     /* 57 */ u8 mPressed; // newly touched
     /* 58 */ u8 mTrigger; // touched or auto repeat
-    /* 59 */ u8 mDoubleTap;
-    /* 5a */ u8 mTouching; // newly released
+    /* 59 */ u8 mDoubleTap; // set for one sample by UpdateDoubleTap; nothing reads it in this build
+    /* 5a */ u8 mReleased; // newly released
     /* 5b */ s8 mCountdown;
     /* 5c */ s8 mCountdown2;
     /* 5d */ s8 mCountdownStart;
     /* 5e */ s8 mCountdown2Start;
-    /* 5f */ s8 mTapCount;
+    /* 5f */ s8 mTapCount; // presses inside the double-tap window; 2 sets mDoubleTap on the next untouched sample
     /* 60 */ u8 mUnk_60;
     /* 61 */ u8 mEnabled;
     /* 62 */ PAD(0x62, 0x64);
@@ -61,15 +61,15 @@ public:
     }
 
     void Init();
-    void InitPanel();
+    void InitPanel(); // TP_Init, then Init
     void Update(BOOL enabled);
     BOOL HitTest(s32 x, s32 y, s32 width, s16 height);
     BOOL IsDownIn(s32 x, s32 y, s32 width, s16 height);
     BOOL IsPressedIn(s32 x, s32 y, s32 width, s16 height);
     BOOL IsTriggerIn(s32 x, s32 y, s32 width, s16 height);
-    BOOL IsReleasedIn(u32 x, s16 y, u32 width, s16 height);
+    BOOL IsReleasedIn(u32 x, s16 y, u32 width, s16 height); // tests mX/mY, the last touched point
     void UpdateDoubleTap();
-    void UpdateMotion();
-    BOOL ReadCalibration();
+    void UpdateMotion(); // motion from the previous sample's x/y (mPrev) to mX/mY
+    BOOL ReadCalibration(); // always TRUE in this build (TP_GetUserInfo returns 1 on every path)
     void ApplyCalibrationAndEnable();
 };

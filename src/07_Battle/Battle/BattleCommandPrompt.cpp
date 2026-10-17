@@ -357,7 +357,7 @@ void BattleCommandPrompt::Update() {
                             u32 tx = TouchManager::Get().mX;
                             u32 ty = TouchManager::Get().mY;
                             if (data_ov007_0227a764[i].x < tx && tx < data_ov007_0227a764[i].x + data_ov007_0227a764[i].w && data_ov007_0227a764[i].y < ty && ty < data_ov007_0227a764[i].y + data_ov007_0227a764[i].h) {
-                                if (TouchManager::Get().mTouching) {
+                                if (TouchManager::Get().mReleased) {
                                     if (i <= mCount - 1) {
                                         if (mCursorPos != i) {
                                             SoundManager::Get().StartSeqArc(5);
@@ -472,7 +472,7 @@ void BattleCommandPrompt::Update() {
             mStateCellAnims[1]->Update();
             if (mCharacterIcons) {
                 mCharacterIconCellAnims[1]->Draw(1, 0x86, 1, 0);
-                if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsActive()) {
+                if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsCpu()) {
                     mCharacterIconCellAnims[2]->Draw(1, 0x86, 1, 0);
                 }
                 mCharacterIcons->DrawIcons();

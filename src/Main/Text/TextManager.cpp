@@ -25,8 +25,8 @@ struct TextSprite {
 extern "C" void DC_FlushRange(void *buffer, u32 size);
 
 void TextManager::InitFont() {
-    mCursor  = &gTextPalette;
-    *mCursor = 0;
+    mPalette = &gTextPalette;
+    *mPalette = 0;
     mFont    = &gFontHeader;
     mMetrics = &gGlyphMetrics;
     mData    = &gFontData;
@@ -388,17 +388,17 @@ void TextManager::FillScrChars(u32 mode, u16 *map, u32 palette, u32 base, u32 wi
 
 void TextManager::SetColor(u32 unk1, u32 unk2, u32 unk3) {
     if (unk2 == 0) {
-        QueueUpload(unk1, 5, unk3 << 5, mCursor, 0x20, 0);
+        QueueUpload(unk1, 5, unk3 << 5, mPalette, 0x20, 0);
     } else {
-        QueueUpload(unk1, 0, unk3 << 9, mCursor, 0x20, 0);
+        QueueUpload(unk1, 0, unk3 << 9, mPalette, 0x20, 0);
     }
 }
 
 void TextManager::func_0202ce44(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
     if (unk2 == 0) {
-        QueueUpload(unk1, 6, unk3 << 5, mCursor, 0x20, 0);
+        QueueUpload(unk1, 6, unk3 << 5, mPalette, 0x20, 0);
     } else {
-        QueueUpload(unk1, 1, (unk4 << 13) + (unk3 << 9), mCursor, 0x20, 0);
+        QueueUpload(unk1, 1, (unk4 << 13) + (unk3 << 9), mPalette, 0x20, 0);
     }
 }
 

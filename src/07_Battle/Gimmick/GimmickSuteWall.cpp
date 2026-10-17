@@ -8,7 +8,7 @@
 
 void RemoveCollisionSet(GimmickCollision *data, GimmickSetData *set);
 void LoadCollisionFile(void *buf, u8 id);
-GimmickSetData *AddCollisionSet(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
+GimmickSetData *AddCollisionSet(GimmickCollision *data, int mode, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
 extern MtxFx43 data_020c1cf4;
 
 static ModelResource *sResources[2];

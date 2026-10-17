@@ -33,6 +33,8 @@ struct Vec3s {
     /* 06 */
 };
 
+// mCameraPoints[0] is the eye (Camera::SetPosition), [1] the target (SetTarget). mX..mZ are fx32; the From / To
+// values are whole units, converted with FXC when UpdateWait interpolates.
 struct ScriptCameraPoint {
     /* 00 */ fx32 mX;
     /* 04 */ fx32 mY;
@@ -46,6 +48,8 @@ struct ScriptCameraPoint {
     /* 18 */
 };
 
+// mVec[0] is the current value, [1] the start and [2] the end of UpdateWait's interpolation (x pitch, y yaw).
+// In camera mode 0 UpdateCameraAndLight sets the target to eye + 100 * (sin(yaw), sin(pitch), -cos(yaw)).
 struct ScriptCameraAngles {
   union {
    Vec3s mVec[3];
@@ -53,7 +57,7 @@ struct ScriptCameraAngles {
     /* 00 */ u16 mPitch;
     union {
         /* 02 */ u16 mYaw;
-        /* 02 */ s16 mUnk_02s;
+        /* 02 */ s16 mUnk_02s; // s16 view of mYaw
     };
     /* 04 */ PAD(0x04, 0x08);
     /* 08 */ s16 mYawFrom;
@@ -80,6 +84,8 @@ struct ScriptMap {
     /* 34 */
 };
 
+// A model slot (data_020a2554 entries). In ScriptPlayer, the Model methods (LoadModel, SwapModel, ReleaseModel,
+// DrawModels, mModels) mean this slot kind; ReleaseModels frees the models of every kind.
 struct ScriptModel {
     /* 00 */ fx32 mX;
     /* 04 */ fx32 mY;
@@ -106,6 +112,7 @@ struct ScriptModel {
     /* 54 */
 };
 
+// mX..mZ are drawn at half size (x / 2, y / 2, z / 2 - 0x72000).
 struct ScriptSphere {
     /* 00 */ fx32 mX;
     /* 04 */ fx32 mY;
@@ -126,16 +133,18 @@ struct ScriptSphere {
     /* 39 */ u8 mUnk_39;
     /* 3a */ u8 mUnk_3a;
     /* 3b */ u8 mStorytalkCell2Frame;
-    /* 3c */ u8 mUnk_3c;
-    /* 3d */ u8 mUnk_3d;
-    /* 3e */ u8 mUnk_3e;
+    /* 3c */ u8 mUnk_3c; // while non-zero DrawSpheres steps mUnk_3e up to 1, else down to 0
+    /* 3d */ u8 mUnk_3d; // 0..0x7f position of the sine DrawSpheres adds to y
+    /* 3e */ u8 mUnk_3e; // 0 or 1: multiplier of that sine offset
     /* 3f */ u8 mShadowScale;
-    /* 40 */ s16 mShadowY;
+    /* 40 */ s16 mShadowY; // whole units; drawn at (mShadowY << 12) - 0x64000
     /* 42 */ u8 mSwapPending;
     /* 43 */ PAD(0x43, 0x44);
     /* 44 */
 };
 
+// mX..mZ are drawn at half size with offsets (x / 2, y / 2 - 0x64000 plus mOffsetY / 2 whole units,
+// z / 2 - 0x80000).
 struct ScriptCharacter {
     /* 00 */ fx32 mX;
     /* 04 */ fx32 mY;
@@ -149,15 +158,17 @@ struct ScriptCharacter {
     /* 2c */ UnkStruct_0205401c *mCharacter;
     /* 30 */ UnkStruct_0205401c *mNextCharacter;
     /* 34 */ s16 mOffsetY;
-    /* 36 */ s8 mCharacterId;
+    /* 36 */ s8 mCharacterId; // -1 = none
     /* 37 */ s8 mNextCharacterId;
+    // +38..+3a are rows of func_020687a8's per-id tables: +39 the row playing, +3a the row asked for
+    // (func_02067f30), +38 the row for the next character (SwapCharacter copies it into both).
     /* 38 */ u8 mUnk_38;
     /* 39 */ u8 mUnk_39;
     /* 3a */ u8 mUnk_3a;
     /* 3b */ u8 mUnk_3b;
     /* 3c */ u8 mExtraAnimEnabled;
     /* 3d */ u8 mShadowScale;
-    /* 3e */ u8 mVisible;
+    /* 3e */ u8 mVisible; // draw gate; DrawCharacters still writes the position while 0
     /* 3f */ u8 mStorytalkCell2X;
     /* 40 */ u8 mUnk_40;
     /* 41 */ u8 mUnk_41;
@@ -167,22 +178,24 @@ struct ScriptCharacter {
     /* 48 */
 };
 
-// Script/event player.
+// Script player: StartScript starts the read of "/script/%s"; ReadScript takes the 0x20-byte .mes name and the 3-byte
+// commands (into mCommands) from that file and starts the read of "/font/<name>.mes"; Update runs the commands
+// (RunCommands, UpdateWait) and draws the map, model, sphere and character slots and the storytalk window's texts.
 class ScriptPlayer : public SceneBase {
 public:
     /* 000c */ ScriptCommand mCommands[0x400];
-    /* 100c */ CellAnimation *mCutsceneCellAnim;
+    /* 100c */ CellAnimation *mCutsceneCellAnim; // made by LoadGraphics when mUnk_14e4 == 0 and (mUnk_14f1 or func_02066c7c())
     /* 1010 */ ModelInstance *mShadowModel;
     /* 1014 */ ModelLightGroup *mLights;
     /* 1018 */ StorytalkWindow *mStorytalkWindow;
-    /* 101c */ ScriptMap mMaps[2];
+    /* 101c */ ScriptMap mMaps[2]; // only [0] is loaded and drawn
     /* 1084 */ ScriptModel mModels[2];
     /* 112c */ ScriptSphere mSpheres[2];
     /* 11b4 */ ScriptCharacter mCharacters[2];
     /* 1244 */ ScriptCameraPoint mCameraPoints[2];
     /* 1274 */ ScriptCameraAngles mCameraAngles;
     /* 1288 */ Camera *mCamera;
-    /* 128c */ u16 mFov[3];
+    /* 128c */ u16 mFov[3]; // degrees: [0] current, [1] start, [2] end of the interpolation; ApplyFov uses [0]
     /* 1292 */ u8 mCameraMode;
     /* 1293 */ PAD(0x1293, 0x1298);
     /* 1298 */ Vec3s mLightDir;
@@ -191,7 +204,7 @@ public:
     /* 12aa */ PAD(0x12aa, 0x12ac);
     /* 12ac */ u16 mLightColor;
     /* 12ae */ PAD(0x12ae, 0x12b0);
-    /* 12b0 */ u32 mFileData;
+    /* 12b0 */ u32 mFileData; // buffer of the last finished read; ReadScript frees the script data but keeps the pointer
     /* 12b4 */ u32 mFileSize;
     /* 12b8 */ u8 mModelLoadStep;
     /* 12b9 */ u8 mState;
@@ -201,18 +214,18 @@ public:
     /* 12be */ u16 mCommandCount;
     /* 12c0 */ u16 mUnk_12c0;
     /* 12c2 */ u16 mUnk_12c2;
-    /* 12c4 */ u8 mWaitTimer;
+    /* 12c4 */ u8 mWaitTimer; // command 13 sets it for wait kind 1; every kind-6 wait starts it at 0, so kind 6's countdown never runs
     /* 12c5 */ u8 mWaitKind;
     /* 12c6 */ u8 mCurrentCommand;
     /* 12c7 */ PAD(0x12c7, 0x12c8);
     /* 12c8 */ s16 mCurrentValue;
     /* 12ca */ u8 mMessageState;
-    /* 12cb */ u8 mInputTimer;
+    /* 12cb */ u8 mInputTimer; // frames between an accepted input and the page step
     /* 12cc */ u16 mMessagePos;
-    /* 12ce */ u16 mMessageCount;
+    /* 12ce */ u16 mMessageCount; // texts queued by command 1; wraps to 0 at 0x80 while mMessagePos does not
     /* 12d0 */ u16 mUnk_12d0;
     /* 12d2 */ s16 mMessageIndices[0x80];
-    /* 13d2 */ s16 mUnk_13d2[0x80];
+    /* 13d2 */ s16 mUnk_13d2[0x80]; // value command 8 gives the next queued text; StorytalkWindow::SetMessage's second argument
     /* 14d2 */ s8 mUnk_14d2;
     /* 14d3 */ u8 mFadeKind;
     /* 14d4 */ s8 mUnk_14d4;
@@ -221,12 +234,12 @@ public:
     /* 14d7 */ s8 mBrightnessFrom;
     /* 14d8 */ u8 mBrightnessFrames;
     /* 14d9 */ u8 mBrightnessFrameCount;
-    /* 14da */ u16 mLerpFrames;
+    /* 14da */ u16 mLerpFrames; // also the envelope position Bg0WaveCallback reads
     /* 14dc */ u16 mLerpFrameCount;
-    /* 14de */ u16 mFrameCount;
+    /* 14de */ u16 mFrameCount; // set by command 14; copied into mBrightnessFrameCount and mLerpFrameCount
     /* 14e0 */ u8 mFinishRequested;
     /* 14e1 */ u8 mResult;
-    /* 14e2 */ u8 mUnk_14e2;
+    /* 14e2 */ u8 mUnk_14e2; // the creating scene's ctor argument; func_02066814 sets 7 at the end of a table
     /* 14e3 */ PAD(0x14e3, 0x14e4);
     /* 14e4 */ u8 mUnk_14e4;
     /* 14e5 */ u8 mUnk_14e5;
@@ -249,72 +262,85 @@ public:
     ScriptPlayer(u32 unk1, u32 unk2, u32 unk3);
     virtual ~ScriptPlayer();
     virtual void Update();
+    // Script number for the save position (gSaveData mUnk_42 / mUnk_43) or -1; may call SetupBattle and
+    // StopWithResult even with unk1 == 0; unk1 != 0 also advances the position.
     s32 func_02066814(u32 unk1);
-    void StopWithResult(u32 unk1);
-    void UpdateBrightness();
-    void UpdateBrightnessFade();
-    void SetCharacterVisible(u32 index, u8 unk2);
+    void StopWithResult(u32 unk1); // stores the result and waits in state 4 with wait kind 7
+    void UpdateBrightness(); // the code after 'mUnk_14d4 == 0' never runs: mUnk_14d4 is only ever 0
+    void UpdateBrightnessFade(); // interpolates mBrightness; applies it only while mFadeKind == 0
+    void SetCharacterVisible(u32 index, u8 unk2); // also clears the slot's mUnk_3b
     void ApplyPendingSwaps();
     void CreateNextCharacter(u32 index);
     void SwapCharacter(u32 index);
     void SwapSphere(u32 index);
     void SwapModel(u32 index);
+    // flag 0 creates the current character; flag 1 only waits for the next one's load (CreateNextCharacter).
+    // TRUE at once for an id < 0; both first call func_020682a0.
     BOOL LoadCharacter(u32 index, u32 flag);
-    void func_020682a0(u32 index, u32 kind);
+    void func_020682a0(u32 index, u32 characterId);
     void ResetCharacterParams(u32 index);
     s8 func_020687a8(s32 kind, u32 index, u32 column);
     void SetCharacterExtraAnimEnabled(u32 index, u32 value);
     void UpdateCharacterExtraAnims();
     void ApplyCharacterRotation(u32 index);
+    // FALSE at once when value is the current map id; else -2 keeps the id, the map model is deleted and TRUE = a load
+    // is needed.
     BOOL SetMap(s32 value);
-    BOOL LoadMap();
+    BOOL LoadMap(); // id clamped to 0..0x11; also resets the camera and the light
+    // FALSE at once when value is the slot's model id; else stores it (-2 keeps it), deletes character 1's model
+    // (index 0) or sphere 1's (index 1), releases the slot; TRUE = a load is needed.
     BOOL func_02068c54(u32 index, s32 value);
-    void LoadRealbakuPalettes(TextureFile *texture, u32 id);
+    void LoadRealbakuPalettes(TextureFile *texture, u32 id); // only for ids 0x1c / 0x1d: eleven palettes
     void StartNextModelLoad(u32 index, u32 value);
-    void ReleaseModel(u32 index);
+    void ReleaseModel(u32 index); // the mNextFiles buffers are not freed
     BOOL func_02069680(u32 index);
-    void CreateNextSphere(u32 index);
+    void CreateNextSphere(u32 index); // reads nothing: the model is loaded when SwapSphere runs its stored setup
     u8 GetSphereVariant(u32 index);
     BOOL LoadModel(u32 index);
-    BOOL LoadNextModelFiles(u32 index);
-    BOOL LoadSphere(u32 index, u32 flag);
-    void ResetSphereParams(u32 index);
+    BOOL LoadNextModelFiles(u32 index); // staged
+    BOOL LoadSphere(u32 index, u32 flag); // flag 1 loads nothing and is TRUE at once (func_0203d6f0)
+    void ResetSphereParams(u32 index); // with mUnk_36 set also restarts the sphere's animation
     void ApplySphereRotation(u32 index);
-    void ApplyFov();
-    void UpdateCameraAndLight();
+    void ApplyFov(); // only mFov[0]
+    void UpdateCameraAndLight(); // nothing when the eye equals the target
     void SetCameraMode(u32 mode);
     void func_0206a01c();
     void SetCutsceneAnimation(u32 value, u32 force);
     void SkipScript();
-    void UpdateMessages();
+    void UpdateMessages(); // starts with the skip check (key 8 in states 3-4 outside wait kind 6 calls SkipScript)
     void DrawSpheres();
     void DrawCharacters();
     void UpdateCharacterAnimation(u32 index);
     void DrawMap();
     void DrawModels();
     UnkStruct_02065c40_Kind GetCommandSlot(u32 id);
-    void RunCommands();
+    void RunCommands(); // at the end of the list: func_02066814(1), state 5, ReleaseModels(0)
     void ExecuteCommand(u32 command, s32 value);
     s32 func_02070554(s32 kind, s32 index);
     void SetBg0Wave(u32 flag);
     BOOL ReadMessages();
     BOOL func_02067f30(u32 index, s32 value);
+    // 0 for mUnk_14e2 == 6; with a script number from func_02066814(0) starts "cmd_ST_mev_..." and returns 1;
+    // otherwise func_02066814(1) (and StopWithResult(5) when mUnk_14e9 is set) and 0.
     u32 func_02066f60();
+    // Also writes display registers; makes the cutscene cells when mUnk_14e4 == 0 and (mUnk_14f1 or
+    // func_02066c7c()), and then with mUnk_14e2 == 5 clears mUnk_14f1 and sets mUnk_14ed.
     void LoadGraphics();
-    BOOL ReadScript();
-    void UpdateWait();
+    BOOL ReadScript(); // also starts the read of the script's .mes file
+    void UpdateWait(); // kind 4 runs the interpolation of every slot, the camera, light and FOV; kind 9 calls LoadGraphics
     void SetupSpriteSlots();
+    // Every slot kind's models; with unk1 == 0 the map and shadow models stay. The mNextFiles buffers are not freed.
     void ReleaseModels(u32 unk1);
     void ResetCamera();
     void ResetLight();
     u32 func_020667ec();
-    BOOL func_02066c7c();
+    BOOL func_02066c7c(); // func_02066814(0) != -1; that call's side effects (SetupBattle, StopWithResult) still happen
     void SetupBattle(u32 unk1, u32 unk2);
     u32 func_020670b4(u32 id);
     u8 func_02067240(u32 id);
     u8 func_02067120(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
-    BOOL IsRunning();
-    u32 GetResult();
+    BOOL IsRunning(); // mState != 9: also TRUE in state 0, 5-8 and 10
+    u32 GetResult(); // 0 while mSaveRequested or mUnlockPopupHandle is set
     BOOL IsGraphicsLoaded();
     void ClearGraphicsLoaded();
     u32 GetSaveRequest();

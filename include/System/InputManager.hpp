@@ -5,7 +5,7 @@
 
 #define INPUT_KEY_COUNT 12
 
-// Direction bits of the key masks passed to IsHeld / IsDown / IsTrigger (and copied into FieldSelectScene's
+// Direction bits of the key masks passed to IsPressed / IsDown / IsTrigger (and copied into FieldSelectScene's
 // mInput[].mKeys), named from code that acts on them: NameEntryScene moves its cursor, drawn at
 // x = mCol * 24 + 0x20, y = mRow * 24 + 0x38, by mRow-- for KEY_UP, mRow++ for KEY_DOWN, mCol - 1 (mod 8) for
 // KEY_LEFT and mCol + 1 (mod 8) for KEY_RIGHT. Larger y is further down the screen and larger x further right
@@ -18,10 +18,10 @@
 #define KEY_DOWN 0x80
 
 // Global input state, constructed on first use and destroyed at exit.
-// Offsets 00/04 are what IsHeld/IsTrigger read; the update (Update) shows the roles below.
+// Offsets 00/04 are what IsPressed/IsTrigger read; the update (Update) shows the roles below.
 class InputManager {
 public:
-    /* 00 */ u16 mHeld;    // keys that went down this frame (Update: keys & (keys ^ old))
+    /* 00 */ u16 mPressed; // keys that went down this frame (Update: keys & (keys ^ old))
     /* 02 */ u16 mKeys;    // raw key state of this frame
     /* 04 */ u16 mTrigger; // pressed this frame, or auto-repeat firing
     /* 06 */ u16 mReleased;
@@ -46,8 +46,8 @@ public:
         return instance;
     }
 
-    u16 IsHeld(u16 keys) {
-        return mHeld & keys;
+    u16 IsPressed(u16 keys) {
+        return mPressed & keys;
     }
     u16 IsDown(u16 keys) {
         return mKeys & keys;

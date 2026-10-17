@@ -410,8 +410,8 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             G2S_SetWnd0InsidePlane(0x3f, FALSE);
             G2S_SetWnd0Position(0, 0, 0xff, 0xbf);
             func_ov007_0223f90c(0x100);
-            if (data_020d433c.mBattlePlayers->mPlayers[e[0].mUnk_0d_4]->IsActive() == 1
-                && data_020d433c.mBattlePlayers->mPlayers[e[1].mUnk_0d_4]->IsActive() == 1) {
+            if (data_020d433c.mBattlePlayers->mPlayers[e[0].mUnk_0d_4]->IsCpu() == 1
+                && data_020d433c.mBattlePlayers->mPlayers[e[1].mUnk_0d_4]->IsCpu() == 1) {
                 mUnk_68 = 1;
                 WirelessManager::Get();
                 if (IsWirelessMode(&data_020c4030.mUnk_228)) {
@@ -620,7 +620,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             SpriteManager::Get().SetupMode(0, 7);
             GX_SetGraphicsMode(1, 0, 1);
             mUnk_50 = func_ov007_022428d4(mData->mMarkerCardId);
-            u8 side = data_020d433c.mBattlePlayers->CurrentPlayer() == e[1].mUnk_0d_4 ? 1 : 0;
+            u8 side = data_020d433c.mBattlePlayers->Unk2a9() == e[1].mUnk_0d_4 ? 1 : 0;
             u32 kind = 6;
             switch (mUnk_50) {
                 case 1:
@@ -692,7 +692,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
                 break;
             }
             u8 side;
-            if (data_020d433c.mBattlePlayers->CurrentPlayer() == e[1].mUnk_0d_4) {
+            if (data_020d433c.mBattlePlayers->Unk2a9() == e[1].mUnk_0d_4) {
                 side = 1;
                 if (mUnk_5d == 0) {
                     side = 0;
@@ -751,7 +751,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             }
             func_ov007_0223f90c(0x40);
             mStep = 0x19;
-            if (data_020d433c.mBattlePlayers->CurrentPlayer() == e[1].mUnk_0d_4) {
+            if (data_020d433c.mBattlePlayers->Unk2a9() == e[1].mUnk_0d_4) {
                 if (mUnk_5d == 0) {
                     BattleCardSpec *spec = mCardSpec;
                     spec->mUnk_1e = 0;
@@ -774,7 +774,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             if (mContext->mRequest == 0) {
                 break;
             }
-            u8 side = data_020d433c.mBattlePlayers->CurrentPlayer() == e[1].mUnk_0d_4 ? 1 : 0;
+            u8 side = data_020d433c.mBattlePlayers->Unk2a9() == e[1].mUnk_0d_4 ? 1 : 0;
             mCardSpec = new BattleCardSpec(3, e[side].mBakuganId, e[side].mUnk_0d_0, e[side].mCharacterId == 0x15 ? 1 : 0);
             func_ov007_0223f90c(0x40);
             mStep++;
@@ -809,7 +809,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             mStep++;
             break;
         case 27:
-            if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
+            if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
                 data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
             }
             if (data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
@@ -929,7 +929,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             do {
                 if ((&mUnk_62)[i] == 0) {
                     BattlePlayer *p = data_020d433c.mBattlePlayers->mPlayers[e[i].mUnk_0d_4];
-                    if (p->IsActive()) {
+                    if (p->IsCpu()) {
                         (&mUnk_62)[i] = 1;
                     } else if (data_020d433c.mUnk_9a_2) {
                         (&mUnk_62)[i] = 1;
@@ -970,7 +970,7 @@ BOOL BattleConfrontCard::func_ov007_0223f918() {
             do {
                 BattleEntry *ent = &e[i];
                 
-                if (data_020d433c.mBattlePlayers->mPlayers[ent->mUnk_0d_4]->IsActive()) {
+                if (data_020d433c.mBattlePlayers->mPlayers[ent->mUnk_0d_4]->IsCpu()) {
                     if (e[i].mUnk_0f_0) {
                         mUnk_56 = 0;
                     } else {

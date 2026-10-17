@@ -38,7 +38,7 @@ public:
     /* 80 */ u32 mCamera;
     /* 84 */ BattleCommandMap *mCommandMap;
     /* 88 */ MessageWindow *mMessageWindow;
-    /* 8c */ BattleCommandPrompt *mCommandPrompt; // freed with CloseCommandPrompt(obj, flag)
+    /* 8c */ BattleCommandPrompt *mCommandPrompt; // ended with CloseCommandPrompt(obj, flag)
     /* 90 */ u8 mGridMask[14][10];
     /* 11c */ u16 mUnk_11c;
     /* 11e */ u16 mUnk_11e;
@@ -85,7 +85,7 @@ public:
     void InitGridMask();
     void LoadTurnGraphics();
     BOOL UpdatePrompt();
-    void UpdateCursorScrollAndCamera(u32 flag); // 0xa48 bytes, not decompiled
+    void UpdateCursorScrollAndCamera(u32 flag);
 };
 
 class BattleMapObj;
@@ -174,4 +174,6 @@ extern "C" void GetCornerPosition(BattleCommandMap *map, VecFx32 *out);
 void GetCellPosition(VecFx32 *out, u8 a, u8 b);
 extern "C" u32 FindMarkerCellAt(VecFx32 *v, u8 *outA, u8 *outB);
 
-void func_ov007_0223ad70(u32 variant); // loads the battle background
+// Loads the battle_b_bg files of data_020d433c.mFieldId (or the "last" set), then battle_b_obj_00, the union_b cockpit
+// and page characters and card_s_000, and sets data_020d433c.mUnk_10's layout 8.
+void func_ov007_0223ad70(u32 variant);

@@ -87,21 +87,21 @@ void BattleUnk0227532c::Update() {
                 switch (id) {
                     case 0:
                         if (data_020d433c.mNextScene == 8) {
-                            mResult = 2;
+                            mNextScene = 2;
                         } else if (data_020d433c.mUnk_8a_4 != 0) {
-                            mResult = 1;
+                            mNextScene = 1;
                         } else {
-                            mResult = 2;
+                            mNextScene = 2;
                         }
                         break;
                     case 1:
-                        mResult = 1;
+                        mNextScene = 1;
                         break;
                 }
                 mState++;
             }
-            if (InputManager::Get().IsHeld(8)) {
-                mResult = 1;
+            if (InputManager::Get().IsPressed(8)) {
+                mNextScene = 1;
                 mState++;
             }
             break;
@@ -112,7 +112,7 @@ void BattleUnk0227532c::Update() {
             break;
         case 4:
             GXS_SetVisiblePlane(mPlanes | 0x10);
-            RequestScene(mResult);
+            RequestScene(mNextScene);
             mFinished = 1;
             break;
     }

@@ -151,7 +151,7 @@ BOOL LogoScene::WaitFrames(u32 maxFrames, u32 minFrames) {
     BOOL done = FALSE;
     mWaitFrames++;
     if (mWaitFrames >= minFrames) {
-        if (TouchManager::Get().mPressed | (InputManager::Get().IsHeld(1) | InputManager::Get().IsHeld(8))) {
+        if (TouchManager::Get().mPressed | (InputManager::Get().IsPressed(1) | InputManager::Get().IsPressed(8))) {
             done = TRUE;
         }
     }

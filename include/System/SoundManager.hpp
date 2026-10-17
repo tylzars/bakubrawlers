@@ -5,8 +5,8 @@
 
 // One entry of a sound table: two ids, negative when unused.
 struct SoundEntry {
-    /* 0 */ s16 mUnk_0;
-    /* 2 */ s16 mUnk_2;
+    /* 0 */ s16 mUnk_0; // mSeqTable: the group LoadGroup loads; mSeqArcTable: first id of the pair
+    /* 2 */ s16 mUnk_2; // mSeqTable: the id StartSeqFromInfo starts; mSeqArcTable: second id of the pair
     /* 4 */
 };
 
@@ -18,7 +18,7 @@ public:
     /* 08 */ u8 mArchive[0x94]; // archive state (NNSSndArc)
     /* 9c */ u32 mHeap;
     /* a0 */ u32 mSeqSndHandle; // sound handle
-    /* a4 */ u32 mSeqArcSndHandle; // sound handle
+    /* a4 */ u32 mSeqArcSndHandle; // handle of the sound StartSeqArc started
     /* a8 */ s32 mSeqIndex;
     /* ac */ u8 mSeqArcPlayerIndex;
     /* ad */ u8 mSeqArcVolume;
@@ -41,7 +41,7 @@ public:
     void Update();
     void RestoreHeapState();
     void func_020245c4(u32 unk1);
-    void LoadAndStartSeq(u32 unk1);
+    void LoadAndStartSeq(u32 unk1); // each step is skipped for a negative id or when unk1 is already mSeqIndex
     void LoadSeqGroup(u32 unk1);
     void StartSeq(u32 unk1);
     void StopSeq(u32 fadeFrames);

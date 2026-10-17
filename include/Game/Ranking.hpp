@@ -26,7 +26,7 @@ public:
     /* 00 (vtable) */
     /* 04 */ RankingEntry mEntries[13];
     /* 6c */ RankingEntry mUnk_6c[4];
-    /* 8c */ u8 mPlayerCharacterId;
+    /* 8c */ u8 mPlayerCharacterId; // always 0x15 (set by the ctor only)
     /* 8d */ u8 mUnk_8d;
     /* 8e */ u16 mPlayerRank;
     /* 90 */ u32 mPlayerScore;

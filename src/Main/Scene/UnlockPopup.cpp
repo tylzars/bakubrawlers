@@ -20,7 +20,7 @@ static const WindowItemRecord sMenuItems[2] = {
     {1, 0x8000, 120, 35, 0, 0, 0, {-1, -1, -1, -1}, 0, 0},
 };
 
-static const u8 sMessageIds[4] = {0, 1, 4, 0};
+static const u8 sMessageIds[4] = {0, 1, 4, 0}; // mIndex 0 / 1 / 2 -> entries 0 / 1 / 4 of mMessages
 
 UnlockPopup::UnlockPopup(s32 unk1) :
     SceneBase(0x3e8, 0) {

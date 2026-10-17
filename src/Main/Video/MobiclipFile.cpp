@@ -50,7 +50,7 @@ void func_0203b7c8(F *f) {
     if (f->flag == 1) FS_WaitFile(f->file);
     f->flag = 0;
 }
-void ReaderClose(Src *s) { s->adv(); }
+void ReaderClose(Src *s) { s->adv(); } // Reader's Close slot (PlayerRelease calls Close before deleting the reader)
 void func_0203b804() {}
 // YUV-to-RGB555 conversion (hand-written assembly): args points at {Y, UV, dst, stride, width, height, table}.
 // Y rows are 0x100 bytes apart; each U/V row (0x100 bytes, U in the first 0x80, V in the second) serves two Y

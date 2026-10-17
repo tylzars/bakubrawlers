@@ -21,7 +21,7 @@ public:
     /* 10 */ UnkStruct_0205401c *mModel;
     /* 14 */ ModelInstance *mMyroombgModel;
     /* 18 */ Camera *mCamera;
-    /* 1c */ ModelLightGroup *mPalette;
+    /* 1c */ ModelLightGroup *mLights;
     /* 20 */ MessageFile *mMessages;
     /* 24 */ void *mTextBuffers[5];
     /* 38 */ void *mGlyphBuffer;

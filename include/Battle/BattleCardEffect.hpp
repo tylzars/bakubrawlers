@@ -20,7 +20,7 @@ class BattleCardEffect : public SceneBase {
 public:
     /* 0c */ CellAnimation *mCellAnim;
     /* 10 */ u8 mState;
-    /* 11 */ u8 mAnimPairIndex; // palette variant for kinds >= 0x11
+    /* 11 */ u8 mAnimPairIndex; // kinds >= 0x11 play animations mAnimPairIndex * 2 and * 2 + 1
     /* 12 */ PAD(0x12, 0x14);
     /* 14 */ u32 mCharOffset; // character offset passed to SpriteScreen::LoadCharacters
     /* 18 */ u8 mPalette;
@@ -35,7 +35,7 @@ public:
 
     void LoadAnimation(); // load the animation files
     int UpdateAnimation();  // update and draw, TRUE when the animation finished
-    void SetFirstAnimation();
-    void SetMiddleAnimation();
+    void SetFirstAnimation(); // the first of the three Update plays (state 0); mAnimPairIndex * 2 for kinds >= 0x11
+    void SetMiddleAnimation(); // does nothing for kinds >= 0x11
     void SetLastAnimation();
 };

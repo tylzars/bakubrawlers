@@ -196,7 +196,7 @@ void UnkStruct_02071d24::Update() {
             } else {
                 mUnk_52 = 0;
                 if (mUnk_51 != 0) {
-                    if (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed) {
+                    if (InputManager::Get().IsPressed(1) | TouchManager::Get().mPressed) {
                         mUnk_51 = 0;
                     } else {
                         mUnk_51--;
@@ -530,7 +530,7 @@ void UnkStruct_02071d24::func_020733d4() {
         return;
     }
     if (func_02072d84()) {
-        if (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed) {
+        if (InputManager::Get().IsPressed(1) | TouchManager::Get().mPressed) {
             mUnk_50 = 3;
         }
     }

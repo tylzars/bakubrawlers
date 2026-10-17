@@ -20,13 +20,13 @@
 #include <nitro/gx.h>
 
 struct BattleObjPair {
-    u8 mRow;
-    u8 mCol;
+    u8 mCellX;
+    u8 mCellY;
 };
 
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag);
-void AddMarker(BattlePlayerList *list, u8 row, u8 col, u8 player, u8 slot);
+void AddMarker(BattlePlayerList *list, u8 x, u8 y, u8 player, u8 slot);
 u8 PickUnflaggedSlot54(BattlePlayer *player);
 void InitCommandSubScreen(int x, int y);
 void CloseCommandMap(BattleCommandMap *map);
@@ -105,7 +105,7 @@ BattleObj00::BattleObj00(u8 flag)
     } else {
         mFlipped = 1;
     }
-    mUnk_34 = data_ov007_0227a33c[v].mRow;
+    mUnk_34 = data_ov007_0227a33c[v].mCellX;
     u8 b    = data_ov007_0227a33d[v * 2];
     mUnk_35 = b;
     BattlePlayerList *l = data_020d433c.mBattlePlayers;
@@ -185,7 +185,7 @@ void BattleObj00::Update() {
                 mState = 7;
                 return;
             }
-            if (!InputManager::Get().IsHeld(8)) {
+            if (!InputManager::Get().IsPressed(8)) {
                 return;
             }
             mState++;
@@ -419,13 +419,13 @@ void BattleObj00::Update() {
                     p = data_020d433c.mBattlePlayers->mPlayers[i];
                     kind         = p->mUnk_f1;
                     if (p->mSlots54Remaining != 0) {
-                        if (p->IsActive() || data_020d433c.mUnk_9a_3) {
-                            AddMarker(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mRow, data_ov007_0227a33c[kind].mCol, i, PickUnflaggedSlot54(p));
+                        if (p->IsCpu() || data_020d433c.mUnk_9a_3) {
+                            AddMarker(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mCellX, data_ov007_0227a33c[kind].mCellY, i, PickUnflaggedSlot54(p));
                         } else {
                             if (IsWirelessMode((const u8 *) &WirelessManager::Get().mState)) {
-                                AddMarker(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mRow, data_ov007_0227a33c[kind].mCol, i, (u8) *(u32 *) ((u8 *) data_020d433c.mBattlePlayers->mPlayers[i] + 0x104));
+                                AddMarker(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mCellX, data_ov007_0227a33c[kind].mCellY, i, (u8) *(u32 *) ((u8 *) data_020d433c.mBattlePlayers->mPlayers[i] + 0x104));
                             } else {
-                                AddMarker(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mRow, data_ov007_0227a33c[kind].mCol, i, mSlot);
+                                AddMarker(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mCellX, data_ov007_0227a33c[kind].mCellY, i, mSlot);
                             }
                         }
                     }
@@ -447,7 +447,7 @@ void BattleObj00::Update() {
             return;
         }
         case 20:
-            if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
+            if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
                 data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
             }
             if (data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {

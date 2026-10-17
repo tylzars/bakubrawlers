@@ -27,19 +27,19 @@ static const WindowItemRecord sUnionTwoButtonItems[2] = {
 
 static const u8 sTwoButtonAnimPositions[2][2] = {{0x38, 0x58}, {0x38, 0x78}};
 
-BattleUnionAbility::BattleUnionAbility(u8 type, u32 charOffset, u16 palette)
+BattleUnionAbility::BattleUnionAbility(u8 kind, u32 charOffset, u16 palette)
     : SceneBase(0x3e8, 0) {
     mCellAnimA = 0;
     mCellAnimB = 0;
     mSlide = 0x104;
     mStateFrames = 0;
     mState = 0;
-    mType  = type;
-    mChoice = 0;
+    mKind  = kind;
+    mNextScene = 0;
     mCancel = 0;
     mCharOffset = charOffset;
     mPalette    = palette;
-    if (type != 5) {
+    if (kind != 5) {
         mWindow = new SelectWindow(2, sUnionTwoButtonItems, 0);
     } else {
         mWindow = new SelectWindow(1, sUnionOneButtonItems, 0);
@@ -98,7 +98,7 @@ void BattleUnionAbility::Update() {
             mSlide -= 0x18;
             if (mSlide <= 0) {
                 mSlide = 0;
-                if (mType != 0 && mType != 1 && mType != 3 && mType != 5) {
+                if (mKind != 0 && mKind != 1 && mKind != 3 && mKind != 5) {
                     mState = 6;
                 } else {
                     mWindow->mEnabled = 1;
@@ -111,10 +111,10 @@ void BattleUnionAbility::Update() {
                 s8 id = mWindow->GetSelectedId();
                 if (id != 0) {
                     if (id == 1) {
-                        mChoice = 2;
+                        mNextScene = 2;
                     }
                 } else {
-                    mChoice = 1;
+                    mNextScene = 1;
                 }
                 mState++;
                 mStateFrames = 0;
@@ -134,10 +134,10 @@ void BattleUnionAbility::Update() {
             }
             break;
         case 7:
-            if (mChoice == 0xff) {
+            if (mNextScene == 0xff) {
                 mFinished = 1;
             } else {
-                RequestScene(mChoice);
+                RequestScene(mNextScene);
                 mFinished = 1;
             }
             break;
@@ -145,13 +145,13 @@ void BattleUnionAbility::Update() {
     Draw();
 }
 
-void BattleUnionAbility::Close(u8 choice) {
+void BattleUnionAbility::Close(u8 nextScene) {
     mCancel = 1;
-    mChoice = choice;
+    mNextScene = nextScene;
 }
 
 void BattleUnionAbility::SetupSubWndAndAntenna() {
-    switch (mType) {
+    switch (mKind) {
         case 0:
         case 1:
         case 3:
@@ -171,7 +171,7 @@ void BattleUnionAbility::func_ov007_022344a4() {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
     ChangeDir("/Game/Battle/Obj");
-    if (mType == 0 || mType == 1 || mType == 3) {
+    if (mKind == 0 || mKind == 1 || mKind == 3) {
         mWindow->SetCells(2, sUnionTwoButtonCells);
         mWindow->mCellAnims[0]->SetAnimation(1);
         LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
@@ -182,7 +182,7 @@ void BattleUnionAbility::func_ov007_022344a4() {
             mCellAnims[i]->mPaletteBase   = mPalette;
             i++;
         } while (i < 2);
-    } else if (mType == 5) {
+    } else if (mKind == 5) {
         mWindow->SetCells(1, sUnionOneButtonCells);
         mWindow->mCellAnims[0]->SetAnimation(7);
         LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
@@ -200,7 +200,7 @@ void BattleUnionAbility::LoadGraphics() {
     screen.SetObjVramMode(3);
     func_ov007_022344a4();
     ChangeDir("/Game/Battle/Obj");
-    switch (mType) {
+    switch (mKind) {
         case 0:
             LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
             mCellAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 0, 1, 1);
@@ -244,7 +244,7 @@ void BattleUnionAbility::Draw() {
     mCellAnimA->Draw(1, (s16) (mSlide + 0x80), 0x60, 0);
     mCellAnimB->Update();
     mCellAnimB->Draw(1, (s16) (mSlide + 0x80), 0x60, 0);
-    switch (mType) {
+    switch (mKind) {
         case 0:
         case 1:
         case 3: {

@@ -66,7 +66,7 @@ static const s8 sSparkleSteps[15][4] = {
 BattleMoneyReward::BattleMoneyReward()
     : SceneBase(0x3e8, 0) {
     mWindow     = 0;
-    mTextSize   = 0;
+    mTextBufferSize = 0;
     mGlyphCount = 0;
     mTimer      = 0xf0;
     mSlideA     = 0;
@@ -245,7 +245,7 @@ void BattleMoneyReward::Update() {
                 SoundManager::Get().StartSeqArc(0x36);
                 mTransferSoundTimer = 10;
             }
-            if (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed) {
+            if (InputManager::Get().IsPressed(1) | TouchManager::Get().mPressed) {
                 mTotal += mAmount;
                 mAmount = 0;
                 mWindow->mEnabled = 1;
@@ -413,9 +413,9 @@ void BattleMoneyReward::Init() {
     }
     ChangeDir("/");
     mMessages = (MessageFile *) LoadFile("/font/mes_result.mes", 0, 0, 0, 0, 0);
-    mTextSize = TextManager::Get().BufferSize(0x20, 0x20);
+    mTextBufferSize = TextManager::Get().BufferSize(0x20, 0x20);
     mGlyphCount = TextManager::Get().GlyphCount(0x80);
-    mTextBuffer = OS_Alloc(mTextSize);
+    mTextBuffer = OS_Alloc(mTextBufferSize);
     mGlyphBuffer = OS_Alloc(mGlyphCount * 0xc);
     TextManager::Get().Init(mGlyphBuffer, 0, 0, 0x20, 0x20, 0x21);
     TextManager::Get().SetColor(0, 0, 15);
@@ -486,11 +486,11 @@ void BattleMoneyReward::PrintTotal() {
     y3 = 0;
     text2.Print(mMessages->GetText(15), mMessages->GetLength(15), mTextBuffer, 0x20, 2, &y3, &x3, 0, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
     TextManager::Get().mUse4bppFont = 0;
-    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0xa000, mTextBuffer, mTextSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0xa000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void BattleMoneyReward::ClearText() {
     if (mTextBuffer) {
-        MI_CpuClear16(mTextBuffer, mTextSize);
+        MI_CpuClear16(mTextBuffer, mTextBufferSize);
     }
 }

@@ -681,7 +681,7 @@ s8 MyroomTipsScene::UpdateCategorySelection(const u8 *pos, u8 count) {
     if ((s8) context->mInfo.mMenuResult != saved) {
         SoundManager::Get().StartSeqArc(5);
     }
-    if (InputManager::Get().IsHeld(1)) {
+    if (InputManager::Get().IsPressed(1)) {
         return context->mInfo.mMenuResult;
     }
     return -1;
@@ -705,7 +705,7 @@ BOOL MyroomTipsScene::UpdateRowSelection() {
             mScroll++;
         }
     }
-    if (TouchManager::Get().mTouching != 0) {
+    if (TouchManager::Get().mReleased != 0) {
         u8 i = 0;
         do {
             if (TouchManager::Get().IsReleasedIn(0x20, (s16) (i * 32 + 0x20), 0xc0, 0x1c)) {
@@ -719,7 +719,7 @@ BOOL MyroomTipsScene::UpdateRowSelection() {
             i++;
         } while (i < 4);
     }
-    if (InputManager::Get().IsHeld(1)) {
+    if (InputManager::Get().IsPressed(1)) {
         confirm = TRUE;
     }
     if ((row != mRow) | (scroll != mScroll)) {

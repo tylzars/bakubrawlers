@@ -440,7 +440,7 @@ void BattleTarget::Update() {
                     if (mUnk_1d2 >= 2) {
                         BattlePlayerList *list = data_020d433c.mBattlePlayers;
                         u8 unit                = list->Units()[(u8) (mUnitHandle - 1)].mMarker;
-                        BattleMarker *marker   = &list->Entries()[unit];
+                        BattleMarker *marker   = &list->Markers()[unit];
                         func_ov007_0225b69c(marker->mCellX, marker->mCellY);
                     }
                 }
@@ -528,7 +528,7 @@ void BattleTarget::Update() {
                         mState++;
                     }
                 } else {
-                    if ((mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9 && TouchManager::Get().mPressed) || data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsActive()) {
+                    if ((mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9 && TouchManager::Get().mPressed) || data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsCpu()) {
                         mState++;
                     }
                 }
@@ -2027,7 +2027,7 @@ void BattleTarget::func_ov007_02257f3c(GimmickSetData *set, u32 index, VecFx32 *
     BattleObstacle *selfp = &self;
     BattleObstacle other = *(BattleObstacle *) ((u8 *) set + 0x10 + index * 0x20);
     BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
-    mHitGimmickType = set->mTag;
+    mHitGimmickType = set->mTag; // a gimmick's set carries its GIMMICK_TYPE in mTag
     switch (set->mTag) {
         case 0: // the Gimmick constructor's default; every subclass constructor overwrites it
         case GIMMICK_TYPE_EXE_POINT:
@@ -3234,7 +3234,7 @@ BOOL BattleTarget::func_ov007_0225b4a0(VecFx32 *pos, u16 *angle, VecFx32 *vel, u
                         u8 m = list->mMarkers[(u8) (cell - 1)].mUnitHandle;
                         if (m != 0) {
                             BattleUnit *unit = &data_020d433c.mBattlePlayers->mUnits[(u8) (m - 1)];
-                            if (p0->IsActive() && !p1->IsActive() && unit->mPlayer == mPartner) {
+                            if (p0->IsCpu() && !p1->IsCpu() && unit->mPlayer == mPartner) {
                                 if (speed < 0x1000) {
                                     if (!(*angle > 0xe38 && *angle < 0x10000 - 0xe38)) {
                                         return 1;

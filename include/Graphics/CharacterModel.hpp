@@ -36,8 +36,8 @@ public:
     /* 44 */ s32 mUnk_44;
     /* 48 */ ModelInstance *mParts[6];
     /* 60 */ void *mUnk_60;
-    /* 64 */ u8 mVisible;
-    /* 65 */ u8 mSkinPalette;
+    /* 64 */ u8 mVisible; // also reached as UnkStruct_0205401c_04::mVisible (MyroomStatusScene)
+    /* 65 */ u8 mSkinPalette; // 0x65-0x74 are also written as UnkStruct_0205401c_04::mUnk_65[16] (CharacterEditScene)
     /* 66 */ u8 mFaceKind;
     /* 67 */ u8 mFaceVariant;
     /* 68 */ u8 mHairKind;
@@ -58,7 +58,7 @@ public:
     /* 77 */ u8 mExtraAnimEnabled;
     /* 78 */ u8 mUnk_78;
     /* 79 */ u8 mHeadLoadStep;
-    /* 7a */ u8 mUnk_7a;
+    /* 7a */ u8 mUnk_7a; // only ever 0 (StartLoad), so UpdateLoad's test always passes in this build
     /* 7b */ PAD(0x7b, 0x7c);
     /* 7c */
 
@@ -70,8 +70,8 @@ public:
     void CreateHeadAndLoadParts();
     void LoadPart(u32 part, u32 unk);
     BOOL LoadHeadFiles(u32 async);
-    void CreateHead();
-    void FreeParts();
+    void CreateHead(); // also loads the head's texture and palette files (LoadPartTextures(0)) and allocates mUnk_60
+    void FreeParts(); // deletes the six parts and frees mUnk_60
     void DrawParts();
     void LoadPartTextures(u32 part);
     BOOL LoadPartTexture(u32 part, const char *name, const char *file);

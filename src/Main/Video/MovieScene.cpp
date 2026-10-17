@@ -58,7 +58,7 @@ void MovieScene::Update() {
         mPlaybackDone = 1;
         return;
     }
-    if (InputManager::Get().IsHeld(8)) {
+    if (InputManager::Get().IsPressed(8)) {
         mPlayer->SeekToEnd();
     }
 }

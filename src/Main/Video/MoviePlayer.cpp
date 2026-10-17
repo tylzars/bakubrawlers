@@ -61,9 +61,9 @@ extern "C" void GX_SetBankForSubOBJ(u32 a);
 extern "C" void GX_SetBankForSubBGExtPltt(u32 a);
 extern "C" void GX_ResetBankForLCDC();
 extern "C" void GXS_LoadOAM(const void *data, u32 offset, u32 size);
-extern "C" void FS_InitFile(void *decoder);
-extern "C" void FS_OpenFile(void *decoder, const char *path);
-extern "C" void FS_CloseFile(void *decoder);
+extern "C" void FS_InitFile(void *file);
+extern "C" void FS_OpenFile(void *file, const char *path);
+extern "C" void FS_CloseFile(void *file);
 extern "C" int OS_GetArenaLo(int a);
 extern "C" int OS_GetArenaHi(int a);
 void QueueFrameCallback(void (*callback)(void *), void *arg);
@@ -226,16 +226,16 @@ void MoviePlayer::Open(void *a, void *b, u8 c, u32 d) {
     }
     func_0203bddc(OS_GetArenaLo(3), sizeA);
     func_0203bdfc(OS_GetArenaLo(4), sizeB);
-    FS_InitFile(mDecoder);
-    FS_OpenFile(mDecoder, (const char *) a);
+    FS_InitFile(mFile);
+    FS_OpenFile(mFile, (const char *) a);
     mUnk_d4 = 6;
-    mVideo  = (Player *) MobiclipCreate((Reader *) mDecoder, mUnk_d4);
+    mVideo  = (Player *) MobiclipCreate((Reader *) mFile, mUnk_d4);
     mFrameCount = MobiclipGetFrameCount(mVideo);
     mUnk_fc = func_0203a6dc(mVideo);
     if (mUseVideo2) {
-        FS_InitFile(mDecoder2);
-        FS_OpenFile(mDecoder2, (const char *) b);
-        mVideo2 = (Player *) MobiclipCreate((Reader *) mDecoder2, mUnk_d4);
+        FS_InitFile(mFile2);
+        FS_OpenFile(mFile2, (const char *) b);
+        mVideo2 = (Player *) MobiclipCreate((Reader *) mFile2, mUnk_d4);
     }
     mUseBuffer2 = c;
     u32 frames = func_0203a67c(mVideo);
@@ -278,12 +278,12 @@ void MoviePlayer::Close() {
     }
     OS_Free(mBuffer);
     MobiclipDelete(mVideo);
-    FS_CloseFile(mDecoder);
+    FS_CloseFile(mFile);
     if (!mUseVideo2) {
         return;
     }
     MobiclipDelete(mVideo2);
-    FS_CloseFile(mDecoder2);
+    FS_CloseFile(mFile2);
 }
 
 void MoviePlayer::SeekToEnd() {

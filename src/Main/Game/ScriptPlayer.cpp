@@ -946,33 +946,33 @@ void ScriptPlayer::CreateNextCharacter(u32 index) {
 
 BOOL ScriptPlayer::LoadCharacter(u32 index, u32 flag) {
     u8 variant;
-    s8 kind;
+    s8 characterId;
     UnkStruct_0205401c **slot;
     if (flag) {
         variant = mCharacters[index].mUnk_38;
-        kind    = mCharacters[index].mNextCharacterId;
+        characterId = mCharacters[index].mNextCharacterId;
         slot    = &mCharacters[index].mNextCharacter;
     } else {
         variant = mCharacters[index].mUnk_3a;
-        kind    = mCharacters[index].mCharacterId;
+        characterId = mCharacters[index].mCharacterId;
         slot    = &mCharacters[index].mCharacter;
     }
-    if (kind < 0) {
+    if (characterId < 0) {
         return TRUE;
     }
-    func_020682a0(index, kind);
+    func_020682a0(index, characterId);
     if (flag) {
         if (!(*slot)->UpdateLoad()) {
             return FALSE;
         }
     } else {
         *slot = new UnkStruct_0205401c();
-        u8 id = kind;
+        u8 id = characterId;
         (*slot)->Create(id, 0, 0, 0);
         u8 a = func_020687a8(id, variant, 0);
         u8 b = func_020687a8(id, variant, 3);
         (*slot)->func_02054644(b, a);
-        if (kind == 0x15) {
+        if (characterId == 0x15) {
             ((CharacterModel *) (*slot)->mCharacter)->mParts[0]->mAnim->mLoop = 1;
         } else {
             ((ModelTransform *) (*slot)->mStoryCharacter)->mModel->mAnim->mLoop = 1;
@@ -987,8 +987,8 @@ BOOL ScriptPlayer::LoadCharacter(u32 index, u32 flag) {
     return TRUE;
 }
 
-void ScriptPlayer::func_020682a0(u32 index, u32 kind) {
-    if (kind == 0x15) {
+void ScriptPlayer::func_020682a0(u32 index, u32 characterId) {
+    if (characterId == 0x15) {
         SpriteManager::Get().RestoreSlot(3);
     } else if (index == 0) {
         SpriteManager::Get().RestoreSlot(2);
@@ -999,8 +999,8 @@ void ScriptPlayer::func_020682a0(u32 index, u32 kind) {
 
 struct UnkStruct_020a22ac {
     /* 0 */ const char *mName;
-    /* 4 */ s16 mX;
-    /* 6 */ s16 mY;
+    /* 4 */ s16 mY;
+    /* 6 */ s16 mZ;
     /* 8 */
 };
 extern const UnkStruct_020a22ac data_020a22ac[18];
@@ -1089,16 +1089,16 @@ void ScriptPlayer::SwapCharacter(u32 index) {
     mCharacters[index].mUnk_39 = mCharacters[index].mUnk_38;
     mCharacters[index].mUnk_3a = mCharacters[index].mUnk_38;
     ResetCharacterParams(index);
-    s8 kind    = mCharacters[index].mCharacterId;
+    s8 characterId = mCharacters[index].mCharacterId;
     s8 variant = mCharacters[index].mUnk_3a;
-    func_020682a0(index, kind);
+    func_020682a0(index, characterId);
     mCharacters[index].mCharacter->FinishLoad();
     u8 variantId = variant;
-    u8 id        = kind;
+    u8 id        = characterId;
     u8 a         = func_020687a8(id, variantId, 0);
     u8 b         = func_020687a8(id, variantId, 3);
     mCharacters[index].mCharacter->func_02054644(b, a);
-    if (kind == 0x15) {
+    if (characterId == 0x15) {
         ((CharacterModel *) mCharacters[index].mCharacter->mCharacter)->mParts[0]->mAnim->mLoop = 1;
     } else {
         ((ModelTransform *) mCharacters[index].mCharacter->mStoryCharacter)->mModel->mAnim->mLoop = 1;
@@ -1126,11 +1126,11 @@ void ScriptPlayer::SetCharacterExtraAnimEnabled(u32 index, u32 value) {
 
 void ScriptPlayer::UpdateCharacterExtraAnims() {
     for (u8 i = 0; i < 2; i++) {
-        s32 kind = mCharacters[i].mCharacterId;
-        if (kind < 0) {
+        s32 characterId = mCharacters[i].mCharacterId;
+        if (characterId < 0) {
             continue;
         }
-        if (kind == mStorytalkWindow->mCharacterId) {
+        if (characterId == mStorytalkWindow->mCharacterId) {
             if (mStorytalkWindow->GetPageTextTimer()) {
                 SetCharacterExtraAnimEnabled(i, 1);
             } else {
@@ -1223,11 +1223,11 @@ BOOL ScriptPlayer::LoadMap() {
     MI_CpuClear16(mMaps[0].mRot, 0x14);
     MI_CpuClear16(&mMaps[0], 0x18);
     mMaps[0].mX = 0;
-    mMaps[0].mY = FX_FROM_INT_ROUND(data_020a22ac[id].mX);
-    mMaps[0].mZ = FX_FROM_INT_ROUND(data_020a22ac[id].mY);
+    mMaps[0].mY = FX_FROM_INT_ROUND(data_020a22ac[id].mY);
+    mMaps[0].mZ = FX_FROM_INT_ROUND(data_020a22ac[id].mZ);
     mMaps[0].mPosFrom[0] = 0;
-    mMaps[0].mPosFrom[1] = data_020a22ac[id].mX;
-    mMaps[0].mPosFrom[2] = data_020a22ac[id].mY;
+    mMaps[0].mPosFrom[1] = data_020a22ac[id].mY;
+    mMaps[0].mPosFrom[2] = data_020a22ac[id].mZ;
     mMaps[0].mPosTo[0] = mMaps[0].mPosFrom[0];
     mMaps[0].mPosTo[1] = mMaps[0].mPosFrom[1];
     mMaps[0].mPosTo[2] = mMaps[0].mPosFrom[2];
@@ -1715,9 +1715,9 @@ void ScriptPlayer::SetCutsceneAnimation(u32 value, u32 force) {
 
 void ScriptPlayer::UpdateMessages() {
     if ((mUnk_14ed == 0) & ((mUnk_12ba == 0) & (mSkipped == 0))) {
-        u8 step = mState;
-        if (((step >= 3) & (step <= 4)) && mWaitKind != 6) {
-            if (InputManager::Get().IsHeld(8)) {
+        u8 state = mState;
+        if (((state >= 3) & (state <= 4)) && mWaitKind != 6) {
+            if (InputManager::Get().IsPressed(8)) {
                 SkipScript();
                 return;
             }
@@ -1816,12 +1816,12 @@ void ScriptPlayer::UpdateMessages() {
                     SetCutsceneAnimation(1, 1);
                 }
             }
-            if (!InputManager::Get().IsHeld(1) && !touched) {
+            if (!InputManager::Get().IsPressed(1) && !touched) {
                 return;
             }
             mUnk_14ef = 0;
             if (mUnk_14e8 | mUnk_14f1) {
-                SetCutsceneAnimation(InputManager::Get().IsHeld(1) ? 3 : 1, 0);
+                SetCutsceneAnimation(InputManager::Get().IsPressed(1) ? 3 : 1, 0);
             }
             mInputTimer = 4;
             if (mMessageState == 4) {
@@ -1966,9 +1966,9 @@ void ScriptPlayer::UpdateCharacterAnimation(u32 index) {
     if (mCharacters[index].mUnk_3b == 0) {
         return;
     }
-    s32 kind = mCharacters[index].mCharacterId;
+    s32 characterId = mCharacters[index].mCharacterId;
     ModelAnim *anim;
-    if (kind == 0x15) {
+    if (characterId == 0x15) {
         anim = ((CharacterModel *) mCharacters[index].mCharacter->mCharacter)->mParts[0]->mAnim;
     } else {
         anim = ((ModelTransform *) mCharacters[index].mCharacter->mStoryCharacter)->mModel->mAnim;
@@ -1983,10 +1983,10 @@ void ScriptPlayer::UpdateCharacterAnimation(u32 index) {
     if (cur != target) {
         loop = FALSE;
         if (cur == 0) {
-            value = func_020687a8((u8) kind, target, 1);
+            value = func_020687a8((u8) characterId, target, 1);
             mCharacters[index].mUnk_39 = target;
         } else {
-            value = func_020687a8((u8) kind, cur, 2);
+            value = func_020687a8((u8) characterId, cur, 2);
             mCharacters[index].mUnk_39 = 0;
         }
         if (value < 0) {
@@ -2000,7 +2000,7 @@ void ScriptPlayer::UpdateCharacterAnimation(u32 index) {
             }
         }
     } else {
-        value = func_020687a8((u8) kind, cur, 0);
+        value = func_020687a8((u8) characterId, cur, 0);
         mCharacters[index].mUnk_3b = 0;
         loop = TRUE;
     }
@@ -3287,14 +3287,14 @@ extern "C" void Bg0WaveCallback() {
     u32 time = line + GameSystem::Get().mFrame;
     ScriptPlayer *event = gScriptPlayer;
     u16 angle = (time << 16) / 192;
-    u16 height = event->mLerpFrameCount;
-    u16 width  = event->mLerpFrames;
-    u16 third  = height / 3;
+    u16 frameCount = event->mLerpFrameCount;
+    u16 frames     = event->mLerpFrames;
+    u16 third      = frameCount / 3;
     u16 span;
-    if (width >= height - third) {
-        span = height - width;
+    if (frames >= frameCount - third) {
+        span = frameCount - frames;
     } else {
-        span = width;
+        span = frames;
         if (span > third) {
             span = third;
         }

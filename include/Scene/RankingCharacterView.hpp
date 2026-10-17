@@ -49,13 +49,13 @@ public:
     RankingCharacterView(u8 unk1, u16 unk2, u32 unk3, u32 unk4); // 0x020741b4
     virtual ~RankingCharacterView();
     virtual void Update();
-    BOOL ChangeCharacter(u8 unk1, u16 unk2, u32 unk3);
+    BOOL ChangeCharacter(u8 unk1, u16 unk2, u32 unk3); // queues id, rank and score; FALSE while mChanging is set
     void Load();
     void CreateCharacterModel(u32 kind);
     void Draw();
     void DrawSprites();
     void PrintName();
     void ClearNameText();
-    void ApplyNextCharacter();
+    void ApplyNextCharacter(); // rebuilds the model for the queued character (mNext*) and takes one SlideTo(0) step
     BOOL SlideTo(s32 target);
 };

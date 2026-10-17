@@ -48,7 +48,7 @@ public:
     UnkStruct_02071d24(u32 unk1);
     virtual ~UnkStruct_02071d24();
     virtual void Update();
-    void LoadGraphics();
+    void LoadGraphics(); // also creates mCommandList for the current entry (mBakuganIds / mAttributes)
     void func_02072b14();
     void func_02072b60();
     void func_02072c40();
@@ -58,9 +58,9 @@ public:
     void func_02072e7c();
     void RefreshItems();
     void func_020733d4();
-    void LoadMessages();
-    void PrintText();
+    void LoadMessages(); // also creates mMessageWindow and sets the text colour
+    void PrintText(); // prints nothing when the entry's mUnk_34 is NULL
     void DrawText();
     void ClearText();
-    void SetBakugan(u32 index, u32 unk2, u32 unk3, u8 unk4);
+    void SetBakugan(u32 index, u32 unk2, u32 unk3, u8 unk4); // nothing for index >= 6, unk2 >= 0x29 or unk3 >= 6; else fills entry index, mBakuganIndex = 0
 };

@@ -8,7 +8,7 @@
 
 void RemoveCollisionSet(GimmickCollision *data, GimmickSetData *set);
 void LoadCollisionFile(void *buf, u8 id);
-GimmickSetData *AddCollisionSet(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
+GimmickSetData *AddCollisionSet(GimmickCollision *data, int mode, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
 
 static const u8 sDestroyTurnLimits[4]  = {3, 4, 5, 0};
 static const u16 data_ov007_022793d4[3] = {30, 50, 50};

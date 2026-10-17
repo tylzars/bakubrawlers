@@ -318,7 +318,9 @@ extern s32 G3X_GetClipMtx(void *p);
 extern void MTX_Copy44To43(void *a, void *b);
 extern s32 G3X_GetVectorMtx(void *p);
 extern void FlushFifoCommandBuffer(void);
-void func_02032cc8(void *a, void *b) {   // reset the geometry engine state
+// Sends the buffered commands (FlushFifoCommandBuffer), then reads the clip matrix into a (as 4x3) and the vector
+// matrix into b, each only when non-NULL.
+void func_02032cc8(void *a, void *b) {
     u8 buf[0x40];
     FlushFifoCommandBuffer();
     *(volatile u32 *)0x4000440 = 0;

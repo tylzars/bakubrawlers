@@ -43,7 +43,7 @@ void UnkScene_02226e4c::Update() {
             break;
         }
         case 3:
-            if (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed) {
+            if (InputManager::Get().IsPressed(1) | TouchManager::Get().mPressed) {
                 delete mObj0c;
                 mObj0c = NULL;
                 mState = 8;

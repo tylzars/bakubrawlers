@@ -334,7 +334,7 @@ void BattleStatusPanels::DrawPanels() {
             }
             mPanels[i].mPrevLevel = level;
                         mPanels[i].mCellAnims[3]->Draw(0, (s16) (q + dir * mPanels[i].mMirrored * 16 + dir * -0x12), (s16) (y - 8), mUnk_f2);
-            if (data_020d433c.mBattlePlayers->mPlayers[i]->IsActive()) {
+            if (data_020d433c.mBattlePlayers->mPlayers[i]->IsCpu()) {
                 mPanels[i].mCellAnims[5]->Draw(0, (s16) (dir * (mPanels[i].mMirrored * 0x18 - 2) + q), (s16) (int) (y - 8), mUnk_f2);
             }
             s16 px = dir * (mPanels[i].mNameWidth * mPanels[i].mMirrored + 0xe) + q;

@@ -177,7 +177,7 @@ class BattleObj01;
 class BattleSub48 : public SceneBase {
 public:
     /* 00 SceneBase */
-    /* 0c */ u8 mState; // state: 0 idle, 1 slide in (update), 2 slide out, 3 hold, 4 finished
+    /* 0c */ u8 mState; // 0 nothing drawn, 1 DrawCircleAndSides, 2 the abilities slide up (0xc0 to 0x8c), 3 DrawAbilitiesAndSides, 4 finished
     /* 0d */ u8 mUnk_0d; // sub-state of the animation started by func_ov007_02224a70
     union {
         /* 0e */ u8 mUnk_0e;
@@ -269,7 +269,7 @@ public:
     void LoadModel();
 };
 
-// Camera rows of the 3D battle field (12 bytes, table at 0x022791ec).
+// Rows of model positions of the 3D battle field (12 bytes, table at 0x022791ec).
 struct BattleCamRow {
     /* 00 */ s32 mX;
     /* 04 */ s32 mY;
@@ -310,8 +310,8 @@ public:
     virtual ~BattleField3D();
     void MoveModels(float a, float b);
     void CreateAuras();
-    void FollowPushPercent(u32 frame);
-    void Draw(u32 frame);
+    void FollowPushPercent(u32 percent);
+    void Draw(u32 percent);
 };
 
 // Battle HUD scene on the sub screen (0x130 bytes, formerly BattleHud): the power gauge that tugs between the two

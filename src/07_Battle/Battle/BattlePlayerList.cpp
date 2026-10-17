@@ -939,23 +939,23 @@ u16 *GetMarkerSlotValue(BattlePlayerList *list, u8 index) {
     return &list->mPlayers[list->mMarkers[index].mPlayer]->Slot54(list->mMarkers[index].mSlot);
 }
 
-BattleRecord *GetUnitRecordAt(BattlePlayerList *list, u8 row, u8 col) {
-    u8 index = (u8) (list->mUnitHandles[row][col] - 1);
+BattleRecord *GetUnitRecordAt(BattlePlayerList *list, u8 x, u8 y) {
+    u8 index = (u8) (list->mUnitHandles[x][y] - 1);
     return &list->mPlayers[list->mUnits[index].mPlayer]->mRecords[list->mUnits[index].mRecord];
 }
 
 static const s8 sNeighbors[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
-BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 row, u8 col) {
-    if (list->mMarkerCount == 0 && row >= 3 && row <= 4 && col >= 2 && col <= 3) {
+BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 x, u8 y) {
+    if (list->mMarkerCount == 0 && x >= 3 && x <= 4 && y >= 2 && y <= 3) {
         return TRUE;
     }
-    if (list->mMarkerHandles[row][col] != 0) {
+    if (list->mMarkerHandles[x][y] != 0) {
         return FALSE;
     }
     for (u8 i = 0; i < 4; i++) {
-        u8 r = (u8) (row + sNeighbors[i][0]);
-        u8 c = (u8) (col + sNeighbors[i][1]);
+        u8 r = (u8) (x + sNeighbors[i][0]);
+        u8 c = (u8) (y + sNeighbors[i][1]);
         if (r < 14 && c < 10 && list->mMarkerHandles[r][c] > 0) {
             return TRUE;
         }
@@ -964,15 +964,15 @@ BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 row, u8 col) {
 }
 
 
-void AddMarker(BattlePlayerList *list, u8 row, u8 col, u8 player, u8 slot) {
+void AddMarker(BattlePlayerList *list, u8 x, u8 y, u8 player, u8 slot) {
     for (u8 i = 0; i < 12; i++) {
         if (list->mMarkers[i].mStatus == 0) {
             list->mMarkers[i].mStatus = 1;
-            list->mMarkers[i].mCellX = row;
-            list->mMarkers[i].mCellY = col;
+            list->mMarkers[i].mCellX = x;
+            list->mMarkers[i].mCellY = y;
             list->mMarkers[i].mPlayer = player;
             list->mMarkers[i].mSlot = slot;
-            list->mMarkerHandles[row][col] = i + 1;
+            list->mMarkerHandles[x][y] = i + 1;
             SetSlot54Flag(list->mPlayers[player], slot, 1);
             list->mMarkerCount++;
             return;

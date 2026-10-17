@@ -17,7 +17,7 @@ void InputManager::Update(BOOL enabled) {
     if (enabled == 0) {
         keys = 0;
     }
-    mHeld     = keys & (keys ^ mKeys);
+    mPressed     = keys & (keys ^ mKeys);
     mReleased = ~keys & (keys ^ mKeys);
     mKeys     = keys;
 
@@ -49,5 +49,5 @@ void InputManager::Update(BOOL enabled) {
             }
         }
     } while (i > 0);
-    mTrigger |= mHeld;
+    mTrigger |= mPressed;
 }

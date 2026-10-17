@@ -249,7 +249,7 @@ void NameEntryScene::Update() {
             break;
         case 2: {
             u8 prevScroll = mScroll;
-            if (InputManager::Get().IsHeld(1)) {
+            if (InputManager::Get().IsPressed(1)) {
                 switch (mCursorArea) {
                     case 0:
                         AddChar((u8) (mCol + (mRow + mScroll) * 8 + mTab * 0x60));
@@ -268,7 +268,7 @@ void NameEntryScene::Update() {
                         break;
                 }
             }
-            if (InputManager::Get().IsHeld(2)) {
+            if (InputManager::Get().IsPressed(2)) {
                 SoundManager::Get().StartSeqArc(0);
                 mKeyboard->SetResultItem(5, 3);
             }
@@ -396,7 +396,7 @@ void NameEntryScene::Update() {
             if (prevScroll != mScroll) {
                 UploadTabNsc();
             }
-            if (InputManager::Get().IsHeld(0x400)) {
+            if (InputManager::Get().IsPressed(0x400)) {
                 SoundManager::Get().StartSeqArc(0);
                 mKeyboard->SetResultItem(4, 3);
             }
@@ -474,7 +474,7 @@ void NameEntryScene::Update() {
             } else {
                 func_ov000_0221bc98();
             }
-            if (InputManager::Get().IsHeld(8) && mKeyboard->mButtons[6].mEnabled != 0) {
+            if (InputManager::Get().IsPressed(8) && mKeyboard->mButtons[6].mEnabled != 0) {
                 SoundManager::Get().StartSeqArc(0);
                 mKeyboard->SetResultItem(6, 3);
             }
@@ -565,7 +565,7 @@ void NameEntryScene::UploadTabNcg() {
 }
 
 void NameEntryScene::AddTouchedChar() {
-    if (TouchManager::Get().mTouching == 0) {
+    if (TouchManager::Get().mReleased == 0) {
         return;
     }
     s16 px = TouchManager::Get().mX;

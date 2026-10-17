@@ -81,9 +81,9 @@ public:
     /* 0c */ u16 mCharBase;
     /* 0e */ u8 mAnimIndex; // animation index
     /* 0f */ u8 mFrameIndex; // frame index
-    /* 10 */ u8 mMode; // playback mode
+    /* 10 */ u8 mMode; // Update: 0 and 4 forward once, 1 forward loop, 2 backward once, 3 backward loop, 5 stopped
     /* 11 */ s8 mPaletteBase;
-    /* 12 */ u8 mFinished; // finished
+    /* 12 */ u8 mFinished; // set when mode 0, 2 or 4 reaches its end; cleared by ResetAnimation
     /* 13 */ PAD(0x13, 0x14);
     /* 14 */ CellAnimFile *mFile;
     /* 18 */
@@ -99,11 +99,12 @@ public:
         ResetAnimation();
     }
     void SetMode(u32 unk1);
-    void Rewind();
+    void Rewind(); // back to the start frame and its duration; leaves mFinished (ResetAnimation clears it)
     void DrawFrame(u8 unk1, u8 frame, s16 x, s16 y, u8 unk5);
     void Init(CellAnimFrame *entries, u32 index);
     void DrawToScreen(SpriteScreen *screen, s32 x, s32 y, u8 unk4);
     void DrawFrameToScreen(SpriteScreen *screen, u32 frame, s32 x, s16 y, u8 unk5);
+    // scaleX / scaleY are multiplied by the cel's scale and its rotation is added
     void DrawTransformedToScreen(SpriteScreen *screen, s32 x, s32 y, u8 unk4, s32 scaleX, s32 scaleY, u16 rotation);
     u32 GetDuration(); // total duration of the current animation
     void DrawTransformed(u32 screen, s32 x, s32 y, u32 mode, s32 scaleX, s32 scaleY, u32 unk7); // scaled draw

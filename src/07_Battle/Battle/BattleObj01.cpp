@@ -17,7 +17,7 @@ int PointDistance(int x1, int y1, int x2, int y2);
 
 
 BattleObj01::BattleObj01(u8 layer, u32 charBase) {
-    mActive = 0;
+    mMoving = 0;
     mUnk_05 = 0;
     mMotion = 0;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
@@ -44,7 +44,7 @@ BattleObj01::~BattleObj01() {
 }
 
 BOOL BattleObj01::Start(u8 fast, int x, int y, s16 targetX, s16 targetY, u16 angle, int motion) {
-    if (mActive) {
+    if (mMoving) {
         return 0;
     }
     mMotion = &gBattleObj01Motions[motion];
@@ -56,7 +56,7 @@ BOOL BattleObj01::Start(u8 fast, int x, int y, s16 targetX, s16 targetY, u16 ang
     }
     mCellAnims[0]->SetAnimation(anim);
     mCellAnims[1]->SetAnimation(anim + 1);
-    mActive = 1;
+    mMoving = 1;
     mUnk_05 = fast;
     mSpeed = mMotion->mStartSpeed;
     mX = x;
@@ -76,7 +76,7 @@ BOOL BattleObj01::Start(u8 fast, int x, int y, s16 targetX, s16 targetY, u16 ang
 }
 
 BOOL BattleObj01::Update() {
-    if (!mActive) {
+    if (!mMoving) {
         return 0;
     }
     BattleObj01Motion *motion = mMotion;
@@ -100,6 +100,6 @@ BOOL BattleObj01::Update() {
     if (PointDistance((s32) mTargetX, (s32) mTargetY, (s32) mX, (s32) mY) > 2) {
         return 0;
     }
-    mActive = 0;
+    mMoving = 0;
     return 1;
 }

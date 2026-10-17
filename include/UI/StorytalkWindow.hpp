@@ -18,7 +18,7 @@ public:
     /* 28 */ u32 mTextBufferSizes[2];
     /* 30 */ u8 mState; // state
     /* 31 */ u8 mUnk_31;
-    /* 32 */ u8 mSlideTimer;
+    /* 32 */ u8 mSlideTimer; // 12 when the slide-in starts, -1 per Update in state 3; the box is drawn t * t / 8 pixels higher
     /* 33 */ PAD(0x33, 0x34);
     /* 34 */ s16 mMessageIndex;
     /* 36 */ u8 mUnk_36;
@@ -36,8 +36,8 @@ public:
     /* 42 */ s16 mCharacterId;
     // set when a message index >= 0 is set (:235), cleared for -1 (:232) and when its last page is done (:121)
     /* 44 */ u8 mHasMessage;
-    /* 45 */ u8 mLastPageDone;
-    /* 46 */ u8 mCell1Visible;
+    /* 45 */ u8 mLastPageDone; // set by NextPage on the last page; Update then (with mKeepLastPage == 0) clears mHasMessage, state 2
+    /* 46 */ u8 mCell1Visible; // draw gate of mCellAnims[1]; it is also hidden while mTextOnly is set and on blink frames
     /* 47 */ u8 mCloseRequested;
     /* 48 */ u8 mBlink;
     /* 49 */ u8 mBlinkHidden;
@@ -53,10 +53,12 @@ public:
     void LoadMessageFile(const char *path);
     void LoadGraphics();
     void SetCell2FrameAndX(u32 unk1, u32 unk2);
-    BOOL NextPage(u32 unk1);
+    BOOL NextPage(u32 unk1); // sound 0x6b only when unk1 != 0; FALSE (and mLastPageDone) on the last page
+    // unk1 = message index, -1 = none; unk2 = character, 0x64 becomes 0 or 5 by data_020d433c.mUnk_82;
+    // unk3 restarts the slide-in (state 2); unk4 is stored in mTextOnly.
     void SetMessage(s32 unk1, s32 unk2, u32 unk3, u32 unk4);
     void SetCell1Visible(u32 unk1);
     u32 GetPageTextTimer();
     BOOL HasMorePages();
-    BOOL IsTextShown();
+    BOOL IsTextShown(); // mState == 5; also TRUE on blink frames when nothing is drawn
 };

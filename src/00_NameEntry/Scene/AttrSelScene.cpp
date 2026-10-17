@@ -131,7 +131,7 @@ void AttrSelScene::Update() {
                         }
                         mAttrib--;
                         SoundManager::Get().StartSeqArc(5);
-                    } else if (InputManager::Get().IsHeld(1)) {
+                    } else if (InputManager::Get().IsPressed(1)) {
                         SoundManager::Get().StartSeqArc(0);
                         event = 3;
                     }

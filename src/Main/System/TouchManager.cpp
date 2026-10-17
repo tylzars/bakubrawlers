@@ -27,13 +27,13 @@ void TouchManager::Init() {
     mMoveAngle = 0;
     mDistance = 0;
     mUnk_50 = 0;
-    mRepeatDelay = 0;
-    mRepeatTimer = 0;
+    mDoubleTapFrameCount = 0;
+    mDoubleTapTimer = 0;
     mDown = 0;
     mPressed = 0;
     mTrigger = 0;
     mDoubleTap = 0;
-    mTouching = 0;
+    mReleased = 0;
     mCountdown = 0;
     mCountdown2 = 0;
     mCountdownStart = 0;
@@ -41,7 +41,7 @@ void TouchManager::Init() {
     mTapCount = 0;
     mUnk_60 = 0;
     mEnabled = 0;
-    mRepeatDelay = 30;
+    mDoubleTapFrameCount = 30;
     mCountdownStart = mCountdown = 12;
     mCountdown2Start = mCountdown2 = 2;
     mUnk_50 = 0x1240 - 12;
@@ -84,7 +84,7 @@ void TouchManager::Update(BOOL enabled) {
     mCur.y = sample.y;
     mCur.touch = sample.touch;
     mCur.valid = sample.valid;
-    mTouching = 0;
+    mReleased = 0;
     mDown = 0;
     mPressed = 0;
     mTrigger = 0;
@@ -111,7 +111,7 @@ void TouchManager::Update(BOOL enabled) {
             }
         }
     } else if (mPrev.touch != 0) {
-        mTouching = 1;
+        mReleased = 1;
     }
     UpdateDoubleTap();
     UpdateMotion();
@@ -168,7 +168,7 @@ BOOL TouchManager::IsTriggerIn(s32 x, s32 y, s32 width, s16 height) {
 }
 
 BOOL TouchManager::IsReleasedIn(u32 x, s16 y, u32 width, s16 height) {
-    if (mTouching != 0) {
+    if (mReleased != 0) {
         if (HitTest(x, y, width, height)) {
             return TRUE;
         }
@@ -180,11 +180,11 @@ void TouchManager::UpdateDoubleTap() {
     mDoubleTap = 0;
     if (mPressed != 0) {
         if (mTapCount == 0) {
-            mRepeatTimer = mRepeatDelay;
+            mDoubleTapTimer = mDoubleTapFrameCount;
         }
     }
-    mRepeatTimer--;
-    if (mRepeatTimer > 0) {
+    mDoubleTapTimer--;
+    if (mDoubleTapTimer > 0) {
         if (mPressed != 0) {
             mTapCount++;
             return;
@@ -194,11 +194,11 @@ void TouchManager::UpdateDoubleTap() {
         }
         if (mTapCount >= 2) {
             mDoubleTap = 1;
-            mRepeatTimer = 0;
+            mDoubleTapTimer = 0;
             mTapCount = 0;
         }
     } else {
-        mRepeatTimer = 0;
+        mDoubleTapTimer = 0;
         mTapCount = 0;
     }
 }

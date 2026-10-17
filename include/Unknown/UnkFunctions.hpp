@@ -11,6 +11,8 @@ void SeedRandom(u32 unk1);
 u8 GetCardInfo(u32 id, u32 kind);
 BOOL UnlockProgressEntry(u32 unk1);
 BOOL UnlockStoreItems();
+// For each UnlockPair of the save position's list sets the id's bit in the level arrays up to its mLevel
+// (data_020d496a, 496d, 4970); TRUE when an id had no bit in any of them before.
 BOOL UnlockCharacters();
 BOOL UnlockFields();
 void func_02089208();

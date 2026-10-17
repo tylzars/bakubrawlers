@@ -117,7 +117,7 @@ extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
 
 void func_ov007_02246a84(BattleCommandMap *map, u32 a);
 
-BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 row, u8 col);
+BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 x, u8 y);
 
 extern "C" void func_ov007_022314bc(BattleCpu *cpu);
 
@@ -125,7 +125,7 @@ void ApplyScrollOffset(void *arg);
 
 extern "C" void func_ov007_02247a7c(BattleCommandMap *map);
 
-void AddMarker(BattlePlayerList *list, u8 row, u8 col, u8 player, u8 slot);
+void AddMarker(BattlePlayerList *list, u8 x, u8 y, u8 player, u8 slot);
 
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 
@@ -148,7 +148,7 @@ struct BattleCellInfo {
     /* 09 */ u8 mAttribute;
 };
 
-BattleCellInfo *GetUnitRecordAt(BattlePlayerList *list, u8 row, u8 col);
+BattleCellInfo *GetUnitRecordAt(BattlePlayerList *list, u8 x, u8 y);
 
 extern "C" void RotateCameraYaw(BattleCommandMap *map, u32 direction);
 
@@ -499,7 +499,7 @@ void BattleCommand::Update() {
                     mState = 10;
                 }
             } else {
-                BOOL active = list->mPlayers[mUnk_133]->IsActive();
+                BOOL active = list->mPlayers[mUnk_133]->IsCpu();
                 if (!active) {
                     mState = 0xe;
                 } else {
@@ -514,7 +514,7 @@ void BattleCommand::Update() {
         }
 
         case 8: {
-            if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
+            if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
                 data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
             }
             if (data_020d433c.mBattlePlayers->mUnk_2a4->func_02087cac()) {
@@ -530,7 +530,7 @@ void BattleCommand::Update() {
                 mState = 10;
                 return;
             }
-            BOOL active = list->mPlayers[mUnk_133]->IsActive();
+            BOOL active = list->mPlayers[mUnk_133]->IsCpu();
             if (!active) {
                 mState = 0xe;
                 return;
@@ -588,7 +588,7 @@ void BattleCommand::Update() {
                 ok = FALSE;
             }
             if (ok) {
-                if (InputManager::Get().IsHeld(8)) {
+                if (InputManager::Get().IsPressed(8)) {
                     mState = 0x31;
                     return;
                 }
@@ -1128,7 +1128,7 @@ void BattleCommand::Update() {
                 mState = 10;
                 return;
             }
-            BOOL active = list->mPlayers[(u8) cur]->IsActive();
+            BOOL active = list->mPlayers[(u8) cur]->IsCpu();
             if (!active) {
                 mState = 0xe;
                 return;
@@ -1213,7 +1213,7 @@ void BattleCommand::Update() {
             u8 flag                = 0;
             if (v > 0) {
                 idx = v - 1;
-                if (list->CurrentPlayer() == list->mUnits[idx].mPlayer) {
+                if (list->Unk2a9() == list->mUnits[idx].mPlayer) {
                     item->mFlags = 5;
                     if (mReleasedOnCursorCell != 0) {
                         flag = 1;
@@ -1260,7 +1260,7 @@ void BattleCommand::Update() {
                     s8 cell = data_020d433c.mBattlePlayers->mUnitHandles[y][x];
                     if (cell > 0) {
                         BattlePlayerList *l2 = data_020d433c.mBattlePlayers;
-                        if (l2->CurrentPlayer() == l2->mUnits[(u8) (cell - 1)].mPlayer) {
+                        if (l2->Unk2a9() == l2->mUnits[(u8) (cell - 1)].mPlayer) {
                             if (mFlipped == 0) {
                                 mUnk_10->Draw(1, (s16) (mOffsetX + (y * 16 + 14 - mScrollX)), (s16) (x * 24 - 22 - mScrollY), 0);
                             } else {
@@ -2062,7 +2062,7 @@ void BattleCommand::UpdateCursorScrollAndCamera(u32 flag) {
             mUnk_124 = tx + mScrollX;
             mUnk_126 = ty + mScrollY;
         }
-        if (TouchManager::Get().mTouching != 0) {
+        if (TouchManager::Get().mReleased != 0) {
             mUnk_124 = tx + mScrollX;
             mUnk_126 = ty + mScrollY;
             s16 col  = (mUnk_124 - 0xe - mOffsetX) / 16;
@@ -2087,20 +2087,20 @@ void BattleCommand::UpdateCursorScrollAndCamera(u32 flag) {
                 }
             }
         }
-        if (TouchManager::Get().mTouching != 0) {
+        if (TouchManager::Get().mReleased != 0) {
             mUnk_129 = 0;
         }
     }
     if (mMode == 2) {
         if (InputManager::Get().IsDown(0x200)) {
-            if (InputManager::Get().IsHeld(0x100)) {
+            if (InputManager::Get().IsPressed(0x100)) {
                 func_ov007_02246a84(mCommandMap, 2);
                 return;
             }
             RotateCameraYaw(mCommandMap, 0);
         }
         if (InputManager::Get().IsDown(0x100)) {
-            if (InputManager::Get().IsHeld(0x200)) {
+            if (InputManager::Get().IsPressed(0x200)) {
                 func_ov007_02246a84(mCommandMap, 2);
                 return;
             }
@@ -2115,7 +2115,7 @@ void BattleCommand::UpdateCursorScrollAndCamera(u32 flag) {
     }
 }
 
-BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 row, u8 col);
+BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 x, u8 y);
 
 void BattleCommand::RefreshCommandPageOrList() {
     switch (mMode) {

@@ -16,8 +16,8 @@ struct AntennaLayout {
     /* 08 */
 };
 struct AntennaPos {
-    /* 00 */ u8 mY;
-    /* 01 */ u8 mX;
+    /* 00 */ u8 mX;
+    /* 01 */ u8 mY;
 };
 extern const AntennaLayout gAntennaLayouts[];
 extern const AntennaPos gAntennaPositions[];
@@ -37,7 +37,7 @@ AntennaIndicator::~AntennaIndicator() {
 }
 
 void AntennaIndicator::Update() {
-    u32 frame;
+    u32 screen;
     CameraManager &camB = CameraManager::Get();
     CameraManager &camA = CameraManager::Get();
     CameraMode modeB = (CameraMode) camB.mMode;
@@ -52,14 +52,14 @@ void AntennaIndicator::Update() {
                 return;
             }
         }
-        frame = 0;
+        screen = 0;
     } else {
-        frame = gAntennaLayouts[mLayoutIndex].mScreen;
+        screen = gAntennaLayouts[mLayoutIndex].mScreen;
     }
     WirelessManager::Get();
-    mFirstCellAnim->DrawFrame(frame, data_020c4030.mUnk_24d, gAntennaPositions[mLayoutIndex].mY, gAntennaPositions[mLayoutIndex].mX, 0);
+    mFirstCellAnim->DrawFrame(screen, data_020c4030.mUnk_24d, gAntennaPositions[mLayoutIndex].mX, gAntennaPositions[mLayoutIndex].mY, 0);
     if (mSecondVisible) {
-        mSecondCellAnim->Draw(frame, gAntennaPositions[mLayoutIndex].mY, gAntennaPositions[mLayoutIndex].mX, 0);
+        mSecondCellAnim->Draw(screen, gAntennaPositions[mLayoutIndex].mX, gAntennaPositions[mLayoutIndex].mY, 0);
     }
 }
 

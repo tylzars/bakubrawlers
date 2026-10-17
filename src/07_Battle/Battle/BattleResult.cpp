@@ -1242,7 +1242,7 @@ void BattleResult::PrintMoney() {
 }
 
 #define COUNT_STEP(CLEAR_ONLY)                                                         \
-    if ((u32) mMoneyRemaining < 10 || (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed)) { \
+    if ((u32) mMoneyRemaining < 10 || (InputManager::Get().IsPressed(1) | TouchManager::Get().mPressed)) { \
         if (!(CLEAR_ONLY)) {                                                           \
             mMoneyTotal += mMoneyRemaining;                                                        \
         }                                                                              \
@@ -1261,7 +1261,7 @@ void BattleResult::PrintMoney() {
     }
 
 void BattleResult::UpdateMoneyCount() {
-    if (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed) {
+    if (InputManager::Get().IsPressed(1) | TouchManager::Get().mPressed) {
         mDelayTimer = 0;
     }
     if (mDelayTimer != 0) {

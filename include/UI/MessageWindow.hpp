@@ -37,7 +37,7 @@ public:
     void StartMessage(u32 unk1, u32 unk2, u32 unk3);
     void SetVram(u32 vram);
     void LoadMessageFile(const char *name);
-    void InitText();
+    void InitText(); // also uploads the text palette and clears 0x800 bytes at mVram + 0x6400000 (0x6600000 for screen 1)
     void UploadTextPalette();
 };
 

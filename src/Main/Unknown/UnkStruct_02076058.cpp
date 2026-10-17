@@ -123,7 +123,7 @@ UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
             mAttributes[slot] = variant;
             UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, mBakuganIds[slot], variant);
             mSaveEntries[slot] = entry;
-            u32 base = entry->mPad;
+            u32 base = entry->mGauge;
             mRemainingGauge[slot] = record->mGauge - base;
             mUnk_70[slot] = mSaveEntries[slot]->mUnk_00_0;
         }
@@ -330,7 +330,7 @@ void UnkStruct_02076058::LoadGraphics() {
                 mCellAnims[i]->mFrameIndex = 0;
                 UnkStruct_02023248 *entry = mSaveEntries[i % 3];
                 if (entry != NULL) {
-                    int gauge = entry->mPad;
+                    int gauge = entry->mGauge;
                     u16 rest = gauge % 300;
                     mCellAnims[i]->mFrameIndex = (u8) ((float) (rest * (mCellAnims[i]->mFrames[mCellAnims[i]->mAnimIndex].mFrameCount - 1)) / 300.0f);
                 }
@@ -364,7 +364,7 @@ void UnkStruct_02076058::AddRemainingGaugeAtOnce() {
     for (u8 i = 0; i < 3; i++) {
         u8 slot = i + mSlotOffset;
         if (mSaveEntries[slot] != NULL && mRemainingGauge[slot] != 0) {
-            mRemainingGauge[slot] += mSaveEntries[slot]->mPad;
+            mRemainingGauge[slot] += mSaveEntries[slot]->mGauge;
             if (func_020771d8(i, 1)) {
                 changed = 1;
             }
@@ -405,15 +405,15 @@ u32 UnkStruct_02076058::func_020771d8(u32 index, u32 unk2) {
                     mUnk_79 = 1;
                     result = 1;
                 } else {
-                    mSaveEntries[slot]->mPad = mRemainingGauge[slot];
+                    mSaveEntries[slot]->mGauge = mRemainingGauge[slot];
                     break;
                 }
             } else {
-                u32 gauge = entry->mPad;
+                u32 gauge = entry->mGauge;
                 if (gauge < cost) {
                     break;
                 }
-                entry->mPad = gauge - cost;
+                entry->mGauge = gauge - cost;
                 if ((s32) mSaveEntries[slot]->mUnk_00_0 < 9) {
                     mSaveEntries[slot]->mUnk_00_0 = mSaveEntries[slot]->mUnk_00_0 + 1;
                 }
@@ -429,7 +429,7 @@ u32 UnkStruct_02076058::func_020771d8(u32 index, u32 unk2) {
             k++;
         } while (k < count);
         CellAnimation *anim = mCellAnims[index + 3];
-        int gauge = mSaveEntries[slot]->mPad;
+        int gauge = mSaveEntries[slot]->mGauge;
         u16 rest = gauge % 300;
         anim->mFrameIndex = (u8) ((float) (rest * (anim->mFrames[anim->mAnimIndex].mFrameCount - 1)) / 300.0f);
     }
@@ -456,7 +456,7 @@ void UnkStruct_02076058::Draw() {
         UnkStruct_02023248 *entry = mSaveEntries[i + mSlotOffset];
         if (entry != NULL && (s32) entry->mUnk_00_0 < 9 && mCellAnims[slot] != NULL) {
             u32 last = mCellAnims[slot]->mFrames[mCellAnims[slot]->mAnimIndex].mFrameCount - 1;
-            u8 count = entry->mPad / 300;
+            u8 count = entry->mGauge / 300;
             u8 n = 0;
             if (count != 0) {
                 u8 x = sResultCellPositions[slot][0];
@@ -486,7 +486,7 @@ void UnkStruct_02076058::Draw() {
 }
 
 void UnkStruct_02076058::UpdateGauge() {
-    if (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed) {
+    if (InputManager::Get().IsPressed(1) | TouchManager::Get().mPressed) {
         AddRemainingGaugeAtOnce();
     }
     u32 changed = 0;
@@ -495,7 +495,7 @@ void UnkStruct_02076058::UpdateGauge() {
         UnkStruct_02023248 *entry = mSaveEntries[slot];
         if (entry != NULL) {
             if ((s32) entry->mUnk_00_0 >= 9) {
-                entry->mPad = 0;
+                entry->mGauge = 0;
                 mRemainingGauge[slot] = 0;
             } else if (mCellAnims[i + 9]->mFinished != 0 && mRemainingGauge[slot] != 0) {
                 u32 step = 3;
@@ -504,7 +504,7 @@ void UnkStruct_02076058::UpdateGauge() {
                     step = (u8) points;
                 }
                 mRemainingGauge[slot] -= step;
-                mSaveEntries[slot]->mPad = mSaveEntries[slot]->mPad + step;
+                mSaveEntries[slot]->mGauge = mSaveEntries[slot]->mGauge + step;
                 if (func_020771d8(i, 0)) {
                     changed = 1;
                 }
@@ -564,7 +564,7 @@ void UnkStruct_02076058::SetBakugan(u32 index, u32 unk2, u32 unk3, u8 unk4) {
     if (unk4 != 0) {
         GetBakuganEntry(gSaveData, unk2, unk3);
         u16 cost = (mSaveEntries[index]->mUnk_00_0 + 1) * 300;
-        mRemainingGauge[index] = cost - mSaveEntries[index]->mPad;
+        mRemainingGauge[index] = cost - mSaveEntries[index]->mGauge;
     }
 }
 

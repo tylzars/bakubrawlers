@@ -74,7 +74,7 @@ BattleAbility::BattleAbility()
     mRecord = list->mPlayers[mPlayer]->mRecord;
     if (mPlayer != own) {
         mUnk_0d = 1;
-        if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsActive()) {
+        if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsCpu()) {
             mUnk_0e = 1;
         }
     }
@@ -704,7 +704,7 @@ u8 BattleAbility::func_ov007_0226547c() {
             }
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
             UnitIndex marker       = (UnitIndex) list->mUnits[mUnit].mMarker;
-            BattleMarker *entries  = list->Entries();
+            BattleMarker *entries  = list->Markers();
             list->mMarkers[marker].mStatus = 3;
             VecFx32 pos;
             GetCellPosition(&pos, entries[marker].mCellX, entries[marker].mCellY);
@@ -849,7 +849,7 @@ u8 BattleAbility::func_ov007_02265af8() {
                 list      = data_020d433c.mBattlePlayers;
                 units     = list->mUnits;
                 unit      = UnitAt(units, mUnk_29, sz);
-                marker    = &list->Entries()[unit->mMarker];
+                marker    = &list->Markers()[unit->mMarker];
                 GetCellPosition(&mUnk_54, marker->mCellX, marker->mCellY);
                 SetTransformPosition(mTarget->mBakugan, mUnk_54.x, 0x899a, mUnk_54.z);
                 VecFx32 a = mTarget->mBakugan->mPosition;
@@ -932,7 +932,7 @@ u8 BattleAbility::func_ov007_02265fac() {
         case 1:
             if (mUnk_1a >= 0x50 && !mUnk_62_1) {
                 mUnk_62_1            = 1;
-                BattleMarker *marker = &data_020d433c.mBattlePlayers->Entries()[mUnk_2a];
+                BattleMarker *marker = &data_020d433c.mBattlePlayers->Markers()[mUnk_2a];
                 GetCellPosition(&mUnk_54, marker->mCellX, marker->mCellY);
                 SetTransformPosition(mTarget->mBakugan, mUnk_54.x, 0x899a, mUnk_54.z);
                 u8 idx = mUnk_29;

@@ -359,7 +359,7 @@ s32 TournamentSubScene::UpdateEntryKeySelection() {
         if (mCount != 1) {
             SoundManager::Get().StartSeqArc(5);
         } else {
-            if (InputManager::Get().IsHeld(KEY_DOWN) | InputManager::Get().IsHeld(KEY_UP)) {
+            if (InputManager::Get().IsPressed(KEY_DOWN) | InputManager::Get().IsPressed(KEY_UP)) {
                 SoundManager::Get().StartSeqArc(2);
             }
         }

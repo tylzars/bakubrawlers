@@ -1695,11 +1695,11 @@ void ListScene::UpdateListInput() {
             break;
     }
     if (mListWindow->mState == 1) {
-        if (InputManager::Get().IsHeld(1)) {
+        if (InputManager::Get().IsPressed(1)) {
             if (act == 0) {
                 act = 1;
             }
-        } else if (InputManager::Get().IsHeld(2)) {
+        } else if (InputManager::Get().IsPressed(2)) {
             if (act == 0) {
                 act = 2;
                 mListWindow->mCellAnims[0]->SetAnimation(3);
@@ -1709,7 +1709,7 @@ void ListScene::UpdateListInput() {
             if (act == 0) {
                 if (mSelectingPage != 0) {
                     act = 3;
-                    if (InputManager::Get().IsHeld(KEY_LEFT)) {
+                    if (InputManager::Get().IsPressed(KEY_LEFT)) {
                         mUnk_f5 = 1;
                     } else {
                         mUnk_f5 = 2;
@@ -1722,7 +1722,7 @@ void ListScene::UpdateListInput() {
             if (act == 0) {
                 if (mSelectingPage != 0) {
                     act = 4;
-                    if (InputManager::Get().IsHeld(KEY_RIGHT)) {
+                    if (InputManager::Get().IsPressed(KEY_RIGHT)) {
                         mUnk_f5 = 3;
                     } else {
                         mUnk_f5 = 4;
@@ -2069,27 +2069,27 @@ void ListScene::UpdatePages() {
             }
             break;
         case 5:
-            if (TouchManager::Get().mTouching != 0) {
+            if (TouchManager::Get().mReleased != 0) {
                 mUnk_f5 = 0;
             }
             break;
         case 6:
-            if (TouchManager::Get().mTouching != 0 && mPageSliding == 0) {
+            if (TouchManager::Get().mReleased != 0 && mPageSliding == 0) {
                 ApplyTargetPage();
             }
             break;
         case 7:
-            if (TouchManager::Get().mTouching != 0) {
+            if (TouchManager::Get().mReleased != 0) {
                 mUnk_f5 = 0;
             }
             break;
         case 8:
-            if (TouchManager::Get().mTouching != 0 && mPageSliding == 0) {
+            if (TouchManager::Get().mReleased != 0 && mPageSliding == 0) {
                 ApplyTargetPage();
             }
             break;
         case 9:
-            if (TouchManager::Get().mTouching != 0) {
+            if (TouchManager::Get().mReleased != 0) {
                 mUnk_f5 = 0;
             }
             break;
@@ -3820,7 +3820,7 @@ void ResetCursorBakuganEntry(ListScene *self) {
     UnkStruct_02023248 *entry = GetBakuganEntry(gSaveData, id, self->mListFilter);
     u32 index                 = GetBakuganTableIndex(self, id, self->mListFilter);
     entry->mUnk_00_0          = 0;
-    entry->mPad               = 0;
+    entry->mGauge             = 0;
     entry->mUnk_0             = sInitialEntryFields[index][0];
     entry->mUnk_12            = sInitialEntryFields[index][1];
     entry->mUnk_3             = sInitialEntryFields[index][2];
@@ -4660,7 +4660,7 @@ u32 ListScene::GetEntryPrice(u32 unk1, u32 unk2) {
         cost = 5000;
     }
     u32 price = cost * sPricePercents[pair->mUnk_00_0] / 100;
-    return price - price * pair->mPad / ((pair->mUnk_00_0 + 1) * 300);
+    return price - price * pair->mGauge / ((pair->mUnk_00_0 + 1) * 300);
 }
 
 BOOL ListScene::ShouldApplyTargetPage() {

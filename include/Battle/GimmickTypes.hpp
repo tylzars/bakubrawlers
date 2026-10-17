@@ -9,13 +9,13 @@
 
 // Functions of other battle files / ITCM used by the gimmicks.
 void LoadCollisionFile(void *buf, u8 id);
-GimmickSetData *AddCollisionSet(GimmickCollision *data, int count, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
+GimmickSetData *AddCollisionSet(GimmickCollision *data, int mode, void *buf, VecFx32 *pos, u16 *rot, u8 unk);
 void RemoveCollisionSet(GimmickCollision *data, GimmickSetData *set);
 extern MtxFx43 data_020c1cf4;
 extern "C" fx32 FX_Div(fx32 num, fx32 den); // fixed point num / den (hardware divider)
 void RotateVecY(VecFx32 *in, u16 angle, VecFx32 *out); // rotates `in` about Y
 
-// Bakugan statue shown for the attribute in data_020d433c.mUnk_95 (pyrus_dorg00, angelo/diablo, Ventus_skyr_0,
+// Bakugan statue loaded per field id data_020d433c.mFieldId (pyrus_dorg00, angelo/diablo, Ventus_skyr_0,
 // subterra_majin, haos_tig, hydra). Vtable 02286c84.
 class GimmickBakugan : public Gimmick {
 public:
@@ -33,7 +33,7 @@ public:
     /* 14 */ virtual void Finish();
 };
 
-// Breakable block, model block_%02d (indexed by data_020d433c.mUnk_95). Vtable 02286e30.
+// Breakable block, model block_%02d (indexed by data_020d433c.mFieldId). Vtable 02286e30.
 class GimmickBlock : public Gimmick {
 public:
     /* 45 */ PAD(0x45, 0x48);
@@ -337,7 +337,8 @@ public:
 
     void DrawModelB();
 };
-// Model-less push field (no Load/Unload work): while the target is inside, pushes it away from mPosition.
+// Model-less pull field (no Load/Unload work): while the target is inside, adds mPullPerFrame to the target's mUnk_a0, towards
+// a point 0x8000 nearer mPosition turned by 0x71c.
 class GimmickUnk_022308a8 : public Gimmick { // vtable 022875bc
 public:
     /* 45 */ PAD(0x45, 0x48);
@@ -384,7 +385,7 @@ public:
 // target is pulled from the partner's side and the partner gets a mTimer frame cooldown. Vtable 0228af9c.
 class GimmickHaosWall : public Gimmick { // 02274d78
 public:
-    /* 45 */ u8 mTimer;
+    /* 45 */ u8 mTimer; // counts down only on frames without a hit
     /* 46 */ u8 mUnk_46;
     /* 47 */ PAD(0x47, 0x48);
     /* 48 */
@@ -422,7 +423,7 @@ public:
     void DrawModelB();
     void DrawModels(int drawB);
     int CountDownToState(int frames, int state);
-    int IsTargetNear(); // TRUE when the target is within 0x96000 of the bubble
+    int IsTargetNear(); // TRUE when the target's bakugan is visible and within 0x96000 of the bubble
 };
 // Lightning strikes (ikazuchistart / ikaz00): at most two strike at a time (static counter), each waits one of
 // the random mDelays between strikes and hits the target when it is in range. Vtable 0228b528.

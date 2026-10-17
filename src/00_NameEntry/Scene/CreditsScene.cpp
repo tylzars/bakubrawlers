@@ -119,7 +119,7 @@ void CreditsScene::Update() {
 
 BOOL CreditsScene::UpdateText() {
     u32 step = 0;
-    if (InputManager::Get().IsHeld(8)) {
+    if (InputManager::Get().IsPressed(8)) {
         mColState[0] = 3;
         mColState[1] = 3;
         G2_SetBG1Priority(3);

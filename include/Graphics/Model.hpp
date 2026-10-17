@@ -5,7 +5,7 @@
 
 #include <nitro/fx.h>
 
-// One of the four lights of a ModelLights set (0x14 bytes, ctor 02029b5c; vtable 020a569c).
+// One of the four lights of a ModelLightGroup (0x14 bytes, ctor 02029b5c; vtable 020a569c).
 class ModelLight {
 public:
     /* 00 (vtable) */
@@ -17,7 +17,7 @@ public:
 
     ModelLight(u32 index, u32 enabled, u16 color, const s16 *direction);
     virtual ~ModelLight();
-    void Apply(); // sends the light to the 3D engine state
+    void Apply(); // sends the light to the 3D engine state; nothing while mEnabled == 0
     void SetDirection(const s16 *direction);
 };
 
@@ -59,8 +59,8 @@ public:
     /* 10 */
 
     UnkStruct_0205401c();
-    UnkStruct_0205401c *Release();
-    void Create(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
+    UnkStruct_0205401c *Release(); // SpriteManager::RestoreSlot(0), then deletes the story character, character and shadow
+    void Create(u32 unk1, u32 unk2, u32 unk3, u32 unk4); // unk2 != 0 first calls SpriteManager::SaveSlot(0)
     void SetParams(const CharacterParams *params);
     void func_0205461c(u32 unk1, u32 unk2);
     void Draw();
@@ -127,7 +127,7 @@ public:
     /* 00 (vtable) */
     /* 04 */ u32 mPaused;
     /* 08 */ u32 mLoop; // loop
-    /* 0c */ s32 mFramePerFrame;
+    /* 0c */ s32 mFramePerFrame; // fx32 added to each channel's frame per step; negative plays backward
     /* 10 */ u32 mReachedEnd;
     /* 14 */ NitroModel *mNitroModel;
     /* 18 */ ModelAnimData *mAnimData;
@@ -145,7 +145,7 @@ public:
     void Init();
     BOOL Advance();
     void InitChannel(u32 channel, ModelAnimFile *anim, u8 *table);
-    void ResetFrames();
+    void ResetFrames(); // clears mReachedEnd, every channel to frame 0 (channel 0 also func_020299ec, channel 2 func_02031518 per entry)
     s32 GetFrameCountForSet(u32 set);
     void StepAnimObjAndRecordEnd(NNSG3dAnmObj *obj);
     BOOL StepAnimObj(NNSG3dAnmObj *obj);
@@ -173,7 +173,7 @@ public:
     /* 58 */ ModelFile *mModelFile;
     /* 5c */ ModelAnim *mAnim;
     /* 60 */ NNSG3dAnmObj *mExtraAnim;
-    /* 64 */ MtxFx43 *mCallbackMtx;
+    /* 64 */ MtxFx43 *mCallbackMtx; // StoreCallbackMtx writes entry -1 (before the array) when rs->mFlags & 0x10 is clear
     /* 68 */ u8 mOwnFlags;
     /* 69 */ u8 mUseBoxTest;
     /* 6a */ u8 mAnimStarted;

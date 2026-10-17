@@ -37,7 +37,7 @@ public:
         static GameSystem instance;
         return instance;
     }
-    const char *GetLanguageSuffix(); // suffix appended to file names ("%s_%s"): gLanguageSuffixes[data_020d433c.mUnk_79], NULL (no suffix) for 0
+    const char *GetLanguageSuffix(); // suffix appended to file names ("%s_%s"): gLanguageSuffixes[data_020d433c.mLanguage], NULL (no suffix) for 0
     void Init();
     void Run();
     void func_02021700();

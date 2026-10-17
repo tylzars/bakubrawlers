@@ -34,5 +34,5 @@ public:
     virtual ~SaveWindow();
     virtual void Update();
     void Load();
-    void PrintMessage(u32 unk1);
+    void PrintMessage(u32 unk1); // centres the line with a BG offset, always on the sub screen (G2S_) whatever mScreen is
 };

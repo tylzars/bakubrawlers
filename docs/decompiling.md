@@ -681,7 +681,7 @@ Other findings from linking:
 - **Chained member assignments in constructors.** `a = b = 0;` reproduces the reload-and-truncate sequences
   (`ldrb`/`and #0xff`) that separate stores don't (BattleBase's constructor).
 - **An inline accessor turns a field read into a temporary.** `mUnk_2c->Entries()` instead of `mUnk_2c->mEntries`
-  moved a pointer from r5 to r6 (BattleBase::Update), like `CurrentPlayer()` and `Screen(n)`.
+  moved a pointer from r5 to r6 (BattleBase::Update), like `Unk2a9()` and `Screen(n)`.
 - **Spill slots.** Spilled parameters take the lowest stack slots, in parameter order; spilled named locals go above
   them in reverse declaration order (the first declared gets the highest slot); a spilled compiler temporary (such as
   a repeated global read that mwcc merges into one value) sits just above the parameters. A local that won't take its

@@ -35,7 +35,7 @@ MyroomStatusScene::MyroomStatusScene(u32 unk) :
     mGlyphBuffer = NULL;
     mTextBufferSize = 0;
     mGlyphCount = 0;
-    mPalette = new ModelLightGroup(gMyroomStatusLightData);
+    mLights = new ModelLightGroup(gMyroomStatusLightData);
     mRanking = new Ranking();
     u32 frames = gSaveData[0].mPlayFrames;
     mHours     = frames / 216000;
@@ -59,9 +59,9 @@ MyroomStatusScene::~MyroomStatusScene() {
         delete model;
     }
     delete mCamera;
-    ModelLightGroup *palette = mPalette;
-    if (palette != NULL) {
-        delete palette;
+    ModelLightGroup *lights = mLights;
+    if (lights != NULL) {
+        delete lights;
     }
     CellAnimation *cell = mCellAnim;
     if (cell != NULL) {

@@ -162,7 +162,7 @@ void BattleBase::Init(BattleData *data, u32 mode) {
     u8 count = 0;
     u8 i = 0;
     do {
-        if (data_020d433c.mBattlePlayers->mPlayers[i]->IsActive()) {
+        if (data_020d433c.mBattlePlayers->mPlayers[i]->IsCpu()) {
             BattleSlot *slot = new BattleSlot(data, i, mode, data_020d433c.mBattlePlayers->mPlayers[i]->mCharacterId,
                                               entries[0].mUnk_0d_4, entries[1].mUnk_0d_4, mParam, mUnk_13);
             mSlots[i] = slot;
@@ -176,7 +176,7 @@ void BattleBase::Init(BattleData *data, u32 mode) {
         u8 j = 0;
         do {
             u8 nib = entries[j].mUnk_0d_4;
-            if (!data_020d433c.mBattlePlayers->mPlayers[nib]->IsActive()) {
+            if (!data_020d433c.mBattlePlayers->mPlayers[nib]->IsCpu()) {
                 mHelpers[j] = new BattleSideHelper(j, data_020d433c.mBattlePlayers->mPlayers[nib]->mCharacterId, entries);
             }
             j++;
@@ -186,7 +186,7 @@ void BattleBase::Init(BattleData *data, u32 mode) {
         mSlots[order[0]]->mUnk_14 |= 4;
         mSlots[order[1]]->mUnk_14 |= 4;
     }
-    Init(data, mode);
+    Init(data, mode); // virtual call: the derived screen's Init (Confront03, ConfrontBg01/02/04/05/06), not this body
     mHud = new BattleHud(data, mParam, mUnk_12, (s8 *) &mUnk_1c);
     mSub48 = new BattleSub48(data, mUnk_12);
     mField3D = new BattleField3D(data, 0);
@@ -340,7 +340,7 @@ void BattleBase::Update() {
                             } else {
                                 u8 j = 0;
                                 do {
-                                    if (data_020d433c.mBattlePlayers->mPlayers[j]->IsActive()) {
+                                    if (data_020d433c.mBattlePlayers->mPlayers[j]->IsCpu()) {
                                         mSlots[j]->StartCardDelay(mCardSide);
                                     }
                                     j++;
@@ -897,8 +897,6 @@ void BattleBase::func_ov007_0221bb3c() {
 
 extern "C" void G2x_SetMasterBrightness_(vu16 *reg, int value);
 
-// Differs from the shared MATH_Rand32: max == 0 returns the raw high word.
-
 void BattleBase::func_ov007_0221bb68() {
     mUnk_25 = mParam->mUnk_0b;
     mUnk_24 = mParam->mUnk_08;
@@ -1064,7 +1062,7 @@ int BattleBase::func_ov007_0221c178(u16 *a, u16 *b, u16 *c, u8 *flag) {
                 if (mHud->mUnk_118[mUnk_12] == 1) {
                     if (GetCardInfo(entries[mUnk_12].mCardId, 3) != 4) {
                         if (TouchManager::Get().IsPressedIn(data_ov007_02279178[mUnk_12], data_ov007_0227916c, 0x10, 0x18) ||
-                            InputManager::Get().IsHeld(0x300)) {
+                            InputManager::Get().IsPressed(0x300)) {
                             c[mUnk_12] = 1;
                         }
                     }
@@ -1108,7 +1106,7 @@ int BattleBase::func_ov007_0221c178(u16 *a, u16 *b, u16 *c, u8 *flag) {
                     }
                 }
             }
-        } else if (TouchManager::Get().mTouching) {
+        } else if (TouchManager::Get().mReleased) {
             mUnk_19 = 2;
             mUnk_1a = 0;
         } else {
@@ -1167,7 +1165,7 @@ int BattleBase::func_ov007_0221c178(u16 *a, u16 *b, u16 *c, u8 *flag) {
 int BattleBase::UpdateSlots(u16 *a, u16 *b, u16 *c, u8 *d) {
     u8 i = 0;
     do {
-        if (data_020d433c.mBattlePlayers->mPlayers[i]->IsActive()) {
+        if (data_020d433c.mBattlePlayers->mPlayers[i]->IsCpu()) {
             if (mSlots[i]->Update(a, b, c, (s8 (*)[2]) &mUnk_1c, mHud->mPushPercent, d) != -1) {
                 break;
             }
@@ -1388,7 +1386,7 @@ void BattleBase::func_ov007_0221d088(u8 a, u16 *counts) {
             do {
                 if (sel == i) {
                     mHud->StartObject(a, TouchManager::Get().mX, TouchManager::Get().mY, mMode);
-                } else if (!data_020d433c.mBattlePlayers->mPlayers[i]->IsActive()) {
+                } else if (!data_020d433c.mBattlePlayers->mPlayers[i]->IsCpu()) {
                     BattleRand32(0xffff);
                 }
                 k++;

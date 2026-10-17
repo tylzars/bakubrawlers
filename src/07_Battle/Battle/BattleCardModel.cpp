@@ -227,7 +227,7 @@ BattleCardModel::BattleCardModel(EffectManager *effects, Camera *camera, u32 a, 
     mUseRealb20      = d;
     mTextBuffer  = 0;
     mTextBuffer2 = 0;
-    mTextSize    = 0;
+    mTextBufferSize = 0;
     mGlyphCount      = 0;
     mTextWidth   = 0;
     if (a == 4) {
@@ -269,9 +269,9 @@ void BattleCardModel::Init(u32 type, u32 id, u32 c) {
 }
 
 BattleCardModel::~BattleCardModel() {
-    ModelLightGroup *palette = mLights;
-    if (palette) {
-        delete palette;
+    ModelLightGroup *lights = mLights;
+    if (lights) {
+        delete lights;
     }
     if (mBaku) {
         delete mBaku;
@@ -602,13 +602,13 @@ void BattleCardModel::LoadNameText() {
         return;
     }
     MessageFile *file = (MessageFile *) LoadFile("/font/mes_BakuganName.mes", 0, 0, 0, 0, 0);
-    mTextSize         = TextManager::Get().BufferSize(0x20, 2);
+    mTextBufferSize = TextManager::Get().BufferSize(0x20, 2);
     mGlyphCount           = TextManager::Get().GlyphCount(8);
-    mTextBuffer       = OS_Alloc(mTextSize);
+    mTextBuffer       = OS_Alloc(mTextBufferSize);
     mTextBuffer2      = OS_Alloc(mGlyphCount * 0xc);
     TextManager::Get().Init(mTextBuffer2, 0, 0, 0x20, 2, 0x21);
     TextManager::Get().SetColor(0, 0, 0xf);
-    MI_CpuClear16(mTextBuffer, mTextSize);
+    MI_CpuClear16(mTextBuffer, mTextBufferSize);
     u16 index = mBakuganId;
     if ((index == 5) | (index == 6)) {
         index += 0x24;
@@ -621,7 +621,7 @@ void BattleCardModel::LoadNameText() {
     width  = 0;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x20, 2, &width, &height, &mTextWidth, 0, 2,
                0x21, 0x10, 0, 0, 0, 1, 1);
-    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0, mTextBuffer, mTextSize, 0);
+    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0, mTextBuffer, mTextBufferSize, 0);
     TextManager::Get().mUse4bppFont = 0;
     OS_Free(file);
 }

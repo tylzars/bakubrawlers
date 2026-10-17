@@ -5,16 +5,17 @@
 
 struct Player;
 
-// Movie player object (0x114 bytes, ctor 0203c18c, dtor 0203c1b8): wraps the Mobiclip decoder, double buffers the
-// decoded frame lines in RGB555 and shows them on the main screen while the sound is streamed with a timer callback.
+// Movie player object (0x114 bytes, ctor 0203c18c, dtor 0203c1b8): wraps the Mobiclip decoder. Update writes blocks
+// from func_0203a79c into the ring mBuffer (and mBuffer2), which StartSound hands to func_02008160, with CountTick as
+// func_02008098's callback; DrawFrame passes GetVideoTarget() to func_0203a73c.
 class MoviePlayer {
 public:
-    /* 00 */ volatile s64 mUnk_00; // frames shown at the last reset
-    /* 08 */ s64 mFrames; // frames decoded
+    /* 00 */ volatile s64 mUnk_00; // CountTick calls since Open or the last reset
+    /* 08 */ s64 mFrames; // blocks (mUnk_fc elements each) written into mBuffer; the Update reset subtracts mUnk_00
     /* 10 */ Player *mVideo;
-    /* 14 */ Player *mVideo2; // second video stream (for the lower screen)
-    /* 18 */ u8 mDecoder[0x48];
-    /* 60 */ u8 mDecoder2[0x48];
+    /* 14 */ Player *mVideo2; // second stream; never opened in this build (the only Open call passes b = 0)
+    /* 18 */ u8 mFile[0x48];
+    /* 60 */ u8 mFile2[0x48];
     /* a8 */ u8 mAlarm[0x2c];
     /* d4 */ u32 mUnk_d4;
     /* d8 */ u32 mUnk_d8;
@@ -29,13 +30,13 @@ public:
     /* fc */ u32 mUnk_fc;
     /* 100 */ u16 *mBuffer;
     /* 104 */ u16 *mBuffer2;
-    /* 108 */ u8 mUseBuffer2;
+    /* 108 */ u8 mUseBuffer2; // always 1 in this build (MovieScene passes c = 1); Update steps the audio channel loop by mUseBuffer2 + 1
     /* 109 */ u8 mSoundStarted;
     /* 10a */ u8 mUnk_10a;
     /* 10b */ u8 mUnk_10b;
     /* 10c */ u8 mUnk_10c;
     /* 10d */ PAD(0x10d, 0x10e);
-    /* 10e */ u8 mUseVideo2;
+    /* 10e */ u8 mUseVideo2; // always 0 in this build (MovieScene passes b = 0)
     /* 10f */ u8 mAudioChannelCount;
     /* 110 */ u8 mAudioChannelIndex;
     /* 111 */ PAD(0x111, 0x114);
@@ -50,6 +51,8 @@ public:
     void DrawFrame();
     void Open(void *a, void *b, u8 c, u32 d); // d: only the low byte is used
     void Close();
+    // Sets mFrameIndex = mFrameCount (and mUnk_10b, which nothing reads), so Update returns TRUE on its next frame; the
+    // decoder is not moved.
     void SeekToEnd();
     BOOL Update();
 };

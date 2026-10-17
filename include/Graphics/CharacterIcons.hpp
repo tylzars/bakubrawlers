@@ -31,8 +31,11 @@ public:
 
     CharacterIcons(u32 unk1, u32 unk2, s32 unk3); // 0x02065158
     ~CharacterIcons();
+    // Nothing for slot >= 4 or the slot's current character; < 0 hides the slot. 0x15 builds the graphics from the look
+    // at unk3 (gCharacterLook when 0) with LoadEditedIcon, any other id loads icon_ch_NN (NN = id + 1); then the cell
+    // is created and the slot shown.
     void SetCharacter(u32 slot, s32 character, u32 unk3, u32 unk4);
     void SetDrawArgs(u8 slot, s16 x, s16 y, u32 unk4);
     void DrawIcons();
-    void SetVisible(u32 slot, u32 visible);
+    void SetVisible(u32 slot, u32 visible); // no bound check on slot (the NULL test is always true)
 };

@@ -100,7 +100,7 @@ struct WindowButton {
     /* 01 */ PAD(0x01, 0x04);
     /* 04 */ u32 mEnabled;
     /* 08 */ u8 mUnk_08; // animation index of the idle cell
-    /* 09 */ u8 mResultAnimIndex; // animation index of the selected cell
+    /* 09 */ u8 mResultAnimIndex; // animation index set when the item gives a result (Update events 1-3, SetResultItem)
     /* 0a */ u8 mUnk_0a;
     /* 0b */ PAD(0x0b, 0x0c);
     /* 0c */
@@ -114,13 +114,13 @@ public:
     /* 008 */ CellAnimation *mCellAnims[22];
     /* 060 */ u8 mCellCount;
     /* 061 */ u8 mState; // state
-    /* 062 */ u8 mSlideStep; // slide phase
+    /* 062 */ u8 mSlideStep; // step of UpdateSlideIn (state 0) and of UpdateSlideOut (state 3)
     /* 063 */ s8 mSavedSelection;
-    /* 064 */ u8 mEnabled;
-    /* 065 */ u8 mInputLocked;
-    /* 066 */ u8 mSlideInRequested;
+    /* 064 */ u8 mEnabled; // Update does nothing while 0; Draw does not test it
+    /* 065 */ u8 mInputLocked; // set by results 1 and 2, cleared in state 4; an item with flag 8 returns to state 1 through state 5 with it still set
+    /* 066 */ u8 mSlideInRequested; // set by SetItems / Reset; cleared when the slide-out ends (state 3, and by BattleCommand); state 4 waits for it
     /* 067 */ PAD(0x067, 0x068);
-    /* 068 */ u8 mSlideToTarget[22];
+    /* 068 */ u8 mSlideToTarget[22]; // per cell id: 1 = moves to (mSlideTargetX, mSlideTargetY) (SlideCellTo)
     /* 07e */ u8 mUnk_07e;
     /* 07f */ PAD(0x07f, 0x080);
     /* 080 */ Vec2s mCellPos[22];
@@ -137,10 +137,10 @@ public:
     void SetCells(u32 count, const WindowCellRecord *cells);
     BOOL Update(BOOL acceptInput);
     void Draw();
-    void Reset(int selection);
-    void SetResultItem(u32 unk1, u32 unk2);
-    void SetItems(u32 count, WindowItem *items, s32 selection);
-    void FreeCells();
+    void Reset(int selection); // SetItems with the current items; also clears mUnk_0e0
+    void SetResultItem(u32 unk1, u32 unk2); // selects item unk1 as if chosen: its result animation, mResult = unk2, state 2
+    void SetItems(u32 count, WindowItem *items, s32 selection); // new items and selection; cells to the items' positions, slide-in requested
+    void FreeCells(); // deletes the 22 cells; mCellCount is left as it is
     void FreeCursor();
     BOOL UpdateSlideIn();
     void UpdateSlideOut();

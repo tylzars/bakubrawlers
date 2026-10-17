@@ -18,7 +18,7 @@ public:
     /* 16 */ PAD(0x16, 0x18);
     /* 18 */ VecFx32 mScale;
     /* 24 */ PAD(0x24, 0x25);
-    /* 25 */ u8 mAnimRunning;
+    /* 25 */ u8 mAnimRunning; // written by AdvanceAnim; never read in this build
     /* 26 */ PAD(0x26, 0x28);
     /* 28 */ ModelInstance *mModel;
     /* 2c */
@@ -26,9 +26,9 @@ public:
     ModelTransform();
     ~ModelTransform();
     BOOL DrawInstance(); // builds the matrix and draws mModel
-    // loads texture, model and optional animation data files and creates the instance (mModel); unk0 -> mUnk_00
+    // loads texture, model and optional animation data files and creates the instance (mModel); unk0 -> mAnimEnabled
     void LoadFiles(const char *nsbtx, const char *nsbmd, const char *data, u32 unk0);
     void LoadFilesNoAnim(const char *nsbtx, const char *nsbmd); // same without animation data
     void StartAnim(u32 a, u32 b);                         // starts the animation (frame step 1.0)
-    void AdvanceAnim();                                     // updates mUnk_25 from the animation state
+    void AdvanceAnim();                                     // updates mAnimRunning from the animation state
 };

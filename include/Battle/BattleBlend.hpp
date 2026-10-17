@@ -19,8 +19,8 @@ public:
 
     BattleBlend(u16 period, u8 min, u8 max); // 02223cf0
     virtual ~BattleBlend();           // 02223d4c deleting
-    void RaiseLevel();
+    void RaiseLevel(); // mLevel + 1 on every mPeriod-th call, capped at mMax
     void UpdateWobble();
-    BOOL LowerLevel();
+    BOOL LowerLevel(); // mLevel - 1 down to mMin; TRUE on every call; also zeroes mRaiseCount
     void WriteBlendAlpha();
 };

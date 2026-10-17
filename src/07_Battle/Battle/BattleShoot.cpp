@@ -372,7 +372,7 @@ void BattleShoot::Update() {
         case 2: {
             mCells[0].mX = (mCells[0].mX + 0x80) / 2;
             mCells[0].mY = (mCells[0].mY + 0xa0) / 2;
-            if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
+            if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
                 data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
             }
             u8 limit;
@@ -572,7 +572,7 @@ void BattleShoot::Update() {
                     }
                     if (mBattleTarget->mUnk_1cb == 0) {
                         BattlePlayerList *l = data_020d433c.mBattlePlayers;
-                        if (l->mPlayers[l->mTurnPlayer]->IsActive()) {
+                        if (l->mPlayers[l->mTurnPlayer]->IsCpu()) {
                             func_ov007_0226e430();
                         }
                         func_ov007_0226e234();
@@ -1033,7 +1033,7 @@ BOOL BattleShoot::func_ov007_0226d23c() {
         mBattleTarget->mRotYAdjust = mRotYAdjust;
         mBattleTarget->mRotZAdjust = mRotZAdjust;
     }
-    if (InputManager::Get().IsHeld(0x400)) {
+    if (InputManager::Get().IsPressed(0x400)) {
         mUnk_6195 = (mUnk_6195 + 1) & 1;
         mBattleTarget->func_ov007_02254928(mUnk_6195);
     }
@@ -1825,7 +1825,7 @@ BOOL BattleShoot::TryStartPopup() {
         ok = 0;
     }
     if (ok) {
-        if (InputManager::Get().IsHeld(8)) {
+        if (InputManager::Get().IsPressed(8)) {
             mReturnState = mState;
             mState = 0xd;
             data_020d433c.mUnk_14 |= 8;

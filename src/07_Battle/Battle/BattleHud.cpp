@@ -24,7 +24,7 @@
 
 // Externals of other battle files.
 u32 BattleRand32(u32 max);
-// Object at BattlePlayerList+0x2a4: a timed screen effect (fade) the battle shows before the gauge starts.
+// BattlePlayerList::mUnk_2a4 is a StorytalkWindow; BattleHud::Update and BattleObj00 drive it with SetMessage / NextPage.
 extern const u8 data_ov007_02279178[];
 extern const u32 data_ov007_02279184[];
 extern const s32 data_ov007_0227918c[];
@@ -401,7 +401,7 @@ void BattleHud::Update() {
             }
             break;
         case 2: {
-            if (InputManager::Get().IsHeld(1) || TouchManager::Get().mTouching) {
+            if (InputManager::Get().IsPressed(1) || TouchManager::Get().mReleased) {
                 data_020d433c.mBattlePlayers->mUnk_2a4->NextPage(1);
             }
             u32 limit = data_020d433c.mUnk_83 == 4 ? 0 : 5;

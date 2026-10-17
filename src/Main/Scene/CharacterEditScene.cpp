@@ -206,7 +206,7 @@ CharacterEditScene::CharacterEditScene(u32 unk) :
     mWindow0Result  = 0;
     mWindow1Result  = 0;
     mWindow2Result  = 0;
-    mPalette = new ModelLightGroup(sCharacterEditLights);
+    mLights = new ModelLightGroup(sCharacterEditLights);
     mMenuDepth = 0;
     for (u8 i = 0; i < 3; i++) {
         mMenuSelection[i] = 0;
@@ -281,9 +281,9 @@ CharacterEditScene::~CharacterEditScene() {
         OS_Free(mWindowGlyphBuffer);
         mWindowGlyphBuffer = NULL;
     }
-    ModelLightGroup *palette = mPalette;
-    if (palette != NULL) {
-        delete palette;
+    ModelLightGroup *lights = mLights;
+    if (lights != NULL) {
+        delete lights;
     }
     CellAnimation *cell;
     u8 i = 0;
@@ -562,7 +562,7 @@ void CharacterEditScene::UpdateRootMenu() {
             mStep = 9;
             func_02063b10(1);
             return;
-        } else if (InputManager::Get().IsHeld(8) && mWindows[0]->mState == 1) {
+        } else if (InputManager::Get().IsPressed(8) && mWindows[0]->mState == 1) {
             mUnk_1b0 = 1;
             func_02063b10(1);
             mWindows[0]->mState = 3;
@@ -962,7 +962,7 @@ void CharacterEditScene::func_0205e958() {
             func_02063b10(1);
             SlideToParent();
             return;
-        } else if (InputManager::Get().IsHeld(8) && mWindows[0]->mState == 1) {
+        } else if (InputManager::Get().IsPressed(8) && mWindows[0]->mState == 1) {
             mUnk_1b0 = 1;
             func_02063b10(1);
             mWindows[0]->mState = 3;
@@ -1546,7 +1546,7 @@ void CharacterEditScene::func_020604e8() {
             func_02063b10(1);
             SlideToParent();
             return;
-        } else if (InputManager::Get().IsHeld(8) && mWindows[0]->mState == 1) {
+        } else if (InputManager::Get().IsPressed(8) && mWindows[0]->mState == 1) {
             mUnk_1b0 = 1;
             func_02063b10(1);
             mWindows[0]->mState = 3;

@@ -517,7 +517,7 @@ void OptionScene::UpdateSettings() {
             }
         }
         mRow = mTouchRow;
-    } else if (TouchManager::Get().mTouching) {
+    } else if (TouchManager::Get().mReleased) {
         if (mTouchRow < 0) {
             return;
         }

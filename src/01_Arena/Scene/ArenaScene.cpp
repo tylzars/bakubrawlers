@@ -391,7 +391,7 @@ void ArenaScene::Update() {
                     mMessageWindow->StartMessage(0x10, 0, 1);
                 }
             }
-            if (InputManager::Get().IsHeld(1) || menu == 1) {
+            if (InputManager::Get().IsPressed(1) || menu == 1) {
                 if (mPlayerCount >= 2) {
                     SoundManager::Get().StartSeqArc(0);
                     WirelessManager::Get().func_0202f184();
@@ -464,7 +464,7 @@ void ArenaScene::Update() {
                         if (TouchManager::Get().IsPressedIn(0x20, 0x30, 0xc0, (s16) (mPlayerCount * 0x18))) {
                             mSelection = MINU(mPlayerCount - 1, (u32) (TouchManager::Get().mY - 0x30) / 0x18);
                         }
-                    } else if (TouchManager::Get().mTouching) {
+                    } else if (TouchManager::Get().mReleased) {
                         if (TouchManager::Get().IsReleasedIn(0x20, 0x30, 0xc0, (s16) (mPlayerCount * 0x18))) {
                             mSelection = MINU(mPlayerCount - 1, (u32) (TouchManager::Get().mY - 0x30) / 0x18);
                             touched = 1;

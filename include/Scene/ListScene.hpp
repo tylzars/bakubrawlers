@@ -70,7 +70,7 @@ public:
     // (:2219-2221)
     /* 0fa */ u8 mCursorItem;
     /* 0fb */ s8 mTargetItem;
-    /* 0fc */ u8 mItemCount;
+    /* 0fc */ u8 mItemCount; // BuildList sets 2, with no ids, for page 0 (mPage == 0) of modes 3 / 5 with mCharacterId 0x15
     /* 0fd */ u8 mScroll;
     /* 0fe */ PAD(0x0fe, 0x100);
     /* 100 */ u32 mListScrolling;
@@ -115,12 +115,14 @@ public:
     virtual ~ListScene();
     virtual void Update();
     void Release(u32 releaseCommands);
+    // Only when mWndMode changed; also sets the sub screen's blend brightness (-8 in modes 1 / 2); mode 0 turns the
+    // windows off.
     void ApplyWndMode();
     void InitDisplay();
-    void LoadMessages();
+    void LoadMessages(); // also copies a u16 of mes_Alphabet.mes into mAlphabetChar
     void PrintRows();
     void ClearSubScreenText();
-    void DrawSubScreenText();
+    void DrawSubScreenText(); // also steps mMessageWindow; nothing while mTextKind is set
     void UpdateMainScreen();
     void UpdateListWindow();
     void UpdatePages();
@@ -129,6 +131,7 @@ public:
     void DrawRows();
     void DrawItemNumberAndCount();
     void DrawMoneyFilterButtonsAndCursor();
+    // GetEntryPrice uses it (5000 when 0), scaled by sPricePercents[entry mUnk_00_0] and reduced by the entry's mGauge
     u32 GetPrice(u32 unk1, u32 unk2);
     u32 GetEntryPrice(u32 unk1, u32 unk2);
     void DrawMoneyAmount(u32 unk1, u32 unk2);
@@ -145,6 +148,8 @@ public:
     void LoadRowGraphics();
     void RefreshCommandList();
     void RefreshCommandPage();
+    // unk1 >= 0 starts that entry; < 0: modes 3 / 5 start entry 6, mCursorItem + 7 or mPage + 8, the other modes do
+    // nothing
     void SetMessage(s32 unk1);
     void ApplyTargetPage();
     BOOL ShouldApplyTargetPage();
@@ -168,7 +173,7 @@ public:
     void ReadSlots();
     void BuildList(u32 unk1);
     void RefreshCounts();
-    void LoadSubScreenGraphics();
+    void LoadSubScreenGraphics(); // with data_020d433c.mWireless set also creates mAntenna (AntennaIndicator layout 3) or re-lays it
     void UpdateListInput();
 };
 

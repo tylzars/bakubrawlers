@@ -65,15 +65,15 @@ public:
     /* 15a */ u8 mUnk_15a;
     /* 15b */ u8 mUnk_15b;
     /* 15c */ u8 mUnk_15c;
-    /* 15d */ u8 mVisible;
+    /* 15d */ u8 mVisible; // draw gate; UpdatePage's count-up and the window update are skipped with it
     /* 15e */ u8 mCloseRequested;
     /* 15f */ u8 mUnk_15f;
     /* 160 */ u8 mUnk_160;
     /* 161 */ u8 mUnk_161;
     /* 162 */ u8 mUnk_162;
-    /* 163 */ u8 mFourItems;
+    /* 163 */ u8 mFourItems; // always 0 in this build: every CreateCommandListWindow call passes g = 0
     /* 164 */ u8 mUnk_164;
-    /* 165 */ u8 mCountUpTimer;
+    /* 165 */ u8 mCountUpTimer; // frames left before the count-up starts (0x3c), counted down by UpdatePage
     /* 166 */ u16 mCountUpRemaining;
     /* 168 */
 
@@ -83,24 +83,26 @@ public:
     void func_02058240(u32 value);
     void CyclePage(u32 flag);
     BOOL IsSettingUp();
-    void SetWindowVisible(u32 enable);
-    void UpdateWindow();
+    void SetWindowVisible(u32 enable); // the gate also stops UpdateWindow; enabling does nothing while mWindow is NULL
+    void UpdateWindow(); // a chosen item steps the page (CyclePage)
+    // Item 1 steps forward (enabled while mUnk_15b <= mLastTextPage), item 0 back; a disabled item gets flag 0x8000,
+    // which the cursor skips.
     void UpdateListItems();
     BOOL IsListItemEnabled(u32 right);
     void InitDisplayAndCamera();
     void ResetLoadStep();
-    BOOL LoadGraphics();
+    BOOL LoadGraphics(); // staged: one file per call
     BOOL CreateBakuganModel();
     void LoadText();
     void PrintText(u8 index);
     void DrawName();
     void ClearText();
     void DrawBakugan();
-    void UpdatePage();
+    void UpdatePage(); // also runs the count-up StartCountUp began; with mUnk_15f set only mCells3c[2] is drawn
     void func_0205aea4();
     void ClearValues();
     void SetValue(u32 index, u32 value);
-    void StartCountUp(u32 value);
+    void StartCountUp(u32 value); // ignored while a count-up runs; UpdatePage advances it
     BOOL IsCountingUp();
     void func_0205b0dc(const BattleCellPair *pair);
 };
@@ -130,8 +132,10 @@ struct BattleCellPair {
 void func_0205afb4(BattleCommandList *list, u32 a, u32 b, BattleCellPair *pair);
 void func_0205b1c4(u32 index, u32 unk2);
 
-void CloseCommandList(BattleCommandList *list);
+void CloseCommandList(BattleCommandList *list); // asks the list to end (mCloseRequested)
 void func_02058228(BattleCommandList *list, u32 a);
 void func_02058248(BattleCommandList *list, u8 b);
+// Also sets mPlayer = c % 4 (-1, with mUnk_16 cleared, when c < 0) and clears mUnk_160 (and mUnk_15f in state 1 or
+// when the ids are unchanged).
 void SetCommandListBakugan(BattleCommandList *list, u8 a, u8 b, s32 c);
 void CreateCommandListWindow(BattleCommandList *list, u32 a, u32 b, s16 c, s16 d, s16 e, s16 f, u32 g);

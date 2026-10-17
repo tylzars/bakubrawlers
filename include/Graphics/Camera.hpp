@@ -37,7 +37,9 @@ public:
     void SetFrameIndex(u16 frame);
     void ApplyPath();
     void AdvanceFrame(u32 unk1);
-    void SetPath(void *file, u32 unk2); // 0x0202610c, load a camera animation
+    // 0x0202610c, points mPath at path data already in memory (past a {0, 0, fov} header when there is one) and sets
+    // mFrameCount; nothing is read from a file.
+    void SetPath(void *file, u32 unk2);
     void SampleTrack(VecFx32 *out, u32 track, fx32 t); // samples a track of the animation
     void ComputeDistanceAndAngles();                                // derives distance, yaw, pitch and roll
 
@@ -128,8 +130,8 @@ extern "C" MtxFx44 *func_02032710();
 extern "C" MtxFx44 *func_02032604();
 extern "C" MtxFx43 *func_020323b8();
 
-// Matrix routines in ITCM (not identified as SDK functions; by shape MTX_LookAt is a look-at builder,
-// MTX_SetTranslation43 applies a translation and MTX_Concat43 concatenates two matrices).
+// Matrix routines in ITCM (libs/nds/src/fx): MTX_LookAt builds a look-at matrix, MTX_SetTranslation43 only writes v
+// into m->_[9..11], MTX_Concat43 concatenates two matrices.
 extern "C" void MTX_LookAt(VecFx32 *pos, VecFx32 *up, VecFx32 *target, MtxFx43 *out);
 extern "C" void MTX_SetTranslation43(MtxFx43 *m, VecFx32 *v);
 extern "C" void MTX_Concat43(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);

@@ -78,14 +78,14 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
             }
             mScroll = scroll;
             RefreshScrollItemY();
-            if (TouchManager::Get().mTouching != 0) {
+            if (TouchManager::Get().mReleased != 0) {
                 mDragging = 0;
             }
         }
     } else {
     if (TouchManager::Get().mPressed != 0) {
         mode = 1;
-    } else if (TouchManager::Get().mTouching != 0) {
+    } else if (TouchManager::Get().mReleased != 0) {
         mode = 2;
     } else if (TouchManager::Get().mDown != 0) {
         mode = 3;
@@ -99,9 +99,9 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
             BOOL b = FALSE;
             BOOL l = FALSE;
             BOOL r = FALSE;
-            if (InputManager::Get().IsHeld(1)) {
+            if (InputManager::Get().IsPressed(1)) {
                 a = TRUE;
-            } else if (InputManager::Get().IsHeld(2)) {
+            } else if (InputManager::Get().IsPressed(2)) {
                 b = TRUE;
             } else if (InputManager::Get().IsTrigger(KEY_UP)) {
                 dir = 0;
@@ -111,9 +111,9 @@ u32 SelectWindowCursor::UpdateInput(u32 playSound) {
                 dir = 2;
             } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
                 dir = 3;
-            } else if (InputManager::Get().IsHeld(0x100)) {
+            } else if (InputManager::Get().IsPressed(0x100)) {
                 r = TRUE;
-            } else if (InputManager::Get().IsHeld(0x200)) {
+            } else if (InputManager::Get().IsPressed(0x200)) {
                 l = TRUE;
             }
             if (a) {

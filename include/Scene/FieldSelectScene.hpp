@@ -27,7 +27,7 @@ struct CellEntry {
 struct FieldInput {
     /* 00 */ u16 mKeys;
     /* 02 */ u8 mCursorItem;
-    /* 03 */ u8 mTouching;
+    /* 03 */ u8 mReleased;
     /* 04 */ u8 mTouchX;
     /* 05 */ u8 mTouchY;
     /* 06 */ u8 mTaken;

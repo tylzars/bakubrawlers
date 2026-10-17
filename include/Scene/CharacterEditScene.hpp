@@ -59,7 +59,7 @@ public:
     /* 20 */ u32 mWindow2Result;
     /* 24 */ UnkStruct_0205401c *mModel;
     /* 28 */ Camera *mCamera;
-    /* 2c */ ModelLightGroup *mPalette;
+    /* 2c */ ModelLightGroup *mLights;
     /* 30 */ u8 mState;
     /* 31 */ u8 mStep;
     /* 32 */ u16 mStepFrames;

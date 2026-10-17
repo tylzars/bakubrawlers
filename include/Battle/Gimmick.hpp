@@ -12,7 +12,8 @@ struct GimmickSetBlock {
     u32 mData[0x200];
 };
 
-// Loaded data of the SetData_%02d_%02d.bin files (0x824+ bytes), created by AddCollisionSet.
+// A collision set (0x838 bytes) that AddCollisionSet builds from a buffer LoadCollisionFile fills from
+// "/Game/Collision/atari_%02d.bin"; GimmickCollision tests the sets against each other.
 struct GimmickSetData {
     /* 000 */ GimmickSetData *mPrev; // list node: previous
     /* 004 */ GimmickSetData *mNext;
@@ -29,13 +30,14 @@ struct GimmickSetData {
     /* 823 */ u8 mHitCount;
     /* 824 */ u8 mHitSlots[8];
     /* 82c */ u8 mHitObstacleIndices[8];
-    /* 834 */ u8 mTag; // slot in the owner's table + 1 (0: unused)
+    /* 834 */ u8 mTag; // AddCollisionSet's last argument: the unit index + 1 for BattleTarget's unit sets (0 for its
+                       // field and mBakugan sets), the GIMMICK_TYPE for a gimmick's set
     /* 835 */ PAD(0x835, 0x838);
 };
 
 // Object types of the SetData files (GimmickSetEntry::mType). GimmickManager::CreateFromFile creates one
-// subclass per type and each subclass constructor stores its type in Gimmick::mUnk_3a, which
-// LoadCollision passes on as the collision set's tag (BattleTarget switches on it). Type 1 creates a
+// subclass per type and each subclass constructor stores its type in Gimmick::mType, which LoadCollision and the
+// subclasses' own collision loaders pass on as the collision set's tag (BattleTarget switches on it). Type 1 creates a
 // GimmickExePoint when data_020d433c.mUnk_7a is set, otherwise a GimmickFieldPowerS with variant 1, which stores
 // GIMMICK_TYPE_FIELD_POWER_S. Types 0x1f, 0x28 and 0x3d (GimmickUnk_02274830, GimmickUnk_022308a8,
 // GimmickUnk_02230cec) are not named.
@@ -75,7 +77,7 @@ public:
     /* 45 */
 
     Gimmick(u8 a, u8 b);
-    void LoadCollision(int id, int count); // loads the SetData file `id` into mUnk_3c
+    void LoadCollision(int id, int mode); // loads "/Game/Collision/atari_%02d.bin" `id` as a collision set into mCollision
     BOOL IsNearMarker(int radius);       // TRUE when mPosition is within radius of a marked player entry
     virtual ~Gimmick();
     /* 08 */ virtual void Update() = 0;

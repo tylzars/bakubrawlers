@@ -51,12 +51,12 @@ public:
     /* 18 */ void *mCamFile; // camera animation file
     /* 1c */ BattleCardModelEntry *mEntry;
     /* 20 */ BattleCardModelPart *mParts;
-    /* 24 */ u32 mCurrentCamKey;
+    /* 24 */ u32 mCurrentCamKey; // key in use: advanced after each use, back to mEntry->mCamKeys at {-1, -1}; 0 = stopped
     /* 28 */ ModelLightGroup *mLights;
     /* 2c */ VecFx32 mPos[5];
     /* 68 */ void *mTextBuffer;
     /* 6c */ void *mTextBuffer2;
-    /* 70 */ u32 mTextSize;
+    /* 70 */ u32 mTextBufferSize;
     /* 74 */ u32 mGlyphCount;
     /* 78 */ s32 mLastFrame;
     /* 7c */ u16 mHandles[5];
@@ -80,8 +80,8 @@ public:
     virtual void Update();
     void Init(u32 type, u32 id, u32 c);
     BOOL UpdateState();
-    void LoadGraphics();
-    void StartEffectsAtFrame();
+    void LoadGraphics(); // effect groups realb%02d and union, the .cam path, mBaku, mLastFrame, mBones, mLights
+    void StartEffectsAtFrame(); // nothing once mAnimRestarted is set
     void UpdateEffects();
     void MoveEffectToBone(u32 index);
     void func_ov007_02273be8();
@@ -96,4 +96,4 @@ public:
     }
 };
 
-void CloseCardModel(BattleCardModel *model); // releases the model
+void CloseCardModel(BattleCardModel *model); // nothing once mState >= 3; else state 3 and sFade[0] = 3; frees nothing

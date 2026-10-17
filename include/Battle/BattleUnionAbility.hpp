@@ -9,7 +9,7 @@ class CellAnimation;
 class SelectWindow;
 
 // "Union ability" prompt of the battle (battle_b_obj_union_ability): a card that slides in with one or two
-// buttons (mType 5: one button), result in mUnk_26. Vtable 02287614, 0x30 bytes.
+// buttons (mKind 5: one button), result in mNextScene. Vtable 02287614, 0x30 bytes.
 class BattleUnionAbility : public SceneBase {
 public:
     /* 00 SceneBase */
@@ -20,18 +20,18 @@ public:
     /* 20 */ s16 mSlide;
     /* 22 */ u16 mStateFrames;
     /* 24 */ u8 mState;
-    /* 25 */ u8 mType;
-    /* 26 */ u8 mChoice;
+    /* 25 */ u8 mKind;
+    /* 26 */ u8 mNextScene;
     /* 27 */ u8 mCancel;
     /* 28 */ u32 mCharOffset;
     /* 2c */ u16 mPalette;
     /* 2e */ PAD(0x2e, 0x30);
     /* 30 */
 
-    BattleUnionAbility(u8 type, u32 charOffset, u16 palette);
+    BattleUnionAbility(u8 kind, u32 charOffset, u16 palette);
     virtual ~BattleUnionAbility();
     /* 08 */ virtual void Update();
-    void Close(u8 choice);
+    void Close(u8 nextScene); // asks the object to end (mCancel); it then requests nextScene (0xff = none)
     void SetupSubWndAndAntenna();
     void func_ov007_022344a4();
     void LoadGraphics();

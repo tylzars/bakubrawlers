@@ -20,7 +20,7 @@ public:
     /* 70 */ MessageFile *mMessages;
     /* 74 */ void *mTextBuffer;
     /* 78 */ void *mGlyphBuffer;
-    /* 7c */ u32 mTextSize;
+    /* 7c */ u32 mTextBufferSize;
     /* 80 */ u32 mGlyphCount;
     /* 84 */ u32 mAmount; // still to be counted into mTotal
     /* 88 */ u32 mTotal;

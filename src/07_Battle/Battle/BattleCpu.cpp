@@ -6,7 +6,7 @@
 
 u8 GetCardAttributeValue(u32 id, u32 index);
 
-BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 row, u8 col);
+BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 x, u8 y);
 
 // Row and column pairs of the six target regions. One-dimensional u8 tables get a .rodata section each, which is
 // what puts each table of this file on a 4-byte boundary in the original; a struct or 2-D array would share one
@@ -54,7 +54,7 @@ static const u8 data_ov007_022797ac[17][5] = {
     {20, 50, 30, 0, 0}
 };
 
-// Seven weights per row, one row per value of the player's mUnk_f6, summed until they pass a random roll. A
+// Seven weights per row, one row per value of the player's mCharacterId, summed until they pass a random roll. A
 // function-local static of an inline accessor gets a section of its own; defined ahead of ShotTable() it keeps its
 // place before that table.
 typedef u8 RollWeightRow[7];
@@ -214,7 +214,7 @@ u8 BattleCpu::func_ov007_022310f0() {
     BOOL c = FALSE;
     if (data_020d433c.mHasPartners) {
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
-        u8 a                   = list->Unk294();
+        u8 a                   = list->MarkerCount();
         u8 b                   = list->mPlayers[mPlayer]->Partner();
         u8 i                   = 0;
         BattleUnit *u;
@@ -331,7 +331,7 @@ u8 BattleCpu::PickMarkerCell() {
 // coloured after the player and record base (case 4).
 enum RecordIndex { RECORD_INDEX_0 };
 
-// The final mUnk_98 pass reads the entries through mUnk_1c, not the Entries() accessor.
+// The search loop of the final mHasPartners pass reads mMarkers directly (m2), not through the Markers() accessor.
 extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     cpu->mPos.x = 0;
     cpu->mPos.y = 0;
@@ -347,7 +347,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     u8 kind                = list->mPlayers[cpu->mPlayer]->mCharacterId;
     u8 i                   = 0;
     do {
-        BattleMarker *m = &list->Entries()[i];
+        BattleMarker *m = &list->Markers()[i];
         if (m->mStatus != 0) {
             if (cpu->mPlayer == m->mPlayer) {
                 own[nOwn] = i;
@@ -478,7 +478,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                     j = 0;
                     BattlePlayerList *l = data_020d433c.mBattlePlayers;
                     do {
-                        BattleMarker *m = &l->Entries()[j];
+                        BattleMarker *m = &l->Markers()[j];
                         if (m->mStatus != 0 && m->mUnitHandle == 0) {
                             if (cpu->mPlayer == m->mPlayer) {
                                 pick = j;
@@ -499,12 +499,12 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                     j = 0;
                     l = data_020d433c.mBattlePlayers;
                     do {
-                        BattleMarker *m = &l->Entries()[j];
+                        BattleMarker *m = &l->Markers()[j];
                         if (m->mStatus != 0 && m->mUnitHandle != 0) {
                             u8 owner = l->Units()[(u8) (m->mUnitHandle - 1)].mPlayer;
                             if (owner != cpu->mPlayer && owner != l->mPlayers[cpu->mPlayer]->Partner()) {
                                 if (state == 2) {
-                                    if (!l->mPlayers[owner]->IsActive()) {
+                                    if (!l->mPlayers[owner]->IsCpu()) {
                                         pick = j;
                                         break;
                                     }
@@ -535,7 +535,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                 j                 = 0;
                 do {
                     BattlePlayerList *l = data_020d433c.mBattlePlayers;
-                    BattleMarker *m     = &l->Entries()[j];
+                    BattleMarker *m     = &l->Markers()[j];
                     if (m->mStatus != 0) {
                         bool ok  = false;
                         u8 owner = m->mPlayer;
@@ -558,7 +558,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                     bestIdx = 0;
                     do {
                         BattlePlayerList *l = data_020d433c.mBattlePlayers;
-                        BattleMarker *m     = &l->Entries()[j];
+                        BattleMarker *m     = &l->Markers()[j];
                         if (m->mStatus != 0) {
                             u8 me = cpu->mPlayer;
                             if (me == m->mPlayer || m->mPlayer == l->mPlayers[me]->Partner()) {
@@ -601,7 +601,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
         }
     } while (pick >= 12);
     if (data_020d433c.mHasPartners != 0) {
-        BattleMarker *m     = &data_020d433c.mBattlePlayers->Entries()[pick];
+        BattleMarker *m     = &data_020d433c.mBattlePlayers->Markers()[pick];
         if (m->mUnitHandle != 0) {
             u8 owner = data_020d433c.mBattlePlayers->Units()[(u8) (m->mUnitHandle - 1)].mPlayer;
             if (owner == data_020d433c.mBattlePlayers->mPlayers[cpu->mPlayer]->Partner()) {
@@ -627,9 +627,9 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
     if (pick >= 12) {
         pick = 0;
     }
-    cpu->mPos.x = data_020d433c.mBattlePlayers->Entries()[pick].mCellX * 0x23000 - 0xe3800;
+    cpu->mPos.x = data_020d433c.mBattlePlayers->Markers()[pick].mCellX * 0x23000 - 0xe3800;
     cpu->mPos.y = 0;
-    cpu->mPos.z = data_020d433c.mBattlePlayers->Entries()[pick].mCellY * 0x2f000 - 0xd3800;
+    cpu->mPos.z = data_020d433c.mBattlePlayers->Markers()[pick].mCellY * 0x2f000 - 0xd3800;
     cpu->func_ov007_022328dc();
 }
 

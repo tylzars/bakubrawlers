@@ -196,7 +196,7 @@ ConfrontBg02::ConfrontBg02()
     mDelay = 0;
     mSide  = 0;
     mData  = 0;
-    mStep  = gConfrontEmblemSteps;
+    mEmblemStep = gConfrontEmblemSteps;
     for (u8 i = 0; i < 3; i++) {
         mCellAnims[i] = 0;
     }
@@ -405,8 +405,8 @@ void ConfrontBg02::UpdateEmblemStep() {
     for (; i < 5; i++) {
         total += step->mUntil;
         if (mElapsedFrames < total) {
-            if (mStep != step) {
-                mStep = step;
+            if (mEmblemStep != step) {
+                mEmblemStep = step;
             }
             return;
         }
@@ -420,8 +420,8 @@ BOOL ConfrontBg02::CountDownDelay() {
         if (mDelay != 0) {
             mDelay--;
         } else {
-            mDelay = BattleRand32(mStep->mMaxDelay - mStep->mMinDelay);
-            mDelay += mStep->mMinDelay;
+            mDelay = BattleRand32(mEmblemStep->mMaxDelay - mEmblemStep->mMinDelay);
+            mDelay += mEmblemStep->mMinDelay;
             result = TRUE;
         }
     }

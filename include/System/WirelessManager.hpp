@@ -41,17 +41,22 @@ struct WmEntry {
 class WirelessManager {
 public:
     /* 0000 */ // vptr
-    /* 0004 */ u32 mParentCallback; // callback: void (*)(u8 aid, const void *data), run when the link comes up
+    /* 0004 */ u32 mParentCallback; // set by StartParent, called with (arg->mUnk_10, arg->mUnk_14) on event 7 of the parent
+                                    // callback func_0202dee4; the only StartParent call passes 0, so it never runs in this build
     /* 0008 */ WmEntry mScanResults[WM_ENTRY_COUNT]; // collected scan results
-    /* 0908 */ WmEntry mScanSnapshot[WM_ENTRY_COUNT]; // snapshot handed to the game
-    /* 1208 */ u16 mScanResultTimers[WM_ENTRY_COUNT]; // age counter per scan result
+    /* 0908 */ WmEntry mScanSnapshot[WM_ENTRY_COUNT]; // snapshot handed to the game; ArenaScene reads it as data_020c3938
+    /* 1208 */ u16 mScanResultTimers[WM_ENTRY_COUNT]; // per mScanResults slot: 300 when stored, counted down by
+                                                      // UpdateScanResultTimers; 0 = slot free
     /* 1220 */ u16 mUnk_1220;
-    /* 1222 */ u16 mTestedChannel; // channel index while a scan is running
+    /* 1222 */ u16 mTestedChannel; // 1-based channel TestNextChannel last passed to func_020119ec; StartChannelTest resets it to 0
     /* 1224 */ u16 mMinTestResult;
     /* 1226 */ u16 mParentChannel;
-    /* 1228 */ volatile u8 mState; // mode (6 and 7 are the wireless modes, see IsWirelessMode)
+    /* 1228 */ volatile u8 mState; // 0 off, 1 started, 2 parent starting, 3 channels measured, 4 scanning, 5 joining,
+                                   // 6 connected as parent, 7 joined, 8 stopping, 9 failed; also read as
+                                   // data_020c4030.mUnk_228 / data_020c4258 (IsWirelessMode tests 6 and 7)
     /* 1229 */ u8 mJoinIndex;
-    /* 122a */ u8 mUnk_122a; // step of the running mode
+    /* 122a */ u8 mUnk_122a; // 4 = a library call is pending, 0 = it completed, 6 = failure or stop request (also written as
+                             // data_020c4030.mUnk_22a), 1 = scan issued, 2 / 3 = parent / joined link up, 5 = stopped
     /* 122b */ u8 mUnk_122b;
     /* 122c */ u8 mUnk_122c;
     /* 122d */ u8 mUnk_122d;
@@ -59,7 +64,7 @@ public:
     /* 122f */ u8 mUnk_122f;
     /* 1230 */ u8 mUnk_1230;
     /* 1231 */ u8 mUnk_1231[24];
-    /* 1249 */ u8 mRecvWriteIndex;
+    /* 1249 */ u8 mRecvWriteIndex; // the received ring (sWmWorkB.mRecv) is written but never read in this build
     /* 124a */ u8 mUnk_124a;
     /* 124b */ u8 mSendWriteIndex;
     /* 124c */ u8 mSendReadIndex;
@@ -120,16 +125,16 @@ public:
 
 struct UnkStruct_020c4030 {
     /* 000 */ PAD(0x000, 0x228);
-    /* 228 */ u8 mUnk_228;
+    /* 228 */ u8 mUnk_228; // the same byte as WirelessManager::mState
     /* 229 */ PAD(0x229, 0x22a);
-    /* 22a */ u8 mUnk_22a;
+    /* 22a */ u8 mUnk_22a; // the same byte as WirelessManager::mUnk_122a
     /* 22b */ PAD(0x22b, 0x24d);
     /* 24d */ u8 mUnk_24d; // the same byte as WirelessManager::mUnk_124d
 };
 
 extern UnkStruct_020c4030 data_020c4030;
-extern u8 data_020c4258; // the same byte as data_020c4030.mUnk_228
-// Communication mode 6 and 7 are the wireless modes.
+extern u8 data_020c4258; // the same byte as data_020c4030.mUnk_228 (WirelessManager::mState)
+// TRUE for WirelessManager::mState 6 (connected as parent) and 7 (joined).
 static inline BOOL IsWirelessMode(const u8 *mode) {
     switch (*mode) {
         case 6:

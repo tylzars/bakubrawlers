@@ -76,12 +76,13 @@ struct BattleRecord {
     /* 04 */ u16 mUnk_04;
     /* 06 */ u16 mUnk_06;
     /* 08 */ u8 mBakuganId;
-    /* 09 */ u8 mAttribute;
-    /* 0a */ u8 mStatus;
+    /* 09 */ u8 mAttribute; // also written raw by BattleAbility (rec2[0x15])
+    /* 0a */ u8 mStatus; // 0 free, 1 placed, 2 (BattlePlayer set-up, RemoveUnit), 3 (ListScene: past the received list);
+                         // BattlePlayer may set 2 back to 0 when none of the first mUnk_99 is 0
     /* 0b */ u8 mUnk_0b;
 };
 
-class BattleCpu; // the object a player controls on the field (ctor 02230f58)
+class BattleCpu; // created by BattlePlayer's ctor for an index at or past the limit (1, or func_0202f134() in wireless mode); ctor 02230f58
 
 struct BattlePlayer : public SceneBase {
     /* 00 SceneBase */
@@ -105,19 +106,20 @@ struct BattlePlayer : public SceneBase {
     /* e4 */ u32 mUnk_e4;
     /* e8 */ u32 mUnk_e8;
     /* ec */ u8 mUnk_ec;
-    /* ed */ u8 mNameLength; // length of the name at +b0
-    /* ee */ u8 mUnk_ee;
-    /* ef */ u8 mState;
+    /* ed */ u8 mNameLength; // length in bytes of the name at +b0 (NameText)
+    /* ee */ u8 mUnk_ee; // raised by BattlePlayerList, BattleCommand and BattleConfrontCard; func_ov007_02263150 tests
+                         // it (plus the partner's) >= 3, BattleResult against data_020d433c.mUnk_99
+    /* ef */ u8 mState; // Update's case 3 never runs: nothing writes 3
     /* f0 */ u8 mIndex;
     /* f1 */ u8 mUnk_f1;
-    /* f2 */ u8 mPartner;
+    /* f2 */ u8 mPartner; // equals mIndex while data_020d433c.mHasPartners is 0
     /* f3 */ u8 mUnk_f3;
     /* f4 */ u8 mHistoryCount;
     /* f5 */ u8 mRecord;
     /* f6 */ u8 mCharacterId;
-    /* f7 */ u8 mUnk_f7;
-    /* f8 */ u8 mSlots54Remaining;
-    /* f9 */ u8 mSlots6cRemaining;
+    /* f7 */ u8 mUnk_f7; // 0..2, copied from data_020d433c.mUnk_a3; see there
+    /* f8 */ u8 mSlots54Remaining; // mSlots54 entries (of the first data_020d433c.mUnk_99) with mFlag 0; also read raw at +0xf8 (BattleAbility)
+    /* f9 */ u8 mSlots6cRemaining; // the same for mSlots6c
     /* fa */ u16 mUnk_fa;
     /* fc */ u8 mUnk_fc;
     /* fd */ u8 mUnk_fd;
@@ -168,7 +170,8 @@ struct BattlePlayer : public SceneBase {
         return &mRecords[mRecord];
     }
 
-    bool IsActive() const {
+    // TRUE when the player has a BattleCpu (mCpu).
+    bool IsCpu() const {
         bool active = false;
         if (mCpu) {
             active = true;
@@ -186,9 +189,9 @@ struct BattlePlayer : public SceneBase {
 struct BattleUnit {
     /* 00 */ VecFx32 mPos;
     /* 0c */ u16 mUnk_0c;
-    /* 0e */ u8 mRecord;
+    /* 0e */ u8 mRecord; // the view BattleUnk022637acUnit keeps the name mUnk_0e
     /* 0f */ u8 mPlayer;
-    /* 10 */ u8 mStatus;
+    /* 10 */ u8 mStatus; // 0 free, else AddUnit's flag (ReplaceUnitRecord sets 1); BattleAbility writes 3
     /* 11 */ u8 mMarker;
     /* 12 */ u8 mUnk_12;
     /* 13 */ PAD(0x13, 0x14);
@@ -199,7 +202,7 @@ struct BattleUnit {
 struct BattleMarker {
     /* 0 */ u8 mSlot;
     /* 1 */ u8 mPlayer;
-    /* 2 */ u8 mStatus;
+    /* 2 */ u8 mStatus; // 0 free, 1 placed; BattleAbility writes 3, BattleCommandMap sets 1 back
     /* 3 */ u8 mCellX;
     /* 4 */ u8 mCellY;
     /* 5 */ u8 mUnitHandle;
@@ -212,15 +215,15 @@ struct BattlePlayerList : public SceneBase {
     /* 00c */ BattlePlayer *mPlayers[4];
     /* 01c */ BattleMarker mMarkers[12];
     /* 07c */ BattleUnit mUnits[12];
-    /* 16c */ s8 mMarkerHandles[14][10];
-    /* 1f8 */ s8 mUnitHandles[14][10];
-    /* 284 */ u8 mTurnOrder[4];
-    /* 288 */ u16 mTurnCount;
+    /* 16c */ s8 mMarkerHandles[14][10]; // index + 1 into mMarkers, 0 = none; [cell x][cell y]
+    /* 1f8 */ s8 mUnitHandles[14][10]; // index + 1 into mUnits, 0 = none; [cell x][cell y]
+    /* 284 */ u8 mTurnOrder[4]; // read at (mTurnCount - 1) % mPlayerCount, positions 1 and 2 swapped while mHasPartners is set
+    /* 288 */ u16 mTurnCount; // +1 per new turn player (not for an extra turn, mUnk_2ad); BattleCommand draws (mTurnCount - 1) / mPlayerCount + 1
     /* 28a */ u8 mTurnPlayer;
     /* 28b */ u8 mUnk_28b;
     /* 28c */ u8 mUnk_28c;
-    /* 28d */ u8 mUnitA;
-    /* 28e */ u8 mUnitB;
+    /* 28d */ u8 mUnitA; // SetUnitAB's first unit, read as BattleData's entry 0 (set by BattleTarget, BattleAbility)
+    /* 28e */ u8 mUnitB; // SetUnitAB's second unit, read as BattleData's entry 1; sometimes the same unit as mUnitA
     /* 28f */ u8 mUnk_28f;
     /* 290 */ PAD(0x290, 0x291);
     /* 291 */ u8 mUnk_291;
@@ -234,7 +237,7 @@ struct BattlePlayerList : public SceneBase {
     /* 2a0 */ Camera *mCamera;
     /* 2a4 */ StorytalkWindow *mUnk_2a4;
     /* 2a8 */ u8 mState;
-    /* 2a9 */ u8 mUnk_2a9;
+    /* 2a9 */ u8 mUnk_2a9; // player index: data_020d433c.mUnk_ae in wireless mode, else 0 (CreateObjects); compared with mTurnPlayer and units' mPlayer
     /* 2aa */ u8 mUnk_2aa;
     /* 2ab */ u8 mUnk_2ab;
     /* 2ac */ u8 mUnk_2ac;
@@ -253,24 +256,23 @@ struct BattlePlayerList : public SceneBase {
         return mPlayers[mTurnPlayer];
     }
 
-    // Index of the player whose units are being commanded (compared with BattleUnit::mUnk_0f).
-    u8 CurrentPlayer() {
+    u8 Unk2a9() {
         return mUnk_2a9;
     }
 
-    u8 Unk294() {
+    u8 MarkerCount() {
         return mMarkerCount;
     }
     BattleUnit *Units() {
         return mUnits;
     }
 
-    BattleMarker *Entries() {
+    BattleMarker *Markers() {
         return mMarkers;
     }
 
-    s8 CellAt(u8 row, u8 col) {
-        return mUnitHandles[row][col];
+    s8 CellAt(u8 x, u8 y) {
+        return mUnitHandles[x][y];
     }
 
     void SetCursor(u8 x, u8 y) {
@@ -290,23 +292,27 @@ class GimmickManager;
 struct GimmickSetData;
 struct BattleObstacle;
 
-// Collision manager of the gimmick set files (0x214 bytes, vtable 0228abfc, ctor 02271bb4): a list of up to 0x7f loaded
-// sets (slot 0 is the list head) handed out through a ring of slot pointers; Update tests the sets against each other.
+// Collision manager (0x214 bytes, vtable 0228abfc, ctor 02271bb4): a list of up to 0x7f sets (slot 0 is the list head)
+// handed out through a ring of slot pointers; Update tests the sets against each other. Besides the gimmicks' sets,
+// BattleTarget adds the units', the field's (mMapCollision) and its mBakugan's (mCollision).
 struct GimmickCollision : public SceneBase {
     /* 00 SceneBase */
-    /* 0c */ GimmickSetData *mSets; // 0x80 slots of 0x838 bytes
+    /* 0c */ GimmickSetData *mSets; // 0x80 slots of 0x838 bytes; slot 0 is the list head, not a loaded set
     /* 10 */ GimmickSetData *mSetRing[0x80]; // slot ring
     /* 210 */ u8 mRingWriteIndex; // ring position where a released slot is put back
     /* 211 */ u8 mRingReadIndex; // ring position of the next slot to hand out
-    /* 212 */ u8 mEnabled; // set while the shoot screen is shown
+    /* 212 */ u8 mEnabled; // Update tests the sets only while set (BattleTarget sets it, its destructor clears it); the hit counts are cleared either way
     /* 213 */ PAD(0x213, 0x214);
 
     GimmickCollision(); // 02271bb4
     virtual ~GimmickCollision();
     /* 08 */ virtual void Update(); // 02271db0
 
+    // Records each overlap in both sets (mHitSlots, mHitObstacleIndices = j for both, mHitCount, at most 8). j is not
+    // reset per obstacle of a, so after a's first obstacle each further one is tested once, against b's entry
+    // j = count, count + 1, ... (past b's list).
     void TestSets(GimmickSetData *a, GimmickSetData *b);
-    BOOL TestObstacles(BattleObstacle *a, BattleObstacle *b);
+    BOOL TestObstacles(BattleObstacle *a, BattleObstacle *b); // 0 for type 0 against a non-zero type and for a first type >= 2
 };
 
 struct UnkStruct_020d433c {
@@ -329,7 +335,9 @@ struct UnkStruct_020d433c {
     /* 78 */ PAD(0x78, 0x79);
     /* 79 */ u8 mLanguage;
     /* 7a */ u8 mUnk_7a;
-    /* 7b */ u8 mNextScene;
+    /* 7b */ u8 mNextScene; // requested and cleared when the battle ends (0 requests 4; 0xd becomes 0xb with mUnk_7a and
+                            // mUnk_7d == 3); 8 takes the wireless-mode path instead; BattleResult and BattleUnk0227532c
+                            // also test it
     /* 7c */ u8 mUnk_7c;
     /* 7d */ u8 mUnk_7d;
     /* 7e */ u8 mUnk_7e_0 : 4;
@@ -370,11 +378,13 @@ struct UnkStruct_020d433c {
             /* 9a */ u8 mUnk_9a_7 : 1;
         };
     };
-    /* 9b */ u8 mPartners[4];
-    /* 9f */ u8 mCharacterIds[4];
-    /* a3 */ u8 mUnk_a3[4];
+    /* 9b */ u8 mPartners[4]; // also data_020d43d7; read only while mHasPartners is set
+    /* 9f */ u8 mCharacterIds[4]; // also data_020d43db
+    /* a3 */ u8 mUnk_a3[4]; // also data_020d43df: per player 0..2, copied to BattlePlayer::mUnk_f7; second index of the
+                            // player templates, a BattleShoot multiplier index, BattleCpu tests, a cell frame drawn by
+                            // FieldSelectScene / BattleResult
     /* a7 */ u8 mUnk_a7;
-    /* a8 */ u8 mWireless;
+    /* a8 */ u8 mWireless; // set by ArenaScene when it starts the wireless session; cleared by ArenaScene, ArenaWindowScene, BattlePlayerList
     /* a9 */ u8 mUnk_a9[4];
     /* ad */ u8 mUnk_ad;
     /* ae */ u8 mUnk_ae;

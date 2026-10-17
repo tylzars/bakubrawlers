@@ -1221,7 +1221,7 @@ void FieldSelectScene::func_ov001_02222040() {
             u8 *p = WirelessManager::Get().func_0202f0cc(data_020d433c.mUnk_af[i]);
             if (p != NULL) {
                 if (p[0] == 0xd) {
-                    mInput[i].mTouching = p[6];
+                    mInput[i].mReleased = p[6];
                     mInput[i].mTouchX   = p[7];
                     mInput[i].mTouchY   = p[8];
                     mInput[i].mKeys     = *(u16 *) (p + 4);
@@ -1230,7 +1230,7 @@ void FieldSelectScene::func_ov001_02222040() {
                     mInput[i].mUnk_0e   = p[0xc];
                     mInput[i].mUnk_0f   = p[0xd];
                 } else {
-                    mInput[i].mTouching = 0;
+                    mInput[i].mReleased = 0;
                     mInput[i].mTouchX   = 0;
                     mInput[i].mTouchY   = 0;
                     mInput[i].mKeys     = 0;
@@ -1243,18 +1243,18 @@ void FieldSelectScene::func_ov001_02222040() {
             i++;
         } while (i < 4);
         data_0220f540.mUnk_00 = 0xd;
-        NET_BYTE(6) = TouchManager::Get().mTouching;
+        NET_BYTE(6) = TouchManager::Get().mReleased;
         NET_BYTE(7) = TouchManager::Get().mX;
         NET_BYTE(8) = TouchManager::Get().mY;
-        NET_KEYS   = InputManager::Get().IsTrigger(KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT) | InputManager::Get().IsHeld(3);
+        NET_KEYS   = InputManager::Get().IsTrigger(KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT) | InputManager::Get().IsPressed(3);
         NET_BYTE(9) = 0;
         NET_BYTE(12) = 0;
         NET_BYTE(13) = 0;
     } else {
-        mInput[0].mTouching = TouchManager::Get().mTouching;
+        mInput[0].mReleased = TouchManager::Get().mReleased;
         mInput[0].mTouchX   = TouchManager::Get().mX;
         mInput[0].mTouchY   = TouchManager::Get().mY;
-        mInput[0].mKeys     = InputManager::Get().IsTrigger(KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT) | InputManager::Get().IsHeld(3);
+        mInput[0].mKeys     = InputManager::Get().IsTrigger(KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT) | InputManager::Get().IsPressed(3);
         mInput[0].mUnk_07   = 0;
         mInput[0].mUnk_0e   = 0;
         mInput[0].mUnk_0f   = 0;
@@ -1878,7 +1878,7 @@ u32 FieldSelectScene::UpdateNumberPage() {
     } else {
     if (mInput[0].mKeys & 1) {
         TakeCursorItem(0);
-    } else if (mInput[0].mTouching != 0) {
+    } else if (mInput[0].mReleased != 0) {
         u8 cur = mInput[0].mCursorItem;
         int dx = (s16) (mInput[0].mTouchX - 0x20);
         if ((dx >= 0) & (dx < 0xc0)) {
@@ -1945,7 +1945,7 @@ u32 FieldSelectScene::UpdateRulePage() {
         u32 changed = 0;
         u32 keys = mInput[0].mKeys;
         if (!(keys & 1)) {
-            if (mInput[0].mTouching != 0) {
+            if (mInput[0].mReleased != 0) {
                 int y = mInput[0].mTouchY;
                 int t = y - 0x26;
                 int x = mInput[0].mTouchX;
@@ -2085,7 +2085,7 @@ u32 FieldSelectScene::UpdateCharaPage() {
                 u16 keys = mInput[owner].mKeys;
                 if (keys & 1) {
                     event = 1;
-                } else if (mInput[owner].mTouching != 0) {
+                } else if (mInput[owner].mReleased != 0) {
                     u8 cur = mInput[i].mCursorItem;
                     u32 k  = 0;
                     do {
@@ -2204,7 +2204,7 @@ u32 FieldSelectScene::UpdatePairPage() {
         u16 keys = mInput[0].mKeys;
         if (keys & 1) {
             TakeCursorItem(0);
-        } else if (mInput[0].mTouching != 0) {
+        } else if (mInput[0].mReleased != 0) {
             u8 cur = mInput[0].mCursorItem;
             int dx = (s16) (mInput[0].mTouchX - 0x10);
             if ((dx >= 0) & (dx < 0xe0)) {
@@ -2281,7 +2281,7 @@ u32 FieldSelectScene::UpdateFieldPage() {
             u8 ev    = 0;
             if (keys & 1) {
                 ev = 1;
-            } else if (mInput[0].mTouching != 0) {
+            } else if (mInput[0].mReleased != 0) {
                 u8 cur = mInput[0].mCursorItem;
                 u32 k  = 0;
                 do {

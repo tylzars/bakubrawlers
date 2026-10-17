@@ -67,8 +67,8 @@ extern int func_02041704(int), func_02041714(int), func_02041724(int), func_0204
 extern int func_02041754(int), func_02041848(int), func_020417a0(int);
 extern int func_020416c0(int, int), func_020416d0(int, void *, void *), func_020416dc(int, int);
 extern int func_020416e4(int, int), func_020416ec(int, int);
-extern int StmGetState(int), func_02041f50(int, int), func_02041f18(int, void *, void *);
-extern void func_02042dd8(Pl *, int, int, int, int);
+extern int StmGetState(int), StmSetReadEnd(int, int), StmSetReadEndCallback(int, void *, void *);
+extern void AdxStartFile(Pl *, int, int, int, int);
 extern void AdxStop(Pl *);
 extern int AdxGetState(Pl *), func_02042fdc(Pl *);
 extern void func_02043188(Pl *, int);
@@ -167,7 +167,7 @@ void func_02043f28(Pl *o)
     if ((unsigned char)o->s2 <= 1 && o->ba8 == 1) {
         if (StmGetState(o->i8) == 2) return;
         if (o->io10 != 0) o->io10->vt->f14(o->io10);
-        func_02042dd8(o, o->ib0, o->ib4, o->ib8, o->ibc);
+        AdxStartFile(o, o->ib0, o->ib4, o->ib8, o->ibc);
         o->ba8 = 0;
     }
     st = CriStmGetState(h);
@@ -200,8 +200,8 @@ void func_02043f28(Pl *o)
                 o->i50 %= 2048;
                 n = (x + 0x7ff) / 2048;
                 o->i8c = n;
-                func_02041f50(o->i8, n);
-                func_02041f18(o->i8, func_02043b44, o);
+                StmSetReadEnd(o->i8, n);
+                StmSetReadEndCallback(o->i8, func_02043b44, o);
             }
             func_02041790(h);
             o->i90 = func_02041764(h);
@@ -210,7 +210,7 @@ void func_02043f28(Pl *o)
             func_020416e4(h, 0);
             func_020416d0(h, func_0204395c, o);
         } else {
-            if (o->i8 != 0) func_02041f50(o->i8, 0x7fffffff);
+            if (o->i8 != 0) StmSetReadEnd(o->i8, 0x7fffffff);
             func_020416dc(h, func_02041744(h));
             func_020416ec(h, 0);
             func_020416e4(h, 0);

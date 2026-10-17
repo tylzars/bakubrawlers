@@ -139,20 +139,20 @@ Stm *StmAllocFromB(void *a, int b, int c, StmIO *d)
 
 extern int StmStartInner(Stm *);
 extern void StmStopAndWait(Stm *);
-extern void func_02041ce0(Stm *);
+extern void StmCloseFileAndWait(Stm *);
 extern void StmStop(Stm *);
-extern void func_02041c94(Stm *);
-extern void func_02041cb0(Stm *);
-extern void func_02041cfc(Stm *);
+extern void StmCloseFile(Stm *);
+extern void StmCloseFileInner(Stm *);
+extern void StmCloseFileAndWaitInner(Stm *);
 extern void func_02041dc0(Stm *);
 extern void StmStopInner(Stm *);
 extern void StmStopAndWaitInner(Stm *);
 extern Stm *StmAllocInner(int, int);
 extern void StmDeallocInner(Stm *);
-extern void func_02041c28(Stm *, int, int, int, long long);
+extern void StmRequestOpenFileInner(Stm *, int, int, int, long long);
 extern int StmGetStateInner(Stm *);
-extern int func_02041da8(Stm *, int);
-extern void func_02041f44(Stm *, int, int);
+extern int StmSetPosInner(Stm *, int);
+extern void StmSetReadEndCallbackInner(Stm *, int, int);
 
 Stm *StmAlloc(int a, int n)
 {
@@ -176,24 +176,24 @@ void StmDealloc(Stm *s)
     func_02042754();
 }
 
-/* Blocks in StmStopAndWait until the stream is stopped, then calls func_02041ce0 and clears the entry. */
+/* Blocks in StmStopAndWait until the stream is stopped, then calls StmCloseFileAndWait and clears the entry. */
 void StmDeallocInner(Stm *s)
 {
     if (s == 0) return;
     StmStopAndWait(s);
-    func_02041ce0(s);
+    StmCloseFileAndWait(s);
     s->used = 0;
     memset(s, 0, 100);
 }
 
-void func_02041bdc(Stm *s, int a, int b, int c, long long x)
+void StmRequestOpenFile(Stm *s, int a, int b, int c, long long x)
 {
     func_02042748();
-    func_02041c28(s, a, b, c, x);
+    StmRequestOpenFileInner(s, a, b, c, x);
     func_02042754();
 }
 
-void func_02041c28(Stm *s, int a, int b, int c, long long x)
+void StmRequestOpenFileInner(Stm *s, int a, int b, int c, long long x)
 {
     StmLockEnter();
     s->c = c;
@@ -205,14 +205,14 @@ void func_02041c28(Stm *s, int a, int b, int c, long long x)
     StmLockLeave();
 }
 
-void func_02041c94(Stm *s)
+void StmCloseFile(Stm *s)
 {
     func_02042748();
-    func_02041cb0(s);
+    StmCloseFileInner(s);
     func_02042754();
 }
 
-void func_02041cb0(Stm *s)
+void StmCloseFileInner(Stm *s)
 {
     StmStop(s);
     StmLockEnter();
@@ -221,17 +221,17 @@ void func_02041cb0(Stm *s)
     StmLockLeave();
 }
 
-void func_02041ce0(Stm *s)
+void StmCloseFileAndWait(Stm *s)
 {
     func_02042748();
-    func_02041cfc(s);
+    StmCloseFileAndWaitInner(s);
     func_02042754();
 }
 
-void func_02041cfc(Stm *s)
+void StmCloseFileAndWaitInner(Stm *s)
 {
     StmStopAndWait(s);
-    func_02041c94(s);
+    StmCloseFile(s);
     for (;;) {
         if (s->b4d == 0 && s->b4a == 0) return;
         func_0204035c();
@@ -250,16 +250,16 @@ int StmGetState(Stm *s)
 
 int StmGetStateInner(Stm *s) { return s->state; }
 
-int func_02041d7c(Stm *s, int v)
+int StmSetPos(Stm *s, int v)
 {
     int r;
     func_02042748();
-    r = func_02041da8(s, v);
+    r = StmSetPosInner(s, v);
     func_02042754();
     return r;
 }
 
-int func_02041da8(Stm *s, int v)
+int StmSetPosInner(Stm *s, int v)
 {
     s->i5c = v;
     if (v > s->sectors) s->i5c = s->sectors;
@@ -333,14 +333,14 @@ void StmStopAndWaitInner(Stm *s)
     }
 }
 
-void func_02041f18(Stm *s, int a, int b)
+void StmSetReadEndCallback(Stm *s, int a, int b)
 {
     func_02042748();
-    func_02041f44(s, a, b);
+    StmSetReadEndCallbackInner(s, a, b);
     func_02042754();
 }
 
-void func_02041f44(Stm *s, int a, int b)
+void StmSetReadEndCallbackInner(Stm *s, int a, int b)
 {
     s->i3c = a;
     s->i40 = b;

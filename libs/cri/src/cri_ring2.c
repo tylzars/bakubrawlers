@@ -76,8 +76,8 @@ extern int CriRingGetExtraNoLock(CriRing *);
 extern void func_0204568c(const char *);
 extern void CriBufDefaultCallback(void);
 extern void CriBufSendJoinedText(const char *, const char *);
-extern void CriBufPoolAddRef(void);
-extern void CriBufPoolReleaseRef(void);
+extern void CriBufPoolAddRefNoLock(void);
+extern void CriBufPoolReleaseRefNoLock(void);
 extern CriBuf *CriBufAllocNoLock(char *, int);
 extern void CriBufDeallocNoLock(CriBuf *);
 extern void *func_02045928(CriBuf *);
@@ -308,15 +308,15 @@ void CriBufSendJoinedText(const char *a, const char *b)
     func_0204568c(buf);
 }
 
-void func_020456e8(void)
+void CriBufPoolAddRef(void)
 {
     func_02045f10();
     func_02045f60();
-    CriBufPoolAddRef();
+    CriBufPoolAddRefNoLock();
     func_02045f6c();
 }
 
-void CriBufPoolAddRef(void)
+void CriBufPoolAddRefNoLock(void)
 {
     if (gBufCount == 0) {
         __clear(gBufs, sizeof(gBufs));
@@ -324,15 +324,15 @@ void CriBufPoolAddRef(void)
     gBufCount++;
 }
 
-void func_02045760(void)
+void CriBufPoolReleaseRef(void)
 {
     func_02045f60();
-    CriBufPoolReleaseRef();
+    CriBufPoolReleaseRefNoLock();
     func_02045f6c();
     func_02045f38();
 }
 
-void CriBufPoolReleaseRef(void)
+void CriBufPoolReleaseRefNoLock(void)
 {
     if (--gBufCount == 0) {
         __clear(gBufs, sizeof(gBufs));

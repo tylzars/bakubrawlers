@@ -48,7 +48,7 @@ extern void SendErr(const char *, ...);
 
 extern int CriDevTableHasName(char *, int);
 extern char *CriDevGetDefaultName(void);
-extern CriDev *func_020469f8(char *, char *, char *);
+extern CriDev *CriDevTableFindOrDefault(char *, char *, char *);
 extern CriDevHandle *CriDevFindFreeHandle(void);
 extern void CriDevClearHandle(CriDevHandle *);
 extern void CriDevSplitPath(char *, char *, char *);
@@ -91,7 +91,7 @@ char *CriDevGetDefaultName(void)
     return data_02217a30;
 }
 
-CriDev *func_020469f8(char *a, char *b, char *c)
+CriDev *CriDevTableFindOrDefault(char *a, char *b, char *c)
 {
     CriDev *d;
     if (a[0] == 0) {
@@ -130,7 +130,7 @@ CriDevHandle *CriDevAllocHandle(char *path, int arg1, int arg2)
         CriDevSendText(data_020ada48);
         return 0;
     }
-    h->dev = func_020469f8(tmp, name, path);
+    h->dev = CriDevTableFindOrDefault(tmp, name, path);
     if (h->dev == 0) {
         CriDevClearHandle(h);
         CriDevSendText(data_020ada6c);
@@ -223,7 +223,7 @@ void CriDevDeallocHandle(CriDevHandle *h)
     }
 }
 
-int func_02046d74(CriDevHandle *h)
+int CriDevGetPos(CriDevHandle *h)
 {
     int r;
     if (h == 0) {
@@ -239,7 +239,7 @@ int func_02046d74(CriDevHandle *h)
     return r;
 }
 
-int func_02046dcc(CriDevHandle *h, int a, int b)
+int CriDevSetPos(CriDevHandle *h, int a, int b)
 {
     int r;
     if (h == 0) {
@@ -255,7 +255,7 @@ int func_02046dcc(CriDevHandle *h, int a, int b)
     return r;
 }
 
-int func_02046e24(CriDevHandle *h, int a, int b)
+int CriDevRead(CriDevHandle *h, int a, int b)
 {
     int r;
     if (h == 0) {
@@ -271,7 +271,7 @@ int func_02046e24(CriDevHandle *h, int a, int b)
     return r;
 }
 
-void func_02046e7c(void)
+void CriDevAdvanceAll(void)
 {
     int i;
     for (i = 0; i < 32; i++) {
@@ -280,7 +280,7 @@ void func_02046e7c(void)
     }
 }
 
-int func_02046eb4(CriDevHandle *h)
+int CriDevGetState(CriDevHandle *h)
 {
     int r = 3;
     if (h == 0) {
@@ -295,7 +295,7 @@ int func_02046eb4(CriDevHandle *h)
     return r;
 }
 
-int func_02046f0c(char *path)
+int CriDevGetSizeByPath(char *path)
 {
     char tmp[0x129];
     char name[0x129];
@@ -309,14 +309,14 @@ int func_02046f0c(char *path)
         CriDevSendText(data_020adbf4);
         return 0;
     }
-    d = func_020469f8(tmp, name, path);
+    d = CriDevTableFindOrDefault(tmp, name, path);
     if (d == 0) CriDevSendText(data_020adc1c);
     if (d->f8 != 0) return d->f8(name);
     CriDevSendText(data_020adc40);
     return 0;
 }
 
-int func_02046fc8(CriDevHandle *h)
+int CriDevGetSize(CriDevHandle *h)
 {
     int r;
     if (h == 0) {

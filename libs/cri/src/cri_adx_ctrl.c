@@ -76,8 +76,8 @@ extern int func_020417a0(int);
 extern int func_02041850(int);
 extern int func_02041860(int);
 extern int StmGetState(int);
-extern int func_02041d7c(int, int);
-extern int func_02041f50(int, int);
+extern int StmSetPos(int, int);
+extern int StmSetReadEnd(int, int);
 extern int func_020479a4(int);
 extern void func_020479b0(int, int);
 extern int func_02051514(int, int, int, int *, int *, int *);
@@ -426,15 +426,15 @@ void func_02043b44(Pl *o)
     if (io8 == 0 || h == 0) return;
     r = func_02041774(h);
     if (o->s2 == 4) {
-        func_02041f50(o->i8, 0x7fffffff);
+        StmSetReadEnd(o->i8, 0x7fffffff);
         return;
     }
     if (o->b6c == 0) {
         if (func_020416b0(o->h) >= o->ic0) func_020416dc(o->h, -1);
-        func_02041f50(o->i8, 0x7fffffff);
+        StmSetReadEnd(o->i8, 0x7fffffff);
         return;
     }
-    func_02041d7c(io8, r / 2048);
+    StmSetPos(io8, r / 2048);
 }
 
 void func_02043bd0(Pl *o)

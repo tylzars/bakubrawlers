@@ -38,8 +38,8 @@ extern void func_02045f60(void);
 extern void func_02045f6c(void);
 extern void func_02045f38(void);
 extern void CriRingCommitSpan(void);
-extern void CriRingPoolAddRef(void);
-extern void CriRingPoolReleaseRef(void);
+extern void CriRingPoolAddRefNoLock(void);
+extern void CriRingPoolReleaseRefNoLock(void);
 extern CriRing *CriRingAllocNoLock(int, int, int);
 extern void CriRingDeallocNoLock(CriRing *);
 extern int func_02044cb8(CriRing *);
@@ -61,15 +61,15 @@ void CriRingSendJoinedText(const char *a, const char *b)
     func_0204568c(buf);
 }
 
-void func_02044a70(void)
+void CriRingPoolAddRef(void)
 {
     func_02045f10();
     func_02045f60();
-    CriRingPoolAddRef();
+    CriRingPoolAddRefNoLock();
     func_02045f6c();
 }
 
-void CriRingPoolAddRef(void)
+void CriRingPoolAddRefNoLock(void)
 {
     if (gRingCount == 0) {
         __clear(gRings, sizeof(gRings));
@@ -77,15 +77,15 @@ void CriRingPoolAddRef(void)
     gRingCount++;
 }
 
-void func_02044ae0(void)
+void CriRingPoolReleaseRef(void)
 {
     func_02045f60();
-    CriRingPoolReleaseRef();
+    CriRingPoolReleaseRefNoLock();
     func_02045f6c();
     func_02045f38();
 }
 
-void CriRingPoolReleaseRef(void)
+void CriRingPoolReleaseRefNoLock(void)
 {
     if (--gRingCount == 0) {
         __clear(gRings, sizeof(gRings));

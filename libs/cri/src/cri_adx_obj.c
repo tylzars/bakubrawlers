@@ -48,7 +48,7 @@ extern void func_02043580(Adx *);
 extern void func_02043244(Adx *, int);
 extern void func_020478fc(void *);
 extern void CriStmDealloc(void *);
-extern void func_02041f18(void *, int, int);
+extern void StmSetReadEndCallback(void *, int, int);
 extern void StmDealloc(void *);
 extern void func_02051528(void *);
 extern void func_02051504(void *);
@@ -57,11 +57,11 @@ extern void func_02040988(void *);
 extern void func_02043378(Adx *);
 extern void func_020514f8(void *);
 extern void func_020426e0(void *, int, int);
-extern void func_02041f50(void *, int);
-extern void func_02041d7c(void *, int);
+extern void StmSetReadEnd(void *, int);
+extern void StmSetPos(void *, int);
 extern void StmStop(void *);
-extern void func_02041c94(void *);
-extern void func_02041bdc(void *, int, int, int, long long);
+extern void StmCloseFile(void *);
+extern void StmRequestOpenFile(void *, int, int, int, long long);
 extern void StmStart(void *);
 extern void func_02047914(void *, int), func_02047920(void *, int);
 extern void func_020409a0(void *);
@@ -243,7 +243,7 @@ void AdxDeallocInner(Adx *o)
     q = o->stm;
     if (q) {
         o->stm = 0;
-        func_02041f18(q, 0, 0);
+        StmSetReadEndCallback(q, 0, 0);
         StmDealloc(q);
     }
     if (o->p94) {
@@ -300,7 +300,7 @@ void AdxDeallocAllInner(void)
     }
 }
 
-/* Also reached from func_02043f28 (cri_adx_ctrl2.c, the type-1 step of func_02044630) through func_02042dd8 while
+/* Also reached from func_02043f28 (cri_adx_ctrl2.c, the type-1 step of func_02044630) through AdxStartFile while
    ba8 == 1: the cri_adx_ctrl.c set-ups that only store state 1 and ba8 = 1 start there. */
 void AdxStart(Adx *o, int v)
 {
@@ -322,15 +322,15 @@ void AdxStart(Adx *o, int v)
     if (o->p74) func_020514f8(o->p74);
 }
 
-void func_02042dd8(Adx *o, int a, int b, int c, int d)
+void AdxStartFile(Adx *o, int a, int b, int c, int d)
 {
     func_020426e0(o->stm, o->s3e << 11, o->s3c << 11);
-    func_02041f50(o->stm, data_020acbf0);
-    func_02041f18(o->stm, 0, 0);
-    func_02041d7c(o->stm, 0);
+    StmSetReadEnd(o->stm, data_020acbf0);
+    StmSetReadEndCallback(o->stm, 0, 0);
+    StmSetPos(o->stm, 0);
     StmStop(o->stm);
-    func_02041c94(o->stm);
-    func_02041bdc(o->stm, a, b, c, (long long)d << 11);
+    StmCloseFile(o->stm);
+    StmRequestOpenFile(o->stm, a, b, c, (long long)d << 11);
     StmStart(o->stm);
     AdxStart(o, (int)o->p10);
 }
@@ -366,7 +366,7 @@ void AdxStopInner(Adx *o)
         SendErr(data_020acca4);
         return;
     }
-    if (o->stm) func_02041c94(o->stm);
+    if (o->stm) StmCloseFile(o->stm);
     if (o->mode == 4) {
         func_02051538(o->p94);
         if (o->p14) o->p14->vt->f14(o->p14);

@@ -32,37 +32,37 @@ extern char data_020acb98[], data_020acbc4[];
 
 extern void func_0203eda4(void), func_0203edb0(void), func_0203edbc(void), func_0203edc0(void);
 extern int CriTrySetFlag(void *);
-extern void func_02046e7c(void);
-extern int func_02046eb4(void *);
+extern void CriDevAdvanceAll(void);
+extern int CriDevGetState(void *);
 extern int func_020470e0(void *);
 extern void CriSplitSpan(void *, int, void *, void *);
 extern void CriDevDeallocHandle(void *);
 extern void *CriDevAllocHandle(int, int, int);
-extern int func_02046fc8(void *);
-extern int func_02046f0c(int);
-extern int func_02046dcc(void *, int, int);
-extern int func_02046d74(void *);
-extern int func_02046e24(void *, int, int);
+extern int CriDevGetSize(void *);
+extern int CriDevGetSizeByPath(int);
+extern int CriDevSetPos(void *, int, int);
+extern int CriDevGetPos(void *);
+extern int CriDevRead(void *, int, int);
 extern void SendErrConcat(const char *, int);
-extern void func_02041d7c(Stm *, int);
+extern void StmSetPos(Stm *, int);
 extern void func_02041f84(void);
-extern void func_02042394(Stm *);
-extern void func_02041f9c(Stm *);
+extern void StmAdvance(Stm *);
+extern void StmAdvanceRead(Stm *);
 extern void StmLockEnter(void), StmLockLeave(void), func_02042748(void), func_02042754(void);
 extern int func_0204273c(void *);
 extern int func_02042714(Stm *, int, int);
-extern void func_02042660(void);
+extern void StmAdvanceAllInner(void);
 extern void func_020426d0(void);
 
-static void func_02041f74(Stm *s, int v);
-void func_02041f50(Stm *s, int v)
+static void StmSetReadEndInner(Stm *s, int v);
+void StmSetReadEnd(Stm *s, int v)
 {
     func_02042748();
-    func_02041f74(s, v);
+    StmSetReadEndInner(s, v);
     func_02042754();
 }
 
-static void func_02041f74(Stm *s, int v)
+static void StmSetReadEndInner(Stm *s, int v)
 {
     if (v < 0) v = s->sectors;
     s->i34 = v;
@@ -84,11 +84,11 @@ static inline int tail(Stm *s)
     return 0;
 }
 
-void func_02041f9c(Stm *s)
+void StmAdvanceRead(Stm *s)
 {
     void *h = s->h8;
     StmIO *io = s->io;
-    int st = func_02046eb4(h);
+    int st = CriDevGetState(h);
     StmLockEnter();
     if (s->s2 == 1) {
         if (st == 1) {
@@ -164,12 +164,12 @@ void func_02041f9c(Stm *s)
         if (s->i34 - s->i5c <= n) n = s->i34 - s->i5c;
         if (n >= s->sectors - s->i5c) n = s->sectors - s->i5c;
         if (n >= s->i30) n = s->i30;
-        func_02046dcc(s->h8, s->c + s->i5c, 0);
+        CriDevSetPos(s->h8, s->c + s->i5c, 0);
         if (s->i60 != 0xfffff) {
             int x = s->i60 - s->i38 / 2048;
             if (n >= x) n = x;
         }
-        s->i24 = func_02046e24(s->h8, n, a.p);
+        s->i24 = CriDevRead(s->h8, n, a.p);
         s->span.p = a.p;
         s->span.n = a.n;
         if (s->i24 > 0) return;
@@ -177,7 +177,7 @@ void func_02041f9c(Stm *s)
         s->span.p = 0;
         s->span.n = 0;
         s->s2 = 0;
-        if (func_02046eb4(s->h8) != 3) return;
+        if (CriDevGetState(s->h8) != 3) return;
         if (func_020470e0(s->h8) == 0) {
             s->state = 4;
             return;
@@ -189,7 +189,7 @@ void func_02041f9c(Stm *s)
     }
 }
 
-void func_02042394(Stm *s)
+void StmAdvance(Stm *s)
 {
     if (s->s2 == 0) {
         if (s->b4c == 1) {
@@ -234,14 +234,14 @@ void func_02042394(Stm *s)
                 if (fl == 0) StmLockLeave();
                 if (s->b49 == 1 && s->b4a == 1) return;
                 if (s->i58 == 0) {
-                    x = func_02046fc8(s->h8);
-                    if (x < 0) x = func_02046f0c(s->i54);
+                    x = CriDevGetSize(s->h8);
+                    if (x < 0) x = CriDevGetSizeByPath(s->i54);
                     nsec = (x + 0x7ff) / 0x800;
                 } else {
-                    func_02046dcc(s->h8, 0, 2);
-                    nsec = func_02046d74(s->h8);
+                    CriDevSetPos(s->h8, 0, 2);
+                    nsec = CriDevGetPos(s->h8);
                     x = nsec << 11;
-                    func_02046dcc(s->h8, 0, 0);
+                    CriDevSetPos(s->h8, 0, 0);
                 }
                 if (s->size == 0x7ffff800LL) {
                     s->size = x;
@@ -253,9 +253,9 @@ void func_02042394(Stm *s)
                     s->sectors = d;
                     s->size = (long long)d << 11;
                 }
-                func_02041d7c(s, 0);
+                StmSetPos(s, 0);
                 s->b49 = 0;
-                if (func_02046eb4(s->h8) == 3) {
+                if (CriDevGetState(s->h8) == 3) {
                     SendErrConcat(data_020acbc4, s->i54);
                     if (s->h8) {
                         void *h = s->h8;
@@ -274,24 +274,24 @@ void func_02042394(Stm *s)
         }
         if (s->b4b == 1) s->b4b = 0;
     }
-    if (s->state == 2 && s->b4d == 1 && s->b49 == 0) func_02041f9c(s);
+    if (s->state == 2 && s->b4d == 1 && s->b49 == 0) StmAdvanceRead(s);
 }
 
-void func_0204264c(void)
+void StmAdvanceAll(void)
 {
     func_02042748();
-    func_02042660();
+    StmAdvanceAllInner();
     func_02042754();
 }
 
-void func_02042660(void)
+void StmAdvanceAllInner(void)
 {
     int i;
     Stm *p;
     if (func_0204273c(&data_022163dc) == 0) return;
     p = data_022163f0;
     for (i = 0; i < 10; i++, p++) {
-        if (p->used == 1) func_02042394(p);
+        if (p->used == 1) StmAdvance(p);
     }
     data_022163d8.i4 = 0;
 }
@@ -303,7 +303,7 @@ void func_020426bc(void)
     func_02042754();
 }
 
-void func_020426d0(void) { func_02046e7c(); }
+void func_020426d0(void) { CriDevAdvanceAll(); }
 void func_020426dc(void) { }
 
 int func_020426e0(Stm *s, int a, int b)

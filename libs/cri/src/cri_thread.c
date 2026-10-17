@@ -42,7 +42,7 @@ extern void func_020479fc(void);
 extern void CriDevSetCallback(int, int);
 extern void func_0204712c(int, int);
 extern void CriDevTableAddAndSetCallback(int *, void *, int);
-extern void func_02049344(void);
+extern void CriFilGetDevice(void);
 extern void func_020479f0(void);
 extern void CriDevSetDefaultName(int *);
 extern void SleepUntilVBlank(void);
@@ -93,7 +93,7 @@ void func_0204713c(void)
     }
     func_020479fc();
     CriDevSetCallback((int)func_0204712c, 0);
-    CriDevTableAddAndSetCallback(&data_020add08, (void *)func_02049344, 0);
+    CriDevTableAddAndSetCallback(&data_020add08, (void *)CriFilGetDevice, 0);
     CriDevTableAddAndSetCallback(&data_020add0c, (void *)func_020479f0, 0);
     CriDevSetDefaultName(&data_020add14);
     data_02217a3c = 1;

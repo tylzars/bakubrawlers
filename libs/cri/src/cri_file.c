@@ -186,7 +186,7 @@ void CriFilLockLeave(void)
     CriLockLeave1();
 }
 
-char *func_02049344(void)
+char *CriFilGetDevice(void)
 {
     int a = data_0209e41c;
     return data_020ae0cc;

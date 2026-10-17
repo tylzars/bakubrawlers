@@ -13,9 +13,9 @@ extern void SetHandleIdPair(void *a, u32 v, u32 w);
 extern int LoadBankAndWaveArcs(int id, u32 flags, void *heap, int flag, u32 *out);
 extern int LoadSeqAndBank(int id, u32 flags, void *heap, int flag, u32 *out);
 extern void InitSndStrm(WavStrm *s);
-extern void func_02037504(WavStrm *s);
+extern void StartSndStrm(WavStrm *s);
 extern void StopSndStrmIfActive(WavStrm *s);
-extern void func_02037574(WavStrm *s, s32 v);
+extern void SetSndStrmVolume(WavStrm *s, s32 v);
 extern void UnreserveSndStrmChannels(WavStrm *s);
 extern void *GetWavStrmChannelInfo(int idx);
 extern u32 *GetWavStrmFileInfo(u32 id);
@@ -56,7 +56,7 @@ extern void SetWavStrmAccessFns(WavStrm *s, u32 id);
 extern int OpenWavStrmFromFile(WavStrm *s, u32 id);
 extern int CloseWavStrmFile(WavStrm *s);
 extern int ReadWavStrmFile(WavStrm *s, void *dst, u32 len, u32 off);
-extern int func_0203a3b4(WavStrm *s);
+extern int CancelWavStrmFile(WavStrm *s);
 extern int OpenWavStrmFromMemory(WavStrm *s, u32 id);
 
 // Sample format passed to the fill callback.
@@ -67,7 +67,7 @@ extern void func_0203a40c(WavStrm *s);
 extern void AdvanceRamp(SndLerp *l);
 
 // start a stream: sequence + bank + wave setup, returns 1 on success
-int func_0203913c(void *a, void *b, int c, u32 d, u8 *e, u32 f) {
+int StartSeqSound(void *a, void *b, int c, u32 d, u8 *e, u32 f) {
     u32 out2;
     u32 out1;
     void *r4;
@@ -178,7 +178,7 @@ void UpdateWavStrms(void) {   // per-frame update of all streams
             continue;
         }
         if (s->b2 && s->f118 != 0) {
-            func_02037504(s);
+            StartSndStrm(s);
             s->b1 = 1;
             s->b2 = 0;
         }
@@ -189,7 +189,7 @@ void UpdateWavStrms(void) {   // per-frame update of all streams
             // the real source form is not known.
             sum = data_0208f89c[GetRampValue(&s->pan) >> 8] - -v + data_0208f89c[s->f158];
             if (sum != s->f15c) {
-                func_02037574(s, sum);
+                SetSndStrmVolume(s, sum);
                 s->f15c = sum;
             }
             if (s->b3 && IsRampDone(&s->pan)) {
@@ -563,7 +563,7 @@ void SetWavStrmAccessFns(WavStrm *s, u32 id) {   // choose file or memory access
         s->open = (WavStrmOpenFn)OpenWavStrmFromFile;
         s->close = (WavStrmCloseFn)CloseWavStrmFile;
         s->read = (WavStrmReadFn)ReadWavStrmFile;
-        s->done = (WavStrmDoneFn)func_0203a3b4;
+        s->done = (WavStrmDoneFn)CancelWavStrmFile;
     } else {
         s->open = (WavStrmOpenFn)OpenWavStrmFromMemory;
         s->close = (WavStrmCloseFn)func_0203a3ec;
@@ -590,7 +590,7 @@ int ReadWavStrmFile(WavStrm *s, void *dst, u32 len, u32 off) {
     return FS_ReadFile(s->file, dst, len);
 }
 
-int func_0203a3b4(WavStrm *s) {
+int CancelWavStrmFile(WavStrm *s) {
     return FS_CancelFile(s->file);
 }
 

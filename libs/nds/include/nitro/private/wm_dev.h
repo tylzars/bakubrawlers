@@ -115,9 +115,9 @@ extern u32 CountSetBits(u32 a);
 extern int RTC_Init(void);
 extern int RTC_GetDate(u32 *p);
 extern void func_02011c34(void *p);
-extern void func_02011cb0(u16 a, void *p);
+extern void LockCtrdg(u16 a, void *p);
 extern void func_02011c7c(void *p);
-extern void func_02011d0c(u16 a, void *p);
+extern void UnlockCtrdg(u16 a, void *p);
 
 extern void func_020101a8(void);
 extern u16 func_020101c4(void);

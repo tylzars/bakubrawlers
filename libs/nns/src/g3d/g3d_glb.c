@@ -317,10 +317,10 @@ BOOL func_02032c40(u32 *out, AnmObj *o, u32 idx) {   // OR together the flags of
 extern s32 G3X_GetClipMtx(void *p);
 extern void MTX_Copy44To43(void *a, void *b);
 extern s32 G3X_GetVectorMtx(void *p);
-extern void func_01ff92a4(void);
+extern void FlushFifoCommandBuffer(void);
 void func_02032cc8(void *a, void *b) {   // reset the geometry engine state
     u8 buf[0x40];
-    func_01ff92a4();
+    FlushFifoCommandBuffer();
     *(volatile u32 *)0x4000440 = 0;
     *(volatile u32 *)0x4000444 = 0;
     *(volatile u32 *)0x4000454 = 0;
@@ -348,8 +348,8 @@ extern u32 GetTex4x4Size(ResTex *t);
 extern u32 GetPlttSize(ResTex *t);
 extern void SetTexKeys(ResTex *t, u32 key, u32 key4x4);
 extern void SetPlttKey(ResTex *t, u32 key);
-extern void func_0203187c(ResTex *t, BOOL begin);
-extern void func_0203199c(ResTex *t, BOOL begin);
+extern void LoadResTex(ResTex *t, BOOL begin);
+extern void LoadResPltt(ResTex *t, BOOL begin);
 extern void TakeTexKeys(ResTex *t, u32 *key, u32 *key4x4);
 extern u32 TakePlttKey(ResTex *t);
 extern BOOL ApplyResTexToMdlSet(ResMdlSet *set, ResTex *t);
@@ -422,8 +422,8 @@ BOOL SetupResFile(void *file) {   // allocate VRAM, upload textures, bind
         }
         SetTexKeys(tex, key, key4x4);
         SetPlttKey(tex, keyP);
-        func_0203187c(tex, 1);
-        func_0203199c(tex, 1);
+        LoadResTex(tex, 1);
+        LoadResPltt(tex, 1);
     }
     if (U32(file, 0) == 0x30444d42) {
         ResMdlSet *set = GetResMdlSet(file);

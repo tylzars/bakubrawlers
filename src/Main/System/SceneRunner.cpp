@@ -98,7 +98,7 @@ extern "C" void FS_LoadOverlay(u32 processor, u32 id);
 extern "C" void FS_RunOverlayDestructorsById(u32 processor, u32 id);
 extern void RecreateGameHeap(void *lo);
 extern void AddGameHeapBlock();
-extern "C" void func_02007230();
+extern "C" void SleepUntilVBlank();
 extern void ClearFrameCallbacks();
 extern void RemoveHBlankHook(void (*hook)());
 extern void RewindUploadQueue();
@@ -129,7 +129,7 @@ void SceneRunner::SwitchToScene(s32 scene) {
         scene = 1;
     }
     RemoveHBlankHook(0);
-    func_02007230();
+    SleepUntilVBlank();
     ClearFrameCallbacks();
     SceneManager::Get().DeleteLayer();
     SceneManager::Get().Reset();
@@ -156,7 +156,7 @@ void SceneRunner::Update() {
     switch (context->mState) {
         case 0:
             TouchManager::Get().ReadCalibration();
-            func_02007230();
+            SleepUntilVBlank();
             if (TouchManager::Get().ReadCalibration()) {
                 TouchManager::Get().ApplyCalibrationAndEnable();
             }

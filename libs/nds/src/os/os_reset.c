@@ -22,7 +22,7 @@ struct {
     u16 initialized;
 } resetState;
 
-void func_02007230(void) {
+void SleepUntilVBlank(void) {
     WaitByLoop(1);
     SleepUntilIrq(1, 1);
 }

@@ -31,12 +31,12 @@ typedef struct { u32 week : 3; u32 : 4; u32 b7 : 1; u32 hour : 6; u32 : 1; u32 b
 #define RAW_STAT ((RTCRawStat *)0x027ffdea)
 #define RAW_ALARM ((RTCRawAlarm *)0x027ffdec)
 
-u32 func_0200e174(u32 bcd);
-u32 func_0200e254(RTCDate *date);
+u32 BcdToInt(u32 bcd);
+u32 ComputeDateWeek(RTCDate *date);
 BOOL func_0200e20c(void);
 BOOL func_0200e21c(void);
-void func_0200e1e4(u32 result, void *arg);
-void func_0200e1f4(void);
+void RtcStoreResult(u32 result, void *arg);
+void RtcWaitNotBusy(void);
 void RtcFifoReceive(u32 tag, u32 data, u32 err);
 extern int func_0200d1e0(int a, int b);
 extern int func_0200d924(void);
@@ -87,9 +87,9 @@ int RTC_GetDateAsync(RTCDate *date, RTCCallback cb, void *arg)
 
 u32 RTC_GetDate(RTCDate *date)
 {
-    u32 r = RTC_GetDateAsync(date, (RTCCallback)func_0200e1e4, 0);
+    u32 r = RTC_GetDateAsync(date, (RTCCallback)RtcStoreResult, 0);
     data_020bfd98.result = r;
-    if (r == 0) func_0200e1f4();
+    if (r == 0) RtcWaitNotBusy();
     return data_020bfd98.result;
 }
 
@@ -119,30 +119,30 @@ void RtcFifoReceive(u32 tag, u32 data, u32 err)
         switch (data_020bfd98.command) {
         case 0: {
             RTCDate *d = (RTCDate *)data_020bfd98.p1;
-            d->year = func_0200e174(RAW_DATE->year);
-            d->month = func_0200e174(RAW_DATE->month);
-            d->day = func_0200e174(RAW_DATE->day);
-            d->week = func_0200e254(d);
+            d->year = BcdToInt(RAW_DATE->year);
+            d->month = BcdToInt(RAW_DATE->month);
+            d->day = BcdToInt(RAW_DATE->day);
+            d->week = ComputeDateWeek(d);
             break;
         }
         case 1: {
             RTCTime *t = (RTCTime *)data_020bfd98.p1;
-            t->hour = func_0200e174(RAW_TIME->hour);
-            t->minute = func_0200e174(RAW_TIME->minute);
-            t->second = func_0200e174(RAW_TIME->second);
+            t->hour = BcdToInt(RAW_TIME->hour);
+            t->minute = BcdToInt(RAW_TIME->minute);
+            t->second = BcdToInt(RAW_TIME->second);
             break;
         }
         case 2: {
             RTCDate *d = (RTCDate *)data_020bfd98.p1;
             RTCTime *t;
-            d->year = func_0200e174((u8)*(vu32 *)0x027ffde8);
-            d->month = func_0200e174(RAW_DATE->month);
-            d->day = func_0200e174(RAW_DATE->day);
-            d->week = func_0200e254(d);
+            d->year = BcdToInt((u8)*(vu32 *)0x027ffde8);
+            d->month = BcdToInt(RAW_DATE->month);
+            d->day = BcdToInt(RAW_DATE->day);
+            d->week = ComputeDateWeek(d);
             t = (RTCTime *)data_020bfd98.p2;
-            t->hour = func_0200e174(RAW_TIME->hour);
-            t->minute = func_0200e174(RAW_TIME->minute);
-            t->second = func_0200e174(RAW_TIME->second);
+            t->hour = BcdToInt(RAW_TIME->hour);
+            t->minute = BcdToInt(RAW_TIME->minute);
+            t->second = BcdToInt(RAW_TIME->second);
             break;
         }
         case 6: {
@@ -158,8 +158,8 @@ void RtcFifoReceive(u32 tag, u32 data, u32 err)
         case 8: {
             s32 *p = (s32 *)data_020bfd98.p1;
             p[0] = RAW_ALARM->week;
-            p[1] = func_0200e174(RAW_ALARM->hour);
-            p[2] = func_0200e174(RAW_ALARM->minute);
+            p[1] = BcdToInt(RAW_ALARM->hour);
+            p[2] = BcdToInt(RAW_ALARM->minute);
             p[3] = res;
             if (RAW_ALARM->b7) p[3] += 1;
             if (RAW_ALARM->b15) p[3] += 2;
@@ -244,7 +244,7 @@ void RtcFifoReceive(u32 tag, u32 data, u32 err)
     }
 }
 
-u32 func_0200e174(u32 bcd)
+u32 BcdToInt(u32 bcd)
 {
     int i;
     u32 r = 0;
@@ -260,12 +260,12 @@ u32 func_0200e174(u32 bcd)
     return r;
 }
 
-void func_0200e1e4(u32 result, void *arg)
+void RtcStoreResult(u32 result, void *arg)
 {
     data_020bfd98.result = result;
 }
 
-asm void func_0200e1f4(void)
+asm void RtcWaitNotBusy(void)
 {
     ldr ip, =data_020bfda4
 loop:
@@ -275,15 +275,15 @@ loop:
     bx lr
 }
 
-BOOL func_0200e20c(void) { return func_0200e22c(0x12); }
-BOOL func_0200e21c(void) { return func_0200e22c(0x27); }
+BOOL func_0200e20c(void) { return RtcFifoSend(0x12); }
+BOOL func_0200e21c(void) { return RtcFifoSend(0x27); }
 
-BOOL func_0200e22c(u32 cmd)
+BOOL RtcFifoSend(u32 cmd)
 {
     return PXI_SendWordByFifo(5, (cmd << 8) & 0x7f00, 0) >= 0;
 }
 
-u32 func_0200e254(RTCDate *date)
+u32 ComputeDateWeek(RTCDate *date)
 {
     s32 m;
     s32 y;

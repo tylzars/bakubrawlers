@@ -184,12 +184,12 @@ Ltake:
     bx lr
 }
 
-// func_02004fbc(id): marks id (0x40-0x7f) free again by setting bit
+// OS_FreeLockID(id): marks id (0x40-0x7f) free again by setting bit
 // 0x80000000 >> (id - 0x40) in the word at 0x027fffb0 (ids below 0x60) or
 // 0x80000000 >> (id - 0x60) in the word at 0x027fffb4 (ids 0x60 and up; the
 // compare is signed). Returns nothing. The flags of the single compare are
 // reused by all the conditional branches.
-asm void func_02004fbc(unsigned int id) {
+asm void OS_FreeLockID(unsigned int id) {
     ldr r3, =0x27fffb0
     cmp r0, #0x60
     bpl Lhi

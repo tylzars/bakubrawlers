@@ -154,7 +154,7 @@ static inline BOOL TpSendFifo(u32 data)
     return PXI_SendWordByFifo(6, data, 0) >= 0;
 }
 
-void func_0200c338(void)
+void TP_RequestRaw(void)
 {
     u32 e = OS_DisableInterrupts();
     if (!TpSendFifo(0x3000000)) {

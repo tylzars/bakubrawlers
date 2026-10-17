@@ -39,9 +39,9 @@ void func_0201209c(u32 tag, u32 data);
 void func_0201210c(u32 tag, u32 data);
 void func_02011e7c(void);
 void func_020120f8(void);
-void func_02012120(u32 *p);
+void CreateCtrdgTaskThread(u32 *p);
 void func_020121ac(void *p);
-void func_020121c0(u32 *w);
+void CtrdgTaskThread(u32 *w);
 void func_02011ab0(void);
 
 #define EXMEMCNT (*(vu16 *)0x04000204)
@@ -60,7 +60,7 @@ void func_02011c7c(CTRDGTiming *t)
     EXMEMCNT = (t->rom2nd << 4) | (EXMEMCNT & ~0x10);
 }
 
-void func_02011cb0(u16 id, CTRDGLock *l)
+void LockCtrdg(u16 id, CTRDGLock *l)
 {
     for (;;) {
         l->irq = OS_DisableInterrupts();
@@ -72,13 +72,13 @@ void func_02011cb0(u16 id, CTRDGLock *l)
     }
 }
 
-void func_02011d0c(u16 id, CTRDGLock *l)
+void UnlockCtrdg(u16 id, CTRDGLock *l)
 {
     if (l->locked == 0) OS_UnLockCartridge(id);
     OS_RestoreInterrupts(l->irq);
 }
 
-void func_02011d30(u32 data)
+void CtrdgFifoSend(u32 data)
 {
     while (PXI_SendWordByFifo(0xd, data, 0) != 0) {
         WaitByLoop(1);
@@ -95,7 +95,7 @@ void func_02011d80(u32 v)
     OS_RestoreInterrupts(e);
 }
 
-void func_02011dc8(void)
+void InitCtrdg(void)
 {
     if (data_020c11a0.init != 0) return;
     data_020c11a0.init = 1;
@@ -108,7 +108,7 @@ void func_02011dc8(void)
     PXI_SetFifoRecvCallback(0xd, 0);
     PXI_SetFifoRecvCallback(0xd, (void *)func_0201209c);
     data_020c11a0.cb = 0;
-    func_02012120(&data_020c1280);
+    CreateCtrdgTaskThread(&data_020c1280);
     PXI_SetFifoRecvCallback(0x11, (void *)func_0201210c);
     func_02011d80(0);
 }
@@ -138,7 +138,7 @@ void func_02011e7c(void)
     irq = OS_SetIrqMask(0x40000);
     ime = *(vu16 *)0x04000208;
     *(vu16 *)0x04000208 = 1;
-    func_02011cb0(data_020c1184.id, &lock);
+    LockCtrdg(data_020c1184.id, &lock);
     cart = (EXMEMCNT & 0x8000) >> 15;
     func_02011c34(&timing);
     EXMEMCNT &= ~0x8000;
@@ -146,7 +146,7 @@ void func_02011e7c(void)
     MI_DmaCopy16(1, 0x8000080, (u8 *)data_020c11c0 + 0x80, 0x40);
     EXMEMCNT = (EXMEMCNT & ~0x8000) | (cart << 15);
     func_02011c7c(&timing);
-    func_02011d0c(data_020c1184.id, &lock);
+    UnlockCtrdg(data_020c1184.id, &lock);
     if (*(u8 *)0x027fff9b == 0 && *(u8 *)0x027fff9a != 0) {
     } else {
         int i;
@@ -165,7 +165,7 @@ void func_02011e7c(void)
     }
     MIi_CpuCopy32((void *)0xffff0020, data_020c11c4, 0x9c);
     DC_FlushAll();
-    func_02011d30((((u32)data_020c11c0 - 0x02000000) >> 5 << 6) | 1);
+    CtrdgFifoSend((((u32)data_020c11c0 - 0x02000000) >> 5 << 6) | 1);
     while (data_020c1184.flag != 1) {
         WaitByLoop(1);
     }
@@ -199,7 +199,7 @@ void func_0201209c(u32 tag, u32 data)
 
 void func_020120f8(void)
 {
-    func_02011d30(2);
+    CtrdgFifoSend(2);
     OS_Terminate();
 }
 
@@ -208,7 +208,7 @@ void func_0201210c(u32 tag, u32 data)
     data_020c11a0.f04 = 0;
 }
 
-void func_02012120(u32 *p)
+void CreateCtrdgTaskThread(u32 *p)
 {
     u32 e = OS_DisableInterrupts();
     if (data_020c1368.work == 0) {
@@ -216,7 +216,7 @@ void func_02012120(u32 *p)
         func_020121ac(p + 0x31);
         func_020121ac(data_020c136c);
         p[0x30] = 0;
-        OS_CreateThread(p, (void *)func_020121c0, p, data_020c1790, 0x400, 0x14);
+        OS_CreateThread(p, (void *)CtrdgTaskThread, p, data_020c1790, 0x400, 0x14);
         OS_WakeupThreadDirect(p);
     }
     OS_RestoreInterrupts(e);
@@ -227,7 +227,7 @@ void func_020121ac(void *p)
     MI_CpuFill8(p, 0, 0x24);
 }
 
-void func_020121c0(u32 *w)
+void CtrdgTaskThread(u32 *w)
 {
     CTRDGTask t;
     u32 e;

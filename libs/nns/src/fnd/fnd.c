@@ -32,7 +32,7 @@ void NNS_FndAppendListObject(NNSFndList *list, void *obj) {
         list->count++;
     }
 }
-void func_02030918(NNSFndList *list, void *obj) {
+void NNS_FndPrependListObject(NNSFndList *list, void *obj) {
     if (list->head == 0) { AddToEmptyList(list, obj); return; }
     {
         NNSFndLink *l = LNK(list, obj);
@@ -45,7 +45,7 @@ void func_02030918(NNSFndList *list, void *obj) {
 }
 void NNS_FndInsertListObject(NNSFndList *list, void *target, void *obj) {
     if (target == 0) { NNS_FndAppendListObject(list, obj); return; }
-    if (target == list->head) { func_02030918(list, obj); return; }
+    if (target == list->head) { NNS_FndPrependListObject(list, obj); return; }
     {
         u16 off = list->offset;
         NNSFndLink *l = (NNSFndLink *)((u8 *)obj + off);
@@ -72,7 +72,7 @@ void *NNS_FndGetNextListObject(NNSFndList *list, void *obj) {
     if (obj == 0) return list->head;
     return LNK(list, obj)->next;
 }
-void *func_02030a44(NNSFndList *list, void *obj) {
+void *NNS_FndGetPrevListObject(NNSFndList *list, void *obj) {
     if (obj == 0) return list->tail;
     return LNK(list, obj)->prev;
 }

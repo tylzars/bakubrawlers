@@ -30,7 +30,7 @@ extern "C" fx32 FX_Modf(fx32 value, fx32 *integer); // splits into integer part 
 extern "C" void MTX_Perspective(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
 // builds a perspective (frustum) matrix
 extern "C" void MTX_Frustum(fx32 top, fx32 bottom, fx32 left, fx32 right, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
-extern "C" void func_01ff92a4();
+extern "C" void FlushFifoCommandBuffer();
 extern MtxFx33 data_02211430; // G3dGlb base rotation
 extern const VecFx32 gDefaultBaseScale;
 extern const VecFx32 gDefaultBaseTrans;

@@ -187,18 +187,18 @@ BOOL GetNextInstData(SNDBank *bank, u16 *out, SNDInstPos *pos) {
     return FALSE;
 }
 
-u32 func_02008fd8(SNDBank *bank) {
+u32 GetWaveArcEntryCount(SNDBank *bank) {
     return bank->count;
 }
 
-void func_02008fe0(SNDBank *bank, int idx, u32 value) {
+void SetWaveArcEntry(SNDBank *bank, int idx, u32 value) {
     SND_LockMutex();
     bank->inst[idx] = value;
     DC_StoreRange(&bank->inst[idx], 4);
     SND_UnlockMutex();
 }
 
-void *func_02009014(SNDBank *bank, int idx) {
+void *GetWaveArcEntry(SNDBank *bank, int idx) {
     u32 v;
     void *r;
     SND_LockMutex();

@@ -1130,7 +1130,7 @@ int func_02011b28(void)
     if (info->b.f1 == 1) {
         return 0;
     }
-    func_02011cb0(data_020c1180.h6, b);
+    LockCtrdg(data_020c1180.h6, b);
     func_02011c34(a);
     tag = rom[0xb2];
     if (tag == 0x96 && info->h0 != *(u16 *)(rom + 0xbe)) {
@@ -1148,6 +1148,6 @@ bad:
     info->b.f1 = 1;
 done:
     func_02011c7c(a);
-    func_02011d0c(data_020c1180.h6, b);
+    UnlockCtrdg(data_020c1180.h6, b);
     return ok;
 }

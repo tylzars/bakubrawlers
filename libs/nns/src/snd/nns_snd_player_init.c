@@ -8,7 +8,7 @@ extern void SetPlayerMaxSounds(int player, int maxSounds);
 extern void func_02036938(int player, int channels);
 extern int CreatePlayerHeap(int player, SndHeap *heap, u32 size);
 extern void *func_0203a460(u32 seq, u32 id);
-extern int func_0203913c(int a, int b, int c, int d, void *rec, int id);
+extern int StartSeqSound(int a, int b, int c, int d, void *rec, int id);
 extern int func_02039238(int a, int b, int c, int d, void *rec, u32 seq, int e, int f);
 
 int InitPlayersFromArc(SndHeap *heap) {   // set up the sound players from the archive
@@ -30,10 +30,10 @@ int InitPlayersFromArc(SndHeap *heap) {   // set up the sound players from the a
     return 1;
 }
 
-int func_02039048(int a, int id) {   // start sequence `id` with its default parameters
+int StartSeqFromInfo(int a, int id) {   // start sequence `id` with its default parameters
     u8 *rec = GetSeqInfo(id);
     if (rec == 0) return 0;
-    return func_0203913c(a, rec[9], *(u16 *)(rec + 4), rec[8], rec, id);
+    return StartSeqSound(a, rec[9], *(u16 *)(rec + 4), rec[8], rec, id);
 }
 
 int func_02039090(int a, int b, int c, int d, int e, int f) {   // start a sequence of a sequence archive; negative parameters use the defaults

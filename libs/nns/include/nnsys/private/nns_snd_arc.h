@@ -34,7 +34,7 @@ typedef struct SndHeap {
     NNSFndList states;               // 0x04 state blocks (each a NNSFndList of SndHeapBlk), link offset 0xc
 } SndHeap;
 
-extern void *func_02030a44(void *list, void *obj);
+extern void *NNS_FndGetPrevListObject(void *list, void *obj);
 extern void NNS_FndAppendListObject(void *list, void *obj);
 extern void NNS_FndRemoveListObject(void *list, void *obj);
 extern void NNS_FndInitList(void *list, u16 off);

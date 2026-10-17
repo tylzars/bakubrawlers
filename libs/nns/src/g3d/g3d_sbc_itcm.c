@@ -25,7 +25,7 @@ extern int G3X_GetClipMtx(s32 *m);   // G3X_GetClipMtx
 extern void *func_020326a0(void);
 extern void *func_020326d8(void);
 extern void *func_020323b8(void);
-extern void func_01ff92a4(void);
+extern void FlushFifoCommandBuffer(void);
 extern void MI_CpuSend32(const void *src, void *dst, u32 size);
 #define GXFIFO (*(vu32 *) 0x04000400)
 
@@ -526,7 +526,7 @@ void func_01ffbbac(Rs *rs, u32 op) {
         }
     }
     if (!(rs->flag & 0x100)) {
-        func_01ff92a4();
+        FlushFifoCommandBuffer();
         GXFIFO = 0x151110;
         GXFIFO = 0;
         GXFIFO = 0;
@@ -606,7 +606,7 @@ void func_01ffbe2c(Rs *rs, u32 op) {
         }
     }
     if (!(rs->flag & 0x100)) {
-        func_01ff92a4();
+        FlushFifoCommandBuffer();
         GXFIFO = 0x151110;
         GXFIFO = 0;
         GXFIFO = 0;
@@ -682,7 +682,7 @@ void func_01ffc108(Rs *rs) {
     int i;
     cmd += 3;
     MIi_CpuClearFast(0, &acc, sizeof(acc));
-    func_01ff92a4();
+    FlushFifoCommandBuffer();
     MTX_MODE = 0;
     MTX_STORE = 1;
     MTX_IDENTITY = 0;

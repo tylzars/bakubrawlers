@@ -184,7 +184,7 @@ BOOL ModelInstance::BoxTest() {
     if (mUseBoxTest == 0) {
         return TRUE;
     }
-    func_01ff92a4();
+    FlushFifoCommandBuffer();
     u8 *model = (u8 *) mModelFile->mResModel;
     *(vu32 *) 0x040004a4 = 0x30c1;
     *(vu32 *) 0x04000500 = 0;

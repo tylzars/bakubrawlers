@@ -12,7 +12,7 @@ extern void OS_InitVAlarm(void);   // 0x020070b0
 extern void ClearOwnerTable(void);
 extern void OS_InitThread(void);   // 0x020052bc
 extern void OS_InitReset(void);   // OS_InitReset
-extern void func_02011dc8(void);
+extern void InitCtrdg(void);
 extern void InitCard(void);
 extern void PmInit(void);
 extern void OSi_WaitVCount0(void);
@@ -61,7 +61,7 @@ void OS_Init(void) {
     ClearOwnerTable();
     OS_InitThread();
     OS_InitReset();
-    func_02011dc8();
+    InitCtrdg();
     InitCard();
     PmInit();
     OSi_WaitVCount0();

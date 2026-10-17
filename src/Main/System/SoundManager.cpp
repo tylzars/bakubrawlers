@@ -14,7 +14,7 @@ extern "C" void InitSndHandle(void *handle);
 extern "C" void SetPlayerMaxSounds(u32 a, u32 b);
 extern "C" void RestoreSndHeapState(u32 heap, u32 a);
 extern "C" void StopHandleSound(void *handle, u32 fadeFrames);
-extern "C" void func_02039048(void *handle, s32 id);
+extern "C" void StartSeqFromInfo(void *handle, s32 id);
 extern "C" void SetArcReadChunk(u32 a);
 extern "C" void func_02039090(void *handle, u32 a, s32 b, s32 c, s32 d, s32 e);
 extern "C" void StopPlayerSounds(u32 a, u32 b);
@@ -85,7 +85,7 @@ void SoundManager::StartSeq(u32 unk1) {
         return;
     }
     StopHandleSound(&mSeqSndHandle, 1);
-    func_02039048(&mSeqSndHandle, mSeqTable[unk1].mUnk_2);
+    StartSeqFromInfo(&mSeqSndHandle, mSeqTable[unk1].mUnk_2);
     SetSeqVolume(0x7f);
     mSeqIndex = unk1;
 }

@@ -76,7 +76,7 @@ u32 FS_LoadRomTables(u32 a, u32 b);
 u64 OS_GetTick(void);
 u64 _ll_udiv(u64 a, u64 b);
 int IsCardPulledOut(void);
-void func_0200f7ac(void);
+void TerminateAfterCardPullout(void);
 int func_0200d1e0(u32 a, u32 b);
 void func_0200d3e0(u32 a, u32 b, u32 c);
 }
@@ -327,7 +327,7 @@ void GameSystem::func_02021700() {
         mInputEnabled = 1;
     }
     if (IsCardPulledOut() != 0) {
-        func_0200f7ac();
+        TerminateAfterCardPullout();
     }
     if (mInputEnabled == 0) {
         MicManager::Get().ResetTimeAndEvents();
@@ -336,7 +336,7 @@ void GameSystem::func_02021700() {
 
 GameSystem::~GameSystem() {}
 
-extern "C" void func_01ff9284(void *buffer);
+extern "C" void SetFifoCommandBufferIfNone(void *buffer);
 extern void *data_020baf00;
 
 // Placed by the linker right after the start-up code (0x02000c04), apart from the rest of this file.
@@ -344,7 +344,7 @@ void main() {
     u8 buffer[0x304];
     u8 state[0x188];
     GameSystem::Get().Init();
-    func_01ff9284(buffer);
+    SetFifoCommandBufferIfNone(buffer);
     data_020baf00 = state;
     GameSystem::Get().Run();
 }

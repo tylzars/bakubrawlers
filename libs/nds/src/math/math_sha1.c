@@ -219,7 +219,7 @@ asm void data_0200bb74(void) {
 // the first word rotated left by 5, the fifth word, the constant, the schedule word and the
 // function of words two to four, and the second word rotated right by 2 moves into the third
 // position. The block result is added back into the state at r0.
-asm void func_0200bb88(unsigned *state, const void *data, int len) {
+asm void SHA1ProcessBlocks(unsigned *state, const void *data, int len) {
     stmfd sp!, {r4, r5, r6, r7, r8, r9, r10, r11, ip, lr}
     ldmia r0, {r3, r9, r10, r11, ip}    // load the five state words
     sub sp, sp, #0x84

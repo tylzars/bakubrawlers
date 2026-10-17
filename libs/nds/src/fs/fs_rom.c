@@ -38,20 +38,20 @@ BOOL FS_SetupArchive(FSArchive *arc, u32 base, u32 fat, u32 fat_size, u32 fnt, u
 u32 FS_LoadArchiveTables(FSArchive *arc, void *mem, u32 size);
 void FS_FinishArchiveCommand(FSArchive *arc, int result);
 
-int func_0200ad28(FSArchive *arc, void *dst, u32 pos, u32 len);
+int ReadRomArchive(FSArchive *arc, void *dst, u32 pos, u32 len);
 int func_0200ad70(FSArchive *arc, void *dst, u32 pos, u32 len);
 int func_0200ade4(FSArchive *arc, void *dst, u32 pos, u32 len);
 int func_0200adec(void *arc, int ev);
-int func_0200ad78(void *arc, int ev);
+int RomArchiveProc(void *arc, int ev);
 
-void func_0200ad04(FSArchive *arc)
+void FinishRomArchiveRead(FSArchive *arc)
 {
     FS_FinishArchiveCommand(arc, IsCardPulledOut() ? 5 : 0);
 }
 
-int func_0200ad28(FSArchive *arc, void *dst, u32 pos, u32 len)
+int ReadRomArchive(FSArchive *arc, void *dst, u32 pos, u32 len)
 {
-    ReadCardRom(data_020bfc9c.dma, pos, dst, len, (void (*)(void *)) func_0200ad04, arc, 1);
+    ReadCardRom(data_020bfc9c.dma, pos, dst, len, (void (*)(void *)) FinishRomArchiveRead, arc, 1);
     return 6;
 }
 
@@ -60,7 +60,7 @@ int func_0200ad70(FSArchive *arc, void *dst, u32 pos, u32 len)
     return 1;
 }
 
-int func_0200ad78(void *arc, int ev)
+int RomArchiveProc(void *arc, int ev)
 {
     switch (ev) {
     case 9:
@@ -110,12 +110,12 @@ void FS_Init(u32 dma)
         FS_SetArchiveProc(&data_020bfcb4, (void (*)(void *, int)) func_0200adec, -1);
         FS_SetupArchive(&data_020bfcb4, 0, 0, 0, 0, 0, func_0200ade4, func_0200ad70);
     } else {
-        FS_SetArchiveProc(&data_020bfcb4, (void (*)(void *, int)) func_0200ad78, 0x602);
+        FS_SetArchiveProc(&data_020bfcb4, (void (*)(void *, int)) RomArchiveProc, 0x602);
         fnt = hdr->fnt;
         if (fnt != -1 && fnt != 0) {
             fat = hdr->fat;
             if (fat != -1 && fat != 0) {
-                FS_SetupArchive(&data_020bfcb4, 0, fat, hdr->fat_size, fnt, hdr->fnt_size, func_0200ad28, func_0200ad70);
+                FS_SetupArchive(&data_020bfcb4, 0, fat, hdr->fat_size, fnt, hdr->fnt_size, ReadRomArchive, func_0200ad70);
             }
         }
     }

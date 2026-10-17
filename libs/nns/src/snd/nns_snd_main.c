@@ -25,8 +25,8 @@ typedef struct {
 extern SndRes data_02213a00;
 
 extern void SND_Init(void);
-extern void func_0200da20(void *);
-extern void func_0200da38(void *);
+extern void PmPrependPreCallback(void *);
+extern void PmAppendPostCallback(void *);
 extern void InitSndCapture(void);
 extern void InitSoundsAndPlayers(void);
 extern int SND_RecvCommandReply(int);
@@ -42,20 +42,20 @@ extern void SND_WaitForCommandProc(u32);
 extern void func_02037a74(void);
 extern void func_020080d8(u32, u32);
 extern void func_020080f8(u32, u32);
-void func_020367bc(void);
-void func_020367f4(void);
+void SndPmPreCallback(void);
+void SndPmPostCallback(void);
 void ClearSndRes(void);
 
 void InitSnd(void) {
     if (data_02211600.initialised) return;
     data_02211600.initialised = 1;
     SND_Init();
-    data_02211600.cb0 = func_020367bc;
+    data_02211600.cb0 = SndPmPreCallback;
     data_02211600.cb0Arg = 0;
-    data_02211600.cb1 = func_020367f4;
+    data_02211600.cb1 = SndPmPostCallback;
     data_02211600.cb1Arg = 0;
-    func_0200da20(data_02211610);
-    func_0200da38(data_0221161c);
+    PmPrependPreCallback(data_02211610);
+    PmAppendPostCallback(data_0221161c);
     ClearSndRes();
     InitSndCapture();
     InitSoundsAndPlayers();
@@ -76,7 +76,7 @@ void func_020367b0(u32 volume) {
     func_0200820c(volume);
 }
 
-void func_020367bc(void) {   // start callback
+void SndPmPreCallback(void) {
     u32 r;
     func_02037a14();
     func_02008034(0, 0, 0, 0);
@@ -85,7 +85,7 @@ void func_020367bc(void) {   // start callback
     SND_WaitForCommandProc(r);
 }
 
-void func_020367f4(void) {
+void SndPmPostCallback(void) {
     func_02037a74();
 }
 

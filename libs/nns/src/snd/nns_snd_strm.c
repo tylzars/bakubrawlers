@@ -22,10 +22,10 @@ extern u32 OS_DisableInterrupts(void);
 extern void OS_RestoreInterrupts(u32 irq);
 extern void func_0200800c(u32 chMask, u32 capMask, u32 alarmMask, u32 flags);
 extern void func_02008034(u32 chMask, u32 capMask, u32 alarmMask, u32 flags);
-extern void func_0200da20(void *);
-extern void func_0200da38(void *);
-extern void func_0200da50(void *);
-extern void func_0200da68(void *);
+extern void PmPrependPreCallback(void *);
+extern void PmAppendPostCallback(void *);
+extern void PmRemovePreCallback(void *);
+extern void PmRemovePostCallback(void *);
 extern u32 SND_GetCurrentCommandTag(void);
 extern void SND_FlushCommand(int);
 extern void SND_WaitForCommandProc(u32);
@@ -37,17 +37,17 @@ void StopSndStrm(SndStrm *s);
 void DeactivateSndStrm(SndStrm *s);
 void func_02037708(SndStrm *s);
 void RunSndStrmCallback(SndStrm *s, int phase);
-void func_020377c8(SndStrm *s);
-void func_02037814(SndStrm *s);
+void SndStrmPmPreCallback(SndStrm *s);
+void SndStrmPmPostCallback(SndStrm *s);
 
 void InitSndStrm(SndStrm *s) {   // stream init
     if (data_022142e4 == 0) {
         NNS_FndInitList(&data_022142e8, 0);
         data_022142e4 = 1;
     }
-    s->cbA.fn = (void (*)(void *))func_020377c8;
+    s->cbA.fn = (void (*)(void *))SndStrmPmPreCallback;
     s->cbA.arg = s;
-    s->cbB.fn = (void (*)(void *))func_02037814;
+    s->cbB.fn = (void (*)(void *))SndStrmPmPostCallback;
     s->cbB.arg = s;
     s->chMask = 0;
     s->chCount = 0;
@@ -116,11 +116,11 @@ int SetupSndStrm(SndStrm *s, int fmt, void *buf, u32 size, u32 timer, s32 frames
     return 1;
 }
 
-void func_02037504(SndStrm *s) {   // start
+void StartSndStrm(SndStrm *s) {   // start
     func_0200800c(s->chMask, 0, 1 << s->slot, 0);
     if (s->registered) return;
-    func_0200da20(&s->cbA);
-    func_0200da38(&s->cbB);
+    PmPrependPreCallback(&s->cbA);
+    PmAppendPostCallback(&s->cbB);
     s->registered = 1;
 }
 
@@ -129,7 +129,7 @@ void StopSndStrmIfActive(SndStrm *s) {   // stop if running
     StopSndStrm(s);
 }
 
-void func_02037574(SndStrm *s, int pos) {   // seek all channels
+void SetSndStrmVolume(SndStrm *s, int pos) {   // volume of every channel
     u32 ch;
     int i;
     s->offset = pos;
@@ -141,7 +141,7 @@ void func_02037574(SndStrm *s, int pos) {   // seek all channels
     }
 }
 
-void func_020375e0(SndStrm *s, int idx, u32 off) {   // seek one channel
+void SetSndStrmChannelVolume(SndStrm *s, int idx, u32 off) {   // volume of one channel
     s32 v;
     if (idx > s->chCount - 1) return;
     idx = s->chan[idx];
@@ -159,8 +159,8 @@ void StopSndStrm(SndStrm *s) {   // stop
     if (s->registered) {
         u32 irq;
         func_02008034(s->chMask, 0, 1 << s->slot, 0);
-        func_0200da50(&s->cbA);
-        func_0200da68(&s->cbB);
+        PmRemovePreCallback(&s->cbA);
+        PmRemovePostCallback(&s->cbB);
         s->registered = 0;
         irq = SND_GetCurrentCommandTag();
         SND_FlushCommand(1);
@@ -193,7 +193,7 @@ void RunSndStrmCallback(SndStrm *s, int phase) {   // fill callback
     if (s->pos >= s->frames) s->pos = 0;
 }
 
-void func_020377c8(SndStrm *s) {
+void SndStrmPmPreCallback(SndStrm *s) {
     u32 irq;
     if (!s->registered) return;
     func_02008034(s->chMask, 0, 1 << s->slot, 0);
@@ -202,7 +202,7 @@ void func_020377c8(SndStrm *s) {
     SND_WaitForCommandProc(irq);
 }
 
-void func_02037814(SndStrm *s) {
+void SndStrmPmPostCallback(SndStrm *s) {
     if (!s->registered) return;
     while (s->pos != 0) {
         u32 irq = OS_DisableInterrupts();

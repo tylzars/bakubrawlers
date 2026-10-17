@@ -45,7 +45,7 @@ extern void CriDevTableAddAndSetCallback(int *, void *, int);
 extern void func_02049344(void);
 extern void func_020479f0(void);
 extern void CriDevSetDefaultName(int *);
-extern void func_02007230(void);
+extern void SleepUntilVBlank(void);
 extern void func_02047884(void);
 extern void OS_WakeupThreadDirect(void *);
 extern void OS_SleepThread(int);
@@ -103,7 +103,7 @@ void func_020471d0(void)
 {
     unsigned m = data_02217a9c.mode;
     if (m <= 1) {
-        func_02007230();
+        SleepUntilVBlank();
         return;
     }
     if (m != 2) return;

@@ -7,7 +7,7 @@ extern "C" {
 extern "C" void TP_Init();
 extern "C" int OS_GetCpsrIrqBits();
 extern "C" void OS_EnableInterrupts();
-extern "C" void func_0200c338();
+extern "C" void TP_RequestRaw();
 extern "C" int TP_GetRaw(void *raw);
 extern "C" void TP_GetCalibratedPoint(TouchSample *out, void *raw);
 extern "C" BOOL TP_GetUserInfo(void *panel);
@@ -63,7 +63,7 @@ void TouchManager::Update(BOOL enabled) {
         OS_EnableInterrupts();
     }
     do {
-        func_0200c338();
+        TP_RequestRaw();
     } while (TP_GetRaw(raw) != 0);
     TP_GetCalibratedPoint(&sample, raw);
     if (enabled == 0) {

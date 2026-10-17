@@ -9,9 +9,9 @@ extern void func_020081cc(void *start, void *end);
 extern void func_020081ec(void *start, void *end);
 extern void UnlinkBankFromWaveArcs(void *p);
 extern void ClearWaveArcLinks(void *p);
-extern u32 func_02009014(u32 wave, int idx);
-extern void func_02008fe0(u32 wave, int idx, u32 data);
-extern u32 func_02008fd8(u32 wave);
+extern u32 GetWaveArcEntry(u32 wave, int idx);
+extern void SetWaveArcEntry(u32 wave, int idx, u32 data);
+extern u32 GetWaveArcEntryCount(u32 wave);
 extern void ClearInstPos(void *iter);
 extern int GetNextInstData(u32 bank, void *entry, void *iter);
 extern void MI_CpuCopy8(void *dst, void *src, u32 n);
@@ -140,7 +140,7 @@ void SplitWaveArcFreeCallback(void *p, u32 size, u32 x, u32 id) {
 }
 
 void WaveArcEntryFreeCallback(void *p, u32 size, u32 wave, u32 idx) {   // free callback for a single wave
-    if ((u32)p == func_02009014(wave, idx)) func_02008fe0(wave, idx, 0);
+    if ((u32)p == GetWaveArcEntry(wave, idx)) SetWaveArcEntry(wave, idx, 0);
     func_020081ec(p, (u8 *)p + size);
 }
 
@@ -149,8 +149,8 @@ int LoadWaveArcEntry(u32 wave, u32 idx, u32 file, SndHeap *heap) {   // load wav
     u32 *ent;
     u32 size, start, end, last;
     u8 *blk;
-    if (func_02009014(wave, idx) != 0) return 1;
-    last = func_02008fd8(wave);
+    if (GetWaveArcEntry(wave, idx) != 0) return 1;
+    last = GetWaveArcEntryCount(wave);
     ent = w + (w[0x38 / 4] + idx);
     start = ent[0x3c / 4];
     end = idx < last - 1 ? ent[0x40 / 4] : w[2];
@@ -160,7 +160,7 @@ int LoadWaveArcEntry(u32 wave, u32 idx, u32 file, SndHeap *heap) {   // load wav
     if (blk == 0) return 0;
     if (size != ReadFatEntryData(file, blk, size, start)) return 0;
     DC_StoreRange(blk, size);
-    func_02008fe0(wave, idx, (u32)blk);
+    SetWaveArcEntry(wave, idx, (u32)blk);
     return 1;
 }
 

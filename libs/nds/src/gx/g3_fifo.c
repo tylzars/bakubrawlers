@@ -7,20 +7,20 @@ extern volatile s32 data_01ffd1a4; // nonzero while a DMA to the GX FIFO is runn
 extern s32 data_01ffd1a8; // 0: use the first DMA helper, nonzero: the second
 
 void WaitFifoBlockSend(void);
-void func_01ff931c(void *arg);
+void FifoBlockSendDoneCallback(void *arg);
 void MI_CpuSend32(const void *src, volatile void *dest, u32 size);
 void SendFifoCommand(u32 cmd, const void *params, u32 count);
 void MI_SendGXCommandAsyncFast(s32 ch, const void *src, u32 size, void (*cb)(void *), void *arg);
 void MI_SendGXCommandAsync(s32 ch, const void *src, u32 size, void (*cb)(void *), void *arg);
 
-void func_01ff9284(u32 *buf) {
+void SetFifoCommandBufferIfNone(u32 *buf) {
     if (data_01ffd1a0 == 0) {
         *buf = 0;
         data_01ffd1a0 = buf;
     }
 }
 
-void func_01ff92a4(void) {
+void FlushFifoCommandBuffer(void) {
     u32 n;
     if (data_01ffd1a4 != 0) {
         WaitFifoBlockSend();
@@ -37,7 +37,7 @@ void WaitFifoBlockSend(void) {
     }
 }
 
-void func_01ff931c(void *arg) {
+void FifoBlockSendDoneCallback(void *arg) {
     *(s32 *) arg = 0;
 }
 
@@ -46,12 +46,12 @@ void SendFifoCommandBlock(const u32 *src, u32 size) {
         SendFifoCommand(src[0], src + 1, (size >> 2) - 1);
         return;
     }
-    func_01ff92a4();
+    FlushFifoCommandBuffer();
     data_01ffd1a4 = 1;
     if (data_01ffd1a8 != 0) {
-        MI_SendGXCommandAsyncFast(data_020a4f24, src, size, func_01ff931c, (void *) &data_01ffd1a4);
+        MI_SendGXCommandAsyncFast(data_020a4f24, src, size, FifoBlockSendDoneCallback, (void *) &data_01ffd1a4);
     } else {
-        MI_SendGXCommandAsync(data_020a4f24, src, size, func_01ff931c, (void *) &data_01ffd1a4);
+        MI_SendGXCommandAsync(data_020a4f24, src, size, FifoBlockSendDoneCallback, (void *) &data_01ffd1a4);
     }
 }
 
@@ -72,7 +72,7 @@ void SendFifoCommand(u32 cmd, const void *params, u32 count) {
             }
         }
         if (buf[0] != 0) {
-            func_01ff92a4();
+            FlushFifoCommandBuffer();
         } else if (data_01ffd1a4 != 0) {
             WaitFifoBlockSend();
         }

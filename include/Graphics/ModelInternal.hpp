@@ -116,7 +116,7 @@ extern "C" void RemoveAnmObjFromRenderObj(void *renderObj, NNSG3dAnmObj *obj);
 extern "C" void SetRenderObjCallback(void *renderObj, void (*callback)(NNSG3dRS *), u32 unk2, u32 unk3, u32 unk4);
 extern "C" void ClearRenderObjCallback(void *renderObj);
 extern "C" void func_02032cc8(MtxFx43 *mtx, void *unk2);
-extern "C" void func_01ff92a4();
+extern "C" void FlushFifoCommandBuffer();
 extern "C" BOOL G3X_GetBoxTestResult(s32 *result);
 extern "C" void SetG3dGlbTrans(const VecFx32 *trans);
 extern "C" void SetG3dGlbScale(const VecFx32 *scale);

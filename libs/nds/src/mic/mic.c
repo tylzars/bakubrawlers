@@ -1,9 +1,9 @@
 #include <nitro/private/sdk_tp.h>
 
-extern int func_0200cae4(u32 buf, u32 size, u32 rate, u32 type);
-extern int func_0200cbe8(void);
-extern void func_0200cc10(u32 res, void *arg);
-extern void func_0200cc20(void);
+extern int MicSendStartAutoSampling(u32 buf, u32 size, u32 rate, u32 type);
+extern int MicSendStopAutoSampling(void);
+extern void MicStoreResult(u32 res, void *arg);
+extern void MicWaitNotBusy(void);
 extern void MicFifoReceive(u32 tag, u32 data, int err);
 
 void MIC_Init(void)
@@ -48,13 +48,13 @@ u32 MIC_StartAutoSamplingAsync(MICAutoParam *p, void (*cb)(u32, void *), void *a
     micWork.cbArg = arg;
     micWork.fullCb = p->full;
     micWork.fullArg = p->fullArg;
-    return func_0200cae4((u32)p->buffer, p->size, p->rate, type) ? 0 : 3;
+    return MicSendStartAutoSampling((u32)p->buffer, p->size, p->rate, type) ? 0 : 3;
 }
 
 u32 MIC_StartAutoSampling(MICAutoParam *p)
 {
-    micWork.result = MIC_StartAutoSamplingAsync(p, (void (*)(u32, void *))func_0200cc10, NULL);
-    if (micWork.result == 0) func_0200cc20();
+    micWork.result = MIC_StartAutoSamplingAsync(p, (void (*)(u32, void *))MicStoreResult, NULL);
+    if (micWork.result == 0) MicWaitNotBusy();
     return micWork.result;
 }
 
@@ -69,13 +69,13 @@ u32 MIC_StopAutoSamplingAsync(void (*cb)(u32, void *), void *arg)
     OS_RestoreInterrupts(e);
     micWork.cb = cb;
     micWork.cbArg = arg;
-    return func_0200cbe8() ? 0 : 3;
+    return MicSendStopAutoSampling() ? 0 : 3;
 }
 
 u32 MIC_StopAutoSampling(void)
 {
-    micWork.result = MIC_StopAutoSamplingAsync((void (*)(u32, void *))func_0200cc10, NULL);
-    if (micWork.result == 0) func_0200cc20();
+    micWork.result = MIC_StopAutoSamplingAsync((void (*)(u32, void *))MicStoreResult, NULL);
+    if (micWork.result == 0) MicWaitNotBusy();
     return micWork.result;
 }
 
@@ -121,7 +121,7 @@ void MicFifoReceive(u32 tag, u32 data, int err)
     }
 }
 
-int func_0200cae4(u32 buf, u32 size, u32 rate, u32 type)
+int MicSendStartAutoSampling(u32 buf, u32 size, u32 rate, u32 type)
 {
     if (PXI_SendWordByFifo(9, (type | 0x4100) | 0x2000000, 0) < 0) return 0;
     if (PXI_SendWordByFifo(9, (buf >> 16) | 0x10000, 0) < 0) return 0;
@@ -132,19 +132,19 @@ int func_0200cae4(u32 buf, u32 size, u32 rate, u32 type)
     return PXI_SendWordByFifo(9, 0x1060000 | (u16)rate, 0) >= 0;
 }
 
-int func_0200cbe8(void)
+int MicSendStopAutoSampling(void)
 {
     return PXI_SendWordByFifo(9, 0x3004200, 0) >= 0;
 }
 
-void func_0200cc10(u32 res, void *arg)
+void MicStoreResult(u32 res, void *arg)
 {
     micWork.result = res;
 }
 
 extern vu32 data_020bfd50;   // micWork.busy as a pool symbol
 
-asm void func_0200cc20(void)
+asm void MicWaitNotBusy(void)
 {
     ldr ip, =data_020bfd50
 loop:

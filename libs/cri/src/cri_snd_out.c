@@ -38,9 +38,9 @@ typedef volatile u16 vu16;
 extern void MIi_CpuClearFast(u32, void *, u32);
 extern int SetupSndStrm(void *, int, void *, int, int, int, void *, void *);
 extern void func_02037634(void *, int, int);
-extern void func_02037574(void *, int);
-extern void func_020375e0(void *, int, int);
-extern void func_02037504(void *);
+extern void SetSndStrmVolume(void *, int);
+extern void SetSndStrmChannelVolume(void *, int, int);
+extern void StartSndStrm(void *);
 extern void StopSndStrmIfActive(void *);
 extern void MI_CpuCopy8(void *, void *, int);
 extern void MI_CpuFill8(void *, int, int);
@@ -64,8 +64,8 @@ int SndOutSetup(SndOut *o)
     SndOutResetCounters(o);
     r = SetupSndStrm(o->timer, 1, o->buf, o->size, o->i08, o->s2c, func_02049cec, o);
     func_02037634(o->timer, 0, o->u20);
-    func_02037574(o->timer, o->pan);
-    func_020375e0(o->timer, 0, 0);
+    SetSndStrmVolume(o->timer, o->pan);
+    SetSndStrmChannelVolume(o->timer, 0, 0);
     o->prev = 0;
     o->flags |= 8;
     return r;
@@ -142,7 +142,7 @@ int func_02049e08(SndOut *o, int rate)
 void func_02049f30(SndOut *o)
 {
     SndOutSetup(o);
-    func_02037504(o->timer);
+    StartSndStrm(o->timer);
 }
 
 void SndOutStop(SndOut *o)
@@ -466,8 +466,8 @@ u32 SndOutGetSpaceSamples(SndOut *o)
 int func_0204aa80(SndOut *o, int pan)
 {
     o->pan = pan;
-    func_02037574(o->timer, pan);
-    func_020375e0(o->timer, 0, 0);
+    SetSndStrmVolume(o->timer, pan);
+    SetSndStrmChannelVolume(o->timer, 0, 0);
     return pan;
 }
 

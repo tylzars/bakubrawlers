@@ -19,7 +19,7 @@ extern "C" void func_02051fb8(void *handle, int a);
 extern "C" void func_02051f5c(void *handle);
 extern "C" void func_0205201c(void *handle, float volume);
 extern "C" void func_02051a88();
-extern "C" void func_02007230();
+extern "C" void SleepUntilVBlank();
 extern "C" void func_02051a5c();
 extern const u8 data_0209e538[];
 
@@ -118,7 +118,7 @@ void TaskBase::Wait() {
     if (mInitialized != 0) {
         func_02051a88();
     } else {
-        func_02007230();
+        SleepUntilVBlank();
     }
 }
 

@@ -30,9 +30,9 @@ void ReleaseSndHeap(SndHeap *h) {
 void ResetSndHeap(SndHeap *h) {   // free every block, running the free callbacks
     void *st;
     int called = 0;
-    for (st = func_02030a44(&h->states, 0); st != 0; st = func_02030a44(&h->states, 0)) {
+    for (st = NNS_FndGetPrevListObject(&h->states, 0); st != 0; st = NNS_FndGetPrevListObject(&h->states, 0)) {
         SndHeapBlk *b;
-        for (b = func_02030a44(st, 0); b != 0; b = func_02030a44(st, b)) {
+        for (b = NNS_FndGetPrevListObject(st, 0); b != 0; b = NNS_FndGetPrevListObject(st, b)) {
             if (b->cb != 0) {
                 b->cb((u8 *)b + 0x20, b->size, b->a, b->b);
                 called = 1;
@@ -49,7 +49,7 @@ void *AllocSndHeapBlock(SndHeap *h, u32 size, void *cb, u32 a, u32 b) {
     SndHeapBlk *blk = FrmHeapAlloc(h->heap, ((size + 0x1f) & ~0x1f) + 0x20, 0x20);
     void *last;
     if (blk == 0) return 0;
-    last = func_02030a44(&h->states, 0);
+    last = NNS_FndGetPrevListObject(&h->states, 0);
     blk->size = size;
     blk->cb = cb;
     blk->a = a;
@@ -77,8 +77,8 @@ void RestoreSndHeapState(SndHeap *h, u32 level) {
     }
     if ((s32)level < h->states.count) {
         do {
-            st = func_02030a44(&h->states, 0);
-            for (b = func_02030a44(st, b); b != 0; b = func_02030a44(st, b)) {
+            st = NNS_FndGetPrevListObject(&h->states, 0);
+            for (b = NNS_FndGetPrevListObject(st, b); b != 0; b = NNS_FndGetPrevListObject(st, b)) {
                 if (b->cb != 0) {
                     b->cb((u8 *)b + 0x20, b->size, b->a, b->b);
                     called = 1;

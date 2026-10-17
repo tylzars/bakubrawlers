@@ -13,21 +13,21 @@ extern int func_0200d214(void (*cb)(u32, u32 *), u32 *res);
 extern int func_0200d268(void);
 extern int func_0200d308(u32 v);
 extern int func_0200d354(u32 *a, u32 *b);
-extern void func_0200d3b4(u32 word);
+extern void PmFifoSend(u32 word);
 extern int func_0200d6ec(int a, int b, int c, int d);
 extern int func_0200d924(void);
-extern void func_0200d9f8(PMCallbackInfo *list);
+extern void PmRunCallbacks(PMCallbackInfo *list);
 extern void func_0200cc58(void);
 extern void func_0200cc98(void);
 extern void func_0200cce8(void);
 extern void func_0200d2b4(void);
-extern void func_0200d940(PMCallbackInfo **head, PMCallbackInfo *node);
-extern void func_0200d954(PMCallbackInfo **head, PMCallbackInfo *node);
-extern void func_0200d9a0(PMCallbackInfo **head, PMCallbackInfo *node);
+extern void PmPrependCallback(PMCallbackInfo **head, PMCallbackInfo *node);
+extern void PmAppendCallback(PMCallbackInfo **head, PMCallbackInfo *node);
+extern void PmRemoveCallback(PMCallbackInfo **head, PMCallbackInfo *node);
 extern u32 OS_DisableIrqMask(u32 mask);       // 0x02004bc0
 extern void OS_SetIrqMask(u32 mask);          // 0x02004b64
 extern int OS_IsTickAvailable(void);
-extern void func_02007230(void);
+extern void SleepUntilVBlank(void);
 extern void OS_Halt(void);                    // 0x02007530
 extern void MI_StopAllDma(void);
 extern int func_02011b28(void);
@@ -70,7 +70,7 @@ void func_0200cce8(void)
     } while (*l != 0);
 }
 
-void func_0200cd44(u32 v, u32 *p)
+void PmStoreResult(u32 v, u32 *p)
 {
     if (p != NULL) *p = v;
 }
@@ -148,9 +148,9 @@ void func_0200ceac(u32 *cmd, int n)
             continue;
         }
         res = 0xffff0000;
-        pmWork.cb = (void (*)(u32, void *))func_0200cd44;
+        pmWork.cb = (void (*)(u32, void *))PmStoreResult;
         pmWork.cbArg = (void *)&res;
-        for (i = 0; i < n; i++) func_0200d3b4(cmd[i]);
+        for (i = 0; i < n; i++) PmFifoSend(cmd[i]);
         OS_RestoreInterrupts(e);
         while (res == 0xffff0000) OS_SpinWait(0xa3a47);
         if (res == 0) return;
@@ -180,8 +180,8 @@ int func_0200cff8(u32 cmd, u32 data, u16 *res, void (*cb)(u32, u32 *), u32 *arg)
     pmWork.cb = (void (*)(u32, void *))cb;
     pmWork.cbArg = arg;
     pmWork.resultPtr = res;
-    func_0200d3b4((cmd & 0xff) | 0x6100 | 0x2000000);
-    func_0200d3b4(0x1010000 | (u16)data);
+    PmFifoSend((cmd & 0xff) | 0x6100 | 0x2000000);
+    PmFifoSend(0x1010000 | (u16)data);
     OS_RestoreInterrupts(e);
     return 0;
 }
@@ -189,7 +189,7 @@ int func_0200cff8(u32 cmd, u32 data, u16 *res, void (*cb)(u32, u32 *), u32 *arg)
 int func_0200d07c(u32 cmd, u32 data, u16 *res)
 {
     u32 r;
-    int ret = func_0200cff8(cmd, data, res, func_0200cd44, &r);
+    int ret = func_0200cff8(cmd, data, res, PmStoreResult, &r);
     if (ret != 0) return ret;
     pmWaitFunc();
     return r;
@@ -211,7 +211,7 @@ int func_0200d0c0(u32 a, void (*cb)(u32, u32 *), u32 *arg)
 int func_0200d124(u32 a)
 {
     u32 r;
-    int ret = func_0200d0c0(a, func_0200cd44, &r);
+    int ret = func_0200d0c0(a, PmStoreResult, &r);
     if (ret != 0) return ret;
     pmWaitFunc();
     return r;
@@ -237,7 +237,7 @@ int func_0200d158(u32 a, u32 b, void (*cb)(u32, u32 *), u32 *arg)
 int func_0200d1e0(u32 a, u32 b)
 {
     u32 r;
-    int ret = func_0200d158(a, b, func_0200cd44, &r);
+    int ret = func_0200d158(a, b, PmStoreResult, &r);
     if (ret != 0) return ret;
     pmWaitFunc();
     return r;
@@ -255,7 +255,7 @@ int func_0200d214(void (*cb)(u32, u32 *), u32 *arg)
 int func_0200d268(void)
 {
     u32 r;
-    int ret = func_0200d214(func_0200cd44, &r);
+    int ret = func_0200d214(PmStoreResult, &r);
     if (ret != 0) return ret;
     pmWaitFunc = func_0200cc98;
     pmWaitFunc();
@@ -303,7 +303,7 @@ int func_0200d354(u32 *a, u32 *b)
     return ret;
 }
 
-void func_0200d3b4(u32 word)
+void PmFifoSend(u32 word)
 {
     while (PXI_SendWordByFifo(8, word, 0) != 0) {}
 }
@@ -322,7 +322,7 @@ void func_0200d3e0(u32 flags, u32 a, u32 b)
     u32 cur;
     u16 ime;
     u32 t;
-    func_0200d9f8(pmWork.preList);
+    PmRunCallbacks(pmWork.preList);
     ime = REG_IME;
     REG_IME = 0;
     e = OS_DisableInterrupts();
@@ -374,7 +374,7 @@ void func_0200d3e0(u32 flags, u32 a, u32 b)
     t = REG_IME;
     REG_IME = ime;
     if (ok) func_0200d2b4();
-    func_0200d9f8(pmWork.postList);
+    PmRunCallbacks(pmWork.postList);
 }
 
 int func_0200d6ec(int a, int b, int c, int d)
@@ -405,8 +405,8 @@ int func_0200d6ec(int a, int b, int c, int d)
             do { OS_SpinWait(0xa3a47); } while (func_0200d308(0));
         }
         if (*(vu32 *)0x027ffc3c - pmWork.vcount8 <= 2) {
-            func_02007230();
-            func_02007230();
+            SleepUntilVBlank();
+            SleepUntilVBlank();
         }
         REG_POWCNT &= ~1;
         pmWork.vcount4 = *(vu32 *)0x027ffc3c;
@@ -436,7 +436,7 @@ int func_0200d924(void)
     return (REG_POWCNT & 1) != 0;
 }
 
-void func_0200d940(PMCallbackInfo **head, PMCallbackInfo *node)
+void PmPrependCallback(PMCallbackInfo **head, PMCallbackInfo *node)
 {
     if (head != NULL) {
         node->next = *head;
@@ -444,7 +444,7 @@ void func_0200d940(PMCallbackInfo **head, PMCallbackInfo *node)
     }
 }
 
-void func_0200d954(PMCallbackInfo **head, PMCallbackInfo *node)
+void PmAppendCallback(PMCallbackInfo **head, PMCallbackInfo *node)
 {
     PMCallbackInfo *cur, *nx;
     if (head == NULL) return;
@@ -463,7 +463,7 @@ void func_0200d954(PMCallbackInfo **head, PMCallbackInfo *node)
     cur->next = node;
 }
 
-void func_0200d9a0(PMCallbackInfo **head, PMCallbackInfo *node)
+void PmRemoveCallback(PMCallbackInfo **head, PMCallbackInfo *node)
 {
     PMCallbackInfo *cur, *prev;
     u32 e;
@@ -483,7 +483,7 @@ void func_0200d9a0(PMCallbackInfo **head, PMCallbackInfo *node)
     OS_RestoreInterrupts(e);
 }
 
-void func_0200d9f8(PMCallbackInfo *list)
+void PmRunCallbacks(PMCallbackInfo *list)
 {
     if (list == NULL) return;
     do {
@@ -492,22 +492,22 @@ void func_0200d9f8(PMCallbackInfo *list)
     } while (list != NULL);
 }
 
-void func_0200da20(PMCallbackInfo *node)
+void PmPrependPreCallback(PMCallbackInfo *node)
 {
-    func_0200d940(&pmWork.preList, node);
+    PmPrependCallback(&pmWork.preList, node);
 }
 
-void func_0200da38(PMCallbackInfo *node)
+void PmAppendPostCallback(PMCallbackInfo *node)
 {
-    func_0200d954(&pmWork.postList, node);
+    PmAppendCallback(&pmWork.postList, node);
 }
 
-void func_0200da50(PMCallbackInfo *node)
+void PmRemovePreCallback(PMCallbackInfo *node)
 {
-    func_0200d9a0(&pmWork.preList, node);
+    PmRemoveCallback(&pmWork.preList, node);
 }
 
-void func_0200da68(PMCallbackInfo *node)
+void PmRemovePostCallback(PMCallbackInfo *node)
 {
-    func_0200d9a0(&pmWork.postList, node);
+    PmRemoveCallback(&pmWork.postList, node);
 }

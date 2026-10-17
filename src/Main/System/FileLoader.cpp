@@ -7,7 +7,7 @@
 #include <nitro/os.h>
 
 extern "C" u32 OS_GetLockID();
-extern "C" void func_02004fbc(u32 id);
+extern "C" void OS_FreeLockID(u32 id);
 extern "C" void func_0200e658(u32 id);
 extern "C" void func_0200e668(u32 id);
 extern "C" BOOL func_0200ec04(u32 src, void *dst, u32 len, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f);
@@ -21,7 +21,7 @@ void SaveManager::Init() {
     func_0200e658(id);
     func_0200ed00(0xd01);
     func_0200e668(id);
-    func_02004fbc(id);
+    OS_FreeLockID(id);
     mBusy = 0;
 }
 
@@ -53,7 +53,7 @@ u32 SaveManager::GetSlotStatus(u32 unk1) {
     func_0200ec04((u32) (base + (unk1 << 13)), &magicA, 4, 0, 0, 0, 6, 1, 0);
     BOOL ok = func_0200ec04((u32) (base + (unk1 << 13) + 0x1000), &magicB, 4, 0, 0, 0, 6, 1, 0);
     func_0200e668(id);
-    func_02004fbc(id);
+    OS_FreeLockID(id);
     if (!ok) {
         result = SAVE_STATUS_ERROR;
     } else if (magicA == 0x19691015) {
@@ -81,7 +81,7 @@ u32 SaveManager::WriteSlotMarker(u32 unk1) {
         }
     }
     func_0200e668(id);
-    func_02004fbc(id);
+    OS_FreeLockID(id);
     return result;
 }
 
@@ -170,7 +170,7 @@ void SaveWriter::Update() {
             break;
         case 8:
             func_0200e668(task->mLock);
-            func_02004fbc(task->mLock);
+            OS_FreeLockID(task->mLock);
             OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, task->mBuffer);
             task->mState = 9;
             break;
@@ -220,7 +220,7 @@ void SaveReader::Update() {
             }
             task->mResult = GetCardResult();
             func_0200e668(task->mLock);
-            func_02004fbc(task->mLock);
+            OS_FreeLockID(task->mLock);
             UnkStruct_SaveBlock *block;
             u16 crc = SaveManager::Get().ComputeCrc((block = (UnkStruct_SaveBlock *) task->mBuffer)->mData, 0xff4);
             if (block->mCrc == crc && block->mMagic1 == 0x19721021 && block->mMagic0 == 0x20071019) {

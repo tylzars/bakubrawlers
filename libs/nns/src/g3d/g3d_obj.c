@@ -150,7 +150,7 @@ void SetTexKeys(ResTex *t, u32 key, u32 key4x4) {
     if (key != 0) t->texKey = key;
     if (key4x4 != 0) t->tex4x4Key = key4x4;
 }
-void func_0203187c(ResTex *t, BOOL begin) {
+void LoadResTex(ResTex *t, BOOL begin) {
     if (begin) GX_BeginLoadTex();
     if (t->texSize << 3) {
         GX_LoadTex((u8 *)t + t->texOfs, (u16)t->texKey << 3, t->texSize << 3);
@@ -185,7 +185,7 @@ void TakeTexKeys(ResTex *t, u32 *key, u32 *key4x4) {
 }
 u32 GetPlttSize(ResTex *t) { return t ? t->plttSize << 3 : 0; }
 void SetPlttKey(ResTex *t, u32 key) { t->plttKey = key; }
-void func_0203199c(ResTex *t, BOOL begin) {
+void LoadResPltt(ResTex *t, BOOL begin) {
     if (begin) GX_BeginLoadTexPltt();
     GX_LoadTexPltt((u8 *)t + t->plttOfs, (t->plttKey << 16) >> 13, t->plttSize << 3);
     t->plttLoaded |= 1;

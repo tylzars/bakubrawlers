@@ -50,15 +50,15 @@ extern int data_02215dc0, data_02216840, data_02216844, data_02216848;
 extern void (*data_0221683c)(Pl *, int, int, int);
 extern char data_020acfc0[];
 
-extern void func_02040170(const char *);
-extern void func_020401cc(const char *, const char *);
+extern void SendErr(const char *);
+extern void SendErrConcat(const char *, const char *);
 extern void func_020402f0(int, int, char *, int);
 extern void *func_02012484(void *, int, int);
 extern void func_0203eda4(void);
 extern void func_0203edb0(void);
-extern int func_0203ef10(int, int, short *);
+extern int FindHalfword0x80(int, int, short *);
 extern int func_0203f69c(int, int, short *);
-extern int func_02051478(int, int, short *);
+extern int FindFourBytes(int, int, short *);
 extern void func_0204604c(Out *, int, Out *, Out *);
 extern int func_020409a0(int), func_02040988(int), func_0204138c(int), func_02040948(int);
 extern int func_02040964(int, int), func_02040978(int);
@@ -69,8 +69,8 @@ extern int func_020416c0(int, int), func_020416d0(int, void *, void *), func_020
 extern int func_020416e4(int, int), func_020416ec(int, int);
 extern int func_02041d50(int), func_02041f50(int, int), func_02041f18(int, void *, void *);
 extern void func_02042dd8(Pl *, int, int, int, int);
-extern void func_02042f14(Pl *);
-extern int func_02042f94(Pl *), func_02042fdc(Pl *);
+extern void StopAdx(Pl *);
+extern int GetAdxState(Pl *), func_02042fdc(Pl *);
 extern void func_02043188(Pl *, int);
 extern void func_0204355c(Pl *, int);
 extern void func_020434fc(Pl *, int, int);
@@ -111,13 +111,13 @@ void func_02043c14(Pl *o)
     }
     r9 += s2;
     if (func_020416f4(h) == 1) {
-        r8 = func_02051478(A.p + r9, A.n - r9, &s2);
+        r8 = FindFourBytes(A.p + r9, A.n - r9, &s2);
         if (r8 == 0) r0 = -1;
-        else r0 = func_02051478(B.p, B.n, &s0);
+        else r0 = FindFourBytes(B.p, B.n, &s0);
     } else {
-        r8 = func_0203ef10(A.p + r9, A.n - r9, &s2);
+        r8 = FindHalfword0x80(A.p + r9, A.n - r9, &s2);
         if (r8 == 0) r0 = -1;
-        else r0 = func_0203ef10(B.p, B.n, &s0);
+        else r0 = FindHalfword0x80(B.p, B.n, &s0);
     }
     r5 = s2;
     r4 = s0;
@@ -175,8 +175,8 @@ void func_02043f28(Pl *o)
         n = func_02041714(h);
         if (n > o->s3) {
             func_020402f0(n, o->s3, buf, 16);
-            func_020401cc(data_020acfc0, buf);
-            func_02042f14(o);
+            SendErrConcat(data_020acfc0, buf);
+            StopAdx(o);
             return;
         }
         r6 = func_02041704(h);
@@ -312,7 +312,7 @@ void func_0204454c(Pl *o)
 void func_020445a8(Pl *o)
 {
     if (o->i8 == 0) return;
-    if (func_02042f94(o) == 0) return;
+    if (GetAdxState(o) == 0) return;
     switch (o->s2) {
     case 0:
     case 1:

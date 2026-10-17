@@ -51,8 +51,8 @@ extern void func_020446b0(void);
 extern void *func_02012484(void *, int, int);
 extern int func_020446e8(void);
 extern void func_02044820(int);
-extern void func_020401cc(const char *, const char *);
-extern void func_02040170(const char *);
+extern void SendErrConcat(const char *, const char *);
+extern void SendErr(const char *);
 extern int func_0203ef70(int, int, short *, signed char *, signed char *, signed char *, signed char *, int *, int *, int *);
 extern int func_0203f0f0(int, int, unsigned char *, unsigned char *);
 extern int func_0203f060(int, int, short *);
@@ -135,9 +135,9 @@ void func_0203e110(CriObj *o)
     } while (--i);
 }
 
-extern void func_0203e21c(CriObj *);
+extern void ReleaseCriObj(CriObj *);
 
-CriObj *func_0203e150(int a, int b, int c, int d)
+CriObj *CreateCriObj(int a, int b, int c, int d)
 {
     CriObj *p = g_criObjs;
     int i;
@@ -151,7 +151,7 @@ CriObj *func_0203e150(int a, int b, int c, int d)
     func_02012484(o, 0, 0xec);
     g_criObjs[i].used = 1;
     o->h = func_020446e8();
-    if (o->h == 0) { func_0203e21c(o); return 0; }
+    if (o->h == 0) { ReleaseCriObj(o); return 0; }
     o->i38 = a; o->i3c = b; o->i40 = c; o->i44 = d;
     o->i78 = (int)func_0203e0c4;
     o->i7c = (int)o;
@@ -161,7 +161,7 @@ CriObj *func_0203e150(int a, int b, int c, int d)
     return o;
 }
 
-void func_0203e21c(CriObj *o)
+void ReleaseCriObj(CriObj *o)
 {
     int h;
     if (o == 0) return;
@@ -182,14 +182,14 @@ int func_0203e254(CriObj *o, int flag, int len)
     short s1e, s1c, s1a;
     unsigned char c19, c18;
     if ((flag & 1) && func_0203e06c() == 0) {
-        func_020401cc(str_e, str_b);
+        SendErrConcat(str_e, str_b);
         return -1;
     }
     o->s2 = 1;
     if (func_0203ef70(flag, len, &r20, &o->c, &o->d, &o->f, &o->e, &o->i14, &o->i18, &o->i10) < 0) return 0;
     if (o->c > 4) {
         if (o->ib4 == 0) {
-            func_020401cc(str_c, str_d);
+            SendErrConcat(str_c, str_d);
             return -1;
         }
         o->d = 8;
@@ -261,7 +261,7 @@ int func_0203e698(CriObj *o) { return o->i14; }
 int func_0203e6a0(CriObj *o)
 {
     if (o != 0) return o->e;
-    func_02040170(str_a);
+    SendErr(str_a);
     return -1;
 }
 int func_0203e6c4(CriObj *o) { return o->d; }
@@ -277,13 +277,13 @@ int func_0203e714(CriObj *o) { return o->ic0; }
 int func_0203e71c(CriObj *o) { return o->sd4; }
 int func_0203e724(CriObj *o, int i) { return (&o->sd6)[i]; }
 
-void func_0203e730(CriObj *o)
+void SaveCriSlotValues(CriObj *o)
 {
     func_020447d0(o->h, &o->iac, &o->ib0);
     func_02044804(o->h, &o->sa6, &o->sa8, &o->saa);
 }
 
-void func_0203e760(CriObj *o)
+void RestoreCriSlotValues(CriObj *o)
 {
     func_020447ac(o->h, &o->iac, &o->ib0);
     func_020447f4(o->h, o->sa6, o->sa8, o->saa);
@@ -310,7 +310,7 @@ int func_0203e790(CriObj *o, unsigned a, unsigned b, int c, short *p0, short *p1
     return 0;
 }
 
-int func_0203e874(CriObj *o) { return o->state; }
+int GetCriObjState(CriObj *o) { return o->state; }
 
 void func_0203e87c(CriObj *o, int a, int b)
 {
@@ -329,9 +329,9 @@ void func_0203e87c(CriObj *o, int a, int b)
     o->idc = 0;
 }
 
-void func_0203e8e8(CriObj *o) { if (o->state == 0) o->state = 1; }
+void StartCriObj(CriObj *o) { if (o->state == 0) o->state = 1; }
 
-void func_0203e8fc(CriObj *o) { func_020448d0(o->h); o->state = 0; }
+void StopCriObj(CriObj *o) { func_020448d0(o->h); o->state = 0; }
 
 void func_0203e918(CriObj *o)
 {

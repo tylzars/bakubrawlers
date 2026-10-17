@@ -37,7 +37,7 @@ extern char data_020adcd8[], data_020add50[];
 extern int data_020add08, data_020add0c, data_020add14, data_020add90, data_020add1c;
 extern char data_02217ac0[], data_02217b80[], data_02217c40[];
 
-extern void func_02040170(const char *, ...);
+extern void SendErr(const char *, ...);
 extern void func_020479fc(void);
 extern void func_0204701c(int, int);
 extern void func_0204712c(int, int);
@@ -88,7 +88,7 @@ void func_0204713c(void)
     int v = data_0209e388;
     int f = data_02217a3c;
     if (f == 1) {
-        func_02040170((const char *)data_020adcd8, v);
+        SendErr((const char *)data_020adcd8, v);
         return;
     }
     func_020479fc();

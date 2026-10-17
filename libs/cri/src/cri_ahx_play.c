@@ -50,11 +50,11 @@ extern void func_0204bdd4(int *, int *);
 extern void func_020517b4(int *, int *);
 extern void func_020517dc(int *, int *);
 extern void func_0204d95c(int, int);
-extern void *func_0204e330(CriVObj *, void *, int);
-extern void func_0204e3d0(void *);
-extern void func_0204e3ec(void *, CriVObj *);
-extern int func_0204e75c(void *);
-extern int func_0204e764(void *);
+extern void *CreateCriBits(CriVObj *, void *, int);
+extern void ClearCriBits(void *);
+extern void ResetCriBits(void *, CriVObj *);
+extern int GetCriBitsPos(void *);
+extern int IsCriBitsEmpty(void *);
 extern int data_02218f38;
 extern volatile int data_0209e420;
 extern int data_020af610[2];
@@ -112,7 +112,7 @@ void func_0204da64(CriPlay *o)
     o->f0b = 0;
 }
 
-CriPlay *func_0204daa0(CriVObj *h, int n, CriVObj **arr, char *buf, int size)
+CriPlay *CreateCriPlay(CriVObj *h, int n, CriVObj **arr, char *buf, int size)
 {
     char *end;
     CriPlay *o = (CriPlay *)(((unsigned)buf + 7) & ~7);
@@ -124,16 +124,16 @@ CriPlay *func_0204daa0(CriVObj *h, int n, CriVObj **arr, char *buf, int size)
     p = (char *)((((unsigned)o + 0x5b)) & ~7);
     q = p + 0x34;
     if (q > end) return 0;
-    o->bits = func_0204e330(h, p, 0x34);
+    o->bits = CreateCriBits(h, p, 0x34);
     if (o->bits == 0) return 0;
     q = (char *)(((unsigned)q + 7) & ~7);
     if (q + 0x250 + 0x1000 > end) {
-        func_0204e3d0(o->bits);
+        ClearCriBits(o->bits);
         return 0;
     }
     o->dec = func_0204ad88(q, 0x1250);
     if (o->dec == 0) {
-        func_0204e3d0(o->bits);
+        ClearCriBits(o->bits);
         return 0;
     }
     o->nch = n;
@@ -149,13 +149,13 @@ CriPlay *func_0204daa0(CriVObj *h, int n, CriVObj **arr, char *buf, int size)
     return o;
 }
 
-void func_0204dbb4(CriPlay *o)
+void ReleaseCriPlay(CriPlay *o)
 {
     if (o == 0) return;
     if (o->bits) {
         void *b = o->bits;
         o->bits = 0;
-        func_0204e3d0(b);
+        ClearCriBits(b);
     }
     if (o->dec) {
         void *d = o->dec;
@@ -165,18 +165,18 @@ void func_0204dbb4(CriPlay *o)
     func_02012484(o, 0, 0x54);
 }
 
-int func_0204dc04(CriPlay *o) { return o->state; }
-void func_0204dc0c(CriPlay *o, CriVObj *s) { o->src = s; }
+int GetCriPlayState(CriPlay *o) { return o->state; }
+void SetCriPlaySrc(CriPlay *o, CriVObj *s) { o->src = s; }
 
-void func_0204dc14(CriPlay *o)
+void StartCriPlay(CriPlay *o)
 {
     func_0204da64(o);
-    func_0204e3ec(o->bits, o->src);
+    ResetCriBits(o->bits, o->src);
     func_0204af3c(o->dec, o->bits);
     o->state = 1;
 }
 
-void func_0204dc40(CriPlay *o)
+void StopCriPlay(CriPlay *o)
 {
     func_0204ae80(o->dec);
     o->state = 0;
@@ -200,7 +200,7 @@ void func_0204dc9c(CriPlay *o)
     int unit, blk, n, take, lim;
     void (*cb)(int, int, void *, int);
 
-    if (c == 1 && src->vt->size(src, 1) == 0 && func_0204e764(o->bits) == 1) {
+    if (c == 1 && src->vt->size(src, 1) == 0 && IsCriBitsEmpty(o->bits) == 1) {
         o->state = 3;
         return;
     }
@@ -230,7 +230,7 @@ void func_0204dc9c(CriPlay *o)
     o->ch[0]->vt->commit(o->ch[0], 1, &in);
     o->ch[0]->vt->put(o->ch[0], 0, &out);
     o->i20 += n;
-    o->i24 = (func_0204e75c(o->bits) + 7) / 8;
+    o->i24 = (GetCriBitsPos(o->bits) + 7) / 8;
     o->i28 += take;
     o->i2c += n;
     o->i38 += n;

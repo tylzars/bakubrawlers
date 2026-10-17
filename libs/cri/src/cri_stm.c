@@ -36,7 +36,7 @@ extern void func_0204035c(void);
 extern void OS_Sleep(int);
 extern int func_0203e6dc(void *), func_0203e6e4(void *), func_0203e6ec(void *), func_0203e6f4(void *);
 extern int func_0203e704(void *), func_0203e70c(void *), func_0203e714(void *), func_0203e71c(void *);
-extern int func_0203e724(void *, int), func_0203e730(void *), func_0203e760(void *);
+extern int func_0203e724(void *, int), SaveCriSlotValues(void *), RestoreCriSlotValues(void *);
 
 int func_02041744(Stm *s) { return func_0203e6dc(s->io); }
 int func_02041754(Stm *s) { return func_0203e6e4(s->io); }
@@ -60,8 +60,8 @@ int func_020417f8(Stm *s, int a)
 }
 
 void *func_02041848(Stm *s) { return &s->i60; }
-int func_02041850(Stm *s) { return func_0203e730(s->io); }
-int func_02041860(Stm *s) { return func_0203e760(s->io); }
+int func_02041850(Stm *s) { return SaveCriSlotValues(s->io); }
+int func_02041860(Stm *s) { return RestoreCriSlotValues(s->io); }
 int func_02041870(Stm *s) { return *(int *)((char *)s + 0xb0); }
 
 

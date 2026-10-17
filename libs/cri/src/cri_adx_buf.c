@@ -8,7 +8,7 @@ extern int func_02044840(int);
 extern void func_0204492c(int);
 extern void func_020448fc(int);
 extern void func_0203deac(CriObj *);
-extern void func_0203eae0(short *, short *, int);
+extern void CopyShorts(short *, short *, int);
 extern void func_0203e9dc(CriObj *);
 
 void func_0203e954(CriObj *o, int n)
@@ -55,7 +55,7 @@ void func_0203e9dc(CriObj *o)
     else func_0203e954(o, a);
 }
 
-void func_0203eae0(short *dst, short *src, int n)
+void CopyShorts(short *dst, short *src, int n)
 {
     while (n > 0) {
         *dst++ = *src++;
@@ -65,13 +65,13 @@ void func_0203eae0(short *dst, short *src, int n)
 
 void func_0203eb00(short *base, int a, int b, int n)
 {
-    func_0203eae0(base, base + a, n);
-    func_0203eae0(base + b, base + (b + a), n);
+    CopyShorts(base, base + a, n);
+    CopyShorts(base + b, base + (b + a), n);
 }
 
 void func_0203eb38(short *base, int a, int b, int n)
 {
-    func_0203eae0(base, base + a, n);
+    CopyShorts(base, base + a, n);
 }
 
 extern void func_0203eb38(short *, int, int, int);

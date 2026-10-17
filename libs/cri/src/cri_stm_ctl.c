@@ -43,7 +43,7 @@ extern int func_02046f0c(int);
 extern int func_02046dcc(void *, int, int);
 extern int func_02046d74(void *);
 extern int func_02046e24(void *, int, int);
-extern void func_020401cc(const char *, int);
+extern void SendErrConcat(const char *, int);
 extern void func_02041d7c(Stm *, int);
 extern void func_02041f84(void);
 extern void func_02042394(Stm *);
@@ -220,7 +220,7 @@ void func_02042394(Stm *s)
                 if (s->h8 == 0) {
                     s->h8 = func_02046a7c(s->i54, s->i58, 0);
                     if (s->h8 == 0) {
-                        func_020401cc(data_020acb98, s->i54);
+                        SendErrConcat(data_020acb98, s->i54);
                         s->state = 4;
                         s->b4d = 0;
                         s->b49 = 0;
@@ -256,7 +256,7 @@ void func_02042394(Stm *s)
                 func_02041d7c(s, 0);
                 s->b49 = 0;
                 if (func_02046eb4(s->h8) == 3) {
-                    func_020401cc(data_020acbc4, s->i54);
+                    SendErrConcat(data_020acbc4, s->i54);
                     if (s->h8) {
                         void *h = s->h8;
                         s->h8 = 0;

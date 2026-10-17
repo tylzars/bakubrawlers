@@ -36,7 +36,7 @@ extern char data_020acbf8[], data_020acc20[], data_020acc4c[], data_020acc7c[], 
             data_020acccc[], data_020accf4[], data_020acd20[], data_020acd54[], data_020acd80[], data_020acdac[];
 
 extern void *func_02012484(void *, int, int);
-extern void func_02040170(const char *);
+extern void SendErr(const char *);
 extern void func_0203eda4(void), func_0203edb0(void), func_0203edbc(void), func_0203edc0(void);
 extern void *func_02044b44(int, int, int);
 extern void *func_02041b34(void *, int);
@@ -72,30 +72,30 @@ extern int func_020417f8(void *, int);
 extern int func_020417b0(void *);
 extern void func_02047980(void *, int, int);
 extern void func_02047974(void *, int);
-extern Adx *func_02042794(int, int, int);
-extern void func_02042b40(Adx *);
+extern Adx *CreateAdxInner(int, int, int);
+extern void ReleaseAdxInner(Adx *);
 extern void func_02042b04(Adx *);
-extern void func_02042f30(Adx *);
-extern void func_02042ce0(void);
-extern void func_02042d18(Adx *, int);
+extern void StopAdxInner(Adx *);
+extern void ReleaseAllAdxInner(void);
+extern void StartAdx(Adx *, int);
 extern void func_02042e94(Adx *);
-extern Adx *func_02042ae4(int, int);
-extern int func_02042fb8(Adx *);
+extern Adx *CreateAdxNch1Inner(int, int);
+extern int GetAdxStateInner(Adx *);
 extern int func_02043000(Adx *);
 extern void func_02043068(Adx *, int, int);
 extern void func_020431ac(Adx *, int);
 extern int func_02043220(Adx *);
 
-Adx *func_02042760(int a, int b, int c)
+Adx *CreateAdx(int a, int b, int c)
 {
     Adx *r;
     func_0203edbc();
-    r = func_02042794(a, b, c);
+    r = CreateAdxInner(a, b, c);
     func_0203edc0();
     return r;
 }
 
-Adx *func_02042794(int nch, int buf, int size)
+Adx *CreateAdxInner(int nch, int buf, int size)
 {
     Adx *o;
     int rem, base;
@@ -103,14 +103,14 @@ Adx *func_02042794(int nch, int buf, int size)
     base = (buf + 0x3f) & ~0x3f;
     rem = size - (base - buf);
     if (nch < 0 || buf == 0 || size < 0) {
-        func_02040170(data_020acbf8);
+        SendErr(data_020acbf8);
         return 0;
     }
     for (i = 0; i < 4; i++) {
         if (g_criDrv[i].used == 0) break;
     }
     if (i == 4) {
-        func_02040170(data_020acc20);
+        SendErr(data_020acc20);
         return 0;
     }
     o = &g_criDrv[i];
@@ -120,7 +120,7 @@ Adx *func_02042794(int nch, int buf, int size)
     o->i20 = base + k * 2;
     o->i24 = ((rem - k * 2 - 0x124) / 2048) << 11;
     if (o->i24 < 0) {
-        func_02040170(data_020acc4c);
+        SendErr(data_020acc4c);
         return 0;
     }
     o->i28 = 0x24;
@@ -131,12 +131,12 @@ Adx *func_02042794(int nch, int buf, int size)
     o->p14 = 0;
     o->p10 = func_02044b44(o->i20, o->i24, o->i28);
     if (o->p10 == 0) {
-        func_02042b40(o);
+        ReleaseAdxInner(o);
         return 0;
     }
     o->stm = func_02041b34(o->p10, 0);
     if (o->stm == 0) {
-        func_02042b40(o);
+        ReleaseAdxInner(o);
         return 0;
     }
     i = 0;
@@ -144,7 +144,7 @@ Adx *func_02042794(int nch, int buf, int size)
         do {
             o->p18[i] = func_02044b44(o->i2c + o->i34 * i * 2, o->i30 * 2, (o->i34 - o->i30) * 2);
             if (o->p18[i] == 0) {
-                func_02042b40(o);
+                ReleaseAdxInner(o);
                 return 0;
             }
             i++;
@@ -152,17 +152,17 @@ Adx *func_02042794(int nch, int buf, int size)
     }
     o->p4 = func_020407f8(o->p10, nch, o->p18);
     if (o->p4 == 0) {
-        func_02042b40(o);
+        ReleaseAdxInner(o);
         return 0;
     }
     o->p0c = func_020478f0(o->p18, nch, nch * 0x10c0 + base);
     if (o->p0c == 0) {
-        func_02042b40(o);
+        ReleaseAdxInner(o);
         return 0;
     }
     o->p94 = func_02051524(o->p10);
     if (o->p94 == 0) {
-        func_02042b40(o);
+        ReleaseAdxInner(o);
         return 0;
     }
     func_02051534(o->p94, o->stm);
@@ -191,18 +191,18 @@ Adx *func_02042794(int nch, int buf, int size)
     return o;
 }
 
-Adx *func_02042ab8(int a, int b)
+Adx *CreateAdxNch1(int a, int b)
 {
     Adx *r;
     func_0203edbc();
-    r = func_02042ae4(a, b);
+    r = CreateAdxNch1Inner(a, b);
     func_0203edc0();
     return r;
 }
 
-Adx *func_02042ae4(int a, int b)
+Adx *CreateAdxNch1Inner(int a, int b)
 {
-    Adx *r = func_02042794(1, a, b);
+    Adx *r = CreateAdxInner(1, a, b);
     if (r == 0) return 0;
     return r;
 }
@@ -212,24 +212,24 @@ void func_02042b04(Adx *o)
     if (data_022167d8.fn30) data_022167d8.fn30(o);
 }
 
-void func_02042b24(Adx *o)
+void ReleaseAdx(Adx *o)
 {
     func_0203edbc();
-    func_02042b40(o);
+    ReleaseAdxInner(o);
     func_0203edc0();
 }
 
-void func_02042b40(Adx *o)
+void ReleaseAdxInner(Adx *o)
 {
     Obj *p;
     void *q;
     int i;
     if (o == 0) {
-        func_02040170(data_020acc7c);
+        SendErr(data_020acc7c);
         return;
     }
     func_02042b04(o);
-    if (o->used == 1) func_02042f30(o);
+    if (o->used == 1) StopAdxInner(o);
     if (o->p0c) {
         q = o->p0c;
         o->p0c = 0;
@@ -284,23 +284,23 @@ void func_02042b40(Adx *o)
     func_0203edb0();
 }
 
-void func_02042ccc(void)
+void ReleaseAllAdx(void)
 {
     func_0203edbc();
-    func_02042ce0();
+    ReleaseAllAdxInner();
     func_0203edc0();
 }
 
-void func_02042ce0(void)
+void ReleaseAllAdxInner(void)
 {
     int i;
     Adx *p = g_criDrv;
     for (i = 0; i < 4; i++, p++) {
-        if (p->used == 1) func_02042b40(p);
+        if (p->used == 1) ReleaseAdxInner(p);
     }
 }
 
-void func_02042d18(Adx *o, int v)
+void StartAdx(Adx *o, int v)
 {
     int i;
     for (i = 0; i < o->nch; i++) o->p18[i]->vt->f14(o->p18[i]);
@@ -330,7 +330,7 @@ void func_02042dd8(Adx *o, int a, int b, int c, int d)
     func_02041c94(o->stm);
     func_02041bdc(o->stm, a, b, c, (long long)d << 11);
     func_02041dfc(o->stm);
-    func_02042d18(o, (int)o->p10);
+    StartAdx(o, (int)o->p10);
 }
 
 void func_02042e94(Adx *o)
@@ -351,17 +351,17 @@ void func_02042e94(Adx *o)
     func_0203edb0();
 }
 
-void func_02042f14(Adx *o)
+void StopAdx(Adx *o)
 {
     func_0203edbc();
-    func_02042f30(o);
+    StopAdxInner(o);
     func_0203edc0();
 }
 
-void func_02042f30(Adx *o)
+void StopAdxInner(Adx *o)
 {
     if (o == 0) {
-        func_02040170(data_020acca4);
+        SendErr(data_020acca4);
         return;
     }
     if (o->stm) func_02041c94(o->stm);
@@ -372,19 +372,19 @@ void func_02042f30(Adx *o)
     func_02042e94(o);
 }
 
-int func_02042f94(Adx *o)
+int GetAdxState(Adx *o)
 {
     int r;
     func_0203edbc();
-    r = func_02042fb8(o);
+    r = GetAdxStateInner(o);
     func_0203edc0();
     return r;
 }
 
-int func_02042fb8(Adx *o)
+int GetAdxStateInner(Adx *o)
 {
     if (o) return o->state;
-    func_02040170(data_020acccc);
+    SendErr(data_020acccc);
     return -1;
 }
 
@@ -400,7 +400,7 @@ int func_02042fdc(Adx *o)
 int func_02043000(Adx *o)
 {
     if (o == 0) {
-        func_02040170(data_020accf4);
+        SendErr(data_020accf4);
         return -1;
     }
     if (o->state < 2) return 0;
@@ -418,11 +418,11 @@ void func_02043068(Adx *o, int ch, int vol)
 {
     int a, r;
     if (o == 0) {
-        func_02040170(data_020acd20);
+        SendErr(data_020acd20);
         return;
     }
     if (ch != 0 && ch != 1) {
-        func_02040170(data_020acd54);
+        SendErr(data_020acd54);
         return;
     }
     if (vol != -128) {
@@ -451,7 +451,7 @@ void func_02043068(Adx *o, int ch, int vol)
         func_02047980(o->p0c, ch, r);
         return;
     }
-    func_02040170(data_020acd80);
+    SendErr(data_020acd80);
 }
 
 void func_02043188(Adx *o, int v)
@@ -465,7 +465,7 @@ void func_020431ac(Adx *o, int v)
 {
     int a;
     if (o == 0) {
-        func_02040170(data_020acdac);
+        SendErr(data_020acdac);
         return;
     }
     o->s40 = v;

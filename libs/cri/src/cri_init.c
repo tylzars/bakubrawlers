@@ -59,7 +59,7 @@ extern int func_020463d8(int, int, void *, int, void *);
 extern int func_0204625c(int, void *, int, void *);
 extern void func_0204324c(int);
 extern void func_02046200(void *);
-extern void func_02042ccc(void);
+extern void ReleaseAllAdx(void);
 extern void func_020478d8(void);
 extern void func_0205150c(void);
 extern void func_020418d0(void);
@@ -71,7 +71,7 @@ extern void func_02040140(void);
 extern void func_02045760(void);
 extern void func_02044ae0(void);
 extern void func_02045fe8(void);
-extern void func_02042b24(void *);
+extern void ReleaseAdx(void *);
 extern void func_0205153c(void);
 extern void func_0203e07c(void);
 extern void func_020406c4(void);
@@ -120,7 +120,7 @@ void func_020405d4(void)
         return;
     }
     if (--g_criSys.refcnt != 0) return;
-    func_02042ccc();
+    ReleaseAllAdx();
     func_020478d8();
     func_0205150c();
     func_020418d0();
@@ -141,7 +141,7 @@ void func_020405d4(void)
     for (i = 0; i < 4; i++) {
         if (p->used != 0) {
             func_02046200(data_020acac8);
-            func_02042b24(p);
+            ReleaseAdx(p);
         }
         p++;
     }

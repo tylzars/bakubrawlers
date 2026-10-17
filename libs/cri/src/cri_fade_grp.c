@@ -72,7 +72,7 @@ struct CriFader {
 
 extern char data_020aff80[], data_020affb0[], data_020affe4[];
 extern char data_020b0010[], data_020b0044[];
-extern void func_0204f360(char *);
+extern void SendErrWrapper(char *);
 extern void func_0204ed2c(void), func_0204ed38(void);
 extern void *func_02012484(void *, int, int);
 extern double cos(double);   /* cos */
@@ -145,7 +145,7 @@ int func_02050984(CriFader *f, int a, int b, int c);
 int func_0204fc00(CriFadeGrp *g, int i)
 {
     if (g->w58 == 0) {
-        func_0204f360(data_020aff80);
+        SendErrWrapper(data_020aff80);
         return 0;
     }
     if (g->w9c == 0) {
@@ -173,7 +173,7 @@ void func_0204fc8c(CriFadeGrp *g)
 {
     int i;
     if (g->w58 == 0) {
-        func_0204f360(data_020affb0);
+        SendErrWrapper(data_020affb0);
         return;
     }
     func_0204ed2c();
@@ -247,7 +247,7 @@ void func_0204fe20(CriFadeGrp *g, int *arg)
     int in;
     int out;
     if (g->w58 == 0) {
-        func_0204f360(data_020affe4);
+        SendErrWrapper(data_020affe4);
         return;
     }
     func_0204ed2c();
@@ -491,11 +491,11 @@ void func_0205067c(CriFadeGrp *g, int ev)
 CriFader *func_02050698(CriFader *f, unsigned size)
 {
     if (f == 0) {
-        func_0204f360(data_020b0010);
+        SendErrWrapper(data_020b0010);
         return 0;
     }
     if (size < 0x44) {
-        func_0204f360(data_020b0044);
+        SendErrWrapper(data_020b0044);
         return 0;
     }
     func_020508ec(f);

@@ -21,7 +21,7 @@ extern char data_020ad000[];
 extern void func_0203edbc(void);
 extern void func_0203edc0(void);
 extern int func_0203edc4(int, int, short *, short *);
-extern void func_02040170(const char *);
+extern void SendErr(const char *);
 extern void func_02044440(CriSlot *);
 extern void func_02043f28(CriSlot *);
 extern void func_020442ec(CriSlot *);
@@ -45,7 +45,7 @@ void func_02044614(CriSlot *p)
 void func_02044630(CriSlot *p)
 {
     if (p == 0) {
-        func_02040170(data_020ad000);
+        SendErr(data_020ad000);
         return;
     }
     {

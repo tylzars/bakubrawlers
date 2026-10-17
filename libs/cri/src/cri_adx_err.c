@@ -38,7 +38,7 @@ void func_02040140(void)
     data_02215c7c.arg = 0;
 }
 
-void func_02040170(const char *msg)
+void SendErr(const char *msg)
 {
     if (msg == 0) {
         func_02046194(data_020aca2c);
@@ -49,7 +49,7 @@ void func_02040170(const char *msg)
     func_02046194(data_02215ca4);
 }
 
-void func_020401cc(const char *a, const char *b)
+void SendErrConcat(const char *a, const char *b)
 {
     if (a == 0 || b == 0) {
         func_02046194(data_020aca34);
@@ -138,9 +138,9 @@ void func_02040370(void)
     if (data_02215da4.done != 0) data_02215da4.done(data_02215da4.doneArg);
 }
 
-void func_0204043c(int unused, const char *msg) { func_02040170(msg); }
+void func_0204043c(int unused, const char *msg) { SendErr(msg); }
 
-void func_0204044c(int unused, const char *msg) { func_02040170(msg); }
+void func_0204044c(int unused, const char *msg) { SendErr(msg); }
 
 int func_0204045c(void)
 {

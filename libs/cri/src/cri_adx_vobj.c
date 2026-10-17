@@ -69,13 +69,13 @@ extern char data_020afbb4[], data_020afbe8[], data_020afc1c[], data_020afc4c[], 
 extern char data_020afd3c[], data_020afd70[], data_020afd9c[], data_020afdc8[], data_020afdfc[], data_020afe2c[];
 extern char data_020afe5c[], data_020afe8c[], data_020afebc[], data_020afeec[], data_020aff1c[], data_020aff4c[];
 
-extern void func_02040170(const char *);
+extern void SendErr(const char *);
 extern void func_0204048c(void);
 extern void func_020405d4(void);
 extern void func_020463d8(int, int, void *, void *, void *);
 extern void func_02046328(int, int);
 extern void func_02046174(void), func_02046184(void);
-extern void *func_020510c8(void *, int);
+extern void *CreateCriX(void *, int);
 extern int func_02051124(void);
 extern void func_02051110(int);
 extern void func_020511a4(int);
@@ -99,18 +99,18 @@ extern void func_0204bdfc(void *, void *, int);
 extern void func_0204bf1c(void *);
 extern void *func_0204fc00(Obj *, int);
 
-extern int func_0204f324(Pool *);
-extern void func_0204f2ec(Pool *);
-extern void func_0204f360(const char *);
-extern void func_0204ee0c(Pool *);
+extern int HasPoolRef(Pool *);
+extern void ClearPool(Pool *);
+extern void SendErrWrapper(const char *);
+extern void ReleasePoolRef(Pool *);
 extern int func_0204f338(Pool *);
-extern int func_0204f3c8(Obj *, Cfg *, char *, int);
-extern void func_0204f734(Obj *);
-extern void func_0204ef90(Pool *, Obj *);
+extern int InitPoolObj(Obj *, Cfg *, char *, int);
+extern void ReleasePoolObjParts(Obj *);
+extern void ReleasePoolObj(Pool *, Obj *);
 extern Obj *func_0204f36c(char *, unsigned);
 extern void func_0204f3b4(Obj *);
 extern void func_0204f264(Pool *, Obj *);
-extern int func_0204f7b8(Obj *);
+extern int IsPoolObjInit(Obj *);
 extern int func_0204f98c(Obj *);
 extern void func_0204f1e8(Pool *);
 extern void func_0204ed44(void), func_0204ed48(void), func_0204ed10(void);
@@ -121,7 +121,7 @@ extern int func_0204fbc8(Obj *);
 
 typedef struct Par { int a, b, c; } Par;
 
-int func_0204f3c8(Obj *o, Cfg *cfg, char *buf, int size)
+int InitPoolObj(Obj *o, Cfg *cfg, char *buf, int size)
 {
     unsigned long i;
     int off;
@@ -129,7 +129,7 @@ int func_0204f3c8(Obj *o, Cfg *cfg, char *buf, int size)
     int n;
     off = 0;
     if (o->i58 == 1 || o->i5c == 1) {
-        func_0204f360(data_020afc1c);
+        SendErrWrapper(data_020afc1c);
         return 0;
     }
     func_0204fd2c(o);
@@ -155,8 +155,8 @@ int func_0204f3c8(Obj *o, Cfg *cfg, char *buf, int size)
             VObj *v = func_02050e60(buf + off, 0xc);
             o->slot[i] = v;
             if (v == 0) {
-                func_0204f360(data_020afc4c);
-                func_0204f734(o);
+                SendErrWrapper(data_020afc4c);
+                ReleasePoolObjParts(o);
                 return 0;
             }
             off += 0xc;
@@ -166,8 +166,8 @@ int func_0204f3c8(Obj *o, Cfg *cfg, char *buf, int size)
                 n = cfg->w10 * (((((cfg->w8 / 1000) * (cfg->w4 * 2500)) / 16 * (cfg->w0 + 1) + 0x800) / 0x800) * 0x800 + 0x24) + ((cfg->w4 * 0x1460) << 1) + 0x40;
             }
             if (v->vt->f0(v, &par, buf + off, n) == 0) {
-                func_0204f360(data_020afc84);
-                func_0204f734(o);
+                SendErrWrapper(data_020afc84);
+                ReleasePoolObjParts(o);
                 return 0;
             }
             off += n;
@@ -175,8 +175,8 @@ int func_0204f3c8(Obj *o, Cfg *cfg, char *buf, int size)
         }
         o->ent[i].buf = func_02050698(buf + off, 0x44);
         if (o->ent[i].buf == 0) {
-            func_0204f360(data_020afcbc);
-            func_0204f734(o);
+            SendErrWrapper(data_020afcbc);
+            ReleasePoolObjParts(o);
             return 0;
         }
         off += 0x44;
@@ -195,8 +195,8 @@ int func_0204f3c8(Obj *o, Cfg *cfg, char *buf, int size)
         func_02012484(o->pc8, 0, cfg->wc * 4);
     }
     if (off > size) {
-        func_0204f360(data_020afcf8);
-        func_0204f734(o);
+        SendErrWrapper(data_020afcf8);
+        ReleasePoolObjParts(o);
         return 0;
     }
     o->i58 = 1;
@@ -204,7 +204,7 @@ int func_0204f3c8(Obj *o, Cfg *cfg, char *buf, int size)
     return 1;
 }
 
-void func_0204f734(Obj *o)
+void ReleasePoolObjParts(Obj *o)
 {
     int i;
     if (o->i58 != 1 && o->i5c != 1) return;
@@ -221,12 +221,12 @@ void func_0204f734(Obj *o)
     }
 }
 
-int func_0204f7b8(Obj *o) { return o->i58; }
+int IsPoolObjInit(Obj *o) { return o->i58; }
 
 void func_0204f7c0(Obj *o, int a)
 {
     if (o->i58 == 0) {
-        func_0204f360(data_020afd3c);
+        SendErrWrapper(data_020afd3c);
         return;
     }
     o->i30 = 0;
@@ -237,7 +237,7 @@ void func_0204f7c0(Obj *o, int a)
 void func_0204f810(Obj *o)
 {
     if (o->i58 == 0) {
-        func_0204f360(data_020afd70);
+        SendErrWrapper(data_020afd70);
         return;
     }
     if (o->cur->vt->f28(o->cur) == 0) return;
@@ -250,7 +250,7 @@ void func_0204f878(Obj *o, int v)
 {
     int i;
     if (o->i58 == 0) {
-        func_0204f360(data_020afd9c);
+        SendErrWrapper(data_020afd9c);
         return;
     }
     func_0204ed2c();
@@ -264,7 +264,7 @@ void func_0204f878(Obj *o, int v)
 int func_0204f8ec(Obj *o)
 {
     if (o->i58 == 0) {
-        func_0204f360(data_020afdc8);
+        SendErrWrapper(data_020afdc8);
         return 4;
     }
     return o->cur->vt->f24(o->cur);
@@ -274,7 +274,7 @@ int func_0204f924(Obj *o)
 {
     int r;
     if (o->i58 == 0) {
-        func_0204f360(data_020afdfc);
+        SendErrWrapper(data_020afdfc);
         return 4;
     }
     r = o->cur->vt->f28(o->cur);
@@ -291,7 +291,7 @@ void func_0204f994(Obj *o, int v)
     Ent *base;
     Ent *e;
     if (o->i58 == 0) {
-        func_0204f360(data_020afe2c);
+        SendErrWrapper(data_020afe2c);
         return;
     }
     func_0204ed2c();
@@ -317,11 +317,11 @@ void func_0204fa2c(Obj *o)
     void *x;
     int off;
     if (o->i58 == 0) {
-        func_0204f360(data_020afe5c);
+        SendErrWrapper(data_020afe5c);
         return;
     }
     if (o->cfg.i20 == 0) {
-        func_0204f360(data_020afe8c);
+        SendErrWrapper(data_020afe8c);
         return;
     }
     for (i = 0; i < o->cnt; i++) {
@@ -340,11 +340,11 @@ void func_0204fad4(Obj *o)
     int i;
     void *x;
     if (o->i58 == 0) {
-        func_0204f360(data_020afebc);
+        SendErrWrapper(data_020afebc);
         return;
     }
     if (o->cfg.i20 == 0) {
-        func_0204f360(data_020afeec);
+        SendErrWrapper(data_020afeec);
         return;
     }
     i = 0;
@@ -362,7 +362,7 @@ void func_0204fad4(Obj *o)
 void *func_0204fb64(Obj *o, int i)
 {
     if (o->i58 == 0) {
-        func_0204f360(data_020aff1c);
+        SendErrWrapper(data_020aff1c);
         return 0;
     }
     if (o->cfg.i1c == 1) return 0;
@@ -373,7 +373,7 @@ void *func_0204fb64(Obj *o, int i)
 int func_0204fbc8(Obj *o)
 {
     if (o->i58 == 0) {
-        func_0204f360(data_020aff4c);
+        SendErrWrapper(data_020aff4c);
         return 0;
     }
     if (o->cfg.i1c == 1) return 0;

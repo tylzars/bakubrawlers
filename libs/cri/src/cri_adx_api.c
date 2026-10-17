@@ -5,10 +5,10 @@ extern int func_02047680(void);
 extern void func_0204657c(void), func_0204658c(void), func_0204659c(void), func_020465ac(void), func_020465bc(void), func_020465cc(void), func_020465dc(void), func_020465ec(void);
 extern void func_0204ed44(void), func_0204ed48(void);
 extern int func_0204ecf0(int);
-extern int func_0204ed4c(int, int);
-extern int func_0204ee0c(int);
-extern int func_0204eeb4(int, int, int, int);
-extern int func_0204ef90(int, int);
+extern int AddPoolRef(int, int);
+extern int ReleasePoolRef(int);
+extern int CreatePoolObj(int, int, int, int);
+extern int ReleasePoolObj(int, int);
 extern int func_0204efd8(int, int);
 extern void func_0204f7c0(int, int);
 extern void func_0204f810(int);
@@ -29,12 +29,12 @@ int func_0204e854(void);
 int func_0204e8ac(void);
 int func_0204e908(void);
 int func_0204e934(int x);
-int func_0204e958(void);
-int func_0204e97c(void);
-int func_0204e994(int a, int b, int c);
-int func_0204e9c8(int a, int b, int c);
-void func_0204e9f4(int a);
-int func_0204ea10(int a);
+int AddGlobalPoolRef(void);
+int ReleaseGlobalPoolRef(void);
+int CreateGlobalPoolObj(int a, int b, int c);
+int CreateGlobalPoolObjInner(int a, int b, int c);
+void ReleaseGlobalPoolObj(int a);
+int ReleaseGlobalPoolObjInner(int a);
 int func_0204ea2c(int a);
 int func_0204ea50(int a);
 void func_0204ea6c(int a, int b);
@@ -102,19 +102,19 @@ int func_0204e934(int x)
     return 1;
 }
 
-int func_0204e958(void) { return func_0204ed4c(data_020afa5c, data_0209e4a8); }
-int func_0204e97c(void) { return func_0204ee0c(data_020afa5c); }
-int func_0204e994(int a, int b, int c)
+int AddGlobalPoolRef(void) { return AddPoolRef(data_020afa5c, data_0209e4a8); }
+int ReleaseGlobalPoolRef(void) { return ReleasePoolRef(data_020afa5c); }
+int CreateGlobalPoolObj(int a, int b, int c)
 {
     int r;
     func_0204ed44();
-    r = func_0204e9c8(a, b, c);
+    r = CreateGlobalPoolObjInner(a, b, c);
     func_0204ed48();
     return r;
 }
-int func_0204e9c8(int a, int b, int c) { return func_0204eeb4(data_020afa5c, a, b, c); }
-void func_0204e9f4(int a) { func_0204ed44(); func_0204ea10(a); func_0204ed48(); }
-int func_0204ea10(int a) { return func_0204ef90(data_020afa5c, a); }
+int CreateGlobalPoolObjInner(int a, int b, int c) { return CreatePoolObj(data_020afa5c, a, b, c); }
+void ReleaseGlobalPoolObj(int a) { func_0204ed44(); ReleaseGlobalPoolObjInner(a); func_0204ed48(); }
+int ReleaseGlobalPoolObjInner(int a) { return ReleasePoolObj(data_020afa5c, a); }
 int func_0204ea2c(int a)
 {
     int r;

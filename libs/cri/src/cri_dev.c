@@ -44,7 +44,7 @@ extern void func_020468e4(char *);
 extern CriDev *func_02046890(char *);
 extern void func_02051558(char *, int, const char *);
 extern void func_020515a0(char *, int, const char *, char *, char *);
-extern void func_02040170(const char *, ...);
+extern void SendErr(const char *, ...);
 
 extern int func_020469a0(char *, int);
 extern char *func_020469ec(void);
@@ -367,5 +367,5 @@ int func_020470e0(CriDevHandle *h)
 
 void func_0204712c(int a, int b)
 {
-    func_02040170((const char *)b);
+    SendErr((const char *)b);
 }

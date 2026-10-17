@@ -14,7 +14,7 @@ void func_0203edc4(int a, int b, short *o0, short *o1)
     *o1 = (short)(4096.0f * ((0.0f - c) * c));
 }
 
-int func_0203ef10(unsigned char *p, int n, short *out)
+int FindHalfword0x80(unsigned char *p, int n, short *out)
 {
     int lim = n - 1;
     int found = 0x7fffffff;

@@ -51,8 +51,8 @@ extern char data_020acdd8[], data_020ace04[], data_020ace30[], data_020ace60[], 
 extern char data_020aceb0[], data_020acee0[], data_020acf0c[], data_020acf38[], data_020acf64[];
 extern char data_020acf94[];
 
-extern void func_02040170(const char *);
-extern void func_020401cc(const char *, const char *);
+extern void SendErr(const char *);
+extern void SendErrConcat(const char *, const char *);
 extern void func_020402f0(int, int, char *, int);
 extern void func_0203eda4(void);
 extern void func_0203edb0(void);
@@ -83,8 +83,8 @@ extern void func_020479b0(int, int);
 extern int func_02051514(int, int, int, int *, int *, int *);
 extern void func_02051558(int, int, int);
 extern int func_020457cc(int, int);
-extern void func_02042f14(Pl *);
-extern void func_02042d18(Pl *, int);
+extern void StopAdx(Pl *);
+extern void StartAdx(Pl *, int);
 extern void func_0204303c(Pl *, int, int);
 extern void func_02043554(Pl *, int, int);
 extern void func_02043558(Pl *, int, int);
@@ -107,7 +107,7 @@ extern void func_0204395c(Pl *);
 int func_02043220(Pl *p)
 {
     if (p != 0) return p->s40;
-    func_02040170(data_020acdd8);
+    SendErr(data_020acdd8);
     return 0;
 }
 
@@ -167,7 +167,7 @@ void func_0204339c(Pl *o, int flag)
 {
     int a, r5, r4, r8;
     if (o == 0) {
-        func_02040170(data_020ace04);
+        SendErr(data_020ace04);
         return;
     }
     if (o->io == 0) a = 0;
@@ -206,7 +206,7 @@ int func_020434ac(Pl *p)
 int func_020434d0(Pl *p)
 {
     if (p == 0) {
-        func_02040170(data_020ace30);
+        SendErr(data_020ace30);
         return 0;
     }
     return func_020479a4(p->ic);
@@ -255,14 +255,14 @@ void func_020435c8(Pl *o, int a, int b)
     char buf[16];
     int sc, s10, s8;
     if (o == 0) {
-        func_02040170(data_020ace60);
+        SendErr(data_020ace60);
         return;
     }
-    func_02042f14(o);
+    StopAdx(o);
     if (func_02051514(a, b, o->iac, &s8, &sc, &s10) != 0) return;
     if (o->i8 == 0) {
         func_020402f0(a, b, buf, 16);
-        func_020401cc(data_020ace8c, buf);
+        SendErrConcat(data_020ace8c, buf);
         *(short *)((char *)o + 0x60) = -1;
         o->state = 6;
         return;
@@ -287,10 +287,10 @@ void func_020436b4(Pl *p, int a, int b, int c)
 void func_020436e8(Pl *o, int a, int b, int c)
 {
     if (o == 0 || a == 0) {
-        func_02040170(data_020aceb0);
+        SendErr(data_020aceb0);
         return;
     }
-    func_02042f14(o);
+    StopAdx(o);
     func_02051558(o->iac, 0x100, a);
     o->ib0 = o->iac;
     o->ib4 = 0;
@@ -322,19 +322,19 @@ void func_020437c4(Pl *o, int a, int b)
 {
     int r;
     if (o == 0 || a == 0 || b < 0) {
-        func_02040170(data_020acee0);
+        SendErr(data_020acee0);
         return;
     }
-    func_02042f14(o);
+    StopAdx(o);
     func_0203eda4();
     r = func_020457cc(a, b);
     if (r == 0) {
         func_0203edb0();
-        func_02040170(data_020acf0c);
+        SendErr(data_020acf0c);
         return;
     }
     o->s2 = 2;
-    func_02042d18(o, r);
+    StartAdx(o, r);
     func_0204355c(o, 0);
     func_0203edb0();
 }
@@ -353,10 +353,10 @@ void func_02043874(Pl *o, Hdr *h, int idx)
     int r;
     int off;
     if (o == 0 || h == 0 || idx < 0) {
-        func_02040170(data_020acf38);
+        SendErr(data_020acf38);
         return;
     }
-    func_02042f14(o);
+    StopAdx(o);
     if (idx >= BSWAP(h->w4)) return;
     if (idx < 0) return;
     func_0203eda4();
@@ -364,11 +364,11 @@ void func_02043874(Pl *o, Hdr *h, int idx)
     r = func_020457cc((int)h + BSWAP(off), 0x40000000);
     if (r == 0) {
         func_0203edb0();
-        func_02040170(data_020acf64);
+        SendErr(data_020acf64);
         return;
     }
     o->s2 = 2;
-    func_02042d18(o, r);
+    StartAdx(o, r);
     func_0204355c(o, 0);
     func_0203edb0();
 }
@@ -403,7 +403,7 @@ void func_020439e0(Pl *o)
         return;
     }
     io->vt->f18(io, 1, o->i50, &out);
-    if (out.n < o->i50) func_02040170(data_020acf94);
+    if (out.n < o->i50) SendErr(data_020acf94);
     io->vt->f20(io, 0, &out);
     func_020416e4(h, 0);
     func_020416dc(h, o->i90 = c - a);

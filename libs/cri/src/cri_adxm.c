@@ -59,7 +59,7 @@ extern int sprintf(char *, const char *, ...);
 extern void func_0204713c(void);
 extern void func_02047414(int, void *);
 extern void func_0204048c(void);
-extern void func_0204e958(void);
+extern void AddGlobalPoolRef(void);
 extern void func_0204ecfc(void);
 extern void func_02047408(void (*)(int, const char *), int);
 extern void func_020483f0(const void *, int);
@@ -67,14 +67,14 @@ extern void func_020522e4(void);
 extern void func_020522c8(int, const char *);
 extern void func_020522e8(const char *, const char *);
 extern void func_02052208(void);
-extern void func_0204e97c(void);
+extern void ReleaseGlobalPoolRef(void);
 extern void func_020405d4(void);
 extern void func_02047698(void);
 extern void func_02047224(void);
 extern void func_02047810(int);
 extern void func_020471d0(void);
 extern int func_0204ea2c(void *);
-extern void *func_0204e994(void *, void *, int);
+extern void *CreateGlobalPoolObj(void *, void *, int);
 extern void func_0204eb54(void *, int);
 extern void func_0204eb84(void *, int);
 extern void func_0204ebb4(void *, int);
@@ -86,7 +86,7 @@ extern void *func_0204ec94(void *, int);
 extern void func_020491c4(void *, int);
 extern void func_0200a7b4(void *);
 extern void func_0204ec6c(void *);
-extern void func_0204e9f4(void *);
+extern void ReleaseGlobalPoolObj(void *);
 extern int func_0204eaf4(void *);
 extern void func_0204ea6c(void *, const char *);
 extern void func_0204ea9c(void *);
@@ -139,7 +139,7 @@ void func_02051818(CriMemCfg *cfg, int a, const void *b, void (*c)(const char *)
         data_02218fd0.sflag = 1;
     }
     func_0204048c();
-    func_0204e958();
+    AddGlobalPoolRef();
     func_0204ecfc();
     func_02047408(func_020522c8, 0);
     func_020483f0(b, a);
@@ -154,7 +154,7 @@ void func_020519bc(void)
     }
     if (data_02218fd0.init == 1) {
         func_02052208();
-        func_0204e97c();
+        ReleaseGlobalPoolRef();
         func_020405d4();
         func_02047698();
         if (data_02218fd0.sflag != 0) {
@@ -247,7 +247,7 @@ void *func_02051ae4(CriOpen *p)
     } else {
         e->work = p->mem->alloc(size);
     }
-    e->h = func_0204e994(&s, e->work, size);
+    e->h = CreateGlobalPoolObj(&s, e->work, size);
     if (e->h == 0) {
         func_020522e8(data_020b230c[8], data_020b2474);
         return 0;
@@ -295,7 +295,7 @@ void func_02051d7c(CriHdl *hdl)
     if (e->f18 != 0) {
         func_0204ec6c(e->h);
     }
-    func_0204e9f4(e->h);
+    ReleaseGlobalPoolObj(e->h);
     e->h = 0;
     if (e->mem.free != 0) {
         e->mem.free(e->work);

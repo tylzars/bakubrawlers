@@ -16,7 +16,7 @@ CharacterIcons::CharacterIcons(u32 unk1, u32 unk2, s32 unk3) {
     mScreen = unk3 % 2;
     for (u8 i = 0; i < 4; i++) {
         mSlots[i].mCharacterId = -1;
-        mSlots[i].mAnim      = NULL;
+        mSlots[i].mCellAnim      = NULL;
         mSlots[i].mX         = 0;
         mSlots[i].mY         = 0;
         mSlots[i].mUnk_0a    = 0;
@@ -26,7 +26,7 @@ CharacterIcons::CharacterIcons(u32 unk1, u32 unk2, s32 unk3) {
 
 CharacterIcons::~CharacterIcons() {
     for (u8 i = 0; i < 4; i++) {
-        CellAnimation *anim = mSlots[i].mAnim;
+        CellAnimation *anim = mSlots[i].mCellAnim;
         if (anim != NULL) {
             delete anim;
         }
@@ -64,14 +64,14 @@ void CharacterIcons::SetCharacter(u32 slot, s32 character, u32 unk3, u32 unk4) {
         }
         ChangeDir("/Game/Character/Icon/");
     }
-    if (mSlots[slot].mAnim != NULL) {
-        delete mSlots[slot].mAnim;
+    if (mSlots[slot].mCellAnim != NULL) {
+        delete mSlots[slot].mCellAnim;
     }
-    mSlots[slot].mAnim = NULL;
+    mSlots[slot].mCellAnim = NULL;
     sprintf(path, "icon_ch_%02d_nce.bin", number);
-    mSlots[slot].mAnim = new CellAnimation(path, 0, 1, 1);
-    mSlots[slot].mAnim->mCharBase = screen.GetCharBase(offset);
-    mSlots[slot].mAnim->mPaletteBase   = palette;
+    mSlots[slot].mCellAnim = new CellAnimation(path, 0, 1, 1);
+    mSlots[slot].mCellAnim->mCharBase = screen.GetCharBase(offset);
+    mSlots[slot].mCellAnim->mPaletteBase   = palette;
     mSlots[slot].mVisible = 1;
     ChangeDir("/");
 }
@@ -89,7 +89,7 @@ void CharacterIcons::DrawIcons() {
     for (u8 i = 0; i < 4; i++) {
         CharacterIconSlot *slot = &mSlots[i];
         if (slot->mVisible != 0) {
-            slot->mAnim->Draw(mScreen, slot->mX, slot->mY, slot->mUnk_0a);
+            slot->mCellAnim->Draw(mScreen, slot->mX, slot->mY, slot->mUnk_0a);
         }
     }
 }

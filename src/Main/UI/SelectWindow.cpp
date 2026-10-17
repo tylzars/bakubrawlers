@@ -31,7 +31,7 @@ SelectWindow::SelectWindow(u32 itemCount, const WindowItemRecord *items, s32 unk
         item++;
     } while (i < itemCount);
     for (i = 0; i < 22; i++) {
-        mCells[i] = NULL;
+        mCellAnims[i] = NULL;
     }
 }
 
@@ -75,9 +75,9 @@ BOOL SelectWindow::Update(BOOL input) {
             if (newId == -1) {
                 return 0;
             }
-            mCells[newId]->SetAnimation(mButtons[newId].mResultAnimIndex);
+            mCellAnims[newId]->SetAnimation(mButtons[newId].mResultAnimIndex);
             if (oldId != -1 && newId != oldId) {
-                mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
+                mCellAnims[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
             }
             mResult  = 1;
             mInputLocked = 1;
@@ -87,9 +87,9 @@ BOOL SelectWindow::Update(BOOL input) {
             if (newId == -1) {
                 return 0;
             }
-            mCells[newId]->SetAnimation(mButtons[newId].mResultAnimIndex);
+            mCellAnims[newId]->SetAnimation(mButtons[newId].mResultAnimIndex);
             if (oldId != -1 && newId != oldId) {
-                CellAnimation *cell = mCells[oldId];
+                CellAnimation *cell = mCellAnims[oldId];
                 u8 anim             = mButtons[oldId].mUnk_08;
                 if (anim != cell->mAnimIndex) {
                     cell->SetAnimation(anim);
@@ -103,9 +103,9 @@ BOOL SelectWindow::Update(BOOL input) {
             if (newId == -1) {
                 return 0;
             }
-            mCells[newId]->SetAnimation(mButtons[newId].mResultAnimIndex);
+            mCellAnims[newId]->SetAnimation(mButtons[newId].mResultAnimIndex);
             if (oldId != -1 && newId != oldId && mCursor->HasNeighbor(newSel)) {
-                mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
+                mCellAnims[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
             }
             mSavedSelection = oldSel;
             mResult  = 3;
@@ -115,14 +115,14 @@ BOOL SelectWindow::Update(BOOL input) {
             mUnk_0e0 = 1;
             if (newPrev != oldPrev) {
                 if (newPrevId != -1 && items[newPrev].mUnk_18 == 3) {
-                    CellAnimation *cell = mCells[newPrevId];
+                    CellAnimation *cell = mCellAnims[newPrevId];
                     u8 anim             = mButtons[newPrevId].mUnk_0a;
                     if (anim != cell->mAnimIndex) {
                         cell->SetAnimation(anim);
                     }
                 }
                 if (oldPrevId != -1 && newPrevId != oldPrevId && oldPrev != newSel) {
-                    mCells[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
+                    mCellAnims[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
                 }
             }
             break;
@@ -130,26 +130,26 @@ BOOL SelectWindow::Update(BOOL input) {
             mUnk_0e0 = 1;
             if (newSel != oldSel) {
                 if (newId != -1) {
-                    CellAnimation *cell = mCells[newId];
+                    CellAnimation *cell = mCellAnims[newId];
                     u8 anim             = mButtons[newId].mUnk_0a;
                     if (anim != cell->mAnimIndex) {
                         cell->SetAnimation(anim);
                     }
                 }
                 if (oldId != -1 && newId != oldId) {
-                    mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
+                    mCellAnims[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
                 }
             }
             if (newPrev != oldPrev) {
                 if (newPrevId != -1) {
-                    CellAnimation *cell = mCells[newPrevId];
+                    CellAnimation *cell = mCellAnims[newPrevId];
                     u8 anim             = mButtons[newPrevId].mUnk_0a;
                     if (anim != cell->mAnimIndex) {
                         cell->SetAnimation(anim);
                     }
                 }
                 if (oldPrevId != -1 && newPrevId != oldPrevId && oldPrev != newSel) {
-                    mCells[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
+                    mCellAnims[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
                 }
             }
             break;
@@ -157,33 +157,33 @@ BOOL SelectWindow::Update(BOOL input) {
             mUnk_0e0 = 0;
             if (newSel != oldSel) {
                 if (newId != -1) {
-                    CellAnimation *cell = mCells[newId];
+                    CellAnimation *cell = mCellAnims[newId];
                     u8 anim             = mButtons[newId].mUnk_0a;
                     if (anim != cell->mAnimIndex) {
                         cell->SetAnimation(anim);
                     }
                 }
                 if (oldId != -1 && newId != oldId) {
-                    mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
+                    mCellAnims[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
                 }
             }
             if (newPrev != oldPrev) {
                 if (newPrevId != -1) {
-                    CellAnimation *cell = mCells[newPrevId];
+                    CellAnimation *cell = mCellAnims[newPrevId];
                     u8 anim             = mButtons[newPrevId].mUnk_0a;
                     if (anim != cell->mAnimIndex) {
                         cell->SetAnimation(anim);
                     }
                 }
                 if (oldPrevId != -1 && newPrevId != oldPrevId && oldPrev != newSel) {
-                    mCells[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
+                    mCellAnims[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
                 }
             }
             break;
         case 7:
             mUnk_0e0 = 0;
             if (newPrev != oldPrev && oldPrevId != -1 && newPrevId != oldPrevId && oldPrev != newSel) {
-                mCells[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
+                mCellAnims[oldPrevId]->SetAnimation(mButtons[oldPrevId].mUnk_08);
             }
             break;
         }
@@ -193,10 +193,10 @@ BOOL SelectWindow::Update(BOOL input) {
         BOOL flag = FALSE;
         SelectWindowCursor *c = mCursor;
         s8 sel = c->mSelection;
-        if (mCells[sel == -1 ? -1 : c->mItems[sel].mId]->mFinished != 0) {
+        if (mCellAnims[sel == -1 ? -1 : c->mItems[sel].mId]->mFinished != 0) {
             flag = TRUE;
         }
-        if (mCells[sel == -1 ? -1 : c->mItems[sel].mId]->mMode == 1) {
+        if (mCellAnims[sel == -1 ? -1 : c->mItems[sel].mId]->mMode == 1) {
             flag = TRUE;
         }
         if (flag) {
@@ -216,7 +216,7 @@ BOOL SelectWindow::Update(BOOL input) {
         SelectWindowCursor *c = mCursor;
         if (mSlideStep == 2) {
             if (c->mSelection != -1) {
-                mCells[GetSelectedId()]->SetAnimation(mButtons[GetSelectedId()].mUnk_08);
+                mCellAnims[GetSelectedId()]->SetAnimation(mButtons[GetSelectedId()].mUnk_08);
             }
         } else if (mSlideStep == 0) {
             mSlideInRequested = 0;
@@ -233,7 +233,7 @@ BOOL SelectWindow::Update(BOOL input) {
         if (mSavedSelection != mCursor->mSelection) {
             int id = GetSelectedId();
             if (id != -1) {
-                mCells[GetSelectedId()]->SetAnimation(mButtons[GetSelectedId()].mUnk_08);
+                mCellAnims[GetSelectedId()]->SetAnimation(mButtons[GetSelectedId()].mUnk_08);
             }
         }
         mCursor->mSelection = mSavedSelection;
@@ -256,9 +256,9 @@ void SelectWindow::SetCells(u32 count, const WindowCellRecord *cells) {
     do {
         const WindowCellRecord *cell = &cells[i];
         if (cell->mPath != NULL) {
-            mCells[mCellCount]            = new CellAnimation(cell->mPath, cell->mAnimIndex, 1, 1);
-            mCells[mCellCount]->mCharBase = screen.GetCharBase(cell->mCharOffset);
-            mCells[mCellCount]->mPaletteBase   = cell->mPaletteBase;
+            mCellAnims[mCellCount]            = new CellAnimation(cell->mPath, cell->mAnimIndex, 1, 1);
+            mCellAnims[mCellCount]->mCharBase = screen.GetCharBase(cell->mCharOffset);
+            mCellAnims[mCellCount]->mPaletteBase   = cell->mPaletteBase;
         }
         WindowButton *button = &mButtons[mCellCount];
         i++;
@@ -277,11 +277,11 @@ void SelectWindow::FreeCursor() {
 void SelectWindow::FreeCells() {
     u8 i = 0;
     do {
-        CellAnimation *cell = mCells[i];
+        CellAnimation *cell = mCellAnims[i];
         if (cell != NULL) {
             delete cell;
         }
-        mCells[i] = NULL;
+        mCellAnims[i] = NULL;
         i++;
     } while (i < 22);
 }
@@ -290,12 +290,12 @@ void SelectWindow::Draw() {
     u8 i = 0;
     do {
         if (mButtons[i].mEnabled != 0) {
-            if (mCells[i] != NULL) {
-                mCells[i]->Update();
-                mCells[i]->Draw(1, mCellPos[i].x, mCellPos[i].y, mButtons[i].mUnk_00);
+            if (mCellAnims[i] != NULL) {
+                mCellAnims[i]->Update();
+                mCellAnims[i]->Draw(1, mCellPos[i].x, mCellPos[i].y, mButtons[i].mUnk_00);
             }
-        } else if (mUnk_07e != 0 && mCells[i] != NULL) {
-            mCells[i]->Update();
+        } else if (mUnk_07e != 0 && mCellAnims[i] != NULL) {
+            mCellAnims[i]->Update();
         }
         i++;
     } while (i < mCellCount);
@@ -605,9 +605,9 @@ void SelectWindow::SetResultItem(u32 unk1, u32 unk2) {
     s8 oldId = GetSelectedId();
     mCursor->mSelection = unk1;
     s8 sel = mCursor->mSelection;
-    mCells[unk1]->SetAnimation(mButtons[unk1].mResultAnimIndex);
+    mCellAnims[unk1]->SetAnimation(mButtons[unk1].mResultAnimIndex);
     if (oldId != -1 && unk1 != oldId && mCursor->HasNeighbor(sel)) {
-        mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
+        mCellAnims[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
     }
     mResult   = unk2;
     mState  = 2;

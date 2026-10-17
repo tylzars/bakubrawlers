@@ -21,7 +21,7 @@ struct GlyphSlot {
 class TutorialScene : public SceneBase {
 public:
     /* 00 (base) */
-    /* 0c */ CellAnimation *mCells[4];
+    /* 0c */ CellAnimation *mCellAnims[4];
     /* 1c */ ScriptPlayer *mEvent;
     /* 20 */ SelectWindow *mWindow;
     /* 24 */ MessageWindow *mMessageWindow;

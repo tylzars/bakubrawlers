@@ -89,12 +89,12 @@ MyroomTipsScene::MyroomTipsScene() :
     mWindowA = NULL;
     mWindowB = NULL;
     mEvent   = NULL;
-    mCellB   = NULL;
+    mCellAnimB   = NULL;
     mMessageWindow = NULL;
-    mCellA   = NULL;
+    mCellAnimA   = NULL;
     u8 i;
     for (i = 0; i < 6; i++) {
-        mCells[i] = NULL;
+        mCellAnims[i] = NULL;
     }
     for (i = 0; i < 2; i++) {
         mRowCells[i] = NULL;
@@ -116,17 +116,17 @@ MyroomTipsScene::MyroomTipsScene() :
 MyroomTipsScene::~MyroomTipsScene() {
     delete mWindowA;
     delete mWindowB;
-    CellAnimation *cellB = mCellB;
+    CellAnimation *cellB = mCellAnimB;
     if (cellB != NULL) {
         delete cellB;
     }
     delete mMessageWindow;
-    CellAnimation *cellA = mCellA;
+    CellAnimation *cellA = mCellAnimA;
     if (cellA != NULL) {
         delete cellA;
     }
     for (u8 i = 0; i < 6; i++) {
-        CellAnimation *cell = mCells[i];
+        CellAnimation *cell = mCellAnims[i];
         if (cell != NULL) {
             delete cell;
         }
@@ -231,7 +231,7 @@ void MyroomTipsScene::Update() {
             if (!mEvent->IsRunning()) {
                 mWindowB->mState = 4;
                 mWindowB->Reset(-1);
-                mWindowB->mCells[0]->SetAnimation(2);
+                mWindowB->mCellAnims[0]->SetAnimation(2);
                 MI_CpuClear16(mTextWidth, 8);
                 MI_CpuClear16(mTextX, 8);
                 MI_CpuFill8(mTimers, 0x3c, 4);
@@ -337,19 +337,19 @@ void MyroomTipsScene::LoadGraphics() {
     ChangeDir("/Game/Myroom/");
     sub.LoadCharacters("myroom_tips_obj_00.nce_ncg1D.bin", 0x2000, 0);
     sub.LoadPalette("myroom_tips_obj_00_ncl.bin", 0, 0);
-    mCellA            = new CellAnimation("myroom_tips_obj_00_nce.bin", 0, 1, 1);
-    mCellA->mCharBase = sub.GetCharBase(0x2000);
-    mCellA->mPaletteBase   = 0;
+    mCellAnimA            = new CellAnimation("myroom_tips_obj_00_nce.bin", 0, 1, 1);
+    mCellAnimA->mCharBase = sub.GetCharBase(0x2000);
+    mCellAnimA->mPaletteBase   = 0;
     for (u8 i = 0; i < 6; i++) {
-        mCells[i]            = new CellAnimation("myroom_tips_obj_00_nce.bin", 0, 1, 1);
-        mCells[i]->mCharBase = sub.GetCharBase(0x2000);
-        mCells[i]->mPaletteBase   = 0;
-        mCells[i]->SetAnimation(i + 2);
+        mCellAnims[i]            = new CellAnimation("myroom_tips_obj_00_nce.bin", 0, 1, 1);
+        mCellAnims[i]->mCharBase = sub.GetCharBase(0x2000);
+        mCellAnims[i]->mPaletteBase   = 0;
+        mCellAnims[i]->SetAnimation(i + 2);
     }
-    mCellB            = new CellAnimation("myroom_tips_obj_00_nce.bin", 0, 1, 1);
-    mCellB->mCharBase = sub.GetCharBase(0x2000);
-    mCellB->mPaletteBase   = 0;
-    mCellB->SetAnimation(1);
+    mCellAnimB            = new CellAnimation("myroom_tips_obj_00_nce.bin", 0, 1, 1);
+    mCellAnimB->mCharBase = sub.GetCharBase(0x2000);
+    mCellAnimB->mPaletteBase   = 0;
+    mCellAnimB->SetAnimation(1);
     mNewCells[0]            = new CellAnimation("myroom_tips_obj_00_nce.bin", 8, 1, 1);
     mNewCells[0]->mCharBase = sub.GetCharBase(0x2000);
     mNewCells[0]->mPaletteBase   = 0;
@@ -445,9 +445,9 @@ void MyroomTipsScene::func_ov008_022271f8() {
     SceneContext *context = mContext;
     if (mFlags & 1) {
         BOOL drawn = FALSE;
-        mCellA->Update();
+        mCellAnimA->Update();
         if (!gSaveData[0].mUnk_5bf_0 && gSaveData[0].mUnk_42 == 6 && mUnlocked[0] != 0) {
-            mCellA->Draw(1, 0x14, 0x22, 2);
+            mCellAnimA->Draw(1, 0x14, 0x22, 2);
             drawn = TRUE;
         }
         u8 i = 0;
@@ -456,10 +456,10 @@ void MyroomTipsScene::func_ov008_022271f8() {
         }
         do {
             if (mUnlocked[i] == 0) {
-                mCellA->Draw(1, sMyroomTipsCategoryPos[i][0], sMyroomTipsCategoryPos[i][1], 2);
+                mCellAnimA->Draw(1, sMyroomTipsCategoryPos[i][0], sMyroomTipsCategoryPos[i][1], 2);
             } else {
-                mCells[i]->Update();
-                mCells[i]->Draw(1, sMyroomTipsCategoryPos[i][0], sMyroomTipsCategoryPos[i][1], 2);
+                mCellAnims[i]->Update();
+                mCellAnims[i]->Draw(1, sMyroomTipsCategoryPos[i][0], sMyroomTipsCategoryPos[i][1], 2);
             }
             i++;
         } while (i < 6);
@@ -501,11 +501,11 @@ void MyroomTipsScene::func_ov008_022273f0() {
 }
 
 void MyroomTipsScene::DrawCategoryCursor(const u8 *pos, u32 index) {
-    if (mCellB == NULL) {
+    if (mCellAnimB == NULL) {
         return;
     }
-    mCellB->Update();
-    mCellB->Draw(1, pos[index * 2], pos[index * 2 + 1], 2);
+    mCellAnimB->Update();
+    mCellAnimB->Draw(1, pos[index * 2], pos[index * 2 + 1], 2);
 }
 
 void MyroomTipsScene::func_ov008_022274f8() {

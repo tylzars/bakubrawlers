@@ -10,8 +10,8 @@ class CellAnimation;
 // ListScene::mAntenna.
 class AntennaIndicator : public SceneBase {
 public:
-    /* 0c */ CellAnimation *mFirstAnim;
-    /* 10 */ CellAnimation *mSecondAnim;
+    /* 0c */ CellAnimation *mFirstCellAnim;
+    /* 10 */ CellAnimation *mSecondCellAnim;
     /* 14 */ PAD(0x14, 0x19);
     /* 19 */ u8 mLayoutIndex; // layout index
     /* 1a */ u8 mSecondVisible; // draw the second animation too

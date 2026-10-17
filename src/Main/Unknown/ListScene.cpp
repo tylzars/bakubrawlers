@@ -773,7 +773,7 @@ void ListScene::Update() {
     if (mUnk_3fa != 0) {
         mUnk_3fa--;
         if (mUnk_3fa == 0 && mUnk_4c != NULL) {
-            mUnk_4c->mCells[0]->SetAnimation(2);
+            mUnk_4c->mCellAnims[0]->SetAnimation(2);
         }
     }
     if (mUnk_3ff != 0 && mUnk_3fc == 0) {
@@ -1037,7 +1037,7 @@ void ListScene::Update() {
                     case 0xb:
                         SoundManager::Get().StartSeqArc(0x6a);
                         func_02085220(this, 0);
-                        mDeckWindow->mCells[0]->SetAnimation(0);
+                        mDeckWindow->mCellAnims[0]->SetAnimation(0);
                         mState = 0x17;
                         WirelessManager::Get();
                         if (IsWirelessMode(&data_020c4030.mUnk_228)) {
@@ -1451,7 +1451,7 @@ void ListScene::LoadSubScreenGraphics() {
         ChangeDir("/");
         mDeckWindow = new SelectWindow(2, data_020a31a0, 0);
         mDeckWindow->SetCells(2, data_020a31d8);
-        mDeckWindow->mCells[0]->SetAnimation(1);
+        mDeckWindow->mCellAnims[0]->SetAnimation(1);
         this->SetItemFlags(3, 0, 8);
         this->SetItemFlags(3, 1, 8);
         this->SetItemFlags(0, 0, 0x8000);
@@ -1702,7 +1702,7 @@ void ListScene::func_0207cfa4() {
         } else if (InputManager::Get().IsHeld(2)) {
             if (act == 0) {
                 act = 2;
-                mUnk_4c->mCells[0]->SetAnimation(3);
+                mUnk_4c->mCellAnims[0]->SetAnimation(3);
                 mUnk_3fa = 6;
             }
         } else if (InputManager::Get().IsTrigger(KEY_LEFT)) {
@@ -1992,13 +1992,13 @@ void ListScene::func_0207e074() {
         mUnk_194[0] = 0;
         if (mUnk_e8 > mUnk_f4 && mUnk_f0 != 0) {
             SetItemFlags(0, 1, 8);
-            mUnk_4c->mCells[1]->Rewind();
+            mUnk_4c->mCellAnims[1]->Rewind();
         } else {
             SetItemFlags(0, 1, 0x8000);
         }
         if (mUnk_e8 < mUnk_e9 - 1 && mUnk_f0 != 0) {
             SetItemFlags(0, 2, 8);
-            mUnk_4c->mCells[2]->Rewind();
+            mUnk_4c->mCellAnims[2]->Rewind();
         } else {
             SetItemFlags(0, 2, 0x8000);
         }
@@ -2022,9 +2022,9 @@ void ListScene::func_0207e074() {
             SetItemFlags(0, 6, 0x8000);
         } else {
             SetItemFlags(0, 5, 8);
-            mUnk_4c->mCells[5]->Rewind();
+            mUnk_4c->mCellAnims[5]->Rewind();
             SetItemFlags(0, 6, 8);
-            mUnk_4c->mCells[6]->Rewind();
+            mUnk_4c->mCellAnims[6]->Rewind();
         }
         switch (mMode) {
             case 0:
@@ -3672,27 +3672,27 @@ void func_020834ec(ListScene *self, u32 mode) {
         case 0:
             self->SetItemFlags(1, 3, 1);
             self->mUnk_48->mCursor->mSelection = 3;
-            self->mUnk_48->mCells[3]->SetAnimation(1);
-            self->mUnk_48->mCells[0]->SetAnimation(9);
+            self->mUnk_48->mCellAnims[3]->SetAnimation(1);
+            self->mUnk_48->mCellAnims[0]->SetAnimation(9);
             break;
         case 1:
             self->SetItemFlags(1, 1, 1);
             self->SetItemFlags(1, 2, 2);
             if (flag != 0) {
                 self->mUnk_48->mCursor->mSelection = 1;
-                self->mUnk_48->mCells[1]->SetAnimation(4);
+                self->mUnk_48->mCellAnims[1]->SetAnimation(4);
             } else {
                 self->mUnk_48->mCursor->mSelection = 2;
-                self->mUnk_48->mCells[2]->SetAnimation(7);
+                self->mUnk_48->mCellAnims[2]->SetAnimation(7);
             }
-            self->mUnk_48->mCells[0]->SetAnimation(10);
+            self->mUnk_48->mCellAnims[0]->SetAnimation(10);
             break;
         case 2:
             self->SetItemFlags(1, 1, 1);
             self->SetItemFlags(1, 2, 2);
             self->mUnk_48->mCursor->mSelection = 1;
-            self->mUnk_48->mCells[1]->SetAnimation(4);
-            self->mUnk_48->mCells[0]->SetAnimation(10);
+            self->mUnk_48->mCellAnims[1]->SetAnimation(4);
+            self->mUnk_48->mCellAnims[0]->SetAnimation(10);
             self->mUnk_48->mButtons[4].mEnabled = 1;
             break;
     }
@@ -3868,7 +3868,7 @@ void func_020843ac(ListScene *self, u32 unk1) {
         screen.LoadPalette("battle_b_obj_ability_ncl.bin", 0x100, 0);
         GXS_SetVisiblePlane(0x11);
         self->mDeckWindow->mCursor->mSelection = 1;
-        self->mDeckWindow->mCells[1]->SetAnimation(4);
+        self->mDeckWindow->mCellAnims[1]->SetAnimation(4);
         self->SetItemFlags(3, 0, 8);
         self->SetItemFlags(3, 1, 8);
         self->SetItemFlags(0, 0, 0x8000);
@@ -4129,7 +4129,7 @@ void func_02085220(ListScene *self, u32 mode) {
             self->mPendingPlanes                      = 0x11;
             self->mDeckWindow->mEnabled             = 1;
             self->mDeckWindow->mCursor->mSelection = state;
-            self->mDeckWindow->mCells[0]->SetAnimation(1);
+            self->mDeckWindow->mCellAnims[0]->SetAnimation(1);
             self->SetItemFlags(3, state, 8);
             self->SetItemFlags(3, 1, 8);
             self->mUnk_48->mEnabled = state;
@@ -4154,20 +4154,20 @@ void func_02085220(ListScene *self, u32 mode) {
         case 0:
             self->SetItemFlags(1, 3, 1);
             self->mUnk_48->mCursor->mSelection = 3;
-            self->mUnk_48->mCells[3]->SetAnimation(1);
-            self->mUnk_48->mCells[0]->SetAnimation(9);
+            self->mUnk_48->mCellAnims[3]->SetAnimation(1);
+            self->mUnk_48->mCellAnims[0]->SetAnimation(9);
             break;
         case 1:
             self->SetItemFlags(1, 1, 1);
             self->SetItemFlags(1, 2, 2);
             if (flag != 0) {
                 self->mUnk_48->mCursor->mSelection = 1;
-                self->mUnk_48->mCells[1]->SetAnimation(4);
+                self->mUnk_48->mCellAnims[1]->SetAnimation(4);
             } else {
                 self->mUnk_48->mCursor->mSelection = 2;
-                self->mUnk_48->mCells[2]->SetAnimation(7);
+                self->mUnk_48->mCellAnims[2]->SetAnimation(7);
             }
-            self->mUnk_48->mCells[0]->SetAnimation(10);
+            self->mUnk_48->mCellAnims[0]->SetAnimation(10);
             break;
     }
     self->mUnk_1a1 = mode;

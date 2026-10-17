@@ -75,7 +75,7 @@ TutorialScene::TutorialScene() :
     mUnk_4b        = 0;
     mUnk_4c        = 0;
     mUnk_4d        = 0;
-    MI_CpuClear32(mCells, sizeof(mCells));
+    MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
     for (u8 i = 0; i < 7; i++) {
         if (TestFlagBit(data_020d49ae, i)) {
             mFlags[i] = 1;
@@ -95,8 +95,8 @@ TutorialScene::~TutorialScene() {
         delete mWindow;
     }
     for (u8 i = 0; i < 4; i++) {
-        if (mCells[i] != NULL) {
-            delete mCells[i];
+        if (mCellAnims[i] != NULL) {
+            delete mCellAnims[i];
         }
     }
     if (mMessages[0] != NULL) {
@@ -579,31 +579,31 @@ void TutorialScene::LoadGraphics() {
     main.SetObjVramMode(3);
     main.LoadCharacters("tutorial_u_obj_00.nce_ncg1D.bin", 0, 0);
     main.LoadPalette("tutorial_u_obj_00_ncl.bin", 0, 0);
-    if (mCells[3] != NULL) {
-        delete mCells[3];
+    if (mCellAnims[3] != NULL) {
+        delete mCellAnims[3];
     }
-    mCells[3]            = new CellAnimation("tutorial_u_obj_00_nce.bin", 0, 1, 1);
-    mCells[3]->mCharBase = main.GetCharBase(0);
-    mCells[3]->mPaletteBase   = 0;
+    mCellAnims[3]            = new CellAnimation("tutorial_u_obj_00_nce.bin", 0, 1, 1);
+    mCellAnims[3]->mCharBase = main.GetCharBase(0);
+    mCellAnims[3]->mPaletteBase   = 0;
     SpriteScreen &sub    = SpriteManager::Get().Screen(1);
     sub.SetObjVramMode(3);
     sub.LoadCharacters("tutorial_b_obj_00.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("tutorial_b_obj_00_ncl.bin", 0, 0);
     for (u8 i = 0; i < 3; i++) {
-        if (mCells[i] != NULL) {
-            delete mCells[i];
+        if (mCellAnims[i] != NULL) {
+            delete mCellAnims[i];
         }
-        mCells[i]            = new CellAnimation("tutorial_b_obj_00_nce.bin", 0, 1, 1);
-        mCells[i]->mCharBase = sub.GetCharBase(0);
-        mCells[i]->mPaletteBase   = 0;
+        mCellAnims[i]            = new CellAnimation("tutorial_b_obj_00_nce.bin", 0, 1, 1);
+        mCellAnims[i]->mCharBase = sub.GetCharBase(0);
+        mCellAnims[i]->mPaletteBase   = 0;
     }
-    CellAnimation *cell = mCells[1];
+    CellAnimation *cell = mCellAnims[1];
     cell->mAnimIndex       = 2;
     cell->ResetAnimation();
-    cell          = mCells[0];
+    cell          = mCellAnims[0];
     cell->mAnimIndex = 1;
     cell->ResetAnimation();
-    cell          = mCells[2];
+    cell          = mCellAnims[2];
     cell->mAnimIndex = 0;
     cell->ResetAnimation();
     ChangeDir("/Game/2D/union_b/");
@@ -719,7 +719,7 @@ u8 TutorialScene::UpdateList() {
     u8 i;
     if (result != 0) {
         if (result == 1) {
-            CellAnimation *cell = mCells[1];
+            CellAnimation *cell = mCellAnims[1];
             cell->mAnimIndex       = 3;
             cell->ResetAnimation();
         }
@@ -778,7 +778,7 @@ void TutorialScene::UpdateScroll() {
     u8 y                 = window->mCursor->mScrollItemY;
     window->mCellPos[2].x = 0xe4;
     window->mCellPos[2].y = y;
-    CellAnimation *cell = mCells[1];
+    CellAnimation *cell = mCellAnims[1];
     cell->mAnimIndex       = 2;
     cell->ResetAnimation();
 }
@@ -792,18 +792,18 @@ void TutorialScene::DrawList() {
         SpriteManager::Get().Screen(1).AddOam(mGlyphs[0].mBuffer, mGlyphs[0].mCount, 0x28, (s16) (i * 32 + 0x29), 2,
                                                      (u16) ((index * 0x800 + 0x8000) >> 7), 0xf, 0);
         if (mFlags[index + 1] != 0) {
-            mCells[2]->Draw(1, 8, (s16) (i * 32 + 0x24), 2);
+            mCellAnims[2]->Draw(1, 8, (s16) (i * 32 + 0x24), 2);
         }
         u8 selected;
         if (mSelection != index) {
             selected = 0;
         } else {
             selected = 1;
-            mCells[1]->Update();
+            mCellAnims[1]->Update();
         }
-        mCells[selected]->Draw(1, 0x20, (s16) (i * 32 + 0x20), 2);
+        mCellAnims[selected]->Draw(1, 0x20, (s16) (i * 32 + 0x20), 2);
     }
-    mCells[3]->Draw(0, 0x80, 0x60, 0);
+    mCellAnims[3]->Draw(0, 0x80, 0x60, 0);
 }
 
 u8 GetTutorialId(TutorialScene *scene) {

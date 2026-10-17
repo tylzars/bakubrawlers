@@ -23,7 +23,7 @@ public:
     /* 14 */ float mScale;
     /* 18 */ s32 mSpeed;
     /* 1c */ s32 mAccel;
-    /* 20 */ CellAnimation *mAnim;
+    /* 20 */ CellAnimation *mCellAnim;
     /* 24 */
 
     ConfrontEmblem02(u8 emblem);

@@ -31,15 +31,15 @@ ConfrontEmblem02::ConfrontEmblem02(u8 emblem) {
     screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
     sprintf(path, "vs_emblem_%02d_nce.bin", emblem);
-    mAnim = new CellAnimation(path, 0, 1, 1);
-    mAnim->mCharBase = screen.GetCharBase(0x1c000);
-    mAnim->mPaletteBase = 0xb;
-    mAnim->SetAnimation(0);
+    mCellAnim = new CellAnimation(path, 0, 1, 1);
+    mCellAnim->mCharBase = screen.GetCharBase(0x1c000);
+    mCellAnim->mPaletteBase = 0xb;
+    mCellAnim->SetAnimation(0);
     ChangeDir("/");
 }
 
 ConfrontEmblem02::~ConfrontEmblem02() {
-    delete mAnim;
+    delete mCellAnim;
 }
 
 void ConfrontEmblem02::Start(u8 side) {
@@ -54,8 +54,8 @@ void ConfrontEmblem02::Start(u8 side) {
     mAccel = 0x148;
     mScale = 1.0f;
     mUnk_07_2 = 0;
-    mAnim->ResetAnimation();
-    mAnim->SetAnimation(0);
+    mCellAnim->ResetAnimation();
+    mCellAnim->SetAnimation(0);
 }
 
 void ConfrontEmblem02::Update() {
@@ -90,8 +90,8 @@ void ConfrontEmblem02::Update() {
             }
             break;
         case 1:
-            if (mAnim->mFinished == 0) {
-                mAnim->Update();
+            if (mCellAnim->mFinished == 0) {
+                mCellAnim->Update();
             } else {
                 mTouched = 0;
                 mState = 2;
@@ -123,7 +123,7 @@ void ConfrontEmblem02::Draw() {
                 s32 x = (s32) mAngle;
                 s32 sy = (s32) b;
                 s32 sx = (s32) a;
-                mAnim->DrawTransformed(1, x, 0x7b, 2, sy, sx, 0);
+                mCellAnim->DrawTransformed(1, x, 0x7b, 2, sy, sx, 0);
             }
             break;
         case 1:
@@ -133,7 +133,7 @@ void ConfrontEmblem02::Draw() {
                 s32 x = (s32) mAngle;
                 s32 sy = (s32) b;
                 s32 sx = (s32) a;
-                mAnim->DrawTransformed(1, x, 0x7b, 2, sy, sx, 0);
+                mCellAnim->DrawTransformed(1, x, 0x7b, 2, sy, sx, 0);
             }
             break;
         case 2:
@@ -179,8 +179,8 @@ int ConfrontEmblem02::func_ov007_0221e268(u8 flag) {
         if (result != -1) {
             mTouched = 1;
             mState = 1;
-            mAnim->ResetAnimation();
-            mAnim->SetAnimation(anim);
+            mCellAnim->ResetAnimation();
+            mCellAnim->SetAnimation(anim);
         }
     } else if (result == 100) {
         if (mUnk_07_2) {
@@ -198,7 +198,7 @@ ConfrontBg02::ConfrontBg02()
     mData  = 0;
     mStep  = gConfrontEmblemSteps;
     for (u8 i = 0; i < 3; i++) {
-        mAnims[i] = 0;
+        mCellAnims[i] = 0;
     }
     for (u8 i = 0; i < 4; i++) {
         mEmblems[i] = 0;
@@ -211,7 +211,7 @@ ConfrontBg02::~ConfrontBg02() {
     }
     CellAnimation *anim;
     for (u8 i = 0; i < 3; i++) {
-        anim = mAnims[i];
+        anim = mCellAnims[i];
         delete anim;
     }
 }
@@ -275,21 +275,21 @@ void ConfrontBg02::LoadGraphics() {
     sprintf(path, "vs_emblem_%02d_ncl.bin", emblem);
     screen.LoadPalette(path, 0x160, 0x40);
     sprintf(path, "vs_emblem_%02d_nce.bin", emblem);
-    mAnims[0] = new CellAnimation(path, 0, 1, 1);
-    mAnims[0]->mCharBase = screen.GetCharBase(0x1c000);
-    mAnims[0]->mPaletteBase = 12;
-    mAnims[0]->SetAnimation(0);
+    mCellAnims[0] = new CellAnimation(path, 0, 1, 1);
+    mCellAnims[0]->mCharBase = screen.GetCharBase(0x1c000);
+    mCellAnims[0]->mPaletteBase = 12;
+    mCellAnims[0]->SetAnimation(0);
     screen.LoadCharacters("vs_b_obj_02_line.nce_ncg1D.bin", 0x1d000, 0);
-    mAnims[2] = new CellAnimation("vs_b_obj_02_line_nce.bin", 0, 1, 1);
-    mAnims[2]->mCharBase = screen.GetCharBase(0x1d000);
-    mAnims[2]->mPaletteBase = 11;
-    mAnims[2]->SetAnimation(0);
+    mCellAnims[2] = new CellAnimation("vs_b_obj_02_line_nce.bin", 0, 1, 1);
+    mCellAnims[2]->mCharBase = screen.GetCharBase(0x1d000);
+    mCellAnims[2]->mPaletteBase = 11;
+    mCellAnims[2]->SetAnimation(0);
     screen.LoadCharacters("vs_b_obj_02_marker.nce_ncg1D.bin", 0x1e000, 0);
     screen.LoadPalette("vs_b_obj_02_marker_ncl.bin", 0x1a0, 0x20);
-    mAnims[1] = new CellAnimation("vs_b_obj_02_marker_nce.bin", 0, 1, 1);
-    mAnims[1]->mCharBase = screen.GetCharBase(0x1e000);
-    mAnims[1]->mPaletteBase = 13;
-    mAnims[1]->SetAnimation(0);
+    mCellAnims[1] = new CellAnimation("vs_b_obj_02_marker_nce.bin", 0, 1, 1);
+    mCellAnims[1]->mCharBase = screen.GetCharBase(0x1e000);
+    mCellAnims[1]->mPaletteBase = 13;
+    mCellAnims[1]->SetAnimation(0);
     ChangeDir("/");
 }
 
@@ -334,24 +334,24 @@ void ConfrontBg02::vfunc_3c() {
             mEmblems[i]->Draw();
         }
     }
-    if (mAnims[1]->mAnimIndex == 1) {
-        if (mAnims[1]->mFinished == 0) {
-            mAnims[1]->Update();
+    if (mCellAnims[1]->mAnimIndex == 1) {
+        if (mCellAnims[1]->mFinished == 0) {
+            mCellAnims[1]->Update();
         } else {
-            mAnims[1]->ResetAnimation();
-            mAnims[1]->SetAnimation(0);
+            mCellAnims[1]->ResetAnimation();
+            mCellAnims[1]->SetAnimation(0);
         }
     }
-    mAnims[1]->Draw(1, 0x69, 0x64, 2);
+    mCellAnims[1]->Draw(1, 0x69, 0x64, 2);
     for (u8 i = 0; i < 4; i++) {
         if (mEmblems[i]->mUnk_07_1) {
             mEmblems[i]->Draw();
         }
     }
-    mAnims[0]->Draw(1, 0x80, 0x7b, 2);
-    if (mAnims[2]->mFinished == 0) {
-        mAnims[2]->Update();
-        mAnims[2]->Draw(1, 0x80, 0x7b, 2);
+    mCellAnims[0]->Draw(1, 0x80, 0x7b, 2);
+    if (mCellAnims[2]->mFinished == 0) {
+        mCellAnims[2]->Update();
+        mCellAnims[2]->Draw(1, 0x80, 0x7b, 2);
     }
 }
 
@@ -360,8 +360,8 @@ u8 ConfrontBg02::UpdateTouch(int a) {
     s32 result = -1;
     for (u8 i = 0; i < 4; i++) {
         if (mEmblems[i]->func_ov007_0221e268(1) == 100) {
-            mAnims[1]->ResetAnimation();
-            mAnims[1]->SetAnimation(1);
+            mCellAnims[1]->ResetAnimation();
+            mCellAnims[1]->SetAnimation(1);
             break;
         }
     }
@@ -378,8 +378,8 @@ u8 ConfrontBg02::UpdateTouch(int a) {
         }
         if (result != -1) {
             if (result == 100) {
-                mAnims[2]->ResetAnimation();
-                mAnims[2]->SetAnimation(1);
+                mCellAnims[2]->ResetAnimation();
+                mCellAnims[2]->SetAnimation(1);
                 SoundManager::Get().StartSeqArc(0x28);
             } else {
                 SoundManager::Get().StartSeqArc(0x29);

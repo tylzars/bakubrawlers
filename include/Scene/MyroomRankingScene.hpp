@@ -14,7 +14,7 @@ struct MessageFile;
 
 // One row of cell animations of the ranking list.
 struct MyroomRankingRow {
-    /* 00 */ CellAnimation *mCells[10];
+    /* 00 */ CellAnimation *mCellAnims[10];
     /* 28 */ u8 mCharacterId;
     /* 29 */ PAD(0x29, 0x2a);
     /* 2a */ u16 mRank;

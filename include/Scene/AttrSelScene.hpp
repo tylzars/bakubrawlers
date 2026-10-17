@@ -32,7 +32,7 @@ public:
     /* 2c */ void *mGlyphBuffer[2];
     /* 34 */ void *mTextBuffer[2];
     /* 3c */ MessageFile *mMessages;
-    /* 40 */ CellAnimation *mCells[8];
+    /* 40 */ CellAnimation *mCellAnims[8];
     /* 60 */ MessageWindow *mMessageWindow;
     /* 64 */ SelectWindow *mSelectWindow;
     /* 68 */

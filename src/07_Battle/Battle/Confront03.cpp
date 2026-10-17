@@ -27,15 +27,15 @@ ConfrontEmblem03::ConfrontEmblem03(u8 index) {
     screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
     sprintf(path, "vs_emblem_%02d_nce.bin", index);
-    mAnim = new CellAnimation(path, 0, 1, 1);
-    mAnim->mCharBase = screen.GetCharBase(0x1c000);
-    mAnim->mPaletteBase = 11;
-    mAnim->SetAnimation(0);
+    mCellAnim = new CellAnimation(path, 0, 1, 1);
+    mCellAnim->mCharBase = screen.GetCharBase(0x1c000);
+    mCellAnim->mPaletteBase = 11;
+    mCellAnim->SetAnimation(0);
     ChangeDir("/");
 }
 
 ConfrontEmblem03::~ConfrontEmblem03() {
-    delete mAnim;
+    delete mCellAnim;
 }
 
 void ConfrontEmblem03::Start(u8 slot, int flag) {
@@ -52,8 +52,8 @@ void ConfrontEmblem03::Start(u8 slot, int flag) {
         mHoldFrameCount = 0x50;
     }
     mScale = 0.1f;
-    mAnim->ResetAnimation();
-    mAnim->SetAnimation(0);
+    mCellAnim->ResetAnimation();
+    mCellAnim->SetAnimation(0);
 }
 
 void ConfrontEmblem03::Update() {
@@ -82,8 +82,8 @@ void ConfrontEmblem03::Update() {
             }
             break;
         case 1:
-            if (mAnim->mFinished == 0) {
-                mAnim->Update();
+            if (mCellAnim->mFinished == 0) {
+                mCellAnim->Update();
             } else {
                 mTouched = 0;
                 mState = 2;
@@ -121,7 +121,7 @@ void ConfrontEmblem03::Draw() {
             } else {
                 b = 4096.0f * mScale - 0.5f;
             }
-            mAnim->DrawTransformed(1, (s32) mX, (s32) mY, 2, (s32) b, (s32) a, 0);
+            mCellAnim->DrawTransformed(1, (s32) mX, (s32) mY, 2, (s32) b, (s32) a, 0);
             break;
         }
         case 1: {
@@ -137,7 +137,7 @@ void ConfrontEmblem03::Draw() {
             } else {
                 b = 4096.0f * mScale - 0.5f;
             }
-            mAnim->DrawTransformed(1, (s32) mX, (s32) mY, 2, (s32) b, (s32) a, 0);
+            mCellAnim->DrawTransformed(1, (s32) mX, (s32) mY, 2, (s32) b, (s32) a, 0);
             break;
         }
         case 2:
@@ -169,8 +169,8 @@ int ConfrontEmblem03::func_ov007_0221f594() {
     if (result != -1) {
         mTouched = 1;
         mState = 1;
-        mAnim->ResetAnimation();
-        mAnim->SetAnimation(anim);
+        mCellAnim->ResetAnimation();
+        mCellAnim->SetAnimation(anim);
     }
     return result;
 }

@@ -7,7 +7,7 @@ class CellAnimation;
 
 // One icon of the set.
 struct CharacterIconSlot {
-    /* 00 */ CellAnimation *mAnim;
+    /* 00 */ CellAnimation *mCellAnim;
     /* 04 */ s16 mX;
     /* 06 */ s16 mY;
     /* 08 */ u8 mVisible;

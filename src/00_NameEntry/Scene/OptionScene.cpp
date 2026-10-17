@@ -97,7 +97,7 @@ OptionScene::OptionScene() :
     mSelection = 0;
     mFile = NULL;
     mBuf0c = NULL;
-    MI_CpuClear32(mCells, sizeof(mCells));
+    MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
     mState = 0;
     mSaved = *(u16 *) ((u8 *) gSaveData + 0x28);
 }
@@ -121,11 +121,11 @@ void OptionScene::Release() {
     CellAnimation *cell;
     u8 i;
     for (i = 0; i < 5; i++) {
-        cell = mCells[i];
+        cell = mCellAnims[i];
         if (cell != NULL) {
             delete cell;
         }
-        mCells[i] = NULL;
+        mCellAnims[i] = NULL;
     }
     if (mWindow != NULL) {
         delete mWindow;
@@ -439,7 +439,7 @@ void OptionScene::BuildMainMenu() {
     mWindow->SetCells(6, sOptionMainMenuCells);
     mWindow->Update(1);
     u8 sel = mSelection;
-    mWindow->mCells[sel]->SetAnimation(sOptionMainMenuCells[sel].mAnimIndices[2]);
+    mWindow->mCellAnims[sel]->SetAnimation(sOptionMainMenuCells[sel].mAnimIndices[2]);
 }
 
 void OptionScene::BuildSettings() {
@@ -448,17 +448,17 @@ void OptionScene::BuildSettings() {
     u8 i;
     CellAnimation *cell;
     for (i = 0; i < 5; i++) {
-        cell = mCells[i];
+        cell = mCellAnims[i];
         if (cell != NULL) {
             delete cell;
         }
-        mCells[i] = new CellAnimation("option_b_obj_00_nce.bin", sOptionSettingsAnimIndices[i], 1, 1);
+        mCellAnims[i] = new CellAnimation("option_b_obj_00_nce.bin", sOptionSettingsAnimIndices[i], 1, 1);
         mPosX[i] = sOptionSettingsStartPos[i].x;
         mPosY[i] = sOptionSettingsStartPos[i].y;
     }
     SaveData *data = gSaveData;
     mRow = 0;
-    mCells[2]->SetAnimation(0x13);
+    mCellAnims[2]->SetAnimation(0x13);
     mSlideTimer = 8;
     mOld[0] = data->mUnk_28_7;
     mOld[1] = data->mUnk_28_10;
@@ -482,11 +482,11 @@ void OptionScene::DrawSettings() {
         mSlideTimer--;
     }
     for (u8 i = 0; i < 3; i++) {
-        mCells[1]->Draw(1, (s16) (mPosX[2 + i] + sOptionSettingsColumnX[mCur[i]]), sOptionSettingsRowY[i], 0);
+        mCellAnims[1]->Draw(1, (s16) (mPosX[2 + i] + sOptionSettingsColumnX[mCur[i]]), sOptionSettingsRowY[i], 0);
     }
     for (u8 i = 0; i < 5; i++) {
-        mCells[i]->Update();
-        mCells[i]->Draw(1, mPosX[i], mPosY[i], 0);
+        mCellAnims[i]->Update();
+        mCellAnims[i]->Draw(1, mPosX[i], mPosY[i], 0);
     }
 }
 
@@ -548,8 +548,8 @@ void OptionScene::UpdateSettings() {
         changed = TRUE;
     }
     if (prev != mRow) {
-        mCells[prev + 2]->SetAnimation(sOptionSettingsAnimIndices[prev + 2]);
-        mCells[mRow + 2]->SetAnimation(sOptionSettingsAnimIndices[mRow + 5]);
+        mCellAnims[prev + 2]->SetAnimation(sOptionSettingsAnimIndices[prev + 2]);
+        mCellAnims[mRow + 2]->SetAnimation(sOptionSettingsAnimIndices[mRow + 5]);
     }
     if (changed) {
         switch (mRow) {
@@ -576,10 +576,10 @@ void OptionScene::UpdateSettings() {
 void OptionScene::BuildMenu2() {
     ClearText(2);
     SpriteManager::Get();
-    if (mCells[0] != NULL) {
-        delete mCells[0];
+    if (mCellAnims[0] != NULL) {
+        delete mCellAnims[0];
     }
-    mCells[0] = new CellAnimation("option_b_obj_00_nce.bin", 1, 1, 1);
+    mCellAnims[0] = new CellAnimation("option_b_obj_00_nce.bin", 1, 1, 1);
     mPosX[0] = 0x80;
     mPosY[0] = 0x50;
     mSlideTimer = 8;
@@ -588,7 +588,7 @@ void OptionScene::BuildMenu2() {
     mWindow->SetCells(4, sOptionMenu2Cells);
     mWindow->Update(1);
     int sel = gSaveData[0].mUnk_28_6 == 0 ? 1 : 0;
-    mWindow->mCells[(u8) sel]->SetAnimation(sOptionMenu2Cells[sel].mAnimIndices[2]);
+    mWindow->mCellAnims[(u8) sel]->SetAnimation(sOptionMenu2Cells[sel].mAnimIndices[2]);
 }
 
 void OptionScene::DrawMenu2() {
@@ -596,7 +596,7 @@ void OptionScene::DrawMenu2() {
         mPosY[0] += 2;
         mSlideTimer--;
     }
-    mCells[0]->Draw(1, mPosX[0], mPosY[0], 0);
+    mCellAnims[0]->Draw(1, mPosX[0], mPosY[0], 0);
 }
 
 void OptionScene::BuildMenu3() {
@@ -670,10 +670,10 @@ void OptionScene::ResetDisplay() {
 void OptionScene::BuildMenu4() {
     ClearText(4);
     SpriteManager::Get();
-    if (mCells[0] != NULL) {
-        delete mCells[0];
+    if (mCellAnims[0] != NULL) {
+        delete mCellAnims[0];
     }
-    mCells[0] = new CellAnimation("option_b_obj_00_nce.bin", 2, 1, 1);
+    mCellAnims[0] = new CellAnimation("option_b_obj_00_nce.bin", 2, 1, 1);
     mPosX[0] = 0x80;
     mPosY[0] = 0x50;
     mSlideTimer = 8;
@@ -682,7 +682,7 @@ void OptionScene::BuildMenu4() {
     mWindow->SetCells(4, sOptionMenu4Cells);
     mWindow->Update(1);
     int sel = gSaveData[0].mUnk_28_5 == 0 ? 1 : 0;
-    mWindow->mCells[(u8) sel]->SetAnimation(sOptionMenu4Cells[sel].mAnimIndices[2]);
+    mWindow->mCellAnims[(u8) sel]->SetAnimation(sOptionMenu4Cells[sel].mAnimIndices[2]);
 }
 
 
@@ -694,7 +694,7 @@ void OptionScene::DrawMenu3() {
         mPosY[0] += 2;
         mSlideTimer--;
     }
-    mCells[0]->Draw(1, mPosX[0], mPosY[0], 0);
+    mCellAnims[0]->Draw(1, mPosX[0], mPosY[0], 0);
 }
 
 void OptionScene::ClearText(u32 index) {

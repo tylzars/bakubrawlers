@@ -200,7 +200,7 @@ public:
     /* 3a */ s16 mAbilitiesYPerFrame;
     /* 3c */ int mSide;
     /* 40 */ BattleData *mData;
-    /* 44 */ CellAnimation *mAnims[15];
+    /* 44 */ CellAnimation *mCellAnims[15];
     /* 80 */
 
     BattleSub48(BattleData *data, u8 mode);
@@ -353,7 +353,7 @@ public:
     /* 26 */ u8 mUnk_26;
     /* 27 */ u8 mUnk_27;
     /* 28 */ s32 mLastPush[2];
-    /* 30 */ CellAnimation *mAnims[23];
+    /* 30 */ CellAnimation *mCellAnims[23];
     /* 8c */ BattleData *mData;
     /* 90 */ BattleParam *mParam;
     /* 94 */ s8 (*mChoice)[2]; // per side: the two chosen entries (-1: none)

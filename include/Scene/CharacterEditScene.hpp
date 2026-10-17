@@ -86,7 +86,7 @@ public:
     /* 15f */ u8 mColor2Count;
     /* 160 */ u8 *mStyleAnimIndices;
     /* 164 */ SelectWindowCursor *mCursor;
-    /* 168 */ CellAnimation *mCells[16];
+    /* 168 */ CellAnimation *mCellAnims[16];
     /* 1a8 */ u32 mRebuildModel;
     /* 1ac */ s8 mFixedItem;
     /* 1ad */ PAD(0x1ad, 0x1b0);
@@ -106,7 +106,7 @@ public:
     /* 1d8 */ void *mNameGlyphBuffer;
     /* 1dc */ u32 mNameBufferSize;
     /* 1e0 */ u32 mNameGlyphCount;
-    /* 1e4 */ CellAnimation *mNameplateCell;
+    /* 1e4 */ CellAnimation *mNameplateCellAnim;
     /* 1e8 */
 
     CharacterEditScene(u32 unk);

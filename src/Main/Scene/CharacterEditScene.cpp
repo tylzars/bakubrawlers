@@ -213,7 +213,7 @@ CharacterEditScene::CharacterEditScene(u32 unk) :
     }
     InitLookLists();
     for (u8 i = 0; i < 16; i++) {
-        mCells[i] = NULL;
+        mCellAnims[i] = NULL;
     }
     mRebuildModel = 0;
     mUnk_1b0 = 0;
@@ -229,7 +229,7 @@ CharacterEditScene::CharacterEditScene(u32 unk) :
     mNameGlyphBuffer = NULL;
     mNameBufferSize = 0;
     mNameGlyphCount = 0;
-    mNameplateCell = NULL;
+    mNameplateCellAnim = NULL;
 }
 
 CharacterEditScene::~CharacterEditScene() {
@@ -288,7 +288,7 @@ CharacterEditScene::~CharacterEditScene() {
     CellAnimation *cell;
     u8 i = 0;
     do {
-        cell = mCells[i];
+        cell = mCellAnims[i];
         if (cell != NULL) {
             delete cell;
         }
@@ -303,7 +303,7 @@ CharacterEditScene::~CharacterEditScene() {
         OS_Free(mNameGlyphBuffer);
         mNameGlyphBuffer = NULL;
     }
-    cell = mNameplateCell;
+    cell = mNameplateCellAnim;
     if (cell != NULL) {
         delete cell;
     }
@@ -413,9 +413,9 @@ void CharacterEditScene::UpdateRootMenu() {
         }
         mWindows[0]->SetItems(10, (WindowItem *) sRootMenuItems, (s8) mMenuSelection[mMenuDepth]);
         if (mMenuSelection[mMenuDepth] == 0) {
-            mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(0x19);
+            mWindows[0]->mCellAnims[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(0x19);
         } else {
-            mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
+            mWindows[0]->mCellAnims[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
         }
         mWindows[1]->Reset(-1);
         func_02063b10(0);
@@ -595,7 +595,7 @@ void CharacterEditScene::UpdateRootMenu() {
         if (SpriteManager::Get().IsFading()) {
             return;
         }
-        mWindows[0]->mCells[7]->SetAnimation(0x19);
+        mWindows[0]->mCellAnims[7]->SetAnimation(0x19);
         mStep = 5;
         mWindows[0]->mEnabled = 1;
         mWindows[1]->mEnabled = 1;
@@ -672,7 +672,7 @@ void CharacterEditScene::UpdateRootMenu() {
         mWindows[1]->mEnabled = 0;
         mWindows[2]->mEnabled = 1;
         mWindows[2]->mCursor->mSelection = 1;
-        mWindows[2]->mCells[1]->SetAnimation(7);
+        mWindows[2]->mCellAnims[1]->SetAnimation(7);
         GXS_SetVisiblePlane(0x1d);
         mWindows[2]->mButtons[0].mEnabled = 1;
         mWindows[2]->mButtons[1].mEnabled = 1;
@@ -681,8 +681,8 @@ void CharacterEditScene::UpdateRootMenu() {
         PrintWindowText();
         mStep = 0xc;
         mRotateState = 0;
-        mWindows[0]->mCells[9]->SetAnimation(0xc);
-        mWindows[0]->mCells[10]->SetAnimation(0xe);
+        mWindows[0]->mCellAnims[9]->SetAnimation(0xc);
+        mWindows[0]->mCellAnims[10]->SetAnimation(0xe);
         break;
     case 12:
         if (mWindow2Result == 1) {
@@ -706,7 +706,7 @@ void CharacterEditScene::UpdateRootMenu() {
         mWindows[2]->Reset(-1);
         mWindows[2]->mEnabled = 0;
         mWindows[0]->Reset(0);
-        mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(0x19);
+        mWindows[0]->mCellAnims[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(0x19);
         mWindows[0]->mEnabled = 1;
         mWindows[1]->mEnabled = 1;
         ResetTexts();
@@ -827,7 +827,7 @@ void CharacterEditScene::func_0205e958() {
             mMenuSelection[mMenuDepth] = 1;
         }
         mWindows[0]->SetItems(10, (WindowItem *) data_0209eec4, (s8) mMenuSelection[mMenuDepth]);
-        mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
+        mWindows[0]->mCellAnims[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
         SetupSlideIn();
@@ -1463,7 +1463,7 @@ void CharacterEditScene::func_020604e8() {
             mMenuSelection[mMenuDepth] = 1;
         }
         mWindows[0]->SetItems(8, (WindowItem *) data_0209f394, (s8) mMenuSelection[mMenuDepth]);
-        mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
+        mWindows[0]->mCellAnims[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
         SetupSlideIn();
@@ -1759,7 +1759,7 @@ void CharacterEditScene::func_020612cc() {
     switch (mStep) {
     case 0x53: {
         mWindows[0]->SetItems(2, (WindowItem *) data_0209f12c, 0);
-        mWindows[0]->mCells[0]->SetAnimation(1);
+        mWindows[0]->mCellAnims[0]->SetAnimation(1);
         func_020637a8();
         EnableGroupButtons();
         func_020638a8(0);
@@ -2063,29 +2063,29 @@ void CharacterEditScene::LoadGraphics() {
     ChangeDir("/Game/2d/CharacterEditor/Obj");
     screen1.LoadCharacters("color_base.nce_ncg1D.bin", 0x14000, 0);
     screen1.LoadPalette("color_base_ncl.bin", 0x120, 0);
-    mCells[8] = new CellAnimation("color_base_nce.bin", 0, 1, 1);
-    mCells[8]->mCharBase = screen1.GetCharBase(0x14000);
-    mCells[8]->mPaletteBase = 9;
-    mCells[8]->SetAnimation(0);
+    mCellAnims[8] = new CellAnimation("color_base_nce.bin", 0, 1, 1);
+    mCellAnims[8]->mCharBase = screen1.GetCharBase(0x14000);
+    mCellAnims[8]->mPaletteBase = 9;
+    mCellAnims[8]->SetAnimation(0);
     screen1.LoadPalette("color_base_ncl.bin", 0x140, 0);
-    mCells[9] = new CellAnimation("color_base_nce.bin", 0, 1, 1);
-    mCells[9]->mCharBase = screen1.GetCharBase(0x14000);
-    mCells[9]->mPaletteBase = 10;
-    mCells[9]->SetAnimation(0);
+    mCellAnims[9] = new CellAnimation("color_base_nce.bin", 0, 1, 1);
+    mCellAnims[9]->mCharBase = screen1.GetCharBase(0x14000);
+    mCellAnims[9]->mPaletteBase = 10;
+    mCellAnims[9]->SetAnimation(0);
     ChangeDir("/Game/2d/union_b");
     u8 i = 10;
     do {
-        mCells[i] = new CellAnimation("union_b_obj_edit_nce.bin", 0, 1, 1);
-        mCells[i]->mCharBase = screen1.GetCharBase(0x6000);
-        mCells[i]->mPaletteBase = 0;
+        mCellAnims[i] = new CellAnimation("union_b_obj_edit_nce.bin", 0, 1, 1);
+        mCellAnims[i]->mCharBase = screen1.GetCharBase(0x6000);
+        mCellAnims[i]->mPaletteBase = 0;
         i++;
     } while (i < 16);
-    mCells[10]->SetAnimation(0x16);
-    mCells[11]->SetAnimation(0x17);
-    mCells[12]->SetAnimation(0x12);
-    mCells[13]->SetAnimation(0x14);
-    mCells[14]->SetAnimation(0x15);
-    mCells[15]->SetAnimation(0x15);
+    mCellAnims[10]->SetAnimation(0x16);
+    mCellAnims[11]->SetAnimation(0x17);
+    mCellAnims[12]->SetAnimation(0x12);
+    mCellAnims[13]->SetAnimation(0x14);
+    mCellAnims[14]->SetAnimation(0x15);
+    mCellAnims[15]->SetAnimation(0x15);
     ChangeDir("/");
     ChangeDir("/font/");
     mMessages = LoadFile("mes_chara_edit.mes", 0, 0, 0, 0, 0);
@@ -2132,10 +2132,10 @@ void CharacterEditScene::LoadGraphics() {
     ChangeDir("/Game/2d/CharacterEditor/Obj");
     screen.LoadCharacters("nameplate_u_obj_32k.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("nameplate_u_obj_32k_ncl.bin", 0, 0);
-    mNameplateCell = new CellAnimation("nameplate_u_obj_32k_nce.bin", 0, 1, 1);
-    mNameplateCell->mCharBase = screen.GetCharBase(0);
-    mNameplateCell->mPaletteBase = 0;
-    mNameplateCell->SetAnimation(0);
+    mNameplateCellAnim = new CellAnimation("nameplate_u_obj_32k_nce.bin", 0, 1, 1);
+    mNameplateCellAnim->mCharBase = screen.GetCharBase(0);
+    mNameplateCellAnim->mPaletteBase = 0;
+    mNameplateCellAnim->SetAnimation(0);
     ChangeDir("/");
     mNameBufferSize = TextManager::Get().BufferSize(0x20, 2);
     mNameBuffer = OS_Alloc(mNameBufferSize);
@@ -2149,11 +2149,11 @@ void CharacterEditScene::LoadGraphics() {
 void CharacterEditScene::LoadChoiceCells(const char *chars, const char *palette, const char *cells, const char *palette2) {
     u8 i = 0;
     do {
-        CellAnimation *cell = mCells[i];
+        CellAnimation *cell = mCellAnims[i];
         if (cell != NULL) {
             delete cell;
         }
-        mCells[i] = NULL;
+        mCellAnims[i] = NULL;
         i++;
     } while (i <= 7);
     ChangeDir("/Game/2d/CharacterEditor/Obj");
@@ -2163,12 +2163,12 @@ void CharacterEditScene::LoadChoiceCells(const char *chars, const char *palette,
     u8 j = 0;
     do {
         if (mStyleAnimIndices == NULL) {
-            mCells[j] = new CellAnimation(cells, 0, 1, 1);
+            mCellAnims[j] = new CellAnimation(cells, 0, 1, 1);
         } else {
-            mCells[j] = new CellAnimation(cells, mStyleAnimIndices[j], 1, 1);
+            mCellAnims[j] = new CellAnimation(cells, mStyleAnimIndices[j], 1, 1);
         }
-        mCells[j]->mCharBase = screen.GetCharBase(0x15000);
-        mCells[j]->mPaletteBase = 0xb;
+        mCellAnims[j]->mCharBase = screen.GetCharBase(0x15000);
+        mCellAnims[j]->mPaletteBase = 0xb;
         j++;
     } while (j < mStyleCount);
     screen.LoadPalette(palette2, 0x120, 0);
@@ -2205,9 +2205,9 @@ void CharacterEditScene::Draw() {
         mModel->Draw();
     }
     DrawName();
-    if (mNameplateCell != NULL) {
-        mNameplateCell->Update();
-        mNameplateCell->DrawFrame(0, gSaveData[0].mAttribute, 0x80, 0x60, 0);
+    if (mNameplateCellAnim != NULL) {
+        mNameplateCellAnim->Update();
+        mNameplateCellAnim->DrawFrame(0, gSaveData[0].mAttribute, 0x80, 0x60, 0);
     }
 }
 
@@ -2356,16 +2356,16 @@ void CharacterEditScene::UpdateRotateInput() {
         }
         return;
     }
-    w->mCells[9]->SetAnimation(0xc);
-    mWindows[0]->mCells[10]->SetAnimation(0xe);
+    w->mCellAnims[9]->SetAnimation(0xc);
+    mWindows[0]->mCellAnims[10]->SetAnimation(0xe);
     if (InputManager::Get().IsDown(0x200)) {
         mRotateState = 1;
-        mWindows[0]->mCells[9]->SetAnimation(0xd);
+        mWindows[0]->mCellAnims[9]->SetAnimation(0xd);
         return;
     }
     if (InputManager::Get().IsDown(0x100)) {
         mRotateState = 2;
-        mWindows[0]->mCells[10]->SetAnimation(0xf);
+        mWindows[0]->mCellAnims[10]->SetAnimation(0xf);
         return;
     }
     if (mWindow0Result == 3) {
@@ -2488,7 +2488,7 @@ void CharacterEditScene::SlideToParent() {
         w->mCellPos[id].y = 0x1a;
     }
     mWindows[0]->SlideCellTo(items[0].mId, 0x87, mMenuSelection[mMenuDepth - 1] * 0x1c + 0x1a);
-    mWindows[0]->mCells[(u8) items[0].mId]->SetAnimation(3);
+    mWindows[0]->mCellAnims[(u8) items[0].mId]->SetAnimation(3);
 }
 
 void CharacterEditScene::SlideToFirstRow() {
@@ -2500,7 +2500,7 @@ void CharacterEditScene::SlideToFirstRow() {
     }
     items[sel].mSlideOut = 1;
     mWindows[0]->SlideCellTo(items[sel].mId, 0x87, 0x1a);
-    mWindows[0]->mCells[(u8) items[sel].mId]->SetAnimation(3);
+    mWindows[0]->mCellAnims[(u8) items[sel].mId]->SetAnimation(3);
 }
 
 BOOL CharacterEditScene::SwitchToSelectedGroup() {
@@ -2704,7 +2704,7 @@ void CharacterEditScene::SetupChoices() {
     u8 selected = mStyleIndex;
     mCursorItem = selected;
     mCursor->mSelection = selected;
-    mCells[12]->SetAnimation(0x12);
+    mCellAnims[12]->SetAnimation(0x12);
     WindowItem *items = mCursor->mItems;
     u8 i = 0;
     do {
@@ -2737,57 +2737,57 @@ void CharacterEditScene::DrawChoices() {
     }
     u8 i = 0;
     do {
-        if (mCells[i] != NULL) {
-            mCells[i]->Update();
-            mCells[i]->Draw(1, sCharacterEditCellPositions[i].x, sCharacterEditCellPositions[i].y, 1);
+        if (mCellAnims[i] != NULL) {
+            mCellAnims[i]->Update();
+            mCellAnims[i]->Draw(1, sCharacterEditCellPositions[i].x, sCharacterEditCellPositions[i].y, 1);
         }
         i++;
     } while (i < mStyleCount);
     u8 j = 8;
     do {
-        if (mCells[j] != NULL) {
-            mCells[j]->Update();
+        if (mCellAnims[j] != NULL) {
+            mCellAnims[j]->Update();
             switch (j - 8) {
             case 0:
                 if (mColorCount != 0) {
-                    mCells[j]->DrawFrame(1, mColorCount - 1, sCharacterEditCellPositions[j].x, sCharacterEditCellPositions[j].y, 1);
+                    mCellAnims[j]->DrawFrame(1, mColorCount - 1, sCharacterEditCellPositions[j].x, sCharacterEditCellPositions[j].y, 1);
                 }
                 break;
             case 1:
                 if (mColor2Count != 0) {
-                    mCells[j]->DrawFrame(1, mColor2Count - 1, sCharacterEditCellPositions[j].x, sCharacterEditCellPositions[j].y, 1);
+                    mCellAnims[j]->DrawFrame(1, mColor2Count - 1, sCharacterEditCellPositions[j].x, sCharacterEditCellPositions[j].y, 1);
                 }
                 break;
             case 2:
             case 3:
                 if (mState == 9) {
-                    mCells[j]->Draw(1, sCharacterEditCellPositions[j].x, sCharacterEditCellPositions[j].y, 1);
+                    mCellAnims[j]->Draw(1, sCharacterEditCellPositions[j].x, sCharacterEditCellPositions[j].y, 1);
                 }
                 break;
             case 4: {
                 u8 v = mCursorItem;
                 if (v < 8) {
-                    mCells[j]->Draw(1, (s16) (v % 3 * 32 + 0x91), (s16) (v / 3 * 32 + 0x34), 0);
+                    mCellAnims[j]->Draw(1, (s16) (v % 3 * 32 + 0x91), (s16) (v / 3 * 32 + 0x34), 0);
                 } else if (v < 0xe) {
-                    mCells[j]->Draw(1, (s16) ((v - 8) * 15 + 0x90), 0x86, 0);
+                    mCellAnims[j]->Draw(1, (s16) ((v - 8) * 15 + 0x90), 0x86, 0);
                 } else {
-                    mCells[j]->Draw(1, (s16) ((v - 0xe) * 15 + 0x90), 0x96, 0);
+                    mCellAnims[j]->Draw(1, (s16) ((v - 0xe) * 15 + 0x90), 0x96, 0);
                 }
                 break;
             }
             case 5: {
                 u8 v = mStyleIndex;
-                mCells[j]->Draw(1, (s16) (sCharacterEditCellPositions[j].x + v % 3 * 32), (s16) (sCharacterEditCellPositions[j].y + v / 3 * 32), 0);
+                mCellAnims[j]->Draw(1, (s16) (sCharacterEditCellPositions[j].x + v % 3 * 32), (s16) (sCharacterEditCellPositions[j].y + v / 3 * 32), 0);
                 break;
             }
             case 6:
                 if (mColorCount != 0) {
-                    mCells[j]->Draw(1, (s16) (sCharacterEditCellPositions[j].x + mColorIndex * 15), sCharacterEditCellPositions[j].y, 0);
+                    mCellAnims[j]->Draw(1, (s16) (sCharacterEditCellPositions[j].x + mColorIndex * 15), sCharacterEditCellPositions[j].y, 0);
                 }
                 break;
             case 7:
                 if (mColor2Count != 0) {
-                    mCells[j]->Draw(1, (s16) (sCharacterEditCellPositions[j].x + mColor2Index * 15), sCharacterEditCellPositions[j].y, 0);
+                    mCellAnims[j]->Draw(1, (s16) (sCharacterEditCellPositions[j].x + mColor2Index * 15), sCharacterEditCellPositions[j].y, 0);
                 }
                 break;
             }
@@ -2805,9 +2805,9 @@ void CharacterEditScene::UpdateChoiceInput() {
     if (mCursorItem != sel) {
         mCursorItem = sel;
         if (mCursorItem < 8) {
-            mCells[12]->SetAnimation(0x12);
+            mCellAnims[12]->SetAnimation(0x12);
         } else {
-            mCells[12]->SetAnimation(0x13);
+            mCellAnims[12]->SetAnimation(0x13);
         }
         return;
     }

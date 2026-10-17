@@ -111,7 +111,7 @@ class SelectWindow {
 public:
     /* 000 (vtable) */
     /* 004 */ SelectWindowCursor *mCursor;
-    /* 008 */ CellAnimation *mCells[22];
+    /* 008 */ CellAnimation *mCellAnims[22];
     /* 060 */ u8 mCellCount;
     /* 061 */ u8 mState; // state
     /* 062 */ u8 mSlideStep; // slide phase

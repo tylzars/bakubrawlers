@@ -33,7 +33,7 @@ public:
     /* 28 */ float mDirY;
     /* 2c */ float mSideX;
     /* 30 */ float mSideY;
-    /* 34 */ CellAnimation *mAnims[2];
+    /* 34 */ CellAnimation *mCellAnims[2];
     /* 3c */ BattleObj01Motion *mMotion;
     /* 40 */
 

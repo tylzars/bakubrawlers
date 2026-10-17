@@ -63,7 +63,7 @@ struct BattlePlane {
 class BattleTarget : public SceneBase {
 public:
     /* 00 SceneBase */
-    /* 0c */ CellAnimation *mAnims[7];
+    /* 0c */ CellAnimation *mCellAnims[7];
     /* 28 */ BattleStatusPanels *mStatusPanels;
     /* 2c */ void *mRoulettePalette;
     /* 30 */ u32 mRoulettePaletteSize;

@@ -16,7 +16,7 @@ class BattleCommandPage : public SceneBase {
 public:
     /* 0c */ void *mNceData[3];
     /* 18 */ CellAnimFile *mCellFiles[3];
-    /* 24 */ CellAnimation *mCells[11];
+    /* 24 */ CellAnimation *mCellAnims[11];
     /* 50 */ SelectWindow *mWindow;
     /* 54 */ void *mCardMessages;
     /* 58 */ void *mCardTextMessages;

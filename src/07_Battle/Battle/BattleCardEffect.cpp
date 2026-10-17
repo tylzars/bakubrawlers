@@ -11,7 +11,7 @@ extern const BattleCardEffectInfo gCardEffectInfos[];
 
 BattleCardEffect::BattleCardEffect(u32 a, u32 b, u32 c, u32 d)
     : SceneBase(0x3f2, 0) {
-    mAnim   = 0;
+    mCellAnim   = 0;
     mState  = 0;
     mCharOffset = a;
     mPalette = b;
@@ -32,8 +32,8 @@ BattleCardEffect::BattleCardEffect(u32 a, u32 b, u32 c, u32 d)
 }
 
 BattleCardEffect::~BattleCardEffect() {
-    if (mAnim) {
-        delete mAnim;
+    if (mCellAnim) {
+        delete mCellAnim;
     }
 }
 
@@ -76,23 +76,23 @@ void BattleCardEffect::Update() {
 
 void BattleCardEffect::SetFirstAnimation() {
     if (mKind >= 0x11) {
-        mAnim->SetAnimation(mAnimPairIndex * 2);
+        mCellAnim->SetAnimation(mAnimPairIndex * 2);
     } else {
-        mAnim->SetAnimation(0);
+        mCellAnim->SetAnimation(0);
     }
 }
 
 void BattleCardEffect::SetMiddleAnimation() {
     if (mKind < 0x11) {
-        mAnim->SetAnimation(1);
+        mCellAnim->SetAnimation(1);
     }
 }
 
 void BattleCardEffect::SetLastAnimation() {
     if (mKind >= 0x11) {
-        mAnim->SetAnimation(mAnimPairIndex * 2 + 1);
+        mCellAnim->SetAnimation(mAnimPairIndex * 2 + 1);
     } else {
-        mAnim->SetAnimation(2);
+        mCellAnim->SetAnimation(2);
     }
 }
 
@@ -107,15 +107,15 @@ void BattleCardEffect::LoadAnimation() {
     sprintf(path, "%s_ncl.bin", gCardEffectInfos[mKind].mName);
     screen.LoadPalette(path, mPalette << 5, 0);
     sprintf(path, "%s_nce.bin", gCardEffectInfos[mKind].mName);
-    mAnim = new CellAnimation(path, 0, 1, 1);
-    mAnim->mCharBase = screen.GetCharBase(mCharOffset);
-    mAnim->mPaletteBase   = mPalette;
-    mAnim->SetAnimation(0);
+    mCellAnim = new CellAnimation(path, 0, 1, 1);
+    mCellAnim->mCharBase = screen.GetCharBase(mCharOffset);
+    mCellAnim->mPaletteBase   = mPalette;
+    mCellAnim->SetAnimation(0);
     ChangeDir("/");
 }
 
 int BattleCardEffect::UpdateAnimation() {
-    mAnim->Update();
+    mCellAnim->Update();
     CameraManager &camB = CameraManager::Get();
     CameraManager &camA = CameraManager::Get();
     CameraMode modeB = (CameraMode) camB.mMode;
@@ -125,6 +125,6 @@ int BattleCardEffect::UpdateAnimation() {
             return 0;
         }
     }
-    mAnim->Draw(gCardEffectInfos[mKind].mScreen, 0x80, 0x60, 0);
-    return mAnim->mFinished;
+    mCellAnim->Draw(gCardEffectInfos[mKind].mScreen, 0x80, 0x60, 0);
+    return mCellAnim->mFinished;
 }

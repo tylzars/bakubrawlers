@@ -94,7 +94,7 @@ BattleCommandPage::BattleCommandPage(u16 a, s32 b) :
     MI_CpuClear32(mFileSizes, 0x30);
     MI_CpuClear32(mNceData, 0xc);
     MI_CpuClear32(mCellFiles, 0xc);
-    MI_CpuClear32(mCells, 0x2c);
+    MI_CpuClear32(mCellAnims, 0x2c);
     mCardId = func_02055644(a);
     mNextCardId = mCardId;
     mDrawnCardId = mCardId;
@@ -128,7 +128,7 @@ BattleCommandPage::~BattleCommandPage() {
         }
     }
     for (u8 i = 0; i < 11; i++) {
-        CellAnimation *cell = mCells[i];
+        CellAnimation *cell = mCellAnims[i];
         if (cell != NULL) {
             delete cell;
         }
@@ -368,18 +368,18 @@ void BattleCommandPage::UpdatePageItems() {
     WindowItem *items = mWindow->mCursor->mItems;
     if (selected < count) {
         if (IsPageItemEnabled(1) == 0) {
-            mWindow->mCells[1]->SetAnimation(3);
+            mWindow->mCellAnims[1]->SetAnimation(3);
             items[1].mFlags = 0x408;
             if (mFourItems != 0) {
-                mWindow->mCells[3]->SetAnimation(7);
+                mWindow->mCellAnims[3]->SetAnimation(7);
             }
         }
     } else {
         if (IsPageItemEnabled(1) != 0) {
-            mWindow->mCells[1]->SetAnimation(5);
+            mWindow->mCellAnims[1]->SetAnimation(5);
             items[1].mFlags = 0x8000;
             if (mFourItems != 0) {
-                mWindow->mCells[3]->SetAnimation(5);
+                mWindow->mCellAnims[3]->SetAnimation(5);
             }
         }
     }
@@ -387,32 +387,32 @@ void BattleCommandPage::UpdatePageItems() {
         if (IsPageItemEnabled(0) != 0) {
             return;
         }
-        mWindow->mCells[0]->SetAnimation(0);
+        mWindow->mCellAnims[0]->SetAnimation(0);
         items[0].mFlags = 0x208;
         if (mFourItems == 0) {
             return;
         }
-        mWindow->mCells[2]->SetAnimation(6);
+        mWindow->mCellAnims[2]->SetAnimation(6);
     } else {
         if (IsPageItemEnabled(0) == 0) {
             return;
         }
-        mWindow->mCells[0]->SetAnimation(2);
+        mWindow->mCellAnims[0]->SetAnimation(2);
         items[0].mFlags = 0x8000;
         if (mFourItems == 0) {
             return;
         }
-        mWindow->mCells[2]->SetAnimation(2);
+        mWindow->mCellAnims[2]->SetAnimation(2);
     }
 }
 
 BOOL BattleCommandPage::IsPageItemEnabled(u32 right) {
     if (right == 0) {
-        if (mWindow->mCells[0]->mAnimIndex == 2) {
+        if (mWindow->mCellAnims[0]->mAnimIndex == 2) {
             return FALSE;
         }
     } else {
-        if (mWindow->mCells[1]->mAnimIndex == 5) {
+        if (mWindow->mCellAnims[1]->mAnimIndex == 5) {
             return FALSE;
         }
     }
@@ -471,20 +471,20 @@ BOOL BattleCommandPage::LoadGraphics() {
         mCellFiles[0] = new CellAnimFileData(mNceData[0]);
         if (mCellFiles[0] != NULL) {
             for (u8 i = 0; i < 6; i++) {
-                CellAnimation *cell = mCells[i];
+                CellAnimation *cell = mCellAnims[i];
                 if (cell != NULL) {
                     delete cell;
                 }
-                mCells[i]            = new CellAnimation(mCellFiles[0], 0);
-                mCells[i]->mCharBase = screen.GetCharBase(0x8000);
-                mCells[i]->mPaletteBase   = 0;
+                mCellAnims[i]            = new CellAnimation(mCellFiles[0], 0);
+                mCellAnims[i]->mCharBase = screen.GetCharBase(0x8000);
+                mCellAnims[i]->mPaletteBase   = 0;
             }
-            mCells[0]->SetAnimation(0);
-            mCells[1]->SetAnimation(1);
-            mCells[2]->SetAnimation(3);
-            mCells[3]->SetAnimation(7);
-            mCells[4]->SetAnimation(8);
-            mCells[5]->SetAnimation(9);
+            mCellAnims[0]->SetAnimation(0);
+            mCellAnims[1]->SetAnimation(1);
+            mCellAnims[2]->SetAnimation(3);
+            mCellAnims[3]->SetAnimation(7);
+            mCellAnims[4]->SetAnimation(8);
+            mCellAnims[5]->SetAnimation(9);
         }
     }
     QueueUpload(screen.mBgIndex, 5, 0x140, mFiles[3], mFileSizes[3], 1);
@@ -501,13 +501,13 @@ BOOL BattleCommandPage::LoadGraphics() {
         mCellFiles[1] = NULL;
         mCellFiles[1] = new CellAnimFileData(mNceData[1]);
         if (mCellFiles[1] != NULL) {
-            CellAnimation *cell = mCells[6];
+            CellAnimation *cell = mCellAnims[6];
             if (cell != NULL) {
                 delete cell;
             }
-            mCells[6]            = new CellAnimation(mCellFiles[1], 0);
-            mCells[6]->mCharBase = screen.GetCharBase(0x14000);
-            mCells[6]->mPaletteBase   = 10;
+            mCellAnims[6]            = new CellAnimation(mCellFiles[1], 0);
+            mCellAnims[6]->mCharBase = screen.GetCharBase(0x14000);
+            mCellAnims[6]->mPaletteBase   = 10;
         }
     }
     QueueUpload(screen.mBgIndex, 5, 0x100, mFiles[6], mFileSizes[6], 1);
@@ -525,18 +525,18 @@ BOOL BattleCommandPage::LoadGraphics() {
         mCellFiles[2] = new CellAnimFileData(mNceData[2]);
         if (mCellFiles[2] != NULL) {
             for (u8 i = 7; i < 11; i++) {
-                CellAnimation *cell = mCells[i];
+                CellAnimation *cell = mCellAnims[i];
                 if (cell != NULL) {
                     delete cell;
                 }
-                mCells[i]            = new CellAnimation(mCellFiles[2], 0);
-                mCells[i]->mCharBase = screen.GetCharBase(0x12000);
-                mCells[i]->mPaletteBase   = 8;
+                mCellAnims[i]            = new CellAnimation(mCellFiles[2], 0);
+                mCellAnims[i]->mCharBase = screen.GetCharBase(0x12000);
+                mCellAnims[i]->mPaletteBase   = 8;
             }
-            mCells[7]->SetAnimation(1);
-            mCells[8]->SetAnimation(3);
-            mCells[9]->SetAnimation(2);
-            mCells[10]->SetAnimation(4);
+            mCellAnims[7]->SetAnimation(1);
+            mCellAnims[8]->SetAnimation(3);
+            mCellAnims[9]->SetAnimation(2);
+            mCellAnims[10]->SetAnimation(4);
         }
     }
     return TRUE;
@@ -765,7 +765,7 @@ void BattleCommandPage::DrawCard() {
     } else {
         big = 1;
     }
-    mCells[0]->DrawFrame(0, big, 0x80, 0x60, 0);
+    mCellAnims[0]->DrawFrame(0, big, 0x80, 0x60, 0);
     if (mUnk_106 != 0) {
         return;
     }
@@ -776,20 +776,20 @@ void BattleCommandPage::DrawCard() {
         u8 cur   = data_020d433c.mBattlePlayers->mUnk_2a9;
         BOOL has;
         if (mPlayer == cur) {
-            mCells[8]->DrawFrame(0, mPlayer, 0x24, 0x18, 0);
+            mCellAnims[8]->DrawFrame(0, mPlayer, 0x24, 0x18, 0);
         } else {
             has = 0;
             if (data_020d433c.mBattlePlayers->mPlayers[(u8)mPlayer]->mCpu != NULL) {
                 has = 1;
             }
             if (has == 1) {
-                mCells[9]->DrawFrame(0, mPlayer, 0x15, 0x12, 0);
+                mCellAnims[9]->DrawFrame(0, mPlayer, 0x15, 0x12, 0);
             }
             if ((data_020d433c.mHasPartners == 1) & (mPlayer == data_020d43d7[cur])) {
-                mCells[10]->DrawFrame(0, mPlayer, 0x24, 0x18, 0);
+                mCellAnims[10]->DrawFrame(0, mPlayer, 0x24, 0x18, 0);
             }
         }
-        mCells[7]->DrawFrame(0, mPlayer, 0, 0x16, 0);
+        mCellAnims[7]->DrawFrame(0, mPlayer, 0, 0x16, 0);
     }
     if (mCardId == 0) {
         return;
@@ -835,8 +835,8 @@ void BattleCommandPage::DrawCard() {
             left += b;
             i    = 0;
             do {
-                mCells[2]->DrawFrame(0, (s32) v % 10, y + (3 - i) * 7, 0xb0, 0);
-                mCells[5]->DrawFrame(0, (s32) v % 10, left + (cnt - i) * 4 + half, ty, 0);
+                mCellAnims[2]->DrawFrame(0, (s32) v % 10, y + (3 - i) * 7, 0xb0, 0);
+                mCellAnims[5]->DrawFrame(0, (s32) v % 10, left + (cnt - i) * 4 + half, ty, 0);
                 v /= 10;
                 i = (u8) (i + 1);
             } while (i < cnt);
@@ -846,8 +846,8 @@ void BattleCommandPage::DrawCard() {
             idx = 4;
         }
         if (n != 0) {
-            mCells[1]->DrawFrame(0, k, 0x80, 0x60, 0);
-            mCells[idx]->DrawFrame(0, k, c, a, 0);
+            mCellAnims[1]->DrawFrame(0, k, 0x80, 0x60, 0);
+            mCellAnims[idx]->DrawFrame(0, k, c, a, 0);
         }
         if (big) {
             a += 0xd;
@@ -861,5 +861,5 @@ void BattleCommandPage::DrawCard() {
     if (mDrawnCardId == 0) {
         return;
     }
-    mCells[6]->DrawFrame(0, GetCardInfo(mDrawnCardId, 2), 0x80, 0x84, 0);
+    mCellAnims[6]->DrawFrame(0, GetCardInfo(mDrawnCardId, 2), 0x80, 0x84, 0);
 }

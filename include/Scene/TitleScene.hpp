@@ -12,7 +12,7 @@ struct MessageFile;
 // Overlay 0 scene with vtable 0x02227920 (title screen: movie bknd_op, main menu, then CharacterEditScene / save scene).
 class TitleScene : public SceneBase {
 public:
-    /* 0c */ CellAnimation *mCells[8];
+    /* 0c */ CellAnimation *mCellAnims[8];
     /* 2c */ SelectWindowCursor *mCursor;
     /* 30 */ SelectWindow *mWindow30;
     /* 34 */ MessageWindow *mMessageWindow;

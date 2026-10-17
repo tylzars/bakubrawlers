@@ -24,7 +24,7 @@ class BattleCommandPrompt : public SceneBase {
 public:
     /* 0c */ CellAnimation *mBakuganSubCellAnims[3];
     /* 18 */ CellAnimation *mCursorAnim;
-    /* 1c */ CellAnimation *mDigitAnim;
+    /* 1c */ CellAnimation *mDigitCellAnim;
     /* 20 */ CellAnimation *mStateCellAnims[3];
     /* 2c */ MessageWindow *mMessageWindow;
     /* 30 */ BattleCommandPage *mCommandPage;

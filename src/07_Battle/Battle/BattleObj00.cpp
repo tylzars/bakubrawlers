@@ -39,7 +39,7 @@ extern const u8 data_ov007_0227a33d[];
 
 class BattleObj00 : public SceneBase {
 public:
-    /* 0c */ CellAnimation *mAnims[3];
+    /* 0c */ CellAnimation *mCellAnims[3];
     /* 18 */ BattleCommandPage *mPage;
     /* 1c */ Camera *mCamera;
     /* 20 */ BattleCommandMap *mMap;
@@ -87,9 +87,9 @@ BattleObj00::BattleObj00(u8 flag)
         mOffsetX = 4;
     }
     mCamera = data_020d433c.mBattlePlayers->mCamera;
-    mAnims[2] = 0;
-    mAnims[1] = 0;
-    mAnims[0] = 0;
+    mCellAnims[2] = 0;
+    mCellAnims[1] = 0;
+    mCellAnims[0] = 0;
     mUnion = 0;
     mUnk_2e = 0;
     mUnk_30 = 0;
@@ -114,21 +114,21 @@ BattleObj00::BattleObj00(u8 flag)
 }
 
 BattleObj00::~BattleObj00() {
-    CellAnimation *anim = mAnims[2];
+    CellAnimation *anim = mCellAnims[2];
     if (anim) {
         delete anim;
     }
-    mAnims[2] = 0;
-    anim = mAnims[1];
+    mCellAnims[2] = 0;
+    anim = mCellAnims[1];
     if (anim) {
         delete anim;
     }
-    mAnims[1] = 0;
-    anim = mAnims[0];
+    mCellAnims[1] = 0;
+    anim = mCellAnims[0];
     if (anim) {
         delete anim;
     }
-    mAnims[0] = 0;
+    mCellAnims[0] = 0;
     SpriteManager::Get().ResetSlots();
 }
 
@@ -495,14 +495,14 @@ void BattleObj00::LoadGraphics() {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
     ChangeDir("/Game/Battle/Obj");
-    mAnims[0] = new CellAnimation("battle_b_obj_00_nce.bin", 0x15, 1, 1);
-    mAnims[0]->mCharBase = screen.GetCharBase(0x10000);
-    mAnims[0]->mPaletteBase = 0;
-    mAnims[1] = new CellAnimation("battle_b_obj_00_nce.bin", 0x16, 1, 1);
-    mAnims[1]->mCharBase = screen.GetCharBase(0x10000);
-    mAnims[1]->mPaletteBase = 0;
-    mAnims[2] = new CellAnimation("battle_b_obj_00_nce.bin", 0x1b, 1, 1);
-    mAnims[2]->mCharBase = screen.GetCharBase(0x10000);
-    mAnims[2]->mPaletteBase = 0;
+    mCellAnims[0] = new CellAnimation("battle_b_obj_00_nce.bin", 0x15, 1, 1);
+    mCellAnims[0]->mCharBase = screen.GetCharBase(0x10000);
+    mCellAnims[0]->mPaletteBase = 0;
+    mCellAnims[1] = new CellAnimation("battle_b_obj_00_nce.bin", 0x16, 1, 1);
+    mCellAnims[1]->mCharBase = screen.GetCharBase(0x10000);
+    mCellAnims[1]->mPaletteBase = 0;
+    mCellAnims[2] = new CellAnimation("battle_b_obj_00_nce.bin", 0x1b, 1, 1);
+    mCellAnims[2]->mCharBase = screen.GetCharBase(0x10000);
+    mCellAnims[2]->mPaletteBase = 0;
     ChangeDir("/Game/2D/union_b");
 }

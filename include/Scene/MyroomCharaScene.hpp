@@ -24,7 +24,7 @@ public:
     /* 14 */ u32 mCellsVisible[2];
     /* 1c */ u32 mCellVisible;
     /* 20 */ SelectWindow *mWindow;
-    /* 24 */ CellAnimation *mCells[2];
+    /* 24 */ CellAnimation *mCellAnims[2];
     /* 2c */ CellAnimation *mCell;
     /* 30 */ u32 mResult;
     /* 34 */ MessageFile *mStoryCharaNameMessages;

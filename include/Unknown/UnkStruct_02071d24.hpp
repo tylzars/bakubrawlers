@@ -20,7 +20,7 @@ public:
     /* 10 */ MessageFile *mResultMessages;
     /* 14 */ MessageWindow *mMessageWindow;
     /* 18 */ BattleCommandList *mCommandList;
-    /* 1c */ CellAnimation *mBakuganSubAnim;
+    /* 1c */ CellAnimation *mBakuganSubCellAnim;
     /* 20 */ SelectWindow *mWindow;
     /* 24 */ void *mTextBuffer;
     /* 28 */ void *mGlyphBuffer;

@@ -62,7 +62,7 @@ UnkStruct_02071d24::UnkStruct_02071d24(u32 unk1) :
     mUnk_52 = 0;
     mUnk_53 = 0;
     mPendingPlanes = -1;
-    mBakuganSubAnim = NULL;
+    mBakuganSubCellAnim = NULL;
     mTextBuffer = NULL;
     mGlyphBuffer = NULL;
     mTextBufferSize = 0;
@@ -76,7 +76,7 @@ UnkStruct_02071d24::UnkStruct_02071d24(u32 unk1) :
 }
 
 UnkStruct_02071d24::~UnkStruct_02071d24() {
-    delete mBakuganSubAnim;
+    delete mBakuganSubCellAnim;
     delete mWindow;
     if (mBakuganNameMessages != NULL) {
         OS_Free(mBakuganNameMessages);
@@ -277,11 +277,11 @@ void UnkStruct_02071d24::LoadGraphics() {
     screen2.LoadExtPalette("bakugan_sub_ncl.bin", 0, 0);
     screen2.LoadCharacters("result_b_obj_01.nce_ncg1D.bin", 0x4000, 0);
     screen2.LoadPalette("result_b_obj_01_ncl.bin", 0, 0);
-    mBakuganSubAnim           = new CellAnimation("bakugan_sub_nce.bin", 0, 1, 1);
-    mBakuganSubAnim->mCharBase = screen2.GetCharBase(0x9000);
-    mBakuganSubAnim->mPaletteBase   = 0;
-    mBakuganSubAnim->SetMode(5);
-    mBakuganSubAnim->mFrameIndex = mAttributes[mBakuganIndex];
+    mBakuganSubCellAnim           = new CellAnimation("bakugan_sub_nce.bin", 0, 1, 1);
+    mBakuganSubCellAnim->mCharBase = screen2.GetCharBase(0x9000);
+    mBakuganSubCellAnim->mPaletteBase   = 0;
+    mBakuganSubCellAnim->SetMode(5);
+    mBakuganSubCellAnim->mFrameIndex = mAttributes[mBakuganIndex];
     mWindow          = new SelectWindow(7, data_020a2e48, 0);
     mWindow->SetCells(7, data_020a2f0c);
     mWindow->Update(1);
@@ -386,9 +386,9 @@ void UnkStruct_02071d24::func_02072dfc() {
     if (mUnk_34[mBakuganIndex] == NULL) {
         return;
     }
-    if (mBakuganSubAnim != NULL) {
-        mBakuganSubAnim->Update();
-        mBakuganSubAnim->DrawTransformed(1, 0x20, 0x3c, 1, 0x800, 0x800, 0);
+    if (mBakuganSubCellAnim != NULL) {
+        mBakuganSubCellAnim->Update();
+        mBakuganSubCellAnim->DrawTransformed(1, 0x20, 0x3c, 1, 0x800, 0x800, 0);
     }
     if (mWindow != NULL) {
         mWindow->Draw();
@@ -400,9 +400,9 @@ void UnkStruct_02071d24::func_02072e7c() {
     if (mUnk_34[mBakuganIndex] == NULL) {
         return;
     }
-    if (mBakuganSubAnim != NULL) {
-        mBakuganSubAnim->Update();
-        mBakuganSubAnim->DrawTransformed(1, 0x20, 0x3c, 1, 0x800, 0x800, 0);
+    if (mBakuganSubCellAnim != NULL) {
+        mBakuganSubCellAnim->Update();
+        mBakuganSubCellAnim->DrawTransformed(1, 0x20, 0x3c, 1, 0x800, 0x800, 0);
     }
     if (mWindow != NULL) {
         BOOL enabled = TRUE;
@@ -442,46 +442,46 @@ void UnkStruct_02071d24::RefreshItems() {
             case 0:
                 if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_0 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
+                    mWindow->mCellAnims[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
-                    mWindow->mCells[i]->SetAnimation(0xf);
+                    mWindow->mCellAnims[i]->SetAnimation(0xf);
                 }
                 break;
             case 1:
                 if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_12 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
+                    mWindow->mCellAnims[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
-                    mWindow->mCells[i]->SetAnimation(0x10);
+                    mWindow->mCellAnims[i]->SetAnimation(0x10);
                 }
                 break;
             case 2:
                 if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_3 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
+                    mWindow->mCellAnims[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
-                    mWindow->mCells[i]->SetAnimation(0x11);
+                    mWindow->mCellAnims[i]->SetAnimation(0x11);
                 }
                 break;
             case 3:
                 if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_6 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
+                    mWindow->mCellAnims[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
-                    mWindow->mCells[i]->SetAnimation(0x12);
+                    mWindow->mCellAnims[i]->SetAnimation(0x12);
                 }
                 break;
             case 4:
                 if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_9 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
+                    mWindow->mCellAnims[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
-                    mWindow->mCells[i]->SetAnimation(0x13);
+                    mWindow->mCellAnims[i]->SetAnimation(0x13);
                 }
                 break;
         }
@@ -495,7 +495,7 @@ void UnkStruct_02071d24::RefreshItems() {
             mMessageWindow->StartMessage((s16) (index + 0x10), 0, 1);
             mWindow->mCursor->mSelection = index;
             mWindow->mSavedSelection            = index;
-            mWindow->mCells[index]->SetAnimation(data_020a2f0c[index].mAnimIndices[2]);
+            mWindow->mCellAnims[index]->SetAnimation(data_020a2f0c[index].mAnimIndices[2]);
             return;
         }
     }
@@ -515,7 +515,7 @@ void UnkStruct_02071d24::func_020733d4() {
                 SetCommandListBakugan(mCommandList, mBakuganIds[next], mAttributes[next], -1);
             }
             mUnk_4f = 0;
-            mBakuganSubAnim->mFrameIndex = mAttributes[mBakuganIndex];
+            mBakuganSubCellAnim->mFrameIndex = mAttributes[mBakuganIndex];
             func_02072b14();
             RefreshItems();
             func_02072c40();

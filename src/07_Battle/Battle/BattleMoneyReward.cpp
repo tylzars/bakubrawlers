@@ -81,10 +81,10 @@ BattleMoneyReward::BattleMoneyReward()
     mSparkleSoundTimer     = 0;
     mTransferSoundTimer     = 0;
     for (u8 i = 0; i < 9; i++) {
-        mAnims[i] = 0;
+        mCellAnims[i] = 0;
     }
     for (u8 i = 0; i < 15; i++) {
-        mAnimsB[i]      = 0;
+        mCellAnimsB[i]      = 0;
         mPos[i][0]      = 0;
         mPos[i][1]      = 0;
         mTimers[i][0]   = 0;
@@ -148,7 +148,7 @@ BattleMoneyReward::~BattleMoneyReward() {
     delete mWindow;
     i = 0;
     do {
-        a = mAnims[i];
+        a = mCellAnims[i];
         if (a) {
             delete a;
         }
@@ -157,7 +157,7 @@ BattleMoneyReward::~BattleMoneyReward() {
     u8 j;
     j = 0;
     do {
-        b = mAnimsB[j];
+        b = mCellAnimsB[j];
         if (b) {
             delete b;
         }
@@ -198,7 +198,7 @@ void BattleMoneyReward::Update() {
             }
             break;
         case 2:
-            if (mAnims[1]->mFinished != 0) {
+            if (mCellAnims[1]->mFinished != 0) {
                 mState++;
             }
             break;
@@ -283,7 +283,7 @@ void BattleMoneyReward::Update() {
                 }
                 hit = mSparkleSoundTimer > 0;
                 do {
-                    u32 length = mAnimsB[n]->GetDuration();
+                    u32 length = mCellAnimsB[n]->GetDuration();
                     mSparkleFrames[k]++;
                     if (mSparkleFrames[k] >= length) {
                         mSparkleFrames[k] = 0;
@@ -384,17 +384,17 @@ void BattleMoneyReward::Init() {
     if (kind == 1) {
         kind = 13;
     }
-    mAnims[0]            = new CellAnimation("tournament_u_obj_01_nce.bin", kind, 1, 1);
-    mAnims[0]->mCharBase = screen.GetCharBase(0);
-    mAnims[0]->mPaletteBase   = 0;
-    mAnims[0]->mFrameIndex   = mAnims[0]->mFrames[mAnims[0]->mAnimIndex].mFrameCount - 1;
+    mCellAnims[0]            = new CellAnimation("tournament_u_obj_01_nce.bin", kind, 1, 1);
+    mCellAnims[0]->mCharBase = screen.GetCharBase(0);
+    mCellAnims[0]->mPaletteBase   = 0;
+    mCellAnims[0]->mFrameIndex   = mCellAnims[0]->mFrames[mCellAnims[0]->mAnimIndex].mFrameCount - 1;
     for (u8 i = 1; i < 9; i++) {
-        mAnims[i]            = new CellAnimation("tournament_u_obj_02_nce.bin", 2, 1, 1);
-        mAnims[i]->mCharBase = screen.GetCharBase(0x7000);
-        mAnims[i]->mPaletteBase   = 6;
+        mCellAnims[i]            = new CellAnimation("tournament_u_obj_02_nce.bin", 2, 1, 1);
+        mCellAnims[i]->mCharBase = screen.GetCharBase(0x7000);
+        mCellAnims[i]->mPaletteBase   = 6;
     }
-    mAnims[1]->SetAnimation(0);
-    mAnims[2]->SetAnimation(1);
+    mCellAnims[1]->SetAnimation(0);
+    mCellAnims[2]->SetAnimation(1);
     SpriteScreen &screen2 = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/2D/union_b/");
     screen2.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0, 0);
@@ -403,12 +403,12 @@ void BattleMoneyReward::Init() {
     screen2.LoadCharacters("map_b_obj_02.nce_ncg1D.bin", 0x2000, 0);
     screen2.LoadPalette("map_b_obj_02_ncl.bin", 0x20, 0);
     for (u8 i = 0; i < 15; i++) {
-        mAnimsB[i]            = new CellAnimation("map_b_obj_02_nce.bin", i, 1, 1);
-        mAnimsB[i]->mCharBase = screen2.GetCharBase(0x2000);
-        mAnimsB[i]->mPaletteBase   = 1;
+        mCellAnimsB[i]            = new CellAnimation("map_b_obj_02_nce.bin", i, 1, 1);
+        mCellAnimsB[i]->mCharBase = screen2.GetCharBase(0x2000);
+        mCellAnimsB[i]->mPaletteBase   = 1;
     }
     for (u8 i = 3; i < 9; i++) {
-        mAnimsB[i]->GetDuration();
+        mCellAnimsB[i]->GetDuration();
         mSparkleFrames[i - 3] = 0;
     }
     ChangeDir("/");
@@ -428,19 +428,19 @@ void BattleMoneyReward::Init() {
 }
 
 void BattleMoneyReward::Draw() {
-    mAnims[0]->Update();
-    mAnims[0]->Draw(0, 0x80, 0x60, 2);
+    mCellAnims[0]->Update();
+    mCellAnims[0]->Draw(0, 0x80, 0x60, 2);
     if (mAmountVisible) {
-        mAnims[1]->Update();
-        mAnims[1]->Draw(0, 0x80, 0x60, 2);
-        mAnims[2]->Update();
-        mAnims[2]->Draw(0, (s16) (mSlideA + 0x80), 0x60, 2);
+        mCellAnims[1]->Update();
+        mCellAnims[1]->Draw(0, 0x80, 0x60, 2);
+        mCellAnims[2]->Update();
+        mCellAnims[2]->Draw(0, (s16) (mSlideA + 0x80), 0x60, 2);
         u32 value = mAmount;
         u8 i      = 0;
         do {
             u8 digit = value % 10;
             value    = value / 10;
-            mAnims[i + 3]->DrawFrame(0, digit, (s16) (mSlideA + (0xaf + i * -0x13)), 0x80, 2);
+            mCellAnims[i + 3]->DrawFrame(0, digit, (s16) (mSlideA + (0xaf + i * -0x13)), 0x80, 2);
             if (value == 0) {
                 break;
             }
@@ -459,9 +459,9 @@ void BattleMoneyReward::Draw() {
                 mPos[i][j]    = mPos[i][j] + sSparkleSteps[i][j];
             }
         }
-        mAnimsB[i]->Update();
-        mAnimsB[i]->Draw(1, (s16) (mPos[i][0] + 0x80), (s16) (mPos[i][1] + 0x60), 2);
-        mAnimsB[i]->Draw(1, (s16) (mPos[i][0] + 0x80), (s16) (mPos[i][1] - 0xa0), 2);
+        mCellAnimsB[i]->Update();
+        mCellAnimsB[i]->Draw(1, (s16) (mPos[i][0] + 0x80), (s16) (mPos[i][1] + 0x60), 2);
+        mCellAnimsB[i]->Draw(1, (s16) (mPos[i][0] + 0x80), (s16) (mPos[i][1] - 0xa0), 2);
     }
 }
 

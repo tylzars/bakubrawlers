@@ -97,12 +97,12 @@ void ParkMenu::LoadGraphics() {
     ChangeDir("/Game/Park/");
     screen.LoadCharacters("park_b_obj.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("park_b_obj_ncl.bin", 0, 0);
-    mCells[4] = new CellAnimation("park_b_obj_nce.bin", 4, 1, 1);
-    mCells[4]->mCharBase = screen.GetCharBase(0);
-    mCells[4]->mPaletteBase   = 0;
-    mCells[5] = new CellAnimation("park_b_obj_nce.bin", 3, 1, 1);
-    mCells[5]->mCharBase = screen.GetCharBase(0);
-    mCells[5]->mPaletteBase   = 0;
+    mCellAnims[4] = new CellAnimation("park_b_obj_nce.bin", 4, 1, 1);
+    mCellAnims[4]->mCharBase = screen.GetCharBase(0);
+    mCellAnims[4]->mPaletteBase   = 0;
+    mCellAnims[5] = new CellAnimation("park_b_obj_nce.bin", 3, 1, 1);
+    mCellAnims[5]->mCharBase = screen.GetCharBase(0);
+    mCellAnims[5]->mPaletteBase   = 0;
     u32 charBase = 0x8000;
     u32 palette  = 7;
     u8 i         = 0;
@@ -114,10 +114,10 @@ void ParkMenu::LoadGraphics() {
         sprintf(name, "park_b_ch_obj_%02d_ncl.bin", id);
         screen.LoadPalette(name, palette << 5, 0);
         sprintf(name, "park_b_ch_obj_%02d_nce.bin", id);
-        mCells[i]            = new CellAnimation(name, 2, 1, 1);
-        mCells[i]->mCharBase = screen.GetCharBase(charBase);
+        mCellAnims[i]            = new CellAnimation(name, 2, 1, 1);
+        mCellAnims[i]->mCharBase = screen.GetCharBase(charBase);
         charBase += 0x1000;
-        mCells[i]->mPaletteBase = palette;
+        mCellAnims[i]->mPaletteBase = palette;
         palette            = (u8) (palette + 2);
         i++;
     } while (i < mCount);
@@ -128,13 +128,13 @@ void ParkMenu::LoadGraphics() {
     screen.LoadPalette("union_b_obj_cockpit_ncl.bin", 0xc0, 0);
     screen.LoadCharacters("union_b_obj_point.nce_ncg1D.bin", 0x13000, 0);
     screen.LoadPalette("union_b_obj_point_ncl.bin", 0x80, 0);
-    mCells[6]            = new CellAnimation("union_b_obj_point_nce.bin", 0, 1, 1);
-    mCells[6]->mCharBase = screen.GetCharBase(0x13000);
-    mCells[6]->mPaletteBase   = 4;
+    mCellAnims[6]            = new CellAnimation("union_b_obj_point_nce.bin", 0, 1, 1);
+    mCellAnims[6]->mCharBase = screen.GetCharBase(0x13000);
+    mCellAnims[6]->mPaletteBase   = 4;
     screen.LoadCharacters("union_b_obj_number.nce_ncg1D.bin", 0x14000, 0);
-    mCells[7]            = new CellAnimation("union_b_obj_number_nce.bin", 0, 1, 1);
-    mCells[7]->mCharBase = screen.GetCharBase(0x14000);
-    mCells[7]->mPaletteBase   = 4;
+    mCellAnims[7]            = new CellAnimation("union_b_obj_number_nce.bin", 0, 1, 1);
+    mCellAnims[7]->mCharBase = screen.GetCharBase(0x14000);
+    mCellAnims[7]->mPaletteBase   = 4;
     ChangeDir("/");
     mMessages[0] = (MessageFile *) LoadFile("font/mes_park.mes", 0, 0, 0, 0, 0);
     mMessages[1] = (MessageFile *) LoadFile("font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
@@ -186,19 +186,19 @@ u32 ParkMenu::UpdateSelection(u32 mode) {
         WindowItem *items = mWindow->mCursor->mItems;
         do {
             if (mTarget == k) {
-                mWindow->mCells[k]->ResetAnimation();
-                mWindow->mCells[k]->SetAnimation(1);
-                mCells[k]->ResetAnimation();
-                mCells[k]->SetAnimation(1);
+                mWindow->mCellAnims[k]->ResetAnimation();
+                mWindow->mCellAnims[k]->SetAnimation(1);
+                mCellAnims[k]->ResetAnimation();
+                mCellAnims[k]->SetAnimation(1);
             } else if (mCurrent == k) {
-                mWindow->mCells[k]->ResetAnimation();
-                mWindow->mCells[k]->SetAnimation(1);
-                mWindow->mCells[k]->mFrameIndex = mWindow->mCells[k]->mFrames[mWindow->mCells[k]->mAnimIndex].mFrameCount;
-                mWindow->mCells[k]->SetMode(2);
-                mCells[k]->ResetAnimation();
-                mCells[k]->SetAnimation(1);
-                mCells[k]->mFrameIndex = mCells[k]->mFrames[mCells[k]->mAnimIndex].mFrameCount;
-                mCells[k]->SetMode(2);
+                mWindow->mCellAnims[k]->ResetAnimation();
+                mWindow->mCellAnims[k]->SetAnimation(1);
+                mWindow->mCellAnims[k]->mFrameIndex = mWindow->mCellAnims[k]->mFrames[mWindow->mCellAnims[k]->mAnimIndex].mFrameCount;
+                mWindow->mCellAnims[k]->SetMode(2);
+                mCellAnims[k]->ResetAnimation();
+                mCellAnims[k]->SetAnimation(1);
+                mCellAnims[k]->mFrameIndex = mCellAnims[k]->mFrames[mCellAnims[k]->mAnimIndex].mFrameCount;
+                mCellAnims[k]->SetMode(2);
             }
             items[k].mFlags = 0x8000;
             k++;
@@ -249,20 +249,20 @@ void ParkMenu::Setup() {
         w->mCellPos[i].y = Q.y;
         items[i].mX = R.x;
         if (i == mCurrent) {
-            CellAnimation *c = mWindow->mCells[i];
+            CellAnimation *c = mWindow->mCellAnims[i];
             c->SetAnimation(1);
             items[i].mFlags = 5;
-            c               = mCells[i];
+            c               = mCellAnims[i];
             c->SetAnimation(1);
         } else {
-            CellAnimation *c = mWindow->mCells[i];
+            CellAnimation *c = mWindow->mCellAnims[i];
             c->SetAnimation(0);
             items[i].mFlags = 0x8000;
-            c               = mCells[i];
+            c               = mCellAnims[i];
             c->SetAnimation(0);
         }
-        mWindow->mCells[i]->ResetAnimation();
-        mCells[i]->ResetAnimation();
+        mWindow->mCellAnims[i]->ResetAnimation();
+        mCellAnims[i]->ResetAnimation();
         mWindow->mButtons[i].mEnabled = 1;
         i++;
     } while (i < mCount);
@@ -308,7 +308,7 @@ BOOL ParkMenu::Slide() {
         i++;
     } while (i < mCount);
     if (mTimer == 0) {
-        CellAnimation *cell = mWindow->mCells[mCurrent];
+        CellAnimation *cell = mWindow->mCellAnims[mCurrent];
         cell->SetAnimation(0);
         items[mTarget].mFlags  = 5;
         items[mCurrent].mFlags = 0x8000;
@@ -329,13 +329,13 @@ BOOL ParkMenu::Slide() {
             mWindow->mButtons[5].mEnabled = 1;
             items[5].mFlags               = 8;
         }
-        mWindow->mCells[5]->Rewind();
-        mWindow->mCells[4]->Rewind();
+        mWindow->mCellAnims[5]->Rewind();
+        mWindow->mCellAnims[4]->Rewind();
         if (mMode == 1) {
-            CellAnimation *c = mWindow->mCells[4];
+            CellAnimation *c = mWindow->mCellAnims[4];
             c->SetAnimation(0);
         } else {
-            CellAnimation *c = mWindow->mCells[5];
+            CellAnimation *c = mWindow->mCellAnims[5];
             c->SetAnimation(1);
         }
         DrawText();
@@ -388,18 +388,18 @@ void ParkMenu::Draw() {
     u8 i = 0;
     do {
         Vec2s pt = mWindow->mCellPos[i];
-        mCells[i]->Update();
-        u8 state = mCells[i]->mAnimIndex;
+        mCellAnims[i]->Update();
+        u8 state = mCellAnims[i]->mAnimIndex;
         if (state != 0) {
             if (state == 2 && mProgressEntryIndex != 0xff) {
-                mCells[5]->Update();
-                mCells[5]->Draw(1, (s16) (pt.x + 0x23), (s16) (pt.y + 0x32), 0);
+                mCellAnims[5]->Update();
+                mCellAnims[5]->Draw(1, (s16) (pt.x + 0x23), (s16) (pt.y + 0x32), 0);
             }
-            mCells[i]->Draw(1, pt.x, pt.y, 0);
+            mCellAnims[i]->Draw(1, pt.x, pt.y, 0);
         } else {
-            mCells[4]->DrawFrame(1, GetParkGroupId(i), pt.x, pt.y, 0);
+            mCellAnims[4]->DrawFrame(1, GetParkGroupId(i), pt.x, pt.y, 0);
         }
-        CellAnimation *c = mCells[i];
+        CellAnimation *c = mCellAnims[i];
         if (c->mAnimIndex == 1 && c->mFinished != 0) {
             if (c->mMode == 2) {
                 c->SetAnimation(0);
@@ -430,9 +430,9 @@ void ParkMenu::DrawNumber() {
     } while (pos >= 0 && value != 0);
     for (; i < 7; i++) {
         s32 d = digits.d[i];
-        if (d >= 0 && mCells[7] != NULL) {
-            mCells[7]->DrawFrame(1, (u8) d, (s16) (i * 7 + 0x2f), 0x17, 0);
+        if (d >= 0 && mCellAnims[7] != NULL) {
+            mCellAnims[7]->DrawFrame(1, (u8) d, (s16) (i * 7 + 0x2f), 0x17, 0);
         }
     }
-    mCells[6]->Draw(1, 3, 0x14, 0);
+    mCellAnims[6]->Draw(1, 3, 0x14, 0);
 }

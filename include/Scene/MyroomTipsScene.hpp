@@ -23,9 +23,9 @@ public:
     /* 28 */ SelectWindow *mWindowA;
     /* 2c */ SelectWindow *mWindowB;
     /* 30 */ ScriptPlayer *mEvent;
-    /* 34 */ CellAnimation *mCells[6];
-    /* 4c */ CellAnimation *mCellA;
-    /* 50 */ CellAnimation *mCellB;
+    /* 34 */ CellAnimation *mCellAnims[6];
+    /* 4c */ CellAnimation *mCellAnimA;
+    /* 50 */ CellAnimation *mCellAnimB;
     /* 54 */ CellAnimation *mNewCells[2];
     /* 5c */ CellAnimation *mRowCells[2];
     /* 64 */ u32 mTextBufferSize;

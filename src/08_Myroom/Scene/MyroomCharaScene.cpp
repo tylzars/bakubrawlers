@@ -78,7 +78,7 @@ MyroomCharaScene::MyroomCharaScene() :
     mListCount  = 0;
     mMessageWindow    = NULL;
     for (u8 i = 0; i < 2; i++) {
-        mCells[i]   = NULL;
+        mCellAnims[i]   = NULL;
         mCellsVisible[i]  = 0;
     }
     mCell = NULL;
@@ -117,11 +117,11 @@ void MyroomCharaScene::Cleanup() {
 
 void MyroomCharaScene::FreeCells() {
     for (u8 i = 0; i < 2; i++) {
-        CellAnimation *cell = mCells[i];
+        CellAnimation *cell = mCellAnims[i];
         if (cell != NULL) {
             delete cell;
         }
-        mCells[i] = NULL;
+        mCellAnims[i] = NULL;
     }
 }
 
@@ -135,7 +135,7 @@ void MyroomCharaScene::Update() {
             mStatus                  = new MyroomStatusScene(0x15);
             mContext->mRequest        = 0;
             mWindow->mCursor->mSelection = 0;
-            mWindow->mCells[0]->SetAnimation(2);
+            mWindow->mCellAnims[0]->SetAnimation(2);
             mTab    = 0;
             mShownTab = 0;
             RefreshPageButtons();
@@ -377,14 +377,14 @@ void MyroomCharaScene::LoadMainGraphics() {
     main.LoadPalette("myroom_status_u_obj_01_ncl.bin", 0x80, 0);
     u8 i;
     for (i = 0; i == 0; i++) {
-        mCells[i]            = new CellAnimation("myroom_status_u_obj_00_nce.bin", 0, 1, 1);
-        mCells[i]->mCharBase = main.GetCharBase(0);
-        mCells[i]->mPaletteBase   = 0;
+        mCellAnims[i]            = new CellAnimation("myroom_status_u_obj_00_nce.bin", 0, 1, 1);
+        mCellAnims[i]->mCharBase = main.GetCharBase(0);
+        mCellAnims[i]->mPaletteBase   = 0;
     }
     do {
-        mCells[i]            = new CellAnimation("myroom_status_u_obj_01_nce.bin", 0, 1, 1);
-        mCells[i]->mCharBase = main.GetCharBase(0x9000);
-        mCells[i]->mPaletteBase   = 4;
+        mCellAnims[i]            = new CellAnimation("myroom_status_u_obj_01_nce.bin", 0, 1, 1);
+        mCellAnims[i]->mCharBase = main.GetCharBase(0x9000);
+        mCellAnims[i]->mPaletteBase   = 4;
         i++;
     } while (i < 2);
     ChangeDir("/");
@@ -398,15 +398,15 @@ void MyroomCharaScene::SetupTabCells() {
             mCellsVisible[0] = 0;
             break;
         case 1:
-            mCells[0]->SetAnimation(0);
+            mCellAnims[0]->SetAnimation(0);
             break;
         case 2:
-            mCells[0]->SetAnimation(1);
-            mCells[1]->SetAnimation(func_ov008_02224a4c());
+            mCellAnims[0]->SetAnimation(1);
+            mCellAnims[1]->SetAnimation(func_ov008_02224a4c());
             mCellsVisible[1] = 1;
             break;
         case 3:
-            mCells[0]->SetAnimation(2);
+            mCellAnims[0]->SetAnimation(2);
             break;
     }
 }
@@ -425,12 +425,12 @@ void MyroomCharaScene::DrawWindow() {
 
 void MyroomCharaScene::DrawCells() {
     for (u8 i = 0; i < 2; i++) {
-        if (mCells[i] != NULL && mCellsVisible[i] != 0) {
-            mCells[i]->Update();
+        if (mCellAnims[i] != NULL && mCellsVisible[i] != 0) {
+            mCellAnims[i]->Update();
             if (i == 1) {
-                mCells[i]->Draw(0, 0x80, 0x60, 0);
+                mCellAnims[i]->Draw(0, 0x80, 0x60, 0);
             } else {
-                mCells[i]->Draw(0, 0x80, 0x60, 1);
+                mCellAnims[i]->Draw(0, 0x80, 0x60, 1);
             }
         }
     }
@@ -711,8 +711,8 @@ void MyroomCharaScene::RefreshPageButtons() {
     WindowItem *items = mWindow->mCursor->mItems;
     if (mTab == 3) {
         if (mPageCount == 1) {
-            mWindow->mCells[4]->SetAnimation(2);
-            mWindow->mCells[5]->SetAnimation(5);
+            mWindow->mCellAnims[4]->SetAnimation(2);
+            mWindow->mCellAnims[5]->SetAnimation(5);
             mWindow->mButtons[4].mEnabled = 0;
             mWindow->mButtons[5].mEnabled = 0;
             items[4].mFlags               = 0x8000;
@@ -720,26 +720,26 @@ void MyroomCharaScene::RefreshPageButtons() {
             return;
         }
         if (mPage != 0) {
-            mWindow->mCells[4]->SetAnimation(0);
+            mWindow->mCellAnims[4]->SetAnimation(0);
             mWindow->mButtons[4].mEnabled = 1;
             items[4].mFlags               = 0x208;
         } else {
-            mWindow->mCells[4]->SetAnimation(2);
+            mWindow->mCellAnims[4]->SetAnimation(2);
             mWindow->mButtons[4].mEnabled = 0;
             items[4].mFlags               = 0x8000;
         }
         if (mPage < mPageCount - 1) {
-            mWindow->mCells[5]->SetAnimation(3);
+            mWindow->mCellAnims[5]->SetAnimation(3);
             mWindow->mButtons[5].mEnabled = 1;
             items[5].mFlags               = 0x408;
         } else {
-            mWindow->mCells[5]->SetAnimation(5);
+            mWindow->mCellAnims[5]->SetAnimation(5);
             mWindow->mButtons[5].mEnabled = 0;
             items[5].mFlags               = 0x8000;
         }
     } else {
-        mWindow->mCells[4]->SetAnimation(2);
-        mWindow->mCells[5]->SetAnimation(5);
+        mWindow->mCellAnims[4]->SetAnimation(2);
+        mWindow->mCellAnims[5]->SetAnimation(5);
         mWindow->mButtons[4].mEnabled = 0;
         mWindow->mButtons[5].mEnabled = 0;
         items[4].mFlags               = 0x8000;

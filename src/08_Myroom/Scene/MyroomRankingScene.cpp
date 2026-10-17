@@ -76,19 +76,19 @@ inline void MyroomRankingScene::UpdateRowAnimations() {
     for (u8 i = 0; i < 6; i++) {
         switch (mRows[i].mRank) {
             case 1:
-                mWindow->mCells[(u8) (i + 1)]->SetAnimation(1);
+                mWindow->mCellAnims[(u8) (i + 1)]->SetAnimation(1);
                 break;
             case 2:
-                mWindow->mCells[(u8) (i + 1)]->SetAnimation(2);
+                mWindow->mCellAnims[(u8) (i + 1)]->SetAnimation(2);
                 break;
             case 3:
-                mWindow->mCells[(u8) (i + 1)]->SetAnimation(3);
+                mWindow->mCellAnims[(u8) (i + 1)]->SetAnimation(3);
                 break;
             default:
                 if ((s32) mRows[i].mRank > 10) {
-                    mWindow->mCells[(u8) (i + 1)]->SetAnimation(0);
+                    mWindow->mCellAnims[(u8) (i + 1)]->SetAnimation(0);
                 } else {
-                    mWindow->mCells[(u8) (i + 1)]->SetAnimation(4);
+                    mWindow->mCellAnims[(u8) (i + 1)]->SetAnimation(4);
                 }
                 break;
         }
@@ -114,7 +114,7 @@ MyroomRankingScene::MyroomRankingScene() :
     mUnk_1c0  = 0;
     for (; i < 6; i++) {
         for (j = 0; j < 10; j++) {
-            mRows[i].mCells[j] = NULL;
+            mRows[i].mCellAnims[j] = NULL;
         }
     }
     mPlayerRank  = mRows[0].mRank;
@@ -139,7 +139,7 @@ MyroomRankingScene::~MyroomRankingScene() {
     delete mWindow;
     for (i = 0; i < 6; i++) {
         for (j = 0; j < 10; j++) {
-            cell = mRows[i].mCells[j];
+            cell = mRows[i].mCellAnims[j];
             if (cell != NULL) {
                 delete cell;
             }
@@ -324,11 +324,11 @@ void MyroomRankingScene::Init() {
     sub.LoadPalette("union_b_obj_number_ncl.bin", 0x160, 0);
     for (u8 i = 0; i < 6; i++) {
         for (u8 j = 0; j < 10; j++) {
-            mRows[i].mCells[j]            = new CellAnimation("union_b_obj_number_nce.bin", 0, 1, 1);
-            mRows[i].mCells[j]->mCharBase = sub.GetCharBase(0x7000);
-            mRows[i].mCells[j]->mPaletteBase   = 11;
-            mRows[i].mCells[j]->SetAnimation(0);
-            mRows[i].mCells[j]->SetMode(5);
+            mRows[i].mCellAnims[j]            = new CellAnimation("union_b_obj_number_nce.bin", 0, 1, 1);
+            mRows[i].mCellAnims[j]->mCharBase = sub.GetCharBase(0x7000);
+            mRows[i].mCellAnims[j]->mPaletteBase   = 11;
+            mRows[i].mCellAnims[j]->SetAnimation(0);
+            mRows[i].mCellAnims[j]->SetMode(5);
         }
     }
     ChangeDir("/font/");
@@ -392,7 +392,7 @@ void MyroomRankingScene::DrawSubScreen() {
         b             = mRows[i].mScore;
         for (u8 j = 0; j < 10; j++) {
             digit = 0;
-            if (mRows[i].mCells[j] == NULL) {
+            if (mRows[i].mCellAnims[j] == NULL) {
                 continue;
             }
             if (j < 3) {
@@ -410,8 +410,8 @@ void MyroomRankingScene::DrawSubScreen() {
                     continue;
                 }
             }
-            mRows[i].mCells[j]->Update();
-            mRows[i].mCells[j]->DrawFrame(1, digit, sMyroomRankingDigitPos[i][j].mX, sMyroomRankingDigitPos[i][j].mY, 0);
+            mRows[i].mCellAnims[j]->Update();
+            mRows[i].mCellAnims[j]->DrawFrame(1, digit, sMyroomRankingDigitPos[i][j].mX, sMyroomRankingDigitPos[i][j].mY, 0);
         }
     }
     SelectWindow *window = mWindow;

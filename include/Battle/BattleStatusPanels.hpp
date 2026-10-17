@@ -8,7 +8,7 @@ class CharacterIcons;
 
 // One player's panel on the upper screen (battle_u): sprites, the name text buffers and a few state bytes. 0x38 bytes.
 struct BattlePanel {
-    /* 00 */ CellAnimation *mAnims[7];
+    /* 00 */ CellAnimation *mCellAnims[7];
     /* 1c */ s16 mOffset[4];
     /* 24 */ s8 mCharacterId; // character shown in the icon (-1: none)
     /* 25 */ u8 mMirrored;
@@ -33,8 +33,8 @@ class BattleStatusPanels {
 public:
     /* 00 */ CharacterIcons *mIcons;
     /* 04 */ BattlePanel mPanels[4];
-    /* e4 */ CellAnimation *mAnimC;
-    /* e8 */ CellAnimation *mAnimD;
+    /* e4 */ CellAnimation *mCellAnimC;
+    /* e8 */ CellAnimation *mCellAnimD;
     /* ec */ u32 mCharBase;
     /* f0 */ u8 mPalette;
     /* f1 */ u8 mUnk_f1;

@@ -13,7 +13,7 @@ struct MessageFile;
 
 // A cell animation entry (one per button or marker).
 struct CellEntry {
-    /* 00 */ CellAnimation *mAnim;
+    /* 00 */ CellAnimation *mCellAnim;
     /* 04 */ s16 mX;
     /* 06 */ s16 mY;
     /* 08 */ u8 mVisible;

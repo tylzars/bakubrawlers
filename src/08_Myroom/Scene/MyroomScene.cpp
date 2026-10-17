@@ -166,7 +166,7 @@ void MyroomScene::Update() {
                 mWindows[0]->Reset(-1);
                 mWindows[0]->mCursor->mSelection = -1;
                 mWindows[0]->mCursor->mSelection = *(s8 *) &ctx->mInfo.mUnk_06;
-                mWindows[0]->mCells[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(sMyroomMenu0SelectedAnimIndices[(s8) ctx->mInfo.mUnk_06]);
+                mWindows[0]->mCellAnims[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(sMyroomMenu0SelectedAnimIndices[(s8) ctx->mInfo.mUnk_06]);
             }
             PrintStatus();
             ctx->mInfo.mState++;
@@ -649,10 +649,10 @@ void MyroomScene::StartScroll() {
     WindowItem *items = window->mCursor->mItems;
     for (i = 0; i < 5; i++) {
         if (ctx->mInfo.mUnk_0a == i) {
-            window->mCells[i]->ResetAnimation();
-            window->mCells[i]->SetAnimation(sMyroomMenu0SelectedAnimIndices[i]);
+            window->mCellAnims[i]->ResetAnimation();
+            window->mCellAnims[i]->SetAnimation(sMyroomMenu0SelectedAnimIndices[i]);
         } else if ((s8) ctx->mInfo.mUnk_06 == i) {
-            window->mCells[i]->SetMode(2);
+            window->mCellAnims[i]->SetMode(2);
         }
         items[i].mFlags = 0x8000;
     }
@@ -688,14 +688,14 @@ void MyroomScene::HandleWindowResult() {
                     ctx->mInfo.mState = 0xf;
                     break;
                 case 1:
-                    if (mWindows[1]->mCells[3]->mFinished == 0) {
+                    if (mWindows[1]->mCellAnims[3]->mFinished == 0) {
                         return;
                     }
                     SwitchPage(0);
                     mWindows[1]->Reset(0);
                     break;
                 case 2:
-                    if (mWindows[2]->mCells[3]->mFinished == 0) {
+                    if (mWindows[2]->mCellAnims[3]->mFinished == 0) {
                         return;
                     }
                     SwitchPage(0);
@@ -716,7 +716,7 @@ void MyroomScene::HandleWindowResult() {
                             ctx->mInfo.mUnk_06 = 0;
                             ctx->mInfo.mUnk_0a = 0;
                             SwitchPage(1);
-                            mWindows[1]->mCells[4]->ResetAnimation();
+                            mWindows[1]->mCellAnims[4]->ResetAnimation();
                             break;
                         case 1:
                             ctx->mInfo.mState = 0xc;
@@ -733,7 +733,7 @@ void MyroomScene::HandleWindowResult() {
                             ctx->mInfo.mUnk_06 = 0;
                             ctx->mInfo.mUnk_0a = 0;
                             SwitchPage(2);
-                            mWindows[2]->mCells[4]->ResetAnimation();
+                            mWindows[2]->mCellAnims[4]->ResetAnimation();
                             break;
                         case 5:
                             ctx->mInfo.mState = 0xf;
@@ -755,7 +755,7 @@ void MyroomScene::HandleWindowResult() {
                             ctx->mInfo.mState  = 6;
                             break;
                         case 3:
-                            if (mWindows[1]->mCells[3]->mFinished == 0) {
+                            if (mWindows[1]->mCellAnims[3]->mFinished == 0) {
                                 return;
                             }
                             SwitchPage(0);
@@ -778,7 +778,7 @@ void MyroomScene::HandleWindowResult() {
                             ctx->mInfo.mState  = 6;
                             break;
                         case 3:
-                            if (mWindows[2]->mCells[3]->mFinished == 0) {
+                            if (mWindows[2]->mCellAnims[3]->mFinished == 0) {
                                 return;
                             }
                             SwitchPage(0);
@@ -825,7 +825,7 @@ BOOL MyroomScene::UpdateScroll() {
         items[i].mX = step + items[i].mX;
     }
     if (ctx->mInfo.mScrollDir == 0) {
-        window->mCells[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(sMyroomMenu0AnimIndices[(s8) ctx->mInfo.mUnk_06]);
+        window->mCellAnims[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(sMyroomMenu0AnimIndices[(s8) ctx->mInfo.mUnk_06]);
         items[ctx->mInfo.mUnk_0a].mFlags     = 8;
         items[(s8) ctx->mInfo.mUnk_06].mFlags     = 0x8000;
         window->mCursor->mSelection          = ctx->mInfo.mUnk_0a;
@@ -842,12 +842,12 @@ BOOL MyroomScene::UpdateScroll() {
             window->mButtons[7].mEnabled = 1;
             items[7].mFlags              = 8;
         }
-        window->mCells[6]->Rewind();
-        window->mCells[7]->Rewind();
+        window->mCellAnims[6]->Rewind();
+        window->mCellAnims[7]->Rewind();
         if (ctx->mInfo.mPage == 1) {
-            window->mCells[6]->SetAnimation(0);
+            window->mCellAnims[6]->SetAnimation(0);
         } else {
-            window->mCells[7]->SetAnimation(1);
+            window->mCellAnims[7]->SetAnimation(1);
         }
         PrintStatus();
         done = TRUE;
@@ -870,13 +870,13 @@ void MyroomScene::RefreshCellLayout() {
         window->SetCellPos(i, pos);
         items[i].mX = pos.x;
         if ((s8) ctx->mInfo.mUnk_06 == i) {
-            window->mCells[i]->SetAnimation(sMyroomMenu0SelectedAnimIndices[i]);
+            window->mCellAnims[i]->SetAnimation(sMyroomMenu0SelectedAnimIndices[i]);
             items[i].mFlags = 8;
         } else {
-            window->mCells[i]->SetAnimation(sMyroomMenu0AnimIndices[i]);
+            window->mCellAnims[i]->SetAnimation(sMyroomMenu0AnimIndices[i]);
             items[i].mFlags = 0x8000;
         }
-        window->mCells[i]->ResetAnimation();
+        window->mCellAnims[i]->ResetAnimation();
     }
     if ((s8) ctx->mInfo.mUnk_06 != 0) {
         window->mButtons[6].mEnabled = 1;

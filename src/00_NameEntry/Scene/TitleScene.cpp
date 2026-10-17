@@ -156,7 +156,7 @@ TitleScene::TitleScene() :
     data_020d433c.mUnk_88_0 = 0;
     data_020d433c.mUnk_7e_0 = 0;
     data_020d433c.mUnk_8a_0 = 0;
-    MI_CpuClear32(mCells, sizeof(mCells));
+    MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
     MI_CpuClear32(mBuffers, sizeof(mBuffers));
     MI_CpuClear32(mBufferSizes, sizeof(mBufferSizes));
     mCursor = new SelectWindowCursor(1, sTitleFullScreenItems, 0);
@@ -168,8 +168,8 @@ TitleScene::TitleScene() :
 
 TitleScene::~TitleScene() {
     for (u8 i = 0; i < 8; i++) {
-        if (mCells[i] != NULL) {
-            delete mCells[i];
+        if (mCellAnims[i] != NULL) {
+            delete mCellAnims[i];
         }
     }
     operator delete(mCursor);
@@ -311,10 +311,10 @@ void TitleScene::Update() {
                 SetMessage(0);
             } else if (mUnk_d0) {
                 mWindow30->mCursor->mSelection = 0;
-                mWindow30->mCells[0]->SetAnimation(1);
+                mWindow30->mCellAnims[0]->SetAnimation(1);
             } else {
                 mWindow30->mCursor->mSelection = 1;
-                mWindow30->mCells[1]->SetAnimation(4);
+                mWindow30->mCellAnims[1]->SetAnimation(4);
             }
             mState++;
             break;
@@ -632,7 +632,7 @@ void TitleScene::Update() {
                 changed = 1;
             }
             if (changed) {
-                mCells[mMenuSelection + 3]->SetAnimation(mMenuSelection * 3 + 2);
+                mCellAnims[mMenuSelection + 3]->SetAnimation(mMenuSelection * 3 + 2);
                 mState++;
             }
             UpdateCursorCell();
@@ -838,42 +838,42 @@ void TitleScene::LoadGraphics() {
     screen.LoadCharacters("title_b_obj_00.nce_ncg1D.bin", 0, 0);
     screen.LoadExtPalette("title_b_obj_00_ncl.bin", 0, 0);
     for (u8 i = 0; i < 8; i++) {
-        if (mCells[i] != NULL) {
-            delete mCells[i];
+        if (mCellAnims[i] != NULL) {
+            delete mCellAnims[i];
         }
-        mCells[i] = new CellAnimation("title_b_obj_00_nce.bin", 0, 1, 1);
-        mCells[i]->mCharBase = screen.GetCharBase(0);
-        mCells[i]->mPaletteBase = 0;
+        mCellAnims[i] = new CellAnimation("title_b_obj_00_nce.bin", 0, 1, 1);
+        mCellAnims[i]->mCharBase = screen.GetCharBase(0);
+        mCellAnims[i]->mPaletteBase = 0;
     }
-    mCells[3]->SetAnimation(0);
-    mCells[4]->SetAnimation(3);
-    mCells[5]->SetAnimation(6);
-    mCells[6]->SetAnimation(9);
-    mCells[7]->SetAnimation(12);
+    mCellAnims[3]->SetAnimation(0);
+    mCellAnims[4]->SetAnimation(3);
+    mCellAnims[5]->SetAnimation(6);
+    mCellAnims[6]->SetAnimation(9);
+    mCellAnims[7]->SetAnimation(12);
     screen.LoadCharacters("title_b_obj_03.nce_ncg1D.bin", 0xb000, 0);
     screen.LoadPalette("title_b_obj_03_ncl.bin", 0x40, 0);
-    if (mCells[0] != NULL) {
-        delete mCells[0];
+    if (mCellAnims[0] != NULL) {
+        delete mCellAnims[0];
     }
-    mCells[0] = new CellAnimation("title_b_obj_03_nce.bin", 0, 1, 1);
-    mCells[0]->mCharBase = screen.GetCharBase(0xb000);
-    mCells[0]->mPaletteBase = 2;
+    mCellAnims[0] = new CellAnimation("title_b_obj_03_nce.bin", 0, 1, 1);
+    mCellAnims[0]->mCharBase = screen.GetCharBase(0xb000);
+    mCellAnims[0]->mPaletteBase = 2;
     screen.LoadCharacters("title_b_obj_02.nce_ncg1D.bin", 0xc000, 0);
     screen.LoadExtPalette("title_b_obj_02_ncl.bin", 0x400, 0);
-    if (mCells[1] != NULL) {
-        delete mCells[1];
+    if (mCellAnims[1] != NULL) {
+        delete mCellAnims[1];
     }
-    mCells[1] = new CellAnimation("title_b_obj_02_nce.bin", 1, 1, 1);
-    mCells[1]->mCharBase = screen.GetCharBase(0xc000);
-    mCells[1]->mPaletteBase = 2;
+    mCellAnims[1] = new CellAnimation("title_b_obj_02_nce.bin", 1, 1, 1);
+    mCellAnims[1]->mCharBase = screen.GetCharBase(0xc000);
+    mCellAnims[1]->mPaletteBase = 2;
     screen.LoadCharacters("title_b_obj_04.nce_ncg1D.bin", 0x1d000, 0);
     screen.LoadPalette("title_b_obj_04_ncl.bin", 0xe0, 0);
-    if (mCells[2] != NULL) {
-        delete mCells[2];
+    if (mCellAnims[2] != NULL) {
+        delete mCellAnims[2];
     }
-    mCells[2] = new CellAnimation("title_b_obj_04_nce.bin", 0, 1, 1);
-    mCells[2]->mCharBase = screen.GetCharBase(0x1d000);
-    mCells[2]->mPaletteBase = 7;
+    mCellAnims[2] = new CellAnimation("title_b_obj_04_nce.bin", 0, 1, 1);
+    mCellAnims[2]->mCharBase = screen.GetCharBase(0x1d000);
+    mCellAnims[2]->mPaletteBase = 7;
     screen.LoadCharacters("title_b_obj_01.nce_ncg1D.bin", 0x13000, 0);
     screen.LoadExtPalette("title_b_obj_01_ncl.bin", 0x200, 0);
     ChangeDir("/Game/2D/union_b/");
@@ -887,14 +887,14 @@ void TitleScene::LoadGraphics() {
 }
 
 void TitleScene::func_ov000_022245e8() {
-    mCells[0]->Update();
-    mCells[0]->Draw(1, 0x80, 0x60, 0);
+    mCellAnims[0]->Update();
+    mCellAnims[0]->Draw(1, 0x80, 0x60, 0);
 }
 
 void TitleScene::DrawMenuCells() {
     for (u8 i = 0; i < 5; i++) {
-        mCells[3 + i]->Update();
-        mCells[3 + i]->Draw(1, 0x80, 0x60, 3);
+        mCellAnims[3 + i]->Update();
+        mCellAnims[3 + i]->Draw(1, 0x80, 0x60, 3);
     }
 }
 
@@ -904,7 +904,7 @@ void TitleScene::RefreshMenuAnimations() {
         if (i == mMenuSelection) {
             anim = anim + 1;
         }
-        mCells[3 + i]->SetAnimation(anim);
+        mCellAnims[3 + i]->SetAnimation(anim);
     }
 }
 
@@ -1008,19 +1008,19 @@ void TitleScene::UploadSubBg(u32 index) {
 }
 
 BOOL TitleScene::UpdateCursorCell() {
-    mCells[1]->Update();
-    mCells[1]->Draw(1, 0x80, 0x58, 2);
+    mCellAnims[1]->Update();
+    mCellAnims[1]->Draw(1, 0x80, 0x58, 2);
     if (mCursorStep == 0) {
         if (mSubBgIndex == mMenuSelection) {
             return TRUE;
         }
         mCursorStep = 1;
-        mCells[1]->SetAnimation(2);
+        mCellAnims[1]->SetAnimation(2);
         SoundManager::Get().StartSeqArc(0xd);
     }
     switch (mCursorStep) {
         case 1:
-            if (mCells[1]->mFinished != 0) {
+            if (mCellAnims[1]->mFinished != 0) {
                 mCursorStep++;
             }
             break;
@@ -1028,13 +1028,13 @@ BOOL TitleScene::UpdateCursorCell() {
             u8 cur = mMenuSelection;
             mSubBgIndex = cur;
             UploadSubBg(cur);
-            mCells[1]->SetAnimation(3);
+            mCellAnims[1]->SetAnimation(3);
             SoundManager::Get().StartSeqArc(0xc);
             mCursorStep++;
             break;
         }
         case 3:
-            if (mCells[1]->mFinished != 0) {
+            if (mCellAnims[1]->mFinished != 0) {
                 mCursorStep = 0;
             }
             break;
@@ -1057,5 +1057,5 @@ void TitleScene::DrawLogo() {
     } else {
         mMessageWindow->Update();
     }
-    mCells[2]->Draw(1, 0x80, mLogoY, 1);
+    mCellAnims[2]->Draw(1, 0x80, mLogoY, 1);
 }

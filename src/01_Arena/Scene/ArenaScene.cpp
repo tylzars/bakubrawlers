@@ -113,12 +113,12 @@ ArenaScene::ArenaScene() : SceneBase(1000, 0) {
 }
 
 ArenaScene::~ArenaScene() {
-    if (mMain.mAnim != NULL) {
-        delete mMain.mAnim;
+    if (mMain.mCellAnim != NULL) {
+        delete mMain.mCellAnim;
     }
     for (u8 i = 0; i < 3; i++) {
-        if (mSlots[i].mAnim != NULL) {
-            delete mSlots[i].mAnim;
+        if (mSlots[i].mCellAnim != NULL) {
+            delete mSlots[i].mCellAnim;
         }
     }
     for (u8 i = 0; i < 4; i++) {
@@ -281,7 +281,7 @@ void ArenaScene::Update() {
             }
             u8 v;
             if (mResult == 1) {
-                mSlots[mSelection].mAnim->SetAnimation(mSlots[mSelection].mFrame + 2);
+                mSlots[mSelection].mCellAnim->SetAnimation(mSlots[mSelection].mFrame + 2);
                 v = 0x14;
             } else {
                 v = 0;
@@ -642,32 +642,32 @@ void ArenaScene::LoadGraphics() {
     sub.SetObjVramMode(3);
     sub.LoadCharacters("select_wireless_b_obj_00.nce_ncg1D.bin", 0x4000, 0);
     sub.LoadPalette("select_wireless_b_obj_00_ncl.bin", 0x20, 0);
-    if (mSlots[0].mAnim != NULL) {
-        delete mSlots[0].mAnim;
+    if (mSlots[0].mCellAnim != NULL) {
+        delete mSlots[0].mCellAnim;
     }
-    mSlots[0].mAnim            = new CellAnimation("select_wireless_b_obj_00_nce.bin", 0, 1, 1);
-    mSlots[0].mAnim->mCharBase = sub.GetCharBase(0x4000);
-    mSlots[0].mAnim->mPaletteBase   = 1;
+    mSlots[0].mCellAnim            = new CellAnimation("select_wireless_b_obj_00_nce.bin", 0, 1, 1);
+    mSlots[0].mCellAnim->mCharBase = sub.GetCharBase(0x4000);
+    mSlots[0].mCellAnim->mPaletteBase   = 1;
     mSlots[0].mX               = 0x20;
     mSlots[0].mY               = 0x30;
     mSlots[0].mTargetX          = 0x20;
     mSlots[0].mTargetY          = 0x30;
-    if (mSlots[1].mAnim != NULL) {
-        delete mSlots[1].mAnim;
+    if (mSlots[1].mCellAnim != NULL) {
+        delete mSlots[1].mCellAnim;
     }
-    mSlots[1].mAnim            = new CellAnimation("select_wireless_b_obj_00_nce.bin", 0, 1, 1);
-    mSlots[1].mAnim->mCharBase = sub.GetCharBase(0x4000);
-    mSlots[1].mAnim->mPaletteBase   = 1;
+    mSlots[1].mCellAnim            = new CellAnimation("select_wireless_b_obj_00_nce.bin", 0, 1, 1);
+    mSlots[1].mCellAnim->mCharBase = sub.GetCharBase(0x4000);
+    mSlots[1].mCellAnim->mPaletteBase   = 1;
     mSlots[1].mX               = 0x20;
     mSlots[1].mY               = 0x60;
     mSlots[1].mTargetX          = 0x20;
     mSlots[1].mTargetY          = 0x60;
-    if (mSlots[2].mAnim != NULL) {
-        delete mSlots[2].mAnim;
+    if (mSlots[2].mCellAnim != NULL) {
+        delete mSlots[2].mCellAnim;
     }
-    mSlots[2].mAnim            = new CellAnimation("select_wireless_b_obj_00_nce.bin", 12, 1, 1);
-    mSlots[2].mAnim->mCharBase = sub.GetCharBase(0x4000);
-    mSlots[2].mAnim->mPaletteBase   = 1;
+    mSlots[2].mCellAnim            = new CellAnimation("select_wireless_b_obj_00_nce.bin", 12, 1, 1);
+    mSlots[2].mCellAnim->mCharBase = sub.GetCharBase(0x4000);
+    mSlots[2].mCellAnim->mPaletteBase   = 1;
     mSlots[2].mX               = 0x70;
     mSlots[2].mY               = 0x60;
     mSlots[2].mTargetX          = 0x70;
@@ -677,12 +677,12 @@ void ArenaScene::LoadGraphics() {
     main.SetObjVramMode(3);
     main.LoadCharacters("select_arena_u_obj_00.nce_ncg1D.bin", 0, 0);
     main.LoadPalette("select_arena_u_obj_00_ncl.bin", 0, 0);
-    if (mMain.mAnim != NULL) {
-        delete mMain.mAnim;
+    if (mMain.mCellAnim != NULL) {
+        delete mMain.mCellAnim;
     }
-    mMain.mAnim            = new CellAnimation("select_arena_u_obj_00_nce.bin", 1, 1, 1);
-    mMain.mAnim->mCharBase = main.GetCharBase(0);
-    mMain.mAnim->mPaletteBase   = 0;
+    mMain.mCellAnim            = new CellAnimation("select_arena_u_obj_00_nce.bin", 1, 1, 1);
+    mMain.mCellAnim->mCharBase = main.GetCharBase(0);
+    mMain.mCellAnim->mPaletteBase   = 0;
     mMain.mX               = 0x80;
     mMain.mY               = 0x60;
     mMain.mTargetX          = 0x80;
@@ -715,9 +715,9 @@ void ArenaScene::SetupVariant() {
     mResult = 0;
     mSelection = 0;
     if (mVariant == 0) {
-        mMain.mAnim->SetAnimation(0);
+        mMain.mCellAnim->SetAnimation(0);
     } else {
-        mMain.mAnim->SetAnimation(1);
+        mMain.mCellAnim->SetAnimation(1);
     }
     switch (mVariant) {
         case 0:
@@ -788,9 +788,9 @@ void ArenaScene::RefreshSlotAnimations() {
     for (u8 i = 0; i < 2; i++) {
         if (mSlots[i].mVisible != 0) {
             if (mSelection == i) {
-                mSlots[i].mAnim->SetAnimation(mSlots[i].mFrame + 1);
+                mSlots[i].mCellAnim->SetAnimation(mSlots[i].mFrame + 1);
             } else {
-                mSlots[i].mAnim->SetAnimation(mSlots[i].mFrame);
+                mSlots[i].mCellAnim->SetAnimation(mSlots[i].mFrame);
             }
         }
     }
@@ -848,7 +848,7 @@ void ArenaScene::ResetMenu() {
     mMenuWindow->mCursor->mSelection = -1;
     mMenuWindow->mEnabled            = 0;
     for (u8 i = 0; i < 2; i++) {
-        mMenuWindow->mCells[i]->SetAnimation(sArenaMenuCells[((const WindowItem *) sArenaMenuItems)[i].mId].mAnimIndices[0]);
+        mMenuWindow->mCellAnims[i]->SetAnimation(sArenaMenuCells[((const WindowItem *) sArenaMenuItems)[i].mId].mAnimIndices[0]);
     }
 }
 
@@ -859,8 +859,8 @@ void ArenaScene::func_ov001_0221bee8() {
     if (mMain.mVisible == 0) {
         return;
     }
-    mMain.mAnim->Update();
-    mMain.mAnim->Draw(0, mMain.mX, mMain.mY, mMain.mUnk_0c);
+    mMain.mCellAnim->Update();
+    mMain.mCellAnim->Draw(0, mMain.mX, mMain.mY, mMain.mUnk_0c);
 }
 
 void ArenaScene::func_ov001_0221bf40() {
@@ -871,8 +871,8 @@ void ArenaScene::func_ov001_0221bf40() {
         if (mSlots[i].mVisible != 0) {
             mSlots[i].mX = (mSlots[i].mX + mSlots[i].mTargetX) / 2;
             mSlots[i].mY = (mSlots[i].mY + mSlots[i].mTargetY) / 2;
-            mSlots[i].mAnim->Update();
-            mSlots[i].mAnim->Draw(1, mSlots[i].mX, mSlots[i].mY, mSlots[i].mUnk_0c);
+            mSlots[i].mCellAnim->Update();
+            mSlots[i].mCellAnim->Draw(1, mSlots[i].mX, mSlots[i].mY, mSlots[i].mUnk_0c);
         }
     }
     mMenuWindow->Draw();

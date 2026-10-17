@@ -22,7 +22,7 @@ public:
     /* 14 */ float mX;
     /* 18 */ float mY;
     /* 1c */ float mScale;
-    /* 20 */ CellAnimation *mAnim;
+    /* 20 */ CellAnimation *mCellAnim;
     /* 24 */
 
     ConfrontEmblem03(u8 index);

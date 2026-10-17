@@ -276,7 +276,7 @@ void MapScene::Update() {
                     }
                     mMenuWindow->Reset((s8) mTab);
                     {
-                        CellAnimation *cell = mMenuWindow->mCells[mTab];
+                        CellAnimation *cell = mMenuWindow->mCellAnims[mTab];
                         cell->mAnimIndex = sMapMenuCells[mTab].mAnimIndices[2];
                         cell->ResetAnimation();
                     }
@@ -675,7 +675,7 @@ void MapScene::CreateMenu() {
     mMenuWindow->mCursor->mSelection = mTab;
     for (u8 i = 0; i < 4; i++) {
         u32 state           = i == mTab ? 2 : 0;
-        CellAnimation *cell = mMenuWindow->mCells[i];
+        CellAnimation *cell = mMenuWindow->mCellAnims[i];
         cell->mAnimIndex       = sMapMenuCells[i].mAnimIndices[state];
         cell->ResetAnimation();
     }

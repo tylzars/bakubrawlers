@@ -25,8 +25,8 @@ public:
     /* 14 */ CellAnimation *mUnk_14;
     /* 18 */ CellAnimation *mUnk_18;
     /* 1c */ CellAnimation *mUnk_1c;
-    /* 20 */ CellAnimation *mTurnAnim;
-    /* 24 */ CellAnimation *mTurnDigits;
+    /* 20 */ CellAnimation *mTurnCellAnim;
+    /* 24 */ CellAnimation *mTurnDigitsCellAnim;
     /* 28 */ CellAnimation *mUnk_28;
     /* 2c */ CellAnimation *mPlayerCellAnims[4];
     /* 3c */ CellAnimation *mUnitCellAnims[12];

@@ -38,7 +38,7 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
     BattleEntry *entries = mData->mEntries;
     u8 i = 0;
     do {
-        mAnims[i] = 0;
+        mCellAnims[i] = 0;
         i++;
     } while (i < 15);
     if (data_020d433c.mFieldId != 0 && data_020d433c.mFieldId != 7) {
@@ -85,7 +85,7 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
 BattleSub48::~BattleSub48() {
     u8 i = 0;
     do {
-        CellAnimation *anim = mAnims[i];
+        CellAnimation *anim = mCellAnims[i];
         if (anim) {
             delete anim;
         }
@@ -149,48 +149,48 @@ void BattleSub48::LoadGraphics() {
             if (kind != 5 && other != 5) {
                 i = 0;
                 do {
-                    mAnims[i] = new CellAnimation("vs_u_obj_ability_32k_nce.bin", 0, 1, 1);
-                    mAnims[i]->mCharBase = screen.GetCharBase(0x1000);
-                    mAnims[i]->mPaletteBase = 1;
+                    mCellAnims[i] = new CellAnimation("vs_u_obj_ability_32k_nce.bin", 0, 1, 1);
+                    mCellAnims[i]->mCharBase = screen.GetCharBase(0x1000);
+                    mCellAnims[i]->mPaletteBase = 1;
                     i++;
                 } while (i < 4);
-                mAnims[0]->SetAnimation(9);
-                mAnims[1]->SetAnimation(8);
+                mCellAnims[0]->SetAnimation(9);
+                mCellAnims[1]->SetAnimation(8);
                 mUnk_0e_0 = 0;
                 switch (kind) {
                     case 0:
-                        mAnims[3]->SetAnimation(0);
+                        mCellAnims[3]->SetAnimation(0);
                         break;
                     case 1:
-                        mAnims[3]->SetAnimation(1);
+                        mCellAnims[3]->SetAnimation(1);
                         break;
                     case 2:
-                        mAnims[3]->SetAnimation(2);
+                        mCellAnims[3]->SetAnimation(2);
                         break;
                     case 3:
-                        mAnims[3]->SetAnimation(3);
+                        mCellAnims[3]->SetAnimation(3);
                         break;
                     case 4:
                         mUnk_0e_0 = 1;
-                        mAnims[2]->SetAnimation(10);
+                        mCellAnims[2]->SetAnimation(10);
                         switch (other) {
                             case 0:
-                                mAnims[3]->SetAnimation(5);
+                                mCellAnims[3]->SetAnimation(5);
                                 break;
                             case 1:
-                                mAnims[3]->SetAnimation(4);
+                                mCellAnims[3]->SetAnimation(4);
                                 break;
                             case 2:
-                                mAnims[3]->SetAnimation(6);
+                                mCellAnims[3]->SetAnimation(6);
                                 break;
                             case 3:
-                                mAnims[3]->SetAnimation(7);
+                                mCellAnims[3]->SetAnimation(7);
                                 break;
                         }
                         break;
                 }
                 if (data_020d433c.mUnk_9a_2) {
-                    mAnims[2]->SetAnimation(10);
+                    mCellAnims[2]->SetAnimation(10);
                     mUnk_0e_0 = 1;
                 }
             }
@@ -198,23 +198,23 @@ void BattleSub48::LoadGraphics() {
     }
     i = 4;
     do {
-        mAnims[i] = new CellAnimation("vs_u_obj_ability_32k_nce.bin", 0, 1, 1);
-        mAnims[i]->mCharBase = screen.GetCharBase(0x1000);
-        mAnims[i]->mPaletteBase = 1;
+        mCellAnims[i] = new CellAnimation("vs_u_obj_ability_32k_nce.bin", 0, 1, 1);
+        mCellAnims[i]->mCharBase = screen.GetCharBase(0x1000);
+        mCellAnims[i]->mPaletteBase = 1;
         i++;
     } while (i < 7);
-    mAnims[4]->SetAnimation(11);
+    mCellAnims[4]->SetAnimation(11);
     i = 0;
     j = 5;
     do {
         if (entries[i].mUnk_0f_2) {
-            mAnims[j]->SetAnimation(3);
+            mCellAnims[j]->SetAnimation(3);
         } else {
             int k = GetCardInfo(entries[i].mCardId, 3);
             if (k == 1) {
-                mAnims[j]->SetAnimation(1);
+                mCellAnims[j]->SetAnimation(1);
             } else if (k == 3) {
-                mAnims[j]->SetAnimation(3);
+                mCellAnims[j]->SetAnimation(3);
             }
         }
         j++;
@@ -225,27 +225,27 @@ void BattleSub48::LoadGraphics() {
         j = 7;
         do {
             s32 value = data_ov007_022790c8[mFieldIndex][i];
-            mAnims[j] = new CellAnimation("vs_u_obj_updown_32k_nce.bin", 0, 1, 1);
-            mAnims[j]->mCharBase = screen.GetCharBase(0x3400);
-            mAnims[j]->mPaletteBase = 3;
+            mCellAnims[j] = new CellAnimation("vs_u_obj_updown_32k_nce.bin", 0, 1, 1);
+            mCellAnims[j]->mCharBase = screen.GetCharBase(0x3400);
+            mCellAnims[j]->mPaletteBase = 3;
             if (value > 0x1000) {
-                mAnims[j]->SetAnimation(0);
+                mCellAnims[j]->SetAnimation(0);
             } else if (value < 0x1000) {
-                mAnims[j]->SetAnimation(1);
+                mCellAnims[j]->SetAnimation(1);
             } else {
-                mAnims[j]->SetAnimation(2);
+                mCellAnims[j]->SetAnimation(2);
             }
             j++;
             i++;
         } while (i < 6);
-        mAnims[13] = new CellAnimation("vs_emblem_00_32k_nce.bin", 0, 1, 1);
-        mAnims[13]->mCharBase = screen.GetCharBase(0x6000);
-        mAnims[13]->mPaletteBase = 10;
-        mAnims[13]->SetAnimation(0);
-        mAnims[14] = new CellAnimation("vs_u_obj_updown_32k_nce.bin", 0, 1, 1);
-        mAnims[14]->mCharBase = screen.GetCharBase(0x3400);
-        mAnims[14]->mPaletteBase = 3;
-        mAnims[14]->SetAnimation(3);
+        mCellAnims[13] = new CellAnimation("vs_emblem_00_32k_nce.bin", 0, 1, 1);
+        mCellAnims[13]->mCharBase = screen.GetCharBase(0x6000);
+        mCellAnims[13]->mPaletteBase = 10;
+        mCellAnims[13]->SetAnimation(0);
+        mCellAnims[14] = new CellAnimation("vs_u_obj_updown_32k_nce.bin", 0, 1, 1);
+        mCellAnims[14]->mCharBase = screen.GetCharBase(0x3400);
+        mCellAnims[14]->mPaletteBase = 3;
+        mCellAnims[14]->SetAnimation(3);
     }
     ChangeDir("/");
 }
@@ -324,11 +324,11 @@ u8 BattleSub48::func_ov007_02224a70() {
                     s32 value = data_ov007_022790c8[mFieldIndex][mUnk_12[i]];
                     u8 slot = mUnk_12[i] + 7;
                     if (value > 0x1000) {
-                        mAnims[slot]->SetAnimation(0);
+                        mCellAnims[slot]->SetAnimation(0);
                     } else if (value < 0x1000) {
-                        mAnims[slot]->SetAnimation(1);
+                        mCellAnims[slot]->SetAnimation(1);
                     } else {
-                        mAnims[slot]->SetAnimation(2);
+                        mCellAnims[slot]->SetAnimation(2);
                     }
                     i++;
                 } while (i < 2);
@@ -341,7 +341,7 @@ u8 BattleSub48::func_ov007_02224a70() {
 }
 
 void BattleSub48::DrawCircleAndSides() {
-    mAnims[13]->Draw(0, 0x6e, (s16) mCircleY, 1);
+    mCellAnims[13]->Draw(0, 0x6e, (s16) mCircleY, 1);
     u16 x;
     u16 y;
     int step;
@@ -351,19 +351,19 @@ void BattleSub48::DrawCircleAndSides() {
         u16 angle = c * 0x2aaa + 0xc000;
         if (mCircleUpDownVisible) {
             u8 slot = i + 7;
-            if (mAnims[slot]->mAnimIndex != 2) {
+            if (mCellAnims[slot]->mAnimIndex != 2) {
                 step = angle >> 4;
                 x = 110.0f + 70.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
                 y = (float) (u32) mCircleY + 70.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
-                mAnims[slot]->Update();
-                mAnims[slot]->Draw(0, (s16) x, (s16) y, 1);
+                mCellAnims[slot]->Update();
+                mCellAnims[slot]->Draw(0, (s16) x, (s16) y, 1);
             }
         }
         if (gCircleSlots[mUnk_12[0]] != c && gCircleSlots[mUnk_12[1]] != c) {
             step = angle >> 4;
             x = 110.0f + 50.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
             y = (float) (u32) mCircleY + 50.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
-            mAnims[14]->DrawFrame(0, i, x, y, 1);
+            mCellAnims[14]->DrawFrame(0, i, x, y, 1);
         }
         i++;
     } while (i < 6);
@@ -377,10 +377,10 @@ void BattleSub48::DrawSides() {
         u16 y = mPos[i][1];
         if (mSideUpDownVisible) {
             u8 slot = mUnk_12[i] + 7;
-            mAnims[slot]->Update();
-            mAnims[slot]->Draw(0, (s16) (x + (i == 0 ? 30 : -30)), (s16) y, 1);
+            mCellAnims[slot]->Update();
+            mCellAnims[slot]->Draw(0, (s16) (x + (i == 0 ? 30 : -30)), (s16) y, 1);
         }
-        mAnims[14]->DrawFrame(0, mUnk_12[i], x, y, 1);
+        mCellAnims[14]->DrawFrame(0, mUnk_12[i], x, y, 1);
         i++;
     } while (i < 2);
 }
@@ -403,22 +403,22 @@ void BattleSub48::DrawAbilitiesAndSides() {
     }
     do {
         if (entries[i].mCardId != 0) {
-            if (mAnims[3] == 0) {
+            if (mCellAnims[3] == 0) {
                 break;
             }
             if ((i == 0 && mSide == 0) || (i == 1 && mSide == 1)) {
                 u8 other = i ^ 1;
                 if (!entries[other].mUnk_0f_3) {
                     if (!mUnk_0e_0) {
-                        mAnims[1]->Update();
-                        mAnims[1]->Draw(0, xs[i], y, 1);
+                        mCellAnims[1]->Update();
+                        mCellAnims[1]->Draw(0, xs[i], y, 1);
                     } else {
-                        mAnims[2]->Draw(0, xs[i], y, 1);
+                        mCellAnims[2]->Draw(0, xs[i], y, 1);
                     }
                     EntryIndex k = (EntryIndex) i;
                     x            = xs[k];
-                    mAnims[3]->Draw(0, x, y, 1);
-                    mAnims[0]->Draw(0, x, y, 1);
+                    mCellAnims[3]->Draw(0, x, y, 1);
+                    mCellAnims[0]->Draw(0, x, y, 1);
                     if (i == 0) {
                         xs[0] += 0x41;
                     } else {
@@ -435,9 +435,9 @@ void BattleSub48::DrawAbilitiesAndSides() {
             if (entries[i].mUnk_0f_2) {
                 s16 x = xs[i];
                 u8 slot = i + 5;
-                mAnims[slot]->Draw(0, x, y, 1);
-                mAnims[4]->Update();
-                mAnims[4]->Draw(0, x, y, 1);
+                mCellAnims[slot]->Draw(0, x, y, 1);
+                mCellAnims[4]->Update();
+                mCellAnims[4]->Draw(0, x, y, 1);
                 if (i == 0) {
                     xs[0] += 0x41;
                 } else {
@@ -447,9 +447,9 @@ void BattleSub48::DrawAbilitiesAndSides() {
                 u8 j = i ^ 1;
                 s16 x = xs[j];
                 u8 slot = i + 5;
-                mAnims[slot]->Draw(0, x, y, 1);
-                mAnims[4]->Update();
-                mAnims[4]->Draw(0, x, y, 1);
+                mCellAnims[slot]->Draw(0, x, y, 1);
+                mCellAnims[4]->Update();
+                mCellAnims[4]->Draw(0, x, y, 1);
                 if (j == 0) {
                     xs[0] -= 0x41;
                 } else {

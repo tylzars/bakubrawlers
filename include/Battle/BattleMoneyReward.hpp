@@ -14,8 +14,8 @@ struct MessageFile;
 class BattleMoneyReward : public SceneBase {
 public:
     /* 00 SceneBase */
-    /* 0c */ CellAnimation *mAnims[9];
-    /* 30 */ CellAnimation *mAnimsB[15];
+    /* 0c */ CellAnimation *mCellAnims[9];
+    /* 30 */ CellAnimation *mCellAnimsB[15];
     /* 6c */ SelectWindow *mWindow;
     /* 70 */ MessageFile *mMessages;
     /* 74 */ void *mTextBuffer;

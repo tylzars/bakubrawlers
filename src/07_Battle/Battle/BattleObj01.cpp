@@ -23,19 +23,19 @@ BattleObj01::BattleObj01(u8 layer, u32 charBase) {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj");
-    mAnims[0] = new CellAnimation("vs_b_obj_01_nce.bin", 0, 1, 1);
-    mAnims[0]->mCharBase = screen.GetCharBase(charBase);
-    mAnims[0]->mPaletteBase = layer;
-    mAnims[1] = new CellAnimation("vs_b_obj_01_nce.bin", 0, 1, 1);
-    mAnims[1]->mCharBase = screen.GetCharBase(charBase);
-    mAnims[1]->mPaletteBase = layer;
+    mCellAnims[0] = new CellAnimation("vs_b_obj_01_nce.bin", 0, 1, 1);
+    mCellAnims[0]->mCharBase = screen.GetCharBase(charBase);
+    mCellAnims[0]->mPaletteBase = layer;
+    mCellAnims[1] = new CellAnimation("vs_b_obj_01_nce.bin", 0, 1, 1);
+    mCellAnims[1]->mCharBase = screen.GetCharBase(charBase);
+    mCellAnims[1]->mPaletteBase = layer;
     ChangeDir("/");
 }
 
 BattleObj01::~BattleObj01() {
     u8 i = 0;
     do {
-        CellAnimation *anim = mAnims[i];
+        CellAnimation *anim = mCellAnims[i];
         if (anim) {
             delete anim;
         }
@@ -54,8 +54,8 @@ BOOL BattleObj01::Start(u8 fast, int x, int y, s16 targetX, s16 targetY, u16 ang
     } else {
         anim = 13;
     }
-    mAnims[0]->SetAnimation(anim);
-    mAnims[1]->SetAnimation(anim + 1);
+    mCellAnims[0]->SetAnimation(anim);
+    mCellAnims[1]->SetAnimation(anim + 1);
     mActive = 1;
     mUnk_05 = fast;
     mSpeed = mMotion->mStartSpeed;
@@ -91,10 +91,10 @@ BOOL BattleObj01::Update() {
         mSideSpeed = mSideSpeed - mMotion->mSideDecel;
         NormalizeXY(mTargetX - mX, mTargetY - mY, &mDirX);
     }
-    mAnims[1]->Update();
-    mAnims[1]->Draw(1, mScreenX, mScreenY, 1);
-    mAnims[0]->Update();
-    mAnims[0]->Draw(1, mX, mY, 1);
+    mCellAnims[1]->Update();
+    mCellAnims[1]->Draw(1, mScreenX, mScreenY, 1);
+    mCellAnims[0]->Update();
+    mCellAnims[0]->Draw(1, mX, mY, 1);
     mScreenX = (s32) mX;
     mScreenY = (s32) mY;
     if (PointDistance((s32) mTargetX, (s32) mTargetY, (s32) mX, (s32) mY) > 2) {

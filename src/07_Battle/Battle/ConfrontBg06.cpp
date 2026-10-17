@@ -35,16 +35,16 @@ ConfrontEmblem06::ConfrontEmblem06(u8 index) {
     sprintf(path, "vs_emblem_%02d_ncl.bin", index);
     screen.LoadPalette(path, 0x160, 0x20);
     sprintf(path, "vs_emblem_%02d_nce.bin", index);
-    mAnims[0]            = new CellAnimation(path, 0, 1, 1);
-    mAnims[0]->mCharBase = screen.GetCharBase(0x1c000);
-    mAnims[0]->mPaletteBase   = 11;
-    mAnims[0]->SetAnimation(0);
+    mCellAnims[0]            = new CellAnimation(path, 0, 1, 1);
+    mCellAnims[0]->mCharBase = screen.GetCharBase(0x1c000);
+    mCellAnims[0]->mPaletteBase   = 11;
+    mCellAnims[0]->SetAnimation(0);
     screen.LoadCharacters("vs_b_obj_06_burst.nce_ncg1D.bin", 0x1d000, 0);
     screen.LoadPalette("vs_b_obj_06_burst_ncl.bin", 0x180, 0x20);
-    mAnims[1]            = new CellAnimation("vs_b_obj_06_burst_nce.bin", 0, 1, 1);
-    mAnims[1]->mCharBase = screen.GetCharBase(0x1d000);
-    mAnims[1]->mPaletteBase   = 12;
-    mAnims[1]->SetAnimation(0);
+    mCellAnims[1]            = new CellAnimation("vs_b_obj_06_burst_nce.bin", 0, 1, 1);
+    mCellAnims[1]->mCharBase = screen.GetCharBase(0x1d000);
+    mCellAnims[1]->mPaletteBase   = 12;
+    mCellAnims[1]->SetAnimation(0);
     ChangeDir("/");
     mX = 128.0f;
     mY = 140.0f;
@@ -53,7 +53,7 @@ ConfrontEmblem06::ConfrontEmblem06(u8 index) {
 
 ConfrontEmblem06::~ConfrontEmblem06() {
     for (u8 i = 0; i < 2; i++) {
-        delete mAnims[i];
+        delete mCellAnims[i];
     }
 }
 
@@ -85,16 +85,16 @@ void ConfrontEmblem06::Update() {
                     if (!mMuted) {
                         SoundManager::Get().StartSeqArc(0x2e);
                     }
-                    mAnims[1]->ResetAnimation();
+                    mCellAnims[1]->ResetAnimation();
                     mBurstStarted = 1;
                     mState++;
                 }
             }
             return;
         case 2:
-            if (mAnims[1]->mFinished == 0) {
-                mAnims[1]->Update();
-                mAnims[1]->Draw(1, mX, mY, 0);
+            if (mCellAnims[1]->mFinished == 0) {
+                mCellAnims[1]->Update();
+                mCellAnims[1]->Draw(1, mX, mY, 0);
                 return;
             }
             WirelessManager::Get();
@@ -140,7 +140,7 @@ void ConfrontEmblem06::Draw() {
     } else {
         b = 4096.0f * mScale - 0.5f;
     }
-    mAnims[0]->DrawTransformed(1, x, y, 1, (s32) b, (s32) a, 0);
+    mCellAnims[0]->DrawTransformed(1, x, y, 1, (s32) b, (s32) a, 0);
 }
 
 void ConfrontEmblem06::PickDir() {

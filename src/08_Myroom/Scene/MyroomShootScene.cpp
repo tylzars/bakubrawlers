@@ -573,24 +573,24 @@ void MyroomShootScene::func_ov008_02223264() {
     }
     WindowItem *items = mWindow->mCursor->mItems;
     if (mTextPage != 0) {
-        if (mWindow->mCells[8]->mAnimIndex == 2) {
-            mWindow->mCells[8]->SetAnimation(0);
+        if (mWindow->mCellAnims[8]->mAnimIndex == 2) {
+            mWindow->mCellAnims[8]->SetAnimation(0);
             items[8].mFlags = 0x208;
         }
     } else {
-        if (mWindow->mCells[8]->mAnimIndex != 2) {
-            mWindow->mCells[8]->SetAnimation(2);
+        if (mWindow->mCellAnims[8]->mAnimIndex != 2) {
+            mWindow->mCellAnims[8]->SetAnimation(2);
             items[8].mFlags = 0x8000;
         }
     }
     if (mTextEndY > 0x80) {
-        if (mWindow->mCells[9]->mAnimIndex == 5) {
-            mWindow->mCells[9]->SetAnimation(3);
+        if (mWindow->mCellAnims[9]->mAnimIndex == 5) {
+            mWindow->mCellAnims[9]->SetAnimation(3);
             items[9].mFlags = 0x408;
         }
     } else {
-        if (mWindow->mCells[9]->mAnimIndex != 5) {
-            mWindow->mCells[9]->SetAnimation(5);
+        if (mWindow->mCellAnims[9]->mAnimIndex != 5) {
+            mWindow->mCellAnims[9]->SetAnimation(5);
             items[9].mFlags = 0x8000;
         }
     }

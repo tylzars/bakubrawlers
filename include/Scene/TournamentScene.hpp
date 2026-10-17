@@ -17,9 +17,9 @@ struct MessageFile;
 class TournamentScene : public SceneBase {
 public:
     /* 00 (base) */
-    /* 0c */ CellAnimation *mCellsA[5];
+    /* 0c */ CellAnimation *mCellAnimsA[5];
     /* 20 */ CellAnimation *mCell20;
-    /* 24 */ CellAnimation *mCellsB[5];
+    /* 24 */ CellAnimation *mCellAnimsB[5];
     /* 38 */ CharacterIcons *mObj38;
     /* 3c */ ScriptPlayer *mEvent;
     /* 40 */ SelectWindow *mMenuWindow;

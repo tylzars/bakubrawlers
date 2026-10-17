@@ -13,9 +13,9 @@ class SelectWindow;
 class BattleUnionAbility : public SceneBase {
 public:
     /* 00 SceneBase */
-    /* 0c */ CellAnimation *mAnimA;
-    /* 10 */ CellAnimation *mAnimB;
-    /* 14 */ CellAnimation *mAnims[2];
+    /* 0c */ CellAnimation *mCellAnimA;
+    /* 10 */ CellAnimation *mCellAnimB;
+    /* 14 */ CellAnimation *mCellAnims[2];
     /* 1c */ SelectWindow *mWindow;
     /* 20 */ s16 mSlide;
     /* 22 */ u16 mStateFrames;

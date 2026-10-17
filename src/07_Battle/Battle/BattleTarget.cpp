@@ -346,7 +346,7 @@ BattleTarget::BattleTarget(Camera *camera, u8 unk2, u8 unk3)
     } while (i < 12);
     u8 j = 0;
     do {
-        mAnims[j] = 0;
+        mCellAnims[j] = 0;
         j++;
     } while (j < 7);
     mUnk_1a0 = 0;
@@ -374,7 +374,7 @@ BattleTarget::~BattleTarget() {
     }
     u8 i = 0;
     do {
-        delete mAnims[i];
+        delete mCellAnims[i];
         i++;
     } while (i < 7);
     u8 j = 0;
@@ -546,8 +546,8 @@ void BattleTarget::Update() {
                     BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord];
                     u8 values[3]         = {1, 2, 4};
                     pick                 = MATH_Rand32(&gRandom, 3);
-                    mAnims[4]->SetAnimation(pick + 3);
-                    mAnims[5]->SetAnimation(1);
+                    mCellAnims[4]->SetAnimation(pick + 3);
+                    mCellAnims[5]->SetAnimation(1);
                     record->mAttribute = values[pick];
                     mUnk_34         = 0;
                     mState++;
@@ -556,7 +556,7 @@ void BattleTarget::Update() {
                 break;
             }
             case 7: {
-                if (mAnims[4]->mFinished != 0) {
+                if (mCellAnims[4]->mFinished != 0) {
                     if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mRecords[mRecord].mAttribute == 1) {
                         mState = 0xb;
                     } else {
@@ -565,9 +565,9 @@ void BattleTarget::Update() {
                     }
                 }
                 DrawRoulette();
-                u8 frame = mAnims[4]->mFrameIndex;
+                u8 frame = mCellAnims[4]->mFrameIndex;
                 if (mUnk_34 != frame) {
-                    u8 t = data_ov007_0227a74c[mAnims[4]->mAnimIndex - 3];
+                    u8 t = data_ov007_0227a74c[mCellAnims[4]->mAnimIndex - 3];
                     if (t <= frame) {
                         if ((t - frame) % 2 == 0) {
                             SoundManager::Get().StartSeqArc(0x59);
@@ -576,7 +576,7 @@ void BattleTarget::Update() {
                         SoundManager::Get().StartSeqArc(0x59);
                     }
                 }
-                mUnk_34 = mAnims[4]->mFrameIndex;
+                mUnk_34 = mCellAnims[4]->mFrameIndex;
                 break;
             }
             case 8:
@@ -804,27 +804,27 @@ void BattleTarget::Init() {
     screen.LoadPalette("battle_shoot_b_gp_ncl.bin", 0x140, 0);
     u8 j = 0;
     do {
-        mAnims[j] = new CellAnimation("battle_shoot_b_gp_nce.bin", 0, 1, 1);
-        mAnims[j]->mCharBase = screen.GetCharBase(0);
-        mAnims[j]->mPaletteBase   = 10;
+        mCellAnims[j] = new CellAnimation("battle_shoot_b_gp_nce.bin", 0, 1, 1);
+        mCellAnims[j]->mCharBase = screen.GetCharBase(0);
+        mCellAnims[j]->mPaletteBase   = 10;
         j++;
     } while (j <= 3);
-    mAnims[1]->SetAnimation(0);
-    mAnims[0]->SetAnimation(1);
-    mAnims[2]->SetAnimation(2);
-    mAnims[3]->SetAnimation(3);
+    mCellAnims[1]->SetAnimation(0);
+    mCellAnims[0]->SetAnimation(1);
+    mCellAnims[2]->SetAnimation(2);
+    mCellAnims[3]->SetAnimation(3);
     SpriteScreen &screen1 = SpriteManager::Get().Screen(1);
     screen1.LoadCharacters("battle_b_obj_roulette.nce_ncg1D.bin", 0xa000, 0);
     mRoulettePalette = LoadFile("battle_b_obj_roulette_ncl.bin", 0, 0, 0, &mRoulettePaletteSize, 0);
-    mAnims[4] = new CellAnimation("battle_b_obj_roulette_nce.bin", 2, 1, 1);
-    mAnims[4]->mCharBase = screen1.GetCharBase(0xa000);
-    mAnims[4]->mPaletteBase   = 0;
-    mAnims[5] = new CellAnimation("battle_b_obj_roulette_nce.bin", 0, 1, 1);
-    mAnims[5]->mCharBase = screen1.GetCharBase(0xa000);
-    mAnims[5]->mPaletteBase   = 0;
-    mAnims[6] = new CellAnimation("battle_b_obj_roulette_nce.bin", 6, 1, 1);
-    mAnims[6]->mCharBase = screen1.GetCharBase(0xa000);
-    mAnims[6]->mPaletteBase   = 0;
+    mCellAnims[4] = new CellAnimation("battle_b_obj_roulette_nce.bin", 2, 1, 1);
+    mCellAnims[4]->mCharBase = screen1.GetCharBase(0xa000);
+    mCellAnims[4]->mPaletteBase   = 0;
+    mCellAnims[5] = new CellAnimation("battle_b_obj_roulette_nce.bin", 0, 1, 1);
+    mCellAnims[5]->mCharBase = screen1.GetCharBase(0xa000);
+    mCellAnims[5]->mPaletteBase   = 0;
+    mCellAnims[6] = new CellAnimation("battle_b_obj_roulette_nce.bin", 6, 1, 1);
+    mCellAnims[6]->mCharBase = screen1.GetCharBase(0xa000);
+    mCellAnims[6]->mPaletteBase   = 0;
     ChangeDir("/");
 }
 
@@ -3663,14 +3663,14 @@ void BattleTarget::func_ov007_0225ca48(u32 player, u32 record) {
         if (total == 0) {
             break;
         }
-        mAnims[1]->DrawFrame(0, total % 10, 0xc0 + (3 - i) * 12, 0xaa, 1);
+        mCellAnims[1]->DrawFrame(0, total % 10, 0xc0 + (3 - i) * 12, 0xaa, 1);
         i++;
         total = total / 10;
     } while (i < 4);
     if (data_020d433c.mBattlePlayers->mPlayers[player]->mUnk_fa == 0) {
         return;
     }
-    mAnims[0]->Draw(0, 0xf2, 0xab, 1);
+    mCellAnims[0]->Draw(0, 0xf2, 0xab, 1);
 }
 
 void BattleTarget::func_ov007_0225cb7c() {
@@ -3699,20 +3699,20 @@ void BattleTarget::func_ov007_0225cb7c() {
         DC_FlushRange(buf, 0x80);
         QueueUpload(0, 4, 0xe00, buf, 0x80, 1);
     }
-    mAnims[2]->Draw(0, 0xbe, 0xb7, 1);
-    mAnims[3]->Draw(0, 0xce, 0xba, 1);
+    mCellAnims[2]->Draw(0, 0xbe, 0xb7, 1);
+    mCellAnims[3]->Draw(0, 0xce, 0xba, 1);
     SpriteManager::Get().Screen(0).AddOam((void *) data_ov007_0227a5e0.mUnk_50, 1, 0xce, 0xba, 1, 0x70, 0xb, 0);
 }
 
 void BattleTarget::DrawRoulette() {
-    mAnims[4]->Update();
-    mAnims[4]->Draw(1, 0x80, 0x62, 0);
+    mCellAnims[4]->Update();
+    mCellAnims[4]->Draw(1, 0x80, 0x62, 0);
     if (mPlayer == data_020d433c.mBattlePlayers->mUnk_2a9) {
-        mAnims[5]->Update();
-        mAnims[5]->Draw(1, 0x80, 0x62, 0);
+        mCellAnims[5]->Update();
+        mCellAnims[5]->Draw(1, 0x80, 0x62, 0);
     }
-    mAnims[6]->Update();
-    mAnims[6]->Draw(1, 0x80, 0x62, 0);
+    mCellAnims[6]->Update();
+    mCellAnims[6]->Draw(1, 0x80, 0x62, 0);
 }
 
 void BattleTarget::func_ov007_0225ce08() {

@@ -29,8 +29,8 @@ static const u8 sTwoButtonAnimPositions[2][2] = {{0x38, 0x58}, {0x38, 0x78}};
 
 BattleUnionAbility::BattleUnionAbility(u8 type, u32 charOffset, u16 palette)
     : SceneBase(0x3e8, 0) {
-    mAnimA = 0;
-    mAnimB = 0;
+    mCellAnimA = 0;
+    mCellAnimB = 0;
     mSlide = 0x104;
     mStateFrames = 0;
     mState = 0;
@@ -46,7 +46,7 @@ BattleUnionAbility::BattleUnionAbility(u8 type, u32 charOffset, u16 palette)
     }
     u8 i = 0;
     do {
-        mAnims[i] = 0;
+        mCellAnims[i] = 0;
         i++;
     } while (i < 2);
 }
@@ -55,16 +55,16 @@ BattleUnionAbility::~BattleUnionAbility() {
     if (mWindow) {
         delete mWindow;
     }
-    if (mAnimA) {
-        delete mAnimA;
+    if (mCellAnimA) {
+        delete mCellAnimA;
     }
-    if (mAnimB) {
-        delete mAnimB;
+    if (mCellAnimB) {
+        delete mCellAnimB;
     }
     u8 i = 0;
     do {
-        if (mAnims[i]) {
-            delete mAnims[i];
+        if (mCellAnims[i]) {
+            delete mCellAnims[i];
         }
         i++;
     } while (i < 2);
@@ -173,22 +173,22 @@ void BattleUnionAbility::func_ov007_022344a4() {
     ChangeDir("/Game/Battle/Obj");
     if (mType == 0 || mType == 1 || mType == 3) {
         mWindow->SetCells(2, sUnionTwoButtonCells);
-        mWindow->mCells[0]->SetAnimation(1);
+        mWindow->mCellAnims[0]->SetAnimation(1);
         LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
         u8 i = 0;
         do {
-            mAnims[i]            = new CellAnimation("battle_b_obj_union_ability_nce.bin", 9, 1, 1);
-            mAnims[i]->mCharBase = screen.GetCharBase(mCharOffset);
-            mAnims[i]->mPaletteBase   = mPalette;
+            mCellAnims[i]            = new CellAnimation("battle_b_obj_union_ability_nce.bin", 9, 1, 1);
+            mCellAnims[i]->mCharBase = screen.GetCharBase(mCharOffset);
+            mCellAnims[i]->mPaletteBase   = mPalette;
             i++;
         } while (i < 2);
     } else if (mType == 5) {
         mWindow->SetCells(1, sUnionOneButtonCells);
-        mWindow->mCells[0]->SetAnimation(7);
+        mWindow->mCellAnims[0]->SetAnimation(7);
         LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
-        mAnims[0]            = new CellAnimation("battle_b_obj_union_ability_nce.bin", 9, 1, 1);
-        mAnims[0]->mCharBase = screen.GetCharBase(mCharOffset);
-        mAnims[0]->mPaletteBase   = mPalette;
+        mCellAnims[0]            = new CellAnimation("battle_b_obj_union_ability_nce.bin", 9, 1, 1);
+        mCellAnims[0]->mCharBase = screen.GetCharBase(mCharOffset);
+        mCellAnims[0]->mPaletteBase   = mPalette;
     }
     LoadAndQueueUpload(1, 5, mPalette << 5, "battle_b_obj_ability_ncl.bin", 0, 0, 0);
     ChangeDir("/");
@@ -203,47 +203,47 @@ void BattleUnionAbility::LoadGraphics() {
     switch (mType) {
         case 0:
             LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
-            mAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 0, 1, 1);
-            mAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 3, 1, 1);
+            mCellAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 0, 1, 1);
+            mCellAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 3, 1, 1);
             break;
         case 1:
             LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
-            mAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 1, 1, 1);
-            mAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 4, 1, 1);
+            mCellAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 1, 1, 1);
+            mCellAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 4, 1, 1);
             break;
         case 2:
             LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
-            mAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 2, 1, 1);
-            mAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 5, 1, 1);
+            mCellAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 2, 1, 1);
+            mCellAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 5, 1, 1);
             break;
         case 3:
             LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_fie_ability.nce_ncg1D.bin", 0, 0, 0);
-            mAnimA = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 0, 1, 1);
-            mAnimB = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 2, 1, 1);
+            mCellAnimA = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 0, 1, 1);
+            mCellAnimB = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 2, 1, 1);
             break;
         case 4:
             LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_wait.nce_ncg1D.bin", 0, 0, 0);
-            mAnimA = new CellAnimation("battle_b_obj_wait_nce.bin", 0, 1, 1);
-            mAnimB = new CellAnimation("battle_b_obj_wait_nce.bin", 1, 1, 1);
+            mCellAnimA = new CellAnimation("battle_b_obj_wait_nce.bin", 0, 1, 1);
+            mCellAnimB = new CellAnimation("battle_b_obj_wait_nce.bin", 1, 1, 1);
             break;
         case 5:
             LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_fie_ability.nce_ncg1D.bin", 0, 0, 0);
-            mAnimA = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 1, 1, 1);
-            mAnimB = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 3, 1, 1);
+            mCellAnimA = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 1, 1, 1);
+            mCellAnimB = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 3, 1, 1);
             break;
     }
     ChangeDir("/");
-    mAnimA->mCharBase = screen.GetCharBase(mCharOffset);
-    mAnimA->mPaletteBase   = mPalette;
-    mAnimB->mCharBase = screen.GetCharBase(mCharOffset);
-    mAnimB->mPaletteBase   = mPalette;
+    mCellAnimA->mCharBase = screen.GetCharBase(mCharOffset);
+    mCellAnimA->mPaletteBase   = mPalette;
+    mCellAnimB->mCharBase = screen.GetCharBase(mCharOffset);
+    mCellAnimB->mPaletteBase   = mPalette;
 }
 
 void BattleUnionAbility::Draw() {
-    mAnimA->Update();
-    mAnimA->Draw(1, (s16) (mSlide + 0x80), 0x60, 0);
-    mAnimB->Update();
-    mAnimB->Draw(1, (s16) (mSlide + 0x80), 0x60, 0);
+    mCellAnimA->Update();
+    mCellAnimA->Draw(1, (s16) (mSlide + 0x80), 0x60, 0);
+    mCellAnimB->Update();
+    mCellAnimB->Draw(1, (s16) (mSlide + 0x80), 0x60, 0);
     switch (mType) {
         case 0:
         case 1:
@@ -256,8 +256,8 @@ void BattleUnionAbility::Draw() {
             window->mCellPos[1].y = 0x78;
             u8 i = 0;
             do {
-                mAnims[i]->Update();
-                mAnims[i]->Draw(1, (s16) (mSlide + sTwoButtonAnimPositions[i][0]), sTwoButtonAnimPositions[i][1], 0);
+                mCellAnims[i]->Update();
+                mCellAnims[i]->Draw(1, (s16) (mSlide + sTwoButtonAnimPositions[i][0]), sTwoButtonAnimPositions[i][1], 0);
                 i++;
             } while (i < 2);
             mWindow->Draw();
@@ -267,8 +267,8 @@ void BattleUnionAbility::Draw() {
             SelectWindow *window = mWindow;
             window->mCellPos[0].x = mSlide + 0x38;
             window->mCellPos[0].y = 0x78;
-            mAnims[0]->Update();
-            mAnims[0]->Draw(1, (s16) (mSlide + 0x38), 0x78, 0);
+            mCellAnims[0]->Update();
+            mCellAnims[0]->Draw(1, (s16) (mSlide + 0x38), 0x78, 0);
             mWindow->Draw();
             break;
     }

@@ -65,7 +65,7 @@ BattleCommandPrompt::BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 
         i++;
     } while (i < 3);
     mCursorAnim = 0;
-    mDigitAnim = 0;
+    mDigitCellAnim = 0;
     mMessageWindow = 0;
     mCharOffset = charOffset;
     mMode = mode;
@@ -153,8 +153,8 @@ BattleCommandPrompt::~BattleCommandPrompt() {
     if (mCursorAnim) {
         delete mCursorAnim;
     }
-    if (mDigitAnim) {
-        delete mDigitAnim;
+    if (mDigitCellAnim) {
+        delete mDigitCellAnim;
     }
     if (mWindow) {
         delete mWindow;
@@ -514,7 +514,7 @@ void BattleCommandPrompt::Update() {
                         digits[2] = 0;
                         u8 j      = 0;
                         do {
-                            mDigitAnim->DrawFrame(1, digits[j], (s16) (mSlideX + data_ov007_0227a764[i].x + 4 + j * 13),
+                            mDigitCellAnim->DrawFrame(1, digits[j], (s16) (mSlideX + data_ov007_0227a764[i].x + 4 + j * 13),
                                                    (s16) (data_ov007_0227a764[i].y + 0x36), 0);
                             j++;
                         } while (j < 3);
@@ -632,9 +632,9 @@ void BattleCommandPrompt::Load() {
             mCursorAnim = new CellAnimation("union_b_obj_cursor_nce.bin", 1, 1, 1);
             mCursorAnim->mCharBase = screen.GetCharBase(0x1b800);
             mCursorAnim->mPaletteBase   = 0xd;
-            mDigitAnim = new CellAnimation("union_b_obj_gp_nce.bin", 2, 1, 1);
-            mDigitAnim->mCharBase = screen.GetCharBase(0x1a000);
-            mDigitAnim->mPaletteBase   = 0xc;
+            mDigitCellAnim = new CellAnimation("union_b_obj_gp_nce.bin", 2, 1, 1);
+            mDigitCellAnim->mCharBase = screen.GetCharBase(0x1a000);
+            mDigitCellAnim->mPaletteBase   = 0xc;
             break;
         }
     }

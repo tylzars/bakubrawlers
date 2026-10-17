@@ -18,7 +18,7 @@ struct BattleCardEffectInfo {
 // 0x1c byte object that plays a card effect cell animation (Game/Battle/Obj/<name>). Vtable 0228ab70.
 class BattleCardEffect : public SceneBase {
 public:
-    /* 0c */ CellAnimation *mAnim;
+    /* 0c */ CellAnimation *mCellAnim;
     /* 10 */ u8 mState;
     /* 11 */ u8 mAnimPairIndex; // palette variant for kinds >= 0x11
     /* 12 */ PAD(0x12, 0x14);

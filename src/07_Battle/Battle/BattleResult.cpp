@@ -101,14 +101,14 @@ public:
     /* 0c */ SelectWindow *mWindow;
     /* 10 */ MessageWindow *mMessageWindow;
     /* 14 */ MessageFile *mResultMessages;
-    /* 18 */ CellAnimation *mAnims[8];
+    /* 18 */ CellAnimation *mCellAnims[8];
     /* 38 */ void *mTextBuffers[3];
     /* 44 */ void *mGlyphBuffers[3];
     /* 50 */ u32 mTextBufferSizes[3];
     /* 5c */ u32 mGlyphCounts[3];
     /* 68 */ void *mUnk_68;
     /* 6c */ CharacterIcons *mIcons;
-    /* 70 */ CellAnimation *mAnimsB[5];
+    /* 70 */ CellAnimation *mCellAnimsB[5];
     /* 84 */ u32 mHistoryValues[6];
     /* 9c */ s32 mPrizeMoney;
     /* a0 */ s32 mRewardMoney;
@@ -164,7 +164,7 @@ BattleResult::BattleResult()
     SpriteManager::Get();
     SpriteManager::sFade[0] = 1;
     SpriteManager::sBrightness[0] = -16;
-    MI_CpuClear32(mAnims, sizeof(mAnims));
+    MI_CpuClear32(mCellAnims, sizeof(mCellAnims));
     MI_CpuClear32(mHistoryValues, sizeof(mHistoryValues));
     mResultMessages = 0;
     MI_CpuClear32(mTextBuffers, sizeof(mTextBuffers));
@@ -172,11 +172,11 @@ BattleResult::BattleResult()
     MI_CpuClear32(mTextBufferSizes, sizeof(mTextBufferSizes));
     MI_CpuClear32(mGlyphCounts, sizeof(mGlyphCounts));
     mIcons = 0;
-    mAnimsB[0] = 0;
-    mAnimsB[1] = 0;
-    mAnimsB[2] = 0;
-    mAnimsB[3] = 0;
-    mAnimsB[4] = 0;
+    mCellAnimsB[0] = 0;
+    mCellAnimsB[1] = 0;
+    mCellAnimsB[2] = 0;
+    mCellAnimsB[3] = 0;
+    mCellAnimsB[4] = 0;
 }
 
 BattleResult::~BattleResult() {
@@ -188,15 +188,15 @@ BattleResult::~BattleResult() {
     FrameTask::Get().StopAllChannels();
     u8 i = 0;
     do {
-        delete mAnims[i];
+        delete mCellAnims[i];
         i++;
     } while (i < 8);
     delete mIcons;
-    delete mAnimsB[0];
-    delete mAnimsB[1];
-    delete mAnimsB[2];
-    delete mAnimsB[3];
-    delete mAnimsB[4];
+    delete mCellAnimsB[0];
+    delete mCellAnimsB[1];
+    delete mCellAnimsB[2];
+    delete mCellAnimsB[3];
+    delete mCellAnimsB[4];
     if (mResultMessages) {
         OS_Free(mResultMessages);
         mResultMessages = 0;
@@ -660,21 +660,21 @@ void BattleResult::LoadResultGraphics() {
     screen.LoadPalette("result_u_obj_00_ncl.bin", 0x180, 0);
     u8 i = 0;
     do {
-        mAnims[i] = new CellAnimation("result_u_obj_00_nce.bin", 0, 1, 1);
-        mAnims[i]->mCharBase = screen.GetCharBase(0);
-        mAnims[i]->mPaletteBase   = 12;
-        mAnims[i]->SetAnimation(7);
+        mCellAnims[i] = new CellAnimation("result_u_obj_00_nce.bin", 0, 1, 1);
+        mCellAnims[i]->mCharBase = screen.GetCharBase(0);
+        mCellAnims[i]->mPaletteBase   = 12;
+        mCellAnims[i]->SetAnimation(7);
         i++;
     } while (i < 2);
     i = 0;
     do {
         u8 *rec = (u8 *) data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mUnk_2a9] + 0x84;
         if (*(u16 *) (rec + i * 6) != 0) {
-            mAnims[i + 2] = new CellAnimation("bakugan_sub_s_nce.bin", 0, 1, 1);
-            mAnims[i + 2]->mCharBase = screen.GetCharBase(0x2000);
-            mAnims[i + 2]->mPaletteBase   = 0;
-            mAnims[i + 2]->SetMode(5);
-            mAnims[i + 2]->mFrameIndex = rec[i * 6 + 2];
+            mCellAnims[i + 2] = new CellAnimation("bakugan_sub_s_nce.bin", 0, 1, 1);
+            mCellAnims[i + 2]->mCharBase = screen.GetCharBase(0x2000);
+            mCellAnims[i + 2]->mPaletteBase   = 0;
+            mCellAnims[i + 2]->SetMode(5);
+            mCellAnims[i + 2]->mFrameIndex = rec[i * 6 + 2];
         }
         i++;
     } while (i < data_020d433c.mUnk_99);
@@ -721,18 +721,18 @@ void BattleResult::SetupRetryScreen() {
     SpriteScreen &screen0 = SpriteManager::Get().Screen(0);
     screen0.LoadCharacters("retry_u_obj_00.nce_ncg1D.bin", 0x4000, 0);
     screen0.LoadPalette("retry_u_obj_00_ncl.bin", 0x1c0, 0);
-    mAnimsB[3] = new CellAnimation("retry_u_obj_00_nce.bin", 0, 1, 1);
-    mAnimsB[3]->mCharBase = screen0.GetCharBase(0x4000);
-    mAnimsB[3]->mPaletteBase   = 14;
+    mCellAnimsB[3] = new CellAnimation("retry_u_obj_00_nce.bin", 0, 1, 1);
+    mCellAnimsB[3]->mCharBase = screen0.GetCharBase(0x4000);
+    mCellAnimsB[3]->mPaletteBase   = 14;
     ChangeDir("/Game/Battle/Obj/");
     screen0.LoadCharacters("select_ch_u_obj_00.nce_ncg1D.bin", 0x1400, 0);
     screen0.LoadPalette("select_ch_u_obj_00_ncl.bin", 0x40, 0);
-    mAnimsB[0] = new CellAnimation("select_ch_u_obj_00_nce.bin", 0, 1, 1);
-    mAnimsB[0]->mCharBase = screen0.GetCharBase(0x1400);
-    mAnimsB[0]->mPaletteBase   = 2;
-    mAnimsB[4] = new CellAnimation("select_ch_u_obj_00_nce.bin", 2, 1, 1);
-    mAnimsB[4]->mCharBase = screen0.GetCharBase(0x1400);
-    mAnimsB[4]->mPaletteBase   = 2;
+    mCellAnimsB[0] = new CellAnimation("select_ch_u_obj_00_nce.bin", 0, 1, 1);
+    mCellAnimsB[0]->mCharBase = screen0.GetCharBase(0x1400);
+    mCellAnimsB[0]->mPaletteBase   = 2;
+    mCellAnimsB[4] = new CellAnimation("select_ch_u_obj_00_nce.bin", 2, 1, 1);
+    mCellAnimsB[4]->mCharBase = screen0.GetCharBase(0x1400);
+    mCellAnimsB[4]->mPaletteBase   = 2;
     mIcons = new CharacterIcons(0x5000, 10, 0);
     u8 i = 0;
     do {
@@ -745,12 +745,12 @@ void BattleResult::SetupRetryScreen() {
     ChangeDir("/Game/Character/Icon/");
     screen0.LoadCharacters("icon_ch_base.nce_ncg1D.bin", 0, 0);
     screen0.LoadPalette("icon_ch_base_ncl.bin", 0, 0);
-    mAnimsB[1] = new CellAnimation("icon_ch_base_nce.bin", 7, 1, 1);
-    mAnimsB[1]->mCharBase = screen0.GetCharBase(0);
-    mAnimsB[1]->mPaletteBase   = 0;
-    mAnimsB[2] = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
-    mAnimsB[2]->mCharBase = screen0.GetCharBase(0);
-    mAnimsB[2]->mPaletteBase   = 0;
+    mCellAnimsB[1] = new CellAnimation("icon_ch_base_nce.bin", 7, 1, 1);
+    mCellAnimsB[1]->mCharBase = screen0.GetCharBase(0);
+    mCellAnimsB[1]->mPaletteBase   = 0;
+    mCellAnimsB[2] = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
+    mCellAnimsB[2]->mCharBase = screen0.GetCharBase(0);
+    mCellAnimsB[2]->mPaletteBase   = 0;
     MessageFile *file = (MessageFile *) LoadFile("/font/mes_BattleArenaMenu.mes", 0, 0, 0, 0, 0);
     TextManager::Get().func_0202ce44(0, 0, 0, 0);
     void *map = OS_Alloc(TextManager::Get().GlyphCount(0x600));
@@ -825,7 +825,7 @@ void BattleResult::DrawRetryText() {
 // and the scheduler keeps it after the stack store and ahead of the register arguments (as the original does).
 void BattleResult::DrawRetryScreen() {
     mMessageWindow->Update();
-    mAnimsB[3]->Draw(0, 0x80, 0x60, 0);
+    mCellAnimsB[3]->Draw(0, 0x80, 0x60, 0);
     u8 i = 0;
     do {
         s16 x;
@@ -834,9 +834,9 @@ void BattleResult::DrawRetryScreen() {
         s32 top  = base + 0x21;
         y        = top;
         x = 0x1e;
-        mAnimsB[1]->SetAnimation(i + 7);
-        mAnimsB[1]->mFrameIndex = 0;
-        mAnimsB[1]->Draw(0, x, y, 0);
+        mCellAnimsB[1]->SetAnimation(i + 7);
+        mCellAnimsB[1]->mFrameIndex = 0;
+        mCellAnimsB[1]->Draw(0, x, y, 0);
         bool flag = false;
         if (data_020d433c.mBattlePlayers->mPlayers[i]->mCpu) {
             flag = true;
@@ -844,22 +844,22 @@ void BattleResult::DrawRetryScreen() {
         if (flag) {
             y = top;
             x = 0x20;
-            mAnimsB[1]->SetAnimation(11);
-            mAnimsB[1]->mFrameIndex = i;
+            mCellAnimsB[1]->SetAnimation(11);
+            mCellAnimsB[1]->mFrameIndex = i;
         } else if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
             y = base + 0x3a;
             x = 0x20;
-            mAnimsB[1]->SetAnimation(i + 2);
-            mAnimsB[1]->mFrameIndex = 0;
+            mCellAnimsB[1]->SetAnimation(i + 2);
+            mCellAnimsB[1]->mFrameIndex = 0;
         }
-        mAnimsB[1]->Draw(0, x, y, 0);
+        mCellAnimsB[1]->Draw(0, x, y, 0);
         y = base + 0x25;
-        mAnimsB[2]->Draw(0, 0x20, y, 1);
+        mCellAnimsB[2]->Draw(0, 0x20, y, 1);
         y = (i + 1) * 0x28;
-        mAnimsB[0]->Draw(0, 0x20, y, 1);
+        mCellAnimsB[0]->Draw(0, 0x20, y, 1);
         if (data_020d433c.mCharacterIds[i] != 0x15) {
-            mAnimsB[4]->mFrameIndex = data_020d433c.mUnk_a3[i];
-            mAnimsB[4]->Draw(0, 0x48, base + 0x37, 0);
+            mCellAnimsB[4]->mFrameIndex = data_020d433c.mUnk_a3[i];
+            mCellAnimsB[4]->Draw(0, 0x48, base + 0x37, 0);
         }
         i++;
     } while (i < data_020d433c.mPlayerCount);
@@ -872,17 +872,17 @@ void BattleResult::DrawResultScreen() {
     }
     u8 i = 0;
     do {
-        if (mAnims[i]) {
-            mAnims[i]->Update();
+        if (mCellAnims[i]) {
+            mCellAnims[i]->Update();
             switch (i) {
                 case 0:
                     if (mMoneyStep >= 9) {
-                        mAnims[i]->DrawFrame(0, 0, ((const u8 *) sAnimPos)[i * 2], ((const u8 *) sAnimPos)[i * 2 + 1], 1);
+                        mCellAnims[i]->DrawFrame(0, 0, ((const u8 *) sAnimPos)[i * 2], ((const u8 *) sAnimPos)[i * 2 + 1], 1);
                     }
                     break;
                 case 1:
                     if (mMoneyStep >= 11) {
-                        mAnims[i]->Draw(0, ((const u8 *) sAnimPos)[i * 2], ((const u8 *) sAnimPos)[i * 2 + 1], 1);
+                        mCellAnims[i]->Draw(0, ((const u8 *) sAnimPos)[i * 2], ((const u8 *) sAnimPos)[i * 2 + 1], 1);
                     }
                     break;
                 case 2:
@@ -893,9 +893,9 @@ void BattleResult::DrawResultScreen() {
                 case 7:
                     if (mMoneyStep >= (u8) (i - 2) + 3) {
                         if (mHistoryValues[3] != 0) {
-                            mAnims[i]->Draw(0, ((const u8 *) sAnimPos)[i * 2], ((const u8 *) sAnimPos)[i * 2 + 1], 1);
+                            mCellAnims[i]->Draw(0, ((const u8 *) sAnimPos)[i * 2], ((const u8 *) sAnimPos)[i * 2 + 1], 1);
                         } else {
-                            mAnims[i]->Draw(0, ((const u8 *) sAnimPos)[i * 2 + 6], ((const u8 *) sAnimPos)[i * 2 + 7], 1);
+                            mCellAnims[i]->Draw(0, ((const u8 *) sAnimPos)[i * 2 + 6], ((const u8 *) sAnimPos)[i * 2 + 7], 1);
                         }
                     }
                     break;

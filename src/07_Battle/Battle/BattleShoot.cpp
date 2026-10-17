@@ -48,7 +48,7 @@ struct ShootPacket {
 };
 
 struct BattleShootCell { // 0xc bytes
-    /* 00 */ CellAnimation *mAnim;
+    /* 00 */ CellAnimation *mCellAnim;
     /* 04 */ s16 mX;
     /* 06 */ s16 mY;
     /* 08 */ u8 mUnk_08;
@@ -56,7 +56,7 @@ struct BattleShootCell { // 0xc bytes
 };
 
 struct BattleShootIcon { // 0x10 bytes
-    /* 00 */ CellAnimation *mAnim;
+    /* 00 */ CellAnimation *mCellAnim;
     /* 04 */ s16 mX;
     /* 06 */ s16 mY;
     /* 08 */ u16 mRotation;
@@ -303,7 +303,7 @@ void BattleShoot::Init(Camera *unk1) {
 BattleShoot::~BattleShoot() {
     u8 i = 0;
     do {
-        CellAnimation *a = mCells[i].mAnim;
+        CellAnimation *a = mCells[i].mCellAnim;
         if (a) {
             delete a;
         }
@@ -311,7 +311,7 @@ BattleShoot::~BattleShoot() {
     } while (i < 7);
     u8 j = 0;
     do {
-        CellAnimation *a = mIcons[j].mAnim;
+        CellAnimation *a = mIcons[j].mCellAnim;
         if (a) {
             delete a;
         }
@@ -720,15 +720,15 @@ void BattleShoot::LoadGraphics() {
     screen.LoadCharacters("battle_shoot_b_ball_sp.nce_ncg1D.bin", 0x2000, 0);
     void *palette = LoadFile("battle_shoot_b_ball_sp_ncl.bin", 0, id << 5, 0x20, 0, 0);
     QueueUpload(screen.mBgIndex, 5, 0, palette, 0x20, 1);
-    mCells[0].mAnim = new CellAnimation("battle_shoot_b_ball_00_nce.bin", 1, 1, 1);
-    mCells[0].mAnim->mCharBase = screen.GetCharBase(0);
-    mCells[0].mAnim->mPaletteBase   = 0;
+    mCells[0].mCellAnim = new CellAnimation("battle_shoot_b_ball_00_nce.bin", 1, 1, 1);
+    mCells[0].mCellAnim->mCharBase = screen.GetCharBase(0);
+    mCells[0].mCellAnim->mPaletteBase   = 0;
     mCells[0].mX               = 0x80;
     mCells[0].mY               = -0x40;
     mCells[0].mUnk_08          = 1;
-    mCells[1].mAnim = new CellAnimation("battle_shoot_b_ball_sp_nce.bin", 0, 1, 1);
-    mCells[1].mAnim->mCharBase = screen.GetCharBase(0x2000);
-    mCells[1].mAnim->mPaletteBase   = 0;
+    mCells[1].mCellAnim = new CellAnimation("battle_shoot_b_ball_sp_nce.bin", 0, 1, 1);
+    mCells[1].mCellAnim->mCharBase = screen.GetCharBase(0x2000);
+    mCells[1].mCellAnim->mPaletteBase   = 0;
     mCells[1].mX               = 0x80;
     mCells[1].mY               = -0x40;
     mCells[1].mUnk_08          = 1;
@@ -737,14 +737,14 @@ void BattleShoot::LoadGraphics() {
     screen.LoadPalette("union_b_obj_cockpit_ncl.bin", 0xa0, 0);
     screen.LoadCharacters("union_b_obj_mic.nce_ncg1D.bin", 0x7000, 0);
     screen.LoadPalette("union_b_obj_mic_ncl.bin", 0xc0, 0);
-    mCells[4].mAnim = new CellAnimation("union_b_obj_mic_nce.bin", 1, 1, 1);
-    mCells[4].mAnim->mCharBase = screen.GetCharBase(0x7000);
-    mCells[4].mAnim->mPaletteBase   = 6;
+    mCells[4].mCellAnim = new CellAnimation("union_b_obj_mic_nce.bin", 1, 1, 1);
+    mCells[4].mCellAnim->mCharBase = screen.GetCharBase(0x7000);
+    mCells[4].mCellAnim->mPaletteBase   = 6;
     mCells[4].mX               = 0x80;
     mCells[4].mY               = 0x30;
     mCells[4].mUnk_08          = 2;
     if (data_020d433c.mUnk_9a_0 && data_020d433c.mUnk_83 == 0) {
-        mCells[4].mAnim->SetAnimation(0);
+        mCells[4].mCellAnim->SetAnimation(0);
     }
     mMicTargetY = 0x60;
     ChangeDir("/Game/Battle/Obj/");
@@ -752,26 +752,26 @@ void BattleShoot::LoadGraphics() {
     screen.LoadPalette("battle_shoot_b_effect_ncl.bin", 0x140, 0);
     u8 i = 0;
     do {
-        mIcons[i].mAnim = new CellAnimation("battle_shoot_b_effect_nce.bin", 0, 1, 1);
-        mIcons[i].mAnim->mCharBase = screen.GetCharBase(0xf000);
-        mIcons[i].mAnim->mPaletteBase   = 10;
+        mIcons[i].mCellAnim = new CellAnimation("battle_shoot_b_effect_nce.bin", 0, 1, 1);
+        mIcons[i].mCellAnim->mCharBase = screen.GetCharBase(0xf000);
+        mIcons[i].mCellAnim->mPaletteBase   = 10;
         mIcons[i].mTimer          = 0;
         i++;
     } while (i < 5);
-    mCells[5].mAnim = new CellAnimation("battle_shoot_b_effect_nce.bin", 1, 1, 1);
-    mCells[5].mAnim->mCharBase = screen.GetCharBase(0xf000);
-    mCells[5].mAnim->mPaletteBase   = 10;
-    mCells[6].mAnim = new CellAnimation("battle_shoot_b_effect_nce.bin", 2, 1, 1);
-    mCells[6].mAnim->mCharBase = screen.GetCharBase(0xf000);
-    mCells[6].mAnim->mPaletteBase   = 10;
+    mCells[5].mCellAnim = new CellAnimation("battle_shoot_b_effect_nce.bin", 1, 1, 1);
+    mCells[5].mCellAnim->mCharBase = screen.GetCharBase(0xf000);
+    mCells[5].mCellAnim->mPaletteBase   = 10;
+    mCells[6].mCellAnim = new CellAnimation("battle_shoot_b_effect_nce.bin", 2, 1, 1);
+    mCells[6].mCellAnim->mCharBase = screen.GetCharBase(0xf000);
+    mCells[6].mCellAnim->mPaletteBase   = 10;
     sprintf(buffer, "battle_shoot_b_obj_%02d.nce_ncg1D.bin", id);
     screen.LoadCharacters(buffer, 0x4000, 0);
     sprintf(buffer, "battle_shoot_b_obj_%02d_ncl.bin", id);
     screen.LoadPalette(buffer, 0x20, 0);
     sprintf(buffer, "battle_shoot_b_obj_%02d_nce.bin", id);
-    mCells[2].mAnim = new CellAnimation(buffer, 0, 1, 1);
-    mCells[2].mAnim->mCharBase = screen.GetCharBase(0x4000);
-    mCells[2].mAnim->mPaletteBase   = 1;
+    mCells[2].mCellAnim = new CellAnimation(buffer, 0, 1, 1);
+    mCells[2].mCellAnim->mCharBase = screen.GetCharBase(0x4000);
+    mCells[2].mCellAnim->mPaletteBase   = 1;
     mCells[2].mX               = 0x122;
     mCells[2].mY               = 0x18;
     mCells[2].mUnk_08          = 1;
@@ -787,7 +787,7 @@ void BattleShoot::LoadGraphics() {
     if (!flag) {
         mSpEnabled = 0;
     } else {
-        mCells[2].mAnim->SetAnimation(2);
+        mCells[2].mCellAnim->SetAnimation(2);
         mSpEnabled = 1;
         mUnk_6182 = 0xdc;
     }
@@ -797,9 +797,9 @@ void BattleShoot::LoadGraphics() {
     sprintf(buffer, "vs_cutin_perfect_ncl.bin", id);
     screen.LoadPalette(buffer, 0x120, 0);
     sprintf(buffer, "vs_b_obj_pen_nce.bin", id);
-    mCells[3].mAnim = new CellAnimation(buffer, 4, 1, 1);
-    mCells[3].mAnim->mCharBase = screen.GetCharBase(0xe000);
-    mCells[3].mAnim->mPaletteBase   = 9;
+    mCells[3].mCellAnim = new CellAnimation(buffer, 4, 1, 1);
+    mCells[3].mCellAnim->mCharBase = screen.GetCharBase(0xe000);
+    mCells[3].mCellAnim->mPaletteBase   = 9;
     mCells[3].mX               = 0x80;
     mCells[3].mY               = 0x60;
     mCells[3].mUnk_08          = 1;
@@ -980,13 +980,13 @@ BOOL BattleShoot::func_ov007_0226d23c() {
             if (((mTouchX > 0xc8) & (mTouchY < 0x30)) && mSpEnabled != 0) {
                 u8 record = data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mTurnPlayer]->mRecords[data_020d433c.mBattlePlayers->mPlayers[data_020d433c.mBattlePlayers->mTurnPlayer]->mRecord].mAttribute;
                 if (mSpKind == 0) {
-                    mCells[2].mAnim->SetAnimation(0);
-                    mCells[0].mAnim->SetAnimation(2);
+                    mCells[2].mCellAnim->SetAnimation(0);
+                    mCells[0].mCellAnim->SetAnimation(2);
                     mSpKind = record + 1;
                     SoundManager::Get().StartSeqArc(0);
                 } else {
-                    mCells[2].mAnim->SetAnimation(2);
-                    mCells[0].mAnim->SetAnimation(1);
+                    mCells[2].mCellAnim->SetAnimation(2);
+                    mCells[0].mCellAnim->SetAnimation(1);
                     mSpKind = 0;
                     SoundManager::Get().StartSeqArc(1);
                 }
@@ -1278,7 +1278,7 @@ void BattleShoot::func_ov007_0226dfb8() {
 }
 
 void BattleShoot::func_ov007_0226e234() {
-    if (!mIcons[0].mAnim) {
+    if (!mIcons[0].mCellAnim) {
         return;
     }
     if (mBlendAlpha < 0x10) {
@@ -1308,7 +1308,7 @@ void BattleShoot::func_ov007_0226e234() {
         i = 0;
         do {
             if (mIcons[i].mTimer == 0) {
-                mIcons[i].mAnim->SetAnimation(0);
+                mIcons[i].mCellAnim->SetAnimation(0);
                 mIcons[i].mX = mTouchX;
                 mIcons[i].mY = mTouchY;
                 mIcons[i].mXPerFrame = 0;
@@ -1621,9 +1621,9 @@ void BattleShoot::func_ov007_0226e884() {
         if (mUnk_61a5 != animState) {
             mUnk_61a5 = animState;
             if (mUnk_61a5) {
-                mCells[4].mAnim->SetAnimation(2);
+                mCells[4].mCellAnim->SetAnimation(2);
             } else {
-                mCells[4].mAnim->SetAnimation(0);
+                mCells[4].mCellAnim->SetAnimation(0);
             }
         }
     }
@@ -1697,29 +1697,29 @@ void BattleShoot::func_ov007_0226f378() {
             }
         }
         if (mMessageId != 0) {
-            mCells[6].mAnim->Draw(1, 0x80, mMessageY, 2);
+            mCells[6].mCellAnim->Draw(1, 0x80, mMessageY, 2);
             mMessageWindow->func_02065bd4(0x20, (s16) (mMessageY + 0x42), 0);
             mMessageWindow->Update();
-            mCells[5].mAnim->Draw(1, 0x80, mMessageY, 2);
+            mCells[5].mCellAnim->Draw(1, 0x80, mMessageY, 2);
         }
     }
-    if (mCells[0].mAnim) {
-        mCells[0].mAnim->Update();
-        mCells[0].mAnim->Draw(1, (s16) (mCells[0].mX + 0x10), (s16) (mCells[0].mY + 0x10), mCells[0].mUnk_08);
+    if (mCells[0].mCellAnim) {
+        mCells[0].mCellAnim->Update();
+        mCells[0].mCellAnim->Draw(1, (s16) (mCells[0].mX + 0x10), (s16) (mCells[0].mY + 0x10), mCells[0].mUnk_08);
         if (mUnk_6197 != 0 && mSpEnabled != 0) {
             mCells[2].mX = (mUnk_6182 + mCells[2].mX) / 2;
-            mCells[2].mAnim->Update();
-            mCells[2].mAnim->Draw(1, mCells[2].mX, mCells[2].mY, mCells[2].mUnk_08);
+            mCells[2].mCellAnim->Update();
+            mCells[2].mCellAnim->Draw(1, mCells[2].mX, mCells[2].mY, mCells[2].mUnk_08);
             if (mSpKind != 0) {
-                mCells[1].mAnim->Update();
-                mCells[1].mAnim->Draw(1, mCells[0].mX, mCells[0].mY, mCells[0].mUnk_08);
+                mCells[1].mCellAnim->Update();
+                mCells[1].mCellAnim->Draw(1, mCells[0].mX, mCells[0].mY, mCells[0].mUnk_08);
             }
         }
     }
 }
 void BattleShoot::DrawMic() {
-    mCells[4].mAnim->Update();
-    mCells[4].mAnim->Draw(1, mCells[4].mX, mCells[4].mY, mCells[4].mUnk_08);
+    mCells[4].mCellAnim->Update();
+    mCells[4].mCellAnim->Draw(1, mCells[4].mX, mCells[4].mY, mCells[4].mUnk_08);
     mCells[4].mY = (mCells[4].mY * 3 + mMicTargetY) / 4;
 }
 
@@ -1788,12 +1788,12 @@ void BattleShoot::ApplyBlendAlpha() {
 }
 
 void BattleShoot::func_ov007_0226f8a8() {
-    if (!mIcons[0].mAnim) {
+    if (!mIcons[0].mCellAnim) {
         return;
     }
     if (mUnk_619c != 0) {
-        mCells[3].mAnim->Update();
-        mCells[3].mAnim->Draw(1, mCells[3].mX, mCells[3].mY, mCells[3].mUnk_08);
+        mCells[3].mCellAnim->Update();
+        mCells[3].mCellAnim->Draw(1, mCells[3].mX, mCells[3].mY, mCells[3].mUnk_08);
         if (mShootTextVisible != 0) {
             DrawShootText();
         }
@@ -1802,9 +1802,9 @@ void BattleShoot::func_ov007_0226f8a8() {
     do {
         if (mIcons[i].mTimer != 0) {
             mIcons[i].mTimer--;
-            mIcons[i].mAnim->Update();
-            mIcons[i].mAnim->DrawTransformed(1, mIcons[i].mX, mIcons[i].mY, 2, 0x1000, 0x1000, mIcons[i].mRotation);
-            if (mIcons[i].mAnim->mFinished != 0) {
+            mIcons[i].mCellAnim->Update();
+            mIcons[i].mCellAnim->DrawTransformed(1, mIcons[i].mX, mIcons[i].mY, 2, 0x1000, 0x1000, mIcons[i].mRotation);
+            if (mIcons[i].mCellAnim->mFinished != 0) {
                 mIcons[i].mTimer = 0;
             } else {
                 mIcons[i].mX += mIcons[i].mXPerFrame;

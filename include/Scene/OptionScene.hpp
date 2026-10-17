@@ -13,7 +13,7 @@ public:
     /* 0c */ void *mBuf0c;
     /* 10 */ SelectWindow *mWindow;
     /* 14 */ MessageFile *mFile;
-    /* 18 */ CellAnimation *mCells[5];
+    /* 18 */ CellAnimation *mCellAnims[5];
     /* 2c */ u16 mBufSize;
     /* 2e */ u16 mSaved;
     /* 30 */ s16 mPosX[5];

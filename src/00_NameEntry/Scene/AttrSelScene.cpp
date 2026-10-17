@@ -52,7 +52,7 @@ AttrSelScene::AttrSelScene() :
     mMessageWindow = NULL;
     mSelectWindow = NULL;
     for (u8 i = 0; i < 8; i++) {
-        mCells[i] = NULL;
+        mCellAnims[i] = NULL;
     }
     mGlyphCount[1] = 0;
     mGlyphCount[0] = 0;
@@ -76,8 +76,8 @@ AttrSelScene::~AttrSelScene() {
     delete mSelectWindow;
     delete mMessageWindow;
     for (u8 i = 0; i < 8; i++) {
-        if (mCells[i] != NULL) {
-            delete mCells[i];
+        if (mCellAnims[i] != NULL) {
+            delete mCellAnims[i];
         }
     }
 }
@@ -148,7 +148,7 @@ void AttrSelScene::Update() {
                         LoadSubBg();
                     }
                     mTransitionState = 2;
-                    mCells[6]->mFrameIndex = mAttrib;
+                    mCellAnims[6]->mFrameIndex = mAttrib;
                     mPulseState = 0;
                     mPulseAlpha = 0;
                     break;
@@ -209,24 +209,24 @@ void AttrSelScene::LoadGraphics() {
     ChangeDir("/Game/AttrSel/Obj");
     screen0.LoadCharacters("nameplate_u_obj.nce_ncg1D.bin", 0, 0);
     screen0.LoadPalette("nameplate_u_obj_ncl.bin", 0, 0);
-    mCells[7] = new CellAnimation("nameplate_u_obj_nce.bin", 0, 1, 1);
-    mCells[7]->mCharBase = screen0.GetCharBase(0);
-    mCells[7]->mPaletteBase = 0;
-    mCells[7]->SetAnimation(0);
+    mCellAnims[7] = new CellAnimation("nameplate_u_obj_nce.bin", 0, 1, 1);
+    mCellAnims[7]->mCharBase = screen0.GetCharBase(0);
+    mCellAnims[7]->mPaletteBase = 0;
+    mCellAnims[7]->SetAnimation(0);
     SpriteScreen &screen1 = SpriteManager::Get().Screen(1);
     screen1.LoadCharacters("edit_attribute_obj_00.nce_ncg1D.bin", 0, 0);
     screen1.LoadPalette("edit_attribute_obj_00_ncl.bin", 0, 0);
     for (u8 i = 0; i < 6; i++) {
-        mCells[i] = new CellAnimation("edit_attribute_obj_00_nce.bin", 0, 1, 1);
-        mCells[i]->mCharBase = screen1.GetCharBase(0);
-        mCells[i]->mPaletteBase = 0;
-        mCells[i]->SetAnimation(i);
+        mCellAnims[i] = new CellAnimation("edit_attribute_obj_00_nce.bin", 0, 1, 1);
+        mCellAnims[i]->mCharBase = screen1.GetCharBase(0);
+        mCellAnims[i]->mPaletteBase = 0;
+        mCellAnims[i]->SetAnimation(i);
     }
-    mCells[6] = new CellAnimation("edit_attribute_obj_00_nce.bin", 0, 1, 1);
-    mCells[6]->mCharBase = screen1.GetCharBase(0);
-    mCells[6]->mPaletteBase = 0;
-    mCells[6]->SetAnimation(6);
-    mCells[6]->mFrameIndex = mAttrib;
+    mCellAnims[6] = new CellAnimation("edit_attribute_obj_00_nce.bin", 0, 1, 1);
+    mCellAnims[6]->mCharBase = screen1.GetCharBase(0);
+    mCellAnims[6]->mPaletteBase = 0;
+    mCellAnims[6]->SetAnimation(6);
+    mCellAnims[6]->mFrameIndex = mAttrib;
     ChangeDir("/");
     ChangeDir("/Game/2D/union_b");
     screen1.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0xd000, 0);
@@ -392,14 +392,14 @@ void AttrSelScene::PulseBlend() {
 void AttrSelScene::DrawText() {
     SpriteManager::Get().Screen(0).AddOam(mGlyphBuffer[0], (u8) mGlyphCount[0], 0x16, 0xaa, 0, 0x40, 0xf, 0);
     SpriteManager::Get().Screen(0).AddOam(mGlyphBuffer[1], (u8) mGlyphCount[1], 0x10, 0x7c, 0, 0x80, 0xf, 0);
-    mCells[7]->Draw(0, 0x80, 0x60, 0);
+    mCellAnims[7]->Draw(0, 0x80, 0x60, 0);
 }
 
 void AttrSelScene::Draw() {
     for (u8 i = 0; i < 6; i++) {
-        mCells[i]->Draw(1, 0x80, 0x60, 0);
+        mCellAnims[i]->Draw(1, 0x80, 0x60, 0);
     }
-    mCells[6]->Draw(1, 0x80, 0x68, 0);
+    mCellAnims[6]->Draw(1, 0x80, 0x68, 0);
     mMessageWindow->Update();
     mSelectWindow->Draw();
 }

@@ -22,7 +22,7 @@ public:
     /* 6b */ PAD(0x6b, 0x6c);
     /* 6c */ ConfrontEmblemStep *mStep;
     /* 70 */ BattleData *mData;
-    /* 74 */ CellAnimation *mAnims[3]; // [0] emblem of the local player (0x1c000), [1] marker (0x1e000), [2] line (0x1d000)
+    /* 74 */ CellAnimation *mCellAnims[3]; // [0] emblem of the local player (0x1c000), [1] marker (0x1e000), [2] line (0x1d000)
     /* 80 */ ConfrontEmblem02 *mEmblems[4];
     /* 90 */
 

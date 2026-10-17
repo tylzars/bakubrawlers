@@ -550,18 +550,18 @@ void BattleCommandList::UpdateListItems() {
     WindowItem *items = mWindow->mCursor->mItems;
     if (selected <= count) {
         if (IsListItemEnabled(1) == 0) {
-            mWindow->mCells[1]->SetAnimation(3);
+            mWindow->mCellAnims[1]->SetAnimation(3);
             items[1].mFlags = 0x408;
             if (mFourItems != 0) {
-                mWindow->mCells[3]->SetAnimation(7);
+                mWindow->mCellAnims[3]->SetAnimation(7);
             }
         }
     } else {
         if (IsListItemEnabled(1) != 0) {
-            mWindow->mCells[1]->SetAnimation(5);
+            mWindow->mCellAnims[1]->SetAnimation(5);
             items[1].mFlags = 0x8000;
             if (mFourItems != 0) {
-                mWindow->mCells[3]->SetAnimation(5);
+                mWindow->mCellAnims[3]->SetAnimation(5);
             }
         }
     }
@@ -579,32 +579,32 @@ void BattleCommandList::UpdateListItems() {
         if (IsListItemEnabled(0) != 0) {
             return;
         }
-        mWindow->mCells[0]->SetAnimation(0);
+        mWindow->mCellAnims[0]->SetAnimation(0);
         items[0].mFlags = 0x208;
         if (mFourItems == 0) {
             return;
         }
-        mWindow->mCells[2]->SetAnimation(6);
+        mWindow->mCellAnims[2]->SetAnimation(6);
     } else {
         if (IsListItemEnabled(0) == 0) {
             return;
         }
-        mWindow->mCells[0]->SetAnimation(2);
+        mWindow->mCellAnims[0]->SetAnimation(2);
         items[0].mFlags = 0x8000;
         if (mFourItems == 0) {
             return;
         }
-        mWindow->mCells[2]->SetAnimation(2);
+        mWindow->mCellAnims[2]->SetAnimation(2);
     }
 }
 
 BOOL BattleCommandList::IsListItemEnabled(u32 right) {
     if (right == 0) {
-        if (mWindow->mCells[0]->mAnimIndex == 2) {
+        if (mWindow->mCellAnims[0]->mAnimIndex == 2) {
             return FALSE;
         }
     } else {
-        if (mWindow->mCells[1]->mAnimIndex == 5) {
+        if (mWindow->mCellAnims[1]->mAnimIndex == 5) {
             return FALSE;
         }
     }

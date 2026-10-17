@@ -32,7 +32,7 @@ public:
             /* 28 */ u32 mGlyphCount;
             /* 2c */ u16 mTextWidth[2];
             /* 30 */ MessageFile *mMessages[2];
-            /* 38 */ CellAnimation *mCells[8]; // 0-3 characters, 4-5 union cells, 6 point, 7 number
+            /* 38 */ CellAnimation *mCellAnims[8]; // 0-3 characters, 4-5 union cells, 6 point, 7 number
         };
     };
     /* 58 */ SelectWindow *mWindow;

@@ -505,24 +505,24 @@ void MyroomGiftScene::func_ov008_0221f194() {
     }
     WindowItem *items = mWindow->mCursor->mItems;
     if (mTextPage != 0) {
-        if (mWindow->mCells[12]->mAnimIndex == 2) {
-            mWindow->mCells[12]->SetAnimation(0);
+        if (mWindow->mCellAnims[12]->mAnimIndex == 2) {
+            mWindow->mCellAnims[12]->SetAnimation(0);
             items[12].mFlags = 0x208;
         }
     } else {
-        if (mWindow->mCells[12]->mAnimIndex != 2) {
-            mWindow->mCells[12]->SetAnimation(2);
+        if (mWindow->mCellAnims[12]->mAnimIndex != 2) {
+            mWindow->mCellAnims[12]->SetAnimation(2);
             items[12].mFlags = 0x8000;
         }
     }
     if (mTextEndY > 0x80) {
-        if (mWindow->mCells[13]->mAnimIndex == 5) {
-            mWindow->mCells[13]->SetAnimation(3);
+        if (mWindow->mCellAnims[13]->mAnimIndex == 5) {
+            mWindow->mCellAnims[13]->SetAnimation(3);
             items[13].mFlags = 0x408;
         }
     } else {
-        if (mWindow->mCells[13]->mAnimIndex != 5) {
-            mWindow->mCells[13]->SetAnimation(5);
+        if (mWindow->mCellAnims[13]->mAnimIndex != 5) {
+            mWindow->mCellAnims[13]->SetAnimation(5);
             items[13].mFlags = 0x8000;
         }
     }

@@ -464,12 +464,12 @@ void StoreScene::StartScroll() {
     WindowItem *items = mWindow->mCursor->mItems;
     for (i = 0; i < 3; i++) {
         if (info->mPage == i) {
-            mWindow->mCells[i]->ResetAnimation();
-            CellAnimation *cell = mWindow->mCells[i];
+            mWindow->mCellAnims[i]->ResetAnimation();
+            CellAnimation *cell = mWindow->mCellAnims[i];
             cell->mAnimIndex       = sSelectedFrames[i];
             cell->ResetAnimation();
         } else if (info->mSelection == i) {
-            mWindow->mCells[i]->SetMode(2);
+            mWindow->mCellAnims[i]->SetMode(2);
         }
         items[i].mFlags = 0x8000;
     }
@@ -542,7 +542,7 @@ BOOL StoreScene::ScrollStep() {
         items[i].mX = step + items[i].mX;
     }
     if (info->mScroll == 0) {
-        CellAnimation *sel = mWindow->mCells[(u8) info->mSelection];
+        CellAnimation *sel = mWindow->mCellAnims[(u8) info->mSelection];
         sel->mAnimIndex       = sIdleFrames[info->mSelection];
         sel->ResetAnimation();
         items[info->mPage].mFlags      = 8;
@@ -559,14 +559,14 @@ BOOL StoreScene::ScrollStep() {
             mWindow->mButtons[5].mEnabled = 1;
             items[5].mFlags             = 8;
         }
-        mWindow->mCells[4]->Rewind();
-        mWindow->mCells[5]->Rewind();
+        mWindow->mCellAnims[4]->Rewind();
+        mWindow->mCellAnims[5]->Rewind();
         if (info->mScrollDir == 1) {
-            CellAnimation *cell = mWindow->mCells[4];
+            CellAnimation *cell = mWindow->mCellAnims[4];
             cell->mAnimIndex       = 0;
             cell->ResetAnimation();
         } else {
-            CellAnimation *cell = mWindow->mCells[5];
+            CellAnimation *cell = mWindow->mCellAnims[5];
             cell->mAnimIndex       = 1;
             cell->ResetAnimation();
         }
@@ -586,17 +586,17 @@ void StoreScene::UpdateSlotLayout() {
         mWindow->SetCellPos(i, pos);
         items[i].mX = pos.x;
         if (info->mSelection == i) {
-            CellAnimation *cell = mWindow->mCells[i];
+            CellAnimation *cell = mWindow->mCellAnims[i];
             cell->mAnimIndex       = sSelectedFrames[i];
             cell->ResetAnimation();
             items[i].mFlags = 8;
         } else {
-            CellAnimation *cell = mWindow->mCells[i];
+            CellAnimation *cell = mWindow->mCellAnims[i];
             cell->mAnimIndex       = sIdleFrames[i];
             cell->ResetAnimation();
             items[i].mFlags = 0x8000;
         }
-        mWindow->mCells[i]->ResetAnimation();
+        mWindow->mCellAnims[i]->ResetAnimation();
     }
     u32 flags;
     if (info->mSelection != 0) {

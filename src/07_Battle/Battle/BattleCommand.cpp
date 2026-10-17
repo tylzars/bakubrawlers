@@ -240,8 +240,8 @@ BattleCommand::BattleCommand(u32 unk)
     mUnk_18 = 0;
     mUnk_1c = 0;
     mUnk_28 = 0;
-    mTurnAnim = 0;
-    mTurnDigits = 0;
+    mTurnCellAnim = 0;
+    mTurnDigitsCellAnim = 0;
     i = 0;
     do {
         mUnitCellAnims[i] = 0;
@@ -288,11 +288,11 @@ BattleCommand::~BattleCommand() {
     if (mUnk_28) {
         delete mUnk_28;
     }
-    if (mTurnAnim) {
-        delete mTurnAnim;
+    if (mTurnCellAnim) {
+        delete mTurnCellAnim;
     }
-    if (mTurnDigits) {
-        delete mTurnDigits;
+    if (mTurnDigitsCellAnim) {
+        delete mTurnDigitsCellAnim;
     }
     u8 i = 0;
     do {
@@ -1531,9 +1531,9 @@ BOOL BattleCommand::UpdatePrompt() {
         case 1:
             CloseMode(1);
             mPromptWindow->Reset(-1);
-            mPromptWindow->mCells[0]->SetAnimation(8);
-            mPromptWindow->mCells[1]->SetAnimation(0);
-            mPromptWindow->mCells[2]->SetAnimation(12);
+            mPromptWindow->mCellAnims[0]->SetAnimation(8);
+            mPromptWindow->mCellAnims[1]->SetAnimation(0);
+            mPromptWindow->mCellAnims[2]->SetAnimation(12);
             mPromptStep++;
             break;
         case 2:
@@ -1700,12 +1700,12 @@ void BattleCommand::func_ov007_0223a734() {
         mUnk_1c->mCharBase = screen.GetCharBase(0xa000);
         mUnk_1c->mPaletteBase   = 0;
     }
-    mTurnAnim = new CellAnimation("battle_b_obj_turn_nce.bin", 0, 1, 1);
-    mTurnAnim->mCharBase = screen.GetCharBase(0x17000);
-    mTurnAnim->mPaletteBase   = 9;
-    mTurnDigits = new CellAnimation("battle_b_obj_turn_nce.bin", 1, 1, 1);
-    mTurnDigits->mCharBase = screen.GetCharBase(0x17000);
-    mTurnDigits->mPaletteBase   = 9;
+    mTurnCellAnim = new CellAnimation("battle_b_obj_turn_nce.bin", 0, 1, 1);
+    mTurnCellAnim->mCharBase = screen.GetCharBase(0x17000);
+    mTurnCellAnim->mPaletteBase   = 9;
+    mTurnDigitsCellAnim = new CellAnimation("battle_b_obj_turn_nce.bin", 1, 1, 1);
+    mTurnDigitsCellAnim->mCharBase = screen.GetCharBase(0x17000);
+    mTurnDigitsCellAnim->mPaletteBase   = 9;
     u8 p = 0;
     do {
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -2363,12 +2363,12 @@ void BattleCommand::DrawTurnCount() {
     if (count > 99) {
         count = 99;
     }
-    mTurnDigits->Update();
-    mTurnDigits->DrawFrame(1, count / 10, 0x3e, 0xae, 0);
-    mTurnDigits->Update();
-    mTurnDigits->DrawFrame(1, count % 10, 0x48, 0xae, 0);
-    mTurnAnim->Update();
-    mTurnAnim->Draw(1, 0x80, 0x60, 0);
+    mTurnDigitsCellAnim->Update();
+    mTurnDigitsCellAnim->DrawFrame(1, count / 10, 0x3e, 0xae, 0);
+    mTurnDigitsCellAnim->Update();
+    mTurnDigitsCellAnim->DrawFrame(1, count % 10, 0x48, 0xae, 0);
+    mTurnCellAnim->Update();
+    mTurnCellAnim->Draw(1, 0x80, 0x60, 0);
 }
 
 void ApplyScrollOffset(void *arg) {

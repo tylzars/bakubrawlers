@@ -20,19 +20,19 @@ ConfrontEmblem05::ConfrontEmblem05(u8 emblem) {
     sub.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
     sprintf(path, "vs_emblem_%02d_nce.bin", emblem);
-    mAnim          = new CellAnimation(path, 0, 1, 1);
-    mAnim->mCharBase = sub.GetCharBase(0x1c000);
-    mAnim->mPaletteBase = 0xb;
-    mAnim->SetAnimation(0);
+    mCellAnim          = new CellAnimation(path, 0, 1, 1);
+    mCellAnim->mCharBase = sub.GetCharBase(0x1c000);
+    mCellAnim->mPaletteBase = 0xb;
+    mCellAnim->SetAnimation(0);
     ChangeDir("/");
-    mAnim->ResetAnimation();
-    mAnim->SetAnimation(0);
+    mCellAnim->ResetAnimation();
+    mCellAnim->SetAnimation(0);
     mX = 78.0f + 50.0f * ((float) FX_SinCosTable_[(mAngle >> 4) * 2 + 1] / 4096.0f);
     mY = 136.0f + 32.0f * ((float) FX_SinCosTable_[(mAngle >> 4) * 2] / 4096.0f);
 }
 
 ConfrontEmblem05::~ConfrontEmblem05() {
-    delete mAnim;
+    delete mCellAnim;
 }
 
 void ConfrontEmblem05::Update() {
@@ -51,7 +51,7 @@ void ConfrontEmblem05::Update() {
 void ConfrontEmblem05::Draw() {
     s32 x = (s32) mX;
     s32 y = (s32) mY;
-    mAnim->DrawTransformed(1, x, y, 0, 0x1000, 0x1000, 0);
+    mCellAnim->DrawTransformed(1, x, y, 0, 0x1000, 0x1000, 0);
 }
 
 int ConfrontEmblem05::func_ov007_02220b9c(int fast) {

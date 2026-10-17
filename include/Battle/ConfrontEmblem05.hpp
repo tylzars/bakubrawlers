@@ -15,7 +15,7 @@ public:
     /* 0a */ u16 mSpeed;
     /* 0c */ float mX;
     /* 10 */ float mY;
-    /* 14 */ CellAnimation *mAnim;
+    /* 14 */ CellAnimation *mCellAnim;
     /* 18 */
 
     ConfrontEmblem05(u8 emblem);

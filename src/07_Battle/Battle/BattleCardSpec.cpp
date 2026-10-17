@@ -134,10 +134,10 @@ void BattleCardSpec::Update() {
     if (mState > 1) {
         SnapshotCamera();
         MtxFx43 mtx   = gIdentityMtx43;
-        VecFx32 pos   = gCardSpecModelScale;
-        mRealbaseModel->Draw(&mtx, &pos);
+        VecFx32 scale = gCardSpecModelScale;
+        mRealbaseModel->Draw(&mtx, &scale);
         mRealnormalModel->AdvanceAnim();
-        mRealnormalModel->Draw(&mtx, &pos);
+        mRealnormalModel->Draw(&mtx, &scale);
     }
 }
 

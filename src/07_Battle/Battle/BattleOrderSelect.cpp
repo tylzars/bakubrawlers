@@ -39,7 +39,7 @@ public:
     /* b0 */ MessageWindow *mMessageWindow;
     /* b4 */ s8 mCharacterIds[4];
     /* b8 */ u8 mItemTaken[4];
-    /* bc */ u8 mItemOrder[4];
+    /* bc */ u8 mItemOrder[4]; // index = item, value = the turn-order slot SetTurnOrder gets
     /* c0 */ s8 mPlayerItemIndex[4];
     /* c4 */ u8 mUnk_c4[4];
     /* c8 */ u8 mUnk_c8[4];
@@ -52,15 +52,17 @@ public:
     BattleOrderSelect();
     virtual ~BattleOrderSelect();
     virtual void Update();
-    BOOL SetAndCheckMessageType(u32 index);
+    BOOL SetAndCheckMessageType(u32 index); // same result as SetMessageTypeAndCheckAll
     void WriteTouchMessage();
     void ApplyTurnOrder();
     void ShuffleOrder();
     void InitDisplay();
+    // Also ShuffleOrder (Update shuffles again right after), CharacterIcons mIcons (hidden), mMessageWindow
+    // (mes_Command) and SetupLayout(6) of data_020d433c.mAntenna when set.
     void LoadGraphics();
     void SetBgSlide(u8 timer);
     BOOL UpdateTouchSelection();
-    BOOL AssignUntakenItem();
+    BOOL AssignUntakenItem(); // first player with no item gets the first free one (FALSE); TRUE when all have one
     void Draw();
     BOOL IsInRect(int x, int y, int rx, s16 ry, u8 w, u8 h);
 };

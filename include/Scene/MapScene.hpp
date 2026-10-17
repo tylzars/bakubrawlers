@@ -59,7 +59,7 @@ public:
     /* 76 */ u8 mPage;
     /* 77 */ u8 mPageVisible;
     /* 78 */ PAD(0x78, 0x79);
-    /* 79 */ u8 mPanelVisible;
+    /* 79 */ u8 mPanelVisible; // non-zero: Update draws only DrawPanelWindow (no popup, page or money)
     /* 7a */ u16 mTextWidth;
     /* 7c */ u8 mUnk_7c;
     /* 7d */ u8 mUnk_7d;
@@ -88,6 +88,8 @@ public:
     void ReloadMap();
     void LoadMapBackground();         // 0221aaa4
     void func_ov005_0221abf4();
+    // TRUE when mEvent->GetResult() is non-zero. Also writes data_020d433c: mUnk_7f = SCENE_MAP (MYROOM), mRules and
+    // mMicEnabled (BATTLE), mTutorialNumber / mTutorialPart / mUnk_82 (TUTORIAL).
     BOOL SetNextSceneFromEvent();
     BOOL func_ov005_0221b2ac();
     u8 UpdateMenu();                  // 0221b2dc
@@ -100,6 +102,8 @@ public:
     void DrawPopup();                 // 0221b824
     void DrawMoney();                 // 0221bc28
     void DrawPage();
+    // Clears mUnk_7e; when the tab's condition holds, prints its info and sets the mUnk_7e bit DrawPopup tests. MYROOM
+    // only when data_020d48f0.mRank differs from mPrevRank (then copies it); PARK calls func_02089208 first.
     void ShowTabInfo(u32 index);
     void ShowNumbers();               // 0221bf60
     void ShowText(u16 index, s32 unk2); // 0221c390

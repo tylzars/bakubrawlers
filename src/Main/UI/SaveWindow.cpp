@@ -65,7 +65,7 @@ SaveWindow::~SaveWindow() {
     }
 }
 
-extern const u32 gBgCharUploadKinds[];
+extern const u32 gBgCharUploadKinds[]; // [bg] = UPLOAD_KIND_BG0_CHAR..BG3_CHAR (11..14)
 
 static inline void SetCellPos(SelectWindow *window, int index, s16 x, s16 y) {
     window->mCellPos[index].x = x;
@@ -155,7 +155,7 @@ void SaveWindow::Update() {
     }
 }
 
-extern const u32 gBgScrUploadKinds[];
+extern const u32 gBgScrUploadKinds[]; // [bg] = UPLOAD_KIND_BG0_SCR..BG3_SCR (7..10)
 extern const WindowItemRecord gSaveWindowItems[];
 
 // Loads the window files, creates the SelectWindow, and sets the BG offsets/priorities, visible planes, blend

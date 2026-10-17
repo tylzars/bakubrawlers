@@ -6,7 +6,7 @@
 #include <nitro/fx.h>
 
 // Computer player helper of the battle (vtable 02287604: empty destructor + deleting destructor).
-// mUnk_79 is the player index it plays for.
+// mPlayer is the player index it plays for.
 class BattleCpu {
 public:
     /* 00 */ // vtable
@@ -32,7 +32,7 @@ public:
     /* 7d */ u8 mUnk_7d;
     /* 7e */ u8 mUnk_7e;
     /* 7f */ u8 mTargetNodeIndices[4];
-    /* 83 */ u8 mTargetIndex;
+    /* 83 */ u8 mTargetIndex; // (+ 1) % mJumpObjCount per target; set to 0 only by the ctor
     /* 84 */ u8 mJumpObjCount;
     /* 85 */ u8 mOffsetEntries[8];
     /* 8d */ u8 mOffsetEntryIndex;
@@ -46,13 +46,15 @@ public:
     u8 PickRecord();
     void func_ov007_02231e2c(struct BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC);
     void func_ov007_022328dc();
+    // also sets mUnk_54 (0x47e + rand 301) and mUnk_58 (0xe10), the BattleTarget::mMoveFrames values
+    // BattleShoot::UpdateTurnPlayerCpu waits for
     void StartJumpObjTargets(int a);
     void NextTarget();
     void StopJumpObjTargets();
     void RandomizeOffsets();
     void SetOffset();
     bool func_ov007_02232e04(u32 a, u32 b, u32 c);
-    void GetOffset(s32 *x, s32 *y);
+    void GetOffset(s32 *x, s32 *y); // (0, 0) unless the player's mUnk_f7 != 0 and mOffsetFrames % mOffsetInterval == 0
 };
 
 // Ballistics helpers (free functions in BattleCpu.cpp).

@@ -891,7 +891,6 @@ void BattlePlayerList::Update() {
     }
 }
 
-// Record of a command cell: u8 table helpers below
 void InitPlayerListDisplay() {
     SpriteManager::Get().SetupMode(1, 7);
     GX_SetDispSelect(1);
@@ -913,6 +912,7 @@ void InitPlayerListDisplay() {
     G2S_SetBG1Priority(1);
 }
 
+// Also sets mUnk_2a9: data_020d433c.mUnk_ae in wireless mode, else 0.
 void CreateObjects(BattlePlayerList *list) {
     list->mCamera = new Camera();
     list->mCamera->SetUp(0, 0x1000, 0);
@@ -935,6 +935,7 @@ void CreateObjects(BattlePlayerList *list) {
     WirelessManager::Get();
     list->mUnk_2a9 = IsWirelessMode(&data_020c4030.mUnk_228) ? data_020d433c.mUnk_ae : 0;
 }
+// The address of the marker's value in its player's mSlots54.
 u16 *GetMarkerSlotValue(BattlePlayerList *list, u8 index) {
     return &list->mPlayers[list->mMarkers[index].mPlayer]->Slot54(list->mMarkers[index].mSlot);
 }
@@ -946,6 +947,7 @@ BattleRecord *GetUnitRecordAt(BattlePlayerList *list, u8 x, u8 y) {
 
 static const s8 sNeighbors[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
+// TRUE for cells 3-4 x 2-3 while there is no marker; otherwise for an empty cell next to a marker (4 neighbours).
 BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 x, u8 y) {
     if (list->mMarkerCount == 0 && x >= 3 && x <= 4 && y >= 2 && y <= 3) {
         return TRUE;
@@ -1101,6 +1103,8 @@ void SetTurnOrder(BattlePlayerList *list, u8 slot, u8 player) {
     }
 }
 
+// Called from Update case 2 each frame. Only mTutorialId 1-4, 7, 8, 10, 12 and 14 change mState; any other id runs
+// it again (with a new StorytalkWindow) the next frame.
 void SetupTutorial(BattlePlayerList *list) {
     list->mUnk_2a4 = new StorytalkWindow();
     MIi_CpuCopyFast(gCharacterLook, (u8 *) list->mPlayers[0] + 0xa8, 8);
@@ -1295,6 +1299,8 @@ extern "C" BOOL func_ov007_02263150(BattlePlayerList *list) {
     return result;
 }
 
+// TRUE at once outside wireless mode (nothing written). Else writes `id` to the outgoing data_0220f540.mUnk_00 and is
+// TRUE when players 0 .. n - 1 (n = GetRecvBlockCount()) all have mMsg.mType == id.
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id) {
     WirelessManager::Get();
     if (!IsWirelessMode(&data_020c4030.mUnk_228)) {

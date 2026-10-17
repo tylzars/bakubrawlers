@@ -41,9 +41,9 @@ struct GimmickSetData {
     /* 81e */ u16 mRotY;
     /* 820 */ u16 mRotZ;
     /* 822 */ u8 mSlot; // own slot index
-    /* 823 */ u8 mHitCount;
+    /* 823 */ u8 mHitCount; // overlaps recorded by GimmickCollision::TestSets, at most 8
     /* 824 */ u8 mHitSlots[8];
-    /* 82c */ u8 mHitObstacleIndices[8];
+    /* 82c */ u8 mHitObstacleIndices[8]; // both sets store j, the index into b's records (for set b its own)
     /* 834 */ u8 mTag; // AddCollisionSet's last argument: the unit index + 1 for BattleTarget's unit sets (0 for its
                        // field and mBakugan sets), the GIMMICK_TYPE for a gimmick's set
     /* 835 */ PAD(0x835, 0x838);
@@ -83,16 +83,16 @@ public:
     /* 0c ModelTransform */
     /* 38 */ u8 mState;
     /* 39 */ u8 mId;
-    /* 3a */ u8 mType;
+    /* 3a */ u8 mType; // GIMMICK_TYPE_* of the class (a type 1 entry made into GimmickFieldPowerS stores FIELD_POWER_S)
     /* 3b */ u8 mUnk_3b;
     /* 3c */ GimmickSetData *mCollision;
     /* 40 */ s32 mCountingTurns;
-    /* 44 */ u8 mTurnCount;
+    /* 44 */ u8 mTurnCount; // + 1 per BattlePlayerList::mTurnCount++ while mCountingTurns (per player turn, not round)
     /* 45 */
 
     Gimmick(u8 a, u8 b);
     void LoadCollision(int id, int mode); // loads "/Game/Collision/atari_%02d.bin" `id` as a collision set into mCollision
-    BOOL IsNearMarker(int radius);       // TRUE when mPosition is within radius of a marked player entry
+    BOOL IsNearMarker(int radius);       // TRUE when a marker with mStatus set is within radius + 0x17800 in x / z
     virtual ~Gimmick();
     /* 08 */ virtual void Update() = 0;
     /* 0c */ virtual void Load() = 0;

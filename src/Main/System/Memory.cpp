@@ -35,6 +35,8 @@ static inline void CreateGameHeap() {
     OS_DestroyHeap(0, gGameHeap.mHandle);
 }
 
+// Returns the block reserved from the high arena first (`reserve` rounded up to 0x20; NULL for 0), then creates
+// the game heap.
 void *InitGameHeap(u32 reserve) {
     void *block;
     if (reserve == 0) {

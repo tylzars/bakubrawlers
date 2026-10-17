@@ -10,6 +10,8 @@ fx32 GetBoxDistance(BattleSphere *sphere, BattleHitBox *box);
 BOOL TestBoxSphere(BattleObstacle *a, BattleObstacle *b);
 BOOL TestPosInRadiusXZ(BattleObstacle *a, BattleObstacle *b);
 
+// a's centre within b's x/z radius (b->mHalfX), and b's y range (+-mHalfY) overlapping a's y +- a->mHalfX: a's
+// radius counts only on y.
 BOOL TestCylinder(BattleObstacle *a, BattleObstacle *b) {
     BattleObstacle tmp = *a;
     if (TestPosInRadiusXZ(&tmp, b)) {
@@ -31,6 +33,7 @@ BOOL TestPosInRadiusXZ(BattleObstacle *a, BattleObstacle *b) {
     return VEC_Mag(&d) < r;
 }
 
+// a's centre strictly inside b's half sizes in x and z of b's own rotated frame (y not tested).
 BOOL TestPosInBoxXZ(BattleObstacle *a, BattleObstacle *b) {
     VecFx32 d;
     MtxFx33 mtx;
@@ -55,6 +58,8 @@ BOOL TestPosInBoxXZ(BattleObstacle *a, BattleObstacle *b) {
     return 1;
 }
 
+// b's centre within |b->mHalfX| of box a. TestObstacles also calls it when both obstacles are OBSTACLE_TYPE_BOX (b then
+// read as a sphere).
 BOOL TestBoxSphere(BattleObstacle *a, BattleObstacle *b) {
     BattleHitBox box;
     box.mPos.x = a->mPos.x;
@@ -100,6 +105,7 @@ fx32 GetBoxDistance(BattleSphere *sphere, BattleHitBox *box) {
     return VEC_Mag(&p);
 }
 
+// Nearest point of the rotated box to the sphere's centre (the centre itself when inside); box->mAxes is scratch.
 void GetNearestPointOnBox(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out) {
     VecFx32 d;
     fx32 half[3];

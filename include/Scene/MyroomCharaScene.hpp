@@ -19,10 +19,10 @@ public:
     /* 0c */ MyroomStatusScene *mStatus;
     /* 10 */ u8 mState;
     /* 11 */ s8 mTab;
-    /* 12 */ s8 mShownTab;
+    /* 12 */ s8 mShownTab; // tab on screen: the old one from the mTab change (state 3) to state 5; 0 = mStatus is up
     /* 13 */ PAD(0x13, 0x14);
     /* 14 */ u32 mCellsVisible[2];
-    /* 1c */ u32 mCellVisible;
+    /* 1c */ u32 mCellVisible; // set to 1 by LoadSubGraphics, never cleared
     /* 20 */ SelectWindow *mWindow;
     /* 24 */ CellAnimation *mCellAnims[2];
     /* 2c */ CellAnimation *mCell;
@@ -51,7 +51,7 @@ public:
     void FreeCells();        // 0x02223800
     void SetReady();         // 0x02223fa8
     void InitDisplay();      // 0x02223fc0
-    void LoadSubGraphics();
+    void LoadSubGraphics(); // also sets mCellVisible = 1
     void LoadMainGraphics();
     void SetupTabCells();
     void Draw();             // 0x02224914
@@ -61,11 +61,15 @@ public:
     u8 func_ov008_02224a4c();
     void LoadText();
     void ClearTextBuffers(); // 0x02224c60
+    // Prints into mTextBuffers[line] only (RenderLine uploads). Message 7 replaces the number when tab 1's
+    // gSaveData[0].mUnk_48 + mUnk_4a or tab 2's value is 0; message `suffix` follows unless it is -1.
     void PrintValue(u32 line, u32 value, u8 digits, s16 x, s16 suffix);
     void RenderLine(u32 line, u32 kind);
     void DrawText();         // 0x02225544
     void FreeText();         // 0x0222563c
     void RenderLines();
+    // mList = ids i < 0x11, i != 5, with gSaveData[0].mUnk_5e[i] != 0, largest value first; mPageCount pages of 7.
+    // With mListCount 0 the do-while still writes mList[0].
     void BuildList();
     void RefreshPageButtons();
 };

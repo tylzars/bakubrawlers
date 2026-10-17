@@ -25,6 +25,7 @@ struct PromptRect {
     u8 w;
     u8 h;
 };
+// Items and cells of BattleCommandPrompt::mWindow; the cells repeat BattleCommand.cpp's sCockpitCells.
 static const WindowItemRecord sPromptWindowItems[2] = {
     {0, 5, 0xa1, 0x85, 0x36, 0x14, 0, {-1, -1, -1, -1}, 0, 1},
     {1, 2, 0xd9, 0x85, 0x1e, 0x14, 0, {-1, -1, -1, -1}, 0, 1},

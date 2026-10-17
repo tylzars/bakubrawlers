@@ -37,11 +37,11 @@ public:
     /* 48 */ u32 mGlyphCount[2];
     /* 50 */ u16 mEffect;
     /* 52 */ u16 mRot[3];
-    /* 58 */ u16 mTextWidth;
+    /* 58 */ u16 mTextWidth; // width of the printed line: above 0xf0 it marches at mTextX, else it is centred
     /* 5a */ s16 mTextX;
     /* 5c */ u16 mTextEndY;
     /* 5e */ s8 mPendingSelection;
-    /* 5f */ s8 mShooterTimer;
+    /* 5f */ s8 mShooterTimer; // 3 on a selection; -1 per DrawSprites call, which skips the mShooter calls until 0
     /* 60 */ s8 mSelected;
     /* 61 */ u8 mCol;
     /* 62 */ u8 mRow;
@@ -59,7 +59,7 @@ public:
 
     void InitDisplay();            // 0x02221830
     void Init();
-    void SelectShooter(s8 index);
+    void SelectShooter(s8 index); // a locked index (mUnlocked 0) is selected with no mShooter or effect
     void InitUnlocked();           // 0x02222714
     void Draw();                   // 0x0222276c
     void DrawSprites();            // 0x02222784

@@ -8,7 +8,7 @@ public:
     /* 68 */ u8 mSoundTimer;
     /* 69 */ u8 mUnk_69;
     /* 6a */ u16 mUnk_6a;
-    /* 6c */ u32 mDistanceSum;
+    /* 6c */ u32 mDistanceSum; // stylus distance summed over hit frames; zeroed at the limit and on frames with no hit
     /* 70 */ BattleData *mData;
     /* 74 */ BattleBlend *mBlend;
     /* 78 */

@@ -35,6 +35,7 @@ int ReaderRead(F *f, void *buf, u32 n) {
     f->o8 += n;
     return 1;
 }
+// Returns the offset of the wanted bytes inside buf (0 when the read does not start).
 int ReaderStartAlignedRead(F *f, void *buf, u32 n) {
     u32 aligned = f->o8 & -0x200;
     u32 off = f->o8 - aligned;

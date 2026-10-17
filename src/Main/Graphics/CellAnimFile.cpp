@@ -89,7 +89,7 @@ CellAnimFile::~CellAnimFile() {
     }
 }
 
-// Scales the character numbers of every OAM entry by num / den.
+// Scales by num / den the character numbers of the OAM entries up to the last one a cel uses (at least one).
 // `den` is 16-bit all the way down (CellAnimation -> CellAnimFile -> here): a narrow parameter's stack copy comes
 // after the loads, as in the original; as s32 the store came first.
 void ScaleCellAnimChars(CellAnimFile *file, CellAnimData *data, u16 den, s32 num) {

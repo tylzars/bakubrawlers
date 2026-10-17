@@ -205,7 +205,7 @@ public:
     void DisableCallbackMtx();
     MtxFx43 *GetCallbackMtx(s32 index);
     BOOL BoxTest();
-    BOOL Draw(MtxFx43 *mtx, VecFx32 *pos);
+    BOOL Draw(MtxFx43 *mtx, VecFx32 *scale);
 };
 
 struct NNSG3dResTex;

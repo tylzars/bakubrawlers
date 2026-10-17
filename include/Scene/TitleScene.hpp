@@ -33,21 +33,22 @@ public:
     /* 4c */ u32 mGlyphCount;
     /* 50 */ void *mBuffers[5][3];
     /* 8c */ u32 mBufferSizes[5][3];
-    /* c8 */ u16 mUnk_c8;
+    /* c8 */ u16 mUnk_c8; // frames in state 6, zeroed when state 5 leads into it; above 0xe10 the scene goes to state 7
     /* ca */ PAD(0xca, 0xcb);
     /* cb */ u8 mState;
-    /* cc */ u8 mTimer;
+    /* cc */ u8 mTimer; // also the slide curve: mScrollY from (mTimer - 3) squared while it counts down from 0x13
     /* cd */ u8 mMenuVisible;
     /* ce */ u8 mMenuSelection;
-    /* cf */ u8 mMessageIndex;
+    /* cf */ u8 mMessageIndex; // last index SetMessage started; 0xff (ctor) = none yet
     /* d0 */ u8 mUnk_d0;
     /* d1 */ u8 mBlendAmplitude;
+    // UpdateFade's sine angle, 180 per turn ((mBlendAngle << 16) / 180), counted down; IsFadeDone is FALSE below 0x5a
     /* d2 */ u8 mBlendAngle;
     /* d3 */ u8 mPlaneBlendEnabled;
     /* d4 */ u8 mCursorStep;
     /* d5 */ u8 mSubBgIndex;
     /* d6 */ u8 mUnk_d6;
-    /* d7 */ u8 mLogoVisible;
+    /* d7 */ u8 mLogoVisible; // gates DrawLogo, which also steps mMessageWindow once mLogoY reaches 0x60
     /* d8 */ u8 mLogoY;
     /* d9 */ PAD(0xd9, 0xda);
     /* da */ s16 mScrollY;

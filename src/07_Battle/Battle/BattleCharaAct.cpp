@@ -136,7 +136,7 @@ static const u16 *sActFrameTaskIds[22] = {
     NULL,
     data_ov007_0227acb8,
 };
-// Light setups (0x0227af68) indexed by data_020d433c.mUnk_95: four lights each, as ModelLightGroup reads them
+// Light setups (0x0227af68) indexed by data_020d433c.mFieldId: four lights each, as ModelLightGroup reads them
 // (enable flag, colour, direction). The table is a section of its own, after the 16-byte tables above: a
 // function-local static of an inline accessor gets one.
 struct LightRecord {
@@ -563,7 +563,7 @@ void BattleCharaAct::Draw() {
     }
     BOOL draw    = 1;
     MtxFx43 mtx  = gIdentityMtx43;
-    VecFx32 pos  = sActModelScale;
+    VecFx32 scale = sActModelScale;
     VecFx32 zero = {0, 0, 0};
     MTX_SetTranslation43(&mtx, &zero);
     if ((mKind == 10) | ((mKind == 7) | ((mKind == 8) | (mKind == 9)))) {
@@ -576,7 +576,7 @@ void BattleCharaAct::Draw() {
         return;
     }
     mActModel->AdvanceAnim();
-    mActModel->Draw(&mtx, &pos);
+    mActModel->Draw(&mtx, &scale);
 }
 
 void BattleCharaAct::LoadFieldopModel() {
@@ -604,10 +604,10 @@ void BattleCharaAct::DrawFieldopModel() {
         return;
     }
     MtxFx43 mtx = gIdentityMtx43;
-    VecFx32 pos = sFieldopModelScale;
+    VecFx32 scale = sFieldopModelScale;
     MTX_ApplyRotX43(&mtx, 0x4000);
     mFieldopModel->AdvanceAnim();
-    mFieldopModel->Draw(&mtx, &pos);
+    mFieldopModel->Draw(&mtx, &scale);
 }
 
 u32 GetTexVariant(u32 a, u32 b) {

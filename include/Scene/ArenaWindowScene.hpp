@@ -28,6 +28,8 @@ public:
     /* 0c */
 
     void InitDisplay();
+    // Display registers first (main visible planes 0; sub mode 0, BG0 set up, visible planes 0x11, no window or blend),
+    // then the union_b window files, LoadMessages, PrintMessage and a new two-item mWindow (disabled, selection 0).
     void SetupWindow();
     void LoadWindowGraphics();
     void LoadMessages();

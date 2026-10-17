@@ -59,6 +59,7 @@ void ClearFrameCallbacks() {
     GX_VBlankIntr(TRUE);
 }
 
+// A hook already in the table is moved to the first free entry; with no free entry nothing is added.
 void AddHBlankHook(void (*hook)()) {
     GX_HBlankIntr(FALSE);
     for (u8 i = 0; i < FRAME_HOOK_COUNT; i++) {
@@ -75,6 +76,7 @@ void AddHBlankHook(void (*hook)()) {
     GX_HBlankIntr(TRUE);
 }
 
+// NULL removes every hook.
 void RemoveHBlankHook(void (*hook)()) {
     GX_HBlankIntr(FALSE);
     if (hook == NULL) {

@@ -9,16 +9,16 @@
 #include "Graphics/BakuganModel.hpp"
 
 // Motions of a BattleMoveState (mMode), set by CreateBakugan (IDLE) and BattleTarget through StartMove. StartMove
-// scales the given velocity; each frame BattleUnk29c::Update adds it to the pose's position (all but IDLE). The
+// scales the given velocity; each frame BattleUnk29c::Update adds it to the model's position (all but IDLE). The
 // LAUNCH modes normalise it, scale it to the speed below, set an upward y velocity and a spin, then subtract 0x800
-// from the y velocity each frame and hide the pose below y 0x899a. No code stores LAUNCH_SPIN_X in this build.
+// from the y velocity each frame and hide the model below y 0x899a. No code stores LAUNCH_SPIN_X in this build.
 #define MOVE_MODE_IDLE               1 // no motion step; the only mode func_ov007_0226ff08 measures distances for
 #define MOVE_MODE_DAMPED             2 // velocity * 0xccd at the start, * 0xf0a each frame, no gravity
 #define MOVE_MODE_LAUNCH_SPIN_Y      3 // speed 0xa000, up 0x8000, spins about y
 #define MOVE_MODE_SLOW_LAUNCH_SPIN_X 4 // speed 0x5000, up 0x5800, spins about x
 #define MOVE_MODE_LAUNCH_SPIN_X      5 // speed 0xa000, up 0x8000, spins about x
 
-// Motion record of a pose (0x14 bytes, allocated by CreateBakugan).
+// Motion record of one mBakugans model (0x14 bytes, allocated by CreateBakugan).
 struct BattleMoveState {
     /* 00 */ VecFx32 mVelocity;
     /* 0c */ u16 mRot[3];
@@ -26,7 +26,7 @@ struct BattleMoveState {
     /* 13 */ u8 mUnk_13;
 };
 
-// Poses, name plates and cursors of the battle command map (0xa4 bytes, ctor 0226fb74, dtor 0226fc18).
+// Bakugan models, name plates and cursors of the battle command map (0xa4 bytes, ctor 0226fb74, dtor 0226fc18).
 struct BattleUnk29c {
     /* 00 */ BakuganModel *mBakugans[12];
     /* 30 */ BattleMoveState *mMoveStates[12];
@@ -52,6 +52,9 @@ struct BattleUnk29c {
     void CreateFontObjs();
     void Release();
     void Update();
+    // Unless flag and mUnk_9e are both 0: mNearUnitHandles = up to three idle units within 0x64000 of the target's
+    // bakugan, nearest first; mUnk_98 = up to three idle units with mStatus 2 / 3 or mUnk_12, placed by comparing with
+    // the first list's distances (far[]), not their own.
     void func_ov007_0226ff08(u32 flag);
     void CreateBakugan(u32 index, VecFx32 *pos, u16 *rot, u8 a, u8 b);
     void Draw();

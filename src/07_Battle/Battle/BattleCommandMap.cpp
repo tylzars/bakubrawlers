@@ -310,6 +310,7 @@ void CloseCommandMapNow(BattleCommandMap *map) {
     map->mState = 3;
 }
 
+// State 1: the map fades the screen down and ends after the fade (CloseCommandMapNow skips the fade).
 void CloseCommandMap(BattleCommandMap *map) {
     map->mState = 1;
 }
@@ -813,6 +814,7 @@ void func_ov007_022470e4(BattleCommandMap *map, u8 a, u8 b) {
 
 extern "C" void ApplyCameraYaw(BattleCommandMap *map);
 
+// Moves the camera, offset kept, over cell (a, b) in `frames` frames (0: at once); the same cell with 0x1e: no-op.
 extern "C" void SetCursorCellAndMoveCamera(BattleCommandMap *map, u8 a, u8 b, u32 frames) {
     if (a == map->mCursorX && b == map->mCursorY && frames == 0x1e) {
         return;
@@ -862,6 +864,7 @@ extern "C" void RotateCameraYaw(BattleCommandMap *map, u32 direction) {
     }
 }
 
+// Puts the camera at mCameraYawDegrees on a circle of radius mCameraDistance around its target (y kept).
 extern "C" void ApplyCameraYaw(BattleCommandMap *map) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera == 0) {
@@ -927,6 +930,7 @@ extern "C" void ComputeCameraDistance(BattleCommandMap *map) {
     map->mCameraDistance = VEC_Distance(&target, &pos);
 }
 
+// mCameraYawDegrees = the camera's yaw in degrees (0..359; RotateCameraYaw wraps it with % 360).
 extern "C" void CopyCameraYaw(BattleCommandMap *map) {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     if (camera == 0) {
@@ -1217,6 +1221,7 @@ extern "C" void ComputeVelocity(BattleCommandMap *map) {
     RotateDirScaled(rot, map->mDirScale, &v, (VecFx32 *) map->mVelocity);
 }
 
+// Also stores PredictStop's step count in mStopStepCount.
 extern "C" void PredictLandingAndSetCameraTarget(BattleCommandMap *map) {
     VecFx32 tmp;
     PredictLanding((VecFx32 *) map->mCornerPosition, (VecFx32 *) map->mVelocity, (VecFx32 *) map->mLandingPosition);

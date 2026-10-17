@@ -104,6 +104,8 @@ extern void ClearFrameCallbacks();
 extern void RemoveHBlankHook(void (*hook)());
 extern void RewindUploadQueue();
 
+// Also closes and reopens FrameTask's handles, runs the previous overlay's destructors and rebuilds the game heap
+// after the new overlay's RAM and BSS.
 void SceneRunner::LoadOverlay(u32 overlay) {
     OverlayInfo info;
     FrameTask::Get().CloseHandles();
@@ -124,6 +126,7 @@ SceneRunner::SceneRunner() : SceneBase(0, 3) {
     mOverlayState = 0;
 }
 
+// The game heap block is re-added unless WirelessManager::func_0202f238() is non-zero.
 void SceneRunner::SwitchToScene(s32 scene) {
     FrameTask::Get().StopAllChannels();
     if ((scene < 1) | (scene >= 14)) {

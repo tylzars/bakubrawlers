@@ -30,11 +30,11 @@ public:
     /* 44 */ u8 mCur[3];
     /* 47 */ u8 mOld[3];
     /* 4a */ u8 mState;
-    /* 4b */ u8 mSlideTimer;
+    /* 4b */ u8 mSlideTimer; // set to 8; counted down inside DrawSettings / DrawMenu2 / DrawMenu3 / SlideStep
     /* 4c */ s8 mTouchRow;
     /* 4d */ s8 mSelection;
     /* 4e */ u8 mRow;
-    /* 4f */ u8 mFlagSelectedId;
+    /* 4f */ u8 mFlagSelectedId; // id < 2 of the BuildMenu2 / BuildMenu4 windows; 0 stores 1 in mMicEnabled / mUnk_28_5
     /* 50 */
 
     OptionScene();

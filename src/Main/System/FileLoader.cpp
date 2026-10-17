@@ -106,7 +106,8 @@ struct UnkStruct_SaveBlock {
     /* 0c */ u8 mData[0xff4];
 };
 
-// Writes the save data (vtable 0x020a54a8).
+// Writes the save data (vtable 0x020a54a8): copy 0, then copy 1 after copy 0 succeeded (no retry). The start check
+// tests GetSlotStatus(0), while the writes go to task->mSlot.
 class SaveWriter : public SceneBase {
 public:
     virtual ~SaveWriter();

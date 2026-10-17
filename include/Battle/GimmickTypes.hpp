@@ -68,6 +68,9 @@ public:
 
     void func_ov007_0222accc();
     u8 PickKind();
+    // While mSequenceFrames runs, one step every sKindStepIntervals[mKind] frames, sKindStepCounts[mKind] steps: seq
+    // 0x34 / 0x35 / 0x36 by kind; kind 1 also func_ov007_0226a380(p, p->mRecord, 0x1e) and effect 3, kind 2 effect 0xe
+    // and + 0x28 to the turn player's record mGauge (below 0xfd7).
     void UpdateKindSequence();
     void func_ov007_0222b8b4();
     int func_ov007_0222bc24();
@@ -111,7 +114,7 @@ public:
 
     void Init();
     void DrawModel();
-    void RotateDir(int reset);
+    void RotateDir(int reset); // its only call passes 0: the reset branch does not run in this build
 };
 
 // Helpers of the effect manager (data_020d433c.mEffects).
@@ -242,7 +245,7 @@ public:
     void CountTurnAll();
     void CreateFromFile(GimmickSetFile *file);
     void LoadSetData(int a, int b);
-    int Add(Gimmick *gimmick);
+    int Add(Gimmick *gimmick); // links the gimmick into a node; returns that node's id from the mIds ring
     void Remove(int id);
 };
 
@@ -293,7 +296,7 @@ public:
     /* 45 */ PAD(0x45, 0x48);
     /* 48 */ ModelInstance *mModelB;
     /* 4c */ u16 mCounter;
-    /* 4e */ u8 mPushed;
+    /* 4e */ u8 mPushed; // set as state 3 is left, cleared before state 4 returns to 1: the state-3 test never sees it
     /* 4f */ u8 mMarkerNear;
     /* 50 */
 
@@ -304,8 +307,11 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
+    // Advances mModelB's animation only while bit 3 of data_020d433c.mFlags is clear; its `&= 8` first clears the other
+    // bits (as in CountDownToState).
     void DrawModelB();
     void DrawModels(int drawB);
+    // Steps mCounter only while bit 3 of data_020d433c.mFlags is clear; its `&= 8` first clears the other bits.
     int CountDownToState(int frames, int state);
 };
 // One row of the ability pick table at 02279568: `mCount` entries, picked by weight, mapped through `mIds`.
@@ -337,12 +343,12 @@ public:
 
     void DrawModelB();
 };
-// Model-less pull field (no Load/Unload work): while the target is inside, adds mPullPerFrame to the target's mUnk_a0, towards
-// a point 0x8000 nearer mPosition turned by 0x71c.
+// Model-less pull field (no Load/Unload work): while the target is inside, adds mPullPerFrame to its mBaseVelocity,
+// towards a point 0x8000 nearer mPosition turned by 0x71c.
 class GimmickUnk_022308a8 : public Gimmick { // vtable 022875bc
 public:
     /* 45 */ PAD(0x45, 0x48);
-    /* 48 */ VecFx32 mPullPerFrame;
+    /* 48 */ VecFx32 mPullPerFrame; // recomputed every step; the 0x71c turn gives it a sideways part
     /* 54 */ u8 mSoundStarted;
     /* 55 */ PAD(0x55, 0x58);
     /* 58 */
@@ -407,7 +413,7 @@ public:
     /* 48 */ ModelInstance *mModelB;
     /* 4c */ u16 mCounter;
     /* 4e */ u16 mPushTimer;
-    /* 50 */ u8 mTargetNear;
+    /* 50 */ u8 mTargetNear; // last IsTargetNear result, compared with the new one to start / stop the sound
     /* 51 */ u8 mMarkerNear;
     /* 52 */ u8 mPushed;
     /* 53 */ PAD(0x53, 0x54);
@@ -420,8 +426,11 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
+    // Advances mModelB's animation only while bit 3 of data_020d433c.mFlags is clear; its `&= 8` first clears the other
+    // bits (as in CountDownToState).
     void DrawModelB();
     void DrawModels(int drawB);
+    // Steps mCounter only while bit 3 of data_020d433c.mFlags is clear; its `&= 8` first clears the other bits.
     int CountDownToState(int frames, int state);
     int IsTargetNear(); // TRUE when the target's bakugan is visible and within 0x96000 of the bubble
 };

@@ -17,8 +17,8 @@ extern const VecFx32 data_020a2fd8;
 extern const VecFx32 data_020a2fe4;
 extern const u8 gRankingDigitCellPositions[][2];
 extern const u8 data_020a3004[];
-extern const s8 gRankingCharacterModelZ[];
-extern const s8 gRankingCharacterModelY[];
+extern const s8 gRankingCharacterModelZ[]; // indexed by character id; whole units, << 12 to fx32
+extern const s8 gRankingCharacterModelY[]; // as gRankingCharacterModelZ
 extern char data_020d441a[];
 
 // Position of a model object (CharacterModel / StoryCharacterModel): the VecFx32 at +4.
@@ -270,12 +270,12 @@ void RankingCharacterView::Draw() {
     DrawSprites();
     MtxFx43 *camera = func_020323b8();
     MtxFx43 mtx     = gIdentityMtx43;
-    VecFx32 pos     = data_020a2fd8;
+    VecFx32 scale   = data_020a2fd8;
     VecFx32 offset  = data_020a2fe4;
     MTX_SetTranslation43(&mtx, &offset);
     MTX_Concat43(&mtx, camera, &mtx);
     mMyroombgModel->AdvanceAnim();
-    mMyroombgModel->Draw(&mtx, &pos);
+    mMyroombgModel->Draw(&mtx, &scale);
     mCharacterModel->Draw();
 }
 

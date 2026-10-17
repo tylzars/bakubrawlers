@@ -86,9 +86,10 @@ u8 gUploadCount;  // queued entries
 u8 gUploadReadIndex;  // head index
 u8 gUploadWriteIndex;  // tail index
 u8 gPendingFreeCount;  // pending frees in gPendingFrees
-u32 gQueuedBytes; // bytes queued this frame
+u32 gQueuedBytes; // bytes queued this frame; never read in this build
 UploadEntry gUploadQueue[UPLOAD_QUEUE_SIZE];
 
+// Buffers flagged mFree are queued in gPendingFrees; FlushPendingFrees frees them later.
 void FlushUploadQueue() {
     u32 head = gUploadReadIndex;
     do {
@@ -214,6 +215,7 @@ void UpdateUploadQueue() {
     gQueuedBytes = 0;
 }
 
+// Both indices back to 0, the pending-free count zeroed (nothing freed) and gQueuedBytes 0; gUploadCount is kept.
 void RewindUploadQueue() {
     gUploadReadIndex = 0;
     gUploadWriteIndex = 0;

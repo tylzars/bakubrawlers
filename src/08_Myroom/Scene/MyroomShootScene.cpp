@@ -36,7 +36,8 @@ static const VecFx32 sMyroomShootRoomScale = {0x1000, 0x1000, 0x1000};
 static const VecFx32 sMyroomShootRoomOffset = {0, 0, -0xe6000};
 static const u32 sMyroomShootTextUnitSizes[2] = {0x44, 0x21};
 static const u16 sMyroomShootEffectRotDegrees[6][3] = {{0, 15, 15}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
-static const u8 sMyroomShootGridUsed[2][3] = {{1, 1, 1}, {1, 1, 1}};
+static const u8 sMyroomShootGridUsed[2][3] = {{1, 1, 1}, {1, 1, 1}}; // all 1: the == 0 skips never run in this build
+// Init rewrites the animations from sMyroomShootShooterAnimIndices (1 for a locked shooter) before SetCells.
 static WindowCellRecord sMyroomShootShooterCells[6] = {
     {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 2, 0x0, 0, 1, 1, {2, 2, 2, 0}},
     {"Game/Myroom/myroom_s_shoot_b_obj_nce.bin", 3, 0x0, 0, 1, 1, {3, 3, 3, 0}},

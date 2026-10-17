@@ -1092,7 +1092,8 @@ u8 BattleAbility::func_ov007_02266868() {
     return done;
 }
 
-// Effect placement of a field (0x24 bytes): position, camera position and a scale.
+// Effect placement of a field (0x24 bytes): position, camera position and a scale. sFieldEffects[mFieldId] is read
+// by BattleAbility::func_ov007_02266a28 (case 4) and UpdateCameraToFieldEffect.
 struct BattleAbilityFieldEffect {
     /* 00 */ VecFx32 mPos;
     /* 0c */ VecFx32 mCamera;
@@ -1245,6 +1246,7 @@ u8 BattleAbility::func_ov007_02266a28() {
 
 void func_ov007_0226a380(BattlePlayer *player, u8 record, int unk);
 
+// Camera position on a circle (65 times the sine table) around the target in x/z, y set to 0xc000; mUnk_3a += 100.
 void OrbitCamera(BattleAbility *self) {
     u16 angle   = self->mUnk_3a;
     Camera *cam = self->mCamera;
@@ -1316,6 +1318,8 @@ BOOL UpdateCameraToFieldEffect(BattleAbility *self) {
     return done;
 }
 
+// Step 0 only sets up: *out becomes its offset from the camera target, mUnk_3c 10 times its direction in x/z (y 0),
+// mUnk_1a the step count; nothing moves. Later calls move position and target by mUnk_3c; TRUE once mUnk_1a is 0.
 BOOL UpdateCameraShiftTo(BattleAbility *self, VecFx32 *out) {
     BOOL done = 0;
     VecFx32 tmp;

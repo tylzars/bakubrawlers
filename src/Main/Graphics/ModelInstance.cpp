@@ -204,14 +204,14 @@ BOOL ModelInstance::BoxTest() {
     return result != 0;
 }
 
-BOOL ModelInstance::Draw(MtxFx43 *mtx, VecFx32 *pos) {
+BOOL ModelInstance::Draw(MtxFx43 *mtx, VecFx32 *scale) {
     if (mtx != NULL) {
         MI_Copy36B(mtx, &data_02211430);
         data_02211374.mFlags &= ~0xa4;
         SetG3dGlbTrans((VecFx32 *) &mtx->_[9]);
     }
-    if (pos != NULL) {
-        SetG3dGlbScale(pos);
+    if (scale != NULL) {
+        SetG3dGlbScale(scale);
     }
     func_02032284();
     if (!BoxTest()) {

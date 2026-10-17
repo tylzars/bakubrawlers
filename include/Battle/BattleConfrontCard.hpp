@@ -18,7 +18,7 @@ class BakuganModel;
 class ModelLightGroup;
 
 // Camera of the card screen (vtable 02288700, 0x30 bytes): the map objects, two cameras and a model; built from
-// the card ids of both sides.
+// bakugan id | attribute << 8 of each side (mSide0BakuganId / mSide0Variant, ...).
 class BattleCardCamera : public SceneBase {
 public:
     /* 00 SceneBase */
@@ -29,7 +29,7 @@ public:
     /* 20 */ void *mCamFile;
     /* 24 */ u16 mUnk_24;
     /* 26 */ u8 mState;
-    /* 27 */ u8 mMapModelVisible;
+    /* 27 */ u8 mMapModelVisible; // always 1 in this build
     /* 28 */ PAD(0x28, 0x29);
     /* 29 */ u8 mUnk_29;
     /* 2a */ u8 mUnk_2a;
@@ -112,7 +112,7 @@ public:
     void PrintMessage(u32 index);
     void Init();
     void InitDisplay();
-    void ResetDisplay();
+    void ResetDisplay(); // also clears data_020d433c.mAntenna->mSecondVisible (when set)
     void LoadGraphics();
     void LoadCardGraphic(u16 card);
     void func_ov007_0223f90c(u16 value);

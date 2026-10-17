@@ -67,7 +67,7 @@ static WmParentParam sDefaultParentParam = {sParentData, 0x70, 0, 0x400904, 0, 1
 // singleton's atexit node at 0x0220f584 between them; the code addresses them from the start of the section.
 struct WmWorkB {
     /* 00 */ PAD(0x00, 0x10);
-    /* 10 */ u32 mRecv[4]; // received 4-byte messages (RECV_QUEUE)
+    /* 10 */ u32 mRecv[4]; // received 4-byte messages (RECV_QUEUE); written, never read in this build
     /* 20 */ PAD(0x20, 0x30);
     /* 30 */ u32 mSend[4]; // messages waiting to be sent (SEND_QUEUE)
     /* 40 */ PAD(0x40, 0x50);

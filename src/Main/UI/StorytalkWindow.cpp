@@ -175,6 +175,8 @@ void StorytalkWindow::LoadMessageFile(const char *path) {
     mMessages = LoadFile(path, 0, 0, 0, 0, 0);
 }
 
+// Loads mes_StoryCharaName.mes and allocates the two text buffers; also sets screen 0's OBJ VRAM mode 3 (LoadGraphics
+// sets 1 again).
 void LoadStorytalkText(StorytalkWindow *self) {
     ChangeDir("/");
     self->mStoryCharaNameMessages = LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
@@ -220,6 +222,8 @@ void ResetStorytalkMessageText(StorytalkWindow *self) {
     self->mMessageIndex = -1;
 }
 
+// No-op for the current index. Otherwise resets the text and pages; -1: state 2, no message; else mHasMessage, state
+// 4 when func_02087cac, and one Print of the message that only fills TextManager's mLineStarts.
 void SetStorytalkMessageIndex(StorytalkWindow *self, s32 unk1) {
     if (self->mMessageIndex == unk1) {
         return;
@@ -461,6 +465,7 @@ void StorytalkWindow::SetCell1Visible(u32 unk1) {
     mCell1Visible = unk1;
 }
 
+// SetMessage(-1, -1, 0, 0): no message (no-op when the index is already -1) and character -1; mPageTextTimer = 0.
 void SetNoStorytalkMessage(StorytalkWindow *self) {
     self->SetMessage(-1, -1, 0, 0);
     self->mPageTextTimer = 0;

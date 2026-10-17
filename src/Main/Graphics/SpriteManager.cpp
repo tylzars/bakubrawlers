@@ -104,6 +104,7 @@ static inline fx32 CosIdx(int idx) {
 
 extern "C" fx32 FX_Div(fx32 a, fx32 b); // FX_Div
 
+// UpdateSpriteFade, CameraManager::UpdateMode, then FlushOam of both screens.
 void EndFrameCallback(void *arg) {
     SpriteManager *self = (SpriteManager *) arg;
     UpdateSpriteFade();

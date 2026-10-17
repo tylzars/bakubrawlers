@@ -80,22 +80,24 @@ public:
     /* 3c */ u32 mPrevAirFrames;
     /* 40 */ u32 mUnk_40;
     /* 44 */ u32 mUnk_44;
+    // + 1 on a step with no motion, or with vertical velocity exactly -mGravityPerFrame (otherwise 0); reaching 0x28 on
+    // a motionless step stops the bakugan
     /* 48 */ u32 mRestFrames;
-    /* 4c */ u32 mMoveFrames;
+    /* 4c */ u32 mMoveFrames; // calls of UpdateMove since construction (any branch); never reset
     /* 50 */ u32 mUnk_50;
     /* 54 */ u32 mUnk_54;
-    /* 58 */ VecFx32 mPrevPosition;
+    /* 58 */ VecFx32 mPrevPosition; // its y is also set to an obstacle's top on landing
     /* 64 */ VecFx32 mVelocity;
     /* 70 */ VecFx32 mPrevVelocity;
     /* 7c */ VecFx32 mCollisionNormal;
     /* 88 */ u32 mUnk_88;
     /* 8c */ fx32 mPushScale;
-    /* 90 */ u32 mBounceFactor;
+    /* 90 */ u32 mBounceFactor; // always 0x533 when read (UpdateMove sets it first)
     /* 94 */ VecFx32 mUnk_94;
     /* a0 */ VecFx32 mBaseVelocity;
     /* ac */ VecFx32 mPushVelocity;
     /* b8 */ VecFx32 mUnk_b8;
-    /* c4 */ u32 mGravityPerFrame;
+    /* c4 */ u32 mGravityPerFrame; // 0x1c3 (ctor), 0x29, 0xa4 or 0x1dc - 0x19 by the handler
     /* c8 */ VecFx32 mPushPerFrame;
     /* d4 */ VecFx32 mUnk_d4;
     /* e0 */ u8 *mUnitCollisionBuffer;
@@ -135,7 +137,7 @@ public:
     /* 1c2 */ u16 mUnitHitEffectHandle;
     /* 1c4 */ u16 mUnk_1c4;
     /* 1c6 */ u16 mUnk_1c6;
-    /* 1c8 */ u16 mTimer;
+    /* 1c8 */ u16 mTimer; // the 0x78-frame waits of states 8 and 10
     /* 1ca */ u8 mUnk_1ca;
     /* 1cb */ u8 mUnk_1cb;
     /* 1cc */ u8 mUnk_1cc;
@@ -150,7 +152,7 @@ public:
     /* 1d5 */ u8 mPartner;
     /* 1d6 */ u8 mUnk_1d6;
     /* 1d7 */ u8 mUnk_1d7;
-    /* 1d8 */ u8 mHitGimmickType;
+    /* 1d8 */ u8 mHitGimmickType; // keeps the last test's value on steps that skip UpdateCollisions
     /* 1d9 */ u8 mPrevHitGimmickType;
     /* 1da */ u8 mOnMarkerCell;
     /* 1db */ u8 mUnk_1db;
@@ -220,7 +222,7 @@ public:
     void UpdateCollisions(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d);
     void IntegrateMotion(VecFx32 *pos, u16 *rot, VecFx32 *vel, VecFx32 *a, VecFx32 *b, u32 *counter, u8 flag, u32 mode);
     void LimitSumLength(VecFx32 *a, VecFx32 *b);
-    void StopSoundAfterVentKaze();
+    void StopSoundAfterVentKaze(); // stops seq 0xf the step after the last VENT_KAZE hit (the tornado also uses 0xf)
     void func_ov007_022585e0();
     BOOL GetHitBoxNormal(BattleHitBox *box, BattleSphere *sphere, VecFx32 *dir, VecFx32 *out, u8 flag, u8 *outFlag);
     BOOL TestPointInHitBoxXZ(BattleHitBox *box, VecFx32 *point);

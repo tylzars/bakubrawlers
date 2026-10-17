@@ -35,7 +35,7 @@ public:
     /* 44 */ MessageWindow *mMessageWindow;
     /* 48 */ CharacterIcons *mCharacterIcons;
     /* 4c */ s32 mResult;
-    /* 50 */ u8 mTextLineCount;
+    /* 50 */ u8 mTextLineCount; // Print's y after the message / 14 (line advances); read as the line count
     /* 51 */ s8 mScroll;
     /* 52 */ u8 mCount;
     /* 53 */ s8 mSelected;

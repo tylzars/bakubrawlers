@@ -13,6 +13,7 @@ static const WindowCellRecord sArenaWindowTwoButtonCells[2] = {
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 1, 8192, 0, 0, 1, {0, 2, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_window_nce.bin", 9, 8192, 0, 0, 1, {9, 9, 9, 0}},
 };
+// Record 1 (flag 0x8000) is skipped by the cursor and by touch: one item is selectable.
 static const WindowItemRecord sArenaWindowTwoButtonItems[2] = {
     {0, 1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, 1},
     {1, 32768, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},

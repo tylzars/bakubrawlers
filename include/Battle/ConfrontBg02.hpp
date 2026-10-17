@@ -39,6 +39,6 @@ public:
     /* 44 */ virtual void vfunc_44(int index, u16 count);
 
     void UpdateEmblemStep();
-    BOOL CountDownDelay();
+    BOOL CountDownDelay(); // only while at least 10 frames of mBattleFrameCount remain; TRUE when mDelay re-rolls
     void StartIdleEmblem();
 };

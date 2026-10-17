@@ -36,6 +36,7 @@ void func_02022b0c() {
     MI_CpuFill8(&data_020d433c, 0, 0xb4);
 }
 
+// Also copies gSaveData[0].mRules into data_020d433c.mRules.
 void ResetSaveData() {
     MI_CpuFill8(gSaveData, 0, 0xff4);
     ResetOptions(gSaveData);
@@ -83,6 +84,7 @@ void ResetSaveData() {
     } while (n < 3);
 }
 
+// Also applies the volumes (ApplyVolumeOptions).
 void ResetOptions(SaveData *d) {
     SaveData *p = gSaveData;
     p->mUnk_28_5 = 1;

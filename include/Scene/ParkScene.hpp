@@ -19,7 +19,7 @@ public:
     /* 0f */ u8 mUnk_0f;
     /* 10 */ u8 mPlayerCount;
     /* 11 */ u8 mWindowVisible;
-    /* 12 */ u8 mRequestParkScene;
+    /* 12 */ u8 mRequestParkScene; // state 6: 0 requests SCENE_MAP, non-zero SCENE_PARK
     /* 14 */ ParkMenu *mMenu;
     /* 18 */ ScriptPlayer *mEvent;
     /* 1c */ void *mUnk_1c;
@@ -38,7 +38,7 @@ public:
     void Init();                    // 0221b1d4
     void InitDisplay();             // 0221b214
     void LoadWindowGraphics();      // 0221b3f4
-    void ReloadBackground();
+    void ReloadBackground(); // sub engine: visible planes 0x11, windows off, no blend; then LoadBackground
     void LoadBackground();          // 0221b5ec
     void Cleanup();                 // 0221b74c
     void Draw();                    // 0221b7f4

@@ -7,7 +7,7 @@
 extern const u8 gRankingCharacterIds[][13];
 extern const u8 data_020a305c[4];
 extern const u32 data_020a3060[4];
-extern const u16 gRankingScorePercents[2][12];
+extern const u16 gRankingScorePercents[2][12]; // percent of the base taken off the score
 extern const u16 gRankingSineScales[2][12];
 extern const u16 gRankingSineOffsets[2][12];
 extern const u32 gRankingScoreOffsets[2][12];

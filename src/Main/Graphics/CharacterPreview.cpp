@@ -43,7 +43,7 @@ public:
     /* 3b */ char mAnimPath[0x7f];
     /* ba */ char mModelPath[0x7f];
     /* 139 */ char mTexturePath[0x7f];
-    /* 1b8 */ u8 mLoadStep;
+    /* 1b8 */ u8 mLoadStep; // 0 until StartLoad; non-zero also tells the destructor to stop the load and free the data
     /* 1b9 */ u8 mVariant;
     /* 1ba */ PAD(0x1ba, 0x1bc);
     /* 1bc */

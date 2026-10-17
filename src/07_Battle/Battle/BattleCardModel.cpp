@@ -311,8 +311,8 @@ void BattleCardModel::Update() {
         case 2:
         case 3: {
             MtxFx43 mtx = gIdentityMtx43;
-            VecFx32 pos = gCardModelScale;
-            mBaku->mModel->Draw(&mtx, &pos);
+            VecFx32 scale = gCardModelScale;
+            mBaku->mModel->Draw(&mtx, &scale);
             DrawName();
             UpdateEffects();
             break;

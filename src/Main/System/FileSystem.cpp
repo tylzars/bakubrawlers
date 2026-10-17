@@ -42,7 +42,7 @@ static inline BOOL IsBusy(const FSFileLike *file) {
 
 extern u32 data_020d53e4_h; // same address as gFileLoad: the compression header read by the blocking loader
 extern u8 gLoadFileUncompContext[];
-extern u32 gAsyncLoadHeader;
+extern u32 gAsyncLoadHeader; // same address as gFileLoad.mAsyncHeader (0x020d53e4 + 0x24)
 extern u8 gAsyncUncompContext[];
 extern FSFileLike gFsFile;
 

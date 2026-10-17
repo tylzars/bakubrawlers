@@ -1,6 +1,7 @@
 #include "UI/SelectWindow.hpp"
 const u8 sMyroomRankingRowCellPos[6][2] = {{0x10, 0x2e}, {0x10, 0x42}, {0x10, 0x56}, {0x10, 0x6a}, {0x10, 0x7e}, {0x10, 0x92}};
 
+// Cell 7 is the union_b cockpit cell; the others are myroom_ranking_b_obj_00 cells.
 const WindowCellRecord sMyroomRankingObj00Cells[9] = {
     {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 6, 0, 0, 0, 1, {6, 6, 6, 0}},
     {"Game/Myroom/myroom_ranking_b_obj_00_nce.bin", 4, 0, 0, 1, 1, {4, 4, 4, 0}},

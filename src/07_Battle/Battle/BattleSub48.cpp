@@ -482,6 +482,7 @@ int PointDistance(int x1, int y1, int x2, int y2) {
     return (int) ((float) FX_Sqrt(FX32_CONST((float) sq)) / 4096.0f);
 }
 
+// out is left unchanged for a zero vector.
 void NormalizeXY(float x, float y, float *out) {
     float len = (float) FX_Sqrt(FX32_CONST(x * x + y * y)) / 4096.0f;
     if (len == 0.0f) {

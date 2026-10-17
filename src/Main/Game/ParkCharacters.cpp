@@ -9,7 +9,7 @@ struct ParkEntry {
     /* 00 */ s32 mType;
     /* 04 */ u8 mUnk_04;
     /* 05 */ u8 mUnk_05;
-    /* 06 */ u8 mProgressEntryIndex;
+    /* 06 */ u8 mProgressEntryIndex; // 0xff = none; same byte as ParkScene.cpp's copy and ParkMenu's +0x12
     /* 07 */ u8 mMinCategory;
     /* 08 */ u8 mFieldId;
     /* 09 */ u8 mUnk_09;
@@ -148,6 +148,7 @@ struct ParkPick {
 // some placements here are load-bearing: `j = 0` at its declaration puts j (the fill loop's index) first, `g = 0` comes
 // before `category`/`group` in the first loop, the perm loop counts with g, `flag` is shared by the duplicate check and
 // the else branch, and `k` is declared right after `group`.
+// Also writes data_020d433c.mUnk_8d (the entry picked for each slot).
 void FillParkSlots() {
     ParkGroup *group;
     u8 k;

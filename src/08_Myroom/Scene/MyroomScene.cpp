@@ -37,6 +37,7 @@
 #define MYROOM_MENU_CHARA 4
 #define MYROOM_MENU_TIPS 5
 
+// The three entries of pages 1 and 2 only (sMyroomMenu1Items / sMyroomMenu2Items, the touch test, mCellAnim).
 static const Vec2s sMyroomMenuEntryPos[3] = {
     {16, 72}, {96, 72}, {176, 72},
 };

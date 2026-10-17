@@ -32,11 +32,11 @@ struct UnkStruct_SceneRequest {
 
 struct UnkStruct_SceneNode {
     /* 00 */ PAD(0x00, 0x08);
-    /* 08 */ UnkStruct_SceneRequest *mRequest;
+    /* 08 */ UnkStruct_SceneRequest *mRequest; // the parent scene's mContext (SceneBase +0x08), not a request value
 };
 
 struct UnkStruct_SceneList {
-    /* 00 */ UnkStruct_SceneNode *mHead;
+    /* 00 */ UnkStruct_SceneNode *mHead; // the parent node's mScene
 };
 
 struct SceneContext;
@@ -70,7 +70,7 @@ struct SceneContext {
         UnkStruct_SceneList *mList;
     };
     /* 10 */ u16 mOrder;
-    /* 12 */ s16 mRequest;
+    /* 12 */ s16 mRequest; // set by a child's RequestScene: a SCENE_* id in SceneRunner's node, else a result code
     /* 14 */ SceneInfo mInfo;
     /* 20 */ PAD(0x20, 0x40);
     /* 40 */

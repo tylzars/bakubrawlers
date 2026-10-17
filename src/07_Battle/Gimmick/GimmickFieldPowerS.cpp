@@ -6,7 +6,7 @@
 
 static ModelResource *sResources[2];
 
-static const u8 sPowerSPartnerTurnLimits[4]  = {5, 3, 0, 0};
+static const u8 sPowerSPartnerTurnLimits[4]  = {5, 3, 0, 0}; // [mVariant], used when data_020d433c.mHasPartners
 static const u8 sPowerSTurnLimits[2][3] = {{5, 7, 9}, {5, 7, 9}};
 static const VecFx32 sPowerSEffectOffset      = {0, 0, 0x1e000};
 static const VecFx32 sPowerSEffectScale      = {0x800, 0x800, 0x800};

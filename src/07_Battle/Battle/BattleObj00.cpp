@@ -54,21 +54,23 @@ public:
     /* 34 */ u8 mUnk_34;
     /* 35 */ u8 mUnk_35;
     /* 36 */ u8 mUnk_36;
-    /* 37 */ u8 mBrightness;
+    /* 37 */ u8 mBrightness; // sub-screen G2S_SetBlendBrightness level, 0 up to 0x10 (+1 every 4th frame)
     /* 38 */ PAD(0x38, 0x39);
+    // low byte of the state-13 request (1 where this class set mRequest = 1); AddMarker's slot; data_0220f540.mUnk_04
     /* 39 */ u8 mSlot;
     /* 3a */ u8 mUnk_3a;
     /* 3b */ PAD(0x3b, 0x3c);
+    // mCorner of player BattlePlayerList::mUnk_2a9 > 1; here it only picks the BG variant (func_ov007_0223ad70)
     /* 3c */ u8 mFlipped;
     /* 3d */ PAD(0x3d, 0x3e);
     /* 3e */ u8 mUnk_3e;
-    /* 3f */ u8 mOffsetX;
+    /* 3f */ u8 mOffsetX; // 0 or 4 by gSaveData mUnk_28_5; mUnk_2a is always 0, so the sub screen gets x -mOffsetX
     /* 40 */
 
     BattleObj00(u8 flag);
     virtual ~BattleObj00();
     virtual void Update();
-    void LoadGraphics();
+    void LoadGraphics(); // leaves the current directory at /Game/2D/union_b
 };
 
 BattleObj00::BattleObj00(u8 flag)

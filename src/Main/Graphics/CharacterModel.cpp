@@ -7,7 +7,7 @@
 // the original passes a pointer here (the declaration in FileSystem.hpp takes u32)
 const char *gCharacterPartNames[6] = {"head", "up", "down", "hair", "glasse", "cap"}; // part names, .data 0x020b24bc-0x020b24fc
 extern MtxFx43 gIdentityMtx43;
-extern MtxFx43 gHeadNodeMtx;
+extern MtxFx43 gHeadNodeMtx; // rotated in place (Y 0x8000, Z 0x4000) before parts 3-5 are drawn with it
 extern "C" void func_02031838(void *renderObj, void (*callback)(NNSG3dRS *));
 extern "C" MtxFx43 *func_020323b8();
 extern "C" void MTX_Concat43(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);
@@ -508,6 +508,7 @@ void InstallHeadNodeMtxCallback(NNSG3dRS *rs) {
     rs->mUnk_92   = 3;
 }
 
+// Node 0x10 only: gHeadNodeMtx = func_02032cc8's matrix concatenated with func_020323b8()'s.
 void StoreHeadNodeMtx(NNSG3dRS *rs) {
     int id;
     if (rs->mFlags & 0x10) {

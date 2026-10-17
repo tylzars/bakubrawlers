@@ -32,9 +32,9 @@ struct FieldInput {
     /* 05 */ u8 mTouchY;
     /* 06 */ u8 mTaken;
     /* 07 */ u8 mUnk_07;
-    /* 08 */ u8 mTakenItem;
+    /* 08 */ u8 mTakenItem; // item last taken: TakeCursorItem writes it on the CHARA page only; kept when mTaken clears
     /* 09 */ PAD(0x09, 0x0a);
-    /* 0a */ u8 mWindowOpen;
+    /* 0a */ u8 mWindowOpen; // SetWindowOpen creates mWindows[1] only for mLocalSlot; other slots just record it
     /* 0b */ u8 mWindowSelection;
     /* 0c */ u8 mUnk_0c;
     /* 0d */ u8 mPressTimer;
@@ -78,11 +78,11 @@ public:
         /* 25c */ struct { u8 mValue; u8 mCount; } mOptions[5];
         /* 25c */ u8 mOptionBytes[5][2];
     };
-    /* 266 */ u8 mCharaUnlocked[4][0x12];
+    /* 266 */ u8 mCharaUnlocked[4][0x12]; // 0 = blocked; 1-3 (flag set k + 1) also picks SetWindowOpen's window set
     /* 2ae */ u8 mFieldUnlocked[4][9];
     /* 2d2 */ u8 mCharaNew[0x12];
     /* 2e4 */ u8 mFieldNew[9];
-    /* 2ed */ u8 mPageKinds[7];
+    /* 2ed */ u8 mPageKinds[7]; // FIELD_SELECT_PAGE_*; set only for ctor argument (mUnk_33a) 0, the only one passed
     /* 2f4 */ MessageFile *mMessages;
     /* 2f8 */ void *mTextBuffer;
     /* 2fc */ void *mGlyphBuffer;
@@ -96,6 +96,8 @@ public:
     /* 328 */ u8 mState;
     /* 329 */ u8 mPage;
     /* 32a */ u8 mPlayerCount;
+    // wireless: GetRecvBlockCount() (also mPlayerCount), else 1; slots from it on read slot 0's unlock rows
+    // (IsCursorItemBlocked, SetWindowOpen)
     /* 32b */ u8 mInputCount;
     /* 32c */ u8 mHasPartners;
     /* 32d */ u8 mShowRulePage;
@@ -120,6 +122,7 @@ public:
     /* 340 */ u8 mUnk_340;
     /* 341 */ u8 mSavedFieldItem;
     /* 342 */ PAD(0x342, 0x344);
+    // -1 = none; UpdatePage (each call) and state 8 apply it: G2S_SetBG1Priority(0), then GXS_SetVisiblePlane
     /* 344 */ s32 mPendingSubPlanes;
     /* 348 */ u8 mMessageEnabled;
     /* 349 */
@@ -137,11 +140,12 @@ public:
     u32 UpdatePage();
     void func_ov001_02226cb0();
     void func_ov001_02226d74();
+    // Runs the window's Draw and Update(0) until its mState is <= 2 or 4, then Reset(-1), no selection, enabled.
     void ResetWindow(SelectWindow *window);
-    BOOL UpdatePageBlend();
+    BOOL UpdatePageBlend(); // the page change: fade to 0x10, ResetPage, wait mBlendTimer, fade back; TRUE while running
     void DrawWindowText();
-    u32 UpdateWindowPage();
-    u32 UpdateRulePage();
+    u32 UpdateWindowPage(); // WINDOW is entry 0 (wireless only) and mPage starts at 1: reached only by going back
+    u32 UpdateRulePage(); // returns 0 or 2 only
     u32 UpdateCharaPage();
     u32 UpdatePairPage();
     u32 UpdateFieldPage();
@@ -156,8 +160,11 @@ public:
     BOOL func_ov001_02223914();
     void func_ov001_02223d70(u32 unk1);
     void UpdatePairCells();
+    // uploads mFiles set sFieldSelectSubFileIndices[idx], or set 9 when neither mLocalSlot nor slot 0 has it unlocked;
+    // also sets mCells[4]'s frame index
     void UploadFieldFiles(u32 unk1);
     void MoveBlendToTarget();
+    // also writes the window selection to the outgoing NET_BYTE(0xb) (always: other slots return before)
     void SetWindowOpen(u32 unk1, u32 unk2, u32 unk3);
     s16 GetCharaItemX(u32 unk1);
     s16 GetCharaItemY(u32 unk1);
@@ -173,5 +180,7 @@ public:
     void LoadMessages();
     void LoadNameText();
     void InitDisplay();
+    // Also sets mWindow0ItemCount (2, 1 without mLocalIsFirstSlot) and, in wireless mode, data_020d433c.mAntenna
+    // (SetupLayout(2) or a new AntennaIndicator(2)).
     void LoadGraphics();
 };

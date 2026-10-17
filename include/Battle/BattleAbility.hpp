@@ -58,8 +58,9 @@ struct BattleUnk022637acUnit {
 // the record's mUnk_06 to itself); 0xd2 (sets BattlePlayer::mUnk_f3 to 0xbe); 0xd3 / 0xd4 ("gp_down" /
 // "gp_pickup2": clear / add to itself the record mUnk_06 of the caster's unit, then of every other placed unit).
 
-// Battle class with vtable 0228a08c (ctor 022637ac, dtor 02263944/022639a8, Update 02263a14, 0x74 bytes). Runs a
-// state machine through the handler table at 0228a098 (state = mUnk_0c, entries of 8 bytes: function, zero).
+// Battle class with vtable 0228a08c (ctor 022637ac, dtor 02263944/022639a8, Update 02263a14, 0x74 bytes). Update
+// switches on mState; state 13 runs sAbilityHandlers[mAbilityIndex] (table at 0228a098, 8-byte entries: function,
+// zero).
 class BattleAbility : public SceneBase {
 public:
     /* 0c */ u8 mState;

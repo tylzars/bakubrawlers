@@ -37,7 +37,7 @@ public:
     /* 4d */ u8 mLength;
     /* 4e */ u16 mName[12];
     /* 66 */ u8 mScroll;
-    /* 67 */ u8 mCursorArea;
+    /* 67 */ u8 mCursorArea; // mCellAnims[2] drawn at: 0 grid cell mCol / mRow; 1-3 x 0x20 / 0x50 / 0xb0, y 0xa0
     /* 68 */ u8 mCol;
     /* 69 */ u8 mRow;
     /* 6a */ u8 mUnk_6a;
@@ -46,7 +46,7 @@ public:
     /* 6d */ u8 mMode;
     /* 6e */ PAD(0x6e, 0x70);
     /* 70 */ s32 mPendingSubPlanes;
-    /* 74 */ u8 mSpecialNameHandle;
+    /* 74 */ u8 mSpecialNameHandle; // index + 1 into sSpecialNameCodes / sSpecialNameMoney, 0 = none
     /* 75 */
 
     NameEntryScene(u8 mode);
@@ -57,7 +57,7 @@ public:
 
     void InitDisplay(); // 02219844
     void LoadGraphics(); // 02219a08
-    void UploadTabNsc();
+    void UploadTabNsc(); // only 0x300 bytes, from + 0x1c0 + mScroll * 0xc0 of the tab's buffer to screen offset 0x1c0
     void UploadTabNcg();
     void AddTouchedChar();
     void Backspace(); // 0221b438

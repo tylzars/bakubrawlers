@@ -58,12 +58,20 @@ public:
 
     void InitDisplay();       // 0x022266b8
     void LoadGraphics();
-    void LoadText();
+    void LoadText(); // also prints every row (PrintRows(-1))
     void Draw();              // 0x02226ff0
     void func_ov008_022271f8();
+    // WINDOW_A: DrawCategoryCursor; WINDOW_B: mRowCells[1] on row mRow and mRowCells[0] on the other three rows.
     void func_ov008_022273f0();
     void DrawCategoryCursor(const u8 *pos, u32 index);
+    // Nothing while mEvent runs (both windows disabled). WINDOW_A: category input in mInfo state 0; picking the current
+    // unlocked category (category 0 not while !mUnk_5bf_0 and mUnk_42 == 6) calls func_0206f88c on mEvent and sets up
+    // the row list (mStep 8). WINDOW_B: row input while mUnk_85 is 0 (a pick starts mRowCells[1] animation 3 and sets
+    // mUnk_85); then, once that animation ends, starts the tip's message (mStep 0xb) and sets its data_020d49a1 bit
+    // (mNew - 1 when newly set).
     void func_ov008_022274f8();
+    // A new touch on an entry returns its index at once (mInfo.mMenuResult unchanged); otherwise the keys move
+    // mInfo.mMenuResult (rows of 3), returned only with IsPressed(1), else -1.
     s8 UpdateCategorySelection(const u8 *pos, u8 count);
     BOOL UpdateRowSelection();
     void PrintRows(s32 row);
@@ -72,6 +80,8 @@ public:
     void DrawMessage();       // 0x02228434
     void ClearMessageBuffer();
     void CountTips();
-    u32 GetUnlockedTip(s16 index);
+    u32 GetUnlockedTip(s16 index); // position in the category of the (index + 1)-th unlocked tip; 0 (valid) if none
+    // Per row: counts mTimers down; else, when mTextWidth > 0xc0, moves mTextX left by 1 (back to 0xc0 once the text
+    // is off, a 0x3c-frame pause at 0) and reprints the row.
     void UpdateTextX();
 };

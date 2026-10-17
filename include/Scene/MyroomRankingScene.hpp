@@ -30,7 +30,7 @@ public:
     /* 10 */ RankingCharacterView *mCharacterView;
     /* 14 */ SelectWindow *mWindow;
     /* 18 */ PAD(0x18, 0x40);
-    /* 40 */ u8 mPlayerCharacterId;
+    /* 40 */ u8 mPlayerCharacterId; // copy of Ranking::mPlayerCharacterId, always 0x15 after Init
     /* 41 */ PAD(0x41, 0x42);
     /* 42 */ u16 mPlayerRank;
     /* 44 */ u32 mPlayerScore;
@@ -50,8 +50,10 @@ public:
     /* 1b8 */ u8 mState;
     /* 1b9 */ u8 mScroll;
     /* 1ba */ u8 mRow;
+    // mScroll + mRow of the selection, capped at 10 (Init sets 10 when mPlayerRank > 10); 10 = the record at Ranking
+    // +0x8c (mPlayerCharacterId / mPlayerRank / mPlayerScore)
     /* 1bb */ u8 mEntryIndex;
-    /* 1bc */ s8 mPrintedScroll;
+    /* 1bc */ s8 mPrintedScroll; // mScroll when the rows were last printed; -1 at start
     /* 1bd */ u8 mEntryCount;
     /* 1be */ PAD(0x1be, 0x1bf);
     /* 1bf */ s8 mTimer;
@@ -69,6 +71,8 @@ public:
     void Draw();
     void DrawSubScreen();
     s32 UpdateSelection();
+    // KEY_UP: mRow - 1, or at row 0 the cursor scroll - 1 (not below 0); KEY_DOWN: mRow + 1, or at row 5 scroll + 1
+    // (not past mEntryCount - 6). Returns scroll + mRow when either moved, else -1.
     s32 UpdateKeySelection();
     void UpdateRows();
     void PrintNames();

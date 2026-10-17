@@ -29,6 +29,7 @@ static const WindowCellRecord sTutorialListCells[6] = {
     {"union_b_obj_scroll_nce.bin", 2, 20480, 3, 2, 1, {2, 3, 3, 0}},
     {"union_b_obj_scroll_nce.bin", 5, 20480, 3, 2, 1, {5, 5, 5, 0}},
 };
+// Record 2 (flag 0x8000) is skipped by the cursor and by touch: two items are selectable.
 static const WindowItemRecord sTutorialThreeButtonItems[3] = {
     {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
     {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},
@@ -523,6 +524,8 @@ void TutorialScene::Update() {
     }
 }
 
+// Display registers only: SetupMode(1, 7), GX_SetGraphicsMode(1, 0, 1), main BG0 control last argument 1, sub
+// planes 0x10 (InitWindowDisplay: SetupMode(1, 1), mode (1, 0, 0), BG0 on both screens, planes 0x11 on both).
 void InitScriptDisplay(TutorialScene *scene) {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(1, 7);
@@ -806,6 +809,7 @@ void TutorialScene::DrawList() {
     mCellAnims[3]->Draw(0, 0x80, 0x60, 0);
 }
 
+// sTutorialFirstIds[mTutorialNumber] + mTutorialPart - 1 (for mTutorialNumber 2: doubled, + 1 when mUnk_86).
 u8 GetTutorialId(TutorialScene *scene) {
     s8 a = data_020d433c.mTutorialPart - 1;
     u8 b = data_020d433c.mTutorialNumber;
@@ -833,6 +837,7 @@ BOOL func_ov005_0221fd64(TutorialScene *scene) {
     }
 }
 
+// Also sets data_020d433c.mNextScene = SCENE_TUTORIAL and mUnk_99 = 3.
 void SetupFourPlayerBattle() {
     data_020d433c.mUnk_99 = 3;
     data_020d433c.mPlayerCount = 4;

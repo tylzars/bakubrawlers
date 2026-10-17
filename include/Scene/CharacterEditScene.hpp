@@ -75,28 +75,32 @@ public:
     /* 14c */ u32 mChoicesVisible;
     /* 150 */ ModelInstance *mCutRoomModel;
     /* 154 */ u8 mMenuDepth;
-    /* 155 */ u8 mMenuSelection[3];
+    /* 155 */ u8 mMenuSelection[3]; // one entry per mMenuDepth
     /* 158 */ u8 mMenuDepthMove;
     /* 159 */ u8 mCursorItem;
     /* 15a */ u8 mStyleIndex;
     /* 15b */ u8 mColorIndex;
+    // colour row 2 (items 14-19): hair's only colour list, the glasses' color_glasses_len one
     /* 15c */ u8 mColor2Index;
     /* 15d */ u8 mStyleCount;
     /* 15e */ u8 mColorCount;
-    /* 15f */ u8 mColor2Count;
+    /* 15f */ u8 mColor2Count; // count of colour row 2 (see mColor2Index)
     /* 160 */ u8 *mStyleAnimIndices;
     /* 164 */ SelectWindowCursor *mCursor;
     /* 168 */ CellAnimation *mCellAnims[16];
     /* 1a8 */ u32 mRebuildModel;
-    /* 1ac */ s8 mFixedItem;
+    /* 1ac */ s8 mFixedItem; // item index that does not slide in (SetupSlideIn), -1 = none
     /* 1ad */ PAD(0x1ad, 0x1b0);
     /* 1b0 */ u32 mUnk_1b0;
+    // Ctor argument: 1 from MyroomScene, 0 from TitleScene. 1 sets flags 0x8000 on item 4 of the five-item menus
+    // (mState 1 / 3) and moves the root entries' states and texts up by one, keeps lists 0-2 in RandomizeLook, skips
+    // StoreLook on the direct exit and asks first when mChoiceApplied is set.
     /* 1b4 */ u8 mFromMyroom;
     /* 1b5 */ PAD(0x1b5, 0x1b8);
     /* 1b8 */ u32 mChoiceApplied;
-    /* 1bc */ void *mWindowTextBuffer;
+    /* 1bc */ void *mWindowTextBuffer; // the text shown while mWindows[2] is up (steps 0xb-0xe): PrintWindowText
     /* 1c0 */ void *mWindowGlyphBuffer;
-    /* 1c4 */ u32 mWindowTextBufferSize; // size of mUnk_1bc
+    /* 1c4 */ u32 mWindowTextBufferSize; // size of mWindowTextBuffer
     /* 1c8 */ u32 mWindowGlyphCount;
     /* 1cc */ u32 mWindowTextVisible;
     /* 1d0 */ u8 mNextScene;
@@ -128,37 +132,40 @@ public:
     void func_020612cc();
     void UpdateFinish();
     void SetupChoices();
+    // Also loads palette2, color_hair_male (state 7) or color_glasses_len (state 9), and sets mChoicesVisible.
     void LoadChoiceCells(const char *chars, const char *palette, const char *cells, const char *palette2);
     void Draw();
-    BOOL EnableSelectedGroupButtons();
+    BOOL EnableSelectedGroupButtons(); // TRUE for mWindows[1] ids 1-6: enables that id's group (1 / 2-4 / 5-6) only
     void StoreLook(CharacterLook *look);
     void DrawChoices();
     void UpdateChoiceInput();
+    // Hair (state 7) style items also reset list 5. Step 6 calls it after RandomizeLook in mState 1, where no case
+    // matches: only the mCursorItem index copy and the tail (ApplyLookToModel, mRebuildModel, mChoiceApplied) run.
     void ApplyCursorItem();
     void ApplyLookToModel();
     void RandomizeLook();
     void func_02064cd4(u32 flag);
-    void PrintWindowText();
+    void PrintWindowText(); // message 0x1c into mWindowTextBuffer, shown with mWindows[2]
     void DrawName();
     void SetText(u32 slot, u32 message, u32 value);
     void DrawTexts();
     void UpdateInit();
     void func_02061c3c();
-    void LoadGraphics();
+    void LoadGraphics(); // also loads mes_chara_edit.mes into mMessages and creates mMessageWindow
     void PrintName();
-    void ResetTexts();
+    void ResetTexts(); // the six mTexts and buffers, mWindowTextBuffer (mWindowTextVisible 0), mMessageWindow's buffer
     void InitLookLists();
     void ClearName();
     void SetItemFlags(u32 i, u32 v);
     void SetItemSlide(u32 i, u32 a, u32 b);
     void SetChoiceItemNeighbors(u32 i, u32 a, u32 b, u32 c, u32 d);
-    void MoveMenuDepth(u32 v);
+    void MoveMenuDepth(u32 v); // 1: mMenuDepth + 1, 2: - 1, 0: unchanged; v is kept in mMenuDepthMove
     void UpdateRotateInput();
     void func_02063b10(u32 arg);
-    void SetupSlideIn();
+    void SetupSlideIn(); // one item skips the slide-in (mFixedItem): 0 going deeper, the depth's selection going back
     void SlideToParent();
     void SlideToFirstRow();
     BOOL SwitchToSelectedGroup();
     void func_020637a8();
-    void EnableGroupButtons();
+    void EnableGroupButtons(); // for the current mState: button 0 and that state's group of buttons 1-6 (12: none)
 };

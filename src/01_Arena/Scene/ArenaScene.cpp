@@ -20,9 +20,10 @@
 
 struct UnkStruct_020c4230 {
     /* 00 */ PAD(0x00, 0x20);
-    /* 20 */ u16 mUnk_20;
+    /* 20 */ u16 mUnk_20; // 0x020c4250 = WirelessManager::mSendBlockIndex (instance 0x020c3030 + 0x1220)
 };
 
+// Private view of WmEntry for the name field: data_020c3938 is WirelessManager::mScanSnapshot (0x020c3030 + 0x908).
 struct ScanSnapshotEntry {
     /* 00 */ PAD(0x00, 0x50);
     /* 50 */ u16 mName[12];
@@ -51,6 +52,7 @@ static const WindowItemRecord sArenaMenuItems[2][2] = {
         {1, 2, 225, 170, 30, 20, 0, {-1, -1, -1, -1}, 0, 1},
     },
 };
+// Record 1 (flag 0x8000) is skipped by the cursor and by touch: one item is selectable.
 static const WindowItemRecord sArenaTwoButtonItems[2] = {
     {0, 1, 89, 152, 78, 20, 0, {0, 0, 0, 0}, 0, 1},
     {1, 0x8000, 120, 18, 78, 20, 0, {-1, -1, -1, -1}, 0, 0},
@@ -64,6 +66,7 @@ static const WindowCellRecord sArenaMenuCells[2] = {
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 0, 0xb000, 6, 2, 1, {0, 1, 1, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 6, 2, 1, {2, 3, 3, 0}},
 };
+// Record 2 (flag 0x8000) is skipped by the cursor and by touch: two items are selectable.
 static const WindowItemRecord sArenaThreeButtonItems[3] = {
     {0, 1, 45, 152, 78, 20, 0, {0, 0, 1, 1}, 0, 2},
     {1, 1, 133, 152, 78, 20, 0, {1, 1, 0, 0}, 0, 2},

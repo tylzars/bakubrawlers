@@ -15,6 +15,7 @@ struct GiftLayout {
 const GiftPos sMyroomGiftCellAnimPos = {0x80, 0x60};
 
 #include "Graphics/SpriteManager.hpp"
+// LoadGraphics rewrites the animations from sMyroomGiftLayout.ids (0xb for a missing emblem) before SetCells.
 WindowCellRecord sMyroomGiftEmblemCells[10] = {
     {"Game/Myroom/myroom_gift_b_obj_nce.bin", 0, 0, 0, 1, 1, {0, 0, 0, 0}},
     {"Game/Myroom/myroom_gift_b_obj_nce.bin", 1, 0, 0, 1, 1, {1, 1, 1, 0}},

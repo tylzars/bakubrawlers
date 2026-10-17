@@ -16,9 +16,9 @@ class Confront03 : public BattleBase {
 public:
     /* 68 */ u32 mPenFrames;
     /* 6c */ u8 mPenEmblemIndex;
-    /* 6d */ u8 mLongHold;
-    /* 6e */ u16 mUsedSlotMask;
-    /* 70 */ ConfrontRow *mConfrontRow;
+    /* 6d */ u8 mLongHold; // UpdateTouch's `low`: emblems then hold at scale 1.0 for 0x50 frames, not 0x14
+    /* 6e */ u16 mUsedSlotMask; // bit k = slot k taken; the ctor sets bit 0, so slot 0 is never handed out
+    /* 70 */ ConfrontRow *mConfrontRow; // always gConfrontRows (row 0)
     /* 74 */ u16 mDelay;
     /* 78 */ BattleData *mData;
     /* 7c */ ConfrontEmblem03 *mEmblems[4];
@@ -37,5 +37,7 @@ public:
     /* 44 */ virtual void vfunc_44(int index, u16 count);
 
     BOOL CountDownDelay();
+    // Frees the bits of idle emblems, then starts the first idle emblem on a random free slot. Without mUnk_18_1 a pick
+    // of slot 1 or 2 only draws two random numbers; with no free slot or idle emblem it draws three.
     void StartIdleEmblem();
 };

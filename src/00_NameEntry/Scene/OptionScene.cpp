@@ -24,6 +24,7 @@ static const WindowCellRecord sOptionMainMenuCells[6] = {
     {"option_b_obj_00_nce.bin", 15, 0x0, 0, 0, 1, {15, 17, 16, 0}},
     {"/Game/2D/union_b/union_b_obj_cockpit_nce.bin", 2, 0xb000, 9, 0, 1, {2, 3, 3, 0}},
 };
+// [0..2] the cells; [3] the sub BG1 / BG2 offset (SlideStep then gives BG2 an x offset 0x20 below BG1's).
 static const Vec2s sOptionMenu3StartPos[4] = {
     {301, 136}, {389, 136}, {376, 35}, {0, 0},
 };
@@ -52,6 +53,7 @@ static const Vec2s sOptionSettingsSlidePerFrame[5] = {
 static const Vec2s sOptionSettingsStartPos[5] = {
     {128, 80}, {256, 0}, {256, 52}, {256, 84}, {256, 116},
 };
+// [0..4] the five cells; [5..7] the animation of row mRow while selected (BuildSettings sets [5]'s 0x13 directly).
 static const u8 sOptionSettingsAnimIndices[8] = {0x0, 0x24, 0x12, 0x14, 0x16, 0x13, 0x15, 0x17};
 static const WindowItemRecord sOptionMenu4Items[4] = {
     {0, 0x1, 48, 64, 160, 24, 0x303, {1, 1, -1, -1}, 0, 2},

@@ -34,7 +34,8 @@ static const WindowCellRecord sResultCockpitCells[1] = {
 #include <nitro/os.h>
 #include <stdio.h>
 
-// Result screen of a battle: the three players' bakugan with their level and points.
+// Level and gauge screen for up to three bakugan save entries: BattleResult creates it with mode 0 (slots from the
+// records of player mUnk_2a9), ListScene with mode 1 (one slot set by SetBakugan).
 class UnkStruct_02076058 : public SceneBase {
 public:
     /* 0c */ MessageFile *mBakuganNameMessages;
@@ -46,16 +47,16 @@ public:
     /* 50 */ u32 mGlyphCount;
     /* 54 */ UnkStruct_02023248 *mSaveEntries[3];
     /* 60 */ UnkStruct_02071d24 *mUnk_60;
-    /* 64 */ u16 mRemainingGauge[3];
-    /* 6a */ u8 mBakuganIds[3];
+    /* 64 */ u16 mRemainingGauge[3]; // gauge still to be moved into the save entry's mGauge
+    /* 6a */ u8 mBakuganIds[3]; // mode 0 stores a record's id 6 as 5
     /* 6d */ u8 mAttributes[3];
     /* 70 */ u8 mUnk_70[3];
     /* 73 */ u8 mMode;
     /* 74 */ u8 mState;
-    /* 75 */ u8 mSlotOffset;
-    /* 76 */ u8 mTimer;
+    /* 75 */ u8 mSlotOffset; // added to the slot index of the data arrays (not of mCellAnims); always 0 in this build
+    /* 76 */ u8 mTimer; // 0x3c; counts down only once every gauge is moved and the cell animations ended
     /* 77 */ u8 mUnk_77;
-    /* 78 */ u8 mUnk_78;
+    /* 78 */ u8 mUnk_78; // set to 1 by ListScene / BattleResult (+0x78); states 2 (mode 0) and 5 wait for it
     /* 79 */ u8 mUnk_79;
     /* 7a */ PAD(0x7a, 0x7c);
     /* 7c */ SelectWindow *mWindow;
@@ -66,11 +67,11 @@ public:
     virtual void Update();
     void InitDisplay();
     void LoadGraphics();
-    void AddRemainingGaugeAtOnce();
+    void AddRemainingGaugeAtOnce(); // at most nine level steps per slot; a remainder past them is dropped
     u32 func_020771d8(u32 index, u32 unk2);
     void Draw();
     void UpdateGauge();
-    void SetBakugan(u32 index, u32 unk2, u32 unk3, u8 unk4);
+    void SetBakugan(u32 index, u32 unk2, u32 unk3, u8 unk4); // unk4 != 0: mRemainingGauge = what the next level needs
     void LoadMessages();
     void PrintText();
 };

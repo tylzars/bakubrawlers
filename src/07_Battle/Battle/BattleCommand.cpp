@@ -62,6 +62,8 @@ static const u8 data_ov007_02279aa8[2]                 = {0x04, 0xde};
 
 static const BattleCommandPoint sStartCursorPoints[4] = {{6, 4}, {7, 4}, {7, 5}, {6, 5}};
 
+// Cells of BattleCommand::mPromptWindow (its items are sPromptItems below; BattleCommandPrompt's own window uses
+// sPromptWindowItems / Cells).
 static const WindowCellRecord sPromptCells[3] = {
     {"battle_b_obj_00_nce.bin", 8, 0xa000, 0, 0, 1, {8, 11, 10, 0}},
     {"battle_b_obj_00_nce.bin", 0, 0xa000, 0, 0, 1, {0, 3, 2, 0}},
@@ -139,6 +141,7 @@ void func_ov007_022470e4(BattleCommandMap *map, u8 a, u8 b);
 
 u16 *GetMarkerSlotValue(BattlePlayerList *list, u8 index);
 
+// Record of a battle cell returned by GetUnitRecordAt.
 struct BattleCellInfo {
     /* 00 */ u16 mUnk_00;
     /* 02 */ u16 mUnk_02;
@@ -1874,8 +1877,6 @@ void BattleCommand::Draw() {
     DrawTurnCount();
 }
 
-// Record of a battle cell returned by GetUnitRecordAt.
-
 void CreateCursorModel(BattleCommandMap *map);
 
 void func_ov007_02246a84(BattleCommandMap *map, u32 a);
@@ -2237,7 +2238,7 @@ void BattleCommand::OpenNextMode(u32 flag) {
     mNextMode = COMMAND_MODE_NONE;
 }
 
-// Marks the cells of the battle grid that exist on the current field (data_020d433c.mUnk_95 is the field type).
+// Marks the cells of the battle grid that exist on the current field (by data_020d433c.mFieldId).
 void BattleCommand::InitGridMask() {
     if (data_020d433c.mLastBattle != 0) {
         MI_CpuFill8(mGridMask, 0, 0x8c);

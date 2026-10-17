@@ -7,7 +7,7 @@
 // Defined among the headers: where they sit among the singletons' objects sets the data layout.
 static const u8 sAttrSelTextHeights[2] = {2, 0x10};
 static const u8 sSectorToAttrib[6] = {3, 2, 1, 0, 5, 4};
-static const u8 sAttribToSaved[6] = {0, 2, 3, 4, 1, 5};
+static const u8 sAttribToSaved[6] = {0, 2, 3, 4, 1, 5}; // also picks the message (+ 0x1d) printed for mAttrib
 static const u32 sAttrSelTextUnitSizes[2] = {0x21, 0x44};
 static const u8 sAttrSelTextWidths[2] = {0x10, 0x1c};
 static const u8 sSavedToAttrib[6] = {0, 4, 1, 2, 3, 5};
@@ -41,7 +41,7 @@ AttrSelScene::AttrSelScene() :
     mAttrib = sSavedToAttrib[gSaveData[0].mAttribute];
     mPulseState = 0;
     mPulseAlpha = 0;
-    mUnk_10_0 = 0;
+    mPulseDecreasing = 0;
     mPulseFrames = 0;
     mFade = 0;
     mTransitionState = 4;
@@ -343,7 +343,7 @@ void AttrSelScene::PulseBlend() {
         case 0:
             mPulseAlpha += 2;
             if (mPulseAlpha >= 7) {
-                mUnk_10_0 = 0;
+                mPulseDecreasing = 0;
                 mPulseState = 1;
             }
             break;
@@ -351,33 +351,33 @@ void AttrSelScene::PulseBlend() {
             mPulseFrames++;
             if (mPulseFrames >= 4) {
                 mPulseFrames = 0;
-                if (!mUnk_10_0) {
+                if (!mPulseDecreasing) {
                     mPulseAlpha += 2;
                     if (mPulseAlpha >= 0x1f) {
                         mPulseAlpha = 0x1f;
-                        mUnk_10_0 ^= 1;
+                        mPulseDecreasing ^= 1;
                     }
                 } else {
                     mPulseAlpha -= 2;
                     if (mPulseAlpha <= 7) {
                         mPulseAlpha = 7;
-                        mUnk_10_0 ^= 1;
+                        mPulseDecreasing ^= 1;
                     }
                 }
             }
             break;
         case 2:
-            if (!mUnk_10_0) {
+            if (!mPulseDecreasing) {
                 mPulseAlpha += 6;
                 if (mPulseAlpha >= 0x1f) {
                     mPulseAlpha = 0x1f;
-                    mUnk_10_0 ^= 1;
+                    mPulseDecreasing ^= 1;
                 }
             } else {
                 mPulseAlpha -= 6;
                 if (mPulseAlpha <= 7) {
                     mPulseAlpha = 7;
-                    mUnk_10_0 ^= 1;
+                    mPulseDecreasing ^= 1;
                     mPulseCount++;
                     if (mPulseCount >= 6) {
                         mPulseState = 1;

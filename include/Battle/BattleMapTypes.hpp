@@ -23,13 +23,13 @@
 class BattleMapModel : public ModelTransform { // 0x30 bytes, ctor 02248c84 (1 argument), dtor 02248cb0
 public:
     /* 2c */ u8 mKind; // MAP_MODEL_KIND_*
-    /* 2d */ u8 mColorLevel; // brightness of the model (0xf..0x1f)
+    /* 2d */ u8 mColorLevel; // 5-bit material colour level (0xf..0x1f), packed 5:5:5 for both colour pairs
     /* 2e */ PAD(0x2e, 0x30);
 
     BattleMapModel(u32 unk1);
     ~BattleMapModel();
     void LoadModel(); // loads the model of kind mKind from /Game/Battle/3d/MapObj
-    void DrawPulsing(); // updates the brightness and draws
+    void DrawPulsing(); // steps mColorLevel down / up by GameSystem::mFrame bit 0x20, then draws
 };
 
 // Kinds of a BattleMapPiece (constructor / LoadModel argument `type`): the /Game/Battle/3d/MapObj model it loads.

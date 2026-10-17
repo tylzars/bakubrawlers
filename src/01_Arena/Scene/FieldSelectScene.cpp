@@ -9,6 +9,7 @@ inline u32 *DataLayoutSlot() {
     return &sSlot;
 }
 static const u8 sFieldSelectPairColumnX[4] = {0x1a, 0x44, 0x94, 0xbe};
+// The mFiles set UploadFieldFiles uploads for a field item; also mCells[4]'s frame.
 static const u8 sFieldSelectSubFileIndices[10] = {0x6, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x8, 0x7, 0x9};
 static const WindowItemRecord sFieldSelectWindow3Items[1] = {
     {0, 0x1, 9, 170, 86, 20, 0, {-1, -1, -1, -1}, 0, 1},
@@ -116,6 +117,8 @@ static const WindowCellRecord sFieldSelectWindow1Cells[5][6] = {
 };
 static const u8 sFieldSelectFirstRowColumnX[4] = {0x1a, 0x52, 0x88, 0xbe};
 static const u8 sFieldSelectPairSlots[4][4] = {{0x0, 0x1, 0x2, 0x3}, {0x0, 0x1, 0x2, 0x3}, {0x0, 0x2, 0x1, 0x3}, {0x0, 0x3, 0x1, 0x2}};
+// [8] is the always-unlocked random entry: TakeCursorItem replaces it with an unlocked 0-7 before mFieldId is read, so
+// its 0 is not used there.
 static const u8 sFieldSelectFieldIds[9] = {0x0, 0x1, 0x2, 0x4, 0x5, 0x6, 0x3, 0x7, 0x0};
 
 #include "Text/TextManager.hpp"

@@ -37,7 +37,7 @@ struct BattlePlayerTemplate {
 };
 struct BattlePlayerTemplateSet {
     /* 00 */ BattlePlayerTemplate mRecords[3];
-    /* 24 */ u16 mSlots54Values[3][2];
+    /* 24 */ u16 mSlots54Values[3][2]; // [k][0] copied to mSlots54[k].mValue; [k][1] is never read
     /* 30 */ u16 mSlots6cValues[3][2];
     /* 3c */
 };
@@ -473,6 +473,7 @@ void func_ov007_0226a380(BattlePlayer *player, u8 record, int amount) {
     }
 }
 
+// Also keeps mSlots54Remaining (the slots with flag 0) in step.
 void SetSlot54Flag(BattlePlayer *player, u32 index, u32 flag) {
     if (player->mSlots54[index].mFlag == 0) {
         if (flag != 0 && player->mSlots54Remaining != 0) {
@@ -486,6 +487,7 @@ void SetSlot54Flag(BattlePlayer *player, u32 index, u32 flag) {
     player->mSlots54[index].mFlag = flag;
 }
 
+// Also keeps mSlots6cRemaining (the slots with flag 0) in step.
 void SetSlot6cFlag(BattlePlayer *player, u8 index, int flag) {
     if (player->mSlots6c[index].mFlag == 0) {
         if (flag != 0 && player->mSlots6cRemaining != 0) {
@@ -500,6 +502,7 @@ void SetSlot6cFlag(BattlePlayer *player, u8 index, int flag) {
 }
 
 
+// Every caller is in SetupTutorial's mTutorialId cases 7, 8, 10 and 14, so the mTutorialId == 1 branch does not run.
 void SetupTutorialPlayer(BattlePlayer *player) {
     if (data_020d433c.mTutorialId != 0xe) {
         u8 two = 2;

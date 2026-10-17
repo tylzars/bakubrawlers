@@ -39,6 +39,9 @@ public:
     void LoadGraphics();
     void CreateMenu();
     void UpdateMenu();
+    // mInfo state 11, mScroll 0x62; the mPage item cell restarts on animation sSelectedFrames[mPage], the mSelection
+    // one plays backward once; items 0-2 get flags 0x8000; button 0 on for mPage < 2, 2 for mPage >= 1; button and item
+    // 4 / 5 off (flags 0x8000) on page 0 / 2.
     void StartScroll();
     void HandleMenuResult();
     BOOL ScrollStep();

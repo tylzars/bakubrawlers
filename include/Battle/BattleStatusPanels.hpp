@@ -9,17 +9,17 @@ class CharacterIcons;
 // One player's panel on the upper screen (battle_u): sprites, the name text buffers and a few state bytes. 0x38 bytes.
 struct BattlePanel {
     /* 00 */ CellAnimation *mCellAnims[7];
-    /* 1c */ s16 mOffset[4];
+    /* 1c */ s16 mOffset[4]; // [0] / [1] the x / y offset added when drawn, stepping by 1 towards [2] / [3]
     /* 24 */ s8 mCharacterId; // character shown in the icon (-1: none)
-    /* 25 */ u8 mMirrored;
+    /* 25 */ u8 mMirrored; // both callers pass side 2, so it always equals mCol (team & 1) in this build
     /* 26 */ u8 mCol;
     /* 27 */ u8 mRow;
     /* 28 */ u8 mUnk_28;
     /* 29 */ u8 mUnk_29;
     /* 2a */ PAD(0x2a, 0x2b);
     /* 2b */ u8 mPrevLevel;
-    /* 2c */ void *mBuffer;  // glyph buffer of the name text
-    /* 30 */ void *mBuffer2; // text manager buffer
+    /* 2c */ void *mBuffer;  // text buffer the name is printed into and uploaded from (mBufferSize bytes)
+    /* 30 */ void *mBuffer2; // glyph buffer (mGlyphCount * 0xc) given to TextManager::Init and drawn by AddOam
     /* 34 */ u16 mNameWidth;
     /* 36 */ u8 mUnk_36;
     /* 37 */ PAD(0x37, 0x38);

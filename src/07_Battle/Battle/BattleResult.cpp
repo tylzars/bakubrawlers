@@ -112,17 +112,17 @@ public:
     /* 84 */ u32 mHistoryValues[6];
     /* 9c */ s32 mPrizeMoney;
     /* a0 */ s32 mRewardMoney;
-    /* a4 */ s32 mMoneyRemaining;
-    /* a8 */ s32 mMoneyTotal;
+    /* a4 */ s32 mMoneyRemaining; // counted down by 10s: into mMoneyTotal (steps 1-13), shown as added from step 17
+    /* a8 */ s32 mMoneyTotal; // running sum of the counted amounts; doubled at step 15 when mUnk_ac
     /* ac */ u8 mUnk_ac;
     /* ad */ u8 mUnk_ad;
     /* ae */ u8 mUnk_ae;
     /* af */ u8 mDelayTimer;
     /* b0 */ u8 mSoundTimer;
     /* b1 */ u8 mState;
-    /* b2 */ u8 mMoneyStep;
+    /* b2 */ u8 mMoneyStep; // UpdateMoneyCount's step; also decides which result lines are drawn and printed
     /* b3 */ u8 mUnk_b3;
-    /* b4 */ u8 mSelectedId;
+    /* b4 */ u8 mSelectedId; // also written to data_0220f540 + 4
     /* b5 */
 
     BattleResult();
@@ -134,11 +134,13 @@ public:
     void SetupRetryScreen();
     void DrawRetryText();
     void DrawRetryScreen();
-    void DrawResultScreen();
+    void DrawResultScreen(); // draws nothing while func_020779ec(mUnk_68) is non-zero
     void LoadResultTextAndAmounts();
     void ComputeAmounts();
     void PrintResultText();
-    void PrintMoney();
+    void PrintMoney(); // does not clear mTextBuffers[1] itself (UpdateMoneyCount does)
+    // Step 16 adds mMoneyTotal (capped 9999990) to gSaveData[0].mMoney and mUnk_20; step 17 ends with mState + 1
+    // and *((u8 *) mUnk_68 + 0x78) = 1.
     void UpdateMoneyCount();
     void DrawResultText();
     void ClearTextBuffers();

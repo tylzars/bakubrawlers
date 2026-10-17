@@ -60,7 +60,7 @@ struct BattleShootIcon { // 0x10 bytes
     /* 04 */ s16 mX;
     /* 06 */ s16 mY;
     /* 08 */ u16 mRotation;
-    /* 0a */ s8 mXPerFrame;
+    /* 0a */ s8 mXPerFrame; // with mYPerFrame: only ever set to 0, so they add nothing to mX / mY
     /* 0b */ s8 mYPerFrame;
     /* 0c */ u8 mTimer;
     /* 0d */ PAD(0x0d, 0x10);
@@ -136,16 +136,16 @@ public:
     /* 6184 */ u16 mMessageId;
     /* 6186 */ u8 mState;
     /* 6187 */ u8 mDelayTimer;
-    /* 6188 */ u8 mBlendAlpha;
+    /* 6188 */ u8 mBlendAlpha; // counts up to 0x10
     /* 6189 */ u8 mTouchFrames;
     /* 618a */ u8 mPrevTouchFrames;
     /* 618b */ u8 mStartTouchX;
     /* 618c */ u8 mStartTouchY;
     /* 618d */ u8 mPrevTouchX;
     /* 618e */ u8 mPrevTouchY;
-    /* 618f */ u8 mTouchX;
+    /* 618f */ u8 mTouchX; // TouchManager::mX, or the fixed 0x80 / 0x58 / 0xa8 of a key-made stroke
     /* 6190 */ u8 mTouchY;
-    /* 6191 */ u8 mBallXPerFrame;
+    /* 6191 */ u8 mBallXPerFrame; // signed, read as (s8)
     /* 6192 */ u8 mBallYPerFrame;
     /* 6193 */ u8 mShotSpeed;
     /* 6194 */ u8 mStrokeIconStarted;
@@ -153,7 +153,7 @@ public:
     /* 6196 */ u8 mSpEnabled;
     /* 6197 */ u8 mUnk_6197;
     /* 6198 */ u8 mSpKind;
-    /* 6199 */ u8 mStartTouchInCorner;
+    /* 6199 */ u8 mStartTouchInCorner; // stroke began at x > 0xc8 with y > 0xa0, or y < 0x30 while mSpEnabled
     /* 619a */ u8 mMessageY;
     /* 619b */ u8 mMessageTargetY;
     /* 619c */ u8 mPenStrokesRemaining;
@@ -161,7 +161,7 @@ public:
     /* 619e */ u8 mCpuPushInterval;
     /* 619f */ u8 mTextWidth;
     /* 61a0 */ u8 mPenAndIconsVisible;
-    /* 61a1 */ u8 mPlotEnabled;
+    /* 61a1 */ u8 mPlotEnabled; // gates PlotLine and UploadBitmap
     /* 61a2 */ u8 mUnk_61a2;
     /* 61a3 */ u8 mSubPlanes;
     /* 61a4 */ u8 mMicVisible;
@@ -179,9 +179,9 @@ public:
     /* 08 */ virtual void Update();
     void Init(Camera *unk1);
     void InitDisplay();
-    void Setup();
-    void LoadGraphics();
-    void ClearBitmap();
+    void Setup(); // once per object, from Update state 0 or 7
+    void LoadGraphics(); // also loads the "jammer" effect group and sets mSpEnabled (mUnk_6182 = 0xdc when set)
+    void ClearBitmap(); // only for the local turn player (mTurnPlayer == mUnk_2a9); the upload needs mPlotEnabled
     void UpdatePushMessages();
     void UpdateTurnPlayerCpu();
     void StartPushEffect(u8 kind, s32 x, s32 z);
@@ -190,15 +190,17 @@ public:
     BOOL UpdateShotInput();
     void UpdateRotAdjustKeys();
     BOOL UpdateCameraRotKeys();
+    // with canStart and no touch, the direction-key masks (KEY_LEFT | 0x800, KEY_RIGHT | 1, ...) fake a stroke into the
+    // same members
     void UpdateTouch(BOOL canStart);
     void DrawMic();
     void UploadBitmap();
-    void PlotLine(u8 x0, u8 y0, u8 x1, u8 y1);
+    void PlotLine(u8 x0, u8 y0, u8 x1, u8 y1); // local turn player only; (x1, y1) itself is not plotted
     void PlotDot(u8 x, u8 y);
     void PlotPixel(u8 x, u8 y);
     void DrawPenAndIcons();
-    BOOL TryStartPopup();
-    void SetSubPlanes(u8 value);
+    BOOL TryStartPopup(); // on a start also sets data_020d433c.mFlags |= 8 and clears mPlotEnabled
+    void SetSubPlanes(u8 value); // the register is written later by the queued ApplySubPlanes
     void LoadShootText();
     void DrawShootText();
     void UpdateCameraOffset();

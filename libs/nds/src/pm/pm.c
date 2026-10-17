@@ -20,7 +20,7 @@ extern void PmRunCallbacks(PMCallbackInfo *list);
 extern void func_0200cc58(void);
 extern void func_0200cc98(void);
 extern void func_0200cce8(void);
-extern void func_0200d2b4(void);
+extern u32 func_0200d2b4(void);
 extern void PmPrependCallback(PMCallbackInfo **head, PMCallbackInfo *node);
 extern void PmAppendCallback(PMCallbackInfo **head, PMCallbackInfo *node);
 extern void PmRemoveCallback(PMCallbackInfo **head, PMCallbackInfo *node);
@@ -263,7 +263,10 @@ int func_0200d268(void)
     return r;
 }
 
-void func_0200d2b4(void)
+// Never returns: once func_0200d268 reports 0 it disables interrupts, calls MI_StopAllDma and loops on OS_Halt.
+// Declared u32 as in card_dev.h because TerminateAfterCardPullout (card_pullout.c) tests a result; those tests
+// never run.
+u32 func_0200d2b4(void)
 {
     if (func_0200d268() != 0) {
         do {

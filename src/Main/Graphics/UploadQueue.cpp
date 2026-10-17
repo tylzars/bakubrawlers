@@ -23,7 +23,7 @@ struct UploadEntry {
 
 
 // VRAM/BG upload helpers (GX/G2 region of main).
-extern "C" void GXS_LoadBGPltt(void *data, u32 offset, u32 size);
+extern "C" void GX_LoadOBJPltt(void *data, u32 offset, u32 size);
 extern "C" void GX_LoadOBJ(void *data, u32 offset, u32 size);
 extern "C" void GX_LoadBGPltt(void *data, u32 offset, u32 size);
 extern "C" void GX_LoadBG0Scr(void *data, u32 offset, u32 size);
@@ -40,7 +40,7 @@ extern "C" void GX_LoadTex(void *data, u32 offset, u32 size);
 extern "C" void GX_LoadTexPltt(void *data, u32 offset, u32 size);
 extern "C" void GXS_LoadOBJ(void *data, u32 offset, u32 size);
 extern "C" void GXS_LoadOBJPltt(void *data, u32 offset, u32 size);
-extern "C" void GX_LoadOBJPltt(void *data, u32 offset, u32 size);
+extern "C" void GXS_LoadBGPltt(void *data, u32 offset, u32 size);
 extern "C" void GXS_LoadBG0Scr(void *data, u32 offset, u32 size);
 extern "C" void GXS_LoadBG1Scr(void *data, u32 offset, u32 size);
 extern "C" void GXS_LoadBG2Scr(void *data, u32 offset, u32 size);
@@ -69,10 +69,10 @@ BankFunc gEndLoadFuncs[8]  = {GX_EndLoadOBJExtPltt, GX_EndLoadBGExtPltt, GX_EndL
 BankFunc gBeginLoadFuncs[8]  = {GX_BeginLoadOBJExtPltt, GX_BeginLoadBGExtPltt, GX_BeginLoadTex, GX_BeginLoadTexPltt,
                               GX_BeginLoadSubOBJExtPltt, GX_BeginLoadSubBGExtPltt, GX_BeginLoadTex, GX_BeginLoadTexPltt};
 UploadFunc gUploadFuncs[30] = {
-    GX_LoadOBJExtPltt, GX_LoadBGExtPltt, GX_LoadTex, GX_LoadTexPltt, GX_LoadOBJ, GXS_LoadBGPltt, GX_LoadBGPltt,
+    GX_LoadOBJExtPltt, GX_LoadBGExtPltt, GX_LoadTex, GX_LoadTexPltt, GX_LoadOBJ, GX_LoadOBJPltt, GX_LoadBGPltt,
     GX_LoadBG0Scr, GX_LoadBG1Scr, GX_LoadBG2Scr, GX_LoadBG3Scr, GX_LoadBG0Char, GX_LoadBG1Char, GX_LoadBG2Char,
     GX_LoadBG3Char, GX_LoadSubOBJExtPltt, GX_LoadSubBGExtPltt, GX_LoadTex, GX_LoadTexPltt, GXS_LoadOBJ, GXS_LoadOBJPltt,
-    GX_LoadOBJPltt, GXS_LoadBG0Scr, GXS_LoadBG1Scr, GXS_LoadBG2Scr, GXS_LoadBG3Scr, GXS_LoadBG0Char, GXS_LoadBG1Char,
+    GXS_LoadBGPltt, GXS_LoadBG0Scr, GXS_LoadBG1Scr, GXS_LoadBG2Scr, GXS_LoadBG3Scr, GXS_LoadBG0Char, GXS_LoadBG1Char,
     GXS_LoadBG2Char, GXS_LoadBG3Char};
 // Zero-initialised but in .data in the original.
 #pragma explicit_zero_data on

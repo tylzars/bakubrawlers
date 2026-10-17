@@ -60,7 +60,7 @@ extern void CriSetThread0Done(void);
 extern void CriFuncTableRun4(void);
 extern int CriFuncTableRun6(void);
 extern void func_020478a8(void);
-extern void CriSetTextCallback(void);
+extern void CriSetTextCallback(void *, void *);
 extern void func_0204e844(int);
 extern void CriSendFormattedText(char *);
 extern void func_020477a8(void);
@@ -186,7 +186,7 @@ void CriThread2Func(void)
     data_02217a9c.done2 = 1;
 }
 
-void func_02047408(void) { CriSetTextCallback(); }
+void func_02047408(void *f, void *arg) { CriSetTextCallback(f, arg); }
 
 int func_02047414(unsigned mode, CriCfg *cfg)
 {

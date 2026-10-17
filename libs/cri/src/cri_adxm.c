@@ -22,7 +22,7 @@ typedef struct CriGlob {           /* 0x02218fd0 */
     char pad7[0x1a1];
     void *f1a8;
     CriMemCfg mem;                 /* 0x1ac */
-    void *f1b4;
+    void *f1b4;                    /* 0x1b4-0x1bc: the three 0x1000-byte thread stacks CriGlobInit allocates */
     void *f1b8;
     void *f1bc;
     char pad1c0[0x40];
@@ -43,7 +43,15 @@ typedef struct CriElem {           /* 0x68 bytes, array at 0x02218fd8 */
 } CriElem;
 typedef struct CriElemW { int pad; void *used; char rest[0x60]; } CriElemW;  /* same array seen from 0x02218fd4 */
 
-typedef struct CriVolSet { int a, b, c; void *p1, *p2, *p3; int s1, s2, s3; } CriVolSet;
+/* thread configuration handed to func_02047414 (cri_thread.c, same layout as its CriCfg there): three thread
+   priorities, three stacks, three stack sizes */
+typedef struct CriCfg {
+    int prio0, prio1, prio2;    /* 0x00, 0x04, 0x08 */
+    void *stk0;                 /* 0x0c */
+    void *stk1;                 /* 0x10 */
+    void *stk2;                 /* 0x14 */
+    int size0, size1, size2;    /* 0x18, 0x1c, 0x20 */
+} CriCfg;
 
 extern CriGlob data_02218fd0;
 extern CriElemW data_02218fd4[4];
@@ -57,7 +65,7 @@ extern char data_020b2440[], data_020b2454[], data_020b2474[], data_020b2490[], 
 extern void MI_CpuFill8(void *, int, unsigned);
 extern int sprintf(char *, const char *, ...);
 extern void func_0204713c(void);
-extern void func_02047414(int, void *);
+extern void func_02047414(int, CriCfg *);
 extern void CriInit(void);
 extern void GlobalPoolAddRef(void);
 extern void func_0204ecfc(void);
@@ -122,19 +130,19 @@ void CriGlobInit(CriMemCfg *cfg, int a, const void *b, void (*c)(const char *), 
         func_02047414(1, 0);
         data_02218fd0.sflag = 0;
     } else {
-        CriVolSet s;
-        s.a = 12;
-        s.b = 14;
-        s.c = 24;
+        CriCfg s;
+        s.prio0 = 12;
+        s.prio1 = 14;
+        s.prio2 = 24;
         data_02218fd0.f1b4 = cfg->alloc(0x1000);
         data_02218fd0.f1b8 = cfg->alloc(0x1000);
         data_02218fd0.f1bc = cfg->alloc(0x1000);
-        s.p1 = data_02218fd0.f1b4;
-        s.p2 = data_02218fd0.f1b8;
-        s.p3 = data_02218fd0.f1bc;
-        s.s1 = 0x1000;
-        s.s2 = 0x1000;
-        s.s3 = 0x1000;
+        s.stk0 = data_02218fd0.f1b4;
+        s.stk1 = data_02218fd0.f1b8;
+        s.stk2 = data_02218fd0.f1bc;
+        s.size0 = 0x1000;
+        s.size1 = 0x1000;
+        s.size2 = 0x1000;
         func_02047414(2, &s);
         data_02218fd0.sflag = 1;
     }
@@ -201,7 +209,7 @@ void *CriHdlAlloc(CriMemCfg *cfg, int a, int b)
 void *func_02051ae4(CriOpen *p)
 {
     CriElem *e;
-    CriVolSet unused;
+    CriCfg unused;              /* never read or written: only its size (0x24 bytes, CriCfg's) in the frame matters */
     struct {
         int a, b, c, d, e;
         char f;

@@ -46,7 +46,7 @@ void TerminateAfterCardPullout(void)
     MI_StopDma(2);
     MI_StopDma(3);
     if (((s32)(*(vu16 *)0x27fffa8 & 0x8000)) >> 15) {
-        u32 r = func_0200d2b4();
+        u32 r = func_0200d2b4();   // never returns (pm.c): the tests of r below never run
         if (r == 4) {
             do {
                 OS_SpinWait(0xa3a47);

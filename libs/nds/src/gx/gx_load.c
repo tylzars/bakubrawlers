@@ -17,6 +17,12 @@ void *G2S_GetBG2CharPtr(void);
 void *G2_GetBG3CharPtr(void);
 void *G2S_GetBG3CharPtr(void);
 
+// The four palette loaders. Their names follow gUploadFuncs (UploadQueue.cpp): slots 0-14 are screen 0 (GX_) and
+// 15-29 screen 1 (GXS_ or GX_LoadSub..., GX_LoadTex / GX_LoadTexPltt on both; screen 0 / 1 as SpriteScreen::FlushOam's
+// GX_LoadOAM / GXS_LoadOAM split), slot % 15 is the kind. Slot 6 (kind 6, BG palette) writes 0x05000000 and slot 21
+// 0x05000400; slot 5 (kind 5, OBJ palette) writes 0x05000200 and slot 20 0x05000600. So each screen's palettes sit
+// in one 0x400 block, as GX_LoadOAM / GXS_LoadOAM below (0x07000000 / 0x07000400), and MoviePlayer.cpp clears
+// 0x5000000 and 0x5000400 together. Kept in address order.
 void GX_LoadBGPltt(const void *src, u32 offset, u32 size) {
     if (data_020a4f24 != -1 && size > 0x1c) {
         MI_DmaCopy16(data_020a4f24, src, (void *) (0x05000000 + offset), size);
@@ -25,7 +31,7 @@ void GX_LoadBGPltt(const void *src, u32 offset, u32 size) {
     }
 }
 
-void GX_LoadOBJPltt(const void *src, u32 offset, u32 size) {
+void GXS_LoadBGPltt(const void *src, u32 offset, u32 size) {
     if (data_020a4f24 != -1 && size > 0x1c) {
         MI_DmaCopy16(data_020a4f24, src, (void *) (0x05000400 + offset), size);
     } else {
@@ -33,7 +39,7 @@ void GX_LoadOBJPltt(const void *src, u32 offset, u32 size) {
     }
 }
 
-void GXS_LoadBGPltt(const void *src, u32 offset, u32 size) {
+void GX_LoadOBJPltt(const void *src, u32 offset, u32 size) {
     if (data_020a4f24 != -1 && size > 0x1c) {
         MI_DmaCopy16(data_020a4f24, src, (void *) (0x05000200 + offset), size);
     } else {

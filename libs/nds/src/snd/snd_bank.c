@@ -11,6 +11,9 @@ struct SNDLink {
 struct SNDWaveArc {
     u8 pad[0x18];
     SNDLink *list;     // 0x18
+    u8 pad1c[0x1c];
+    u32 count;         // 0x38
+    u32 entry[1];      // 0x3c: 0 = not loaded, below 0x2000000 an offset from the archive, else a pointer
 };
 
 typedef struct {
@@ -187,25 +190,25 @@ BOOL GetNextInstData(SNDBank *bank, u16 *out, SNDInstPos *pos) {
     return FALSE;
 }
 
-u32 GetWaveArcEntryCount(SNDBank *bank) {
-    return bank->count;
+u32 GetWaveArcEntryCount(SNDWaveArc *arc) {
+    return arc->count;
 }
 
-void SetWaveArcEntry(SNDBank *bank, int idx, u32 value) {
+void SetWaveArcEntry(SNDWaveArc *arc, int idx, u32 value) {
     SND_LockMutex();
-    bank->inst[idx] = value;
-    DC_StoreRange(&bank->inst[idx], 4);
+    arc->entry[idx] = value;
+    DC_StoreRange(&arc->entry[idx], 4);
     SND_UnlockMutex();
 }
 
-void *GetWaveArcEntry(SNDBank *bank, int idx) {
+void *GetWaveArcEntry(SNDWaveArc *arc, int idx) {
     u32 v;
     void *r;
     SND_LockMutex();
-    v = bank->inst[idx];
+    v = arc->entry[idx];
     if (v != 0) {
         if (v < 0x2000000) {
-            r = (u8 *) bank + v;
+            r = (u8 *) arc + v;
         } else {
             r = (void *) v;
         }

@@ -629,9 +629,12 @@ void WavStrmThreadLoop(WavStrmMgr *m) {   // decode thread
     }
 }
 
-typedef struct { s32 id; u32 a, b; } WavStrmEnt;   // 12 bytes, id -1 for an empty slot
-typedef struct { u8 pad[0x1c]; u32 count; WavStrmEnt ent[1]; } WavStrmTable;
-WavStrmEnt *func_0203a460(WavStrmTable *t, int idx) {
+// The record table inside a loaded sequence-archive file: func_02039090 (nns_snd_player_init.c) looks up the
+// file of an INFO sequence archive record and takes record idx from it. 12 bytes each, id -1 for an empty slot;
+// bytes 4-9 are read like SndSeqRec's (nns_snd_player_init.c).
+typedef struct { s32 id; u32 a, b; } SndSeqArcEnt;
+typedef struct { u8 pad[0x1c]; u32 count; SndSeqArcEnt ent[1]; } SndSeqArcTable;
+SndSeqArcEnt *func_0203a460(SndSeqArcTable *t, int idx) {
     if (idx < 0) return 0;
     if (idx >= t->count) return 0;
     if (t->ent[idx].id == -1) return 0;

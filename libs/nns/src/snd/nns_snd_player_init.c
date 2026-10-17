@@ -2,7 +2,9 @@
 #include <nnsys/private/nns_snd_arc.h>
 
 typedef struct { u8 maxSounds; u8 pad1; u16 channels; u32 heapSize; } SndPlayerInfo;   // INFO player record
-typedef struct { u32 file; u16 bank; u16 pad6; u8 vol; u8 prio; } SndSeqRec;           // INFO sequence record (fileId, bank, volume at 8, priority at 9 as used here)
+// INFO sequence record as used here: bank at 4; StartSeqSound gets byte 9 as the player and byte 8 as the priority
+// (both for AllocHandleSound) and passes byte 6 to SetHandleVolA and byte 7 to func_02036b68.
+typedef struct { u32 file; u16 bank; u8 volA; u8 b7; u8 prio; u8 player; } SndSeqRec;
 
 extern void SetPlayerMaxSounds(int player, int maxSounds);
 extern void func_02036938(int player, int channels);

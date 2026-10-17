@@ -12,7 +12,7 @@ extern float data_020a5074;
 extern char data_020a53f4[];
 extern double data_020a52e0[];
 extern double copysign(double, double);
-extern double func_0201c1c0(double, double);
+extern double pow(double, double);
 extern double scalbn(double, int);
 extern int ClassifyDouble(double);
 extern void func_0201c518(Dec *, const char *, short);
@@ -79,10 +79,10 @@ double func_0201cfc4(Dec *d)
         e -= n;
     }
     if (e < 0) {
-        s = func_0201c1c0(5.0, (double)(-e));
+        s = pow(5.0, (double)(-e));
         acc = acc / s;
     } else {
-        s = func_0201c1c0(5.0, (double)e);
+        s = pow(5.0, (double)e);
         acc = acc * s;
     }
     acc = scalbn(acc, e);

@@ -20,8 +20,8 @@ extern void func_020506e0(int);
 extern int CriFaderGetState(int), CriFaderGetValue(int);
 extern void CriFaderStart(int, int, int, int, int);
 extern void CriFaderAdvance(int);
-extern void func_02012484(void *, int, int);
-extern int func_020124c4(void *, void *, int);
+extern void memset(void *, int, int);
+extern int memcmp(void *, void *, int);
 void func_02051414(CriX *o, int m);
 int func_0205141c(CriX *o);
 int func_02051448(CriX *o);
@@ -179,7 +179,7 @@ void ResetCriX(CriX *o)
 {
     o->vt = 0;
     o->h = 0;
-    func_02012484(o->sub, 0, 0x44);
+    memset(o->sub, 0, 0x44);
     o->f4c = 0;
     o->mode = 0;
     o->t54 = 30;
@@ -209,7 +209,7 @@ int FindFourBytes(char *s, int n, short *out)
     int i = 0;
     if (lim > 0) {
         do {
-            if (func_020124c4(s + i, &data_020b01f0, 4) == 0) {
+            if (memcmp(s + i, &data_020b01f0, 4) == 0) {
                 if (i >= 0x7fffffff) i = 0x7fffffff;
                 found = i;
                 break;

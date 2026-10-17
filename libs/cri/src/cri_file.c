@@ -52,11 +52,11 @@ typedef struct CriPool {
     int h34[23];        /* 0x34 */
 } CriPool;
 
-extern void *func_02012484(void *, int, int);
-extern void func_02015b34(char *, const char *, int);
-extern int func_02015c04(const char *, const char *, int);
+extern void *memset(void *, int, int);
+extern void strncpy(char *, const char *, int);
+extern int strncmp(const char *, const char *, int);
 extern unsigned func_02015a50(const char *);
-extern unsigned func_02017714(char *, char **, int);
+extern unsigned strtoul(char *, char **, int);
 extern void CriLockEnter1(void);
 extern void CriLockLeave1(void);
 extern void func_0203eda4(void);
@@ -123,14 +123,14 @@ void func_020491c4(CriFlagObj *p, int v)
 
 void func_020491d0(void)
 {
-    func_02012484(data_02218544, 0, 0x100);
+    memset(data_02218544, 0, 0x100);
     data_0221853c.fn = 0;
     data_0221853c.arg = 0;
 }
 
 void func_02049200(void)
 {
-    func_02012484(data_02218544, 0, 0x100);
+    memset(data_02218544, 0, 0x100);
     data_0221853c.fn = 0;
     data_0221853c.arg = 0;
 }
@@ -143,7 +143,7 @@ void CriMsgSetCallback(void (*fn)(int, char *), int arg)
 
 void CriMsgSendText(char *msg)
 {
-    func_02015b34(data_02218544, msg, 0xff);
+    strncpy(data_02218544, msg, 0xff);
     if (data_0221853c.fn) {
         data_0221853c.fn(data_0221853c.arg, data_02218544);
     }
@@ -158,7 +158,7 @@ CriNameEnt *CriNameTableFind(char *name)
     e = data_02218648;
     n = data_02218644;
     for (i = 0; i < n; i++) {
-        if (func_02015c04((char *)e, name, 12) == 0) return e;
+        if (strncmp((char *)e, name, 12) == 0) return e;
         e++;
     }
     return 0;
@@ -199,7 +199,7 @@ void CriFilCallErrorCallback(int a, void *msg)
 
 unsigned func_02049384(char *s, char **e, int b)
 {
-    return func_02017714(s, e, b);
+    return strtoul(s, e, b);
 }
 
 unsigned CriParseUnsigned(char *s, char **end, int base)
@@ -282,7 +282,7 @@ CriFil *CriFilFindFree(void)
 
 void CriFilClear(CriFil *f)
 {
-    func_02012484(f, 0, 0x38);
+    memset(f, 0, 0x38);
 }
 
 void CriFilInit(CriFil *f)
@@ -405,7 +405,7 @@ int CriFilRead(CriFil *f, int n, char *buf)
     if (f->len <= rem) rem = f->len;
     CriFilLockLeave();
     func_02012464(buf, base + f->off, f->len);
-    func_02012484(buf + rem, 0, f->len - rem);
+    memset(buf + rem, 0, f->len - rem);
     CriFilLockEnter();
     f->i14 = f->cnt * f->ssize;
     f->pos = f->pos + f->cnt;

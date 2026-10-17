@@ -15,7 +15,7 @@ extern double func_0201a850(double, double);
 extern double func_0201b72c(double, double, int);
 extern int func_0201a188(double, double *);
 
-double func_0201c028(double x) {
+double sin(double x) {
     double y[2], z = 0.0;
     int n, ix;
     ix = __HI(x);

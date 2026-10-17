@@ -378,7 +378,7 @@ void MyroomShootScene::DrawSprites() {
     VecFx32 scale = sMyroomShootRoomScale;
     VecFx32 offset = sMyroomShootRoomOffset;
     MTX_SetTranslation43(&view, &offset);
-    func_01ff89c0(&view, base, &view);
+    MTX_Concat43(&view, base, &view);
     mRoom->AdvanceAnim();
     mRoom->Draw(&view, &scale);
     mShooterTimer--;

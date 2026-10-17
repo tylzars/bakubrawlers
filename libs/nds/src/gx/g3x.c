@@ -60,7 +60,7 @@ int G3X_GetClipMtx(MtxFx44 *dst) {
     if (reg_G3X_GXSTAT & 0x08000000) {
         return -1;
     }
-    func_01ff9604((const void *) 0x04000640, dst);
+    MI_Copy64B((const void *) 0x04000640, dst);
     return 0;
 }
 

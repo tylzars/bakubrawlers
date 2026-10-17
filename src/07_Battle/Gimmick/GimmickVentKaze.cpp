@@ -83,7 +83,7 @@ void GimmickVentKaze::Update() {
         if (mRotY) {
             MTX_ApplyRotY33(&m, mRotY);
         }
-        func_01ff84d0(&a, &m, &a);
+        MTX_MultVec33(&a, &m, &a);
         VEC_Add(&a, &mPosition, &a);
         VEC_Subtract(&a, &h->mPosition, &b);
         fx32 z = FX_Div(0x2800, -b.y);
@@ -96,7 +96,7 @@ void GimmickVentKaze::Update() {
         if (mRotY) {
             MTX_ApplyRotY33(&m, mRotY);
         }
-        func_01ff84d0(&c, &m, &c);
+        MTX_MultVec33(&c, &m, &c);
         VEC_Add(&data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0, &c, &data_020d433c.mBattlePlayers->mBattleTarget->mUnk_a0);
         break;
     }

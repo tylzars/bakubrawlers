@@ -273,7 +273,7 @@ void RankingCharacterView::Draw() {
     VecFx32 pos     = data_020a2fd8;
     VecFx32 offset  = data_020a2fe4;
     MTX_SetTranslation43(&mtx, &offset);
-    func_01ff89c0(&mtx, camera, &mtx);
+    MTX_Concat43(&mtx, camera, &mtx);
     mMyroomBgModel->AdvanceAnim();
     mMyroomBgModel->Draw(&mtx, &pos);
     mCharacterModel->Draw();

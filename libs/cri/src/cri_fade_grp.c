@@ -74,13 +74,13 @@ extern char data_020aff80[], data_020affb0[], data_020affe4[];
 extern char data_020b0010[], data_020b0044[];
 extern void SendErrWrapper(char *);
 extern void func_0204ed2c(void), func_0204ed38(void);
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 extern double cos(double);   /* cos */
-extern double func_0201c028(double);   /* sin */
-extern double func_0201c19c(double);   /* acos */
-extern double func_0201c1a8(double);   /* asin */
-extern double func_0201c1b4(double);   /* log10 */
-extern double func_0201c1c0(double, double); /* pow */
+extern double sin(double);   /* sin */
+extern double acos(double);   /* acos */
+extern double asin(double);   /* asin */
+extern double log10(double);   /* log10 */
+extern double pow(double, double); /* pow */
 
 int func_0204fc00(CriFadeGrp *g, int i);
 void func_0204fc64(CriFadeGrp *g, int v);
@@ -213,7 +213,7 @@ void CriFadeGrpReset(CriFadeGrp *g)
         p[10] = 0;
         p[11] = 0;
     }
-    func_02012484(g->w30, 0, 0x28);
+    memset(g->w30, 0, 0x28);
     g->w58 = 0;
     g->w5c = 0;
     g->w60 = 0;
@@ -224,7 +224,7 @@ void CriFadeGrpReset(CriFadeGrp *g)
     g->w74 = 0;
     g->w78 = 0;
     g->w7c = 0;
-    func_02012484(g->w80, 0, 0x28);
+    memset(g->w80, 0, 0x28);
     g->n = 0;
     g->state = 0;
     g->b0 = 30;
@@ -668,22 +668,22 @@ int CriFaderLinearToValue(CriFader *f, int x)
     switch (f->curve) {
     case 0:
     default:
-        t = (float) (200.0 * func_0201c1b4((double) ((float) x / 3238200.0f)));
+        t = (float) (200.0 * log10((double) ((float) x / 3238200.0f)));
         break;
     case 1:
         t = -960.0f + 960.0f * ((float) x / 3238200.0f);
         break;
     case 2:
-        s = (float) func_0201c028((double) (1.5707964f * (float) x / 3238200.0f));
-        t = (float) (200.0 * func_0201c1b4((double) (3238200.0f * s / 3238200.0f)));
+        s = (float) sin((double) (1.5707964f * (float) x / 3238200.0f));
+        t = (float) (200.0 * log10((double) (3238200.0f * s / 3238200.0f)));
         break;
     case 3:
         s = (float) cos((double) (1.5707964f * (float) x / 3238200.0f));
-        t = (float) (200.0 * func_0201c1b4((double) (3238200.0f * (1.0f - s) / 3238200.0f)));
+        t = (float) (200.0 * log10((double) (3238200.0f * (1.0f - s) / 3238200.0f)));
         break;
     case 4:
-        s = (float) func_0201c1b4(960.0);
-        t = 0.0f - (float) func_0201c1c0(10.0, (double) (s * (float) (0x316938 - x) / 3238200.0f));
+        s = (float) log10(960.0);
+        t = 0.0f - (float) pow(10.0, (double) (s * (float) (0x316938 - x) / 3238200.0f));
         break;
 
     }
@@ -710,24 +710,24 @@ int CriFaderValueToLinear(CriFader *f, int x)
     switch (f->curve) {
     case 0:
     default:
-        t = 3238200.0f * (float) func_0201c1c0(10.0, (double) ((float) x / 200.0f));
+        t = 3238200.0f * (float) pow(10.0, (double) ((float) x / 200.0f));
         break;
     case 1:
         t = 3238200.0f * ((float) (x + 960) / 960.0f);
         break;
     case 2:
-        t = 3238200.0f * (float) func_0201c1c0(10.0, (double) ((float) x / 200.0f));
+        t = 3238200.0f * (float) pow(10.0, (double) ((float) x / 200.0f));
         q = t / 3238200.0f;
-        t = 3238200.0f * ((float) func_0201c1a8((double) q) / 1.5707964f);
+        t = 3238200.0f * ((float) asin((double) q) / 1.5707964f);
         break;
     case 3:
-        t = 3238200.0f * (float) func_0201c1c0(10.0, (double) ((float) x / 200.0f));
+        t = 3238200.0f * (float) pow(10.0, (double) ((float) x / 200.0f));
         q = t / 3238200.0f;
-        t = 3238200.0f * ((float) func_0201c19c((double) (1.0f - q)) / 1.5707964f);
+        t = 3238200.0f * ((float) acos((double) (1.0f - q)) / 1.5707964f);
         break;
     case 4:
-        L = (float) func_0201c1b4(960.0);
-        t = 3238200.0f * (float) func_0201c1b4((double) -x) / L;
+        L = (float) log10(960.0);
+        t = 3238200.0f * (float) log10((double) -x) / L;
         break;
     }
     if (!(t > 0.0f)) {

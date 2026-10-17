@@ -20,7 +20,7 @@ extern void (*data_020a4e90[])(Rs *, u32, u16 *, u32);   // node-description han
 extern s32 VEC_Mag(const s32 *v);        // VEC_Mag
 extern void VEC_Normalize(const s32 *src, s32 *dst);    // VEC_Normalize
 extern void MTX_Copy43To44(const void *src, void *dst);  // 4x3 to 4x4
-extern void func_02000de8(const s32 *a, const s32 *b, s32 *ab);   // MTX_Concat44
+extern void MTX_Concat44(const s32 *a, const s32 *b, s32 *ab);   // MTX_Concat44
 extern int G3X_GetClipMtx(s32 *m);   // G3X_GetClipMtx
 extern void *func_020326a0(void);
 extern void *func_020326d8(void);
@@ -535,10 +535,10 @@ void func_01ffbbac(Rs *rs, u32 op) {
         g = data_02211374[0xfc / 4];
         if (g & 1) {
             MTX_Copy43To44(func_020326a0(), t1);
-            func_02000de8(clip, t1, clip);
+            MTX_Concat44(clip, t1, clip);
         } else if (g & 2) {
             MTX_Copy43To44(data_022113c0, t2);
-            func_02000de8(clip, t2, clip);
+            MTX_Concat44(clip, t2, clip);
         }
         v0[0] = clip[12];
         v0[1] = clip[13];
@@ -615,10 +615,10 @@ void func_01ffbe2c(Rs *rs, u32 op) {
         g = data_02211374[0xfc / 4];
         if (g & 1) {
             MTX_Copy43To44(func_020326a0(), t1);
-            func_02000de8(clip, t1, clip);
+            MTX_Concat44(clip, t1, clip);
         } else if (g & 2) {
             MTX_Copy43To44(data_022113c0, t2);
-            func_02000de8(clip, t2, clip);
+            MTX_Concat44(clip, t2, clip);
         }
         v0[0] = clip[12];
         v0[1] = clip[13];

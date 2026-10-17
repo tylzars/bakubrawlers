@@ -91,7 +91,7 @@ void GimmickJumpObj::Update() {
         RotateDir(1);
         u32 r = MATH_Rand32(&gRandom, 0x444);
         MTX_ApplyRotY33(&m, r - 0x222);
-        func_01ff84d0(&mDir, &m, &mDir);
+        MTX_MultVec33(&mDir, &m, &mDir);
         SetTargetVelocity(data_020d433c.mBattlePlayers->mBattleTarget, &mDir, 1);
         func_ov007_0225ca18(data_020d433c.mBattlePlayers->mBattleTarget, 4, 0xb4);
         mTimer = 0x3c;
@@ -130,5 +130,5 @@ void GimmickJumpObj::RotateDir(int reset) {
         mDir.y = 0x3000;
         mDir.z = 0;
     }
-    func_01ff84d0(&mDir, &m, &mDir);
+    MTX_MultVec33(&mDir, &m, &mDir);
 }

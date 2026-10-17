@@ -227,7 +227,7 @@ BOOL Effect::Update() {
             continue;
         }
         if ((mMtxSet & mWorldDone[i]) == 0) {
-            func_01ff89c0(&mLocal[i], &mMtx, &mWorld[i]);
+            MTX_Concat43(&mLocal[i], &mMtx, &mWorld[i]);
             mWorldDone[i] = 1;
         }
         if ((mScaleSet & mScaleDone[i]) == 0) {

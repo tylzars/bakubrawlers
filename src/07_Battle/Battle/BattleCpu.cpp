@@ -1088,7 +1088,7 @@ void RotateDirScaled(u16 *rot, u32 s, VecFx32 *dir, VecFx32 *out) {
     if (rot[2]) {
         MTX_ApplyRotZ33(&m, rot[2]);
     }
-    func_01ff84d0(out, &m, out);
+    MTX_MultVec33(out, &m, out);
     out->x = FX_Mul(out->x, FX32_CONST((float) s / 150.0f));
     out->y = FX_Mul(out->y, FX32_CONST((float) s / 150.0f));
     out->z = FX_Mul(out->z, FX32_CONST((float) s / 150.0f));
@@ -1196,7 +1196,7 @@ void func_ov007_022337ec(VecFx32 *A, VecFx32 *B, VecFx32 *C, VecFx32 *D, VecFx32
 void RotateVecY(VecFx32 *in, u16 angle, VecFx32 *out) {
     MtxFx33 m = data_0220e848;
     MTX_ApplyRotY33(&m, angle);
-    func_01ff84d0(in, &m, out);
+    MTX_MultVec33(in, &m, out);
 }
 
 

@@ -39,7 +39,7 @@ extern char data_020adc1c[], data_020adc40[], data_020adc60[], data_020adc90[], 
 extern void CriDevSendText(const char *);
 extern int func_02015a50(const char *);
 extern void *func_02012464(void *, const void *, int);
-extern int func_02015c04(const char *, const char *, int);
+extern int strncmp(const char *, const char *, int);
 extern void CriStrToUpper(char *);
 extern CriDev *CriDevTableFind(char *);
 extern void CriCopyString(char *, int, const char *);
@@ -81,7 +81,7 @@ int CriDevTableHasName(char *path, int len)
     int i;
     CriDevEntry *e = data_022176b4;
     for (i = 0; i < 32; i++, e++) {
-        if (func_02015c04(path, e->name, len) == 0) return 1;
+        if (strncmp(path, e->name, len) == 0) return 1;
     }
     return 0;
 }

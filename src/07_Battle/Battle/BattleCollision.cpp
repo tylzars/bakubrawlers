@@ -45,7 +45,7 @@ BOOL TestPosInBoxXZ(BattleObstacle *a, BattleObstacle *b) {
     if (b->mRotZ) {
         MTX_ApplyRotZ33(&mtx, -b->mRotZ);
     }
-    func_01ff84d0(&d, &mtx, &d);
+    MTX_MultVec33(&d, &mtx, &d);
     fx32 hz = b->mHalfZ;
     fx32 nz = -hz;
     fx32 hx = b->mHalfX;
@@ -125,9 +125,9 @@ void GetNearestPointOnBox(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out)
     MTX_ApplyRotY33(&mtx, box->mRotY);
     MTX_ApplyRotX33(&mtx, box->mRotX);
     MTX_ApplyRotZ33(&mtx, box->mRotZ);
-    func_01ff84d0(&axes[0], &mtx, &box->mAxes[0]);
-    func_01ff84d0(&axes[1], &mtx, &box->mAxes[1]);
-    func_01ff84d0(&axes[2], &mtx, &box->mAxes[2]);
+    MTX_MultVec33(&axes[0], &mtx, &box->mAxes[0]);
+    MTX_MultVec33(&axes[1], &mtx, &box->mAxes[1]);
+    MTX_MultVec33(&axes[2], &mtx, &box->mAxes[2]);
     for (u8 i = 0; i < 3; i++) {
         fx32 t = VEC_DotProduct(&d, &box->mAxes[i]);
         if (t > half[i]) {

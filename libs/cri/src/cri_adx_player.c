@@ -48,7 +48,7 @@ extern short data_0209dce4, data_0209dee4, data_0209e0e4;     /* 0x0209dce4 / de
 extern char str_a[], str_b[], str_c[], str_d[], str_e[], str_f[];
 
 extern void CriSlotClearAll(void);
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 extern int CriSlotAlloc(void);
 extern void CriSlotDealloc(int);
 extern void SendErrConcat(const char *, const char *);
@@ -148,7 +148,7 @@ CriObj *CreateCriObj(int a, int b, int c, int d)
     }
     if (i == 4) return 0;
     o = &g_criObjs[i];
-    func_02012484(o, 0, 0xec);
+    memset(o, 0, 0xec);
     g_criObjs[i].used = 1;
     o->h = CriSlotAlloc();
     if (o->h == 0) { ReleaseCriObj(o); return 0; }
@@ -168,7 +168,7 @@ void ReleaseCriObj(CriObj *o)
     h = o->h;
     o->h = 0;
     CriSlotDealloc(h);
-    func_02012484(o, 0, 0xec);
+    memset(o, 0, 0xec);
     o->used = 0;
 }
 

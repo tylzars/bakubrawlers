@@ -10,7 +10,7 @@ extern MtxFx43 gIdentityMtx43;
 extern MtxFx43 gHeadNodeMtx;
 extern "C" void func_02031838(void *renderObj, void (*callback)(NNSG3dRS *));
 extern "C" MtxFx43 *func_020323b8();
-extern "C" void func_01ff89c0(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);
+extern "C" void MTX_Concat43(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);
 extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
 void InstallHeadNodeMtxCallback(NNSG3dRS *rs);
 void StoreHeadNodeMtx(NNSG3dRS *rs);
@@ -520,5 +520,5 @@ void StoreHeadNodeMtx(NNSG3dRS *rs) {
     }
     func_02032cc8(&gHeadNodeMtx, NULL);
     MtxFx43 *cam = func_020323b8();
-    func_01ff89c0(&gHeadNodeMtx, cam, &gHeadNodeMtx);
+    MTX_Concat43(&gHeadNodeMtx, cam, &gHeadNodeMtx);
 }

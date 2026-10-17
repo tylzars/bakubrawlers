@@ -93,7 +93,7 @@ extern void func_0204ea9c(void *);
 extern void func_0204eac4(void *, int);
 extern void func_0204eb24(void *, int);
 extern void FS_CloseFile(void *);
-extern double func_0201c1b4(double);
+extern double log10(double);
 CriElem *func_02052248(CriHdl *hdl);
 void func_020522a0(CriElem *e);
 void *func_02051ae4(CriOpen *p);
@@ -388,7 +388,7 @@ void func_0205201c(CriHdl *hdl, float v)
     } else if (v >= 1.0f) {
         r = 0;
     } else {
-        r = (int)(10.0f * (20.0f * (float)func_0201c1b4(v)));
+        r = (int)(10.0f * (20.0f * (float)log10(v)));
     }
     func_0204eb24(e->h, r);
 }

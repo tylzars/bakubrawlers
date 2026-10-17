@@ -56,7 +56,7 @@ extern char data_020ad77c[], data_020ad788[], data_020ad7a4[], data_020ad7b0[];
 
 extern void CriRingSendJoinedText(const char *, const char *);
 extern void *func_02012464(void *, void *, int);
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 extern void CriSendText(const char *);
 extern void CriCopyString(char *, int, const char *);
 extern void CriAppendString(char *, int, const char *);
@@ -382,7 +382,7 @@ void CriBufDeallocNoLock(CriBuf *b)
         CriBufSendJoinedText(data_020ad504, data_020ad510);
         return;
     }
-    func_02012484(b, 0, 0x24);
+    memset(b, 0, 0x24);
     b->used = 0;
 }
 

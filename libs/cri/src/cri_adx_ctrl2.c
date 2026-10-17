@@ -53,7 +53,7 @@ extern char data_020acfc0[];
 extern void SendErr(const char *);
 extern void SendErrConcat(const char *, const char *);
 extern void func_020402f0(int, int, char *, int);
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 extern void func_0203eda4(void);
 extern void func_0203edb0(void);
 extern int FindHalfword0x80(int, int, short *);
@@ -264,7 +264,7 @@ void func_020442ec(Pl *o)
     for (i = 0; i < n; i++) {
         Io *ch = o->ch[i];
         ch->vt->f18(ch, 0, sz, &out);
-        func_02012484((void *)out.p, 0, out.n);
+        memset((void *)out.p, 0, out.n);
         ch->vt->f20(ch, 1, &out);
     }
 }

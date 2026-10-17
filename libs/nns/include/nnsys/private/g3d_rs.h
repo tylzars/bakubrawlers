@@ -101,4 +101,4 @@ typedef struct NodeRes {
     s16 hw02;          // 0x02
     s32 data[1];       // 0x04...
 } NodeRes;
-extern void MI_Zero36B(void *mtx33);   // MTX_Identity33 (thumb)
+extern void MI_Zero36B(void *mtx33);   // zeroes nine words

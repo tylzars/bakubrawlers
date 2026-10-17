@@ -6,14 +6,14 @@
 #define P32(p, o) (*(s32 *)((u8 *)(p) + (o)))
 extern void SendFifoCommand(u32 cmd, const void *params, u32 count);
 extern void MIi_CpuCopy32(const void *src, void *dst, u32 size);
-extern void func_01ff854c(void *m43);      // MTX_Identity43
-extern void func_02000d88(void *m44);      // MTX_Identity44
-extern void func_01ff817c(void *m33);      // MTX_Identity33
-extern void func_01ff8634(void *src, void *dst);   // MTX_Inverse43
-extern void func_01ff9604(const void *src, void *dst);   // copy 4x4
+extern void MTX_Identity43_(void *m43);      // MTX_Identity43
+extern void MTX_Identity44_(void *m44);      // MTX_Identity44
+extern void MTX_Identity33_(void *m33);      // MTX_Identity33
+extern void MTX_Inverse43(void *src, void *dst);   // MTX_Inverse43
+extern void MI_Copy64B(const void *src, void *dst);   // copy 4x4
 extern void MTX_Copy43To44(const void *src, void *dst);   // 4x3 to 4x4
-extern void func_02000de8(const void *a, const void *b, void *dst);   // MTX_Concat44
-extern void func_01ff89c0(void *a, void *b, void *dst);   // MTX_Concat43
+extern void MTX_Concat44(const void *a, const void *b, void *dst);   // MTX_Concat44
+extern void MTX_Concat43(void *a, void *b, void *dst);   // MTX_Concat43
 extern void MTX_ApplyScale43(void *src, void *dst, s32 x, s32 y, s32 z);   // scale
 extern long long FX_InvFx64c(s32 x);   // FX_Inv (64 bit)
 extern s32 FX_Div(s32 a, s32 b);
@@ -40,8 +40,8 @@ void InitG3dGlb(void) {
     g[0x90 / 4] = 0x60293130;
     g[0xa4 / 4] = 0x33333333;
     g[0xb8 / 4] = 0x2a1b19;
-    func_01ff854c(data_022113c0);
-    func_02000d88(data_0221137c);
+    MTX_Identity43_(data_022113c0);
+    MTX_Identity44_(data_0221137c);
     g[0x80 / 4] = 0x2d8b62d8;
     g[0x84 / 4] = 0x40000200;
     g[0x88 / 4] = 0x40000200 - 0xc0000001;
@@ -57,7 +57,7 @@ void InitG3dGlb(void) {
     g[0xe0 / 4] = 0;
     g[0xe4 / 4] = 0;
     g[0xe8 / 4] = 0;
-    func_01ff817c(data_02211430);
+    MTX_Identity33_(data_02211430);
     g[0xec / 4] = 0x1000;
     g[0xf0 / 4] = 0x1000;
     g[0xf4 / 4] = 0x1000;
@@ -105,7 +105,7 @@ void func_02032394(u32 specular, u32 emission, BOOL shininess) {
 }
 void *func_020323b8(void) {   // inverse of the current position matrix (cached)
     if (!(GU[0xfc / 4] & 8)) {
-        func_01ff8634(data_022113c0, data_02211474);
+        MTX_Inverse43(data_022113c0, data_02211474);
         GU[0xfc / 4] |= 8;
     }
     return data_02211474;
@@ -114,8 +114,8 @@ s32 InvertMtx44(s32 *src, s32 *dstp) {   // MTX_Inverse44 (Gauss-Jordan, fixed p
     s32 tmp[4][4];
     s32 (*dst)[4] = (s32 (*)[4]) dstp;
     s32 piv, i, j, k, best;
-    func_01ff9604(src, (s32 *) tmp);
-    func_02000d88(dstp);
+    MI_Copy64B(src, (s32 *) tmp);
+    MTX_Identity44_(dstp);
     for (i = 0; i < 4; i++) {
         long long inv;
         piv = i;
@@ -157,9 +157,9 @@ void *func_02032604(void) {   // inverse of the projection matrix (cached)
     return data_02211534;
 }
 void func_02032648(void) {   // base matrix = position * base scale, and its inverse
-    func_01ff89c0(data_02211430, data_022113c0, data_022114a4);
+    MTX_Concat43(data_02211430, data_022113c0, data_022114a4);
     MTX_ApplyScale43(data_022114a4, data_022114a4, GU[0xec / 4], GU[0xf0 / 4], GU[0xf4 / 4]);
-    func_01ff8634(data_022114a4, data_022114d4);
+    MTX_Inverse43(data_022114a4, data_022114d4);
 }
 void *func_020326a0(void) {
     if (!(GU[0xfc / 4] & 0x80)) {
@@ -181,7 +181,7 @@ void *func_02032710(void) {   // combined position and projection matrix (cached
         void *a = func_020323b8();
         void *b = func_02032604();
         MTX_Copy43To44(a, tmp);
-        func_02000de8(b, tmp, data_02211574);
+        MTX_Concat44(b, tmp, data_02211574);
         GU[0xfc / 4] |= 0x40;
     }
     return data_02211574;

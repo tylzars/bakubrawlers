@@ -205,7 +205,7 @@ unsigned long long ScanULongLong(int base, int maxw, int (*rd)(void *, int, int)
 }
 
 
-unsigned long func_02017714(const char *str, char **end, int base)
+unsigned long strtoul(const char *str, char **end, int base)
 {
     int scanned, neg, ovf;
     StrRead s;

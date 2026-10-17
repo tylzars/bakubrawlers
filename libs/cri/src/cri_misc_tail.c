@@ -7,10 +7,10 @@ extern int *data_020b01f8;
 extern int data_020b01fc[4];
 
 extern int func_02015a6c(void *, int);
-extern int func_02015b34(void *, int, int);
-extern int func_02015b84(void *, int);
-extern int func_02015bb4(void *, int, int);
-extern int func_020146c0(char *, const char *, va_list);
+extern int strncpy(void *, int, int);
+extern int strcat(void *, int);
+extern int strncat(void *, int, int);
+extern int vsprintf(char *, const char *, va_list);
 extern void func_02012464(void *, const void *, int);
 
 void func_02051528(void) {}
@@ -26,20 +26,20 @@ int *func_02051540(void)
 }
 
 int CriCopyString(void *a, int b, int c) { return func_02015a6c(a, c); }
-int CriCopyStringN(void *a, int b, int c, int d) { return func_02015b34(a, c, d); }
-int CriAppendString(void *a, int b, int c) { return func_02015b84(a, c); }
-int CriAppendStringN(void *a, int b, int c, int d) { return func_02015bb4(a, c, d); }
+int CriCopyStringN(void *a, int b, int c, int d) { return strncpy(a, c, d); }
+int CriAppendString(void *a, int b, int c) { return strcat(a, c); }
+int CriAppendStringN(void *a, int b, int c, int d) { return strncat(a, c, d); }
 
 int CriFormatString(char *buf, int unused, const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
-    return func_020146c0(buf, fmt, ap);
+    return vsprintf(buf, fmt, ap);
 }
 
 int CriFormatStringV(char *buf, int unused, const char *fmt, va_list ap)
 {
-    return func_020146c0(buf, fmt, ap);
+    return vsprintf(buf, fmt, ap);
 }
 
 void CriCrossFadeResizeSamples(short *src, int n1, short *dst, int n2)

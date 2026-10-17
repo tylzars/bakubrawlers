@@ -11,7 +11,7 @@ static inline fx32 FX_Mul32x64c(fx32 a, fx64 b) {
     return (fx32) ((b * (fx64) a + 0x80000000LL) >> 32);
 }
 
-void func_02001688(fx32 sinFov, fx32 cosFov, fx32 aspect, fx32 n, fx32 f, fx32 scale, MtxFx44 *mtx) {
+void MTX_Perspective(fx32 sinFov, fx32 cosFov, fx32 aspect, fx32 n, fx32 f, fx32 scale, MtxFx44 *mtx) {
     fx32 cot;
     fx64 val;
     fx32 tmp;

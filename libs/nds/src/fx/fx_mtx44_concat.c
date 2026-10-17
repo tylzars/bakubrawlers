@@ -1,6 +1,6 @@
 #include <nitro/internal.h>
 
-void func_02000de8(const MtxFx44 *a, const MtxFx44 *b, MtxFx44 *ab) {
+void MTX_Concat44(const MtxFx44 *a, const MtxFx44 *b, MtxFx44 *ab) {
     MtxFx44 tmp;
     MtxFx44 *p;
     fx32 x, y, z, w;

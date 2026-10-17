@@ -22,7 +22,7 @@ extern char *data_02218f34;
 extern void (*data_020af5a0[16])(short *, short *, short *);
 
 extern void func_0204c088(short *, short *, short *);
-extern void func_02012484(void *, int, int);
+extern void memset(void *, int, int);
 extern void func_0204ad00(void);
 void func_0204d864(void);
 
@@ -69,7 +69,7 @@ void func_0204d8e4(void) {
 }
 
 MpSyn *func_0204d8fc(MpSyn *o, int size) {
-    func_02012484(o, 0, size);
+    memset(o, 0, size);
     o->pos[0] = o->pos[1] = 0x40;
     o->coef = (short *)data_02218f20.coefCopy;
     o->win = (short *)data_02218f20.winCopy;
@@ -78,7 +78,7 @@ MpSyn *func_0204d8fc(MpSyn *o, int size) {
 }
 
 void func_0204d944(MpSyn *o) {
-    func_02012484(o, 0, 0x814);
+    memset(o, 0, 0x814);
 }
 
 void func_0204d95c(void) {

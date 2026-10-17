@@ -1121,7 +1121,7 @@ struct BattleShootRange { // at data_ov007_0227bcf8
 extern const BattleShootRange data_ov007_0227bcf8[3];
 extern MtxFx33 data_0220e848;
 extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
-extern "C" void func_01ff84d0(VecFx32 *v, MtxFx33 *m, VecFx32 *out);
+extern "C" void MTX_MultVec33(VecFx32 *v, MtxFx33 *m, VecFx32 *out);
 
 void BattleShoot::func_ov007_0226daa8() {
     mUnk_617c = 0;
@@ -1392,7 +1392,7 @@ void BattleShoot::func_ov007_0226e430() {
     if (mBattleTarget->mUnk_1e3 != 0) {
         MtxFx33 m = data_0220e848;
         MTX_ApplyRotY33(&m, 0x5555);
-        func_01ff84d0(&v, &m, &v);
+        MTX_MultVec33(&v, &m, &v);
         v.x = FX_Mul(v.x, 0xa000);
         v.y = FX_Mul(v.y, 0xa000);
         v.z = FX_Mul(v.z, 0xa000);
@@ -1671,7 +1671,7 @@ void BattleShoot::func_ov007_0226f0e8(u8 kind, s32 x, s32 z) {
     if (angle != 0) {
         MtxFx43 rot = gIdentityMtx43;
         MTX_ApplyRotZ43(&rot, angle);
-        func_01ff89c0(&rot, &mtx, &mtx);
+        MTX_Concat43(&rot, &mtx, &mtx);
     }
     MTX_SetTranslation43(&mtx, &pos);
     SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);

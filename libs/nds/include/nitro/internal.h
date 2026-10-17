@@ -36,8 +36,8 @@ void MIi_CpuClear32(u32 data, void *dest, u32 size);
 void MI_DmaFill32(u32 dmaNo, void *dest, u32 data, u32 size);
 #define reg_G3X_GXFIFO (*(vu32 *) 0x04000400)
 #define reg_G3X_GXSTAT (*(vu32 *) 0x04000600)
-void MI_Send48B(const void *src, volatile void *dst); // MI_Copy48B
-void MI_Send128B(const void *src, volatile void *dst); // MI_Copy128B
+void MI_Send48B(const void *src, volatile void *dst);
+void MI_Send128B(const void *src, volatile void *dst);
 void MI_Copy36B(const void *src, volatile void *dst);
 #define reg_G3X_END_VTXS (*(vu32 *) 0x04000504)
 #define reg_G3X_CLEAR_COLOR (*(vu32 *) 0x04000350)
@@ -50,7 +50,7 @@ void G3X_InitTable(void);
 int G3X_GetMtxStackLevelPV(u32 *level);
 int G3X_GetMtxStackLevelPJ(u32 *level);
 void MI_DmaFill32Async(u32 dmaNo, void *dest, u32 data, u32 size, void *callback, void *arg);
-void func_01ff9604(const void *src, void *dst); // MI_Copy64B
+void MI_Copy64B(const void *src, void *dst); // MI_Copy64B
 void MIi_CpuCopy16(const void *src, void *dst, u32 size);
 void MIi_CpuCopy32(const void *src, void *dst, u32 size);
 void MI_DmaCopy16(u32 dmaNo, const void *src, void *dest, u32 size); // MI_DmaCopy16

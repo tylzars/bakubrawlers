@@ -49,7 +49,7 @@ typedef struct SndPlayer {
     Bytes8 tail;            /* 0xa24 */
 } SndPlayer;
 
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 extern void func_0204d814(void);
 extern void func_0204d824(void);
 extern void func_0204d834(void);
@@ -88,7 +88,7 @@ SndPlayer *func_0204ad88(SndPlayer *p, u32 size)
 {
     u8 *a = (u8 *)(((u32)p + 7) & ~7);
     u8 *e;
-    func_02012484(a, 0, 0xa2c);
+    memset(a, 0, 0xa2c);
     e = a + 0x22c;
     e = e + 0x800;
     e = (u8 *)(((u32)e + 7) & ~7);
@@ -117,19 +117,19 @@ void func_0204ae48(SndPlayer *p)
         p->h = 0;
         func_0204d944(h);
     }
-    func_02012484(p, 0, 0xa2c);
+    memset(p, 0, 0xa2c);
 }
 
 void func_0204ae80(SndPlayer *p)
 {
     void *h = p->h;
-    func_02012484(p->a1b8, 0, 0x30);
-    func_02012484(&p->info, 0, 0x3c);
-    func_02012484(p->a224, 0, 0x100);
-    func_02012484(p->a324, 0, 0x100);
-    func_02012484(p->a424, 0, 0x300);
-    func_02012484(p->buf0, 0, 0x180);
-    func_02012484(p->a724, 0, 0x300);
+    memset(p->a1b8, 0, 0x30);
+    memset(&p->info, 0, 0x3c);
+    memset(p->a224, 0, 0x100);
+    memset(p->a324, 0, 0x100);
+    memset(p->a424, 0, 0x300);
+    memset(p->buf0, 0, 0x180);
+    memset(p->a724, 0, 0x300);
     p->b1a9 = 0;
     p->i1ac = 0;
     if (p->h == 0) return;

@@ -46,7 +46,7 @@ extern CriStm g_criStm[4];     /* 0x02216108 */
 
 extern char str_cri_a[], str_cri_b[];
 
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 extern void *func_02012464(void *, void *, int);
 extern void SendErrConcat(const char *, const char *);
 extern int CriRingGetBuf(void *);
@@ -151,7 +151,7 @@ void CriStmDealloc(CriStm *s)
         ReleaseCriObj(o);
     }
     func_0203eda4();
-    func_02012484(s, 0, 0xb4);
+    memset(s, 0, 0xb4);
     func_0203edb0();
 }
 
@@ -455,7 +455,7 @@ void func_020413f8(CriStm *s)
     if (s->nch > 0) {
         do {
             s->ch[i]->vt->get(s->ch[i], 0, len, &p);
-            func_02012484(p.p, 0, len);
+            memset(p.p, 0, len);
             s->ch[i]->vt->commit(s->ch[i], 1, &p);
             i++;
         } while (i < s->nch);

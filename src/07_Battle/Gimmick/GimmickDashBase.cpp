@@ -144,5 +144,5 @@ void GimmickDashBase::RotateDir(int reset) {
         mDir.y = 0;
         mDir.z = -0xa000;
     }
-    func_01ff84d0(&mDir, &m, &mDir);
+    MTX_MultVec33(&mDir, &m, &mDir);
 }

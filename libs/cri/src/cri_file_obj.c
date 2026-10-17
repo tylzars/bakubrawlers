@@ -31,7 +31,7 @@ extern int FS_OpenFile(void *, char *);
 extern void FS_CloseFile(void *);
 extern void FS_SeekFile(int *, int, int);
 extern void FS_CancelFile(int *);
-extern void func_02012484(void *, int, int);
+extern void memset(void *, int, int);
 extern void CriLockEnter1(void);
 extern void CriLockLeave1(void);
 extern void CriMsgSetCallback(void);
@@ -92,7 +92,7 @@ void FObjDealloc(FObj *o)
     if (o == 0) return;
     if (o->hp == o->h4) FS_CloseFile(o->hp);
     o->used = 0;
-    func_02012484(o, 0, 0x84);
+    memset(o, 0, 0x84);
 }
 
 int FObjSetPos(FObj *o, int off, int whence)

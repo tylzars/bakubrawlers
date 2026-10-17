@@ -35,7 +35,7 @@ extern int data_020acbf0;
 extern char data_020acbf8[], data_020acc20[], data_020acc4c[], data_020acc7c[], data_020acca4[],
             data_020acccc[], data_020accf4[], data_020acd20[], data_020acd54[], data_020acd80[], data_020acdac[];
 
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 extern void SendErr(const char *);
 extern void func_0203eda4(void), func_0203edb0(void), func_0203edbc(void), func_0203edc0(void);
 extern void *CriRingAlloc(int, int, int);
@@ -114,7 +114,7 @@ Adx *CreateAdxInner(int nch, int buf, int size)
         return 0;
     }
     o = &g_criDrv[i];
-    func_02012484(o, 0, 0xc4);
+    memset(o, 0, 0xc4);
     o->nch = nch;
     k = nch * 0x1460;
     o->i20 = base + k * 2;
@@ -279,7 +279,7 @@ void ReleaseAdxInner(Adx *o)
         o->p74 = 0;
         func_02051504(q);
     }
-    func_02012484(o, 0, 0xc4);
+    memset(o, 0, 0xc4);
     o->used = 0;
     func_0203edb0();
 }

@@ -17,7 +17,7 @@ typedef struct Locale {
 extern float data_020a5078;
 extern Locale data_020a50d8;
 
-extern void func_02015b34(char *, const char *, size_t_);
+extern void strncpy(char *, const char *, size_t_);
 extern void func_02012504(void *, int, size_t_);
 
 /* 0x020122b0: population count */
@@ -95,7 +95,7 @@ size_t_ func_020123ec(char *dst, const wchar_t_ *src, size_t_ n)
         if (*src == 0) { dst[len] = 0; break; }
         cl = func_020123d0(tmp, *src++);
         if (len + cl > n) break;
-        func_02015b34(dst + len, tmp, cl);
+        strncpy(dst + len, tmp, cl);
         len += cl;
         if (len > n) break;
     }
@@ -113,14 +113,14 @@ void *func_02012464(void *dst, const char *src, size_t_ n)
 }
 
 /* 0x02012484: memset */
-void *func_02012484(void *dst, int c, size_t_ n)
+void *memset(void *dst, int c, size_t_ n)
 {
     func_02012504(dst, c, n);
     return dst;
 }
 
 /* 0x02012498: memchr */
-void *func_02012498(const void *p, int c, size_t_ n)
+void *memchr(const void *p, int c, size_t_ n)
 {
     const unsigned char *s = p;
     unsigned char ch = c;
@@ -133,7 +133,7 @@ void *func_02012498(const void *p, int c, size_t_ n)
 }
 
 /* 0x020124c4: memcmp */
-int func_020124c4(const void *a, const void *b, size_t_ n)
+int memcmp(const void *a, const void *b, size_t_ n)
 {
     const unsigned char *p = a, *q = b;
     if (n) {

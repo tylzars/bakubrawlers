@@ -44,15 +44,15 @@ extern void func_02048930(void), func_02048ef4(void), func_02048f2c(void), func_
 extern void func_02049024(void), func_02049088(void), func_02049118(void), func_02049124(void);
 extern void func_02049138(void), func_02049150(void);
 extern char *func_02015a6c(char *, const char *);
-extern char *func_02015b84(char *, const char *);
+extern char *strcat(char *, const char *);
 extern int FS_ReadFile(int, int, int);
 extern int FS_ReadFileAsync(int, int, int);
 extern void CriLockEnter1(void), CriLockLeave1(void);
 extern int func_02048274(char *);
 extern int func_02048264(int), func_0204826c(int);
 extern int func_02047cf8(CriFile *);
-extern int func_020124c4(const void *, const char *, int);
-extern int func_02015a28(const char *, const char *, ...);
+extern int memcmp(const void *, const char *, int);
+extern int sscanf(const char *, const char *, ...);
 
 extern void func_020478a8(void);
 
@@ -145,7 +145,7 @@ void FObjBuildPath(char *dst, char *src)
         func_02015a6c(dst, data_0221823c);
     }
     if (src == 0) return;
-    func_02015b84(dst, src);
+    strcat(dst, src);
 }
 
 int func_02047ae8(CriFile *o)
@@ -233,8 +233,8 @@ int func_02047cf8(CriFile *o) { return o->p5c; }
 
 int func_02047d00(char *path, int *a, int *b, int *c)
 {
-    if (func_020124c4(data_020ade34, path, 7) == 0) {
-        if (func_02015a28(path, data_020ade3c, a, b, c) == 3) {
+    if (memcmp(data_020ade34, path, 7) == 0) {
+        if (sscanf(path, data_020ade3c, a, b, c) == 3) {
             if (*c == 0) *c = 0x7fffffff;
             return 1;
         }

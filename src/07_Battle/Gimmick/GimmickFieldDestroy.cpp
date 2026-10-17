@@ -309,7 +309,7 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         MTX_MultVec43(&v2, &mtx2, &v2);
         VEC_Add(&camPos, &v2, &camPos);
         MTX_ApplyRotX43(&mtx, data_ov007_022793da[1]);
-        func_01ff89c0(&mtx, &mtx2, &mtx2);
+        MTX_Concat43(&mtx, &mtx2, &mtx2);
         MTX_SetTranslation43(&mtx2, &camPos);
         SetEffectMatrix(data_020d433c.mEffects, handle, &mtx2);
         break;

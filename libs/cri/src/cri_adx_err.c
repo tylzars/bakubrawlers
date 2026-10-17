@@ -6,7 +6,7 @@ extern char data_02215ca4[0x100];    /* message buffer */
 extern char data_02215c84[];         /* scratch digits */
 extern char data_020aca2c[], data_020aca34[], data_020aca3c[];
 
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 extern int func_02015a50(const char *);
 extern void CriSendFormattedText(const char *);
 extern void CriCopyStringN(char *, int, const char *, int);
@@ -26,14 +26,14 @@ extern void func_02040370(void);
 
 void func_02040110(void)
 {
-    func_02012484(data_02215ca4, 0, 0x100);
+    memset(data_02215ca4, 0, 0x100);
     data_02215c7c.fn = 0;
     data_02215c7c.arg = 0;
 }
 
 void func_02040140(void)
 {
-    func_02012484(data_02215ca4, 0, 0x100);
+    memset(data_02215ca4, 0, 0x100);
     data_02215c7c.fn = 0;
     data_02215c7c.arg = 0;
 }

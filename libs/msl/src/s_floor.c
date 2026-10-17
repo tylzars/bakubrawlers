@@ -15,7 +15,7 @@ extern double copysign(double, double);
 extern int ClassifyDouble(double);
 static const double huge = 1.0e300;
 
-double func_0201bb60(double x) {
+double floor(double x) {
     int i0, i1, j0;
     unsigned i, j;
     i0 = __HI(x);

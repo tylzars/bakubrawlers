@@ -24,7 +24,7 @@ int WriteToStrBuffer(void *arg, const char *src, size_t_ n)
 }
 
 /* 0x02014658: vsnprintf */
-size_t_ func_02014658(char *buf, size_t_ size, const char *fmt, char *ap)
+size_t_ vsnprintf(char *buf, size_t_ size, const char *fmt, char *ap)
 {
     StrWriteCtx c;
     size_t_ n;
@@ -42,14 +42,14 @@ size_t_ func_02014658(char *buf, size_t_ size, const char *fmt, char *ap)
 }
 
 /* 0x020146c0: vsprintf */
-size_t_ func_020146c0(char *buf, const char *fmt, char *ap)
+size_t_ vsprintf(char *buf, const char *fmt, char *ap)
 {
-    return func_02014658(buf, -1, fmt, ap);
+    return vsnprintf(buf, -1, fmt, ap);
 }
 
 /* 0x020146d8 */
 int sprintf(char *buf, const char *fmt, ...)
 {
     char *ap = (char *)((unsigned)&fmt & ~3) + 4;
-    return func_02014658(buf, -1, fmt, ap);
+    return vsnprintf(buf, -1, fmt, ap);
 }

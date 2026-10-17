@@ -31,7 +31,7 @@ extern void StmLockEnter(void);
 extern void StmLockLeave(void);
 extern void func_02042748(void);
 extern void func_02042754(void);
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 extern void func_0204035c(void);
 extern void OS_Sleep(int);
 extern int func_0203e6dc(void *), func_0203e6e4(void *), func_0203e6ec(void *), func_0203e6f4(void *);
@@ -180,7 +180,7 @@ void StmDeallocInner(Stm *s)
     StmStopAndWait(s);
     func_02041ce0(s);
     s->used = 0;
-    func_02012484(s, 0, 100);
+    memset(s, 0, 100);
 }
 
 void func_02041bdc(Stm *s, int a, int b, int c, long long x)

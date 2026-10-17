@@ -28,9 +28,9 @@ extern char data_020ad878[], data_020ad898[], data_020ad8c0[], data_020ad8e4[];
 extern char data_020ad90c[], data_020ad944[], data_020ad94c[], data_020ad970[], data_020ad994[];
 
 extern void func_02012464(void *, const void *, int);
-extern void func_02012484(void *, int, int);
+extern void memset(void *, int, int);
 extern int func_02015a50(const char *);
-extern int func_02015c04(const char *, const char *, int);
+extern int strncmp(const char *, const char *, int);
 extern void CriFormatStringV(char *, int, const char *, char *);
 extern void CriCopyStringN(char *, int, const char *, int);
 extern void func_02045f38(void);
@@ -128,7 +128,7 @@ void CriLockLeave3(void) { CriLockLeave((void *)3); }
 void CriSendFormattedText(const char *fmt, ...)
 {
     char *ap = (char *)(((unsigned)&fmt & ~3u) + 4);
-    func_02012484(data_02217628, 0, 0x80);
+    memset(data_02217628, 0, 0x80);
     CriFormatStringV(data_02217628, 0x80, fmt, ap);
     if (data_02217350.fn) {
         data_02217350.fn(data_02217350.arg, data_02217628);
@@ -391,7 +391,7 @@ void *CriDevTableFind(const char *s)
     int n = func_02015a50(s);
     p = data_022176b4;
     for (i = 0; i < 32; i++, p++) {
-        if (func_02015c04(s, p->name, n) == 0) {
+        if (strncmp(s, p->name, n) == 0) {
             return data_022176b4[i].val;
         }
     }

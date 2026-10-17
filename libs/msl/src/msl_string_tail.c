@@ -9,7 +9,7 @@ typedef struct StrReadCtx {
 
 extern int ScanFormatted(int (*)(void *, int, int), void *, const char *, char *, int);
 extern int StringReader(void *, int, int);
-extern int func_020159d4(const char *, const char *, char *);
+extern int vsscanf(const char *, const char *, char *);
 
 /* 0x02015950: scanf string reader callback (get / unget / test eof) */
 int StringReader(void *arg, int ch, int op)
@@ -39,7 +39,7 @@ int StringReader(void *arg, int ch, int op)
 }
 
 /* 0x020159d4: vsscanf */
-int func_020159d4(const char *s, const char *fmt, char *ap)
+int vsscanf(const char *s, const char *fmt, char *ap)
 {
     StrReadCtx c;
     c.p = s;
@@ -49,10 +49,10 @@ int func_020159d4(const char *s, const char *fmt, char *ap)
 }
 
 /* 0x02015a28: sscanf */
-int func_02015a28(const char *s, const char *fmt, ...)
+int sscanf(const char *s, const char *fmt, ...)
 {
     char *ap = (char *)((unsigned)&fmt & ~3) + 4;
-    return func_020159d4(s, fmt, ap);
+    return vsscanf(s, fmt, ap);
 }
 
 /* 0x02015a50: strlen */
@@ -115,7 +115,7 @@ char *func_02015a6c(char *dst, const char *src)
 }
 
 /* 0x02015b34: strncpy */
-char *func_02015b34(char *dst, const char *src, size_t_ n)
+char *strncpy(char *dst, const char *src, size_t_ n)
 {
     char *d = dst;
     if (n == 0) return dst;
@@ -130,7 +130,7 @@ char *func_02015b34(char *dst, const char *src, size_t_ n)
 }
 
 /* 0x02015b84: strcat */
-char *func_02015b84(char *dst, const char *src)
+char *strcat(char *dst, const char *src)
 {
     char *d = dst;
     while (*d++) {}
@@ -140,7 +140,7 @@ char *func_02015b84(char *dst, const char *src)
 }
 
 /* 0x02015bb4: strncat */
-char *func_02015bb4(char *dst, const char *src, size_t_ n)
+char *strncat(char *dst, const char *src, size_t_ n)
 {
     char *d = dst;
     while (*d++) {}
@@ -155,7 +155,7 @@ char *func_02015bb4(char *dst, const char *src, size_t_ n)
 }
 
 /* 0x02015c04: strncmp */
-int func_02015c04(const char *a, const char *b, size_t_ n)
+int strncmp(const char *a, const char *b, size_t_ n)
 {
     if (n) {
         do {
@@ -169,7 +169,7 @@ int func_02015c04(const char *a, const char *b, size_t_ n)
 }
 
 /* 0x02015c38: strchr */
-char *func_02015c38(const char *s, int c)
+char *strchr(const char *s, int c)
 {
     char ch = c;
     char v = *s++;

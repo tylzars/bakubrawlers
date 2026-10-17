@@ -173,7 +173,7 @@ void MyroomStatusScene::Draw3D() {
     VecFx32 b      = gMyroomStatusBgScale;
     VecFx32 a      = gMyroomStatusBgOffset;
     MTX_SetTranslation43(&mtx, &a);
-    func_01ff89c0(&mtx, view, &mtx);
+    MTX_Concat43(&mtx, view, &mtx);
     mMyroombgModel->AdvanceAnim();
     mMyroombgModel->Draw(&mtx, &b);
     mModel->Draw();

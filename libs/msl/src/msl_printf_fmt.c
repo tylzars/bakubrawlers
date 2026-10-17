@@ -177,9 +177,9 @@ char *func_0201368c(double x, char *end, FmtSpec spec)
 
 
 typedef unsigned int size_t_;
-extern char *func_02015c38(const char *, int);
+extern char *strchr(const char *, int);
 extern size_t_ func_02015a50(const char *);
-extern void *func_02012498(const void *, int, size_t_);
+extern void *memchr(const void *, int, size_t_);
 extern int func_020123ec(char *, const void *, size_t_);
 extern char *WriteIntDigits(int, char *, FmtSpec);
 extern char *WriteLongLongDigits(long long, char *, FmtSpec);
@@ -200,7 +200,7 @@ size_t_ func_02013df0(int (*cb)(void *, const char *, size_t_), void *arg, const
     char buf[512];
     int total = 0;
     while (*fmt) {
-        pct = func_02015c38(fmt, '%');
+        pct = strchr(fmt, '%');
         if (pct == 0) {
             n = func_02015a50(fmt);
             total += n;
@@ -317,7 +317,7 @@ size_t_ func_02013df0(int (*cb)(void *, const char *, size_t_), void *arg, const
             } else if (spec.prec_set) {
                 char *e;
                 len = spec.prec;
-                e = func_02012498(s, 0, len);
+                e = memchr(s, 0, len);
                 if (e) len = e - s;
             } else {
                 len = func_02015a50(s);

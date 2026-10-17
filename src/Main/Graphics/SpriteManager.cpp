@@ -11,24 +11,24 @@
 
 // SDK matrix helpers (ITCM / main).
 void MTX_Identity22_(MtxFx22 *mtx);
-extern "C" void func_01ff817c(MtxFx33 *mtx); // MTX_Identity33_
-extern "C" void func_01ff854c(MtxFx43 *mtx); // MTX_Identity43_
-extern "C" void func_02000d88(MtxFx44 *mtx); // MTX_Identity44_
+extern "C" void MTX_Identity33_(MtxFx33 *mtx); // MTX_Identity33_
+extern "C" void MTX_Identity43_(MtxFx43 *mtx); // MTX_Identity43_
+extern "C" void MTX_Identity44_(MtxFx44 *mtx); // MTX_Identity44_
 
 
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);                         // atan2 (16-bit angle)
 extern "C" u16 FX_AsinIdx(fx32 y);                                 // asin (16-bit angle)
-extern "C" void func_01ff827c(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotY33_
-extern "C" void func_01ff8260(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotX33_
-extern "C" void func_01ff82b0(MtxFx33 *a, MtxFx33 *b, MtxFx33 *out);  // MTX_Concat33
-extern "C" void func_01ff84d0(VecFx32 *v, MtxFx33 *m, VecFx32 *out);  // MTX_MultVec33
+extern "C" void MTX_RotY33_(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotY33_
+extern "C" void MTX_RotX33_(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotX33_
+extern "C" void MTX_Concat33(MtxFx33 *a, MtxFx33 *b, MtxFx33 *out);  // MTX_Concat33
+extern "C" void MTX_MultVec33(VecFx32 *v, MtxFx33 *m, VecFx32 *out);  // MTX_MultVec33
 
 extern "C" s64 FX_DivFx64c(fx32 a, fx32 b); // 64-bit fixed-point division (32 fraction bits)
 extern "C" fx32 FX_Modf(fx32 value, fx32 *integer); // splits into integer part and fraction
 
 // MTX_Perspective
-extern "C" void func_02001688(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
-// MTX_Ortho
+extern "C" void MTX_Perspective(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
+// builds a perspective (frustum) matrix
 extern "C" void MTX_Frustum(fx32 top, fx32 bottom, fx32 left, fx32 right, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
 extern "C" void func_01ff92a4();
 extern MtxFx33 data_02211430; // G3dGlb base rotation

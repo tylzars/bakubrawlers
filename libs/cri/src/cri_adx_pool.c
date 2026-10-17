@@ -83,7 +83,7 @@ extern int func_020511d4(int), func_020511dc(int), func_020511e4(int);
 extern void func_020511f4(int, void *);
 extern void func_020511fc(int);
 extern void func_020511c8(void);
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 extern VObj *func_02050e60(void *, int);
 extern void func_02050ea8(void *);
 extern void *func_02050698(void *, int);

@@ -24,7 +24,7 @@ typedef struct CriBits {
     unsigned char *cur;            /* 0x28 */
 } CriBits;
 
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 extern const int data_0209e424[];
 extern void RefillCriBits(CriBits *);
 extern void func_0204e67c(CriPair *, int, CriPair *, CriPair *);
@@ -38,7 +38,7 @@ CriBits *CreateCriBits(CriVObj *src, char *buf, int size)
     int a, b;
     if ((unsigned)size < 0x34) return 0;
     r = (CriBits *)(((unsigned)buf + 7) & ~7);
-    func_02012484(r, 0, 0x2c);
+    memset(r, 0, 0x2c);
     r->src = src;
     r->pos = 0;
     a = src->vt->size(src, 1);
@@ -56,14 +56,14 @@ CriBits *CreateCriBits(CriVObj *src, char *buf, int size)
 void ClearCriBits(CriBits *r)
 {
     if (r == 0) return;
-    func_02012484(r, 0, 0x2c);
+    memset(r, 0, 0x2c);
 }
 
 void ResetCriBits(CriBits *r, CriVObj *src)
 {
     int a, b;
     if (r == 0) return;
-    func_02012484(r, 0, 0x2c);
+    memset(r, 0, 0x2c);
     r->src = src;
     r->pos = 0;
     a = src->vt->size(src, 1);

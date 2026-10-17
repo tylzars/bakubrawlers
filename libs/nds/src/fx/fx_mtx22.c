@@ -42,10 +42,10 @@ void MTX_Concat22(const MtxFx22 *a, const MtxFx22 *b, MtxFx22 *ab) {
     }
 }
 
-// func_02000d88: writes a 4x4 fixed-point identity matrix (sixteen words,
+// MTX_Identity44_: writes a 4x4 fixed-point identity matrix (sixteen words,
 // 0x1000 at words 0, 5, 10 and 15, zero elsewhere) to the buffer in r0.
 // Returns nothing.
-asm void func_02000d88(void *m) {
+asm void MTX_Identity44_(void *m) {
     mov r2, #0x1000
     mov r3, #0
     stmia r0!, {r2, r3}         // m[0]=1.0, m[1]=0

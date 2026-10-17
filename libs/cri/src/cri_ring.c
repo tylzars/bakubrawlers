@@ -1,5 +1,5 @@
 /* CRI middleware, 0x02044a20-0x020450a4 */
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 
 /* ---- 0x02044a20-0x02045098: 24-entry ring buffer pool (0x48 bytes) ---- */
 typedef struct CriRing {
@@ -144,7 +144,7 @@ void CriRingDeallocNoLock(CriRing *r)
         CriRingSendJoinedText(data_020ad090, data_020ad09c);
         return;
     }
-    func_02012484(r, 0, 0x48);
+    memset(r, 0, 0x48);
     r->used = 0;
 }
 

@@ -2,7 +2,7 @@
 // ITCM memory routines 0x01ff94c8-0x01ff9802 (compiler 2.0/sp1p5, -O4,p -ipa file).
 // Hand-written asm (not reproducible from C: conditional-execution loops, single-register ldm/stm, 8-register stm runs):
 //   MIi_CpuClear16 0x01ff94c8, MIi_CpuCopy16 0x01ff94e0, MIi_CpuClear32 0x01ff94fc, MIi_CpuCopy32, MI_CpuSend32,
-//   MIi_CpuClearFast 0x01ff9540, MIi_CpuCopyFast(fast, ldm/stm x8) 0x01ff958c, MI_Copy36B, func_01ff95e0, func_01ff9604,
+//   MIi_CpuClearFast 0x01ff9540, MIi_CpuCopyFast(fast, ldm/stm x8) 0x01ff958c, MI_Copy36B, MI_Copy48B, MI_Copy64B,
 //   MI_Zero36B (thumb, stm x3).
 // MI_CpuFill8 and MI_CpuCopy8 (byte fill/copy) follow near the end.
 #include <nitro/internal.h>
@@ -125,8 +125,8 @@ asm void MI_Copy36B(const void *src, volatile void *dst) {
     bx lr
 }
 
-// func_01ff95e0(src, dst): copies 12 words (48 bytes), three at a time.
-asm void func_01ff95e0(const void *src, void *dst) {
+// MI_Copy48B(src, dst): copies 12 words (48 bytes), three at a time.
+asm void MI_Copy48B(const void *src, void *dst) {
     ldmia r0!, {r2, r3, ip}
     stmia r1!, {r2, r3, ip}
     ldmia r0!, {r2, r3, ip}
@@ -138,10 +138,10 @@ asm void func_01ff95e0(const void *src, void *dst) {
     bx lr
 }
 
-// func_01ff9604(src, dst): copies 16 words (64 bytes): four groups of three,
+// MI_Copy64B(src, dst): copies 16 words (64 bytes): four groups of three,
 // then a final group of four (r0 is reloaded as one of the data registers
 // without write-back).
-asm void func_01ff9604(const void *src, void *dst) {
+asm void MI_Copy64B(const void *src, void *dst) {
     ldmia r0!, {r2, r3, ip}
     stmia r1!, {r2, r3, ip}
     ldmia r0!, {r2, r3, ip}

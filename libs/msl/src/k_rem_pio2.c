@@ -11,7 +11,7 @@
 
 extern const int data_02090698[];      /* init_jk */
 extern const double data_020906a8[];   /* PIo2 */
-extern double func_0201bb60(double);
+extern double floor(double);
 extern double func_0201d700(double, int);
 static const double zero = 0.0;
 static const double one = 1.0;
@@ -48,7 +48,7 @@ recompute:
     }
 
     z = func_0201d700(z, q0);
-    z -= 8.0 * func_0201bb60(z * 0.125);
+    z -= 8.0 * floor(z * 0.125);
     n = (int)z;
     z -= (double)n;
     ih = 0;

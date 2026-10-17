@@ -2,9 +2,9 @@
 // 0x01ff817c, 0x01ff854c, 0x01ff8574, 0x01ff85dc, 0x01ff85fc, 0x01ff8618 (stm-heavy identity/rotation fills) are hand assembly.
 #include <nitro/internal.h>
 
-// func_01ff817c: writes a 3x3 fixed-point identity matrix to r0 (nine words,
+// MTX_Identity33_: writes a 3x3 fixed-point identity matrix to r0 (nine words,
 // 0x1000 on the diagonal). Element 8 is stored first, then the rest in order.
-asm void func_01ff817c(void *m) {
+asm void MTX_Identity33_(void *m) {
     mov r2, #0x1000
     str r2, [r0, #32]           // m[8] = 1.0
     mov r3, #0
@@ -17,7 +17,7 @@ asm void func_01ff817c(void *m) {
 }
 extern void FX_InvAsync(fx32 x);
 extern fx32 FX_GetDivResult(void);
-extern void func_01ff95e0(const void *src, void *dst);   // 48-byte copy
+extern void MI_Copy48B(const void *src, void *dst);   // 48-byte copy
 
 #define REG_DIVCNT (*(vu16 *) 0x04000280)
 #define REG_DIV_NUMER (*(vs64 *) 0x04000290)
@@ -42,7 +42,7 @@ void MTX_ApplyScale33(const MtxFx33 *src, MtxFx33 *dst, fx32 x, fx32 y, fx32 z) 
 }
 
 #pragma thumb on
-void func_01ff8260(MtxFx33 *mtx, fx32 sin, fx32 cos) {
+void MTX_RotX33_(MtxFx33 *mtx, fx32 sin, fx32 cos) {
     mtx->_[0] = 0x1000;
     mtx->_[1] = 0;
     mtx->_[2] = 0;
@@ -54,7 +54,7 @@ void func_01ff8260(MtxFx33 *mtx, fx32 sin, fx32 cos) {
     mtx->_[8] = cos;
 }
 
-asm void func_01ff827c(MtxFx33 *m, fx32 sin, fx32 cos) {
+asm void MTX_RotY33_(MtxFx33 *m, fx32 sin, fx32 cos) {
     str r2, [r0, #0]
     str r2, [r0, #0x20]
     mov r3, #0
@@ -87,7 +87,7 @@ asm void MTX_RotZ33_(MtxFx33 *m, fx32 sin, fx32 cos) {
 }
 #pragma thumb off
 
-void func_01ff82b0(const MtxFx33 *a, const MtxFx33 *b, MtxFx33 *ab) {
+void MTX_Concat33(const MtxFx33 *a, const MtxFx33 *b, MtxFx33 *ab) {
     MtxFx33 tmp;
     MtxFx33 *p;
     fx32 x, y, z;
@@ -128,14 +128,14 @@ void func_01ff82b0(const MtxFx33 *a, const MtxFx33 *b, MtxFx33 *ab) {
     }
 }
 
-void func_01ff84d0(const VecFx32 *v, const MtxFx33 *m, VecFx32 *out) {
+void MTX_MultVec33(const VecFx32 *v, const MtxFx33 *m, VecFx32 *out) {
     fx32 x = v->x, y = v->y, z = v->z;
     out->x = (fx32) (((fx64) x * m->_[0] + (fx64) y * m->_[3] + (fx64) z * m->_[6]) >> 12);
     out->y = (fx32) (((fx64) x * m->_[1] + (fx64) y * m->_[4] + (fx64) z * m->_[7]) >> 12);
     out->z = (fx32) (((fx64) x * m->_[2] + (fx64) y * m->_[5] + (fx64) z * m->_[8]) >> 12);
 }
 
-asm void func_01ff854c(MtxFx43 *m) {
+asm void MTX_Identity43_(MtxFx43 *m) {
     mov r2, #0x1000
     mov r3, #0
     stmia r0!, {r2, r3}
@@ -231,7 +231,7 @@ asm void MTX_RotZ43_(MtxFx43 *m, fx32 sin, fx32 cos) {
 // minus the old translation times the new 3x3 part. Elements are numbered row by row (0-8 the 3x3 part, 9-11 the
 // translation). Returns -1 and leaves dst alone when the determinant is zero, 0 otherwise. src may equal dst; the
 // result then goes through a stack copy.
-int func_01ff8634(const MtxFx43 *src, MtxFx43 *dst) {
+int MTX_Inverse43(const MtxFx43 *src, MtxFx43 *dst) {
     MtxFx43 tmp;
     MtxFx43 *out;
     fx32 det;                  // the determinant, later its reciprocal
@@ -283,7 +283,7 @@ int func_01ff8634(const MtxFx43 *src, MtxFx43 *dst) {
     out->_[11] = -TRUNC12((fx64) out->_[2] * src->_[9] + (fx64) out->_[5] * src->_[10] + (fx64) out->_[8] * src->_[11]);
 
     if (out == &tmp) {
-        func_01ff95e0(&tmp, dst);
+        MI_Copy48B(&tmp, dst);
     }
     return 0;
 }
@@ -292,7 +292,7 @@ int func_01ff8634(const MtxFx43 *src, MtxFx43 *dst) {
 #undef TRUNC12
 #undef ROUND12
 
-void func_01ff89c0(const MtxFx43 *a, const MtxFx43 *b, MtxFx43 *ab) {
+void MTX_Concat43(const MtxFx43 *a, const MtxFx43 *b, MtxFx43 *ab) {
     MtxFx43 tmp;
     MtxFx43 *p;
     fx32 x, y, z;

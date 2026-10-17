@@ -29,7 +29,7 @@ extern void func_02044514(CriSlot *);
 extern void func_02044548(CriSlot *);
 extern void func_020445a8(CriSlot *);
 extern void func_0204454c(CriSlot *);
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 extern int func_0203f714(int, int, int, short *, int, int, int, int, int);
 extern int func_0204006c(int, int, int, short *, int, short *, int, int, short *, int, int);
 
@@ -74,7 +74,7 @@ CriSlot *CriSlotAlloc(void)
     }
     if (i == 4) return 0;
     p = &g_slots[i];
-    func_02012484(p, 0, 0x3c);
+    memset(p, 0, 0x3c);
     p->used = 1;
     p->idx = i;
     p->i8 = 0;
@@ -124,7 +124,7 @@ void CriSlotDealloc(CriSlot *p)
 {
     if (p == 0) return;
     p->used = 0;
-    func_02012484(p, 0, 0x3c);
+    memset(p, 0, 0x3c);
 }
 
 int CriSlotGetState(CriSlot *p)

@@ -11,9 +11,9 @@
 
 // SDK matrix helpers (ITCM / main).
 void MTX_Identity22_(MtxFx22 *mtx);
-extern "C" void func_01ff817c(MtxFx33 *mtx); // MTX_Identity33_
-extern "C" void func_01ff854c(MtxFx43 *mtx); // MTX_Identity43_
-extern "C" void func_02000d88(MtxFx44 *mtx); // MTX_Identity44_
+extern "C" void MTX_Identity33_(MtxFx33 *mtx); // MTX_Identity33_
+extern "C" void MTX_Identity43_(MtxFx43 *mtx); // MTX_Identity43_
+extern "C" void MTX_Identity44_(MtxFx44 *mtx); // MTX_Identity44_
 
 MtxFx22 gIdentityMtx22;
 MtxFx33 data_0220e848;
@@ -22,17 +22,17 @@ MtxFx44 gIdentityMtx44;
 
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);                         // atan2 (16-bit angle)
 extern "C" u16 FX_AsinIdx(fx32 y);                                 // asin (16-bit angle)
-extern "C" void func_01ff827c(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotY33_
-extern "C" void func_01ff8260(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotX33_
-extern "C" void func_01ff82b0(MtxFx33 *a, MtxFx33 *b, MtxFx33 *out);  // MTX_Concat33
-extern "C" void func_01ff84d0(VecFx32 *v, MtxFx33 *m, VecFx32 *out);  // MTX_MultVec33
+extern "C" void MTX_RotY33_(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotY33_
+extern "C" void MTX_RotX33_(MtxFx33 *mtx, fx32 sin, fx32 cos);      // MTX_RotX33_
+extern "C" void MTX_Concat33(MtxFx33 *a, MtxFx33 *b, MtxFx33 *out);  // MTX_Concat33
+extern "C" void MTX_MultVec33(VecFx32 *v, MtxFx33 *m, VecFx32 *out);  // MTX_MultVec33
 
 extern "C" s64 FX_DivFx64c(fx32 a, fx32 b); // 64-bit fixed-point division (32 fraction bits)
 extern "C" fx32 FX_Modf(fx32 value, fx32 *integer); // splits into integer part and fraction
 
 // MTX_Perspective
-extern "C" void func_02001688(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
-// MTX_Ortho
+extern "C" void MTX_Perspective(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
+// builds a perspective (frustum) matrix
 extern "C" void MTX_Frustum(fx32 top, fx32 bottom, fx32 left, fx32 right, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
 extern "C" void func_01ff92a4();
 extern MtxFx33 data_02211430; // G3dGlb base rotation
@@ -109,9 +109,9 @@ extern "C" fx32 FX_Div(fx32 a, fx32 b); // FX_Div
 
 void InitIdentityMatrices() {
     MTX_Identity22_(&gIdentityMtx22);
-    func_01ff817c(&data_0220e848);
-    func_01ff854c(&gIdentityMtx43);
-    func_02000d88(&gIdentityMtx44);
+    MTX_Identity33_(&data_0220e848);
+    MTX_Identity43_(&gIdentityMtx43);
+    MTX_Identity44_(&gIdentityMtx44);
 }
 
 Camera::Camera() {
@@ -143,13 +143,13 @@ void Camera::ComputeDistanceAndAngles() {
     mPitch = FX_AsinIdx(dir.y);
     mtx = data_0220e848;
     if (mYaw != 0) {
-        func_01ff827c(&mtx, -SinIdx(mYaw), CosIdx(mYaw));
+        MTX_RotY33_(&mtx, -SinIdx(mYaw), CosIdx(mYaw));
     }
     if (mPitch != 0) {
-        func_01ff8260(&rot, -SinIdx(mPitch), CosIdx(mPitch));
-        func_01ff82b0(&mtx, &rot, &mtx);
+        MTX_RotX33_(&rot, -SinIdx(mPitch), CosIdx(mPitch));
+        MTX_Concat33(&mtx, &rot, &mtx);
     }
-    func_01ff84d0(&mUp, &mtx, &dir);
+    MTX_MultVec33(&mUp, &mtx, &dir);
     VEC_Normalize(&dir, &dir);
     mRoll = FX_Atan2Idx(-dir.x, dir.y);
 }
@@ -302,7 +302,7 @@ void CameraManager::UpdateProjection() {
     switch (mMode) {
         case 1: {
             Camera *camera = mCameras[mActive];
-            func_02001688(camera->mSin, camera->mCos, 0x1555, camera->mNear, camera->mFar, 0x19a, &data_02211374.mProjection);
+            MTX_Perspective(camera->mSin, camera->mCos, 0x1555, camera->mNear, camera->mFar, 0x19a, &data_02211374.mProjection);
             data_02211374.mFlags &= ~0x50;
             break;
         }
@@ -319,16 +319,16 @@ void CameraManager::UpdateProjection() {
             break;
         case 3: {
             Camera *camera = mCameras[mActive];
-            func_02001688(camera->mSin, camera->mCos, 0x1555, camera->mNear, camera->mFar, 0x19a, &data_02211374.mProjection);
+            MTX_Perspective(camera->mSin, camera->mCos, 0x1555, camera->mNear, camera->mFar, 0x19a, &data_02211374.mProjection);
             data_02211374.mFlags &= ~0x50;
             break;
         }
         case 4:
             if (mActive == 0) {
-                func_02001688(cam0->mSin, cam0->mCos, 0x1555, cam0->mNear, 0x18000, 0x1000, &data_02211374.mProjection);
+                MTX_Perspective(cam0->mSin, cam0->mCos, 0x1555, cam0->mNear, 0x18000, 0x1000, &data_02211374.mProjection);
                 data_02211374.mFlags &= ~0x50;
             } else {
-                func_02001688(cam1->mSin, cam1->mCos, 0x1555, 0x14000, cam1->mFar, 0x1000, &data_02211374.mProjection);
+                MTX_Perspective(cam1->mSin, cam1->mCos, 0x1555, 0x14000, cam1->mFar, 0x1000, &data_02211374.mProjection);
                 data_02211374.mFlags &= ~0x50;
             }
             break;

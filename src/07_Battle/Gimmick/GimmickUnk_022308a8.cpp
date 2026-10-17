@@ -68,7 +68,7 @@ void GimmickUnk_022308a8::Update() {
             e.z = FX_Mul(e.z, 0x8000);
             VEC_Subtract(&d, &e, &e);
             MTX_ApplyRotY33(&m, 0x71c);
-            func_01ff84d0(&e, &m, &e);
+            MTX_MultVec33(&e, &m, &e);
             VEC_Subtract(&e, &d, &mPullPerFrame);
             VEC_Normalize(&mPullPerFrame, &mPullPerFrame);
             mPullPerFrame.x = FX_Mul(mPullPerFrame.x, 0x19a);

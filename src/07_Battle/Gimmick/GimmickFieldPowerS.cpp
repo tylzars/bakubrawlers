@@ -127,7 +127,7 @@ void GimmickFieldPowerS::Update() {
             MTX_MultVec43(&v, &mtx, &v);
             VEC_Add(&camPos, &v, &camPos);
             MTX_ApplyRotX43(&rot, 0x1555);
-            func_01ff89c0(&rot, &mtx, &mtx);
+            MTX_Concat43(&rot, &mtx, &mtx);
             MTX_SetTranslation43(&mtx, &camPos);
             SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
             if (mVariant == 1) {

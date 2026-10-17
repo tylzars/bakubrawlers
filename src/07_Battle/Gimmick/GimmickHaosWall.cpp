@@ -81,13 +81,13 @@ void GimmickHaosWall::Update() {
         if (mRotY) {
             MTX_ApplyRotY33(&m, -mRotY);
         }
-        func_01ff84d0(&a, &m, &b);
+        MTX_MultVec33(&a, &m, &b);
         GimmickNode *node = &data_020d433c.mGimmicks->mNodes[(u8)(mUnk_46 + 1)];
         ((GimmickHaosWall *)node->mGimmick)->StartTimer(0x1e);
         VecFx32 c = node->mGimmick->mPosition;
         m = data_0220e848;
         MTX_ApplyRotY33(&m, node->mGimmick->mRotY + 0x8000);
-        func_01ff84d0(&b, &m, &b);
+        MTX_MultVec33(&b, &m, &b);
         VEC_Add(&c, &b, &c);
         c.y = h->mPosition.y;
         d.x = c.x;

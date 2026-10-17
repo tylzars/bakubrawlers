@@ -28,7 +28,7 @@ typedef struct CriPlay {
     int arg50;
 } CriPlay;
 
-extern void *func_02012484(void *, int, int);
+extern void *memset(void *, int, int);
 extern void func_0204ad0c(int, int);
 extern void func_0204ad1c(int, int);
 extern void func_0204ad28(int, int);
@@ -120,7 +120,7 @@ CriPlay *CreateCriPlay(CriVObj *h, int n, CriVObj **arr, char *buf, int size)
     char *q;
     int i;
     end = buf + size;
-    func_02012484(o, 0, 0x54);
+    memset(o, 0, 0x54);
     p = (char *)((((unsigned)o + 0x5b)) & ~7);
     q = p + 0x34;
     if (q > end) return 0;
@@ -162,7 +162,7 @@ void ReleaseCriPlay(CriPlay *o)
         o->dec = 0;
         func_0204ae48(d);
     }
-    func_02012484(o, 0, 0x54);
+    memset(o, 0, 0x54);
 }
 
 int GetCriPlayState(CriPlay *o) { return o->state; }

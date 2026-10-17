@@ -1290,7 +1290,7 @@ void BattleTarget::func_ov007_02255b78(VecFx32 *b, VecFx32 *c, VecFx32 *in, VecF
     int angle = -(FX_Atan2Idx(diff.z, diff.x) + 0x4000);
     mtx       = data_0220e848;
     MTX_ApplyRotY33(&mtx, angle);
-    func_01ff84d0(in, &mtx, out);
+    MTX_MultVec33(in, &mtx, out);
 }
 
 
@@ -1308,7 +1308,7 @@ void BattleTarget::func_ov007_02255c04(VecFx32 *vec, s32 *out) {
     VEC_Subtract(&mUnk_194, &target, &diff);
     int angle = -(FX_Atan2Idx(diff.x, diff.z) + 0x4000);
     MTX_ApplyRotY33(&mtx, angle);
-    func_01ff84d0(vec, &mtx, &rotated);
+    MTX_MultVec33(vec, &mtx, &rotated);
     out[1] = rotated.x;
     out[0] = rotated.z;
 }
@@ -1352,8 +1352,8 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                     tp.x = mUnk_11c.x + 0x37000 + (k << 13);
                     pos = tp;
                     MTX_ApplyRotY33(&rot, (u16) (data_ov007_0227a5e0.mUnk_0e[player->mUnk_f1] - mUnk_1b8));
-                    func_01ff84d0(&pos, &rot, &pos);
-                    func_01ff84d0(&mUnk_188, &rot, &mUnk_188);
+                    MTX_MultVec33(&pos, &rot, &pos);
+                    MTX_MultVec33(&mUnk_188, &rot, &mUnk_188);
                     pos.x = FX_Mul(pos.x, ident._[4]);
                     pos.z = FX_Mul(pos.z, ident._[8]);
                     if (target == 0) {
@@ -1381,7 +1381,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                     pos.y = 0x32000;
                     pos.z = 0x46000;
                     MTX_ApplyRotY33(&rot, mBakugan->mRotY);
-                    func_01ff84d0(&pos, &rot, &pos);
+                    MTX_MultVec33(&pos, &rot, &pos);
                     if (target == 0) {
                         SetVec(&mCamera->mPosition, pos.x + mBakugan->mPosition.x, pos.y, pos.z + mBakugan->mPosition.z);
                     } else {
@@ -1408,7 +1408,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
                         pos.z = data_ov007_0227a5e0.mUnk_148[slot - 1].z;
                     }
                     MTX_ApplyRotY33(&rot, mBakugan->mRotY);
-                    func_01ff84d0(&pos, &rot, &pos);
+                    MTX_MultVec33(&pos, &rot, &pos);
                     if (target == 0) {
                         SetVec(&mCamera->mPosition, pos.x + mBakugan->mPosition.x, pos.y, pos.z + mBakugan->mPosition.z);
                     } else {
@@ -1431,7 +1431,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             tp.x = mUnk_11c.x + 0x37000;
             pos = tp;
             MTX_ApplyRotY33(&rot, (u16) (data_ov007_0227a5e0.mUnk_0e[player->mUnk_f1] - mUnk_1b8));
-            func_01ff84d0(&pos, &rot, &pos);
+            MTX_MultVec33(&pos, &rot, &pos);
             pos.x = FX_Mul(pos.x, ident._[4]);
             pos.z = FX_Mul(pos.z, ident._[8]);
             VecFx32 t;
@@ -1474,7 +1474,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             pos.y = 0x5000;
             pos.z = 0x32000;
             MTX_ApplyRotY33(&rot, mBakugan->mRotY);
-            func_01ff84d0(&pos, &rot, &pos);
+            MTX_MultVec33(&pos, &rot, &pos);
             VecFx32 t;
             t.z = pos.z + mBakugan->mPosition.z;
             t.y = pos.y;
@@ -1490,7 +1490,7 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             pos.y = 0xf000;
             pos.z = 0x37000;
             MTX_ApplyRotY33(&rot, (u16) (FX_Atan2Idx(mVelocity.x, mVelocity.z) - 0xa000));
-            func_01ff84d0(&pos, &rot, &pos);
+            MTX_MultVec33(&pos, &rot, &pos);
             Camera *c = mCamera;
             cam.x     = c->mPosition.x;
             cam.y     = c->mPosition.y;
@@ -1513,8 +1513,8 @@ void BattleTarget::func_ov007_02255cb4(VecFx32 *target) {
             pos.z = 0x14000;
             MTX_ApplyRotY33(&rot, (u16) (FX_Atan2Idx(mPrevVelocity.x, mPrevVelocity.z) - 0xa000));
             s32 a = FX_Atan2Idx(mPrevVelocity.y, 0x1000);
-            func_01ff84d0(&pos, &rot, &pos);
-            func_01ff84d0(&mUnk_188, &rot, &mUnk_188);
+            MTX_MultVec33(&pos, &rot, &pos);
+            MTX_MultVec33(&mUnk_188, &rot, &mUnk_188);
             pos.y = FX_Mul(pos.y, -FX_SinCosTable_[(a >> 4) * 2]) + 0x5a000;
             cam.x = mUnk_194.x;
             cam.y = mUnk_194.y;
@@ -1609,8 +1609,8 @@ void BattleTarget::func_ov007_022567ac() {
             c.y = 0x2f800;
             c.z = 0x2f800;
             MTX_ApplyRotY33(&mtx, FX_Atan2Idx(mVelocity.x, mVelocity.z) - 0xa000);
-            func_01ff84d0(&c, &mtx, &c);
-            func_01ff84d0(&mUnk_188, &mtx, &mUnk_188);
+            MTX_MultVec33(&c, &mtx, &c);
+            MTX_MultVec33(&mUnk_188, &mtx, &mUnk_188);
             u16 pitch = FX_Atan2Idx(mVelocity.y, 0x1000);
             c.y       = FX_Mul(c.y, -FX_SinCosTable_[(pitch >> 4) * 2]);
             VEC_Add(&c, &mBakugan->mPosition, &c);
@@ -1665,7 +1665,7 @@ void BattleTarget::func_ov007_02256c4c(VecFx32 *target) {
                 VEC_Subtract(&cam, &mBakugan->mPosition, &diff);
                 int angle = -(FX_Atan2Idx(diff.z, diff.x) + 0x4000);
                 MTX_ApplyRotY33(&mtx, angle);
-                func_01ff84d0(&move, &mtx, &move);
+                MTX_MultVec33(&move, &mtx, &move);
                 if (mUnk_1d6 != 0) {
                     mUnk_1d6--;
                 }
@@ -3004,7 +3004,7 @@ BOOL BattleTarget::func_ov007_0225aa80(BattleHitBox *box, VecFx32 *point) {
     if (box->mRotZ) {
         MTX_ApplyRotZ33(&mtx, -box->mRotZ);
     }
-    func_01ff84d0(&d, &mtx, &d);
+    MTX_MultVec33(&d, &mtx, &d);
     VEC_Add(&d, &box->mPos, &d);
     fx32 pz    = box->mPos.z;
     fx32 hz    = box->mHalfZ;

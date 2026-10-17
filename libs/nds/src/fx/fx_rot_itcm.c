@@ -2,14 +2,14 @@
 #include <nitro/internal.h>
 
 extern const s16 FX_SinCosTable_[];   // sin/cos pairs indexed by angle >> 4
-void func_01ff8260(MtxFx33 *m, fx32 sin, fx32 cos);
-void func_01ff827c(MtxFx33 *m, fx32 sin, fx32 cos);
+void MTX_RotX33_(MtxFx33 *m, fx32 sin, fx32 cos);
+void MTX_RotY33_(MtxFx33 *m, fx32 sin, fx32 cos);
 void MTX_RotZ33_(MtxFx33 *m, fx32 sin, fx32 cos);
 void MTX_RotX43_(MtxFx43 *m, fx32 sin, fx32 cos);
 void MTX_RotY43_(MtxFx43 *m, fx32 sin, fx32 cos);
 void MTX_RotZ43_(MtxFx43 *m, fx32 sin, fx32 cos);
-void func_01ff82b0(const MtxFx33 *a, const MtxFx33 *b, MtxFx33 *ab);
-void func_01ff89c0(const MtxFx43 *a, const MtxFx43 *b, MtxFx43 *ab);
+void MTX_Concat33(const MtxFx33 *a, const MtxFx33 *b, MtxFx33 *ab);
+void MTX_Concat43(const MtxFx43 *a, const MtxFx43 *b, MtxFx43 *ab);
 void MTX_Concat22(const fx32 *a, const fx32 *b, fx32 *ab);
 
 void MTX_ScaleRot22(MtxFx22 *out, fx32 sx, fx32 sy, u16 angle) {
@@ -35,17 +35,17 @@ void NAME(MtxFx33 *m, int angle) { \
     MtxFx33 tmp; \
     int idx = (u16) angle >> 4; \
     FN(&tmp, FX_SinCosTable_[idx * 2], FX_SinCosTable_[idx * 2 + 1]); \
-    func_01ff82b0(&tmp, m, m); \
+    MTX_Concat33(&tmp, m, m); \
 }
 #define ROT43(NAME, FN) \
 void NAME(MtxFx43 *m, int angle) { \
     MtxFx43 tmp; \
     int idx = (u16) angle >> 4; \
     FN(&tmp, FX_SinCosTable_[idx * 2], FX_SinCosTable_[idx * 2 + 1]); \
-    func_01ff89c0(&tmp, m, m); \
+    MTX_Concat43(&tmp, m, m); \
 }
-ROT33(MTX_ApplyRotX33, func_01ff8260)
-ROT33(MTX_ApplyRotY33, func_01ff827c)
+ROT33(MTX_ApplyRotX33, MTX_RotX33_)
+ROT33(MTX_ApplyRotY33, MTX_RotY33_)
 ROT33(MTX_ApplyRotZ33, MTX_RotZ33_)
 ROT43(MTX_ApplyRotX43, MTX_RotX43_)
 ROT43(MTX_ApplyRotY43, MTX_RotY43_)

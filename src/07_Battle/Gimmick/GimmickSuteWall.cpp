@@ -120,7 +120,7 @@ void GimmickSuteWall::Update() {
         if ((int)data_020d433c.mGimmicks->mState < 2) {
             return;
         }
-        func_ov007_0222c2f0();
+        UpdateModelBThenRemove();
         break;
     case 3:
         mFinished = 1;
@@ -128,7 +128,7 @@ void GimmickSuteWall::Update() {
     }
 }
 
-int GimmickSuteWall::func_ov007_0222c2f0() {
+int GimmickSuteWall::UpdateModelBThenRemove() {
     if (!mModelB) {
         return 0;
     }

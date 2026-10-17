@@ -73,7 +73,7 @@ public:
     // and + 0x28 to the turn player's record mGauge (below 0xfd7).
     void UpdateKindSequence();
     void func_ov007_0222b8b4();
-    int func_ov007_0222bc24();
+    int UpdateModelBAndE();
 };
 
 // Wall that is thrown away (sutewall_n / sutewall_b), vtable 02286f94.
@@ -92,7 +92,7 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
-    int func_ov007_0222c2f0();
+    int UpdateModelBThenRemove();
 };
 
 // Boost pad (dashbase_00), vtable 02287044. mDir is the push direction, rotated by the model angles.
@@ -179,7 +179,7 @@ void func_ov007_0225ca18(BattleTarget *target, int a, int b);
 extern "C" void MTX_MultVec33(VecFx32 *vec, MtxFx33 *m, VecFx32 *out);
 extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y); // atan2 (16-bit angle)
-extern MtxFx33 data_0220e848;
+extern MtxFx33 gIdentityMtx33;
 
 // Jump pad (jumpobj_00), vtable 022871f0. mDir is the launch direction (0, 0x3000, 0) turned by a random angle.
 class GimmickJumpObj : public Gimmick {
@@ -208,7 +208,7 @@ struct GimmickNode {
     /* 0c */
 };
 
-// Object record of a SetData_%02d_%02d.bin file as loaded by func_ov007_02271a00 (0x20 bytes).
+// Object record of a SetData_%02d_%02d.bin file as loaded by LoadGimmickSetFile (0x20 bytes).
 struct GimmickSetEntry {
     /* 00 */ VecFx32 mPosition;
     /* 0c */ VecFx32 mScale; // half the stored value
@@ -345,7 +345,7 @@ public:
 };
 // Model-less pull field (no Load/Unload work): while the target is inside, adds mPullPerFrame to its mBaseVelocity,
 // towards a point 0x8000 nearer mPosition turned by 0x71c.
-class GimmickUnk_022308a8 : public Gimmick { // vtable 022875bc
+class GimmickPull : public Gimmick { // vtable 022875bc
 public:
     /* 45 */ PAD(0x45, 0x48);
     /* 48 */ VecFx32 mPullPerFrame; // recomputed every step; the 0x71c turn gives it a sideways part
@@ -353,8 +353,8 @@ public:
     /* 55 */ PAD(0x55, 0x58);
     /* 58 */
 
-    GimmickUnk_022308a8(u8 id);
-    virtual ~GimmickUnk_022308a8();
+    GimmickPull(u8 id);
+    virtual ~GimmickPull();
     /* 08 */ virtual void Update();
     /* 0c */ virtual void Load();
     /* 10 */ virtual void Unload();
@@ -387,12 +387,12 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 };
-// Wall pair of the Haos field (haos_wall): mUnk_46 is the manager id of the partner wall (node mUnk_46 + 1), the
+// Wall pair of the Haos field (haos_wall): mOtherWallEntryIndex is the set-file entry index of the partner wall (its manager node is the index + 1), the
 // target is pulled from the partner's side and the partner gets a mTimer frame cooldown. Vtable 0228af9c.
 class GimmickHaosWall : public Gimmick { // 02274d78
 public:
     /* 45 */ u8 mTimer; // counts down only on frames without a hit
-    /* 46 */ u8 mUnk_46;
+    /* 46 */ u8 mOtherWallEntryIndex;
     /* 47 */ PAD(0x47, 0x48);
     /* 48 */
 

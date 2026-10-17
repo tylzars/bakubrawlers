@@ -18,7 +18,7 @@ extern ConfrontEmblemStep gConfrontEmblemSteps[];
 class ConfrontBg02 : public BattleBase {
 public:
     /* 68 */ u16 mDelay;
-    /* 6a */ u8 mSide;
+    /* 6a */ u8 mPushBelowHalf;
     /* 6b */ PAD(0x6b, 0x6c);
     /* 6c */ ConfrontEmblemStep *mEmblemStep;
     /* 70 */ BattleData *mData;
@@ -32,9 +32,9 @@ public:
     /* 28 */ virtual void LoadGraphics();
     /* 2c */ virtual void InitSubScreen();
     /* 30 */ virtual BOOL func_ov007_0221bd84();
-    /* 34 */ virtual void vfunc_34();
+    /* 34 */ virtual void UpdateEmblems();
     /* 38 */ virtual BOOL func_ov007_0221bfa4();
-    /* 3c */ virtual void vfunc_3c();
+    /* 3c */ virtual void Draw();
     /* 40 */ virtual u8 UpdateTouch(int a);
     /* 44 */ virtual void vfunc_44(int index, u16 count);
 

@@ -44,10 +44,10 @@ _ZN12ConfrontBg014InitEP10BattleDataj kind:function(arm,size=0x2c) addr:0x0221d5
 _ZN12ConfrontBg0113InitSubScreenEv kind:function(arm,size=0xd8) addr:0x0221d608
 _ZN12ConfrontBg0112LoadGraphicsEv kind:function(arm,size=0x1ac) addr:0x0221d6e0
 _ZN12ConfrontBg0119func_ov007_0221bfa4Ev kind:function(arm,size=0x98) addr:0x0221d88c
-_ZN12ConfrontBg018vfunc_3cEv kind:function(arm,size=0x10) addr:0x0221d924
+_ZN12ConfrontBg014DrawEv kind:function(arm,size=0x10) addr:0x0221d924
 _ZN12ConfrontBg0111UpdateTouchEi kind:function(arm,size=0x310) addr:0x0221d934
 _ZN12ConfrontBg018vfunc_44Eit kind:function(arm,size=0x4) addr:0x0221dc44
-_ZN12ConfrontBg018vfunc_34Ev kind:function(arm,size=0x4) addr:0x0221dc48
+_ZN12ConfrontBg0113UpdateEmblemsEv kind:function(arm,size=0x4) addr:0x0221dc48
 _ZN12ConfrontBg0119func_ov007_0221bd84Ev kind:function(arm,size=0x8) addr:0x0221dc4c
 _ZThn4_N12ConfrontBg01D0Ev kind:function(arm,size=0x10) addr:0x0221dc54 weak
 _ZThn4_N12ConfrontBg01D1Ev kind:function(arm,size=0x10) addr:0x0221dc64 weak
@@ -66,9 +66,9 @@ _ZN12ConfrontBg02D0Ev kind:function(arm,size=0x9c) addr:0x0221e4cc
 _ZN12ConfrontBg024InitEP10BattleDataj kind:function(arm,size=0x94) addr:0x0221e568
 _ZN12ConfrontBg0213InitSubScreenEv kind:function(arm,size=0xb0) addr:0x0221e5fc
 _ZN12ConfrontBg0212LoadGraphicsEv kind:function(arm,size=0x358) addr:0x0221e6ac
-_ZN12ConfrontBg028vfunc_34Ev kind:function(arm,size=0x88) addr:0x0221ea04
+_ZN12ConfrontBg0213UpdateEmblemsEv kind:function(arm,size=0x88) addr:0x0221ea04
 _ZN12ConfrontBg0219func_ov007_0221bfa4Ev kind:function(arm,size=0x58) addr:0x0221ea8c
-_ZN12ConfrontBg028vfunc_3cEv kind:function(arm,size=0x124) addr:0x0221eae4
+_ZN12ConfrontBg024DrawEv kind:function(arm,size=0x124) addr:0x0221eae4
 _ZN12ConfrontBg0211UpdateTouchEi kind:function(arm,size=0x264) addr:0x0221ec08
 _ZN12ConfrontBg028vfunc_44Eit kind:function(arm,size=0x4) addr:0x0221ee6c
 _ZN12ConfrontBg0216UpdateEmblemStepEv kind:function(arm,size=0x58) addr:0x0221ee70
@@ -93,9 +93,9 @@ _ZN10Confront03D0Ev kind:function(arm,size=0x68) addr:0x0221f804
 _ZN10Confront034InitEP10BattleDataj kind:function(arm,size=0x94) addr:0x0221f86c
 _ZN10Confront0313InitSubScreenEv kind:function(arm,size=0xb0) addr:0x0221f900
 _ZN10Confront0312LoadGraphicsEv kind:function(arm,size=0x144) addr:0x0221f9b0
-_ZN10Confront038vfunc_34Ev kind:function(arm,size=0xc0) addr:0x0221faf4
+_ZN10Confront0313UpdateEmblemsEv kind:function(arm,size=0xc0) addr:0x0221faf4
 _ZN10Confront0319func_ov007_0221bfa4Ev kind:function(arm,size=0x58) addr:0x0221fbb4
-_ZN10Confront038vfunc_3cEv kind:function(arm,size=0x84) addr:0x0221fc0c
+_ZN10Confront034DrawEv kind:function(arm,size=0x84) addr:0x0221fc0c
 _ZN10Confront0311UpdateTouchEi kind:function(arm,size=0x1b8) addr:0x0221fc90
 _ZN10Confront038vfunc_44Eit kind:function(arm,size=0x4) addr:0x0221fe48
 _ZN10Confront0314CountDownDelayEv kind:function(arm,size=0x6c) addr:0x0221fe4c
@@ -110,12 +110,12 @@ _ZN12ConfrontBg044InitEP10BattleDataj kind:function(arm,size=0x68) addr:0x022201
 _ZN12ConfrontBg0413InitSubScreenEv kind:function(arm,size=0xc8) addr:0x022201c4
 _ZN12ConfrontBg0412LoadGraphicsEv kind:function(arm,size=0x1a4) addr:0x0222028c
 _ZN12ConfrontBg0419func_ov007_0221bfa4Ev kind:function(arm,size=0x3c) addr:0x02220430
-_ZN12ConfrontBg048vfunc_3cEv kind:function(arm,size=0x30) addr:0x0222046c
+_ZN12ConfrontBg044DrawEv kind:function(arm,size=0x30) addr:0x0222046c
 _ZN12ConfrontBg0411UpdateTouchEi kind:function(arm,size=0x1e8) addr:0x0222049c
 _ZN12ConfrontBg048vfunc_44Eit kind:function(arm,size=0x4) addr:0x02220684
 _Z18ConfrontBg04RotateP12ConfrontBg04 kind:function(arm,size=0x90) addr:0x02220688
 _ZN12ConfrontBg048SlowDownEv kind:function(arm,size=0x40) addr:0x02220718
-_ZN12ConfrontBg048vfunc_34Ev kind:function(arm,size=0x4) addr:0x02220758
+_ZN12ConfrontBg0413UpdateEmblemsEv kind:function(arm,size=0x4) addr:0x02220758
 _ZN12ConfrontBg0419func_ov007_0221bd84Ev kind:function(arm,size=0x8) addr:0x0222075c
 _ZThn4_N12ConfrontBg04D0Ev kind:function(arm,size=0x10) addr:0x02220764 weak
 _ZThn4_N12ConfrontBg04D1Ev kind:function(arm,size=0x10) addr:0x02220774 weak
@@ -132,9 +132,9 @@ _ZN12ConfrontBg05D0Ev kind:function(arm,size=0x68) addr:0x02220d8c
 _ZN12ConfrontBg054InitEP10BattleDataj kind:function(arm,size=0x78) addr:0x02220df4
 _ZN12ConfrontBg0513InitSubScreenEv kind:function(arm,size=0xd8) addr:0x02220e6c
 _ZN12ConfrontBg0512LoadGraphicsEv kind:function(arm,size=0x2b8) addr:0x02220f44
-_ZN12ConfrontBg058vfunc_34Ev kind:function(arm,size=0x28) addr:0x022211fc
+_ZN12ConfrontBg0513UpdateEmblemsEv kind:function(arm,size=0x28) addr:0x022211fc
 _ZN12ConfrontBg0519func_ov007_0221bfa4Ev kind:function(arm,size=0xa8) addr:0x02221224
-_ZN12ConfrontBg058vfunc_3cEv kind:function(arm,size=0x34) addr:0x022212cc
+_ZN12ConfrontBg054DrawEv kind:function(arm,size=0x34) addr:0x022212cc
 _ZN12ConfrontBg0511UpdateTouchEi kind:function(arm,size=0x230) addr:0x02221300
 _ZN12ConfrontBg058vfunc_44Eit kind:function(arm,size=0x4) addr:0x02221530
 _ZN12ConfrontBg0519func_ov007_0221bd84Ev kind:function(arm,size=0x8) addr:0x02221534
@@ -159,8 +159,8 @@ _ZN12ConfrontBg064InitEP10BattleDataj kind:function(arm,size=0x80) addr:0x022223
 _ZN12ConfrontBg0613InitSubScreenEv kind:function(arm,size=0xb0) addr:0x0222243c
 _ZN12ConfrontBg0619func_ov007_0221bd84Ev kind:function(arm,size=0x28) addr:0x022224ec
 _ZN12ConfrontBg0619func_ov007_0221bfa4Ev kind:function(arm,size=0x4c) addr:0x02222514
-_ZN12ConfrontBg068vfunc_34Ev kind:function(arm,size=0x28) addr:0x02222560
-_ZN12ConfrontBg068vfunc_3cEv kind:function(arm,size=0x28) addr:0x02222588
+_ZN12ConfrontBg0613UpdateEmblemsEv kind:function(arm,size=0x28) addr:0x02222560
+_ZN12ConfrontBg064DrawEv kind:function(arm,size=0x28) addr:0x02222588
 _ZN12ConfrontBg0611UpdateTouchEi kind:function(arm,size=0x130) addr:0x022225b0
 _ZN12ConfrontBg068vfunc_44Eit kind:function(arm,size=0x60) addr:0x022226e0
 _ZN12ConfrontBg0612LoadGraphicsEv kind:function(arm,size=0x4) addr:0x02222740
@@ -288,7 +288,7 @@ _ZN19GimmickFieldDestroy6UpdateEv kind:function(arm,size=0x1a4) addr:0x0222b184
 _ZN19GimmickFieldDestroy8PickKindEv kind:function(arm,size=0xe8) addr:0x0222b328
 _ZN19GimmickFieldDestroy18UpdateKindSequenceEv kind:function(arm,size=0x4a4) addr:0x0222b410
 _ZN19GimmickFieldDestroy19func_ov007_0222b8b4Ev kind:function(arm,size=0x370) addr:0x0222b8b4
-_ZN19GimmickFieldDestroy19func_ov007_0222bc24Ev kind:function(arm,size=0x198) addr:0x0222bc24
+_ZN19GimmickFieldDestroy16UpdateModelBAndEEv kind:function(arm,size=0x198) addr:0x0222bc24
 _ZN15GimmickSuteWallC1Eh kind:function(arm,size=0x3c) addr:0x0222bdbc
 _ZN15GimmickSuteWallD1Ev kind:function(arm,size=0x30) addr:0x0222bdf8
 _ZN15GimmickSuteWallD0Ev kind:function(arm,size=0x38) addr:0x0222be28
@@ -296,7 +296,7 @@ _ZN15GimmickSuteWall4LoadEv kind:function(arm,size=0x23c) addr:0x0222be60
 _ZN15GimmickSuteWall6UnloadEv kind:function(arm,size=0xec) addr:0x0222c09c
 _ZN15GimmickSuteWall6FinishEv kind:function(arm,size=0xc) addr:0x0222c188
 _ZN15GimmickSuteWall6UpdateEv kind:function(arm,size=0x15c) addr:0x0222c194
-_ZN15GimmickSuteWall19func_ov007_0222c2f0Ev kind:function(arm,size=0xe8) addr:0x0222c2f0
+_ZN15GimmickSuteWall22UpdateModelBThenRemoveEv kind:function(arm,size=0xe8) addr:0x0222c2f0
 _ZN15GimmickDashBaseC1Eh kind:function(arm,size=0x4c) addr:0x0222c3d8
 _ZN15GimmickDashBaseD1Ev kind:function(arm,size=0x30) addr:0x0222c424
 _ZN15GimmickDashBaseD0Ev kind:function(arm,size=0x38) addr:0x0222c454
@@ -393,13 +393,13 @@ _ZN19GimmickAbilityField6UnloadEv kind:function(arm,size=0xe4) addr:0x02230304
 _ZN19GimmickAbilityField6FinishEv kind:function(arm,size=0xc) addr:0x022303e8
 _ZN19GimmickAbilityField10DrawModelBEv kind:function(arm,size=0x1d8) addr:0x022303f4
 _ZN19GimmickAbilityField6UpdateEv kind:function(arm,size=0x2dc) addr:0x022305cc
-_ZN19GimmickUnk_022308a8C1Eh kind:function(arm,size=0x44) addr:0x022308a8
-_ZN19GimmickUnk_022308a8D1Ev kind:function(arm,size=0x30) addr:0x022308ec
-_ZN19GimmickUnk_022308a8D0Ev kind:function(arm,size=0x38) addr:0x0223091c
-_ZN19GimmickUnk_022308a84LoadEv kind:function(arm,size=0x4) addr:0x02230954
-_ZN19GimmickUnk_022308a86UnloadEv kind:function(arm,size=0x4) addr:0x02230958
-_ZN19GimmickUnk_022308a86FinishEv kind:function(arm,size=0xc) addr:0x0223095c
-_ZN19GimmickUnk_022308a86UpdateEv kind:function(arm,size=0x384) addr:0x02230968
+_ZN11GimmickPullC1Eh kind:function(arm,size=0x44) addr:0x022308a8
+_ZN11GimmickPullD1Ev kind:function(arm,size=0x30) addr:0x022308ec
+_ZN11GimmickPullD0Ev kind:function(arm,size=0x38) addr:0x0223091c
+_ZN11GimmickPull4LoadEv kind:function(arm,size=0x4) addr:0x02230954
+_ZN11GimmickPull6UnloadEv kind:function(arm,size=0x4) addr:0x02230958
+_ZN11GimmickPull6FinishEv kind:function(arm,size=0xc) addr:0x0223095c
+_ZN11GimmickPull6UpdateEv kind:function(arm,size=0x384) addr:0x02230968
 _ZN19GimmickUnk_02230cecC1Eh kind:function(arm,size=0x34) addr:0x02230cec
 _ZN19GimmickUnk_02230cecD1Ev kind:function(arm,size=0x30) addr:0x02230d20
 _ZN19GimmickUnk_02230cecD0Ev kind:function(arm,size=0x38) addr:0x02230d50
@@ -859,7 +859,7 @@ _ZN16BattleCardEffect16SetLastAnimationEv kind:function(arm,size=0x40) addr:0x02
 _ZN16BattleCardEffect13LoadAnimationEv kind:function(arm,size=0x1a0) addr:0x022716e8
 _ZN16BattleCardEffect15UpdateAnimationEv kind:function(arm,size=0x140) addr:0x02271888
 _Z17LoadCollisionFilePvh kind:function(arm,size=0x38) addr:0x022719c8
-_Z19func_ov007_02271a00P14GimmickSetFilePKc kind:function(arm,size=0x124) addr:0x02271a00
+_Z18LoadGimmickSetFileP14GimmickSetFilePKc kind:function(arm,size=0x124) addr:0x02271a00
 _Z16SetCollisionModeP18GimmickSetDataHeadi kind:function(arm,size=0x90) addr:0x02271b24
 _ZN16GimmickCollisionC1Ev kind:function(arm,size=0xa4) addr:0x02271bb4
 _ZN16GimmickCollisionD1Ev kind:function(arm,size=0x24) addr:0x02271c58
@@ -1731,7 +1731,7 @@ data_ov007_02284c58 kind:data(any) addr:0x02284c58
 data_ov007_02285078 kind:data(any) addr:0x02285078
 data_ov007_02285498 kind:data(any) addr:0x02285498
 gRealBakuTexEntries kind:data(any) addr:0x022858b8
-data_ov007_02285a98 kind:data(any) addr:0x02285a98 local
+sEffectOffset kind:data(any) addr:0x02285a98 local
 sTwoButtonPos kind:data(any) addr:0x02285aa4 local
 sThreeButtonPos kind:data(any) addr:0x02285aac local
 sTwoButtonItems kind:data(any) addr:0x02285ab8 local
@@ -2018,7 +2018,7 @@ _ZTV19GimmickAbilityField kind:data(any) addr:0x02287504
 @832 kind:data(any) addr:0x02287588 local
 @860 kind:data(any) addr:0x022875a0 local
 @861 kind:data(any) addr:0x022875b0 local
-_ZTV19GimmickUnk_022308a8 kind:data(any) addr:0x022875b4
+_ZTV11GimmickPull kind:data(any) addr:0x022875b4
 _ZTV19GimmickUnk_02230cec kind:data(any) addr:0x022875d8
 _ZTV9BattleCpu kind:data(any) addr:0x022875fc
 _ZTV18BattleUnionAbility kind:data(any) addr:0x0228760c

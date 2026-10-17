@@ -6,7 +6,7 @@ GimmickTornado::GimmickTornado(u8 id, u8 variant)
     mAngle  = 0;
     mState  = 0;
     mType = GIMMICK_TYPE_TORNADO;
-    mUnk_3b = variant;
+    mMoveMode = variant;
 }
 
 GimmickTornado::~GimmickTornado() {
@@ -46,7 +46,7 @@ void GimmickTornado::Update() {
     case 1:
         data_020d433c.mFlags &= 8;
         if (!data_020d433c.mFlags) {
-            switch (mUnk_3b) {
+            switch (mMoveMode) {
             case 0:
                 break;
             case 1:

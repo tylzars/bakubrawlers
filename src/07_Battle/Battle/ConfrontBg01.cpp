@@ -80,7 +80,7 @@ BOOL ConfrontBg01::func_ov007_0221bfa4() {
     return FALSE;
 }
 
-void ConfrontBg01::vfunc_3c() {
+void ConfrontBg01::Draw() {
     mBlend->UpdateWobble();
 }
 
@@ -125,7 +125,7 @@ u8 ConfrontBg01::UpdateTouch(int a) {
 void ConfrontBg01::vfunc_44(int index, u16 count) {
 }
 
-void ConfrontBg01::vfunc_34() {
+void ConfrontBg01::UpdateEmblems() {
 }
 
 BOOL ConfrontBg01::func_ov007_0221bd84() {

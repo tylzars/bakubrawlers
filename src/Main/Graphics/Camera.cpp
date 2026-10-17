@@ -16,7 +16,7 @@ extern "C" void MTX_Identity43_(MtxFx43 *mtx); // MTX_Identity43_
 extern "C" void MTX_Identity44_(MtxFx44 *mtx); // MTX_Identity44_
 
 MtxFx22 gIdentityMtx22;
-MtxFx33 data_0220e848;
+MtxFx33 gIdentityMtx33;
 MtxFx43 gIdentityMtx43;
 MtxFx44 gIdentityMtx44;
 
@@ -109,7 +109,7 @@ extern "C" fx32 FX_Div(fx32 a, fx32 b); // FX_Div
 
 void InitIdentityMatrices() {
     MTX_Identity22_(&gIdentityMtx22);
-    MTX_Identity33_(&data_0220e848);
+    MTX_Identity33_(&gIdentityMtx33);
     MTX_Identity43_(&gIdentityMtx43);
     MTX_Identity44_(&gIdentityMtx44);
 }
@@ -141,7 +141,7 @@ void Camera::ComputeDistanceAndAngles() {
     VEC_Normalize(&dir, &dir);
     mYaw   = FX_Atan2Idx(-dir.x, -dir.z);
     mPitch = FX_AsinIdx(dir.y);
-    mtx = data_0220e848;
+    mtx = gIdentityMtx33;
     if (mYaw != 0) {
         MTX_RotY33_(&mtx, -SinIdx(mYaw), CosIdx(mYaw));
     }
@@ -349,7 +349,7 @@ void CameraManager::SwapBuffers() {
 }
 
 void CameraManager::ResetBaseTransform() {
-    MI_Copy36B(&data_0220e848, &data_02211430);
+    MI_Copy36B(&gIdentityMtx33, &data_02211430);
     data_02211374.mFlags &= ~0xa4;
     SetG3dGlbTrans(&gDefaultBaseTrans);
     SetG3dGlbScale(&gDefaultBaseScale);

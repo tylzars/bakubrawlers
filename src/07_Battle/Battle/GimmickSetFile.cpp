@@ -6,12 +6,12 @@
 
 extern const char *data_ov007_0228abc0; // "/Game/Collision/atari_%02d.bin"
 
-int func_ov007_02271a00(GimmickSetFile *file, const char *path);
+int LoadGimmickSetFile(GimmickSetFile *file, const char *path);
 
 void LoadCollisionFile(void *buf, u8 id) {
     char path[0x40];
     sprintf(path, data_ov007_0228abc0, id);
-    func_ov007_02271a00((GimmickSetFile *) buf, path);
+    LoadGimmickSetFile((GimmickSetFile *) buf, path);
 }
 
 // One 0x20 byte object record of a SetData file as stored on disk (the file's records start 4 bytes in).
@@ -33,7 +33,7 @@ struct GimmickSetSrcFile {
     /* 04 */ GimmickSetSrcEntry mEntries[1];
 };
 
-int func_ov007_02271a00(GimmickSetFile *file, const char *path) {
+int LoadGimmickSetFile(GimmickSetFile *file, const char *path) {
     u32 size;
     GimmickSetSrcFile *src = (GimmickSetSrcFile *) LoadFile(path, 0, 0, 0, &size, 0);
     if (src) {

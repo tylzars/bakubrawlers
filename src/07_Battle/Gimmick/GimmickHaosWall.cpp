@@ -4,14 +4,14 @@
 #include "System/SoundManager.hpp"
 
 extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
-extern MtxFx33 data_0220e848;
+extern MtxFx33 gIdentityMtx33;
 
 static ModelResource *sResource;
 
 GimmickHaosWall::GimmickHaosWall(u8 id, u8 param)
     : Gimmick(id, 0) {
     mTimer = 0;
-    mUnk_46 = param;
+    mOtherWallEntryIndex = param;
     mState  = 0;
     mType = GIMMICK_TYPE_HAOS_WALL;
 }
@@ -75,17 +75,17 @@ void GimmickHaosWall::Update() {
         VecFx32 a;
         VecFx32 b;
         VecFx32 d;
-        MtxFx33 m = data_0220e848;
+        MtxFx33 m = gIdentityMtx33;
         BakuganModel *h = list->mBattleTarget->mBakugan;
         VEC_Subtract(&mPosition, &h->mPosition, &a);
         if (mRotY) {
             MTX_ApplyRotY33(&m, -mRotY);
         }
         MTX_MultVec33(&a, &m, &b);
-        GimmickNode *node = &data_020d433c.mGimmicks->mNodes[(u8)(mUnk_46 + 1)];
+        GimmickNode *node = &data_020d433c.mGimmicks->mNodes[(u8)(mOtherWallEntryIndex + 1)];
         ((GimmickHaosWall *)node->mGimmick)->StartTimer(0x1e);
         VecFx32 c = node->mGimmick->mPosition;
-        m = data_0220e848;
+        m = gIdentityMtx33;
         MTX_ApplyRotY33(&m, node->mGimmick->mRotY + 0x8000);
         MTX_MultVec33(&b, &m, &b);
         VEC_Add(&c, &b, &c);

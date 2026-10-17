@@ -53,8 +53,8 @@ struct GimmickSetData {
 // subclass per type and each subclass constructor stores its type in Gimmick::mType, which LoadCollision and the
 // subclasses' own collision loaders pass on as the collision set's tag (BattleTarget switches on it). Type 1 creates a
 // GimmickExePoint when data_020d433c.mUnk_7a is set, otherwise a GimmickFieldPowerS with variant 1, which stores
-// GIMMICK_TYPE_FIELD_POWER_S. Types 0x1f, 0x28 and 0x3d (GimmickUnk_02274830, GimmickUnk_022308a8,
-// GimmickUnk_02230cec) are not named.
+// GIMMICK_TYPE_FIELD_POWER_S. Types 0x1f, 0x28 and 0x3d (GimmickUnk_02274830, GimmickPull,
+// GimmickUnk_02230cec) stay literals.
 enum {
     GIMMICK_TYPE_EXE_POINT       = 1,
     GIMMICK_TYPE_FIELD_POWER_G   = 2,
@@ -84,7 +84,7 @@ public:
     /* 38 */ u8 mState;
     /* 39 */ u8 mId;
     /* 3a */ u8 mType; // GIMMICK_TYPE_* of the class (a type 1 entry made into GimmickFieldPowerS stores FIELD_POWER_S)
-    /* 3b */ u8 mUnk_3b;
+    /* 3b */ u8 mMoveMode;
     /* 3c */ GimmickSetData *mCollision;
     /* 40 */ s32 mCountingTurns;
     /* 44 */ u8 mTurnCount; // + 1 per BattlePlayerList::mTurnCount++ while mCountingTurns (per player turn, not round)

@@ -61,7 +61,7 @@ void GimmickJumpObj::Finish() {
 }
 
 void GimmickJumpObj::Update() {
-    MtxFx33 m = data_0220e848;
+    MtxFx33 m = gIdentityMtx33;
     switch (mState) {
     case 0:
         Init();
@@ -115,7 +115,7 @@ void GimmickJumpObj::Update() {
 }
 
 void GimmickJumpObj::RotateDir(int reset) {
-    MtxFx33 m = data_0220e848;
+    MtxFx33 m = gIdentityMtx33;
     if (mRotY) {
         MTX_ApplyRotY33(&m, mRotY);
     }

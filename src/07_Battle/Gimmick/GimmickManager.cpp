@@ -4,7 +4,7 @@
 #include <nitro/mi.h>
 
 static const char *sSetDataFormat = "SetData_%02d_%02d.bin";
-int func_ov007_02271a00(GimmickSetFile *file, const char *path);
+int LoadGimmickSetFile(GimmickSetFile *file, const char *path);
 
 GimmickManager::GimmickManager() {
     mNodes = new GimmickNode[0x40];
@@ -110,7 +110,7 @@ void GimmickManager::CreateFromFile(GimmickSetFile *file) {
             g = new GimmickAbilityField(mIds[mTop], file->mEntries[i].mParam);
             break;
         case 0x28:
-            g = new GimmickUnk_022308a8(mIds[mTop]);
+            g = new GimmickPull(mIds[mTop]);
             break;
         case GIMMICK_TYPE_AQUOS_FUKIDASHI:
             g = new GimmickAquosFukidashi(mIds[mTop]);
@@ -133,7 +133,7 @@ void GimmickManager::LoadSetData(int a, int b) {
     char path[0x40];
     sprintf(path, sSetDataFormat, a, b);
     ChangeDir("/Game/Gimmick/SetData");
-    if (func_ov007_02271a00((GimmickSetFile *)buf, path)) {
+    if (LoadGimmickSetFile((GimmickSetFile *)buf, path)) {
         CreateFromFile((GimmickSetFile *)buf);
     }
     ChangeDir("/");

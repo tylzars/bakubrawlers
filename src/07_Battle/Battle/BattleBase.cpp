@@ -299,7 +299,7 @@ void BattleBase::Update() {
             break;
         case 7:
             if (!CheckBattleEnd()) {
-                vfunc_34();
+                UpdateEmblems();
                 func_ov007_0221c938();
             } else {
                 mUnk_1c = mUnk_1d = -1;
@@ -405,7 +405,7 @@ void BattleBase::Update() {
         }
     }
     if (!mUnk_54_3) {
-        vfunc_3c();
+        Draw();
     }
     if (mField3D) {
         mField3D->Draw(mHud->mPushPercent);

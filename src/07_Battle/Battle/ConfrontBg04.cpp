@@ -80,7 +80,7 @@ BOOL ConfrontBg04::func_ov007_0221bfa4() {
     return FALSE;
 }
 
-void ConfrontBg04::vfunc_3c() {
+void ConfrontBg04::Draw() {
     mBlend->UpdateWobble();
     if (mSpeed != 0) {
         QueueFrameCallback((FrameCallback) ConfrontBg04Rotate, this);
@@ -180,7 +180,7 @@ void ConfrontBg04::SlowDown() {
     }
 }
 
-void ConfrontBg04::vfunc_34() {
+void ConfrontBg04::UpdateEmblems() {
 }
 
 BOOL ConfrontBg04::func_ov007_0221bd84() {

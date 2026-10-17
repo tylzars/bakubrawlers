@@ -78,8 +78,8 @@ public:
     ConfrontBg06();
     virtual ~ConfrontBg06();
     virtual void LoadGraphics();
-    virtual void vfunc_34();
-    virtual void vfunc_3c();
+    virtual void UpdateEmblems();
+    virtual void Draw();
     virtual u8 UpdateTouch(int a);
     virtual void vfunc_44(int index, u16 count);
 };

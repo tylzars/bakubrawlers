@@ -144,7 +144,7 @@ void GimmickFieldDestroy::Update() {
     }
     case 2:
         if ((int)data_020d433c.mGimmicks->mState >= 2) {
-            func_ov007_0222bc24();
+            UpdateModelBAndE();
         }
         break;
     case 3:
@@ -343,7 +343,7 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
     }
 }
 
-int GimmickFieldDestroy::func_ov007_0222bc24() {
+int GimmickFieldDestroy::UpdateModelBAndE() {
     if (!mModelB) {
         return 0;
     }

@@ -12,7 +12,7 @@ public:
     /* 05 */ u8 mEmblem;
     /* 06 */ PAD(0x06, 0x07);
     /* 07 */ u8 mTouched : 1;
-    /* 07 */ u8 mUnk_07_1 : 1;
+    /* 07 */ u8 mDrawLate : 1;
     /* 07 */ u8 mShrinkStarted : 1;
     /* 08 */ u8 mHoldFrames; // frames of the step at scale 1.0 (not a stylus hold), up to mHoldFrameCount
     /* 09 */ u8 mHoldFrameCount;

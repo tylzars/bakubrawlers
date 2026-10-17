@@ -1289,7 +1289,7 @@ void BattleTarget::func_ov007_02255b78(VecFx32 *b, VecFx32 *c, VecFx32 *in, VecF
     diff.y = 0;
     VEC_Subtract(c, b, &diff);
     int angle = -(FX_Atan2Idx(diff.z, diff.x) + 0x4000);
-    mtx       = data_0220e848;
+    mtx       = gIdentityMtx33;
     MTX_ApplyRotY33(&mtx, angle);
     MTX_MultVec33(in, &mtx, out);
 }
@@ -1301,7 +1301,7 @@ void BattleTarget::func_ov007_02255c04(VecFx32 *vec, s32 *out) {
     VecFx32 target;
     VecFx32 diff;
     VecFx32 rotated;
-    MtxFx33 mtx = data_0220e848;
+    MtxFx33 mtx = gIdentityMtx33;
     Camera *camera = mCamera;
     target.x = camera->mTarget.x;
     target.y = camera->mTarget.y;
@@ -1324,7 +1324,7 @@ void BattleTarget::UpdateCameraPosition(VecFx32 *target) {
     MtxFx33 ident;
     VecFx32 v;
     MtxFx33 m0;
-    m0    = data_0220e848;
+    m0    = gIdentityMtx33;
     rot   = m0;
     ident = m0;
     BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
@@ -1544,7 +1544,7 @@ void BattleTarget::UpdateJumpObjCameraPosition() {
     VecFx32 b;
     VecFx32 a;
     VecFx32 dir;
-    MtxFx33 mtx = data_0220e848;
+    MtxFx33 mtx = gIdentityMtx33;
     switch (mJumpObjCameraStep) {
         case 0: {
             mUnk_184 = 0x333;
@@ -1652,7 +1652,7 @@ void BattleTarget::UpdateCameraTarget(VecFx32 *target) {
                 target = &mBakugan->mPosition;
             }
             if (mState > 1) {
-                mtx    = data_0220e848;
+                mtx    = gIdentityMtx33;
                 move.x = 0;
                 move.y = 0;
                 move.z = 0;
@@ -2995,7 +2995,7 @@ BOOL BattleTarget::TestPointInHitBoxXZ(BattleHitBox *box, VecFx32 *point) {
     VecFx32 d;
     MtxFx33 mtx;
     VEC_Subtract(point, &box->mPos, &d);
-    mtx = data_0220e848;
+    mtx = gIdentityMtx33;
     if (box->mRotY) {
         MTX_ApplyRotY33(&mtx, -box->mRotY);
     }

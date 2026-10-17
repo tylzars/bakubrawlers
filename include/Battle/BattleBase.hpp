@@ -557,10 +557,10 @@ public:
     /* 28 */ virtual void LoadGraphics() = 0;
     /* 2c */ virtual void InitSubScreen();
     /* 30 */ virtual BOOL func_ov007_0221bd84();
-    /* 34 */ virtual void vfunc_34() = 0;
+    /* 34 */ virtual void UpdateEmblems() = 0; // state 7 only; empty for ConfrontBg01 / ConfrontBg04 (no emblems)
     /* 38 */ virtual BOOL func_ov007_0221bfa4();
-    /* 3c */ virtual void vfunc_3c() = 0;
-    // The side's amount (0 = none); called for the local player's side (mUnk_12, from BattlePlayerList::mUnk_2a9) while
+    /* 3c */ virtual void Draw() = 0; // skipped while mUnk_54_3; ConfrontBg01 / ConfrontBg04 draw no cells
+    // The side's amount (0 = none); called for the local player's side (mLocalSide, from BattlePlayerList::mUnk_2a9) while
     // its c[] is 0; low: that side's push percent is below 0x32.
     /* 40 */ virtual u8 UpdateTouch(int low) = 0;
     /* 44 */ virtual void vfunc_44(int index, u16 count) = 0;

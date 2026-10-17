@@ -3,10 +3,10 @@
 #include "System/SoundManager.hpp"
 
 extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
-extern MtxFx33 data_0220e848;
+extern MtxFx33 gIdentityMtx33;
 extern "C" void StopSeqArc(SoundManager *manager, u32 a, u32 b);
 
-GimmickUnk_022308a8::GimmickUnk_022308a8(u8 id)
+GimmickPull::GimmickPull(u8 id)
     : Gimmick(id, 0) {
     mSoundStarted = 0;
     mState  = 0;
@@ -16,21 +16,21 @@ GimmickUnk_022308a8::GimmickUnk_022308a8(u8 id)
     mPullPerFrame.z = 0;
 }
 
-GimmickUnk_022308a8::~GimmickUnk_022308a8() {
+GimmickPull::~GimmickPull() {
     Unload();
 }
 
-void GimmickUnk_022308a8::Load() {
+void GimmickPull::Load() {
 }
 
-void GimmickUnk_022308a8::Unload() {
+void GimmickPull::Unload() {
 }
 
-void GimmickUnk_022308a8::Finish() {
+void GimmickPull::Finish() {
     mState = 2;
 }
 
-void GimmickUnk_022308a8::Update() {
+void GimmickPull::Update() {
     VecFx32 d;
     VecFx32 e;
     MtxFx33 m;
@@ -56,7 +56,7 @@ void GimmickUnk_022308a8::Update() {
             if (r->mAttribute == 1) {
                 return;
             }
-            m = data_0220e848;
+            m = gIdentityMtx33;
             VEC_Subtract(&data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition, &mPosition, &d);
             d.y = 0;
             e.x = d.x;

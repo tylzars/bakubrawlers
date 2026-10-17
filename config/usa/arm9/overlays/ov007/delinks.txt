@@ -196,7 +196,7 @@ src/07_Battle/Gimmick/GimmickAbilityField.cpp:
     .data       start:0x02287504 end:0x022875b4
     .bss        start:0x0228b800 end:0x0228b820
 
-src/07_Battle/Gimmick/GimmickUnk_022308a8.cpp:
+src/07_Battle/Gimmick/GimmickPull.cpp:
     complete
     .text       start:0x022308a8 end:0x02230cec
     .data       start:0x022875b4 end:0x022875d8

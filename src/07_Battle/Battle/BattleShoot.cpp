@@ -1127,7 +1127,7 @@ struct BattleShootRange { // at gCpuPushIntervalRanges
     u32 mHigh;
 };
 extern const BattleShootRange gCpuPushIntervalRanges[3];
-extern MtxFx33 data_0220e848;
+extern MtxFx33 gIdentityMtx33;
 extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
 extern "C" void MTX_MultVec33(VecFx32 *v, MtxFx33 *m, VecFx32 *out);
 
@@ -1398,7 +1398,7 @@ void BattleShoot::UpdateTurnPlayerCpu() {
         v.z   = FX_Mul(v.z, k);
     }
     if (mBattleTarget->mCollided != 0) {
-        MtxFx33 m = data_0220e848;
+        MtxFx33 m = gIdentityMtx33;
         MTX_ApplyRotY33(&m, 0x5555);
         MTX_MultVec33(&v, &m, &v);
         v.x = FX_Mul(v.x, 0xa000);

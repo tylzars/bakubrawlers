@@ -161,7 +161,7 @@ void ConfrontBg05::LoadGraphics() {
     ChangeDir("/");
 }
 
-void ConfrontBg05::vfunc_34() {
+void ConfrontBg05::UpdateEmblems() {
     u8 spectator = IsSpectator();
     if (spectator) {
         return;
@@ -184,7 +184,7 @@ BOOL ConfrontBg05::func_ov007_0221bfa4() {
     return FALSE;
 }
 
-void ConfrontBg05::vfunc_3c() {
+void ConfrontBg05::Draw() {
     u8 spectator = IsSpectator();
     if (spectator) {
         return;

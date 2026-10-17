@@ -17,7 +17,7 @@ ConfrontEmblem03::ConfrontEmblem03(u8 index) {
     mState = 2;
     mEmblem = index;
     mTouched = 0;
-    mUnk_07_1 = 0;
+    mDrawLate = 0;
     mShrinkStarted = 0;
     mHoldFrames = 0;
     mHoldFrameCount = 0;
@@ -43,7 +43,7 @@ void ConfrontEmblem03::Start(u8 slot, int flag) {
     mY = (float) ((slot / 4) * 32 + 0x68 + BattleRand32(2));
     mState = 0;
     mStep = 0;
-    mUnk_07_1 = 0;
+    mDrawLate = 0;
     mSlot = slot;
     mHoldFrames = 0;
     if (flag == 0) {
@@ -164,7 +164,7 @@ int ConfrontEmblem03::func_ov007_0221f594() {
     } else {
         anim = 2;
         result = (s16) (s32) (100.0f * mScale) / 2;
-        mUnk_07_1 = 1;
+        mDrawLate = 1;
     }
     if (result != -1) {
         mTouched = 1;
@@ -253,7 +253,7 @@ void Confront03::LoadGraphics() {
     ChangeDir("/");
 }
 
-void Confront03::vfunc_34() {
+void Confront03::UpdateEmblems() {
     if (CountDownDelay()) {
         u8 count = BattleRand32(mConfrontRow->mUnk_04);
         u8 i = 0;
@@ -294,21 +294,21 @@ BOOL Confront03::func_ov007_0221bfa4() {
     return FALSE;
 }
 
-void Confront03::vfunc_3c() {
+void Confront03::Draw() {
     BOOL spectator = IsSpectator();
     if ((u8) spectator) {
         return;
     }
     u8 i = 0;
     do {
-        if (!mEmblems[i]->mUnk_07_1) {
+        if (!mEmblems[i]->mDrawLate) {
             mEmblems[i]->Draw();
         }
         i++;
     } while (i < 4);
     i = 0;
     do {
-        if (mEmblems[i]->mUnk_07_1) {
+        if (mEmblems[i]->mDrawLate) {
             mEmblems[i]->Draw();
         }
         i++;

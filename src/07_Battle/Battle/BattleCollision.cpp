@@ -38,7 +38,7 @@ BOOL TestPosInBoxXZ(BattleObstacle *a, BattleObstacle *b) {
     VecFx32 d;
     MtxFx33 mtx;
     VEC_Subtract(&a->mPos, &b->mPos, &d);
-    mtx = data_0220e848;
+    mtx = gIdentityMtx33;
     if (b->mRotY) {
         MTX_ApplyRotY33(&mtx, -b->mRotY);
     }
@@ -127,7 +127,7 @@ void GetNearestPointOnBox(BattleSphere *sphere, BattleHitBox *box, VecFx32 *out)
     axes[2].x = 0;
     axes[2].y = 0;
     axes[2].z = 0x1000;
-    mtx       = data_0220e848;
+    mtx       = gIdentityMtx33;
     MTX_ApplyRotY33(&mtx, box->mRotY);
     MTX_ApplyRotX33(&mtx, box->mRotX);
     MTX_ApplyRotZ33(&mtx, box->mRotZ);

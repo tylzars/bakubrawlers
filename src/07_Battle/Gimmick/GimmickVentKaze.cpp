@@ -3,7 +3,7 @@
 #include "System/FileSystem.hpp"
 
 extern "C" void MTX_ApplyRotY33(MtxFx33 *m, u16 angle);
-extern MtxFx33 data_0220e848;
+extern MtxFx33 gIdentityMtx33;
 
 static const VecFx32 data_ov007_02279450 = {0, 0, -0x14000};
 
@@ -52,7 +52,7 @@ void GimmickVentKaze::Finish() {
 void GimmickVentKaze::Update() {
     VecFx32 c;
     VecFx32 b;
-    MtxFx33 m = data_0220e848;
+    MtxFx33 m = gIdentityMtx33;
     switch (mState) {
     case 0:
         LoadCollision(0x34, COLLISION_GROUP_GIMMICK);
@@ -79,7 +79,7 @@ void GimmickVentKaze::Update() {
         }
         BakuganModel *h = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan;
         VecFx32 a           = data_ov007_02279450;
-        m                   = data_0220e848;
+        m                   = gIdentityMtx33;
         if (mRotY) {
             MTX_ApplyRotY33(&m, mRotY);
         }
@@ -92,7 +92,7 @@ void GimmickVentKaze::Update() {
         c.x    = x;
         c.y    = y;
         c.z    = z;
-        m   = data_0220e848;
+        m   = gIdentityMtx33;
         if (mRotY) {
             MTX_ApplyRotY33(&m, mRotY);
         }

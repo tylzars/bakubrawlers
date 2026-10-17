@@ -3,7 +3,7 @@
 #include "Graphics/Camera.hpp"
 #include "System/SoundManager.hpp"
 
-static const VecFx32 data_ov007_02285a98 = {0, 0xf000, 0xa000};
+static const VecFx32 sEffectOffset = {0, 0xf000, 0xa000};
 
 GimmickUnk_02274830::GimmickUnk_02274830(u8 id)
     : Gimmick(id, 0) {
@@ -80,7 +80,7 @@ void GimmickUnk_02274830::Update() {
         CameraManager::Get();
         MtxFx43 mtx    = data_020c1cf4;
         VecFx32 camPos = data_020d433c.mBattlePlayers->mBattleTarget->mBakugan->mPosition;
-        VecFx32 w      = data_ov007_02285a98;
+        VecFx32 w      = sEffectOffset;
         u16 handle     = StartEffect(data_020d433c.mEffects, 1, 4, 0, 0);
         if (handle) {
             mtx._[11] = 0;

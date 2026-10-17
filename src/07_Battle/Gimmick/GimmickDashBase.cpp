@@ -129,7 +129,7 @@ void GimmickDashBase::DrawModel() {
 }
 
 void GimmickDashBase::RotateDir(int reset) {
-    MtxFx33 m = data_0220e848;
+    MtxFx33 m = gIdentityMtx33;
     if (mRotY) {
         MTX_ApplyRotY33(&m, mRotY);
     }

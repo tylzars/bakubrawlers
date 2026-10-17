@@ -1078,7 +1078,7 @@ int PredictStop(VecFx32 *pos, VecFx32 *vel, VecFx32 *out, u32 unk4, u32 unk5) {
 
 void RotateDirScaled(u16 *rot, u32 s, VecFx32 *dir, VecFx32 *out) {
     VEC_Normalize(dir, out);
-    MtxFx33 m = data_0220e848;
+    MtxFx33 m = gIdentityMtx33;
     if (rot[1]) {
         MTX_ApplyRotY33(&m, rot[1]);
     }
@@ -1194,7 +1194,7 @@ void func_ov007_022337ec(VecFx32 *A, VecFx32 *B, VecFx32 *C, VecFx32 *D, VecFx32
 }
 
 void RotateVecY(VecFx32 *in, u16 angle, VecFx32 *out) {
-    MtxFx33 m = data_0220e848;
+    MtxFx33 m = gIdentityMtx33;
     MTX_ApplyRotY33(&m, angle);
     MTX_MultVec33(in, &m, out);
 }

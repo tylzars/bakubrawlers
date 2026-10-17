@@ -19,12 +19,12 @@ ConfrontEmblem02::ConfrontEmblem02(u8 emblem) {
     mSide = 0;
     mEmblem = emblem;
     mTouched = 0;
-    mUnk_07_1 = 0;
-    mUnk_07_2 = 0;
+    mDrawLate = 0;
+    mCenterReported = 0;
     mShrinkStarted = 0;
     mStepFrames = 0;
     mStep = 0;
-    mPos = 0;
+    mDistance = 0;
     mSpeed = 0;
     mAccel = 0;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
@@ -45,15 +45,15 @@ ConfrontEmblem02::~ConfrontEmblem02() {
 void ConfrontEmblem02::Start(u8 side) {
     mSide = BattleRand32(2);
     mState = 0;
-    mUnk_07_1 = 0;
+    mDrawLate = 0;
     mStep = 0;
     mStepFrames = 0;
-    mAngle = mSide == 0 ? -32.0f : 288.0f;
-    mPos = 0;
+    mX = mSide == 0 ? -32.0f : 288.0f;
+    mDistance = 0;
     mSpeed = 0x148;
     mAccel = 0x148;
     mScale = 1.0f;
-    mUnk_07_2 = 0;
+    mCenterReported = 0;
     mCellAnim->ResetAnimation();
     mCellAnim->SetAnimation(0);
 }
@@ -64,14 +64,14 @@ void ConfrontEmblem02::Update() {
             switch (mStep) {
                 case 0:
                     if (mSide == 0) {
-                        mAngle = mAngle + (float) mSpeed / 4096.0f;
+                        mX = mX + (float) mSpeed / 4096.0f;
                     } else {
-                        mAngle = mAngle - (float) mSpeed / 4096.0f;
+                        mX = mX - (float) mSpeed / 4096.0f;
                     }
                     mSpeed += mAccel;
-                    mPos += mSpeed;
-                    if (mPos >= 0xa0000) {
-                        mAngle = 128.0f;
+                    mDistance += mSpeed;
+                    if (mDistance >= 0xa0000) {
+                        mX = 128.0f;
                         mStep++;
                     }
                     break;
@@ -120,7 +120,7 @@ void ConfrontEmblem02::Draw() {
             {
                 float a = mScale > 0.0f ? 0.5f + 4096.0f * mScale : 4096.0f * mScale - 0.5f;
                 float b = mScale > 0.0f ? 0.5f + 4096.0f * mScale : 4096.0f * mScale - 0.5f;
-                s32 x = (s32) mAngle;
+                s32 x = (s32) mX;
                 s32 sy = (s32) b;
                 s32 sx = (s32) a;
                 mCellAnim->DrawTransformed(1, x, 0x7b, 2, sy, sx, 0);
@@ -130,7 +130,7 @@ void ConfrontEmblem02::Draw() {
             {
                 float a = mScale > 0.0f ? 0.5f + 4096.0f * mScale : 4096.0f * mScale - 0.5f;
                 float b = mScale > 0.0f ? 0.5f + 4096.0f * mScale : 4096.0f * mScale - 0.5f;
-                s32 x = (s32) mAngle;
+                s32 x = (s32) mX;
                 s32 sy = (s32) b;
                 s32 sx = (s32) a;
                 mCellAnim->DrawTransformed(1, x, 0x7b, 2, sy, sx, 0);
@@ -151,16 +151,16 @@ int ConfrontEmblem02::func_ov007_0221e268(u8 flag) {
     }
     int anim = 2;
     s16 result = -1;
-    if ((u32) mAngle != 0x80) {
+    if ((u32) mX != 0x80) {
         s16 diff;
-        if ((u32) mAngle > 0x80) {
-            diff = (int) mAngle - 0x80;
+        if ((u32) mX > 0x80) {
+            diff = (int) mX - 0x80;
         } else {
-            diff = 0x80 - (int) mAngle;
+            diff = 0x80 - (int) mX;
         }
         if (diff < 0x1c) {
             if (flag == 0) {
-                mUnk_07_1 = 1;
+                mDrawLate = 1;
             }
             result = 0x1e;
         }
@@ -171,7 +171,7 @@ int ConfrontEmblem02::func_ov007_0221e268(u8 flag) {
         } else {
             result = result / 2;
             if (flag == 0) {
-                mUnk_07_1 = 1;
+                mDrawLate = 1;
             }
         }
     }
@@ -183,10 +183,10 @@ int ConfrontEmblem02::func_ov007_0221e268(u8 flag) {
             mCellAnim->SetAnimation(anim);
         }
     } else if (result == 100) {
-        if (mUnk_07_2) {
+        if (mCenterReported) {
             result = -1;
         }
-        mUnk_07_2 = 1;
+        mCenterReported = 1;
     }
     return result;
 }
@@ -194,7 +194,7 @@ int ConfrontEmblem02::func_ov007_0221e268(u8 flag) {
 ConfrontBg02::ConfrontBg02()
     : BattleBase() {
     mDelay = 0;
-    mSide  = 0;
+    mPushBelowHalf  = 0;
     mData  = 0;
     mEmblemStep = gConfrontEmblemSteps;
     for (u8 i = 0; i < 3; i++) {
@@ -293,7 +293,7 @@ void ConfrontBg02::LoadGraphics() {
     ChangeDir("/");
 }
 
-void ConfrontBg02::vfunc_34() {
+void ConfrontBg02::UpdateEmblems() {
     UpdateEmblemStep();
     if (CountDownDelay()) {
         u8 spectator = IsSpectator();
@@ -324,13 +324,13 @@ BOOL ConfrontBg02::func_ov007_0221bfa4() {
     return FALSE;
 }
 
-void ConfrontBg02::vfunc_3c() {
+void ConfrontBg02::Draw() {
     u8 spectator = IsSpectator();
     if (spectator) {
         return;
     }
     for (u8 i = 0; i < 4; i++) {
-        if (!mEmblems[i]->mUnk_07_1) {
+        if (!mEmblems[i]->mDrawLate) {
             mEmblems[i]->Draw();
         }
     }
@@ -344,7 +344,7 @@ void ConfrontBg02::vfunc_3c() {
     }
     mCellAnims[1]->Draw(1, 0x69, 0x64, 2);
     for (u8 i = 0; i < 4; i++) {
-        if (mEmblems[i]->mUnk_07_1) {
+        if (mEmblems[i]->mDrawLate) {
             mEmblems[i]->Draw();
         }
     }
@@ -356,7 +356,7 @@ void ConfrontBg02::vfunc_3c() {
 }
 
 u8 ConfrontBg02::UpdateTouch(int a) {
-    mSide = a;
+    mPushBelowHalf = a;
     s32 result = -1;
     for (u8 i = 0; i < 4; i++) {
         if (mEmblems[i]->func_ov007_0221e268(1) == 100) {
@@ -432,7 +432,7 @@ void ConfrontBg02::StartIdleEmblem() {
     BOOL found = FALSE;
     for (u8 i = 0; i < 4; i++) {
         if (mEmblems[i]->IsIdle()) {
-            mEmblems[i]->Start(mSide);
+            mEmblems[i]->Start(mPushBelowHalf);
             found = TRUE;
             break;
         }

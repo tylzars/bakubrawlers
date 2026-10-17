@@ -4826,7 +4826,7 @@ gUploadWriteIndex kind:bss addr:0x0220e633
 gQueuedBytes kind:bss addr:0x0220e634
 gUploadQueue kind:bss addr:0x0220e638
 gIdentityMtx22 kind:bss addr:0x0220e838
-data_0220e848 kind:bss addr:0x0220e848
+gIdentityMtx33 kind:bss addr:0x0220e848
 gIdentityMtx43 kind:bss addr:0x0220e86c
 gIdentityMtx44 kind:bss addr:0x0220e89c
 @86 kind:bss addr:0x0220e8dc local

@@ -12,7 +12,7 @@ Gimmick::Gimmick(u8 a, u8 b)
     mType = 0;
     mId = a;
     mCollision = 0;
-    mUnk_3b = b;
+    mMoveMode = b;
     mTurnCount = 0;
     mCountingTurns = 0;
 }

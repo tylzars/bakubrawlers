@@ -327,7 +327,7 @@ BOOL ConfrontBg06::func_ov007_0221bfa4() {
     return FALSE;
 }
 
-void ConfrontBg06::vfunc_34() {
+void ConfrontBg06::UpdateEmblems() {
     BOOL spectator = mLocalSide >= 2;
     if ((u8) spectator) {
         return;
@@ -335,7 +335,7 @@ void ConfrontBg06::vfunc_34() {
     mEmblem->Update();
 }
 
-void ConfrontBg06::vfunc_3c() {
+void ConfrontBg06::Draw() {
     BOOL spectator = mLocalSide >= 2;
     if ((u8) spectator) {
         return;

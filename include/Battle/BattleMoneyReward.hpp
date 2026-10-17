@@ -33,11 +33,11 @@ public:
     /* a4 */ u8 mAmountVisible;
     /* a5 */ u8 mState;
     /* a6 */ u8 mKind;
-    /* a7 */ s8 mUnk_a7;
+    /* a7 */ s8 mTransferTimer;
     /* a8 */ u8 mFade;
     /* a9 */ u8 mUnk_a9;
-    /* aa */ s8 mUnk_aa;
-    /* ab */ s8 mUnk_ab;
+    /* aa */ s8 mSparkleSoundTimer;
+    /* ab */ s8 mTransferSoundTimer;
     /* ac */ u8 mPos[15][2];
     /* ca */ s8 mTimers[15][2];
     /* e8 */

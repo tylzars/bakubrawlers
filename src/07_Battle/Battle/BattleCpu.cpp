@@ -11,7 +11,7 @@ BOOL IsMarkerPlaceable(BattlePlayerList *list, u8 row, u8 col);
 // Row and column pairs of the six target regions. One-dimensional u8 tables get a .rodata section each, which is
 // what puts each table of this file on a 4-byte boundary in the original; a struct or 2-D array would share one
 // section with the others.
-static const u8 data_ov007_022796d8[12] = {3, 1, 7, 1, 7, 5, 3, 5, 5, 3, 0, 0};
+static const u8 sMarkerBlockStarts[12] = {3, 1, 7, 1, 7, 5, 3, 5, 5, 3, 0, 0};
 
 struct BattleCpuRot {
     u16 x;
@@ -279,7 +279,7 @@ u8 BattleCpu::func_ov007_022310f0() {
     return result;
 }
 
-u8 BattleCpu::func_ov007_02231300() {
+u8 BattleCpu::PickMarkerCell() {
     u8 roll = MATH_Rand32(&gRandom, 100);
     u8 t    = data_020d433c.mBattlePlayers->mPlayers[mPlayer]->mUnk_f1;
     if (roll < 50) {
@@ -296,18 +296,18 @@ u8 BattleCpu::func_ov007_02231300() {
     u8 n;
     u8 row0;
     u8 cells[12];
-    row0 = data_ov007_022796d8[t * 2];
+    row0 = sMarkerBlockStarts[t * 2];
     n = 0;
     row = row0;
     do {
-        col = data_ov007_022796d8[t * 2 + 1];
+        col = sMarkerBlockStarts[t * 2 + 1];
         do {
             if (IsMarkerPlaceable(data_020d433c.mBattlePlayers, row, col)) {
                 cells[n] = col | (row << 4);
                 n++;
             }
             col++;
-        } while (col < data_ov007_022796d8[t * 2 + 1] + 3);
+        } while (col < sMarkerBlockStarts[t * 2 + 1] + 3);
         row++;
     } while (row < row0 + 4);
     if (n != 0) {

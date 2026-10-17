@@ -32,7 +32,7 @@ struct BattleCardModelPart {
 
 // Card entry of the tables at 0228acc0 (0x10 bytes).
 struct BattleCardModelEntry {
-    /* 00 */ u8 mUnk_00;
+    /* 00 */ u8 mRestartFrame;
     /* 01 */ u8 mCount; // number of parts
     /* 02 */ PAD(0x02, 0x04);
     /* 04 */ BattleCardModelPart *mParts;
@@ -68,8 +68,8 @@ public:
     /* 8c */ u8 mBakuganId;
     /* 8d */ u8 mVariant;
     /* 8e */ u8 mBones[5];
-    /* 93 */ u8 mUnk_93;
-    /* 94 */ u8 mUnk_94;
+    /* 93 */ u8 mAnimRestarted;
+    /* 94 */ u8 mUseRealb20;
     /* 95 */ u8 mPasses;
     /* 96 */ u8 mUnk_96;
     /* 97 */ PAD(0x97, 0x98);

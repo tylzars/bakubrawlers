@@ -32,7 +32,7 @@ void InitCommandSubScreen(int x, int y);
 void CloseCommandMap(BattleCommandMap *map);
 extern "C" void func_ov007_022482a8(BattleCommandMap *map);
 extern "C" void func_ov007_02247e00(BattleCommandMap *map);
-extern "C" void func_ov007_02247a08(BattleCommandMap *map, u32 a);
+extern "C" void SetCursorAndMarkerModelsVisible(BattleCommandMap *map, u32 a);
 
 extern const BattleObjPair data_ov007_0227a33c[];
 extern const u8 data_ov007_0227a33d[];
@@ -301,7 +301,7 @@ void BattleObj00::Update() {
             if (v == 0) {
                 return;
             }
-            mSlot = func_ov007_0225f0bc(v);
+            mSlot = GetLowByte(v);
             mState++;
             WirelessManager::Get();
             if (!IsWirelessMode(&data_020c4030.mUnk_228)) {
@@ -438,7 +438,7 @@ void BattleObj00::Update() {
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
                 list->mUnk_2a4->SetMessage(list->mUnk_2af, 0x64, 0, 0);
                 G2S_SetBlendBrightness(0x1f, -10);
-                func_ov007_02247a08(mMap, 0);
+                SetCursorAndMarkerModelsVisible(mMap, 0);
                 return;
             }
             CloseCommandMap(mMap);

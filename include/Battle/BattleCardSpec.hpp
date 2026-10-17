@@ -23,7 +23,7 @@ public:
     /* 1a */ u8 mCardModelType;
     /* 1b */ u8 mBakuganId;
     /* 1c */ u8 mVariant;
-    /* 1d */ u8 mUnk_1d;
+    /* 1d */ u8 mUseRealb20;
     /* 1e */ u8 mUnk_1e;
     /* 1f */ PAD(0x1f, 0x20);
     /* 20 */

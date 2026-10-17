@@ -43,7 +43,7 @@ extern "C" void MTX_ScaleRot22(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle
 
 BattleCommandPrompt::BattleCommandPrompt(u32 mode, void *target, u32 flags, u32 charOffset, u8 player)
     : SceneBase(0x3e8, 0) {
-    mUnk_3c = 0;
+    mCharacterIcons = 0;
     mSlideX = 0x100;
     mSlideOutDelayFrames = 0;
     mState = 0;
@@ -162,8 +162,8 @@ BattleCommandPrompt::~BattleCommandPrompt() {
     if (mMessageWindow) {
         delete mMessageWindow;
     }
-    if (mUnk_3c) {
-        delete mUnk_3c;
+    if (mCharacterIcons) {
+        delete mCharacterIcons;
     }
     k = 0;
     do {
@@ -470,12 +470,12 @@ void BattleCommandPrompt::Update() {
             mWindow->Draw();
             mStateCellAnims[0]->Update();
             mStateCellAnims[1]->Update();
-            if (mUnk_3c) {
+            if (mCharacterIcons) {
                 mCharacterIconCellAnims[1]->Draw(1, 0x86, 1, 0);
                 if (data_020d433c.mBattlePlayers->mPlayers[mPlayer]->IsActive()) {
                     mCharacterIconCellAnims[2]->Draw(1, 0x86, 1, 0);
                 }
-                mUnk_3c->DrawIcons();
+                mCharacterIcons->DrawIcons();
                 mCharacterIconCellAnims[0]->Draw(1, 0x86, 3, 0);
             }
             switch (mMode) {
@@ -657,10 +657,10 @@ void BattleCommandPrompt::Load() {
         mCharacterIconCellAnims[2]->SetAnimation(0xb);
         mCharacterIconCellAnims[2]->mFrameIndex = mPlayer;
         ChangeDir("/");
-        mUnk_3c = new CharacterIcons(0x16000, 0xb, 1);
+        mCharacterIcons = new CharacterIcons(0x16000, 0xb, 1);
         BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mPlayer];
-        mUnk_3c->SetCharacter(0, (s8) player->mCharacterId, player->NameInfo(), 0);
-        mUnk_3c->SetDrawArgs(0, 0x88, 5, 0);
+        mCharacterIcons->SetCharacter(0, (s8) player->mCharacterId, player->NameInfo(), 0);
+        mCharacterIcons->SetDrawArgs(0, 0x88, 5, 0);
     }
     }
     ChangeDir("/");
@@ -670,7 +670,7 @@ void ApplySlideX(s16 *x) {
     G2x_SetBGyAffine_((vu16 *) 0x4001030, &gIdentityMtx22, 0, 0, -*x, 0);
 }
 
-extern "C" u8 func_ov007_0225f0bc(u32 v) {
+extern "C" u8 GetLowByte(u32 v) {
     return (u8) v;
 }
 

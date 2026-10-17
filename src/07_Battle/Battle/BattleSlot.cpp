@@ -25,7 +25,7 @@ u8 GetCardInfo(u32 id, u32 kind);
 
 int func_ov007_02222764(int side, BattleEntry *entry) {
     int result = -1;
-    u16 *ids   = &entry->mUnk_12;
+    u16 *ids   = &entry->mCardId;
     int off    = side * sizeof(BattleEntry);
     if (GetCardInfo(*(u16 *) ((u8 *) ids + off), 3) == 4) {
         switch (*(u16 *) ((u8 *) ids + off)) {

@@ -93,7 +93,7 @@ BattleCardModelEntry *data_ov007_0228acc0[13] = {
     data_ov007_02285078,
     data_ov007_02285498,
 };
-extern const VecFx32 data_ov007_0227c0c4;
+extern const VecFx32 gCardModelScale;
 extern MtxFx43 gIdentityMtx43;
 extern const u8 data_ov007_0227c418[];
 extern const u8 data_ov007_0227c438[];
@@ -224,7 +224,7 @@ BattleCardModel::BattleCardModel(EffectManager *effects, Camera *camera, u32 a, 
     : SceneBase(2, 0) {
     mEffects     = effects;
     mCamera      = camera;
-    mUnk_94      = d;
+    mUseRealb20      = d;
     mTextBuffer  = 0;
     mTextBuffer2 = 0;
     mTextSize    = 0;
@@ -248,7 +248,7 @@ BattleCardModel::BattleCardModel(EffectManager *effects, Camera *camera, u32 a, 
 }
 
 void BattleCardModel::Init(u32 type, u32 id, u32 c) {
-    mUnk_93   = 0;
+    mAnimRestarted   = 0;
     mBakuganId = id;
     u8 charId = data_020a1074[id];
     mVariant   = c;
@@ -311,7 +311,7 @@ void BattleCardModel::Update() {
         case 2:
         case 3: {
             MtxFx43 mtx = gIdentityMtx43;
-            VecFx32 pos = data_ov007_0227c0c4;
+            VecFx32 pos = gCardModelScale;
             mBaku->mModel->Draw(&mtx, &pos);
             DrawName();
             UpdateEffects();
@@ -340,8 +340,8 @@ BOOL BattleCardModel::UpdateState() {
             if (data_ov007_0227c428[mType] != 0) {
                 if (!mBaku->mModel->AdvanceAnim()) {
                     mBaku->mModel->StartAnim(0, 0);
-                    mBaku->mModel->SetAnimFrame((s32) FramesToFloat(mEntry->mUnk_00));
-                    mUnk_93 = 1;
+                    mBaku->mModel->SetAnimFrame((s32) FramesToFloat(mEntry->mRestartFrame));
+                    mAnimRestarted = 1;
                 }
                 mCamera->AdvanceFrame(1);
             } else {
@@ -441,7 +441,7 @@ void BattleCardModel::LoadGraphics() {
     mCamFile = LoadFile(name, 0, 0, 0, 0, 0);
     mCamera->SetPath(mCamFile, 0);
     ChangeDir("/");
-    mBaku      = new BattleRealBaku(mBakuganId, data_ov007_0227c418[mType], mVariant, 0, 0, 1, mUnk_94);
+    mBaku      = new BattleRealBaku(mBakuganId, data_ov007_0227c418[mType], mVariant, 0, 0, 1, mUseRealb20);
     mLastFrame = mBaku->mAnim->GetFrameCountForSet(0) - 0x10000;
     mCamera->ApplyPath();
     if (mCount) {
@@ -467,7 +467,7 @@ void BattleCardModel::StartEffectsAtFrame() {
     if (mCount) {
         u8 i = 0;
         do {
-            if (mUnk_93 == 0) {
+            if (mAnimRestarted == 0) {
                 s32 frame = Part(i)->mFrame;
                 if (frame == 0) {
                     frame = 0x1000;

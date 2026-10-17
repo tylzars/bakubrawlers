@@ -11,16 +11,16 @@
 
 BattleCardCamera::BattleCardCamera(u16 a, u16 b)
     : SceneBase(0x3e8, 0) {
-    mUnk_1c = 0;
+    mLights = 0;
     mUnk_24 = 0;
     mState  = 0;
     mMapModelVisible = 1;
     mUnk_29 = 0;
     mUnk_2a = 0;
-    mUnk_2b = a;
-    mUnk_2c = b;
-    mUnk_2d = a >> 8;
-    mUnk_2e = b >> 8;
+    mSide0BakuganId = a;
+    mSide1BakuganId = b;
+    mSide0Variant = a >> 8;
+    mSide1Variant = b >> 8;
     u8 i    = 0;
     do {
         mBakugans[i] = 0;
@@ -45,8 +45,8 @@ BattleCardCamera::~BattleCardCamera() {
     if (mMapModel) {
         delete mMapModel;
     }
-    if (mUnk_1c) {
-        delete mUnk_1c;
+    if (mLights) {
+        delete mLights;
     }
     if (mCamFile) {
         OS_Free(mCamFile);
@@ -80,7 +80,7 @@ void BattleCardCamera::Update() {
             mFinished = 1;
             break;
     }
-    func_ov007_02244e98();
+    UpdateCameraAndDraw();
 }
 
 
@@ -90,10 +90,10 @@ static inline Camera *BattleCamera() { return data_020d433c.mBattlePlayers->mCam
 
 void BattleCardCamera::Init() {
     mBakugans[0] = new BakuganModel();
-    mBakugans[0]->Setup(mUnk_2b, mUnk_2d, 3);
+    mBakugans[0]->Setup(mSide0BakuganId, mSide0Variant, 3);
     mBakugans[0]->mAnimUpdateEnabled = 1;
     mBakugans[1] = new BakuganModel();
-    mBakugans[1]->Setup(mUnk_2c, mUnk_2e, 3);
+    mBakugans[1]->Setup(mSide1BakuganId, mSide1Variant, 3);
     mBakugans[1]->mAnimUpdateEnabled = 1;
     BakuganModel *p0 = mBakugans[0];
     fx32 height            = 0x6000;
@@ -135,7 +135,7 @@ void BattleCardCamera::Init() {
     }
     CameraManager::Get().mActive = 0;
     CameraManager::Get().SetCamerasAndRequestMode(1, camera, 0);
-    mUnk_1c = new ModelLightGroup(data_ov007_02279e88);
+    mLights = new ModelLightGroup(data_ov007_02279e88);
 }
 
 // Copies the active camera into the 3D engine state and the camera manager's snapshot of it.
@@ -154,7 +154,7 @@ static inline void SnapshotCamera() {
     manager.mMtxC[manager.mActive]       = *func_020323b8();
 }
 
-void BattleCardCamera::func_ov007_02244e98() {
+void BattleCardCamera::UpdateCameraAndDraw() {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
     camera->AdvanceFrame(0);
     camera->ApplyPath();

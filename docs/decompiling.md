@@ -493,10 +493,10 @@ Other findings from linking:
   ends in `return QueueUpload(...)`; declaring it `u32` flipped two scheduling ties (`mov r0, r4` against `ldr r1`)
   in func_020843ac (ListScene.cpp), not only register choices.
 
-- **`x[n] = v; n++;` vs `x[n++] = v;`** schedule differently; BattleCpu::func_ov007_02231300 needs the split form. A
+- **`x[n] = v; n++;` vs `x[n++] = v;`** schedule differently; BattleCpu::PickMarkerCell needs the split form. A
   counter also passed to `MATH_Rand32` matched as `u32 n` with `n = (u8) (n + 1)` (StartJumpObjTargets).
 - **Re-read instead of caching.** Where the original reloads a table element or a global chain in a loop, read it at
-  each use rather than through a local pointer (func_ov007_02231300, func_ov007_022314bc).
+  each use rather than through a local pointer (PickMarkerCell, func_ov007_022314bc).
 
 - **`p = e; p += idx;` splits the address CSE.** Built that way, only `idx * size` is shared and the base is re-added
   at each use (`ldrh r0, [r6, r7]`); `&e[idx]` or `e + idx` shares the whole address (BattleConfrontCard::func_ov007_022428d4).

@@ -203,7 +203,7 @@ void BattleHud::Init() {
         mAnims[slot] = new CellAnimation("vs_b_obj_ability_nce.bin", 0, 1, 1);
         mAnims[slot]->mCharBase = screen.GetCharBase(0x10000);
         mAnims[slot]->mPaletteBase = 10;
-        switch (GetCardInfo(entries[i].mUnk_12, 3)) {
+        switch (GetCardInfo(entries[i].mCardId, 3)) {
             case 0:
                 mAnims[slot]->SetAnimation(0);
                 break;
@@ -220,10 +220,10 @@ void BattleHud::Init() {
                 mAnims[slot]->SetAnimation(4);
                 break;
             case 4:
-                if (entries[i].mUnk_12 >= 0x8e && entries[i].mUnk_12 <= 0x91) {
+                if (entries[i].mCardId >= 0x8e && entries[i].mCardId <= 0x91) {
                     mAnims[slot]->SetAnimation(9);
                 } else if (func_ov007_02222764(i, entries) == 5) {
-                    if (GetCardInfo(entries[(u8) (i ^ 1)].mUnk_12, 3) != 5) {
+                    if (GetCardInfo(entries[(u8) (i ^ 1)].mCardId, 3) != 5) {
                         mAnims[slot]->SetAnimation(6);
                     } else {
                         mAnims[slot]->SetAnimation(5);
@@ -302,17 +302,17 @@ void BattleHud::Init() {
         BattleEntry *e = entries;
         e += i;
         u32 card;
-        if (e->mUnk_12 == 0) {
+        if (e->mCardId == 0) {
             if (mUnk_0c == i) {
                 mUnk_117_1 = 1;
             }
             card = 0;
         } else {
-            int kind = GetCardInfo(entries[(u8) mUnk_0c].mUnk_12, 3);
+            int kind = GetCardInfo(entries[(u8) mUnk_0c].mCardId, 3);
             if ((u8) (kind + 0xfc) <= 1) {
                 mUnk_117_1 = 1;
             }
-            card = func_02065c20(e->mUnk_12);
+            card = func_02065c20(e->mCardId);
         }
         LoadSmallCard(i, card);
         i++;
@@ -475,7 +475,7 @@ void SetHudState(BattleHud *obj, u32 state) {
     }
 }
 
-u8 func_ov007_02226aa0(BattleHud *obj) {
+u8 IsHudSequenceRunning(BattleHud *obj) {
     return obj->mState ? 1 : 0;
 }
 

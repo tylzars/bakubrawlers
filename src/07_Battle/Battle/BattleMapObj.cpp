@@ -88,10 +88,10 @@ void BattleMapObj::AddTableParts(const BattleMapObjTable *table) {
     texture->FreeFile();
 }
 
-extern const BattleMapObjTable data_ov007_0227a2bc[];
-extern const BattleMapObjTable data_ov007_0227a2fc[];
-extern const VecFx32 data_ov007_0227a13c;
-extern const VecFx32 data_ov007_0227a148;
+extern const BattleMapObjTable gMapObjFieldTables[];
+extern const BattleMapObjTable gMapObjKindTables[];
+extern const VecFx32 gThrowfield00Scale;
+extern const VecFx32 gThrowfield00Offset;
 
 void BattleMapObj::Load() {
     ChangeDir("/Game/Battle/3d/Map");
@@ -109,10 +109,10 @@ void BattleMapObj::Load() {
             AddPart("commandfiled0.nsbtx", "commandfiled0.nsbmd", "commandfiled0_data.bin", 0);
             break;
         case 10:
-            AddTableParts(&data_ov007_0227a2bc[data_020d433c.mFieldId]);
+            AddTableParts(&gMapObjFieldTables[data_020d433c.mFieldId]);
             break;
         default:
-            AddTableParts(&data_ov007_0227a2fc[mKind]);
+            AddTableParts(&gMapObjKindTables[mKind]);
             break;
     }
     ChangeDir("/");
@@ -122,8 +122,8 @@ void BattleMapObj::Draw() {
     if (mKind == 9) {
         MtxFx43 *camera = func_020323b8();
         MtxFx43 mtx     = gIdentityMtx43;
-        VecFx32 scale   = data_ov007_0227a13c;
-        VecFx32 offset  = data_ov007_0227a148;
+        VecFx32 scale   = gThrowfield00Scale;
+        VecFx32 offset  = gThrowfield00Offset;
         mtx             = gIdentityMtx43;
         MTX_SetTranslation43(&mtx, &offset);
         MTX_Concat43(&mtx, camera, &mtx);

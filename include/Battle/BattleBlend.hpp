@@ -8,7 +8,7 @@ class BattleBlend {
 public:
     /* 04 */ u8 mRaiseCount;
     /* 05 */ u8 mLevel;
-    /* 06 */ u16 mUnk_06;
+    /* 06 */ u16 mLowerCount;
     /* 08 */ s16 mWobble;
     /* 0a */ u8 mWobbleFrames;
     /* 0b */ u8 mFalling;

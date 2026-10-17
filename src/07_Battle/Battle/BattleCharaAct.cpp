@@ -36,7 +36,7 @@ static const u8 data_ov007_0227ae88[16] = {0x28, 0x28, 0x0, 0x28, 0x14, 0x1e, 0x
 static const u8 data_ov007_0227aea8[16] = {0x28, 0x28, 0x0, 0x2d, 0x14, 0x1e, 0x14, 0x0, 0x1e, 0x1e, 0x28, 0x14, 0x32, 0x0, 0x28, 0x28};
 static const u16 data_ov007_0227acb8[16] = {0xef, 0x122, 0x1ee, 0x1ee, 0x155, 0x111, 0xac, 0x176, 0xde, 0x144, 0xcd, 0x155, 0x133, 0x100, 0x1dc, 0x1ee};
 static const u8 data_ov007_0227aeb8[16] = {0x28, 0x28, 0x0, 0x28, 0x14, 0x1e, 0x28, 0x14, 0x1e, 0x1e, 0x1e, 0x14, 0x14, 0x14, 0x3c, 0x28};
-static const VecFx32 data_ov007_0227ac20 = {0x1000, 0x1000, 0x1000};
+static const VecFx32 sActModelScale = {0x1000, 0x1000, 0x1000};
 static const u16 data_ov007_0227acd8[16] = {0xf0, 0x123, 0x1ee, 0xbd, 0x156, 0x112, 0xad, 0x177, 0xdf, 0x145, 0xce, 0x156, 0x134, 0x101, 0x1ed, 0x166};
 static const u16 data_ov007_0227acf8[16] = {0xf1, 0x124, 0x1ee, 0xbe, 0x157, 0x113, 0xae, 0x178, 0xe0, 0x146, 0xcf, 0x157, 0x135, 0x102, 0x1ec, 0x167};
 static const u16 data_ov007_0227ad18[16] = {0xf2, 0x125, 0x1ee, 0xbf, 0x158, 0x114, 0xaf, 0x179, 0xe1, 0x147, 0xd0, 0x158, 0x136, 0x103, 0x1e3, 0x168};
@@ -51,7 +51,7 @@ static const u16 data_ov007_0227adb8[16] = {0xf7, 0x12a, 0x1ee, 0xc4, 0x15d, 0x1
 static const u16 data_ov007_0227add8[16] = {0xf8, 0x12b, 0x1ee, 0xc5, 0x15e, 0x11a, 0xb5, 0x17f, 0xe7, 0x14d, 0xd6, 0x15e, 0x13c, 0x109, 0x1e4, 0x16e};
 static const u8 data_ov007_0227af38[16] = {0x28, 0x50, 0x0, 0x5a, 0x1e, 0x3c, 0x3c, 0x0, 0x50, 0x32, 0x0, 0x1e, 0x0, 0x0, 0x0, 0x46};
 static const u16 data_ov007_0227adf8[16] = {0xf9, 0x12c, 0x1ee, 0xc6, 0x15f, 0x11b, 0xb6, 0x180, 0xe8, 0x14e, 0xd7, 0x15f, 0x13d, 0x10a, 0x1e0, 0x16f};
-static const char *data_ov007_0228a394[22] = {
+static const char *sActFilePrefixes[22] = {
     "dan_",
     "runo_",
     "marucho_",
@@ -87,7 +87,7 @@ static const u8 data_ov007_0227af48[16] = {0x28, 0x46, 0x0, 0x1e, 0x0, 0x1e, 0x3
 static const u16 data_ov007_0227ae38[16] = {0xfb, 0x12e, 0x1ee, 0xc8, 0x161, 0x11d, 0xb8, 0x182, 0xea, 0x150, 0xd9, 0x161, 0x13f, 0x10c, 0x1e2, 0x171};
 static const u8 data_ov007_0227ae58[16] = {0x1e, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1e, 0x28, 0x0, 0x28, 0x0, 0x14, 0x28};
 static const u8 data_ov007_0227aed8[16] = {0x46, 0x50, 0x0, 0x0, 0x0, 0x0, 0x32, 0x0, 0x14, 0x1e, 0x28, 0x0, 0x0, 0x0, 0x64, 0xbe};
-static const u8 *data_ov007_0228a33c[22] = {
+static const u8 *sActFrameTaskFrameCounts[22] = {
     data_ov007_0227aee8,
     data_ov007_0227aef8,
     data_ov007_0227af08,
@@ -111,8 +111,8 @@ static const u8 *data_ov007_0228a33c[22] = {
     NULL,
     data_ov007_0227af58,
 };
-static const VecFx32 data_ov007_0227ac2c = {0x1000, 0x1000, 0x1000};
-static const u16 *data_ov007_0228a2e4[22] = {
+static const VecFx32 sFieldopModelScale = {0x1000, 0x1000, 0x1000};
+static const u16 *sActFrameTaskIds[22] = {
     data_ov007_0227ac38,
     data_ov007_0227adf8,
     data_ov007_0227adb8,
@@ -286,9 +286,9 @@ void BattleCharaAct::LoadActModels() {
             }
         case 1:
         case 6:
-            sprintf(modelName, "%s%02d.nsbmd", data_ov007_0228a394[mCharacterId], mKind + 1);
-            sprintf(textureName, "%s%02d.nsbtx", data_ov007_0228a394[mCharacterId], mKind + 1);
-            sprintf(animName, "%sM_%02d_data.bin", data_ov007_0228a394[mCharacterId], mKind + 1);
+            sprintf(modelName, "%s%02d.nsbmd", sActFilePrefixes[mCharacterId], mKind + 1);
+            sprintf(textureName, "%s%02d.nsbtx", sActFilePrefixes[mCharacterId], mKind + 1);
+            sprintf(animName, "%sM_%02d_data.bin", sActFilePrefixes[mCharacterId], mKind + 1);
             loaded = 1;
             if ((mKind == 1) | (mKind == 6)) {
                 if ((mTexVariant != 0) & (mTexVariant <= 2)) {
@@ -391,16 +391,16 @@ void BattleCharaAct::Update() {
             mState++;
             break;
         case 2:
-            mUnk_30 = 0x1ee;
-            if (data_ov007_0228a2e4[mCharacterId] != NULL) {
-                mUnk_30 = data_ov007_0228a2e4[mCharacterId][mKind];
-                if (mUnk_30 != 0x1ee) {
-                    if (mUnk_30 == 0x1dc && gSaveData[0].mUnk_42 == 0) {
-                        mUnk_30 = 0x1ee - 0x11;
+            mFrameTaskId = 0x1ee;
+            if (sActFrameTaskIds[mCharacterId] != NULL) {
+                mFrameTaskId = sActFrameTaskIds[mCharacterId][mKind];
+                if (mFrameTaskId != 0x1ee) {
+                    if (mFrameTaskId == 0x1dc && gSaveData[0].mUnk_42 == 0) {
+                        mFrameTaskId = 0x1ee - 0x11;
                     }
-const u8 *t = data_ov007_0228a33c[mCharacterId];
- if (t) { mUnk_34 = t[mKind]; } else { mUnk_34 = 0; }
-                    FrameTask::Get().StartChannel(1, mUnk_30);
+const u8 *t = sActFrameTaskFrameCounts[mCharacterId];
+ if (t) { mFrameTaskTimer = t[mKind]; } else { mFrameTaskTimer = 0; }
+                    FrameTask::Get().StartChannel(1, mFrameTaskId);
                     FrameTask::Get().func_0203dd4c(1);
                 }
             }
@@ -471,7 +471,7 @@ const u8 *t = data_ov007_0228a33c[mCharacterId];
             break;
         case 10:
             run = 0;
-            if (mUnk_30 != 0x1ee) {
+            if (mFrameTaskId != 0x1ee) {
                 FrameTask::Get().func_0203dd60(1);
             }
             mState++;
@@ -487,13 +487,13 @@ const u8 *t = data_ov007_0228a33c[mCharacterId];
     if (!run) {
         return;
     }
-    if (mUnk_30 != 0x1ee) {
-        if (mUnk_34 != 0) {
-            mUnk_34--;
+    if (mFrameTaskId != 0x1ee) {
+        if (mFrameTaskTimer != 0) {
+            mFrameTaskTimer--;
         }
-        if (mUnk_34 == 0) {
+        if (mFrameTaskTimer == 0) {
             FrameTask::Get().func_0203dd60(1);
-            mUnk_30 = 0x1ee;
+            mFrameTaskId = 0x1ee;
         }
     }
     CameraManager &manager         = CameraManager::Get();
@@ -563,7 +563,7 @@ void BattleCharaAct::Draw() {
     }
     BOOL draw    = 1;
     MtxFx43 mtx  = gIdentityMtx43;
-    VecFx32 pos  = data_ov007_0227ac20;
+    VecFx32 pos  = sActModelScale;
     VecFx32 zero = {0, 0, 0};
     MTX_SetTranslation43(&mtx, &zero);
     if ((mKind == 10) | ((mKind == 7) | ((mKind == 8) | (mKind == 9)))) {
@@ -604,7 +604,7 @@ void BattleCharaAct::DrawFieldopModel() {
         return;
     }
     MtxFx43 mtx = gIdentityMtx43;
-    VecFx32 pos = data_ov007_0227ac2c;
+    VecFx32 pos = sFieldopModelScale;
     MTX_ApplyRotX43(&mtx, 0x4000);
     mFieldopModel->AdvanceAnim();
     mFieldopModel->Draw(&mtx, &pos);

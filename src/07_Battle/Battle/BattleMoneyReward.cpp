@@ -75,11 +75,11 @@ BattleMoneyReward::BattleMoneyReward()
     mHold       = 0x78;
     mAmountVisible     = 0;
     mState      = 0;
-    mUnk_a7     = 0;
+    mTransferTimer     = 0;
     mFade       = 0x40;
     mUnk_a9     = 0;
-    mUnk_aa     = 0;
-    mUnk_ab     = 0;
+    mSparkleSoundTimer     = 0;
+    mTransferSoundTimer     = 0;
     for (u8 i = 0; i < 9; i++) {
         mAnims[i] = 0;
     }
@@ -221,16 +221,16 @@ void BattleMoneyReward::Update() {
                     mSlideB = 0;
                 }
             } else {
-                mUnk_a7 = 0x78;
-                mUnk_ab = 0x78;
+                mTransferTimer = 0x78;
+                mTransferSoundTimer = 0x78;
                 mState++;
             }
             break;
         case 5:
-            mUnk_a7--;
-            if (mUnk_a7 <= 0) {
+            mTransferTimer--;
+            if (mTransferTimer <= 0) {
                 if (mAmount > 1000) {
-                    mUnk_a7 = 10;
+                    mTransferTimer = 10;
                     mAmount -= 1000;
                     mTotal += 1000;
                 } else {
@@ -240,10 +240,10 @@ void BattleMoneyReward::Update() {
                     mState++;
                 }
             }
-            mUnk_ab--;
-            if (mUnk_ab <= 0) {
+            mTransferSoundTimer--;
+            if (mTransferSoundTimer <= 0) {
                 SoundManager::Get().StartSeqArc(0x36);
-                mUnk_ab = 10;
+                mTransferSoundTimer = 10;
             }
             if (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed) {
                 mTotal += mAmount;
@@ -277,11 +277,11 @@ void BattleMoneyReward::Update() {
                 u8 n = 3;
                 u8 k = 0;
                 u8 hit;
-                s8 cool = mUnk_aa;
+                s8 cool = mSparkleSoundTimer;
                 if (cool > 0) {
-                    mUnk_aa--;
+                    mSparkleSoundTimer--;
                 }
-                hit = mUnk_aa > 0;
+                hit = mSparkleSoundTimer > 0;
                 do {
                     u32 length = mAnimsB[n]->GetDuration();
                     mFrames[k]++;
@@ -294,7 +294,7 @@ void BattleMoneyReward::Update() {
                         for (m = 0; m < 2; m++) {
                             if (frame == sSparkleFrames[k][m]) {
                                 SoundManager::Get().StartSeqArc(0x70);
-                                mUnk_aa = 30;
+                                mSparkleSoundTimer = 30;
                                 hit     = 1;
                                 break;
                             }

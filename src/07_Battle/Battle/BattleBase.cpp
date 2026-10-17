@@ -33,11 +33,11 @@ void FreeAuras(BattleField3D *obj);
 void ClearSub48State(BattleSub48 *obj);
 void SetSlot6cFlag(BattlePlayer *player, u8 a, int b);
 void func_ov007_0222844c(BattleHud *obj, u8 a, u8 b);
-BOOL func_ov007_02226aa0(BattleHud *obj);
+BOOL IsHudSequenceRunning(BattleHud *obj);
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 void StartAbilitiesSlide(BattleSub48 *obj);
 void ShowModels(BattleField3D *obj);
-BOOL func_ov007_02229770(BattleField3D *obj);
+BOOL MoveToEndThenCreateAuras(BattleField3D *obj);
 BOOL func_ov007_022297f0(BattleField3D *obj);
 void SetHudState(BattleHud *obj, u32 a);
 void func_ov007_0222847c(BattleHud *obj);
@@ -216,8 +216,8 @@ void BattleBase::Update() {
             BOOL found = 0;
             do {
                 u32 v = 0xff;
-                if (entries[i].mUnk_12 != 0) {
-                    v = GetCardInfo(entries[i].mUnk_12, 3);
+                if (entries[i].mCardId != 0) {
+                    v = GetCardInfo(entries[i].mCardId, 3);
                 }
                 if (v == 5) {
                     mCardSide = i;
@@ -240,7 +240,7 @@ void BattleBase::Update() {
             s8 i       = 1;
             BOOL found = 0;
             do {
-                if (entries[i].mUnk_12 != 0) {
+                if (entries[i].mCardId != 0) {
                     u8 idx = i;
                     if (func_ov007_02222764(idx, entries) == 5) {
                         mCardSide = idx;
@@ -265,7 +265,7 @@ void BattleBase::Update() {
             s8 i       = 1;
             BOOL found = 0;
             do {
-                u16 card = entries[i].mUnk_12;
+                u16 card = entries[i].mCardId;
                 if (card >= 0x8e && card <= 0x91) {
                     mCardSide = i;
                     found   = 1;
@@ -439,10 +439,10 @@ BOOL BattleBase::RaiseBlendAlpha() {
 
 void BattleBase::SetupCardSequence() {
     BattleEntry *entries = mBattleData->mEntries;
-    mCardId = entries[mCardSide].mUnk_12;
-    mCardKind = GetCardInfo(entries[mCardSide].mUnk_12, 3);
+    mCardId = entries[mCardSide].mCardId;
+    mCardKind = GetCardInfo(entries[mCardSide].mCardId, 3);
     mUnk_2a = 0;
-    SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[entries[mCardSide].mUnk_0d_4], entries[mCardSide].mUnk_11, 2);
+    SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[entries[mCardSide].mUnk_0d_4], entries[mCardSide].mSlot6cIndex, 2);
     BattleBase::InitSubScreen();
     mUnk_54_3 = 1;
     if (!mUnk_54_0) {
@@ -454,10 +454,10 @@ void BattleBase::SetupCardSequence() {
     mUnk_1c = mUnk_1d;
     mUnk_1f = -1;
     mUnk_1e = mUnk_1f;
-    if (entries[0].mUnk_12 == 0x8d && entries[1].mUnk_12 == 0x8d) {
+    if (entries[0].mCardId == 0x8d && entries[1].mCardId == 0x8d) {
         mUnk_54_2 = 1;
     }
-    if (entries[0].mUnk_12 == 0x8c || entries[1].mUnk_12 == 0x8c) {
+    if (entries[0].mCardId == 0x8c || entries[1].mCardId == 0x8c) {
         mUnk_54_2 = 1;
     }
 }
@@ -609,8 +609,8 @@ BOOL BattleBase::UpdateCardSequence() {
         case 11: {
             InitMainScreen();
             u8 side = mCardSide;
-            mCardSpec = (u32) new BattleCardSpec(0xb, entries[(u8) (side ^ 1)].mUnk_0c, entries[(u8) (side ^ 1)].mUnk_0d_0,
-                                               entries[(u8) (side ^ 1)].mUnk_0e == 0x15 ? 1 : 0);
+            mCardSpec = (u32) new BattleCardSpec(0xb, entries[(u8) (side ^ 1)].mBakuganId, entries[(u8) (side ^ 1)].mUnk_0d_0,
+                                               entries[(u8) (side ^ 1)].mCharacterId == 0x15 ? 1 : 0);
             mContext->mRequest = 0;
             mUnk_2a           = 0x40;
             mCardStep++;
@@ -638,10 +638,10 @@ BOOL BattleBase::UpdateCardSequence() {
             if (mHud->IsAbilitySlideDone()) {
                 s32 other = mCardSide ^ 1;
                 mCardSide   = other;
-                mCardId   = entries[other & 0xff].mUnk_12;
+                mCardId   = entries[other & 0xff].mCardId;
                 mPrevCardKind   = mCardKind;
-                mCardKind   = GetCardInfo(entries[mCardSide].mUnk_12, 3);
-                SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[entries[mCardSide].mUnk_0d_4], entries[mCardSide].mUnk_11, 2);
+                mCardKind   = GetCardInfo(entries[mCardSide].mCardId, 3);
+                SetSlot6cFlag(data_020d433c.mBattlePlayers->mPlayers[entries[mCardSide].mUnk_0d_4], entries[mCardSide].mSlot6cIndex, 2);
                 mHud->mUnk_118[mCardSide] = 0;
                 mCardStep                    = 2;
             }
@@ -657,7 +657,7 @@ BOOL BattleBase::UpdateCardSequence() {
                     if (mUnk_12 >= 2) {
                         side = 0;
                     }
-                    mCardSpec = (u32) new BattleCardSpec(0xc, entries[side].mUnk_0c, entries[side].mUnk_0d_0, entries[side].mUnk_0e == 0x15 ? 1 : 0);
+                    mCardSpec = (u32) new BattleCardSpec(0xc, entries[side].mBakuganId, entries[side].mUnk_0d_0, entries[side].mCharacterId == 0x15 ? 1 : 0);
                     mBattleData->mEntries[0].mUnk_0a = entries[0].mUnk_06 + entries[0].mUnk_08;
                     mBattleData->mEntries[1].mUnk_0a = entries[1].mUnk_06 + entries[1].mUnk_08;
                     mBattleData->mEntries[0].mUnk_02 = entries[0].mUnk_04;
@@ -671,7 +671,7 @@ BOOL BattleBase::UpdateCardSequence() {
                 }
                 case 0x8d: {
                     mCardSide ^= 1;
-                    mCardSpec = (u32) new BattleCardSpec(0xc, entries[mCardSide].mUnk_0c, entries[mCardSide].mUnk_0d_0, entries[mCardSide].mUnk_0e == 0x15 ? 1 : 0);
+                    mCardSpec = (u32) new BattleCardSpec(0xc, entries[mCardSide].mBakuganId, entries[mCardSide].mUnk_0d_0, entries[mCardSide].mCharacterId == 0x15 ? 1 : 0);
                     mBattleData->mEntries[mCardSide].mUnk_0a = entries[mCardSide].mUnk_06 + entries[mCardSide].mUnk_08;
                     mBattleData->mEntries[mCardSide].mUnk_02 = entries[mCardSide].mUnk_04;
                     s8 v = data_ov007_02279158[0];
@@ -684,7 +684,7 @@ BOOL BattleBase::UpdateCardSequence() {
                     if (mUnk_54_1 && mUnk_12 != 1) {
                         mCardSide = 0;
                     }
-                    mCardSpec = (u32) new BattleCardSpec(5, entries[mCardSide].mUnk_0c, entries[mCardSide].mUnk_0d_0, entries[mCardSide].mUnk_0e == 0x15 ? 1 : 0);
+                    mCardSpec = (u32) new BattleCardSpec(5, entries[mCardSide].mBakuganId, entries[mCardSide].mUnk_0d_0, entries[mCardSide].mCharacterId == 0x15 ? 1 : 0);
                     if (mUnk_54_1) {
                         mBattleData->mEntries[0].mUnk_02 = entries[0].mUnk_00 + entries[0].mUnk_0a;
                         mBattleData->mEntries[1].mUnk_02 = entries[1].mUnk_00 + entries[1].mUnk_0a;
@@ -789,7 +789,7 @@ void BattleBase::func_ov007_0221b8e8() {
     } else {
         switch (mCardKind) {
         case 0:
-            if (!func_ov007_02226aa0(mHud)) {
+            if (!IsHudSequenceRunning(mHud)) {
                 mState = 7;
                 done = 1;
             }
@@ -797,7 +797,7 @@ void BattleBase::func_ov007_0221b8e8() {
         case 1:
         case 3:
         case 4:
-            if (!func_ov007_02226aa0(mHud)) {
+            if (!IsHudSequenceRunning(mHud)) {
                 mState = 7;
                 done = 1;
             }
@@ -815,8 +815,8 @@ BOOL func_ov007_0221b998(int a, int mode, BattleEntry *entry) {
         return 0;
     }
     BOOL result = 0;
-    if (entry->mUnk_12 != 0) {
-        if (GetCardInfo(entry->mUnk_12, 3) == 5) {
+    if (entry->mCardId != 0) {
+        if (GetCardInfo(entry->mCardId, 3) == 5) {
             result = 1;
         }
     }
@@ -828,7 +828,7 @@ BOOL func_ov007_0221b9d0(int a, int mode, BattleEntry *entry) {
         return 0;
     }
     BOOL result;
-    if (entry->mUnk_12 != 0) {
+    if (entry->mCardId != 0) {
         result = 0;
         if (func_ov007_02222764(result, entry) == 5) {
             result = 1;
@@ -843,7 +843,7 @@ BOOL func_ov007_0221ba0c(int a, int mode, BattleEntry *entry) {
     if (mode != 1) {
         return 0;
     }
-    if (entry->mUnk_12 >= 0x8e && entry->mUnk_12 <= 0x91) {
+    if (entry->mCardId >= 0x8e && entry->mCardId <= 0x91) {
         return 1;
     }
     return 0;
@@ -851,7 +851,7 @@ BOOL func_ov007_0221ba0c(int a, int mode, BattleEntry *entry) {
 
 BOOL func_ov007_0221ba38(int a, u8 side, int value, BattleEntry *entries) {
     u8 other = side ^ 1;
-    if (entries[other].mUnk_12 == 0) {
+    if (entries[other].mCardId == 0) {
         return 0;
     }
     BOOL result = 0;
@@ -866,8 +866,8 @@ BOOL func_ov007_0221ba38(int a, u8 side, int value, BattleEntry *entries) {
 
 int func_ov007_0221ba88(int a, int index, BattleEntry *entries) {
     int result = 0;
-    if (GetCardInfo(entries[index].mUnk_12, 3) == 2) {
-        switch (entries[index].mUnk_12) {
+    if (GetCardInfo(entries[index].mCardId, 3) == 2) {
+        switch (entries[index].mCardId) {
         case 0x78: result = 1; break;
         case 0x79: result = 2; break;
         case 0x7a: result = 3; break;
@@ -966,13 +966,13 @@ BOOL BattleBase::func_ov007_0221bd84() {
         }
         break;
     case 2:
-        if (!func_ov007_02226aa0(mHud)) {
+        if (!IsHudSequenceRunning(mHud)) {
             ShowModels(mField3D);
             mUnk_11++;
         }
         break;
     case 3:
-        if (func_ov007_02229770(mField3D)) {
+        if (MoveToEndThenCreateAuras(mField3D)) {
             SoundManager::Get().StartSeqArc(0x23);
             SoundManager::Get().StartSeqArc(0x24);
             mUnk_18_2 = 1;
@@ -1000,7 +1000,7 @@ BOOL BattleBase::func_ov007_0221bfa4() {
         mUnk_11++;
         break;
     case 1:
-        if (!func_ov007_02226aa0(mHud)) {
+        if (!IsHudSequenceRunning(mHud)) {
             if (func_ov007_022297f0(mField3D)) {
                 mUnk_2a = 0;
                 mUnk_11++;
@@ -1060,9 +1060,9 @@ int BattleBase::func_ov007_0221c178(u16 *a, u16 *b, u16 *c, u8 *flag) {
                         c[mUnk_12] = 1;
                     }
                 }
-            } else if (entries[mUnk_12].mUnk_12 != 0) {
+            } else if (entries[mUnk_12].mCardId != 0) {
                 if (mHud->mUnk_118[mUnk_12] == 1) {
-                    if (GetCardInfo(entries[mUnk_12].mUnk_12, 3) != 4) {
+                    if (GetCardInfo(entries[mUnk_12].mCardId, 3) != 4) {
                         if (TouchManager::Get().IsPressedIn(data_ov007_02279178[mUnk_12], data_ov007_0227916c, 0x10, 0x18) ||
                             InputManager::Get().IsHeld(0x300)) {
                             c[mUnk_12] = 1;
@@ -1279,11 +1279,11 @@ void BattleBase::func_ov007_0221c938() {
                 s8 cur = mMultiplierIndex;
                 if (cur != -1) {
                     v = data_ov007_02278b68[cur].mUnk[entries[i].mUnk_0d_0];
-                    if (entries[i].mUnk_0c == 5) {
+                    if (entries[i].mBakuganId == 5) {
                         if (v < data_ov007_02278b68[cur].mUnk[3]) {
                             v = data_ov007_02278b68[cur].mUnk[3];
                         }
-                    } else if (entries[i].mUnk_0c == 6) {
+                    } else if (entries[i].mBakuganId == 6) {
                         if (v < data_ov007_02278b68[cur].mUnk[0]) {
                             v = data_ov007_02278b68[cur].mUnk[0];
                         }
@@ -1409,11 +1409,11 @@ void BattleBase::func_ov007_0221d088(u8 a, u16 *counts) {
         if (cur != -1) {
             BattleEntry *e = &entries[a];
             v = data_ov007_02278b68[cur].mUnk[e->mUnk_0d_0];
-            if (e->mUnk_0c == 5) {
+            if (e->mBakuganId == 5) {
                 if (v < data_ov007_02278b68[cur].mUnk[3]) {
                     v = data_ov007_02278b68[cur].mUnk[3];
                 }
-            } else if (e->mUnk_0c == 6) {
+            } else if (e->mBakuganId == 6) {
                 if (v < data_ov007_02278b68[cur].mUnk[0]) {
                     v = data_ov007_02278b68[cur].mUnk[0];
                 }

@@ -26,9 +26,9 @@ public:
     /* 24 */ ModelInstance *mActModel;
     /* 28 */ ModelInstance *mFieldopModel;
     /* 2c */ u32 mEdited;
-    /* 30 */ u16 mUnk_30;
+    /* 30 */ u16 mFrameTaskId;
     /* 32 */ u16 mActFrames;
-    /* 34 */ u8 mUnk_34;
+    /* 34 */ u8 mFrameTaskTimer;
     /* 35 */ u8 mState;
     /* 36 */ u8 mKind;
     /* 37 */ u8 mUnclampedKind;

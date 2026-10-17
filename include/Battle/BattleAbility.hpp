@@ -47,7 +47,7 @@ public:
     /* 1c */ BattleTarget *mTarget;
     /* 20 */ BattleUnionAbility *mUnionAbility;
     /* 24 */ BattleCommandPage *mCommandPage;
-    /* 28 */ u8 mUnk_28;
+    /* 28 */ u8 mStep;
     /* 29 */ u8 mUnk_29;
     /* 2a */ u8 mUnk_2a;
     /* 2b */ u8 mUnk_2b;

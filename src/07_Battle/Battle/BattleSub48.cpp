@@ -49,11 +49,11 @@ BattleSub48::BattleSub48(BattleData *data, u8 mode)
             u8 nib = entries[kk].mUnk_0d_0;
             s32 value = data_ov007_022790c8[mUnk_0f][nib];
             mUnk_12[k] = nib;
-            if (entries[k].mUnk_0c == 5) {
+            if (entries[k].mBakuganId == 5) {
                 if (value < data_ov007_022790c8[mUnk_0f][3]) {
                     mUnk_12[k] = 3;
                 }
-            } else if (entries[k].mUnk_0c == 6) {
+            } else if (entries[k].mBakuganId == 6) {
                 if (value < data_ov007_022790c8[mUnk_0f][0]) {
                     mUnk_12[k] = 0;
                 }
@@ -143,8 +143,8 @@ void BattleSub48::LoadGraphics() {
     screen.SetObjVramMode(1);
     ChangeDir("/Game/Confrontation/Obj/");
     if (mUnk_3c < 2) {
-        if (entries[mUnk_3c].mUnk_12 != 0) {
-            kind = GetCardInfo(entries[(u8) mUnk_3c].mUnk_12, 3);
+        if (entries[mUnk_3c].mCardId != 0) {
+            kind = GetCardInfo(entries[(u8) mUnk_3c].mCardId, 3);
             other = func_ov007_02222764((u8) mUnk_3c, entries);
             if (kind != 5 && other != 5) {
                 i = 0;
@@ -210,7 +210,7 @@ void BattleSub48::LoadGraphics() {
         if (entries[i].mUnk_0f_2) {
             mAnims[j]->SetAnimation(3);
         } else {
-            int k = GetCardInfo(entries[i].mUnk_12, 3);
+            int k = GetCardInfo(entries[i].mCardId, 3);
             if (k == 1) {
                 mAnims[j]->SetAnimation(1);
             } else if (k == 3) {
@@ -402,7 +402,7 @@ void BattleSub48::DrawAbilitiesAndSides() {
         return;
     }
     do {
-        if (entries[i].mUnk_12 != 0) {
+        if (entries[i].mCardId != 0) {
             if (mAnims[3] == 0) {
                 break;
             }
@@ -431,7 +431,7 @@ void BattleSub48::DrawAbilitiesAndSides() {
     } while (i < 2);
     i = 0;
     do {
-        if (entries[i].mUnk_12 == 0) {
+        if (entries[i].mCardId == 0) {
             if (entries[i].mUnk_0f_2) {
                 s16 x = xs[i];
                 u8 slot = i + 5;

@@ -50,7 +50,7 @@ BattleAbility::BattleAbility()
     mUnk_1a = 0;
     mUnionAbility = 0;
     mCommandPage = 0;
-    mUnk_28 = 0;
+    mStep = 0;
     mUnk_29 = 0xff;
     mUnk_2a = 0;
     mUnk_2b = 0;
@@ -124,7 +124,7 @@ static inline void SnapshotCamera() {
 }
 
 typedef u8 (BattleAbility::*BattleUnk022637acHandler)();
-static BattleUnk022637acHandler data_ov007_0228a098[12] = {
+static BattleUnk022637acHandler sAbilityHandlers[12] = {
     &BattleAbility::func_ov007_02265118,
     &BattleAbility::func_ov007_022652c8,
     &BattleAbility::func_ov007_0226547c,
@@ -207,7 +207,7 @@ void BattleAbility::Update() {
                 break;
             }
             if (result != 10) {
-                mUnk_2b = func_ov007_0225f0bc(result);
+                mUnk_2b = GetLowByte(result);
                 WirelessManager::Get();
                 if (IsWirelessMode(&data_020c4030.mUnk_228)) {
                     ((u8 *) &data_0220f540)[0] = 0x14;
@@ -329,7 +329,7 @@ void BattleAbility::Update() {
             }
             break;
         case 13:
-            if ((this->*data_ov007_0228a098[mAbilityIndex])()) {
+            if ((this->*sAbilityHandlers[mAbilityIndex])()) {
                 SpriteManager::Get().sFade[0] = 3;
                 SpriteManager::sFade[1]        = 3;
                 mState                           = 0xe;
@@ -626,7 +626,7 @@ void OrbitCamera(BattleAbility *self);
 
 u8 BattleAbility::func_ov007_02265118() {
     u8 done = 0;
-    switch (mUnk_28) {
+    switch (mStep) {
         case 0: {
             VecFx32 pos = sEffectPos_02265118;
             pos.x       = mTarget->mBakugan->mPosition.x;
@@ -637,7 +637,7 @@ u8 BattleAbility::func_ov007_02265118() {
             SoundManager::Get().StartSeqArc(0x5a);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
-            mUnk_28++;
+            mStep++;
             break;
         }
         case 1:
@@ -655,7 +655,7 @@ u8 BattleAbility::func_ov007_02265118() {
 
 u8 BattleAbility::func_ov007_022652c8() {
     u8 done = 0;
-    switch (mUnk_28) {
+    switch (mStep) {
         case 0: {
             VecFx32 pos = sEffectPos_022652c8;
             pos.x       = mTarget->mBakugan->mPosition.x;
@@ -666,7 +666,7 @@ u8 BattleAbility::func_ov007_022652c8() {
             SoundManager::Get().StartSeqArc(0x5a);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
-            mUnk_28++;
+            mStep++;
             break;
         }
         case 1:
@@ -691,12 +691,12 @@ extern "C" void func_ov007_02248910(BattleCommandMap *map);
 // eye computed before either store; the camera pointer is read once up front and again for the eye store.
 u8 BattleAbility::func_ov007_0226547c() {
     u8 done = 0;
-    switch (mUnk_28) {
+    switch (mStep) {
         case 0:
             SoundManager::Get().StartSeqArc(0x5b);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
-            mUnk_28++;
+            mStep++;
             break;
         case 1: {
             if (SpriteManager::Get().IsFading()) {
@@ -724,12 +724,12 @@ u8 BattleAbility::func_ov007_0226547c() {
             cam->mTarget       = target;
             mCamera->mPosition = eye;
             func_ov007_02248910(mTarget->mCommandMap);
-            mUnk_28++;
+            mStep++;
             break;
         }
         case 2:
             if (data_020d433c.mBattlePlayers->mMarkers[data_020d433c.mBattlePlayers->mUnits[mUnit].mMarker].mStatus != 3) {
-                mUnk_28++;
+                mStep++;
             }
             break;
         case 3:
@@ -748,7 +748,7 @@ void ReplaceUnitRecord(BattlePlayerList *list, u8 a, u8 b);
 
 u8 BattleAbility::func_ov007_02265718() {
     u8 done = 0;
-    switch (mUnk_28) {
+    switch (mStep) {
         case 0: {
             VecFx32 pos = sEffectPos_02265718;
             pos.x       = mTarget->mBakugan->mPosition.x;
@@ -759,7 +759,7 @@ u8 BattleAbility::func_ov007_02265718() {
             SoundManager::Get().StartSeqArc(0x5c);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
-            mUnk_28++;
+            mStep++;
             break;
         }
         case 1:
@@ -768,7 +768,7 @@ u8 BattleAbility::func_ov007_02265718() {
                 mUnk_1a = 0;
                 SpriteManager::Get();
                 SpriteManager::sFade[0] = 4;
-                mUnk_28++;
+                mStep++;
             }
             break;
         case 2:
@@ -782,13 +782,13 @@ u8 BattleAbility::func_ov007_02265718() {
             }
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
-            mUnk_28++;
+            mStep++;
             break;
         case 3:
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            mUnk_28++;
+            mStep++;
             break;
         case 4:
             mUnk_1a++;
@@ -826,7 +826,7 @@ u8 BattleAbility::func_ov007_02265af8() {
     UnitSize sz;
     BattlePlayerList *list;
     BattleUnit *unit;
-    switch (mUnk_28) {
+    switch (mStep) {
         case 0: {
             VecFx32 pos = sEffectPos_02265af8_0;
             pos.x       = mTarget->mBakugan->mPosition.x;
@@ -838,7 +838,7 @@ u8 BattleAbility::func_ov007_02265af8() {
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             mUnk_62_1                  = 0;
-            mUnk_28++;
+            mStep++;
             break;
         }
         case 1:
@@ -881,7 +881,7 @@ u8 BattleAbility::func_ov007_02265af8() {
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
-                mUnk_28++;
+                mStep++;
             }
             break;
         case 2:
@@ -893,7 +893,7 @@ u8 BattleAbility::func_ov007_02265af8() {
                 SetEffectPosition(mEffects, handle, &pos);
                 SoundManager::Get().StartSeqArc(0x5d);
                 mUnk_62_1 = 0;
-                mUnk_28++;
+                mStep++;
             }
             break;
         case 3:
@@ -914,7 +914,7 @@ u8 BattleAbility::func_ov007_02265af8() {
 
 u8 BattleAbility::func_ov007_02265fac() {
     u8 done = 0;
-    switch (mUnk_28) {
+    switch (mStep) {
         case 0: {
             VecFx32 pos = sEffectPos_02265fac_0;
             pos.x       = mTarget->mBakugan->mPosition.x;
@@ -926,7 +926,7 @@ u8 BattleAbility::func_ov007_02265fac() {
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             mUnk_62_1                  = 0;
-            mUnk_28++;
+            mStep++;
             break;
         }
         case 1:
@@ -956,7 +956,7 @@ u8 BattleAbility::func_ov007_02265fac() {
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
-                mUnk_28++;
+                mStep++;
             }
             break;
         case 2:
@@ -968,7 +968,7 @@ u8 BattleAbility::func_ov007_02265fac() {
                 SetEffectPosition(mEffects, handle, &pos);
                 SoundManager::Get().StartSeqArc(0x5d);
                 mUnk_62_1 = 0;
-                mUnk_28++;
+                mStep++;
             }
             break;
         case 3:
@@ -988,7 +988,7 @@ u8 BattleAbility::func_ov007_02265fac() {
 
 u8 BattleAbility::func_ov007_022663f0() {
     u8 done = 0;
-    switch (mUnk_28) {
+    switch (mStep) {
         case 0: {
             VecFx32 pos = sEffectPos_022663f0;
             pos.x       = mTarget->mBakugan->mPosition.x;
@@ -999,7 +999,7 @@ u8 BattleAbility::func_ov007_022663f0() {
             SoundManager::Get().StartSeqArc(0x5e);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
-            mUnk_28++;
+            mStep++;
             break;
         }
         case 1:
@@ -1023,12 +1023,12 @@ BOOL func_ov007_0226745c(BattleAbility *self, u8 a, u8 b);
 
 u8 BattleAbility::func_ov007_022665ec() {
     u8 done = 0;
-    switch (mUnk_28) {
+    switch (mStep) {
         case 0:
             LoadEffectGroup(mEffects, 0, "gp_pickup2");
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
-            mUnk_28++;
+            mStep++;
             break;
         case 1: {
             if (SpriteManager::Get().IsFading()) {
@@ -1041,12 +1041,12 @@ u8 BattleAbility::func_ov007_022665ec() {
             SetEffectPosition(mEffects, handle, &pos);
             SoundManager::Get().StartSeqArc(0x5f);
             mUnk_62_0 = 0;
-            mUnk_28++;
+            mStep++;
             break;
         }
         case 2:
             if (func_ov007_0226745c(this, mPlayer, mRecord)) {
-                mUnk_28++;
+                mStep++;
             }
             break;
         case 3:
@@ -1065,7 +1065,7 @@ u8 BattleAbility::func_ov007_022665ec() {
 
 u8 BattleAbility::func_ov007_02266868() {
     u8 done = 0;
-    switch (mUnk_28) {
+    switch (mStep) {
         case 0: {
             VecFx32 pos = sEffectPos_02266868;
             pos.x       = mTarget->mBakugan->mPosition.x;
@@ -1076,7 +1076,7 @@ u8 BattleAbility::func_ov007_02266868() {
             SoundManager::Get().StartSeqArc(0x5f);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
-            mUnk_28++;
+            mStep++;
             break;
         }
         case 1:
@@ -1116,13 +1116,13 @@ BOOL UpdateCameraToFieldEffect(BattleAbility *self);
 
 u8 BattleAbility::func_ov007_02266a28() {
     u8 done = 0;
-    switch (mUnk_28) {
+    switch (mStep) {
         case 0:
             LoadEffectGroup(mEffects, 0, mAbilityId == 0xd4 ? "gp_pickup2" : "gp_down");
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             OrbitCamera(this);
-            mUnk_28++;
+            mStep++;
             break;
         case 1: {
             if (SpriteManager::Get().IsFading()) {
@@ -1141,14 +1141,14 @@ u8 BattleAbility::func_ov007_02266a28() {
                 mUnk_62_0 = 0;
             }
             OrbitCamera(this);
-            mUnk_28++;
+            mStep++;
             break;
         }
         case 2:
             mTarget->func_ov007_0225ca48(0xff, 0xff);
             OrbitCamera(this);
             if (func_ov007_0226745c(this, mPlayer, mRecord)) {
-                mUnk_28++;
+                mStep++;
             }
             break;
         case 3:
@@ -1158,7 +1158,7 @@ u8 BattleAbility::func_ov007_02266a28() {
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
-                mUnk_28++;
+                mStep++;
             }
             break;
         case 4:
@@ -1173,7 +1173,7 @@ u8 BattleAbility::func_ov007_02266a28() {
                 SetEffectScale(mEffects, handle, (VecFx32 *) &entry->mScale);
                 u32 sfx = mAbilityId == 0xd4 ? 0x5f : 0x6c;
                 SoundManager::Get().StartSeqArc(sfx);
-                mUnk_28++;
+                mStep++;
             }
             break;
         case 5:
@@ -1190,7 +1190,7 @@ u8 BattleAbility::func_ov007_02266a28() {
                     }
                     i++;
                 } while (i < 12);
-                mUnk_28++;
+                mStep++;
             }
             break;
         case 6: {
@@ -1215,7 +1215,7 @@ u8 BattleAbility::func_ov007_02266a28() {
             u32 sfx = mAbilityId == 0xd4 ? 0x5f : 0x6c;
             SoundManager::Get().StartSeqArc(sfx);
             mUnk_60 = 0;
-            mUnk_28++;
+            mStep++;
             break;
         }
         case 7: {
@@ -1223,7 +1223,7 @@ u8 BattleAbility::func_ov007_02266a28() {
             mTarget->func_ov007_0225ca48(unit->mPlayer, unit->mRecord);
             OrbitCamera(this);
             if (func_ov007_0226745c(this, unit->mPlayer, unit->mRecord)) {
-                mUnk_28++;
+                mStep++;
             }
             break;
         }
@@ -1235,7 +1235,7 @@ u8 BattleAbility::func_ov007_02266a28() {
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {
                 mUnk_1a = 0;
-                mUnk_28 = 6;
+                mStep = 6;
             }
             break;
         }

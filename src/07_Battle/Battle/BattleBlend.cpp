@@ -8,7 +8,7 @@
 BattleBlend::BattleBlend(u16 period, u8 min, u8 max) {
     mRaiseCount = 0;
     mLevel = min;
-    mUnk_06 = 0;
+    mLowerCount = 0;
     mWobble = 0;
     mWobbleFrames = 0;
     mFalling = 0;
@@ -22,7 +22,7 @@ BattleBlend::~BattleBlend() {
 }
 
 void BattleBlend::RaiseLevel() {
-    mUnk_06 = 0;
+    mLowerCount = 0;
     mRaiseCount++;
     if (mRaiseCount < mPeriod) {
         return;
@@ -73,9 +73,9 @@ void BattleBlend::UpdateWobble() {
 
 BOOL BattleBlend::LowerLevel() {
     BOOL done = 0;
-    mUnk_06++;
-    if ((int) mUnk_06 >= 1) {
-        mUnk_06 = 0;
+    mLowerCount++;
+    if ((int) mLowerCount >= 1) {
+        mLowerCount = 0;
         mRaiseCount = 0;
         if (mLevel > mMin) {
             mLevel--;

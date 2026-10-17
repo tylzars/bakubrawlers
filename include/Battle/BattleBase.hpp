@@ -108,10 +108,10 @@ struct BattleEntry {
     /* 06 */ u16 mUnk_06;
     /* 08 */ u16 mUnk_08;
     /* 0a */ u16 mUnk_0a;
-    /* 0c */ u8 mUnk_0c;
+    /* 0c */ u8 mBakuganId;
     /* 0d */ u8 mUnk_0d_0 : 4;
     /* 0d */ u8 mUnk_0d_4 : 4;
-    /* 0e */ u8 mUnk_0e;
+    /* 0e */ u8 mCharacterId;
     /* 0f */ u8 mUnk_0f_0 : 1;
     /* 0f */ u8 mUnk_0f_1 : 1;
     /* 0f */ u8 mUnk_0f_2 : 1;
@@ -121,8 +121,8 @@ struct BattleEntry {
     /* 0f */ u8 mUnk_0f_6 : 1;
     /* 0f */ u8 mUnk_0f_7 : 1;
     /* 10 */ u8 mUnk_10;
-    /* 11 */ u8 mUnk_11;
-    /* 12 */ u16 mUnk_12;
+    /* 11 */ u8 mSlot6cIndex;
+    /* 12 */ u16 mCardId;
     /* 14 */
 };
 

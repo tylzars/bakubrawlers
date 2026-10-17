@@ -10,7 +10,7 @@
 #include "System/FileSystem.hpp"
 
 // One 0x14-byte motion record of the table at 0x02279080.
-extern BattleObj01Motion data_ov007_02279080[];
+extern BattleObj01Motion gBattleObj01Motions[];
 
 void NormalizeXY(float x, float y, float *out);
 int PointDistance(int x1, int y1, int x2, int y2);
@@ -47,7 +47,7 @@ BOOL BattleObj01::Start(u8 fast, int x, int y, s16 targetX, s16 targetY, u16 ang
     if (mActive) {
         return 0;
     }
-    mMotion = &data_ov007_02279080[motion];
+    mMotion = &gBattleObj01Motions[motion];
     u8 anim;
     if (fast != 0) {
         anim = 15;

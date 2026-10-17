@@ -30,7 +30,7 @@ public:
     /* 30 */ BattleCommandPage *mCommandPage;
     /* 34 */ BattleCommandList *mCommandList;
     /* 38 */ SelectWindow *mWindow;
-    /* 3c */ CharacterIcons *mUnk_3c;
+    /* 3c */ CharacterIcons *mCharacterIcons;
     /* 40 */ CellAnimation *mCharacterIconCellAnims[3];
     /* 4c */ u32 mCharOffset;
     /* 50 */ s16 mSlideX;
@@ -61,4 +61,4 @@ public:
 };
 
 void CloseCommandPrompt(BattleCommandPrompt *prompt, u32 flag); // releases the prompt
-extern "C" u8 func_ov007_0225f0bc(u32 v);
+extern "C" u8 GetLowByte(u32 v);

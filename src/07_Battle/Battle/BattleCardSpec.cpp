@@ -14,7 +14,7 @@
 
 BOOL func_ov007_022632d0(BattlePlayerList *list, u32 flag);
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
-extern const VecFx32 data_ov007_0227aa1c;
+extern const VecFx32 gCardSpecModelScale;
 
 
 // Copies the active camera into the 3D engine state and the camera manager's snapshot of it.
@@ -41,7 +41,7 @@ BattleCardSpec::BattleCardSpec(u32 a, u32 b, u32 c, u8 d)
     mState  = 0;
     mUnk_19 = 0;
     mUnk_1e = 0;
-    mUnk_1d = d;
+    mUseRealb20 = d;
     mCardModelType = a;
     mBakuganId = b;
     mVariant = c;
@@ -79,7 +79,7 @@ void BattleCardSpec::Update() {
             GX_SetVisiblePlane(0x11);
             G2_SetBG0Priority(0);
             LoadModels();
-            mCardModel = new BattleCardModel(data_020d433c.mEffects, data_020d433c.mBattlePlayers->mCamera, mCardModelType, mBakuganId, mVariant, mUnk_1d);
+            mCardModel = new BattleCardModel(data_020d433c.mEffects, data_020d433c.mBattlePlayers->mCamera, mCardModelType, mBakuganId, mVariant, mUseRealb20);
             mContext->mRequest = 0;
             mState++;
             break;
@@ -134,7 +134,7 @@ void BattleCardSpec::Update() {
     if (mState > 1) {
         SnapshotCamera();
         MtxFx43 mtx   = gIdentityMtx43;
-        VecFx32 pos   = data_ov007_0227aa1c;
+        VecFx32 pos   = gCardSpecModelScale;
         mRealbaseModel->Draw(&mtx, &pos);
         mRealnormalModel->AdvanceAnim();
         mRealnormalModel->Draw(&mtx, &pos);

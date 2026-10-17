@@ -6,8 +6,8 @@
 #include "System/FileSystem.hpp"
 #include <stdio.h>
 
-extern const u8 data_ov007_0227c018[];
-extern const BattleCardEffectInfo data_ov007_0227c02c[];
+extern const u8 gCardEffectMiddleFrameCounts[];
+extern const BattleCardEffectInfo gCardEffectInfos[];
 
 BattleCardEffect::BattleCardEffect(u32 a, u32 b, u32 c, u32 d)
     : SceneBase(0x3f2, 0) {
@@ -47,7 +47,7 @@ void BattleCardEffect::Update() {
         case 0:
             if (UpdateAnimation()) {
                 SetMiddleAnimation();
-                mTimer = mKind >= 0x11 ? 0 : data_ov007_0227c018[mKind];
+                mTimer = mKind >= 0x11 ? 0 : gCardEffectMiddleFrameCounts[mKind];
                 mState++;
             }
             break;
@@ -100,13 +100,13 @@ void BattleCardEffect::LoadAnimation() {
     char path[0x100];
     ChangeDir("/Game/Battle/Obj/");
     SpriteManager &sprites = SpriteManager::Get();
-    u8 screenIndex = data_ov007_0227c02c[mKind].mScreen;
+    u8 screenIndex = gCardEffectInfos[mKind].mScreen;
     SpriteScreen &screen = sprites.Screen(screenIndex);
-    sprintf(path, "%s.nce_ncg1D.bin", data_ov007_0227c02c[mKind].mName);
+    sprintf(path, "%s.nce_ncg1D.bin", gCardEffectInfos[mKind].mName);
     screen.LoadCharacters(path, mCharOffset, 0);
-    sprintf(path, "%s_ncl.bin", data_ov007_0227c02c[mKind].mName);
+    sprintf(path, "%s_ncl.bin", gCardEffectInfos[mKind].mName);
     screen.LoadPalette(path, mPalette << 5, 0);
-    sprintf(path, "%s_nce.bin", data_ov007_0227c02c[mKind].mName);
+    sprintf(path, "%s_nce.bin", gCardEffectInfos[mKind].mName);
     mAnim = new CellAnimation(path, 0, 1, 1);
     mAnim->mCharBase = screen.GetCharBase(mCharOffset);
     mAnim->mPaletteBase   = mPalette;
@@ -125,6 +125,6 @@ int BattleCardEffect::UpdateAnimation() {
             return 0;
         }
     }
-    mAnim->Draw(data_ov007_0227c02c[mKind].mScreen, 0x80, 0x60, 0);
+    mAnim->Draw(gCardEffectInfos[mKind].mScreen, 0x80, 0x60, 0);
     return mAnim->mFinished;
 }

@@ -108,8 +108,8 @@ void func_ov007_0226a380(BattlePlayer *player, u8 record, int unk);
 void GetVelocityTowardXZ(VecFx32 *a, VecFx32 *b, VecFx32 *speed, VecFx32 *out);
 extern "C" u32 FX_AcosIdx(s32 value);
 
-extern "C" void func_ov007_022488ac(BattleCommandMap *map, u32 a, u32 b, u32 c);
-extern "C" void func_ov007_02248688(BattleCommandMap *map, VecFx32 *v);
+extern "C" void SetDirAndPredict(BattleCommandMap *map, u32 a, u32 b, u32 c);
+extern "C" void DrawShadowPieceXZ(BattleCommandMap *map, VecFx32 *v);
 extern "C" void FreeBakuganModelInstance(BakuganModel *pose);
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 
@@ -416,14 +416,14 @@ void BattleTarget::Update() {
                     case 4:
                     case 5:
                     case 6:
-                        func_ov007_022488ac(mCommandMap, (u16) (0x6000 - mUnk_1b8), (u16) (mUnk_1ba + 0x31c + 0x400), 0x50);
+                        SetDirAndPredict(mCommandMap, (u16) (0x6000 - mUnk_1b8), (u16) (mUnk_1ba + 0x31c + 0x400), 0x50);
                         break;
                     case 1:
-                        func_ov007_022488ac(mCommandMap, (u16) (0x6000 - mUnk_1b8), (u16) (mUnk_1ba + 0x8e + 0x300), 0x78);
+                        SetDirAndPredict(mCommandMap, (u16) (0x6000 - mUnk_1b8), (u16) (mUnk_1ba + 0x8e + 0x300), 0x78);
                         break;
                     case 3: {
                         u32 idx = data_020d433c.mFieldId;
-                        func_ov007_022488ac(mCommandMap, (u16) (0x6000 - mUnk_1b8), data_ov007_0227a5e0.mUnk_90[idx], (u16) (data_ov007_0227a5e0.mUnk_80[idx] + 0x50));
+                        SetDirAndPredict(mCommandMap, (u16) (0x6000 - mUnk_1b8), data_ov007_0227a5e0.mUnk_90[idx], (u16) (data_ov007_0227a5e0.mUnk_80[idx] + 0x50));
                         break;
                     }
                 }
@@ -736,9 +736,9 @@ void BattleTarget::Update() {
     BakuganModel *pose = mBakugan;
     if (pose && pose->mVisible && (mUnk_1cd || mUnk_1e9) && mCommandMap) {
         if (mUnk_1cb == 0) {
-            func_ov007_02248688(mCommandMap, &mPrevPosition);
+            DrawShadowPieceXZ(mCommandMap, &mPrevPosition);
         } else {
-            func_ov007_02248688(mCommandMap, &pose->mPosition);
+            DrawShadowPieceXZ(mCommandMap, &pose->mPosition);
         }
     }
     func_ov007_0225c4dc();
@@ -766,7 +766,7 @@ void BattleTarget::Init() {
     mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
     mCommandMap->mUnk_151 = 0;
     mCommandMap->Init();
-    func_ov007_02248620(mCommandMap, 1);
+    SetPredictVisible(mCommandMap, 1);
     LoadUnitCollisions();
     LoadMapCollision();
     mUnk_94.x = 0;
@@ -881,7 +881,7 @@ void BattleTarget::LoadMapCollision() {
 }
 
 void BattleTarget::func_ov007_02254928(u32 unk) {
-    func_ov007_02248620(mCommandMap, unk);
+    SetPredictVisible(mCommandMap, unk);
 }
 
 BOOL BattleTarget::func_ov007_02254938(VecFx32 *a, VecFx32 *b, VecFx32 *vel, u8 index) {
@@ -3255,8 +3255,8 @@ BOOL BattleTarget::func_ov007_0225b4a0(VecFx32 *pos, u16 *angle, VecFx32 *vel, u
 }
 
 void BattleTarget::func_ov007_0225b69c(u8 a, u8 b) {
-    func_ov007_022479f4(mCommandMap, 1);
-    func_ov007_02247a3c(mCommandMap);
+    SetMapModelsEnabled(mCommandMap, 1);
+    CreateCursorModel(mCommandMap);
     BattleCommandMap *map = mCommandMap;
     map->mCursorX         = a;
     map->mCursorY         = b;
@@ -3369,7 +3369,7 @@ void BattleTarget::func_ov007_0225b6d0() {
     } else {
         mCollision = AddCollisionSet(data_020d433c.mGimmickCollision, 0x10, buf, &mBakugan->mPosition, &mBakugan->mRotX, 0);
     }
-    func_ov007_02248620(mCommandMap, 0);
+    SetPredictVisible(mCommandMap, 0);
     mBakugan->mVisible = 1;
     if (mUnk_1df == 0) {
         if (power > 0x59) {

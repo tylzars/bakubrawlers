@@ -20,7 +20,7 @@ BattleSideHelper::BattleSideHelper(u8 index, u8 unk2, BattleEntry *entries) {
     mQuarter = 0;
     mRollFrames = 0;
     mQuarterPeriodCount = 0;
-    u16 *id = (u16 *) ((u8 *) &entries->mUnk_12 + index * 0x14);
+    u16 *id = (u16 *) ((u8 *) &entries->mCardId + index * 0x14);
     if (*id != 0) {
         BattleSideRow *row;
         if (unk2 == 0x15) {

@@ -42,7 +42,7 @@ public:
     virtual ~BattleCpu();
     void func_ov007_02231038();
     u8 func_ov007_022310f0();
-    u8 func_ov007_02231300();
+    u8 PickMarkerCell();
     u8 PickRecord();
     void func_ov007_02231e2c(struct BattleCpuRot *rot, u16 *outA, u16 *outB, u8 *outC);
     void func_ov007_022328dc();

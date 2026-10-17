@@ -445,7 +445,7 @@ void BattleCommand::Update() {
             InitCommandSubScreen((s16) (mScrollX - mOffsetX), mScrollY);
             func_ov007_0223ad70(mFlipped);
             LoadTurnGraphics();
-            func_ov007_02247a3c(mCommandMap);
+            CreateCursorModel(mCommandMap);
             func_ov007_02246a84(mCommandMap, 2);
             SpriteManager::Get().StartFade(2);
             mState++;
@@ -789,7 +789,7 @@ void BattleCommand::Update() {
                 return;
             }
             mUnk_132 = r;
-            u8 v     = data_020d433c.mBattlePlayers->Current()->mCpu->func_ov007_02231300();
+            u8 v     = data_020d433c.mBattlePlayers->Current()->mCpu->PickMarkerCell();
             u8 hi    = v >> 4;
             u8 lo    = v & 0xf;
             if (mGridMask[hi][lo] != 0) {
@@ -912,7 +912,7 @@ void BattleCommand::Update() {
             }
             if (v != 10) {
                 GXS_SetVisiblePlane(0x11);
-                mUnk_132 = func_ov007_0225f0bc(v);
+                mUnk_132 = GetLowByte(v);
                 mState++;
                 return;
             }
@@ -1108,7 +1108,7 @@ void BattleCommand::Update() {
             }
             mNextMode = 2;
             OpenNextMode(0);
-            func_ov007_02247a3c(mCommandMap);
+            CreateCursorModel(mCommandMap);
             func_ov007_02246a84(mCommandMap, 2);
             mState++;
             return;
@@ -1161,7 +1161,7 @@ void BattleCommand::Update() {
             }
             CloseMode(1);
             SpriteManager::Get().StartSubFade(3);
-            mUnk_132 = func_ov007_0225f0bc(v);
+            mUnk_132 = GetLowByte(v);
             data_020d433c.mBattlePlayers->mPlayers[mUnk_133]->mRecord = mUnk_132;
             GXS_SetVisiblePlane(0x11);
             mState = 0x34;
@@ -1175,7 +1175,7 @@ void BattleCommand::Update() {
             }
             mNextMode = 2;
             OpenNextMode(0);
-            func_ov007_02247a3c(mCommandMap);
+            CreateCursorModel(mCommandMap);
             func_ov007_02246a84(mCommandMap, 2);
             mState++;
             return;
@@ -1289,7 +1289,7 @@ void BattleCommand::Update() {
             }
             mNextMode = 2;
             OpenNextMode(0);
-            func_ov007_02247a3c(mCommandMap);
+            CreateCursorModel(mCommandMap);
             mCockpitWindow->Reset(-1);
             mCockpitWindow->mEnabled = 0;
             func_ov007_02246a84(mCommandMap, 2);
@@ -1333,7 +1333,7 @@ void BattleCommand::Update() {
             }
             mNextMode = 2;
             OpenNextMode(0);
-            func_ov007_02247a3c(mCommandMap);
+            CreateCursorModel(mCommandMap);
             func_ov007_02246a84(mCommandMap, 2);
             mCommandMap->mUnk_151 = 0;
             SpriteManager::Get().StartSubFade(2);
@@ -1485,7 +1485,7 @@ BOOL BattleCommand::SwitchMode() {
         OpenNextMode(1);
         switch (mMode) {
             case 2:
-                func_ov007_02247a3c(mCommandMap);
+                CreateCursorModel(mCommandMap);
                 func_ov007_02246a84(mCommandMap, 2);
                 break;
             case 3: {
@@ -1610,7 +1610,7 @@ BOOL BattleCommand::UpdatePrompt() {
                 mPromptWindow->mSlideInRequested = 0;
                 mNextMode         = 2;
                 OpenNextMode(0);
-                func_ov007_02247a3c(mCommandMap);
+                CreateCursorModel(mCommandMap);
                 func_ov007_02246a84(mCommandMap, 2);
                 SetCommandMessage();
                 mCommandWindow->Reset(-1);
@@ -1659,7 +1659,7 @@ void BattleCommand::func_ov007_0223a734() {
     LoadAndQueueUpload(0, 5, 0, "battle_u_ncl.bin", 0, 0, 0);
     mCommandMap = new BattleCommandMap(data_020d433c.mFieldId);
     mCommandMap->Init();
-    func_ov007_02247a3c(mCommandMap);
+    CreateCursorModel(mCommandMap);
     func_ov007_02246a84(mCommandMap, 2);
     ChangeDir("/Game/Battle/Obj");
     u8 i;
@@ -1789,7 +1789,7 @@ void func_ov007_0223ad70(u32 variant) {
 
 class Camera;
 
-void func_ov007_02247a3c(BattleCommandMap *map);
+void CreateCursorModel(BattleCommandMap *map);
 
 void BattleCommand::LoadTurnGraphics() {
     ChangeDir("/Game/Battle/Obj");
@@ -1876,7 +1876,7 @@ void BattleCommand::Draw() {
 
 // Record of a battle cell returned by GetUnitRecordAt.
 
-void func_ov007_02247a3c(BattleCommandMap *map);
+void CreateCursorModel(BattleCommandMap *map);
 
 void func_ov007_02246a84(BattleCommandMap *map, u32 a);
 

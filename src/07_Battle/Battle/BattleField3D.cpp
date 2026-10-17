@@ -70,16 +70,16 @@ BattleField3D::BattleField3D(BattleData *data, int unk2) {
     SnapshotCamera();
     mLights = new ModelLightGroup(data_ov007_022791c4);
     BattleEntry *entries = data->mEntries;
-    mSide0RealBaku = new BattleRealBaku(entries[0].mUnk_0c, 0xb, entries[0].mUnk_0d_0, 1, 0, 0, entries[0].mUnk_0e == 0x15);
-    mSide1RealBaku = new BattleRealBaku(entries[1].mUnk_0c, 0xb, entries[1].mUnk_0d_0, 1, 0, 0, entries[1].mUnk_0e == 0x15);
-    BattleCamRow *row = &data_ov007_022791ec[entries[0].mUnk_0c];
+    mSide0RealBaku = new BattleRealBaku(entries[0].mBakuganId, 0xb, entries[0].mUnk_0d_0, 1, 0, 0, entries[0].mCharacterId == 0x15);
+    mSide1RealBaku = new BattleRealBaku(entries[1].mBakuganId, 0xb, entries[1].mUnk_0d_0, 1, 0, 0, entries[1].mCharacterId == 0x15);
+    BattleCamRow *row = &data_ov007_022791ec[entries[0].mBakuganId];
     s32 z0 = row->mZ;
     s32 y0 = row->mY;
     mPos[0].x = -0x1a000;
     mPos[0].y = y0;
     mPos[0].z = z0;
     mSide0EndX = row->mX;
-    row = &data_ov007_022791ec[entries[1].mUnk_0c];
+    row = &data_ov007_022791ec[entries[1].mBakuganId];
     s32 z1 = row->mZ;
     s32 y1 = row->mY;
     mPos[1].x = 0x1a000;
@@ -144,7 +144,7 @@ void ShowModels(BattleField3D *obj) {
     obj->mUnk_04_2 = 0;
 }
 
-BOOL func_ov007_02229770(BattleField3D *obj) {
+BOOL MoveToEndThenCreateAuras(BattleField3D *obj) {
     obj->mPos[1].x -= 0x1000;
     obj->mPos[0].x += 0x1000;
     BOOL reached = 0;

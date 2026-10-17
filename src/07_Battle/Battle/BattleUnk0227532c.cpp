@@ -13,7 +13,7 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-extern MtxFx22 data_0220e838;
+extern MtxFx22 gIdentityMtx22;
 extern "C" void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
 
 static const WindowItemRecord sTwoButtonItems[2] = {
@@ -148,7 +148,7 @@ BOOL BattleUnk0227532c::SlideTo(int target) {
 }
 
 void func_ov007_022758a4(BattleUnk0227532c *popup) {
-    G2x_SetBGyAffine_((vu16 *) 0x4001030, &data_0220e838, 0, 0, popup->mOffset, 0);
+    G2x_SetBGyAffine_((vu16 *) 0x4001030, &gIdentityMtx22, 0, 0, popup->mOffset, 0);
     GXS_SetVisiblePlane(popup->mPlanes | 0x18);
 }
 

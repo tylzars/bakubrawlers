@@ -1866,8 +1866,8 @@ void ScriptPlayer::UpdateMessages() {
 
 extern const s16 data_020a248c[][9];
 extern const s16 data_020a233c[][12];
-void func_02025588(void (*callback)());
-void func_020255f8(void (*callback)());
+void AddHBlankHook(void (*callback)());
+void RemoveHBlankHook(void (*callback)());
 extern "C" void func_0206ea14();
 void func_02087ccc(StorytalkWindow *object, void *data);
 void func_02088ec4(StorytalkWindow *object);
@@ -3272,9 +3272,9 @@ void ScriptPlayer::SetBg0Wave(u32 flag) {
     }
     mBg0Wave = flag;
     if (flag & 0xff) {
-        func_02025588(func_0206ea14);
+        AddHBlankHook(func_0206ea14);
     } else {
-        func_020255f8(func_0206ea14);
+        RemoveHBlankHook(func_0206ea14);
         func_020037e8(0);
     }
 }

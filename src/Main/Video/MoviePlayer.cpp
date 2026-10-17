@@ -39,12 +39,12 @@ extern "C" void func_0203bddc(u32 a, u32 b);
 extern "C" void func_0203bdfc(u32 a, u32 b);
 }
 struct Reader;
-u32 func_0203a574(Reader *decoder, u32 a);
-void func_0203a65c(Player *video);
+u32 MobiclipCreate(Reader *decoder, u32 a);
+void MobiclipDelete(Player *video);
 u32 func_0203a67c(Player *video);
-u32 func_0203a694(Player *video);
-u32 func_0203a6ac(Player *video);
-u32 func_0203a6c4(Player *video);
+u32 MobiclipGetAudioChannelCount(Player *video);
+u32 MobiclipGetFrameRate(Player *video);
+u32 MobiclipGetFrameCount(Player *video);
 u32 func_0203a6dc(Player *video);
 BOOL func_0203a6f4(Player *video);
 void func_0203a718(Player *video);
@@ -229,17 +229,17 @@ void MoviePlayer::Open(void *a, void *b, u8 c, u32 d) {
     func_0200a7b4(mDecoder);
     func_0200aa94(mDecoder, (const char *) a);
     mUnk_d4 = 6;
-    mVideo  = (Player *) func_0203a574((Reader *) mDecoder, mUnk_d4);
-    mFrameCount = func_0203a6c4(mVideo);
+    mVideo  = (Player *) MobiclipCreate((Reader *) mDecoder, mUnk_d4);
+    mFrameCount = MobiclipGetFrameCount(mVideo);
     mUnk_fc = func_0203a6dc(mVideo);
     if (mUseVideo2) {
         func_0200a7b4(mDecoder2);
         func_0200aa94(mDecoder2, (const char *) b);
-        mVideo2 = (Player *) func_0203a574((Reader *) mDecoder2, mUnk_d4);
+        mVideo2 = (Player *) MobiclipCreate((Reader *) mDecoder2, mUnk_d4);
     }
     mUseBuffer2 = c;
     u32 frames = func_0203a67c(mVideo);
-    u32 rate   = func_0203a6ac(mVideo);
+    u32 rate   = MobiclipGetFrameRate(mVideo);
     mUnk_d8    = (u32) (((u64) frames << 24) / ((u64) mUnk_fc * rate)) + 1;
     mUnk_f8    = mUnk_d8 * (mUnk_d4 + 1);
     mBuffer    = (u16 *) OS_Alloc(mUnk_f8 * mUnk_fc * 2);
@@ -255,9 +255,9 @@ void MoviePlayer::Open(void *a, void *b, u8 c, u32 d) {
     mFlipDone = 1;
     OS_CreateAlarm(mAlarm);
     u64 tick   = OS_GetTick();
-    u64 period = (((((u64) 1000000 << 24) / func_0203a6ac(mVideo)) * 0x82ea) >> 6) / 1000;
+    u64 period = (((((u64) 1000000 << 24) / MobiclipGetFrameRate(mVideo)) * 0x82ea) >> 6) / 1000;
     OS_SetPeriodicAlarm(mAlarm, tick + 5, (u32) period, (void (*)(void *)) SetFrameDue, this);
-    mUnk_10f = func_0203a694(mVideo);
+    mUnk_10f = MobiclipGetAudioChannelCount(mVideo);
     int n    = mUseBuffer2 + 1;
     int q    = mUnk_10f / n;
     if (*(u8 *) &d >= q) {
@@ -277,12 +277,12 @@ void MoviePlayer::Close() {
         OS_Free(mBuffer2);
     }
     OS_Free(mBuffer);
-    func_0203a65c(mVideo);
+    MobiclipDelete(mVideo);
     func_0200aadc(mDecoder);
     if (!mUseVideo2) {
         return;
     }
-    func_0203a65c(mVideo2);
+    MobiclipDelete(mVideo2);
     func_0200aadc(mDecoder2);
 }
 

@@ -23,18 +23,18 @@ extern "C" int func_02036ae0(s32 a, s32 b);
 extern "C" void func_02036b40(void *handle, s32 a);
 extern "C" void func_02036b88(void *handle, u32 a, s32 b);
 
-extern u32 data_020d5520[];
+extern u32 gSoundHeapBuffer[];
 extern u32 data_02090778;
-extern SoundEntry data_02090780[];
-extern SoundEntry data_02090788[];
+extern SoundEntry gSeqTable[];
+extern SoundEntry gSeqArcTable[];
 
 void SoundManager::Init() {
     func_020366f8();
     func_020245c4(0x32);
-    mHeap = func_0203824c(data_020d5520, 0x139000);
+    mHeap = func_0203824c(gSoundHeapBuffer, 0x139000);
     func_02037af8(mArchive, "/Snd/sound_data.sdat", mHeap, 0);
-    mSeqTable = data_02090780;
-    mSeqArcTable = data_02090788;
+    mSeqTable = gSeqTable;
+    mSeqArcTable = gSeqArcTable;
     func_020392fc(1, mHeap);
     func_02038fac(mHeap);
     func_020385b8(0, mHeap);

@@ -810,14 +810,14 @@ _ZN10GameSystem13func_02021700Ev kind:function(arm,size=0x2c0) addr:0x02021700
 _ZN10GameSystemD1Ev kind:function(arm,size=0x4) addr:0x020219c0
 _ZN9NullScene6UpdateEv kind:function(arm,size=0x4) addr:0x020219c4
 _ZN9NullSceneD0Ev kind:function(arm,size=0x14) addr:0x020219c8 weak
-_Z13func_020219dcv kind:function(arm,size=0x10) addr:0x020219dc
+_Z18SeedRandomFromTickv kind:function(arm,size=0x10) addr:0x020219dc
 _Z10SeedRandomj kind:function(arm,size=0x44) addr:0x020219ec
 _Z12PickWeightedhPKh kind:function(arm,size=0xc8) addr:0x02021a30
 _ZN12InputManager4InitEv kind:function(arm,size=0x2c) addr:0x02021af8
 _ZN12InputManager6UpdateEi kind:function(arm,size=0x13c) addr:0x02021b24
-_Z13func_02021c60j kind:function(arm,size=0xd8) addr:0x02021c60
-_Z13func_02021d38Pv kind:function(arm,size=0xc8) addr:0x02021d38
-_Z13func_02021e00v kind:function(arm,size=0x10) addr:0x02021e00
+_Z12InitGameHeapj kind:function(arm,size=0xd8) addr:0x02021c60
+_Z16RecreateGameHeapPv kind:function(arm,size=0xc8) addr:0x02021d38
+_Z17GetGameHeapHandlev kind:function(arm,size=0x10) addr:0x02021e00
 _Z13func_02021e10v kind:function(arm,size=0x40) addr:0x02021e10
 _Znwm kind:function(arm,size=0x18) addr:0x02021e50
 _Znam kind:function(arm,size=0x18) addr:0x02021e68
@@ -865,24 +865,24 @@ _Z13func_02023248P8SaveDatajj kind:function(arm,size=0x24) addr:0x02023248
 _Z13func_0202326cP8SaveData kind:function(arm,size=0xa0) addr:0x0202326c
 _Z13func_0202330cP18UnkStruct_020d433c kind:function(arm,size=0xec) addr:0x0202330c
 _Z13func_020233f8P18UnkStruct_020d433c kind:function(arm,size=0xd0) addr:0x020233f8
-_Z13func_020234c8v kind:function(arm,size=0x3c) addr:0x020234c8
+_Z14InitFileSystemv kind:function(arm,size=0x3c) addr:0x020234c8
 _Z8LoadFilePKcjjjPjj kind:function(arm,size=0x204) addr:0x02023504
 _Z13LoadFileAsyncPKcjjjPjj kind:function(arm,size=0x15c) addr:0x02023708
 _Z18GetAsyncLoadBufferv kind:function(arm,size=0x10) addr:0x02023864
 _Z17IsAsyncLoadActivev kind:function(arm,size=0x10) addr:0x02023874
-_Z13func_02023884v kind:function(arm,size=0x1d0) addr:0x02023884
+_Z15UpdateAsyncLoadv kind:function(arm,size=0x1d0) addr:0x02023884
 _Z13StopAsyncLoadv kind:function(arm,size=0x80) addr:0x02023a54
 _Z26OpenFileWithLanguageSuffixPKc kind:function(arm,size=0xac) addr:0x02023ad4
 _ZN11SaveManager4InitEv kind:function(arm,size=0x44) addr:0x02023b80
 _ZN11SaveManager10ComputeCrcEPKvj kind:function(arm,size=0x74) addr:0x02023bc4
 _ZN11SaveManager13GetSlotStatusEj kind:function(arm,size=0xf8) addr:0x02023c38
 _ZN11SaveManager15WriteSlotMarkerEj kind:function(arm,size=0xcc) addr:0x02023d30
-_ZN17UnkScene_020a54a86UpdateEv kind:function(arm,size=0x370) addr:0x02023dfc
-_ZN17UnkScene_020a54946UpdateEv kind:function(arm,size=0x330) addr:0x0202416c
-_ZN17UnkScene_020a54a8D1Ev kind:function(arm,size=0x4) addr:0x0202449c
-_ZN17UnkScene_020a54a8D0Ev kind:function(arm,size=0x14) addr:0x020244a0
-_ZN17UnkScene_020a5494D1Ev kind:function(arm,size=0x4) addr:0x020244b4
-_ZN17UnkScene_020a5494D0Ev kind:function(arm,size=0x14) addr:0x020244b8
+_ZN10SaveWriter6UpdateEv kind:function(arm,size=0x370) addr:0x02023dfc
+_ZN10SaveReader6UpdateEv kind:function(arm,size=0x330) addr:0x0202416c
+_ZN10SaveWriterD1Ev kind:function(arm,size=0x4) addr:0x0202449c
+_ZN10SaveWriterD0Ev kind:function(arm,size=0x14) addr:0x020244a0
+_ZN10SaveReaderD1Ev kind:function(arm,size=0x4) addr:0x020244b4
+_ZN10SaveReaderD0Ev kind:function(arm,size=0x14) addr:0x020244b8
 _ZN12SoundManager4InitEv kind:function(arm,size=0xcc) addr:0x020244cc
 _ZN12SoundManager6UpdateEv kind:function(arm,size=0xc) addr:0x02024598
 _ZN12SoundManager13func_020245a4Ev kind:function(arm,size=0x20) addr:0x020245a4
@@ -899,30 +899,30 @@ func_02024764 kind:function(arm,size=0x2c) addr:0x02024764
 func_02024790 kind:function(arm,size=0x3c) addr:0x02024790
 _ZN12SoundManager15SetSeqArcVolumeEi kind:function(arm,size=0x30) addr:0x020247cc
 func_020247fc kind:function(arm,size=0x1c) addr:0x020247fc
-_ZN11SceneRunner13func_02024818Ej kind:function(arm,size=0x118) addr:0x02024818
+_ZN11SceneRunner11LoadOverlayEj kind:function(arm,size=0x118) addr:0x02024818
 _ZN11SceneRunnerC1Ev kind:function(arm,size=0x38) addr:0x02024930
-_ZN11SceneRunner13func_02024968Ei kind:function(arm,size=0x364) addr:0x02024968
+_ZN11SceneRunner13SwitchToSceneEi kind:function(arm,size=0x364) addr:0x02024968
 _ZN11SceneRunner6UpdateEv kind:function(arm,size=0x6b0) addr:0x02024ccc
 _ZN11SceneRunnerD0Ev kind:function(arm,size=0x14) addr:0x0202537c weak
 _Z16SetFrameIntervalh kind:function(arm,size=0x10) addr:0x02025390
 _Z11UpdateFramev kind:function(arm,size=0x11c) addr:0x020253a0
-_Z13func_020254bcv kind:function(arm,size=0x34) addr:0x020254bc
+_Z15CallHBlankHooksv kind:function(arm,size=0x34) addr:0x020254bc
 _Z18QueueFrameCallbackPFvPvES_ kind:function(arm,size=0x6c) addr:0x020254f0
-_Z13func_0202555cv kind:function(arm,size=0x2c) addr:0x0202555c
-_Z13func_02025588PFvvE kind:function(arm,size=0x70) addr:0x02025588
-_Z13func_020255f8PFvvE kind:function(arm,size=0x70) addr:0x020255f8
-_Z13func_02025668i kind:function(arm,size=0x18) addr:0x02025668
-_Z13func_02025680i kind:function(arm,size=0x18) addr:0x02025680
+_Z19ClearFrameCallbacksv kind:function(arm,size=0x2c) addr:0x0202555c
+_Z13AddHBlankHookPFvvE kind:function(arm,size=0x70) addr:0x02025588
+_Z16RemoveHBlankHookPFvvE kind:function(arm,size=0x70) addr:0x020255f8
+_Z20SetScreen1Brightnessi kind:function(arm,size=0x18) addr:0x02025668
+_Z20SetScreen0Brightnessi kind:function(arm,size=0x18) addr:0x02025680
 _ZN18SpriteFadeDefaultsC1Ev kind:function(arm,size=0x3c) addr:0x02025698
-_Z13func_020256d4v kind:function(arm,size=0xf4) addr:0x020256d4
-_Z13func_020257c8v kind:function(arm,size=0x12c) addr:0x020257c8
-_Z13func_020258f4jjjPvjj kind:function(arm,size=0x158) addr:0x020258f4
-_Z13func_02025a4cjjjPvjj kind:function(arm,size=0x118) addr:0x02025a4c
+_Z16UpdateSpriteFadev kind:function(arm,size=0xf4) addr:0x020256d4
+_Z16FlushUploadQueuev kind:function(arm,size=0x12c) addr:0x020257c8
+_Z12TryUploadNowjjjPvjj kind:function(arm,size=0x158) addr:0x020258f4
+_Z19ReplaceQueuedUploadjjjPvjj kind:function(arm,size=0x118) addr:0x02025a4c
 _Z18LoadAndQueueUploadjjjPKcjjj kind:function(arm,size=0xb8) addr:0x02025b64
 _Z11QueueUploadjjjPvjj kind:function(arm,size=0x158) addr:0x02025c1c
-_Z13func_02025d74v kind:function(arm,size=0x84) addr:0x02025d74
-_Z13func_02025df8v kind:function(arm,size=0x20) addr:0x02025df8
-_Z13func_02025e18v kind:function(arm,size=0x38) addr:0x02025e18
+_Z17UpdateUploadQueuev kind:function(arm,size=0x84) addr:0x02025d74
+_Z17RewindUploadQueuev kind:function(arm,size=0x20) addr:0x02025df8
+_Z20InitIdentityMatricesv kind:function(arm,size=0x38) addr:0x02025e18
 _ZN6CameraC1Ev kind:function(arm,size=0x78) addr:0x02025e50
 _ZN6Camera24ComputeDistanceAndAnglesEv kind:function(arm,size=0x13c) addr:0x02025ec8
 _ZN6Camera6SetFovEj kind:function(arm,size=0x108) addr:0x02026004
@@ -938,7 +938,7 @@ _ZN13CameraManager16UpdateProjectionEv kind:function(arm,size=0x294) addr:0x0202
 _ZN13CameraManager11SwapBuffersEv kind:function(arm,size=0x58) addr:0x020267f0
 _ZN13CameraManager18ResetBaseTransformEv kind:function(arm,size=0x48) addr:0x02026848
 _ZN13CameraManager10UpdateModeEv kind:function(arm,size=0x3bc) addr:0x02026890
-_Z13func_02026c4cPv kind:function(arm,size=0x74) addr:0x02026c4c
+_Z16EndFrameCallbackPv kind:function(arm,size=0x74) addr:0x02026c4c
 _ZN13SpriteManager8EndFrameEv kind:function(arm,size=0x88) addr:0x02026cc0
 _ZN13SpriteManager4InitEv kind:function(arm,size=0x48) addr:0x02026d48
 _ZN13SpriteManager13func_02026d90Ev kind:function(arm,size=0x5c) addr:0x02026d90
@@ -958,8 +958,8 @@ _ZN12SpriteScreen14SetObjVramModeEi kind:function(arm,size=0xd0) addr:0x02027624
 _ZN12SpriteScreen11GetCharBaseEj kind:function(arm,size=0x5c) addr:0x020276f4
 _ZN12SpriteScreen8ResetOamEv kind:function(arm,size=0x28) addr:0x02027750
 _ZN12SpriteScreen6AddOamEPvhssjjjj kind:function(arm,size=0x4a0) addr:0x02027778
-_Z13func_02027c18PvP15SpriteTransform kind:function(arm,size=0x4c) addr:0x02027c18
-_Z13func_02027c64P7MtxFx22P15SpriteTransform kind:function(arm,size=0x90) addr:0x02027c64
+_Z14WriteOamMatrixPvP15SpriteTransform kind:function(arm,size=0x4c) addr:0x02027c18
+_Z22ComputeTransformMatrixP7MtxFx22P15SpriteTransform kind:function(arm,size=0x90) addr:0x02027c64
 _Z13func_02027cf4PiS_iP15SpriteTransform kind:function(arm,size=0x21c) addr:0x02027cf4
 _ZN15SpriteTransformC1Eiit kind:function(arm,size=0xc) addr:0x02027f10
 _ZN12SpriteScreen14LoadCharactersEPKcjj kind:function(arm,size=0x68) addr:0x02027f1c
@@ -1057,12 +1057,12 @@ _ZN13CellAnimation11GetDurationEv kind:function(arm,size=0x48) addr:0x0202a54c
 _ZN12CellAnimFileC2EPKctt kind:function(arm,size=0x17c) addr:0x0202a594
 _ZN12CellAnimFileC1EPKctt kind:function(arm,size=0x17c) addr:0x0202a710
 _ZN12CellAnimFileD1Ev kind:function(arm,size=0xcc) addr:0x0202a88c
-_Z13func_0202a958P12CellAnimFileP12CellAnimDatati kind:function(arm,size=0xcc) addr:0x0202a958
+_Z18ScaleCellAnimCharsP12CellAnimFileP12CellAnimDatati kind:function(arm,size=0xcc) addr:0x0202a958
 _ZN16CellAnimFileDataC1EPv kind:function(arm,size=0x30) addr:0x0202aa24
-_Z13func_0202aa54PKc kind:function(arm,size=0x2c) addr:0x0202aa54
-_Z13func_0202aa80Pv kind:function(arm,size=0xc) addr:0x0202aa80
-_Z13func_0202aa8cPv kind:function(arm,size=0x80) addr:0x0202aa8c
-_Z13func_0202ab0cPv kind:function(arm,size=0x18) addr:0x0202ab0c
+_Z16LoadCellAnimFilePKc kind:function(arm,size=0x2c) addr:0x0202aa54
+_Z16LoadCellAnimDataPv kind:function(arm,size=0xc) addr:0x0202aa80
+_Z20RelocateCellAnimDataPv kind:function(arm,size=0x80) addr:0x0202aa8c
+_Z16FreeCellAnimDataPv kind:function(arm,size=0x18) addr:0x0202ab0c
 _ZN6EffectC1EP13EffectManagerjPh kind:function(arm,size=0x148) addr:0x0202ab24
 _ZN6EffectD1Ev kind:function(arm,size=0x48) addr:0x0202ac6c
 _ZN6Effect6UpdateEv kind:function(arm,size=0x84c) addr:0x0202acb4
@@ -1104,22 +1104,22 @@ _ZN11TextManager17Get4bppGlyphWidthEj kind:function(arm,size=0x20) addr:0x0202d1
 _ZN11TextManager14FindGlyphIndexEj kind:function(arm,size=0x4c) addr:0x0202d1bc
 _ZN11TextManager14Write1bppGlyphEjPvjjisstt kind:function(arm,size=0x3fc) addr:0x0202d208
 _ZN11TextManager4InitEPvjjtti kind:function(arm,size=0x190) addr:0x0202d604
-_ZN10MicManager13func_0202d794Ev kind:function(arm,size=0xc) addr:0x0202d794
-_ZN10MicManager13func_0202d7a0Ev kind:function(arm,size=0x12c) addr:0x0202d7a0
-_ZN10MicManager13func_0202d8ccEv kind:function(arm,size=0x80) addr:0x0202d8cc
-_ZN10MicManager13func_0202d94cEv kind:function(arm,size=0x60) addr:0x0202d94c
-_ZN10MicManager13func_0202d9acEv kind:function(arm,size=0x158) addr:0x0202d9ac
-_Z13func_0202db04P13WmCallbackArg kind:function(arm,size=0x1d8) addr:0x0202db04
-_Z13func_0202dcdcP13WmCallbackArg kind:function(arm,size=0x84) addr:0x0202dcdc
+_ZN10MicManager4InitEv kind:function(arm,size=0xc) addr:0x0202d794
+_ZN10MicManager13StartSamplingEv kind:function(arm,size=0x12c) addr:0x0202d7a0
+_ZN10MicManager12StopSamplingEv kind:function(arm,size=0x80) addr:0x0202d8cc
+_ZN10MicManager18ResetTimeAndEventsEv kind:function(arm,size=0x60) addr:0x0202d94c
+_ZN10MicManager6UpdateEv kind:function(arm,size=0x158) addr:0x0202d9ac
+_Z12RecvCallbackP13WmCallbackArg kind:function(arm,size=0x1d8) addr:0x0202db04
+_Z13StartCallbackP13WmCallbackArg kind:function(arm,size=0x84) addr:0x0202dcdc
 _Z13func_0202dd60P13WmCallbackArg kind:function(arm,size=0x74) addr:0x0202dd60
-_Z13func_0202ddd4P13WmCallbackArg kind:function(arm,size=0x84) addr:0x0202ddd4
+_Z12StopCallbackP13WmCallbackArg kind:function(arm,size=0x84) addr:0x0202ddd4
 _Z13func_0202de58P13WmCallbackArg kind:function(arm,size=0x8c) addr:0x0202de58
 _Z13func_0202dee4P13WmCallbackArg kind:function(arm,size=0x188) addr:0x0202dee4
-_Z13func_0202e06cP13WmCallbackArg kind:function(arm,size=0x120) addr:0x0202e06c
-_Z13func_0202e18cP13WmCallbackArg kind:function(arm,size=0x98) addr:0x0202e18c
-_Z13func_0202e224P13WmCallbackArg kind:function(arm,size=0x64) addr:0x0202e224
+_Z12ScanCallbackP13WmCallbackArg kind:function(arm,size=0x120) addr:0x0202e06c
+_Z19TestChannelCallbackP13WmCallbackArg kind:function(arm,size=0x98) addr:0x0202e18c
+_Z12SendCallbackP13WmCallbackArg kind:function(arm,size=0x64) addr:0x0202e224
 _Z13func_0202e288P13WmCallbackArg kind:function(arm,size=0xec) addr:0x0202e288
-_Z13func_0202e374P13WmCallbackArg kind:function(arm,size=0x104) addr:0x0202e374
+_Z12JoinCallbackP13WmCallbackArg kind:function(arm,size=0x104) addr:0x0202e374
 _Z13func_0202e478P13WmCallbackArg kind:function(arm,size=0x70) addr:0x0202e478
 _Z13func_0202e4e8P13WmCallbackArg kind:function(arm,size=0x4) addr:0x0202e4e8
 _ZN15WirelessManager13func_0202e4ecEv kind:function(arm,size=0x38) addr:0x0202e4ec
@@ -1507,13 +1507,13 @@ func_0203a4e0 kind:function(arm,size=0x34) addr:0x0203a4e0
 func_0203a514 kind:function(arm,size=0x18) addr:0x0203a514
 func_0203a52c kind:function(arm,size=0x18) addr:0x0203a52c
 _Z13func_0203a544P6PlayerP6Readerj kind:function(arm,size=0x30) addr:0x0203a544
-_Z13func_0203a574P6Readerj kind:function(arm,size=0xd4) addr:0x0203a574
+_Z14MobiclipCreateP6Readerj kind:function(arm,size=0xd4) addr:0x0203a574
 _Z13func_0203a648P6Reader kind:function(arm,size=0x14) addr:0x0203a648
-_Z13func_0203a65cP6Player kind:function(arm,size=0x20) addr:0x0203a65c
+_Z14MobiclipDeleteP6Player kind:function(arm,size=0x20) addr:0x0203a65c
 _Z13func_0203a67cP6Player kind:function(arm,size=0x18) addr:0x0203a67c
-_Z13func_0203a694P6Player kind:function(arm,size=0x18) addr:0x0203a694
-_Z13func_0203a6acP6Player kind:function(arm,size=0x18) addr:0x0203a6ac
-_Z13func_0203a6c4P6Player kind:function(arm,size=0x18) addr:0x0203a6c4
+_Z28MobiclipGetAudioChannelCountP6Player kind:function(arm,size=0x18) addr:0x0203a694
+_Z20MobiclipGetFrameRateP6Player kind:function(arm,size=0x18) addr:0x0203a6ac
+_Z21MobiclipGetFrameCountP6Player kind:function(arm,size=0x18) addr:0x0203a6c4
 _Z13func_0203a6dcP6Player kind:function(arm,size=0x18) addr:0x0203a6dc
 _Z13func_0203a6f4P6Player kind:function(arm,size=0x24) addr:0x0203a6f4
 _Z13func_0203a718P6Player kind:function(arm,size=0x24) addr:0x0203a718
@@ -1528,12 +1528,12 @@ _ZN6PlayernwEm kind:function(arm,size=0xc) addr:0x0203a7fc
 _ZN6PlayerdlEPv kind:function(arm,size=0xc) addr:0x0203a808
 _ZN6PlayerC1Ev kind:function(arm,size=0x30) addr:0x0203a814
 _ZN6PlayerD1Ev kind:function(arm,size=0x14) addr:0x0203a844
-_Z13func_0203a858P6PlayerP6Readerj kind:function(arm,size=0x5ac) addr:0x0203a858
-_Z13func_0203ae04P6Player kind:function(arm,size=0x168) addr:0x0203ae04
+_Z10PlayerInitP6PlayerP6Readerj kind:function(arm,size=0x5ac) addr:0x0203a858
+_Z13PlayerReleaseP6Player kind:function(arm,size=0x168) addr:0x0203ae04
 _Z13func_0203af6cP6Player kind:function(arm,size=0x8) addr:0x0203af6c
-_Z13func_0203af74P6Player kind:function(arm,size=0x8) addr:0x0203af74
-_Z13func_0203af7cP6Player kind:function(arm,size=0x8) addr:0x0203af7c
-_Z13func_0203af84P6Player kind:function(arm,size=0x8) addr:0x0203af84
+_Z26PlayerGetAudioChannelCountP6Player kind:function(arm,size=0x8) addr:0x0203af74
+_Z18PlayerGetFrameRateP6Player kind:function(arm,size=0x8) addr:0x0203af7c
+_Z19PlayerGetFrameCountP6Player kind:function(arm,size=0x8) addr:0x0203af84
 _Z13func_0203af8cP6Player kind:function(arm,size=0x24) addr:0x0203af8c
 func_0203afb0 kind:function(arm,size=0x138) addr:0x0203afb0
 func_0203b0e8 kind:function(arm,size=0xe4) addr:0x0203b0e8
@@ -1544,12 +1544,12 @@ func_0203b3a0 kind:function(arm,size=0x1b0) addr:0x0203b3a0
 func_0203b550 kind:function(arm,size=0xf0) addr:0x0203b550
 _ZN6ReadernwEm kind:function(arm,size=0xc) addr:0x0203b640
 func_0203b64c kind:function(arm,size=0xc) addr:0x0203b64c
-func_0203b658 kind:function(arm,size=0x38) addr:0x0203b658
-func_0203b690 kind:function(arm,size=0x4c) addr:0x0203b690
-func_0203b6dc kind:function(arm,size=0x70) addr:0x0203b6dc
-func_0203b74c kind:function(arm,size=0x7c) addr:0x0203b74c
+ReaderInit kind:function(arm,size=0x38) addr:0x0203b658
+ReaderSeek kind:function(arm,size=0x4c) addr:0x0203b690
+ReaderRead kind:function(arm,size=0x70) addr:0x0203b6dc
+ReaderStartAlignedRead kind:function(arm,size=0x7c) addr:0x0203b74c
 func_0203b7c8 kind:function(arm,size=0x28) addr:0x0203b7c8
-func_0203b7f0 kind:function(arm,size=0x14) addr:0x0203b7f0
+ReaderClose kind:function(arm,size=0x14) addr:0x0203b7f0
 func_0203b804 kind:function(arm,size=0x4) addr:0x0203b804
 func_0203b808 kind:function(arm,size=0x5c0) addr:0x0203b808
 func_0203bdc8 kind:function(arm,size=0xc) addr:0x0203bdc8
@@ -1562,8 +1562,8 @@ func_0203bf10 kind:function(arm,size=0x70) addr:0x0203bf10
 func_0203bf80 kind:function(arm,size=0x70) addr:0x0203bf80
 func_0203bff0 kind:function(arm,size=0x14) addr:0x0203bff0
 func_0203c004 kind:function(arm,size=0x158) addr:0x0203c004
-func_0203c15c kind:function(arm,size=0x18) addr:0x0203c15c
-func_0203c174 kind:function(arm,size=0x18) addr:0x0203c174
+MobiclipAlloc kind:function(arm,size=0x18) addr:0x0203c15c
+MobiclipFree kind:function(arm,size=0x18) addr:0x0203c174
 _ZN11MoviePlayerC1Ev kind:function(arm,size=0x2c) addr:0x0203c18c
 _ZN11MoviePlayerD1Ev kind:function(arm,size=0x4) addr:0x0203c1b8
 _Z9CountTickP11MoviePlayer kind:function(arm,size=0x1c) addr:0x0203c1bc
@@ -2468,8 +2468,8 @@ _ZN8TaskBase5Stop0Ev kind:function(arm,size=0x10) addr:0x020524a8
 _ZN8TaskBase5Stop1Ev kind:function(arm,size=0x10) addr:0x020524b8
 _ZN8TaskBase10SetVolume0Ef kind:function(arm,size=0x10) addr:0x020524c8
 _ZN8TaskBase10SetVolume1Ef kind:function(arm,size=0x10) addr:0x020524d8
-_Z13func_020524e8j kind:function(arm,size=0x18) addr:0x020524e8 local
-_Z13func_02052500Pv kind:function(arm,size=0x18) addr:0x02052500 local
+_Z8CriAllocj kind:function(arm,size=0x18) addr:0x020524e8 local
+_Z7CriFreePv kind:function(arm,size=0x18) addr:0x02052500 local
 _Z13func_02052518Pv kind:function(arm,size=0x4) addr:0x02052518 local
 _ZN8TaskBase4WaitEv kind:function(arm,size=0x20) addr:0x0205251c
 func_0205253c kind:function(arm,size=0xc) addr:0x0205253c
@@ -2499,8 +2499,8 @@ _ZN14CharacterModel13func_02053ea0Ejj kind:function(arm,size=0x4c) addr:0x02053e
 _ZN14CharacterModel19SetExtraAnimEnabledEj kind:function(arm,size=0x98) addr:0x02053eec
 _ZN14CharacterModel12GetHeadFrameEv kind:function(arm,size=0x24) addr:0x02053f84
 _ZN14CharacterModel12SetHeadFrameEj kind:function(arm,size=0x18) addr:0x02053fa8
-_Z13func_02053fc0P8NNSG3dRS kind:function(arm,size=0x18) addr:0x02053fc0
-_Z13func_02053fd8P8NNSG3dRS kind:function(arm,size=0x44) addr:0x02053fd8
+_Z26InstallHeadNodeMtxCallbackP8NNSG3dRS kind:function(arm,size=0x18) addr:0x02053fc0
+_Z16StoreHeadNodeMtxP8NNSG3dRS kind:function(arm,size=0x44) addr:0x02053fd8
 _ZN18UnkStruct_0205401cC1Ev kind:function(arm,size=0x18) addr:0x0205401c
 _ZN18UnkStruct_0205401c7ReleaseEv kind:function(arm,size=0xe8) addr:0x02054034
 _ZN18UnkStruct_0205401c6CreateEjjjj kind:function(arm,size=0x174) addr:0x0205411c
@@ -2520,13 +2520,13 @@ _ZN18UnkStruct_0205401c16IsAnimEndReachedEv kind:function(arm,size=0x30) addr:0x
 _ZN18UnkStruct_0205401c10LoadShadowEv kind:function(arm,size=0x98) addr:0x02054740
 _ZN19StoryCharacterModelC1Ev kind:function(arm,size=0x34) addr:0x020547d8
 _ZN19StoryCharacterModelD1Ev kind:function(arm,size=0x9c) addr:0x0205480c
-_ZN19StoryCharacterModel13func_020548a8Ejj kind:function(arm,size=0xe8) addr:0x020548a8
-_ZN19StoryCharacterModel13func_02054990Ejj kind:function(arm,size=0x7c) addr:0x02054990
-_ZN19StoryCharacterModel13func_02054a0cEv kind:function(arm,size=0x1c8) addr:0x02054a0c
-_ZN19StoryCharacterModel13func_02054bd4Ev kind:function(arm,size=0xf0) addr:0x02054bd4
+_ZN19StoryCharacterModel9LoadCharaEjj kind:function(arm,size=0xe8) addr:0x020548a8
+_ZN19StoryCharacterModel9StartLoadEjj kind:function(arm,size=0x7c) addr:0x02054990
+_ZN19StoryCharacterModel10UpdateLoadEv kind:function(arm,size=0x1c8) addr:0x02054a0c
+_ZN19StoryCharacterModel11CreateModelEv kind:function(arm,size=0xf0) addr:0x02054bd4
 _ZN19StoryCharacterModel13func_02054cc4Ejj kind:function(arm,size=0x44) addr:0x02054cc4
-_ZN19StoryCharacterModel13func_02054d08Ej kind:function(arm,size=0xa0) addr:0x02054d08
-_ZN19StoryCharacterModel13func_02054da8Ev kind:function(arm,size=0x30) addr:0x02054da8
+_ZN19StoryCharacterModel19SetExtraAnimEnabledEj kind:function(arm,size=0xa0) addr:0x02054d08
+_ZN19StoryCharacterModel4DrawEv kind:function(arm,size=0x30) addr:0x02054da8
 _ZN19StoryCharacterModel13func_02054dd8Ejj kind:function(arm,size=0x18) addr:0x02054dd8
 _ZN17BattleCommandPageC1Eti kind:function(arm,size=0x12c) addr:0x02054df0
 _ZN17BattleCommandPageD1Ev kind:function(arm,size=0x164) addr:0x02054f1c
@@ -2998,8 +2998,8 @@ data_0208b503 kind:data(any) addr:0x0208b503
 __ptmf_null kind:data(any) addr:0x020906e8
 data_020906f0 kind:data(any) addr:0x020906f0
 data_02090778 kind:data(any) addr:0x02090778
-data_02090780 kind:data(any) addr:0x02090780
-data_02090788 kind:data(any) addr:0x02090788
+gSeqTable kind:data(any) addr:0x02090780
+gSeqArcTable kind:data(any) addr:0x02090788
 FX_SinCosTable_ kind:data(any) addr:0x0208b524
 func_02090b24 kind:function(arm,size=0x38) addr:0x02090b24
 func_020914e4 kind:function(arm,size=0x4) addr:0x020914e4
@@ -3019,7 +3019,7 @@ data_0209d578 kind:data(any) addr:0x0209d578
 data_0209d6f8 kind:data(any) addr:0x0209d6f8
 data_0209d9f8 kind:data(any) addr:0x0209d9f8
 data_0209da08 kind:data(any) addr:0x0209da08
-data_0209dabc kind:data(any) addr:0x0209dabc
+gVolumeScales kind:data(any) addr:0x0209dabc
 data_0209dae4 kind:data(any) addr:0x0209dae4
 data_0209dce4 kind:data(any) addr:0x0209dce4
 data_0209dee4 kind:data(any) addr:0x0209dee4
@@ -3386,18 +3386,18 @@ gLanguageSuffixes kind:data(any) addr:0x020a544c
 _ZTV9SceneBase kind:data(any) addr:0x020a546c weak
 @340 kind:data(any) addr:0x020a5480 local
 @438 kind:data(any) addr:0x020a5484 local
-_ZTV17UnkScene_020a5494 kind:data(any) addr:0x020a548c
-_ZTV17UnkScene_020a54a8 kind:data(any) addr:0x020a54a0
+_ZTV10SaveReader kind:data(any) addr:0x020a548c
+_ZTV10SaveWriter kind:data(any) addr:0x020a54a0
 @174 kind:data(any) addr:0x020a54b4 local
 _ZTV11SceneRunner kind:data(any) addr:0x020a54cc
 sFrameInterval kind:data(any) addr:0x020a54e0 local
-data_020a54e4 kind:data(any) addr:0x020a54e4
-data_020a54ec kind:data(any) addr:0x020a54ec
-data_020a550c kind:data(any) addr:0x020a550c
-data_020a552c kind:data(any) addr:0x020a552c
-data_020a55a4 kind:data(any) addr:0x020a55a4
-data_020a5624$608 kind:data(any) addr:0x020a5624 local
-data_020a5638$609 kind:data(any) addr:0x020a5638 local
+gBrightnessFuncs kind:data(any) addr:0x020a54e4
+gEndLoadFuncs kind:data(any) addr:0x020a54ec
+gBeginLoadFuncs kind:data(any) addr:0x020a550c
+gUploadFuncs kind:data(any) addr:0x020a552c
+gPendingFrees kind:data(any) addr:0x020a55a4
+sCharSizes$608 kind:data(any) addr:0x020a5624 local
+sObjVramModeBits$609 kind:data(any) addr:0x020a5638 local
 @515 kind:data(any) addr:0x020a565c local
 @537 kind:data(any) addr:0x020a5664 local
 @551 kind:data(any) addr:0x020a566c local
@@ -3413,7 +3413,7 @@ _ZTV13EffectManager kind:data(any) addr:0x020a56a4
 @1531 kind:data(any) addr:0x020a56ec local
 data_020a56f0 kind:data(any) addr:0x020a56f0
 _ZTV15WirelessManager kind:data(any) addr:0x020a5730
-data_020a5744 kind:data(any) addr:0x020a5744 local
+sDefaultParentParam kind:data(any) addr:0x020a5744 local
 data_020a5784 kind:data(any) addr:0x020a5784
 data_020a5788 kind:data(any) addr:0x020a5788
 data_020a578c kind:data(any) addr:0x020a578c
@@ -3483,7 +3483,7 @@ data_020ac92c kind:data(any) addr:0x020ac92c
 data_020ac934 kind:data(any) addr:0x020ac934
 data_020ac940 kind:data(any) addr:0x020ac940
 _ZTV9FrameTask kind:data(any) addr:0x020ac94c
-data_020ac960 kind:data(any) addr:0x020ac960
+gChannelPathFormat kind:data(any) addr:0x020ac960
 str_e kind:data(any) addr:0x020ac978
 str_b kind:data(any) addr:0x020ac998
 str_c kind:data(any) addr:0x020ac9b8
@@ -4683,7 +4683,7 @@ data_020d020f kind:bss addr:0x020d020f
 data_020d090a kind:bss addr:0x020d090a
 data_020d42dc kind:bss addr:0x020d42dc
 gRandom kind:bss addr:0x020d42e8
-data_020d4300 kind:bss addr:0x020d4300
+gGameHeap kind:bss addr:0x020d4300
 @48 kind:bss addr:0x020d430c local
 @461 kind:bss addr:0x020d4318 local
 @45 kind:bss addr:0x020d4324 local
@@ -4722,17 +4722,17 @@ data_020d49ae kind:bss addr:0x020d49ae
 data_020d49b0 kind:bss addr:0x020d49b0
 data_020d49b2 kind:bss addr:0x020d49b2
 data_020d49b3 kind:bss addr:0x020d49b3
-data_020d53e4 kind:bss addr:0x020d53e4
+gFileLoad kind:bss addr:0x020d53e4
 data_020d53e4_h kind:bss addr:0x020d53e4
 @36 kind:bss addr:0x020d53e8 local
-data_020d53f4 kind:bss addr:0x020d53f4
-data_020d5408 kind:bss addr:0x020d5408
-data_020d540c kind:bss addr:0x020d540c
-data_020d5440 kind:bss addr:0x020d5440
+gLoadFileUncompContext kind:bss addr:0x020d53f4
+gAsyncLoadHeader kind:bss addr:0x020d5408
+gAsyncUncompContext kind:bss addr:0x020d540c
+gFsFile kind:bss addr:0x020d5440
 gCurrentDir kind:bss addr:0x020d5488
 @100 kind:bss addr:0x020d5508 local
 data_020d5514 kind:bss addr:0x020d5514
-data_020d5520 kind:bss addr:0x020d5520
+gSoundHeapBuffer kind:bss addr:0x020d5520
 data_020e0206 kind:bss addr:0x020e0206
 data_020e020d kind:bss addr:0x020e020d
 data_020e0fde kind:bss addr:0x020e0fde
@@ -4819,16 +4819,16 @@ sCallbacks kind:bss addr:0x0220e5a0 local
 sCallbackArgs kind:bss addr:0x0220e5e4 local
 _ZN13SpriteManager5sFadeE kind:bss addr:0x0220e628
 _ZN13SpriteManager11sBrightnessE kind:bss addr:0x0220e62c
-data_0220e630 kind:bss addr:0x0220e630
-data_0220e631 kind:bss addr:0x0220e631
-data_0220e632 kind:bss addr:0x0220e632
-data_0220e633 kind:bss addr:0x0220e633
-data_0220e634 kind:bss addr:0x0220e634
-data_0220e638 kind:bss addr:0x0220e638
-data_0220e838 kind:bss addr:0x0220e838
+gUploadCount kind:bss addr:0x0220e630
+gUploadReadIndex kind:bss addr:0x0220e631
+gPendingFreeCount kind:bss addr:0x0220e632
+gUploadWriteIndex kind:bss addr:0x0220e633
+gQueuedBytes kind:bss addr:0x0220e634
+gUploadQueue kind:bss addr:0x0220e638
+gIdentityMtx22 kind:bss addr:0x0220e838
 data_0220e848 kind:bss addr:0x0220e848
 gIdentityMtx43 kind:bss addr:0x0220e86c
-data_0220e89c kind:bss addr:0x0220e89c
+gIdentityMtx44 kind:bss addr:0x0220e89c
 @86 kind:bss addr:0x0220e8dc local
 sBuffer_0220e900 kind:bss addr:0x0220e900 local
 @180 kind:bss addr:0x0220f100 local
@@ -4837,7 +4837,7 @@ sManager kind:bss addr:0x0220f110 local
 @27 kind:bss addr:0x0220f114 local
 @14 kind:bss addr:0x0220f120 local
 data_0220f12c kind:bss addr:0x0220f12c
-data_0220f140 kind:bss addr:0x0220f140
+gMicBuffer kind:bss addr:0x0220f140
 data_0220f540 kind:bss addr:0x0220f540
 data_0220f544 kind:bss addr:0x0220f544
 data_0220f560 kind:bss addr:0x0220f560 local
@@ -4848,14 +4848,14 @@ data_0220f570 kind:bss addr:0x0220f570 local
 data_0220f574 kind:bss addr:0x0220f574 local
 data_0220f578 kind:bss addr:0x0220f578 local
 data_0220f57c kind:bss addr:0x0220f57c local
-data_0220f580 kind:bss addr:0x0220f580 local
+sCommandWord kind:bss addr:0x0220f580 local
 @70 kind:bss addr:0x0220f584 local
-data_0220f590 kind:bss addr:0x0220f590 local
+sWmWorkB kind:bss addr:0x0220f590 local
 data_0220f620 kind:bss addr:0x0220f620 local
-data_0220f640 kind:bss addr:0x0220f640 local
-data_0220f680 kind:bss addr:0x0220f680 local
+sParentParam kind:bss addr:0x0220f640 local
+sParentData kind:bss addr:0x0220f680 local
 data_0220f700 kind:bss addr:0x0220f700 local
-data_0220f7a0 kind:bss addr:0x0220f7a0 local
+sEntryBuffer kind:bss addr:0x0220f7a0 local
 data_0220f860 kind:bss addr:0x0220f860 local
 data_0220fa20 kind:bss addr:0x0220fa20 local
 data_0220fc20 kind:bss addr:0x0220fc20 local
@@ -5014,7 +5014,7 @@ data_02218fd4 kind:bss addr:0x02218fd4
 data_02218fd8 kind:bss addr:0x02218fd8
 data_0221917c kind:bss addr:0x0221917c
 data_02219190 kind:bss addr:0x02219190
-data_022191d4 kind:bss addr:0x022191d4
+gHeadNodeMtx kind:bss addr:0x022191d4
 @196 kind:bss addr:0x02219204 local
 @756 kind:bss addr:0x02219210 local
 @1039 kind:bss addr:0x0221921c local
@@ -5075,11 +5075,11 @@ data_02090698 kind:data(any) addr:0x02090698
 data_020906a8 kind:data(any) addr:0x020906a8
 data_0208f89c kind:data(any) addr:0x0208f89c
 data_020904a8 kind:data(any) addr:0x020904a8
-data_0209094c kind:data(any) addr:0x0209094c
-data_02090958 kind:data(any) addr:0x02090958
-data_02090968 kind:data(any) addr:0x02090968
-data_02090978 kind:data(any) addr:0x02090978
-data_020909c0 kind:data(any) addr:0x020909c0
+gDefaultBaseScale kind:data(any) addr:0x0209094c
+gDefaultBaseTrans kind:data(any) addr:0x02090958
+gEdgeColorTable kind:data(any) addr:0x02090968
+gToonTable kind:data(any) addr:0x02090978
+gShininessTable kind:data(any) addr:0x020909c0
 @113 kind:data(any) addr:0x020902d4 local
 data_020902f0 kind:data(any) addr:0x020902f0
 data_02090328 kind:data(any) addr:0x02090328

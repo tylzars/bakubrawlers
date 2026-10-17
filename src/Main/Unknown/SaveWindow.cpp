@@ -73,13 +73,13 @@ static inline void SetCellPos(SelectWindow *window, int index, s16 x, s16 y) {
 }
 
 // Writes the save data (vtable 0x020a54a8; defined in FileLoader.cpp). Created once the save dialog is done.
-class UnkScene_020a54a8 : public SceneBase {
+class SaveWriter : public SceneBase {
 public:
-    UnkScene_020a54a8() :
+    SaveWriter() :
         SceneBase(0xffdc, 0) {
         ((u8 *) mContext)[0x23] = 0;
     }
-    virtual ~UnkScene_020a54a8();
+    virtual ~SaveWriter();
     virtual void Update();
 };
 
@@ -124,7 +124,7 @@ void SaveWindow::Update() {
             }
             gSaveData[0].mLanguage = data_020d433c.mLanguage;
             SaveManager::Get();
-            new UnkScene_020a54a8();
+            new SaveWriter();
             mState++;
             break;
         case 4:

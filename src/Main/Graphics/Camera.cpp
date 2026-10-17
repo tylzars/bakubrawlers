@@ -15,10 +15,10 @@ extern "C" void func_01ff817c(MtxFx33 *mtx); // MTX_Identity33_
 extern "C" void func_01ff854c(MtxFx43 *mtx); // MTX_Identity43_
 extern "C" void func_02000d88(MtxFx44 *mtx); // MTX_Identity44_
 
-MtxFx22 data_0220e838;
+MtxFx22 gIdentityMtx22;
 MtxFx33 data_0220e848;
 MtxFx43 gIdentityMtx43;
-MtxFx44 data_0220e89c;
+MtxFx44 gIdentityMtx44;
 
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);                         // atan2 (16-bit angle)
 extern "C" u16 FX_AsinIdx(fx32 y);                                 // asin (16-bit angle)
@@ -36,11 +36,11 @@ extern "C" void func_02001688(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, f
 extern "C" void MTX_Frustum(fx32 top, fx32 bottom, fx32 left, fx32 right, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
 extern "C" void func_01ff92a4();
 extern MtxFx33 data_02211430; // NNS_G3dGlb base rotation
-extern const VecFx32 data_0209094c;
-extern const VecFx32 data_02090958;
+extern const VecFx32 gDefaultBaseScale;
+extern const VecFx32 gDefaultBaseTrans;
 
-void func_020256d4();
-void func_02026c4c(void *arg);
+void UpdateSpriteFade();
+void EndFrameCallback(void *arg);
 
 // VRAM bank mapping and engine setup (NitroSDK GX_SetBankFor* and related).
 extern "C" void GX_SetBankForBG(u32 banks);
@@ -68,7 +68,7 @@ extern "C" void func_02002e00();
 extern "C" void GX_ResetBankForSubBGExtPltt();
 extern "C" void GX_ResetBankForSubOBJExtPltt();
 extern "C" void MI_DmaFill32(u32 dmaNo, void *dest, u32 data, u32 size);
-s32 func_02021e00();
+s32 GetGameHeapHandle();
 extern "C" void func_020313f8(void *obj, u32 unk2, s32 heap);
 extern "C" void func_02035e58(u32 unk1, u32 unk2);
 extern "C" void func_02036538(u32 unk1, void *buffer, u32 size, u32 unk4);
@@ -90,9 +90,9 @@ struct UnkStruct_020c2acc {
 #define REG_G3_DISP3DCNT (*(vu16 *) 0x4000060)
 #define REG_G3_SWAP_BUFFERS (*(vu32 *) 0x4000540)
 
-extern const u8 data_02090968[];
-extern const u8 data_02090978[];
-extern const u8 data_020909c0[];
+extern const u8 gEdgeColorTable[];
+extern const u8 gToonTable[];
+extern const u8 gShininessTable[];
 
 
 #define INT_TO_FX(n) ((fx32) ((n) > 0 ? (float) ((n) << 12) + 0.5f : (float) ((n) << 12) - 0.5f))
@@ -107,11 +107,11 @@ static inline fx32 CosIdx(int idx) {
 
 extern "C" fx32 FX_Div(fx32 a, fx32 b); // FX_Div
 
-void func_02025e18() {
-    MTX_Identity22_(&data_0220e838);
+void InitIdentityMatrices() {
+    MTX_Identity22_(&gIdentityMtx22);
     func_01ff817c(&data_0220e848);
     func_01ff854c(&gIdentityMtx43);
-    func_02000d88(&data_0220e89c);
+    func_02000d88(&gIdentityMtx44);
 }
 
 Camera::Camera() {
@@ -351,8 +351,8 @@ void CameraManager::SwapBuffers() {
 void CameraManager::ResetBaseTransform() {
     MI_Copy36B(&data_0220e848, &data_02211430);
     data_02211374.mFlags &= ~0xa4;
-    func_020322c0(&data_02090958);
-    func_020322f0(&data_0209094c);
+    func_020322c0(&gDefaultBaseTrans);
+    func_020322f0(&gDefaultBaseScale);
 }
 void CameraManager::UpdateMode() {
     if (mDirty != 0) {

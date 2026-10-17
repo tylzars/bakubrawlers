@@ -32,11 +32,11 @@ extern "C" void func_02001688(fx32 sin, fx32 cos, fx32 aspect, fx32 nearPlane, f
 extern "C" void MTX_Frustum(fx32 top, fx32 bottom, fx32 left, fx32 right, fx32 nearPlane, fx32 farPlane, fx32 scale, MtxFx44 *mtx);
 extern "C" void func_01ff92a4();
 extern MtxFx33 data_02211430; // NNS_G3dGlb base rotation
-extern const VecFx32 data_0209094c;
-extern const VecFx32 data_02090958;
+extern const VecFx32 gDefaultBaseScale;
+extern const VecFx32 gDefaultBaseTrans;
 
-void func_020256d4();
-void func_02026c4c(void *arg);
+void UpdateSpriteFade();
+void EndFrameCallback(void *arg);
 
 // VRAM bank mapping and engine setup (NitroSDK GX_SetBankFor* and related).
 extern "C" void GX_SetBankForBG(u32 banks);
@@ -64,7 +64,7 @@ extern "C" void func_02002e00();
 extern "C" void GX_ResetBankForSubBGExtPltt();
 extern "C" void GX_ResetBankForSubOBJExtPltt();
 extern "C" void MI_DmaFill32(u32 dmaNo, void *dest, u32 data, u32 size);
-s32 func_02021e00();
+s32 GetGameHeapHandle();
 extern "C" void func_020313f8(void *obj, u32 unk2, s32 heap);
 extern "C" void func_02035e58(u32 unk1, u32 unk2);
 extern "C" void func_02036538(u32 unk1, void *buffer, u32 size, u32 unk4);
@@ -87,9 +87,9 @@ static u8 sBuffer_0220e900[0x800] __attribute__((aligned(32)));
 #define REG_G3_DISP3DCNT (*(vu16 *) 0x4000060)
 #define REG_G3_SWAP_BUFFERS (*(vu32 *) 0x4000540)
 
-extern const u8 data_02090968[];
-extern const u8 data_02090978[];
-extern const u8 data_020909c0[];
+extern const u8 gEdgeColorTable[];
+extern const u8 gToonTable[];
+extern const u8 gShininessTable[];
 
 
 #define INT_TO_FX(n) ((fx32) ((n) > 0 ? (float) ((n) << 12) + 0.5f : (float) ((n) << 12) - 0.5f))
@@ -104,9 +104,9 @@ static inline fx32 CosIdx(int idx) {
 
 extern "C" fx32 FX_Div(fx32 a, fx32 b); // FX_Div
 
-void func_02026c4c(void *arg) {
+void EndFrameCallback(void *arg) {
     SpriteManager *self = (SpriteManager *) arg;
-    func_020256d4();
+    UpdateSpriteFade();
     CameraManager::Get().UpdateMode();
     self->mScreens[0].FlushOam();
     self->mScreens[1].FlushOam();
@@ -116,7 +116,7 @@ void SpriteManager::EndFrame() {
     DC_FlushRange(&mScreens[0], 0x400);
     DC_FlushRange(&mScreens[1], 0x400);
     CameraManager::Get().SwapBuffers();
-    QueueFrameCallback(func_02026c4c, this);
+    QueueFrameCallback(EndFrameCallback, this);
 }
 
 void SpriteManager::Init() {
@@ -145,7 +145,7 @@ void SpriteManager::func_02026d90() {
 #define SET_POWCNT(extra) (reg_GX_POWCNT = (reg_GX_POWCNT & 0xfffffdf1) | (extra) | 0x200)
 
 void SpriteManager::SetupMode(u32 unk1, u32 mode) {
-    func_020313f8((u8 *) this + 0x814, 0, func_02021e00());
+    func_020313f8((u8 *) this + 0x814, 0, GetGameHeapHandle());
     ResetVram(unk1 & 0xff);
     mMode = mode;
     switch (mode) {
@@ -320,16 +320,16 @@ void SpriteManager::Init3D() {
     func_02032d54();
     G3X_InitMtxStack();
     REG_G3_DISP3DCNT = REG_G3_DISP3DCNT & 0xffffcffd;
-    G3X_SetToonTable(data_02090978);
+    G3X_SetToonTable(gToonTable);
     REG_G3_DISP3DCNT = (REG_G3_DISP3DCNT & ~0x3000) | 0x10;
     REG_G3_DISP3DCNT = REG_G3_DISP3DCNT & 0xcffb;
     REG_G3_DISP3DCNT = (REG_G3_DISP3DCNT & ~0x3000) | 0x8;
     *(vu32 *) 0x4000580 = 0xbfff0000;
     *(vu32 *) 0x4000540 = 3;
     REG_G3_DISP3DCNT = (REG_G3_DISP3DCNT & ~0x3000) | 0x20;
-    G3X_SetEdgeColorTable(data_02090968);
+    G3X_SetEdgeColorTable(gEdgeColorTable);
     G3X_SetClearColor(0x7fff, 0, 0x7fff, 0x3f, 0);
-    G3_Shininess(data_020909c0);
+    G3_Shininess(gShininessTable);
 }
 
 void SpriteManager::func_02027504(s32 index) {

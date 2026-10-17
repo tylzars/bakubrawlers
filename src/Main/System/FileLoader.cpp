@@ -107,21 +107,21 @@ struct UnkStruct_SaveBlock {
 };
 
 // Writes the save data (vtable 0x020a54a8).
-class UnkScene_020a54a8 : public SceneBase {
+class SaveWriter : public SceneBase {
 public:
-    virtual ~UnkScene_020a54a8();
+    virtual ~SaveWriter();
     virtual void Update();
 };
 
 // Declared second: vtables come out in reverse class order, and 0x020a5494 is the first of the two.
 // Loads the save data (vtable 0x020a5494).
-class UnkScene_020a5494 : public SceneBase {
+class SaveReader : public SceneBase {
 public:
-    virtual ~UnkScene_020a5494();
+    virtual ~SaveReader();
     virtual void Update();
 };
 
-void UnkScene_020a54a8::Update() {
+void SaveWriter::Update() {
     UnkStruct_SaveTask *task = (UnkStruct_SaveTask *) mContext;
     switch (task->mState) {
         case 0: {
@@ -187,7 +187,7 @@ void UnkScene_020a54a8::Update() {
     }
 }
 
-void UnkScene_020a5494::Update() {
+void SaveReader::Update() {
     UnkStruct_SaveTask *task = (UnkStruct_SaveTask *) mContext;
     switch (task->mState) {
         case 0: {
@@ -243,6 +243,6 @@ void UnkScene_020a5494::Update() {
     }
 }
 
-UnkScene_020a54a8::~UnkScene_020a54a8() {}
+SaveWriter::~SaveWriter() {}
 
-UnkScene_020a5494::~UnkScene_020a5494() {}
+SaveReader::~SaveReader() {}

@@ -34,29 +34,29 @@ struct CharacterParams {
 
 class StoryCharacterModel : public ModelTransform {
 public:
-    /* 2c */ void *mUnk_2c;
-    /* 30 */ void *mUnk_30;
-    /* 34 */ void *mUnk_34;
-    /* 38 */ u8 mUnk_38;
-    /* 39 */ u8 mUnk_39;
-    /* 3a */ u8 mUnk_3a;
-    /* 3b */ char mUnk_3b[0x7f];
-    /* ba */ char mUnk_ba[0x7f];
-    /* 139 */ char mUnk_139[0x7f];
-    /* 1b8 */ u8 mUnk_1b8;
-    /* 1b9 */ u8 mUnk_1b9;
+    /* 2c */ void *mTextureData;
+    /* 30 */ void *mModelData;
+    /* 34 */ void *mAnimData;
+    /* 38 */ u8 mVisible;
+    /* 39 */ u8 mExtraAnimSet;
+    /* 3a */ u8 mExtraAnimEnabled;
+    /* 3b */ char mAnimPath[0x7f];
+    /* ba */ char mModelPath[0x7f];
+    /* 139 */ char mTexturePath[0x7f];
+    /* 1b8 */ u8 mLoadStep;
+    /* 1b9 */ u8 mVariant;
     /* 1ba */ PAD(0x1ba, 0x1bc);
     /* 1bc */
 
     StoryCharacterModel();
     ~StoryCharacterModel();
-    void func_020548a8(u32 id, u32 variant);
-    void func_02054990(u32 id, u32 variant);
-    BOOL func_02054a0c();
-    void func_02054bd4();
+    void LoadChara(u32 id, u32 variant);
+    void StartLoad(u32 id, u32 variant);
+    BOOL UpdateLoad();
+    void CreateModel();
     void func_02054cc4(u32 a, u32 b);
-    void func_02054d08(u32 flag);
-    void func_02054da8();
+    void SetExtraAnimEnabled(u32 flag);
+    void Draw();
     void func_02054dd8(u32 a, u32 b);
 };
 
@@ -109,8 +109,8 @@ void UnkStruct_0205401c::Create(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
     mUseCharacter = unk1 == 0x15;
     if (mUseCharacter == 0) {
         mStoryCharacter = new StoryCharacterModel();
-        ((StoryCharacterModel *) mStoryCharacter)->func_020548a8(unk1, unk4);
-        ((StoryCharacterModel *) mStoryCharacter)->mUnk_38 = 1;
+        ((StoryCharacterModel *) mStoryCharacter)->LoadChara(unk1, unk4);
+        ((StoryCharacterModel *) mStoryCharacter)->mVisible = 1;
     } else {
         CharacterModel *character = new CharacterModel();
         mCharacter                   = (UnkStruct_0205401c_04 *) character;
@@ -161,7 +161,7 @@ void UnkStruct_0205401c::StartLoad(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
     } else {
         mUseCharacter = 0;
         mStoryCharacter = new StoryCharacterModel();
-        ((StoryCharacterModel *) mStoryCharacter)->func_02054990(unk1, unk4);
+        ((StoryCharacterModel *) mStoryCharacter)->StartLoad(unk1, unk4);
     }
 }
 
@@ -171,7 +171,7 @@ BOOL UnkStruct_0205401c::UpdateLoad() {
     if (mUseCharacter == 1) {
         done = ((CharacterModel *) mCharacter)->UpdateLoad();
     } else {
-        done = ((StoryCharacterModel *) mStoryCharacter)->func_02054a0c();
+        done = ((StoryCharacterModel *) mStoryCharacter)->UpdateLoad();
     }
     if (done) {
         result = TRUE;
@@ -184,15 +184,15 @@ void UnkStruct_0205401c::FinishLoad() {
         ((CharacterModel *) mCharacter)->CreateHeadAndLoadParts();
         ((CharacterModel *) mCharacter)->mVisible = 1;
     } else {
-        ((StoryCharacterModel *) mStoryCharacter)->func_02054bd4();
-        ((StoryCharacterModel *) mStoryCharacter)->mUnk_38 = 1;
+        ((StoryCharacterModel *) mStoryCharacter)->CreateModel();
+        ((StoryCharacterModel *) mStoryCharacter)->mVisible = 1;
     }
     mBuilt = 1;
 }
 
 void UnkStruct_0205401c::Draw() {
     if (mUseCharacter == 0) {
-        ((StoryCharacterModel *) mStoryCharacter)->func_02054da8();
+        ((StoryCharacterModel *) mStoryCharacter)->Draw();
     } else {
         ((CharacterModel *) mCharacter)->DrawParts();
     }
@@ -231,7 +231,7 @@ void UnkStruct_0205401c::func_02054644(u32 unk1, u32 unk2) {
 
 void UnkStruct_0205401c::func_0205466c(u32 unk1) {
     if (mUseCharacter == 0) {
-        ((StoryCharacterModel *) mStoryCharacter)->func_02054d08(unk1);
+        ((StoryCharacterModel *) mStoryCharacter)->SetExtraAnimEnabled(unk1);
     } else {
         ((CharacterModel *) mCharacter)->SetExtraAnimEnabled(unk1);
     }
@@ -239,7 +239,7 @@ void UnkStruct_0205401c::func_0205466c(u32 unk1) {
 
 void UnkStruct_0205401c::SetVisible(u8 unk1) {
     if (mUseCharacter == 0) {
-        ((StoryCharacterModel *) mStoryCharacter)->mUnk_38 = unk1;
+        ((StoryCharacterModel *) mStoryCharacter)->mVisible = unk1;
     } else {
         ((CharacterModel *) mCharacter)->mVisible = unk1;
     }
@@ -247,7 +247,7 @@ void UnkStruct_0205401c::SetVisible(u8 unk1) {
 
 u8 UnkStruct_0205401c::IsVisible() {
     if (mUseCharacter == 0) {
-        return ((StoryCharacterModel *) mStoryCharacter)->mUnk_38;
+        return ((StoryCharacterModel *) mStoryCharacter)->mVisible;
     }
     return ((CharacterModel *) mCharacter)->mVisible;
 }
@@ -286,17 +286,17 @@ void UnkStruct_0205401c::LoadShadow() {
 }
 
 StoryCharacterModel::StoryCharacterModel() {
-    mUnk_2c  = NULL;
-    mUnk_30  = NULL;
-    mUnk_34  = NULL;
-    mUnk_38  = 0;
-    mUnk_39  = 0;
-    mUnk_3a  = 0;
-    mUnk_1b8 = 0;
+    mTextureData  = NULL;
+    mModelData  = NULL;
+    mAnimData  = NULL;
+    mVisible  = 0;
+    mExtraAnimSet  = 0;
+    mExtraAnimEnabled  = 0;
+    mLoadStep = 0;
 }
 
 StoryCharacterModel::~StoryCharacterModel() {
-    if (mUnk_1b8 != 0) {
+    if (mLoadStep != 0) {
         StopAsyncLoad();
         ModelInstance *model = mModel;
         if (model != NULL) {
@@ -304,23 +304,23 @@ StoryCharacterModel::~StoryCharacterModel() {
             delete model;
             mModel = NULL;
         }
-        if (mUnk_2c != NULL) {
-            OS_Free(mUnk_2c);
+        if (mTextureData != NULL) {
+            OS_Free(mTextureData);
         }
-        if (mUnk_30 != NULL) {
-            OS_Free(mUnk_30);
+        if (mModelData != NULL) {
+            OS_Free(mModelData);
         }
-        if (mUnk_34 != NULL) {
-            OS_Free(mUnk_34);
+        if (mAnimData != NULL) {
+            OS_Free(mAnimData);
         }
     }
 }
 
-void StoryCharacterModel::func_020548a8(u32 id, u32 variant) {
+void StoryCharacterModel::LoadChara(u32 id, u32 variant) {
     char data[0x7f];
     char nsbmd[0x7f];
     char nsbtx[0x7f];
-    mUnk_1b9 = variant;
+    mVariant = variant;
     ChangeDir("/Game/Character/Character");
     if (variant == 0) {
         sprintf(data, "chara%02d_cut_data.bin", id);
@@ -334,49 +334,49 @@ void StoryCharacterModel::func_020548a8(u32 id, u32 variant) {
     ChangeDir("/");
 }
 
-void StoryCharacterModel::func_02054990(u32 id, u32 variant) {
-    mUnk_1b9 = variant;
+void StoryCharacterModel::StartLoad(u32 id, u32 variant) {
+    mVariant = variant;
     if (variant == 0) {
-        sprintf(mUnk_3b, "chara%02d_cut_data.bin", id);
+        sprintf(mAnimPath, "chara%02d_cut_data.bin", id);
     } else {
-        sprintf(mUnk_3b, "chara%02d_%02d_data.bin", id, variant);
+        sprintf(mAnimPath, "chara%02d_%02d_data.bin", id, variant);
     }
-    sprintf(mUnk_ba, "chara%02d.nsbmd", id);
-    sprintf(mUnk_139, "chara%02d.nsbtx", id);
-    mUnk_1b8 = 1;
+    sprintf(mModelPath, "chara%02d.nsbmd", id);
+    sprintf(mTexturePath, "chara%02d.nsbtx", id);
+    mLoadStep = 1;
 }
 
-BOOL StoryCharacterModel::func_02054a0c() {
+BOOL StoryCharacterModel::UpdateLoad() {
     BOOL result = FALSE;
-    switch (mUnk_1b8) {
+    switch (mLoadStep) {
         case 1:
             ChangeDir("/Game/Character/Character");
-            LoadFileAsync(mUnk_139, 0, 0, 0, 0, 0);
+            LoadFileAsync(mTexturePath, 0, 0, 0, 0, 0);
             ChangeDir("/");
-            mUnk_1b8++;
+            mLoadStep++;
             break;
         case 2:
             if (IsAsyncLoadActive() == 0) {
-                mUnk_2c = GetAsyncLoadBuffer();
+                mTextureData = GetAsyncLoadBuffer();
                 ChangeDir("/Game/Character/Character");
-                LoadFileAsync(mUnk_ba, 0, 0, 0, 0, 0);
+                LoadFileAsync(mModelPath, 0, 0, 0, 0, 0);
                 ChangeDir("/");
-                mUnk_1b8++;
+                mLoadStep++;
             }
             break;
         case 3:
             if (IsAsyncLoadActive() == 0) {
-                mUnk_30 = GetAsyncLoadBuffer();
+                mModelData = GetAsyncLoadBuffer();
                 ChangeDir("/Game/Character/Character");
-                LoadFileAsync(mUnk_3b, 0, 0, 0, 0, 0);
+                LoadFileAsync(mAnimPath, 0, 0, 0, 0, 0);
                 ChangeDir("/");
-                mUnk_1b8++;
+                mLoadStep++;
             }
             break;
         case 4:
             if (IsAsyncLoadActive() == 0) {
-                mUnk_34 = GetAsyncLoadBuffer();
-                mUnk_1b8++;
+                mAnimData = GetAsyncLoadBuffer();
+                mLoadStep++;
             }
             break;
         case 5:
@@ -386,16 +386,16 @@ BOOL StoryCharacterModel::func_02054a0c() {
     return result;
 }
 
-void StoryCharacterModel::func_02054bd4() {
-    if (mUnk_1b8 != 5) {
+void StoryCharacterModel::CreateModel() {
+    if (mLoadStep != 5) {
         return;
     }
-    TextureFile *texture = new NitroTextureData(mUnk_2c);
-    NitroModel *model           = new NitroModelData(mUnk_30, texture);
+    TextureFile *texture = new NitroTextureData(mTextureData);
+    NitroModel *model           = new NitroModelData(mModelData, texture);
     texture->FreeFile();
-    OS_Free(mUnk_2c);
-    mUnk_2c                 = NULL;
-    ModelAnimData *animData = new ModelAnimData(mUnk_34);
+    OS_Free(mTextureData);
+    mTextureData                 = NULL;
+    ModelAnimData *animData = new ModelAnimData(mAnimData);
     ModelAnim *anim         = new ModelAnim(animData, model);
     mModel                  = model->CreateInstance(anim);
     mModel->StartAnimWithIncrement(0, 1, 0x1000);
@@ -406,12 +406,12 @@ void StoryCharacterModel::func_02054bd4() {
 void StoryCharacterModel::func_02054cc4(u32 a, u32 b) {
     mModel->StartAnimWithIncrement(a, 1, 0x1000);
     mModel->StartAnimWithIncrement(b, 1, 0x1000);
-    mUnk_39 = a;
-    mUnk_3a = 0;
+    mExtraAnimSet = a;
+    mExtraAnimEnabled = 0;
 }
 
-void StoryCharacterModel::func_02054d08(u32 flag) {
-    mUnk_3a = flag;
+void StoryCharacterModel::SetExtraAnimEnabled(u32 flag) {
+    mExtraAnimEnabled = flag;
     if (!(flag & 0xff)) {
         ModelAnim *anim = mModel->mAnim;
         u8 channel      = GetSet(mModel);
@@ -428,24 +428,24 @@ void StoryCharacterModel::func_02054d08(u32 flag) {
         mModel->mAnim->SetFrame(frame, 0);
         mModel->mAnim->SetFrame(frame, 1);
     } else {
-        NNSG3dAnmObj *obj = mModel->mAnim->GetAnimObjForSet(4, mUnk_39);
+        NNSG3dAnmObj *obj = mModel->mAnim->GetAnimObjForSet(4, mExtraAnimSet);
         mModel->AttachExtraAnim(obj);
     }
 }
 
-void StoryCharacterModel::func_02054da8() {
-    if (mUnk_38 == 0) {
+void StoryCharacterModel::Draw() {
+    if (mVisible == 0) {
         return;
     }
     func_020526bc();
-    if (mUnk_3a == 0) {
+    if (mExtraAnimEnabled == 0) {
         return;
     }
     mModel->AdvanceExtraAnim();
 }
 
 void StoryCharacterModel::func_02054dd8(u32 a, u32 b) {
-    if (mUnk_1b9 != 0) {
+    if (mVariant != 0) {
         a = 0;
     }
     StartAnim(a, b);

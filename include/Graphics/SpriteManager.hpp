@@ -59,7 +59,7 @@ public:
     /* 968 */ u8 mSlotUsed[8];    // slot in use flags
     /* 970 */
 
-    // Fade mode and master brightness per screen ([0] main, [1] sub), stepped every frame by func_020256d4.
+    // Fade mode and master brightness per screen ([0] main, [1] sub), stepped every frame by UpdateSpriteFade.
     static s8 sFade[2];
     static s8 sBrightness[2];
 
@@ -74,7 +74,7 @@ public:
 
     void func_0202740c();
     void SetupMode(u32 unk1, u32 unk2);
-    void EndFrame(); // end of frame: flush the OAM copies, queue the per-frame callback func_02026c4c
+    void EndFrame(); // end of frame: flush the OAM copies, queue the per-frame callback EndFrameCallback
     void Init();
     void func_02026d90();
     void ResetVram(u32 unk1);

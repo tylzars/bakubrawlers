@@ -31,8 +31,8 @@ public:
         static MicManager instance;
         return instance;
     }
-    void func_0202d794();
-    void func_0202d94c();
+    void Init();
+    void ResetTimeAndEvents();
 };
 
 #include "Scene/SceneManager.hpp"
@@ -80,20 +80,20 @@ void func_0200f7ac(void);
 int func_0200d1e0(u32 a, u32 b);
 void func_0200d3e0(u32 a, u32 b, u32 c);
 }
-u32 func_02021c60(u32 a);
-void func_020234c8(void);
-void func_020219dc(void);
+u32 InitGameHeap(u32 a);
+void InitFileSystem(void);
+void SeedRandomFromTick(void);
 void func_02022b0c(void);
 void func_02022b28(void);
-void func_02025e18(void);
-void func_02023884(void);
-void func_02025d74(void);
-void func_0202555c(void);
+void InitIdentityMatrices(void);
+void UpdateAsyncLoad(void);
+void UpdateUploadQueue(void);
+void ClearFrameCallbacks(void);
 extern u32 data_020a4f24;
 extern "C" void G2x_SetMasterBrightness_(vu16 *reg, int value);
 void UpdateFrame();
-void func_020254bc();
-void func_020255f8(void (*callback)());
+void CallHBlankHooks();
+void RemoveHBlankHook(void (*callback)());
 void SetFrameInterval(u8 frames);
 
 // Keys that, all down (IsDown) for three passes of Run, reset the system (OS_ResetSystem(1)): when
@@ -133,10 +133,10 @@ void GameSystem::Init() {
     G2x_SetMasterBrightness_((vu16 *) 0x400106c, 0x10);
     GX_DispOn();
     reg_GXS_DB_DISPCNT |= 0x10000;
-    func_0202555c();
+    ClearFrameCallbacks();
     OS_SetIrqFunction(1, UpdateFrame);
-    func_020255f8(NULL);
-    OS_SetIrqFunction(2, func_020254bc);
+    RemoveHBlankHook(NULL);
+    OS_SetIrqFunction(2, CallHBlankHooks);
     OS_EnableIrqMask(0x40003);
     GX_VBlankIntr(TRUE);
     GX_HBlankIntr(TRUE);
@@ -145,21 +145,21 @@ void GameSystem::Init() {
     while (func_0200d354(this, &mUnk_04) == 1) {
     }
     heap = func_0200af3c(0, 0);
-    func_0200af3c(func_02021c60(heap), heap);
+    func_0200af3c(InitGameHeap(heap), heap);
     FrameTask::Get().Init();
-    func_020234c8();
+    InitFileSystem();
     SpriteManager::Get().Init();
     InputManager::Get().Init();
     TouchManager::Get().InitPanel();
     TextManager::Get().InitFont();
     SoundManager::Get().Init();
     WirelessManager::Get().func_0202ed2c();
-    MicManager::Get().func_0202d794();
+    MicManager::Get().Init();
     FrameTask::Get().OpenHandles();
     mInputEnabled = 1;
     mResetHoldFrames = 0;
     mWirelessWaitFrames = 0;
-    func_020219dc();
+    SeedRandomFromTick();
     SceneManager &manager = SceneManager::Get();
     SceneContext *context = (SceneContext *) manager.Init(&SceneRunner::Get());
     SceneRunner::Get().mContext = context;
@@ -179,7 +179,7 @@ void GameSystem::Init() {
     reg_G2S_DB_BG2CNT = (u16) (reg_G2S_DB_BG2CNT & ~0x40);
     reg_G2S_DB_BG3CNT = (u16) (reg_G2S_DB_BG3CNT & ~0x40);
     CameraManager::Get().Reset();
-    func_02025e18();
+    InitIdentityMatrices();
     mFrameInterval = 1;
     mMinInterval = 1;
     mMaxInterval = 1;
@@ -267,8 +267,8 @@ void GameSystem::Run() {
             }
         }
         func_02021700();
-        func_02023884();
-        func_02025d74();
+        UpdateAsyncLoad();
+        UpdateUploadQueue();
         SpriteManager::Get().EndFrame();
         u64 tick = OS_GetTick();
         FrameTask::Get().WaitFrame();
@@ -299,7 +299,7 @@ void GameSystem::Run() {
 
 void GameSystem::func_02021700() {
     if ((*(vu16 *) 0x27fffa8 & 0x8000) >> 15) {
-        MicManager::Get().func_0202d94c();
+        MicManager::Get().ResetTimeAndEvents();
         if (SaveManager::Get().mBusy != 0) {
             if (mInputEnabled != 0) {
                 while (func_0200d1e0(2, 0) != 0) {
@@ -315,7 +315,7 @@ void GameSystem::func_02021700() {
                 }
             } else {
                 func_0200d3e0(0xc, 0, 0);
-                MicManager::Get().func_0202d94c();
+                MicManager::Get().ResetTimeAndEvents();
             }
         }
     } else if (mInputEnabled == 0) {
@@ -323,14 +323,14 @@ void GameSystem::func_02021700() {
         }
         while (func_0200d1e0(1, mUnk_04) != 0) {
         }
-        MicManager::Get().func_0202d94c();
+        MicManager::Get().ResetTimeAndEvents();
         mInputEnabled = 1;
     }
     if (func_0200f79c() != 0) {
         func_0200f7ac();
     }
     if (mInputEnabled == 0) {
-        MicManager::Get().func_0202d94c();
+        MicManager::Get().ResetTimeAndEvents();
     }
 }
 

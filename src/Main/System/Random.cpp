@@ -4,7 +4,7 @@ extern "C" u32 OS_GetTick();
 
 void SeedRandom(u32 seed);
 
-void func_020219dc() {
+void SeedRandomFromTick() {
     SeedRandom(OS_GetTick());
 }
 

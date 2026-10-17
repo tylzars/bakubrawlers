@@ -6,7 +6,7 @@
 #include "System/InputManager.hpp"
 #include <nitro/gx.h>
 
-void func_02025df8();
+void RewindUploadQueue();
 extern "C" void GX_SetBankForSubBG(u32 a);
 extern "C" void GX_SetBankForSubBGExtPltt(u32 a);
 
@@ -33,7 +33,7 @@ MovieScene::MovieScene(void *video, u32 unk2)
     vu16 *bg1cnt  = (vu16 *) 0x4001008;
     *bg1cnt       = *bg1cnt & ~3;
     *(vu32 *) 0x4001010 = 0;
-    func_02025df8();
+    RewindUploadQueue();
     SpriteManager::Get().StartFade(2);
     mPlaybackDone = 0;
 }

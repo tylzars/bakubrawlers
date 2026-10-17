@@ -64,11 +64,11 @@ extern "C" void GX_BeginLoadTexPltt();
 extern "C" void GX_BeginLoadSubOBJExtPltt();
 extern "C" void GX_BeginLoadSubBGExtPltt();
 
-BankFunc data_020a54ec[8]  = {GX_EndLoadOBJExtPltt, GX_EndLoadBGExtPltt, GX_EndLoadTex, GX_EndLoadTexPltt,
+BankFunc gEndLoadFuncs[8]  = {GX_EndLoadOBJExtPltt, GX_EndLoadBGExtPltt, GX_EndLoadTex, GX_EndLoadTexPltt,
                               GX_EndLoadSubOBJExtPltt, GX_EndLoadSubBGExtPltt, GX_EndLoadTex, GX_EndLoadTexPltt};
-BankFunc data_020a550c[8]  = {GX_BeginLoadOBJExtPltt, GX_BeginLoadBGExtPltt, GX_BeginLoadTex, GX_BeginLoadTexPltt,
+BankFunc gBeginLoadFuncs[8]  = {GX_BeginLoadOBJExtPltt, GX_BeginLoadBGExtPltt, GX_BeginLoadTex, GX_BeginLoadTexPltt,
                               GX_BeginLoadSubOBJExtPltt, GX_BeginLoadSubBGExtPltt, GX_BeginLoadTex, GX_BeginLoadTexPltt};
-UploadFunc data_020a552c[30] = {
+UploadFunc gUploadFuncs[30] = {
     GX_LoadOBJExtPltt, GX_LoadBGExtPltt, GX_LoadTex, GX_LoadTexPltt, GX_LoadOBJ, GXS_LoadBGPltt, GX_LoadBGPltt,
     GX_LoadBG0Scr, GX_LoadBG1Scr, GX_LoadBG2Scr, GX_LoadBG3Scr, GX_LoadBG0Char, GX_LoadBG1Char, GX_LoadBG2Char,
     GX_LoadBG3Char, GX_LoadSubOBJExtPltt, GX_LoadSubBGExtPltt, GX_LoadTex, GX_LoadTexPltt, GXS_LoadOBJ, GXS_LoadOBJPltt,
@@ -76,44 +76,44 @@ UploadFunc data_020a552c[30] = {
     GXS_LoadBG2Char, GXS_LoadBG3Char};
 // Zero-initialised but in .data in the original.
 #pragma explicit_zero_data on
-void *data_020a55a4[UPLOAD_FREE_COUNT] = {0};
+void *gPendingFrees[UPLOAD_FREE_COUNT] = {0};
 #pragma explicit_zero_data reset
 
 // The queue state is five separate globals, not one struct: as members of one struct, the entry accesses and the
 // stores to the free count and the tail reorder across each other, which the original never does. Defined in this
 // order they get the original's addresses (count, head, free count, tail, byte total).
-u8 data_0220e630;  // queued entries
-u8 data_0220e631;  // head index
-u8 data_0220e633;  // tail index
-u8 data_0220e632;  // pending frees in data_020a55a4
-u32 data_0220e634; // bytes queued this frame
-UploadEntry data_0220e638[UPLOAD_QUEUE_SIZE];
+u8 gUploadCount;  // queued entries
+u8 gUploadReadIndex;  // head index
+u8 gUploadWriteIndex;  // tail index
+u8 gPendingFreeCount;  // pending frees in gPendingFrees
+u32 gQueuedBytes; // bytes queued this frame
+UploadEntry gUploadQueue[UPLOAD_QUEUE_SIZE];
 
-void func_020257c8() {
-    u32 head = data_0220e631;
+void FlushUploadQueue() {
+    u32 head = gUploadReadIndex;
     do {
-        UploadEntry *e = &data_0220e638[(u8) head];
+        UploadEntry *e = &gUploadQueue[(u8) head];
         u32 kind       = e->mKind;
         if (kind % UPLOAD_KIND_COUNT < 4) {
             u8 k    = kind;
             u8 bank = k % UPLOAD_KIND_COUNT + (k >= UPLOAD_KIND_COUNT) * 4;
-            data_020a550c[bank]();
-            data_020a552c[kind](data_0220e638[data_0220e631].mData, data_0220e638[data_0220e631].mOffset,
-                                data_0220e638[data_0220e631].mSize);
-            data_020a54ec[bank]();
+            gBeginLoadFuncs[bank]();
+            gUploadFuncs[kind](gUploadQueue[gUploadReadIndex].mData, gUploadQueue[gUploadReadIndex].mOffset,
+                                gUploadQueue[gUploadReadIndex].mSize);
+            gEndLoadFuncs[bank]();
         } else {
-            data_020a552c[kind](data_0220e638[(u8) head].mData, e->mOffset, e->mSize);
+            gUploadFuncs[kind](gUploadQueue[(u8) head].mData, e->mOffset, e->mSize);
         }
-        if (data_0220e638[data_0220e631].mFree != 0) {
-            u32 n = data_0220e632++;
-            data_020a55a4[n] = data_0220e638[data_0220e631].mData;
+        if (gUploadQueue[gUploadReadIndex].mFree != 0) {
+            u32 n = gPendingFreeCount++;
+            gPendingFrees[n] = gUploadQueue[gUploadReadIndex].mData;
         }
-        head          = (data_0220e631 + 1) % UPLOAD_QUEUE_SIZE;
-        data_0220e631 = head;
-    } while (--data_0220e630 != 0);
+        head          = (gUploadReadIndex + 1) % UPLOAD_QUEUE_SIZE;
+        gUploadReadIndex = head;
+    } while (--gUploadCount != 0);
 }
 
-BOOL func_020258f4(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 freeData) {
+BOOL TryUploadNow(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 freeData) {
     BOOL immediate = FALSE;
     int brightness;
     if (screen == 0) {
@@ -132,11 +132,11 @@ BOOL func_020258f4(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 f
         if (slot % UPLOAD_KIND_COUNT < 4) {
             u8 s    = slot;
             u8 bank = s % UPLOAD_KIND_COUNT + (s >= UPLOAD_KIND_COUNT) * 4;
-            data_020a550c[bank]();
-            data_020a552c[slot](data, offset, size);
-            data_020a54ec[bank]();
+            gBeginLoadFuncs[bank]();
+            gUploadFuncs[slot](data, offset, size);
+            gEndLoadFuncs[bank]();
         } else {
-            data_020a552c[slot](data, offset, size);
+            gUploadFuncs[slot](data, offset, size);
         }
         if (freeData != 0) {
             OS_Free(data);
@@ -145,26 +145,26 @@ BOOL func_020258f4(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 f
     return immediate;
 }
 
-BOOL func_02025a4c(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 freeData) {
-    u8 n = data_0220e630;
+BOOL ReplaceQueuedUpload(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 freeData) {
+    u8 n = gUploadCount;
     if (n == 0) {
         return FALSE;
     }
     u32 slot = kind + screen * UPLOAD_KIND_COUNT;
     u32 end  = offset + size;
-    u8 i     = data_0220e631;
+    u8 i     = gUploadReadIndex;
     do {
-        if (slot == data_0220e638[i].mKind) {
-            BOOL after  = offset <= data_0220e638[i].mOffset;
-            BOOL before = end >= data_0220e638[i].mOffset + data_0220e638[i].mSize;
+        if (slot == gUploadQueue[i].mKind) {
+            BOOL after  = offset <= gUploadQueue[i].mOffset;
+            BOOL before = end >= gUploadQueue[i].mOffset + gUploadQueue[i].mSize;
             if (after & before) {
-                if (data_0220e638[i].mFree != 0) {
-                    OS_Free(data_0220e638[i].mData);
+                if (gUploadQueue[i].mFree != 0) {
+                    OS_Free(gUploadQueue[i].mData);
                 }
-                data_0220e638[i].mOffset = offset;
-                data_0220e638[i].mData   = data;
-                data_0220e638[i].mSize   = size;
-                data_0220e638[i].mFree   = freeData;
+                gUploadQueue[i].mOffset = offset;
+                gUploadQueue[i].mData   = data;
+                gUploadQueue[i].mSize   = size;
+                gUploadQueue[i].mFree   = freeData;
                 return TRUE;
             }
         }
@@ -174,9 +174,9 @@ BOOL func_02025a4c(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 f
 }
 
 static inline void FlushPendingFrees() {
-    while (data_0220e632 != 0) {
-        data_0220e632--;
-        OS_Free(data_020a55a4[data_0220e632]);
+    while (gPendingFreeCount != 0) {
+        gPendingFreeCount--;
+        OS_Free(gPendingFrees[gPendingFreeCount]);
     }
 }
 
@@ -189,34 +189,34 @@ u32 LoadAndQueueUpload(u32 screen, u32 kind, u32 offset, const char *path, u32 u
 
 u32 QueueUpload(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 freeData) {
     FlushPendingFrees();
-    if (func_020258f4(screen, kind, offset, data, size, freeData)) {
+    if (TryUploadNow(screen, kind, offset, data, size, freeData)) {
         return offset + size;
     }
-    if (func_02025a4c(screen, kind, offset, data, size, freeData)) {
+    if (ReplaceQueuedUpload(screen, kind, offset, data, size, freeData)) {
         return offset + size;
     }
-    data_0220e638[data_0220e633].mKind   = kind + screen * UPLOAD_KIND_COUNT;
-    data_0220e638[data_0220e633].mOffset = offset;
-    data_0220e638[data_0220e633].mData   = data;
-    data_0220e638[data_0220e633].mSize   = size;
-    data_0220e638[data_0220e633].mFree   = freeData;
-    data_0220e633 = (data_0220e633 + 1) % UPLOAD_QUEUE_SIZE;
-    data_0220e630++;
-    data_0220e634 += size;
+    gUploadQueue[gUploadWriteIndex].mKind   = kind + screen * UPLOAD_KIND_COUNT;
+    gUploadQueue[gUploadWriteIndex].mOffset = offset;
+    gUploadQueue[gUploadWriteIndex].mData   = data;
+    gUploadQueue[gUploadWriteIndex].mSize   = size;
+    gUploadQueue[gUploadWriteIndex].mFree   = freeData;
+    gUploadWriteIndex = (gUploadWriteIndex + 1) % UPLOAD_QUEUE_SIZE;
+    gUploadCount++;
+    gQueuedBytes += size;
     return offset + size;
 }
 
-void func_02025d74() {
+void UpdateUploadQueue() {
     FlushPendingFrees();
-    if (data_0220e630 != 0) {
-        QueueFrameCallback((FrameCallback) func_020257c8, NULL);
+    if (gUploadCount != 0) {
+        QueueFrameCallback((FrameCallback) FlushUploadQueue, NULL);
     }
-    data_0220e634 = 0;
+    gQueuedBytes = 0;
 }
 
-void func_02025df8() {
-    data_0220e631 = 0;
-    data_0220e633 = 0;
-    data_0220e632 = 0;
-    data_0220e634 = 0;
+void RewindUploadQueue() {
+    gUploadReadIndex = 0;
+    gUploadWriteIndex = 0;
+    gPendingFreeCount = 0;
+    gQueuedBytes = 0;
 }

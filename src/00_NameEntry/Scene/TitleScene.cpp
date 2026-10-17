@@ -117,13 +117,13 @@ public:
 };
 
 // Loads the save data (vtable 0x020a5494).
-class UnkScene_020a5494 : public SceneBase {
+class SaveReader : public SceneBase {
 public:
-    UnkScene_020a5494() :
+    SaveReader() :
         SceneBase(0xffdc, 0) {
         ((u8 *) mContext)[0x23] = 0;
     }
-    virtual ~UnkScene_020a5494();
+    virtual ~SaveReader();
     virtual void Update();
 };
 
@@ -347,7 +347,7 @@ void TitleScene::Update() {
             }
             mContext->mRequest = 0;
             SaveManager::Get();
-            new UnkScene_020a5494();
+            new SaveReader();
             mState++;
             break;
         case 12:

@@ -14,8 +14,8 @@ extern UnkStruct_020d433c data_020d433c;
 extern const u16 data_020ac92c[];
 extern const char *const data_020ac934[];
 extern const char *const data_020ac940[];
-extern const char data_020ac960[];
-extern const float data_0209dabc[];
+extern const char gChannelPathFormat[];
+extern const float gVolumeScales[];
 
 void FrameTask::Init() {
     mVolume0 = 1.0f;
@@ -55,7 +55,7 @@ void FrameTask::StartChannel(u32 unk1, u32 unk2) {
     if (unk1 == 1) {
         variant = data_020d433c.mLanguage;
     }
-    sprintf(path, data_020ac960, data_020ac934[unk1], unk2 - data_020ac92c[unk1], variant, data_020ac940[unk1]);
+    sprintf(path, gChannelPathFormat, data_020ac934[unk1], unk2 - data_020ac92c[unk1], variant, data_020ac940[unk1]);
     switch (unk1) {
         case 0:
             Start0(path);
@@ -114,13 +114,13 @@ void FrameTask::SetChannelVolume(u32 channel, u32 level) {
     }
     switch (channel) {
         case 0:
-            TaskBase::SetVolume0(mVolume0 * data_0209dabc[level]);
+            TaskBase::SetVolume0(mVolume0 * gVolumeScales[level]);
             break;
         case 2:
-            TaskBase::SetVolume1(mVolume1 * data_0209dabc[level]);
+            TaskBase::SetVolume1(mVolume1 * gVolumeScales[level]);
             break;
         case 1:
-            TaskBase::SetVolume1(mVolume2 * data_0209dabc[level]);
+            TaskBase::SetVolume1(mVolume2 * gVolumeScales[level]);
             break;
     }
 }

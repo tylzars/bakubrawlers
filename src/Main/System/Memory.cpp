@@ -19,7 +19,7 @@ struct GameHeap {
     u32 mSize;
 };
 
-extern GameHeap data_020d4300;
+extern GameHeap gGameHeap;
 
 static inline void CreateGameHeap() {
     void *lo = OS_GetArenaLo(0);
@@ -27,15 +27,15 @@ static inline void CreateGameHeap() {
     OS_SetArenaLo(0, OS_InitAlloc(0, lo, hi, 1));
     u8 *top        = (u8 *) OS_GetArenaHi(0);
     u8 *bottom     = (u8 *) OS_GetArenaLo(0);
-    data_020d4300.mSize = (u32) (top - bottom) & ~0xf;
-    data_020d4300.mStart = (u8 *) OS_AllocFromArenaLo(0, data_020d4300.mSize, 0x20);
-    s32 handle = OS_CreateHeap(0, data_020d4300.mStart, data_020d4300.mStart + data_020d4300.mSize);
-    data_020d4300.mHandle = handle;
+    gGameHeap.mSize = (u32) (top - bottom) & ~0xf;
+    gGameHeap.mStart = (u8 *) OS_AllocFromArenaLo(0, gGameHeap.mSize, 0x20);
+    s32 handle = OS_CreateHeap(0, gGameHeap.mStart, gGameHeap.mStart + gGameHeap.mSize);
+    gGameHeap.mHandle = handle;
     OS_SetCurrentHeap(0, handle);
-    OS_DestroyHeap(0, data_020d4300.mHandle);
+    OS_DestroyHeap(0, gGameHeap.mHandle);
 }
 
-void *func_02021c60(u32 reserve) {
+void *InitGameHeap(u32 reserve) {
     void *block;
     if (reserve == 0) {
         block = 0;
@@ -46,20 +46,20 @@ void *func_02021c60(u32 reserve) {
     return block;
 }
 
-void func_02021d38(void *lo) {
+void RecreateGameHeap(void *lo) {
     OS_ClearAlloc(0);
     OS_SetArenaLo(0, lo);
     CreateGameHeap();
 }
 
-s32 func_02021e00() {
-    return data_020d4300.mHandle;
+s32 GetGameHeapHandle() {
+    return gGameHeap.mHandle;
 }
 
 void func_02021e10() {
-    OS_CheckHeap(0, data_020d4300.mHandle);
-    OS_AddToHeap(0, data_020d4300.mHandle, data_020d4300.mStart, data_020d4300.mStart + data_020d4300.mSize);
-    OS_CheckHeap(0, data_020d4300.mHandle);
+    OS_CheckHeap(0, gGameHeap.mHandle);
+    OS_AddToHeap(0, gGameHeap.mHandle, gGameHeap.mStart, gGameHeap.mStart + gGameHeap.mSize);
+    OS_CheckHeap(0, gGameHeap.mHandle);
 }
 
 void *operator new(size_t size) {

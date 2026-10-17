@@ -25,11 +25,11 @@ public:
     /* 24 */ u8 mEvents;
     /* 25 */ PAD(0x25, 0x28);
 
-    void func_0202d794();
-    u8 func_0202d7a0();
-    void func_0202d8cc();
-    void func_0202d94c();
-    void func_0202d9ac();
+    void Init();
+    u8 StartSampling();
+    void StopSampling();
+    void ResetTimeAndEvents();
+    void Update();
 };
 
 extern "C" void MIC_Init(void);
@@ -38,14 +38,14 @@ extern "C" void func_0200d338(u32 gain);
 extern "C" void MIC_StartAutoSampling(MicAutoParam *param);
 extern "C" void MIC_StopAutoSampling(void);
 extern "C" s8 *func_0200c9ac(void);
-extern u8 data_0220f140[];
+extern u8 gMicBuffer[];
 
-void MicManager::func_0202d794() {
+void MicManager::Init() {
     MIC_Init();
 }
 
 // Returns the active flag when already sampling, else 0.
-u8 MicManager::func_0202d7a0() {
+u8 MicManager::StartSampling() {
     if (mActive != 0) {
         return mActive;
     }
@@ -54,7 +54,7 @@ u8 MicManager::func_0202d7a0() {
     func_0200d338(1);
     func_0200d338(2);
     mParam.mType     = 2;
-    mParam.mBuffer   = data_0220f140;
+    mParam.mBuffer   = gMicBuffer;
     mParam.mSize     = 0x400;
     mParam.mRate     = 0x105d;
     mParam.mLoop     = 1;
@@ -70,7 +70,7 @@ u8 MicManager::func_0202d7a0() {
     return 0;
 }
 
-void MicManager::func_0202d8cc() {
+void MicManager::StopSampling() {
     if (mActive != 1) {
         return;
     }
@@ -81,12 +81,12 @@ void MicManager::func_0202d8cc() {
     mEvents = 0;
 }
 
-void MicManager::func_0202d94c() {
+void MicManager::ResetTimeAndEvents() {
     mTime   = GameSystem::Get().mFrame;
     mEvents = 0;
 }
 
-void MicManager::func_0202d9ac() {
+void MicManager::Update() {
     s32 level = 0;
     mEvents   = 0;
     if (mActive == 1) {

@@ -4,19 +4,19 @@ extern "C" void G2x_SetMasterBrightness_(vu16 *reg, int value);
 
 typedef void (*FadeFunc)(s32 brightness);
 
-void func_02025668(int brightness);
-void func_02025680(int brightness);
+void SetScreen1Brightness(int brightness);
+void SetScreen0Brightness(int brightness);
 
-FadeFunc data_020a54e4[2] = {func_02025680, func_02025668};
+FadeFunc gBrightnessFuncs[2] = {SetScreen0Brightness, SetScreen1Brightness};
 
 s8 SpriteManager::sFade[2];
 s8 SpriteManager::sBrightness[2];
 
-void func_02025668(int brightness) {
+void SetScreen1Brightness(int brightness) {
     G2x_SetMasterBrightness_((vu16 *) 0x400106c, brightness);
 }
 
-void func_02025680(int brightness) {
+void SetScreen0Brightness(int brightness) {
     G2x_SetMasterBrightness_((vu16 *) 0x400006c, brightness);
 }
 
@@ -27,13 +27,13 @@ SpriteFadeDefaults::SpriteFadeDefaults() {
     }
 }
 
-void func_020256d4() {
+void UpdateSpriteFade() {
     for (s8 i = 1; i >= 0; i--) {
         s8 *fade       = &SpriteManager::sFade[i];
         s8 *brightness = &SpriteManager::sBrightness[i];
         switch (*fade) {
             case 1:
-                data_020a54e4[i](*brightness);
+                gBrightnessFuncs[i](*brightness);
                 break;
             case 2:
                 if (*brightness == 0) {
@@ -43,7 +43,7 @@ void func_020256d4() {
                 } else {
                     *brightness -= 1;
                 }
-                data_020a54e4[i](*brightness);
+                gBrightnessFuncs[i](*brightness);
                 break;
             case 3:
                 if (*brightness > -16) {
@@ -51,7 +51,7 @@ void func_020256d4() {
                 } else {
                     *fade = 1;
                 }
-                data_020a54e4[i](*brightness);
+                gBrightnessFuncs[i](*brightness);
                 break;
             case 4:
                 if (*brightness < 16) {
@@ -59,7 +59,7 @@ void func_020256d4() {
                 } else {
                     *fade = 1;
                 }
-                data_020a54e4[i](*brightness);
+                gBrightnessFuncs[i](*brightness);
                 break;
         }
     }

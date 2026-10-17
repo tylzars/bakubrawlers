@@ -76,7 +76,7 @@ Diff the traces of two variants to find the first stage where they part. Facts r
   value per arm gets a high one (RankingCharacterView::CreateCharacterModel).
 - A `mov rX, rY` just before a load through rX, with rY still live, can be a second identical load that the
   post-allocation clean-up turned into a copy. A read through a `const T *` (e.g. a const-parameter inline helper)
-  keeps that second load apart in the optimizer (CharacterModel::SetExtraAnimEnabled, StoryCharacterModel::func_02054d08).
+  keeps that second load apart in the optimizer (CharacterModel::SetExtraAnimEnabled, StoryCharacterModel::SetExtraAnimEnabled).
 - Before colouring, a scheduler orders each block. Once live values reach the register limit it picks by a
   pressure score (start 16; each last use subtracts 1 + max(1, live - limit), each new value adds max(1, live -
   limit)), keeping source order on ties. Colouring then goes in falling virtual-register order, high-degree nodes
@@ -230,7 +230,7 @@ that matches should replace it.
 - **Vtable order and destructor order can disagree (FileLoader).** Vtables come out in reverse class order, and
   inline virtual destructors are emitted with them (D0 then D1). The original has the two vtables in one order and
   the destructors in the other, with D1 before D0: the destructors were defined out of line after the other
-  functions (`UnkScene_020a54a8::~UnkScene_020a54a8() {}`), which emits D1, D0, D2 (the linker drops D2).
+  functions (`SaveWriter::~SaveWriter() {}`), which emits D1, D0, D2 (the linker drops D2).
 - **A singleton node at two addresses splits a file (MessageScreen).** The MessageScreen constructor's
   TextManager node is at 0x02219308, while UnkStruct_02071d24's functions use one at 0x02219314, and the
   constructor's strings sit between the two classes' vtables. Split at 0x02071d24, both link.
@@ -238,7 +238,7 @@ that matches should replace it.
   one, which the size sort never produces from separate tables: the block 0x0227a5e0-0x0227a74c is one struct
   (`TargetTables`, members named by original address), as in MyroomGiftScene. Byte tables indexed by a variable stay
   separate (inside a struct the indexing becomes an immediate offset).
-- **One class, two names.** SaveWindow.cpp constructed FileLoader's `UnkScene_020a54a8` under the name
+- **One class, two names.** SaveWindow.cpp constructed FileLoader's `SaveWriter` under the name
   `UnkStruct_020a54a0` (its vtable symbol's address), which only showed as an undefined vtable once FileLoader linked.
 - **The main module's code ends at 0x0208b4bc.** dsd had put the `.text`/`.rodata` boundary at 0x0209d490, so ~70 KB
   of constant data (the SDK's FX tables, sndVolumeTable, GameData's and math_sha1's tables) counted as code and no
@@ -391,7 +391,7 @@ Other findings from linking:
   globals (defined in the order that gives the original offsets): as one struct, the entry accesses and the state
   stores reorder across each other.
 - **A zero-initialised table that the original has in `.data`** needs `#pragma explicit_zero_data on` around it
-  (UploadQueue's data_020a55a4); `= {0}` alone puts it in `.bss`.
+  (UploadQueue's gPendingFrees); `= {0}` alone puts it in `.bss`.
 - **A table offset as its own variable before the bounds check** (`u32 pos = id * 0x20; if (pos >= size) ...`) gives
   the separate shift the original has (fs_overlay, fs_archive).
 

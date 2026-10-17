@@ -36,7 +36,7 @@ static const WindowCellRecord data_ov007_0227a77c[2] = {
 static const PromptRect data_ov007_0227a764[3] = {{0x28, 0x3f, 0x30, 0x40}, {0x68, 0x3f, 0x30, 0x40}, {0xa8, 0x3f, 0x30, 0x40}};
 static const PromptRect data_ov007_0227a75c[2] = {{0xa1, 0x85, 0x36, 0x14}, {0xd9, 0x85, 0x1e, 0x14}};
 static const u16 data_ov007_0227a770[6] = {0x2000, 0xc000, 0, 0, 0, 0};
-extern MtxFx22 data_0220e838;
+extern MtxFx22 gIdentityMtx22;
 extern "C" void func_01ffcef4(MtxFx22 *mtx, fx32 scaleX, fx32 scaleY, u16 angle);
 
 
@@ -667,7 +667,7 @@ void BattleCommandPrompt::Load() {
 }
 
 void func_ov007_0225f080(s16 *x) {
-    G2x_SetBGyAffine_((vu16 *) 0x4001030, &data_0220e838, 0, 0, -*x, 0);
+    G2x_SetBGyAffine_((vu16 *) 0x4001030, &gIdentityMtx22, 0, 0, -*x, 0);
 }
 
 extern "C" u8 func_ov007_0225f0bc(u32 v) {

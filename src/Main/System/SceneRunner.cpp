@@ -6,7 +6,7 @@
 
 
 // Header of an overlay as read by the overlay loader (0x2c bytes).
-struct UnkStruct_OverlayInfo {
+struct OverlayInfo {
     /* 00 */ u32 mId;
     /* 04 */ u32 mRamAddress;
     /* 08 */ u32 mRamSize;
@@ -15,7 +15,7 @@ struct UnkStruct_OverlayInfo {
 };
 
 // Fields of the scene context that the runner uses (the node's SceneInfo area).
-struct UnkStruct_RunnerContext {
+struct SceneRunnerContext {
     /* 00 */ PAD(0x00, 0x12);
     /* 12 */ s16 mNextScene;
     /* 14 */ u8 mState;
@@ -38,7 +38,7 @@ public:
         return instance;
     }
 
-    void func_0202d8cc();
+    void StopSampling();
 };
 
 // The scene that switches between the game's scenes: loads the overlay of the next one and constructs it.
@@ -58,8 +58,8 @@ public:
         return instance;
     }
 
-    void func_02024818(u32 overlay);
-    void func_02024968(s32 scene);
+    void LoadOverlay(u32 overlay);
+    void SwitchToScene(s32 scene);
 };
 
 #include "Scene/ArenaWindowScene.hpp"
@@ -93,18 +93,18 @@ extern char SDK_OVERLAY_OV006_ID[];
 extern char SDK_OVERLAY_OV007_ID[];
 extern char SDK_OVERLAY_OV008_ID[];
 
-extern "C" void func_0200b0d4(UnkStruct_OverlayInfo *info, u32 processor, u32 id);
+extern "C" void func_0200b0d4(OverlayInfo *info, u32 processor, u32 id);
 extern "C" void func_0200b4e8(u32 processor, u32 id);
 extern "C" void func_0200b53c(u32 processor, u32 id);
-extern void func_02021d38(void *lo);
+extern void RecreateGameHeap(void *lo);
 extern void func_02021e10();
 extern "C" void func_02007230();
-extern void func_0202555c();
-extern void func_020255f8(void (*hook)());
-extern void func_02025df8();
+extern void ClearFrameCallbacks();
+extern void RemoveHBlankHook(void (*hook)());
+extern void RewindUploadQueue();
 
-void SceneRunner::func_02024818(u32 overlay) {
-    UnkStruct_OverlayInfo info;
+void SceneRunner::LoadOverlay(u32 overlay) {
+    OverlayInfo info;
     FrameTask::Get().CloseHandles();
     func_02021e10();
     if (mOverlayState == 2) {
@@ -114,7 +114,7 @@ void SceneRunner::func_02024818(u32 overlay) {
     func_0200b0d4(&info, 0, overlay);
     func_0200b4e8(0, mOverlay);
     mOverlayState = 2;
-    func_02021d38((void *) (info.mRamAddress + (info.mRamSize + info.mBssSize)));
+    RecreateGameHeap((void *) (info.mRamAddress + (info.mRamSize + info.mBssSize)));
     FrameTask::Get().OpenHandles();
 }
 
@@ -123,14 +123,14 @@ SceneRunner::SceneRunner() : SceneBase(0, 3) {
     mOverlayState = 0;
 }
 
-void SceneRunner::func_02024968(s32 scene) {
+void SceneRunner::SwitchToScene(s32 scene) {
     FrameTask::Get().StopAllChannels();
     if ((scene < 1) | (scene >= 14)) {
         scene = 1;
     }
-    func_020255f8(0);
+    RemoveHBlankHook(0);
     func_02007230();
-    func_0202555c();
+    ClearFrameCallbacks();
     SceneManager::Get().DeleteLayer();
     SceneManager::Get().Reset();
     TextManager::Get().mUse4bppFont = 0;
@@ -139,20 +139,20 @@ void SceneRunner::func_02024968(s32 scene) {
         func_02021e10();
         FrameTask::Get().OpenHandles();
     }
-    func_02025df8();
+    RewindUploadQueue();
     mContext->mRequest = 14;
-    ((UnkStruct_RunnerContext *) mContext)->mState = scene;
+    ((SceneRunnerContext *) mContext)->mState = scene;
     if (data_020d433c.mUnk_84 == 0) {
         SoundManager::Get().func_020245a4();
     }
     if (scene == 5) {
         return;
     }
-    MicManager::Get().func_0202d8cc();
+    MicManager::Get().StopSampling();
 }
 
 void SceneRunner::Update() {
-    UnkStruct_RunnerContext *context = (UnkStruct_RunnerContext *) mContext;
+    SceneRunnerContext *context = (SceneRunnerContext *) mContext;
     switch (context->mState) {
         case 0:
             TouchManager::Get().ReadCalibration();
@@ -167,60 +167,60 @@ void SceneRunner::Update() {
             context->mState++;
             break;
         case 2:
-            SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV000_ID);
+            SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV000_ID);
             new LogoScene();
             context->mState = 14;
             break;
         case 3:
             break;
         case 4:
-            SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV000_ID);
+            SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV000_ID);
             new TitleScene();
             context->mState = 14;
             break;
         case 5: {
-            SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV007_ID);
+            SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV007_ID);
             data_020d433c.mBattlePlayers = new BattlePlayerList();
             context->mState = 14;
             break;
         }
         case 6:
-            SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV003_ID);
+            SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV003_ID);
             new StoreScene();
             context->mState = 14;
             break;
         case 7:
-            SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV008_ID);
+            SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV008_ID);
             new MyroomScene();
             context->mState = 14;
             break;
         case 8:
-            SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV001_ID);
+            SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV001_ID);
             new ArenaWindowScene();
             context->mState = 14;
             break;
         case 9:
-            SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV005_ID);
+            SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV005_ID);
             new MapScene();
             context->mState = 14;
             break;
         case 10:
-            SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV005_ID);
+            SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV005_ID);
             new TutorialScene();
             context->mState = 14;
             break;
         case 11:
-            SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV006_ID);
+            SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV006_ID);
             new GameOverScene();
             context->mState = 14;
             break;
         case 12:
-            SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV004_ID);
+            SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV004_ID);
             new ParkScene();
             context->mState = 14;
             break;
         case 13:
-            SceneRunner::Get().func_02024818((u32) SDK_OVERLAY_OV002_ID);
+            SceneRunner::Get().LoadOverlay((u32) SDK_OVERLAY_OV002_ID);
             new TournamentScene();
             context->mState = 14;
             break;
@@ -236,7 +236,7 @@ void SceneRunner::Update() {
             if (func_0203dd0c(&FrameTask::Get(), 0)) {
                 return;
             }
-            func_02024968(mNextScene);
+            SwitchToScene(mNextScene);
             break;
     }
 }

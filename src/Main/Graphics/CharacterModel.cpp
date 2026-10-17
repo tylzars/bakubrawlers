@@ -7,13 +7,13 @@
 // the original passes a pointer here (the declaration in FileSystem.hpp takes u32)
 const char *gCharacterPartNames[6] = {"head", "up", "down", "hair", "glasse", "cap"}; // part names, .data 0x020b24bc-0x020b24fc
 extern MtxFx43 gIdentityMtx43;
-extern MtxFx43 data_022191d4;
+extern MtxFx43 gHeadNodeMtx;
 extern "C" void func_02031838(void *renderObj, void (*callback)(NNSG3dRS *));
 extern "C" MtxFx43 *func_020323b8();
 extern "C" void func_01ff89c0(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);
 extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
-void func_02053fc0(NNSG3dRS *rs);
-void func_02053fd8(NNSG3dRS *rs);
+void InstallHeadNodeMtxCallback(NNSG3dRS *rs);
+void StoreHeadNodeMtx(NNSG3dRS *rs);
 
 // The current animation set of a model (read through a const pointer, so it is a load of its own).
 static inline u8 GetSet(const ModelInstance *model) {
@@ -289,7 +289,7 @@ void CharacterModel::DrawParts() {
     func_01ffd0e0(&mtx, mRotY);
     func_01ffd138(&mtx, mRotZ);
     if (mParts[0] != NULL) {
-        func_02031838((u8 *) mParts[0] + 4, func_02053fc0);
+        func_02031838((u8 *) mParts[0] + 4, InstallHeadNodeMtxCallback);
         *(u32 *) ((u8 *) mParts[0] + 4) |= 1;
         mParts[0]->Draw(&mtx, &mScale);
         if (mExtraAnimEnabled != 0) {
@@ -302,15 +302,15 @@ void CharacterModel::DrawParts() {
     if (mParts[2] != NULL) {
         mParts[2]->Draw(&mtx, &mScale);
     }
-    func_01ffd0e0(&data_022191d4, 0x8000);
-    func_01ffd138(&data_022191d4, 0x4000);
+    func_01ffd0e0(&gHeadNodeMtx, 0x8000);
+    func_01ffd138(&gHeadNodeMtx, 0x4000);
     if (mParts[5] != NULL) {
-        mParts[5]->Draw(&data_022191d4, &mScale);
+        mParts[5]->Draw(&gHeadNodeMtx, &mScale);
     } else if (mParts[3] != NULL) {
-        mParts[3]->Draw(&data_022191d4, &mScale);
+        mParts[3]->Draw(&gHeadNodeMtx, &mScale);
     }
     if (mParts[4] != NULL) {
-        mParts[4]->Draw(&data_022191d4, &mScale);
+        mParts[4]->Draw(&gHeadNodeMtx, &mScale);
     }
 }
 
@@ -503,12 +503,12 @@ void CharacterModel::SetHeadFrame(u32 frame) {
     mParts[0]->mAnim->SetFrame(frame, 0);
 }
 
-void func_02053fc0(NNSG3dRS *rs) {
-    rs->mCallback = func_02053fd8;
+void InstallHeadNodeMtxCallback(NNSG3dRS *rs) {
+    rs->mCallback = StoreHeadNodeMtx;
     rs->mUnk_92   = 3;
 }
 
-void func_02053fd8(NNSG3dRS *rs) {
+void StoreHeadNodeMtx(NNSG3dRS *rs) {
     int id;
     if (rs->mFlags & 0x10) {
         id = rs->mUnk_ae;
@@ -518,7 +518,7 @@ void func_02053fd8(NNSG3dRS *rs) {
     if (id != 0x10) {
         return;
     }
-    func_02032cc8(&data_022191d4, NULL);
+    func_02032cc8(&gHeadNodeMtx, NULL);
     MtxFx43 *cam = func_020323b8();
-    func_01ff89c0(&data_022191d4, cam, &data_022191d4);
+    func_01ff89c0(&gHeadNodeMtx, cam, &gHeadNodeMtx);
 }

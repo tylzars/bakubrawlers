@@ -1197,7 +1197,7 @@ public:
     /* 00 */ PAD(0x00, 0x20);
     /* 20 */ u8 mActive;
     /* 21 */ PAD(0x21, 0x24);
-    /* 24 */ u8 mUnk_24;
+    /* 24 */ u8 mEvents;
     /* 25 */ PAD(0x25, 0x28);
 
     MicManager() {
@@ -1440,7 +1440,7 @@ void BattleShoot::func_ov007_0226e884() {
     data_0220f540.mUnk_04  = 0;
     *(s32 *) &data_0220f540.mUnk_08 = 0;
     data_0220f540.mUnk_0c  = 0;
-    if (MicManager::Get().mUnk_24 != 0) {
+    if (MicManager::Get().mEvents != 0) {
         if (data_020d433c.mUnk_9a_0) {
             data_0220f540.mUnk_0c = 1;
         }

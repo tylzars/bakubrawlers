@@ -2,7 +2,7 @@
 #include "System/WirelessManager.hpp"
 #include "System/FrameTask.hpp"
 
-extern void func_020219dc();
+extern void SeedRandomFromTick();
 #include "Scene/ArenaWindowScene.hpp"
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Graphics/Display.hpp"
@@ -176,7 +176,7 @@ void ArenaWindowScene::Update() {
             mState++;
             break;
         case 9:
-            func_020219dc();
+            SeedRandomFromTick();
             if (data_020d433c.mUnk_87 != 0) {
                 mState = 0xa;
                 return;

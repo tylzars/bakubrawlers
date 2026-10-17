@@ -1,13 +1,13 @@
 #include "System/FrameTask.hpp"
 #include <nitro/os.h>
 
-struct UnkStruct_CriConfig {
+struct CriMemConfig {
     void *(*mAlloc)(u32);
     void (*mFree)(void *);
 };
 
-extern "C" void func_02051804(UnkStruct_CriConfig *config, int a, const void *b, void (*c)(void *));
-extern "C" void *func_02051ab0(UnkStruct_CriConfig *config, int a, int b);
+extern "C" void func_02051804(CriMemConfig *config, int a, const void *b, void (*c)(void *));
+extern "C" void *func_02051ab0(CriMemConfig *config, int a, int b);
 extern "C" void func_0205214c(void *handle, int a, int b);
 extern "C" void func_020520e8(void *handle, int a);
 extern "C" void func_02051d7c(void *handle);
@@ -34,17 +34,17 @@ TaskBase::TaskBase() {
 // mwcc also emits a deleting destructor (D0) for this class, which the original does not have here.
 TaskBase::~TaskBase() {}
 
-static void *func_020524e8(u32 size);
-static void func_02052500(void *ptr);
+static void *CriAlloc(u32 size);
+static void CriFree(void *ptr);
 static void func_02052518(void *unused);
 
 void TaskBase::Init() {
-    UnkStruct_CriConfig config;
+    CriMemConfig config;
     if (mInitialized != 0) {
         return;
     }
-    config.mAlloc = func_020524e8;
-    config.mFree  = func_02052500;
+    config.mAlloc = CriAlloc;
+    config.mFree  = CriFree;
     func_02051804(&config, 3, data_0209e538, func_02052518);
     mHandle0 = func_02051ab0(&config, 2, 0);
     mHandle1 = func_02051ab0(&config, 1, 0);
@@ -104,11 +104,11 @@ void TaskBase::SetVolume1(float volume) {
     func_0205201c(mHandle1, volume);
 }
 
-static void *func_020524e8(u32 size) {
+static void *CriAlloc(u32 size) {
     return OS_Alloc(size);
 }
 
-static void func_02052500(void *ptr) {
+static void CriFree(void *ptr) {
     OS_Free(ptr);
 }
 

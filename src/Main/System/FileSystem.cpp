@@ -6,7 +6,7 @@
 #include <nitro/os.h>
 
 // State of the file load in progress (instance 0x020d53e4, 0x5c bytes).
-struct UnkStruct_020d53e4 {
+struct FileLoadState {
     /* 00 */ PAD(0x00, 0x24); // 0x00: compression header of the blocking loader (data_020d53e4_h)
     /* 24 */ u32 mAsyncHeader; // header read by the asynchronous loader
     /* 28 */ PAD(0x28, 0x3c);
@@ -23,7 +23,7 @@ struct UnkStruct_020d53e4 {
     /* 5b */
 };
 
-struct FSFileLike { // data_020d5440
+struct FSFileLike { // gFsFile
     /* 00 */ PAD(0x00, 0x0c);
     /* 0c */ u32 mFlags;
     /* 10 */ PAD(0x10, 0x24);
@@ -31,7 +31,7 @@ struct FSFileLike { // data_020d5440
     /* 28 */ u32 mEnd;
 };
 
-extern UnkStruct_020d53e4 data_020d53e4;
+extern FileLoadState gFileLoad;
 
 static inline BOOL IsBusy(const FSFileLike *file) {
     if (file->mFlags & 1) {
@@ -40,11 +40,11 @@ static inline BOOL IsBusy(const FSFileLike *file) {
     return FALSE;
 }
 
-extern u32 data_020d53e4_h; // same address as data_020d53e4: the compression header read by the blocking loader
-extern u8 data_020d53f4[];
-extern u32 data_020d5408;
-extern u8 data_020d540c[];
-extern FSFileLike data_020d5440;
+extern u32 data_020d53e4_h; // same address as gFileLoad: the compression header read by the blocking loader
+extern u8 gLoadFileUncompContext[];
+extern u32 gAsyncLoadHeader;
+extern u8 gAsyncUncompContext[];
+extern FSFileLike gFsFile;
 
 extern "C" int func_0200ac40(void *file, s32 offset, u32 origin);
 extern "C" int func_0200ac30(void *file, void *dst, u32 len);
@@ -59,24 +59,24 @@ extern "C" int func_02007d94(void *ctx, void *src, u32 len);
 extern "C" void DC_FlushRange(void *buf, u32 size);
 
 static inline void NextChunk() {
-    if (data_020d53e4.mRemaining > 0x2000) {
-        data_020d53e4.mChunk = 0x2000;
+    if (gFileLoad.mRemaining > 0x2000) {
+        gFileLoad.mChunk = 0x2000;
     } else {
-        data_020d53e4.mChunk = data_020d53e4.mRemaining;
+        gFileLoad.mChunk = gFileLoad.mRemaining;
     }
 }
 
 static inline void ReadChunk() {
-    data_020d53e4.mRemaining -= data_020d53e4.mChunk;
-    func_0200ac20(&data_020d5440, data_020d53e4.mTemp, data_020d53e4.mChunk);
+    gFileLoad.mRemaining -= gFileLoad.mChunk;
+    func_0200ac20(&gFsFile, gFileLoad.mTemp, gFileLoad.mChunk);
 }
 
 BOOL OpenFileWithLanguageSuffix(const char *path);
 
-void func_020234c8() {
+void InitFileSystem() {
     sprintf(gCurrentDir, "/");
-    func_0200a7b4(&data_020d5440);
-    MI_CpuFill8(&data_020d5408, 0, 0x38);
+    func_0200a7b4(&gFsFile);
+    MI_CpuFill8(&gAsyncLoadHeader, 0, 0x38);
 }
 
 void *LoadFile(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32 unk6) {
@@ -91,7 +91,7 @@ void *LoadFile(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32
     if (mode == 1) {
         OpenFileWithLanguageSuffix(path);
         if (size == 0) {
-            size = data_020d5440.mEnd - data_020d5440.mStart - offset;
+            size = gFsFile.mEnd - gFsFile.mStart - offset;
         }
         if (outSize) {
             *outSize = size;
@@ -100,8 +100,8 @@ void *LoadFile(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32
         if (buffer == NULL) {
             p = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, size);
         }
-        func_0200ac40(&data_020d5440, offset, 0);
-        if (func_0200ac30(&data_020d5440, p, size) < 0) {
+        func_0200ac40(&gFsFile, offset, 0);
+        if (func_0200ac30(&gFsFile, p, size) < 0) {
             if (buffer == NULL) {
                 OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, p);
                 p = NULL;
@@ -110,28 +110,28 @@ void *LoadFile(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32
                 *outSize = 0;
             }
         }
-        func_0200aadc(&data_020d5440);
+        func_0200aadc(&gFsFile);
         buffer = p;
     } else {
         OpenFileWithLanguageSuffix(path);
         if (size == 0) {
-            size = data_020d5440.mEnd - data_020d5440.mStart - offset;
+            size = gFsFile.mEnd - gFsFile.mStart - offset;
         }
-        func_0200ac40(&data_020d5440, offset, 0);
-        func_0200ac30(&data_020d5440, &data_020d53e4, 4);
+        func_0200ac40(&gFsFile, offset, 0);
+        func_0200ac30(&gFsFile, &gFileLoad, 4);
         u32 unpacked = data_020d53e4_h >> 8;
         if (buffer == NULL) {
             buffer = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, unpacked);
         }
         p = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, 0x2000);
-        MI_InitUncompContextLZ(data_020d53f4, buffer, &data_020d53e4);
+        MI_InitUncompContextLZ(gLoadFileUncompContext, buffer, &gFileLoad);
         u32 chunk;
         do {
             chunk = size > 0x2000 ? 0x2000 : size;
-            func_0200ac30(&data_020d5440, p, chunk);
+            func_0200ac30(&gFsFile, p, chunk);
             size -= chunk;
-        } while (func_02007d94(data_020d53f4, p, chunk) != 0);
-        func_0200aadc(&data_020d5440);
+        } while (func_02007d94(gLoadFileUncompContext, p, chunk) != 0);
+        func_0200aadc(&gFsFile);
         OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, p);
         size = unpacked;
         if (outSize) {
@@ -165,112 +165,112 @@ void *LoadFileAsync(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
             }
             break;
     }
-    data_020d53e4.mRequestedSize = size;
+    gFileLoad.mRequestedSize = size;
     if (compressed == 0) {
         OpenFileWithLanguageSuffix(path);
         if (size == 0) {
-            size = data_020d5440.mEnd - data_020d5440.mStart - offset;
+            size = gFsFile.mEnd - gFsFile.mStart - offset;
         }
         if (outSize) {
             *outSize = size;
         }
         if (buffer == NULL) {
             buffer = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, size);
-            data_020d53e4.mOwnsBuffer = 1;
+            gFileLoad.mOwnsBuffer = 1;
         } else {
-            data_020d53e4.mOwnsBuffer = 0;
+            gFileLoad.mOwnsBuffer = 0;
         }
-        func_0200ac40(&data_020d5440, offset, 0);
-        func_0200ac20(&data_020d5440, buffer, size);
+        func_0200ac40(&gFsFile, offset, 0);
+        func_0200ac20(&gFsFile, buffer, size);
     } else {
         OpenFileWithLanguageSuffix(path);
         if (size == 0) {
-            size = data_020d5440.mEnd - data_020d5440.mStart - offset;
+            size = gFsFile.mEnd - gFsFile.mStart - offset;
         }
-        func_0200ac40(&data_020d5440, offset, 0);
-        func_0200ac20(&data_020d5440, &data_020d5408, 4);
-        data_020d53e4.mOwnsBuffer = 0;
+        func_0200ac40(&gFsFile, offset, 0);
+        func_0200ac20(&gFsFile, &gAsyncLoadHeader, 4);
+        gFileLoad.mOwnsBuffer = 0;
     }
-    data_020d53e4.mMode      = compressed;
-    data_020d53e4.mBuffer    = buffer;
-    data_020d53e4.mOutSize   = outSize;
-    data_020d53e4.mSize      = size;
-    data_020d53e4.mActive    = 1;
-    data_020d53e4.mTemp      = NULL;
+    gFileLoad.mMode      = compressed;
+    gFileLoad.mBuffer    = buffer;
+    gFileLoad.mOutSize   = outSize;
+    gFileLoad.mSize      = size;
+    gFileLoad.mActive    = 1;
+    gFileLoad.mTemp      = NULL;
     return buffer;
 }
 
 void *GetAsyncLoadBuffer() {
-    return data_020d53e4.mBuffer;
+    return gFileLoad.mBuffer;
 }
 
 u8 IsAsyncLoadActive() {
-    return data_020d53e4.mActive;
+    return gFileLoad.mActive;
 }
 
-void func_02023884() {
-    if (!data_020d53e4.mActive) {
+void UpdateAsyncLoad() {
+    if (!gFileLoad.mActive) {
         return;
     }
-    if (IsBusy(&data_020d5440)) {
+    if (IsBusy(&gFsFile)) {
         return;
     }
-    if (data_020d53e4.mMode == 0) {
-        func_0200aadc(&data_020d5440);
-        data_020d53e4.mActive = 0;
-        DC_FlushRange(data_020d53e4.mBuffer, data_020d53e4.mSize);
+    if (gFileLoad.mMode == 0) {
+        func_0200aadc(&gFsFile);
+        gFileLoad.mActive = 0;
+        DC_FlushRange(gFileLoad.mBuffer, gFileLoad.mSize);
         return;
     }
-    if (data_020d53e4.mMode == 1) {
-        u32 unpacked = data_020d53e4.mAsyncHeader >> 8;
-        if (data_020d53e4.mBuffer == NULL) {
-            data_020d53e4.mBuffer     = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, unpacked);
-            data_020d53e4.mOwnsBuffer = 1;
+    if (gFileLoad.mMode == 1) {
+        u32 unpacked = gFileLoad.mAsyncHeader >> 8;
+        if (gFileLoad.mBuffer == NULL) {
+            gFileLoad.mBuffer     = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, unpacked);
+            gFileLoad.mOwnsBuffer = 1;
         }
-        data_020d53e4.mTemp = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, 0x2000);
-        MI_InitUncompContextLZ(data_020d540c, data_020d53e4.mBuffer, &data_020d5408);
-        data_020d53e4.mRemaining = data_020d53e4.mSize;
-        if (data_020d53e4.mRequestedSize == 0) {
-            data_020d53e4.mSize = unpacked;
+        gFileLoad.mTemp = OS_AllocFromHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, 0x2000);
+        MI_InitUncompContextLZ(gAsyncUncompContext, gFileLoad.mBuffer, &gAsyncLoadHeader);
+        gFileLoad.mRemaining = gFileLoad.mSize;
+        if (gFileLoad.mRequestedSize == 0) {
+            gFileLoad.mSize = unpacked;
         } else {
-            data_020d53e4.mSize = data_020d53e4.mRequestedSize;
+            gFileLoad.mSize = gFileLoad.mRequestedSize;
         }
-        if (data_020d53e4.mOutSize) {
-            *data_020d53e4.mOutSize = data_020d53e4.mSize;
+        if (gFileLoad.mOutSize) {
+            *gFileLoad.mOutSize = gFileLoad.mSize;
         }
         NextChunk();
         ReadChunk();
-        data_020d53e4.mMode = 2;
+        gFileLoad.mMode = 2;
         return;
     }
-    if (func_02007d94(data_020d540c, data_020d53e4.mTemp, data_020d53e4.mChunk) != 0) {
+    if (func_02007d94(gAsyncUncompContext, gFileLoad.mTemp, gFileLoad.mChunk) != 0) {
         NextChunk();
         ReadChunk();
         return;
     }
-    func_0200aadc(&data_020d5440);
-    data_020d53e4.mActive = 0;
-    OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, data_020d53e4.mTemp);
-    DC_FlushRange(data_020d53e4.mBuffer, data_020d53e4.mSize);
+    func_0200aadc(&gFsFile);
+    gFileLoad.mActive = 0;
+    OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, gFileLoad.mTemp);
+    DC_FlushRange(gFileLoad.mBuffer, gFileLoad.mSize);
 }
 
 void StopAsyncLoad() {
-    if (!data_020d53e4.mActive) {
+    if (!gFileLoad.mActive) {
         return;
     }
-    func_0200abd8(&data_020d5440);
-    func_0200ab18(&data_020d5440);
-    func_0200aadc(&data_020d5440);
-    if (data_020d53e4.mOwnsBuffer) {
-        OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, data_020d53e4.mBuffer);
+    func_0200abd8(&gFsFile);
+    func_0200ab18(&gFsFile);
+    func_0200aadc(&gFsFile);
+    if (gFileLoad.mOwnsBuffer) {
+        OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, gFileLoad.mBuffer);
     }
-    if (data_020d53e4.mTemp) {
-        OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, data_020d53e4.mTemp);
+    if (gFileLoad.mTemp) {
+        OS_FreeToHeap(OS_ARENA_MAIN, OS_CURRENT_HEAP_HANDLE, gFileLoad.mTemp);
     }
-    data_020d53e4.mActive = 0;
+    gFileLoad.mActive = 0;
 }
 
-// Opens data_020d5440 on "<path>_<GetLanguageSuffix()>"; when the suffix is NULL or that open fails, on <path>.
+// Opens gFsFile on "<path>_<GetLanguageSuffix()>"; when the suffix is NULL or that open fails, on <path>.
 // TRUE when one opened (the callers ignore it).
 BOOL OpenFileWithLanguageSuffix(const char *path) {
     char buf[0x80];
@@ -278,10 +278,10 @@ BOOL OpenFileWithLanguageSuffix(const char *path) {
     const char *suffix = GameSystem::Get().GetLanguageSuffix();
     if (suffix) {
         sprintf(buf, "%s_%s", path, suffix);
-        ok = func_0200aa94(&data_020d5440, buf);
+        ok = func_0200aa94(&gFsFile, buf);
     }
     if (!ok) {
-        ok = func_0200aa94(&data_020d5440, path);
+        ok = func_0200aa94(&gFsFile, path);
     }
     return ok;
 }

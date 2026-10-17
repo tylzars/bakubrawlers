@@ -9,7 +9,7 @@ class SelectWindow;
 struct MessageFile;
 
 // A SceneBase task, created with new and left to run itself (the result is not kept). Item 1 skips the save; item 0
-// starts UnkScene_020a54a8, and a result of SAVE_STATUS_ERROR creates MessageScreen(MESSAGE_SCREEN_SYSTEM_4_HALT)
+// starts SaveWriter, and a result of SAVE_STATUS_ERROR creates MessageScreen(MESSAGE_SCREEN_SYSTEM_4_HALT)
 // (SaveWindow.cpp:134-135); otherwise it fades out and ends with RequestScene(1) (:140-150). Every caller passes
 // mScreen = 1, so the mScreen == 0 branch of Load never runs.
 class SaveWindow : public SceneBase {

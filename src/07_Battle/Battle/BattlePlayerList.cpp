@@ -44,9 +44,9 @@ public:
         return instance;
     }
 
-    u8 func_0202d7a0();
-    void func_0202d8cc();
-    void func_0202d9ac();
+    u8 StartSampling();
+    void StopSampling();
+    void Update();
 };
 
 // Placeholder for an unidentified object. The original's data layout needs one more participant in this file's
@@ -162,12 +162,12 @@ BattlePlayerList::BattlePlayerList()
     func_ov007_022633f8(this);
     mBattleTarget = 0;
     mUnk_29c = 0;
-    MicManager::Get().func_0202d7a0();
+    MicManager::Get().StartSampling();
 }
 
 
 BattlePlayerList::~BattlePlayerList() {
-    MicManager::Get().func_0202d8cc();
+    MicManager::Get().StopSampling();
     delete mCamera;
     if (data_020d433c.mGimmickCollision) {
         ((SceneBase *) data_020d433c.mGimmickCollision)->mFinished = 1;
@@ -203,7 +203,7 @@ void BattlePlayerList::Update() {
     u8 id;
     u8 result;
     u8 rec;
-    MicManager::Get().func_0202d9ac();
+    MicManager::Get().Update();
     if (data_020d433c.mWireless) {
         WirelessManager::Get();
         if (!IsWirelessMode(&data_020c4030.mUnk_228)) {

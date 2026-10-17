@@ -8,11 +8,11 @@
 void *operator new[](size_t size);
 void operator delete[](void *ptr);
 
-CellAnimData *func_0202aa54(const char *path);
-CellAnimData *func_0202aa8c(void *data);
-CellAnimData *func_0202aa80(void *data);
-void func_0202ab0c(void *data);
-void func_0202a958(CellAnimFile *file, CellAnimData *data, u16 den, s32 num);
+CellAnimData *LoadCellAnimFile(const char *path);
+CellAnimData *RelocateCellAnimData(void *data);
+CellAnimData *LoadCellAnimData(void *data);
+void FreeCellAnimData(void *data);
+void ScaleCellAnimChars(CellAnimFile *file, CellAnimData *data, u16 den, s32 num);
 
 // Loaded files are shared: one entry per file id, with a reference count.
 struct CellAnimCacheEntry {
@@ -52,9 +52,9 @@ CellAnimFile::CellAnimFile(const char *path, u16 scaleDen, u16 scaleNum) {
             CellAnimCacheEntry *e = &sCache[i];
             if (e->mRefs == 0) {
                 e->mKey = id.file_id;
-                mData   = func_0202aa54(path);
+                mData   = LoadCellAnimFile(path);
                 if (scaleDen != scaleNum) {
-                    func_0202a958(this, mData, scaleDen, scaleNum);
+                    ScaleCellAnimChars(this, mData, scaleDen, scaleNum);
                 }
                 sCache[i].mData = mData;
                 sCache[i].mRefs = 1;
@@ -73,7 +73,7 @@ CellAnimFile::~CellAnimFile() {
             if (e->mRefs != 0 && e->mData == mData) {
                 cache[i].mRefs--;
                 if (sCache[i].mRefs == 0) {
-                    func_0202ab0c(sCache[i].mData);
+                    FreeCellAnimData(sCache[i].mData);
                 }
                 break;
             }
@@ -92,7 +92,7 @@ CellAnimFile::~CellAnimFile() {
 // Scales the character numbers of every OAM entry by num / den.
 // `den` is 16-bit all the way down (CellAnimation -> CellAnimFile -> here): a narrow parameter's stack copy comes
 // after the loads, as in the original; as s32 the store came first.
-void func_0202a958(CellAnimFile *file, CellAnimData *data, u16 den, s32 num) {
+void ScaleCellAnimChars(CellAnimFile *file, CellAnimData *data, u16 den, s32 num) {
     u16 count            = data->mNumFrames;
     CellAnimFrame *frame = data->mFrames;
     CellAnimCel *cel     = data->mCels;
@@ -124,19 +124,19 @@ void func_0202a958(CellAnimFile *file, CellAnimData *data, u16 den, s32 num) {
 }
 
 CellAnimFileData::CellAnimFileData(void *data) : CellAnimFile(NULL, 1, 1) {
-    mData = func_0202aa80(data);
+    mData = LoadCellAnimData(data);
 }
 
-CellAnimData *func_0202aa54(const char *path) {
-    return func_0202aa8c(LoadFile(path, 0, 0, 0, 0, 0));
+CellAnimData *LoadCellAnimFile(const char *path) {
+    return RelocateCellAnimData(LoadFile(path, 0, 0, 0, 0, 0));
 }
 
-CellAnimData *func_0202aa80(void *data) {
-    return func_0202aa8c(data);
+CellAnimData *LoadCellAnimData(void *data) {
+    return RelocateCellAnimData(data);
 }
 
 // Turns the offsets of a loaded file into pointers.
-CellAnimData *func_0202aa8c(void *data) {
+CellAnimData *RelocateCellAnimData(void *data) {
     CellAnimData *file = (CellAnimData *) data;
     u32 oams           = (u32) file->mOams;
     u32 cels           = (u32) file->mCels;
@@ -161,6 +161,6 @@ CellAnimData *func_0202aa8c(void *data) {
     return file;
 }
 
-void func_0202ab0c(void *data) {
+void FreeCellAnimData(void *data) {
     OS_Free(data);
 }

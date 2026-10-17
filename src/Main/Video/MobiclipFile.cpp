@@ -9,14 +9,14 @@ int func_0200ac20(FSFile *, void *, u32);
 void *OS_AllocFromHeap(int, int, u32);
 void OS_FreeToHeap(int, int, void *);
 struct F { u32 o0; u32 o4; u32 o8; FSFile *file; u8 flag; };
-int func_0203b658(F *f, FSFile *file) {
+int ReaderInit(F *f, FSFile *file) {
     f->file = file;
     f->o4 = file->o28 - file->o24;
     f->o8 = f->file->o2c - f->file->o24;
     f->flag = 0;
     return 1;
 }
-int func_0203b690(F *f, u32 pos) {
+int ReaderSeek(F *f, u32 pos) {
     if (f->flag == 1) {
         func_0200ab18(f->file);
         f->flag = 0;
@@ -25,7 +25,7 @@ int func_0203b690(F *f, u32 pos) {
     f->o8 = pos;
     return 1;
 }
-int func_0203b6dc(F *f, void *buf, u32 n) {
+int ReaderRead(F *f, void *buf, u32 n) {
     if (f->flag == 1) {
         func_0200ab18(f->file);
         func_0200ac40(f->file, f->o8, 0);
@@ -35,7 +35,7 @@ int func_0203b6dc(F *f, void *buf, u32 n) {
     f->o8 += n;
     return 1;
 }
-int func_0203b74c(F *f, void *buf, u32 n) {
+int ReaderStartAlignedRead(F *f, void *buf, u32 n) {
     u32 aligned = f->o8 & -0x200;
     u32 off = f->o8 - aligned;
     u32 len = n + off;
@@ -50,7 +50,7 @@ void func_0203b7c8(F *f) {
     if (f->flag == 1) func_0200ab18(f->file);
     f->flag = 0;
 }
-void func_0203b7f0(Src *s) { s->adv(); }
+void ReaderClose(Src *s) { s->adv(); }
 void func_0203b804() {}
 // YUV-to-RGB555 conversion (hand-written assembly): args points at {Y, UV, dst, stride, width, height, table}.
 // Y rows are 0x100 bytes apart; each U/V row (0x100 bytes, U in the first 0x80, V in the second) serves two Y
@@ -522,6 +522,6 @@ void func_0203c004(AdSt *st, u8 *in, int n, u32 *out) {
     }
 }
 
-void *func_0203c15c(u32 n) { return OS_AllocFromHeap(0, -1, n); }
-void func_0203c174(void *q) { OS_FreeToHeap(0, -1, q); }
+void *MobiclipAlloc(u32 n) { return OS_AllocFromHeap(0, -1, n); }
+void MobiclipFree(void *q) { OS_FreeToHeap(0, -1, q); }
 }

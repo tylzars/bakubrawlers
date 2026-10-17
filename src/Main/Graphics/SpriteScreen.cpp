@@ -27,13 +27,13 @@ struct OamSource {
     u16 mPad;
 };
 
-void func_02027c18(void *slot_, SpriteTransform *transform);
+void WriteOamMatrix(void *slot_, SpriteTransform *transform);
 
 void func_02027cf4(s32 *x, s32 *y, s32 shape, SpriteTransform *transform);
 
 extern "C" fx32 FX_Div(fx32 num, fx32 den);
 
-void func_02027c64(MtxFx22 *out, SpriteTransform *transform);
+void ComputeTransformMatrix(MtxFx22 *out, SpriteTransform *transform);
 
 extern "C" void func_02000ccc(MtxFx22 *mtx, fx32 x, fx32 y);
 
@@ -76,21 +76,21 @@ static inline void GXS_SetOBJVRamModeBmp(GXOBJVRamModeBmp mode) {
 // The tables are function-local statics (still .data): mwcc knows no store can reach them, so the table load is
 // scheduled above the mObjVramMode store as with const data.
 void SpriteScreen::SetObjVramMode(s32 mode) {
-    static u16 data_020a5624[9] = {0x20, 0x20, 0x40, 0x80, 0x100, 0x80, 0x100, 0x80, 0x100};
-    static u32 data_020a5638[9]  = {0x0, 0x10, 0x100010, 0x200010, 0x300010, 0x40, 0x400040, 0x0, 0x20};
+    static u16 sCharSizes[9] = {0x20, 0x20, 0x40, 0x80, 0x100, 0x80, 0x100, 0x80, 0x100};
+    static u32 sObjVramModeBits[9]  = {0x0, 0x10, 0x100010, 0x200010, 0x300010, 0x40, 0x400040, 0x0, 0x20};
     mObjVramMode = mode;
-    mCharSize = data_020a5624[mode];
+    mCharSize = sCharSizes[mode];
     if (mode < 5) {
         if (mBgIndex == 0) {
-            GX_SetOBJVRamModeChar((GXOBJVRamModeChar) data_020a5638[mode]);
+            GX_SetOBJVRamModeChar((GXOBJVRamModeChar) sObjVramModeBits[mode]);
         } else {
-            GXS_SetOBJVRamModeChar((GXOBJVRamModeChar) data_020a5638[mode]);
+            GXS_SetOBJVRamModeChar((GXOBJVRamModeChar) sObjVramModeBits[mode]);
         }
     } else {
         if (mBgIndex == 0) {
-            GX_SetOBJVRamModeBmp((GXOBJVRamModeBmp) data_020a5638[mode]);
+            GX_SetOBJVRamModeBmp((GXOBJVRamModeBmp) sObjVramModeBits[mode]);
         } else {
-            GXS_SetOBJVRamModeBmp((GXOBJVRamModeBmp) data_020a5638[mode]);
+            GXS_SetOBJVRamModeBmp((GXOBJVRamModeBmp) sObjVramModeBits[mode]);
         }
     }
 }
@@ -124,7 +124,7 @@ void SpriteScreen::AddOam(void *buffer, u8 count, s16 unk3, s16 unk4, u32 unk5, 
     u32 matrix;
     matrix = i = 0;
     if (transform != NULL) {
-        func_02027c18((u8 *) this + mMatrixCount * 0x20, transform);
+        WriteOamMatrix((u8 *) this + mMatrixCount * 0x20, transform);
         matrix = mMatrixCount;
         mMatrixCount = matrix + 1;
     }
@@ -150,7 +150,7 @@ void SpriteScreen::AddOam(void *buffer, u8 count, s16 unk3, s16 unk4, u32 unk5, 
             func_02027cf4(&x, &y, shape, transform);
         } else if ((flip == 0x300) | (flip == 0x100)) {
             SpriteTransform identity(0x1000, 0x1000, 0);
-            func_02027c18((u8 *) this + mMatrixCount * 0x20, &identity);
+            WriteOamMatrix((u8 *) this + mMatrixCount * 0x20, &identity);
             matrix = *(volatile u8 *) &mMatrixCount;
             mMatrixCount = mMatrixCount + 1;
         }
@@ -244,17 +244,17 @@ void SpriteScreen::AddOam(void *buffer, u8 count, s16 unk3, s16 unk4, u32 unk5, 
     }
 }
 
-void func_02027c18(void *slot_, SpriteTransform *transform) {
+void WriteOamMatrix(void *slot_, SpriteTransform *transform) {
     u8 *slot = (u8 *) slot_;
     MtxFx22 mtx;
-    func_02027c64(&mtx, transform);
+    ComputeTransformMatrix(&mtx, transform);
     *(s16 *) (slot + 0x06) = mtx._[0] >> 4;
     *(s16 *) (slot + 0x0e) = mtx._[1] >> 4;
     *(s16 *) (slot + 0x16) = mtx._[2] >> 4;
     *(s16 *) (slot + 0x1e) = mtx._[3] >> 4;
 }
 
-void func_02027c64(MtxFx22 *out, SpriteTransform *transform) {
+void ComputeTransformMatrix(MtxFx22 *out, SpriteTransform *transform) {
     MtxFx22 scale;
     MtxFx22 rotation;
     fx32 y = FX_Div(0x1000, transform->mScaleY);

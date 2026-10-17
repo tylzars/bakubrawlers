@@ -36,7 +36,7 @@ void UpdateFrame() {
     }
 }
 
-void func_020254bc() {
+void CallHBlankHooks() {
     for (u8 i = 0; i < FRAME_HOOK_COUNT; i++) {
         if (sHooks[i] != NULL) {
             sHooks[i]();
@@ -52,14 +52,14 @@ void QueueFrameCallback(FrameCallback callback, void *arg) {
     GX_VBlankIntr(TRUE);
 }
 
-void func_0202555c() {
+void ClearFrameCallbacks() {
     GX_VBlankIntr(FALSE);
     sQueueWrite = 0;
     sQueueRead  = 0;
     GX_VBlankIntr(TRUE);
 }
 
-void func_02025588(void (*hook)()) {
+void AddHBlankHook(void (*hook)()) {
     GX_HBlankIntr(FALSE);
     for (u8 i = 0; i < FRAME_HOOK_COUNT; i++) {
         if (sHooks[i] == hook) {
@@ -75,7 +75,7 @@ void func_02025588(void (*hook)()) {
     GX_HBlankIntr(TRUE);
 }
 
-void func_020255f8(void (*hook)()) {
+void RemoveHBlankHook(void (*hook)()) {
     GX_HBlankIntr(FALSE);
     if (hook == NULL) {
         for (u8 i = 0; i < FRAME_HOOK_COUNT; i++) {

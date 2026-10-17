@@ -24,8 +24,8 @@ int func_0203afb0(P *p) {
 }
 
 extern "C" {
-extern "C" void *func_0203c15c(u32 size);
-extern "C" void func_0203c174(void *p);
+extern "C" void *MobiclipAlloc(u32 size);
+extern "C" void MobiclipFree(void *p);
 void func_0209d02c(void *);
 extern "C" void *func_0203bf80();
 int func_0203b808(void *);
@@ -67,11 +67,11 @@ int func_0203b1cc(P *p, u32 a, u32 b, int c) {
     if (p->o9c >= p->oa0) return 0;
     if (c != 0) {
         if (p->o68 == 0) {
-            p->o68 = func_0203c15c(p->o14 << 8);
+            p->o68 = MobiclipAlloc(p->o14 << 8);
             if (p->o68 == 0) return 0;
         }
         if (p->o6c == 0) {
-            p->o6c = func_0203c15c((p->o14 >> 1) << 8);
+            p->o6c = MobiclipAlloc((p->o14 >> 1) << 8);
             if (p->o6c == 0) return 0;
         }
         void *s[9];
@@ -176,8 +176,8 @@ int func_0203b550(P *p) {
 struct Reader {
     static void *operator new(unsigned long size);
 };
-void *Reader::operator new(unsigned long n) { return func_0203c15c(n); }
+void *Reader::operator new(unsigned long n) { return MobiclipAlloc(n); }
 
 extern "C" {
-void func_0203b64c(void *q) { func_0203c174(q); }
+void func_0203b64c(void *q) { MobiclipFree(q); }
 }

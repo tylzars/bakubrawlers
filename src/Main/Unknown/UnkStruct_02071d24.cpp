@@ -21,7 +21,7 @@
 
 static const u8 data_020a2e3c[12] = {0, 10, 10, 20, 20, 30, 30, 40, 40, 50, 0, 0};
 
-static const WindowItemRecord data_020a2e48[7] = {
+static const WindowItemRecord sResultWindowItems[7] = {
     {0, 8, 76, 48, 160, 20, 0, {4, 1, -1, -1}, 0, 2},
     {1, 8, 76, 72, 160, 20, 0, {0, 2, -1, -1}, 0, 2},
     {2, 8, 76, 96, 160, 20, 0, {1, 3, -1, -1}, 0, 2},
@@ -31,7 +31,7 @@ static const WindowItemRecord data_020a2e48[7] = {
     {6, 8, 89, 152, 78, 20, 0, {-1, -1, -1, -1}, 0, 2},
 };
 
-static const WindowCellRecord data_020a2f0c[7] = {
+static const WindowCellRecord sResultWindowCells[7] = {
     {"/Game/Battle/Obj/result_b_obj_01_nce.bin", 1, 0x4000, 0, 1, 1, {0, 2, 1, 0}},
     {"/Game/Battle/Obj/result_b_obj_01_nce.bin", 3, 0x4000, 0, 1, 1, {3, 5, 4, 0}},
     {"/Game/Battle/Obj/result_b_obj_01_nce.bin", 6, 0x4000, 0, 1, 1, {6, 8, 7, 0}},
@@ -44,7 +44,7 @@ static const WindowCellRecord data_020a2f0c[7] = {
 #include "Text/TextManager.hpp"
 
 extern "C" void DC_FlushRange(void *buffer, u32 size);
-void func_02072614();
+void InitDisplay();
 
 UnkStruct_02071d24::UnkStruct_02071d24(u32 unk1) :
     SceneBase(2, 0) {
@@ -53,14 +53,14 @@ UnkStruct_02071d24::UnkStruct_02071d24(u32 unk1) :
     mMessageWindow = NULL;
     mCommandList = NULL;
     mWindow = NULL;
-    mUnk_4c = unk1;
+    mMode = unk1;
     mState = 0;
     mBakuganIndex = 0;
-    mUnk_4f = 0;
-    mUnk_50 = 0;
-    mUnk_51 = 0;
+    mSelectedId = 0;
+    mWindowResult = 0;
+    mTimer = 0;
     mUnk_52 = 0;
-    mUnk_53 = 0;
+    mTextKind = 0;
     mPendingPlanes = -1;
     mBakuganSubCellAnim = NULL;
     mTextBuffer = NULL;
@@ -71,7 +71,7 @@ UnkStruct_02071d24::UnkStruct_02071d24(u32 unk1) :
     MI_CpuClear8(mAttributes, 6);
     MI_CpuClear8(mUnk_64, 6);
     for (u8 i = 0; i < 6; i++) {
-        mUnk_34[i] = NULL;
+        mSaveEntries[i] = NULL;
     }
 }
 
@@ -100,7 +100,7 @@ UnkStruct_02071d24::~UnkStruct_02071d24() {
 void UnkStruct_02071d24::Update() {
     switch (mState) {
         case 0:
-            func_02072614();
+            InitDisplay();
             LoadGraphics();
             LoadMessages();
             RefreshItems();
@@ -119,7 +119,7 @@ void UnkStruct_02071d24::Update() {
             if (!SpriteManager::Get().IsFading()) {
                 mState++;
             }
-            func_02072e7c();
+            UpdateWindow();
             break;
         case 3:
             if (func_02072d20()) {
@@ -127,10 +127,10 @@ void UnkStruct_02071d24::Update() {
                 SetFlagBit(data_020d49b0, mAttributes[mBakuganIndex]);
             }
             mState++;
-            if (mUnk_4c != 2) {
+            if (mMode != 2) {
                 func_02072b60();
             }
-            func_02072e7c();
+            UpdateWindow();
             break;
         case 4: {
             WindowItem *items;
@@ -139,11 +139,11 @@ void UnkStruct_02071d24::Update() {
             } else {
                 items = mWindow->mCursor->mItems;
                 mUnk_52 = 0;
-                if (mUnk_50 == 3) {
+                if (mWindowResult == 3) {
                     if ((u8) mWindow->GetSelectedId() == 6) {
-                        if (mUnk_53 == 1) {
-                            mUnk_50 = 0;
-                            mUnk_53 = 2;
+                        if (mTextKind == 1) {
+                            mWindowResult = 0;
+                            mTextKind = 2;
                             PrintText();
                         } else {
                             mPendingPlanes = 0x11;
@@ -164,9 +164,9 @@ void UnkStruct_02071d24::Update() {
                             items[4].mY     = 0x90;
                             mWindow->Update(1);
                             mWindow->Reset(-1);
-                            mUnk_50 = 0;
+                            mWindowResult = 0;
                             RefreshItems();
-                            mUnk_53 = 0;
+                            mTextKind = 0;
                             PrintText();
                             mState++;
                             mUnk_52 = 0x1e;
@@ -174,7 +174,7 @@ void UnkStruct_02071d24::Update() {
                     }
                 }
             }
-            func_02072e7c();
+            UpdateWindow();
             break;
         }
         case 5: {
@@ -187,7 +187,7 @@ void UnkStruct_02071d24::Update() {
             if (mUnk_52 == 0) {
                 mState++;
             }
-            func_02072e7c();
+            UpdateWindow();
             break;
         }
         case 6:
@@ -195,20 +195,20 @@ void UnkStruct_02071d24::Update() {
                 mUnk_52 = 1;
             } else {
                 mUnk_52 = 0;
-                if (mUnk_51 != 0) {
+                if (mTimer != 0) {
                     if (InputManager::Get().IsPressed(1) | TouchManager::Get().mPressed) {
-                        mUnk_51 = 0;
+                        mTimer = 0;
                     } else {
-                        mUnk_51--;
+                        mTimer--;
                     }
                 } else {
                     func_020733d4();
                 }
             }
-            func_02072e7c();
+            UpdateWindow();
             break;
         case 7:
-            func_02072dfc();
+            Draw();
             if (mCommandList != NULL) {
                 CloseCommandList(mCommandList);
                 mContext->mRequest = 0;
@@ -217,7 +217,7 @@ void UnkStruct_02071d24::Update() {
             SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             break;
         case 8:
-            func_02072dfc();
+            Draw();
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
@@ -237,7 +237,7 @@ void UnkStruct_02071d24::Update() {
     }
 }
 
-void func_02072614() {
+void InitDisplay() {
     GX_SetDispSelect(1);
     SpriteManager::Get().SetupMode(0, 1);
     GX_SetGraphicsMode(1, 0, 0);
@@ -253,7 +253,7 @@ void func_02072614() {
     G2S_BlendNone();
 }
 
-// Also creates the BattleCommandList for the current entry (:286) and passes it the entry's save value (func_02072b14)
+// Also creates the BattleCommandList for the current entry (:286) and passes it the entry's save value (RefreshCommandListValues)
 // when it has a record.
 void UnkStruct_02071d24::LoadGraphics() {
     ChangeDir("/Game/Battle/Bg/");
@@ -282,25 +282,25 @@ void UnkStruct_02071d24::LoadGraphics() {
     mBakuganSubCellAnim->mPaletteBase   = 0;
     mBakuganSubCellAnim->SetMode(CELL_ANIM_MODE_STOP);
     mBakuganSubCellAnim->mFrameIndex = mAttributes[mBakuganIndex];
-    mWindow          = new SelectWindow(7, data_020a2e48, 0);
-    mWindow->SetCells(7, data_020a2f0c);
+    mWindow          = new SelectWindow(7, sResultWindowItems, 0);
+    mWindow->SetCells(7, sResultWindowCells);
     mWindow->Update(1);
     mCommandList = new BattleCommandList(mBakuganIds[mBakuganIndex], mAttributes[mBakuganIndex], -1, 0);
-    if (mUnk_34[mBakuganIndex] != NULL) {
-        func_02072b14();
+    if (mSaveEntries[mBakuganIndex] != NULL) {
+        RefreshCommandListValues();
     } else {
         SetCommandListBakuganHidden(mCommandList, 1);
     }
 }
 
-void UnkStruct_02071d24::func_02072b14() {
+void UnkStruct_02071d24::RefreshCommandListValues() {
     int value = func_020231f4(gSaveData, 0, mBakuganIds[mBakuganIndex], mAttributes[mBakuganIndex]);
-    SetCommandListValues(mCommandList, mAttributes[mBakuganIndex], value, mUnk_34[mBakuganIndex]);
+    SetCommandListValues(mCommandList, mAttributes[mBakuganIndex], value, mSaveEntries[mBakuganIndex]);
 }
 
 void UnkStruct_02071d24::func_02072b60() {
     u16 total = 0;
-    BattleCellPair *pair = mUnk_34[mBakuganIndex];
+    BattleCellPair *pair = mSaveEntries[mBakuganIndex];
     u8 i = 0;
     do {
         total += data_020a2e3c[pair->mUnk_00_0 - i];
@@ -319,9 +319,9 @@ void UnkStruct_02071d24::func_02072b60() {
 void UnkStruct_02071d24::func_02072c40() {
     WindowItem *items = mWindow->mCursor->mItems;
     if (func_02072d20()) {
-        mUnk_53 = 1;
+        mTextKind = 1;
     } else {
-        mUnk_53 = 2;
+        mTextKind = 2;
     }
     GXS_SetVisiblePlane(0x13);
     mWindow->mButtons[0].mEnabled = 0;
@@ -347,7 +347,7 @@ void UnkStruct_02071d24::func_02072c40() {
 
 BOOL UnkStruct_02071d24::func_02072d20() {
     u8 index = mBakuganIndex;
-    BattleCellPair *pair = mUnk_34[index];
+    BattleCellPair *pair = mSaveEntries[index];
     if (pair == NULL) {
         return FALSE;
     }
@@ -358,7 +358,7 @@ BOOL UnkStruct_02071d24::func_02072d20() {
         }
     }
     if (count >= 2) {
-        if (mUnk_4c == 2) {
+        if (mMode == 2) {
             return TRUE;
         }
     }
@@ -366,7 +366,7 @@ BOOL UnkStruct_02071d24::func_02072d20() {
 }
 
 BOOL UnkStruct_02071d24::func_02072d84() {
-    BattleCellPair *pair = mUnk_34[mBakuganIndex];
+    BattleCellPair *pair = mSaveEntries[mBakuganIndex];
     if ((s32) pair->mUnk_02_0 < 4) {
         return FALSE;
     }
@@ -382,8 +382,8 @@ BOOL UnkStruct_02071d24::func_02072d84() {
     return (s32) pair->mUnk_02_9 >= 4;
 }
 
-void UnkStruct_02071d24::func_02072dfc() {
-    if (mUnk_34[mBakuganIndex] == NULL) {
+void UnkStruct_02071d24::Draw() {
+    if (mSaveEntries[mBakuganIndex] == NULL) {
         return;
     }
     if (mBakuganSubCellAnim != NULL) {
@@ -396,8 +396,8 @@ void UnkStruct_02071d24::func_02072dfc() {
     DrawText();
 }
 
-void UnkStruct_02071d24::func_02072e7c() {
-    if (mUnk_34[mBakuganIndex] == NULL) {
+void UnkStruct_02071d24::UpdateWindow() {
+    if (mSaveEntries[mBakuganIndex] == NULL) {
         return;
     }
     if (mBakuganSubCellAnim != NULL) {
@@ -406,7 +406,7 @@ void UnkStruct_02071d24::func_02072e7c() {
     }
     if (mWindow != NULL) {
         BOOL enabled = TRUE;
-        if ((func_02072d84() && (InputManager::Get().IsDown(KEY_UP) | InputManager::Get().IsDown(KEY_DOWN))) || mUnk_51 != 0) {
+        if ((func_02072d84() && (InputManager::Get().IsDown(KEY_UP) | InputManager::Get().IsDown(KEY_DOWN))) || mTimer != 0) {
             enabled = FALSE;
         }
         if (mUnk_52 != 0) {
@@ -422,8 +422,8 @@ void UnkStruct_02071d24::func_02072e7c() {
             if (current < 5 && previous != current) {
                 mMessageWindow->StartMessage((s16) (current + 0x10), 0, 1);
             }
-            if (mUnk_50 != 3) {
-                mUnk_50 = result;
+            if (mWindowResult != 3) {
+                mWindowResult = result;
             }
         }
         mWindow->Draw();
@@ -432,7 +432,7 @@ void UnkStruct_02071d24::func_02072e7c() {
 }
 
 void UnkStruct_02071d24::RefreshItems() {
-    if (mUnk_34[mBakuganIndex] == NULL) {
+    if (mSaveEntries[mBakuganIndex] == NULL) {
         return;
     }
     u8 i;
@@ -440,45 +440,45 @@ void UnkStruct_02071d24::RefreshItems() {
     for (i = 0; i < 5; i++) {
         switch (i) {
             case 0:
-                if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_0 < 4) {
+                if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_0 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCellAnims[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
+                    mWindow->mCellAnims[i]->SetAnimation(sResultWindowCells[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mWindow->mCellAnims[i]->SetAnimation(0xf);
                 }
                 break;
             case 1:
-                if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_12 < 4) {
+                if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_12 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCellAnims[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
+                    mWindow->mCellAnims[i]->SetAnimation(sResultWindowCells[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mWindow->mCellAnims[i]->SetAnimation(0x10);
                 }
                 break;
             case 2:
-                if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_3 < 4) {
+                if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_3 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCellAnims[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
+                    mWindow->mCellAnims[i]->SetAnimation(sResultWindowCells[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mWindow->mCellAnims[i]->SetAnimation(0x11);
                 }
                 break;
             case 3:
-                if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_6 < 4) {
+                if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_6 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCellAnims[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
+                    mWindow->mCellAnims[i]->SetAnimation(sResultWindowCells[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mWindow->mCellAnims[i]->SetAnimation(0x12);
                 }
                 break;
             case 4:
-                if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_9 < 4) {
+                if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_9 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCellAnims[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
+                    mWindow->mCellAnims[i]->SetAnimation(sResultWindowCells[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mWindow->mCellAnims[i]->SetAnimation(0x13);
@@ -489,13 +489,13 @@ void UnkStruct_02071d24::RefreshItems() {
     u8 j;
     WindowItem *selectItems = mWindow->mCursor->mItems;
     for (j = 0; j < 5; j++) {
-        u8 index = j + mUnk_4f;
+        u8 index = j + mSelectedId;
         index %= 5;
         if (selectItems[index].mFlags == 8) {
             mMessageWindow->StartMessage((s16) (index + 0x10), 0, 1);
             mWindow->mCursor->mSelection = index;
             mWindow->mSavedSelection            = index;
-            mWindow->mCellAnims[index]->SetAnimation(data_020a2f0c[index].mAnimIndices[2]);
+            mWindow->mCellAnims[index]->SetAnimation(sResultWindowCells[index].mAnimIndices[2]);
             return;
         }
     }
@@ -514,9 +514,9 @@ void UnkStruct_02071d24::func_020733d4() {
             if (mCommandList != NULL) {
                 SetCommandListBakugan(mCommandList, mBakuganIds[next], mAttributes[next], -1);
             }
-            mUnk_4f = 0;
+            mSelectedId = 0;
             mBakuganSubCellAnim->mFrameIndex = mAttributes[mBakuganIndex];
-            func_02072b14();
+            RefreshCommandListValues();
             RefreshItems();
             func_02072c40();
             mState = 3;
@@ -526,52 +526,52 @@ void UnkStruct_02071d24::func_020733d4() {
         }
         return;
     }
-    if (mWindow == NULL || mUnk_34[index] == NULL) {
+    if (mWindow == NULL || mSaveEntries[index] == NULL) {
         return;
     }
     if (func_02072d84()) {
         if (InputManager::Get().IsPressed(1) | TouchManager::Get().mPressed) {
-            mUnk_50 = 3;
+            mWindowResult = 3;
         }
     }
-    mUnk_4f = mWindow->GetSelectedId();
-    if (mUnk_50 != 3) {
+    mSelectedId = mWindow->GetSelectedId();
+    if (mWindowResult != 3) {
         return;
     }
-    mUnk_50 = 0;
-    switch (mUnk_4f) {
+    mWindowResult = 0;
+    switch (mSelectedId) {
         case 0:
-            if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_0 < 4) {
-                mUnk_34[mBakuganIndex]->mUnk_02_0++;
+            if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_0 < 4) {
+                mSaveEntries[mBakuganIndex]->mUnk_02_0++;
             }
             break;
         case 1:
-            if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_12 < 4) {
-                mUnk_34[mBakuganIndex]->mUnk_02_12++;
+            if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_12 < 4) {
+                mSaveEntries[mBakuganIndex]->mUnk_02_12++;
             }
             break;
         case 2:
-            if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_3 < 4) {
-                mUnk_34[mBakuganIndex]->mUnk_02_3++;
+            if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_3 < 4) {
+                mSaveEntries[mBakuganIndex]->mUnk_02_3++;
             }
             break;
         case 3:
-            if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_6 < 4) {
-                mUnk_34[mBakuganIndex]->mUnk_02_6++;
+            if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_6 < 4) {
+                mSaveEntries[mBakuganIndex]->mUnk_02_6++;
             }
             break;
         case 4:
-            if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_9 < 4) {
-                mUnk_34[mBakuganIndex]->mUnk_02_9++;
+            if ((s32) mSaveEntries[mBakuganIndex]->mUnk_02_9 < 4) {
+                mSaveEntries[mBakuganIndex]->mUnk_02_9++;
             }
             break;
     }
-    func_02072b14();
+    RefreshCommandListValues();
     if (mUnk_64[mBakuganIndex] == 0) {
         return;
     }
     mUnk_64[mBakuganIndex]--;
-    mUnk_51 = 0x78;
+    mTimer = 0x78;
     if (mUnk_64[mBakuganIndex] == 0) {
         return;
     }
@@ -611,17 +611,17 @@ void UnkStruct_02071d24::PrintText() {
     s16 width2;
     s16 height2;
     ClearText();
-    if (mUnk_34[mBakuganIndex] == NULL) {
+    if (mSaveEntries[mBakuganIndex] == NULL) {
         return;
     }
-    if (mUnk_53 == 1) {
+    if (mTextKind == 1) {
         TextManager &text = TextManager::Get();
         height1 = 0;
         width1  = 0;
         MessageFile *file = mResultMessages;
         text.Print(file->GetText(1), file->GetLength(1), mTextBuffer, 0x18, 0xc, &width1, &height1, NULL, 0, 2, 0x21, 0x10, 0,
                    0, 1, 1, 1);
-    } else if (mUnk_53 == 2) {
+    } else if (mTextKind == 2) {
         TextManager &text = TextManager::Get();
         height2 = 0;
         width2  = 0;
@@ -636,7 +636,7 @@ void UnkStruct_02071d24::PrintText() {
         curH += 0x48;
         PrintResultText(TextManager::Get(), mResultMessages, 5, mTextBuffer, curW, curH, &pixelWidth);
         curW += pixelWidth;
-        u8 count = mUnk_34[mBakuganIndex]->mUnk_00_0;
+        u8 count = mSaveEntries[mBakuganIndex]->mUnk_00_0;
         if (count < 9) {
             curW += 7;
             TextManager::Get().PrintNumber(count + 1, 1, 0, mTextBuffer, 0x18, 0xc, &curW, &curH, 0, 2, 0x21, 0, 0, 1, 1);
@@ -688,7 +688,7 @@ void UnkStruct_02071d24::SetBakugan(u32 index, u32 unk2, u32 unk3, u8 unk4) {
     mBakuganIndex = 0;
     mBakuganIds[index] = unk2;
     mAttributes[index] = unk3;
-    mUnk_34[index] = (BattleCellPair *) GetBakuganEntry(gSaveData, unk2, unk3);
+    mSaveEntries[index] = (BattleCellPair *) GetBakuganEntry(gSaveData, unk2, unk3);
     if (unk4 > 9) {
         unk4 = 9;
     }

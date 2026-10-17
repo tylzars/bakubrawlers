@@ -45,7 +45,7 @@ public:
     /* 6a */ u8 mCapHandle;
     /* 6b */ u8 mCapPalette;
     /* 6c */ u8 mGlasseHandle;
-    /* 6d */ u8 mUnk_6d;
+    /* 6d */ u8 mGlassePalette;
     /* 6e */ u8 mUnk_6e;
     /* 6f */ u8 mTopKind;
     /* 70 */ u8 mTopPalette;
@@ -53,10 +53,10 @@ public:
     /* 72 */ u8 mDownPalette;
     /* 73 */ u8 mShoesKind;
     /* 74 */ u8 mShoesVariant;
-    /* 75 */ u8 mUnk_75;
+    /* 75 */ u8 mAttribute;
     /* 76 */ u8 mExtraAnimSet;
     /* 77 */ u8 mExtraAnimEnabled;
-    /* 78 */ u8 mUnk_78;
+    /* 78 */ u8 mMotionKind;
     /* 79 */ u8 mHeadLoadStep;
     /* 7a */ u8 mUnk_7a; // only ever 0 (StartLoad), so UpdateLoad's test always passes in this build
     /* 7b */ PAD(0x7b, 0x7c);
@@ -65,7 +65,7 @@ public:
     CharacterModel();
     ~CharacterModel();
     void StartHeadAnim(u32 a, u32 b);
-    void StartLoad(u32 sex);
+    void StartLoad(u32 motionKind);
     BOOL UpdateLoad();
     void CreateHeadAndLoadParts();
     void LoadPart(u32 part, u32 unk);
@@ -77,7 +77,7 @@ public:
     BOOL LoadPartTexture(u32 part, const char *name, const char *file);
     void LoadPartPalette(u32 part, const char *name, const char *file);
     void LoadMergedPalette(u32 part, const char *name, const char *file1, const char *file2, u8 offset);
-    void func_02053ea0(u32 a, u32 b);
+    void SetExtraAnimSetAndStartAnim(u32 a, u32 b);
     void SetExtraAnimEnabled(u32 flag);
     s32 GetHeadFrame();
     void SetHeadFrame(u32 frame);

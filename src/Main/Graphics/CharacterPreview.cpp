@@ -19,7 +19,7 @@ struct CharacterParams {
     u16 mCapHandle : 3;
     u16 mCapPalette : 3;
     u16 mGlasseHandle : 3;
-    u16 mUnk_6d : 3;
+    u16 mGlassePalette : 3;
     u16 mUnk_6e : 3;
     u16 mTopKind : 3;
     u16 mTopPalette : 3;
@@ -29,7 +29,7 @@ struct CharacterParams {
     u16 mShoesKind : 2;
     u16 mSkinPalette : 3;
     u16 mUnk_06_3 : 5;
-    u16 mUnk_75 : 8;
+    u16 mAttribute : 8;
 };
 
 class StoryCharacterModel : public ModelTransform {
@@ -54,7 +54,7 @@ public:
     void StartLoad(u32 id, u32 variant);
     BOOL UpdateLoad();
     void CreateModel();
-    void func_02054cc4(u32 a, u32 b);
+    void SetExtraAnimSetAndStartAnim(u32 a, u32 b);
     void SetExtraAnimEnabled(u32 flag);
     void Draw();
     void func_02054dd8(u32 a, u32 b);
@@ -135,7 +135,7 @@ void UnkStruct_0205401c::SetParams(const CharacterParams *params) {
     ((CharacterModel *) mCharacter)->mCapHandle = params->mCapHandle;
     ((CharacterModel *) mCharacter)->mCapPalette = params->mCapPalette;
     ((CharacterModel *) mCharacter)->mGlasseHandle = params->mGlasseHandle;
-    ((CharacterModel *) mCharacter)->mUnk_6d = params->mUnk_6d;
+    ((CharacterModel *) mCharacter)->mGlassePalette = params->mGlassePalette;
     ((CharacterModel *) mCharacter)->mUnk_6e = params->mUnk_6e;
     ((CharacterModel *) mCharacter)->mTopKind = params->mTopKind;
     ((CharacterModel *) mCharacter)->mTopPalette = params->mTopPalette;
@@ -143,7 +143,7 @@ void UnkStruct_0205401c::SetParams(const CharacterParams *params) {
     ((CharacterModel *) mCharacter)->mDownPalette = params->mDownPalette;
     ((CharacterModel *) mCharacter)->mShoesKind = params->mShoesKind;
     ((CharacterModel *) mCharacter)->mShoesVariant = params->mShoesVariant;
-    ((CharacterModel *) mCharacter)->mUnk_75 = params->mUnk_75;
+    ((CharacterModel *) mCharacter)->mAttribute = params->mAttribute;
 }
 
 void UnkStruct_0205401c::StartLoad(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
@@ -213,7 +213,7 @@ void UnkStruct_0205401c::Draw() {
     mShadow->Draw(&mtx, &scale);
 }
 
-void UnkStruct_0205401c::func_0205461c(u32 unk1, u32 unk2) {
+void UnkStruct_0205401c::StartAnim(u32 unk1, u32 unk2) {
     if (mUseCharacter == 0) {
         ((StoryCharacterModel *) mStoryCharacter)->func_02054dd8(unk1, unk2);
     } else {
@@ -221,11 +221,11 @@ void UnkStruct_0205401c::func_0205461c(u32 unk1, u32 unk2) {
     }
 }
 
-void UnkStruct_0205401c::func_02054644(u32 unk1, u32 unk2) {
+void UnkStruct_0205401c::SetExtraAnimSetAndStartAnim(u32 unk1, u32 unk2) {
     if (mUseCharacter == 0) {
-        ((StoryCharacterModel *) mStoryCharacter)->func_02054cc4(unk1, unk2);
+        ((StoryCharacterModel *) mStoryCharacter)->SetExtraAnimSetAndStartAnim(unk1, unk2);
     } else {
-        ((CharacterModel *) mCharacter)->func_02053ea0(unk1, unk2);
+        ((CharacterModel *) mCharacter)->SetExtraAnimSetAndStartAnim(unk1, unk2);
     }
 }
 
@@ -403,7 +403,7 @@ void StoryCharacterModel::CreateModel() {
     mModel->mUseBoxTest = 0;
 }
 
-void StoryCharacterModel::func_02054cc4(u32 a, u32 b) {
+void StoryCharacterModel::SetExtraAnimSetAndStartAnim(u32 a, u32 b) {
     mModel->StartAnimWithIncrement(a, 1, 0x1000);
     mModel->StartAnimWithIncrement(b, 1, 0x1000);
     mExtraAnimSet = a;

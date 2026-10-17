@@ -2495,7 +2495,7 @@ _ZN14CharacterModel16LoadPartTexturesEj kind:function(arm,size=0x968) addr:0x020
 _ZN14CharacterModel15LoadPartTextureEjPKcS1_ kind:function(arm,size=0x28) addr:0x02053d74
 _ZN14CharacterModel15LoadPartPaletteEjPKcS1_ kind:function(arm,size=0x28) addr:0x02053d9c
 _ZN14CharacterModel17LoadMergedPaletteEjPKcS1_S1_h kind:function(arm,size=0xdc) addr:0x02053dc4
-_ZN14CharacterModel13func_02053ea0Ejj kind:function(arm,size=0x4c) addr:0x02053ea0
+_ZN14CharacterModel27SetExtraAnimSetAndStartAnimEjj kind:function(arm,size=0x4c) addr:0x02053ea0
 _ZN14CharacterModel19SetExtraAnimEnabledEj kind:function(arm,size=0x98) addr:0x02053eec
 _ZN14CharacterModel12GetHeadFrameEv kind:function(arm,size=0x24) addr:0x02053f84
 _ZN14CharacterModel12SetHeadFrameEj kind:function(arm,size=0x18) addr:0x02053fa8
@@ -2509,8 +2509,8 @@ _ZN18UnkStruct_0205401c9StartLoadEjjjh kind:function(arm,size=0xfc) addr:0x02054
 _ZN18UnkStruct_0205401c10UpdateLoadEv kind:function(arm,size=0x38) addr:0x020544e4
 _ZN18UnkStruct_0205401c10FinishLoadEv kind:function(arm,size=0x4c) addr:0x0205451c
 _ZN18UnkStruct_0205401c4DrawEv kind:function(arm,size=0xb4) addr:0x02054568
-_ZN18UnkStruct_0205401c13func_0205461cEjj kind:function(arm,size=0x28) addr:0x0205461c
-_ZN18UnkStruct_0205401c13func_02054644Ejj kind:function(arm,size=0x28) addr:0x02054644
+_ZN18UnkStruct_0205401c9StartAnimEjj kind:function(arm,size=0x28) addr:0x0205461c
+_ZN18UnkStruct_0205401c27SetExtraAnimSetAndStartAnimEjj kind:function(arm,size=0x28) addr:0x02054644
 _ZN18UnkStruct_0205401c19SetExtraAnimEnabledEj kind:function(arm,size=0x28) addr:0x0205466c
 _ZN18UnkStruct_0205401c10SetVisibleEh kind:function(arm,size=0x1c) addr:0x02054694
 _ZN18UnkStruct_0205401c9IsVisibleEv kind:function(arm,size=0x1c) addr:0x020546b0
@@ -2524,7 +2524,7 @@ _ZN19StoryCharacterModel9LoadCharaEjj kind:function(arm,size=0xe8) addr:0x020548
 _ZN19StoryCharacterModel9StartLoadEjj kind:function(arm,size=0x7c) addr:0x02054990
 _ZN19StoryCharacterModel10UpdateLoadEv kind:function(arm,size=0x1c8) addr:0x02054a0c
 _ZN19StoryCharacterModel11CreateModelEv kind:function(arm,size=0xf0) addr:0x02054bd4
-_ZN19StoryCharacterModel13func_02054cc4Ejj kind:function(arm,size=0x44) addr:0x02054cc4
+_ZN19StoryCharacterModel27SetExtraAnimSetAndStartAnimEjj kind:function(arm,size=0x44) addr:0x02054cc4
 _ZN19StoryCharacterModel19SetExtraAnimEnabledEj kind:function(arm,size=0xa0) addr:0x02054d08
 _ZN19StoryCharacterModel4DrawEv kind:function(arm,size=0x30) addr:0x02054da8
 _ZN19StoryCharacterModel13func_02054dd8Ejj kind:function(arm,size=0x18) addr:0x02054dd8
@@ -2610,33 +2610,33 @@ _ZN18CharacterEditScene9DrawTextsEv kind:function(arm,size=0x218) addr:0x0205d2b
 _ZN18CharacterEditScene10UpdateInitEv kind:function(arm,size=0x130) addr:0x0205d4cc
 _ZN18CharacterEditScene14UpdateRootMenuEv kind:function(arm,size=0x10b0) addr:0x0205d5fc
 _ZN18CharacterEditScene14UpdateSkinEditEv kind:function(arm,size=0x2ac) addr:0x0205e6ac
-_ZN18CharacterEditScene13func_0205e958Ev kind:function(arm,size=0xa68) addr:0x0205e958
+_ZN18CharacterEditScene28UpdateFaceHairCapGlassesMenuEv kind:function(arm,size=0xa68) addr:0x0205e958
 _ZN18CharacterEditScene14UpdateFaceEditEv kind:function(arm,size=0x2d8) addr:0x0205f3c0
 _ZN18CharacterEditScene14UpdateHairEditEv kind:function(arm,size=0x2d8) addr:0x0205f698
 _ZN18CharacterEditScene13UpdateCapEditEv kind:function(arm,size=0x2d8) addr:0x0205f970
 _ZN18CharacterEditScene17UpdateGlassesEditEv kind:function(arm,size=0x2d8) addr:0x0205fc48
 _ZN18CharacterEditScene13UpdateTopEditEv kind:function(arm,size=0x5c8) addr:0x0205ff20
-_ZN18CharacterEditScene13func_020604e8Ev kind:function(arm,size=0x7ec) addr:0x020604e8
+_ZN18CharacterEditScene21UpdateBottomShoesMenuEv kind:function(arm,size=0x7ec) addr:0x020604e8
 _ZN18CharacterEditScene16UpdateBottomEditEv kind:function(arm,size=0x2fc) addr:0x02060cd4
 _ZN18CharacterEditScene15UpdateShoesEditEv kind:function(arm,size=0x2fc) addr:0x02060fd0
-_ZN18CharacterEditScene13func_020612ccEv kind:function(arm,size=0x570) addr:0x020612cc
+_ZN18CharacterEditScene21UpdateStoreLookPromptEv kind:function(arm,size=0x570) addr:0x020612cc
 _ZN18CharacterEditScene12UpdateFinishEv kind:function(arm,size=0x144) addr:0x0206183c
 _ZN18CharacterEditScene6UpdateEv kind:function(arm,size=0x2bc) addr:0x02061980
-_ZN18CharacterEditScene13func_02061c3cEv kind:function(arm,size=0x558) addr:0x02061c3c
+_ZN18CharacterEditScene20InitDisplayAndCameraEv kind:function(arm,size=0x558) addr:0x02061c3c
 _ZN18CharacterEditScene12LoadGraphicsEv kind:function(arm,size=0xe50) addr:0x02062194
 _ZN18CharacterEditScene15LoadChoiceCellsEPKcS1_S1_S1_ kind:function(arm,size=0x234) addr:0x02062fe4
 _ZN18CharacterEditScene4DrawEv kind:function(arm,size=0x114) addr:0x02063218
 _ZN18CharacterEditScene26EnableSelectedGroupButtonsEv kind:function(arm,size=0x244) addr:0x0206332c
 _ZN18CharacterEditScene9StoreLookEP13CharacterLook kind:function(arm,size=0x238) addr:0x02063570
-_ZN18CharacterEditScene13func_020637a8Ev kind:function(arm,size=0x34) addr:0x020637a8
+_ZN18CharacterEditScene27SetGroupButtonCellPositionsEv kind:function(arm,size=0x34) addr:0x020637a8
 _ZN18CharacterEditScene18EnableGroupButtonsEv kind:function(arm,size=0xcc) addr:0x020637dc
-_ZN18CharacterEditScene13func_020638a8Ej kind:function(arm,size=0x10) addr:0x020638a8
+_ZN18CharacterEditScene17SetChoicesVisibleEj kind:function(arm,size=0x10) addr:0x020638a8
 _ZN18CharacterEditScene17UpdateRotateInputEv kind:function(arm,size=0x1b4) addr:0x020638b8
 _ZN18CharacterEditScene12SetItemFlagsEjj kind:function(arm,size=0x1c) addr:0x02063a6c
 _ZN18CharacterEditScene12SetItemSlideEjjj kind:function(arm,size=0x20) addr:0x02063a88
 _ZN18CharacterEditScene22SetChoiceItemNeighborsEjjjjj kind:function(arm,size=0x30) addr:0x02063aa8
 _ZN18CharacterEditScene13MoveMenuDepthEj kind:function(arm,size=0x38) addr:0x02063ad8
-_ZN18CharacterEditScene13func_02063b10Ej kind:function(arm,size=0x154) addr:0x02063b10
+_ZN18CharacterEditScene13SetupMenuRowsEj kind:function(arm,size=0x154) addr:0x02063b10
 _ZN18CharacterEditScene12SetupSlideInEv kind:function(arm,size=0xac) addr:0x02063c64
 _ZN18CharacterEditScene13SlideToParentEv kind:function(arm,size=0x9c) addr:0x02063d10
 _ZN18CharacterEditScene15SlideToFirstRowEv kind:function(arm,size=0x74) addr:0x02063dac
@@ -2648,7 +2648,7 @@ _ZN18CharacterEditScene17UpdateChoiceInputEv kind:function(arm,size=0x80) addr:0
 _ZN18CharacterEditScene15ApplyCursorItemEv kind:function(arm,size=0x174) addr:0x020649e4
 _ZN18CharacterEditScene16ApplyLookToModelEv kind:function(arm,size=0x60) addr:0x02064b58
 _ZN18CharacterEditScene13RandomizeLookEv kind:function(arm,size=0x11c) addr:0x02064bb8
-_ZN18CharacterEditScene13func_02064cd4Ej kind:function(arm,size=0xa8) addr:0x02064cd4
+_ZN18CharacterEditScene17SetRootMenuSlidesEj kind:function(arm,size=0xa8) addr:0x02064cd4
 _ZN18CharacterEditScene15PrintWindowTextEv kind:function(arm,size=0x15c) addr:0x02064d7c
 _ZN18CharacterEditScene8DrawNameEv kind:function(arm,size=0xa8) addr:0x02064ed8
 _ZN18CharacterEditScene9ClearNameEv kind:function(arm,size=0x18) addr:0x02064f80
@@ -2775,15 +2775,15 @@ _ZN18UnkStruct_02071d24C1Ej kind:function(arm,size=0xcc) addr:0x02071d24
 _ZN18UnkStruct_02071d24D1Ev kind:function(arm,size=0xec) addr:0x02071df0
 _ZN18UnkStruct_02071d24D0Ev kind:function(arm,size=0xf4) addr:0x02071edc
 _ZN18UnkStruct_02071d246UpdateEv kind:function(arm,size=0x644) addr:0x02071fd0
-_Z13func_02072614v kind:function(arm,size=0x120) addr:0x02072614
+_Z11InitDisplayv kind:function(arm,size=0x120) addr:0x02072614
 _ZN18UnkStruct_02071d2412LoadGraphicsEv kind:function(arm,size=0x3e0) addr:0x02072734
-_ZN18UnkStruct_02071d2413func_02072b14Ev kind:function(arm,size=0x4c) addr:0x02072b14
+_ZN18UnkStruct_02071d2424RefreshCommandListValuesEv kind:function(arm,size=0x4c) addr:0x02072b14
 _ZN18UnkStruct_02071d2413func_02072b60Ev kind:function(arm,size=0xe0) addr:0x02072b60
 _ZN18UnkStruct_02071d2413func_02072c40Ev kind:function(arm,size=0xe0) addr:0x02072c40
 _ZN18UnkStruct_02071d2413func_02072d20Ev kind:function(arm,size=0x64) addr:0x02072d20
 _ZN18UnkStruct_02071d2413func_02072d84Ev kind:function(arm,size=0x78) addr:0x02072d84
-_ZN18UnkStruct_02071d2413func_02072dfcEv kind:function(arm,size=0x80) addr:0x02072dfc
-_ZN18UnkStruct_02071d2413func_02072e7cEv kind:function(arm,size=0x1c4) addr:0x02072e7c
+_ZN18UnkStruct_02071d244DrawEv kind:function(arm,size=0x80) addr:0x02072dfc
+_ZN18UnkStruct_02071d2412UpdateWindowEv kind:function(arm,size=0x1c4) addr:0x02072e7c
 _ZN18UnkStruct_02071d2412RefreshItemsEv kind:function(arm,size=0x394) addr:0x02073040
 _ZN18UnkStruct_02071d2413func_020733d4Ev kind:function(arm,size=0x37c) addr:0x020733d4
 _ZN18UnkStruct_02071d2412LoadMessagesEv kind:function(arm,size=0x294) addr:0x02073750
@@ -2826,8 +2826,8 @@ _Z13func_020779ecPv kind:function(arm,size=0x44) addr:0x020779ec
 _ZN18UnkStruct_0207605810SetBakuganEjjjh kind:function(arm,size=0xb8) addr:0x02077a30
 _ZN18UnkStruct_0207605812LoadMessagesEv kind:function(arm,size=0x244) addr:0x02077ae8
 _ZN18UnkStruct_020760589PrintTextEv kind:function(arm,size=0x474) addr:0x02077d2c
-_Z13func_020781a0P18UnkStruct_02076058 kind:function(arm,size=0xb0) addr:0x020781a0
-_Z13func_02078250P18UnkStruct_02076058 kind:function(arm,size=0x20) addr:0x02078250
+_Z8DrawTextP18UnkStruct_02076058 kind:function(arm,size=0xb0) addr:0x020781a0
+_Z9ClearTextP18UnkStruct_02076058 kind:function(arm,size=0x20) addr:0x02078250
 _Z13func_02078270P18UnkStruct_02076058 kind:function(arm,size=0x20) addr:0x02078270
 _ZN16AntennaIndicatorC1Ej kind:function(arm,size=0x4c) addr:0x02078290
 _ZN16AntennaIndicatorD1Ev kind:function(arm,size=0x54) addr:0x020782dc
@@ -2896,12 +2896,12 @@ _ZN9ListScene28IsCommandListOrPageSettingUpEv kind:function(arm,size=0x48) addr:
 _ZN9ListScene20StoreSlotsInSaveDataEv kind:function(arm,size=0xc4) addr:0x020842e8
 _Z13func_020843acP9ListScenej kind:function(arm,size=0x51c) addr:0x020843ac
 _Z22CopySlotsToFirstPlayerP9ListScene kind:function(arm,size=0x148) addr:0x020848c8
-_Z13func_02084a10P9ListScene kind:function(arm,size=0x228) addr:0x02084a10
-_Z13func_02084c38P9ListScene kind:function(arm,size=0x22c) addr:0x02084c38
-_Z13func_02084e64P9ListScene kind:function(arm,size=0xdc) addr:0x02084e64
-_Z13func_02084f40P9ListScene kind:function(arm,size=0xdc) addr:0x02084f40
-_Z13func_0208501cP9ListScene kind:function(arm,size=0x1b4) addr:0x0208501c
-_ZN9ListScene13func_020851d0Ev kind:function(arm,size=0x50) addr:0x020851d0
+_Z15ExchangeRecordsP9ListScene kind:function(arm,size=0x228) addr:0x02084a10
+_Z13ExchangeSlotsP9ListScene kind:function(arm,size=0x22c) addr:0x02084c38
+_Z18ExchangeRandomSeedP9ListScene kind:function(arm,size=0xdc) addr:0x02084e64
+_Z22ExchangeCharacterLooksP9ListScene kind:function(arm,size=0xdc) addr:0x02084f40
+_Z19ExchangeRecordHeadsP9ListScene kind:function(arm,size=0x1b4) addr:0x0208501c
+_ZN9ListScene23UpdateMainScreenAndDrawEv kind:function(arm,size=0x50) addr:0x020851d0
 _Z17SetupDeckTextKindP9ListScenej kind:function(arm,size=0x240) addr:0x02085220
 _ZN9ListScene10SetMessageEi kind:function(arm,size=0xac) addr:0x02085460
 _Z9PickSlotsP9ListScene kind:function(arm,size=0x3c8) addr:0x0208550c
@@ -3049,16 +3049,16 @@ _ZZ15CommandMessagesvE20sCommandMessageTable kind:data(any) addr:0x0209e68c weak
 sCharacterEditTextVramOffsets kind:data(any) addr:0x0209e784 local
 sCharacterEditLights kind:data(any) addr:0x0209e79c local
 sCharacterEditCellPositions kind:data(any) addr:0x0209e7f4 local
-data_0209e834 kind:data(any) addr:0x0209e834 local
-data_0209e888 kind:data(any) addr:0x0209e888 local
+sWindow2Cells kind:data(any) addr:0x0209e834 local
+sWindow0Cells kind:data(any) addr:0x0209e888 local
 sRootMenuItems kind:data(any) addr:0x0209e9f4 local
 sEditMenuItems kind:data(any) addr:0x0209ec5c local
-data_0209eec4 kind:data(any) addr:0x0209eec4 local
-data_0209f12c kind:data(any) addr:0x0209f12c local
-data_0209f394 kind:data(any) addr:0x0209f394 local
+sFaceHairCapGlassesMenuItems kind:data(any) addr:0x0209eec4 local
+sStoreLookPromptItems kind:data(any) addr:0x0209f12c local
+sBottomShoesMenuItems kind:data(any) addr:0x0209f394 local
 sGroupButtonItems kind:data(any) addr:0x0209f5fc local
 sCharacterEditCursorItems kind:data(any) addr:0x0209f864 local
-data_0209facc kind:data(any) addr:0x0209facc local
+sWindow2Items kind:data(any) addr:0x0209facc local
 data_0209fd34 kind:data(any) addr:0x0209fd34
 data_020a0000 kind:data(any) addr:0x020a0000
 data_020a0001 kind:data(any) addr:0x020a0001
@@ -3134,8 +3134,8 @@ gBgScrUploadKinds kind:data(any) addr:0x020a2dac
 gBgCharUploadKinds kind:data(any) addr:0x020a2dbc
 gSaveWindowItems kind:data(any) addr:0x020a2dcc
 data_020a2e3c kind:data(any) addr:0x020a2e3c local
-data_020a2e48 kind:data(any) addr:0x020a2e48 local
-data_020a2f0c kind:data(any) addr:0x020a2f0c local
+sResultWindowItems kind:data(any) addr:0x020a2e48 local
+sResultWindowCells kind:data(any) addr:0x020a2f0c local
 gRankingCellPositions kind:data(any) addr:0x020a2fd0
 data_020a2fd8 kind:data(any) addr:0x020a2fd8
 data_020a2fe4 kind:data(any) addr:0x020a2fe4

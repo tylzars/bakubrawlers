@@ -13,7 +13,7 @@ struct BattleCellPair;
 struct MessageFile;
 
 // Scene with cockpit cells, a BattleCommandList and a SelectWindow of seven buttons (0-4 and 5-6 enabled in turn)
-// (vtable 0x020b9038, 0x6c bytes); created by UnkStruct_02076058 and by ListScene (ListScene.cpp:1199).
+// (vtable 0x020b9038, 0x6c bytes); created by UnkStruct_02076058 and by ListScene (ListScene.cpp:1194).
 class UnkStruct_02071d24 : public SceneBase {
 public:
     /* 0c */ MessageFile *mBakuganNameMessages;
@@ -26,15 +26,15 @@ public:
     /* 28 */ void *mGlyphBuffer;
     /* 2c */ u32 mTextBufferSize;
     /* 30 */ u32 mGlyphCount;
-    /* 34 */ BattleCellPair *mUnk_34[6];
-    /* 4c */ u8 mUnk_4c;
+    /* 34 */ BattleCellPair *mSaveEntries[6];
+    /* 4c */ u8 mMode;
     /* 4d */ u8 mState;
     /* 4e */ u8 mBakuganIndex;
-    /* 4f */ u8 mUnk_4f;
-    /* 50 */ u8 mUnk_50;
-    /* 51 */ u8 mUnk_51;
+    /* 4f */ u8 mSelectedId;
+    /* 50 */ u8 mWindowResult;
+    /* 51 */ u8 mTimer;
     /* 52 */ u8 mUnk_52;
-    /* 53 */ u8 mUnk_53;
+    /* 53 */ u8 mTextKind;
     /* 54 */ s32 mPendingPlanes;
     /* 58 */ u8 mBakuganIds[6];
     /* 5e */ u8 mAttributes[6];
@@ -49,17 +49,17 @@ public:
     virtual ~UnkStruct_02071d24();
     virtual void Update();
     void LoadGraphics(); // also creates mCommandList for the current entry (mBakuganIds / mAttributes)
-    void func_02072b14();
+    void RefreshCommandListValues();
     void func_02072b60();
     void func_02072c40();
     BOOL func_02072d20();
     BOOL func_02072d84();
-    void func_02072dfc();
-    void func_02072e7c();
+    void Draw();
+    void UpdateWindow();
     void RefreshItems();
     void func_020733d4();
     void LoadMessages(); // also creates mMessageWindow and sets the text colour
-    void PrintText(); // prints nothing when the entry's mUnk_34 is NULL
+    void PrintText(); // prints nothing when the entry's mSaveEntries is NULL
     void DrawText();
     void ClearText();
     void SetBakugan(u32 index, u32 unk2, u32 unk3, u8 unk4); // nothing for index >= 6, unk2 >= 0x29 or unk3 >= 6; else fills entry index, mBakuganIndex = 0

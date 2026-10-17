@@ -259,7 +259,7 @@ BattleCharaAct::~BattleCharaAct() {
 u8 BattleCharaAct::CreateCharacter() {
     mCharacter = new UnkStruct_0205401c();
     mCharacter->Create(mCharacterId, 1, data_020d433c.mBattlePlayers->mPlayers[mPlayer]->NameInfo(), (u8) (mKind + 1));
-    mCharacter->func_0205461c(mKind, 0);
+    mCharacter->StartAnim(mKind, 0);
     return mCharacter->mUseCharacter;
 }
 

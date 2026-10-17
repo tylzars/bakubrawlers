@@ -21,25 +21,25 @@ struct TextSlot {
 // Appearance of the player's character: the bit fields stored in the save data at +0x14.
 struct CharacterLook {
     /* 00 */ u16 mUnk_00_0 : 1;
-    /* 00 */ u16 mUnk_00_1 : 3;
-    /* 00 */ u16 mUnk_00_4 : 3;
-    /* 00 */ u16 mUnk_00_7 : 3;
-    /* 00 */ u16 mUnk_00_10 : 3;
-    /* 00 */ u16 mUnk_00_13 : 3;
-    /* 02 */ u16 mUnk_02_0 : 3;
-    /* 02 */ u16 mUnk_02_3 : 3;
-    /* 02 */ u16 mUnk_02_6 : 3;
+    /* 00 */ u16 mFaceKind : 3;
+    /* 00 */ u16 mFaceVariant : 3;
+    /* 00 */ u16 mHairKind : 3;
+    /* 00 */ u16 mHairVariant : 3;
+    /* 00 */ u16 mCapHandle : 3;
+    /* 02 */ u16 mCapPalette : 3;
+    /* 02 */ u16 mGlasseHandle : 3;
+    /* 02 */ u16 mGlassePalette : 3;
     /* 02 */ u16 mUnk_02_9 : 3;
-    /* 02 */ u16 mUnk_02_12 : 3;
+    /* 02 */ u16 mTopKind : 3;
     /* 02 */ u16 mUnk_02_15 : 1;
-    /* 04 */ u16 mUnk_04_0 : 3;
-    /* 04 */ u16 mUnk_04_3 : 5;
-    /* 04 */ u16 mUnk_04_8 : 3;
-    /* 04 */ u16 mUnk_04_11 : 3;
-    /* 04 */ u16 mUnk_04_14 : 2;
-    /* 06 */ u16 mUnk_06_0 : 3;
+    /* 04 */ u16 mTopPalette : 3;
+    /* 04 */ u16 mDownKind : 5;
+    /* 04 */ u16 mDownPalette : 3;
+    /* 04 */ u16 mShoesVariant : 3;
+    /* 04 */ u16 mShoesKind : 2;
+    /* 06 */ u16 mSkinPalette : 3;
     /* 06 */ u16 mUnk_06_3 : 5;
-    /* 06 */ u16 mUnk_06_8 : 8;
+    /* 06 */ u16 mAttribute : 8;
     /* 08 */
 };
 
@@ -92,7 +92,7 @@ public:
     /* 1a8 */ u32 mRebuildModel;
     /* 1ac */ s8 mFixedItem; // item index that does not slide in (SetupSlideIn), -1 = none
     /* 1ad */ PAD(0x1ad, 0x1b0);
-    /* 1b0 */ u32 mUnk_1b0;
+    /* 1b0 */ u32 mStoreLookPromptRequested;
     // Ctor argument: 1 from MyroomScene, 0 from TitleScene. 1 sets flags 0x8000 on item 4 of the five-item menus
     // (mState 1 / 3) and moves the root entries' states and texts up by one, keeps lists 0-2 in RandomizeLook, skips
     // StoreLook on the direct exit and asks first when mChoiceApplied is set.
@@ -118,19 +118,19 @@ public:
     virtual ~CharacterEditScene();
     virtual void Update();
 
-    void func_020638a8(u32 v); // mWindows[0]->mButtons[13].mEnabled = mChoicesVisible = v
+    void SetChoicesVisible(u32 v); // mWindows[0]->mButtons[13].mEnabled = mChoicesVisible = v
     void UpdateRootMenu();
     void UpdateSkinEdit();
-    void func_0205e958();
+    void UpdateFaceHairCapGlassesMenu();
     void UpdateFaceEdit();
     void UpdateHairEdit();
     void UpdateCapEdit();
     void UpdateGlassesEdit();
     void UpdateTopEdit();
-    void func_020604e8();
+    void UpdateBottomShoesMenu();
     void UpdateBottomEdit();
     void UpdateShoesEdit();
-    void func_020612cc();
+    void UpdateStoreLookPrompt();
     void UpdateFinish();
     void SetupChoices();
     // Also loads palette2, color_hair_male (state 7) or color_glasses_len (state 9), and sets mChoicesVisible.
@@ -145,13 +145,13 @@ public:
     void ApplyCursorItem();
     void ApplyLookToModel();
     void RandomizeLook();
-    void func_02064cd4(u32 flag);
+    void SetRootMenuSlides(u32 flag);
     void PrintWindowText(); // message 0x1c into mWindowTextBuffer, shown with mWindows[2]
     void DrawName();
     void SetText(u32 slot, u32 message, u32 value);
     void DrawTexts();
     void UpdateInit();
-    void func_02061c3c();
+    void InitDisplayAndCamera();
     void LoadGraphics(); // also loads mes_chara_edit.mes into mMessages and creates mMessageWindow
     void PrintName();
     void ResetTexts(); // the six mTexts and buffers, mWindowTextBuffer (mWindowTextVisible 0), mMessageWindow's buffer
@@ -162,11 +162,11 @@ public:
     void SetChoiceItemNeighbors(u32 i, u32 a, u32 b, u32 c, u32 d);
     void MoveMenuDepth(u32 v); // 1: mMenuDepth + 1, 2: - 1, 0: unchanged; v is kept in mMenuDepthMove
     void UpdateRotateInput();
-    void func_02063b10(u32 arg);
+    void SetupMenuRows(u32 arg);
     void SetupSlideIn(); // one item skips the slide-in (mFixedItem): 0 going deeper, the depth's selection going back
     void SlideToParent();
     void SlideToFirstRow();
     BOOL SwitchToSelectedGroup();
-    void func_020637a8();
+    void SetGroupButtonCellPositions();
     void EnableGroupButtons(); // for the current mState: button 0 and that state's group of buttons 1-6 (12: none)
 };

@@ -60,11 +60,11 @@ void CharacterModel::StartHeadAnim(u32 a, u32 b) {
     mParts[0]->StartAnimWithIncrement(a, b, 0x1000);
 }
 
-void CharacterModel::LoadPart(u32 part, u32 sex) {
+void CharacterModel::LoadPart(u32 part, u32 motionKind) {
     char buf[0x20];
     switch (part) {
         case 0: {
-            StartLoad(sex);
+            StartLoad(motionKind);
             u32 async = 0;
             while (!LoadHeadFiles(async)) {
             }
@@ -150,8 +150,8 @@ void CharacterModel::LoadPart(u32 part, u32 sex) {
     ChangeDir("/");
 }
 
-void CharacterModel::StartLoad(u32 sex) {
-    mUnk_78 = sex;
+void CharacterModel::StartLoad(u32 motionKind) {
+    mMotionKind = motionKind;
     mHeadLoadStep = 0;
     mUnk_7a = 0;
 }
@@ -169,11 +169,11 @@ BOOL CharacterModel::UpdateLoad() {
 
 void CharacterModel::CreateHeadAndLoadParts() {
     CreateHead();
-    LoadPart(1, mUnk_78);
-    LoadPart(2, mUnk_78);
-    LoadPart(3, mUnk_78);
-    LoadPart(4, mUnk_78);
-    LoadPart(5, mUnk_78);
+    LoadPart(1, mMotionKind);
+    LoadPart(2, mMotionKind);
+    LoadPart(3, mMotionKind);
+    LoadPart(4, mMotionKind);
+    LoadPart(5, mMotionKind);
 }
 
 BOOL CharacterModel::LoadHeadFiles(u32 async) {
@@ -209,7 +209,7 @@ BOOL CharacterModel::LoadHeadFiles(u32 async) {
         case 2:
             if (IsAsyncLoadActive() == 0) {
                 ChangeDir("/Game/Character/EditedCharacter/Anm");
-                if (mUnk_78 == 0) {
+                if (mMotionKind == 0) {
                     sprintf(buf, "edit_motion_m_cut_data.bin");
                 } else {
                     sprintf(buf, "edit_motion_m_data.bin");
@@ -346,15 +346,15 @@ void CharacterModel::LoadPartTextures(u32 part) {
             LoadPartPalette(part, bufA, bufB);
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Mobile");
             sprintf(bufA, "Mobile_00");
-            sprintf(bufB, "Mobile_00_%03d", mUnk_75);
+            sprintf(bufB, "Mobile_00_%03d", mAttribute);
             LoadPartPalette(part, bufA, bufB);
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Gloves");
             sprintf(bufA, "Gloves_00");
-            sprintf(bufB, "Gloves_00_%03d", mUnk_75);
+            sprintf(bufB, "Gloves_00_%03d", mAttribute);
             LoadPartPalette(part, bufA, bufB);
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Top");
             sprintf(bufA, "Top_%02d", mTopKind);
-            sprintf(bufB, "Top_%02d_%03d", mTopKind, mUnk_75);
+            sprintf(bufB, "Top_%02d_%03d", mTopKind, mAttribute);
             sprintf(bufC, "Top_%02d_%03d", mTopKind, mTopPalette);
             u8 table[6] = {4, 8, 8, 7, 6, 0xe};
             u8 offset = table[mTopKind];
@@ -366,7 +366,7 @@ void CharacterModel::LoadPartTextures(u32 part) {
             if (mDownKind == 0) {
                 ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Item");
                 sprintf(bufA, "item_00");
-                sprintf(bufB, "item_00_%03d", mUnk_75);
+                sprintf(bufB, "item_00_%03d", mAttribute);
                 sprintf(bufC, "item_00_%03d", mDownPalette);
                 LoadMergedPalette(part, bufA, bufB, bufC, 9);
             }
@@ -383,7 +383,7 @@ void CharacterModel::LoadPartTextures(u32 part) {
             LoadPartPalette(part, bufA, bufB);
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Down");
             sprintf(bufA, "Down_%02d", mDownKind);
-            sprintf(bufB, "Down_%02d_%03d", mDownKind, mUnk_75);
+            sprintf(bufB, "Down_%02d_%03d", mDownKind, mAttribute);
             sprintf(bufC, "Down_%02d_%03d", mDownKind, mDownPalette);
             u8 table[6] = {0, 4, 5, 4, 2, 0xe};
             u8 offset = table[mDownKind];
@@ -404,11 +404,11 @@ void CharacterModel::LoadPartTextures(u32 part) {
             if (mUnk_6e == 0) {
                 sprintf(bufD, "Glasse_%02d_%03d", mGlasseHandle - 1, 0);
                 sprintf(bufB, "Glasse_%02d_%03d", mGlasseHandle - 1, 0);
-                sprintf(bufC, "Glasse_%02d_%03d", mGlasseHandle - 1, mUnk_6d);
+                sprintf(bufC, "Glasse_%02d_%03d", mGlasseHandle - 1, mGlassePalette);
             } else {
                 sprintf(bufD, "Glasse_%02d_%03d", mGlasseHandle - 1, 1);
                 sprintf(bufB, "Glasse_%02d_%03d", mGlasseHandle - 1, mUnk_6e - 1);
-                sprintf(bufC, "Glasse_%02d_%03d", mGlasseHandle - 1, mUnk_6d);
+                sprintf(bufC, "Glasse_%02d_%03d", mGlasseHandle - 1, mGlassePalette);
             }
             u8 table[4] = {0xf, 0xf, 0xf, 0xf};
             u8 offset = table[mGlasseHandle - 1];
@@ -456,7 +456,7 @@ void CharacterModel::LoadMergedPalette(u32 part, const char *name, const char *f
     OS_Free(data2);
 }
 
-void CharacterModel::func_02053ea0(u32 a, u32 b) {
+void CharacterModel::SetExtraAnimSetAndStartAnim(u32 a, u32 b) {
     if (mParts[0] == NULL) {
         return;
     }

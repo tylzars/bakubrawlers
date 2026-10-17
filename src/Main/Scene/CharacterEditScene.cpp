@@ -20,7 +20,7 @@ static const WindowItemRecord sEditMenuItems[22] = {
     { 13, 0x8000, 128, 96, 0, 0, {0}, {-1, -1, -1, -1}, 0, 0 },
 };
 
-static const WindowItemRecord data_0209f12c[22] = {
+static const WindowItemRecord sStoreLookPromptItems[22] = {
     { 0, 0x1, 68, 56, 112, 32, {0x403}, {1, 1, 0, 0}, 0, 2 },
     { 1, 0x1, 68, 104, 112, 32, {0x304}, {0, 0, 1, 1}, 0, 2 },
 };
@@ -35,7 +35,7 @@ static const s16 sCameraPositionTargets[4][6] = {
 
 static const u16 sCharacterEditLights[20] = {1, 0x7fff, 0xf666, 0xf5ec, 0xf829};
 
-static const WindowItemRecord data_0209f394[22] = {
+static const WindowItemRecord sBottomShoesMenuItems[22] = {
     { 2, 0x1, 135, 26, 114, 24, {0x403}, {2, 1, 0, 0}, 0, 2 },
     { 3, 0x1, 140, 54, 114, 24, {0x403}, {0, 2, 1, 1}, 0, 2 },
     { 4, 0x1, 140, 82, 114, 24, {0x403}, {1, 0, 2, 2}, 0, 2 },
@@ -46,7 +46,7 @@ static const WindowItemRecord data_0209f394[22] = {
     { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
 };
 
-static const WindowCellRecord data_0209e888[13] = {
+static const WindowCellRecord sWindow0Cells[13] = {
     { "union_b_obj_edit_nce.bin", {0}, 0x6000, {0}, {0x1}, 0, {0, 2, 1, 0} },
     { "union_b_obj_edit_nce.bin", {0}, 0x6000, {0}, {0x1}, 0, {0, 2, 1, 0} },
     { "union_b_obj_edit_nce.bin", {0x3}, 0x6000, {0}, {0x1}, 0, {3, 5, 4, 0} },
@@ -82,7 +82,7 @@ inline WindowCellRecord *CellTable_020b3a44() {
     return sGroupButtonCells;
 }
 
-static const WindowCellRecord data_0209e834[3] = {
+static const WindowCellRecord sWindow2Cells[3] = {
     { "union_b_obj_window_nce.bin", {0x3}, 0x19000, {0xd}, {0}, 0, {3, 5, 4, 0} },
     { "union_b_obj_window_nce.bin", {0x6}, 0x19000, {0xd}, {0}, 0, {6, 8, 7, 0} },
     { "union_b_obj_window_nce.bin", {0xa}, 0x19000, {0xd}, {0}, 0, {10, 10, 10, 0} },
@@ -125,7 +125,7 @@ static const WindowItemRecord sCharacterEditCursorItems[22] = {
     { 19, 0x8, 221, 152, 12, 11, {0}, {13, 2, 18, 14}, 0, 1 },
 };
 
-static const WindowItemRecord data_0209facc[22] = {
+static const WindowItemRecord sWindow2Items[22] = {
     { 0, 0x1, 45, 152, 78, 20, {0}, {0, 0, 1, 1}, 0, 2 },
     { 1, 0x2, 133, 152, 78, 20, {0}, {1, 1, 0, 0}, 0, 2 },
     { 2, 0x8000, 120, 18, 0, 0, {0}, {-1, -1, -1, -1}, 0, 0 },
@@ -146,7 +146,7 @@ static const WindowItemRecord sRootMenuItems[22] = {
 
 static const u32 sCharacterEditTextVramOffsets[6] = {0, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000};
 
-static const WindowItemRecord data_0209eec4[22] = {
+static const WindowItemRecord sFaceHairCapGlassesMenuItems[22] = {
     { 2, 0x1, 135, 26, 114, 24, {0x403}, {4, 1, 0, 0}, 0, 2 },
     { 3, 0x1, 140, 54, 114, 24, {0x403}, {0, 2, 1, 1}, 0, 2 },
     { 4, 0x1, 140, 82, 114, 24, {0x403}, {1, 3, 2, 2}, 0, 2 },
@@ -216,7 +216,7 @@ CharacterEditScene::CharacterEditScene(u32 unk) :
         mCellAnims[i] = NULL;
     }
     mRebuildModel = 0;
-    mUnk_1b0 = 0;
+    mStoreLookPromptRequested = 0;
     mChoiceApplied = 0;
     mWindowTextVisible = 0;
     mWindowTextBuffer = NULL;
@@ -376,7 +376,7 @@ void CharacterEditScene::DrawTexts() {
 void CharacterEditScene::UpdateInit() {
     switch (mStep) {
     case 0:
-        func_02061c3c();
+        InitDisplayAndCamera();
         LoadGraphics();
         mWindows[0]->mEnabled = 0;
         mWindows[1]->mEnabled = 0;
@@ -418,11 +418,11 @@ void CharacterEditScene::UpdateRootMenu() {
             mWindows[0]->mCellAnims[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
         }
         mWindows[1]->Reset(-1);
-        func_02063b10(0);
+        SetupMenuRows(0);
         SetupSlideIn();
-        func_020637a8();
+        SetGroupButtonCellPositions();
         EnableGroupButtons();
-        func_020638a8(0);
+        SetChoicesVisible(0);
         GXS_SetVisiblePlane(0x15);
         {
             fx32 posZ = FxRound(sCameraPositionTargets[0][2] * 0x1000);
@@ -546,25 +546,25 @@ void CharacterEditScene::UpdateRootMenu() {
                 return;
             }
         } else if (mWindow0Result == 1) {
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToFirstRow();
             mStep = 10;
             return;
         } else if (mWindow0Result == 2) {
             if (mChoiceApplied != 0 && mFromMyroom == 1) {
                 mStep = 0xb;
-                func_02064cd4(1);
+                SetRootMenuSlides(1);
                 return;
             }
             if (mFromMyroom == 0) {
                 StoreLook(NULL);
             }
             mStep = 9;
-            func_02063b10(1);
+            SetupMenuRows(1);
             return;
         } else if (InputManager::Get().IsPressed(8) && mWindows[0]->mState == 1) {
-            mUnk_1b0 = 1;
-            func_02063b10(1);
+            mStoreLookPromptRequested = 1;
+            SetupMenuRows(1);
             mWindows[0]->mState = 3;
             mStep = 10;
             SoundManager::Get().StartSeqArc(0);
@@ -614,7 +614,7 @@ void CharacterEditScene::UpdateRootMenu() {
         if (SwitchToSelectedGroup()) {
             return;
         }
-        if (mUnk_1b0 != 0) {
+        if (mStoreLookPromptRequested != 0) {
             mState = 0xc;
             mStep = 0x53;
             return;
@@ -695,7 +695,7 @@ void CharacterEditScene::UpdateRootMenu() {
         if (mWindows[2]->mState != 4) {
             return;
         }
-        func_02064cd4(0);
+        SetRootMenuSlides(0);
         mState = 0xd;
         mStep = 0x5a;
         break;
@@ -716,7 +716,7 @@ void CharacterEditScene::UpdateRootMenu() {
         if (mWindows[0]->mState != 1) {
             return;
         }
-        func_02064cd4(0);
+        SetRootMenuSlides(0);
         GXS_SetVisiblePlane(0x15);
         mWindows[2]->mButtons[0].mEnabled = 0;
         mWindows[2]->mButtons[1].mEnabled = 0;
@@ -746,11 +746,11 @@ void CharacterEditScene::UpdateSkinEdit() {
     case 0x10:
         mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
-        func_02063b10(0);
+        SetupMenuRows(0);
         SetupSlideIn();
-        func_020637a8();
+        SetGroupButtonCellPositions();
         EnableGroupButtons();
-        func_020638a8(1);
+        SetChoicesVisible(1);
         SetupChoices();
         LoadChoiceCells("sub_skin.nce_ncg1D.bin", "sub_skin_ncl.bin", "sub_skin_nce.bin", "color_skin_ncl.bin");
         ResetTexts();
@@ -785,15 +785,15 @@ void CharacterEditScene::UpdateSkinEdit() {
             }
         } else if (mWindow0Result == 1) {
             mStep = 0x15;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         } else if (mWindow0Result == 2) {
             mStep = 0x14;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         }
         UpdateRotateInput();
@@ -820,20 +820,20 @@ void CharacterEditScene::UpdateSkinEdit() {
     }
 }
 
-void CharacterEditScene::func_0205e958() {
+void CharacterEditScene::UpdateFaceHairCapGlassesMenu() {
     switch (mStep) {
     case 0x16: {
         if (mMenuDepthMove != 2) {
             mMenuSelection[mMenuDepth] = 1;
         }
-        mWindows[0]->SetItems(10, (WindowItem *) data_0209eec4, (s8) mMenuSelection[mMenuDepth]);
+        mWindows[0]->SetItems(10, (WindowItem *) sFaceHairCapGlassesMenuItems, (s8) mMenuSelection[mMenuDepth]);
         mWindows[0]->mCellAnims[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
         mWindows[1]->Reset(-1);
-        func_02063b10(0);
+        SetupMenuRows(0);
         SetupSlideIn();
-        func_020637a8();
+        SetGroupButtonCellPositions();
         EnableGroupButtons();
-        func_020638a8(0);
+        SetChoicesVisible(0);
         fx32 posZ = FxRound(sCameraPositionTargets[1][2] * 0x1000);
         fx32 posY = FxRound(sCameraPositionTargets[1][1] * 0x1000);
         mCamera->SetPosition(FxRound(sCameraPositionTargets[1][0] * 0x1000), posY, posZ);
@@ -949,22 +949,22 @@ void CharacterEditScene::func_0205e958() {
         } else if (mWindow0Result == 1) {
             if (mWindows[0]->GetSelectedId() == 2) {
                 mStep = 0x1a;
-                func_02063b10(1);
+                SetupMenuRows(1);
                 SlideToParent();
                 return;
             }
             mStep = 0x1b;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToFirstRow();
             return;
         } else if (mWindow0Result == 2) {
             mStep = 0x1a;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
             return;
         } else if (InputManager::Get().IsPressed(8) && mWindows[0]->mState == 1) {
-            mUnk_1b0 = 1;
-            func_02063b10(1);
+            mStoreLookPromptRequested = 1;
+            SetupMenuRows(1);
             mWindows[0]->mState = 3;
             mStep = 0x1b;
             return;
@@ -986,7 +986,7 @@ void CharacterEditScene::func_0205e958() {
         if (SwitchToSelectedGroup()) {
             return;
         }
-        if (mUnk_1b0 != 0) {
+        if (mStoreLookPromptRequested != 0) {
             mState = 0xc;
             mStep = 0x53;
             return;
@@ -1044,11 +1044,11 @@ void CharacterEditScene::UpdateFaceEdit() {
     case 0x1c:
         mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
-        func_02063b10(0);
+        SetupMenuRows(0);
         SetupSlideIn();
-        func_020637a8();
+        SetGroupButtonCellPositions();
         EnableGroupButtons();
-        func_020638a8(1);
+        SetChoicesVisible(1);
         SetupChoices();
         LoadChoiceCells("sub_face_male.nce_ncg1D.bin", "sub_face_male_ncl.bin", "sub_face_male_nce.bin", "color_face_male_ncl.bin");
         ResetTexts();
@@ -1085,15 +1085,15 @@ void CharacterEditScene::UpdateFaceEdit() {
             }
         } else if (mWindow0Result == 1) {
             mStep = 0x21;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         } else if (mWindow0Result == 2) {
             mStep = 0x21;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         }
         UpdateRotateInput();
@@ -1124,11 +1124,11 @@ void CharacterEditScene::UpdateHairEdit() {
     case 0x23:
         mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
-        func_02063b10(0);
+        SetupMenuRows(0);
         SetupSlideIn();
-        func_020637a8();
+        SetGroupButtonCellPositions();
         EnableGroupButtons();
-        func_020638a8(1);
+        SetChoicesVisible(1);
         SetupChoices();
         LoadChoiceCells("sub_hair_male.nce_ncg1D.bin", "sub_hair_male_ncl.bin", "sub_hair_male_nce.bin", "color_hair_male_ncl.bin");
         ResetTexts();
@@ -1165,15 +1165,15 @@ void CharacterEditScene::UpdateHairEdit() {
             }
         } else if (mWindow0Result == 1) {
             mStep = 0x28;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         } else if (mWindow0Result == 2) {
             mStep = 0x27;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         }
         UpdateRotateInput();
@@ -1204,11 +1204,11 @@ void CharacterEditScene::UpdateCapEdit() {
     case 0x2a:
         mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
-        func_02063b10(0);
+        SetupMenuRows(0);
         SetupSlideIn();
-        func_020637a8();
+        SetGroupButtonCellPositions();
         EnableGroupButtons();
-        func_020638a8(1);
+        SetChoicesVisible(1);
         SetupChoices();
         LoadChoiceCells("sub_cap_male.nce_ncg1D.bin", "sub_cap_male_ncl.bin", "sub_cap_male_nce.bin", "color_cap_male_ncl.bin");
         ResetTexts();
@@ -1245,15 +1245,15 @@ void CharacterEditScene::UpdateCapEdit() {
             }
         } else if (mWindow0Result == 1) {
             mStep = 0x2f;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         } else if (mWindow0Result == 2) {
             mStep = 0x2e;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         }
         UpdateRotateInput();
@@ -1284,11 +1284,11 @@ void CharacterEditScene::UpdateGlassesEdit() {
     case 0x31:
         mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
-        func_02063b10(0);
+        SetupMenuRows(0);
         SetupSlideIn();
-        func_020637a8();
+        SetGroupButtonCellPositions();
         EnableGroupButtons();
-        func_020638a8(1);
+        SetChoicesVisible(1);
         SetupChoices();
         LoadChoiceCells("sub_glasses.nce_ncg1D.bin", "sub_glasses_ncl.bin", "sub_glasses_nce.bin", "color_glasses_fr_ncl.bin");
         ResetTexts();
@@ -1325,15 +1325,15 @@ void CharacterEditScene::UpdateGlassesEdit() {
             }
         } else if (mWindow0Result == 1) {
             mStep = 0x36;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         } else if (mWindow0Result == 2) {
             mStep = 0x35;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         }
         UpdateRotateInput();
@@ -1364,11 +1364,11 @@ void CharacterEditScene::UpdateTopEdit() {
     case 0x38: {
         mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
-        func_02063b10(0);
+        SetupMenuRows(0);
         SetupSlideIn();
-        func_020637a8();
+        SetGroupButtonCellPositions();
         EnableGroupButtons();
-        func_020638a8(1);
+        SetChoicesVisible(1);
         SetupChoices();
         LoadChoiceCells("sub_top_male.nce_ncg1D.bin", "sub_top_male_ncl.bin", "sub_top_male_nce.bin",
                       "color_top_male_ncl.bin");
@@ -1422,15 +1422,15 @@ void CharacterEditScene::UpdateTopEdit() {
             }
         } else if (mWindow0Result == 1) {
             mStep = 0x3d;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         } else if (mWindow0Result == 2) {
             mStep = 0x3c;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         }
         UpdateRotateInput();
@@ -1456,20 +1456,20 @@ void CharacterEditScene::UpdateTopEdit() {
     }
 }
 
-void CharacterEditScene::func_020604e8() {
+void CharacterEditScene::UpdateBottomShoesMenu() {
     switch (mStep) {
     case 0x3f: {
         if (mMenuDepthMove != 2) {
             mMenuSelection[mMenuDepth] = 1;
         }
-        mWindows[0]->SetItems(8, (WindowItem *) data_0209f394, (s8) mMenuSelection[mMenuDepth]);
+        mWindows[0]->SetItems(8, (WindowItem *) sBottomShoesMenuItems, (s8) mMenuSelection[mMenuDepth]);
         mWindows[0]->mCellAnims[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(4);
         mWindows[1]->Reset(-1);
-        func_02063b10(0);
+        SetupMenuRows(0);
         SetupSlideIn();
-        func_020637a8();
+        SetGroupButtonCellPositions();
         EnableGroupButtons();
-        func_020638a8(0);
+        SetChoicesVisible(0);
         mCamera->SetPosition(FxRound(sCameraPositionTargets[3][0] * 0x1000), FxRound(sCameraPositionTargets[3][1] * 0x1000), FxRound(sCameraPositionTargets[3][2] * 0x1000));
         mCamera->SetTarget(FxRound(sCameraPositionTargets[3][3] * 0x1000), FxRound(sCameraPositionTargets[3][4] * 0x1000), FxRound(sCameraPositionTargets[3][5] * 0x1000));
         CameraManager &manager = CameraManager::Get();
@@ -1533,22 +1533,22 @@ void CharacterEditScene::func_020604e8() {
         } else if (mWindow0Result == 1) {
             if (mWindows[0]->GetSelectedId() == 2) {
                 mStep = 0x43;
-                func_02063b10(1);
+                SetupMenuRows(1);
                 SlideToParent();
                 return;
             }
             mStep = 0x44;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToFirstRow();
             return;
         } else if (mWindow0Result == 2) {
             mStep = 0x43;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
             return;
         } else if (InputManager::Get().IsPressed(8) && mWindows[0]->mState == 1) {
-            mUnk_1b0 = 1;
-            func_02063b10(1);
+            mStoreLookPromptRequested = 1;
+            SetupMenuRows(1);
             mWindows[0]->mState = 3;
             mStep = 0x44;
             return;
@@ -1570,7 +1570,7 @@ void CharacterEditScene::func_020604e8() {
         if (SwitchToSelectedGroup()) {
             return;
         }
-        if (mUnk_1b0 != 0) {
+        if (mStoreLookPromptRequested != 0) {
             mState = 0xc;
             mStep = 0x53;
             return;
@@ -1602,11 +1602,11 @@ void CharacterEditScene::UpdateBottomEdit() {
     case 0x45:
         mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
-        func_02063b10(0);
+        SetupMenuRows(0);
         SetupSlideIn();
-        func_020637a8();
+        SetGroupButtonCellPositions();
         EnableGroupButtons();
-        func_020638a8(1);
+        SetChoicesVisible(1);
         SetupChoices();
         LoadChoiceCells("sub_bottom_male.nce_ncg1D.bin", "sub_bottom_male_ncl.bin", "sub_bottom_male_nce.bin", "color_bottom_male_ncl.bin");
         ResetTexts();
@@ -1642,15 +1642,15 @@ void CharacterEditScene::UpdateBottomEdit() {
         }
         if (mWindow0Result == 1) {
             mStep = 0x4a;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         } else if (mWindow0Result == 2) {
             mStep = 0x49;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         }
         UpdateRotateInput();
@@ -1681,11 +1681,11 @@ void CharacterEditScene::UpdateShoesEdit() {
     case 0x4c:
         mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
-        func_02063b10(0);
+        SetupMenuRows(0);
         SetupSlideIn();
-        func_020637a8();
+        SetGroupButtonCellPositions();
         EnableGroupButtons();
-        func_020638a8(1);
+        SetChoicesVisible(1);
         SetupChoices();
         LoadChoiceCells("sub_shoes_male.nce_ncg1D.bin", "sub_shoes_male_ncl.bin", "sub_shoes_male_nce.bin", "color_shoes_male_ncl.bin");
         ResetTexts();
@@ -1721,15 +1721,15 @@ void CharacterEditScene::UpdateShoesEdit() {
         }
         if (mWindow0Result == 1) {
             mStep = 0x51;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         } else if (mWindow0Result == 2) {
             mStep = 0x50;
-            func_02063b10(1);
+            SetupMenuRows(1);
             SlideToParent();
-            func_020638a8(0);
+            SetChoicesVisible(0);
             return;
         }
         UpdateRotateInput();
@@ -1755,14 +1755,14 @@ void CharacterEditScene::UpdateShoesEdit() {
     }
 }
 
-void CharacterEditScene::func_020612cc() {
+void CharacterEditScene::UpdateStoreLookPrompt() {
     switch (mStep) {
     case 0x53: {
-        mWindows[0]->SetItems(2, (WindowItem *) data_0209f12c, 0);
+        mWindows[0]->SetItems(2, (WindowItem *) sStoreLookPromptItems, 0);
         mWindows[0]->mCellAnims[0]->SetAnimation(1);
-        func_020637a8();
+        SetGroupButtonCellPositions();
         EnableGroupButtons();
-        func_020638a8(0);
+        SetChoicesVisible(0);
         GXS_SetVisiblePlane(0x14);
         fx32 posZ = FxRound(sCameraPositionTargets[0][2] * 0x1000);
         fx32 posY = FxRound(sCameraPositionTargets[0][1] * 0x1000);
@@ -1784,7 +1784,7 @@ void CharacterEditScene::func_020612cc() {
         ResetTexts();
         SetText(0, 3, 0);
         mStep = 0x54;
-        mUnk_1b0 = 0;
+        mStoreLookPromptRequested = 0;
         mRotateState = 3;
         break;
     }
@@ -1807,7 +1807,7 @@ void CharacterEditScene::func_020612cc() {
         }
         if (mWindows[0]->GetSelectedId() == 0) {
             StoreLook(NULL);
-            mModel->func_0205461c(0x17, 0);
+            mModel->StartAnim(0x17, 0);
             data_020d433c.mSaveDirty = 1;
             mStep = 0x59;
             mStepFrames = 0;
@@ -1877,7 +1877,7 @@ void CharacterEditScene::Update() {
         mModel->Create(0x15, 1, (u32) &look, 0);
         mModel->LoadShadow();
         mModel->mCharacter->mRotY = mModelAngle;
-        mModel->func_0205461c(0, 1);
+        mModel->StartAnim(0, 1);
         ((CharacterModel *) mModel->mCharacter)->SetHeadFrame(value);
     }
     switch (mState) {
@@ -1891,7 +1891,7 @@ void CharacterEditScene::Update() {
         UpdateSkinEdit();
         break;
     case 3:
-        func_0205e958();
+        UpdateFaceHairCapGlassesMenu();
         break;
     case 6:
         UpdateFaceEdit();
@@ -1909,7 +1909,7 @@ void CharacterEditScene::Update() {
         UpdateTopEdit();
         break;
     case 5:
-        func_020604e8();
+        UpdateBottomShoesMenu();
         break;
     case 10:
         UpdateBottomEdit();
@@ -1918,7 +1918,7 @@ void CharacterEditScene::Update() {
         UpdateShoesEdit();
         break;
     case 12:
-        func_020612cc();
+        UpdateStoreLookPrompt();
         break;
     case 13:
         UpdateFinish();
@@ -1957,7 +1957,7 @@ void CharacterEditScene::Update() {
     mModelAngle = data->mRotY;
 }
 
-void CharacterEditScene::func_02061c3c() {
+void CharacterEditScene::InitDisplayAndCamera() {
     SpriteManager::Get().SetupMode(0, 7);
     GX_SetGraphicsMode(1, 0, 1);
     GXS_SetGraphicsMode(0);
@@ -2018,9 +2018,9 @@ void CharacterEditScene::LoadGraphics() {
     mWindows[1] = new SelectWindow(7, sGroupButtonItems, -1);
     mWindows[1]->mUnk_07e = 1;
     mWindows[2] = NULL;
-    mWindows[2] = new SelectWindow(3, data_0209facc, -1);
+    mWindows[2] = new SelectWindow(3, sWindow2Items, -1);
     mCursor = new SelectWindowCursor(0x14, sCharacterEditCursorItems, 0);
-    func_020637a8();
+    SetGroupButtonCellPositions();
     ChangeDir("/Game/2d/CharacterEditor/Bg");
     void *data;
     data = LoadFile("edit_ch_b_bg_00_ncl.bin", 0, 0, 0, &size, 0);
@@ -2051,8 +2051,8 @@ void CharacterEditScene::LoadGraphics() {
     screen1.LoadPalette("union_b_obj_cockpit_ncl.bin", 0x80, 0);
     screen1.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x19000, 0);
     screen1.LoadPalette("union_b_obj_window_ncl.bin", 0x1a0, 0);
-    mWindows[2]->SetCells(3, data_0209e834);
-    mWindows[0]->SetCells(0xd, data_0209e888);
+    mWindows[2]->SetCells(3, sWindow2Cells);
+    mWindows[0]->SetCells(0xd, sWindow0Cells);
     ChangeDir("/Game/2d/CharacterEditor/Obj");
     screen1.LoadCharacters("edit_ch_b_obj_00.nce_ncg1D.bin", 0xf000, 0);
     const char *pal = "edit_ch_b_obj_00_ncl.bin";
@@ -2125,7 +2125,7 @@ void CharacterEditScene::LoadGraphics() {
     mModel->Create(0x15, 1, 0, 0);
     mModel->LoadShadow();
     mModel->mCharacter->mRotY = mModelAngle;
-    mModel->func_0205461c(0, 1);
+    mModel->StartAnim(0, 1);
     ChangeDir("/");
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
     screen.SetObjVramMode(1);
@@ -2269,26 +2269,26 @@ void CharacterEditScene::StoreLook(CharacterLook *look) {
     if (look == NULL) {
         look = (CharacterLook *) gCharacterLook;
     }
-    look->mUnk_06_0 = mLists[0].mValues[mLists[0].mIndex];
-    look->mUnk_00_1 = mLists[1].mValues[mLists[1].mIndex];
-    look->mUnk_00_4 = mLists[2].mValues[mLists[2].mIndex];
-    look->mUnk_00_7 = mLists[3].mValues[mLists[3].mIndex];
-    look->mUnk_00_10 = mLists[4].mValues[mLists[4].mIndex];
-    look->mUnk_00_13 = mLists[5].mValues[mLists[5].mIndex];
-    look->mUnk_02_0 = mLists[6].mValues[mLists[6].mIndex];
-    look->mUnk_02_3 = mLists[7].mValues[mLists[7].mIndex];
-    look->mUnk_02_6 = mLists[8].mValues[mLists[8].mIndex];
+    look->mSkinPalette = mLists[0].mValues[mLists[0].mIndex];
+    look->mFaceKind = mLists[1].mValues[mLists[1].mIndex];
+    look->mFaceVariant = mLists[2].mValues[mLists[2].mIndex];
+    look->mHairKind = mLists[3].mValues[mLists[3].mIndex];
+    look->mHairVariant = mLists[4].mValues[mLists[4].mIndex];
+    look->mCapHandle = mLists[5].mValues[mLists[5].mIndex];
+    look->mCapPalette = mLists[6].mValues[mLists[6].mIndex];
+    look->mGlasseHandle = mLists[7].mValues[mLists[7].mIndex];
+    look->mGlassePalette = mLists[8].mValues[mLists[8].mIndex];
     look->mUnk_02_9 = mLists[9].mValues[mLists[9].mIndex];
-    look->mUnk_02_12 = mLists[10].mValues[mLists[10].mIndex];
-    look->mUnk_04_0 = mLists[11].mValues[mLists[11].mIndex];
-    look->mUnk_04_3 = mLists[12].mValues[mLists[12].mIndex];
-    look->mUnk_04_8 = mLists[13].mValues[mLists[13].mIndex];
-    look->mUnk_04_14 = mLists[14].mValues[mLists[14].mIndex];
-    look->mUnk_04_11 = mLists[15].mValues[mLists[15].mIndex];
-    look->mUnk_06_8 = gSaveData[0].mAttribute;
+    look->mTopKind = mLists[10].mValues[mLists[10].mIndex];
+    look->mTopPalette = mLists[11].mValues[mLists[11].mIndex];
+    look->mDownKind = mLists[12].mValues[mLists[12].mIndex];
+    look->mDownPalette = mLists[13].mValues[mLists[13].mIndex];
+    look->mShoesKind = mLists[14].mValues[mLists[14].mIndex];
+    look->mShoesVariant = mLists[15].mValues[mLists[15].mIndex];
+    look->mAttribute = gSaveData[0].mAttribute;
 }
 
-void CharacterEditScene::func_020637a8() {
+void CharacterEditScene::SetGroupButtonCellPositions() {
     u8 i = 0;
     do {
         SelectWindow *w = mWindows[1];
@@ -2330,7 +2330,7 @@ void CharacterEditScene::EnableGroupButtons() {
     }
 }
 
-void CharacterEditScene::func_020638a8(u32 v) {
+void CharacterEditScene::SetChoicesVisible(u32 v) {
     mWindows[0]->mButtons[13].mEnabled = v;
     mChoicesVisible = v;
 }
@@ -2412,7 +2412,7 @@ void CharacterEditScene::MoveMenuDepth(u32 v) {
     }
 }
 
-void CharacterEditScene::func_02063b10(u32 arg) {
+void CharacterEditScene::SetupMenuRows(u32 arg) {
     u8 count;
     switch (mState) {
     case 1:
@@ -2552,39 +2552,39 @@ void CharacterEditScene::InitLookLists() {
         switch (i) {
         case 0:
             count = 5;
-            value = SAVE_LOOK->mUnk_06_0;
+            value = SAVE_LOOK->mSkinPalette;
             break;
         case 1:
             count = 4;
-            value = SAVE_LOOK->mUnk_00_1;
+            value = SAVE_LOOK->mFaceKind;
             break;
         case 2:
             count = 6;
-            value = SAVE_LOOK->mUnk_00_4;
+            value = SAVE_LOOK->mFaceVariant;
             break;
         case 3:
             count = 8;
-            value = SAVE_LOOK->mUnk_00_7;
+            value = SAVE_LOOK->mHairKind;
             break;
         case 4:
             count = 6;
-            value = SAVE_LOOK->mUnk_00_10;
+            value = SAVE_LOOK->mHairVariant;
             break;
         case 5:
             count = 6;
-            value = SAVE_LOOK->mUnk_00_13;
+            value = SAVE_LOOK->mCapHandle;
             break;
         case 6:
             count = 6;
-            value = SAVE_LOOK->mUnk_02_0;
+            value = SAVE_LOOK->mCapPalette;
             break;
         case 7:
             count = 5;
-            value = SAVE_LOOK->mUnk_02_3;
+            value = SAVE_LOOK->mGlasseHandle;
             break;
         case 8:
             count = 4;
-            value = SAVE_LOOK->mUnk_02_6;
+            value = SAVE_LOOK->mGlassePalette;
             break;
         case 9:
             count = 5;
@@ -2592,27 +2592,27 @@ void CharacterEditScene::InitLookLists() {
             break;
         case 10:
             count = 6;
-            value = SAVE_LOOK->mUnk_02_12;
+            value = SAVE_LOOK->mTopKind;
             break;
         case 11:
             count = 6;
-            value = SAVE_LOOK->mUnk_04_0;
+            value = SAVE_LOOK->mTopPalette;
             break;
         case 12:
             count = 6;
-            value = SAVE_LOOK->mUnk_04_3;
+            value = SAVE_LOOK->mDownKind;
             break;
         case 13:
             count = 6;
-            value = SAVE_LOOK->mUnk_04_8;
+            value = SAVE_LOOK->mDownPalette;
             break;
         case 14:
             count = 3;
-            value = SAVE_LOOK->mUnk_04_14;
+            value = SAVE_LOOK->mShoesKind;
             break;
         case 15:
             count = 6;
-            value = SAVE_LOOK->mUnk_04_11;
+            value = SAVE_LOOK->mShoesVariant;
             break;
         }
         mLists[i].mCount = 0;
@@ -2895,7 +2895,7 @@ void CharacterEditScene::ApplyLookToModel() {
         mModel->mCharacter->mUnk_65[i] = mLists[i].mValues[mLists[i].mIndex];
         i++;
     } while (i < 16);
-    mModel->mCharacter->mUnk_75 = gSaveData[0].mAttribute;
+    mModel->mCharacter->mAttribute = gSaveData[0].mAttribute;
 }
 
 void CharacterEditScene::RandomizeLook() {
@@ -2915,7 +2915,7 @@ void CharacterEditScene::RandomizeLook() {
     }
 }
 
-void CharacterEditScene::func_02064cd4(u32 flag) {
+void CharacterEditScene::SetRootMenuSlides(u32 flag) {
     u8 i = 0;
     do {
         if (flag != 0) {

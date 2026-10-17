@@ -120,7 +120,7 @@ void MyroomStatusScene::InitDisplay() {
 void MyroomStatusScene::CreateModel() {
     mModel = new UnkStruct_0205401c();
     mModel->Create(0x15, 0, 0, 0);
-    mModel->func_0205461c(0, 1);
+    mModel->StartAnim(0, 1);
     mModel->mCharacter->mVisible = 1;
     mModel->mCharacter->mRotY += 0x4cd;
 }

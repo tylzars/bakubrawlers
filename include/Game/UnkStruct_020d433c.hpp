@@ -133,7 +133,7 @@ struct BattlePlayer : public SceneBase {
     virtual ~BattlePlayer();
     /* 08 */ virtual void Update(); // 02269c98
 
-    // Name text at +b0 and the pointer-sized value at +a8 (both overlap mRecords, which is probably only 4 long).
+    // Name text at +b0 and the 8-byte character look at +a8 (read as CharacterParams by Create) (both overlap mRecords, which is probably only 4 long).
     const u8 *NameText() {
         return (const u8 *) this + 0xb0;
     }

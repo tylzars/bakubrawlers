@@ -999,7 +999,7 @@ BOOL ScriptPlayer::LoadCharacter(u32 index, u32 flag) {
         (*slot)->Create(id, 0, 0, 0);
         u8 a = GetAnimTableValue(id, tableIndex, 0);
         u8 b = GetAnimTableValue(id, tableIndex, 3);
-        (*slot)->func_02054644(b, a);
+        (*slot)->SetExtraAnimSetAndStartAnim(b, a);
         if (characterId == 0x15) {
             ((CharacterModel *) (*slot)->mCharacter)->mParts[0]->mAnim->mLoop = 1;
         } else {
@@ -1125,7 +1125,7 @@ void ScriptPlayer::SwapCharacter(u32 index) {
     u8 id        = characterId;
     u8 a         = GetAnimTableValue(id, tableIndexU8, 0);
     u8 b         = GetAnimTableValue(id, tableIndexU8, 3);
-    mCharacters[index].mCharacter->func_02054644(b, a);
+    mCharacters[index].mCharacter->SetExtraAnimSetAndStartAnim(b, a);
     if (characterId == 0x15) {
         ((CharacterModel *) mCharacters[index].mCharacter->mCharacter)->mParts[0]->mAnim->mLoop = 1;
     } else {
@@ -2033,7 +2033,7 @@ void ScriptPlayer::UpdateCharacterAnimation(u32 index) {
         loop = TRUE;
     }
     s8 other = GetAnimTableValue((u8) mCharacters[index].mCharacterId, target, 3);
-    mCharacters[index].mCharacter->func_02054644((u8) other, (u8) value);
+    mCharacters[index].mCharacter->SetExtraAnimSetAndStartAnim((u8) other, (u8) value);
     mCharacters[index].mExtraAnimEnabled = 0;
     anim->mLoop = loop;
 }

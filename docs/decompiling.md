@@ -756,7 +756,7 @@ Other findings from linking:
 - **Narrow read-modify-write toggles.** `f++; f &= 1;` as two statements on a `u8` field matches where a temporary
   (`u8 t = f + 1; f = t & 1;`) keeps the add in its own register (`ScriptPlayer::Update`).
 - **Arguments a callee ignores.** If callers load a register before a call (e.g. `this` into r0) that the callee
-  never reads, the callee still takes that parameter: `func_02084e64(ListScene *self)` is passed `self`
+  never reads, the callee still takes that parameter: `ExchangeRandomSeed(ListScene *self)` is passed `self`
   although its body ignores it, and declaring it without the parameter makes the caller 8 bytes short.
 - **Declare return values.** A function declared `void` that really returns a value changes the caller's
   register allocation: `LoadAndQueueUpload` returns `offset + size`, and declaring it `u32` (callers ignore the result)
@@ -792,7 +792,7 @@ Other findings from linking:
 - **A field set from an argument and then tested:** store first and test the field (`f = g; if (f != 0)`), not
   `if (g & 0xff)` (`CreateCommandListWindow`, `CreateCommandPageWindow`).
 - **Load order through locals:** a pointer copied to a local before a store fixes the order of pool loads
-  (`func_02084a10`); fields loaded into named locals before arithmetic fix the order of field loads, then try
+  (`ExchangeRecords`); fields loaded into named locals before arithmetic fix the order of field loads, then try
   both operand orders (`BattleTarget::TestPointInHitBoxXZ`).
 - **One-word diffs in the literal pool** can be a wrong constant, e.g. dividing by the wrong number
   (`BattleTarget::func_ov007_0225c360` divides by 182, not 240).

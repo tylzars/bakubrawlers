@@ -76,9 +76,9 @@ public:
     void PrintText();
 };
 
-void func_02078250(UnkStruct_02076058 *object);
+void ClearText(UnkStruct_02076058 *object);
 extern "C" void DC_FlushRange(void *buffer, u32 size);
-void func_020781a0(UnkStruct_02076058 *object);
+void DrawText(UnkStruct_02076058 *object);
 
 UnkStruct_02076058::UnkStruct_02076058(u8 unk1) :
     SceneBase(0x3e8, 0) {
@@ -149,7 +149,7 @@ UnkStruct_02076058::~UnkStruct_02076058() {
         mResultMessages = NULL;
     }
     if (mTextBuffer != NULL) {
-        func_02078250(this);
+        ClearText(this);
         OS_Free(mTextBuffer);
     }
     if (mGlyphBuffer != NULL) {
@@ -480,7 +480,7 @@ void UnkStruct_02076058::Draw() {
             mCellAnims[slot]->Draw(1, sResultCellPositions[slot][0], sResultCellPositions[slot][1], 1);
         }
     }
-    func_020781a0(this);
+    DrawText(this);
     if (mWindow != NULL) {
         mWindow->Draw();
     }
@@ -585,7 +585,7 @@ void UnkStruct_02076058::LoadMessages() {
 }
 
 void UnkStruct_02076058::PrintText() {
-    func_02078250(this);
+    ClearText(this);
     TextManager::Get().mUse4bppFont = 1;
     for (u8 i = 0; i < 3; i++) {
         if (mSaveEntries[i + mSlotOffset] != NULL) {
@@ -628,11 +628,11 @@ void UnkStruct_02076058::PrintText() {
     QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, UPLOAD_KIND_OBJ, 0x6000, mTextBuffer, mTextBufferSize, 0);
 }
 
-void func_020781a0(UnkStruct_02076058 *object) {
+void DrawText(UnkStruct_02076058 *object) {
     SpriteManager::Get().Screen(1).AddOam(object->mGlyphBuffer, object->mGlyphCount, 0x46, 0x29, 1, 0xc0, 0xf, 0);
 }
 
-void func_02078250(UnkStruct_02076058 *object) {
+void ClearText(UnkStruct_02076058 *object) {
     if (object->mTextBuffer != NULL) {
         MI_CpuClear16(object->mTextBuffer, object->mTextBufferSize);
     }

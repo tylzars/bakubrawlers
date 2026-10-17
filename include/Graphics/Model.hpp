@@ -35,7 +35,7 @@ public:
 class ModelInstance;
 struct CharacterParams;
 
-// The CharacterModel (Graphics/CharacterModel.hpp) seen through UnkStruct_0205401c::mUnk_04; still to be merged
+// The CharacterModel (Graphics/CharacterModel.hpp) seen through UnkStruct_0205401c::mCharacter; still to be merged
 // into that class (CharacterEditScene reads 0x65-0x74 as an array).
 struct UnkStruct_0205401c_04 {
     /* 00 */ PAD(0x00, 0x12);
@@ -43,7 +43,7 @@ struct UnkStruct_0205401c_04 {
     /* 14 */ PAD(0x14, 0x64);
     /* 64 */ u8 mVisible;
     /* 65 */ u8 mUnk_65[16];
-    /* 75 */ u8 mUnk_75;
+    /* 75 */ u8 mAttribute;
     /* 76 */
 };
 
@@ -62,12 +62,12 @@ public:
     UnkStruct_0205401c *Release(); // SpriteManager::RestoreSlot(0), then deletes the story character, character and shadow
     void Create(u32 unk1, u32 unk2, u32 unk3, u32 unk4); // unk2 != 0 first calls SpriteManager::SaveSlot(0)
     void SetParams(const CharacterParams *params);
-    void func_0205461c(u32 unk1, u32 unk2);
+    void StartAnim(u32 unk1, u32 unk2);
     void Draw();
     void StartLoad(u32 unk1, u32 unk2, u32 unk3, u8 unk4);
     BOOL UpdateLoad();
     void FinishLoad();
-    void func_02054644(u32 unk1, u32 unk2);
+    void SetExtraAnimSetAndStartAnim(u32 unk1, u32 unk2);
     void SetExtraAnimEnabled(u32 unk1);
     void SetVisible(u8 unk1);
     u8 IsVisible();

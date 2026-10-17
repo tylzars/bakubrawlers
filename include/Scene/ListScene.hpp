@@ -18,7 +18,7 @@ class UnkStruct_02071d24;
 class UnkObject_02078e14 {
 public:
     /* 00 */ virtual ~UnkObject_02078e14();
-    /* 04 */ u8 mUnk_04;
+    /* 04 */ u8 mFinished;
     /* 05 */ PAD(0x05, 0x64);
     /* 64 */ u8 mUnk_64;
 };
@@ -65,7 +65,7 @@ public:
     /* 0ec */ u32 mPageSliding;
     /* 0f0 */ u32 mSelectingPage;
     /* 0f4 */ u8 mFirstPage;
-    /* 0f5 */ u8 mUnk_f5;
+    /* 0f5 */ u8 mListInputState;
     /* 0f6 */ PAD(0x0f6, 0x0f8);
     /* 0f8 */ s16 mRowSlideY;
     // mCursorItem - mScroll is the visible row (UpdateListInput); UpdateListScroll moves it to mTargetItem, the item
@@ -173,7 +173,7 @@ public:
     void SetupMainScreenForPage();
     void ClearMainScreenText();
     void StoreSlotsInSaveData(); // only with mCharacterId 0x15
-    void func_020851d0();
+    void UpdateMainScreenAndDraw();
     void DrawPromptWindowContents();
     void InitMainScreenText();
     void InitAndLoadMainScreen(); // main engine registers, clears main BG / OBJ VRAM, then the files, cells and text
@@ -194,10 +194,10 @@ void SetupListTextKind(ListScene *self, u32 mode);
 void ResetCursorBakuganEntry(ListScene *self);
 void func_020843ac(ListScene *self, u32 unk1);
 void CopySlotsToFirstPlayer(ListScene *self);
-BOOL func_02084a10(ListScene *self);
-BOOL func_02084c38(ListScene *self);
-BOOL func_02084e64(ListScene *self); // self is passed but unused
-BOOL func_02084f40(ListScene *self); // self is passed but unused
-BOOL func_0208501c(ListScene *self);
+BOOL ExchangeRecords(ListScene *self);
+BOOL ExchangeSlots(ListScene *self);
+BOOL ExchangeRandomSeed(ListScene *self); // self is passed but unused
+BOOL ExchangeCharacterLooks(ListScene *self); // self is passed but unused
+BOOL ExchangeRecordHeads(ListScene *self);
 void SetupDeckTextKind(ListScene *self, u32 mode);
 void PickSlots(ListScene *self);

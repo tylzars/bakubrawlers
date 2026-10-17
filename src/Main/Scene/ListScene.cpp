@@ -508,11 +508,11 @@ void PrintListSceneSubScreenText(ListScene *self);
 void ResetCursorBakuganEntry(ListScene *self);
 void func_020843ac(ListScene *self, u32 unk1);
 void CopySlotsToFirstPlayer(ListScene *self);
-BOOL func_02084a10(ListScene *self);
-BOOL func_02084c38(ListScene *self);
-BOOL func_02084e64(ListScene *self); // self is passed but unused
-BOOL func_02084f40(ListScene *self); // self is passed but unused
-BOOL func_0208501c(ListScene *self);
+BOOL ExchangeRecords(ListScene *self);
+BOOL ExchangeSlots(ListScene *self);
+BOOL ExchangeRandomSeed(ListScene *self); // self is passed but unused
+BOOL ExchangeCharacterLooks(ListScene *self); // self is passed but unused
+BOOL ExchangeRecordHeads(ListScene *self);
 void SetupDeckTextKind(ListScene *self, u32 mode);
 void PickSlots(ListScene *self);
 void PickSlot3Card(ListScene *self);
@@ -591,7 +591,7 @@ ListScene::ListScene(u32 unk1, u32 unk2) :
     mPageScroll = 0;
     mPageSliding = 0;
     mSelectingPage = 1;
-    mUnk_f5 = 0;
+    mListInputState = 0;
     mWndMode = 2;
     mRowSlideY  = 0;
     mCursorItem  = 0;
@@ -665,7 +665,7 @@ ListScene::~ListScene() {
     }
     SpriteManager::Get().SetFade(FADE_MODE_HOLD, -16);
     if (data_020d433c.mWireless != 0) {
-        mAntenna->mUnk_04 = 1;
+        mAntenna->mFinished = 1;
     }
     delete mMessageWindow;
     mWndMode = 0;
@@ -729,7 +729,7 @@ void ListScene::Release(u32 releaseCommands) {
         }
     }
     if (data_020d433c.mWireless != 0) {
-        mAntenna->mUnk_04 = 1;
+        mAntenna->mFinished = 1;
     }
     delete mMessageWindow;
     mMessageWindow = NULL;
@@ -818,7 +818,7 @@ void ListScene::Update() {
             mState++;
             if (mMode == 5) {
                 mState = 7;
-                func_020851d0();
+                UpdateMainScreenAndDraw();
                 return;
             }
             break;
@@ -920,7 +920,7 @@ void ListScene::Update() {
             mDeckWindow->mEnabled = 0;
             SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
             mState++;
-            func_020851d0();
+            UpdateMainScreenAndDraw();
             return;
         case 8:
             if (!SpriteManager::Get().IsFading()) {
@@ -930,7 +930,7 @@ void ListScene::Update() {
                     SetupDeckTextKind(this, 0xc);
                 }
             }
-            func_020851d0();
+            UpdateMainScreenAndDraw();
             return;
         case 9:
             if (!IsCommandListOrPageSettingUp()) {
@@ -953,19 +953,19 @@ void ListScene::Update() {
                     }
                 }
             }
-            func_020851d0();
+            UpdateMainScreenAndDraw();
             return;
         case 10:
             SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mDeckWindow->mEnabled = 0;
             mState++;
-            func_020851d0();
+            UpdateMainScreenAndDraw();
             return;
         case 11:
             if (!SpriteManager::Get().IsFading()) {
                 mState++;
             }
-            func_020851d0();
+            UpdateMainScreenAndDraw();
             return;
         case 12:
             if (IsCommandListOrPageSettingUp()) {
@@ -1002,21 +1002,21 @@ void ListScene::Update() {
             }
             func_020843ac(this, 1);
             mState++;
-            func_020851d0();
+            UpdateMainScreenAndDraw();
             return;
         case 18:
             if (!IsCommandListOrPageSettingUp() && mMainScreenState == 0) {
                 SpriteManager::Get().StartFade(FADE_MODE_TO_ZERO);
                 mState++;
             }
-            func_020851d0();
+            UpdateMainScreenAndDraw();
             return;
         case 19:
             if (!SpriteManager::Get().IsFading()) {
                 mDeckWindow->mEnabled = 1;
                 mState           = 9;
             }
-            func_020851d0();
+            UpdateMainScreenAndDraw();
             return;
         case 20: {
             switch (mPromptWindow->Update(1)) {
@@ -1027,7 +1027,7 @@ void ListScene::Update() {
                     mState = 0x16;
                     break;
             }
-            func_020851d0();
+            UpdateMainScreenAndDraw();
             return;
         }
         case 21:
@@ -1051,14 +1051,14 @@ void ListScene::Update() {
                         break;
                 }
             }
-            func_020851d0();
+            UpdateMainScreenAndDraw();
             return;
         case 22:
             mPromptWindow->Update(1);
             if (mPromptWindow->mState == 4) {
                 SetupDeckTextKind(this, 0);
             }
-            func_020851d0();
+            UpdateMainScreenAndDraw();
             return;
         case 23:
             mDeckWindow->mEnabled = 0;
@@ -1068,7 +1068,7 @@ void ListScene::Update() {
             MIi_CpuCopyFast(gCharacterLook, (u8 *) ((u32 *) data_020d433c.mBattlePlayers)[3] + 0xa8, 8);
             SpriteManager::Get().StartFade(FADE_MODE_DOWN);
             mState++;
-            func_020851d0();
+            UpdateMainScreenAndDraw();
             return;
         case 24:
             if (!SpriteManager::Get().IsFading()) {
@@ -1076,7 +1076,7 @@ void ListScene::Update() {
                 mState++;
                 return;
             }
-            func_020851d0();
+            UpdateMainScreenAndDraw();
             return;
         case 25:
             if (mContext->mRequest != 0) {
@@ -1088,27 +1088,27 @@ void ListScene::Update() {
             mFinished = 1;
             return;
         case 27:
-            if (func_02084a10(this)) {
+            if (ExchangeRecords(this)) {
                 mState++;
             }
             UPDATE_TAIL();
         case 28:
-            if (func_02084c38(this)) {
+            if (ExchangeSlots(this)) {
                 mState++;
             }
             UPDATE_TAIL();
         case 29:
-            if (func_0208501c(this)) {
+            if (ExchangeRecordHeads(this)) {
                 mState++;
             }
             UPDATE_TAIL();
         case 30:
-            if (func_02084f40(this)) {
+            if (ExchangeCharacterLooks(this)) {
                 mState++;
             }
             UPDATE_TAIL();
         case 31:
-            if (func_02084e64(this)) {
+            if (ExchangeRandomSeed(this)) {
                 SpriteManager::Get().StartFade(FADE_MODE_DOWN);
                 mState++;
             }
@@ -1653,30 +1653,30 @@ void ListScene::UpdateListInput() {
     switch (mListWindow->mCursor->mUnk_05) {
         case 1:
             if (act == 0) {
-                if (mUnk_f5 == 0) {
-                    mUnk_f5 = 5;
+                if (mListInputState == 0) {
+                    mListInputState = 5;
                     act     = 3;
                 } else if (TouchManager::Get().mTrigger != 0) {
-                    mUnk_f5 = 6;
+                    mListInputState = 6;
                     act     = 3;
                 }
             }
             break;
         case 2:
             if (act == 0) {
-                if (mUnk_f5 == 0) {
-                    mUnk_f5 = 7;
+                if (mListInputState == 0) {
+                    mListInputState = 7;
                     act     = 4;
                 } else if (TouchManager::Get().mTrigger != 0) {
-                    mUnk_f5 = 8;
+                    mListInputState = 8;
                     act     = 4;
                 }
             }
             break;
         case 5:
             if (act == 0) {
-                if (mUnk_f5 == 0) {
-                    mUnk_f5 = 9;
+                if (mListInputState == 0) {
+                    mListInputState = 9;
                     act     = 5;
                 } else if (TouchManager::Get().mTrigger != 0) {
                     act = 5;
@@ -1685,8 +1685,8 @@ void ListScene::UpdateListInput() {
             break;
         case 6:
             if (act == 0) {
-                if (mUnk_f5 == 0) {
-                    mUnk_f5 = 9;
+                if (mListInputState == 0) {
+                    mListInputState = 9;
                     act     = 6;
                 } else if (TouchManager::Get().mTrigger != 0) {
                     act = 6;
@@ -1710,9 +1710,9 @@ void ListScene::UpdateListInput() {
                 if (mSelectingPage != 0) {
                     act = 3;
                     if (InputManager::Get().IsPressed(KEY_LEFT)) {
-                        mUnk_f5 = 1;
+                        mListInputState = 1;
                     } else {
-                        mUnk_f5 = 2;
+                        mListInputState = 2;
                     }
                 } else if (mListWindow->mButtons[3].mEnabled != 0) {
                     mListWindow->SetResultItem(3, 3);
@@ -1723,9 +1723,9 @@ void ListScene::UpdateListInput() {
                 if (mSelectingPage != 0) {
                     act = 4;
                     if (InputManager::Get().IsPressed(KEY_RIGHT)) {
-                        mUnk_f5 = 3;
+                        mListInputState = 3;
                     } else {
-                        mUnk_f5 = 4;
+                        mListInputState = 4;
                     }
                 } else if (mListWindow->mButtons[4].mEnabled != 0) {
                     mListWindow->SetResultItem(4, 3);
@@ -1804,7 +1804,7 @@ void ListScene::UpdateListInput() {
                     mTargetPage = mCursorPage - 1;
                     SoundManager::Get().StartSeqArc(5);
                 } else {
-                    mUnk_f5 = 0;
+                    mListInputState = 0;
                 }
                 return;
             case 4:
@@ -1812,7 +1812,7 @@ void ListScene::UpdateListInput() {
                     mTargetPage = mCursorPage + 1;
                     SoundManager::Get().StartSeqArc(5);
                 } else {
-                    mUnk_f5 = 0;
+                    mListInputState = 0;
                 }
                 return;
         }
@@ -1915,7 +1915,7 @@ void ListScene::UpdateListInput() {
                     RefreshCommandList();
                     SoundManager::Get().StartSeqArc(0);
                 }
-                mUnk_f5 = 0;
+                mListInputState = 0;
                 return;
             case 5:
                 if (mItemCount <= 1) {
@@ -2057,7 +2057,7 @@ void ListScene::UpdateListWindow() {
 }
 
 void ListScene::UpdatePages() {
-    switch (mUnk_f5) {
+    switch (mListInputState) {
         case 2:
             if (InputManager::Get().IsDown(KEY_LEFT) == 0 && mPageSliding == 0) {
                 ApplyTargetPage();
@@ -2070,7 +2070,7 @@ void ListScene::UpdatePages() {
             break;
         case 5:
             if (TouchManager::Get().mReleased != 0) {
-                mUnk_f5 = 0;
+                mListInputState = 0;
             }
             break;
         case 6:
@@ -2080,7 +2080,7 @@ void ListScene::UpdatePages() {
             break;
         case 7:
             if (TouchManager::Get().mReleased != 0) {
-                mUnk_f5 = 0;
+                mListInputState = 0;
             }
             break;
         case 8:
@@ -2090,7 +2090,7 @@ void ListScene::UpdatePages() {
             break;
         case 9:
             if (TouchManager::Get().mReleased != 0) {
-                mUnk_f5 = 0;
+                mListInputState = 0;
             }
             break;
     }
@@ -2132,8 +2132,8 @@ void ListScene::UpdatePages() {
 }
 
 void ListScene::ApplyTargetPage() {
-    if (mUnk_f5 != 5 && mUnk_f5 != 7) {
-        mUnk_f5 = 0;
+    if (mListInputState != 5 && mListInputState != 7) {
+        mListInputState = 0;
     }
     mPage      = mTargetPage;
     mDirtyFlags[2] = 1;
@@ -3946,7 +3946,7 @@ void CopySlotsToFirstPlayer(ListScene *self) {
     }
 }
 
-BOOL func_02084a10(ListScene *self) {
+BOOL ExchangeRecords(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
         if (self->mCharacterId != 0x15) {
             BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mRecords[i];
@@ -3989,7 +3989,7 @@ BOOL func_02084a10(ListScene *self) {
     return FALSE;
 }
 
-BOOL func_02084c38(ListScene *self) {
+BOOL ExchangeSlots(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
         if (self->mCharacterId != 0x15) {
             SLOT_MESSAGE->mSlots54Values[i] = data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mSlots54[i].mValue;
@@ -4041,7 +4041,7 @@ BOOL func_02084c38(ListScene *self) {
     return FALSE;
 }
 
-BOOL func_02084e64(ListScene *self) {
+BOOL ExchangeRandomSeed(ListScene *self) {
     data_0220f540.mUnk_04 = MATH_Rand32(&gRandom, 0);
     if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 2)) {
         u8 *info = WirelessManager::Get().GetRecvBlock(0);
@@ -4053,7 +4053,7 @@ BOOL func_02084e64(ListScene *self) {
     return FALSE;
 }
 
-BOOL func_02084f40(ListScene *self) {
+BOOL ExchangeCharacterLooks(ListScene *self) {
     MIi_CpuCopyFast(gCharacterLook, (u8 *) &data_0220f540 + 4, 8);
     if (SetMessageTypeAndCheckAll(data_020d433c.mBattlePlayers, 6)) {
         u32 count = WirelessManager::Get().GetRecvBlockCount();
@@ -4068,7 +4068,7 @@ BOOL func_02084f40(ListScene *self) {
     return FALSE;
 }
 
-BOOL func_0208501c(ListScene *self) {
+BOOL ExchangeRecordHeads(ListScene *self) {
     for (u8 i = 0; i < 3; i++) {
         if (self->mCharacterId != 0x15) {
             MIi_CpuCopy16(&data_020d433c.mBattlePlayers->mPlayers[self->mPlayer]->mRecords[i], (u8 *) &data_0220f540 + 4 + i * 4, 4);
@@ -4105,7 +4105,7 @@ BOOL func_0208501c(ListScene *self) {
     return FALSE;
 }
 
-void ListScene::func_020851d0() {
+void ListScene::UpdateMainScreenAndDraw() {
     UpdateMainScreen();
     DrawMainScreen();
     DrawPromptWindowContents();
@@ -4673,7 +4673,7 @@ u32 ListScene::GetEntryPrice(u32 unk1, u32 unk2) {
 }
 
 BOOL ListScene::ShouldApplyTargetPage() {
-    switch (mUnk_f5) {
+    switch (mListInputState) {
         case 2:
             if (mCursorPage <= mFirstPage) {
                 return TRUE;

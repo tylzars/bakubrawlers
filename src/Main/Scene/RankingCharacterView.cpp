@@ -165,7 +165,7 @@ void RankingCharacterView::CreateCharacterModel(u32 kind) {
     mCharacterModel = new UnkStruct_0205401c();
     SpriteManager::Get().SaveSlot(0);
     mCharacterModel->Create(kind & 0xff, 0, 0, 0);
-    mCharacterModel->func_0205461c(0, 1);
+    mCharacterModel->StartAnim(0, 1);
     mCharacterModel->SetVisible(1);
     fx32 z = gRankingCharacterModelZ[kind] << 12;
     fx32 y = gRankingCharacterModelY[kind] << 12;
@@ -371,7 +371,7 @@ void RankingCharacterView::ApplyNextCharacter() {
     u32 kind = mCharacterId;
     SpriteManager::Get().RestoreSlot(0);
     mCharacterModel->Create(kind & 0xff, 0, 0, 0);
-    mCharacterModel->func_0205461c(0, 1);
+    mCharacterModel->StartAnim(0, 1);
     mCharacterModel->SetVisible(1);
     u16 *rot = mCharacterModel->GetModelRotation();
     rot[1] += 0x4cd;

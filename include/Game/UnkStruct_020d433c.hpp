@@ -154,7 +154,7 @@ struct BattlePlayer : public SceneBase {
         return ((u8 *) this)[0x56 + i * 4];
     }
 
-    // Appends (id, kind) to the 6-byte history entries at +84; mUnk_f4 counts them.
+    // Appends (id, kind) to the 6-byte history entries at +84; mHistoryCount counts them.
     void PushHistory(u16 id, u8 kind) {
         *(u16 *) ((u8 *) this + mHistoryCount * 6 + 0x84) = id;
         *((u8 *) this + mHistoryCount * 6 + 0x86)          = kind;

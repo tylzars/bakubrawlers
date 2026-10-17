@@ -154,7 +154,7 @@ that matches should replace it.
   stack-slot order), BattlePlayerList::Update's two volatile reads in case 4's second record (keep the player
   reload and the slot read apart so they number as the original's registers need), BattleSub48's enum-typed entry index, BattleAbility::func_ov007_02265af8's two
   volatile index reads, BattleOrderSelect's `volatile ry`, BattleCardModel's narrow stack
-  read, the casts through `data_020a3210.mOrder` in ListScene.cpp, BattleConfrontCard::func_ov007_0223f918's
+  read, the casts through `sAreaCursorAndBakuganOrder.mOrder` in ListScene.cpp, BattleConfrontCard::func_ov007_0223f918's
   two-arm player index in case 29 (both arms read the same byte), cri_wave_ch func_02048940's repeated
   `r6 > 0 || r6 > 0` test (a join below the get24 call, so its result stays in r6's local).
 - Expression stand-ins: nns_snd_wavstrm UpdateWavStrms's `- -v`, msl_strtod's `mp = (unsigned char *)&mant`,
@@ -617,7 +617,7 @@ Other findings from linking:
   `u8, u8` matched three callers in ListScene.cpp. An `extern` object's declared size can matter too:
   stores at 0x1c/0x1d into `UnkStruct_0220f540` scheduled like the original only once the type was at least 0x3c bytes.
 - **Code that leaves no instructions can still move the scheduler.** The choice between equally ready instructions
-  depends on where they sit in the block; dummy calls before a block flip such ties (func_020843ac, func_02085220).
+  depends on where they sit in the block; dummy calls before a block flip such ties (func_020843ac, SetupDeckTextKind).
 - **A negative constant stored with `strh` means a signed 16-bit destination.** `mov r0, #0xe000; sub r1, r0, #0x12000`
   (0xffffc000) stored to a halfword can't come from a `u16` field: every form folds to 0xc000. Only a signed 16-bit
   lvalue gives it (`*(s16 *) &p->mRotY = -0x4000;` as a placeholder, BattleCardCamera::Init).

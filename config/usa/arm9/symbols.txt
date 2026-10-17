@@ -2843,34 +2843,34 @@ _ZN9ListSceneD0Ev kind:function(arm,size=0x2d4) addr:0x02079398
 _ZN9ListScene7ReleaseEj kind:function(arm,size=0x304) addr:0x0207966c
 _ZN9ListScene6UpdateEv kind:function(arm,size=0x1a38) addr:0x02079970
 _ZN9ListScene11InitDisplayEv kind:function(arm,size=0x340) addr:0x0207b3a8
-_ZN9ListScene13func_0207b6e8Ev kind:function(arm,size=0x78) addr:0x0207b6e8
+_ZN9ListScene17SetupPagesAndListEv kind:function(arm,size=0x78) addr:0x0207b6e8
 _ZN9ListScene21LoadSubScreenGraphicsEv kind:function(arm,size=0xe08) addr:0x0207b760
 _ZN9ListScene12LoadMessagesEv kind:function(arm,size=0x4f8) addr:0x0207c568
 _ZN9ListScene9PrintRowsEv kind:function(arm,size=0x450) addr:0x0207ca60
 _ZN9ListScene17DrawSubScreenTextEv kind:function(arm,size=0xd4) addr:0x0207ceb0
 _ZN9ListScene18ClearSubScreenTextEv kind:function(arm,size=0x20) addr:0x0207cf84
-_ZN9ListScene13func_0207cfa4Ev kind:function(arm,size=0xf00) addr:0x0207cfa4
-_ZN9ListScene13func_0207dea4Ev kind:function(arm,size=0x1d0) addr:0x0207dea4
-_ZN9ListScene13func_0207e074Ev kind:function(arm,size=0x3b0) addr:0x0207e074
-_ZN9ListScene13func_0207e424Ev kind:function(arm,size=0x3c0) addr:0x0207e424
-_ZN9ListScene13func_0207e7e4Ev kind:function(arm,size=0x258) addr:0x0207e7e4
-_ZN9ListScene13func_0207ea3cEv kind:function(arm,size=0x300) addr:0x0207ea3c
+_ZN9ListScene15UpdateListInputEv kind:function(arm,size=0xf00) addr:0x0207cfa4
+_ZN9ListScene16UpdateMainScreenEv kind:function(arm,size=0x1d0) addr:0x0207dea4
+_ZN9ListScene16UpdateListWindowEv kind:function(arm,size=0x3b0) addr:0x0207e074
+_ZN9ListScene11UpdatePagesEv kind:function(arm,size=0x3c0) addr:0x0207e424
+_ZN9ListScene15ApplyTargetPageEv kind:function(arm,size=0x258) addr:0x0207e7e4
+_ZN9ListScene16UpdateListScrollEv kind:function(arm,size=0x300) addr:0x0207ea3c
 _ZN9ListScene12ApplyWndModeEv kind:function(arm,size=0x188) addr:0x0207ed3c
-_ZN9ListScene13func_0207eec4Ev kind:function(arm,size=0x42c) addr:0x0207eec4
+_ZN9ListScene14DrawMainScreenEv kind:function(arm,size=0x42c) addr:0x0207eec4
 _ZN9ListScene11DrawWindowsEv kind:function(arm,size=0x3c) addr:0x0207f2f0
-_ZN9ListScene13func_0207f32cEv kind:function(arm,size=0x5e0) addr:0x0207f32c
-_ZN9ListScene13func_0207f90cEv kind:function(arm,size=0x648) addr:0x0207f90c
-_ZN9ListScene13func_0207ff54Ev kind:function(arm,size=0x1b0) addr:0x0207ff54
-_ZN9ListScene13func_02080104Ev kind:function(arm,size=0x10c) addr:0x02080104
+_ZN9ListScene22DrawPagesAndMovingItemEv kind:function(arm,size=0x5e0) addr:0x0207f32c
+_ZN9ListScene8DrawRowsEv kind:function(arm,size=0x648) addr:0x0207f90c
+_ZN9ListScene22DrawItemNumberAndCountEv kind:function(arm,size=0x1b0) addr:0x0207ff54
+_ZN9ListScene31DrawMoneyFilterButtonsAndCursorEv kind:function(arm,size=0x10c) addr:0x02080104
 _ZN9ListScene9ReadSlotsEv kind:function(arm,size=0x17c) addr:0x02080210
-_ZN9ListScene13func_0208038cEv kind:function(arm,size=0x440) addr:0x0208038c
-_ZN9ListScene13func_020807ccEv kind:function(arm,size=0xcc) addr:0x020807cc
-_ZN9ListScene13func_02080898Ev kind:function(arm,size=0x2b0) addr:0x02080898
+_ZN9ListScene22SetupMainScreenForPageEv kind:function(arm,size=0x440) addr:0x0208038c
+_ZN9ListScene16LoadSlotGraphicsEv kind:function(arm,size=0xcc) addr:0x020807cc
+_ZN9ListScene15LoadRowGraphicsEv kind:function(arm,size=0x2b0) addr:0x02080898
 _ZN9ListScene13func_02080b48Ejj kind:function(arm,size=0x94) addr:0x02080b48
 _ZN9ListScene9BuildListEj kind:function(arm,size=0x54c) addr:0x02080bdc
-_ZN9ListScene13func_02081128Ev kind:function(arm,size=0x46c) addr:0x02081128
-_ZN9ListScene13func_02081594Ev kind:function(arm,size=0x158) addr:0x02081594
-_ZN9ListScene13func_020816ecEjj kind:function(arm,size=0x2a8) addr:0x020816ec
+_ZN9ListScene18RefreshCommandListEv kind:function(arm,size=0x46c) addr:0x02081128
+_ZN9ListScene18RefreshCommandPageEv kind:function(arm,size=0x158) addr:0x02081594
+_ZN9ListScene15DrawMoneyAmountEjj kind:function(arm,size=0x2a8) addr:0x020816ec
 _ZN9ListScene12SetItemFlagsEjjj kind:function(arm,size=0xb8) addr:0x02081994
 _Z23ListSceneScrollCallbackPv kind:function(arm,size=0x28) addr:0x02081a4c
 _ZN9ListScene15DrawBakuganMarkEhjjss kind:function(arm,size=0x1b8) addr:0x02081a74
@@ -2888,44 +2888,44 @@ _ZN9ListScene18DrawMainScreenTextEv kind:function(arm,size=0xa8) addr:0x020831f4
 _ZN9ListScene19ClearMainScreenTextEv kind:function(arm,size=0x20) addr:0x0208329c
 _ZN9ListScene13RefreshCountsEv kind:function(arm,size=0x1e0) addr:0x020832bc
 _ZN9ListScene13GetRatioFrameEj kind:function(arm,size=0x50) addr:0x0208349c
-_Z13func_020834ecP9ListScenej kind:function(arm,size=0x4b4) addr:0x020834ec
+_Z17SetupListTextKindP9ListScenej kind:function(arm,size=0x4b4) addr:0x020834ec
 _Z27PrintListSceneSubScreenTextP9ListScene kind:function(arm,size=0x69c) addr:0x020839a0
-_ZN9ListScene13func_0208403cEv kind:function(arm,size=0x120) addr:0x0208403c
-_Z13func_0208415cP9ListScene kind:function(arm,size=0x144) addr:0x0208415c
+_ZN9ListScene24DrawPromptWindowContentsEv kind:function(arm,size=0x120) addr:0x0208403c
+_Z23ResetCursorBakuganEntryP9ListScene kind:function(arm,size=0x144) addr:0x0208415c
 _ZN9ListScene28IsCommandListOrPageSettingUpEv kind:function(arm,size=0x48) addr:0x020842a0
 _ZN9ListScene20StoreSlotsInSaveDataEv kind:function(arm,size=0xc4) addr:0x020842e8
 _Z13func_020843acP9ListScenej kind:function(arm,size=0x51c) addr:0x020843ac
-_Z13func_020848c8P9ListScene kind:function(arm,size=0x148) addr:0x020848c8
+_Z22CopySlotsToFirstPlayerP9ListScene kind:function(arm,size=0x148) addr:0x020848c8
 _Z13func_02084a10P9ListScene kind:function(arm,size=0x228) addr:0x02084a10
 _Z13func_02084c38P9ListScene kind:function(arm,size=0x22c) addr:0x02084c38
 _Z13func_02084e64P9ListScene kind:function(arm,size=0xdc) addr:0x02084e64
 _Z13func_02084f40P9ListScene kind:function(arm,size=0xdc) addr:0x02084f40
 _Z13func_0208501cP9ListScene kind:function(arm,size=0x1b4) addr:0x0208501c
 _ZN9ListScene13func_020851d0Ev kind:function(arm,size=0x50) addr:0x020851d0
-_Z13func_02085220P9ListScenej kind:function(arm,size=0x240) addr:0x02085220
+_Z17SetupDeckTextKindP9ListScenej kind:function(arm,size=0x240) addr:0x02085220
 _ZN9ListScene10SetMessageEi kind:function(arm,size=0xac) addr:0x02085460
-_Z13func_0208550cP9ListScene kind:function(arm,size=0x3c8) addr:0x0208550c
-_Z13func_020858d4P9ListScene kind:function(arm,size=0x98) addr:0x020858d4
-_Z13func_0208596cP9ListScenejj kind:function(arm,size=0x24) addr:0x0208596c
-_Z13func_02085990P9ListScene kind:function(arm,size=0xec) addr:0x02085990
-_Z13func_02085a7cP9ListScenejj kind:function(arm,size=0x110) addr:0x02085a7c
-_Z13func_02085b8cP9ListScene kind:function(arm,size=0x21c) addr:0x02085b8c
-_Z13func_02085da8P9ListScenejjj kind:function(arm,size=0x244) addr:0x02085da8
-_Z13func_02085fecP9ListScene kind:function(arm,size=0x58) addr:0x02085fec
-_Z13func_02086044P9ListScenej kind:function(arm,size=0x1b0) addr:0x02086044
+_Z9PickSlotsP9ListScene kind:function(arm,size=0x3c8) addr:0x0208550c
+_Z13PickSlot3CardP9ListScene kind:function(arm,size=0x98) addr:0x020858d4
+_Z20CardMatchesBakuganIdP9ListScenejj kind:function(arm,size=0x24) addr:0x0208596c
+_Z13PickSlot6CardP9ListScene kind:function(arm,size=0xec) addr:0x02085990
+_Z20CardMatchesAttributeP9ListScenejj kind:function(arm,size=0x110) addr:0x02085a7c
+_Z13PickSlot7CardP9ListScene kind:function(arm,size=0x21c) addr:0x02085b8c
+_Z32CardMatchesBakuganIdAndAttributeP9ListScenejjj kind:function(arm,size=0x244) addr:0x02085da8
+_Z13PickSlot8CardP9ListScene kind:function(arm,size=0x58) addr:0x02085fec
+_Z25CardMatchesSlotAttributesP9ListScenej kind:function(arm,size=0x1b0) addr:0x02086044
 _Z21ListSceneHasAttributeP9ListScenej kind:function(arm,size=0x30) addr:0x020861f4
 _ZN9ListScene13GetEntryPriceEjj kind:function(arm,size=0xac) addr:0x02086224
-_ZN9ListScene13func_020862d0Ev kind:function(arm,size=0x17c) addr:0x020862d0
+_ZN9ListScene21ShouldApplyTargetPageEv kind:function(arm,size=0x17c) addr:0x020862d0
 _ZN9ListScene13func_0208644cEv kind:function(arm,size=0xa0) addr:0x0208644c
 _ZN9ListScene8GetPriceEjj kind:function(arm,size=0x5c) addr:0x020864ec
 _ZN9ListScene13func_02086548Ejj kind:function(arm,size=0x28) addr:0x02086548
 _ZN9ListScene13func_02086570Ejj kind:function(arm,size=0x10) addr:0x02086570
-_Z13func_02086580P9ListScenejjP14BattleCellPair kind:function(arm,size=0xd4) addr:0x02086580
-_Z13func_02086654P9ListScenejj kind:function(arm,size=0x14) addr:0x02086654
+_Z16FillInitialEntryP9ListScenejjP14BattleCellPair kind:function(arm,size=0xd4) addr:0x02086580
+_Z20GetBakuganTableIndexP9ListScenejj kind:function(arm,size=0x14) addr:0x02086654
 _Z18SortListSceneItemsP9ListScenej kind:function(arm,size=0xb4) addr:0x02086668
-_Z13func_0208671cP9ListScenej kind:function(arm,size=0x9c) addr:0x0208671c
-_Z13func_020867b8P9ListScene kind:function(arm,size=0xbc) addr:0x020867b8
-_Z13func_02086874P9ListScene kind:function(arm,size=0xc4) addr:0x02086874
+_Z29FillPickListWithShuffledCardsP9ListScenej kind:function(arm,size=0x9c) addr:0x0208671c
+_Z15ShufflePickListP9ListScene kind:function(arm,size=0xbc) addr:0x020867b8
+_Z28SortPickListByAttributeValueP9ListScene kind:function(arm,size=0xc4) addr:0x02086874
 _Z16UnlockStoreItemsv kind:function(arm,size=0x120) addr:0x02086938
 _Z16UnlockCharactersv kind:function(arm,size=0x11c) addr:0x02086a58
 _Z12UnlockFieldsv kind:function(arm,size=0x1d4) addr:0x02086b74
@@ -3157,21 +3157,21 @@ data_020a30fd kind:data(any) addr:0x020a30fd
 @4084 kind:data(any) addr:0x020a3168 local
 @3306 kind:data(any) addr:0x020a316c local
 sPricePercents kind:data(any) addr:0x020a3174 local
-data_020a3188 kind:data(any) addr:0x020a3188 local
-data_020a31a0 kind:data(any) addr:0x020a31a0 local
-data_020a31d8 kind:data(any) addr:0x020a31d8 local
-data_020a3210 kind:data(any) addr:0x020a3210 local
-data_020a3274 kind:data(any) addr:0x020a3274 local
-data_020a3300 kind:data(any) addr:0x020a3300 local
-data_020a338c kind:data(any) addr:0x020a338c local
-data_020a3430 kind:data(any) addr:0x020a3430 local
-data_020a34f4 kind:data(any) addr:0x020a34f4 local
-data_020a35b8 kind:data(any) addr:0x020a35b8 local
-data_020a3688 kind:data(any) addr:0x020a3688 local
-data_020a3768 kind:data(any) addr:0x020a3768 local
+sCardAndMarkOam kind:data(any) addr:0x020a3188 local
+sDeckWindowItems kind:data(any) addr:0x020a31a0 local
+sDeckWindowCells kind:data(any) addr:0x020a31d8 local
+sAreaCursorAndBakuganOrder kind:data(any) addr:0x020a3210 local
+sPromptWindowCells kind:data(any) addr:0x020a3274 local
+sPromptWindowItems kind:data(any) addr:0x020a3300 local
+sBakuganPriceEntries kind:data(any) addr:0x020a338c local
+sListWindowItems kind:data(any) addr:0x020a3430 local
+sListWindowCells kind:data(any) addr:0x020a34f4 local
+sInitialEntryFields kind:data(any) addr:0x020a35b8 local
+sPageAndRowCursorItems kind:data(any) addr:0x020a3688 local
+sBakuganAttributeFlags kind:data(any) addr:0x020a3768 local
 _ZZ14Table_020a3860vE13data_020a3860 kind:data(any) addr:0x020a3860 weak
 _ZZ14Table_020a39fcvE11sItemPrices kind:data(any) addr:0x020a39fc weak
-_ZZ14Table_020a3ba8vE13data_020a3ba8 kind:data(any) addr:0x020a3ba8 weak
+_ZZ14Table_020a3ba8vE10sCardOrder kind:data(any) addr:0x020a3ba8 weak
 data_020a3d54 kind:data(any) addr:0x020a3d54 local
 data_020a3d58 kind:data(any) addr:0x020a3d58 local
 data_020a3d5c kind:data(any) addr:0x020a3d5c local

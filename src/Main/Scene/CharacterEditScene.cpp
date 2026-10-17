@@ -11,7 +11,7 @@
 #include "Game/Random.hpp"
 #include <nitro/math.h>
 
-static const WindowItemRecord data_0209ec5c[22] = {
+static const WindowItemRecord sEditMenuItems[22] = {
     { 2, 0x1, 135, 26, 114, 24, {0x403}, {-1, -1, -1, -1}, 0, 1 },
     { 9, 0x8, 8, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
     { 10, 0x8, 100, 170, 28, 20, {0x201}, {-1, -1, -1, -1}, 0, 3 },
@@ -26,14 +26,14 @@ static const WindowItemRecord data_0209f12c[22] = {
 };
 
 // Camera position and target (in whole units) of the four views.
-static const s16 data_0209e7c4[4][6] = {
+static const s16 sCameraPositionTargets[4][6] = {
     {180, 110, 90, 5, 80, 0},
     {60, 130, 30, 5, 130, 0},
     {70, 110, 35, 5, 90, 0},
     {100, 100, 50, 5, 40, 0},
 };
 
-static const u16 data_0209e79c[20] = {1, 0x7fff, 0xf666, 0xf5ec, 0xf829};
+static const u16 sCharacterEditLights[20] = {1, 0x7fff, 0xf666, 0xf5ec, 0xf829};
 
 static const WindowItemRecord data_0209f394[22] = {
     { 2, 0x1, 135, 26, 114, 24, {0x403}, {2, 1, 0, 0}, 0, 2 },
@@ -70,7 +70,7 @@ inline WindowCellRecord *CellTable_020b3a28() {
 }
 
 inline WindowCellRecord *CellTable_020b3a44() {
-    static WindowCellRecord data_020b3a44[7] = {
+    static WindowCellRecord sGroupButtonCells[7] = {
         { "edit_ch_b_obj_00_nce.bin", {0x1}, 0xf000, {0x5}, {0x2}, 0, {1, 1, 1, 0} },
         { "edit_ch_b_obj_00_nce.bin", {0x2}, 0xf000, {0x5}, {0x1}, 0, {2, 2, 2, 0} },
         { "edit_ch_b_obj_00_nce.bin", {0x3}, 0xf000, {0x5}, {0x1}, 0, {3, 3, 3, 0} },
@@ -79,7 +79,7 @@ inline WindowCellRecord *CellTable_020b3a44() {
         { "edit_ch_b_obj_00_nce.bin", {0x6}, 0xf000, {0x5}, {0x1}, 0, {6, 6, 6, 0} },
         { "edit_ch_b_obj_00_nce.bin", {0x7}, 0xf000, {0x5}, {0x1}, 0, {7, 7, 7, 0} },
     };
-    return data_020b3a44;
+    return sGroupButtonCells;
 }
 
 static const WindowCellRecord data_0209e834[3] = {
@@ -88,7 +88,7 @@ static const WindowCellRecord data_0209e834[3] = {
     { "union_b_obj_window_nce.bin", {0xa}, 0x19000, {0xd}, {0}, 0, {10, 10, 10, 0} },
 };
 
-static const WindowItemRecord data_0209f5fc[22] = {
+static const WindowItemRecord sGroupButtonItems[22] = {
     { 0, 0x8000, 128, 96, 0, 0, {0}, {-1, -1, -1, -1}, 0, 0 },
     { 1, 0x8, 56, 34, 24, 24, {0}, {-1, -1, -1, -1}, 0, 1 },
     { 2, 0x8, 34, 63, 21, 47, {0}, {-1, -1, -1, -1}, 0, 1 },
@@ -98,11 +98,11 @@ static const WindowItemRecord data_0209f5fc[22] = {
     { 6, 0x8, 70, 102, 17, 60, {0}, {-1, -1, -1, -1}, 0, 1 },
 };
 
-static const Vec2s data_0209e7f4[16] = {
+static const Vec2s sCharacterEditCellPositions[16] = {
     {145, 52}, {177, 52}, {209, 52}, {145, 84}, {177, 84}, {209, 84}, {145, 116}, {177, 116}, {146, 136}, {146, 152}, {219, 134}, {219, 150}, {145, 52}, {145, 52}, {144, 134}, {144, 150},
 };
 
-static const WindowItemRecord data_0209f864[22] = {
+static const WindowItemRecord sCharacterEditCursorItems[22] = {
     { 0, 0x8, 145, 52, 30, 30, {0}, {14, 3, 2, 1}, 0, 1 },
     { 1, 0x8, 177, 52, 30, 30, {0}, {16, 4, 0, 2}, 0, 1 },
     { 2, 0x8, 209, 52, 30, 30, {0}, {18, 5, 1, 0}, 0, 1 },
@@ -131,7 +131,7 @@ static const WindowItemRecord data_0209facc[22] = {
     { 2, 0x8000, 120, 18, 0, 0, {0}, {-1, -1, -1, -1}, 0, 0 },
 };
 
-static const WindowItemRecord data_0209e9f4[22] = {
+static const WindowItemRecord sRootMenuItems[22] = {
     { 7, 0x8, 135, 26, 114, 24, {0x403}, {4, 1, 0, 0}, 0, 2 },
     { 3, 0x1, 135, 54, 114, 24, {0x403}, {0, 2, 1, 1}, 0, 2 },
     { 4, 0x1, 135, 82, 114, 24, {0x403}, {1, 3, 2, 2}, 0, 2 },
@@ -144,7 +144,7 @@ static const WindowItemRecord data_0209e9f4[22] = {
     { 12, 0x2, 225, 170, 30, 20, {0x201}, {-1, -1, -1, -1}, 0, 1 },
 };
 
-static const u32 data_0209e784[6] = {0, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000};
+static const u32 sCharacterEditTextVramOffsets[6] = {0, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000};
 
 static const WindowItemRecord data_0209eec4[22] = {
     { 2, 0x1, 135, 26, 114, 24, {0x403}, {4, 1, 0, 0}, 0, 2 },
@@ -206,7 +206,7 @@ CharacterEditScene::CharacterEditScene(u32 unk) :
     mUnk_18  = 0;
     mUnk_1c  = 0;
     mUnk_20  = 0;
-    mPalette = new ModelLightGroup(data_0209e79c);
+    mPalette = new ModelLightGroup(sCharacterEditLights);
     mMenuDepth = 0;
     for (u8 i = 0; i < 3; i++) {
         mMenuSelection[i] = 0;
@@ -339,7 +339,7 @@ void CharacterEditScene::SetText(u32 slot, u32 message, u32 value) {
         if (&mTexts[slot].mHeight != NULL) {
             mTexts[slot].mHeight = b;
         }
-        QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, data_0209e784[slot], mTextBuffers[slot],
+        QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, sCharacterEditTextVramOffsets[slot], mTextBuffers[slot],
                       mTextBufferSize, 0);
     }
     mTexts[slot].mItemIndex = value;
@@ -363,7 +363,7 @@ void CharacterEditScene::DrawTexts() {
                 WindowItem *item = &items[mTexts[i].mItemIndex];
                 screen.AddOam(mTextGlyphBuffer, (u8) mTextGlyphCount, (s16) (pos.x + item->mWidth / 2 - mTexts[i].mWidth / 2),
                                      (s16) (y + item->mHeight / 2 - mTexts[i].mHeight / 2), 0,
-                                     (u16) (data_0209e784[i] >> 7), 0xf, 0);
+                                     (u16) (sCharacterEditTextVramOffsets[i] >> 7), 0xf, 0);
             }
         }
         i++;
@@ -411,7 +411,7 @@ void CharacterEditScene::UpdateRootMenu() {
         if (mMenuDepthMove != 2) {
             mMenuSelection[mMenuDepth] = 0;
         }
-        mWindows[0]->SetItems(10, (WindowItem *) data_0209e9f4, (s8) mMenuSelection[mMenuDepth]);
+        mWindows[0]->SetItems(10, (WindowItem *) sRootMenuItems, (s8) mMenuSelection[mMenuDepth]);
         if (mMenuSelection[mMenuDepth] == 0) {
             mWindows[0]->mCells[(u8) mWindows[0]->GetSelectedId()]->SetAnimation(0x19);
         } else {
@@ -425,11 +425,11 @@ void CharacterEditScene::UpdateRootMenu() {
         func_020638a8(0);
         GXS_SetVisiblePlane(0x15);
         {
-            fx32 posZ = FxRound(data_0209e7c4[0][2] * 0x1000);
-            fx32 posY = FxRound(data_0209e7c4[0][1] * 0x1000);
+            fx32 posZ = FxRound(sCameraPositionTargets[0][2] * 0x1000);
+            fx32 posY = FxRound(sCameraPositionTargets[0][1] * 0x1000);
             Camera *cam = mCamera;
-            cam->SetPosition(FxRound(data_0209e7c4[0][0] * 0x1000), posY, posZ);
-            mCamera->SetTarget(FxRound(data_0209e7c4[0][3] * 0x1000), FxRound(data_0209e7c4[0][4] * 0x1000), FxRound(data_0209e7c4[0][5] * 0x1000));
+            cam->SetPosition(FxRound(sCameraPositionTargets[0][0] * 0x1000), posY, posZ);
+            mCamera->SetTarget(FxRound(sCameraPositionTargets[0][3] * 0x1000), FxRound(sCameraPositionTargets[0][4] * 0x1000), FxRound(sCameraPositionTargets[0][5] * 0x1000));
         }
         {
             CameraManager &manager = CameraManager::Get();
@@ -744,7 +744,7 @@ void CharacterEditScene::UpdateRootMenu() {
 void CharacterEditScene::UpdateSkinEdit() {
     switch (mStep) {
     case 0x10:
-        mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
+        mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
         SetupSlideIn();
@@ -834,12 +834,12 @@ void CharacterEditScene::func_0205e958() {
         func_020637a8();
         EnableGroupButtons();
         func_020638a8(0);
-        fx32 posZ = FxRound(data_0209e7c4[1][2] * 0x1000);
-        fx32 posY = FxRound(data_0209e7c4[1][1] * 0x1000);
-        mCamera->SetPosition(FxRound(data_0209e7c4[1][0] * 0x1000), posY, posZ);
-        fx32 tgtZ = FxRound(data_0209e7c4[1][5] * 0x1000);
-        fx32 tgtY = FxRound(data_0209e7c4[1][4] * 0x1000);
-        mCamera->SetTarget(FxRound(data_0209e7c4[1][3] * 0x1000), tgtY, tgtZ);
+        fx32 posZ = FxRound(sCameraPositionTargets[1][2] * 0x1000);
+        fx32 posY = FxRound(sCameraPositionTargets[1][1] * 0x1000);
+        mCamera->SetPosition(FxRound(sCameraPositionTargets[1][0] * 0x1000), posY, posZ);
+        fx32 tgtZ = FxRound(sCameraPositionTargets[1][5] * 0x1000);
+        fx32 tgtY = FxRound(sCameraPositionTargets[1][4] * 0x1000);
+        mCamera->SetTarget(FxRound(sCameraPositionTargets[1][3] * 0x1000), tgtY, tgtZ);
         CameraManager &manager = CameraManager::Get();
         Camera *camera = manager.mCameras[manager.mActive];
         data_02211374.mCameraPosition = camera->mPosition;
@@ -1042,7 +1042,7 @@ void CharacterEditScene::func_0205e958() {
 void CharacterEditScene::UpdateFaceEdit() {
     switch (mStep) {
     case 0x1c:
-        mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
+        mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
         SetupSlideIn();
@@ -1122,7 +1122,7 @@ void CharacterEditScene::UpdateFaceEdit() {
 void CharacterEditScene::UpdateHairEdit() {
     switch (mStep) {
     case 0x23:
-        mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
+        mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
         SetupSlideIn();
@@ -1202,7 +1202,7 @@ void CharacterEditScene::UpdateHairEdit() {
 void CharacterEditScene::UpdateCapEdit() {
     switch (mStep) {
     case 0x2a:
-        mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
+        mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
         SetupSlideIn();
@@ -1282,7 +1282,7 @@ void CharacterEditScene::UpdateCapEdit() {
 void CharacterEditScene::UpdateGlassesEdit() {
     switch (mStep) {
     case 0x31:
-        mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
+        mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
         SetupSlideIn();
@@ -1362,7 +1362,7 @@ void CharacterEditScene::UpdateGlassesEdit() {
 void CharacterEditScene::UpdateTopEdit() {
     switch (mStep) {
     case 0x38: {
-        mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
+        mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
         SetupSlideIn();
@@ -1372,8 +1372,8 @@ void CharacterEditScene::UpdateTopEdit() {
         SetupChoices();
         LoadChoiceCells("sub_top_male.nce_ncg1D.bin", "sub_top_male_ncl.bin", "sub_top_male_nce.bin",
                       "color_top_male_ncl.bin");
-        mCamera->SetPosition(FxRound(data_0209e7c4[2][0] * 0x1000), FxRound(data_0209e7c4[2][1] * 0x1000), FxRound(data_0209e7c4[2][2] * 0x1000));
-        mCamera->SetTarget(FxRound(data_0209e7c4[2][3] * 0x1000), FxRound(data_0209e7c4[2][4] * 0x1000), FxRound(data_0209e7c4[2][5] * 0x1000));
+        mCamera->SetPosition(FxRound(sCameraPositionTargets[2][0] * 0x1000), FxRound(sCameraPositionTargets[2][1] * 0x1000), FxRound(sCameraPositionTargets[2][2] * 0x1000));
+        mCamera->SetTarget(FxRound(sCameraPositionTargets[2][3] * 0x1000), FxRound(sCameraPositionTargets[2][4] * 0x1000), FxRound(sCameraPositionTargets[2][5] * 0x1000));
         CameraManager &manager = CameraManager::Get();
         Camera *camera = manager.mCameras[manager.mActive];
         data_02211374.mCameraPosition = camera->mPosition;
@@ -1470,8 +1470,8 @@ void CharacterEditScene::func_020604e8() {
         func_020637a8();
         EnableGroupButtons();
         func_020638a8(0);
-        mCamera->SetPosition(FxRound(data_0209e7c4[3][0] * 0x1000), FxRound(data_0209e7c4[3][1] * 0x1000), FxRound(data_0209e7c4[3][2] * 0x1000));
-        mCamera->SetTarget(FxRound(data_0209e7c4[3][3] * 0x1000), FxRound(data_0209e7c4[3][4] * 0x1000), FxRound(data_0209e7c4[3][5] * 0x1000));
+        mCamera->SetPosition(FxRound(sCameraPositionTargets[3][0] * 0x1000), FxRound(sCameraPositionTargets[3][1] * 0x1000), FxRound(sCameraPositionTargets[3][2] * 0x1000));
+        mCamera->SetTarget(FxRound(sCameraPositionTargets[3][3] * 0x1000), FxRound(sCameraPositionTargets[3][4] * 0x1000), FxRound(sCameraPositionTargets[3][5] * 0x1000));
         CameraManager &manager = CameraManager::Get();
         Camera *camera = manager.mCameras[manager.mActive];
         data_02211374.mCameraPosition = camera->mPosition;
@@ -1600,7 +1600,7 @@ void CharacterEditScene::func_020604e8() {
 void CharacterEditScene::UpdateBottomEdit() {
     switch (mStep) {
     case 0x45:
-        mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
+        mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
         SetupSlideIn();
@@ -1679,7 +1679,7 @@ void CharacterEditScene::UpdateBottomEdit() {
 void CharacterEditScene::UpdateShoesEdit() {
     switch (mStep) {
     case 0x4c:
-        mWindows[0]->SetItems(6, (WindowItem *) data_0209ec5c, -1);
+        mWindows[0]->SetItems(6, (WindowItem *) sEditMenuItems, -1);
         mWindows[1]->Reset(-1);
         func_02063b10(0);
         SetupSlideIn();
@@ -1764,11 +1764,11 @@ void CharacterEditScene::func_020612cc() {
         EnableGroupButtons();
         func_020638a8(0);
         GXS_SetVisiblePlane(0x14);
-        fx32 posZ = FxRound(data_0209e7c4[0][2] * 0x1000);
-        fx32 posY = FxRound(data_0209e7c4[0][1] * 0x1000);
+        fx32 posZ = FxRound(sCameraPositionTargets[0][2] * 0x1000);
+        fx32 posY = FxRound(sCameraPositionTargets[0][1] * 0x1000);
         Camera *cam = mCamera;
-        cam->SetPosition(FxRound(data_0209e7c4[0][0] * 0x1000), posY, posZ);
-        mCamera->SetTarget(FxRound(data_0209e7c4[0][3] * 0x1000), FxRound(data_0209e7c4[0][4] * 0x1000), FxRound(data_0209e7c4[0][5] * 0x1000));
+        cam->SetPosition(FxRound(sCameraPositionTargets[0][0] * 0x1000), posY, posZ);
+        mCamera->SetTarget(FxRound(sCameraPositionTargets[0][3] * 0x1000), FxRound(sCameraPositionTargets[0][4] * 0x1000), FxRound(sCameraPositionTargets[0][5] * 0x1000));
         CameraManager &manager = CameraManager::Get();
         Camera *camera = manager.mCameras[manager.mActive];
         data_02211374.mCameraPosition = camera->mPosition;
@@ -1989,11 +1989,11 @@ void CharacterEditScene::func_02061c3c() {
     mCamera->SetUp(0, 0x1000, 0);
     mCamera->SetClip(0x1000, 0x1388000);
     mCamera->SetFov(0x2aaa);
-    fx32 posZ = FxRound(data_0209e7c4[0][2] * 0x1000);
-    fx32 posY = FxRound(data_0209e7c4[0][1] * 0x1000);
+    fx32 posZ = FxRound(sCameraPositionTargets[0][2] * 0x1000);
+    fx32 posY = FxRound(sCameraPositionTargets[0][1] * 0x1000);
     Camera *cam = mCamera;
-    cam->SetPosition(FxRound(data_0209e7c4[0][0] * 0x1000), posY, posZ);
-    mCamera->SetTarget(FxRound(data_0209e7c4[0][3] * 0x1000), FxRound(data_0209e7c4[0][4] * 0x1000), FxRound(data_0209e7c4[0][5] * 0x1000));
+    cam->SetPosition(FxRound(sCameraPositionTargets[0][0] * 0x1000), posY, posZ);
+    mCamera->SetTarget(FxRound(sCameraPositionTargets[0][3] * 0x1000), FxRound(sCameraPositionTargets[0][4] * 0x1000), FxRound(sCameraPositionTargets[0][5] * 0x1000));
     CameraManager::Get().mActive = 0;
     CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
     CameraManager &manager = CameraManager::Get();
@@ -2013,13 +2013,13 @@ void CharacterEditScene::func_02061c3c() {
 void CharacterEditScene::LoadGraphics() {
     u32 size;
     mWindows[0] = NULL;
-    mWindows[0] = new SelectWindow(10, (WindowItemRecord *) data_0209e9f4, -1);
+    mWindows[0] = new SelectWindow(10, (WindowItemRecord *) sRootMenuItems, -1);
     mWindows[1] = NULL;
-    mWindows[1] = new SelectWindow(7, data_0209f5fc, -1);
+    mWindows[1] = new SelectWindow(7, sGroupButtonItems, -1);
     mWindows[1]->mUnk_07e = 1;
     mWindows[2] = NULL;
     mWindows[2] = new SelectWindow(3, data_0209facc, -1);
-    mCursor = new SelectWindowCursor(0x14, data_0209f864, 0);
+    mCursor = new SelectWindowCursor(0x14, sCharacterEditCursorItems, 0);
     func_020637a8();
     ChangeDir("/Game/2d/CharacterEditor/Bg");
     void *data;
@@ -2739,7 +2739,7 @@ void CharacterEditScene::DrawChoices() {
     do {
         if (mCells[i] != NULL) {
             mCells[i]->Update();
-            mCells[i]->Draw(1, data_0209e7f4[i].x, data_0209e7f4[i].y, 1);
+            mCells[i]->Draw(1, sCharacterEditCellPositions[i].x, sCharacterEditCellPositions[i].y, 1);
         }
         i++;
     } while (i < mStyleCount);
@@ -2750,18 +2750,18 @@ void CharacterEditScene::DrawChoices() {
             switch (j - 8) {
             case 0:
                 if (mColorCount != 0) {
-                    mCells[j]->DrawFrame(1, mColorCount - 1, data_0209e7f4[j].x, data_0209e7f4[j].y, 1);
+                    mCells[j]->DrawFrame(1, mColorCount - 1, sCharacterEditCellPositions[j].x, sCharacterEditCellPositions[j].y, 1);
                 }
                 break;
             case 1:
                 if (mColor2Count != 0) {
-                    mCells[j]->DrawFrame(1, mColor2Count - 1, data_0209e7f4[j].x, data_0209e7f4[j].y, 1);
+                    mCells[j]->DrawFrame(1, mColor2Count - 1, sCharacterEditCellPositions[j].x, sCharacterEditCellPositions[j].y, 1);
                 }
                 break;
             case 2:
             case 3:
                 if (mState == 9) {
-                    mCells[j]->Draw(1, data_0209e7f4[j].x, data_0209e7f4[j].y, 1);
+                    mCells[j]->Draw(1, sCharacterEditCellPositions[j].x, sCharacterEditCellPositions[j].y, 1);
                 }
                 break;
             case 4: {
@@ -2777,17 +2777,17 @@ void CharacterEditScene::DrawChoices() {
             }
             case 5: {
                 u8 v = mStyleIndex;
-                mCells[j]->Draw(1, (s16) (data_0209e7f4[j].x + v % 3 * 32), (s16) (data_0209e7f4[j].y + v / 3 * 32), 0);
+                mCells[j]->Draw(1, (s16) (sCharacterEditCellPositions[j].x + v % 3 * 32), (s16) (sCharacterEditCellPositions[j].y + v / 3 * 32), 0);
                 break;
             }
             case 6:
                 if (mColorCount != 0) {
-                    mCells[j]->Draw(1, (s16) (data_0209e7f4[j].x + mColorIndex * 15), data_0209e7f4[j].y, 0);
+                    mCells[j]->Draw(1, (s16) (sCharacterEditCellPositions[j].x + mColorIndex * 15), sCharacterEditCellPositions[j].y, 0);
                 }
                 break;
             case 7:
                 if (mColor2Count != 0) {
-                    mCells[j]->Draw(1, (s16) (data_0209e7f4[j].x + mColor2Index * 15), data_0209e7f4[j].y, 0);
+                    mCells[j]->Draw(1, (s16) (sCharacterEditCellPositions[j].x + mColor2Index * 15), sCharacterEditCellPositions[j].y, 0);
                 }
                 break;
             }

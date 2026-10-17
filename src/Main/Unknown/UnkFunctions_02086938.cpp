@@ -2,7 +2,7 @@
 #include "Game/UnkStruct_020d48f0.hpp"
 
 // Bit tests written as macros (as in MyroomTipsScene): unlike the TestFlagBit/SetFlagBit inlines they let mwcc reuse the
-// loaded byte for the following set, and they colour the registers of func_020875ac's loops like the original.
+// loaded byte for the following set, and they colour the registers of IsProgressEntryUnlocked's loops like the original.
 #define TEST_BIT(flags, index) ((flags)[(index) / 8] & (1 << ((index) % 8)))
 #define SET_BIT(flags, index) ((flags)[(index) / 8] |= 1 << ((index) % 8))
 
@@ -24,7 +24,7 @@ extern u8 data_020d4970[];
 
 s32 func_02087468();
 
-BOOL func_020875ac(u32 index);
+BOOL IsProgressEntryUnlocked(u32 index);
 
 BOOL UnlockProgressEntry(u32 index);
 
@@ -85,7 +85,7 @@ BOOL func_02086d48();
 BOOL func_02086e08();
 s32 func_02087100();
 s32 func_02087468();
-BOOL func_020875ac(u32 index);
+BOOL IsProgressEntryUnlocked(u32 index);
 BOOL UnlockProgressEntry(u32 index);
 
 // mwcc emits a file's objects sorted by size, byte arrays and the inline accessors' tables as sections of their own;
@@ -205,7 +205,7 @@ static const u16 data_020a3ef2[18] = {28, 32, 29, 48, 52, 59, 67, 97, 91, 76, 10
 // The four tables come after the byte lists in the original, so they are sections of their own: function-local
 // statics of inline accessors.
 inline const FlagList8 *Table_020a4040() {
-    static const FlagList8 data_020a4040[11] = {
+    static const FlagList8 sStoreItemLists8[11] = {
         {8, data_020a3fe0},
         {0, NULL},
         {3, data_020a3fdc},
@@ -218,11 +218,11 @@ inline const FlagList8 *Table_020a4040() {
         {1, data_020a3d6c},
         {2, data_020a3fd8},
     };
-    return data_020a4040;
+    return sStoreItemLists8;
 }
 
 inline const FlagList16 *Table_020a3fe8() {
-    static const FlagList16 data_020a3fe8[11] = {
+    static const FlagList16 sStoreItemLists16[11] = {
         {31, data_020a3f90},
         {0, NULL},
         {21, data_020a3f3c},
@@ -235,11 +235,11 @@ inline const FlagList16 *Table_020a3fe8() {
         {15, data_020a3ed4},
         {11, data_020a3e76},
     };
-    return data_020a3fe8;
+    return sStoreItemLists16;
 }
 
 inline const UnlockTable *Table_020a4098() {
-    static const UnlockTable data_020a4098[11] = {
+    static const UnlockTable sCharacterUnlockTables[11] = {
         {1, data_020ba9cc},
         {3, data_020ba9d4},
         {1, data_020ba9c8},
@@ -252,11 +252,11 @@ inline const UnlockTable *Table_020a4098() {
         {10, data_020baa28},
         {1, data_020ba9c4},
     };
-    return data_020a4098;
+    return sCharacterUnlockTables;
 }
 
 inline const ProgressEntry *Table_020a40f0() {
-    static const ProgressEntry data_020a40f0[27] = {
+    static const ProgressEntry sProgressEntries[27] = {
         {data_020a3f16, 0, 19},
         {data_020a3ea2, 0, 11},
         {data_020a3e8c, 0, 11},
@@ -285,7 +285,7 @@ inline const ProgressEntry *Table_020a40f0() {
         {data_020a3d5c, 1, 1},
         {data_020a3dac, 2, 2},
     };
-    return data_020a40f0;
+    return sProgressEntries;
 }
 
 
@@ -617,7 +617,7 @@ s32 func_02087468() {
     return result;
 }
 
-BOOL func_020875ac(u32 index) {
+BOOL IsProgressEntryUnlocked(u32 index) {
     BOOL result = TRUE;
     u8 i;
     switch (Table_020a40f0()[index].mType) {

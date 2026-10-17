@@ -555,7 +555,7 @@ Other findings from linking:
   so it leaves no visible code, but it changes the schedule before allocation. A block-local pointer also gets a
   different register from a function-scope one (ParkCharacters GetParkEntry's loop pointer). A local reassigned in
   place keeps its register (`cx += width;` before the multiply in func_02027cf4), and `u16 *` indexing keeps an index
-  update in place where byte-pointer arithmetic lets it sink past calls (func_02078ab8).
+  update in place where byte-pointer arithmetic lets it sink past calls (LoadEditedIconPalette).
 - **Search tool.** tools/permuter.py runs a simulated-annealing search over many source transformations (statement
   order, scopes, enum-typed copies, temporaries, an inline identity, casts, compound forms) with a graded distance and
   stripped compiles; run it in the background on a near-miss.
@@ -563,7 +563,7 @@ Other findings from linking:
   `a`, `b` and `base` at function scope before `BattleData *d = mData;` pulls the stack parameter unk4 into the chain
   of non-overlapping values sharing one callee-saved register (as in the original) but gives that chain r4 and `this`
   r5, the original's registers renamed. Only these two allocation states turned up in ~6,000 variants.
-- **Which variables exist, and where, moves the schedule; expression forms rarely do.** func_020875ac's case 2
+- **Which variables exist, and where, moves the schedule; expression forms rarely do.** IsProgressEntryUnlocked's case 2
   loaded the count between list[1] and list[0] only with one function-scope `u8 i` shared by all cases and the count
   read in the loop condition (`while (i < table[index].mCount)`); a count local before the loop is never scheduled
   ahead of list[0]. Macro vs inline, ternary vs if/else and index spellings all compiled the same.
@@ -671,7 +671,7 @@ Other findings from linking:
 - **Reused locals are coloured in order of first appearance.** When a function-scope local is reused in several
   loops, mwcc colours its later live ranges in the order the variables first *appear* in the function, not their
   declaration order; a dead `j = 0;` near the top (or moving `g = 0;` above other assignments) reorders them
-  (func_02089278 in ParkCharacters.cpp). Separate variables still go by declaration order, ahead of those ranges. A
+  (FillParkSlots in ParkCharacters.cpp). Separate variables still go by declaration order, ahead of those ranges. A
   `u8` passed to `MATH_Rand32` merges into the inline's 64-bit temporary, so its declaration position doesn't matter.
 - **One loop counter for every loop.** Original functions often reuse one function-scope `u8 i` (and a second `j`)
   for all their loops, even where one counts down; per-loop locals colour differently, and no declaration order
@@ -737,7 +737,7 @@ Other findings from linking:
 - **Loops whose entry test sits inside the body** (the back edge jumps to a `count != 0` guard) are do-while loops with
   the guard as an `if` inside; the gimmick overlap test also never resets its inner counter, which plain `for` loops
   cannot express.
-- **`s16` locals colour differently from `s32` ones** in otherwise identical code (func_02088b30).
+- **`s16` locals colour differently from `s32` ones** in otherwise identical code (DrawStorytalkTextAndCell1).
 
 - **Narrow reads of stack arguments.** Some callees read a stack-passed argument with `ldrb`/`ldrh` while every
   caller stores it as a full word, so a `u8`/`u16` parameter type breaks the callers (they add an `and`). Until the

@@ -84,7 +84,7 @@ u32 InitGameHeap(u32 a);
 void InitFileSystem(void);
 void SeedRandomFromTick(void);
 void func_02022b0c(void);
-void func_02022b28(void);
+void ResetSaveData(void);
 void InitIdentityMatrices(void);
 void UpdateAsyncLoad(void);
 void UpdateUploadQueue(void);
@@ -164,7 +164,7 @@ void GameSystem::Init() {
     SceneContext *context = (SceneContext *) manager.Init(&SceneRunner::Get());
     SceneRunner::Get().mContext = context;
     func_02022b0c();
-    func_02022b28();
+    ResetSaveData();
     SpriteManager::Get().SetupMode(0, 1);
     reg_GX_DISPCNT &= ~0x38000000;
     reg_GX_DISPCNT &= ~0x7000000;

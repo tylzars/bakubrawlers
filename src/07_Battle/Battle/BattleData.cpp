@@ -8,7 +8,7 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-u8 func_02065bf4(u32 id, u32 index);
+u8 GetCardAttributeValue(u32 id, u32 index);
 
 BattleData::BattleData() {
     mMarkerCardId = 0;
@@ -55,23 +55,23 @@ BattleData::BattleData() {
     u8 i = 0;
     do {
         if (mEntries[i].mUnk_0c == 5) {
-            u32 a = func_02065bf4(mMarkerCardId, 1);
-            u32 b = func_02065bf4(mMarkerCardId, 3);
+            u32 a = GetCardAttributeValue(mMarkerCardId, 1);
+            u32 b = GetCardAttributeValue(mMarkerCardId, 3);
             if (a > b) {
                 mEntries[i].mUnk_06 = a * 10;
             } else {
                 mEntries[i].mUnk_06 = b * 10;
             }
         } else if (mEntries[i].mUnk_0c == 6) {
-            u32 a = func_02065bf4(mMarkerCardId, 1);
-            u32 b = func_02065bf4(mMarkerCardId, 0);
+            u32 a = GetCardAttributeValue(mMarkerCardId, 1);
+            u32 b = GetCardAttributeValue(mMarkerCardId, 0);
             if (a > b) {
                 mEntries[i].mUnk_06 = a * 10;
             } else {
                 mEntries[i].mUnk_06 = b * 10;
             }
         } else {
-            mEntries[i].mUnk_06 = func_02065bf4(mMarkerCardId, mEntries[i].mUnk_0d_0) * 10;
+            mEntries[i].mUnk_06 = GetCardAttributeValue(mMarkerCardId, mEntries[i].mUnk_0d_0) * 10;
         }
         mEntries[i].mUnk_02 = mEntries[i].mUnk_00 + mEntries[i].mUnk_06;
         i++;

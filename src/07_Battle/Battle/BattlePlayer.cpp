@@ -139,7 +139,7 @@ extern u8 data_020d43df[];
 extern u8 data_020d43db[];
 extern u8 data_020d43d7[];
 extern u8 data_020d43e3[];
-s32 func_020230dc(SaveData *base, u32 unk1, u32 unk2);
+s32 GetSlotBakuganId(SaveData *base, u32 unk1, u32 unk2);
 
 BattlePlayer::BattlePlayer(u32 index)
     : SceneBase(2, 0) {
@@ -184,7 +184,7 @@ BattlePlayer::BattlePlayer(u32 index)
         u8 k = 0;
         do {
             mRecords[k].mAttribute = func_020230a8(save, 0, k);
-            mRecords[k].mBakuganId = func_020230dc(save, 0, k);
+            mRecords[k].mBakuganId = GetSlotBakuganId(save, 0, k);
             mRecords[k].mUnk_04 = func_020231f4(save, 0, mRecords[k].mBakuganId, mRecords[k].mAttribute);
             mRecords[k].mUnk_0b = mRecords[k].mUnk_04 / 10;
             mRecords[k].mHead = *(BattleRecordHead *) func_02023248(save, mRecords[k].mBakuganId, mRecords[k].mAttribute);

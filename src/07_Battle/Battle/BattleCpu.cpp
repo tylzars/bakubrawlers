@@ -4,7 +4,7 @@
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Unknown/UnkFunctions.hpp"
 
-u8 func_02065bf4(u32 id, u32 index);
+u8 GetCardAttributeValue(u32 id, u32 index);
 
 BOOL func_ov007_02262574(BattlePlayerList *list, u8 row, u8 col);
 
@@ -562,7 +562,7 @@ extern "C" void func_ov007_022314bc(BattleCpu *cpu) {
                         if (m->mStatus != 0) {
                             u8 me = cpu->mPlayer;
                             if (me == m->mPlayer || m->mPlayer == l->mPlayers[me]->Partner()) {
-                                u32 v = func_02065bf4(m->mSlot, recKind);
+                                u32 v = GetCardAttributeValue(m->mSlot, recKind);
                                 if (v > best) {
                                     best    = v;
                                     bestIdx = j;

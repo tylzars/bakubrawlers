@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 extern u8 gCharacterLook[];
-void func_0207889c(u8 screen, u32 offset, u32 palette, const void *colors, u32 unk5);
+void LoadEditedIcon(u8 screen, u32 offset, u32 palette, const void *colors, u32 unk5);
 
 CharacterIcons::CharacterIcons(u32 unk1, u32 unk2, s32 unk3) {
     mUnk_30 = 0;
@@ -58,9 +58,9 @@ void CharacterIcons::SetCharacter(u32 slot, s32 character, u32 unk3, u32 unk4) {
         screen.LoadPalette(path, palette << 5, 0);
     } else {
         if (unk3 != 0) {
-            func_0207889c(mScreen, offset, palette, (const void *) unk3, unk4);
+            LoadEditedIcon(mScreen, offset, palette, (const void *) unk3, unk4);
         } else {
-            func_0207889c(mScreen, offset, palette, gCharacterLook, unk4);
+            LoadEditedIcon(mScreen, offset, palette, gCharacterLook, unk4);
         }
         ChangeDir("/Game/Character/Icon/");
     }

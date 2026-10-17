@@ -28,7 +28,7 @@ struct UnkStruct_020a3210 {
 };
 
 struct UnkStruct_020a338c {
-    /* 0 */ u16 mUnk_00;
+    /* 0 */ u16 mPriceTens;
     /* 2 */ u8 mUnk_02;
     /* 3 */ u8 mUnk_03;
 };
@@ -57,7 +57,7 @@ static const WindowCellRecord data_020a34f4[7] = {
     {"/Game/List/list_b_obj_00_nce.bin", 14, 0xc000, 6, 1, 1, {14, 15, 15, 0}},
 };
 
-static const u16 data_020a3174[10] = {
+static const u16 sPricePercents[10] = {
     40, 80, 120, 160, 200, 240, 280, 320, 400, 0,
 };
 
@@ -248,7 +248,7 @@ static const u8 data_020a3768[0x29][6] = {
 // The two halfword tables are sections of their own in the original (after the byte table above). Function-local
 // statics of inline accessors get their own sections and keep their place in the size sort.
 inline const u16 *Table_020a39fc() {
-    static const u16 data_020a39fc[214] = {
+    static const u16 sItemPrices[214] = {
         1000, 5000, 10000, 5000, 10000, 5000, 10000, 5000, 10000, 5000, 10000, 5000,
         10000, 4000, 4000, 4000, 4000, 4000, 4000, 250, 250, 250, 250, 250,
         350, 600, 1200, 350, 450, 450, 900, 350, 450, 600, 900, 600,
@@ -268,7 +268,7 @@ inline const u16 *Table_020a39fc() {
         450, 1200, 2000, 2000, 450, 900, 1200, 450, 600, 1000, 1000, 1000,
         1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 0,
     };
-    return data_020a39fc;
+    return sItemPrices;
 }
 
 static const WindowCellRecord data_020a31d8[2] = {
@@ -299,7 +299,7 @@ inline const u16 *Table_020a3ba8() {
 // Ten-byte records (0x020a3860); GetPrice reads the first halfword. As a function-local static of an inline
 // accessor the table gets a section of its own, so the table after it starts on a 4-byte boundary as in the original.
 struct UnkStruct_020a3860 {
-    /* 0 */ u16 mUnk_00;
+    /* 0 */ u16 mPriceTens;
     /* 2 */ u8 mUnk_02;
     /* 3 */ u8 mUnk_03;
     /* 4 */ u8 mUnk_04[6];
@@ -368,18 +368,18 @@ public:
     /* 78 */ u8 mUnk_78;
     /* 79 */ PAD(0x79, 0x80);
     UnkStruct_02076058(u8 unk1);
-    void func_02077a30(u32 a, u32 b, u32 c, u8 d);
+    void SetBakugan(u32 a, u32 b, u32 c, u8 d);
 };
 BOOL func_02078270(UnkStruct_02076058 *obj);
 u32 func_020779ec(void *obj);
 
-void func_02081a4c(void *arg);
+void ListSceneScrollCallback(void *arg);
 
 // Which screen a sprite or text goes to (passed to SpriteManager::Screen and the cell animation draws).
 enum ScreenId { SCREEN_MAIN, SCREEN_SUB };
 
 
-u8 func_020230dc(SaveData *d, u32 a, u32 b);
+u8 GetSlotBakuganId(SaveData *d, u32 a, u32 b);
 
 
 
@@ -396,9 +396,9 @@ extern u8 data_020d4976[];
 
 extern u8 data_020d497b[];
 
-void func_02023134(SaveData *d, u32 a, u32 b, u32 c, u32 e, u32 f);
+void SetSlotBakugan(SaveData *d, u32 a, u32 b, u32 c, u32 e, u32 f);
 
-void func_02086668(ListScene *self, u32 unk1);
+void SortListSceneItems(ListScene *self, u32 unk1);
 
 void func_02086580(ListScene *self, u32 unk1, u32 unk2, BattleCellPair *out);
 
@@ -418,13 +418,13 @@ static inline u16 *MessageEntry(void *base, u32 index) {
     return (u16 *) ((u8 *) base + index * 4);
 }
 
-void func_02082efc(ListScene *self);
+void PrintListSceneMainScreenText(ListScene *self);
 
 static inline void PrintMessageB(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x) {
     tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0, 0, 0, 1, 1, 1);
 }
 
-void func_020839a0(ListScene *self);
+void PrintListSceneSubScreenText(ListScene *self);
 
 
 
@@ -468,7 +468,7 @@ struct BattleSlotMessage {
 
 #define SLOT_MESSAGE ((BattleSlotMessage *) &data_0220f540)
 
-u8 func_020230dc(SaveData *d, u32 a, u32 b);
+u8 GetSlotBakuganId(SaveData *d, u32 a, u32 b);
 
 void func_0208671c(ListScene *self, u32 unk1);
 
@@ -490,7 +490,7 @@ BOOL func_02085da8(ListScene *self, u32 unk1, u32 unk2, u32 unk3);
 
 BOOL func_02086044(ListScene *self, u32 unk1);
 
-BOOL func_020861f4(ListScene *self, u32 unk1);
+BOOL ListSceneHasAttribute(ListScene *self, u32 unk1);
 
 
 
@@ -499,20 +499,12 @@ BOOL func_020861f4(ListScene *self, u32 unk1);
 
 
 
-u8 func_02065bf4(u32 id, u32 index);
+u8 GetCardAttributeValue(u32 id, u32 index);
 
-extern const u32 data_020a4040[][2];
-
-extern const u8 *const data_020a4044[][2];
-
-extern const u32 data_020a3fe8[][2];
-
-extern const u16 *const data_020a3fec[][2];
-
-void func_02081a4c(void *arg);
-void func_02082efc(ListScene *self);
+void ListSceneScrollCallback(void *arg);
+void PrintListSceneMainScreenText(ListScene *self);
 void func_020834ec(ListScene *self, u32 mode);
-void func_020839a0(ListScene *self);
+void PrintListSceneSubScreenText(ListScene *self);
 void func_0208415c(ListScene *self);
 void func_020843ac(ListScene *self, u32 unk1);
 void func_020848c8(ListScene *self);
@@ -531,10 +523,10 @@ void func_02085b8c(ListScene *self);
 BOOL func_02085da8(ListScene *self, u32 unk1, u32 unk2, u32 unk3);
 void func_02085fec(ListScene *self);
 BOOL func_02086044(ListScene *self, u32 unk1);
-BOOL func_020861f4(ListScene *self, u32 unk1);
+BOOL ListSceneHasAttribute(ListScene *self, u32 unk1);
 void func_02086580(ListScene *self, u32 unk1, u32 unk2, BattleCellPair *out);
 u32 func_02086654(ListScene *self, u32 unk1, u32 unk2);
-void func_02086668(ListScene *self, u32 unk1);
+void SortListSceneItems(ListScene *self, u32 unk1);
 void func_0208671c(ListScene *self, u32 unk1);
 void func_020867b8(ListScene *self);
 void func_02086874(ListScene *self);
@@ -1140,7 +1132,7 @@ void ListScene::Update() {
                 }
                 Release(0);
                 mUnk_1e0 = new UnkStruct_02076058(1);
-                mUnk_1e0->func_02077a30(1, mItemIds[mCursorItem] & 0xff, mUnk_104, 1);
+                mUnk_1e0->SetBakugan(1, mItemIds[mCursorItem] & 0xff, mUnk_104, 1);
                 mContext->mRequest = 0;
                 mState++;
                 return;
@@ -2278,7 +2270,7 @@ void ListScene::func_0207ea3c() {
                     func_02081594();
                     mUnk_194[0] = 1;
                 }
-                QueueFrameCallback(func_02081a4c, this);
+                QueueFrameCallback(ListSceneScrollCallback, this);
             } else {
                 mUnk_100 = 0;
                 func_02081128();
@@ -2634,7 +2626,7 @@ void ListScene::func_02080210() {
         }
     } else {
         for (u8 i = 0; i < 3; i++) {
-            mUnk_c8[i]     = func_020230dc(gSaveData, 0, i);
+            mUnk_c8[i]     = GetSlotBakuganId(gSaveData, 0, i);
             mUnk_c8[9 + i] = func_020230a8(gSaveData, 0, i);
         }
         for (u8 i = 0; i < 3; i++) {
@@ -2854,7 +2846,7 @@ void ListScene::BuildList(u32 unk1) {
                     }
                 }
             }
-            func_02086668(this, 1);
+            SortListSceneItems(this, 1);
             break;
         case 2: {
             for (u16 k = 1; k < 0xd5; k++) {
@@ -2863,7 +2855,7 @@ void ListScene::BuildList(u32 unk1) {
                     mItemCount++;
                 }
             }
-            func_02086668(this, 0);
+            SortListSceneItems(this, 0);
             break;
         }
         case 3:
@@ -2883,7 +2875,7 @@ void ListScene::BuildList(u32 unk1) {
                             mItemCount++;
                         }
                     }
-                    func_02086668(this, 1);
+                    SortListSceneItems(this, 1);
                     u8 j = 0;
                     do {
                         if (mItemIds[j] == mUnk_c8[mUnk_e6 - 1] && mUnk_104 == mUnk_c8[mUnk_e6 + 8]) {
@@ -2899,7 +2891,7 @@ void ListScene::BuildList(u32 unk1) {
                         mItemCount++;
                     }
                 }
-                func_02086668(this, 0);
+                SortListSceneItems(this, 0);
                 u16 j = 0;
                 do {
                     if (mItemIds[j] == mUnk_c8[mUnk_e6 - 1]) {
@@ -2918,7 +2910,7 @@ void ListScene::BuildList(u32 unk1) {
                             mItemCount++;
                         }
                     }
-                    func_02086668(this, 1);
+                    SortListSceneItems(this, 1);
                 } else {
                     for (u16 k = 1; k < 0xd5; k++) {
                         if (TestFlagBit(data_020d4946, k) && GetCardInfo(k, 1) == mUnk_104 && func_02065c20(k) < 0x2bc) {
@@ -2926,7 +2918,7 @@ void ListScene::BuildList(u32 unk1) {
                             mItemCount++;
                         }
                     }
-                    func_02086668(this, 0);
+                    SortListSceneItems(this, 0);
                 }
             }
             break;
@@ -3198,7 +3190,7 @@ void ListScene::func_02081994(u32 unk1, u32 unk2, u32 unk3) {
     items[unk2].mFlags = unk3;
 }
 
-void func_02081a4c(void *arg) {
+void ListSceneScrollCallback(void *arg) {
     ListScene *self = (ListScene *) arg;
     reg_G2S_DB_BG2OFS = (u32) ((-0x20 - self->mUnk_f8) << 16) & G2_BGOFS_V_MASK;
 }
@@ -3470,7 +3462,7 @@ void ListScene::func_020826ec() {
     ChangeDir("/Game/Card/Graphic/Small");
     LoadAndQueueUpload(0, 0, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
     InitMainScreenText();
-    func_02082efc(this);
+    PrintListSceneMainScreenText(this);
 }
 
 BOOL ListScene::func_02082d00(u32 unk1, u32 unk2, u32 unk3) {
@@ -3501,7 +3493,7 @@ void ListScene::InitMainScreenText() {
     TextManager::Get().SetColor(0, 0, 0xf);
 }
 
-void func_02082efc(ListScene *self) {
+void PrintListSceneMainScreenText(ListScene *self) {
     s16 b = 0;
     s16 a = 0;
     self->ClearMainScreenText();
@@ -3705,12 +3697,12 @@ void func_020834ec(ListScene *self, u32 mode) {
             break;
     }
     self->mUnk_1a1 = mode;
-    func_020839a0(self);
+    PrintListSceneSubScreenText(self);
     self->mState  = 4;
     self->mWndMode = 0;
 }
 
-void func_020839a0(ListScene *self) {
+void PrintListSceneSubScreenText(ListScene *self) {
     const u8 *base;
     u8 index;
     self->ClearSubScreenText();
@@ -3851,7 +3843,7 @@ void ListScene::func_020842e8() {
         return;
     }
     for (u8 i = 0; i < 3; i++) {
-        func_02023134(gSaveData, 0, i, 0, (u8) mUnk_c8[i], (u8) mUnk_c8[9 + i]);
+        SetSlotBakugan(gSaveData, 0, i, 0, (u8) mUnk_c8[i], (u8) mUnk_c8[9 + i]);
     }
     for (u8 i = 0; i < 3; i++) {
         gSaveData[0].mUnk_06[i] = mUnk_c8[3 + i];
@@ -4083,7 +4075,7 @@ BOOL func_0208501c(ListScene *self) {
             u8 id;
             u32 kind;
             u32 invalid = 0;
-            id   = func_020230dc(gSaveData, 0, i);
+            id   = GetSlotBakuganId(gSaveData, 0, i);
             kind = func_020230a8(gSaveData, 0, i);
             if (id >= 0x29) {
                 invalid = 1;
@@ -4179,7 +4171,7 @@ void func_02085220(ListScene *self, u32 mode) {
             break;
     }
     self->mUnk_1a1 = mode;
-    func_020839a0(self);
+    PrintListSceneSubScreenText(self);
     self->mState = 0x14;
 }
 
@@ -4598,7 +4590,7 @@ BOOL func_02086044(ListScene *self, u32 unk1) {
             if (self->mUnk_3f4 != 0) {
                 return FALSE;
             }
-            if (func_020861f4(self, 0) && func_020861f4(self, 4)) {
+            if (ListSceneHasAttribute(self, 0) && ListSceneHasAttribute(self, 4)) {
                 return TRUE;
             }
             break;
@@ -4606,7 +4598,7 @@ BOOL func_02086044(ListScene *self, u32 unk1) {
             if (self->mUnk_3f4 != 0) {
                 return FALSE;
             }
-            if (func_020861f4(self, 5) && func_020861f4(self, 3)) {
+            if (ListSceneHasAttribute(self, 5) && ListSceneHasAttribute(self, 3)) {
                 return TRUE;
             }
             break;
@@ -4614,7 +4606,7 @@ BOOL func_02086044(ListScene *self, u32 unk1) {
             if (self->mUnk_3f4 != 0) {
                 return FALSE;
             }
-            if (func_020861f4(self, 2) && func_020861f4(self, 1)) {
+            if (ListSceneHasAttribute(self, 2) && ListSceneHasAttribute(self, 1)) {
                 return TRUE;
             }
             break;
@@ -4629,7 +4621,7 @@ BOOL func_02086044(ListScene *self, u32 unk1) {
             if (self->mUnk_3f4 != 0) {
                 return FALSE;
             }
-            if (func_020861f4(self, 0) && func_020861f4(self, 1) && func_020861f4(self, 3)) {
+            if (ListSceneHasAttribute(self, 0) && ListSceneHasAttribute(self, 1) && ListSceneHasAttribute(self, 3)) {
                 return TRUE;
             }
             break;
@@ -4637,7 +4629,7 @@ BOOL func_02086044(ListScene *self, u32 unk1) {
             if (self->mUnk_3f4 != 0) {
                 return FALSE;
             }
-            if (func_020861f4(self, 2) && func_020861f4(self, 4) && func_020861f4(self, 5)) {
+            if (ListSceneHasAttribute(self, 2) && ListSceneHasAttribute(self, 4) && ListSceneHasAttribute(self, 5)) {
                 return TRUE;
             }
             break;
@@ -4647,7 +4639,7 @@ BOOL func_02086044(ListScene *self, u32 unk1) {
     return FALSE;
 }
 
-BOOL func_020861f4(ListScene *self, u32 unk1) {
+BOOL ListSceneHasAttribute(ListScene *self, u32 unk1) {
     u8 i = 0;
     do {
         if (unk1 == self->mUnk_c8[9 + i]) {
@@ -4667,7 +4659,7 @@ u32 ListScene::func_02086224(u32 unk1, u32 unk2) {
     if (cost == 0) {
         cost = 5000;
     }
-    u32 price = cost * data_020a3174[pair->mUnk_00_0] / 100;
+    u32 price = cost * sPricePercents[pair->mUnk_00_0] / 100;
     return price - price * pair->mPad / ((pair->mUnk_00_0 + 1) * 300);
 }
 
@@ -4726,9 +4718,9 @@ s32 ListScene::func_0208644c() {
 u32 ListScene::GetPrice(u32 unk1, u32 unk2) {
     u32 index = func_02086654(this, unk1, unk2);
     if (gSaveData[0].mUnk_5bf_0 == 0 && index == 0x24) {
-        return Table_020a3860()[index].mUnk_00 * 10;
+        return Table_020a3860()[index].mPriceTens * 10;
     }
-    return data_020a338c[index].mUnk_00 * 10;
+    return data_020a338c[index].mPriceTens * 10;
 }
 
 u32 ListScene::func_02086548(u32 unk1, u32 unk2) {
@@ -4759,7 +4751,7 @@ u32 func_02086654(ListScene *self, u32 unk1, u32 unk2) {
     return unk1;
 }
 
-void func_02086668(ListScene *self, u32 unk1) {
+void SortListSceneItems(ListScene *self, u32 unk1) {
     u8 s;
     u8 t;
     for (s = 0; s < self->mItemCount - 1; s++) {
@@ -4819,8 +4811,8 @@ void func_02086874(ListScene *self) {
     u8 t;
     for (s = 0; s < self->mUnk_3f2 - 1; s++) {
         for (t = s + 1; t < self->mUnk_3f2; t++) {
-            u32 va = func_02065bf4(self->mUnk_1f2[s], (u8) gSaveData[0].mUnk_1a_8);
-            u32 vb = func_02065bf4(self->mUnk_1f2[t], (u8) gSaveData[0].mUnk_1a_8);
+            u32 va = GetCardAttributeValue(self->mUnk_1f2[s], (u8) gSaveData[0].mUnk_1a_8);
+            u32 vb = GetCardAttributeValue(self->mUnk_1f2[t], (u8) gSaveData[0].mUnk_1a_8);
             if (va < vb) {
                 u16 tmp           = self->mUnk_1f2[s];
                 self->mUnk_1f2[s] = self->mUnk_1f2[t];

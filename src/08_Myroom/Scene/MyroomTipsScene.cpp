@@ -29,9 +29,9 @@ struct TipsEntry {
     s8 mMessage;
 };
 
-extern "C" void func_020705f0(ScriptPlayer *event);
+extern "C" void InvalidateStorytalkMessageIndex(ScriptPlayer *event);
 extern "C" void func_0206f88c(ScriptPlayer *event, u32 category, s32 value, u32 unk4);
-extern "C" void func_0206f6f0(ScriptPlayer *event, const char *name, u32 id, u32 unk3, u32 unk4);
+extern "C" void StartMessageScript(ScriptPlayer *event, const char *name, u32 id, u32 unk3, u32 unk4);
 
 const s8 data_ov008_02229658[6] = {0, 11, 17, 24, 31, 44};
 
@@ -202,7 +202,7 @@ void MyroomTipsScene::Update() {
                     if (mUnlocked[0] == 0) {
                         id = 0x34;
                     }
-                    func_0206f6f0(mEvent, "mes_tips_Dan", id, 10, 0x15);
+                    StartMessageScript(mEvent, "mes_tips_Dan", id, 10, 0x15);
                     SpriteManager::Get().sFade[0] = 2;
                     context->mInfo.mStep             = 5;
                 }
@@ -629,7 +629,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
                 }
             }
         }
-        func_020705f0(mEvent);
+        InvalidateStorytalkMessageIndex(mEvent);
         mEvent->func_0206f564(message, 11, -1);
         context->mInfo.mStep = 0xb;
         int flag             = sMyroomTipsCategoryFirstBits[(s8) context->mInfo.mMenuResult] + mIndices[mRow];

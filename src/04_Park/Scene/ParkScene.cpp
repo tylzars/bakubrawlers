@@ -27,8 +27,8 @@ struct ParkEntry {
     /* 00 */ u32 mType;
     /* 04 */ u8 mUnk_04;
     /* 05 */ u8 mUnk_05;
-    /* 06 */ u8 mUnk_06;
-    /* 07 */ u8 mUnk_07;
+    /* 06 */ u8 mProgressEntryIndex;
+    /* 07 */ u8 mMinCategory;
     /* 08 */ u8 mFieldId;
     /* 09 */ u8 mUnk_09;
     /* 0a */ union {
@@ -484,7 +484,7 @@ void ParkScene::Update() {
                     case 1:
                     case 2:
                         mEvent->mUnk_14f1 = 0;
-                        if (entry.mUnk_06 != 0xff) {
+                        if (entry.mProgressEntryIndex != 0xff) {
                             mState = 0x1c;
                         } else {
                             mState = 0x1f;
@@ -523,7 +523,7 @@ void ParkScene::Update() {
         case 28: {
             ParkEntry entry;
             GetParkEntry(mEntryIndex, &entry);
-            reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", (u8) (entry.mUnk_06 + 5), 1);
+            reinterpret_cast<ParkPopup *>(this)->Open("/font/mes_park.mes", (u8) (entry.mProgressEntryIndex + 5), 1);
             ShowWindow();
             mState++;
             break;
@@ -611,7 +611,7 @@ void ParkScene::Update() {
                 data_020d433c.mUnk_9a = 0x11;
                 data_020d433c.mUnk_9a_0 = gSaveData[0].mUnk_28_6;
                 if (gSaveData[0].mUnk_5bf_0) {
-                    if (entry.mUnk_06 == 0x19 && idx == 7) {
+                    if (entry.mProgressEntryIndex == 0x19 && idx == 7) {
                         data_020d433c.mUnk_a3[1] = 2;
                     }
                 }

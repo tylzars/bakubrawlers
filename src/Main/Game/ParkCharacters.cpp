@@ -8,8 +8,8 @@ struct ParkEntry {
     /* 00 */ s32 mType;
     /* 04 */ u8 mUnk_04;
     /* 05 */ u8 mUnk_05;
-    /* 06 */ u8 mUnk_06;
-    /* 07 */ u8 mUnk_07;
+    /* 06 */ u8 mProgressEntryIndex;
+    /* 07 */ u8 mMinCategory;
     /* 08 */ u8 mFieldId;
     /* 09 */ u8 mUnk_09;
     /* 0a */ u16 mUnk_0a;
@@ -27,15 +27,15 @@ struct ParkCategory {
     /* 04 */ ParkGroup *mGroups;
 };
 
-extern ParkCategory data_020a4ccc[];
-extern BOOL func_020875ac(u32 index);
+extern ParkCategory gParkCategories[];
+extern BOOL IsProgressEntryUnlocked(u32 index);
 void GetParkEntry(u32 index, void *out);
-BOOL func_02089c7c(u32 id);
-BOOL func_02089ec8();
-BOOL func_02089f2c();
+BOOL CanUnlockProgressEntry(u32 id);
+BOOL AreProgressEntries6To10Unlocked();
+BOOL AreProgressEntries11To15Unlocked();
 
 // Moved here from StorytalkWindow.cpp, where it currently sits past the end of that unit (0x02088f38).
-u8 func_02088f38() {
+u8 GetStageParkCategory() {
     u8 stage = gSaveData[0].mUnk_42;
     if (stage == 0 || (stage == 1 && gSaveData[0].mUnk_43 == 0)) {
         return 0;
@@ -147,7 +147,7 @@ struct ParkPick {
 // some placements here are load-bearing: `j = 0` at its declaration puts j (the fill loop's index) first, `g = 0` comes
 // before `category`/`group` in the first loop, the perm loop counts with g, `flag` is shared by the duplicate check and
 // the else branch, and `k` is declared right after `group`.
-void func_02089278() {
+void FillParkSlots() {
     ParkGroup *group;
     u8 k;
     ParkEntry *entry;
@@ -166,13 +166,13 @@ void func_02089278() {
         cat   = 0;
         do {
             g        = 0;
-            category = &data_020a4ccc[cat];
+            category = &gParkCategories[cat];
             group    = category->mGroups;
             do {
                 entry = group->mEntries;
                 e     = 0;
                 do {
-                    if (entry->mUnk_06 != 0xff && func_02089c7c(entry->mUnk_06)) {
+                    if (entry->mProgressEntryIndex != 0xff && CanUnlockProgressEntry(entry->mProgressEntryIndex)) {
                         flag = FALSE;
                         for (k = 0; k < count; k++) {
                             if (group->mId == picks[k].mId) {
@@ -186,7 +186,7 @@ void func_02089278() {
                             pick->mGroup    = g;
                             pick->mId       = group->mId;
                             count++;
-                            pick->mValue = entry->mUnk_06;
+                            pick->mValue = entry->mProgressEntryIndex;
                             if (count >= 0x1a) {
                                 cat = 0x1c;
                                 g   = category->mCount;
@@ -260,7 +260,7 @@ void func_02089278() {
             do {
                 cat = 0;
                 do {
-                    category = &data_020a4ccc[cat];
+                    category = &gParkCategories[cat];
                     group    = category->mGroups;
                     g        = 0;
                     do {
@@ -309,7 +309,7 @@ void func_02089278() {
             u8 grp;
             cat   = gSaveData[0].mParkSlots[g].mCategory;
             grp   = gSaveData[0].mParkSlots[g].mGroup;
-            entry = data_020a4ccc[cat].mGroups[grp].mEntries;
+            entry = gParkCategories[cat].mGroups[grp].mEntries;
             j = 0;
             do {
                 u8 r = MATH_Rand32(&gRandom, 4);
@@ -326,15 +326,15 @@ void func_02089278() {
                 }
                 e++;
                 entry++;
-            } while (e < data_020a4ccc[cat].mGroups[grp].mCount);
+            } while (e < gParkCategories[cat].mGroups[grp].mCount);
             g++;
         } while (g < gSaveData[0].mParkSlotCount);
     } else {
         ParkGroup *stageGroup;
         ParkEntry *stageEntry;
         u8 stage;
-        stage      = func_02088f38();
-        category   = &data_020a4ccc[stage];
+        stage      = GetStageParkCategory();
+        category   = &gParkCategories[stage];
         stageGroup = category->mGroups;
         count      = 0;
         g          = 0;
@@ -370,7 +370,7 @@ void GetParkEntry(u32 index, void *out) {
     u8 i;
     u8 category;
     category          = gSaveData[0].mParkSlots[index].mCategory;
-    ParkCategory *cat = &data_020a4ccc[category];
+    ParkCategory *cat = &gParkCategories[category];
     group             = gSaveData[0].mParkSlots[index].mGroup;
     groups            = cat->mGroups;
     found             = FALSE;
@@ -382,7 +382,7 @@ void GetParkEntry(u32 index, void *out) {
             category = 0xff;
         }
         do {
-            if (entries->mUnk_06 != 0xff && category >= entries->mUnk_07 && func_02089c7c(entries->mUnk_06)) {
+            if (entries->mProgressEntryIndex != 0xff && category >= entries->mMinCategory && CanUnlockProgressEntry(entries->mProgressEntryIndex)) {
                 MIi_CpuCopyFast(entries, out, 12);
                 found = TRUE;
                 break;
@@ -403,7 +403,7 @@ void GetParkEntry(u32 index, void *out) {
 }
 
 u8 GetParkGroupId(u32 index) {
-    ParkCategory *category = &data_020a4ccc[gSaveData[0].mParkSlots[index].mCategory];
+    ParkCategory *category = &gParkCategories[gSaveData[0].mParkSlots[index].mCategory];
     return (u8) category->mGroups[gSaveData[0].mParkSlots[index].mGroup].mId;
 }
 
@@ -464,9 +464,9 @@ void func_02089a9c(u32 index) {
     }
 }
 
-BOOL func_02089c7c(u32 id) {
+BOOL CanUnlockProgressEntry(u32 id) {
     BOOL result = TRUE;
-    if (func_020875ac(id)) {
+    if (IsProgressEntryUnlocked(id)) {
         return FALSE;
     }
     switch (id) {
@@ -490,45 +490,45 @@ BOOL func_02089c7c(u32 id) {
             }
             break;
         case 17:
-            if (!(((u8 *) gSaveData)[0x586] & 1) || !func_02089ec8() || gSaveData[0].mUnk_5b8 < 5) {
+            if (!(((u8 *) gSaveData)[0x586] & 1) || !AreProgressEntries6To10Unlocked() || gSaveData[0].mUnk_5b8 < 5) {
                 result = FALSE;
             }
             break;
         case 18:
-            if (!(((u8 *) gSaveData)[0x586] & 4) || !func_02089ec8() || gSaveData[0].mUnk_5b8 < 5) {
+            if (!(((u8 *) gSaveData)[0x586] & 4) || !AreProgressEntries6To10Unlocked() || gSaveData[0].mUnk_5b8 < 5) {
                 result = FALSE;
             }
             break;
         case 19:
-            if (!(((u8 *) gSaveData)[0x586] & 0x10) || !func_02089ec8() || gSaveData[0].mUnk_5b8 < 5) {
+            if (!(((u8 *) gSaveData)[0x586] & 0x10) || !AreProgressEntries6To10Unlocked() || gSaveData[0].mUnk_5b8 < 5) {
                 result = FALSE;
             }
             break;
         case 20:
-            if (!(((u8 *) gSaveData)[0x586] & 0x80) || !func_02089ec8() || gSaveData[0].mUnk_5b8 < 5) {
+            if (!(((u8 *) gSaveData)[0x586] & 0x80) || !AreProgressEntries6To10Unlocked() || gSaveData[0].mUnk_5b8 < 5) {
                 result = FALSE;
             }
             break;
         case 21:
-            if (!(((u8 *) gSaveData)[0x587] & 0x8) || !func_02089ec8() || gSaveData[0].mUnk_5b8 < 5) {
+            if (!(((u8 *) gSaveData)[0x587] & 0x8) || !AreProgressEntries6To10Unlocked() || gSaveData[0].mUnk_5b8 < 5) {
                 result = FALSE;
             }
             break;
         case 22:
-            if (!(((u8 *) gSaveData)[0x587] & 0x2) || !func_02089ec8() || gSaveData[0].mUnk_5b8 < 5) {
+            if (!(((u8 *) gSaveData)[0x587] & 0x2) || !AreProgressEntries6To10Unlocked() || gSaveData[0].mUnk_5b8 < 5) {
                 result = FALSE;
             }
             break;
         case 23:
         case 24:
-            if (gSaveData[0].mUnk_5b8 < 6 || !func_02089f2c()) {
+            if (gSaveData[0].mUnk_5b8 < 6 || !AreProgressEntries11To15Unlocked()) {
                 result = FALSE;
             }
             break;
         case 25: {
             u8 i = 6;
             do {
-                if (!func_020875ac(i)) {
+                if (!IsProgressEntryUnlocked(i)) {
                     result = FALSE;
                     break;
                 }
@@ -540,16 +540,16 @@ BOOL func_02089c7c(u32 id) {
     return result;
 }
 
-BOOL func_02089ec8() {
-    if (!func_020875ac(6) || !func_020875ac(7) || !func_020875ac(8) || !func_020875ac(9) || !func_020875ac(10)) {
+BOOL AreProgressEntries6To10Unlocked() {
+    if (!IsProgressEntryUnlocked(6) || !IsProgressEntryUnlocked(7) || !IsProgressEntryUnlocked(8) || !IsProgressEntryUnlocked(9) || !IsProgressEntryUnlocked(10)) {
         return FALSE;
     }
     return TRUE;
 }
 
-BOOL func_02089f2c() {
-    if (!func_020875ac(11) || !func_020875ac(12) || !func_020875ac(13) || !func_020875ac(14) ||
-        !func_020875ac(15)) {
+BOOL AreProgressEntries11To15Unlocked() {
+    if (!IsProgressEntryUnlocked(11) || !IsProgressEntryUnlocked(12) || !IsProgressEntryUnlocked(13) || !IsProgressEntryUnlocked(14) ||
+        !IsProgressEntryUnlocked(15)) {
         return FALSE;
     }
     return TRUE;

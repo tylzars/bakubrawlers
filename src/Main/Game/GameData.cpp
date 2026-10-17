@@ -11,11 +11,11 @@
 #include <nitro/mi.h>
 
 // Volume tables (0x020906f0-0x02090778), indexed by the 3-bit settings in gSaveData.
-extern const u8 data_020906f0[6] = {0, 20, 40, 60, 85, 110};
-extern const u8 data_020906f8[6] = {0, 25, 50, 75, 100, 127};
-extern const float data_0209070c[6] = {0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f};
-extern const float data_02090724[6] = {0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 0.9f};
-extern const float data_0209073c[6] = {0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f};
+extern const u8 gSeqVolumes[6] = {0, 20, 40, 60, 85, 110};
+extern const u8 gSeqArcVolumes[6] = {0, 25, 50, 75, 100, 127};
+extern const float gFrameTaskVolumes1[6] = {0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f};
+extern const float gFrameTaskVolumes0[6] = {0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 0.9f};
+extern const float gFrameTaskVolumes2[6] = {0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f};
 extern const u16 data_02090754[3][6] = {
     {0x0000, 0x0016, 0x0000, 0x00be, 0x0013, 0x007e},
     {0x0000, 0x0017, 0x0005, 0x00d2, 0x0028, 0x008c},
@@ -29,16 +29,16 @@ SaveData gSaveData[1];
 extern u16 data_020c4250;
 int func_0205b1c4(u32 a, u32 b);
 
-void func_02022d48(SaveData *d);
-void func_02022db4(SaveData *d);
+void ResetOptions(SaveData *d);
+void ApplyVolumeOptions(SaveData *d);
 
 void func_02022b0c() {
     MI_CpuFill8(&data_020d433c, 0, 0xb4);
 }
 
-void func_02022b28() {
+void ResetSaveData() {
     MI_CpuFill8(gSaveData, 0, 0xff4);
-    func_02022d48(gSaveData);
+    ResetOptions(gSaveData);
     gSaveData[0].mMoney = 3000;
     UnlockStoreItems();
     UnlockCharacters();
@@ -83,7 +83,7 @@ void func_02022b28() {
     } while (n < 3);
 }
 
-void func_02022d48(SaveData *d) {
+void ResetOptions(SaveData *d) {
     SaveData *p = gSaveData;
     p->mUnk_28_5 = 1;
     p->mUnk_28_6 = 1;
@@ -91,15 +91,15 @@ void func_02022d48(SaveData *d) {
     p->mUnk_28_10 = 5;
     p->mUnk_28_13 = 5;
     p->mUnk_27_0 = p->mUnk_28_6;
-    func_02022db4(d);
+    ApplyVolumeOptions(d);
 }
 
-void func_02022db4(SaveData *d) {
-    SoundManager::Get().mSeqVolume = data_020906f0[d->mUnk_28_7];
-    SoundManager::Get().mSeqArcVolume = data_020906f8[d->mUnk_28_10];
-    FrameTask::Get().mVolume0 = data_02090724[d->mUnk_28_7];
-    FrameTask::Get().mVolume1 = data_0209070c[d->mUnk_28_10];
-    FrameTask::Get().mVolume2 = data_0209073c[d->mUnk_28_13];
+void ApplyVolumeOptions(SaveData *d) {
+    SoundManager::Get().mSeqVolume = gSeqVolumes[d->mUnk_28_7];
+    SoundManager::Get().mSeqArcVolume = gSeqArcVolumes[d->mUnk_28_10];
+    FrameTask::Get().mVolume0 = gFrameTaskVolumes0[d->mUnk_28_7];
+    FrameTask::Get().mVolume1 = gFrameTaskVolumes1[d->mUnk_28_10];
+    FrameTask::Get().mVolume2 = gFrameTaskVolumes2[d->mUnk_28_13];
     SoundManager::Get().SetSeqVolume(0x7f);
     SoundManager::Get().SetSeqArcVolume(0x7f);
     FrameTask::Get().SetChannelVolume(0, 4);
@@ -111,7 +111,7 @@ s32 func_020230a8(SaveData *d, u32 a, u32 b) {
     return (u8) (rec[b] % 6);
 }
 
-u8 func_020230dc(SaveData *d, u32 a, u32 b) {
+u8 GetSlotBakuganId(SaveData *d, u32 a, u32 b) {
     u16 *rec = (u16 *) ((u8 *) d + a * 0x14);
     u32 v = rec[b];
     if (v >= 0xf6) {
@@ -121,7 +121,7 @@ u8 func_020230dc(SaveData *d, u32 a, u32 b) {
     return q % 41;
 }
 
-void func_02023134(SaveData *d, u32 a, u32 b, u32 c, u32 e, u32 f) {
+void SetSlotBakugan(SaveData *d, u32 a, u32 b, u32 c, u32 e, u32 f) {
     u16 *rec = (u16 *) ((u8 *) d + a * 0x14);
     rec[b] = func_0202317c(d, c, *(u8 *) &e, *(u8 *) &f);
 }

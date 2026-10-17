@@ -49,7 +49,7 @@ static const WindowCellRecord sTutorialThreeButtonCells[3] = {
 
 
 extern "C" void func_020383f8(u32 a);
-void func_02089278();
+void FillParkSlots();
 void SetupFourPlayerBattle();
 class TutorialScene;
 BOOL func_ov005_0221fd64(TutorialScene *scene);
@@ -501,7 +501,7 @@ void TutorialScene::Update() {
                 RequestScene(prev <= 2 ? 9 : 0xc);
                 mFinished = 1;
                 if (prev == 3 && prev == 4) {
-                    func_02089278();
+                    FillParkSlots();
                 }
             } else {
                 if (mUnk_4b != 0) {

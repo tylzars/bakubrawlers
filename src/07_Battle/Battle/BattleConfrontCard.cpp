@@ -63,7 +63,7 @@ static const s32 sAttributeRates[6][6] = {
 void func_ov007_0226a448(BattlePlayer *player, u8 index, int flag);
 
 extern const s8 data_ov007_02279d3c[];
-u8 func_02065bf4(u32 id, u32 index);
+u8 GetCardAttributeValue(u32 id, u32 index);
 
 extern "C" BOOL func_ov007_02263150(BattlePlayerList *list);
 extern "C" void func_ov007_022633f8(BattlePlayerList *list);
@@ -1501,12 +1501,12 @@ u8 BattleConfrontCard::func_ov007_022428d4(u16 card) {
                 }
             }
             if (want == e[i].mUnk_0c) {
-                power     = func_02065bf4(card, e[i].mUnk_0d_0) * 10;
+                power     = GetCardAttributeValue(card, e[i].mUnk_0d_0) * 10;
                 u16 alt   = 0;
                 if (e[i].mUnk_0c == 5) {
-                    alt = func_02065bf4(card, 3) * 10;
+                    alt = GetCardAttributeValue(card, 3) * 10;
                 } else if (e[i].mUnk_0c == 6) {
-                    alt = func_02065bf4(card, 0) * 10;
+                    alt = GetCardAttributeValue(card, 0) * 10;
                 }
                 if (power < alt) {
                     power = alt;
@@ -1709,7 +1709,7 @@ void BattleConfrontCard::func_ov007_02243100() {
         u8 digits;
         int margin;
         u8 j;
-        value = func_02065bf4(mData->mMarkerCardId, i);
+        value = GetCardAttributeValue(mData->mMarkerCardId, i);
         if (value != 0) {
             digits = 3;
             if (value < 10) {
@@ -2000,16 +2000,16 @@ BOOL BattleConfrontCard::func_ov007_022433c8(u8 side, u16 id) {
         case 0xb8:
         abilityCard:
             if (self->mUnk_0c == 5) {
-                if (func_02065bf4(id, 3) != 0) {
+                if (GetCardAttributeValue(id, 3) != 0) {
                     result = TRUE;
                 }
             }
             if (self->mUnk_0c == 6) {
-                if (func_02065bf4(id, 0) != 0) {
+                if (GetCardAttributeValue(id, 0) != 0) {
                     result = TRUE;
                 }
             }
-            if (func_02065bf4(id, self->mUnk_0d_0) != 0) {
+            if (GetCardAttributeValue(id, self->mUnk_0d_0) != 0) {
                 result = TRUE;
             }
             break;
@@ -2142,16 +2142,16 @@ u16 BattleConfrontCard::func_ov007_02243b24(u8 side, u32 id) {
         case 0xbb:
         case 0xbc:
         case 0xbd: {
-            value   = func_02065bf4(id, e->mUnk_0d_0) * 10;
+            value   = GetCardAttributeValue(id, e->mUnk_0d_0) * 10;
             u16 old = value;
             if (e->mUnk_0c == 5) {
-                if (value < func_02065bf4(id, 3) * 10) {
-                    value = func_02065bf4(id, 3) * 10;
+                if (value < GetCardAttributeValue(id, 3) * 10) {
+                    value = GetCardAttributeValue(id, 3) * 10;
                 }
             }
             if (e->mUnk_0c == 6) {
-                if (old < func_02065bf4(id, 0) * 10) {
-                    value = func_02065bf4(id, 0) * 10;
+                if (old < GetCardAttributeValue(id, 0) * 10) {
+                    value = GetCardAttributeValue(id, 0) * 10;
                 }
             }
             break;

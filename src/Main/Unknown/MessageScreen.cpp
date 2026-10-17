@@ -11,7 +11,7 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-extern u16 data_020a596c;
+extern u16 gTextPalette;
 
 MessageScreen::MessageScreen(u32 unk1) {
     GX_SetDispSelect(1);
@@ -64,7 +64,7 @@ MessageScreen::MessageScreen(u32 unk1) {
     GXS_LoadBG0Scr(map, 0, 0x600);
     OS_Free(map);
     GX_BeginLoadSubBGExtPltt();
-    GX_LoadSubBGExtPltt(&data_020a596c, 0x4000, 0x20);
+    GX_LoadSubBGExtPltt(&gTextPalette, 0x4000, 0x20);
     GX_EndLoadSubBGExtPltt();
     G2S_SetBG0Offset(0x10, 0);
     if (unk1 != MESSAGE_SCREEN_TITLE_8) {

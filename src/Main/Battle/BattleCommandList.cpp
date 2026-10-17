@@ -66,7 +66,7 @@ struct CommandMessageTable {
     /* f8 */
 };
 inline const CommandMessageTable &CommandMessages() {
-    static const CommandMessageTable data_0209e68c = {
+    static const CommandMessageTable sCommandMessageTable = {
         {
             {0, 0, 0, 0, 0, 0},
             {1, 0, 0, 0, 0, 0},
@@ -112,7 +112,7 @@ inline const CommandMessageTable &CommandMessages() {
         },
         {0, 0},
     };
-    return data_0209e68c;
+    return sCommandMessageTable;
 }
 
 // item table of the list window (positions are patched by CreateCommandListWindow)
@@ -163,7 +163,7 @@ inline const char **ListPaths() {
 }
 
 // light table of the list model
-static const u16 data_0209e594[20] = {1, 0x7fff, 0xf666, 0xf5ec, 0xf829};
+static const u16 sCommandListLights[20] = {1, 0x7fff, 0xf666, 0xf5ec, 0xf829};
 
 // table of func_0205aea4
 static const u16 data_0209e57c[6] = {0x2000, 0xc000, 0, 0, 0, 0};
@@ -776,7 +776,7 @@ BOOL BattleCommandList::LoadGraphics() {
     manager.mMtxA[manager.mActive]       = *func_02032710();
     manager.mMtxB[manager.mActive]       = *func_02032604();
     manager.mMtxC[manager.mActive]       = *func_020323b8();
-    mLights = new ModelLightGroup(data_0209e594);
+    mLights = new ModelLightGroup(sCommandListLights);
     return TRUE;
 }
 

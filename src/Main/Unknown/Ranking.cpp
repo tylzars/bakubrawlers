@@ -4,14 +4,14 @@
 
 #include <nitro/fx.h>
 
-extern const u8 data_020a3070[][13];
+extern const u8 gRankingCharacterIds[][13];
 extern const u8 data_020a305c[4];
 extern const u32 data_020a3060[4];
-extern const u16 data_020b94fc[2][12];
-extern const u16 data_020b952c[2][12];
-extern const u16 data_020b955c[2][12];
-extern const u32 data_020b958c[2][12];
-extern const u32 data_020b95ec[2][12];
+extern const u16 gRankingScorePercents[2][12];
+extern const u16 gRankingSineScales[2][12];
+extern const u16 gRankingSineOffsets[2][12];
+extern const u32 gRankingScoreOffsets[2][12];
+extern const u32 gRankingSineAmplitudes[2][12];
 
 Ranking::Ranking() {
     mPlayerCharacterId = 0x15;
@@ -68,7 +68,7 @@ void Ranking::Build() {
     s8 k;
     s8 j;
     for (i = 0; i < 13; i++) {
-        u8 id = data_020a3070[mTableIndex][i];
+        u8 id = gRankingCharacterIds[mTableIndex][i];
         mEntries[i].mCharacterId = id;
         if (id == 0x15) {
             mEntries[i].mScore = 0;
@@ -197,18 +197,18 @@ void Ranking::Build() {
 u32 Ranking::ComputeScore(u8 index) {
     u32 base = mPlayerScore / 2000 * 2000;
     u8 mode = mTableIndex;
-    s32 x = (base + data_020b955c[mode][index]) * data_020b952c[mode][index];
+    s32 x = (base + gRankingSineOffsets[mode][index]) * gRankingSineScales[mode][index];
     double angle = (double) x - (double) (u32) ((double) x / 6.283185308) * 6.283185308;
     s32 step = (u32) (angle * 10430.378349108529);
     s32 sinv = FX_SinCosTable_[(step >> 4) * 2];
     u32 adj;
     if (sinv >= 0) {
-        adj = (sinv * (data_020b95ec[mode][index] / 100) >> 12) * 100;
+        adj = (sinv * (gRankingSineAmplitudes[mode][index] / 100) >> 12) * 100;
     } else {
-        adj = -((-sinv * (data_020b95ec[mode][index] / 100)) >> 12) * 100;
+        adj = -((-sinv * (gRankingSineAmplitudes[mode][index] / 100)) >> 12) * 100;
     }
-    u32 sub = base * data_020b94fc[mode][index];
-    return (base + data_020b958c[mode][index] + adj - sub / 100) / 10 * 10;
+    u32 sub = base * gRankingScorePercents[mode][index];
+    return (base + gRankingScoreOffsets[mode][index] + adj - sub / 100) / 10 * 10;
 }
 
 // (0x30bb0 - score) is unsigned, so a score above 0x30bb0 wraps; Build guards the mPlayerScore call (:120) but not the

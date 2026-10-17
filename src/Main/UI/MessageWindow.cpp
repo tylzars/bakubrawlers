@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 // One 16x16 OAM cell, drawn once per 16 pixels of the window's width.
-static const CellAnimOam data_020a10a0 = {0, 0x4000, 0};
+static const CellAnimOam sMessageWindowOam = {0, 0x4000, 0};
 
 MessageWindow::MessageWindow(const char *name, u32 unk2, u32 unk3) {
     mFile       = NULL;
@@ -125,7 +125,7 @@ void MessageWindow::Update() {
     SpriteScreen &screen = SpriteManager::Get().Screen(mScreen);
     u8 i                 = 0;
     do {
-        screen.AddOam((void *) &data_020a10a0, 1, (s16)(mX + i * 16), (s16)(mY + 1), mUnk_27, (u16)(i + (mVram >> 7)), 0xf, 0);
+        screen.AddOam((void *) &sMessageWindowOam, 1, (s16)(mX + i * 16), (s16)(mY + 1), mUnk_27, (u16)(i + (mVram >> 7)), 0xf, 0);
         i++;
     } while (i < mWidth / 16);
 }
@@ -144,16 +144,16 @@ void MessageWindow::SetWidth(u32 unk1) {
     mWidth = (s32) (unk1 >> 4) << 4;
 }
 
-extern const u8 data_020a15ac[][6];
-extern const u8 data_020a1258[][4];
+extern const u8 gCardAttributeValues[][6];
+extern const u8 gCardInfo[][4];
 extern const u16 data_020a10ac[];
 
-u8 func_02065bf4(u32 id, u32 index) {
-    return data_020a15ac[id][index];
+u8 GetCardAttributeValue(u32 id, u32 index) {
+    return gCardAttributeValues[id][index];
 }
 
 u8 GetCardInfo(u32 id, u32 kind) {
-    return data_020a1258[id][kind];
+    return gCardInfo[id][kind];
 }
 
 u16 func_02065c20(u32 id) {

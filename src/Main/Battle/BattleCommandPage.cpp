@@ -751,7 +751,7 @@ void BattleCommandPage::func_02056f70() {
     SpriteManager::Get().mScreens[0].AddOam((void *) data_0209e558[0], 1, 0x14, 0x65, 3, 0xe0, 0, 0);
 }
 
-u8 func_02065bf4(u32 id, u32 index);
+u8 GetCardAttributeValue(u32 id, u32 index);
 extern u8 data_020d43d7[];
 
 void BattleCommandPage::DrawCard() {
@@ -813,7 +813,7 @@ void BattleCommandPage::DrawCard() {
     }
     for (k = 0; k < 6; k++) {
         s16 y = k * 0x28 + 0x14;
-        n = func_02065bf4(mDrawnCardId, k);
+        n = GetCardAttributeValue(mDrawnCardId, k);
         if (n != 0) {
             u8 cnt;
             s32 half;

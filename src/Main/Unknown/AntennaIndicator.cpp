@@ -111,10 +111,10 @@ struct AntennaPalette {
 
 extern "C" void MIi_CpuCopy16(const void *src, void *dst, u32 size);
 extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
-void func_02078ab8(u8 screen, u32 palette, const AntennaPalette *colors, u32 unk4);
-void func_02078a48(u8 *dst, const u8 *src);
+void LoadEditedIconPalette(u8 screen, u32 palette, const AntennaPalette *colors, u32 unk4);
+void CopyNonZeroNibbles(u8 *dst, const u8 *src);
 
-void func_0207889c(u8 screen, u32 offset, u32 palette, const void *colors, u32 unk5) {
+void LoadEditedIcon(u8 screen, u32 offset, u32 palette, const void *colors, u32 unk5) {
     const AntennaPalette *pal = (const AntennaPalette *) colors;
     u8 *file;
     u8 *buffer = (u8 *) OS_Alloc(0x200);
@@ -129,23 +129,23 @@ void func_0207889c(u8 screen, u32 offset, u32 palette, const void *colors, u32 u
     MI_CpuCopy8(file + a * 0x200, buffer, 0x200);
     if (d != 0) {
         if (e != 0) {
-            func_02078a48(buffer, file + ((d - 1) * 0x200 + 0x2e00));
+            CopyNonZeroNibbles(buffer, file + ((d - 1) * 0x200 + 0x2e00));
         }
-        func_02078a48(buffer, file + (d * 0x200 + 0x2400));
+        CopyNonZeroNibbles(buffer, file + (d * 0x200 + 0x2400));
     }
     if (c != 0) {
-        func_02078a48(buffer, file + (c * 0x200 + 0x1800));
+        CopyNonZeroNibbles(buffer, file + (c * 0x200 + 0x1800));
     } else {
-        func_02078a48(buffer, file + (b * 0x200 + 0x800));
+        CopyNonZeroNibbles(buffer, file + (b * 0x200 + 0x800));
     }
     DC_FlushRange(buffer, 0x200);
     QueueUpload(screen, 4, offset, buffer, 0x200, 1);
     OS_Free(file);
-    func_02078ab8(screen, palette, pal, unk5);
+    LoadEditedIconPalette(screen, palette, pal, unk5);
     ChangeDir("/");
 }
 
-void func_02078a48(u8 *dst, const u8 *src) {
+void CopyNonZeroNibbles(u8 *dst, const u8 *src) {
     for (u16 i = 0; i < 0x400; i++) {
         if (i & 1) {
             u8 v = *src & 0xf;
@@ -164,7 +164,7 @@ void func_02078a48(u8 *dst, const u8 *src) {
     }
 }
 
-void func_02078ab8(u8 screen, u32 palette, const AntennaPalette *colors, u32 unk4) {
+void LoadEditedIconPalette(u8 screen, u32 palette, const AntennaPalette *colors, u32 unk4) {
     u32 h;
     u32 i;
     u32 d;

@@ -12,13 +12,13 @@
 #include <nitro/os.h>
 #include <stdio.h>
 
-extern const u8 data_020a2fd0[][2];
+extern const u8 gRankingCellPositions[][2];
 extern const VecFx32 data_020a2fd8;
 extern const VecFx32 data_020a2fe4;
-extern const u8 data_020a2ff0[][2];
+extern const u8 gRankingDigitCellPositions[][2];
 extern const u8 data_020a3004[];
-extern const s8 data_020a302c[];
-extern const s8 data_020a3044[];
+extern const s8 gRankingCharacterModelZ[];
+extern const s8 gRankingCharacterModelY[];
 extern char data_020d441a[];
 
 // Position of a model object (CharacterModel / StoryCharacterModel): the VecFx32 at +4.
@@ -167,8 +167,8 @@ void RankingCharacterView::CreateCharacterModel(u32 kind) {
     mCharacterModel->Create(kind & 0xff, 0, 0, 0);
     mCharacterModel->func_0205461c(0, 1);
     mCharacterModel->SetVisible(1);
-    fx32 z = data_020a302c[kind] << 12;
-    fx32 y = data_020a3044[kind] << 12;
+    fx32 z = gRankingCharacterModelZ[kind] << 12;
+    fx32 y = gRankingCharacterModelY[kind] << 12;
     if (kind == 0x15) {
         SetModelPos((UnkStruct_ModelPos *) mCharacterModel->mCharacter, 0, y, z);
     } else {
@@ -315,19 +315,19 @@ void RankingCharacterView::func_0207520c() {
             cell->ResetAnimation();
             mDigitCellAnims[i]->SetMode(5);
             mDigitCellAnims[i]->Update();
-            mDigitCellAnims[i]->Draw(0, data_020a2ff0[i][0], data_020a2ff0[i][1], 0);
+            mDigitCellAnims[i]->Draw(0, gRankingDigitCellPositions[i][0], gRankingDigitCellPositions[i][1], 0);
         } else {
             cell->mAnimIndex = 0;
             cell->ResetAnimation();
             mDigitCellAnims[i]->SetMode(5);
             mDigitCellAnims[i]->Update();
-            mDigitCellAnims[i]->DrawFrame(0, digit, data_020a2ff0[i][0], data_020a2ff0[i][1], 0);
+            mDigitCellAnims[i]->DrawFrame(0, digit, gRankingDigitCellPositions[i][0], gRankingDigitCellPositions[i][1], 0);
         }
     }
     for (u8 i = 0; i < 2; i++) {
         if (mRankingCellAnims[i] != NULL) {
             mRankingCellAnims[i]->Update();
-            mRankingCellAnims[i]->Draw(0, data_020a2fd0[i][0], data_020a2fd0[i][1], 0);
+            mRankingCellAnims[i]->Draw(0, gRankingCellPositions[i][0], gRankingCellPositions[i][1], 0);
         }
     }
 }
@@ -395,6 +395,6 @@ BOOL RankingCharacterView::SlideTo(s32 target) {
     }
     u8 kind = mCharacterId;
     SetModelPos(mCharacterId == 0x15 ? (UnkStruct_ModelPos *) mCharacterModel->mCharacter : (UnkStruct_ModelPos *) mCharacterModel->mStoryCharacter, mModelX,
-                data_020a3044[kind] << 12, data_020a302c[kind] << 12);
+                gRankingCharacterModelY[kind] << 12, gRankingCharacterModelZ[kind] << 12);
     return FALSE;
 }

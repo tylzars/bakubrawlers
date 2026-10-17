@@ -75,15 +75,15 @@ static const WindowItemRecord sTitleThreeButtonItems[3] = {
 };
 
 
-s32 func_020230dc(SaveData *base, u32 unk1, u32 unk2);
-void func_02023134(SaveData *base, u32 a, u32 b, u32 c, u32 d, u32 e);
+s32 GetSlotBakuganId(SaveData *base, u32 unk1, u32 unk2);
+void SetSlotBakugan(SaveData *base, u32 a, u32 b, u32 c, u32 d, u32 e);
 void func_0202321c(SaveData *base, const u16 *src, u32 b, u32 c);
-void func_02022db4(SaveData *base);
-void func_02022b28();
+void ApplyVolumeOptions(SaveData *base);
+void ResetSaveData();
 void func_02022b0c();
 s32 func_02087100();
 void func_02086d48();
-void func_02089278();
+void FillParkSlots();
 
 class MovieScene {
 public:
@@ -280,7 +280,7 @@ void TitleScene::Update() {
             mState = 1;
             return;
         case 9: {
-            func_02022b28();
+            ResetSaveData();
             u8 a = data_020d433c.mUnk_81;
             u8 b = data_020d433c.mLanguage;
             u8 c = data_020d433c.mUnk_77;
@@ -365,9 +365,9 @@ void TitleScene::Update() {
                     u8 changed = 0;
                     u8 i;
                     for (i = 0; i < 3; i++) {
-                        if (func_020230dc(gSaveData, 0, i) == 0x28) {
+                        if (GetSlotBakuganId(gSaveData, 0, i) == 0x28) {
                             u8 v = buf[i];
-                            func_02023134(gSaveData, 0, i, 0, 0x22, v);
+                            SetSlotBakugan(gSaveData, 0, i, 0, 0x22, v);
                             changed = 1;
                         }
                     }
@@ -387,7 +387,7 @@ void TitleScene::Update() {
                             func_0202321c(gSaveData, (const u16 *) &tmp, 0x22, v);
                         }
                     }
-                    func_02022db4(gSaveData);
+                    ApplyVolumeOptions(gSaveData);
                     FrameTask::Get().StartChannel(0, 0x10);
                     data_020d433c.mUnk_76 = 1;
                     mLogoVisible = 1;
@@ -666,7 +666,7 @@ void TitleScene::Update() {
                 case 0:
                     scene = 9;
                     if (gSaveData[0].mUnk_5bf_0) {
-                        func_02089278();
+                        FillParkSlots();
                     }
                     break;
                 case 1:

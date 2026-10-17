@@ -106,8 +106,8 @@ OptionScene::~OptionScene() {
     Release();
 }
 
-void func_02022d48(SaveData *d);
-void func_02022db4(SaveData *d);
+void ResetOptions(SaveData *d);
+void ApplyVolumeOptions(SaveData *d);
 
 void OptionScene::Release() {
     if (mFile != NULL) {
@@ -196,7 +196,7 @@ void OptionScene::Update() {
                     d->mUnk_28_7 = mOld[0];
                     d->mUnk_28_10 = mOld[1];
                     d->mUnk_28_13 = mOld[2];
-                    func_02022db4(d);
+                    ApplyVolumeOptions(d);
                     mState++;
                     break;
                 }
@@ -270,7 +270,7 @@ void OptionScene::Update() {
                 s8 id = mWindow->GetSelectedId();
                 switch (id) {
                     case 0:
-                        func_02022d48(gSaveData);
+                        ResetOptions(gSaveData);
                         break;
                     case 1:
                         break;
@@ -490,7 +490,7 @@ void OptionScene::DrawSettings() {
     }
 }
 
-void func_02022db4(SaveData *d);
+void ApplyVolumeOptions(SaveData *d);
 
 
 void OptionScene::UpdateSettings() {
@@ -555,17 +555,17 @@ void OptionScene::UpdateSettings() {
         switch (mRow) {
             case 0:
                 gSaveData[0].mUnk_28_7 = mCur[0];
-                func_02022db4(gSaveData);
+                ApplyVolumeOptions(gSaveData);
                 break;
             case 1:
                 gSaveData[0].mUnk_28_10 = mCur[1];
-                func_02022db4(gSaveData);
+                ApplyVolumeOptions(gSaveData);
                 SoundManager::Get().func_02024754(1);
                 SoundManager::Get().StartSeqArc(5);
                 break;
             case 2:
                 gSaveData[0].mUnk_28_13 = mCur[2];
-                func_02022db4(gSaveData);
+                ApplyVolumeOptions(gSaveData);
                 FrameTask::Get().StopChannel(1);
                 FrameTask::Get().StartChannel(1, 0x183);
                 break;

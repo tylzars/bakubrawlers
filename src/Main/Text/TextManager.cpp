@@ -4,13 +4,13 @@
 #include "Unknown/UnkFunctions.hpp"
 #include <nitro/mi.h>
 
-extern FontHeader data_020a598c;
-extern GlyphMetrics data_020ab80c;
-extern FontData data_020ab150;
-extern u16 data_020a596c;
-extern u8 data_020b48dc[];
+extern FontHeader gFontHeader;
+extern GlyphMetrics gGlyphMetrics;
+extern FontData gFontData;
+extern u16 gTextPalette;
+extern u8 gFont4bppGlyphs[];
 extern "C" void OS_Terminate();
-extern u32 data_020a56f0[];
+extern u32 gTextSpriteAttrs[];
 
 // One glyph block of a text buffer registered as an OBJ: attribute word, tile number, position.
 struct TextSprite {
@@ -25,11 +25,11 @@ struct TextSprite {
 extern "C" void DC_FlushRange(void *buffer, u32 size);
 
 void TextManager::InitFont() {
-    mCursor  = &data_020a596c;
+    mCursor  = &gTextPalette;
     *mCursor = 0;
-    mFont    = &data_020a598c;
-    mMetrics = &data_020ab80c;
-    mData    = &data_020ab150;
+    mFont    = &gFontHeader;
+    mMetrics = &gGlyphMetrics;
+    mData    = &gFontData;
     mUseShadow  = 0;
     mShadowColor  = 6;
     mUse4bppFont  = 0;
@@ -43,7 +43,7 @@ void TextManager::InitFont() {
         u8 y = 0;
         do {
             s8 x = 15;
-            u8 *row = data_020b48dc + (y % 8) * 4 + (y / 8) * 0x40 + g * 0x80;
+            u8 *row = gFont4bppGlyphs + (y % 8) * 4 + (y / 8) * 0x40 + g * 0x80;
             do {
                 u8 b = (row + (x % 8) / 2)[(x / 8) * 0x20];
                 u8 v;
@@ -417,7 +417,7 @@ void TextManager::Write4bppGlyph(u32 glyph, void *buffer, u32 eightBit, s32 layo
     if (glyphWidth == 0) {
         return;
     }
-    u8 *font    = data_020b48dc + idx * 0x80;
+    u8 *font    = gFont4bppGlyphs + idx * 0x80;
     u16 unitA   = (layout & 0xf) << 4;
     u16 unitB   = ((layout >> 4) & 0xf) << 4;
     u16 row     = 0;
@@ -592,7 +592,7 @@ void TextManager::Init(void *glyphs, u32 unk2, u32 unk3, u16 width, u16 height, 
     do {
         u16 x = 0;
         do {
-            sprite->mAttr = data_020a56f0[tableIndex] | (unk3 << 13);
+            sprite->mAttr = gTextSpriteAttrs[tableIndex] | (unk3 << 13);
             sprite->mTile = SpriteManager::Get().Screen(unk2).GetCharBase(tile);
             sprite->mX    = x << 3;
             sprite->mY    = y << 3;

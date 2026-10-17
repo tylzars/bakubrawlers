@@ -850,12 +850,12 @@ _ZN12TouchManager12UpdateMotionEv kind:function(arm,size=0x158) addr:0x02022988
 _ZN12TouchManager15ReadCalibrationEv kind:function(arm,size=0x10) addr:0x02022ae0
 _ZN12TouchManager25ApplyCalibrationAndEnableEv kind:function(arm,size=0x1c) addr:0x02022af0
 _Z13func_02022b0cv kind:function(arm,size=0x1c) addr:0x02022b0c
-_Z13func_02022b28v kind:function(arm,size=0x220) addr:0x02022b28
-_Z13func_02022d48P8SaveData kind:function(arm,size=0x6c) addr:0x02022d48
-_Z13func_02022db4P8SaveData kind:function(arm,size=0x2f4) addr:0x02022db4
+_Z13ResetSaveDatav kind:function(arm,size=0x220) addr:0x02022b28
+_Z12ResetOptionsP8SaveData kind:function(arm,size=0x6c) addr:0x02022d48
+_Z18ApplyVolumeOptionsP8SaveData kind:function(arm,size=0x2f4) addr:0x02022db4
 _Z13func_020230a8P8SaveDatajj kind:function(arm,size=0x34) addr:0x020230a8
-_Z13func_020230dcP8SaveDatajj kind:function(arm,size=0x58) addr:0x020230dc
-_Z13func_02023134P8SaveDatajjjjj kind:function(arm,size=0x34) addr:0x02023134
+_Z16GetSlotBakuganIdP8SaveDatajj kind:function(arm,size=0x58) addr:0x020230dc
+_Z14SetSlotBakuganP8SaveDatajjjjj kind:function(arm,size=0x34) addr:0x02023134
 _Z13func_02023168P8SaveDatajji kind:function(arm,size=0x14) addr:0x02023168
 _Z13func_0202317cP8SaveDatajjj kind:function(arm,size=0x44) addr:0x0202317c
 _Z13func_020231c0P8SaveDataij kind:function(arm,size=0x34) addr:0x020231c0
@@ -2671,7 +2671,7 @@ _ZN13MessageWindow6UpdateEv kind:function(arm,size=0x2fc) addr:0x020658d0
 _ZN13MessageWindow7SetVramEj kind:function(arm,size=0x8) addr:0x02065bcc
 _ZN13MessageWindow13func_02065bd4Ejjj kind:function(arm,size=0x10) addr:0x02065bd4
 _ZN13MessageWindow8SetWidthEj kind:function(arm,size=0x10) addr:0x02065be4
-_Z13func_02065bf4jj kind:function(arm,size=0x18) addr:0x02065bf4
+_Z21GetCardAttributeValuejj kind:function(arm,size=0x18) addr:0x02065bf4
 _Z11GetCardInfojj kind:function(arm,size=0x14) addr:0x02065c0c
 _Z13func_02065c20j kind:function(arm,size=0x20) addr:0x02065c20
 _ZN12ScriptPlayerC1Ejjj kind:function(arm,size=0x538) addr:0x02065c40
@@ -2748,20 +2748,20 @@ _ZN12ScriptPlayer11RunCommandsEv kind:function(arm,size=0xb4) addr:0x0206b09c
 _ZN12ScriptPlayer14ExecuteCommandEji kind:function(arm,size=0x2268) addr:0x0206b150
 _ZN12ScriptPlayer10UpdateWaitEv kind:function(arm,size=0x1618) addr:0x0206d3b8
 _ZN12ScriptPlayer10SetBg0WaveEj kind:function(arm,size=0x44) addr:0x0206e9d0
-func_0206ea14 kind:function(arm,size=0xfc) addr:0x0206ea14
+Bg0WaveCallback kind:function(arm,size=0xfc) addr:0x0206ea14
 _ZN12ScriptPlayer11StartScriptEPKc kind:function(arm,size=0x230) addr:0x0206eb10
 _ZN12ScriptPlayer10ReadScriptEv kind:function(arm,size=0x1c8) addr:0x0206ed40
 _ZN12ScriptPlayer12ReadMessagesEv kind:function(arm,size=0x44) addr:0x0206ef08
 _ZN12ScriptPlayer13func_0206ef4cEPKcjjji kind:function(arm,size=0x618) addr:0x0206ef4c
 _ZN12ScriptPlayer13func_0206f564Eiji kind:function(arm,size=0x18c) addr:0x0206f564
-func_0206f6f0 kind:function(arm,size=0x19c) addr:0x0206f6f0
+StartMessageScript kind:function(arm,size=0x19c) addr:0x0206f6f0
 func_0206f88c kind:function(arm,size=0x128) addr:0x0206f88c
 _ZN12ScriptPlayer13func_0206f9b4EPKcjjjjjj kind:function(arm,size=0x6c) addr:0x0206f9b4
 _ZN12ScriptPlayer13func_0206fa20EPKcPKtPKhjjjjjj kind:function(arm,size=0x8c0) addr:0x0206fa20
 _ZN12ScriptPlayer13func_020702e0Eiiiiii kind:function(arm,size=0xb0) addr:0x020702e0
 _ZN12ScriptPlayer10SkipScriptEv kind:function(arm,size=0x1c4) addr:0x02070390
 _ZN12ScriptPlayer13func_02070554Eii kind:function(arm,size=0x9c) addr:0x02070554
-func_020705f0 kind:function(arm,size=0x18) addr:0x020705f0
+InvalidateStorytalkMessageIndex kind:function(arm,size=0x18) addr:0x020705f0
 _ZN10SaveWindowC1Ejjjjjjjjj kind:function(arm,size=0xe0) addr:0x02070608
 _ZN10SaveWindowD1Ev kind:function(arm,size=0xd0) addr:0x020706e8
 _ZN10SaveWindowD0Ev kind:function(arm,size=0xd8) addr:0x020707b8
@@ -2816,16 +2816,16 @@ _ZN18UnkStruct_02076058C1Eh kind:function(arm,size=0x234) addr:0x02076058
 _ZN18UnkStruct_02076058D1Ev kind:function(arm,size=0x164) addr:0x0207628c
 _ZN18UnkStruct_02076058D0Ev kind:function(arm,size=0x16c) addr:0x020763f0
 _ZN18UnkStruct_020760586UpdateEv kind:function(arm,size=0x4cc) addr:0x0207655c
-_ZN18UnkStruct_0207605813func_02076a28Ev kind:function(arm,size=0x10c) addr:0x02076a28
-_ZN18UnkStruct_0207605813func_02076b34Ev kind:function(arm,size=0x5c0) addr:0x02076b34
-_ZN18UnkStruct_0207605813func_020770f4Ev kind:function(arm,size=0xe4) addr:0x020770f4
+_ZN18UnkStruct_0207605811InitDisplayEv kind:function(arm,size=0x10c) addr:0x02076a28
+_ZN18UnkStruct_0207605812LoadGraphicsEv kind:function(arm,size=0x5c0) addr:0x02076b34
+_ZN18UnkStruct_0207605823AddRemainingGaugeAtOnceEv kind:function(arm,size=0xe4) addr:0x020770f4
 _ZN18UnkStruct_0207605813func_020771d8Ejj kind:function(arm,size=0x280) addr:0x020771d8
-_ZN18UnkStruct_0207605813func_02077458Ev kind:function(arm,size=0x318) addr:0x02077458
-_ZN18UnkStruct_0207605813func_02077770Ev kind:function(arm,size=0x27c) addr:0x02077770
+_ZN18UnkStruct_020760584DrawEv kind:function(arm,size=0x318) addr:0x02077458
+_ZN18UnkStruct_0207605811UpdateGaugeEv kind:function(arm,size=0x27c) addr:0x02077770
 _Z13func_020779ecPv kind:function(arm,size=0x44) addr:0x020779ec
-_ZN18UnkStruct_0207605813func_02077a30Ejjjh kind:function(arm,size=0xb8) addr:0x02077a30
-_ZN18UnkStruct_0207605813func_02077ae8Ev kind:function(arm,size=0x244) addr:0x02077ae8
-_ZN18UnkStruct_0207605813func_02077d2cEv kind:function(arm,size=0x474) addr:0x02077d2c
+_ZN18UnkStruct_0207605810SetBakuganEjjjh kind:function(arm,size=0xb8) addr:0x02077a30
+_ZN18UnkStruct_0207605812LoadMessagesEv kind:function(arm,size=0x244) addr:0x02077ae8
+_ZN18UnkStruct_020760589PrintTextEv kind:function(arm,size=0x474) addr:0x02077d2c
 _Z13func_020781a0P18UnkStruct_02076058 kind:function(arm,size=0xb0) addr:0x020781a0
 _Z13func_02078250P18UnkStruct_02076058 kind:function(arm,size=0x20) addr:0x02078250
 _Z13func_02078270P18UnkStruct_02076058 kind:function(arm,size=0x20) addr:0x02078270
@@ -2834,9 +2834,9 @@ _ZN16AntennaIndicatorD1Ev kind:function(arm,size=0x54) addr:0x020782dc
 _ZN16AntennaIndicatorD0Ev kind:function(arm,size=0x5c) addr:0x02078330
 _ZN16AntennaIndicator6UpdateEv kind:function(arm,size=0x24c) addr:0x0207838c
 _ZN16AntennaIndicator11SetupLayoutEj kind:function(arm,size=0x2c4) addr:0x020785d8
-_Z13func_0207889chjjPKvj kind:function(arm,size=0x1ac) addr:0x0207889c
-_Z13func_02078a48PhPKh kind:function(arm,size=0x70) addr:0x02078a48
-_Z13func_02078ab8hjPK14AntennaPalettej kind:function(arm,size=0x35c) addr:0x02078ab8
+_Z14LoadEditedIconhjjPKvj kind:function(arm,size=0x1ac) addr:0x0207889c
+_Z18CopyNonZeroNibblesPhPKh kind:function(arm,size=0x70) addr:0x02078a48
+_Z21LoadEditedIconPalettehjPK14AntennaPalettej kind:function(arm,size=0x35c) addr:0x02078ab8
 _ZN9ListSceneC1Ejj kind:function(arm,size=0x2b8) addr:0x02078e14
 _ZN9ListSceneD1Ev kind:function(arm,size=0x2cc) addr:0x020790cc
 _ZN9ListSceneD0Ev kind:function(arm,size=0x2d4) addr:0x02079398
@@ -2872,7 +2872,7 @@ _ZN9ListScene13func_02081128Ev kind:function(arm,size=0x46c) addr:0x02081128
 _ZN9ListScene13func_02081594Ev kind:function(arm,size=0x158) addr:0x02081594
 _ZN9ListScene13func_020816ecEjj kind:function(arm,size=0x2a8) addr:0x020816ec
 _ZN9ListScene13func_02081994Ejjj kind:function(arm,size=0xb8) addr:0x02081994
-_Z13func_02081a4cPv kind:function(arm,size=0x28) addr:0x02081a4c
+_Z23ListSceneScrollCallbackPv kind:function(arm,size=0x28) addr:0x02081a4c
 _ZN9ListScene13func_02081a74Ehjjss kind:function(arm,size=0x1b8) addr:0x02081a74
 _ZN9ListScene13func_02081c2cEjjj kind:function(arm,size=0x130) addr:0x02081c2c
 _ZN9ListScene13func_02081d5cEjjjj kind:function(arm,size=0x508) addr:0x02081d5c
@@ -2883,13 +2883,13 @@ _ZN9ListScene13func_02082660Ev kind:function(arm,size=0x8c) addr:0x02082660
 _ZN9ListScene13func_020826ecEv kind:function(arm,size=0x614) addr:0x020826ec
 _ZN9ListScene13func_02082d00Ejjj kind:function(arm,size=0x70) addr:0x02082d00
 _ZN9ListScene18InitMainScreenTextEv kind:function(arm,size=0x18c) addr:0x02082d70
-_Z13func_02082efcP9ListScene kind:function(arm,size=0x2f8) addr:0x02082efc
+_Z28PrintListSceneMainScreenTextP9ListScene kind:function(arm,size=0x2f8) addr:0x02082efc
 _ZN9ListScene18DrawMainScreenTextEv kind:function(arm,size=0xa8) addr:0x020831f4
 _ZN9ListScene19ClearMainScreenTextEv kind:function(arm,size=0x20) addr:0x0208329c
 _ZN9ListScene13func_020832bcEv kind:function(arm,size=0x1e0) addr:0x020832bc
 _ZN9ListScene13func_0208349cEj kind:function(arm,size=0x50) addr:0x0208349c
 _Z13func_020834ecP9ListScenej kind:function(arm,size=0x4b4) addr:0x020834ec
-_Z13func_020839a0P9ListScene kind:function(arm,size=0x69c) addr:0x020839a0
+_Z27PrintListSceneSubScreenTextP9ListScene kind:function(arm,size=0x69c) addr:0x020839a0
 _ZN9ListScene13func_0208403cEv kind:function(arm,size=0x120) addr:0x0208403c
 _Z13func_0208415cP9ListScene kind:function(arm,size=0x144) addr:0x0208415c
 _ZN9ListScene13func_020842a0Ev kind:function(arm,size=0x48) addr:0x020842a0
@@ -2913,7 +2913,7 @@ _Z13func_02085b8cP9ListScene kind:function(arm,size=0x21c) addr:0x02085b8c
 _Z13func_02085da8P9ListScenejjj kind:function(arm,size=0x244) addr:0x02085da8
 _Z13func_02085fecP9ListScene kind:function(arm,size=0x58) addr:0x02085fec
 _Z13func_02086044P9ListScenej kind:function(arm,size=0x1b0) addr:0x02086044
-_Z13func_020861f4P9ListScenej kind:function(arm,size=0x30) addr:0x020861f4
+_Z21ListSceneHasAttributeP9ListScenej kind:function(arm,size=0x30) addr:0x020861f4
 _ZN9ListScene13func_02086224Ejj kind:function(arm,size=0xac) addr:0x02086224
 _ZN9ListScene13func_020862d0Ev kind:function(arm,size=0x17c) addr:0x020862d0
 _ZN9ListScene13func_0208644cEv kind:function(arm,size=0xa0) addr:0x0208644c
@@ -2922,7 +2922,7 @@ _ZN9ListScene13func_02086548Ejj kind:function(arm,size=0x28) addr:0x02086548
 _ZN9ListScene13func_02086570Ejj kind:function(arm,size=0x10) addr:0x02086570
 _Z13func_02086580P9ListScenejjP14BattleCellPair kind:function(arm,size=0xd4) addr:0x02086580
 _Z13func_02086654P9ListScenejj kind:function(arm,size=0x14) addr:0x02086654
-_Z13func_02086668P9ListScenej kind:function(arm,size=0xb4) addr:0x02086668
+_Z18SortListSceneItemsP9ListScenej kind:function(arm,size=0xb4) addr:0x02086668
 _Z13func_0208671cP9ListScenej kind:function(arm,size=0x9c) addr:0x0208671c
 _Z13func_020867b8P9ListScene kind:function(arm,size=0xbc) addr:0x020867b8
 _Z13func_02086874P9ListScene kind:function(arm,size=0xc4) addr:0x02086874
@@ -2933,7 +2933,7 @@ _Z13func_02086d48v kind:function(arm,size=0xc0) addr:0x02086d48
 _Z13func_02086e08v kind:function(arm,size=0x2f8) addr:0x02086e08
 _Z13func_02087100v kind:function(arm,size=0x368) addr:0x02087100
 _Z13func_02087468v kind:function(arm,size=0x144) addr:0x02087468
-_Z13func_020875acj kind:function(arm,size=0x144) addr:0x020875ac
+_Z23IsProgressEntryUnlockedj kind:function(arm,size=0x144) addr:0x020875ac
 _Z19UnlockProgressEntryj kind:function(arm,size=0x1a8) addr:0x020876f0
 _ZN15StorytalkWindowC1Ev kind:function(arm,size=0xbc) addr:0x02087898
 _ZN15StorytalkWindowD1Ev kind:function(arm,size=0xb8) addr:0x02087954
@@ -2941,35 +2941,35 @@ _ZN15StorytalkWindowD0Ev kind:function(arm,size=0xc0) addr:0x02087a0c
 _ZN15StorytalkWindow6UpdateEv kind:function(arm,size=0x1e0) addr:0x02087acc
 _ZN15StorytalkWindow13func_02087cacEv kind:function(arm,size=0x14) addr:0x02087cac
 _ZN15StorytalkWindow5CloseEv kind:function(arm,size=0xc) addr:0x02087cc0
-_Z13func_02087cccP15StorytalkWindowPv kind:function(arm,size=0x2c) addr:0x02087ccc
+_Z24ReplaceStorytalkMessagesP15StorytalkWindowPv kind:function(arm,size=0x2c) addr:0x02087ccc
 _ZN15StorytalkWindow15LoadMessageFileEPKc kind:function(arm,size=0x70) addr:0x02087cf8
-_Z13func_02087d68P15StorytalkWindow kind:function(arm,size=0x184) addr:0x02087d68
+_Z17InitStorytalkTextP15StorytalkWindow kind:function(arm,size=0x184) addr:0x02087d68
 _ZN15StorytalkWindow12LoadGraphicsEv kind:function(arm,size=0x208) addr:0x02087eec
-_Z13func_020880f4P15StorytalkWindow kind:function(arm,size=0x48) addr:0x020880f4
-_Z13func_0208813cP15StorytalkWindowi kind:function(arm,size=0x188) addr:0x0208813c
-_Z13func_020882c4P15StorytalkWindow kind:function(arm,size=0x714) addr:0x020882c4
-_Z13func_020889d8P15StorytalkWindowi kind:function(arm,size=0x40) addr:0x020889d8
+_Z25ResetStorytalkMessageTextP15StorytalkWindow kind:function(arm,size=0x48) addr:0x020880f4
+_Z24SetStorytalkMessageIndexP15StorytalkWindowi kind:function(arm,size=0x188) addr:0x0208813c
+_Z18PrintStorytalkTextP15StorytalkWindow kind:function(arm,size=0x714) addr:0x020882c4
+_Z21SetStorytalkCharacterP15StorytalkWindowi kind:function(arm,size=0x40) addr:0x020889d8
 _ZN15StorytalkWindow13func_02088a18Ejj kind:function(arm,size=0xc) addr:0x02088a18
-_Z13func_02088a24P15StorytalkWindow kind:function(arm,size=0x10c) addr:0x02088a24
-_Z13func_02088b30P15StorytalkWindow kind:function(arm,size=0x1a8) addr:0x02088b30
-_Z13func_02088cd8P15StorytalkWindow kind:function(arm,size=0xd4) addr:0x02088cd8
+_Z17DrawStorytalkNameP15StorytalkWindow kind:function(arm,size=0x10c) addr:0x02088a24
+_Z25DrawStorytalkTextAndCell1P15StorytalkWindow kind:function(arm,size=0x1a8) addr:0x02088b30
+_Z23DrawStorytalkCells0And2P15StorytalkWindow kind:function(arm,size=0xd4) addr:0x02088cd8
 _ZN15StorytalkWindow8NextPageEj kind:function(arm,size=0xb8) addr:0x02088dac
 _ZN15StorytalkWindow10SetMessageEiijj kind:function(arm,size=0x58) addr:0x02088e64
 _ZN15StorytalkWindow15SetCell1VisibleEj kind:function(arm,size=0x8) addr:0x02088ebc
-_Z13func_02088ec4P15StorytalkWindow kind:function(arm,size=0x30) addr:0x02088ec4
+_Z21SetNoStorytalkMessageP15StorytalkWindow kind:function(arm,size=0x30) addr:0x02088ec4
 _ZN15StorytalkWindow13func_02088ef4Ev kind:function(arm,size=0x8) addr:0x02088ef4
 _ZN15StorytalkWindow12HasMorePagesEv kind:function(arm,size=0x18) addr:0x02088efc
 _ZN15StorytalkWindow11IsTextShownEv kind:function(arm,size=0x14) addr:0x02088f14
-_Z13func_02088f28P15StorytalkWindowh kind:function(arm,size=0x10) addr:0x02088f28
-_Z13func_02088f38v kind:function(arm,size=0x2d0) addr:0x02088f38
+_Z17SetStorytalkBlinkP15StorytalkWindowh kind:function(arm,size=0x10) addr:0x02088f28
+_Z20GetStageParkCategoryv kind:function(arm,size=0x2d0) addr:0x02088f38
 _Z13func_02089208v kind:function(arm,size=0x70) addr:0x02089208
-_Z13func_02089278v kind:function(arm,size=0x6ac) addr:0x02089278
+_Z13FillParkSlotsv kind:function(arm,size=0x6ac) addr:0x02089278
 _Z12GetParkEntryjPv kind:function(arm,size=0x140) addr:0x02089924
 _Z14GetParkGroupIdj kind:function(arm,size=0x38) addr:0x02089a64
 _Z13func_02089a9cj kind:function(arm,size=0x1e0) addr:0x02089a9c
-_Z13func_02089c7cj kind:function(arm,size=0x24c) addr:0x02089c7c
-_Z13func_02089ec8v kind:function(arm,size=0x64) addr:0x02089ec8
-_Z13func_02089f2cv kind:function(arm,size=0x64) addr:0x02089f2c
+_Z22CanUnlockProgressEntryj kind:function(arm,size=0x24c) addr:0x02089c7c
+_Z31AreProgressEntries6To10Unlockedv kind:function(arm,size=0x64) addr:0x02089ec8
+_Z32AreProgressEntries11To15Unlockedv kind:function(arm,size=0x64) addr:0x02089f2c
 _ZN15GiftUnlockSceneC1Ei kind:function(arm,size=0x68) addr:0x02089f90
 _ZN15GiftUnlockSceneD1Ev kind:function(arm,size=0x84) addr:0x02089ff8
 _ZN15GiftUnlockSceneD0Ev kind:function(arm,size=0x8c) addr:0x0208a07c
@@ -2996,7 +2996,7 @@ data_0208b501 kind:data(any) addr:0x0208b501
 data_0208b502 kind:data(any) addr:0x0208b502
 data_0208b503 kind:data(any) addr:0x0208b503
 __ptmf_null kind:data(any) addr:0x020906e8
-data_020906f0 kind:data(any) addr:0x020906f0
+gSeqVolumes kind:data(any) addr:0x020906f0
 data_02090778 kind:data(any) addr:0x02090778
 gSeqTable kind:data(any) addr:0x02090780
 gSeqArcTable kind:data(any) addr:0x02090788
@@ -3043,21 +3043,21 @@ data_0209e538 kind:data(any) addr:0x0209e538
 data_0209e558 kind:data(any) addr:0x0209e558 local
 data_0209e57c kind:data(any) addr:0x0209e57c local
 data_0209e588 kind:data(any) addr:0x0209e588 local
-data_0209e594 kind:data(any) addr:0x0209e594 local
+sCommandListLights kind:data(any) addr:0x0209e594 local
 data_0209e5bc kind:data(any) addr:0x0209e5bc local
-_ZZ15CommandMessagesvE13data_0209e68c kind:data(any) addr:0x0209e68c weak
-data_0209e784 kind:data(any) addr:0x0209e784 local
-data_0209e79c kind:data(any) addr:0x0209e79c local
-data_0209e7f4 kind:data(any) addr:0x0209e7f4 local
+_ZZ15CommandMessagesvE20sCommandMessageTable kind:data(any) addr:0x0209e68c weak
+sCharacterEditTextVramOffsets kind:data(any) addr:0x0209e784 local
+sCharacterEditLights kind:data(any) addr:0x0209e79c local
+sCharacterEditCellPositions kind:data(any) addr:0x0209e7f4 local
 data_0209e834 kind:data(any) addr:0x0209e834 local
 data_0209e888 kind:data(any) addr:0x0209e888 local
-data_0209e9f4 kind:data(any) addr:0x0209e9f4 local
-data_0209ec5c kind:data(any) addr:0x0209ec5c local
+sRootMenuItems kind:data(any) addr:0x0209e9f4 local
+sEditMenuItems kind:data(any) addr:0x0209ec5c local
 data_0209eec4 kind:data(any) addr:0x0209eec4 local
 data_0209f12c kind:data(any) addr:0x0209f12c local
 data_0209f394 kind:data(any) addr:0x0209f394 local
-data_0209f5fc kind:data(any) addr:0x0209f5fc local
-data_0209f864 kind:data(any) addr:0x0209f864 local
+sGroupButtonItems kind:data(any) addr:0x0209f5fc local
+sCharacterEditCursorItems kind:data(any) addr:0x0209f864 local
 data_0209facc kind:data(any) addr:0x0209facc local
 data_0209fd34 kind:data(any) addr:0x0209fd34
 data_020a0000 kind:data(any) addr:0x020a0000
@@ -3068,10 +3068,10 @@ data_020a0202 kind:data(any) addr:0x020a0202
 data_020a0206 kind:data(any) addr:0x020a0206
 data_020a0209 kind:data(any) addr:0x020a0209
 data_020a1074 kind:data(any) addr:0x020a1074
-data_020a10a0 kind:data(any) addr:0x020a10a0 local
+sMessageWindowOam kind:data(any) addr:0x020a10a0 local
 data_020a10ac kind:data(any) addr:0x020a10ac
-data_020a1258 kind:data(any) addr:0x020a1258
-data_020a15ac kind:data(any) addr:0x020a15ac
+gCardInfo kind:data(any) addr:0x020a1258
+gCardAttributeValues kind:data(any) addr:0x020a15ac
 data_020a1ac6 kind:data(any) addr:0x020a1ac6
 data_020a1ad5 kind:data(any) addr:0x020a1ad5
 data_020a1ae4 kind:data(any) addr:0x020a1ae4
@@ -3130,22 +3130,22 @@ data_020a2559 kind:data(any) addr:0x020a2559
 data_020a255a kind:data(any) addr:0x020a255a
 data_020a26a4 kind:data(any) addr:0x020a26a4
 data_020a26a5 kind:data(any) addr:0x020a26a5
-data_020a2dac kind:data(any) addr:0x020a2dac
-data_020a2dbc kind:data(any) addr:0x020a2dbc
-data_020a2dcc kind:data(any) addr:0x020a2dcc
+gBgScrUploadKinds kind:data(any) addr:0x020a2dac
+gBgCharUploadKinds kind:data(any) addr:0x020a2dbc
+gSaveWindowItems kind:data(any) addr:0x020a2dcc
 data_020a2e3c kind:data(any) addr:0x020a2e3c local
 data_020a2e48 kind:data(any) addr:0x020a2e48 local
 data_020a2f0c kind:data(any) addr:0x020a2f0c local
-data_020a2fd0 kind:data(any) addr:0x020a2fd0
+gRankingCellPositions kind:data(any) addr:0x020a2fd0
 data_020a2fd8 kind:data(any) addr:0x020a2fd8
 data_020a2fe4 kind:data(any) addr:0x020a2fe4
-data_020a2ff0 kind:data(any) addr:0x020a2ff0
+gRankingDigitCellPositions kind:data(any) addr:0x020a2ff0
 data_020a3004 kind:data(any) addr:0x020a3004
-data_020a302c kind:data(any) addr:0x020a302c
-data_020a3044 kind:data(any) addr:0x020a3044
+gRankingCharacterModelZ kind:data(any) addr:0x020a302c
+gRankingCharacterModelY kind:data(any) addr:0x020a3044
 data_020a305c kind:data(any) addr:0x020a305c
 data_020a3060 kind:data(any) addr:0x020a3060
-data_020a3070 kind:data(any) addr:0x020a3070
+gRankingCharacterIds kind:data(any) addr:0x020a3070
 data_020a308c kind:data(any) addr:0x020a308c local
 data_020a30a4 kind:data(any) addr:0x020a30a4 local
 data_020a30c0 kind:data(any) addr:0x020a30c0 local
@@ -3156,7 +3156,7 @@ data_020a30fc kind:data(any) addr:0x020a30fc
 data_020a30fd kind:data(any) addr:0x020a30fd
 @4084 kind:data(any) addr:0x020a3168 local
 @3306 kind:data(any) addr:0x020a316c local
-data_020a3174 kind:data(any) addr:0x020a3174 local
+sPricePercents kind:data(any) addr:0x020a3174 local
 data_020a3188 kind:data(any) addr:0x020a3188 local
 data_020a31a0 kind:data(any) addr:0x020a31a0 local
 data_020a31d8 kind:data(any) addr:0x020a31d8 local
@@ -3170,7 +3170,7 @@ data_020a35b8 kind:data(any) addr:0x020a35b8 local
 data_020a3688 kind:data(any) addr:0x020a3688 local
 data_020a3768 kind:data(any) addr:0x020a3768 local
 _ZZ14Table_020a3860vE13data_020a3860 kind:data(any) addr:0x020a3860 weak
-_ZZ14Table_020a39fcvE13data_020a39fc kind:data(any) addr:0x020a39fc weak
+_ZZ14Table_020a39fcvE11sItemPrices kind:data(any) addr:0x020a39fc weak
 _ZZ14Table_020a3ba8vE13data_020a3ba8 kind:data(any) addr:0x020a3ba8 weak
 data_020a3d54 kind:data(any) addr:0x020a3d54 local
 data_020a3d58 kind:data(any) addr:0x020a3d58 local
@@ -3243,12 +3243,12 @@ data_020a3fd4 kind:data(any) addr:0x020a3fd4 local
 data_020a3fd8 kind:data(any) addr:0x020a3fd8 local
 data_020a3fdc kind:data(any) addr:0x020a3fdc local
 data_020a3fe0 kind:data(any) addr:0x020a3fe0 local
-_ZZ14Table_020a3fe8vE13data_020a3fe8 kind:data(any) addr:0x020a3fe8 weak
-_ZZ14Table_020a4040vE13data_020a4040 kind:data(any) addr:0x020a4040 weak
-_ZZ14Table_020a4098vE13data_020a4098 kind:data(any) addr:0x020a4098 weak
-_ZZ14Table_020a40f0vE13data_020a40f0 kind:data(any) addr:0x020a40f0 weak
+_ZZ14Table_020a3fe8vE17sStoreItemLists16 kind:data(any) addr:0x020a3fe8 weak
+_ZZ14Table_020a4040vE16sStoreItemLists8 kind:data(any) addr:0x020a4040 weak
+_ZZ14Table_020a4098vE22sCharacterUnlockTables kind:data(any) addr:0x020a4098 weak
+_ZZ14Table_020a40f0vE16sProgressEntries kind:data(any) addr:0x020a40f0 weak
 data_020a41c8 kind:data(any) addr:0x020a41c8
-data_020a41cc kind:data(any) addr:0x020a41cc
+gStorytalkTextOam kind:data(any) addr:0x020a41cc
 @664 kind:data(any) addr:0x020a41d8 local
 @609 kind:data(any) addr:0x020a41dc local
 data_020a41ec kind:data(any) addr:0x020a41ec
@@ -3295,7 +3295,7 @@ data_020a4ac8 kind:data(any) addr:0x020a4ac8
 data_020a4b40 kind:data(any) addr:0x020a4b40
 data_020a4bb8 kind:data(any) addr:0x020a4bb8
 data_020a4c3c kind:data(any) addr:0x020a4c3c
-data_020a4ccc kind:data(any) addr:0x020a4ccc
+gParkCategories kind:data(any) addr:0x020a4ccc
 sEmblemFiles kind:data(any) addr:0x020a4dac local
 sOkItems kind:data(any) addr:0x020a4db8 local
 sOkCells kind:data(any) addr:0x020a4dd4 local
@@ -3411,7 +3411,7 @@ _ZTV13EffectManager kind:data(any) addr:0x020a56a4
 @1529 kind:data(any) addr:0x020a56d4 local
 @1530 kind:data(any) addr:0x020a56e0 local
 @1531 kind:data(any) addr:0x020a56ec local
-data_020a56f0 kind:data(any) addr:0x020a56f0
+gTextSpriteAttrs kind:data(any) addr:0x020a56f0
 _ZTV15WirelessManager kind:data(any) addr:0x020a5730
 sDefaultParentParam kind:data(any) addr:0x020a5744 local
 data_020a5784 kind:data(any) addr:0x020a5784
@@ -3445,10 +3445,10 @@ data_020a590c kind:data(any) addr:0x020a590c
 _ZTV10ReaderBase kind:data(any) addr:0x020a5924
 _ZTV6Reader kind:data(any) addr:0x020a5948
 data_020a5950 kind:data(any) addr:0x020a5950
-data_020a596c kind:data(any) addr:0x020a596c
-data_020a598c kind:data(any) addr:0x020a598c
-data_020ab150 kind:data(any) addr:0x020ab150
-data_020ab80c kind:data(any) addr:0x020ab80c
+gTextPalette kind:data(any) addr:0x020a596c
+gFontHeader kind:data(any) addr:0x020a598c
+gFontData kind:data(any) addr:0x020ab150
+gGlyphMetrics kind:data(any) addr:0x020ab80c
 _ZTV10MovieScene kind:data(any) addr:0x020ac788
 @680 kind:data(any) addr:0x020ac79c local
 @681 kind:data(any) addr:0x020ac7b0 local
@@ -3986,7 +3986,7 @@ _ZTV18CharacterEditScene kind:data(any) addr:0x020b3774
 @1164 kind:data(any) addr:0x020b39f0 local
 @1147 kind:data(any) addr:0x020b3a0c local
 _ZZ18CellTable_020b3a28vE13data_020b3a28 kind:data(any) addr:0x020b3a28 weak
-_ZZ18CellTable_020b3a44vE13data_020b3a44 kind:data(any) addr:0x020b3a44 weak
+_ZZ18CellTable_020b3a44vE17sGroupButtonCells kind:data(any) addr:0x020b3a44 weak
 @6159 kind:data(any) addr:0x020b3b08 local
 @6160 kind:data(any) addr:0x020b3b20 local
 @6161 kind:data(any) addr:0x020b3b34 local
@@ -4141,7 +4141,7 @@ data_020b462c kind:data(any) addr:0x020b462c
 data_020b4640 kind:data(any) addr:0x020b4640
 data_020b4654 kind:data(any) addr:0x020b4654
 _ZTV12ScriptPlayer kind:data(any) addr:0x020b4668
-data_020b467c kind:data(any) addr:0x020b467c
+gMessageScriptCommands kind:data(any) addr:0x020b467c
 @6704 kind:data(any) addr:0x020b46c0 local
 @6705 kind:data(any) addr:0x020b46d4 local
 @6706 kind:data(any) addr:0x020b46e8 local
@@ -4183,13 +4183,13 @@ data_020b467c kind:data(any) addr:0x020b467c
 @10402 kind:data(any) addr:0x020b48b8 local
 @10577 kind:data(any) addr:0x020b48c8 local
 @10578 kind:data(any) addr:0x020b48cc local
-data_020b48dc kind:data(any) addr:0x020b48dc
+gFont4bppGlyphs kind:data(any) addr:0x020b48dc
 _ZTV10SaveWindow kind:data(any) addr:0x020b8ddc
 @1026 kind:data(any) addr:0x020b8df0 local
 @1027 kind:data(any) addr:0x020b8e1c local
 @995 kind:data(any) addr:0x020b8e48 local
 @996 kind:data(any) addr:0x020b8e74 local
-data_020b8ea0 kind:data(any) addr:0x020b8ea0 local
+sSaveWindowCells kind:data(any) addr:0x020b8ea0 local
 @1810 kind:data(any) addr:0x020b8f10 local
 @1811 kind:data(any) addr:0x020b8f24 local
 @1812 kind:data(any) addr:0x020b8f40 local
@@ -4248,11 +4248,11 @@ _ZTV20RankingCharacterView kind:data(any) addr:0x020b9384
 @1848 kind:data(any) addr:0x020b94e4 local
 @1849 kind:data(any) addr:0x020b94e8 local
 _ZTV7Ranking kind:data(any) addr:0x020b94ec
-data_020b94fc kind:data(any) addr:0x020b94fc
-data_020b952c kind:data(any) addr:0x020b952c
-data_020b955c kind:data(any) addr:0x020b955c
-data_020b958c kind:data(any) addr:0x020b958c
-data_020b95ec kind:data(any) addr:0x020b95ec
+gRankingScorePercents kind:data(any) addr:0x020b94fc
+gRankingSineScales kind:data(any) addr:0x020b952c
+gRankingSineOffsets kind:data(any) addr:0x020b955c
+gRankingScoreOffsets kind:data(any) addr:0x020b958c
+gRankingSineAmplitudes kind:data(any) addr:0x020b95ec
 _ZTV18UnkStruct_02076058 kind:data(any) addr:0x020b964c
 @98 kind:data(any) addr:0x020b9660 local
 @2679 kind:data(any) addr:0x020b9690 local
@@ -5026,7 +5026,7 @@ gHeadNodeMtx kind:bss addr:0x022191d4
 @1274 kind:bss addr:0x02219264 local
 @1403 kind:bss addr:0x02219270 local
 @290 kind:bss addr:0x0221927c local
-data_02219288 kind:bss addr:0x02219288
+gScriptPlayer kind:bss addr:0x02219288
 @339 kind:bss addr:0x02219290 local
 @390 kind:bss addr:0x0221929c local
 @182 kind:bss addr:0x022192a8 local

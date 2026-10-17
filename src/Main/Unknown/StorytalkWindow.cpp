@@ -10,21 +10,21 @@
 #include <nitro/mi.h>
 #include <nitro/os.h>
 
-void func_02087d68(StorytalkWindow *self);
+void InitStorytalkText(StorytalkWindow *self);
 
-void func_020880f4(StorytalkWindow *self);
+void ResetStorytalkMessageText(StorytalkWindow *self);
 
-void func_0208813c(StorytalkWindow *self, s32 unk1);
+void SetStorytalkMessageIndex(StorytalkWindow *self, s32 unk1);
 
-void func_020882c4(StorytalkWindow *self);
+void PrintStorytalkText(StorytalkWindow *self);
 
-void func_020889d8(StorytalkWindow *self, s32 unk1);
+void SetStorytalkCharacter(StorytalkWindow *self, s32 unk1);
 
-void func_02088a24(StorytalkWindow *self);
+void DrawStorytalkName(StorytalkWindow *self);
 
-void func_02088b30(StorytalkWindow *self);
+void DrawStorytalkTextAndCell1(StorytalkWindow *self);
 
-void func_02088cd8(StorytalkWindow *self);
+void DrawStorytalkCells0And2(StorytalkWindow *self);
 
 StorytalkWindow::StorytalkWindow() :
     SceneBase(0x3e8, 0) {
@@ -80,7 +80,7 @@ void StorytalkWindow::Update() {
     }
     switch (mState) {
         case 0:
-            func_02087d68(this);
+            InitStorytalkText(this);
             LoadGraphics();
             mState++;
             break;
@@ -99,7 +99,7 @@ void StorytalkWindow::Update() {
             }
             break;
         case 3:
-            func_02088cd8(this);
+            DrawStorytalkCells0And2(this);
             if (mSlideTimer != 0) {
                 mSlideTimer--;
             } else {
@@ -107,16 +107,16 @@ void StorytalkWindow::Update() {
             }
             break;
         case 4:
-            func_02088a24(this);
-            func_02088cd8(this);
-            func_020882c4(this);
+            DrawStorytalkName(this);
+            DrawStorytalkCells0And2(this);
+            PrintStorytalkText(this);
             mLastPageDone = 0;
             mState++;
             break;
         case 5:
-            func_02088a24(this);
-            func_02088b30(this);
-            func_02088cd8(this);
+            DrawStorytalkName(this);
+            DrawStorytalkTextAndCell1(this);
+            DrawStorytalkCells0And2(this);
             if (mLastPageDone != 0 && mUnk_4a == 0) {
                 mHasMessage = 0;
                 mState = 2;
@@ -135,22 +135,22 @@ void StorytalkWindow::Update() {
 extern u16 data_020c1a4c[];
 
 
-extern const u8 data_020a41cc[];
+extern const u8 gStorytalkTextOam[];
 
 extern const s8 data_020a41c8[];
 
 
-void func_02087ccc(StorytalkWindow *self, void *data);
-void func_02087d68(StorytalkWindow *self);
-void func_020880f4(StorytalkWindow *self);
-void func_0208813c(StorytalkWindow *self, s32 unk1);
-void func_020889d8(StorytalkWindow *self, s32 unk1);
-void func_02088a24(StorytalkWindow *self);
-void func_02088b30(StorytalkWindow *self);
-void func_02088cd8(StorytalkWindow *self);
-void func_02088ec4(StorytalkWindow *self);
-void func_02088f28(StorytalkWindow *self, u8 unk1);
-u8 func_02088f38();
+void ReplaceStorytalkMessages(StorytalkWindow *self, void *data);
+void InitStorytalkText(StorytalkWindow *self);
+void ResetStorytalkMessageText(StorytalkWindow *self);
+void SetStorytalkMessageIndex(StorytalkWindow *self, s32 unk1);
+void SetStorytalkCharacter(StorytalkWindow *self, s32 unk1);
+void DrawStorytalkName(StorytalkWindow *self);
+void DrawStorytalkTextAndCell1(StorytalkWindow *self);
+void DrawStorytalkCells0And2(StorytalkWindow *self);
+void SetNoStorytalkMessage(StorytalkWindow *self);
+void SetStorytalkBlink(StorytalkWindow *self, u8 unk1);
+u8 GetStageParkCategory();
 
 BOOL StorytalkWindow::func_02087cac() {
     return mState > 2;
@@ -160,7 +160,7 @@ void StorytalkWindow::Close() {
     mCloseRequested = 1;
 }
 
-void func_02087ccc(StorytalkWindow *self, void *data) {
+void ReplaceStorytalkMessages(StorytalkWindow *self, void *data) {
     if (self->mMessages != NULL) {
         OS_Free(self->mMessages);
     }
@@ -175,7 +175,7 @@ void StorytalkWindow::LoadMessageFile(const char *path) {
     mMessages = LoadFile(path, 0, 0, 0, 0, 0);
 }
 
-void func_02087d68(StorytalkWindow *self) {
+void InitStorytalkText(StorytalkWindow *self) {
     ChangeDir("/");
     self->mStoryCharaNames = LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
     SpriteManager::Get().Screen(0).SetObjVramMode(3);
@@ -185,7 +185,7 @@ void func_02087d68(StorytalkWindow *self) {
     self->mTextBufferSizes[1] = TextManager::Get().BufferSize(0x10, 4);
     self->mTextBuffers[1] = OS_Alloc(self->mTextBufferSizes[1]);
     MI_CpuClear16(self->mTextBuffers[1], self->mTextBufferSizes[1]);
-    func_020880f4(self);
+    ResetStorytalkMessageText(self);
 }
 
 // Re-entrant: deletes and recreates the cells; also called by the scenes that reload it (ScriptPlayer.cpp,
@@ -212,7 +212,7 @@ void StorytalkWindow::LoadGraphics() {
     TextManager::Get().SetColor(0, 0, 0xf);
 }
 
-void func_020880f4(StorytalkWindow *self) {
+void ResetStorytalkMessageText(StorytalkWindow *self) {
     MI_CpuClearFast((void *) 0x6406000, 0x1800);
     MI_CpuClear16(self->mTextBuffers[0], self->mTextBufferSizes[0]);
     self->mUnk_36 = 1;
@@ -220,11 +220,11 @@ void func_020880f4(StorytalkWindow *self) {
     self->mMessageIndex = -1;
 }
 
-void func_0208813c(StorytalkWindow *self, s32 unk1) {
+void SetStorytalkMessageIndex(StorytalkWindow *self, s32 unk1) {
     if (self->mMessageIndex == unk1) {
         return;
     }
-    func_020880f4(self);
+    ResetStorytalkMessageText(self);
     self->mMessageIndex = unk1;
     self->mUnk_36 = 0;
     self->mTextPage = 0;
@@ -259,7 +259,7 @@ void func_0208813c(StorytalkWindow *self, s32 unk1) {
 
 extern char data_020d441a[];
 
-void func_020882c4(StorytalkWindow *self) {
+void PrintStorytalkText(StorytalkWindow *self) {
     s16 h;
     s16 w;
     if (self->mMessageIndex < 0) {
@@ -348,7 +348,7 @@ file->GetText(index), file->GetLength(index), self->mTextBuffers[1], 0x20, 2, &y
     QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x7800, self->mTextBuffers[1], self->mTextBufferSizes[1], 0);
 }
 
-void func_020889d8(StorytalkWindow *self, s32 unk1) {
+void SetStorytalkCharacter(StorytalkWindow *self, s32 unk1) {
     if (unk1 == self->mCharacterId) {
         return;
     }
@@ -362,7 +362,7 @@ void StorytalkWindow::func_02088a18(u32 unk1, u32 unk2) {
     mUnk_40 = unk2;
 }
 
-void func_02088a24(StorytalkWindow *self) {
+void DrawStorytalkName(StorytalkWindow *self) {
     if (self->mBlink != 0 && self->mBlinkHidden != 0) {
         return;
     }
@@ -371,12 +371,12 @@ void func_02088a24(StorytalkWindow *self) {
     }
     u8 i = 0;
     do {
-        SpriteManager::Get().Screen(0).AddOam((void *) data_020a41cc, 1, (s16) (i % 8 * 0x20 + 0x12), 0x82, 0, (u16) (i * 8 + 0x3c0), 0xf, 0);
+        SpriteManager::Get().Screen(0).AddOam((void *) gStorytalkTextOam, 1, (s16) (i % 8 * 0x20 + 0x12), 0x82, 0, (u16) (i * 8 + 0x3c0), 0xf, 0);
         i++;
     } while (i < 8);
 }
 
-void func_02088b30(StorytalkWindow *self) {
+void DrawStorytalkTextAndCell1(StorytalkWindow *self) {
     if (self->mBlink != 0 && self->mBlinkHidden != 0) {
         return;
     }
@@ -393,7 +393,7 @@ void func_02088b30(StorytalkWindow *self) {
     }
     i = 0;
     do {
-        SpriteManager::Get().Screen(0).AddOam((void *) data_020a41cc, 1, (s16) (x + i % 8 * 0x20 - 0x20), (s16) (y + i / 8 * 12 + shift), 0, (u16) (i * 8 + 0x300), 0xf, 0);
+        SpriteManager::Get().Screen(0).AddOam((void *) gStorytalkTextOam, 1, (s16) (x + i % 8 * 0x20 - 0x20), (s16) (y + i / 8 * 12 + shift), 0, (u16) (i * 8 + 0x300), 0xf, 0);
         i++;
     } while (i < 0x18);
     if (self->mCell1Visible == 0) {
@@ -406,7 +406,7 @@ void func_02088b30(StorytalkWindow *self) {
     self->mCellAnims[1]->Draw(0, 0xf0, (s16) (y + 0x1c), 0);
 }
 
-void func_02088cd8(StorytalkWindow *self) {
+void DrawStorytalkCells0And2(StorytalkWindow *self) {
     if (self->mBlink != 0 && self->mBlinkHidden != 0) {
         return;
     }
@@ -443,7 +443,7 @@ BOOL StorytalkWindow::NextPage(u32 unk1) {
 
 void StorytalkWindow::SetMessage(s32 unk1, s32 unk2, u32 unk3, u32 unk4) {
     mUnk_4b = unk4;
-    func_0208813c(this, unk1);
+    SetStorytalkMessageIndex(this, unk1);
     if (unk2 == 0x64) {
         if (data_020d433c.mUnk_82 != 0) {
             unk2 = 0;
@@ -451,7 +451,7 @@ void StorytalkWindow::SetMessage(s32 unk1, s32 unk2, u32 unk3, u32 unk4) {
             unk2 = 5;
         }
     }
-    func_020889d8(this, unk2);
+    SetStorytalkCharacter(this, unk2);
     if (unk3 != 0) {
         mState = 2;
     }
@@ -461,7 +461,7 @@ void StorytalkWindow::SetCell1Visible(u32 unk1) {
     mCell1Visible = unk1;
 }
 
-void func_02088ec4(StorytalkWindow *self) {
+void SetNoStorytalkMessage(StorytalkWindow *self) {
     self->SetMessage(-1, -1, 0, 0);
     self->mUnk_3c = 0;
 }
@@ -478,7 +478,7 @@ BOOL StorytalkWindow::IsTextShown() {
     return mState == 5;
 }
 
-void func_02088f28(StorytalkWindow *self, u8 unk1) {
+void SetStorytalkBlink(StorytalkWindow *self, u8 unk1) {
     self->mBlink = unk1;
     self->mBlinkHidden = 0;
 }

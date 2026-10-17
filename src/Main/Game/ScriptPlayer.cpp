@@ -23,16 +23,16 @@
 #include "Graphics/BakuganModel.hpp"
 #include "Graphics/ModelInternal.hpp"
 
-ScriptPlayer *data_02219288;
+ScriptPlayer *gScriptPlayer;
 extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 extern "C" void DC_FlushRange(void *buffer, u32 size);
-void func_02088ec4(StorytalkWindow *object);
+void SetNoStorytalkMessage(StorytalkWindow *object);
 extern "C" void MIi_CpuCopy32(const void *src, void *dest, u32 size);
 extern const u32 data_020a23cc[8][6];
 extern "C" void func_020360cc(UnkStruct_SpriteManager_28 *slot);
 extern "C" void func_02038444(u32 a, u32 b);
 
-void func_02089278();
+void FillParkSlots();
 
 extern const u8 data_020a1c34[];
 
@@ -109,7 +109,7 @@ ScriptPlayer::ScriptPlayer(u32 unk1, u32 unk2, u32 unk3) :
     mUnk_14f1 = unk3;
     mCutsceneAnimIndex = 0;
     mBg0Wave = 0;
-    data_02219288 = this;
+    gScriptPlayer = this;
     MI_CpuClear32(&mCutsceneCellAnim, 4);
     MI_CpuClear32(mCharacters, 0x90);
     MI_CpuClear32(mMaps, 0x68);
@@ -378,7 +378,7 @@ s32 ScriptPlayer::func_02066814(u32 unk1) {
                 mUnk_14e2 = 7;
             }
             if (advance | done) {
-                func_02089278();
+                FillParkSlots();
             }
         }
     }
@@ -1868,9 +1868,9 @@ extern const s16 data_020a248c[][9];
 extern const s16 data_020a233c[][12];
 void AddHBlankHook(void (*callback)());
 void RemoveHBlankHook(void (*callback)());
-extern "C" void func_0206ea14();
-void func_02087ccc(StorytalkWindow *object, void *data);
-void func_02088ec4(StorytalkWindow *object);
+extern "C" void Bg0WaveCallback();
+void ReplaceStorytalkMessages(StorytalkWindow *object, void *data);
+void SetNoStorytalkMessage(StorytalkWindow *object);
 
 void ScriptPlayer::DrawSpheres() {
     for (u8 i = 0; i < 2; i++) {
@@ -2148,7 +2148,7 @@ void ScriptPlayer::RunCommands() {
     }
 }
 
-void func_02088f28(StorytalkWindow *self, u8 unk1);
+void SetStorytalkBlink(StorytalkWindow *self, u8 unk1);
 
 void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
     mCurrentCommand = command;
@@ -2165,7 +2165,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             }
             break;
         case 3:
-            func_02088ec4(mStorytalkWindow);
+            SetNoStorytalkMessage(mStorytalkWindow);
             mMessageState = 0;
             mMessagePos = mMessageCount;
             mWaitTimer = 0;
@@ -2968,7 +2968,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             CameraManager::Get().mActive = 0;
             CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
             mUnk_14e4 = 0;
-            func_02088f28(mStorytalkWindow, 0);
+            SetStorytalkBlink(mStorytalkWindow, 0);
             mWaitKind = 9;
             break;
         case 233:
@@ -2980,7 +2980,7 @@ void ScriptPlayer::ExecuteCommand(u32 command, s32 value) {
             mUnk_14e4 = 1;
             mUnk_14e5 = 1;
             GXS_SetVisiblePlane(1);
-            func_02088f28(mStorytalkWindow, 1);
+            SetStorytalkBlink(mStorytalkWindow, 1);
             mStorytalkWindow->LoadGraphics();
             break;
         case 234:
@@ -3272,20 +3272,20 @@ void ScriptPlayer::SetBg0Wave(u32 flag) {
     }
     mBg0Wave = flag;
     if (flag & 0xff) {
-        AddHBlankHook(func_0206ea14);
+        AddHBlankHook(Bg0WaveCallback);
     } else {
-        RemoveHBlankHook(func_0206ea14);
+        RemoveHBlankHook(Bg0WaveCallback);
         func_020037e8(0);
     }
 }
 
-extern "C" void func_0206ea14() {
+extern "C" void Bg0WaveCallback() {
     s32 line = *(vu16 *) 0x4000006;
     if (line >= 0xc0) {
         return;
     }
     u32 time = line + GameSystem::Get().mFrame;
-    ScriptPlayer *event = data_02219288;
+    ScriptPlayer *event = gScriptPlayer;
     u16 angle = (time << 16) / 192;
     u16 height = event->mLerpFrameCount;
     u16 width  = event->mLerpFrames;
@@ -3318,7 +3318,7 @@ BOOL ScriptPlayer::StartScript(const char *path) {
     mMessageState = 0;
     mMessagePos = 0;
     mMessageCount = 0;
-    func_02088ec4(mStorytalkWindow);
+    SetNoStorytalkMessage(mStorytalkWindow);
     mUnk_12ba = 0;
     mSkipped = 0;
     SetCharacterVisible(0, 0);
@@ -3406,8 +3406,8 @@ BOOL ScriptPlayer::ReadMessages() {
         return FALSE;
     }
     mFileData = (u32) GetAsyncLoadBuffer();
-    func_02087ccc(mStorytalkWindow, (void *) mFileData);
-    func_02088ec4(mStorytalkWindow);
+    ReplaceStorytalkMessages(mStorytalkWindow, (void *) mFileData);
+    SetNoStorytalkMessage(mStorytalkWindow);
     return TRUE;
 }
 
@@ -3554,7 +3554,7 @@ BOOL ScriptPlayer::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4,
     LoadFileAsync(file, 0, 0, 0, &mFileSize, 0);
     mStorytalkWindow->SetCell1Visible(0);
     mMessageState = 0;
-    func_02088ec4(mStorytalkWindow);
+    SetNoStorytalkMessage(mStorytalkWindow);
     mMessagePos = 0;
     mMessageCount = 0;
     mState = 2;
@@ -3566,7 +3566,7 @@ BOOL ScriptPlayer::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32 unk4,
 
 extern const u8 data_020a1b8a[];
 extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
-void func_02088ec4(StorytalkWindow *object);
+void SetNoStorytalkMessage(StorytalkWindow *object);
 
 void ScriptPlayer::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
     BOOL isTwo   = mUnk_12ba == 2;
@@ -3582,7 +3582,7 @@ void ScriptPlayer::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
     }
     if (mUnk_14e2 == 5) {
         mMessageState = 0;
-        func_02088ec4(mStorytalkWindow);
+        SetNoStorytalkMessage(mStorytalkWindow);
         mMessageIndices[0] = unk1;
         mCommandIndex    = mUnk_12c0;
         mCommands[mUnk_12c0].mValue = func_02070554(mCharacters[0].mCharacterId, unk2);
@@ -3608,7 +3608,7 @@ void ScriptPlayer::func_0206f564(s32 unk1, u32 unk2, s32 unk3) {
 }
 
 // The four computed entries of the script below (FxScale, Identity16) are filled at run time on the first call, under a
-// guard at 0x0221928c (right after data_02219288).
+// guard at 0x0221928c (right after gScriptPlayer).
 inline s16 FxScale(float v) {
     return (s16) (v * 4096.0f + 0.5f);
 }
@@ -3622,24 +3622,24 @@ inline s16 Identity16(s16 v) {
 // initializer the compiler's init addresses it through the section symbol and the copy through its own (two pool
 // words). The hand-written guard and the init are stand-ins for the original's form.
 #pragma section npdata begin
-ScriptCommand data_020b467c[17] = {
+ScriptCommand gMessageScriptCommands[17] = {
     {1, 0xe}, {-16, 0xf}, {0, 0x19}, {3, 9}, {9, 0x3b}, {0, 0x3c}, {0x2d, 0x2f}, {0, 0x31},
     {0, 0x33}, {0, 0x35}, {0, 0x3a}, {10, 0xe}, {0, 0xf}, {0, 0x19}, {0, 0xd7}, {0, 8}, {0, 1}};
 #pragma section npdata end
 static u32 sScriptGuard;
 
-extern "C" BOOL func_0206f6f0(ScriptPlayer *event, const char *name, u32 id, u32 unk3, u32 unk4) {
+extern "C" BOOL StartMessageScript(ScriptPlayer *event, const char *name, u32 id, u32 unk3, u32 unk4) {
     BOOL idle = event->mCommandIndex == event->mCommandCount;
     BOOL nine = event->mState == 9;
     if (nine & idle) {
         if (!(sScriptGuard & 1)) {
-            data_020b467c[7].mValue  = FxScale(0.27f);
-            data_020b467c[8].mValue  = FxScale(0.43f);
-            data_020b467c[9].mValue  = FxScale(0.86f);
-            data_020b467c[10].mValue = Identity16(0x7fff);
+            gMessageScriptCommands[7].mValue  = FxScale(0.27f);
+            gMessageScriptCommands[8].mValue  = FxScale(0.43f);
+            gMessageScriptCommands[9].mValue  = FxScale(0.86f);
+            gMessageScriptCommands[10].mValue = Identity16(0x7fff);
             sScriptGuard |= 1;
         }
-        MIi_CpuCopy32(data_020b467c, event->mCommands, 0x44);
+        MIi_CpuCopy32(gMessageScriptCommands, event->mCommands, 0x44);
         event->mCommands[14].mValue = event->func_02070554((s8) *(s16 *) &unk4, unk3);
         event->mCommands[15].mValue = *(s16 *) &unk4;
         event->mCommands[16].mValue = id;
@@ -3651,7 +3651,7 @@ extern "C" BOOL func_0206f6f0(ScriptPlayer *event, const char *name, u32 id, u32
         LoadFileAsync(file, 0, 0, 0, &event->mFileSize, 0);
         event->mStorytalkWindow->SetCell1Visible(0);
         event->mMessageState = 0;
-        func_02088ec4(event->mStorytalkWindow);
+        SetNoStorytalkMessage(event->mStorytalkWindow);
         event->mMessagePos = 0;
         event->mMessageCount = 0;
         event->mState = 2;
@@ -3685,7 +3685,7 @@ extern "C" void func_0206f88c(ScriptPlayer *event, u32 category, s32 value, u32 
     event->mCommandIndex = 0;
     event->mCommandCount = 0x20;
     event->mMessageState = 0;
-    func_02088ec4(event->mStorytalkWindow);
+    SetNoStorytalkMessage(event->mStorytalkWindow);
     event->mMessagePos = 0;
     event->mMessageCount = 0;
     event->mState = 3;
@@ -3943,7 +3943,7 @@ u8 ScriptPlayer::func_0206fa20(const char *name, const u16 *unk2, const u8 *unk3
     n++;
     mCommandIndex = 0;
     mCommandCount = n;
-    func_02088ec4(mStorytalkWindow);
+    SetNoStorytalkMessage(mStorytalkWindow);
     ChangeDir("/");
     char file[0x80];
     sprintf(file, "/font/%s.mes", name);
@@ -3970,7 +3970,7 @@ BOOL ScriptPlayer::func_020702e0(s32 unk1, s32 unk2, s32 unk3, s32 unk4, s32 unk
     mMessageCount  = 0;
     mMessagePos  = 0;
     mMessageIndices[0] = count - 10;   // -1 derived from the count, as the original computes it
-    func_02088ec4(mStorytalkWindow);
+    SetNoStorytalkMessage(mStorytalkWindow);
     mMaps[0].mUnk_32 = 1;
     mState            = 3;
     return TRUE;
@@ -4021,7 +4021,7 @@ void ScriptPlayer::SkipScript() {
     mMessageState = 0;
     mUnk_14ee = 0;
     mMessageCount = mMessagePos;
-    func_02088ec4(mStorytalkWindow);
+    SetNoStorytalkMessage(mStorytalkWindow);
     mState = 3;
     mSkipped = 1;
     SpriteManager::Get().StartFade(2);
@@ -4051,7 +4051,7 @@ s32 ScriptPlayer::func_02070554(s32 kind, s32 index) {
 }
 
 
-extern "C" void func_020705f0(ScriptPlayer *event) {
+extern "C" void InvalidateStorytalkMessageIndex(ScriptPlayer *event) {
     if (event->mStorytalkWindow != NULL) {
         event->mStorytalkWindow->mMessageIndex = -1;
     }

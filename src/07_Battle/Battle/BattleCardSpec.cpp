@@ -60,12 +60,12 @@ BattleCardSpec::BattleCardSpec(u32 a, u32 b, u32 c, u8 d)
 BattleCardSpec::~BattleCardSpec() {
     ModelInstance *a = mUnk_10;
     if (a) {
-        a->mUnk_68 = 0xf;
+        a->mOwnFlags = 0xf;
         delete a;
     }
     ModelInstance *b = mUnk_14;
     if (b) {
-        b->mUnk_68 = 0xf;
+        b->mOwnFlags = 0xf;
         delete b;
     }
     SpriteManager::Get().func_0202740c();
@@ -75,7 +75,7 @@ void BattleCardSpec::Update() {
     switch (mState) {
         case 0: {
             CameraManager::Get().mActive = 0;
-            CameraManager::Get().func_02026504(1, data_020d433c.mBattlePlayers->mCamera, 0);
+            CameraManager::Get().SetCamerasAndRequestMode(1, data_020d433c.mBattlePlayers->mCamera, 0);
             GX_SetVisiblePlane(0x11);
             G2_SetBG0Priority(0);
             func_ov007_0225fbdc();
@@ -133,28 +133,28 @@ void BattleCardSpec::Update() {
     }
     if (mState > 1) {
         SnapshotCamera();
-        MtxFx43 mtx   = data_0220e86c;
+        MtxFx43 mtx   = gIdentityMtx43;
         VecFx32 pos   = data_ov007_0227aa1c;
-        mUnk_10->func_02029174(&mtx, &pos);
-        mUnk_14->func_02028d80();
-        mUnk_14->func_02029174(&mtx, &pos);
+        mUnk_10->Draw(&mtx, &pos);
+        mUnk_14->AdvanceAnim();
+        mUnk_14->Draw(&mtx, &pos);
     }
 }
 
 void BattleCardSpec::func_ov007_0225fbdc() {
     ChangeDir("/Game/Battle/3d/Map/");
-    UnkStruct_02028308 *texture = new NitroTexture("realbase_00.nsbtx");
+    TextureFile *texture = new NitroTexture("realbase_00.nsbtx");
     NitroModel *model           = new NitroModel("realbase_00.nsbmd", texture);
-    mUnk_10                     = model->func_02028b78(NULL);
-    mUnk_10->mUnk_69            = 0;
-    texture->func_02028344();
-    UnkStruct_02028308 *texture2 = new NitroTexture("realnormal_99.nsbtx");
+    mUnk_10                     = model->CreateInstance(NULL);
+    mUnk_10->mUseBoxTest            = 0;
+    texture->FreeFile();
+    TextureFile *texture2 = new NitroTexture("realnormal_99.nsbtx");
     NitroModel *model2           = new NitroModel("realnormal_99.nsbmd", texture2);
-    texture2->func_02028344();
+    texture2->FreeFile();
     ModelAnimData *data = new ModelAnimData("realnormal_99_data.bin");
     ModelAnim *anim     = new ModelAnim(data, model2);
-    mUnk_14             = model2->func_02028b78(anim);
-    mUnk_14->func_02028de8(0, 1);
-    mUnk_14->mUnk_69 = 0;
+    mUnk_14             = model2->CreateInstance(anim);
+    mUnk_14->StartAnim(0, 1);
+    mUnk_14->mUseBoxTest = 0;
     ChangeDir("/");
 }

@@ -18,24 +18,24 @@ public:
     /* a8 */ u8 mAlarm[0x2c];
     /* d4 */ u32 mUnk_d4;
     /* d8 */ u32 mUnk_d8;
-    /* dc */ u32 mUnk_dc;
-    /* e0 */ u32 mUnk_e0;
+    /* dc */ u32 mFrameCount;
+    /* e0 */ u32 mFrameIndex;
     /* e4 */ u32 mUnk_e4;
-    /* e8 */ volatile u32 mUnk_e8;
-    /* ec */ u32 mUnk_ec;
-    /* f0 */ volatile u32 mUnk_f0;
-    /* f4 */ u32 mUnk_f4;
+    /* e8 */ volatile u32 mFrameDue;
+    /* ec */ u32 mVramPage;
+    /* f0 */ volatile u32 mFlipDone;
+    /* f4 */ u32 mWriteOffset;
     /* f8 */ u32 mUnk_f8;
     /* fc */ u32 mUnk_fc;
     /* 100 */ u16 *mBuffer;
     /* 104 */ u16 *mBuffer2;
-    /* 108 */ u8 mUnk_108;
-    /* 109 */ u8 mUnk_109;
+    /* 108 */ u8 mUseBuffer2;
+    /* 109 */ u8 mSoundStarted;
     /* 10a */ u8 mUnk_10a;
     /* 10b */ u8 mUnk_10b;
     /* 10c */ u8 mUnk_10c;
     /* 10d */ PAD(0x10d, 0x10e);
-    /* 10e */ u8 mUnk_10e;
+    /* 10e */ u8 mUseVideo2;
     /* 10f */ u8 mUnk_10f;
     /* 110 */ u8 mUnk_110;
     /* 111 */ PAD(0x111, 0x114);
@@ -43,17 +43,17 @@ public:
 
     MoviePlayer();
     ~MoviePlayer();
-    void func_0203c1d8(u32 rate);
-    void func_0203c354();
-    u32 func_0203c384();
-    u32 func_0203c39c();
-    void func_0203c3d0();
-    void func_0203c5b4(void *a, void *b, u8 c, u32 d); // d: only the low byte is used
-    void func_0203c9c4();
-    void func_0203ca5c();
-    BOOL func_0203ca70();
+    void StartSound(u32 rate);
+    void StopSound();
+    u32 GetVideoTarget();
+    u32 GetVideo2Target();
+    void DrawFrame();
+    void Open(void *a, void *b, u8 c, u32 d); // d: only the low byte is used
+    void Close();
+    void SeekToEnd();
+    BOOL Update();
 };
 
-void func_0203c448(MoviePlayer *player); // alarm handler: a frame is due
-void func_0203c454(MoviePlayer *player); // vblank task: flips the screen
-void func_0203c1bc(MoviePlayer *player); // alarm handler: counts a tick
+void SetFrameDue(MoviePlayer *player); // alarm handler: a frame is due
+void FlipVramPage(MoviePlayer *player); // vblank task: flips the screen
+void CountTick(MoviePlayer *player); // alarm handler: counts a tick

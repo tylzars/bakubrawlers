@@ -5,51 +5,51 @@
 void operator delete(void *ptr);
 
 ModelAnim::ModelAnim(const void *data, NitroModel *model) {
-    func_02029594();
-    mUnk_14 = model;
-    mUnk_18 = (ModelAnimData *) data;
+    Init();
+    mNitroModel = model;
+    mAnimData = (ModelAnimData *) data;
     for (u8 i = 0; i < 5; i++) {
         ModelAnimData *d = (ModelAnimData *) data;
-        func_0202964c(i, d->mAnims[i], (u8 *) d->mFile[i].mTable);
+        InitChannel(i, d->mAnims[i], (u8 *) d->mFile[i].mTable);
     }
 }
 
 ModelAnim::~ModelAnim() {
-    func_02029914();
+    FreeAnimObjs();
 }
 
-void ModelAnim::func_02029594() {
+void ModelAnim::Init() {
     for (u8 i = 0; i < 5; i++) {
-        mUnk_1c[i] = NULL;
-        mUnk_30[i] = NULL;
-        mUnk_44[i] = NULL;
-        mUnk_5d    = 0;
+        mAnimFiles[i] = NULL;
+        mAnimObjs[i] = NULL;
+        mAnimObjHandles[i] = NULL;
+        mSet    = 0;
     }
-    mUnk_04 = 0;
-    mUnk_08 = 1;
-    mUnk_0c = 0x1000;
-    mUnk_14 = NULL;
-    mUnk_18 = NULL;
+    mPaused = 0;
+    mLoop = 1;
+    mFramePerFrame = 0x1000;
+    mNitroModel = NULL;
+    mAnimData = NULL;
 }
 
-BOOL ModelAnim::func_020295e0() {
-    if (mUnk_04 != 0) {
+BOOL ModelAnim::Advance() {
+    if (mPaused != 0) {
         return TRUE;
     }
     for (u8 i = 0; i < 5; i++) {
-        NNSG3dAnmObj *obj = func_02029a48(i);
+        NNSG3dAnmObj *obj = GetAnimObj(i);
         if (obj != NULL) {
             func_0202982c(obj);
         }
     }
-    return !((mUnk_08 == 0) & mUnk_10);
+    return !((mLoop == 0) & mReachedEnd);
 }
 
-void ModelAnim::func_0202964c(u32 channel, UnkStruct_02029248 *anim, u8 *table) {
+void ModelAnim::InitChannel(u32 channel, ModelAnimFile *anim, u8 *table) {
     if (anim == NULL || table == NULL) {
         return;
     }
-    mUnk_1c[channel] = anim;
+    mAnimFiles[channel] = anim;
     u8 count         = 0;
     switch (channel) {
     case 0:
@@ -71,20 +71,20 @@ void ModelAnim::func_0202964c(u32 channel, UnkStruct_02029248 *anim, u8 *table) 
     if (count == 0) {
         return;
     }
-    mUnk_58[channel] = count;
-    mUnk_44[channel] = table;
-    mUnk_30[channel] = (NNSG3dAnmObj **) OS_Alloc(count * 4);
+    mAnimObjCounts[channel] = count;
+    mAnimObjHandles[channel] = table;
+    mAnimObjs[channel] = (NNSG3dAnmObj **) OS_Alloc(count * 4);
     u8 i = 0;
     do {
-        mUnk_30[channel][i] = NULL;
+        mAnimObjs[channel][i] = NULL;
         i++;
     } while (i < count);
 }
 
-void ModelAnim::func_02029734() {
-    mUnk_10 = 0;
+void ModelAnim::ResetFrames() {
+    mReachedEnd = 0;
     for (u8 channel = 0; channel < 5; channel++) {
-        NNSG3dAnmObj *obj = func_02029a48(channel);
+        NNSG3dAnmObj *obj = GetAnimObj(channel);
         if (obj == NULL) {
             continue;
         }
@@ -94,7 +94,7 @@ void ModelAnim::func_02029734() {
             func_020299ec();
             break;
         case 2:
-            for (u8 i = 0; i < ((u8 *) mUnk_14->mUnk_04)[0x18]; i++) {
+            for (u8 i = 0; i < ((u8 *) mNitroModel->mResModel)[0x18]; i++) {
                 func_02031518(obj, i);
             }
             break;
@@ -102,10 +102,10 @@ void ModelAnim::func_02029734() {
     }
 }
 
-s32 ModelAnim::func_020297d4(u32 set) {
+s32 ModelAnim::GetFrameCountForSet(u32 set) {
     s32 max = 0;
     for (u8 channel = 0; channel < 5; channel++) {
-        NNSG3dAnmObj *obj = func_02029a58(channel, set);
+        NNSG3dAnmObj *obj = GetAnimObjForSet(channel, set);
         if (obj != NULL) {
             s32 end = obj->mRes->mFrames << 12;
             if (max < end) {
@@ -117,23 +117,23 @@ s32 ModelAnim::func_020297d4(u32 set) {
 }
 
 void ModelAnim::func_0202982c(NNSG3dAnmObj *obj) {
-    mUnk_10 = (func_02029854(obj) != 0 || mUnk_10 != 0);
+    mReachedEnd = (StepAnimObj(obj) != 0 || mReachedEnd != 0);
 }
 
-BOOL ModelAnim::func_02029854(NNSG3dAnmObj *obj) {
-    s32 frame = obj->mFrame + mUnk_0c;
+BOOL ModelAnim::StepAnimObj(NNSG3dAnmObj *obj) {
+    s32 frame = obj->mFrame + mFramePerFrame;
     BOOL done = FALSE;
     obj->mFrame = frame;
     s32 end = obj->mRes->mFrames << 12;
     if (frame >= end) {
         done = TRUE;
-        if (mUnk_08 != 0) {
+        if (mLoop != 0) {
             obj->mFrame = frame - end;
         } else {
             obj->mFrame = end - 1;
         }
     } else if (frame < 0) {
-        if (mUnk_08 != 0) {
+        if (mLoop != 0) {
             obj->mFrame = frame + end;
         } else {
             obj->mFrame = done;
@@ -142,86 +142,86 @@ BOOL ModelAnim::func_02029854(NNSG3dAnmObj *obj) {
     return done;
 }
 
-void ModelAnim::func_020298c0(u32 value, u32 index) {
+void ModelAnim::SetFrame(u32 value, u32 index) {
     if (index == 5) {
         for (u8 i = 0; i < 5; i++) {
-            NNSG3dAnmObj *obj = func_02029a48(i);
+            NNSG3dAnmObj *obj = GetAnimObj(i);
             if (obj != NULL) {
                 obj->mFrame = value;
             }
         }
     } else {
-        NNSG3dAnmObj *obj = func_02029a48(index);
+        NNSG3dAnmObj *obj = GetAnimObj(index);
         if (obj != NULL) {
             obj->mFrame = value;
         }
     }
 }
 
-void ModelAnim::func_02029914() {
+void ModelAnim::FreeAnimObjs() {
     for (u8 i = 0; i < 5; i++) {
-        if (mUnk_30[i] != NULL) {
-            for (u8 j = 0; j < mUnk_58[i]; j++) {
-                if (mUnk_30[i][j] != NULL) {
-                    OS_Free(mUnk_30[i][j]);
+        if (mAnimObjs[i] != NULL) {
+            for (u8 j = 0; j < mAnimObjCounts[i]; j++) {
+                if (mAnimObjs[i][j] != NULL) {
+                    OS_Free(mAnimObjs[i][j]);
                 }
             }
-            OS_Free(mUnk_30[i]);
+            OS_Free(mAnimObjs[i]);
         }
-        mUnk_30[i] = NULL;
-        mUnk_44[i] = NULL;
-        mUnk_5d    = 0;
+        mAnimObjs[i] = NULL;
+        mAnimObjHandles[i] = NULL;
+        mSet    = 0;
     }
 }
 
-void ModelAnim::func_020299b8() {
-    ModelAnimData *data = mUnk_18;
+void ModelAnim::FreeAnimData() {
+    ModelAnimData *data = mAnimData;
     if (data == NULL) {
         return;
     }
     delete data;
-    mUnk_18 = NULL;
+    mAnimData = NULL;
 }
 
 void ModelAnim::func_020299ec() {
-    NNSG3dAnmObj *obj = func_02029a48(0);
+    NNSG3dAnmObj *obj = GetAnimObj(0);
     if (obj == NULL) {
         return;
     }
-    for (u8 i = 0; i < ((u8 *) mUnk_14->mUnk_04)[0x17]; i++) {
+    for (u8 i = 0; i < ((u8 *) mNitroModel->mResModel)[0x17]; i++) {
         func_02031518(obj, i);
     }
 }
 
-NNSG3dAnmObj *ModelAnim::func_02029a48(u32 channel) {
-    return func_02029a58(channel, mUnk_5d);
+NNSG3dAnmObj *ModelAnim::GetAnimObj(u32 channel) {
+    return GetAnimObjForSet(channel, mSet);
 }
 
-NNSG3dAnmObj *ModelAnim::func_02029a58(u32 channel, u32 set) {
-    if (mUnk_44[channel] == NULL) {
+NNSG3dAnmObj *ModelAnim::GetAnimObjForSet(u32 channel, u32 set) {
+    if (mAnimObjHandles[channel] == NULL) {
         return NULL;
     }
-    u8 id = mUnk_44[channel][set];
+    u8 id = mAnimObjHandles[channel][set];
     if (id == 0) {
         return NULL;
     }
     u8 index = id - 1;
-    if (mUnk_30[channel][index] == NULL) {
-        mUnk_30[channel][index] =
-            (NNSG3dAnmObj *) mUnk_18->mAnims[channel]->func_02029288(index, mUnk_14, mUnk_14->mUnk_08);
+    if (mAnimObjs[channel][index] == NULL) {
+        mAnimObjs[channel][index] =
+            (NNSG3dAnmObj *) mAnimData->mAnims[channel]->CreateAnimObj(index, mNitroModel, mNitroModel->mTexture);
     }
-    return mUnk_30[channel][index];
+    return mAnimObjs[channel][index];
 }
 
-void ModelAnim::func_02029ad8(u32 set) {
-    mUnk_5d = set;
-    mUnk_10 = 0;
+void ModelAnim::SelectSet(u32 set) {
+    mSet = set;
+    mReachedEnd = 0;
     for (u8 channel = 0; channel < 5; channel++) {
-        if (mUnk_44[channel] != NULL && mUnk_44[channel][set] != 0) {
-            u8 index = mUnk_44[channel][set] - 1;
-            if (mUnk_30[channel][index] == NULL) {
-                mUnk_30[channel][index] =
-                    (NNSG3dAnmObj *) mUnk_18->mAnims[channel]->func_02029288(index, mUnk_14, mUnk_14->mUnk_08);
+        if (mAnimObjHandles[channel] != NULL && mAnimObjHandles[channel][set] != 0) {
+            u8 index = mAnimObjHandles[channel][set] - 1;
+            if (mAnimObjs[channel][index] == NULL) {
+                mAnimObjs[channel][index] =
+                    (NNSG3dAnmObj *) mAnimData->mAnims[channel]->CreateAnimObj(index, mNitroModel, mNitroModel->mTexture);
             }
         }
     }

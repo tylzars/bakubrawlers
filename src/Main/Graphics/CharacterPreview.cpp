@@ -5,29 +5,29 @@
 #include <stdio.h>
 
 extern u8 data_020d4404[];
-extern MtxFx43 data_0220e86c;
+extern MtxFx43 gIdentityMtx43;
 extern "C" void func_01ffcf64(MtxFx43 *mtx, VecFx32 *pos);
 
 // 0x1bc bytes, built from /Game/Character/Character/charaNN files.
 // Custom character appearance as stored in the save data (8 bytes, data_020d4404).
 struct CharacterParams {
     u16 mUnk_00_0 : 1;
-    u16 mUnk_66 : 3;
-    u16 mUnk_67 : 3;
-    u16 mUnk_68 : 3;
-    u16 mUnk_69 : 3;
-    u16 mUnk_6a : 3;
-    u16 mUnk_6b : 3;
-    u16 mUnk_6c : 3;
+    u16 mFaceKind : 3;
+    u16 mFaceVariant : 3;
+    u16 mHairKind : 3;
+    u16 mHairVariant : 3;
+    u16 mCapHandle : 3;
+    u16 mCapPalette : 3;
+    u16 mGlasseHandle : 3;
     u16 mUnk_6d : 3;
     u16 mUnk_6e : 3;
-    u16 mUnk_6f : 3;
-    u16 mUnk_70 : 3;
-    u16 mUnk_71 : 5;
-    u16 mUnk_72 : 3;
-    u16 mUnk_74 : 3;
-    u16 mUnk_73 : 2;
-    u16 mUnk_65 : 3;
+    u16 mTopKind : 3;
+    u16 mTopPalette : 3;
+    u16 mDownKind : 5;
+    u16 mDownPalette : 3;
+    u16 mShoesVariant : 3;
+    u16 mShoesKind : 2;
+    u16 mSkinPalette : 3;
     u16 mUnk_06_3 : 5;
     u16 mUnk_75 : 8;
 };
@@ -62,7 +62,7 @@ public:
 
 // The current animation set of a model (read through a const pointer, so it is a load of its own).
 static inline u8 GetSet(const ModelInstance *model) {
-    return model->mAnim->mUnk_5d;
+    return model->mAnim->mSet;
 }
 
 static inline void SetRotation(ModelTransform *model, const u16 *rot) {
@@ -72,81 +72,81 @@ static inline void SetRotation(ModelTransform *model, const u16 *rot) {
 }
 
 UnkStruct_0205401c::UnkStruct_0205401c() {
-    mUnk_00 = NULL;
-    mUnk_04 = NULL;
-    mUnk_08 = NULL;
-    mUnk_0d = 0;
+    mShadow = NULL;
+    mCharacter = NULL;
+    mStoryCharacter = NULL;
+    mBuilt = 0;
 }
 
-UnkStruct_0205401c *UnkStruct_0205401c::func_02054034() {
+UnkStruct_0205401c *UnkStruct_0205401c::Release() {
     SpriteManager::Get().func_0202753c(0);
-    StoryCharacterModel *story = (StoryCharacterModel *) mUnk_08;
+    StoryCharacterModel *story = (StoryCharacterModel *) mStoryCharacter;
     if (story != NULL) {
         delete story;
     }
-    mUnk_08 = NULL;
-    CharacterModel *character = (CharacterModel *) mUnk_04;
+    mStoryCharacter = NULL;
+    CharacterModel *character = (CharacterModel *) mCharacter;
     if (character != NULL) {
         delete character;
     }
-    mUnk_04 = NULL;
-    ModelInstance *shadow = mUnk_00;
+    mCharacter = NULL;
+    ModelInstance *shadow = mShadow;
     if (shadow != NULL) {
-        shadow->mUnk_68 = 0xf;
+        shadow->mOwnFlags = 0xf;
         delete shadow;
-        mUnk_00 = NULL;
+        mShadow = NULL;
     }
     return this;
 }
 
-void UnkStruct_0205401c::func_0205411c(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
+void UnkStruct_0205401c::Create(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
     if (unk3 == 0) {
         unk3 = (u32) data_020d4404;
     }
     if (unk2 != 0) {
         SpriteManager::Get().func_02027504(0);
     }
-    mUnk_0c = unk1 == 0x15;
-    if (mUnk_0c == 0) {
-        mUnk_08 = new StoryCharacterModel();
-        ((StoryCharacterModel *) mUnk_08)->func_020548a8(unk1, unk4);
-        ((StoryCharacterModel *) mUnk_08)->mUnk_38 = 1;
+    mUseCharacter = unk1 == 0x15;
+    if (mUseCharacter == 0) {
+        mStoryCharacter = new StoryCharacterModel();
+        ((StoryCharacterModel *) mStoryCharacter)->func_020548a8(unk1, unk4);
+        ((StoryCharacterModel *) mStoryCharacter)->mUnk_38 = 1;
     } else {
         CharacterModel *character = new CharacterModel();
-        mUnk_04                   = (UnkStruct_0205401c_04 *) character;
-        func_02054290((const CharacterParams *) unk3);
-        ((CharacterModel *) mUnk_04)->func_020528b0(0, unk4);
-        ((CharacterModel *) mUnk_04)->func_020528b0(1, unk4);
-        ((CharacterModel *) mUnk_04)->func_020528b0(2, unk4);
-        ((CharacterModel *) mUnk_04)->func_020528b0(3, unk4);
-        ((CharacterModel *) mUnk_04)->func_020528b0(4, unk4);
-        ((CharacterModel *) mUnk_04)->func_020528b0(5, unk4);
-        ((CharacterModel *) mUnk_04)->mUnk_64 = 1;
+        mCharacter                   = (UnkStruct_0205401c_04 *) character;
+        SetParams((const CharacterParams *) unk3);
+        ((CharacterModel *) mCharacter)->LoadPart(0, unk4);
+        ((CharacterModel *) mCharacter)->LoadPart(1, unk4);
+        ((CharacterModel *) mCharacter)->LoadPart(2, unk4);
+        ((CharacterModel *) mCharacter)->LoadPart(3, unk4);
+        ((CharacterModel *) mCharacter)->LoadPart(4, unk4);
+        ((CharacterModel *) mCharacter)->LoadPart(5, unk4);
+        ((CharacterModel *) mCharacter)->mVisible = 1;
     }
-    mUnk_0d = 1;
+    mBuilt = 1;
 }
 
-void UnkStruct_0205401c::func_02054290(const CharacterParams *params) {
-    ((CharacterModel *) mUnk_04)->mUnk_65 = params->mUnk_65;
-    ((CharacterModel *) mUnk_04)->mUnk_66 = params->mUnk_66;
-    ((CharacterModel *) mUnk_04)->mUnk_67 = params->mUnk_67;
-    ((CharacterModel *) mUnk_04)->mUnk_68 = params->mUnk_68;
-    ((CharacterModel *) mUnk_04)->mUnk_69 = params->mUnk_69;
-    ((CharacterModel *) mUnk_04)->mUnk_6a = params->mUnk_6a;
-    ((CharacterModel *) mUnk_04)->mUnk_6b = params->mUnk_6b;
-    ((CharacterModel *) mUnk_04)->mUnk_6c = params->mUnk_6c;
-    ((CharacterModel *) mUnk_04)->mUnk_6d = params->mUnk_6d;
-    ((CharacterModel *) mUnk_04)->mUnk_6e = params->mUnk_6e;
-    ((CharacterModel *) mUnk_04)->mUnk_6f = params->mUnk_6f;
-    ((CharacterModel *) mUnk_04)->mUnk_70 = params->mUnk_70;
-    ((CharacterModel *) mUnk_04)->mUnk_71 = params->mUnk_71;
-    ((CharacterModel *) mUnk_04)->mUnk_72 = params->mUnk_72;
-    ((CharacterModel *) mUnk_04)->mUnk_73 = params->mUnk_73;
-    ((CharacterModel *) mUnk_04)->mUnk_74 = params->mUnk_74;
-    ((CharacterModel *) mUnk_04)->mUnk_75 = params->mUnk_75;
+void UnkStruct_0205401c::SetParams(const CharacterParams *params) {
+    ((CharacterModel *) mCharacter)->mSkinPalette = params->mSkinPalette;
+    ((CharacterModel *) mCharacter)->mFaceKind = params->mFaceKind;
+    ((CharacterModel *) mCharacter)->mFaceVariant = params->mFaceVariant;
+    ((CharacterModel *) mCharacter)->mHairKind = params->mHairKind;
+    ((CharacterModel *) mCharacter)->mHairVariant = params->mHairVariant;
+    ((CharacterModel *) mCharacter)->mCapHandle = params->mCapHandle;
+    ((CharacterModel *) mCharacter)->mCapPalette = params->mCapPalette;
+    ((CharacterModel *) mCharacter)->mGlasseHandle = params->mGlasseHandle;
+    ((CharacterModel *) mCharacter)->mUnk_6d = params->mUnk_6d;
+    ((CharacterModel *) mCharacter)->mUnk_6e = params->mUnk_6e;
+    ((CharacterModel *) mCharacter)->mTopKind = params->mTopKind;
+    ((CharacterModel *) mCharacter)->mTopPalette = params->mTopPalette;
+    ((CharacterModel *) mCharacter)->mDownKind = params->mDownKind;
+    ((CharacterModel *) mCharacter)->mDownPalette = params->mDownPalette;
+    ((CharacterModel *) mCharacter)->mShoesKind = params->mShoesKind;
+    ((CharacterModel *) mCharacter)->mShoesVariant = params->mShoesVariant;
+    ((CharacterModel *) mCharacter)->mUnk_75 = params->mUnk_75;
 }
 
-void UnkStruct_0205401c::func_020543e8(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
+void UnkStruct_0205401c::StartLoad(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
     if (unk2 != 0) {
         SpriteManager::Get().func_02027504(0);
     }
@@ -154,24 +154,24 @@ void UnkStruct_0205401c::func_020543e8(u32 unk1, u32 unk2, u32 unk3, u8 unk4) {
         if (unk3 == 0) {
             unk3 = (u32) data_020d4404;
         }
-        mUnk_0c = 1;
-        mUnk_04 = (UnkStruct_0205401c_04 *) new CharacterModel();
-        func_02054290((const CharacterParams *) unk3);
-        ((CharacterModel *) mUnk_04)->func_02052da4(unk4);
+        mUseCharacter = 1;
+        mCharacter = (UnkStruct_0205401c_04 *) new CharacterModel();
+        SetParams((const CharacterParams *) unk3);
+        ((CharacterModel *) mCharacter)->StartLoad(unk4);
     } else {
-        mUnk_0c = 0;
-        mUnk_08 = new StoryCharacterModel();
-        ((StoryCharacterModel *) mUnk_08)->func_02054990(unk1, unk4);
+        mUseCharacter = 0;
+        mStoryCharacter = new StoryCharacterModel();
+        ((StoryCharacterModel *) mStoryCharacter)->func_02054990(unk1, unk4);
     }
 }
 
-BOOL UnkStruct_0205401c::func_020544e4() {
+BOOL UnkStruct_0205401c::UpdateLoad() {
     BOOL result = FALSE;
     BOOL done;
-    if (mUnk_0c == 1) {
-        done = ((CharacterModel *) mUnk_04)->func_02052db8();
+    if (mUseCharacter == 1) {
+        done = ((CharacterModel *) mCharacter)->UpdateLoad();
     } else {
-        done = ((StoryCharacterModel *) mUnk_08)->func_02054a0c();
+        done = ((StoryCharacterModel *) mStoryCharacter)->func_02054a0c();
     }
     if (done) {
         result = TRUE;
@@ -179,27 +179,27 @@ BOOL UnkStruct_0205401c::func_020544e4() {
     return result;
 }
 
-void UnkStruct_0205401c::func_0205451c() {
-    if (mUnk_0c == 1) {
-        ((CharacterModel *) mUnk_04)->func_02052df0();
-        ((CharacterModel *) mUnk_04)->mUnk_64 = 1;
+void UnkStruct_0205401c::FinishLoad() {
+    if (mUseCharacter == 1) {
+        ((CharacterModel *) mCharacter)->CreateHeadAndLoadParts();
+        ((CharacterModel *) mCharacter)->mVisible = 1;
     } else {
-        ((StoryCharacterModel *) mUnk_08)->func_02054bd4();
-        ((StoryCharacterModel *) mUnk_08)->mUnk_38 = 1;
+        ((StoryCharacterModel *) mStoryCharacter)->func_02054bd4();
+        ((StoryCharacterModel *) mStoryCharacter)->mUnk_38 = 1;
     }
-    mUnk_0d = 1;
+    mBuilt = 1;
 }
 
-void UnkStruct_0205401c::func_02054568() {
-    if (mUnk_0c == 0) {
-        ((StoryCharacterModel *) mUnk_08)->func_02054da8();
+void UnkStruct_0205401c::Draw() {
+    if (mUseCharacter == 0) {
+        ((StoryCharacterModel *) mStoryCharacter)->func_02054da8();
     } else {
-        ((CharacterModel *) mUnk_04)->func_02053298();
+        ((CharacterModel *) mCharacter)->DrawParts();
     }
-    if (mUnk_00 == NULL) {
+    if (mShadow == NULL) {
         return;
     }
-    MtxFx43 mtx = data_0220e86c;
+    MtxFx43 mtx = gIdentityMtx43;
     VecFx32 scale;
     VecFx32 pos;
     scale.x     = 0x4000;
@@ -209,80 +209,80 @@ void UnkStruct_0205401c::func_02054568() {
     pos.y       = -0x800;
     pos.z       = 0;
     func_01ffcf64(&mtx, &pos);
-    mUnk_00->func_02028d80();
-    mUnk_00->func_02029174(&mtx, &scale);
+    mShadow->AdvanceAnim();
+    mShadow->Draw(&mtx, &scale);
 }
 
 void UnkStruct_0205401c::func_0205461c(u32 unk1, u32 unk2) {
-    if (mUnk_0c == 0) {
-        ((StoryCharacterModel *) mUnk_08)->func_02054dd8(unk1, unk2);
+    if (mUseCharacter == 0) {
+        ((StoryCharacterModel *) mStoryCharacter)->func_02054dd8(unk1, unk2);
     } else {
-        ((CharacterModel *) mUnk_04)->func_02052894(unk1, unk2);
+        ((CharacterModel *) mCharacter)->StartHeadAnim(unk1, unk2);
     }
 }
 
 void UnkStruct_0205401c::func_02054644(u32 unk1, u32 unk2) {
-    if (mUnk_0c == 0) {
-        ((StoryCharacterModel *) mUnk_08)->func_02054cc4(unk1, unk2);
+    if (mUseCharacter == 0) {
+        ((StoryCharacterModel *) mStoryCharacter)->func_02054cc4(unk1, unk2);
     } else {
-        ((CharacterModel *) mUnk_04)->func_02053ea0(unk1, unk2);
+        ((CharacterModel *) mCharacter)->func_02053ea0(unk1, unk2);
     }
 }
 
 void UnkStruct_0205401c::func_0205466c(u32 unk1) {
-    if (mUnk_0c == 0) {
-        ((StoryCharacterModel *) mUnk_08)->func_02054d08(unk1);
+    if (mUseCharacter == 0) {
+        ((StoryCharacterModel *) mStoryCharacter)->func_02054d08(unk1);
     } else {
-        ((CharacterModel *) mUnk_04)->func_02053eec(unk1);
+        ((CharacterModel *) mCharacter)->SetExtraAnimEnabled(unk1);
     }
 }
 
-void UnkStruct_0205401c::func_02054694(u8 unk1) {
-    if (mUnk_0c == 0) {
-        ((StoryCharacterModel *) mUnk_08)->mUnk_38 = unk1;
+void UnkStruct_0205401c::SetVisible(u8 unk1) {
+    if (mUseCharacter == 0) {
+        ((StoryCharacterModel *) mStoryCharacter)->mUnk_38 = unk1;
     } else {
-        ((CharacterModel *) mUnk_04)->mUnk_64 = unk1;
+        ((CharacterModel *) mCharacter)->mVisible = unk1;
     }
 }
 
-u8 UnkStruct_0205401c::func_020546b0() {
-    if (mUnk_0c == 0) {
-        return ((StoryCharacterModel *) mUnk_08)->mUnk_38;
+u8 UnkStruct_0205401c::IsVisible() {
+    if (mUseCharacter == 0) {
+        return ((StoryCharacterModel *) mStoryCharacter)->mUnk_38;
     }
-    return ((CharacterModel *) mUnk_04)->mUnk_64;
+    return ((CharacterModel *) mCharacter)->mVisible;
 }
 
-u16 *UnkStruct_0205401c::func_020546cc() {
+u16 *UnkStruct_0205401c::GetModelRotation() {
     ModelTransform *model;
-    if (mUnk_0c == 0) {
-        model = (StoryCharacterModel *) mUnk_08;
+    if (mUseCharacter == 0) {
+        model = (StoryCharacterModel *) mStoryCharacter;
     } else {
-        model = (CharacterModel *) mUnk_04;
+        model = (CharacterModel *) mCharacter;
     }
     return &model->mRotX;
 }
 
-void UnkStruct_0205401c::func_020546e4(const u16 *rot) {
-    if (mUnk_0c == 0) {
-        SetRotation((StoryCharacterModel *) mUnk_08, rot);
+void UnkStruct_0205401c::SetModelRotation(const u16 *rot) {
+    if (mUseCharacter == 0) {
+        SetRotation((StoryCharacterModel *) mStoryCharacter, rot);
     } else {
-        SetRotation((CharacterModel *) mUnk_04, rot);
+        SetRotation((CharacterModel *) mCharacter, rot);
     }
 }
 
-s32 UnkStruct_0205401c::func_02054710() {
-    if (mUnk_0c == 0) {
-        return ((StoryCharacterModel *) mUnk_08)->mModel->func_02028f48();
+s32 UnkStruct_0205401c::IsAnimEndReached() {
+    if (mUseCharacter == 0) {
+        return ((StoryCharacterModel *) mStoryCharacter)->mModel->IsAnimFinished();
     }
-    return ((CharacterModel *) mUnk_04)->mParts[0]->func_02028f48();
+    return ((CharacterModel *) mCharacter)->mParts[0]->IsAnimFinished();
 }
 
-void UnkStruct_0205401c::func_02054740() {
+void UnkStruct_0205401c::LoadShadow() {
     ChangeDir("/story/mdl");
     NitroTexture *texture = new NitroTexture("cut_shadow.nsbtx");
     NitroModel *model     = new NitroModel("cut_shadow.nsbmd", texture);
-    texture->func_02028344();
-    mUnk_00 = model->func_02028b78(NULL);
+    texture->FreeFile();
+    mShadow = model->CreateInstance(NULL);
 }
 
 StoryCharacterModel::StoryCharacterModel() {
@@ -297,10 +297,10 @@ StoryCharacterModel::StoryCharacterModel() {
 
 StoryCharacterModel::~StoryCharacterModel() {
     if (mUnk_1b8 != 0) {
-        func_02023a54();
+        StopAsyncLoad();
         ModelInstance *model = mModel;
         if (model != NULL) {
-            model->mUnk_68 = 0xf;
+            model->mOwnFlags = 0xf;
             delete model;
             mModel = NULL;
         }
@@ -329,8 +329,8 @@ void StoryCharacterModel::func_020548a8(u32 id, u32 variant) {
     }
     sprintf(nsbmd, "chara%02d.nsbmd", id);
     sprintf(nsbtx, "chara%02d.nsbtx", id);
-    func_020525c0(nsbtx, nsbmd, data, 1);
-    mModel->mUnk_69 = 0;
+    LoadFiles(nsbtx, nsbmd, data, 1);
+    mModel->mUseBoxTest = 0;
     ChangeDir("/");
 }
 
@@ -351,31 +351,31 @@ BOOL StoryCharacterModel::func_02054a0c() {
     switch (mUnk_1b8) {
         case 1:
             ChangeDir("/Game/Character/Character");
-            func_02023708(mUnk_139, 0, 0, 0, 0, 0);
+            LoadFileAsync(mUnk_139, 0, 0, 0, 0, 0);
             ChangeDir("/");
             mUnk_1b8++;
             break;
         case 2:
-            if (func_02023874() == 0) {
-                mUnk_2c = func_02023864();
+            if (IsAsyncLoadActive() == 0) {
+                mUnk_2c = GetAsyncLoadBuffer();
                 ChangeDir("/Game/Character/Character");
-                func_02023708(mUnk_ba, 0, 0, 0, 0, 0);
+                LoadFileAsync(mUnk_ba, 0, 0, 0, 0, 0);
                 ChangeDir("/");
                 mUnk_1b8++;
             }
             break;
         case 3:
-            if (func_02023874() == 0) {
-                mUnk_30 = func_02023864();
+            if (IsAsyncLoadActive() == 0) {
+                mUnk_30 = GetAsyncLoadBuffer();
                 ChangeDir("/Game/Character/Character");
-                func_02023708(mUnk_3b, 0, 0, 0, 0, 0);
+                LoadFileAsync(mUnk_3b, 0, 0, 0, 0, 0);
                 ChangeDir("/");
                 mUnk_1b8++;
             }
             break;
         case 4:
-            if (func_02023874() == 0) {
-                mUnk_34 = func_02023864();
+            if (IsAsyncLoadActive() == 0) {
+                mUnk_34 = GetAsyncLoadBuffer();
                 mUnk_1b8++;
             }
             break;
@@ -390,22 +390,22 @@ void StoryCharacterModel::func_02054bd4() {
     if (mUnk_1b8 != 5) {
         return;
     }
-    UnkStruct_02028308 *texture = new NitroTextureData(mUnk_2c);
+    TextureFile *texture = new NitroTextureData(mUnk_2c);
     NitroModel *model           = new NitroModelData(mUnk_30, texture);
-    texture->func_02028344();
+    texture->FreeFile();
     OS_Free(mUnk_2c);
     mUnk_2c                 = NULL;
     ModelAnimData *animData = new ModelAnimData(mUnk_34);
     ModelAnim *anim         = new ModelAnim(animData, model);
-    mModel                  = model->func_02028b78(anim);
-    mModel->func_02028e54(0, 1, 0x1000);
-    mUnk_00 = 1;
-    mModel->mUnk_69 = 0;
+    mModel                  = model->CreateInstance(anim);
+    mModel->StartAnimWithIncrement(0, 1, 0x1000);
+    mAnimEnabled = 1;
+    mModel->mUseBoxTest = 0;
 }
 
 void StoryCharacterModel::func_02054cc4(u32 a, u32 b) {
-    mModel->func_02028e54(a, 1, 0x1000);
-    mModel->func_02028e54(b, 1, 0x1000);
+    mModel->StartAnimWithIncrement(a, 1, 0x1000);
+    mModel->StartAnimWithIncrement(b, 1, 0x1000);
     mUnk_39 = a;
     mUnk_3a = 0;
 }
@@ -415,21 +415,21 @@ void StoryCharacterModel::func_02054d08(u32 flag) {
     if (!(flag & 0xff)) {
         ModelAnim *anim = mModel->mAnim;
         u8 channel      = GetSet(mModel);
-        u32 loop        = anim->mUnk_08;
+        u32 loop        = anim->mLoop;
         NNSG3dAnmObj *obj;
         s32 frame;
-        obj = anim->func_02029a48(0);
+        obj = anim->GetAnimObj(0);
         if (obj == NULL) {
             frame = 0;
         } else {
             frame = obj->mFrame;
         }
-        mModel->func_02028e54(channel, loop, 0x1000);
-        mModel->mAnim->func_020298c0(frame, 0);
-        mModel->mAnim->func_020298c0(frame, 1);
+        mModel->StartAnimWithIncrement(channel, loop, 0x1000);
+        mModel->mAnim->SetFrame(frame, 0);
+        mModel->mAnim->SetFrame(frame, 1);
     } else {
-        NNSG3dAnmObj *obj = mModel->mAnim->func_02029a58(4, mUnk_39);
-        mModel->func_02028f54(obj);
+        NNSG3dAnmObj *obj = mModel->mAnim->GetAnimObjForSet(4, mUnk_39);
+        mModel->AttachExtraAnim(obj);
     }
 }
 
@@ -441,12 +441,12 @@ void StoryCharacterModel::func_02054da8() {
     if (mUnk_3a == 0) {
         return;
     }
-    mModel->func_02028da4();
+    mModel->AdvanceExtraAnim();
 }
 
 void StoryCharacterModel::func_02054dd8(u32 a, u32 b) {
     if (mUnk_1b9 != 0) {
         a = 0;
     }
-    func_02052768(a, b);
+    StartAnim(a, b);
 }

@@ -97,7 +97,7 @@ void AttrSelScene::Update() {
             if ((u8) mSelectWindow->Update(TRUE) == 2) {
                 event = 1;
             } else {
-                if (TouchManager::Get().mUnk_57) {
+                if (TouchManager::Get().mPressed) {
                     if (Distance(TouchManager::Get().mX, TouchManager::Get().mY, 0x80, 0x60) < 0x50) {
                         int x = FX32_CONST((float) (u32) TouchManager::Get().mX - 128.0f);
                         int y = FX32_CONST((float) (u32) TouchManager::Get().mY - 96.0f);
@@ -108,31 +108,31 @@ void AttrSelScene::Update() {
                         u8 attr = data_ov000_02226224[sector];
                         if (mAttrib == attr) {
                             event = 3;
-                            SoundManager::Get().func_020246f8(0);
+                            SoundManager::Get().StartSeqArc(0);
                         } else {
                             event = 2;
-                            SoundManager::Get().func_020246f8(5);
+                            SoundManager::Get().StartSeqArc(5);
                         }
                         mAttrib = attr;
                     }
                 }
                 if (event == 0) {
-                    if (InputManager::Get().IsTrigger(0x50)) {
+                    if (InputManager::Get().IsTrigger(KEY_UP | KEY_RIGHT)) {
                         mAttrib++;
                         event = 2;
                         if (mAttrib >= 6) {
                             mAttrib = 0;
                         }
-                        SoundManager::Get().func_020246f8(5);
-                    } else if (InputManager::Get().IsTrigger(0xa0)) {
+                        SoundManager::Get().StartSeqArc(5);
+                    } else if (InputManager::Get().IsTrigger(KEY_DOWN | KEY_LEFT)) {
                         event = 2;
                         if (mAttrib == 0) {
                             mAttrib = 6;
                         }
                         mAttrib--;
-                        SoundManager::Get().func_020246f8(5);
+                        SoundManager::Get().StartSeqArc(5);
                     } else if (InputManager::Get().IsHeld(1)) {
-                        SoundManager::Get().func_020246f8(0);
+                        SoundManager::Get().StartSeqArc(0);
                         event = 3;
                     }
                 }
@@ -148,7 +148,7 @@ void AttrSelScene::Update() {
                         LoadSubBg();
                     }
                     mState = 2;
-                    mCells[6]->mUnk_0f = mAttrib;
+                    mCells[6]->mFrameIndex = mAttrib;
                     mUnk_0e = 0;
                     mUnk_0f = 0;
                     break;
@@ -182,7 +182,7 @@ void AttrSelScene::Update() {
 
 void AttrSelScene::InitDisplay() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 3, 0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG3Control(1, 0, 2, 4, 0);
@@ -198,35 +198,35 @@ void AttrSelScene::InitDisplay() {
 
 void AttrSelScene::LoadGraphics() {
     ChangeDir("/Game/AttrSel/Bg");
-    func_02025b64(0, 1, 0, "edit_attribute_u_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 11, 0, "edit_attribute_u_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 7, 0, "edit_attribute_u_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "edit_attribute_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "edit_attribute_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "edit_attribute_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0, "edit_attribute_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 11, 0, "edit_attribute_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 7, 0, "edit_attribute_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "edit_attribute_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "edit_attribute_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "edit_attribute_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     SpriteScreen &screen0 = SpriteManager::Get().Screen(0);
     ChangeDir("/Game/AttrSel/Obj");
     screen0.LoadCharacters("nameplate_u_obj.nce_ncg1D.bin", 0, 0);
     screen0.LoadPalette("nameplate_u_obj_ncl.bin", 0, 0);
     mCells[7] = new CellAnimation("nameplate_u_obj_nce.bin", 0, 1, 1);
-    mCells[7]->mCharBase = screen0.func_020276f4(0);
-    mCells[7]->mUnk_11 = 0;
+    mCells[7]->mCharBase = screen0.GetCharBase(0);
+    mCells[7]->mPaletteBase = 0;
     mCells[7]->SetAnimation(0);
     SpriteScreen &screen1 = SpriteManager::Get().Screen(1);
     screen1.LoadCharacters("edit_attribute_obj_00.nce_ncg1D.bin", 0, 0);
     screen1.LoadPalette("edit_attribute_obj_00_ncl.bin", 0, 0);
     for (u8 i = 0; i < 6; i++) {
         mCells[i] = new CellAnimation("edit_attribute_obj_00_nce.bin", 0, 1, 1);
-        mCells[i]->mCharBase = screen1.func_020276f4(0);
-        mCells[i]->mUnk_11 = 0;
+        mCells[i]->mCharBase = screen1.GetCharBase(0);
+        mCells[i]->mPaletteBase = 0;
         mCells[i]->SetAnimation(i);
     }
     mCells[6] = new CellAnimation("edit_attribute_obj_00_nce.bin", 0, 1, 1);
-    mCells[6]->mCharBase = screen1.func_020276f4(0);
-    mCells[6]->mUnk_11 = 0;
+    mCells[6]->mCharBase = screen1.GetCharBase(0);
+    mCells[6]->mPaletteBase = 0;
     mCells[6]->SetAnimation(6);
-    mCells[6]->mUnk_0f = mAttrib;
+    mCells[6]->mFrameIndex = mAttrib;
     ChangeDir("/");
     ChangeDir("/Game/2D/union_b");
     screen1.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0xd000, 0);
@@ -234,8 +234,8 @@ void AttrSelScene::LoadGraphics() {
     ChangeDir("/");
     mMessageWindow = new MessageWindow("mes_chara_edit", 1, 0x1f000);
     mMessageWindow->func_02065bd4(0x14, 4, 0);
-    mMessageWindow->func_02065be4(0xd8);
-    mMessageWindow->func_02065890(0, 0, 1);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(0, 0, 1);
     mSelectWindow = new SelectWindow(1, data_ov000_0222623c, -1);
     mSelectWindow->SetCells(1, data_ov000_02226258);
     mSelectWindow->mCursor->mSelection = -1;
@@ -249,7 +249,7 @@ void AttrSelScene::LoadGraphics() {
         TextManager::Get().Init(mGlyphBuffer[i], 0, 0, data_ov000_02226214[i], data_ov000_02226218[i], data_ov000_02226234[i]);
     }
     PrintName(mTextBuffer[0], mBufferSize[0], 0x2000, 0x10, 2, 0x21);
-    mMessages = (MessageFile *) func_02023504("/font/mes_chara_edit.mes", 0, 0, 0, 0, 0);
+    mMessages = (MessageFile *) LoadFile("/font/mes_chara_edit.mes", 0, 0, 0, 0, 0);
     LoadSubBg();
 }
 
@@ -257,11 +257,11 @@ void AttrSelScene::PrintName(void *buffer, u32 size, u32 vram, u16 width, u16 he
     s16 outWidth = 0;
     s16 outHeight = 0;
     s16 pixelWidth = 0;
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     TextManager::Get().Print(data_020d43f0[0].mName, 0x18, buffer, width, height, &outWidth, &outHeight,
                              (u16 *) &pixelWidth, 0, 2, unk, 0x10, 0, 0, 1, 1, 1);
-    TextManager::Get().mUnk_5b = 0;
-    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, vram, buffer, size, 0);
+    TextManager::Get().mUse4bppFont = 0;
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, vram, buffer, size, 0);
 }
 
 void AttrSelScene::PrintMessage(MessageFile *file, u16 index, void *buffer, u32 size, u32 vram, u16 width, u16 height, u32 unk) {
@@ -273,18 +273,18 @@ void AttrSelScene::PrintMessage(MessageFile *file, u16 index, void *buffer, u32 
     outWidth = 0;
     text.Print(file->GetText(index), file->GetLength(index), buffer, width, height, &outWidth, &outHeight, NULL, 0, 2,
                unk, 0xc, 0, 0, 0, 1, 1);
-    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, vram, buffer, size, 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, vram, buffer, size, 0);
 }
 
 void AttrSelScene::LoadSubBg() {
     char path[0x40];
     ChangeDir("/Game/AttrSel/Bg");
     sprintf(path, "edit_attribute_u_sub_%02d_ncl.bin", mAttrib);
-    func_02025b64(0, 1, 0x6000, path, 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0x6000, path, 0, 0, 0);
     sprintf(path, "edit_attribute_u_sub_%02d_ncg.bin", mAttrib);
-    func_02025b64(0, 14, 0, path, 0, 0, 0);
+    LoadAndQueueUpload(0, 14, 0, path, 0, 0, 0);
     sprintf(path, "edit_attribute_u_sub_%02d_nsc.bin", mAttrib);
-    func_02025b64(0, 10, 0, path, 0, 0, 0);
+    LoadAndQueueUpload(0, 10, 0, path, 0, 0, 0);
     ChangeDir("/");
     PrintMessage(mMessages, data_ov000_0222621c[mAttrib] + 0x1d, mTextBuffer[1], mBufferSize[1], 0x4000, 0x1c, 0x10, 0x44);
 }
@@ -305,7 +305,7 @@ void AttrSelScene::TransitionStep() {
                 mUnk_16 = 0x1f - mFade;
                 mUnk_17 = mFade;
             }
-            func_020254f0(func_ov000_0221f080, this);
+            QueueFrameCallback(func_ov000_0221f080, this);
             break;
         case 2:
             mFade = 0;
@@ -323,7 +323,7 @@ void AttrSelScene::TransitionStep() {
                 mUnk_17 = v;
                 mUnk_16 = 0x1f - (v & 0xff);
             }
-            func_020254f0(func_ov000_0221f080, this);
+            QueueFrameCallback(func_ov000_0221f080, this);
             break;
         case 4:
             break;
@@ -390,8 +390,8 @@ void AttrSelScene::PulseBlend() {
 }
 
 void AttrSelScene::DrawText() {
-    SpriteManager::Get().Screen(0).func_02027778(mGlyphBuffer[0], (u8) mGlyphCount[0], 0x16, 0xaa, 0, 0x40, 0xf, 0);
-    SpriteManager::Get().Screen(0).func_02027778(mGlyphBuffer[1], (u8) mGlyphCount[1], 0x10, 0x7c, 0, 0x80, 0xf, 0);
+    SpriteManager::Get().Screen(0).AddOam(mGlyphBuffer[0], (u8) mGlyphCount[0], 0x16, 0xaa, 0, 0x40, 0xf, 0);
+    SpriteManager::Get().Screen(0).AddOam(mGlyphBuffer[1], (u8) mGlyphCount[1], 0x10, 0x7c, 0, 0x80, 0xf, 0);
     mCells[7]->Draw(0, 0x80, 0x60, 0);
 }
 
@@ -400,7 +400,7 @@ void AttrSelScene::Draw() {
         mCells[i]->Draw(1, 0x80, 0x60, 0);
     }
     mCells[6]->Draw(1, 0x80, 0x68, 0);
-    mMessageWindow->func_020658d0();
+    mMessageWindow->Update();
     mSelectWindow->Draw();
 }
 

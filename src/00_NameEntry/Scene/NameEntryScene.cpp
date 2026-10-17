@@ -137,7 +137,7 @@ NameEntryScene::~NameEntryScene() {
 
 void NameEntryScene::InitDisplay() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
     GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 1, 0, 2, 0);
@@ -167,52 +167,52 @@ void NameEntryScene::InitDisplay() {
 void NameEntryScene::LoadGraphics() {
     if (mMode == 0) {
         ChangeDir("/Game/Title");
-        func_02025b64(0, 7, 0, "title_u_bg_00_nsc.bin", 0, 0, 0);
-        func_02025b64(0, 11, 0, "title_u_bg_00_ncg.bin", 0, 0, 0);
-        func_02025b64(0, 1, 0, "title_u_bg_00_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(0, 7, 0, "title_u_bg_00_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(0, 11, 0, "title_u_bg_00_ncg.bin", 0, 0, 0);
+        LoadAndQueueUpload(0, 1, 0, "title_u_bg_00_ncl.bin", 0, 0, 0);
     }
     ChangeDir("/Game/Nameentry");
-    func_02025b64(1, 8, 0, "keyboard_b_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 12, 0, "keyboard_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x2000, "keyboard_b_bg_00_ncl.bin", 0, 0, 0);
-    mBuf3c = (u8 *) func_02023504("keyboard_b_bg_font_a_nsc.bin", 0, 0, 0, 0, 0);
-    mBuf40 = (u8 *) func_02023504("keyboard_b_bg_font_b_nsc.bin", 0, 0, 0, 0, 0);
-    mBuf48 = (u8 *) func_02023504("keyboard_b_bg_font_b_ncg.bin", 0, 0, 0, 0, 0);
-    mBuf44 = (u8 *) func_02023504("keyboard_b_bg_font_a_ncg.bin", 0, 0, 0, 0, 0);
-    func_02025b64(1, 1, 0, "keyboard_b_bg_font_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "keyboard_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "keyboard_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "keyboard_b_bg_00_ncl.bin", 0, 0, 0);
+    mBuf3c = (u8 *) LoadFile("keyboard_b_bg_font_a_nsc.bin", 0, 0, 0, 0, 0);
+    mBuf40 = (u8 *) LoadFile("keyboard_b_bg_font_b_nsc.bin", 0, 0, 0, 0, 0);
+    mBuf48 = (u8 *) LoadFile("keyboard_b_bg_font_b_ncg.bin", 0, 0, 0, 0, 0);
+    mBuf44 = (u8 *) LoadFile("keyboard_b_bg_font_a_ncg.bin", 0, 0, 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "keyboard_b_bg_font_ncl.bin", 0, 0, 0);
     func_ov000_0221b22c();
     func_ov000_0221b190();
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     screen.LoadCharacters("keyboard_b_obj_00.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("keyboard_b_obj_00_ncl.bin", 0x140, 0);
     mCellAnims[2] = new CellAnimation("keyboard_b_obj_00_nce.bin", 0, 1, 1);
-    mCellAnims[2]->mCharBase = screen.func_020276f4(0);
-    mCellAnims[2]->mUnk_11   = 10;
+    mCellAnims[2]->mCharBase = screen.GetCharBase(0);
+    mCellAnims[2]->mPaletteBase   = 10;
     mCellAnims[2]->SetAnimation(8);
     mCellAnims[1]            = new CellAnimation("keyboard_b_obj_00_nce.bin", 0, 1, 1);
-    mCellAnims[1]->mCharBase = screen.func_020276f4(0);
-    mCellAnims[1]->mUnk_11   = 10;
+    mCellAnims[1]->mCharBase = screen.GetCharBase(0);
+    mCellAnims[1]->mPaletteBase   = 10;
     mCellAnims[1]->SetAnimation(7);
     mCellAnims[0]            = new CellAnimation("keyboard_b_obj_00_nce.bin", 0, 1, 1);
-    mCellAnims[0]->mCharBase = screen.func_020276f4(0);
-    mCellAnims[0]->mUnk_11   = 10;
+    mCellAnims[0]->mCharBase = screen.GetCharBase(0);
+    mCellAnims[0]->mPaletteBase   = 10;
     mCellAnims[0]->SetAnimation(6);
-    u32 n = mCellAnims[0]->mFrames[mCellAnims[0]->mUnk_0e].mUnk_10;
+    u32 n = mCellAnims[0]->mFrames[mCellAnims[0]->mAnimIndex].mFrameCount;
     if (n != 0) {
         n--;
     }
-    mCellAnims[0]->mUnk_0f = n;
+    mCellAnims[0]->mFrameIndex = n;
     ChangeDir("/Game/2D/union_b");
     SpriteScreen &screen2 = SpriteManager::Get().Screen(1);
-    screen2.func_02027624(3);
+    screen2.SetObjVramMode(3);
     screen2.LoadCharacters("union_b_obj_scroll.nce_ncg1D.bin", 0x2000, 0);
     screen2.LoadPalette("union_b_obj_scroll_ncl.bin", 0x1a0, 0);
     mKeyboard = new SelectWindow(7, data_ov000_0222608c, 0);
     mKeyboard->SetCells(7, data_ov000_02226150);
     mKeyboard->mCursor->mSelection = -1;
     mKeyboard->mCursor->SetScroll(0);
-    mKeyboard->mCursor->func_02030474(0x4c, 0x84, 4, 0xc);
+    mKeyboard->mCursor->SetupScroll(0x4c, 0x84, 4, 0xc);
     if (mMode != 0) {
         mKeyboard->mButtons[6].mEnabled = 0;
         mKeyboard->mCursor->mItems[6].mFlags = 0x8000;
@@ -222,10 +222,10 @@ void NameEntryScene::LoadGraphics() {
     screen3.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
     mConfirm = new SelectWindow(2, data_ov000_02225fd4, 1);
     mConfirm->SetCells(2, data_ov000_0222600c);
-    mConfirm->mUnk_064 = 0;
-    func_02025b64(1, 1, 0x4000, "union_b_bg_window_b_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 13, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 9, 0, "union_b_bg_window_a_nsc.bin", 0, 0, 0);
+    mConfirm->mEnabled = 0;
+    LoadAndQueueUpload(1, 1, 0x4000, "union_b_bg_window_b_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 13, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 9, 0, "union_b_bg_window_a_nsc.bin", 0, 0, 0);
 }
 
 void NameEntryScene::Update() {
@@ -255,27 +255,27 @@ void NameEntryScene::Update() {
                         AddChar((u8) (mCol + (mRow + mUnk_66) * 8 + mTab * 0x60));
                         break;
                     case 1:
-                        SoundManager::Get().func_020246f8(0);
-                        mKeyboard->func_0205c844(4, 3);
+                        SoundManager::Get().StartSeqArc(0);
+                        mKeyboard->SetResultItem(4, 3);
                         break;
                     case 2:
-                        SoundManager::Get().func_020246f8(0);
-                        mKeyboard->func_0205c844(5, 3);
+                        SoundManager::Get().StartSeqArc(0);
+                        mKeyboard->SetResultItem(5, 3);
                         break;
                     case 3:
-                        SoundManager::Get().func_020246f8(0);
-                        mKeyboard->func_0205c844(6, 3);
+                        SoundManager::Get().StartSeqArc(0);
+                        mKeyboard->SetResultItem(6, 3);
                         break;
                 }
             }
             if (InputManager::Get().IsHeld(2)) {
-                SoundManager::Get().func_020246f8(0);
-                mKeyboard->func_0205c844(5, 3);
+                SoundManager::Get().StartSeqArc(0);
+                mKeyboard->SetResultItem(5, 3);
             }
             switch (mState) {
                 case 0:
-                    if (InputManager::Get().IsTrigger(0x40)) {
-                        SoundManager::Get().func_020246f8(5);
+                    if (InputManager::Get().IsTrigger(KEY_UP)) {
+                        SoundManager::Get().StartSeqArc(5);
                         if (mRow != 0) {
                             mRow--;
                         } else if (mUnk_66 != 0) {
@@ -293,8 +293,8 @@ void NameEntryScene::Update() {
                             }
                             mCellAnims[2]->SetAnimation(9);
                         }
-                    } else if (InputManager::Get().IsTrigger(0x80)) {
-                        SoundManager::Get().func_020246f8(5);
+                    } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
+                        SoundManager::Get().StartSeqArc(5);
                         mRow++;
                         if (mRow >= 4) {
                             mRow = 3;
@@ -315,12 +315,12 @@ void NameEntryScene::Update() {
                             }
                         }
                     }
-                    if (InputManager::Get().IsTrigger(0x20)) {
-                        SoundManager::Get().func_020246f8(5);
+                    if (InputManager::Get().IsTrigger(KEY_LEFT)) {
+                        SoundManager::Get().StartSeqArc(5);
                         mCol = (u8) (mCol + 7);
                         mCol &= 7;
-                    } else if (InputManager::Get().IsTrigger(0x10)) {
-                        SoundManager::Get().func_020246f8(5);
+                    } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
+                        SoundManager::Get().StartSeqArc(5);
                         mCol = (u8) (mCol + 1);
                         mCol &= 7;
                     }
@@ -328,8 +328,8 @@ void NameEntryScene::Update() {
                 case 1:
                 case 2:
                 case 3:
-                    if (InputManager::Get().IsTrigger(0x40)) {
-                        SoundManager::Get().func_020246f8(5);
+                    if (InputManager::Get().IsTrigger(KEY_UP)) {
+                        SoundManager::Get().StartSeqArc(5);
                         switch (mState) {
                             case 1:
                                 mCol = 0;
@@ -346,8 +346,8 @@ void NameEntryScene::Update() {
                         mKeyboard->mCursor->SetScroll(mUnk_66);
                         mCellAnims[2]->SetAnimation(8);
                         mState = 0;
-                    } else if (InputManager::Get().IsTrigger(0x80)) {
-                        SoundManager::Get().func_020246f8(5);
+                    } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
+                        SoundManager::Get().StartSeqArc(5);
                         switch (mState) {
                             case 1:
                                 mCol = 0;
@@ -365,8 +365,8 @@ void NameEntryScene::Update() {
                         mCellAnims[2]->SetAnimation(8);
                         mState = 0;
                     }
-                    if (InputManager::Get().IsTrigger(0x20)) {
-                        SoundManager::Get().func_020246f8(5);
+                    if (InputManager::Get().IsTrigger(KEY_LEFT)) {
+                        SoundManager::Get().StartSeqArc(5);
                         mState = (u8) (mState + 3);
                         mState &= 3;
                         if (mState == 0) {
@@ -376,8 +376,8 @@ void NameEntryScene::Update() {
                                 mState = 2;
                             }
                         }
-                    } else if (InputManager::Get().IsTrigger(0x10)) {
-                        SoundManager::Get().func_020246f8(5);
+                    } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
+                        SoundManager::Get().StartSeqArc(5);
                         mState = (u8) (mState + 1);
                         mState &= 3;
                         switch (mState) {
@@ -397,8 +397,8 @@ void NameEntryScene::Update() {
                 func_ov000_0221b190();
             }
             if (InputManager::Get().IsHeld(0x400)) {
-                SoundManager::Get().func_020246f8(0);
-                mKeyboard->func_0205c844(4, 3);
+                SoundManager::Get().StartSeqArc(0);
+                mKeyboard->SetResultItem(4, 3);
             }
             if (mKeyboard != NULL) {
                 if (mKeyboard->mCursor->mScroll != mUnk_66) {
@@ -408,7 +408,7 @@ void NameEntryScene::Update() {
                 u8 result = mKeyboard->Update(1);
                 mKeyboard->Draw();
                 SelectWindow *w = mKeyboard;
-                s16 posY = w->mCursor->mUnk_0b;
+                s16 posY = w->mCursor->mScrollItemY;
                 w->mCellPos[0].x = 0xe6;
                 w->mCellPos[0].y = posY;
                 if (result == 3) {
@@ -428,8 +428,8 @@ void NameEntryScene::Update() {
                                 mUnk_6c = 4;
                             } else {
                                 GXS_SetVisiblePlane(0x17);
-                                mKeyboard->mUnk_064 = 0;
-                                mConfirm->mUnk_064 = 1;
+                                mKeyboard->mEnabled = 0;
+                                mConfirm->mEnabled = 1;
                                 MI_CpuClear16(mName, sizeof(mName));
                                 mLength = 0;
                                 PrintMessage();
@@ -475,8 +475,8 @@ void NameEntryScene::Update() {
                 func_ov000_0221bc98();
             }
             if (InputManager::Get().IsHeld(8) && mKeyboard->mButtons[6].mEnabled != 0) {
-                SoundManager::Get().func_020246f8(0);
-                mKeyboard->func_0205c844(6, 3);
+                SoundManager::Get().StartSeqArc(0);
+                mKeyboard->SetResultItem(6, 3);
             }
             break;
         }
@@ -484,8 +484,8 @@ void NameEntryScene::Update() {
             func_ov000_0221c1e4();
             if (mConfirm->Update(1) == 3) {
                 mUnk_70 = 0x13;
-                mKeyboard->mUnk_064 = 1;
-                mConfirm->mUnk_064 = 0;
+                mKeyboard->mEnabled = 1;
+                mConfirm->mEnabled = 0;
                 mKeyboard->mButtons[6].mEnabled = 0;
                 mKeyboard->mCursor->mItems[6].mFlags = 0x8000;
                 if (mState == 3) {
@@ -545,10 +545,10 @@ void NameEntryScene::Update() {
 void NameEntryScene::func_ov000_0221b190() {
     switch (mTab) {
         case 0:
-            func_02025c1c(1, 7, 0x1c0, mBuf3c + 0x1c0 + mUnk_66 * 0xc0, 0x300, 0);
+            QueueUpload(1, 7, 0x1c0, mBuf3c + 0x1c0 + mUnk_66 * 0xc0, 0x300, 0);
             break;
         case 1:
-            func_02025c1c(1, 7, 0x1c0, mBuf40 + 0x1c0 + mUnk_66 * 0xc0, 0x300, 0);
+            QueueUpload(1, 7, 0x1c0, mBuf40 + 0x1c0 + mUnk_66 * 0xc0, 0x300, 0);
             break;
     }
 }
@@ -556,10 +556,10 @@ void NameEntryScene::func_ov000_0221b190() {
 void NameEntryScene::func_ov000_0221b22c() {
     switch (mTab) {
         case 0:
-            func_02025c1c(1, 0xb, 0, mBuf44, 0x5000, 0);
+            QueueUpload(1, 0xb, 0, mBuf44, 0x5000, 0);
             break;
         case 1:
-            func_02025c1c(1, 0xb, 0, mBuf48, 0x5000, 0);
+            QueueUpload(1, 0xb, 0, mBuf48, 0x5000, 0);
             break;
     }
 }
@@ -634,10 +634,10 @@ void NameEntryScene::AddChar(s32 index) {
     mName[mLength] = *chars;
     mLength++;
     RenderName();
-    SoundManager::Get().func_020246f8(0);
+    SoundManager::Get().StartSeqArc(0);
     mKeyboard->mButtons[6].mEnabled = 1;
     mKeyboard->mCursor->mItems[6].mFlags = 8;
-    mCellAnims[0]->func_02029fc0();
+    mCellAnims[0]->Rewind();
     if (mLength >= mMaxLength) {
         mCellAnims[2]->SetAnimation(9);
         mState = 3;
@@ -648,14 +648,14 @@ void NameEntryScene::AddChar(s32 index) {
 }
 
 void NameEntryScene::Load() {
-    SpriteManager::Get().Screen(1).func_02027624(3);
+    SpriteManager::Get().Screen(1).SetObjVramMode(3);
     ChangeDir("/font/");
     mMessage = new MessageWindow("mes_name", 1, 0x3000);
     mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->func_02065be4(0xd8);
-    mMessage->func_02065890(0, 0, 1);
-    mCharTable = (MessageFile *) func_02023504("mes_Alphabet.mes", 0, 0, 0, 0, 0);
-    mMessages = (MessageFile *) func_02023504("mes_name.mes", 0, 0, 0, 0, 0);
+    mMessage->SetWidth(0xd8);
+    mMessage->StartMessage(0, 0, 1);
+    mCharTable = (MessageFile *) LoadFile("mes_Alphabet.mes", 0, 0, 0, 0, 0);
+    mMessages = (MessageFile *) LoadFile("mes_name.mes", 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x18, 8);
     mTextBuffer = OS_Alloc(mTextBufferSize);
     MI_CpuClear16(mTextBuffer, mTextBufferSize);
@@ -691,7 +691,7 @@ void NameEntryScene::Load() {
 
 void NameEntryScene::RenderName() {
     ClearTextBuffer();
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     u8 i = 0;
     do {
         s16 x;
@@ -709,20 +709,20 @@ void NameEntryScene::RenderName() {
     } while (i < mMaxLength);
     DC_FlushRange(mTextBuffer, mTextBufferSize);
     TextManager &endText = TextManager::Get();
-    endText.mUnk_5b = 0;
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x4000, mTextBuffer, mTextBufferSize, 0);
+    endText.mUse4bppFont = 0;
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x4000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void NameEntryScene::func_ov000_0221bc98() {
     if (mMessage != NULL) {
-        mMessage->func_020658d0();
+        mMessage->Update();
     }
-    SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, 0x33, 0x1e, 0, 0x80, 0xe, 0);
+    SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, 0x33, 0x1e, 0, 0x80, 0xe, 0);
 }
 
 void NameEntryScene::ClearTextBuffer() {
     if (mMessage != NULL) {
-        mMessage->func_02065878();
+        mMessage->ClearBuffer();
     }
     if (mTextBuffer != NULL) {
         MI_CpuClear16(mTextBuffer, mTextBufferSize);
@@ -813,9 +813,9 @@ void NameEntryScene::PrintMessage() {
     height = 0;
     MessageFile *file = mMessages;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x18, 8, &height, &width, 0, 0, 2, 0x44, 0x10, 0, 0, 1, 1, 1);
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x4000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x4000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void NameEntryScene::func_ov000_0221c1e4() {
-    SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, 0x20, 0x38, 0, 0x80, 0xe, 0);
+    SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, 0x20, 0x38, 0, 0x80, 0xe, 0);
 }

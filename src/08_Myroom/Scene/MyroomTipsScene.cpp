@@ -211,8 +211,8 @@ void MyroomTipsScene::Update() {
             return;
         case 5:
             if (SpriteManager::Get().sFade[0] <= 1) {
-                mWindowA->mUnk_061 = 4;
-                mWindowA->func_0205c7c8(-1);
+                mWindowA->mState = 4;
+                mWindowA->Reset(-1);
                 mFlags = 1;
                 context->mInfo.mStep++;
             }
@@ -229,8 +229,8 @@ void MyroomTipsScene::Update() {
             return;
         case 8:
             if (!mEvent->func_020678e8()) {
-                mWindowB->mUnk_061 = 4;
-                mWindowB->func_0205c7c8(-1);
+                mWindowB->mState = 4;
+                mWindowB->Reset(-1);
                 mWindowB->mCells[0]->SetAnimation(2);
                 MI_CpuClear16(mUnk_78, 8);
                 MI_CpuClear16(mUnk_70, 8);
@@ -253,7 +253,7 @@ void MyroomTipsScene::Update() {
             GXS_SetVisiblePlane(0x11);
             mWindowB->mCursor->SetScroll(mScroll);
             SelectWindow *window  = mWindowB;
-            u8 y                  = window->mCursor->mUnk_0b;
+            u8 y                  = window->mCursor->mScrollItemY;
             window->mCellPos[1].x = 0xe4;
             window->mCellPos[1].y = y;
             mUnk_85               = 0;
@@ -308,7 +308,7 @@ void MyroomTipsScene::Update() {
 
 void MyroomTipsScene::InitDisplay() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 7);
+    SpriteManager::Get().SetupMode(1, 7);
     GX_SetGraphicsMode(1, 0, 1);
     GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
@@ -326,40 +326,40 @@ void MyroomTipsScene::InitDisplay() {
 
 void MyroomTipsScene::func_ov008_022267f4() {
     ChangeDir("/Game/Myroom/");
-    func_02025b64(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x2000, "myroom_tips_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "myroom_tips_b_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 12, 0, "myroom_tips_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "myroom_tips_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "myroom_tips_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "myroom_tips_b_bg_00_ncg.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
-    sub.func_02027624(3);
+    sub.SetObjVramMode(3);
     ChangeDir("/Game/Myroom/");
     sub.LoadCharacters("myroom_tips_obj_00.nce_ncg1D.bin", 0x2000, 0);
     sub.LoadPalette("myroom_tips_obj_00_ncl.bin", 0, 0);
     mCellA            = new CellAnimation("myroom_tips_obj_00_nce.bin", 0, 1, 1);
-    mCellA->mCharBase = sub.func_020276f4(0x2000);
-    mCellA->mUnk_11   = 0;
+    mCellA->mCharBase = sub.GetCharBase(0x2000);
+    mCellA->mPaletteBase   = 0;
     for (u8 i = 0; i < 6; i++) {
         mCells[i]            = new CellAnimation("myroom_tips_obj_00_nce.bin", 0, 1, 1);
-        mCells[i]->mCharBase = sub.func_020276f4(0x2000);
-        mCells[i]->mUnk_11   = 0;
+        mCells[i]->mCharBase = sub.GetCharBase(0x2000);
+        mCells[i]->mPaletteBase   = 0;
         mCells[i]->SetAnimation(i + 2);
     }
     mCellB            = new CellAnimation("myroom_tips_obj_00_nce.bin", 0, 1, 1);
-    mCellB->mCharBase = sub.func_020276f4(0x2000);
-    mCellB->mUnk_11   = 0;
+    mCellB->mCharBase = sub.GetCharBase(0x2000);
+    mCellB->mPaletteBase   = 0;
     mCellB->SetAnimation(1);
     mNewCells[0]            = new CellAnimation("myroom_tips_obj_00_nce.bin", 8, 1, 1);
-    mNewCells[0]->mCharBase = sub.func_020276f4(0x2000);
-    mNewCells[0]->mUnk_11   = 0;
+    mNewCells[0]->mCharBase = sub.GetCharBase(0x2000);
+    mNewCells[0]->mPaletteBase   = 0;
     ChangeDir("/Game/Tutorial/obj/");
     sub.LoadCharacters("tutorial_b_obj_00.nce_ncg1D.bin", 0x5000, 0);
     sub.LoadPalette("tutorial_b_obj_00_ncl.bin", 0xa0, 0);
     for (u8 i = 0; i < 2; i++) {
         mRowCells[i]            = new CellAnimation("tutorial_b_obj_00_nce.bin", 0, 1, 1);
-        mRowCells[i]->mCharBase = sub.func_020276f4(0x5000);
-        mRowCells[i]->mUnk_11   = 5;
+        mRowCells[i]->mCharBase = sub.GetCharBase(0x5000);
+        mRowCells[i]->mPaletteBase   = 5;
     }
     mRowCells[0]->SetAnimation(1);
     mRowCells[1]->SetAnimation(2);
@@ -370,19 +370,19 @@ void MyroomTipsScene::func_ov008_022267f4() {
     sub.LoadCharacters("union_b_obj_new.nce_ncg1D.bin", 0xc000, 0);
     sub.LoadPalette("union_b_obj_new_ncl.bin", 0x100, 0);
     mNewCells[1]            = new CellAnimation("union_b_obj_new_nce.bin", 0, 1, 1);
-    mNewCells[1]->mCharBase = sub.func_020276f4(0xc000);
-    mNewCells[1]->mUnk_11   = 8;
+    mNewCells[1]->mCharBase = sub.GetCharBase(0xc000);
+    mNewCells[1]->mPaletteBase   = 8;
     ChangeDir("/");
     mWindowA = new SelectWindow(1, data_ov008_02229674, 0);
     mWindowA->SetCells(1, data_ov008_02229690);
     mWindowA->mCursor->mSelection = -1;
-    mWindowA->mUnk_064            = 0;
+    mWindowA->mEnabled            = 0;
     mWindowB                      = new SelectWindow(5, data_ov008_02229724, -1);
     mWindowB->SetCells(5, data_ov008_022297b0);
     mWindowB->mCursor->mSelection = -1;
     mWindowB->mCursor->mSelection = mScroll;
-    mWindowB->mCursor->func_02030474(0x30, 0x90, 4, mCount);
-    mWindowB->mUnk_064 = 0;
+    mWindowB->mCursor->SetupScroll(0x30, 0x90, 4, mCount);
+    mWindowB->mEnabled = 0;
     mRow               = 0;
     func_ov008_02226e00();
     mFlags = 1;
@@ -390,7 +390,7 @@ void MyroomTipsScene::func_ov008_022267f4() {
 
 void MyroomTipsScene::func_ov008_02226e00() {
     ChangeDir("/font/");
-    mMessages = (MessageFile *) func_02023504("mes_TIPS_sys.mes", 0, 0, 0, 0, 0);
+    mMessages = (MessageFile *) LoadFile("mes_TIPS_sys.mes", 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x30, 2);
     mGlyphCount     = TextManager::Get().GlyphCount(0x30, 2, 0x11);
     mUnk_6c         = mGlyphCount / 2;
@@ -432,7 +432,7 @@ void MyroomTipsScene::Draw() {
     mNewCells[1]->Update();
     u8 j = 0;
     do {
-        SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mUnk_6c, 0x26, (s16) (j * 32 + 0x29), 1,
+        SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mUnk_6c, 0x26, (s16) (j * 32 + 0x29), 1,
                                                      (u16) ((j * 3 * 0x400 + 0x8000) >> 7), 0xf, 0);
         if (!TEST_BIT(data_020d49a1, data_ov008_02229660[(s8) context->mInfo.mMenuResult] + mIndices[j])) {
             mNewCells[1]->Draw(1, 0x20, (s16) (j * 32 + 0x20), 1);
@@ -510,14 +510,14 @@ void MyroomTipsScene::func_ov008_022274a4(const u8 *pos, u32 index) {
 
 void MyroomTipsScene::func_ov008_022274f8() {
     if (mEvent->func_020678e8()) {
-        mWindowA->mUnk_064 = 0;
-        mWindowB->mUnk_064 = 0;
+        mWindowA->mEnabled = 0;
+        mWindowB->mEnabled = 0;
         return;
     }
     UnkStruct_SceneContext *context = mContext;
     if (mFlags & 1) {
-        mWindowA->mUnk_064 = 1;
-        mWindowB->mUnk_064 = 0;
+        mWindowA->mEnabled = 1;
+        mWindowB->mEnabled = 0;
         if (mWindowA != NULL) {
             switch (*(u8 *) &context->mInfo.mPrevSelection) {
                 case 2:
@@ -533,7 +533,7 @@ void MyroomTipsScene::func_ov008_022274f8() {
                 s8 category = context->mInfo.mMenuResult;
                 if (category != selection) {
                     context->mInfo.mMenuResult = selection;
-                    SoundManager::Get().func_020246f8(5);
+                    SoundManager::Get().StartSeqArc(5);
                 } else if (mUnlocked[category] != 0) {
                     BOOL available = TRUE;
                     if (category == 0) {
@@ -542,11 +542,11 @@ void MyroomTipsScene::func_ov008_022274f8() {
                         }
                     }
                     if (available) {
-                        SoundManager::Get().func_020246f8(0);
+                        SoundManager::Get().StartSeqArc(0);
                         s8 current = context->mInfo.mMenuResult;
                         func_0206f88c(mEvent, (u8) current, data_ov008_02229658[current], 10);
                         mCount = mUnlocked[(s8) context->mInfo.mMenuResult];
-                        mWindowB->mCursor->func_02030474(0x30, 0x90, 4, mCount);
+                        mWindowB->mCursor->SetupScroll(0x30, 0x90, 4, mCount);
                         if (mCount <= 4) {
                             mWindowB->mButtons[1].mEnabled = 0;
                         } else {
@@ -563,14 +563,14 @@ void MyroomTipsScene::func_ov008_022274f8() {
         return;
     }
     if (mUnk_85 == 0) {
-        mWindowA->mUnk_064 = 0;
-        mWindowB->mUnk_064 = 1;
+        mWindowA->mEnabled = 0;
+        mWindowB->mEnabled = 1;
         BOOL changed       = FALSE;
         switch (*(u8 *) &context->mInfo.mPrevSelection) {
             case 1:
-                mWindowB->mUnk_061 = 4;
+                mWindowB->mState = 4;
                 changed            = TRUE;
-                mWindowB->func_0205c7c8(0);
+                mWindowB->Reset(0);
                 break;
             case 2:
                 SpriteManager::Get().sFade[0] = 3;
@@ -585,11 +585,11 @@ void MyroomTipsScene::func_ov008_022274f8() {
         if (!changed) {
             return;
         }
-        SoundManager::Get().func_020246f8(0);
+        SoundManager::Get().StartSeqArc(0);
         mRowCells[1]->SetAnimation(3);
         mWindowB->mCursor->SetScroll(mScroll);
         SelectWindow *window = mWindowB;
-        u8 y                 = window->mCursor->mUnk_0b;
+        u8 y                 = window->mCursor->mScrollItemY;
         window->mCellPos[1].x = 0xe4;
         window->mCellPos[1].y = y;
         mUnk_85                 = 1;
@@ -598,10 +598,10 @@ void MyroomTipsScene::func_ov008_022274f8() {
             return;
         }
         CellAnimation *cell = mRowCells[1];
-        if (cell->mUnk_0e != 3) {
+        if (cell->mAnimIndex != 3) {
             return;
         }
-        if (cell->mUnk_12 == 0) {
+        if (cell->mFinished == 0) {
             return;
         }
         cell->SetAnimation(2);
@@ -643,16 +643,16 @@ void MyroomTipsScene::func_ov008_022274f8() {
 s8 MyroomTipsScene::func_ov008_02227a08(const u8 *pos, u8 count) {
     UnkStruct_SceneContext *context = mContext;
     u8 saved                        = context->mInfo.mMenuResult;
-    if (TouchManager::Get().mUnk_57 != 0) {
+    if (TouchManager::Get().mPressed != 0) {
         u8 i = 0;
         do {
-            if (TouchManager::Get().func_02022860((s16) (pos[i * 2] - 9), (s16) (pos[i * 2 + 1] - 10), 0x4b, 0x42)) {
+            if (TouchManager::Get().IsPressedIn((s16) (pos[i * 2] - 9), (s16) (pos[i * 2 + 1] - 10), 0x4b, 0x42)) {
                 return i;
             }
             i++;
         } while (i < count);
     }
-    if (InputManager::Get().IsTrigger(0x20)) {
+    if (InputManager::Get().IsTrigger(KEY_LEFT)) {
         s8 current = context->mInfo.mMenuResult;
         if (current < 3) {
             context->mInfo.mMenuResult = current + (count - 1);
@@ -661,7 +661,7 @@ s8 MyroomTipsScene::func_ov008_02227a08(const u8 *pos, u8 count) {
             context->mInfo.mMenuResult = current + (count - 1);
             context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult % 3 + 3;
         }
-    } else if (InputManager::Get().IsTrigger(0x10)) {
+    } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
         s8 current = context->mInfo.mMenuResult;
         if (current < 3) {
             context->mInfo.mMenuResult = current + 1;
@@ -671,15 +671,15 @@ s8 MyroomTipsScene::func_ov008_02227a08(const u8 *pos, u8 count) {
             context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult % 3 + 3;
         }
     }
-    if (InputManager::Get().IsTrigger(0x80)) {
+    if (InputManager::Get().IsTrigger(KEY_DOWN)) {
         context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult + 3;
         context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult % count;
-    } else if (InputManager::Get().IsTrigger(0x40)) {
+    } else if (InputManager::Get().IsTrigger(KEY_UP)) {
         context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult + (count - 3);
         context->mInfo.mMenuResult = (s8) context->mInfo.mMenuResult % count;
     }
     if ((s8) context->mInfo.mMenuResult != saved) {
-        SoundManager::Get().func_020246f8(5);
+        SoundManager::Get().StartSeqArc(5);
     }
     if (InputManager::Get().IsHeld(1)) {
         return context->mInfo.mMenuResult;
@@ -692,13 +692,13 @@ BOOL MyroomTipsScene::func_ov008_02227dd4() {
     u8 row       = mRow;
     u8 scroll    = mScroll;
     mScroll      = mWindowB->mCursor->mScroll;
-    if (InputManager::Get().IsTrigger(0x40)) {
+    if (InputManager::Get().IsTrigger(KEY_UP)) {
         if (mRow != 0) {
             mRow--;
         } else if (mScroll != 0) {
             mScroll--;
         }
-    } else if (InputManager::Get().IsTrigger(0x80)) {
+    } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
         if (mRow < 3) {
             mRow++;
         } else if (mScroll + 4 < mCount) {
@@ -708,7 +708,7 @@ BOOL MyroomTipsScene::func_ov008_02227dd4() {
     if (TouchManager::Get().mTouching != 0) {
         u8 i = 0;
         do {
-            if (TouchManager::Get().func_020228c0(0x20, (s16) (i * 32 + 0x20), 0xc0, 0x1c)) {
+            if (TouchManager::Get().IsReleasedIn(0x20, (s16) (i * 32 + 0x20), 0xc0, 0x1c)) {
                 if (mRow == i) {
                     confirm = TRUE;
                 } else {
@@ -758,11 +758,11 @@ BOOL MyroomTipsScene::func_ov008_02227dd4() {
         func_ov008_02228214(-1);
         mWindowB->mCursor->SetScroll(mScroll);
         SelectWindow *window  = mWindowB;
-        u8 y                  = window->mCursor->mUnk_0b;
+        u8 y                  = window->mCursor->mScrollItemY;
         window->mCellPos[1].x = 0xe4;
         window->mCellPos[1].y = y;
-        SoundManager::Get().func_020246f8(5);
-        mRowCells[1]->func_02029fc0();
+        SoundManager::Get().StartSeqArc(5);
+        mRowCells[1]->Rewind();
     }
     return confirm;
 }
@@ -790,7 +790,7 @@ void MyroomTipsScene::func_ov008_02228214(s32 row) {
         MessageFile *file = mMessages;
         text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[i], 0x30, 2, &width, &height, pixelWidth, 0, 2,
                    0x11, 0x10, 0, 0, 1, 1, 1);
-        func_02025c1c(1, 4, 0x8000 + i * 0xc00, mTextBuffers[i], mTextBufferSize, 0);
+        QueueUpload(1, 4, 0x8000 + i * 0xc00, mTextBuffers[i], mTextBufferSize, 0);
         i++;
     } while (i < end);
 }
@@ -798,24 +798,24 @@ void MyroomTipsScene::func_ov008_02228214(s32 row) {
 void MyroomTipsScene::func_ov008_022283a8() {
     mMessage = new MessageWindow("mes_myroom", 1, 0x3800);
     mMessage->func_02065bd4(0x14, 4, 1);
-    mMessage->func_02065be4(0xd8);
-    mMessage->func_02065890(0x2d, 0, 1);
+    mMessage->SetWidth(0xd8);
+    mMessage->StartMessage(0x2d, 0, 1);
 }
 
 void MyroomTipsScene::func_ov008_0222840c(u32 message) {
     func_ov008_0222844c();
-    mMessage->func_02065890(message, 0, 1);
+    mMessage->StartMessage(message, 0, 1);
 }
 
 void MyroomTipsScene::DrawMessage() {
     if (mMessage != NULL) {
-        mMessage->func_020658d0();
+        mMessage->Update();
     }
 }
 
 void MyroomTipsScene::func_ov008_0222844c() {
     if (mMessage != NULL) {
-        mMessage->func_02065878();
+        mMessage->ClearBuffer();
     }
 }
 

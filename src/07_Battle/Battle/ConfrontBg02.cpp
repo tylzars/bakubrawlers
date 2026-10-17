@@ -28,12 +28,12 @@ ConfrontEmblem02::ConfrontEmblem02(u8 emblem) {
     mSpeed = 0;
     mAccel = 0;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
     sprintf(path, "vs_emblem_%02d_nce.bin", emblem);
     mAnim = new CellAnimation(path, 0, 1, 1);
-    mAnim->mCharBase = screen.func_020276f4(0x1c000);
-    mAnim->mUnk_11 = 0xb;
+    mAnim->mCharBase = screen.GetCharBase(0x1c000);
+    mAnim->mPaletteBase = 0xb;
     mAnim->SetAnimation(0);
     ChangeDir("/");
 }
@@ -54,7 +54,7 @@ void ConfrontEmblem02::func_ov007_0221de78(u8 side) {
     mAccel = 0x148;
     mScale = 1.0f;
     mUnk_07_2 = 0;
-    mAnim->func_02029f6c();
+    mAnim->ResetAnimation();
     mAnim->SetAnimation(0);
 }
 
@@ -90,7 +90,7 @@ void ConfrontEmblem02::func_ov007_0221df04() {
             }
             break;
         case 1:
-            if (mAnim->mUnk_12 == 0) {
+            if (mAnim->mFinished == 0) {
                 mAnim->Update();
             } else {
                 mUnk_07_0 = 0;
@@ -123,7 +123,7 @@ void ConfrontEmblem02::func_ov007_0221e090() {
                 s32 x = (s32) mAngle;
                 s32 sy = (s32) b;
                 s32 sx = (s32) a;
-                mAnim->func_0202a494(1, x, 0x7b, 2, sy, sx, 0);
+                mAnim->DrawTransformed(1, x, 0x7b, 2, sy, sx, 0);
             }
             break;
         case 1:
@@ -133,7 +133,7 @@ void ConfrontEmblem02::func_ov007_0221e090() {
                 s32 x = (s32) mAngle;
                 s32 sy = (s32) b;
                 s32 sx = (s32) a;
-                mAnim->func_0202a494(1, x, 0x7b, 2, sy, sx, 0);
+                mAnim->DrawTransformed(1, x, 0x7b, 2, sy, sx, 0);
             }
             break;
         case 2:
@@ -179,7 +179,7 @@ int ConfrontEmblem02::func_ov007_0221e268(u8 flag) {
         if (result != -1) {
             mUnk_07_0 = 1;
             mState = 1;
-            mAnim->func_02029f6c();
+            mAnim->ResetAnimation();
             mAnim->SetAnimation(anim);
         }
     } else if (result == 100) {
@@ -257,12 +257,12 @@ void ConfrontBg02::vfunc_28() {
         return;
     }
     ChangeDir("/Game/Confrontation/Bg/");
-    func_02025b64(1, 1, 0x2000, "vs_b_bg_02_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 12, 0, "vs_b_bg_02_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "vs_b_bg_02_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "vs_b_bg_02_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "vs_b_bg_02_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "vs_b_bg_02_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
     u8 emblem;
     if (mUnk_12 == 0) {
@@ -276,19 +276,19 @@ void ConfrontBg02::vfunc_28() {
     screen.LoadPalette(path, 0x160, 0x40);
     sprintf(path, "vs_emblem_%02d_nce.bin", emblem);
     mAnims[0] = new CellAnimation(path, 0, 1, 1);
-    mAnims[0]->mCharBase = screen.func_020276f4(0x1c000);
-    mAnims[0]->mUnk_11 = 12;
+    mAnims[0]->mCharBase = screen.GetCharBase(0x1c000);
+    mAnims[0]->mPaletteBase = 12;
     mAnims[0]->SetAnimation(0);
     screen.LoadCharacters("vs_b_obj_02_line.nce_ncg1D.bin", 0x1d000, 0);
     mAnims[2] = new CellAnimation("vs_b_obj_02_line_nce.bin", 0, 1, 1);
-    mAnims[2]->mCharBase = screen.func_020276f4(0x1d000);
-    mAnims[2]->mUnk_11 = 11;
+    mAnims[2]->mCharBase = screen.GetCharBase(0x1d000);
+    mAnims[2]->mPaletteBase = 11;
     mAnims[2]->SetAnimation(0);
     screen.LoadCharacters("vs_b_obj_02_marker.nce_ncg1D.bin", 0x1e000, 0);
     screen.LoadPalette("vs_b_obj_02_marker_ncl.bin", 0x1a0, 0x20);
     mAnims[1] = new CellAnimation("vs_b_obj_02_marker_nce.bin", 0, 1, 1);
-    mAnims[1]->mCharBase = screen.func_020276f4(0x1e000);
-    mAnims[1]->mUnk_11 = 13;
+    mAnims[1]->mCharBase = screen.GetCharBase(0x1e000);
+    mAnims[1]->mPaletteBase = 13;
     mAnims[1]->SetAnimation(0);
     ChangeDir("/");
 }
@@ -334,11 +334,11 @@ void ConfrontBg02::vfunc_3c() {
             mEmblems[i]->func_ov007_0221e090();
         }
     }
-    if (mAnims[1]->mUnk_0e == 1) {
-        if (mAnims[1]->mUnk_12 == 0) {
+    if (mAnims[1]->mAnimIndex == 1) {
+        if (mAnims[1]->mFinished == 0) {
             mAnims[1]->Update();
         } else {
-            mAnims[1]->func_02029f6c();
+            mAnims[1]->ResetAnimation();
             mAnims[1]->SetAnimation(0);
         }
     }
@@ -349,7 +349,7 @@ void ConfrontBg02::vfunc_3c() {
         }
     }
     mAnims[0]->Draw(1, 0x80, 0x7b, 2);
-    if (mAnims[2]->mUnk_12 == 0) {
+    if (mAnims[2]->mFinished == 0) {
         mAnims[2]->Update();
         mAnims[2]->Draw(1, 0x80, 0x7b, 2);
     }
@@ -360,12 +360,12 @@ u8 ConfrontBg02::vfunc_40(int a) {
     s32 result = -1;
     for (u8 i = 0; i < 4; i++) {
         if (mEmblems[i]->func_ov007_0221e268(1) == 100) {
-            mAnims[1]->func_02029f6c();
+            mAnims[1]->ResetAnimation();
             mAnims[1]->SetAnimation(1);
             break;
         }
     }
-    if (TouchManager::Get().mUnk_57 == 0) {
+    if (TouchManager::Get().mPressed == 0) {
         return 0;
     }
     if (func_ov007_022252d0((s16) TouchManager::Get().mX, (s16) TouchManager::Get().mY, 0x80, 0x7b) < 0x10) {
@@ -378,11 +378,11 @@ u8 ConfrontBg02::vfunc_40(int a) {
         }
         if (result != -1) {
             if (result == 100) {
-                mAnims[2]->func_02029f6c();
+                mAnims[2]->ResetAnimation();
                 mAnims[2]->SetAnimation(1);
-                SoundManager::Get().func_020246f8(0x28);
+                SoundManager::Get().StartSeqArc(0x28);
             } else {
-                SoundManager::Get().func_020246f8(0x29);
+                SoundManager::Get().StartSeqArc(0x29);
             }
         }
     }

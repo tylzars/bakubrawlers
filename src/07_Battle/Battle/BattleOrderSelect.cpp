@@ -167,7 +167,7 @@ void BattleOrderSelect::Update() {
         case 3:
             mTimer++;
             if (mTimer >= 0x1e) {
-                mMessage->func_02065890(0x1d, 0, 1);
+                mMessage->StartMessage(0x1d, 0, 1);
                 mState++;
             }
             func_ov007_0224c368(mTimer);
@@ -235,7 +235,7 @@ void BattleOrderSelect::func_ov007_0224b7bc() {
     WirelessManager::Get();
     if (IsWirelessMode(&data_020c4030.mUnk_228)) {
         data_0220f540.mUnk_00 = 10;
-        data_0220f540.mTouchDown = TouchManager::Get().mUnk_57;
+        data_0220f540.mTouchDown = TouchManager::Get().mPressed;
         data_0220f540.mTouchX    = TouchManager::Get().mX;
         data_0220f540.mTouchY    = TouchManager::Get().mY;
     }
@@ -273,7 +273,7 @@ void BattleOrderSelect::func_ov007_0224b95c() {
 
 void BattleOrderSelect::func_ov007_0224ba0c() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
@@ -302,17 +302,17 @@ void BattleOrderSelect::func_ov007_0224ba0c() {
 
 void BattleOrderSelect::func_ov007_0224bbf8() {
     ChangeDir("/Game/Battle/Bg/");
-    func_02025b64(0, 1, 0, "select_order_u_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 11, 0, "select_order_u_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 7, 0, "select_order_u_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "select_order_b_bg_01_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "select_order_b_bg_01_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "select_order_b_bg_01_a_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x2000, "select_order_b_bg_01_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "select_order_b_bg_01_b_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x4000, "select_order_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 13, 0, "select_order_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 9, 0, "select_order_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0, "select_order_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 11, 0, "select_order_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 7, 0, "select_order_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "select_order_b_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "select_order_b_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "select_order_b_bg_01_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "select_order_b_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "select_order_b_bg_01_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x4000, "select_order_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 13, 0, "select_order_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 9, 0, "select_order_b_bg_00_nsc.bin", 0, 0, 0);
     SpriteScreen &screen0 = SpriteManager::Get().mScreens[0];
     ChangeDir("/Game/Character/Icon/");
     screen0.LoadCharacters("icon_ch_base.nce_ncg1D.bin", 0xb000, 0);
@@ -321,8 +321,8 @@ void BattleOrderSelect::func_ov007_0224bbf8() {
     do {
         CellAnimation *anim = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
         mA[i].mAnim         = anim;
-        mA[i].mAnim->mCharBase = screen0.func_020276f4(0xb000);
-        mA[i].mAnim->mUnk_11   = 11;
+        mA[i].mAnim->mCharBase = screen0.GetCharBase(0xb000);
+        mA[i].mAnim->mPaletteBase   = 11;
         mA[i].mX               = 0;
         mA[i].mY               = 0;
         mA[i].mUnk_08          = 0;
@@ -341,16 +341,16 @@ void BattleOrderSelect::func_ov007_0224bbf8() {
     do {
         u32 a                  = i & 0xff;
         mC[a].mAnim            = new CellAnimation("select_order_b_obj_00_nce.bin", 0, 1, 1);
-        mC[a].mAnim->mCharBase = screen1.func_020276f4(0);
-        mC[a].mAnim->mUnk_11   = 0;
+        mC[a].mAnim->mCharBase = screen1.GetCharBase(0);
+        mC[a].mAnim->mPaletteBase   = 0;
         mC[a].mX               = 0x84 - mCount * 0x20 + i * 0x40;
         mC[a].mY               = 0x60;
         mC[a].mUnk_08          = 0;
         mC[a].mAnim->SetAnimation(i + 4);
         u8 b = i + 4;
         mC[b].mAnim            = new CellAnimation("select_order_b_obj_00_nce.bin", 0, 1, 1);
-        mC[b].mAnim->mCharBase = screen1.func_020276f4(0);
-        mC[b].mAnim->mUnk_11   = 0;
+        mC[b].mAnim->mCharBase = screen1.GetCharBase(0);
+        mC[b].mAnim->mPaletteBase   = 0;
         mC[b].mX               = 0x84 - mCount * 0x20 + i * 0x40;
         mC[b].mY               = 0x40;
         mC[b].mUnk_08          = 2;
@@ -361,17 +361,17 @@ void BattleOrderSelect::func_ov007_0224bbf8() {
     screen0.LoadCharacters("union_b_obj_you.nce_ncg1D.bin", 0x10000, 0);
     screen0.LoadPalette("union_b_obj_you_ncl.bin", 0x140, 0);
     mB[0].mAnim            = new CellAnimation("union_b_obj_you_nce.bin", 3, 1, 1);
-    mB[0].mAnim->mCharBase = screen0.func_020276f4(0x10000);
-    mB[0].mAnim->mUnk_11   = 10;
+    mB[0].mAnim->mCharBase = screen0.GetCharBase(0x10000);
+    mB[0].mAnim->mPaletteBase   = 10;
     mB[0].mUnk_09          = 0;
-    mB[0].mAnim->mUnk_0f   = data_020d433c.mBattlePlayers->mUnk_2a9;
+    mB[0].mAnim->mFrameIndex   = data_020d433c.mBattlePlayers->mUnk_2a9;
     mB[1].mAnim            = new CellAnimation("union_b_obj_you_nce.bin", 2, 1, 1);
-    mB[1].mAnim->mCharBase = screen0.func_020276f4(0x10000);
-    mB[1].mAnim->mUnk_11   = 10;
+    mB[1].mAnim->mCharBase = screen0.GetCharBase(0x10000);
+    mB[1].mAnim->mPaletteBase   = 10;
     mB[1].mUnk_09          = 0;
     mB[2].mAnim            = new CellAnimation("union_b_obj_you_nce.bin", 4, 1, 1);
-    mB[2].mAnim->mCharBase = screen0.func_020276f4(0x10000);
-    mB[2].mAnim->mUnk_11   = 10;
+    mB[2].mAnim->mCharBase = screen0.GetCharBase(0x10000);
+    mB[2].mAnim->mPaletteBase   = 10;
     mB[2].mUnk_09          = 0;
     ChangeDir("/");
     mIcons = new CharacterIcons(0xa000, 6, 0);
@@ -383,7 +383,7 @@ void BattleOrderSelect::func_ov007_0224bbf8() {
     } while (i < mCount);
     mMessage = new MessageWindow("mes_Command", 1, 0x10000);
     mMessage->func_02065bd4(0x14, 4, 1);
-    mMessage->func_02065be4(0xd8);
+    mMessage->SetWidth(0xd8);
     AntennaIndicator *unk = data_020d433c.mUnk_10;
     if (unk) {
         unk->SetupLayout(6);
@@ -420,7 +420,7 @@ BOOL BattleOrderSelect::func_ov007_0224c3d4() {
                 x               = p->mMsg.mTouchX;
                 y               = p->mMsg.mTouchY;
             } else {
-                down = TouchManager::Get().mUnk_57;
+                down = TouchManager::Get().mPressed;
                 x    = TouchManager::Get().mX;
                 y    = TouchManager::Get().mY;
             }
@@ -429,7 +429,7 @@ BOOL BattleOrderSelect::func_ov007_0224c3d4() {
                 do {
                     if (func_ov007_0224cb20(x, y, mC[(u8) (j + 4)].mX, mC[(u8) (j + 4)].mY, 0x38, 0x48)) {
                         if (mUnk_b8[j] != 0) {
-                            SoundManager::Get().func_020246f8(2);
+                            SoundManager::Get().StartSeqArc(2);
                         } else {
                             mUnk_b8[j] = 1;
                             mUnk_c0[i] = j;
@@ -437,7 +437,7 @@ BOOL BattleOrderSelect::func_ov007_0224c3d4() {
                             if (i == data_020d433c.mBattlePlayers->mUnk_2a9) {
                                 hit = 1;
                             }
-                            SoundManager::Get().func_020246f8(0);
+                            SoundManager::Get().StartSeqArc(0);
                             done++;
                             break;
                         }
@@ -452,7 +452,7 @@ BOOL BattleOrderSelect::func_ov007_0224c3d4() {
         return 1;
     }
     if (hit) {
-        mMessage->func_02065890(0x1e, 1, 1);
+        mMessage->StartMessage(0x1e, 1, 1);
     }
     return 0;
 }
@@ -467,7 +467,7 @@ BOOL BattleOrderSelect::func_ov007_0224c720() {
                     mUnk_b8[j] = 1;
                     mUnk_c0[i] = j;
                     mC[(u8) (j + 4)].mAnim->SetAnimation(mUnk_bc[mUnk_c0[i]] + 8);
-                    SoundManager::Get().func_020246f8(0);
+                    SoundManager::Get().StartSeqArc(0);
                     return 0;
                 }
                 j++;
@@ -504,10 +504,10 @@ void BattleOrderSelect::func_ov007_0224c810() {
                         flag = true;
                     }
                     if (flag == 1) {
-                        mB[1].mAnim->func_0202a3ec(0, i, mC[slot].mX + 0x1b, mC[slot].mY - 0x31 - off, 2);
+                        mB[1].mAnim->DrawFrame(0, i, mC[slot].mX + 0x1b, mC[slot].mY - 0x31 - off, 2);
                     }
                     if ((data_020d433c.mUnk_98 == 1) & (i == data_020d433c.mUnk_9b[p])) {
-                        mB[2].mAnim->func_0202a3ec(0, i, mC[slot].mX + 0x10, mC[slot].mY - 0x38 - off, 2);
+                        mB[2].mAnim->DrawFrame(0, i, mC[slot].mX + 0x10, mC[slot].mY - 0x38 - off, 2);
                     }
                 }
                 mIcons->SetVisible(i, 1);
@@ -519,7 +519,7 @@ void BattleOrderSelect::func_ov007_0224c810() {
         }
         i++;
     } while (i < mCount);
-    mMessage->func_020658d0();
+    mMessage->Update();
     mIcons->DrawIcons();
 }
 

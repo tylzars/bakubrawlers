@@ -43,7 +43,7 @@ void UnkScene_02226e4c::Update() {
             break;
         }
         case 3:
-            if (InputManager::Get().IsHeld(1) | TouchManager::Get().mUnk_57) {
+            if (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed) {
                 delete mObj0c;
                 mObj0c = NULL;
                 mState = 8;
@@ -58,7 +58,7 @@ void UnkScene_02226e4c::Update() {
 
 void UnkScene_02226e4c::InitDisplay() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);

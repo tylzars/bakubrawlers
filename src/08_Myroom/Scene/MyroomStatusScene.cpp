@@ -35,7 +35,7 @@ MyroomStatusScene::MyroomStatusScene(u32 unk) :
     mGlyphBuffer = NULL;
     mTextBufferSize = 0;
     mGlyphCount = 0;
-    mPalette = new UnkStruct_02029ca8(data_ov008_02228660);
+    mPalette = new ModelLightGroup(data_ov008_02228660);
     mUnk_50 = new Ranking();
     u32 frames = data_020d43f0[0].mPlayFrames;
     mHours     = frames / 216000;
@@ -46,20 +46,20 @@ MyroomStatusScene::MyroomStatusScene(u32 unk) :
 }
 
 MyroomStatusScene::~MyroomStatusScene() {
-    CameraManager::Get().func_02026504(0, NULL, 0);
+    CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
     ModelInstance *p14 = mUnk_14;
     if (p14 != NULL) {
-        p14->mUnk_68 = 0xf;
+        p14->mOwnFlags = 0xf;
         delete p14;
         mUnk_14 = NULL;
     }
     UnkStruct_0205401c *model = mModel;
     if (model != NULL) {
-        model->func_02054034();
+        model->Release();
         delete model;
     }
     delete mCamera;
-    UnkStruct_02029ca8 *palette = mPalette;
+    ModelLightGroup *palette = mPalette;
     if (palette != NULL) {
         delete palette;
     }
@@ -112,17 +112,17 @@ void MyroomStatusScene::SetReady() {
 
 void MyroomStatusScene::InitDisplay() {
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
-    SpriteManager::Get().func_02026dec(0, 7);
+    SpriteManager::Get().SetupMode(0, 7);
     GX_SetGraphicsMode(1, 0, 1);
     GXS_SetGraphicsMode(0);
 }
 
 void MyroomStatusScene::CreateModel() {
     mModel = new UnkStruct_0205401c();
-    mModel->func_0205411c(0x15, 0, 0, 0);
+    mModel->Create(0x15, 0, 0, 0);
     mModel->func_0205461c(0, 1);
-    mModel->mUnk_04->mUnk_64 = 1;
-    mModel->mUnk_04->mUnk_12 += 0x4cd;
+    mModel->mCharacter->mVisible = 1;
+    mModel->mCharacter->mRotY += 0x4cd;
 }
 
 void MyroomStatusScene::Setup3D() {
@@ -131,10 +131,10 @@ void MyroomStatusScene::Setup3D() {
     mCamera->SetUp(0, 0x1000, 0);
     mCamera->SetTarget(0x2b000, 0x6e000, 0);
     mCamera->SetClip(0x1000, 0x1388000);
-    mCamera->func_02026004(0x2aaa);
+    mCamera->SetFov(0x2aaa);
     mCamera->SetPosition(0x19000, 0x5a000, 0x96000);
     CameraManager::Get().mActive = 0;
-    CameraManager::Get().func_02026504(1, mCamera, 0);
+    CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
     CameraManager &manager = CameraManager::Get();
     Camera *camera    = manager.mCameras[manager.mActive];
     data_02211374.mCameraPosition = camera->mPosition;
@@ -150,16 +150,16 @@ void MyroomStatusScene::Setup3D() {
     ChangeDir("/Game/Myroom/Map/");
     NitroTexture *texture = new NitroTexture("myroombg.nsbtx");
     NitroModel *model     = new NitroModel("myroombg.nsbmd", texture);
-    texture->func_02028344();
-    mUnk_14 = model->func_02028b78(0);
+    texture->FreeFile();
+    mUnk_14 = model->CreateInstance(0);
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
-    screen.func_02027624(1);
+    screen.SetObjVramMode(1);
     ChangeDir("/Game/Myroom/");
     screen.LoadCharacters("myroom_status_u_obj_32k.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("myroom_status_u_obj_32k_ncl.bin", 0, 0);
     mCellAnim = new CellAnimation("myroom_status_u_obj_32k_nce.bin", 0, 1, 1);
-    mCellAnim->mCharBase = screen.func_020276f4(0);
-    mCellAnim->mUnk_11   = 0;
+    mCellAnim->mCharBase = screen.GetCharBase(0);
+    mCellAnim->mPaletteBase   = 0;
     mCellAnim->SetAnimation(0);
     LoadText();
     ChangeDir("/");
@@ -169,14 +169,14 @@ void MyroomStatusScene::Draw3D() {
     DrawLines();
     DrawCell();
     MtxFx43 *view = func_020323b8();
-    MtxFx43 mtx   = data_0220e86c;
+    MtxFx43 mtx   = gIdentityMtx43;
     VecFx32 b      = data_ov008_02228640;
     VecFx32 a      = data_ov008_02228634;
     func_01ffcf64(&mtx, &a);
     func_01ff89c0(&mtx, view, &mtx);
-    mUnk_14->func_02028d80();
-    mUnk_14->func_02029174(&mtx, &b);
-    mModel->func_02054568();
+    mUnk_14->AdvanceAnim();
+    mUnk_14->Draw(&mtx, &b);
+    mModel->Draw();
 }
 
 void MyroomStatusScene::DrawCell() {
@@ -189,7 +189,7 @@ void MyroomStatusScene::DrawCell() {
 
 void MyroomStatusScene::LoadText() {
     ChangeDir("/font/");
-    mMessages = (MessageFile *) func_02023504("mes_myroom_status.mes", 0, 0, 0, 0, 0);
+    mMessages = (MessageFile *) LoadFile("mes_myroom_status.mes", 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x20, 2);
     for (u8 i = 0; i < 5; i++) {
         mTextBuffers[i] = OS_Alloc(mTextBufferSize);
@@ -224,10 +224,10 @@ void MyroomStatusScene::RenderLine(u8 line) {
     y = 0;
     switch (line) {
         case 0:
-            TextManager::Get().mUnk_5b = 1;
+            TextManager::Get().mUse4bppFont = 1;
             TextManager::Get().Print(data_020d43f0[0].mName, 0x18, mTextBuffers[line], 0x20, 2, &x, &y, 0, 0, 2, 0x21, 0,
                                      0, 0, 0, 1, 1);
-            TextManager::Get().mUnk_5b = 0;
+            TextManager::Get().mUse4bppFont = 0;
             break;
         case 1:
             TextManager::Get().PrintNumber(info->mPlayerRank, 3, 0, mTextBuffers[line], 0x20, 2, &x, &y, 0, 2, 0x21, 0, 0, 1, 1);
@@ -277,12 +277,12 @@ void MyroomStatusScene::RenderLine(u8 line) {
             break;
     }
     SpriteManager &sprites = SpriteManager::Get();
-    func_02025c1c(sprites.Screen(0).mBgIndex, 4, data_ov008_0222864c[line], mTextBuffers[line], mTextBufferSize, 0);
+    QueueUpload(sprites.Screen(0).mBgIndex, 4, data_ov008_0222864c[line], mTextBuffers[line], mTextBufferSize, 0);
 }
 
 void MyroomStatusScene::DrawLines() {
     for (u8 i = 0; i < 5; i++) {
-        SpriteManager::Get().Screen(0).func_02027778(mGlyphBuffer, mGlyphCount, data_ov008_02228688[i][0],
+        SpriteManager::Get().Screen(0).AddOam(mGlyphBuffer, mGlyphCount, data_ov008_02228688[i][0],
                                                      data_ov008_02228688[i][1], 0,
                                                      (data_ov008_0222864c[i] << 11) >> 16, 0xf, 0);
     }

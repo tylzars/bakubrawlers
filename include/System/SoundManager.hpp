@@ -4,7 +4,7 @@
 #include "types.h"
 
 // One entry of a sound table: two ids, negative when unused.
-struct UnkStruct_SoundEntry {
+struct SoundEntry {
     /* 0 */ s16 mUnk_0;
     /* 2 */ s16 mUnk_2;
     /* 4 */
@@ -13,16 +13,16 @@ struct UnkStruct_SoundEntry {
 // Global sound player, constructed on first use and destroyed at exit.
 class SoundManager {
 public:
-    /* 00 */ UnkStruct_SoundEntry *mUnk_00;
-    /* 04 */ UnkStruct_SoundEntry *mUnk_04;
-    /* 08 */ u8 mUnk_08[0x94]; // archive state (NNSSndArc)
-    /* 9c */ u32 mUnk_9c;
-    /* a0 */ u32 mUnk_a0; // sound handle
-    /* a4 */ u32 mUnk_a4; // sound handle
-    /* a8 */ s32 mUnk_a8;
+    /* 00 */ SoundEntry *mSeqTable;
+    /* 04 */ SoundEntry *mSeqArcTable;
+    /* 08 */ u8 mArchive[0x94]; // archive state (NNSSndArc)
+    /* 9c */ u32 mHeap;
+    /* a0 */ u32 mSeqHandle; // sound handle
+    /* a4 */ u32 mSeqArcHandle; // sound handle
+    /* a8 */ s32 mSeqIndex;
     /* ac */ u8 mUnk_ac;
-    /* ad */ u8 mUnk_ad;
-    /* ae */ u8 mUnk_ae;
+    /* ad */ u8 mSeqArcVolume;
+    /* ae */ u8 mSeqVolume;
     /* af */ PAD(0xaf, 0xb0);
     /* b0 */
 
@@ -37,19 +37,19 @@ public:
         return instance;
     }
 
-    void func_020244cc();
-    void func_02024598();
+    void Init();
+    void Update();
     void func_020245a4();
     void func_020245c4(u32 unk1);
-    void func_020245d4(u32 unk1);
+    void LoadAndStartSeq(u32 unk1);
     void func_020245f4(u32 unk1);
-    void func_02024628(u32 unk1);
-    void func_02024688(u32 fadeFrames);
-    void func_020246a4(s32 unk1);
+    void StartSeq(u32 unk1);
+    void StopSeq(u32 fadeFrames);
+    void SetSeqVolume(s32 unk1);
     void func_020246d4(u32 unk1);
-    void func_020246f8(u32 unk1);
+    void StartSeqArc(u32 unk1);
     void func_02024754(u32 unk1);
-    void func_020247cc(s32 unk1);
+    void SetSeqArcVolume(s32 unk1);
 };
 
 // Sound helpers with C linkage that take the manager explicitly.

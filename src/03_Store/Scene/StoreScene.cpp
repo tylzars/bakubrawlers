@@ -68,12 +68,12 @@ StoreScene::StoreScene() :
         mCellAnims[i] = NULL;
     }
     data_020d43f0[0].mUnk_5b9_0 = 0;
-    FrameTask::Get().func_0203dc34(0, 0x16);
+    FrameTask::Get().StartChannel(0, 0x16);
 }
 
 StoreScene::~StoreScene() {
     Cleanup();
-    FrameTask::Get().func_0203dd90();
+    FrameTask::Get().StopAllChannels();
 }
 
 void StoreScene::Cleanup() {
@@ -182,7 +182,7 @@ void StoreScene::Update() {
             DrawMoney();
             break;
         case 11:
-            if (mMenu->mUnk_061 != 1) {
+            if (mMenu->mState != 1) {
                 mMenu->Update(TRUE);
             }
             if (ScrollStep()) {
@@ -321,7 +321,7 @@ void StoreScene::Update() {
 
 void StoreScene::InitDisplay() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 7);
+    SpriteManager::Get().SetupMode(1, 7);
     GX_SetGraphicsMode(1, 0, 1);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(1, 1, 0, 1, 1);
@@ -354,12 +354,12 @@ void StoreScene::InitDisplay() {
 
 void StoreScene::LoadGraphics() {
     ChangeDir("/Game/Store/");
-    func_02025b64(1, 7, 0, "shop_b_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "shop_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "shop_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "shop_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "shop_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "shop_b_bg_00_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/Store/");
     SpriteScreen &shop = SpriteManager::Get().Screen(1);
-    shop.func_02027624(3);
+    shop.SetObjVramMode(3);
     shop.LoadCharacters("shop_b_obj_00.nce_ncg1D.bin", 0x5000, 0);
     shop.LoadPalette("shop_b_obj_00_ncl.bin", 0x40, 0);
     ChangeDir("/Game/2D/union_b/");
@@ -373,12 +373,12 @@ void StoreScene::LoadGraphics() {
     sub.LoadCharacters("union_b_obj_number.nce_ncg1D.bin", 0x11000, 0);
     sub.LoadPalette("union_b_obj_number_ncl.bin", 0x160, 0);
     mCellAnims[0]            = new CellAnimation("union_b_obj_point_nce.bin", 0, 1, 1);
-    mCellAnims[0]->mCharBase = sub.func_020276f4(0x10000);
-    mCellAnims[0]->mUnk_11   = 11;
+    mCellAnims[0]->mCharBase = sub.GetCharBase(0x10000);
+    mCellAnims[0]->mPaletteBase   = 11;
     mCellAnims[0]->SetAnimation(0);
     mCellAnims[1]            = new CellAnimation("union_b_obj_number_nce.bin", 0, 1, 1);
-    mCellAnims[1]->mCharBase = sub.func_020276f4(0x11000);
-    mCellAnims[1]->mUnk_11   = 11;
+    mCellAnims[1]->mCharBase = sub.GetCharBase(0x11000);
+    mCellAnims[1]->mPaletteBase   = 11;
     mCellAnims[1]->SetAnimation(0);
     CreateMenu();
 }
@@ -421,16 +421,16 @@ void StoreScene::UpdateMenu() {
                 break;
             }
             default:
-                if (mMenu->mUnk_061 == 1) {
-                    if (InputManager::Get().IsTrigger(0x20)) {
+                if (mMenu->mState == 1) {
+                    if (InputManager::Get().IsTrigger(KEY_LEFT)) {
                         if (info->mSelection != 0) {
-                            mMenu->func_0205c844(4, 3);
-                            SoundManager::Get().func_020246f8(0);
+                            mMenu->SetResultItem(4, 3);
+                            SoundManager::Get().StartSeqArc(0);
                         }
-                    } else if (InputManager::Get().IsTrigger(0x10)) {
+                    } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
                         if (info->mSelection < 2) {
-                            mMenu->func_0205c844(5, 3);
-                            SoundManager::Get().func_020246f8(0);
+                            mMenu->SetResultItem(5, 3);
+                            SoundManager::Get().StartSeqArc(0);
                         }
                     }
                 }
@@ -464,12 +464,12 @@ void StoreScene::func_ov003_0221ab38() {
     WindowItem *items = mMenu->mCursor->mItems;
     for (i = 0; i < 3; i++) {
         if (info->mPage == i) {
-            mMenu->mCells[i]->func_02029f6c();
+            mMenu->mCells[i]->ResetAnimation();
             CellAnimation *cell = mMenu->mCells[i];
-            cell->mUnk_0e       = sSelectedFrames[i];
-            cell->func_02029f6c();
+            cell->mAnimIndex       = sSelectedFrames[i];
+            cell->ResetAnimation();
         } else if (info->mSelection == i) {
-            mMenu->mCells[i]->func_02029fb8(2);
+            mMenu->mCells[i]->SetMode(2);
         }
         items[i].mFlags = 0x8000;
     }
@@ -543,8 +543,8 @@ BOOL StoreScene::ScrollStep() {
     }
     if (info->mScroll == 0) {
         CellAnimation *sel = mMenu->mCells[(u8) info->mSelection];
-        sel->mUnk_0e       = sIdleFrames[info->mSelection];
-        sel->func_02029f6c();
+        sel->mAnimIndex       = sIdleFrames[info->mSelection];
+        sel->ResetAnimation();
         items[info->mPage].mFlags      = 8;
         items[info->mSelection].mFlags = 0x8000;
         mMenu->mCursor->mSelection     = info->mPage;
@@ -559,16 +559,16 @@ BOOL StoreScene::ScrollStep() {
             mMenu->mButtons[5].mEnabled = 1;
             items[5].mFlags             = 8;
         }
-        mMenu->mCells[4]->func_02029fc0();
-        mMenu->mCells[5]->func_02029fc0();
+        mMenu->mCells[4]->Rewind();
+        mMenu->mCells[5]->Rewind();
         if (info->mScrollDir == 1) {
             CellAnimation *cell = mMenu->mCells[4];
-            cell->mUnk_0e       = 0;
-            cell->func_02029f6c();
+            cell->mAnimIndex       = 0;
+            cell->ResetAnimation();
         } else {
             CellAnimation *cell = mMenu->mCells[5];
-            cell->mUnk_0e       = 1;
-            cell->func_02029f6c();
+            cell->mAnimIndex       = 1;
+            cell->ResetAnimation();
         }
         PrintStatus();
         done = TRUE;
@@ -587,16 +587,16 @@ void StoreScene::UpdateSlotLayout() {
         items[i].mX = pos.x;
         if (info->mSelection == i) {
             CellAnimation *cell = mMenu->mCells[i];
-            cell->mUnk_0e       = sSelectedFrames[i];
-            cell->func_02029f6c();
+            cell->mAnimIndex       = sSelectedFrames[i];
+            cell->ResetAnimation();
             items[i].mFlags = 8;
         } else {
             CellAnimation *cell = mMenu->mCells[i];
-            cell->mUnk_0e       = sIdleFrames[i];
-            cell->func_02029f6c();
+            cell->mAnimIndex       = sIdleFrames[i];
+            cell->ResetAnimation();
             items[i].mFlags = 0x8000;
         }
-        mMenu->mCells[i]->func_02029f6c();
+        mMenu->mCells[i]->ResetAnimation();
     }
     u32 flags;
     if (info->mSelection != 0) {
@@ -633,7 +633,7 @@ void StoreScene::SetupText() {
     if (mGlyphBuffer != NULL) {
         OS_Free(mGlyphBuffer);
     }
-    mMessages       = (MessageFile *) func_02023504("/font/mes_storecomment.mes", 0, 0, 0, 0, 0);
+    mMessages       = (MessageFile *) LoadFile("/font/mes_storecomment.mes", 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x10, 2);
     mGlyphCount     = TextManager::Get().GlyphCount(4);
     mTextBuffer     = OS_Alloc(mTextBufferSize);
@@ -643,19 +643,19 @@ void StoreScene::SetupText() {
     TextManager::Get().SetColor(1, 0, 0xf);
     mMessage = new MessageWindow("mes_storecomment", 1, 0x1800);
     mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->func_02065be4(0xd8);
-    mMessage->func_02065890(0xa, 0, 1);
+    mMessage->SetWidth(0xd8);
+    mMessage->StartMessage(0xa, 0, 1);
 }
 
 void StoreScene::DrawText() {
     UnkStruct_SceneContext *ctx = mContext;
     if (mGlyphBuffer != NULL) {
-        SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount,
+        SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount,
                                                      (s16) (0x80 - ((u32) ctx->mInfo.mUnk_00 >> 1)), 0x90, 0, 0x60,
                                                      0xf, 0);
     }
     if (mMessage != NULL) {
-        mMessage->func_020658d0();
+        mMessage->Update();
     }
 }
 
@@ -664,7 +664,7 @@ void StoreScene::PrintStatus() {
     SceneInfo *info = &mContext->mInfo;
     index           = sMessageIndices[info->mSelection];
     ClearTextBuffer();
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     TextManager &text          = TextManager::Get();
     s16 height;
     s16 width;
@@ -673,8 +673,8 @@ void StoreScene::PrintStatus() {
     MessageFile *table = mMessages;
     text.Print(table->GetText(index), table->GetLength(index), mTextBuffer, 0x10, 2, &height, &width,
                &info->mUnk_00, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
-    TextManager::Get().mUnk_5b = 0;
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x3000, mTextBuffer, mTextBufferSize, 0);
+    TextManager::Get().mUse4bppFont = 0;
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x3000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void StoreScene::ClearTextBuffer() {
@@ -695,7 +695,7 @@ void StoreScene::DrawMoney() {
     } while (i >= 0 && money != 0);
     for (; j < 7; j++) {
         if (digits[j] >= 0 && mCellAnims[1] != NULL) {
-            mCellAnims[1]->func_0202a3ec(1, digits[j], j * 7 + 0x2e, 0x17, 1);
+            mCellAnims[1]->DrawFrame(1, digits[j], j * 7 + 0x2e, 0x17, 1);
         }
     }
     if (mCellAnims[0] != NULL) {

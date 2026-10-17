@@ -9,7 +9,7 @@
 // ctor 02052548, dtor 02052584 (frees the instance).
 class ModelTransform {
 public:
-    /* 00 */ u8 mUnk_00;
+    /* 00 */ u8 mAnimEnabled;
     /* 01 */ PAD(0x01, 0x04);
     /* 04 */ VecFx32 mPosition;
     /* 10 */ u16 mRotX;
@@ -18,7 +18,7 @@ public:
     /* 16 */ PAD(0x16, 0x18);
     /* 18 */ VecFx32 mScale;
     /* 24 */ PAD(0x24, 0x25);
-    /* 25 */ u8 mUnk_25;
+    /* 25 */ u8 mAnimRunning;
     /* 26 */ PAD(0x26, 0x28);
     /* 28 */ ModelInstance *mModel;
     /* 2c */
@@ -27,8 +27,8 @@ public:
     ~ModelTransform();
     BOOL func_020526bc(); // builds the matrix and draws mModel
     // loads texture, model and optional animation data files and creates the instance (mModel); unk0 -> mUnk_00
-    void func_020525c0(const char *nsbtx, const char *nsbmd, const char *data, u32 unk0);
-    void func_020526a8(const char *nsbtx, const char *nsbmd); // same without animation data
-    void func_02052768(u32 a, u32 b);                         // starts the animation (frame step 1.0)
-    void func_0205277c();                                     // updates mUnk_25 from the animation state
+    void LoadFiles(const char *nsbtx, const char *nsbmd, const char *data, u32 unk0);
+    void LoadFilesNoAnim(const char *nsbtx, const char *nsbmd); // same without animation data
+    void StartAnim(u32 a, u32 b);                         // starts the animation (frame step 1.0)
+    void AdvanceAnim();                                     // updates mUnk_25 from the animation state
 };

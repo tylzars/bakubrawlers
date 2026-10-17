@@ -46,7 +46,7 @@ tables, register-heavy loops, SDK struct access, string tables). With the game f
 | **2.0 sp2p2, sp2p3, sp2p4** | **19/20, every one of the three** |
 | DSi 1.x (9 builds) | 8/20 |
 
-The remaining miss (`func_02025b64`, 4 words) fails identically on all 25 builds, so it is a
+The remaining miss (`LoadAndQueueUpload`, 4 words) fails identically on all 25 builds, so it is a
 source detail. To repeat the test on a function, decompile it into a stand-alone file and run
 `python3 tools/probe_compilers.py <file> --flags='-O4,p -ipa file -inline on,noauto'`.
 
@@ -96,8 +96,8 @@ sp2p2 is the lower bound; any of the three is correct for matching.
 | `-O4,p` | `-O3,p` misallocates registers in `func_ov000_0221f474` and `func_ov007_0221c850`; `-O4,s`/`-O2` keep the singleton accessor out of line and change `func_020253a0` and `func_ov007_02232c88` size |
 | `-ipa file` | Inline-function local statics (e.g. guard `data_020c17cc`) are referenced from main and every overlay, so they are shared standalone sections. Without `-ipa file`, mwcc puts them in each file's `.bss` (checked on the frame-update probe). The SDK also loses 23/99 matches without it. |
 | `-inline on,noauto` | `auto` inlines same-file calls (`CreateObj`, `Draw`) that ov006 keeps as `bl` |
-| `-enum int` | Game: `func_02023708` (file loader) inlines NitroSDK `FS_GetLength` on an `FSFile`, whose `prop.file.top/bottom` sit after two enum members; under `-enum min` the 4 field loads miss. SDK: `-enum min` loses 9/99 matches |
-| `-char signed` | Game: `func_0202ba64` (effect loader) walks a plain `char` name table (`while (*p++)`, passed to `%s`) with `ldrsb`; under `-char unsigned` exactly that load differs |
+| `-enum int` | Game: `LoadFileAsync` (file loader) inlines NitroSDK `FS_GetLength` on an `FSFile`, whose `prop.file.top/bottom` sit after two enum members; under `-enum min` the 4 field loads miss. SDK: `-enum min` loses 9/99 matches |
+| `-char signed` | Game: `LoadEffectGroup` (effect loader) walks a plain `char` name table (`while (*p++)`, passed to `%s`) with `ldrsb`; under `-char unsigned` exactly that load differs |
 | `-str noreuse` | ov006's `data_ov006_0221a544` initializer points at three identical copies of one path literal; `reuse`/`pool`/default merge them |
 | `-Cpp_exceptions off` | `on` changes `new`-with-constructor codegen in ov006 |
 | `-RTTI off` | vtables have a zero typeinfo slot (`data_ov006_0221a6a8 - 4`) |

@@ -22,14 +22,14 @@ void GimmickTornado::Load() {
         return;
     }
     ChangeDir("/Game/Gimmick");
-    func_020525c0("vne_tornado.nsbtx", "vne_tornado.nsbmd", "vne_tornado_data.bin", 1);
+    LoadFiles("vne_tornado.nsbtx", "vne_tornado.nsbmd", "vne_tornado_data.bin", 1);
     ChangeDir("/");
 }
 
 void GimmickTornado::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mUnk_68       = 0xf;
+        m->mOwnFlags       = 0xf;
         delete m;
         mModel = 0;
     }

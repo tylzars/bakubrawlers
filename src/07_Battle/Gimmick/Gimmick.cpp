@@ -20,7 +20,7 @@ Gimmick::Gimmick(u8 a, u8 b)
 Gimmick::~Gimmick() {
     ModelInstance *model = mModel;
     if (model) {
-        model->mUnk_68 = 0xf;
+        model->mOwnFlags = 0xf;
         delete model;
         mModel = 0;
     }

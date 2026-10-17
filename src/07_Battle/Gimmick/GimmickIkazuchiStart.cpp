@@ -34,30 +34,30 @@ void GimmickIkazuchiStart::Load() {
         sResources[0] = new ModelResource("ikaz00.nsbmd", "ikaz00_data.bin", "ikaz00.nsbtx", 1);
     }
     ChangeDir("/Game/Gimmick");
-    sResources[1]->func_020306e4(1);
-    mModel = sResources[1]->mModel->func_02028b78(new ModelAnim(sResources[1]->mAnimData, sResources[1]->mModel));
-    mModel->func_02028e54(0, 1, 0x1000);
-    mUnk_00 = 1;
-    sResources[0]->func_020306e4(1);
-    mModelB = sResources[0]->mModel->func_02028b78(new ModelAnim(sResources[0]->mAnimData, sResources[0]->mModel));
-    mModelB->func_02028e54(0, 0, 0x1000);
+    sResources[1]->AddRef(1);
+    mModel = sResources[1]->mModel->CreateInstance(new ModelAnim(sResources[1]->mAnimData, sResources[1]->mModel));
+    mModel->StartAnimWithIncrement(0, 1, 0x1000);
+    mAnimEnabled = 1;
+    sResources[0]->AddRef(1);
+    mModelB = sResources[0]->mModel->CreateInstance(new ModelAnim(sResources[0]->mAnimData, sResources[0]->mModel));
+    mModelB->StartAnimWithIncrement(0, 0, 0x1000);
     ChangeDir("/");
 }
 
 void GimmickIkazuchiStart::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mUnk_68       = 1;
+        m->mOwnFlags       = 1;
         delete m;
         mModel = 0;
         ModelInstance *b = mModelB;
-        b->mUnk_68       = 1;
+        b->mOwnFlags       = 1;
         delete b;
         mModelB = 0;
     }
     if (sResources[1]) {
-        sResources[0]->func_020307e8();
-        if (sResources[1]->func_020307e8()) {
+        sResources[0]->ReleaseRef();
+        if (sResources[1]->ReleaseRef()) {
             ModelResource *r = sResources[1];
             delete r;
             sResources[1] = 0;
@@ -121,7 +121,7 @@ void GimmickIkazuchiStart::Update() {
             return;
         }
         if (mModel && (int)data_020d433c.mGimmicks->mState >= 1) {
-            SoundManager::Get().func_020246f8(0x61);
+            SoundManager::Get().StartSeqArc(0x61);
         }
         mCounter = 0x46;
         mState++;
@@ -179,7 +179,7 @@ void GimmickIkazuchiStart::Update() {
         if (!mModelB) {
             return;
         }
-        mModelB->func_02028e54(0, 0, 0x1000);
+        mModelB->StartAnimWithIncrement(0, 0, 0x1000);
         break;
     case 8:
         mFinished = 1;
@@ -192,13 +192,13 @@ int GimmickIkazuchiStart::func_ov007_022789e0(int count) {
     if (mModel && (int)data_020d433c.mGimmicks->mState >= 1) {
         func_020526bc();
         if (count && mModelB) {
-            MtxFx43 mtx = data_0220e86c;
+            MtxFx43 mtx = gIdentityMtx43;
             func_01ffcf64(&mtx, &mPosition);
             data_020d433c.mUnk_14 &= 8;
             if (!data_020d433c.mUnk_14) {
-                mModelB->func_02028d80();
+                mModelB->AdvanceAnim();
             }
-            mModelB->func_02029174(&mtx, &mScale);
+            mModelB->Draw(&mtx, &mScale);
         }
     }
     if (count) {
@@ -209,7 +209,7 @@ int GimmickIkazuchiStart::func_ov007_022789e0(int count) {
                 mState = 1;
                 sCount--;
                 if (mModelB) {
-                    mModelB->func_02028e54(0, 0, 0x1000);
+                    mModelB->StartAnimWithIncrement(0, 0, 0x1000);
                 }
                 result = 1;
             }

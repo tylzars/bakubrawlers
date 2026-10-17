@@ -8,7 +8,7 @@
 class Camera;
 class CellAnimation;
 class ModelInstance;
-class UnkStruct_02029ca8;
+class ModelLightGroup;
 class Ranking;
 class UnkStruct_0205401c;
 struct MessageFile;
@@ -21,7 +21,7 @@ public:
     /* 10 */ UnkStruct_0205401c *mModel;
     /* 14 */ ModelInstance *mUnk_14;
     /* 18 */ Camera *mCamera;
-    /* 1c */ UnkStruct_02029ca8 *mPalette;
+    /* 1c */ ModelLightGroup *mPalette;
     /* 20 */ MessageFile *mMessages;
     /* 24 */ void *mTextBuffers[5];
     /* 38 */ void *mGlyphBuffer;

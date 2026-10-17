@@ -21,14 +21,14 @@ BattleObj01::BattleObj01(u8 layer, u32 charBase) {
     mUnk_05 = 0;
     mMotion = 0;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj");
     mAnims[0] = new CellAnimation("vs_b_obj_01_nce.bin", 0, 1, 1);
-    mAnims[0]->mCharBase = screen.func_020276f4(charBase);
-    mAnims[0]->mUnk_11 = layer;
+    mAnims[0]->mCharBase = screen.GetCharBase(charBase);
+    mAnims[0]->mPaletteBase = layer;
     mAnims[1] = new CellAnimation("vs_b_obj_01_nce.bin", 0, 1, 1);
-    mAnims[1]->mCharBase = screen.func_020276f4(charBase);
-    mAnims[1]->mUnk_11 = layer;
+    mAnims[1]->mCharBase = screen.GetCharBase(charBase);
+    mAnims[1]->mPaletteBase = layer;
     ChangeDir("/");
 }
 

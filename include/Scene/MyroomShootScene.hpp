@@ -1,7 +1,7 @@
 #pragma once
 
 #include "global.h"
-#include "Graphics/UnkStruct_0203d374.hpp"
+#include "Graphics/BakuganModel.hpp"
 #include "types.h"
 
 #include "Scene/SceneBase.hpp"
@@ -15,7 +15,7 @@ class CellAnimation;
 class MessageWindow;
 class ModelInstance;
 class SelectWindow;
-class UnkStruct_02029ca8;
+class ModelLightGroup;
 struct MessageFile;
 
 // Overlay 8: the shoot screen, a list of six shooters with a model of the selected one.
@@ -23,9 +23,9 @@ class MyroomShootScene : public SceneBase {
 public:
     /* 00 (base) */
     /* 0c */ Camera *mCamera;
-    /* 10 */ UnkStruct_02029ca8 *mLights;
+    /* 10 */ ModelLightGroup *mLights;
     /* 14 */ CellAnimation *mCellAnim;
-    /* 18 */ UnkStruct_0203d374 *mShooter;
+    /* 18 */ BakuganModel *mShooter;
     /* 1c */ ModelInstance *mRoom;
     /* 20 */ MessageFile *mMessages;
     /* 24 */ void *mTextBuffers[2];

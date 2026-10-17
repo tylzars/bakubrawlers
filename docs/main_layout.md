@@ -48,13 +48,13 @@ treated as game code. Proposed source files follow the class boundaries (vtables
 | 0x02021eb8-0x020224f8 | Scene/SceneBase.cpp | `SceneManager` (scene list with layers) and the `SceneBase` constructor |
 | 0x020224f8-0x02022b0c | System/TouchManager.cpp | touch sampling, hit tests |
 | 0x02022b0c-0x020234c8 | Game/GameData.cpp | helpers over data_020d433c/data_020d43f0 (the save data) |
-| 0x020234c8-0x02023b80 | System/FileSystem.cpp | file loading (`func_02023504`), compressed files, path buffer |
+| 0x020234c8-0x02023b80 | System/FileSystem.cpp | file loading (`LoadFile`), compressed files, path buffer |
 | 0x02023b80-0x020244cc | System/FileLoader.cpp | backup (save) read/write scenes and CRC |
 | 0x020244cc-0x02024818 | System/SoundManager.cpp | sound archive, BGM and SE |
 | 0x02024818-0x0202537c | System/SceneRunner.cpp | loads each scene's overlay and runs it |
 | 0x0202537c-0x02025668 | System/FrameUpdate.cpp | frame callbacks and HBlank hooks |
 | 0x02025668-0x020257c8 | Graphics/SpriteFade.cpp | screen fade state |
-| 0x020257c8-0x02025e18 | Graphics/UploadQueue.cpp | queue of VRAM uploads (`func_02025b64`, `func_02025c1c`) |
+| 0x020257c8-0x02025e18 | Graphics/UploadQueue.cpp | queue of VRAM uploads (`LoadAndQueueUpload`, `QueueUpload`) |
 | 0x02025e18-0x020275bc | Graphics/SpriteManager.cpp | identity matrices, Camera, CameraManager, SpriteManager methods |
 | 0x020275bc-0x02028280 | Graphics/SpriteScreen.cpp | |
 | 0x02028280-0x020289c8 | Graphics/NitroTexture.cpp | texture/palette resource and VRAM upload |

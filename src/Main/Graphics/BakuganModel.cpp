@@ -1,28 +1,28 @@
-#include "Graphics/UnkStruct_0203d374.hpp"
+#include "Graphics/BakuganModel.hpp"
 
 #include "Graphics/Model.hpp"
 #include "Graphics/ModelInternal.hpp"
 #include "System/FileSystem.hpp"
 #include <stdio.h>
 
-extern MtxFx43 data_0220e86c;
+extern MtxFx43 gIdentityMtx43;
 extern const u8 data_020a1074[];
 
-UnkStruct_0203d374::UnkStruct_0203d374() {
+BakuganModel::BakuganModel() {
     mUnk_4b = 0;
     mUnk_32 = 0;
     mUnk_33 = 0;
     mUnk_34 = 0;
-    mUnk_4c = 0;
-    mUnk_4a = 0;
-    mUnk_49 = 0;
-    mUnk_4c = 0;
-    mUnk_4d = 0;
-    mUnk_4f = 0;
+    mMode = 0;
+    mVisible = 0;
+    mAnimUpdateEnabled = 0;
+    mMode = 0;
+    mVariant = 0;
+    mKind = 0;
     mUnk_48 = 0;
-    mUnk_4e = 0;
-    mUnk_2c = 0;
-    mUnk_4f = 0;
+    mSpinStep = 0;
+    mSpinTurnCount = 0;
+    mKind = 0;
     u8 i    = 0;
     do {
         mUnk_38[i].mUnk_06 = 0;
@@ -32,53 +32,53 @@ UnkStruct_0203d374::UnkStruct_0203d374() {
     } while (i < 2);
 }
 
-UnkStruct_0203d374::~UnkStruct_0203d374() {
+BakuganModel::~BakuganModel() {
     ModelInstance *model = mModel;
     if (model) {
         if (mUnk_48) {
-            model->mUnk_68 = 0;
+            model->mOwnFlags = 0;
             delete model;
         } else {
-            model->mUnk_68 = 0xf;
+            model->mOwnFlags = 0xf;
             delete model;
         }
         mModel = 0;
     }
 }
 
-extern "C" void func_0203d45c(UnkStruct_0203d374 *pose) {
+extern "C" void FreeBakuganModelInstance(BakuganModel *pose) {
     ModelInstance *model = pose->mModel;
     if (!model) {
         return;
     }
     if (pose->mUnk_48) {
-        model->mUnk_68 = 0;
+        model->mOwnFlags = 0;
         delete model;
     } else {
-        model->mUnk_68 = 0xf;
+        model->mOwnFlags = 0xf;
         delete model;
     }
     pose->mModel = 0;
 }
 
-void UnkStruct_0203d374::func_0203d4c4(u32 unk1) {
-    func_0203d4dc(mUnk_4f, mUnk_4d, unk1);
+void BakuganModel::SetupMode(u32 unk1) {
+    Setup(mKind, mVariant, unk1);
 }
 
-void UnkStruct_0203d374::func_0203d4dc(u32 kind, u32 value, u32 mode) {
+void BakuganModel::Setup(u32 kind, u32 value, u32 mode) {
     char name[0x40];
     char file[0x40];
     mUnk_48 = 0;
-    mUnk_4a = 1;
-    mUnk_4c = mode;
-    mUnk_4d = value;
-    mUnk_4f = kind;
+    mVisible = 1;
+    mMode = mode;
+    mVariant = value;
+    mKind = kind;
     if ((s32) kind >= 0x29) {
         return;
     }
-    func_0203d710(kind);
+    LoadModel(kind);
     ChangeDir("/Game/Bakugan/tex");
-    UnkStruct_02028308 *texture = mModel->mUnk_58->mUnk_08;
+    TextureFile *texture = mModel->mModelFile->mTexture;
     u8 id                       = data_020a1074[(u8) kind];
     if ((u8) (mode + 0xff) <= 1) {
         if (kind == 0x22 && value == 0) {
@@ -88,7 +88,7 @@ void UnkStruct_0203d374::func_0203d4dc(u32 kind, u32 value, u32 mode) {
             sprintf(name, "L_sphe%02d", id);
             sprintf(file, "H_sphe%02d_%02d", id, value);
         }
-        texture->func_02028858(name, file, 0);
+        texture->LoadPaletteFile(name, file, 0);
     } else {
         if (kind == 0x22 && value == 0) {
             sprintf(name, "H_sphe83");
@@ -97,55 +97,55 @@ void UnkStruct_0203d374::func_0203d4dc(u32 kind, u32 value, u32 mode) {
             sprintf(name, "H_sphe%02d", id);
             sprintf(file, "%s_%02d", name, value);
         }
-        texture->func_02028858(name, file, 0);
-        texture->func_020286fc(name, file, 0);
+        texture->LoadPaletteFile(name, file, 0);
+        texture->LoadTextureFile(name, file, 0);
     }
-    texture->func_02028344();
+    texture->FreeFile();
     ChangeDir("/");
     if ((u8) (mode + 0xfd) <= 1) {
-        func_02052768(0, 1);
+        StartAnim(0, 1);
         if (mode == 4) {
-            mUnk_49 = 1;
+            mAnimUpdateEnabled = 1;
         }
     }
     if ((u8) (mode + 0xfb) <= 1) {
-        mUnk_49 = 0;
-        func_02052768(0, 0);
+        mAnimUpdateEnabled = 0;
+        StartAnim(0, 0);
     }
 }
 
-void UnkStruct_0203d374::func_0203d6e0(u32 unk1, u32 unk2, u32 unk3) {
-    mUnk_50 = unk1;
-    mUnk_51 = unk2;
-    mUnk_52 = unk3;
+void BakuganModel::StoreSetup(u32 unk1, u32 unk2, u32 unk3) {
+    mStoredKind = unk1;
+    mStoredVariant = unk2;
+    mStoredMode = unk3;
 }
 
-BOOL UnkStruct_0203d374::func_0203d6f0() {
+BOOL BakuganModel::func_0203d6f0() {
     return TRUE;
 }
 
-void UnkStruct_0203d374::func_0203d6f8() {
-    func_0203d4dc(mUnk_50, mUnk_51, mUnk_52);
+void BakuganModel::RunStoredSetup() {
+    Setup(mStoredKind, mStoredVariant, mStoredMode);
 }
 
-BOOL UnkStruct_0203d374::func_0203d710(u8 kind) {
+BOOL BakuganModel::LoadModel(u8 kind) {
     char path[0x100];
     if (mUnk_48) {
         return FALSE;
     }
     ModelInstance *old = mModel;
     if (old) {
-        old->mUnk_68 = 0xf;
+        old->mOwnFlags = 0xf;
         delete old;
         mModel = 0;
     }
     u8 id = data_020a1074[kind];
-    if (kind == 0x22 && mUnk_4d == 0) {
+    if (kind == 0x22 && mVariant == 0) {
         id = 0x53;
     }
     ChangeDir("/Game/Bakugan/mdl");
     NitroTexture *texture;
-    if ((u8) (mUnk_4c + 0xff) <= 1) {
+    if ((u8) (mMode + 0xff) <= 1) {
         sprintf(path, "L_sphe%02d.nsbtx", id);
         texture = new NitroTexture(path);
     } else {
@@ -153,70 +153,70 @@ BOOL UnkStruct_0203d374::func_0203d710(u8 kind) {
         texture = new NitroTexture(path);
     }
     NitroModel *model = new NitroModel();
-    if (mUnk_4c == 2) {
+    if (mMode == 2) {
         sprintf(path, "L_sphe%02d.nsbmd", id);
-        if (!model->func_020289e0(path, texture)) {
+        if (!model->Load(path, texture)) {
             return FALSE;
         }
-    } else if (mUnk_4c == 1) {
+    } else if (mMode == 1) {
         sprintf(path, "M_sphe%02d.nsbmd", id);
-        if (!model->func_020289e0(path, texture)) {
+        if (!model->Load(path, texture)) {
             return FALSE;
         }
     } else {
         sprintf(path, "H_sphe%02d.nsbmd", id);
-        if (!model->func_020289e0(path, texture)) {
+        if (!model->Load(path, texture)) {
             return FALSE;
         }
     }
-    if (mUnk_4c != 2 && mUnk_4c != 1) {
+    if (mMode != 2 && mMode != 1) {
         sprintf(path, "H_sphe%02d_data.bin", id);
         ModelAnimData *data = new ModelAnimData(path);
         ModelAnim *anim     = new ModelAnim(data, model);
-        mModel              = model->func_02028b78(anim);
+        mModel              = model->CreateInstance(anim);
     } else {
-        mModel = model->func_02028b78(NULL);
+        mModel = model->CreateInstance(NULL);
     }
     ChangeDir("/");
     return TRUE;
 }
 
-void UnkStruct_0203d374::func_0203d988() {
-    if (mUnk_4c == 6) {
-        func_0203d9e0();
+void BakuganModel::Update() {
+    if (mMode == 6) {
+        UpdateSpin();
     }
-    if (!mUnk_49) {
+    if (!mAnimUpdateEnabled) {
         return;
     }
-    if (mUnk_4c == 3) {
-        mModel->mAnim->func_020298c0(0x96000, 5);
+    if (mMode == 3) {
+        mModel->mAnim->SetFrame(0x96000, 5);
     }
     if (mModel) {
-        mModel->func_02028d80();
+        mModel->AdvanceAnim();
     }
 }
 
-void UnkStruct_0203d374::func_0203d9e0() {
-    switch (mUnk_4e) {
+void BakuganModel::UpdateSpin() {
+    switch (mSpinStep) {
         case 0:
-            if (mUnk_2c < 3) {
+            if (mSpinTurnCount < 3) {
                 mRotX += 0x38e;
                 if (mRotX > 0xfc72) {
-                    mUnk_2c++;
+                    mSpinTurnCount++;
                     mRotX = 0;
                 }
             } else {
-                mUnk_2c = 0;
-                mUnk_4e++;
+                mSpinTurnCount = 0;
+                mSpinStep++;
             }
             break;
         case 1:
-            mUnk_49 = 1;
-            mUnk_4e++;
+            mAnimUpdateEnabled = 1;
+            mSpinStep++;
             break;
         case 2:
-            if (mModel->func_02028f48()) {
-                mUnk_4e++;
+            if (mModel->IsAnimFinished()) {
+                mSpinStep++;
             }
             break;
         case 3:
@@ -225,15 +225,15 @@ void UnkStruct_0203d374::func_0203d9e0() {
     }
 }
 
-void UnkStruct_0203d374::func_0203dab0() {
-    if (!mUnk_4a) {
+void BakuganModel::DrawModel() {
+    if (!mVisible) {
         return;
     }
     VecFx32 pos;
     fx32 z      = mPosition.z;
     fx32 y      = mPosition.y;
     fx32 x      = mPosition.x;
-    MtxFx43 mtx = data_0220e86c;
+    MtxFx43 mtx = gIdentityMtx43;
     pos.x = x;
     pos.y = y;
     pos.z = z;
@@ -248,21 +248,21 @@ void UnkStruct_0203d374::func_0203dab0() {
         func_01ffd138(&mtx, mRotZ);
     }
     if (mModel) {
-        mModel->func_02029174(&mtx, &mScale);
+        mModel->Draw(&mtx, &mScale);
     }
 }
 
-void UnkStruct_0203d374::func_0203db70(const VecFx32 *pos) {
+void BakuganModel::func_0203db70(const VecFx32 *pos) {
     SetPosition(pos);
 }
 
-void func_0203db8c(void *obj, fx32 x, fx32 y, fx32 z) {
+void SetTransformPosition(void *obj, fx32 x, fx32 y, fx32 z) {
     VecFx32 *pos = (VecFx32 *) ((u8 *) obj + 4);
     pos->x       = x;
     pos->y       = y;
     pos->z       = z;
 }
 
-void UnkStruct_0203d374::func_0203db94(const u16 *rot) {
+void BakuganModel::func_0203db94(const u16 *rot) {
     SetRotation(rot);
 }

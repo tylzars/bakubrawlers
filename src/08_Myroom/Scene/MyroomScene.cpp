@@ -110,12 +110,12 @@ MyroomScene::MyroomScene() :
     mMenus[2] = NULL;
     mMessage  = NULL;
     data_020d433c.mUnk_14_1 = 0;
-    FrameTask::Get().func_0203dc34(0, 0x13);
+    FrameTask::Get().StartChannel(0, 0x13);
 }
 
 MyroomScene::~MyroomScene() {
     Cleanup();
-    FrameTask::Get().func_0203dd90();
+    FrameTask::Get().StopAllChannels();
 }
 
 void MyroomScene::Cleanup() {
@@ -163,7 +163,7 @@ void MyroomScene::Update() {
             }
             mEvent->func_0206ef4c("mes_rm_button", 0, 0xa, 0, 0x15);
             if (mMenus[0] != NULL) {
-                mMenus[0]->func_0205c7c8(-1);
+                mMenus[0]->Reset(-1);
                 mMenus[0]->mCursor->mSelection = -1;
                 mMenus[0]->mCursor->mSelection = *(s8 *) &ctx->mInfo.mUnk_06;
                 mMenus[0]->mCells[(u8) (s8) ctx->mInfo.mUnk_06]->SetAnimation(data_ov008_022286fc[(s8) ctx->mInfo.mUnk_06]);
@@ -333,7 +333,7 @@ void MyroomScene::Update() {
             GXS_SetVisiblePlane(0x11);
             ctx->mInfo.mState         = 1;
             ctx->mInfo.mPrevSelection = 0;
-            FrameTask::Get().func_0203dc34(0, 0x13);
+            FrameTask::Get().StartChannel(0, 0x13);
             break;
         case 15:
             if ((data_020d433c.mUnk_14 & 2) && data_020d433c.mUnk_7f == 4) {
@@ -381,7 +381,7 @@ void MyroomScene::Update() {
 
 void MyroomScene::InitDisplay() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 7);
+    SpriteManager::Get().SetupMode(1, 7);
     GX_SetGraphicsMode(1, 0, 1);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(1, 1, 0, 1, 1);
@@ -414,19 +414,19 @@ void MyroomScene::InitDisplay() {
 
 void MyroomScene::LoadGraphics() {
     ChangeDir("/Game/Myroom/");
-    func_02025b64(1, 7, 0, "myroom_b_bg_01_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "myroom_b_bg_01_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "myroom_b_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_01_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_01_ncl.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
-    sub.func_02027624(3);
+    sub.SetObjVramMode(3);
     sub.LoadCharacters("myroom_b_obj_00.nce_ncg1D.bin", 0x5000, 0);
     sub.LoadPalette("myroom_b_obj_00_ncl.bin", 0x40, 0);
     mCellAnim            = new CellAnimation("myroom_b_obj_00_nce.bin", 0, 1, 1);
-    mCellAnim->mCharBase = sub.func_020276f4(0x5000);
-    mCellAnim->mUnk_11   = 2;
+    mCellAnim->mCharBase = sub.GetCharBase(0x5000);
+    mCellAnim->mPaletteBase   = 2;
     ChangeDir("/Game/2D/union_b/");
     SpriteScreen &sub2 = SpriteManager::Get().Screen(1);
-    sub2.func_02027624(3);
+    sub2.SetObjVramMode(3);
     sub2.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0, 0);
     sub2.LoadPalette("union_b_obj_cockpit_ncl.bin", 0, 0);
     sub2.LoadCharacters("union_b_obj_arrow.nce_ncg1D.bin", 0x4000, 0);
@@ -544,16 +544,16 @@ void MyroomScene::func_ov008_0221c2a0() {
                     }
                     // fall through
                     default:
-                        if (delta == 0 && window->mUnk_061 == 1) {
-                            if (InputManager::Get().IsTrigger(0x20)) {
+                        if (delta == 0 && window->mState == 1) {
+                            if (InputManager::Get().IsTrigger(KEY_LEFT)) {
                                 if ((s8) ctx->mInfo.mUnk_06 != 0) {
-                                    window->func_0205c844(first, 3);
-                                    SoundManager::Get().func_020246f8(0);
+                                    window->SetResultItem(first, 3);
+                                    SoundManager::Get().StartSeqArc(0);
                                 }
-                            } else if (InputManager::Get().IsTrigger(0x10)) {
+                            } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
                                 if ((s8) ctx->mInfo.mUnk_06 < count - 1) {
-                                    window->func_0205c844(last, 3);
-                                    SoundManager::Get().func_020246f8(0);
+                                    window->SetResultItem(last, 3);
+                                    SoundManager::Get().StartSeqArc(0);
                                 }
                             }
                         }
@@ -584,27 +584,27 @@ void MyroomScene::func_ov008_0221c2a0() {
                             u8 n = last - first + 1;
                             u8 k = 0;
                             do {
-                                if (TouchManager::Get().func_02022860(data_ov008_02228758[k].x, data_ov008_02228758[k].y, 0x38,
+                                if (TouchManager::Get().IsPressedIn(data_ov008_02228758[k].x, data_ov008_02228758[k].y, 0x38,
                                                                       0x30)) {
                                     s8 selection = (s8) ctx->mInfo.mUnk_06;
                                     if (k != selection) {
                                         delta = (s8) (k - selection - first);
-                                    } else if (window->mUnk_061 == 1) {
-                                        window->func_0205c844((u8) selection, 3);
-                                        SoundManager::Get().func_020246f8(0);
+                                    } else if (window->mState == 1) {
+                                        window->SetResultItem((u8) selection, 3);
+                                        SoundManager::Get().StartSeqArc(0);
                                     }
                                 }
                                 k++;
                             } while (k < n);
-                            if (window->mUnk_061 == 1) {
-                                if (InputManager::Get().IsTrigger(0x20)) {
+                            if (window->mState == 1) {
+                                if (InputManager::Get().IsTrigger(KEY_LEFT)) {
                                     s8 selection = (s8) ctx->mInfo.mUnk_06;
                                     if (selection > first) {
                                         delta = -1;
                                     } else {
                                         delta = (s8) (last - selection - first);
                                     }
-                                } else if (InputManager::Get().IsTrigger(0x10)) {
+                                } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
                                     s8 selection = (s8) ctx->mInfo.mUnk_06;
                                     if (selection < last) {
                                         delta = 1;
@@ -621,7 +621,7 @@ void MyroomScene::func_ov008_0221c2a0() {
                     window->mCursor->mSelection = (s8) ctx->mInfo.mUnk_06 + first;
                     PrintStatus();
                     ctx->mInfo.mPrevSelection = 0;
-                    SoundManager::Get().func_020246f8(0);
+                    SoundManager::Get().StartSeqArc(0);
                 }
                 break;
         }
@@ -649,10 +649,10 @@ void MyroomScene::func_ov008_0221c8b0() {
     WindowItem *items = window->mCursor->mItems;
     for (i = 0; i < 5; i++) {
         if (ctx->mInfo.mUnk_0a == i) {
-            window->mCells[i]->func_02029f6c();
+            window->mCells[i]->ResetAnimation();
             window->mCells[i]->SetAnimation(data_ov008_022286fc[i]);
         } else if ((s8) ctx->mInfo.mUnk_06 == i) {
-            window->mCells[i]->func_02029fb8(2);
+            window->mCells[i]->SetMode(2);
         }
         items[i].mFlags = 0x8000;
     }
@@ -688,18 +688,18 @@ void MyroomScene::func_ov008_0221c9c8() {
                     ctx->mInfo.mState = 0xf;
                     break;
                 case 1:
-                    if (mMenus[1]->mCells[3]->mUnk_12 == 0) {
+                    if (mMenus[1]->mCells[3]->mFinished == 0) {
                         return;
                     }
                     SwitchPage(0);
-                    mMenus[1]->func_0205c7c8(0);
+                    mMenus[1]->Reset(0);
                     break;
                 case 2:
-                    if (mMenus[2]->mCells[3]->mUnk_12 == 0) {
+                    if (mMenus[2]->mCells[3]->mFinished == 0) {
                         return;
                     }
                     SwitchPage(0);
-                    mMenus[2]->func_0205c7c8(0);
+                    mMenus[2]->Reset(0);
                     break;
             }
             break;
@@ -716,7 +716,7 @@ void MyroomScene::func_ov008_0221c9c8() {
                             ctx->mInfo.mUnk_06 = 0;
                             ctx->mInfo.mUnk_0a = 0;
                             SwitchPage(1);
-                            mMenus[1]->mCells[4]->func_02029f6c();
+                            mMenus[1]->mCells[4]->ResetAnimation();
                             break;
                         case 1:
                             ctx->mInfo.mState = 0xc;
@@ -733,7 +733,7 @@ void MyroomScene::func_ov008_0221c9c8() {
                             ctx->mInfo.mUnk_06 = 0;
                             ctx->mInfo.mUnk_0a = 0;
                             SwitchPage(2);
-                            mMenus[2]->mCells[4]->func_02029f6c();
+                            mMenus[2]->mCells[4]->ResetAnimation();
                             break;
                         case 5:
                             ctx->mInfo.mState = 0xf;
@@ -755,11 +755,11 @@ void MyroomScene::func_ov008_0221c9c8() {
                             ctx->mInfo.mState  = 6;
                             break;
                         case 3:
-                            if (mMenus[1]->mCells[3]->mUnk_12 == 0) {
+                            if (mMenus[1]->mCells[3]->mFinished == 0) {
                                 return;
                             }
                             SwitchPage(0);
-                            mMenus[1]->func_0205c7c8(0);
+                            mMenus[1]->Reset(0);
                             break;
                     }
                     break;
@@ -778,11 +778,11 @@ void MyroomScene::func_ov008_0221c9c8() {
                             ctx->mInfo.mState  = 6;
                             break;
                         case 3:
-                            if (mMenus[2]->mCells[3]->mUnk_12 == 0) {
+                            if (mMenus[2]->mCells[3]->mFinished == 0) {
                                 return;
                             }
                             SwitchPage(0);
-                            mMenus[2]->func_0205c7c8(0);
+                            mMenus[2]->Reset(0);
                             break;
                     }
                     break;
@@ -814,7 +814,7 @@ BOOL MyroomScene::func_ov008_0221cc6c() {
         default:
             return FALSE;
     }
-    if (window->mUnk_061 != 1) {
+    if (window->mState != 1) {
         window->Update(TRUE);
     }
     items = window->mCursor->mItems;
@@ -842,8 +842,8 @@ BOOL MyroomScene::func_ov008_0221cc6c() {
             window->mButtons[7].mEnabled = 1;
             items[7].mFlags              = 8;
         }
-        window->mCells[6]->func_02029fc0();
-        window->mCells[7]->func_02029fc0();
+        window->mCells[6]->Rewind();
+        window->mCells[7]->Rewind();
         if (ctx->mInfo.mPage == 1) {
             window->mCells[6]->SetAnimation(0);
         } else {
@@ -876,7 +876,7 @@ void MyroomScene::func_ov008_0221cea0() {
             window->mCells[i]->SetAnimation(data_ov008_02228704[i]);
             items[i].mFlags = 0x8000;
         }
-        window->mCells[i]->func_02029f6c();
+        window->mCells[i]->ResetAnimation();
     }
     if ((s8) ctx->mInfo.mUnk_06 != 0) {
         window->mButtons[6].mEnabled = 1;
@@ -917,7 +917,7 @@ void MyroomScene::SetupText() {
     if (mGlyphBuffer != NULL) {
         OS_Free(mGlyphBuffer);
     }
-    mMessages       = (MessageFile *) func_02023504("/font/mes_myroom.mes", 0, 0, 0, 0, 0);
+    mMessages       = (MessageFile *) LoadFile("/font/mes_myroom.mes", 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x20, 2);
     mGlyphCount     = TextManager::Get().GlyphCount(8);
     mTextBuffer     = OS_Alloc(mTextBufferSize);
@@ -927,16 +927,16 @@ void MyroomScene::SetupText() {
     TextManager::Get().SetColor(1, 0, 0xf);
     mMessage = new MessageWindow("mes_myroom", 1, 0x1800);
     mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->func_02065be4(0xd8);
+    mMessage->SetWidth(0xd8);
     switch (mContext->mInfo.mMenuResult) {
         case 0:
-            mMessage->func_02065890(0x24, 0, 1);
+            mMessage->StartMessage(0x24, 0, 1);
             break;
         case 1:
-            mMessage->func_02065890(0x25, 0, 1);
+            mMessage->StartMessage(0x25, 0, 1);
             break;
         case 2:
-            mMessage->func_02065890(0x26, 0, 1);
+            mMessage->StartMessage(0x26, 0, 1);
             break;
     }
 }
@@ -946,13 +946,13 @@ void MyroomScene::func_ov008_0221d2c0() {
     UnkStruct_SceneContext *ctx = mContext;
     switch (ctx->mInfo.mMenuResult) {
         case 0:
-            mMessage->func_02065890(0x24, 0, 1);
+            mMessage->StartMessage(0x24, 0, 1);
             break;
         case 1:
-            mMessage->func_02065890(0x25, 0, 1);
+            mMessage->StartMessage(0x25, 0, 1);
             break;
         case 2:
-            mMessage->func_02065890(0x26, 0, 1);
+            mMessage->StartMessage(0x26, 0, 1);
             break;
     }
     PrintStatus();
@@ -966,18 +966,18 @@ void MyroomScene::func_ov008_0221d2c0() {
 void MyroomScene::DrawText() {
     UnkStruct_SceneContext *ctx = mContext;
     if (mGlyphBuffer != NULL) {
-        SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount,
+        SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount,
                                                      (s16) (0x80 - ((u32) ctx->mInfo.mUnk_00 >> 1)), 0x90, 0, 0x60,
                                                      0xf, 0);
     }
     if (mMessage != NULL) {
-        mMessage->func_020658d0();
+        mMessage->Update();
     }
 }
 
 void MyroomScene::func_ov008_0221d450() {
     if (mMessage != NULL) {
-        mMessage->func_02065878();
+        mMessage->ClearBuffer();
     }
 }
 
@@ -996,7 +996,7 @@ void MyroomScene::PrintStatus() {
             break;
     }
     ClearTextBuffer();
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     TextManager &text          = TextManager::Get();
     s16 height;
     s16 width;
@@ -1005,8 +1005,8 @@ void MyroomScene::PrintStatus() {
     MessageFile *table = mMessages;
     text.Print(table->GetText(index), table->GetLength(index), mTextBuffer, 0x20, 2, &height, &width, &info->mUnk_00, 0, 2,
                0x21, 0xe, 0, 0, 0, 1, 1);
-    TextManager::Get().mUnk_5b = 0;
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x3000, mTextBuffer, mTextBufferSize, 0);
+    TextManager::Get().mUse4bppFont = 0;
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x3000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void MyroomScene::ClearTextBuffer() {

@@ -61,7 +61,7 @@ static const u16 data_020a3174[10] = {
     40, 80, 120, 160, 200, 240, 280, 320, 400, 0,
 };
 
-// Two 12-byte sprite blocks for SpriteScreen::func_02027778 (rows 0x020a3188 and 0x020a3194).
+// Two 12-byte sprite blocks for SpriteScreen::AddOam (rows 0x020a3188 and 0x020a3194).
 static const u8 data_020a3188[2][12] = {
     {0x00, 0xa0, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
     {0x00, 0x20, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
@@ -785,7 +785,7 @@ void ListScene::Update() {
         }
     }
     if (mUnk_3ff != 0 && mUnk_3fc == 0) {
-        SoundManager::Get().func_020246f8(0x66);
+        SoundManager::Get().StartSeqArc(0x66);
         mUnk_3ff = 0;
         u32 one = 1;
         if (mUnk_e6 < 4) {
@@ -831,8 +831,8 @@ void ListScene::Update() {
             }
             break;
         case 1:
-            mUnk_48->mUnk_064 = 0;
-            mUnk_4c->mUnk_064 = 0;
+            mUnk_48->mEnabled = 0;
+            mUnk_4c->mEnabled = 0;
             if (!func_020842a0()) {
                 SpriteManager::Get().StartFade(2);
                 mState++;
@@ -840,7 +840,7 @@ void ListScene::Update() {
             break;
         case 2:
             if (!SpriteManager::Get().IsFading()) {
-                mUnk_4c->mUnk_064 = 1;
+                mUnk_4c->mEnabled = 1;
                 mState++;
             }
             break;
@@ -861,7 +861,7 @@ void ListScene::Update() {
             break;
         case 5:
             mUnk_48->Update(1);
-            if (mUnk_48->mUnk_061 == 4) {
+            if (mUnk_48->mState == 4) {
                 switch (mUnk_1a1) {
                     case 2:
                         switch (mMode) {
@@ -880,7 +880,7 @@ void ListScene::Update() {
                                 func_020834ec(this, 6);
                                 break;
                         }
-                        SoundManager::Get().func_020246f8(0x69);
+                        SoundManager::Get().StartSeqArc(0x69);
                         break;
                     case 3:
                         func_020834ec(this, 2);
@@ -902,13 +902,13 @@ void ListScene::Update() {
                     case 8:
                         func_02080210();
                         func_020834ec(this, 0);
-                        SoundManager::Get().func_020246f8(0x68);
+                        SoundManager::Get().StartSeqArc(0x68);
                         break;
                     case 9:
                         func_0208550c(this);
                         data_020d433c.mUnk_14 |= 2;
                         func_020834ec(this, 0);
-                        SoundManager::Get().func_020246f8(0x67);
+                        SoundManager::Get().StartSeqArc(0x67);
                         break;
                     default:
                         func_020834ec(this, 0);
@@ -918,21 +918,21 @@ void ListScene::Update() {
             break;
         case 6:
             mUnk_48->Update(1);
-            if (mUnk_48->mUnk_061 == 4) {
+            if (mUnk_48->mState == 4) {
                 func_020834ec(this, 0);
             }
             break;
         case 7:
-            mUnk_48->mUnk_064 = 0;
-            mUnk_4c->mUnk_064 = 0;
-            mUnk_50->mUnk_064 = 0;
+            mUnk_48->mEnabled = 0;
+            mUnk_4c->mEnabled = 0;
+            mUnk_50->mEnabled = 0;
             SpriteManager::Get().StartFade(2);
             mState++;
             func_020851d0();
             return;
         case 8:
             if (!SpriteManager::Get().IsFading()) {
-                mUnk_50->mUnk_064 = 1;
+                mUnk_50->mEnabled = 1;
                 mState++;
                 if (mUnk_3f4 != 0) {
                     func_02085220(this, 0xc);
@@ -965,7 +965,7 @@ void ListScene::Update() {
             return;
         case 10:
             SpriteManager::Get().StartFade(3);
-            mUnk_50->mUnk_064 = 0;
+            mUnk_50->mEnabled = 0;
             mState++;
             func_020851d0();
             return;
@@ -990,13 +990,13 @@ void ListScene::Update() {
             break;
         case 14:
             if (!SpriteManager::Get().IsFading()) {
-                mUnk_4c->mUnk_064 = 1;
+                mUnk_4c->mEnabled = 1;
                 mState           = 3;
             }
             break;
         case 15:
             SpriteManager::Get().StartFade(3);
-            mUnk_4c->mUnk_064 = 0;
+            mUnk_4c->mEnabled = 0;
             mState++;
             break;
         case 16:
@@ -1021,7 +1021,7 @@ void ListScene::Update() {
             return;
         case 19:
             if (!SpriteManager::Get().IsFading()) {
-                mUnk_50->mUnk_064 = 1;
+                mUnk_50->mEnabled = 1;
                 mState           = 9;
             }
             func_020851d0();
@@ -1040,16 +1040,16 @@ void ListScene::Update() {
         }
         case 21:
             mUnk_48->Update(1);
-            if (mUnk_48->mUnk_061 == 4) {
+            if (mUnk_48->mState == 4) {
                 switch (mUnk_1a1) {
                     case 0xb:
-                        SoundManager::Get().func_020246f8(0x6a);
+                        SoundManager::Get().StartSeqArc(0x6a);
                         func_02085220(this, 0);
                         mUnk_50->mCells[0]->SetAnimation(0);
                         mState = 0x17;
                         WirelessManager::Get();
                         if (IsWirelessMode(&data_020c4030.mUnk_228)) {
-                            mUnk_50->mUnk_064 = 0;
+                            mUnk_50->mEnabled = 0;
                             mState           = 0x1b;
                             UPDATE_TAIL();
                         }
@@ -1063,13 +1063,13 @@ void ListScene::Update() {
             return;
         case 22:
             mUnk_48->Update(1);
-            if (mUnk_48->mUnk_061 == 4) {
+            if (mUnk_48->mState == 4) {
                 func_02085220(this, 0);
             }
             func_020851d0();
             return;
         case 23:
-            mUnk_50->mUnk_064 = 0;
+            mUnk_50->mEnabled = 0;
             if (mCharacterId == 0x15) {
                 func_020848c8(this);
             }
@@ -1223,8 +1223,8 @@ void ListScene::Update() {
                 func_020842e8();
             }
             SpriteManager::Get().StartFade(3);
-            mUnk_48->mUnk_064 = 0;
-            mUnk_4c->mUnk_064 = 0;
+            mUnk_48->mEnabled = 0;
+            mUnk_4c->mEnabled = 0;
             mState++;
             break;
         case 44:
@@ -1261,7 +1261,7 @@ void ListScene::Update() {
 
 void ListScene::InitDisplay() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
@@ -1341,58 +1341,58 @@ void ListScene::func_0207b6e8() {
 
 void ListScene::LoadSubScreenGraphics() {
     ChangeDir("/Game/2d/union_b/");
-    func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 0xc, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 0xc, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     switch (mMode) {
         case 0:
         case 1:
         case 2:
             ChangeDir("/Game/List/");
-            func_02025b64(1, 1, 0, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 1, 0x4000, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 1, 0x6000, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 0xb, 0, "list_store_b_bg_00_ncg.bin", 0, 0, 0);
-            func_02025b64(1, 7, 0, "list_store_b_bg_00_nsc.bin", 0, 0, 0);
-            func_02025b64(1, 9, 0, "list_store_b_bg_01_nsc.bin", 0, 0, 0);
-            func_02025b64(1, 10, 0, "list_store_b_bg_02_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0x4000, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0x6000, "list_store_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 0xb, 0, "list_store_b_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 7, 0, "list_store_b_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 9, 0, "list_store_b_bg_01_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 10, 0, "list_store_b_bg_02_nsc.bin", 0, 0, 0);
             break;
         case 3:
             ChangeDir("/Game/List/");
-            func_02025b64(1, 1, 0, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 1, 0x4000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 1, 0x6000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 0xb, 0, "list_edit_b_bg_00_ncg.bin", 0, 0, 0);
-            func_02025b64(1, 7, 0, "list_edit_b_bg_00_nsc.bin", 0, 0, 0);
-            func_02025b64(1, 9, 0, "list_edit_b_bg_01_nsc.bin", 0, 0, 0);
-            func_02025b64(1, 10, 0, "list_edit_b_bg_02_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0x4000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0x6000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 0xb, 0, "list_edit_b_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 7, 0, "list_edit_b_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 9, 0, "list_edit_b_bg_01_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 10, 0, "list_edit_b_bg_02_nsc.bin", 0, 0, 0);
             break;
         case 4:
             ChangeDir("/Game/List/");
-            func_02025b64(1, 1, 0, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 1, 0x4000, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 1, 0x6000, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 0xb, 0, "list_gallery_b_bg_00_ncg.bin", 0, 0, 0);
-            func_02025b64(1, 7, 0, "list_gallery_b_bg_00_nsc.bin", 0, 0, 0);
-            func_02025b64(1, 9, 0, "list_gallery_b_bg_01_nsc.bin", 0, 0, 0);
-            func_02025b64(1, 10, 0, "list_gallery_b_bg_02_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0x4000, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0x6000, "list_gallery_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 0xb, 0, "list_gallery_b_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 7, 0, "list_gallery_b_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 9, 0, "list_gallery_b_bg_01_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 10, 0, "list_gallery_b_bg_02_nsc.bin", 0, 0, 0);
             break;
         case 5:
             ChangeDir("/Game/Battle/Bg/");
-            func_02025b64(1, 1, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 0xb, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
-            func_02025b64(1, 7, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 0xb, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 7, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
             break;
     }
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/Game/List/");
     screen.LoadCharacters("list_b_obj_00.nce_ncg1D.bin", 0xc000, 0);
     screen.LoadPalette("list_b_obj_00_ncl.bin", 0xc0, 0);
     for (u8 i = 0; i <= 12; i++) {
         mSubScreenCellAnims[i]            = new CellAnimation("list_b_obj_00_nce.bin", 0, 1, 1);
-        mSubScreenCellAnims[i]->mCharBase = screen.func_020276f4(0xc000);
-        mSubScreenCellAnims[i]->mUnk_11   = 6;
+        mSubScreenCellAnims[i]->mCharBase = screen.GetCharBase(0xc000);
+        mSubScreenCellAnims[i]->mPaletteBase   = 6;
     }
     mSubScreenCellAnims[0]->SetAnimation(0x23);
     mSubScreenCellAnims[1]->SetAnimation(0x24);
@@ -1423,20 +1423,20 @@ void ListScene::LoadSubScreenGraphics() {
     screen.LoadCharacters("union_b_obj_page.nce_ncg1D.bin", 0x1d000, 0);
     screen.LoadPalette("union_b_obj_page_ncl.bin", 0, 0);
     mSubScreenCellAnims[13]            = new CellAnimation("union_b_obj_number_nce.bin", 0, 1, 1);
-    mSubScreenCellAnims[13]->mCharBase = screen.func_020276f4(0x9000);
-    mSubScreenCellAnims[13]->mUnk_11   = 3;
+    mSubScreenCellAnims[13]->mCharBase = screen.GetCharBase(0x9000);
+    mSubScreenCellAnims[13]->mPaletteBase   = 3;
     mSubScreenCellAnims[13]->SetAnimation(0);
     mSubScreenCellAnims[15]            = new CellAnimation("union_b_obj_new_nce.bin", 0, 1, 1);
-    mSubScreenCellAnims[15]->mCharBase = screen.func_020276f4(0xb000);
-    mSubScreenCellAnims[15]->mUnk_11   = 5;
+    mSubScreenCellAnims[15]->mCharBase = screen.GetCharBase(0xb000);
+    mSubScreenCellAnims[15]->mPaletteBase   = 5;
     mSubScreenCellAnims[15]->SetAnimation(0);
     mSubScreenCellAnims[16]            = new CellAnimation("union_b_obj_gp_nce.bin", 0, 1, 1);
-    mSubScreenCellAnims[16]->mCharBase = screen.func_020276f4(0xa000);
-    mSubScreenCellAnims[16]->mUnk_11   = 4;
+    mSubScreenCellAnims[16]->mCharBase = screen.GetCharBase(0xa000);
+    mSubScreenCellAnims[16]->mPaletteBase   = 4;
     mSubScreenCellAnims[16]->SetAnimation(2);
     mSubScreenCellAnims[17]            = new CellAnimation("union_b_obj_point_nce.bin", 0, 1, 1);
-    mSubScreenCellAnims[17]->mCharBase = screen.func_020276f4(0x1c000);
-    mSubScreenCellAnims[17]->mUnk_11   = 3;
+    mSubScreenCellAnims[17]->mCharBase = screen.GetCharBase(0x1c000);
+    mSubScreenCellAnims[17]->mPaletteBase   = 3;
     mSubScreenCellAnims[17]->SetAnimation(0);
     ChangeDir("/");
     mUnk_4c = new SelectWindow(7, data_020a3430, -1);
@@ -1453,8 +1453,8 @@ void ListScene::LoadSubScreenGraphics() {
         screen.LoadCharacters("battle_b_obj_wait.nce_ncg1D.bin", 0x1e000, 0);
         screen.LoadPalette("battle_b_obj_ability_ncl.bin", 0x100, 0);
         mSubScreenCellAnims[18]            = new CellAnimation("battle_b_obj_wait_nce.bin", 0, 1, 1);
-        mSubScreenCellAnims[18]->mCharBase = screen.func_020276f4(0x1e000);
-        mSubScreenCellAnims[18]->mUnk_11   = 8;
+        mSubScreenCellAnims[18]->mCharBase = screen.GetCharBase(0x1e000);
+        mSubScreenCellAnims[18]->mPaletteBase   = 8;
         mSubScreenCellAnims[18]->SetAnimation(0);
         ChangeDir("/");
         mUnk_50 = new SelectWindow(2, data_020a31a0, 0);
@@ -1471,15 +1471,15 @@ void ListScene::LoadSubScreenGraphics() {
         this->func_02081994(0, 6, 0x8000);
     }
     ChangeDir("/Game/Bakugan/mark");
-    func_02025b64(1, 0, 0x200, "bakugan_s_000_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 0, 0, "bakugan_s_base_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 4, 0x12000, "bakugan_s_base.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 0, 0x200, "bakugan_s_000_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 0, 0, "bakugan_s_base_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 4, 0x12000, "bakugan_s_base.nce_ncg1D.bin", 0, 0, 0);
     mSubScreenCellAnims[14]            = new CellAnimation("bakugan_s_base_nce.bin", 0, 1, 1);
-    mSubScreenCellAnims[14]->mCharBase = screen.func_020276f4(0x12000);
-    mSubScreenCellAnims[14]->mUnk_11   = 0;
+    mSubScreenCellAnims[14]->mCharBase = screen.GetCharBase(0x12000);
+    mSubScreenCellAnims[14]->mPaletteBase   = 0;
     mSubScreenCellAnims[14]->SetAnimation(0);
     ChangeDir("/Game/Card/Graphic/Small");
-    func_02025b64(1, 0, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 0, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
     if (data_020d433c.mUnk_a8 == 0) {
         return;
     }
@@ -1491,14 +1491,14 @@ void ListScene::LoadSubScreenGraphics() {
 }
 
 void ListScene::LoadMessages() {
-    SpriteManager::Get().Screen(1).func_02027624(3);
+    SpriteManager::Get().Screen(1).SetObjVramMode(3);
     ChangeDir("/font/");
-    mStorecommentMessages    = func_02023504("mes_storecomment.mes", 0, 0, 0, 0, 0);
-    mBakuganNameShortMessages    = func_02023504("mes_BakuganNameShort.mes", 0, 0, 0, 0, 0);
-    mBakuganNameMessages    = func_02023504("mes_BakuganName.mes", 0, 0, 0, 0, 0);
-    mCardNameShortMessages    = func_02023504("mes_CardNameShort.mes", 0, 0, 0, 0, 0);
-    mDeckSelectMessages    = func_02023504("mes_DeckSelect.mes", 0, 0, 0, 0, 0);
-    mResultMessages    = func_02023504("mes_Result.mes", 0, 0, 0, 0, 0);
+    mStorecommentMessages    = LoadFile("mes_storecomment.mes", 0, 0, 0, 0, 0);
+    mBakuganNameShortMessages    = LoadFile("mes_BakuganNameShort.mes", 0, 0, 0, 0, 0);
+    mBakuganNameMessages    = LoadFile("mes_BakuganName.mes", 0, 0, 0, 0, 0);
+    mCardNameShortMessages    = LoadFile("mes_CardNameShort.mes", 0, 0, 0, 0, 0);
+    mDeckSelectMessages    = LoadFile("mes_DeckSelect.mes", 0, 0, 0, 0, 0);
+    mResultMessages    = LoadFile("mes_Result.mes", 0, 0, 0, 0, 0);
     mTextBufferSizes[0] = TextManager::Get().BufferSize(0x18, 0x10);
     mTextBuffers[0] = OS_Alloc(mTextBufferSizes[0]);
     MI_CpuClear16(mTextBuffers[0], mTextBufferSizes[0]);
@@ -1506,39 +1506,39 @@ void ListScene::LoadMessages() {
     mGlyphBuffers[0] = OS_Alloc((s16) mGlyphCounts[0] * (s16) 0xc);
     TextManager::Get().Init(mGlyphBuffers[0], 1, 0, 0x18, 0x10, 0x44);
     TextManager::Get().SetColor(1, 0, 0xf);
-    u8 *alphabet = (u8 *) func_02023504("mes_Alphabet.mes", 0, 0, 0, 0, 0);
+    u8 *alphabet = (u8 *) LoadFile("mes_Alphabet.mes", 0, 0, 0, 0, 0);
     TextManager::Get();
     mUnk_24 = *(u16 *) (alphabet + *(u16 *) (alphabet + 2) + 0xb4);
     OS_Free(alphabet);
     switch (mMode) {
         case 0:
             mMessageWindow = new MessageWindow("mes_storecomment", 1, 0x1b000);
-            mMessageWindow->func_02065890(0xb, 0, 1);
+            mMessageWindow->StartMessage(0xb, 0, 1);
             break;
         case 1:
             mMessageWindow = new MessageWindow("mes_storecomment", 1, 0x1b000);
-            mMessageWindow->func_02065890(0xd, 0, 1);
+            mMessageWindow->StartMessage(0xd, 0, 1);
             break;
         case 2:
             mMessageWindow = new MessageWindow("mes_storecomment", 1, 0x1b000);
-            mMessageWindow->func_02065890(0xc, 0, 1);
+            mMessageWindow->StartMessage(0xc, 0, 1);
             break;
         case 3:
             mMessageWindow = new MessageWindow("mes_DeckSelect", 1, 0x1b000);
-            mMessageWindow->func_02065890(6, 0, 1);
+            mMessageWindow->StartMessage(6, 0, 1);
             break;
         case 5:
             mMessageWindow = new MessageWindow("mes_DeckSelect", 1, 0x1b000);
-            mMessageWindow->func_02065890(5, 0, 1);
+            mMessageWindow->StartMessage(5, 0, 1);
             break;
         case 4:
             mMessageWindow = new MessageWindow("mes_myroom", 1, 0x1b000);
-            mMessageWindow->func_02065890(0x30, 0, 1);
+            mMessageWindow->StartMessage(0x30, 0, 1);
             break;
     }
     if (mMessageWindow != NULL) {
         mMessageWindow->func_02065bd4(0x14, 4, 0);
-        mMessageWindow->func_02065be4(0xd8);
+        mMessageWindow->SetWidth(0xd8);
     }
 }
 
@@ -1621,7 +1621,7 @@ void ListScene::PrintRows() {
             }
             break;
     }
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, mTextBuffers[0], mTextBufferSizes[0], 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, mTextBuffers[0], mTextBufferSizes[0], 0);
 }
 
 void ListScene::DrawSubScreenText() {
@@ -1629,9 +1629,9 @@ void ListScene::DrawSubScreenText() {
         return;
     }
     if (mMessageWindow != NULL) {
-        mMessageWindow->func_020658d0();
+        mMessageWindow->Update();
     }
-    SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffers[0], (u8) mGlyphCounts[0], 0x41, (s16) (mUnk_f8 + 0x48), 2, 0, 0xf, 0);
+    SpriteManager::Get().Screen(1).AddOam(mGlyphBuffers[0], (u8) mGlyphCounts[0], 0x41, (s16) (mUnk_f8 + 0x48), 2, 0, 0xf, 0);
 }
 
 void ListScene::ClearSubScreenText() {
@@ -1664,7 +1664,7 @@ void ListScene::func_0207cfa4() {
                 if (mUnk_f5 == 0) {
                     mUnk_f5 = 5;
                     act     = 3;
-                } else if (TouchManager::Get().mUnk_58 != 0) {
+                } else if (TouchManager::Get().mTrigger != 0) {
                     mUnk_f5 = 6;
                     act     = 3;
                 }
@@ -1675,7 +1675,7 @@ void ListScene::func_0207cfa4() {
                 if (mUnk_f5 == 0) {
                     mUnk_f5 = 7;
                     act     = 4;
-                } else if (TouchManager::Get().mUnk_58 != 0) {
+                } else if (TouchManager::Get().mTrigger != 0) {
                     mUnk_f5 = 8;
                     act     = 4;
                 }
@@ -1686,7 +1686,7 @@ void ListScene::func_0207cfa4() {
                 if (mUnk_f5 == 0) {
                     mUnk_f5 = 9;
                     act     = 5;
-                } else if (TouchManager::Get().mUnk_58 != 0) {
+                } else if (TouchManager::Get().mTrigger != 0) {
                     act = 5;
                 }
             }
@@ -1696,13 +1696,13 @@ void ListScene::func_0207cfa4() {
                 if (mUnk_f5 == 0) {
                     mUnk_f5 = 9;
                     act     = 6;
-                } else if (TouchManager::Get().mUnk_58 != 0) {
+                } else if (TouchManager::Get().mTrigger != 0) {
                     act = 6;
                 }
             }
             break;
     }
-    if (mUnk_4c->mUnk_061 == 1) {
+    if (mUnk_4c->mState == 1) {
         if (InputManager::Get().IsHeld(1)) {
             if (act == 0) {
                 act = 1;
@@ -1713,37 +1713,37 @@ void ListScene::func_0207cfa4() {
                 mUnk_4c->mCells[0]->SetAnimation(3);
                 mUnk_3fa = 6;
             }
-        } else if (InputManager::Get().IsTrigger(0x20)) {
+        } else if (InputManager::Get().IsTrigger(KEY_LEFT)) {
             if (act == 0) {
                 if (mUnk_f0 != 0) {
                     act = 3;
-                    if (InputManager::Get().IsHeld(0x20)) {
+                    if (InputManager::Get().IsHeld(KEY_LEFT)) {
                         mUnk_f5 = 1;
                     } else {
                         mUnk_f5 = 2;
                     }
                 } else if (mUnk_4c->mButtons[3].mEnabled != 0) {
-                    mUnk_4c->func_0205c844(3, 3);
+                    mUnk_4c->SetResultItem(3, 3);
                 }
             }
-        } else if (InputManager::Get().IsTrigger(0x10)) {
+        } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
             if (act == 0) {
                 if (mUnk_f0 != 0) {
                     act = 4;
-                    if (InputManager::Get().IsHeld(0x10)) {
+                    if (InputManager::Get().IsHeld(KEY_RIGHT)) {
                         mUnk_f5 = 3;
                     } else {
                         mUnk_f5 = 4;
                     }
                 } else if (mUnk_4c->mButtons[4].mEnabled != 0) {
-                    mUnk_4c->func_0205c844(4, 3);
+                    mUnk_4c->SetResultItem(4, 3);
                 }
             }
-        } else if (InputManager::Get().IsTrigger(0x40)) {
+        } else if (InputManager::Get().IsTrigger(KEY_UP)) {
             if (act == 0) {
                 act = 5;
             }
-        } else if (InputManager::Get().IsTrigger(0x80)) {
+        } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
             if (act == 0) {
                 act = 6;
             }
@@ -1778,7 +1778,7 @@ void ListScene::func_0207cfa4() {
                 } else {
                     mUnk_fb = mScroll + cur - 5;
                 }
-                SoundManager::Get().func_020246f8(5);
+                SoundManager::Get().StartSeqArc(5);
             }
         }
     }
@@ -1797,7 +1797,7 @@ void ListScene::func_0207cfa4() {
                 if ((mMode == 3 || mMode == 5) && mUnk_e6 == 0) {
                     SetMessage(-1);
                 }
-                SoundManager::Get().func_020246f8(0);
+                SoundManager::Get().StartSeqArc(0);
                 return;
             case 2:
                 if (mMode == 5) {
@@ -1805,12 +1805,12 @@ void ListScene::func_0207cfa4() {
                 } else {
                     mState = 0x2b;
                 }
-                SoundManager::Get().func_020246f8(1);
+                SoundManager::Get().StartSeqArc(1);
                 return;
             case 3:
                 if (mUnk_e8 > mUnk_f4) {
                     mUnk_e7 = mUnk_e8 - 1;
-                    SoundManager::Get().func_020246f8(5);
+                    SoundManager::Get().StartSeqArc(5);
                 } else {
                     mUnk_f5 = 0;
                 }
@@ -1818,7 +1818,7 @@ void ListScene::func_0207cfa4() {
             case 4:
                 if (mUnk_e8 < mUnk_e9 - 1) {
                     mUnk_e7 = mUnk_e8 + 1;
-                    SoundManager::Get().func_020246f8(5);
+                    SoundManager::Get().StartSeqArc(5);
                 } else {
                     mUnk_f5 = 0;
                 }
@@ -1840,7 +1840,7 @@ void ListScene::func_0207cfa4() {
                         } else {
                             func_020834ec(this, 2);
                         }
-                        SoundManager::Get().func_020246f8(0);
+                        SoundManager::Get().StartSeqArc(0);
                         return;
                     case 1: {
                         UnkStruct_02023248 *entry = func_02023248(data_020d43f0, (u8) mItemIds[mCursorItem], mUnk_104);
@@ -1852,7 +1852,7 @@ void ListScene::func_0207cfa4() {
                         } else {
                             func_020834ec(this, 2);
                         }
-                        SoundManager::Get().func_020246f8(0);
+                        SoundManager::Get().StartSeqArc(0);
                         return;
                     }
                     case 2:
@@ -1862,7 +1862,7 @@ void ListScene::func_0207cfa4() {
                         } else {
                             func_020834ec(this, 2);
                         }
-                        SoundManager::Get().func_020246f8(0);
+                        SoundManager::Get().StartSeqArc(0);
                         return;
                     case 3:
                     case 5:
@@ -1885,7 +1885,7 @@ void ListScene::func_0207cfa4() {
                                 mUnk_3ff = 1;
                             }
                         }
-                        SoundManager::Get().func_020246f8(0);
+                        SoundManager::Get().StartSeqArc(0);
                         return;
                 }
                 break;
@@ -1901,9 +1901,9 @@ void ListScene::func_0207cfa4() {
                     SetMessage(-1);
                 }
                 if (act == 2) {
-                    SoundManager::Get().func_020246f8(1);
+                    SoundManager::Get().StartSeqArc(1);
                 } else {
-                    SoundManager::Get().func_020246f8(0);
+                    SoundManager::Get().StartSeqArc(0);
                 }
                 return;
             case 3:
@@ -1921,7 +1921,7 @@ void ListScene::func_0207cfa4() {
                     mUnk_194[2] = 1;
                     mUnk_194[0] = 1;
                     func_02081128();
-                    SoundManager::Get().func_020246f8(0);
+                    SoundManager::Get().StartSeqArc(0);
                 }
                 mUnk_f5 = 0;
                 return;
@@ -1934,7 +1934,7 @@ void ListScene::func_0207cfa4() {
                 } else {
                     mUnk_fb = mItemCount - 1;
                 }
-                SoundManager::Get().func_020246f8(5);
+                SoundManager::Get().StartSeqArc(5);
                 return;
             case 6:
                 if (mItemCount <= 1) {
@@ -1945,7 +1945,7 @@ void ListScene::func_0207cfa4() {
                 } else {
                     mUnk_fb = 0;
                 }
-                SoundManager::Get().func_020246f8(5);
+                SoundManager::Get().StartSeqArc(5);
                 return;
         }
     }
@@ -1954,7 +1954,7 @@ void ListScene::func_0207cfa4() {
 void ListScene::func_0207dea4() {
     switch (mUnk_1a0) {
         case 1:
-            mUnk_4c->mUnk_064 = 0;
+            mUnk_4c->mEnabled = 0;
             if (mCommandList != NULL) {
                 func_0205821c(mCommandList);
                 mContext->mUnk_12 = 0;
@@ -1990,7 +1990,7 @@ void ListScene::func_0207dea4() {
         case 4:
             func_0208038c();
             mUnk_1a0        = 0;
-            mUnk_4c->mUnk_064 = 1;
+            mUnk_4c->mEnabled = 1;
             break;
     }
 }
@@ -2000,13 +2000,13 @@ void ListScene::func_0207e074() {
         mUnk_194[0] = 0;
         if (mUnk_e8 > mUnk_f4 && mUnk_f0 != 0) {
             func_02081994(0, 1, 8);
-            mUnk_4c->mCells[1]->func_02029fc0();
+            mUnk_4c->mCells[1]->Rewind();
         } else {
             func_02081994(0, 1, 0x8000);
         }
         if (mUnk_e8 < mUnk_e9 - 1 && mUnk_f0 != 0) {
             func_02081994(0, 2, 8);
-            mUnk_4c->mCells[2]->func_02029fc0();
+            mUnk_4c->mCells[2]->Rewind();
         } else {
             func_02081994(0, 2, 0x8000);
         }
@@ -2030,9 +2030,9 @@ void ListScene::func_0207e074() {
             func_02081994(0, 6, 0x8000);
         } else {
             func_02081994(0, 5, 8);
-            mUnk_4c->mCells[5]->func_02029fc0();
+            mUnk_4c->mCells[5]->Rewind();
             func_02081994(0, 6, 8);
-            mUnk_4c->mCells[6]->func_02029fc0();
+            mUnk_4c->mCells[6]->Rewind();
         }
         switch (mMode) {
             case 0:
@@ -2067,12 +2067,12 @@ void ListScene::func_0207e074() {
 void ListScene::func_0207e424() {
     switch (mUnk_f5) {
         case 2:
-            if (InputManager::Get().IsDown(0x20) == 0 && mUnk_ec == 0) {
+            if (InputManager::Get().IsDown(KEY_LEFT) == 0 && mUnk_ec == 0) {
                 func_0207e7e4();
             }
             break;
         case 4:
-            if (InputManager::Get().IsDown(0x10) == 0 && mUnk_ec == 0) {
+            if (InputManager::Get().IsDown(KEY_RIGHT) == 0 && mUnk_ec == 0) {
                 func_0207e7e4();
             }
             break;
@@ -2278,7 +2278,7 @@ void ListScene::func_0207ea3c() {
                     func_02081594();
                     mUnk_194[0] = 1;
                 }
-                func_020254f0(func_02081a4c, this);
+                QueueFrameCallback(func_02081a4c, this);
             } else {
                 mUnk_100 = 0;
                 func_02081128();
@@ -2346,7 +2346,7 @@ void ListScene::func_0207eec4() {
                 mUnk_5c[0]->Draw(0, 0x80, 0x60, 0);
             }
             if (mUnk_5c[3] != NULL) {
-                mUnk_5c[3]->func_0202a3ec(0, 0, 0x80, 0x60, 0);
+                mUnk_5c[3]->DrawFrame(0, 0, 0x80, 0x60, 0);
             }
             for (; i < 9; i++) {
                 if (i < 3) {
@@ -2360,14 +2360,14 @@ void ListScene::func_0207eec4() {
             {
                 s32 n = func_0208644c();
                 if ((u32) n < 1000) {
-                    mUnk_5c[5]->func_0202a3ec(0, n / 100, 0x6e, 0x94, 0);
-                    mUnk_5c[5]->func_0202a3ec(0, n / 10 % 10, 0x7a, 0x94, 0);
-                    mUnk_5c[5]->func_0202a3ec(0, n % 10, 0x86, 0x94, 0);
+                    mUnk_5c[5]->DrawFrame(0, n / 100, 0x6e, 0x94, 0);
+                    mUnk_5c[5]->DrawFrame(0, n / 10 % 10, 0x7a, 0x94, 0);
+                    mUnk_5c[5]->DrawFrame(0, n % 10, 0x86, 0x94, 0);
                 } else {
-                    mUnk_5c[5]->func_0202a3ec(0, n / 1000, 0x68, 0x94, 0);
-                    mUnk_5c[5]->func_0202a3ec(0, n / 100 % 10, 0x74, 0x94, 0);
-                    mUnk_5c[5]->func_0202a3ec(0, n / 10 % 10, 0x80, 0x94, 0);
-                    mUnk_5c[5]->func_0202a3ec(0, n % 10, 0x8c, 0x94, 0);
+                    mUnk_5c[5]->DrawFrame(0, n / 1000, 0x68, 0x94, 0);
+                    mUnk_5c[5]->DrawFrame(0, n / 100 % 10, 0x74, 0x94, 0);
+                    mUnk_5c[5]->DrawFrame(0, n / 10 % 10, 0x80, 0x94, 0);
+                    mUnk_5c[5]->DrawFrame(0, n % 10, 0x8c, 0x94, 0);
                 }
             }
             break;
@@ -2376,7 +2376,7 @@ void ListScene::func_0207eec4() {
                 mUnk_5c[1]->Draw(i, 0x80, 0x60, i);
             }
             if (mUnk_5c[3] != NULL) {
-                mUnk_5c[3]->func_0202a3ec(0, 1, 0x80, 0x60, 0);
+                mUnk_5c[3]->DrawFrame(0, 1, 0x80, 0x60, 0);
             }
             DrawMainScreenText();
             if (mUnk_5c[2] == NULL) {
@@ -2388,7 +2388,7 @@ void ListScene::func_0207eec4() {
                 if (i % 7 == 6) {
                     y += 6;
                 }
-                mUnk_5c[2]->func_0202a3ec(0, func_0208349c(i), x, y, 0);
+                mUnk_5c[2]->DrawFrame(0, func_0208349c(i), x, y, 0);
             }
             break;
     }
@@ -2426,10 +2426,10 @@ void ListScene::func_0207f32c() {
         switch (mMode) {
             case 0:
             case 1:
-                mSubScreenCellAnims[4]->func_0202a3ec(1, (u8) (mUnk_ea + i), mUnk_e4 + 0x1e + i * 0x2c, 0x26, 1);
+                mSubScreenCellAnims[4]->DrawFrame(1, (u8) (mUnk_ea + i), mUnk_e4 + 0x1e + i * 0x2c, 0x26, 1);
                 break;
             case 2:
-                mSubScreenCellAnims[5]->func_0202a3ec(1, (u8) (mUnk_ea + i), mUnk_e4 + 0x20 + i * 0x2c, 0x24, 1);
+                mSubScreenCellAnims[5]->DrawFrame(1, (u8) (mUnk_ea + i), mUnk_e4 + 0x20 + i * 0x2c, 0x24, 1);
                 break;
             case 3:
             case 5:
@@ -2449,9 +2449,9 @@ void ListScene::func_0207f32c() {
                     mSubScreenCellAnims[10]->SetAnimation(0x20);
                     mSubScreenCellAnims[10]->Draw(1, (s16) (mUnk_e4 + 0x19 + i * 0x2c), 0x21, 1);
                 } else if ((mUnk_ea + i) < 7) {
-                    mSubScreenCellAnims[4]->func_0202a3ec(1, (u8) ((mUnk_ea + i) - 1), mUnk_e4 + 0x1e + i * 0x2c, 0x26, 1);
+                    mSubScreenCellAnims[4]->DrawFrame(1, (u8) ((mUnk_ea + i) - 1), mUnk_e4 + 0x1e + i * 0x2c, 0x26, 1);
                 } else {
-                    mSubScreenCellAnims[5]->func_0202a3ec(1, (u8) ((mUnk_ea + i) - 7), mUnk_e4 + 0x20 + i * 0x2c, 0x24, 1);
+                    mSubScreenCellAnims[5]->DrawFrame(1, (u8) ((mUnk_ea + i) - 7), mUnk_e4 + 0x20 + i * 0x2c, 0x24, 1);
                 }
                 break;
         }
@@ -2461,31 +2461,31 @@ void ListScene::func_0207f32c() {
     switch (mMode) {
         case 0:
         case 1:
-            mSubScreenCellAnims[1]->func_0202a3ec(1, 1, mUnk_e4 + 0x14 - mUnk_ea * 0x2c, 0x22, 1);
+            mSubScreenCellAnims[1]->DrawFrame(1, 1, mUnk_e4 + 0x14 - mUnk_ea * 0x2c, 0x22, 1);
             break;
         case 2:
-            mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x14 - mUnk_ea * 0x2c, 0x22, 1);
-            mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x98 - mUnk_ea * 0x2c, 0x22, 1);
+            mSubScreenCellAnims[1]->DrawFrame(1, 0, mUnk_e4 + 0x14 - mUnk_ea * 0x2c, 0x22, 1);
+            mSubScreenCellAnims[1]->DrawFrame(1, 0, mUnk_e4 + 0x98 - mUnk_ea * 0x2c, 0x22, 1);
             break;
         case 3:
         case 5:
             if (mUnk_ea < 6) {
-                mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x40 - mUnk_ea * 0x2c, 0x22, 1);
+                mSubScreenCellAnims[1]->DrawFrame(1, 0, mUnk_e4 + 0x40 - mUnk_ea * 0x2c, 0x22, 1);
             }
-            mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0xc4 - mUnk_ea * 0x2c, 0x22, 1);
+            mSubScreenCellAnims[1]->DrawFrame(1, 0, mUnk_e4 + 0xc4 - mUnk_ea * 0x2c, 0x22, 1);
             if (mUnk_ea != 0) {
-                mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x148 - mUnk_ea * 0x2c, 0x22, 1);
+                mSubScreenCellAnims[1]->DrawFrame(1, 0, mUnk_e4 + 0x148 - mUnk_ea * 0x2c, 0x22, 1);
             }
             break;
         case 4:
             if (mUnk_ea < 8) {
-                mSubScreenCellAnims[1]->func_0202a3ec(1, 1, mUnk_e4 + 0x40 - mUnk_ea * 0x2c, 0x22, 1);
+                mSubScreenCellAnims[1]->DrawFrame(1, 1, mUnk_e4 + 0x40 - mUnk_ea * 0x2c, 0x22, 1);
             }
             if (mUnk_ea != 0) {
-                mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x148 - mUnk_ea * 0x2c, 0x22, 1);
+                mSubScreenCellAnims[1]->DrawFrame(1, 0, mUnk_e4 + 0x148 - mUnk_ea * 0x2c, 0x22, 1);
             }
             if (mUnk_ea > 3) {
-                mSubScreenCellAnims[1]->func_0202a3ec(1, 0, mUnk_e4 + 0x1cc - mUnk_ea * 0x2c, 0x22, 1);
+                mSubScreenCellAnims[1]->DrawFrame(1, 0, mUnk_e4 + 0x1cc - mUnk_ea * 0x2c, 0x22, 1);
             }
             break;
     }
@@ -2530,9 +2530,9 @@ void ListScene::func_0207f90c() {
                 case 3:
                 case 5:
                     if (mUnk_e6 == 0) {
-                        mSubScreenCellAnims[11]->func_0202a3ec(1, (u8) (i + 1), 0x19, mUnk_f8 + 0x45 + i * 32, 2);
+                        mSubScreenCellAnims[11]->DrawFrame(1, (u8) (i + 1), 0x19, mUnk_f8 + 0x45 + i * 32, 2);
                         mSubScreenCellAnims[12]->SetAnimation(0x1f);
-                        mSubScreenCellAnims[12]->func_0202a3ec(1, (u8) (i + 1), 0x71, mUnk_f8 + 0x4b + i * 32, 2);
+                        mSubScreenCellAnims[12]->DrawFrame(1, (u8) (i + 1), 0x71, mUnk_f8 + 0x4b + i * 32, 2);
                     } else if (mUnk_e6 < 4) {
                         func_02081a74(mUnk_104, (u8) ((mScroll + i) % 4), 2, 0x1d, mUnk_f8 + 0x49 + i * 32);
                         if (func_02082d00(1, (u8) mItemIds[mScroll + i], mUnk_104) != 0) {
@@ -2576,19 +2576,19 @@ void ListScene::func_0207ff54() {
     }
     mSubScreenCellAnims[13]->SetAnimation(0);
     if (a >= 10) {
-        mSubScreenCellAnims[13]->func_0202a3ec(1, (u8) (a / 10), 0xb7, 0xaf, 1);
+        mSubScreenCellAnims[13]->DrawFrame(1, (u8) (a / 10), 0xb7, 0xaf, 1);
     }
     x += 6;
-    mSubScreenCellAnims[13]->func_0202a3ec(1, (u8) (a % 10), x, 0xaf, 1);
+    mSubScreenCellAnims[13]->DrawFrame(1, (u8) (a % 10), x, 0xaf, 1);
     mSubScreenCellAnims[13]->SetAnimation(2);
     x += 6;
     mSubScreenCellAnims[13]->Draw(1, x, 0xaf, 1);
     mSubScreenCellAnims[13]->SetAnimation(0);
     x += 6;
     if (mItemCount >= 10) {
-        mSubScreenCellAnims[13]->func_0202a3ec(1, (u8) (mItemCount / 10), x, 0xaf, 1);
+        mSubScreenCellAnims[13]->DrawFrame(1, (u8) (mItemCount / 10), x, 0xaf, 1);
     }
-    mSubScreenCellAnims[13]->func_0202a3ec(1, (u8) (mItemCount % 10), x + 6, 0xaf, 1);
+    mSubScreenCellAnims[13]->DrawFrame(1, (u8) (mItemCount % 10), x + 6, 0xaf, 1);
     mSubScreenCellAnims[2]->Draw(1, 0xaf, 0xaa, 1);
 }
 
@@ -3161,14 +3161,14 @@ void ListScene::func_020816ec(u32 unk1, u32 unk2) {
     if (unk2 == 4) {
         for (; i < 7; i++) {
             if (digits[i] >= 0) {
-                mSubScreenCellAnims[13]->func_0202a3ec(1, digits[i], x + i * 7, y, scale);
+                mSubScreenCellAnims[13]->DrawFrame(1, digits[i], x + i * 7, y, scale);
             }
         }
         mSubScreenCellAnims[17]->Draw(1, (s16) (x - 0x2b), (s16) (y - 3), scale);
     } else {
         for (; i < 7; i++) {
             if (digits[i] >= 0) {
-                mSubScreenCellAnims[13]->func_0202a3ec(1, digits[i], x + i * 5, y, scale);
+                mSubScreenCellAnims[13]->DrawFrame(1, digits[i], x + i * 5, y, scale);
             }
         }
     }
@@ -3226,14 +3226,14 @@ void ListScene::func_02081a74(u8 unk1, u32 unk2, u32 unk3, s16 unk4, s16 unk5) {
             pos = unk2 * 8 + 0x2a0;
             break;
     }
-    SpriteManager::Get().Screen(second).func_02027778((void *) data_020a3188[1], 1, (s16) (unk4 + 3), (s16) (unk5 + 3), priority, pos, 1, 0);
+    SpriteManager::Get().Screen(second).AddOam((void *) data_020a3188[1], 1, (s16) (unk4 + 3), (s16) (unk5 + 3), priority, pos, 1, 0);
     if (unk3 == 0) {
         if (mUnk_5c[4] == NULL) {
             return;
         }
-        mUnk_5c[4]->func_0202a3ec(second, unk1, unk4, unk5, priority);
+        mUnk_5c[4]->DrawFrame(second, unk1, unk4, unk5, priority);
     } else {
-        mSubScreenCellAnims[14]->func_0202a3ec(second, unk1, unk4, unk5, priority);
+        mSubScreenCellAnims[14]->DrawFrame(second, unk1, unk4, unk5, priority);
     }
 }
 
@@ -3275,7 +3275,7 @@ void ListScene::func_02081c2c(u32 unk1, u32 unk2, u32 unk3) {
             offset = unk2 * 0x400 + 0x19000;
             break;
     }
-    func_02025b64(second, 4, offset, path, 0, 0, 0);
+    LoadAndQueueUpload(second, 4, offset, path, 0, 0, 0);
 }
 
 static inline void PrintMessageFW(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x, u16 *width) {
@@ -3286,7 +3286,7 @@ void ListScene::func_02081d5c(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
     s16 b = 0;
     s16 a = 0;
     u16 w;
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     a                          = unk2 << 5;
     PrintMessageF(TextManager::Get(), (MessageFile *) mBakuganNameShortMessages, unk1, mTextBuffers[0], b, a);
     b = 0x73;
@@ -3303,7 +3303,7 @@ void ListScene::func_02081d5c(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
         b += 7;
         TextManager::Get().PrintNumber(*(u8 *) &unk4 + 1, 1, 0, mTextBuffers[0], 0x18, 0x10, &b, &a, 0, 2, 0x44, 0, 0, 1, 1);
     }
-    TextManager::Get().mUnk_5b = 0;
+    TextManager::Get().mUse4bppFont = 0;
 }
 
 void ListScene::func_02082264(u8 unk1, u8 unk2, u32 unk3, s16 unk4, s16 unk5) {
@@ -3329,11 +3329,11 @@ void ListScene::func_02082264(u8 unk1, u8 unk2, u32 unk3, s16 unk4, s16 unk5) {
             pos = unk2 * 4 + 0x300;
             break;
     }
-    SpriteManager::Get().Screen(second).func_02027778((void *) data_020a3188[0], 1, unk4, unk5, priority, pos, 2, 0);
+    SpriteManager::Get().Screen(second).AddOam((void *) data_020a3188[0], 1, unk4, unk5, priority, pos, 2, 0);
     if (unk3 == 0) {
         return;
     }
-    mSubScreenCellAnims[6]->func_0202a3ec(second, unk1, unk4, unk5, priority);
+    mSubScreenCellAnims[6]->DrawFrame(second, unk1, unk4, unk5, priority);
 }
 
 void ListScene::func_020823d8(u32 unk1, u32 unk2, u32 unk3) {
@@ -3372,14 +3372,14 @@ void ListScene::func_020823d8(u32 unk1, u32 unk2, u32 unk3) {
             offset = unk2 * 0x200 + 0x1a000;
             break;
     }
-    func_02025b64(second, 4, offset, path, 0, 0, 0);
+    LoadAndQueueUpload(second, 4, offset, path, 0, 0, 0);
 }
 
 void ListScene::func_0208250c(u32 unk1, u32 unk2) {
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     s16 x = unk2 << 5;
     PrintMessageF(TextManager::Get(), (MessageFile *) mCardNameShortMessages, unk1, mTextBuffers[0], 0, x);
-    TextManager::Get().mUnk_5b = 0;
+    TextManager::Get().mUse4bppFont = 0;
 }
 
 void ListScene::func_02082660() {
@@ -3398,7 +3398,7 @@ void ListScene::func_02082660() {
 }
 
 void ListScene::func_020826ec() {
-    SpriteManager::Get().func_02026dec(0, 1);
+    SpriteManager::Get().SetupMode(0, 1);
     GX_SetGraphicsMode(1, 0, 0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG1Control(0, 1, 2, 4, 0);
@@ -3428,47 +3428,47 @@ void ListScene::func_020826ec() {
     switch (mMode) {
         case 3:
         case 5:
-            func_02025b64(0, 1, 0, "list_edit_u_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(0, 0xb, 0, "list_edit_u_bg_00_ncg.bin", 0, 0, 0);
-            func_02025b64(0, 7, 0, "list_edit_u_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(0, 1, 0, "list_edit_u_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(0, 0xb, 0, "list_edit_u_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(0, 7, 0, "list_edit_u_bg_00_nsc.bin", 0, 0, 0);
             break;
         case 4:
-            func_02025b64(0, 1, 0, "list_gallery_u_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(0, 0xb, 0, "list_gallery_u_bg_00_ncg.bin", 0, 0, 0);
-            func_02025b64(0, 7, 0, "list_gallery_u_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(0, 1, 0, "list_gallery_u_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(0, 0xb, 0, "list_gallery_u_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(0, 7, 0, "list_gallery_u_bg_00_nsc.bin", 0, 0, 0);
             break;
     }
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/Game/List/");
     screen.LoadCharacters("list_u_obj_00.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("list_u_obj_00_ncl.bin", 0, 0);
     for (u8 i = 0; i <= 3; i++) {
         mUnk_5c[i]              = new CellAnimation("list_u_obj_00_nce.bin", 0, 1, 1);
-        mUnk_5c[i]->mCharBase   = screen.func_020276f4(0);
-        mUnk_5c[i]->mUnk_11     = 0;
+        mUnk_5c[i]->mCharBase   = screen.GetCharBase(0);
+        mUnk_5c[i]->mPaletteBase     = 0;
     }
     mUnk_5c[0]->SetAnimation(0);
     mUnk_5c[1]->SetAnimation(1);
     mUnk_5c[2]->SetAnimation(2);
     mUnk_5c[3]->SetAnimation(3);
     ChangeDir("/Game/Bakugan/mark");
-    func_02025b64(0, 0, 0x200, "bakugan_s_000_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 0, 0, "bakugan_s_base_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 4, 0x3000, "bakugan_s_base.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 0, 0x200, "bakugan_s_000_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 0, 0, "bakugan_s_base_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 4, 0x3000, "bakugan_s_base.nce_ncg1D.bin", 0, 0, 0);
     mUnk_5c[4]            = new CellAnimation("bakugan_s_base_nce.bin", 0, 1, 1);
-    mUnk_5c[4]->mCharBase = screen.func_020276f4(0x3000);
-    mUnk_5c[4]->mUnk_11   = 0;
+    mUnk_5c[4]->mCharBase = screen.GetCharBase(0x3000);
+    mUnk_5c[4]->mPaletteBase   = 0;
     mUnk_5c[4]->SetAnimation(0);
     ChangeDir("/Game/2d/union_b/");
     screen.LoadCharacters("union_b_obj_gp.nce_ncg1D.bin", 0x2000, 0);
     screen.LoadPalette("union_b_obj_gp_ncl.bin", 0xa0, 0);
     mUnk_5c[5]            = new CellAnimation("union_b_obj_gp_nce.bin", 0, 1, 1);
-    mUnk_5c[5]->mCharBase = screen.func_020276f4(0x2000);
-    mUnk_5c[5]->mUnk_11   = 5;
+    mUnk_5c[5]->mCharBase = screen.GetCharBase(0x2000);
+    mUnk_5c[5]->mPaletteBase   = 5;
     mUnk_5c[5]->SetAnimation(2);
     ChangeDir("/Game/Card/Graphic/Small");
-    func_02025b64(0, 0, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 0, 0x400, "card_s_000_ncl.bin", 0, 0, 0);
     InitMainScreenText();
     func_02082efc(this);
 }
@@ -3516,11 +3516,11 @@ void func_02082efc(ListScene *self) {
         TextManager::Get().Print(&self->mUnk_24, 2, self->mTextBuffers[1], 0x18, 0x14, &b, &a, NULL, 0, 2, 0x42, 0, 0, 0, 0, 1, 1);
         TextManager::Get().PrintNumber(self->mUnk_1a2[i].mUnk_b, 3, 0, self->mTextBuffers[1], 0x18, 0x14, &b, &a, 0, 2, 0x42, 0, 0, 1, 1);
     }
-    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x10000, self->mTextBuffers[1], self->mTextBufferSizes[1], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x10000, self->mTextBuffers[1], self->mTextBufferSizes[1], 0);
 }
 
 void ListScene::DrawMainScreenText() {
-    SpriteManager::Get().Screen(0).func_02027778(mGlyphBuffers[1], (u8) mGlyphCounts[1], 0x40, 0x22, 0, 0x200, 0xf, 0);
+    SpriteManager::Get().Screen(0).AddOam(mGlyphBuffers[1], (u8) mGlyphCounts[1], 0x40, 0x22, 0, 0x200, 0xf, 0);
 }
 
 void ListScene::ClearMainScreenText() {
@@ -3605,8 +3605,8 @@ void func_020834ec(ListScene *self, u32 mode) {
                 self->mCommandPage->func_02055890(1);
             }
             self->mPendingPlanes                   = 0x1d;
-            self->mUnk_4c->mUnk_064 = 1;
-            self->mUnk_48->mUnk_064 = 0;
+            self->mUnk_4c->mEnabled = 1;
+            self->mUnk_48->mEnabled = 0;
             state                      = 0;
             if (self->mUnk_1a1 == 10 || self->mUnk_1a1 == 6) {
                 self->mUnk_186[self->mUnk_e6] = self->mCursorItem;
@@ -3672,9 +3672,9 @@ void func_020834ec(ListScene *self, u32 mode) {
         self->mCommandPage->func_02055890(0);
     }
     GXS_SetVisiblePlane(0x1f);
-    self->mUnk_4c->mUnk_064 = 0;
-    self->mUnk_48->func_0205c7c8(-1);
-    self->mUnk_48->mUnk_064 = 1;
+    self->mUnk_4c->mEnabled = 0;
+    self->mUnk_48->Reset(-1);
+    self->mUnk_48->mEnabled = 1;
     self->mUnk_48->mButtons[0].mEnabled = 1;
     switch (state) {
         case 0:
@@ -3765,16 +3765,16 @@ void func_020839a0(ListScene *self) {
         case 5:
             base  = (u8 *) self->mStorecommentMessages;
             index = 9;
-            TextManager::Get().mUnk_5b = 1;
+            TextManager::Get().mUse4bppFont = 1;
             PrintMessageF(TextManager::Get(), (MessageFile *) self->mBakuganNameMessages, self->mItemIds[self->mCursorItem], self->mTextBuffers[0], 0x1c, 0x38);
-            TextManager::Get().mUnk_5b = 0;
+            TextManager::Get().mUse4bppFont = 0;
             break;
         case 6:
             base  = (u8 *) self->mStorecommentMessages;
             index = 0x16;
-            TextManager::Get().mUnk_5b = 1;
+            TextManager::Get().mUse4bppFont = 1;
             PrintMessageF(TextManager::Get(), (MessageFile *) self->mCardNameShortMessages, self->mItemIds[self->mCursorItem], self->mTextBuffers[0], 0x17, 0x38);
-            TextManager::Get().mUnk_5b = 0;
+            TextManager::Get().mUse4bppFont = 0;
             break;
         case 7:
             base  = (u8 *) self->mStorecommentMessages;
@@ -3803,7 +3803,7 @@ void func_020839a0(ListScene *self) {
     if (base != NULL) {
         PrintMessageF3(TextManager::Get(), (MessageFile *) base, index, self->mTextBuffers[0], 0, 0);
     }
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, self->mTextBuffers[0], self->mTextBufferSizes[0], 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, self->mTextBuffers[0], self->mTextBufferSizes[0], 0);
 }
 
 void ListScene::func_0208403c() {
@@ -3818,7 +3818,7 @@ void ListScene::func_0208403c() {
             func_02082264(mUnk_104, 0, 3, 0x23, 0x5a);
             break;
     }
-    SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffers[0], (u8) mGlyphCounts[0], 0x20, 0x28, 0, 0, 0xf, 0);
+    SpriteManager::Get().Screen(1).AddOam(mGlyphBuffers[0], (u8) mGlyphCounts[0], 0x20, 0x28, 0, 0, 0xf, 0);
 }
 
 void func_0208415c(ListScene *self) {
@@ -3865,9 +3865,9 @@ void func_020843ac(ListScene *self, u32 unk1) {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     if (unk1 != 0) {
         ChangeDir("/Game/Battle/Bg/");
-        func_02025b64(1, 1, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
-        func_02025b64(1, 0xb, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
-        func_02025b64(1, 7, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 1, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 0xb, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 7, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
         ChangeDir("/Game/Deck/");
         screen.LoadCharacters("select_deck_b_obj_01.nce_ncg1D.bin", 0x1c000, 0);
         screen.LoadPalette("select_deck_b_obj_01_ncl.bin", 0xc0, 0);
@@ -3907,13 +3907,13 @@ void func_020843ac(ListScene *self, u32 unk1) {
         self->ApplyWndMode();
     } else {
         ChangeDir("/Game/List/");
-        func_02025b64(1, 1, 0, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
-        func_02025b64(1, 1, 0x4000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
-        func_02025b64(1, 1, 0x6000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
-        func_02025b64(1, 0xb, 0, "list_edit_b_bg_00_ncg.bin", 0, 0, 0);
-        func_02025b64(1, 7, 0, "list_edit_b_bg_00_nsc.bin", 0, 0, 0);
-        func_02025b64(1, 9, 0, "list_edit_b_bg_01_nsc.bin", 0, 0, 0);
-        func_02025b64(1, 0xa, 0, "list_edit_b_bg_02_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 1, 0, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 1, 0x4000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 1, 0x6000, "list_edit_b_bg_00_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 0xb, 0, "list_edit_b_bg_00_ncg.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 7, 0, "list_edit_b_bg_00_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 9, 0, "list_edit_b_bg_01_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 0xa, 0, "list_edit_b_bg_02_nsc.bin", 0, 0, 0);
         screen.LoadPalette("list_b_obj_00_ncl.bin", 0xc0, 0);
         ChangeDir("/Game/2d/union_b/");
         screen.LoadCharacters("union_b_obj_point.nce_ncg1D.bin", 0x1c000, 0);
@@ -4117,7 +4117,7 @@ void ListScene::func_020851d0() {
     func_0207eec4();
     func_0208403c();
     if (mMessageWindow != NULL && mUnk_1a1 == 0) {
-        mMessageWindow->func_020658d0();
+        mMessageWindow->Update();
     }
     if (mState < 0x17) {
         DrawWindows();
@@ -4135,12 +4135,12 @@ void func_02085220(ListScene *self, u32 mode) {
     switch (mode) {
         case 0:
             self->mPendingPlanes                      = 0x11;
-            self->mUnk_50->mUnk_064             = 1;
+            self->mUnk_50->mEnabled             = 1;
             self->mUnk_50->mCursor->mSelection = state;
             self->mUnk_50->mCells[0]->SetAnimation(1);
             self->func_02081994(3, state, 8);
             self->func_02081994(3, 1, 8);
-            self->mUnk_48->mUnk_064 = state;
+            self->mUnk_48->mEnabled = state;
             self->mUnk_1a1          = mode;
             self->mState           = 9;
             return;
@@ -4152,11 +4152,11 @@ void func_02085220(ListScene *self, u32 mode) {
             break;
     }
     GXS_SetVisiblePlane(0x13);
-    self->mUnk_50->mUnk_064 = 0;
+    self->mUnk_50->mEnabled = 0;
     self->func_02081994(3, 0, 0x8000);
     self->func_02081994(3, 1, 0x8000);
-    self->mUnk_48->func_0205c7c8(-1);
-    self->mUnk_48->mUnk_064             = 1;
+    self->mUnk_48->Reset(-1);
+    self->mUnk_48->mEnabled             = 1;
     self->mUnk_48->mButtons[0].mEnabled = 1;
     switch (state) {
         case 0:
@@ -4185,7 +4185,7 @@ void func_02085220(ListScene *self, u32 mode) {
 
 void ListScene::SetMessage(s32 unk1) {
     if (unk1 >= 0) {
-        mMessageWindow->func_02065890(unk1, 0, 1);
+        mMessageWindow->StartMessage(unk1, 0, 1);
         return;
     }
     switch (mMode) {
@@ -4198,12 +4198,12 @@ void ListScene::SetMessage(s32 unk1) {
         case 5:
             if (mUnk_e6 == 0) {
                 if (mUnk_f0 != 0) {
-                    mMessageWindow->func_02065890(6, 0, 1);
+                    mMessageWindow->StartMessage(6, 0, 1);
                 } else {
-                    mMessageWindow->func_02065890((s16) (mCursorItem + 7), 0, 1);
+                    mMessageWindow->StartMessage((s16) (mCursorItem + 7), 0, 1);
                 }
             } else {
-                mMessageWindow->func_02065890((s16) (mUnk_e6 + 8), 0, 1);
+                mMessageWindow->StartMessage((s16) (mUnk_e6 + 8), 0, 1);
             }
             break;
     }
@@ -4677,7 +4677,7 @@ BOOL ListScene::func_020862d0() {
             if (mUnk_e8 <= mUnk_f4) {
                 return TRUE;
             }
-            if (InputManager::Get().IsDown(0x20) != 0) {
+            if (InputManager::Get().IsDown(KEY_LEFT) != 0) {
                 return FALSE;
             }
             break;
@@ -4685,7 +4685,7 @@ BOOL ListScene::func_020862d0() {
             if (mUnk_e8 >= mUnk_e9 - 1) {
                 return TRUE;
             }
-            if (InputManager::Get().IsDown(0x10) != 0) {
+            if (InputManager::Get().IsDown(KEY_RIGHT) != 0) {
                 return FALSE;
             }
             break;

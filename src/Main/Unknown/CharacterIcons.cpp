@@ -70,8 +70,8 @@ void CharacterIcons::SetCharacter(u32 slot, s32 character, u32 unk3, u32 unk4) {
     mSlots[slot].mAnim = NULL;
     sprintf(path, "icon_ch_%02d_nce.bin", number);
     mSlots[slot].mAnim = new CellAnimation(path, 0, 1, 1);
-    mSlots[slot].mAnim->mCharBase = screen.func_020276f4(offset);
-    mSlots[slot].mAnim->mUnk_11   = palette;
+    mSlots[slot].mAnim->mCharBase = screen.GetCharBase(offset);
+    mSlots[slot].mAnim->mPaletteBase   = palette;
     mSlots[slot].mVisible = 1;
     ChangeDir("/");
 }

@@ -95,15 +95,15 @@ void func_02022d48(UnkStruct_020d43f0 *d) {
 }
 
 void func_02022db4(UnkStruct_020d43f0 *d) {
-    SoundManager::Get().mUnk_ae = data_020906f0[d->mUnk_28_7];
-    SoundManager::Get().mUnk_ad = data_020906f8[d->mUnk_28_10];
+    SoundManager::Get().mSeqVolume = data_020906f0[d->mUnk_28_7];
+    SoundManager::Get().mSeqArcVolume = data_020906f8[d->mUnk_28_10];
     FrameTask::Get().mVolume0 = data_02090724[d->mUnk_28_7];
     FrameTask::Get().mVolume1 = data_0209070c[d->mUnk_28_10];
     FrameTask::Get().mVolume2 = data_0209073c[d->mUnk_28_13];
-    SoundManager::Get().func_020246a4(0x7f);
-    SoundManager::Get().func_020247cc(0x7f);
-    FrameTask::Get().func_0203ddb0(0, 4);
-    FrameTask::Get().func_0203ddb0(1, 4);
+    SoundManager::Get().SetSeqVolume(0x7f);
+    SoundManager::Get().SetSeqArcVolume(0x7f);
+    FrameTask::Get().SetChannelVolume(0, 4);
+    FrameTask::Get().SetChannelVolume(1, 4);
 }
 
 s32 func_020230a8(UnkStruct_020d43f0 *d, u32 a, u32 b) {

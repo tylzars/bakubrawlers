@@ -24,13 +24,13 @@ void GimmickBlock::Load() {
         sResource = new ModelResource(nsbmd, 0, nsbtx, 1);
     }
     ChangeDir("/Game/Gimmick");
-    sResource->func_020306e4(1);
+    sResource->AddRef(1);
     if (sResource->mAnimData) {
-        mModel = sResource->mModel->func_02028b78(new ModelAnim(sResource->mAnimData, sResource->mModel));
-        mModel->func_02028e54(0, 1, 0x1000);
-        mUnk_00 = 1;
+        mModel = sResource->mModel->CreateInstance(new ModelAnim(sResource->mAnimData, sResource->mModel));
+        mModel->StartAnimWithIncrement(0, 1, 0x1000);
+        mAnimEnabled = 1;
     } else {
-        mModel = sResource->mModel->func_02028b78(0);
+        mModel = sResource->mModel->CreateInstance(0);
     }
     ChangeDir("/");
 }
@@ -38,11 +38,11 @@ void GimmickBlock::Load() {
 void GimmickBlock::Unload() {
     ModelInstance *model = mModel;
     if (model) {
-        model->mUnk_68 = 1;
+        model->mOwnFlags = 1;
         delete model;
         mModel = 0;
     }
-    if (sResource && sResource->func_020307e8()) {
+    if (sResource && sResource->ReleaseRef()) {
         ModelResource *r = sResource;
         delete r;
         sResource = 0;

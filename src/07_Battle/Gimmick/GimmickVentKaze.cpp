@@ -24,21 +24,21 @@ void GimmickVentKaze::Load() {
         sResource = new ModelResource("ventkaze0.nsbmd", "ventkaze0_data.bin", "ventkaze0.nsbtx", 1);
     }
     ChangeDir("/Game/Gimmick");
-    sResource->func_020306e4(1);
-    mModel = sResource->mModel->func_02028b78(new ModelAnim(sResource->mAnimData, sResource->mModel));
-    mModel->func_02028e54(0, 1, 0x1000);
-    mUnk_00 = 1;
+    sResource->AddRef(1);
+    mModel = sResource->mModel->CreateInstance(new ModelAnim(sResource->mAnimData, sResource->mModel));
+    mModel->StartAnimWithIncrement(0, 1, 0x1000);
+    mAnimEnabled = 1;
     ChangeDir("/");
 }
 
 void GimmickVentKaze::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mUnk_68       = 1;
+        m->mOwnFlags       = 1;
         delete m;
         mModel = 0;
     }
-    if (sResource && sResource->func_020307e8()) {
+    if (sResource && sResource->ReleaseRef()) {
         ModelResource *r = sResource;
         delete r;
         sResource = 0;
@@ -77,7 +77,7 @@ void GimmickVentKaze::Update() {
         if (r->mUnk_09 == 5) {
             return;
         }
-        UnkStruct_0203d374 *h = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4;
+        BakuganModel *h = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4;
         VecFx32 a           = data_ov007_02279450;
         m                   = data_0220e848;
         if (mRotY) {

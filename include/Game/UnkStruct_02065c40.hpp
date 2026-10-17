@@ -9,12 +9,12 @@
 
 class CellAnimation;
 class ModelInstance;
-class UnkStruct_02029ca8;
+class ModelLightGroup;
 class StorytalkWindow;
 class Camera;
 class UnkStruct_0205401c;
-class UnkStruct_0203d374;
-class UnkStruct_02028308;
+class BakuganModel;
+class TextureFile;
 
 // func_0206b05c's result: an enum, not BOOL (the final compare's moveq/movne order needs it)
 enum UnkStruct_02065c40_Kind { UNK_02065C40_KIND_0, UNK_02065C40_KIND_1 };
@@ -116,8 +116,8 @@ struct UnkStruct_02065c40_44 {
     /* 1e */ s16 mUnk_1e[3];
     /* 24 */ s16 mUnk_24[3];
     /* 2a */ PAD(0x2a, 0x2c);
-    /* 2c */ UnkStruct_0203d374 *mUnk_2c;
-    /* 30 */ UnkStruct_0203d374 *mUnk_30;
+    /* 2c */ BakuganModel *mUnk_2c;
+    /* 30 */ BakuganModel *mUnk_30;
     /* 34 */ s8 mUnk_34;
     /* 35 */ s8 mUnk_35;
     /* 36 */ u8 mUnk_36;
@@ -173,7 +173,7 @@ public:
     /* 000c */ UnkStruct_02065c40_cmd mUnk_0c[0x400];
     /* 100c */ CellAnimation *mUnk_100c;
     /* 1010 */ ModelInstance *mUnk_1010;
-    /* 1014 */ UnkStruct_02029ca8 *mUnk_1014;
+    /* 1014 */ ModelLightGroup *mUnk_1014;
     /* 1018 */ StorytalkWindow *mUnk_1018;
     /* 101c */ UnkStruct_02065c40_34 mUnk_101c[2];
     /* 1084 */ UnkStruct_02065c40_54 mUnk_1084[2];
@@ -269,7 +269,7 @@ public:
     BOOL func_020688e0(s32 value);
     BOOL func_02068954();
     BOOL func_02068c54(u32 index, s32 value);
-    void func_02068d0c(UnkStruct_02028308 *texture, u32 id);
+    void func_02068d0c(TextureFile *texture, u32 id);
     void func_02069120(u32 index, u32 value);
     void func_020695e8(u32 index);
     BOOL func_02069680(u32 index);

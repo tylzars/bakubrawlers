@@ -452,7 +452,7 @@ void FieldSelectScene::Update() {
             break;
         }
         case 6:
-            WirelessManager::Get().func_0202edd0();
+            WirelessManager::Get().Stop();
             mState++;
             break;
         case 7:
@@ -485,7 +485,7 @@ void FieldSelectScene::Update() {
 
 void FieldSelectScene::func_ov001_0221f23c() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
@@ -529,16 +529,16 @@ void FieldSelectScene::func_ov001_0221f23c() {
 
 void FieldSelectScene::func_ov001_0221f4e8() {
     ChangeDir("/Game/Battle/Bg/");
-    func_02025b64(0, 1, 0x6000, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 12, 0, "select_arena_u_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 8, 0, "select_arena_u_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x6000, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 12, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0x6000, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 12, 0, "select_arena_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 8, 0, "select_arena_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x6000, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(1, 1, 0x4000, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 13, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 9, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x4000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 13, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 9, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/Battle/Obj/");
     SpriteScreen &main = SpriteManager::Get().Screen(0);
     main.LoadCharacters("select_arena_u_obj_00.nce_ncg1D.bin", 0, 0);
@@ -548,31 +548,31 @@ void FieldSelectScene::func_ov001_0221f4e8() {
     } else {
         mMain.mAnim = new CellAnimation("select_arena_u_obj_00_nce.bin", 3, 1, 1);
     }
-    mMain.mAnim->mCharBase = main.func_020276f4(0);
-    mMain.mAnim->mUnk_11   = 0;
+    mMain.mAnim->mCharBase = main.GetCharBase(0);
+    mMain.mAnim->mPaletteBase   = 0;
     mMain.mX               = 0x80;
     mMain.mY               = 0x60;
     mMain.mUnk_09          = 0;
     mMain.mVisible         = 1;
     ChangeDir("/Game/2D/union_b/");
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
-    sub.func_02027624(3);
+    sub.SetObjVramMode(3);
     sub.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("union_b_obj_cockpit_ncl.bin", 0, 0);
     ChangeDir("/Game/Battle/Bg/");
     char name[0x80];
     for (u8 i = 0; i < 10; i++) {
         sprintf(name, "select_field_u_sub_%02d_ncl.bin", i);
-        mFiles[i][1] = func_02023504(name, 0, 0, 0, &mFileSizes[i][1], 0);
+        mFiles[i][1] = LoadFile(name, 0, 0, 0, &mFileSizes[i][1], 0);
         sprintf(name, "select_field_u_sub_%02d_ncg.bin", i);
-        mFiles[i][0] = func_02023504(name, 0, 0, 0, &mFileSizes[i][0], 0);
+        mFiles[i][0] = LoadFile(name, 0, 0, 0, &mFileSizes[i][0], 0);
         sprintf(name, "select_field_u_sub_%02d_nsc.bin", i);
-        mFiles[i][2] = func_02023504(name, 0, 0, 0, &mFileSizes[i][2], 0);
+        mFiles[i][2] = LoadFile(name, 0, 0, 0, &mFileSizes[i][2], 0);
     }
     ChangeDir("/");
     mMessage = new MessageWindow("mes_BattleArenaMenu", 1, 0x7000);
     mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->func_02065be4(0xd8);
+    mMessage->SetWidth(0xd8);
     mUnk_33e = 2;
     if (mUnk_333 == 0) {
         mUnk_33e--;
@@ -610,7 +610,7 @@ void FieldSelectScene::func_ov001_0221fa94() {
     mWindows[0] = new SelectWindow(mUnk_33e, sIdItems.items[variant], 0);
     mWindows[0]->SetCells(mUnk_33e, data_ov001_0222715c);
     mWindows[0]->mCursor->mSelection = -1;
-    mWindows[0]->mUnk_064            = 0;
+    mWindows[0]->mEnabled            = 0;
     if (mUnk_2ed[mUnk_329] == 2) {
         mWindows[0]->mButtons[0].mEnabled = 0;
     }
@@ -663,9 +663,9 @@ void FieldSelectScene::func_ov001_0221fa94() {
     switch (mUnk_2ed[mUnk_329]) {
         case 0: {
             if (mUnk_333 != 0) {
-                mMessage->func_02065890(0x13, 0, 1);
+                mMessage->StartMessage(0x13, 0, 1);
             } else {
-                mMessage->func_02065890(4, 1, 1);
+                mMessage->StartMessage(4, 1, 1);
             }
             mMain.mAnim->SetAnimation(6);
             if (mUnk_32b > 2) {
@@ -676,8 +676,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
             sub.LoadCharacters("icon_ch_base.nce_ncg1D.bin", 0x13000, 0);
             sub.LoadPalette("icon_ch_base_ncl.bin", 0x40, 0);
             mCells2[7].mAnim            = new CellAnimation("icon_ch_base_nce.bin", 0xb, 1, 1);
-            mCells2[7].mAnim->mCharBase = sub.func_020276f4(0x13000);
-            mCells2[7].mAnim->mUnk_11   = 2;
+            mCells2[7].mAnim->mCharBase = sub.GetCharBase(0x13000);
+            mCells2[7].mAnim->mPaletteBase   = 2;
             mCells2[7].mVisible         = 0;
             ChangeDir("/Game/Battle/Obj/");
             sub.LoadCharacters("select_number_b_obj_00.nce_ncg1D.bin", 0x8000, 0);
@@ -690,8 +690,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
             }
             do {
                 mCells2[n].mAnim            = new CellAnimation("select_number_b_obj_00_nce.bin", n & 0xff, 1, 1);
-                mCells2[n].mAnim->mCharBase = sub.func_020276f4(0x8000);
-                mCells2[n].mAnim->mUnk_11   = 8;
+                mCells2[n].mAnim->mCharBase = sub.GetCharBase(0x8000);
+                mCells2[n].mAnim->mPaletteBase   = 8;
                 mCells2[n].mX               = 0x20;
                 mCells2[n].mY               = n * 0x24 + y;
                 mCells2[n].mUnk_09          = 3;
@@ -705,16 +705,16 @@ void FieldSelectScene::func_ov001_0221fa94() {
         }
         case 1: {
             if (mUnk_333 != 0) {
-                mMessage->func_02065890(5, 0, 1);
+                mMessage->StartMessage(5, 0, 1);
             } else {
-                mMessage->func_02065890(4, 1, 1);
+                mMessage->StartMessage(4, 1, 1);
             }
             mMain.mAnim->SetAnimation(2);
             ChangeDir("/Game/Battle/Bg/");
             if (mUnk_333 != 0) {
-                func_02025b64(1, 1, 0, "select_rule_b_bg_00_ncl.bin", 0, 0, 0);
-                func_02025b64(1, 11, 0, "select_rule_b_bg_00_ncg.bin", 0, 0, 0);
-                func_02025b64(1, 7, 0, "select_rule_b_bg_00_nsc.bin", 0, 0, 0);
+                LoadAndQueueUpload(1, 1, 0, "select_rule_b_bg_00_ncl.bin", 0, 0, 0);
+                LoadAndQueueUpload(1, 11, 0, "select_rule_b_bg_00_ncg.bin", 0, 0, 0);
+                LoadAndQueueUpload(1, 7, 0, "select_rule_b_bg_00_nsc.bin", 0, 0, 0);
                 ChangeDir("/Game/Battle/Obj/");
                 SpriteScreen &sub = SpriteManager::Get().Screen(1);
                 sub.LoadCharacters("select_rule_b_obj_00.nce_ncg1D.bin", 0x8000, 0);
@@ -722,8 +722,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 u8 k = 0;
                 do {
                     mCells2[k].mAnim            = new CellAnimation("select_rule_b_obj_00_nce.bin", 0, 1, 1);
-                    mCells2[k].mAnim->mCharBase = sub.func_020276f4(0x8000);
-                    mCells2[k].mAnim->mUnk_11   = 8;
+                    mCells2[k].mAnim->mCharBase = sub.GetCharBase(0x8000);
+                    mCells2[k].mAnim->mPaletteBase   = 8;
                     mCells2[k].mX               = 0x88;
                     mCells2[k].mY               = (k % 5) * 0x18 + 0x26;
                     mCells2[k].mUnk_09          = 2;
@@ -747,9 +747,9 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 mCells2[7].mAnim->SetAnimation(6);
                 mCells2[7].mUnk_09 = 1;
             } else {
-                func_02025b64(0, 1, 0, "select_rule_u_bg_00_ncl.bin", 0, 0, 0);
-                func_02025b64(0, 11, 0, "select_rule_u_bg_00_ncg.bin", 0, 0, 0);
-                func_02025b64(0, 7, 0, "select_rule_u_bg_00_nsc.bin", 0, 0, 0);
+                LoadAndQueueUpload(0, 1, 0, "select_rule_u_bg_00_ncl.bin", 0, 0, 0);
+                LoadAndQueueUpload(0, 11, 0, "select_rule_u_bg_00_ncg.bin", 0, 0, 0);
+                LoadAndQueueUpload(0, 7, 0, "select_rule_u_bg_00_nsc.bin", 0, 0, 0);
                 ChangeDir("/Game/Battle/Obj/");
                 SpriteScreen &main = SpriteManager::Get().Screen(0);
                 main.LoadCharacters("select_rule_u_obj_00.nce_ncg1D.bin", 0x8000, 0);
@@ -757,8 +757,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 u8 k = 0;
                 do {
                     mCells[k].mAnim            = new CellAnimation("select_rule_u_obj_00_nce.bin", 0, 1, 1);
-                    mCells[k].mAnim->mCharBase = main.func_020276f4(0x8000);
-                    mCells[k].mAnim->mUnk_11   = 8;
+                    mCells[k].mAnim->mCharBase = main.GetCharBase(0x8000);
+                    mCells[k].mAnim->mPaletteBase   = 8;
                     mCells[k].mX               = 0x88;
                     mCells[k].mY               = k * 0x18 + 0x26;
                     mCells[k].mUnk_09          = 1;
@@ -776,12 +776,12 @@ void FieldSelectScene::func_ov001_0221fa94() {
             break;
         }
         case 2: {
-            mMessage->func_02065890(6, 0, 1);
+            mMessage->StartMessage(6, 0, 1);
             mMain.mAnim->SetAnimation(3);
             ChangeDir("/Game/Battle/Bg/");
-            func_02025b64(1, 1, 0, "select_ch_b_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 11, 0, "select_ch_b_bg_00_ncg.bin", 0, 0, 0);
-            func_02025b64(1, 7, 0, "select_ch_b_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0, "select_ch_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 11, 0, "select_ch_b_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 7, 0, "select_ch_b_bg_00_nsc.bin", 0, 0, 0);
             u8 j = 0;
             do {
                 mInput[j].mUnk_02 = mInput[j].mUnk_08;
@@ -794,8 +794,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
             u8 k = 0;
             do {
                 mCells2[k].mAnim            = new CellAnimation("select_ch_b_obj_00_nce.bin", k & 0xff, 1, 1);
-                mCells2[k].mAnim->mCharBase = sub.func_020276f4(0x8000);
-                mCells2[k].mAnim->mUnk_11   = 4;
+                mCells2[k].mAnim->mCharBase = sub.GetCharBase(0x8000);
+                mCells2[k].mAnim->mPaletteBase   = 4;
                 mCells2[k].mX               = func_ov001_02225628(mInput[k].mUnk_02);
                 mCells2[k].mY               = func_ov001_0222565c(mInput[k].mUnk_02);
                 mCells2[k].mUnk_09          = 1;
@@ -805,8 +805,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
             u8 m = 4;
             do {
                 mCells2[m].mAnim            = new CellAnimation("select_ch_b_obj_00_nce.bin", m & 0xff, 1, 1);
-                mCells2[m].mAnim->mCharBase = sub.func_020276f4(0x8000);
-                mCells2[m].mAnim->mUnk_11   = 4;
+                mCells2[m].mAnim->mCharBase = sub.GetCharBase(0x8000);
+                mCells2[m].mAnim->mPaletteBase   = 4;
                 mCells2[m].mX               = 0x80;
                 mCells2[m].mY               = 0x60;
                 mCells2[m].mUnk_09          = 3;
@@ -827,8 +827,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
             do {
                 u32 idx                           = c & 0xff;
                 mCells[idx].mAnim            = new CellAnimation("select_ch_u_obj_00_nce.bin", 0, 1, 1);
-                mCells[idx].mAnim->mCharBase = main.func_020276f4(0x8000);
-                mCells[idx].mAnim->mUnk_11   = 4;
+                mCells[idx].mAnim->mCharBase = main.GetCharBase(0x8000);
+                mCells[idx].mAnim->mPaletteBase   = 4;
                 mCells[idx].mX               = 0x18;
                 mCells[idx].mY               = c * 0x24 + 0x2a;
                 mCells[idx].mUnk_09          = 3;
@@ -837,32 +837,32 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 c++;
             } while (c < mUnk_32a);
             mCells[4].mAnim            = new CellAnimation("select_ch_u_obj_00_nce.bin", 2, 1, 1);
-            mCells[4].mAnim->mCharBase = main.func_020276f4(0x8000);
-            mCells[4].mAnim->mUnk_11   = 4;
+            mCells[4].mAnim->mCharBase = main.GetCharBase(0x8000);
+            mCells[4].mAnim->mPaletteBase   = 4;
             mCells[4].mVisible         = 0;
             ChangeDir("/Game/Character/Icon/");
             main.LoadCharacters("icon_ch_base.nce_ncg1D.bin", 0x10000, 0);
             main.LoadPalette("icon_ch_base_ncl.bin", 0x120, 0);
             mCells[6].mAnim            = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
-            mCells[6].mAnim->mCharBase = main.func_020276f4(0x10000);
-            mCells[6].mAnim->mUnk_11   = 9;
+            mCells[6].mAnim->mCharBase = main.GetCharBase(0x10000);
+            mCells[6].mAnim->mPaletteBase   = 9;
             mCells[6].mVisible         = 0;
             mCells[7].mAnim            = new CellAnimation("icon_ch_base_nce.bin", 2, 1, 1);
-            mCells[7].mAnim->mCharBase = main.func_020276f4(0x10000);
-            mCells[7].mAnim->mUnk_11   = 9;
+            mCells[7].mAnim->mCharBase = main.GetCharBase(0x10000);
+            mCells[7].mAnim->mPaletteBase   = 9;
             mCells[7].mVisible         = 0;
             sub2.LoadCharacters("icon_ch_base.nce_ncg1D.bin", 0x13000, 0);
             sub2.LoadPalette("icon_ch_base_ncl.bin", 0x40, 0);
             mCells2[7].mAnim            = new CellAnimation("icon_ch_base_nce.bin", 2, 1, 1);
-            mCells2[7].mAnim->mCharBase = sub2.func_020276f4(0x13000);
-            mCells2[7].mAnim->mUnk_11   = 2;
+            mCells2[7].mAnim->mCharBase = sub2.GetCharBase(0x13000);
+            mCells2[7].mAnim->mPaletteBase   = 2;
             mCells2[7].mVisible         = 0;
             ChangeDir("/Game/2D/union_b/");
             sub2.LoadCharacters("union_b_obj_new.nce_ncg1D.bin", 0x14400, 0);
             sub2.LoadPalette("union_b_obj_new_ncl.bin", 0x20, 0);
             mCells2[8].mAnim            = new CellAnimation("union_b_obj_new_nce.bin", 0, 1, 1);
-            mCells2[8].mAnim->mCharBase = sub2.func_020276f4(0x14400);
-            mCells2[8].mAnim->mUnk_11   = 1;
+            mCells2[8].mAnim->mCharBase = sub2.GetCharBase(0x14400);
+            mCells2[8].mAnim->mPaletteBase   = 1;
             mCells2[8].mUnk_09          = 3;
             mCells2[8].mVisible         = 0;
             ChangeDir("/");
@@ -871,7 +871,7 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 mPanel[0]->SetCharacter(p, -1, 0, 0);
                 mPanel[1]->SetCharacter(p, -1, 0, 0);
                 func_ov001_02226bf8(p);
-                if (IsWirelessMode((const u8 *) &WirelessManager::Get().mUnk_1228) && p < mUnk_32b) {
+                if (IsWirelessMode((const u8 *) &WirelessManager::Get().mState) && p < mUnk_32b) {
                     func_ov001_022267d0(p);
                 }
                 p++;
@@ -892,9 +892,9 @@ void FieldSelectScene::func_ov001_0221fa94() {
         case 3: {
             mUnk_32a = data_020d433c.mPlayerCount;
             if (mUnk_333 != 0) {
-                mMessage->func_02065890(0x11, 0, 1);
+                mMessage->StartMessage(0x11, 0, 1);
             } else {
-                mMessage->func_02065890(4, 1, 1);
+                mMessage->StartMessage(4, 1, 1);
             }
             mMain.mAnim->SetAnimation(4);
             ChangeDir("/Game/Battle/Obj/");
@@ -908,8 +908,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 } else {
                     mCells2[k].mAnim = new CellAnimation("select_ch_b_obj_00_nce.bin", 7, 1, 1);
                 }
-                mCells2[k].mAnim->mCharBase = sub.func_020276f4(0x8000);
-                mCells2[k].mAnim->mUnk_11   = 4;
+                mCells2[k].mAnim->mCharBase = sub.GetCharBase(0x8000);
+                mCells2[k].mAnim->mPaletteBase   = 4;
                 mCells2[k].mX               = 0x10;
                 mCells2[k].mY               = k * 0x24 + 0x1a;
                 mCells2[k].mUnk_09          = 3;
@@ -926,12 +926,12 @@ void FieldSelectScene::func_ov001_0221fa94() {
             sub2.LoadCharacters("icon_ch_base.nce_ncg1D.bin", 0x13000, 0);
             sub2.LoadPalette("icon_ch_base_ncl.bin", 0x40, 0);
             mCells2[5].mAnim            = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
-            mCells2[5].mAnim->mCharBase = sub2.func_020276f4(0x13000);
-            mCells2[5].mAnim->mUnk_11   = 2;
+            mCells2[5].mAnim->mCharBase = sub2.GetCharBase(0x13000);
+            mCells2[5].mAnim->mPaletteBase   = 2;
             mCells2[5].mVisible         = 0;
             mCells2[7].mAnim            = new CellAnimation("icon_ch_base_nce.bin", 2, 1, 1);
-            mCells2[7].mAnim->mCharBase = sub2.func_020276f4(0x13000);
-            mCells2[7].mAnim->mUnk_11   = 2;
+            mCells2[7].mAnim->mCharBase = sub2.GetCharBase(0x13000);
+            mCells2[7].mAnim->mPaletteBase   = 2;
             mCells2[7].mVisible         = 0;
             ChangeDir("/Game/Battle/Obj/");
             SpriteScreen &main = SpriteManager::Get().Screen(0);
@@ -943,8 +943,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
             do {
                 u32 idx                           = c & 0xff;
                 mCells[idx].mAnim            = new CellAnimation("select_ch_u_obj_00_nce.bin", 0, 1, 1);
-                mCells[idx].mAnim->mCharBase = main.func_020276f4(0x8000);
-                mCells[idx].mAnim->mUnk_11   = 4;
+                mCells[idx].mAnim->mCharBase = main.GetCharBase(0x8000);
+                mCells[idx].mAnim->mPaletteBase   = 4;
                 mCells[idx].mX               = 0x18;
                 mCells[idx].mY               = c * 0x24 + 0x2a;
                 mCells[idx].mUnk_09          = 3;
@@ -953,19 +953,19 @@ void FieldSelectScene::func_ov001_0221fa94() {
                 c++;
             } while (c < mUnk_32a);
             mCells[4].mAnim            = new CellAnimation("select_ch_u_obj_00_nce.bin", 2, 1, 1);
-            mCells[4].mAnim->mCharBase = main.func_020276f4(0x8000);
-            mCells[4].mAnim->mUnk_11   = 4;
+            mCells[4].mAnim->mCharBase = main.GetCharBase(0x8000);
+            mCells[4].mAnim->mPaletteBase   = 4;
             mCells[4].mVisible         = 0;
             ChangeDir("/Game/Character/Icon/");
             main.LoadCharacters("icon_ch_base.nce_ncg1D.bin", 0x10000, 0);
             main.LoadPalette("icon_ch_base_ncl.bin", 0x120, 0);
             mCells[6].mAnim            = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
-            mCells[6].mAnim->mCharBase = main.func_020276f4(0x10000);
-            mCells[6].mAnim->mUnk_11   = 9;
+            mCells[6].mAnim->mCharBase = main.GetCharBase(0x10000);
+            mCells[6].mAnim->mPaletteBase   = 9;
             mCells[6].mVisible         = 0;
             mCells[7].mAnim            = new CellAnimation("icon_ch_base_nce.bin", 2, 1, 1);
-            mCells[7].mAnim->mCharBase = main.func_020276f4(0x10000);
-            mCells[7].mAnim->mUnk_11   = 9;
+            mCells[7].mAnim->mCharBase = main.GetCharBase(0x10000);
+            mCells[7].mAnim->mPaletteBase   = 9;
             mCells[7].mVisible         = 0;
             mUnk_334 = 1;
             mUnk_338 = 1;
@@ -987,38 +987,38 @@ void FieldSelectScene::func_ov001_0221fa94() {
         case 4: {
             mUnk_32a = data_020d433c.mPlayerCount;
             if (mUnk_333 != 0) {
-                mMessage->func_02065890(8, 0, 1);
+                mMessage->StartMessage(8, 0, 1);
             } else {
-                mMessage->func_02065890(4, 1, 1);
+                mMessage->StartMessage(4, 1, 1);
             }
             mMain.mAnim->SetAnimation(5);
             ChangeDir("/Game/Battle/Bg/");
-            func_02025b64(1, 1, 0, "select_field_b_bg_00_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 11, 0, "select_field_b_bg_00_ncg.bin", 0, 0, 0);
-            func_02025b64(1, 7, 0, "select_field_b_bg_00_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0, "select_field_b_bg_00_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 11, 0, "select_field_b_bg_00_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 7, 0, "select_field_b_bg_00_nsc.bin", 0, 0, 0);
             ChangeDir("/Game/Battle/Obj/");
             SpriteScreen &sub = SpriteManager::Get().Screen(1);
             sub.LoadCharacters("select_field_b_obj_00.nce_ncg1D.bin", 0x8000, 0);
             sub.LoadPalette("select_field_b_obj_00_ncl.bin", 0x100, 0);
             mInput[0].mUnk_02           = mUnk_341;
             mCells2[0].mAnim            = new CellAnimation("select_field_b_obj_00_nce.bin", 0, 1, 1);
-            mCells2[0].mAnim->mCharBase = sub.func_020276f4(0x8000);
-            mCells2[0].mAnim->mUnk_11   = 8;
+            mCells2[0].mAnim->mCharBase = sub.GetCharBase(0x8000);
+            mCells2[0].mAnim->mPaletteBase   = 8;
             mCells2[0].mX               = func_ov001_02225698(mInput[0].mUnk_02);
             mCells2[0].mY               = func_ov001_022256c8(mInput[0].mUnk_02);
             mCells2[0].mUnk_09          = 1;
             mCells2[0].mVisible         = 1;
             mCells2[4].mAnim            = new CellAnimation("select_field_b_obj_00_nce.bin", 4, 1, 1);
-            mCells2[4].mAnim->mCharBase = sub.func_020276f4(0x8000);
-            mCells2[4].mAnim->mUnk_11   = 4;
+            mCells2[4].mAnim->mCharBase = sub.GetCharBase(0x8000);
+            mCells2[4].mAnim->mPaletteBase   = 4;
             mCells2[4].mUnk_09          = 3;
             mCells2[4].mVisible         = 0;
             SpriteScreen &main          = SpriteManager::Get().Screen(0);
             main.LoadCharacters("select_field_u_obj_00.nce_ncg1D.bin", 0x8000, 0);
             main.LoadPalette("select_field_u_obj_00_ncl.bin", 0x80, 0);
             mCells[4].mAnim            = new CellAnimation("select_field_u_obj_00_nce.bin", 0, 1, 1);
-            mCells[4].mAnim->mCharBase = main.func_020276f4(0x8000);
-            mCells[4].mAnim->mUnk_11   = 4;
+            mCells[4].mAnim->mCharBase = main.GetCharBase(0x8000);
+            mCells[4].mAnim->mPaletteBase   = 4;
             mCells[4].mX               = 0x80;
             mCells[4].mY               = 0x60;
             mCells[4].mUnk_09          = 3;
@@ -1029,8 +1029,8 @@ void FieldSelectScene::func_ov001_0221fa94() {
             sub2.LoadCharacters("union_b_obj_new.nce_ncg1D.bin", 0x14400, 0);
             sub2.LoadPalette("union_b_obj_new_ncl.bin", 0x20, 0);
             mCells2[8].mAnim            = new CellAnimation("union_b_obj_new_nce.bin", 0, 1, 1);
-            mCells2[8].mAnim->mCharBase = sub2.func_020276f4(0x14400);
-            mCells2[8].mAnim->mUnk_11   = 1;
+            mCells2[8].mAnim->mCharBase = sub2.GetCharBase(0x14400);
+            mCells2[8].mAnim->mPaletteBase   = 1;
             mCells2[8].mUnk_09          = 1;
             mCells2[8].mVisible         = 0;
             SpriteScreen &sub3 = SpriteManager::Get().Screen(1);
@@ -1046,16 +1046,16 @@ void FieldSelectScene::func_ov001_0221fa94() {
         }
         case 5: {
             if (mUnk_333 != 0) {
-                mMessage->func_02065890(0xc, 0, 1);
+                mMessage->StartMessage(0xc, 0, 1);
             } else {
-                mMessage->func_02065890(4, 1, 1);
+                mMessage->StartMessage(4, 1, 1);
             }
             mMain.mAnim->SetAnimation(1);
             if (mUnk_333 != 0) {
                 ChangeDir("/Game/2D/union_b/");
-                func_02025b64(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-                func_02025b64(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-                func_02025b64(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+                LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+                LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+                LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
                 SpriteScreen &sub = SpriteManager::Get().Screen(1);
                 sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x8000, 0);
                 sub.LoadPalette("union_b_obj_window_ncl.bin", 0x100, 0);
@@ -1211,7 +1211,7 @@ void FieldSelectScene::func_ov001_02222040() {
     if (IsWirelessMode(mode)) {
         WirelessManager::Get();
         data_0220f540.mUnk_01 = data_020c4230.mUnk_20;
-        WirelessManager::Get().func_0202f024(&data_0220f540);
+        WirelessManager::Get().QueueSend(&data_0220f540);
         WirelessManager::Get().func_0202f078(&data_0220f540);
     }
     WirelessManager::Get();
@@ -1246,7 +1246,7 @@ void FieldSelectScene::func_ov001_02222040() {
         NET_BYTE(6) = TouchManager::Get().mTouching;
         NET_BYTE(7) = TouchManager::Get().mX;
         NET_BYTE(8) = TouchManager::Get().mY;
-        NET_KEYS   = InputManager::Get().IsTrigger(0xf0) | InputManager::Get().IsHeld(3);
+        NET_KEYS   = InputManager::Get().IsTrigger(KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT) | InputManager::Get().IsHeld(3);
         NET_BYTE(9) = 0;
         NET_BYTE(12) = 0;
         NET_BYTE(13) = 0;
@@ -1254,7 +1254,7 @@ void FieldSelectScene::func_ov001_02222040() {
         mInput[0].mTouching = TouchManager::Get().mTouching;
         mInput[0].mTouchX   = TouchManager::Get().mX;
         mInput[0].mTouchY   = TouchManager::Get().mY;
-        mInput[0].mKeys     = InputManager::Get().IsTrigger(0xf0) | InputManager::Get().IsHeld(3);
+        mInput[0].mKeys     = InputManager::Get().IsTrigger(KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT) | InputManager::Get().IsHeld(3);
         mInput[0].mUnk_07   = 0;
         mInput[0].mUnk_0e   = 0;
         mInput[0].mUnk_0f   = 0;
@@ -1625,7 +1625,7 @@ void FieldSelectScene::func_ov001_022231ec(u32 slot, u32 value, u32 playSound) {
         }
     }
     if (playSound) {
-        SoundManager::Get().func_020246f8(5);
+        SoundManager::Get().StartSeqArc(5);
     }
 }
 
@@ -1644,10 +1644,10 @@ BOOL FieldSelectScene::func_ov001_02223430(u8 slot) {
                 if (func_ov001_022237d0(slot) != 0) {
                     if (slot < mUnk_32b) {
                         if (slot == mUnk_33b) {
-                            SoundManager::Get().func_020246f8(2);
+                            SoundManager::Get().StartSeqArc(2);
                         }
                     } else if (mUnk_33b == 0) {
-                        SoundManager::Get().func_020246f8(2);
+                        SoundManager::Get().StartSeqArc(2);
                     }
                     return FALSE;
                 }
@@ -1679,14 +1679,14 @@ BOOL FieldSelectScene::func_ov001_02223430(u8 slot) {
             }
             if (mUnk_2ae[0][mInput[0].mUnk_02] == 0) {
                 if (mUnk_33b == 0) {
-                    SoundManager::Get().func_020246f8(2);
+                    SoundManager::Get().StartSeqArc(2);
                 }
                 return FALSE;
             }
             break;
     }
     mInput[slot].mUnk_06 = 1;
-    SoundManager::Get().func_020246f8(0);
+    SoundManager::Get().StartSeqArc(0);
     return TRUE;
 }
 
@@ -1760,7 +1760,7 @@ BOOL FieldSelectScene::func_ov001_02223914() {
                         mCells2[slot].mUnk_09 = 1;
                         mInput[slot].mUnk_06  = 0;
                         if (mInput[mUnk_33b].mUnk_0a == 0) {
-                            SoundManager::Get().func_020246f8(1);
+                            SoundManager::Get().StartSeqArc(1);
                         }
                         flag = 1;
                     }
@@ -1781,7 +1781,7 @@ BOOL FieldSelectScene::func_ov001_02223914() {
                         mCells2[i].mUnk_09 = 1;
                         mInput[i].mUnk_06  = 0;
                         if (mInput[mUnk_33b].mUnk_0a == 0) {
-                            SoundManager::Get().func_020246f8(1);
+                            SoundManager::Get().StartSeqArc(1);
                         }
                     }
                 }
@@ -1801,11 +1801,11 @@ BOOL FieldSelectScene::func_ov001_02223914() {
         return FALSE;
     }
     if (mInput[0].mUnk_07 != 0) {
-        SoundManager::Get().func_020246f8(1);
+        SoundManager::Get().StartSeqArc(1);
         return TRUE;
     }
     if (mInput[0].mKeys & 2) {
-        SoundManager::Get().func_020246f8(1);
+        SoundManager::Get().StartSeqArc(1);
         return TRUE;
     }
     return FALSE;
@@ -1836,14 +1836,14 @@ void FieldSelectScene::func_ov001_02223d70(u32 unk1) {
     if (mUnk_333 != 0) {
         u8 i = 0;
         do {
-            mCells2[i].mAnim->mUnk_0f = mUnk_25c[i * 2];
+            mCells2[i].mAnim->mFrameIndex = mUnk_25c[i * 2];
             i++;
         } while (i < 5);
         mCells2[7].mY = mInput[0].mUnk_02 * 0x18 + 0x26;
     } else {
         u8 i = 0;
         do {
-            mCells[i].mAnim->mUnk_0f = mUnk_25c[i * 2];
+            mCells[i].mAnim->mFrameIndex = mUnk_25c[i * 2];
             i++;
         } while (i < 5);
     }
@@ -1864,10 +1864,10 @@ void FieldSelectScene::func_ov001_02223e5c() {
         u8 a = data_ov001_022270dc[r][1];
         u8 b = data_ov001_022270dc[r][2];
         u8 c = data_ov001_022270dc[r][3];
-        mCells[0].mAnim->mUnk_0f = 0;
-        mCells[a].mAnim->mUnk_0f = 0;
-        mCells[b].mAnim->mUnk_0f = 1;
-        mCells[c].mAnim->mUnk_0f = 1;
+        mCells[0].mAnim->mFrameIndex = 0;
+        mCells[a].mAnim->mFrameIndex = 0;
+        mCells[b].mAnim->mFrameIndex = 1;
+        mCells[c].mAnim->mFrameIndex = 1;
     }
 }
 
@@ -1906,9 +1906,9 @@ u32 FieldSelectScene::func_ov001_02223f5c() {
     } else if (mInput[0].mKeys != 0) {
         u8 v   = mInput[0].mUnk_02 % 3;
         do {
-            if (mInput[0].mKeys & 0x40) {
+            if (mInput[0].mKeys & KEY_UP) {
                 v = (v + 2) % 3;
-            } else if (mInput[0].mKeys & 0x80) {
+            } else if (mInput[0].mKeys & KEY_DOWN) {
                 v = (v + 1) % 3;
             }
         } while (mUnk_32b > 2 && v == 0);
@@ -1969,17 +1969,17 @@ u32 FieldSelectScene::func_ov001_02224178() {
             } else if (keys != 0) {
                 u8 cur = mInput[0].mUnk_02;
                 u8 v   = cur % 5;
-                if (keys & 0x40) {
+                if (keys & KEY_UP) {
                     v = (v + 4) % 5;
-                } else if (keys & 0x80) {
+                } else if (keys & KEY_DOWN) {
                     v = (v + 1) % 5;
                 }
                 if (v != cur) {
                     mInput[0].mUnk_02 = v;
                     changed           = 1;
-                } else if (keys & 0x20) {
+                } else if (keys & KEY_LEFT) {
                     prev = 1;
-                } else if (keys & 0x10) {
+                } else if (keys & KEY_RIGHT) {
                     next = 1;
                 }
             }
@@ -2102,17 +2102,17 @@ u32 FieldSelectScene::func_ov001_02224538() {
                         }
                         k = (u8) (k + 1);
                     } while (k < 0x12);
-                } else if (keys & 0xf0) {
+                } else if (keys & (KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT)) {
                     u8 cur = mInput[i].mUnk_02;
                     u8 col = cur % 6;
                     u8 row = cur / 6;
-                    if (keys & 0x40) {
+                    if (keys & KEY_UP) {
                         row = (row + 2) % 3;
-                    } else if (keys & 0x80) {
+                    } else if (keys & KEY_DOWN) {
                         row = (row + 1) % 3;
-                    } else if (keys & 0x20) {
+                    } else if (keys & KEY_LEFT) {
                         col = (col + 5) % 6;
-                    } else if (keys & 0x10) {
+                    } else if (keys & KEY_RIGHT) {
                         col = (col + 1) % 6;
                     }
                     int n = row * 6 + col;
@@ -2162,7 +2162,7 @@ u32 FieldSelectScene::func_ov001_02224538() {
         } while (++i < mUnk_32a);
         if (((numOpen == 0) & (numDone >= mUnk_32a)) || mInput[0].mUnk_0e != 0) {
             if (mInput[0].mUnk_0e != 0) {
-                SoundManager::Get().func_020246f8(0);
+                SoundManager::Get().StartSeqArc(0);
             }
             data_020d433c.mPlayerCount = numDone;
             if (numDone < 4) {
@@ -2187,8 +2187,8 @@ u32 FieldSelectScene::func_ov001_02224538() {
     if (mUnk_33d == 0) {
         mWindows[0]->mButtons[0].mEnabled = 0;
         if (old != 0) {
-            mWindows[2]->mUnk_061              = 1;
-            mWindows[2]->mUnk_065              = 0;
+            mWindows[2]->mState              = 1;
+            mWindows[2]->mInputLocked              = 0;
             mWindows[2]->mCursor->mSelection   = -1;
             mWindows[2]->mCells[0]->SetAnimation(2);
         }
@@ -2226,9 +2226,9 @@ u32 FieldSelectScene::func_ov001_02224be0() {
         } else if (keys != 0) {
             u8 cur = mInput[0].mUnk_02;
             u8 v   = cur % 4;
-            if (keys & 0x40) {
+            if (keys & KEY_UP) {
                 v = (v + 3) % 4;
-            } else if (keys & 0x80) {
+            } else if (keys & KEY_DOWN) {
                 v = (v + 1) % 4;
             }
             if (v != cur) {
@@ -2301,13 +2301,13 @@ u32 FieldSelectScene::func_ov001_02224df0() {
             } else if (keys != 0) {
                 u8 col = mInput[0].mUnk_02 % 4;
                 u8 row = mInput[0].mUnk_02 / 4;
-                if (keys & 0x40) {
+                if (keys & KEY_UP) {
                     row = (row + 2) % 3;
-                } else if (keys & 0x80) {
+                } else if (keys & KEY_DOWN) {
                     row = (row + 1) % 3;
-                } else if (keys & 0x20) {
+                } else if (keys & KEY_LEFT) {
                     col = (col + 3) % 4;
-                } else if (keys & 0x10) {
+                } else if (keys & KEY_RIGHT) {
                     col = (col + 1) % 4;
                 }
                 int n = col + row * 4;
@@ -2336,7 +2336,7 @@ u32 FieldSelectScene::func_ov001_02224df0() {
             mUnk_341 = mInput[0].mUnk_02;
             result   = 1;
             mUnk_32d = 1;
-            SoundManager::Get().func_020246f8(0);
+            SoundManager::Get().StartSeqArc(0);
         }
     }
     return result;
@@ -2349,10 +2349,10 @@ void FieldSelectScene::func_ov001_02225150(u32 idx) {
     } else {
         sel = data_ov001_022270d0[idx];
     }
-    func_02025c1c(0, 1, 0, mFiles[sel][1], mFileSizes[sel][1], 0);
-    func_02025c1c(0, 0xb, 0, mFiles[sel][0], mFileSizes[sel][0], 0);
-    func_02025c1c(0, 7, 0, mFiles[sel][2], mFileSizes[sel][2], 0);
-    mCells[4].mAnim->mUnk_0f = sel;
+    QueueUpload(0, 1, 0, mFiles[sel][1], mFileSizes[sel][1], 0);
+    QueueUpload(0, 0xb, 0, mFiles[sel][0], mFileSizes[sel][0], 0);
+    QueueUpload(0, 7, 0, mFiles[sel][2], mFileSizes[sel][2], 0);
+    mCells[4].mAnim->mFrameIndex = sel;
 }
 
 u32 FieldSelectScene::func_ov001_02225214() {
@@ -2374,7 +2374,7 @@ BOOL FieldSelectScene::func_ov001_02225240() {
             case 1:
                 mUnk_32f = 0x10;
                 if (mWindows[0] != NULL) {
-                    mWindows[0]->mUnk_064 = 0;
+                    mWindows[0]->mEnabled = 0;
                 }
                 mUnk_330++;
                 break;
@@ -2393,7 +2393,7 @@ BOOL FieldSelectScene::func_ov001_02225240() {
                 mUnk_330++;
                 break;
             case 4:
-                mWindows[0]->mUnk_064 = 1;
+                mWindows[0]->mEnabled = 1;
                 mUnk_330 = 0;
                 break;
         }
@@ -2454,9 +2454,9 @@ void FieldSelectScene::func_ov001_022253f0(u32 slot, u32 value, u32 idx) {
                 break;
             default:
                 if (mUnk_333 != 0 && mUnk_33c != 0) {
-                    mMessage->func_02065890(0xe, 0, 1);
+                    mMessage->StartMessage(0xe, 0, 1);
                 } else {
-                    mMessage->func_02065890(0xf, 0, 1);
+                    mMessage->StartMessage(0xf, 0, 1);
                 }
                 set     = 2;
                 count = 6;
@@ -2490,7 +2490,7 @@ void FieldSelectScene::func_ov001_022253f0(u32 slot, u32 value, u32 idx) {
         }
         mWindows[1] = NULL;
         if (mUnk_2ed[mUnk_329] == 2) {
-            mMessage->func_02065890(6, 0, 1);
+            mMessage->StartMessage(6, 0, 1);
         }
         if (mUnk_2ed[mUnk_329] == 4) {
             func_ov001_0222657c();
@@ -2522,7 +2522,7 @@ s16 FieldSelectScene::func_ov001_022256c8(u32 idx) {
 
 void FieldSelectScene::func_ov001_022256e4() {
     if (mUnk_348 != 0) {
-        mMessage->func_020658d0();
+        mMessage->Update();
     }
     if (mMain.mVisible != 0) {
         mMain.mAnim->Update();
@@ -2540,7 +2540,7 @@ void FieldSelectScene::func_ov001_022256e4() {
             mCells[6].mAnim->Draw(0, 0x19, (s16) (y + 2), 3);
             if (mUnk_32b <= i) {
                 mCells[7].mAnim->SetAnimation(0xb);
-                mCells[7].mAnim->func_0202a3ec(0, i, 0x15, y, 1);
+                mCells[7].mAnim->DrawFrame(0, i, 0x15, y, 1);
             }
             if (mUnk_33b == i) {
                 mCells[7].mAnim->SetAnimation(i + 2);
@@ -2584,7 +2584,7 @@ void FieldSelectScene::func_ov001_022256e4() {
                 }
             }
             if (sel >= 0) {
-                mCells[4].mAnim->func_0202a3ec(0, sel, 0x40, (s16) (i * 0x24 + 0x38), 1);
+                mCells[4].mAnim->DrawFrame(0, sel, 0x40, (s16) (i * 0x24 + 0x38), 1);
             }
             i++;
         } while (i < mUnk_32a);
@@ -2595,7 +2595,7 @@ void FieldSelectScene::func_ov001_022256e4() {
         if (slot < 4) {
             if (mUnk_32b <= slot) {
                 mCells2[7].mAnim->SetAnimation(0xb);
-                mCells2[7].mAnim->func_0202a3ec(1, slot, mCells2[slot].mX, mCells2[slot].mY, mCells2[slot].mUnk_09);
+                mCells2[7].mAnim->DrawFrame(1, slot, mCells2[slot].mX, mCells2[slot].mY, mCells2[slot].mUnk_09);
             }
             if (mUnk_33b == slot) {
                 mCells2[7].mAnim->SetAnimation(slot + 2);
@@ -2624,7 +2624,7 @@ void FieldSelectScene::func_ov001_022256e4() {
                 mCells2[5].mAnim->Draw(1, x + 4, y + 2, 2);
                 if (mUnk_32b <= v) {
                     mCells2[7].mAnim->SetAnimation(0xb);
-                    mCells2[7].mAnim->func_0202a3ec(1, v, x, y, 1);
+                    mCells2[7].mAnim->DrawFrame(1, v, x, y, 1);
                 }
                 if (mUnk_33b == v) {
                     mCells2[7].mAnim->SetAnimation(v + 2);
@@ -2647,7 +2647,7 @@ void FieldSelectScene::func_ov001_022256e4() {
             u8 n    = mUnk_32b;
             if (n < j + 2) {
                 do {
-                    mCells2[7].mAnim->func_0202a3ec(1, n, (s16) (mCells2[j].mX + 0x14 + n * 32), mCells2[j].mY,
+                    mCells2[7].mAnim->DrawFrame(1, n, (s16) (mCells2[j].mX + 0x14 + n * 32), mCells2[j].mY,
                                                     mCells2[j].mUnk_09);
                     n++;
                 } while (n < j + 2);
@@ -2736,7 +2736,7 @@ void FieldSelectScene::func_ov001_022256e4() {
             if (mInput[p].mUnk_06 != 0) {
                 u8 q = mInput[p].mUnk_08;
                 if ((q != 0) & (f == q)) {
-                    mCells2[5].mAnim->func_0202a3ec(1, f, mCells2[4].mX, mCells2[4].mY, mCells2[4].mUnk_09);
+                    mCells2[5].mAnim->DrawFrame(1, f, mCells2[4].mX, mCells2[4].mY, mCells2[4].mUnk_09);
                     break;
                 }
             }
@@ -2745,14 +2745,14 @@ void FieldSelectScene::func_ov001_022256e4() {
         f++;
     } while (f < 0x12);
     if (mUnk_340 != 0) {
-        mCells2[5].mAnim->func_0202a3ec(1, 0, mCells2[4].mX, mCells2[4].mY, mCells2[4].mUnk_09);
+        mCells2[5].mAnim->DrawFrame(1, 0, mCells2[4].mX, mCells2[4].mY, mCells2[4].mUnk_09);
     }
 }
 
 void FieldSelectScene::func_ov001_022260b8() {
-    SpriteManager::Get().Screen(1).func_02027624(3);
+    SpriteManager::Get().Screen(1).SetObjVramMode(3);
     ChangeDir("/");
-    mUnk_2f4 = (MessageFile *) func_02023504("font/mes_BattleArenaMenu.mes", 0, 0, 0, 0, 0);
+    mUnk_2f4 = (MessageFile *) LoadFile("font/mes_BattleArenaMenu.mes", 0, 0, 0, 0, 0);
     mUnk_300 = TextManager::Get().BufferSize(0x18, 0x10);
     mUnk_2f8 = OS_Alloc(mUnk_300);
     MI_CpuClear16(mUnk_2f8, mUnk_300);
@@ -2772,14 +2772,14 @@ void FieldSelectScene::func_ov001_022262d0(u32 index) {
     MessageFile *file = mUnk_2f4;
     text.Print(file->GetText(index), file->GetLength(index), mUnk_2f8, 0x18, 0x10, &height, &width, 0, 0, 2, 0x44, 0xe, 0, 0,
                1, 1, 1);
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x15000, mUnk_2f8, mUnk_300, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x15000, mUnk_2f8, mUnk_300, 0);
 }
 
 void FieldSelectScene::func_ov001_02226430() {
     if (mUnk_2ed[mUnk_329] == 4) {
-        SpriteManager::Get().Screen(1).func_02027778(mUnk_2fc, (u8) mUnk_304, 0x20, 0x28, 0, 0x2a0, 0xf, 0);
+        SpriteManager::Get().Screen(1).AddOam(mUnk_2fc, (u8) mUnk_304, 0x20, 0x28, 0, 0x2a0, 0xf, 0);
     } else {
-        SpriteManager::Get().Screen(1).func_02027778(mUnk_2fc, (u8) mUnk_304, 0x20, 0x38, 0, 0x2a0, 0xf, 0);
+        SpriteManager::Get().Screen(1).AddOam(mUnk_2fc, (u8) mUnk_304, 0x20, 0x38, 0, 0x2a0, 0xf, 0);
     }
 }
 
@@ -2790,9 +2790,9 @@ void FieldSelectScene::func_ov001_0222657c() {
 }
 
 void FieldSelectScene::func_ov001_0222659c() {
-    SpriteManager::Get().Screen(0).func_02027624(3);
+    SpriteManager::Get().Screen(0).SetObjVramMode(3);
     ChangeDir("/");
-    mUnk_308 = (MessageFile *) func_02023504("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
+    mUnk_308 = (MessageFile *) LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
     mUnk_320 = TextManager::Get().BufferSize(0x20, 2);
     for (u8 i = 0; i < 4; i++) {
         mUnk_30c[i] = OS_Alloc(mUnk_320);
@@ -2818,7 +2818,7 @@ void FieldSelectScene::func_ov001_022267d0(u8 slot) {
             }
         }
     }
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     if (useName) {
         s16 height;
         s16 width;
@@ -2836,14 +2836,14 @@ void FieldSelectScene::func_ov001_022267d0(u8 slot) {
         text.Print(file->GetText(id), file->GetLength(id), mUnk_30c[slot], 0x20, 2, &height, &width, 0, 0, 2, 0x21, 0xe, 0, 0, 0, 1,
                    1);
     }
-    TextManager::Get().mUnk_5b = 0;
-    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, (slot << 12) + 0xc000, mUnk_30c[slot], mUnk_320, 0);
+    TextManager::Get().mUse4bppFont = 0;
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, (slot << 12) + 0xc000, mUnk_30c[slot], mUnk_320, 0);
 }
 
 void FieldSelectScene::func_ov001_02226b18() {
     u8 i = 0;
     do {
-        SpriteManager::Get().Screen(0).func_02027778(mUnk_31c, (u8) mUnk_324, 0x40, (s16) (i * 0x24 + 0x2c), 2,
+        SpriteManager::Get().Screen(0).AddOam(mUnk_31c, (u8) mUnk_324, 0x40, (s16) (i * 0x24 + 0x2c), 2,
                                                      ((((u32) i << 12) + 0xc000) << 9) >> 16, 0xf, 0);
         i++;
     } while (i < mUnk_32a);
@@ -2861,11 +2861,11 @@ void FieldSelectScene::func_ov001_02226c38(SelectWindow *window) {
     do {
         window->Draw();
         window->Update(0);
-        state = window->mUnk_061;
+        state = window->mState;
     } while (!((state <= 2) | (state == 4)));
-    window->func_0205c7c8(-1);
+    window->Reset(-1);
     window->mCursor->mSelection = -1;
-    window->mUnk_064            = 1;
+    window->mEnabled            = 1;
 }
 
 void FieldSelectScene::func_ov001_02226cb0() {

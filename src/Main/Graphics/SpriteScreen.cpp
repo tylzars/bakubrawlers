@@ -40,23 +40,23 @@ extern "C" void func_02000ccc(MtxFx22 *mtx, fx32 x, fx32 y);
 extern "C" void MTX_Concat22(const MtxFx22 *a, const MtxFx22 *b, MtxFx22 *out);
 
 SpriteScreen::SpriteScreen() {
-    mUnk_400 = 0;
+    mCharSize = 0;
     mBgIndex = 0;
-    mUnk_403 = 9;
-    func_02027750();
+    mObjVramMode = 9;
+    ResetOam();
 }
 
-void SpriteScreen::func_020275e8(u32 unk1) {
+void SpriteScreen::SetBgIndex(u32 unk1) {
     mBgIndex = unk1;
 }
 
-void SpriteScreen::func_020275f0() {
+void SpriteScreen::FlushOam() {
     if (mBgIndex == 0) {
         GX_LoadOAM(this, 0, 0x400);
     } else {
         GXS_LoadOAM(this, 0, 0x400);
     }
-    func_02027750();
+    ResetOam();
 }
 
 enum GXOBJVRamModeChar { GX_OBJVRAMMODE_CHAR_2D = 0 };
@@ -74,12 +74,12 @@ static inline void GXS_SetOBJVRamModeBmp(GXOBJVRamModeBmp mode) {
     reg_GXS_DB_DISPCNT = (u32) (reg_GXS_DB_DISPCNT & ~0x60 | mode);
 }
 // The tables are function-local statics (still .data): mwcc knows no store can reach them, so the table load is
-// scheduled above the mUnk_403 store as with const data.
-void SpriteScreen::func_02027624(s32 mode) {
+// scheduled above the mObjVramMode store as with const data.
+void SpriteScreen::SetObjVramMode(s32 mode) {
     static u16 data_020a5624[9] = {0x20, 0x20, 0x40, 0x80, 0x100, 0x80, 0x100, 0x80, 0x100};
     static u32 data_020a5638[9]  = {0x0, 0x10, 0x100010, 0x200010, 0x300010, 0x40, 0x400040, 0x0, 0x20};
-    mUnk_403 = mode;
-    mUnk_400 = data_020a5624[mode];
+    mObjVramMode = mode;
+    mCharSize = data_020a5624[mode];
     if (mode < 5) {
         if (mBgIndex == 0) {
             GX_SetOBJVRamModeChar((GXOBJVRamModeChar) data_020a5638[mode]);
@@ -95,12 +95,12 @@ void SpriteScreen::func_02027624(s32 mode) {
     }
 }
 
-u32 SpriteScreen::func_020276f4(u32 offset) {
+u32 SpriteScreen::GetCharBase(u32 offset) {
     u32 result = offset;
-    if (mUnk_403 < 7) {
-        result = result / mUnk_400;
+    if (mObjVramMode < 7) {
+        result = result / mCharSize;
     } else {
-        u32 size = mUnk_400;
+        u32 size = mCharSize;
         u32 rem  = result % (size * 2);
         result   = (result / (size * 8)) * 32 + rem / 16;
     }
@@ -110,30 +110,30 @@ u32 SpriteScreen::func_020276f4(u32 offset) {
 
 
 
-void SpriteScreen::func_02027750() {
+void SpriteScreen::ResetOam() {
     MIi_CpuClear16(0xc0, this, 0x400);
-    mUnk_404 = 0;
-    mUnk_405 = 0;
+    mOamCount = 0;
+    mMatrixCount = 0;
 }
 
-void SpriteScreen::func_02027778(void *buffer, u8 count, s16 unk3, s16 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8) {
-    OamEntry *entry = (OamEntry *) this + mUnk_404;
+void SpriteScreen::AddOam(void *buffer, u8 count, s16 unk3, s16 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8) {
+    OamEntry *entry = (OamEntry *) this + mOamCount;
     OamSource *source = (OamSource *) buffer;
     SpriteTransform *transform = (SpriteTransform *) unk8;
     u8 i;
     u32 matrix;
     matrix = i = 0;
     if (transform != NULL) {
-        func_02027c18((u8 *) this + mUnk_405 * 0x20, transform);
-        matrix = mUnk_405;
-        mUnk_405 = matrix + 1;
+        func_02027c18((u8 *) this + mMatrixCount * 0x20, transform);
+        matrix = mMatrixCount;
+        mMatrixCount = matrix + 1;
     }
     s8 paletteBase = *(s8 *) &unk7;
     u16 tileBase = *(u16 *) &unk6;
     s16 offsetY = unk4;
     u8 priority = *(u8 *) &unk5;
     for (; ; ) {
-        if (mUnk_404 >= 0x80) {
+        if (mOamCount >= 0x80) {
             return;
         }
         s32 attr2 = source->mAttr2;
@@ -150,9 +150,9 @@ void SpriteScreen::func_02027778(void *buffer, u8 count, s16 unk3, s16 unk4, u32
             func_02027cf4(&x, &y, shape, transform);
         } else if ((flip == 0x300) | (flip == 0x100)) {
             SpriteTransform identity(0x1000, 0x1000, 0);
-            func_02027c18((u8 *) this + mUnk_405 * 0x20, &identity);
-            matrix = *(volatile u8 *) &mUnk_405;
-            mUnk_405 = mUnk_405 + 1;
+            func_02027c18((u8 *) this + mMatrixCount * 0x20, &identity);
+            matrix = *(volatile u8 *) &mMatrixCount;
+            mMatrixCount = mMatrixCount + 1;
         }
         s16 cull;
         if (transform != NULL) {
@@ -233,7 +233,7 @@ void SpriteScreen::func_02027778(void *buffer, u8 count, s16 unk3, s16 unk4, u32
                 }
             }
             entry->mAttr2 = tile | (priority << 10) | (palette << 12);
-            mUnk_404++;
+            mOamCount++;
             entry++;
         }
         source++;
@@ -353,21 +353,21 @@ SpriteTransform::SpriteTransform(s32 scaleX, s32 scaleY, u16 rotation) {
 
 u32 SpriteScreen::LoadCharacters(const char *path, u32 offset, u32 unk3) {
     u32 size;
-    void *data = func_02023504(path, 0, 0, 0, &size, 0);
+    void *data = LoadFile(path, 0, 0, 0, &size, 0);
     if (unk3 != 0) {
         size = unk3;
     }
-    return func_02025c1c(mBgIndex, 4, offset, data, size, 1);
+    return QueueUpload(mBgIndex, 4, offset, data, size, 1);
 }
 
 
 u32 SpriteScreen::LoadPalette(const char *path, u32 offset, u32 unk3) {
     u32 size;
-    void *data = func_02023504(path, 0, 0, 0, &size, 0);
+    void *data = LoadFile(path, 0, 0, 0, &size, 0);
     if (unk3 != 0) {
         size = unk3;
     }
-    return func_02025c1c(mBgIndex, 5, offset, data, size, 1);
+    return QueueUpload(mBgIndex, 5, offset, data, size, 1);
 }
 
 
@@ -378,13 +378,13 @@ u32 SpriteScreen::LoadPalette(const char *path, u32 offset, u32 unk3) {
 extern "C" fx32 FX_Div(fx32 num, fx32 den);
 float _fdiv(float a, float b);
 
-void SpriteScreen::func_02027fec(const char *path, u32 unk2, u32 unk3) {
+void SpriteScreen::LoadExtPalette(const char *path, u32 unk2, u32 unk3) {
     u32 size;
-    void *data = func_02023504(path, 0, 0, 0, &size, 0);
+    void *data = LoadFile(path, 0, 0, 0, &size, 0);
     if (unk3 != 0) {
         size = unk3;
     }
-    func_02025c1c(mBgIndex, 0, unk2, data, size, 1);
+    QueueUpload(mBgIndex, 0, unk2, data, size, 1);
 }
 
 

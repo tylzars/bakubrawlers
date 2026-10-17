@@ -36,7 +36,7 @@ SaveWindow::SaveWindow(u32 unk1, u32 unk2, u32 unk3, u32 unk4, u32 unk5, u32 unk
     mWindowBg = unk2;
     mTextBg = unk5;
     mState = 0;
-    FrameTask::Get().func_0203dd90();
+    FrameTask::Get().StopAllChannels();
 }
 
 SaveWindow::~SaveWindow() {
@@ -111,7 +111,7 @@ void SaveWindow::Update() {
             }
             break;
         case 2:
-            FrameTask::Get().func_0203dd90();
+            FrameTask::Get().StopAllChannels();
             SetCellPos(mWindow, 3, 0x80, 0x60);
             SetCellPos(mWindow, 0, 0x100, 0xc0);
             SetCellPos(mWindow, 1, 0x100, 0xc0);
@@ -162,10 +162,10 @@ extern const WindowItemRecord data_020a2dcc[];
 // brightness and SpriteManager::sFade/sBrightness (:259-266, :321-328).
 void SaveWindow::Load() {
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(mScreen, 1, mUnk_1c, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(mScreen, data_020a2dbc[mWindowBg], mUnk_18, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(mScreen, 1, mUnk_1c, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(mScreen, data_020a2dbc[mWindowBg], mUnk_18, "union_b_bg_window_ncg.bin", 0, 0, 0);
     u32 size;
-    u16 *tiles = (u16 *) func_02023504("union_b_bg_window_a_nsc.bin", 0, 0, 0, &size, 0);
+    u16 *tiles = (u16 *) LoadFile("union_b_bg_window_a_nsc.bin", 0, 0, 0, &size, 0);
     size >>= 1;
     u16 tileAdd = mUnk_18 >> 6;
     u16 palAdd  = (mUnk_1c & 0x1fff) / 0x200;
@@ -182,15 +182,15 @@ void SaveWindow::Load() {
             i++;
         } while (size > i);
     }
-    func_02025c1c(mScreen, data_020a2dac[mWindowBg], 0, tiles, size * 2, 1);
+    QueueUpload(mScreen, data_020a2dac[mWindowBg], 0, tiles, size * 2, 1);
     ChangeDir("/");
-    mMessages = (MessageFile *) func_02023504("/font/mes_system.mes", 0, 0, 0, 0, 0);
+    mMessages = (MessageFile *) LoadFile("/font/mes_system.mes", 0, 0, 0, 0, 0);
     TextManager::Get().func_0202ce44(mScreen, 0, (mUnk_24 >> 5) & 0xff, 0);
     TextManager::Get();
     u16 *buffer = (u16 *) OS_Alloc(0x600);
     MIi_CpuClear16((u16) ((mUnk_20 >> 5) | ((mUnk_24 >> 5) << 12)), buffer, 0x600);
-    TextManager::Get().func_0202cd48(0, buffer, (mUnk_24 >> 5) & 0xff, (u16) mUnk_20, 0x18, 0x18, 0x20);
-    func_02025c1c(mScreen, data_020a2dac[mTextBg], 0, buffer, 0x600, 1);
+    TextManager::Get().FillScrChars(0, buffer, (mUnk_24 >> 5) & 0xff, (u16) mUnk_20, 0x18, 0x18, 0x20);
+    QueueUpload(mScreen, data_020a2dac[mTextBg], 0, buffer, 0x600, 1);
     TextManager::Get();
     mTextBufferSize = 0x4000;
     mTextBuffer = OS_Alloc(mTextBufferSize);
@@ -198,8 +198,8 @@ void SaveWindow::Load() {
     screen.LoadCharacters("/Game/2D/union_b/union_b_obj_window.nce_ncg1D.bin", mUnk_28, 0);
     screen.LoadPalette("/Game/2D/union_b/union_b_obj_window_ncl.bin", mUnk_2c, 0);
     for (u8 i = 0; i < 4; i++) {
-        data_020b8ea0[i].mUnk_08 = mUnk_28;
-        data_020b8ea0[i].mUnk_0c = mUnk_2c / 32;
+        data_020b8ea0[i].mCharOffset = mUnk_28;
+        data_020b8ea0[i].mPaletteBase = mUnk_2c / 32;
     }
     mWindow = new SelectWindow(4, data_020a2dcc, 1);
     mWindow->SetCells(4, data_020b8ea0);
@@ -342,7 +342,7 @@ void SaveWindow::PrintMessage(u32 index) {
     MessageFile *file = mMessages;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x18, 0x10, &width, &height, &pixelWidth, 0, 2, 0,
                0x10, 0, 0, 1, 1, 1);
-    func_02025c1c(mScreen, data_020a2dbc[mTextBg], mUnk_20, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(mScreen, data_020a2dbc[mTextBg], mUnk_20, mTextBuffer, mTextBufferSize, 0);
     s16 offset = (pixelWidth - 0x100) / 2;
     switch (mTextBg) {
         case 0:

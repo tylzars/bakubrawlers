@@ -201,7 +201,7 @@ void UnkStruct_02076058::Update() {
                 switch (mUnk_73) {
                     case 0:
                         if (mUnk_7c != NULL) {
-                            mUnk_7c->mUnk_064 = 1;
+                            mUnk_7c->mEnabled = 1;
                             if (mUnk_7c->Update(1) == 1) {
                                 mUnk_74 = 7;
                             }
@@ -266,7 +266,7 @@ void UnkStruct_02076058::Update() {
 void UnkStruct_02076058::func_02076a28() {
     GX_SetDispSelect(1);
     if (mUnk_73 == 0) {
-        SpriteManager::Get().func_02026dec(0, 1);
+        SpriteManager::Get().SetupMode(0, 1);
         GX_SetGraphicsMode(1, 0, 0);
     }
     G2S_SetBG0Control(0, 1, 0, 1, 0);
@@ -281,15 +281,15 @@ void UnkStruct_02076058::func_02076a28() {
 
 void UnkStruct_02076058::func_02076b34() {
     ChangeDir("/Game/Battle/Bg/");
-    func_02025b64(1, 1, 0, "result_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "result_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "result_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "result_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "result_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "result_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/Battle/Obj/");
     u8 i;
     SpriteScreen &screen = SpriteManager::Get().mScreens[1];
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     screen.LoadCharacters("bakugan_sub.nce_ncg1D.bin", 0, 0);
-    screen.func_02027fec("bakugan_sub_ncl.bin", 0, 0);
+    screen.LoadExtPalette("bakugan_sub_ncl.bin", 0, 0);
     screen.LoadCharacters("result_b_obj_00.nce_ncg1D.bin", 0xc000, 0);
     screen.LoadPalette("result_b_obj_00_ncl.bin", 0, 0);
     for (i = 0; i < 12; i++) {
@@ -298,24 +298,24 @@ void UnkStruct_02076058::func_02076b34() {
             case 1:
             case 2:
                 mUnk_14[i] = new CellAnimation("bakugan_sub_nce.bin", 0, 1, 1);
-                mUnk_14[i]->mCharBase = screen.func_020276f4(0);
-                mUnk_14[i]->mUnk_11 = 0;
-                mUnk_14[i]->func_02029fb8(5);
-                mUnk_14[i]->mUnk_0f = mUnk_6d[i];
+                mUnk_14[i]->mCharBase = screen.GetCharBase(0);
+                mUnk_14[i]->mPaletteBase = 0;
+                mUnk_14[i]->SetMode(5);
+                mUnk_14[i]->mFrameIndex = mUnk_6d[i];
                 break;
             case 6:
             case 7:
             case 8:
                 mUnk_14[i] = new CellAnimation("result_b_obj_00_nce.bin", 0, 1, 1);
-                mUnk_14[i]->mCharBase = screen.func_020276f4(0xc000);
-                mUnk_14[i]->mUnk_11 = 0;
-                mUnk_14[i]->func_02029fb8(5);
+                mUnk_14[i]->mCharBase = screen.GetCharBase(0xc000);
+                mUnk_14[i]->mPaletteBase = 0;
+                mUnk_14[i]->SetMode(5);
                 if (mUnk_54[i % 3] != NULL) {
                     s32 level = mUnk_54[i % 3]->mUnk_00_0;
                     if (level < 9) {
-                        mUnk_14[i]->mUnk_0f = level;
+                        mUnk_14[i]->mFrameIndex = level;
                     } else {
-                        mUnk_14[i]->mUnk_0f = 8;
+                        mUnk_14[i]->mFrameIndex = 8;
                     }
                 }
                 break;
@@ -323,16 +323,16 @@ void UnkStruct_02076058::func_02076b34() {
             case 4:
             case 5: {
                 mUnk_14[i] = new CellAnimation("result_b_obj_00_nce.bin", 0, 1, 1);
-                mUnk_14[i]->mCharBase = screen.func_020276f4(0xc000);
-                mUnk_14[i]->mUnk_11 = 0;
+                mUnk_14[i]->mCharBase = screen.GetCharBase(0xc000);
+                mUnk_14[i]->mPaletteBase = 0;
                 mUnk_14[i]->SetAnimation(1);
-                mUnk_14[i]->func_02029fb8(5);
-                mUnk_14[i]->mUnk_0f = 0;
+                mUnk_14[i]->SetMode(5);
+                mUnk_14[i]->mFrameIndex = 0;
                 UnkStruct_02023248 *entry = mUnk_54[i % 3];
                 if (entry != NULL) {
                     int gauge = entry->mPad;
                     u16 rest = gauge % 300;
-                    mUnk_14[i]->mUnk_0f = (u8) ((float) (rest * (mUnk_14[i]->mFrames[mUnk_14[i]->mUnk_0e].mUnk_10 - 1)) / 300.0f);
+                    mUnk_14[i]->mFrameIndex = (u8) ((float) (rest * (mUnk_14[i]->mFrames[mUnk_14[i]->mAnimIndex].mFrameCount - 1)) / 300.0f);
                 }
                 break;
             }
@@ -340,11 +340,11 @@ void UnkStruct_02076058::func_02076b34() {
             case 10:
             case 11:
                 mUnk_14[i] = new CellAnimation("result_b_obj_00_nce.bin", 0, 1, 1);
-                mUnk_14[i]->mCharBase = screen.func_020276f4(0xc000);
-                mUnk_14[i]->mUnk_11 = 0;
+                mUnk_14[i]->mCharBase = screen.GetCharBase(0xc000);
+                mUnk_14[i]->mPaletteBase = 0;
                 mUnk_14[i]->SetAnimation(5);
                 CellAnimation *last = mUnk_14[i];
-                last->mUnk_0f = last->mFrames[last->mUnk_0e].mUnk_10 - 1;
+                last->mFrameIndex = last->mFrames[last->mAnimIndex].mFrameCount - 1;
                 break;
         }
     }
@@ -355,7 +355,7 @@ void UnkStruct_02076058::func_02076b34() {
     mUnk_7c = new SelectWindow(1, data_020a30a4, 0);
     mUnk_7c->SetCells(1, data_020a30c0);
     mUnk_7c->mCursor->mSelection = -1;
-    mUnk_7c->mUnk_064 = 0;
+    mUnk_7c->mEnabled = 0;
     ChangeDir("/");
 }
 
@@ -372,7 +372,7 @@ void UnkStruct_02076058::func_020770f4() {
         }
     }
     if (changed != 0) {
-        SoundManager::Get().func_020246f8(0x35);
+        SoundManager::Get().StartSeqArc(0x35);
         func_02077d2c();
     }
 }
@@ -398,9 +398,9 @@ u32 UnkStruct_02076058::func_020771d8(u32 index, u32 unk2) {
                     }
                     s32 level = mUnk_54[slot]->mUnk_00_0;
                     if (level < 9) {
-                        mUnk_14[index + 6]->mUnk_0f = level;
+                        mUnk_14[index + 6]->mFrameIndex = level;
                     }
-                    mUnk_14[index + 9]->func_02029f6c();
+                    mUnk_14[index + 9]->ResetAnimation();
                     mUnk_77 = 1;
                     mUnk_79 = 1;
                     result = 1;
@@ -419,9 +419,9 @@ u32 UnkStruct_02076058::func_020771d8(u32 index, u32 unk2) {
                 }
                 s32 level = mUnk_54[slot]->mUnk_00_0;
                 if (level < 9) {
-                    mUnk_14[index + 6]->mUnk_0f = level;
+                    mUnk_14[index + 6]->mFrameIndex = level;
                 }
-                mUnk_14[index + 9]->func_02029f6c();
+                mUnk_14[index + 9]->ResetAnimation();
                 mUnk_77 = 1;
                 mUnk_79 = 1;
                 result = 1;
@@ -431,7 +431,7 @@ u32 UnkStruct_02076058::func_020771d8(u32 index, u32 unk2) {
         CellAnimation *anim = mUnk_14[index + 3];
         int gauge = mUnk_54[slot]->mPad;
         u16 rest = gauge % 300;
-        anim->mUnk_0f = (u8) ((float) (rest * (anim->mFrames[anim->mUnk_0e].mUnk_10 - 1)) / 300.0f);
+        anim->mFrameIndex = (u8) ((float) (rest * (anim->mFrames[anim->mAnimIndex].mFrameCount - 1)) / 300.0f);
     }
     return result;
 }
@@ -448,14 +448,14 @@ void UnkStruct_02076058::func_02077458() {
         u8 slot = i;
         if (mUnk_54[i + mUnk_75] != NULL && mUnk_14[slot] != NULL) {
             mUnk_14[slot]->Update();
-            mUnk_14[slot]->func_0202a494(1, data_020a308c[slot][0], data_020a308c[slot][1], 1, 0x800, 0x800, 0);
+            mUnk_14[slot]->DrawTransformed(1, data_020a308c[slot][0], data_020a308c[slot][1], 1, 0x800, 0x800, 0);
         }
     }
     for (u32 i = 0; i < 3; i = (u8) (i + 1)) {
         u8 slot = i + 3;
         UnkStruct_02023248 *entry = mUnk_54[i + mUnk_75];
         if (entry != NULL && (s32) entry->mUnk_00_0 < 9 && mUnk_14[slot] != NULL) {
-            u32 last = mUnk_14[slot]->mFrames[mUnk_14[slot]->mUnk_0e].mUnk_10 - 1;
+            u32 last = mUnk_14[slot]->mFrames[mUnk_14[slot]->mAnimIndex].mFrameCount - 1;
             u8 count = entry->mPad / 300;
             u8 n = 0;
             if (count != 0) {
@@ -464,7 +464,7 @@ void UnkStruct_02076058::func_02077458() {
                 do {
                     u8 cellX = x + n % 3 * 32;
                     u8 cellY = n / 3 * 6 + y;
-                    mUnk_14[slot]->func_0202a3ec(1, (u8) last, cellX, cellY, 1);
+                    mUnk_14[slot]->DrawFrame(1, (u8) last, cellX, cellY, 1);
                     n++;
                 } while (n < count);
             }
@@ -486,7 +486,7 @@ void UnkStruct_02076058::func_02077458() {
 }
 
 void UnkStruct_02076058::func_02077770() {
-    if (InputManager::Get().IsHeld(1) | TouchManager::Get().mUnk_57) {
+    if (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed) {
         func_020770f4();
     }
     u32 changed = 0;
@@ -497,7 +497,7 @@ void UnkStruct_02076058::func_02077770() {
             if ((s32) entry->mUnk_00_0 >= 9) {
                 entry->mPad = 0;
                 mUnk_64[slot] = 0;
-            } else if (mUnk_14[i + 9]->mUnk_12 != 0 && mUnk_64[slot] != 0) {
+            } else if (mUnk_14[i + 9]->mFinished != 0 && mUnk_64[slot] != 0) {
                 u32 step = 3;
                 s32 points = mUnk_64[slot];
                 if (points < 3) {
@@ -512,7 +512,7 @@ void UnkStruct_02076058::func_02077770() {
         }
     }
     if (changed != 0) {
-        SoundManager::Get().func_020246f8(0x35);
+        SoundManager::Get().StartSeqArc(0x35);
         func_02077d2c();
     }
     u32 done = 1;
@@ -523,7 +523,7 @@ void UnkStruct_02076058::func_02077770() {
         }
     }
     for (u8 i = 0; i < 3; i++) {
-        if (mUnk_14[i + 9]->mUnk_12 == 0) {
+        if (mUnk_14[i + 9]->mFinished == 0) {
             done = 0;
         }
     }
@@ -569,10 +569,10 @@ void UnkStruct_02076058::func_02077a30(u32 index, u32 unk2, u32 unk3, u8 unk4) {
 }
 
 void UnkStruct_02076058::func_02077ae8() {
-    SpriteManager::Get().Screen(1).func_02027624(3);
+    SpriteManager::Get().Screen(1).SetObjVramMode(3);
     ChangeDir("/font/");
-    mUnk_0c = (MessageFile *) func_02023504("mes_BakuganName.mes", 0, 0, 0, 0, 0);
-    mUnk_10 = (MessageFile *) func_02023504("mes_Result.mes", 0, 0, 0, 0, 0);
+    mUnk_0c = (MessageFile *) LoadFile("mes_BakuganName.mes", 0, 0, 0, 0, 0);
+    mUnk_10 = (MessageFile *) LoadFile("mes_Result.mes", 0, 0, 0, 0, 0);
     mUnk_4c = TextManager::Get().BufferSize(0x18, 0x10);
     mUnk_44 = OS_Alloc(mUnk_4c);
     MI_CpuClear16(mUnk_44, mUnk_4c);
@@ -585,7 +585,7 @@ void UnkStruct_02076058::func_02077ae8() {
 
 void UnkStruct_02076058::func_02077d2c() {
     func_02078250(this);
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     for (u8 i = 0; i < 3; i++) {
         if (mUnk_54[i + mUnk_75] != NULL) {
             s16 x = 0;
@@ -623,12 +623,12 @@ void UnkStruct_02076058::func_02077d2c() {
         }
     }
     DC_FlushRange(mUnk_44, mUnk_4c);
-    TextManager::Get().mUnk_5b = 0;
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x6000, mUnk_44, mUnk_4c, 0);
+    TextManager::Get().mUse4bppFont = 0;
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x6000, mUnk_44, mUnk_4c, 0);
 }
 
 void func_020781a0(UnkStruct_02076058 *object) {
-    SpriteManager::Get().Screen(1).func_02027778(object->mUnk_48, object->mUnk_50, 0x46, 0x29, 1, 0xc0, 0xf, 0);
+    SpriteManager::Get().Screen(1).AddOam(object->mUnk_48, object->mUnk_50, 0x46, 0x29, 1, 0xc0, 0xf, 0);
 }
 
 void func_02078250(UnkStruct_02076058 *object) {

@@ -95,7 +95,7 @@ BattleSub48::~BattleSub48() {
 
 void BattleSub48::func_ov007_02224270() {
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
-    screen.func_02027624(1);
+    screen.SetObjVramMode(1);
     ChangeDir("/Game/Confrontation/Obj/");
     screen.LoadCharacters("vs_u_obj_ability_32k.nce_ncg1D.bin", 0x1000, 0);
     screen.LoadPalette("vs_u_obj_ability_32k_ncl.bin", 0x20, 0x40);
@@ -140,7 +140,7 @@ void BattleSub48::func_ov007_02224444() {
     u8 i;
     u8 j;
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
-    screen.func_02027624(1);
+    screen.SetObjVramMode(1);
     ChangeDir("/Game/Confrontation/Obj/");
     if (mUnk_3c < 2) {
         if (entries[mUnk_3c].mUnk_12 != 0) {
@@ -150,8 +150,8 @@ void BattleSub48::func_ov007_02224444() {
                 i = 0;
                 do {
                     mAnims[i] = new CellAnimation("vs_u_obj_ability_32k_nce.bin", 0, 1, 1);
-                    mAnims[i]->mCharBase = screen.func_020276f4(0x1000);
-                    mAnims[i]->mUnk_11 = 1;
+                    mAnims[i]->mCharBase = screen.GetCharBase(0x1000);
+                    mAnims[i]->mPaletteBase = 1;
                     i++;
                 } while (i < 4);
                 mAnims[0]->SetAnimation(9);
@@ -199,8 +199,8 @@ void BattleSub48::func_ov007_02224444() {
     i = 4;
     do {
         mAnims[i] = new CellAnimation("vs_u_obj_ability_32k_nce.bin", 0, 1, 1);
-        mAnims[i]->mCharBase = screen.func_020276f4(0x1000);
-        mAnims[i]->mUnk_11 = 1;
+        mAnims[i]->mCharBase = screen.GetCharBase(0x1000);
+        mAnims[i]->mPaletteBase = 1;
         i++;
     } while (i < 7);
     mAnims[4]->SetAnimation(11);
@@ -226,8 +226,8 @@ void BattleSub48::func_ov007_02224444() {
         do {
             s32 value = data_ov007_022790c8[mUnk_0f][i];
             mAnims[j] = new CellAnimation("vs_u_obj_updown_32k_nce.bin", 0, 1, 1);
-            mAnims[j]->mCharBase = screen.func_020276f4(0x3400);
-            mAnims[j]->mUnk_11 = 3;
+            mAnims[j]->mCharBase = screen.GetCharBase(0x3400);
+            mAnims[j]->mPaletteBase = 3;
             if (value > 0x1000) {
                 mAnims[j]->SetAnimation(0);
             } else if (value < 0x1000) {
@@ -239,12 +239,12 @@ void BattleSub48::func_ov007_02224444() {
             i++;
         } while (i < 6);
         mAnims[13] = new CellAnimation("vs_emblem_00_32k_nce.bin", 0, 1, 1);
-        mAnims[13]->mCharBase = screen.func_020276f4(0x6000);
-        mAnims[13]->mUnk_11 = 10;
+        mAnims[13]->mCharBase = screen.GetCharBase(0x6000);
+        mAnims[13]->mPaletteBase = 10;
         mAnims[13]->SetAnimation(0);
         mAnims[14] = new CellAnimation("vs_u_obj_updown_32k_nce.bin", 0, 1, 1);
-        mAnims[14]->mCharBase = screen.func_020276f4(0x3400);
-        mAnims[14]->mUnk_11 = 3;
+        mAnims[14]->mCharBase = screen.GetCharBase(0x3400);
+        mAnims[14]->mPaletteBase = 3;
         mAnims[14]->SetAnimation(3);
     }
     ChangeDir("/");
@@ -351,7 +351,7 @@ void BattleSub48::func_ov007_02224c90() {
         u16 angle = c * 0x2aaa + 0xc000;
         if (mUnk_0e_1) {
             u8 slot = i + 7;
-            if (mAnims[slot]->mUnk_0e != 2) {
+            if (mAnims[slot]->mAnimIndex != 2) {
                 step = angle >> 4;
                 x = 110.0f + 70.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
                 y = (float) (u32) mUnk_16 + 70.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
@@ -363,7 +363,7 @@ void BattleSub48::func_ov007_02224c90() {
             step = angle >> 4;
             x = 110.0f + 50.0f * ((float) FX_SinCosTable_[step * 2 + 1] / 4096.0f);
             y = (float) (u32) mUnk_16 + 50.0f * ((float) FX_SinCosTable_[step * 2] / 4096.0f);
-            mAnims[14]->func_0202a3ec(0, i, x, y, 1);
+            mAnims[14]->DrawFrame(0, i, x, y, 1);
         }
         i++;
     } while (i < 6);
@@ -380,7 +380,7 @@ void BattleSub48::func_ov007_02224ef8() {
             mAnims[slot]->Update();
             mAnims[slot]->Draw(0, (s16) (x + (i == 0 ? 30 : -30)), (s16) y, 1);
         }
-        mAnims[14]->func_0202a3ec(0, mUnk_12[i], x, y, 1);
+        mAnims[14]->DrawFrame(0, mUnk_12[i], x, y, 1);
         i++;
     } while (i < 2);
 }

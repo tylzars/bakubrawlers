@@ -108,8 +108,8 @@ void BattleCardEffect::func_ov007_022716e8() {
     screen.LoadPalette(path, mPalette << 5, 0);
     sprintf(path, "%s_nce.bin", data_ov007_0227c02c[mKind].mName);
     mAnim = new CellAnimation(path, 0, 1, 1);
-    mAnim->mCharBase = screen.func_020276f4(mUnk_14);
-    mAnim->mUnk_11   = mPalette;
+    mAnim->mCharBase = screen.GetCharBase(mUnk_14);
+    mAnim->mPaletteBase   = mPalette;
     mAnim->SetAnimation(0);
     ChangeDir("/");
 }
@@ -126,5 +126,5 @@ int BattleCardEffect::func_ov007_02271888() {
         }
     }
     mAnim->Draw(data_ov007_0227c02c[mKind].mScreen, 0x80, 0x60, 0);
-    return mAnim->mUnk_12;
+    return mAnim->mFinished;
 }

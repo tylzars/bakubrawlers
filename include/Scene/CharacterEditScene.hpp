@@ -59,7 +59,7 @@ public:
     /* 20 */ u32 mUnk_20;
     /* 24 */ UnkStruct_0205401c *mModel;
     /* 28 */ Camera *mCamera;
-    /* 2c */ UnkStruct_02029ca8 *mPalette;
+    /* 2c */ ModelLightGroup *mPalette;
     /* 30 */ u8 mState;
     /* 31 */ u8 mUnk_31;
     /* 32 */ u16 mUnk_32;

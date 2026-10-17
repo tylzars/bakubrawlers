@@ -26,8 +26,8 @@ extern const u8 data_0209e538[];
 TaskBase::TaskBase() {
     mHandle0     = 0;
     mHandle1     = 0;
-    mUnk_0c      = 0;
-    mUnk_0d      = 0;
+    mStatus0      = 0;
+    mStatus1      = 0;
     mInitialized = 0;
 }
 
@@ -54,7 +54,7 @@ void TaskBase::Init() {
     mInitialized = 1;
 }
 
-void TaskBase::func_020523f8() {
+void TaskBase::Release() {
     if (mInitialized == 0) {
         return;
     }
@@ -64,19 +64,19 @@ void TaskBase::func_020523f8() {
     mInitialized = 0;
 }
 
-void TaskBase::func_0205242c() {
+void TaskBase::UpdateHandles() {
     if (mInitialized != 0) {
-        mUnk_0c = func_02051e40(mHandle0);
-        mUnk_0d = func_02051e40(mHandle1);
+        mStatus0 = func_02051e40(mHandle0);
+        mStatus1 = func_02051e40(mHandle1);
     }
     func_02051a3c();
 }
 
-void TaskBase::func_02052460(const char *path) {
+void TaskBase::Start0(const char *path) {
     func_02051ed4(mHandle0, path);
 }
 
-void TaskBase::func_02052470(const char *path) {
+void TaskBase::Start1(const char *path) {
     func_02051ed4(mHandle1, path);
 }
 
@@ -88,11 +88,11 @@ void TaskBase::func_02052494() {
     func_02051fb8(mHandle1, 0);
 }
 
-void TaskBase::func_020524a8() {
+void TaskBase::Stop0() {
     func_02051f5c(mHandle0);
 }
 
-void TaskBase::func_020524b8() {
+void TaskBase::Stop1() {
     func_02051f5c(mHandle1);
 }
 
@@ -114,7 +114,7 @@ static void func_02052500(void *ptr) {
 
 static void func_02052518(void *unused) {}
 
-void TaskBase::func_0205251c() {
+void TaskBase::Wait() {
     if (mInitialized != 0) {
         func_02051a88();
     } else {

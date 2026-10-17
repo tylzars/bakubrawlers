@@ -58,7 +58,7 @@ void UnlockPopup::Update() {
             break;
         case 1:
             if (SpriteManager::Get().sFade[1] <= 1) {
-                mWindow->mUnk_064 = 1;
+                mWindow->mEnabled = 1;
                 mState++;
             }
             break;
@@ -91,14 +91,14 @@ void UnlockPopup::InitDisplay() {
 
 void UnlockPopup::Load() {
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(1, 1, 0, "union_b_bg_window_b_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "union_b_bg_window_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_b_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_a_nsc.bin", 0, 0, 0);
     SpriteScreen &bottom = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/2D/union_b/");
     bottom.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0, 0);
     bottom.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
-    mMessages       = (MessageFile *) func_02023504("/font/mes_Unlock.mes", 0, 0, 0, 0, 0);
+    mMessages       = (MessageFile *) LoadFile("/font/mes_Unlock.mes", 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x18, 0xc);
     mGlyphCount     = TextManager::Get().GlyphCount(9);
     mTextBuffer     = OS_Alloc(mTextBufferSize);
@@ -113,12 +113,12 @@ void UnlockPopup::Load() {
     mWindow->SetCells(2, sMenuCells);
     mWindow->mCursor->mSelection = -1;
     mWindow->mCursor->mSelection = 0;
-    mWindow->mUnk_064            = 0;
+    mWindow->mEnabled            = 0;
 }
 
 void UnlockPopup::Draw() {
     mWindow->Draw();
-    SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, 9, 0x20, 0x38, 2, 0x40, 0xf, 0);
+    SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, 9, 0x20, 0x38, 2, 0x40, 0xf, 0);
 }
 
 void UnlockPopup::PrintMessage() {
@@ -132,7 +132,7 @@ void UnlockPopup::PrintMessage() {
     MessageFile *table = mMessages;
     text.Print(table->GetText(id), table->GetLength(id), mTextBuffer, 0x18, 0xc, &height, &width, NULL, 0, 2, 0x42, 0xe,
                0, 0, 1, 1, 1);
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x2000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x2000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void UnlockPopup::ClearText() {

@@ -260,7 +260,7 @@ int BattleSlot::func_ov007_02222c34(u8 n, u16 *a, u16 *b) {
                                 } while (i < data_020d433c.mPlayerCount);
                             }
                             if (mUnk_0c - sum > 80) {
-                                SoundManager::Get().func_020246f8(0x6c);
+                                SoundManager::Get().StartSeqArc(0x6c);
                                 func_020247fc(&SoundManager::Get(), 0x312);
                                 mUnk_1e = 60;
                             }
@@ -273,7 +273,7 @@ int BattleSlot::func_ov007_02222c34(u8 n, u16 *a, u16 *b) {
                     mUnk_0c = mUnk_24[2];
                     mUnk_0c += func_ov007_0221d348(mUnk_24[3]);
                     if (mUnk_0c >= 50) {
-                        SoundManager::Get().func_020246f8(0x6c);
+                        SoundManager::Get().StartSeqArc(0x6c);
                         func_020247fc(&SoundManager::Get(), 0x312);
                         mUnk_1e = 60;
                     }
@@ -287,7 +287,7 @@ int BattleSlot::func_ov007_02222c34(u8 n, u16 *a, u16 *b) {
                         mUnk_12 += func_ov007_0221d348(mUnk_24[2]);
                         if (mUnk_24[0] >= func_ov007_0221d348(100)) {
                             mUnk_0c = 100;
-                            SoundManager::Get().func_020246f8(0x6c);
+                            SoundManager::Get().StartSeqArc(0x6c);
                             func_020247fc(&SoundManager::Get(), 0x312);
                         } else {
                             mUnk_0c = 10;
@@ -331,7 +331,7 @@ u32 BattleSlot::func_ov007_022230b4(u16 value, u8 n) {
                         mUnk_14_1 = 1;
                         mUnk_16 = mUnk_2c[2];
                         if (!mUnk_14_2) {
-                            SoundManager::Get().func_020246f8(0x6c);
+                            SoundManager::Get().StartSeqArc(0x6c);
                             func_020247fc(&SoundManager::Get(), 0x312);
                         }
                     }

@@ -46,7 +46,7 @@ void GimmickUnk_022308a8::Update() {
             BattlePlayer *p = data_020d433c.mBattlePlayers->Current();
             BattleRecord *r = &p->mRecords[p->mRecord];
             if (!mUnk_54) {
-                SoundManager::Get().func_020246f8(0x64);
+                SoundManager::Get().StartSeqArc(0x64);
                 mUnk_54 = 1;
             }
             data_020d433c.mUnk_14 &= 8;

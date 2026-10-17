@@ -171,7 +171,7 @@ void MyroomGiftScene::InitDisplay() {
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     MI_CpuClearFast((void *) 0x6200000, 0x20000);
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(0, 1);
+    SpriteManager::Get().SetupMode(0, 1);
     GX_SetGraphicsMode(1, 0, 0);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
@@ -210,28 +210,28 @@ void MyroomGiftScene::InitDisplay() {
 
 void MyroomGiftScene::func_ov008_0221de34() {
     ChangeDir("/Game/Card/Graphic/");
-    func_02025b64(0, 7, 0, "cardspec_u_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(0, 11, 0, "cardspec_u_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 1, 0, "cardspec_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 7, 0, "cardspec_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 11, 0, "cardspec_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0, "cardspec_u_bg_00_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/Myroom/");
-    func_02025b64(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
     SpriteScreen &main = SpriteManager::Get().Screen(0);
-    main.func_02027624(3);
+    main.SetObjVramMode(3);
     LoadEmblem(6);
     ChangeDir("/Game/Myroom/");
     main.LoadCharacters("myroom_gift_u_obj_00.nce_ncg1D.bin", 0x3000, 0);
     main.LoadPalette("myroom_gift_u_obj_00_ncl.bin", 0, 0);
     mCellAnim            = new CellAnimation("myroom_gift_u_obj_00_nce.bin", 0, 1, 1);
-    mCellAnim->mCharBase = main.func_020276f4(0x3000);
-    mCellAnim->mUnk_11   = 0;
+    mCellAnim->mCharBase = main.GetCharBase(0x3000);
+    mCellAnim->mPaletteBase   = 0;
     mCellAnim->SetAnimation(0);
     ChangeDir("/");
     mWindow = NULL;
     mWindow = new SelectWindow(0xe, data_ov008_02228b28, -1);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
-    sub.func_02027624(3);
+    sub.SetObjVramMode(3);
     ChangeDir("/");
     sub.LoadCharacters("Game/Myroom/myroom_gift_b_obj.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("Game/Myroom/myroom_gift_b_obj_ncl.bin", 0, 0);
@@ -244,22 +244,22 @@ void MyroomGiftScene::func_ov008_0221de34() {
             const u8 *ids = data_ov008_02228a7c.ids;
             ids += i;
             u8 value = *ids;
-            *(u8 *) &data_ov008_0222a160[i].mUnk_04 = value;
-            data_ov008_0222a160[i].mUnk_18[0] = value;
-            data_ov008_0222a160[i].mUnk_18[1] = value;
-            data_ov008_0222a160[i].mUnk_18[2] = value;
+            *(u8 *) &data_ov008_0222a160[i].mAnimIndex = value;
+            data_ov008_0222a160[i].mAnimIndices[0] = value;
+            data_ov008_0222a160[i].mAnimIndices[1] = value;
+            data_ov008_0222a160[i].mAnimIndices[2] = value;
         } else {
-            *(u8 *) &data_ov008_0222a160[i].mUnk_04 = 0xb;
-            data_ov008_0222a160[i].mUnk_18[0] = 0xb;
-            data_ov008_0222a160[i].mUnk_18[1] = 0xb;
-            data_ov008_0222a160[i].mUnk_18[2] = 0xb;
+            *(u8 *) &data_ov008_0222a160[i].mAnimIndex = 0xb;
+            data_ov008_0222a160[i].mAnimIndices[0] = 0xb;
+            data_ov008_0222a160[i].mAnimIndices[1] = 0xb;
+            data_ov008_0222a160[i].mAnimIndices[2] = 0xb;
         }
     }
     mWindow->SetCells(10, data_ov008_0222a160);
     mWindow->SetCells(4, data_ov008_02228ab8);
     ChangeDir("/font/");
     if (mMessages == NULL) {
-        mMessages = (MessageFile *) func_02023504("mes_myroom.mes", 0, 0, 0, 0, 0);
+        mMessages = (MessageFile *) LoadFile("mes_myroom.mes", 0, 0, 0, 0, 0);
     }
     for (u8 i = 0; i < 2; i++) {
         mTextBufferSize[i] = (u16) TextManager::Get().BufferSize((s16) data_ov008_02228a56[i][0], (s16) data_ov008_02228a56[i][1]);
@@ -272,8 +272,8 @@ void MyroomGiftScene::func_ov008_0221de34() {
     TextManager::Get().SetColor(0, 0, 0xf);
     mMessage = new MessageWindow("mes_myroom", 1, 0x6000);
     mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->func_02065be4(0xd8);
-    mMessage->func_02065890(0x22, 0, 1);
+    mMessage->SetWidth(0xd8);
+    mMessage->StartMessage(0x22, 0, 1);
     func_ov008_0221e9a0();
     ChangeDir("/");
 }
@@ -298,9 +298,9 @@ void MyroomGiftScene::LoadEmblem(u8 index) {
     }
     ChangeDir("/Game/Myroom/");
     sprintf(name, "myroom_gift_u_obj_emblem_%02d.nce_ncg1D.bin", index + 1);
-    func_02025b64(0, 4, 0, name, 0, 0, 0);
+    LoadAndQueueUpload(0, 4, 0, name, 0, 0, 0);
     sprintf(name, "myroom_gift_u_obj_emblem_%02d_ncl.bin", index + 1);
-    func_02025b64(0, 0, 0, name, 0, 0, 0);
+    LoadAndQueueUpload(0, 0, 0, name, 0, 0, 0);
     ChangeDir("/");
     mUnk_55 = 0;
     mUnk_42 = 0x100;
@@ -325,12 +325,12 @@ void MyroomGiftScene::func_ov008_0221e670() {
         int y = i * 32 + 0x24;
         j     = 0;
         do {
-            SpriteManager::Get().Screen(0).func_02027778((void *) data_ov008_02228a70, 1, j * 32 + 0xe, y, 0, (u16) (i * 0x18 + j * 8), 0, 0);
+            SpriteManager::Get().Screen(0).AddOam((void *) data_ov008_02228a70, 1, j * 32 + 0xe, y, 0, (u16) (i * 0x18 + j * 8), 0, 0);
             j++;
         } while (j < 3);
         i++;
     } while (i < 4);
-    SpriteManager::Get().Screen(0).func_02027778(mGlyphBuffers[0], 4, 0x70, 0x1e, 0, 0xa0, 0xf, 0);
+    SpriteManager::Get().Screen(0).AddOam(mGlyphBuffers[0], 4, 0x70, 0x1e, 0, 0xa0, 0xf, 0);
     s16 x;
     u8 first;
     u8 last;
@@ -352,13 +352,13 @@ void MyroomGiftScene::func_ov008_0221e670() {
     }
     j = first;
     do {
-        SpriteManager::Get().Screen(0).func_02027778((u8 *) mGlyphBuffers[1] + j * 0xc, 1, x, 8, 0, 0x100, 0xf, 0);
+        SpriteManager::Get().Screen(0).AddOam((u8 *) mGlyphBuffers[1] + j * 0xc, 1, x, 8, 0, 0x100, 0xf, 0);
         j++;
     } while (j < last);
 }
 
 void MyroomGiftScene::DrawWindows() {
-    mMessage->func_020658d0();
+    mMessage->Update();
     mWindow->Draw();
 }
 
@@ -380,9 +380,9 @@ void MyroomGiftScene::func_ov008_0221e9a0() {
     if (&mUnk_44 != NULL) {
         mUnk_44 = height;
     }
-    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x5000, mTextBuffers[0], mTextBufferSize[0], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x5000, mTextBuffers[0], mTextBufferSize[0], 0);
     ClearTextBuffers(1);
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     TextManager &text2         = TextManager::Get();
     s16 height2;
     s16 width2;
@@ -392,8 +392,8 @@ void MyroomGiftScene::func_ov008_0221e9a0() {
     file       = mMessages;
     text2.Print(file->GetText(index2), file->GetLength(index2), mTextBuffers[1], 0x40, 2, &height2, &width2, &mUnk_40, 0, 2,
                 0x21, 0xe, 0, 0, 0, 1, 1);
-    TextManager::Get().mUnk_5b = 0;
-    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x8000, mTextBuffers[1], mTextBufferSize[1], 0);
+    TextManager::Get().mUse4bppFont = 0;
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x8000, mTextBuffers[1], mTextBufferSize[1], 0);
     if (mHasEmblem[mEmblem] == 0) {
         mUnk_44 = 0;
     }
@@ -410,20 +410,20 @@ s32 MyroomGiftScene::func_ov008_0221ece8() {
             mUnk_52 = result / 4;
             u8 emblem = data_ov008_02228a7c.order[result];
             if (emblem != mEmblem) {
-                SoundManager::Get().func_020246f8(0);
+                SoundManager::Get().StartSeqArc(0);
             }
         } else {
             switch (id) {
                 case 0xc:
                     if (previous > 0) {
                         mUnk_55--;
-                        SoundManager::Get().func_020246f8(0);
+                        SoundManager::Get().StartSeqArc(0);
                     }
                     break;
                 case 0xd:
                     if (mUnk_44 > 0x80) {
                         mUnk_55++;
-                        SoundManager::Get().func_020246f8(0);
+                        SoundManager::Get().StartSeqArc(0);
                     }
                     break;
             }
@@ -440,7 +440,7 @@ s32 MyroomGiftScene::func_ov008_0221ece8() {
 s8 MyroomGiftScene::func_ov008_0221eec4() {
     s8 result  = -1;
     BOOL moved = FALSE;
-    if (InputManager::Get().IsTrigger(0x40)) {
+    if (InputManager::Get().IsTrigger(KEY_UP)) {
         moved = TRUE;
         if (mUnk_52 != 0) {
             mUnk_52--;
@@ -450,7 +450,7 @@ s8 MyroomGiftScene::func_ov008_0221eec4() {
                 mUnk_52--;
             }
         }
-    } else if (InputManager::Get().IsTrigger(0x80)) {
+    } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
         moved = TRUE;
         mUnk_52++;
         if (mUnk_52 >= 3) {
@@ -459,7 +459,7 @@ s8 MyroomGiftScene::func_ov008_0221eec4() {
             mUnk_52 = 0;
         }
     }
-    if (InputManager::Get().IsTrigger(0x20)) {
+    if (InputManager::Get().IsTrigger(KEY_LEFT)) {
         moved = TRUE;
         if (mUnk_51 != 0) {
             mUnk_51--;
@@ -471,7 +471,7 @@ s8 MyroomGiftScene::func_ov008_0221eec4() {
                 } while (mUnk_51 != 0 && data_ov008_02228a64[mUnk_52][mUnk_51] == 0);
             }
         }
-    } else if (InputManager::Get().IsTrigger(0x10)) {
+    } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
         moved = TRUE;
         mUnk_51++;
         if (mUnk_51 >= 4) {
@@ -482,7 +482,7 @@ s8 MyroomGiftScene::func_ov008_0221eec4() {
     }
     if (moved) {
         result = mUnk_51 + mUnk_52 * 4;
-        SoundManager::Get().func_020246f8(0);
+        SoundManager::Get().StartSeqArc(0);
     }
     return result;
 }
@@ -490,38 +490,38 @@ s8 MyroomGiftScene::func_ov008_0221eec4() {
 void MyroomGiftScene::func_ov008_0221f194() {
     if (mResult == 2) {
         SpriteManager::Get().StartFade(3);
-        SoundManager::Get().func_020246f8(1);
+        SoundManager::Get().StartSeqArc(1);
         mState = 3;
     } else {
         s32 selection = func_ov008_0221ece8();
         if (selection >= 0) {
             LoadEmblem(data_ov008_02228a7c.order[selection]);
             func_ov008_0221e9a0();
-            if (mWindow->mUnk_061 != 1) {
-                mWindow->mUnk_061 = 4;
-                mWindow->func_0205c7c8(-1);
+            if (mWindow->mState != 1) {
+                mWindow->mState = 4;
+                mWindow->Reset(-1);
             }
         }
     }
     WindowItem *items = mWindow->mCursor->mItems;
     if (mUnk_55 != 0) {
-        if (mWindow->mCells[12]->mUnk_0e == 2) {
+        if (mWindow->mCells[12]->mAnimIndex == 2) {
             mWindow->mCells[12]->SetAnimation(0);
             items[12].mFlags = 0x208;
         }
     } else {
-        if (mWindow->mCells[12]->mUnk_0e != 2) {
+        if (mWindow->mCells[12]->mAnimIndex != 2) {
             mWindow->mCells[12]->SetAnimation(2);
             items[12].mFlags = 0x8000;
         }
     }
     if (mUnk_44 > 0x80) {
-        if (mWindow->mCells[13]->mUnk_0e == 5) {
+        if (mWindow->mCells[13]->mAnimIndex == 5) {
             mWindow->mCells[13]->SetAnimation(3);
             items[13].mFlags = 0x408;
         }
     } else {
-        if (mWindow->mCells[13]->mUnk_0e != 5) {
+        if (mWindow->mCells[13]->mAnimIndex != 5) {
             mWindow->mCells[13]->SetAnimation(5);
             items[13].mFlags = 0x8000;
         }

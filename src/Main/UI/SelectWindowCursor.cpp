@@ -11,14 +11,14 @@ SelectWindowCursor::SelectWindowCursor(u32 count, const void *table, u32 unk3) {
     mSelection = unk3;
     mUnk_07    = -1;
     mUnk_08    = 0;
-    mUnk_09    = 0;
-    mUnk_0a    = 0;
-    mUnk_0b    = 0;
-    mUnk_0c    = 0;
-    mUnk_0d    = 0;
-    mUnk_0e    = 0;
-    mUnk_0f    = 0;
-    mUnk_10    = 0;
+    mScrollItem    = 0;
+    mDragging    = 0;
+    mScrollItemY    = 0;
+    mScrollAreaY    = 0;
+    mScrollAreaHeight    = 0;
+    mShownRowCount    = 0;
+    mRowCount    = 0;
+    mScrollMax    = 0;
     mScroll    = 0;
     mItems     = (WindowItem *) table;
 }
@@ -29,24 +29,24 @@ u32 SelectWindowCursor::func_0202f468(u32 unk1) {
     if (unk1 != 0) {
         switch (result) {
             case 1:
-                SoundManager::Get().func_020246f8(0);
+                SoundManager::Get().StartSeqArc(0);
                 break;
             case 2:
-                SoundManager::Get().func_020246f8(1);
+                SoundManager::Get().StartSeqArc(1);
                 break;
             case 3:
-                SoundManager::Get().func_020246f8(0);
+                SoundManager::Get().StartSeqArc(0);
                 break;
             case 5:
             case 7:
                 break;
             case 6:
-                SoundManager::Get().func_020246f8(2);
+                SoundManager::Get().StartSeqArc(2);
                 mSelection = -1;
                 break;
             default:
                 if (mSelection != previous) {
-                    SoundManager::Get().func_020246f8(5);
+                    SoundManager::Get().StartSeqArc(5);
                 }
                 break;
         }
@@ -57,18 +57,18 @@ u32 SelectWindowCursor::func_0202f468(u32 unk1) {
 u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
     u32 mode   = 0;
     u32 result = 0;
-    if (mUnk_0a != 0) {
-        if (mUnk_10 != 0) {
+    if (mDragging != 0) {
+        if (mScrollMax != 0) {
             s32 pos;
-            if ((pos = mUnk_0d) >= (s16) (TouchManager::Get().mY - mUnk_0c)) {
-                if ((s16) (TouchManager::Get().mY - mUnk_0c) < 0) {
+            if ((pos = mScrollAreaHeight) >= (s16) (TouchManager::Get().mY - mScrollAreaY)) {
+                if ((s16) (TouchManager::Get().mY - mScrollAreaY) < 0) {
                     pos = 0;
                 } else {
-                    pos = (s16) (TouchManager::Get().mY - mUnk_0c);
+                    pos = (s16) (TouchManager::Get().mY - mScrollAreaY);
                 }
             }
-            s32 range  = mUnk_0d - mItems[mUnk_09].mHeight;
-            s32 scroll = mUnk_10;
+            s32 range  = mScrollAreaHeight - mItems[mScrollItem].mHeight;
+            s32 scroll = mScrollMax;
             s32 q      = scroll * ((u8) pos + range / (scroll * 2)) / range;
             if (q <= scroll) {
                 if (q < 0) {
@@ -77,17 +77,17 @@ u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
                 scroll = q;
             }
             mScroll = scroll;
-            func_02030508();
+            RefreshScrollItemY();
             if (TouchManager::Get().mTouching != 0) {
-                mUnk_0a = 0;
+                mDragging = 0;
             }
         }
     } else {
-    if (TouchManager::Get().mUnk_57 != 0) {
+    if (TouchManager::Get().mPressed != 0) {
         mode = 1;
     } else if (TouchManager::Get().mTouching != 0) {
         mode = 2;
-    } else if (TouchManager::Get().mUnk_56 != 0) {
+    } else if (TouchManager::Get().mDown != 0) {
         mode = 3;
     }
     mUnk_05 = -1;
@@ -103,13 +103,13 @@ u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
                 a = TRUE;
             } else if (InputManager::Get().IsHeld(2)) {
                 b = TRUE;
-            } else if (InputManager::Get().IsTrigger(0x40)) {
+            } else if (InputManager::Get().IsTrigger(KEY_UP)) {
                 dir = 0;
-            } else if (InputManager::Get().IsTrigger(0x80)) {
+            } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
                 dir = 1;
-            } else if (InputManager::Get().IsTrigger(0x20)) {
+            } else if (InputManager::Get().IsTrigger(KEY_LEFT)) {
                 dir = 2;
-            } else if (InputManager::Get().IsTrigger(0x10)) {
+            } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
                 dir = 3;
             } else if (InputManager::Get().IsHeld(0x100)) {
                 r = TRUE;
@@ -249,7 +249,7 @@ u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
                 } else {
                     s8 i = 0;
                     do {
-                        if (func_0203055c(i)) {
+                        if (HasNeighbor(i)) {
                             cand = i;
                             break;
                         }
@@ -287,29 +287,29 @@ u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
             do {
                 if (!(mItems[i].mFlags & 0x8000)) {
                     if (mItems[i].mFlags & 0x10) {
-                        if (mUnk_10 != 0) {
-                            if (TouchManager::Get().func_02022860(mItems[i].mX, mUnk_0c, mItems[i].mWidth, mUnk_0d)) {
-                                mUnk_0a = 1;
+                        if (mScrollMax != 0) {
+                            if (TouchManager::Get().IsPressedIn(mItems[i].mX, mScrollAreaY, mItems[i].mWidth, mScrollAreaHeight)) {
+                                mDragging = 1;
                                 break;
                             }
                         }
-                    } else if (TouchManager::Get().func_02022860(mItems[i].mX, mItems[i].mY, mItems[i].mWidth,
+                    } else if (TouchManager::Get().IsPressedIn(mItems[i].mX, mItems[i].mY, mItems[i].mWidth,
                                                                  mItems[i].mHeight)) {
-                        if (mUnk_10 != 0) {
+                        if (mScrollMax != 0) {
                             if (mItems[i].mFlags & 0x20) {
                                 if (mScroll != 0) {
                                     mScroll--;
-                                    func_02030508();
+                                    RefreshScrollItemY();
                                     if (playSound != 0) {
-                                        SoundManager::Get().func_020246f8(5);
+                                        SoundManager::Get().StartSeqArc(5);
                                     }
                                 }
                             } else if (mItems[i].mFlags & 0x40) {
-                                if (mScroll < mUnk_10) {
+                                if (mScroll < mScrollMax) {
                                     mScroll++;
-                                    func_02030508();
+                                    RefreshScrollItemY();
                                     if (playSound != 0) {
-                                        SoundManager::Get().func_020246f8(5);
+                                        SoundManager::Get().StartSeqArc(5);
                                     }
                                 }
                             }
@@ -318,7 +318,7 @@ u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
                         mUnk_07 = sel;
                         mUnk_08 = mUnk_07 == mSelection ? 1 : 0;
                         mUnk_05 = sel;
-                        if (func_0203055c(mUnk_05)) {
+                        if (HasNeighbor(mUnk_05)) {
                             mSelection = mUnk_05;
                         }
                         result = 4;
@@ -336,7 +336,7 @@ u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
             u8 i = 0;
             do {
                 if (!(mItems[i].mFlags & 0x8000)) {
-                    if (TouchManager::Get().func_020228c0(mItems[i].mX, mItems[i].mY, mItems[i].mWidth,
+                    if (TouchManager::Get().IsReleasedIn(mItems[i].mX, mItems[i].mY, mItems[i].mWidth,
                                                           mItems[i].mHeight)
                         && mUnk_07 == i) {
                         u32 kind = mItems[i].mUnk_18;
@@ -366,25 +366,25 @@ u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
             u8 i = 0;
             do {
                 if (!(mItems[i].mFlags & 0x8000)) {
-                    if (TouchManager::Get().func_02022830(mItems[i].mX, mItems[i].mY, mItems[i].mWidth,
+                    if (TouchManager::Get().IsDownIn(mItems[i].mX, mItems[i].mY, mItems[i].mWidth,
                                                           mItems[i].mHeight)) {
-                        if (mUnk_10 != 0) {
-                            if (TouchManager::Get().func_02022890(mItems[i].mX, mItems[i].mY, mItems[i].mWidth,
+                        if (mScrollMax != 0) {
+                            if (TouchManager::Get().IsTriggerIn(mItems[i].mX, mItems[i].mY, mItems[i].mWidth,
                                                                   mItems[i].mHeight)) {
                                 if (mItems[i].mFlags & 0x20) {
                                     if (mScroll != 0) {
                                         mScroll--;
-                                        func_02030508();
+                                        RefreshScrollItemY();
                                         if (playSound != 0) {
-                                            SoundManager::Get().func_020246f8(5);
+                                            SoundManager::Get().StartSeqArc(5);
                                         }
                                     }
                                 } else if (mItems[i].mFlags & 0x40) {
-                                    if (mScroll < mUnk_10) {
+                                    if (mScroll < mScrollMax) {
                                         mScroll++;
-                                        func_02030508();
+                                        RefreshScrollItemY();
                                         if (playSound != 0) {
-                                            SoundManager::Get().func_020246f8(5);
+                                            SoundManager::Get().StartSeqArc(5);
                                         }
                                     }
                                 }
@@ -411,51 +411,51 @@ u32 SelectWindowCursor::func_0202f61c(u32 playSound) {
     return result;
 }
 
-void SelectWindowCursor::func_02030474(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
-    mUnk_0c = unk1;
+void SelectWindowCursor::SetupScroll(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
+    mScrollAreaY = unk1;
     s32 d   = unk2 - unk1;
     if (d < 0) {
         d = 0;
     }
-    mUnk_0d = d;
-    mUnk_0e = unk3;
-    mUnk_0f = *(u8 *) &unk4;
-    s32 e   = *(u8 *) &unk4 - mUnk_0e;
+    mScrollAreaHeight = d;
+    mShownRowCount = unk3;
+    mRowCount = *(u8 *) &unk4;
+    s32 e   = *(u8 *) &unk4 - mShownRowCount;
     if (e < 0) {
         e = 0;
     }
-    mUnk_10 = e;
-    mUnk_0a = 0;
-    mUnk_0b = 0;
+    mScrollMax = e;
+    mDragging = 0;
+    mScrollItemY = 0;
     mScroll = 0;
     u8 i = 0;
     do {
         if (mItems[i].mFlags & 0x10) {
-            mUnk_09 = i;
+            mScrollItem = i;
             break;
         }
         i++;
     } while (i < mCount);
-    func_02030508();
+    RefreshScrollItemY();
 }
 
 void SelectWindowCursor::SetScroll(u32 scroll) {
-    if (scroll > mUnk_10) {
-        scroll = mUnk_10;
+    if (scroll > mScrollMax) {
+        scroll = mScrollMax;
     }
     mScroll = scroll;
-    func_02030508();
+    RefreshScrollItemY();
 }
 
-void SelectWindowCursor::func_02030508() {
-    if (mUnk_10 == 0) {
-        mUnk_0b = mUnk_0c;
+void SelectWindowCursor::RefreshScrollItemY() {
+    if (mScrollMax == 0) {
+        mScrollItemY = mScrollAreaY;
         return;
     }
-    mUnk_0b = mUnk_0c + mScroll * (mUnk_0d - mItems[mUnk_09].mHeight) / mUnk_10;
+    mScrollItemY = mScrollAreaY + mScroll * (mScrollAreaHeight - mItems[mScrollItem].mHeight) / mScrollMax;
 }
 
-BOOL SelectWindowCursor::func_0203055c(int index) {
+BOOL SelectWindowCursor::HasNeighbor(int index) {
     if (index == -1) {
         return FALSE;
     }

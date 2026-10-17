@@ -36,7 +36,7 @@ BattleCardCamera::~BattleCardCamera() {
     }
     u8 i = 0;
     do {
-        UnkStruct_0203d374 *p = mUnk_10[i];
+        BakuganModel *p = mUnk_10[i];
         if (p) {
             delete p;
         }
@@ -89,13 +89,13 @@ extern const u8 data_ov007_02279e88[];
 static inline Camera *BattleCamera() { return data_020d433c.mBattlePlayers->mCamera; }
 
 void BattleCardCamera::func_ov007_02244bb4() {
-    mUnk_10[0] = new UnkStruct_0203d374();
-    mUnk_10[0]->func_0203d4dc(mUnk_2b, mUnk_2d, 3);
-    mUnk_10[0]->mUnk_49 = 1;
-    mUnk_10[1] = new UnkStruct_0203d374();
-    mUnk_10[1]->func_0203d4dc(mUnk_2c, mUnk_2e, 3);
-    mUnk_10[1]->mUnk_49 = 1;
-    UnkStruct_0203d374 *p0 = mUnk_10[0];
+    mUnk_10[0] = new BakuganModel();
+    mUnk_10[0]->Setup(mUnk_2b, mUnk_2d, 3);
+    mUnk_10[0]->mAnimUpdateEnabled = 1;
+    mUnk_10[1] = new BakuganModel();
+    mUnk_10[1]->Setup(mUnk_2c, mUnk_2e, 3);
+    mUnk_10[1]->mAnimUpdateEnabled = 1;
+    BakuganModel *p0 = mUnk_10[0];
     fx32 height            = 0x6000;
     p0->mPosition.x = -0xe000;
     p0->mPosition.y = height;
@@ -104,7 +104,7 @@ void BattleCardCamera::func_ov007_02244bb4() {
     p0->mRotX = 0;
     p0->mRotY = 0x4000;
     p0->mRotZ = 0;
-    UnkStruct_0203d374 *p1 = mUnk_10[1];
+    BakuganModel *p1 = mUnk_10[1];
     p1->mPosition.x = 0xe000;
     p1->mPosition.y = height;
     p1->mPosition.z = 0;
@@ -114,7 +114,7 @@ void BattleCardCamera::func_ov007_02244bb4() {
     *(s16 *) &p1->mRotY = -0x4000;
     p1->mRotZ = 0;
     mUnk_18 = new BattleMapModel(2);
-    mUnk_18->func_02052768(0, 0);
+    mUnk_18->StartAnim(0, 0);
     BattleMapModel *model = mUnk_18;
     model->mRotX = 0;
     model->mRotY = 0x4000;
@@ -124,18 +124,18 @@ void BattleCardCamera::func_ov007_02244bb4() {
     Camera *camera = BattleCamera();
     camera->SetUp(0, 0x1000, 0);
     camera->SetClip(0x1000, 0x1388000);
-    camera->func_02026004(0x18e3);
+    camera->SetFov(0x18e3);
     camera->SetPosition(0x14cd, 0x1ddec, 0x6b852);
     camera->SetTarget(0, 0x7000, 0);
     ChangeDir("/Game/Battle/3d/MapCam");
-    mUnk_20 = func_02023504("card_cam_00.cam", 0, 0, 0, 0, 0);
+    mUnk_20 = LoadFile("card_cam_00.cam", 0, 0, 0, 0, 0);
     ChangeDir("/");
     if (mUnk_20) {
-        camera->func_0202610c(mUnk_20, 0);
+        camera->SetPath(mUnk_20, 0);
     }
     CameraManager::Get().mActive = 0;
-    CameraManager::Get().func_02026504(1, camera, 0);
-    mUnk_1c = new UnkStruct_02029ca8(data_ov007_02279e88);
+    CameraManager::Get().SetCamerasAndRequestMode(1, camera, 0);
+    mUnk_1c = new ModelLightGroup(data_ov007_02279e88);
 }
 
 // Copies the active camera into the 3D engine state and the camera manager's snapshot of it.
@@ -156,13 +156,13 @@ static inline void SnapshotCamera() {
 
 void BattleCardCamera::func_ov007_02244e98() {
     Camera *camera = data_020d433c.mBattlePlayers->mCamera;
-    camera->func_020264a4(0);
-    camera->func_02026180();
+    camera->AdvanceFrame(0);
+    camera->ApplyPath();
     SnapshotCamera();
-    mUnk_10[0]->func_0203d988();
-    mUnk_10[0]->func_0203dab0();
-    mUnk_10[1]->func_0203d988();
-    mUnk_10[1]->func_0203dab0();
+    mUnk_10[0]->Update();
+    mUnk_10[0]->DrawModel();
+    mUnk_10[1]->Update();
+    mUnk_10[1]->DrawModel();
     if (mUnk_27) {
         mUnk_18->func_020526bc();
     }

@@ -24,12 +24,12 @@ ConfrontEmblem03::ConfrontEmblem03(u8 index) {
     mUnk_0a = 0;
     mUnk_0b = -1;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
     sprintf(path, "vs_emblem_%02d_nce.bin", index);
     mAnim = new CellAnimation(path, 0, 1, 1);
-    mAnim->mCharBase = screen.func_020276f4(0x1c000);
-    mAnim->mUnk_11 = 11;
+    mAnim->mCharBase = screen.GetCharBase(0x1c000);
+    mAnim->mPaletteBase = 11;
     mAnim->SetAnimation(0);
     ChangeDir("/");
 }
@@ -52,7 +52,7 @@ void ConfrontEmblem03::func_ov007_0221f1b8(u8 slot, int flag) {
         mUnk_09 = 0x50;
     }
     mUnk_1c = 0.1f;
-    mAnim->func_02029f6c();
+    mAnim->ResetAnimation();
     mAnim->SetAnimation(0);
 }
 
@@ -82,7 +82,7 @@ void ConfrontEmblem03::func_ov007_0221f268() {
             }
             break;
         case 1:
-            if (mAnim->mUnk_12 == 0) {
+            if (mAnim->mFinished == 0) {
                 mAnim->Update();
             } else {
                 mUnk_07_0 = 0;
@@ -121,7 +121,7 @@ void ConfrontEmblem03::func_ov007_0221f3a4() {
             } else {
                 b = 4096.0f * mUnk_1c - 0.5f;
             }
-            mAnim->func_0202a494(1, (s32) mUnk_14, (s32) mUnk_18, 2, (s32) b, (s32) a, 0);
+            mAnim->DrawTransformed(1, (s32) mUnk_14, (s32) mUnk_18, 2, (s32) b, (s32) a, 0);
             break;
         }
         case 1: {
@@ -137,7 +137,7 @@ void ConfrontEmblem03::func_ov007_0221f3a4() {
             } else {
                 b = 4096.0f * mUnk_1c - 0.5f;
             }
-            mAnim->func_0202a494(1, (s32) mUnk_14, (s32) mUnk_18, 2, (s32) b, (s32) a, 0);
+            mAnim->DrawTransformed(1, (s32) mUnk_14, (s32) mUnk_18, 2, (s32) b, (s32) a, 0);
             break;
         }
         case 2:
@@ -169,7 +169,7 @@ int ConfrontEmblem03::func_ov007_0221f594() {
     if (result != -1) {
         mUnk_07_0 = 1;
         mUnk_04 = 1;
-        mAnim->func_02029f6c();
+        mAnim->ResetAnimation();
         mAnim->SetAnimation(anim);
     }
     return result;
@@ -242,7 +242,7 @@ void Confront03::vfunc_28() {
     }
     BattleData *data = mData;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
     char path[0x80];
     u8 nibble = mUnk_12 == 0 ? data->mEntries[0].mUnk_0d_0 : data->mEntries[1].mUnk_0d_0;
@@ -334,7 +334,7 @@ u8 Confront03::vfunc_40(int a) {
         }
     }
     mUnk_6d = a;
-    if (TouchManager::Get().mUnk_57 == 0) {
+    if (TouchManager::Get().mPressed == 0) {
         return 0;
     }
     int sound = -1;
@@ -350,7 +350,7 @@ u8 Confront03::vfunc_40(int a) {
         i++;
     } while (i < 4);
     if (result != -1) {
-        SoundManager::Get().func_020246f8(sound);
+        SoundManager::Get().StartSeqArc(sound);
     }
     if (result == -1) {
         return 0;

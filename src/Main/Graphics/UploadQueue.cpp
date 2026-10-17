@@ -180,14 +180,14 @@ static inline void FlushPendingFrees() {
     }
 }
 
-u32 func_02025b64(u32 screen, u32 kind, u32 offset, const char *path, u32 unk5, u32 unk6, u32 unk7) {
+u32 LoadAndQueueUpload(u32 screen, u32 kind, u32 offset, const char *path, u32 unk5, u32 unk6, u32 unk7) {
     FlushPendingFrees();
     u32 size;
-    void *data = func_02023504(path, 0, unk5, unk6, &size, unk7);
-    return func_02025c1c(screen, kind, offset, data, size, 1);
+    void *data = LoadFile(path, 0, unk5, unk6, &size, unk7);
+    return QueueUpload(screen, kind, offset, data, size, 1);
 }
 
-u32 func_02025c1c(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 freeData) {
+u32 QueueUpload(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 freeData) {
     FlushPendingFrees();
     if (func_020258f4(screen, kind, offset, data, size, freeData)) {
         return offset + size;
@@ -209,7 +209,7 @@ u32 func_02025c1c(u32 screen, u32 kind, u32 offset, void *data, u32 size, u32 fr
 void func_02025d74() {
     FlushPendingFrees();
     if (data_0220e630 != 0) {
-        func_020254f0((FrameCallback) func_020257c8, NULL);
+        QueueFrameCallback((FrameCallback) func_020257c8, NULL);
     }
     data_0220e634 = 0;
 }

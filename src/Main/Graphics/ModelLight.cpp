@@ -24,7 +24,7 @@ ModelLight::ModelLight(u32 index, u32 enabled, u16 color, const s16 *direction) 
 
 ModelLight::~ModelLight() {}
 
-void ModelLight::func_02029c0c() {
+void ModelLight::Apply() {
     if (mEnabled == 0) {
         return;
     }
@@ -32,7 +32,7 @@ void ModelLight::func_02029c0c() {
     func_02032320(mIndex, mDirection[0], mDirection[1], mDirection[2]);
 }
 
-void ModelLight::func_02029c44(const s16 *direction) {
+void ModelLight::SetDirection(const s16 *direction) {
     mDirection[0] = direction[0];
     mDirection[1] = direction[1];
     mDirection[2] = direction[2];
@@ -48,17 +48,17 @@ void ModelLight::func_02029c44(const s16 *direction) {
     }
 }
 
-UnkStruct_02029ca8::UnkStruct_02029ca8(const void *data) {
+ModelLightGroup::ModelLightGroup(const void *data) {
     for (u8 i = 0; i < 4; i++) {
         const u8 *table   = (const u8 *) data;
         ModelLight *light = new ModelLight(i, table[i * 10], *(const u16 *) (table + i * 10 + 2),
                                            (const s16 *) (table + i * 10 + 4));
         mLights[i] = light;
-        light->func_02029c0c();
+        light->Apply();
     }
 }
 
-UnkStruct_02029ca8::~UnkStruct_02029ca8() {
+ModelLightGroup::~ModelLightGroup() {
     for (u8 i = 0; i < 4; i++) {
         if (mLights[i] != NULL) {
             delete mLights[i];
@@ -66,8 +66,8 @@ UnkStruct_02029ca8::~UnkStruct_02029ca8() {
     }
 }
 
-void UnkStruct_02029ca8::func_02029d54() {
+void ModelLightGroup::ApplyAll() {
     for (u8 i = 0; i < 4; i++) {
-        mLights[i]->func_02029c0c();
+        mLights[i]->Apply();
     }
 }

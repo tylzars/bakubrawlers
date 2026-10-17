@@ -44,7 +44,7 @@ void func_020254bc() {
     }
 }
 
-void func_020254f0(FrameCallback callback, void *arg) {
+void QueueFrameCallback(FrameCallback callback, void *arg) {
     GX_VBlankIntr(FALSE);
     sCallbacks[sQueueWrite]    = callback;
     sCallbackArgs[sQueueWrite] = arg;

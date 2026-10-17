@@ -154,7 +154,7 @@ void ArenaScene::func_ov001_022197ec() {
     if (mMode < 2) {
         return;
     }
-    WirelessManager::Get().func_0202edd0();
+    WirelessManager::Get().Stop();
     data_020d433c.mUnk_a8 = 0;
     mUnk_b3 = 1;
     func_ov001_0221c5b0();
@@ -179,7 +179,7 @@ void ArenaScene::func_ov001_0221993c(u32 mode) {
     mSubMenuMode = mode;
     switch (mSubMenuMode) {
         case 1:
-            SoundManager::Get().func_020246f8(1);
+            SoundManager::Get().StartSeqArc(1);
             G2S_SetBG2Priority(0);
             if (mSubMenu != NULL) {
                 delete mSubMenu;
@@ -191,7 +191,7 @@ void ArenaScene::func_ov001_0221993c(u32 mode) {
             func_ov001_0221c934(12);
             break;
         case 2:
-            SoundManager::Get().func_020246f8(2);
+            SoundManager::Get().StartSeqArc(2);
             G2S_SetBG2Priority(0);
             if (mSubMenu != NULL) {
                 delete mSubMenu;
@@ -217,7 +217,7 @@ void ArenaScene::Update() {
     if (IsWirelessMode(modePtr)) {
         WirelessManager::Get();
         data_0220f540.mUnk_01 = data_020c4230.mUnk_20;
-        WirelessManager::Get().func_0202f024(&data_0220f540);
+        WirelessManager::Get().QueueSend(&data_0220f540);
         WirelessManager::Get().func_0202f078(&data_0220f540);
     }
     WirelessManager::Get();
@@ -319,7 +319,7 @@ void ArenaScene::Update() {
                             break;
                         case 1:
                             if (mode == 0) {
-                                WirelessManager::Get().func_0202ed3c();
+                                WirelessManager::Get().Start();
                                 data_020d433c.mUnk_a8 = 1;
                             }
                             data_0220f540.mUnk_00 = 0xb;
@@ -357,7 +357,7 @@ void ArenaScene::Update() {
                 for (u8 i = 0; i < 12; i++) {
                     name[i] = data_020d43f0[0].mName[i];
                 }
-                WirelessManager::Get().func_0202ee10(3, name, 0x1a, 0);
+                WirelessManager::Get().StartParent(3, name, 0x1a, 0);
                 mMode++;
             }
             break;
@@ -383,24 +383,24 @@ void ArenaScene::Update() {
             if (mPlayerCount >= 2) {
                 if (mMenu->mButtons[0].mEnabled == 0) {
                     mMenu->mButtons[0].mEnabled = 1;
-                    mMessage->func_02065890(2, 0, 1);
+                    mMessage->StartMessage(2, 0, 1);
                 }
             } else {
                 if (mMenu->mButtons[0].mEnabled != 0) {
                     mMenu->mButtons[0].mEnabled = 0;
-                    mMessage->func_02065890(0x10, 0, 1);
+                    mMessage->StartMessage(0x10, 0, 1);
                 }
             }
             if (InputManager::Get().IsHeld(1) || menu == 1) {
                 if (mPlayerCount >= 2) {
-                    SoundManager::Get().func_020246f8(0);
+                    SoundManager::Get().StartSeqArc(0);
                     WirelessManager::Get().func_0202f184();
                     mUnk_b6 = 10;
                     mMode   = 7;
                 }
             }
             if (menu != 0) {
-                mMenu->func_0205c7c8(-1);
+                mMenu->Reset(-1);
                 mMenu->mCursor->mSelection = -1;
             }
             if (menu & (mMode == 6)) {
@@ -417,7 +417,7 @@ void ArenaScene::Update() {
             break;
         case 8:
             if (mode >= 1) {
-                WirelessManager::Get().func_0202eeb0();
+                WirelessManager::Get().StartScan();
                 mMode++;
             }
             break;
@@ -429,7 +429,7 @@ void ArenaScene::Update() {
                 func_ov001_0221993c(1);
                 return;
             }
-            u8 count = WirelessManager::Get().func_0202ef80() <= 4 ? WirelessManager::Get().func_0202ef80() : 4;
+            u8 count = WirelessManager::Get().TakeScanSnapshot() <= 4 ? WirelessManager::Get().TakeScanSnapshot() : 4;
             if (count != 0) {
                 mMenu->mButtons[0].mEnabled = 1;
                 u8 i = 0;
@@ -450,22 +450,22 @@ void ArenaScene::Update() {
                     mSelection = sel;
                     if (mPlayerCount > 1) {
                         u8 old = mSelection;
-                        if (InputManager::Get().IsTrigger(0x40)) {
+                        if (InputManager::Get().IsTrigger(KEY_UP)) {
                             mSelection = (mSelection + mPlayerCount - 1) % mPlayerCount;
-                        } else if (InputManager::Get().IsTrigger(0x80)) {
+                        } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
                             mSelection = (mSelection + 1) % mPlayerCount;
                         }
                         if (old != mSelection) {
-                            SoundManager::Get().func_020246f8(5);
+                            SoundManager::Get().StartSeqArc(5);
                         }
                     }
                     u32 touched = 0;
-                    if (TouchManager::Get().mUnk_57) {
-                        if (TouchManager::Get().func_02022860(0x20, 0x30, 0xc0, (s16) (mPlayerCount * 0x18))) {
+                    if (TouchManager::Get().mPressed) {
+                        if (TouchManager::Get().IsPressedIn(0x20, 0x30, 0xc0, (s16) (mPlayerCount * 0x18))) {
                             mSelection = MINU(mPlayerCount - 1, (u32) (TouchManager::Get().mY - 0x30) / 0x18);
                         }
                     } else if (TouchManager::Get().mTouching) {
-                        if (TouchManager::Get().func_020228c0(0x20, 0x30, 0xc0, (s16) (mPlayerCount * 0x18))) {
+                        if (TouchManager::Get().IsReleasedIn(0x20, 0x30, 0xc0, (s16) (mPlayerCount * 0x18))) {
                             mSelection = MINU(mPlayerCount - 1, (u32) (TouchManager::Get().mY - 0x30) / 0x18);
                             touched = 1;
                         }
@@ -477,14 +477,14 @@ void ArenaScene::Update() {
                     mSlots[2].mUnk_08  = 0x20;
                     mSlots[2].mUnk_0a  = mSelection * 0x18 + 0x34;
                     if (touched) {
-                        SoundManager::Get().func_020246f8(0);
-                        mMessage->func_02065890(4, 1, 1);
+                        SoundManager::Get().StartSeqArc(0);
+                        mMessage->StartMessage(4, 1, 1);
                         u16 name[13];
                         name[12] = 0xfffc;
                         for (u8 i = 0; i < 12; i++) {
                             name[i] = data_020d43f0[0].mName[i];
                         }
-                        WirelessManager::Get().func_0202eefc(mSelection, name, 0x1a);
+                        WirelessManager::Get().StartJoin(mSelection, name, 0x1a);
                         mPlayerCount = 0;
                         func_ov001_0221c5b0();
                         mSlots[2].mVisible = 0;
@@ -592,7 +592,7 @@ void ArenaScene::Update() {
 
 void ArenaScene::func_ov001_0221b06c() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
@@ -624,30 +624,30 @@ void ArenaScene::func_ov001_0221b24c() {
         data_020d433c.mUnk_10->SetupLayout(1);
     }
     ChangeDir("/Game/Battle/bg/");
-    func_02025b64(0, 1, 0, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 11, 0, "select_arena_u_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 7, 0, "select_arena_u_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x2000, "select_wireless_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 12, 0, "select_wireless_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "select_wireless_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0, "select_arena_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 11, 0, "select_arena_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 7, 0, "select_arena_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "select_arena_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "select_arena_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "select_arena_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "select_wireless_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "select_wireless_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "select_wireless_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(1, 1, 0x4000, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 13, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 9, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x4000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 13, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 9, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/Battle/obj/");
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
-    sub.func_02027624(3);
+    sub.SetObjVramMode(3);
     sub.LoadCharacters("select_wireless_b_obj_00.nce_ncg1D.bin", 0x4000, 0);
     sub.LoadPalette("select_wireless_b_obj_00_ncl.bin", 0x20, 0);
     if (mSlots[0].mAnim != NULL) {
         delete mSlots[0].mAnim;
     }
     mSlots[0].mAnim            = new CellAnimation("select_wireless_b_obj_00_nce.bin", 0, 1, 1);
-    mSlots[0].mAnim->mCharBase = sub.func_020276f4(0x4000);
-    mSlots[0].mAnim->mUnk_11   = 1;
+    mSlots[0].mAnim->mCharBase = sub.GetCharBase(0x4000);
+    mSlots[0].mAnim->mPaletteBase   = 1;
     mSlots[0].mX               = 0x20;
     mSlots[0].mY               = 0x30;
     mSlots[0].mUnk_08          = 0x20;
@@ -656,8 +656,8 @@ void ArenaScene::func_ov001_0221b24c() {
         delete mSlots[1].mAnim;
     }
     mSlots[1].mAnim            = new CellAnimation("select_wireless_b_obj_00_nce.bin", 0, 1, 1);
-    mSlots[1].mAnim->mCharBase = sub.func_020276f4(0x4000);
-    mSlots[1].mAnim->mUnk_11   = 1;
+    mSlots[1].mAnim->mCharBase = sub.GetCharBase(0x4000);
+    mSlots[1].mAnim->mPaletteBase   = 1;
     mSlots[1].mX               = 0x20;
     mSlots[1].mY               = 0x60;
     mSlots[1].mUnk_08          = 0x20;
@@ -666,23 +666,23 @@ void ArenaScene::func_ov001_0221b24c() {
         delete mSlots[2].mAnim;
     }
     mSlots[2].mAnim            = new CellAnimation("select_wireless_b_obj_00_nce.bin", 12, 1, 1);
-    mSlots[2].mAnim->mCharBase = sub.func_020276f4(0x4000);
-    mSlots[2].mAnim->mUnk_11   = 1;
+    mSlots[2].mAnim->mCharBase = sub.GetCharBase(0x4000);
+    mSlots[2].mAnim->mPaletteBase   = 1;
     mSlots[2].mX               = 0x70;
     mSlots[2].mY               = 0x60;
     mSlots[2].mUnk_08          = 0x70;
     mSlots[2].mUnk_0a          = 0x60;
     ChangeDir("/Game/Battle/Obj/");
     SpriteScreen &main = SpriteManager::Get().Screen(0);
-    main.func_02027624(3);
+    main.SetObjVramMode(3);
     main.LoadCharacters("select_arena_u_obj_00.nce_ncg1D.bin", 0, 0);
     main.LoadPalette("select_arena_u_obj_00_ncl.bin", 0, 0);
     if (mMain.mAnim != NULL) {
         delete mMain.mAnim;
     }
     mMain.mAnim            = new CellAnimation("select_arena_u_obj_00_nce.bin", 1, 1, 1);
-    mMain.mAnim->mCharBase = main.func_020276f4(0);
-    mMain.mAnim->mUnk_11   = 0;
+    mMain.mAnim->mCharBase = main.GetCharBase(0);
+    mMain.mAnim->mPaletteBase   = 0;
     mMain.mX               = 0x80;
     mMain.mY               = 0x60;
     mMain.mUnk_08          = 0x80;
@@ -704,7 +704,7 @@ void ArenaScene::func_ov001_0221b24c() {
     }
     mMessage = new MessageWindow("mes_BattleArenaMenu", 1, 0x2000);
     mMessage->func_02065bd4(0x14, 4, 1);
-    mMessage->func_02065be4(0xd8);
+    mMessage->SetWidth(0xd8);
 }
 
 void ArenaScene::func_ov001_0221b994() {
@@ -724,22 +724,22 @@ void ArenaScene::func_ov001_0221b994() {
             G2S_SetBG0Priority(2);
             mSlots[0].mFrame = 0;
             mSlots[1].mFrame = 3;
-            mMessage->func_02065890(0, 0, 1);
+            mMessage->StartMessage(0, 0, 1);
             break;
         case 1:
             G2S_SetBG0Priority(2);
             mSlots[0].mFrame = 6;
             mSlots[1].mFrame = 9;
-            mMessage->func_02065890(1, 0, 1);
+            mMessage->StartMessage(1, 0, 1);
             break;
         case 2:
             G2S_SetBG0Priority(3);
-            mMessage->func_02065890(0x10, 0, 1);
+            mMessage->StartMessage(0x10, 0, 1);
             break;
         case 3:
             G2S_SetBG0Priority(3);
             mSlots[2].mFrame = 12;
-            mMessage->func_02065890(3, 0, 1);
+            mMessage->StartMessage(3, 0, 1);
             break;
     }
     for (u8 i = 0; i < 3; i++) {
@@ -780,7 +780,7 @@ void ArenaScene::func_ov001_0221b994() {
     mMenu = new SelectWindow(2, data_ov001_02226fdc[sel], 0);
     mMenu->SetCells(2, data_ov001_02226e54);
     mMenu->mCursor->mSelection       = -1;
-    mMenu->mUnk_064                  = 0;
+    mMenu->mEnabled                  = 0;
     mMenu->mButtons[0].mEnabled      = 0;
 }
 
@@ -806,7 +806,7 @@ u32 ArenaScene::func_ov001_0221bca0() {
         mSelection = newSel;
         if (newSel < 2) {
             func_ov001_0221bc44();
-            SoundManager::Get().func_020246f8(5);
+            SoundManager::Get().StartSeqArc(5);
         }
     }
     if (menu == 1) {
@@ -819,12 +819,12 @@ u32 ArenaScene::func_ov001_0221bca0() {
             }
         case 1:
             result = 1;
-            SoundManager::Get().func_020246f8(0);
+            SoundManager::Get().StartSeqArc(0);
             break;
     }
     if (result == 0 && menu == 2) {
         result = 2;
-        SoundManager::Get().func_020246f8(1);
+        SoundManager::Get().StartSeqArc(1);
     }
     return result;
 }
@@ -833,7 +833,7 @@ u32 ArenaScene::func_ov001_0221bdf0() {
     if (mMenu == NULL) {
         return 0;
     }
-    mMenu->mUnk_064 = 1;
+    mMenu->mEnabled = 1;
     return mMenu->Update(0);
 }
 
@@ -842,19 +842,19 @@ void ArenaScene::func_ov001_0221be1c() {
     do {
         mMenu->Draw();
         mMenu->Update(0);
-        state = mMenu->mUnk_061;
+        state = mMenu->mState;
     } while (!((state <= 2) | (state == 4)));
-    mMenu->func_0205c7c8(-1);
+    mMenu->Reset(-1);
     mMenu->mCursor->mSelection = -1;
-    mMenu->mUnk_064            = 0;
+    mMenu->mEnabled            = 0;
     for (u8 i = 0; i < 2; i++) {
-        mMenu->mCells[i]->SetAnimation(data_ov001_02226e54[((const WindowItem *) data_ov001_02226fdc)[i].mId].mUnk_18[0]);
+        mMenu->mCells[i]->SetAnimation(data_ov001_02226e54[((const WindowItem *) data_ov001_02226fdc)[i].mId].mAnimIndices[0]);
     }
 }
 
 void ArenaScene::func_ov001_0221bee8() {
     if (mMessage != NULL) {
-        mMessage->func_020658d0();
+        mMessage->Update();
     }
     if (mMain.mVisible == 0) {
         return;
@@ -905,17 +905,17 @@ void ArenaScene::func_ov001_0221c1d8() {
         width = 0;
         if (i < mPlayerCount) {
             TextManager &text = TextManager::Get();
-            text.mUnk_5b = 1;
+            text.mUse4bppFont = 1;
             height = 0x1c;
             TextManager::Get().Print(&data_020d433c.mNames[i], 0x18, mBuffers[i], 0x20, 2, &height, &width, 0, 0, 2, 0x21, 0x10,
                                      0, 0, 0, 0, 1);
-            TextManager::Get().mUnk_5b = 0;
+            TextManager::Get().mUse4bppFont = 0;
         }
         height = 0;
         width  = 0;
         TextManager::Get().PrintNumber(i + 1, 0, 0, mBuffers[i], 0x20, 2, &height, &width, 0, 2, 0x21, 0, 0, 0, 1);
         DC_FlushRange(mBuffers[i], mTextBufferSize);
-        func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, i << 11, mBuffers[i], mTextBufferSize, 0);
+        QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, i << 11, mBuffers[i], mTextBufferSize, 0);
     }
 }
 
@@ -923,7 +923,7 @@ void ArenaScene::func_ov001_0221c484() {
     SpriteManager::Get();
     for (u8 i = 0; i < 4; i++) {
         SpriteScreen &screen = SpriteManager::Get().Screen(1);
-        screen.func_02027778(mGlyphBuffer, (u8) mGlyphCount, 0x24, (s16) (i * 0x18 + 0x38), 0, (u16) (u32) screen.func_020276f4(i << 11), 0xf,
+        screen.AddOam(mGlyphBuffer, (u8) mGlyphCount, 0x24, (s16) (i * 0x18 + 0x38), 0, (u16) (u32) screen.GetCharBase(i << 11), 0xf,
                              0);
     }
 }
@@ -951,9 +951,9 @@ u32 ArenaScene::func_ov001_0221c614(u32 unk1) {
 }
 
 void ArenaScene::func_ov001_0221c710() {
-    SpriteManager::Get().Screen(1).func_02027624(3);
+    SpriteManager::Get().Screen(1).SetObjVramMode(3);
     ChangeDir("/");
-    mMessages = (MessageFile *) func_02023504("font/mes_BattleArenaMenu.mes", 0, 0, 0, 0, 0);
+    mMessages = (MessageFile *) LoadFile("font/mes_BattleArenaMenu.mes", 0, 0, 0, 0, 0);
     mUnk_94 = TextManager::Get().BufferSize(0x18, 8);
     mUnk_8c = OS_Alloc(mUnk_94);
     MI_CpuClear16(mUnk_8c, mUnk_94);
@@ -973,9 +973,9 @@ void ArenaScene::func_ov001_0221c934(u32 unk1) {
     height            = 0;
     MessageFile *file = mMessages;
     text.Print(file->GetText(unk1), file->GetLength(unk1), mUnk_8c, 0x18, 8, &height, &width, 0, 0, 2, 0x11, 0xe, 0, 0, 1, 1, 1);
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xe000, mUnk_8c, mUnk_94, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xe000, mUnk_8c, mUnk_94, 0);
 }
 
 void ArenaScene::func_ov001_0221caa0() {
-    SpriteManager::Get().Screen(1).func_02027778(mUnk_90, (u8) mUnk_98, 0x20, 0x28, 0, 0x1c0, 0xf, 0);
+    SpriteManager::Get().Screen(1).AddOam(mUnk_90, (u8) mUnk_98, 0x20, 0x28, 0, 0x1c0, 0xf, 0);
 }

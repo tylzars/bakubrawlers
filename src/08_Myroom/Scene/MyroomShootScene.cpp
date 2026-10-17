@@ -106,21 +106,21 @@ MyroomShootScene::MyroomShootScene() :
 }
 
 MyroomShootScene::~MyroomShootScene() {
-    CameraManager::Get().func_02026504(0, NULL, 0);
+    CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
     ModelInstance *room = mRoom;
     if (room != NULL) {
-        room->mUnk_68 = 0xf;
+        room->mOwnFlags = 0xf;
         delete room;
     }
-    UnkStruct_0203d374 *shooter = mShooter;
+    BakuganModel *shooter = mShooter;
     if (shooter != NULL) {
         delete shooter;
     }
-    data_020d433c.mEffects->func_0202be68();
-    func_0202bc58(data_020d433c.mEffects, 0);
+    data_020d433c.mEffects->FreeAllEffects();
+    FreeEffectGroup(data_020d433c.mEffects, 0);
     delete mWindow;
     delete mCamera;
-    UnkStruct_02029ca8 *lights = mLights;
+    ModelLightGroup *lights = mLights;
     if (lights != NULL) {
         delete lights;
     }
@@ -146,7 +146,7 @@ MyroomShootScene::~MyroomShootScene() {
     }
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     MI_CpuClearFast((void *) 0x6200000, 0x20000);
-    SpriteManager::Get().func_02027568(0);
+    SpriteManager::Get().ClearSlotUsed(0);
     SpriteManager::Get().func_0202740c();
 }
 
@@ -193,7 +193,7 @@ void MyroomShootScene::InitDisplay() {
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     MI_CpuClearFast((void *) 0x6200000, 0x20000);
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(0, 7);
+    SpriteManager::Get().SetupMode(0, 7);
     GX_SetGraphicsMode(1, 0, 1);
     GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
@@ -225,10 +225,10 @@ void MyroomShootScene::func_ov008_02221a14() {
     mCamera->SetUp(0, 0x1000, 0);
     mCamera->SetTarget(0x28000, 0x6e000, 0);
     mCamera->SetClip(0x1000, 0x1388000);
-    mCamera->func_02026004(0x2aaa);
+    mCamera->SetFov(0x2aaa);
     mCamera->SetPosition(0x14000, 0x5a000, 0x96000);
     CameraManager::Get().mActive = 0;
-    CameraManager::Get().func_02026504(1, mCamera, 0);
+    CameraManager::Get().SetCamerasAndRequestMode(1, mCamera, 0);
     CameraManager &manager = CameraManager::Get();
     Camera *camera    = manager.mCameras[manager.mActive];
     data_02211374.mCameraPosition = camera->mPosition;
@@ -241,24 +241,24 @@ void MyroomShootScene::func_ov008_02221a14() {
     manager.mMtxA[manager.mActive]       = *func_02032710();
     manager.mMtxB[manager.mActive]       = *func_02032604();
     manager.mMtxC[manager.mActive]       = *func_020323b8();
-    mLights = new UnkStruct_02029ca8(data_ov008_022290a4);
+    mLights = new ModelLightGroup(data_ov008_022290a4);
     ChangeDir("/Game/Myroom/");
-    func_02025b64(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
     SpriteScreen &main = SpriteManager::Get().Screen(0);
-    main.func_02027624(3);
+    main.SetObjVramMode(3);
     main.LoadCharacters("myroom_s_shoot_u_obj_00.nce_ncg1D.bin", 0x4000, 0);
     main.LoadPalette("myroom_s_shoot_u_obj_00_ncl.bin", 0, 0);
     mCellAnim            = new CellAnimation("myroom_s_shoot_u_obj_00_nce.bin", 0, 1, 1);
-    mCellAnim->mCharBase = main.func_020276f4(0x4000);
-    mCellAnim->mUnk_11   = 0;
+    mCellAnim->mCharBase = main.GetCharBase(0x4000);
+    mCellAnim->mPaletteBase   = 0;
     mCellAnim->SetAnimation(0);
     ChangeDir("/");
     mWindow = NULL;
     mWindow = new SelectWindow(10, data_ov008_02229184, -1);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
-    sub.func_02027624(3);
+    sub.SetObjVramMode(3);
     ChangeDir("/");
     sub.LoadCharacters("Game/Myroom/myroom_s_shoot_b_obj.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("Game/Myroom/myroom_s_shoot_b_obj_ncl.bin", 0, 0);
@@ -270,15 +270,15 @@ void MyroomShootScene::func_ov008_02221a14() {
         if (mUnlocked[i] != 0) {
             u8 a = data_ov008_0222902c[i][0];
             u8 b = data_ov008_0222902c[i][1];
-            *(u8 *) &data_ov008_0222ab2c[i].mUnk_04 = a;
-            data_ov008_0222ab2c[i].mUnk_18[0] = a;
-            data_ov008_0222ab2c[i].mUnk_18[1] = b;
-            data_ov008_0222ab2c[i].mUnk_18[2] = a;
+            *(u8 *) &data_ov008_0222ab2c[i].mAnimIndex = a;
+            data_ov008_0222ab2c[i].mAnimIndices[0] = a;
+            data_ov008_0222ab2c[i].mAnimIndices[1] = b;
+            data_ov008_0222ab2c[i].mAnimIndices[2] = a;
         } else {
-            *(u8 *) &data_ov008_0222ab2c[i].mUnk_04 = 1;
-            data_ov008_0222ab2c[i].mUnk_18[0] = 1;
-            data_ov008_0222ab2c[i].mUnk_18[1] = 1;
-            data_ov008_0222ab2c[i].mUnk_18[2] = 1;
+            *(u8 *) &data_ov008_0222ab2c[i].mAnimIndex = 1;
+            data_ov008_0222ab2c[i].mAnimIndices[0] = 1;
+            data_ov008_0222ab2c[i].mAnimIndices[1] = 1;
+            data_ov008_0222ab2c[i].mAnimIndices[2] = 1;
         }
     }
     mWindow->SetCells(6, data_ov008_0222ab2c);
@@ -286,16 +286,16 @@ void MyroomShootScene::func_ov008_02221a14() {
     ChangeDir("/Game/Myroom/Map/");
     NitroModel *model     = new NitroModel();
     NitroTexture *texture = new NitroTexture("myroom_s.nsbtx");
-    model->func_020289e0("myroom_s.nsbmd", texture);
-    texture->func_02028344();
-    mRoom = model->func_02028b78(0);
+    model->Load("myroom_s.nsbmd", texture);
+    texture->FreeFile();
+    mRoom = model->CreateInstance(0);
     data_020d433c.mEffects = new EffectManager();
-    func_0202ba64(data_020d433c.mEffects, 0, "shoot");
+    LoadEffectGroup(data_020d433c.mEffects, 0, "shoot");
     SpriteManager::Get().func_02027504(0);
     func_ov008_02222474(0);
     ChangeDir("/font/");
     if (mMessages == NULL) {
-        mMessages = (MessageFile *) func_02023504("mes_myroom.mes", 0, 0, 0, 0, 0);
+        mMessages = (MessageFile *) LoadFile("mes_myroom.mes", 0, 0, 0, 0, 0);
     }
     for (u8 i = 0; i < 2; i++) {
         mTextBufferSize[i] = (u16) TextManager::Get().BufferSize((s16) data_ov008_0222901a[i][0], (s16) data_ov008_0222901a[i][1]);
@@ -308,8 +308,8 @@ void MyroomShootScene::func_ov008_02221a14() {
     TextManager::Get().SetColor(0, 0, 0xf);
     mMessage = new MessageWindow("mes_myroom", 1, 0x7000);
     mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->func_02065be4(0xd8);
-    mMessage->func_02065890(0x23, 0, 1);
+    mMessage->SetWidth(0xd8);
+    mMessage->StartMessage(0x23, 0, 1);
     func_ov008_02222a78();
     ChangeDir("/");
 }
@@ -317,21 +317,21 @@ void MyroomShootScene::func_ov008_02221a14() {
 void MyroomShootScene::func_ov008_02222474(s8 index) {
     if (mSelected != index) {
         mSelected                   = index;
-        UnkStruct_0203d374 *shooter = mShooter;
+        BakuganModel *shooter = mShooter;
         if (shooter != NULL) {
             delete shooter;
         }
         mShooter = NULL;
         if (mEffect != 0) {
-            func_0202beb8(data_020d433c.mEffects, mEffect);
+            FreeEffect(data_020d433c.mEffects, mEffect);
             mEffect = 0;
         }
         if (mUnlocked[mSelected] != 0) {
             u16 modelRot[3];
             u16 effectRot[3];
             VecFx32 pos;
-            mShooter = new UnkStruct_0203d374();
-            mShooter->func_0203d4dc(data_ov008_02229068[mSelected], (u8) mSelected, 0);
+            mShooter = new BakuganModel();
+            mShooter->Setup(data_ov008_02229068[mSelected], (u8) mSelected, 0);
             pos = data_ov008_022290cc[mSelected];
             mShooter->func_0203db70(&pos);
             mRot[0]  = 0;
@@ -341,12 +341,12 @@ void MyroomShootScene::func_ov008_02222474(s8 index) {
             modelRot[1] = (u16) (65536.0f * (float) mRot[1] / 360.0f);
             modelRot[2] = (u16) (65536.0f * (float) mRot[2] / 360.0f);
             mShooter->func_0203db94(modelRot);
-            mEffect = func_0202bd40(data_020d433c.mEffects, 0, (u8) data_ov008_02229038[mSelected], 0, 0);
-            func_0202bef4(data_020d433c.mEffects, mEffect, &pos);
+            mEffect = StartEffect(data_020d433c.mEffects, 0, (u8) data_ov008_02229038[mSelected], 0, 0);
+            SetEffectPosition(data_020d433c.mEffects, mEffect, &pos);
             effectRot[0] = (u16) (65536.0f * (float) data_ov008_02229080[mSelected][0] / 360.0f);
             effectRot[1] = (u16) (65536.0f * (float) data_ov008_02229080[mSelected][1] / 360.0f);
             effectRot[2] = (u16) (65536.0f * (float) data_ov008_02229080[mSelected][2] / 360.0f);
-            func_0202bf3c(data_020d433c.mEffects, mEffect, effectRot);
+            SetEffectRotation(data_020d433c.mEffects, mEffect, effectRot);
         }
         mUnk_63 = 0;
         mUnk_5a = 0x100;
@@ -374,25 +374,25 @@ void MyroomShootScene::DrawSprites() {
         mCellAnim->Draw(0, data_ov008_02229018.x, data_ov008_02229018.y, 0);
     }
     MtxFx43 *base = func_020323b8();
-    MtxFx43 view  = data_0220e86c;
+    MtxFx43 view  = gIdentityMtx43;
     VecFx32 scale = data_ov008_02229044;
     VecFx32 offset = data_ov008_02229050;
     func_01ffcf64(&view, &offset);
     func_01ff89c0(&view, base, &view);
-    mRoom->func_02028d80();
-    mRoom->func_02029174(&view, &scale);
+    mRoom->AdvanceAnim();
+    mRoom->Draw(&view, &scale);
     mUnk_5f--;
     if (mUnk_5f <= 0) {
         mUnk_5f = 0;
         if (mShooter != NULL) {
-            mShooter->func_0203d988();
-            mShooter->func_0203dab0();
+            mShooter->Update();
+            mShooter->DrawModel();
         }
     }
     if (mUnlocked[mSelected] == 0) {
         return;
     }
-    SpriteManager::Get().Screen(0).func_02027778(mGlyphBuffers[0], 4, 0x70, 0x1e, 0, 0, 0xf, 0);
+    SpriteManager::Get().Screen(0).AddOam(mGlyphBuffers[0], 4, 0x70, 0x1e, 0, 0, 0xf, 0);
     u8 first;
     u8 k;
     s16 x;
@@ -415,13 +415,13 @@ void MyroomShootScene::DrawSprites() {
     }
     k = first;
     do {
-        SpriteManager::Get().Screen(0).func_02027778((u8 *) mGlyphBuffers[1] + k * 0xc, 1, x, 8, 0, 0x60, 0xf, 0);
+        SpriteManager::Get().Screen(0).AddOam((u8 *) mGlyphBuffers[1] + k * 0xc, 1, x, 8, 0, 0x60, 0xf, 0);
         k++;
     } while (k < last);
 }
 
 void MyroomShootScene::DrawWindows() {
-    mMessage->func_020658d0();
+    mMessage->Update();
     mWindow->Draw();
 }
 
@@ -443,9 +443,9 @@ void MyroomShootScene::func_ov008_02222a78() {
     if (&mUnk_5c != NULL) {
         mUnk_5c = height;
     }
-    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0, mTextBuffers[0], mTextBufferSize[0], 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0, mTextBuffers[0], mTextBufferSize[0], 0);
     ClearTextBuffers(1);
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     TextManager &text2         = TextManager::Get();
     s16 height2;
     s16 width2;
@@ -455,8 +455,8 @@ void MyroomShootScene::func_ov008_02222a78() {
     file       = mMessages;
     text2.Print(file->GetText(index2), file->GetLength(index2), mTextBuffers[1], 0x40, 2, &height2, &width2, &mUnk_58, 0, 2,
                 0x21, 0xe, 0, 0, 0, 1, 1);
-    TextManager::Get().mUnk_5b = 0;
-    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x3000, mTextBuffers[1], mTextBufferSize[1], 0);
+    TextManager::Get().mUse4bppFont = 0;
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, 0x3000, mTextBuffers[1], mTextBufferSize[1], 0);
     if (mUnlocked[mSelected] == 0) {
         mUnk_5c = 0;
     }
@@ -478,19 +478,19 @@ s32 MyroomShootScene::func_ov008_02222dbc() {
                 mUnk_61 = result % 3;
                 mUnk_62 = result / 3;
                 if (mSelected != (s8) id) {
-                    SoundManager::Get().func_020246f8(0);
+                    SoundManager::Get().StartSeqArc(0);
                 }
                 break;
             case 8:
                 if (previous > 0) {
                     mUnk_63--;
-                    SoundManager::Get().func_020246f8(0);
+                    SoundManager::Get().StartSeqArc(0);
                 }
                 break;
             case 9:
                 if (mUnk_5c > 0x80) {
                     mUnk_63++;
-                    SoundManager::Get().func_020246f8(0);
+                    SoundManager::Get().StartSeqArc(0);
                 }
                 break;
         }
@@ -506,7 +506,7 @@ s32 MyroomShootScene::func_ov008_02222dbc() {
 s8 MyroomShootScene::func_ov008_02222fa4() {
     s8 result  = -1;
     BOOL moved = FALSE;
-    if (InputManager::Get().IsTrigger(0x40)) {
+    if (InputManager::Get().IsTrigger(KEY_UP)) {
         moved = TRUE;
         if (mUnk_62 != 0) {
             mUnk_62--;
@@ -516,7 +516,7 @@ s8 MyroomShootScene::func_ov008_02222fa4() {
                 mUnk_62--;
             }
         }
-    } else if (InputManager::Get().IsTrigger(0x80)) {
+    } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
         moved = TRUE;
         mUnk_62++;
         if (mUnk_62 >= 2) {
@@ -525,7 +525,7 @@ s8 MyroomShootScene::func_ov008_02222fa4() {
             mUnk_62 = 0;
         }
     }
-    if (InputManager::Get().IsTrigger(0x20)) {
+    if (InputManager::Get().IsTrigger(KEY_LEFT)) {
         moved = TRUE;
         if (mUnk_61 != 0) {
             mUnk_61--;
@@ -535,7 +535,7 @@ s8 MyroomShootScene::func_ov008_02222fa4() {
                 mUnk_61--;
             }
         }
-    } else if (InputManager::Get().IsTrigger(0x10)) {
+    } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
         moved = TRUE;
         mUnk_61++;
         if (mUnk_61 >= 3) {
@@ -546,23 +546,23 @@ s8 MyroomShootScene::func_ov008_02222fa4() {
     }
     if (moved) {
         result = mUnk_61 + mUnk_62 * 3;
-        SoundManager::Get().func_020246f8(0);
+        SoundManager::Get().StartSeqArc(0);
     }
     return result;
 }
 
 void MyroomShootScene::func_ov008_02223264() {
     if (mResult == 2) {
-        SoundManager::Get().func_020246f8(1);
+        SoundManager::Get().StartSeqArc(1);
         SpriteManager::Get().StartFade(3);
         mState = 3;
     } else if (mUnk_5e != -1) {
         SpriteManager::Get().func_0202753c(0);
         func_ov008_02222474(mUnk_5e);
         func_ov008_02222a78();
-        if (mWindow->mUnk_061 != 1) {
-            mWindow->mUnk_061 = 4;
-            mWindow->func_0205c7c8(-1);
+        if (mWindow->mState != 1) {
+            mWindow->mState = 4;
+            mWindow->Reset(-1);
         }
     } else {
         s32 selection = func_ov008_02222dbc();
@@ -573,23 +573,23 @@ void MyroomShootScene::func_ov008_02223264() {
     }
     WindowItem *items = mWindow->mCursor->mItems;
     if (mUnk_63 != 0) {
-        if (mWindow->mCells[8]->mUnk_0e == 2) {
+        if (mWindow->mCells[8]->mAnimIndex == 2) {
             mWindow->mCells[8]->SetAnimation(0);
             items[8].mFlags = 0x208;
         }
     } else {
-        if (mWindow->mCells[8]->mUnk_0e != 2) {
+        if (mWindow->mCells[8]->mAnimIndex != 2) {
             mWindow->mCells[8]->SetAnimation(2);
             items[8].mFlags = 0x8000;
         }
     }
     if (mUnk_5c > 0x80) {
-        if (mWindow->mCells[9]->mUnk_0e == 5) {
+        if (mWindow->mCells[9]->mAnimIndex == 5) {
             mWindow->mCells[9]->SetAnimation(3);
             items[9].mFlags = 0x408;
         }
     } else {
-        if (mWindow->mCells[9]->mUnk_0e != 5) {
+        if (mWindow->mCells[9]->mAnimIndex != 5) {
             mWindow->mCells[9]->SetAnimation(5);
             items[9].mFlags = 0x8000;
         }

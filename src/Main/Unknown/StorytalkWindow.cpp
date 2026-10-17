@@ -92,7 +92,7 @@ void StorytalkWindow::Update() {
         case 2:
             if (mHasMessage != 0) {
                 if (mUnk_4b == 0) {
-                    SoundManager::Get().func_020246f8(0x18);
+                    SoundManager::Get().StartSeqArc(0x18);
                 }
                 mSlideTimer = 0xc;
                 mState++;
@@ -172,13 +172,13 @@ void StorytalkWindow::LoadMessageFile(const char *path) {
         OS_Free(mMessages);
     }
     ChangeDir("/");
-    mMessages = func_02023504(path, 0, 0, 0, 0, 0);
+    mMessages = LoadFile(path, 0, 0, 0, 0, 0);
 }
 
 void func_02087d68(StorytalkWindow *self) {
     ChangeDir("/");
-    self->mStoryCharaNames = func_02023504("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
-    SpriteManager::Get().Screen(0).func_02027624(3);
+    self->mStoryCharaNames = LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
+    SpriteManager::Get().Screen(0).SetObjVramMode(3);
     self->mTextBufferSizes[0] = TextManager::Get().BufferSize(0x18, 8);
     self->mTextBuffers[0] = OS_Alloc(self->mTextBufferSizes[0]);
     MI_CpuClear16(self->mTextBuffers[0], self->mTextBufferSizes[0]);
@@ -194,7 +194,7 @@ void StorytalkWindow::LoadGraphics() {
     char path[0x80];
     ChangeDir("/story/");
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
-    screen.func_02027624(1);
+    screen.SetObjVramMode(1);
     sprintf(path, "storytalk_ob.nce_ncg1D.bin");
     screen.LoadCharacters(path, 0x4000, 0);
     sprintf(path, "storytalk_ob_ncl.bin");
@@ -203,7 +203,7 @@ void StorytalkWindow::LoadGraphics() {
         delete mCellAnims[i];
         mCellAnims[i]            = new CellAnimation("storytalk_ob_nce.bin", 0, 1, 1);
         mCellAnims[i]->mCharBase = 0x200;
-        mCellAnims[i]->mUnk_11   = 12;
+        mCellAnims[i]->mPaletteBase   = 12;
     }
     mCellAnims[0]->SetAnimation(0);
     mCellAnims[1]->SetAnimation(1);
@@ -248,11 +248,11 @@ void func_0208813c(StorytalkWindow *self, s32 unk1) {
     void *buffer = self->mTextBuffers[0];
     file         = (MessageFile *) self->mMessages;
     MI_CpuClear16(data_020c1a4c, 0x20);
-    text.mUnk_58 = 1;
+    text.mLineStartCount = 1;
     text.Print(file->GetText(index), file->GetLength(index), buffer, 0x20, 6, &y, &x, NULL, 0, 0, 0x21, 0x10, 0, 1, 0, 1, 1);
     for (u8 i = 1; i < 0x10; i++) {
-        if (text.mPalette[i] == 0) {
-            text.mPalette[i] = text.mUnk_36[i];
+        if (text.mLineStarts[i] == 0) {
+            text.mLineStarts[i] = text.mUnk_36[i];
         }
     }
 }
@@ -265,8 +265,8 @@ void func_020882c4(StorytalkWindow *self) {
     if (self->mMessageIndex < 0) {
         return;
     }
-    u32 a = TextManager::Get().func_0202c1a8((u8) ((self->mLastTextPage + 1) * 3));
-    u32 b = TextManager::Get().func_0202c1a8((u8) ((self->mLastTextPage + 2) * 3));
+    u32 a = TextManager::Get().GetLineStart((u8) ((self->mLastTextPage + 1) * 3));
+    u32 b = TextManager::Get().GetLineStart((u8) ((self->mLastTextPage + 2) * 3));
     if (a < b) {
         self->mUnk_39 = 1;
     }
@@ -284,7 +284,7 @@ void func_020882c4(StorytalkWindow *self) {
         x = -(self->mTextPage * 0x30);
         y = 0x20;
         void *buffer      = self->mTextBuffers[0];
-        u16 count         = t1.func_0202c1a8((u8) ((self->mTextPage + 1) * 3));
+        u16 count         = t1.GetLineStart((u8) ((self->mTextPage + 1) * 3));
         MessageFile *file = (MessageFile *) self->mMessages;
         u16 index         = self->mMessageIndex;
         u16 len           = file->GetLength(index);
@@ -293,7 +293,7 @@ void func_020882c4(StorytalkWindow *self) {
         if (len < count * 2) {
             n = len >> 1;
         }
-        text.mUnk_58 = 0x10;
+        text.mLineStartCount = 0x10;
         text.Print(str, n * 2, buffer, 0x20, 6, &y, &x, NULL, 0, 2, 0x21, 0x10, 0, 0, 1, 1, 1);
         self->mUnk_3e = 2;
     } else {
@@ -312,22 +312,22 @@ void func_020882c4(StorytalkWindow *self) {
         self->mUnk_3e = w;
         self->mUnk_36 = 1;
     }
-    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x6000, self->mTextBuffers[0], 0x1800, 0);
+    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x6000, self->mTextBuffers[0], 0x1800, 0);
     if (self->mTextPage != 0) {
         TextManager &first = TextManager::Get();
         TextManager &text = TextManager::Get();
-        u16 a2            = first.func_0202c1a8((u8) ((self->mTextPage + 1) * 3));
+        u16 a2            = first.GetLineStart((u8) ((self->mTextPage + 1) * 3));
 
-        u16 b2            = text.func_0202c1a8((u8) (self->mTextPage * 3));
+        u16 b2            = text.GetLineStart((u8) (self->mTextPage * 3));
         self->mUnk_3c     = a2 - b2;
     } else {
-        self->mUnk_3c = TextManager::Get().func_0202c1a8((u8) ((self->mTextPage + 1) * 3));
+        self->mUnk_3c = TextManager::Get().GetLineStart((u8) ((self->mTextPage + 1) * 3));
     }
     self->mUnk_3c = self->mUnk_3c * 2 / 3;
     if (self->mMessageIndex < 0 || self->mCharacterId < 0) {
         return;
     }
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     if (self->mCharacterId == 0x15) {
         h = 0;
         w = 0;
@@ -344,8 +344,8 @@ void func_020882c4(StorytalkWindow *self) {
         text.Print(
 file->GetText(index), file->GetLength(index), self->mTextBuffers[1], 0x20, 2, &y, &x, NULL, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
     }
-    TextManager::Get().mUnk_5b = 0;
-    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x7800, self->mTextBuffers[1], self->mTextBufferSizes[1], 0);
+    TextManager::Get().mUse4bppFont = 0;
+    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0x7800, self->mTextBuffers[1], self->mTextBufferSizes[1], 0);
 }
 
 void func_020889d8(StorytalkWindow *self, s32 unk1) {
@@ -371,7 +371,7 @@ void func_02088a24(StorytalkWindow *self) {
     }
     u8 i = 0;
     do {
-        SpriteManager::Get().Screen(0).func_02027778((void *) data_020a41cc, 1, (s16) (i % 8 * 0x20 + 0x12), 0x82, 0, (u16) (i * 8 + 0x3c0), 0xf, 0);
+        SpriteManager::Get().Screen(0).AddOam((void *) data_020a41cc, 1, (s16) (i % 8 * 0x20 + 0x12), 0x82, 0, (u16) (i * 8 + 0x3c0), 0xf, 0);
         i++;
     } while (i < 8);
 }
@@ -393,7 +393,7 @@ void func_02088b30(StorytalkWindow *self) {
     }
     i = 0;
     do {
-        SpriteManager::Get().Screen(0).func_02027778((void *) data_020a41cc, 1, (s16) (x + i % 8 * 0x20 - 0x20), (s16) (y + i / 8 * 12 + shift), 0, (u16) (i * 8 + 0x300), 0xf, 0);
+        SpriteManager::Get().Screen(0).AddOam((void *) data_020a41cc, 1, (s16) (x + i % 8 * 0x20 - 0x20), (s16) (y + i / 8 * 12 + shift), 0, (u16) (i * 8 + 0x300), 0xf, 0);
         i++;
     } while (i < 0x18);
     if (self->mCell1Visible == 0) {
@@ -418,7 +418,7 @@ void func_02088cd8(StorytalkWindow *self) {
         s16 x = self->mUnk_40;
         if ((x < 0xe8) & (x > 0x18)) {
             if (self->mUnk_3f < 3) {
-                self->mCellAnims[2]->func_0202a3ec(0, self->mUnk_3f, x, (s16) (shift + 0x60), 0);
+                self->mCellAnims[2]->DrawFrame(0, self->mUnk_3f, x, (s16) (shift + 0x60), 0);
             }
         }
     }
@@ -427,7 +427,7 @@ void func_02088cd8(StorytalkWindow *self) {
 
 BOOL StorytalkWindow::NextPage(u32 unk1) {
     if (unk1 != 0) {
-        SoundManager::Get().func_020246f8(0x6b);
+        SoundManager::Get().StartSeqArc(0x6b);
     }
     if (mTextPage >= mLastTextPage) {
         mLastPageDone = 1;

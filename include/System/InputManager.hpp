@@ -5,6 +5,18 @@
 
 #define INPUT_KEY_COUNT 12
 
+// Direction bits of the key masks passed to IsHeld / IsDown / IsTrigger (and copied into FieldSelectScene's
+// mInput[].mKeys), named from code that acts on them: NameEntryScene moves its cursor, drawn at
+// x = mCol * 24 + 0x20, y = mRow * 24 + 0x38, by mRow-- for KEY_UP, mRow++ for KEY_DOWN, mCol - 1 (mod 8) for
+// KEY_LEFT and mCol + 1 (mod 8) for KEY_RIGHT. Larger y is further down the screen and larger x further right
+// (TextManager::Print adds each glyph's width to x and starts a wrapped line at the starting x and y plus the
+// caller's line spacing, 0x10 at MessageWindow's call). The other bits of the set (1, 2, 4, 8, 0x100, 0x200, 0x400,
+// 0x800) are left as literals.
+#define KEY_RIGHT 0x10
+#define KEY_LEFT 0x20
+#define KEY_UP 0x40
+#define KEY_DOWN 0x80
+
 // Global input state, constructed on first use and destroyed at exit.
 // Offsets 00/04 are what IsHeld/IsTrigger read; the update (Update) shows the roles below.
 class InputManager {

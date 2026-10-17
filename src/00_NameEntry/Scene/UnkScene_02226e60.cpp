@@ -130,7 +130,7 @@ void UnkScene_02226e60::Update() {
 
 void UnkScene_02226e60::InitDisplay() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 5, 0);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 0, 0, 1, 0);
@@ -150,7 +150,7 @@ BOOL UnkScene_02226e60::WaitFrames(u32 maxFrames, u32 minFrames) {
     BOOL done = FALSE;
     mFrames++;
     if (mFrames >= minFrames) {
-        if (TouchManager::Get().mUnk_57 | (InputManager::Get().IsHeld(1) | InputManager::Get().IsHeld(8))) {
+        if (TouchManager::Get().mPressed | (InputManager::Get().IsHeld(1) | InputManager::Get().IsHeld(8))) {
             done = TRUE;
         }
     }
@@ -162,27 +162,27 @@ BOOL UnkScene_02226e60::WaitFrames(u32 maxFrames, u32 minFrames) {
 
 void func_ov000_0221d150() {
     ChangeDir("/logo");
-    func_02025b64(0, 6, 0, "logo_activision_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 11, 0, "logo_activision_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 7, 0, "logo_activision_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 6, 0, "logo_activision_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 11, 0, "logo_activision_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 7, 0, "logo_activision_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     GX_SetVisiblePlane(0x11);
 }
 
 void UnkScene_02226e60::func_ov000_0221d21c() {
     ChangeDir("/logo");
-    func_02025b64(0, 6, 0, "logo_now_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 11, 0, "logo_now_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 7, 0, "logo_now_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 6, 0, "logo_now_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 11, 0, "logo_now_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 7, 0, "logo_now_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     GX_SetVisiblePlane(0x11);
 }
 
 void UnkScene_02226e60::func_ov000_0221d2e8() {
     ChangeDir("/logo");
-    func_02025b64(0, 1, 0x2000, "logo_mobiclip_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 12, 0, "logo_mobiclip_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 8, 0, "logo_mobiclip_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0x2000, "logo_mobiclip_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 12, 0, "logo_mobiclip_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 8, 0, "logo_mobiclip_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     GX_SetVisiblePlane(0x12);
 }
@@ -190,13 +190,13 @@ void UnkScene_02226e60::func_ov000_0221d2e8() {
 void UnkScene_02226e60::func_ov000_0221d3b4() {
     ChangeDir("/logo");
     if (data_020d433c.mUnk_79 == 0) {
-        func_02025b64(1, 1, 0x2000, "logo_legaltext_english_ncl.bin", 0, 0, 0);
-        func_02025b64(1, 12, 0, "logo_legaltext_english_ncg.bin", 0, 0, 0);
-        func_02025b64(1, 8, 0, "logo_legaltext_english_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 1, 0x2000, "logo_legaltext_english_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 12, 0, "logo_legaltext_english_ncg.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 8, 0, "logo_legaltext_english_nsc.bin", 0, 0, 0);
     } else {
-        func_02025b64(1, 1, 0x2000, "logo_legaltext_french_ncl.bin", 0, 0, 0);
-        func_02025b64(1, 12, 0, "logo_legaltext_french_ncg.bin", 0, 0, 0);
-        func_02025b64(1, 8, 0, "logo_legaltext_french_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 1, 0x2000, "logo_legaltext_french_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 12, 0, "logo_legaltext_french_ncg.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 8, 0, "logo_legaltext_french_nsc.bin", 0, 0, 0);
     }
     ChangeDir("/");
     GXS_SetVisiblePlane(0x12);
@@ -204,18 +204,18 @@ void UnkScene_02226e60::func_ov000_0221d3b4() {
 
 void UnkScene_02226e60::func_ov000_0221d500() {
     ChangeDir("/logo");
-    func_02025b64(1, 1, 0x2000, "logo_cri_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 12, 0, "logo_cri_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "logo_cri_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "logo_cri_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "logo_cri_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "logo_cri_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     GXS_SetVisiblePlane(0x12);
 }
 
 void UnkScene_02226e60::func_ov000_0221d5d4() {
     ChangeDir("/logo");
-    func_02025b64(1, 1, 0x2000, "logo_nelvana_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 12, 0, "logo_nelvana_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "logo_nelvana_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "logo_nelvana_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "logo_nelvana_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "logo_nelvana_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     GXS_SetVisiblePlane(0x12);
 }

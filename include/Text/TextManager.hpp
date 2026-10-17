@@ -82,13 +82,13 @@ public:
         /* 36 */ u16 mUnk_36[17]; // filled as one run from 0x36 (ov002 02220830)
         struct {
             /* 36 */ u16 mUnk_36_0;
-            /* 38 */ u16 mPalette[16]; // character count of each printed line
+            /* 38 */ u16 mLineStarts[16]; // text position where each printed line starts
         };
     };
-    /* 58 */ u8 mUnk_58; // lines recorded in mPalette
-    /* 59 */ u8 mUnk_59; // draw a shadow behind each glyph
-    /* 5a */ u8 mUnk_5a; // shadow colour index
-    /* 5b */ u8 mUnk_5b; // 1 = use the 4bpp bitmap font
+    /* 58 */ u8 mLineStartCount; // entries recorded in mLineStarts
+    /* 59 */ u8 mUseShadow; // draw a shadow behind each glyph
+    /* 5a */ u8 mShadowColor; // shadow colour index
+    /* 5b */ u8 mUse4bppFont; // 1 = use the 4bpp bitmap font
     /* 5c */ // the instance really extends to 0xe8: u8 widths of the bitmap font glyphs from +0x5c (see Widths());
     //        declaring them as a member changes the code of the users, so they are reached by offset
 
@@ -124,8 +124,8 @@ public:
         return countX * countY;
     }
 
-    void func_0202c02c(); // sets up the font pointers and measures the bitmap font
-    u16 func_0202c1a8(u32 index); // character count of a recorded line
+    void InitFont(); // sets up the font pointers and measures the bitmap font
+    u16 GetLineStart(u32 index); // text position where a recorded line starts
     void Init(void *glyphs, u32 unk2, u32 unk3, u16 width, u16 height, s32 flags);
     void SetColor(u32 unk1, u32 unk2, u32 unk3);
     void Print(const void *text, u16 length, void *buffer, u16 width, u16 height, s16 *outWidth, s16 *outHeight,
@@ -134,10 +134,10 @@ public:
     void PrintNumber(u32 value, u8 minDigits, u32 unk3, void *buffer, u16 width, u16 height, s16 *outWidth,
                      s16 *outHeight, u32 unk9, u32 unk10, u32 unk11, u16 unk12, u32 unk13, u32 unk14,
                      u32 unk15); // 0202cb50
-    void func_0202cd48(u32 mode, u16 *map, u32 palette, u32 base, u32 width, u32 height, u32 stride);
+    void FillScrChars(u32 mode, u16 *map, u32 palette, u32 base, u32 width, u32 height, u32 stride);
     void func_0202ce44(u32 unk1, u32 unk2, u32 unk3, u8 unk4);
-    void func_0202ceac(u32 glyph, void *buffer, u32 eightBit, s32 layout, s16 x, s16 y, u16 width, u16 height);
-    u8 func_0202d19c(u32 glyph);
-    s32 func_0202d1bc(u32 code);
-    void func_0202d208(u32 glyph, void *buffer, u32 eightBit, u32 color, s32 layout, s16 x, s16 y, u16 width, u16 height);
+    void Write4bppGlyph(u32 glyph, void *buffer, u32 eightBit, s32 layout, s16 x, s16 y, u16 width, u16 height);
+    u8 Get4bppGlyphWidth(u32 glyph);
+    s32 FindGlyphIndex(u32 code);
+    void Write1bppGlyph(u32 glyph, void *buffer, u32 eightBit, u32 color, s32 layout, s16 x, s16 y, u16 width, u16 height);
 };

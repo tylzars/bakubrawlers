@@ -17,7 +17,7 @@ extern "C" void func_02000d88(MtxFx44 *mtx); // MTX_Identity44_
 
 MtxFx22 data_0220e838;
 MtxFx33 data_0220e848;
-MtxFx43 data_0220e86c;
+MtxFx43 gIdentityMtx43;
 MtxFx44 data_0220e89c;
 
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);                         // atan2 (16-bit angle)
@@ -110,7 +110,7 @@ extern "C" fx32 FX_Div(fx32 a, fx32 b); // FX_Div
 void func_02025e18() {
     MTX_Identity22_(&data_0220e838);
     func_01ff817c(&data_0220e848);
-    func_01ff854c(&data_0220e86c);
+    func_01ff854c(&gIdentityMtx43);
     func_02000d88(&data_0220e89c);
 }
 
@@ -118,21 +118,21 @@ Camera::Camera() {
     mNear      = 0x1000;
     mFar       = 0x190000;
     mDistance  = 0x1000;
-    mUnk_50 = 0;
-    mUnk_52      = 0;
+    mFrameCount = 0;
+    mFrameIndex      = 0;
     mPath       = NULL;
-    mUnk_58     = 0;
+    mPathFov     = 0;
     mPitch      = 0;
     mYaw        = 0;
     mRoll       = 0;
     SetPosition(0, 0, 0);
     SetTarget(0, 0, -0x1000);
     SetUp(0, 0x1000, 0);
-    func_02026004(0x2aaa);
+    SetFov(0x2aaa);
 }
 
 // Derives yaw, pitch, roll and distance from position, target and up.
-void Camera::func_02025ec8() {
+void Camera::ComputeDistanceAndAngles() {
     MtxFx33 mtx;
     MtxFx33 rot;
     VecFx32 dir;
@@ -154,7 +154,7 @@ void Camera::func_02025ec8() {
     mRoll = FX_Atan2Idx(-dir.x, dir.y);
 }
 
-void Camera::func_02026004(u32 fov) {
+void Camera::SetFov(u32 fov) {
     fov = (u16) fov;
     u16 angle = fov;
     u16 scaled = angle * 3 / 4;
@@ -163,55 +163,55 @@ void Camera::func_02026004(u32 fov) {
     mFov      = angle;
     mSin      = SinIdx(half);
     mCos      = CosIdx(half);
-    mUnk_44   = FX_Div(mNear * 2, mCos);
-    mUnk_44   = FX_Mul(mSin, mUnk_44);
-    mUnk_40   = FX_Mul(mUnk_44 / 2, 0x1555);
-    mUnk_48   = mUnk_44 * 0x69 / 192;
+    mNearHeight   = FX_Div(mNear * 2, mCos);
+    mNearHeight   = FX_Mul(mSin, mNearHeight);
+    mNearHalfWidth   = FX_Mul(mNearHeight / 2, 0x1555);
+    mUnk_48   = mNearHeight * 0x69 / 192;
     mUnk_34   = FX_Div(mCos << 7, mSin) * 3 / 4;
 }
 
-void Camera::func_0202610c(void *file, u32 frameCount) {
+void Camera::SetPath(void *file, u32 frameCount) {
     const u32 *path = (const u32 *) file;
-    mUnk_52  = 0;
-    mUnk_58 = 0;
+    mFrameIndex  = 0;
+    mPathFov = 0;
     if (path[0] == 0) {
         if (path[1] == 0) {
             mPath   = path + 3;
-            mUnk_58 = path[2];
+            mPathFov = path[2];
         }
     } else {
         mPath = path;
     }
     if (frameCount == 0) {
-        mUnk_50 = mPath[0];
+        mFrameCount = mPath[0];
     } else {
-        mUnk_50 = frameCount;
+        mFrameCount = frameCount;
     }
 }
 
-void Camera::func_02026164(u16 frame) {
-    if (frame >= mUnk_50) {
-        frame = mUnk_50 - 1;
+void Camera::SetFrameIndex(u16 frame) {
+    if (frame >= mFrameCount) {
+        frame = mFrameCount - 1;
     }
-    mUnk_52 = frame;
+    mFrameIndex = frame;
 }
 
-void Camera::func_02026180() {
-    if (mUnk_58 != 0) {
-        func_02026004(mUnk_58);
+void Camera::ApplyPath() {
+    if (mPathFov != 0) {
+        SetFov(mPathFov);
     }
     fx32 keys   = INT_TO_FX(mPath[0]);
-    fx32 frames = INT_TO_FX(mUnk_50);
+    fx32 frames = INT_TO_FX(mFrameCount);
     s64 ratio   = FX_DivFx64c(keys, frames);
-    fx32 t      = (fx32) ((ratio * INT_TO_FX(mUnk_52) + 0x80000000LL) >> 32);
+    fx32 t      = (fx32) ((ratio * INT_TO_FX(mFrameIndex) + 0x80000000LL) >> 32);
     VecFx32 v;
-    func_020262cc(&v, 0, t);
+    SampleTrack(&v, 0, t);
     mPosition = v;
-    func_020262cc(&v, 1, t);
+    SampleTrack(&v, 1, t);
     mTarget = v;
 }
 
-void Camera::func_020262cc(VecFx32 *out, u32 track, fx32 t) {
+void Camera::SampleTrack(VecFx32 *out, u32 track, fx32 t) {
     const VecFx32 *keys;
     u32 n      = mPath[0];
     keys       = (const VecFx32 *) (mPath + 1) + track * n;
@@ -241,23 +241,23 @@ void Camera::func_020262cc(VecFx32 *out, u32 track, fx32 t) {
     *out = r;
 }
 
-void Camera::func_020264a4(u32 loop) {
-    mUnk_52++;
-    if (mUnk_52 < mUnk_50) {
+void Camera::AdvanceFrame(u32 loop) {
+    mFrameIndex++;
+    if (mFrameIndex < mFrameCount) {
         return;
     }
     if (loop) {
-        mUnk_52 = 0;
+        mFrameIndex = 0;
     } else {
-        mUnk_52--;
+        mFrameIndex--;
     }
 }
 
 CameraManager::CameraManager() {
 }
 
-void CameraManager::func_020264e0() {
-    mUnk_01 = 1;
+void CameraManager::Reset() {
+    mModelsVisible = 1;
     mCameras[0] = NULL;
     mCameras[1] = NULL;
     mActive = 0;
@@ -265,7 +265,7 @@ void CameraManager::func_020264e0() {
     mDirty = 0;
 }
 
-void CameraManager::func_02026504(u32 mode, Camera *camera, u32 unk3) {
+void CameraManager::SetCamerasAndRequestMode(u32 mode, Camera *camera, u32 unk3) {
     Camera *second = (Camera *) unk3;
     if (camera == NULL) {
         camera = second;
@@ -285,7 +285,7 @@ void CameraManager::func_02026504(u32 mode, Camera *camera, u32 unk3) {
     }
 }
 
-void CameraManager::func_0202655c() {
+void CameraManager::UpdateProjection() {
     if (mDirty != 0) {
         if (mRequestedMode == 0) {
             return;
@@ -308,12 +308,12 @@ void CameraManager::func_0202655c() {
         }
         case 2:
             if (mActive == 0) {
-                MTX_Frustum(cam0->mUnk_44 / 2, -cam0->mUnk_44 / 2, -cam0->mUnk_40, cam0->mUnk_40, cam0->mNear, cam0->mFar,
+                MTX_Frustum(cam0->mNearHeight / 2, -cam0->mNearHeight / 2, -cam0->mNearHalfWidth, cam0->mNearHalfWidth, cam0->mNear, cam0->mFar,
                               0x19a, &data_02211374.mProjection);
                 data_02211374.mFlags &= ~0x50;
             } else {
-                MTX_Frustum(-cam1->mUnk_44 / 2 - cam1->mUnk_48, -cam1->mUnk_44 - cam1->mUnk_44 / 2 - cam1->mUnk_48,
-                              -cam1->mUnk_40, cam1->mUnk_40, cam1->mNear, cam1->mFar, 0x19a, &data_02211374.mProjection);
+                MTX_Frustum(-cam1->mNearHeight / 2 - cam1->mUnk_48, -cam1->mNearHeight - cam1->mNearHeight / 2 - cam1->mUnk_48,
+                              -cam1->mNearHalfWidth, cam1->mNearHalfWidth, cam1->mNear, cam1->mFar, 0x19a, &data_02211374.mProjection);
                 data_02211374.mFlags &= ~0x50;
             }
             break;
@@ -335,7 +335,7 @@ void CameraManager::func_0202655c() {
     }
 }
 
-void CameraManager::func_020267f0() {
+void CameraManager::SwapBuffers() {
     if (mDirty == 0) {
         if (mMode == 0) {
             return;
@@ -348,13 +348,13 @@ void CameraManager::func_020267f0() {
     *(vu32 *) 0x4000540 = 3;
 }
 
-void CameraManager::func_02026848() {
+void CameraManager::ResetBaseTransform() {
     MI_Copy36B(&data_0220e848, &data_02211430);
     data_02211374.mFlags &= ~0xa4;
     func_020322c0(&data_02090958);
     func_020322f0(&data_0209094c);
 }
-void CameraManager::func_02026890() {
+void CameraManager::UpdateMode() {
     if (mDirty != 0) {
         mMode  = mRequestedMode;
         mDirty = 0;

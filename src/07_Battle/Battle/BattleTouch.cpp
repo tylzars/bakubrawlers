@@ -19,7 +19,7 @@ struct BattleNetMessage {
 
 u8 func_ov007_02229ee4(s32 x, s32 y, s32 width, s32 height, u16 unk5, u8 *flag) {
     u8 hit = 0;
-    if (TouchManager::Get().mUnk_56 == 0) {
+    if (TouchManager::Get().mDown == 0) {
         *flag = 0;
         return 0;
     }
@@ -33,7 +33,7 @@ u8 func_ov007_02229ee4(s32 x, s32 y, s32 width, s32 height, u16 unk5, u8 *flag) 
         }
         return hit;
     }
-    if (!TouchManager::Get().func_02022830((s16) x, (s16) y, (s16) width, (s16) height)) {
+    if (!TouchManager::Get().IsDownIn((s16) x, (s16) y, (s16) width, (s16) height)) {
         if (*flag != 0) {
             (*flag)--;
             hit = 1;
@@ -48,7 +48,7 @@ static u32 sTouchTicks;
 
 s32 func_ov007_0222a118(s32 x, s32 y, s32 radius) {
     s32 angle = 0;
-    if (TouchManager::Get().mUnk_56 != 0) {
+    if (TouchManager::Get().mDown != 0) {
         sTouchTicks++;
     } else {
         sTouchTicks = 0;

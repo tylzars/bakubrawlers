@@ -133,8 +133,8 @@ void TutorialScene::Update() {
             }
             if (a) {
                 SoundManager::Get().func_020245a4();
-                SoundManager::Get().func_020245d4(1);
-                func_020383f8(SoundManager::Get().mUnk_9c);
+                SoundManager::Get().LoadAndStartSeq(1);
+                func_020383f8(SoundManager::Get().mHeap);
             }
             if (b) {
                 mUnk_47 = 1;
@@ -164,19 +164,19 @@ void TutorialScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 return;
             }
-            mWindow->mUnk_064 = 1;
+            mWindow->mEnabled = 1;
             mUnk_47++;
             break;
         case 3: {
             u8 r = UpdateList();
             if (r != 0) {
                 if (r == 1) {
-                    SoundManager::Get().func_020246f8(0);
+                    SoundManager::Get().StartSeqArc(0);
                     data_020d433c.mUnk_83 = mSelection + 1;
                     data_020d433c.mUnk_84 = 1;
                     mUnk_47++;
                 } else {
-                    SoundManager::Get().func_020246f8(1);
+                    SoundManager::Get().StartSeqArc(1);
                     mUnk_4b = 1;
                     mUnk_47++;
                 }
@@ -287,7 +287,7 @@ void TutorialScene::Update() {
                 return;
             }
             ShowText(0);
-            mWindow->mUnk_064 = 1;
+            mWindow->mEnabled = 1;
             mUnk_47++;
             break;
         case 14:
@@ -295,7 +295,7 @@ void TutorialScene::Update() {
                 SpriteManager::Get().StartFade(3);
                 mUnk_47++;
             }
-            SpriteManager::Get().Screen(1).func_02027778(mGlyphs[1].mBuffer, mGlyphs[1].mCount, 0x20, 0x28, 2, 0x20, 0xf, 0);
+            SpriteManager::Get().Screen(1).AddOam(mGlyphs[1].mBuffer, mGlyphs[1].mCount, 0x20, 0x28, 2, 0x20, 0xf, 0);
             mWindow->Draw();
             break;
         case 15:
@@ -365,7 +365,7 @@ void TutorialScene::Update() {
             } else {
                 ShowText(4);
             }
-            mWindow->mUnk_064 = 1;
+            mWindow->mEnabled = 1;
             mUnk_47++;
             break;
         case 19:
@@ -373,7 +373,7 @@ void TutorialScene::Update() {
                 SpriteManager::Get().StartFade(3);
                 mUnk_47++;
             }
-            SpriteManager::Get().Screen(1).func_02027778(mGlyphs[1].mBuffer, mGlyphs[1].mCount, 0x20, 0x28, 2, 0x20, 0xf, 0);
+            SpriteManager::Get().Screen(1).AddOam(mGlyphs[1].mBuffer, mGlyphs[1].mCount, 0x20, 0x28, 2, 0x20, 0xf, 0);
             mWindow->Draw();
             break;
         case 20:
@@ -403,7 +403,7 @@ void TutorialScene::Update() {
                 return;
             }
             ShowText(1);
-            mWindow->mUnk_064 = 1;
+            mWindow->mEnabled = 1;
             mUnk_47++;
             break;
         case 23:
@@ -411,7 +411,7 @@ void TutorialScene::Update() {
                 SpriteManager::Get().StartFade(3);
                 mUnk_47++;
             }
-            SpriteManager::Get().Screen(1).func_02027778(mGlyphs[1].mBuffer, mGlyphs[1].mCount, 0x20, 0x28, 2, 0x20, 0xf, 0);
+            SpriteManager::Get().Screen(1).AddOam(mGlyphs[1].mBuffer, mGlyphs[1].mCount, 0x20, 0x28, 2, 0x20, 0xf, 0);
             mWindow->Draw();
             break;
         case 24:
@@ -525,7 +525,7 @@ void TutorialScene::Update() {
 
 void func_ov005_0221e858(TutorialScene *scene) {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 7);
+    SpriteManager::Get().SetupMode(1, 7);
     GX_SetGraphicsMode(1, 0, 1);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 1);
@@ -545,7 +545,7 @@ void func_ov005_0221e858(TutorialScene *scene) {
 
 void func_ov005_0221e9c8(TutorialScene *scene) {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
@@ -568,25 +568,25 @@ void func_ov005_0221e9c8(TutorialScene *scene) {
 
 void TutorialScene::LoadGraphics() {
     ChangeDir("/Game/Tutorial/bg/");
-    func_02025b64(0, 1, 0, "tutorial_u_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 11, 0, "tutorial_u_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 7, 0, "tutorial_u_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "tutorial_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "tutorial_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "tutorial_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0, "tutorial_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 11, 0, "tutorial_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 7, 0, "tutorial_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "tutorial_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "tutorial_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "tutorial_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/Tutorial/obj/");
     SpriteScreen &main = SpriteManager::Get().Screen(0);
-    main.func_02027624(3);
+    main.SetObjVramMode(3);
     main.LoadCharacters("tutorial_u_obj_00.nce_ncg1D.bin", 0, 0);
     main.LoadPalette("tutorial_u_obj_00_ncl.bin", 0, 0);
     if (mCells[3] != NULL) {
         delete mCells[3];
     }
     mCells[3]            = new CellAnimation("tutorial_u_obj_00_nce.bin", 0, 1, 1);
-    mCells[3]->mCharBase = main.func_020276f4(0);
-    mCells[3]->mUnk_11   = 0;
+    mCells[3]->mCharBase = main.GetCharBase(0);
+    mCells[3]->mPaletteBase   = 0;
     SpriteScreen &sub    = SpriteManager::Get().Screen(1);
-    sub.func_02027624(3);
+    sub.SetObjVramMode(3);
     sub.LoadCharacters("tutorial_b_obj_00.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("tutorial_b_obj_00_ncl.bin", 0, 0);
     for (u8 i = 0; i < 3; i++) {
@@ -594,18 +594,18 @@ void TutorialScene::LoadGraphics() {
             delete mCells[i];
         }
         mCells[i]            = new CellAnimation("tutorial_b_obj_00_nce.bin", 0, 1, 1);
-        mCells[i]->mCharBase = sub.func_020276f4(0);
-        mCells[i]->mUnk_11   = 0;
+        mCells[i]->mCharBase = sub.GetCharBase(0);
+        mCells[i]->mPaletteBase   = 0;
     }
     CellAnimation *cell = mCells[1];
-    cell->mUnk_0e       = 2;
-    cell->func_02029f6c();
+    cell->mAnimIndex       = 2;
+    cell->ResetAnimation();
     cell          = mCells[0];
-    cell->mUnk_0e = 1;
-    cell->func_02029f6c();
+    cell->mAnimIndex = 1;
+    cell->ResetAnimation();
     cell          = mCells[2];
-    cell->mUnk_0e = 0;
-    cell->func_02029f6c();
+    cell->mAnimIndex = 0;
+    cell->ResetAnimation();
     ChangeDir("/Game/2D/union_b/");
     SpriteScreen &window = SpriteManager::Get().Screen(1);
     window.LoadCharacters("union_b_obj_scroll.nce_ncg1D.bin", 0x5000, 0);
@@ -616,8 +616,8 @@ void TutorialScene::LoadGraphics() {
     mWindow->SetCells(6, data_ov005_02220238);
     mWindow->mCursor->mSelection = -1;
     mWindow->mCursor->mSelection = 0;
-    mWindow->mCursor->func_02030474(0x30, 0x90, 4, 6);
-    mWindow->mUnk_064 = 0;
+    mWindow->mCursor->SetupScroll(0x30, 0x90, 4, 6);
+    mWindow->mEnabled = 0;
     if (data_020d433c.mUnk_83 != 0) {
         mSelection = data_020d433c.mUnk_83 - 1;
     } else {
@@ -639,8 +639,8 @@ void TutorialScene::LoadGraphics() {
     delete mMessageWindow;
     mMessageWindow = new MessageWindow("mes_Tutorial", 1, 0x4000);
     mMessageWindow->func_02065bd4(0x14, 4, 2);
-    mMessageWindow->func_02065be4(0xd8);
-    mMessageWindow->func_02065890(2, 0, 1);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(2, 0, 1);
 }
 
 void TutorialScene::LoadListWindow() {
@@ -649,9 +649,9 @@ void TutorialScene::LoadListWindow() {
     G2S_SetBG0Priority(2);
     GXS_SetVisiblePlane(0x11);
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
@@ -662,7 +662,7 @@ void TutorialScene::LoadListWindow() {
     if (mGlyphs[1].mBuffer != NULL) {
         OS_Free(mGlyphs[1].mBuffer);
     }
-    mMessages[1]     = (MessageFile *) func_02023504("font/mes_Tutorial.mes", 0, 0, 0, 0, 0);
+    mMessages[1]     = (MessageFile *) LoadFile("font/mes_Tutorial.mes", 0, 0, 0, 0, 0);
     mGlyphs[1].mCount   = TextManager::Get().GlyphCount(12);
     mGlyphs[1].mBuffer  = OS_Alloc((s16) mGlyphs[1].mCount * (s16) 12);
     TextManager::Get().Init(mGlyphs[1].mBuffer, 1, 0, 0x18, 4, 0x21);
@@ -671,7 +671,7 @@ void TutorialScene::LoadListWindow() {
     mWindow = new SelectWindow(3, data_ov005_022200e8, -1);
     mWindow->SetCells(3, data_ov005_0222013c);
     mWindow->mCursor->mSelection = -1;
-    mWindow->mUnk_064             = 0;
+    mWindow->mEnabled             = 0;
     mWindow->mCursor->mSelection = 1;
 }
 
@@ -687,13 +687,13 @@ void TutorialScene::ShowText(int index) {
     MessageFile *file = mMessages[1];
     text.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 4, &height,
                              &width, 0, 0, 2, 0x21, 0x10, 0, 0, 1, 1, 1);
-    func_02025c1c(1, 4, 0x1000, buffer, size, 1);
+    QueueUpload(1, 4, 0x1000, buffer, size, 1);
 }
 
 void TutorialScene::LoadListText() {
     u8 i;
     ChangeDir("/");
-    mMessages[0]     = (MessageFile *) func_02023504("font/mes_Tutorial.mes", 0, 0, 0, 0, 0);
+    mMessages[0]     = (MessageFile *) LoadFile("font/mes_Tutorial.mes", 0, 0, 0, 0, 0);
     mGlyphs[0].mCount   = TextManager::Get().GlyphCount(8);
     mGlyphs[0].mBuffer  = OS_Alloc((s16) mGlyphs[0].mCount * (s16) 12);
     TextManager::Get().Init(mGlyphs[0].mBuffer, 1, 0, 0x20, 2, 0x21);
@@ -709,7 +709,7 @@ void TutorialScene::LoadListText() {
         MessageFile *file = mMessages[0];
         text.Print(file->GetText((u16) (i + 5)), file->GetLength((u16) (i + 5)), buffer, 0x20, 2, &height,
                    &width, 0, 0, 2, 0x21, 0, 0, 0, 1, 1, 1);
-        func_02025c1c(1, 4, 0x8000 + i * 0x800, buffer, size, 1);
+        QueueUpload(1, 4, 0x8000 + i * 0x800, buffer, size, 1);
     }
     TextManager::Get().SetColor(1, 0, 0xf);
 }
@@ -720,8 +720,8 @@ u8 TutorialScene::UpdateList() {
     if (result != 0) {
         if (result == 1) {
             CellAnimation *cell = mCells[1];
-            cell->mUnk_0e       = 3;
-            cell->func_02029f6c();
+            cell->mAnimIndex       = 3;
+            cell->ResetAnimation();
         }
         return result;
     }
@@ -737,14 +737,14 @@ u8 TutorialScene::UpdateList() {
         bottom = scroll;
     }
     mSelection = bottom;
-    if (InputManager::Get().IsTrigger(0x40)) {
+    if (InputManager::Get().IsTrigger(KEY_UP)) {
         if (mSelection != 0) {
             mSelection--;
         }
         if (mScroll > mSelection) {
             mScroll = mSelection;
         }
-    } else if (InputManager::Get().IsTrigger(0x80)) {
+    } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
         if (mSelection < 5) {
             mSelection++;
         }
@@ -754,7 +754,7 @@ u8 TutorialScene::UpdateList() {
     }
     if (TouchManager::Get().mTouching != 0) {
         for (i = 0; i < 4; i++) {
-            if (TouchManager::Get().func_020228c0(0x20, (s16) (i * 32 + 0x20), 0xc0, 0x1c)) {
+            if (TouchManager::Get().IsReleasedIn(0x20, (s16) (i * 32 + 0x20), 0xc0, 0x1c)) {
                 u8 index = mScroll + i;
                 if (mSelection == index) {
                     result = 1;
@@ -767,7 +767,7 @@ u8 TutorialScene::UpdateList() {
     }
     if ((prevSel != mSelection) | (prevScroll != mScroll)) {
         UpdateScroll();
-        SoundManager::Get().func_020246f8(5);
+        SoundManager::Get().StartSeqArc(5);
     }
     return result;
 }
@@ -775,21 +775,21 @@ u8 TutorialScene::UpdateList() {
 void TutorialScene::UpdateScroll() {
     mWindow->mCursor->SetScroll(mScroll);
     SelectWindow *window = mWindow;
-    u8 y                 = window->mCursor->mUnk_0b;
+    u8 y                 = window->mCursor->mScrollItemY;
     window->mCellPos[2].x = 0xe4;
     window->mCellPos[2].y = y;
     CellAnimation *cell = mCells[1];
-    cell->mUnk_0e       = 2;
-    cell->func_02029f6c();
+    cell->mAnimIndex       = 2;
+    cell->ResetAnimation();
 }
 
 void TutorialScene::DrawList() {
     mWindow->Draw();
-    mMessageWindow->func_020658d0();
+    mMessageWindow->Update();
     u8 base = mWindow->mCursor->mScroll;
     for (u8 i = 0; i < 4; i++) {
         u8 index = base + i;
-        SpriteManager::Get().Screen(1).func_02027778(mGlyphs[0].mBuffer, mGlyphs[0].mCount, 0x28, (s16) (i * 32 + 0x29), 2,
+        SpriteManager::Get().Screen(1).AddOam(mGlyphs[0].mBuffer, mGlyphs[0].mCount, 0x28, (s16) (i * 32 + 0x29), 2,
                                                      (u16) ((index * 0x800 + 0x8000) >> 7), 0xf, 0);
         if (mFlags[index + 1] != 0) {
             mCells[2]->Draw(1, 8, (s16) (i * 32 + 0x24), 2);

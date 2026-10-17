@@ -68,7 +68,7 @@ void GimmickUnk_02274830::Update() {
             r2->mUnk_04 = 10;
             func_ov007_0226a380(p, rec, (s16)-d);
         }
-        SoundManager::Get().func_020246f8(0x60);
+        SoundManager::Get().StartSeqArc(0x60);
         v = data_020d433c.mBattlePlayers->mUnk_298->mUnk_64;
         v.y = 0;
         VEC_Normalize(&v, &v);
@@ -81,7 +81,7 @@ void GimmickUnk_02274830::Update() {
         MtxFx43 mtx    = data_020c1cf4;
         VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
         VecFx32 w      = data_ov007_02285a98;
-        u16 handle     = func_0202bd40(data_020d433c.mEffects, 1, 4, 0, 0);
+        u16 handle     = StartEffect(data_020d433c.mEffects, 1, 4, 0, 0);
         if (handle) {
             mtx._[11] = 0;
             mtx._[10] = 0;
@@ -89,9 +89,9 @@ void GimmickUnk_02274830::Update() {
             MTX_MultVec43(&w, &mtx, &w);
             VEC_Add(&camPos, &w, &camPos);
             func_01ffcf64(&mtx, &camPos);
-            func_0202bf60(data_020d433c.mEffects, handle, &mtx);
+            SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         }
-        handle = func_0202bd40(data_020d433c.mEffects, 1, 0xd, 0, 1);
+        handle = StartEffect(data_020d433c.mEffects, 1, 0xd, 0, 1);
         if (handle) {
             CameraManager::Get();
             MtxFx43 mtx2    = data_020c1cf4;
@@ -100,7 +100,7 @@ void GimmickUnk_02274830::Update() {
             mtx2._[10]      = 0;
             mtx2._[9]       = 0;
             func_01ffcf64(&mtx2, &camPos2);
-            func_0202bf60(data_020d433c.mEffects, handle, &mtx2);
+            SetEffectMatrix(data_020d433c.mEffects, handle, &mtx2);
         }
         mUnk_46 = 0x78;
         mState++;

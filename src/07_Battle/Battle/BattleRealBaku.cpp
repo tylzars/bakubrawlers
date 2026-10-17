@@ -30,7 +30,7 @@ BattleRealBaku::BattleRealBaku(u8 id, int unk2, u8 unk3, int unk4, int unk5, int
 BattleRealBaku::~BattleRealBaku() {
     ModelInstance *model = mModel;
     if (model) {
-        model->mUnk_68 = 0xf;
+        model->mOwnFlags = 0xf;
         delete model;
         mModel = 0;
     }
@@ -73,12 +73,12 @@ void BattleRealBaku::func_ov007_02274454() {
     sprintf(buf, "realb%02d_%02d_data.bin", charId, mUnk_05);
     ModelAnimData *data = new ModelAnimData(buf);
     mAnim               = new ModelAnim(data, model);
-    mModel              = model->func_02028b78(mAnim);
+    mModel              = model->CreateInstance(mAnim);
     ChangeDir("/");
-    mModel->mUnk_69 = mUnk_06_4;
-    mModel->func_02028de8(0, mUnk_06_3);
+    mModel->mUseBoxTest = mUnk_06_4;
+    mModel->StartAnim(0, mUnk_06_3);
     if (mUnk_06_5) {
-        mModel->func_02028fec();
+        mModel->EnableCallbackMtx();
     }
     if (flag) {
         BattleRealBakuTexEntry *entry = &data_ov007_022858b8[mId];
@@ -88,11 +88,11 @@ void BattleRealBaku::func_ov007_02274454() {
             do {
                 sprintf(name1, "realb%02d_%02d", charId, entry->mIds[i]);
                 sprintf(name2, "realb%02d_%02d_%02d", charId, entry->mIds[i], mUnk_06_0);
-                tex->func_02028858(name1, name2, 0);
+                tex->LoadPaletteFile(name1, name2, 0);
                 i++;
             } while (i < entry->mCount);
             ChangeDir("/");
         }
     }
-    tex->func_02028344();
+    tex->FreeFile();
 }

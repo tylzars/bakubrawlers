@@ -38,25 +38,25 @@ void GimmickFieldPowerS::Load() {
     }
     ChangeDir("/Game/Gimmick");
     if (sResources[mVariant]) {
-        sResources[mVariant]->func_020306e4(1);
+        sResources[mVariant]->AddRef(1);
     }
-    mModel = sResources[mVariant]->mModel->func_02028b78(0);
+    mModel = sResources[mVariant]->mModel->CreateInstance(0);
     ChangeDir("/");
 }
 
 void GimmickFieldPowerS::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mUnk_68       = 1;
+        m->mOwnFlags       = 1;
         delete m;
         mModel = 0;
     }
-    if (sResources[0] && sResources[0]->func_020307e8()) {
+    if (sResources[0] && sResources[0]->ReleaseRef()) {
         ModelResource *r = sResources[0];
         delete r;
         sResources[0] = 0;
     }
-    if (sResources[1] && sResources[1]->func_020307e8()) {
+    if (sResources[1] && sResources[1]->ReleaseRef()) {
         ModelResource *r = sResources[1];
         delete r;
         sResources[1] = 0;
@@ -112,12 +112,12 @@ void GimmickFieldPowerS::Update() {
             break;
         }
         }
-        SoundManager::Get().func_020246f8(0x34);
-        u8 handle = func_0202bd40(data_020d433c.mEffects, 1, 0xc, 0, 1);
+        SoundManager::Get().StartSeqArc(0x34);
+        u8 handle = StartEffect(data_020d433c.mEffects, 1, 0xc, 0, 1);
         if (handle) {
             CameraManager::Get();
             MtxFx43 mtx    = data_020c1cf4;
-            MtxFx43 rot    = data_0220e86c;
+            MtxFx43 rot    = gIdentityMtx43;
             VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
             VecFx32 v      = data_ov007_02279438;
             VecFx32 w      = data_ov007_02279444;
@@ -129,9 +129,9 @@ void GimmickFieldPowerS::Update() {
             func_01ffd088(&rot, 0x1555);
             func_01ff89c0(&rot, &mtx, &mtx);
             func_01ffcf64(&mtx, &camPos);
-            func_0202bf60(data_020d433c.mEffects, handle, &mtx);
+            SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
             if (mVariant == 1) {
-                func_0202bf18(data_020d433c.mEffects, handle, &w);
+                SetEffectScale(data_020d433c.mEffects, handle, &w);
             }
         }
         mUnk_40 = 1;

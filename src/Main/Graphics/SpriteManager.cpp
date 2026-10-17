@@ -107,23 +107,23 @@ extern "C" fx32 FX_Div(fx32 a, fx32 b); // FX_Div
 void func_02026c4c(void *arg) {
     SpriteManager *self = (SpriteManager *) arg;
     func_020256d4();
-    CameraManager::Get().func_02026890();
-    self->mScreens[0].func_020275f0();
-    self->mScreens[1].func_020275f0();
+    CameraManager::Get().UpdateMode();
+    self->mScreens[0].FlushOam();
+    self->mScreens[1].FlushOam();
 }
 
-void SpriteManager::func_02026cc0() {
+void SpriteManager::EndFrame() {
     DC_FlushRange(&mScreens[0], 0x400);
     DC_FlushRange(&mScreens[1], 0x400);
-    CameraManager::Get().func_020267f0();
-    func_020254f0(func_02026c4c, this);
+    CameraManager::Get().SwapBuffers();
+    QueueFrameCallback(func_02026c4c, this);
 }
 
-void SpriteManager::func_02026d48() {
-    mScreens[0].func_020275e8(0);
-    mScreens[1].func_020275e8(1);
+void SpriteManager::Init() {
+    mScreens[0].SetBgIndex(0);
+    mScreens[1].SetBgIndex(1);
     for (u8 i = 0; i < 8; i++) {
-        mUnk_968[i] = 0;
+        mSlotUsed[i] = 0;
     }
 }
 
@@ -144,9 +144,9 @@ void SpriteManager::func_02026d90() {
 
 #define SET_POWCNT(extra) (reg_GX_POWCNT = (reg_GX_POWCNT & 0xfffffdf1) | (extra) | 0x200)
 
-void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
+void SpriteManager::SetupMode(u32 unk1, u32 mode) {
     func_020313f8((u8 *) this + 0x814, 0, func_02021e00());
-    func_02027354(unk1 & 0xff);
+    ResetVram(unk1 & 0xff);
     mMode = mode;
     switch (mode) {
         case 1:
@@ -158,8 +158,8 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             GX_SetBankForSubOBJ(8);
             GX_SetBankForSubBGExtPltt(0x80);
             GX_SetBankForSubOBJExtPltt(0x100);
-            mScreens[0].func_02027624(3);
-            mScreens[1].func_02027624(3);
+            mScreens[0].SetObjVramMode(3);
+            mScreens[1].SetObjVramMode(3);
             SET_POWCNT(2);
             break;
         case 2:
@@ -171,8 +171,8 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             GX_SetBankForSubOBJ(8);
             GX_SetBankForSubBGExtPltt(0x80);
             GX_SetBankForSubOBJExtPltt(0x100);
-            mScreens[0].func_02027624(3);
-            mScreens[1].func_02027624(3);
+            mScreens[0].SetObjVramMode(3);
+            mScreens[1].SetObjVramMode(3);
             SET_POWCNT(2);
             break;
         case 3:
@@ -185,10 +185,10 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             GX_SetBankForSubOBJ(8);
             GX_SetBankForSubBGExtPltt(0x80);
             GX_SetBankForSubOBJExtPltt(0x100);
-            mScreens[0].func_02027624(3);
-            mScreens[1].func_02027624(8);
+            mScreens[0].SetObjVramMode(3);
+            mScreens[1].SetObjVramMode(8);
             SET_POWCNT(0xe);
-            func_0202743c();
+            Init3D();
             func_020273dc(1, 0x10000);
             break;
         case 4:
@@ -200,10 +200,10 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             GX_SetBankForSubOBJ(8);
             GX_SetBankForSubBGExtPltt(0x80);
             GX_SetBankForSubOBJExtPltt(0x100);
-            mScreens[0].func_02027624(1);
-            mScreens[1].func_02027624(8);
+            mScreens[0].SetObjVramMode(1);
+            mScreens[1].SetObjVramMode(8);
             SET_POWCNT(0xe);
-            func_0202743c();
+            Init3D();
             func_020273dc(1, 0x10000);
             break;
         case 5:
@@ -215,10 +215,10 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             GX_SetBankForSubOBJ(8);
             GX_SetBankForSubBGExtPltt(0x80);
             GX_SetBankForSubOBJExtPltt(0x100);
-            mScreens[0].func_02027624(1);
-            mScreens[1].func_02027624(8);
+            mScreens[0].SetObjVramMode(1);
+            mScreens[1].SetObjVramMode(8);
             SET_POWCNT(0xe);
-            func_0202743c();
+            Init3D();
             func_020273dc(2, 0x10000);
             break;
         case 6:
@@ -229,10 +229,10 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             GX_SetBankForSubOBJ(8);
             GX_SetBankForSubBGExtPltt(0x80);
             GX_SetBankForSubOBJExtPltt(0x100);
-            mScreens[0].func_02027624(2);
-            mScreens[1].func_02027624(8);
+            mScreens[0].SetObjVramMode(2);
+            mScreens[1].SetObjVramMode(8);
             SET_POWCNT(0xe);
-            func_0202743c();
+            Init3D();
             func_020273dc(2, 0x8000);
             break;
         case 7:
@@ -243,10 +243,10 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             GX_SetBankForSubOBJ(8);
             GX_SetBankForSubBGExtPltt(0x80);
             GX_SetBankForSubOBJExtPltt(0x100);
-            mScreens[0].func_02027624(1);
-            mScreens[1].func_02027624(3);
+            mScreens[0].SetObjVramMode(1);
+            mScreens[1].SetObjVramMode(3);
             SET_POWCNT(0xe);
-            func_0202743c();
+            Init3D();
             func_020273dc(2, 0x10000);
             break;
         case 8:
@@ -257,10 +257,10 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             GX_SetBankForOBJ(0x10);
             GX_SetBankForSubBG(4);
             GX_SetBankForSubBGExtPltt(0x80);
-            mScreens[0].func_02027624(3);
-            mScreens[1].func_02027624(3);
+            mScreens[0].SetObjVramMode(3);
+            mScreens[1].SetObjVramMode(3);
             SET_POWCNT(0xe);
-            func_0202743c();
+            Init3D();
             func_020273dc(2, 0x4000);
             break;
         case 9:
@@ -272,16 +272,16 @@ void SpriteManager::func_02026dec(u32 unk1, u32 mode) {
             GX_SetBankForSubBG(4);
             GX_SetBankForSubOBJ(0x100);
             GX_SetBankForSubBGExtPltt(0x80);
-            mScreens[0].func_02027624(1);
-            mScreens[1].func_02027624(3);
+            mScreens[0].SetObjVramMode(1);
+            mScreens[1].SetObjVramMode(3);
             SET_POWCNT(0xe);
-            func_0202743c();
+            Init3D();
             func_020273dc(1, 0x10000);
             break;
     }
 }
 
-void SpriteManager::func_02027354(u32 unk1) {
+void SpriteManager::ResetVram(u32 unk1) {
     if (unk1 != 1) {
         return;
     }
@@ -312,11 +312,11 @@ void SpriteManager::func_020273dc(u32 unk1, u32 unk2) {
 void SpriteManager::func_0202740c() {
     func_02035ee0();
     for (u8 i = 0; i < 8; i++) {
-        mUnk_968[i] = 0;
+        mSlotUsed[i] = 0;
     }
 }
 
-void SpriteManager::func_0202743c() {
+void SpriteManager::Init3D() {
     func_02032d54();
     G3X_InitMtxStack();
     REG_G3_DISP3DCNT = REG_G3_DISP3DCNT & 0xffffcffd;
@@ -337,24 +337,24 @@ void SpriteManager::func_02027504(s32 index) {
         return;
     }
     func_020360cc(&mUnk_828[index]);
-    mUnk_968[index] = 1;
+    mSlotUsed[index] = 1;
 }
 
 void SpriteManager::func_0202753c(s32 index) {
-    if (mUnk_968[index] == 0) {
+    if (mSlotUsed[index] == 0) {
         return;
     }
     func_0203610c(&mUnk_828[index]);
 }
 
-void SpriteManager::func_02027568(s32 index) {
-    mUnk_968[index] = 0;
+void SpriteManager::ClearSlotUsed(s32 index) {
+    mSlotUsed[index] = 0;
 }
 
-void SpriteManager::func_02027578(s32 index, const UnkStruct_SpriteManager_28 *src) {
+void SpriteManager::SetSlot(s32 index, const UnkStruct_SpriteManager_28 *src) {
     if (src == NULL) {
         return;
     }
-    mUnk_968[index] = 1;
+    mSlotUsed[index] = 1;
     mUnk_828[index] = *src;
 }

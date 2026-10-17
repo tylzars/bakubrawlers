@@ -10,7 +10,7 @@
 class EffectManager;
 class Camera;
 class BattleRealBaku;
-class UnkStruct_02029ca8;
+class ModelLightGroup;
 
 // One effect or bone attachment of a card model (0x28 bytes, tables at 0227f050 and following).
 struct BattleCardModelPart {
@@ -52,7 +52,7 @@ public:
     /* 1c */ BattleCardModelEntry *mEntry;
     /* 20 */ BattleCardModelPart *mParts;
     /* 24 */ u32 mUnk_24;
-    /* 28 */ UnkStruct_02029ca8 *mUnk_28;
+    /* 28 */ ModelLightGroup *mUnk_28;
     /* 2c */ VecFx32 mPos[5];
     /* 68 */ void *mTextBuffer;
     /* 6c */ void *mTextBuffer2;

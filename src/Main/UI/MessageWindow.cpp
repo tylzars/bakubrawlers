@@ -21,17 +21,17 @@ MessageWindow::MessageWindow(const char *name, u32 unk2, u32 unk3) {
     mVram       = 0;
     mX          = 0;
     mY          = 0;
-    mUnk_20     = 0;
-    mUnk_22     = 0;
+    mTextWidth     = 0;
+    mTextX     = 0;
     mMessage    = -1;
     mUnk_27     = 0;
     mScreen     = unk2;
     mWidth      = 0xc0;
     mTimer      = 0;
-    mUnk_2b     = 0;
-    func_02065bcc(unk3);
-    func_02065660(name);
-    func_020656c4();
+    mLoopShortText     = 0;
+    SetVram(unk3);
+    LoadMessageFile(name);
+    InitText();
 }
 
 MessageWindow::~MessageWindow() {
@@ -46,91 +46,91 @@ MessageWindow::~MessageWindow() {
     }
 }
 
-void MessageWindow::func_02065660(const char *name) {
+void MessageWindow::LoadMessageFile(const char *name) {
     char path[0x80];
     if (mFile != NULL) {
         OS_Free(mFile);
     }
     sprintf(path, "/font/%s.mes", name);
-    mFile = (MessageFile *) func_02023504(path, 0, 0, 0, 0, 0);
+    mFile = (MessageFile *) LoadFile(path, 0, 0, 0, 0, 0);
 }
 
-void MessageWindow::func_020656c4() {
+void MessageWindow::InitText() {
     mBufferSize = TextManager::Get().BufferSize(0x28, 2);
     mBuffer     = OS_Alloc(mBufferSize);
     mGlyphCount = TextManager::Get().GlyphCount(0x14);
     mGlyphs     = OS_Alloc(mGlyphCount * 0xc);
     TextManager::Get().Init(mGlyphs, mScreen, 0, 0x28, 2, 0x11);
-    func_02065818();
+    UploadTextPalette();
     if (mScreen == 0) {
         MI_CpuClearFast((void *) (mVram + 0x6400000), 0x800);
     } else {
         MI_CpuClearFast((void *) (mVram + 0x6600000), 0x800);
     }
-    func_02065878();
+    ClearBuffer();
 }
 
-void MessageWindow::func_02065818() {
+void MessageWindow::UploadTextPalette() {
     TextManager::Get().SetColor(mScreen, 0, 0xf);
 }
 
-void MessageWindow::func_02065878() {
+void MessageWindow::ClearBuffer() {
     MI_CpuClear16(mBuffer, mBufferSize);
 }
 
-void MessageWindow::func_02065890(u32 unk1, u32 unk2, u32 unk3) {
+void MessageWindow::StartMessage(u32 unk1, u32 unk2, u32 unk3) {
     mMessage = unk1;
-    mUnk_2b  = unk2;
-    func_02065878();
+    mLoopShortText  = unk2;
+    ClearBuffer();
     mUnk_26 = 0;
     mTimer  = 0;
-    mUnk_22 = unk3 != 0 ? mWidth : 2;
-    mUnk_20 = mWidth;
+    mTextX = unk3 != 0 ? mWidth : 2;
+    mTextWidth = mWidth;
 }
 
 enum ScreenIndex { SCREEN_INDEX_0 };
 
-void MessageWindow::func_020658d0() {
+void MessageWindow::Update() {
     if (mMessage < 0) {
         return;
     }
-    u32 flag = mUnk_20 < mWidth ? mUnk_2b : 1;
+    u32 flag = mTextWidth < mWidth ? mLoopShortText : 1;
     if (mTimer != 0) {
         mTimer--;
-    } else if (!((mUnk_22 == 0) & (flag == 0))) {
-        mUnk_22--;
-        if (mUnk_22 == 0) {
+    } else if (!((mTextX == 0) & (flag == 0))) {
+        mTextX--;
+        if (mTextX == 0) {
             mTimer = 0x3c;
         }
-        func_02065878();
+        ClearBuffer();
         TextManager &text = TextManager::Get();
         s16 width;
         s16 height;
         height            = 0;
-        width             = mUnk_22;
+        width             = mTextX;
         MessageFile *file = mFile;
         text.Print(file->GetText((u16) mMessage), file->GetLength((u16) mMessage), mBuffer, 0x28, 2, &width, &height,
-                   &mUnk_20, 0, 2, 0x11, 0x10, 0, 0, 0, 1, 1);
+                   &mTextWidth, 0, 2, 0x11, 0x10, 0, 0, 0, 1, 1);
         // The screen index is an enum-typed local (a real load, before the stack arguments); a plain read is folded
         // into the call and loaded after them.
         SpriteManager &sprites = SpriteManager::Get();
         ScreenIndex screen     = (ScreenIndex) mScreen;
-        func_02025c1c(sprites.Screen(screen).mBgIndex, 4, mVram, mBuffer, 0x800, 0);
-        BOOL negative = mUnk_22 < 0;
-        BOOL last     = mUnk_20 == -mUnk_22;
+        QueueUpload(sprites.Screen(screen).mBgIndex, 4, mVram, mBuffer, 0x800, 0);
+        BOOL negative = mTextX < 0;
+        BOOL last     = mTextWidth == -mTextX;
         if (negative & last) {
-            mUnk_22 = mWidth;
+            mTextX = mWidth;
         }
     }
     SpriteScreen &screen = SpriteManager::Get().Screen(mScreen);
     u8 i                 = 0;
     do {
-        screen.func_02027778((void *) &data_020a10a0, 1, (s16)(mX + i * 16), (s16)(mY + 1), mUnk_27, (u16)(i + (mVram >> 7)), 0xf, 0);
+        screen.AddOam((void *) &data_020a10a0, 1, (s16)(mX + i * 16), (s16)(mY + 1), mUnk_27, (u16)(i + (mVram >> 7)), 0xf, 0);
         i++;
     } while (i < mWidth / 16);
 }
 
-void MessageWindow::func_02065bcc(u32 vram) {
+void MessageWindow::SetVram(u32 vram) {
     mVram = vram;
 }
 
@@ -140,7 +140,7 @@ void MessageWindow::func_02065bd4(u32 unk1, u32 unk2, u32 unk3) {
     mUnk_27 = unk3;
 }
 
-void MessageWindow::func_02065be4(u32 unk1) {
+void MessageWindow::SetWidth(u32 unk1) {
     mWidth = (s32) (unk1 >> 4) << 4;
 }
 

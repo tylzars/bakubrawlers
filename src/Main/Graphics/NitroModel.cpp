@@ -23,43 +23,43 @@ static inline void *GetModelByIdx(NNSG3dResMdlSet *set, u32 index) {
     return NULL;
 }
 
-UnkStruct_020289c8::UnkStruct_020289c8() {
+ModelFile::ModelFile() {
     mFile     = NULL;
-    mUnk_04   = NULL;
-    mUnk_08   = NULL;
+    mResModel   = NULL;
+    mTexture   = NULL;
     mOwnsFile = 0;
 }
 
-BOOL UnkStruct_020289c8::func_020289e0(const char *name, UnkStruct_02028308 *texture) {
-    void *file = func_02023504(name, 0, 0, 0, 0, 0);
+BOOL ModelFile::Load(const char *name, TextureFile *texture) {
+    void *file = LoadFile(name, 0, 0, 0, 0, 0);
     mOwnsFile  = 1;
-    return func_02028a2c(file, texture);
+    return LoadData(file, texture);
 }
 
-BOOL UnkStruct_020289c8::func_02028a2c(void *file, UnkStruct_02028308 *texture) {
+BOOL ModelFile::LoadData(void *file, TextureFile *texture) {
     if (file == NULL) {
         return FALSE;
     }
     if (mFile != NULL) {
-        func_02028af0();
+        Release();
     }
     mFile = file;
-    mUnk_04 = GetModelByIdx(func_02033598(file), 0);
+    mResModel = GetModelByIdx(func_02033598(file), 0);
     if (texture != NULL) {
-        func_02028b4c(texture);
+        BindTexture(texture);
     }
     return TRUE;
 }
 
-BOOL UnkStruct_020289c8::func_02028ac4(const char *name) {
-    if (!func_020289e0(name, NULL)) {
+BOOL ModelFile::func_02028ac4(const char *name) {
+    if (!Load(name, NULL)) {
         return FALSE;
     }
     func_02032d7c(mFile);
     return TRUE;
 }
 
-void UnkStruct_020289c8::func_02028af0() {
+void ModelFile::Release() {
     if (mFile == NULL) {
         return;
     }
@@ -70,20 +70,20 @@ void UnkStruct_020289c8::func_02028af0() {
         mOwnsFile = 0;
     }
     mFile   = NULL;
-    mUnk_04 = NULL;
-    mUnk_08 = NULL;
+    mResModel = NULL;
+    mTexture = NULL;
 }
 
-void UnkStruct_020289c8::func_02028b4c(UnkStruct_02028308 *texture) {
+void ModelFile::BindTexture(TextureFile *texture) {
     if (texture == NULL || texture->mTex == NULL) {
         return;
     }
-    mUnk_08 = texture;
+    mTexture = texture;
     func_02031fec(func_02033598(mFile), texture->mTex);
 }
 
-ModelInstance *UnkStruct_020289c8::func_02028b78(ModelAnim *anim) {
+ModelInstance *ModelFile::CreateInstance(ModelAnim *anim) {
     ModelInstance *instance = new ModelInstance(this);
-    instance->func_02028de0(anim);
+    instance->SetAnim(anim);
     return instance;
 }

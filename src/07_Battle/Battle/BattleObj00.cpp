@@ -157,7 +157,7 @@ void BattleObj00::Update() {
             if (!func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
                 return;
             }
-            SpriteManager::Get().func_02026dec(1, 7);
+            SpriteManager::Get().SetupMode(1, 7);
             mMap = new BattleCommandMap(data_020d433c.mUnk_95);
             mMap->vfunc_0c();
             data_020d433c.mGimmicks->mState = 1;
@@ -177,7 +177,7 @@ void BattleObj00::Update() {
             }
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
             Camera *camera         = list->mCamera;
-            if (((camera->mUnk_52 + 1 >= camera->mUnk_50) & 0xffff) != 0) {
+            if (((camera->mFrameIndex + 1 >= camera->mFrameCount) & 0xffff) != 0) {
                 mUnk_32 = 7;
                 return;
             }
@@ -397,7 +397,7 @@ void BattleObj00::Update() {
                 G2S_SetBlendBrightness(0x11, mUnk_37);
             }
             if (mUnk_28 == 1) {
-                SoundManager::Get().func_020246f8(6);
+                SoundManager::Get().StartSeqArc(6);
             }
             if ((s32) mUnk_28 <= 150) {
                 return;
@@ -422,7 +422,7 @@ void BattleObj00::Update() {
                         if (p->IsActive() || data_020d433c.mUnk_9a_3) {
                             func_ov007_02262638(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mRow, data_ov007_0227a33c[kind].mCol, i, func_ov007_0226a5e8(p));
                         } else {
-                            if (IsWirelessMode((const u8 *) &WirelessManager::Get().mUnk_1228)) {
+                            if (IsWirelessMode((const u8 *) &WirelessManager::Get().mState)) {
                                 func_ov007_02262638(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mRow, data_ov007_0227a33c[kind].mCol, i, (u8) *(u32 *) ((u8 *) data_020d433c.mBattlePlayers->mPlayers[i] + 0x104));
                             } else {
                                 func_ov007_02262638(data_020d433c.mBattlePlayers, data_ov007_0227a33c[kind].mRow, data_ov007_0227a33c[kind].mCol, i, mUnk_39);
@@ -489,20 +489,20 @@ void BattleObj00::Update() {
 
 void BattleObj00::func_ov007_0224ad2c() {
     ChangeDir("/Game/Battle/Obj");
-    func_02025b64(0, 4, 0, "battle_u.nce_ncg1D.bin", 0, 0, 0);
-    func_02025b64(0, 5, 0, "battle_u_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 4, 0, "battle_u.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 5, 0, "battle_u_ncl.bin", 0, 0, 0);
     ChangeDir("/");
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/Game/Battle/Obj");
     mAnims[0] = new CellAnimation("battle_b_obj_00_nce.bin", 0x15, 1, 1);
-    mAnims[0]->mCharBase = screen.func_020276f4(0x10000);
-    mAnims[0]->mUnk_11 = 0;
+    mAnims[0]->mCharBase = screen.GetCharBase(0x10000);
+    mAnims[0]->mPaletteBase = 0;
     mAnims[1] = new CellAnimation("battle_b_obj_00_nce.bin", 0x16, 1, 1);
-    mAnims[1]->mCharBase = screen.func_020276f4(0x10000);
-    mAnims[1]->mUnk_11 = 0;
+    mAnims[1]->mCharBase = screen.GetCharBase(0x10000);
+    mAnims[1]->mPaletteBase = 0;
     mAnims[2] = new CellAnimation("battle_b_obj_00_nce.bin", 0x1b, 1, 1);
-    mAnims[2]->mCharBase = screen.func_020276f4(0x10000);
-    mAnims[2]->mUnk_11 = 0;
+    mAnims[2]->mCharBase = screen.GetCharBase(0x10000);
+    mAnims[2]->mPaletteBase = 0;
     ChangeDir("/Game/2D/union_b");
 }

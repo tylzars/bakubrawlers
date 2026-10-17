@@ -9,7 +9,7 @@ BattleMapPiece::BattleMapPiece(int type) {
 BattleMapPiece::~BattleMapPiece() {
     ModelInstance *model = mModel;
     if (model) {
-        model->mUnk_68 = 0xf;
+        model->mOwnFlags = 0xf;
         delete model;
         mModel = 0;
     }
@@ -19,13 +19,13 @@ void BattleMapPiece::func_ov007_022636f4(u32 type) {
     ChangeDir("/Game/Battle/3d/MapObj");
     switch (type) {
         case 0:
-            func_020526a8("Lpoint_01_00.nsbtx", "Lpoint_01_00.nsbmd");
+            LoadFilesNoAnim("Lpoint_01_00.nsbtx", "Lpoint_01_00.nsbmd");
             break;
         case 1:
-            func_020526a8("Lpoint_00_00.nsbtx", "Lpoint_00_00.nsbmd");
+            LoadFilesNoAnim("Lpoint_00_00.nsbtx", "Lpoint_00_00.nsbmd");
             break;
         case 2:
-            func_020526a8("sphere_shadow.nsbtx", "sphere_shadow.nsbmd");
+            LoadFilesNoAnim("sphere_shadow.nsbtx", "sphere_shadow.nsbmd");
             break;
     }
     ChangeDir("/");

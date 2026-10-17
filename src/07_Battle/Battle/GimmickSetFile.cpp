@@ -35,7 +35,7 @@ struct GimmickSetSrcFile {
 
 int func_ov007_02271a00(GimmickSetFile *file, const char *path) {
     u32 size;
-    GimmickSetSrcFile *src = (GimmickSetSrcFile *) func_02023504(path, 0, 0, 0, &size, 0);
+    GimmickSetSrcFile *src = (GimmickSetSrcFile *) LoadFile(path, 0, 0, 0, &size, 0);
     if (src) {
         file->mCount = src->mCount;
         *(u16 *) file = src->mUnk_00;

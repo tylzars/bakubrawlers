@@ -14,8 +14,8 @@ class BattleCardSpec;
 
 class BattleMapObj;
 class BattleMapModel;
-class UnkStruct_0203d374;
-class UnkStruct_02029ca8;
+class BakuganModel;
+class ModelLightGroup;
 
 // Camera of the card screen (vtable 02288700, 0x30 bytes): the map objects, two cameras and a model; built from
 // the card ids of both sides.
@@ -23,9 +23,9 @@ class BattleCardCamera : public SceneBase {
 public:
     /* 00 SceneBase */
     /* 0c */ BattleMapObj *mUnk_0c;
-    /* 10 */ UnkStruct_0203d374 *mUnk_10[2];
+    /* 10 */ BakuganModel *mUnk_10[2];
     /* 18 */ BattleMapModel *mUnk_18;
-    /* 1c */ UnkStruct_02029ca8 *mUnk_1c;
+    /* 1c */ ModelLightGroup *mUnk_1c;
     /* 20 */ void *mUnk_20;
     /* 24 */ u16 mUnk_24;
     /* 26 */ u8 mState;

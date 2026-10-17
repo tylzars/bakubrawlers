@@ -123,7 +123,7 @@ void UnkStruct_02071d24::Update() {
             break;
         case 3:
             if (func_02072d20()) {
-                SoundManager::Get().func_020246f8(0x34);
+                SoundManager::Get().StartSeqArc(0x34);
                 SetFlagBit(data_020d49b0, mUnk_5e[mBakuganIndex]);
             }
             mState++;
@@ -163,7 +163,7 @@ void UnkStruct_02071d24::Update() {
                             items[6].mY     = 0xc0;
                             items[4].mY     = 0x90;
                             mWindow->Update(1);
-                            mWindow->func_0205c7c8(-1);
+                            mWindow->Reset(-1);
                             mUnk_50 = 0;
                             RefreshItems();
                             mUnk_53 = 0;
@@ -196,7 +196,7 @@ void UnkStruct_02071d24::Update() {
             } else {
                 mUnk_52 = 0;
                 if (mUnk_51 != 0) {
-                    if (InputManager::Get().IsHeld(1) | TouchManager::Get().mUnk_57) {
+                    if (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed) {
                         mUnk_51 = 0;
                     } else {
                         mUnk_51--;
@@ -239,7 +239,7 @@ void UnkStruct_02071d24::Update() {
 
 void func_02072614() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(0, 1);
+    SpriteManager::Get().SetupMode(0, 1);
     GX_SetGraphicsMode(1, 0, 0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG1Control(0, 1, 2, 4, 0);
@@ -257,31 +257,31 @@ void func_02072614() {
 // when it has a record.
 void UnkStruct_02071d24::LoadGraphics() {
     ChangeDir("/Game/Battle/Bg/");
-    func_02025b64(1, 7, 0, "result_b_bg_01_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "result_b_bg_01_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "result_b_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "result_b_bg_01_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "result_b_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "result_b_bg_01_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/2d/union_b/");
-    func_02025b64(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0xf000, 0);
     screen.LoadPalette("union_b_obj_window_ncl.bin", 0x160, 0);
     screen.LoadCharacters("union_b_obj_cockpit.nce_ncg1D.bin", 0x11000, 0);
     screen.LoadPalette("union_b_obj_cockpit_ncl.bin", 0x1a0, 0);
     ChangeDir("/Game/Battle/Obj/");
     SpriteScreen &screen2 = SpriteManager::Get().Screen(1);
-    screen2.func_02027624(3);
+    screen2.SetObjVramMode(3);
     screen2.LoadCharacters("bakugan_sub.nce_ncg1D.bin", 0x9000, 0);
-    screen2.func_02027fec("bakugan_sub_ncl.bin", 0, 0);
+    screen2.LoadExtPalette("bakugan_sub_ncl.bin", 0, 0);
     screen2.LoadCharacters("result_b_obj_01.nce_ncg1D.bin", 0x4000, 0);
     screen2.LoadPalette("result_b_obj_01_ncl.bin", 0, 0);
     mBakuganSubAnim           = new CellAnimation("bakugan_sub_nce.bin", 0, 1, 1);
-    mBakuganSubAnim->mCharBase = screen2.func_020276f4(0x9000);
-    mBakuganSubAnim->mUnk_11   = 0;
-    mBakuganSubAnim->func_02029fb8(5);
-    mBakuganSubAnim->mUnk_0f = mUnk_5e[mBakuganIndex];
+    mBakuganSubAnim->mCharBase = screen2.GetCharBase(0x9000);
+    mBakuganSubAnim->mPaletteBase   = 0;
+    mBakuganSubAnim->SetMode(5);
+    mBakuganSubAnim->mFrameIndex = mUnk_5e[mBakuganIndex];
     mWindow          = new SelectWindow(7, data_020a2e48, 0);
     mWindow->SetCells(7, data_020a2f0c);
     mWindow->Update(1);
@@ -340,7 +340,7 @@ void UnkStruct_02071d24::func_02072c40() {
     items[4].mY     = 0xc0;
     items[6].mY     = 0x98;
     mWindow->Update(1);
-    mWindow->func_0205c7c8(-1);
+    mWindow->Reset(-1);
     mWindow->mCursor->mSelection = 6;
     PrintText();
 }
@@ -388,7 +388,7 @@ void UnkStruct_02071d24::func_02072dfc() {
     }
     if (mBakuganSubAnim != NULL) {
         mBakuganSubAnim->Update();
-        mBakuganSubAnim->func_0202a494(1, 0x20, 0x3c, 1, 0x800, 0x800, 0);
+        mBakuganSubAnim->DrawTransformed(1, 0x20, 0x3c, 1, 0x800, 0x800, 0);
     }
     if (mWindow != NULL) {
         mWindow->Draw();
@@ -402,11 +402,11 @@ void UnkStruct_02071d24::func_02072e7c() {
     }
     if (mBakuganSubAnim != NULL) {
         mBakuganSubAnim->Update();
-        mBakuganSubAnim->func_0202a494(1, 0x20, 0x3c, 1, 0x800, 0x800, 0);
+        mBakuganSubAnim->DrawTransformed(1, 0x20, 0x3c, 1, 0x800, 0x800, 0);
     }
     if (mWindow != NULL) {
         BOOL enabled = TRUE;
-        if ((func_02072d84() && (InputManager::Get().IsDown(0x40) | InputManager::Get().IsDown(0x80))) || mUnk_51 != 0) {
+        if ((func_02072d84() && (InputManager::Get().IsDown(KEY_UP) | InputManager::Get().IsDown(KEY_DOWN))) || mUnk_51 != 0) {
             enabled = FALSE;
         }
         if (mUnk_52 != 0) {
@@ -420,7 +420,7 @@ void UnkStruct_02071d24::func_02072e7c() {
             u8 result   = mWindow->Update(1);
             s8 current  = mWindow->mCursor->mSelection;
             if (current < 5 && previous != current) {
-                mMessageWindow->func_02065890((s16) (current + 0x10), 0, 1);
+                mMessageWindow->StartMessage((s16) (current + 0x10), 0, 1);
             }
             if (mUnk_50 != 3) {
                 mUnk_50 = result;
@@ -442,7 +442,7 @@ void UnkStruct_02071d24::RefreshItems() {
             case 0:
                 if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_0 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mUnk_18[0]);
+                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mWindow->mCells[i]->SetAnimation(0xf);
@@ -451,7 +451,7 @@ void UnkStruct_02071d24::RefreshItems() {
             case 1:
                 if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_12 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mUnk_18[0]);
+                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mWindow->mCells[i]->SetAnimation(0x10);
@@ -460,7 +460,7 @@ void UnkStruct_02071d24::RefreshItems() {
             case 2:
                 if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_3 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mUnk_18[0]);
+                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mWindow->mCells[i]->SetAnimation(0x11);
@@ -469,7 +469,7 @@ void UnkStruct_02071d24::RefreshItems() {
             case 3:
                 if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_6 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mUnk_18[0]);
+                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mWindow->mCells[i]->SetAnimation(0x12);
@@ -478,7 +478,7 @@ void UnkStruct_02071d24::RefreshItems() {
             case 4:
                 if ((s32) mUnk_34[mBakuganIndex]->mUnk_02_9 < 4) {
                     items[i].mFlags = 8;
-                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mUnk_18[0]);
+                    mWindow->mCells[i]->SetAnimation(data_020a2f0c[i].mAnimIndices[0]);
                 } else {
                     items[i].mFlags = 0x8000;
                     mWindow->mCells[i]->SetAnimation(0x13);
@@ -492,10 +492,10 @@ void UnkStruct_02071d24::RefreshItems() {
         u8 index = j + mUnk_4f;
         index %= 5;
         if (selectItems[index].mFlags == 8) {
-            mMessageWindow->func_02065890((s16) (index + 0x10), 0, 1);
+            mMessageWindow->StartMessage((s16) (index + 0x10), 0, 1);
             mWindow->mCursor->mSelection = index;
-            mWindow->mUnk_063            = index;
-            mWindow->mCells[index]->SetAnimation(data_020a2f0c[index].mUnk_18[2]);
+            mWindow->mSavedSelection            = index;
+            mWindow->mCells[index]->SetAnimation(data_020a2f0c[index].mAnimIndices[2]);
             return;
         }
     }
@@ -515,7 +515,7 @@ void UnkStruct_02071d24::func_020733d4() {
                 func_02058260(mCommandList, mBakuganIds[next], mUnk_5e[next], -1);
             }
             mUnk_4f = 0;
-            mBakuganSubAnim->mUnk_0f = mUnk_5e[mBakuganIndex];
+            mBakuganSubAnim->mFrameIndex = mUnk_5e[mBakuganIndex];
             func_02072b14();
             RefreshItems();
             func_02072c40();
@@ -530,7 +530,7 @@ void UnkStruct_02071d24::func_020733d4() {
         return;
     }
     if (func_02072d84()) {
-        if (InputManager::Get().IsHeld(1) | TouchManager::Get().mUnk_57) {
+        if (InputManager::Get().IsHeld(1) | TouchManager::Get().mPressed) {
             mUnk_50 = 3;
         }
     }
@@ -579,17 +579,17 @@ void UnkStruct_02071d24::func_020733d4() {
 }
 
 void UnkStruct_02071d24::LoadMessages() {
-    SpriteManager::Get().Screen(1).func_02027624(3);
+    SpriteManager::Get().Screen(1).SetObjVramMode(3);
     ChangeDir("/font/");
-    mBakuganNameMessages = (MessageFile *) func_02023504("mes_BakuganName.mes", 0, 0, 0, 0, 0);
-    mResultMessages = (MessageFile *) func_02023504("mes_Result.mes", 0, 0, 0, 0, 0);
+    mBakuganNameMessages = (MessageFile *) LoadFile("mes_BakuganName.mes", 0, 0, 0, 0, 0);
+    mResultMessages = (MessageFile *) LoadFile("mes_Result.mes", 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x18, 0xc);
     mTextBuffer = OS_Alloc(mTextBufferSize);
     MI_CpuClear16(mTextBuffer, mTextBufferSize);
     mMessageWindow = new MessageWindow("mes_Result", 1, 0x2800);
     mMessageWindow->func_02065bd4(0x14, 4, 0);
-    mMessageWindow->func_02065be4(0xd8);
-    mMessageWindow->func_02065890(0x10, 0, 1);
+    mMessageWindow->SetWidth(0xd8);
+    mMessageWindow->StartMessage(0x10, 0, 1);
     mGlyphCount = TextManager::Get().GlyphCount(0x24);
     mGlyphBuffer = OS_Alloc((s16) mGlyphCount * (s16) 0xc);
     TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x18, 0xc, 0x21);
@@ -629,7 +629,7 @@ void UnkStruct_02071d24::PrintText() {
         text.Print(file->GetText(0), file->GetLength(0), mTextBuffer, 0x18, 0xc, &width2, &height2, NULL, 0, 2, 0x21, 0x10, 0,
                    0, 1, 1, 1);
     } else {
-        TextManager::Get().mUnk_5b = 1;
+        TextManager::Get().mUse4bppFont = 1;
         curW = 0;
         curH = 0;
         PrintResultText(TextManager::Get(), mBakuganNameMessages, mBakuganIds[mBakuganIndex], mTextBuffer, curW, curH, NULL);
@@ -643,13 +643,13 @@ void UnkStruct_02071d24::PrintText() {
         } else {
             PrintResultText(TextManager::Get(), mResultMessages, 6, mTextBuffer, curW, curH, NULL);
         }
-        TextManager::Get().mUnk_5b = 0;
+        TextManager::Get().mUse4bppFont = 0;
     }
     DC_FlushRange(mTextBuffer, mTextBufferSize);
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, mTextBuffer, mTextBufferSize, 0);
 }
 
-// Outside states 2-4 also steps the MessageWindow's text (func_020658d0).
+// Outside states 2-4 also steps the MessageWindow's text (Update).
 void UnkStruct_02071d24::DrawText() {
     BOOL show = FALSE;
     switch (mState) {
@@ -662,9 +662,9 @@ void UnkStruct_02071d24::DrawText() {
             break;
     }
     if (show) {
-        SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, (u8) mGlyphCount, 0x20, 0x28, 0, 0, 0xe, 0);
+        SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, (u8) mGlyphCount, 0x20, 0x28, 0, 0, 0xe, 0);
     } else {
-        SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, (u8) mGlyphCount, 0x14, 0x1c, 0, 0, 0xe, 0);
+        SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, (u8) mGlyphCount, 0x14, 0x1c, 0, 0, 0xe, 0);
     }
     if (mMessageWindow == NULL) {
         return;
@@ -672,7 +672,7 @@ void UnkStruct_02071d24::DrawText() {
     if (show) {
         return;
     }
-    mMessageWindow->func_020658d0();
+    mMessageWindow->Update();
 }
 
 void UnkStruct_02071d24::ClearText() {

@@ -41,16 +41,16 @@ struct WmEntry {
 class WirelessManager {
 public:
     /* 0000 */ // vptr
-    /* 0004 */ u32 mUnk_0004; // callback: void (*)(u8 aid, const void *data), run when the link comes up
-    /* 0008 */ WmEntry mUnk_0008[WM_ENTRY_COUNT]; // collected scan results
-    /* 0908 */ WmEntry mUnk_0908[WM_ENTRY_COUNT]; // snapshot handed to the game
-    /* 1208 */ u16 mUnk_1208[WM_ENTRY_COUNT]; // age counter per scan result
+    /* 0004 */ u32 mParentCallback; // callback: void (*)(u8 aid, const void *data), run when the link comes up
+    /* 0008 */ WmEntry mScanResults[WM_ENTRY_COUNT]; // collected scan results
+    /* 0908 */ WmEntry mScanSnapshot[WM_ENTRY_COUNT]; // snapshot handed to the game
+    /* 1208 */ u16 mScanResultTimers[WM_ENTRY_COUNT]; // age counter per scan result
     /* 1220 */ u16 mUnk_1220;
-    /* 1222 */ u16 mUnk_1222; // channel index while a scan is running
+    /* 1222 */ u16 mTestedChannel; // channel index while a scan is running
     /* 1224 */ u16 mUnk_1224;
     /* 1226 */ u16 mUnk_1226;
-    /* 1228 */ volatile u8 mUnk_1228; // mode (6 and 7 are the wireless modes, see IsWirelessMode)
-    /* 1229 */ u8 mUnk_1229;
+    /* 1228 */ volatile u8 mState; // mode (6 and 7 are the wireless modes, see IsWirelessMode)
+    /* 1229 */ u8 mJoinIndex;
     /* 122a */ u8 mUnk_122a; // step of the running mode
     /* 122b */ u8 mUnk_122b;
     /* 122c */ u8 mUnk_122c;
@@ -59,10 +59,10 @@ public:
     /* 122f */ u8 mUnk_122f;
     /* 1230 */ u8 mUnk_1230;
     /* 1231 */ u8 mUnk_1231[24];
-    /* 1249 */ u8 mUnk_1249;
+    /* 1249 */ u8 mRecvWriteIndex;
     /* 124a */ u8 mUnk_124a;
-    /* 124b */ u8 mUnk_124b;
-    /* 124c */ u8 mUnk_124c;
+    /* 124b */ u8 mSendWriteIndex;
+    /* 124c */ u8 mSendReadIndex;
     /* 124d */ u8 mUnk_124d;
     /* 124e */ u8 mUnk_124e;
     /* 124f */ u8 mUnk_124f;
@@ -88,13 +88,13 @@ public:
     void func_0202e718();
     void func_0202e76c();
     void func_0202e7c8();
-    void func_0202e7fc(u32 unk1);
-    void func_0202e864();
-    void func_0202e9e0();
+    void Join(u32 unk1);
+    void StoreScanResult();
+    void UpdateScanResultTimers();
     void func_0202ea18();
     void func_0202ea34();
-    void func_0202ea84();
-    u32 func_0202eb08(void *unk1, u32 unk2);
+    void SendNext();
+    u32 Send(void *unk1, u32 unk2);
     void func_0202eb70();
     void func_0202ebc4();
     void func_0202ec74(u32 unk1);
@@ -103,15 +103,15 @@ public:
     void func_0202ed2c();
     void func_0202f1a4(u32 unk1);
     u32 func_0202f238();
-    void func_0202f244();
+    void Update();
 
-    u32 func_0202ed3c();
-    u32 func_0202edd0();
-    u32 func_0202ee10(u32 unk1, void *unk2, u32 unk3, u32 unk4);
-    u32 func_0202eefc(u32 unk1, void *unk2, u32 unk3);
-    u32 func_0202ef80();
-    u32 func_0202eeb0();
-    u32 func_0202f024(void *unk1);
+    u32 Start();
+    u32 Stop();
+    u32 StartParent(u32 unk1, void *unk2, u32 unk3, u32 unk4);
+    u32 StartJoin(u32 unk1, void *unk2, u32 unk3);
+    u32 TakeScanSnapshot();
+    u32 StartScan();
+    u32 QueueSend(void *unk1);
     u32 func_0202f078(void *unk1);
     u8 *func_0202f0cc(u32 unk1);
     u32 func_0202f134();

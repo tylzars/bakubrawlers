@@ -5,97 +5,97 @@
 
 extern MtxFx33 data_02211430; // NNS_G3dGlb base rotation
 
-ModelInstance::ModelInstance(UnkStruct_020289c8 *model) {
-    mUnk_69 = 1;
-    mUnk_58 = model;
-    func_02031554(mRenderObj, model->mUnk_04);
-    mUnk_30 = this;
-    mUnk_60 = NULL;
+ModelInstance::ModelInstance(ModelFile *model) {
+    mUseBoxTest = 1;
+    mModelFile = model;
+    func_02031554(mRenderObj, model->mResModel);
+    mUserData = this;
+    mExtraAnim = NULL;
     mAnim   = NULL;
-    mUnk_64 = NULL;
-    mUnk_6a = 0;
+    mCallbackMtx = NULL;
+    mAnimStarted = 0;
 }
 
 ModelInstance::~ModelInstance() {
-    func_02029054();
-    func_02028ef0();
+    DisableCallbackMtx();
+    DetachAllAnims();
     if (mAnim != NULL) {
-        if (mUnk_68 & 8) {
-            mAnim->func_020299b8();
+        if (mOwnFlags & 8) {
+            mAnim->FreeAnimData();
         }
-        if ((mUnk_68 & 1) && mAnim != NULL) {
+        if ((mOwnFlags & 1) && mAnim != NULL) {
             delete mAnim;
         }
     }
-    UnkStruct_02028308 *texture;
-    UnkStruct_020289c8 *file = mUnk_58;
+    TextureFile *texture;
+    ModelFile *file = mModelFile;
     if (file != NULL) {
-        texture = file->mUnk_08;
-        if ((mUnk_68 & 2) && file != NULL) {
-            file->func_02028af0();
+        texture = file->mTexture;
+        if ((mOwnFlags & 2) && file != NULL) {
+            file->Release();
             delete file;
         }
         if (texture != NULL) {
-            if ((mUnk_68 & 4) && texture != NULL) {
-                texture->func_0202832c();
+            if ((mOwnFlags & 4) && texture != NULL) {
+                texture->Release();
                 delete texture;
             }
         }
     }
 }
 
-BOOL ModelInstance::func_02028d80() {
+BOOL ModelInstance::AdvanceAnim() {
     BOOL result = TRUE;
     if (mAnim != NULL) {
-        result = mAnim->func_020295e0();
+        result = mAnim->Advance();
     }
     return result;
 }
 
-BOOL ModelInstance::func_02028da4() {
+BOOL ModelInstance::AdvanceExtraAnim() {
     BOOL result = TRUE;
-    if (mUnk_60 != NULL) {
+    if (mExtraAnim != NULL) {
         ModelAnim *anim = mAnim;
-        if (anim->mUnk_04 == 0) {
-            result = anim->func_02029854(mUnk_60) == 0;
+        if (anim->mPaused == 0) {
+            result = anim->StepAnimObj(mExtraAnim) == 0;
         }
     }
     return result;
 }
 
-void ModelInstance::func_02028de0(ModelAnim *anim) {
+void ModelInstance::SetAnim(ModelAnim *anim) {
     mAnim = anim;
 }
 
-void ModelInstance::func_02028de8(u32 a, u32 b) {
-    func_02028ef0();
-    mAnim->func_02029ad8(a);
-    mAnim->func_02029734();
+void ModelInstance::StartAnim(u32 a, u32 b) {
+    DetachAllAnims();
+    mAnim->SelectSet(a);
+    mAnim->ResetFrames();
     for (u8 i = 0; i < 5; i++) {
-        NNSG3dAnmObj *obj = mAnim->func_02029a48(i);
+        NNSG3dAnmObj *obj = mAnim->GetAnimObj(i);
         if (obj != NULL) {
             func_020316c8(mRenderObj, obj);
         }
     }
-    mAnim->mUnk_08 = b;
-    mUnk_6a        = 1;
+    mAnim->mLoop = b;
+    mAnimStarted        = 1;
 }
 
-void ModelInstance::func_02028e54(u32 a, u32 b, fx32 c) {
-    func_02028de8(a, b);
-    mAnim->mUnk_0c = c;
+void ModelInstance::StartAnimWithIncrement(u32 a, u32 b, fx32 c) {
+    StartAnim(a, b);
+    mAnim->mFramePerFrame = c;
 }
 
-void ModelInstance::func_02028e70(s32 frame) {
+void ModelInstance::SetAnimFrame(s32 frame) {
     for (u8 i = 0; i < 5; i++) {
-        mAnim->func_020298c0(frame, i);
+        mAnim->SetFrame(frame, i);
     }
 }
 
-s32 ModelInstance::func_02028ea4() {
+s32 ModelInstance::GetAnimFrame() {
     s32 max = 0;
     for (u8 i = 0; i < 5; i++) {
-        NNSG3dAnmObj *obj = mAnim->func_02029a48(i);
+        NNSG3dAnmObj *obj = mAnim->GetAnimObj(i);
         s32 frame;
         if (obj == NULL) {
             frame = 0;
@@ -109,41 +109,41 @@ s32 ModelInstance::func_02028ea4() {
     return max;
 }
 
-void ModelInstance::func_02028ef0() {
-    if (mUnk_6a != 0 && mAnim != NULL) {
+void ModelInstance::DetachAllAnims() {
+    if (mAnimStarted != 0 && mAnim != NULL) {
         for (u8 i = 0; i < 5; i++) {
-            NNSG3dAnmObj *obj = mAnim->func_02029a48(i);
+            NNSG3dAnmObj *obj = mAnim->GetAnimObj(i);
             if (obj != NULL) {
                 func_020317bc(mRenderObj, obj);
             }
         }
     }
-    func_02028f88();
+    DetachExtraAnim();
 }
 
-s32 ModelInstance::func_02028f48() {
-    return mAnim->mUnk_10;
+s32 ModelInstance::IsAnimFinished() {
+    return mAnim->mReachedEnd;
 }
 
-void ModelInstance::func_02028f54(NNSG3dAnmObj *obj) {
-    func_02028f88();
+void ModelInstance::AttachExtraAnim(NNSG3dAnmObj *obj) {
+    DetachExtraAnim();
     if (obj == NULL) {
         return;
     }
     func_020316c8(mRenderObj, obj);
-    mUnk_60     = obj;
+    mExtraAnim     = obj;
     obj->mFrame = 0;
 }
 
-void ModelInstance::func_02028f88() {
-    if (mUnk_60 == NULL) {
+void ModelInstance::DetachExtraAnim() {
+    if (mExtraAnim == NULL) {
         return;
     }
-    func_020317bc(mRenderObj, mUnk_60);
-    mUnk_60 = NULL;
+    func_020317bc(mRenderObj, mExtraAnim);
+    mExtraAnim = NULL;
 }
 
-void ModelInstance::func_02028fb0(NNSG3dRS *rs) {
+void ModelInstance::StoreCallbackMtx(NNSG3dRS *rs) {
     ModelInstance *instance = (ModelInstance *) rs->mRenderObj->mUserData;
     s32 index;
     if (rs->mFlags & 0x10) {
@@ -151,41 +151,41 @@ void ModelInstance::func_02028fb0(NNSG3dRS *rs) {
     } else {
         index = -1;
     }
-    func_02032cc8(&instance->mUnk_64[index], NULL);
-    instance->mUnk_6b = 1;
+    func_02032cc8(&instance->mCallbackMtx[index], NULL);
+    instance->mCallbackMtxStored = 1;
 }
 
-void ModelInstance::func_02028fec() {
-    if (mUnk_64 != NULL) {
+void ModelInstance::EnableCallbackMtx() {
+    if (mCallbackMtx != NULL) {
         return;
     }
-    mUnk_64 = new MtxFx43[((u8 *) mUnk_58->mUnk_04)[0x17]];
-    func_02031810(mRenderObj, func_02028fb0, 0, 6, 3);
-    mUnk_6b = 0;
+    mCallbackMtx = new MtxFx43[((u8 *) mModelFile->mResModel)[0x17]];
+    func_02031810(mRenderObj, StoreCallbackMtx, 0, 6, 3);
+    mCallbackMtxStored = 0;
 }
 
-void ModelInstance::func_02029054() {
-    if (mUnk_64 == NULL) {
+void ModelInstance::DisableCallbackMtx() {
+    if (mCallbackMtx == NULL) {
         return;
     }
     func_02031824(mRenderObj);
-    delete[] mUnk_64;
-    mUnk_64 = NULL;
+    delete[] mCallbackMtx;
+    mCallbackMtx = NULL;
 }
 
-MtxFx43 *ModelInstance::func_02029084(s32 index) {
-    if (mUnk_6b != 0 && index <= ((u8 *) mUnk_58->mUnk_04)[0x17] && mUnk_64 != NULL) {
-        return &mUnk_64[index];
+MtxFx43 *ModelInstance::GetCallbackMtx(s32 index) {
+    if (mCallbackMtxStored != 0 && index <= ((u8 *) mModelFile->mResModel)[0x17] && mCallbackMtx != NULL) {
+        return &mCallbackMtx[index];
     }
     return NULL;
 }
 
-BOOL ModelInstance::func_020290c0() {
-    if (mUnk_69 == 0) {
+BOOL ModelInstance::BoxTest() {
+    if (mUseBoxTest == 0) {
         return TRUE;
     }
     func_01ff92a4();
-    u8 *model = (u8 *) mUnk_58->mUnk_04;
+    u8 *model = (u8 *) mModelFile->mResModel;
     *(vu32 *) 0x040004a4 = 0x30c1;
     *(vu32 *) 0x04000500 = 0;
     *(vu32 *) 0x04000504 = 0;
@@ -204,7 +204,7 @@ BOOL ModelInstance::func_020290c0() {
     return result != 0;
 }
 
-BOOL ModelInstance::func_02029174(MtxFx43 *mtx, VecFx32 *pos) {
+BOOL ModelInstance::Draw(MtxFx43 *mtx, VecFx32 *pos) {
     if (mtx != NULL) {
         MI_Copy36B(mtx, &data_02211430);
         data_02211374.mFlags &= ~0xa4;
@@ -214,10 +214,10 @@ BOOL ModelInstance::func_02029174(MtxFx43 *mtx, VecFx32 *pos) {
         func_020322f0(pos);
     }
     func_02032284();
-    if (!func_020290c0()) {
+    if (!BoxTest()) {
         return FALSE;
     }
-    if (!CameraManager::Get().mUnk_01) {
+    if (!CameraManager::Get().mModelsVisible) {
         return TRUE;
     }
     func_01ffb0ec(mRenderObj);

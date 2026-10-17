@@ -5,8 +5,8 @@
 #include <stdio.h>
 
 // the original passes a pointer here (the declaration in FileSystem.hpp takes u32)
-const char *data_020b24e4[6] = {"head", "up", "down", "hair", "glasse", "cap"}; // part names, .data 0x020b24bc-0x020b24fc
-extern MtxFx43 data_0220e86c;
+const char *gCharacterPartNames[6] = {"head", "up", "down", "hair", "glasse", "cap"}; // part names, .data 0x020b24bc-0x020b24fc
+extern MtxFx43 gIdentityMtx43;
 extern MtxFx43 data_022191d4;
 extern "C" void func_02031838(void *renderObj, void (*callback)(NNSG3dRS *));
 extern "C" MtxFx43 *func_020323b8();
@@ -17,132 +17,132 @@ void func_02053fd8(NNSG3dRS *rs);
 
 // The current animation set of a model (read through a const pointer, so it is a load of its own).
 static inline u8 GetSet(const ModelInstance *model) {
-    return model->mAnim->mUnk_5d;
+    return model->mAnim->mSet;
 }
 
 CharacterModel::CharacterModel() {
     mUnk_60 = NULL;
-    mUnk_64 = 0;
-    mUnk_76 = 0;
-    mUnk_77 = 0;
+    mVisible = 0;
+    mExtraAnimSet = 0;
+    mExtraAnimEnabled = 0;
     for (u8 i = 0; i < 6; i++) {
         mParts[i] = NULL;
     }
     mUnk_40 = -1;
     mUnk_41 = -1;
     mUnk_44 = 2;
-    MI_CpuFill8(mUnk_38, 0, 6);
-    mUnk_2c = NULL;
-    mUnk_30 = NULL;
-    mUnk_34 = NULL;
+    MI_CpuFill8(mPartFileNumbers, 0, 6);
+    mHeadTextureData = NULL;
+    mHeadModelData = NULL;
+    mMotionData = NULL;
 }
 
 CharacterModel::~CharacterModel() {
     if (mParts[0] != NULL) {
         func_02031824((u8 *) mParts[0] + 4);
     }
-    func_020531fc();
-    if (mUnk_2c != NULL) {
-        OS_Free(mUnk_2c);
+    FreeParts();
+    if (mHeadTextureData != NULL) {
+        OS_Free(mHeadTextureData);
     }
-    if (mUnk_30 != NULL) {
-        OS_Free(mUnk_30);
+    if (mHeadModelData != NULL) {
+        OS_Free(mHeadModelData);
     }
-    if (mUnk_34 != NULL) {
-        OS_Free(mUnk_34);
+    if (mMotionData != NULL) {
+        OS_Free(mMotionData);
     }
 }
 
-void CharacterModel::func_02052894(u32 a, u32 b) {
+void CharacterModel::StartHeadAnim(u32 a, u32 b) {
     if (mParts[0] == NULL) {
         return;
     }
-    mParts[0]->func_02028e54(a, b, 0x1000);
+    mParts[0]->StartAnimWithIncrement(a, b, 0x1000);
 }
 
-void CharacterModel::func_020528b0(u32 part, u32 sex) {
+void CharacterModel::LoadPart(u32 part, u32 sex) {
     char buf[0x20];
     switch (part) {
         case 0: {
-            func_02052da4(sex);
+            StartLoad(sex);
             u32 async = 0;
-            while (!func_02052e50(async)) {
+            while (!LoadHeadFiles(async)) {
             }
-            func_020530e8();
+            CreateHead();
             break;
         }
         case 1: {
-            mUnk_38[1] = mUnk_6f;
+            mPartFileNumbers[1] = mTopKind;
             ChangeDir("/Game/Character/EditedCharacter/Male/Up");
-            sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[1], mUnk_38[1]);
-            UnkStruct_02028308 *texture = new NitroTexture(buf);
-            sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[1], mUnk_38[1]);
+            sprintf(buf, "edit_%s_M%02d.nsbtx", gCharacterPartNames[1], mPartFileNumbers[1]);
+            TextureFile *texture = new NitroTexture(buf);
+            sprintf(buf, "edit_%s_M%02d.nsbmd", gCharacterPartNames[1], mPartFileNumbers[1]);
             NitroModel *model = new NitroModel(buf, texture);
-            mParts[1]         = model->func_02028b78(NULL);
-            func_0205340c(1);
-            texture->func_02028344();
+            mParts[1]         = model->CreateInstance(NULL);
+            LoadPartTextures(1);
+            texture->FreeFile();
             if (mUnk_60 != NULL) {
                 mParts[1]->mUnk_38 = mUnk_60;
             }
-            mParts[1]->mUnk_69 = 0;
+            mParts[1]->mUseBoxTest = 0;
             break;
         }
         case 2: {
-            mUnk_38[2] = mUnk_71 * 3 + mUnk_73;
+            mPartFileNumbers[2] = mDownKind * 3 + mShoesKind;
             ChangeDir("/Game/Character/EditedCharacter/Male/Down");
-            sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[2], mUnk_38[2]);
-            UnkStruct_02028308 *texture = new NitroTexture(buf);
-            sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[2], mUnk_38[2]);
+            sprintf(buf, "edit_%s_M%02d.nsbtx", gCharacterPartNames[2], mPartFileNumbers[2]);
+            TextureFile *texture = new NitroTexture(buf);
+            sprintf(buf, "edit_%s_M%02d.nsbmd", gCharacterPartNames[2], mPartFileNumbers[2]);
             NitroModel *model = new NitroModel(buf, texture);
-            mParts[2]         = model->func_02028b78(NULL);
-            func_0205340c(2);
-            texture->func_02028344();
+            mParts[2]         = model->CreateInstance(NULL);
+            LoadPartTextures(2);
+            texture->FreeFile();
             if (mUnk_60 != NULL) {
                 mParts[2]->mUnk_38 = mUnk_60;
             }
-            mParts[2]->mUnk_69 = 0;
+            mParts[2]->mUseBoxTest = 0;
             break;
         }
         case 3: {
-            mUnk_38[3] = mUnk_68;
+            mPartFileNumbers[3] = mHairKind;
             ChangeDir("/Game/Character/EditedCharacter/Male/Hair");
-            sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[3], mUnk_38[3]);
-            UnkStruct_02028308 *texture = new NitroTexture(buf);
-            sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[3], mUnk_38[3]);
+            sprintf(buf, "edit_%s_M%02d.nsbtx", gCharacterPartNames[3], mPartFileNumbers[3]);
+            TextureFile *texture = new NitroTexture(buf);
+            sprintf(buf, "edit_%s_M%02d.nsbmd", gCharacterPartNames[3], mPartFileNumbers[3]);
             NitroModel *model = new NitroModel(buf, texture);
-            mParts[3]         = model->func_02028b78(NULL);
-            func_0205340c(3);
-            texture->func_02028344();
-            mParts[3]->mUnk_69 = 0;
+            mParts[3]         = model->CreateInstance(NULL);
+            LoadPartTextures(3);
+            texture->FreeFile();
+            mParts[3]->mUseBoxTest = 0;
             break;
         }
         case 4: {
-            mUnk_38[4] = mUnk_6c;
-            if (mUnk_38[4] != 0) {
+            mPartFileNumbers[4] = mGlasseHandle;
+            if (mPartFileNumbers[4] != 0) {
                 ChangeDir("/Game/Character/EditedCharacter/Male/Glasse");
-                sprintf(buf, "edit_%s_MF%02d.nsbtx", data_020b24e4[4], mUnk_38[4] - 1);
-                UnkStruct_02028308 *texture = new NitroTexture(buf);
-                sprintf(buf, "edit_%s_MF%02d.nsbmd", data_020b24e4[4], mUnk_38[4] - 1);
+                sprintf(buf, "edit_%s_MF%02d.nsbtx", gCharacterPartNames[4], mPartFileNumbers[4] - 1);
+                TextureFile *texture = new NitroTexture(buf);
+                sprintf(buf, "edit_%s_MF%02d.nsbmd", gCharacterPartNames[4], mPartFileNumbers[4] - 1);
                 NitroModel *model = new NitroModel(buf, texture);
-                mParts[4]         = model->func_02028b78(NULL);
-                func_0205340c(4);
-                texture->func_02028344();
-                mParts[4]->mUnk_69 = 0;
+                mParts[4]         = model->CreateInstance(NULL);
+                LoadPartTextures(4);
+                texture->FreeFile();
+                mParts[4]->mUseBoxTest = 0;
             }
             break;
         }
         case 5: {
-            mUnk_38[5] = mUnk_6a;
-            if (mUnk_38[5] != 0) {
+            mPartFileNumbers[5] = mCapHandle;
+            if (mPartFileNumbers[5] != 0) {
                 ChangeDir("/Game/Character/EditedCharacter/Male/Cap");
-                sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[5], mUnk_38[5] - 1);
-                UnkStruct_02028308 *texture = new NitroTexture(buf);
-                sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[5], mUnk_38[5] - 1);
+                sprintf(buf, "edit_%s_M%02d.nsbtx", gCharacterPartNames[5], mPartFileNumbers[5] - 1);
+                TextureFile *texture = new NitroTexture(buf);
+                sprintf(buf, "edit_%s_M%02d.nsbmd", gCharacterPartNames[5], mPartFileNumbers[5] - 1);
                 NitroModel *model = new NitroModel(buf, texture);
-                mParts[5]         = model->func_02028b78(NULL);
-                func_0205340c(5);
-                texture->func_02028344();
-                mParts[5]->mUnk_69 = 0;
+                mParts[5]         = model->CreateInstance(NULL);
+                LoadPartTextures(5);
+                texture->FreeFile();
+                mParts[5]->mUseBoxTest = 0;
             }
             break;
         }
@@ -150,64 +150,64 @@ void CharacterModel::func_020528b0(u32 part, u32 sex) {
     ChangeDir("/");
 }
 
-void CharacterModel::func_02052da4(u32 sex) {
+void CharacterModel::StartLoad(u32 sex) {
     mUnk_78 = sex;
-    mUnk_79 = 0;
+    mHeadLoadStep = 0;
     mUnk_7a = 0;
 }
 
-BOOL CharacterModel::func_02052db8() {
+BOOL CharacterModel::UpdateLoad() {
     BOOL result = FALSE;
     if (mUnk_7a == 0) {
-        if (func_02052e50(1)) {
-            mUnk_79 = 0;
+        if (LoadHeadFiles(1)) {
+            mHeadLoadStep = 0;
             result  = TRUE;
         }
     }
     return result;
 }
 
-void CharacterModel::func_02052df0() {
-    func_020530e8();
-    func_020528b0(1, mUnk_78);
-    func_020528b0(2, mUnk_78);
-    func_020528b0(3, mUnk_78);
-    func_020528b0(4, mUnk_78);
-    func_020528b0(5, mUnk_78);
+void CharacterModel::CreateHeadAndLoadParts() {
+    CreateHead();
+    LoadPart(1, mUnk_78);
+    LoadPart(2, mUnk_78);
+    LoadPart(3, mUnk_78);
+    LoadPart(4, mUnk_78);
+    LoadPart(5, mUnk_78);
 }
 
-BOOL CharacterModel::func_02052e50(u32 async) {
+BOOL CharacterModel::LoadHeadFiles(u32 async) {
     char buf[0x20];
     BOOL result = FALSE;
-    switch (mUnk_79) {
+    switch (mHeadLoadStep) {
         case 0:
-            mUnk_38[0] = 0;
+            mPartFileNumbers[0] = 0;
             ChangeDir("/Game/Character/EditedCharacter/Male/Head");
-            sprintf(buf, "edit_%s_M%02d.nsbtx", data_020b24e4[0], mUnk_38[0]);
+            sprintf(buf, "edit_%s_M%02d.nsbtx", gCharacterPartNames[0], mPartFileNumbers[0]);
             if (async) {
-                func_02023708(buf, 0, 0, 0, 0, 0);
+                LoadFileAsync(buf, 0, 0, 0, 0, 0);
             } else {
-                mUnk_2c = func_02023504(buf, 0, 0, 0, 0, 0);
+                mHeadTextureData = LoadFile(buf, 0, 0, 0, 0, 0);
             }
             ChangeDir("/");
-            mUnk_79++;
+            mHeadLoadStep++;
             break;
         case 1:
-            if (func_02023874() == 0) {
+            if (IsAsyncLoadActive() == 0) {
                 ChangeDir("/Game/Character/EditedCharacter/Male/Head");
-                sprintf(buf, "edit_%s_M%02d.nsbmd", data_020b24e4[0], mUnk_38[0]);
+                sprintf(buf, "edit_%s_M%02d.nsbmd", gCharacterPartNames[0], mPartFileNumbers[0]);
                 if (async) {
-                    mUnk_2c = func_02023864();
-                    func_02023708(buf, 0, 0, 0, 0, 0);
+                    mHeadTextureData = GetAsyncLoadBuffer();
+                    LoadFileAsync(buf, 0, 0, 0, 0, 0);
                 } else {
-                    mUnk_30 = func_02023504(buf, 0, 0, 0, 0, 0);
+                    mHeadModelData = LoadFile(buf, 0, 0, 0, 0, 0);
                 }
                 ChangeDir("/");
-                mUnk_79++;
+                mHeadLoadStep++;
             }
             break;
         case 2:
-            if (func_02023874() == 0) {
+            if (IsAsyncLoadActive() == 0) {
                 ChangeDir("/Game/Character/EditedCharacter/Anm");
                 if (mUnk_78 == 0) {
                     sprintf(buf, "edit_motion_m_cut_data.bin");
@@ -215,19 +215,19 @@ BOOL CharacterModel::func_02052e50(u32 async) {
                     sprintf(buf, "edit_motion_m_data.bin");
                 }
                 if (async) {
-                    mUnk_30 = func_02023864();
-                    func_02023708(buf, 0, 0, 0, 0, 0);
+                    mHeadModelData = GetAsyncLoadBuffer();
+                    LoadFileAsync(buf, 0, 0, 0, 0, 0);
                 } else {
-                    mUnk_34 = func_02023504(buf, 0, 0, 0, 0, 0);
+                    mMotionData = LoadFile(buf, 0, 0, 0, 0, 0);
                     result  = TRUE;
                 }
                 ChangeDir("/");
-                mUnk_79++;
+                mHeadLoadStep++;
             }
             break;
         case 3:
-            if (func_02023874() == 0) {
-                mUnk_34 = func_02023864();
+            if (IsAsyncLoadActive() == 0) {
+                mMotionData = GetAsyncLoadBuffer();
                 result  = TRUE;
             }
             break;
@@ -235,16 +235,16 @@ BOOL CharacterModel::func_02052e50(u32 async) {
     return result;
 }
 
-void CharacterModel::func_020530e8() {
-    UnkStruct_02028308 *texture = new NitroTextureData(mUnk_2c);
-    NitroModel *model           = new NitroModelData(mUnk_30, texture);
-    ModelAnimData *animData     = new ModelAnimData(mUnk_34);
+void CharacterModel::CreateHead() {
+    TextureFile *texture = new NitroTextureData(mHeadTextureData);
+    NitroModel *model           = new NitroModelData(mHeadModelData, texture);
+    ModelAnimData *animData     = new ModelAnimData(mMotionData);
     ModelAnim *anim             = new ModelAnim(animData, model);
-    mParts[0]                   = model->func_02028b78(anim);
-    func_0205340c(0);
-    texture->func_02028344();
-    OS_Free(mUnk_2c);
-    mUnk_2c = NULL;
+    mParts[0]                   = model->CreateInstance(anim);
+    LoadPartTextures(0);
+    texture->FreeFile();
+    OS_Free(mHeadTextureData);
+    mHeadTextureData = NULL;
     if (mUnk_60 == NULL) {
         s16 count = *(u8 *) (*(u8 **) ((u8 *) mParts[0] + 8) + 0x17);
         mUnk_60   = OS_Alloc(count * 0x58);
@@ -252,11 +252,11 @@ void CharacterModel::func_020530e8() {
     if (mUnk_60 != NULL) {
         mParts[0]->mUnk_38 = mUnk_60;
     }
-    mParts[0]->mUnk_69 = 0;
+    mParts[0]->mUseBoxTest = 0;
 }
 
 
-void CharacterModel::func_020531fc() {
+void CharacterModel::FreeParts() {
     for (u8 i = 0; i < 6; i++) {
         ModelInstance *inst = mParts[i];
         if (inst != NULL) {
@@ -265,7 +265,7 @@ void CharacterModel::func_020531fc() {
             }
             inst->mUnk_38 = NULL;
             inst = mParts[i];
-            inst->mUnk_68 = 0xf;
+            inst->mOwnFlags = 0xf;
             delete inst;
             mParts[i] = NULL;
         }
@@ -276,12 +276,12 @@ void CharacterModel::func_020531fc() {
     }
 }
 
-void CharacterModel::func_02053298() {
-    MtxFx43 mtx = data_0220e86c;
+void CharacterModel::DrawParts() {
+    MtxFx43 mtx = gIdentityMtx43;
     if (mParts[0] != NULL) {
-        mParts[0]->func_02028d80();
+        mParts[0]->AdvanceAnim();
     }
-    if (mUnk_64 == 0) {
+    if (mVisible == 0) {
         return;
     }
     func_01ffcf64(&mtx, &mPosition);
@@ -291,30 +291,30 @@ void CharacterModel::func_02053298() {
     if (mParts[0] != NULL) {
         func_02031838((u8 *) mParts[0] + 4, func_02053fc0);
         *(u32 *) ((u8 *) mParts[0] + 4) |= 1;
-        mParts[0]->func_02029174(&mtx, &mScale);
-        if (mUnk_77 != 0) {
-            mParts[0]->func_02028da4();
+        mParts[0]->Draw(&mtx, &mScale);
+        if (mExtraAnimEnabled != 0) {
+            mParts[0]->AdvanceExtraAnim();
         }
     }
     if (mParts[1] != NULL) {
-        mParts[1]->func_02029174(&mtx, &mScale);
+        mParts[1]->Draw(&mtx, &mScale);
     }
     if (mParts[2] != NULL) {
-        mParts[2]->func_02029174(&mtx, &mScale);
+        mParts[2]->Draw(&mtx, &mScale);
     }
     func_01ffd0e0(&data_022191d4, 0x8000);
     func_01ffd138(&data_022191d4, 0x4000);
     if (mParts[5] != NULL) {
-        mParts[5]->func_02029174(&data_022191d4, &mScale);
+        mParts[5]->Draw(&data_022191d4, &mScale);
     } else if (mParts[3] != NULL) {
-        mParts[3]->func_02029174(&data_022191d4, &mScale);
+        mParts[3]->Draw(&data_022191d4, &mScale);
     }
     if (mParts[4] != NULL) {
-        mParts[4]->func_02029174(&data_022191d4, &mScale);
+        mParts[4]->Draw(&data_022191d4, &mScale);
     }
 }
 
-void CharacterModel::func_0205340c(u32 part) {
+void CharacterModel::LoadPartTextures(u32 part) {
     char bufA[0x7f];
     char bufB[0x7f];
     char bufC[0x7f];
@@ -323,135 +323,135 @@ void CharacterModel::func_0205340c(u32 part) {
         case 0: {
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Skin");
             sprintf(bufA, "Skin_00");
-            sprintf(bufB, "Skin_00_%03d", mUnk_65);
-            func_02053d9c(part, bufA, bufB);
+            sprintf(bufB, "Skin_00_%03d", mSkinPalette);
+            LoadPartPalette(part, bufA, bufB);
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Mouth");
             sprintf(bufA, "Mouth_00");
-            sprintf(bufB, "Mouth_00_%03d", mUnk_65);
-            func_02053d9c(part, bufA, bufB);
+            sprintf(bufB, "Mouth_00_%03d", mSkinPalette);
+            LoadPartPalette(part, bufA, bufB);
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Face");
             sprintf(bufA, "Face_00");
-            sprintf(bufB, "Face_%02d_%03d", mUnk_66, mUnk_67);
-            sprintf(bufC, "Face_%02d_%03d", mUnk_66, mUnk_65);
+            sprintf(bufB, "Face_%02d_%03d", mFaceKind, mFaceVariant);
+            sprintf(bufC, "Face_%02d_%03d", mFaceKind, mSkinPalette);
             u8 table[4] = {3, 2, 2, 3};
-            u8 offset = table[mUnk_66];
-            func_02053d74(part, bufA, bufB);
-            func_02053dc4(part, bufA, bufB, bufC, offset);
+            u8 offset = table[mFaceKind];
+            LoadPartTexture(part, bufA, bufB);
+            LoadMergedPalette(part, bufA, bufB, bufC, offset);
             break;
         }
         case 1: {
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Skin");
             sprintf(bufA, "Skin_00");
-            sprintf(bufB, "Skin_00_%03d", mUnk_65);
-            func_02053d9c(part, bufA, bufB);
+            sprintf(bufB, "Skin_00_%03d", mSkinPalette);
+            LoadPartPalette(part, bufA, bufB);
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Mobile");
             sprintf(bufA, "Mobile_00");
             sprintf(bufB, "Mobile_00_%03d", mUnk_75);
-            func_02053d9c(part, bufA, bufB);
+            LoadPartPalette(part, bufA, bufB);
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Gloves");
             sprintf(bufA, "Gloves_00");
             sprintf(bufB, "Gloves_00_%03d", mUnk_75);
-            func_02053d9c(part, bufA, bufB);
+            LoadPartPalette(part, bufA, bufB);
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Top");
-            sprintf(bufA, "Top_%02d", mUnk_6f);
-            sprintf(bufB, "Top_%02d_%03d", mUnk_6f, mUnk_75);
-            sprintf(bufC, "Top_%02d_%03d", mUnk_6f, mUnk_70);
+            sprintf(bufA, "Top_%02d", mTopKind);
+            sprintf(bufB, "Top_%02d_%03d", mTopKind, mUnk_75);
+            sprintf(bufC, "Top_%02d_%03d", mTopKind, mTopPalette);
             u8 table[6] = {4, 8, 8, 7, 6, 0xe};
-            u8 offset = table[mUnk_6f];
-            func_02053d74(part, bufA, bufB);
-            func_02053dc4(part, bufA, bufB, bufC, offset);
+            u8 offset = table[mTopKind];
+            LoadPartTexture(part, bufA, bufB);
+            LoadMergedPalette(part, bufA, bufB, bufC, offset);
             break;
         }
         case 2: {
-            if (mUnk_71 == 0) {
+            if (mDownKind == 0) {
                 ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Item");
                 sprintf(bufA, "item_00");
                 sprintf(bufB, "item_00_%03d", mUnk_75);
-                sprintf(bufC, "item_00_%03d", mUnk_72);
-                func_02053dc4(part, bufA, bufB, bufC, 9);
+                sprintf(bufC, "item_00_%03d", mDownPalette);
+                LoadMergedPalette(part, bufA, bufB, bufC, 9);
             }
-            if (mUnk_71 == 1 || mUnk_71 == 5) {
+            if (mDownKind == 1 || mDownKind == 5) {
                 ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Skin");
                 sprintf(bufA, "Skin_00");
-                sprintf(bufB, "Skin_00_%03d", mUnk_65);
-                func_02053d9c(part, bufA, bufB);
+                sprintf(bufB, "Skin_00_%03d", mSkinPalette);
+                LoadPartPalette(part, bufA, bufB);
             }
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Shoes");
-            sprintf(bufA, "Shoes_%02d", mUnk_73);
-            sprintf(bufB, "Shoes_%02d_%03d", mUnk_73, mUnk_74);
-            func_02053d74(part, bufA, bufB);
-            func_02053d9c(part, bufA, bufB);
+            sprintf(bufA, "Shoes_%02d", mShoesKind);
+            sprintf(bufB, "Shoes_%02d_%03d", mShoesKind, mShoesVariant);
+            LoadPartTexture(part, bufA, bufB);
+            LoadPartPalette(part, bufA, bufB);
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Down");
-            sprintf(bufA, "Down_%02d", mUnk_71);
-            sprintf(bufB, "Down_%02d_%03d", mUnk_71, mUnk_75);
-            sprintf(bufC, "Down_%02d_%03d", mUnk_71, mUnk_72);
+            sprintf(bufA, "Down_%02d", mDownKind);
+            sprintf(bufB, "Down_%02d_%03d", mDownKind, mUnk_75);
+            sprintf(bufC, "Down_%02d_%03d", mDownKind, mDownPalette);
             u8 table[6] = {0, 4, 5, 4, 2, 0xe};
-            u8 offset = table[mUnk_71];
-            func_02053d74(part, bufA, bufB);
-            func_02053dc4(part, bufA, bufB, bufC, offset);
+            u8 offset = table[mDownKind];
+            LoadPartTexture(part, bufA, bufB);
+            LoadMergedPalette(part, bufA, bufB, bufC, offset);
             break;
         }
         case 3: {
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Hair");
-            sprintf(bufA, "Hair_%02d", mUnk_68);
-            sprintf(bufB, "Hair_%02d_%03d", 0, mUnk_69);
-            func_02053d9c(part, bufA, bufB);
+            sprintf(bufA, "Hair_%02d", mHairKind);
+            sprintf(bufB, "Hair_%02d_%03d", 0, mHairVariant);
+            LoadPartPalette(part, bufA, bufB);
             break;
         }
         case 4: {
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Glasse");
-            sprintf(bufA, "Glasse_%02d", mUnk_6c - 1);
+            sprintf(bufA, "Glasse_%02d", mGlasseHandle - 1);
             if (mUnk_6e == 0) {
-                sprintf(bufD, "Glasse_%02d_%03d", mUnk_6c - 1, 0);
-                sprintf(bufB, "Glasse_%02d_%03d", mUnk_6c - 1, 0);
-                sprintf(bufC, "Glasse_%02d_%03d", mUnk_6c - 1, mUnk_6d);
+                sprintf(bufD, "Glasse_%02d_%03d", mGlasseHandle - 1, 0);
+                sprintf(bufB, "Glasse_%02d_%03d", mGlasseHandle - 1, 0);
+                sprintf(bufC, "Glasse_%02d_%03d", mGlasseHandle - 1, mUnk_6d);
             } else {
-                sprintf(bufD, "Glasse_%02d_%03d", mUnk_6c - 1, 1);
-                sprintf(bufB, "Glasse_%02d_%03d", mUnk_6c - 1, mUnk_6e - 1);
-                sprintf(bufC, "Glasse_%02d_%03d", mUnk_6c - 1, mUnk_6d);
+                sprintf(bufD, "Glasse_%02d_%03d", mGlasseHandle - 1, 1);
+                sprintf(bufB, "Glasse_%02d_%03d", mGlasseHandle - 1, mUnk_6e - 1);
+                sprintf(bufC, "Glasse_%02d_%03d", mGlasseHandle - 1, mUnk_6d);
             }
             u8 table[4] = {0xf, 0xf, 0xf, 0xf};
-            u8 offset = table[mUnk_6c - 1];
-            func_02053d74(part, bufA, bufD);
-            func_02053dc4(part, bufA, bufB, bufC, offset);
+            u8 offset = table[mGlasseHandle - 1];
+            LoadPartTexture(part, bufA, bufD);
+            LoadMergedPalette(part, bufA, bufB, bufC, offset);
             break;
         }
         case 5: {
             ChangeDir("/Game/Character/EditedCharacter/Male/Tex/Cap");
-            sprintf(bufA, "Cap_%02d", mUnk_6a - 1);
-            sprintf(bufB, "Cap_%02d_%03d", mUnk_6a - 1, mUnk_69);
-            sprintf(bufC, "Cap_%02d_%03d", mUnk_6a - 1, mUnk_6b);
+            sprintf(bufA, "Cap_%02d", mCapHandle - 1);
+            sprintf(bufB, "Cap_%02d_%03d", mCapHandle - 1, mHairVariant);
+            sprintf(bufC, "Cap_%02d_%03d", mCapHandle - 1, mCapPalette);
             u8 table[5] = {3, 5, 0xc, 5, 0xc};
-            u8 offset = table[mUnk_6a - 1];
-            func_02053d74(part, bufA, bufB);
-            func_02053dc4(part, bufA, bufB, bufC, offset);
+            u8 offset = table[mCapHandle - 1];
+            LoadPartTexture(part, bufA, bufB);
+            LoadMergedPalette(part, bufA, bufB, bufC, offset);
             break;
         }
     }
     ChangeDir("/");
 }
 
-BOOL CharacterModel::func_02053d74(u32 part, const char *name, const char *file) {
-    return mParts[part]->mUnk_58->mUnk_08->func_020286fc(name, file, 0);
+BOOL CharacterModel::LoadPartTexture(u32 part, const char *name, const char *file) {
+    return mParts[part]->mModelFile->mTexture->LoadTextureFile(name, file, 0);
 }
 
-void CharacterModel::func_02053d9c(u32 part, const char *name, const char *file) {
-    mParts[part]->mUnk_58->mUnk_08->func_02028858(name, file, 0);
+void CharacterModel::LoadPartPalette(u32 part, const char *name, const char *file) {
+    mParts[part]->mModelFile->mTexture->LoadPaletteFile(name, file, 0);
 }
 
-void CharacterModel::func_02053dc4(u32 part, const char *name, const char *file1, const char *file2, u8 offset) {
-    UnkStruct_02028308 *texture = mParts[part]->mUnk_58->mUnk_08;
+void CharacterModel::LoadMergedPalette(u32 part, const char *name, const char *file1, const char *file2, u8 offset) {
+    TextureFile *texture = mParts[part]->mModelFile->mTexture;
     char buf1[0x20];
     char buf2[0x20];
     u32 size;
     u8 *data2;
     u8 *data1;
     sprintf(buf1, "%s.ntfp", file1);
-    data1 = (u8 *) func_02023504(buf1, 0, 0, 0, &size, 0);
+    data1 = (u8 *) LoadFile(buf1, 0, 0, 0, &size, 0);
     sprintf(buf2, "%s.ntfp", file2);
-    data2 = (u8 *) func_02023504(buf2, 0, 0, 0, &size, 0);
+    data2 = (u8 *) LoadFile(buf2, 0, 0, 0, &size, 0);
     MI_CpuCopy8(data2 + offset * 2, data1 + offset * 2, size - offset * 2);
-    texture->func_020288d4(name, data1, size);
+    texture->UploadNamedPalette(name, data1, size);
     OS_Free(data1);
     OS_Free(data2);
 }
@@ -460,47 +460,47 @@ void CharacterModel::func_02053ea0(u32 a, u32 b) {
     if (mParts[0] == NULL) {
         return;
     }
-    mParts[0]->func_02028e54(a, 1, 0x1000);
-    mParts[0]->func_02028e54(b, 1, 0x1000);
-    mUnk_76 = a;
-    mUnk_77 = 0;
+    mParts[0]->StartAnimWithIncrement(a, 1, 0x1000);
+    mParts[0]->StartAnimWithIncrement(b, 1, 0x1000);
+    mExtraAnimSet = a;
+    mExtraAnimEnabled = 0;
 }
 
-void CharacterModel::func_02053eec(u32 flag) {
+void CharacterModel::SetExtraAnimEnabled(u32 flag) {
     if (mParts[0] == NULL) {
         return;
     }
-    mUnk_77 = flag;
+    mExtraAnimEnabled = flag;
     if (!(flag & 0xff)) {
         ModelAnim *anim = mParts[0]->mAnim;
         u8 channel      = GetSet(mParts[0]);
-        u32 loop        = anim->mUnk_08;
+        u32 loop        = anim->mLoop;
         NNSG3dAnmObj *obj;
         s32 frame;
-        obj = anim->func_02029a48(0);
+        obj = anim->GetAnimObj(0);
         if (obj == NULL) {
             frame = 0;
         } else {
             frame = obj->mFrame;
         }
-        mParts[0]->func_02028e54(channel, loop, 0x1000);
-        mParts[0]->mAnim->func_020298c0(frame, 0);
+        mParts[0]->StartAnimWithIncrement(channel, loop, 0x1000);
+        mParts[0]->mAnim->SetFrame(frame, 0);
     } else {
-        NNSG3dAnmObj *obj = mParts[0]->mAnim->func_02029a58(4, mUnk_76);
-        mParts[0]->func_02028f54(obj);
+        NNSG3dAnmObj *obj = mParts[0]->mAnim->GetAnimObjForSet(4, mExtraAnimSet);
+        mParts[0]->AttachExtraAnim(obj);
     }
 }
 
-s32 CharacterModel::func_02053f84() {
-    NNSG3dAnmObj *obj = mParts[0]->mAnim->func_02029a48(0);
+s32 CharacterModel::GetHeadFrame() {
+    NNSG3dAnmObj *obj = mParts[0]->mAnim->GetAnimObj(0);
     if (obj == NULL) {
         return 0;
     }
     return obj->mFrame;
 }
 
-void CharacterModel::func_02053fa8(u32 frame) {
-    mParts[0]->mAnim->func_020298c0(frame, 0);
+void CharacterModel::SetHeadFrame(u32 frame) {
+    mParts[0]->mAnim->SetFrame(frame, 0);
 }
 
 void func_02053fc0(NNSG3dRS *rs) {

@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include "Graphics/CharacterModel.hpp"
 #include "System/FileSystem.hpp"
-#include "Graphics/UnkStruct_0203d374.hpp"
+#include "Graphics/BakuganModel.hpp"
 #include "Graphics/ModelInternal.hpp"
 
 UnkStruct_02065c40 *data_02219288;
@@ -141,20 +141,20 @@ UnkStruct_02065c40::UnkStruct_02065c40(u32 unk1, u32 unk2, u32 unk3) :
     mUnk_1288->SetUp(0, 0x1000, 0);
     mUnk_1288->SetClip(0x1000, 0x1388000);
     CameraManager::Get().mActive = 0;
-    CameraManager::Get().func_02026504(1, mUnk_1288, 0);
+    CameraManager::Get().SetCamerasAndRequestMode(1, mUnk_1288, 0);
     func_02069bdc();
     func_02069c6c();
     mUnk_1018 = new StorytalkWindow();
     G2_SetBlendBrightness(1, -16);
     if (mUnk_14f0 != 0) {
-        FrameTask::Get().func_0203dd74(0);
+        FrameTask::Get().StopChannel(0);
     }
-    FrameTask::Get().func_0203dd74(1);
+    FrameTask::Get().StopChannel(1);
     data_020d433c.mUnk_9a = 0x11;
     data_020d433c.mUnk_9a_0 = data_020d43f0[0].mUnk_28_6;
     data_020d433c.mUnk_7a = 1;
     if (data_020d433c.mUnk_84 != 0) {
-        func_02038444(SoundManager::Get().mUnk_9c, 2);
+        func_02038444(SoundManager::Get().mHeap, 2);
     } else {
         SoundManager::Get().func_020245a4();
     }
@@ -163,7 +163,7 @@ UnkStruct_02065c40::UnkStruct_02065c40(u32 unk1, u32 unk2, u32 unk3) :
 }
 
 UnkStruct_02065c40::~UnkStruct_02065c40() {
-    func_02023a54();
+    StopAsyncLoad();
     if (mUnk_100c != NULL) {
         delete mUnk_100c;
     }
@@ -177,22 +177,22 @@ UnkStruct_02065c40::~UnkStruct_02065c40() {
     }
     ModelInstance *instance = mUnk_1010;
     if (instance != NULL) {
-        instance->mUnk_68 = 0xf;
+        instance->mOwnFlags = 0xf;
         delete instance;
     }
     delete mUnk_1288;
-    UnkStruct_02029ca8 *lights = mUnk_1014;
+    ModelLightGroup *lights = mUnk_1014;
     if (lights != NULL) {
         delete lights;
     }
-    CameraManager::Get().func_02026504(0, NULL, 0);
+    CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
     if (mUnk_14f0 != 0) {
-        FrameTask::Get().func_0203dd74(0);
+        FrameTask::Get().StopChannel(0);
     }
-    FrameTask::Get().func_0203dd74(1);
+    FrameTask::Get().StopChannel(1);
     SoundManager::Get().func_02024754(1);
     if (data_020d433c.mUnk_84 == 0) {
-        SoundManager::Get().func_02024688(1);
+        SoundManager::Get().StopSeq(1);
     }
 }
 
@@ -204,7 +204,7 @@ void UnkStruct_02065c40::func_020666d8() {
         for (u8 j = 0; j < 6; j++) {
             slot.mUnk_00[j] = data_020a23cc[i][j];
         }
-        SpriteManager::Get().func_02027578(i, &slot);
+        SpriteManager::Get().SetSlot(i, &slot);
     }
 }
 
@@ -661,17 +661,17 @@ void UnkStruct_02065c40::func_02067708(u32 unk1) {
     for (u8 i = 0; i < 2; i++) {
         UnkStruct_0205401c *model = mUnk_11b4[i].mUnk_2c;
         if (model != NULL) {
-            model->func_02054034();
+            model->Release();
             delete model;
         }
         mUnk_11b4[i].mUnk_2c = NULL;
         model                = mUnk_11b4[i].mUnk_30;
         if (model != NULL) {
-            model->func_02054034();
+            model->Release();
             delete model;
         }
         mUnk_11b4[i].mUnk_30 = NULL;
-        UnkStruct_0203d374 *object = mUnk_112c[i].mUnk_2c;
+        BakuganModel *object = mUnk_112c[i].mUnk_2c;
         if (object != NULL) {
             delete object;
         }
@@ -684,7 +684,7 @@ void UnkStruct_02065c40::func_02067708(u32 unk1) {
         if (unk1 != 0) {
             ModelInstance *instance = mUnk_101c[i].mUnk_2c;
             if (instance != NULL) {
-                instance->mUnk_68 = 0xf;
+                instance->mOwnFlags = 0xf;
                 delete instance;
                 mUnk_101c[i].mUnk_2c = NULL;
             }
@@ -703,7 +703,7 @@ void UnkStruct_02065c40::func_02067708(u32 unk1) {
     }
     ModelInstance *instance;
     if (unk1 != 0 && (instance = mUnk_1010) != NULL) {
-        instance->mUnk_68 = 0xf;
+        instance->mOwnFlags = 0xf;
         delete instance;
         mUnk_1010 = NULL;
     }
@@ -762,10 +762,10 @@ extern const s8 data_020a1b02[][5];
 
 void UnkStruct_02065c40::func_02067998(u8 unk1) {
     if (unk1) {
-        NNSG3dAnmObj *obj = mUnk_101c[0].mUnk_2c->mAnim->func_02029a58(1, unk1);
-        mUnk_101c[0].mUnk_2c->func_02028f54(obj);
+        NNSG3dAnmObj *obj = mUnk_101c[0].mUnk_2c->mAnim->GetAnimObjForSet(1, unk1);
+        mUnk_101c[0].mUnk_2c->AttachExtraAnim(obj);
     } else {
-        mUnk_101c[0].mUnk_2c->func_02028f88();
+        mUnk_101c[0].mUnk_2c->DetachExtraAnim();
     }
 }
 
@@ -831,18 +831,18 @@ void UnkStruct_02065c40::func_02067b08() {
     if (mUnk_14e4 == 0 && (mUnk_14f1 | func_02066c7c())) {
         ChangeDir("/story/");
         SpriteScreen &screen = SpriteManager::Get().Screen(1);
-        screen.func_02027624(3);
+        screen.SetObjVramMode(3);
         sprintf(path, "cutscene_b_obj.nce_ncg1D.bin");
         screen.LoadCharacters(path, 0xd000, 0);
         sprintf(path, "cutscene_b_obj_ncl.bin");
-        screen.func_02027fec(path, 0, 0);
+        screen.LoadExtPalette(path, 0, 0);
         if (mUnk_100c != NULL) {
             delete mUnk_100c;
         }
         mUnk_14f2 = 0;
         mUnk_100c = new CellAnimation("cutscene_b_obj_nce.bin", mUnk_14f2, 1, 1);
         mUnk_100c->mCharBase = 0x1a0;
-        mUnk_100c->mUnk_11   = 0;
+        mUnk_100c->mPaletteBase   = 0;
         if (mUnk_14e2 == 5) {
             mUnk_14f1 = 0;
             mUnk_14ed = 1;
@@ -853,12 +853,12 @@ void UnkStruct_02065c40::func_02067b08() {
         SpriteManager::Get().func_0202753c(7);
         NitroTexture *texture = new NitroTexture("story/mdl/cut_shadow.nsbtx");
         NitroModel *model     = new NitroModel;
-        model->func_020289e0("story/mdl/cut_shadow.nsbmd", texture);
-        texture->func_02028344();
-        mUnk_1010 = model->func_02028b78(NULL);
+        model->Load("story/mdl/cut_shadow.nsbmd", texture);
+        texture->FreeFile();
+        mUnk_1010 = model->CreateInstance(NULL);
     }
     if (mUnk_1014 == NULL) {
-        mUnk_1014 = new UnkStruct_02029ca8(data_020a1bae);
+        mUnk_1014 = new ModelLightGroup(data_020a1bae);
         func_02069c6c();
     }
     mUnk_1018->LoadGraphics();
@@ -869,7 +869,7 @@ void UnkStruct_02065c40::func_02067e2c(u32 index, u8 unk2) {
     if (model == NULL) {
         return;
     }
-    model->func_02054694(unk2);
+    model->SetVisible(unk2);
     mUnk_11b4[index].mUnk_3b = 0;
     mUnk_11b4[index].mUnk_3e = unk2;
 }
@@ -896,7 +896,7 @@ BOOL UnkStruct_02065c40::func_02067f30(u32 index, s32 value) {
         func_02067e2c(index, 0);
         UnkStruct_0205401c *model = mUnk_11b4[index].mUnk_2c;
         if (model != NULL) {
-            model->func_02054034();
+            model->Release();
             delete model;
         }
         mUnk_11b4[index].mUnk_2c = NULL;
@@ -905,13 +905,13 @@ BOOL UnkStruct_02065c40::func_02067f30(u32 index, s32 value) {
     mUnk_11b4[index].mUnk_3a = value;
     if (mUnk_11b4[index].mUnk_2c != NULL) {
         if (mUnk_11b4[index].mUnk_3a != mUnk_11b4[index].mUnk_39) {
-            if (mUnk_11b4[index].mUnk_2c->func_020546b0()) {
+            if (mUnk_11b4[index].mUnk_2c->IsVisible()) {
                 mUnk_11b4[index].mUnk_3b = 1;
             }
             if (mUnk_11b4[index].mUnk_36 == 0x15) {
-                ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim->mUnk_10 = 1;
+                ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mCharacter)->mParts[0]->mAnim->mReachedEnd = 1;
             } else {
-                ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim->mUnk_10 = 1;
+                ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mStoryCharacter)->mModel->mAnim->mReachedEnd = 1;
             }
             func_0206abf4(index);
         }
@@ -923,7 +923,7 @@ BOOL UnkStruct_02065c40::func_02067f30(u32 index, s32 value) {
     func_02067e2c(index, 0);
     UnkStruct_0205401c *model = mUnk_11b4[index].mUnk_2c;
     if (model != NULL) {
-        model->func_02054034();
+        model->Release();
         delete model;
     }
     mUnk_11b4[index].mUnk_2c = NULL;
@@ -933,7 +933,7 @@ BOOL UnkStruct_02065c40::func_02067f30(u32 index, s32 value) {
 void UnkStruct_02065c40::func_02068074(u32 index) {
     UnkStruct_0205401c *model = mUnk_11b4[index].mUnk_30;
     if (model != NULL) {
-        model->func_02054034();
+        model->Release();
         delete model;
     }
     mUnk_11b4[index].mUnk_30 = NULL;
@@ -941,7 +941,7 @@ void UnkStruct_02065c40::func_02068074(u32 index) {
         return;
     }
     mUnk_11b4[index].mUnk_30 = new UnkStruct_0205401c();
-    mUnk_11b4[index].mUnk_30->func_020543e8((u8) mUnk_11b4[index].mUnk_37, 0, 0, 0);
+    mUnk_11b4[index].mUnk_30->StartLoad((u8) mUnk_11b4[index].mUnk_37, 0, 0, 0);
 }
 
 BOOL UnkStruct_02065c40::func_020680f8(u32 index, u32 flag) {
@@ -962,23 +962,23 @@ BOOL UnkStruct_02065c40::func_020680f8(u32 index, u32 flag) {
     }
     func_020682a0(index, kind);
     if (flag) {
-        if (!(*slot)->func_020544e4()) {
+        if (!(*slot)->UpdateLoad()) {
             return FALSE;
         }
     } else {
         *slot = new UnkStruct_0205401c();
         u8 id = kind;
-        (*slot)->func_0205411c(id, 0, 0, 0);
+        (*slot)->Create(id, 0, 0, 0);
         u8 a = func_020687a8(id, variant, 0);
         u8 b = func_020687a8(id, variant, 3);
         (*slot)->func_02054644(b, a);
         if (kind == 0x15) {
-            ((CharacterModel *) (*slot)->mUnk_04)->mParts[0]->mAnim->mUnk_08 = 1;
+            ((CharacterModel *) (*slot)->mCharacter)->mParts[0]->mAnim->mLoop = 1;
         } else {
-            ((ModelTransform *) (*slot)->mUnk_08)->mModel->mAnim->mUnk_08 = 1;
+            ((ModelTransform *) (*slot)->mStoryCharacter)->mModel->mAnim->mLoop = 1;
         }
         mUnk_11b4[index].mUnk_39 = variant;
-        (*slot)->func_02054694(0);
+        (*slot)->SetVisible(0);
         mUnk_11b4[index].mUnk_3e = 0;
         MI_CpuClear16(&mUnk_11b4[index], 0x18);
         MI_CpuClear16(mUnk_11b4[index].mUnk_18, 0x14);
@@ -1080,7 +1080,7 @@ void UnkStruct_02065c40::func_0206852c(u32 index) {
     }
     UnkStruct_0205401c *old = mUnk_11b4[index].mUnk_2c;
     if (old != NULL) {
-        old->func_02054034();
+        old->Release();
         delete old;
     }
     mUnk_11b4[index].mUnk_2c = mUnk_11b4[index].mUnk_30;
@@ -1092,16 +1092,16 @@ void UnkStruct_02065c40::func_0206852c(u32 index) {
     s8 kind    = mUnk_11b4[index].mUnk_36;
     s8 variant = mUnk_11b4[index].mUnk_3a;
     func_020682a0(index, kind);
-    mUnk_11b4[index].mUnk_2c->func_0205451c();
+    mUnk_11b4[index].mUnk_2c->FinishLoad();
     u8 variantId = variant;
     u8 id        = kind;
     u8 a         = func_020687a8(id, variantId, 0);
     u8 b         = func_020687a8(id, variantId, 3);
     mUnk_11b4[index].mUnk_2c->func_02054644(b, a);
     if (kind == 0x15) {
-        ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim->mUnk_08 = 1;
+        ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mCharacter)->mParts[0]->mAnim->mLoop = 1;
     } else {
-        ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim->mUnk_08 = 1;
+        ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mStoryCharacter)->mModel->mAnim->mLoop = 1;
     }
 }
 
@@ -1118,9 +1118,9 @@ void UnkStruct_02065c40::func_0206867c(u32 index, u32 value) {
         return;
     }
     if (mUnk_11b4[index].mUnk_36 == 0x15) {
-        ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim->mUnk_08 = 0;
+        ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mCharacter)->mParts[0]->mAnim->mLoop = 0;
     } else {
-        ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim->mUnk_08 = 0;
+        ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mStoryCharacter)->mModel->mAnim->mLoop = 0;
     }
 }
 
@@ -1169,7 +1169,7 @@ void UnkStruct_02065c40::func_02068884(u32 index) {
     rot[0] = mUnk_11b4[index].mUnk_18[0];
     rot[1] = mUnk_11b4[index].mUnk_18[1];
     rot[2] = mUnk_11b4[index].mUnk_18[2];
-    mUnk_11b4[index].mUnk_2c->func_020546e4((const u16 *) rot);
+    mUnk_11b4[index].mUnk_2c->SetModelRotation((const u16 *) rot);
 }
 
 BOOL UnkStruct_02065c40::func_020688e0(s32 value) {
@@ -1181,7 +1181,7 @@ BOOL UnkStruct_02065c40::func_020688e0(s32 value) {
     }
     ModelInstance *instance = mUnk_101c[0].mUnk_2c;
     if (instance != NULL) {
-        instance->mUnk_68 = 0xf;
+        instance->mOwnFlags = 0xf;
         delete instance;
         mUnk_101c[0].mUnk_2c = NULL;
     }
@@ -1206,16 +1206,16 @@ BOOL UnkStruct_02065c40::func_02068954() {
     NitroTexture *texture = new NitroTexture(path);
     sprintf(path, "%s.nsbmd", data_020a22ac[id].mName);
     NitroModel *model = new NitroModel;
-    model->func_020289e0(path, texture);
-    texture->func_02028344();
+    model->Load(path, texture);
+    texture->FreeFile();
     if ((id != 8) & (id != 9)) {
         sprintf(path, "%s_data.bin", data_020a22ac[id].mName);
         ModelAnimData *animData = new ModelAnimData(path);
         ModelAnim *anim         = new ModelAnim(animData, model);
-        mUnk_101c[0].mUnk_2c    = model->func_02028b78(anim);
-        mUnk_101c[0].mUnk_2c->func_02028e54(0, 1, 0x1000);
+        mUnk_101c[0].mUnk_2c    = model->CreateInstance(anim);
+        mUnk_101c[0].mUnk_2c->StartAnimWithIncrement(0, 1, 0x1000);
     } else {
-        mUnk_101c[0].mUnk_2c = model->func_02028b78(NULL);
+        mUnk_101c[0].mUnk_2c = model->CreateInstance(NULL);
     }
     ChangeDir("/");
     func_02069bdc();
@@ -1246,12 +1246,12 @@ BOOL UnkStruct_02065c40::func_02068c54(u32 index, s32 value) {
     if (index == 0) {
         UnkStruct_0205401c *model = mUnk_11b4[1].mUnk_2c;
         if (model != NULL) {
-            model->func_02054034();
+            model->Release();
             delete model;
         }
         mUnk_11b4[1].mUnk_2c = NULL;
     } else {
-        UnkStruct_0203d374 *object = mUnk_112c[1].mUnk_2c;
+        BakuganModel *object = mUnk_112c[1].mUnk_2c;
         if (object != NULL) {
             delete object;
         }
@@ -1264,7 +1264,7 @@ BOOL UnkStruct_02065c40::func_02068c54(u32 index, s32 value) {
     return TRUE;
 }
 
-void UnkStruct_02065c40::func_02068d0c(UnkStruct_02028308 *texture, u32 id) {
+void UnkStruct_02065c40::func_02068d0c(TextureFile *texture, u32 id) {
     if ((id == 0x1d) | (id == 0x1c)) {
         char name[0x40];
         char file[0x40];
@@ -1275,7 +1275,7 @@ void UnkStruct_02065c40::func_02068d0c(UnkStruct_02028308 *texture, u32 id) {
         for (i = 0; i < 11; i++) {
             sprintf(name, "%s_%02d", prefix, i);
             sprintf(file, "%s_%02d_%02d", prefix, i, variant);
-            texture->func_02028858(name, file, 0);
+            texture->LoadPaletteFile(name, file, 0);
         }
         ChangeDir("/");
     }
@@ -1307,18 +1307,18 @@ BOOL UnkStruct_02065c40::func_02068e14(u32 index) {
     ChangeDir(data_020b431c[dir]);
     sprintf(path, "%s.nsbmd", data_020a2554[id].mName);
     model = new NitroModel;
-    model->func_020289e0(path, texture);
+    model->Load(path, texture);
     if (dir != 1) {
-        texture->func_02028344();
+        texture->FreeFile();
     }
     if (data_020a2554[id].mData != 0) {
         sprintf(path, "%s_data.bin", data_020a2554[id].mName);
         ModelAnimData *animData = new ModelAnimData(path);
         ModelAnim *anim         = new ModelAnim(animData, model);
-        mUnk_1084[index].mUnk_2c = model->func_02028b78(anim);
-        mUnk_1084[index].mUnk_2c->func_02028e54(0, 1, 0x1000);
+        mUnk_1084[index].mUnk_2c = model->CreateInstance(anim);
+        mUnk_1084[index].mUnk_2c->StartAnimWithIncrement(0, 1, 0x1000);
     } else {
-        mUnk_1084[index].mUnk_2c = model->func_02028b78(NULL);
+        mUnk_1084[index].mUnk_2c = model->CreateInstance(NULL);
     }
     ChangeDir("/");
     MI_CpuClear16(&mUnk_1084[index], 0x18);
@@ -1347,10 +1347,10 @@ BOOL UnkStruct_02065c40::func_02069194(u32 index) {
     char path[0x80];
     u8 id = mUnk_1084[index].mUnk_4a;
     if (mUnk_12b8 != 0) {
-        if (func_02023874() != 0) {
+        if (IsAsyncLoadActive() != 0) {
             return FALSE;
         }
-        mUnk_1084[index].mUnk_3c[mUnk_12b8 - 1] = func_02023864();
+        mUnk_1084[index].mUnk_3c[mUnk_12b8 - 1] = GetAsyncLoadBuffer();
         if (mUnk_12b8 == 2 && data_020a2554[id].mData == 0) {
             mUnk_12b8 = 3;
         }
@@ -1368,7 +1368,7 @@ BOOL UnkStruct_02065c40::func_02069194(u32 index) {
                 sprintf(path, "%s%s_data.bin", data_020b431c[data_020a2554[id].mDir], data_020a2554[id].mName);
                 break;
         }
-        func_02023708(path, 0, 0, 0, 0, 0);
+        LoadFileAsync(path, 0, 0, 0, 0, 0);
         mUnk_12b8++;
         return FALSE;
     }
@@ -1383,26 +1383,26 @@ void UnkStruct_02065c40::func_02069340(u32 index) {
         SpriteManager::Get().func_0202753c(6);
     }
     u8 id = mUnk_1084[index].mUnk_4a;
-    UnkStruct_02028308 *texture = new NitroTextureData(mUnk_1084[index].mUnk_3c[0]);
+    TextureFile *texture = new NitroTextureData(mUnk_1084[index].mUnk_3c[0]);
     func_02068d0c(texture, id);
     NitroModel *model = new NitroModel;
-    model->func_02028a2c(mUnk_1084[index].mUnk_3c[1], texture);
+    model->LoadData(mUnk_1084[index].mUnk_3c[1], texture);
     if (data_020a2554[id].mDir != 1) {
-        texture->func_02028344();
+        texture->FreeFile();
     }
     if (data_020a2554[id].mData != 0) {
         ModelAnimData *animData = new ModelAnimData(mUnk_1084[index].mUnk_3c[2]);
         ModelAnim *anim         = new ModelAnim(animData, model);
-        mUnk_1084[index].mUnk_2c = model->func_02028b78(anim);
-        mUnk_1084[index].mUnk_2c->func_02028e54(0, 1, 0x1000);
+        mUnk_1084[index].mUnk_2c = model->CreateInstance(anim);
+        mUnk_1084[index].mUnk_2c->StartAnimWithIncrement(0, 1, 0x1000);
     } else {
-        mUnk_1084[index].mUnk_2c = model->func_02028b78(NULL);
+        mUnk_1084[index].mUnk_2c = model->CreateInstance(NULL);
     }
     for (u8 j = 0; j < 3; j++) {
         mUnk_1084[index].mUnk_30[j] = mUnk_1084[index].mUnk_3c[j];
         mUnk_1084[index].mUnk_3c[j] = NULL;
     }
-    mUnk_1084[index].mUnk_2c->func_02028e54(mUnk_1084[index].mUnk_52, 1, 0x1000);
+    mUnk_1084[index].mUnk_2c->StartAnimWithIncrement(mUnk_1084[index].mUnk_52, 1, 0x1000);
     mUnk_1084[index].mUnk_48 = mUnk_1084[index].mUnk_4a;
     mUnk_1084[index].mUnk_4a = -1;
     mUnk_1084[index].mUnk_4d = 0;
@@ -1412,7 +1412,7 @@ void UnkStruct_02065c40::func_02069340(u32 index) {
 void UnkStruct_02065c40::func_020695e8(u32 index) {
     ModelInstance *instance = mUnk_1084[index].mUnk_2c;
     if (instance != NULL) {
-        instance->mUnk_68 = 0xf;
+        instance->mOwnFlags = 0xf;
         delete instance;
         mUnk_1084[index].mUnk_2c = NULL;
     }
@@ -1428,7 +1428,7 @@ BOOL UnkStruct_02065c40::func_02069680(u32 index) {
     if (index == 1) {
         func_020695e8(1);
     }
-    UnkStruct_0203d374 *object = mUnk_112c[index].mUnk_2c;
+    BakuganModel *object = mUnk_112c[index].mUnk_2c;
     if (object != NULL) {
         delete object;
     }
@@ -1440,7 +1440,7 @@ BOOL UnkStruct_02065c40::func_02069680(u32 index) {
 }
 
 void UnkStruct_02065c40::func_020696e8(u32 index) {
-    UnkStruct_0203d374 *object = mUnk_112c[index].mUnk_30;
+    BakuganModel *object = mUnk_112c[index].mUnk_30;
     if (object != NULL) {
         delete object;
     }
@@ -1449,9 +1449,9 @@ void UnkStruct_02065c40::func_020696e8(u32 index) {
     if (kind < 0) {
         return;
     }
-    mUnk_112c[index].mUnk_30 = new UnkStruct_0203d374();
+    mUnk_112c[index].mUnk_30 = new BakuganModel();
     u8 value = func_02069780(kind);
-    mUnk_112c[index].mUnk_30->func_0203d6e0(data_020a1bd6[kind].mUnk_0, value, 5);
+    mUnk_112c[index].mUnk_30->StoreSetup(data_020a1bd6[kind].mUnk_0, value, 5);
 }
 
 u8 UnkStruct_02065c40::func_02069780(u32 index) {
@@ -1472,7 +1472,7 @@ static inline fx32 CosIdx(int idx) {
     return FX_SinCosTable_[(idx >> 4) * 2 + 1];
 }
 
-// The mode passed to func_0203d4dc is an enum local: as `u32 mode = c ? 5 : 1;` it colours differently (r6/r7 swapped).
+// The mode passed to Setup is an enum local: as `u32 mode = c ? 5 : 1;` it colours differently (r6/r7 swapped).
 enum UnkStruct_02065c40_ModelMode { UNK_02065C40_MODEL_MODE_1 = 1, UNK_02065C40_MODEL_MODE_5 = 5 };
 
 BOOL UnkStruct_02065c40::func_020697c8(u32 index, u32 flag) {
@@ -1494,9 +1494,9 @@ BOOL UnkStruct_02065c40::func_020697c8(u32 index, u32 flag) {
             mode = UNK_02065C40_MODEL_MODE_1;
         }
         ChangeDir("/");
-        mUnk_112c[index].mUnk_2c = new UnkStruct_0203d374();
+        mUnk_112c[index].mUnk_2c = new BakuganModel();
         u8 value = func_02069780(kind);
-        mUnk_112c[index].mUnk_2c->func_0203d4dc(data_020a1bd6[kind].mUnk_0, value, (u8) mode);
+        mUnk_112c[index].mUnk_2c->Setup(data_020a1bd6[kind].mUnk_0, value, (u8) mode);
         mUnk_112c[index].mUnk_37 = 0;
         MI_CpuClear16(&mUnk_112c[index], 0x18);
         MI_CpuClear16(mUnk_112c[index].mUnk_18, 0x14);
@@ -1518,15 +1518,15 @@ void UnkStruct_02065c40::func_020699a4(u32 index) {
     if (mUnk_112c[index].mUnk_36 == 0) {
         return;
     }
-    mUnk_112c[index].mUnk_2c->mUnk_49 = 1;
-    mUnk_112c[index].mUnk_2c->mModel->func_02028e54(0, 0, 0x64000);
+    mUnk_112c[index].mUnk_2c->mAnimUpdateEnabled = 1;
+    mUnk_112c[index].mUnk_2c->mModel->StartAnimWithIncrement(0, 0, 0x64000);
 }
 
 void UnkStruct_02065c40::func_02069a24(u32 index) {
     if (mUnk_112c[index].mUnk_30 == NULL) {
         return;
     }
-    UnkStruct_0203d374 *object = mUnk_112c[index].mUnk_2c;
+    BakuganModel *object = mUnk_112c[index].mUnk_2c;
     if (object != NULL) {
         delete object;
     }
@@ -1539,7 +1539,7 @@ void UnkStruct_02065c40::func_02069a24(u32 index) {
     } else {
         SpriteManager::Get().func_0202753c(5);
     }
-    mUnk_112c[index].mUnk_2c->func_0203d6f8();
+    mUnk_112c[index].mUnk_2c->RunStoredSetup();
     func_020699a4(index);
 }
 
@@ -1586,12 +1586,12 @@ void UnkStruct_02065c40::func_02069c6c() {
         return;
     }
     mUnk_1014->mLights[0]->mColor = mUnk_12ac;
-    mUnk_1014->func_02029d54();
+    mUnk_1014->ApplyAll();
 }
 
 void UnkStruct_02065c40::func_02069d0c() {
     u32 fov = mUnk_128c[0];
-    mUnk_1288->func_02026004((u32) (65536.0f * fov / 360.0f));
+    mUnk_1288->SetFov((u32) (65536.0f * fov / 360.0f));
 }
 
 void UnkStruct_02065c40::func_02069d54() {
@@ -1618,8 +1618,8 @@ void UnkStruct_02065c40::func_02069d54() {
     dir[0] = dx;
     dir[1] = dy;
     dir[2] = dz;
-    mUnk_1014->mLights[0]->func_02029c44(dir);
-    mUnk_1014->func_02029d54();
+    mUnk_1014->mLights[0]->SetDirection(dir);
+    mUnk_1014->ApplyAll();
 }
 
 void UnkStruct_02065c40::func_02069eb8(u32 mode) {
@@ -1806,11 +1806,11 @@ void UnkStruct_02065c40::func_0206a208() {
                 return;
             }
             BOOL touched = FALSE;
-            if (TouchManager::Get().mUnk_57 != 0) {
+            if (TouchManager::Get().mPressed != 0) {
                 mUnk_14ef = 1;
             }
             if (mUnk_14ef != 0) {
-                if (TouchManager::Get().mUnk_56 == 0) {
+                if (TouchManager::Get().mDown == 0) {
                     touched = TRUE;
                 } else {
                     func_0206a1c8(1, 1);
@@ -1832,7 +1832,7 @@ void UnkStruct_02065c40::func_0206a208() {
             if (mUnk_14ee != 0) {
                 return;
             }
-            SoundManager::Get().func_020246f8(0x6b);
+            SoundManager::Get().StartSeqArc(0x6b);
             break;
         }
         case 8:
@@ -1897,20 +1897,20 @@ void UnkStruct_02065c40::func_0206a850() {
             }
             mUnk_112c[i].mUnk_2c->func_0203db70(&pos);
             func_02069b80(i);
-            mUnk_112c[i].mUnk_2c->func_0203d988();
-            mUnk_112c[i].mUnk_2c->func_0203dab0();
+            mUnk_112c[i].mUnk_2c->Update();
+            mUnk_112c[i].mUnk_2c->DrawModel();
             u8 shadow = mUnk_112c[i].mUnk_3f;
             if (shadow != 0 && mUnk_1010 != NULL) {
                 s32 scale = shadow * 0x19a;
                 if (scale > 0) {
                     pos.y = (mUnk_112c[i].mUnk_40 << 12) - 0x64000;
-                    MtxFx43 mtx = data_0220e86c;
+                    MtxFx43 mtx = gIdentityMtx43;
                     func_01ffcf64(&mtx, &pos);
                     VecFx32 size;
                     size.x = scale;
                     size.y = scale;
                     size.z = scale;
-                    mUnk_1010->func_02029174(&mtx, &size);
+                    mUnk_1010->Draw(&mtx, &size);
                 }
             }
         }
@@ -1931,23 +1931,23 @@ void UnkStruct_02065c40::func_0206aa34() {
             pos.x = x / 2;
             pos.z = z;
             if (mUnk_11b4[i].mUnk_36 == 0x15) {
-                ModelTransform *transform = (ModelTransform *) mUnk_11b4[i].mUnk_2c->mUnk_04;
+                ModelTransform *transform = (ModelTransform *) mUnk_11b4[i].mUnk_2c->mCharacter;
                 transform->mPosition.x    = pos.x;
                 transform->mPosition.y    = pos.y;
                 transform->mPosition.z    = pos.z;
             } else {
-                ModelTransform *transform = (ModelTransform *) mUnk_11b4[i].mUnk_2c->mUnk_08;
+                ModelTransform *transform = (ModelTransform *) mUnk_11b4[i].mUnk_2c->mStoryCharacter;
                 transform->mPosition.x    = pos.x;
                 transform->mPosition.y    = pos.y;
                 transform->mPosition.z    = pos.z;
             }
             if (mUnk_11b4[i].mUnk_3e != 0) {
                 func_02068884(i);
-                mUnk_11b4[i].mUnk_2c->func_02054568();
+                mUnk_11b4[i].mUnk_2c->Draw();
                 func_0206abf4(i);
                 u8 shadow = mUnk_11b4[i].mUnk_3d;
                 if (shadow != 0 && mUnk_1010 != NULL) {
-                    MtxFx43 mtx = data_0220e86c;
+                    MtxFx43 mtx = gIdentityMtx43;
                     s32 scale   = shadow * 0x19a;
                     VecFx32 size;
                     size.x = scale;
@@ -1955,7 +1955,7 @@ void UnkStruct_02065c40::func_0206aa34() {
                     size.z = scale;
                     pos.y += 0x1000;
                     func_01ffcf64(&mtx, &pos);
-                    mUnk_1010->func_02029174(&mtx, &size);
+                    mUnk_1010->Draw(&mtx, &size);
                 }
             }
         }
@@ -1969,11 +1969,11 @@ void UnkStruct_02065c40::func_0206abf4(u32 index) {
     s32 kind = mUnk_11b4[index].mUnk_36;
     ModelAnim *anim;
     if (kind == 0x15) {
-        anim = ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mUnk_04)->mParts[0]->mAnim;
+        anim = ((CharacterModel *) mUnk_11b4[index].mUnk_2c->mCharacter)->mParts[0]->mAnim;
     } else {
-        anim = ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mUnk_08)->mModel->mAnim;
+        anim = ((ModelTransform *) mUnk_11b4[index].mUnk_2c->mStoryCharacter)->mModel->mAnim;
     }
-    if (anim->mUnk_10 == 0) {
+    if (anim->mReachedEnd == 0) {
         return;
     }
     u8 cur = mUnk_11b4[index].mUnk_39;
@@ -2007,14 +2007,14 @@ void UnkStruct_02065c40::func_0206abf4(u32 index) {
     s8 other = func_020687a8((u8) mUnk_11b4[index].mUnk_36, target, 3);
     mUnk_11b4[index].mUnk_2c->func_02054644((u8) other, (u8) value);
     mUnk_11b4[index].mUnk_3c = 0;
-    anim->mUnk_08 = loop;
+    anim->mLoop = loop;
 }
 
 void UnkStruct_02065c40::func_0206ada4() {
     if (mUnk_101c[0].mUnk_2c == NULL) {
         return;
     }
-    MtxFx43 mtx = data_0220e86c;
+    MtxFx43 mtx = gIdentityMtx43;
     VecFx32 size;
     size.x = 0x1000;
     size.y = 0x1000;
@@ -2037,18 +2037,18 @@ void UnkStruct_02065c40::func_0206ada4() {
     }
     func_01ffcf64(&mtx, &pos);
     if (mUnk_101c[0].mUnk_32 != 0) {
-        mUnk_101c[0].mUnk_2c->mUnk_60->mFrame = 0;
+        mUnk_101c[0].mUnk_2c->mExtraAnim->mFrame = 0;
     } else {
-        mUnk_101c[0].mUnk_2c->func_02028d80();
+        mUnk_101c[0].mUnk_2c->AdvanceAnim();
     }
-    mUnk_101c[0].mUnk_2c->func_02028da4();
-    mUnk_101c[0].mUnk_2c->func_02029174(&mtx, &size);
+    mUnk_101c[0].mUnk_2c->AdvanceExtraAnim();
+    mUnk_101c[0].mUnk_2c->Draw(&mtx, &size);
 }
 
 void UnkStruct_02065c40::func_0206aecc() {
     for (u8 i = 0; i < 2; i++) {
         if (mUnk_1084[i].mUnk_2c != NULL && mUnk_1084[i].mUnk_4e != 0) {
-            MtxFx43 mtx = data_0220e86c;
+            MtxFx43 mtx = gIdentityMtx43;
             s32 scale   = FX_FROM_INT_ROUND(mUnk_1084[i].mUnk_4c);
             VecFx32 size;
             size.x = scale;
@@ -2068,10 +2068,10 @@ void UnkStruct_02065c40::func_0206aecc() {
             if (mUnk_1084[i].mUnk_18[2] != 0) {
                 func_01ffd138(&mtx, (u16) mUnk_1084[i].mUnk_18[2]);
             }
-            mUnk_1084[i].mUnk_2c->func_02028d80();
-            mUnk_1084[i].mUnk_2c->func_02029174(&mtx, &size);
+            mUnk_1084[i].mUnk_2c->AdvanceAnim();
+            mUnk_1084[i].mUnk_2c->Draw(&mtx, &size);
             if (mUnk_1084[i].mUnk_4d != 0) {
-                if (mUnk_1084[i].mUnk_2c->func_02028f48() != 0) {
+                if (mUnk_1084[i].mUnk_2c->IsAnimFinished() != 0) {
                     mUnk_1084[i].mUnk_4e = 0;
                 }
             }
@@ -2384,7 +2384,7 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
             break;
         case 58:
             mUnk_1014->mLights[0]->mColor = mUnk_12ac;
-            mUnk_1014->func_02029d54();
+            mUnk_1014->ApplyAll();
             break;
         case 169:
         case 191:
@@ -2412,7 +2412,7 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
             if (mUnk_1084[idx].mUnk_2c == NULL) {
                 break;
             }
-            mUnk_1084[idx].mUnk_2c->func_02028e54((u8) mUnk_12c8, 0, 0x1000);
+            mUnk_1084[idx].mUnk_2c->StartAnimWithIncrement((u8) mUnk_12c8, 0, 0x1000);
             mUnk_1084[idx].mUnk_4d = 1;
             mUnk_1084[idx].mUnk_4e = 1;
             break;
@@ -2425,7 +2425,7 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
             if (mUnk_1084[idx].mUnk_2c == NULL) {
                 break;
             }
-            mUnk_1084[idx].mUnk_2c->func_02028e54((u8) mUnk_12c8, 1, 0x1000);
+            mUnk_1084[idx].mUnk_2c->StartAnimWithIncrement((u8) mUnk_12c8, 1, 0x1000);
             mUnk_1084[idx].mUnk_4d = 0;
             mUnk_1084[idx].mUnk_4e = 1;
             break;
@@ -2600,7 +2600,7 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
             {
                 UnkStruct_0205401c *model = mUnk_11b4[idx].mUnk_2c;
                 if (model != NULL) {
-                    model->func_02054034();
+                    model->Release();
                     delete model;
                 }
                 mUnk_11b4[idx].mUnk_2c = NULL;
@@ -2618,7 +2618,7 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
             {
                 UnkStruct_0205401c *model = mUnk_11b4[idx].mUnk_30;
                 if (model != NULL) {
-                    model->func_02054034();
+                    model->Release();
                     delete model;
                 }
                 mUnk_11b4[idx].mUnk_30 = NULL;
@@ -2697,7 +2697,7 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
                             break;
                     }
                 }
-                UnkStruct_0203d374 *pose = mUnk_112c[idx].mUnk_2c;
+                BakuganModel *pose = mUnk_112c[idx].mUnk_2c;
                 if (pose != NULL) {
                     delete pose;
                 }
@@ -2711,7 +2711,7 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
         case 121:
         case 146:
             {
-                UnkStruct_0203d374 *pose = mUnk_112c[idx].mUnk_30;
+                BakuganModel *pose = mUnk_112c[idx].mUnk_30;
                 if (pose != NULL) {
                     delete pose;
                 }
@@ -2829,18 +2829,18 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
             }
             switch (mUnk_12c8) {
                 case 1:
-                    mUnk_112c[idx].mUnk_2c->mModel->func_02028e54(0, 0, 0x1000);
+                    mUnk_112c[idx].mUnk_2c->mModel->StartAnimWithIncrement(0, 0, 0x1000);
                     break;
                 case 3:
-                    mUnk_112c[idx].mUnk_2c->mModel->func_02028e54(0, 0, 0x64000);
+                    mUnk_112c[idx].mUnk_2c->mModel->StartAnimWithIncrement(0, 0, 0x64000);
                     break;
                 case 4:
-                    mUnk_112c[idx].mUnk_2c->mModel->func_02028e54(0, 0, -1);
+                    mUnk_112c[idx].mUnk_2c->mModel->StartAnimWithIncrement(0, 0, -1);
                     break;
                 case 2:
-                    mUnk_112c[idx].mUnk_2c->mModel->func_02028e54(0, 0, 0x64000);
-                    mUnk_112c[idx].mUnk_2c->mModel->func_02028d80();
-                    mUnk_112c[idx].mUnk_2c->mModel->mAnim->mUnk_0c = -0x1000;
+                    mUnk_112c[idx].mUnk_2c->mModel->StartAnimWithIncrement(0, 0, 0x64000);
+                    mUnk_112c[idx].mUnk_2c->mModel->AdvanceAnim();
+                    mUnk_112c[idx].mUnk_2c->mModel->mAnim->mFramePerFrame = -0x1000;
                     break;
             }
             break;
@@ -2858,23 +2858,23 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
             }
             mUnk_14d2 = mUnk_12c8;
             if (mUnk_14d2 > -1) {
-                FrameTask::Get().func_0203dc34(0, mUnk_14d2);
+                FrameTask::Get().StartChannel(0, mUnk_14d2);
             } else {
-                FrameTask::Get().func_0203dd74(0);
+                FrameTask::Get().StopChannel(0);
             }
             break;
         case 214:
-            FrameTask::Get().func_0203dd74(0);
+            FrameTask::Get().StopChannel(0);
             break;
         case 215:
             if (mUnk_12c8 > -1) {
-                FrameTask::Get().func_0203dc34(1, (u16) (mUnk_12c8 + 0xa8));
+                FrameTask::Get().StartChannel(1, (u16) (mUnk_12c8 + 0xa8));
             } else {
-                FrameTask::Get().func_0203dd74(1);
+                FrameTask::Get().StopChannel(1);
             }
             break;
         case 216:
-            FrameTask::Get().func_0203dd74(1);
+            FrameTask::Get().StopChannel(1);
             break;
         case 217:
             {
@@ -2883,9 +2883,9 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
                 }
                 s32 id = (u16) mUnk_12c8;
                 if (id < 0x11) {
-                    SoundManager::Get().func_020246f8(id + 0x12);
+                    SoundManager::Get().StartSeqArc(id + 0x12);
                 } else {
-                    SoundManager::Get().func_020246f8((u16) (id - 0x11) + 0x44);
+                    SoundManager::Get().StartSeqArc((u16) (id - 0x11) + 0x44);
                 }
                 break;
             }
@@ -2966,16 +2966,16 @@ void UnkStruct_02065c40::func_0206b150(u32 command, s32 value) {
             break;
         case 232:
             CameraManager::Get().mActive = 0;
-            CameraManager::Get().func_02026504(1, mUnk_1288, 0);
+            CameraManager::Get().SetCamerasAndRequestMode(1, mUnk_1288, 0);
             mUnk_14e4 = 0;
             func_02088f28(mUnk_1018, 0);
             mUnk_12c5 = 9;
             break;
         case 233:
             func_02067708(1);
-            SpriteManager::Get().func_02026dec(1, 7);
+            SpriteManager::Get().SetupMode(1, 7);
             func_020666d8();
-            CameraManager::Get().func_02026504(2, mUnk_1288, (u32) mUnk_1288);
+            CameraManager::Get().SetCamerasAndRequestMode(2, mUnk_1288, (u32) mUnk_1288);
             SpriteManager::Get().SetFade(1, -16);
             mUnk_14e4 = 1;
             mUnk_14e5 = 1;
@@ -3023,7 +3023,7 @@ void UnkStruct_02065c40::func_0206d3b8() {
                 func_02067e2c(idx, 0);
                 UnkStruct_0205401c *model = mUnk_11b4[idx].mUnk_2c;
                 if (model != NULL) {
-                    model->func_02054034();
+                    model->Release();
                     delete model;
                 }
                 mUnk_11b4[idx].mUnk_2c = NULL;
@@ -3312,7 +3312,7 @@ BOOL UnkStruct_02065c40::func_0206eb10(const char *path) {
     }
     ChangeDir("/");
     sprintf(file, "/script/%s", path);
-    func_02023708(file, 0, 0, 0, &mUnk_12b4, 1);
+    LoadFileAsync(file, 0, 0, 0, &mUnk_12b4, 1);
     func_02069bdc();
     func_02069c6c();
     mUnk_12ca = 0;
@@ -3359,10 +3359,10 @@ BOOL UnkStruct_02065c40::func_0206eb10(const char *path) {
 
 
 BOOL UnkStruct_02065c40::func_0206ed40() {
-    if (func_02023874() != 0) {
+    if (IsAsyncLoadActive() != 0) {
         return FALSE;
     }
-    mUnk_12b0 = (u32) func_02023864();
+    mUnk_12b0 = (u32) GetAsyncLoadBuffer();
     u8 *data = (u8 *) mUnk_12b0;
     u32 size = mUnk_12b4;
     u8 *name = (u8 *) OS_Alloc(0x20);
@@ -3392,7 +3392,7 @@ BOOL UnkStruct_02065c40::func_0206ed40() {
     ChangeDir("/");
     char file[0x80];
     sprintf(file, "/font/%s.mes", name);
-    func_02023708(file, 0, 0, 0, &mUnk_12b4, 0);
+    LoadFileAsync(file, 0, 0, 0, &mUnk_12b4, 0);
     OS_Free(name);
     OS_Free(body);
     OS_Free(data);
@@ -3402,10 +3402,10 @@ BOOL UnkStruct_02065c40::func_0206ed40() {
 
 
 BOOL UnkStruct_02065c40::func_0206ef08() {
-    if (func_02023874() != 0) {
+    if (IsAsyncLoadActive() != 0) {
         return FALSE;
     }
-    mUnk_12b0 = (u32) func_02023864();
+    mUnk_12b0 = (u32) GetAsyncLoadBuffer();
     func_02087ccc(mUnk_1018, (void *) mUnk_12b0);
     func_02088ec4(mUnk_1018);
     return TRUE;
@@ -3551,7 +3551,7 @@ BOOL UnkStruct_02065c40::func_0206ef4c(const char *name, u32 unk2, u32 unk3, u32
     ChangeDir("/");
     char file[0x80];
     sprintf(file, "/font/%s.mes", name);
-    func_02023708(file, 0, 0, 0, &mUnk_12b4, 0);
+    LoadFileAsync(file, 0, 0, 0, &mUnk_12b4, 0);
     mUnk_1018->SetCell1Visible(0);
     mUnk_12ca = 0;
     func_02088ec4(mUnk_1018);
@@ -3648,7 +3648,7 @@ extern "C" BOOL func_0206f6f0(UnkStruct_02065c40 *event, const char *name, u32 i
         ChangeDir("/");
         char file[0x80];
         sprintf(file, "/font/%s.mes", name);
-        func_02023708(file, 0, 0, 0, &event->mUnk_12b4, 0);
+        LoadFileAsync(file, 0, 0, 0, &event->mUnk_12b4, 0);
         event->mUnk_1018->SetCell1Visible(0);
         event->mUnk_12ca = 0;
         func_02088ec4(event->mUnk_1018);
@@ -3947,7 +3947,7 @@ u8 UnkStruct_02065c40::func_0206fa20(const char *name, const u16 *unk2, const u8
     ChangeDir("/");
     char file[0x80];
     sprintf(file, "/font/%s.mes", name);
-    func_02023708(file, 0, 0, 0, &mUnk_12b4, 0);
+    LoadFileAsync(file, 0, 0, 0, &mUnk_12b4, 0);
     mUnk_14ec = 0;
     mUnk_12b9 = 2;
     return TRUE;

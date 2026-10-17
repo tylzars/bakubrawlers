@@ -24,19 +24,19 @@ void GimmickFieldPowerG::Load() {
         sResource = new ModelResource("fieldpower_g_0.nsbmd", 0, "fieldpower_g_0.nsbtx", 1);
     }
     ChangeDir("/Game/Gimmick");
-    sResource->func_020306e4(1);
-    mModel = sResource->mModel->func_02028b78(0);
+    sResource->AddRef(1);
+    mModel = sResource->mModel->CreateInstance(0);
     ChangeDir("/");
 }
 
 void GimmickFieldPowerG::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mUnk_68       = 1;
+        m->mOwnFlags       = 1;
         delete m;
         mModel = 0;
     }
-    if (sResource && sResource->func_020307e8()) {
+    if (sResource && sResource->ReleaseRef()) {
         ModelResource *r = sResource;
         delete r;
         sResource = 0;
@@ -74,12 +74,12 @@ void GimmickFieldPowerG::Update() {
         if (p->mUnk_fd > 0x63) {
             p->mUnk_fd = 0x63;
         }
-        SoundManager::Get().func_020246f8(0x35);
+        SoundManager::Get().StartSeqArc(0x35);
         CameraManager::Get();
         MtxFx43 mtx = data_020c1cf4;
         VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
         VecFx32 v      = data_ov007_02279420;
-        u16 handle     = func_0202bd40(data_020d433c.mEffects, 1, 3, 0, 0);
+        u16 handle     = StartEffect(data_020d433c.mEffects, 1, 3, 0, 0);
         if (handle) {
             mtx._[11] = 0;
             mtx._[10] = 0;
@@ -87,9 +87,9 @@ void GimmickFieldPowerG::Update() {
             MTX_MultVec43(&v, &mtx, &v);
             VEC_Add(&camPos, &v, &camPos);
             func_01ffcf64(&mtx, &camPos);
-            func_0202bf60(data_020d433c.mEffects, handle, &mtx);
+            SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         }
-        handle = func_0202bd40(data_020d433c.mEffects, 1, 0xd, 0, 1);
+        handle = StartEffect(data_020d433c.mEffects, 1, 0xd, 0, 1);
         if (handle) {
             VecFx32 d;
             VecFx32 camPos2 = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
@@ -107,7 +107,7 @@ void GimmickFieldPowerG::Update() {
             d.z = FX_Mul(d.z, 0x1e000);
             VEC_Add(&d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition, &d);
             func_01ffcf64(&mtx2, &d);
-            func_0202bf60(data_020d433c.mEffects, handle, &mtx2);
+            SetEffectMatrix(data_020d433c.mEffects, handle, &mtx2);
         }
         mUnk_40 = 1;
         mUnk_3c = 0;

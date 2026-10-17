@@ -8,27 +8,27 @@
 #include "Graphics/ModelTransform.hpp"
 
 // A texture/model file object built from a file already in memory.
-class NitroTextureData : public UnkStruct_02028308 {
+class NitroTextureData : public TextureFile {
 public:
     NitroTextureData(void *file) {
-        func_020282c4(file);
+        LoadData(file);
     }
 };
 
 class NitroModelData : public NitroModel {
 public:
-    NitroModelData(void *file, UnkStruct_02028308 *texture) {
-        func_02028a2c(file, texture);
+    NitroModelData(void *file, TextureFile *texture) {
+        LoadData(file, texture);
     }
 };
 
 // Editable character built from separately loaded parts (head, up, down, hair, glasses, cap), 0x7c bytes.
 class CharacterModel : public ModelTransform {
 public:
-    /* 2c */ void *mUnk_2c;
-    /* 30 */ void *mUnk_30;
-    /* 34 */ void *mUnk_34;
-    /* 38 */ u8 mUnk_38[6];
+    /* 2c */ void *mHeadTextureData;
+    /* 30 */ void *mHeadModelData;
+    /* 34 */ void *mMotionData;
+    /* 38 */ u8 mPartFileNumbers[6];
     /* 3e */ PAD(0x3e, 0x40);
     /* 40 */ s8 mUnk_40;
     /* 41 */ s8 mUnk_41;
@@ -36,51 +36,51 @@ public:
     /* 44 */ s32 mUnk_44;
     /* 48 */ ModelInstance *mParts[6];
     /* 60 */ void *mUnk_60;
-    /* 64 */ u8 mUnk_64;
-    /* 65 */ u8 mUnk_65;
-    /* 66 */ u8 mUnk_66;
-    /* 67 */ u8 mUnk_67;
-    /* 68 */ u8 mUnk_68;
-    /* 69 */ u8 mUnk_69;
-    /* 6a */ u8 mUnk_6a;
-    /* 6b */ u8 mUnk_6b;
-    /* 6c */ u8 mUnk_6c;
+    /* 64 */ u8 mVisible;
+    /* 65 */ u8 mSkinPalette;
+    /* 66 */ u8 mFaceKind;
+    /* 67 */ u8 mFaceVariant;
+    /* 68 */ u8 mHairKind;
+    /* 69 */ u8 mHairVariant;
+    /* 6a */ u8 mCapHandle;
+    /* 6b */ u8 mCapPalette;
+    /* 6c */ u8 mGlasseHandle;
     /* 6d */ u8 mUnk_6d;
     /* 6e */ u8 mUnk_6e;
-    /* 6f */ u8 mUnk_6f;
-    /* 70 */ u8 mUnk_70;
-    /* 71 */ u8 mUnk_71;
-    /* 72 */ u8 mUnk_72;
-    /* 73 */ u8 mUnk_73;
-    /* 74 */ u8 mUnk_74;
+    /* 6f */ u8 mTopKind;
+    /* 70 */ u8 mTopPalette;
+    /* 71 */ u8 mDownKind;
+    /* 72 */ u8 mDownPalette;
+    /* 73 */ u8 mShoesKind;
+    /* 74 */ u8 mShoesVariant;
     /* 75 */ u8 mUnk_75;
-    /* 76 */ u8 mUnk_76;
-    /* 77 */ u8 mUnk_77;
+    /* 76 */ u8 mExtraAnimSet;
+    /* 77 */ u8 mExtraAnimEnabled;
     /* 78 */ u8 mUnk_78;
-    /* 79 */ u8 mUnk_79;
+    /* 79 */ u8 mHeadLoadStep;
     /* 7a */ u8 mUnk_7a;
     /* 7b */ PAD(0x7b, 0x7c);
     /* 7c */
 
     CharacterModel();
     ~CharacterModel();
-    void func_02052894(u32 a, u32 b);
-    void func_02052da4(u32 sex);
-    BOOL func_02052db8();
-    void func_02052df0();
-    void func_020528b0(u32 part, u32 unk);
-    BOOL func_02052e50(u32 async);
-    void func_020530e8();
-    void func_020531fc();
-    void func_02053298();
-    void func_0205340c(u32 part);
-    BOOL func_02053d74(u32 part, const char *name, const char *file);
-    void func_02053d9c(u32 part, const char *name, const char *file);
-    void func_02053dc4(u32 part, const char *name, const char *file1, const char *file2, u8 offset);
+    void StartHeadAnim(u32 a, u32 b);
+    void StartLoad(u32 sex);
+    BOOL UpdateLoad();
+    void CreateHeadAndLoadParts();
+    void LoadPart(u32 part, u32 unk);
+    BOOL LoadHeadFiles(u32 async);
+    void CreateHead();
+    void FreeParts();
+    void DrawParts();
+    void LoadPartTextures(u32 part);
+    BOOL LoadPartTexture(u32 part, const char *name, const char *file);
+    void LoadPartPalette(u32 part, const char *name, const char *file);
+    void LoadMergedPalette(u32 part, const char *name, const char *file1, const char *file2, u8 offset);
     void func_02053ea0(u32 a, u32 b);
-    void func_02053eec(u32 flag);
-    s32 func_02053f84();
-    void func_02053fa8(u32 frame);
+    void SetExtraAnimEnabled(u32 flag);
+    s32 GetHeadFrame();
+    void SetHeadFrame(u32 frame);
 };
 
-extern const char *data_020b24e4[6]; // part names: head, up, down, hair, glasse, cap
+extern const char *gCharacterPartNames[6]; // part names: head, up, down, hair, glasse, cap

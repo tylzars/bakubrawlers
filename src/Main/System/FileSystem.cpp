@@ -74,12 +74,12 @@ static inline void ReadChunk() {
 BOOL OpenFileWithLanguageSuffix(const char *path);
 
 void func_020234c8() {
-    sprintf(data_020d5488, "/");
+    sprintf(gCurrentDir, "/");
     func_0200a7b4(&data_020d5440);
     MI_CpuFill8(&data_020d5408, 0, 0x38);
 }
 
-void *func_02023504(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32 unk6) {
+void *LoadFile(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32 unk6) {
     void *buffer      = (void *) unk2;
     u32 offset        = unk3;
     u32 size          = unk4;
@@ -144,7 +144,7 @@ void *func_02023504(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
     return buffer;
 }
 
-void *func_02023708(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32 unk6) {
+void *LoadFileAsync(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize, u32 unk6) {
     void *buffer = (void *) unk2;
     u32 offset   = unk3;
     u32 size     = unk4;
@@ -200,11 +200,11 @@ void *func_02023708(const char *path, u32 unk2, u32 unk3, u32 unk4, u32 *outSize
     return buffer;
 }
 
-void *func_02023864() {
+void *GetAsyncLoadBuffer() {
     return data_020d53e4.mBuffer;
 }
 
-u8 func_02023874() {
+u8 IsAsyncLoadActive() {
     return data_020d53e4.mActive;
 }
 
@@ -254,7 +254,7 @@ void func_02023884() {
     DC_FlushRange(data_020d53e4.mBuffer, data_020d53e4.mSize);
 }
 
-void func_02023a54() {
+void StopAsyncLoad() {
     if (!data_020d53e4.mActive) {
         return;
     }

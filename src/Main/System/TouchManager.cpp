@@ -23,22 +23,22 @@ void TouchManager::Init() {
     MI_CpuClear32(&pad_0x44, 0xc);
     mX = 0;
     mY = 0;
-    mUnk_38 = 0;
-    mUnk_3c = 0;
+    mMoveDegrees = 0;
+    mMoveAngle = 0;
     mDistance = 0;
     mUnk_50 = 0;
     mRepeatDelay = 0;
     mRepeatTimer = 0;
-    mUnk_56 = 0;
-    mUnk_57 = 0;
-    mUnk_58 = 0;
-    mUnk_59 = 0;
+    mDown = 0;
+    mPressed = 0;
+    mTrigger = 0;
+    mDoubleTap = 0;
     mTouching = 0;
     mCountdown = 0;
     mCountdown2 = 0;
     mCountdownStart = 0;
     mCountdown2Start = 0;
-    mUnk_5f = 0;
+    mTapCount = 0;
     mUnk_60 = 0;
     mEnabled = 0;
     mRepeatDelay = 30;
@@ -47,7 +47,7 @@ void TouchManager::Init() {
     mUnk_50 = 0x1240 - 12;
 }
 
-void TouchManager::func_020225d0() {
+void TouchManager::InitPanel() {
     TP_Init();
     Init();
 }
@@ -85,36 +85,36 @@ void TouchManager::Update(BOOL enabled) {
     mCur.touch = sample.touch;
     mCur.valid = sample.valid;
     mTouching = 0;
-    mUnk_56 = 0;
-    mUnk_57 = 0;
-    mUnk_58 = 0;
+    mDown = 0;
+    mPressed = 0;
+    mTrigger = 0;
     if (sample.touch != 0) {
         mX = sample.x;
         mY = sample.y;
-        mUnk_56 = 1;
+        mDown = 1;
         if (mPrev.touch == 0) {
-            mUnk_57 = 1;
-            mUnk_58 = 1;
+            mPressed = 1;
+            mTrigger = 1;
             mCountdown = mCountdownStart;
             mCountdown2 = mCountdown2Start;
         } else if (mCountdown < 0) {
             mCountdown2--;
             if (mCountdown2 < 0) {
-                mUnk_58 = 1;
+                mTrigger = 1;
                 mCountdown2 = mCountdown2Start;
             }
         } else {
             mCountdown--;
             if (mCountdown < 0) {
-                mUnk_58 = 1;
+                mTrigger = 1;
                 mCountdown2 = mCountdown2Start;
             }
         }
     } else if (mPrev.touch != 0) {
         mTouching = 1;
     }
-    func_020228f0();
-    func_02022988();
+    UpdateDoubleTap();
+    UpdateMotion();
 }
 
 BOOL TouchManager::HitTest(s32 x, s32 y, s32 width, s16 height) {
@@ -140,8 +140,8 @@ BOOL TouchManager::HitTest(s32 x, s32 y, s32 width, s16 height) {
     return inside;
 }
 
-BOOL TouchManager::func_02022830(s32 x, s32 y, s32 width, s16 height) {
-    if (mUnk_56 != 0) {
+BOOL TouchManager::IsDownIn(s32 x, s32 y, s32 width, s16 height) {
+    if (mDown != 0) {
         if (HitTest(x, y, width, height)) {
             return TRUE;
         }
@@ -149,8 +149,8 @@ BOOL TouchManager::func_02022830(s32 x, s32 y, s32 width, s16 height) {
     return FALSE;
 }
 
-BOOL TouchManager::func_02022860(s32 x, s32 y, s32 width, s16 height) {
-    if (mUnk_57 != 0) {
+BOOL TouchManager::IsPressedIn(s32 x, s32 y, s32 width, s16 height) {
+    if (mPressed != 0) {
         if (HitTest(x, y, width, height)) {
             return TRUE;
         }
@@ -158,8 +158,8 @@ BOOL TouchManager::func_02022860(s32 x, s32 y, s32 width, s16 height) {
     return FALSE;
 }
 
-BOOL TouchManager::func_02022890(s32 x, s32 y, s32 width, s16 height) {
-    if (mUnk_58 != 0) {
+BOOL TouchManager::IsTriggerIn(s32 x, s32 y, s32 width, s16 height) {
+    if (mTrigger != 0) {
         if (HitTest(x, y, width, height)) {
             return TRUE;
         }
@@ -167,7 +167,7 @@ BOOL TouchManager::func_02022890(s32 x, s32 y, s32 width, s16 height) {
     return FALSE;
 }
 
-BOOL TouchManager::func_020228c0(u32 x, s16 y, u32 width, s16 height) {
+BOOL TouchManager::IsReleasedIn(u32 x, s16 y, u32 width, s16 height) {
     if (mTouching != 0) {
         if (HitTest(x, y, width, height)) {
             return TRUE;
@@ -176,34 +176,34 @@ BOOL TouchManager::func_020228c0(u32 x, s16 y, u32 width, s16 height) {
     return FALSE;
 }
 
-void TouchManager::func_020228f0() {
-    mUnk_59 = 0;
-    if (mUnk_57 != 0) {
-        if (mUnk_5f == 0) {
+void TouchManager::UpdateDoubleTap() {
+    mDoubleTap = 0;
+    if (mPressed != 0) {
+        if (mTapCount == 0) {
             mRepeatTimer = mRepeatDelay;
         }
     }
     mRepeatTimer--;
     if (mRepeatTimer > 0) {
-        if (mUnk_57 != 0) {
-            mUnk_5f++;
+        if (mPressed != 0) {
+            mTapCount++;
             return;
         }
-        if (mUnk_56 != 0) {
+        if (mDown != 0) {
             return;
         }
-        if (mUnk_5f >= 2) {
-            mUnk_59 = 1;
+        if (mTapCount >= 2) {
+            mDoubleTap = 1;
             mRepeatTimer = 0;
-            mUnk_5f = 0;
+            mTapCount = 0;
         }
     } else {
         mRepeatTimer = 0;
-        mUnk_5f = 0;
+        mTapCount = 0;
     }
 }
 
-void TouchManager::func_02022988() {
+void TouchManager::UpdateMotion() {
     s32 dy = mY - mPrev.y;
     s32 dx = mX - mPrev.x;
     fx32 fy = dy << 12;
@@ -230,19 +230,19 @@ void TouchManager::func_02022988() {
         a = 0;
     }
     if (mDistance != 0) {
-        mUnk_38 = a;
-        mUnk_3c = b;
+        mMoveDegrees = a;
+        mMoveAngle = b;
     } else {
-        mUnk_38 = -1;
-        mUnk_3c = -1;
+        mMoveDegrees = -1;
+        mMoveAngle = -1;
     }
 }
 
-BOOL TouchManager::func_02022ae0() {
+BOOL TouchManager::ReadCalibration() {
     return TP_GetUserInfo(&mPanel);
 }
 
-void TouchManager::func_02022af0() {
+void TouchManager::ApplyCalibrationAndEnable() {
     TP_SetCalibrateParam(&mPanel);
     mEnabled = 1;
 }

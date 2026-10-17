@@ -23,30 +23,30 @@ void FrameTask::Init() {
     mVolume2 = 1.0f;
 }
 
-void FrameTask::func_0203dbc4() {
+void FrameTask::OpenHandles() {
     TaskBase::Init();
-    func_0203ddb0(0, 4);
-    func_0203ddb0(2, 4);
-    func_0203ddb0(1, 4);
+    SetChannelVolume(0, 4);
+    SetChannelVolume(2, 4);
+    SetChannelVolume(1, 4);
 }
 
-void FrameTask::func_0203dc04() {
-    func_0205242c();
+void FrameTask::Update() {
+    UpdateHandles();
 }
 
-void FrameTask::func_0203dc10() {
-    func_0205251c();
+void FrameTask::WaitFrame() {
+    Wait();
 }
 
 void FrameTask::Run() {
     func_0205253c();
 }
 
-void FrameTask::func_0203dc28() {
-    func_020523f8();
+void FrameTask::CloseHandles() {
+    Release();
 }
 
-void FrameTask::func_0203dc34(u32 unk1, u32 unk2) {
+void FrameTask::StartChannel(u32 unk1, u32 unk2) {
     char path[0x80];
     if (unk1 >= 3) {
         return;
@@ -58,16 +58,16 @@ void FrameTask::func_0203dc34(u32 unk1, u32 unk2) {
     sprintf(path, data_020ac960, data_020ac934[unk1], unk2 - data_020ac92c[unk1], variant, data_020ac940[unk1]);
     switch (unk1) {
         case 0:
-            func_02052460(path);
+            Start0(path);
             break;
         case 2:
-            func_02052470(path);
+            Start1(path);
             break;
         case 1:
-            func_02052470(path);
+            Start1(path);
             break;
     }
-    func_0203ddb0(unk1, 4);
+    SetChannelVolume(unk1, 4);
 }
 
 BOOL func_0203dd0c(FrameTask *task, u32 channel) {
@@ -95,20 +95,20 @@ void FrameTask::func_0203dd60(u32 channel) {
     }
 }
 
-void FrameTask::func_0203dd74(u32 channel) {
+void FrameTask::StopChannel(u32 channel) {
     if (channel == 0) {
-        func_020524a8();
+        Stop0();
     } else {
-        func_020524b8();
+        Stop1();
     }
 }
 
-void FrameTask::func_0203dd90() {
-    func_0203dd74(0);
-    func_0203dd74(1);
+void FrameTask::StopAllChannels() {
+    StopChannel(0);
+    StopChannel(1);
 }
 
-void FrameTask::func_0203ddb0(u32 channel, u32 level) {
+void FrameTask::SetChannelVolume(u32 channel, u32 level) {
     if (level >= 10) {
         return;
     }

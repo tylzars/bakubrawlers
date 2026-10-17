@@ -438,7 +438,7 @@ void func_ov007_0226a1d8(BattlePlayer *player) {
         MIi_CpuCopy16(name, (u8 *) player + 0xb0, length * sizeof(u16));
         player->mUnk_ed = length * 2;
     } else {
-        MessageFile *file = (MessageFile *) func_02023504("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
+        MessageFile *file = (MessageFile *) LoadFile("/font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
         player->mUnk_ed   = file->GetLength(player->mUnk_f6);
         TextManager::Get();
         MIi_CpuCopy16(file->GetText(player->mUnk_f6), (u8 *) player + 0xb0, player->mUnk_ed);

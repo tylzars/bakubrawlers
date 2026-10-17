@@ -19,7 +19,7 @@ static ModelResource *sResources[3];
 static const u16 data_ov007_022793e0[3] = {10, 10, 6};
 
 extern MtxFx43 data_020c1cf4;
-extern MtxFx43 data_0220e86c;
+extern MtxFx43 gIdentityMtx43;
 
 
 GimmickFieldDestroy::GimmickFieldDestroy(u8 a)
@@ -63,22 +63,22 @@ void GimmickFieldDestroy::Load() {
         sResources[1] = new ModelResource("fielddestroy_e_0.nsbmd", "fielddestroy_e_0_data.bin", "fielddestroy_e_0.nsbtx", 1);
     }
     ChangeDir("/Game/Gimmick");
-    sResources[2]->func_020306e4(0);
-    mModel  = sResources[2]->mModel->func_02028b78(new ModelAnim(sResources[2]->mAnimData, sResources[2]->mModel));
-    mModel->func_02028e54(0, 1, 0x1000);
-    mUnk_00 = 1;
-    sResources[0]->func_020306e4(1);
-    if (!sResources[0]->mModel->mUnk_08) {
-        sResources[0]->mModel->func_02028b4c(sResources[2]->mTexture);
-        sResources[2]->mTexture->func_02028344();
+    sResources[2]->AddRef(0);
+    mModel  = sResources[2]->mModel->CreateInstance(new ModelAnim(sResources[2]->mAnimData, sResources[2]->mModel));
+    mModel->StartAnimWithIncrement(0, 1, 0x1000);
+    mAnimEnabled = 1;
+    sResources[0]->AddRef(1);
+    if (!sResources[0]->mModel->mTexture) {
+        sResources[0]->mModel->BindTexture(sResources[2]->mTexture);
+        sResources[2]->mTexture->FreeFile();
     }
-    mModelB = sResources[0]->mModel->func_02028b78(new ModelAnim(sResources[0]->mAnimData, sResources[0]->mModel));
-    mModelB->func_02028e54(0, 0, 0x1000);
-    mModelB->mUnk_69 = 0;
-    sResources[1]->func_020306e4(1);
-    mModelE = sResources[1]->mModel->func_02028b78(new ModelAnim(sResources[1]->mAnimData, sResources[1]->mModel));
-    mModelE->func_02028e54(0, 0, 0x1000);
-    mModelE->mUnk_69 = 0;
+    mModelB = sResources[0]->mModel->CreateInstance(new ModelAnim(sResources[0]->mAnimData, sResources[0]->mModel));
+    mModelB->StartAnimWithIncrement(0, 0, 0x1000);
+    mModelB->mUseBoxTest = 0;
+    sResources[1]->AddRef(1);
+    mModelE = sResources[1]->mModel->CreateInstance(new ModelAnim(sResources[1]->mAnimData, sResources[1]->mModel));
+    mModelE->StartAnimWithIncrement(0, 0, 0x1000);
+    mModelE->mUseBoxTest = 0;
     ChangeDir("/");
 }
 
@@ -88,22 +88,22 @@ void GimmickFieldDestroy::Unload() {
     }
     if (mModel) {
         ModelInstance *m = mModelE;
-        m->mUnk_68       = 1;
+        m->mOwnFlags       = 1;
         delete m;
         mModelE = 0;
         m               = mModelB;
-        m->mUnk_68      = 1;
+        m->mOwnFlags      = 1;
         delete m;
         mModelB = 0;
         m               = mModel;
-        m->mUnk_68      = 1;
+        m->mOwnFlags      = 1;
         delete m;
         mModel = 0;
     }
     if (sResources[2]) {
-        sResources[0]->func_020307e8();
-        sResources[1]->func_020307e8();
-        if (sResources[2]->func_020307e8()) {
+        sResources[0]->ReleaseRef();
+        sResources[1]->ReleaseRef();
+        if (sResources[2]->ReleaseRef()) {
             ModelResource *r = sResources[2];
             delete r;
             sResources[2] = 0;
@@ -137,7 +137,7 @@ void GimmickFieldDestroy::Update() {
             mUnk_3c = 0;
             func_ov007_0222b8b4();
             mTimer++;
-            SoundManager::Get().func_020246f8(4);
+            SoundManager::Get().StartSeqArc(4);
             mState++;
         }
         break;
@@ -219,16 +219,16 @@ void GimmickFieldDestroy::func_ov007_0222b410() {
             p                       = plist->mPlayers[plist->mUnk_28a];
             switch (kind) {
             case 0:
-                SoundManager::Get().func_020246f8(0x34);
+                SoundManager::Get().StartSeqArc(0x34);
                 break;
             case 1: {
-                SoundManager::Get().func_020246f8(0x35);
+                SoundManager::Get().StartSeqArc(0x35);
                 func_ov007_0226a380(p, p->mRecord, 0x1e);
                 CameraManager::Get();
                 MtxFx43 mtx    = data_020c1cf4;
                 VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
                 VecFx32 v      = {0, 0xf000, -0xa000};
-                u8 handle      = func_0202bd40(data_020d433c.mEffects, 1, 3, 0, 0);
+                u8 handle      = StartEffect(data_020d433c.mEffects, 1, 3, 0, 0);
                 if (handle) {
                     mtx._[11] = 0;
                     mtx._[10] = 0;
@@ -236,13 +236,13 @@ void GimmickFieldDestroy::func_ov007_0222b410() {
                     MTX_MultVec43(&v, &mtx, &v);
                     VEC_Add(&camPos, &v, &camPos);
                     func_01ffcf64(&mtx, &camPos);
-                    func_0202bf60(data_020d433c.mEffects, handle, &mtx);
+                    SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
                 }
                 break;
             }
             case 2: {
-                SoundManager::Get().func_020246f8(0x36);
-                u8 handle = func_0202bd40(data_020d433c.mEffects, 1, 0xe, 0, 1);
+                SoundManager::Get().StartSeqArc(0x36);
+                u8 handle = StartEffect(data_020d433c.mEffects, 1, 0xe, 0, 1);
                 BattleRecord *rec = &p->mRecords[p->mRecord];
                 if ((int)rec->mGauge < 0xfd7) {
                     rec->mGauge += 0x28;
@@ -264,7 +264,7 @@ void GimmickFieldDestroy::func_ov007_0222b410() {
                     d.z = FX_Mul(d.z, 0x1e000);
                     VEC_Add(&d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition, &d);
                     func_01ffcf64(&mtx, &d);
-                    func_0202bf60(data_020d433c.mEffects, handle, &mtx);
+                    SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
                 }
                 break;
             }
@@ -293,14 +293,14 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
             v = 0xbe;
         }
         p->mUnk_f3 = v;
-        u8 handle  = func_0202bd40(data_020d433c.mEffects, 1, 0xc, 0, 1);
+        u8 handle  = StartEffect(data_020d433c.mEffects, 1, 0xc, 0, 1);
         if (!handle) {
             return;
         }
         CameraManager::Get();
         MtxFx43 mtx2           = data_020c1cf4;
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
-        MtxFx43 mtx            = data_0220e86c;
+        MtxFx43 mtx            = gIdentityMtx43;
         VecFx32 camPos         = list->mUnk_298->mUnk_1a4->mPosition;
         VecFx32 v2             = {0, 0, 0x1e000};
         mtx2._[11]             = 0;
@@ -311,11 +311,11 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         func_01ffd088(&mtx, data_ov007_022793da[1]);
         func_01ff89c0(&mtx, &mtx2, &mtx2);
         func_01ffcf64(&mtx2, &camPos);
-        func_0202bf60(data_020d433c.mEffects, handle, &mtx2);
+        SetEffectMatrix(data_020d433c.mEffects, handle, &mtx2);
         break;
     }
     case 1: {
-        u8 handle = func_0202bd40(data_020d433c.mEffects, 1, 0xd, 0, 1);
+        u8 handle = StartEffect(data_020d433c.mEffects, 1, 0xd, 0, 1);
         if (!handle) {
             return;
         }
@@ -335,7 +335,7 @@ void GimmickFieldDestroy::func_ov007_0222b8b4() {
         d.z = FX_Mul(d.z, 0x1e000);
         VEC_Add(&d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition, &d);
         func_01ffcf64(&mtx, &d);
-        func_0202bf60(data_020d433c.mEffects, handle, &mtx);
+        SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         break;
     }
     case 2:
@@ -347,13 +347,13 @@ int GimmickFieldDestroy::func_ov007_0222bc24() {
     if (!mModelB) {
         return 0;
     }
-    if (!mModelB->func_02028d80()) {
+    if (!mModelB->AdvanceAnim()) {
         mState++;
     }
     CameraManager::Get();
     MtxFx43 mtx = data_020c1cf4;
     func_01ffcf64(&mtx, &mPosition);
-    mModelB->func_02029174(&mtx, &mScale);
+    mModelB->Draw(&mtx, &mScale);
     VecFx32 dir;
     VecFx32 cp;
     Camera *cam = CameraManager::Get().mCameras[0];
@@ -366,7 +366,7 @@ int GimmickFieldDestroy::func_ov007_0222bc24() {
     dir.z = 0;
     VEC_Add(&dir, &mPosition, &dir);
     func_01ffcf64(&mtx, &dir);
-    mModelE->func_02028d80();
-    mModelE->func_02029174(&mtx, &mScale);
+    mModelE->AdvanceAnim();
+    mModelE->Draw(&mtx, &mScale);
 }
 

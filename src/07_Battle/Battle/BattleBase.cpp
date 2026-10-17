@@ -319,11 +319,11 @@ void BattleBase::Update() {
                         mUnk_40 = new BattleField3D(mUnk_2c, 2);
                     } else {
                         mUnk_40 = new BattleField3D(mUnk_2c, 1);
-                        SoundManager::Get().func_020246f8(0x24);
+                        SoundManager::Get().StartSeqArc(0x24);
                     }
                     switch (mUnk_4f) {
                         case 0:
-                            SoundManager::Get().func_020246f8(0x2f);
+                            SoundManager::Get().StartSeqArc(0x2f);
                             func_020247fc(&SoundManager::Get(), 0x400);
                             if (mUnk_44->mUnk_13 == 0x32) {
                                 func_ov007_02226a44(mUnk_44, 4);
@@ -380,7 +380,7 @@ void BattleBase::Update() {
             break;
         case 12:
             if (func_ov007_022631bc(data_020d433c.mBattlePlayers, 0xf)) {
-                SoundManager::Get().func_020246f8(0x32);
+                SoundManager::Get().StartSeqArc(0x32);
                 SpriteManager::Get().StartFade(4);
                 mUnk_10++;
             }
@@ -413,7 +413,7 @@ void BattleBase::Update() {
 }
 
 void BattleBase::func_ov007_0221a55c() {
-    SpriteManager::Get().func_02026dec(0, 7);
+    SpriteManager::Get().SetupMode(0, 7);
     GX_SetGraphicsMode(1, 0, 1);
     G2_SetBG0Priority(2);
     G2_SetBG1Priority(2);
@@ -470,7 +470,7 @@ BOOL BattleBase::func_ov007_0221a7d0() {
     switch (mUnk_4d) {
         case 0:
             SoundManager::Get().func_02024754(1);
-            SoundManager::Get().func_020246f8(0x30);
+            SoundManager::Get().StartSeqArc(0x30);
             SpriteManager::Get().StartFade(4);
             mUnk_4d++;
         case 1:
@@ -508,7 +508,7 @@ BOOL BattleBase::func_ov007_0221a7d0() {
             if (mUnk_54_4) {
                 if (mUnk_44->func_ov007_02228514()) {
                     mUnk_54_4 = 0;
-                    SoundManager::Get().func_020246f8(0x33);
+                    SoundManager::Get().StartSeqArc(0x33);
                 }
             }
             mUnk_2a++;
@@ -527,7 +527,7 @@ BOOL BattleBase::func_ov007_0221a7d0() {
                     mUnk_4d = 9;
                 }
                 if (mUnk_4d != 6) {
-                    SoundManager::Get().func_020246f8(0x30);
+                    SoundManager::Get().StartSeqArc(0x30);
                     func_02055624((BattleCommandPage *) mUnk_58, 2);
                 }
             }
@@ -663,10 +663,10 @@ BOOL BattleBase::func_ov007_0221a7d0() {
                     mUnk_2c->mEntries[0].mUnk_02 = entries[0].mUnk_04;
                     mUnk_2c->mEntries[1].mUnk_02 = entries[1].mUnk_04;
                     mUnk_54_1                    = 1;
-                    mUnk_2c->mUnk_34[4]->mUnk_0f = 1;
+                    mUnk_2c->mUnk_34[4]->mFrameIndex = 1;
                     s8 v = data_ov007_02279158[0];
-                    mUnk_2c->mUnk_34[4]->mUnk_11 = v;
-                    mUnk_2c->mUnk_34[3]->mUnk_11 = v;
+                    mUnk_2c->mUnk_34[4]->mPaletteBase = v;
+                    mUnk_2c->mUnk_34[3]->mPaletteBase = v;
                     break;
                 }
                 case 0x8d: {
@@ -675,9 +675,9 @@ BOOL BattleBase::func_ov007_0221a7d0() {
                     mUnk_2c->mEntries[mUnk_4e].mUnk_0a = entries[mUnk_4e].mUnk_06 + entries[mUnk_4e].mUnk_08;
                     mUnk_2c->mEntries[mUnk_4e].mUnk_02 = entries[mUnk_4e].mUnk_04;
                     s8 v = data_ov007_02279158[0];
-                    mUnk_2c->mUnk_34[4]->mUnk_0f = 1;
-                    mUnk_2c->mUnk_34[4]->mUnk_11 = v;
-                    mUnk_2c->mUnk_34[3]->mUnk_11 = v;
+                    mUnk_2c->mUnk_34[4]->mFrameIndex = 1;
+                    mUnk_2c->mUnk_34[4]->mPaletteBase = v;
+                    mUnk_2c->mUnk_34[3]->mPaletteBase = v;
                     break;
                 }
                 default: {
@@ -691,10 +691,10 @@ BOOL BattleBase::func_ov007_0221a7d0() {
                     } else {
                         mUnk_2c->mEntries[mUnk_4e].mUnk_02 = entries[mUnk_4e].mUnk_00 + entries[mUnk_4e].mUnk_0a;
                     }
-                    mUnk_2c->mUnk_34[4]->mUnk_0f = 0;
+                    mUnk_2c->mUnk_34[4]->mFrameIndex = 0;
                     s8 v = data_ov007_02279d3c[0];
-                    mUnk_2c->mUnk_34[4]->mUnk_11 = v;
-                    mUnk_2c->mUnk_34[3]->mUnk_11 = v;
+                    mUnk_2c->mUnk_34[4]->mPaletteBase = v;
+                    mUnk_2c->mUnk_34[3]->mPaletteBase = v;
                     break;
                 }
             }
@@ -758,10 +758,10 @@ BOOL BattleBase::func_ov007_0221a7d0() {
                 SpriteManager::Get().func_0202740c();
                 SpriteManager::Get().StartFade(3);
                 mUnk_4d                      = 0x12;
-                mUnk_2c->mUnk_34[4]->mUnk_0f = 0;
+                mUnk_2c->mUnk_34[4]->mFrameIndex = 0;
                 s8 v = data_ov007_02279d3c[0];
-                mUnk_2c->mUnk_34[4]->mUnk_11 = v;
-                mUnk_2c->mUnk_34[3]->mUnk_11 = v;
+                mUnk_2c->mUnk_34[4]->mPaletteBase = v;
+                mUnk_2c->mUnk_34[3]->mPaletteBase = v;
             }
             break;
         case 18:
@@ -973,8 +973,8 @@ BOOL BattleBase::func_ov007_0221bd84() {
         break;
     case 3:
         if (func_ov007_02229770(mUnk_40)) {
-            SoundManager::Get().func_020246f8(0x23);
-            SoundManager::Get().func_020246f8(0x24);
+            SoundManager::Get().StartSeqArc(0x23);
+            SoundManager::Get().StartSeqArc(0x24);
             mUnk_18_2 = 1;
             mUnk_44->mUnk_22 |= 0x80;
             mUnk_44->mUnk_22 |= 0x10;
@@ -1036,9 +1036,9 @@ int BattleBase::func_ov007_0221c178(u16 *a, u16 *b, u16 *c, u8 *flag) {
     BattleEntry *entries   = mUnk_2c->mEntries;
     if (mUnk_12 <= 1) {
         if (mUnk_55 != 0) {
-            if (TouchManager::Get().func_02022860(data_ov007_02279174, data_ov007_0227917c, data_ov007_02279168,
+            if (TouchManager::Get().IsPressedIn(data_ov007_02279174, data_ov007_0227917c, data_ov007_02279168,
                                                   data_ov007_02279164)) {
-                SoundManager::Get().func_020246f8(0x31);
+                SoundManager::Get().StartSeqArc(0x31);
                 mUnk_44->mUnk_116 = 5;
                 mUnk_55--;
                 if (mUnk_55 == 0) {
@@ -1063,7 +1063,7 @@ int BattleBase::func_ov007_0221c178(u16 *a, u16 *b, u16 *c, u8 *flag) {
             } else if (entries[mUnk_12].mUnk_12 != 0) {
                 if (mUnk_44->mUnk_118[mUnk_12] == 1) {
                     if (GetCardInfo(entries[mUnk_12].mUnk_12, 3) != 4) {
-                        if (TouchManager::Get().func_02022860(data_ov007_02279178[mUnk_12], data_ov007_0227916c, 0x10, 0x18) ||
+                        if (TouchManager::Get().IsPressedIn(data_ov007_02279178[mUnk_12], data_ov007_0227916c, 0x10, 0x18) ||
                             InputManager::Get().IsHeld(0x300)) {
                             c[mUnk_12] = 1;
                         }
@@ -1439,7 +1439,7 @@ BOOL BattleBase::func_ov007_0221d398() {
         if (mUnk_26 >= 15) {
             if (mUnk_18_0) {
                 func_ov007_02229998(mUnk_40);
-                SoundManager::Get().func_020246f8(0x25);
+                SoundManager::Get().StartSeqArc(0x25);
                 func_ov007_022252c4(mUnk_48);
             }
             mUnk_28++;

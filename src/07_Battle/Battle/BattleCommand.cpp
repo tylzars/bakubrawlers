@@ -508,8 +508,8 @@ void BattleCommand::Update() {
                 }
             }
             func_ov007_0223ce24();
-            mMessage->func_02065818();
-            mUnk_6c->mUnk_064 = 1;
+            mMessage->UploadTextPalette();
+            mUnk_6c->mEnabled = 1;
             return;
         }
 
@@ -523,8 +523,8 @@ void BattleCommand::Update() {
             G2S_SetBlendBrightness(0x1f, 0);
             data_020d433c.mBattlePlayers->mUnk_2af++;
             func_ov007_0223ce24();
-            mMessage->func_02065818();
-            mUnk_6c->mUnk_064 = 1;
+            mMessage->UploadTextPalette();
+            mUnk_6c->mEnabled = 1;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
             if (mUnk_133 == list->mUnk_2a9) {
                 mUnk_128 = 10;
@@ -626,7 +626,7 @@ void BattleCommand::Update() {
             return;
         case 13: {
             mUnk_6c->Update(1);
-            if (mUnk_6c->mUnk_061 == 4) {
+            if (mUnk_6c->mState == 4) {
                 switch (mUnk_136) {
                     case 1:
                         mUnk_128 = 0x25;
@@ -643,7 +643,7 @@ void BattleCommand::Update() {
                             do {
                                 if (p->mSlots54[i].mFlag == 0) {
                                     func_ov007_0223c74c(1);
-                                    mUnk_70->mUnk_064 = 0;
+                                    mUnk_70->mEnabled = 0;
                                     mUnk_128          = 0x17;
                                     break;
                                 }
@@ -655,7 +655,7 @@ void BattleCommand::Update() {
                     case 4:
                         func_ov007_0223c74c(1);
                         mNextMode = 4;
-                        mUnk_70->mUnk_064 = 0;
+                        mUnk_70->mEnabled = 0;
                         mUnk_128          = 0x29;
                         break;
                 }
@@ -666,7 +666,7 @@ void BattleCommand::Update() {
             list->mUnk_28b         = a;
             list->mUnk_28c         = b;
             func_ov007_0223b38c();
-            mMessage->func_020658d0();
+            mMessage->Update();
             return;
         }
         case 14: {
@@ -767,8 +767,8 @@ void BattleCommand::Update() {
                 return;
             }
             mUnk_6c->mButtons[3].mEnabled = 0;
-            mUnk_6c->mUnk_061 = 4;
-            mUnk_6c->mUnk_066 = 0;
+            mUnk_6c->mState = 4;
+            mUnk_6c->mSlideInRequested = 0;
             mMode     = 0;
             mUnk_11e  = 0;
             mUnk_128  = 0x1f;
@@ -921,14 +921,14 @@ void BattleCommand::Update() {
             return;
         }
         case 25:
-            mUnk_6c->func_0205c7c8(-1);
-            mUnk_70->mUnk_064 = 1;
-            mMessage->func_02065890(0x13, 0, 1);
-            mMessage->func_02065818();
+            mUnk_6c->Reset(-1);
+            mUnk_70->mEnabled = 1;
+            mMessage->StartMessage(0x13, 0, 1);
+            mMessage->UploadTextPalette();
             mUnk_128++;
             return;
         case 26: {
-            if (mUnk_70->mUnk_061 == 1) {
+            if (mUnk_70->mState == 1) {
                 func_ov007_0223bb30(1);
             }
             WindowItem *item = mUnk_70->mCursor->mItems;
@@ -937,12 +937,12 @@ void BattleCommand::Update() {
                 item->mFlags = 5;
                 if (mUnk_13b != 0) {
                     flag = 1;
-                    SoundManager::Get().func_020246f8(0);
+                    SoundManager::Get().StartSeqArc(0);
                 }
             } else {
                 item->mFlags = 0x804;
                 if (mUnk_13b != 0) {
-                    SoundManager::Get().func_020246f8(2);
+                    SoundManager::Get().StartSeqArc(2);
                 }
             }
             u8 sel    = mUnk_70->Update(1);
@@ -953,15 +953,15 @@ void BattleCommand::Update() {
                 SpriteManager::Get().StartFade(3);
                 mUnk_128 = 0x1c;
                 if (flag != 0) {
-                    mUnk_70->mUnk_061 = 4;
-                    mUnk_70->mUnk_066 = 0;
+                    mUnk_70->mState = 4;
+                    mUnk_70->mSlideInRequested = 0;
                 }
                 mUnk_129 = 0;
             } else if (sel == 2) {
                 mUnk_128++;
                 mUnk_129 = 0;
             }
-            mMessage->func_020658d0();
+            mMessage->Update();
             u8 b                   = mUnk_12d;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
             u8 a                   = mUnk_12c;
@@ -970,20 +970,20 @@ void BattleCommand::Update() {
             func_ov007_0223b38c();
             func_ov007_0223b874();
             mUnk_70->Draw();
-            func_020254f0(func_ov007_0223cf8c, this);
+            QueueFrameCallback(func_ov007_0223cf8c, this);
             return;
         }
 
         case 27:
             mUnk_70->Update(1);
-            if (mUnk_70->mUnk_061 == 4) {
+            if (mUnk_70->mState == 4) {
                 new BattleCommandPrompt(1, mUnk_78, 0, 0, 0);
                 mContext->mUnk_12 = 0;
-                mUnk_70->func_0205c7c8(-1);
-                mUnk_70->mUnk_064 = 0;
+                mUnk_70->Reset(-1);
+                mUnk_70->mEnabled = 0;
                 mUnk_128          = 0x18;
             }
-            mMessage->func_020658d0();
+            mMessage->Update();
             {
                 u8 b                   = mUnk_12d;
                 BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -994,11 +994,11 @@ void BattleCommand::Update() {
             func_ov007_0223b38c();
             func_ov007_0223b874();
             mUnk_70->Draw();
-            func_020254f0(func_ov007_0223cf8c, this);
+            QueueFrameCallback(func_ov007_0223cf8c, this);
             return;
         case 28:
             mUnk_70->Update(1);
-            if (mUnk_70->mUnk_061 == 4) {
+            if (mUnk_70->mState == 4) {
                 mUnk_128++;
             }
             func_ov007_0223b38c();
@@ -1023,7 +1023,7 @@ void BattleCommand::Update() {
             func_ov007_0223c74c(1);
             mUnk_11e = 0;
             mUnk_128++;
-            mUnk_70->mUnk_064 = 0;
+            mUnk_70->mEnabled = 0;
             return;
         case 31: {
             func_ov007_0223c8ac();
@@ -1068,7 +1068,7 @@ void BattleCommand::Update() {
                 }
             }
             if (mUnk_11e == 1) {
-                SoundManager::Get().func_020246f8(6);
+                SoundManager::Get().StartSeqArc(6);
             }
             if ((s32) mUnk_11e <= 0x96) {
                 return;
@@ -1117,9 +1117,9 @@ void BattleCommand::Update() {
             if (SpriteManager::Get().sFade[0] > 1) {
                 return;
             }
-            mUnk_6c->func_0205c7c8(-1);
+            mUnk_6c->Reset(-1);
             mUnk_6c->Update(1);
-            mMessage->func_02065818();
+            mMessage->UploadTextPalette();
             func_ov007_0223ce24();
             mUnk_13a = 0;
             BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -1185,7 +1185,7 @@ void BattleCommand::Update() {
                 return;
             }
             func_ov007_0223ce24();
-            mUnk_6c->func_0205c7c8(-1);
+            mUnk_6c->Reset(-1);
             mUnk_128 = 10;
             return;
         case 41:
@@ -1197,13 +1197,13 @@ void BattleCommand::Update() {
             func_ov007_0223c8d4(1);
             func_02058228(mUnk_7c, 1);
             mUnk_128++;
-            mUnk_70->func_0205c7c8(-1);
-            mUnk_70->mUnk_064 = 1;
+            mUnk_70->Reset(-1);
+            mUnk_70->mEnabled = 1;
             func_ov007_0223c578();
-            mMessage->func_02065890(0x21, 0, 1);
+            mMessage->StartMessage(0x21, 0, 1);
             return;
         case 42: {
-            if (mUnk_70->mUnk_061 == 1) {
+            if (mUnk_70->mState == 1) {
                 func_ov007_0223bb30(0);
             }
             WindowItem *item       = mUnk_70->mCursor->mItems;
@@ -1217,12 +1217,12 @@ void BattleCommand::Update() {
                     item->mFlags = 5;
                     if (mUnk_13b != 0) {
                         flag = 1;
-                        SoundManager::Get().func_020246f8(0);
+                        SoundManager::Get().StartSeqArc(0);
                     }
                 } else {
                     item->mFlags = 0x804;
                     if (mUnk_13b != 0) {
-                        SoundManager::Get().func_020246f8(2);
+                        SoundManager::Get().StartSeqArc(2);
                     }
                 }
             } else {
@@ -1234,7 +1234,7 @@ void BattleCommand::Update() {
                 mUnk_12f = 0;
                 mUnk_11e = 0;
                 SpriteManager::Get().StartFade(3);
-                mUnk_70->mUnk_064 = 0;
+                mUnk_70->mEnabled = 0;
                 mUnk_128          = 0x2d;
                 data_0220f540.mUnk_00 = 0x12;
                 data_0220f540.mTouchDown = mUnk_12c;
@@ -1245,7 +1245,7 @@ void BattleCommand::Update() {
                 func_ov007_0223c74c(1);
                 mUnk_129 = 0;
             }
-            mMessage->func_020658d0();
+            mMessage->Update();
             u8 b                = mUnk_12d;
             u8 a                = mUnk_12c;
             BattlePlayerList *l = data_020d433c.mBattlePlayers;
@@ -1273,36 +1273,36 @@ void BattleCommand::Update() {
                 y++;
             } while (y < 14);
             mUnk_70->Draw();
-            func_020254f0(func_ov007_0223cf8c, this);
+            QueueFrameCallback(func_ov007_0223cf8c, this);
             return;
         }
         case 43:
-            mMessage->func_020658d0();
+            mMessage->Update();
             func_ov007_0223b38c();
             func_ov007_0223c8ac();
             if (mMode != 0) {
                 return;
             }
             mUnk_70->Update(1);
-            if (mUnk_70->mUnk_061 != 4) {
+            if (mUnk_70->mState != 4) {
                 return;
             }
             mNextMode = 2;
             func_ov007_0223c8d4(0);
             func_ov007_02247a3c(mUnk_84);
-            mUnk_70->func_0205c7c8(-1);
-            mUnk_70->mUnk_064 = 0;
+            mUnk_70->Reset(-1);
+            mUnk_70->mEnabled = 0;
             func_ov007_02246a84(mUnk_84, 2);
             mUnk_128++;
             return;
         case 44:
-            mMessage->func_020658d0();
+            mMessage->Update();
             func_ov007_0223b38c();
             if (SpriteManager::Get().sFade[0] > 1) {
                 return;
             }
             func_ov007_0223ce24();
-            mUnk_6c->func_0205c7c8(-1);
+            mUnk_6c->Reset(-1);
             mUnk_128 = 10;
             func_ov007_0223ce24();
             return;
@@ -1427,7 +1427,7 @@ void BattleCommand::Update() {
 BOOL BattleCommand::func_ov007_02239e1c(BOOL input) {
     BOOL result = FALSE;
     u8 sel      = 0;
-    BOOL poll   = mUnk_6c->mUnk_061 != 1;
+    BOOL poll   = mUnk_6c->mState != 1;
     if (input | poll) {
         sel = mUnk_6c->Update(1);
     }
@@ -1464,7 +1464,7 @@ BOOL BattleCommand::func_ov007_02239e1c(BOOL input) {
         }
         func_ov007_0223bb30(0);
     }
-    mMessage->func_020658d0();
+    mMessage->Update();
     func_ov007_0223b38c();
     u8 b                   = mUnk_12d;
     u8 a                   = mUnk_12c;
@@ -1474,7 +1474,7 @@ BOOL BattleCommand::func_ov007_02239e1c(BOOL input) {
     if (mMode == 2) {
         func_ov007_022470e4(mUnk_84, mUnk_12c, mUnk_12d);
     }
-    func_020254f0(func_ov007_0223cf8c, this);
+    QueueFrameCallback(func_ov007_0223cf8c, this);
     return result;
 }
 
@@ -1530,7 +1530,7 @@ BOOL BattleCommand::func_ov007_0223a1c8() {
             mUnk_138++;
         case 1:
             func_ov007_0223c74c(1);
-            mUnk_74->func_0205c7c8(-1);
+            mUnk_74->Reset(-1);
             mUnk_74->mCells[0]->SetAnimation(8);
             mUnk_74->mCells[1]->SetAnimation(0);
             mUnk_74->mCells[2]->SetAnimation(12);
@@ -1606,22 +1606,22 @@ BOOL BattleCommand::func_ov007_0223a1c8() {
         case 8:
             func_ov007_0223c8ac();
             if (mMode == 0) {
-                mUnk_74->mUnk_061 = 4;
-                mUnk_74->mUnk_066 = 0;
+                mUnk_74->mState = 4;
+                mUnk_74->mSlideInRequested = 0;
                 mNextMode         = 2;
                 func_ov007_0223c8d4(0);
                 func_ov007_02247a3c(mUnk_84);
                 func_ov007_02246a84(mUnk_84, 2);
                 func_ov007_0223ce24();
-                mUnk_6c->func_0205c7c8(-1);
+                mUnk_6c->Reset(-1);
                 func_ov007_0223b2f0();
                 mUnk_138 = 0;
                 return TRUE;
             }
             break;
         case 9:
-            mUnk_74->mUnk_061 = 4;
-            mUnk_74->mUnk_066 = 0;
+            mUnk_74->mState = 4;
+            mUnk_74->mSlideInRequested = 0;
             mUnk_138          = 0;
             break;
     }
@@ -1629,7 +1629,7 @@ BOOL BattleCommand::func_ov007_0223a1c8() {
 }
 
 void func_ov007_0223a5a4(BattleCommand *command, u32 mode) {
-    SpriteManager::Get().func_02026dec(mode, 7);
+    SpriteManager::Get().SetupMode(mode, 7);
     G2_SetBG0Offset(0, 0);
     G2_BlendNone();
     GX_SetDispSelect(1);
@@ -1655,8 +1655,8 @@ void func_ov007_0223a690(int x, int y) {
 
 void BattleCommand::func_ov007_0223a734() {
     ChangeDir("/Game/Battle/Obj");
-    func_02025b64(0, 4, 0, "battle_u.nce_ncg1D.bin", 0, 0, 0);
-    func_02025b64(0, 5, 0, "battle_u_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 4, 0, "battle_u.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 5, 0, "battle_u_ncl.bin", 0, 0, 0);
     mUnk_84 = new BattleCommandMap(data_020d433c.mUnk_95);
     mUnk_84->vfunc_0c();
     func_ov007_02247a3c(mUnk_84);
@@ -1664,7 +1664,7 @@ void BattleCommand::func_ov007_0223a734() {
     ChangeDir("/Game/Battle/Obj");
     u8 i;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     mUnk_6c->SetCells(10, data_ov007_02279c24);
     for (i = data_020d433c.mPlayerCount; i < 4; i++) {
         mUnk_6c->mButtons[i + 6].mEnabled = 0;
@@ -1673,39 +1673,39 @@ void BattleCommand::func_ov007_0223a734() {
     mUnk_74->SetCells(3, data_ov007_02279bd0);
     for (i = 0; i < 12; i++) {
         mUnk_3c[i] = new CellAnimation("battle_b_obj_00_nce.bin", 0x44, 1, 1);
-        mUnk_3c[i]->mCharBase = screen.func_020276f4(0xa000);
-        mUnk_3c[i]->mUnk_11   = 0;
+        mUnk_3c[i]->mCharBase = screen.GetCharBase(0xa000);
+        mUnk_3c[i]->mPaletteBase   = 0;
     }
     mUnk_0c = new CellAnimation("battle_b_obj_00_nce.bin", 0x15, 1, 1);
-    mUnk_0c->mCharBase = screen.func_020276f4(0xa000);
-    mUnk_0c->mUnk_11   = 0;
+    mUnk_0c->mCharBase = screen.GetCharBase(0xa000);
+    mUnk_0c->mPaletteBase   = 0;
     mUnk_10 = new CellAnimation("battle_b_obj_00_nce.bin", 0x16, 1, 1);
-    mUnk_10->mCharBase = screen.func_020276f4(0xa000);
-    mUnk_10->mUnk_11   = 0;
+    mUnk_10->mCharBase = screen.GetCharBase(0xa000);
+    mUnk_10->mPaletteBase   = 0;
     mUnk_14 = new CellAnimation("battle_b_obj_00_nce.bin", 0x1b, 1, 1);
-    mUnk_14->mCharBase = screen.func_020276f4(0xa000);
-    mUnk_14->mUnk_11   = 0;
+    mUnk_14->mCharBase = screen.GetCharBase(0xa000);
+    mUnk_14->mPaletteBase   = 0;
     if (data_020d433c.mUnk_85) {
         mUnk_28 = new CellAnimation("battle_b_obj_00_nce.bin", 0x45, 1, 1);
-        mUnk_28->mCharBase = screen.func_020276f4(0xa000);
-        mUnk_28->mUnk_11   = 0;
+        mUnk_28->mCharBase = screen.GetCharBase(0xa000);
+        mUnk_28->mPaletteBase   = 0;
     }
     u8 cur = data_020d433c.mBattlePlayers->mUnk_2a9;
     mUnk_18 = new CellAnimation("battle_b_obj_00_nce.bin", (u8) (cur + 0x38), 1, 1);
-    mUnk_18->mCharBase = screen.func_020276f4(0xa000);
-    mUnk_18->mUnk_11   = 0;
+    mUnk_18->mCharBase = screen.GetCharBase(0xa000);
+    mUnk_18->mPaletteBase   = 0;
     if (data_020d433c.mUnk_98) {
         u8 partner = data_020d433c.mBattlePlayers->mPlayers[cur]->mUnk_f2;
         mUnk_1c = new CellAnimation("battle_b_obj_00_nce.bin", (u8) (partner + 0x40), 1, 1);
-        mUnk_1c->mCharBase = screen.func_020276f4(0xa000);
-        mUnk_1c->mUnk_11   = 0;
+        mUnk_1c->mCharBase = screen.GetCharBase(0xa000);
+        mUnk_1c->mPaletteBase   = 0;
     }
     mUnk_20 = new CellAnimation("battle_b_obj_turn_nce.bin", 0, 1, 1);
-    mUnk_20->mCharBase = screen.func_020276f4(0x17000);
-    mUnk_20->mUnk_11   = 9;
+    mUnk_20->mCharBase = screen.GetCharBase(0x17000);
+    mUnk_20->mPaletteBase   = 9;
     mTurnDigits = new CellAnimation("battle_b_obj_turn_nce.bin", 1, 1, 1);
-    mTurnDigits->mCharBase = screen.func_020276f4(0x17000);
-    mTurnDigits->mUnk_11   = 9;
+    mTurnDigits->mCharBase = screen.GetCharBase(0x17000);
+    mTurnDigits->mPaletteBase   = 9;
     u8 p = 0;
     do {
         BattlePlayerList *list = data_020d433c.mBattlePlayers;
@@ -1716,14 +1716,14 @@ void BattleCommand::func_ov007_0223a734() {
             u8 frame   = (list->mPlayers[p]->mUnk_f1 + 2) % 4 + (p * 4 + 0x28);
             mUnk_2c[p] = new CellAnimation("battle_b_obj_00_nce.bin", frame, 1, 1);
         }
-        mUnk_2c[p]->mCharBase = screen.func_020276f4(0xa000);
-        mUnk_2c[p]->mUnk_11   = 0;
+        mUnk_2c[p]->mCharBase = screen.GetCharBase(0xa000);
+        mUnk_2c[p]->mPaletteBase   = 0;
         p++;
     } while (p < data_020d433c.mPlayerCount);
     ChangeDir("/");
     mMessage = new MessageWindow("mes_Command", 1, 0x1f000);
     mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->func_02065be4(0xd8);
+    mMessage->SetWidth(0xd8);
     func_ov007_0223ce24();
 }
 
@@ -1736,17 +1736,17 @@ void func_ov007_0223ad70(u32 variant) {
     ChangeDir("/Game/Battle/Bg");
     if (data_020d433c.mUnk_8a_0 != 0) {
         sprintf(path, "battle_b_bg_last_ncl.bin", data_020d433c.mUnk_95);
-        func_02025b64(1, 1, 0x4000, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 1, 0x4000, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_last_ncg.bin", data_020d433c.mUnk_95);
-        func_02025b64(1, 0xb, 0, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 0xb, 0, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_last_a_nsc.bin", data_020d433c.mUnk_95);
-        func_02025b64(1, 7, 0, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 7, 0, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_last_b_nsc.bin", data_020d433c.mUnk_95);
-        func_02025b64(1, 7, 0x800, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 7, 0x800, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_last_c_nsc.bin", data_020d433c.mUnk_95);
-        func_02025b64(1, 7, 0x1000, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 7, 0x1000, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_last_d_nsc.bin", data_020d433c.mUnk_95);
-        func_02025b64(1, 7, 0x1800, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 7, 0x1800, path, 0, 0, 0);
     } else {
         switch (data_020d433c.mUnk_95) {
             case 1:
@@ -1757,30 +1757,30 @@ void func_ov007_0223ad70(u32 variant) {
                 break;
         }
         sprintf(path, "battle_b_bg_%02d_ncl.bin", data_020d433c.mUnk_95);
-        func_02025b64(1, 1, 0x4000, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 1, 0x4000, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_%02d_ncg.bin", data_020d433c.mUnk_95);
-        func_02025b64(1, 0xb, 0, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 0xb, 0, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_%02d_a_%02d_nsc.bin", data_020d433c.mUnk_95, variant);
-        func_02025b64(1, 7, 0, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 7, 0, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_%02d_b_%02d_nsc.bin", data_020d433c.mUnk_95, variant);
-        func_02025b64(1, 7, 0x800, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 7, 0x800, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_%02d_c_%02d_nsc.bin", data_020d433c.mUnk_95, variant);
-        func_02025b64(1, 7, 0x1000, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 7, 0x1000, path, 0, 0, 0);
         sprintf(path, "battle_b_bg_%02d_d_%02d_nsc.bin", data_020d433c.mUnk_95, variant);
-        func_02025b64(1, 7, 0x1800, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 7, 0x1800, path, 0, 0, 0);
     }
-    SpriteManager::Get().Screen(1).func_02027624(3);
+    SpriteManager::Get().Screen(1).SetObjVramMode(3);
     ChangeDir("/Game/Battle/Obj");
-    func_02025b64(1, 4, 0xa000, "battle_b_obj_00.nce_ncg1D.bin", 0, 0, 0);
-    func_02025b64(1, 5, 0, "battle_b_obj_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 4, 0xa000, "battle_b_obj_00.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 5, 0, "battle_b_obj_00_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/2D/union_b");
-    func_02025b64(1, 4, 0x1c800, "union_b_obj_cockpit.nce_ncg1D.bin", 0, 0, 0);
-    func_02025b64(1, 5, 0x1c0, "union_b_obj_cockpit_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 4, 0x1c800, "union_b_obj_cockpit.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 5, 0x1c0, "union_b_obj_cockpit_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/Card/Graphic/Small");
-    func_02025b64(1, 4, 0x9000, "card_s_000_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 0, 0, "card_s_000_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 4, 0x9000, "card_s_000_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 0, 0, "card_s_000_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/2D/union_b");
-    func_02025b64(1, 4, 0x18000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 4, 0x18000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
     if (data_020d433c.mUnk_10) {
         data_020d433c.mUnk_10->SetupLayout(8);
     }
@@ -1793,14 +1793,14 @@ void func_ov007_02247a3c(BattleCommandMap *map);
 
 void BattleCommand::func_ov007_0223b2f0() {
     ChangeDir("/Game/Battle/Obj");
-    func_02025b64(1, 4, 0x17000, "battle_b_obj_turn.nce_ncg1D.bin", 0, 0, 0);
-    func_02025b64(1, 5, 0x120, "battle_b_obj_turn_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 4, 0x17000, "battle_b_obj_turn.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 5, 0x120, "battle_b_obj_turn_ncl.bin", 0, 0, 0);
     ChangeDir("/");
 }
 
 void BattleCommand::func_ov007_0223b38c() {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     u8 col = mUnk_12c;
     u8 row = mUnk_12d;
     if (mUnk_135) {
@@ -1824,7 +1824,7 @@ void BattleCommand::func_ov007_0223b38c() {
             s8 cell = data_020d433c.mBattlePlayers->mUnk_1f8[i][j];
             if (cell > 0) {
                 func_ov007_02262530(data_020d433c.mBattlePlayers, i, j);
-                mUnk_3c[k]->func_0202a3ec(1, data_020d433c.mBattlePlayers->Units()[(u8) (cell - 1)].mUnk_0f, (s16) (x * 16 + 14 - mUnk_120 + mUnk_139), (s16) (y * 24 - 22 - mUnk_122), 1);
+                mUnk_3c[k]->DrawFrame(1, data_020d433c.mBattlePlayers->Units()[(u8) (cell - 1)].mUnk_0f, (s16) (x * 16 + 14 - mUnk_120 + mUnk_139), (s16) (y * 24 - 22 - mUnk_122), 1);
                 k++;
             }
             s8 mark = data_020d433c.mBattlePlayers->mUnk_16c[i][j];
@@ -1837,7 +1837,7 @@ void BattleCommand::func_ov007_0223b38c() {
                     }
                 }
                 if (show) {
-                    screen.func_02027778((void *) data_ov007_02279ac0, 1, (s16) (x * 16 + 14 - mUnk_120 + mUnk_139), (s16) (y * 24 - 22 - mUnk_122), 1, 0x120, 0, 0);
+                    screen.AddOam((void *) data_ov007_02279ac0, 1, (s16) (x * 16 + 14 - mUnk_120 + mUnk_139), (s16) (y * 24 - 22 - mUnk_122), 1, 0x120, 0, 0);
                 }
             }
             j++;
@@ -1866,7 +1866,7 @@ void BattleCommand::func_ov007_0223b38c() {
         mUnk_2c[p]->Draw(1, (s16) (mUnk_139 + data_ov007_02279ab0[side].mX), data_ov007_02279ab0[side].mY, 0);
         p++;
     } while (p < data_020d433c.mPlayerCount);
-    if (data_020d433c.mUnk_85 && mUnk_6c->mUnk_061 == 1) {
+    if (data_020d433c.mUnk_85 && mUnk_6c->mState == 1) {
         mUnk_28->Update();
         mUnk_28->Draw(1, data_ov007_02279aa8[data_020d43f0[0].mUnk_28_5], 0x22, 0);
     }
@@ -1930,7 +1930,7 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
     mUnk_13b  = 0;
     if (mUnk_13a == 0) {
         if (mUnk_135 != 0) {
-            if (InputManager::Get().IsTrigger(0x10) && mUnk_12c != 0) {
+            if (InputManager::Get().IsTrigger(KEY_RIGHT) && mUnk_12c != 0) {
                 u32 r = mUnk_12c - 1;
                 if (mUnk_90[r][mUnk_12d] != 0) {
                     mUnk_12c = r;
@@ -1940,7 +1940,7 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
                     }
                 }
             }
-            if (InputManager::Get().IsTrigger(0x20) && mUnk_12c < 13) {
+            if (InputManager::Get().IsTrigger(KEY_LEFT) && mUnk_12c < 13) {
                 u32 r = mUnk_12c + 1;
                 if (mUnk_90[r][mUnk_12d] != 0) {
                     mUnk_12c = r;
@@ -1950,7 +1950,7 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
                     }
                 }
             }
-            if (InputManager::Get().IsTrigger(0x40) && mUnk_12d < 9) {
+            if (InputManager::Get().IsTrigger(KEY_UP) && mUnk_12d < 9) {
                 u32 c = mUnk_12d;
                 c++;
                 if (mUnk_90[mUnk_12c][c] != 0) {
@@ -1961,7 +1961,7 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
                     }
                 }
             }
-            if (InputManager::Get().IsTrigger(0x80) && mUnk_12d != 0) {
+            if (InputManager::Get().IsTrigger(KEY_DOWN) && mUnk_12d != 0) {
                 u32 c = mUnk_12d;
                 c--;
                 if (mUnk_90[mUnk_12c][c] != 0) {
@@ -1973,7 +1973,7 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
                 }
             }
         } else {
-            if (InputManager::Get().IsTrigger(0x10) && mUnk_12c < 13) {
+            if (InputManager::Get().IsTrigger(KEY_RIGHT) && mUnk_12c < 13) {
                 u32 r = mUnk_12c + 1;
                 if (mUnk_90[r][mUnk_12d] != 0) {
                     mUnk_12c = r;
@@ -1983,7 +1983,7 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
                     }
                 }
             }
-            if (InputManager::Get().IsTrigger(0x20) && mUnk_12c != 0) {
+            if (InputManager::Get().IsTrigger(KEY_LEFT) && mUnk_12c != 0) {
                 u32 r = mUnk_12c - 1;
                 if (mUnk_90[r][mUnk_12d] != 0) {
                     mUnk_12c = r;
@@ -1993,7 +1993,7 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
                     }
                 }
             }
-            if (InputManager::Get().IsTrigger(0x40) && mUnk_12d != 0) {
+            if (InputManager::Get().IsTrigger(KEY_UP) && mUnk_12d != 0) {
                 u32 c = mUnk_12d;
                 c--;
                 if (mUnk_90[mUnk_12c][c] != 0) {
@@ -2004,7 +2004,7 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
                     }
                 }
             }
-            if (InputManager::Get().IsTrigger(0x80) && mUnk_12d < 9) {
+            if (InputManager::Get().IsTrigger(KEY_DOWN) && mUnk_12d < 9) {
                 u32 c = mUnk_12d;
                 c++;
                 if (mUnk_90[mUnk_12c][c] != 0) {
@@ -2057,7 +2057,7 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
         } else if (mUnk_122 < data_ov007_02279aec[field].mMin) {
             mUnk_122 = data_ov007_02279aec[field].mMin;
         }
-        if (TouchManager::Get().mUnk_57 != 0) {
+        if (TouchManager::Get().mPressed != 0) {
             mUnk_129 = 1;
             mUnk_124 = tx + mUnk_120;
             mUnk_126 = ty + mUnk_122;
@@ -2108,7 +2108,7 @@ void BattleCommand::func_ov007_0223bb30(u32 flag) {
         }
     }
     if (moved == 1) {
-        SoundManager::Get().func_020246f8(5);
+        SoundManager::Get().StartSeqArc(5);
         if (flag == 0) {
             func_ov007_0223c578();
         }
@@ -2348,12 +2348,12 @@ void BattleCommand::func_ov007_0223ce24() {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     if (list->mUnk_28a == list->mUnk_2a9) {
         if (list->mUnk_292 == 1) {
-            mMessage->func_02065890(0x20, 0, 1);
+            mMessage->StartMessage(0x20, 0, 1);
         } else {
-            mMessage->func_02065890(1, 0, 1);
+            mMessage->StartMessage(1, 0, 1);
         }
     } else {
-        mMessage->func_02065890(0x33, 0, 1);
+        mMessage->StartMessage(0x33, 0, 1);
     }
 }
 
@@ -2364,9 +2364,9 @@ void BattleCommand::func_ov007_0223ce90() {
         count = 99;
     }
     mTurnDigits->Update();
-    mTurnDigits->func_0202a3ec(1, count / 10, 0x3e, 0xae, 0);
+    mTurnDigits->DrawFrame(1, count / 10, 0x3e, 0xae, 0);
     mTurnDigits->Update();
-    mTurnDigits->func_0202a3ec(1, count % 10, 0x48, 0xae, 0);
+    mTurnDigits->DrawFrame(1, count % 10, 0x48, 0xae, 0);
     mUnk_20->Update();
     mUnk_20->Draw(1, 0x80, 0x60, 0);
 }

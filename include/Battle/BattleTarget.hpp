@@ -6,7 +6,7 @@
 #include <nitro/fx.h>
 
 class Camera;
-#include "Graphics/UnkStruct_0203d374.hpp"
+#include "Graphics/BakuganModel.hpp"
 #include "Scene/SceneBase.hpp"
 
 struct GimmickSetData;
@@ -112,7 +112,7 @@ public:
     /* 188 */ VecFx32 mUnk_188;
     /* 194 */ VecFx32 mUnk_194;
     /* 1a0 */ u32 mUnk_1a0;
-    /* 1a4 */ UnkStruct_0203d374 *mUnk_1a4;
+    /* 1a4 */ BakuganModel *mUnk_1a4;
     /* 1a8 */ GimmickSetData *mUnk_1a8;
     /* 1ac */ GimmickSetData *mUnk_1ac;
     /* 1b0 */ u16 mUnk_1b0;

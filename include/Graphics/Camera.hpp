@@ -17,14 +17,14 @@ public:
     /* 34 */ s32 mUnk_34;
     /* 38 */ fx32 mSin; // sin of fov * 3/8 (table lookup)
     /* 3c */ fx32 mCos; // cos of fov * 3/8
-    /* 40 */ fx32 mUnk_40;
-    /* 44 */ fx32 mUnk_44;
+    /* 40 */ fx32 mNearHalfWidth;
+    /* 44 */ fx32 mNearHeight;
     /* 48 */ s32 mUnk_48;
-    /* 4c */ fx32 mDistance; // length of target - position, set by func_02025ec8
-    /* 50 */ u16 mUnk_50;    // camera animation: frame count
-    /* 52 */ u16 mUnk_52;    // camera animation: current frame
+    /* 4c */ fx32 mDistance; // length of target - position, set by ComputeDistanceAndAngles
+    /* 50 */ u16 mFrameCount;    // camera animation: frame count
+    /* 52 */ u16 mFrameIndex;    // camera animation: current frame
     /* 54 */ const u32 *mPath; // animation data: u32 key count, then per track one VecFx32 per key
-    /* 58 */ u16 mUnk_58;      // field of view from the animation header (0 = none)
+    /* 58 */ u16 mPathFov;      // field of view from the animation header (0 = none)
     /* 5a */ u16 mFov;
     /* 5c */ u16 mPitch;
     /* 5e */ u16 mYaw;
@@ -33,13 +33,13 @@ public:
     /* 64 */
 
     Camera(); // 0x02025e50
-    void func_02026004(u32 fov); // sets the field of view
-    void func_02026164(u16 frame);
-    void func_02026180();
-    void func_020264a4(u32 unk1);
-    void func_0202610c(void *file, u32 unk2); // 0x0202610c, load a camera animation
-    void func_020262cc(VecFx32 *out, u32 track, fx32 t); // samples a track of the animation
-    void func_02025ec8();                                // derives distance, yaw, pitch and roll
+    void SetFov(u32 fov); // sets the field of view
+    void SetFrameIndex(u16 frame);
+    void ApplyPath();
+    void AdvanceFrame(u32 unk1);
+    void SetPath(void *file, u32 unk2); // 0x0202610c, load a camera animation
+    void SampleTrack(VecFx32 *out, u32 track, fx32 t); // samples a track of the animation
+    void ComputeDistanceAndAngles();                                // derives distance, yaw, pitch and roll
 
     void SetPosition(fx32 x, fx32 y, fx32 z) {
         mPosition.x = x;
@@ -77,7 +77,7 @@ enum CameraMode {
 class CameraManager {
 public:
     /* 000 */ u8 mDirty; // set when a new mode was requested
-    /* 001 */ u8 mUnk_01;
+    /* 001 */ u8 mModelsVisible;
     /* 002 */ PAD(0x002, 0x004);
     /* 004 */ s32 mRequestedMode;
     /* 008 */ s32 mActive;
@@ -92,12 +92,12 @@ public:
 
     CameraManager();
     ~CameraManager();
-    void func_02026504(u32 mode, Camera *camera, u32 unk3); // unk3: camera for the second screen
-    void func_020264e0();
-    void func_0202655c();
-    void func_020267f0();
-    void func_02026848();
-    void func_02026890();
+    void SetCamerasAndRequestMode(u32 mode, Camera *camera, u32 unk3); // unk3: camera for the second screen
+    void Reset();
+    void UpdateProjection();
+    void SwapBuffers();
+    void ResetBaseTransform();
+    void UpdateMode();
 
     static CameraManager &Get() {
         static CameraManager instance;
@@ -122,7 +122,7 @@ struct UnkStruct_02211374 {
     /* 264 */
 };
 extern UnkStruct_02211374 data_02211374;
-extern MtxFx43 data_0220e86c;
+extern MtxFx43 gIdentityMtx43;
 
 extern "C" MtxFx44 *func_02032710();
 extern "C" MtxFx44 *func_02032604();

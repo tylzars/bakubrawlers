@@ -25,90 +25,90 @@ extern "C" void func_02036b88(void *handle, u32 a, s32 b);
 
 extern u32 data_020d5520[];
 extern u32 data_02090778;
-extern UnkStruct_SoundEntry data_02090780[];
-extern UnkStruct_SoundEntry data_02090788[];
+extern SoundEntry data_02090780[];
+extern SoundEntry data_02090788[];
 
-void SoundManager::func_020244cc() {
+void SoundManager::Init() {
     func_020366f8();
     func_020245c4(0x32);
-    mUnk_9c = func_0203824c(data_020d5520, 0x139000);
-    func_02037af8(mUnk_08, "/Snd/sound_data.sdat", mUnk_9c, 0);
-    mUnk_00 = data_02090780;
-    mUnk_04 = data_02090788;
-    func_020392fc(1, mUnk_9c);
-    func_02038fac(mUnk_9c);
-    func_020385b8(0, mUnk_9c);
-    func_020383f8(mUnk_9c);
-    func_02036ab4(&mUnk_a0);
-    func_02036ab4(&mUnk_a4);
+    mHeap = func_0203824c(data_020d5520, 0x139000);
+    func_02037af8(mArchive, "/Snd/sound_data.sdat", mHeap, 0);
+    mSeqTable = data_02090780;
+    mSeqArcTable = data_02090788;
+    func_020392fc(1, mHeap);
+    func_02038fac(mHeap);
+    func_020385b8(0, mHeap);
+    func_020383f8(mHeap);
+    func_02036ab4(&mSeqHandle);
+    func_02036ab4(&mSeqArcHandle);
     func_02036918(mUnk_ac, 8);
-    mUnk_a8 = -1;
+    mSeqIndex = -1;
     mUnk_ac = data_02090778;
-    mUnk_ad = 0x7f;
-    mUnk_ae = 0x7f;
+    mSeqArcVolume = 0x7f;
+    mSeqVolume = 0x7f;
 }
 
-void SoundManager::func_02024598() {
+void SoundManager::Update() {
     func_02036780();
 }
 
 void SoundManager::func_020245a4() {
-    func_02038444(mUnk_9c, 1);
-    mUnk_a8 = -1;
+    func_02038444(mHeap, 1);
+    mSeqIndex = -1;
 }
 
 void SoundManager::func_020245c4(u32 unk1) {
     func_020367b0(unk1);
 }
 
-void SoundManager::func_020245d4(u32 unk1) {
+void SoundManager::LoadAndStartSeq(u32 unk1) {
     func_020245f4(unk1);
-    func_02024628(unk1);
+    StartSeq(unk1);
 }
 
 void SoundManager::func_020245f4(u32 unk1) {
-    s16 id = mUnk_00[unk1].mUnk_0;
+    s16 id = mSeqTable[unk1].mUnk_0;
     if (id < 0) {
         return;
     }
-    if (unk1 == mUnk_a8) {
+    if (unk1 == mSeqIndex) {
         return;
     }
-    func_020385b8(id, mUnk_9c);
+    func_020385b8(id, mHeap);
 }
 
-void SoundManager::func_02024628(u32 unk1) {
-    if (mUnk_00[unk1].mUnk_2 < 0) {
+void SoundManager::StartSeq(u32 unk1) {
+    if (mSeqTable[unk1].mUnk_2 < 0) {
         return;
     }
-    if (unk1 == mUnk_a8) {
+    if (unk1 == mSeqIndex) {
         return;
     }
-    func_020369e4(&mUnk_a0, 1);
-    func_02039048(&mUnk_a0, mUnk_00[unk1].mUnk_2);
-    func_020246a4(0x7f);
-    mUnk_a8 = unk1;
+    func_020369e4(&mSeqHandle, 1);
+    func_02039048(&mSeqHandle, mSeqTable[unk1].mUnk_2);
+    SetSeqVolume(0x7f);
+    mSeqIndex = unk1;
 }
 
-void SoundManager::func_02024688(u32 fadeFrames) {
-    func_020369e4(&mUnk_a0, fadeFrames);
-    mUnk_a8 = -1;
+void SoundManager::StopSeq(u32 fadeFrames) {
+    func_020369e4(&mSeqHandle, fadeFrames);
+    mSeqIndex = -1;
 }
 
-void SoundManager::func_020246a4(s32 unk1) {
-    func_02036b40(&mUnk_a0, mUnk_ae * unk1 / 0x7f);
+void SoundManager::SetSeqVolume(s32 unk1) {
+    func_02036b40(&mSeqHandle, mSeqVolume * unk1 / 0x7f);
 }
 
 void SoundManager::func_020246d4(u32 unk1) {
     func_02038214(0x8000);
-    func_020385b8(unk1, mUnk_9c);
+    func_020385b8(unk1, mHeap);
 }
 
-void SoundManager::func_020246f8(u32 unk1) {
-    UnkStruct_SoundEntry *table = mUnk_04;
+void SoundManager::StartSeqArc(u32 unk1) {
+    SoundEntry *table = mSeqArcTable;
     if (table[unk1].mUnk_2 >= 0 && table[unk1].mUnk_0 >= 0) {
-        func_02039090(&mUnk_a4, mUnk_ac, -1, -1, table[unk1].mUnk_0, table[unk1].mUnk_2);
-        func_020247cc(0x7f);
+        func_02039090(&mSeqArcHandle, mUnk_ac, -1, -1, table[unk1].mUnk_0, table[unk1].mUnk_2);
+        SetSeqArcVolume(0x7f);
     }
 }
 
@@ -117,14 +117,14 @@ void SoundManager::func_02024754(u32 unk1) {
 }
 
 extern "C" void func_02024764(SoundManager *manager, u32 unk1, u32 unk2) {
-    UnkStruct_SoundEntry *table = manager->mUnk_04;
+    SoundEntry *table = manager->mSeqArcTable;
     if (table[unk1].mUnk_2 >= 0 && table[unk1].mUnk_0 >= 0) {
         func_02036a50(table[unk1].mUnk_0, table[unk1].mUnk_2, unk2);
     }
 }
 
 extern "C" int func_02024790(SoundManager *manager, u32 unk1) {
-    UnkStruct_SoundEntry *table = manager->mUnk_04;
+    SoundEntry *table = manager->mSeqArcTable;
     if (table[unk1].mUnk_2 < 0) {
         return 0;
     }
@@ -134,10 +134,10 @@ extern "C" int func_02024790(SoundManager *manager, u32 unk1) {
     return (u8) func_02036ae0(table[unk1].mUnk_0, table[unk1].mUnk_2);
 }
 
-void SoundManager::func_020247cc(s32 unk1) {
-    func_02036b40(&mUnk_a4, mUnk_ad * unk1 / 0x7f);
+void SoundManager::SetSeqArcVolume(s32 unk1) {
+    func_02036b40(&mSeqArcHandle, mSeqArcVolume * unk1 / 0x7f);
 }
 
 extern "C" void func_020247fc(SoundManager *manager, s16 unk1) {
-    func_02036b88(&manager->mUnk_a4, 0xffff, unk1);
+    func_02036b88(&manager->mSeqArcHandle, 0xffff, unk1);
 }

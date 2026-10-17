@@ -63,7 +63,7 @@ ParkMenu::ParkMenu(u8 current) {
     mWindow->SetCells(7, sCells);
     s8 sel = current;
     mWindow->mCursor->mSelection = -1;
-    mWindow->func_0205c7c8(sel);
+    mWindow->Reset(sel);
     mWindow->mCursor->mSelection = sel;
     mUnk_5c = new Ranking();
     mUnk_5c->Build();
@@ -98,11 +98,11 @@ void ParkMenu::LoadGraphics() {
     screen.LoadCharacters("park_b_obj.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("park_b_obj_ncl.bin", 0, 0);
     mCells[4] = new CellAnimation("park_b_obj_nce.bin", 4, 1, 1);
-    mCells[4]->mCharBase = screen.func_020276f4(0);
-    mCells[4]->mUnk_11   = 0;
+    mCells[4]->mCharBase = screen.GetCharBase(0);
+    mCells[4]->mPaletteBase   = 0;
     mCells[5] = new CellAnimation("park_b_obj_nce.bin", 3, 1, 1);
-    mCells[5]->mCharBase = screen.func_020276f4(0);
-    mCells[5]->mUnk_11   = 0;
+    mCells[5]->mCharBase = screen.GetCharBase(0);
+    mCells[5]->mPaletteBase   = 0;
     u32 charBase = 0x8000;
     u32 palette  = 7;
     u8 i         = 0;
@@ -115,9 +115,9 @@ void ParkMenu::LoadGraphics() {
         screen.LoadPalette(name, palette << 5, 0);
         sprintf(name, "park_b_ch_obj_%02d_nce.bin", id);
         mCells[i]            = new CellAnimation(name, 2, 1, 1);
-        mCells[i]->mCharBase = screen.func_020276f4(charBase);
+        mCells[i]->mCharBase = screen.GetCharBase(charBase);
         charBase += 0x1000;
-        mCells[i]->mUnk_11 = palette;
+        mCells[i]->mPaletteBase = palette;
         palette            = (u8) (palette + 2);
         i++;
     } while (i < mCount);
@@ -129,15 +129,15 @@ void ParkMenu::LoadGraphics() {
     screen.LoadCharacters("union_b_obj_point.nce_ncg1D.bin", 0x13000, 0);
     screen.LoadPalette("union_b_obj_point_ncl.bin", 0x80, 0);
     mCells[6]            = new CellAnimation("union_b_obj_point_nce.bin", 0, 1, 1);
-    mCells[6]->mCharBase = screen.func_020276f4(0x13000);
-    mCells[6]->mUnk_11   = 4;
+    mCells[6]->mCharBase = screen.GetCharBase(0x13000);
+    mCells[6]->mPaletteBase   = 4;
     screen.LoadCharacters("union_b_obj_number.nce_ncg1D.bin", 0x14000, 0);
     mCells[7]            = new CellAnimation("union_b_obj_number_nce.bin", 0, 1, 1);
-    mCells[7]->mCharBase = screen.func_020276f4(0x14000);
-    mCells[7]->mUnk_11   = 4;
+    mCells[7]->mCharBase = screen.GetCharBase(0x14000);
+    mCells[7]->mPaletteBase   = 4;
     ChangeDir("/");
-    mMessages[0] = (MessageFile *) func_02023504("font/mes_park.mes", 0, 0, 0, 0, 0);
-    mMessages[1] = (MessageFile *) func_02023504("font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
+    mMessages[0] = (MessageFile *) LoadFile("font/mes_park.mes", 0, 0, 0, 0, 0);
+    mMessages[1] = (MessageFile *) LoadFile("font/mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x18, 2);
     mTextBuffers[0] = OS_Alloc(mTextBufferSize);
     mTextBuffers[1] = OS_Alloc(mTextBufferSize);
@@ -147,9 +147,9 @@ void ParkMenu::LoadGraphics() {
     TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x18, 2, 0x21);
     TextManager::Get().SetColor(1, 0, 0xf);
     mMessage = new MessageWindow("mes_park", 1, 0x1f000);
-    mMessage->func_02065890(3, 0, 1);
+    mMessage->StartMessage(3, 0, 1);
     mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->func_02065be4(0xd8);
+    mMessage->SetWidth(0xd8);
 }
 
 u32 ParkMenu::UpdateSelection(u32 mode) {
@@ -171,13 +171,13 @@ u32 ParkMenu::UpdateSelection(u32 mode) {
                 break;
         }
     }
-    if (result == 0 && mWindow->mUnk_061 == 1) {
+    if (result == 0 && mWindow->mState == 1) {
         switch (HandleInput()) {
             case 1:
-                mWindow->func_0205c844(4, 3);
+                mWindow->SetResultItem(4, 3);
                 break;
             case 2:
-                mWindow->func_0205c844(5, 3);
+                mWindow->SetResultItem(5, 3);
                 break;
         }
     }
@@ -186,19 +186,19 @@ u32 ParkMenu::UpdateSelection(u32 mode) {
         WindowItem *items = mWindow->mCursor->mItems;
         do {
             if (mTarget == k) {
-                mWindow->mCells[k]->func_02029f6c();
+                mWindow->mCells[k]->ResetAnimation();
                 mWindow->mCells[k]->SetAnimation(1);
-                mCells[k]->func_02029f6c();
+                mCells[k]->ResetAnimation();
                 mCells[k]->SetAnimation(1);
             } else if (mCurrent == k) {
-                mWindow->mCells[k]->func_02029f6c();
+                mWindow->mCells[k]->ResetAnimation();
                 mWindow->mCells[k]->SetAnimation(1);
-                mWindow->mCells[k]->mUnk_0f = mWindow->mCells[k]->mFrames[mWindow->mCells[k]->mUnk_0e].mUnk_10;
-                mWindow->mCells[k]->func_02029fb8(2);
-                mCells[k]->func_02029f6c();
+                mWindow->mCells[k]->mFrameIndex = mWindow->mCells[k]->mFrames[mWindow->mCells[k]->mAnimIndex].mFrameCount;
+                mWindow->mCells[k]->SetMode(2);
+                mCells[k]->ResetAnimation();
                 mCells[k]->SetAnimation(1);
-                mCells[k]->mUnk_0f = mCells[k]->mFrames[mCells[k]->mUnk_0e].mUnk_10;
-                mCells[k]->func_02029fb8(2);
+                mCells[k]->mFrameIndex = mCells[k]->mFrames[mCells[k]->mAnimIndex].mFrameCount;
+                mCells[k]->SetMode(2);
             }
             items[k].mFlags = 0x8000;
             k++;
@@ -219,19 +219,19 @@ u32 ParkMenu::UpdateSelection(u32 mode) {
 
 int ParkMenu::HandleInput() {
     int result = 0;
-    if (InputManager::Get().IsTrigger(0x20)) {
+    if (InputManager::Get().IsTrigger(KEY_LEFT)) {
         if (mCurrent != 0) {
             result = 1;
             mTarget--;
         }
-    } else if (InputManager::Get().IsTrigger(0x10)) {
+    } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
         if (mCurrent < mCount - 1) {
             result = 2;
             mTarget++;
         }
     }
     if (result != 0) {
-        SoundManager::Get().func_020246f8(0);
+        SoundManager::Get().StartSeqArc(0);
     }
     return result;
 }
@@ -261,8 +261,8 @@ void ParkMenu::Setup() {
             c               = mCells[i];
             c->SetAnimation(0);
         }
-        mWindow->mCells[i]->func_02029f6c();
-        mCells[i]->func_02029f6c();
+        mWindow->mCells[i]->ResetAnimation();
+        mCells[i]->ResetAnimation();
         mWindow->mButtons[i].mEnabled = 1;
         i++;
     } while (i < mCount);
@@ -329,8 +329,8 @@ BOOL ParkMenu::Slide() {
             mWindow->mButtons[5].mEnabled = 1;
             items[5].mFlags               = 8;
         }
-        mWindow->mCells[5]->func_02029fc0();
-        mWindow->mCells[4]->func_02029fc0();
+        mWindow->mCells[5]->Rewind();
+        mWindow->mCells[4]->Rewind();
         if (mMode == 1) {
             CellAnimation *c = mWindow->mCells[4];
             c->SetAnimation(0);
@@ -362,7 +362,7 @@ void ParkMenu::DrawText() {
     ClearBuffers();
     for (u8 i = 0; i < 2; i++) {
         u32 entry = TextEntry(i);
-        TextManager::Get().mUnk_5b = 1;
+        TextManager::Get().mUse4bppFont = 1;
         TextManager &text = TextManager::Get();
         s16 w;
         s16 h;
@@ -371,8 +371,8 @@ void ParkMenu::DrawText() {
         MessageFile *file = mMessages[i];
         text.Print(file->GetText(entry), file->GetLength(entry), mTextBuffers[i], 0x18, 2, &w, &h, &mTextWidth[i], 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
 
-        TextManager::Get().mUnk_5b = 0;
-        func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, sTextVramOffsets[i], mTextBuffers[i], mTextBufferSize, 0);
+        TextManager::Get().mUse4bppFont = 0;
+        QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, sTextVramOffsets[i], mTextBuffers[i], mTextBufferSize, 0);
     }
 }
 
@@ -389,7 +389,7 @@ void ParkMenu::Draw() {
     do {
         Vec2s pt = mWindow->mCellPos[i];
         mCells[i]->Update();
-        u8 state = mCells[i]->mUnk_0e;
+        u8 state = mCells[i]->mAnimIndex;
         if (state != 0) {
             if (state == 2 && mUnk_12 != 0xff) {
                 mCells[5]->Update();
@@ -397,11 +397,11 @@ void ParkMenu::Draw() {
             }
             mCells[i]->Draw(1, pt.x, pt.y, 0);
         } else {
-            mCells[4]->func_0202a3ec(1, GetParkGroupId(i), pt.x, pt.y, 0);
+            mCells[4]->DrawFrame(1, GetParkGroupId(i), pt.x, pt.y, 0);
         }
         CellAnimation *c = mCells[i];
-        if (c->mUnk_0e == 1 && c->mUnk_12 != 0) {
-            if (c->mUnk_10 == 2) {
+        if (c->mAnimIndex == 1 && c->mFinished != 0) {
+            if (c->mMode == 2) {
                 c->SetAnimation(0);
             } else {
                 c->SetAnimation(2);
@@ -411,11 +411,11 @@ void ParkMenu::Draw() {
     } while (i < mCount);
     mWindow->Draw();
     for (i = 0; i < 2; i++) {
-        SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, 6, (s16) (0x80 - ((u32) mTextWidth[i] >> 1)),
+        SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, 6, (s16) (0x80 - ((u32) mTextWidth[i] >> 1)),
                                                      sTextY[i], 0, (u16) (sTextVramOffsets[i] >> 7), 0xf, 0);
     }
     DrawNumber();
-    mMessage->func_020658d0();
+    mMessage->Update();
 }
 
 void ParkMenu::DrawNumber() {
@@ -431,7 +431,7 @@ void ParkMenu::DrawNumber() {
     for (; i < 7; i++) {
         s32 d = digits.d[i];
         if (d >= 0 && mCells[7] != NULL) {
-            mCells[7]->func_0202a3ec(1, (u8) d, (s16) (i * 7 + 0x2f), 0x17, 0);
+            mCells[7]->DrawFrame(1, (u8) d, (s16) (i * 7 + 0x2f), 0x17, 0);
         }
     }
     mCells[6]->Draw(1, 3, 0x14, 0);

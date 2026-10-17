@@ -50,22 +50,22 @@ void ConfrontBg04::vfunc_28() {
     char path[0x80];
     const char *dir = "/Game/Confrontation/Bg/";
     BattleEntry *entries = mData->mEntries;
-    sprintf(data_020d5488, dir);
+    sprintf(gCurrentDir, dir);
     func_0200acac(dir);
     u8 side = mUnk_12;
     BOOL spectator = side >= 2;
     if (!(u8) spectator) {
         u8 n = entries[side].mUnk_0d_0;
         sprintf(path, "vs_b_bg_04_%02d_ncl.bin", n);
-        func_02025b64(1, 1, 0x2000, path, 0, 0, 0);
-        func_02025b64(1, 12, 0, "vs_b_bg_04_06_ncg.bin", 0, 0, 0);
-        func_02025b64(1, 8, 0, "vs_b_bg_04_06_nsc.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 1, 0x2000, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 12, 0, "vs_b_bg_04_06_ncg.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 8, 0, "vs_b_bg_04_06_nsc.bin", 0, 0, 0);
         sprintf(path, "vs_b_bg_04_%02d_ncl.bin", n);
-        func_02025b64(1, 1, 0x6000, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 1, 0x6000, path, 0, 0, 0);
         sprintf(path, "vs_b_bg_04_%02d_ncg.bin", n);
-        func_02025b64(1, 14, 0, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 14, 0, path, 0, 0, 0);
         sprintf(path, "vs_b_bg_04_%02d_nsc.bin", n);
-        func_02025b64(1, 10, 0, path, 0, 0, 0);
+        LoadAndQueueUpload(1, 10, 0, path, 0, 0, 0);
     }
     ChangeDir("/");
 }
@@ -83,7 +83,7 @@ BOOL ConfrontBg04::func_ov007_0221bfa4() {
 void ConfrontBg04::vfunc_3c() {
     mBlend->func_ov007_02223dc4();
     if (mSpeed != 0) {
-        func_020254f0((FrameCallback) func_ov007_02220688, this);
+        QueueFrameCallback((FrameCallback) func_ov007_02220688, this);
     }
 }
 
@@ -91,7 +91,7 @@ u8 ConfrontBg04::vfunc_40(int a) {
     u8 touching = 1;
     s32 value;
     u16 result = 0;
-    if (TouchManager::Get().mUnk_56 == 0) {
+    if (TouchManager::Get().mDown == 0) {
         touching = 0;
     } else {
         value = func_ov007_0222a118(0x80, 0x88, 0xf4);
@@ -127,7 +127,7 @@ u8 ConfrontBg04::vfunc_40(int a) {
     mUnk_68 += mSpeed;
     if (mUnk_68 >= 0xffff || mUnk_68 <= -0xffff) {
         mUnk_68 = 0;
-        SoundManager::Get().func_020246f8(0x2a);
+        SoundManager::Get().StartSeqArc(0x2a);
     }
     s32 speed = 0;
     if (mSpeed > 0) {

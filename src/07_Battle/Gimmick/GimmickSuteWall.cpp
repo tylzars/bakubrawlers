@@ -46,31 +46,31 @@ void GimmickSuteWall::Load() {
         sResources[0] = new ModelResource("sutewall_b.nsbmd", "sutewall_b_data.bin", "sutewall_b.nsbtx", 1);
     }
     ChangeDir("/Game/Gimmick");
-    sResources[1]->func_020306e4(1);
-    mModel = sResources[1]->mModel->func_02028b78(new ModelAnim(sResources[1]->mAnimData, sResources[1]->mModel));
-    mModel->func_02028e54(0, 1, 0x1000);
-    mUnk_00 = 1;
-    sResources[0]->func_020306e4(1);
-    mModelB = sResources[0]->mModel->func_02028b78(new ModelAnim(sResources[0]->mAnimData, sResources[0]->mModel));
-    mModelB->func_02028e54(0, 0, 0x1000);
-    mModelB->mUnk_69 = 0;
+    sResources[1]->AddRef(1);
+    mModel = sResources[1]->mModel->CreateInstance(new ModelAnim(sResources[1]->mAnimData, sResources[1]->mModel));
+    mModel->StartAnimWithIncrement(0, 1, 0x1000);
+    mAnimEnabled = 1;
+    sResources[0]->AddRef(1);
+    mModelB = sResources[0]->mModel->CreateInstance(new ModelAnim(sResources[0]->mAnimData, sResources[0]->mModel));
+    mModelB->StartAnimWithIncrement(0, 0, 0x1000);
+    mModelB->mUseBoxTest = 0;
     ChangeDir("/");
 }
 
 void GimmickSuteWall::Unload() {
     if (mModel) {
         ModelInstance *m = mModelB;
-        m->mUnk_68       = 1;
+        m->mOwnFlags       = 1;
         delete m;
         mModelB = 0;
         m       = mModel;
-        m->mUnk_68 = 1;
+        m->mOwnFlags = 1;
         delete m;
         mModel = 0;
     }
     if (sResources[1]) {
-        sResources[0]->func_020307e8();
-        if (sResources[1]->func_020307e8()) {
+        sResources[0]->ReleaseRef();
+        if (sResources[1]->ReleaseRef()) {
             ModelResource *r = sResources[1];
             delete r;
             sResources[1] = 0;
@@ -106,7 +106,7 @@ void GimmickSuteWall::Update() {
             return;
         }
         func_ov007_02271d78(data_020d433c.mUnk_0c, mUnk_3c);
-        SoundManager::Get().func_020246f8(4);
+        SoundManager::Get().StartSeqArc(4);
         mState++;
         break;
     }
@@ -132,7 +132,7 @@ int GimmickSuteWall::func_ov007_0222c2f0() {
     if (!mModelB) {
         return 0;
     }
-    if (!mModelB->func_02028d80()) {
+    if (!mModelB->AdvanceAnim()) {
         if (data_020d433c.mGimmicks) {
             data_020d433c.mGimmicks->func_ov007_0222e860(mUnk_39);
         }
@@ -141,5 +141,5 @@ int GimmickSuteWall::func_ov007_0222c2f0() {
     CameraManager::Get();
     MtxFx43 mtx = data_020c1cf4;
     func_01ffcf64(&mtx, &mPosition);
-    mModelB->func_02029174(&mtx, &mScale);
+    mModelB->Draw(&mtx, &mScale);
 }

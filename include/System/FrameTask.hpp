@@ -10,8 +10,8 @@ public:
     /* 00 (vtable) */
     /* 04 */ void *mHandle0;
     /* 08 */ void *mHandle1;
-    /* 0c */ u8 mUnk_0c;
-    /* 0d */ u8 mUnk_0d;
+    /* 0c */ u8 mStatus0;
+    /* 0d */ u8 mStatus1;
     /* 0e */ PAD(0x0e, 0x10);
     /* 10 */ s32 mInitialized;
     /* 14 */
@@ -23,15 +23,15 @@ public:
     /* 04 */ virtual void SetVolume0(float volume);
     /* 08 */ virtual void SetVolume1(float volume);
 
-    void func_0205242c();
-    void func_0205251c();
-    void func_020523f8();
-    void func_02052460(const char *path);
-    void func_02052470(const char *path);
+    void UpdateHandles();
+    void Wait();
+    void Release();
+    void Start0(const char *path);
+    void Start1(const char *path);
     void func_02052480();
     void func_02052494();
-    void func_020524a8();
-    void func_020524b8();
+    void Stop0();
+    void Stop1();
 };
 
 // Runs once per frame from the frame update.
@@ -56,16 +56,16 @@ public:
     }
 
     void Run();
-    void func_0203dbc4();
-    void func_0203dc04();
-    void func_0203dc10();
-    void func_0203dc28();
-    void func_0203dc34(u32 unk1, u32 unk2);
+    void OpenHandles();
+    void Update();
+    void WaitFrame();
+    void CloseHandles();
+    void StartChannel(u32 unk1, u32 unk2);
     void func_0203dd4c(u32 channel);
     void func_0203dd60(u32 channel);
-    void func_0203dd74(u32 channel);
-    void func_0203dd90();
-    void func_0203ddb0(u32 channel, u32 level);
+    void StopChannel(u32 channel);
+    void StopAllChannels();
+    void SetChannelVolume(u32 channel, u32 level);
 };
 
 BOOL func_0203dd0c(FrameTask *task, u32 channel); // nonzero when the channel's task has finished

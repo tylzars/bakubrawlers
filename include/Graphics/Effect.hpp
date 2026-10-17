@@ -20,7 +20,7 @@ struct EffectAnim {
 };
 
 // A running effect: a small script of byte codes that creates models, moves them and animates them (0x61c bytes,
-// ctor 0202ab24, destroyed with 0202ac6c). func_0202acb4 runs the script until it waits or ends and then updates
+// ctor 0202ab24, destroyed with 0202ac6c). Update runs the script until it waits or ends and then updates
 // the models; it returns FALSE when the effect is over.
 class Effect {
 public:
@@ -62,17 +62,17 @@ public:
 
     Effect(EffectManager *manager, u32 group, u8 *script);
     ~Effect();
-    BOOL func_0202acb4();
-    void func_0202b500(VecFx32 *pos);
-    void func_0202b524(VecFx32 *scale);
-    void func_0202b548(u16 *rot);
-    void func_0202b570(MtxFx43 *mtx);
-    void func_0202b5c4(VecFx32 *out);
-    u16 func_0202b5f4();
-    s32 func_0202b63c();
-    s32 func_0202b668();
-    u16 func_0202b8c4();
-    u32 func_0202b8f0();
+    BOOL Update();
+    void SetPosition(VecFx32 *pos);
+    void SetScale(VecFx32 *scale);
+    void SetRotation(u16 *rot);
+    void SetMatrix(MtxFx43 *mtx);
+    void ReadVecArg(VecFx32 *out);
+    u16 ReadU16Arg();
+    s32 ReadS32Arg();
+    s32 ReadRandom();
+    u16 ReadU16();
+    u32 ReadU32();
 };
 
 // Layout of a loaded .esb file; the offsets are turned into pointers when it is loaded.
@@ -102,17 +102,17 @@ public:
     EffectManager();                       // 0202b938
     virtual ~EffectManager();              // 0202b9cc, deleting 0202ba14
     virtual void Update();                 // 0202bf84
-    ModelInstance *func_0202be14(u32 group, u32 index);
-    void func_0202be68();
-    void func_0202bf94(u32 tag);
-    void func_0202c024(u32 passes);
+    ModelInstance *CreateModelInstance(u32 group, u32 index);
+    void FreeAllEffects();
+    void UpdateTagged(u32 tag);
+    void SetPasses(u32 passes);
 };
 
-void func_0202ba64(EffectManager *manager, u32 slot, const char *name);
-void func_0202bc58(EffectManager *manager, u32 slot);
-u16 func_0202bd40(EffectManager *manager, u32 group, u32 script, u32 position, u32 tag);
-void func_0202beb8(EffectManager *manager, u16 handle);
-void func_0202bef4(EffectManager *manager, u16 handle, VecFx32 *position);
-void func_0202bf18(EffectManager *manager, u16 handle, VecFx32 *scale);
-void func_0202bf3c(EffectManager *manager, u16 handle, u16 *rotation);
-void func_0202bf60(EffectManager *manager, u16 handle, MtxFx43 *mtx);
+void LoadEffectGroup(EffectManager *manager, u32 slot, const char *name);
+void FreeEffectGroup(EffectManager *manager, u32 slot);
+u16 StartEffect(EffectManager *manager, u32 group, u32 script, u32 position, u32 tag);
+void FreeEffect(EffectManager *manager, u16 handle);
+void SetEffectPosition(EffectManager *manager, u16 handle, VecFx32 *position);
+void SetEffectScale(EffectManager *manager, u16 handle, VecFx32 *scale);
+void SetEffectRotation(EffectManager *manager, u16 handle, u16 *rotation);
+void SetEffectMatrix(EffectManager *manager, u16 handle, MtxFx43 *mtx);

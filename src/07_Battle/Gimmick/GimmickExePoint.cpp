@@ -23,19 +23,19 @@ void GimmickExePoint::Load() {
         sResource = new ModelResource("exepoint_00.nsbmd", 0, "exepoint_00.nsbtx", 1);
     }
     ChangeDir("/Game/Gimmick");
-    sResource->func_020306e4(1);
-    mModel = sResource->mModel->func_02028b78(0);
+    sResource->AddRef(1);
+    mModel = sResource->mModel->CreateInstance(0);
     ChangeDir("/");
 }
 
 void GimmickExePoint::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mUnk_68       = 1;
+        m->mOwnFlags       = 1;
         delete m;
         mModel = 0;
     }
-    if (sResource && sResource->func_020307e8()) {
+    if (sResource && sResource->ReleaseRef()) {
         ModelResource *r = sResource;
         delete r;
         sResource = 0;
@@ -68,8 +68,8 @@ void GimmickExePoint::Update() {
         if ((int)rec->mGauge < 0xfd7) {
             rec->mGauge += 0x28;
         }
-        SoundManager::Get().func_020246f8(0x36);
-        u8 handle = func_0202bd40(data_020d433c.mEffects, 1, 0xe, 0, 1);
+        SoundManager::Get().StartSeqArc(0x36);
+        u8 handle = StartEffect(data_020d433c.mEffects, 1, 0xe, 0, 1);
         if (handle) {
             VecFx32 d;
             VecFx32 camPos = data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition;
@@ -87,7 +87,7 @@ void GimmickExePoint::Update() {
             d.z = FX_Mul(d.z, 0x1e000);
             VEC_Add(&d, &data_020d433c.mBattlePlayers->mUnk_298->mUnk_1a4->mPosition, &d);
             func_01ffcf64(&mtx, &d);
-            func_0202bf60(data_020d433c.mEffects, handle, &mtx);
+            SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         }
         mUnk_40 = 1;
         mUnk_3c = 0;

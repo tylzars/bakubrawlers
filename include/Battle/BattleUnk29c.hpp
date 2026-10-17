@@ -6,7 +6,7 @@
 #include <nitro/fx.h>
 
 #include "Battle/BattleMapTypes.hpp"
-#include "Graphics/UnkStruct_0203d374.hpp"
+#include "Graphics/BakuganModel.hpp"
 
 // Motion record of a pose (0x14 bytes, allocated by func_ov007_02270120).
 struct BattleMoveState {
@@ -18,7 +18,7 @@ struct BattleMoveState {
 
 // Poses, name plates and cursors of the battle command map (0xa4 bytes, ctor 0226fb74, dtor 0226fc18).
 struct BattleUnk29c {
-    /* 00 */ UnkStruct_0203d374 *mUnk_00[12];
+    /* 00 */ BakuganModel *mUnk_00[12];
     /* 30 */ BattleMoveState *mUnk_30[12];
     /* 60 */ BattleMapPiece *mUnk_60;
     /* 64 */ BattleFontObj *mUnk_64[9];
@@ -37,7 +37,7 @@ struct BattleUnk29c {
 
     BattleUnk29c();  // 0226fb74
     ~BattleUnk29c(); // 0226fc18
-    UnkStruct_0203d374 *func_ov007_0226fc4c(u8 index);
+    BakuganModel *func_ov007_0226fc4c(u8 index);
     void func_ov007_0226fc5c(u32 index);
     void func_ov007_0226fca8();
     void func_ov007_0226fd78();

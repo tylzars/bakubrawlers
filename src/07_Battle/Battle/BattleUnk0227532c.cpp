@@ -72,7 +72,7 @@ void BattleUnk0227532c::Update() {
     switch (mState) {
         case 0:
             func_ov007_02275900();
-            func_020254f0((FrameCallback) func_ov007_022758a4, this);
+            QueueFrameCallback((FrameCallback) func_ov007_022758a4, this);
             mState++;
             break;
         case 1:
@@ -81,7 +81,7 @@ void BattleUnk0227532c::Update() {
             }
             break;
         case 2:
-            SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, (u8) mGlyphCount, (s16) (0x20 - mOffset), 0x40, 0, 0x220, 0xf, 0);
+            SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, (u8) mGlyphCount, (s16) (0x20 - mOffset), 0x40, 0, 0x220, 0xf, 0);
             if (mWindow->Update(1) == 1) {
                 s8 id = mWindow->GetSelectedId();
                 switch (id) {
@@ -142,8 +142,8 @@ BOOL BattleUnk0227532c::func_ov007_022756f0(int target) {
         mOffset = target;
         done    = TRUE;
     }
-    SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, (u8) mGlyphCount, (s16) (0x20 - mOffset), 0x40, 0, 0x220, 0xf, 0);
-    func_020254f0((FrameCallback) func_ov007_022758a4, this);
+    SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, (u8) mGlyphCount, (s16) (0x20 - mOffset), 0x40, 0, 0x220, 0xf, 0);
+    QueueFrameCallback((FrameCallback) func_ov007_022758a4, this);
     return done;
 }
 
@@ -156,14 +156,14 @@ void BattleUnk0227532c::func_ov007_02275900() {
     G2S_SetBG0Priority(3);
     G2S_SetBG3Priority(0);
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(1, 1, 0x6000, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 14, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 10, 0, "union_b_bg_window_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x6000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 14, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 10, 0, "union_b_bg_window_a_nsc.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x10000, 0);
     screen.LoadPalette("union_b_obj_window_ncl.bin", 0x180, 0);
     TextManager::Get().SetColor(1, 0, 15);
-    MessageFile *file = (MessageFile *) func_02023504("/font/mes_command.mes", 0, 0, 0, 0, 0);
+    MessageFile *file = (MessageFile *) LoadFile("/font/mes_command.mes", 0, 0, 0, 0, 0);
     void *buffer      = OS_Alloc(TextManager::Get().BufferSize(0x18, 8));
     MI_CpuClearFast(buffer, 0x1800);
     int index;
@@ -181,7 +181,7 @@ void BattleUnk0227532c::func_ov007_02275900() {
     height = 0;
     text.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 8, &height, &width, 0, 0, 2, 0x44, 0x10, 0, 0, 1, 1, 1);
     OS_Free(file);
-    func_02025c1c(1, 4, 0x11000, buffer, 0x1800, 1);
+    QueueUpload(1, 4, 0x11000, buffer, 0x1800, 1);
     mGlyphCount  = TextManager::Get().GlyphCount(3);
     mGlyphBuffer = OS_Alloc((s16) mGlyphCount * (s16) 0xc);
     TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x18, 8, 0x44);

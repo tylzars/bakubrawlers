@@ -178,7 +178,7 @@ void OptionScene::Update() {
         }
         case 3:
             mWindow->Update(1);
-            if (mWindow->mUnk_061 == 4) {
+            if (mWindow->mState == 4) {
                 BuildSettings();
                 mState++;
             }
@@ -213,13 +213,13 @@ void OptionScene::Update() {
             DrawSettings();
             if (mUnk_4b == 0) {
                 func_02024764(&SoundManager::Get(), 5, 1);
-                FrameTask::Get().func_0203dd74(1);
+                FrameTask::Get().StopChannel(1);
                 mState = 1;
             }
             break;
         case 7:
             mWindow->Update(1);
-            if (mWindow->mUnk_061 == 4) {
+            if (mWindow->mState == 4) {
                 BuildMenu2();
                 mState++;
             }
@@ -258,7 +258,7 @@ void OptionScene::Update() {
             break;
         case 11:
             mWindow->Update(1);
-            if (mWindow->mUnk_061 == 4) {
+            if (mWindow->mState == 4) {
                 BuildMenu3();
                 mState++;
             }
@@ -289,7 +289,7 @@ void OptionScene::Update() {
             break;
         case 17:
             mWindow->Update(1);
-            if (mWindow->mUnk_061 == 4) {
+            if (mWindow->mState == 4) {
                 BuildMenu4();
                 mState++;
             }
@@ -342,12 +342,12 @@ void OptionScene::Update() {
             if (mContext->mUnk_12 == 0) {
                 break;
             }
-            FrameTask::Get().func_0203dc34(0, 0x10);
+            FrameTask::Get().StartChannel(0, 0x10);
             mState = 0;
             break;
         case 21:
             mWindow->Update(1);
-            if (mWindow->mUnk_061 == 4) {
+            if (mWindow->mState == 4) {
                 if (mSaved == *(u16 *) ((u8 *) data_020d43f0 + 0x28)) {
                     SpriteManager::Get().StartFade(3);
                     mState = 0x17;
@@ -379,7 +379,7 @@ void OptionScene::Update() {
 
 void OptionScene::Init() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
@@ -403,15 +403,15 @@ void OptionScene::Init() {
     G2_BlendNone();
     G2S_BlendNone();
     ChangeDir("/Game/Title/");
-    func_02025b64(0, 1, 0, "option_u_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 11, 0, "option_u_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 7, 0, "option_u_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "option_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "option_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "option_b_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x2000, "/Game/2D/union_b/union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 12, 0, "/Game/2D/union_b/union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0x800, "/Game/2D/union_b/union_b_bg_window_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0, "option_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 11, 0, "option_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 7, 0, "option_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "option_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "option_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "option_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "/Game/2D/union_b/union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "/Game/2D/union_b/union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0x800, "/Game/2D/union_b/union_b_bg_window_a_nsc.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.LoadCharacters("option_b_obj_00.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("option_b_obj_00_ncl.bin", 0, 0);
@@ -421,15 +421,15 @@ void OptionScene::Init() {
     screen.LoadPalette("/Game/2D/union_b/union_b_obj_window_ncl.bin", 0x140, 0);
     TextManager::Get().func_0202ce44(0, 0, 0, 0);
     TextManager::Get().func_0202ce44(1, 0, 0, 0);
-    mFile = (MessageFile *) func_02023504("/font/mes_option.mes", 0, 0, 0, 0, 0);
+    mFile = (MessageFile *) LoadFile("/font/mes_option.mes", 0, 0, 0, 0, 0);
     mBufSize = TextManager::Get().BufferSize(0x18, 0x20);
     mBuf0c = OS_Alloc(mBufSize);
     u16 mapSize = TextManager::Get().BufferSize(0x18, 2);
     u16 *map = (u16 *) OS_Alloc(mapSize);
     MI_CpuClearFast(map, mapSize);
-    TextManager::Get().func_0202cd48(0, map, 0, 0, 0x18, 0x18, 0x20);
-    func_02025c1c(0, 8, 0, map, mapSize, 0);
-    func_02025c1c(1, 9, 0x800, map, mapSize, 1);
+    TextManager::Get().FillScrChars(0, map, 0, 0, 0x18, 0x18, 0x20);
+    QueueUpload(0, 8, 0, map, mapSize, 0);
+    QueueUpload(1, 9, 0x800, map, mapSize, 1);
 }
 
 void OptionScene::BuildMainMenu() {
@@ -439,7 +439,7 @@ void OptionScene::BuildMainMenu() {
     mWindow->SetCells(6, data_ov000_02226650);
     mWindow->Update(1);
     u8 sel = mSelection;
-    mWindow->mCells[sel]->SetAnimation(data_ov000_02226650[sel].mUnk_18[2]);
+    mWindow->mCells[sel]->SetAnimation(data_ov000_02226650[sel].mAnimIndices[2]);
 }
 
 void OptionScene::BuildSettings() {
@@ -498,11 +498,11 @@ void OptionScene::UpdateSettings() {
     u8 prev;
     prev = mUnk_4e;
     changed = FALSE;
-    if (TouchManager::Get().mUnk_56) {
-        if (TouchManager::Get().mUnk_57) {
+    if (TouchManager::Get().mDown) {
+        if (TouchManager::Get().mPressed) {
             mUnk_4c = -1;
             for (u8 i = 0; i < 3; i++) {
-                if (TouchManager::Get().func_02022830(0, data_ov000_02226274[i], 0x100, 0x18)) {
+                if (TouchManager::Get().IsDownIn(0, data_ov000_02226274[i], 0x100, 0x18)) {
                     mUnk_4c = i;
                     break;
                 }
@@ -512,7 +512,7 @@ void OptionScene::UpdateSettings() {
             return;
         }
         for (u8 i = 0; i < 6; i++) {
-            if (TouchManager::Get().func_02022830(data_ov000_02226278[i], data_ov000_02226274[mUnk_4c], 0x10, 0x18)) {
+            if (TouchManager::Get().IsDownIn(data_ov000_02226278[i], data_ov000_02226274[mUnk_4c], 0x10, 0x18)) {
                 mCur[mUnk_4c] = i;
             }
         }
@@ -522,25 +522,25 @@ void OptionScene::UpdateSettings() {
             return;
         }
         changed = TRUE;
-    } else if (InputManager::Get().IsTrigger(0x40)) {
+    } else if (InputManager::Get().IsTrigger(KEY_UP)) {
         if (mUnk_4e == 0) {
             mUnk_4e = 2;
         } else {
             mUnk_4e--;
         }
-    } else if (InputManager::Get().IsTrigger(0x80)) {
+    } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
         if (mUnk_4e == 2) {
             mUnk_4e = 0;
         } else {
             mUnk_4e++;
         }
-    } else if (InputManager::Get().IsTrigger(0x20)) {
+    } else if (InputManager::Get().IsTrigger(KEY_LEFT)) {
         mCur[mUnk_4e]--;
         if (mCur[mUnk_4e] >= 6) {
             mCur[mUnk_4e] = 0;
         }
         changed = TRUE;
-    } else if (InputManager::Get().IsTrigger(0x10)) {
+    } else if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
         mCur[mUnk_4e]++;
         if (mCur[mUnk_4e] >= 6) {
             mCur[mUnk_4e] = 5;
@@ -561,13 +561,13 @@ void OptionScene::UpdateSettings() {
                 data_020d43f0[0].mUnk_28_10 = mCur[1];
                 func_02022db4(data_020d43f0);
                 SoundManager::Get().func_02024754(1);
-                SoundManager::Get().func_020246f8(5);
+                SoundManager::Get().StartSeqArc(5);
                 break;
             case 2:
                 data_020d43f0[0].mUnk_28_13 = mCur[2];
                 func_02022db4(data_020d43f0);
-                FrameTask::Get().func_0203dd74(1);
-                FrameTask::Get().func_0203dc34(1, 0x183);
+                FrameTask::Get().StopChannel(1);
+                FrameTask::Get().StartChannel(1, 0x183);
                 break;
         }
     }
@@ -588,7 +588,7 @@ void OptionScene::BuildMenu2() {
     mWindow->SetCells(4, data_ov000_02226538);
     mWindow->Update(1);
     int sel = data_020d43f0[0].mUnk_28_6 == 0 ? 1 : 0;
-    mWindow->mCells[(u8) sel]->SetAnimation(data_ov000_02226538[sel].mUnk_18[2]);
+    mWindow->mCells[(u8) sel]->SetAnimation(data_ov000_02226538[sel].mAnimIndices[2]);
 }
 
 void OptionScene::DrawMenu2() {
@@ -631,7 +631,7 @@ void OptionScene::BuildMenu3() {
     outWidth = 0;
     MessageFile *file = mFile;
     text.Print(file->GetText(3), file->GetLength(3), mBuf0c, 0x18, 0x18, &outWidth, &outHeight, NULL, 0, 2, 0, 0x10, 0, 0, 1, 1, 1);
-    func_02025c1c(1, 0xd, 0, mBuf0c, mBufSize, 0);
+    QueueUpload(1, 0xd, 0, mBuf0c, mBufSize, 0);
 }
 
 void OptionScene::SlideStep() {
@@ -682,7 +682,7 @@ void OptionScene::BuildMenu4() {
     mWindow->SetCells(4, data_ov000_02226458);
     mWindow->Update(1);
     int sel = data_020d43f0[0].mUnk_28_5 == 0 ? 1 : 0;
-    mWindow->mCells[(u8) sel]->SetAnimation(data_ov000_02226458[sel].mUnk_18[2]);
+    mWindow->mCells[(u8) sel]->SetAnimation(data_ov000_02226458[sel].mAnimIndices[2]);
 }
 
 
@@ -707,6 +707,6 @@ void OptionScene::ClearText(u32 index) {
     outWidth = 0;
     MessageFile *file = mFile;
     text.Print(file->GetText(index), file->GetLength(index), mBuf0c, 0x18, 0x18, &outWidth, &outHeight, &pixelWidth, 0, 2, 0, 0x10, 0, 0, 0, 1, 1);
-    func_02025c1c(0, 0xc, 0, mBuf0c, mBufSize, 0);
+    QueueUpload(0, 0xc, 0, mBuf0c, mBufSize, 0);
     G2_SetBG1Offset((pixelWidth - 0x100) / 2, 0);
 }

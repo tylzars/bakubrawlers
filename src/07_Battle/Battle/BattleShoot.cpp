@@ -320,8 +320,8 @@ BattleShoot::~BattleShoot() {
     if (mUnk_613c) {
         OS_Free(mUnk_613c);
     }
-    data_020d433c.mEffects->func_0202be68();
-    func_0202bc58(data_020d433c.mEffects, 0);
+    data_020d433c.mEffects->FreeAllEffects();
+    FreeEffectGroup(data_020d433c.mEffects, 0);
     data_020d433c.mBattlePlayers->mUnk_298 = 0;
     if (mUnk_6134) {
         delete mUnk_6134;
@@ -353,9 +353,9 @@ void BattleShoot::Update() {
             mUnk_6187--;
             if (mUnk_6187 == 0) {
                 if (data_020d433c.mUnk_85 == 3) {
-                    mUnk_6134->mUnk_064 = 0;
+                    mUnk_6134->mEnabled = 0;
                 } else {
-                    mUnk_6134->mUnk_064 = 1;
+                    mUnk_6134->mEnabled = 1;
                 }
                 SpriteManager::Get().StartFade(2);
                 u8 mode = data_020d433c.mUnk_85;
@@ -407,7 +407,7 @@ void BattleShoot::Update() {
                 mUnk_6134->Draw();
             }
             if (func_ov007_0226d23c()) {
-                mUnk_6134->mUnk_064 = 0;
+                mUnk_6134->mEnabled = 0;
                 func_ov007_0226dfb8();
                 mUnk_61a1 = 0;
                 mUnk_6186++;
@@ -640,7 +640,7 @@ void BattleShoot::Update() {
 
 void BattleShoot::func_ov007_0226bb2c() {
     reg_GX_POWCNT |= 0x8000;
-    SpriteManager::Get().func_02026dec(1, 7);
+    SpriteManager::Get().SetupMode(1, 7);
     GX_SetGraphicsMode(1, 0, 1);
     GXS_SetGraphicsMode(3);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
@@ -696,39 +696,39 @@ void BattleShoot::func_ov007_0226bdfc() {
     char buffer[0x80];
     u8 player;
     u8 record;
-    func_0202ba64(data_020d433c.mEffects, 0, "jammer");
+    LoadEffectGroup(data_020d433c.mEffects, 0, "jammer");
     player = data_020d433c.mBattlePlayers->mUnk_28a;
     record = data_020d433c.mBattlePlayers->mPlayers[player]->RecordIndex();
     ChangeDir("/Game/Battle/Bg/");
-    func_02025b64(1, 1, 0, "battle_shoot_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 0xb, 0, "battle_shoot_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "battle_shoot_b_bg_00_b_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x2000, "battle_shoot_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "battle_shoot_b_bg_00_a_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 6, 0, "pentest_pen_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 9, 0, "pentest_pen_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "battle_shoot_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 0xb, 0, "battle_shoot_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "battle_shoot_b_bg_00_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "battle_shoot_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "battle_shoot_b_bg_00_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 6, 0, "pentest_pen_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 9, 0, "pentest_pen_nsc.bin", 0, 0, 0);
     func_ov007_0226f604();
     u8 id = data_020d433c.mBattlePlayers->mPlayers[player]->mRecords[record].mUnk_09;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/Game/Battle/Obj/");
     sprintf(buffer, "battle_shoot_b_ball_%02d.nce_ncg1D.bin", id);
     screen.LoadCharacters(buffer, 0, 0);
     sprintf(buffer, "battle_shoot_b_ball_%02d_ncl.bin", id);
-    screen.func_02027fec(buffer, 0, 0);
+    screen.LoadExtPalette(buffer, 0, 0);
     sprintf(buffer, "battle_shoot_b_ball_%02d.nce_ncg1D.bin", id);
     screen.LoadCharacters("battle_shoot_b_ball_sp.nce_ncg1D.bin", 0x2000, 0);
-    void *palette = func_02023504("battle_shoot_b_ball_sp_ncl.bin", 0, id << 5, 0x20, 0, 0);
-    func_02025c1c(screen.mBgIndex, 5, 0, palette, 0x20, 1);
+    void *palette = LoadFile("battle_shoot_b_ball_sp_ncl.bin", 0, id << 5, 0x20, 0, 0);
+    QueueUpload(screen.mBgIndex, 5, 0, palette, 0x20, 1);
     mCells[0].mAnim = new CellAnimation("battle_shoot_b_ball_00_nce.bin", 1, 1, 1);
-    mCells[0].mAnim->mCharBase = screen.func_020276f4(0);
-    mCells[0].mAnim->mUnk_11   = 0;
+    mCells[0].mAnim->mCharBase = screen.GetCharBase(0);
+    mCells[0].mAnim->mPaletteBase   = 0;
     mCells[0].mX               = 0x80;
     mCells[0].mY               = -0x40;
     mCells[0].mUnk_08          = 1;
     mCells[1].mAnim = new CellAnimation("battle_shoot_b_ball_sp_nce.bin", 0, 1, 1);
-    mCells[1].mAnim->mCharBase = screen.func_020276f4(0x2000);
-    mCells[1].mAnim->mUnk_11   = 0;
+    mCells[1].mAnim->mCharBase = screen.GetCharBase(0x2000);
+    mCells[1].mAnim->mPaletteBase   = 0;
     mCells[1].mX               = 0x80;
     mCells[1].mY               = -0x40;
     mCells[1].mUnk_08          = 1;
@@ -738,8 +738,8 @@ void BattleShoot::func_ov007_0226bdfc() {
     screen.LoadCharacters("union_b_obj_mic.nce_ncg1D.bin", 0x7000, 0);
     screen.LoadPalette("union_b_obj_mic_ncl.bin", 0xc0, 0);
     mCells[4].mAnim = new CellAnimation("union_b_obj_mic_nce.bin", 1, 1, 1);
-    mCells[4].mAnim->mCharBase = screen.func_020276f4(0x7000);
-    mCells[4].mAnim->mUnk_11   = 6;
+    mCells[4].mAnim->mCharBase = screen.GetCharBase(0x7000);
+    mCells[4].mAnim->mPaletteBase   = 6;
     mCells[4].mX               = 0x80;
     mCells[4].mY               = 0x30;
     mCells[4].mUnk_08          = 2;
@@ -753,25 +753,25 @@ void BattleShoot::func_ov007_0226bdfc() {
     u8 i = 0;
     do {
         mIcons[i].mAnim = new CellAnimation("battle_shoot_b_effect_nce.bin", 0, 1, 1);
-        mIcons[i].mAnim->mCharBase = screen.func_020276f4(0xf000);
-        mIcons[i].mAnim->mUnk_11   = 10;
+        mIcons[i].mAnim->mCharBase = screen.GetCharBase(0xf000);
+        mIcons[i].mAnim->mPaletteBase   = 10;
         mIcons[i].mUnk_0c          = 0;
         i++;
     } while (i < 5);
     mCells[5].mAnim = new CellAnimation("battle_shoot_b_effect_nce.bin", 1, 1, 1);
-    mCells[5].mAnim->mCharBase = screen.func_020276f4(0xf000);
-    mCells[5].mAnim->mUnk_11   = 10;
+    mCells[5].mAnim->mCharBase = screen.GetCharBase(0xf000);
+    mCells[5].mAnim->mPaletteBase   = 10;
     mCells[6].mAnim = new CellAnimation("battle_shoot_b_effect_nce.bin", 2, 1, 1);
-    mCells[6].mAnim->mCharBase = screen.func_020276f4(0xf000);
-    mCells[6].mAnim->mUnk_11   = 10;
+    mCells[6].mAnim->mCharBase = screen.GetCharBase(0xf000);
+    mCells[6].mAnim->mPaletteBase   = 10;
     sprintf(buffer, "battle_shoot_b_obj_%02d.nce_ncg1D.bin", id);
     screen.LoadCharacters(buffer, 0x4000, 0);
     sprintf(buffer, "battle_shoot_b_obj_%02d_ncl.bin", id);
     screen.LoadPalette(buffer, 0x20, 0);
     sprintf(buffer, "battle_shoot_b_obj_%02d_nce.bin", id);
     mCells[2].mAnim = new CellAnimation(buffer, 0, 1, 1);
-    mCells[2].mAnim->mCharBase = screen.func_020276f4(0x4000);
-    mCells[2].mAnim->mUnk_11   = 1;
+    mCells[2].mAnim->mCharBase = screen.GetCharBase(0x4000);
+    mCells[2].mAnim->mPaletteBase   = 1;
     mCells[2].mX               = 0x122;
     mCells[2].mY               = 0x18;
     mCells[2].mUnk_08          = 1;
@@ -798,8 +798,8 @@ void BattleShoot::func_ov007_0226bdfc() {
     screen.LoadPalette(buffer, 0x120, 0);
     sprintf(buffer, "vs_b_obj_pen_nce.bin", id);
     mCells[3].mAnim = new CellAnimation(buffer, 4, 1, 1);
-    mCells[3].mAnim->mCharBase = screen.func_020276f4(0xe000);
-    mCells[3].mAnim->mUnk_11   = 9;
+    mCells[3].mAnim->mCharBase = screen.GetCharBase(0xe000);
+    mCells[3].mAnim->mPaletteBase   = 9;
     mCells[3].mX               = 0x80;
     mCells[3].mY               = 0x60;
     mCells[3].mUnk_08          = 1;
@@ -810,15 +810,15 @@ void BattleShoot::func_ov007_0226bdfc() {
     mUnk_6134->Update(1);
     mUnk_6138 = new MessageWindow("mes_CardName", 1, 0x9000);
     mUnk_6138->func_02065bd4(0x20, 0xa2, 2);
-    mUnk_6138->func_02065be4(0xe0);
-    mUnk_6138->func_02065890(0, 0, 1);
+    mUnk_6138->SetWidth(0xe0);
+    mUnk_6138->StartMessage(0, 0, 1);
     if (data_020d433c.mUnk_10) {
         data_020d433c.mUnk_10->SetupLayout(9);
     }
 }
 
 void BattleShoot::func_ov007_0226c798() {
-    MessageFile *file = (MessageFile *) func_02023504("/font/mes_shoot.mes", 0, 0, 0, 0, 0);
+    MessageFile *file = (MessageFile *) LoadFile("/font/mes_shoot.mes", 0, 0, 0, 0, 0);
     u32 size          = TextManager::Get().BufferSize(0x18, 0xa);
     void *buffer      = OS_Alloc(size);
     MI_CpuClear16(buffer, size);
@@ -826,16 +826,16 @@ void BattleShoot::func_ov007_0226c798() {
     mUnk_613c = OS_Alloc(mUnk_6140 * (s16) 0xc);
     TextManager::Get().Init(mUnk_613c, 1, 0, 0x18, 0xa, 0x21);
     u16 pixelWidth = 0;
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     TextManager &text = TextManager::Get();
     s16 height;
     s16 width;
     width  = 0;
     height = 0;
     text.Print(file->GetText(0), file->GetLength(0), buffer, 0x18, 0xa, &height, &width, &pixelWidth, 0, 2, 0x21, 0x10, 0, 0, 0, 1, 1);
-    TextManager::Get().mUnk_5b = 0;
+    TextManager::Get().mUse4bppFont = 0;
     mUnk_619f = pixelWidth;
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x14000, buffer, size, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x14000, buffer, size, 0);
     if (file) {
         OS_Free(file);
     }
@@ -849,7 +849,7 @@ static inline u16 KeysReleased(InputManager &input, u16 keys) {
 }
 
 void BattleShoot::func_ov007_0226cad8() {
-    SpriteManager::Get().Screen(1).func_02027778(mUnk_613c, mUnk_6140, (s16) (0x80 - ((u32) mUnk_619f >> 1)), 0x50, *(u8 *) ((u8 *) this + 0x6038), 0x280, 0xf, 0);
+    SpriteManager::Get().Screen(1).AddOam(mUnk_613c, mUnk_6140, (s16) (0x80 - ((u32) mUnk_619f >> 1)), 0x50, *(u8 *) ((u8 *) this + 0x6038), 0x280, 0xf, 0);
 }
 
 void BattleShoot::func_ov007_0226cb9c(BOOL canStart) {
@@ -862,7 +862,7 @@ void BattleShoot::func_ov007_0226cb9c(BOOL canStart) {
         mUnk_61a7 = 0;
     }
     if (mUnk_6189 != 0) {
-        if (TouchManager::Get().mUnk_56 != 0) {
+        if (TouchManager::Get().mDown != 0) {
             mUnk_618d = mUnk_618f;
             mUnk_618e = mUnk_6190;
             mUnk_618f = TouchManager::Get().mX;
@@ -885,8 +885,8 @@ void BattleShoot::func_ov007_0226cb9c(BOOL canStart) {
         }
     } else {
         mUnk_6199 = 0;
-        if (TouchManager::Get().mUnk_56 != 0) {
-            if (TouchManager::Get().mUnk_57 != 0) {
+        if (TouchManager::Get().mDown != 0) {
+            if (TouchManager::Get().mPressed != 0) {
                 mUnk_618f = TouchManager::Get().mX;
                 mUnk_6190 = TouchManager::Get().mY;
             }
@@ -913,23 +913,23 @@ void BattleShoot::func_ov007_0226cb9c(BOOL canStart) {
                 mUnk_618c = mUnk_618e = 0x60;
                 mUnk_618f = 0x80;
                 mUnk_6190 = 0x60;
-                if (InputManager::Get().IsDown(0x820)) {
+                if (InputManager::Get().IsDown(KEY_LEFT | 0x800)) {
                     mUnk_618b = mUnk_618d = 0xa8;
                     mUnk_618f = 0x58;
                     mUnk_618a = mUnk_6189 = 1;
                     mUnk_61a7 = 0xf;
-                } else if (InputManager::Get().IsDown(0x11)) {
+                } else if (InputManager::Get().IsDown(KEY_RIGHT | 1)) {
                     mUnk_618b = mUnk_618d = 0x58;
                     mUnk_618f = 0xa8;
                     mUnk_618a = mUnk_6189 = 1;
                     mUnk_61a7 = 0xf;
                 }
-                if (InputManager::Get().IsDown(0x440)) {
+                if (InputManager::Get().IsDown(KEY_UP | 0x400)) {
                     mUnk_618c = mUnk_618e = 0x88;
                     mUnk_6190 = 0x38;
                     mUnk_618a = mUnk_6189 = 1;
                     mUnk_61a7 = 0xf;
-                } else if (InputManager::Get().IsDown(0x82)) {
+                } else if (InputManager::Get().IsDown(KEY_DOWN | 2)) {
                     mUnk_618c = mUnk_618e = 0x38;
                     mUnk_6190 = 0x88;
                     mUnk_618a = mUnk_6189 = 1;
@@ -983,12 +983,12 @@ BOOL BattleShoot::func_ov007_0226d23c() {
                     mCells[2].mAnim->SetAnimation(0);
                     mCells[0].mAnim->SetAnimation(2);
                     mUnk_6198 = record + 1;
-                    SoundManager::Get().func_020246f8(0);
+                    SoundManager::Get().StartSeqArc(0);
                 } else {
                     mCells[2].mAnim->SetAnimation(2);
                     mCells[0].mAnim->SetAnimation(1);
                     mUnk_6198 = 0;
-                    SoundManager::Get().func_020246f8(1);
+                    SoundManager::Get().StartSeqArc(1);
                 }
                 mUnk_6130->mUnk_1df = mUnk_6198;
                 mUnk_6189 = 0;
@@ -1080,21 +1080,21 @@ BOOL BattleShoot::func_ov007_0226d7ac() {
         mUnk_6176 = 0;
         mUnk_6174 = 0;
         mUnk_6130->mUnk_1e4 = 1;
-        if (InputManager::Get().IsDown(0x20)) {
+        if (InputManager::Get().IsDown(KEY_LEFT)) {
             mUnk_6178 -= mUnk_617a;
             mUnk_617c++;
             if (mUnk_617c == 0) {
                 mUnk_617c = 0xffff;
             }
         }
-        if (InputManager::Get().IsDown(0x10)) {
+        if (InputManager::Get().IsDown(KEY_RIGHT)) {
             mUnk_6178 += mUnk_617a;
             mUnk_617c++;
             if (mUnk_617c == 0) {
                 mUnk_617c = 0xffff;
             }
         }
-        if (KeysReleased(InputManager::Get(), 0x20) | KeysReleased(InputManager::Get(), 0x10)) {
+        if (KeysReleased(InputManager::Get(), KEY_LEFT) | KeysReleased(InputManager::Get(), KEY_RIGHT)) {
             mUnk_617c = 0;
         }
         if (mUnk_617c >= 0x19) {
@@ -1126,7 +1126,7 @@ extern "C" void func_01ff84d0(VecFx32 *v, MtxFx33 *m, VecFx32 *out);
 void BattleShoot::func_ov007_0226daa8() {
     mUnk_617c = 0;
     mUnk_6130->mUnk_1e4 = 0;
-    if (InputManager::Get().IsDown(0x20)) {
+    if (InputManager::Get().IsDown(KEY_LEFT)) {
         if ((u16) (mUnk_6168 + 0x8000 - mUnk_616c) > 0x6aab) {
             mUnk_6168 = mUnk_6168 - mUnk_616c;
             mUnk_6174++;
@@ -1136,7 +1136,7 @@ void BattleShoot::func_ov007_0226daa8() {
         } else {
             mUnk_6168 = 0xeaab;
         }
-    } else if (InputManager::Get().IsDown(0x10)) {
+    } else if (InputManager::Get().IsDown(KEY_RIGHT)) {
         if ((u16) (mUnk_616c + (mUnk_6168 + 0x8000)) < 0x9555) {
             mUnk_6168 += mUnk_616c;
             mUnk_6174++;
@@ -1147,10 +1147,10 @@ void BattleShoot::func_ov007_0226daa8() {
             mUnk_6168 = 0x1555;
         }
     }
-    if (KeysReleased(InputManager::Get(), 0x20) | KeysReleased(InputManager::Get(), 0x10)) {
+    if (KeysReleased(InputManager::Get(), KEY_LEFT) | KeysReleased(InputManager::Get(), KEY_RIGHT)) {
         mUnk_6174 = 0;
     }
-    if (InputManager::Get().IsDown(0x40)) {
+    if (InputManager::Get().IsDown(KEY_UP)) {
         if ((u16) (mUnk_616a + 0x8000 - mUnk_6170) > 0x8000) {
             mUnk_616a = mUnk_616a - mUnk_6170;
             mUnk_6176++;
@@ -1160,7 +1160,7 @@ void BattleShoot::func_ov007_0226daa8() {
         } else {
             mUnk_616a = 0;
         }
-    } else if (InputManager::Get().IsDown(0x80)) {
+    } else if (InputManager::Get().IsDown(KEY_DOWN)) {
         if ((u16) (mUnk_6170 + (mUnk_616a + 0x8000)) < 0xaaaa) {
             mUnk_616a += mUnk_6170;
             mUnk_6176++;
@@ -1171,7 +1171,7 @@ void BattleShoot::func_ov007_0226daa8() {
             mUnk_616a = 0x2aaa;
         }
     }
-    if (KeysReleased(InputManager::Get(), 0x40) | KeysReleased(InputManager::Get(), 0x80)) {
+    if (KeysReleased(InputManager::Get(), KEY_UP) | KeysReleased(InputManager::Get(), KEY_DOWN)) {
         mUnk_6176 = 0;
     }
     if (mUnk_6174 >= 10) {
@@ -1375,7 +1375,7 @@ void BattleShoot::func_ov007_0226e430() {
     if (target->mUnk_4c % mUnk_619e != 0) {
         return;
     }
-    UnkStruct_0203d374 *pose = target->mUnk_1a4;
+    BakuganModel *pose = target->mUnk_1a4;
     VecFx32 pos2             = cpu->mPos;
     VEC_Subtract(&pos2, &pose->mPosition, &v);
     VEC_Normalize(&v, &v);
@@ -1635,11 +1635,11 @@ void BattleShoot::func_ov007_0226f0e8(u8 kind, s32 x, s32 z) {
     if ((x | z) == 0) {
         return;
     }
-    u8 handle = func_0202bd40(data_020d433c.mEffects, 0, data_ov007_0227bc9c[kind], 0, 1);
+    u8 handle = StartEffect(data_020d433c.mEffects, 0, data_ov007_0227bc9c[kind], 0, 1);
     if (handle == 0) {
         return;
     }
-    SoundManager::Get().func_020246f8(0x43);
+    SoundManager::Get().StartSeqArc(0x43);
     VecFx32 pos = mUnk_6130->mUnk_1a4->mPosition;
     VecFx32 off;
     VecFx32 dir = {0, 0, 0};
@@ -1669,12 +1669,12 @@ void BattleShoot::func_ov007_0226f0e8(u8 kind, s32 x, s32 z) {
     MTX_MultVec43(&off, &mtx, &off);
     VEC_Add(&pos, &off, &pos);
     if (angle != 0) {
-        MtxFx43 rot = data_0220e86c;
+        MtxFx43 rot = gIdentityMtx43;
         func_01ffd138(&rot, angle);
         func_01ff89c0(&rot, &mtx, &mtx);
     }
     func_01ffcf64(&mtx, &pos);
-    func_0202bf60(data_020d433c.mEffects, handle, &mtx);
+    SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
 }
 
 void BattleShoot::func_ov007_0226f378() {
@@ -1683,7 +1683,7 @@ void BattleShoot::func_ov007_0226f378() {
         if (mUnk_6184 != id) {
             if (mUnk_619a == 0x80) {
                 mUnk_6184 = id;
-                mUnk_6138->func_02065890((s16) id, 0, 0);
+                mUnk_6138->StartMessage((s16) id, 0, 0);
                 mUnk_619b = 0x60;
             } else if (mUnk_619a == 0x60) {
                 mUnk_619b = 0x80;
@@ -1699,7 +1699,7 @@ void BattleShoot::func_ov007_0226f378() {
         if (mUnk_6184 != 0) {
             mCells[6].mAnim->Draw(1, 0x80, mUnk_619a, 2);
             mUnk_6138->func_02065bd4(0x20, (s16) (mUnk_619a + 0x42), 0);
-            mUnk_6138->func_020658d0();
+            mUnk_6138->Update();
             mCells[5].mAnim->Draw(1, 0x80, mUnk_619a, 2);
         }
     }
@@ -1733,7 +1733,7 @@ void BattleShoot::func_ov007_0226f604() {
 void BattleShoot::func_ov007_0226f644() {
     if (mUnk_61a1 != 0) {
         DC_FlushRange(mBitmap, 0x6000);
-        func_02025c1c(1, 0xd, 0, mBitmap, 0x6000, 0);
+        QueueUpload(1, 0xd, 0, mBitmap, 0x6000, 0);
     }
 }
 
@@ -1803,8 +1803,8 @@ void BattleShoot::func_ov007_0226f8a8() {
         if (mIcons[i].mUnk_0c != 0) {
             mIcons[i].mUnk_0c--;
             mIcons[i].mAnim->Update();
-            mIcons[i].mAnim->func_0202a494(1, mIcons[i].mUnk_04, mIcons[i].mUnk_06, 2, 0x1000, 0x1000, mIcons[i].mUnk_08);
-            if (mIcons[i].mAnim->mUnk_12 != 0) {
+            mIcons[i].mAnim->DrawTransformed(1, mIcons[i].mUnk_04, mIcons[i].mUnk_06, 2, 0x1000, 0x1000, mIcons[i].mUnk_08);
+            if (mIcons[i].mAnim->mFinished != 0) {
                 mIcons[i].mUnk_0c = 0;
             } else {
                 mIcons[i].mUnk_04 += mIcons[i].mUnk_0a;
@@ -1838,7 +1838,7 @@ BOOL BattleShoot::func_ov007_0226f9e8() {
 
 void BattleShoot::func_ov007_0226fb2c(u8 value) {
     mUnk_61a3 = value;
-    func_020254f0(func_ov007_0226fb50, this);
+    QueueFrameCallback(func_ov007_0226fb50, this);
 }
 
 void func_ov007_0226fb50(void *arg) {

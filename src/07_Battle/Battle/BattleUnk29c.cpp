@@ -5,7 +5,7 @@
 #include "Game/UnkStruct_020d433c.hpp"
 #include "Battle/BattleTarget.hpp"
 #include "Battle/BattleMapTypes.hpp"
-#include "Graphics/UnkStruct_0203d374.hpp"
+#include "Graphics/BakuganModel.hpp"
 
 
 BattleUnk29c::BattleUnk29c() {
@@ -42,7 +42,7 @@ BattleUnk29c::~BattleUnk29c() {
     mUnk_60 = 0;
 }
 
-UnkStruct_0203d374 *BattleUnk29c::func_ov007_0226fc4c(u8 index) {
+BakuganModel *BattleUnk29c::func_ov007_0226fc4c(u8 index) {
     if (mUnk_00[index] == 0) {
         return 0;
     }
@@ -50,7 +50,7 @@ UnkStruct_0203d374 *BattleUnk29c::func_ov007_0226fc4c(u8 index) {
 }
 
 void BattleUnk29c::func_ov007_0226fc5c(u32 index) {
-    UnkStruct_0203d374 *pose = mUnk_00[index];
+    BakuganModel *pose = mUnk_00[index];
     if (pose) {
         delete pose;
     }
@@ -154,7 +154,7 @@ void BattleUnk29c::func_ov007_0226ff08(u32 flag) {
         mUnk_98[i] = 0;
     }
     BattleTarget *target = data_020d433c.mBattlePlayers->mUnk_298;
-    UnkStruct_0203d374 *tp = target->mUnk_1a4;
+    BakuganModel *tp = target->mUnk_1a4;
     u8 n = 0;
     do {
         if (tp && mUnk_00[n] && mUnk_30[n] && mUnk_30[n]->mMode == 1) {
@@ -198,11 +198,11 @@ void BattleUnk29c::func_ov007_0226ff08(u32 flag) {
 
 void BattleUnk29c::func_ov007_02270120(u32 index, VecFx32 *pos, u16 *rot, u8 a, u8 b) {
     if (mUnk_00[index] == 0 && mUnk_30[index] == 0) {
-        mUnk_00[index] = new UnkStruct_0203d374();
+        mUnk_00[index] = new BakuganModel();
         if (data_020d433c.mBattlePlayers->mUnk_295 < 8) {
-            mUnk_00[index]->func_0203d4dc(a, b, 1);
+            mUnk_00[index]->Setup(a, b, 1);
         } else {
-            mUnk_00[index]->func_0203d4dc(a, b, 2);
+            mUnk_00[index]->Setup(a, b, 2);
         }
         mUnk_00[index]->SetPosition(pos);
         mUnk_00[index]->SetRotation(rot);
@@ -232,13 +232,13 @@ void BattleUnk29c::func_ov007_02270248() {
     u8 i = 0;
     do {
         if (mUnk_00[i] && mUnk_30[i] && mUnk_30[i]->mMode) {
-            mUnk_00[i]->func_0203dab0();
-            UnkStruct_0203d374 *pose = mUnk_00[i];
+            mUnk_00[i]->DrawModel();
+            BakuganModel *pose = mUnk_00[i];
             VecFx32 pos              = {0, 0x3800, 0};
             pos.x                    = pose->mPosition.x;
             pos.z                    = pose->mPosition.z;
             VecFx32 sc               = {0x1000, 0x1000, 0x1000};
-            if (pose->mUnk_4a && mUnk_60) {
+            if (pose->mVisible && mUnk_60) {
                 mUnk_60->mScale    = sc;
                 mUnk_60->mPosition = pos;
                 mUnk_60->func_020526bc();
@@ -476,7 +476,7 @@ void BattleUnk29c::func_ov007_02270ae0(u8 index, BattleMoveState *state) {
 
 // The x angle is read first and added last (`rx += r[0]`): that loads p->mRotX first and r[0] last, which gives the
 // original's registers (a plain `p->mRotX + r[0]` is substituted into the store and loaded after the y and z sums).
-static inline void AddRot(UnkStruct_0203d374 *p, const u16 *r) {
+static inline void AddRot(BakuganModel *p, const u16 *r) {
     u16 rx = p->mRotX;
     u16 ry = p->mRotY + r[1];
     u16 rz = p->mRotZ + r[2];
@@ -488,7 +488,7 @@ static inline void AddRot(UnkStruct_0203d374 *p, const u16 *r) {
 void BattleUnk29c::func_ov007_02270dbc(u32 index) {
     BattleMoveState *m = mUnk_30[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
-        UnkStruct_0203d374 *q = mUnk_00[index];
+        BakuganModel *q = mUnk_00[index];
         VecFx32 pos;
         pos.x = q->mPosition.x;
         pos.y = q->mPosition.y;
@@ -509,7 +509,7 @@ void BattleUnk29c::func_ov007_02270dbc(u32 index) {
 void BattleUnk29c::func_ov007_02270f1c(u32 index) {
     BattleMoveState *m = mUnk_30[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
-        UnkStruct_0203d374 *q = mUnk_00[index];
+        BakuganModel *q = mUnk_00[index];
         VecFx32 pos;
         pos.x = q->mPosition.x;
         pos.y = q->mPosition.y;
@@ -518,7 +518,7 @@ void BattleUnk29c::func_ov007_02270f1c(u32 index) {
         mUnk_00[index]->mPosition = pos;
         mUnk_30[index]->mVelocity.y -= 0x800;
         if (pos.y < 0x899a) {
-            mUnk_00[index]->mUnk_4a = 0;
+            mUnk_00[index]->mVisible = 0;
             m = mUnk_30[index];
             m->mVelocity.x = 0;
             m->mVelocity.y = 0;
@@ -538,7 +538,7 @@ void BattleUnk29c::func_ov007_02270f1c(u32 index) {
 void BattleUnk29c::func_ov007_02271054(u32 index) {
     BattleMoveState *m = mUnk_30[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
-        UnkStruct_0203d374 *q = mUnk_00[index];
+        BakuganModel *q = mUnk_00[index];
         VecFx32 pos;
         pos.x = q->mPosition.x;
         pos.y = q->mPosition.y;
@@ -547,7 +547,7 @@ void BattleUnk29c::func_ov007_02271054(u32 index) {
         mUnk_00[index]->mPosition = pos;
         mUnk_30[index]->mVelocity.y -= 0x800;
         if (pos.y < 0x899a) {
-            mUnk_00[index]->mUnk_4a = 0;
+            mUnk_00[index]->mVisible = 0;
             m = mUnk_30[index];
             m->mVelocity.x = 0;
             m->mVelocity.y = 0;
@@ -567,7 +567,7 @@ void BattleUnk29c::func_ov007_02271054(u32 index) {
 void BattleUnk29c::func_ov007_0227118c(u32 index) {
     BattleMoveState *m = mUnk_30[index];
     if (m->mVelocity.x != 0 || m->mVelocity.y != 0 || m->mVelocity.z != 0) {
-        UnkStruct_0203d374 *q = mUnk_00[index];
+        BakuganModel *q = mUnk_00[index];
         VecFx32 pos;
         pos.x = q->mPosition.x;
         pos.y = q->mPosition.y;
@@ -576,7 +576,7 @@ void BattleUnk29c::func_ov007_0227118c(u32 index) {
         mUnk_00[index]->mPosition = pos;
         mUnk_30[index]->mVelocity.y -= 0x800;
         if (pos.y < 0x899a) {
-            mUnk_00[index]->mUnk_4a = 0;
+            mUnk_00[index]->mVisible = 0;
             m = mUnk_30[index];
             m->mVelocity.x = 0;
             m->mVelocity.y = 0;

@@ -35,21 +35,21 @@ void GimmickJumpObj::Load() {
         sResource = new ModelResource("jumpobj_00.nsbmd", "jumpobj_00_data.bin", "jumpobj_00.nsbtx", 1);
     }
     ChangeDir("/Game/Gimmick");
-    sResource->func_020306e4(1);
-    mModel = sResource->mModel->func_02028b78(new ModelAnim(sResource->mAnimData, sResource->mModel));
-    mModel->func_02028e54(0, 1, 0x1000);
-    mUnk_00 = 1;
+    sResource->AddRef(1);
+    mModel = sResource->mModel->CreateInstance(new ModelAnim(sResource->mAnimData, sResource->mModel));
+    mModel->StartAnimWithIncrement(0, 1, 0x1000);
+    mAnimEnabled = 1;
     ChangeDir("/");
 }
 
 void GimmickJumpObj::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mUnk_68       = 1;
+        m->mOwnFlags       = 1;
         delete m;
         mModel = 0;
     }
-    if (sResource && sResource->func_020307e8()) {
+    if (sResource && sResource->ReleaseRef()) {
         ModelResource *r = sResource;
         delete r;
         sResource = 0;
@@ -95,7 +95,7 @@ void GimmickJumpObj::Update() {
         func_ov007_0225c960(data_020d433c.mBattlePlayers->mUnk_298, &mDir, 1);
         func_ov007_0225ca18(data_020d433c.mBattlePlayers->mUnk_298, 4, 0xb4);
         mTimer = 0x3c;
-        SoundManager::Get().func_020246f8(0x37);
+        SoundManager::Get().StartSeqArc(0x37);
         mState++;
         break;
     }

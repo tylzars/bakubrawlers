@@ -128,7 +128,7 @@ BattlePlayerList::BattlePlayerList()
     mUnk_2af = 0;
     mUnk_2b0 = 0;
     if (data_020d433c.mUnk_84) {
-        func_02038444(SoundManager::Get().mUnk_9c, 2);
+        func_02038444(SoundManager::Get().mHeap, 2);
     } else {
         SoundManager::Get().func_020245a4();
     }
@@ -187,7 +187,7 @@ BattlePlayerList::~BattlePlayerList() {
         delete g;
     }
     data_020d433c.mGimmicks = 0;
-    CameraManager::Get().func_02026504(0, 0, 0);
+    CameraManager::Get().SetCamerasAndRequestMode(0, 0, 0);
     GX_SetDispSelect(0);
 }
 
@@ -692,8 +692,8 @@ void BattlePlayerList::Update() {
             mUnk_2b1 = MATH_Rand32(&data_020d42e8, 100);
             if (data_020d433c.mUnk_83 == 2 || data_020d433c.mUnk_83 == 4) {
                 SoundManager::Get().func_020245a4();
-                SoundManager::Get().func_020245d4(1);
-                func_020383f8(SoundManager::Get().mUnk_9c);
+                SoundManager::Get().LoadAndStartSeq(1);
+                func_020383f8(SoundManager::Get().mHeap);
                 mUnk_2a8 = 0x22;
                 SpriteManager::Get().StartFade(3);
                 if (mUnk_2b0 != 0) {
@@ -773,7 +773,7 @@ void BattlePlayerList::Update() {
             break;
         case 29:
             if (mUnk_2ae != 0) {
-                SoundManager::Get().func_02024688(1);
+                SoundManager::Get().StopSeq(1);
             }
             new BattleResult();
             mContext->mUnk_12 = 0;
@@ -791,8 +791,8 @@ void BattlePlayerList::Update() {
                 return;
             }
             SoundManager::Get().func_020245a4();
-            SoundManager::Get().func_020245d4(1);
-            func_020383f8(SoundManager::Get().mUnk_9c);
+            SoundManager::Get().LoadAndStartSeq(1);
+            func_020383f8(SoundManager::Get().mHeap);
             break;
         case 31:
             data_020d433c.mUnk_87   = 1;
@@ -833,7 +833,7 @@ void BattlePlayerList::Update() {
                 case 1:
                     if (data_020d433c.mUnk_a8) {
                         data_020d433c.mUnk_89 = 1;
-                        WirelessManager::Get().func_0202edd0();
+                        WirelessManager::Get().Stop();
                         mUnk_2a8++;
                     } else {
                         data_020d433c.mUnk_89 = 0;
@@ -875,7 +875,7 @@ void BattlePlayerList::Update() {
             break;
         case 36:
             SpriteManager::Get().SetFade(1, -16);
-            SoundManager::Get().func_02024688(1);
+            SoundManager::Get().StopSeq(1);
             WirelessManager::Get();
             if (IsWirelessMode(&data_020c4030.mUnk_228) || data_020d433c.mUnk_7b == 8) {
                 mContext->mUnk_12       = 1;
@@ -893,7 +893,7 @@ void BattlePlayerList::Update() {
 
 // Record of a command cell: u8 table helpers below
 void func_ov007_022621dc() {
-    SpriteManager::Get().func_02026dec(1, 7);
+    SpriteManager::Get().SetupMode(1, 7);
     GX_SetDispSelect(1);
     GX_SetGraphicsMode(1, 0, 1);
     GXS_SetVisiblePlane(0x11);
@@ -918,7 +918,7 @@ void func_ov007_02262328(BattlePlayerList *list) {
     list->mCamera->SetUp(0, 0x1000, 0);
     list->mCamera->SetTarget(0, 0, 0);
     list->mCamera->SetClip(0x1000, 0x1388000);
-    list->mCamera->func_02026004(0x2aaa);
+    list->mCamera->SetFov(0x2aaa);
     list->mCamera->SetPosition(0, 0, list->mCamera->mUnk_34);
     data_020d433c.mEffects = new EffectManager();
     data_020d433c.mUnk_0c  = new UnkStruct_020d433c_0c();
@@ -1344,25 +1344,25 @@ extern "C" void func_ov007_022633f8(BattlePlayerList *list) {
         return;
     }
     if (data_020d433c.mUnk_7b != 0xd) {
-        FrameTask::Get().func_0203dc34(0, sFrameTaskIds[data_020d433c.mUnk_95]);
+        FrameTask::Get().StartChannel(0, sFrameTaskIds[data_020d433c.mUnk_95]);
         return;
     }
     if (data_020d433c.mUnk_8a_0) {
-        FrameTask::Get().func_0203dc34(0, 3);
+        FrameTask::Get().StartChannel(0, 3);
         return;
     }
     if (func_0202326c(data_020d43f0)) {
         if (data_020d43f0[0].mUnk_42 == 9) {
-            FrameTask::Get().func_0203dc34(0, 7);
+            FrameTask::Get().StartChannel(0, 7);
         } else {
-            FrameTask::Get().func_0203dc34(0, 5);
+            FrameTask::Get().StartChannel(0, 5);
         }
         return;
     }
     if (data_020d433c.mUnk_8a_4) {
-        FrameTask::Get().func_0203dc34(0, 10);
+        FrameTask::Get().StartChannel(0, 10);
         return;
     }
-    FrameTask::Get().func_0203dc34(0, sFrameTaskIds[data_020d433c.mUnk_95]);
+    FrameTask::Get().StartChannel(0, sFrameTaskIds[data_020d433c.mUnk_95]);
 }
 

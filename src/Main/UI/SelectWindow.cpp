@@ -4,19 +4,19 @@
 #include "Graphics/SpriteManager.hpp"
 
 // The three animation indices of a cell (WindowButton::mUnk_08..mUnk_0a), copied as one object.
-// Placeholder for a real struct shared by WindowCellRecord::mUnk_18 and WindowButton::mUnk_08.
+// Placeholder for a real struct shared by WindowCellRecord::mAnimIndices and WindowButton::mUnk_08.
 struct WindowCellAnims {
     u8 mAnims[3];
 };
 
 SelectWindow::SelectWindow(u32 itemCount, const WindowItemRecord *items, s32 unk3) {
     mCellCount = 0;
-    mUnk_061   = 0;
-    mUnk_062   = 0;
-    mUnk_063   = -1;
-    mUnk_064   = 1;
-    mUnk_065   = 0;
-    mUnk_066   = 0;
+    mState   = 0;
+    mSlideStep   = 0;
+    mSavedSelection   = -1;
+    mEnabled   = 1;
+    mInputLocked   = 0;
+    mSlideInRequested   = 0;
     mUnk_07e   = 0;
     mResult    = 0;
     mUnk_0e0   = 0;
@@ -26,7 +26,7 @@ SelectWindow::SelectWindow(u32 itemCount, const WindowItemRecord *items, s32 unk
     do {
         mCellPos[item->mId].x = item->mX;
         mCellPos[item->mId].y = item->mY;
-        mUnk_068[item->mId]   = 0;
+        mSlideToTarget[item->mId]   = 0;
         i++;
         item++;
     } while (i < itemCount);
@@ -36,20 +36,20 @@ SelectWindow::SelectWindow(u32 itemCount, const WindowItemRecord *items, s32 unk
 }
 
 SelectWindow::~SelectWindow() {
-    func_0205bd10();
-    func_0205bcf4();
+    FreeCells();
+    FreeCursor();
 }
 
 BOOL SelectWindow::Update(BOOL input) {
     int result = 0;
     u32 event  = 0;
-    if (mUnk_064 == 0) {
+    if (mEnabled == 0) {
         return 0;
     }
-    switch (mUnk_061) {
+    switch (mState) {
     case 0:
-        if (func_0205bdf4()) {
-            mUnk_061 = 1;
+        if (UpdateSlideIn()) {
+            mState = 1;
         }
         break;
     case 1: {
@@ -59,7 +59,7 @@ BOOL SelectWindow::Update(BOOL input) {
         int oldPrev       = mCursor->mUnk_05;
         SelectWindowCursor *cur = mCursor;
         int oldPrevId     = oldPrev == -1 ? -1 : cur->mItems[oldPrev].mId;
-        if (mUnk_065 == 0) {
+        if (mInputLocked == 0) {
             event = mCursor->func_0202f468(input);
         }
         int newSel    = mCursor->mSelection;
@@ -75,41 +75,41 @@ BOOL SelectWindow::Update(BOOL input) {
             if (newId == -1) {
                 return 0;
             }
-            mCells[newId]->SetAnimation(mButtons[newId].mUnk_09);
+            mCells[newId]->SetAnimation(mButtons[newId].mResultAnim);
             if (oldId != -1 && newId != oldId) {
                 mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
             }
             mResult  = 1;
-            mUnk_065 = 1;
-            mUnk_061 = 2;
+            mInputLocked = 1;
+            mState = 2;
             break;
         case 2:
             if (newId == -1) {
                 return 0;
             }
-            mCells[newId]->SetAnimation(mButtons[newId].mUnk_09);
+            mCells[newId]->SetAnimation(mButtons[newId].mResultAnim);
             if (oldId != -1 && newId != oldId) {
                 CellAnimation *cell = mCells[oldId];
                 u8 anim             = mButtons[oldId].mUnk_08;
-                if (anim != cell->mUnk_0e) {
+                if (anim != cell->mAnimIndex) {
                     cell->SetAnimation(anim);
                 }
             }
             mResult  = 2;
-            mUnk_065 = 1;
-            mUnk_061 = 2;
+            mInputLocked = 1;
+            mState = 2;
             break;
         case 3:
             if (newId == -1) {
                 return 0;
             }
-            mCells[newId]->SetAnimation(mButtons[newId].mUnk_09);
-            if (oldId != -1 && newId != oldId && mCursor->func_0203055c(newSel)) {
+            mCells[newId]->SetAnimation(mButtons[newId].mResultAnim);
+            if (oldId != -1 && newId != oldId && mCursor->HasNeighbor(newSel)) {
                 mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
             }
-            mUnk_063 = oldSel;
+            mSavedSelection = oldSel;
             mResult  = 3;
-            mUnk_061 = 2;
+            mState = 2;
             break;
         case 5:
             mUnk_0e0 = 1;
@@ -117,7 +117,7 @@ BOOL SelectWindow::Update(BOOL input) {
                 if (newPrevId != -1 && items[newPrev].mUnk_18 == 3) {
                     CellAnimation *cell = mCells[newPrevId];
                     u8 anim             = mButtons[newPrevId].mUnk_0a;
-                    if (anim != cell->mUnk_0e) {
+                    if (anim != cell->mAnimIndex) {
                         cell->SetAnimation(anim);
                     }
                 }
@@ -132,7 +132,7 @@ BOOL SelectWindow::Update(BOOL input) {
                 if (newId != -1) {
                     CellAnimation *cell = mCells[newId];
                     u8 anim             = mButtons[newId].mUnk_0a;
-                    if (anim != cell->mUnk_0e) {
+                    if (anim != cell->mAnimIndex) {
                         cell->SetAnimation(anim);
                     }
                 }
@@ -144,7 +144,7 @@ BOOL SelectWindow::Update(BOOL input) {
                 if (newPrevId != -1) {
                     CellAnimation *cell = mCells[newPrevId];
                     u8 anim             = mButtons[newPrevId].mUnk_0a;
-                    if (anim != cell->mUnk_0e) {
+                    if (anim != cell->mAnimIndex) {
                         cell->SetAnimation(anim);
                     }
                 }
@@ -159,7 +159,7 @@ BOOL SelectWindow::Update(BOOL input) {
                 if (newId != -1) {
                     CellAnimation *cell = mCells[newId];
                     u8 anim             = mButtons[newId].mUnk_0a;
-                    if (anim != cell->mUnk_0e) {
+                    if (anim != cell->mAnimIndex) {
                         cell->SetAnimation(anim);
                     }
                 }
@@ -171,7 +171,7 @@ BOOL SelectWindow::Update(BOOL input) {
                 if (newPrevId != -1) {
                     CellAnimation *cell = mCells[newPrevId];
                     u8 anim             = mButtons[newPrevId].mUnk_0a;
-                    if (anim != cell->mUnk_0e) {
+                    if (anim != cell->mAnimIndex) {
                         cell->SetAnimation(anim);
                     }
                 }
@@ -193,56 +193,56 @@ BOOL SelectWindow::Update(BOOL input) {
         BOOL flag = FALSE;
         SelectWindowCursor *c = mCursor;
         s8 sel = c->mSelection;
-        if (mCells[sel == -1 ? -1 : c->mItems[sel].mId]->mUnk_12 != 0) {
+        if (mCells[sel == -1 ? -1 : c->mItems[sel].mId]->mFinished != 0) {
             flag = TRUE;
         }
-        if (mCells[sel == -1 ? -1 : c->mItems[sel].mId]->mUnk_10 == 1) {
+        if (mCells[sel == -1 ? -1 : c->mItems[sel].mId]->mMode == 1) {
             flag = TRUE;
         }
         if (flag) {
             mUnk_0e0 = 0;
             if (mCursor->mItems[mCursor->mSelection].mFlags & 8) {
-                mUnk_061 = 5;
+                mState = 5;
                 result   = mResult;
             } else {
                 result   = mResult;
-                mUnk_061 = 3;
+                mState = 3;
             }
         }
         break;
     }
     case 3:
-        func_0205c2e0();
+        UpdateSlideOut();
         SelectWindowCursor *c = mCursor;
-        if (mUnk_062 == 2) {
+        if (mSlideStep == 2) {
             if (c->mSelection != -1) {
                 mCells[GetSelectedId()]->SetAnimation(mButtons[GetSelectedId()].mUnk_08);
             }
-        } else if (mUnk_062 == 0) {
-            mUnk_066 = 0;
-            mUnk_061 = 4;
+        } else if (mSlideStep == 0) {
+            mSlideInRequested = 0;
+            mState = 4;
         }
         break;
     case 4:
-        if (mUnk_066 != 0) {
-            mUnk_065 = 0;
-            mUnk_061 = 0;
+        if (mSlideInRequested != 0) {
+            mInputLocked = 0;
+            mState = 0;
         }
         break;
     case 5: {
-        if (mUnk_063 != mCursor->mSelection) {
+        if (mSavedSelection != mCursor->mSelection) {
             int id = GetSelectedId();
             if (id != -1) {
                 mCells[GetSelectedId()]->SetAnimation(mButtons[GetSelectedId()].mUnk_08);
             }
         }
-        mCursor->mSelection = mUnk_063;
-        mUnk_063            = -1;
+        mCursor->mSelection = mSavedSelection;
+        mSavedSelection            = -1;
         SelectWindowCursor *cursor = mCursor;
         cursor->mUnk_05    = -1;
         cursor->mUnk_07    = -1;
         cursor->mUnk_08    = 0;
-        mUnk_061            = 1;
+        mState            = 1;
         break;
     }
     }
@@ -252,29 +252,29 @@ BOOL SelectWindow::Update(BOOL input) {
 void SelectWindow::SetCells(u32 count, const WindowCellRecord *cells) {
     u8 i                 = 0;
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     do {
         const WindowCellRecord *cell = &cells[i];
         if (cell->mPath != NULL) {
-            mCells[mCellCount]            = new CellAnimation(cell->mPath, cell->mUnk_04, 1, 1);
-            mCells[mCellCount]->mCharBase = screen.func_020276f4(cell->mUnk_08);
-            mCells[mCellCount]->mUnk_11   = cell->mUnk_0c;
+            mCells[mCellCount]            = new CellAnimation(cell->mPath, cell->mAnimIndex, 1, 1);
+            mCells[mCellCount]->mCharBase = screen.GetCharBase(cell->mCharOffset);
+            mCells[mCellCount]->mPaletteBase   = cell->mPaletteBase;
         }
         WindowButton *button = &mButtons[mCellCount];
         i++;
         button->mUnk_00  = cell->mUnk_10;
-        button->mEnabled = cell->mUnk_14;
-        *(WindowCellAnims *) &button->mUnk_08 = *(const WindowCellAnims *) cell->mUnk_18;
+        button->mEnabled = cell->mEnabled;
+        *(WindowCellAnims *) &button->mUnk_08 = *(const WindowCellAnims *) cell->mAnimIndices;
         mCellCount++;
     } while (i < count);
 }
 
-void SelectWindow::func_0205bcf4() {
+void SelectWindow::FreeCursor() {
     delete mCursor;
     mCursor = NULL;
 }
 
-void SelectWindow::func_0205bd10() {
+void SelectWindow::FreeCells() {
     u8 i = 0;
     do {
         CellAnimation *cell = mCells[i];
@@ -301,15 +301,15 @@ void SelectWindow::Draw() {
     } while (i < mCellCount);
 }
 
-BOOL SelectWindow::func_0205bdf4() {
+BOOL SelectWindow::UpdateSlideIn() {
     u8 i             = 0;
     BOOL done        = TRUE;
     WindowItem *item = mCursor->mItems;
-    switch (mUnk_062) {
+    switch (mSlideStep) {
     case 0:
         do {
             s8 id = item->mId;
-            if (mUnk_068[id] == 0 && item->mSlideIn != 0) {
+            if (mSlideToTarget[id] == 0 && item->mSlideIn != 0) {
                 u8 type = item->mSlideIn;
                 if (type == 4) {
                     mCellPos[id].x = -item->mWidth;
@@ -327,47 +327,47 @@ BOOL SelectWindow::func_0205bdf4() {
             }
             item++;
         } while (i < mCursor->mCount);
-        mUnk_062 = 1;
+        mSlideStep = 1;
         break;
     case 1:
         do {
             u8 type = item->mSlideIn;
             if (type == 4) {
                 s8 id = item->mId;
-                if (mUnk_068[id] != 0) {
-                    mCellPos[id].x += (s8)((mUnk_0d8 + 0x20 - mCellPos[id].x) / 7);
-                    if (mUnk_0d8 <= mCellPos[item->mId].x) {
-                        mCellPos[item->mId].x = mUnk_0d8;
+                if (mSlideToTarget[id] != 0) {
+                    mCellPos[id].x += (s8)((mSlideTargetX + 0x20 - mCellPos[id].x) / 7);
+                    if (mSlideTargetX <= mCellPos[item->mId].x) {
+                        mCellPos[item->mId].x = mSlideTargetX;
                     } else {
                         done = FALSE;
                     }
                 }
             } else if (type == 3) {
                 s8 id = item->mId;
-                if (mUnk_068[id] != 0) {
-                    mCellPos[id].x += (s8)((mUnk_0d8 - 0x20 - mCellPos[id].x) / 7);
-                    if (mUnk_0d8 >= mCellPos[item->mId].x) {
-                        mCellPos[item->mId].x = mUnk_0d8;
+                if (mSlideToTarget[id] != 0) {
+                    mCellPos[id].x += (s8)((mSlideTargetX - 0x20 - mCellPos[id].x) / 7);
+                    if (mSlideTargetX >= mCellPos[item->mId].x) {
+                        mCellPos[item->mId].x = mSlideTargetX;
                     } else {
                         done = FALSE;
                     }
                 }
             } else if (type == 1) {
                 s8 id = item->mId;
-                if (mUnk_068[id] != 0) {
-                    mCellPos[id].y += (s8)((mUnk_0da - 0x20 - mCellPos[id].y) / 7);
-                    if (mUnk_0da >= mCellPos[item->mId].y) {
-                        mCellPos[item->mId].y = mUnk_0da;
+                if (mSlideToTarget[id] != 0) {
+                    mCellPos[id].y += (s8)((mSlideTargetY - 0x20 - mCellPos[id].y) / 7);
+                    if (mSlideTargetY >= mCellPos[item->mId].y) {
+                        mCellPos[item->mId].y = mSlideTargetY;
                     } else {
                         done = FALSE;
                     }
                 }
             } else if (type == 2) {
                 s8 id = item->mId;
-                if (mUnk_068[id] != 0) {
-                    mCellPos[id].y += (s8)((mUnk_0da + 0x20 - mCellPos[id].y) / 7);
-                    if (mUnk_0da <= mCellPos[item->mId].y) {
-                        mCellPos[item->mId].y = mUnk_0da;
+                if (mSlideToTarget[id] != 0) {
+                    mCellPos[id].y += (s8)((mSlideTargetY + 0x20 - mCellPos[id].y) / 7);
+                    if (mSlideTargetY <= mCellPos[item->mId].y) {
+                        mCellPos[item->mId].y = mSlideTargetY;
                     } else {
                         done = FALSE;
                     }
@@ -383,7 +383,7 @@ BOOL SelectWindow::func_0205bdf4() {
                 u8 type = item->mSlideIn;
                 if (type == 4) {
                     s8 id = item->mId;
-                    if (mUnk_068[id] == 0) {
+                    if (mSlideToTarget[id] == 0) {
                         mCellPos[id].x += (s8)((item->mX + 0x20 - mCellPos[id].x) / 7);
                         if (item->mX <= mCellPos[item->mId].x) {
                             mCellPos[item->mId].x = item->mX;
@@ -393,7 +393,7 @@ BOOL SelectWindow::func_0205bdf4() {
                     }
                 } else if (type == 3) {
                     s8 id = item->mId;
-                    if (mUnk_068[id] == 0) {
+                    if (mSlideToTarget[id] == 0) {
                         mCellPos[id].x += (s8)((item->mX - 0x20 - mCellPos[id].x) / 7);
                         if (item->mX >= mCellPos[item->mId].x) {
                             mCellPos[item->mId].x = item->mX;
@@ -403,7 +403,7 @@ BOOL SelectWindow::func_0205bdf4() {
                     }
                 } else if (type == 1) {
                     s8 id = item->mId;
-                    if (mUnk_068[id] == 0) {
+                    if (mSlideToTarget[id] == 0) {
                         mCellPos[id].y += (s8)((item->mY - 0x20 - mCellPos[id].y) / 7);
                         if (item->mY >= mCellPos[item->mId].y) {
                             mCellPos[item->mId].y = item->mY;
@@ -413,7 +413,7 @@ BOOL SelectWindow::func_0205bdf4() {
                     }
                 } else if (type == 2) {
                     s8 id = item->mId;
-                    if (mUnk_068[id] == 0) {
+                    if (mSlideToTarget[id] == 0) {
                         mCellPos[id].y += (s8)((item->mY + 0x20 - mCellPos[id].y) / 7);
                         if (item->mY <= mCellPos[item->mId].y) {
                             mCellPos[item->mId].y = item->mY;
@@ -427,17 +427,17 @@ BOOL SelectWindow::func_0205bdf4() {
             } while (i < mCursor->mCount);
         }
         if (done) {
-            mUnk_062 = 2;
+            mSlideStep = 2;
         }
         break;
     case 2:
-        mUnk_062 = i;
+        mSlideStep = i;
         return done;
     }
     return FALSE;
 }
 
-void SelectWindow::func_0205c2e0() {
+void SelectWindow::UpdateSlideOut() {
     SelectWindowCursor *cursor;
     BOOL done;
     WindowItem *item;
@@ -445,16 +445,16 @@ void SelectWindow::func_0205c2e0() {
     i    = 0;
     done = TRUE;
     item = mCursor->mItems;
-    switch (mUnk_062) {
+    switch (mSlideStep) {
     case 0:
-        mUnk_062 = 1;
+        mSlideStep = 1;
         break;
     case 1:
         do {
             u8 type = item->mSlideOut;
             if (type == 4) {
                 s8 id = item->mId;
-                if (mUnk_068[id] == 0) {
+                if (mSlideToTarget[id] == 0) {
                     mCellPos[id].x += (s8)((0x120 - mCellPos[id].x) / 7);
                     if (mCellPos[item->mId].x >= 0x100) {
                         mCellPos[item->mId].x = 0x100;
@@ -464,7 +464,7 @@ void SelectWindow::func_0205c2e0() {
                 }
             } else if (type == 3) {
                 s8 id = item->mId;
-                if (mUnk_068[id] == 0) {
+                if (mSlideToTarget[id] == 0) {
                     mCellPos[id].x += (s8)(-(item->mWidth + 0x20 + mCellPos[id].x) / 7);
                     if (-item->mWidth >= mCellPos[item->mId].x) {
                         mCellPos[item->mId].x = -item->mWidth;
@@ -474,7 +474,7 @@ void SelectWindow::func_0205c2e0() {
                 }
             } else if (type == 1) {
                 s8 id = item->mId;
-                if (mUnk_068[id] == 0) {
+                if (mSlideToTarget[id] == 0) {
                     mCellPos[id].y += (s8)(-(item->mHeight + 0x20 + mCellPos[id].y) / 7);
                     if (-item->mHeight >= mCellPos[item->mId].y) {
                         mCellPos[item->mId].y = -item->mHeight;
@@ -484,7 +484,7 @@ void SelectWindow::func_0205c2e0() {
                 }
             } else if (type == 2) {
                 s8 id = item->mId;
-                if (mUnk_068[id] == 0) {
+                if (mSlideToTarget[id] == 0) {
                     mCellPos[id].y += (s8)((0xe0 - mCellPos[id].y) / 7);
                     if (mCellPos[item->mId].y >= 0xc0) {
                         mCellPos[item->mId].y = 0xc0;
@@ -504,40 +504,40 @@ void SelectWindow::func_0205c2e0() {
                 u8 type = item->mSlideOut;
                 if (type == 4) {
                     s8 id = item->mId;
-                    if (mUnk_068[id] != 0) {
-                        mCellPos[id].x += (s8)((mUnk_0d8 + 0x20 - mCellPos[id].x) / 7);
-                        if (mUnk_0d8 <= mCellPos[item->mId].x) {
-                            mCellPos[item->mId].x = mUnk_0d8;
+                    if (mSlideToTarget[id] != 0) {
+                        mCellPos[id].x += (s8)((mSlideTargetX + 0x20 - mCellPos[id].x) / 7);
+                        if (mSlideTargetX <= mCellPos[item->mId].x) {
+                            mCellPos[item->mId].x = mSlideTargetX;
                         } else {
                             done = FALSE;
                         }
                     }
                 } else if (type == 3) {
                     s8 id = item->mId;
-                    if (mUnk_068[id] != 0) {
-                        mCellPos[id].x += (s8)((mUnk_0d8 - 0x20 - mCellPos[id].x) / 7);
-                        if (mUnk_0d8 >= mCellPos[item->mId].x) {
-                            mCellPos[item->mId].x = mUnk_0d8;
+                    if (mSlideToTarget[id] != 0) {
+                        mCellPos[id].x += (s8)((mSlideTargetX - 0x20 - mCellPos[id].x) / 7);
+                        if (mSlideTargetX >= mCellPos[item->mId].x) {
+                            mCellPos[item->mId].x = mSlideTargetX;
                         } else {
                             done = FALSE;
                         }
                     }
                 } else if (type == 1) {
                     s8 id = item->mId;
-                    if (mUnk_068[id] != 0) {
-                        mCellPos[id].y += (s8)((mUnk_0da - 0x20 - mCellPos[id].y) / 7);
-                        if (mUnk_0da >= mCellPos[item->mId].y) {
-                            mCellPos[item->mId].y = mUnk_0da;
+                    if (mSlideToTarget[id] != 0) {
+                        mCellPos[id].y += (s8)((mSlideTargetY - 0x20 - mCellPos[id].y) / 7);
+                        if (mSlideTargetY >= mCellPos[item->mId].y) {
+                            mCellPos[item->mId].y = mSlideTargetY;
                         } else {
                             done = FALSE;
                         }
                     }
                 } else if (type == 2) {
                     s8 id = item->mId;
-                    if (mUnk_068[id] != 0) {
-                        mCellPos[id].y += (s8)((mUnk_0da + 0x20 - mCellPos[id].y) / 7);
-                        if (mUnk_0da <= mCellPos[item->mId].y) {
-                            mCellPos[item->mId].y = mUnk_0da;
+                    if (mSlideToTarget[id] != 0) {
+                        mCellPos[id].y += (s8)((mSlideTargetY + 0x20 - mCellPos[id].y) / 7);
+                        if (mSlideTargetY <= mCellPos[item->mId].y) {
+                            mCellPos[item->mId].y = mSlideTargetY;
                         } else {
                             done = FALSE;
                         }
@@ -548,26 +548,26 @@ void SelectWindow::func_0205c2e0() {
             } while (i < mCursor->mCount);
         }
         if (done) {
-            mUnk_062 = 2;
+            mSlideStep = 2;
         }
         break;
     case 2:
         do {
             if (item->mSlideIn != 0) {
                 s8 id = item->mId;
-                if (mUnk_068[id] == 0) {
+                if (mSlideToTarget[id] == 0) {
                     mButtons[id].mEnabled = FALSE;
                 }
             }
             i++;
             item++;
         } while (i < mCursor->mCount);
-        mUnk_062 = 0;
+        mSlideStep = 0;
         break;
     }
 }
 
-void SelectWindow::func_0205c74c(u32 count, WindowItem *items, s32 selection) {
+void SelectWindow::SetItems(u32 count, WindowItem *items, s32 selection) {
     mCursor->mSelection = -1;
     mCursor->mSelection = selection;
     SelectWindowCursor *cursor = mCursor;
@@ -578,14 +578,14 @@ void SelectWindow::func_0205c74c(u32 count, WindowItem *items, s32 selection) {
     do {
         mCellPos[item->mId].x = item->mX;
         mCellPos[item->mId].y = item->mY;
-        mUnk_068[item->mId]   = 0;
+        mSlideToTarget[item->mId]   = 0;
         i++;
         item++;
     } while (i < count);
-    mUnk_066 = 1;
+    mSlideInRequested = 1;
 }
 
-void SelectWindow::func_0205c7c8(int selection) {
+void SelectWindow::Reset(int selection) {
     mCursor->mSelection = -1;
     mCursor->mSelection = selection;
     WindowItem *item    = mCursor->mItems;
@@ -593,22 +593,22 @@ void SelectWindow::func_0205c7c8(int selection) {
     do {
         mCellPos[item->mId].x = item->mX;
         mCellPos[item->mId].y = item->mY;
-        mUnk_068[item->mId]   = 0;
+        mSlideToTarget[item->mId]   = 0;
         i++;
         item++;
     } while (i < mCursor->mCount);
-    mUnk_066 = 1;
+    mSlideInRequested = 1;
     mUnk_0e0 = 0;
 }
 
-void SelectWindow::func_0205c844(u32 unk1, u32 unk2) {
+void SelectWindow::SetResultItem(u32 unk1, u32 unk2) {
     s8 oldId = GetSelectedId();
     mCursor->mSelection = unk1;
     s8 sel = mCursor->mSelection;
-    mCells[unk1]->SetAnimation(mButtons[unk1].mUnk_09);
-    if (oldId != -1 && unk1 != oldId && mCursor->func_0203055c(sel)) {
+    mCells[unk1]->SetAnimation(mButtons[unk1].mResultAnim);
+    if (oldId != -1 && unk1 != oldId && mCursor->HasNeighbor(sel)) {
         mCells[oldId]->SetAnimation(mButtons[oldId].mUnk_08);
     }
     mResult   = unk2;
-    mUnk_061  = 2;
+    mState  = 2;
 }

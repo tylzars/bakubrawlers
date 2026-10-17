@@ -97,7 +97,7 @@ void func_020255f8(void (*callback)());
 void SetFrameInterval(u8 frames);
 
 // Keys that, all down (IsDown) for three passes of Run, reset the system (OS_ResetSystem(1)): when
-// WirelessManager::mUnk_1228 is non-zero, after Run waits for it to reach 0; when it is 0, only if no save is running
+// WirelessManager::mState is non-zero, after Run waits for it to reach 0; when it is 0, only if no save is running
 // (SaveManager::mBusy == 0), otherwise the count restarts.
 #define RESET_KEYS 0x30c
 
@@ -148,14 +148,14 @@ void GameSystem::Init() {
     func_0200af3c(func_02021c60(heap), heap);
     FrameTask::Get().Init();
     func_020234c8();
-    SpriteManager::Get().func_02026d48();
+    SpriteManager::Get().Init();
     InputManager::Get().Init();
-    TouchManager::Get().func_020225d0();
-    TextManager::Get().func_0202c02c();
-    SoundManager::Get().func_020244cc();
+    TouchManager::Get().InitPanel();
+    TextManager::Get().InitFont();
+    SoundManager::Get().Init();
     WirelessManager::Get().func_0202ed2c();
     MicManager::Get().func_0202d794();
-    FrameTask::Get().func_0203dbc4();
+    FrameTask::Get().OpenHandles();
     mInputEnabled = 1;
     mResetHoldFrames = 0;
     mWirelessWaitFrames = 0;
@@ -165,7 +165,7 @@ void GameSystem::Init() {
     SceneRunner::Get().mContext = context;
     func_02022b0c();
     func_02022b28();
-    SpriteManager::Get().func_02026dec(0, 1);
+    SpriteManager::Get().SetupMode(0, 1);
     reg_GX_DISPCNT &= ~0x38000000;
     reg_GX_DISPCNT &= ~0x7000000;
     reg_GX_DISPCNT = (reg_GX_DISPCNT & 0xffcfffef) | 0x10 | 0x100000;
@@ -178,7 +178,7 @@ void GameSystem::Init() {
     reg_G2S_DB_BG1CNT = (u16) (reg_G2S_DB_BG1CNT & ~0x40);
     reg_G2S_DB_BG2CNT = (u16) (reg_G2S_DB_BG2CNT & ~0x40);
     reg_G2S_DB_BG3CNT = (u16) (reg_G2S_DB_BG3CNT & ~0x40);
-    CameraManager::Get().func_020264e0();
+    CameraManager::Get().Reset();
     func_02025e18();
     mFrameInterval = 1;
     mMinInterval = 1;
@@ -209,40 +209,40 @@ void GameSystem::Run() {
         SetFrameInterval(mFrameInterval);
         mExtraFrames = 0;
         if (mFrameInterval > 1) {
-            CameraManager::Get().func_0202655c();
-            CameraManager::Get().func_02026848();
-            CameraManager::Get().mUnk_01 = 0;
+            CameraManager::Get().UpdateProjection();
+            CameraManager::Get().ResetBaseTransform();
+            CameraManager::Get().mModelsVisible = 0;
             do {
                 InputManager::Get().Update(mInputEnabled);
                 TouchManager::Get().Update(mInputEnabled);
-                FrameTask::Get().func_0203dc04();
-                SoundManager::Get().func_02024598();
+                FrameTask::Get().Update();
+                SoundManager::Get().Update();
                 SceneManager::Get().Update();
                 mFrame++;
                 InputManager::Get();
-                SpriteManager::Get().Screen(0).func_02027750();
-                SpriteManager::Get().Screen(1).func_02027750();
+                SpriteManager::Get().Screen(0).ResetOam();
+                SpriteManager::Get().Screen(1).ResetOam();
                 mExtraFrames++;
             } while (mExtraFrames < mFrameInterval - 1);
         }
         InputManager::Get().Update(mInputEnabled);
         TouchManager::Get().Update(mInputEnabled);
-        FrameTask::Get().func_0203dc04();
-        SoundManager::Get().func_02024598();
-        CameraManager::Get().mUnk_01 = 1;
-        CameraManager::Get().func_0202655c();
-        CameraManager::Get().func_02026848();
+        FrameTask::Get().Update();
+        SoundManager::Get().Update();
+        CameraManager::Get().mModelsVisible = 1;
+        CameraManager::Get().UpdateProjection();
+        CameraManager::Get().ResetBaseTransform();
         SceneManager::Get().Update();
         mFrame++;
         InputManager::Get();
         if (IsAtLeast3(&mResetHoldFrames)) {
-            if (WirelessManager::Get().mUnk_1228 != 0) {
-                while (WirelessManager::Get().mUnk_1228 != 0) {
-                    if (WirelessManager::Get().mUnk_1228 != 8) {
-                        WirelessManager::Get().func_0202edd0();
+            if (WirelessManager::Get().mState != 0) {
+                while (WirelessManager::Get().mState != 0) {
+                    if (WirelessManager::Get().mState != 8) {
+                        WirelessManager::Get().Stop();
                     }
-                    FrameTask::Get().func_0203dc10();
-                    WirelessManager::Get().func_0202f244();
+                    FrameTask::Get().WaitFrame();
+                    WirelessManager::Get().Update();
                 }
                 G2x_SetMasterBrightness_((vu16 *) 0x400006c, -16);
                 G2x_SetMasterBrightness_((vu16 *) 0x400106c, -16);
@@ -269,19 +269,19 @@ void GameSystem::Run() {
         func_02021700();
         func_02023884();
         func_02025d74();
-        SpriteManager::Get().func_02026cc0();
+        SpriteManager::Get().EndFrame();
         u64 tick = OS_GetTick();
-        FrameTask::Get().func_0203dc10();
+        FrameTask::Get().WaitFrame();
         elapsed = (u32) ((tick - prev) * 64000 / 33514);
         prev = OS_GetTick();
-        WirelessManager::Get().func_0202f244();
+        WirelessManager::Get().Update();
         mWirelessWaitFrames = 0;
-        if (IsWirelessMode((const u8 *) &WirelessManager::Get().mUnk_1228)) {
+        if (IsWirelessMode((const u8 *) &WirelessManager::Get().mState)) {
             while (WirelessManager::Get().mUnk_124e == 0) {
                 mWirelessWaitFrames++;
-                FrameTask::Get().func_0203dc10();
-                WirelessManager::Get().func_0202f244();
-                if (!IsWirelessMode((const u8 *) &WirelessManager::Get().mUnk_1228)) {
+                FrameTask::Get().WaitFrame();
+                WirelessManager::Get().Update();
+                if (!IsWirelessMode((const u8 *) &WirelessManager::Get().mState)) {
                     break;
                 }
             }
@@ -289,9 +289,9 @@ void GameSystem::Run() {
         if (mHalted != 0) {
             for (;;) {
                 func_02021700();
-                FrameTask::Get().func_0203dc10();
-                WirelessManager::Get().func_0202f244();
-                SoundManager::Get().func_02024598();
+                FrameTask::Get().WaitFrame();
+                WirelessManager::Get().Update();
+                SoundManager::Get().Update();
             }
         }
     }
@@ -307,7 +307,7 @@ void GameSystem::func_02021700() {
                 mInputEnabled = 0;
             }
         } else {
-            if (WirelessManager::Get().mUnk_1228 != 0) {
+            if (WirelessManager::Get().mState != 0) {
                 if (mInputEnabled != 0) {
                     while (func_0200d1e0(2, 0) != 0) {
                     }

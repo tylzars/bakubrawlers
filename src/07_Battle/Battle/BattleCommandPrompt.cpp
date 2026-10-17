@@ -214,30 +214,30 @@ void BattleCommandPrompt::Update() {
                 case 0:
                 case 1:
                 case 3:
-                    mUnk_2c->func_02065890(0x11, 0, 1);
+                    mUnk_2c->StartMessage(0x11, 0, 1);
                     break;
                 case 2:
-                    mUnk_2c->func_02065890(0x12, 0, 1);
+                    mUnk_2c->StartMessage(0x12, 0, 1);
                     break;
                 case 5:
                     if (mUnk_8c == data_020d433c.mBattlePlayers->mUnk_2a9) {
-                        mUnk_2c->func_02065890(0x27, 0, 1);
+                        mUnk_2c->StartMessage(0x27, 0, 1);
                     } else {
-                        mUnk_2c->func_02065890((s16) (mUnk_8c + 0x28), 0, 1);
+                        mUnk_2c->StartMessage((s16) (mUnk_8c + 0x28), 0, 1);
                     }
                     break;
                 case 7:
                     if (mUnk_8c == data_020d433c.mBattlePlayers->mUnk_2a9) {
-                        mUnk_2c->func_02065890(0x2c, 0, 1);
+                        mUnk_2c->StartMessage(0x2c, 0, 1);
                     } else {
-                        mUnk_2c->func_02065890((s16) (mUnk_8c + 0x2d), 0, 1);
+                        mUnk_2c->StartMessage((s16) (mUnk_8c + 0x2d), 0, 1);
                     }
                     break;
                 case 6:
                     if (mUnk_8c == data_020d433c.mBattlePlayers->mUnk_2a9) {
-                        mUnk_2c->func_02065890(0x22, 0, 1);
+                        mUnk_2c->StartMessage(0x22, 0, 1);
                     } else {
-                        mUnk_2c->func_02065890((s16) (mUnk_8c + 0x23), 0, 1);
+                        mUnk_2c->StartMessage((s16) (mUnk_8c + 0x23), 0, 1);
                     }
                     break;
             }
@@ -251,9 +251,9 @@ void BattleCommandPrompt::Update() {
                     if (mUnk_50 <= 0) {
                         mUnk_50 = 0;
                         mUnk_8e = 1;
-                        mUnk_38->mUnk_064 = 1;
+                        mUnk_38->mEnabled = 1;
                     }
-                    func_020254f0((FrameCallback) func_ov007_0225f080, &mUnk_50);
+                    QueueFrameCallback((FrameCallback) func_ov007_0225f080, &mUnk_50);
                     break;
                 case 1: {
                     int idx            = mUnk_8f + mUnk_90;
@@ -280,8 +280,8 @@ void BattleCommandPrompt::Update() {
                             }
                             break;
                     }
-                    if (mUnk_38->mUnk_061 == 1) {
-                        if (InputManager::Get().IsTrigger(0x10)) {
+                    if (mUnk_38->mState == 1) {
+                        if (InputManager::Get().IsTrigger(KEY_RIGHT)) {
                             u8 cur = mUnk_8f + mUnk_90;
                             if (cur < mUnk_92 - 1) {
                                 mUnk_8f++;
@@ -312,10 +312,10 @@ void BattleCommandPrompt::Update() {
                                 }
                             }
                             if (cur != mUnk_8f) {
-                                SoundManager::Get().func_020246f8(5);
+                                SoundManager::Get().StartSeqArc(5);
                             }
                         }
-                        if (InputManager::Get().IsTrigger(0x20)) {
+                        if (InputManager::Get().IsTrigger(KEY_LEFT)) {
                             u8 cur = mUnk_8f + mUnk_90;
                             if (cur != 0) {
                                 if (mUnk_8f != 0) {
@@ -349,7 +349,7 @@ void BattleCommandPrompt::Update() {
                                 }
                             }
                             if (cur != mUnk_8f) {
-                                SoundManager::Get().func_020246f8(5);
+                                SoundManager::Get().StartSeqArc(5);
                             }
                         }
                         u8 i = 0;
@@ -360,10 +360,10 @@ void BattleCommandPrompt::Update() {
                                 if (TouchManager::Get().mTouching) {
                                     if (i <= mUnk_92 - 1) {
                                         if (mUnk_8f != i) {
-                                            SoundManager::Get().func_020246f8(5);
+                                            SoundManager::Get().StartSeqArc(5);
                                             mUnk_8f = i;
                                         } else if (mUnk_38->mButtons[0].mEnabled != 0) {
-                                            SoundManager::Get().func_020246f8(0);
+                                            SoundManager::Get().StartSeqArc(0);
                                             mUnk_8e = 3;
                                             mUnk_88 = 0;
                                         }
@@ -396,7 +396,7 @@ void BattleCommandPrompt::Update() {
                     if (mUnk_50 <= -0x100) {
                         mUnk_8a = 6;
                     }
-                    func_020254f0((FrameCallback) func_ov007_0225f080, &mUnk_50);
+                    QueueFrameCallback((FrameCallback) func_ov007_0225f080, &mUnk_50);
                     break;
                 case 3:
                     mUnk_88++;
@@ -457,7 +457,7 @@ void BattleCommandPrompt::Update() {
             mUnk_18->Update();
             mUnk_18->Draw(1, (s16) (mUnk_50 + data_ov007_0227a764[mUnk_8f].x), data_ov007_0227a764[mUnk_8f].y, 0);
             mUnk_2c->func_02065bd4((s16) (mUnk_50 + 0x20), 0x28, 0);
-            mUnk_2c->func_020658d0();
+            mUnk_2c->Update();
             {
                 u8 i = 0;
                 do {
@@ -485,14 +485,14 @@ void BattleCommandPrompt::Update() {
                 case 5:
                 case 7: {
                     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-                    screen.func_02027624(3);
+                    screen.SetObjVramMode(3);
                     u8 n = mUnk_92;
                     if (n > 3) {
                         n = 3;
                     }
                     u8 i = 0;
                     do {
-                        screen.func_02027778((void *)data_ov007_0227a770, 1, (s16) (mUnk_50 + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0,
+                        screen.AddOam((void *)data_ov007_0227a770, 1, (s16) (mUnk_50 + data_ov007_0227a764[i].x), data_ov007_0227a764[i].y, 0,
                                              ((mUnk_4c + (i + mUnk_90) * 0x1800) << 9) >> 16, (s8) (mUnk_90 + (i + 10)), 0);
                         i++;
                     } while (i < n);
@@ -514,12 +514,12 @@ void BattleCommandPrompt::Update() {
                         digits[2] = 0;
                         u8 j      = 0;
                         do {
-                            mUnk_1c->func_0202a3ec(1, digits[j], (s16) (mUnk_50 + data_ov007_0227a764[i].x + 4 + j * 13),
+                            mUnk_1c->DrawFrame(1, digits[j], (s16) (mUnk_50 + data_ov007_0227a764[i].x + 4 + j * 13),
                                                    (s16) (data_ov007_0227a764[i].y + 0x36), 0);
                             j++;
                         } while (j < 3);
                         mUnk_0c[i + mUnk_90]->Update();
-                        mUnk_0c[i + mUnk_90]->func_0202a3ec(1, mUnk_70[i + mUnk_90]->mUnk_09, (s16) (mUnk_50 + data_ov007_0227a764[i].x),
+                        mUnk_0c[i + mUnk_90]->DrawFrame(1, mUnk_70[i + mUnk_90]->mUnk_09, (s16) (mUnk_50 + data_ov007_0227a764[i].x),
                                                             data_ov007_0227a764[i].y, 0);
                         i++;
                     } while (i < n);
@@ -555,29 +555,29 @@ void func_ov007_0225e698(BattleCommandPrompt *prompt) {
 void BattleCommandPrompt::func_ov007_0225e6d4() {
     mUnk_2c = new MessageWindow("mes_Command", 1, 0x1f000);
     mUnk_2c->func_02065bd4(0x20, 0x28, 0);
-    mUnk_2c->func_02065bcc(0x1f000);
+    mUnk_2c->SetVram(0x1f000);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/Game/2D/union_b");
-    func_02025b64(1, 4, 0x1c800, "union_b_obj_cockpit.nce_ncg1D.bin", 0, 0, 0);
-    func_02025b64(1, 5, 0x1c0, "union_b_obj_cockpit_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 4, 0x1c800, "union_b_obj_cockpit.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 5, 0x1c0, "union_b_obj_cockpit_ncl.bin", 0, 0, 0);
     mUnk_38->SetCells(2, data_ov007_0227a77c);
-    func_02025b64(1, 4, 0x1b800, "union_b_obj_cursor.nce_ncg1D.bin", 0, 0, 0);
-    func_02025b64(1, 5, 0x1a0, "union_b_obj_cursor_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 4, 0x1a000, "union_b_obj_gp.nce_ncg1D.bin", 0, 0, 0);
-    func_02025b64(1, 5, 0x180, "union_b_obj_gp_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 4, 0x1b800, "union_b_obj_cursor.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 5, 0x1a0, "union_b_obj_cursor_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 4, 0x1a000, "union_b_obj_gp.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 5, 0x180, "union_b_obj_gp_ncl.bin", 0, 0, 0);
     ChangeDir("/Game/Battle/Obj");
-    func_02025b64(1, 4, 0x19000, "battle_b_obj_state.nce_ncg1D.bin", 0, 0, 0);
-    func_02025b64(1, 5, 0x100, "battle_b_obj_state_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 4, 0x19000, "battle_b_obj_state.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 5, 0x100, "battle_b_obj_state_ncl.bin", 0, 0, 0);
     mUnk_20[0] = new CellAnimation("battle_b_obj_state_nce.bin", 0, 1, 1);
-    mUnk_20[0]->mCharBase = screen.func_020276f4(0x19000);
-    mUnk_20[0]->mUnk_11   = 8;
+    mUnk_20[0]->mCharBase = screen.GetCharBase(0x19000);
+    mUnk_20[0]->mPaletteBase   = 8;
     mUnk_20[1] = new CellAnimation("battle_b_obj_state_nce.bin", 1, 1, 1);
-    mUnk_20[1]->mCharBase = screen.func_020276f4(0x19000);
-    mUnk_20[1]->mUnk_11   = 8;
+    mUnk_20[1]->mCharBase = screen.GetCharBase(0x19000);
+    mUnk_20[1]->mPaletteBase   = 8;
     mUnk_20[2] = new CellAnimation("battle_b_obj_state_nce.bin", 2, 1, 1);
-    mUnk_20[2]->mCharBase = screen.func_020276f4(0x19000);
-    mUnk_20[2]->mUnk_11   = 8;
+    mUnk_20[2]->mCharBase = screen.GetCharBase(0x19000);
+    mUnk_20[2]->mPaletteBase   = 8;
     switch (mUnk_8b) {
         case 0:
         case 1:
@@ -585,25 +585,25 @@ void BattleCommandPrompt::func_ov007_0225e6d4() {
         case 5:
         case 7: {
             ChangeDir("/Game/Battle/Bg");
-            func_02025b64(1, 1, 0x6000, "battle_b_bg_window_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 0xe, 0, "battle_b_bg_window_ncg.bin", 0, 0, 0);
-            func_02025b64(1, 0xa, 0, "battle_b_bg_window_a_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0x6000, "battle_b_bg_window_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 0xe, 0, "battle_b_bg_window_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 0xa, 0, "battle_b_bg_window_a_nsc.bin", 0, 0, 0);
             ChangeDir("/Game/Card/Graphic/Large");
             u8 i = 0;
             do {
                 char name[0x100];
                 u32 size;
                 sprintf(name, "card_l_%03d.nce_ncg1D.bin", func_02065c20(mUnk_52[i]));
-                void *data = func_02023504(name, 0, 0, 0, &size, 0);
-                func_02025c1c(1, 4, mUnk_4c + i * 0x1800, screen.func_02028054((u8 *) data), 0x1000, 1);
+                void *data = LoadFile(name, 0, 0, 0, &size, 0);
+                QueueUpload(1, 4, mUnk_4c + i * 0x1800, screen.func_02028054((u8 *) data), 0x1000, 1);
                 sprintf(name, "card_l_%03d_ncl.bin", func_02065c20(mUnk_52[i]));
-                func_02025b64(1, 0, 0x1400 + i * 0x200, name, 0, 0, 0);
+                LoadAndQueueUpload(1, 0, 0x1400 + i * 0x200, name, 0, 0, 0);
                 i++;
             } while (i < mUnk_92);
             ChangeDir("/Game/2D/union_b");
             mUnk_18 = new CellAnimation("union_b_obj_cursor_nce.bin", 0, 1, 1);
-            mUnk_18->mCharBase = screen.func_020276f4(0x1b800);
-            mUnk_18->mUnk_11   = 0xd;
+            mUnk_18->mCharBase = screen.GetCharBase(0x1b800);
+            mUnk_18->mPaletteBase   = 0xd;
             if (mUnk_94[0]) {
                 GXS_SetVisibleWnd(4);
                 G2S_SetWndOBJInsidePlane(0x10, TRUE);
@@ -615,26 +615,26 @@ void BattleCommandPrompt::func_ov007_0225e6d4() {
         case 2:
         case 6: {
             ChangeDir("/Game/Battle/Bg");
-            func_02025b64(1, 1, 0x6000, "battle_b_bg_window_ncl.bin", 0, 0, 0);
-            func_02025b64(1, 0xe, 0, "battle_b_bg_window_ncg.bin", 0, 0, 0);
-            func_02025b64(1, 0xa, 0, "battle_b_bg_window_a_nsc.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 1, 0x6000, "battle_b_bg_window_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 0xe, 0, "battle_b_bg_window_ncg.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 0xa, 0, "battle_b_bg_window_a_nsc.bin", 0, 0, 0);
             ChangeDir("/Game/Battle/Obj");
-            func_02025b64(1, 4, 0, "bakugan_sub.nce_ncg1D.bin", 0, 0, 0);
-            func_02025b64(1, 0, 0x200, "bakugan_sub_ncl.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 4, 0, "bakugan_sub.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 0, 0x200, "bakugan_sub_ncl.bin", 0, 0, 0);
             u8 i = 0;
             do {
                 mUnk_0c[i] = new CellAnimation("bakugan_sub_nce.bin", 0, 1, 1);
-                mUnk_0c[i]->mCharBase = screen.func_020276f4(0);
-                mUnk_0c[i]->mUnk_11   = 1;
+                mUnk_0c[i]->mCharBase = screen.GetCharBase(0);
+                mUnk_0c[i]->mPaletteBase   = 1;
                 i++;
             } while (i < mUnk_92);
             ChangeDir("/Game/2D/union_b");
             mUnk_18 = new CellAnimation("union_b_obj_cursor_nce.bin", 1, 1, 1);
-            mUnk_18->mCharBase = screen.func_020276f4(0x1b800);
-            mUnk_18->mUnk_11   = 0xd;
+            mUnk_18->mCharBase = screen.GetCharBase(0x1b800);
+            mUnk_18->mPaletteBase   = 0xd;
             mUnk_1c = new CellAnimation("union_b_obj_gp_nce.bin", 2, 1, 1);
-            mUnk_1c->mCharBase = screen.func_020276f4(0x1a000);
-            mUnk_1c->mUnk_11   = 0xc;
+            mUnk_1c->mCharBase = screen.GetCharBase(0x1a000);
+            mUnk_1c->mPaletteBase   = 0xc;
             break;
         }
     }
@@ -643,19 +643,19 @@ void BattleCommandPrompt::func_ov007_0225e6d4() {
       case 6:
       case 7: {
         ChangeDir("/Game/Character/Icon");
-        func_02025b64(1, 4, 0x14000, "icon_ch_base.nce_ncg1D.bin", 0, 0, 0);
-        func_02025b64(1, 5, 0x120, "icon_ch_base_ncl.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 4, 0x14000, "icon_ch_base.nce_ncg1D.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 5, 0x120, "icon_ch_base_ncl.bin", 0, 0, 0);
         u8 j = 0;
         do {
             mUnk_40[j] = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
-            mUnk_40[j]->mCharBase = screen.func_020276f4(0x14000);
-            mUnk_40[j]->mUnk_11   = 9;
+            mUnk_40[j]->mCharBase = screen.GetCharBase(0x14000);
+            mUnk_40[j]->mPaletteBase   = 9;
             j++;
         } while (j < 3);
         mUnk_40[0]->SetAnimation(0);
         mUnk_40[1]->SetAnimation(mUnk_8c + 7);
         mUnk_40[2]->SetAnimation(0xb);
-        mUnk_40[2]->mUnk_0f = mUnk_8c;
+        mUnk_40[2]->mFrameIndex = mUnk_8c;
         ChangeDir("/");
         mUnk_3c = new CharacterIcons(0x16000, 0xb, 1);
         BattlePlayer *player = data_020d433c.mBattlePlayers->mPlayers[mUnk_8c];

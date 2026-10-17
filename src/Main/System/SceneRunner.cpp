@@ -105,7 +105,7 @@ extern void func_02025df8();
 
 void SceneRunner::func_02024818(u32 overlay) {
     UnkStruct_OverlayInfo info;
-    FrameTask::Get().func_0203dc28();
+    FrameTask::Get().CloseHandles();
     func_02021e10();
     if (mOverlayState == 2) {
         func_0200b53c(0, mOverlay);
@@ -115,7 +115,7 @@ void SceneRunner::func_02024818(u32 overlay) {
     func_0200b4e8(0, mOverlay);
     mOverlayState = 2;
     func_02021d38((void *) (info.mRamAddress + (info.mRamSize + info.mBssSize)));
-    FrameTask::Get().func_0203dbc4();
+    FrameTask::Get().OpenHandles();
 }
 
 SceneRunner::SceneRunner() : SceneBase(0, 3) {
@@ -124,7 +124,7 @@ SceneRunner::SceneRunner() : SceneBase(0, 3) {
 }
 
 void SceneRunner::func_02024968(s32 scene) {
-    FrameTask::Get().func_0203dd90();
+    FrameTask::Get().StopAllChannels();
     if ((scene < 1) | (scene >= 14)) {
         scene = 1;
     }
@@ -133,11 +133,11 @@ void SceneRunner::func_02024968(s32 scene) {
     func_0202555c();
     SceneManager::Get().DeleteLayer();
     SceneManager::Get().Reset();
-    TextManager::Get().mUnk_5b = 0;
+    TextManager::Get().mUse4bppFont = 0;
     if (!WirelessManager::Get().func_0202f238()) {
-        FrameTask::Get().func_0203dc28();
+        FrameTask::Get().CloseHandles();
         func_02021e10();
-        FrameTask::Get().func_0203dbc4();
+        FrameTask::Get().OpenHandles();
     }
     func_02025df8();
     mContext->mUnk_12 = 14;
@@ -155,10 +155,10 @@ void SceneRunner::Update() {
     UnkStruct_RunnerContext *context = (UnkStruct_RunnerContext *) mContext;
     switch (context->mState) {
         case 0:
-            TouchManager::Get().func_02022ae0();
+            TouchManager::Get().ReadCalibration();
             func_02007230();
-            if (TouchManager::Get().func_02022ae0()) {
-                TouchManager::Get().func_02022af0();
+            if (TouchManager::Get().ReadCalibration()) {
+                TouchManager::Get().ApplyCalibrationAndEnable();
             }
             context->mState++;
             mContext->mUnk_12 = 14;
@@ -229,7 +229,7 @@ void SceneRunner::Update() {
             if (mNextScene == 14) {
                 return;
             }
-            FrameTask::Get().func_0203dc28();
+            FrameTask::Get().CloseHandles();
             context->mState = 15;
             break;
         case 15:

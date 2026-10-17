@@ -20,7 +20,7 @@ void func_02025680(int brightness) {
     G2x_SetMasterBrightness_((vu16 *) 0x400006c, brightness);
 }
 
-UnkStruct_SpriteManager_00::UnkStruct_SpriteManager_00() {
+SpriteFadeDefaults::SpriteFadeDefaults() {
     for (u8 i = 0; i < 2; i++) {
         SpriteManager::sFade[i]       = 1;
         SpriteManager::sBrightness[i] = 16;

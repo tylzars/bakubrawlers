@@ -82,7 +82,7 @@ void BattleStatusPanels::func_ov007_02234efc() {
     u8 j;
     SpriteScreen &screen = SpriteManager::Get().mScreens[0];
     u8 i;
-    screen.func_02027624(1);
+    screen.SetObjVramMode(1);
     screen.LoadCharacters("battle_u.nce_ncg1D.bin", mCharBase, 0);
     screen.LoadPalette("battle_u_ncl.bin", mPalette << 5, 0);
     if (data_020d433c.mUnk_98) {
@@ -93,35 +93,35 @@ void BattleStatusPanels::func_ov007_02234efc() {
         j = 0;
         do {
             mPanels[i].mAnims[j]            = new CellAnimation("battle_u_nce.bin", 0, 1, 1);
-            mPanels[i].mAnims[j]->mCharBase = screen.func_020276f4(mCharBase);
-            mPanels[i].mAnims[j]->mUnk_11   = mPalette;
+            mPanels[i].mAnims[j]->mCharBase = screen.GetCharBase(mCharBase);
+            mPanels[i].mAnims[j]->mPaletteBase   = mPalette;
             j++;
         } while (j < 6);
         mPanels[i].mAnims[0]->SetAnimation(mPanels[i].mUnk_25 + 6);
         mPanels[i].mAnims[1]->SetAnimation(0);
         mPanels[i].mAnims[2]->SetAnimation(mPanels[i].mUnk_25 + 4);
         mPanels[i].mAnims[3]->SetAnimation(2);
-        mPanels[i].mAnims[3]->mUnk_0f = i;
+        mPanels[i].mAnims[3]->mFrameIndex = i;
         mPanels[i].mAnims[4]->SetAnimation(i + 0x12);
         mPanels[i].mAnims[5]->SetAnimation(3);
-        mPanels[i].mAnims[5]->mUnk_0f = i;
+        mPanels[i].mAnims[5]->mFrameIndex = i;
         if (data_020d433c.mUnk_98) {
             mPanels[i].mAnims[6]            = new CellAnimation("battle_u_team_nce.bin", 0, 1, 1);
-            mPanels[i].mAnims[6]->mCharBase = screen.func_020276f4(mCharBase + 0x4000);
-            mPanels[i].mAnims[6]->mUnk_11   = mPalette;
+            mPanels[i].mAnims[6]->mCharBase = screen.GetCharBase(mCharBase + 0x4000);
+            mPanels[i].mAnims[6]->mPaletteBase   = mPalette;
             mPanels[i].mAnims[6]->SetAnimation(i);
         }
         i++;
     } while (i < 4);
     if (data_020d433c.mUnk_98) {
         mAnimC            = new CellAnimation("battle_u_team_nce.bin", 0, 1, 1);
-        mAnimC->mCharBase = screen.func_020276f4(mCharBase + 0x4000);
-        mAnimC->mUnk_11   = mPalette;
+        mAnimC->mCharBase = screen.GetCharBase(mCharBase + 0x4000);
+        mAnimC->mPaletteBase   = mPalette;
         mAnimC->SetAnimation(4);
     }
     mAnimD            = new CellAnimation("battle_u_nce.bin", 0, 1, 1);
-    mAnimD->mCharBase = screen.func_020276f4(mCharBase);
-    mAnimD->mUnk_11   = mPalette;
+    mAnimD->mCharBase = screen.GetCharBase(mCharBase);
+    mAnimD->mPaletteBase   = mPalette;
     mAnimD->SetAnimation(1);
     ChangeDir("/");
 }
@@ -165,7 +165,7 @@ void BattleStatusPanels::func_ov007_02235280(u32 index, s32 character, u32 team,
         if ((index == cur) & (cur == cur2)) {
             mPanels[index].mAnims[2]->SetAnimation(mPanels[index].mUnk_25 + 0x16);
         } else {
-            mPanels[index].mAnims[2]->mUnk_0f = 0x12;
+            mPanels[index].mAnims[2]->mFrameIndex = 0x12;
         }
     }
     mPanels[index].mUnk_2b = level;
@@ -224,7 +224,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                                 if (SpriteManager::Get().sFade[0] <= 1) {
                                     if (mUnk_fd) {
                                         mUnk_fd = 0;
-                                        SoundManager::Get().func_020246f8(6);
+                                        SoundManager::Get().StartSeqArc(6);
                                     }
                                     mAnimD->Update();
                                 }
@@ -243,7 +243,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                                 } else {
                                     f = 1;
                                 }
-                                mPanels[i].mAnims[1]->func_0202a3ec(0, f, k * 9 + 0x74, 0x10, mUnk_f2);
+                                mPanels[i].mAnims[1]->DrawFrame(0, f, k * 9 + 0x74, 0x10, mUnk_f2);
                                 k++;
                             } while (k < mPanels[i].mUnk_29);
                         }
@@ -260,7 +260,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                                 if (SpriteManager::Get().sFade[0] <= 1) {
                                     if (mUnk_fd) {
                                         mUnk_fd = 0;
-                                        SoundManager::Get().func_020246f8(6);
+                                        SoundManager::Get().StartSeqArc(6);
                                     }
                                     mAnimD->Update();
                                 }
@@ -279,7 +279,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                                 } else {
                                     f = 1;
                                 }
-                                mPanels[i].mAnims[1]->func_0202a3ec(0, f, k * 9 + 0x74, 0xa8, mUnk_f2);
+                                mPanels[i].mAnims[1]->DrawFrame(0, f, k * 9 + 0x74, 0xa8, mUnk_f2);
                                 k++;
                             } while (k < mPanels[i].mUnk_29);
                         }
@@ -290,7 +290,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                     if (SpriteManager::Get().sFade[0] <= 1) {
                         if (mUnk_fd) {
                             mUnk_fd = 0;
-                            SoundManager::Get().func_020246f8(6);
+                            SoundManager::Get().StartSeqArc(6);
                         }
                         mAnimD->Update();
                     }
@@ -310,7 +310,7 @@ void BattleStatusPanels::func_ov007_02235480() {
                         f = 1;
                     }
                     u8 n25 = mPanels[i].mUnk_25;
-                    mPanels[i].mAnims[1]->func_0202a3ec(0, f, dir * ((n25 + k) * 9 + 0x14) + q, y + 0xc, mUnk_f2);
+                    mPanels[i].mAnims[1]->DrawFrame(0, f, dir * ((n25 + k) * 9 + 0x14) + q, y + 0xc, mUnk_f2);
                     k++;
                 } while (k < mPanels[i].mUnk_29);
             }
@@ -320,14 +320,14 @@ void BattleStatusPanels::func_ov007_02235480() {
                     mPanels[i].mAnims[2]->Update();
                     mPanels[i].mAnims[2]->Draw(0, (s16) (x - 2), (s16) (y - 2), mUnk_f2);
                 } else {
-                    mPanels[i].mAnims[2]->func_0202a3ec(0, level - 1, x - 2, y - 2, mUnk_f2);
+                    mPanels[i].mAnims[2]->DrawFrame(0, level - 1, x - 2, y - 2, mUnk_f2);
                     if (level >= 0x13) {
                         u8 cur  = data_020d433c.mBattlePlayers->mUnk_28a;
                         u8 cur2 = data_020d433c.mBattlePlayers->mUnk_2a9;
                         if ((i == cur) & (cur == cur2)) {
                             mPanels[i].mAnims[2]->SetAnimation(mPanels[i].mUnk_25 + 0x18);
                         } else {
-                            mPanels[i].mAnims[2]->mUnk_0f = 0x12;
+                            mPanels[i].mAnims[2]->mFrameIndex = 0x12;
                         }
                     }
                 }
@@ -351,12 +351,12 @@ void BattleStatusPanels::func_ov007_02235480() {
             }
             switch (mMode) {
                 case 0:
-                    SpriteManager::Get().Screen(0).func_02027778(mPanels[i].mBuffer2, (u8) mGlyphCount, px, (s16) (y - 1), mUnk_f2,
+                    SpriteManager::Get().Screen(0).AddOam(mPanels[i].mBuffer2, (u8) mGlyphCount, px, (s16) (y - 1), mUnk_f2,
                                                                  (u16) ((mCharBase + 0x2000 + (i << 11)) >> 5), 0xf,
                                                                  0);
                     break;
                 case 1:
-                    SpriteManager::Get().Screen(0).func_02027778(mPanels[i].mBuffer2, (u8) mGlyphCount, px, (s16) (y - 1), mUnk_f2,
+                    SpriteManager::Get().Screen(0).AddOam(mPanels[i].mBuffer2, (u8) mGlyphCount, px, (s16) (y - 1), mUnk_f2,
                                                                  (u16) ((mCharBase + 0x2000) >> 5), 0xf, 0);
                     break;
             }
@@ -418,18 +418,18 @@ void BattleStatusPanels::func_ov007_022361c4(u32 index) {
     width                  = 0;
     mPanels[index].mUnk_34 = 0;
     func_ov007_0223619c(index);
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     TextManager::Get().Print(data_020d433c.mBattlePlayers->mPlayers[index]->NameText(),
                              data_020d433c.mBattlePlayers->mPlayers[index]->mUnk_ed, mPanels[index].mBuffer, 0x10, 2,
                              &height, &width, &mPanels[index].mUnk_34, 0, 2, 0x21, 0, 0, 0, 0, 1, 1);
-    TextManager::Get().mUnk_5b = 0;
+    TextManager::Get().mUse4bppFont = 0;
     switch (mMode) {
         case 0:
-            func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, mCharBase + 0x2000 + (index << 11),
+            QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, mCharBase + 0x2000 + (index << 11),
                           mPanels[index].mBuffer, mBufferSize, 0);
             break;
         case 1:
-            func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, mCharBase + 0x2000, mPanels[index].mBuffer,
+            QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, mCharBase + 0x2000, mPanels[index].mBuffer,
                           mBufferSize, 0);
             break;
     }

@@ -208,7 +208,7 @@ void TitleScene::Update() {
                 mUnk_cb = 3;
                 break;
             }
-            FrameTask::Get().func_0203dc28();
+            FrameTask::Get().CloseHandles();
             mUnk_cb++;
             break;
         case 1:
@@ -217,7 +217,7 @@ void TitleScene::Update() {
             break;
         case 2:
             if (mContext->mUnk_12 == 1) {
-                FrameTask::Get().func_0203dbc4();
+                FrameTask::Get().OpenHandles();
                 mUnk_cb++;
             }
             break;
@@ -227,10 +227,10 @@ void TitleScene::Update() {
             LoadSystemText();
             SpriteManager::Get().StartFade(2);
             if (data_020d433c.mUnk_76) {
-                FrameTask::Get().func_0203dc34(0, 0x10);
+                FrameTask::Get().StartChannel(0, 0x10);
                 mUnk_d7 = 1;
             } else {
-                FrameTask::Get().func_0203dc34(0, 0x17);
+                FrameTask::Get().StartChannel(0, 0x17);
             }
             mUnk_cb++;
             break;
@@ -276,7 +276,7 @@ void TitleScene::Update() {
             if (SpriteManager::Get().IsFading()) {
                 break;
             }
-            FrameTask::Get().func_0203dc28();
+            FrameTask::Get().CloseHandles();
             mUnk_cb = 1;
             return;
         case 9: {
@@ -334,7 +334,7 @@ void TitleScene::Update() {
                             break;
                     }
                 } else {
-                    FrameTask::Get().func_0203dd90();
+                    FrameTask::Get().StopAllChannels();
                     mUnk_cb++;
                 }
             }
@@ -388,7 +388,7 @@ void TitleScene::Update() {
                         }
                     }
                     func_02022db4(data_020d43f0);
-                    FrameTask::Get().func_0203dc34(0, 0x10);
+                    FrameTask::Get().StartChannel(0, 0x10);
                     data_020d433c.mUnk_76 = 1;
                     mUnk_d7 = 1;
                     mUnk_d8 = 0x48;
@@ -466,7 +466,7 @@ void TitleScene::Update() {
                 SetWindowMode(0);
                 data_020d433c.mUnk_76 = 1;
                 SpriteManager::Get().StartFade(3);
-                FrameTask::Get().func_0203dc28();
+                FrameTask::Get().CloseHandles();
                 mUnk_cb++;
             }
             break;
@@ -479,8 +479,8 @@ void TitleScene::Update() {
             break;
         case 21:
             if (mContext->mUnk_12 == 1) {
-                FrameTask::Get().func_0203dbc4();
-                FrameTask::Get().func_0203dc34(0, 0x17);
+                FrameTask::Get().OpenHandles();
+                FrameTask::Get().StartChannel(0, 0x17);
                 mUnk_cb++;
             }
             break;
@@ -549,7 +549,7 @@ void TitleScene::Update() {
                 G2_BlendNone();
                 SpriteManager::Get().StartFade(2);
                 mUnk_d7 = 1;
-                FrameTask::Get().func_0203dc34(0, 0x10);
+                FrameTask::Get().StartChannel(0, 0x10);
                 mUnk_cb++;
             }
             break;
@@ -574,7 +574,7 @@ void TitleScene::Update() {
             mCursor->mSelection = mUnk_ce;
             UploadSubBg(mUnk_ce);
             GXS_SetVisiblePlane(0x17);
-            func_020254f0(TitleScene::ApplyScroll, this);
+            QueueFrameCallback(TitleScene::ApplyScroll, this);
             mUnk_da = -0xc0;
             mUnk_cc = 0x13;
             mUnk_cb++;
@@ -583,12 +583,12 @@ void TitleScene::Update() {
             mUnk_cc--;
             u8 cc = mUnk_cc;
             if (cc != 0) {
-                func_020254f0(TitleScene::ApplyScroll, this);
+                QueueFrameCallback(TitleScene::ApplyScroll, this);
                 s8 d = cc - 3;
                 mUnk_da = -((s16) ((d * d - 9) * 0xc0 / 0x100));
                 break;
             }
-            func_020254f0(TitleScene::ApplyScroll, this);
+            QueueFrameCallback(TitleScene::ApplyScroll, this);
             mUnk_da = 0;
             mUnk_cd = 1;
             func_ov000_02224678();
@@ -750,7 +750,7 @@ void TitleScene::Update() {
 
 void TitleScene::func_ov000_02223aa4() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
@@ -785,7 +785,7 @@ void TitleScene::func_ov000_02223aa4() {
 
 void TitleScene::func_ov000_02223cdc() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
     GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 0, 0, 1, 0);
@@ -807,43 +807,43 @@ void TitleScene::func_ov000_02223cdc() {
 void TitleScene::LoadGraphics() {
     char path[0x80];
     ChangeDir("/Game/Title/");
-    func_02025b64(0, 1, 0, "title_u_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 11, 0, "title_u_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 7, 0, "title_u_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(0, 1, 0x2000, "title_u_bg_01_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 12, 0, "title_u_bg_01_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 8, 0, "title_u_bg_01_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "title_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "title_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "title_b_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x2000, "title_b_bg_02_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 12, 0, "title_b_bg_02_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "title_b_bg_02_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0, "title_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 11, 0, "title_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 7, 0, "title_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0x2000, "title_u_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 12, 0, "title_u_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 8, 0, "title_u_bg_01_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "title_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "title_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "title_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "title_b_bg_02_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "title_b_bg_02_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "title_b_bg_02_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(1, 1, 0x6000, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 14, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 10, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x6000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 14, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 10, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     ChangeDir("/Game/Title/");
     if (mBuffers[0][1] == NULL) {
         for (u8 i = 0; i < 5; i++) {
             sprintf(path, "title_b_bg_sub_%02d_ncl.bin", i);
-            mBuffers[i][1] = func_02023504(path, 0, 0, 0, &mUnk_8c[i][1], 0);
+            mBuffers[i][1] = LoadFile(path, 0, 0, 0, &mUnk_8c[i][1], 0);
             sprintf(path, "title_b_bg_sub_%02d_ncg.bin", i);
-            mBuffers[i][0] = func_02023504(path, 0, 0, 0, &mUnk_8c[i][0], 0);
+            mBuffers[i][0] = LoadFile(path, 0, 0, 0, &mUnk_8c[i][0], 0);
             sprintf(path, "title_b_bg_sub_%02d_nsc.bin", i);
-            mBuffers[i][2] = func_02023504(path, 0, 0, 0, &mUnk_8c[i][2], 0);
+            mBuffers[i][2] = LoadFile(path, 0, 0, 0, &mUnk_8c[i][2], 0);
         }
     }
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.LoadCharacters("title_b_obj_00.nce_ncg1D.bin", 0, 0);
-    screen.func_02027fec("title_b_obj_00_ncl.bin", 0, 0);
+    screen.LoadExtPalette("title_b_obj_00_ncl.bin", 0, 0);
     for (u8 i = 0; i < 8; i++) {
         if (mCells[i] != NULL) {
             delete mCells[i];
         }
         mCells[i] = new CellAnimation("title_b_obj_00_nce.bin", 0, 1, 1);
-        mCells[i]->mCharBase = screen.func_020276f4(0);
-        mCells[i]->mUnk_11 = 0;
+        mCells[i]->mCharBase = screen.GetCharBase(0);
+        mCells[i]->mPaletteBase = 0;
     }
     mCells[3]->SetAnimation(0);
     mCells[4]->SetAnimation(3);
@@ -856,26 +856,26 @@ void TitleScene::LoadGraphics() {
         delete mCells[0];
     }
     mCells[0] = new CellAnimation("title_b_obj_03_nce.bin", 0, 1, 1);
-    mCells[0]->mCharBase = screen.func_020276f4(0xb000);
-    mCells[0]->mUnk_11 = 2;
+    mCells[0]->mCharBase = screen.GetCharBase(0xb000);
+    mCells[0]->mPaletteBase = 2;
     screen.LoadCharacters("title_b_obj_02.nce_ncg1D.bin", 0xc000, 0);
-    screen.func_02027fec("title_b_obj_02_ncl.bin", 0x400, 0);
+    screen.LoadExtPalette("title_b_obj_02_ncl.bin", 0x400, 0);
     if (mCells[1] != NULL) {
         delete mCells[1];
     }
     mCells[1] = new CellAnimation("title_b_obj_02_nce.bin", 1, 1, 1);
-    mCells[1]->mCharBase = screen.func_020276f4(0xc000);
-    mCells[1]->mUnk_11 = 2;
+    mCells[1]->mCharBase = screen.GetCharBase(0xc000);
+    mCells[1]->mPaletteBase = 2;
     screen.LoadCharacters("title_b_obj_04.nce_ncg1D.bin", 0x1d000, 0);
     screen.LoadPalette("title_b_obj_04_ncl.bin", 0xe0, 0);
     if (mCells[2] != NULL) {
         delete mCells[2];
     }
     mCells[2] = new CellAnimation("title_b_obj_04_nce.bin", 0, 1, 1);
-    mCells[2]->mCharBase = screen.func_020276f4(0x1d000);
-    mCells[2]->mUnk_11 = 7;
+    mCells[2]->mCharBase = screen.GetCharBase(0x1d000);
+    mCells[2]->mPaletteBase = 7;
     screen.LoadCharacters("title_b_obj_01.nce_ncg1D.bin", 0x13000, 0);
-    screen.func_02027fec("title_b_obj_01_ncl.bin", 0x200, 0);
+    screen.LoadExtPalette("title_b_obj_01_ncl.bin", 0x200, 0);
     ChangeDir("/Game/2D/union_b/");
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x1b000, 0);
     screen.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
@@ -883,7 +883,7 @@ void TitleScene::LoadGraphics() {
     delete mMessageWindow;
     mMessageWindow = new MessageWindow("mes_title", 1, 0x1f000);
     mMessageWindow->func_02065bd4(0x14, 4, 1);
-    mMessageWindow->func_02065be4(0xd8);
+    mMessageWindow->SetWidth(0xd8);
 }
 
 void TitleScene::func_ov000_022245e8() {
@@ -909,11 +909,11 @@ void TitleScene::func_ov000_02224678() {
 }
 
 void TitleScene::LoadSystemText() {
-    SpriteManager::Get().Screen(1).func_02027624(3);
+    SpriteManager::Get().Screen(1).SetObjVramMode(3);
     if (mBuf38 == NULL) {
         ChangeDir("/");
-        mBuf38 = func_02023504("font/mes_system.mes", 0, 0, 0, 0, 0);
-        mBuf3c = func_02023504("font/mes_title.mes", 0, 0, 0, 0, 0);
+        mBuf38 = LoadFile("font/mes_system.mes", 0, 0, 0, 0, 0);
+        mBuf3c = LoadFile("font/mes_title.mes", 0, 0, 0, 0, 0);
         mUnk_48 = TextManager::Get().BufferSize(0x18, 0xa);
         mBuf40 = OS_Alloc(mUnk_48);
         mUnk_4c = TextManager::Get().GlyphCount(0x3c);
@@ -933,11 +933,11 @@ void TitleScene::PrintText(MessageFile *file, u32 index) {
     outWidth = 0;
     text.Print(file->GetText(index), file->GetLength(index), mBuf40, 0x18, 0xa, &outWidth, &outHeight, NULL, 0, 2,
                0x11, 0xe, 0, 0, 1, 1, 1);
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x19000, mBuf40, mUnk_48, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x19000, mBuf40, mUnk_48, 0);
 }
 
 void TitleScene::DrawText() {
-    SpriteManager::Get().Screen(1).func_02027778(mBuf44, (u8) mUnk_4c, 0x20, 0x28, 0, 0x320, 0xf, 0);
+    SpriteManager::Get().Screen(1).AddOam(mBuf44, (u8) mUnk_4c, 0x20, 0x28, 0, 0x320, 0xf, 0);
 }
 
 void TitleScene::ClearText() {
@@ -949,7 +949,7 @@ void TitleScene::ClearText() {
 void TitleScene::SetMessage(u32 index) {
     if ((index <= 6) & (mUnk_cf != index)) {
         mUnk_cf = index;
-        mMessageWindow->func_02065890(mUnk_cf, 0, 1);
+        mMessageWindow->StartMessage(mUnk_cf, 0, 1);
     }
 }
 
@@ -1002,9 +1002,9 @@ BOOL TitleScene::IsFadeDone(BOOL tick) {
 }
 
 void TitleScene::UploadSubBg(u32 index) {
-    func_02025c1c(1, 1, 0x4000, mBuffers[index][1], mUnk_8c[index][1], 0);
-    func_02025c1c(1, 13, 0, mBuffers[index][0], mUnk_8c[index][0], 0);
-    func_02025c1c(1, 9, 0, mBuffers[index][2], mUnk_8c[index][2], 0);
+    QueueUpload(1, 1, 0x4000, mBuffers[index][1], mUnk_8c[index][1], 0);
+    QueueUpload(1, 13, 0, mBuffers[index][0], mUnk_8c[index][0], 0);
+    QueueUpload(1, 9, 0, mBuffers[index][2], mUnk_8c[index][2], 0);
 }
 
 BOOL TitleScene::UpdateCursorCell() {
@@ -1016,11 +1016,11 @@ BOOL TitleScene::UpdateCursorCell() {
         }
         mUnk_d4 = 1;
         mCells[1]->SetAnimation(2);
-        SoundManager::Get().func_020246f8(0xd);
+        SoundManager::Get().StartSeqArc(0xd);
     }
     switch (mUnk_d4) {
         case 1:
-            if (mCells[1]->mUnk_12 != 0) {
+            if (mCells[1]->mFinished != 0) {
                 mUnk_d4++;
             }
             break;
@@ -1029,12 +1029,12 @@ BOOL TitleScene::UpdateCursorCell() {
             mUnk_d5 = cur;
             UploadSubBg(cur);
             mCells[1]->SetAnimation(3);
-            SoundManager::Get().func_020246f8(0xc);
+            SoundManager::Get().StartSeqArc(0xc);
             mUnk_d4++;
             break;
         }
         case 3:
-            if (mCells[1]->mUnk_12 != 0) {
+            if (mCells[1]->mFinished != 0) {
                 mUnk_d4 = 0;
             }
             break;
@@ -1055,7 +1055,7 @@ void TitleScene::DrawLogo() {
     if (mUnk_d8 < 0x60) {
         mUnk_d8++;
     } else {
-        mMessageWindow->func_020658d0();
+        mMessageWindow->Update();
     }
     mCells[2]->Draw(1, 0x80, mUnk_d8, 1);
 }

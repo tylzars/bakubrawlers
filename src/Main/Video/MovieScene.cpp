@@ -13,7 +13,7 @@ extern "C" void GX_SetBankForSubBGExtPltt(u32 a);
 MovieScene::MovieScene(void *video, u32 unk2)
     : SceneBase(2, 0) {
     mPlayer = new MoviePlayer();
-    mPlayer->func_0203c5b4(video, 0, 1, unk2);
+    mPlayer->Open(video, 0, 1, unk2);
     RequestScene(0);
     G2x_SetMasterBrightness_((vu16 *) 0x400006c, -16);
     G2x_SetMasterBrightness_((vu16 *) 0x400106c, -16);
@@ -24,9 +24,9 @@ MovieScene::MovieScene(void *video, u32 unk2)
     vu16 *bg0cnt = (vu16 *) 0x4001008;
     *bg0cnt      = (*bg0cnt & 0x43) | 0x84;
     ChangeDir("/Game/2D/union_b");
-    func_02025b64(1, 7, 0, "union_b_bg_wallpaper_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "union_b_bg_wallpaper_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "union_b_bg_wallpaper_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "union_b_bg_wallpaper_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "union_b_bg_wallpaper_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "union_b_bg_wallpaper_ncl.bin", 0, 0, 0);
     ChangeDir("/");
     vu32 *dispcnt = (vu32 *) 0x4001000;
     *dispcnt      = (*dispcnt & ~0x1f00) | 0x100;
@@ -35,7 +35,7 @@ MovieScene::MovieScene(void *video, u32 unk2)
     *(vu32 *) 0x4001010 = 0;
     func_02025df8();
     SpriteManager::Get().StartFade(2);
-    mUnk_10 = 0;
+    mPlaybackDone = 0;
 }
 
 MovieScene::~MovieScene() {
@@ -43,7 +43,7 @@ MovieScene::~MovieScene() {
 }
 
 void MovieScene::Update() {
-    if (mUnk_10) {
+    if (mPlaybackDone) {
         SpriteManager &manager = SpriteManager::Get();
         if (manager.IsFading()) {
             return;
@@ -52,13 +52,13 @@ void MovieScene::Update() {
         mFinished = 1;
         return;
     }
-    if (mPlayer->func_0203ca70()) {
-        mPlayer->func_0203c9c4();
+    if (mPlayer->Update()) {
+        mPlayer->Close();
         SpriteManager::Get().StartFade(3);
-        mUnk_10 = 1;
+        mPlaybackDone = 1;
         return;
     }
     if (InputManager::Get().IsHeld(8)) {
-        mPlayer->func_0203ca5c();
+        mPlayer->SeekToEnd();
     }
 }

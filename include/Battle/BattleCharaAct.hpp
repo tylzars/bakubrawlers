@@ -10,7 +10,7 @@
 class Camera;
 class BattleMapObj;
 class UnkStruct_0205401c;
-class UnkStruct_02029ca8;
+class ModelLightGroup;
 class ModelInstance;
 
 // A character (story / edited) shown on the battle field with its own camera path (vtable 0228a2d8, 0x40 bytes).
@@ -22,7 +22,7 @@ public:
     /* 14 */ void *mUnk_14;
     /* 18 */ BattleMapObj *mUnk_18;
     /* 1c */ UnkStruct_0205401c *mUnk_1c;
-    /* 20 */ UnkStruct_02029ca8 *mUnk_20;
+    /* 20 */ ModelLightGroup *mUnk_20;
     /* 24 */ ModelInstance *mUnk_24;
     /* 28 */ ModelInstance *mUnk_28;
     /* 2c */ u32 mUnk_2c;

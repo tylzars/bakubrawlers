@@ -6,7 +6,7 @@
 #include <nitro/fx.h>
 
 #include "Graphics/ModelTransform.hpp"
-#include "Graphics/UnkStruct_0203d374.hpp"
+#include "Graphics/BakuganModel.hpp"
 
 class BattleMapModel : public ModelTransform { // 0x30 bytes, ctor 02248c84 (1 argument), dtor 02248cb0
 public:
@@ -37,13 +37,13 @@ public:
     void func_ov007_02248ac4(u32 type); // loads the texture and the model of the type
 };
 
-class UnkStruct_02028308;
+class TextureFile;
 
 // One model of a BattleMapObj (0x2c bytes, no own members): dtor 02249068, loader 022490ac.
 class BattleMapObjPart : public ModelTransform {
 public:
     ~BattleMapObjPart();
-    void func_ov007_022490ac(UnkStruct_02028308 *texture, const char *nsbmd, const char *data, u32 unk0);
+    void func_ov007_022490ac(TextureFile *texture, const char *nsbmd, const char *data, u32 unk0);
 };
 
 // A model file entry of the tables of BattleMapObj (8 bytes).

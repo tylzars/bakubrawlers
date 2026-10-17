@@ -117,33 +117,33 @@ void GimmickAbilityField::Load() {
         sResources[1] = new ModelResource("ability_filed1.nsbmd", 0, "ability_filed1.nsbtx", 1);
     }
     ChangeDir("/Game/Gimmick");
-    mUnk_4d = sResources[0]->func_020306e4(1);
+    mUnk_4d = sResources[0]->AddRef(1);
     if (mUnk_4d >= 4) {
         mUnk_4d = 3;
     }
-    mModel = sResources[0]->mModel->func_02028b78(new ModelAnim(sResources[0]->mAnimData, sResources[0]->mModel));
-    mModel->func_02028e54(0, 1, 0x1000);
-    mUnk_00 = 1;
-    sResources[1]->func_020306e4(1);
-    mModelB = sResources[1]->mModel->func_02028b78(0);
-    func_020331a4(mModelB->mUnk_58->mUnk_04, 0, 0x3f000000);
+    mModel = sResources[0]->mModel->CreateInstance(new ModelAnim(sResources[0]->mAnimData, sResources[0]->mModel));
+    mModel->StartAnimWithIncrement(0, 1, 0x1000);
+    mAnimEnabled = 1;
+    sResources[1]->AddRef(1);
+    mModelB = sResources[1]->mModel->CreateInstance(0);
+    func_020331a4(mModelB->mModelFile->mResModel, 0, 0x3f000000);
     ChangeDir("/");
 }
 
 void GimmickAbilityField::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mUnk_68       = 1;
+        m->mOwnFlags       = 1;
         delete m;
         mModel = 0;
         ModelInstance *b = mModelB;
-        b->mUnk_68       = 1;
+        b->mOwnFlags       = 1;
         delete b;
         mModelB = 0;
     }
     if (sResources[0]) {
-        sResources[1]->func_020307e8();
-        if (sResources[0]->func_020307e8()) {
+        sResources[1]->ReleaseRef();
+        if (sResources[0]->ReleaseRef()) {
             ModelResource *r = sResources[1];
             delete r;
             sResources[1] = 0;
@@ -174,7 +174,7 @@ void GimmickAbilityField::func_ov007_022303f4() {
     VEC_Add(&v, &mPosition, &v);
     func_01ffcf64(&mtx, &v);
     data_02211374.mUnk_9c = 0x1f00c0 | (data_ov007_02279554[mUnk_4d] << 24);
-    mModelB->func_02029174(&mtx, &mScale);
+    mModelB->Draw(&mtx, &mScale);
 }
 
 void GimmickAbilityField::Update() {
@@ -193,10 +193,10 @@ void GimmickAbilityField::Update() {
         }
         mState++;
         func_ov007_02271d78(data_020d433c.mUnk_0c, mUnk_3c);
-        SoundManager::Get().func_020246f8(0x35);
+        SoundManager::Get().StartSeqArc(0x35);
         s8 pick = func_02021a30(data_ov007_02279568[mUnk_4c].mCount, data_ov007_02279568[mUnk_4c].mWeights);
         data_020d433c.mBattlePlayers->Current()->mUnk_fa = data_ov007_02279568[mUnk_4c].mIds[pick];
-        u8 handle = func_0202bd40(data_020d433c.mEffects, 1, 0x12, 0, 1);
+        u8 handle = StartEffect(data_020d433c.mEffects, 1, 0x12, 0, 1);
         if (handle) {
             CameraManager::Get();
             MtxFx43 mtx    = data_020c1cf4;
@@ -205,7 +205,7 @@ void GimmickAbilityField::Update() {
             mtx._[10]      = 0;
             mtx._[9]       = 0;
             func_01ffcf64(&mtx, &camPos);
-            func_0202bf60(data_020d433c.mEffects, handle, &mtx);
+            SetEffectMatrix(data_020d433c.mEffects, handle, &mtx);
         }
         mUnk_40 = 1;
         mUnk_3c = 0;

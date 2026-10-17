@@ -13,26 +13,26 @@ extern "C" void func_02031994(NNSG3dResTex *tex, u32 plttKey);
 
 extern "C" void *func_0203324c(void *dict, const char *name);
 
-void NitroTexture::func_02028280(const char *name) {
-    void *file = func_02023504(name, 0, 0, 0, 0, 0);
+void NitroTexture::Load(const char *name) {
+    void *file = LoadFile(name, 0, 0, 0, 0, 0);
     mOwnsFile  = 1;
-    func_020282c4(file);
+    LoadData(file);
 }
 
-BOOL UnkStruct_02028308::func_020282c4(void *file) {
+BOOL TextureFile::LoadData(void *file) {
     if (file == NULL) {
         return FALSE;
     }
     if (mFile != NULL) {
-        func_0202832c();
+        Release();
     }
     mFile = file;
     mTex  = func_020335a8(file);
-    func_020283f8();
+    AllocVramAndUpload();
     return TRUE;
 }
 
-UnkStruct_02028308::UnkStruct_02028308() {
+TextureFile::TextureFile() {
     mTex      = NULL;
     mFile     = NULL;
     mLoaded   = 0;
@@ -42,12 +42,12 @@ UnkStruct_02028308::UnkStruct_02028308() {
     mOwnsFile = 0;
 }
 
-void UnkStruct_02028308::func_0202832c() {
-    func_02028388();
-    func_02028344();
+void TextureFile::Release() {
+    FreeVram();
+    FreeFile();
 }
 
-void UnkStruct_02028308::func_02028344() {
+void TextureFile::FreeFile() {
     if (mFile == NULL) {
         return;
     }
@@ -59,7 +59,7 @@ void UnkStruct_02028308::func_02028344() {
     mFile = NULL;
 }
 
-void UnkStruct_02028308::func_02028388() {
+void TextureFile::FreeVram() {
     if (mLoaded == 0) {
         return;
     }
@@ -75,7 +75,7 @@ void UnkStruct_02028308::func_02028388() {
     mLoaded = 0;
 }
 
-void UnkStruct_02028308::func_020283f8() {
+void TextureFile::AllocVramAndUpload() {
     u32 texSize   = func_02031840(mTex);
     u32 size4x4   = func_02031854(mTex);
     u32 plttSize  = func_02031980(mTex);
@@ -93,15 +93,15 @@ void UnkStruct_02028308::func_020283f8() {
     }
     func_02031868(mTex, texKey, tex4x4Key);
     func_02031994(mTex, plttKey);
-    func_020284e8();
-    func_0202866c();
+    UploadTextures();
+    UploadPalettes();
     mTexHandle    = texKey;
     m4x4Handle = tex4x4Key;
     mPlttHandle   = plttKey;
     mLoaded    = 1;
 }
 
-void UnkStruct_02028308::func_020284e8() {
+void TextureFile::UploadTextures() {
     u32 ofs;
     NNSG3dResTex *tex = mTex;
     u32 size          = tex->mTexBlocks << 3;
@@ -111,7 +111,7 @@ void UnkStruct_02028308::func_020284e8() {
         void *buf = OS_Alloc(size);
         MIi_CpuCopy32((u8 *) tex + ofs, buf, size);
         DC_FlushRange(buf, size);
-        func_02025c1c(0, 2, addr, buf, size, 1);
+        QueueUpload(0, 2, addr, buf, size, 1);
         mTex->mTexState |= 1;
     }
     u32 idx;
@@ -128,16 +128,16 @@ void UnkStruct_02028308::func_020284e8() {
     void *buf2  = OS_Alloc(size2);
     MIi_CpuCopy32((u8 *) tex2 + ofs2, buf2, size2);
     DC_FlushRange(buf2, size2);
-    func_02025c1c(0, 2, addr2, buf2, size2, 1);
+    QueueUpload(0, 2, addr2, buf2, size2, 1);
     size2 >>= 1;
     void *buf3 = OS_Alloc(size2);
     MIi_CpuCopy32((u8 *) tex2 + idx, buf3, size2);
     DC_FlushRange(buf3, size2);
-    func_02025c1c(0, 2, 0x20000 + ((addr2 & 0x1ffff) >> 1) + ((addr2 & 0x40000) >> 2), buf3, size2, 1);
+    QueueUpload(0, 2, 0x20000 + ((addr2 & 0x1ffff) >> 1) + ((addr2 & 0x40000) >> 2), buf3, size2, 1);
     mTex->m4x4State |= 1;
 }
 
-void UnkStruct_02028308::func_0202866c() {
+void TextureFile::UploadPalettes() {
     u32 ofs;
     NNSG3dResTex *tex = mTex;
     u32 size          = tex->mPlttBlocks << 3;
@@ -146,21 +146,21 @@ void UnkStruct_02028308::func_0202866c() {
     void *buf         = OS_Alloc(size);
     MIi_CpuCopy32((u8 *) tex + ofs, buf, size);
     DC_FlushRange(buf, size);
-    func_02025c1c(0, 3, addr, buf, size, 1);
+    QueueUpload(0, 3, addr, buf, size, 1);
     mTex->mPlttState |= 1;
 }
 
-BOOL UnkStruct_02028308::func_020286fc(const char *name, const char *file, u32 size) {
+BOOL TextureFile::LoadTextureFile(const char *name, const char *file, u32 size) {
     char path[0x20];
     u32 outSize;
     sprintf(path, "%s.ntft", file);
-    void *data = func_02023504(path, 0, 0, 0, &outSize, size);
-    BOOL result = func_02028778(name, data, outSize);
+    void *data = LoadFile(path, 0, 0, 0, &outSize, size);
+    BOOL result = UploadNamedTexture(name, data, outSize);
     OS_Free(data);
     return result;
 }
 
-BOOL UnkStruct_02028308::func_02028778(const char *name, void *data, u32 size) {
+BOOL TextureFile::UploadNamedTexture(const char *name, void *data, u32 size) {
     char buf[0x14];
     MI_CpuFill8(buf, 0, 0x14);
     sprintf(buf, name);
@@ -175,24 +175,24 @@ BOOL UnkStruct_02028308::func_02028778(const char *name, void *data, u32 size) {
         void *dst = OS_Alloc(size);
         MIi_CpuCopy32(data, dst, size);
         DC_FlushRange(dst, size);
-        func_02025c1c(0, 2, addr, dst, size, 1);
+        QueueUpload(0, 2, addr, dst, size, 1);
     } else {
         return FALSE;
     }
     return TRUE;
 }
 
-BOOL UnkStruct_02028308::func_02028858(const char *name, const char *file, u32 size) {
+BOOL TextureFile::LoadPaletteFile(const char *name, const char *file, u32 size) {
     char path[0x20];
     u32 outSize;
     sprintf(path, "%s.ntfp", file);
-    void *data = func_02023504(path, 0, 0, 0, &outSize, size);
-    BOOL result = func_020288d4(name, data, outSize);
+    void *data = LoadFile(path, 0, 0, 0, &outSize, size);
+    BOOL result = UploadNamedPalette(name, data, outSize);
     OS_Free(data);
     return result;
 }
 
-BOOL UnkStruct_02028308::func_020288d4(const char *name, void *data, u32 size) {
+BOOL TextureFile::UploadNamedPalette(const char *name, void *data, u32 size) {
     char buf[0x14];
     MI_CpuFill8(buf, 0, 0x14);
     sprintf(buf, "%s_pl", name);
@@ -209,7 +209,7 @@ BOOL UnkStruct_02028308::func_020288d4(const char *name, void *data, u32 size) {
         void *dst   = OS_Alloc(aligned);
         MIi_CpuCopy32(data, dst, aligned);
         DC_FlushRange(dst, aligned);
-        func_02025c1c(0, 3, addr, dst, aligned, 1);
+        QueueUpload(0, 3, addr, dst, aligned, 1);
     } else {
         return FALSE;
     }

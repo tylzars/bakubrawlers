@@ -8,9 +8,9 @@
 
 class CellAnimation;
 class CellAnimFile;
-class UnkStruct_02029ca8;
+class ModelLightGroup;
 class Camera;
-class UnkStruct_0203d374;
+class BakuganModel;
 struct BattleCellPair;
 
 // A value at 0x0c of BattleCommandList that func_0205a804 steps towards its target by one per frame.
@@ -34,9 +34,9 @@ public:
     /* 7c */ void *mUnk_7c;
     /* 80 */ void *mUnk_80;
     /* 84 */ void *mUnk_84;
-    /* 88 */ UnkStruct_02029ca8 *mUnk_88;
+    /* 88 */ ModelLightGroup *mUnk_88;
     /* 8c */ SelectWindow *mUnk_8c;
-    /* 90 */ UnkStruct_0203d374 *mUnk_90;
+    /* 90 */ BakuganModel *mUnk_90;
     /* 94 */ Camera *mUnk_94;
     /* 98 */ u16 mUnk_98;
     /* 9a */ u16 mUnk_9a;

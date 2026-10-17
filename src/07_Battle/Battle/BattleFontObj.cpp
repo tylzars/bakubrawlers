@@ -10,7 +10,7 @@ BattleFontObj::BattleFontObj(u32 type) {
 BattleFontObj::~BattleFontObj() {
     ModelInstance *model = mModel;
     if (model) {
-        model->mUnk_68 = 0xf;
+        model->mOwnFlags = 0xf;
         delete model;
         mModel = 0;
     }
@@ -28,7 +28,7 @@ void BattleFontObj::func_ov007_02248ac4(u32 type) {
         case 3:
             sprintf(texture, "pname%02d.nsbtx", type + 1);
             sprintf(model, "pname%02d.nsbmd", type + 1);
-            func_020526a8(texture, model);
+            LoadFilesNoAnim(texture, model);
             break;
         case 4:
         case 5:
@@ -36,7 +36,7 @@ void BattleFontObj::func_ov007_02248ac4(u32 type) {
             index = type - 4;
             sprintf(texture, "st_icon%02d.nsbtx", index);
             sprintf(model, "st_icon%02d.nsbmd", index);
-            func_020526a8(texture, model);
+            LoadFilesNoAnim(texture, model);
             break;
         case 7:
         case 8:
@@ -45,7 +45,7 @@ void BattleFontObj::func_ov007_02248ac4(u32 type) {
             index = type - 6;
             sprintf(texture, "py%d.nsbtx", index);
             sprintf(model, "py%d.nsbmd", index);
-            func_020526a8(texture, model);
+            LoadFilesNoAnim(texture, model);
             break;
         case 11:
         case 12:
@@ -54,12 +54,12 @@ void BattleFontObj::func_ov007_02248ac4(u32 type) {
             index = type - 10;
             sprintf(texture, "pt%d.nsbtx", index);
             sprintf(model, "pt%d.nsbmd", index);
-            func_020526a8(texture, model);
+            LoadFilesNoAnim(texture, model);
             break;
     }
     if (mModel && mModel->mAnim) {
-        mUnk_00 = 1;
-        func_02052768(0, 0);
+        mAnimEnabled = 1;
+        StartAnim(0, 0);
     }
     ChangeDir("/");
 }

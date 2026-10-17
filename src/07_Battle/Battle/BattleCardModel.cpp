@@ -94,7 +94,7 @@ BattleCardModelEntry *data_ov007_0228acc0[13] = {
     data_ov007_02285498,
 };
 extern const VecFx32 data_ov007_0227c0c4;
-extern MtxFx43 data_0220e86c;
+extern MtxFx43 gIdentityMtx43;
 extern const u8 data_ov007_0227c418[];
 extern const u8 data_ov007_0227c438[];
 extern const u8 data_ov007_0227c3f0[];
@@ -269,7 +269,7 @@ void BattleCardModel::func_ov007_022725f0(u32 type, u32 id, u32 c) {
 }
 
 BattleCardModel::~BattleCardModel() {
-    UnkStruct_02029ca8 *palette = mUnk_28;
+    ModelLightGroup *palette = mUnk_28;
     if (palette) {
         delete palette;
     }
@@ -285,13 +285,13 @@ BattleCardModel::~BattleCardModel() {
     if (mUnk_18) {
         OS_Free(mUnk_18);
     }
-    func_0202bc58(mEffects, 0);
-    func_0202bc58(mEffects, 1);
+    FreeEffectGroup(mEffects, 0);
+    FreeEffectGroup(mEffects, 1);
 }
 
 void BattleCardModel::Update() {
     mPasses = GameSystem::Get().mWirelessWaitFrames + 1;
-    mEffects->func_0202c024(mPasses);
+    mEffects->SetPasses(mPasses);
     mUnk_96 = 0;
     u8 state;
     u8 i = 0;
@@ -310,9 +310,9 @@ void BattleCardModel::Update() {
             break;
         case 2:
         case 3: {
-            MtxFx43 mtx = data_0220e86c;
+            MtxFx43 mtx = gIdentityMtx43;
             VecFx32 pos = data_ov007_0227c0c4;
-            mBaku->mModel->func_02029174(&mtx, &pos);
+            mBaku->mModel->Draw(&mtx, &pos);
             func_ov007_02274238();
             func_ov007_022737e0();
             break;
@@ -338,23 +338,23 @@ BOOL BattleCardModel::func_ov007_0227292c() {
             break;
         case 2:
             if (data_ov007_0227c428[mType] != 0) {
-                if (!mBaku->mModel->func_02028d80()) {
-                    mBaku->mModel->func_02028de8(0, 0);
-                    mBaku->mModel->func_02028e70((s32) FramesToFloat(mEntry->mUnk_00));
+                if (!mBaku->mModel->AdvanceAnim()) {
+                    mBaku->mModel->StartAnim(0, 0);
+                    mBaku->mModel->SetAnimFrame((s32) FramesToFloat(mEntry->mUnk_00));
                     mUnk_93 = 1;
                 }
-                mCamera->func_020264a4(1);
+                mCamera->AdvanceFrame(1);
             } else {
-                if (!mBaku->mModel->func_02028d80()) {
+                if (!mBaku->mModel->AdvanceAnim()) {
                     mState++;
                 }
-                if (mBaku->mModel->func_02028ea4() >= mLastFrame) {
+                if (mBaku->mModel->GetAnimFrame() >= mLastFrame) {
                     SpriteManager::Get();
                     if (SpriteManager::sFade[0] <= 1) {
                         SpriteManager::Get();
                         SpriteManager::sFade[0] = 3;
                     } else {
-                        s8 brightness = -(s8) ((mBaku->mModel->func_02028ea4() - mLastFrame) >> 12);
+                        s8 brightness = -(s8) ((mBaku->mModel->GetAnimFrame() - mLastFrame) >> 12);
                         if (brightness < -16) {
                             brightness = -16;
                         }
@@ -365,14 +365,14 @@ BOOL BattleCardModel::func_ov007_0227292c() {
                         SpriteManager::sFade[0] = 3;
                     }
                 }
-                mCamera->func_020264a4(0);
+                mCamera->AdvanceFrame(0);
             }
-            mCamera->func_02026180();
+            mCamera->ApplyPath();
             SnapshotCamera();
             if (mUnk_24 != 0) {
-                if (mBaku->mModel->func_02028ea4() >= (s32) FramesToFloat(mEntry->mUnk_0a)) {
+                if (mBaku->mModel->GetAnimFrame() >= (s32) FramesToFloat(mEntry->mUnk_0a)) {
                     mUnk_24 = 0;
-                } else if (mBaku->mModel->func_02028ea4() >= (s32) FramesToFloat(mEntry->mUnk_08)) {
+                } else if (mBaku->mModel->GetAnimFrame() >= (s32) FramesToFloat(mEntry->mUnk_08)) {
                     VecFx32 offset;
                     VecFx32 delta;
                     Camera *camA = mCamera;
@@ -409,14 +409,14 @@ BOOL BattleCardModel::func_ov007_0227292c() {
         case 3:
             SpriteManager::Get();
             if (SpriteManager::sFade[0] > 1) {
-                mCamera->func_020264a4(1);
-                mCamera->func_02026180();
+                mCamera->AdvanceFrame(1);
+                mCamera->ApplyPath();
                 SnapshotCamera();
                 func_ov007_02273718();
             } else {
-                mEffects->func_0202be68();
+                mEffects->FreeAllEffects();
                 MI_CpuFill8(mHandles, 0, 5);
-                mEffects->func_0202c024(1);
+                mEffects->SetPasses(1);
                 return TRUE;
             }
             break;
@@ -434,16 +434,16 @@ void BattleCardModel::func_ov007_022734d8() {
     char name[0x80];
     char bone[0x11];
     sprintf(name, "realb%02d", mId);
-    func_0202ba64(mEffects, 0, name);
-    func_0202ba64(mEffects, 1, "union");
+    LoadEffectGroup(mEffects, 0, name);
+    LoadEffectGroup(mEffects, 1, "union");
     ChangeDir("/Game/Realbaku/Mdl");
     sprintf(name, "realb%02d_M_%02d.cam", mId, data_ov007_0227c438[mType]);
-    mUnk_18 = func_02023504(name, 0, 0, 0, 0, 0);
-    mCamera->func_0202610c(mUnk_18, 0);
+    mUnk_18 = LoadFile(name, 0, 0, 0, 0, 0);
+    mCamera->SetPath(mUnk_18, 0);
     ChangeDir("/");
     mBaku      = new BattleRealBaku(mUnk_8c, data_ov007_0227c418[mType], mUnk_8d, 0, 0, 1, mUnk_94);
-    mLastFrame = mBaku->mAnim->func_020297d4(0) - 0x10000;
-    mCamera->func_02026180();
+    mLastFrame = mBaku->mAnim->GetFrameCountForSet(0) - 0x10000;
+    mCamera->ApplyPath();
     if (mCount) {
         u8 i = 0;
         do {
@@ -460,7 +460,7 @@ void BattleCardModel::func_ov007_022734d8() {
             i++;
         } while (i < mCount);
     }
-    mUnk_28 = new UnkStruct_02029ca8(data_ov007_0227c3f0);
+    mUnk_28 = new ModelLightGroup(data_ov007_0227c3f0);
 }
 
 void BattleCardModel::func_ov007_02273718() {
@@ -472,15 +472,15 @@ void BattleCardModel::func_ov007_02273718() {
                 if (frame == 0) {
                     frame = 0x1000;
                 }
-                if (frame == mBaku->mModel->func_02028ea4()) {
+                if (frame == mBaku->mModel->GetAnimFrame()) {
                     if (mHandles[i]) {
-                        func_0202beb8(mEffects, mHandles[i]);
+                        FreeEffect(mEffects, mHandles[i]);
                     }
                     u32 group = 1;
                     if (!Part(i)->mUnk_17_0) {
                         group = 0;
                     }
-                    mHandles[i] = func_0202bd40(mEffects, group, Part(i)->mScript, 0, 0);
+                    mHandles[i] = StartEffect(mEffects, group, Part(i)->mScript, 0, 0);
                 }
             }
             i++;
@@ -502,19 +502,19 @@ void BattleCardModel::func_ov007_022737e0() {
                         mPos[i].x = part->mPos.x;
                         mPos[i].y = part->mPos.y;
                         mPos[i].z = part->mPos.z;
-                        func_0202bef4(mEffects, mHandles[i], &mPos[i]);
+                        SetEffectPosition(mEffects, mHandles[i], &mPos[i]);
                         break;
                     case 1:
                         func_ov007_02273a4c(i);
                         break;
                     case 2:
-                        rot = data_0220e86c;
+                        rot = gIdentityMtx43;
                         func_01ffd088(&rot, mParts[i].mRot[0]);
                         func_01ffd0e0(&rot, mParts[i].mRot[1]);
                         func_01ffd138(&rot, mParts[i].mRot[2]);
                         func_01ffcf64(&rot, &mParts[i].mPos);
                         func_01ff89c0(&rot, &CameraManager::Get().mMtxC[0], &rot);
-                        func_0202bf60(mEffects, mHandles[i], &rot);
+                        SetEffectMatrix(mEffects, mHandles[i], &rot);
                         break;
                     case 3:
                         func_ov007_02273a4c(i);
@@ -524,7 +524,7 @@ void BattleCardModel::func_ov007_022737e0() {
                         angles[0] = FX_AsinIdx(dir.y);
                         angles[1] = FX_AcosIdx(dir.x) - 0x4000;
                         angles[2] = 0;
-                        func_0202bf3c(mEffects, mHandles[i], angles);
+                        SetEffectRotation(mEffects, mHandles[i], angles);
                         break;
                 }
             }
@@ -536,9 +536,9 @@ void BattleCardModel::func_ov007_022737e0() {
 void BattleCardModel::func_ov007_02273a4c(u32 index) {
     MtxFx43 world;
     MtxFx43 rot;
-    MtxFx43 *bone = mBaku->mModel->func_02029084(mBones[index]);
+    MtxFx43 *bone = mBaku->mModel->GetCallbackMtx(mBones[index]);
     func_01ff89c0(bone, &CameraManager::Get().mMtxC[0], &world);
-    rot = data_0220e86c;
+    rot = gIdentityMtx43;
     func_01ffd088(&rot, mParts[index].mRot[0]);
     func_01ffd0e0(&rot, mParts[index].mRot[1]);
     func_01ffd138(&rot, mParts[index].mRot[2]);
@@ -552,7 +552,7 @@ void BattleCardModel::func_ov007_02273a4c(u32 index) {
     mPos[index].x += world._[9];
     mPos[index].y += world._[10];
     mPos[index].z += world._[11];
-    func_0202bef4(mEffects, mHandles[index], &mPos[index]);
+    SetEffectPosition(mEffects, mHandles[index], &mPos[index]);
 }
 
 void BattleCardModel::func_ov007_02273be8() {
@@ -564,19 +564,19 @@ void BattleCardModel::func_ov007_02273be8() {
         case 6:
         case 7:
         case 8:
-            SoundManager::Get().func_020246f8(9);
+            SoundManager::Get().StartSeqArc(9);
             return;
         case 9:
-            SoundManager::Get().func_020246f8(0x6d);
+            SoundManager::Get().StartSeqArc(0x6d);
             return;
         case 10:
-            SoundManager::Get().func_020246f8(0x6e);
+            SoundManager::Get().StartSeqArc(0x6e);
             return;
         case 11:
-            SoundManager::Get().func_020246f8(0x6f);
+            SoundManager::Get().StartSeqArc(0x6f);
             return;
         case 12:
-            SoundManager::Get().func_020246f8(0x6c);
+            SoundManager::Get().StartSeqArc(0x6c);
             return;
     }
     if (mType > 4) {
@@ -584,7 +584,7 @@ void BattleCardModel::func_ov007_02273be8() {
     }
     u32 *sounds = data_ov007_0228acf4[mId];
     if (sounds && sounds[mType] != 0x1ee) {
-        FrameTask::Get().func_0203dc34(2, (u16) data_ov007_0228acf4[mId][mType]);
+        FrameTask::Get().StartChannel(2, (u16) data_ov007_0228acf4[mId][mType]);
     }
 }
 
@@ -601,7 +601,7 @@ void BattleCardModel::func_ov007_02273ec0() {
     if (mType != 0) {
         return;
     }
-    MessageFile *file = (MessageFile *) func_02023504("/font/mes_BakuganName.mes", 0, 0, 0, 0, 0);
+    MessageFile *file = (MessageFile *) LoadFile("/font/mes_BakuganName.mes", 0, 0, 0, 0, 0);
     mTextSize         = TextManager::Get().BufferSize(0x20, 2);
     mUnk_74           = TextManager::Get().GlyphCount(8);
     mTextBuffer       = OS_Alloc(mTextSize);
@@ -613,7 +613,7 @@ void BattleCardModel::func_ov007_02273ec0() {
     if ((index == 5) | (index == 6)) {
         index += 0x24;
     }
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     TextManager &text          = TextManager::Get();
     s16 width;
     s16 height;
@@ -621,8 +621,8 @@ void BattleCardModel::func_ov007_02273ec0() {
     width  = 0;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x20, 2, &width, &height, &mTextWidth, 0, 2,
                0x21, 0x10, 0, 0, 0, 1, 1);
-    func_02025c1c(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0, mTextBuffer, mTextSize, 0);
-    TextManager::Get().mUnk_5b = 0;
+    QueueUpload(SpriteManager::Get().mScreens[0].mBgIndex, 4, 0, mTextBuffer, mTextSize, 0);
+    TextManager::Get().mUse4bppFont = 0;
     OS_Free(file);
 }
 
@@ -631,7 +631,7 @@ void BattleCardModel::func_ov007_02274238() {
         return;
     }
     if (mType == 0) {
-        SpriteManager::Get().mScreens[0].func_02027778(mTextBuffer2, 8, (s16) (0x80 - ((u32) mTextWidth >> 1)), 0xb0, 0, 0, 0xf, 0);
+        SpriteManager::Get().mScreens[0].AddOam(mTextBuffer2, 8, (s16) (0x80 - ((u32) mTextWidth >> 1)), 0xb0, 0, 0, 0xf, 0);
     }
     mUnk_96 = 1;
 }

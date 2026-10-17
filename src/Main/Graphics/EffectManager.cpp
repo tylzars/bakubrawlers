@@ -19,7 +19,7 @@ static EffectManager *sManager;
 
 Effect::Effect(EffectManager *manager, u32 group, u8 *script) {
     mCursor       = script;
-    mMtx          = data_0220e86c;
+    mMtx          = gIdentityMtx43;
     mPos.x        = 0;
     mPos.y        = 0;
     mPos.z        = 0;
@@ -62,13 +62,13 @@ Effect::~Effect() {
     for (u8 i = 0; i < 10; i++) {
         ModelInstance *model = mModels[i];
         if (model != NULL) {
-            model->mUnk_68 = 1;
+            model->mOwnFlags = 1;
             delete model;
         }
     }
 }
 
-BOOL Effect::func_0202acb4() {
+BOOL Effect::Update() {
     BOOL result = TRUE;
     u8 keep;
     if (mWaiting != 0) {
@@ -102,13 +102,13 @@ BOOL Effect::func_0202acb4() {
                 }
                 u8 id   = *mCursor++;
                 keep = *mCursor++;
-                mModels[slot] = sManager->func_0202be14(mGroup, id);
-                mModels[slot]->func_02028e54(keep, 0, mAnimSpeed);
+                mModels[slot] = sManager->CreateModelInstance(mGroup, id);
+                mModels[slot]->StartAnimWithIncrement(keep, 0, mAnimSpeed);
                 u16 frame = mFrame;
                 if (frame != 0) {
-                    mModels[slot]->func_02028e70(FX32_CONST((float) frame));
+                    mModels[slot]->SetAnimFrame(FX32_CONST((float) frame));
                 }
-                mLocal[slot] = data_0220e86c;
+                mLocal[slot] = gIdentityMtx43;
                 if (mModelRot[1] != 0) {
                     func_01ffd0e0(&mLocal[slot], mModelRot[1]);
                 }
@@ -138,7 +138,7 @@ BOOL Effect::func_0202acb4() {
             }
             case 3: {
                 keep = *mCursor++;
-                func_0202b5c4(&mModelScale);
+                ReadVecArg(&mModelScale);
                 if (keep == 1) {
                     mSavedScale = mModelScale;
                 }
@@ -146,7 +146,7 @@ BOOL Effect::func_0202acb4() {
             }
             case 4: {
                 keep = *mCursor++;
-                func_0202b5c4(&mModelPos);
+                ReadVecArg(&mModelPos);
                 if (keep == 1) {
                     mSavedPos = mModelPos;
                 }
@@ -154,9 +154,9 @@ BOOL Effect::func_0202acb4() {
             }
             case 5: {
                 keep = *mCursor++;
-                mModelRot[0] = (u16) ((float) func_0202b5f4() * 65536.0f / 360.0f);
-                mModelRot[1] = (u16) ((float) func_0202b5f4() * 65536.0f / 360.0f);
-                mModelRot[2] = (u16) ((float) func_0202b5f4() * 65536.0f / 360.0f);
+                mModelRot[0] = (u16) ((float) ReadU16Arg() * 65536.0f / 360.0f);
+                mModelRot[1] = (u16) ((float) ReadU16Arg() * 65536.0f / 360.0f);
+                mModelRot[2] = (u16) ((float) ReadU16Arg() * 65536.0f / 360.0f);
                 if (keep == 1) {
                     mSavedRot[0] = mModelRot[0];
                     mSavedRot[1] = mModelRot[1];
@@ -165,7 +165,7 @@ BOOL Effect::func_0202acb4() {
                 break;
             }
             case 7:
-                mLoopCount[mLoopDepth] = func_0202b5f4();
+                mLoopCount[mLoopDepth] = ReadU16Arg();
                 mLoopStart[mLoopDepth] = mCursor;
                 mLoopDepth++;
                 break;
@@ -183,7 +183,7 @@ BOOL Effect::func_0202acb4() {
                 break;
             case 10: {
                 keep = *mCursor++;
-                mLoop = func_0202b5f4();
+                mLoop = ReadU16Arg();
                 if (keep == 1) {
                     mSavedLoop = mLoop;
                 }
@@ -191,17 +191,17 @@ BOOL Effect::func_0202acb4() {
             }
             case 11: {
                 keep = *mCursor++;
-                mAnimSpeed = func_0202b63c();
+                mAnimSpeed = ReadS32Arg();
                 if (keep == 1) {
                     mSavedAnimSpeed = mAnimSpeed;
                 }
                 break;
             }
             case 12:
-                mFrame = func_0202b5f4();
+                mFrame = ReadU16Arg();
                 break;
             case 9:
-                mWait    = func_0202b5f4();
+                mWait    = ReadU16Arg();
                 mWaiting = 1;
                 run      = FALSE;
                 break;
@@ -209,7 +209,7 @@ BOOL Effect::func_0202acb4() {
         } while (run);
     }
     if (mMtxSet == 0) {
-        mMtx = data_0220e86c;
+        mMtx = gIdentityMtx43;
         if (mRot[1] != 0) {
             func_01ffd0e0(&mMtx, mRot[1]);
         }
@@ -236,18 +236,18 @@ BOOL Effect::func_0202acb4() {
             mWorldScale[i].z = FX_Mul(mScale.z, mLocalScale[i].z);
             mScaleDone[i]    = 1;
         }
-        mModels[i]->func_02029174(&mWorld[i], &mWorldScale[i]);
-        mAnimEnded = mModels[i]->func_02028d80() == 0;
+        mModels[i]->Draw(&mWorld[i], &mWorldScale[i]);
+        mAnimEnded = mModels[i]->AdvanceAnim() == 0;
         if (mAnimEnded != 0) {
             if (mAnims[i].mLoop != 0) {
-                mModels[i]->func_02028e54(mAnims[i].mAnim, 0, mAnims[i].mSpeed);
+                mModels[i]->StartAnimWithIncrement(mAnims[i].mAnim, 0, mAnims[i].mSpeed);
                 u16 frame = mAnims[i].mFrame;
                 if (frame != 0) {
-                    mModels[i]->func_02028e70(FX32_CONST((float) frame));
+                    mModels[i]->SetAnimFrame(FX32_CONST((float) frame));
                 }
             } else {
                 ModelInstance *model = mModels[i];
-                model->mUnk_68       = 1;
+                model->mOwnFlags       = 1;
                 delete model;
                 mModels[i] = NULL;
             }
@@ -260,24 +260,24 @@ BOOL Effect::func_0202acb4() {
     return result;
 }
 
-void Effect::func_0202b500(VecFx32 *pos) {
+void Effect::SetPosition(VecFx32 *pos) {
     mPos       = *pos;
     mMtxSet    = 0;
 }
 
-void Effect::func_0202b524(VecFx32 *scale) {
+void Effect::SetScale(VecFx32 *scale) {
     mScale     = *scale;
     mScaleSet  = 0;
 }
 
-void Effect::func_0202b548(u16 *rot) {
+void Effect::SetRotation(u16 *rot) {
     mRot[0] = rot[0];
     mRot[1] = rot[1];
     mRot[2] = rot[2];
     mMtxSet = 0;
 }
 
-void Effect::func_0202b570(MtxFx43 *mtx) {
+void Effect::SetMatrix(MtxFx43 *mtx) {
     mMtx    = *mtx;
     mMtxSet = 1;
     u8 i    = 0;
@@ -287,30 +287,30 @@ void Effect::func_0202b570(MtxFx43 *mtx) {
     } while (i < 10);
 }
 
-void Effect::func_0202b5c4(VecFx32 *out) {
-    out->x = func_0202b63c();
-    out->y = func_0202b63c();
-    out->z = func_0202b63c();
+void Effect::ReadVecArg(VecFx32 *out) {
+    out->x = ReadS32Arg();
+    out->y = ReadS32Arg();
+    out->z = ReadS32Arg();
 }
 
-u16 Effect::func_0202b5f4() {
+u16 Effect::ReadU16Arg() {
     if (*mCursor++ == 0) {
-        return func_0202b8c4();
+        return ReadU16();
     }
-    return (u16) ((float) func_0202b668() / 4096.0f);
+    return (u16) ((float) ReadRandom() / 4096.0f);
 }
 
-s32 Effect::func_0202b63c() {
+s32 Effect::ReadS32Arg() {
     if (*mCursor++ == 0) {
-        return func_0202b8f0();
+        return ReadU32();
     }
-    return func_0202b668();
+    return ReadRandom();
 }
 
-s32 Effect::func_0202b668() {
-    u32 rawMin = func_0202b8f0();
-    u32 rawMax = func_0202b8f0();
-    u32 rawStep = func_0202b8f0();
+s32 Effect::ReadRandom() {
+    u32 rawMin = ReadU32();
+    u32 rawMax = ReadU32();
+    u32 rawStep = ReadU32();
     float min  = *(float *) &rawMin;
     float max  = *(float *) &rawMax;
     float step = *(float *) &rawStep;
@@ -324,13 +324,13 @@ s32 Effect::func_0202b668() {
     return FX32_CONST(min + t * (max - min));
 }
 
-u16 Effect::func_0202b8c4() {
+u16 Effect::ReadU16() {
     u8 lo = *mCursor++;
     u8 hi = *mCursor++;
     return lo | (hi << 8);
 }
 
-u32 Effect::func_0202b8f0() {
+u32 Effect::ReadU32() {
     u8 b0 = *mCursor++;
     u8 b1 = *mCursor++;
     u8 b2 = *mCursor++;
@@ -350,18 +350,18 @@ EffectManager::EffectManager() : SceneBase(1000, 0) {
 }
 
 EffectManager::~EffectManager() {
-    func_0202be68();
+    FreeAllEffects();
     delete[] mEffects;
     for (u8 i = 0; i < 3; i++) {
-        func_0202bc58(this, i);
+        FreeEffectGroup(this, i);
     }
 }
 
-void func_0202ba64(EffectManager *manager, u32 slot, const char *name) {
+void LoadEffectGroup(EffectManager *manager, u32 slot, const char *name) {
     char path[0x80];
     ChangeDir("/effect");
     sprintf(path, "%s.esb", name);
-    EffectFile *file = (EffectFile *) func_02023504(path, 0, 0, 0, 0, 0);
+    EffectFile *file = (EffectFile *) LoadFile(path, 0, 0, 0, 0, 0);
     manager->mFiles[slot] = file;
     file->mNames += (u32) file;
     u8 i                  = 0;
@@ -386,11 +386,11 @@ void func_0202ba64(EffectManager *manager, u32 slot, const char *name) {
         }
         i++;
     } while (i < manager->mFiles[slot]->mNumModels);
-    manager->mTextures[slot]->func_02028344();
+    manager->mTextures[slot]->FreeFile();
     ChangeDir("/");
 }
 
-void func_0202bc58(EffectManager *manager, u32 slot) {
+void FreeEffectGroup(EffectManager *manager, u32 slot) {
     if (manager->mFiles[slot] == NULL) {
         return;
     }
@@ -398,7 +398,7 @@ void func_0202bc58(EffectManager *manager, u32 slot) {
     do {
         NitroModel *model = manager->mModels[slot][i];
         if (model != NULL) {
-            model->func_02028af0();
+            model->Release();
             delete model;
         }
         manager->mModels[slot][i] = NULL;
@@ -414,7 +414,7 @@ void func_0202bc58(EffectManager *manager, u32 slot) {
     manager->mAnimData[slot] = NULL;
     NitroTexture *texture    = manager->mTextures[slot];
     if (texture != NULL) {
-        texture->func_0202832c();
+        texture->Release();
         delete texture;
     }
     manager->mTextures[slot] = NULL;
@@ -422,7 +422,7 @@ void func_0202bc58(EffectManager *manager, u32 slot) {
     manager->mFiles[slot] = NULL;
 }
 
-u16 func_0202bd40(EffectManager *manager, u32 group, u32 script, u32 position, u32 tag) {
+u16 StartEffect(EffectManager *manager, u32 group, u32 script, u32 position, u32 tag) {
     u16 start;
     u16 i;
     start = manager->mNext;
@@ -435,7 +435,7 @@ u16 func_0202bd40(EffectManager *manager, u32 group, u32 script, u32 position, u
             s32 handle           = i + 1;
             manager->mNext       = handle % 64;
             if (position != 0) {
-                func_0202bef4(manager, handle, (VecFx32 *) position);
+                SetEffectPosition(manager, handle, (VecFx32 *) position);
             }
             return handle;
         }
@@ -444,14 +444,14 @@ u16 func_0202bd40(EffectManager *manager, u32 group, u32 script, u32 position, u
     return 0;
 }
 
-ModelInstance *EffectManager::func_0202be14(u32 group, u32 index) {
+ModelInstance *EffectManager::CreateModelInstance(u32 group, u32 index) {
     ModelAnim *anim = new ModelAnim(mAnimData[group], mModels[group][index]);
-    ModelInstance *model = mModels[group][index]->func_02028b78(anim);
-    model->mUnk_69 = 0;
+    ModelInstance *model = mModels[group][index]->CreateInstance(anim);
+    model->mUseBoxTest = 0;
     return model;
 }
 
-void EffectManager::func_0202be68() {
+void EffectManager::FreeAllEffects() {
     for (u16 i = 0; i < 64; i++) {
         Effect *effect = mEffects[i];
         if (effect != NULL) {
@@ -462,7 +462,7 @@ void EffectManager::func_0202be68() {
     }
 }
 
-void func_0202beb8(EffectManager *manager, u16 handle) {
+void FreeEffect(EffectManager *manager, u16 handle) {
     u32 i          = handle - 1;
     Effect *effect = manager->mEffects[i];
     if (effect != NULL) {
@@ -472,49 +472,49 @@ void func_0202beb8(EffectManager *manager, u16 handle) {
     manager->mEffects[i] = NULL;
 }
 
-void func_0202bef4(EffectManager *manager, u16 handle, VecFx32 *position) {
+void SetEffectPosition(EffectManager *manager, u16 handle, VecFx32 *position) {
     Effect *effect = manager->mEffects[handle - 1];
     if (effect == NULL) {
         return;
     }
-    effect->func_0202b500(position);
+    effect->SetPosition(position);
 }
 
-void func_0202bf18(EffectManager *manager, u16 handle, VecFx32 *scale) {
+void SetEffectScale(EffectManager *manager, u16 handle, VecFx32 *scale) {
     Effect *effect = manager->mEffects[handle - 1];
     if (effect == NULL) {
         return;
     }
-    effect->func_0202b524(scale);
+    effect->SetScale(scale);
 }
 
-void func_0202bf3c(EffectManager *manager, u16 handle, u16 *rotation) {
+void SetEffectRotation(EffectManager *manager, u16 handle, u16 *rotation) {
     Effect *effect = manager->mEffects[handle - 1];
     if (effect == NULL) {
         return;
     }
-    effect->func_0202b548(rotation);
+    effect->SetRotation(rotation);
 }
 
-void func_0202bf60(EffectManager *manager, u16 handle, MtxFx43 *mtx) {
+void SetEffectMatrix(EffectManager *manager, u16 handle, MtxFx43 *mtx) {
     Effect *effect = manager->mEffects[handle - 1];
     if (effect == NULL) {
         return;
     }
-    effect->func_0202b570(mtx);
+    effect->SetMatrix(mtx);
 }
 
 void EffectManager::Update() {
-    func_0202bf94(0);
+    UpdateTagged(0);
 }
 
-void EffectManager::func_0202bf94(u32 tag) {
+void EffectManager::UpdateTagged(u32 tag) {
     u8 passes = mPasses;
     u8 i;
     do {
         i = 0;
         do {
-            if (mEffects[i] != NULL && tag == mTags[i] && mEffects[i]->func_0202acb4() == 0) {
+            if (mEffects[i] != NULL && tag == mTags[i] && mEffects[i]->Update() == 0) {
                 Effect *effect = mEffects[i];
                 if (effect != NULL) {
                     effect->~Effect();
@@ -528,6 +528,6 @@ void EffectManager::func_0202bf94(u32 tag) {
     } while (passes != 0);
 }
 
-void EffectManager::func_0202c024(u32 passes) {
+void EffectManager::SetPasses(u32 passes) {
     mPasses = passes;
 }

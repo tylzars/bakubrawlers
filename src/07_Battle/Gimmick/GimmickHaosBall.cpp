@@ -22,21 +22,21 @@ void GimmickHaosBall::Load() {
         sResource = new ModelResource("Haosball.nsbmd", "Haosball_data.bin", "Haosball.nsbtx", 1);
     }
     ChangeDir("/Game/Gimmick");
-    sResource->func_020306e4(1);
-    mModel = sResource->mModel->func_02028b78(new ModelAnim(sResource->mAnimData, sResource->mModel));
-    mModel->func_02028e54(0, 1, 0x1000);
-    mUnk_00 = 1;
+    sResource->AddRef(1);
+    mModel = sResource->mModel->CreateInstance(new ModelAnim(sResource->mAnimData, sResource->mModel));
+    mModel->StartAnimWithIncrement(0, 1, 0x1000);
+    mAnimEnabled = 1;
     ChangeDir("/");
 }
 
 void GimmickHaosBall::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mUnk_68       = 1;
+        m->mOwnFlags       = 1;
         delete m;
         mModel = 0;
     }
-    if (sResource && sResource->func_020307e8()) {
+    if (sResource && sResource->ReleaseRef()) {
         ModelResource *r = sResource;
         delete r;
         sResource = 0;
@@ -66,7 +66,7 @@ void GimmickHaosBall::Update() {
         }
         mTimer = 0x1e;
         if (mModel) {
-            mModel->mAnim->mUnk_0c = 0x4000;
+            mModel->mAnim->mFramePerFrame = 0x4000;
         }
         mState++;
         break;
@@ -77,7 +77,7 @@ void GimmickHaosBall::Update() {
         if (!target) {
             return;
         }
-        UnkStruct_0203d374 *h = target->mUnk_1a4;
+        BakuganModel *h = target->mUnk_1a4;
         VEC_Subtract(&mPosition, &h->mPosition, &d);
         d.x = FX_Mul(d.x, 0x400);
         d.y = FX_Mul(d.y, 0x400);
@@ -98,7 +98,7 @@ void GimmickHaosBall::Update() {
         }
         mState = 3;
         if (mModel) {
-            mModel->mAnim->mUnk_0c = -0x1000;
+            mModel->mAnim->mFramePerFrame = -0x1000;
         }
         break;
     }
@@ -115,7 +115,7 @@ void GimmickHaosBall::Update() {
         if (data_020d433c.mBattlePlayers->mUnk_298) {
             func_ov007_0225c960(data_020d433c.mBattlePlayers->mUnk_298, &rnd, 0);
         }
-        SoundManager::Get().func_020246f8(0x3a);
+        SoundManager::Get().StartSeqArc(0x3a);
         mState++;
         break;
     }
@@ -129,7 +129,7 @@ void GimmickHaosBall::Update() {
         }
         mState = 1;
         if (mModel) {
-            mModel->mAnim->mUnk_0c = 0x1000;
+            mModel->mAnim->mFramePerFrame = 0x1000;
         }
         break;
     case 5:

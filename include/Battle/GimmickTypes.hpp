@@ -115,9 +115,9 @@ public:
 };
 
 // Helpers of the effect manager (data_020d433c.mEffects).
-u16 func_0202bd40(EffectManager *manager, u32 a, u32 b, u32 c, u32 d);
-void func_0202bf60(EffectManager *manager, u16 handle, MtxFx43 *mtx);
-void func_0202bf18(EffectManager *manager, u16 handle, VecFx32 *vec);
+u16 StartEffect(EffectManager *manager, u32 a, u32 b, u32 c, u32 d);
+void SetEffectMatrix(EffectManager *manager, u16 handle, MtxFx43 *mtx);
+void SetEffectScale(EffectManager *manager, u16 handle, VecFx32 *vec);
 
 // Exit marker (exepoint_00), vtable 022870bc.
 class GimmickExePoint : public Gimmick {
@@ -136,7 +136,7 @@ public:
 void func_ov007_0226a380(BattlePlayer *player, u8 record, int unk);
 extern "C" void func_01ffd088(MtxFx43 *m, u16 angle);                       // rotate about X
 extern "C" void func_01ff89c0(MtxFx43 *a, MtxFx43 *b, MtxFx43 *out);        // a * b
-extern MtxFx43 data_0220e86c;
+extern MtxFx43 gIdentityMtx43;
 
 // Power field (fieldpower_g_0), vtable 0228711c.
 class GimmickFieldPowerG : public Gimmick {

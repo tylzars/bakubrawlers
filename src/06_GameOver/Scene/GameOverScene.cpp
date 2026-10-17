@@ -101,7 +101,7 @@ void GameOverScene::Update() {
             }
             break;
         case 2: {
-            mResultWindow->mUnk_064 = 1;
+            mResultWindow->mEnabled = 1;
             if (mResultWindow->Update(TRUE)) {
                 mSelection = mResultWindow->mCursor->mSelection;
                 BOOL retry = FALSE;
@@ -177,7 +177,7 @@ void GameOverScene::Update() {
 
 void GameOverScene::InitDisplay() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
@@ -203,12 +203,12 @@ void GameOverScene::InitDisplay() {
 
 void GameOverScene::LoadGraphics() {
     ChangeDir("/game/GameOver/");
-    func_02025b64(0, 1, 0, "gameover_u_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 11, 0, "gameover_u_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 7, 0, "gameover_u_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "gameover_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "gameover_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "gameover_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0, "gameover_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 11, 0, "gameover_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 7, 0, "gameover_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "gameover_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "gameover_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "gameover_b_bg_00_nsc.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     sub.LoadCharacters("gameover_b_obj_00.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("gameover_b_obj_00_ncl.bin", 0, 0);
@@ -216,13 +216,13 @@ void GameOverScene::LoadGraphics() {
     main.LoadCharacters("gameover_u_obj_00.nce_ncg1D.bin", 0, 0);
     main.LoadPalette("gameover_u_obj_00_ncl.bin", 0, 0);
     mCellAnims[0]            = new CellAnimation("gameover_u_obj_00_nce.bin", 0, 1, 1);
-    mCellAnims[0]->mCharBase = main.func_020276f4(0);
-    mCellAnims[0]->mUnk_11   = 0;
+    mCellAnims[0]->mCharBase = main.GetCharBase(0);
+    mCellAnims[0]->mPaletteBase   = 0;
     mCellAnims[0]->SetAnimation(0);
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &window = SpriteManager::Get().Screen(1);
     window.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x3000, 0);
     window.LoadPalette("union_b_obj_window_ncl.bin", 0x40, 0);
@@ -235,14 +235,14 @@ void GameOverScene::CreateResultWindow() {
     mResultWindow = new SelectWindow(count, sResultItems[mUnk_2d], -1);
     mResultWindow->SetCells(count, sResultCells[mUnk_2d]);
     mResultWindow->mCursor->mSelection = -1;
-    mResultWindow->mUnk_064            = 0;
+    mResultWindow->mEnabled            = 0;
     mResultWindow->mCursor->mSelection = 0;
 }
 
 void GameOverScene::SetupText() {
-    SpriteManager::Get().Screen(1).func_02027624(3);
+    SpriteManager::Get().Screen(1).SetObjVramMode(3);
     ChangeDir("/");
-    mMessages       = (MessageFile *) func_02023504("font/mes_System.mes", 0, 0, 0, 0, 0);
+    mMessages       = (MessageFile *) LoadFile("font/mes_System.mes", 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x18, 8);
     mTextBuffer     = OS_Alloc(mTextBufferSize);
     MI_CpuClear16(mTextBuffer, mTextBufferSize);
@@ -258,11 +258,11 @@ void GameOverScene::SetupText() {
     height            = 0;
     MessageFile *file = mMessages;
     text.Print(file->GetText(10), file->GetLength(10), mTextBuffer, 0x18, 8, &height, &width, 0, 0, 2, 0x11, 0xe, 0, 0, 1, 1, 1);
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x4000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x4000, mTextBuffer, mTextBufferSize, 0);
 }
 
 void GameOverScene::DrawText() {
-    SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, 0x20, 0x38, 0, 0x80, 0xf, 0);
+    SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, 0x20, 0x38, 0, 0x80, 0xf, 0);
 }
 
 void GameOverScene::ShowRetryWindow(BOOL show) {

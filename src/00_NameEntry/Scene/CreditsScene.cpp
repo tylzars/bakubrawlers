@@ -28,7 +28,7 @@ CreditsScene::CreditsScene() :
     }
     mTimer[0] = 0;
     mTimer[1] = 12;
-    FrameTask::Get().func_0203dc34(0, 0xf);
+    FrameTask::Get().StartChannel(0, 0xf);
 }
 
 CreditsScene::~CreditsScene() {
@@ -42,12 +42,12 @@ CreditsScene::~CreditsScene() {
     }
     G2_SetBG1Offset(0, 0);
     G2S_SetBG1Offset(0, 0);
-    FrameTask::Get().func_0203dd90();
+    FrameTask::Get().StopAllChannels();
 }
 
 void CreditsScene::InitDisplay() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GX_SetGraphicsMode(1, 0, 0);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
@@ -74,12 +74,12 @@ void CreditsScene::InitDisplay() {
 
 void CreditsScene::LoadGraphics() {
     ChangeDir("/Game/Credit/");
-    func_02025b64(0, 1, 0, "credits_u_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(0, 11, 0, "credits_u_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 7, 0, "credits_u_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "credits_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "credits_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "credits_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0, "credits_u_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 11, 0, "credits_u_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 7, 0, "credits_u_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "credits_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "credits_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "credits_b_bg_00_nsc.bin", 0, 0, 0);
 }
 
 void CreditsScene::Update() {
@@ -133,7 +133,7 @@ BOOL CreditsScene::UpdateText() {
     }
     mScroll[0] += step;
     mScroll[1] += step;
-    func_020254f0(func_ov000_02225f98, this);
+    QueueFrameCallback(func_ov000_02225f98, this);
     while (mSubScroll >= 0x10) {
         mSubScroll -= 0x10;
         // unsigned long, not u32 (unsigned int): the index conversion changes how mwcc shares `this + i`.
@@ -203,34 +203,34 @@ void CreditsScene::PrintLine(u32 message, u32 row, u32 column, u32 shadow) {
         tm.Print(file->GetText((u16) message), file->GetLength((u16) message), mBuffers[column], 0x20, 2, &outWidth2,
                                  &outHeight2, NULL, 0, 2, 0, 0x10, 0, 0, 0, 1, 1);
     }
-    func_02025c1c(column, 12, offset, mBuffers[column], mBufferSize, 0);
+    QueueUpload(column, 12, offset, mBuffers[column], mBufferSize, 0);
 }
 
 void CreditsScene::LoadText() {
     u16 *map = (u16 *) OS_Alloc(TextManager::Get().BufferSize(8, 8));
     MI_CpuClear16(map, 0x800);
-    TextManager::Get().func_0202cd48(0, map, 0, 0, 0x20, 0x20, 0x20);
-    func_02025c1c(0, 8, 0, map, 0x800, 1);
+    TextManager::Get().FillScrChars(0, map, 0, 0, 0x20, 0x20, 0x20);
+    QueueUpload(0, 8, 0, map, 0x800, 1);
     map = (u16 *) OS_Alloc(0x800);
     MI_CpuClear16(map, 0x800);
-    TextManager::Get().func_0202cd48(0, map, 0, 0, 0x20, 0x20, 0x20);
-    func_02025c1c(1, 8, 0, map, 0x800, 1);
+    TextManager::Get().FillScrChars(0, map, 0, 0, 0x20, 0x20, 0x20);
+    QueueUpload(1, 8, 0, map, 0x800, 1);
     TextManager::Get().func_0202ce44(0, 0, 0, 0);
     TextManager::Get().func_0202ce44(1, 0, 0, 0);
     void *chars = OS_Alloc(TextManager::Get().BufferSize(0x20, 0x20));
     MI_CpuClear16(chars, 0x8000);
     DC_FlushRange(chars, 0x8000);
-    func_02025c1c(0, 12, 0, chars, 0x8000, 1);
+    QueueUpload(0, 12, 0, chars, 0x8000, 1);
     chars = OS_Alloc(0x8000);
     MI_CpuClear16(chars, 0x8000);
     DC_FlushRange(chars, 0x8000);
-    func_02025c1c(1, 12, 0, chars, 0x8000, 1);
+    QueueUpload(1, 12, 0, chars, 0x8000, 1);
     mBufferSize = TextManager::Get().BufferSize(8, 8);
     for (u32 i = 0; i < 2; i++) {
         mBuffers[i] = OS_Alloc(mBufferSize);
         MI_CpuClear16(mBuffers[i], mBufferSize);
     }
-    mMessages = (MessageFile *) func_02023504("/font/mes_Credit.mes", 0, 0, 0, 0, 0);
+    mMessages = (MessageFile *) LoadFile("/font/mes_Credit.mes", 0, 0, 0, 0, 0);
 }
 
 void func_ov000_02225f98(void *scene) {

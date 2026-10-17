@@ -195,7 +195,7 @@ void ParkScene::Update() {
                 break;
             }
             SpriteManager::Get().StartSubFade(3);
-            FrameTask::Get().func_0203dc34(0, 0x14);
+            FrameTask::Get().StartChannel(0, 0x14);
             mUnk_0d++;
             break;
         case 6:
@@ -238,7 +238,7 @@ void ParkScene::Update() {
                     mUnk_0d           = 11;
                     break;
                 default:
-                    FrameTask::Get().func_0203dc34(0, 0x14);
+                    FrameTask::Get().StartChannel(0, 0x14);
                     mUnk_0d = 0x11;
                     break;
             }
@@ -263,7 +263,7 @@ void ParkScene::Update() {
                 data_020d433c.mUnk_7c = 1;
                 if (rules == 0) {
                     Init();
-                    FrameTask::Get().func_0203dc34(0, 0x14);
+                    FrameTask::Get().StartChannel(0, 0x14);
                     mUnk_0d = 0x11;
                 } else {
                     mUnk_12 = 1;
@@ -271,7 +271,7 @@ void ParkScene::Update() {
                 }
             } else {
                 mEvent = new UnkStruct_02065c40(7, 0, 1);
-                FrameTask::Get().func_0203dc34(0, 0x14);
+                FrameTask::Get().StartChannel(0, 0x14);
                 mUnk_0d = 0xd;
             }
             break;
@@ -388,7 +388,7 @@ void ParkScene::Update() {
             break;
         }
         case 20:
-            if (mMenu->mWindow->mUnk_061 != 1) {
+            if (mMenu->mWindow->mState != 1) {
                 mMenu->mWindow->Update(TRUE);
             }
             if (mMenu->Slide()) {
@@ -530,8 +530,8 @@ void ParkScene::Update() {
         }
         case 29:
             mWindow->mCursor->mSelection = -1;
-            mWindow->mUnk_061            = 4;
-            mWindow->func_0205c7c8(0);
+            mWindow->mState            = 4;
+            mWindow->Reset(0);
             mUnk_0d++;
             break;
         case 30:
@@ -548,8 +548,8 @@ void ParkScene::Update() {
             break;
         case 32:
             mWindow->mCursor->mSelection = -1;
-            mWindow->mUnk_061            = 4;
-            mWindow->func_0205c7c8(1);
+            mWindow->mState            = 4;
+            mWindow->Reset(1);
             mUnk_0d++;
             break;
         case 33: {
@@ -651,8 +651,8 @@ void ParkScene::Update() {
             break;
         case 37:
             mWindow->mCursor->mSelection = -1;
-            mWindow->mUnk_061            = 4;
-            mWindow->func_0205c7c8(1);
+            mWindow->mState            = 4;
+            mWindow->Reset(1);
             mUnk_0d++;
             break;
         case 38: {
@@ -733,7 +733,7 @@ void ParkScene::Init() {
 
 void ParkScene::InitDisplay() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 7);
+    SpriteManager::Get().SetupMode(1, 7);
     GX_SetGraphicsMode(1, 0, 1);
     GXS_SetGraphicsMode(0);
     G2_SetBG0Control(0, 1, 0, 1, 1);
@@ -766,9 +766,9 @@ void ParkScene::LoadWindowGraphics() {
     G2S_SetBG1Control(0, 1, 2, 4, 0);
     GXS_SetVisiblePlane(0x13);
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/2D/union_b/");
     sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0, 0);
@@ -785,12 +785,12 @@ void ParkScene::func_ov004_0221b5b4() {
 
 void ParkScene::LoadBackground() {
     ChangeDir("/Game/Park/");
-    func_02025b64(1, 1, 0, "park_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "park_b_bg_01_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "park_b_bg_01_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x4000, "park_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 13, 0, "park_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 9, 0, "park_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "park_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "park_b_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "park_b_bg_01_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x4000, "park_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 13, 0, "park_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 9, 0, "park_b_bg_00_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     delete mMenu;
     mMenu = new ParkMenu(mUnk_0c);
@@ -823,7 +823,7 @@ void ParkScene::Draw() {
         return;
     }
     mWindow->Draw();
-    SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, 9, 0x20, 0x28, 0, 0x360, 0xf, 0);
+    SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, 9, 0x20, 0x28, 0, 0x360, 0xf, 0);
 }
 
 u8 ParkScene::func_ov004_0221b8c4(int index) {
@@ -845,7 +845,7 @@ int ParkScene::func_ov004_0221b908(int index) {
 
 void ParkScene::ShowWindow() {
     GXS_SetVisiblePlane(0x13);
-    mWindow->mUnk_064 = 1;
+    mWindow->mEnabled = 1;
     mWindowVisible = 1;
     G2S_SetWnd0Position(0x10, 0x10, 0xf0, 0xb0);
     GXS_SetVisibleWnd(1);
@@ -857,7 +857,7 @@ void ParkScene::ShowWindow() {
 
 void ParkScene::HideWindow() {
     GXS_SetVisiblePlane(0x11);
-    mWindow->mUnk_064 = 0;
+    mWindow->mEnabled = 0;
     mWindowVisible = 0;
     G2S_SetBlendBrightness(0x11, 0);
     GXS_SetVisibleWnd(0);
@@ -867,9 +867,9 @@ void ParkScene::HideWindow() {
 
 void ParkPopup::Open(const char *mesPath, u32 index, u32 mode) {
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, "union_b_bg_window_ncl.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/2D/union_b/");
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x10000, 0);
@@ -883,7 +883,7 @@ void ParkPopup::Open(const char *mesPath, u32 index, u32 mode) {
     if (mGlyphBuffer != NULL) {
         OS_Free(mGlyphBuffer);
     }
-    mMessages       = (MessageFile *) func_02023504(mesPath, 0, 0, 0, 0, 0);
+    mMessages       = (MessageFile *) LoadFile(mesPath, 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x18, 0xc);
     mGlyphCount     = TextManager::Get().GlyphCount(9);
     mTextBuffer     = OS_Alloc(mTextBufferSize);
@@ -902,7 +902,7 @@ void ParkPopup::Open(const char *mesPath, u32 index, u32 mode) {
             break;
     }
     mWindow->mCursor->mSelection = -1;
-    mWindow->mUnk_064            = 0;
+    mWindow->mEnabled            = 0;
     ChangeDir("/");
 }
 
@@ -916,7 +916,7 @@ void ParkPopup::PrintMessage(u32 index) {
     MessageFile *file = mMessages;
     text.Print(file->GetText(index), file->GetLength(index), mTextBuffer, 0x18, 0xc, &height, &width, 0, 0, 2, 0x42,
                0x10, 0, 0, 0, 1, 1);
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x1b000, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x1b000, mTextBuffer, mTextBufferSize, 0);
 }
 
 struct ParkRulesBuf {

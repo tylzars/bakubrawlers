@@ -139,7 +139,7 @@ void MyroomCharaScene::Update() {
             mTab    = 0;
             mUnk_12 = 0;
             func_ov008_02225910();
-            mWindow->mUnk_064 = 0;
+            mWindow->mEnabled = 0;
             mState            = 1;
             return;
         case 1:
@@ -148,8 +148,8 @@ void MyroomCharaScene::Update() {
             break;
         case 2:
             if (!SpriteManager::Get().IsFading()) {
-                mWindow->mUnk_064 = 1;
-                if (mWindow->mUnk_061 == 1) {
+                mWindow->mEnabled = 1;
+                if (mWindow->mState == 1) {
                     mState = 3;
                 }
             }
@@ -180,7 +180,7 @@ void MyroomCharaScene::Update() {
             break;
         }
         case 4:
-            mWindow->mUnk_064 = 0;
+            mWindow->mEnabled = 0;
             if (SpriteManager::Get().sFade[0] <= 1) {
                 mState = 5;
                 if (mUnk_12 == 0) {
@@ -250,11 +250,11 @@ void MyroomCharaScene::Update() {
         case 14:
         case 15:
         case 16:
-            mWindow->mUnk_064 = 1;
+            mWindow->mEnabled = 1;
             mState            = 3;
             break;
         case 17:
-            if (mWindow->mUnk_061 == 4) {
+            if (mWindow->mState == 4) {
                 if (!SpriteManager::Get().IsFading()) {
                     SetReady();
                     mState = 0x12;
@@ -281,7 +281,7 @@ void MyroomCharaScene::SetReady() {
 void MyroomCharaScene::InitDisplay() {
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(0, 1);
+    SpriteManager::Get().SetupMode(0, 1);
     GX_SetGraphicsMode(1, 0, 0);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG1Control(0, 1, 2, 4, 0);
@@ -331,13 +331,13 @@ void MyroomCharaScene::InitDisplay() {
 
 void MyroomCharaScene::func_ov008_022242c0() {
     ChangeDir("Game/Myroom/");
-    func_02025b64(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
     mWindow = NULL;
     mWindow = new SelectWindow(7, data_ov008_022293e8, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
-    sub.func_02027624(3);
+    sub.SetObjVramMode(3);
     sub.LoadCharacters("myroom_status_b_obj_00.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("myroom_status_b_obj_00_ncl.bin", 0, 0);
     mWindow->SetCells(4, data_ov008_02229378);
@@ -350,27 +350,27 @@ void MyroomCharaScene::func_ov008_022242c0() {
     mWindow->SetCells(1, data_ov008_0222929c);
     ChangeDir("/Game/Myroom/");
     mCell            = new CellAnimation("myroom_status_b_obj_00_nce.bin", 0, 1, 1);
-    mCell->mCharBase = sub.func_020276f4(0);
-    mCell->mUnk_11   = 0;
+    mCell->mCharBase = sub.GetCharBase(0);
+    mCell->mPaletteBase   = 0;
     mCell->SetAnimation(0);
     mUnk_1c = 1;
     ChangeDir("/");
     ChangeDir("/font/");
     mMessage = new MessageWindow("mes_myroom", 1, 0x13000);
     mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->func_02065be4(0xd8);
-    mMessage->func_02065890(0x27, 0, 1);
+    mMessage->SetWidth(0xd8);
+    mMessage->StartMessage(0x27, 0, 1);
     ChangeDir("/");
 }
 
 void MyroomCharaScene::func_ov008_0222460c() {
     ChangeDir("/Game/Myroom/");
-    func_02025b64(0, 7, 0, "story_bg_01_nsc.bin", 0, 0, 0);
-    func_02025b64(0, 11, 0, "story_bg_01_ncg.bin", 0, 0, 0);
-    func_02025b64(0, 1, 0, "story_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 7, 0, "story_bg_01_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 11, 0, "story_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(0, 1, 0, "story_bg_01_ncl.bin", 0, 0, 0);
     SpriteScreen &main = SpriteManager::Get().Screen(0);
-    main.func_02027624(3);
-    main.func_02027750();
+    main.SetObjVramMode(3);
+    main.ResetOam();
     main.LoadCharacters("myroom_status_u_obj_00.nce_ncg1D.bin", 0, 0);
     main.LoadPalette("myroom_status_u_obj_00_ncl.bin", 0, 0);
     main.LoadCharacters("myroom_status_u_obj_01.nce_ncg1D.bin", 0x9000, 0);
@@ -378,13 +378,13 @@ void MyroomCharaScene::func_ov008_0222460c() {
     u8 i;
     for (i = 0; i == 0; i++) {
         mCells[i]            = new CellAnimation("myroom_status_u_obj_00_nce.bin", 0, 1, 1);
-        mCells[i]->mCharBase = main.func_020276f4(0);
-        mCells[i]->mUnk_11   = 0;
+        mCells[i]->mCharBase = main.GetCharBase(0);
+        mCells[i]->mPaletteBase   = 0;
     }
     do {
         mCells[i]            = new CellAnimation("myroom_status_u_obj_01_nce.bin", 0, 1, 1);
-        mCells[i]->mCharBase = main.func_020276f4(0x9000);
-        mCells[i]->mUnk_11   = 4;
+        mCells[i]->mCharBase = main.GetCharBase(0x9000);
+        mCells[i]->mPaletteBase   = 4;
         i++;
     } while (i < 2);
     ChangeDir("/");
@@ -415,7 +415,7 @@ void MyroomCharaScene::Draw() {
     DrawWindow();
     DrawCells();
     DrawCell();
-    mMessage->func_020658d0();
+    mMessage->Update();
     DrawText();
 }
 
@@ -449,8 +449,8 @@ u8 MyroomCharaScene::func_ov008_02224a4c() {
 
 void MyroomCharaScene::func_ov008_02224a5c() {
     ChangeDir("/font/");
-    mNames    = (MessageFile *) func_02023504("mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
-    mMessages = (MessageFile *) func_02023504("mes_myroom_status.mes", 0, 0, 0, 0, 0);
+    mNames    = (MessageFile *) LoadFile("mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
+    mMessages = (MessageFile *) LoadFile("mes_myroom_status.mes", 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x20, 2);
     for (u8 i = 0; i < 7; i++) {
         mTextBuffers[i] = OS_Alloc(mTextBufferSize);
@@ -586,7 +586,7 @@ void MyroomCharaScene::func_ov008_02224f80(u32 line, u32 kind) {
             func_ov008_02224ca4(line, data_020d43f0[0].mUnk_82, 3, 0, 6);
             break;
         case 10: {
-            TextManager::Get().mUnk_5b = 1;
+            TextManager::Get().mUse4bppFont = 1;
             TextManager &text          = TextManager::Get();
             s16 width;
             s16 height;
@@ -596,20 +596,20 @@ void MyroomCharaScene::func_ov008_02224f80(u32 line, u32 kind) {
             MessageFile *file = mNames;
             text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[line], 0x20, 2, &width, &height, 0, 0, 2, 0x21, 0, 0,
                        0, 0, 1, 1);
-            TextManager::Get().mUnk_5b = 0;
+            TextManager::Get().mUse4bppFont = 0;
             func_ov008_02224ca4(line, data_020d444e[mList[mPage * 7 + line]], 3,
                                 (s16) (data_ov008_0222930c[3][line].mRight - data_ov008_0222930c[3][line].mX), 6);
             break;
         }
     }
-    func_02025c1c(SpriteManager::Get().Screen(0).mBgIndex, 4, data_ov008_022292b8[line], mTextBuffers[line], mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(0).mBgIndex, 4, data_ov008_022292b8[line], mTextBuffers[line], mTextBufferSize, 0);
     mUnk_64[line] = 1;
 }
 
 void MyroomCharaScene::DrawText() {
     for (u8 i = 0; i < 7; i++) {
         if (mUnk_64[i] != 0) {
-            SpriteManager::Get().Screen(0).func_02027778(mGlyphBuffer, mGlyphCount, data_ov008_0222930c[mUnk_12][i].mX,
+            SpriteManager::Get().Screen(0).AddOam(mGlyphBuffer, mGlyphCount, data_ov008_0222930c[mUnk_12][i].mX,
                                                          data_ov008_0222930c[mUnk_12][i].mY, 0,
                                                          (u16) (data_ov008_022292b8[i] >> 7), 0xf, 0);
         }

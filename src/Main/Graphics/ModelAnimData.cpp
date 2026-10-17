@@ -5,27 +5,27 @@
 
 void *operator new(size_t size);
 
-void UnkStruct_02029248::func_02029248() {
+void ModelAnimFile::Init() {
     mFile     = NULL;
     mOwnsFile = 0;
 }
 
-BOOL UnkStruct_02029248::func_02029258(void *file) {
+BOOL ModelAnimFile::SetFile(void *file) {
     if (file == NULL) {
         return FALSE;
     }
     if (mFile != NULL) {
-        func_020292e4();
+        Release();
     }
     mFile = file;
     return TRUE;
 }
 
-void *UnkStruct_02029248::func_02029288(u32 index, UnkStruct_020289c8 *model, UnkStruct_02028308 *texture) {
+void *ModelAnimFile::CreateAnimObj(u32 index, ModelFile *model, TextureFile *texture) {
     void *modelRes = NULL;
     void *texRes   = NULL;
     if (model != NULL) {
-        modelRes = model->mUnk_04;
+        modelRes = model->mResModel;
     }
     if (texture != NULL) {
         texRes = texture->mTex;
@@ -36,7 +36,7 @@ void *UnkStruct_02029248::func_02029288(u32 index, UnkStruct_020289c8 *model, Un
     return mem;
 }
 
-void UnkStruct_02029248::func_020292e4() {
+void ModelAnimFile::Release() {
     if (mFile == NULL) {
         return;
     }
@@ -49,7 +49,7 @@ void UnkStruct_02029248::func_020292e4() {
 
 ModelAnimData::ModelAnimData(const char *path) {
     MI_CpuClear32(mAnims, 0x14);
-    ModelAnimEntry *file = (ModelAnimEntry *) func_02023504(path, 0, 0, 0, 0, 0);
+    ModelAnimEntry *file = (ModelAnimEntry *) LoadFile(path, 0, 0, 0, 0, 0);
     mOwnsFile = 1;
     for (u8 i = 0; i < 5; i++) {
         if (file[i].mFile != 0) {
@@ -58,7 +58,7 @@ ModelAnimData::ModelAnimData(const char *path) {
         }
     }
     mFile = file;
-    func_02029488();
+    CreateAnimFiles();
 }
 
 ModelAnimData::ModelAnimData(void *data) {
@@ -72,14 +72,14 @@ ModelAnimData::ModelAnimData(void *data) {
         }
     }
     mFile = file;
-    func_02029488();
+    CreateAnimFiles();
 }
 
 ModelAnimData::~ModelAnimData() {
     for (u8 i = 0; i < 5; i++) {
-        UnkStruct_02029248 *anim = mAnims[i];
+        ModelAnimFile *anim = mAnims[i];
         if (anim != NULL) {
-            anim->func_020292e4();
+            anim->Release();
             delete anim;
         }
     }
@@ -88,17 +88,17 @@ ModelAnimData::~ModelAnimData() {
     }
 }
 
-void ModelAnimData::func_02029488() {
+void ModelAnimData::CreateAnimFiles() {
     // note: the original keeps the new object in a callee-saved register instead of using the constructor's
-    // returned `this`; calling func_02029248 as a plain method after operator new(8) reproduces that.
+    // returned `this`; calling Init as a plain method after operator new(8) reproduces that.
     for (u8 i = 0; i < 5; i++) {
         if (mFile[i].mFile != 0) {
-            UnkStruct_02029248 *anim = (UnkStruct_02029248 *) operator new(8);
+            ModelAnimFile *anim = (ModelAnimFile *) operator new(8);
             if (anim != NULL) {
-                anim->func_02029248();
+                anim->Init();
             }
             mAnims[i]                = anim;
-            anim->func_02029258((void *) mFile[i].mFile);
+            anim->SetFile((void *) mFile[i].mFile);
         }
     }
 }

@@ -11,7 +11,7 @@ class MovieScene : public SceneBase {
 public:
     /* 00 SceneBase */
     /* 0c */ MoviePlayer *mPlayer;
-    /* 10 */ u8 mUnk_10; // 0 playing, 1 finished and waiting for the fade
+    /* 10 */ u8 mPlaybackDone; // 0 playing, 1 finished and waiting for the fade
     /* 11 */ PAD(0x11, 0x14);
     /* 14 */
 

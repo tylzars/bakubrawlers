@@ -34,7 +34,7 @@ ModelResource::ModelResource(const char *nsbmd, const char *data, const char *ns
 
 ModelResource::~ModelResource() {
     while (mRefs != 0) {
-        func_020307e8();
+        ReleaseRef();
     }
     delete mModelFile;
     mModelFile = NULL;
@@ -44,7 +44,7 @@ ModelResource::~ModelResource() {
     mDataFile = NULL;
 }
 
-u16 ModelResource::func_020306e4(u8 freeTexture) {
+u16 ModelResource::AddRef(u8 freeTexture) {
     if (mRefs == 0) {
         if (mTextureFile != NULL) {
             mTexture = new NitroTexture(mTextureFile);
@@ -62,25 +62,25 @@ u16 ModelResource::func_020306e4(u8 freeTexture) {
             }
         }
         if (mTexture != NULL && freeTexture != 0) {
-            mTexture->func_02028344();
+            mTexture->FreeFile();
         }
     }
     return mRefs++;
 }
 
-BOOL ModelResource::func_020307e8() {
+BOOL ModelResource::ReleaseRef() {
     BOOL result = FALSE;
     mRefs--;
     if (mRefs == 0) {
         NitroTexture *texture = mTexture;
         if (texture != NULL) {
-            texture->func_0202832c();
+            texture->Release();
             delete texture;
         }
         mTexture = NULL;
         NitroModel *model = mModel;
         if (model != NULL) {
-            model->func_02028af0();
+            model->Release();
             delete model;
         }
         mModel = NULL;

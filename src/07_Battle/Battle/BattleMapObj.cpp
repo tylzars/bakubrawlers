@@ -11,23 +11,23 @@
 BattleMapObjPart::~BattleMapObjPart() {
     ModelInstance *model = mModel;
     if (model) {
-        model->mUnk_68 = 0xb;
+        model->mOwnFlags = 0xb;
         delete model;
         mModel = 0;
     }
 }
 
-void BattleMapObjPart::func_ov007_022490ac(UnkStruct_02028308 *texture, const char *nsbmd, const char *data, u32 unk0) {
+void BattleMapObjPart::func_ov007_022490ac(TextureFile *texture, const char *nsbmd, const char *data, u32 unk0) {
     NitroModel *model = new NitroModel(nsbmd, texture);
     if (data != 0) {
         ModelAnimData *animData = new ModelAnimData(data);
         ModelAnim *anim         = new ModelAnim(animData, model);
-        mModel                  = model->func_02028b78(anim);
-        mModel->func_02028e54(0, 1, 0x1000);
-        mUnk_00 = unk0;
+        mModel                  = model->CreateInstance(anim);
+        mModel->StartAnimWithIncrement(0, 1, 0x1000);
+        mAnimEnabled = unk0;
     } else {
-        mModel  = model->func_02028b78(0);
-        mUnk_00 = 0;
+        mModel  = model->CreateInstance(0);
+        mAnimEnabled = 0;
     }
 }
 
@@ -39,7 +39,7 @@ BattleMapObj::BattleMapObj(int unk1) {
 
 BattleMapObj::~BattleMapObj() {
     u8 i = 0;
-    UnkStruct_02028308 *texture = mParts[0]->mModel->mUnk_58->mUnk_08;
+    TextureFile *texture = mParts[0]->mModel->mModelFile->mTexture;
     do {
         BattleMapObjPart *part = mParts[i];
         if (part) {
@@ -48,22 +48,22 @@ BattleMapObj::~BattleMapObj() {
         i++;
     } while (i < 8);
     if (texture) {
-        texture->func_0202832c();
+        texture->Release();
         delete texture;
     }
 }
 
 void BattleMapObj::func_ov007_02249200(const char *nsbtx, const char *nsbmd, const char *data, u32 flag) {
     mParts[mCount] = new BattleMapObjPart();
-    mParts[mCount]->func_020525c0(nsbtx, nsbmd, data, 1);
-    mParts[mCount]->mModel->mUnk_69 = flag;
+    mParts[mCount]->LoadFiles(nsbtx, nsbmd, data, 1);
+    mParts[mCount]->mModel->mUseBoxTest = flag;
     mCount++;
 }
 
-void BattleMapObj::func_ov007_0224927c(UnkStruct_02028308 *texture, const char *nsbmd, const char *data, u32 flag) {
+void BattleMapObj::func_ov007_0224927c(TextureFile *texture, const char *nsbmd, const char *data, u32 flag) {
     mParts[mCount] = new BattleMapObjPart();
     mParts[mCount]->func_ov007_022490ac(texture, nsbmd, data, 1);
-    mParts[mCount]->mModel->mUnk_69 = flag;
+    mParts[mCount]->mModel->mUseBoxTest = flag;
     mCount++;
 }
 
@@ -85,7 +85,7 @@ void BattleMapObj::func_ov007_022492f8(const BattleMapObjTable *table) {
         }
         i++;
     } while (i < table->mCount);
-    texture->func_02028344();
+    texture->FreeFile();
 }
 
 extern const BattleMapObjTable data_ov007_0227a2bc[];
@@ -121,14 +121,14 @@ void BattleMapObj::func_ov007_022493fc() {
 void BattleMapObj::func_ov007_0224954c() {
     if (mUnk_20 == 9) {
         MtxFx43 *camera = func_020323b8();
-        MtxFx43 mtx     = data_0220e86c;
+        MtxFx43 mtx     = gIdentityMtx43;
         VecFx32 scale   = data_ov007_0227a13c;
         VecFx32 offset  = data_ov007_0227a148;
-        mtx             = data_0220e86c;
+        mtx             = gIdentityMtx43;
         func_01ffcf64(&mtx, &offset);
         func_01ff89c0(&mtx, camera, &mtx);
-        mParts[0]->mModel->func_02028d80();
-        mParts[0]->mModel->func_02029174(&mtx, &scale);
+        mParts[0]->mModel->AdvanceAnim();
+        mParts[0]->mModel->Draw(&mtx, &scale);
     } else {
         if (mCount != 0) {
             u8 i = 0;

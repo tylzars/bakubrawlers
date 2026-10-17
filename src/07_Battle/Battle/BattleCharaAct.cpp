@@ -19,10 +19,10 @@
 #include <stdio.h>
 
 // Model file loaded from a name and a texture (the pair of calls after the base constructor).
-class BattleCharaActModel : public UnkStruct_020289c8 {
+class BattleCharaActModel : public ModelFile {
 public:
-    BattleCharaActModel(const char *name, UnkStruct_02028308 *texture) {
-        func_020289e0(name, texture);
+    BattleCharaActModel(const char *name, TextureFile *texture) {
+        Load(name, texture);
     }
 };
 
@@ -136,7 +136,7 @@ static const u16 *data_ov007_0228a2e4[22] = {
     NULL,
     data_ov007_0227acb8,
 };
-// Light setups (0x0227af68) indexed by data_020d433c.mUnk_95: four lights each, as UnkStruct_02029ca8 reads them
+// Light setups (0x0227af68) indexed by data_020d433c.mUnk_95: four lights each, as ModelLightGroup reads them
 // (enable flag, colour, direction). The table is a section of its own, after the 16-byte tables above: a
 // function-local static of an inline accessor gets one.
 struct LightRecord {
@@ -190,23 +190,23 @@ void BattleCharaAct::func_ov007_02267a8c() {
     }
     switch (mUnk_36) {
     case 0:
-        SpriteManager::Get().func_02026dec(1, 7);
+        SpriteManager::Get().SetupMode(1, 7);
         mUnk_10 = new Camera();
-        mUnk_10->func_02026004(0x1555);
+        mUnk_10->SetFov(0x1555);
         mUnk_10->SetClip(0x1000, 0x1388000);
         mUnk_10->SetPosition(0, 0, 0x22c000 - 0x1000);
         mUnk_10->SetTarget(0, 0, 0);
-        CameraManager::Get().func_02026504(3, mUnk_0c, (u32) mUnk_10);
+        CameraManager::Get().SetCamerasAndRequestMode(3, mUnk_0c, (u32) mUnk_10);
         break;
     case 5:
     case 6:
         SpriteManager::Get().func_0202740c();
         CameraManager::Get().mActive = 0;
-        CameraManager::Get().func_02026504(1, mUnk_0c, 0);
+        CameraManager::Get().SetCamerasAndRequestMode(1, mUnk_0c, 0);
         break;
     default:
-        SpriteManager::Get().func_02026dec(1, 7);
-        CameraManager::Get().func_02026504(2, mUnk_0c, 0);
+        SpriteManager::Get().SetupMode(1, 7);
+        CameraManager::Get().SetCamerasAndRequestMode(2, mUnk_0c, 0);
         break;
     }
     mUnk_24 = 0;
@@ -222,28 +222,28 @@ void BattleCharaAct::func_ov007_02267a8c() {
         ChangeDir("/Game/Character/Character/");
         sprintf(buffer, "chara%02d_M_%02d.cam", mUnk_38, n);
     }
-    mUnk_14 = func_02023504(buffer, 0, 0, 0, 0, 0);
-    mUnk_0c->func_0202610c(mUnk_14, 0);
+    mUnk_14 = LoadFile(buffer, 0, 0, 0, 0, 0);
+    mUnk_0c->SetPath(mUnk_14, 0);
     ChangeDir("/");
-    mUnk_20 = new UnkStruct_02029ca8(LightSetups()[data_020d433c.mUnk_95]);
+    mUnk_20 = new ModelLightGroup(LightSetups()[data_020d433c.mUnk_95]);
 }
 
 BattleCharaAct::~BattleCharaAct() {
-    UnkStruct_02029ca8 *lights = mUnk_20;
+    ModelLightGroup *lights = mUnk_20;
     if (lights) {
         delete lights;
     }
     delete mUnk_10;
-    CameraManager::Get().func_02026504(0, 0, 0);
+    CameraManager::Get().SetCamerasAndRequestMode(0, 0, 0);
     UnkStruct_0205401c *character = mUnk_1c;
     if (character) {
-        character->func_02054034();
+        character->Release();
         delete character;
     }
     func_ov007_022695f4();
     ModelInstance *model = mUnk_24;
     if (model) {
-        model->mUnk_68 = 0xf;
+        model->mOwnFlags = 0xf;
         delete model;
         mUnk_24 = 0;
     }
@@ -258,9 +258,9 @@ BattleCharaAct::~BattleCharaAct() {
 
 u8 BattleCharaAct::func_ov007_02268110() {
     mUnk_1c = new UnkStruct_0205401c();
-    mUnk_1c->func_0205411c(mUnk_38, 1, data_020d433c.mBattlePlayers->mPlayers[mUnk_39]->NameInfo(), (u8) (mUnk_36 + 1));
+    mUnk_1c->Create(mUnk_38, 1, data_020d433c.mBattlePlayers->mPlayers[mUnk_39]->NameInfo(), (u8) (mUnk_36 + 1));
     mUnk_1c->func_0205461c(mUnk_36, 0);
-    return mUnk_1c->mUnk_0c;
+    return mUnk_1c->mUseCharacter;
 }
 
 void BattleCharaAct::func_ov007_02268190() {
@@ -316,23 +316,23 @@ void BattleCharaAct::func_ov007_02268190() {
             break;
     }
     if (loaded) {
-        UnkStruct_02028308 *texture = new NitroTexture(textureName);
+        TextureFile *texture = new NitroTexture(textureName);
         if (paletteAKind == 1) {
-            texture->func_02028858("S_sphe00", paletteA, 0);
+            texture->LoadPaletteFile("S_sphe00", paletteA, 0);
         }
         if (paletteBKind == 1) {
-            texture->func_02028858("S_sphe01", paletteB, 0);
+            texture->LoadPaletteFile("S_sphe01", paletteB, 0);
         }
         if (paletteAKind == 2) {
-            texture->func_02028858("ab_00", paletteA, 0);
+            texture->LoadPaletteFile("ab_00", paletteA, 0);
         }
-        UnkStruct_020289c8 *model = new BattleCharaActModel(modelName, texture);
-        texture->func_02028344();
+        ModelFile *model = new BattleCharaActModel(modelName, texture);
+        texture->FreeFile();
         ModelAnimData *data = new ModelAnimData(animName);
         ModelAnim *anim     = new ModelAnim(data, (NitroModel *) model);
-        mUnk_24             = model->func_02028b78(anim);
-        mUnk_24->func_02028e54(0, 0, 0x1000);
-        mUnk_24->mUnk_69 = 0;
+        mUnk_24             = model->CreateInstance(anim);
+        mUnk_24->StartAnimWithIncrement(0, 0, 0x1000);
+        mUnk_24->mUseBoxTest = 0;
     }
     ChangeDir("/");
 }
@@ -400,7 +400,7 @@ void BattleCharaAct::Update() {
                     }
 const u8 *t = data_ov007_0228a33c[mUnk_38];
  if (t) { mUnk_34 = t[mUnk_36]; } else { mUnk_34 = 0; }
-                    FrameTask::Get().func_0203dc34(1, mUnk_30);
+                    FrameTask::Get().StartChannel(1, mUnk_30);
                     FrameTask::Get().func_0203dd4c(1);
                 }
             }
@@ -421,7 +421,7 @@ const u8 *t = data_ov007_0228a33c[mUnk_38];
                 mUnk_35 = 8;
                 break;
             }
-            if (mUnk_1c->func_02054710()) {
+            if (mUnk_1c->IsAnimEndReached()) {
                 mUnk_35 = 8;
                 break;
             }
@@ -464,7 +464,7 @@ const u8 *t = data_ov007_0228a33c[mUnk_38];
             break;
         case 9:
             if (!SpriteManager::Get().IsFading()) {
-                CameraManager::Get().func_02026504(0, NULL, 0);
+                CameraManager::Get().SetCamerasAndRequestMode(0, NULL, 0);
                 data_020d433c.mUnk_14 |= 4;
                 mUnk_35++;
             }
@@ -510,10 +510,10 @@ const u8 *t = data_ov007_0228a33c[mUnk_38];
     manager.mMtxC[manager.mActive]       = *func_020323b8();
     if (mUnk_36 == 0) {
         if (CameraManager::Get().mActive == 0) {
-            u8 saved                     = CameraManager::Get().mUnk_01;
-            CameraManager::Get().mUnk_01 = 0;
+            u8 saved                     = CameraManager::Get().mModelsVisible;
+            CameraManager::Get().mModelsVisible = 0;
             func_ov007_022693f4();
-            CameraManager::Get().mUnk_01 = saved;
+            CameraManager::Get().mModelsVisible = saved;
             func_ov007_022693f4();
         } else {
             func_ov007_0226961c();
@@ -554,15 +554,15 @@ void BattleCharaAct::func_ov007_02269380() {
 }
 
 void BattleCharaAct::func_ov007_022693f4() {
-    mUnk_0c->func_020264a4(0);
-    mUnk_0c->func_02026180();
+    mUnk_0c->AdvanceFrame(0);
+    mUnk_0c->ApplyPath();
     mUnk_18->func_ov007_0224954c();
-    mUnk_1c->func_02054568();
+    mUnk_1c->Draw();
     if (!mUnk_24) {
         return;
     }
     BOOL draw    = 1;
-    MtxFx43 mtx  = data_0220e86c;
+    MtxFx43 mtx  = gIdentityMtx43;
     VecFx32 pos  = data_ov007_0227ac20;
     VecFx32 zero = {0, 0, 0};
     func_01ffcf64(&mtx, &zero);
@@ -575,26 +575,26 @@ void BattleCharaAct::func_ov007_022693f4() {
     if (!draw) {
         return;
     }
-    mUnk_24->func_02028d80();
-    mUnk_24->func_02029174(&mtx, &pos);
+    mUnk_24->AdvanceAnim();
+    mUnk_24->Draw(&mtx, &pos);
 }
 
 void BattleCharaAct::func_ov007_02269518() {
-    UnkStruct_02028308 *texture = new NitroTexture("fieldop_00.nsbtx");
-    UnkStruct_020289c8 *model   = new BattleCharaActModel("fieldop_00.nsbmd", texture);
-    texture->func_02028344();
+    TextureFile *texture = new NitroTexture("fieldop_00.nsbtx");
+    ModelFile *model   = new BattleCharaActModel("fieldop_00.nsbmd", texture);
+    texture->FreeFile();
     ModelAnimData *data = new ModelAnimData("fieldop_00_data.bin");
     ModelAnim *anim     = new ModelAnim(data, (NitroModel *) model);
-    mUnk_28             = model->func_02028b78(anim);
-    mUnk_28->func_02028de8(0, 1);
-    mUnk_28->mUnk_69 = 0;
-    mUnk_28->func_02028e54(0, 1, 0x2000);
+    mUnk_28             = model->CreateInstance(anim);
+    mUnk_28->StartAnim(0, 1);
+    mUnk_28->mUseBoxTest = 0;
+    mUnk_28->StartAnimWithIncrement(0, 1, 0x2000);
 }
 
 void BattleCharaAct::func_ov007_022695f4() {
     ModelInstance *model = mUnk_28;
     if (model) {
-        model->mUnk_68 = 0xf;
+        model->mOwnFlags = 0xf;
         delete model;
     }
 }
@@ -603,11 +603,11 @@ void BattleCharaAct::func_ov007_0226961c() {
     if (!mUnk_28) {
         return;
     }
-    MtxFx43 mtx = data_0220e86c;
+    MtxFx43 mtx = gIdentityMtx43;
     VecFx32 pos = data_ov007_0227ac2c;
     func_01ffd088(&mtx, 0x4000);
-    mUnk_28->func_02028d80();
-    mUnk_28->func_02029174(&mtx, &pos);
+    mUnk_28->AdvanceAnim();
+    mUnk_28->Draw(&mtx, &pos);
 }
 
 u32 func_ov007_022696a0(u32 a, u32 b) {

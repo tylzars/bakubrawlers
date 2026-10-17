@@ -17,15 +17,15 @@ ConfrontEmblem05::ConfrontEmblem05(u8 emblem) {
     mAngle    = 0;
     mSpeed    = 0x50;
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
-    sub.func_02027624(3);
+    sub.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
     sprintf(path, "vs_emblem_%02d_nce.bin", emblem);
     mAnim          = new CellAnimation(path, 0, 1, 1);
-    mAnim->mCharBase = sub.func_020276f4(0x1c000);
-    mAnim->mUnk_11 = 0xb;
+    mAnim->mCharBase = sub.GetCharBase(0x1c000);
+    mAnim->mPaletteBase = 0xb;
     mAnim->SetAnimation(0);
     ChangeDir("/");
-    mAnim->func_02029f6c();
+    mAnim->ResetAnimation();
     mAnim->SetAnimation(0);
     mX = 78.0f + 50.0f * ((float) FX_SinCosTable_[(mAngle >> 4) * 2 + 1] / 4096.0f);
     mY = 136.0f + 32.0f * ((float) FX_SinCosTable_[(mAngle >> 4) * 2] / 4096.0f);
@@ -51,7 +51,7 @@ void ConfrontEmblem05::func_ov007_02220a00() {
 void ConfrontEmblem05::func_ov007_02220b48() {
     s32 x = (s32) mX;
     s32 y = (s32) mY;
-    mAnim->func_0202a494(1, x, y, 0, 0x1000, 0x1000, 0);
+    mAnim->DrawTransformed(1, x, y, 0, 0x1000, 0x1000, 0);
 }
 
 int ConfrontEmblem05::func_ov007_02220b9c(int fast) {
@@ -135,18 +135,18 @@ void ConfrontBg05::vfunc_28() {
     ChangeDir("/Game/Confrontation/Bg/");
     u8 n = entries[mUnk_12].mUnk_0d_0;
     sprintf(path, "vs_b_bg_05_%02d_ncl.bin", n);
-    func_02025b64(1, 1, 0x2000, path, 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, path, 0, 0, 0);
     sprintf(path, "vs_b_bg_05_%02d_ncg.bin", n);
-    func_02025b64(1, 12, 0, path, 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, path, 0, 0, 0);
     sprintf(path, "vs_b_bg_05_%02d_nsc.bin", n);
-    func_02025b64(1, 8, 0, path, 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, path, 0, 0, 0);
     sprintf(path, "vs_b_bg_05_%02d_ncl.bin", n);
-    func_02025b64(1, 1, 0x6000, path, 0, 0, 0);
-    func_02025b64(1, 14, 0, "vs_b_bg_05_06_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 10, 0, "vs_b_bg_05_06_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x6000, path, 0, 0, 0);
+    LoadAndQueueUpload(1, 14, 0, "vs_b_bg_05_06_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 10, 0, "vs_b_bg_05_06_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
     u8 emblem;
     if (mUnk_12 == 0) {
@@ -198,12 +198,12 @@ u8 ConfrontBg05::vfunc_40(int a) {
     s16 y = (s32) mEmblem->mY;
     s16 x = (s32) mEmblem->mX;
     func_ov007_0221bb28(x, y);
-    if (TouchManager::Get().mUnk_56) {
+    if (TouchManager::Get().mDown) {
         hit = mEmblem->func_ov007_02220b9c(a);
         if (hit != -1) {
             func_ov007_0221bb3c();
             if (!func_02024790(&SoundManager::Get(), 0x2b)) {
-                SoundManager::Get().func_020246f8(0x2b);
+                SoundManager::Get().StartSeqArc(0x2b);
             }
             mUnk_68 = 10;
         }

@@ -22,6 +22,6 @@ public:
 
     ModelResource(const char *nsbmd, const char *data, const char *nsbtx, u32 unk4); // 020305ac
     ~ModelResource();                                                               // 02030684
-    u16 func_020306e4(u8 freeTexture); // load the files (first reference) and count a reference; returns the count before
-    BOOL func_020307e8();               // drop a reference, TRUE when the files were released
+    u16 AddRef(u8 freeTexture); // load the files (first reference) and count a reference; returns the count before
+    BOOL ReleaseRef();               // drop a reference, TRUE when the files were released
 };

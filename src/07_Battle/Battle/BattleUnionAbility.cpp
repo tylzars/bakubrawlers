@@ -101,7 +101,7 @@ void BattleUnionAbility::Update() {
                 if (mType != 0 && mType != 1 && mType != 3 && mType != 5) {
                     mState = 6;
                 } else {
-                    mWindow->mUnk_064 = 1;
+                    mWindow->mEnabled = 1;
                     mState++;
                 }
             }
@@ -169,74 +169,74 @@ void BattleUnionAbility::func_ov007_02234428() {
 
 void BattleUnionAbility::func_ov007_022344a4() {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/Game/Battle/Obj");
     if (mType == 0 || mType == 1 || mType == 3) {
         mWindow->SetCells(2, data_ov007_02279a70);
         mWindow->mCells[0]->SetAnimation(1);
-        func_02025b64(1, 4, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
         u8 i = 0;
         do {
             mAnims[i]            = new CellAnimation("battle_b_obj_union_ability_nce.bin", 9, 1, 1);
-            mAnims[i]->mCharBase = screen.func_020276f4(mCharOffset);
-            mAnims[i]->mUnk_11   = mPalette;
+            mAnims[i]->mCharBase = screen.GetCharBase(mCharOffset);
+            mAnims[i]->mPaletteBase   = mPalette;
             i++;
         } while (i < 2);
     } else if (mType == 5) {
         mWindow->SetCells(1, data_ov007_02279a1c);
         mWindow->mCells[0]->SetAnimation(7);
-        func_02025b64(1, 4, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
+        LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_union_ability.nce_ncg1D.bin", 0, 0, 0);
         mAnims[0]            = new CellAnimation("battle_b_obj_union_ability_nce.bin", 9, 1, 1);
-        mAnims[0]->mCharBase = screen.func_020276f4(mCharOffset);
-        mAnims[0]->mUnk_11   = mPalette;
+        mAnims[0]->mCharBase = screen.GetCharBase(mCharOffset);
+        mAnims[0]->mPaletteBase   = mPalette;
     }
-    func_02025b64(1, 5, mPalette << 5, "battle_b_obj_ability_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 5, mPalette << 5, "battle_b_obj_ability_ncl.bin", 0, 0, 0);
     ChangeDir("/");
     mCharOffset += 0xa00;
 }
 
 void BattleUnionAbility::func_ov007_0223471c() {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     func_ov007_022344a4();
     ChangeDir("/Game/Battle/Obj");
     switch (mType) {
         case 0:
-            func_02025b64(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
             mAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 0, 1, 1);
             mAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 3, 1, 1);
             break;
         case 1:
-            func_02025b64(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
             mAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 1, 1, 1);
             mAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 4, 1, 1);
             break;
         case 2:
-            func_02025b64(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_ability.nce_ncg1D.bin", 0, 0, 0);
             mAnimA = new CellAnimation("battle_b_obj_ability_nce.bin", 2, 1, 1);
             mAnimB = new CellAnimation("battle_b_obj_ability_nce.bin", 5, 1, 1);
             break;
         case 3:
-            func_02025b64(1, 4, mCharOffset, "battle_b_obj_fie_ability.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_fie_ability.nce_ncg1D.bin", 0, 0, 0);
             mAnimA = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 0, 1, 1);
             mAnimB = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 2, 1, 1);
             break;
         case 4:
-            func_02025b64(1, 4, mCharOffset, "battle_b_obj_wait.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_wait.nce_ncg1D.bin", 0, 0, 0);
             mAnimA = new CellAnimation("battle_b_obj_wait_nce.bin", 0, 1, 1);
             mAnimB = new CellAnimation("battle_b_obj_wait_nce.bin", 1, 1, 1);
             break;
         case 5:
-            func_02025b64(1, 4, mCharOffset, "battle_b_obj_fie_ability.nce_ncg1D.bin", 0, 0, 0);
+            LoadAndQueueUpload(1, 4, mCharOffset, "battle_b_obj_fie_ability.nce_ncg1D.bin", 0, 0, 0);
             mAnimA = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 1, 1, 1);
             mAnimB = new CellAnimation("battle_b_obj_fie_ability_nce.bin", 3, 1, 1);
             break;
     }
     ChangeDir("/");
-    mAnimA->mCharBase = screen.func_020276f4(mCharOffset);
-    mAnimA->mUnk_11   = mPalette;
-    mAnimB->mCharBase = screen.func_020276f4(mCharOffset);
-    mAnimB->mUnk_11   = mPalette;
+    mAnimA->mCharBase = screen.GetCharBase(mCharOffset);
+    mAnimA->mPaletteBase   = mPalette;
+    mAnimB->mCharBase = screen.GetCharBase(mCharOffset);
+    mAnimB->mPaletteBase   = mPalette;
 }
 
 void BattleUnionAbility::func_ov007_02234b5c() {

@@ -217,11 +217,11 @@ public:
 class Camera;
 class ModelInstance;
 class ModelAnim;
-class UnkStruct_02029ca8;
+class ModelLightGroup;
 class EffectManager;
 
 class BattleMapObjPart;
-class UnkStruct_02028308;
+class TextureFile;
 struct BattleMapObjTable;
 
 // Helper of the battle map scene (0x24 bytes): ctor 0x0224916c, destructor 0x02249198 (non-virtual).
@@ -238,7 +238,7 @@ public:
     BattleMapObj(int unk1);
     ~BattleMapObj();
     void func_ov007_02249200(const char *nsbtx, const char *nsbmd, const char *data, u32 flag);
-    void func_ov007_0224927c(UnkStruct_02028308 *texture, const char *nsbmd, const char *data, u32 flag);
+    void func_ov007_0224927c(TextureFile *texture, const char *nsbmd, const char *data, u32 flag);
     void func_ov007_022492f8(const BattleMapObjTable *table);
     void func_ov007_022493fc();
     void func_ov007_0224954c();
@@ -298,7 +298,7 @@ public:
     /* 1c */ VecFx32 mPos[2];
     /* 34 */ float mUnk_34;
     /* 38 */ BattleMapObj *mUnk_38;
-    /* 3c */ UnkStruct_02029ca8 *mUnk_3c;
+    /* 3c */ ModelLightGroup *mUnk_3c;
     /* 40 */ void *mCamFile;
     /* 44 */ EffectManager *mEffects;
     /* 48 */ BattleRealBaku *mUnk_48;

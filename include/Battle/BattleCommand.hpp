@@ -90,8 +90,8 @@ public:
 
 class BattleMapObj;
 class BattleMapModel;
-class UnkStruct_0203d374;
-class UnkStruct_02029ca8;
+class BakuganModel;
+class ModelLightGroup;
 class BattleStatusPanels;
 struct BattleUnk29c;
 class BattleMapPiece;
@@ -102,12 +102,12 @@ class BattleCommandMap : public SceneBase {
 public:
     /* 0c */ void *mUnk_0c;
     /* 10 */ BattleMapObj *mUnk_10;
-    /* 14 */ UnkStruct_0203d374 *mUnk_14;
+    /* 14 */ BakuganModel *mUnk_14;
     /* 18 */ void *mUnk_18[12];
     /* 48 */ BattleMapModel *mUnk_48;
     /* 4c */ BattleMapModel *mUnk_4c;
     /* 50 */ BattleMapModel *mUnk_50[4];
-    /* 60 */ UnkStruct_02029ca8 *mUnk_60;
+    /* 60 */ ModelLightGroup *mUnk_60;
     /* 64 */ BattleMapPiece *mUnk_64;
     /* 68 */ BattleMapPiece *mUnk_68;
     /* 6c */ BattleMapPiece *mUnk_6c;

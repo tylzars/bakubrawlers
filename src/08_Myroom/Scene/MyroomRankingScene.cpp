@@ -36,7 +36,7 @@ const WindowItemRecord data_ov008_02228eac[13] = {
     {12, 0x8000, 238, 64, 0, 0, 0x0, {-1, -1, -1, -1}, 0, 0},
 };
 
-// Position (x, y) of each digit cell, per ranking row, as passed to func_0202a3ec.
+// Position (x, y) of each digit cell, per ranking row, as passed to DrawFrame.
 struct RankingDigitPos {
     /* 0 */ u8 mX;
     /* 1 */ u8 mY;
@@ -216,7 +216,7 @@ void MyroomRankingScene::Update() {
             }
             break;
         case 4:
-            if (mWindow->mUnk_061 == 4) {
+            if (mWindow->mState == 4) {
                 if (!SpriteManager::Get().IsFading()) {
                     mUnk_1b8 = 5;
                 }
@@ -235,14 +235,14 @@ void MyroomRankingScene::Update() {
             switch (mWindow->mCursor->mUnk_05) {
                 case 10:
                 case 11:
-                    SoundManager::Get().func_020246f8(5);
+                    SoundManager::Get().StartSeqArc(5);
                     break;
             }
         }
         if (mResult != 2) {
             UpdateRowAnimations();
         } else {
-            SoundManager::Get().func_020246f8(1);
+            SoundManager::Get().StartSeqArc(1);
             mUnk_1c0 = 1;
         }
         func_ov008_022205ac();
@@ -253,7 +253,7 @@ void MyroomRankingScene::InitDisplay() {
     MI_CpuClearFast((void *) 0x6000000, 0x80000);
     MI_CpuClearFast((void *) 0x6200000, 0x20000);
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(0, 7);
+    SpriteManager::Get().SetupMode(0, 7);
     GX_SetGraphicsMode(1, 0, 1);
     GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
@@ -298,13 +298,13 @@ void MyroomRankingScene::func_ov008_0221fe9c() {
     mUnk_16c = mUnk_44;
     mUnk_10  = new RankingCharacterView(mUnk_168, mUnk_16a, mUnk_16c, 0);
     ChangeDir("/Game/Myroom/");
-    func_02025b64(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "myroom_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "myroom_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "myroom_b_bg_00_ncl.bin", 0, 0, 0);
     mWindow = NULL;
     mWindow = new SelectWindow(0xd, data_ov008_02228eac, -1);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
-    sub.func_02027624(3);
+    sub.SetObjVramMode(3);
     ChangeDir("/");
     sub.LoadCharacters("Game/Myroom/myroom_ranking_b_obj_00.nce_ncg1D.bin", 0, 0);
     sub.LoadPalette("Game/Myroom/myroom_ranking_b_obj_00_ncl.bin", 0, 0);
@@ -319,20 +319,20 @@ void MyroomRankingScene::func_ov008_0221fe9c() {
     if (mUnk_42 > 10) {
         mUnk_1bd++;
     }
-    mWindow->mCursor->func_02030474(0x40, 0x90, 6, mUnk_1bd);
+    mWindow->mCursor->SetupScroll(0x40, 0x90, 6, mUnk_1bd);
     sub.LoadCharacters("union_b_obj_number.nce_ncg1D.bin", 0x7000, 0);
     sub.LoadPalette("union_b_obj_number_ncl.bin", 0x160, 0);
     for (u8 i = 0; i < 6; i++) {
         for (u8 j = 0; j < 10; j++) {
             mRows[i].mCells[j]            = new CellAnimation("union_b_obj_number_nce.bin", 0, 1, 1);
-            mRows[i].mCells[j]->mCharBase = sub.func_020276f4(0x7000);
-            mRows[i].mCells[j]->mUnk_11   = 11;
+            mRows[i].mCells[j]->mCharBase = sub.GetCharBase(0x7000);
+            mRows[i].mCells[j]->mPaletteBase   = 11;
             mRows[i].mCells[j]->SetAnimation(0);
-            mRows[i].mCells[j]->func_02029fb8(5);
+            mRows[i].mCells[j]->SetMode(5);
         }
     }
     ChangeDir("/font/");
-    mMessages       = (MessageFile *) func_02023504("mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
+    mMessages       = (MessageFile *) LoadFile("mes_StoryCharaName.mes", 0, 0, 0, 0, 0);
     mTextBufferSize = TextManager::Get().BufferSize(0x10, 4);
     mGlyphCount     = TextManager::Get().GlyphCount(2);
     for (u8 i = 0; i < 6; i++) {
@@ -344,8 +344,8 @@ void MyroomRankingScene::func_ov008_0221fe9c() {
     TextManager::Get().SetColor(1, 0, 0xf);
     mMessage = new MessageWindow("mes_myroom", 1, 0xb000);
     mMessage->func_02065bd4(0x14, 4, 0);
-    mMessage->func_02065be4(0xd8);
-    mMessage->func_02065890(0x28, 0, 1);
+    mMessage->SetWidth(0xd8);
+    mMessage->StartMessage(0x28, 0, 1);
     if ((s32) mUnk_42 > 10) {
         mUnk_1b9 = mUnk_1bd - 6;
         mUnk_1ba = 5;
@@ -380,7 +380,7 @@ void MyroomRankingScene::func_ov008_022205b8() {
         u8 x        = data_ov008_02228cbc[i][0];
         u32 base    = (i << 11) + 0x8000;
         for (u8 j = 0; j < 2; j++) {
-            SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffers[i], 1,
+            SpriteManager::Get().Screen(1).AddOam(mGlyphBuffers[i], 1,
                                                          (s16) (x + (j % 2) * 64), y, 0, (u16) (j * 8 + (base >> 7)), 0xf, 0);
         }
     }
@@ -411,15 +411,15 @@ void MyroomRankingScene::func_ov008_022205b8() {
                 }
             }
             mRows[i].mCells[j]->Update();
-            mRows[i].mCells[j]->func_0202a3ec(1, digit, data_ov008_02228d38[i][j].mX, data_ov008_02228d38[i][j].mY, 0);
+            mRows[i].mCells[j]->DrawFrame(1, digit, data_ov008_02228d38[i][j].mX, data_ov008_02228d38[i][j].mY, 0);
         }
     }
     SelectWindow *window = mWindow;
-    u8 cy = window->mCursor->mUnk_0b;
+    u8 cy = window->mCursor->mScrollItemY;
     window->mCellPos[9].x = 0xe4;
     window->mCellPos[9].y = cy;
     mWindow->Draw();
-    mMessage->func_020658d0();
+    mMessage->Update();
 }
 
 s32 MyroomRankingScene::func_ov008_02220848() {
@@ -435,7 +435,7 @@ s32 MyroomRankingScene::func_ov008_02220848() {
             case 6: {
                 s32 row = id - 1;
                 if (mUnk_1ba != row) {
-                    SoundManager::Get().func_020246f8(0);
+                    SoundManager::Get().StartSeqArc(0);
                 }
                 mUnk_1ba = row;
                 result   = (s8) (mUnk_1b9 + mUnk_1ba);
@@ -443,7 +443,7 @@ s32 MyroomRankingScene::func_ov008_02220848() {
             }
             case 10:
             case 11:
-                SoundManager::Get().func_020246f8(5);
+                SoundManager::Get().StartSeqArc(5);
                 break;
         }
     }
@@ -472,7 +472,7 @@ s32 MyroomRankingScene::func_ov008_022209d4() {
     result   = -1;
     scrolled = FALSE;
     moved    = TRUE;
-    if (InputManager::Get().IsTrigger(0x40)) {
+    if (InputManager::Get().IsTrigger(KEY_UP)) {
         if (mUnk_1ba == 0) {
             if (scroll == 0) {
                 moved = FALSE;
@@ -483,7 +483,7 @@ s32 MyroomRankingScene::func_ov008_022209d4() {
         } else {
             mUnk_1ba--;
         }
-    } else if (InputManager::Get().IsTrigger(0x80)) {
+    } else if (InputManager::Get().IsTrigger(KEY_DOWN)) {
         if (mUnk_1ba == 5) {
             if (scroll >= mUnk_1bd - 6) {
                 moved = FALSE;
@@ -502,7 +502,7 @@ s32 MyroomRankingScene::func_ov008_022209d4() {
     }
     if (moved) {
         result = (s8) (scroll + mUnk_1ba);
-        SoundManager::Get().func_020246f8(0);
+        SoundManager::Get().StartSeqArc(0);
     }
     return result;
 }
@@ -535,7 +535,7 @@ void MyroomRankingScene::func_ov008_02220d14() {
     mUnk_1bc = mUnk_1b9;
     do {
         MI_CpuClear16(mTextBuffers[i], mTextBufferSize);
-        TextManager::Get().mUnk_5b = 1;
+        TextManager::Get().mUse4bppFont = 1;
         if (mRows[i].mUnk_28 == 0x15) {
             s16 width;
             s16 height;
@@ -554,8 +554,8 @@ void MyroomRankingScene::func_ov008_02220d14() {
             text.Print(file->GetText(index), file->GetLength(index), mTextBuffers[i], 0x10, 4, &height, &width, 0, 0, 2, 0x42,
                        0, 0, 0, 0, 1, 1);
         }
-        TextManager::Get().mUnk_5b = 0;
-        func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x8000 + i * 0x800, mTextBuffers[i], mTextBufferSize, 0);
+        TextManager::Get().mUse4bppFont = 0;
+        QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0x8000 + i * 0x800, mTextBuffers[i], mTextBufferSize, 0);
         i++;
     } while (i < 6);
 }

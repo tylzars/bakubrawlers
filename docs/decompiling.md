@@ -76,7 +76,7 @@ Diff the traces of two variants to find the first stage where they part. Facts r
   value per arm gets a high one (RankingCharacterView::CreateCharacterModel).
 - A `mov rX, rY` just before a load through rX, with rY still live, can be a second identical load that the
   post-allocation clean-up turned into a copy. A read through a `const T *` (e.g. a const-parameter inline helper)
-  keeps that second load apart in the optimizer (CharacterModel::func_02053eec, StoryCharacterModel::func_02054d08).
+  keeps that second load apart in the optimizer (CharacterModel::SetExtraAnimEnabled, StoryCharacterModel::func_02054d08).
 - Before colouring, a scheduler orders each block. Once live values reach the register limit it picks by a
   pressure score (start 16; each last use subtracts 1 + max(1, live - limit), each new value adds max(1, live -
   limit)), keeping source order on ties. Colouring then goes in falling virtual-register order, high-degree nodes
@@ -159,8 +159,8 @@ that matches should replace it.
   `r6 > 0 || r6 > 0` test (a join below the get24 call, so its result stays in r6's local).
 - Expression stand-ins: nns_snd_wavstrm func_020394c8's `- -v`, msl_strtod's `mp = (unsigned char *)&mant`,
   FileLoader's zero `base`, BattleCardCamera's -0x4000 constant, GameData's `mUnk_460 + 0xa0` cast.
-- Judgement calls: CharacterModel::func_02053d9c is declared void (its body is a tail call and every caller
-  ignores the result; void is what keeps func_0205340c matching).
+- Judgement calls: CharacterModel::LoadPartPalette is declared void (its body is a tail call and every caller
+  ignores the result; void is what keeps LoadPartTextures matching).
 
 ## Hard problems and how they were solved
 
@@ -200,7 +200,7 @@ that matches should replace it.
     exhaustive search over all 14! orders found no layout without it, and declaring it everywhere breaks 32 units.
   - gLanguageSuffixes (the language-letter table) and its strings are Game's `.data`; SaveManager is one byte,
     SceneRunner 0x14 and FrameTask 0x96c (sizes read from Game's `.bss`).
-- **Two literal-pool entries for one address.** `func_02023504` (FileSystem.cpp) loads 0x020d53e4 from two
+- **Two literal-pool entries for one address.** `LoadFile` (FileSystem.cpp) loads 0x020d53e4 from two
   different pool words, so two relocations (different symbols, or symbol plus offset) resolve to the same address
   in the original. The source models it with a second extern, `data_020d53e4_h`; the real layout of the loader's
   statics (header word, registration node, two MI contexts, state fields) is still to be worked out.
@@ -280,7 +280,7 @@ that matches should replace it.
   sections. Also: FrameTask's singleton objects join guard first, which a compile where both orders fit can't tell.
 - **Guard load before a preceding store (solved).** mwcc lets a following load (e.g. the next singleton's guard)
   move above a store only when the store's offset is below half of the declared size of the object stored into.
-  `TextManager` was declared 0x5c bytes, so the `mUnk_5b` store (offset 0x5b) blocked it; with its real size,
+  `TextManager` was declared 0x5c bytes, so the `mUse4bppFont` store (offset 0x5b) blocked it; with its real size,
   0xe8 (an unused trailing member, so `Widths()` keeps its code), 22 functions match. So when a store seems to
   pin a later load, check the declared size of the stored-to object.
 
@@ -410,7 +410,7 @@ Other findings from linking:
   register swap.
 - **`else { return x; }` keeps a branch** where `if (!c) return x;` predicates the return (MobiclipFile's allocators).
 - **One function-scope pointer reused in both branches** of an if/else changes how the second value is coloured
-  (FileSystem's func_02023504).
+  (FileSystem's LoadFile).
 
 - **Create the first operand early, add the second late:** `u16 rx = p->mRotX; ...other sums...; rx += r[0];`
   instead of `u16 rx = p->mRotX + r[0];` (which is substituted into its store and created last) gave BattleUnk29c's
@@ -490,7 +490,7 @@ Other findings from linking:
   the second pattern with only one visible store, so its other zero consumer is still unknown.
 
 - **A callee declared `void` that returns a value changes scheduling in its callers.** `SpriteScreen::LoadCharacters`
-  ends in `return func_02025c1c(...)`; declaring it `u32` flipped two scheduling ties (`mov r0, r4` against `ldr r1`)
+  ends in `return QueueUpload(...)`; declaring it `u32` flipped two scheduling ties (`mov r0, r4` against `ldr r1`)
   in func_020843ac (ListScene.cpp), not only register choices.
 
 - **`x[n] = v; n++;` vs `x[n++] = v;`** schedule differently; BattleCpu::func_ov007_02231300 needs the split form. A
@@ -519,19 +519,19 @@ Other findings from linking:
   first; copying `buf[i] = data_xxx[i]` element by element does not match (TitleScene::Update, BattleTarget::Update).
 - **Check a callee's real parameter type before fighting a caller's registers.** An `s16` local passed to a `u32`
   parameter inside a loop is widened by a hoisted temporary that mwcc coalesces with the local, so declaration order
-  stops affecting it. With `func_02027778`'s third parameter as `s16` (its prologue then matches too), MyroomGiftScene
+  stops affecting it. With `AddOam`'s third parameter as `s16` (its prologue then matches too), MyroomGiftScene
   and MyroomShootScene matched by declaration order alone.
 - **Repeated calls with constant arguments schedule in a cycle, and an earlier call's return type shifts it.** In a
-  lab of 20 identical `func_02025b64` calls the argument-setup pattern repeats every 7 calls; the period depends on
+  lab of 20 identical `LoadAndQueueUpload` calls the argument-setup pattern repeats every 7 calls; the period depends on
   the stack arguments (10, 8, 7, 6, 6 calls for 1-5 of them). Code before the run shifts it: a global store, or a
   call that returns a value (a `void` call shifts it less). The open cases (TournamentSubScene::func_ov002_0221fb24,
   BattleUnk022767c8::func_ov007_02277514, and the enum-zero placeholders in MyroomGiftScene and UnkStruct_02071d24)
   were all one cause: `func_0200acac` (called by the `ChangeDir` inline) returns BOOL but was declared void.
-  Declaring it BOOL matched them; CharacterModel::func_02053d9c then needed to be void to keep func_0205340c matching
+  Declaring it BOOL matched them; CharacterModel::LoadPartPalette then needed to be void to keep LoadPartTextures matching
   (its body is a tail call and every caller ignores the result, so either type fits the binary).
 - **A stack parameter the callee reads as `*(s16 *)&param` is really `s16`.** Declaring it so makes callers narrow at
   the call, which creates the value later and gives it the low register: with
-  `SpriteScreen::func_02027778(..., s16 unk4, ...)`, `int y = row * 0xc + base;` passed straight through matched
+  `SpriteScreen::AddOam(..., s16 unk4, ...)`, `int y = row * 0xc + base;` passed straight through matched
   TournamentScene::func_ov002_0221cd10. The callee's other narrow reads (`*(u16 *)&unk6` and so on) are untested.
 - **A pointer local can hoist shared index arithmetic over a branch.** `BattlePlayer *pl = list->mPlayers[p];`
   makes `p * 4` a common subexpression with a later `p * 4 + 0x28`, and mwcc hoists it above the `if`. Keeping the
@@ -548,7 +548,7 @@ Other findings from linking:
 - **An identical first instruction in both arms is hoisted after register allocation.** When both arms of an
   if/else start with the same instruction (same registers), mwcc moves it above the branch; that is not CSE or code
   motion in the source, so source forms that try to stop a "hoist" cannot work. The original keeps such loads in
-  each arm only because the arms load into different registers (CharacterModel::func_02053eec's restart arm uses
+  each arm only because the arms load into different registers (CharacterModel::SetExtraAnimEnabled's restart arm uses
   r2 for the part pointer, plus a `mov r2, r0` copy).
 - **One more live value across a loop changes the loop body's schedule.** BattleBase::func_ov007_0221c938 matched with
   `const u8 *mode = &data_020c4258;` used by the three IsWirelessMode calls: the pointer is reloaded from the pool,
@@ -569,7 +569,7 @@ Other findings from linking:
   ahead of list[0]. Macro vs inline, ternary vs if/else and index spellings all compiled the same.
 - **A function-local static table schedules like const data.** mwcc knows no store can reach it, so its load moves
   above preceding stores, while the table stays in `.data` (a file-scope `const` would move it to `.rodata`).
-  SpriteScreen::func_02027624 matched this way. The statics get `name$N` symbols, to check when the unit's data is
+  SpriteScreen::SetObjVramMode matched this way. The statics get `name$N` symbols, to check when the unit's data is
   claimed.
 - **A u16/s16 stack parameter is loaded at the top of the entry block.** With a 32-bit type the same load sinks
   to its first consumer (or its home-slot copy joins the late r0 chain). It only helps when every consumer has the
@@ -584,7 +584,7 @@ Other findings from linking:
 - **A narrow parameter type changes the caller's spill scheduling.** A word-sized access to a u8/u16/s16 parameter's
   home slot shares the worst-case alias set with pointer accesses, so such stores and loads chain in the
   post-allocation scheduler (ties go to input order). BattleData::func_ov007_0223de88 matched once its `value` was
-  u16 and `flag` u8, which needed CellAnimation::Draw and func_0202a3ec's last parameter to be u8 as well; callers
+  u16 and `flag` u8, which needed CellAnimation::Draw and DrawFrame's last parameter to be u8 as well; callers
   then pass u8 variables (a u32 variable gains an `and #0xff`).
 - **`delete p;` versus `if (p) delete p;`.** mwcc emits the null check for a plain `delete` itself; an explicit `if`
   changes the block shape and the scheduling around it (BattleResult's destructors). Try both: BattleConfrontCard's
@@ -610,7 +610,7 @@ Other findings from linking:
 - **Arguments with side effects are evaluated before the stack-argument stores.** A volatile read or `x++` in an
   argument is computed before the `[sp]` stores and the other arguments; every side-effect-free form is folded into
   the call and loaded after the stores, because the scheduler never lifts a `[this]` load above a `[sp]` store.
-  MessageWindow::func_020658d0 gets the same effect from an enum-typed copy of mScreen plus a named
+  MessageWindow::Update gets the same effect from an enum-typed copy of mScreen plus a named
   `SpriteManager &` (each alone is not enough). A value whose only
   consumer is one later call is substituted into that call; a compound assignment or a later read keeps it in place.
 - **`(u8)` casts at a call site often stand in for the callee's parameter types.** Making `func_020231f4` take
@@ -752,14 +752,14 @@ Other findings from linking:
 - **Inlined SDK setters.** A 36-byte copy into 0x02211430 followed by calls to 0x020322c0/0x020322f0 is the
   inline `NNS_G3dGlbSetBaseRot`/`Trans`/`Scale`: `MI_Copy36B` (0x01ff95c4) copies the 3x3 rotation.
 - **Flag from a condition.** `if (c) { x = 0; } else { x = 1; }` as statements can give the original's
-  `moveq`/`movne` order where `x = c ? 0 : 1` gives the reverse (`func_02023708`).
+  `moveq`/`movne` order where `x = c ? 0 : 1` gives the reverse (`LoadFileAsync`).
 - **Narrow read-modify-write toggles.** `f++; f &= 1;` as two statements on a `u8` field matches where a temporary
   (`u8 t = f + 1; f = t & 1;`) keeps the add in its own register (`UnkStruct_02065c40::Update`).
 - **Arguments a callee ignores.** If callers load a register before a call (e.g. `this` into r0) that the callee
   never reads, the callee still takes that parameter: `func_02084e64(ListScene *self)` is passed `self`
   although its body ignores it, and declaring it without the parameter makes the caller 8 bytes short.
 - **Declare return values.** A function declared `void` that really returns a value changes the caller's
-  register allocation: `func_02025b64` returns `offset + size`, and declaring it `u32` (callers ignore the result)
+  register allocation: `LoadAndQueueUpload` returns `offset + size`, and declaring it `u32` (callers ignore the result)
   fixed runs of loads that kept a zero in a callee-saved register.
 - **Runtime helpers.** `bl` to `0x0201f970` is `_s32_div_f`, i.e. a `/` in source: the dividend is in r0 and the
   divisor in r1, which often already holds a value the code uses elsewhere (keep it in a local).

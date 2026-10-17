@@ -93,7 +93,7 @@ void ArenaWindowScene::Update() {
             if (mUnk_24 == 0xa) {
                 return;
             }
-            FrameTask::Get().func_0203dc34(0, 0x10);
+            FrameTask::Get().StartChannel(0, 0x10);
             break;
         }
         case 1:
@@ -146,7 +146,7 @@ void ArenaWindowScene::Update() {
         case 5:
             func_ov001_0221d858();
             SpriteManager::Get().StartFade(2);
-            WirelessManager::Get().func_0202edd0();
+            WirelessManager::Get().Stop();
             mUnk_24++;
             break;
         case 6:
@@ -158,7 +158,7 @@ void ArenaWindowScene::Update() {
                 return;
             }
             data_020d433c.mUnk_a8 = 0;
-            mMenu->mUnk_064       = 1;
+            mMenu->mEnabled       = 1;
             mUnk_24++;
             break;
         case 7:
@@ -206,7 +206,7 @@ void ArenaWindowScene::Update() {
             if (mContext->mUnk_12 == 0) {
                 return;
             }
-            FrameTask::Get().func_0203dc34(0, 0x10);
+            FrameTask::Get().StartChannel(0, 0x10);
             SpriteManager::Get().StartFade(3);
             mUnk_24++;
             break;
@@ -221,7 +221,7 @@ void ArenaWindowScene::Update() {
             }
             break;
         case 14:
-            FrameTask::Get().func_0203dd90();
+            FrameTask::Get().StopAllChannels();
             mUnk_24++;
             break;
         case 15:
@@ -241,7 +241,7 @@ void ArenaWindowScene::Update() {
 
 void ArenaWindowScene::func_ov001_0221d6dc() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     G2_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2_SetBG0Offset(0, 0);
@@ -262,7 +262,7 @@ void ArenaWindowScene::func_ov001_0221d6dc() {
 
 void ArenaWindowScene::func_ov001_0221d858() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(0, 1, 0, 1, 0);
     G2S_SetBG0Offset(0, 0);
@@ -273,9 +273,9 @@ void ArenaWindowScene::func_ov001_0221d858() {
     G2S_SetWndOutsidePlane(0x1f, FALSE);
     G2S_BlendNone();
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0x2000, 0);
     sub.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
@@ -288,13 +288,13 @@ void ArenaWindowScene::func_ov001_0221d858() {
     mMenu = new SelectWindow(2, data_ov001_02227084, -1);
     mMenu->SetCells(2, data_ov001_0222704c);
     mMenu->mCursor->mSelection = -1;
-    mMenu->mUnk_064            = 0;
+    mMenu->mEnabled            = 0;
     mMenu->mCursor->mSelection = 0;
 }
 
 void ArenaWindowScene::func_ov001_0221db10() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 1);
+    SpriteManager::Get().SetupMode(1, 1);
     G2S_SetBG0Control(0, 0, 0, 1, 0);
     G2S_SetBG1Control(0, 1, 2, 4, 0);
     G2S_SetBG0Offset(0, 0);
@@ -303,9 +303,9 @@ void ArenaWindowScene::func_ov001_0221db10() {
     G2S_SetBG1Priority(0);
     GXS_SetVisiblePlane(0x13);
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &sub = SpriteManager::Get().Screen(1);
     ChangeDir("/Game/2D/union_b/");
     sub.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0, 0);
@@ -314,10 +314,10 @@ void ArenaWindowScene::func_ov001_0221db10() {
 }
 
 void ArenaWindowScene::func_ov001_0221dd40() {
-    SpriteManager::Get().Screen(1).func_02027624(3);
+    SpriteManager::Get().Screen(1).SetObjVramMode(3);
     if (mMessages == NULL) {
         ChangeDir("/");
-        mMessages       = (MessageFile *) func_02023504("font/mes_BattleArenaMenu.mes", 0, 0, 0, 0, 0);
+        mMessages       = (MessageFile *) LoadFile("font/mes_BattleArenaMenu.mes", 0, 0, 0, 0, 0);
         mTextBufferSize = TextManager::Get().BufferSize(0x18, 4);
         mTextBuffer     = OS_Alloc(mTextBufferSize);
         MI_CpuClear16(mTextBuffer, mTextBufferSize);
@@ -338,11 +338,11 @@ void ArenaWindowScene::func_ov001_0221df64() {
     MessageFile *file = mMessages;
     text.Print(file->GetText(11), file->GetLength(11), mTextBuffer, 0x18, 4, &height, &width, 0, 0, 2, 0x11, 0xe, 0, 0,
                1, 1, 1);
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, mTextBuffer, mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0, mTextBuffer, mTextBufferSize, 0);
 }
 
 void ArenaWindowScene::func_ov001_0221e0b4() {
-    SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, (u8) mGlyphCount, 0x20, 0x28, 0, 0, 0xf, 0);
+    SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, (u8) mGlyphCount, 0x20, 0x28, 0, 0, 0xf, 0);
 }
 
 

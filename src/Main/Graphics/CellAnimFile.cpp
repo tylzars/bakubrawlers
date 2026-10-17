@@ -108,7 +108,7 @@ void func_0202a958(CellAnimFile *file, CellAnimData *data, u16 den, s32 num) {
             }
             j++;
             cel++;
-        } while (j < frame->mUnk_10);
+        } while (j < frame->mFrameCount);
         i++;
         frame++;
     } while (i < count);
@@ -128,7 +128,7 @@ CellAnimFileData::CellAnimFileData(void *data) : CellAnimFile(NULL, 1, 1) {
 }
 
 CellAnimData *func_0202aa54(const char *path) {
-    return func_0202aa8c(func_02023504(path, 0, 0, 0, 0, 0));
+    return func_0202aa8c(LoadFile(path, 0, 0, 0, 0, 0));
 }
 
 CellAnimData *func_0202aa80(void *data) {
@@ -154,7 +154,7 @@ CellAnimData *func_0202aa8c(void *data) {
             cel->mOam = (void *) ((u32) file->mOams + (u32) cel->mOam * sizeof(CellAnimOam));
             j++;
             cel++;
-        } while (j < frame->mUnk_10);
+        } while (j < frame->mFrameCount);
         i++;
         frame++;
     } while (i < file->mNumFrames);

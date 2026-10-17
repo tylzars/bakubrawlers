@@ -10,20 +10,20 @@ struct WindowCellRecord {
     /* 00 */ const char *mPath;
     // The first member of each union is the one the code reads (as a byte); initializers still fill a whole word.
     union {
-        /* 04 */ u8 mUnk_04;
+        /* 04 */ u8 mAnimIndex;
         u32 mUnk_04_word;
     };
-    /* 08 */ u32 mUnk_08;
+    /* 08 */ u32 mCharOffset;
     union {
-        /* 0c */ s8 mUnk_0c;
+        /* 0c */ s8 mPaletteBase;
         u32 mUnk_0c_word;
     };
     union {
         /* 10 */ u8 mUnk_10;
         u32 mUnk_10_word;
     };
-    /* 14 */ u32 mUnk_14;
-    /* 18 */ u8 mUnk_18[4];
+    /* 14 */ u32 mEnabled;
+    /* 18 */ u8 mAnimIndices[4];
     /* 1c */
 };
 
@@ -57,8 +57,8 @@ struct WindowItem {
     /* 0a */ s16 mY;
     /* 0c */ s16 mWidth;
     /* 0e */ s16 mHeight;
-    /* 10 */ u8 mSlideIn;  // edge the cell slides in from (1 top, 2 bottom, 3 right, 4 left)
-    /* 11 */ u8 mSlideOut; // edge the cell slides out to
+    /* 10 */ u8 mSlideIn;  // direction the cell moves while sliding in (1 up, 2 down, 3 left, 4 right)
+    /* 11 */ u8 mSlideOut; // direction the cell moves while sliding out (same values)
     /* 12 */ s8 mNeighbors[4];
     /* 16 */ PAD(0x16, 0x18);
     /* 18 */ u32 mUnk_18;
@@ -73,14 +73,14 @@ struct SelectWindowCursor {
     /* 06 */ s8 mSelection;
     /* 07 */ s8 mUnk_07;
     /* 08 */ u8 mUnk_08;
-    /* 09 */ u8 mUnk_09;
-    /* 0a */ u8 mUnk_0a;
-    /* 0b */ u8 mUnk_0b;
-    /* 0c */ u8 mUnk_0c;
-    /* 0d */ u8 mUnk_0d;
-    /* 0e */ u8 mUnk_0e;
-    /* 0f */ u8 mUnk_0f;
-    /* 10 */ u8 mUnk_10;
+    /* 09 */ u8 mScrollItem;
+    /* 0a */ u8 mDragging;
+    /* 0b */ u8 mScrollItemY;
+    /* 0c */ u8 mScrollAreaY;
+    /* 0d */ u8 mScrollAreaHeight;
+    /* 0e */ u8 mShownRowCount;
+    /* 0f */ u8 mRowCount;
+    /* 10 */ u8 mScrollMax;
     /* 11 */ u8 mScroll;
     /* 12 */ PAD(0x12, 0x14);
     /* 14 */
@@ -88,10 +88,10 @@ struct SelectWindowCursor {
     SelectWindowCursor(u32 count, const void *table, u32 unk3); // 0x0202f420
     u32 func_0202f468(u32 unk1);
     u32 func_0202f61c(u32 playSound);
-    void func_02030474(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
+    void SetupScroll(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
     void SetScroll(u32 scroll); // 020304ec, clamps to mUnk_10
-    void func_02030508();
-    BOOL func_0203055c(int index);
+    void RefreshScrollItemY();
+    BOOL HasNeighbor(int index);
 };
 
 // An on-screen button of a window; mEnabled toggles whether it can be pressed.
@@ -100,7 +100,7 @@ struct WindowButton {
     /* 01 */ PAD(0x01, 0x04);
     /* 04 */ u32 mEnabled;
     /* 08 */ u8 mUnk_08; // animation index of the idle cell
-    /* 09 */ u8 mUnk_09; // animation index of the selected cell
+    /* 09 */ u8 mResultAnim; // animation index of the selected cell
     /* 0a */ u8 mUnk_0a;
     /* 0b */ PAD(0x0b, 0x0c);
     /* 0c */
@@ -113,19 +113,19 @@ public:
     /* 004 */ SelectWindowCursor *mCursor;
     /* 008 */ CellAnimation *mCells[22];
     /* 060 */ u8 mCellCount;
-    /* 061 */ u8 mUnk_061; // state
-    /* 062 */ u8 mUnk_062; // slide phase
-    /* 063 */ s8 mUnk_063;
-    /* 064 */ u8 mUnk_064;
-    /* 065 */ u8 mUnk_065;
-    /* 066 */ u8 mUnk_066;
+    /* 061 */ u8 mState; // state
+    /* 062 */ u8 mSlideStep; // slide phase
+    /* 063 */ s8 mSavedSelection;
+    /* 064 */ u8 mEnabled;
+    /* 065 */ u8 mInputLocked;
+    /* 066 */ u8 mSlideInRequested;
     /* 067 */ PAD(0x067, 0x068);
-    /* 068 */ u8 mUnk_068[22];
+    /* 068 */ u8 mSlideToTarget[22];
     /* 07e */ u8 mUnk_07e;
     /* 07f */ PAD(0x07f, 0x080);
     /* 080 */ Vec2s mCellPos[22];
-    /* 0d8 */ s16 mUnk_0d8;
-    /* 0da */ s16 mUnk_0da;
+    /* 0d8 */ s16 mSlideTargetX;
+    /* 0da */ s16 mSlideTargetY;
     /* 0dc */ u32 mResult;
     /* 0e0 */ u8 mUnk_0e0;
     /* 0e1 */ PAD(0x0e1, 0x0e4);
@@ -137,19 +137,19 @@ public:
     void SetCells(u32 count, const WindowCellRecord *cells);
     BOOL Update(BOOL acceptInput);
     void Draw();
-    void func_0205c7c8(int selection);
-    void func_0205c844(u32 unk1, u32 unk2);
-    void func_0205c74c(u32 count, WindowItem *items, s32 selection);
-    void func_0205bd10();
-    void func_0205bcf4();
-    BOOL func_0205bdf4();
-    void func_0205c2e0();
+    void Reset(int selection);
+    void SetResultItem(u32 unk1, u32 unk2);
+    void SetItems(u32 count, WindowItem *items, s32 selection);
+    void FreeCells();
+    void FreeCursor();
+    BOOL UpdateSlideIn();
+    void UpdateSlideOut();
 
     // Starts sliding cell `index` towards (x, y).
     void SlideCellTo(u8 index, s16 x, s16 y) {
-        mUnk_068[index] = 1;
-        mUnk_0d8        = x;
-        mUnk_0da        = y;
+        mSlideToTarget[index] = 1;
+        mSlideTargetX        = x;
+        mSlideTargetY        = y;
     }
     Vec2s GetCellPos(int index) {
         return mCellPos[index];

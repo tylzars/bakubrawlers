@@ -236,7 +236,7 @@ void MapScene::Update() {
             if (mEvent->func_020678e8()) {
                 break;
             }
-            FrameTask::Get().func_0203dc34(0, 0x12);
+            FrameTask::Get().StartChannel(0, 0x12);
             CreateMenu();
             mEvent->func_0206ef4c("mes_town", data_ov005_0221fe90[mTab], 10, 7, 0x15);
             SpriteManager::Get().StartFade(2);
@@ -244,7 +244,7 @@ void MapScene::Update() {
             break;
         case 12: {
             UpdateDrag();
-            func_020254f0((FrameCallback) func_ov005_0221b67c, this);
+            QueueFrameCallback((FrameCallback) func_ov005_0221b67c, this);
             u8 r = UpdateMenu();
             if (r != 0) {
                 if (r != 1) {
@@ -258,7 +258,7 @@ void MapScene::Update() {
         }
         case 13:
             mMenu->Update(TRUE);
-            if (mMenu->mUnk_061 == 4) {
+            if (mMenu->mState == 4) {
                 if (mTab == 3) {
                     switch (data_020d43f0[0].mUnk_42) {
                         case 1:
@@ -274,11 +274,11 @@ void MapScene::Update() {
                             }
                             break;
                     }
-                    mMenu->func_0205c7c8((s8) mTab);
+                    mMenu->Reset((s8) mTab);
                     {
                         CellAnimation *cell = mMenu->mCells[mTab];
-                        cell->mUnk_0e = data_ov005_02220044[mTab].mUnk_18[2];
-                        cell->func_02029f6c();
+                        cell->mAnimIndex = data_ov005_02220044[mTab].mAnimIndices[2];
+                        cell->ResetAnimation();
                     }
                     mUnk_64--;
                 } else {
@@ -432,13 +432,13 @@ void MapScene::func_ov005_0221a598() {
     }
     mScrollTarget = func_ov005_0221b760(mTab) << 4;
     mScrollPos    = mScrollTarget;
-    func_020254f0((FrameCallback) func_ov005_0221b67c, this);
+    QueueFrameCallback((FrameCallback) func_ov005_0221b67c, this);
     CreateMenu();
 }
 
 void MapScene::InitDisplay() {
     GX_SetDispSelect(1);
-    SpriteManager::Get().func_02026dec(1, 7);
+    SpriteManager::Get().SetupMode(1, 7);
     GX_SetGraphicsMode(1, 0, 1);
     GXS_SetGraphicsMode(0);
     G2S_SetBG0Control(1, 1, 0, 4, 1);
@@ -475,9 +475,9 @@ void MapScene::LoadWindowGraphics() {
     G2S_SetBG1Priority(0);
     GXS_SetVisiblePlane(0x13);
     ChangeDir("/Game/2D/union_b/");
-    func_02025b64(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "union_b_bg_window_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "union_b_bg_window_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "union_b_bg_window_b_nsc.bin", 0, 0, 0);
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("union_b_obj_window_ncl.bin", 0, 0);
@@ -500,19 +500,19 @@ void MapScene::func_ov005_0221a9ec() {
 
 void MapScene::LoadMapBackground() {
     ChangeDir("/story/");
-    func_02025b64(1, 1, 0x4000, "map_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "map_b_bg_00_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "map_b_bg_00_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 1, 0x6000, "map_b_bg_00_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 12, 0, "map_b_bg_01_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "map_b_bg_01_a_nsc.bin", 0, 0, 0);
-    func_02025b64(1, 9, 0, "map_b_bg_01_b_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x4000, "map_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "map_b_bg_00_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "map_b_bg_00_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x6000, "map_b_bg_00_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "map_b_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "map_b_bg_01_a_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 9, 0, "map_b_bg_01_b_nsc.bin", 0, 0, 0);
     ChangeDir("/");
 }
 
 void MapScene::func_ov005_0221abf4() {
     SpriteScreen &screen = SpriteManager::Get().Screen(1);
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/story/");
     char path[0x80];
     sprintf(path, "map_b_obj_00.nce_ncg1D.bin");
@@ -524,8 +524,8 @@ void MapScene::func_ov005_0221abf4() {
             delete mCellAnims[i];
         }
         mCellAnims[i] = new CellAnimation("map_b_obj_00_nce.bin", 0, 1, 1);
-        mCellAnims[i]->mCharBase = screen.func_020276f4(0);
-        mCellAnims[i]->mUnk_11 = 0;
+        mCellAnims[i]->mCharBase = screen.GetCharBase(0);
+        mCellAnims[i]->mPaletteBase = 0;
     }
     mCellAnims[0]->SetAnimation(0x10);
     mCellAnims[1]->SetAnimation(0xf);
@@ -533,14 +533,14 @@ void MapScene::func_ov005_0221abf4() {
         delete mCellAnims[4];
     }
     mCellAnims[4] = new CellAnimation("map_b_obj_00_nce.bin", 0x11, 1, 1);
-    mCellAnims[4]->mCharBase = screen.func_020276f4(0);
-    mCellAnims[4]->mUnk_11 = 0;
+    mCellAnims[4]->mCharBase = screen.GetCharBase(0);
+    mCellAnims[4]->mPaletteBase = 0;
     if (mCellAnims[5] != NULL) {
         delete mCellAnims[5];
     }
     mCellAnims[5] = new CellAnimation("map_b_obj_00_nce.bin", 0x12, 1, 1);
-    mCellAnims[5]->mCharBase = screen.func_020276f4(0);
-    mCellAnims[5]->mUnk_11 = 0;
+    mCellAnims[5]->mCharBase = screen.GetCharBase(0);
+    mCellAnims[5]->mPaletteBase = 0;
     ChangeDir("/Game/2D/union_b/");
     screen.LoadCharacters("union_b_obj_point.nce_ncg1D.bin", 0x4800, 0);
     screen.LoadPalette("union_b_obj_point_ncl.bin", 0x1a0, 0);
@@ -548,27 +548,27 @@ void MapScene::func_ov005_0221abf4() {
         delete mCellAnims[2];
     }
     mCellAnims[2] = new CellAnimation("union_b_obj_point_nce.bin", 0, 1, 1);
-    mCellAnims[2]->mCharBase = screen.func_020276f4(0x4800);
-    mCellAnims[2]->mUnk_11 = 0xd;
+    mCellAnims[2]->mCharBase = screen.GetCharBase(0x4800);
+    mCellAnims[2]->mPaletteBase = 0xd;
     screen.LoadCharacters("union_b_obj_number.nce_ncg1D.bin", 0x3000, 0);
     screen.LoadPalette("union_b_obj_number_ncl.bin", 0x1c0, 0);
     if (mCellAnims[3] != NULL) {
         delete mCellAnims[3];
     }
     mCellAnims[3] = new CellAnimation("union_b_obj_number_nce.bin", 0, 1, 1);
-    mCellAnims[3]->mCharBase = screen.func_020276f4(0x3000);
-    mCellAnims[3]->mUnk_11 = 0xe;
+    mCellAnims[3]->mCharBase = screen.GetCharBase(0x3000);
+    mCellAnims[3]->mPaletteBase = 0xe;
     screen.LoadCharacters("union_b_obj_quit.nce_ncg1D.bin", 0x4000, 0);
     screen.LoadPalette("union_b_obj_quit_ncl.bin", 0x180, 0);
     screen.LoadCharacters("union_b_obj_window_a.nce_ncg1D.bin", 0x9000, 0);
-    screen.func_02027fec("union_b_obj_window_a_ncl.bin", 0, 0);
+    screen.LoadExtPalette("union_b_obj_window_a_ncl.bin", 0, 0);
     screen.LoadCharacters("union_b_obj_window.nce_ncg1D.bin", 0xb000, 0);
     screen.LoadPalette("union_b_obj_window_ncl.bin", 0x140, 0);
     ChangeDir("/");
     if (mText[1].mMessages != NULL) {
         return;
     }
-    mText[1].mMessages = (MessageFile *) func_02023504("font/mes_town_info.mes", 0, 0, 0, 0, 0);
+    mText[1].mMessages = (MessageFile *) LoadFile("font/mes_town_info.mes", 0, 0, 0, 0, 0);
     mText[1].mTextBufferSize = TextManager::Get().BufferSize(0x20, 4);
     mText[1].mTextBuffer = OS_Alloc(mText[1].mTextBufferSize);
     MI_CpuClear16(mText[1].mTextBuffer, mText[1].mTextBufferSize);
@@ -629,7 +629,7 @@ BOOL MapScene::func_ov005_0221b2ac() {
 u8 MapScene::UpdateMenu() {
     u8 result       = 0;
     u8 prev         = mMenu->mCursor->mSelection;
-    mMenu->mUnk_064 = 1;
+    mMenu->mEnabled = 1;
     u8 status       = mMenu->Update(1);
     u8 sel          = mMenu->mCursor->mSelection;
     if (sel < 4) {
@@ -671,13 +671,13 @@ void MapScene::CreateMenu() {
     mMenu = new SelectWindow(5, data_ov005_0221ffb8, -1);
     mMenu->SetCells(5, data_ov005_02220044);
     mMenu->mCursor->mSelection = -1;
-    mMenu->mUnk_064            = 0;
+    mMenu->mEnabled            = 0;
     mMenu->mCursor->mSelection = mTab;
     for (u8 i = 0; i < 4; i++) {
         u32 state           = i == mTab ? 2 : 0;
         CellAnimation *cell = mMenu->mCells[i];
-        cell->mUnk_0e       = data_ov005_02220044[i].mUnk_18[state];
-        cell->func_02029f6c();
+        cell->mAnimIndex       = data_ov005_02220044[i].mAnimIndices[state];
+        cell->ResetAnimation();
     }
     func_ov005_0221b364(mTab, TRUE);
     LoadPanelText2(mTab);
@@ -687,14 +687,14 @@ void MapScene::CreateMenu() {
 void MapScene::UpdateDrag() {
     u8 cur = TouchManager::Get().mX;
     if (mDragging != 0) {
-        if (TouchManager::Get().mUnk_56 == 0) {
+        if (TouchManager::Get().mDown == 0) {
             mDragging = 0;
         }
     } else {
-        if (TouchManager::Get().mUnk_57 != 0) {
+        if (TouchManager::Get().mPressed != 0) {
             mLastTouchX = cur;
         }
-        if (TouchManager::Get().mUnk_56 != 0 && mLastTouchX != cur) {
+        if (TouchManager::Get().mDown != 0 && mLastTouchX != cur) {
             mDragging = 1;
         }
     }
@@ -778,7 +778,7 @@ void MapScene::DrawPopup() {
     switch (mTab) {
         case 0:
             if (mUnk_7e_0) {
-                SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
+                SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
                 mCellAnims[5]->Draw(1, 0x80, 0x64, 0);
@@ -787,7 +787,7 @@ void MapScene::DrawPopup() {
             break;
         case 1:
             if (mUnk_7e_1) {
-                SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
+                SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
                 mPageVisible = 0;
@@ -795,7 +795,7 @@ void MapScene::DrawPopup() {
             break;
         case 2:
             if (mUnk_7e_2) {
-                SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
+                SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
                 mPageVisible = 0;
@@ -803,7 +803,7 @@ void MapScene::DrawPopup() {
             break;
         case 3:
             if (mUnk_7e_3) {
-                SpriteManager::Get().Screen(1).func_02027778(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
+                SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) mUnk_36, (s16) mUnk_38, 0,
                                                              0xa0, 0xf, 0);
                 mCellAnims[4]->Draw(1, 0x80, 0x60, 1);
                 mPageVisible = 0;
@@ -834,7 +834,7 @@ void MapScene::DrawMoney() {
     for (; i < 7; i++) {
         s8 digit = digits[i];
         if (digit >= 0 && mCellAnims[3] != NULL) {
-            mCellAnims[3]->func_0202a3ec(1, digit, i * 7 + 0x2c, 3, 2);
+            mCellAnims[3]->DrawFrame(1, digit, i * 7 + 0x2c, 3, 2);
         }
     }
     mCellAnims[2]->Draw(1, 0, 0, 2);
@@ -859,10 +859,10 @@ void MapScene::func_ov005_0221bde8(u32 index) {
             if (data_020d48f0.mUnk_ba == data_020d48f0.mUnk_bc) {
                 return;
             }
-            TextManager::Get().mUnk_5b = 1;
+            TextManager::Get().mUse4bppFont = 1;
             ShowNumbers();
             data_020d48f0.mUnk_bc = data_020d48f0.mUnk_ba;
-            TextManager::Get().mUnk_5b = 0;
+            TextManager::Get().mUse4bppFont = 0;
             mUnk_7e_0 = 1;
             break;
         case 1:
@@ -898,7 +898,7 @@ void MapScene::ShowNumbers() {
         mGlyphCount = TextManager::Get().GlyphCount(8);
         TextManager::Get().Init(mGlyphBuffer, 1, 0, 0x20, 0x10, 0x44);
     }
-    MessageFile *file = (MessageFile *) func_02023504("/font/mes_town_info.mes", 0, 0, 0, 0, 0);
+    MessageFile *file = (MessageFile *) LoadFile("/font/mes_town_info.mes", 0, 0, 0, 0, 0);
     u32 size          = TextManager::Get().BufferSize(0x20, 0x10);
     void *buffer      = OS_Alloc(size);
     MI_CpuClearFast(buffer, size);
@@ -930,7 +930,7 @@ void MapScene::ShowNumbers() {
         x2 = 0x98 - mUnk_36;
     }
     TextManager::Get().PrintNumber(data_020d48f0.mUnk_ba, 0, 0, buffer, 0x18, 0x10, &x2, &y, 0, 2, 0x44, 0x10, 0, 1, 1);
-    func_02025c1c(1, 4, 0x5000, buffer, size, 1);
+    QueueUpload(1, 4, 0x5000, buffer, size, 1);
     OS_Free(file);
     TextManager::Get().SetColor(1, 0, 0xf);
 }
@@ -945,7 +945,7 @@ void MapScene::ShowText(u16 index, s32 unk2) {
         mGlyphCount = TextManager::Get().GlyphCount(cols, 0x10, 0x44);
         TextManager::Get().Init(mGlyphBuffer, 1, 0, cols, 0x10, 0x44);
     }
-    file   = (MessageFile *) func_02023504("/font/mes_town_info.mes", 0, 0, 0, 0, 0);
+    file   = (MessageFile *) LoadFile("/font/mes_town_info.mes", 0, 0, 0, 0, 0);
     size   = TextManager::Get().BufferSize(cols, 0x10);
     buffer = OS_Alloc(size);
     MI_CpuClearFast(buffer, size);
@@ -961,7 +961,7 @@ void MapScene::ShowText(u16 index, s32 unk2) {
     }
     mUnk_36 = (256 - mUnk_36) / 2;
     mUnk_38 = (0x6c - mUnk_38) / 2 + 0x1e;
-    func_02025c1c(1, 4, 0x5000, buffer, size, 1);
+    QueueUpload(1, 4, 0x5000, buffer, size, 1);
     OS_Free(file);
     TextManager::Get().SetColor(1, 0, 0xf);
 }
@@ -979,9 +979,9 @@ BOOL MapScene::ShowCurrent() {
         return TRUE;
     }
     if (flag == 0) {
-        TextManager::Get().mUnk_5b = 1;
+        TextManager::Get().mUse4bppFont = 1;
         ShowText((u16) data_ov005_0221fea0[id - 1], 0);
-        TextManager::Get().mUnk_5b = 0;
+        TextManager::Get().mUse4bppFont = 0;
         return TRUE;
     }
     return FALSE;
@@ -1000,14 +1000,14 @@ void MapScene::CreatePanelWindow() {
     mPanelWindow->SetCells(4, data_ov005_0221ff48);
     mPanelWindow->mCursor->mSelection = -1;
     mPanelWindow->mCursor->mSelection = 1;
-    mPanelWindow->mUnk_064            = 0;
+    mPanelWindow->mEnabled            = 0;
     mUnk_79                           = 1;
 }
 
 void MapScene::LoadPanelText() {
     if (mText[0].mMessages == NULL) {
         ChangeDir("/");
-        mText[0].mMessages       = (MessageFile *) func_02023504("font/mes_town_info.mes", 0, 0, 0, 0, 0);
+        mText[0].mMessages       = (MessageFile *) LoadFile("font/mes_town_info.mes", 0, 0, 0, 0, 0);
         mText[0].mTextBufferSize = TextManager::Get().BufferSize(0x18, 4);
         mText[0].mTextBuffer     = OS_Alloc(mText[0].mTextBufferSize);
         MI_CpuClear16(mText[0].mTextBuffer, mText[0].mTextBufferSize);
@@ -1023,12 +1023,12 @@ void MapScene::LoadPanelText() {
     MessageFile *file = mText[0].mMessages;
     text.Print(file->GetText(16), file->GetLength(16), mText[0].mTextBuffer, 0x18, 4, &height, &width, 0, 0,
                2, 0x11, 0xe, 0, 0, 1, 1, 1);
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xc000, mText[0].mTextBuffer, mText[0].mTextBufferSize, 0);
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xc000, mText[0].mTextBuffer, mText[0].mTextBufferSize, 0);
     TextManager::Get().SetColor(1, 0, 0xf);
 }
 
 void MapScene::DrawPanelText() {
-    SpriteManager::Get().Screen(1).func_02027778(mText[0].mGlyphBuffer, mText[0].mGlyphCount, 0x20, 0x38, 0, 0x180, 0xf,
+    SpriteManager::Get().Screen(1).AddOam(mText[0].mGlyphBuffer, mText[0].mGlyphCount, 0x20, 0x38, 0, 0x180, 0xf,
                                                  0);
 }
 
@@ -1049,7 +1049,7 @@ void MapScene::LoadPanelText2(int index) {
             break;
     }
     MI_CpuClear16(mText[1].mTextBuffer, mText[1].mTextBufferSize);
-    TextManager::Get().mUnk_5b = 1;
+    TextManager::Get().mUse4bppFont = 1;
     TextManager &text          = TextManager::Get();
     s16 height;
     s16 width;
@@ -1058,8 +1058,8 @@ void MapScene::LoadPanelText2(int index) {
     MessageFile *file = (MessageFile *) mText[1].mMessages;
     text.Print(file->GetText(id), file->GetLength(id), mText[1].mTextBuffer, 0x20, 4, &height, &width,
                &mTextWidth, 0, 2, 0x21, 0xe, 0, 0, 0, 1, 1);
-    TextManager::Get().mUnk_5b = 0;
-    func_02025c1c(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xd000, mText[1].mTextBuffer, mText[1].mTextBufferSize, 0);
+    TextManager::Get().mUse4bppFont = 0;
+    QueueUpload(SpriteManager::Get().Screen(1).mBgIndex, 4, 0xd000, mText[1].mTextBuffer, mText[1].mTextBufferSize, 0);
 }
 
 void MapScene::DrawPanelText2(s16 x) {
@@ -1070,13 +1070,13 @@ void MapScene::DrawPanelText2(s16 x) {
     if (right > 0x1fc) {
         left = left - (right - 0x1fc);
     }
-    SpriteManager::Get().Screen(1).func_02027778(mText[1].mGlyphBuffer, mText[1].mGlyphCount, left,
+    SpriteManager::Get().Screen(1).AddOam(mText[1].mGlyphBuffer, mText[1].mGlyphCount, left,
                                                  (s16) (data_ov005_0221feb8[mPage].mY - 0x28), 2, 0x1a0, 0xf, 0);
 }
 
 // NOTE: returns u32 in the original; MapScene.hpp declares `void UpdatePanelWindow()` and needs `u32`.
 u32 MapScene::UpdatePanelWindow() {
-    mPanelWindow->mUnk_064 = 1;
+    mPanelWindow->mEnabled = 1;
     u32 result             = 0;
     if (mPanelWindow->Update(TRUE) == 1) {
         result = mPanelWindow->mCursor->mSelection == 0 ? 1 : 2;

@@ -133,27 +133,27 @@ u8 GetCardInfo(u32 id, u32 kind);
 void BattleHud::func_ov007_022257e0() {
     BattleEntry *entries = mData->mEntries;
     ChangeDir("/Game/Confrontation/Bg/");
-    func_02025b64(1, 1, 0, "vs_b_bg_01_ncl.bin", 0, 0, 0);
-    func_02025b64(1, 11, 0, "vs_b_bg_01_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 7, 0, "vs_b_bg_01_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0, "vs_b_bg_01_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 11, 0, "vs_b_bg_01_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 7, 0, "vs_b_bg_01_nsc.bin", 0, 0, 0);
     ChangeDir("/");
     MI_CpuClearFast((void *) 0x5000400, 0x20);
     void *fill = OS_Alloc(0x20);
     MI_CpuFill8(fill, 0x11, 0x20);
-    func_02025c1c(1, 0xd, 0, fill, 0x20, 1);
+    QueueUpload(1, 0xd, 0, fill, 0x20, 1);
     SpriteScreen &screen = SpriteManager::Get().mScreens[1];
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     ChangeDir("/Game/Confrontation/Obj/");
     screen.LoadCharacters("vs_b_obj_01.nce_ncg1D.bin", 0x7000, 0);
-    u8 *pal = (u8 *) func_02023504("vs_b_obj_01_ncl.bin", 0, 0, 0, 0, 0);
-    func_02025c1c(screen.mBgIndex, 5, 0xe0, pal + (u8) (entries[0].mUnk_0d_0 + 2) * 0x20, 0x20, 0);
-    func_02025c1c(screen.mBgIndex, 5, 0x100, pal + (u8) (entries[1].mUnk_0d_0 + 2) * 0x20, 0x20, 0);
-    func_02025c1c(screen.mBgIndex, 5, 0xa0, pal, 0x40, 1);
+    u8 *pal = (u8 *) LoadFile("vs_b_obj_01_ncl.bin", 0, 0, 0, 0, 0);
+    QueueUpload(screen.mBgIndex, 5, 0xe0, pal + (u8) (entries[0].mUnk_0d_0 + 2) * 0x20, 0x20, 0);
+    QueueUpload(screen.mBgIndex, 5, 0x100, pal + (u8) (entries[1].mUnk_0d_0 + 2) * 0x20, 0x20, 0);
+    QueueUpload(screen.mBgIndex, 5, 0xa0, pal, 0x40, 1);
     u8 i = 0;
     do {
         mAnims[i] = new CellAnimation("vs_b_obj_01_nce.bin", 0, 1, 1);
-        mAnims[i]->mCharBase = screen.func_020276f4(0x7000);
-        mAnims[i]->mUnk_11 = 5;
+        mAnims[i]->mCharBase = screen.GetCharBase(0x7000);
+        mAnims[i]->mPaletteBase = 5;
         i++;
     } while (i < 8);
     mAnims[0]->SetAnimation(0);
@@ -161,7 +161,7 @@ void BattleHud::func_ov007_022257e0() {
     mAnims[2]->SetAnimation(6);
     mAnims[3]->SetAnimation(8);
     mAnims[4]->SetAnimation(9);
-    mUnk_c0 = mAnims[3]->func_0202a54c();
+    mUnk_c0 = mAnims[3]->GetDuration();
     mAnims[4]->SetAnimation(7);
     mAnims[5]->SetAnimation(0x12);
     mAnims[6]->SetAnimation(entries[0].mUnk_0d_4 + 0x17);
@@ -177,23 +177,23 @@ void BattleHud::func_ov007_022257e0() {
     screen.LoadCharacters(path, 0xe000, 0);
     sprintf(path, "vs_cutin_cbattle%02d_nce.bin", n);
     mAnims[9] = new CellAnimation(path, 0, 1, 1);
-    mAnims[9]->mCharBase = screen.func_020276f4(0xe000);
-    mAnims[9]->mUnk_11 = 9;
+    mAnims[9]->mCharBase = screen.GetCharBase(0xe000);
+    mAnims[9]->mPaletteBase = 9;
     mAnims[9]->SetAnimation(0);
     screen.LoadCharacters("vs_cutin_perfect.nce_ncg1D.bin", 0xd000, 0);
     screen.LoadPalette("vs_cutin_perfect_ncl.bin", 0x120, 0x20);
     mAnims[8] = new CellAnimation("vs_cutin_perfect_nce.bin", 0, 1, 1);
-    mAnims[8]->mCharBase = screen.func_020276f4(0xd000);
-    mAnims[8]->mUnk_11 = 9;
+    mAnims[8]->mCharBase = screen.GetCharBase(0xd000);
+    mAnims[8]->mPaletteBase = 9;
     mAnims[8]->SetAnimation(0);
     screen.LoadCharacters("vs_cutin_cbattle01.nce_ncg1D.bin", 0xf000, 0);
     mAnims[10] = new CellAnimation("vs_cutin_cbattle01_nce.bin", 0, 1, 1);
-    mAnims[10]->mCharBase = screen.func_020276f4(0xf000);
-    mAnims[10]->mUnk_11 = 9;
+    mAnims[10]->mCharBase = screen.GetCharBase(0xf000);
+    mAnims[10]->mPaletteBase = 9;
     mAnims[10]->SetAnimation(3);
     mAnims[11] = new CellAnimation("vs_cutin_cbattle01_nce.bin", 0, 1, 1);
-    mAnims[11]->mCharBase = screen.func_020276f4(0xf000);
-    mAnims[11]->mUnk_11 = 9;
+    mAnims[11]->mCharBase = screen.GetCharBase(0xf000);
+    mAnims[11]->mPaletteBase = 9;
     mAnims[11]->SetAnimation(4);
     screen.LoadCharacters("vs_b_obj_ability.nce_ncg1D.bin", 0x10000, 0);
     screen.LoadPalette("vs_b_obj_ability_ncl.bin", 0x140, 0x20);
@@ -201,8 +201,8 @@ void BattleHud::func_ov007_022257e0() {
     u8 slot = 14;
     do {
         mAnims[slot] = new CellAnimation("vs_b_obj_ability_nce.bin", 0, 1, 1);
-        mAnims[slot]->mCharBase = screen.func_020276f4(0x10000);
-        mAnims[slot]->mUnk_11 = 10;
+        mAnims[slot]->mCharBase = screen.GetCharBase(0x10000);
+        mAnims[slot]->mPaletteBase = 10;
         switch (GetCardInfo(entries[i].mUnk_12, 3)) {
             case 0:
                 mAnims[slot]->SetAnimation(0);
@@ -237,18 +237,18 @@ void BattleHud::func_ov007_022257e0() {
         i++;
     } while (i < 2);
     mAnims[20] = new CellAnimation("vs_b_obj_ability_nce.bin", 0, 1, 1);
-    mAnims[20]->mCharBase = screen.func_020276f4(0x10000);
-    mAnims[20]->mUnk_11 = 10;
+    mAnims[20]->mCharBase = screen.GetCharBase(0x10000);
+    mAnims[20]->mPaletteBase = 10;
     mAnims[20]->SetAnimation(8);
     mAnims[16] = new CellAnimation("vs_b_obj_ability_nce.bin", 0, 1, 1);
-    mAnims[16]->mCharBase = screen.func_020276f4(0x10000);
-    mAnims[16]->mUnk_11 = 10;
+    mAnims[16]->mCharBase = screen.GetCharBase(0x10000);
+    mAnims[16]->mPaletteBase = 10;
     mAnims[16]->SetAnimation(7);
     screen.LoadPalette("vs_b_obj_down_ncl.bin", 0x1c0, 0);
     screen.LoadCharacters("vs_b_obj_pen.nce_ncg1D.bin", 0x14000, 0);
     mAnims[21] = new CellAnimation("vs_b_obj_pen_nce.bin", 0, 1, 1);
-    mAnims[21]->mCharBase = screen.func_020276f4(0x14000);
-    mAnims[21]->mUnk_11 = 9;
+    mAnims[21]->mCharBase = screen.GetCharBase(0x14000);
+    mAnims[21]->mPaletteBase = 9;
     if (mUnk_0c < 2) {
         switch (mParam->mUnk_00) {
             case 0:
@@ -285,12 +285,12 @@ void BattleHud::func_ov007_022257e0() {
     ChangeDir("/Game/Character/Icon");
     mAnims[12] = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
     u32 base = data_ov007_02279d44;
-    mAnims[12]->mCharBase = screen.func_020276f4(base);
+    mAnims[12]->mCharBase = screen.GetCharBase(base);
     s8 layer = data_ov007_02279d40;
-    mAnims[12]->mUnk_11 = layer;
+    mAnims[12]->mPaletteBase = layer;
     mAnims[13] = new CellAnimation("icon_ch_base_nce.bin", 0, 1, 1);
-    mAnims[13]->mCharBase = screen.func_020276f4(base);
-    mAnims[13]->mUnk_11 = layer;
+    mAnims[13]->mCharBase = screen.GetCharBase(base);
+    mAnims[13]->mPaletteBase = layer;
     mAnims[12]->SetAnimation(7);
     mAnims[13]->SetAnimation(7);
     ChangeDir("/");
@@ -321,11 +321,11 @@ void BattleHud::func_ov007_022257e0() {
         mUnk_117_1 = 1;
     }
     func_ov007_02226614();
-    mData->mUnk_6c->func_02065660("mes_ControlBattle");
+    mData->mUnk_6c->LoadMessageFile("mes_ControlBattle");
     if ((u32) mUnk_0c <= 1) {
-        mData->mUnk_6c->func_02065890(mParam->mUnk_00, 0, 1);
+        mData->mUnk_6c->StartMessage(mParam->mUnk_00, 0, 1);
     } else {
-        mData->mUnk_6c->func_02065890(6, 0, 1);
+        mData->mUnk_6c->StartMessage(6, 0, 1);
     }
     mData->mUnk_6c->mUnk_27 = 1;
     func_ov007_02226ab8();
@@ -344,7 +344,7 @@ void BattleHud::func_ov007_0222644c(u8 side, int card) {
     BattleEntry *entries = mData->mEntries;
     u8 selected = data_020d433c.mBattlePlayers->mUnk_2a9;
     u8 i;
-    screen.func_02027624(3);
+    screen.SetObjVramMode(3);
     index = side + 0x11;
     ChangeDir("/Game/Card/Graphic/Small");
     char path[0x80];
@@ -356,11 +356,11 @@ void BattleHud::func_ov007_0222644c(u8 side, int card) {
     u32 base = data_ov007_02279184[side];
     screen.LoadCharacters(path, base, 0);
     if (side == 0) {
-        screen.func_02027fec("card_s_000_ncl.bin", 0x600, 0);
+        screen.LoadExtPalette("card_s_000_ncl.bin", 0x600, 0);
     }
     mAnims[index] = new CellAnimation("card_s_000_nce.bin", 0, 1, 1);
-    mAnims[index]->mCharBase = screen.func_020276f4(base);
-    mAnims[index]->mUnk_11 = 3;
+    mAnims[index]->mCharBase = screen.GetCharBase(base);
+    mAnims[index]->mPaletteBase = 3;
     mAnims[index]->SetAnimation(0);
     ChangeDir("/");
 }
@@ -372,13 +372,13 @@ void BattleHud::func_ov007_02226614() {
     }
     mAnims[22] = 0;
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
-    screen.func_02027624(1);
+    screen.SetObjVramMode(1);
     ChangeDir("/Game/Confrontation/Obj/");
     screen.LoadCharacters("vs_b_obj_countdown.nce_ncg1D.bin", 0, 0);
     screen.LoadPalette("vs_b_obj_countdown_ncl.bin", 0, 0x20);
     mAnims[22] = new CellAnimation("vs_b_obj_countdown_nce.bin", 0, 1, 1);
-    mAnims[22]->mCharBase = screen.func_020276f4(0);
-    mAnims[22]->mUnk_11 = 0;
+    mAnims[22]->mCharBase = screen.GetCharBase(0);
+    mAnims[22]->mPaletteBase = 0;
     mAnims[22]->SetAnimation(0);
     ChangeDir("/");
 }
@@ -511,7 +511,7 @@ void BattleHud::func_ov007_02226ab8() {
             mUnk_9f = 100 - mUnk_9f;
         }
     }
-    mUnk_9c = mAnims[22]->func_0202a54c();
+    mUnk_9c = mAnims[22]->GetDuration();
     u8 pct = mUnk_9f;
     mUnk_a0[0] = (float) pct / (float) mUnk_9c / 100.0f;
     mUnk_a0[1] = (float) (u8) (100 - pct) / (float) mUnk_9c / 100.0f;
@@ -671,34 +671,34 @@ void BattleHud::func_ov007_02227128() {
     mUnk_22_2 = 0;
     mUnk_22_1 = 0;
     mUnk_22_0 = 0;
-    mAnims[22]->func_02029f6c();
+    mAnims[22]->ResetAnimation();
 }
 
 BOOL BattleHud::func_ov007_02227158() {
-    switch (mAnims[22]->mUnk_0f) {
+    switch (mAnims[22]->mFrameIndex) {
         case 5:
             if (!mUnk_22_0) {
                 mUnk_22_0 = 1;
-                SoundManager::Get().func_020246f8(0x26);
+                SoundManager::Get().StartSeqArc(0x26);
                 func_020247fc(&SoundManager::Get(), 0x400);
             }
             break;
         case 15:
             if (!mUnk_22_1) {
                 mUnk_22_1 = 1;
-                SoundManager::Get().func_020246f8(0x26);
+                SoundManager::Get().StartSeqArc(0x26);
                 func_020247fc(&SoundManager::Get(), 0x400);
             }
             break;
         case 25:
             if (!mUnk_22_2) {
                 mUnk_22_2 = 1;
-                SoundManager::Get().func_020246f8(0x26);
+                SoundManager::Get().StartSeqArc(0x26);
                 func_020247fc(&SoundManager::Get(), 0x400);
             }
             break;
     }
-    if (mAnims[22]->mUnk_12 == 0) {
+    if (mAnims[22]->mFinished == 0) {
         mAnims[22]->Update();
         mAnims[22]->Draw(0, 0x80, 0x60, 0);
         return 0;
@@ -883,19 +883,19 @@ void BattleHud::func_ov007_02227730() {
     func_ov007_02227c54();
     if (mUnk_22_4) {
         if (!mUnk_23_2) {
-            if (mAnims[9]->mUnk_0e == 0 && mAnims[9]->mUnk_12 != 0) {
-                mAnims[9]->func_02029f6c();
+            if (mAnims[9]->mAnimIndex == 0 && mAnims[9]->mFinished != 0) {
+                mAnims[9]->ResetAnimation();
                 mAnims[9]->SetAnimation(1);
             }
-        } else if (mAnims[9]->mUnk_0e != 2) {
+        } else if (mAnims[9]->mAnimIndex != 2) {
             if (mUnk_20 != 0) {
                 mUnk_20--;
             } else {
-                mAnims[9]->func_02029f6c();
+                mAnims[9]->ResetAnimation();
                 mAnims[9]->SetAnimation(2);
             }
         }
-        if (mAnims[9]->mUnk_0e == 1 && mUnk_12c >= 0) {
+        if (mAnims[9]->mAnimIndex == 1 && mUnk_12c >= 0) {
             if (mUnk_0c == 2) {
                 mUnk_24++;
                 if (mUnk_24 >= 0x28) {
@@ -912,7 +912,7 @@ void BattleHud::func_ov007_02227730() {
         }
         mAnims[9]->Update();
         mAnims[9]->Draw(1, 0x80, 0x6e, 0);
-        if (mAnims[9]->mUnk_0e == 1) {
+        if (mAnims[9]->mAnimIndex == 1) {
             if (mUnk_0c == 2 || mUnk_0c == 3) {
                 mAnims[10]->Update();
                 mAnims[10]->Draw(1, 0x48, 0x82, 0);
@@ -928,7 +928,7 @@ void BattleHud::func_ov007_02227730() {
         mAnims[8]->Draw(1, 0x80, 0x6e, 0);
     }
     func_ov007_022286e0();
-    mData->mUnk_6c->func_020658d0();
+    mData->mUnk_6c->Update();
 }
 
 void BattleHud::func_ov007_02227bbc(u8 index) {
@@ -936,11 +936,11 @@ void BattleHud::func_ov007_02227bbc(u8 index) {
     u8 i = 0;
     do {
         if (i == index) {
-            mAnims[j]->func_02029f6c();
+            mAnims[j]->ResetAnimation();
             mAnims[j]->SetAnimation(12 - i);
             mUnk_122[i] = 1;
         } else if (mUnk_122[i] == 0) {
-            mAnims[j]->func_02029f6c();
+            mAnims[j]->ResetAnimation();
             mAnims[j]->SetAnimation(8 - i);
         }
         j++;
@@ -981,7 +981,7 @@ void BattleHud::func_ov007_02227c54() {
                     } else {
                         f = 4096.0f * mUnk_a8[i] - 0.5f;
                     }
-                    mAnims[j]->func_0202a494(1, x, 0x40, 3, (s32) f, 0x1000, 0);
+                    mAnims[j]->DrawTransformed(1, x, 0x40, 3, (s32) f, 0x1000, 0);
                 } else {
                     mAnims[j]->SetAnimation(frame + 1);
                     if (mUnk_a8[i] > 0.0f) {
@@ -989,7 +989,7 @@ void BattleHud::func_ov007_02227c54() {
                     } else {
                         f = 4096.0f * mUnk_a8[i] - 0.5f;
                     }
-                    mAnims[j]->func_0202a494(1, x, 0x40, 3, (s32) f << 1, 0x1000, 0);
+                    mAnims[j]->DrawTransformed(1, x, 0x40, 3, (s32) f << 1, 0x1000, 0);
                 }
             }
             frame = 2;
@@ -1013,10 +1013,10 @@ void BattleHud::func_ov007_02227c54() {
         i = 0;
         do {
             if (!mUnk_117_3) {
-                if (mAnims[j]->mUnk_12 == 0) {
+                if (mAnims[j]->mFinished == 0) {
                     mAnims[j]->Update();
                 } else {
-                    mAnims[j]->func_02029f6c();
+                    mAnims[j]->ResetAnimation();
                 }
             }
             mAnims[j]->Draw(1, x, 0x42, 1);
@@ -1025,7 +1025,7 @@ void BattleHud::func_ov007_02227c54() {
         } while (i < 2);
     } else {
         if (!mUnk_117_3) {
-            u8 cur = mAnims[2]->mUnk_0e;
+            u8 cur = mAnims[2]->mAnimIndex;
             if (mUnk_28[0] != 0 && mUnk_28[1] != 0) {
                 u8 want;
                 if (mUnk_28[0] > mUnk_28[1]) {
@@ -1036,13 +1036,13 @@ void BattleHud::func_ov007_02227c54() {
                     want = 6;
                 }
                 if (cur != want) {
-                    mAnims[2]->func_02029f6c();
+                    mAnims[2]->ResetAnimation();
                     mAnims[2]->SetAnimation(want);
                 }
             } else if (mUnk_28[0] == 0 && mUnk_28[1] == 0) {
                 if (cur != 6) {
                     if (mUnk_1c[0] == 0 && mUnk_1c[1] == 0) {
-                        mAnims[2]->func_02029f6c();
+                        mAnims[2]->ResetAnimation();
                         mAnims[2]->SetAnimation(6);
                     }
                 }
@@ -1052,14 +1052,14 @@ void BattleHud::func_ov007_02227c54() {
                 do {
                     if (mUnk_28[i] != 0) {
                         if (mUnk_1c[(u8) (i ^ 1)] != 0) {
-                            mAnims[2]->func_02029f6c();
+                            mAnims[2]->ResetAnimation();
                             mAnims[2]->SetAnimation(6);
                         } else {
                             if (cur != j) {
-                                mAnims[2]->func_02029f6c();
+                                mAnims[2]->ResetAnimation();
                                 mAnims[2]->SetAnimation(j);
                             }
-                            mUnk_1c[i] = mAnims[2]->func_0202a54c();
+                            mUnk_1c[i] = mAnims[2]->GetDuration();
                         }
                     }
                     j--;
@@ -1092,7 +1092,7 @@ void BattleHud::func_ov007_02227c54() {
         } else {
             f = 4096.0f * (1.0f - p) - 0.5f;
         }
-        mAnims[1]->func_0202a494(1, 0xe0, 0x40, 3, (s32) f, 0x1000, 0);
+        mAnims[1]->DrawTransformed(1, 0xe0, 0x40, 3, (s32) f, 0x1000, 0);
     } else {
         mAnims[1]->SetAnimation(3);
         if (1.0f - p > 0.0f) {
@@ -1100,7 +1100,7 @@ void BattleHud::func_ov007_02227c54() {
         } else {
             f = 4096.0f * (1.0f - p) - 0.5f;
         }
-        mAnims[1]->func_0202a494(1, 0xe0, 0x40, 3, (s32) f << 1, 0x1000, 0);
+        mAnims[1]->DrawTransformed(1, 0xe0, 0x40, 3, (s32) f << 1, 0x1000, 0);
     }
     if (p >= 0.5f) {
         mAnims[0]->SetAnimation(0);
@@ -1109,7 +1109,7 @@ void BattleHud::func_ov007_02227c54() {
         } else {
             f = 4096.0f * p - 0.5f;
         }
-        mAnims[0]->func_0202a494(1, 0x20, 0x40, 3, (s32) f, 0x1000, 0);
+        mAnims[0]->DrawTransformed(1, 0x20, 0x40, 3, (s32) f, 0x1000, 0);
     } else {
         mAnims[0]->SetAnimation(1);
         if (p > 0.0f) {
@@ -1117,7 +1117,7 @@ void BattleHud::func_ov007_02227c54() {
         } else {
             f = 4096.0f * p - 0.5f;
         }
-        mAnims[0]->func_0202a494(1, 0x20, 0x40, 3, (s32) f << 1, 0x1000, 0);
+        mAnims[0]->DrawTransformed(1, 0x20, 0x40, 3, (s32) f << 1, 0x1000, 0);
     }
 }
 
@@ -1130,7 +1130,7 @@ void func_ov007_0222844c(BattleHud *obj, u8 a, u8 b) {
 
 void func_ov007_0222847c(BattleHud *obj) {
     CellAnimation *anim = obj->mAnims[9];
-    if (anim->mUnk_0e != 2) {
+    if (anim->mAnimIndex != 2) {
         anim->SetAnimation(2);
     }
 }
@@ -1179,11 +1179,11 @@ void BattleHud::func_ov007_02228530(int card) {
     sprintf(path, "card_l_%03d.nce_ncg1D.bin", id);
     screen.LoadCharacters(path, 0x17000, 0);
     sprintf(path, "card_l_%03d_ncl.bin", id);
-    screen.func_02027fec(path, 0xa00, 0);
+    screen.LoadExtPalette(path, 0xa00, 0);
     sprintf(path, "card_l_%03d_nce.bin", id);
     mAnims[19] = new CellAnimation(path, 0, 1, 1);
-    mAnims[19]->mCharBase = screen.func_020276f4(0x17000);
-    mAnims[19]->mUnk_11 = 5;
+    mAnims[19]->mCharBase = screen.GetCharBase(0x17000);
+    mAnims[19]->mPaletteBase = 5;
     mAnims[19]->SetAnimation(0);
     ChangeDir("/");
 }
@@ -1295,7 +1295,7 @@ void BattleHud::func_ov007_022286e0() {
         }
         side++;
     } while (side < 2);
-    if (mAnims[15]->mUnk_0e == 5) {
+    if (mAnims[15]->mAnimIndex == 5) {
         s8 s = 1;
         do {
             if (mUnk_11c[s] > -32 && mUnk_11c[s] < 0x120) {
@@ -1317,6 +1317,6 @@ void BattleHud::func_ov007_022286e0() {
             mAnims[20]->Update();
             mAnims[20]->Draw(1, 0x82, 0x5a, 0);
         }
-        mAnims[19]->func_0202a494(1, y, mUnk_126, 0, 0xb33, 0xb33, 0);
+        mAnims[19]->DrawTransformed(1, y, mUnk_126, 0, 0xb33, 0xb33, 0);
     }
 }

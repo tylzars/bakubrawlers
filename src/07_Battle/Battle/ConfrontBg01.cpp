@@ -51,19 +51,19 @@ void ConfrontBg01::vfunc_28() {
     char path[0x80];
     const char *dir = "/Game/Confrontation/Bg/";
     BattleEntry *entries = mData->mEntries;
-    sprintf(data_020d5488, dir);
+    sprintf(gCurrentDir, dir);
     func_0200acac(dir);
     u8 n = entries[mUnk_12].mUnk_0d_0;
     sprintf(path, "vs_b_bg_01_%02d_ncl.bin", n);
-    func_02025b64(1, 1, 0x2000, path, 0, 0, 0);
-    func_02025b64(1, 12, 0, "vs_b_bg_01_06_ncg.bin", 0, 0, 0);
-    func_02025b64(1, 8, 0, "vs_b_bg_01_06_nsc.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x2000, path, 0, 0, 0);
+    LoadAndQueueUpload(1, 12, 0, "vs_b_bg_01_06_ncg.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 8, 0, "vs_b_bg_01_06_nsc.bin", 0, 0, 0);
     sprintf(path, "vs_b_bg_01_%02d_ncl.bin", n);
-    func_02025b64(1, 1, 0x6000, path, 0, 0, 0);
+    LoadAndQueueUpload(1, 1, 0x6000, path, 0, 0, 0);
     sprintf(path, "vs_b_bg_01_%02d_ncg.bin", n);
-    func_02025b64(1, 14, 0, path, 0, 0, 0);
+    LoadAndQueueUpload(1, 14, 0, path, 0, 0, 0);
     sprintf(path, "vs_b_bg_01_%02d_nsc.bin", n);
-    func_02025b64(1, 10, 0, path, 0, 0, 0);
+    LoadAndQueueUpload(1, 10, 0, path, 0, 0, 0);
     ChangeDir("/");
 }
 
@@ -97,7 +97,7 @@ u8 ConfrontBg01::vfunc_40(int a) {
             mUnk_6c = 0;
             func_ov007_0221bb3c();
             if (!func_02024790(&SoundManager::Get(), 0x27)) {
-                SoundManager::Get().func_020246f8(0x27);
+                SoundManager::Get().StartSeqArc(0x27);
             }
             mUnk_68 = 10;
             if (mUnk_6a < 0x200) {

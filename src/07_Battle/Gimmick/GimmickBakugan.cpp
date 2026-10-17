@@ -73,18 +73,18 @@ void GimmickBakugan::Load() {
     ChangeDir("/Game/Gimmick");
     for (u8 i = 0; i < 2; i++) {
         if (sResources[i]) {
-            sResources[i]->func_020306e4(1);
+            sResources[i]->AddRef(1);
         }
     }
     if (sResources[mVariant]->mAnimData) {
-        mModel = sResources[mVariant]->mModel->func_02028b78(new ModelAnim(sResources[mVariant]->mAnimData, sResources[mVariant]->mModel));
-        mModel->func_02028e54(0, 1, 0x1000);
-        mUnk_00 = 1;
+        mModel = sResources[mVariant]->mModel->CreateInstance(new ModelAnim(sResources[mVariant]->mAnimData, sResources[mVariant]->mModel));
+        mModel->StartAnimWithIncrement(0, 1, 0x1000);
+        mAnimEnabled = 1;
     } else {
-        mModel = sResources[mVariant]->mModel->func_02028b78(0);
+        mModel = sResources[mVariant]->mModel->CreateInstance(0);
     }
     if (data_020d433c.mUnk_95 == 5) {
-        mModel->mUnk_69 = 0;
+        mModel->mUseBoxTest = 0;
     }
     ChangeDir("/");
 }
@@ -93,13 +93,13 @@ void GimmickBakugan::Unload() {
     ModelInstance *model = mModel;
     u8 i                 = 0;
     if (model) {
-        model->mUnk_68 = 1;
+        model->mOwnFlags = 1;
         delete model;
         mModel = 0;
     }
     ModelResource **res = sResources;
     for (; i < 2; i++) {
-        if (res[i] && res[i]->func_020307e8()) {
+        if (res[i] && res[i]->ReleaseRef()) {
             ModelResource *r = res[i];
             delete r;
             res[i] = 0;
@@ -122,10 +122,10 @@ void GimmickBakugan::Update() {
         }
         func_020526bc();
         ModelAnim *anim;
-        if (mAnimFrames && (anim = mModel->mAnim) && anim->mUnk_10) {
+        if (mAnimFrames && (anim = mModel->mAnim) && anim->mReachedEnd) {
             mState++;
-            anim->func_020298c0(0, 5);
-            anim->mUnk_04 = 1;
+            anim->SetFrame(0, 5);
+            anim->mPaused = 1;
             mAnimTimer    = mAnimFrames;
         }
         break;
@@ -141,8 +141,8 @@ void GimmickBakugan::Update() {
         mState = 1;
         ModelAnim *anim = mModel->mAnim;
         if (anim) {
-            anim->mUnk_04 = 0;
-            anim->mUnk_10 = 0;
+            anim->mPaused = 0;
+            anim->mReachedEnd = 0;
         }
         break;
     }

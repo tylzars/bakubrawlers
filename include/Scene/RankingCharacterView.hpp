@@ -8,7 +8,7 @@
 class CellAnimation;
 class ModelInstance;
 class Camera;
-class UnkStruct_02029ca8;
+class ModelLightGroup;
 class UnkStruct_0205401c;
 struct MessageFile;
 
@@ -20,7 +20,7 @@ public:
     /* 1c */ CellAnimation *mDigitCellAnims[10];
     /* 44 */ ModelInstance *mMyroomBgModel;
     /* 48 */ Camera *mCamera;
-    /* 4c */ UnkStruct_02029ca8 *mUnk_4c;
+    /* 4c */ ModelLightGroup *mUnk_4c;
     // UnkStruct_0205401c, not a CharacterModel: holds a CharacterModel for id 0x15, a StoryCharacterModel otherwise
     // (Model.hpp:54-55)
     /* 50 */ UnkStruct_0205401c *mCharacterModel;

@@ -104,4 +104,4 @@ public:
     u32 UpdatePanelWindow();          // 0221cec4
 };
 
-void func_ov005_0221b67c(MapScene *scene); // scroll callback for func_020254f0
+void func_ov005_0221b67c(MapScene *scene); // scroll callback for QueueFrameCallback

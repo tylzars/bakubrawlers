@@ -25,21 +25,21 @@ void GimmickHaosWall::Load() {
         sResource = new ModelResource("haos_wall.nsbmd", "haos_wall_data.bin", "haos_wall.nsbtx", 1);
     }
     ChangeDir("/Game/Gimmick");
-    sResource->func_020306e4(1);
-    mModel = sResource->mModel->func_02028b78(new ModelAnim(sResource->mAnimData, sResource->mModel));
-    mModel->func_02028e54(0, 1, 0x1000);
-    mUnk_00 = 1;
+    sResource->AddRef(1);
+    mModel = sResource->mModel->CreateInstance(new ModelAnim(sResource->mAnimData, sResource->mModel));
+    mModel->StartAnimWithIncrement(0, 1, 0x1000);
+    mAnimEnabled = 1;
     ChangeDir("/");
 }
 
 void GimmickHaosWall::Unload() {
     if (mModel) {
         ModelInstance *m = mModel;
-        m->mUnk_68       = 1;
+        m->mOwnFlags       = 1;
         delete m;
         mModel = 0;
     }
-    if (sResource && sResource->func_020307e8()) {
+    if (sResource && sResource->ReleaseRef()) {
         ModelResource *r = sResource;
         delete r;
         sResource = 0;
@@ -76,7 +76,7 @@ void GimmickHaosWall::Update() {
         VecFx32 b;
         VecFx32 d;
         MtxFx33 m = data_0220e848;
-        UnkStruct_0203d374 *h = list->mUnk_298->mUnk_1a4;
+        BakuganModel *h = list->mUnk_298->mUnk_1a4;
         VEC_Subtract(&mPosition, &h->mPosition, &a);
         if (mRotY) {
             func_01ffcfd8(&m, -mRotY);
@@ -103,7 +103,7 @@ void GimmickHaosWall::Update() {
         h->mPosition.z = c.z;
         mUnk_45 = 0x1e;
         func_ov007_0225ca18(data_020d433c.mBattlePlayers->mUnk_298, 7, 0);
-        SoundManager::Get().func_020246f8(0x5b);
+        SoundManager::Get().StartSeqArc(0x5b);
         mState++;
         break;
     }

@@ -29,7 +29,7 @@ static const VecFx32 sEffectPos_02265118 = {0, 0x4800, 0};
 #include "Graphics/Camera.hpp"
 #include "Graphics/Effect.hpp"
 #include "Graphics/SpriteManager.hpp"
-#include "Graphics/UnkStruct_0203d374.hpp"
+#include "Graphics/BakuganModel.hpp"
 #include "System/FileSystem.hpp"
 #include "System/SoundManager.hpp"
 #include <nitro/gx.h>
@@ -100,8 +100,8 @@ BattleUnk022637ac::~BattleUnk022637ac() {
         }
         i++;
     } while (i < 2);
-    mEffects->func_0202be68();
-    func_0202bc58(mEffects, 0);
+    mEffects->FreeAllEffects();
+    FreeEffectGroup(mEffects, 0);
 }
 
 BOOL func_ov007_022631bc(BattlePlayerList *list, u32 id);
@@ -241,9 +241,9 @@ void BattleUnk022637ac::Update() {
             }
             mContext->mUnk_12 = 1;
             if (mUnk_18 == 0xcc) {
-                CameraManager::Get().func_020264e0();
+                CameraManager::Get().Reset();
                 CameraManager::Get().mActive = 0;
-                CameraManager::Get().func_02026504(1, mUnk_30, 0);
+                CameraManager::Get().SetCamerasAndRequestMode(1, mUnk_30, 0);
                 SnapshotCamera();
             }
             mState = 10;
@@ -362,23 +362,23 @@ void BattleUnk022637ac::Update() {
 
 void BattleUnk022637ac::func_ov007_02264788() {
     SpriteScreen &screen = SpriteManager::Get().Screen(0);
-    screen.func_02027624(1);
+    screen.SetObjVramMode(1);
     ChangeDir("/Game/Battle/Obj/");
     screen.LoadCharacters("vs_u_obj_num_32k.nce_ncg1D.bin", 0x6000, 0);
     screen.LoadPalette("vs_u_obj_num_32k_ncl.bin", 0x180, 0x40);
     u8 i = 0;
     do {
         mUnk_80[i] = new CellAnimation("vs_u_obj_num_32k_nce.bin", 0, 1, 1);
-        mUnk_80[i]->mCharBase = screen.func_020276f4(0x6000);
-        mUnk_80[i]->mUnk_11   = 12;
+        mUnk_80[i]->mCharBase = screen.GetCharBase(0x6000);
+        mUnk_80[i]->mPaletteBase   = 12;
         i++;
     } while (i < 2);
     mUnk_80[0]->SetAnimation(0);
     mUnk_80[1]->SetAnimation(1);
     ChangeDir("/");
     ChangeDir("/Game/2D/union_b");
-    func_02025b64(1, 4, 0x2000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
-    func_02025b64(1, 5, 0xe0, "union_b_obj_page_ncl.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 4, 0x2000, "union_b_obj_page.nce_ncg1D.bin", 0, 0, 0);
+    LoadAndQueueUpload(1, 5, 0xe0, "union_b_obj_page_ncl.bin", 0, 0, 0);
     ChangeDir("/");
 }
 
@@ -631,10 +631,10 @@ u8 BattleUnk022637ac::func_ov007_02265118() {
             VecFx32 pos = sEffectPos_02265118;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
-            func_0202ba64(mEffects, 0, "shuto_return");
-            s16 handle = func_0202bd40(mEffects, 0, 0, 0, 1);
-            func_0202bef4(mEffects, handle, &pos);
-            SoundManager::Get().func_020246f8(0x5a);
+            LoadEffectGroup(mEffects, 0, "shuto_return");
+            s16 handle = StartEffect(mEffects, 0, 0, 0, 1);
+            SetEffectPosition(mEffects, handle, &pos);
+            SoundManager::Get().StartSeqArc(0x5a);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             mUnk_28++;
@@ -660,10 +660,10 @@ u8 BattleUnk022637ac::func_ov007_022652c8() {
             VecFx32 pos = sEffectPos_022652c8;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
-            func_0202ba64(mEffects, 0, "shuto_return");
-            s16 handle = func_0202bd40(mEffects, 0, 0, 0, 1);
-            func_0202bef4(mEffects, handle, &pos);
-            SoundManager::Get().func_020246f8(0x5a);
+            LoadEffectGroup(mEffects, 0, "shuto_return");
+            s16 handle = StartEffect(mEffects, 0, 0, 0, 1);
+            SetEffectPosition(mEffects, handle, &pos);
+            SoundManager::Get().StartSeqArc(0x5a);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             mUnk_28++;
@@ -693,7 +693,7 @@ u8 BattleUnk022637ac::func_ov007_0226547c() {
     u8 done = 0;
     switch (mUnk_28) {
         case 0:
-            SoundManager::Get().func_020246f8(0x5b);
+            SoundManager::Get().StartSeqArc(0x5b);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             mUnk_28++;
@@ -753,10 +753,10 @@ u8 BattleUnk022637ac::func_ov007_02265718() {
             VecFx32 pos = sEffectPos_02265718;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
-            func_0202ba64(mEffects, 0, "bkn_exchange");
-            s16 handle = func_0202bd40(mEffects, 0, 0, 0, 1);
-            func_0202bef4(mEffects, handle, &pos);
-            SoundManager::Get().func_020246f8(0x5c);
+            LoadEffectGroup(mEffects, 0, "bkn_exchange");
+            s16 handle = StartEffect(mEffects, 0, 0, 0, 1);
+            SetEffectPosition(mEffects, handle, &pos);
+            SoundManager::Get().StartSeqArc(0x5c);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             mUnk_28++;
@@ -778,7 +778,7 @@ u8 BattleUnk022637ac::func_ov007_02265718() {
             func_ov007_022629cc(data_020d433c.mBattlePlayers, mUnk_16, mUnk_2b);
             {
                 BattleRecord *record = &data_020d433c.mBattlePlayers->mPlayers[mUnk_15]->mRecords[mUnk_2b];
-                ((UnkStruct_0203d374 *) mUnk_1c->mUnk_1a4)->func_0203d4dc(record->mUnk_08, record->mUnk_09, 3);
+                ((BakuganModel *) mUnk_1c->mUnk_1a4)->Setup(record->mUnk_08, record->mUnk_09, 3);
             }
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
@@ -803,7 +803,7 @@ u8 BattleUnk022637ac::func_ov007_02265718() {
 }
 
 extern "C" void MI_CpuCopy8(const void *src, void *dst, u32 size);
-void func_0203db8c(void *obj, fx32 x, fx32 y, fx32 z);
+void SetTransformPosition(void *obj, fx32 x, fx32 y, fx32 z);
 void func_ov007_02262828(BattlePlayerList *list, u8 a, u8 b);
 u8 func_ov007_02262768(BattlePlayerList *list, const VecFx32 *pos, u16 value, u8 player, u8 record, u8 marker, u8 flag);
 void func_ov007_02262a64(BattlePlayerList *list, u8 a, u8 b);
@@ -831,10 +831,10 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
             VecFx32 pos = sEffectPos_02265af8_0;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
-            func_0202ba64(mEffects, 0, "bkn_move");
-            s16 handle = func_0202bd40(mEffects, 0, 0, 0, 1);
-            func_0202bef4(mEffects, handle, &pos);
-            SoundManager::Get().func_020246f8(0x5d);
+            LoadEffectGroup(mEffects, 0, "bkn_move");
+            s16 handle = StartEffect(mEffects, 0, 0, 0, 1);
+            SetEffectPosition(mEffects, handle, &pos);
+            SoundManager::Get().StartSeqArc(0x5d);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             mUnk_62_1                  = 0;
@@ -851,13 +851,13 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
                 unit      = UnitAt(units, mUnk_29, sz);
                 marker    = &list->Entries()[unit->mUnk_11];
                 func_ov007_02248944(&mUnk_54, marker->mUnk_3, marker->mUnk_4);
-                func_0203db8c(mUnk_1c->mUnk_1a4, mUnk_54.x, 0x899a, mUnk_54.z);
+                SetTransformPosition(mUnk_1c->mUnk_1a4, mUnk_54.x, 0x899a, mUnk_54.z);
                 VecFx32 a = mUnk_1c->mUnk_1a4->mPosition;
                 VecFx32 b = *(VecFx32 *) unit;
                 mUnk_1c->func_ov007_02259a40(marker->mUnk_3, marker->mUnk_4, &a, &b);
                 mUnk_1c->mUnk_1a4->mPosition = a;
                 mUnk_1c->mUnk_1d2       = 3;
-                mUnk_1c->mUnk_1a4->mUnk_4a = 0;
+                mUnk_1c->mUnk_1a4->mVisible = 0;
                 // Both indices are read as their own statements (volatile placeholders), the list before them.
                 u8 ri;
                 BattlePlayer *pl     = data_020d433c.mBattlePlayers->mPlayers[*(volatile u8 *) &mUnk_15];
@@ -886,12 +886,12 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
             break;
         case 2:
             if (func_ov007_02267304(this, &mUnk_54)) {
-                s16 handle  = func_0202bd40(mEffects, 0, 0, 0, 1);
+                s16 handle  = StartEffect(mEffects, 0, 0, 0, 1);
                 VecFx32 pos = sEffectPos_02265af8_1;
                 pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
                 pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
-                func_0202bef4(mEffects, handle, &pos);
-                SoundManager::Get().func_020246f8(0x5d);
+                SetEffectPosition(mEffects, handle, &pos);
+                SoundManager::Get().StartSeqArc(0x5d);
                 mUnk_62_1 = 0;
                 mUnk_28++;
             }
@@ -899,7 +899,7 @@ u8 BattleUnk022637ac::func_ov007_02265af8() {
         case 3:
             if (mUnk_1a >= 0x50 && !mUnk_62_1) {
                 mUnk_62_1                  = 1;
-                mUnk_1c->mUnk_1a4->mUnk_4a = 1;
+                mUnk_1c->mUnk_1a4->mVisible = 1;
             }
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {
@@ -919,10 +919,10 @@ u8 BattleUnk022637ac::func_ov007_02265fac() {
             VecFx32 pos = sEffectPos_02265fac_0;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
-            func_0202ba64(mEffects, 0, "bkn_move");
-            s16 handle = func_0202bd40(mEffects, 0, 0, 0, 1);
-            func_0202bef4(mEffects, handle, &pos);
-            SoundManager::Get().func_020246f8(0x5d);
+            LoadEffectGroup(mEffects, 0, "bkn_move");
+            s16 handle = StartEffect(mEffects, 0, 0, 0, 1);
+            SetEffectPosition(mEffects, handle, &pos);
+            SoundManager::Get().StartSeqArc(0x5d);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             mUnk_62_1                  = 0;
@@ -934,7 +934,7 @@ u8 BattleUnk022637ac::func_ov007_02265fac() {
                 mUnk_62_1            = 1;
                 BattleMarker *marker = &data_020d433c.mBattlePlayers->Entries()[mUnk_2a];
                 func_ov007_02248944(&mUnk_54, marker->mUnk_3, marker->mUnk_4);
-                func_0203db8c(mUnk_1c->mUnk_1a4, mUnk_54.x, 0x899a, mUnk_54.z);
+                SetTransformPosition(mUnk_1c->mUnk_1a4, mUnk_54.x, 0x899a, mUnk_54.z);
                 u8 idx = mUnk_29;
                 if (idx == 0xff) {
                     mUnk_1c->mUnk_1d2 = 2;
@@ -946,7 +946,7 @@ u8 BattleUnk022637ac::func_ov007_02265fac() {
                     func_ov007_02262a64(data_020d433c.mBattlePlayers, mUnk_29, mUnk_16);
                     mUnk_1c->mUnk_1d2 = 3;
                 }
-                mUnk_1c->mUnk_1a4->mUnk_4a = 0;
+                mUnk_1c->mUnk_1a4->mVisible = 0;
                 VecFx32 c;
                 c.x = mUnk_1c->mUnk_1a4->mPosition.x;
                 c.y = mUnk_1c->mUnk_1a4->mPosition.y;
@@ -961,12 +961,12 @@ u8 BattleUnk022637ac::func_ov007_02265fac() {
             break;
         case 2:
             if (func_ov007_02267304(this, &mUnk_54)) {
-                s16 handle  = func_0202bd40(mEffects, 0, 0, 0, 1);
+                s16 handle  = StartEffect(mEffects, 0, 0, 0, 1);
                 VecFx32 pos = sEffectPos_02265fac_1;
                 pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
                 pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
-                func_0202bef4(mEffects, handle, &pos);
-                SoundManager::Get().func_020246f8(0x5d);
+                SetEffectPosition(mEffects, handle, &pos);
+                SoundManager::Get().StartSeqArc(0x5d);
                 mUnk_62_1 = 0;
                 mUnk_28++;
             }
@@ -974,7 +974,7 @@ u8 BattleUnk022637ac::func_ov007_02265fac() {
         case 3:
             if (mUnk_1a >= 0x50 && !mUnk_62_1) {
                 mUnk_62_1                  = 1;
-                mUnk_1c->mUnk_1a4->mUnk_4a = 1;
+                mUnk_1c->mUnk_1a4->mVisible = 1;
             }
             mUnk_1a++;
             if (mUnk_1a > 0xa0) {
@@ -993,10 +993,10 @@ u8 BattleUnk022637ac::func_ov007_022663f0() {
             VecFx32 pos = sEffectPos_022663f0;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
-            func_0202ba64(mEffects, 0, "defense_up");
-            s16 handle = func_0202bd40(mEffects, 0, 0, 0, 1);
-            func_0202bef4(mEffects, handle, &pos);
-            SoundManager::Get().func_020246f8(0x5e);
+            LoadEffectGroup(mEffects, 0, "defense_up");
+            s16 handle = StartEffect(mEffects, 0, 0, 0, 1);
+            SetEffectPosition(mEffects, handle, &pos);
+            SoundManager::Get().StartSeqArc(0x5e);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             mUnk_28++;
@@ -1025,7 +1025,7 @@ u8 BattleUnk022637ac::func_ov007_022665ec() {
     u8 done = 0;
     switch (mUnk_28) {
         case 0:
-            func_0202ba64(mEffects, 0, "gp_pickup2");
+            LoadEffectGroup(mEffects, 0, "gp_pickup2");
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             mUnk_28++;
@@ -1037,9 +1037,9 @@ u8 BattleUnk022637ac::func_ov007_022665ec() {
             VecFx32 pos = sEffectPos_022665ec;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
-            s16 handle  = func_0202bd40(mEffects, 0, 0, 0, 1);
-            func_0202bef4(mEffects, handle, &pos);
-            SoundManager::Get().func_020246f8(0x5f);
+            s16 handle  = StartEffect(mEffects, 0, 0, 0, 1);
+            SetEffectPosition(mEffects, handle, &pos);
+            SoundManager::Get().StartSeqArc(0x5f);
             mUnk_62_0 = 0;
             mUnk_28++;
             break;
@@ -1070,10 +1070,10 @@ u8 BattleUnk022637ac::func_ov007_02266868() {
             VecFx32 pos = sEffectPos_02266868;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
-            func_0202ba64(mEffects, 0, "gp_pickup2");
-            s16 handle = func_0202bd40(mEffects, 0, 0, 0, 1);
-            func_0202bef4(mEffects, handle, &pos);
-            SoundManager::Get().func_020246f8(0x5f);
+            LoadEffectGroup(mEffects, 0, "gp_pickup2");
+            s16 handle = StartEffect(mEffects, 0, 0, 0, 1);
+            SetEffectPosition(mEffects, handle, &pos);
+            SoundManager::Get().StartSeqArc(0x5f);
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             mUnk_28++;
@@ -1111,14 +1111,14 @@ static const BattleUnk022637acEffect data_ov007_0227ab00[8] = {
     {{0, 0x5000, 0}, {0, 0x208000, 0x208000}, {0x12000, 0xa000, 0x12000}},
 };
 
-void func_0202bf18(EffectManager *manager, u16 handle, VecFx32 *scale);
+void SetEffectScale(EffectManager *manager, u16 handle, VecFx32 *scale);
 BOOL func_ov007_02267100(BattleUnk022637ac *self);
 
 u8 BattleUnk022637ac::func_ov007_02266a28() {
     u8 done = 0;
     switch (mUnk_28) {
         case 0:
-            func_0202ba64(mEffects, 0, mUnk_18 == 0xd4 ? "gp_pickup2" : "gp_down");
+            LoadEffectGroup(mEffects, 0, mUnk_18 == 0xd4 ? "gp_pickup2" : "gp_down");
             SpriteManager::Get();
             SpriteManager::sFade[0] = 2;
             func_ov007_02267098(this);
@@ -1131,10 +1131,10 @@ u8 BattleUnk022637ac::func_ov007_02266a28() {
             VecFx32 pos = sEffectPos_02266a28_0;
             pos.x       = mUnk_1c->mUnk_1a4->mPosition.x;
             pos.z       = mUnk_1c->mUnk_1a4->mPosition.z;
-            s16 handle  = func_0202bd40(mEffects, 0, 0, 0, 1);
-            func_0202bef4(mEffects, handle, &pos);
+            s16 handle  = StartEffect(mEffects, 0, 0, 0, 1);
+            SetEffectPosition(mEffects, handle, &pos);
             u32 sfx = mUnk_18 == 0xd4 ? 0x5f : 0x6c;
-            SoundManager::Get().func_020246f8(sfx);
+            SoundManager::Get().StartSeqArc(sfx);
             if (mUnk_18 == 0xd3) {
                 mUnk_62_0 = 1;
             } else {
@@ -1168,11 +1168,11 @@ u8 BattleUnk022637ac::func_ov007_02266a28() {
                 VecFx32 pos                          = sEffectPos_02266a28_1;
                 pos.x                                = entry->mPos.x;
                 pos.z                                = entry->mPos.z;
-                u16 handle                           = (u16) (s16) func_0202bd40(mEffects, 0, 0, 0, 1);
-                func_0202bef4(mEffects, handle, &pos);
-                func_0202bf18(mEffects, handle, (VecFx32 *) &entry->mScale);
+                u16 handle                           = (u16) (s16) StartEffect(mEffects, 0, 0, 0, 1);
+                SetEffectPosition(mEffects, handle, &pos);
+                SetEffectScale(mEffects, handle, (VecFx32 *) &entry->mScale);
                 u32 sfx = mUnk_18 == 0xd4 ? 0x5f : 0x6c;
-                SoundManager::Get().func_020246f8(sfx);
+                SoundManager::Get().StartSeqArc(sfx);
                 mUnk_28++;
             }
             break;
@@ -1207,13 +1207,13 @@ u8 BattleUnk022637ac::func_ov007_02266a28() {
             x = p->x;
             mUnk_30->SetTarget(x, y, z);
             func_ov007_02267098(this);
-            s16 handle  = func_0202bd40(mEffects, 0, 0, 0, 1);
+            s16 handle  = StartEffect(mEffects, 0, 0, 0, 1);
             VecFx32 pos = sEffectPos_02266a28_2;
             pos.x       = x;
             pos.z       = z;
-            func_0202bef4(mEffects, handle, &pos);
+            SetEffectPosition(mEffects, handle, &pos);
             u32 sfx = mUnk_18 == 0xd4 ? 0x5f : 0x6c;
-            SoundManager::Get().func_020246f8(sfx);
+            SoundManager::Get().StartSeqArc(sfx);
             mUnk_60 = 0;
             mUnk_28++;
             break;
@@ -1377,7 +1377,7 @@ BOOL func_ov007_0226745c(BattleUnk022637ac *self, u8 player, u8 slot) {
             if (self->mUnk_62_0) {
                 u8 i = 0;
                 do {
-                    self->mUnk_80[i]->mUnk_11 = 13;
+                    self->mUnk_80[i]->mPaletteBase = 13;
                     i++;
                 } while (i < 2);
             } else {
@@ -1434,7 +1434,7 @@ BOOL func_ov007_0226745c(BattleUnk022637ac *self, u8 player, u8 slot) {
                         func_ov007_0226a380(p, slot, (s16) -amount);
                     }
                 }
-                SoundManager::Get().func_020246f8(8);
+                SoundManager::Get().StartSeqArc(8);
             }
             break;
         case 3:
@@ -1447,12 +1447,12 @@ BOOL func_ov007_0226745c(BattleUnk022637ac *self, u8 player, u8 slot) {
     x += 0x30;
     u32 value = self->mUnk_6e;
     do {
-        self->mUnk_80[0]->func_0202a3ec(0, (u8) (u16) ((int) value % 10), x, y, 0);
+        self->mUnk_80[0]->DrawFrame(0, (u8) (u16) ((int) value % 10), x, y, 0);
         x -= 12;
         value /= 10;
         i++;
     } while (i < self->mUnk_61);
-    self->mUnk_80[1]->func_0202a3ec(0, self->mUnk_62_0, x, y, 0);
+    self->mUnk_80[1]->DrawFrame(0, self->mUnk_62_0, x, y, 0);
     return done;
 }
 

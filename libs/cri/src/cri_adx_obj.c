@@ -52,8 +52,8 @@ extern void StmSetReadEndCallback(void *, int, int);
 extern void StmDealloc(void *);
 extern void func_02051528(void *);
 extern void func_02051504(void *);
-extern void func_02040950(void *, int);
-extern void func_02040988(void *);
+extern void CriStmSetSrc(void *, int);
+extern void CriStmStart(void *);
 extern void func_02043378(Adx *);
 extern void func_020514f8(void *);
 extern void func_020426e0(void *, int, int);
@@ -64,7 +64,7 @@ extern void StmCloseFile(void *);
 extern void StmRequestOpenFile(void *, int, int, int, long long);
 extern void StmStart(void *);
 extern void func_02047914(void *, int), func_02047920(void *, int);
-extern void func_020409a0(void *);
+extern void CriStmStop(void *);
 extern void func_020514fc(void *);
 extern void func_02051538(void *);
 extern int func_02041714(void *);
@@ -84,7 +84,7 @@ extern int AdxGetStateInner(Adx *);
 extern int func_02043000(Adx *);
 extern void func_02043068(Adx *, int, int);
 extern void func_020431ac(Adx *, int);
-extern int func_02043220(Adx *);
+extern int AdxGetVolumeInner(Adx *);
 
 Adx *AdxAlloc(int a, int b, int c)
 {
@@ -300,15 +300,15 @@ void AdxDeallocAllInner(void)
     }
 }
 
-/* Also reached from func_02043f28 (cri_adx_ctrl2.c, the type-1 step of func_02044630) through AdxStartFile while
+/* Also reached from AdxAdvanceState1 (cri_adx_ctrl2.c, the type-1 step of AdxAdvanceInner) through AdxStartFile while
    ba8 == 1: the cri_adx_ctrl.c set-ups that only store state 1 and ba8 = 1 start there. */
 void AdxStart(Adx *o, int v)
 {
     int i;
     for (i = 0; i < o->nch; i++) o->p18[i]->vt->f14(o->p18[i]);
-    func_02040950(o->p4, v);
+    CriStmSetSrc(o->p4, v);
     o->p14 = (Obj *)v;
-    func_02040988(o->p4);
+    CriStmStart(o->p4);
     o->state = 1;
     o->pad4c_ = 0;
     o->b71 = 0;
@@ -340,7 +340,7 @@ void func_02042e94(Adx *o)
     func_0203eda4();
     func_02047914(o->p0c, 0);
     func_02047920(o->p0c, 0);
-    func_020409a0(o->p4);
+    CriStmStop(o->p4);
     if (o->mode == 2 && o->p14) {
         Obj *p = o->p14;
         o->p14 = 0;
@@ -481,7 +481,7 @@ int func_020431fc(Adx *o)
 {
     int r;
     func_0203edbc();
-    r = func_02043220(o);
+    r = AdxGetVolumeInner(o);
     func_0203edc0();
     return r;
 }

@@ -70,13 +70,13 @@ extern int func_0203e6cc(void *);
 extern int func_0203e6d4(void *);
 extern int func_0203e6dc(void *);
 extern int CriObjGetState(void *);
-extern void func_0203e87c(void *, void *, int);
+extern void CriObjSetInput(void *, void *, int);
 extern void StartCriObj(void *);
 extern void StopCriObj(void *);
 extern void func_0203e918(void *);
 extern int func_0203e944(void *);
 extern int func_0203e94c(void *);
-extern void func_0203eccc(void *);
+extern void CriObjAdvance(void *);
 extern int func_0203f69c(void *, int, short *);
 extern void func_0203de40(void *, int);
 extern void func_0203de64(void *, int);
@@ -85,18 +85,18 @@ extern int func_02041744(CriStm *);
 extern int func_02041734(CriStm *);
 extern int func_02041870(CriStm *);
 extern int func_02040c40(struct CriStm *, int *, int *, int *);
-extern void func_020409bc(CriStm *);
+extern void CriStmAdvanceState1(CriStm *);
 extern void func_02040d10(CriStm *);
 extern void func_02041110(CriStm *);
 extern void func_020412bc(CriStm *);
-extern void func_02041320(CriStm *);
-extern void func_0204138c(CriStm *);
+extern void CriStmAdvanceState2(CriStm *);
+extern void CriStmAdvance(CriStm *);
 extern void func_020413f8(CriStm *);
 extern void func_02041528(CriStm *);
-extern void func_020407bc(CriStm *);
+extern void CriStmReset(CriStm *);
 extern char data_020acaf4[], data_020acb14[], data_020acb38[], data_020acb5c[];
 
-void func_020407bc(CriStm *s)
+void CriStmReset(CriStm *s)
 {
     s->ia0 = 0;
     s->i2c = 0;
@@ -133,7 +133,7 @@ CriStm *CriStmAlloc(int owner, int nch, CriVObj **srcs)
     s->nch = nch;
     for (i = 0; i < nch; i++) s->ch[i] = srcs[i];
     s->state = 0;
-    func_020407bc(s);
+    CriStmReset(s);
     s->cb48 = 0;
     s->arg4c = 0;
     s->cb58 = 0;
@@ -157,25 +157,25 @@ void CriStmDealloc(CriStm *s)
 
 int CriStmGetState(CriStm *s) { return s->state; }
 
-void func_02040950(CriStm *s, int v) { s->src = (CriVObj *)v; func_0203de40(s->obj, v); }
+void CriStmSetSrc(CriStm *s, int v) { s->src = (CriVObj *)v; func_0203de40(s->obj, v); }
 
 void func_02040964(CriStm *s, int v) { s->i38 = v; func_0203de64(s->obj, v); }
 
 void func_02040978(CriStm *s) { func_0203dec4(s->obj); }
 
-void func_02040988(CriStm *s)
+void CriStmStart(CriStm *s)
 {
-    func_020407bc(s);
+    CriStmReset(s);
     s->state = 1;
 }
 
-void func_020409a0(CriStm *s)
+void CriStmStop(CriStm *s)
 {
     StopCriObj(s->obj);
     s->state = 0;
 }
 
-void func_020409bc(CriStm *s)
+void CriStmAdvanceState1(CriStm *s)
 {
     CriPlayer *obj;
     CriVObj *src;
@@ -353,7 +353,7 @@ void func_02040d10(CriStm *s)
         }
     }
     if (func_0203e690(obj) == 10) src->vt->put(src, 1, &s->in);
-    func_0203e87c(obj, s->in.p, s->in.n);
+    CriObjSetInput(obj, s->in.p, s->in.n);
     StartCriObj(obj);
 }
 
@@ -407,26 +407,26 @@ void func_020412bc(CriStm *s)
     s->i34 += c;
 }
 
-void func_02041320(CriStm *s)
+void CriStmAdvanceState2(CriStm *s)
 {
     CriPlayer *obj = s->obj;
     int st;
     if (CriObjGetState(obj) == 0) func_02040d10(s);
-    func_0203eccc(obj);
+    CriObjAdvance(obj);
     if (CriObjGetState(obj) == 3) func_02041110(s);
     st = obj->s98;
     if (st == 10 || st == 20 || st == 11 || st == 12 || st == 15) func_020412bc(s);
 }
 
-void func_0204138c(CriStm *s)
+void CriStmAdvance(CriStm *s)
 {
     if (s->ia8 > 0) {
         func_0203eda4();
         func_020413f8(s);
         func_0203edb0();
     }
-    if (s->state == 2) func_02041320(s);
-    else if (s->state == 1) func_020409bc(s);
+    if (s->state == 2) CriStmAdvanceState2(s);
+    else if (s->state == 1) CriStmAdvanceState1(s);
     if (s->iac > 0) {
         func_0203eda4();
         func_02041528(s);
@@ -491,14 +491,14 @@ void func_02041528(CriStm *s)
     s->iac -= half;
 }
 
-void func_02041644(void)
+void CriStmAdvanceAll(void)
 {
     int i;
     CriStm *p;
     if (gCriStmSys.pre != 0) gCriStmSys.pre(gCriStmSys.preArg);
     p = gCriStm;
     for (i = 0; i < 4; i++) {
-        if (p->used == 1) func_0204138c(p);
+        if (p->used == 1) CriStmAdvance(p);
         p++;
     }
     if (gCriStmSys.post != 0) gCriStmSys.post(gCriStmSys.postArg);
@@ -508,8 +508,8 @@ int func_020416b0(CriStm *s) { return s->i30; }
 int func_020416b8(CriStm *s) { return s->i2c; }
 void func_020416c0(CriStm *s, int v) { s->i34 = v; }
 void func_020416c8(CriStm *s, int v) { s->ia4 = v; }
-void func_020416d0(CriStm *s, void (*cb)(int), int arg) { s->cb48 = cb; s->arg4c = arg; }
-void func_020416dc(CriStm *s, int v) { s->i3c = v; }
+void CriStmSetEndCallback(CriStm *s, void (*cb)(int), int arg) { s->cb48 = cb; s->arg4c = arg; }
+void CriStmSetEnd(CriStm *s, int v) { s->i3c = v; }
 void func_020416e4(CriStm *s, int v) { s->i40 = v; }
 void func_020416ec(CriStm *s, int v) { s->i44 = v; }
 int func_020416f4(CriStm *s) { return func_0203e690(s->obj); }

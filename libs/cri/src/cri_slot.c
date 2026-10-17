@@ -1,4 +1,4 @@
-/* CRI middleware, 0x02044614-0x02044a20: 4-slot object pool (0x3c bytes) */
+/* CRI middleware, 0x02044614-0x02044a20: 4-slot object pool (0x3c bytes), plus AdxAdvance / AdxAdvanceInner: those take a gCriDrv Adx entry (declared CriSlot *; byte +1, CriSlotHdr.type, is the Adx state) */
 typedef struct CriSlot {
     int used;           /* 0x00 */
     int idx;            /* 0x04 */
@@ -22,10 +22,10 @@ extern void func_0203edbc(void);
 extern void func_0203edc0(void);
 extern int func_0203edc4(int, int, short *, short *);
 extern void SendErr(const char *);
-extern void func_02044440(CriSlot *);
-extern void func_02043f28(CriSlot *);
-extern void func_020442ec(CriSlot *);
-extern void func_02044514(CriSlot *);
+extern void AdxAdvanceState3(CriSlot *);
+extern void AdxAdvanceState1(CriSlot *);
+extern void AdxAdvanceState2(CriSlot *);
+extern void AdxAdvanceState4(CriSlot *);
 extern void func_02044548(CriSlot *);
 extern void func_020445a8(CriSlot *);
 extern void func_0204454c(CriSlot *);
@@ -33,16 +33,16 @@ extern void *memset(void *, int, int);
 extern int func_0203f714(int, int, int, short *, int, int, int, int, int);
 extern int func_0204006c(int, int, int, short *, int, short *, int, int, short *, int, int);
 
-void func_02044630(CriSlot *p);
+void AdxAdvanceInner(CriSlot *p);
 
-void func_02044614(CriSlot *p)
+void AdxAdvance(CriSlot *p)
 {
     func_0203edbc();
-    func_02044630(p);
+    AdxAdvanceInner(p);
     func_0203edc0();
 }
 
-void func_02044630(CriSlot *p)
+void AdxAdvanceInner(CriSlot *p)
 {
     if (p == 0) {
         SendErr(data_020ad000);
@@ -50,10 +50,10 @@ void func_02044630(CriSlot *p)
     }
     {
         int t = ((CriSlotHdr *)p)->type;
-        if (t == 3) func_02044440(p);
-        else if (t == 1) func_02043f28(p);
-        else if (t == 2) func_020442ec(p);
-        else if (t == 4) func_02044514(p);
+        if (t == 3) AdxAdvanceState3(p);
+        else if (t == 1) AdxAdvanceState1(p);
+        else if (t == 2) AdxAdvanceState2(p);
+        else if (t == 4) AdxAdvanceState4(p);
         else if (t == 5) func_02044548(p);
     }
     func_020445a8(p);
@@ -132,7 +132,7 @@ int CriSlotGetState(CriSlot *p)
     return p->state;
 }
 
-int func_02044848(CriSlot *p, int a, int b, int c, int d)
+int CriSlotSetupMode1(CriSlot *p, int a, int b, int c, int d)
 {
     if (p->state != 0) return 0;
     p->mode = 1;
@@ -143,7 +143,7 @@ int func_02044848(CriSlot *p, int a, int b, int c, int d)
     return 1;
 }
 
-int func_0204487c(CriSlot *p, int a, int b, int c, int d)
+int CriSlotSetupMode2(CriSlot *p, int a, int b, int c, int d)
 {
     if (p->state != 0) return 0;
     p->mode = 2;
@@ -161,7 +161,7 @@ void CriSlotStart(CriSlot *p)
     p->state = 1;
 }
 
-void func_020448d0(CriSlot *p)
+void CriSlotStop(CriSlot *p)
 {
     p->state = 0;
     p->u28.b[0] = 0; p->u28.b[1] = 0; p->u28.b[2] = 0; p->u28.b[3] = 0;
@@ -183,7 +183,7 @@ void func_02044918(void)
     gFlag = 1;
 }
 
-void func_0204492c(CriSlot *p)
+void CriSlotRun(CriSlot *p)
 {
     if (p->state == 1) p->state = 2;
     if (p->state != 2) return;

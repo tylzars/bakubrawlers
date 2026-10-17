@@ -84,7 +84,7 @@ extern void func_020511f4(int, void *);
 extern void func_020511fc(int);
 extern void func_020511c8(void);
 extern void *memset(void *, int, int);
-extern VObj *func_02050e60(void *, int);
+extern VObj *CriMemBlkCreate(void *, int);
 extern void func_02050ea8(void *);
 extern void *CriFaderCreate(void *, int);
 extern void func_020506e0(void *);

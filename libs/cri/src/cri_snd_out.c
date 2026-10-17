@@ -18,7 +18,7 @@ struct SndOut {
     u16 filled;     /* 0x1c */
     u16 space;      /* 0x1e */
     u16 u20;
-    s16 pan;        /* 0x22: the value SetSndStrmVolume gets (func_0204aa80), a volume, not a pan */
+    s16 pan;        /* 0x22: the value SetSndStrmVolume gets (SndOutSetVolume), a volume, not a pan */
     u16 level;      /* 0x24 */
     s16 resample;   /* 0x26 */
     u16 mode;       /* 0x28: 1..6 = upsampling ratio, 8 = copy */
@@ -49,7 +49,7 @@ extern char data_020ae2bc[];
 
 extern void SndOutStop(SndOut *);
 extern void SndOutResetCounters(SndOut *);
-extern void func_02049cec(int, int, int, u32, int, SndOut *);
+extern void SndOutStrmCallback(int, int, int, u32, int, SndOut *);
 extern void SndOutGetSpaceAndFilled(SndOut *, u16 *, u16 *);
 extern void SndOutMoveSpaceToFilled(SndOut *, int);
 extern u16 SndOutSplitSpace(SndOut *, u16 *, u16 *);
@@ -62,7 +62,7 @@ int SndOutSetup(SndOut *o)
     if (o->flags & 8) return 0;
     MIi_CpuClearFast(0, o->buf, o->size);
     SndOutResetCounters(o);
-    r = SetupSndStrm(o->timer, 1, o->buf, o->size, o->i08, o->s2c, func_02049cec, o);
+    r = SetupSndStrm(o->timer, 1, o->buf, o->size, o->i08, o->s2c, SndOutStrmCallback, o);
     func_02037634(o->timer, 0, o->u20);
     SetSndStrmVolume(o->timer, o->pan);
     SetSndStrmChannelVolume(o->timer, 0, 0);
@@ -71,7 +71,7 @@ int SndOutSetup(SndOut *o)
     return r;
 }
 
-void func_02049cec(int type, int b, int c, u32 n, int d, SndOut *o)
+void SndOutStrmCallback(int type, int b, int c, u32 n, int d, SndOut *o)
 {
     int hit = 0;
     if (type == 1) {
@@ -139,7 +139,7 @@ int func_02049e08(SndOut *o, int rate)
     return rate;
 }
 
-void func_02049f30(SndOut *o)
+void SndOutStart(SndOut *o)
 {
     SndOutSetup(o);
     StartSndStrm(o->timer);
@@ -463,7 +463,7 @@ u32 SndOutGetSpaceSamples(SndOut *o)
     return (u32)o->space >> 1;
 }
 
-int func_0204aa80(SndOut *o, int pan)
+int SndOutSetVolume(SndOut *o, int pan)
 {
     o->pan = pan;
     SetSndStrmVolume(o->timer, pan);

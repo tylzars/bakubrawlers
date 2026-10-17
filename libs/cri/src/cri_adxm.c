@@ -71,7 +71,7 @@ extern void CriInit(void);
 extern void GlobalPoolAddRef(void);
 extern void func_0204ecfc(void);
 extern void func_02047408(void (*)(int, const char *), int);
-extern void func_020483f0(const void *, int);
+extern void ChSetChannelIds(const void *, int);
 extern void func_020522e4(void);
 extern void CriGlobTextCallback(int, const char *);
 extern void CriGlobSendErr(const char *, const char *);
@@ -153,7 +153,7 @@ void CriGlobInit(CriMemCfg *cfg, int a, const void *b, void (*c)(const char *), 
     GlobalPoolAddRef();
     func_0204ecfc();
     func_02047408(CriGlobTextCallback, 0);
-    func_020483f0(b, a);
+    ChSetChannelIds(b, a);
     data_02218fd0.ch = 2;
     data_02218fd0.init = 1;
 }

@@ -1,7 +1,7 @@
 /* Two objects live in this unit.
-   CriMemBlk (0xc bytes, as in cri_mem_blk.c): its vtable data_0209e4ac lists func_02050ebc..func_02050f58
+   CriMemBlk (0xc bytes, as in cri_mem_blk.c): its vtable data_0209e4ac lists CriMemBlkAllocAdx..CriMemBlkRequestStartFileRange
    (cri_mem_blk.c) and func_02050f68..func_020510a4 below; func_020510ac sets it up. Those below work on the Adx
-   object at +4 (the AdxAlloc / AdxAllocNch1 result stored by func_02050ebc): most hand it and their other
+   object at +4 (the AdxAlloc / AdxAllocNch1 result stored by CriMemBlkAllocAdx): most hand it and their other
    arguments, unchanged, to a cri_adx_ctrl.c / cri_adx_obj.c function; func_02050fc8 maps AdxGetState's result,
    func_0205102c raises the value to at least -960 first, func_0205105c / func_02051078 act only when their first
    argument is 0, and func_020510a4 returns the object.
@@ -23,7 +23,7 @@ typedef struct CriX {
 } CriX;
 
 extern int data_0209e4ac, data_020b0120, data_020b0154, data_020b0188, data_020b01b8, data_020b01f0;
-extern void func_0204359c(void *, int, int), func_02043798(void *, int, int), func_02043848(void *, int, int);
+extern void func_0204359c(void *, int, int), AdxStartBuf(void *, int, int), AdxStartHdrEntry(void *, int, int);
 extern void AdxStop(void *), func_02043478(void *, int);
 extern int func_020434ac(void *);
 extern int AdxGetState(void *);
@@ -45,8 +45,8 @@ int func_02051448(CriX *o);
 void CriXReset(CriX *o);
 
 void func_02050f68(CriMemBlk *o, int a, int b) { func_0204359c(o->adx, a, b); }
-void func_02050f78(CriMemBlk *o, int a, int b) { func_02043798(o->adx, a, b); }
-void func_02050f88(CriMemBlk *o, int a, int b) { func_02043848(o->adx, a, b); }
+void func_02050f78(CriMemBlk *o, int a, int b) { AdxStartBuf(o->adx, a, b); }
+void func_02050f88(CriMemBlk *o, int a, int b) { AdxStartHdrEntry(o->adx, a, b); }
 void func_02050f98(CriMemBlk *o) { AdxStop(o->adx); }
 void func_02050fa8(CriMemBlk *o, int v) { func_02043478(o->adx, v); }
 int func_02050fb8(CriMemBlk *o) { return func_020434ac(o->adx); }

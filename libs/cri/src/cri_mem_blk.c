@@ -6,7 +6,7 @@ typedef struct CriMemSrc {
     int c;                            /* 0x08 */
 } CriMemSrc;
 
-/* vtable data_0209e4ac: func_02050ebc, func_02050f24, func_02050f48, func_02050f58 here, then func_02050f68..
+/* vtable data_0209e4ac: CriMemBlkAllocAdx, CriMemBlkDeallocAdx, CriMemBlkRequestStartFile, CriMemBlkRequestStartFileRange here, then func_02050f68..
    func_020510a4 (cri_adx_vol.c) */
 typedef struct CriMemBlk {
     void *vt;                         /* 0x00, data_0209e4ac, set by func_020510ac */
@@ -20,10 +20,10 @@ extern void func_020510ac(CriMemBlk *);
 extern void *AdxAllocNch1(int, int);
 extern void *AdxAlloc(int, int, int);
 extern void AdxDealloc(void *);
-extern void func_0204375c(void *, int);
-extern void func_020436b4(void *, int, int, int);
+extern void AdxRequestStartFile(void *, int);
+extern void AdxRequestStartFileRange(void *, int, int, int);
 
-CriMemBlk *func_02050e60(CriMemBlk *m, unsigned size)
+CriMemBlk *CriMemBlkCreate(CriMemBlk *m, unsigned size)
 {
     if (m == 0) {
         SendErrWrapper(data_020b0078);
@@ -45,7 +45,7 @@ void func_02050ea8(CriMemBlk *m)
     func_020510ac(m);
 }
 
-int func_02050ebc(CriMemBlk *m, CriMemSrc *s, int a, int b)
+int CriMemBlkAllocAdx(CriMemBlk *m, CriMemSrc *s, int a, int b)
 {
     if (s->c != 0) {
         m->adx = AdxAllocNch1(a, b - 0xc);
@@ -60,7 +60,7 @@ int func_02050ebc(CriMemBlk *m, CriMemSrc *s, int a, int b)
     return 1;
 }
 
-void func_02050f24(CriMemBlk *m)
+void CriMemBlkDeallocAdx(CriMemBlk *m)
 {
     if (m->adx == 0) {
         return;
@@ -69,12 +69,12 @@ void func_02050f24(CriMemBlk *m)
     m->adx = 0;
 }
 
-void func_02050f48(CriMemBlk *m, int a)
+void CriMemBlkRequestStartFile(CriMemBlk *m, int a)
 {
-    func_0204375c(m->adx, a);
+    AdxRequestStartFile(m->adx, a);
 }
 
-void func_02050f58(CriMemBlk *m, int a, int b, int c)
+void CriMemBlkRequestStartFileRange(CriMemBlk *m, int a, int b, int c)
 {
-    func_020436b4(m->adx, a, b, c);
+    AdxRequestStartFileRange(m->adx, a, b, c);
 }

@@ -64,7 +64,7 @@ extern void func_020447ac(int, int *, int *);
 extern void func_020447d0(int, int *, int *);
 extern void func_020447f4(int, int, int, int);
 extern void func_02044804(int, short *, short *, short *);
-extern void func_020448d0(int);
+extern void CriSlotStop(int);
 extern void func_020448fc(int);
 extern void CriFormatString(void *, int, const char *);
 
@@ -313,7 +313,7 @@ int func_0203e790(CriObj *o, unsigned a, unsigned b, int c, short *p0, short *p1
 
 int CriObjGetState(CriObj *o) { return o->state; }
 
-void func_0203e87c(CriObj *o, int a, int b)
+void CriObjSetInput(CriObj *o, int a, int b)
 {
     if (o->s98 == 0) {
         o->i48 = a;
@@ -332,8 +332,8 @@ void func_0203e87c(CriObj *o, int a, int b)
 
 void StartCriObj(CriObj *o) { if (o->state == 0) o->state = 1; }   /* nothing unless state is 0 */
 
-/* func_020448d0 also zeroes the slot's state and u28 values (the ones CriObjSaveSlotValues copies). */
-void StopCriObj(CriObj *o) { func_020448d0(o->h); o->state = 0; }
+/* CriSlotStop also zeroes the slot's state and u28 values (the ones CriObjSaveSlotValues copies). */
+void StopCriObj(CriObj *o) { CriSlotStop(o->h); o->state = 0; }
 
 void func_0203e918(CriObj *o)
 {

@@ -37,11 +37,11 @@ extern void *data_020ade04;
 extern int func_02047798(void);
 extern void func_0204e8ac(void);
 extern void OS_WakeupThreadDirect(void *);
-extern void func_02048304(void), func_02048398(void), func_020482f8(void), func_02048430(void);
-extern void func_02048718(int), func_0204866c(int);
-extern void func_0204871c(void), func_02048808(void), func_020488f8(void), func_02048914(void);
-extern void func_02048930(void), func_02048ef4(void), func_02048f2c(void), func_02048f38(void);
-extern void func_02049024(void), func_02049088(void), func_02049118(void), func_02049124(void);
+extern void func_02048304(void), func_02048398(void), func_020482f8(void), ChAlloc(void);
+extern void func_02048718(int), ChDealloc(int);
+extern void func_0204871c(void), ChSetSndOutStarted(void), ChGetFilledSamples(void), ChGetSpaceSamples(void);
+extern void func_02048930(void), ChAdvanceAll(void), func_02048f2c(void), func_02048f38(void);
+extern void ChSetVolume(void), func_02049088(void), func_02049118(void), func_02049124(void);
 extern void func_02049138(void), func_02049150(void);
 extern char *func_02015a6c(char *, const char *);
 extern char *strcat(char *, const char *);
@@ -89,23 +89,23 @@ void func_020478a8(void)
 void func_020478cc(void) { func_02048304(); }
 void func_020478d8(void) { func_02048398(); }
 void func_020478e4(void) { func_020482f8(); }
-void func_020478f0(void) { func_02048430(); }
+void func_020478f0(void) { ChAlloc(); }
 
 void func_020478fc(int a)
 {
     func_02048718(a);
-    func_0204866c(a);
+    ChDealloc(a);
 }
 
 void func_02047914(void) { func_0204871c(); }
-void func_02047920(void) { func_02048808(); }
-void func_0204792c(void) { func_020488f8(); }
-void func_02047938(void) { func_02048914(); }
+void func_02047920(void) { ChSetSndOutStarted(); }
+void func_0204792c(void) { ChGetFilledSamples(); }
+void func_02047938(void) { ChGetSpaceSamples(); }
 void func_02047944(void) { func_02048930(); }
-void func_02047950(void) { func_02048ef4(); }
+void func_02047950(void) { ChAdvanceAll(); }
 void func_0204795c(void) { func_02048f2c(); }
 void func_02047968(void) { func_02048f38(); }
-void func_02047974(void) { func_02049024(); }
+void func_02047974(void) { ChSetVolume(); }
 void func_02047980(void) { func_02049088(); }
 void func_0204798c(void) { func_02049118(); }
 void func_02047998(void) { func_02049124(); }

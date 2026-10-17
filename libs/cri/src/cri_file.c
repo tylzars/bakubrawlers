@@ -61,7 +61,7 @@ extern void CriLockEnter1(void);
 extern void CriLockLeave1(void);
 extern void func_0203eda4(void);
 extern void func_0203edb0(void);
-extern void func_02048808(void *, int);
+extern void ChSetSndOutStarted(void *, int);
 extern void CriCopyString(char *, int, char *);
 extern void InitSndStrm(void *);
 extern int ReserveSndStrmChannels(void *, int, void *);
@@ -110,9 +110,9 @@ void func_02049150(CriFlagObj *p, int v)
     func_0203edb0();
     if (t != 2) return;
     if (v == 1) {
-        func_02048808(p, 0);
+        ChSetSndOutStarted(p, 0);
     } else {
-        func_02048808(p, 1);
+        ChSetSndOutStarted(p, 1);
     }
 }
 

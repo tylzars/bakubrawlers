@@ -84,7 +84,7 @@ extern u8 CriBitsRead(int, int);
 extern int CriHdrParse(u8 *, int, int *, SndHdr *);
 
 
-SndPlayer *func_0204ad88(SndPlayer *p, u32 size)
+SndPlayer *SndPlayerCreate(SndPlayer *p, u32 size)
 {
     u8 *a = (u8 *)(((u32)p + 7) & ~7);
     u8 *e;
@@ -110,7 +110,7 @@ SndPlayer *func_0204ad88(SndPlayer *p, u32 size)
     return p;
 }
 
-void func_0204ae48(SndPlayer *p)
+void SndPlayerRelease(SndPlayer *p)
 {
     void *h = p->h;
     if (h != 0) {
@@ -120,7 +120,7 @@ void func_0204ae48(SndPlayer *p)
     memset(p, 0, 0xa2c);
 }
 
-void func_0204ae80(SndPlayer *p)
+void SndPlayerReset(SndPlayer *p)
 {
     void *h = p->h;
     memset(p->a1b8, 0, 0x30);
@@ -141,14 +141,14 @@ void func_0204ae80(SndPlayer *p)
     p->h = func_0204d8fc(h, 0x81c);
 }
 
-void func_0204af3c(SndPlayer *p, int src)
+void SndPlayerResetAndSetSrc(SndPlayer *p, int src)
 {
-    func_0204ae80(p);
+    SndPlayerReset(p);
     p->src = src;
 }
 
 /* the tail copy is the __memcpy intrinsic: a struct copy swaps the source and destination registers */
-void func_0204af54(SndPlayer *p)
+void SndPlayerReadHdr(SndPlayer *p)
 {
     u8 *end;
     SndInfo *info = &p->info;

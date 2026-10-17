@@ -53,7 +53,7 @@ extern void CriPlayRelease(int);
 extern void func_0204da34(void);
 extern int CriPlayGetState(int);
 extern void CriPlayStart(int);
-extern void func_0204df44(int);
+extern void CriPlayAdvance(int);
 extern int func_0204df74(int);
 extern int func_0204df6c(int);
 extern void CriPlaySetSrc(int);
@@ -149,7 +149,7 @@ void func_0204bfb0(MpX *x) {
         return;
     }
     if (x->state != 2) return;
-    for (i = 0; i < x->nstep; i++) func_0204df44(h);
+    for (i = 0; i < x->nstep; i++) CriPlayAdvance(h);
     x->i90 = func_0204df74(h) - x->i88;
     x->i88 = x->i88 + x->i90;
     x->i94 = func_0204df6c(h);

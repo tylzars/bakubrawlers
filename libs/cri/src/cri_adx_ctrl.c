@@ -58,14 +58,14 @@ extern void func_0203eda4(void);
 extern void func_0203edb0(void);
 extern void func_0203edbc(void);
 extern void func_0203edc0(void);
-extern void func_02041644(void);
+extern void CriStmAdvanceAll(void);
 extern void func_02047950(void);
-extern void func_02044614(Pl *);
+extern void AdxAdvance(Pl *);
 extern int func_020416b0(int);
 extern int func_020416c0(int, int);
 extern int func_020416c8(int);
-extern int func_020416d0(int, void *, void *);
-extern int func_020416dc(int, int);
+extern int CriStmSetEndCallback(int, void *, void *);
+extern int CriStmSetEnd(int, int);
 extern int func_020416e4(int, int);
 extern int func_020416ec(int, int);
 extern int func_02041714(int);
@@ -90,10 +90,10 @@ extern void func_02043554(Pl *, int, int);
 extern void func_02043558(Pl *, int, int);
 extern void func_02043580(Pl *, int);
 extern void func_020435c8(Pl *, int, int);
-extern void func_020436e8(Pl *, int, int, int);
-extern void func_020437c4(Pl *, int, int);
-extern void func_02043874(Pl *, Hdr *, int);
-extern void func_02043780(Pl *, int);
+extern void AdxRequestStartFileRangeInner(Pl *, int, int, int);
+extern void AdxStartBufInner(Pl *, int, int);
+extern void AdxStartHdrEntryInner(Pl *, Hdr *, int);
+extern void AdxRequestStartFileInner(Pl *, int);
 extern void func_0204349c(Pl *, int);
 extern int func_020434d0(Pl *);
 extern void func_02043290(void);
@@ -104,7 +104,7 @@ extern void func_020439e0(Pl *);
 extern void func_02043b44(Pl *);
 extern void func_0204395c(Pl *);
 
-int func_02043220(Pl *p)
+int AdxGetVolumeInner(Pl *p)
 {
     if (p != 0) return p->s40;
     SendErr(data_020acdd8);
@@ -141,11 +141,11 @@ void func_02043290(void)
     data_022167d8.st = 1;
     func_0203edb0();
     if (data_022167d8.f18 != 0) data_022167d8.f18(data_022167d8.a14);
-    func_02041644();
+    CriStmAdvanceAll();
     data_022167d8.st = 2;
     p = gCriDrv;
     for (i = 0; i < 4; i++) {
-        if (p->used == 1) func_02044614(p);
+        if (p->used == 1) AdxAdvance(p);
         p++;
     }
     data_022167d8.st = 3;
@@ -277,14 +277,14 @@ void func_020435c8(Pl *o, int a, int b)
     func_0204355c(o, 0);
 }
 
-void func_020436b4(Pl *p, int a, int b, int c)
+void AdxRequestStartFileRange(Pl *p, int a, int b, int c)
 {
     func_0203edbc();
-    func_020436e8(p, a, b, c);
+    AdxRequestStartFileRangeInner(p, a, b, c);
     func_0203edc0();
 }
 
-void func_020436e8(Pl *o, int a, int b, int c)
+void AdxRequestStartFileRangeInner(Pl *o, int a, int b, int c)
 {
     if (o == 0 || a == 0) {
         SendErr(data_020aceb0);
@@ -302,23 +302,23 @@ void func_020436e8(Pl *o, int a, int b, int c)
     func_0204355c(o, 0);
 }
 
-void func_0204375c(Pl *p, int a)
+void AdxRequestStartFile(Pl *p, int a)
 {
     func_0203edbc();
-    func_02043780(p, a);
+    AdxRequestStartFileInner(p, a);
     func_0203edc0();
 }
 
-void func_02043780(Pl *p, int a) { func_020436e8(p, a, 0, 0xfffff); }
+void AdxRequestStartFileInner(Pl *p, int a) { AdxRequestStartFileRangeInner(p, a, 0, 0xfffff); }
 
-void func_02043798(Pl *p, int a, int b)
+void AdxStartBuf(Pl *p, int a, int b)
 {
     func_0203edbc();
-    func_020437c4(p, a, b);
+    AdxStartBufInner(p, a, b);
     func_0203edc0();
 }
 
-void func_020437c4(Pl *o, int a, int b)
+void AdxStartBufInner(Pl *o, int a, int b)
 {
     int r;
     if (o == 0 || a == 0 || b < 0) {
@@ -339,16 +339,16 @@ void func_020437c4(Pl *o, int a, int b)
     func_0203edb0();
 }
 
-void func_02043848(Pl *p, int a, int b)
+void AdxStartHdrEntry(Pl *p, int a, int b)
 {
     func_0203edbc();
-    func_02043874(p, a, b);
+    AdxStartHdrEntryInner(p, a, b);
     func_0203edc0();
 }
 
 #define BSWAP(x) ((((x) >> 24) & 0xff) | (((x) >> 8) & 0xff00) | (((x) << 8) & 0xff0000) | ((x) << 24))
 
-void func_02043874(Pl *o, Hdr *h, int idx)
+void AdxStartHdrEntryInner(Pl *o, Hdr *h, int idx)
 {
     int r;
     int off;
@@ -384,10 +384,10 @@ void func_0204395c(Pl *o)
     func_020416e4(h, 0);
     d = c - a;
     o->i90 = d;
-    func_020416dc(h, d);
+    CriStmSetEnd(h, d);
     func_020416ec(h, b);
     func_020416c0(h, a);
-    func_020416d0(h, func_020439e0, o);
+    CriStmSetEndCallback(h, func_020439e0, o);
 }
 
 void func_020439e0(Pl *o)
@@ -399,14 +399,14 @@ void func_020439e0(Pl *o)
     int b = func_02041774(h);
     int c = func_02041790(h);
     if ((unsigned char)(signed char)(o->s2 - 2) <= 1 && o->b6c == 0) {
-        func_020416dc(o->h, -1);
+        CriStmSetEnd(o->h, -1);
         return;
     }
     io->vt->f18(io, 1, o->i50, &out);
     if (out.n < o->i50) SendErr(data_020acf94);
     io->vt->f20(io, 0, &out);
     func_020416e4(h, 0);
-    func_020416dc(h, o->i90 = c - a);
+    CriStmSetEnd(h, o->i90 = c - a);
     func_020416ec(h, b);
     func_020416c0(h, a);
     if (o->s2 == 2) {
@@ -430,7 +430,7 @@ void func_02043b44(Pl *o)
         return;
     }
     if (o->b6c == 0) {
-        if (func_020416b0(o->h) >= o->ic0) func_020416dc(o->h, -1);
+        if (func_020416b0(o->h) >= o->ic0) CriStmSetEnd(o->h, -1);
         StmSetReadEnd(o->i8, 0x7fffffff);
         return;
     }

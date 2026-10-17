@@ -84,7 +84,7 @@ extern void func_020511f4(int, void *);
 extern void func_020511fc(int);
 extern void func_020511c8(void);
 extern void *memset(void *, int, int);
-extern VObj *func_02050e60(void *, int);
+extern VObj *CriMemBlkCreate(void *, int);
 extern void func_02050ea8(void *);
 extern void *CriFaderCreate(void *, int);
 extern void func_020506e0(void *);
@@ -153,7 +153,7 @@ int PoolObjInit(Obj *o, Cfg *cfg, char *buf, int size)
     }
     for (i = 0; (int)i < o->cnt; i++) {
         if (cfg->i1c == 0) {
-            VObj *v = func_02050e60(buf + off, 0xc);
+            VObj *v = CriMemBlkCreate(buf + off, 0xc);
             o->slot[i] = v;
             if (v == 0) {
                 SendErrWrapper(data_020afc4c);

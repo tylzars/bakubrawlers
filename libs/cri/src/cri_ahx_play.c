@@ -34,11 +34,11 @@ extern void func_0204ad1c(int, int);
 extern void func_0204ad28(int, int);
 extern void func_0204ad34(void);
 extern void func_0204ad64(void);
-extern void *func_0204ad88(void *, int);
-extern void func_0204ae48(void *);
-extern void func_0204ae80(void *);
-extern void func_0204af3c(void *, void *);
-extern void func_0204af54(void *);
+extern void *SndPlayerCreate(void *, int);
+extern void SndPlayerRelease(void *);
+extern void SndPlayerReset(void *);
+extern void SndPlayerResetAndSetSrc(void *, void *);
+extern void SndPlayerReadHdr(void *);
 extern int func_0204b150(void *);
 extern int func_0204b224(void *);
 extern int func_0204b238(void *, int, int, int);
@@ -59,10 +59,10 @@ extern int data_02218f38;
 extern volatile int data_0209e420;
 extern int data_020af610[2];
 extern void func_0204dfcc(int *, int *);
-extern void func_0204da64(CriPlay *);
+extern void CriPlayReset(CriPlay *);
 extern void func_0204df00(CriPair *, int, CriPair *, CriPair *);
-extern void func_0204dc9c(CriPlay *);
-extern void func_0204dc5c(CriPlay *);
+extern void CriPlayAdvanceState2(CriPlay *);
+extern void CriPlayAdvanceState1(CriPlay *);
 extern int func_0204df88(CriPlay *);
 extern int func_0204df98(CriPlay *);
 
@@ -97,7 +97,7 @@ void func_0204da34(void)
     data_02218f38--;
 }
 
-void func_0204da64(CriPlay *o)
+void CriPlayReset(CriPlay *o)
 {
     o->i0c = 0;
     o->i1c = 0;
@@ -131,7 +131,7 @@ CriPlay *CriPlayCreate(CriVObj *h, int n, CriVObj **arr, char *buf, int size)
         CriBitsClear(o->bits);
         return 0;
     }
-    o->dec = func_0204ad88(q, 0x1250);
+    o->dec = SndPlayerCreate(q, 0x1250);
     if (o->dec == 0) {
         CriBitsClear(o->bits);
         return 0;
@@ -140,7 +140,7 @@ CriPlay *CriPlayCreate(CriVObj *h, int n, CriVObj **arr, char *buf, int size)
     o->src = h;
     for (i = 0; i < n; i++) o->ch[i] = arr[i];
     o->state = 0;
-    func_0204da64(o);
+    CriPlayReset(o);
     o->cb44 = 0;
     o->arg48 = 0;
     o->cb4c = 0;
@@ -160,7 +160,7 @@ void CriPlayRelease(CriPlay *o)
     if (o->dec) {
         void *d = o->dec;
         o->dec = 0;
-        func_0204ae48(d);
+        SndPlayerRelease(d);
     }
     memset(o, 0, 0x54);
 }
@@ -170,28 +170,28 @@ void CriPlaySetSrc(CriPlay *o, CriVObj *s) { o->src = s; }
 
 void CriPlayStart(CriPlay *o)
 {
-    func_0204da64(o);
+    CriPlayReset(o);
     CriBitsReset(o->bits, o->src);
-    func_0204af3c(o->dec, o->bits);
+    SndPlayerResetAndSetSrc(o->dec, o->bits);
     o->state = 1;
 }
 
 /* Also called by cri_mpa_dec.c's func_0204bfb0 on every poll while CriPlayGetState is 0, and once it is 3. */
 void CriPlayStop(CriPlay *o)
 {
-    func_0204ae80(o->dec);
+    SndPlayerReset(o->dec);
     o->state = 0;
 }
 
-void func_0204dc5c(CriPlay *o)
+void CriPlayAdvanceState1(CriPlay *o)
 {
     if (o->src->vt->size(o->src, 1) < 0x24) return;
-    func_0204af54(o->dec);
+    SndPlayerReadHdr(o->dec);
     func_0204b150(o->dec);
     o->state = 2;
 }
 
-void func_0204dc9c(CriPlay *o)
+void CriPlayAdvanceState2(CriPlay *o)
 {
     CriPair in;
     CriPair out;
@@ -258,13 +258,13 @@ void func_0204df00(CriPair *src, int limit, CriPair *a, CriPair *b)
     }
 }
 
-void func_0204df44(CriPlay *o)
+void CriPlayAdvance(CriPlay *o)
 {
     int s = o->state;
     if (s == 2) {
-        func_0204dc9c(o);
+        CriPlayAdvanceState2(o);
     } else if (s == 1) {
-        func_0204dc5c(o);
+        CriPlayAdvanceState1(o);
     }
 }
 int func_0204df6c(CriPlay *o) { return o->i24; }

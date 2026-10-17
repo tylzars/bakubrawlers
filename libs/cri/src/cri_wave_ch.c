@@ -41,13 +41,13 @@ extern PlObj *func_02049b20(int, int, int);
 extern void func_02049c04(PlObj *);
 extern void SndOutSetup(PlObj *);
 extern void SndOutStop(PlObj *);
-extern void func_02049f30(PlObj *);
+extern void SndOutStart(PlObj *);
 extern int func_02049b18(PlObj *);
 extern short func_02049e08(PlObj *, int);
 extern void SndOutClearSpace(PlObj *);
 extern int SndOutGetFilledSamples(PlObj *);
 extern int SndOutGetSpaceSamples(PlObj *);
-extern void func_0204aa80(PlObj *, int);
+extern void SndOutSetVolume(PlObj *, int);
 extern void func_0204aab0(PlObj *, int);
 
 typedef struct SpanV { short *p; int n; } SpanV;
@@ -63,36 +63,36 @@ extern void func_020482ec(void);
 extern void func_02048f2c(Ch *, int);
 extern void func_02048f38(Ch *, int);
 extern void func_02049118(Ch *, int);
-extern void func_02049024(Ch *, int);
+extern void ChSetVolume(Ch *, int);
 extern void func_02049088(Ch *, int, int);
-extern void func_02048808(Ch *, int);
+extern void ChSetSndOutStarted(Ch *, int);
 extern void func_0204871c(Ch *, int);
-extern void func_0204866c(Ch *);
+extern void ChDealloc(Ch *);
 extern void func_02048940(Ch *);
 
 void func_02048304(void);
 void func_02048398(void);
-void func_020483f0(void *p, int n);
-Ch *func_02048430(int **srcs, int n, int a2);
-void func_0204866c(Ch *c);
+void ChSetChannelIds(void *p, int n);
+Ch *ChAlloc(int **srcs, int n, int a2);
+void ChDealloc(Ch *c);
 void func_02048718(void);
 int func_020487e8(Ch *c);
-int func_020488d8(Ch *c);
-int func_020488f8(Ch *c);
-int func_02048914(Ch *c);
+int ChIsSndOutStarted(Ch *c);
+int ChGetFilledSamples(Ch *c);
+int ChGetSpaceSamples(Ch *c);
 int func_02048930(Ch *c);
 void func_02048f2c(Ch *c, int v);
 void func_02049118(Ch *c, int v);
 void func_02049124(Ch *c);
 int func_02049138(Ch *c);
 void func_0204871c(Ch *c, int m);
-void func_02048808(Ch *c, int m);
+void ChSetSndOutStarted(Ch *c, int m);
 void func_02048940(Ch *c);
-void func_02048e30(Ch *c);
-void func_02048e88(Ch *c);
-void func_02048ef4(void);
+void ChClearSpace(Ch *c);
+void ChAdvance(Ch *c);
+void ChAdvanceAll(void);
 void func_02048f38(Ch *c, int rate);
-void func_02049024(Ch *c, int v);
+void ChSetVolume(Ch *c, int v);
 void func_02049088(Ch *c, int idx, int v);
 
 void func_02048304(void)
@@ -114,13 +114,13 @@ void func_02048398(void)
     int i;
     if (--data_0221844c != 0) return;
     for (i = 0; i < 4; i++) {
-        if (data_02218450.ch[i].used == 1) func_0204866c(&data_02218450.ch[i]);
+        if (data_02218450.ch[i].used == 1) ChDealloc(&data_02218450.ch[i]);
     }
     func_02049aac();
     func_02049200();
 }
 
-void func_020483f0(void *p, int n)
+void ChSetChannelIds(void *p, int n)
 {
     if (n > 8) return;
     data_02218450.n = n;
@@ -129,7 +129,7 @@ void func_020483f0(void *p, int n)
     CopyBytes(data_02218450.ids, p, n);
 }
 
-Ch *func_02048430(int **srcs, int n, int a2)
+Ch *ChAlloc(int **srcs, int n, int a2)
 {
     Ch *c;
     int i, j;
@@ -166,12 +166,12 @@ Ch *func_02048430(int **srcs, int n, int a2)
             }
         }
         if (id == 0xff) {
-            func_0204866c(c);
+            ChDealloc(c);
             return 0;
         }
         p = func_02049b20(j, a2, id);
         if (p == 0) {
-            func_0204866c(c);
+            ChDealloc(c);
             return 0;
         }
         c->pl[j] = p;
@@ -179,7 +179,7 @@ Ch *func_02048430(int **srcs, int n, int a2)
     func_02048f2c(c, c->ncnt);
     func_02048f38(c, 0x7fd8);
     func_02049118(c, 0x10);
-    func_02049024(c, 0);
+    ChSetVolume(c, 0);
     if (c->nch == 2) {
         func_02049088(c, 0, -15);
         func_02049088(c, 1, 15);
@@ -195,11 +195,11 @@ Ch *func_02048430(int **srcs, int n, int a2)
     return c;
 }
 
-void func_0204866c(Ch *c)
+void ChDealloc(Ch *c)
 {
     int i, j;
     if (c == 0) return;
-    func_02048808(c, 0);
+    ChSetSndOutStarted(c, 0);
     func_0204871c(c, 0);
     for (i = 0; i < c->nch; i++) {
         for (j = 0; j < data_02218450.n; j++) {
@@ -247,15 +247,15 @@ int func_020487e8(Ch *c)
     return r;
 }
 
-void func_02048808(Ch *c, int m)
+void ChSetSndOutStarted(Ch *c, int m)
 {
     int n, i;
     if (c == 0) return;
-    if (m == func_020488d8(c)) return;
+    if (m == ChIsSndOutStarted(c)) return;
     n = nplay(c);
     if (m == 1) {
         if ((c->flags & 8) == 8) return;
-        for (i = 0; i < n; i++) func_02049f30(c->pl[i]);
+        for (i = 0; i < n; i++) SndOutStart(c->pl[i]);
         c->flags = (c->flags | 2) & ~4;
     } else if (m == 0) {
         for (i = 0; i < n; i++) SndOutStop(c->pl[i]);
@@ -263,7 +263,7 @@ void func_02048808(Ch *c, int m)
     }
 }
 
-int func_020488d8(Ch *c)
+int ChIsSndOutStarted(Ch *c)
 {
     int r;
     if (c == 0) return -1;
@@ -271,13 +271,13 @@ int func_020488d8(Ch *c)
     return r;
 }
 
-int func_020488f8(Ch *c)
+int ChGetFilledSamples(Ch *c)
 {
     if (c == 0) return -1;
     return SndOutGetFilledSamples(c->pl[0]);
 }
 
-int func_02048914(Ch *c)
+int ChGetSpaceSamples(Ch *c)
 {
     if (c == 0) return -1;
     return SndOutGetSpaceSamples(c->pl[0]);
@@ -423,7 +423,7 @@ void func_02048940(Ch *c)
     }
 }
 
-void func_02048e30(Ch *c)
+void ChClearSpace(Ch *c)
 {
     int n, i;
     n = nplay(c);
@@ -437,24 +437,24 @@ static inline int nplay(Ch *c)
     return n;
 }
 
-void func_02048e88(Ch *c)
+void ChAdvance(Ch *c)
 {
     if (func_020487e8(c) == 1) {
         func_02048940(c);
         return;
     }
-    if (func_020488d8(c) != 1) return;
-    if (c->s2c != 0) func_02048940(c); else func_02048e30(c);
+    if (ChIsSndOutStarted(c) != 1) return;
+    if (c->s2c != 0) func_02048940(c); else ChClearSpace(c);
     if (SndOutGetFilledSamples(c->pl[0]) != 0) return;
     c->b6 = 0;
-    func_02048808(c, 0);
+    ChSetSndOutStarted(c, 0);
 }
 
-void func_02048ef4(void)
+void ChAdvanceAll(void)
 {
     int i;
     for (i = 0; i < 4; i++) {
-        if (data_02218450.ch[i].used == 1) func_02048e88(&data_02218450.ch[i]);
+        if (data_02218450.ch[i].used == 1) ChAdvance(&data_02218450.ch[i]);
     }
 }
 
@@ -483,7 +483,7 @@ void func_02048f38(Ch *c, int rate)
     for (i = 0; i < c->nch; i++) c->s0c = func_02049e08(c->pl[i], rate);
 }
 
-void func_02049024(Ch *c, int v)
+void ChSetVolume(Ch *c, int v)
 {
     short x;
     int i;
@@ -492,7 +492,7 @@ void func_02049024(Ch *c, int v)
     x = v;
     if (x <= -999) x = -999;
     c->s18 = x;
-    for (i = 0; i < c->nch; i++) func_0204aa80(c->pl[i], c->s18);
+    for (i = 0; i < c->nch; i++) SndOutSetVolume(c->pl[i], c->s18);
 }
 
 void func_02049088(Ch *c, int idx, int v)

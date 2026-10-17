@@ -1,11 +1,11 @@
 #include "cri_obj_b.h"
 
-extern void func_02044848(int, int, int, short *, int);
+extern void CriSlotSetupMode1(int, int, int, short *, int);
 extern void CriSlotStart(int);
-extern void func_0204487c(int, int, int, short *, short *);
+extern void CriSlotSetupMode2(int, int, int, short *, short *);
 extern int CriSlotGetResult(int);
 extern int CriSlotGetState(int);
-extern void func_0204492c(int);
+extern void CriSlotRun(int);
 extern void func_020448fc(int);
 extern void func_0203deac(CriObj *);
 extern void CopyShorts(short *, short *, int);
@@ -16,7 +16,7 @@ void func_0203e954(CriObj *o, int n)
     int h = o->h;
     short *p = o->i5c;
     p += o->i68;
-    func_02044848(h, o->i48, n, p, 0);
+    CriSlotSetupMode1(h, o->i48, n, p, 0);
     CriSlotStart(h);
 }
 
@@ -24,7 +24,7 @@ void func_0203e994(CriObj *o, int n)
 {
     short *p = o->i5c + o->i68;
     int h = o->h;
-    func_0204487c(h, o->i48, n * 2, p, p + o->i64);
+    CriSlotSetupMode2(h, o->i48, n * 2, p, p + o->i64);
     CriSlotStart(h);
 }
 
@@ -110,7 +110,7 @@ void func_0203ec2c(CriObj *o)
         o->state = 2;
     }
     if (o->state != 2) return;
-    func_0204492c(o->h);
+    CriSlotRun(o->h);
     if (CriSlotGetState(o->h) != 3) return;
     func_0203eb4c(o);
     func_020448fc(o->h);
@@ -120,7 +120,7 @@ void func_0203ec2c(CriObj *o)
 
 extern void func_0203ed0c(CriObj *);
 
-void func_0203eccc(CriObj *o)
+void CriObjAdvance(CriObj *o)
 {
     int m = o->s98;
     if (m == 0) func_0203ec2c(o);

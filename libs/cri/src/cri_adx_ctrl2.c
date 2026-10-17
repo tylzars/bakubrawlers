@@ -60,12 +60,12 @@ extern int FindHalfword0x80(int, int, short *);
 extern int func_0203f69c(int, int, short *);
 extern int FindFourBytes(int, int, short *);
 extern void CriSplitSpan(Out *, int, Out *, Out *);
-extern int func_020409a0(int), func_02040988(int), func_0204138c(int), CriStmGetState(int);
+extern int CriStmStop(int), CriStmStart(int), CriStmAdvance(int), CriStmGetState(int);
 extern int func_02040964(int, int), func_02040978(int);
 extern int func_020416b0(int), func_020416b8(int), func_020416f4(int);
 extern int func_02041704(int), func_02041714(int), func_02041724(int), func_02041734(int), func_02041744(int);
 extern int func_02041754(int), func_02041848(int), func_020417a0(int);
-extern int func_020416c0(int, int), func_020416d0(int, void *, void *), func_020416dc(int, int);
+extern int func_020416c0(int, int), CriStmSetEndCallback(int, void *, void *), CriStmSetEnd(int, int);
 extern int func_020416e4(int, int), func_020416ec(int, int);
 extern int StmGetState(int), StmSetReadEnd(int, int), StmSetReadEndCallback(int, void *, void *);
 extern void AdxStartFile(Pl *, int, int, int, int);
@@ -143,20 +143,20 @@ void func_02043c14(Pl *o)
     }
     func_0203edb0();
     o->ia4 += func_020416b8(h);
-    func_020409a0(h);
-    func_02040988(h);
-    func_0204138c(h);
+    CriStmStop(h);
+    CriStmStart(h);
+    CriStmAdvance(h);
     if (CriStmGetState(h) != 2) {
         func_0204355c(o, 0);
         return;
     }
     func_02040964(h, o->i48);
-    func_020416dc(h, func_02041744(h));
+    CriStmSetEnd(h, func_02041744(h));
     func_020416ec(h, 0);
     func_020416e4(h, 0);
 }
 
-void func_02043f28(Pl *o)
+void AdxAdvanceState1(Pl *o)
 {
     int h = o->h;
     int a, b, n, r5, r6, t, q, p;
@@ -205,16 +205,16 @@ void func_02043f28(Pl *o)
             }
             func_02041790(h);
             o->i90 = func_02041764(h);
-            func_020416dc(h, o->i90);
+            CriStmSetEnd(h, o->i90);
             func_020416ec(h, 0);
             func_020416e4(h, 0);
-            func_020416d0(h, func_0204395c, o);
+            CriStmSetEndCallback(h, func_0204395c, o);
         } else {
             if (o->i8 != 0) StmSetReadEnd(o->i8, 0x7fffffff);
-            func_020416dc(h, func_02041744(h));
+            CriStmSetEnd(h, func_02041744(h));
             func_020416ec(h, 0);
             func_020416e4(h, 0);
-            func_020416d0(h, func_02043c14, o);
+            CriStmSetEndCallback(h, func_02043c14, o);
         }
         p = func_02041704(h);
         q = func_02041714(h);
@@ -237,7 +237,7 @@ void func_02043f28(Pl *o)
     }
 }
 
-void func_020442ec(Pl *o)
+void AdxAdvanceState2(Pl *o)
 {
     int ic, r5, r6, h, lim, n, i, sz;
     Out out;
@@ -269,11 +269,11 @@ void func_020442ec(Pl *o)
     }
 }
 
-void func_02044440(Pl *o)
+void AdxAdvanceState3(Pl *o)
 {
     int i, n, v;
     if (o->b6c == 0 && o->ic0 != 0) {
-        if (func_020416b0(o->h) >= o->ic0) func_020416dc(o->h, -1);
+        if (func_020416b0(o->h) >= o->ic0) CriStmSetEnd(o->h, -1);
     }
     if (CriStmGetState(o->h) != 3) return;
     n = func_02041714(o->h);
@@ -289,7 +289,7 @@ void func_02044440(Pl *o)
     o->state = 4;
 }
 
-void func_02044514(Pl *o)
+void AdxAdvanceState4(Pl *o)
 {
     data_02216840 = func_0204792c(o->ic);
     if (func_02047944(o->ic) != 2) o->state = 5;

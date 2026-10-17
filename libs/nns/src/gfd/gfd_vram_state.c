@@ -1,14 +1,14 @@
 // NitroSystem Gfd: frame-texture VRAM state save/restore and the link-list VRAM region manager (free-list helpers).
 // main 0x020360c4-0x020364a8
 typedef unsigned int u32;
-typedef struct { u32 enabled; u32 start; u32 end; u32 pad[3]; } TexSlot;
+typedef struct { u32 start; u32 end; u32 enabled; u32 mapped; u32 pad[2]; } TexSlot;   // as gfd_vram.c (unused here)
 typedef struct Node { u32 start; u32 size; struct Node *prev; struct Node *next; } Node;
 typedef struct { Node *head; } Man;
 typedef struct { Node *head; } Pool;
 
 int func_020360c4(u32 key) { return 0; }
 
-typedef struct { u32 a, b, c[4]; } Ent;
+typedef struct { u32 a, b, c[4]; } Ent;   // data_020a58ac seen as here: a / b are TexSlot start / end
 extern Ent data_020a58ac[5];
 void SaveTexSlotRanges(u32 *out) {
     int i;

@@ -481,6 +481,8 @@ int CriFadeGrpNoFaderRunning(CriFadeGrp *g)
     return r;
 }
 
+/* g->dc(g, ev): the callback the group installs as its faders' ramp-start and end callbacks (func_02050080,
+   func_0205012c, func_02050268). */
 void CriFadeGrpCallCallback(CriFadeGrp *g, int ev)
 {
     if (g != 0 && g->dc != 0) {
@@ -592,6 +594,8 @@ void CriFaderAdvance(CriFader *f)
     }
 }
 
+/* The callback runs when CriFaderAdvance moves state 1 to 2; a CriFaderStart without ramp and delay (b, c <= 0)
+   enters state 2 at once and never calls it. */
 void CriFaderSetRampStartCallback(CriFader *f, void (*cb)(CriFadeGrp *, int), CriFadeGrp *a, int b)
 {
     f->cb1 = cb;

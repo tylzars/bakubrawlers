@@ -33,6 +33,8 @@
 
 BOOL SetMessageTypeAndCheckAll(BattlePlayerList *list, u32 id);
 
+// The type-8 message states 6 and 9 write into data_0220f540 (state 9, the shot rebuilt from a received packet,
+// sends mRecord 0).
 struct ShootPacket {
     u8 mUnk_00;
     u8 mUnk_01;
@@ -77,9 +79,9 @@ struct BattleShootMsg { // 0x20 bytes: a message of the shoot minigame, sent to 
     /* 03 */ u8 mUnk_03;
     union {
         struct {
-            /* 04 */ s32 mPushX;
+            /* 04 */ s32 mPushX; // AddPushXZ and StartShot negate it before GetPushVector
             /* 08 */ s32 mPushZ;
-            /* 0c */ u8 mMicEvent;
+            /* 0c */ u8 mMicEvent; // 1 only with data_020d433c.mMicEnabled as well as a MicManager event
         };
         /* 04 */ ShootWords7 mWords;
     };
@@ -125,11 +127,11 @@ public:
     /* 616a */ u16 mRotZAdjust;
     /* 616c */ s32 mRotYAdjustPerFrame;
     /* 6170 */ s32 mRotZAdjustPerFrame;
-    /* 6174 */ u16 mRotYAdjustFrames;
+    /* 6174 */ u16 mRotYAdjustFrames; // frames KEY_LEFT / KEY_RIGHT moved mRotYAdjust (max 0xffff), 0 on release
     /* 6176 */ u16 mRotZAdjustFrames;
-    /* 6178 */ u16 mCameraRotY;
+    /* 6178 */ u16 mCameraRotY; // never reset after Init; copied to BattleTarget::mCameraRotY
     /* 617a */ u16 mCameraRotYPerFrame;
-    /* 617c */ u16 mCameraRotYFrames;
+    /* 617c */ u16 mCameraRotYFrames; // + 2 in a frame when KEY_LEFT and KEY_RIGHT are both held
     /* 617e */ u16 mUnk_617e;
     /* 6180 */ u16 mUnk_6180;
     /* 6182 */ u16 mUnk_6182;
@@ -150,15 +152,17 @@ public:
     /* 6193 */ u8 mShotSpeed;
     /* 6194 */ u8 mStrokeIconStarted;
     /* 6195 */ u8 mPredictVisible;
-    /* 6196 */ u8 mSpEnabled;
+    /* 6196 */ u8 mSpEnabled; // gates the x > 0xc8, y < 0x30 touch toggling mSpKind and the mCells[2] / [1] draws
     /* 6197 */ u8 mUnk_6197;
     /* 6198 */ u8 mSpKind;
     /* 6199 */ u8 mStartTouchInCorner; // stroke began at x > 0xc8 with y > 0xa0, or y < 0x30 while mSpEnabled
     /* 619a */ u8 mMessageY;
     /* 619b */ u8 mMessageTargetY;
+    // - 1 per 0x20+ px stroke step of UpdateIcons (per frame of a stroke while all 5 icons are busy); the pen cell and
+    // the shoot text are drawn while non-zero
     /* 619c */ u8 mPenStrokesRemaining;
     /* 619d */ u8 mShootTextVisible;
-    /* 619e */ u8 mCpuPushInterval;
+    /* 619e */ u8 mCpuPushInterval; // the CPU push runs on move steps that are multiples of it; re-rolled after each
     /* 619f */ u8 mTextWidth;
     /* 61a0 */ u8 mPenAndIconsVisible;
     /* 61a1 */ u8 mPlotEnabled; // gates PlotLine and UploadBitmap
@@ -182,13 +186,15 @@ public:
     void Setup(); // once per object, from Update state 0 or 7
     void LoadGraphics(); // also loads the "jammer" effect group and sets mSpEnabled (mUnk_6182 = 0xdc when set)
     void ClearBitmap(); // only for the local turn player (mTurnPlayer == mUnk_2a9); the upload needs mPlotEnabled
+    // also folds the mMicEvent flags into the turn player's mUnk_dc / mUnk_e4 and steps the other CPUs' offset entries
     void UpdatePushMessages();
     void UpdateTurnPlayerCpu();
-    void StartPushEffect(u8 kind, s32 x, s32 z);
+    void StartPushEffect(u8 player, s32 x, s32 z);
     void UpdateMessageAndBall();
-    void StartTouchShot();
+    void StartTouchShot(); // in wireless mode it only computes mShotRotY / mShotSpeed (state 6 sends them)
     BOOL UpdateShotInput();
-    void UpdateRotAdjustKeys();
+    void UpdateRotAdjustKeys(); // also zeroes mCameraRotYFrames and mBattleTarget->mCameraMode first
+    // also sets BattleTarget camera mode 1 and its mUnk_17c blend; TRUE while 0x100 / 0x200 is held or easing out
     BOOL UpdateCameraRotKeys();
     // with canStart and no touch, the direction-key masks (KEY_LEFT | 0x800, KEY_RIGHT | 1, ...) fake a stroke into the
     // same members
@@ -204,11 +210,11 @@ public:
     void LoadShootText();
     void DrawShootText();
     void UpdateCameraOffset();
-    void UpdateIcons();
+    void UpdateIcons(); // also fades mBlendAlpha in and counts mPenStrokesRemaining down
     void ApplyBlendAlpha();
     BOOL func_ov007_0226d214();
     u16 GetLengthXY(int a, int b);
-    u16 GetAngleFromOriginToCpuPos();
+    u16 GetAngleFromOriginToCpuPos(); // state 10 stores it as mRotYAdjust
 };
 
 extern const u16 gFieldRotZAdjust[];
@@ -495,8 +501,8 @@ void BattleShoot::Update() {
                     mRotYAdjust = GetAngleFromOriginToCpuPos();
                     mShotRotY = 0x6000;
                     mShotRotZ = 0;
-                    *(u16 *) ((u8 *) mBattleTarget + 0x1b8) = mRotYAdjust;
-                    *(u16 *) ((u8 *) mBattleTarget + 0x1ba) = mRotZAdjust;
+                    *(u16 *) ((u8 *) mBattleTarget + 0x1b8) = mRotYAdjust; // BattleTarget::mRotYAdjust
+                    *(u16 *) ((u8 *) mBattleTarget + 0x1ba) = mRotZAdjust; // BattleTarget::mRotZAdjust
                 } else if (kind == 2) {
                     cpu->StartJumpObjTargets(0x14000);
                 }
@@ -850,7 +856,7 @@ static inline u16 KeysReleased(InputManager &input, u16 keys) {
     return input.mReleased & keys;
 }
 
-void BattleShoot::DrawShootText() {
+void BattleShoot::DrawShootText() { // this + 0x6038 below is mCells[3].mUnk_08
     SpriteManager::Get().Screen(1).AddOam(mGlyphBuffer, mGlyphCount, (s16) (0x80 - ((u32) mTextWidth >> 1)), 0x50, *(u8 *) ((u8 *) this + 0x6038), 0x280, 0xf, 0);
 }
 
@@ -1633,11 +1639,11 @@ void BattleShoot::UpdatePushMessages() {
 
 extern "C" u16 FX_Atan2Idx(fx32 x, fx32 y);
 
-void BattleShoot::StartPushEffect(u8 kind, s32 x, s32 z) {
+void BattleShoot::StartPushEffect(u8 player, s32 x, s32 z) {
     if ((x | z) == 0) {
         return;
     }
-    u8 handle = StartEffect(data_020d433c.mEffects, 0, gPlayerEffectIds[kind], 0, 1);
+    u8 handle = StartEffect(data_020d433c.mEffects, 0, gPlayerEffectIds[player], 0, 1);
     if (handle == 0) {
         return;
     }

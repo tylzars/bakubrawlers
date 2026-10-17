@@ -25,7 +25,7 @@ public:
 
     ModelTransform();
     ~ModelTransform();
-    BOOL DrawInstance(); // builds the matrix and draws mModel
+    BOOL DrawInstance(); // AdvanceAnim first, builds the matrix and returns mModel->Draw (FALSE without mModel)
     // loads texture, model and optional animation data files and creates the instance (mModel); unk0 -> mAnimEnabled
     void LoadFiles(const char *nsbtx, const char *nsbmd, const char *data, u32 unk0);
     void LoadFilesNoAnim(const char *nsbtx, const char *nsbmd); // same without animation data

@@ -6,7 +6,7 @@ typedef unsigned int u32;
 
 typedef struct SndOut SndOut;
 struct SndOut {
-    u16 flags;      /* 0x00: 2 = updating, 4 = measure level, 8 = running */
+    u16 flags;      /* 0x00: 2 = updating, 4 = measure level, 8 = set up (SndOutSetup) until SndOutStop */
     s16 id;         /* 0x02 */
     u8 *buf;        /* 0x04 */
     int i08;        /* 0x08 */
@@ -18,7 +18,7 @@ struct SndOut {
     u16 filled;     /* 0x1c */
     u16 space;      /* 0x1e */
     u16 u20;
-    s16 pan;        /* 0x22 */
+    s16 pan;        /* 0x22: the value SetSndStrmVolume gets (func_0204aa80), a volume, not a pan */
     u16 level;      /* 0x24 */
     s16 resample;   /* 0x26 */
     u16 mode;       /* 0x28: 1..6 = upsampling ratio, 8 = copy */

@@ -80,6 +80,7 @@ int func_0204046c(void) { func_0204327c(); return 0; }
 
 int func_0204047c(void) { func_0204035c(); return 0; }
 
+/* Counted: the set-up runs on the first call only; the two lines before the refcnt test run on every call. */
 void CriInit(void)
 {
     data_020aca44 = data_0209e324;
@@ -111,6 +112,7 @@ void CriInit(void)
     gCriSys.refcnt++;
 }
 
+/* Counted: the clean-up runs when the last reference goes. */
 void CriExit(void)
 {
     int i;

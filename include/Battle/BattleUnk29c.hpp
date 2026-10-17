@@ -33,7 +33,7 @@ struct BattleUnk29c {
     /* 60 */ BattleMapPiece *mShadow;
     /* 64 */ BattleFontObj *mFontObjs[9];
     /* 88 */ VecFx32 mStIconPosition;
-    /* 94 */ u8 mStIconUnitHandle;
+    /* 94 */ u8 mStIconUnitHandle; // index + 1 into mUnits, 0 = none; only tested for non-zero (DrawStIcons)
     /* 95 */ u8 mUnk_95;
     /* 96 */ u8 mStIconFontObjIndex;
     /* 97 */ PAD(0x97, 0x98);
@@ -62,6 +62,7 @@ struct BattleUnk29c {
     void DrawNearPyPt();
     void DrawStIcons();
     void DrawUnitStIcons(u8 index);
+    // type 0: mFontObjs[5], 1: [6]; drawn above the unit's position at the call until Release
     void SetStIconUnit(u8 index, u32 type);
     void StartMove(u8 index, BattleMoveState *state);
     void UpdateMoveMode2(u32 index);

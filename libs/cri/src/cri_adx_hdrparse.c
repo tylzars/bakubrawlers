@@ -67,6 +67,8 @@ void CriHdrBRead(unsigned char *ss, CriHdrB *d)
     if (d->ba > 0) d->bb = s[11];
 }
 
+/* dst == 0: stores only the length (*outsize). The A loop reads every entry from the same src (src is not moved),
+   so the B entries start right after the 4-byte count. */
 int CriHdrParse(unsigned char *src, int size, int *outsize, CriHdr *dst)
 {
     long n;

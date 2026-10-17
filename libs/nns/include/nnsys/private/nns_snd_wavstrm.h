@@ -35,7 +35,7 @@ struct WavStrm {                 // stride 0x174, 4 of them at data_0221508c
     u32 blockSamples;            // 0xdc
     u32 lastBlockSize;           // 0xe0
     u32 lastBlockSamples;        // 0xe4
-    SndLerp pan;                 // 0xe8
+    SndLerp pan;                 // 0xe8 ramp in the SetSndStrmVolume sum (via data_0208f89c), not a pan
     SndAdpcmState adpcm[2];      // 0xf8
     u8 pad100[0x10];
     s32 active:1, b1:1, b2:1, b3:1, b4:1, b5:1, b6:1;   // 0x110 flags

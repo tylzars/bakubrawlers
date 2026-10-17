@@ -121,6 +121,7 @@ void FS_Init(u32 dma)
     }
 }
 
+// FS_LoadArchiveTables of the ROM archive: loads nothing when size is too small, only returns the size needed.
 u32 FS_LoadRomTables(void *mem, u32 size)
 {
     return FS_LoadArchiveTables(&data_020bfcb4, mem, size);

@@ -8,7 +8,7 @@ typedef struct SndPlayer {
     NNSFndList sounds;       // 0x00 active sounds, ordered by priority (link offset 0xc)
     NNSFndList heaps;        // 0x0c player heaps (link offset 0)
     u32 maxSounds;           // 0x18
-    u32 heapSize;            // 0x1c
+    u32 heapSize;            // 0x1c set from SndPlayerInfo.channels (func_02036938), not the heap size
     u8 volume;               // 0x20
     u8 pad[3];
 } SndPlayer;
@@ -200,7 +200,7 @@ void InitSoundsAndPlayers(void) {   // reset the sound slots and players
 extern s16 data_0208f89c[];
 
 void UpdateSounds(void) {   // per-frame update of every active sound
-    u32 doneMask = func_02008b1c();
+    u32 runningMask = func_02008b1c();
     SndSound *s = NNS_FndGetNextListObject(&data_02213a18, 0);
     if (s == 0) return;
     do {
@@ -208,7 +208,7 @@ void UpdateSounds(void) {   // per-frame update of every active sound
         if (s->started == 0) {
             if (SND_IsFinishedCommandTag(s->tick) != 0) s->started = 1;
         }
-        if (s->started != 0 && !(doneMask & (1 << s->channel))) {
+        if (s->started != 0 && !(runningMask & (1 << s->channel))) {
             ReleaseSound(s);
         } else {
             s32 vol, vB, vA, vp;
@@ -277,13 +277,14 @@ void StopSndSound(SndSound *s, u32 fade) {   // stop a sound, optionally fading 
     s->status = 2;
 }
 
-void *TakePlayerHeap(u32 player, SndPlayerHeapBlk *dst) {   // take a player heap block for use
+// Takes a player heap block for a SndSound (its +8 is heapBlk) and resets the block's heap.
+void *TakePlayerHeap(u32 player, SndPlayerHeapBlk *sound) {
     SndPlayer *p = &data_02213e64[player];
     SndPlayerHeapBlk *b = NNS_FndGetNextListObject(&p->heaps, 0);
     if (b == 0) return 0;
     NNS_FndRemoveListObject(&p->heaps, b);
-    b->owner = dst;
-    *(void **)((u8 *)dst + 8) = b;
+    b->owner = sound;
+    *(void **)((u8 *)sound + 8) = b;
     ResetSndHeap(b->heap);
     return b->heap;
 }

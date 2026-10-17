@@ -22,7 +22,7 @@ struct ParkSlot {
 
 struct SaveData {
     /* 000 */ u16 mSlotEntryIndices[3];
-    /* 006 */ u16 mSlots54Values[3];
+    /* 006 */ u16 mSlots54Values[3]; // 54 / 6c: the BattlePlayer offsets of mSlots54 / mSlots6c it is copied to
     /* 00c */ u16 mSlots6cValues[3];
     /* 012 */ PAD(0x012, 0x014);
     /* 014 */ u16 mUnk_14_0 : 1;
@@ -41,14 +41,14 @@ struct SaveData {
     /* 018 */ u16 mUnk_18_14 : 2;
     /* 01a */ u16 mUnk_1a_0 : 3;
     /* 01a */ u16 mUnk_1a_3 : 5;
-    /* 01a */ u16 mAttribute : 8;
+    /* 01a */ u16 mAttribute : 8; // AttrSelScene's choice (sAttribToSaved[mAttrib]); 0..5
     /* 01c */ u32 mMoney;
     /* 020 */ u32 mUnk_20;
     /* 024 */ u8 mUnk_24;
     /* 025 */ u8 mUnk_25;
     /* 026 */ u8 mLanguage; // written by SaveWindow; nothing in this build reads it back
     union {
-        /* 027 */ u8 mRules;
+        /* 027 */ u8 mRules; // copied to and from data_020d433c.mRules; mUnk_27_0 mirrors mMicEnabled
         struct {
             /* 027 */ u8 mUnk_27_0 : 1;
             /* 027 */ u8 mUnk_27_1 : 1;
@@ -60,8 +60,8 @@ struct SaveData {
     /* 028 */ u16 mUnk_28_0 : 5;
     /* 028 */ u16 mUnk_28_5 : 1;
     /* 028 */ u16 mMicEnabled : 1;
-    /* 028 */ u16 mVolume0Index : 3;
-    /* 028 */ u16 mVolume1Index : 3;
+    /* 028 */ u16 mVolume0Index : 3; // also selects gSeqVolumes -> SoundManager::mSeqVolume
+    /* 028 */ u16 mVolume1Index : 3; // also selects gSeqArcVolumes -> SoundManager::mSeqArcVolume
     /* 028 */ u16 mVolume2Index : 3;
     /* 02a */ u16 mName[12]; // player name, UTF-16
     /* 042 */ u8 mUnk_42; // indexes data_020b4324 (ScriptPlayer::func_02066814) and the unlock tables; 10 = past the last
@@ -85,7 +85,7 @@ struct SaveData {
     /* 082 */ u16 mUnk_82; // +1 with mUnk_b3 set and partners (data_020d433c.mHasPartners)
     /* 084 */ u16 mUnk_84; // +1 with mUnk_b3 set, no partners, 4 players
     /* 086 */ PAD(0x086, 0x088);
-    /* 088 */ u16 mBakuganEntries[0xf6][2];
+    /* 088 */ u16 mBakuganEntries[0xf6][2]; // also reached as data_020d4478 (gSaveData + 0x88)
     /* 460 */ u8 mUnk_460[0xf6];
     /* 556 */ u8 mUnk_556[0x22];
     /* 578 */ volatile u8 mUnk_578;
@@ -127,7 +127,7 @@ struct SaveData {
 extern SaveData gSaveData[1];
 
 // Bit-flag arrays inside gSaveData (at +0x578, +0x57d, +0x580) that code addresses directly.
-extern u8 gUnlockedFieldBits[];
+extern u8 gUnlockedFieldBits[]; // SaveData::mUnk_578 onward; bit = field id (UnlockFields, FieldSelectScene, ParkScene)
 extern u8 data_020d496d[];
 extern u8 data_020d4970[];
 extern u8 data_020d4969[];
@@ -149,9 +149,10 @@ extern UnkStruct_020d4478 data_020d4478[];
 extern u8 data_020d4850[];
 extern u8 data_020d49b0[];
 
+// unk3 + unk2 * 6 + unk1 * 0xf6 (id, attribute); 0, entry 0, for unk1 >= 1, unk2 >= 0x29 or unk3 >= 6
 int GetBakuganEntryIndex(SaveData *base, u32 unk1, u32 unk2, u32 unk3);
 u16 func_020231f4(SaveData *base, u32 unk1, u8 unk2, u8 unk3);
-void SetSlotEntryIndex(SaveData *base, u32 unk1, u32 unk2, int unk3);
+void SetSlotEntryIndex(SaveData *base, u32 unk1, u32 unk2, int unk3); // slot unk2 = unk3; 0xffff = empty
 void func_020231c0(SaveData *base, int unk1, u32 unk2);
 UnkStruct_02023248 *GetBakuganEntry(SaveData *base, u32 unk1, u32 unk2);
 

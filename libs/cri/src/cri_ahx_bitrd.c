@@ -140,6 +140,7 @@ void CriBitsRefill(CriBits *r)
     }
 }
 
+/* Same body as CriSplitSpan (cri_err.c) and func_0204df00 (cri_ahx_play.c), on CriPair. */
 void func_0204e67c(CriPair *src, int limit, CriPair *a, CriPair *b)
 {
     int len = src->n;
@@ -156,6 +157,7 @@ void func_0204e67c(CriPair *src, int limit, CriPair *a, CriPair *b)
     }
 }
 
+/* Tops acc up first (CriBitsRefill), as CriBitsRead does; 1 when CriBitsRead(r, n) would take n bits. */
 int CriBitsCanRead(CriBits *r, int n)
 {
     if (r->bits < n) CriBitsRefill(r);
@@ -163,6 +165,7 @@ int CriBitsCanRead(CriBits *r, int n)
     return 1;
 }
 
+/* When fewer than n bits are left it drops them (pos still advances) and returns 0. */
 int CriBitsRead(CriBits *r, int n)
 {
     int sh, v, a;
@@ -181,7 +184,7 @@ int CriBitsRead(CriBits *r, int n)
     return v;
 }
 
-int CriBitsGetPos(CriBits *r) { return r->pos; }
+int CriBitsGetPos(CriBits *r) { return r->pos; }   /* in bits, taken or dropped */
 
 int CriBitsIsEmpty(CriBits *r)
 {

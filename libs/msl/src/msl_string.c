@@ -84,7 +84,10 @@ int func_020123d0(char *s, wchar_t_ wc)
     return data_020a50d8.conv->wctomb(s, wc);
 }
 
-/* 0x020123ec: wcstombs */
+/* 0x020123ec: converts the wide string src into dst through the locale's wctomb (func_020123bc here: the low byte,
+   one byte per character), stopping before a character that would pass n bytes. At the wide NUL it writes
+   dst[len] = 0 even when len == n (one byte past n). Returns the byte count, 0 for a null dst or src, never an
+   error. */
 size_t_ func_020123ec(char *dst, const wchar_t_ *src, size_t_ n)
 {
     char tmp[4];

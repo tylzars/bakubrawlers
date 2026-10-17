@@ -6,6 +6,7 @@ typedef struct Dec {
     unsigned char text[33];
 } Dec;
 
+/* 1 when |a| < |b|: the signs are not read. */
 int IsDecLess(const Dec *a, const Dec *b)
 {
     int i, m;

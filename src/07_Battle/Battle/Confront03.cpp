@@ -185,7 +185,7 @@ int ConfrontEmblem03::GetSlotIfIdle() {
     return -1;
 }
 
-extern ConfrontRow gConfrontRows[];
+extern ConfrontRow gConfrontRows[]; // only the first row is read: mConfrontRow is set to it and never moved
 
 Confront03::Confront03()
     : BattleBase() {

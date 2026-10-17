@@ -176,6 +176,7 @@ void CriPlayStart(CriPlay *o)
     o->state = 1;
 }
 
+/* Also called by cri_mpa_dec.c's func_0204bfb0 on every poll while CriPlayGetState is 0, and once it is 3. */
 void CriPlayStop(CriPlay *o)
 {
     func_0204ae80(o->dec);
@@ -240,6 +241,7 @@ void func_0204dc9c(CriPlay *o)
     if (o->i28 >= lim) o->state = 3;
 }
 
+/* Same body as CriSplitSpan (cri_err.c) and func_0204e67c (cri_ahx_bitrd.c), on CriPair. */
 void func_0204df00(CriPair *src, int limit, CriPair *a, CriPair *b)
 {
     int len = src->n;

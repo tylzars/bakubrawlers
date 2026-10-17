@@ -102,8 +102,8 @@ int func_0204e934(int x)
     return 1;
 }
 
-int GlobalPoolAddRef(void) { return PoolAddRef(data_020afa5c, data_0209e4a8); }
-int GlobalPoolReleaseRef(void) { return PoolReleaseRef(data_020afa5c); }
+int GlobalPoolAddRef(void) { return PoolAddRef(data_020afa5c, data_0209e4a8); }   /* PoolAddRef reads no 2nd argument */
+int GlobalPoolReleaseRef(void) { return PoolReleaseRef(data_020afa5c); }   /* PoolReleaseRef is void: no result */
 int GlobalPoolAllocObj(int a, int b, int c)
 {
     int r;

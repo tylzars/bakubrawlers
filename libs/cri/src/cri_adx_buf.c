@@ -159,6 +159,8 @@ void func_0203eda4(void) { CriLockEnter1(); }
 
 void func_0203edb0(void) { CriLockLeave1(); }
 
+/* Empty in this build: the outer API functions (AdxAlloc, AdxGetState, ..., func_02042748 / func_02042754)
+   bracket their inner calls with func_0203edbc / func_0203edc0. */
 void func_0203edbc(void) {}
 
 void func_0203edc0(void) {}

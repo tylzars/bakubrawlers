@@ -39,7 +39,7 @@ extern "C" void func_0203bddc(u32 a, u32 b);
 extern "C" void func_0203bdfc(u32 a, u32 b);
 }
 struct Reader;
-u32 MobiclipCreate(Reader *decoder, u32 a);
+u32 MobiclipCreate(Reader *src, u32 a);
 void MobiclipDelete(Player *video);
 u32 func_0203a67c(Player *video);
 u32 MobiclipGetAudioChannelCount(Player *video);
@@ -47,7 +47,7 @@ u32 MobiclipGetFrameRate(Player *video);
 u32 MobiclipGetFrameCount(Player *video);
 u32 func_0203a6dc(Player *video);
 BOOL MobiclipNextFrame(Player *video);
-void MobiclipDecodeFrame(Player *video);
+void MobiclipDecodeFrame(Player *video); // declared void here; Mobiclip.cpp returns a BOOL, which these calls ignore
 void MobiclipConvertFrame(Player *video, u32 a, u32 b, int c);
 void MobiclipSkipFrame(Player *video);
 u32 MobiclipGetAudioBlockCount(Player *video);
@@ -238,9 +238,9 @@ void MoviePlayer::Open(void *a, void *b, u8 c, u32 d) {
         mVideo2 = (Player *) MobiclipCreate((Reader *) mFile2, mPlaneCount);
     }
     mUseBuffer2 = c;
-    u32 frames = func_0203a67c(mVideo);
+    u32 soundRate = func_0203a67c(mVideo);
     u32 rate   = MobiclipGetFrameRate(mVideo);
-    mUnk_d8    = (u32) (((u64) frames << 24) / ((u64) mBlockLength * rate)) + 1;
+    mUnk_d8    = (u32) (((u64) soundRate << 24) / ((u64) mBlockLength * rate)) + 1;
     mBufferBlockCount    = mUnk_d8 * (mPlaneCount + 1);
     mBuffer    = (u16 *) OS_Alloc(mBufferBlockCount * mBlockLength * 2);
     MIi_CpuClearFast(0, mBuffer, mBufferBlockCount * mBlockLength * 2);

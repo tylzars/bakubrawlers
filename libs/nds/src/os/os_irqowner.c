@@ -14,6 +14,8 @@ void ClearOwnerTable(void) {
     }
 }
 
+// Clears the entries of mask whose stored id equals tag, and their mask bits. Only ClearOwnerTable (0) and this
+// function write irqOwnerMask, so in this build nothing is ever cleared.
 void ClearMatchingOwnerEntries(u32 mask, u16 tag) {
     u32 bits;
     int i;

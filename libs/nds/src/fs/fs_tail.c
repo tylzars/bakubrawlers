@@ -14,8 +14,8 @@ struct FSArchiveLike {
 };
 
 struct FSFileLike {
-    FSFileLike *next;        // 0x00
-    FSFileLike *prev;        // 0x04
+    FSFileLike *prev;        // 0x00
+    FSFileLike *next;        // 0x04
     FSArchiveLike *archive;  // 0x08
     volatile u32 flag;       // 0x0c
     u32 pad10;
@@ -28,16 +28,16 @@ extern void FinishFileCommand(FSFileLike *file, int result);
 
 void FinishFileCommand(FSFileLike *file, int result) {
     OSIntrMode e = OS_DisableInterrupts();
-    FSFileLike *next = file->next;
     FSFileLike *prev = file->prev;
-    if (next != NULL) {
-        next->prev = prev;
-    }
+    FSFileLike *next = file->next;
     if (prev != NULL) {
         prev->next = next;
     }
-    file->next = NULL;
+    if (next != NULL) {
+        next->prev = prev;
+    }
     file->prev = NULL;
+    file->next = NULL;
     file->flag &= ~0x4f;
     file->result = result;
     OS_WakeupThread(&file->queue);

@@ -120,6 +120,8 @@ Stm *StmAllocFromA(void *a, int b, int c, StmIO *d)
     return p;
 }
 
+/* Never runs in this build: StmAllocInner calls it for n >= 256 and the only StmAlloc call passes 0
+   (cri_adx_obj.c). */
 Stm *StmAllocFromB(void *a, int b, int c, StmIO *d)
 {
     Stm *p = 0;
@@ -174,6 +176,7 @@ void StmDealloc(Stm *s)
     func_02042754();
 }
 
+/* Blocks in StmStopAndWait until the stream is stopped, then calls func_02041ce0 and clears the entry. */
 void StmDeallocInner(Stm *s)
 {
     if (s == 0) return;
@@ -299,6 +302,7 @@ void StmStop(Stm *s)
     func_02042754();
 }
 
+/* In state 2 with s2 == 1 the stop is only flagged (b4c = 1, b4b cleared); otherwise state 1 at once. */
 void StmStopInner(Stm *s)
 {
     StmLockEnter();
@@ -318,6 +322,7 @@ void StmStopAndWait(Stm *s)
     func_02042754();
 }
 
+/* Stops, then waits for state 1 with i28 == 0, stepping func_0204035c (and OS_Sleep(1) while data_02215db4). */
 void StmStopAndWaitInner(Stm *s)
 {
     StmStop(s);

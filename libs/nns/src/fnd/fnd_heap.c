@@ -21,6 +21,8 @@ static inline void SetGroup(MBlock *b, u8 g) { b->attr &= ~0xff; b->attr |= g & 
 
 static inline u16 GetAllocMode(ExpHeap *h) { return h->body.flags & 1; }
 static inline u16 GetOpt(NNSFndHeapHead *h) { return h->opts & 0xff; }
+// Not run in this build: the expanded heap (GetMBlockRegion .. ExpHeapFree) and the unit heap (PopFreeNode ..
+// UnitHeapFree) are reached only through the allocator table at 0x02090a40, which nothing references.
 void GetMBlockRegion(MBRegion *r, MBlock *b) {   // block's region incl. alignment padding
     r->start = (u32)b - GetAlign(b);
     r->end = b->size + ((u32)b + 0x10);
@@ -123,6 +125,7 @@ void *AllocFromExpFreeListTail(ExpHeap *h, u32 size, u32 align) {   // allocate 
     return (void *)CarveUsedMBlock(&h->body, best, bestAddr, size, 1);
 }
 
+// The merged neighbours are unlinked even when the result is under 0x10 bytes and 0 is returned.
 BOOL MergeRegionIntoFreeList(ExpBody *h, MBRegion *r) {   // give a region back to the free list, merging neighbours
     MBRegion reg = *r;
     MBlock *prev = 0;
@@ -262,6 +265,8 @@ void UnitHeapFree(UnitHeap *h, void *blk) {
 }
 
 typedef struct { const void *func; void *heap; s32 param1; s32 param2; } NNSFndAllocator;
+// The table at 0x02090a40-0x02090a54 holds the next six (Unit Alloc / Free, FrmAllocatorAlloc, func_0203138c,
+// Exp Alloc / Free); no word in the ROM holds that table's address, so they do not run in this build.
 void *ExpAllocatorAlloc(NNSFndAllocator *a, u32 size) { return ExpHeapAlloc(a->heap, size, a->param1); }
 void ExpAllocatorFree(NNSFndAllocator *a, void *p) { ExpHeapFree(a->heap, p); }
 void *FrmAllocatorAlloc(NNSFndAllocator *a, u32 size) { return FrmHeapAlloc(a->heap, size, a->param1); }

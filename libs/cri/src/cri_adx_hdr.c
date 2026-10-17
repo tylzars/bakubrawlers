@@ -14,6 +14,7 @@ void func_0203edc4(int a, int b, short *o0, short *o1)
     *o1 = (short)(4096.0f * ((0.0f - c) * c));
 }
 
+/* 0 when found, -1 when not; *out = the byte offset (even offsets from p are tested). */
 int FindHalfword0x80(unsigned char *p, int n, short *out)
 {
     int lim = n - 1;

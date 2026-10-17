@@ -76,20 +76,22 @@ public:
     /* 2c */ void *mRoulettePalette;
     /* 30 */ u32 mRoulettePaletteSize;
     /* 34 */ s32 mUnk_34;
+    // + 1 per IntegrateMotion step, 0 on the ground branch, -1 (none - 0x10000) after a vertical contact on a marker;
+    // not counted while IntegrateMotion is skipped
     /* 38 */ u32 mAirFrames;
-    /* 3c */ u32 mPrevAirFrames;
-    /* 40 */ u32 mUnk_40;
+    /* 3c */ u32 mPrevAirFrames; // copy taken at the end of UpdateMove (after StartLandingSound reads it)
+    /* 40 */ u32 mUnk_40; // a second copy of mAirFrames, taken before IntegrateMotion
     /* 44 */ u32 mUnk_44;
     // + 1 on a step with no motion, or with vertical velocity exactly -mGravityPerFrame (otherwise 0); reaching 0x28 on
     // a motionless step stops the bakugan
     /* 48 */ u32 mRestFrames;
-    /* 4c */ u32 mMoveFrames; // calls of UpdateMove since construction (any branch); never reset
+    /* 4c */ u32 mMoveFrames; // + 1 per UpdateMove call except one that returns after TryRestOnCell; never reset
     /* 50 */ u32 mUnk_50;
     /* 54 */ u32 mUnk_54;
     /* 58 */ VecFx32 mPrevPosition; // its y is also set to an obstacle's top on landing
     /* 64 */ VecFx32 mVelocity;
     /* 70 */ VecFx32 mPrevVelocity;
-    /* 7c */ VecFx32 mCollisionNormal;
+    /* 7c */ VecFx32 mCollisionNormal; // UpdateCollisions' reflection vector, read the next step before it is rewritten
     /* 88 */ u32 mUnk_88;
     /* 8c */ fx32 mPushScale;
     /* 90 */ u32 mBounceFactor; // always 0x533 when read (UpdateMove sets it first)
@@ -98,6 +100,8 @@ public:
     /* ac */ VecFx32 mPushVelocity;
     /* b8 */ VecFx32 mUnk_b8;
     /* c4 */ u32 mGravityPerFrame; // 0x1c3 (ctor), 0x29, 0xa4 or 0x1dc - 0x19 by the handler
+    // sum of the pushes added since the last IntegrateMotion, folded into mPushVelocity and cleared there; keeps
+    // summing while IntegrateMotion is skipped
     /* c8 */ VecFx32 mPushPerFrame;
     /* d4 */ VecFx32 mUnk_d4;
     /* e0 */ u8 *mUnitCollisionBuffer;
@@ -109,6 +113,8 @@ public:
     /* 134 */ VecFx32 mUnitHitVelocity;
     /* 140 */ u32 mUnk_140;
     /* 144 */ VecFx32 *mTornadoPosition;
+    // y the collision pass put the ball back to on its last vertical collision (mPrevPosition.y: an obstacle top only
+    // for kind-0 boxes and BLOCK); 0x899a when IntegrateMotion clamps it to the floor; UpdateTornado's write is unread
     /* 148 */ u32 mVerticalContactY;
     /* 14c */ u32 mUnk_14c;
     /* 150 */ PAD(0x150, 0x15c);
@@ -119,7 +125,10 @@ public:
     /* 17c */ u32 mUnk_17c;
     /* 180 */ s32 mCameraShakeY;
     /* 184 */ s32 mUnk_184;
+    // set by BattleShoot::UpdateCameraOffset each state-12 frame and turned in place by UpdateCameraPosition /
+    // UpdateJumpObjCameraPosition; mUnk_11c is a separate offset
     /* 188 */ VecFx32 mCameraOffset;
+    // the camera position before mCameraOffset is added (modes 0 and 4, jump-obj step 2); modes 1-3 do not write it
     /* 194 */ VecFx32 mCameraBasePosition;
     /* 1a0 */ u32 mUnk_1a0;
     /* 1a4 */ BakuganModel *mBakugan;
@@ -134,17 +143,19 @@ public:
     /* 1bc */ u16 mIkazuchiTimer;
     /* 1be */ u16 mUnk_1be;
     /* 1c0 */ u16 mShotEffectHandle;
-    /* 1c2 */ u16 mUnitHitEffectHandle;
+    /* 1c2 */ u16 mUnitHitEffectHandle; // set by UpdateUnitHit, not cleared after the effect
     /* 1c4 */ u16 mUnk_1c4;
     /* 1c6 */ u16 mUnk_1c6;
     /* 1c8 */ u16 mTimer; // the 0x78-frame waits of states 8 and 10
     /* 1ca */ u8 mUnk_1ca;
     /* 1cb */ u8 mUnk_1cb;
     /* 1cc */ u8 mUnk_1cc;
+    // cleared as UpdateCollisions starts (once mMoveFrames != 0) and by func_ov007_02258448 step 5, set by field-set
+    // contacts; 0 at the end of the pass ends the shot
     /* 1cd */ u8 mInField;
     /* 1ce */ u8 mUnk_1ce;
     /* 1cf */ u8 mUnk_1cf;
-    /* 1d0 */ u8 mLanded;
+    /* 1d0 */ u8 mLanded; // set the first step IntegrateMotion takes its ground branch; never cleared (ctor 0)
     /* 1d1 */ u8 mPrevLanded;
     /* 1d2 */ u8 mResult;
     /* 1d3 */ u8 mRecord;
@@ -163,7 +174,7 @@ public:
     /* 1e0 */ u8 mShotSpKind;
     /* 1e1 */ u8 mUnk_1e1;
     /* 1e2 */ u8 mState;
-    /* 1e3 */ u8 mCollided;
+    /* 1e3 */ u8 mCollided; // set by a non-zero collision response; only BattleShoot::UpdateTurnPlayerCpu clears it
     /* 1e4 */ u8 mCameraMode;
     /* 1e5 */ u8 mResetCameraOffset;
     /* 1e6 */ u8 mJumpObjCameraStep;
@@ -187,16 +198,20 @@ public:
     void LoadUnitCollisions();
     void LoadMapCollision();
     void SetMapPredictVisible(u32 unk);
+    // TRUE when |vel| > mHeadingMinSpeeds[index] and the x/z angle between vel and b - a is at most
+    // mHeadingAngleLimits[index] (sTables)
     BOOL IsHeadingToward(VecFx32 *a, VecFx32 *b, VecFx32 *vel, u8 index);
-    void LaunchHitUnit(GimmickSetData *set);
-    void UpdateMove();
+    void LaunchHitUnit(GimmickSetData *set); // UpdateCollisions calls it only with mSpKind 6, for an enemy unit
+    void UpdateMove(); // returns at once when TryRestOnCell stops the ball: no collisions, no mMoveFrames++
     void UpdateHaosWall();
     void UpdateJumpObj();
     void UpdateJumpObjCameraPosition();
-    void UpdateCameraTarget(VecFx32 *target);
+    void UpdateCameraTarget(VecFx32 *target); // mCameraMode 2 also scales mCameraShakeY by -0xf33 each call
+    // mCameraMode 0 past mState 1 also scales mUnk_11c and mRotZAdjust by 15/16 each call
     void UpdateCameraPosition(VecFx32 *target);
     void UpdateCamera();
     void UpdateCameraAndDraw();
+    // the record's mUnk_04 + mUnk_06 (nothing for 0), and mCellAnims[0] when the player's mAbilityId != 0
     void DrawRecordTotal(u32 player, u32 record);
     void DrawRoulette();
     BOOL func_ov007_0225d078();
@@ -204,22 +219,24 @@ public:
     void HandleGimmickHit(GimmickSetData *set, u32 index, VecFx32 *vel, VecFx32 *out);
     BOOL GetObstacleNormal(BattleSphere *sphere, VecFx32 *dir, BattleObstacle *obj, VecFx32 *out, u8 flag, u8 *outFlag);
     void UpdateEffects();
-    void GetPushVector(s32 *pair, u8 mode, VecFx32 *out);
+    void GetPushVector(s32 *pair, u8 mode, VecFx32 *out); // scales pair in place; out = (pair[0], 0, pair[1])
     BOOL CanRestOnCell(VecFx32 *pos, u16 *angle, VecFx32 *vel, u8 *outA, u8 *outB);
     void func_ov007_0225c360(u16 *in, s32 a, u16 *out);
     void func_ov007_0225ce08();
     void DrawBar();
     BOOL func_ov007_022583b8();
     void func_ov007_02258448();
-    void UpdateTornado(VecFx32 *target);
+    void UpdateTornado(VecFx32 *target); // step 0 also writes target->y = 0x899a (the gimmick set's position)
     void UpdateUnitHoming();
     void UpdateUnitHit();
-    BOOL StartUnitHit(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d);
+    BOOL StartUnitHit(VecFx32 *a, VecFx32 *b, VecFx32 *c, u8 d); // run on every unit hit; FALSE without the bakugan
     void UpdateIkazuchi();
     void UpdateOnMarkerCell();
     BOOL func_ov007_02259af0();
-    BOOL TryRestOnCell();
+    BOOL TryRestOnCell(); // on TRUE the ball is stopped on the cell (velocity 0, y 0x899a) and the shot ends
     void UpdateCollisions(VecFx32 *a, VecFx32 *b, u32 *c, u32 *d);
+    // One step: ++*counter, the mPushPerFrame fold-in, ground bounce and friction (mLanded) or gravity, the stop after
+    // 0x28 motionless steps (mResult 1, mUnk_1c6), the mUnk_dc + mUnk_e4 extra along x/z; flag forces the air branch
     void IntegrateMotion(VecFx32 *pos, u16 *rot, VecFx32 *vel, VecFx32 *a, VecFx32 *b, u32 *counter, u8 flag, u32 mode);
     void LimitSumLength(VecFx32 *a, VecFx32 *b);
     void StopSoundAfterVentKaze(); // stops seq 0xf the step after the last VENT_KAZE hit (the tornado also uses 0xf)
@@ -229,12 +246,15 @@ public:
     BOOL func_ov007_0225aba0(VecFx32 *a, VecFx32 *b, VecFx32 *tri, fx32 *t, VecFx32 *out);
     void func_ov007_0225b69c(u8 a, u8 b);
     void AddPlayerPush();
+    // nothing for another player in a tutorial; mAirFrames > 3: fixed scale (0x14000 in mUnk_1dd 2, else 0x5000);
+    // else scaled by mPushScale while it is >= 0x800 (else mPushScale = 0)
     void AddPushXZ(s32 *pair);
     void AddScaledPush(VecFx32 *v);
     void MoveClearOfUnit(u8 a, u8 b, VecFx32 *out, VecFx32 *ref);
     BOOL IntersectSegmentPlane(VecFx32 *a, VecFx32 *b, BattlePlane *plane, fx32 *t, VecFx32 *hit);
+    // plane of c, d, e (normal (d - c) x (e - c)); FALSE when normal . (a - b) <= 0, else IntersectSegmentPlane
     BOOL IntersectSegmentTrianglePlane(VecFx32 *a, VecFx32 *b, VecFx32 *c, VecFx32 *d, VecFx32 *e, fx32 *t, VecFx32 *hit);
-    void StartLandingSound();
+    void StartLandingSound(); // seq 4 when mAirFrames is back to 0 after 10 or more air steps
     void func_ov007_02255b78(VecFx32 *b, VecFx32 *c, VecFx32 *in, VecFx32 *out);
     void func_ov007_02255c04(VecFx32 *vec, s32 *out);
 };

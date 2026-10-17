@@ -58,6 +58,7 @@ s32 GetGameHeapHandle() {
     return gGameHeap.mHandle;
 }
 
+// Adds the block CreateGameHeap allocated (mStart, mSize) to the heap, with OS_CheckHeap before and after.
 void AddGameHeapBlock() {
     OS_CheckHeap(0, gGameHeap.mHandle);
     OS_AddToHeap(0, gGameHeap.mHandle, gGameHeap.mStart, gGameHeap.mStart + gGameHeap.mSize);

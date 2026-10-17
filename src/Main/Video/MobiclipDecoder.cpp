@@ -108,6 +108,7 @@ int PlayerSkipFrame(P *p) {
     return 1;
 }
 
+// blocks per channel in the current frame (oc8 = o1e channels times this)
 u32 PlayerGetAudioBlockCount(P *p) { return p->o88[p->cur]; }
 
 #define CH(p) ((Chan *) ((p)->o58 + (p)->od0 * 0x14f8))
@@ -144,6 +145,7 @@ int PlayerReadAudioBlock(P *p, u32 v) {
     return 1;
 }
 
+// Tests o20 == 0 where PlayerReadAudioBlock tests the type o1c == 0, so a type-0 stream with o20 != 0 skips 0x200.
 int PlayerSkipAudioBlock(P *p) {
     if (p->occ == p->oc8) return 0;
     if (p->o20 == 0) return 0;

@@ -277,6 +277,7 @@ int func_0203e714(CriObj *o) { return o->ic0; }
 int func_0203e71c(CriObj *o) { return o->sd4; }
 int func_0203e724(CriObj *o, int i) { return (&o->sd6)[i]; }
 
+/* u28.s[0..3] and s34 / s36 / s38 only (not s30 / s32). */
 void CriObjSaveSlotValues(CriObj *o)
 {
     func_020447d0(o->h, &o->iac, &o->ib0);
@@ -329,8 +330,9 @@ void func_0203e87c(CriObj *o, int a, int b)
     o->idc = 0;
 }
 
-void StartCriObj(CriObj *o) { if (o->state == 0) o->state = 1; }
+void StartCriObj(CriObj *o) { if (o->state == 0) o->state = 1; }   /* nothing unless state is 0 */
 
+/* func_020448d0 also zeroes the slot's state and u28 values (the ones CriObjSaveSlotValues copies). */
 void StopCriObj(CriObj *o) { func_020448d0(o->h); o->state = 0; }
 
 void func_0203e918(CriObj *o)

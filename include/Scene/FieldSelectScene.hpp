@@ -37,7 +37,7 @@ struct FieldInput {
     /* 0a */ u8 mWindowOpen; // SetWindowOpen creates mWindows[1] only for mLocalSlot; other slots just record it
     /* 0b */ u8 mWindowSelection;
     /* 0c */ u8 mUnk_0c;
-    /* 0d */ u8 mPressTimer;
+    /* 0d */ u8 mPressTimer; // 8 after an accepted mUnk_07 or mKeys & 1 / & 2; drops those while non-zero
     /* 0e */ u8 mUnk_0e;
     /* 0f */ u8 mUnk_0f;
     /* 10 */
@@ -107,16 +107,18 @@ public:
     /* 331 */ u8 mBlendTimer;
     /* 332 */ u8 mNextScene;
     /* 333 */ u8 mLocalIsFirstSlot;
-    /* 334 */ u8 mPlayerRowsVisible;
+    /* 334 */ u8 mPlayerRowsVisible; // also the only gate of DrawNames and mPanel[0]->DrawIcons; set on CHARA and PAIR
+    // 1 on the CHARA page: Draw then calls mPanel[1]->DrawIcons once; the pair grid and UpdatePage draw mPanel[1]
+    // without it
     /* 335 */ u8 mUnk_335;
     /* 336 */ u8 mUnk_336;
     /* 337 */ u8 mFieldMarksVisible;
-    /* 338 */ u8 mPairGridVisible;
-    /* 339 */ u8 mNumberMarksVisible;
+    /* 338 */ u8 mPairGridVisible; // set on the PAIR page; picking row 0 of the grid sets mHasPartners 0
+    /* 339 */ u8 mNumberMarksVisible; // mCells2[7] frames mInputCount .. row + 1 beside each number row
     /* 33a */ u8 mUnk_33a;
     /* 33b */ u8 mLocalSlot;
     /* 33c */ u8 mUnk_33c;
-    /* 33d */ u8 mLocalTaken;
+    /* 33d */ u8 mLocalTaken; // copy of mInput[mLocalSlot].mTaken made only on the CHARA page; SetupPage zeroes it
     /* 33e */ u8 mWindow0ItemCount;
     /* 33f */ u8 mUnk_33f;
     /* 340 */ u8 mUnk_340;

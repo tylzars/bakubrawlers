@@ -2,6 +2,7 @@
 #define __LO(x) *(int*)&x
 extern double frexp(double, int *);
 extern double scalbn(double, int);
+// The sign bit in place (0x80000000 or 0), not 0 / 1.
 int GetSignBit(double x) {
     return __HI(x) & 0x80000000;
 }

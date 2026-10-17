@@ -110,6 +110,7 @@ public:
     /* 6c */ CharacterIcons *mIcons;
     /* 70 */ CellAnimation *mCellAnimsB[5];
     /* 84 */ u32 mHistoryValues[6];
+    // if mUnk_b3: SCENE_TOURNAMENT sPrizeTable * 100, else sRankTable * 100 per opponent (+ 0x708 with mUnk_5bf_0)
     /* 9c */ s32 mPrizeMoney;
     /* a0 */ s32 mRewardMoney;
     /* a4 */ s32 mMoneyRemaining; // counted down by 10s: into mMoneyTotal (steps 1-13), shown as added from step 17

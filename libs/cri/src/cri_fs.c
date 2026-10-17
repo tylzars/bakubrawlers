@@ -45,8 +45,8 @@ extern void func_02049024(void), func_02049088(void), func_02049118(void), func_
 extern void func_02049138(void), func_02049150(void);
 extern char *func_02015a6c(char *, const char *);
 extern char *strcat(char *, const char *);
-extern int FS_ReadFile(int, int, int);
-extern int FS_ReadFileAsync(int, int, int);
+extern int FS_ReadFile(int, int, int); /* declared with int parameters; fs_file.c takes (FSFile *, void *, int) */
+extern int FS_ReadFileAsync(int, int, int); /* the same for FS_ReadFileAsync */
 extern void CriLockEnter1(void), CriLockLeave1(void);
 extern int func_02048274(char *);
 extern int func_02048264(int), func_0204826c(int);

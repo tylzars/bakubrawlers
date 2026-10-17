@@ -60,7 +60,9 @@ public:
     /* 0c */
 
     void InitDisplay(); // display setup (menu)
-    void InitSaveWindowDisplay(); // display setup
+    // display setup before each new SaveWindow; unlike InitDisplay: no main BG control, sub BG0 / BG1 only, planes
+    // 0x11 / 0x13
+    void InitSaveWindowDisplay();
     void LoadGraphics();        // 02223e3c
     void func_ov000_022245e8();
     void DrawMenuCells();

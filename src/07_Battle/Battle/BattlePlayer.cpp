@@ -593,6 +593,9 @@ u8 PickUnflaggedSlot54(BattlePlayer *player) {
     return first;
 }
 
+// Random index (below data_020d433c.mUnk_99) of an mSlots6c entry with mFlag 0 whose bit in mask is clear; 0xff for
+// none. Slot 1 with an mValue of 0x92..0xa7 is returned at once (or, at random, slot 0 when that one is free too).
+// The pick gives 0xff instead for mValue 0x8c when x > y and for 0x8e..0x91 when y >= 0.
 u8 PickUnflaggedSlot6c(BattlePlayer *player, u8 mask, s16 x, s16 y) {
     BattlePlayerList *list = data_020d433c.mBattlePlayers;
     u8 i = 0;

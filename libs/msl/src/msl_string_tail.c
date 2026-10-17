@@ -63,7 +63,7 @@ int func_02015a50(const char *s)
     return n;
 }
 
-/* 0x02015a6c */
+/* 0x02015a6c: strcpy, a word at a time when src and dst share alignment */
 char *func_02015a6c(char *dst, const char *src)
 {
     unsigned char c;

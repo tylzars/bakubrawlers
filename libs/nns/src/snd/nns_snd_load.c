@@ -14,7 +14,7 @@ extern void SetWaveArcEntry(u32 wave, int idx, u32 data);
 extern u32 GetWaveArcEntryCount(u32 wave);
 extern void ClearInstPos(void *iter);
 extern int GetNextInstData(u32 bank, void *entry, void *iter);
-extern void MI_CpuCopy8(void *dst, void *src, u32 n);
+extern void MI_CpuCopy8(void *src, void *dst, u32 n);
 extern void MI_CpuFill8(void *dst, u32 data, u32 size);
 typedef struct { u8 pad[0x38]; u32 count; } SndWaveHdr;   // 0x3c bytes of wave archive header
 extern SndWaveHdr data_022149b4;

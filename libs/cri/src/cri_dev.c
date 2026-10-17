@@ -109,6 +109,8 @@ CriDev *func_020469f8(char *a, char *b, char *c)
     return d;
 }
 
+/* The device's f10 (slot 0x10) makes the object; without it, or when it returns 0, the handle is cleared and 0
+   returned. */
 CriDevHandle *CriDevAllocHandle(char *path, int arg1, int arg2)
 {
     char tmp[0x12a];
@@ -206,6 +208,7 @@ void CriDevCopyDefaultName(char *dst)
     CopyBytes(dst, data_02217a30, len + 1);
 }
 
+/* Without the device's f14 (slot 0x14) only a text is sent: the handle is kept. */
 void CriDevDeallocHandle(CriDevHandle *h)
 {
     if (h == 0) {

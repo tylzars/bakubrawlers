@@ -97,6 +97,8 @@ void CriSplitSpan(CriSpan *in, int limit, CriSpan *a, CriSpan *b)
     }
 }
 
+/* CriLockEnter / CriLockLeave do nothing until CriStartThreads installs the hooks (CriSetLockEnterHook /
+   CriSetLockLeaveHook). */
 void CriLockEnter(void *x)
 {
     if (data_02217620.fn == 0) return;
@@ -125,6 +127,7 @@ void CriLockLeave1(void) { CriLockLeave((void *)1); }
 void CriLockEnter3(void) { CriLockEnter((void *)3); }
 void CriLockLeave3(void) { CriLockLeave((void *)3); }
 
+/* The 0x80 size is not enforced: CriFormatStringV ignores it and calls vsprintf. */
 void CriSendFormattedText(const char *fmt, ...)
 {
     char *ap = (char *)(((unsigned)&fmt & ~3u) + 4);
@@ -135,6 +138,7 @@ void CriSendFormattedText(const char *fmt, ...)
     }
 }
 
+/* A null msg calls data_02217350.fn without the null check the other path makes. */
 void CriSendText(const char *msg)
 {
     if (msg == 0) {
@@ -317,6 +321,7 @@ void func_020466bc(void)
     __clear(&data_02217350, sizeof(data_02217350));
 }
 
+/* 1 when this call set *p to 1 (it was not 1 before), else 0. The hook data_0221734c is only ever zeroed. */
 int CriTrySetFlag(int *p)
 {
     int r;

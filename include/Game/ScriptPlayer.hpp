@@ -90,7 +90,7 @@ struct ScriptMap {
     /* 2a */ PAD(0x2a, 0x2c);
     /* 2c */ ModelInstance *mModel;
     /* 30 */ s16 mMapId;
-    /* 32 */ u8 mHoldAnims;
+    /* 32 */ u8 mHoldAnims; // DrawMap: extra anim to frame 0 then one step, main anim not advanced; needs an extra anim
     /* 33 */ PAD(0x33, 0x34);
     /* 34 */
 };
@@ -144,7 +144,7 @@ struct ScriptSphere {
     /* 39 */ u8 mStorytalkCell2XTo;
     /* 3a */ u8 mStorytalkCell2XFrom;
     /* 3b */ u8 mStorytalkCell2Frame;
-    /* 3c */ u8 mSineYEnabled; // while non-zero DrawSpheres steps mUnk_3e up to 1, else down to 0
+    /* 3c */ u8 mSineYEnabled; // while non-zero DrawSpheres steps mSineYScale up to 1, else down to 0
     /* 3d */ u8 mSineYAngle; // 0..0x7f position of the sine DrawSpheres adds to y
     /* 3e */ u8 mSineYScale; // 0 or 1: multiplier of that sine offset
     /* 3f */ u8 mShadowScale;
@@ -174,13 +174,13 @@ struct ScriptCharacter {
     // +38..+3a are rows of GetAnimTableValue's per-id tables: +39 the row playing, +3a the row asked for
     // (func_02067f30), +38 the row for the next character (SwapCharacter copies it into both).
     /* 38 */ u8 mNextAnimTableIndex;
-    /* 39 */ u8 mAnimTableIndex;
+    /* 39 */ u8 mAnimTableIndex; // the row the playing animation leads to (already 0 while the move back to 0 plays)
     /* 3a */ u8 mTargetAnimTableIndex;
-    /* 3b */ u8 mAnimChangePending;
+    /* 3b */ u8 mAnimChangePending; // only set while the character is visible
     /* 3c */ u8 mExtraAnimEnabled;
     /* 3d */ u8 mShadowScale;
     /* 3e */ u8 mVisible; // draw gate; DrawCharacters still writes the position while 0
-    /* 3f */ u8 mStorytalkCell2X;
+    /* 3f */ u8 mStorytalkCell2X; // also eased from mStorytalkCell2XFrom to mStorytalkCell2XTo by UpdateWait
     /* 40 */ u8 mStorytalkCell2XTo;
     /* 41 */ u8 mStorytalkCell2XFrom;
     /* 42 */ u8 mStorytalkCell2Frame;
@@ -219,10 +219,14 @@ public:
     /* 12b4 */ u32 mFileSize;
     /* 12b8 */ u8 mModelLoadStep;
     /* 12b9 */ u8 mState;
+    // command 9, at most 3 (a negative value is kept and acts like 1): 0 waits for input, 3 keeps the last page,
+    // others go on at once (message state 5)
     /* 12ba */ u8 mMessageMode;
     /* 12bb */ PAD(0x12bb, 0x12bc);
     /* 12bc */ u16 mCommandIndex;
     /* 12be */ u16 mCommandCount;
+    // written only by func_0206ef4c and func_0206f88c (mModelCommandIndex: func_0206ef4c); other script builders
+    // leave them as they were
     /* 12c0 */ u16 mChannel1CommandIndex;
     /* 12c2 */ u16 mModelCommandIndex;
     /* 12c4 */ u8 mWaitTimer; // command 13 sets it for SCRIPT_WAIT_KIND_TIMER; every SCRIPT_WAIT_KIND_LOAD wait starts it at 0, so that countdown never runs
@@ -234,9 +238,12 @@ public:
     /* 12cb */ u8 mInputTimer; // frames between an accepted input and the page step
     /* 12cc */ u16 mMessagePos;
     /* 12ce */ u16 mMessageCount; // texts queued by command 1; wraps to 0 at 0x80 while mMessagePos does not
+    // 200 on entering message state 7 and after a restart, 300 after a page step (HasMorePages is FALSE right after
+    // NextPage, so the 200 there never runs)
     /* 12d0 */ u16 mNextPageTimer;
     /* 12d2 */ s16 mMessageIndices[0x80];
     /* 13d2 */ s16 mMessageCharacterIds[0x80]; // value command 8 gives the next queued text; StorytalkWindow::SetMessage's second argument
+    // the last value command 213 handled; command 214 stops channel 0 without clearing it
     /* 14d2 */ s8 mChannel0FrameTaskId;
     /* 14d3 */ u8 mFadeKind;
     /* 14d4 */ s8 mUnk_14d4;
@@ -254,16 +261,19 @@ public:
     /* 14e3 */ PAD(0x14e3, 0x14e4);
     /* 14e4 */ u8 mUnk_14e4;
     /* 14e5 */ u8 mUnk_14e5;
-    /* 14e6 */ u8 mGraphicsLoaded;
+    /* 14e6 */ u8 mGraphicsLoaded; // set only after wait kind 9's LoadGraphics (command 232); the scene clears it
     /* 14e7 */ u8 mUnk_14e7;
     /* 14e8 */ u8 mUnk_14e8;
+    // set by some SetupBattle paths only; the readers do not clear it, only the gSaveData[0].mUnk_5bf_0 test does
     /* 14e9 */ u8 mBattlePending;
-    /* 14ea */ u8 mSaveRequested;
-    /* 14eb */ u8 mUnlockPopupHandle;
+    /* 14ea */ u8 mSaveRequested; // also makes state 5 run the unlock checks; state 6 waits until it is cleared
+    /* 14eb */ u8 mUnlockPopupHandle; // 1 characters, 2 fields, 3 tips (state 5); callers open UnlockPopup(it - 1)
     /* 14ec */ u8 mSkipped;
     /* 14ed */ u8 mSkipDisabled;
+    // passed only to texts started from message state 0 (the restarts pass 0); 2 blocks input, non-zero skips seq 0x6b
     /* 14ee */ u8 mTextOnly;
     /* 14ef */ u8 mTouchLatched;
+    // every new ScriptPlayer passes 0 for it: the ctor / dtor StopChannel(0) does not run in this build
     /* 14f0 */ u8 mStopChannel0;
     /* 14f1 */ u8 mUnk_14f1;
     /* 14f2 */ u8 mCutsceneAnimIndex;
@@ -279,7 +289,7 @@ public:
     void StopWithResult(u32 unk1); // stores the result and waits in state 4 with SCRIPT_WAIT_KIND_STOP
     void UpdateBrightness(); // the code after 'mUnk_14d4 == 0' never runs: mUnk_14d4 is only ever 0
     void UpdateBrightnessFade(); // interpolates mBrightness; applies it only while mFadeKind == SCRIPT_FADE_KIND_BLEND
-    void SetCharacterVisible(u32 index, u8 unk2); // also clears the slot's mUnk_3b
+    void SetCharacterVisible(u32 index, u8 unk2); // also clears the slot's mAnimChangePending
     void ApplyPendingSwaps();
     void CreateNextCharacter(u32 index);
     void SwapCharacter(u32 index);
@@ -291,7 +301,7 @@ public:
     void RestoreCharacterSpriteSlot(u32 index, u32 characterId);
     void ResetCharacterParams(u32 index);
     s8 GetAnimTableValue(s32 kind, u32 index, u32 column);
-    void SetCharacterExtraAnimEnabled(u32 index, u32 value);
+    void SetCharacterExtraAnimEnabled(u32 index, u32 value); // with mAnimChangePending also clears its anim's mLoop
     void UpdateCharacterExtraAnims();
     void ApplyCharacterRotation(u32 index);
     // FALSE at once when value is the current map id; else -2 keeps the id, the map model is deleted and TRUE = a load
@@ -315,7 +325,7 @@ public:
     void ApplyFov(); // only mFov[0]
     void UpdateCameraAndLight(); // nothing when the eye equals the target
     void SetCameraMode(u32 mode);
-    void UpdateCutsceneAndStorytalkCell2();
+    void UpdateCutsceneAndStorytalkCell2(); // the cell-2 part is skipped every other frame while mUnk_14e4 is set
     void SetCutsceneAnimation(u32 value, u32 force);
     void SkipScript();
     void UpdateMessages(); // starts with the skip check (key 8 in states 3-4 outside SCRIPT_WAIT_KIND_LOAD calls SkipScript)
@@ -354,7 +364,7 @@ public:
     u32 GetResult(); // 0 while mSaveRequested or mUnlockPopupHandle is set
     BOOL IsGraphicsLoaded();
     void ClearGraphicsLoaded();
-    u32 GetSaveRequest();
+    u32 GetSaveRequest(); // mSaveRequested in state 6, else 0
     void ClearSaveRequest();
     u32 GetUnlockPopupHandle();
     void ClearUnlockPopupHandle();

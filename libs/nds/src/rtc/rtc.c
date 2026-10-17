@@ -244,6 +244,7 @@ void RtcFifoReceive(u32 tag, u32 data, u32 err)
     }
 }
 
+/* 0 when any 4-bit digit is 10-15. */
 u32 BcdToInt(u32 bcd)
 {
     int i;
@@ -283,6 +284,7 @@ BOOL RtcFifoSend(u32 cmd)
     return PXI_SendWordByFifo(5, (cmd << 8) & 0x7f00, 0) >= 0;
 }
 
+/* 0..6: t % 7, a position in a 7-day cycle. */
 u32 ComputeDateWeek(RTCDate *date)
 {
     s32 m;

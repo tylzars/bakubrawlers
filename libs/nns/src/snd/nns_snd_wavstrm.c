@@ -1,4 +1,7 @@
 // NitroSystem sound library: wave file streaming (up to four streams read from a file or memory, decoded by a thread). 0x0203913c-0x0203a52c
+// In this build no WavStrm is ever made active (the only writes of `active` store 0) and data_022149f0.mgr is never
+// written, so UpdateWavStrms skips every stream, StopWavStrm never calls s->done (CancelWavStrmFile or
+// func_0203a40c) and the stream paths past InitWavStrms do not run.
 #include <nnsys/private/nns_snd_arc.h>
 #include <nnsys/private/nns_snd_wavstrm.h>
 

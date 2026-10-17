@@ -9,7 +9,7 @@ extern u8 gMode0Rows[];
 extern u8 gMode3Rows[];
 extern u8 gMode4Rows[];
 
-// One 0x28-byte record per battle mode (BattleSlot::mUnk_24). Defined between the includes on purpose
+// Per battle mode, its ten 4-byte rows (the ctor picks BattleSlot::mModeRow). Defined between the includes on purpose
 // (docs/decompiling.md, "Data layout within a section"): here, before the SoundManager and WirelessManager headers, it
 // gives the original's .bss order of their destructor nodes (WirelessManager's first).
 u8 *gModeRowTables[6] = {
@@ -56,6 +56,8 @@ extern u8 gIntervalRows[];
 
 extern u8 data_ov007_02278d34[];
 
+// [character * 12 + mode] plus BattlePlayer::mUnk_f7 gives the ctor's mModeRow row (after its +1 / +2 cases, at
+// most 9) and func_ov007_022234f0's result (at most 7), which BattleConfrontCard multiplies a power by.
 extern u8 gCharacterModeBases[];
 
 extern u8 data_ov007_02278d7a[];

@@ -31,7 +31,7 @@ public:
     /* 34 */ u8 mUnk_34;
     /* 35 */ PAD(0x35, 0x38);
     /* 38 */ UnkStruct_0203d374_38 mUnk_38[2];
-    /* 48 */ u8 mUnk_48; // set by the mode that keeps the model alive
+    /* 48 */ u8 mUnk_48; // only ever written 0 in this build; when set, deletes keep the files (mOwnFlags 0)
     /* 49 */ u8 mAnimUpdateEnabled; // gates Update's animation advance; separate from ModelTransform::mAnimEnabled
     /* 4a */ u8 mVisible; // visible
     /* 4b */ u8 mUnk_4b;

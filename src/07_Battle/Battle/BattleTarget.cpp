@@ -39,8 +39,9 @@ struct GimmickBuffer {
 // original has them in this (unsorted) order, followed by the three byte tables in their own sections. Header order
 // above (Camera, Sound, Touch, Wireless, Sprite) gives the original .bss node order.
 struct TargetTables {
+    // read at mUnitHitCount 0..2: [2] runs into mHitFrameCounts[0], harmless (that hit sets mUnk_140 = 0 at once)
     /* 000 */ u16 mSpKind1HitFrameCounts[2];
-    /* 004 */ u16 mHitFrameCounts[5];
+    /* 004 */ u16 mHitFrameCounts[5]; // only [0..2] are read (mUnitHitCount stops at 3)
     /* 00e */ u16 mBaseRotY[4];
     /* 016 */ u16 mRestAngleLimits[5];
     /* 020 */ u16 mHeadingAngleLimits[5];
@@ -51,7 +52,7 @@ struct TargetTables {
     /* 05c */ VecFx32 mUnk_5c;
     /* 068 */ VecFx32 mHitEffectOffset;
     /* 074 */ VecFx32 mUnk_74;
-    /* 080 */ u16 mSpKind3Speeds[8];
+    /* 080 */ u16 mSpKind3Speeds[8]; // both readers add 0x50
     /* 090 */ u16 mSpKind3RotZ[8];
     /* 0a0 */ u32 mUnk_a0[5];
     /* 0b4 */ s32 mHeadingMinSpeeds[5];
@@ -59,7 +60,7 @@ struct TargetTables {
     /* 0dc */ s32 mUnk_dc[5];
     /* 0f0 */ s32 mRestSpeedLimits[5];
     /* 104 */ s32 mUnk_104[8];
-    /* 124 */ VecFx32 mSpKind1HitCameraOffsets[3];
+    /* 124 */ VecFx32 mSpKind1HitCameraOffsets[3]; // both tables: x / z turned and added to a position, y absolute
     /* 148 */ VecFx32 mHitCameraOffsets[3];
 };
 

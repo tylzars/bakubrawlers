@@ -40,7 +40,7 @@ void RunSndStrmCallback(SndStrm *s, int phase);
 void SndStrmPmPreCallback(SndStrm *s);
 void SndStrmPmPostCallback(SndStrm *s);
 
-void InitSndStrm(SndStrm *s) {   // stream init
+void InitSndStrm(SndStrm *s) {   // stream init; also run by cri_file.c's func_02049b20 on each free pool slot it finds
     if (data_022142e4 == 0) {
         NNS_FndInitList(&data_022142e8, 0);
         data_022142e4 = 1;
@@ -157,14 +157,14 @@ void func_02037634(SndStrm *s, int idx, u32 v) {
 
 void StopSndStrm(SndStrm *s) {   // stop
     if (s->registered) {
-        u32 irq;
+        u32 tag;
         func_02008034(s->chMask, 0, 1 << s->slot, 0);
         PmRemovePreCallback(&s->cbA);
         PmRemovePostCallback(&s->cbB);
         s->registered = 0;
-        irq = SND_GetCurrentCommandTag();
+        tag = SND_GetCurrentCommandTag();
         SND_FlushCommand(1);
-        SND_WaitForCommandProc(irq);
+        SND_WaitForCommandProc(tag);
     }
     DeactivateSndStrm(s);
 }
@@ -194,12 +194,12 @@ void RunSndStrmCallback(SndStrm *s, int phase) {   // fill callback
 }
 
 void SndStrmPmPreCallback(SndStrm *s) {
-    u32 irq;
+    u32 tag;
     if (!s->registered) return;
     func_02008034(s->chMask, 0, 1 << s->slot, 0);
-    irq = SND_GetCurrentCommandTag();
+    tag = SND_GetCurrentCommandTag();
     SND_FlushCommand(1);
-    SND_WaitForCommandProc(irq);
+    SND_WaitForCommandProc(tag);
 }
 
 void SndStrmPmPostCallback(SndStrm *s) {

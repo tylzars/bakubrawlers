@@ -42,6 +42,7 @@ void func_0201c238(Dec *d, int n)
 }
 
 
+/* Does nothing unless 0 < n < d->len. */
 void RoundDec(Dec *d, int n)
 {
     if (n <= 0) return;
@@ -54,6 +55,7 @@ void RoundDec(Dec *d, int n)
     }
 }
 
+/* sign is always 0; v == 0 gives len 0 and exp -1. */
 void U64ToDec(Dec *d, unsigned long long v)
 {
     int i, j;
@@ -79,6 +81,7 @@ void U64ToDec(Dec *d, unsigned long long v)
     d->exp = d->len - 1;
 }
 
+/* res->sign is set to 0: the signs are not multiplied. */
 void MultiplyDec(Dec *res, const Dec *a, const Dec *b)
 {
     unsigned char buf[64];
@@ -135,6 +138,7 @@ up:
     func_0201c238(res, res->len);
 }
 
+/* sign is set to 0. The tail tests compare a character with 5, so any string longer than 32 digits rounds up. */
 void StringToDec(Dec *d, const char *s, short exp)
 {
     int i;

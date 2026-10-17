@@ -59,9 +59,9 @@ void StopSndCapture(void) {   // stop
     mask = use ? 1 << c->alarm : 0;
     func_02008034(c->chMask, c->capSlots, mask, 0);
     if (use) {
-        u32 irq = SND_GetCurrentCommandTag();
+        u32 tag = SND_GetCurrentCommandTag();
         SND_FlushCommand(1);
-        SND_WaitForCommandProc(irq);
+        SND_WaitForCommandProc(tag);
         while (OS_ReceiveMessage(data_022143bc, 0, 0) != 0) {}
     }
     if (c->capSlots != 0) func_02036878(c->capSlots);
@@ -73,14 +73,14 @@ void StopSndCapture(void) {   // stop
 
 void func_02037a14(void) {   // pause
     SndCapture *c = &data_022143fc;
-    u32 irq;
+    u32 tag;
     u32 mask;
     if (data_022143b4.cap.active == 0) return;
     mask = c->alarm >= 0 ? 1 << c->alarm : 0;
     func_02008034(c->chMask, c->capSlots, mask, 0);
-    irq = SND_GetCurrentCommandTag();
+    tag = SND_GetCurrentCommandTag();
     SND_FlushCommand(1);
-    SND_WaitForCommandProc(irq);
+    SND_WaitForCommandProc(tag);
 }
 
 void func_02037a74(void) {   // clear buffers and restart

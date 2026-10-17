@@ -86,7 +86,7 @@ NNSFndHeapHead *FindInnermostHeapContaining(NNSFndList *list, void *ptr) {   // 
     }
     return 0;
 }
-NNSFndList *FindParentList(void *ptr) {   // list that holds the heap containing ptr
+NNSFndList *FindParentList(void *ptr) {   // children list of the innermost heap holding ptr, else the root list
     NNSFndList *list = &data_02211368;
     NNSFndHeapHead *h = FindInnermostHeapContaining(list, ptr);
     if (h) list = &h->children;

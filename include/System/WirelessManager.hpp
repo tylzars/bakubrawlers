@@ -74,18 +74,19 @@ public:
     /* 1229 */ u8 mJoinIndex;
     /* 122a */ u8 mUnk_122a; // WM_CALL_* status of the last library call; 2 is written with mState 6 by ParentEventCallback
                              // and never read. Also written as data_020c4030.mUnk_22a
+    // 1 when SendCallback runs (command-word sends too), on event 0xa and when Send is refused; SendNext clears it
     /* 122b */ u8 mSendIdle;
     /* 122c */ u8 mExchangeStarted;
     /* 122d */ u8 mMaxJoinedCount;
     /* 122e */ u8 mJoinedCount;
-    /* 122f */ u8 mPaused;
+    /* 122f */ u8 mPaused; // Update skips UpdateExchange and SendNext while set; QueueSend still sends at once
     /* 1230 */ u8 mUnk_1230;
     /* 1231 */ u8 mJoinData[24];
     /* 1249 */ u8 mRecvWriteIndex; // the received ring (sWmWorkB.mRecv) is written but never read in this build
     /* 124a */ u8 mUnk_124a;
     /* 124b */ u8 mSendWriteIndex;
     /* 124c */ u8 mSendReadIndex;
-    /* 124d */ u8 mUnk_124d;
+    /* 124d */ u8 mUnk_124d; // func_0201044c()'s value, stored by Update; AntennaIndicator draws it as a frame
     /* 124e */ u8 mHasNewRecvBlocks;
     /* 124f */ u8 mUnk_124f;
     /* 1250 */ u8 mUnk_1250;
@@ -101,10 +102,12 @@ public:
         return instance;
     }
 
-    void RequestStart();
-    void RequestStop();
+    void RequestStart(); // the library call's result is not checked
+    void RequestStop(); // the library call's result is not checked
     void func_0202e544();
-    void RequestParent();
+    void RequestParent(); // also resets mJoinedCount
+    // next channel after mTestedChannel in func_0201042c's mask (mask 0 / 0x8000: WM_CALL_FAILED); once mTestedChannel
+    // reaches 16, even after a pending call, mState 3 and WM_CALL_DONE
     void TestNextChannel();
     void StartChannelTest();
     void SetupScanParam();
@@ -117,10 +120,10 @@ public:
     void func_0202ea34();
     void SendNext();
     u32 Send(void *unk1, u32 unk2);
-    void StartExchange();
+    void StartExchange(); // sets mExchangeTimer even when func_02010e6c refuses (mExchangeStarted stays 0)
     void UpdateExchange();
     void func_0202ec74(u32 unk1);
-    void SetPaused(u32 unk1);
+    void SetPaused(u32 unk1); // only on a change: func_02010cf8 gets 0 when pausing, 1 when resuming
     void func_0202ed00();
     void Init();
     void func_0202f1a4(u32 unk1);
@@ -136,7 +139,7 @@ public:
     u32 QueueSend(void *unk1);
     u32 SetSendBlock(void *unk1);
     u8 *GetRecvBlock(u32 unk1);
-    u32 GetRecvBlockCount();
+    u32 GetRecvBlockCount(); // unlike GetRecvBlock, no mState / mPaused test
     void func_0202f184();
 };
 

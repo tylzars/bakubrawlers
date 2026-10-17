@@ -223,15 +223,15 @@ void TournamentSubScene::InitDisplay() {
     G2S_BlendNone();
 }
 
-// UnkStruct_020758f4_Record::mTextLength must be u32 (loaded with ldr).
+// UnkStruct_020758f4_Record::mScore must be u32 (loaded with ldr).
 void TournamentSubScene::Init() {
     mRanking = new Ranking();
     u8 i = 0;
     do {
         UnkStruct_020758f4_Record *info = mRanking->FindEntry(mEntries[i].mId);
         if (info != NULL) {
-            mEntries[i].mRank = info->mTextOffset;
-            mEntries[i].mScore = info->mTextLength;
+            mEntries[i].mRank = info->mRank;
+            mEntries[i].mScore = info->mScore;
         }
         i++;
     } while (i < mCount);

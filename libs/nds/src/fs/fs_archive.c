@@ -202,6 +202,8 @@ int FindPathCommand(FSFile *f)
     return 0;
 }
 
+// Command 5 of the archive command table; nothing in this build requests it (RequestFileCommand gets 0, 4, 6, 7
+// and 8 only).
 int GetPathCommand(FSFile *f)
 {
     FSArchive *arc = f->arc;
@@ -360,6 +362,7 @@ int OpenFileRangeCommand(FSFile *f)
     return 0;
 }
 
+// Command 8 (FS_CloseFile): does nothing and returns 0.
 int CloseFileCommand(void)
 {
     return 0;
@@ -601,6 +604,7 @@ BOOL FS_SetupArchive(FSArchive *arc, u32 base, u32 fat, u32 fat_size, u32 fnt, u
     return TRUE;
 }
 
+// Loads the FAT and FNT into mem only when the size they need fits in size; returns that size either way.
 u32 FS_LoadArchiveTables(FSArchive *arc, void *mem, u32 size)
 {
     FSFile tmp;

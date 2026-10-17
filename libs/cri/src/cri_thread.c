@@ -201,6 +201,8 @@ int func_02047414(unsigned mode, CriCfg *cfg)
     return 1;
 }
 
+/* Counted: only the first start passes. Installs the lock hooks; data_020add1c is always 15 (the name lookup
+   fails); the final else (mode != 2) cannot run, mode is set to 2 above. */
 void CriStartThreads(CriCfg *cfg)
 {
     int tmp;

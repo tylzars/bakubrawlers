@@ -24,6 +24,7 @@ extern void func_02040370(void);
 
 
 
+/* Same body as func_02040140. */
 void func_02040110(void)
 {
     memset(data_02215ca4, 0, 0x100);
@@ -31,6 +32,7 @@ void func_02040110(void)
     data_02215c7c.arg = 0;
 }
 
+/* Same body as func_02040110. */
 void func_02040140(void)
 {
     memset(data_02215ca4, 0, 0x100);

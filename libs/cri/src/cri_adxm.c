@@ -41,7 +41,8 @@ typedef struct CriElem {           /* 0x68 bytes, array at 0x02218fd8 */
     unsigned flags;                /* 0x28 */
     char rest[0x3c];
 } CriElem;
-typedef struct CriElemW { int pad; void *used; char rest[0x60]; } CriElemW;  /* same array seen from 0x02218fd4 */
+/* the same array seen from 0x02218fd4: used is CriElem.h */
+typedef struct CriElemW { int pad; void *used; char rest[0x60]; } CriElemW;
 
 /* thread configuration handed to func_02047414 (cri_thread.c, same layout as its CriCfg there): three thread
    priorities, three stacks, three stack sizes */
@@ -112,6 +113,8 @@ void CriGlobInitWithThreads(CriMemCfg *cfg, int a, const void *b, void (*c)(cons
     CriGlobInit(cfg, a, b, c, 1);
 }
 
+/* Counted: only the first call sets up. The flag == 0 branch (no threads) does not run in this build: the only
+   caller, CriGlobInitWithThreads, passes 1. */
 void CriGlobInit(CriMemCfg *cfg, int a, const void *b, void (*c)(const char *), int flag)
 {
     if (data_02218fd0.init != 0) {
@@ -174,6 +177,7 @@ void CriGlobExit(void)
     data_02218fd0.init--;
 }
 
+/* The run mode is 2 in this build (func_02047414(2, ...)), so func_0204e854 runs CriFuncTableRun5 only. */
 void CriGlobUpdate(void)
 {
     if (data_02218fd0.init != 0) {
@@ -352,6 +356,8 @@ void CriHdlStart(CriHdl *hdl, const char *path)
     func_0204ea6c(e->h, path);
 }
 
+/* Through PoolObjStop and func_0205012c: when the voice reports state 2 (and the group's w68 is 0) it fades out
+   first, else it stops at once. */
 void CriHdlStop(CriHdl *hdl)
 {
     if (data_02218fd0.init == 0) {
@@ -378,6 +384,7 @@ void func_02051fb8(CriHdl *hdl, int a)
     func_0204eac4(func_02052248(hdl)->h, a);
 }
 
+/* v < 0.01 gives -960, v >= 1 gives 0, in between 200 * log10(v) (-400..0); then the same call as CriHdlSetVolume. */
 void CriHdlSetVolumeFloat(CriHdl *hdl, float v)
 {
     CriElem *e;
@@ -401,6 +408,7 @@ void CriHdlSetVolumeFloat(CriHdl *hdl, float v)
     func_0204eb24(e->h, r);
 }
 
+/* a is the fader target level: 0 full, lower is quieter; func_0205102c raises it to at least -960 on the way. */
 void CriHdlSetVolume(CriHdl *hdl, int a)
 {
     if (data_02218fd0.init == 0) {
@@ -456,6 +464,8 @@ CriElem *func_02052248(CriHdl *hdl)
     return r;
 }
 
+/* FS_CloseFile(e->os) when its stat bit 0x10 is set. The close never happens in this build: e->os is only
+   FS_InitFile'd, and only the FS open functions set that bit. */
 void func_020522a0(CriElem *e)
 {
     int r;

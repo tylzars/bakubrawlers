@@ -5,6 +5,7 @@
 // Free functions in main that have no header of their own yet.
 
 struct SaveData;
+// The slot's entry index % 6. No empty check, unlike GetSlotBakuganId: an empty slot (0xffff) gives 3.
 s32 GetSlotBakuganAttribute(SaveData *data, u32 unk2, u32 unk3);
 extern "C" void DC_FlushRange(void *buffer, u32 size); // probably DC_FlushRange
 void SeedRandom(u32 unk1);
@@ -14,6 +15,8 @@ BOOL UnlockStoreItems();
 // For each UnlockPair of the save position's list sets the id's bit in the level arrays up to its mLevel
 // (data_020d496a, 496d, 4970); TRUE when an id had no bit in any of them before.
 BOOL UnlockCharacters();
+// Sets gUnlockedFieldBits bits (bit = field id): 0x1 and 0x80 always, the others by gSaveData[0].mUnk_42 / mUnk_43;
+// TRUE when one of them was clear.
 BOOL UnlockFields();
 void RefreshParkSlotProgressEntryFlag();
 // Park entry types: the values of ParkEntry::mType in the 12-byte park table records GetParkEntry copies out (read

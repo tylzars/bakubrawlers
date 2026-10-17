@@ -56,7 +56,7 @@ extern "C" void MI_CpuCopy8(const void *src, void *dest, u32 size);
 extern "C" void DC_FlushRange(void *buffer, u32 size);
 void SetNoStorytalkMessage(StorytalkWindow *object);
 extern "C" void MIi_CpuCopy32(const void *src, void *dest, u32 size);
-extern const u32 gScriptSpriteSlots[8][6];
+extern const u32 gScriptSpriteSlots[8][6]; // the first six words of each slot SetupSpriteSlots passes to SetSlot
 extern "C" void SaveTexSlotRanges(TexSlotRanges *slot);
 extern "C" void RestoreSndHeapState(u32 a, u32 b);
 
@@ -2109,13 +2109,13 @@ void ScriptPlayer::DrawModels() {
 
 struct UnkStruct_020a2198 {
     /* 00 */ s16 mCameraPositionX;
-    /* 02 */ s16 mCameraPositionY;
+    /* 02 */ s16 mCameraPositionY; // with mUnk_14e2 == 0 also command 0xb2's value
     /* 04 */ s16 mCameraPositionZ;
     /* 06 */ s16 mCameraTargetX;
     /* 08 */ s16 mCameraTargetY;
     /* 0a */ s16 mCameraTargetZ;
-    /* 0c */ s16 mCharacterX;
-    /* 0e */ s16 mCharacterY;
+    /* 0c */ s16 mCharacterX; // character 0 only
+    /* 0e */ s16 mCharacterY; // with mUnk_14e2 == 0 also command 0xaf's value
     /* 10 */ s16 mCharacterZ;
     /* 12 */ s16 mCharacterRotY;
     /* 14 */ u8 mCharacterStorytalkCell2X;
@@ -3725,7 +3725,7 @@ struct UnkStruct_s8x2 {
 };
 struct UnkStruct_s16x4 {
     /* 0 */ s16 mX;
-    /* 2 */ s16 mY;
+    /* 2 */ s16 mY; // unread in data_020a22a4
     /* 4 */ s16 mZ;
     /* 6 */ s16 mRotY;
 };

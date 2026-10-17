@@ -121,6 +121,7 @@ extern int PoolObjGetAdxCount(Obj *);
 
 typedef struct Par { int a, b, c; } Par;
 
+/* The same 0xe0 object is declared CriFadeGrp in cri_fade_grp.c (w58 / w5c = i58 / i5c). */
 int PoolObjInit(Obj *o, Cfg *cfg, char *buf, int size)
 {
     unsigned long i;
@@ -204,6 +205,7 @@ int PoolObjInit(Obj *o, Cfg *cfg, char *buf, int size)
     return 1;
 }
 
+/* slot[] and ent[].buf are not cleared; CriFadeGrpReset clears them on the next PoolObjInit. */
 void PoolObjReleaseParts(Obj *o)
 {
     int i;
@@ -234,6 +236,8 @@ void PoolObjStart(Obj *o, int a)
     func_0204fe20(o, &o->i30);
 }
 
+/* Nothing while the current voice reports state 0; else func_0205012c (mode 2): a fade-out first when the voice
+   reports state 2 (and w68 is 0), else an immediate stop. */
 void PoolObjStop(Obj *o)
 {
     if (o->i58 == 0) {
@@ -286,6 +290,7 @@ int PoolObjGetState(Obj *o)
 
 int func_0204f98c(Obj *o) { return o->cfg.b14; }
 
+/* ic4 (the target of the next fade-in) is always set; while the slot's fade-out runs (s4 == 1) only that is stored. */
 void PoolObjSetVolume(Obj *o, int v)
 {
     Ent *base;

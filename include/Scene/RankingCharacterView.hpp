@@ -40,7 +40,7 @@ public:
     /* 78 */ s32 mModelX;
     /* 7c */ u8 mState;
     /* 7d */ PAD(0x7d, 0x7e);
-    /* 7e */ u8 mKind;
+    /* 7e */ u8 mKind; // 0 from MyroomRankingScene, 1 from TournamentSubScene: animation 0 / 1 of mRankingCellAnims[0]
     /* 7f */ PAD(0x7f, 0x80);
     /* 80 */ u32 mChanging;
     /* 84 */ u32 mFinishRequested;
@@ -53,7 +53,7 @@ public:
     void Load();
     void CreateCharacterModel(u32 kind);
     void Draw();
-    void DrawSprites();
+    void DrawSprites(); // the mAnimIndex 2 branch (mCharacterId 0x15) cannot run: it needs i >= 10 in an i < 10 loop
     void PrintName();
     void ClearNameText();
     void ApplyNextCharacter(); // rebuilds the model for the queued character (mNext*) and takes one SlideTo(0) step

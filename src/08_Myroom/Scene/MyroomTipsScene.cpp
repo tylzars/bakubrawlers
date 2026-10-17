@@ -2,7 +2,7 @@
 #include "Scene/MyroomTipsScene.hpp"
 #include "Game/ScriptPlayer.hpp"
 #include "Game/SaveData.hpp"
-extern u8 gUnlockedTipBits[];
+extern u8 gUnlockedTipBits[]; // inside gSaveData at +0x5ac (SaveData::mUnk_5ac), set by UnlockTips
 extern u8 data_020d49a1[];
 #include "Graphics/CellAnimation.hpp"
 #include "Graphics/Display.hpp"

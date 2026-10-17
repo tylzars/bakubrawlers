@@ -22,6 +22,8 @@ struct {
     u16 initialized;
 } resetState;
 
+/* The V_BLANK check bit is set by the game's UpdateFrame (OS_SetIrqFunction(1, ...)) once every sFrameInterval
+   vblanks. */
 void SleepUntilVBlank(void) {
     WaitByLoop(1);
     SleepUntilIrq(1, 1);

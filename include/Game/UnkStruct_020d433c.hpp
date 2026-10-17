@@ -120,7 +120,7 @@ struct BattlePlayer : public SceneBase {
     /* f7 */ u8 mUnk_f7; // 0..2, copied from data_020d433c.mUnk_a3; see there
     /* f8 */ u8 mSlots54Remaining; // mSlots54 entries (of the first data_020d433c.mUnk_99) with mFlag 0; also read raw at +0xf8 (BattleAbility)
     /* f9 */ u8 mSlots6cRemaining; // the same for mSlots6c
-    /* fa */ u16 mAbilityId;
+    /* fa */ u16 mAbilityId; // also the message id BattleShoot shows
     /* fc */ u8 mUnk_fc;
     /* fd */ u8 mUnk_fd;
     /* fe */ u8 mUnk_fe;
@@ -282,7 +282,10 @@ struct BattlePlayerList : public SceneBase {
 };
 
 void MoveUnit(BattlePlayerList *list, u8 index, const VecFx32 *pos, u8 marker);
+// mTurnOrder[slot] = player (slot 0 also sets mTurnPlayer); the player's mCorner = slot (0 / 2 with two players).
 void SetTurnOrder(BattlePlayerList *list, u8 slot, u8 player);
+// Clears unit index (mStatus, mUnk_12, its marker's mUnitHandle, its cell handle; mUnitCount--); its record gets
+// mStatus = value, mUnk_04 = mUnk_0b * 10, mUnk_06 = 0 (and mAttribute 1 for mBakuganId 4).
 void RemoveUnit(BattlePlayerList *list, u8 index, u8 value);
 
 class EffectManager; // particle effect list (ctor 0202ab24 creates the 0x61c byte effects)
@@ -325,12 +328,14 @@ struct UnkStruct_020d433c {
         /* 14 */ u16 mFlags;
         struct {
             /* 14 */ u16 mUnk_14_0 : 1;
-            /* 14 */ u16 mSaveDirty : 1;
+            /* 14 */ u16 mSaveDirty : 1; // ListScene / MyroomScene also set and test it as mFlags & 2
             /* 14 */ u16 mUnk_14_2 : 14;
         };
     };
     /* 16 */ u16 mNames[4][12]; // UTF-16 player names
     /* 76 */ u8 mUnk_76;
+    // LogoScene's slot check: 0 NO_MAGIC, 1 MARKER, 2 OK (not the SAVE_STATUS_* values); TitleScene sets 1 when it
+    // writes the slot marker
     /* 77 */ u8 mSaveSlotContent;
     /* 78 */ PAD(0x78, 0x79);
     /* 79 */ u8 mLanguage;
@@ -344,10 +349,12 @@ struct UnkStruct_020d433c {
     /* 7e */ u8 mMapTab : 4;
     /* 7e */ u8 mTitleMenuSelection : 4;
     /* 7f */ u8 mUnk_7f; // SCENE_* id MyroomScene requests when it ends (TitleScene stores SCENE_TITLE, MapScene
-                         // SCENE_MAP); with SCENE_TITLE and mUnk_14 & 2 it opens a SaveWindow first
+                         // SCENE_MAP); with SCENE_TITLE and mFlags & 2 (mSaveDirty) it opens a SaveWindow first
     /* 80 */ u8 mUnk_80;
     /* 81 */ u8 mUnk_81;
     /* 82 */ u8 mUnk_82;
+    // 0 outside tutorials; BattlePlayerList clears it (and mTutorialId) for 5 / 6 and puts it back (:802) before
+    // SCENE_TUTORIAL
     /* 83 */ u8 mTutorialNumber;
     /* 84 */ u8 mTutorialPart;
     /* 85 */ u8 mTutorialId;
@@ -356,9 +363,10 @@ struct UnkStruct_020d433c {
     /* 88 */ u8 mUnk_88_0 : 4;
     /* 88 */ u8 mUnk_88_4 : 4;
     /* 89 */ u8 mUnk_89;
+    // SetupBattle: 1 when gSaveData[0].mUnk_42 == 9 and mUnk_43 == 8, else 0 (not the previous battle)
     /* 8a */ u8 mLastBattle : 4;
     /* 8a */ u8 mUnk_8a_4 : 4;
-    /* 8b */ u8 mParkEntryIndex : 4;
+    /* 8b */ u8 mParkEntryIndex : 4; // ParkRules reads its entry with gSaveData[0].mUnk_5b8 swapped to mUnk_8b_4
     /* 8b */ u8 mUnk_8b_4 : 4;
     /* 8c */ u8 mUnk_8c_0 : 4;
     /* 8c */ u8 mUnk_8c_4 : 4;
@@ -388,6 +396,8 @@ struct UnkStruct_020d433c {
     /* a7 */ u8 mUnk_a7;
     /* a8 */ u8 mWireless; // set by ArenaScene when it starts the wireless session; cleared by ArenaScene, ArenaWindowScene, BattlePlayerList
     /* a9 */ u8 mUnk_a9[4];
+    // TitleScene state 0 then runs the credits, sets gSaveData[0].mUnk_5bf_0, GiftUnlockScene and a SaveWindow, and
+    // clears it before SCENE_LOGO
     /* ad */ u8 mCreditsPending;
     /* ae */ u8 mUnk_ae;
     /* af */ u8 mUnk_af[4];

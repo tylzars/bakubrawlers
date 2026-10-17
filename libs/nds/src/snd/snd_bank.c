@@ -201,6 +201,7 @@ void SetWaveArcEntry(SNDWaveArc *arc, int idx, u32 value) {
     SND_UnlockMutex();
 }
 
+/* 0 gives NULL; a value below 0x2000000 is an offset from arc, any other an address. */
 void *GetWaveArcEntry(SNDWaveArc *arc, int idx) {
     u32 v;
     void *r;

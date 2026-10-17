@@ -54,6 +54,7 @@ struct LookChoices {
 class CharacterEditScene : public SceneBase {
 public:
     /* 0c */ SelectWindow *mWindows[3];
+    // mWindows[0..2]->Update results, stored after the state handlers run: the handlers see last frame's
     /* 18 */ u32 mWindow0Result;
     /* 1c */ u32 mWindow1Result;
     /* 20 */ u32 mWindow2Result;
@@ -117,7 +118,7 @@ public:
     virtual ~CharacterEditScene();
     virtual void Update();
 
-    void func_020638a8(u32 v);
+    void func_020638a8(u32 v); // mWindows[0]->mButtons[13].mEnabled = mChoicesVisible = v
     void UpdateRootMenu();
     void UpdateSkinEdit();
     void func_0205e958();

@@ -219,6 +219,7 @@ int func_02051448(CriX *o)
     return o->t54 - o->t58 * (int)r / -o->t5c;
 }
 
+/* Against the fixed 4 bytes at data_020b01f0; 0 when found, -1 when not; *out = the byte offset. */
 int FindFourBytes(char *s, int n, short *out)
 {
     int lim = n - 3;

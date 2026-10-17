@@ -56,6 +56,8 @@ public:
     /* b0 */ u8 mResult; // UpdateSelection's return (0, 1 or 2), stored in Update case 2
     /* b1 */ u8 mSelection;
     /* b2 */ u8 mSubMenuMode;
+    // set by StopWirelessAndReset; while set and the wireless state byte (data_020c4258) is non-zero, Update returns
+    // after its send step, drawing only the message (with mUnk_b4); cleared once that byte is 0
     /* b3 */ u8 mWirelessStopping;
     /* b4 */ u8 mUnk_b4;
     /* b5 */ u8 mRequest;
@@ -68,6 +70,8 @@ public:
     /* 08 */ virtual void Update() override;
     /* 0c */
 
+    // Nothing before state 2. Else Stop, data_020d433c.mWireless = 0, names reset, back to state 2 with mVariant 0,
+    // the antenna finished, the sub-menu closed and StartFade(FADE_MODE_TO_ZERO).
     void StopWirelessAndReset();
     // No-op for the current mode. 1 / 2: seq 1 / 2, BG2 priority 0, a new SelectWindow(3 / 2, ...) as mSubMenuWindow,
     // PrintMessage(12 / 11); 0: deletes mSubMenuWindow, BG2 priority 3.

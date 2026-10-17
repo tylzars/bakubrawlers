@@ -29,8 +29,8 @@ struct AreaCursorAndBakuganOrder {
 
 struct BakuganPriceEntry {
     /* 0 */ u16 mPriceTens;
-    /* 2 */ u8 mUnk_02;
-    /* 3 */ u8 mUnk_03;
+    /* 2 */ u8 mUnk_02; // func_02086548 returns it * 10 (ResetCursorBakuganEntry stores that with func_020231c0)
+    /* 3 */ u8 mUnk_03; // never read
 };
 
 // mwcc emits a file's objects sorted by size; the order of equal sizes (the window tables and their path strings, and
@@ -402,16 +402,16 @@ void SortListSceneItems(ListScene *self, u32 unk1);
 
 void FillInitialEntry(ListScene *self, u32 unk1, u32 unk2, BattleCellPair *out);
 
-static inline void PrintMessageF3(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x) {
-    tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0x10, 0, 0, 1, 1, 1);
+static inline void PrintMessageF3(TextManager &tm, MessageFile *file, int index, void *buffer, s16 x, s16 y) {
+    tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &x, &y, NULL, 0, 2, 0x44, 0x10, 0, 0, 1, 1, 1);
 }
 
-static inline void PrintMessageF(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x) {
-    tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0x10, 0, 0, 0, 1, 1);
+static inline void PrintMessageF(TextManager &tm, MessageFile *file, int index, void *buffer, s16 x, s16 y) {
+    tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &x, &y, NULL, 0, 2, 0x44, 0x10, 0, 0, 0, 1, 1);
 }
 
-static inline void PrintMessageWidth(TextManager &tm, const u8 *data, u32 offset, u32 length, void *buffer, s16 x, s16 y, u16 *width) {
-    tm.Print(data + offset, length, buffer, 0x18, 0x10, &y, &x, width, 0, 2, 0x44, 0, 0, 0, 0, 1, 1);
+static inline void PrintMessageWidth(TextManager &tm, const u8 *data, u32 offset, u32 length, void *buffer, s16 y, s16 x, u16 *width) {
+    tm.Print(data + offset, length, buffer, 0x18, 0x10, &x, &y, width, 0, 2, 0x44, 0, 0, 0, 0, 1, 1);
 }
 
 static inline u16 *MessageEntry(void *base, u32 index) {
@@ -420,8 +420,8 @@ static inline u16 *MessageEntry(void *base, u32 index) {
 
 void PrintListSceneMainScreenText(ListScene *self);
 
-static inline void PrintMessageB(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x) {
-    tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, NULL, 0, 2, 0x44, 0, 0, 0, 1, 1, 1);
+static inline void PrintMessageB(TextManager &tm, MessageFile *file, int index, void *buffer, s16 x, s16 y) {
+    tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &x, &y, NULL, 0, 2, 0x44, 0, 0, 0, 1, 1, 1);
 }
 
 void PrintListSceneSubScreenText(ListScene *self);
@@ -445,7 +445,7 @@ static inline void MI_CpuCopy16(const void *src, void *dst, u32 size) {
 struct BattleListMessage {
     /* 00 */ u8 mUnk_00;
     /* 01 */ PAD(0x01, 0x04);
-    /* 04 */ u16 mUnk_04[6];
+    /* 04 */ u16 mUnk_04[6]; // each record's BattleRecord::mUnk_04 (func_020231f4 of the slot for mCharacterId 0x15)
     /* 10 */ u8 mBakuganIds[6];
     /* 16 */ u8 mAttributes[6];
     /* 1c */ u8 mRecordCount;
@@ -672,9 +672,9 @@ ListScene::~ListScene() {
     ApplyWndMode();
 }
 
-// Frees what LoadSubScreenGraphics, LoadMessages and InitMainScreenText built; also finishes the antenna task
-// (mAntenna, :736-738) and turns the sub-screen windows off. With releaseCommands it also frees mCommandList /
-// mCommandPage and writes mContext->mRequest (:741-754).
+// Frees what LoadSubScreenGraphics, LoadMessages and InitMainScreenText built; in wireless mode also sets
+// mAntenna->mUnk_04 = 1; turns the sub-screen windows off (mWndMode 0). With releaseCommands it also closes
+// mCommandList / mCommandPage (those not already closed) and writes mContext->mRequest.
 void ListScene::Release(u32 releaseCommands) {
     for (u8 i = 0; i < 6; i++) {
         delete mMainScreenCellAnims[i];
@@ -3270,8 +3270,8 @@ void ListScene::LoadBakuganMark(u32 unk1, u32 unk2, u32 unk3) {
     LoadAndQueueUpload(second, UPLOAD_KIND_OBJ, offset, path, 0, 0, 0);
 }
 
-static inline void PrintMessageFW(TextManager &tm, MessageFile *file, int index, void *buffer, s16 y, s16 x, u16 *width) {
-    tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &y, &x, width, 0, 2, 0x44, 0, 0, 0, 0, 1, 1);
+static inline void PrintMessageFW(TextManager &tm, MessageFile *file, int index, void *buffer, s16 x, s16 y, u16 *width) {
+    tm.Print(file->GetText(index), file->GetLength(index), buffer, 0x18, 0x10, &x, &y, width, 0, 2, 0x44, 0, 0, 0, 0, 1, 1);
 }
 
 void ListScene::PrintBakuganRow(u32 unk1, u32 unk2, u32 unk3, u32 unk4) {
@@ -3369,8 +3369,8 @@ void ListScene::LoadSmallCard(u32 unk1, u32 unk2, u32 unk3) {
 
 void ListScene::PrintCardNameShort(u32 unk1, u32 unk2) {
     TextManager::Get().mUse4bppFont = 1;
-    s16 x = unk2 << 5;
-    PrintMessageF(TextManager::Get(), (MessageFile *) mCardNameShortMessages, unk1, mTextBuffers[0], 0, x);
+    s16 y = unk2 << 5;
+    PrintMessageF(TextManager::Get(), (MessageFile *) mCardNameShortMessages, unk1, mTextBuffers[0], 0, y);
     TextManager::Get().mUse4bppFont = 0;
 }
 
@@ -3719,33 +3719,33 @@ void PrintListSceneSubScreenText(ListScene *self) {
             u8 i;
             u32 msg;
             u32 value;
-            s16 y     = 0;
             s16 x     = 0;
+            s16 y     = 0;
             i = 0;
             msg = 0;
             value = 0;
             for (; i < 3; i++) {
-                y = 8;
+                x = 8;
                 switch (i) {
                     case 0:
-                        x     = 10;
+                        y     = 10;
                         msg   = 6;
                         value = gSaveData[0].mMoney;
                         break;
                     case 1:
                         value = self->mPrice;
-                        x     = 0x28;
+                        y     = 0x28;
                         msg   = 7;
                         break;
                     case 2:
-                        msg   = y;
+                        msg   = x;
                         value = gSaveData[0].mMoney - self->mPrice;
-                        x     = 0x50;
+                        y     = 0x50;
                         break;
                 }
-                PrintMessageB(TextManager::Get(), (MessageFile *) self->mStorecommentMessages, msg, self->mTextBuffers[0], y, x);
-                y += 0x80;
-                TextManager::Get().PrintNumber(value, 7, 0, self->mTextBuffers[0], 0x18, 0x10, &y, &x, 0, 2, 0x44, 0, 1, 1, 1);
+                PrintMessageB(TextManager::Get(), (MessageFile *) self->mStorecommentMessages, msg, self->mTextBuffers[0], x, y);
+                x += 0x80;
+                TextManager::Get().PrintNumber(value, 7, 0, self->mTextBuffers[0], 0x18, 0x10, &x, &y, 0, 2, 0x44, 0, 1, 1, 1);
             }
             break;
         }
@@ -3813,6 +3813,7 @@ void ListScene::DrawPromptWindowContents() {
     SpriteManager::Get().Screen(1).AddOam(mGlyphBuffers[0], (u8) mGlyphCounts[0], 0x20, 0x28, 0, 0, 0xf, 0);
 }
 
+// Also stores func_02086548's value with func_020231c0 for the entry's index, outside the entry itself.
 void ResetCursorBakuganEntry(ListScene *self) {
     u8 id     = self->mItemIds[self->mCursorItem];
     int value = GetBakuganEntryIndex(gSaveData, 0, id, self->mListFilter);
@@ -4201,6 +4202,10 @@ void ListScene::SetMessage(s32 unk1) {
     }
 }
 
+// Fills mSlotValues: [0..2] / [9..11] the bakugan id / attribute pairs with a non-zero func_020231f4, largest first
+// (ids 0x24 / 0x25 are taken only with gSaveData's mAttribute, and then into [0]), then [3..8] from the cards
+// FillPickListWithShuffledCards(0..5) lists. [3..5] are always written; [6..8] only when PickSlot6/7/8Card finds a
+// match, else they keep their value.
 void PickSlots(ListScene *self) {
     u32 found = 0;
     u8 i;
@@ -4320,6 +4325,8 @@ void PickSlot6Card(ListScene *self) {
     } while (a < 4);
 }
 
+// TRUE for card 0x68 + k, 0x70 + k or 0x80 + k with k == unk2 (0..5), and for 0x6e / 0x6f / 0x76 / 0x77 / 0x86 / 0x87
+// and 0x78..0x7f whatever unk2 is; FALSE for every other card.
 BOOL CardMatchesAttribute(ListScene *self, u32 unk1, u32 unk2) {
     switch (unk1) {
         case 0x68:
@@ -4584,6 +4591,8 @@ void PickSlot8Card(ListScene *self) {
     } while (i < self->mPickCount);
 }
 
+// TRUE for any card not listed (default); FALSE for 0xc1..0xc6; 0xbe..0xc0, 0xc7 and 0xc8 only when the slot
+// attributes contain their two or three values, and never while mFirstSlotOnly.
 BOOL CardMatchesSlotAttributes(ListScene *self, u32 unk1) {
     switch (unk1) {
         case 0xbe:
@@ -4785,6 +4794,7 @@ void SortListSceneItems(ListScene *self, u32 unk1) {
     }
 }
 
+// Cards 1..0xd4 with GetCardNumber < 0x2bc, their data_020d4946 bit set and GetCardInfo(k, 1) == unk1, shuffled.
 void FillPickListWithShuffledCards(ListScene *self, u32 unk1) {
     self->mPickCount = 0;
     for (u16 k = 1; k < 0xd5; k++) {
@@ -4806,6 +4816,7 @@ void ShufflePickList(ListScene *self) {
     }
 }
 
+// Largest GetCardAttributeValue for gSaveData[0].mAttribute first.
 void SortPickListByAttributeValue(ListScene *self) {
     u8 s;
     u8 t;

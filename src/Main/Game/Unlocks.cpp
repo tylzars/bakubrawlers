@@ -12,7 +12,7 @@ extern u8 data_020d4976[];
 
 extern u8 data_020d497b[];
 
-extern u8 gUnlockedTipBits[];
+extern u8 gUnlockedTipBits[]; // inside gSaveData at +0x5ac (SaveData::mUnk_5ac)
 
 extern u8 data_020d49a6[];
 

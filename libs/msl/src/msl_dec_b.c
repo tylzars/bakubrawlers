@@ -52,6 +52,7 @@ void func_0201c5b4(Dec *d, int n)
     }
 }
 
+/* Compares magnitudes: the signs are not read. */
 int IsDecEqual(const Dec *a, const Dec *b)
 {
     int i, m;

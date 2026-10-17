@@ -149,6 +149,8 @@ BOOL FS_CloseFile(FSFile *f)
     return TRUE;
 }
 
+// A command not yet started is marked (stat 4) so the queue hands it back; it then runs here, in the calling
+// thread, followed by the rest of the queue (func_0200a24c).
 BOOL FS_WaitFile(FSFile *f)
 {
     BOOL sync = FALSE;
@@ -171,6 +173,8 @@ BOOL FS_WaitFile(FSFile *f)
     return f->error == 0;
 }
 
+// Only marks the file (stat 2, archive flag 0x20); the next queue step (func_02009fa4) finishes the marked files
+// still in arc->list with result 3.
 void FS_CancelFile(FSFile *f)
 {
     u32 e = OS_DisableInterrupts();

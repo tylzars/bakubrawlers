@@ -75,6 +75,8 @@ BOOL ReadOverlayInfoEntry(FSOverlayInfo *out, int target, int id, FSArchive *arc
     return TRUE;
 }
 
+// data_020bfca4 / data_020bfcac are FSRomWork's w8 / wc and w10 / w14 (fs_rom.c): FS_Init stores ptr and size 0,
+// or ptr -1 and size 0 when the u16 at 0x027ffc40 is 2; then the loc->ptr != 0 branch returns FALSE at the size test.
 BOOL FS_LoadOverlayInfo(FSOverlayInfo *out, int target, int id)
 {
     FSOvtLoc *loc = target == 0 ? &data_020bfca4 : &data_020bfcac;

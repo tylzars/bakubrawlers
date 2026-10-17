@@ -81,6 +81,8 @@ public:
     /* 0c */
 
     void Cleanup(); // 022195e0
+    // unlike TutorialScene's: also sets up sub BG0 (sub planes 0x11, not 0x10), but no main BG0 control and main BG0
+    // priority 0, not 2
     void InitScriptDisplay();
     void func_ov002_0221b5b0();
     // Screen 0 set. First resets both engines' display registers (func_ov002_0221b5b0) and clears 0x20000 bytes at

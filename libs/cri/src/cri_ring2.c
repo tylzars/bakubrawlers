@@ -90,6 +90,8 @@ extern void CriBufPutBackSpanNoLock(CriBuf *, int, CriSpan *);
 extern int CriBufCanGetNoLock(CriBuf *, int, int, int *);
 extern void func_02045f90(void);
 
+/* mode 1 adds s->len to c (what CriRingCanGet mode 1 offers, after mirroring the span into the extra area), mode 0
+   to d10 (mode 0); any other mode clears s. */
 void CriRingCommitSpan(CriRing *r, int mode, CriSpan *s)
 {
     if (r == 0) {
@@ -191,6 +193,7 @@ void CriRingPutBackSpanNoLock(CriRing *r, int mode, CriSpan *s)
     }
 }
 
+/* *out = the count available for mode, at most max; returns TRUE when that is max. */
 int CriRingCanGet(CriRing *r, int mode, int max, int *out)
 {
     int v;
@@ -571,6 +574,7 @@ void CriBufPutBackSpanNoLock(CriBuf *b, int mode, CriSpan *s)
     if (b->cb != 0) b->cb(b->cbarg, -3);
 }
 
+/* *out = the count available for mode, at most max; returns TRUE when that is max. */
 int CriBufCanGet(CriBuf *b, int mode, int max, int *out)
 {
     int v;

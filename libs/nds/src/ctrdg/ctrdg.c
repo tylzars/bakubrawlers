@@ -60,6 +60,7 @@ void func_02011c7c(CTRDGTiming *t)
     EXMEMCNT = (t->rom2nd << 4) | (EXMEMCNT & ~0x10);
 }
 
+/* Returns with interrupts disabled; the lock is not taken when owner bit 0x40 is set (l->locked != 0). */
 void LockCtrdg(u16 id, CTRDGLock *l)
 {
     for (;;) {

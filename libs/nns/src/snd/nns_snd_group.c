@@ -20,11 +20,12 @@ int LoadBankAndWaveArcs(int id, u32 flags, void *heap, int flag, u32 *out);
 int LoadWaveArc(int id, u32 flags, void *heap, int flag, u32 *out);
 int LoadGroupEntries(int group, void *heap);
 
+// 1 when every item loaded (LoadGroupEntries returns 0 then): the opposite polarity of LoadGroupEntries.
 int LoadGroup(int group, void *heap) {
     return LoadGroupEntries(group, heap) == 0 ? 1 : 0;
 }
 
-int LoadGroupEntries(int group, void *heap) {   // load every item of a group
+int LoadGroupEntries(int group, void *heap) {   // load every item of a group: 0 when all loaded, else the error
     SndGroup *g = GetGroupInfo(group);
     u32 i;
     SndGroupEnt *e;

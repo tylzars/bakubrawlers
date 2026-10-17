@@ -47,7 +47,7 @@ public:
     /* 14 */ virtual void Finish();
 };
 
-// Falling field pieces (fielddestroy_n/b/e models), vtable 02286e90. mKind selects the effect run by func_0222b410.
+// Falling field pieces (fielddestroy_n/b/e models), vtable 02286e90. mKind selects UpdateKindSequence's effect.
 class GimmickFieldDestroy : public Gimmick {
 public:
     /* 45 */ PAD(0x45, 0x48);
@@ -330,7 +330,7 @@ public:
     /* 45 */ PAD(0x45, 0x48);
     /* 48 */ ModelInstance *mModelB;
     /* 4c */ u8 mAbilityRowIndex;
-    /* 4d */ u8 mInstanceIndex;
+    /* 4d */ u8 mInstanceIndex; // sResources[0]->AddRef's count before this instance's reference, capped at 3
     /* 4e */ PAD(0x4e, 0x50);
     /* 50 */
 
@@ -341,7 +341,7 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 
-    void DrawModelB();
+    void DrawModelB(); // also sets data_02211374.mUnk_9c from mInstanceIndex before the draw
 };
 // Model-less pull field (no Load/Unload work): while the target is inside, adds mPullPerFrame to its mBaseVelocity,
 // towards a point 0x8000 nearer mPosition turned by 0x71c.
@@ -373,7 +373,7 @@ public:
     /* 10 */ virtual void Unload();
     /* 14 */ virtual void Finish();
 };
-// Model-less hit field (id 0x1f): knocks the target up, drains the current record's gauge and waits mUnk_46 frames.
+// Model-less hit field (id 0x1f): knocks the target up, drains the current record's gauge and waits mTimer frames.
 class GimmickUnk_02274830 : public Gimmick { // vtable 0228af78
 public:
     /* 45 */ PAD(0x45, 0x46);

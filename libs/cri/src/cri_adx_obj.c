@@ -300,6 +300,8 @@ void AdxDeallocAllInner(void)
     }
 }
 
+/* Also reached from func_02043f28 (cri_adx_ctrl2.c, the type-1 step of func_02044630) through func_02042dd8 while
+   ba8 == 1: the cri_adx_ctrl.c set-ups that only store state 1 and ba8 = 1 start there. */
 void AdxStart(Adx *o, int v)
 {
     int i;
@@ -381,6 +383,7 @@ int AdxGetState(Adx *o)
     return r;
 }
 
+/* -1 and a report when o is 0. */
 int AdxGetStateInner(Adx *o)
 {
     if (o) return o->state;

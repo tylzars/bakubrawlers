@@ -101,6 +101,8 @@ static u8 sEntryBuffer[0xc0] ALIGN32;
 static u8 data_0220f860[0x1c0] ALIGN32;
 static u8 sRecvBlocks[0x200] ALIGN32;
 static u8 sExchangeBuffer[0x820] ALIGN32;
+// The wireless library's work buffer (func_02010674 -> func_0200f8e8), unrelated to sWmWorkB. The library clears
+// 0xf00 bytes from it (wm_base.c), past this array and into the next bss symbol data_02210fdc.
 static u8 sWmWork[0xb9c] ALIGN32;
 #define RECV_QUEUE (sWmWorkB.mRecv)
 #define SEND_QUEUE (sWmWorkB.mSend)
@@ -366,7 +368,7 @@ void func_0202e478(WmCallbackArg *arg) {
     }
 }
 
-void func_0202e4e8(WmCallbackArg *arg) {}
+void func_0202e4e8(WmCallbackArg *arg) {} // empty: the callback SetPaused passes to func_02010cf8
 
 void WirelessManager::RequestStart() {
     func_02010674(sWmWork, (void *) StartCallback, 2);

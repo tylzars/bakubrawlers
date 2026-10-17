@@ -10,7 +10,7 @@ typedef struct SndPlayer {
     NNSFndList sounds;       // 0x00 active sounds, ordered by priority (link offset 0xc)
     NNSFndList heaps;        // 0x0c player heaps (link offset 0)
     u32 maxSounds;           // 0x18
-    u32 heapSize;            // 0x1c
+    u32 heapSize;            // 0x1c set from SndPlayerInfo.channels (func_02036938), not the heap size
     u8 volume;               // 0x20
     u8 pad[3];
 } SndPlayer;                 // stride 0x24
@@ -44,14 +44,14 @@ typedef struct SndSound {
 struct SndHandle { struct SndSound * volatile sound; };
 struct SndPlayerHeapBlk { u32 pad0; u32 pad4; void *heap; SndSound *owner; u32 player; };
 
-// A {callback, argument, link} record registered with the SND command layer (12 bytes).
+// A {callback, argument, link} node of the pm callback lists (PmPrependPreCallback / PmAppendPostCallback), 12 bytes.
 typedef struct { void (*fn)(void *); void *arg; void *next; } SndCallbackRec;
 
 // PCM stream (NNSSndStrm). Registered in data_022142e8.
 typedef void (*SndStrmCallback)(int phase, int chCount, void **bufs, u32 size, int fmt, void *arg);
 typedef struct SndStrm {
     u32 pad0[2];
-    SndCallbackRec cbA;      // 0x08 stop-timer callback
+    SndCallbackRec cbA;      // 0x08 pm pre-list node: SndStrmPmPreCallback
     SndCallbackRec cbB;      // 0x14 drain callback
     u32 fmt;                 // 0x20
     s32 active:1;            // 0x24 bit 0
@@ -61,13 +61,13 @@ typedef struct SndStrm {
     SndStrmCallback cb;      // 0x30
     void *cbArg;             // 0x34
     s32 pos;                 // 0x38 division being filled
-    u32 offset;              // 0x3c
+    u32 offset;              // 0x3c volume part SetSndStrmVolume adds to each channel's off for func_02008bec
     s32 slot;                // 0x40 timer slot
     u32 chMask;              // 0x44
     s32 chCount;             // 0x48
     u8 chan[16];             // 0x4c
 } SndStrm;
-typedef struct { void *addr; u32 off; } SndStrmChan;   // data_02214334, per hardware channel
+typedef struct { void *addr; u32 off; } SndStrmChan;   // data_02214334, per hardware channel; off: its volume part
 
 // Reverb/capture state (data_022143fc)
 typedef struct {
@@ -91,7 +91,7 @@ typedef struct {
 
 // Sound archive (SDAT) state
 typedef struct { u32 count; u32 off[1]; } SndArcTable;
-typedef struct { u32 offset, size, a, b; } SndArcFatEnt;
+typedef struct { u32 offset, size, cache, b; } SndArcFatEnt;   // cache: as nns_snd_arc.h
 typedef struct { u32 pad; u32 pad4; u32 count; SndArcFatEnt ent[1]; } SndArcFat;
 typedef struct { u32 archive, file; } SndFileId;
 typedef struct SndArc {

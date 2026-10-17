@@ -23,6 +23,7 @@ void IncrementAlarmCount(int idx) {
     e->count++;
 }
 
+// Returns the new count, the tag CallAlarmCallback checks.
 u32 SetAlarmCallback(int idx, void (*cb)(void *), void *arg) {
     AlarmEntry *e = &alarmTable[idx];
     e->callback = cb;
@@ -31,6 +32,7 @@ u32 SetAlarmCallback(int idx, void (*cb)(void *), void *arg) {
     return e->count;
 }
 
+// data: index in bits 0-7, count in bits 8-15; runs the callback only when that count is the entry's and one is set.
 void CallAlarmCallback(u32 data) {
     AlarmEntry *e = &alarmTable[data & 0xff];
     if (((int) data >> 8 & 0xff) != e->count) {

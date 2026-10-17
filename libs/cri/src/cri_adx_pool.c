@@ -292,6 +292,7 @@ void PoolAdvanceObj(Pool *p, Obj *o)
 
 int func_0204f2e4(Pool *p) { return p->h; }
 
+/* Zeroes every member except h and buf. */
 void PoolClear(Pool *p)
 {
     int i;

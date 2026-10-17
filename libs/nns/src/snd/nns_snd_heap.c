@@ -22,6 +22,7 @@ SndHeap *CreateSndHeap(void *where, u32 size) {
     return (SndHeap *)start;
 }
 
+// ResetSndHeap and UnlinkFrmHeap; h->heap is left set.
 void ReleaseSndHeap(SndHeap *h) {
     ResetSndHeap(h);
     UnlinkFrmHeap(h->heap);
@@ -65,6 +66,8 @@ s32 RecordSndHeapState(SndHeap *h) {
     return -1;
 }
 
+// level 0 is ResetSndHeap. Else drops the states above level (running their blocks' free callbacks; none when
+// level >= states.count), RestoreFrmState, then pushes a new state as RecordSndHeapState does.
 void RestoreSndHeapState(SndHeap *h, u32 level) {
     void *st;
     int called;
@@ -112,7 +115,7 @@ int AppendSndHeapState(SndHeap *h) {   // push a new state block
 }
 
 void FlushSndCommandsAndWait(void) {   // flush after callbacks
-    u32 irq = SND_GetCurrentCommandTag();
+    u32 tag = SND_GetCurrentCommandTag();
     SND_FlushCommand(1);
-    SND_WaitForCommandProc(irq);
+    SND_WaitForCommandProc(tag);
 }

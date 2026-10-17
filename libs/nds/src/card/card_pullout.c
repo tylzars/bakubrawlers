@@ -12,6 +12,7 @@ void InitCardPullout(void)
 }
 
 #define PO ((CardPullout *)data_020c06c0)
+// Also called directly by func_0200f838 with (0xe, 0x11, 0).
 void CardPulloutFifoReceive(u32 tag, u32 data, int err)
 {
     if ((data & 0x3f) == 0x11) {

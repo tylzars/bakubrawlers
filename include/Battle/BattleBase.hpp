@@ -46,8 +46,8 @@ public:
     // the other roles
     /* 0a */ u16 mIntervalFrameCount;
     /* 0c */ s16 mValue;
-    /* 0e */ u16 mValueFrames;
-    /* 10 */ u16 mRollFrames;
+    /* 0e */ u16 mValueFrames; // +1 per ComputeValue call (mRole 2 / 3); at mParam->mUnk_08 the mMode step runs
+    /* 10 */ u16 mRollFrames; // +1 per CONFRONT_BG06 step of ComputeValue (not per frame); rolls at mRollFrameCount
     /* 12 */ u16 mRollFrameCount;
     union {
         /* 14 */ u8 mUnk_14;
@@ -203,7 +203,7 @@ public:
             /* 0e */ u8 mUnk_0e_0 : 1;
             /* 0e */ u8 mCircleUpDownVisible : 1;
             /* 0e */ u8 mSideUpDownVisible : 1;
-            /* 0e */ u8 mNoEmblem : 1;
+            /* 0e */ u8 mNoEmblem : 1; // set by the ctor for mFieldId 0 or 7 (no vs_emblem file is loaded for them)
             /* 0e */ u8 mUnk_0e_4 : 1;
         };
     };
@@ -218,7 +218,7 @@ public:
     /* 28 */ float mVel[2][2];
     /* 38 */ s16 mAbilitiesY;
     /* 3a */ s16 mAbilitiesYPerFrame; // starts at 10, shrinks by 2 per state-2 frame down to 2
-    /* 3c */ int mSide;
+    /* 3c */ int mSide; // BattleBase::mLocalSide (the ctor's mode): 0 / 1 entry side, 2..4 neither entry
     /* 40 */ BattleData *mData;
     /* 44 */ CellAnimation *mCellAnims[15];
     /* 80 */
@@ -282,7 +282,7 @@ public:
         struct {
             /* 06 */ u8 mVariant : 3; // variant number in the file names
             /* 06 */ u8 mAnimLoop : 1;
-            /* 06 */ u8 mUseBoxTest : 1;
+            /* 06 */ u8 mUseBoxTest : 1; // copied to mModel->mUseBoxTest; all three calls pass 0
             /* 06 */ u8 mUseCallbackMtx : 1;
             /* 06 */ u8 mUseRealb20 : 1;
         };

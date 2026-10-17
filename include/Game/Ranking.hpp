@@ -3,12 +3,11 @@
 #include "global.h"
 #include "types.h"
 
-// Second view of a RankingEntry (8 bytes, the type FindEntry returns); despite their names, mTextOffset and
-// mTextLength hold the rank and the score (TournamentSubScene.cpp:232-233).
+// Second view of a RankingEntry (8 bytes, the type FindEntry returns): mRank and mScore at the same offsets.
 struct UnkStruct_020758f4_Record {
     /* 0 */ PAD(0x0, 0x2);
-    /* 2 */ u16 mTextOffset;
-    /* 4 */ u32 mTextLength;
+    /* 2 */ u16 mRank;
+    /* 4 */ u32 mScore;
 };
 
 // 8-byte record returned by GetEntry.

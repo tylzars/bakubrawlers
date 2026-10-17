@@ -36,7 +36,7 @@ struct SpriteScreen {
     u32 LoadCharacters(const char *path, u32 offset, u32 unk3);
     u32 LoadPalette(const char *path, u32 offset, u32 unk3);
     void LoadExtPalette(const char *path, u32 unk2, u32 unk3); // palette load variant
-    void *DownsampleCharacters(u8 *data); // reorders 0x1000 bytes of character data into a new buffer and frees data
+    void *DownsampleCharacters(u8 *data); // pixel (2a, 2b) to (a, b): half-size copy in a new 0x1000 buffer; frees data
     u32 GetCharBase(u32 unk1);
     void SetObjVramMode(s32 unk1);
     void AddOam(void *buffer, u8 count, s16 unk3, s16 unk4, u32 unk5, u32 unk6, u32 unk7, u32 unk8);
@@ -80,16 +80,18 @@ public:
         return mScreens[index];
     }
 
-    void ResetSlots();
+    void ResetSlots(); // ResetTexSlots (resets the five live texture slots), then clears the eight mSlotUsed
     void SetupMode(u32 unk1, u32 unk2);
     void EndFrame(); // end of frame: flush the OAM copies, queue the per-frame callback EndFrameCallback
     void Init();
+    // SubBG 4 + SubOBJ 8 (modes 3 / 5 / 6 / 7) or BG 2 (mode 9) again; CameraManager::UpdateMode calls it before its
+    // bank switches
     void func_02026d90();
     void ResetVram(u32 unk1);
     void SetupTexAndPltt(u32 unk1, u32 unk2);
     void Init3D();
     void SaveSlot(s32 index);
-    void RestoreSlot(s32 index);
+    void RestoreSlot(s32 index); // nothing unless mSlotUsed[index]; no bound check
     void ClearSlotUsed(s32 index);
     void SetSlot(s32 index, const TexSlotRanges *src);
 

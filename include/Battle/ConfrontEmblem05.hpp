@@ -9,7 +9,7 @@
 class ConfrontEmblem05 {
 public:
     /* 00 (vtable 0228627c) */
-    /* 04 */ u8 mMirrored : 1; // direction of the sweep
+    /* 04 */ u8 mMirrored : 1; // set: mX = 178 - 50 cos, not 78 + 50 cos (mirrored about x 128); flips as mAngle wraps
     /* 05 */ PAD(0x05, 0x08);
     /* 08 */ u16 mAngle;
     /* 0a */ u16 mSpeed;

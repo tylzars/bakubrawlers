@@ -322,6 +322,7 @@ int func_02042714(Stm *s, int a, int b)
     return 1;
 }
 
+/* The shared CRI lock: func_0203eda4 / func_0203edb0 are CriLockEnter1 / CriLockLeave1 (cri_adx_buf.c). */
 void StmLockEnter(void) { func_0203eda4(); }
 void StmLockLeave(void) { func_0203edb0(); }
 int func_0204273c(void *p) { return CriTrySetFlag(p); }

@@ -68,8 +68,8 @@ void func_0200489c(void) {
 }
 
 // RunIrqSlot(n): common interrupt trampoline for slot n. Takes the slot's
-// callback and clears it, marks the slot's interrupt bit in the check word,
-// calls the callback with its argument, and masks the interrupt again unless
+// callback and clears it, calls the callback with its argument, then marks the
+// slot's interrupt bit in the check word, and masks the interrupt again unless
 // the slot is flagged to stay enabled.
 void RunIrqSlot(int n) {
     u32 bit = 1 << data_020a4f28[n];
@@ -84,6 +84,8 @@ void RunIrqSlot(int n) {
     }
 }
 
+// RunIrqSlot0..7: nothing in the code calls them by name; their addresses sit in the DTCM word table at 0x027e0000
+// (slots 4-7 at +0x0c..+0x18, 0-3 at +0x20..+0x2c; the other words point at func_0200489c).
 void RunIrqSlot0(void) { RunIrqSlot(0); }
 void RunIrqSlot1(void) { RunIrqSlot(1); }
 void RunIrqSlot2(void) { RunIrqSlot(2); }

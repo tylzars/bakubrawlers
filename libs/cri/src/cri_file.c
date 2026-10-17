@@ -25,7 +25,7 @@ typedef struct CriFil {
     short pad2;
     int ssize;            /* 0x04 */
     int i8;               /* 0x08 */
-    int nsec;             /* 0x0c */
+    int nsec;             /* 0x0c in blocks of ssize bytes, as pos and CriFilRead's count */
     int pos;              /* 0x10 */
     int i14;              /* 0x14 */
     int cnt;              /* 0x18 */
@@ -149,6 +149,7 @@ void CriMsgSendText(char *msg)
     }
 }
 
+/* Never runs in this build: CriNameTableGetValue, its only caller, returns -1 first. */
 CriNameEnt *CriNameTableFind(char *name)
 {
     int i;
@@ -164,6 +165,7 @@ CriNameEnt *CriNameTableFind(char *name)
     return 0;
 }
 
+/* Always -1 in this build: nothing writes data_02218648. */
 int CriNameTableGetValue(char *name, int *out)
 {
     CriNameEnt *e;

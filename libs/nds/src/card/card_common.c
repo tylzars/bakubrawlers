@@ -94,6 +94,7 @@ static inline BOOL IsNitro(void)
     return *(vu16 *)0x27ffc40 == 2;
 }
 
+// Two steps run only when !IsNitro(): the 0x160-byte copy 0x27ffe00 -> 0x27ffa80 and func_0200e594(1).
 void InitCardCommon(void)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
@@ -141,6 +142,7 @@ void func_0200e594(u32 v)
 
 #pragma optimize_for_size on
 #pragma dont_inline on
+// Sleeps while CF_BUSY is set; TRUE when arg->result is 0.
 int WaitCardNotBusy(void)
 {
     CardCommon *c = (CardCommon *)data_020bfe60;
@@ -812,6 +814,8 @@ void CardTaskThread(void)
     }
 }
 
+// Sends cmd and waits for the reply, again while arg->result is 4 (at most `tries` sends); TRUE when result is 0.
+// The first call also waits for the PXI callback and sends command 0.
 int SendCardCommand(CardCommon *c, u32 cmd, int tries)
 {
     u32 e;

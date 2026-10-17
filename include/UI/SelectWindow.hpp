@@ -86,10 +86,10 @@ struct SelectWindowCursor {
     /* 14 */
 
     SelectWindowCursor(u32 count, const void *table, u32 unk3); // 0x0202f420
-    u32 Update(u32 unk1);
+    u32 Update(u32 unk1); // UpdateInput(unk1); with unk1 != 0 also the event's sound, and event 6 sets mSelection -1
     u32 UpdateInput(u32 playSound);
     void SetupScroll(u32 unk1, u32 unk2, u32 unk3, u32 unk4);
-    void SetScroll(u32 scroll); // 020304ec, clamps to mUnk_10
+    void SetScroll(u32 scroll); // 020304ec, clamps to mScrollMax
     void RefreshScrollItemY();
     BOOL HasNeighbor(int index);
 };

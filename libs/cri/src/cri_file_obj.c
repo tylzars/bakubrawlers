@@ -36,6 +36,8 @@ extern void CriLockEnter1(void);
 extern void CriLockLeave1(void);
 extern void CriMsgSetCallback(void);
 
+/* Takes a free entry. When func_02047d00 knows the name it gives the handle, base and size; otherwise the file is
+   opened by its path on the embedded handle. secsize starts at 0x800. */
 FObj *FObjAlloc(int name, int unused, int flag)
 {
     char buf[0x200];
@@ -87,6 +89,7 @@ FObj *FObjAlloc(int name, int unused, int flag)
     return o;
 }
 
+/* Closes the file when it was opened here (hp == h4), then clears the entry. */
 void FObjDealloc(FObj *o)
 {
     if (o == 0) return;
@@ -95,6 +98,7 @@ void FObjDealloc(FObj *o)
     memset(o, 0, 0x84);
 }
 
+/* pos is in blocks of secsize bytes, clamped to 0..nsect; also seeks the handle to pos * secsize + base. */
 int FObjSetPos(FObj *o, int off, int whence)
 {
     int r = 0;
@@ -125,6 +129,7 @@ int FObjGetPos(FObj *o)
     return 0;
 }
 
+/* Only queues the read (mode 1, state 2) and returns n; returns 0 while mode is 2; n == 0 completes at once. */
 int FObjStartRead(FObj *o, int n, int arg)
 {
     if (o == 0) {
@@ -158,6 +163,7 @@ int FObjStartRead(FObj *o, int n, int arg)
     return o->i6c;
 }
 
+/* Also clears a finished state 1; the file is cancelled only while a read is pending (state 2). */
 void FObjStopRead(FObj *o)
 {
     int st;
@@ -199,6 +205,7 @@ void FObjSetBlockSize(FObj *o, int sz)
     o->i68 = o->i6c * o->secsize;
 }
 
+/* i68; FObjSetBlockSize also recomputes it from i6c. */
 int FObjGetLastReadSize(FObj *o)
 {
     if (o != 0) return o->i68;

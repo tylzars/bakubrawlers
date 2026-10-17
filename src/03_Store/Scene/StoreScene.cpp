@@ -28,6 +28,7 @@
 s32 UnlockEmblem8Or9();
 void func_02086d48();
 
+// only ever SetMapExtraAnim's argument (GetAnimObjForSet(1, n))
 static const u8 sSelectScriptIds[3] = {2, 1, 3};
 static const u8 sMessageIndices[3]  = {0x12, 0x13, 0x14};
 static const u8 sIdleFrames[3]      = {3, 0, 6};

@@ -31,7 +31,7 @@ public:
     /* 3b */ u8 mTextOnlyY;
     /* 3c */ u16 mPageTextTimer;
     /* 3e */ u8 mUnk_3e;
-    /* 3f */ u8 mCell2Frame;
+    /* 3f */ u8 mCell2Frame; // set only by SetCell2FrameAndX (not the ctor); 3 or more: cell 2 not drawn
     /* 40 */ u16 mCell2X;
     /* 42 */ s16 mCharacterId;
     // set when a message index >= 0 is set (:235), cleared for -1 (:232) and when its last page is done (:121)

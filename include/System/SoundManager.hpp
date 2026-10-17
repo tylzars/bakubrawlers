@@ -20,7 +20,7 @@ public:
     /* a0 */ u32 mSeqSndHandle; // sound handle
     /* a4 */ u32 mSeqArcSndHandle; // handle of the sound StartSeqArc started
     /* a8 */ s32 mSeqIndex;
-    /* ac */ u8 mSeqArcPlayerIndex;
+    /* ac */ u8 mSeqArcPlayerIndex; // Init passes it to SetPlayerMaxSounds before it copies gSeqArcPlayerIndex in
     /* ad */ u8 mSeqArcVolume;
     /* ae */ u8 mSeqVolume;
     /* af */ PAD(0xaf, 0xb0);
@@ -39,14 +39,14 @@ public:
 
     void Init();
     void Update();
-    void RestoreHeapState();
+    void RestoreHeapState(); // RestoreSndHeapState(mHeap, 1); also sets mSeqIndex = -1
     void func_020245c4(u32 unk1);
     void LoadAndStartSeq(u32 unk1); // each step is skipped for a negative id or when unk1 is already mSeqIndex
-    void LoadSeqGroup(u32 unk1);
+    void LoadSeqGroup(u32 unk1); // LoadGroup(mSeqTable[unk1].mUnk_0); skipped when that is < 0 or unk1 is mSeqIndex
     void StartSeq(u32 unk1);
     void StopSeq(u32 fadeFrames);
     void SetSeqVolume(s32 unk1);
-    void LoadSoundGroup(u32 unk1);
+    void LoadSoundGroup(u32 unk1); // SetArcReadChunk(0x8000), then LoadGroup(unk1, mHeap)
     void StartSeqArc(u32 unk1);
     void StopSeqArcPlayerSounds(u32 unk1);
     void SetSeqArcVolume(s32 unk1);

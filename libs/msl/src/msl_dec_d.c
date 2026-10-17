@@ -21,6 +21,7 @@ extern void U64ToDec(Dec *, unsigned long long);
 extern void MultiplyDec(Dec *, const Dec *, const Dec *);
 extern void RoundDec(Dec *, int);
 
+/* NaN and infinity come back as one character, 'N' or 'I', in text[0], not a digit value. */
 void DoubleToDec(Dec *d, double x)
 {
     char sign = GetSignBit(x) != 0;

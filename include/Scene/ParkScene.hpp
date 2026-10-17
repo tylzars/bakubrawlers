@@ -43,6 +43,7 @@ public:
     void Cleanup();                 // 0221b74c
     void Draw();                    // 0221b7f4
     u8 func_ov004_0221b8c4(int index);
+    // index if its gUnlockedFieldBits bit is set, else 2 if bit 2 is, else 0 untested (bit 0 is set on every new save)
     int GetUnlockedFieldId(int index);
     void ShowWindow();              // 0221b94c
     void HideWindow();              // 0221b9d0

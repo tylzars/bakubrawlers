@@ -1455,10 +1455,10 @@ BOOL BattleBase::UpdateFlash() {
     return done;
 }
 
-void BattleBase::func_ov007_0221d488(u16 *p) {
+void BattleBase::TryStartCardSequenceFromMessages(u16 *p) {
     TryStartCardSequence(p);
 }
 
-int BattleBase::func_ov007_0221d494(u16 *a, u16 *b, u16 *c, u8 *d) {
+int BattleBase::UpdateSlotsFromMessages(u16 *a, u16 *b, u16 *c, u8 *d) {
     return UpdateSlots(a, b, c, d);
 }

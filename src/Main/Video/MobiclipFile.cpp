@@ -491,17 +491,17 @@ extern u8 data_02094990[], data_0209d6f8[], data_0209d578[];
 ALLOC(func_0203bea0, b, 0x2100, data_02094990)
 ALLOC(func_0203bf10, a, 0x300, data_0209d6f8)
 ALLOC(func_0203bf80, d, 0x180, data_0209d578)
-void func_0203bff0(u32 *s, u8 *p) {
+void MobiclipSetAdpcmState(u32 *s, u8 *p) {
     s[1] = p[0];
     s[0] = *(s16 *) (p + 2);
 }
 struct AdSt { int pred; int idx; };
-extern const s8 data_0209d9f8[];
-extern const s16 data_0209da08[];
+extern const s8 gMobiclipAdpcmIndexAdjust[];
+extern const s16 gMobiclipAdpcmDiffScale[];
 #define NIB(n) \
     { \
-        s16 step = data_0209da08[st->idx]; \
-        st->idx += data_0209d9f8[(n) & 7]; \
+        s16 step = gMobiclipAdpcmDiffScale[st->idx]; \
+        st->idx += gMobiclipAdpcmIndexAdjust[(n) & 7]; \
         if (st->idx < 0) st->idx = 0; \
         if (st->idx > 0x58) st->idx = 0x58; \
         int diff = step >> 3; \
@@ -512,7 +512,7 @@ extern const s16 data_0209da08[];
         if (st->pred < -0x8000) st->pred = -0x8000; \
         if (st->pred > 0x7fff) st->pred = 0x7fff; \
     }
-void func_0203c004(AdSt *st, u8 *in, int n, u32 *out) {
+void MobiclipDecodeAdpcm(AdSt *st, u8 *in, int n, u32 *out) {
     for (int i = 0; i < n; i++) {
         int b = in[i];
         NIB(b)

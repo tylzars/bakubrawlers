@@ -31,8 +31,8 @@ extern "C" void *func_0203bf80();
 int func_0203b808(void *);
 int func_02090b24(Chan *);
 void func_020914e4(Chan *);
-extern "C" void func_0203bff0(Chan *, u8 *);
-extern "C" void func_0203c004(Chan *, u8 *, int, u32);
+extern "C" void MobiclipSetAdpcmState(Chan *, u8 *);
+extern "C" void MobiclipDecodeAdpcm(Chan *, u8 *, int, u32);
 extern "C" void MIi_CpuCopy16(void *, u32, u32);
 extern const int data_0209d568[];
 
@@ -127,10 +127,10 @@ int PlayerReadAudioBlock(P *p, u32 v) {
         p->ctx->ptr += 0x28;
     } else if (t == 3) {
         if (p->oa4 == 1) {
-            func_0203bff0(CH(p), p->ctx->ptr);
+            MobiclipSetAdpcmState(CH(p), p->ctx->ptr);
             p->ctx->ptr += 4;
         }
-        func_0203c004(CH(p), p->ctx->ptr, 0x80, v);
+        MobiclipDecodeAdpcm(CH(p), p->ctx->ptr, 0x80, v);
         p->ctx->ptr += 0x80;
     } else {
         MIi_CpuCopy16(p->ctx->ptr, v, 0x200);

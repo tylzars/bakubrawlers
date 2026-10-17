@@ -71,4 +71,6 @@ public:
     void SetChannelVolume(u32 channel, u32 level); // gVolumeScales[level] (level < 10); channel 1 scales mVolume2, 2 mVolume1
 };
 
-BOOL func_0203dd0c(FrameTask *task, u32 channel); // nonzero when the channel's task has finished
+// TRUE while CriHdlGetState of the channel's handle (channel 0: mHandle0, else mHandle1) == 2; every caller waits
+// until it returns FALSE, each after a StopChannel / StopAllChannels / CloseHandles.
+BOOL func_0203dd0c(FrameTask *task, u32 channel);

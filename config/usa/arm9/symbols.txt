@@ -1560,8 +1560,8 @@ func_0203be24 kind:function(arm,size=0x7c) addr:0x0203be24
 func_0203bea0 kind:function(arm,size=0x70) addr:0x0203bea0
 func_0203bf10 kind:function(arm,size=0x70) addr:0x0203bf10
 func_0203bf80 kind:function(arm,size=0x70) addr:0x0203bf80
-func_0203bff0 kind:function(arm,size=0x14) addr:0x0203bff0
-func_0203c004 kind:function(arm,size=0x158) addr:0x0203c004
+MobiclipSetAdpcmState kind:function(arm,size=0x14) addr:0x0203bff0
+MobiclipDecodeAdpcm kind:function(arm,size=0x158) addr:0x0203c004
 MobiclipAlloc kind:function(arm,size=0x18) addr:0x0203c15c
 MobiclipFree kind:function(arm,size=0x18) addr:0x0203c174
 _ZN11MoviePlayerC1Ev kind:function(arm,size=0x2c) addr:0x0203c18c
@@ -3017,8 +3017,8 @@ data_02096a90 kind:data(any) addr:0x02096a90
 data_0209d568 kind:data(any) addr:0x0209d568
 data_0209d578 kind:data(any) addr:0x0209d578
 data_0209d6f8 kind:data(any) addr:0x0209d6f8
-data_0209d9f8 kind:data(any) addr:0x0209d9f8
-data_0209da08 kind:data(any) addr:0x0209da08
+gMobiclipAdpcmIndexAdjust kind:data(any) addr:0x0209d9f8
+gMobiclipAdpcmDiffScale kind:data(any) addr:0x0209da08
 gVolumeScales kind:data(any) addr:0x0209dabc
 data_0209dae4 kind:data(any) addr:0x0209dae4
 data_0209dce4 kind:data(any) addr:0x0209dce4

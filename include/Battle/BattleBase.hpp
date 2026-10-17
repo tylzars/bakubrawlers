@@ -112,8 +112,10 @@ public:
     /* 08 */ virtual void func_ov007_0221cebc(int a) = 0;
     /* 0c */ virtual void func_ov007_0221ced0(u16 *a, u16 *b, u16 *c) = 0;
     /* 10 */ virtual void func_ov007_0221cfac(u16 *a, u16 *b) = 0;
-    /* 14 */ virtual int func_ov007_0221d494(u16 *a, u16 *b, u16 *c, u8 *d) = 0;
-    /* 18 */ virtual void func_ov007_0221d488(u16 *p) = 0;
+    /* 14 */ virtual int UpdateSlotsFromMessages(u16 *a, u16 *b, u16 *c, u8 *d) = 0;
+    // Slot 18: forwards to TryStartCardSequence with the array ApplyNetMessages built (UpdateSlotsFromMessages runs first
+    // and its CPU slots can also set entries of it).
+    /* 18 */ virtual void TryStartCardSequenceFromMessages(u16 *p) = 0;
     /* 1c */ virtual void func_ov007_0221d088(u8 a, u16 *counts) = 0;
 };
 
@@ -552,8 +554,8 @@ public:
     /* 08 */ virtual void func_ov007_0221cebc(int a);
     /* 0c */ virtual void func_ov007_0221ced0(u16 *a, u16 *b, u16 *c);
     /* 10 */ virtual void func_ov007_0221cfac(u16 *a, u16 *b);
-    /* 14 */ virtual int func_ov007_0221d494(u16 *a, u16 *b, u16 *c, u8 *d);
-    /* 18 */ virtual void func_ov007_0221d488(u16 *p);
+    /* 14 */ virtual int UpdateSlotsFromMessages(u16 *a, u16 *b, u16 *c, u8 *d);
+    /* 18 */ virtual void TryStartCardSequenceFromMessages(u16 *p);
     /* 1c */ virtual void func_ov007_0221d088(u8 a, u16 *counts);
     /* 20 */ virtual void Update();
     /* 24 */ virtual void Init(BattleData *data, u32 mode);
